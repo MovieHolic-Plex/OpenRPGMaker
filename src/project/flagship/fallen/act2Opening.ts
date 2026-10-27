@@ -1716,7 +1716,8 @@ function frostford(project: Project, exec: Exec, hubId: string): void {
   const doors = (town?.doors ?? []).filter((d) => d.reached !== false && !(town?.anchors ?? []).includes(d.kit));
   if (doors.length < 3) throw new Error("[fallen-star act2] 서리나루 집 문이 모자란다");
   const work = town?.work ?? { x: 16, y: 12 };
-  exec(project, "set_scene_mood", { mapId: FS2_FROST_ID, applyMode: "map", weather: { kind: "snow", intensity: 0.2 }, lighting: { ambient: 0, color: "#000000" } });
+  // 조명은 해 질 녘 「대답의 등」(frostFestival set_lighting_volume)이 정한다 — 분위기 이벤트에 조명을 주면 들어설 때 그 조명이 덮어쓴다.
+  exec(project, "set_scene_mood", { mapId: FS2_FROST_ID, applyMode: "map", weather: { kind: "snow", intensity: 0.2 } });
   // 설원 길 두 번째 맵 북쪽 끝 → 마을 남쪽.
   if (!FS2_SNOW.exit) throw new Error("[fallen-star act2] 설원 길 출구가 없다");
   const b = originEdge(project, M(project, FS2_FROST_ID), "south");

@@ -6360,27 +6360,6 @@
        ]
       },
       {
-       "kind": "move",
-       "dir": "down",
-       "steps": 1
-      },
-      {
-       "kind": "hold",
-       "dir": null,
-       "ms": 400
-      },
-      {
-       "kind": "move",
-       "dir": "up",
-       "steps": 1
-      },
-      {
-       "kind": "waitFor",
-       "testid": "dialogue-box",
-       "state": "present",
-       "timeoutMs": 8000
-      },
-      {
        "kind": "hold",
        "dir": null,
        "ms": 1200
