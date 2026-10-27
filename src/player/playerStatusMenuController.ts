@@ -16,7 +16,7 @@ import { refreshGrowthVitals } from "@/project/growth/vitals";
 import type { GrowthMenuTab } from "@/player/playerGrowthMenu";
 import { store } from "@/project/store";
 import { getPlayerPreferences, updatePlayerPreferences } from "@/player/playerPreferences";
-import { createSaveSnapshot, getSaveSlotStatus, listSaveSlots, saveToSlot, type SaveSlotIndex } from "@/player/saveSlots";
+import { createSaveSnapshot, getSaveSlotStatus, listSaveSlots, readAutosave, saveToSlot, type SaveSlotIndex } from "@/player/saveSlots";
 import { renderPlayerStatusMenu, statusMenuControls } from "@/player/playerStatusMenu";
 import { updateStatusMenuDetailSelection } from "@/player/playerStatusMenuDetailRenderer";
 import { animateStatusMenuPage, animateStatusMenuVitals, readStatusMenuVitals } from "@/player/playerStatusMenuMotion";
@@ -185,6 +185,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       project,
       session,
       slots: listSaveSlots(window.localStorage),
+      autosave: readAutosave(window.localStorage),
       message,
       selectedCommand,
       mode,
@@ -239,6 +240,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
         onOpenGroup: openGroup,
         onSaveSlot: saveSlot,
         onLoadSlot: loadSlot,
+        onLoadAutosave: options.loadAutosave ? () => loadAutosave() : undefined,
         onSelectItemTarget: (itemId) => {
           rememberDetailCursorFromTestId(`status-menu-item-${itemId}`);
           itemActionId = undefined;
@@ -596,6 +598,13 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     rememberDetailCursorFromTestId(`load-slot-${slot}`);
     options.emitMenuJuice("menu-confirm", currentMenu());
     options.loadSlot(slot, false);
+  }
+
+  function loadAutosave(): void {
+    if (!options.loadAutosave) return;
+    rememberDetailCursorFromTestId("load-slot-auto");
+    options.emitMenuJuice("menu-confirm", currentMenu());
+    options.loadAutosave(false);
   }
 
   function useItem(itemId: string, actorId?: string, monsterInstanceId?: string): void {
