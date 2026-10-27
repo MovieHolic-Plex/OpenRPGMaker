@@ -266,7 +266,56 @@ describe("fillTile — flood fill", () => {
     expect(upperAt(map, 0, 1)).toBe(TILE.EMPTY);
     expect(at(map, 1, 1)).toBe(TILE.GRASS);
     expect(at(map, 0, 1)).toBe(TILE.WATER);
-  });
+  it("오토타일 몸통·변·모서리를 한 재료로 채우고 다른 지형은 남긴다", () => {
+    const project = store.getCurrent();
+    const mapId = project.startMapId;
+    const map = project.maps[mapId]!;
+    const tileset = project.tilesets[map.tilesetId]!;
+    const body = 9001;
+    const edge = 9002;
+    const corner = 9003;
+    const other = 9010;
+    const linked = 9020;
+    const paint = 9099;
+    tileset.autotileGroups = [
+      {
+        id: "fill-road",
+        name: "fill road",
+        memberTileIds: [body, edge, corner],
+        connectTileIds: [body, edge, corner],
+        variantMap: { "0": body, "15": body },
+      },
+      {
+        id: "fill-other",
+        name: "fill other",
+        memberTileIds: [other],
+        connectTileIds: [other, linked],
+        variantMap: { "0": other },
+      },
+    ];
+    const put = (x: number, y: number, tile: number): void => {
+      map.lowerTiles[y * map.width + x] = tile;
+    };
+    put(1, 1, body);
+    put(2, 1, edge);
+    put(1, 0, corner);
+    put(2, 2, other);
+    put(3, 1, linked);
+    put(5, 5, edge);
+    put(3, 3, corner);
+    const outside = at(map, 4, 4);
+
+    fillTile(mapId, "lower", 2, 1, paint);
+
+    const after = currentMap();
+    expect(at(after, 1, 1)).toBe(paint);
+    expect(at(after, 2, 1)).toBe(paint);
+    expect(at(after, 1, 0)).toBe(paint);
+    expect(at(after, 2, 2)).toBe(other);
+    expect(at(after, 3, 1)).toBe(linked);
+    expect(at(after, 5, 5)).toBe(edge);
+    expect(at(after, 3, 3)).toBe(corner);
+    expect(at(after, 4, 4)).toBe(outside);  });
 });
 
 describe("eraseTile", () => {

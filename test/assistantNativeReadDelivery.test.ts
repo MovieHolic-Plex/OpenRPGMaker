@@ -34,7 +34,8 @@ describe("native read delivery credit", () => {
     const write: Call = { name: "upsert_item", args: { item: { id: item.id, price: 654 } } };
     let round = 0;
     const session = new AssistantSession(project, {
-      config: { ...defaultAiConfig(), authMode: "apiKey", model: "native-delivery-fixture", agentMode: "chat", maxToolCalls: 1 },
+      // #2535: defaultAiConfig() pins the writer to gemini-4-argon (1M window); this fixture measures the unpinned fixture model window.
+      config: { ...defaultAiConfig(), roleModels: {}, authMode: "apiKey", model: "native-delivery-fixture", agentMode: "chat", maxToolCalls: 1 },
       declareIntent: facts => fixedDeclarer({ mode: "modify", tools: [write.name], source: round === 0 ? "llm" : "continuation",
         readBeforeWrite: { project: false, collections: ["items"], references: true } })(facts),
       chat: async (_config, request) => {
@@ -81,7 +82,8 @@ describe("native read delivery credit", () => {
     const pageLimit = 24_000;
     // The latest oversized write result need not fit: stop immediately after the mutation.
     const pageTotal = Math.ceil(JSON.stringify({ collection: "items", records: [item], total: 1, nextOffset: null }).length / pageLimit);
-    const config: AiConfig = { ...defaultAiConfig(), authMode: "apiKey", model: "native-delivery-fixture", agentMode: "chat",
+    // #2535: unpin roleModels so the writer window is the fixture model's, not gemini-4-argon's 1M window.
+    const config: AiConfig = { ...defaultAiConfig(), roleModels: {}, authMode: "apiKey", model: "native-delivery-fixture", agentMode: "chat",
       maxToolCalls: 2, maxTokens: 4_000_000 };
     const session = new AssistantSession(project, {
       config,

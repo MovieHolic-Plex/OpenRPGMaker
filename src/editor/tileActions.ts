@@ -561,20 +561,88 @@ function expandEraseCompanions(
   return [...out.values()];
 }
 
-const FILL_NEIGHBORS = [[-1, 0], [1, 0], [0, -1], [0, 1]] as const;
+export function fillTile(mapId: MapId, layer: TileLayer, x: number, y: number, newTile: number, options: TilePaintOptions = {}): void {
+  const fillPlan = planFillTile(mapId, layer, x, y, newTile);
+  if (fillPlan.points.length === 0) return;
+  const current = store.getCurrent();
+  const currentMap = current.maps[mapId];
+  if (!currentMap) return;
+  const tileset = current.tilesets[currentMap.tilesetId];
+  if (options.worldmapAutoBackground && tileset && worldmapBrushMaterial(tileset, newTile)) {
+    paintTilesBulk(mapId, fillPlan.points.map(p => ({ ...p, layer: fillPlan.layer, tile: newTile })), options);
+    return;
+  }
+  const autoConnect = options.autoConnect ?? true;
+  const groups = autotileGroupsForTileset(tileset);
+  const shapeAutotile = fillPlan.layer === "lower" && (autoConnect || fillTriggers(currentMap, tileset, fillPlan, newTile, "lower"));
+  const lowerGroups = shapeAutotile ? fillGroups(currentMap, groups, fillPlan, newTile, "lower") : [];
+  const upperGroups = fillGroups(currentMap, groups, fillPlan, newTile, "upper");
+  store.updateMapTiles(mapId, (m) => {
+    if (!inMap(m, x, y)) return;
+    for (const point of fillPlan.points) setTileSafe(m, fillPlan.layer, point.x, point.y, newTile);
+    for (const group of lowerGroups) shapeAutotileGroupAround(m, group, fillPlan.points);
+    for (const group of upperGroups) shapeAutotileGroupAround(autotileGroupLayerView(m, group), group, fillPlan.points);
+    // 하위 지형 채우기는 상위(수관 등)를 재작성하지 않는다.
+    if (fillPlan.layer === "upper" || !isLowerTerrainTile(tileset, newTile)) {
+      repairTreePairsOnMap(m, tileset, {
+        canopyReplacementExemptTileIds: resolveForestCanopyReplacementExemptTileIds(current, { storeProject: true }),
+      });
+    }
+  }, {
+    cells: changedTileCellsForEdit(mapId, fillPlan.layer, fillPlan.points, shapeAutotile || upperGroups.length > 0),
+  });
+}
 
-/**
- * 시작 칸과 같은 타일로 4방향 이어진 영역.
- * 상위 층은 바닥(`lowerTiles`)도 시작 칸과 같아야 한다. 상위가 비어 있으면 맵 전체가
- * 같은 빈 값이라, 바닥을 안 보면 풀밭에 장식을 채우려다 물·길·벽까지 덮인다
- * (`mapHelpers.floodFillCells` 의 2층 규칙과 같다).
- */
-function floodFillPoints(map: GameMap, layer: TileLayer, x: number, y: number): RoadPoint[] {
-  const tiles = layer === "lower" ? map.lowerTiles : map.upperTiles;
+/** 채우기가 한 재료로 잇는 칸. 몸통·변·모서리는 번호가 달라도 같은 땅이고, 연결만 겹치는 이웃은 아니다. */
+function autotileFillMembers(tileset: TilesetDef | undefined, layer: TileLayer, tile: number): ReadonlySet<number> | null {
+  if (tile < 0) return null;
+  let members: Set<number> | null = null;
+  for (const group of autotileGroupsForTileset(tileset)) {
+    if (autotileGroupLayer(group) !== layer || !group.memberTileIds.includes(tile)) continue;
+    members ??= new Set<number>();
+    for (const id of group.memberTileIds) members.add(id);
+  }
+  return members;
+}
+
+function fillGroups(
+  map: GameMap,
+  groups: readonly AutotileGroup[],
+  fillPlan: { readonly layer: TileLayer; readonly points: readonly RoadPoint[] },
+  newTile: number,
+  groupLayer: TileLayer,
+): readonly AutotileGroup[] {
+  if (fillPlan.layer !== groupLayer) return [];
+  return groups.filter((group) => autotileGroupLayer(group) === groupLayer
+    && fillPlan.points.some((point) => autotileEditTriggersGroup(group, tileAt(map, groupLayer, point.x, point.y), newTile)));
+}
+
+function fillTriggers(
+  map: GameMap,
+  tileset: TilesetDef | undefined,
+  fillPlan: { readonly layer: TileLayer; readonly points: readonly RoadPoint[] },
+  newTile: number,
+  groupLayer: TileLayer,
+): boolean {
+  return fillGroups(map, autotileGroupsForTileset(tileset), fillPlan, newTile, groupLayer).length > 0;
+}
+
+function planFillTile(mapId: MapId, layer: TileLayer, x: number, y: number, newTile: number): { readonly layer: TileLayer; readonly points: readonly RoadPoint[] } {
+  const project = store.getCurrent();
+  const map = project.maps[mapId];
+  if (!map || !inMap(map, x, y)) return { layer, points: [] };
+  const tileset = project.tilesets[map.tilesetId];
+  const targetLayer = effectiveLayer(tileset, layer, newTile);
+  const targetArr = targetLayer === "lower" ? map.lowerTiles : map.upperTiles;
   const startIdx = y * map.width + x;
-  const target = tiles[startIdx];
-  const matchGround = layer === "upper";
-  const ground = matchGround ? map.lowerTiles[startIdx] : undefined;
+  const target = targetArr[startIdx];
+  // 누른 칸이 이미 그 번호면 맵을 다시 쓰지 않는다.
+  if (target === newTile) return { layer: targetLayer, points: [] };
+  const members = typeof target === "number" ? autotileFillMembers(tileset, targetLayer, target) : null;
+  const sameMaterial = (index: number): boolean => {
+    const tile = targetArr[index];
+    return members ? typeof tile === "number" && members.has(tile) : tile === target;
+  };
   const queue = [startIdx];
   const seen = new Set<number>([startIdx]);
   const points: RoadPoint[] = [];
@@ -583,74 +651,21 @@ function floodFillPoints(map: GameMap, layer: TileLayer, x: number, y: number): 
     const cx = idx % map.width;
     const cy = Math.floor(idx / map.width);
     points.push({ x: cx, y: cy });
-    for (const [dx, dy] of FILL_NEIGHBORS) {
-      const nx = cx + dx;
-      const ny = cy + dy;
+    const neighbors = [
+      [cx - 1, cy],
+      [cx + 1, cy],
+      [cx, cy - 1],
+      [cx, cy + 1],
+    ] as const;
+    for (const [nx, ny] of neighbors) {
       if (!inMap(map, nx, ny)) continue;
       const ni = ny * map.width + nx;
-      if (seen.has(ni)) continue;
-      if (tiles[ni] !== target) continue;
-      if (matchGround && map.lowerTiles[ni] !== ground) continue;
+      if (seen.has(ni) || !sameMaterial(ni)) continue;
       seen.add(ni);
       queue.push(ni);
     }
   }
-  return points;
-}
-
-export function fillTile(mapId: MapId, layer: TileLayer, x: number, y: number, newTile: number, options: TilePaintOptions = {}): void {
-  const fillPlan = planFillTile(mapId, layer, x, y, newTile);
-  const current = store.getCurrent();
-  const currentMap = current.maps[mapId];
-  const tileset = currentMap ? current.tilesets[currentMap.tilesetId] : undefined;
-  if (options.worldmapAutoBackground && tileset && currentMap && worldmapBrushMaterial(tileset, newTile)) {
-    paintTilesBulk(mapId, fillPlan.points.map(p => ({ ...p, layer: fillPlan.layer, tile: newTile })), options);
-    return;
-  }
-  const autoConnect = options.autoConnect ?? true;
-  const prevAtStart =
-    currentMap && fillPlan.points[0]
-      ? tileAt(currentMap, fillPlan.layer, fillPlan.points[0]!.x, fillPlan.points[0]!.y)
-      : undefined;
-  const shapeAutotile =
-    fillPlan.layer === "lower"
-    && (
-      autoConnect
-      || editTriggersAnyAutotile(tileset, prevAtStart, newTile)
-    );
-  const upperGroups=fillPlan.layer==='upper'?autotileGroupsForTileset(tileset).filter(group=>autotileGroupLayer(group)==='upper'&&autotileEditTriggersGroup(group,prevAtStart,newTile)):[];
-  store.updateMapTiles(mapId, (m) => {
-    if (!inMap(m, x, y)) return;
-    const targetLayer = effectiveLayer(tileset, layer, newTile);
-    const targetArr = targetLayer === "lower" ? m.lowerTiles : m.upperTiles;
-    const target = targetArr[y * m.width + x];
-    const changedPoints = floodFillPoints(m, targetLayer, x, y);
-    for (const point of changedPoints) setTileSafe(m, targetLayer, point.x, point.y, newTile);
-    shapeTerrainAfterLowerEdit(m, tileset, {
-      layer: targetLayer,
-      points: changedPoints,
-      previousTile: target,
-      nextTile: newTile,
-      autoConnect: shapeAutotile,
-    });
-    for(const group of upperGroups)shapeAutotileGroupAround(autotileGroupLayerView(m,group),group,changedPoints);
-    // 하위 지형 채우기는 상위(수관 등)를 재작성하지 않는다.
-    if (targetLayer === "upper" || !isLowerTerrainTile(tileset, newTile)) {
-      repairTreePairsOnMap(m, tileset, {
-        canopyReplacementExemptTileIds: resolveForestCanopyReplacementExemptTileIds(current, { storeProject: true }),
-      });
-    }
-  }, {
-    cells: changedTileCellsForEdit(mapId, fillPlan.layer, fillPlan.points, shapeAutotile || upperGroups.length>0),
-  });
-}
-
-function planFillTile(mapId: MapId, layer: TileLayer, x: number, y: number, newTile: number): { readonly layer: TileLayer; readonly points: readonly RoadPoint[] } {
-  const project = store.getCurrent();
-  const map = project.maps[mapId];
-  if (!map || !inMap(map, x, y)) return { layer, points: [] };
-  const targetLayer = effectiveLayer(project.tilesets[map.tilesetId], layer, newTile);
-  return { layer: targetLayer, points: floodFillPoints(map, targetLayer, x, y) };
+  return { layer: targetLayer, points };
 }
 
 function changedTileCellsForEdit(mapId: MapId, layer: TileLayer, points: readonly RoadPoint[], autoConnect: boolean): readonly ProjectChangeCell[] {

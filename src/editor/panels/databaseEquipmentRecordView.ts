@@ -275,7 +275,7 @@ export function renderEquipmentRecordForm(form: HTMLElement, record: EquipmentRe
             })),
             sectionCard({
               title: "능력치 보정",
-              hint: "착용 중에만 더해집니다",
+              hint: "착용 중에만 더해집니다. 음수는 감점입니다",
               testid: "db-equipment-card-stats",
               children: [
                 el("div", {
@@ -681,7 +681,7 @@ function statField(input: StatFieldInput, onChange?: () => void): HTMLElement {
     const statBonuses = { ...currentEquipment(input.equipment).statBonuses, [input.key]: value };
     updateDatabaseRecord("equipment", input.equipment.id, { statBonuses });
     onChange?.();
-  }, { min: 0, max: 9999 });
+  }, { min: -9999, max: 9999 });
 }
 
 function combatAxisField(

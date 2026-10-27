@@ -5,6 +5,7 @@
 
 import type { ReliefBrushMode } from "@/project/relief/edit";
 import type { ReliefRoughSize } from "@/project/relief/roughBrush";
+import type { ReliefWallTile } from "@/project/relief/types";
 import type { MapId } from "@/project/types";
 import type { PaletteStamp } from "@/editor/tilePaletteStamp";
 import type { TerrainPoint, TerrainSymmetry } from "./terrainDesignGeometry";
@@ -51,6 +52,19 @@ export interface TileClipboardLayer {
   overlay?: number[];
 }
 
+/**
+ * 선택 영역의 높이. 좌표는 영역 좌상단이 (0, 0)이다.
+ * 맵에 높이가 없어도 평지(전부 0)로 담아, 붙여넣기가 목적지 언덕을 덮어 평지로 만든다.
+ */
+export interface TileClipboardRelief {
+  /** 행 우선. 길이 = width × height. */
+  levels: number[];
+  /** 있으면 levels 와 같은 길이. 없으면 경사로 없음. */
+  ramps?: number[];
+  /** 영역 안 상대 좌표의 벽면 장식. */
+  wallDecor?: ReliefWallTile[];
+}
+
 // 복사는 항상 하위+상위 레이어를 통째로 담는다(RM2K3 영역 복사 관례).
 export interface TileClipboard {
   width: number;
@@ -59,6 +73,8 @@ export interface TileClipboard {
   upper: TileClipboardLayer;
   /** 그림자 비트. 없으면 0. */
   shadow?: number[];
+  /** 칸 높이·경사로·벽면 장식. 없으면 옛 클립보드 — 목적지의 높이를 그대로 둔다. */
+  relief?: TileClipboardRelief;
 }
 
 export interface EditorState {
@@ -430,4 +446,26 @@ export function editorStateChangedOnlySelectedTile(previous: EditorState, next: 
     selectionChanged = true;
   }
   return selectionChanged;
+}
+
+const EVENT_SELECTION_KEYS: ReadonlySet<keyof EditorState> = new Set<keyof EditorState>([
+  "selectedEventId",
+  "selectedEventPageId",
+  "pendingEventCoordinate",
+]);
+
+/**
+ * 이벤트 레이어에서 고른 이벤트(또는 빈 칸 대기 좌표)만 바뀌었는가.
+ * 목록은 그 표시만 옮기면 된다. 행을 다시 만들면 긴 목록이 맨 위로 튀고, 초상 아이콘을
+ * 전부 다시 붙이느라 클릭이 멈춘다. 레이어·도구·맵이 같이 바뀌면 패널 자체가 달라진다.
+ */
+export function editorStateChangedOnlyEventSelection(previous: EditorState, next: EditorState): boolean {
+  if (previous === next || next.layer !== "event") return false;
+  let changed = false;
+  for (const key of Object.keys(next) as (keyof EditorState)[]) {
+    if (previous[key] === next[key]) continue;
+    if (!EVENT_SELECTION_KEYS.has(key)) return false;
+    changed = true;
+  }
+  return changed;
 }

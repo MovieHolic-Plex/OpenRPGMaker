@@ -55,18 +55,21 @@ describe("fill 로직", () => {
 
   it("다른 타일은 넘어가지 않는다", () => {
     const m = createBlankMap("m", 5, 1);
+    // New maps are floored with the default tileset's plain ground (beodeul_city since the 2026-10-07 EasyRPG purge), not TILE.GRASS.
+    const ground = m.lowerTiles[0];
     m.lowerTiles[2] = TILE.WALL;
     fillLogic(m, 0, 0, TILE.PATH);
     expect(m.lowerTiles[0]).toBe(TILE.PATH);
     expect(m.lowerTiles[1]).toBe(TILE.PATH);
     expect(m.lowerTiles[2]).toBe(TILE.WALL); // 안 바뀜
-    expect(m.lowerTiles[3]).toBe(TILE.GRASS);
-    expect(m.lowerTiles[4]).toBe(TILE.GRASS);
+    expect(m.lowerTiles[3]).toBe(ground);
+    expect(m.lowerTiles[4]).toBe(ground);
   });
 
   it("같은 타일로 채우면 변화 없음", () => {
     const m = createBlankMap("m", 3, 3);
-    fillLogic(m, 0, 0, TILE.GRASS);
-    expect(m.lowerTiles.every((t: number) => t === TILE.GRASS)).toBe(true);
+    const ground = m.lowerTiles[0];
+    fillLogic(m, 0, 0, ground);
+    expect(m.lowerTiles.every((t: number) => t === ground)).toBe(true);
   });
 });

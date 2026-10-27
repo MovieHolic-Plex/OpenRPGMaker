@@ -30,6 +30,15 @@ export function eventBodyRect(event: GameEvent): FootprintRect {
 }
 
 /**
+ * 몸 사각이 맵 칸 안에 들어가는가.
+ * 앵커만 안이고 머리·옆 칸이 밖이면 false. 붙여넣기와 끌어 옮기기가 같은 식을 쓴다.
+ */
+export function eventBodyFitsMap(event: GameEvent, mapWidth: number, mapHeight: number): boolean {
+  const body = eventBodyRect(event);
+  return body.left >= 0 && body.top >= 0 && body.right < mapWidth && body.bottom < mapHeight;
+}
+
+/**
  * 이벤트의 통행 사각 — 몸 사각의 하단 `passRows` 행. 발자국과 마찬가지로 **첫 페이지**에서 읽는다.
  *
  * 런타임(`runtimeEventView`)은 조건을 평가해 활성 페이지의 사각을 쓰지만, 저작 시점 검사는

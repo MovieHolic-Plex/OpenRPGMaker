@@ -24,7 +24,8 @@ describe("M2 persisted runtime classification completeness", () => {
 
     // Then: the union is exactly the 126 catalog IDs, with no duplicate membership.
     expect(new Set(classifiedIds)).toEqual(new Set(catalogIds));
-    expect(classifiedIds).toHaveLength(133);
+    // 135: + m2-226 Lift Ride (#3509), m2-227 Journal Line (#3546).
+    expect(classifiedIds).toHaveLength(135);
     expect([...membershipCounts].filter(([, count]) => count > 1)).toEqual([]);
   });
 
@@ -176,7 +177,8 @@ describe("M2 persisted runtime classification completeness", () => {
 
     // 31 + m2-069(맵 배경 흐름) + 명작 공백 미니게임 키트·순간이동 메뉴(m2-219~223).
     // + 화면 효과 m2-202 + 파티클·모습 효과 m2-224·225 (2026-10-02).
-    expect(M2_MAP_COMMON_FULL_IDS).toHaveLength(40);
+    // + Lift Ride m2-226 (#3509), Journal Line m2-227 (#3546).
+    expect(M2_MAP_COMMON_FULL_IDS).toHaveLength(42);
     for (const commandId of M2_MAP_COMMON_FULL_IDS) {
       expect(catalogRowRuntimeSupport(commandId, undefined, "map"), commandId).toBe("runtime-full");
     }

@@ -152,7 +152,8 @@ describe("접촉 피해 — 몸 사각 인접", () => {
 function projectWithSpawn(footprint?: CharacterFootprint, passRows?: number) {
   const project = createBlankProject();
   const map = project.maps[project.startMapId]!;
-  map.lowerTiles.fill(TILE.GRASS);
+  // TILE.GRASS (240) is not open ground on the default beodeul_city sheet; floor the map with its own plain ground tile.
+  map.lowerTiles.fill(map.lowerTiles[0]!);
   const troopId = project.database.troops[0]!.id;
   map.fieldSpawns = [
     {

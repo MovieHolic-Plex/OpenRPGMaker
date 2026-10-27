@@ -6,14 +6,15 @@
 import { describe, expect, it } from "vitest";
 import { canMove } from "@/project/collision";
 import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
-import { defaultTilesets } from "@/project/defaults/defaultAssets";
+import { retiredEasyRpgTileset } from "./support/retiredEasyRpgTilesets";
 import { canTravelBetweenMaps, firstStandableCell } from "@/testing/mapTravelReachability";
 import type { GameMap, Project } from "@/project/types";
 
 describe("도달성 도구의 계약", () => {
   /** 두 칸 맵 두 개를 관문 하나로 이은 최소 프로젝트. 관문 칸의 통행성을 바꿔 가며 검사한다. */
   function twoMapProject(gateTile: number): Project {
-    const tileset = defaultTilesets()[COMBINED_TOWN_TILESET_ID]!;
+    // The combined-town sheet left defaultTilesets() in the 2026-10-07 copyright purge; build its retired definition.
+    const tileset = retiredEasyRpgTileset(COMBINED_TOWN_TILESET_ID);
     const makeMap = (id: string, gateAt: { x: number; y: number } | null, target?: string): GameMap => {
       const width = 4;
       const height = 3;

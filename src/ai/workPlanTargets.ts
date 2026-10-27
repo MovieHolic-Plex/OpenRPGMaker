@@ -20,12 +20,19 @@ function record(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
-/** Missing is legacy input; null retains malformed input instead of dropping it. */
+/**
+ * Missing is legacy input; null retains malformed input instead of dropping it.
+ * set_work_plan skips schema normalization, so one map id often arrives as a string
+ * (`"map_hub"` or `"map_a, map_b"`). A comma-separated string is that same id list.
+ */
 export function parseWorkTargetIds(value: unknown): readonly string[] | null | undefined {
   if (value === undefined) return undefined;
-  if (!Array.isArray(value) || value.length === 0
-    || !value.every((id): id is string => typeof id === "string" && id.trim().length > 0)) return null;
-  const ids = value.map(id => id.trim());
+  const entries: unknown = typeof value === "string"
+    ? value.split(",").map((id) => id.trim()).filter((id) => id.length > 0)
+    : value;
+  if (!Array.isArray(entries) || entries.length === 0
+    || !entries.every((id): id is string => typeof id === "string" && id.trim().length > 0)) return null;
+  const ids = entries.map(id => id.trim());
   return new Set(ids).size === ids.length ? ids : null;
 }
 

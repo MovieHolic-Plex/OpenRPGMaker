@@ -24,7 +24,8 @@ import {
 
 /** 배경 저작만 얹은 원시 프로젝트 JSON. 로드 게이트를 재려면 타입이 아니라 JSON 이 필요하다. */
 function projectJsonWithBackground(background: unknown): string {
-  const raw = JSON.parse(serialize(createBlankProject())) as { maps: Record<string, Record<string, unknown>> };
+  // 한 번 읽은 모양에서 시작한다 — 새 프로젝트의 기본값(battleUiStyle="retro2003")은 로드가 생략해 바이트 비교가 표현 차이로 빗나간다.
+  const raw = JSON.parse(serialize(deserialize(serialize(createBlankProject())))) as { maps: Record<string, Record<string, unknown>> };
   const mapId = Object.keys(raw.maps)[0]!;
   raw.maps[mapId]!.background = background;
   return JSON.stringify(raw);

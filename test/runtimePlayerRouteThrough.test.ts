@@ -42,6 +42,8 @@ type RouteSpec = {
   readonly moves: readonly MoveCommand[];
   readonly repeat?: boolean;
   readonly wait?: boolean;
+  /** false 만 저장한다. 생략은 막힌 걸음을 소비하는 기본 동작. */
+  readonly skippable?: false;
 };
 
 type AuthoredProject = {
@@ -76,7 +78,12 @@ function authorProject(specs: readonly RouteSpec[], buildMap?: (map: GameMap) =>
             {
               kind: "moveEvent",
               eventId: spec.target,
-              route: { moves: [...spec.moves], repeat: spec.repeat === true, wait: spec.wait === true },
+              route: {
+                moves: [...spec.moves],
+                repeat: spec.repeat === true,
+                wait: spec.wait === true,
+                ...(spec.skippable === false ? { skippable: false as const } : {}),
+              },
             },
             { kind: "setSwitch", switchId: DONE_SWITCH, value: true },
           ],
@@ -473,6 +480,92 @@ describe("주인공 통과 상태의 수명 (OPRN-OUT-016)", () => {
     harness.step(STEP_FRAMES * 2);
 
     expect(harness.scene.tileX).toBe(6);
+  });
+});
+
+describe("moveEvent skippable false retries a blocked step", () => {
+  it("keeps the blocked player step instead of taking the next command", async () => {
+    installManualFrames();
+    const authored = authorProject(
+      [{
+        id: "hold_player",
+        target: PLAYER_MOVE_TARGET,
+        skippable: false,
+        moves: [{ kind: "move", dir: "right" }, { kind: "move", dir: "left" }],
+      }],
+      (map) => { wall(map, 6, 5); },
+    );
+    const harness = routeHarness(authored.map);
+
+    await playCommands(harness, authored.commands("hold_player"), STEP_FRAMES * 3);
+
+    expect([harness.scene.tileX, harness.scene.tileY]).toEqual([5, 5]);
+    expect(harness.scene.playerRoute?.index).toBe(0);
+    expect(harness.scene.playerRoute?.moves[0]).toEqual({ kind: "move", dir: "right" });
+    expect(harness.scene.playerRoute?.preserveBlockedSteps).toBe(true);
+  });
+
+  it("still drops a blocked player step when skippable is omitted", async () => {
+    installManualFrames();
+    const authored = authorProject(
+      [{
+        id: "skip_player",
+        target: PLAYER_MOVE_TARGET,
+        moves: [{ kind: "move", dir: "right" }, { kind: "move", dir: "left" }],
+      }],
+      (map) => { wall(map, 6, 5); },
+    );
+    const harness = routeHarness(authored.map);
+
+    await playCommands(harness, authored.commands("skip_player"), STEP_FRAMES * 3);
+
+    expect([harness.scene.tileX, harness.scene.tileY]).toEqual([4, 5]);
+    expect(harness.scene.playerRoute).toBeNull();
+  });
+
+  it("keeps a blocked NPC step instead of walking the unmatched next step", async () => {
+    installManualFrames();
+    const authored = authorProject(
+      [{
+        id: "hold_npc",
+        target: "walker",
+        skippable: false,
+        moves: [{ kind: "move", dir: "right" }, { kind: "move", dir: "left" }],
+      }],
+      (map) => {
+        map.events.push(event("walker", 10, 8, [page("walker", "same", { kind: "action" })]));
+        wall(map, 11, 8);
+      },
+    );
+    const harness = routeHarness(authored.map);
+
+    await playCommands(harness, authored.commands("hold_npc"), NPC_FRAMES);
+
+    expect(harness.scene.eventPositions.walker).toMatchObject({ x: 10, y: 8 });
+    const mover = harness.scene.autonomousNPCs.get("walker");
+    expect(mover?.preserveBlockedSteps).toBe(true);
+    expect(mover?.step).toBe(0);
+    expect(mover?.moves[0]).toEqual({ kind: "move", dir: "right" });
+  });
+
+  it("still drops a blocked NPC step when skippable is omitted", async () => {
+    installManualFrames();
+    const authored = authorProject(
+      [{
+        id: "skip_npc",
+        target: "walker",
+        moves: [{ kind: "move", dir: "right" }, { kind: "move", dir: "left" }],
+      }],
+      (map) => {
+        map.events.push(event("walker", 10, 8, [page("walker", "same", { kind: "action" })]));
+        wall(map, 11, 8);
+      },
+    );
+    const harness = routeHarness(authored.map);
+
+    await playCommands(harness, authored.commands("skip_npc"), NPC_FRAMES);
+
+    expect(harness.scene.eventPositions.walker).toMatchObject({ x: 9, y: 8 });
   });
 });
 

@@ -10,55 +10,11 @@ const loadFs = async (): Promise<FsReader> => {
   return (await import(moduleName)) as FsReader;
 };
 
-const matrixPath = ".omo/evidence/rm2003-database-plan/db-ui-coverage-matrix.md";
-const captureScriptPath = ".omo/evidence/rm2003-database-plan/capture-db-ui.mjs";
 const viteConfigPath = "vite.config.ts";
 
-const requiredManualPages = [
-  "Database Settings",
-  "Actors",
-  "Classes",
-  "Skills",
-  "Items",
-  "Enemy Battlers",
-  "Enemy Troops",
-  "Elements",
-  "States",
-  "Battle Animation",
-  "Battle Animation 2",
-  "Battle Screen",
-  "Terrain",
-  "Tilesets",
-  "Terms",
-  "System",
-  "System 2",
-  "Common Events",
-  "Supplementary Windows",
-] as const;
-
 describe("RM2003 database UI evidence plan", () => {
-  it("covers every Haylee Database manual page in the UI matrix", async () => {
-    const { existsSync, readFileSync } = await loadFs();
-    expect(existsSync(matrixPath)).toBe(true);
-
-    const matrix = readFileSync(matrixPath, "utf8");
-
-    for (const page of requiredManualPages) {
-      expect(matrix, `${page} should be represented`).toContain(`| ${page} |`);
-    }
-  });
-
-  it("provides an executable screenshot harness for post-change browser evidence", async () => {
-    const { existsSync, readFileSync } = await loadFs();
-    expect(existsSync(captureScriptPath)).toBe(true);
-
-    const script = readFileSync(captureScriptPath, "utf8");
-
-    expect(script).toContain("post-db-actors.png");
-    expect(script).toContain("post-mobile-db-tabs.png");
-    expect(script).toContain("VITE_WATCH_GUARD");
-  });
-
+  // .omo/evidence/rm2003-database-plan(매트릭스·캡처 스크립트)는 공개 기준선의 산출물 정리(0d4f13e7c8)에서 빠졌다 —
+  // 그 파일을 읽던 두 경우는 뺐다. Vite 감시 제외 계약만 남는다.
   it("keeps evidence artifacts out of the Vite file watcher on Windows", async () => {
     const { readFileSync } = await loadFs();
     const config = readFileSync(viteConfigPath, "utf8");

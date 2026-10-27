@@ -18,7 +18,8 @@ import { collectWebExportAssets } from "@/project/webExportAssets";
 
 describe("OPRN 파노라마 견본", () => {
   it("다섯 세트(하늘·노을·밤하늘·바다·구름)가 있고 그림 파일이 저장소에 있다", () => {
-    expect(OPRN_PANORAMA_SETS.map((set) => set.id)).toEqual(["oprn-sky-day", "oprn-sunset", "oprn-night-stars", "oprn-sea", "oprn-clouds"]);
+    // + oprn-sky-day-city (rooftop street view, #3375).
+    expect(OPRN_PANORAMA_SETS.map((set) => set.id)).toEqual(["oprn-sky-day", "oprn-sky-day-city", "oprn-sunset", "oprn-night-stars", "oprn-sea", "oprn-clouds"]);
     for (const asset of OPRN_PANORAMA_ASSETS) expect(existsSync(resolve("public", asset.path)), asset.path).toBe(true);
   });
 

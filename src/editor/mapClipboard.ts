@@ -1,7 +1,9 @@
-import { editorState, type TileSelection } from "@/editor/editorState";
+import { editorState, type TileClipboardRelief, type TileSelection } from "@/editor/editorState";
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { compactMapLayers, layerTileAt, setLayerTileAt, setShadowAt, shadowAt } from "@/project/mapLayers";
 import { replaceTileStack, tileStackAt } from "@/project/mapOverlayTiles";
+import { copyRelief, emptyRelief } from "@/project/relief/edit";
+import { RELIEF_MAX_LEVEL, type ReliefData } from "@/project/relief/types";
 import { store, type ProjectChangeCell } from "@/project/store";
 import type { GameMap, MapId } from "@/project/types";
 import { toast } from "@/util/toast";
@@ -76,6 +78,7 @@ export function copySelection(mapId: MapId): boolean {
       lower,
       upper,
       shadow,
+      relief: reliefStampFromMap(map, selection.x, selection.y, selection.width, selection.height),
     },
   });
   showClipboardToast(`${selection.width}×${selection.height} 복사됨`, "ok");
@@ -163,9 +166,12 @@ export function pasteClipboard(mapId: MapId, x: number, y: number): boolean {
         setShadowAt(targetMap, targetIndex, clipboard.shadow?.[sourceIndex] ?? 0);
       }
     }
+    if (clipboard.relief) {
+      applyReliefStamp(targetMap, clipboard.relief, x, y, clipboard.width, clipboard.height);
+    }
     // 빈 칸을 붙여 마지막 2·4층·그림자 칸이 비면 선택 칸을 뺀다 — 옛 맵 모양으로 돌아간다.
     compactMapLayers(targetMap);
-  }, { scope: "map", mapId, cells });
+  }, { scope: "map", mapId, cells, ...(clipboard.relief ? { relief: true as const } : {}) });
   showClipboardToast(`${clipboard.width}×${clipboard.height} 붙여넣기 완료`, "ok");
   return true;
 }
@@ -196,10 +202,109 @@ export function clearSelectionRegion(mapId: MapId): boolean {
         setShadowAt(targetMap, idx, 0);
       }
     }
+    if (targetMap.relief) {
+      applyReliefStamp(
+        targetMap,
+        { levels: new Array(selection.width * selection.height).fill(0) },
+        selection.x,
+        selection.y,
+        selection.width,
+        selection.height,
+      );
+    }
     compactMapLayers(targetMap);
-  }, { scope: "map", mapId, cells });
+  }, { scope: "map", mapId, cells, ...(map.relief ? { relief: true as const } : {}) });
   showClipboardToast("영역 지우기 완료", "ok");
   return true;
+}
+
+function reliefStampFromMap(map: GameMap, originX: number, originY: number, width: number, height: number): TileClipboardRelief {
+  const levels: number[] = [];
+  const ramps: number[] = [];
+  let anyRamp = false;
+  for (let cy = 0; cy < height; cy += 1) {
+    for (let cx = 0; cx < width; cx += 1) {
+      const index = (originY + cy) * map.width + originX + cx;
+      levels.push(map.relief?.levels[index] ?? 0);
+      const ramp = map.relief?.ramps?.[index] ?? 0;
+      ramps.push(ramp);
+      if (ramp > 0) anyRamp = true;
+    }
+  }
+  const wallDecor = (map.relief?.wallDecor ?? []).flatMap((decor) => {
+    if (decor.x < originX || decor.y < originY || decor.x >= originX + width || decor.y >= originY + height) return [];
+    return [{ x: decor.x - originX, y: decor.y - originY, row: decor.row, tile: decor.tile }];
+  });
+  return {
+    levels,
+    ...(anyRamp ? { ramps } : {}),
+    ...(wallDecor.length > 0 ? { wallDecor } : {}),
+  };
+}
+
+/** 스탬프의 높이로 사각형을 덮는다. 평지 스탬프는 그 칸의 언덕·경사·벽 장식을 지운다. */
+function applyReliefStamp(
+  map: GameMap,
+  stamp: TileClipboardRelief,
+  originX: number,
+  originY: number,
+  stampWidth: number,
+  stampHeight: number,
+): void {
+  const { width, height } = map;
+  const current = map.relief;
+  if (current && (current.width !== width || current.height !== height || current.levels.length !== width * height)) return;
+  const stampRaises = stamp.levels.some((level) => level > 0)
+    || (stamp.ramps?.some((ramp) => ramp > 0) ?? false)
+    || (stamp.wallDecor?.length ?? 0) > 0;
+  if (!current && !stampRaises) return;
+
+  const relief: ReliefData = current ? copyRelief(current) : emptyRelief(width, height);
+  const writeRamps = Boolean(relief.ramps) || (stamp.ramps?.some((ramp) => ramp > 0) ?? false);
+  if (writeRamps) relief.ramps ??= new Array(width * height).fill(0);
+
+  const covered = new Set<string>();
+  for (let cy = 0; cy < stampHeight; cy += 1) {
+    for (let cx = 0; cx < stampWidth; cx += 1) {
+      const x = originX + cx;
+      const y = originY + cy;
+      if (!isInsideMap(x, y, width, height)) continue;
+      const sourceIndex = cy * stampWidth + cx;
+      const targetIndex = y * width + x;
+      relief.levels[targetIndex] = clampReliefLevel(stamp.levels[sourceIndex] ?? 0);
+      if (relief.ramps) relief.ramps[targetIndex] = clampReliefRamp(stamp.ramps?.[sourceIndex] ?? 0);
+      covered.add(`${x},${y}`);
+    }
+  }
+  const kept = (relief.wallDecor ?? []).filter((decor) => !covered.has(`${decor.x},${decor.y}`));
+  const added = (stamp.wallDecor ?? []).flatMap((decor) => {
+    const x = originX + decor.x;
+    const y = originY + decor.y;
+    if (!covered.has(`${x},${y}`)) return [];
+    return [{ x, y, row: decor.row, tile: decor.tile }];
+  });
+  if (kept.length + added.length > 0) relief.wallDecor = [...kept, ...added];
+  else delete relief.wallDecor;
+  if (relief.ramps && !relief.ramps.some((ramp) => ramp > 0)) delete relief.ramps;
+  // 경사로(1~8)는 낮은 끝 단이 0이어도 칸의 일부다. reliefIsFlat 은 그 칸을 평지로 본다.
+  if (reliefHasStamp(relief)) map.relief = relief;
+  else delete map.relief;
+}
+
+function reliefHasStamp(relief: ReliefData): boolean {
+  return relief.levels.some((level) => level > 0)
+    || (relief.ramps?.some((ramp) => ramp > 0) ?? false)
+    || (relief.wallDecor?.length ?? 0) > 0;
+}
+
+function clampReliefLevel(value: number): number {
+  if (!Number.isFinite(value)) return 0;
+  return Math.max(0, Math.min(RELIEF_MAX_LEVEL, Math.round(value)));
+}
+
+function clampReliefRamp(value: number): number {
+  if (!Number.isInteger(value) || value < 0 || value > 9) return 0;
+  return value;
 }
 
 function clampPasteOrigin(origin: number, clipSize: number, mapSize: number): number {
