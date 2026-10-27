@@ -431,3 +431,25 @@ export function editorStateChangedOnlySelectedTile(previous: EditorState, next: 
   }
   return selectionChanged;
 }
+
+const EVENT_SELECTION_KEYS: ReadonlySet<keyof EditorState> = new Set<keyof EditorState>([
+  "selectedEventId",
+  "selectedEventPageId",
+  "pendingEventCoordinate",
+]);
+
+/**
+ * 이벤트 레이어에서 고른 이벤트(또는 빈 칸 대기 좌표)만 바뀌었는가.
+ * 목록은 그 표시만 옮기면 된다. 행을 다시 만들면 긴 목록이 맨 위로 튀고, 초상 아이콘을
+ * 전부 다시 붙이느라 클릭이 멈춘다. 레이어·도구·맵이 같이 바뀌면 패널 자체가 달라진다.
+ */
+export function editorStateChangedOnlyEventSelection(previous: EditorState, next: EditorState): boolean {
+  if (previous === next || next.layer !== "event") return false;
+  let changed = false;
+  for (const key of Object.keys(next) as (keyof EditorState)[]) {
+    if (previous[key] === next[key]) continue;
+    if (!EVENT_SELECTION_KEYS.has(key)) return false;
+    changed = true;
+  }
+  return changed;
+}

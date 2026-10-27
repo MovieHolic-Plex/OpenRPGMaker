@@ -5,6 +5,7 @@ import { collectEditorProjectReferenceIssues } from "@/editor/projectReferenceIs
 import {
   editorState,
   editorStateChangedOnlyCanvasOverlay,
+  editorStateChangedOnlyEventSelection,
   editorStateChangedOnlySelectedTile,
   editorStateChangedOnlySelectedTileAndLayer,
   editorStateChangedOnlyToolPick,
@@ -49,6 +50,7 @@ import {
 } from "@/editor/panels/testPlayModal";
 // 좌측 패널 본문(팔레트·맵 트리)은 이제 패널 레지스트리가 그린다 — 여기서 직접 import 하지 않는다.
 // 선택 타일만 바뀐 경우는 시트를 다시 그리지 않도록 팔레트가 활성 칸만 옮긴다.
+import { syncMountedEventSelection } from "@/editor/panels/eventEditor";
 import { syncMountedPaletteLayerSelection, syncMountedPaletteSelection, syncMountedPaletteToolPick } from "@/editor/panels/tilePalette";
 import { dockSignature, mountDock, renderDockPanels, type DockMount } from "@/editor/workspace/dockHost";
 import { resolveLeftDockPanels } from "@/editor/workspace/leftDockPanels";
@@ -333,6 +335,9 @@ export function renderEditor(main: HTMLElement): void {
       if (editorStateChangedOnlySelectedTileAndLayer(previous, state) && syncMountedPaletteLayerSelection()) return;
       // 도구·붓 모양·크기만 바꾸면 시트는 그대로다 — 도구줄·붓 옵션 줄만 간다. 캔버스 툴바는 도구를 읽지 않는다.
       if (editorStateChangedOnlyToolPick(previous, state) && syncMountedPaletteToolPick()) return;
+      // 이벤트만 고른 클릭은 목록 전체를 다시 만들지 않는다. 마을 이벤트 수백 개면
+      // 행·초상을 다시 붙이는 동안 사이드바가 멈추고, 스크롤이 맨 위로 돌아간다.
+      if (editorStateChangedOnlyEventSelection(previous, state) && syncMountedEventSelection()) return;
       schedulePaletteOnlyRefresh();
       return;
     }
