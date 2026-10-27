@@ -19,6 +19,7 @@ import { prefersReducedMotion } from "@/player/characterLanding";
 import type { DialogueTextControl } from "@/player/dialoguePagination";
 import { applyDialogueFx } from "@/player/dialogueTextRenderer";
 import { preloadRuntimeStyles } from "@/app/runtimeStyles";
+import { PORTRAIT_BOTTOM_NOTICE, portraitForcesBottom } from "@/project/dialoguePortraitPosition";
 import { faceDisplayModeOf, renderFacesetCrop } from "./facesetPreview";
 import { SPEAK_SAMPLE_BODY, SPEAK_SAMPLE_SPEAKER } from "@/editor/eventCommands/quickAuthoringDefaults";
 import {
@@ -126,6 +127,7 @@ const visualPreviewHandlers: VisualPreviewHandlers = {
       replay: context?.replayPresentation === true,
       simState: context?.simState,
       look: resolveDialogueLook(store.getCurrent(), { speaker: cmd.speaker, style: cmd.style, context: cmd.context, container: cmd.container, emotion: cmd.emotion }),
+      windowPosition: cmd.position,
     }),
   changeFace: faceStage,
   displayTextSettings: settingsMessageMock,
@@ -245,6 +247,27 @@ function runtimeStage(overlayClass: string): { readonly frame: HTMLElement; read
   return { frame, stage, overlay };
 }
 
+/**
+ * 문장 표시 미리보기의 창 자리. 게임(`applyOverlayPosition` + `portraitForcesBottom`)과 같다.
+ * 위·가운데·아래는 그 자리에 그린다. 비움·자동은 주인공이 창에 안 겹칠 때의 기본인 아래다.
+ * 흉상·전신이 있으면 저작한 위·가운데·자동을 무시하고 아래로 둔다.
+ * 말풍선·흘림·코너는 머리 위·구석에 붙으므로 자리를 옮기지 않는다.
+ */
+function previewDialoguePlacement(
+  authored: "auto" | "top" | "center" | "bottom" | undefined,
+  face: CommandPreviewContext["face"] | undefined,
+  container: string | undefined,
+): { readonly position: "top" | "center" | "bottom"; readonly note?: string } {
+  if (container && container !== "box") return { position: "bottom" };
+  const mode = face?.resourceId ? faceDisplayModeOf(face.resourceId) : "chip";
+  const portrait = mode === "chip" ? "face" : mode;
+  const pinned = authored === "top" || authored === "center" || authored === "bottom" ? authored : "bottom";
+  if (portraitForcesBottom(portrait) && authored !== undefined && authored !== "bottom") {
+    return { position: "bottom", note: PORTRAIT_BOTTOM_NOTICE };
+  }
+  return { position: pinned };
+}
+
 function messageWindowMock(
   speaker: string | undefined,
   body: string,
@@ -255,11 +278,14 @@ function messageWindowMock(
     readonly simState?: PreviewSimState;
     /** 대화창 스타일·대사 종류·화자 프로필을 합친 결과. 게임과 같은 data-* 를 심는다. */
     readonly look?: DialogueLook;
+    /** 이 한 줄의 대화창 위치. 비우면 아래(문장 표시 설정을 따르는 기본). */
+    readonly windowPosition?: "auto" | "top" | "center" | "bottom";
   }
 ): HTMLElement {
-  const { frame, overlay } = runtimeStage("position-bottom");
   const look = presentation?.look;
   if (look?.hideFace) face = undefined;
+  const placement = previewDialoguePlacement(presentation?.windowPosition, face, look?.container);
+  const { frame, overlay } = runtimeStage(`position-${placement.position}`);
   // 말하기 무대: 빈 본문이어도 게임 창에 샘플 대사가 보인다. "..." 만 남기지 않는다.
   // 얼굴은 빌려 오지 않는다 — 이 명령엔 얼굴이 없으므로 게임에서도 얼굴 없이 뜬다.
   const authored = body.trim().length > 0;
@@ -313,6 +339,15 @@ function messageWindowMock(
         class: "ecp-message-sample-note",
         dataset: { testid: "ecp-message-sample-note" },
         text: "샘플 대사 — 본문을 쓰면 이 창에 그대로 들어갑니다",
+      })
+    );
+  }
+  if (placement.note) {
+    frame.append(
+      el("div", {
+        class: "ecp-face-caption",
+        dataset: { testid: "ecp-message-position-note" },
+        text: placement.note,
       })
     );
   }
