@@ -63,7 +63,7 @@ type Fill = (rect: { x: number; y: number; w: number; h: number }, material: str
  * 길 모양: 입구(0,entryY) → 꺾이는 x → 끝 줄(endY) → 끝 마당(구간 끝 이벤트가 마당 안, x=width-2).
  * 꺾이는 x 와 마당 크기는 씨앗이 정한다. 같은 구상이면 같은 길이다.
  */
-export function paintStartRoute(fill: Fill, style: RouteStyle, plan: StartPlan, route: { width: number; height: number; entryY: number; endY: number }): void {
+export function paintStartRoute(fill: Fill, style: RouteStyle, plan: Pick<StartPlan, "seed" | "theme">, route: { width: number; height: number; entryY: number; endY: number }): void {
   const { width: W, height: H, entryY, endY } = route;
   const w = style.roadWidth;
   if (style.ground) fill({ x: 0, y: 0, w: W, h: H }, style.ground, true);
