@@ -241,6 +241,36 @@ describe("shipped catalogs", () => {
     expect(createTranslator(zh).translate("통행 미리보기")).toBe("通行预览");
   });
 
+  it("names a map's parent separately from the upper tile layer, and its vertical size as height", () => {
+    // 새 맵 칸의 글자가 「상위」·「세로」이면 영어는 Upper layer·Vertical, 일본어는 上位·縦,
+    // 중국어는 上层·纵向가 된다. 부모 맵과 칸수에는 그 낱말을 쓰지 않는다.
+    expect(en["상위"]).toBe("Upper layer");
+    expect(ja["상위"]).toBe("上位");
+    expect(zh["상위"]).toBe("上层");
+    expect(en["상위 맵"]).toBe("Parent map");
+    expect(ja["상위 맵"]).toBe("上位マップ");
+    expect(zh["상위 맵"]).toBe("上级地图");
+    expect(en["세로"]).toBe("Vertical");
+    expect(ja["세로"]).toBe("縦");
+    expect(zh["세로"]).toBe("纵向");
+    expect(en["높이"]).toBe("Height");
+    expect(ja["높이"]).toBe("高さ");
+    expect(zh["높이"]).toBe("高度");
+    const english = createTranslator(en);
+    const japanese = createTranslator(ja);
+    const chinese = createTranslator(zh);
+    expect(english.translate("상위 맵")).toBe("Parent map");
+    expect(english.translate("상위 맵")).not.toBe(english.translate("상위"));
+    expect(japanese.translate("상위 맵")).toBe("上位マップ");
+    expect(chinese.translate("상위 맵")).toBe("上级地图");
+    expect(english.translate("높이")).toBe("Height");
+    expect(japanese.translate("높이")).toBe("高さ");
+    expect(chinese.translate("높이")).toBe("高度");
+    // 기본 선택 값은 「그 맵의 자식으로 둔다」이다. Submaps of 는 목록처럼 읽힌다.
+    expect(en["{0}의 하위"]).toBe("Child of {0}");
+    expect(english.translate("빈 맵의 하위")).toBe("Child of Empty map");
+  });
+
   it("describes right-drag region select as a release, not placing an object", () => {
     // 도움말의 우클릭 드래그. 「놓으면」은 드래그를 떼는 것이고, 그 뒤에 뜨는 동작은
     // AI 작업·복사·지우기·구조물로 저장이다. 「저장」은 구조물에만 붙는다.
