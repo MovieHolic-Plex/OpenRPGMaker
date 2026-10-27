@@ -85,6 +85,8 @@ it.each([false, true])("keeps the wiki exception explicit and does not let reset
   const result = await applyProposedProject(proposed, { base, baseline, source: "agent", summary: "Title", toolNames: ["set_title_screen"], resetProject });
   expect(result.ok).toBe(!resetProject);
   expect(store.getCurrent().world?.entities).toEqual(expect.arrayContaining(world?.entities ?? []));
-  expect(history.getMapEditHistoryEntries()).toHaveLength(resetProject ? 0 : 2); // authoring plus the coordinator's observed receipt
+  // One AI apply is one undo step. applyProposedProject records a single snapshot and no longer turns the apply into a second
+  // authored/wiki entry ("Do not turn it into another authored document", applyChangesetToStore.ts); aiApplyCommitCorrelation pins the same 1.
+  expect(history.getMapEditHistoryEntries()).toHaveLength(resetProject ? 0 : 1);
   if (!resetProject) expect(store.getCurrent().meta.title).toBe("Reviewed title");
 });
