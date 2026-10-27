@@ -2,6 +2,7 @@ import type { Command, GameEvent, MapId, Project, TilesetDef } from "@/project/t
 import { resolveCommandListAtPath } from "@/editor/eventCommandPaths";
 import { jsonEqual } from "@/util/structuralJson";
 import { shareContentDigests } from "@/project/persistence/core/contentDigest";
+import { isPendingLazyTileset } from "@/project/bundledTilesetLazy";
 
 /**
  * 편집용 프로젝트 복제. 타일셋 참고문서(타일셋당 수 MB, 합계 약 20MB)는
@@ -12,7 +13,15 @@ import { shareContentDigests } from "@/project/persistence/core/contentDigest";
 export function cloneProjectSharingReferenceDocuments(project: Project): Project {
   const shared: Array<[string, NonNullable<TilesetDef["referenceDocuments"]>]> = [];
   const tilesets: Project["tilesets"] = {};
+  // 아직 되돌리지 않은 지연 번들 타일셋(bundledTilesetDiff.ts)은 복제하지 않고 같은 객체를 가리킨다 — 복제는 모든 필드를 읽어
+  // 번들 정의를 읽고 되돌린다. 스토어는 타일셋 항목을 제자리에서 고치지 않는다(위 계약). 되돌리기는 값이 같은 제자리 채움이다.
+  const lazy: Array<[string, TilesetDef]> = [];
   for (const [id, tileset] of Object.entries(project.tilesets)) {
+    if (isPendingLazyTileset(tileset)) {
+      lazy.push([id, tileset]);
+      tilesets[id] = null as unknown as TilesetDef;
+      continue;
+    }
     const documents = tileset.referenceDocuments;
     if (documents === undefined) {
       tilesets[id] = tileset;
@@ -24,6 +33,7 @@ export function cloneProjectSharingReferenceDocuments(project: Project): Project
     tilesets[id] = { ...tileset, referenceDocuments: [] };
   }
   const cloned = structuredClone({ ...project, tilesets });
+  for (const [id, tileset] of lazy) cloned.tilesets[id] = tileset;
   for (const [id, documents] of shared) {
     const tileset = cloned.tilesets[id];
     if (tileset) tileset.referenceDocuments = documents;

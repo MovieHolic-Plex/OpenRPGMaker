@@ -9,6 +9,7 @@ import { AssistantSession, type SessionEvent } from "@/ai/assistantSession";
 import { defaultAiConfig, type AiConfig, type ChatRequest, type ChatResult } from "@/ai/llmClient";
 import * as tools from "@/editor/tools";
 import { createBlankProject } from "@/project/defaults";
+import { RETIRED_COMBINED_TOWN_TILESET_ID, withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 import { store } from "@/project/store";
 import { getMapEditHistoryEntries, resetMapEditHistory } from "@/editor/mapEditHistory";
 import { fixedDeclarer } from "./intentFixture";
@@ -26,8 +27,9 @@ afterEach(() => {
 });
 
 function projectWithMap() {
-  const ctx = { project: createBlankProject() };
-  expect(tools.runTool(ctx, "create_map", { id: "m1", name: "Accounting", width: 20, height: 20 }).ok).toBe(true);
+  // 칠하기 번호(281)·재질 「모래」 오토타일은 옛 합본 마을 시트 기준이다 — 기본 버들항 시트가 아니라 그 시트를 명시한다.
+  const ctx = { project: withRetiredEasyRpgTilesets(createBlankProject()) };
+  expect(tools.runTool(ctx, "create_map", { id: "m1", name: "Accounting", width: 20, height: 20, tilesetId: RETIRED_COMBINED_TOWN_TILESET_ID }).ok).toBe(true);
   return ctx.project;
 }
 
