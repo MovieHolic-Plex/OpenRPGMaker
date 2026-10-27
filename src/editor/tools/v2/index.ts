@@ -9,7 +9,7 @@ export const V1_TILE_SUPERSEDED: ReadonlyMap<string, string> = new Map([
   // paint_road 는 활성 유지 (흙길 오토타일 본선) — 여기 넣지 않음
   ["scatter_object", "place_props"],
   // build_house, preview_house: construction route manifest에서 관리 (toolRegistry.ts)
-  ["stamp_structure", "stamp_object"],
+  // stamp_structure 는 2026-10-07 저작권 정리로 도구째 지워졌다 — 대체를 가리킬 옛 이름이 없다.
   // set_tile_passability remains active: physical passage is not semantic vocabulary authoring.
   // 지식 쓰기: 승인 어휘
   ["set_tile_metadata", "propose_tile_vocabulary"],
