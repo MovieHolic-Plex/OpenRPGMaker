@@ -1190,6 +1190,16 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       return true;
     }
     setDetailCursor(wrapStatusMenuIndex(selectedDetailActionIndex + delta, actions.length));
+    if (selectedCommand === "save" && confirmSaveSlot !== undefined) {
+      const staying = actions[selectedDetailActionIndex]?.getAttribute("data-testid") === `save-slot-${confirmSaveSlot}`;
+      if (!staying) {
+        // 덮어쓰기 확인은 그 칸에 커서가 있을 때만 맞다. 다른 칸으로 옮긴 뒤에도 푸터가
+        // 「다시 선택하면 덮어씁니다」로 남고, 빈 칸에서 Enter 는 바로 기록했다.
+        confirmSaveSlot = undefined;
+        renderMenu(undefined, "save");
+        return true;
+      }
+    }
     syncRenderedDetailCursor();
     const detail = currentMenu()?.querySelector<HTMLElement>(".status-menu-detail");
     const message = currentMenu()?.querySelector<HTMLElement>(".status-menu-message");
