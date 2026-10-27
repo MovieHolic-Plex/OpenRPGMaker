@@ -90,6 +90,8 @@ beforeEach(() => {
       confirm: vi.fn(() => true),
       dispatchEvent: vi.fn(() => true),
       removeEventListener: vi.fn(),
+      // 툴바 배지는 차가운 캐시면 감사를 250ms 뒤로 미룬다(ruleAuditViolationCountCached) — 타이머는 돌리지 않는다.
+      setTimeout: vi.fn(() => 0),
     },
   });
 });
@@ -151,6 +153,9 @@ describe("인스펙터 옆 규칙 감사/작업 기록 배지", () => {
     lintMock.issues = [{ code: "cluster-rule-count", message: "꽃 과밀", severity: "info" }];
     historyMock.entries = [{ index: 0, label: "타일 편집", mapId: store.getCurrent().startMapId, at: 0, current: true }];
 
+    // 툴바 배지는 캐시된 감사 결과만 읽는다(첫 프레임 전 동기 lint 를 없앤 ruleAuditViolationCountCached).
+    // 미뤄 둔 감사가 끝난 상태를 재현하려고 동기 감사를 한 번 돌려 캐시를 채운다.
+    expect(ruleAuditViolationCount()).toBe(1);
     const rule = renderRuleDropdown();
     const history = renderHistoryDropdown();
 
@@ -161,6 +166,9 @@ describe("인스펙터 옆 규칙 감사/작업 기록 배지", () => {
 
     lintMock.issues = [];
     historyMock.entries = [];
+    // 캐시는 프로젝트 판본에 묶여 있다 — 대역 lint 결과만 바꾸면 판본이 그대로라 새 프로젝트로 무효화한다.
+    store.replace(createBlankProject());
+    expect(ruleAuditViolationCount()).toBe(0);
 
     expect(findByTestId(renderRuleDropdown(), "rule-audit-badge")).toBeNull();
     expect(findByTestId(renderHistoryDropdown(), "history-badge")).toBeNull();

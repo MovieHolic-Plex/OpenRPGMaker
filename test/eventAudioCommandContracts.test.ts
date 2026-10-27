@@ -93,6 +93,18 @@ describe("G1-F9 BGM 기억/재생", () => {
     expect(session.audio.bgm).toEqual({ resourceId: "cc0-bgm-field", loop: true });
   });
 
+  it("기억한 곡의 음량과 페이드를 재생 스텝에 남긴다", () => {
+    const project = createBlankProject();
+    const session = mkSession(project);
+    session.audio.bgm = { resourceId: "cc0-bgm-field", loop: true, volume: 0, fadeInMs: 0 };
+    drain([m2Command("Memorize Current BGM")], session);
+    session.audio.bgm = { resourceId: "cc0-bgm-battle", loop: true, volume: 100, fadeInMs: 800 };
+
+    const step = firstStep([m2Command("Play Memorized BGM")], session);
+    expect(step).toEqual({ kind: "playAudio", resourceId: "cc0-bgm-field", channel: "bgm", loop: true, volume: 0, fadeInMs: 0 });
+    expect(session.audio.bgm).toEqual({ resourceId: "cc0-bgm-field", loop: true, volume: 0, fadeInMs: 0 });
+  });
+
   it("기억한 곡이 없으면 재생 스텝 없이 다음 명령으로 간다", () => {
     const project = createBlankProject();
     const session = mkSession(project);

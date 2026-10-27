@@ -1,3 +1,5 @@
+/** @vitest-environment happy-dom */
+// localStorage 를 쓴다 — CI 의 Node 24 에는 전역 localStorage 가 없다(작성 환경 Node 25 는 기본 제공).
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { beforeEach, describe, expect, it } from "vitest";

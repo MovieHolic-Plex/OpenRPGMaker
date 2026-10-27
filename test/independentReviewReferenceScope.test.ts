@@ -5,14 +5,16 @@ import { defaultAiConfig } from "@/ai/llmClient";
 import { createBlankMap, createBlankProject } from "@/project/defaults";
 import type { Project } from "@/project/types";
 import { independentReviewPayload } from "./independentReviewFixture";
+// The 2026-10-07 default (beodeul_city, ~7MB) alone overflows complete review evidence; these window/scope cases keep the small retired sheet.
+import { RETIRED_COMBINED_TOWN_TILESET_ID, startOnRetiredCombinedTown } from "./support/retiredEasyRpgTilesets";
 
 function fixture() {
-  const project = createBlankProject();
+  const project = startOnRetiredCombinedTown(createBlankProject());
   const presets = Array.from({ length: 5 }, (_, i) => ({ id: `preset_${i}`, name: `Preset ${i}`,
     startMapId: `map_${i}`, startPos: { x: 1, y: 2 }, gold: 100 + i }));
   project.testPresets = presets;
   for (const preset of presets) project.maps[preset.startMapId] = {
-    ...createBlankMap(preset.startMapId, 4, 4), id: preset.startMapId, lowerTileStacks: { 0: [1, 2] },
+    ...createBlankMap(preset.startMapId, 4, 4, RETIRED_COMBINED_TOWN_TILESET_ID), id: preset.startMapId, lowerTileStacks: { 0: [1, 2] },
   };
   return project;
 }

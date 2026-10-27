@@ -115,7 +115,7 @@
 .battle-scene:is([data-battle-ui-style])[data-battle-skin][data-battle-skin-family][data-battle-layout] .battle-result-panel.battle-result-pixel .battle-result-cards::before { color: var(--px-ink-dim); content: "전리품"; font-size: 12px; left: 18px; position: absolute; top: 9px; }
 .battle-scene:is([data-battle-ui-style])[data-battle-skin][data-battle-skin-family][data-battle-layout] .battle-result-panel.battle-result-pixel .battle-result-reward-card:is([data-reward-kind="exp"], [data-reward-kind="levelup"]) { display: none; }
 /* 한 행 = 「이름  ×n        보유 a → b」 한 줄. 공용 규칙이 행을 2열 격자(108px 1fr)로 두고 아이콘을 칸으로 쓰므로
-   여기서는 flex 한 줄로 바꾼다. 소지금 행은 「골드 +n」 대신 「소지금 a → b」 만 보인다. */
+   여기서는 flex 한 줄로 바꾼다. 소지금 행은 「골드 +n」 대신 「소지금 a G → b G」(자료집 화폐 이름) 만 보인다. */
 .battle-scene:is([data-battle-ui-style])[data-battle-skin][data-battle-skin-family][data-battle-layout] .battle-result-panel.battle-result-pixel .battle-result-reward-card {
   align-items: baseline;
   background: transparent;
@@ -203,8 +203,8 @@
    창 배치(논리 320×240): 왼쪽 큰 창(파티 개요 / 작업 패널) · 오른쪽 명령 창 · 소지금 창 · 시간 창 · 아래 조작 줄. */
 .oprn-status-menu.main-menu[data-menu-skin="pixel"] {
   /* 글자는 도트 글꼴의 격자 크기만 쓴다(#3341): 본문 갈무리 11 = 12px, 작은 글자 갈무리 9 = 10px. 게임 px 이라 어느 기기든 같은 배치다(2026-10-24). */
-  --px-menu-font: "Galmuri11 Regular", var(--runtime-pixel-font);
-  --px-small-font: "Galmuri9", var(--runtime-pixel-font);
+  --px-menu-font: var(--font-pixel-text);
+  --px-small-font: var(--font-pixel-small);
   --status-edge-ivory: var(--px-ink);
   --status-edge-muted: var(--px-ink-dim);
   --status-edge-amber: var(--px-accent);

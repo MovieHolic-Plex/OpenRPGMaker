@@ -15,8 +15,10 @@ import {
 import type { Project } from "@/project/types";
 
 function firstTilesetId(project: Project): string {
-  const id = Object.keys(project.tilesets)[0];
-  if (!id) throw new Error("no tileset in blank project");
+  // 새 프로젝트의 첫 타일셋(버들항, 2026-10-07 저작권 정리 뒤 기본값)은 오토타일 그룹을 들고 태어난다 —
+  // 이 시험은 「그룹이 없는 타일셋」에서 시작하는 일반 동작을 보므로 그룹 없는 첫 타일셋을 고른다.
+  const id = Object.keys(project.tilesets).find((key) => !project.tilesets[key]?.autotileGroups?.length);
+  if (!id) throw new Error("no tileset without autotile groups in blank project");
   return id;
 }
 

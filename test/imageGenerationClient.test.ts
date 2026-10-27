@@ -7,6 +7,7 @@ import {
   imageGenerationEndpoint,
   imageGenerationUsesOtherProvider,
 } from "@/ai/imageGenerationClient";
+import { RECOMMENDED_IMAGE_MODEL, RECOMMENDED_IMAGE_PROVIDER_ID } from "@/ai/imageModelCatalog";
 import { defaultAiConfig } from "@/ai/llmClient";
 
 function jsonResponse(body: unknown, status = 200): Response {
@@ -48,8 +49,9 @@ describe("imageGenerationClient", () => {
 
     expect(seen).toHaveLength(1);
     expect(seen[0]!.url).toBe("/v1/images/generations");
-    expect(seen[0]!.provider).toBe(IMAGE_GENERATION_PROVIDER_ID);
-    expect(seen[0]!.body).toEqual({ prompt: "슬라임", model: IMAGE_GENERATION_MODEL });
+    // 새 설정의 그림 기본은 ChatGPT(GPT Image) — da29a9f402. Google 대체는 주입 fetch 가 없을 때만 일어난다.
+    expect(seen[0]!.provider).toBe(RECOMMENDED_IMAGE_PROVIDER_ID);
+    expect(seen[0]!.body).toEqual({ prompt: "슬라임", model: RECOMMENDED_IMAGE_MODEL });
     expect(image.dataUrl).toBe("data:image/png;base64,AAA");
   });
 
@@ -100,10 +102,13 @@ describe("imageGenerationClient", () => {
     ).rejects.toThrow(ImageGenerationError);
   });
 
-  it("기본 제공자(Antigravity)면 다른 제공자 안내가 필요 없다", () => {
+  it("대화 제공자와 그림 제공자가 같을 때만 다른 제공자 안내가 필요 없다", () => {
+    // 기본 대화는 Google(#2535), 기본 그림은 ChatGPT(da29a9f402)라 새 설정은 안내가 뜬다.
     const config = defaultAiConfig();
     expect(config.providerId).toBe(IMAGE_GENERATION_PROVIDER_ID);
-    expect(imageGenerationUsesOtherProvider(config)).toBe(false);
-    expect(imageGenerationUsesOtherProvider({ ...config, providerId: "openai-codex" })).toBe(true);
+    expect(config.imageProviderId).toBe(RECOMMENDED_IMAGE_PROVIDER_ID);
+    expect(imageGenerationUsesOtherProvider(config)).toBe(true);
+    expect(imageGenerationUsesOtherProvider({ ...config, imageProviderId: IMAGE_GENERATION_PROVIDER_ID })).toBe(false);
+    expect(imageGenerationUsesOtherProvider({ ...config, providerId: "openai-codex", imageProviderId: IMAGE_GENERATION_PROVIDER_ID })).toBe(true);
   });
 });

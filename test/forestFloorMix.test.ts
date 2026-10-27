@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { createEmptyToolProject } from "@/editor/tools/emptyProject";
 import { runTool } from "@/editor/tools/toolRunner";
 import type { ToolContext } from "@/editor/tools/types";
+import { RETIRED_COMBINED_TOWN_TILESET_ID, withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 import { DEFAULT_UNDERGROWTH_AUTOTILE_GROUP } from "@/project/defaults/autotileGroups";
 import { isLakeAutotileTile } from "@/project/defaults/lakeAutotile";
 import { isTreeCanopyTileId, isTreeTrunkTileId } from "@/project/tilesetHarness";
@@ -18,8 +19,9 @@ const ONE_BY_ONE_GRASS = new Set([
 ]);
 
 function setup() {
-  const ctx: ToolContext = { project: createEmptyToolProject("숲 바닥 혼합") };
-  const made = runTool(ctx, "create_map", { name: "숲", width: 30, height: 30 });
+  // 밑동 290~293·수관 260~263 은 옛 combined_town 칸 번호다 — 2026-10-07 정리 뒤 기본 칩셋(beodeul_city)이 아니므로 그 시트를 명시해 만든다.
+  const ctx: ToolContext = { project: withRetiredEasyRpgTilesets(createEmptyToolProject("숲 바닥 혼합")) };
+  const made = runTool(ctx, "create_map", { name: "숲", width: 30, height: 30, tilesetId: RETIRED_COMBINED_TOWN_TILESET_ID });
   const mapId = (made.data as { mapId: string }).mapId;
   return { ctx, mapId };
 }

@@ -104,7 +104,8 @@ describe("장르 칩셋 잠금", () => {
 
   it("configure_monster_system(enabled:true) 는 잠금을 켠다", () => {
     const project = createBlankProject();
-    const ctx: ToolContext = { project, assistantRun: true };
+    // 역방향 잠금(#2812): 몬스터 게임이 아닌 프로젝트에서는 몬스터 수집 요청 턴(monsterTurn)에만 몬스터 도구가 풀린다.
+    const ctx: ToolContext = { project, assistantRun: true, monsterTurn: true };
     expect(runTool(ctx, "configure_monster_system", { enabled: true }, { dryRun: false }).ok).toBe(true);
     expect(ctx.project.system.genreLock?.preset).toBe("monster-collect");
   });

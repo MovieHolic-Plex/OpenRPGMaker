@@ -1,10 +1,16 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { AssistantSession } from "@/ai/assistantSession";
 import { defaultAiConfig, type ChatRequest, type ChatResult } from "@/ai/llmClient";
 import { createBlankProject } from "@/project/defaults";
 import { startSession } from "@/project/session";
 import { fixedDeclarer } from "./intentFixture";
 import { runTool } from "@/editor/tools";
+import { withRetiredCombinedTownMaps } from "./support/retiredCombinedTownMaps";
+
+// Tests here build the ~63MB blank project (createBlankProject) and drive assistant sessions or editor
+// panels over it, fingerprinting/copying it per session. Under ci-full load (8 workers on 4-core runners)
+// single tests measured 10-50s, past vitest's 15s default, so the budget is raised for this file only.
+vi.setConfig({ testTimeout: 120_000 });
 
 function original(request: ChatRequest) {
   for (const message of request.messages) {
@@ -19,7 +25,11 @@ function original(request: ChatRequest) {
 
 describe("grounded first working request", () => {
   it("delivers authored start gold and presets before their first writes while excluding live runtime and config", async () => {
-    const project = createBlankProject();
+    // The current default start map's tileset (beodeul_city) alone projects to ~1.77M estimated tokens, so on it
+    // the start-map tileset entry is always paged (omitted) even in a 1M window. This case is about authored
+    // start state and presets reaching the first writer request in full, so it runs on the retired combined-town
+    // sheet whose whole original context fits.
+    const project = withRetiredCombinedTownMaps(createBlankProject());
     project.session.gold = 472319;
     project.session.inventory = { item_potion: 17 };
     project.testPresets = [{ id: "preset_r5_unique", name: "R5", gold: 583421,
@@ -138,7 +148,9 @@ describe("session original snapshot lifecycle", () => {
       } })) }, finishReason: "tool_calls" });
     const write = { name: "upsert_item", args: { item: { id: item.id, price: 321 } } };
     const session = new AssistantSession(project, {
-      config: { ...defaultAiConfig(), authMode: "apiKey", model: "unknown-window-fixture", agentMode: "chat", maxToolCalls },
+      // The writer (execute phase) runs on the default role models / liteModel (gemini-4-argon, 1M window). Pin
+      // every role to the same narrow-window fixture, otherwise the whole record fits and nothing is paged.
+      config: { ...defaultAiConfig(), authMode: "apiKey", model: "unknown-window-fixture", liteModel: "unknown-window-fixture", roleModels: undefined, agentMode: "chat", maxToolCalls },
       declareIntent: fixedDeclarer({ mode: "modify", tools: ["upsert_item"], readBeforeWrite: { project: false, collections: ["items"], references: true } }),
       chat: async (_config, request) => {
         round++;
@@ -199,7 +211,9 @@ describe("session original snapshot lifecycle", () => {
     let calls = 0;
     const project = createBlankProject();
     const session = new AssistantSession(project, {
-      config: { ...defaultAiConfig(), model: "tab_flash_lite_preview", agentMode: "chat" },
+      // The writer runs on the default role models / liteModel (gemini-4-argon, 1M window); pin every role to the
+      // 16k-window model so the catalog really cannot fit.
+      config: { ...defaultAiConfig(), model: "tab_flash_lite_preview", liteModel: "tab_flash_lite_preview", roleModels: undefined, agentMode: "chat" },
       chat: async () => { calls++; return { message: { role: "assistant", content: "unexpected" }, finishReason: "stop" }; },
     });
     const result = await session.sendUserMessage("현재 데이터 확인");

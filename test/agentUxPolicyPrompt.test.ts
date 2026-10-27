@@ -18,15 +18,7 @@ describe("agent UX policy prompt", () => {
       expect(shipped.slice(start, start + AGENT_UX_POLICY_LINES.length)).toBe(AGENT_UX_POLICY_LINES);
     }
   });
-  it("makes shape variety a separate axis from kit color and names the observe step", () => {
-    const text = prompt();
-    expect(text).toContain("집 다양성(필수)");
-    expect(text).toContain("모양 축(templateId)과 색 축(kitId)은 별개다");
-    expect(text).toContain("집마다 서로 다른 templateId를 배정하라");
-    // 6종 kitId 가 지붕색 3군으로 접히는 사실을 프롬프트가 직접 말해야 "색만 바꾼 다양성"을 막는다.
-    expect(text).toContain("blue: blue-stone·slate-wood");
-    expect(text).toContain("look_at_houses");
-  });
+  // Retired: the author_house shape-variety policy (templateId/kitId, look_at_houses) left promptPolicies.ts with author_house.
 
   it("injects the UX policy section into the system prompt", () => {
     expect(prompt()).toContain("## UX 응답 정책(반드시 준수)");
@@ -71,8 +63,9 @@ describe("agent UX policy prompt", () => {
     const text = prompt();
     expect(text).toContain("집 vs 실내(필수)");
     expect(text).toContain("추측 실행 금지");
-    expect(text).toContain("매칭 스킬이 없거나");
-    expect(text).toContain("모호한 집 요청은 author_house를 호출하지");
+    // author_house was removed; the clarify rule now routes to build_hand_interior_room / place_terrain_house (promptPolicies.ts).
+    expect(text).toContain("build_hand_interior_room");
+    expect(text).toContain("place_terrain_house");
   });
 
   it("forbids re-asking parameters already present in the user request", () => {
@@ -124,11 +117,9 @@ describe("agent UX policy prompt", () => {
     expect(text).toContain("사냥터=make_hunting_ground");
     expect(text).toContain("조명=set_lighting_volume/set_scene_mood");
     expect(text).toContain("수역=fill_region");
-    expect(text).toContain("야외 집=author_house");
-    expect(text).toContain("마을=author_village");
-    expect(text).toContain('target:{kind:"existing",mapId}');
-    expect(text).toContain('target:{kind:"new",mapId,name,width,height}');
-    expect(text).toContain('countPolicy:"exact"');
+    // author_house/author_village were removed from the registry; the routes are now place_terrain_house / author_beodeul_town (contextBuilder.ts).
+    expect(text).toContain("야외 집=place_terrain_house");
+    expect(text).toContain("마을=author_beodeul_town");
     expect(text).toContain("build_hand_interior_room");
     expect(text).not.toMatch(/야외 집[^\n]*(build_house_kit|build_house_lots|build_wall|place_door|build_roof)/);
     expect(text).not.toMatch(/마을[^\n]*(build_village|run_village_session|run_village_pipeline)/);
@@ -141,7 +132,7 @@ describe("agent UX policy prompt", () => {
     const text = prompt();
     expect(text).toContain("외장 없는 독립 실내·방·인테리어 요청은 야외 집이 아니다");
     expect(text).toContain("build_hand_interior_room");
-    expect(text).toContain('author_house(interior:"linked-interior")');
+    expect(text).toContain("외장(place_terrain_house)+실내를 짓고 create_transfer_pair 로 잇는다");
     expect(text).toContain("create_map만 하고 멈추지 마세요");
   });
 

@@ -48,6 +48,8 @@ function setup() {
     conversationId: "cleanup", conversationScope: "cleanup-scope", appendBubble,
     setStatus: vi.fn(), expandForAiWork: vi.fn(), beginTurnProgress: vi.fn(), endTurnProgress: vi.fn(),
     refreshAbortButton: vi.fn(), persistConversation: vi.fn(), notifyIfObscuredByTestPlay: vi.fn(), drainPendingSends: vi.fn(),
+    // tool_call 이벤트는 활동 줄을 닫는다(AiRunSurface.completeLiveActivity) — 스텁이 없으면 턴이 「오류」로 끝난다.
+    startLiveActivity: vi.fn(), completeLiveActivity: vi.fn(), closeToolActivity: vi.fn(), scheduleCollapseAfterAiWork: vi.fn(),
   } as unknown as AiRunSurface;
   const deps = {
     surface, applyingProposal: false, projectIdentityId: "cleanup", workPlanSurfaceState: null,

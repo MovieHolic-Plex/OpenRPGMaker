@@ -36,6 +36,8 @@ const DECLARED_COMPANION_TILES: Readonly<Record<string, readonly number[]>> = {
   altar_table: [159,160,161,189,190,191,228,229,230,204],
   work_table: [156,157,158,186,187,188,198,199,200,261,414],
   teacher_desk: [156,157,158,198,199,200,145],
+  // 작은 집 탁자(home_table) — 목재 탁자 위·아래 줄 + 양옆 의자(297·298)·촛대(204)·책(145). 카탈로그에 뒤에 더해진 정의다.
+  home_table: [156,157,158,198,199,200,145,204,297,298],
 };
 
 const cellKey = (cell: { dx: number; dy: number; layer: string }): string =>

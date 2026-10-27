@@ -23,6 +23,8 @@ import { createBlankProject, TILE } from "@/project/defaults";
 import { store } from "@/project/store";
 import type { PaletteStamp } from "@/editor/tilePaletteStamp";
 import type { TilesetDef } from "@/project/types";
+// 큐레이션 조합 붓은 합본 마을(EasyRPG) 칸 번호로 정의돼 있다 — 2026-10-07 정리 뒤 시작 맵을 그 칩셋으로 되돌려 본다.
+import { startOnRetiredCombinedTown } from "./support/retiredEasyRpgTilesets";
 
 vi.mock("@/editor/harnessSuggestion/kitRender", async (importOriginal) => ({
   ...await importOriginal<typeof import("@/editor/harnessSuggestion/kitRender")>(),
@@ -58,7 +60,7 @@ function dragBetween(root: HTMLElement, fromTestId: string, toTestId: string): v
 
 beforeEach(() => {
   document.body.innerHTML = "";
-  store.replace(createBlankProject());
+  store.replace(startOnRetiredCombinedTown(createBlankProject()));
   editorState.set({
     activePaletteStamp: null,
     brushSize: 1,

@@ -22,8 +22,13 @@ describe("Complete character reference census regressions", () => {
     original.mappings = corrections.mappings.map(change => structuredClone(change.before)) as typeof original.mappings;
     original.faces = corrections.faces.map(change => structuredClone(change.before));
     const migrated = parseSharedCharacterGraphicsDocument(original);
-    expect(migrated.mappings).toEqual(corrections.mappings.map(change => change.after));
-    expect(migrated.faces).toEqual(corrections.faces.map(change => change.after));
+    // #2759: parse forward-fills the bundled modern-romance chip pairs (tex_oprn_charset_modern*) missing from old documents.
+    const forwardFilled = (key: string) => /^tex_oprn_charset_modern\d+$/u.test(key);
+    const shipped = defaultSharedCharacterGraphics();
+    const addedMappings = shipped.mappings.filter(row => forwardFilled(row.textureKey));
+    const addedFaceIds = new Set(addedMappings.map(row => row.faceResourceId));
+    expect(migrated.mappings).toEqual([...corrections.mappings.map(change => change.after), ...addedMappings]);
+    expect(migrated.faces).toEqual([...corrections.faces.map(change => change.after), ...shipped.faces.filter(face => addedFaceIds.has(face.resourceId))]);
     expect(parseSharedCharacterGraphicsDocument(migrated)).toEqual(migrated);
     original.mappings[0]!.note = "저자가 직접 검토한 짝";
     expect(parseSharedCharacterGraphicsDocument(original).mappings[0]).toEqual(original.mappings[0]);
@@ -74,7 +79,8 @@ describe("Complete character reference census regressions", () => {
     expect(sharedFaceForCharset(row.textureKey,0)?.resourceId).toBe(row.faceResourceId);
     const npc = (await tool("list_npc_graphics").run(p,{query:"왕"})).data as {matches:{textureKey:string;face:{resourceId:string}}[]};
     expect(npc.matches.find(match=>match.textureKey===row.textureKey)?.face.resourceId).toBe(row.faceResourceId);
-    expect((await search(p,"호스트 검토 얼굴")).matches[0]?.description).toContain("people3#0 왕");
+    // The longer reviewed actor1-00 face note now pushes the pair list past list_resources' 240-unit cut; the host pair is still listed, its label is cut.
+    expect((await search(p,"호스트 검토 얼굴")).matches[0]?.description).toContain("tex_easyrpg_charset_people3");
     expect(reconcileSharedFaceWithCharset("easyrpg-faceset-people1-00",row.textureKey,0).faceResourceId).toBe(row.faceResourceId);
   });
 

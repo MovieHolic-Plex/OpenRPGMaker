@@ -21,9 +21,14 @@ function party(curves: Array<Record<string, number[]> | undefined>): { project: 
 }
 
 describe("JRPG 파티 역할 곡선", () => {
-  it("기본 곡선 그대로인 두 번째 배우에게 곡선을 주라고 알린다", () => {
-    const { warnings } = party([undefined, undefined]);
-    expect(warnings[1]!.some((text) => text.includes("완전히 같습니다"))).toBe(true);
+  // #2890 부터 upsert_actor 는 parameterCurves 를 생략하면 역할별 [Lv1, Lv99] 곡선을 스스로 채운다 — 「완전히 같습니다」 경고는 그때 걷혔다.
+  it("곡선을 생략한 배우는 기본 곡선(HP514) 대신 역할 곡선을 받는다", () => {
+    const { project } = party([undefined, undefined]);
+    for (const id of ["actor_t0", "actor_t1"]) {
+      const curves = project.database.actors.find((actor) => actor.id === id)?.parameterCurves;
+      expect(curves?.maxHp?.length, id).toBe(99);
+      expect(curves?.maxHp?.[0], id).not.toBe(514);
+    }
   });
   it("역할별 곡선을 주면 같은 몸 경고도 평평한 파티 경고도 없다", () => {
     const { project, warnings } = party([

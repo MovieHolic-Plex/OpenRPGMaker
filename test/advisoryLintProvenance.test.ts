@@ -14,6 +14,11 @@ import { verificationEvent } from "./fixtures/verificationOwnership";
 import { offlineChatResponse } from "./fixtures/offlineChatResponse";
 import { approvedReviewResponse } from "./independentReviewFixture";
 
+// Tests here build the ~63MB blank project (createBlankProject) and drive assistant sessions or editor
+// panels over it, fingerprinting/copying it per session. Under ci-full load (8 workers on 4-core runners)
+// single tests measured 10-50s, past vitest's 15s default, so the budget is raised for this file only.
+vi.setConfig({ testTimeout: 120_000 });
+
 const brokenEvent = (switchId: string) => verificationEvent("ev_broken", 2, 2, [{ kind: "setSwitch", switchId, value: true }]);
 function errors(result: ReturnType<typeof runTool>) {
   const data = result.data as { counts: { errors: number }; issues: { code: string; message: string; severity: string }[] };

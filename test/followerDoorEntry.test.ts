@@ -4,9 +4,13 @@ import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
 import { addFollowerToSession, followerPositions, recordFollowerPlayerStep, resetFollowerTrailNearPlayer } from "@/project/followers";
 import { startSession } from "@/project/session";
+import { startOnRetiredCombinedTown } from "./support/retiredEasyRpgTilesets";
 
 function partyAtTopEdge() {
-  const project = createBlankProject();
+  // 고른 풀밭 위에서 본다 — 2026-10-07 정리 뒤 기본 시작 맵(beodeul_city)에는 막힌 칸이 섞여 있어 옆·뒤 칸 판정이 달라진다.
+  const project = startOnRetiredCombinedTown(createBlankProject());
+  // J9 는 간격 따르기(spaced)의 계약이다 — #3509 부터 기본은 고전 빵부스러기(breadcrumb)라 짧은 궤적에선 동료가 주인공 칸에 겹친다.
+  project.system.companions = { ...project.system.companions, followMode: "spaced" };
   const session = startSession(project);
   addFollowerToSession(project, session, { actorId: "actor_hero", name: "미아" });
   // 맵 위 끝에서 아래를 본다 — 뒤(위)는 맵 밖, 계단으로 내려온 자리와 같다.
