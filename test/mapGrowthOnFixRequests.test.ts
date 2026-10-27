@@ -16,6 +16,7 @@ import { estimateVillageSize } from "@/ai/constructionDeclaration";
 import { runTool } from "@/editor/tools";
 import { createBlankProject } from "@/project/defaults";
 import type { Project } from "@/project/types";
+import { MAX_TOOL_MAP_DIMENSION } from "@/project/mapSizeLimits";
 
 type ChatResult = import("@/ai/llmClient").ChatResult;
 
@@ -41,9 +42,9 @@ function finalMsg(text: string): ChatResult {
 }
 
 /** 20×20 맵 m1 하나가 있는 프로젝트. */
-function projectWithMap(width = 20, height = 20): Project {
+function projectWithMap(width = 20, height = 20, tilesetId?: string): Project {
   const ctx = { project: createBlankProject() };
-  const created = runTool(ctx, "create_map", { id: "m1", name: "고칠 맵", width, height });
+  const created = runTool(ctx, "create_map", { id: "m1", name: "고칠 맵", width, height, ...(tilesetId ? { tilesetId } : {}) });
   expect(created.ok, created.summary).toBe(true);
   return ctx.project;
 }
@@ -102,9 +103,9 @@ describe("1. buildSpec — 기존 맵도 확장 plannedMap 을 선언할 수 있
     expect(plannedGrowthForSpec({ width: 20, height: 20 }, {
       assets: [{ id: "a", kind: "village", x: 2, y: 2, w: 8, h: 8 }],
     })).toBeNull();
-    // 상한(256) 을 넘는 요구는 확장으로 풀지 않는다 — 좌표가 틀린 것이다.
+    // 상한(MAX_TOOL_MAP_DIMENSION, 256 → 1024) 을 넘는 요구는 확장으로 풀지 않는다 — 좌표가 틀린 것이다.
     expect(plannedGrowthForSpec({ width: 20, height: 20 }, {
-      assets: [{ id: "a", kind: "village", x: 0, y: 0, w: 900, h: 10 }],
+      assets: [{ id: "a", kind: "village", x: 0, y: 0, w: MAX_TOOL_MAP_DIMENSION + 100, h: 10 }],
     })).toBeNull();
   });
 });
@@ -147,7 +148,9 @@ describe("2. specGate — 맵이 작아서 막힐 때 resize_map 경로를 실�
       toolCallMsg("build_house", { mapId: "m1", x: 22, y: 22, width: 8, height: 8, material: "plaster" }, "c3"),
       finalMsg("맵을 40×40 으로 키우고 집을 지었습니다."),
     ]);
-    const session = new AssistantSession(projectWithMap(), { config: CONFIG, chat });
+    // build_house on the default beodeul_city map first requires reading its reference documents
+    // (tilesetReferenceEvidence); this growth path test builds on a Scarloxy map, which carries none.
+    const session = new AssistantSession(projectWithMap(20, 20, "scarloxy_chipset_grassland"), { config: CONFIG, chat });
     const results: Array<{ name: string; ok: boolean; summary: string }> = [];
 
     await session.sendUserMessage("맵 넓히고 집 지어줘", (event) => {

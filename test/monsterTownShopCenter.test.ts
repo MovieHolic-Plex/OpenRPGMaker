@@ -66,7 +66,7 @@ describe("센터 회복 레시피", () => {
     expect(save).toBeGreaterThan(recover);
     expect(ritual.filter((command) => command.kind === "m2Command" && JSON.stringify(command.fields).includes("flash"))).toHaveLength(3);
     // 볼은 파티 칸 수(최대 6)만큼 partySize 분기로 줄지어 놓인다.
-    expect(ritual.filter((command) => command.kind === "fork" && command.condition?.kind === "partySize")).toBeGreaterThanOrEqual(MONSTER_CENTER_MAX_PARTY);
+    expect(ritual.filter((command) => command.kind === "fork" && command.condition?.kind === "partySize").length).toBeGreaterThanOrEqual(MONSTER_CENTER_MAX_PARTY);
     // 거절 분기에는 회복이 없다.
     expect(flat(choice.options[1]!.branch ?? []).some((command) => command.kind === "recoverAll")).toBe(false);
   });
@@ -96,9 +96,11 @@ describe("place_monster_center 도구", () => {
     expect(genreLockHidesTool({ preset: "monster-collect", mode: "enforce" } as never, "place_monster_center")).toBe(false);
     const project = createBlankProject();
     const mapId = Object.keys(project.maps)[0]!;
-    const result = await runTool(ctx(project), "place_monster_center", { mapId, x: 3, y: 3, checkpointLabel: "시험 센터", machineCells: [{ x: 2, y: 2 }] });
+    // runTool 은 성공하면 context.project 를 새 사본으로 바꾼다 — 원본이 아니라 그 사본을 읽는다.
+    const context = ctx(project);
+    const result = await runTool(context, "place_monster_center", { mapId, x: 3, y: 3, checkpointLabel: "시험 센터", machineCells: [{ x: 2, y: 2 }] });
     expect(result.ok).toBe(true);
-    const events = project.maps[mapId]!.events.filter((event) => JSON.stringify(event.pages).includes("recoverAll"));
+    const events = context.project.maps[mapId]!.events.filter((event) => JSON.stringify(event.pages).includes("recoverAll"));
     expect(events).toHaveLength(1);
     expect(JSON.stringify(events[0]!.pages)).toContain("checkpointSave");
   });

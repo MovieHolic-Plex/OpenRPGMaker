@@ -12,7 +12,8 @@
  * dist/export-player/ 에는 쓰지 않는다 — 그 폴더는 SDK 매니페스트가 묶는 정확한 산출물 집합이고 웹 내보내기 zip 의 원본이다.
  * createFlagshipDemoProject 는 그대로 남는다(편집기 메뉴·이 굽기·dev 서버 폴백).
  */
-import { mkdirSync, writeFileSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { createHash } from "node:crypto";
 import { gzipSync } from "node:zlib";
 import { join } from "node:path";
 import { FLAGSHIP_DEMO_IDS, createFlagshipDemoProject } from "@/project/flagship";
@@ -46,3 +47,32 @@ for (const id of FLAGSHIP_DEMO_IDS) {
   writeFileSync(join(dir, `${id}.project.json`), editor);
   console.log(`${id}: build ${((built - started) / 1000).toFixed(1)}s · player ${mb(player.length)}MB (gzip ${mb(gzipSync(player).length)}MB) · editor ${mb(editor.length)}MB · total ${((performance.now() - started) / 1000).toFixed(1)}s`);
 }
+
+// 데모가 쓰는 카탈로그 BGM 을 산출물에 함께 싣는다. 데스크톱 앱은 BGM 팩 없이 나가서 폴른 스타가 27곡 중 3곡만 울렸다(2026-10-27).
+// 이미 있으면(웹 빌드가 public 의 팩을 복사) 그대로, 체크아웃에 받아 둔 곡이면 복사, 없으면 공개 CDN 에서 받아 SHA-256 을 확인한다.
+// 데모 밖의 곡은 데스크톱이 처음 재생할 때 받는다(electron/main/bgmOnDemand.ts).
+const manifest = JSON.parse(readFileSync("assets/bgm-release-v1.json", "utf8")) as { tracks: { id: string; fileName: string; bytes: number; sha256: string }[] };
+const BGM_CDN = "https://cheapcdn.sgp1.cdn.digitaloceanspaces.com/rpg-zzu/bgm/v1/";
+const used = new Map<string, (typeof manifest.tracks)[number]>();
+for (const id of FLAGSHIP_DEMO_IDS) {
+  if (only && !only.includes(id)) continue;
+  const text = readFileSync(join(dir, `${id}.project.json`), "utf8");
+  for (const track of manifest.tracks) if (text.includes(`"${track.id}"`)) used.set(track.fileName, track);
+}
+const bgmDir = join(out, "assets/cc0/audio/catalog");
+mkdirSync(bgmDir, { recursive: true });
+const sha = (bytes: Uint8Array) => createHash("sha256").update(bytes).digest("hex");
+let copied = 0, downloaded = 0;
+for (const track of used.values()) {
+  const target = join(bgmDir, track.fileName);
+  if (existsSync(target) && sha(readFileSync(target)) === track.sha256) continue;
+  const local = join("public/assets/cc0/audio/catalog", track.fileName);
+  if (existsSync(local) && sha(readFileSync(local)) === track.sha256) { copyFileSync(local, target); copied += 1; continue; }
+  const response = await fetch(BGM_CDN + encodeURIComponent(track.fileName));
+  if (!response.ok) throw new Error(`데모 BGM 을 받지 못했습니다: ${track.fileName} (${response.status})`);
+  const bytes = new Uint8Array(await response.arrayBuffer());
+  if (bytes.byteLength !== track.bytes || sha(bytes) !== track.sha256) throw new Error(`데모 BGM 해시가 다릅니다: ${track.fileName}`);
+  writeFileSync(target, bytes);
+  downloaded += 1;
+}
+console.log(`demo bgm: ${used.size} tracks (copied ${copied}, downloaded ${downloaded}, already present ${used.size - copied - downloaded})`);
