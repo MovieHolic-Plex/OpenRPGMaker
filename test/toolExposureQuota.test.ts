@@ -93,15 +93,16 @@ describe("lossless domain exposure", () => {
 
   it("canonical house/village routes coexist with every eligible multi-domain tool", () => {
     resetAssistantToolDomainMemory();
+    // author_village·author_house 는 2026-10-07 저작권 정리로 지워졌다 — 현행 마을·집 경로는 author_beodeul_town·place_terrain_house.
     const domains = computeActiveToolDomains(
-      declaredIntent({ space: "outdoor", needsPlan: true, tools: ["author_village", "author_house", "place_npc", "upsert_item", "define_quest", "plan_world"] }),
+      declaredIntent({ space: "outdoor", needsPlan: true, tools: ["author_beodeul_town", "place_terrain_house", "place_npc", "upsert_item", "define_quest", "plan_world"] }),
     );
 
     const names = toOpenAiTools(undefined, { domains }).map((tool) => tool.function.name);
 
     expect(names).toEqual(scopedNames(domains));
-    expect(names).toContain("author_house");
-    expect(names).toContain("author_village");
+    expect(names).toContain("place_terrain_house");
+    expect(names).toContain("author_beodeul_town");
   });
 
   it("exposes define_quest and verify_quest when core+quest domains are active", () => {
