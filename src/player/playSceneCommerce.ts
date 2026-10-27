@@ -30,7 +30,7 @@ type CommerceOverlayOptions = {
 };
 
 export function playInn(scene: PlaySceneContext, step: InnStep): Promise<InnOutcome> {
-  // RM2003 여관 처리: 인사 → "N G 묵으시겠습니까?" 예/아니오 → (예) 요금 차감·회복 →
+  // RM2003 여관 처리: 인사 → "N <돈 단위> 묵으시겠습니까?" 예/아니오 → (예) 요금 차감·회복 →
   // 화면이 어두워졌다가(휴식) 기상 메시지와 함께 밝아지고 이벤트가 계속된다.
   // 골드 부족 시 기본은 상태 문구만 갱신. branchOnNotEnoughGold 면 notEnough 로 resume 분기.
   const text = innTextModel(step, resolveTerms(store.getCurrent()));
@@ -109,6 +109,11 @@ export function playInn(scene: PlaySceneContext, step: InnStep): Promise<InnOutc
 function layoutPixelInn(overlay: HTMLElement, project: Project, session: PlaySession, step: InnStep): void {
   const recoverMp = step.recoverMp !== false;
   const price = Math.max(0, Math.trunc(step.price) || 0);
+  // 질문 줄은 자료집 돈 단위를 쓰는데, 같은 창의 게이지와 소지금은 HP/MP/G 로 고정돼 있었다.
+  const terms = resolveTerms(project);
+  const hpLabel = terms.hp.trim() || "HP";
+  const mpLabel = terms.mp.trim() || "MP";
+  const goldLabel = terms.gold.trim() || "G";
   const title = overlay.querySelector<HTMLElement>(".runtime-overlay-title");
   const note = overlay.querySelector<HTMLElement>(".runtime-commerce-note");
   const question = overlay.querySelector<HTMLElement>(".runtime-commerce-status");
@@ -146,8 +151,8 @@ function layoutPixelInn(overlay: HTMLElement, project: Project, session: PlaySes
             }),
           ],
         }),
-        innGauge("HP", vitals.hp, hpAfter, vitals.maxHp, "hp", `inn-party-hp-${index}`),
-        innGauge("MP", vitals.mp, mpAfter, vitals.maxMp, "mp", `inn-party-mp-${index}`),
+        innGauge(hpLabel, vitals.hp, hpAfter, vitals.maxHp, "hp", `inn-party-hp-${index}`),
+        innGauge(mpLabel, vitals.mp, mpAfter, vitals.maxMp, "mp", `inn-party-mp-${index}`),
       ],
     })];
   });
@@ -163,12 +168,12 @@ function layoutPixelInn(overlay: HTMLElement, project: Project, session: PlaySes
         children: [
           `${session.gold.toLocaleString("ko-KR")} → `,
           el("span", { class: enough ? "is-after" : "is-short", text: enough ? (session.gold - price).toLocaleString("ko-KR") : "부족" }),
-          " G",
+          ` ${goldLabel}`,
         ],
       }),
       el("span", { class: "runtime-inn-summary-label", text: "묵으면" }),
-      innSummaryLine("HP", hpGain, "inn-summary-hp"),
-      recoverMp ? innSummaryLine("MP", mpGain, "inn-summary-mp") : el("span", { class: "runtime-inn-summary-line", text: "MP 그대로" }),
+      innSummaryLine(hpLabel, hpGain, "inn-summary-hp"),
+      recoverMp ? innSummaryLine(mpLabel, mpGain, "inn-summary-mp") : el("span", { class: "runtime-inn-summary-line", text: `${mpLabel} 그대로` }),
     ],
   });
   const head = el("div", { class: "runtime-inn-head", children: [title, note].filter((node): node is HTMLElement => Boolean(node)) });
