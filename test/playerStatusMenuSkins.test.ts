@@ -349,4 +349,32 @@ describe("status menu skins — controller", () => {
       restore();
     }
   });
+
+  it("battle skill confirm says it is used in battle, and one cancel leaves that list", () => {
+    const restore = installFakeDom();
+    const previousWindow = Object.getOwnPropertyDescriptor(globalThis, "window");
+    Object.defineProperty(globalThis, "window", { configurable: true, value: { localStorage: memoryStorage() } });
+    try {
+      const { controller, layout } = mountController("workbench");
+      controller.toggleMenu();
+      expect(controller.handleKey("ArrowDown")).toBe(true);
+      expect(controller.handleKey("ArrowRight")).toBe(true);
+      expect(controller.handleKey("Enter")).toBe(true);
+      let menu = findByTestId(layout, "main-menu")!;
+      expect(menu.querySelector("[data-testid^='status-menu-skill-actor-']")).toBeNull();
+      expect(menu.querySelector("[data-testid*='skill_attack']")).not.toBeNull();
+      expect(controller.handleKey("Enter")).toBe(true);
+      menu = findByTestId(layout, "main-menu")!;
+      expect(findByTestId(menu, "status-menu-message")?.textContent).toBe("공격은 전투에서 사용합니다.");
+      expect(menu.querySelector("[data-testid*='skill_attack']")).not.toBeNull();
+      expect(controller.handleKey("Escape")).toBe(true);
+      menu = findByTestId(layout, "main-menu")!;
+      expect(menu.querySelector("[data-testid^='status-menu-skill-actor-']")).not.toBeNull();
+      expect(menu.querySelector("[data-testid*='skill_attack']")).toBeNull();
+    } finally {
+      if (previousWindow) Object.defineProperty(globalThis, "window", previousWindow);
+      else delete (globalThis as { window?: unknown }).window;
+      restore();
+    }
+  });
 });
