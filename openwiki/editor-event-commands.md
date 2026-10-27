@@ -189,6 +189,10 @@ Event command edit dialogs, cutscene/horror/puzzle authoring tools, place_npc/ma
   `ecp-choice-window`·`ecp-choice`·`ecp-message-sample-note`)는 같은 요소에 함께 남긴다.
   `applySystemWindowSkinVariable(win)` 도 게임처럼 호출한다. 얼굴은 `.dialogue-face` 안에 48 논리 px
   (`RUNTIME_FACE_SIZE`)로 넣는다.
+  문장 한 줄의 `position`(위·가운데·아래)은 `.dialogue-overlay` 의 `position-*` 로 그대로 그린다
+  (2026-10-27). 비움·자동은 아래(주인공이 창에 안 겹칠 때의 기본). 흉상·전신이 있으면
+  `portraitForcesBottom` 과 같이 아래로 두고, 위·가운데·자동을 골랐으면 무대 아래에
+  `PORTRAIT_BOTTOM_NOTICE` 를 붙인다. 말풍선·흘림·코너는 자리를 옮기지 않는다.
 - **축소 규칙(JS 없음).** `.ecp-stage-runtime { container-type: inline-size; aspect-ratio: 4/3 }`,
   `.ecp-runtime-viewport { transform: scale(tan(atan2(100cqw, 320px))); transform-origin: 0 100% }`.
   CSS 는 길이끼리 나눌 수 없어 `tan(atan2(y, x))` 로 단위 없는 비율을 얻는다. 배율 = 무대 폭 / 320.
