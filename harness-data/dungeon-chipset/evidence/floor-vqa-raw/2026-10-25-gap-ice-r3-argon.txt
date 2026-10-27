@@ -1,0 +1,37 @@
+model: gemini-4-argon-high (direct, images inline: qa-runs/themes3/ice-wall/after/ice@1-0.png, qa-runs/themes3/ice-wall/after/ice@2-0.png)
+
+Here is the strict pixel-art review of the cave wall pieces in `ice@1-0.png` and `ice@2-0.png`:
+
+### Aesthetic & Material Read
+* **No translucent ice front face:** The front-facing walls read as dark charcoal/slate masonry blocks with small cyan icicles hanging only from the top lip, rather than a translucent icy cliff face.
+* **No frosted rock top plane transition:** The dark rock mass ("ceiling") has an uniform noisy dark-grey texture with no frost lighting or cliff-edge bevel leading into the front wall face; instead, it meets the wall face at a flat, ruler-straight horizontal line.
+
+### Concrete Structural Defects
+
+1. **Boxed White/Grey Outline Rims & Broken Vertical Seams on Stepped Walls (Both images, all diagonal/stepped walls):**
+   * **Locations:**
+     * `ice@1-0.png`: Upper-left lake wall (5 single-tile steps), upper-right room entry steps, center-right diagonal wall (6 steps), lower-left lake steps, and bottom-right corner steps.
+     * `ice@2-0.png`: Upper-left lake diagonal wall (7 steps), center-right passages, and lower-left lake diagonal wall.
+   * **Defect:** Every wall segment is enclosed in a sharp 1px light-grey/white rectangular border on its top, left, and right edges. On diagonal runs, each 16px tile step is separated from its neighbor by a full-height vertical grey outline seam, making the cave walls look like discrete rectangular pillars/bricks sitting side-by-side rather than a continuous rock/ice cliff.
+
+2. **Perspective Discontinuity / Cliff Height Vanishing on Side & Bottom Edges (Both images, global autotile structure):**
+   * **Locations:** Every transition where a south-facing wall face ends and meets an east-, west-, or north-facing cave boundary (e.g., `ice@1-0.png` around the entire southern and eastern perimeter of the upper-left ice lake, the middle-left room's left/bottom walls, and `ice@2-0.png` along the right-hand corridor).
+   * **Defect:** The south-facing walls have a ~2-tile-tall vertical front face, but the east, west, and north edges of the exact same rock mass have **zero vertical thickness**—the "top plane" rock texture sits flush at floor level with only a jagged 2px grey fringe. Consequently, the vertical wall faces appear to float as isolated thin billboards/retaining walls rather than supporting an elevated rock mass.
+
+3. **Isolated 16px Single-Column Wall Pieces Sticking Out of Flat Rock Borders:**
+   * **Locations:**
+     * `ice@1-0.png`: Far-left edge of the middle-left room (two isolated 1-tile-wide vertical wall columns on the left wall); middle-right edge of the eastern room (two isolated 1-tile wall columns).
+     * `ice@2-0.png`: Right-hand vertical corridor wall (four isolated 1-tile-wide wall columns protruding along the eastern wall) and center-left passage (one isolated 1-tile wall column between the two lakes).
+   * **Defect:** Because single-tile overhangs along vertical walls render as full-height boxed pillars surrounded by zero-thickness rock edges, they read as misaligned/floating 16px pillars stuck onto the side of the cave.
+
+4. **Obvious 16px Repeating Pattern on Long Horizontal Walls:**
+   * **Locations:**
+     * `ice@1-0.png`: Middle-left room's north wall (a 9-tile straight horizontal run), upper-left lake's north wall, and lower-middle wall segment.
+     * `ice@2-0.png`: Lower-middle horizontal wall north of the bottom ice lake (5-tile run).
+   * **Defect:** The base horizontal wall tile repeats the exact same pair of cyan icicles and diagonal dark-grey hatching every 16 pixels, creating a rigid, mechanical 16px grid rhythm (broken only occasionally by a bright white icicle variant).
+
+5. **Corrupted / Missing Tile Graphic in Wall Face:**
+   * **Location:** `ice@1-0.png`, bottom-right room, north wall (the 2nd tile from the left in that wall segment, marked with a magenta box at the base and a grey horizontal bar at the top).
+   * **Defect:** A wall tile is broken/overridden by a flat grey mechanical slot/bar graphic with a bright magenta debug outline at its base.
+
+VERDICT: FAIL

@@ -3972,6 +3972,24 @@
    ],
    "lead": "얼음 바닥과 얼음 바위(서리 윗면+얼음벽 앞면). 줄 공통."
   },
+  "gap-ice-r2": {
+   "module": "src/harnesses/dungeon-chipset/rounds/gap_ice_r2.py",
+   "wave": "gap",
+   "title": "얼음 동굴 벽 gap-ice-r2",
+   "items": [
+    "gap.ice_rock"
+   ],
+   "lead": "얼음 바위 다시 그림: 서리 낀 검푸른 바위 윗면(흰 테 없음) + 어두운 바위 위 반투명 얼음 앞면(48px 덩이, 고드름 제각각). 바닥은 고른 gap-ice-r1 A1."
+  },
+  "gap-ice-r3": {
+   "module": "src/harnesses/dungeon-chipset/rounds/gap_ice_r3.py",
+   "wave": "gap",
+   "title": "얼음 동굴 벽 gap-ice-r3",
+   "items": [
+    "gap.ice_rock"
+   ],
+   "lead": "r2 평면 채움 반려 → 윗면 값 띠·서리 덩이·그늘 금, 앞면 결정면·빛 획·깊은 밑 그늘·2~7px 고드름, 48px 가운데 덩이 유지."
+  },
   "gap-tower-r1": {
    "module": "src/harnesses/dungeon-chipset/rounds/gap_tower_r1.py",
    "wave": "gap",
@@ -4349,6 +4367,24 @@
     "other.ground"
    ],
    "lead": "floor VQA r1~r4(Argon·Sonnet): 마계 바닥 A2 의 분홍·붉은 점(소금·후추)과 붉은 사선 금 → 잔잔한 보라 검은 판, 점 없음, 금 드물게, 빛 핏줄은 아주 드물게."
+  },
+  "gap-ice-r4": {
+   "module": "src/harnesses/dungeon-chipset/rounds/gap_ice_r4.py",
+   "wave": "gap",
+   "title": "얼음 동굴 벽 gap-ice-r4",
+   "items": [
+    "gap.ice_rock"
+   ],
+   "lead": "r3 독립 검수 FAIL(윗면 서리 없음·앞면 어두운 돌+청록 물방울·고른 고드름·16px 반복·밝은 테) → 눈 처마·반투명 얼음 기둥(위 밝고 밑 깊음)·바위 창·2~16px 고드름·밝은 선 없는 바닥 그늘."
+  },
+  "gap-ice-r5": {
+   "module": "src/harnesses/dungeon-chipset/rounds/gap_ice_r5.py",
+   "wave": "gap",
+   "title": "얼음 동굴 벽 gap-ice-r5",
+   "items": [
+    "gap.ice_rock"
+   ],
+   "lead": "r4 반려(납작한 윗면·흰 입술·파란 막대·자로 그은 밑 띠) → 고른 C2 바위 윗면에 서리, 앞면 = 층 진 바위 위 얇은 얼음 판(≈45%)·판 밑 고드름·바닥 눈 더미."
   }
  }
 }

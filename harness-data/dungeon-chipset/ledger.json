@@ -1205,198 +1205,22 @@
    "by": "delegated",
    "delegatedBy": "delegated by user to supervisor 2026-10-24",
    "evidence": "harness-data/dungeon-chipset/evidence/2026-10-24-theme-panel-11.json"
+  },
+  {
+   "round": "gap-ice-r5",
+   "item": "gap.ice_rock",
+   "line": "*",
+   "letter": "A1",
+   "sha256": "1b33ffeb92571ee3d50024aa7209a155cb123740287fd5b4c3e7063cab8857a8",
+   "note": "Sonnet VQA r5 PASS; object-gate PASS (advisory)",
+   "at": "2026-10-27T20:01:57",
+   "by": "delegated",
+   "delegatedBy": "delegated by user to supervisor 2026-10-27",
+   "evidence": "harness-data/dungeon-chipset/evidence/2026-10-27-gap-ice-r5-panel.json"
   }
  ],
  "rejects": [],
  "runs": [
-  {
-   "round": "theme-props-r8",
-   "at": "2026-10-24T23:24:06",
-   "fail": 0,
-   "warn": 5,
-   "warnByCode": {
-    "OUTLINE": 1,
-    "R": 2,
-    "CONTRAST": 2
-   },
-   "polish": [
-    {
-     "item": "prop.wisp",
-     "key": "A1",
-     "code": "OUTLINE",
-     "msg": "가장자리 238화소 중 먹 4% — 상한(먹 15%·빛 쪽 50%) 넘음: 장면1 빛 쪽 먹·0단 53%; 장면2 빛 쪽 먹·0단 53%; 장면3 빛 쪽 먹·0단 55% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
-    },
-    {
-     "item": "prop.wisp",
-     "key": "A1",
-     "code": "CONTRAST",
-     "msg": "줄 A 바닥: 장면1(2칸) 그늘 쪽 0.31 vs 바닥 0.46 차 0.16; 장면2(2칸) 그늘 쪽 0.30 vs 바닥 0.46 차 0.16; 장면3(2칸) 그늘 쪽 0.30 vs 바닥 0.46 차 0.16 / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.31 vs 바닥 0.38 차 0.08; 장면2(2칸) 그늘 쪽 0.30 vs 바닥 0.38 차 0.08; 장면3(2칸) 그늘 쪽 0.30 vs 바닥 0.38 차 0.08 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.31 vs 바닥 0.44 차 0.13; 장면2(2칸) 그늘 쪽 0.30 vs 바닥 0.44 차 0.14; 장면3(2칸) 그늘 쪽 0.30 vs 바닥 0.44 차 0.14 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다)"
-    },
-    {
-     "item": "prop.wisp",
-     "key": "A2",
-     "code": "CONTRAST",
-     "msg": "줄 A 바닥: 장면1(2칸) 그늘 쪽 0.30 vs 바닥 0.46 차 0.17; 장면2(2칸) 그늘 쪽 0.30 vs 바닥 0.46 차 0.17; 장면3(2칸) 그늘 쪽 0.29 vs 바닥 0.46 차 0.17 / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.30 vs 바닥 0.38 차 0.09; 장면2(2칸) 그늘 쪽 0.30 vs 바닥 0.38 차 0.09; 장면3(2칸) 그늘 쪽 0.29 vs 바닥 0.38 차 0.09 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.30 vs 바닥 0.44 차 0.14; 장면2(2칸) 그늘 쪽 0.30 vs 바닥 0.44 차 0.14 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다)"
-    }
-   ],
-   "hashes": {
-    "prop.wisp": {
-     "A1": "141fec4b583dcdbdbe718c293b9fb96c9e3fa320c1a8960a41ca8d7afaab9723",
-     "A2": "3acf41ecac63860e4e6c6bbff9f553d11a8c9e4d0a8d9b882e24ce006c2adbeb"
-    }
-   }
-  },
-  {
-   "round": "theme-walls-r10",
-   "at": "2026-10-24T23:33:03",
-   "fail": 0,
-   "warn": 0,
-   "warnByCode": {},
-   "polish": [],
-   "hashes": {
-    "wall.other_rim": {
-     "A1": "5f1e23f1bf15c5073ae41e0c6c9412ed161436e1ab489567ba3c3db9a704ce35",
-     "A2": "ba984d18389fe0795362cd1a1d24d0b3116dac797deb5f3238b7d34187176334"
-    }
-   }
-  },
-  {
-   "round": "theme-props-r8",
-   "at": "2026-10-24T23:33:40",
-   "fail": 0,
-   "warn": 4,
-   "warnByCode": {
-    "R": 2,
-    "CONTRAST": 2
-   },
-   "polish": [
-    {
-     "item": "prop.wisp",
-     "key": "A1",
-     "code": "CONTRAST",
-     "msg": "줄 A 바닥: 장면1(2칸) 그늘 쪽 0.26 vs 바닥 0.46 차 0.20; 장면2(2칸) 그늘 쪽 0.25 vs 바닥 0.46 차 0.21; 장면3(2칸) 그늘 쪽 0.26 vs 바닥 0.46 차 0.20 / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.26 vs 바닥 0.38 차 0.12; 장면2(2칸) 그늘 쪽 0.25 vs 바닥 0.38 차 0.13; 장면3(2칸) 그늘 쪽 0.26 vs 바닥 0.38 차 0.12 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 장면1(2칸) 그늘 쪽 0.26 vs 바닥 0.44 차 0.18; 장면2(2칸) 그늘 쪽 0.25 vs 바닥 0.44 차 0.19; 장면3(2칸) 그늘 쪽 0.26 vs 바닥 0.44 차 0.18"
-    },
-    {
-     "item": "prop.wisp",
-     "key": "A2",
-     "code": "CONTRAST",
-     "msg": "줄 A 바닥: 장면1(2칸) 그늘 쪽 0.25 vs 바닥 0.46 차 0.21; 장면2(2칸) 그늘 쪽 0.25 vs 바닥 0.46 차 0.22; 장면3(2칸) 그늘 쪽 0.26 vs 바닥 0.46 차 0.21 / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.25 vs 바닥 0.38 차 0.13; 장면2(2칸) 그늘 쪽 0.25 vs 바닥 0.38 차 0.14; 장면3(2칸) 그늘 쪽 0.26 vs 바닥 0.38 차 0.13 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 장면1(2칸) 그늘 쪽 0.25 vs 바닥 0.44 차 0.19; 장면2(2칸) 그늘 쪽 0.25 vs 바닥 0.44 차 0.19; 장면3(2칸) 그늘 쪽 0.26 vs 바닥 0.44 차 0.18"
-    }
-   ],
-   "hashes": {
-    "prop.wisp": {
-     "A1": "c65081b34e15ca1ab962bf914d174e9cb55a1e1a6985924bfabaa346406a214c",
-     "A2": "521e1452dc239ffcb237a7da0696f3b1c038247cd2617e232c3d75e7f923a234"
-    }
-   }
-  },
-  {
-   "round": "theme-props-r8",
-   "at": "2026-10-24T23:34:05",
-   "fail": 0,
-   "warn": 5,
-   "warnByCode": {
-    "OUTLINE": 1,
-    "R": 2,
-    "CONTRAST": 2
-   },
-   "polish": [
-    {
-     "item": "prop.wisp",
-     "key": "A1",
-     "code": "OUTLINE",
-     "msg": "가장자리 207화소 중 먹 4% — 상한(먹 15%·빛 쪽 50%) 넘음: 장면1 빛 쪽 먹·0단 52%; 장면2 빛 쪽 먹·0단 51%; 장면3 빛 쪽 먹·0단 52% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
-    },
-    {
-     "item": "prop.wisp",
-     "key": "A1",
-     "code": "CONTRAST",
-     "msg": "줄 A 바닥: 장면1(2칸) 그늘 쪽 0.27 vs 바닥 0.46 차 0.19; 장면2(2칸) 그늘 쪽 0.26 vs 바닥 0.46 차 0.20; 장면3(2칸) 그늘 쪽 0.26 vs 바닥 0.46 차 0.20 / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.27 vs 바닥 0.38 차 0.11; 장면2(2칸) 그늘 쪽 0.26 vs 바닥 0.38 차 0.12; 장면3(2칸) 그늘 쪽 0.26 vs 바닥 0.38 차 0.12 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 장면1(2칸) 그늘 쪽 0.27 vs 바닥 0.44 차 0.17; 장면2(2칸) 그늘 쪽 0.26 vs 바닥 0.44 차 0.18; 장면3(2칸) 그늘 쪽 0.26 vs 바닥 0.44 차 0.18"
-    },
-    {
-     "item": "prop.wisp",
-     "key": "A2",
-     "code": "CONTRAST",
-     "msg": "줄 A 바닥: 장면1(2칸) 그늘 쪽 0.26 vs 바닥 0.46 차 0.20; 장면2(2칸) 그늘 쪽 0.25 vs 바닥 0.46 차 0.21; 장면3(2칸) 그늘 쪽 0.26 vs 바닥 0.46 차 0.21 / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.26 vs 바닥 0.38 차 0.12; 장면2(2칸) 그늘 쪽 0.25 vs 바닥 0.38 차 0.13; 장면3(2칸) 그늘 쪽 0.26 vs 바닥 0.38 차 0.13 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 장면1(2칸) 그늘 쪽 0.26 vs 바닥 0.44 차 0.18; 장면2(2칸) 그늘 쪽 0.25 vs 바닥 0.44 차 0.19; 장면3(2칸) 그늘 쪽 0.26 vs 바닥 0.44 차 0.18"
-    }
-   ],
-   "hashes": {
-    "prop.wisp": {
-     "A1": "45f7bbc2ed493bf035bb883475d0f992579c7180306b5535ea3c961c272d5838",
-     "A2": "8a6c221052e72bd6e31abeb83edd4e6d2064e1f6b12c9fcb2507e6b78d8a68ec"
-    }
-   }
-  },
-  {
-   "round": "theme-props-r7",
-   "at": "2026-10-24T23:35:50",
-   "fail": 0,
-   "warn": 0,
-   "warnByCode": {},
-   "polish": [],
-   "hashes": {
-    "wall.ice_face": {
-     "A1": "00db23d792f17cafbc1f05ec5724cbea925913a34a46f4305e934410d9e99981",
-     "A2": "5c84959b68072afe232efb5079970a91f95d4309f9714af0b2431f06310fdf91"
-    }
-   }
-  },
-  {
-   "round": "theme-props-r7",
-   "at": "2026-10-24T23:37:19",
-   "fail": 0,
-   "warn": 0,
-   "warnByCode": {},
-   "polish": [],
-   "hashes": {
-    "wall.ice_face": {
-     "A1": "1a5df7b5fcca94d2aedfb56bf3f463d0c9fb6fd10941a6bf79af6b10633c8c97",
-     "A2": "24c294dbfc3dc0bafc9c5b8cfba817cd45386f4e1a9e83bd88d6ab552fa3424a"
-    }
-   }
-  },
-  {
-   "round": "theme-props-r7",
-   "at": "2026-10-24T23:37:41",
-   "fail": 0,
-   "warn": 0,
-   "warnByCode": {},
-   "polish": [],
-   "hashes": {
-    "wall.ice_face": {
-     "A1": "f128e2d2e460b20102706fe38375c52c417368a494b9abbf39a684a57b367e79",
-     "A2": "1ca6b6c12e779ff26d1636247046de8261b9b98e5bafa12c3efbdcc583c335db"
-    }
-   }
-  },
-  {
-   "round": "theme-props-r7",
-   "at": "2026-10-24T23:38:33",
-   "fail": 0,
-   "warn": 0,
-   "warnByCode": {},
-   "polish": [],
-   "hashes": {
-    "wall.ice_face": {
-     "A1": "b5eda1f5a046620d530c9a951a49261563cc99f3933f3808e3a9c4515eb5c77f",
-     "A2": "6ced9d9f3bfce288afee3dead8a552bd48842a13aa868523b33ac1e816659ddc"
-    }
-   }
-  },
-  {
-   "round": "theme-props-r7",
-   "at": "2026-10-24T23:38:55",
-   "fail": 0,
-   "warn": 0,
-   "warnByCode": {},
-   "polish": [],
-   "hashes": {
-    "wall.ice_face": {
-     "A1": "c98208b688b36b93d5c661dd4ab7961d02b742e530a8892d2d74c419eb82f9ec",
-     "A2": "97b8ac5eca70e922ea072f60d5bbfb989745a81a730a746047ccbe57ab21b3ec"
-    }
-   }
-  },
   {
    "round": "theme-walls-r10",
    "at": "2026-10-24T23:41:47",
@@ -1864,6 +1688,132 @@
     "other.ground": {
      "A1": "50c474c90120e55602ef1c983d0715050127a1abdb06dc4f34ccfb0a391077fe",
      "A2": "f1ab6d91b12d497ccc82f87ab39e1bd9758184b835397dce1f4f9fccbaa9672d"
+    }
+   }
+  },
+  {
+   "round": "gap-ice-r2",
+   "at": "2026-10-25T20:50:00",
+   "fail": 0,
+   "warn": 0,
+   "warnByCode": {},
+   "polish": [],
+   "hashes": {
+    "gap.ice_rock": {
+     "A1": "0fdeb0485fd9745c227e6bb29f6fdfc7a81958418946bd348f33dbca80fc5bea",
+     "A2": "24efc5ad000fa69fa7d1496aa63176c40b95c9d1d72e380195b556590fbb7f88"
+    }
+   }
+  },
+  {
+   "round": "gap-ice-r3",
+   "at": "2026-10-25T21:27:28",
+   "fail": 0,
+   "warn": 0,
+   "warnByCode": {},
+   "polish": [],
+   "hashes": {
+    "gap.ice_rock": {
+     "A1": "ce044a44933533117ec15babb2e28910e8560dcce282c278a87122a2e829edb9",
+     "A2": "ce46d8170c04648520ff1b9205b7363b3622957b8b74a85aa556efd439571b13"
+    }
+   }
+  },
+  {
+   "round": "gap-ice-r4",
+   "at": "2026-10-27T19:39:20",
+   "fail": 0,
+   "warn": 0,
+   "warnByCode": {},
+   "polish": [],
+   "hashes": {
+    "gap.ice_rock": {
+     "A1": "082bdc1f47fffb43b380770d58afe9d7cba296cd581b0a8d3c2bd7224a461834",
+     "A2": "5fb46f94ed4dd3c145c3211a9b99c99638e92107f467dea76f4788fc6602d464"
+    }
+   }
+  },
+  {
+   "round": "gap-ice-r4",
+   "at": "2026-10-27T19:40:18",
+   "fail": 0,
+   "warn": 0,
+   "warnByCode": {},
+   "polish": [],
+   "hashes": {
+    "gap.ice_rock": {
+     "A1": "4d99f8757905e5ea394d1166cb2433797c9af5facf40f3c232dfa36aa9fcfb2a",
+     "A2": "0bfa9f1194fa53458ed88de75307c6a2000718e0e1206593bf9ff93347706f99"
+    }
+   }
+  },
+  {
+   "round": "gap-ice-r4",
+   "at": "2026-10-27T19:40:42",
+   "fail": 0,
+   "warn": 0,
+   "warnByCode": {},
+   "polish": [],
+   "hashes": {
+    "gap.ice_rock": {
+     "A1": "ecdd9460c5bdaf24cfaed7d1f491891a232aea38f2e9697984255bd440c8f60a",
+     "A2": "800421628020833dc8b31738e78c5e6a244952bbe16acd5fd50449224b5c9e81"
+    }
+   }
+  },
+  {
+   "round": "gap-ice-r4",
+   "at": "2026-10-27T19:41:25",
+   "fail": 0,
+   "warn": 0,
+   "warnByCode": {},
+   "polish": [],
+   "hashes": {
+    "gap.ice_rock": {
+     "A1": "9c63374ff5bf63163f30278c591af9a6ecfbcc90a25a3a14fa64a6f02ab3db97",
+     "A2": "ec805ea573f6d0cf5f92f4b050b16bb12c334dfe9f54bfc00dd3f3678fbdcbb8"
+    }
+   }
+  },
+  {
+   "round": "gap-ice-r5",
+   "at": "2026-10-27T19:55:48",
+   "fail": 1,
+   "warn": 0,
+   "warnByCode": {},
+   "polish": [],
+   "hashes": {
+    "gap.ice_rock": {
+     "A1": "8091c4878fedec4eac0badfacf59bbda44736d844c70c1b229fdef5e52d53f56",
+     "A2": "0b32a7fc74fc288231de8cc4dc4c3a015ed098f76353db6fb8461bc66e7c4278"
+    }
+   }
+  },
+  {
+   "round": "gap-ice-r5",
+   "at": "2026-10-27T19:56:50",
+   "fail": 1,
+   "warn": 0,
+   "warnByCode": {},
+   "polish": [],
+   "hashes": {
+    "gap.ice_rock": {
+     "A1": "15410e96893da1b282e1c82faf5b4856a6e66230d72e04ff7e4b174e03b4ce34",
+     "A2": "dcfdebf59b887a48dcd1730ae43fcc3b2a13c1c25554a732a56d5741338b0ecb"
+    }
+   }
+  },
+  {
+   "round": "gap-ice-r5",
+   "at": "2026-10-27T19:57:29",
+   "fail": 0,
+   "warn": 0,
+   "warnByCode": {},
+   "polish": [],
+   "hashes": {
+    "gap.ice_rock": {
+     "A1": "1b33ffeb92571ee3d50024aa7209a155cb123740287fd5b4c3e7063cab8857a8",
+     "A2": "dcfdebf59b887a48dcd1730ae43fcc3b2a13c1c25554a732a56d5741338b0ecb"
     }
    }
   }

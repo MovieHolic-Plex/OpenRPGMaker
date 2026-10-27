@@ -1,0 +1,399 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e29892650926cacacd8b62a972d8d389028847a9aebd334cc4fb8f8ad8b53fe8",
+ "width": 160,
+ "height": 48,
+ "kind": "terrain",
+ "name": "gap.ice_rock r5 A1",
+ "label": "dungeon/gap.ice_rock.r5.A1",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 8,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "dungeon",
+   "fallback": true,
+   "reason": "칩셋 dungeon 의 화풍 기준 묶음이 없다",
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 10,
+  "tileColorsP90": 12,
+  "darkV5": 43,
+  "nearBlackEdge": 0.06,
+  "opaqueTiles": 23
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "grey top rim band over the ice and rock wall panel (right side)",
+      "rows": "0-1",
+      "evidence": "none",
+      "front_edge_line_row": 2,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "blue ice sheet with hanging icicles, drawn as a vertical wall face",
+      "rows": "3-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark rock wall face with ice flecks",
+      "rows": "14-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left rock autotile tiles with a pale snow rim at the tile top edges",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "This is a terrain autotile sheet showing an ice-covered rock wall seen face-on. The right panel has a 2-row grey rim at rows 0-1 and a dark line at row 2. Below that are ice and icicles (rows 3-13) over dark rock (rows 14-31), all drawn as a vertical face. No horizontal top plane, ellipse, or roof is visible, only a rim. The left tiles are mottled dark rock with ice flecks and thin pale snow edge lines at rows 1, 16 and 20 in the x=40 column. They have no top surface either, so the main body reads as front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is an ice-rock ground patch: dark blue-grey rock grain with pale ice crystal shards, plus an icicle fringe strip. It shows about 9 visible tones per tile, against 3 for the grass reference and 7 for the paving reference. Near-flat coverage is 1%, so there are no large flat fills. Only 3% of dark edge pixels are neutral, so the dark pixels lean blue-slate, matching the adjacent ice and rock rather than a black sticker outline. The ramp runs from deep rock through mid slate and light blue to near-white highlights, about 5 steps. Crystals are placed individually and the speckle varies from tile to tile, so it reads as at least as rich as the references. The hue is its own locked palette and is not judged.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15968
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ice sheet / stalactite band at top of right tile",
+      "rows": "3-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark rock wall face with ice flecks (left and middle tiles, right tile lower part)",
+      "rows": "16-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 16,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "This is a terrain autotile sheet, not a standing object. The silhouette widths are 160 for rows 0-15, 144 for rows 16-31 and 64 for rows 32-47. The left and middle tiles are flat rock texture with ice flecks and a light snow edge on some borders. The right tile is a front-on wall face (rows 16-31, dark rock) under an ice sheet with hanging stalactites (rows 3-15). Column x=80 shows ice blue in rows 3-12 and dark rock from row 13. No horizontal top surface with a front-edge line or ellipse is drawn, so there is no 3/4 top plane. The tiles are meant to be repeated, so the judge should treat them as a texture or wall face rather than a volume."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is an ice-rock ground patch with about 5 lightness steps on the rock and ice ramps: deep navy, dark blue-grey, mid slate, pale ice and white highlight. It has speckled crystal glints, scattered shard clusters and a dripping icicle band at the top. Measured visible tones per tile are 9, above grass at 3 and paving at 7. Near-flat coverage is 1%, against 0% for both references, so there are no flat fills. Only 3% of dark edge pixels are near-neutral, so the darks lean blue and the outline is a tinted dark material tone, not a black sticker line. The paving reference's 80% neutral share does not apply to the candidate. Grain and shading craft are at least equal to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 12818
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "rock/ice wall face with stalactite ice fringe",
+      "rows": "2-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "top rim strip",
+      "rows": "0-1",
+      "evidence": "none",
+      "front_edge_line_row": 2,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left rock tiles (speckled dark stone with ice glints)",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "This is a terrain tile set of a cliff or wall face. The left tiles are a speckled dark-stone texture with ice glints and a light frosted edge. The right block has a 2-row grey band at rows 0-1 and a dark line at row 2. Below that, ice and stalactites hang over a dark rock face down to row 31, with a darker base. The grey band is only a thin rim and has no ellipse, no roof plane, and no front-edge line with eave shadow. The rest is a vertical face, so the piece reads as a front-elevation wall face with no real horizontal top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is an icy rock ground with a dark blue-slate base, crystalline light-blue and white shard clusters and an icicle strip. It shows about 5 lightness steps from deep navy through slate and ice blue to white highlights. Edges and shadows lean blue and are not neutral black, which matches the 3% near-neutral dark edge share. Texture is dense, with speckled shards, per-crystal highlights and varied rubble, and 1% near-flat coverage means there are no flat fills. At 9 visible tones per tile it is above the grass reference (3) and the paving reference (7). Structure and shading craft would sit acceptably beside the Beodeul references, so it passes.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14184
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top border strip of the ice-wall tile",
+      "rows": "0-2",
+      "evidence": "none",
+      "front_edge_line_row": 2,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ice curtain with hanging icicles (vertical wall face)",
+      "rows": "3-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark rock base of the wall face",
+      "rows": "16-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "rocky ground/wall texture tiles at left (flat fill)",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "This is a terrain autotile sheet, not a standing object. The left tiles are flat rock texture. The right block is a wall face: a 1-2 row grey border at rows 0-2, then a blue ice curtain with icicles (rows 3-15) over dark rock (rows 16-31). It has no horizontal top surface, no ellipse and no eave line. Rows 32-47 are a narrower 64px strip of the rock texture. Widths are 160, then 144, then 64. It reads as a vertical wall or texture tile set rather than a 3/4 object."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate's ice-rock ground carries about 9 visible tones per 16x16 tile, above the grass reference (3) and the paving reference (7). Near-flat coverage is 1%, so there are no large flat fills. Its dark edge pixels are only 3% neutral, so the outline is a tinted dark blue-slate, matching the material rather than a black sticker line. The crystalline rock facets show about 5 lightness steps (pale highlight, light ice, mid blue, dark slate, deep). The icy strip at the right has varied icicle and crystal clusters with dark shading beneath. Texture is dense and varied, with speckled glints and per-chunk shading, comparable to the paving reference's per-stone shading. It would sit acceptably beside the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14754
+  }
+ ],
+ "decidedAt": "2026-10-27T10:59:52.732Z",
+ "cells": {
+  "16": [
+   "20f173793af45163",
+   "2255901deecb4e48",
+   "2e28aeaae06db85d",
+   "3119c75ce14e2bb6",
+   "328e18b13cbb2849",
+   "3a71b86e333a974b",
+   "45485f573b9cdf93",
+   "548ec563065dddb4",
+   "54a925714bc4f0c2",
+   "552ae475c4c661f9",
+   "6dcec8e781a0de43",
+   "7683b93086ea30d2",
+   "80a17d17dca699ce",
+   "848560713957878f",
+   "976843aff06111be",
+   "9ed7b623c7a89924",
+   "a6c9d960b84f48c2",
+   "b25a4ed8d6194944",
+   "bd2ba76bc9e309bd",
+   "df1b123f63c0b5a6",
+   "e3e62d05d8c6e3ca",
+   "e58606e92786bf12",
+   "f030aa7e35828e91"
+  ],
+  "24": [
+   "06ad60fbcb8e99ae",
+   "0becc97ae3ef5d4f",
+   "0d95fc4c11b927d4",
+   "1768123f608e78dd",
+   "179d233314ff4228",
+   "23987297076af3a7",
+   "2cbe14d3bcf86c00",
+   "2f52311db9e1466a",
+   "33a35d134da2eb95",
+   "3c98300ad1c6d23d",
+   "43e764b8c0f545eb",
+   "4424d686d898d653",
+   "55c23011d5b35d5d",
+   "589aa3b5451f2a98",
+   "5c64bf725fa30a6e",
+   "655eccac388d1e0c",
+   "65bc53f0ee4896c4",
+   "705b080dfbcb4e7f",
+   "70e640a77bfb4c3e",
+   "71811fc1a9817460",
+   "7cd3c9c524df699b",
+   "80f1846e1c1700f0",
+   "8a6fe0863e2bff80",
+   "8e7e89df2f344963",
+   "9091967a0ec2a231",
+   "9709375541fad7a4",
+   "a6884b35dec530f2",
+   "a96d64bbe4907bb9",
+   "aa0b79bb43871d3d",
+   "b13b0417ee3a948f",
+   "c36ad47fb43f2040",
+   "ca337e3743af6c9b",
+   "cf9f07b1ab3cab0f",
+   "d0e3df15872d6c3c",
+   "d752d9b78d874ada",
+   "dc4387b812ab7b65",
+   "e0d109726e8cf01c",
+   "e614b181b00398c4",
+   "eb94a695e13b87e6",
+   "ebc32dbeae4cd90d",
+   "f9dc8793333b0e67",
+   "feeb4980252f2922"
+  ],
+  "32": [
+   "02e4d66200a6dce5",
+   "141c0a0dcf8a2e9f",
+   "3bc220bf5bab6e3d",
+   "4ffceff5444aa1ac",
+   "5d62b5e9e3a25eea",
+   "67ed8be18e2c714b",
+   "78d36bcbd2291ae8",
+   "7bba57fa3110875f",
+   "8f92dd0fbf188f64",
+   "a4e499def399124d",
+   "b8acadaf6bcdb480",
+   "be449988ba62fe4c",
+   "c0da330770d97f3a",
+   "caeb8bb022766c21",
+   "e5f264ada37eeaa0",
+   "e780a03963a40886",
+   "f664bc0eff34f390"
+  ],
+  "48": [
+   "051e59832abbf128",
+   "0e31f7a9cd42baf1",
+   "2cd907fb3656f6da",
+   "301fb537c5b54a6f",
+   "74d390ba52c00043",
+   "814506835039143a",
+   "8698cd65edfe8d28",
+   "b1f3d207047892ed",
+   "c75c9fe2ebf828f2",
+   "ca0c6ff33765f62e",
+   "ca99d4fd1451978c",
+   "f29ccae8f09a0856"
+  ]
+ }
+}
