@@ -227,7 +227,6 @@ Work order (cheapest first): timeout → fake-DOM/env gaps → combined_town / o
   - [ ] `test/transparentTileLayerRouting.test.ts`
   - [ ] `test/treePlacementNamespaces.test.ts`
 - **4** — `AssertionError: expected N to be +N // Object.is equality`
-  - [ ] `test/harnesses/joseonBaram.test.ts`
   - [ ] `test/regionTaskClip.test.ts`
   - [ ] `test/reliefUx2Contracts.test.ts`
   - [ ] `test/terrainEvolution.test.ts`

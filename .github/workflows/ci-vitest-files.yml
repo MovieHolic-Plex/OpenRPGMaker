@@ -44,6 +44,10 @@ jobs:
       - name: bun 설치
         run: npm install -g bun@1.4.2 && bun --version
 
+      # ci-full 과 같다 — joseonBaram 하네스 테스트의 python 관문 스크립트가 numpy·Pillow 를 쓴다.
+      - name: python 의존성 (numpy·Pillow)
+        run: python3 -m pip install --user --break-system-packages numpy==2.4.4 pillow==12.1.1 && python3 -c "import numpy, PIL; print(numpy.__version__, PIL.__version__)"
+
       - run: npm ci
 
       - name: vitest (지정 파일만)
