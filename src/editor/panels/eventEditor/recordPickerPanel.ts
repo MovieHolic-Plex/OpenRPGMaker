@@ -17,6 +17,7 @@ import { ordinalLabel } from "@/editor/panels/databaseDisplay";
 import { editorState } from "@/editor/editorState";
 import { store } from "@/project/store";
 import { clearChildren, el } from "@/util/dom";
+import { josa, withJosa } from "@/util/josa";
 import { openEventSubdialog } from "./subdialog";
 import {
   canCreateRecord,
@@ -224,8 +225,10 @@ function renderList(
   clearChildren(hosts.list);
 
   const kindLabel = recordKindLabel(request.kind);
+  // 「스위치·변수」는 받침이 없고 「아이템·주인공」은 있다. 「가」로 고정하면 「아이템가」가 된다.
+  const kindWithJosa = withJosa(kindLabel, "이/가");
   if (records.length === 0) {
-    hosts.summary.textContent = `${kindLabel}가 아직 없습니다.`;
+    hosts.summary.textContent = `${kindWithJosa} 아직 없습니다.`;
   } else if (state.query.trim()) {
     hosts.summary.textContent = `일치 ${matches.length} / 전체 ${records.length}`;
   } else {
@@ -233,11 +236,12 @@ function renderList(
   }
 
   if (matches.length === 0) {
+    const query = state.query.trim();
     hosts.list.append(
       el("div", {
         class: "empty-hint",
-        text: state.query.trim()
-          ? `"${state.query.trim()}" 와 일치하는 ${kindLabel}가 없습니다.`
+        text: query
+          ? `"${query}" ${josa(query, "와/과")} 일치하는 ${kindWithJosa} 없습니다.`
           : `${kindLabel} 목록이 비어 있습니다.`,
         dataset: { testid: "event-record-picker-no-result" },
       }),

@@ -277,4 +277,15 @@ describe("shipped catalogs", () => {
     }
     expect(japanese.translate(regionIds)).toContain("リージョン");
   });
+
+  it("keeps item and actor picker empty copy translated after the batchim particle", () => {
+    const english = createTranslator(en);
+    expect(english.translate("아이템이 아직 없습니다.")).toBe("Item not yet available.");
+    expect(english.translate("주인공이 아직 없습니다.")).toBe("Actor not yet available.");
+    expect(english.translate("스위치가 아직 없습니다.")).toBe("Switch not yet available.");
+    expect(english.translate('"없는물건" 과 일치하는 아이템이 없습니다.')).toBe('No Item matches "없는물건".');
+    expect(english.translate('"가나" 와 일치하는 스위치가 없습니다.')).toBe('No Switch matches "가나".');
+    expect(createTranslator(ja).translate("아이템이 아직 없습니다.")).toBe("アイテム がまだありません。");
+    expect(createTranslator(zh).translate("주인공이 아직 없습니다.")).toBe("还没有 角色。");
+  });
 });
