@@ -22,6 +22,8 @@ export { showConfirm };
 import { store } from "@/project/store";
 import { hasExtraLayers, layerTileAt, shadowAt } from "@/project/mapLayers";
 import type { GameMap, Project } from "@/project/types";
+import { editorIntlLocale, type SupportedLocale } from "@/i18n/locale";
+import { getLocale } from "@/i18n";
 import { el } from "@/util/dom";
 import {
   mapIdCreatedByCall,
@@ -361,9 +363,9 @@ export function aiDayKey(date: Date): string {
   return `${y}-${m}-${d}`;
 }
 
-export function formatAiDayLabel(date: Date): string {
+export function formatAiDayLabel(date: Date, locale: SupportedLocale = getLocale()): string {
   try {
-    return date.toLocaleDateString("ko-KR", {
+    return date.toLocaleDateString(editorIntlLocale(locale), {
       year: "numeric",
       month: "long",
       day: "numeric",

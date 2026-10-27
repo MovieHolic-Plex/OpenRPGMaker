@@ -5,6 +5,560 @@
 
 <!-- releases -->
 
+## 0.356.0 — 2026-10-27
+
+### 기능
+
+- **dialogue** — quest/ending lines in the dialogue index; list_dialogue finds lines outside the open map; fix desktop build (#3868) (`5300f35`)
+
+## 0.355.2 — 2026-10-27
+
+### 기타
+
+- Dungeon themes: otherworld slab floor on a new sheet-end tail (#3866) (`2e94009`)
+
+## 0.355.1 — 2026-10-27
+
+### 수정
+
+- **player** — phone landscape menus draw like PC, with wider invisible tap areas (#3861) (`0880dc5`)
+
+### 기타
+
+- Fallen act 2: independent playthrough judge (interactive QA) + fixes it found (#3864) (`376fc54`)
+- Dungeon themes: ice-cave wall redraw (gap-ice-r5) and portcullis lint fix (#3863) (`437c7af`)
+
+## 0.355.0 — 2026-10-27
+
+### 기능
+
+- **beodeul-capital** — ship Astel capital art pieces (canal redrawn) into beodeul_city (#3860) (`d34ba46`)
+
+## 0.354.0 — 2026-10-27
+
+### 기능
+
+- **fallen** — act 2 gap fixes, harder detection, 1.24 release stop at the sky tower (#3858) (`954280b`)
+
+## 0.353.2 — 2026-10-27
+
+### 수정
+
+- **ci** — repair type errors left by the conflict-union merge (#3856) (`db4214b`)
+- **i18n** — call furniture push directions a push, not a pan (#3800) (`b148009`)
+- **player** — restore the screen tint when a flash ends (#3773) (`2148eb7`)
+- **editor** — keep the loop inspector out of the command-column layout (#3691) (`5274060`)
+- **editor** — keep event cut and delete to one undo step (#3731) (`c68c4cf`)
+- **battle** — retarget a downed single target to the next living battler (#3749) (`9f2c52a`)
+- **desktop** — refuse a non-empty folder for File → New Project (#3771) (`efa6a48`)
+- **export** — start the Linux and macOS desktop launchers (#3772) (`d7e5f70`)
+- **editor** — keep event condition labels on one line (#3782) (`f9cf5f7`)
+- **player** — read physical keys in the shop while an IME is active (#3785) (`8195b29`)
+- **input** — resume a tilted gamepad stick after the window returns (#3786) (`fc278a5`)
+- **player** — 전투 준비가 그림을 데우되 무대는 즉시 떼고, 계약을 전송 바이트로 판정 (#3787) (`a552cf2`)
+- **opening** — keep a camera pan from jumping by half the stage (#3791) (`3d98b2c`)
+- **battle** — read physical keys while an IME is active (#3798) (`4c5a5d4`)
+- **editor** — keep the map list filter caret while typing (#3799) (`37a4d4f`)
+- **editor** — match Korean particles in the record picker empty state (#3804) (`d744e22`)
+- **desktop** — save the open project before View → Reload (#3805) (`410e985`)
+- **audio** — play a 0.6 sound cue at 60% and show that level in the editor (#3814) (`3298875`)
+- **editor** — keep weekday toggles on a condition branch (#3816) (`64e95fe`)
+- **player** — show level and save time on each in-game save slot (#3825) (`b31f925`)
+- **editor** — keep upper-layer fill on the same ground (#3829) (`ae67414`)
+- **desktop** — keep fullscreen test play below the window buttons (#3833) (`d3643ea`)
+- **player** — step in place when an event's animation type says it should (#3834) (`526c210`)
+- **player** — move the dialogue choice cursor with WASD (#3840) (`89d132f`)
+- **player** — resolve name codes in the dialogue name box (#3853) (`411595d`)
+- **player** — fade Hide Screen and Show Screen instead of cutting to black (#3831) (`e739289`)
+- **editor** — 자료집 게임 타이틀을 고치면 프로젝트 이름도 따라간다 (#3848) (`913a167`)
+- **audio** — stop title and system previews when their section hides (#3847) (`4d9036a`)
+- **editor** — keep a long event list in place when you pick one (#3845) (`492077a`)
+- **player** — leave the skill list on the first cancel (#3844) (`5e47bbf`)
+- **editor** — keep a transfer's fade and door with the destination (#3843) (`d63988e`)
+- **editor** — show letterbox bars in the screen-effect preview (#3842) (`14937f0`)
+- **player** — inn window uses the database money, HP, and MP terms (#3841) (`0b9a6e6`)
+- **ai** — keep the undo shortcut in the apply notice (#3839) (`82ed62e`)
+- **battle** — 승리 화면이 자료집의 화폐 이름을 쓴다 (#3836) (`8d7302b`)
+- **editor** — Delete clears the selected map region (#3832) (`f4aceb6`)
+- **i18n** — name the new map's parent and height, not a tile layer (#3830) (`574a84e`)
+- **editor** — import the files inside a dropped resource folder (#3828) (`95b96e1`)
+- **player** — show an authored title subtitle without a logo style (#3827) (`2754bc5`)
+- **export** — keep the build status until the export finishes (#3826) (`2af2eed`)
+- **battle** — tell the player when this fight forbids escape (#3824) (`caee46d`)
+- **editor** — keep IME confirm from running a command-palette item (#3823) (`569f6dc`)
+- **database** — 자료집 드롭다운이 영어 코드 대신 한국어로 보이게 한다 (#3821) (`fec8ae5`)
+- **player** — slide around a person on the corner of a diagonal step (#3820) (`5c92a2a`)
+- **player** — 에메랄드 상점 판매 목록에 매각 단가를 표시 (#3819) (`4ab760b`)
+- **editor** — show the message preview at the line's window position (#3818) (`982b5de`)
+- **ai** — say the real apply mode on the assistant settings button (#3815) (`201cca1`)
+- **opening** — draw title-card text at the size the creator set (#3813) (`3da2431`)
+- **player** — scroll the dialogue history with the mouse wheel (#3812) (`3d96c3a`)
+- **player** — cancel save overwrite confirmation when the cursor leaves that slot (#3808) (`f5e5d36`)
+- **player** — scroll title credits with the keyboard (#3806) (`0a5b2de`)
+- **editor** — let a picture fade wait before the next cutscene line (#3803) (`b8d6033`)
+- **editor** — point the in-app guide at the current top bar (#3802) (`da1223d`)
+- **export** — web platform card downloads the web player zip (#3801) (`a928299`)
+- **player** — keep closing punctuation with the last message character (#3797) (`4524b70`)
+- **editor** — keep skill combat fields the database form writes (#3793) (`50bc2e5`)
+- **editor** — keep cliff height when copying a map region (#3792) (`73c87c6`)
+- **audio** — stop event-command preview when the form closes (#3790) (`b36c08b`)
+- **battle** — count each event loop's iteration budget separately (#3788) (`c785038`)
+- **ai** — keep a single verification check object on work plans (#3784) (`8a193b2`)
+- **battle** — status cures no longer say the effect failed (#3778) (`87e0ecd`)
+- **i18n** — say 확인 and 1 digit on number input (#3777) (`ef93e0e`)
+- **player** — show the autosave on the in-game load menu (#3776) (`0b08192`)
+- **editor** — let map settings resize up to the 1024 tile limit (#3775) (`8939f92`)
+- **player** — name the number input and speak each digit (#3769) (`e79ea17`)
+- **player** — show the battle MP cost on the skill menu (#3768) (`f8b58d8`)
+- **editor** — preserve timer comparison operators in event conditions (#3764) (`a80dadc`)
+- **player** — keep picture scale, opacity, and rotation across Move Picture (#3762) (`ea08f24`)
+- **project** — keep a state's lost equipment slot and battle aura across save (#3760) (`586ef3e`)
+- **audio** — keep memorized BGM volume and fade-in (#3759) (`0530584`)
+- **player** — keep the battle-exit cover up until game over is opaque (#3758) (`0952523`)
+- **editor** — keep the database search caret through an IME composition (#3756) (`19c0e0b`)
+- **player** — move dialogue choices with W and S (#3755) (`1e5e3ff`)
+- **ai** — accept boolean strings for build-spec confirmDestroy (#3754) (`29bc2be`)
+- **player** — resume countdown timers when a save boots a new scene (#3750) (`f3f4c7b`)
+- **desktop** — save the open project before the file menu switches folders (#3748) (`a49b43b`)
+- **editor** — fill a connected autotile as one material (#3747) (`d9743ae`)
+- **editor** — name the wide change viewer and keep Tab inside it (#3746) (`ce9a344`)
+- **i18n** — say 1 event and 1 door on map rows (#3745) (`055bf0c`)
+- **export** — keep non-ASCII cover paths on the loading screen (#3744) (`97783a3`)
+- **player** — keep a screen tint tween running across refreshes (#3743) (`788d0cb`)
+- **editor** — keep map inspector primary labels readable (#3742) (`dcdb5cb`)
+- **player** — show uploaded faces in the message window (#3737) (`822fa05`)
+- **player** — retry a blocked move step when the route is not skippable (#3736) (`5e84c1e`)
+- **project** — keep an explicit terrain raft ban across save (#3734) (`9dd6484`)
+- **player** — cap shop quantity at the gold and bag limits (#3733) (`1b8a4f0`)
+- **ai** — keep string successTools and mapTargets on work plans (#3732) (`35ce209`)
+- **audio** — play the map BGM fade-in the author set (#3729) (`3c6ceb6`)
+- **editor** — let database numbers keep a leading minus while typing (#3728) (`542840b`)
+- **project** — keep equipment stat penalties across project save (#3727) (`0b13578`)
+- **editor** — keep the map filter caret while typing (#3724) (`44546bb`)
+- **player** — name the gift and present-item dialogs (#3723) (`9165220`)
+- **battle** — tick gen1 poison and burn after field actions (#3722) (`52a74f8`)
+- **battle** — read physical keys while an IME is composing (#3721) (`bbf9f46`)
+- **editor** — refuse an event paste whose body leaves the map (#3720) (`8081b62`)
+
+### 성능
+
+- **player** — skip unchanged field HUD layout writes (#3757) (`8868a40`)
+- **player** — reuse life-calendar HUD lines between frames (#3789) (`17595fc`)
+
+### 문서
+
+- **openwiki** — point the studio entry at the living shell (#3717) (`4009227`)
+- **openwiki** — #3718 의 문서 3건이 밀어낸 인덱스를 재생성한다 (#3809) (`7b1c0ee`)
+- **openwiki** — describe autotile shaping in the Korean getting-started guide (#3766) (`2fee7f6`)
+- **openwiki** — point the delayed tooltip sheet at the map layer (#3741) (`230abbf`)
+
+## 0.353.1 — 2026-10-27
+
+### 수정
+
+- **input** — read a diagonal gamepad stick inside the square dead zone (#3730) (`f4940dd`)
+- **ci** — slice-4 decisions — enemy/species transparent, Pi outcome keeps response-final/blocked, layer-1 paint keeps layer 2 (#3846) (`c094d63`)
+- **css** — route every font stack through the role tokens (#3761) (`70cd648`)
+
+### 테스트
+
+- **ci** — slice-5 drift fixes — 60 files green, 5 product fixes (#3822) (`cb32080`)
+
+## 0.353.0 — 2026-10-27
+
+### 기능
+
+- **ai** — objective says where, drawn entrances work, no repeated day dialogue (J98, J101-J106) (#3795) (`7a85bb6`)
+
+### 수정
+
+- **export** — escape game titles in the Steam launcher and VDF (#3719) (`1f665b1`)
+- **desktop** — demo music plays — embed demo BGM in baked demos, fetch other catalog tracks on demand (#3796) (`4cd15e1`)
+
+### 성능
+
+- **editor** — restore only map-used bundled tilesets on load; route tileset_blobs readers through deserialize (#3810) (`34cbea8`)
+
+### 테스트
+
+- **ci** — fix drift slice 0 — 51 vitest files green, 7 re-tagged timeout (#3765) (`a901a08`)
+- **persistence** — follow #3774 bundled-tileset diffs — electron may import bundledTilesetDiff; restore the patched tileset before checking its reference documents (#3811) (`8da9778`)
+- **ci** — slice-4 drift fixes — 62 files green, 4 product fixes (#3807) (`923287d`)
+
+## 0.352.0 — 2026-10-27
+
+### 기능
+
+- **workshop** — 사진으로 만들기 — 그림을 그려 후보를 고르고, 어떻게 그렸는지 알린다 (#3449) (`c1544cc`)
+
+### 수정
+
+- **desktop** — open a project.sqlite file passed on the command line (#3718) (`1d1eb76`)
+- **player** — 전투 준비가 그림을 데우되 무대는 즉시 떼고, 계약을 warm URL 재사용으로 판정 (#3794) (`3c1abd8`)
+- **demos** — keep Fallen Star's grafted interior tiles on load; Scarloxy sample opens as a new project folder (#3779) (`cf0ddb2`)
+- **demos** — desktop app opens Fallen Star — bake demos into desktop packages; builder fallback BGM (#3752) (`3b56fcb`)
+- **qa** — scene runner fires a same-layer touch door on bump, like the runtime (#3740) (`66862f1`)
+
+### 성능
+
+- **project** — store bundled tilesets as diffs against the bundle (78MB → 4.4MB blank project) (#3774) (`3e6c80e`)
+
+### 문서
+
+- **openwiki** — 생성 인덱스를 현재 위키로 재생성 (깨진 줄 표가 낡아 ci-full 샤드 13이 섰다) (#3781) (`a3c38c9`)
+
+### 테스트
+
+- retire acceptance-ledger cases; aiChatPanelSettings follows the current UI (#3780) (`6ffbf5a`)
+- **ci** — drift slice 1 — 62 of 74 drift files green on CI (#3751) (`febc15c`)
+
+### CI
+
+- pinned numpy/Pillow for joseon-baram harness tests (#3770) (`84c7552`)
+- **fast** — openwiki 인덱스를 PR 레인에서 검사하고, 지금 낡은 인덱스를 재생성한다 (#3783) (`7ea941e`)
+
+## 0.351.6 — 2026-10-27
+
+### 수정
+
+- **i18n** — call a dragged map rectangle a range in Japanese (#3716) (`8f632f5`)
+
+### 테스트
+
+- drift slice 3 — 60 vitest files green on CI, 4 product fixes (#3739) (`952aadd`)
+- **ci** — fix timeout-tagged vitest files, slice to-00 (33/38 green) (#3725) (`8374a95`)
+
+### 잡무
+
+- **ci** — drop two files ci-full 40357882117 saw passing from the test baseline (633 → 631) (#3726) (`be5176b`)
+
+## 0.351.5 — 2026-10-27
+
+### 수정
+
+- **player** — 전투 준비가 그림까지 데운다 + main 의 winners 부채 갱신 (#3714) (`c2bd6a9`)
+
+## 0.351.4 — 2026-10-27
+
+### 수정
+
+- **bench** — battle-warmup 이 실제로 있는 데모 팩토리를 쓰게 한다 (#3712) (`890f6c9`)
+- **input** — read physical keys while an IME is composing (#3711) (`4e50b1c`)
+- **desktop** — open a project folder from macOS Open With (#3710) (`5d61bea`)
+- **battle** — block burn and freeze by the target's type (#3709) (`17c9ff4`)
+- **ai** — accept numeric strings for verification check indexes (#3707) (`e59d586`)
+- **editor** — keep a dragged event body on the grabbed cell (#3706) (`1ec06d8`)
+- **player** — name the gallery viewer and announce picture changes (#3705) (`ead83a5`)
+- **i18n** — format editor dates in the chosen language (#3704) (`73aa8f3`)
+- **editor** — use Korean confirm and cancel on database dialogs (#3703) (`5796453`)
+- **project** — keep escape grace steps across project save (#3702) (`9a667da`)
+
+### 성능
+
+- **player** — skip unchanged time-tint redraws (#3708) (`f3ec52b`)
+
+### 테스트
+
+- **player** — gamepad 반복 단언의 산술을 바로잡는다 (총 keydown ↔ ArrowDown 혼동) (#3698) (`d7bb216`)
+
+### CI
+
+- **surface** — m2-214-ui-command 에 objectiveChip 선택지가 늘어난 것을 스냅샷에 반영 (1건) (#3699) (`d42d08f`)
+
+### 잡무
+
+- **ci** — #3690 의 nameEntry.css 접근성 규칙이 밀어낸 winners 래칫을 현재 트리로 (#3701) (`102b78a`)
+- **ci** — 통과 확인된 두 파일을 테스트 기준선에서 제거 (635 → 633) (#3700) (`5072085`)
+
+## 0.351.3 — 2026-10-27
+
+### 수정
+
+- **export** — fail when an uploaded media file cannot be read (#3695) (`f609864`)
+- **ai** — accept numeric strings for plannedMap width and height (#3694) (`452cafe`)
+- **battle** — name the major status that blocked a status move (#3692) (`e5287c8`)
+- **player** — name the name-entry dialog and speak the grid character (#3690) (`20a13e3`)
+- **editor** — draw every copied layer in the paste preview (#3689) (`52359ac`)
+- **player** — keep absorb weakness notes across save and load (#3687) (`e1d55d8`)
+- **i18n** — describe region select as a drag release, not a placement (#3686) (`077d2b8`)
+
+### 문서
+
+- point getting-started at the live schema and CI-only tests (#3688) (`87a4008`)
+
+### 테스트
+
+- **ai** — verificationNativeScopes 의 두 it.each 에 자기 예산(60s)을 준다 (#3696) (`3fc8852`)
+
+## 0.351.2 — 2026-10-27
+
+### 수정
+
+- **ci** — 브라우저 축이 player QA 서버를 스스로 띄운다 (9944) (#3683) (`7387ceb`)
+
+### 잡무
+
+- **ci** — #3680 의 dialogue.css 선언이 밀어낸 winners 래칫을 현재 트리로 (#3684) (`994b3d1`)
+
+## 0.351.1 — 2026-10-27
+
+### 수정
+
+- **battle** — skip secondary status when a gen1 hit knocks the target out (#3680) (`5f36944`)
+- **player** — announce the choice question to assistive tech (#3679) (`ab496a4`)
+- **player** — repeat held gamepad and touch directions (#3678) (`abdb603`)
+- **desktop** — keep the close save running if the window is closed again (#3677) (`cd7ebff`)
+- **export** — drop new tileset study docs from the player bundle (#3676) (`dcd9eb2`)
+
+## 0.351.0 — 2026-10-27
+
+### 기능
+
+- **fallen** — act 2 B6–B9 (요새·새라, 서리 가도, 서리나루) — 1.23 stops at the 서리나루 inn (#3674) (`b6a4132`)
+- **ai** — new-player discoverability — objective line, visible story events, cutscene-aware auto-play (J90-J96) (#3669) (`847345b`)
+
+### 수정
+
+- **ai** — keep a valid people list when flat fields sit beside it (#3673) (`0418532`)
+- **i18n** — call reachability a passability preview, not traffic (#3672) (`4b2ed65`)
+- **player** — keep memorized BGM across save and load (#3671) (`a619df2`)
+- **editor** — find map events by their authored name (#3670) (`38b504a`)
+
+### 테스트
+
+- **player** — J88 이후 「돈 0G」 숨김 계약에 systemShell 기대를 맞추고 짝 검증 추가 (#3667) (`996ae33`)
+
+### CI
+
+- **surface** — #3546 「일지」 명령(m2-227-journal-line)이 바꾼 M2·포털 스냅샷 반영 (#3666) (`c77b356`)
+
+### 잡무
+
+- **ci** — 16샤드 실행이 통과 확인한 두 파일을 기준선에서 뺀다 (#3668) (`7f33dc8`)
+
+## 0.350.6 — 2026-10-27
+
+### 수정
+
+- **ci** — 주의 표시 색을 하드코딩 hex 대신 --warning 토큰으로, ai-side-threads 표면 소유 선언 (#3664) (`f7f96ba`)
+
+### 테스트
+
+- **ci** — timeout batch to-01 — explicit suite timeouts, unstick export/graft boots; 26 files leave the baseline (#3663) (`1b9d3ef`)
+
+### CI
+
+- prune stale baseline entries (ci-full 40318900099) + storeEventDraftPreserve budget (#3662) (`55b08ab`)
+
+## 0.350.5 — 2026-10-26
+
+### 수정
+
+- **test-dom** — env2 — fake-DOM/window gaps in 36 ci-full files; 27 files leave the gates baseline (#3661) (`2e22802`)
+- **ai** — no-battle defaults, visible stair exits, unlit darkness (J87, J88, J89) (#3660) (`fa82ce8`)
+- **test** — move 33 combined_town/EasyRPG tests onto retired sheets or current defaults; drop them from gates baseline (#3657) (`63b6298`)
+
+### CI
+
+- **full** — 16 vitest shards — shard 1 lost its runner at 8 shards (#3659) (`7aea117`)
+
+## 0.350.4 — 2026-10-26
+
+### 수정
+
+- **ai-v2** — move_object on hand-edited rooms; dress_room floor decor (#3654) (`499304b`)
+
+### CI
+
+- **fast** — run the CSS ratchet on every PR; fold #3628's attention colour into the review rule (#3655) (`6f407e6`)
+
+## 0.350.3 — 2026-10-26
+
+### 수정
+
+- **ai-v2** — dress_room verb for empty-room/bare-floor defects; scene test warns on unwalkable player cells (#3651) (`5367773`)
+
+### CI
+
+- rebuild gates baseline from 8-shard ci-full with tags; fix list in .omo/ci-fix-list.md (#3652) (`4c7b572`)
+
+## 0.350.2 — 2026-10-26
+
+### 수정
+
+- **ai** — spec NPC autobuild searches its graphic full name -> role noun; interior shell test checks real invariants (#3649) (`3a9f0ec`)
+- **opening** — map-view backgrounds render in previews and screen checks (#3647) (`d32f2f1`)
+
+## 0.350.1 — 2026-10-26
+
+### 수정
+
+- **stills** — offer only installed opening still pack pictures; clear export error (#3646) (`291b046`)
+- **test-dom** — close the window/ResizeObserver/fake-DOM gaps in editor panel tests (#3645) (`a6e86b4`)
+
+## 0.350.0 — 2026-10-26
+
+### 기능
+
+- **fallen** — act 2 B1–B5 — cell escape to burned Dawnwell; duplicate_map night variant, lift action trigger, event-linked forest route (#3643) (`84a31e9`)
+
+### 수정
+
+- **ai** — VQA status says why a shot failed to capture (#3642) (`089f9f1`)
+- **ai** — requested hiding spots must be visible to count (coverage check) (#3640) (`125b9ff`)
+- **ai** — VQA map shots carry game lighting (J79 rerun: defects stuck 2→2→2) (#3638) (`5783942`)
+
+### 테스트
+
+- move combined-town/interior cases onto retired sheets, retire run_*_room_pipeline cases, refresh outdated expectations (#3641) (`a500c7f`)
+
+## 0.349.1 — 2026-10-26
+
+### 수정
+
+- **ai** — CLI tool-list compaction walks schema positions only; a provider-error reply is a failed turn (J79b) (#3637) (`fbc625b`)
+- **player** — map-entry checkpoint retry keeps progress (J58) (#3636) (`a4bb679`)
+
+## 0.349.0 — 2026-10-26
+
+### 기능
+
+- **ai** — restore_event — restore a deleted/rewritten event exactly as before the request (toy-shop advisor t2) (#3633) (`69eae48`)
+- **store** — publish the Shitamachi demo to the play store (#3634) (`328544f`)
+
+### 수정
+
+- **ai** — requested-feature coverage blocker — chaser, darkness, hiding (J71/J73) (#3631) (`3f045b3`)
+- **ai** — local CLI context budget — compact tool list, one image per verb call, context-limit reply is a failed turn (J79) (#3630) (`58456d9`)
+
+## 0.348.1 — 2026-10-26
+
+### 수정
+
+- **handInterior** — train car exits through its drawn doors, not a wall gap (J45) (#3629) (`4b76a96`)
+- **ai** — open the side-thread tray when a run there waits for an answer (J72) (#3628) (`9e8a968`)
+- **ai/v2** — ship blocker for a title other than the requested one (J71/J73) (#3626) (`30995b0`)
+
+## 0.348.0 — 2026-10-26
+
+### 기능
+
+- **ai/v2** — flatten single-wrapper tool schemas (J67) (#3625) (`20175cf`)
+
+### 수정
+
+- **ai** — team image gates blame a text-only model, not a missing review (J69 follow-up) (#3624) (`1132afa`)
+- **ai** — image delivery statuses report not-delivered when the model can't take images (J69) (#3623) (`dbb6833`)
+- **ai/v2** — follow-up turns carry earlier requests; default place-name leak ship check (J70) (#3622) (`51e66a6`)
+
+## 0.347.2 — 2026-10-26
+
+### 수정
+
+- **handInterior** — keep subway platform full width and seat train-car north seats (J45) (#3620) (`302fa31`)
+
+## 0.347.1 — 2026-10-26
+
+### 수정
+
+- **ai/v2** — VQA fix turns start from a cleared context with a self-contained brief (J78) (#3618) (`1f5814a`)
+- **ai/v2** — ship-block unreachable critical events (J75); flag chasers slower than the player (J77) (#3617) (`563270d`)
+
+### 테스트
+
+- retire vitest cases that call assistant tools removed on purpose (#3616) (`caf77ef`)
+
+## 0.347.0 — 2026-10-26
+
+### 기능
+
+- **wasteland** — husk-b at 3.6x the hero and a calm asphalt road (#3615) (`0769690`)
+- **wasteland** — settlement and shanty maps stand large ruins and two-storey shacks in their rows (#3613) (`63c9257`)
+- **ai/v2** — VQA falls back across reviewers; same-family review is labelled (#3610) (`964ffa9`)
+- **battle** — add_battle_guest mid-battle guest joins; visible field enemies get factions and clash (#3557) (`dcc34bf`)
+- **wasteland** — scale objects up to Beodeul-measured heights (r64) (#3606) (`ed114f5`)
+
+### 수정
+
+- **ci** — re-ratchet css baselines — !important down 367→358, winners for #3542/#3546/#3558 (#3611) (`336456a`)
+- **ai** — flag a day counter running beside the time-system calendar (J18) (#3609) (`791a423`)
+- **ai** — break identical-refusal loops, not only arg-shape loops (J74) (#3608) (`aa9fed1`)
+
+### 테스트
+
+- **battle** — enemyBattleScale checks the pixel-sheet hit cell in retro2003 (#3614) (`11baee4`)
+
+### CI
+
+- **full** — 8 shards, 300-min jobs, reports always upload, cap flake retries (#3607) (`833802b`)
+
+## 0.346.13 — 2026-10-26
+
+### 수정
+
+- **player** — keep a freeze frame across save and load (#3604) (`affbcb0`)
+- **i18n** — call the lower layer ground, not a child item (#3603) (`e0f78a9`)
+
+## 0.346.12 — 2026-10-26
+
+### 수정
+
+- **player** — don't let a hidden M press stick the minimap off (#3601) (`5af28c2`)
+
+### 문서
+
+- **openwiki** — refresh the wiki census agents read first (#3600) (`cd8c1da`)
+
+## 0.346.11 — 2026-10-26
+
+### 수정
+
+- **export** — name the file when a web export check fails (#3597) (`399c97c`)
+
+## 0.346.10 — 2026-10-26
+
+### 수정
+
+- **desktop** — close the project store if the window closes while it is opening (#3595) (`bdac1a2`)
+- **player** — name the inn window and speak its cure and rest lines (#3594) (`ccf52c8`)
+
+## 0.346.9 — 2026-10-26
+
+### 수정
+
+- **battle** — announce residual knockouts on the upkeep hit (#3592) (`9ccbad8`)
+- **ai** — drop coordinate wrapper keys after copying them into tool arguments (#3591) (`08b3fe3`)
+
+## 0.346.8 — 2026-10-26
+
+### 수정
+
+- **player** — keep message-window settings across save and load (#3589) (`aa674c7`)
+- **editor** — jump to difficulty and item-used page conditions (#3588) (`168b066`)
+
+## 0.346.7 — 2026-10-26
+
+### 수정
+
+- **player** — release held keys when a gamepad disconnects (#3586) (`20cd0dc`)
+- **i18n** — call the ground layer 地上 in Japanese, not battle (#3585) (`e562220`)
+
+## 0.346.6 — 2026-10-26
+
+### 수정
+
+- **export** — stop a player-bundle </script> from splitting standalone HTML (#3583) (`68be1d9`)
+
+### 문서
+
+- **openwiki** — don't list Korean question marks as broken text (#3582) (`b1260b7`)
+
+## 0.346.5 — 2026-10-26
+
+### 수정
+
+- **desktop** — attach folder dialogs to the editor window (#3579) (`4479f19`)
+
 ## 0.346.4 — 2026-10-26
 
 ### 수정

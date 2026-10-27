@@ -303,7 +303,9 @@ describe("할 일 목록 표면 (작업 계획 체크리스트)", () => {
     expect(findByTestId(panel, "ai-run-stop")?.textContent).toBe("중지");
     expect(findByTestId(panel, "ai-run-progress")).not.toBeNull();
     expect(findByTestId(panel, "ai-run-details-toggle")?.textContent).toContain("자세히");
-    expect(findByTestId(panel, "ai-run-whisper")?.textContent).not.toContain("예산");
+    // 한눈 줄(예전 .ai-run-whisper, 지금은 ai-run-status 한 줄)에는 예산이 없고 예산은 「자세히」 안에만 있다.
+    // whisper 노드는 렌더러(aiChatRenderers.renderWorkPlanChecklist)에서 빠졌다 — CSS 주석만 남았다.
+    expect(findByTestId(panel, "ai-run-status")?.textContent).not.toContain("예산");
     expect(findByTestId(panel, "ai-run-details")?.contains(findByTestId(panel, "ai-autonomous-budget"))).toBe(true);
     expect(findByTestId(panel, "ai-work-item-activity")?.textContent).toBe("진행 중…");
     expect(checklist?.dataset.active).toBe("true");

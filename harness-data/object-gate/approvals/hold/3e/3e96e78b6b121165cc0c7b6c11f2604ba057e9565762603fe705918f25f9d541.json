@@ -1,0 +1,16 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "3e96e78b6b121165cc0c7b6c11f2604ba057e9565762603fe705918f25f9d541",
+ "profileHash": "4d8774b517f41638",
+ "kind": "structure",
+ "decision": "allow",
+ "decidedBy": "supervisor (village-art)",
+ "decidedAt": "2026-10-26T06:48:29.323Z",
+ "by": "delegated",
+ "delegatedBy": "user",
+ "evidence": "tiledata/wasteland-ruins/_review/r65/huskb-asph/verdict-S.md",
+ "via": "review-page",
+ "reasons": [],
+ "note": "r65 husk-b",
+ "sig": "976c0276b80ce997d65051a630b22d154bd111e70caec29f4e16cace06475a6e"
+}

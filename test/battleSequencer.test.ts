@@ -2,6 +2,7 @@ import { describe, expect, it, vi, beforeEach, afterEach } from "vitest";
 import { createBattleRuntime } from "@/battle/runtime";
 import * as advanceModule from "@/battle/battleRuntimeAdvance";
 import { deserialize } from "@/project/io";
+import { store } from "@/project/store";
 import {
   createBattleSequencer,
   BATTLE_ACTING_MS,
@@ -316,7 +317,16 @@ describe("battle sequencer", () => {
       () => undefined
     );
 
-    sequencer.startIntro(runtime.snapshot());
+    // 게이지 충전 안내는 포켓몬 스킨에서만 말한다 — 측면 도트 전투는 게이지 동안 윗창이 빈다(#3063).
+    const previous = store.getCurrent();
+    const pokemon = deserialize(JSON.stringify(battleFixture));
+    pokemon.system.battleUiStyle = "pokemon";
+    store.replace(pokemon);
+    try {
+      sequencer.startIntro(runtime.snapshot());
+    } finally {
+      store.replace(previous);
+    }
     // 인트로는 "○○이(가) 나타났다!" 배너 → 커맨드 프롬프트("무엇을 할까?") 순으로 흐른다.
     expect(introLines[0]).toContain("나타났다");
     expect(introLines.at(-1)).toMatch(/무엇을 할까|게이지/);
@@ -367,7 +377,119 @@ describe("battle sequencer", () => {
     expect(lines.at(-1)).toContain("후퇴");
     expect(queue).toHaveLength(0);
   });
+
+  it("announces a sandstorm knockout after the residual line, not on the earlier hit", () => {
+    const runtime = createBattleRuntime({
+      project: deserialize(JSON.stringify(battleFixture)),
+      troopId: "troop_slime",
+      canEscape: true,
+      canLose: true,
+      battleFlow: "strict",
+      rng: () => 0.5,
+    });
+    const before = runtime.snapshot();
+    const enemy = before.enemies[0];
+    expect(before.activeActorId).toBeTruthy();
+    expect(enemy).toBeTruthy();
+    const sequence = (before.timeline.at(-1)?.sequence ?? 0) + 1;
+    const after = {
+      ...before,
+      enemies: before.enemies.map((entry) => entry.id === enemy!.id ? { ...entry, hp: 0, defeated: true } : entry),
+      timeline: [
+        ...before.timeline,
+        {
+          sequence,
+          kind: "damage" as const,
+          side: "actor" as const,
+          userRecordId: before.activeActorId,
+          targetId: enemy!.id,
+          hit: true,
+          amount: 4,
+          actionId: 1,
+        },
+        {
+          sequence: sequence + 1,
+          kind: "stateUpkeep" as const,
+          side: "enemy" as const,
+          targetId: enemy!.id,
+          amount: 2,
+          message: "모래바람",
+          weatherKind: "sandstorm" as const,
+          actionId: 2,
+        },
+      ],
+    };
+    const lines = playDirectorLines(runtime, { kind: "attack", targetEnemyId: enemy!.id }, before, after);
+    const weatherAt = lines.findIndex((line) => line.includes("모래바람"));
+    const faintAt = lines.findIndex((line) => line.includes("쓰러뜨렸"));
+    expect(weatherAt).toBeGreaterThanOrEqual(0);
+    expect(faintAt).toBeGreaterThan(weatherAt);
+  });
+
+  it("does not stack a second faint line on a doom sentence that already says the battler fell", () => {
+    const runtime = createBattleRuntime({
+      project: deserialize(JSON.stringify(battleFixture)),
+      troopId: "troop_slime",
+      canEscape: true,
+      canLose: true,
+      battleFlow: "strict",
+      rng: () => 0.5,
+    });
+    const before = runtime.snapshot();
+    const actor = before.actors[0];
+    expect(before.activeActorId).toBe(actor?.recordId);
+    const sequence = (before.timeline.at(-1)?.sequence ?? 0) + 1;
+    const doom = `선고의 시간이 다했다 — ${actor!.name}이 쓰러졌다!`;
+    const after = {
+      ...before,
+      actors: before.actors.map((entry) => entry.id === actor!.id ? { ...entry, hp: 0, defeated: true } : entry),
+      timeline: [
+        ...before.timeline,
+        {
+          sequence,
+          kind: "stateUpkeep" as const,
+          side: "actor" as const,
+          userRecordId: actor!.recordId,
+          targetId: actor!.id,
+          amount: actor!.hp,
+          stateId: "state_doom",
+          message: doom,
+          actionId: 1,
+        },
+      ],
+    };
+    const lines = playDirectorLines(runtime, { kind: "attack", targetEnemyId: "enemy-1" }, before, after);
+    const faintLines = lines.filter((line) => line.includes("쓰러"));
+    expect(faintLines.length).toBeGreaterThan(0);
+    expect(faintLines.every((line) => line.includes("시간이 다했다"))).toBe(true);
+  });
 });
+
+function playDirectorLines(
+  runtime: ReturnType<typeof createBattleRuntime>,
+  command: Parameters<ReturnType<typeof createBattleSequencer>["runAfterActorCommand"]>[0],
+  before: ReturnType<typeof runtime.snapshot>,
+  after: ReturnType<typeof runtime.snapshot>,
+): string[] {
+  const lines: string[] = [];
+  const sequencer = createBattleSequencer(
+    runtime,
+    {
+      onDirectorState: (state) => lines.push(...state.lines),
+      onSyncView: () => undefined,
+      onDamageFeedback: () => undefined,
+      onResultStage: () => undefined,
+      onSequenceBusy: () => undefined,
+    },
+    (callback) => {
+      callback();
+      return lines.length + 1;
+    },
+    () => undefined,
+  );
+  sequencer.runAfterActorCommand(command, before, after);
+  return lines;
+}
 
 describe("tempoActionBeats (스킨 동작 템포)", () => {
   it("히트스톱 비트는 두고 나머지 비트만 템포로 줄인다", () => {

@@ -68,9 +68,15 @@ describe("reachability coordinate argument boundary", () => {
     });
   });
 
+  // 빈 targets 는 검사할 목표가 없어 증거가 될 수 없다 — check_reachability 가 invalid-args 로 거절한다(queryTools.ts targets.length === 0).
+  it("rejects an empty target list as an argument failure, not as reachable evidence", () => {
+    const result = runTool({ project: createBlankProject() }, "check_reachability", { ...validArgs, targets: [] });
+    expect(result.ok).toBe(false);
+    expect(result.issues?.[0]?.code).toBe("invalid-args");
+  });
+
   it.each([
     validArgs,
-    { ...validArgs, targets: [] },
     { mapId, from: { x: "10", y: "8" }, targets: [{ x: "11", y: "8" }] },
     { mapId, from: [{ x: 10, y: 8 }], targets: [[{ x: 11, y: 8 }]] },
     { mapId, from: '{"x":10,"y":8}', targets: '[{"x":11,"y":8}]' },

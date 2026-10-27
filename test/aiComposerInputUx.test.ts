@@ -47,7 +47,7 @@ beforeEach(() => {
   vi.stubEnv("VITE_LLM_API_KEY", "");
   store.replace(createBlankProject());
   editorState.set({ currentMapId: null, selection: null });
-  restoreDom = installFakeDom();
+  restoreDom = installFakeDom({ window: true });
   installFakeLocalStorage();
 });
 
@@ -99,6 +99,22 @@ describe("E1 전송 버튼은 보낼 게 있을 때만 준비된 상태", () => 
     const send = findByTestId(panel, "ai-send") as unknown as FakeElement;
 
     expect(send.getAttribute("title")).toBe("보낼 지시를 입력하세요");
+  });
+});
+
+describe("작업 설정 버튼은 적용 방식 목록과 같은 말을 한다", () => {
+  it("기본값은 큰 삭제 확인을 숨기지 않고, 자동 검수는 바로 반영이라고 말한다", () => {
+    const panel = renderPanel();
+    const button = findByTestId(panel, "ai-composer-settings") as unknown as FakeElement;
+    const select = findByTestId(panel, "ai-composer-apply-mode") as unknown as HTMLSelectElement;
+
+    expect(button.textContent).toBe("바로 반영 · 큰 삭제만 확인");
+    expect(button.getAttribute("aria-label")).toBe("작업 설정 · 바로 반영 · 큰 삭제만 확인");
+
+    select.value = "auto";
+    select.dispatchEvent(new Event("change"));
+    expect(button.textContent).toBe("바로 반영 · 자동 검수");
+    expect(button.getAttribute("aria-label")).toBe("작업 설정 · 바로 반영 · 자동 검수");
   });
 });
 

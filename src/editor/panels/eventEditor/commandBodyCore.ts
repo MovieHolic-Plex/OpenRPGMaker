@@ -15,7 +15,8 @@ import { setVariableBody } from "./commandBodyVariable";
 import { conditionForm, databasePicker, selfSwitchControl } from "./conditionForm";
 import { aiImageGenerateField } from "@/editor/panels/aiImageGenerateField";
 import { faceDisplayModeOf, renderFaceGallery, renderFacesetPreview } from "./facesetPreview";
-import { renderConditionEvalPreview } from "./conditionEvalPreview";
+import { conditionPreviewSentence, renderConditionEvalPreview } from "./conditionEvalPreview";
+import { idleTimerWarningMessage } from "./timerConditionText";
 import { renderCommandPreview } from "./commandPreview";
 import {
   BOOLEAN_OPTIONS,
@@ -428,8 +429,26 @@ function textBody(context: CommandEditContext, cmd: Extract<Command, { kind: "te
           class: "event-command-text-speaker-field",
           children: [
             el("span", { class: "event-command-text-body-label", text: "말하는 사람" }),
-            speaker,
+            el("div", {
+              class: "event-command-text-speaker-row",
+              children: [
+                speaker,
+                el("button", {
+                  class: "btn small",
+                  text: "주인공 이름",
+                  attrs: { type: "button", title: "이름표에 그 배우의 현재 이름을 넣습니다." },
+                  dataset: { testid: "event-command-text-speaker-actor-name" },
+                  on: {
+                    click: (event) => {
+                      event.preventDefault();
+                      fillSpeakerFromActor(speaker, apply);
+                    },
+                  },
+                }),
+              ],
+            }),
             el("small", { text: "비워 두면 이름표를 숨깁니다." }),
+            el("small", { text: "\\n[1]은 미리보기와 게임에서 그 배우의 현재 이름으로 바뀝니다." }),
           ],
         }),
         el("div", {
@@ -592,6 +611,20 @@ function textVariableSlot(id: string): number | undefined {
   const resolvedId = [`var_${String(index).padStart(4, "0")}`, String(index), `v${index}`]
     .find(candidate => variables[candidate] !== undefined);
   return resolvedId === id ? index : undefined;
+}
+
+function fillSpeakerFromActor(target: HTMLInputElement, commit: () => void): void {
+  openRecordPickerPanel({
+    kind: "actor",
+    currentId: "",
+    onSelect: (id) => {
+      const index = store.getCurrent().database.actors.findIndex((actor) => actor.id === id) + 1;
+      if (index <= 0) return;
+      target.value = `\\n[${index}]`;
+      commit();
+      target.focus();
+    },
+  });
 }
 
 function selectTextRecord(body: HTMLTextAreaElement, kind: "actor" | "variable", commit: () => void): void {
@@ -1218,6 +1251,9 @@ function forkBody(context: CommandEditContext, cmd: Extract<Command, { kind: "fo
       }),
       conditionForm(cmd.condition, (condition) => {
         context.actions.replaceCommand(context.path, { ...latestFork(), condition });
+        // 종류가 그대로면 폼은 유지된다. 체크한 요일과 아래 문장이 어긋나지 않게 문장만 고친다.
+        const summary = wrap.querySelector<HTMLElement>('[data-testid="event-condition-eval-summary"]');
+        if (summary) summary.textContent = conditionPreviewSentence(condition);
       }, context.path),
     ],
   });
@@ -1296,24 +1332,27 @@ function forkBody(context: CommandEditContext, cmd: Extract<Command, { kind: "fo
   return wrap;
 }
 /**
- * 타이머 조건의 항상-참 함정 인라인 경고. 런타임은 미기동 타이머를 0초로 읽어
- * `seconds >= 0` 조건이 설정 전부터 참이 된다(의도된 계약). 검증기는 warning을
- * 내지만 폼에서 안 보이므로, 조건을 고르는 자리에서 직접 말한다.
+ * 타이머 조건의 꺼짐=0초 함정 인라인 경고. 런타임은 미기동 타이머를 0초로 읽고
+ * 저장된 연산자(없으면 `<=`)로 비교한다. `>` 30 처럼 0이 거짓인 비교는 경고하지 않는다.
  */
 function renderForkTimerWarning(condition: Condition): HTMLElement | null {
-  const timers: { readonly timerId: string; readonly seconds: number }[] = [];
-  const collect = (entry: Condition): void => {
-    if (entry.kind === "timer") timers.push(entry);
-    else if (entry.kind === "all" || entry.kind === "any") entry.conditions.forEach(collect);
-    else if (entry.kind === "not") collect(entry.condition);
+  const messages: string[] = [];
+  // `not` flips the leaf, so an idle-true timer inside it is not an idle-true branch.
+  const collect = (entry: Condition, negated: boolean): void => {
+    if (entry.kind === "timer") {
+      if (negated) return;
+      const message = idleTimerWarningMessage(entry);
+      if (message) messages.push(message);
+      return;
+    }
+    if (entry.kind === "all" || entry.kind === "any") entry.conditions.forEach((child) => collect(child, negated));
+    else if (entry.kind === "not") collect(entry.condition, !negated);
   };
-  collect(condition);
-  const risky = timers.filter((entry) => entry.seconds >= 0);
-  if (risky.length === 0) return null;
-  const names = [...new Set(risky.map((entry) => entry.timerId === "timer2" ? "타이머 2" : "타이머 1"))].join("·");
+  collect(condition, false);
+  if (messages.length === 0) return null;
   return el("p", {
     class: "event-fork-timer-warning",
-    text: `${names} · 0초 이하 조건은 타이머가 꺼져 있어도 참입니다. 타이머를 켜는 명령 뒤에 두거나 임계값을 올리세요.`,
+    text: messages.join(" "),
     dataset: { testid: "event-fork-timer-warning" },
   });
 }

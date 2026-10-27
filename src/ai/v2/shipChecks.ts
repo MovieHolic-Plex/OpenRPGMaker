@@ -7,13 +7,27 @@
 import { createBlankProject } from "@/project/defaults";
 import type { Project } from "@/project/types";
 import { findOpeningStillMood } from "@/assets/openingStillMoods";
+import { unreachableCriticalEvents } from "./puzzleChecks";
+import { withoutIntentNote } from "@/ai/piAgent/monsterGameRequest";
+import { tileAt } from "@/project/collision";
+import { gameHasCombat } from "@/project/combatPresence";
+import { hiddenStairExits } from "@/project/stairs/fit";
+import { unlitDarkFinding } from "@/qa/gameCheck/visualVoid";
+import { romanceCompletionGaps } from "@/qa/gameCheck/romance";
+import { invisibleStoryEvents, objectiveGaps, offArtEntrances, doorCellBlocked, repeatedDayDialogue, lingeringHeavyTints } from "./discoverability";
+import { fieldMenu } from "@/project/fieldMenu";
+import { FACTORY_HERO_ARMS } from "./genreDefaults";
 
 type Obj = Record<string, unknown>;
 export interface ShipBlocker { readonly id: string; readonly message: string; readonly evidence: string }
 
 /** 게임 하나를 만들거나 완성하는 요청(작은 고치기 요청에는 출하 검사를 걸지 않는다). */
-export const WHOLE_GAME_WORDS = /(게임|game)[^.!?\n]{0,60}(만들|지어|짜\s*줘|완성|제작|build|make)|(만들|지어|완성)[^.!?\n]{0,20}(게임|game)|엔딩까지|처음부터 끝까지|whole game/iu;
-export function wantsWholeGame(task: string): boolean { return WHOLE_GAME_WORDS.test(task); }
+// 컨셉 카드 한 줄(「폐업 직전 태엽 장난감 가게, 밤마다 손님이 깨어난다 (회상 스토리)」)도 게임 하나를 만드는 요청이다 — 끝의 (장르) 괄호가 표지.
+// 2026-10-26 toy-j90: 이 한 줄이 출하 검사·화면 검수 없이 1턴을 끝냈다.
+export const WHOLE_GAME_WORDS = /(게임|game)[^.!?\n]{0,60}(만들|지어|짜\s*줘|완성|제작|build|make)|(만들|지어|완성)[^.!?\n]{0,20}(게임|game)|엔딩까지|처음부터 끝까지|whole game|\([^()\n]{0,24}(스토리|이야기|RPG|어드벤처|호러|공포|연애|로맨스|추리|미스터리|탐험|퍼즐|시뮬레이션|액션|비주얼\s*노벨|생존|육성|수집|게임)[^()\n]{0,12}\)\s*$/iu;
+/** 고치기 동사로 끝나는 짧은 요청(「버튼 효과 고쳐 (액션)」)은 괄호 장르가 붙어도 전체 게임 요청이 아니다. */
+const EDIT_REQUEST = /(고쳐|바꿔|옮겨|지워|없애|줄여|늘려|수정|변경)\s*(줘|주세요|라)?[^()\n]{0,4}\([^()\n]*\)\s*$/u;
+export function wantsWholeGame(task: string): boolean { return WHOLE_GAME_WORDS.test(task) && !(EDIT_REQUEST.test(task) && !/(게임|game)[^.!?\n]{0,60}(만들|지어|완성|제작)|엔딩까지|처음부터 끝까지/iu.test(task)); }
 
 let factoryCache: Project | undefined;
 function factory(): Project {
@@ -24,7 +38,7 @@ function factory(): Project {
 /** 편집기 기본값 목록(LEDGER 의 목록과 같은 순서). 검사·문서가 같은 이름을 쓴다. */
 export const EDITOR_DEFAULT_INVENTORY = [
   "title-name", "title-image", "opening", "opening-music", "hud", "window-look", "map-bgm", "battle-bgm", "battle-background",
-  "game-over", "ending-screen", "party-names", "party-faces", "hero-look", "placeholder-text",
+  "game-over", "ending-screen", "party-names", "party-faces", "hero-look", "placeholder-text", "combat-leftovers",
 ] as const;
 
 /** 뼈대·자리표시 글(엔딩·이벤트 이름이나 대사에 남으면 안 된다). */
@@ -123,6 +137,16 @@ export function editorDefaultsLeft(project: Project): ShipBlocker[] {
   if (facesLeft.length) add("party-faces", `파티의 얼굴이 편집기 기본 초상(${facesLeft.map((a) => a.name).join("·")})이다 — 이 인물에 맞는 얼굴을 고르거나(list_npc_graphics) 얼굴을 비운다.`, facesLeft.map((a) => `${a.id}:${a.faceResourceId}`).join(","));
   const looksLeft = party.filter((a) => { const fa = fActors.get(a.id); return !!fa && fa.characterResourceId === a.characterResourceId && (fa.characterIndex ?? 0) === (a.characterIndex ?? 0); });
   if (looksLeft.length) add("hero-look", `파티의 모습이 편집기 기본 칩(${looksLeft.map((a) => a.name).join("·")}, 판타지 검사)이다 — list_npc_graphics{query:<외형>} 로 이 게임의 주인공 모습을 골라 upsert_actor 로 바꾼다.`, looksLeft.map((a) => `${a.id}:${a.characterResourceId}`).join(","));
+
+  // 9b) 전투 없는 게임의 전투 기본값(J88): ESC 메뉴의 스킬·장비·상태·진형 항목, 주인공의 공장 기본 무기·방어구.
+  //     (메뉴 첫 화면의 직업·Lv·HP·MP·EX·돈 칸은 플레이어가 전투·돈 유무로 스스로 숨긴다 — project/combatPresence.ts.)
+  if (!gameHasCombat(project)) {
+    const menu = fieldMenu(project);
+    const combatRows = (menu?.entries ?? []).filter((row) => ["skills", "equipment", "status", "row", "formation", "battle-reports"].includes(row.command)).map((row) => row.label);
+    if (!menu) combatRows.push("편집기 기본 메뉴(스킬·장비·상태)");
+    const gear = party.flatMap((a) => Object.entries(a.initialEquipment ?? {}).filter(([slot, id]) => id && FACTORY_HERO_ARMS[slot] === id).map(([slot, id]) => `${a.name} ${slot}:${String(id)}`));
+    if (combatRows.length || gear.length) add("combat-leftovers", `전투가 없는 게임인데 전투 기본값이 남았다 — ${[...(combatRows.length ? [`ESC 메뉴 ${combatRows.join("·")}`] : []), ...(gear.length ? [`시작 장비 ${gear.join(", ")}`] : [])].join(" / ")}. configure_field_menu{preset:'story'} 로 메뉴를 이야기용으로, upsert_actor{id, initialEquipment:{}} 로 기본 무기·방어구를 뺀다(전투 없는 게임에 검·방패를 «되돌리지» 않는다).`, [...combatRows, ...gear].join(" | ").slice(0, 200));
+  }
 
   // 10) 자리표시 글
   const placeholders: string[] = [];
@@ -260,11 +284,159 @@ export function offPremiseArt(project: Project, task: string): ShipBlocker[] {
   return out;
 }
 
+/**
+ * 제목·엔딩이 기본 시작 칩셋의 고유 지명을 게임 주제로 삼았다(J70, hf2-school-flash: 밤의 학교 공포 게임이 「버들항의 모험」·
+ * 엔딩 「모험의 끝」 "버들항의 평화"로 끝났다). 새 프로젝트가 처음부터 들고 있는 칩셋 계열 이름이라 요청에 없으면 모델이 지어낸 것이다.
+ * task 는 앞선 요청 메모까지 든 실행 지시문이다 — 같은 대화의 어느 요청이든 그 지명을 말했으면 정당하다.
+ */
+/** 플레이어에게 보이는 글만 — 문자열 줄과 비트의 text·lines(id·자원 참조는 빼고). */
+function shownTexts(v: unknown): string[] {
+  if (typeof v === "string") return [v];
+  if (Array.isArray(v)) return v.flatMap(shownTexts);
+  if (v && typeof v === "object") { const o = v as Obj; return [...shownTexts(o.text), ...shownTexts(o.lines)]; }
+  return [];
+}
+const DEFAULT_PLACE_FAMILIES = ["beodeul"] as const;
+export function defaultPlaceLeaks(project: Project, task: string): ShipBlocker[] {
+  const words = new Set<string>();
+  for (const [id, ts] of Object.entries(project.tilesets ?? {})) {
+    if (!DEFAULT_PLACE_FAMILIES.some((f) => id.startsWith(f))) continue;
+    const head = String((ts as { name?: unknown }).name ?? "").trim().split(/[\s·]+/u)[0] ?? "";
+    if (/^[가-힣]{2,}$/u.test(head)) words.add(head);
+  }
+  const out: ShipBlocker[] = [];
+  for (const word of words) {
+    if (task.includes(word)) continue;
+    const title = String(((project.system as unknown as Obj).titleScreen as Obj | undefined)?.title ?? "");
+    const where = [
+      ...(title.includes(word) ? [`타이틀 「${title}」`] : []),
+      ...(String(project.meta.title ?? "").includes(word) && project.meta.title !== title ? [`프로젝트 제목 「${project.meta.title}」`] : []),
+      ...(project.endings ?? []).filter((e) => [e.name, ...shownTexts((e as unknown as Obj).epilogue)].some((t) => t.includes(word))).map((e) => `엔딩 「${e.name}」`),
+    ];
+    if (where.length) out.push({ id: "default-place-leak", message: `${where.slice(0, 4).join("·")}이 「${word}」을 말하는데 요청에는 ${word}이 없다 — ${word}은 새 프로젝트 기본 칩셋 이름이지 이 게임의 무대가 아니다. 요청한 이야기에서 제목(set_title_screen{title})·엔딩(define_ending)을 다시 짓는다.`, evidence: `${word}: ${where.join(", ").slice(0, 160)}` });
+  }
+  return out;
+}
+
+/**
+ * 요청이 제목을 못박았는데 다른 제목으로 냈다(J71 hf2-mansion-flash 「검은 장미의 비밀」, J73 hf2-mansion-argon 「저택 탈출」 —
+ * 요청은 「제목은 「검은 장미 저택」」). 「」『』"" 로 묶인 제목 낱말만 본다(묶지 않은 글은 제목인지 알 수 없다). 게임을 만드는 요청에서만 막는다.
+ */
+// 게임 제목만 — 앞에 낱말이 붙거나(부제목·subtitle) 게임 안의 다른 제목(책·표지판·챕터·퀘스트·곡…)이면 아니다.
+const REQUESTED_TITLE = /(?<![\p{L}\p{N}])(?<!(?:책|표지판?|간판|챕터|퀘스트|노래|곡|장|편지|일기|그림|영화|소설|시|팻말|문서|보고서)\s?)(?:제목|타이틀|title)\s*(?:은|는|을|를|이|가|:|=)?\s*(?:「([^」\n]{1,40})」|『([^』\n]{1,40})』|"([^"\n]{1,40})"|“([^”\n]{1,40})”)(?!\s*(?:은|는|을|를)?\s*(?:말고|대신|쓰지|빼|아니))/giu;
+const firstTitle = (text: string): string | undefined => {
+  for (const m of text.matchAll(REQUESTED_TITLE)) { const t = m.slice(1).find((g) => g !== undefined)?.trim(); if (t) return t; }
+  return undefined;
+};
+/** 이번 글의 제목이 먼저, 없으면 앞선 요청 메모(J70)의 제목. */
+export function requestedTitle(task: string): string | undefined {
+  const own = withoutIntentNote(task);
+  return firstTitle(own) ?? firstTitle(task.slice(own.length));
+}
+const squash = (s: string): string => s.replace(/\s+/gu, "").normalize("NFC");
+export function titleMismatch(project: Project, task: string): ShipBlocker[] {
+  const want = requestedTitle(task);
+  if (!want) return [];
+  const shown = String(((project.system as unknown as Obj).titleScreen as Obj | undefined)?.title ?? project.meta.title ?? "").trim();
+  if (squash(shown) === squash(want)) return [];
+  return [{ id: "title-not-requested", message: `요청한 제목은 「${want}」인데 타이틀이 「${shown || "(없음)"}」이다 — set_title_screen{title:"${want}"} 로 요청한 제목을 그대로 쓴다.`, evidence: `want=${want} shown=${shown}` }];
+}
+
+/**
+ * 요청이 이름 댄 핵심 장치가 게임에 없다(J71/J73 hf2-mansion: 「쫓아오는 것·어둠」을 요청했는데 추격자 0·조명 0으로 냈다).
+ * 낱말 → 프로젝트에서 그 장치를 찾는 표. 「없이·빼고·말고」가 바로 뒤에 붙으면 요청이 아니다. 게임을 만드는 요청에서만 막는다.
+ */
+const NOT_WANTED = String.raw`(?![^.!?\n]{0,10}(?:없이|없는|없게|않|빼고|빼 ?줘|빼 ?주|말고|아니라|아닌|아니고|제외|싫))`;
+interface RequestedFeature { readonly id: string; readonly label: string; readonly words: RegExp; readonly present: (project: Project) => boolean; readonly fix: string }
+const pages = (project: Project): Obj[] => Object.values(project.maps).flatMap((m) => (m.events ?? []).flatMap((ev) => ((ev as unknown as Obj).pages as Obj[] | undefined) ?? []));
+const DARK_AMBIENT = 0.5;
+/** 숨기 이벤트와 그 칸이 눈에 보이는가(이벤트 그림 또는 그 칸의 2층 이상 타일 — 사물함·옷장 가구). */
+export function hidingSpots(project: Project): { mapId: string; eventId: string; x: number; y: number; visible: boolean }[] {
+  const out: { mapId: string; eventId: string; x: number; y: number; visible: boolean }[] = [];
+  for (const map of Object.values(project.maps)) for (const ev of map.events ?? []) {
+    const hiding = (ev.pages ?? []).filter((p) => (p.interaction as Obj | undefined)?.kind === "hiding");
+    if (!hiding.length) continue;
+    const drawn = hiding.some((p) => { const g = (p.graphic ?? {}) as Obj; return !g.transparent && Boolean(g.sprite || g.appearanceId); });
+    const cell = tileAt(map, ev.x, ev.y);
+    const furniture = cell.upper >= 0 || cell.layers.slice(1).some((t) => t >= 0);
+    out.push({ mapId: map.id, eventId: ev.id, x: ev.x, y: ev.y, visible: drawn || furniture });
+  }
+  return out;
+}
+export const REQUESTED_FEATURES: readonly RequestedFeature[] = [
+  {
+    id: "chaser", label: "쫓아오는 추격자",
+    words: new RegExp(String.raw`(?:쫓아\s*오|쫓기(?:는|며|다|면서)|(?:나|주인공|플레이어|우리|아이들?)를\s*쫓는|쫓는\s*(?:괴물|귀신|살인마|놈|그림자|추격자|존재)|추격자|추격\s*(?:당|해\s*오)|따라\s*오는\s*(?:괴물|귀신|그것|놈|무언가|그림자|존재)|chaser|stalker|chased by|chases you)` + NOT_WANTED, "iu"),
+    present: (project) => pages(project).some((p) => ["chase", "approach"].includes(String((p.movement as Obj | undefined)?.type ?? "")) || !!p.detectionEncounter),
+    fix: "make_chase_scene 으로 순찰하다 보면 쫓는 추격자(pursuit·hidingSpots·killOnTouch)를 둔다",
+  },
+  {
+    id: "darkness", label: "어둠(조명)",
+    words: new RegExp(String.raw`(?:어둡|어두운\s*(?:분위기|톤|복도|방|저택|집|학교|숲|동굴|곳|밤|공간|건물|지하|병원|골목)|어둠\s*속|캄캄|깜깜|암전|손전등|불\s*꺼진|정전|darkness|dark\s+(?:room|hallway|corridor|mansion|house|school)|flashlight|lights?\s+out)` + NOT_WANTED, "iu"),
+    present: (project) => Object.values(project.maps).some((m) => (m.defaultLighting?.ambient ?? 0) >= DARK_AMBIENT)
+      || allCommands(project).some(({ cmd }) => cmd.kind === "setLighting" && Number(cmd.ambient) >= DARK_AMBIENT),
+    fix: `set_lighting_volume{mapId, ambient:0.8~0.9, sources:[{at:{kind:'player'}, radius:3~4}]} 로 무대 맵을 어둡게 한다(ambient ${DARK_AMBIENT} 미만은 거의 밝다)`,
+  },
+  {
+    id: "hiding", label: "숨을 곳",
+    words: new RegExp(String.raw`(?:(?:옷장|침대|장롱|사물함|캐비닛|책상|커튼)[^.!?\n]{0,6}숨|숨을\s*(?:곳|데|수)|숨는\s*(?:곳|장소|공간)|숨어서\s*(?:피|도망|버티|기다)|숨바꼭질|은신|hiding\s+(?:spot|place)|hide\s+(?:in|from|under))` + NOT_WANTED, "iu"),
+    // 보이는 은신처만 센다(J81 hf2-school-claude-j79: 은신처 4곳이 모두 맨바닥의 투명 이벤트라 플레이어가 어디에 숨는지 알 수 없었다).
+    present: (project) => hidingSpots(project).some((spot) => spot.visible),
+    fix: "사물함·옷장·청소도구함 같은 보이는 물건 칸을 숨을 곳으로 한다 — 그 칸에 가구를 놓고(place_object·draw_object) configure_object_behavior{kind:'hiding'} 또는 make_chase_scene 의 hidingSpots 로 그 칸을 준다. 맨바닥의 투명 은신처는 숨을 곳으로 치지 않는다",
+  },
+];
+export function requestedFeatureGaps(project: Project, task: string): ShipBlocker[] {
+  return REQUESTED_FEATURES.filter((f) => f.words.test(task) && !f.present(project)).map((f) => ({
+    id: "requested-feature-missing",
+    message: `요청한 ${f.label}이(가) 게임에 없다 — ${f.fix}.`,
+    evidence: `${f.id}: ${task.match(f.words)?.[0] ?? ""}`,
+  }));
+}
+
 /** 조언자·끝맺음 관문이 같이 쓰는 출하 차단 목록(게임을 만드는 요청일 때만). 제목 스포일러는 어느 요청이든. */
 export function shipBlockers(project: Project, task: string): ShipBlocker[] {
   const spoilers = titleSpoilers(project);
   if (!wantsWholeGame(task)) return spoilers;
-  return [...editorDefaultsLeft(project), ...endingClosureProblems(project), ...openingWithoutPlace(project), ...offPremiseArt(project, task), ...spoilers];
+  // 엔딩 길의 열쇠·금고·문·엔딩 이벤트에 걸어 닿지 못하면 게임을 끝낼 수 없다(J75) — 출하 차단.
+  const unreachable = unreachableCriticalEvents(project).map((message): ShipBlocker => ({ id: "critical-unreachable", message: `${message}. 이벤트를 걸어 닿는 칸 옆으로 move_event 하거나 막는 가구를 치운다.`, evidence: message.slice(0, 120) }));
+  // 계단 출구가 숨은 칸이다(J87) — 계단 앞에서 계단 쪽으로 걸어도 이동이 없다.
+  const hiddenExits = hiddenStairExits(project).slice(0, 4);
+  const hidden: ShipBlocker[] = hiddenExits.length ? [{ id: "exit-hidden", message: `계단 출구를 계단 쪽으로 걸어서는 탈 수 없다: ${hiddenExits.join(" · ")}. create_transfer_pair 를 계단 그림 칸으로 다시 부르면 계단 폭 전체가 출구가 된다.`, evidence: hiddenExits[0]!.slice(0, 120) }] : [];
+  // 새 플레이어가 길을 찾나(J90): 이야기 이벤트가 보이고, 지금 할 일이 화면에 있다.
+  const invisible: ShipBlocker[] = invisibleStoryEvents(project).slice(0, 4).map((event) => ({
+    id: "critical-invisible",
+    message: `「${event.mapName}」 ${event.name}(${event.eventId}, ${event.x},${event.y}) 은 ${event.ends ? "엔딩을 부르는" : "이야기를 넘기는"} 이벤트인데 화면에 아무것도 안 보인다(투명·건물 벽면 한 칸). 새 플레이어는 어디를 눌러야 하는지 모른다 — patch_event_page{mapId, eventId, pageIndex, set:{nearSparkle:{radius:2}}} 로 반짝임을 달거나, 그림이 있는 인물·작은 물건(상자·침대·표지판)으로 옮긴다.`,
+    evidence: `${event.mapId} ${event.eventId} (${event.x},${event.y}) page ${event.pageIndex}`,
+  }));
+  // 그려진 입구(계단·스크린도어·문짝) 옆 맨바닥에 선 문·이야기 이벤트 — 새 플레이어는 그림을 누른다(J103·J104).
+  const offArt: ShipBlocker[] = offArtEntrances(project).slice(0, 4).map((entry) => ({
+    id: "entrance-off-art",
+    message: `「${entry.mapName}」 ${entry.name}(${entry.eventId}) 이 그려진 입구 그림 (${entry.door.x},${entry.door.y}) 옆 맨바닥 (${entry.x},${entry.y}) 에 있다 — 새 플레이어는 그림을 눌러 보고 아무 일도 없어 길을 잃는다. move_event{mapId:'${entry.mapId}', eventId:'${entry.eventId}', x:${entry.door.x}, y:${entry.door.y}} 로 그림 칸에 옮긴다${doorCellBlocked(project, entry.mapId, entry.door.x, entry.door.y) ? ` — 그 칸은 막힌 칸이니 patch_event_page{mapId:'${entry.mapId}', eventId:'${entry.eventId}', pageIndex:0, set:{priority:'same', overlapForbidden:true}} 로 부딪혀 열리게 한다(조사형이면 그림을 바라보고 누르면 열린다)` : ""}.`,
+    evidence: `${entry.mapId} ${entry.eventId} (${entry.x},${entry.y}) door (${entry.door.x},${entry.door.y})`,
+  }));
+  // 하루 반복 게임에서 이튿날 첫날 대사를 그대로 다시 한다(J106 「신입이지?」 둘째 날).
+  const repeats: ShipBlocker[] = repeatedDayDialogue(project).slice(0, 4).map((entry) => ({
+    id: "dialogue-repeat",
+    message: `「${entry.mapName}」 ${entry.name}(${entry.eventId}) 의 「${entry.pageName}」 페이지가 ${entry.from}~${entry.to}일째를 덮는데 그 안에서 날을 가르지 않는다 — ${entry.from + 1}일째에 「${entry.line}…」 를 그대로 다시 한다. 날마다 페이지를 나누거나(조건 하루 변수 >= 그날), 페이지 안에서 fork{하루 변수 == ${entry.from}} 로 첫날과 다음 날 말을 가른다.`,
+    evidence: `${entry.eventId} ${entry.pageName} ${entry.from}-${entry.to}`,
+  }));
+  // 장면 뒤에 남는 짙은 화면 색 — 필드가 대화 배경이 걸린 것처럼 어둡다(J98).
+  const tints: ShipBlocker[] = lingeringHeavyTints(project).slice(0, 3).map((entry) => ({
+    id: "field-tint-heavy",
+    message: `「${entry.mapName}」 ${entry.name}(${entry.eventId}) 이 화면 색 「${entry.value}」(알파 ${entry.alpha})를 남긴 채 끝난다 — 필드 전체가 대화 배경이 걸린 것처럼 어두워 새 플레이어가 화면이 멈춘 줄 안다. 이 이벤트 끝의 화면 색을 알파 0.3 이하로 낮춘다(patch_event_page 로 그 m2-046 명령의 value 를 '20,30,80,0.3' 처럼) — 밤 분위기는 그 정도로 충분하고, 회상처럼 잠깐만 쓸 색이면 끝에 value:'neutral' 로 지운다.`,
+    evidence: `${entry.eventId} ${entry.value}`,
+  }));
+  const objectives: ShipBlocker[] = objectiveGaps(project).map((message) => ({ id: "objective-missing", message, evidence: message.slice(0, 120) }));
+  // 연애 게임의 호감이 인물에 묶이지 않으면 ESC 호감도·호감 HUD·호감 엔딩이 비어 있다(J91) — 경고가 아니라 막는다.
+  const romance: ShipBlocker[] = romanceCompletionGaps(project, { task }).slice(0, 4).map((message) => ({ id: "romance-gap", message, evidence: message.slice(0, 120) }));
+  // 짙은 어둠에 주인공 빛이 없으면 걸을 바닥이 검은 구멍이다(J89).
+  // 이벤트가 실행 중에 주인공 빛을 켜는 게임(setLighting 에 player 광원)은 기본 조명만 보고 막지 않는다.
+  const runtimePlayerLight = allCommands(project).some(({ cmd }) => cmd.kind === "setLighting" && JSON.stringify(cmd).includes('"at":"player"'));
+  const unlit: ShipBlocker[] = runtimePlayerLight ? [] : Object.values(project.maps).flatMap((map) => {
+    const finding = unlitDarkFinding(map);
+    return finding ? [{ id: "dark-unlit", message: `「${map.name ?? map.id}」(${map.id}) ${finding.message.replace(/^시각 공백: /u, "")}`, evidence: `${map.id} ambient ${map.defaultLighting?.ambient}` }] : [];
+  }).slice(0, 3);
+  return [...hidden, ...unlit, ...invisible, ...offArt, ...repeats, ...tints, ...objectives, ...romance, ...editorDefaultsLeft(project), ...endingClosureProblems(project), ...openingWithoutPlace(project), ...offPremiseArt(project, task), ...defaultPlaceLeaks(project, task), ...titleMismatch(project, task), ...requestedFeatureGaps(project, task), ...unreachable, ...spoilers];
 }
 
 /** 게임이 «아직 안 지어졌다»는 신호 — 뼈대 자리표시만 남았거나 엔딩이 없다(편집기 기본 HUD·창 같은 마감 항목은 여기서 보지 않는다). */

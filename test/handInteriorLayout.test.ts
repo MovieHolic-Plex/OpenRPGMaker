@@ -14,13 +14,17 @@ describe("방 견본", () => {
   it("손 도트 v5·일본 집 예제가 방 단위로 잘려 있다", () => {
     expect(roomTemplates("atlas_biome_interior").length).toBeGreaterThan(80);
     expect(roomTemplates("jp_city").some((t) => t.kind === "washitsu" && t.items.length > 5)).toBe(true);
-    expect(programKinds("jp_city", "house-1f")?.kinds).toEqual(expect.arrayContaining(["genkan", "hall", "ldk", "toilet", "bath", "washitsu"]));
+    // 일본 집 예제가 다시 짜이며 다다미방(washitsu)은 2층(house-2f)으로 갔다 — 1층 방 구성은 현관·복도·LDK·화장실·욕실이다.
+    expect(programKinds("jp_city", "house-1f")?.kinds).toEqual(expect.arrayContaining(["genkan", "hall", "ldk", "toilet", "bath"]));
+    expect(programKinds("jp_city", "house-2f")?.kinds).toContain("washitsu");
   });
 
   it("같은 크기 방에 심으면 견본 좌표 그대로다", () => {
     const t = roomTemplates("jp_city").find((x) => x.kind === "washitsu")!;
     const placed = placeTemplateItems(t, { x0: 10, y0: 20, w: t.w, h: t.h }, JP_INTERIOR_SPEC);
-    expect(placed.filter((i) => i.t !== "l").map((i) => [i.x - 10, i.y - 20])).toEqual(t.items.filter((i) => i.t !== "l").map((i) => [i.x, i.y]));
+    // 놓는 순서는 계약이 아니다(묶음 단위로 놓으며 순서가 바뀌었다) — 같은 좌표 모음인지 본다.
+    const coords = (cells: readonly { x: number; y: number }[]) => cells.map((c) => `${c.x},${c.y}`).sort();
+    expect(coords(placed.filter((i) => i.t !== "l").map((i) => ({ x: i.x - 10, y: i.y - 20 })))).toEqual(coords(t.items.filter((i) => i.t !== "l")));
   });
 });
 
@@ -84,7 +88,9 @@ describe("build_hand_interior_room layout", () => {
     expect(r.ok).toBe(false);
   });
 
-  it("견본 가구가 거의 다 들어간다", () => {
+  // Retired by #2882 (AI 참고 청사진): layout:{program:"house-1f"} is now composed fresh from the blueprint, which strips plan/rooms
+  // and returns no per-room template furniture tally, so neither the furniture-drop ratio nor the layout+plan refusal exists for it.
+  it.skip("견본 가구가 거의 다 들어간다", () => {
     for (const seed of [2, 3, 4]) {
       const r = runTool(blank(), "build_hand_interior_room", { tileset: "jp_city", name: "집", floor: "flooring", wall: "cloth", layout: { program: "house-1f", seed } });
       expect(r.ok, r.summary).toBe(true);
@@ -108,7 +114,8 @@ describe("build_hand_interior_room layout", () => {
     }
   });
 
-  it("layout 과 plan 을 같이 주면 거부한다", () => {
+  // Retired by #2882 — see above: the blueprint path drops plan instead of refusing the pair.
+  it.skip("layout 과 plan 을 같이 주면 거부한다", () => {
     const r = runTool(blank(), "build_hand_interior_room", { tileset: "jp_city", floor: "flooring", wall: "cloth", plan: ["#####", "#...#", "#...#", "#...#", "##.##"], layout: { program: "house-1f" } });
     expect(r.ok).toBe(false);
   });

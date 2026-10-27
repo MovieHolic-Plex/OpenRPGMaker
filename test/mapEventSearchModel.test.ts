@@ -99,4 +99,28 @@ describe("mapEventSearchModel", () => {
     ]));
     expect(eventResults).toContainEqual(expect.objectContaining({ kind: "mapEvent", name: "Night Owl" }));
   });
+
+  it("페이지 제목과 다른 이벤트 이름(GameEvent.name)으로 찾고, 참조 라벨도 그 이름을 쓴다", () => {
+    const project = fixture();
+    const gate = project.maps[project.startMapId]!.events[0]!;
+    gate.name = "문지기 한솔";
+    gate.pages![0]!.name = "페이지 1";
+    gate.pages![0]!.commands = [{ kind: "setSwitch", switchId: "sw_moon_gate", value: true }];
+
+    const byName = searchProject({ project, selectedMapId: project.startMapId, query: "한솔", scope: "selectedMap" });
+    const byId = searchProject({ project, selectedMapId: project.startMapId, query: "ev_gate", scope: "selectedMap" });
+    const bySwitch = searchProject({ project, selectedMapId: project.startMapId, query: "sw_moon_gate", scope: "all" })
+      .find((entry) => entry.kind === "switch");
+
+    expect(byName).toEqual([expect.objectContaining({
+      kind: "mapEvent",
+      name: "문지기 한솔",
+      target: { kind: "event", mapId: project.startMapId, eventId: "ev_gate" },
+    })]);
+    expect(byId).toEqual([expect.objectContaining({ kind: "mapEvent", name: "문지기 한솔" })]);
+    expect(bySwitch?.kind).toBe("switch");
+    if (bySwitch?.kind !== "switch") return;
+    expect(bySwitch.references).toContainEqual(expect.objectContaining({ eventId: "ev_gate", name: "문지기 한솔" }));
+    expect(byName.some((entry) => entry.name === "페이지 1")).toBe(false);
+  });
 });

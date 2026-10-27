@@ -1,0 +1,503 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f64860f21baedc772534c5a03e5862f5d4bba5613fbbed087b8864824b04d003",
+ "width": 48,
+ "height": 80,
+ "kind": "other",
+ "name": "royal street lamp, 3/4 top-down: square stone pedestal (top face seen from above, front face with a small blue plaque), dark iron post with gold bands, curled iron brackets, an octagonal lantern with warm lit glass and a gold crown cap",
+ "label": "beodeul_city/capital/capital_lamp",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (4/4)",
+  "3/4: 윗면 2행 < 3 (4/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)",
+  "화풍: 평면 채움 (2/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (4/4)",
+   "윗면 2행 < 3 (4/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "명암 3단 < 4 (4/4)",
+   "평면 채움 (2/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "2ad36264365ed8d5"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 4,
+  "tileColorsP90": 14,
+  "darkV5": 93,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 15
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "borderline",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "borderline",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stone pedestal top",
+      "rows": "54-56",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pedestal front face with blue plaque",
+      "rows": "57-62",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "iron post with gold bands",
+      "rows": "34-53",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lantern glass body",
+      "rows": "23-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "gold crown cap and blue band",
+      "rows": "17-22",
+      "evidence": "c",
+      "front_edge_line_row": 21,
+      "eave_shadow_rows": "22"
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": {
+     "cap_rows": 5,
+     "cap_width": 9,
+     "shaft_width": 2,
+     "rounded_at_both_edges": false
+    },
+    "reads_as": "front_elevation",
+    "evidence": "The main body is the stone pedestal. Its light-gray block (rows 54-62) has only a 1-2 row light strip at the top (rows 55-56 in column x=24). There is no distinct top plane, no clear front-edge line and no eave shadow. Below that strip is a front face with the blue plaque (rows 57-60) and a light row 61. A dark outline closes the block at row 62. The pedestal therefore reads as a front elevation with at most a rim. The post (rows 34-53) is a thin vertical shaft. The lantern is drawn as a vertical glass face (rows 23-28) with a small gold crown (rows 17-20) and a blue band at row 21 over a dark row 22. That is a weak roof hint, not an ellipse, and the crown is a small detail on the lantern. The pedestal is the large part with no real top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The lamp is tiny and thin on the board. The pedestal reads as a pale grey block with a small plaque and only about 2-3 value steps, with no stone-by-stone shading or grain. The iron post is a near-flat dark line. The lantern is a small yellow and dark cluster, and the described gold bands, curled brackets, octagonal glass facets and crown cap are barely visible. The dark edge pixels are 0% neutral, so the outlines are tinted rather than sticker-black, which counts in its favour. The visible-tone count of 4 per tile is far below the richer references (well 20, stall 17, hedge 9). The sparse crook lamp has a tone count of 0, so that fact is not held against the candidate. By eye, though, the royal lamp is meant to be an ornate piece and looks flatter and thinner than the Beodeul props, closer to a simple sticker-like silhouette. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 20771
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stone pedestal top",
+      "rows": "54-55",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pedestal front face with plaque",
+      "rows": "56-62",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "iron post with gold bands",
+      "rows": "33-53",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "octagonal lantern with crown cap",
+      "rows": "17-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The pedestal is the main body. Its top is only about 2 light rows (54-55 in the x=24 scan, L=197 at rows 55-56) with no distinct front-edge line and no eave shadow. Below it the front face runs from row 56 to row 62: a blue plaque on rows 57-60, a light row at 61 and a dark outline at 62. The pedestal is a flat front panel with a rim-like strip on top, so it reads as a front elevation. The lantern is drawn as a vertical glass face with a spiky gold crown and a dark base ring, with no ellipse or top plane. The post is a thin vertical shaft. No part shows a real top surface, so this is front elevation, not three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a thin lamp on a grass background, so the per-tile tone count (4) is not held against it. By eye, the lamp is small and sparse next to the references. The pedestal is a light grey block with only about 2-3 value steps and a small plaque, with no per-stone shading or grain. The iron post is a nearly flat dark line with a few gold dots for bands. The lantern is a tiny orange and yellow cluster with a dark cap, showing 2-3 tones and no clear octagonal facets, curled brackets or gold crown detail. The measured dark edge pixels are 0% neutral, so the outlines lean toward tinted dark tones rather than pure black. However, the shapes are so small that the outline is hard to judge, so I call it mixed. The reference lamp-crook is also thin, but the candidate promises much more (pedestal, bands, brackets, octagonal lantern, crown), and little of that appears in the pixels. The shading is shallow and the texture is limited to the pedestal, so a careful artist would see it as thinner and flatter than the Beodeul references such as the well and the cheese stall.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 15322
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stone pedestal top",
+      "rows": "54-55",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pedestal front face with plaque",
+      "rows": "56-62",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "iron post",
+      "rows": "33-53",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "octagonal lantern glass",
+      "rows": "23-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "gold crown cap",
+      "rows": "17-21",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": {
+     "cap_rows": 3,
+     "cap_width": 9,
+     "shaft_width": 2,
+     "rounded_at_both_edges": false
+    },
+    "reads_as": "front_elevation",
+    "evidence": "The pedestal is the main body. Column x=24 shows only rows 55-56 as a light band (L=197), directly above the blue plaque at rows 57-60 and a gray row 61. The pedestal reads as one flat light-gray front rectangle: it has no front-edge line, no eave shadow, no ellipse, and no visible contents. Its top is therefore at most a 1-2 row rim. The lantern is drawn face-on, with a dark row at 22 and glass at 23-28. The gold crown at rows 17-21 is a flat-bottomed hat on a narrow shaft, not an ellipse, and the post is a thin vertical line. No part shows a clear horizontal surface, so the whole object is a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The lamp is a thin, small prop, so the per-tile tone count (4, probably mostly the grass behind it) says little about it. The measured facts do not count against it: 0% neutral dark edge pixels, so the outlines are tinted, and 9% near-flat coverage, close to the cheese stall's 13%. By eye it is still shallower than the references. The stone pedestal is a nearly flat light-grey block with only a small plaque and little stone grain or per-face shading, about 3 steps. The post is a thin dark line with little highlight. The lantern and gold crown are only a few pixels, with no visible octagonal facets, curled brackets or gold band highlights. Beside the cheese stall and the roofed well, which carry 17-20 visible tones, it reads as thinner and more sticker-like. It is also not clearly richer than the crook lamp reference. With the pedestal flat and the lantern under-modelled, I fail it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 20921
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stone pedestal top",
+      "rows": "54-56",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pedestal front face with blue plaque",
+      "rows": "57-62",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "iron post with gold bands",
+      "rows": "33-53",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "octagonal lantern glass body",
+      "rows": "22-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "gold crown cap",
+      "rows": "17-21",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": {
+     "cap_rows": 5,
+     "cap_width": 10,
+     "shaft_width": 2,
+     "rounded_at_both_edges": false
+    },
+    "reads_as": "front_elevation",
+    "evidence": "The pedestal is the largest volume. Rows 54-56 show a light band in the column scan (rows 55-56, L=197), which is only a rim of 2 rows. It has no clear front-edge line and no eave shadow, and no ellipse or interior contents. The front face below (rows 57-62, blue plaque) reads as a flat vertical elevation. The lantern is drawn face-on: spiky crown, a blue band at row 21, a dark strip at row 22, then vertical glass panes. It shows no horizontal top surface or ellipse. The post is a thin vertical shaft. Overall the drawing is a front elevation without a real top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a thin prop drawn on a grass tile. The brief asks for gold bands, curled brackets, an octagonal lantern and a plaque, but at this scale most of that is not readable. The pedestal is a small pale grey block with about 2-3 stone tones and no per-stone shading or grain. The post is a near-uniform dark line, and the lantern is a tiny yellow-orange blob with a dark cap. The dark edge pixels are tinted (0% near-neutral), so the outline is not a sticker-style black line. That is a point in its favour. The measured 4 visible tones per tile mostly come from the grass background, not from the lamp. The lamp itself carries only about 3 steps per material. Against the richer references (well 20 tones, stall 17) and the crook lamp, which is also thin but cleanly shaded, it reads thinner and flatter than a Beodeul piece. A careful artist would not accept it next to the references without more shading on the pedestal and lantern.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 19238
+  }
+ ],
+ "decidedAt": "2026-10-23T01:32:12.608Z",
+ "cells": {
+  "16": [
+   "67e3b7da16a59985",
+   "d5c6ead7ca62ec62",
+   "d9930af8fd310782",
+   "eac0135eaf874ddb"
+  ],
+  "24": [
+   "0402214d6322b136",
+   "142a6ad3ec52388f",
+   "2346356204e4889e",
+   "23eb836b35774d60",
+   "428f19ff7f640a9f",
+   "4a17c9cc64344a32",
+   "64cf617d6192fce1",
+   "654350da89fba77e",
+   "b105b4a3c9ca91f5",
+   "b6ec17c17b278c08",
+   "d1b7e1e4764ce0fa",
+   "d98c96ca3cdea126",
+   "dddf8e3a2a3b446c",
+   "dfea9cef2d45ada0",
+   "e62f7bc402df867e",
+   "e67ffb93a866aeb8"
+  ],
+  "32": [
+   "0915904b484bfb97",
+   "0eb51e9b6f289429",
+   "107c7d39876c97c8",
+   "1538b9c21aa3766b",
+   "1787cc68abade585",
+   "18c0540cf44390cb",
+   "1f416fabad62d4b9",
+   "322b9f084251959d",
+   "5f218a7b13a824b2",
+   "5ff2b59d5d879623",
+   "6cadf0472a8ec736",
+   "6f44b2e9beabb1f3",
+   "750bd95d0ea4c0ff",
+   "7d2e75ab911999e5",
+   "8f30241916e25919",
+   "934ddb440d7464f1",
+   "9cd460f7735b96f1",
+   "9e92d874159c4ba4",
+   "a078c73b6ba3d0c4",
+   "a264106f293eff72",
+   "b179f70aac6270bf",
+   "bce4a2274baf4c28",
+   "c16461a99835e2ec",
+   "c3fe37566dc4fa69",
+   "dbb77b315ef149e1",
+   "e03b5b205c699b28",
+   "ecb5319b8b245511",
+   "f59f1c8648b10ebd"
+  ],
+  "48": [
+   "17b2181c9e75eb1e",
+   "26ca7f30624348a3",
+   "9dfa4b9b7ed57543",
+   "b16d7473a9f0d8e2"
+  ]
+ }
+}

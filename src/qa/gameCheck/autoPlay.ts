@@ -657,6 +657,8 @@ interface Driver {
   readonly deadline: number;
   /** 저장해 두었다가 불러오는 지점 — 있으면 steps 는 처음이 아니라 여기서부터 다시 돈다. */
   base?: PlaySession;
+  /** base 를 잡을 때 그 맵에서 컷신이 옮겨 둔 인물 칸 — 이어 도는 판도 같은 자리에서 시작한다(J92). */
+  baseMoved?: SceneTestResult["movedEvents"];
   /** base 이전에 이미 확정한 단계 수(보고용). */
   committed: number;
   /** 수련 중에는 조우 직전마다 회복한다(회복 센터를 오가는 걸음을 줄인 것). */
@@ -725,13 +727,14 @@ const MAX_COMPANION_JOINS = 3;
 const RECOVERING_PROJECTS = new WeakSet<Project>();
 
 /** 러너는 같은 단계를 몇 번이고 다시 돈다 — 런타임 경고(console.warn)가 매번 쏟아지지 않게 모아 둔다. */
-function quietScene(project: Project, steps: SceneStep[], base?: PlaySession, recover?: boolean): SceneTestResult {
+function quietScene(project: Project, steps: SceneStep[], base?: PlaySession, recover?: boolean, moved?: SceneTestResult["movedEvents"]): SceneTestResult {
   const warn = console.warn;
   console.warn = () => undefined;
   try {
     const start = base ? { mapId: base.currentMapId, start: { x: base.x, y: base.y } } : { mapId: project.startMapId, start: project.startPos };
     return runSceneTest(project, { ...start, steps }, undefined,
       { recoverBeforeRandomEncounters: recover ?? RECOVERING_PROJECTS.has(project), ...(base ? { initialSession: base } : {}),
+        ...(base && moved ? { initialEventPositions: moved } : {}),
         // 몬스터 게임의 자동 플레이어는 동료를 잡고 상성에 맞춰 교체한다(실제 플레이어처럼).
         ...(isMonsterPartyGame(project) ? { monsterTactics: true } : {}) });
   } finally {
@@ -741,7 +744,7 @@ function quietScene(project: Project, steps: SceneStep[], base?: PlaySession, re
 
 function run(driver: Driver, steps: SceneStep[]): SceneTestResult {
   driver.runs += 1;
-  return quietScene(driver.project, steps, driver.base, driver.recover);
+  return quietScene(driver.project, steps, driver.base, driver.recover, driver.baseMoved);
 }
 
 /**
@@ -792,13 +795,14 @@ function learnPendingMoves(project: Project, session: PlaySession): PlaySession 
 
 /**
  * 지금 세션을 저장했다가 불러온 것처럼 다음 시도의 출발점으로 삼는다. 72맵 몬스터 캠페인은 목표가 60개를 넘어
- * 매 시도를 처음부터 다시 돌리면(단계 수의 제곱) 시간 상한에 걸렸다. 맵 안 일시 상태(이벤트 위치)는
- * 실제 불러오기처럼 맵 기본값으로 돌아간다.
+ * 매 시도를 처음부터 다시 돌리면(단계 수의 제곱) 시간 상한에 걸렸다. 컷신이 옮긴 인물 칸은 이어 간다(baseMoved) —
+ * 실제 한 판은 저장·불러오기 없이 이어지므로, 저작 칸으로 되돌리면 사람이 못 찾는 인물을 러너만 찾는다(J92).
  */
 function checkpoint(driver: Driver): void {
   const learned = isMonsterPartyGame(driver.project) ? learnPendingMoves(driver.project, driver.last.session) : null;
   if (driver.steps.length === 0 && driver.base && !learned) return;
   driver.base = learned ?? structuredClone(driver.last.session);
+  driver.baseMoved = driver.last.movedEvents;
   // 복제하면 세션에 붙은 체크포인트(마지막 회복 센터)가 사라진다 — 함께 옮긴다.
   const saved = getSessionCheckpoint(driver.last.session);
   if (saved) setSessionCheckpoint(driver.base, saved);
@@ -1436,7 +1440,10 @@ function train(driver: Driver, target: number, knockedOut = 0, heals = 0): strin
 }
 
 /** 일정이 있는 NPC 의 지금 위치 — 러너가 세운 자리(session.eventLocations)를 따른다. 일정이 없거나 아직 안 세웠으면 저작 위치. */
-function presentLocation(session: PlaySession, authoredMap: string, event: GameEvent): { mapId: string; event: GameEvent } {
+function presentLocation(session: PlaySession, authoredMap: string, event: GameEvent, moved?: SceneTestResult["movedEvents"]): { mapId: string; event: GameEvent } {
+  // 컷신이 옮긴 인물(J92): 지금 이 맵에 있고 저작 칸을 떠났으면 그 칸으로 간다 — 사람이 찾는 자리.
+  const shifted = session.currentMapId === authoredMap ? moved?.[event.id] : undefined;
+  if (shifted) return { mapId: authoredMap, event: { ...event, x: shifted.x, y: shifted.y } };
   if (!event.schedule?.length) return { mapId: authoredMap, event };
   const at = session.eventLocations?.[event.id];
   if (!at || (at.mapId === authoredMap && at.x === event.x && at.y === event.y)) return { mapId: authoredMap, event };
@@ -1456,7 +1463,7 @@ function executeGoal(driver: Driver, goal: Goal, escaped = false, trained = 0, h
   if (!authoredMap || !authoredEvent) return trace(goal.label, false, "공통 이벤트 안의 명령은 자동 플레이가 부를 수 없습니다.", driver, visit.where);
   // NPC 일정: 러너는 시각에 맞춰 일정이 있는 이벤트를 다른 맵·칸에 세운다(session.eventLocations). 저작 위치(「교실 앞 27,34」)로
   // 걸어가 «조사할 이벤트 없음» 으로 오판하지 않고, 지금 그 사람이 선 자리로 간다(2026-10-16 연애 도그푸딩: 한유나는 1~5일 아침 강의실).
-  const present = presentLocation(driver.last.session, authoredMap, authoredEvent);
+  const present = presentLocation(driver.last.session, authoredMap, authoredEvent, driver.last.movedEvents);
   const targetMap = present.mapId;
   const event = present.event;
   if (goal.done?.(driver.last.session, driver.last)) return trace(goal.label, true, "이미 충족돼 건너뜀", driver, visit.where);

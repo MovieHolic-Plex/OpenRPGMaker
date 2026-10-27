@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { setStartMap } from "@/editor/actions";
 import { editorState } from "@/editor/editorState";
-import { getMapEditHistoryEntries, resetMapEditHistory } from "@/editor/mapEditHistory";
+import { getMapEditHistoryEntries, redoMapEdit, resetMapEditHistory, undoMapEdit } from "@/editor/mapEditHistory";
 import { openNewEventEditorModal } from "@/editor/panels/eventEditor/modal";
 import {
   clearEventLayerClipboard,
@@ -200,6 +200,62 @@ describe("event layer context menu", () => {
     expect(pasted?.pages?.[0]?.footprint).toEqual({ width: 3, height: 1 });
     expect(getMapEditHistoryEntries()).toHaveLength(1);
   });
+
+  it("cuts an event in one undo step and keeps it on the clipboard", () => {
+    resetMapEditHistory();
+    const source = sampleEvent("event-cut", 1, 1);
+    store.update((project) => {
+      project.maps[target.mapId]?.events.push(source);
+    });
+    const sourceTarget = { ...target, x: 1, y: 1 };
+
+    eventLayerContextMenuItems(sourceTarget).find((item) => item.id === "cut")?.action();
+
+    expect(store.getCurrent().maps[target.mapId].events.map((item) => item.id)).toEqual([]);
+    expect(eventLayerContextMenuItems(target).find((item) => item.id === "paste")?.disabled).toBe(false);
+    expect(getMapEditHistoryEntries()).toEqual([
+      expect.objectContaining({ label: "이벤트 삭제: event-cut", steps: 1 }),
+    ]);
+
+    expect(undoMapEdit()).toBe(true);
+    expect(store.getCurrent().maps[target.mapId].events.map((item) => item.id)).toEqual(["event-cut"]);
+    expect(getMapEditHistoryEntries()).toHaveLength(0);
+
+    expect(redoMapEdit()).toBe(true);
+    expect(store.getCurrent().maps[target.mapId].events.map((item) => item.id)).toEqual([]);
+    expect(getMapEditHistoryEntries()).toHaveLength(1);
+  it("refuses a paste whose body would leave the map, and still pastes when the body fits", () => {
+    resetMapEditHistory();
+    const wide = sampleEvent("event-wide", 1, 1, { width: 3, height: 1 });
+    const tall = sampleEvent("event-tall", 1, 4, { width: 1, height: 2 });
+    store.update((project) => {
+      project.maps[target.mapId]?.events.push(wide, tall);
+    });
+    editorState.set({ selectedEventId: wide.id });
+    const map = store.getCurrent().maps[target.mapId];
+    expect(map).toBeDefined();
+    if (!map) return;
+
+    eventLayerContextMenuItems({ ...target, x: 1, y: 1 }).find((item) => item.id === "copy")?.action();
+    eventLayerContextMenuItems({ ...target, x: 0, y: 5 }).find((item) => item.id === "paste")?.action();
+    eventLayerContextMenuItems({ ...target, x: map.width - 1, y: 5 }).find((item) => item.id === "paste")?.action();
+    expect(store.getCurrent().maps[target.mapId].events.map((item) => item.id)).toEqual([wide.id, tall.id]);
+    expect(getMapEditHistoryEntries()).toHaveLength(0);
+    expect(editorState.get().selectedEventId).toBe(wide.id);
+    expect(toast).toHaveBeenCalledWith("이벤트 몸이 맵 밖으로 나갑니다.", "error");
+
+    eventLayerContextMenuItems({ ...target, x: map.width - 2, y: 5 }).find((item) => item.id === "paste")?.action();
+    const pastedWide = store.getCurrent().maps[target.mapId].events.find((item) => item.x === map.width - 2 && item.y === 5);
+    expect(pastedWide?.pages?.[0]?.footprint).toEqual({ width: 3, height: 1 });
+
+    vi.clearAllMocks();
+    eventLayerContextMenuItems({ ...target, x: 1, y: 4 }).find((item) => item.id === "copy")?.action();
+    eventLayerContextMenuItems({ ...target, x: 8, y: 0 }).find((item) => item.id === "paste")?.action();
+    expect(store.getCurrent().maps[target.mapId].events.some((item) => item.x === 8 && item.y === 0)).toBe(false);
+    expect(toast).toHaveBeenCalledWith("이벤트 몸이 맵 밖으로 나갑니다.", "error");
+
+    eventLayerContextMenuItems({ ...target, x: 8, y: 1 }).find((item) => item.id === "paste")?.action();
+    expect(store.getCurrent().maps[target.mapId].events.some((item) => item.x === 8 && item.y === 1)).toBe(true);  });
 
   it("does not create a second event on a cell that is already covered", () => {
     const occupant = sampleEvent("event-occupant", target.x, target.y + 1, { width: 1, height: 2 });

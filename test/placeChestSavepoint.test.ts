@@ -140,7 +140,8 @@ describe("place_storage_chest", () => {
     const storageGraphic = storageEvent.pages![0].graphic;
     expect(storageGraphic.sprite).toEqual({ type: "bundled", id: "tex_easyrpg_charset_object2" });
     expect(chestGraphic.sprite).toEqual({ type: "bundled", id: "tex_easyrpg_charset_object1" });
-    expect(storageGraphic.pattern).not.toBe(chestGraphic.pattern);
+    // 보물상자도 이제 object1 의 7번 칸(「나무 보물상자」)을 고르므로 칸 번호(pattern)는 같을 수 있다 — 시트가 다르면 다른 그림이다.
+    expect(storageGraphic.sprite).not.toEqual(chestGraphic.sprite);
     expect(decodeCharsetFrameIndex(storageGraphic.pattern as number).characterIndex).toBe(7);
   });
 

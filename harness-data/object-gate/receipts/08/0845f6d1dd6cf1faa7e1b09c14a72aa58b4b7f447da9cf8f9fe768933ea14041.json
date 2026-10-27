@@ -1,0 +1,345 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0845f6d1dd6cf1faa7e1b09c14a72aa58b4b7f447da9cf8f9fe768933ea14041",
+ "width": 64,
+ "height": 16,
+ "kind": "terrain",
+ "name": "other.ground r4 A2",
+ "label": "dungeon/other.ground.r4.A2",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (3/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "명암 3단 < 4 (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (3/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 3,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "dungeon",
+   "fallback": true,
+   "reason": "칩셋 dungeon 의 화풍 기준 묶음이 없다",
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 7,
+  "tileColorsP90": 7,
+  "darkV5": 42,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 4
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ground tile pattern (stone slabs with purple-edged dark recessed panels)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "This is a 64x16 terrain tile strip: repeating grey stone slabs separated by dark gaps, with purple-edged recessed dark panels in rows 4-10. The width is 64 at every row and the column scans are identical, so the strip is a flat repeating pattern and not a standing object. It has no object silhouette and no front-edge line with eave shadow. The kind is terrain, so the object-style top and front rules do not apply, and I report it as other."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is meant to be a 4x3-tile ground patch, but it shows only a thin horizontal strip, about one tile tall, of dark purple-blue blocks. It looks more like a rail or border band than a ground surface. The rest of the area is empty or a flat grey-blue field with no ground texture. The grass reference has dense speckle and clumps, and the paving reference has per-stone shading, highlighted joints and many cobble dots. The candidate has only about 3 visible steps (dark outline, mid block, light block edge) and no per-stone grain. The measured 6 visible tones per tile and 9% near-flat coverage look acceptable on paper, but they come from the small strip and do not cover a 4x3 ground area. By eye the candidate is much thinner and flatter than either reference. Its outlines are tinted purple (0% near-neutral edge pixels), which is fine, but that does not offset the missing ground coverage and texture.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 12368
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper stone floor band",
+      "rows": "0-2",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "inset floor or pit panel (dark green with purple edge)",
+      "rows": "4-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower stone floor band",
+      "rows": "12-15",
+      "evidence": "none",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The 64x16 sheet is a row of repeating flat terrain tiles. Each tile is a grey-blue stone border (rows 0-2 and 13-15) around an inset dark green panel with a purple edge (rows 4-10). Rows 3 and 11 are dark outline lines and row 12 is a light line. The column scans are identical at x=16, 32 and 47. There is no vertical front face, no ellipse and no roof, so it reads as a flat top-down floor or autotile block. That is consistent with the terrain kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is a thin horizontal strip, roughly 70x10 source pixels, with a bordered row of rectangular cells. It does not read as a 4x3-tile ground patch like the grass and paving references, which fill whole tiles edge to edge. The outline is tinted, a dark purple-blue lean with 0% neutral edge pixels, so it is not a sticker-style black line. The facts show 6 visible tones per tile against 7 for paving and 3 for grass, and 9% near-flat coverage against 0% for both references, so the interior has some flat areas. By eye, the main ramp has only about 3 steps (dark border, mid cell fill, a lighter highlight edge). The references show per-stone shading, chipped highlights and grass tufts, and this piece has none of that. It is shallower than the references and is the wrong shape for the ground kind, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 16026
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "floor tile pattern: stone/slate blocks with purple-bordered dark inset panels, repeating across the 64x16 tile",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "This is a flat terrain autotile, 64x16 and fully opaque, not a standing object. The column scan is the same at every column: slate rows 0-2, a dark line at row 3, a purple/dark inset at rows 4-10, a dark line at row 11, a light slate highlight at row 12, and slate rows 13-15. The pattern is a repeating tiled floor of slate blocks and recessed panels with purple edge highlights. It has no silhouette against the background, no standing volume, and no front face. A separate rule decides pass or fail for terrain."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate does not read as a 4x3-tile ground patch. It is a thin horizontal strip of dark purple-outlined blue cells on an empty flat background, closer to a rail or border than a grass, soil or paving surface. The references fill the whole area with grass tufts and cobble-by-cobble shading. The candidate has only about 3 lightness steps: a dark outline, a mid cell fill and a light edge. Its outline is tinted purple, not neutral, which matches the 0% near-neutral edge fact. The measured 6 visible tones per tile is close to the paving reference's 7, but the strip covers only a small part of the intended 4x3 footprint. Most of the area is empty and flat, and the cells are plain fills with little grain. The measured tone count is therefore misleading. Compared by eye with the references, it is much thinner, flatter and more sticker-like.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 12302
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stone floor tile border, upper row of tiles",
+      "rows": "0-2",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "recessed dark green floor panel with purple edge on top and left",
+      "rows": "4-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone floor tile border, lower row of tiles",
+      "rows": "12-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "This is a 64x16 strip of flat terrain autotile pieces, not a standing object. Every column has the same sequence: stone tile (rows 0-2), dark line (row 3), purple/dark-green inset panel (rows 4-10), dark line (row 11), light lip (row 12), stone tile (rows 13-15). The whole strip is drawn as a top-down ground surface of repeating tiles with scattered speckles. There is no vertical front face, no object silhouette, no ellipse and no roof. The width is 64 in every row, so it is a full tile block. I report it as flat terrain, with no front face to measure."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a thin horizontal strip, about 4 tiles wide and under one tile high, with segmented boxes and a dark purple-blue border. It looks like a rail or border trim, not a 4x3 ground patch, and most of the area it should cover is empty. The measured facts (6 visible tones per tile, 9% near-flat coverage, 0% neutral dark edges) show a tinted outline and no big flat fills in the strip itself. Even so, the strip has only about 3 value steps and little grain. The references fill the whole area with continuous grass tufts and individually shaded paving stones. The candidate does not deliver a ground surface of that richness or coverage, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 16363
+  }
+ ],
+ "decidedAt": "2026-10-25T11:55:37.189Z",
+ "cells": {
+  "16": [
+   "6dd63555f2fe9143",
+   "720496c33c35046d",
+   "b638021adb08da9d"
+  ],
+  "24": [
+   "03ac9e876e0fa919",
+   "2fe2b0aad9c6685b",
+   "37904eb5d1555628",
+   "38529c1fe98012fc",
+   "41f6636125005720",
+   "4aa592e1b9a2f554",
+   "511e49136e0c9eae",
+   "6f5db001a664ce13",
+   "747e9a52328b3e7a",
+   "760cf79d4ce93403",
+   "89813760c8393af5",
+   "a00c75f2052b5a7b",
+   "a6acd6b61422f3e2",
+   "a96299122bc80fc2",
+   "c30445faeb34176f",
+   "c312ce5033b65bab",
+   "e20930e20f9cfa36",
+   "fe6a3509e726948a"
+  ],
+  "32": [
+   "021a0a3c540d084e",
+   "105503b175c7a635",
+   "464ae47f255ea013",
+   "ef22f88ce012f9dc"
+  ],
+  "48": [
+   "03a1ad0828a6e618",
+   "0e00d7fcaf4f4092",
+   "1964b56991a6b39c",
+   "3611997002ea2eb5",
+   "3e54ed8148307a1b",
+   "44f02a6a4b9d513a",
+   "4ae2163ff48bbc74",
+   "8d0aa46f04cf2f3d",
+   "a356a32510a5145e",
+   "a3b0ffdb5dc0b61c",
+   "e32dbeb0e59e5bef",
+   "f20e25b0925816ea"
+  ]
+ }
+}

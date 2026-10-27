@@ -19,7 +19,7 @@ import { MAP_TOOLS } from "./mapTools";
 import { upsertEventIntoMap } from "./eventTools";
 import { ensureNamedSwitch } from "./flagHelpers";
 import { asCell, asRoom, chestLoot, field, list, nested, pickTroops, placeRoamer, text, type Room } from "./jrpgVolumeTools";
-import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
+import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
 import { DUNGEON_ENTRANCE_TAG, ENTRANCE_OPTION_SCHEMA, linkEntranceInDraft, parseEntranceOption } from "./dungeonLinkTools";
 import { dungeonTheme, ensureThemeTroop } from "./dungeonThemeTroops";
 import { beodeulNatureTileset, planBeodeulCanopy, writeBeodeulCanopy } from "./beodeulForest";
@@ -569,7 +569,12 @@ function authorDungeon(draft: Project, argsIn: Record<string, unknown>): ToolExe
   const warnings: string[] = [];
   const baseName = typeof args.name === "string" && args.name.trim() ? (floors > 1 ? args.name.trim().replace(/\s*(지하\s*)?\d+\s*층$/u, "") || "탑" : args.name.trim()) : direction === "up" && floors > 1 ? "탑" : "지하 던전";
   const baseId = typeof args.id === "string" && args.id.trim() ? args.id.trim() : "";
-  const shapes = floors > 1 && direction === "up" && !args.rooms ? towerFloorShapes(floors, baseSeed, Array.isArray(args.floorShapes) ? args.floorShapes : []) : [];
+  // 층마다 다른 방 목록(floorRooms[k] = k+1 층 rooms). 주면 탑 꼴(floorShapes)·rooms 대신 그 층은 이 목록으로 짓는다.
+  const floorRooms = Array.isArray(args.floorRooms) ? (args.floorRooms as unknown[]) : [];
+  delete args.floorRooms;
+  if (floorRooms.length && floors < 2) throw new ToolError("floorRooms 는 floors 가 2 이상일 때만 씁니다 — 한 층이면 rooms 를 주세요.", { code: "invalid-args" });
+  if (floorRooms.some((r) => r !== undefined && r !== null && (!Array.isArray(r) || r.length === 0))) throw new ToolError("floorRooms 는 층마다 방 목록(배열, 1개 이상)의 배열입니다 — 예: [[{kind:'entrance'},{kind:'hall'}],[{kind:'boss'}]].", { code: "invalid-args" });
+  const shapes = floors > 1 && direction === "up" && !args.rooms && !floorRooms.length ? towerFloorShapes(floors, baseSeed, Array.isArray(args.floorShapes) ? args.floorShapes : []) : [];
   delete args.floorShapes;
   const floorGimmicks = Array.isArray(args.floorGimmicks) ? args.floorGimmicks : [];
   delete args.floorGimmicks;
@@ -582,8 +587,9 @@ function authorDungeon(draft: Project, argsIn: Record<string, unknown>): ToolExe
     const floorArgs: Record<string, unknown> = { ...args, name: FLOOR_NAME(baseName, direction, k, floors) };
     delete floorArgs.floors; delete floorArgs.direction; delete floorArgs.populate; delete floorArgs.troops; delete floorArgs.seed; delete floorArgs.sourceMapId;
     if (!first) { delete floorArgs.entrance; delete floorArgs.mapId; floorArgs.id = baseId ? `${baseId}_f${k}` : undefined; }
-    if (floors > 1 && direction === "up" && !args.rooms) { floorArgs.rooms = towerRooms(last, k, baseSeed, shapes[k - 1]); floorArgs.type = args.type ?? "castle"; }
-    else if (floors > 1 && !args.rooms && !args.size) floorArgs.size = last ? "medium" : "small";
+    if (Array.isArray(floorRooms[k - 1])) floorArgs.rooms = floorRooms[k - 1];
+    else if (floors > 1 && direction === "up" && !args.rooms && !floorRooms.length) { floorArgs.rooms = towerRooms(last, k, baseSeed, shapes[k - 1]); floorArgs.type = args.type ?? "castle"; }
+    else if (floors > 1 && !args.rooms && !args.size && !floorArgs.rooms) floorArgs.size = last ? "medium" : "small";
     results.push(buildFloor(draft, floorArgs, { seed: baseSeed + (k - 1) * 101, entry, exit }));
   }
   const datas = results.map((r) => r.data as Record<string, unknown>);
@@ -715,6 +721,20 @@ function gimmickCue(text: string): DungeonGimmick | undefined {
   return undefined;
 }
 
+const DUNGEON_ROOM_ITEM_SCHEMA: JsonSchema = {
+  type: "object",
+  properties: {
+    id: { type: "string", description: "방 이름표(from 에서 가리킨다). 생략하면 kind+순번" },
+    kind: { type: "string", enum: [...DUNGEON_ROOM_KINDS] },
+    w: { type: "integer", description: "바닥 가로 6~40(생략하면 종류별 기본)" },
+    h: { type: "integer", description: "바닥 세로 5~22(벽 앞면 3줄은 위에 따로 붙는다)" },
+    len: { type: "integer", description: "앞 방과 잇는 통로 길이(칸, 선택 — 긴 갱도·곧은 신전 축에)" },
+    shift: { type: "integer", description: "앞 방 가운데에서 옆으로 어긋나는 칸 수(선택 — 0 이면 정중앙 대칭)" },
+    from: { type: "string", description: "이어지는 앞 방 id 또는 kind(생략하면 바로 앞 방)" },
+    dir: { type: "string", enum: [...DUNGEON_DIRS], description: "앞 방의 어느 쪽 문에서 뻗나 N 북·S 남·W 서·E 동(생략하면 자동)" },
+  },
+};
+
 export const AUTHOR_DUNGEON_TOOL: ToolDefinition = {
   name: "author_dungeon",
   description:
@@ -765,6 +785,7 @@ export const AUTHOR_DUNGEON_TOOL: ToolDefinition = {
       gimmick: { type: "string", enum: [...DUNGEON_GIMMICKS, "none"], description: "주제 장치(마지막 층에 하나, 버들항). 생략하면 종류에 맞는 장치를 스스로 고른다(" + Object.entries(THEME_GIMMICKS).map(([t, g]) => `${t}=${g.join("/")}`).join(" · ") + "). " + DUNGEON_GIMMICKS.map((g) => `${g} ${GIMMICK_LABEL[g]}`).join(" · ") + " · none 장치 없음. 자리가 없으면 그 종류의 다음 장치로 바꾸고 경고한다 — 장치 이벤트를 따로 손으로 놓지 말 것." },
       inspiration: { type: "string", description: "사용자가 말한 게임·분위기 그대로(「엘든링 같은」「FF6 광산」「크로노 트리거 마법 왕국」). 종류(type)·배치(layout)·장치(gimmick)를 안 줬을 때 기본값을 정한다: " + DUNGEON_REFERENCES.map((r) => `${r.label} → ${r.type}${r.layout ? `·${r.layout}` : ""}${r.gimmick ? `·${r.gimmick}` : ""}`).join(" / ") + ". 종류 낱말(지하묘지·마계…)이 함께 오면 그 낱말이 이긴다." },
       floorShapes: { type: "array", maxItems: 5, items: { type: "string", enum: [...new Set([...TOWER_FLOOR_SHAPES, ...TOWER_TOP_SHAPES])] }, description: "위로 쌓는 탑의 층마다 꼴(아래층부터). 중간 층 ring 둥근 큰 방·gallery 긴 회랑 끝 링·cross 가운데 홀 사방 곁방·spiral 돌아 오르는 방 사슬·twin 양 날개 방, 꼭대기 ring·hall 알현 회랑·observatory 링 보스방+양옆 보물 방. 생략한 층은 시드(바로 아래층과 다른 꼴)." },
+      floorRooms: { type: "array", maxItems: 5, items: { type: "array", items: DUNGEON_ROOM_ITEM_SCHEMA }, description: "층마다 다른 방 목록(아래층부터, floors 2 이상). 각 원소는 rooms 와 같은 형식의 배열 — 예: 2층 요새 [[입구·안뜰·감방·창고·계단 홀],[막사·성벽 위 보스방]]. 생략한 층은 rooms·탑 꼴·size 규칙을 따른다." },
       floorGimmicks: { type: "array", maxItems: 5, items: { type: "string", enum: [...DUNGEON_GIMMICKS, "none"] }, description: "탑 중간 층마다 장치(아래층부터, 꼭대기는 gimmick). none = 그 층 장치 없음. 생략하면 씨앗으로 마법진." },
       layout: { type: "string", enum: [...DUNGEON_LAYOUTS], description: "층 배치 가족: linear 한 줄 사슬(곁방 하나) · hub 가운데 홀에서 갈래 · loop 고리로 돌아오는 지름길 · vertical 층을 쌓는다(floors 생략 시 2층, tower 는 3층 위로). 생략하면 시드로 고른다 — 같은 종류 두 번 요청도 배치가 달라진다." },
       gateStyle: { type: "string", enum: [...LEVER_GATE_STYLES], description: "레버 관문 그림(lever 장치·puzzle lever): portcullis = 문틀째 그린 내리닫이 쇠창살문 3×2 타일(당기면 올라간다, 지은 던전 기본) · bars = 옛 캐릭터 쇠창살 · rock = 바위(자연 굴 기본). 생략하면 종류 기본." },
@@ -780,19 +801,7 @@ export const AUTHOR_DUNGEON_TOOL: ToolDefinition = {
         minItems: 1,
         maxItems: 12,
         description: "방 목록(첫 방 = 입구). 보통 4~8개. 생략하면 size 로 입구 → 큰 홀 → 갈래 방들 → 보스방(+보물 방)을 정한다.",
-        items: {
-          type: "object",
-          properties: {
-            id: { type: "string", description: "방 이름표(from 에서 가리킨다). 생략하면 kind+순번" },
-            kind: { type: "string", enum: [...DUNGEON_ROOM_KINDS] },
-            w: { type: "integer", description: "바닥 가로 6~40(생략하면 종류별 기본)" },
-            h: { type: "integer", description: "바닥 세로 5~22(벽 앞면 3줄은 위에 따로 붙는다)" },
-            len: { type: "integer", description: "앞 방과 잇는 통로 길이(칸, 선택 — 긴 갱도·곧은 신전 축에)" },
-            shift: { type: "integer", description: "앞 방 가운데에서 옆으로 어긋나는 칸 수(선택 — 0 이면 정중앙 대칭)" },
-            from: { type: "string", description: "이어지는 앞 방 id 또는 kind(생략하면 바로 앞 방)" },
-            dir: { type: "string", enum: [...DUNGEON_DIRS], description: "앞 방의 어느 쪽 문에서 뻗나 N 북·S 남·W 서·E 동(생략하면 자동)" },
-          },
-        },
+        items: DUNGEON_ROOM_ITEM_SCHEMA,
       },
     },
   },

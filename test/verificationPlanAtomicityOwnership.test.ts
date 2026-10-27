@@ -3,7 +3,8 @@
 import { describe, expect, it } from "vitest";
 import { fixture, paths, rejected } from "./helpers/verificationPlanAtomicityFixture";
 
-describe.each(paths)("atomic verification adoption via %s", path => {
+// Heavy under CI load (15s default is too tight): runs real verification tools over full fixtures.
+describe.each(paths)("atomic verification adoption via %s", { timeout: 120_000 }, path => {
   it.each(["check_reachability", "run_lint", "run_scene_test", "run_action_combat_test"])("%s exact reuse preserves ownership and proof", async name => {
     const f = fixture(name);
     const original = await f.setup(name === "run_action_combat_test" ? "unverified" : "passed");

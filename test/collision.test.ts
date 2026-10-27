@@ -6,9 +6,11 @@ import { describe, it, expect } from "vitest";
 import { createBlankMap, createBlankProject, TILE, DEFAULT_SOLID_TILES } from "@/project/defaults";
 import { inBounds, isPassable, canMove, getTileset, tilePassability } from "@/project/collision";
 import type { GameMap, Project, PassFlag } from "@/project/types";
+// 합본 마을(EasyRPG) 칩셋의 타일 번호·그룹을 겨냥한 시험 — 2026-10-07 정리 뒤 새 프로젝트에 없어 옛 저장본처럼 다시 심는다.
+import { startOnRetiredCombinedTown } from "./support/retiredEasyRpgTilesets";
 
 function makeProject(): { project: Project; map: GameMap } {
-  const project = createBlankProject();
+  const project = startOnRetiredCombinedTown(createBlankProject());
   const map = project.maps[project.startMapId];
   return { project, map };
 }

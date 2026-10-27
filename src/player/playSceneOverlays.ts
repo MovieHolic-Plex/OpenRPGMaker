@@ -1,10 +1,10 @@
 import { BattleAdmissionError } from "@/project/battleAdmission";
-import type { Project } from "@/project/types";
+import type { Project, EndingContinueTo } from "@/project/types";
 import { getPlayerPreferences } from "@/player/playerPreferences";
 import { playCinematicSequence } from "@/player/cinematicSequence";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { store } from "@/project/store";
-import { gameOverOutcome, resolveGameOverSettings, type GameOverSettings, DEFAULT_GAME_OVER_BACKGROUND_RESOURCE_ID } from "@/project/cinematicSettings";
+import { gameOverOutcome, resolveGameOverSettings, type GameOverSettings, DEFAULT_GAME_OVER_BACKGROUND_RESOURCE_ID, DEFAULT_GAME_OVER_FADE_OUT_MS } from "@/project/cinematicSettings";
 import { createTerminalScene, type TerminalScene } from "@/player/terminalScene";
 import type { EndingPresentation } from "@/project/cinematicSettings";
 import { isCancelKey, isCinematicAdvanceKey, normalizeKey } from "@/player/keyBindings";
@@ -193,10 +193,11 @@ export function playGameOverPresentation(terminal: TerminalScene, project: Proje
   const style = settings?.presentation ?? "classic";
   const outcome = gameOverOutcome(settings);
   const timing = settings?.timing;
-  terminal.root.style.setProperty("--terminal-fade-ms", `${timing?.fadeOutMs ?? 900}ms`);
+  const fadeOutMs = timing?.fadeOutMs ?? DEFAULT_GAME_OVER_FADE_OUT_MS;
+  terminal.root.style.setProperty("--terminal-fade-ms", `${fadeOutMs}ms`);
   terminal.root.dataset.presentation = style;
   const run = async (): Promise<void> => {
-    if (!await terminal.wait(terminal.reducedMotion ? 0 : (timing?.fadeOutMs ?? 900))) return;
+    if (!await terminal.wait(terminal.reducedMotion ? 0 : fadeOutMs)) return;
     terminal.phase("silence");
     if (!await terminal.wait(timing?.silenceMs ?? (style === "horror" ? 750 : 180))) return;
     if (settings?.sequence?.enabled && settings.sequence.scenes.length) {
@@ -449,7 +450,7 @@ function fitOneLine(element: HTMLElement, from: number, to: number, unit: string
   element.style.whiteSpace = "";
 }
 
-export function showEndingScreen(scene: PlaySceneContext, title: string, message: string, presentation?: EndingPresentation, endingId?: string): void {
+export function showEndingScreen(scene: PlaySceneContext, title: string, message: string, presentation?: EndingPresentation, endingId?: string, continueTo?: EndingContinueTo): void {
   const terminal = createTerminalScene(scene, "ending", title || endingText("ending.heading"));
   if (!terminal) return;
   terminal.root.dataset.tone = presentation?.tone ?? "warm";
@@ -523,12 +524,17 @@ export function showEndingScreen(scene: PlaySceneContext, title: string, message
     // 부제와 요약 줄은 한 기둥 안에 흐른다 — 둘 다 절대 위치(55%·63%)였을 때 두 줄로 넘어간 엔딩 이름이
     // 「플레이 시간」 줄과 겹쳤다(시타마치 VQA before 12-ending-final).
     const meta = textNode("div", "ending-final-meta", "");
-    meta.append(textNode("div", "ending-final-caption", title));
+    // 큰 글자와 같은 이름을 한 번 더 쓰지 않는다 — 엔딩 이름을 finalTitle 로 그대로 둔 게임이 「마지막 밤의 손님들」을 두 줄 겹쳐 보였다(2026-10-27 toy-j91 J101).
+    const norm = (text: string): string => text.replace(/[\s「」『』"'·—-]/gu, "");
+    if (norm(title) !== norm(finalTitle.textContent ?? "")) meta.append(textNode("div", "ending-final-caption", title));
     const summary = endingSummaryLine(scene);
     if (summary) meta.append(textNode("div", "ending-final-summary", summary));
     final.append(meta);
     const actions = textNode("div", "game-over-actions", "");
-    const button = terminalButton("return-title", endingText("ending.returnTitle"), () => { void exitTerminal(terminal, () => scene.returnToTitle()); });
+    // 다음 막으로 이어지는 엔딩 — 타이틀 대신 그 맵으로 옮겨 이야기를 잇는다(EndingDef.continueTo).
+    const button = continueTo
+      ? terminalButton("continue-next", continueTo.label || endingText("ending.nextAct"), () => { void exitTerminal(terminal, () => { void scene.transferTo({ mapId: continueTo.mapId, x: continueTo.x, y: continueTo.y, direction: continueTo.direction ?? "down", fade: "black" }); }); })
+      : terminalButton("return-title", endingText("ending.returnTitle"), () => { void exitTerminal(terminal, () => scene.returnToTitle()); });
     actions.append(button); final.append(actions); terminal.root.append(final);
     const fitFinal = (): void => {
       if (!final.isConnected || terminal.root.dataset.monsterStyle === "emerald") return;

@@ -19,6 +19,7 @@ export const TOOL_ALIASES: readonly ToolAlias[] = [
   // ── 인물·성장·장비 ──
   { terms: ["배우", "캐릭터 만들", "파티원", "동료 만들", "주인공 만들", "actor", "character record", "party member"], tools: ["upsert_actor", "upsert_class", "upsert_character_profile"], label: "배우" },
   { terms: ["직업", "클래스", "class", "job"], tools: ["upsert_class", "define_promotion"], label: "직업" },
+  { terms: ["손님", "전투 중 합류", "합류했다", "원군", "지원군", "도우러 온", "guest", "battle guest"], tools: ["add_battle_guest", "simulate_battle"], label: "전투 중 손님" },
   { terms: ["연계기", "합체기", "듀얼 테크", "트리플 테크", "쿼드 테크", "4인 연계기", "협동기", "combo tech", "dual tech", "triple tech", "연계"], tools: ["upsert_combo_tech", "list_combo_techs", "upsert_skill"], label: "연계기(듀얼·트리플·4인 테크)" },
   { terms: ["유대", "파티원 유대", "동료 유대", "모닥불 대화", "모닥불 이야기", "누구와 이야기", "여관 밤", "party bond", "bond", "campfire talk"], tools: ["configure_party_bonds", "upsert_combo_tech"], label: "파티원 유대(모닥불 대화·문턱 해금)" },
   { terms: ["레벨업 연출", "레벨 업 연출", "기술 습득 연출", "새 기술 습득", "팡파레", "level up fanfare", "skill learned"], tools: ["set_project_settings"], label: "전투 결과 팡파레(battle.fanfare)" },
@@ -42,7 +43,8 @@ export const TOOL_ALIASES: readonly ToolAlias[] = [
   { terms: ["트룹", "적 구성", "전투 구성", "무리", "troop", "encounter group", "battle group"], tools: ["upsert_troop", "upsert_troop_battle_page"], label: "트룹" },
   { terms: ["전투 이벤트", "전투 페이지", "배틀 이벤트", "battle event", "battle page", "대사 전투 중", "페이즈 전환"], tools: ["upsert_troop_battle_page", "author_boss_phases"], label: "전투 이벤트 페이지" },
   { terms: ["보스 페이즈", "다단계 보스", "형태 변화", "boss phase", "phase"], tools: ["author_boss_phases", "upsert_troop_battle_page"], label: "보스 페이즈" },
-  { terms: ["필드 적", "보이는 적", "심볼 인카운터", "심볼", "추격 적", "field enemy", "symbol encounter", "visible enemy", "chase"], tools: ["place_field_enemy", "make_chase_scene", "set_factions"], label: "필드 적" },
+  { terms: ["필드 적", "보이는 적", "심볼 인카운터", "심볼", "추격 적", "field enemy", "symbol encounter", "visible enemy", "chase"], tools: ["place_field_enemy", "make_chase_scene", "set_factions", "set_field_detection"], label: "필드 적" },
+  { terms: ["시야", "부채꼴", "더 빨리 다가", "더 멀리서 알아", "순찰 예민", "경계 강화", "detection", "sight cone", "alert time"], tools: ["set_field_detection", "tune_field_enemies"], label: "적 알아채기·다가오기 조율" },
   { terms: ["랜덤 인카운터", "조우", "인카운터", "encounter", "random battle", "wild"], tools: ["set_encounter_table", "make_hunting_ground", "author_wild_route"], label: "랜덤 조우" },
   { terms: ["밸런스", "난이도", "시뮬레이션", "승률", "simulate", "balance", "difficulty"], tools: ["simulate_battle", "tune_enemy", "evaluate_game_quality"], label: "전투 시뮬" },
   { terms: ["전투 연출", "배틀 애니", "전투 애니메이션", "battle animation", "battle fx", "효과"], tools: ["upsert_battle_animation", "read_directing_guide", "list_fx_sheets"], label: "전투 연출" },

@@ -63,13 +63,7 @@ describe("web export runtime assets — 폐기된 starter 전투 시트", () => 
 });
 
 describe("web export runtime assets", () => {
-  it("includes default terminal art even when no resource profile or game-over settings reference it", () => {
-    const project = createBlankProject();
-    delete project.system.gameOver;
-    project.resourceProfiles = project.resourceProfiles.filter(row => row.kind !== "gameOver");
-    const paths = collectWebExportAssets(project).map(asset => asset.zipPath);
-    expect(paths).toContain("assets/easyrpg/game-over/Game Over.png");
-  });
+  // 기본 게임오버 그림(EasyRPG Game Over.png)은 2026-10-07 저작권 정리로 지웠다 — 「기본 그림을 늘 싣는다」 사례는 은퇴(retiredAssets.ts 가 그 id 를 건너뛴다).
   it("drops life-ledger art from a project that has no life-ledger data", () => {
     // Given
     const project = createBlankProject();
@@ -90,7 +84,10 @@ describe("web export runtime assets", () => {
 
     // Then
     for (const path of farmingCardPaths) expect(required.has(path)).toBe(true);
-    expect(required.size).toBe(PLAYER_RUNTIME_ASSET_PATHS.length);
+    // 다른 조건부 묶음(#3302 의 에메랄드 전투 배경 등)은 이 프로젝트에서 꺼져 있으니 빠진다 — 무조건 경로 + 생활 장부 그림만 남는다.
+    const conditional = new Set(conditionalRuntimeAssetPaths());
+    const expected = PLAYER_RUNTIME_ASSET_PATHS.filter((path) => !conditional.has(path) || farmingCardPaths.includes(path));
+    expect([...required].sort()).toEqual([...expected].sort());
   });
 
   it("keeps every runtime asset that no conditional group claims", () => {

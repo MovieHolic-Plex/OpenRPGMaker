@@ -51,16 +51,17 @@ const FLOOR = resolve(process.cwd(), "test/fixtures/eventEditorPortalSurface.flo
 // 2026-09-23: 탭 1 에 「아이템 제시」(presentItem) 버튼이 더해져 탭 1·그리드·즐겨찾기 해시를 갱신했다.
 // 2026-10-13: 탭 2·3·4 에 파티/전투/연출 명령이 더해져 그 세 탭 해시만 갱신했다.
 // 2026-10-25: 탭 3 에 「승강기 타기」(m2-226-lift-ride)가 더해져 탭 3 해시만 갱신했다(#3509).
+// 2026-10-26: 탭 1·즐겨찾기·그리드에 「일지」(m2-227-journal-line)가 더해져 그 세 해시를 갱신했다(#3546).
 const PRE_FEATURE_PICKER_CONTROL_SHA256 = {
-  commandPicker: "3943af8350cc4374023d49d2e894f9e4c1ca1f538912c8ba57c6638999b9d1f4",
+  commandPicker: "f591d01fe4686b6bd08656b9cf22ed30539be91c7cb596b8aff74ef74c60fb13",
   commandPickerTab2: "03aa5e4513d6d74f2b777adb102676559b67656765e68c79080095c305138ea9",
   commandPickerTab3: "71cbfedd8f1be6481f105c787337b059b5c4ac2e6b6b4b50ec1a5140429e5e0d",
   commandPickerTab4: "b9261a8d0bd1b7f1418280002db1831e5c045c060a6fc2b360c0db51513bacf1",
   commandPickerSearch: "8ed69ecef4ef73962ab06aafa4c8a340684783e3fc833ba7f110d3170f8b1366",
   commandPickerSearchInformational: "1f94b355d4aa302c096fd5fd0c3f7d0d70abb5543bba8b752d0b20893ae5f5dc",
   commandPickerSearchEmpty: "9958c02a4288731e18cf62a97656f15b6f5bdc1a4da839ff508539b1851c587d",
-  commandPickerFavorites: "3370483819d3a3ebb605d9e4081a30429c880ec7589089210f6888b11740d7a4",
-  commandPickerGrid: "3943af8350cc4374023d49d2e894f9e4c1ca1f538912c8ba57c6638999b9d1f4",
+  commandPickerFavorites: "a9b7c925be73e06bf7c11b05104dc8a14eeae0d12834200fdbe7e6de44f2de06",
+  commandPickerGrid: "f591d01fe4686b6bd08656b9cf22ed30539be91c7cb596b8aff74ef74c60fb13",
 } as const;
 
 /**

@@ -35,7 +35,11 @@ assertCiOnlyTests("npm run gates");
 const DEFAULT_BASELINE = resolve(process.cwd(), ".omo/gates-baseline.json");
 const args = process.argv.slice(2);
 const flag = (name) => args.includes(name);
+// `--name value` 와 `--name=value` 둘 다 받는다. ci-full.yml 은 `--flake-budget-min=40` 으로 넘겨 왔는데
+// 예전에는 `=` 형식을 못 읽어 조용히 기본값(20분)이 쓰였다.
 const value = (name, fallback) => {
+  const inline = args.find((arg) => arg.startsWith(`${name}=`));
+  if (inline) return inline.slice(name.length + 1) || fallback;
   const index = args.indexOf(name);
   return index >= 0 && args[index + 1] ? args[index + 1] : fallback;
 };
@@ -424,6 +428,18 @@ if (baseline) {
     });
     regressions.push(...classified.regressions);
     report.newFileFailures = classified.newFileFailures;
+    // 기준선은 줄기만 한다(2026-10-26): 기준선에 실패로 적힌 파일이 이번에 돌아서 통과했으면 기준선에서
+    // 빼야 한다 — 남겨 두면 그 파일이 다시 깨져도 아무도 모른다. 태그가 timeout 인 항목(부하에 따라
+    // 흔들리는 시간 초과)만 경고로 둔다. 태그는 baseline.tests.failedFileTags 에 있다.
+    const ranHere = new Set(report.tests.testFiles ?? []);
+    const failedHere = new Set(report.tests.failedFiles ?? []);
+    const tags = baseline.tests.failedFileTags ?? {};
+    const stale = (baseline.tests.failedFiles ?? []).filter((file) => ranHere.has(file) && !failedHere.has(file));
+    report.staleBaselineEntries = stale;
+    for (const file of stale) {
+      if (tags[file] === "timeout") continue;
+      regressions.push(`tests ${file}: 통과했다 — .omo/gates-baseline.json 의 failedFiles·failedFileTags 에서 빼라`);
+    }
     report.testAttribution = novelty.method;
   }
 }
@@ -447,7 +463,15 @@ for (const failure of report.browser?.failures ?? []) regressions.push(`browser 
 // 예산(기본 20분)을 넘긴 후보는 판정하지 않고 회귀로 남긴다. `--no-flake-retry` 로 끈다.
 const flakeRetries = [];
 let budgetSkipped = 0;
-if (baseline && regressions.length > 0 && !flag("--no-flake-retry")) {
+// 후보가 상한(--flake-max-candidates, 기본 30)을 넘으면 기준선이 낡은 것이다 — 재확인은 시간만 먹고
+// (건당 약 3분) 잡 상한에 걸려 리포트 업로드까지 잘렸다(2026-10-25 ci-full 40240616953). 그때는 건너뛴다.
+const flakeCandidateCount = regressions.filter((entry) => /^tests test\/\S+\.ts: 새로 실패$/u.test(entry)).length;
+const flakeCandidateCap = Number(value("--flake-max-candidates", "30")) || 30;
+const flakeSkippedForCap = flakeCandidateCount > flakeCandidateCap;
+if (flakeSkippedForCap && !flag("--no-flake-retry")) {
+  console.log(`[verify-gates] 새 실패 후보 ${flakeCandidateCount}건 > 상한 ${flakeCandidateCap} — 기준선이 낡았다. 플레이크 재확인을 건너뛴다.`);
+}
+if (baseline && regressions.length > 0 && !flag("--no-flake-retry") && !flakeSkippedForCap) {
   // 예산 20분은 **로컬 반복용** 기본값이다. CI 에서는 모자란다.
   //
   // 건당 비용 실측(2026-09-18) — 두 값이 크게 다르니 주의하라:
@@ -501,6 +525,7 @@ if (baseline && regressions.length > 0 && !flag("--no-flake-retry")) {
   regressions.push(...kept);
 }
 report.flakeRetries = flakeRetries;
+if (flakeSkippedForCap) report.flakeSkippedForCap = { candidates: flakeCandidateCount, cap: flakeCandidateCap };
 
 report.baseline = baseline ? baselinePath : null;
 report.regressions = regressions;

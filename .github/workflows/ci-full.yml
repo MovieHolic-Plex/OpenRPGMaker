@@ -123,11 +123,16 @@ jobs:
   tests:
     runs-on: ubuntu-latest
     # 호스티드 잡 상한은 6시간이다. 샤드 하나와 그 샤드의 플레이크 재확인이 여기 들어온다.
-    timeout-minutes: 240
+    # 2026-10-25: 샤드 넷은 240분에 잘려 리포트 업로드가 건너뛰어졌다 → 샤드 여덟, 잡 300분,
+    # vitest 단계는 280분에 스스로 끊겨 뒤의 always() 보관·업로드 단계가 돌 시간을 남긴다.
+    # 2026-10-26: 8샤드에서도 샤드 1(AI 세션 테스트가 몰린 샤드)이 55~80분에 러너째 사라졌다
+    # (「The operation was canceled」, always() 단계까지 건너뜀 — 러너 메모리 고갈로 본다). 같은 파일을
+    # 반씩(--shard=1/16·2/16) 돌리면 둘 다 끝났다(ci-vitest-files 40308924284·40308932285) → 샤드 16.
+    timeout-minutes: 300
     strategy:
       fail-fast: false
       matrix:
-        shard: [1, 2, 3, 4]
+        shard: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
@@ -142,19 +147,25 @@ jobs:
       - name: bun 설치
         run: npm install -g bun@1.4.2 && bun --version
 
+      # 하네스 테스트(joseonBaram)가 python3 관문 스크립트(mapgate.py·gate.py)를 부르고, 그 스크립트가 numpy·Pillow 를 쓴다.
+      # 러너의 시스템 python 은 PEP 668 로 막혀 있어 --break-system-packages 로 버전을 고정해 깐다.
+      - name: python 의존성 (numpy·Pillow)
+        run: python3 -m pip install --user --break-system-packages numpy==2.4.4 pillow==12.1.1 && python3 -c "import numpy, PIL; print(numpy.__version__, PIL.__version__)"
+
       - run: npm ci
 
       - name: 자원 스냅샷 (시작)
         run: node scripts/ci-resource-report.mjs start
 
       # --flake-budget-min: 이 샤드에서 「새로 실패」한 파일을 단독으로 다시 보는 시간.
-      # 샤드가 넷이라 잡마다 40분. 후보가 수십 건이면 기준선이 낡은 것이다.
+      # 샤드마다 40분. 후보가 상한(30)을 넘으면 재확인 자체를 건너뛴다. 후보가 수십 건이면 기준선이 낡은 것이다.
       - name: vitest 샤드 (기준선 대비 회귀만 실패)
-        run: node scripts/verify-gates.mjs --only tests --shard ${{ matrix.shard }}/4 --flake-budget-min=40
+        timeout-minutes: 280
+        run: node scripts/verify-gates.mjs --only tests --shard ${{ matrix.shard }}/16 --flake-budget-min=40 --flake-max-candidates=30
 
       - name: 자원 리포트
         if: always()
-        run: node scripts/ci-resource-report.mjs report "vitest 샤드 ${{ matrix.shard }}/4"
+        run: node scripts/ci-resource-report.mjs report "vitest 샤드 ${{ matrix.shard }}/16"
 
       # 호스티드 러너 디스크는 잡이 끝나면 사라진다. 판정 파일은 아티팩트로 올린다.
       # 계정 아티팩트 쿼터가 차 있으면 이 단계가 게이트를 실패시키진 않는다.
@@ -170,7 +181,7 @@ jobs:
           git rev-parse HEAD > "$dest/commit.txt"
           ls -la "$dest"
           {
-            echo "### vitest 리포트 (shard ${{ matrix.shard }}/4)"
+            echo "### vitest 리포트 (shard ${{ matrix.shard }}/16)"
             echo ""
             echo "판정 파일은 이 잡의 아티팩트 \`gates-report-shard-${{ matrix.shard }}\` 에 있다."
           } >> "$GITHUB_STEP_SUMMARY"

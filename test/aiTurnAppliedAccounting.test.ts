@@ -20,9 +20,16 @@ import { runTool } from "@/editor/tools/toolRunner";
 import { getTool } from "@/editor/tools";
 import { store } from "@/project/store";
 import { installFakeDom } from "./fakeDom";
+import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
+import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import { HISTORICAL_PLACEMENT_CORRECTION } from "./fixtures/placementRequests";
 import { isProposalCompletenessWarning } from "@/ai/proposalCompleteness";
 import { FLOOR_PAINT_ARGS, WALL_PAINT_ARGS, PRESERVED_PAINT_SPEC, preservedPaintContext } from "./fixtures/preservedPaint";
+
+// Tests here build the ~63MB blank project (createBlankProject) and drive assistant sessions or editor
+// panels over it, fingerprinting/copying it per session. Under ci-full load (8 workers on 4-core runners)
+// single tests measured 10-50s, past vitest's 15s default, so the budget is raised for this file only.
+vi.setConfig({ testTimeout: 120_000 });
 
 const observed = vi.hoisted(() => ({
   activity: vi.fn(async () => ({})),
@@ -135,8 +142,10 @@ describe("panel map completeness selection", () => {
   });
 
   it("uses the real session's plural selection instead of the most recent spec", async () => {
-    const ctx = { project: store.getCurrent() };
-    for (const id of ["a", "b"]) expect(runTool(ctx, "create_map", { id, name: id, width: 20, height: 20 }).ok).toBe(true);
+    // Tile 281 and the spec's terrain vocabulary are the retired combined-town sheet's; on the default beodeul_city
+    // the tileset-reference read gate refuses paint_tiles before completeness is measured.
+    const ctx = { project: withRetiredEasyRpgTilesets(store.getCurrent()) };
+    for (const id of ["a", "b"]) expect(runTool(ctx, "create_map", { id, name: id, width: 20, height: 20, tilesetId: COMBINED_TOWN_TILESET_ID }).ok).toBe(true);
     store.replace(ctx.project);
     const calls = [...["a", "b"].map(mapId => ({ name: "set_build_spec", args: { mapId, assets: [
       { id: "paint", kind: "terrain", x: 3, y: 3, w: 3, h: 3 },
@@ -185,7 +194,8 @@ describe("running-tool event target forwarding", () => {
     });
     // Then: ownership comes from the event; even unknown activity stays in chat.
     expect(observedState).toMatchObject({ runningToolMapId: owner });
-    expect(h.deps.surface.startLiveActivity).toHaveBeenCalledWith("get_map_region", 1);
+    // The live activity row now also receives the tool's args (aiTurnRunner forwards event.args).
+    expect(h.deps.surface.startLiveActivity).toHaveBeenCalledWith("get_map_region", 1, args);
   });
 
   it("forwards the tool target instead of the viewed map or selected region map", async () => {
@@ -212,7 +222,7 @@ describe("running-tool event target forwarding", () => {
     await regionRunner.sendSelectionRegionTask("inspect target");
     // Then: neither the viewed map nor the selection replaces the tool target.
     expect(observedState).toMatchObject({ runningToolMapId: "a" });
-    expect(h.deps.surface.startLiveActivity).toHaveBeenCalledWith("get_map_region", 1);
+    expect(h.deps.surface.startLiveActivity).toHaveBeenCalledWith("get_map_region", 1, { mapId: "a" });
   });
 });
 
@@ -377,7 +387,9 @@ describe("applied baseline across rejected and unrelated requests", () => {
         if (writerRound++ > 0) return { message: { role: "assistant", content: "Writer finished" }, finishReason: "stop" };
         if (turn === 2) expect(session.getProposedProject().system.titleScreen?.title).toBe("Kept approved title");
         const args = turn === 0 ? { title: "Kept approved title" } : turn === 1 ? { title: "Rejected title" }
-          : { showInputHint: !session.getProposedProject().system.titleScreen?.showInputHint };
+          // An unrelated title-screen field. (showInputHint was the old choice; it is a legacy JSON field since
+          // 2026-09-25 and set_title_screen no longer accepts it.)
+          : { menuLabels: { newGame: "Begin anew" } };
         return { message: { role: "assistant", content: null, tool_calls: [{ id: `turn-${turn}`, type: "function", function: {
           name: "set_title_screen", arguments: JSON.stringify(args) } }] }, finishReason: "tool_calls" };
       },
@@ -406,7 +418,7 @@ describe("applied baseline across rejected and unrelated requests", () => {
     expect(session.baselineProject.system.titleScreen?.title).toBe("Kept approved title");
     expect(session.syncBaselineFromStoreIfClean(store.getCurrent())).toBe(false);
     turn = 2; writerRound = 0;
-    const unrelated = await session.sendUserMessage("Change only the input hint", () => {}, undefined, { autonomous });
+    const unrelated = await session.sendUserMessage("Change only the new-game menu label", () => {}, undefined, { autonomous });
     expect(unrelated.review?.status).toBe("approved");
     if (!autonomous) expect(await host.applyProposal(unrelated.proposedCalls)).toBe("applied");
     expect(store.getCurrent().system.titleScreen?.title).toBe("Kept approved title");

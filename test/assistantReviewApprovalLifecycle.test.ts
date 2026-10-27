@@ -10,8 +10,14 @@ import { getMapEditHistoryState, resetMapEditHistory, undoMapEdit } from "@/edit
 import { store } from "@/project/store";
 import { createBlankProject } from "@/project/defaults";
 import { installFakeDom } from "./fakeDom";
+import { installMemoryProjectSession } from "./support/projectSession";
 import { fixedDeclarer } from "./intentFixture";
 import { independentReviewPayload } from "./independentReviewFixture";
+
+// Tests here build the ~63MB blank project (createBlankProject) and drive assistant sessions or editor
+// panels over it, fingerprinting/copying it per session. Under ci-full load (8 workers on 4-core runners)
+// single tests measured 10-50s, past vitest's 15s default, so the budget is raised for this file only.
+vi.setConfig({ testTimeout: 120_000 });
 
 const final = (content: string): ChatResult => ({ message: { role: "assistant", content }, finishReason: "stop" });
 
@@ -33,6 +39,7 @@ async function bounded<T>(signal: Promise<T>): Promise<T> {
 }
 
 let restoreDom: () => void;
+let disposeStorage: (() => void) | null = null;
 beforeEach(() => {
   restoreDom = installFakeDom();
   store._setPersistenceStateForTest({ loaded: false, remotePersistenceEnabled: false, disabledReason: null });
@@ -41,6 +48,7 @@ beforeEach(() => {
   vi.stubGlobal("fetch", vi.fn<typeof fetch>(async () => new Response(null, { status: 201 })));
 });
 afterEach(() => {
+  disposeStorage?.(); disposeStorage = null;
   vi.clearAllTimers(); vi.useRealTimers();
   restoreDom(); vi.restoreAllMocks(); vi.unstubAllGlobals(); vi.unstubAllEnvs();
 });
@@ -152,7 +160,18 @@ describe("review approval ownership", () => {
   });
 
   it("retries an already-applied persistence proof without replaying writes or review", async () => {
-    // Given a real reviewed/direct apply whose proof failed with storage disabled.
+    // Given a project the store really loaded from its repository (boot normalization included), with remote
+    // persistence then switched off. A project put in with store.replace(createBlankProject()) is not normalized,
+    // so its save would never read back to the accepted identity — the app always loads first.
+    // (The LegacyDb PostgREST adapter this used to stub over fetch is gone; the store reaches storage only through
+    // the repository port.)
+    const storage = installMemoryProjectSession();
+    disposeStorage = () => storage.dispose();
+    await storage.seed(createBlankProject());
+    await store.load();
+    store._setPersistenceStateForTest({ loaded: true, remotePersistenceEnabled: false, disabledReason: null });
+    resetMapEditHistory();
+    // And a real reviewed/direct apply whose proof failed with storage disabled.
     const f = fixture();
     const result = await f.session.sendUserMessage("Change title");
     expect(await f.host.applyProposal(result.proposedCalls)).toBe("applied");
@@ -160,23 +179,8 @@ describe("review approval ownership", () => {
     const applied = store.getCurrent();
     const replace = vi.spyOn(store, "replace");
 
-    // When storage recovers, exercise the real save/read proof over a local wire fixture.
+    // When storage recovers, exercise the real save/read proof.
     vi.useFakeTimers(); // Disable unrelated autosave, not the proof's explicit flush/read.
-    vi.stubEnv("VITE_LEGACY_DB_USE_PROXY", "0");
-    vi.stubEnv("VITE_LEGACY_DB_URL", "http://r3-proof.invalid");
-    vi.stubEnv("VITE_LEGACY_DB_ANON_KEY", "fixture-anon");
-    vi.stubEnv("VITE_LEGACY_DB_PROJECT_ID", "r3-local-proof");
-    vi.stubGlobal("window", { location: { hostname: "127.0.0.1", pathname: "/", search: "" },
-      localStorage: { getItem: () => null, setItem: () => {}, removeItem: () => {} } });
-    const rows = new Map<string, string>();
-    vi.stubGlobal("fetch", vi.fn<typeof fetch>(async (input, init) => {
-      const path = new URL(String(input)).pathname;
-      if (!["/rest/v1/projects", "/rest/v1/maps", "/rest/v1/tilesets"].includes(path)) throw new Error(`Unexpected proof transport: ${path}`);
-      if (init?.method === "DELETE") rows.delete(path);
-      else if (init?.method && init.method !== "GET") rows.set(path,
-        path === "/rest/v1/projects" ? `[${String(init.body)}]` : String(init.body));
-      return new Response(rows.get(path) ?? "[]", { headers: { "Content-Type": "application/json" } });
-    }));
     store._setPersistedBaselineForTest(null);
     store._setPersistenceStateForTest({ loaded: true, remotePersistenceEnabled: true, disabledReason: null });
     await f.session.retryLastTurn();
@@ -187,5 +191,6 @@ describe("review approval ownership", () => {
     expect(f.reviewCalls()).toBe(0);
     expect(replace).not.toHaveBeenCalled();
     expect(store.getCurrent()).toBe(applied);
+    expect(storage.repository.rows.has(storage.target.projectId)).toBe(true);
   });
 });

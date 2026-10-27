@@ -10141,6 +10141,592 @@
    ],
    "verify": "configure_story_journal(writers 이리스·카엘, lines write 여러 개 + erase + reread) / meta.oprnStoryJournal 존재 / 이벤트에 Journal Line write·erase·reread / 출하 플레이어 ESC 메뉴 일지에 줄이 쌓이고 지운 줄이 흐리게, 다시 읽은 뒤 되살아남 / 세이브·로드 뒤 일지 유지",
    "suiteCategory": "fs-journal"
+  },
+  {
+   "category": "game",
+   "kind": "logic",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "startBuild": [
+    {
+     "tool": "author_beodeul_town",
+     "args": {
+      "mapId": "map_blank_start",
+      "name": "버들 마을",
+      "houseCount": 4,
+      "theme": "river",
+      "seed": 11
+     }
+    },
+    {
+     "tool": "place_npc",
+     "args": {
+      "mapId": "map_blank_start",
+      "id": "npc_chief",
+      "name": "촌장",
+      "x": 20,
+      "y": 16,
+      "movement": "fixed",
+      "graphic": {
+       "query": "노인 남성"
+      },
+      "pages": [
+       {
+        "lines": [
+         "어서 오게, 버들 마을일세."
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "tool": "place_npc",
+     "args": {
+      "mapId": "map_blank_start",
+      "id": "npc_smith",
+      "name": "대장장이",
+      "x": 14,
+      "y": 20,
+      "movement": "fixed",
+      "graphic": {
+       "query": "아저씨"
+      },
+      "pages": [
+       {
+        "lines": [
+         "망치 소리 좋지?"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "id": "fs2-battle-guest",
+   "prompt": "회수자 HP 60% 되면 발렌이 손님으로 들어와서 자동으로 싸우게 해 줘. 얼음 위에서 등 같이 띄웠을 때만.",
+   "requires": [
+    "회수자 적·트룹과 발렌 배우(없으면 upsert_enemy·upsert_troop·upsert_actor)",
+    "add_battle_guest atEnemyHpPercent 60",
+    "requireSwitchId 로 「등 같이 띄움」 스위치 조건",
+    "전투 페이지 changeParty 로 흉내내지 않음"
+   ],
+   "verify": "add_battle_guest(troopId 회수자 트룹, actorId 발렌, atEnemyHpPercent 60, enemyId 회수자, requireSwitchId) / troop.battleGuests 에 발렌 1건·조건 enemyHpBelow 60 + switch / simulate_battle switchesOn 으로 phaseCoverage battle-guest firedRuns>0 / 파티(startActorIds)에 발렌 없음",
+   "suiteCategory": "fs2-guest"
+  },
+  {
+   "category": "game",
+   "kind": "logic",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "startBuild": [
+    {
+     "tool": "author_beodeul_town",
+     "args": {
+      "mapId": "map_blank_start",
+      "name": "버들 마을",
+      "houseCount": 4,
+      "theme": "river",
+      "seed": 11
+     }
+    },
+    {
+     "tool": "create_map",
+     "args": {
+      "id": "map_act2_cell",
+      "name": "감방",
+      "width": 20,
+      "height": 15,
+      "tilesetId": "atlas_biome_interior"
+     }
+    },
+    {
+     "tool": "define_ending",
+     "args": {
+      "id": "end_act1",
+      "name": "제1막 · 떨어진 별",
+      "conditions": [],
+      "presentation": {
+       "kicker": "제1막 끝",
+       "credits": "제2막에서 계속됩니다."
+      }
+     }
+    },
+    {
+     "tool": "place_npc",
+     "args": {
+      "mapId": "map_blank_start",
+      "id": "npc_chief",
+      "name": "촌장",
+      "x": 20,
+      "y": 16,
+      "movement": "fixed",
+      "graphic": {
+       "query": "노인 남성"
+      },
+      "pages": [
+       {
+        "lines": [
+         "어서 오게."
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "id": "fs2-act-continue",
+   "prompt": "촌장한테 말 걸면 제1막이 끝나게 해 줘. 엔딩 화면은 그대로 보여 주고, 타이틀로 돌아가지 말고 「제2막으로」를 누르면 감방 맵(map_act2_cell) 가운데서 제2막이 시작되게. 감방에 들어가면 「제2막」 한 줄이 먼저 나오게.",
+   "requires": [
+    "엔딩 end_act1 은 그대로 기록(triggerEnding)",
+    "엔딩 마지막 버튼이 타이틀이 아니라 다음 막으로",
+    "map_act2_cell 로 옮김",
+    "감방 첫 장면 자동 실행 한 번"
+   ],
+   "verify": "define_ending end_act1 continueTo {mapId:map_act2_cell, x,y 통행 칸, label 「제2막으로」} / 촌장 이벤트에 triggerEnding end_act1 / map_act2_cell 에 auto 트리거 페이지(스위치로 한 번) / transfer·returnToTitle 로 흉내내지 않음(엔딩 기록이 남아야 한다)",
+   "suiteCategory": "fs2-act-continue"
+  },
+  {
+   "category": "game",
+   "kind": "logic",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "startBuild": [
+    {
+     "tool": "author_beodeul_town",
+     "args": {
+      "mapId": "map_blank_start",
+      "name": "버들 마을",
+      "houseCount": 4,
+      "theme": "river",
+      "seed": 11
+     }
+    },
+    {
+     "tool": "place_npc",
+     "args": {
+      "mapId": "map_blank_start",
+      "id": "npc_baker",
+      "name": "빵집 아주머니",
+      "x": 20,
+      "y": 16,
+      "movement": "fixed",
+      "graphic": {
+       "query": "여성 상인"
+      },
+      "pages": [
+       {
+        "lines": [
+         "어서 와요."
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "id": "fs2-night-variant",
+   "prompt": "이 마을의 「점령된 밤」 판을 따로 하나 만들어 줘. 길·집은 그대로인데 사람들은 다 집에 들어가 있고, 집 문은 「통금이다」 하고 안 열리게. 밤이니까 어둡게.",
+   "requires": [
+    "원본 맵은 그대로 둔다",
+    "새 맵에 사람 NPC 이벤트가 없다",
+    "문 이벤트는 남되 이동하지 않고 한 줄만 보여 준다",
+    "새 맵이 어둡다(밤 분위기)"
+   ],
+   "verify": "duplicate_map events:\"doors\" + lockedDoorText / 새 맵 events 가 문(이전 transfer 자리)뿐, 페이지 명령이 text 한 줄 / map_blank_start 이벤트 수 불변 / set_scene_mood 또는 set_lighting_volume 로 밤 / 사람 이벤트를 하나씩 remove_event 로 지우는 대신 한 번에",
+   "suiteCategory": "fs2-night-variant"
+  },
+  {
+   "category": "game",
+   "kind": "logic",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "startBuild": [
+    {
+     "tool": "author_beodeul_town",
+     "args": {
+      "mapId": "map_blank_start",
+      "name": "버들 마을",
+      "houseCount": 4,
+      "theme": "river",
+      "seed": 11
+     }
+    },
+    {
+     "tool": "create_map",
+     "args": {
+      "id": "map_tower_top",
+      "name": "탑 꼭대기",
+      "width": 20,
+      "height": 15,
+      "tilesetId": "atlas_biome_interior"
+     }
+    }
+   ],
+   "id": "fs2-well-lift",
+   "prompt": "마을 우물 밑으로 사다리 타고 내려가면 작은 지하 승강구가 있고, 거기서 승강 장치를 타면 탑 꼭대기(map_tower_top)로 올라가게 해 줘. 탑에서 승강 장치 타면 다시 내려오게.",
+   "requires": [
+    "우물 조사 → 지하 맵으로 이동",
+    "지하에서 우물로 돌아가는 사다리",
+    "승강 장치 위로 → map_tower_top 도착 연출",
+    "탑에서 아래로 되돌아오는 승강 장치"
+   ],
+   "verify": "build_hand_interior_room(지하 승강구) / place_lift toMapId map_tower_top + 반대 방향 place_lift / 도착 스위치가 project.switches 에 있음(참조 검증 통과) / 승강기를 바닥 칸+페이드로 흉내내지 않음",
+   "suiteCategory": "fs2-well-lift"
+  },
+  {
+   "category": "game",
+   "kind": "logic",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "startBuild": [
+    {
+     "tool": "author_beodeul_town",
+     "args": {
+      "mapId": "map_blank_start",
+      "name": "성벽 마을",
+      "houseCount": 4,
+      "theme": "river",
+      "seed": 11
+     }
+    }
+   ],
+   "id": "fs2-route-from-cell",
+   "prompt": "마을 북쪽 성벽은 허물지 말고, 북쪽 끝 벽의 돌 하나를 조사하면 개구멍으로 빠져나가 북쪽 들판(두 장, 어둡고 안개)으로 가게 해 줘. 들판 입구로 돌아오면 다시 그 벽 앞으로.",
+   "requires": [
+    "시작 맵 성벽·가장자리 타일 불변(길을 새로 내지 않음)",
+    "벽 칸 조사 이벤트 → 들판 1 입구",
+    "들판 1 입구 → 마을 벽 앞으로 돌아오는 이벤트",
+    "들판 두 장이 서로 이어짐"
+   ],
+   "verify": "author_forest_route terrain:field linkFrom:false count 2 moods / 결과 data.maps[0].entry 로 벽 이벤트 transfer·돌아오는 이벤트 / map_blank_start 가장자리 lowerTiles 변화 없음",
+   "suiteCategory": "fs2-route-from-cell"
+  },
+  {
+   "category": "game",
+   "kind": "logic",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "startBuild": [
+    {
+     "tool": "author_beodeul_town",
+     "args": {
+      "mapId": "map_blank_start",
+      "name": "국경 마을",
+      "houseCount": 4,
+      "theme": "river",
+      "seed": 17
+     }
+    }
+   ],
+   "id": "fs2-fortress-door",
+   "prompt": "마을 북쪽 길 끝에 성채 요새를 지어 줘. 성문 홀, 안뜰, 감방, 무기고, 꼭대기 지휘실 순서로. 마을 북쪽 끝에서 바로 들어가게 이어 줘.",
+   "requires": [
+    "요새 맵(성 문법 방 5~6개)",
+    "마을 북쪽 끝 ↔ 요새 입구 양방향 이동",
+    "요새 안 보이는 적·상자"
+   ],
+   "verify": "author_dungeon type castle rooms(entrance·hall·cell·storage·boss) + entrance{fromMapId, x,y} 한 번 / 문으로 들어가는 1층(entryStair kind door)도 연결 성공(transfer-retrigger 없이) / link_world_entrance 를 따로 또 부르지 않음",
+   "suiteCategory": "fs2-fortress-door"
+  },
+  {
+   "category": "game",
+   "kind": "logic",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "startBuild": [
+    {
+     "tool": "author_dungeon",
+     "args": {
+      "type": "castle",
+      "adapter": "beodeul",
+      "genre": "rpg",
+      "name": "관문 요새",
+      "id": "map_fort",
+      "size": "medium",
+      "populate": false,
+      "seed": 5
+     }
+    }
+   ],
+   "id": "fs2-rival-knight-join",
+   "prompt": "요새(map_fort) 보스방에 붉은 갑옷 여기사가 경비견 둘을 데리고 막아서게 해 줘. 지면 게임 오버 말고 요새 감방에서 깨어나 다시 도전하고, 이기면 창을 돌려줄지 맡아 둘지 고른 뒤 동료로 합류해.",
+   "requires": [
+    "여기사 동료 배우(걷기 칩·얼굴·전투 시트가 한 사람)",
+    "적 판 여기사 + 경비견 둘 무리",
+    "전투 지면 감방으로 이동(게임 오버 아님)",
+    "이기면 선택지 둘 → 합류"
+   ],
+   "verify": "upsert_actor + upsert_enemy(monsterResourceId 에 걷기 칩 전투 시트 charset-battler-*) + upsert_troop / 이벤트 battleProcessing canLose:true branchOnResult defeatBranch 이동·victoryBranch choices + changeParty add / 새 사람 그림 생성 없음",
+   "suiteCategory": "fs2-rival-knight-join"
+  },
+  {
+   "category": "game",
+   "kind": "logic",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "startBuild": [
+    {
+     "tool": "author_dungeon",
+     "args": {
+      "type": "castle",
+      "adapter": "beodeul",
+      "genre": "rpg",
+      "name": "북쪽 요새",
+      "id": "map_fort",
+      "size": "small",
+      "populate": false,
+      "seed": 9
+     }
+    }
+   ],
+   "id": "fs2-snow-gap-vault",
+   "prompt": "요새(map_fort) 북문 계단에서 나가면 눈 덮인 고갯길 두 장이 이어지게 해 줘. 길 중간에 얼음 틈이 두 군데 있고, 창을 든 동료(actor_hero)가 있어야 장대처럼 짚고 뛰어넘을 수 있어. 고개 위엔 모닥불.",
+   "requires": [
+    "설원 길 두 장(요새 가장자리를 파지 않음)",
+    "요새 안 정한 칸 ↔ 첫 설원 길 입구 이벤트 연결",
+    "얼음 틈 두 곳이 실제로 막힘",
+    "틈마다 동료 조건 장대 도약",
+    "모닥불"
+   ],
+   "verify": "author_snow_route linkFrom:false paintGaps:true gapCount 2 / data.maps[i].gaps[k].from 에 place_field_obstacle kind gap requiresActorId / 요새 맵 가장자리 타일 변화 없음 / 모닥불 stamp_tileset_object bd-pick-snowfield-bonfire",
+   "suiteCategory": "fs2-snow-gap-vault"
+  },
+  {
+   "category": "game",
+   "kind": "logic",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "startBuild": [
+    {
+     "tool": "author_snow_route",
+     "args": {
+      "side": "north",
+      "count": 2,
+      "names": [
+       "서리 가도",
+       "눈보라 고개"
+      ],
+      "gapCount": 2,
+      "gapWidth": 1,
+      "paintGaps": true,
+      "openEnd": true,
+      "seed": 71
+     }
+    }
+   ],
+   "id": "fs2-past-gap-town",
+   "prompt": "눈보라 고개(설원 길 두 번째 맵) 북쪽 끝에서 눈 덮인 못가 나루 마을로 이어 줘. 길 중간 얼음 틈은 동료가 장대로 뛰어넘어야 지날 수 있어. 마을엔 얼음 구멍에서 은빛 송어를 낚아다 주는 할머니 심부름과 여관 하나.",
+   "requires": [
+    "설원 마을(theme snow) 한 장",
+    "틈 너머 고개 끝 출구 ↔ 마을 남쪽 연결(틈 도약 이벤트를 길로 인정)",
+    "얼음 구멍 조사 → 송어",
+    "할머니에게 주면 보상",
+    "여관 실내 + 문 잇기"
+   ],
+   "verify": "place_field_obstacle gap 뒤 create_transfer_pair(고개 출구 ↔ 마을)가 transfer-unreachable/sealed 로 거절되지 않음 / author_beodeul_town theme snow / 얼음 구멍 칸 이벤트 changeItem / build_hand_interior_room program inn + create_transfer_pair doorAt",
+   "suiteCategory": "fs2-past-gap-town"
+  },
+  {
+   "category": "game",
+   "kind": "logic",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "startBuild": [
+    {
+     "tool": "author_beodeul_town",
+     "args": {
+      "id": "map_lake_town",
+      "name": "호숫가 마을",
+      "theme": "snow",
+      "houseCount": 5,
+      "seed": 81
+     }
+    }
+   ],
+   "id": "fs2-lake-lantern-escape",
+   "prompt": "호숫가 마을(map_lake_town)의 밤 판을 따로 만들어 줘. 얼어붙은 못 위에 숙적이 혼자 등을 띄우고 있고, 말을 걸면 칼을 뽑을지 등을 같이 띄울지 고른다. 대화가 끝나면 얼음이 남쪽부터 갈라져 20초 안에 북쪽 기슭으로 건너야 해. 실패하면 기슭으로 돌아가 얼음에 한 걸음 내디디면 다시. 북쪽엔 탑 입구.",
+   "requires": [
+    "duplicate_map 밤 판(문만 남김)",
+    "못 위 숙적 이벤트 + 선택 둘",
+    "make_timed_escape 얼음 칸만 남쪽부터 붕괴",
+    "재시도 시작 칸은 대화 뒤에만(startCellsSwitchId)",
+    "북쪽 탑 던전 입구는 대화 뒤에만 열림"
+   ],
+   "verify": "make_timed_escape startSwitchId + start + startCellsSwitchId / steps 가 얼음 칸만 / author_dungeon tower entrance fromMapId 밤 판 / 대화 전 시작 칸을 밟아도 타이머가 켜지지 않음",
+   "suiteCategory": "fs2-lake-lantern-escape"
+  },
+  {
+   "category": "game",
+   "kind": "logic",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "startBuild": [
+    {
+     "tool": "author_beodeul_town",
+     "args": {
+      "id": "map_night_town",
+      "name": "통금의 마을",
+      "houseCount": 5,
+      "seed": 31
+     }
+    }
+   ],
+   "id": "fs2-field-detection",
+   "prompt": "통금의 마을(map_night_town)에 밤 순찰 기사 둘이 돌게 해 줘. 들키면 바로 달려와서 싸워야 해. 이번엔 순찰이 훨씬 예민해야 해 — 더 멀리 보고, 시야 부채꼴도 넓고, 들킨 뒤 바로 뛰어오고, 놓쳐도 한참 뒤지다가 돌아가게.",
+   "requires": [
+    "추격형 보이는 적 둘(순찰 경로)",
+    "시야 거리·부채꼴 각도를 기본보다 넓게",
+    "알아차림 지연 짧게·추격 걸음 빠르게",
+    "놓친 뒤 수색 시간 길게"
+   ],
+   "verify": "place_field_enemy behavior chase + patrol, 또는 그 뒤 set_field_detection {sightRange≥7, coneDegrees≥120, alertMs≤300, chaseStepMs≤200, searchMs≥5000} / 순찰 경로 걸음 간격은 그대로(왕복 속도 안 바뀜)",
+   "suiteCategory": "fs2-field-detection"
+  },
+  {
+   "category": "game",
+   "kind": "logic",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "id": "fs2-stealth-penalty",
+   "prompt": "감옥 경비실을 잠입 퍼즐로 만들어 줘. 등불 든 경비 시야에 들키면 경비 둘과 싸우고(도망 못 침) 감방으로 다시 끌려가게 해 줘. 그냥 입구로 돌아가는 게 아니라 실수에 값을 치르게.",
+   "requires": [
+    "stealth_guard_patrol 퍼즐",
+    "들키면 전투(도망 불가) 후 감방으로 이동",
+    "경비 스위치 초기화"
+   ],
+   "verify": "author_map_puzzle presetId stealth_guard_patrol + failPenalty {troopId, sendTo:{mapId,x,y}, text} / caught 명령에 battleProcessing canEscape:false → transfer sendTo",
+   "suiteCategory": "fs2-stealth-penalty"
+  },
+  {
+   "category": "dungeon",
+   "kind": "logic",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "id": "fs2-two-floor-fortress",
+   "prompt": "2층짜리 관문 요새를 지어 줘. 1층은 정문·안뜰·감방·무기고·계단 홀, 2층은 막사와 성벽 위 결투장. 결투장 앞은 쇠창살로 막혀 있고 막사 쪽 레버를 당겨야 열려. 2층 막사엔 쇠뇌병 보초를 세워 줘.",
+   "requires": [
+    "층마다 다른 방 목록(1층 5방·2층 결투장 포함)",
+    "층 계단 연결",
+    "2층 결투장 앞 레버 쇠창살",
+    "2층 고정 보초"
+   ],
+   "verify": "author_dungeon floors 2 direction up floorRooms [[…5방],[…boss]] gimmick lever / 1층 방 목록 ≠ 2층 방 목록 / 2층에 lever·lever_gate 이벤트",
+   "suiteCategory": "fs2-two-floor-fortress"
+  },
+  {
+   "category": "game",
+   "kind": "logic",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "startBuild": [
+    {
+     "tool": "author_beodeul_town",
+     "args": {
+      "id": "map_snow_town",
+      "name": "눈 마을",
+      "theme": "snow",
+      "houseCount": 4,
+      "seed": 12
+     }
+    },
+    {
+     "tool": "author_snow_route",
+     "args": {
+      "fromMapId": "map_snow_town",
+      "side": "north",
+      "count": 1,
+      "names": [
+       "눈길"
+      ],
+      "gapCount": 1,
+      "paintGaps": true,
+      "linkFrom": true,
+      "seed": 5
+     }
+    }
+   ],
+   "id": "fs2-ice-melt",
+   "prompt": "눈길 맵에서 길 한가운데를 두 칸 높이 얼음 덩이로 막아 줘. 불 마법을 쓰는 동료가 필드에서 「불씨 녹이기」를 배우면, 조사해서 녹이고 지나갈 수 있게. 녹이면 얼음 윗머리까지 같이 사라져야 해.",
+   "requires": [
+    "좁은 길목을 폭 전체로 막음",
+    "두 칸 그림(윗머리는 위 칸)",
+    "필드 기술로 열림(녹이기)",
+    "기술은 이벤트로 배움"
+   ],
+   "verify": "place_field_obstacle kind rock fullWidth tile+tileAbove requiresSkillId machine none / 열림 명령이 위 칸 changeTile 까지 되돌림 / learnSkill 이벤트",
+   "suiteCategory": "fs2-ice-melt"
+  },
+  {
+   "category": "game",
+   "kind": "logic",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "id": "fs2-alarm-chase",
+   "prompt": "성벽 개구멍을 빠져나가는 순간 순찰 기사에게 들키게 해 줘. 숲 어귀로 나가면 기사 둘이 쫓아오고, 숲 그늘(맵을 가로지르는 한 줄)에 닿으면 기사들이 돌아서고 숲지기가 고백하는 장면이 나오게.",
+   "requires": [
+    "개구멍 이벤트가 경보 스위치를 켠다",
+    "place_field_enemy appearSwitchId 로 경보 뒤에만 나타나는 추격 기사",
+    "숲 그늘 줄에 닿으면 vanishSwitchId 를 켜서 기사가 사라지고 고백 컷신"
+   ],
+   "verify": "place_field_enemy behavior chase + appearSwitchId(경보) + vanishSwitchId(안전 지점) — 페이지: 경보 전(없음) · 필드 적(경보 조건) · 물러남(없음)",
+   "suiteCategory": "fs2-alarm-chase"
+  },
+  {
+   "category": "game",
+   "kind": "logic",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "id": "fs2-lamp-festival",
+   "prompt": "눈 덮인 나루 마을을 해 질 녘 「대답의 등」 축제 날로 꾸며 줘. 등불마다 따뜻한 빛, 못가 첫 등에서 한 줄을 적어 띄우는 선택, 어부와 등 접는 아이, 잠긴 집 셋은 들어갈 수 있는 실내로.",
+   "requires": [
+    "set_lighting_volume 해 질 녘 덮개 + 등불 광원",
+    "등 띄우기 선택(스위치)",
+    "place_npc 어부·아이",
+    "build_hand_interior_room 실내 3 + create_transfer_pair"
+   ],
+   "verify": "마을 맵 lighting ambient>0·등 광원 / 선택지 이벤트가 스위치를 켠다 / 실내 3곳 출입 쌍",
+   "suiteCategory": "fs2-lamp-festival"
+  },
+  {
+   "category": "game",
+   "kind": "logic",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "id": "fs2-lamp-errand",
+   "prompt": "통금 밤 마을에 잔 일 하나: 빵집 미레가 꺼진 등 셋을 맡기면, 잠긴 집 세 곳 문고리에 몰래 걸어 주고 돌아오면 별빛빵 둘을 받게.",
+   "requires": [
+    "아이템 꺼진 등 x3 지급",
+    "문 세 곳 등 걸기 페이지(아이템 -1, 스위치)",
+    "세 스위치 모두 켜지면 보상 페이지"
+   ],
+   "verify": "미레 페이지 조건 = 세 등 스위치 / 문 이벤트 페이지 '등 걸기'·'등이 걸린 문'",
+   "suiteCategory": "fs2-lamp-errand"
+  },
+  {
+   "category": "game",
+   "kind": "logic",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "id": "fs2-patrol-caught",
+   "prompt": "막사 잠입 퍼즐에 상자 줄 사이 통로를 천천히 오가는 순찰 기사 하나를 더해 줘. 등 뒤로 지나가야 하고, 붙잡히면 게임 오버가 아니라 경비 둘과 싸운 뒤 감방으로 끌려가게.",
+   "requires": [
+    "make_chase_scene patrol waypoints",
+    "caughtPenalty {troopId, sendTo, text}",
+    "killOnTouch 아님"
+   ],
+   "verify": "추격자 페이지 commands = 텍스트 → battleProcessing canEscape:false canLose:true → transfer sendTo",
+   "suiteCategory": "fs2-patrol-caught"
+  },
+  {
+   "category": "game",
+   "kind": "logic",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "id": "fs2-whole-burned-village",
+   "prompt": "강가 마을을 한 번 짓고, 서른 해 전 불에 다 타 버린 모습의 변형 맵을 만들어 줘. 북쪽 끝 집 한 채만 멀쩡하고 나머지 땅은 풀까지 다 잿빛이어야 해.",
+   "requires": [
+    "derive_map_variant look burned keepIntact north scorch whole",
+    "원본은 쓰고 나면 remove_map"
+   ],
+   "verify": "변형 맵 lowerTiles 대부분이 잿빛 땅 · 남은 집 발자국만 풀 · 원본 맵 없음",
+   "suiteCategory": "fs2-whole-burned-village"
   }
  ],
  "gates": {

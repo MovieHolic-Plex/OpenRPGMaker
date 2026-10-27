@@ -1,0 +1,19 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "de2dac52005e881ae23e17280a56e8d837e1342865df7ab3c86cdcfcfc74f373",
+ "profileHash": "4d8774b517f41638",
+ "kind": "terrain",
+ "decision": "allow",
+ "decidedBy": "supervisor (Claude Opus 5.5)",
+ "decidedAt": "2026-10-27T10:50:38.974Z",
+ "by": "delegated",
+ "delegatedBy": "delegated by user to supervisor 2026-10-27",
+ "evidence": "/home/main/z-project/rpg-zzu-object-gate-holds/harness-data/object-gate/vqa/astel-capital-20261027.json",
+ "via": "review-page",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 평면 채움 (4/4)"
+ ],
+ "note": "capital_quay_steps — Argon adversarial VQA r2 (decoys rejected) + r3 PASS; AI receipt advisory (uncalibrated)",
+ "sig": "0d4b75a5e927b4b1c8c21603a694113a2449e4959defd632562b62f1ee894f54"
+}

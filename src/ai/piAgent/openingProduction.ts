@@ -2,10 +2,24 @@ import type { Project } from '../../project/types';
 import { resolveAssetResourceUrl } from '../../assets/generatedAssetResourceResolver';
 import { animaticResourceIds, animaticCaptionText, sampleAnimaticTrack } from '../../project/openingAnimatic';
 import { measureOpeningAnimatic } from '../../project/openingAnimaticMeasure';
+import { openingMapViewMapId } from '../../project/openingMapView';
 
-/** Image transport only, never a saveable proposal. Avoid resending every draft PNG per preview. */
+/**
+ * Image transport only, never a saveable proposal. Avoid resending every draft PNG per preview.
+ * 「게임 속 맵 그대로」 배경(map-view:<mapId>)은 그 맵과 칩셋이 있어야 그려진다 — 둘만 남긴다. 예전에는 맵을 다 비워서
+ * 조수의 preview_opening_animatic 과 화면 검수가 이 배경을 매번 「애니메틱 맵 배경 없음」으로 못 찍었다(2026-10-26 hf2-school-claude-j80 2턴).
+ */
 export function openingImageProject(project: Project, resourceIds: readonly string[]): Project {
-  return structuredClone({ ...project, maps: {}, tilesets: {}, database: {} as Project['database'], assets: { ...project.assets, sprites: {},
+  const maps: Project['maps'] = {}, tilesets: Project['tilesets'] = {};
+  for (const id of resourceIds) {
+    const mapId = openingMapViewMapId(id), map = mapId ? project.maps[mapId] : undefined;
+    if (!mapId || !map) continue;
+    maps[mapId] = map;
+    const tileset = project.tilesets[map.tilesetId];
+    // 참고문서(MD·그림)는 그리기에 안 쓰인다 — 전송 사본을 무겁게 하지 않게 뺀다.
+    if (tileset) { const { referenceDocuments: _docs, ...drawable } = tileset; tilesets[map.tilesetId] = drawable; }
+  }
+  return structuredClone({ ...project, maps, tilesets, database: {} as Project['database'], assets: { ...project.assets, sprites: {},
     uploaded: Object.fromEntries(resourceIds.flatMap(id => project.assets.uploaded[id] ? [[id, project.assets.uploaded[id]]] : [])),
   } });
 }
@@ -307,6 +321,6 @@ inspect_opening_timeline은 구조만 검사한다. preview_opening_animatic으�
 새 게임 시네마틱 오프닝(그림 컷 + 자막, 인게임 컷신 아님)은 get_opening_direction의 illustrated-chapter 문법을 따른다: 레터박스 14~18, 막대 안 한 줄 자막(layout:bar, typewriter), 한 장면을 가까워지는 그림 2~4장으로 나누고 dither 전환으로 잇고, 커지는 위협·변화는 투명 전경 레이어(opacity 키)와 effects로 컷 안에서 자라게 한다. 컷 하나가 정지 그림 한 장 + 줌뿐이면 미완성이다. 생성 그림은 실행기가 자동으로 한 도트 격자·팔레트로 내리므로 화풍 형용사 대신 피사체·빛·구도를 쓴다.
 새 게임 픽셀 애니메틱 오프닝(정수 픽셀 무대의 샷 목록)은 get_opening_direction의 pixel-animatic-opening 문법과 get_animatic_capabilities의 pixelOpening 계약을 따른다: 모든 샷을 width:384, height:216으로 만들고 set_opening_pixel_grid(384,216)을 부르면 샷 안의 모든 숫자가 이미 격자 픽셀이다(샷 길이 6000~9500ms). 레터박스 0.15(216의 32px, 참조 도입부 실측 32/216)에 막대 안 한 줄 자막을 set_opening_caption으로 넣고, 오프닝 전체에서 기본 자막 색 하나(#fff0dc)로 통일하며 마지막 절벽 결의 대사 한두 큐만 강조색(#ff6878)을 쓴다(전체 자막 색 전환 2회 이하, 샷마다 다른 색 금지!). 중요 규칙: ① 배우나 군중을 올릴 배경은 generate_opening_image 프롬프트에 "16-bit SNES JRPG pixel art, crisp pixel clusters, unified 32-color dark fantasy palette, empty environment only, no people or characters in background"와 cast:"nobody"를 지정해 배경 속 그려진 인물과 캐릭터 칩이 겹치지 않게 한다. ② 절대 384×216 전체 배경에 scroll-x/scroll-y를 걸지 않는다(건물·지평선이 화면 중앙에서 잘린다) — scroll-x는 상단 하늘 띠(x:0, y:28, width:384, height:44)에만 걸고 마을 분수대·수호 수정·창문은 작은 직사각형(width:28..48, height:24..40) palette-cycle을 쓰며, 전체 화면 하강/패닝은 반드시 모든 샷에 animate_opening_camera(예: y:96->114 하강 또는 zoom:1.04->1.14)로 넣는다. ③ 인물·기사·주민·주인공을 author_pixel_art로 찍지 않는다(막대인간 절대 금지!) — 인물은 반드시 번들 24×32 캐릭터 칩(현대·연애·학원·오피스는 oprn-charset-modern1~3, 중세·판타지 JRPG는 oprn-charset-heroes1, easyrpg-charset-actor1~4, easyrpg-charset-people1~5)을 place_opening_charset_actor로 놓는다(scale:1 = 24×32, 보폭 걷기 자동 연결). 성당 맹세 샷에는 기사 5~7명을 2열 대열로 배치하고 대장이 제단으로 걸어가게 하며, 새벽 마을 샷에는 분수대 광장 둘레에 주민 5~6명을 배치하고 1~2명이 걷게 하며, 수정이 마젠타 눈에 죽어가는 샷에는 황금 수정 동굴 배경 위에 독립 전경 레이어(role:foreground 또는 author_pixel_art 소품)로 마젠타 눈/덩굴을 얹어 opacity/scale 키로 서서히 깨어나게 연출한다. ④ 말풍선(upsert_opening_emote)은 width:12, height:14 소형으로 마을 광장(주민 2~3명)과 절벽(주인공 exclaim 1개) 1~2개 샷에만 절제해 쓰고 성당 맹세나 수정 동굴에는 절대 쓰지 않는다. ⑤ 샷마다 최소 3개 이상의 독립 움직임(카메라 키 + region 루프 + shaft/glow pulse + particles + 캐릭터 칩 보행)을 겹친다. ⑥ 샷 사이는 set_opening_transition으로 dither(600ms)를 최소 2~3개 샷에, 충격/검 뽑기/타이틀 등장에는 flash(240ms)를, 나머지에는 fade를 섞는다. ⑦ 마지막 타이틀 로고 샷에서 검/문장 엠블럼 소품은 상단(y:16..44)에 두어 중앙 제목/부제 글자(y:82..135)와 겹치지 않게 하고, 시작 맵은 그대로 유지하며 마지막 로고 샷 뒤에 여분 맵 전환 샷은 만들지 않는다.
 오프닝 형식은 하나가 아니다. 요청에 맞춰 get_opening_direction의 recipes(storybook·cinematic·pixel-march(FF6풍 무대사 없는 행진)·title-card·trailer-montage·memory-fragment·credits-roll·duel) 중 고르거나 섞는다. 사용자가 특정 작품풍을 말하면 그 작품의 기법(연출 호흡·무대사 여부·음악 역할)을 따르고 화풍은 기법 문장으로 쓴다. 이야기를 글로 설명하는 것이 기본값이 아니다.
-글자 크기: 오프닝 무대는 320×240 논리 픽셀이 3배로 보인다. presentation.text.size는 자막 10~13, 장 제목 최대 16. 글자는 그림의 주 피사체를 가리지 않는 자리(bottom)에 두고 한 컷 1~2줄로 줄인다. 큰 글씨를 기본으로 두지 않는다.
+글자 크기: 오프닝 무대는 320×240 논리 픽셀이 3배로 보인다. presentation.text.size는 8~64이고 재생이 그 숫자를 그대로 그린다. 자막은 10~13, 그림 위 장 제목은 보통 16 안쪽. 사용자가 제목 카드를 크게 달라고 하면 16을 넘겨도 된다(예: 28~40). 글자는 그림의 주 피사체를 가리지 않는 자리에 두고 한 컷 1~2줄로 줄인다. 큰 글씨를 기본으로 두지 않는다.
 진행 중에는 지금 무엇을 하는지(후보 생성·판정·ffmpeg 등) 사용자에게 한 줄로 알리고 실행기가 띄우는 진행 표시와 모순되지 않게 한다.
 시각 전달 증거와 구성 검토는 실행기가 확인한다. 실제 출하 플레이어의 재생·음악·Skip 검증은 별도이며 이 도구만으로 완료했다고 주장하지 않는다. 막힌 단계와 미검증 범위를 정확히 보고한다.`;

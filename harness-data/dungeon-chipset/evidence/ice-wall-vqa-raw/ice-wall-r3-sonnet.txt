@@ -1,0 +1,33 @@
+VERDICT: FAIL
+
+Scope: rock and ice walls only, ice@1-0.png (640x880) and ice@2-0.png (736x944), plus 4-6x nearest-neighbour crops.
+
+Defects
+
+1. Top face is not frosted. The wall caps are the same flat slate grey as the surrounding rock mass. Their scalloped upper edge has no snow or frost, no pale highlight and no rime. They read as plain rock, not frosted rock. Seen at ice@1 (210-300, 80-125), (330-420, 110-135), (340-385, 495-525) and ice@2 (205-320, 190-225), (80-290, 465-495).
+
+2. Front face is not translucent ice. It is a dark navy/charcoal opaque block with diagonal hatch lines in the lower half. Only the top third has teal icicle streaks. There is no light transmission, no gradient, and no pale blue-white body. It reads as dark stone with teal drips. This is the biggest failure against the brief.
+
+3. Icicles are too regular. Within one wall run they are the same teal, the same width, and hang to roughly the same depth (about 40% of the face). They are clustered in bunches with a fairly even gap. There is no real variation in length, no thin or broken ones, and no ones that reach the floor. Rock-wall icicles are not "uneven".
+
+4. Visible 16px repeat on long runs.
+   - ice@2 horizontal run (80-290, 465-495): the icicle cluster and hatch pattern repeats about every 16px. It reads as a stamped tile strip.
+   - ice@2 (385-495, 625-655): the same repeat.
+   - ice@1 (272-385, 625-650): the same repeat.
+   - ice@1 (130-190, 595-620) and ice@2 (510-620, 340-365): the same repeat.
+   The hatch lines continue pixel-for-pixel across tile borders and sit in the same place every tile.
+
+5. Seams and end caps between wall pieces and rock.
+   - Diagonal staircase runs are built from 1-tile blocks. Each block has hard vertical cut sides and its own dark rectangular silhouette, with no blending into the neighbouring block or the rock mass. See ice@1 (95-205, 215-300) and (50-125, 605-660), and ice@2 (150-420, 195-280) and (440-510, 440-520).
+   - Single isolated wall tiles (ice@1 (190-205, 495-525), (520-545, 240-270), (480-495, 610-640); ice@2 (595-630, 515-555), (150-160, 690-710)) have squared-off top and side edges. They look like standalone pillars, not part of a rock face.
+   - ice@2 (140-160, 715-730) next to the ice floor: the wall piece's left edge is a straight vertical cut against the rock mass. The rock mass above and beside it keeps its own bumpy silhouette, so there is a clear step and colour change at the join.
+
+6. Light rim on wall edges. The outer right or left vertical edge of several wall pieces has a 1px pale lavender/white line, for example the ice@2 piece at about (140-160, 715-745) (right edge) and the stair blocks in ice@2 (400-510, 430-520). The pieces also have a pale lavender bevel along the bottom edge. Together these read as a white outline rim around the wall silhouette, which the brief says to avoid. The bottom rim is also the same colour as the floor speckle, so it looks like a drop-shadow outline, not a base.
+
+7. Floor connection is weak. The front face ends in a straight horizontal cut with a thin pale line, then bare floor. No shadow gradient, no ice or snow buildup, no icicle tips and no debris. The wall looks pasted onto the floor. Where wall pieces meet the ice-floor tiles (ice@1 (50-190, 595-660), ice@2 (205-420, 190-225)) the transition from the dark face to light cyan ice is abrupt, with no meltwater or frost transition.
+
+Passes
+- The scalloped rock-to-wall tops and the large rock mass texture are consistent with each other.
+- The teal icicles do suggest ice at a glance.
+
+Overall: it reads as dark stone blocks with teal drips. It does not read as frosted rock over a translucent ice face. Long runs show an obvious 16px stamp, and there are seam and rim problems. FAIL.

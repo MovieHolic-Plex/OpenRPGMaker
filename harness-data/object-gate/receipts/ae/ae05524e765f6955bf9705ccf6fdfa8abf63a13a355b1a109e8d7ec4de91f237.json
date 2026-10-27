@@ -1,0 +1,284 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ae05524e765f6955bf9705ccf6fdfa8abf63a13a355b1a109e8d7ec4de91f237",
+ "width": 64,
+ "height": 16,
+ "kind": "terrain",
+ "name": "other.ground A2",
+ "label": "dungeon/other.ground.A2",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "dungeon",
+   "fallback": true,
+   "reason": "칩셋 dungeon 의 화풍 기준 묶음이 없다",
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 8,
+  "tileColorsP90": 8,
+  "darkV5": 35,
+  "nearBlackEdge": 0.03,
+  "opaqueTiles": 4
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ground tile texture (dark stone/purple pattern, full 64x16 block)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "This is a terrain autotile block, 64x16 and fully opaque, made of a repeating dark and purple stone pattern. It is not a standing object. The column scans show a repeating texture with 1-row lighter lines (rows 5, 9, 14 at x=16 and x=32; rows 0, 4, 9 at x=47) that act as tile details, not a front-edge line with eave shadow. No object silhouette, front face or side face is drawn, and the width is a constant 64 on every row. The standing-object top/front rules do not apply, so it reads as flat terrain texture (other)."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a cobble-paving strip that matches the paving reference in kind. It shows 6 visible tones per tile against 7 for the paving reference and 3 for the grass. Near-flat coverage is 0%, so there are no large flat fills. The dark edge pixels are 0% neutral, so the outlines lean dark purple, the tone of the neighbouring stone, and are not a black sticker line. Each stone has a lighter top-left highlight, a mid body and darker joints, which gives about 5 steps. That is slightly fewer than the reference, and the stone interiors have less grain than the reference's speckled cobbles. The raw palette is small (8 colours), but the visible tones are close to the paving reference. The piece appears to be only about 1 tile tall, where a 4x3 patch was expected. I did not fail it for that, since size alone is not a style fault. Overall it would sit acceptably next to the reference, though it is a little thinner and lower in contrast.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17634
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ground tile pattern (dark purple/grey repeating tile texture)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a 64x16 terrain texture, a repeating tile pattern of dark purple and grey blocks filling the full width and all 16 rows with no transparent rows. It has no silhouette, no standing object, and no front-edge line or eave shadow. The column scan shows only repeating texture bands, with 1-row lighter lines (L=66) between darker runs, which is surface pattern and not a front face. Because it is flat terrain, it reads as a top-down surface with no separate front face. The kind is terrain, so the standing-object rules do not apply."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is dark purple cobblestone paving, the same kind as the paving reference. Its outlines lean dark purple rather than neutral, which matches the 0% near-neutral edge share. Each stone has a lighter top edge and a dark base, and there are no flat 5x5 areas (0% near-flat). That gives about 5 lightness steps, against about 6-7 for the paving reference. The measured 6 visible tones per tile are just under the reference's 7, and the candidate uses only 8 raw colours. The stones are small and fairly uniform, with little per-stone speckle or variation, so texture is 'some' rather than 'rich'. The art also appears only as a strip about one tile tall and four wide, not a 4x3 patch, so the board shows less than the reference does. It is slightly thinner and less varied than the reference. With that shortfall and the thinner evidence, I fail it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 16577
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ground texture tile (repeating purple and gray cobble or rune pattern)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "The image is a 64x16 fully opaque seamless terrain tile, with width 64 in every row. The column scans show only short alternating dark and light runs (rows 0-4, 5, 6-8, 9, 10-13, 14, 15), which fit a flat repeating cobble or rune pattern. There is no silhouette, no eave or front-edge structure, no ellipse and no standing body. It is a flat ground texture, so the object-style top-and-front-face measurement does not apply."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a purple cobble ground, the same kind as the paving reference. It shows 6 visible tones per tile against 7 for the paving reference and 3 for the grass, so it is on par with the paving. Near-flat coverage is 0%, and the picture shows no large flat areas. The stones are shaded individually with lighter purple tops and dark purple gaps. The dark edge pixels are 0% neutral, so the outline is a dark purple tint of the stone rather than near-black. It has fewer raw colours (8) than the grass reference (26 per tile) but about the same as the paving (7), and the visible tones are comparable. The patch is thin and low-contrast, which is a palette matter and not a reason to fail it. Shading is slightly shallower than the paving reference, but a careful artist would accept it beside that reference.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18834
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tiled ground texture, a full 64x16 block of repeating dark purple and grey tile patterns",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "This is a terrain tile, not a standing object. The silhouette is a full 64-wide rectangle on every row (0-15), with no outline, no front face and no object silhouette. The column scan shows repeating texture bands (light 1-row lines every 4-5 rows) that are tile pattern, not edge lines with eave shadow. There is no standing volume, so the top/front rules do not apply, and the ground reads as a flat texture fill."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a purple cobble strip, so the paving reference is the right comparison. It shows about 6 visible tones per tile against 7 for the paving reference, and its 8 raw colours match that reference's 7. Near-flat coverage is 0%, so there are no flat fills. Each stone is shaded individually, with lighter tops and dark gaps between them, which fits the reference's stone-by-stone shading. The dark edge pixels are 0% neutral, so the outlines lean dark purple, the tone of the adjacent stone, rather than a black sticker line. It is slightly simpler than the reference because the stones are smaller and the highlight steps are fewer, but a careful artist would accept it next to the paving. I judged style only. The piece appears as a thin strip rather than a full 4x3 patch, and that composition problem does not affect this verdict.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15644
+  }
+ ],
+ "decidedAt": "2026-10-25T11:30:23.726Z",
+ "cells": {
+  "16": [
+   "400ed29dfa77a0b2",
+   "4908da8830f3d336",
+   "6fc74366d36f1741",
+   "df3a26c74a48d8bc"
+  ],
+  "24": [
+   "008c3d171c6c10f1",
+   "1a28269f81b2f518",
+   "2846a889b371f617",
+   "2ec09e91879a1530",
+   "345d429f083987f4",
+   "435ba5c651ab53d3",
+   "485ba77e0808a4a8",
+   "4ed828deaf9d59db",
+   "5018caa49b3f69f6",
+   "5695c7aa9a565053",
+   "72340e57092b27fe",
+   "73085f765e18f7f7",
+   "844ad00c338dff11",
+   "857a81bb86f4e2c5",
+   "9bba655c8f8a2f27",
+   "c15cb31fe970d31f",
+   "d16b1108fcbf71f1",
+   "d24bee0a78983ffc"
+  ],
+  "32": [
+   "817e56c9754a754b",
+   "9b1b635da461c642",
+   "b02db9d01adb43a9",
+   "c4a4f23423005515"
+  ],
+  "48": [
+   "08fe7f78d2d40a01",
+   "1bd17c5814ce821e",
+   "30731588e3c54f50",
+   "36b8f1430ce40c4d",
+   "3f1e8b808c7489bb",
+   "6efba6db62c82f83",
+   "8746e8d37c24612e",
+   "90e1078f7b7d2f3c",
+   "a66fe0027b99d519",
+   "d369575df6a5c5de",
+   "de1c2f839b885326",
+   "f17ce91b42ab501a"
+  ]
+ }
+}

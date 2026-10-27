@@ -137,7 +137,8 @@ export async function requireHooks(page) {
 
 /** 체크포인트 부팅: 훅이 서면 성공, 플레이어 부팅 오류 패널이 뜨면 바로 실패(120초를 기다리지 않는다). */
 async function waitForCheckpointBoot(page) {
-  await page.evaluate(() => new Promise((resolve, reject) => {
+  const bootMs = Number(process.env.QA_CHECKPOINT_BOOT_MS) > 0 ? Number(process.env.QA_CHECKPOINT_BOOT_MS) : 600_000;
+  await page.evaluate((bootMs) => new Promise((resolve, reject) => {
     const finish = () => { observer.disconnect(); clearTimeout(deadline); };
     const check = () => {
       if (window.__oprnDebug && document.querySelector('[data-testid="runtime-state-json"]')) {
@@ -148,11 +149,11 @@ async function waitForCheckpointBoot(page) {
       if (error) { finish(); reject(new Error(`체크포인트 부팅 실패: ${error.textContent}`)); }
     };
     const observer = new MutationObserver(check);
-    // 부하(load 150+) 중 실측 부팅 112~219초 — 체크포인트 부팅은 넉넉히 기다린다.
-    const deadline = setTimeout(() => { finish(); reject(new Error("QA scene did not become ready")); }, 360_000);
+    // 부하(load 150+) 중 실측 부팅 112~219초, 폴른 스타(2막 41맵) 두 판 동시면 330~380초 — 넉넉히 기다린다(QA_CHECKPOINT_BOOT_MS 로 조절).
+    const deadline = setTimeout(() => { finish(); reject(new Error("QA scene did not become ready")); }, bootMs);
     observer.observe(document.documentElement, { childList: true, subtree: true });
     check();
-  }));
+  }), bootMs);
 }
 
 /** testid 존재 판정. `attr`/`value` 를 주면 "그 속성값을 가진 요소가 있다" 로 좁힌다 —
@@ -228,6 +229,11 @@ export async function applyOp(page, op, runState) {
     case "cinematic": {
       const { cinematicQaOp } = await import("./runtimeQaCinematics.mjs");
       await cinematicQaOp(page, op);
+      return;
+    }
+    case "interactive": {
+      const { interactiveQaOp } = await import("./runtimeQaInteractive.mjs");
+      await interactiveQaOp(page, op, runState, applyOp);
       return;
     }
     case "battle": {

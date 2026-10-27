@@ -23,6 +23,7 @@ import { setPassageMark } from "@/project/tilesetPassage";
 import type { AutonomousMover } from "@/player/playSceneTypes";
 import type { EventPage, GameEvent, GameMap, Project } from "@/project/types";
 import { mockSprite } from "./runtimeEventPageFixtures";
+import { RETIRED_COMBINED_TOWN_TILESET_ID, withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 
 const SIZE = 16;
 const MAP_ID = "map_adversarial";
@@ -39,7 +40,11 @@ function walledMap(id = MAP_ID, size = SIZE): GameMap {
 }
 
 function projectWith(map: GameMap): Project {
-  const project = createBlankProject();
+  // TILE.GRASS/WATER/PATH 는 옛 combined_town 칸 번호다 — 기본 칩셋이 beodeul_city 로 바뀐 뒤(PR #2335) 그 칩셋을 직접 깐다.
+  const project = withRetiredEasyRpgTilesets(createBlankProject());
+  const town = project.tilesets[RETIRED_COMBINED_TOWN_TILESET_ID]!;
+  map.tilesetId = town.id;
+  map.tileSize = town.tileSize;
   project.maps = { [map.id]: map };
   project.mapTree = { mapId: map.id, children: [] };
   project.startMapId = map.id;

@@ -31,10 +31,12 @@ import { stageBusts } from "@/player/playSceneBustStage";
 import { playInn, playShop } from "@/player/playSceneCommerce";
 import { playOpenChest } from "@/player/playSceneChest";
 import { dialogueHost, dialogueUi } from "@/player/playSceneDom";
+import { resolveDialogueSpeakerName } from "@/player/dialogue";
 import { showNameEntry } from "@/player/nameEntry/nameEntryOverlay";
 import { nameEntryShowcaseHero } from "@/player/nameEntry/nameEntryShowcase";
 import { applyTimerStep } from "@/player/playSceneTimers";
 import { startPlayerRoute } from "@/player/playSceneMovement";
+import { holdBlockedCommandRoute } from "@/player/playerRouteState";
 import { PLAYER_MOVE_TARGET } from "@/project/moveRouteTarget";
 import { resolvePlayerBody } from "@/project/playerFootprint";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
@@ -416,10 +418,12 @@ async function consumeBlockingStep(
   switch (step.kind) {
     case "text": {
       const project = store.getCurrent();
+      const textContext = { session: scene.session, project };
       const event = step.speaker === undefined && currentEventId
         ? runtimeEventViewsForMap(project, scene.map, scene.session, scene.eventPositions).find((view) => view.event.id === currentEventId)?.event
         : undefined;
-      const speaker = step.speaker ?? getCharacterProfile(project, event?.characterId)?.displayName;
+      const authoredSpeaker = step.speaker ?? getCharacterProfile(project, event?.characterId)?.displayName;
+      const speaker = resolveDialogueSpeakerName(authoredSpeaker, textContext) ?? authoredSpeaker;
       markCompanionSpeaking(project, scene, speaker);
       // 말하는 인물이 듣는 인물 쪽으로 돈다(둘 다 맵에 있고 가까울 때, text.autoFace=false 면 안 돈다).
       applyDialogueFacing(scene, step, currentEventId);
@@ -440,7 +444,7 @@ async function consumeBlockingStep(
         face: staged ? staged.face : step.face,
         ...(staged ? { stageListener: true, ...(staged.listenerFace ? { listenerFace: staged.listenerFace } : {}) } : step.listenerFace ? { listenerFace: step.listenerFace } : {}),
         settings: textWindowSettings(scene.session.messageWindowSettings ?? DEFAULT_MESSAGE_WINDOW_SETTINGS, step.position),
-        textContext: { session: scene.session, project: store.getCurrent() },
+        textContext,
         playerTileY: scene.tileY,
         mapHeight: scene.map.height,
         ...playerScreenYOf(scene),
@@ -614,12 +618,14 @@ async function consumeBlockingStep(
       if (target === PLAYER_MOVE_TARGET) {
         // 주인공 강제 이동: 이벤트 무버가 아니라 플레이어를 한 칸씩 걷게 한다.
         startPlayerRoute(scene, moves, step.repeat);
+        if (step.skippable === false && scene.playerRoute) scene.playerRoute.preserveBlockedSteps = true;
         if (step.wait) {
           await Promise.race([waitForPlayerRouteComplete(scene), skipController.waitForSkip()]);
         }
       } else {
         scene.registerAutonomousMover(target, moves, step.repeat);
         scene.commandMoveRouteEventIds.add(target);
+        if (step.skippable === false) holdBlockedCommandRoute(scene.autonomousNPCs.get(target));
         if (step.wait) {
           await Promise.race([waitForMoverComplete(scene, target), skipController.waitForSkip()]);
         }
@@ -781,7 +787,7 @@ async function consumeBlockingStep(
     case "returnToTitle":
       reportEndingClear(scene, step.clear);
       if (step.title !== undefined || step.message !== undefined || step.presentation) {
-        scene.showEndingScreen(step.title ?? "", step.message ?? "", step.presentation, step.clear?.endingId);
+        scene.showEndingScreen(step.title ?? "", step.message ?? "", step.presentation, step.clear?.endingId, step.continueTo);
       } else {
         scene.returnToTitle();
       }

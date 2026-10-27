@@ -1,7 +1,9 @@
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { getMapEditHistoryEntries, getMapEditHistoryState, resetMapEditHistory } from "@/editor/mapEditHistory";
 import { renderSystemTab } from "@/editor/panels/databaseSystemView";
+import { getAudioEngine } from "@/player/audio";
 import { createBlankProject } from "@/project/defaults";
+import { defaultTitleScreenSettings } from "@/project/defaults/defaultDatabase";
 import { store } from "@/project/store";
 import { findByTestId, installFakeDom, type FakeElement } from "./fakeDom";
 
@@ -34,6 +36,7 @@ function clickNav(host: FakeElement, slug: string): void {
 }
 
 /** 각 섹션을 대표하는 testid — 섹션 상태와 무관하게 DOM 에 존재해야 한다. */
+// 게임 메뉴·대화창·HUD 의 키 testid 는 실제 컨트롤 이름이다(스킨 카드 묶음·대화창 스타일 갤러리·HUD 스튜디오 뿌리).
 const SECTION_KEY_TESTIDS: readonly { readonly slug: string; readonly testid: string }[] = [
   { slug: "overview", testid: "db-system-studio" },
   { slug: "party", testid: "db-picker-system-start-actor" },
@@ -42,9 +45,9 @@ const SECTION_KEY_TESTIDS: readonly { readonly slug: string; readonly testid: st
   { slug: "time", testid: "db-field-system-time-enabled" },
   { slug: "typechart", testid: "db-field-system-type-chart-types" },
   { slug: "display", testid: "db-field-system-resolution-preset" },
-  { slug: "menu", testid: "db-system-menu-skin-grid" },
-  { slug: "dialogue", testid: "db-system-dialogue-style-section" },
-  { slug: "hud", testid: "db-system-field-hud-theme" },
+  { slug: "menu", testid: "db-field-system-menu-ui-style" },
+  { slug: "dialogue", testid: "db-field-system-dialogue-style" },
+  { slug: "hud", testid: "db-field-hud" },
   { slug: "font", testid: "db-field-system-font-ui" },
   { slug: "resources", testid: "db-field-title-resource" },
   { slug: "title", testid: "db-title-workbench" },
@@ -60,6 +63,7 @@ describe("database system section navigation", () => {
   });
 
   afterEach(() => {
+    vi.restoreAllMocks();
     cleanupDom?.();
     cleanupDom = undefined;
   });
@@ -176,5 +180,23 @@ describe("database system section navigation", () => {
     expect(getMapEditHistoryEntries().length).toBe(entriesBefore);
     expect(getMapEditHistoryState().canUndo).toBe(false);
     expect(JSON.stringify(store.getCurrent())).toBe(projectBefore);
+  });
+
+  it("stops title BGM preview when leaving the title section", () => {
+    const project = createBlankProject();
+    project.system.titleScreen = { ...defaultTitleScreenSettings(), musicResourceId: "cc0-music-field-loop" };
+    store.replace(project);
+    const host = renderSystem();
+    document.body.append(host);
+    clickNav(host, "title");
+    const engine = getAudioEngine();
+    vi.spyOn(engine, "play").mockImplementation(() => undefined);
+    const stop = vi.spyOn(engine, "stopChannel");
+    clickNav(host, "startup");
+    expect(stop).not.toHaveBeenCalled();
+    clickNav(host, "title");
+    findByTestId(host, "db-title-bgm-play")!.click();
+    clickNav(host, "startup");
+    expect(stop).toHaveBeenCalledWith("bgm", 0);
   });
 });

@@ -1,4 +1,4 @@
-import { contractFailure } from "@/project/playerDeploymentErrors";
+import { contractFailure, WebExportContractError } from "@/project/playerDeploymentErrors";
 import { pathCollisionKey } from "@/project/playerDeploymentManifest";
 import type { FetchBytes, VerifiedPlayerDeployment } from "@/project/playerDeploymentManifest";
 import type { ZipEntry } from "@/project/packageZip";
@@ -8,6 +8,7 @@ import { prunedRuntimeAssetPaths } from "@/project/webExportRuntimeAssets";
 import type { PreparedWebExport, WebExportAsset } from "@/project/webExportTypes";
 
 const encoder = new TextEncoder();
+const STILL_PACK_ZIP_PREFIX = "assets/stills/pack/";
 
 export async function exactWebExportEntries(
   prepared: PreparedWebExport,
@@ -65,7 +66,7 @@ function reserveMissingAssetPath(
   const key = pathCollisionKey(filePath);
   const previous = collisionIndex.get(key);
   if (previous === filePath && entries.has(filePath)) return false;
-  if (previous !== undefined) contractFailure("zip-path-collision");
+  if (previous !== undefined) contractFailure("zip-path-collision", [previous, filePath]);
   collisionIndex.set(key, filePath);
   return true;
 }
@@ -77,7 +78,9 @@ function addExactEntry(options: {
 }): void {
   const key = pathCollisionKey(options.entry.name);
   const previous = options.collisionIndex.get(key);
-  if (previous !== undefined && previous !== options.entry.name) contractFailure("zip-path-collision");
+  if (previous !== undefined && previous !== options.entry.name) {
+    contractFailure("zip-path-collision", [previous, options.entry.name]);
+  }
   if (options.entries.has(options.entry.name)) contractFailure("manifest-incomplete");
   options.collisionIndex.set(key, options.entry.name);
   options.entries.set(options.entry.name, options.entry);
@@ -90,13 +93,17 @@ async function assetEntries(assets: readonly WebExportAsset[], fetchBytes: Fetch
       entries.push({ name: asset.zipPath, bytes: await uploadedAssetBytes(asset.asset) });
       continue;
     }
+    // 스틸 팩 그림은 레포에 없고 stills:install 로만 생긴다 — 없으면 재배포가 아니라 설치가 답이라고 알린다.
+    const missingCode = asset.zipPath.startsWith(STILL_PACK_ZIP_PREFIX) ? "still-pack-not-installed" : "runtime-asset-unavailable";
+    let bytes: Uint8Array;
     try {
-      const bytes = await fetchBytes(exportAssetSourceUrl(asset.sourcePath));
-      if (invalidExportDependencyBytes(bytes)) contractFailure("runtime-asset-unavailable");
-      entries.push({ name: asset.zipPath, bytes });
-    } catch {
-      contractFailure("runtime-asset-unavailable");
+      bytes = await fetchBytes(exportAssetSourceUrl(asset.sourcePath));
+    } catch (error) {
+      if (error instanceof WebExportContractError) throw error;
+      contractFailure(missingCode, asset.zipPath);
     }
+    if (invalidExportDependencyBytes(bytes)) contractFailure(missingCode, asset.zipPath);
+    entries.push({ name: asset.zipPath, bytes });
   }
   return entries;
 }

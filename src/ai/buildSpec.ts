@@ -154,13 +154,19 @@ export function orderedAssets(spec: BuildSpec): SpecAsset[] {
  * 밑그림 밖 구조물 정리가 그대로 통과했다(2026-09-03 적대적 리뷰 P1). 경계에서 한 번 파싱한다.
  */
 export function normalizeBuildSpec(spec: BuildSpec): BuildSpec {
-  const assets = spec.assets.map((asset) => ({
-    ...asset,
-    x: coerceCoordinate(asset.x),
-    y: coerceCoordinate(asset.y),
-    w: coerceCoordinate(asset.w),
-    h: coerceCoordinate(asset.h),
-  }));
+  const assets = spec.assets.map((asset) => {
+    const next: SpecAsset = {
+      ...asset,
+      x: coerceCoordinate(asset.x),
+      y: coerceCoordinate(asset.y),
+      w: coerceCoordinate(asset.w),
+      h: coerceCoordinate(asset.h),
+    };
+    // "true" 가 객체에 남으면 나중 게이트의 === true 가 철거 허가를 또 버린다.
+    if (coerceConfirmDestroy(asset.confirmDestroy)) next.confirmDestroy = true;
+    else delete next.confirmDestroy;
+    return next;
+  });
   const plannedMap = spec.plannedMap
     ? { ...spec.plannedMap, width: coerceCoordinate(spec.plannedMap.width), height: coerceCoordinate(spec.plannedMap.height) }
     : undefined;
@@ -170,6 +176,16 @@ export function normalizeBuildSpec(spec: BuildSpec): BuildSpec {
 function coerceCoordinate(value: number): number {
   const coerced = coerceInteger(value);
   return typeof coerced === "number" ? coerced : value;
+}
+
+/**
+ * set_build_spec 은 runTool 스키마 정규화를 안 거친다. 모델이 confirmDestroy:"true" 를 보내면
+ * `=== true` 가 철거 선언을 버려, 검증은 spec-destroy-confirmation 으로 거절하고 저장된 밑그림은
+ * 그 자리의 clear_region 을 기존 구조물 보호로 막는다. JSON Schema boolean 과 같이 "true"/"false" 만 읽는다.
+ */
+function coerceConfirmDestroy(value: unknown): boolean {
+  if (value === true) return true;
+  return typeof value === "string" && /^(true|false)$/iu.test(value.trim()) && value.trim().toLowerCase() === "true";
 }
 
 /**
@@ -184,8 +200,12 @@ function checkPlannedMap(
   issues: SpecIssue[],
 ): { width: number; height: number } | null {
   const plannedId = typeof plannedMap.mapId === "string" ? plannedMap.mapId : null;
-  const pw = Number.isInteger(plannedMap.width) ? (plannedMap.width as number) : null;
-  const ph = Number.isInteger(plannedMap.height) ? (plannedMap.height as number) : null;
+  // 에셋 x/y/w/h 와 같다. set_build_spec 은 runTool 스키마 정규화를 안 거치므로 모델이 "40" 을 보낸다.
+  // Number.isInteger 만 보면 그 확장이 「1 이상의 정수여야 합니다」로 거절되고, 맵 밖 에셋은 현재 크기로만 재서 키울 수 없다.
+  const width = coerceInteger(plannedMap.width);
+  const height = coerceInteger(plannedMap.height);
+  const pw = isInteger(width) ? width : null;
+  const ph = isInteger(height) ? height : null;
   if (plannedId === null || plannedId !== mapId) {
     issues.push({ severity: "error", message: `plannedMap.mapId('${plannedId ?? "?"}')가 BuildSpec.mapId('${mapId}')와 다릅니다.` });
     return null;
@@ -533,7 +553,7 @@ function assetPermitsOverwrite(asset: SpecAsset): boolean {
   // 사용자가 맵에서 직접 지목한 선택 영역(암묵 스펙, 이 턴 한정)은 그 안의 기존 내용을 고쳐도 좋다는 뜻이다 —
   // 「이 침실 가구 배치 좀 고쳐줘」의 지우고 다시 놓기가 여기 해당한다(test/assistantMapPreservationGuard).
   if (asset.kind === SELECTION_ASSET_KIND) return true;
-  if (asset.kind === "clear") return asset.confirmDestroy === true;
+  if (asset.kind === "clear") return coerceConfirmDestroy(asset.confirmDestroy);
   return asset.overExisting === "clear" || asset.overExisting === "keep";
 }
 
@@ -652,7 +672,7 @@ function checkAsset(rawAsset: unknown, index: number, issues: SpecIssue[]): Chec
   }
 
   const overExisting = rawAsset.overExisting === "clear" || rawAsset.overExisting === "keep" ? rawAsset.overExisting : undefined;
-  return { id, kind, x, y, w, h, layer: rawAsset.layer === "upper" ? "upper" : "lower", confirmDestroy: rawAsset.confirmDestroy === true, overExisting };
+  return { id, kind, x, y, w, h, layer: rawAsset.layer === "upper" ? "upper" : "lower", confirmDestroy: coerceConfirmDestroy(rawAsset.confirmDestroy), overExisting };
 }
 
 function coerceInteger(value: unknown): unknown {

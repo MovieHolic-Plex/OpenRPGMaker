@@ -1,0 +1,34 @@
+VERDICT: FAIL
+
+Judged from the images only. Coordinates: the 12x8 floor is 576x384 at 3x (left half), so a 64px field repeat is 192px at 3x. The field image is 512x512 at 8x. The room scene is 480x384 with the floor at x48-432, y145-335. The edge variants image is 405x303 at 3x, 8 columns x 6 rows, about 48px per cell.
+
+Big improvement over r6: the carpet noise and the 16px per-tile crack stamp are gone. It now reads as cracked slabs, and the construction is much more coherent. The defects below are what remains.
+
+Major defects
+1. The 64px field repeat is visible (point 2), major.
+   - The violet glow dots sit on an obvious lattice in the 12x8 floor. At y~43 they are at x~96, 288 and 480. At y~72 they are at x~72, 264 and 456. At y~90 they are at x~142, 334 and 526. At y~135 they are at x~48, 240 and 432. At y~180 they are at x~110, 302 and 494. The same set returns exactly 192px right and 192px down.
+   - The large light and dark slab clusters repeat too (for example the maroon slab group around x~130-180, y~45-90 returns at x~322 and x~514).
+   - In a 12x8 view the eye reads rows and columns of identical glow dots, and it will be worse on a larger map. The glow is the most salient feature, so it exposes the repeat.
+   - There is no 16px grid and no tile-border seam. The problem is the 64px repeat and the glow placement on it.
+2. Slab interiors are flat fills (point 3), major.
+   - In the 8x field, each slab is almost a single flat value with a few sparse 1px specks. Examples: the dark indigo slab at x~210-290, y~30-110 and the maroon slab at x~280-390, y~110-210.
+   - There is no bevel, highlight, shadow step or light direction on any slab. The only shading is the dark outline, so each slab reads as a flat sticker with a border. The brief asks for no flat fills and 3+ shading steps.
+   - This is clearly less information per slab than Beodeul's organic multi-tone texture.
+3. Edges are not shaded and not distinguishable (point 5), major.
+   - In the 47 edge variants, all cells show the same dark slab with the same dark crack line running from the left-middle to the lower-right (e.g. row 1 cell 1 at x~5-45,y~10-45, and row 6 cell 3 at x~105-145,y~255-295). They differ mostly by a faint 1px rim. No variant has a visible shaded transition or wall shadow, and the 47 shapes cannot be told apart at 3x.
+   - In the room scene the floor meets the brick wall at y~145 with a hard line. The first slab row (y~147-180) is at full brightness, with no gradient shadow under the wall.
+4. Inconsistent variants in the room scene.
+   - Patches of the floor are much darker and flatter, with almost no crack lines. Examples are x~95-190,y~200-290 around the actor and x~340-385,y~200-250. Elsewhere the slabs are bright, with full dark outlines.
+   - The result looks like blotchy dark flat areas laid over the slab field, so the floor does not read as one stone.
+
+Moderate / minor
+5. Colour (point 1): about half the slabs are maroon/brown-red (field image: x~100-200,y~0-80; x~280-380,y~120-200). They read as red-brown cobble, not purple-black. The indigo slabs do read as purple-black. The alternation of maroon and indigo slabs also makes the pattern feel like a cobblestone street more than a demon-realm floor.
+6. Outline lattice (point 2): the uniform dark teal outline around every slab (about 1-2px wide everywhere) forms a continuous network. It does not read as mortar and has no tile-aligned seams. But its constant width and dark colour make it a strong graphic pattern, and it looks the same on all slabs.
+7. Glow (point 4): the violet cracks are bright, thick (3-4px), blocky, and the same brightness everywhere. They read as a handful of glow highlights and not as faint light in cracks. They have no falloff or halo, and each one is a straight short bar. The brief asks for "faint" glow in "some" cracks.
+8. Cracks (point 4): the crack network is the slab outline, so there is no secondary cracking. Only a few slabs have inner hairline cracks (field x~60-90,y~150-170 and x~370-400,y~310-330).
+
+Quality vs Beodeul (point 6)
+- Beodeul volcano (right half of the 12x8 image) is organic, dark and low-chroma, with a mid-scale patchy texture and no visible repeat.
+- The candidate is cleaner and more legible as stone, and clearly better than r6. It is more saturated, flatter per slab, and has a visible repeat. It is still below the Beodeul bar for shading steps and information per slab.
+
+What would likely fix it: break the 64px repeat (glow placement and slab-colour clusters, e.g. a larger field or a few alternating fields), add 2-3 shading steps with top-left light on slabs, shade the first row under walls and the edge variants, and darken or purple-shift the maroon slabs.

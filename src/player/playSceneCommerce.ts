@@ -7,10 +7,12 @@ import { applySystemGraphic } from "@/player/systemGraphics";
 import { attachCursorMenu } from "@/player/runtimeCursorMenu";
 import { menuSkinFor } from "@/player/menuSkins/registry";
 import { partyWalker } from "@/player/partyWalker";
+import { getPlayerPreferences } from "@/player/playerPreferences";
 import { resolveActorName } from "@/project/sessionActorCommands";
 import type { PlaySession } from "@/project/session";
 import type { Project } from "@/project/types";
 import { el } from "@/util/dom";
+import { prefersReducedMotion } from "@/util/reducedMotion";
 import type { StepResult } from "@/player/interpreter";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 
@@ -28,7 +30,7 @@ type CommerceOverlayOptions = {
 };
 
 export function playInn(scene: PlaySceneContext, step: InnStep): Promise<InnOutcome> {
-  // RM2003 여관 처리: 인사 → "N G 묵으시겠습니까?" 예/아니오 → (예) 요금 차감·회복 →
+  // RM2003 여관 처리: 인사 → "N <돈 단위> 묵으시겠습니까?" 예/아니오 → (예) 요금 차감·회복 →
   // 화면이 어두워졌다가(휴식) 기상 메시지와 함께 밝아지고 이벤트가 계속된다.
   // 골드 부족 시 기본은 상태 문구만 갱신. branchOnNotEnoughGold 면 notEnough 로 resume 분기.
   const text = innTextModel(step, resolveTerms(store.getCurrent()));
@@ -107,6 +109,11 @@ export function playInn(scene: PlaySceneContext, step: InnStep): Promise<InnOutc
 function layoutPixelInn(overlay: HTMLElement, project: Project, session: PlaySession, step: InnStep): void {
   const recoverMp = step.recoverMp !== false;
   const price = Math.max(0, Math.trunc(step.price) || 0);
+  // 질문 줄은 자료집 돈 단위를 쓰는데, 같은 창의 게이지와 소지금은 HP/MP/G 로 고정돼 있었다.
+  const terms = resolveTerms(project);
+  const hpLabel = terms.hp.trim() || "HP";
+  const mpLabel = terms.mp.trim() || "MP";
+  const goldLabel = terms.gold.trim() || "G";
   const title = overlay.querySelector<HTMLElement>(".runtime-overlay-title");
   const note = overlay.querySelector<HTMLElement>(".runtime-commerce-note");
   const question = overlay.querySelector<HTMLElement>(".runtime-commerce-status");
@@ -135,11 +142,17 @@ function layoutPixelInn(overlay: HTMLElement, project: Project, session: PlaySes
           class: "runtime-inn-party-who",
           children: [
             el("span", { class: "runtime-inn-party-name", text: name }),
-            el("span", { class: `runtime-inn-party-state${states.length ? " has-state" : ""}`, text: states.length ? states.join(" · ") : "정상" }),
+            // 「독 → 정상」은 보이는 글자다. CSS content 로만 붙이면 화면에는 있고 읽어 주는 기술에는 없다.
+            el("span", {
+              class: `runtime-inn-party-state${states.length ? " has-state" : ""}`,
+              children: states.length
+                ? [states.join(" · "), el("span", { class: "runtime-inn-state-clear", text: " → 정상" })]
+                : ["정상"],
+            }),
           ],
         }),
-        innGauge("HP", vitals.hp, hpAfter, vitals.maxHp, "hp", `inn-party-hp-${index}`),
-        innGauge("MP", vitals.mp, mpAfter, vitals.maxMp, "mp", `inn-party-mp-${index}`),
+        innGauge(hpLabel, vitals.hp, hpAfter, vitals.maxHp, "hp", `inn-party-hp-${index}`),
+        innGauge(mpLabel, vitals.mp, mpAfter, vitals.maxMp, "mp", `inn-party-mp-${index}`),
       ],
     })];
   });
@@ -155,12 +168,12 @@ function layoutPixelInn(overlay: HTMLElement, project: Project, session: PlaySes
         children: [
           `${session.gold.toLocaleString("ko-KR")} → `,
           el("span", { class: enough ? "is-after" : "is-short", text: enough ? (session.gold - price).toLocaleString("ko-KR") : "부족" }),
-          " G",
+          ` ${goldLabel}`,
         ],
       }),
       el("span", { class: "runtime-inn-summary-label", text: "묵으면" }),
-      innSummaryLine("HP", hpGain, "inn-summary-hp"),
-      recoverMp ? innSummaryLine("MP", mpGain, "inn-summary-mp") : el("span", { class: "runtime-inn-summary-line", text: "MP 그대로" }),
+      innSummaryLine(hpLabel, hpGain, "inn-summary-hp"),
+      recoverMp ? innSummaryLine(mpLabel, mpGain, "inn-summary-mp") : el("span", { class: "runtime-inn-summary-line", text: `${mpLabel} 그대로` }),
     ],
   });
   const head = el("div", { class: "runtime-inn-head", children: [title, note].filter((node): node is HTMLElement => Boolean(node)) });
@@ -188,6 +201,7 @@ function innGauge(label: string, current: number, after: number, max: number, ki
       }),
       el("span", {
         class: "runtime-inn-track",
+        attrs: { "aria-hidden": "true" },
         children: [
           el("span", { class: "runtime-inn-track-gain", attrs: { style: `width:${pct(after)}` } }),
           el("span", { class: "runtime-inn-track-fill", attrs: { style: `width:${pct(current)}` } }),
@@ -218,6 +232,12 @@ async function playInnRest(
   const fade = document.createElement("div");
   fade.className = "runtime-inn-fade";
   fade.dataset.testid = "inn-resting";
+  fade.setAttribute("role", "status");
+  fade.setAttribute("aria-label", "휴식 중");
+  if (innReducedMotion()) {
+    fade.style.animation = "none";
+    fade.style.opacity = "0.96";
+  }
   overlay.replaceChildren(fade);
   scene.syncRuntimeState();
 
@@ -294,14 +314,24 @@ function commerceStatus(text: string): HTMLElement {
   const status = document.createElement("p");
   status.className = "runtime-commerce-status";
   status.dataset.testid = "commerce-status";
+  status.setAttribute("role", "status");
   status.textContent = text;
   return status;
+}
+
+/** 운영체제 「움직임 줄이기」 또는 플레이어 「메뉴 움직임 줄이기」. 휴식 암전은 그때 바로 어두워진다. */
+function innReducedMotion(): boolean {
+  return getPlayerPreferences().reduceMenuMotion || prefersReducedMotion();
 }
 
 function createCommerceOverlay(options: CommerceOverlayOptions): HTMLElement {
   const overlay = document.createElement("section");
   overlay.className = "runtime-overlay runtime-commerce-overlay";
   overlay.dataset.testid = options.testId;
+  // 제목 노드는 휴식 연출이 통째로 갈아끼운다. 이름은 오버레이에 두어야 창이 바뀌어도 남는다.
+  overlay.setAttribute("role", "dialog");
+  overlay.setAttribute("aria-modal", "true");
+  overlay.setAttribute("aria-label", options.title);
   applySystemGraphic(overlay);
   const title = document.createElement("div");
   title.className = "runtime-overlay-title";

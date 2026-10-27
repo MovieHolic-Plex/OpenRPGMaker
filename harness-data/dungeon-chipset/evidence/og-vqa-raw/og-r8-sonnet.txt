@@ -1,0 +1,38 @@
+VERDICT: FAIL
+
+Judged from the images only. Coordinates: the 16x12 floor is 768x576 at 3x (left half), so the 128x96 field repeat is 384px right and 288px down. The field image is 768x576 at 6x. The room scene is 480x384, with the floor at x48-432, y145-335. The edge image is 405x303 at 3x, 8 columns x 6 rows.
+
+Clear improvement over r7: the body is darker and genuinely purple-black. The slabs now have a lit rim (maroon-pink highlight on the upper and left edges) plus horizontal grain, so they are no longer flat stickers. The glow is small and sparse, and the 16/64px lattice is gone. Two major defects remain, both outside the body field itself.
+
+Major defects
+1. The edge variants do not match the body, and the room scene shows a hard rectangular join (points 2 and 5), major.
+   - In the room scene the floor's outer ring is a flat dark-indigo fill with faint horizontal streaks and a few reddish specks, and it has no slab outlines at all. This ring is one tile wide on the left, right and bottom (x48-96, x384-432, y288-335) and about one tile under the wall (y145-192).
+   - The slab body appears only as a rectangle inside it, x~96-384, y~192-288. The rectangle is much darker and has heavy dark cracks. Its borders are straight and visible at x~96, x~384, y~192 and y~288.
+   - The result looks like a patch of one material pasted onto a floor of another. That is the same pasted-on look the brief says to avoid.
+   - Wherever the builder uses edge variants (next to walls and doorways), the floor loses its slab structure.
+2. The 47 edge variants are flat fills and are not distinguishable (point 5), major.
+   - Each of the 47 cells (edge image, 8 columns x 6 rows, e.g. x~5-45,y~5-45 and x~105-145,y~255-295) is a near-uniform dark indigo square with 2-4 reddish specks and a faint 1px darker rim.
+   - There is no visible slab, crack, bevel, wall shadow or transition from body to edge. At 3x the 47 shapes cannot be told apart.
+   - This breaks the brief's "no flat single-value fills" and "wall and threshold edges are shaded". The floor under the brick wall at y~145-190 is a flat purple band with no gradient or contact shadow.
+3. The 128/96 repeat is noticeable at 16x12 (point 2), moderate to major.
+   - The 16x12 floor reads as a 2x2 tiling of one image. The glow dots recur exactly: (x~95,y~40) and (x~480,y~40); (x~335,y~215) and (x~720,y~215); (x~40,y~170) and (x~430,y~170); (x~118,y~255) and (x~500,y~255). Each pair is 385px apart. The same dots return 285px down: (x~40,y~170) and (x~40,y~455); (x~118,y~255) and (x~118,y~540).
+   - The large light slabs also recur on this pitch: the large maroon-lit slab at x~130-175,y~50-90 returns at x~515-560 and at y~340-380.
+   - Anyone laying a larger room (e.g. 20x15 tiles or more) will see this. It is better than r7, but still an identifiable repeat. In an 8-tile-wide room it would be hidden.
+
+Moderate and minor
+4. Scale mismatch between scene and field (point 1).
+   - The slab body inside the room scene (x96-384,y192-288) has much larger, heavier cracks and darker cells than the slabs in the 16x12 floor (x0-768) and the 6x field image. It looks like a different texture or a different crop, and this inconsistency adds to the pasted-on look in defect 1.
+5. Flat interiors (point 3), moderate.
+   - Inside the field, most slabs now have a lit rim and horizontal grain (field x~270-370,y~100-190; x~490-570,y~190-270). The dark slabs (field x~20-100,y~120-180; x~200-290,y~10-100) are nearly flat dark indigo with only sparse grain.
+   - The light/dark slab ratio is mid. It is better than r7 but still flatter than Beodeul's organic multi-tone texture.
+6. Outline network (point 2), minor.
+   - The near-black 1-2px outline round every slab is uniform and forms a Voronoi-cobble look. It reads more like cobblestone paving than "cracked" stone.
+   - There are no tile-aligned seams and no 16px grid, so this is a style note.
+7. Glow (point 4), minor.
+   - The glow is now appropriately faint: small violet slivers on crack lines, ~10 per 128x96 field (e.g. field x~190-215,y~80; x~80-100,y~340; x~575,y~140; x~675,y~435; x~235,y~515).
+   - It meets "faint glow in some cracks". It is sparse enough that most of the floor shows none, so the otherworld feel is mostly carried by the hue. Glow dots on slab borders are 2-5px straight slivers with no halo. This is acceptable.
+
+Quality vs Beodeul (point 6)
+- The body field alone is much closer to the bar. It is dark and low-key, with slab-scale structure, and it is legible at 3x. Information per tile is higher than Beodeul's mid-scale patchy texture.
+- However, the floor as the builder actually lays it near walls does not match. Beodeul's volcano cave has continuous texture and shaded wall contact. This floor has a flat band at the edges and a hard step into the body.
+- Defects 1 and 2 are the reason for the FAIL. If the edge variants carry the slab structure, outlines and a shaded wall-contact gradient, and the repeat is hidden (a larger or alternate field), this would likely pass.

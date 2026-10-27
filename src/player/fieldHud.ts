@@ -3,10 +3,19 @@ import type { PlaySession } from "@/project/session";
 import { effectiveFieldHud, normalizeFieldHud, resolvedHudWidgets, recommendedHudFont, type HudWidget } from "@/project/fieldHud";
 import { isActionCombatMap } from "@/project/actionCombat";
 import { resolvePlayResolution } from "@/project/playResolution";
-import { readHudWidget, type HudRuntimeContext } from "./fieldHudData";
+import { readHudWidget, type HudEntry, type HudReading, type HudRuntimeContext } from "./fieldHudData";
 import { drawHudWidget, hudNode } from "./fieldHudRender";
 export type { HudRuntimeContext } from "./fieldHudData";
-interface WidgetMount { node: HTMLElement; signature: string; drawnWidget?: HudWidget; readingSignature?: string; changedAt: number; changedPending?: boolean }
+interface WidgetLayout { x: number; y: number; width: number; height: number; autoMap: boolean; mapRight: number; avoiding: boolean }
+interface WidgetMount {
+  node: HTMLElement;
+  drawnWidget?: HudWidget;
+  seenReading?: HudReading;
+  drawnReading?: HudReading;
+  layout?: WidgetLayout;
+  changedAt: number;
+  changedPending?: boolean;
+}
 /** Same renderer for authoring preview and shipped player; input belongs to the editor only. */
 export class FieldHud {
   readonly root = hudNode("field-hud");
@@ -30,20 +39,26 @@ export class FieldHud {
       for (const widget of this.widgets) {
         if (!this.mounts.has(widget.id)) {
           const node = hudNode("hud-widget"); node.dataset.widgetId = widget.id; node.dataset.testid = `hud-widget-${widget.id}`;
-          this.mounts.set(widget.id, { node, signature: "", changedAt: -Infinity });
+          this.mounts.set(widget.id, { node, changedAt: -Infinity });
         }
         this.root.append(this.mounts.get(widget.id)!.node);
       }
     }
     const config = this.config, modern = config.theme !== "legacy";
-    this.host.dataset.fieldHud = config.theme;
-    this.host.dataset.hudObjective = String(!modern || config.objective);
-    this.root.dataset.theme = config.theme;
+    writeDataset(this.host, "fieldHud", config.theme);
+    writeDataset(this.host, "hudObjective", String(!modern || config.objective));
+    const uiScale = String(Math.max(1, Math.round((resolvePlayResolution(project.system).height / 240) * 100) / 100));
+    if (this.host.style.getPropertyValue("--play-ui-scale") !== uiScale) this.host.style.setProperty("--play-ui-scale", uiScale);
+    writeDataset(this.root, "theme", config.theme);
     const font = config.font && config.font !== "auto" ? config.font : recommendedHudFont(config.theme);
-    this.host.dataset.hudFont = font;
-    this.root.dataset.font = font;
-    this.root.hidden = !modern;
-    if (!modern) { delete this.host.dataset.hudStamina; delete this.host.dataset.hudHp; return; }
+    writeDataset(this.host, "hudFont", font);
+    writeDataset(this.root, "font", font);
+    if (this.root.hidden !== !modern) this.root.hidden = !modern;
+    if (!modern) {
+      if (this.host.dataset.hudStamina !== undefined) delete this.host.dataset.hudStamina;
+      if (this.host.dataset.hudHp !== undefined) delete this.host.dataset.hudHp;
+      return;
+    }
     const size = resolvePlayResolution(project.system);
     const action = isActionCombatMap(project, project.maps[session.currentMapId]);
     const now = performance.now();
@@ -51,11 +66,10 @@ export class FieldHud {
     for (const widget of this.widgets) {
       const mount = this.mounts.get(widget.id)!;
       const reading = readHudWidget(widget, project, session, context);
-      const readingSignature = JSON.stringify(reading);
-      if (mount.readingSignature !== undefined && mount.readingSignature !== readingSignature) { mount.changedAt = now; mount.changedPending = widget.condition === "changed"; }
+      if (mount.seenReading && !sameReading(mount.seenReading, reading)) { mount.changedAt = now; mount.changedPending = widget.condition === "changed"; }
       // 대화·메뉴가 HUD 를 가리는 동안 바뀐 값은 다시 보일 때부터 3초를 센다(말 걸기 직후의 호감 변화를 놓치지 않게).
       if (mount.changedPending && this.root.offsetParent !== null) { mount.changedAt = now; mount.changedPending = false; }
-      mount.readingSignature = readingSignature;
+      mount.seenReading = reading;
       const condition = widget.condition === "always" ||
         (widget.condition === "damaged" && reading.value < reading.max) ||
         (widget.condition === "low" && reading.value / reading.max <= .25) ||
@@ -63,18 +77,19 @@ export class FieldHud {
         (widget.condition === "action" && action) ||
         (widget.condition === "switch" && !!widget.switchId && session.switches[widget.switchId] === true) ||
         (widget.condition === "changed" && now - mount.changedAt < 3000);
-      mount.node.hidden = !widget.enabled || !reading.available || !condition ||
+      const hidden = !widget.enabled || !reading.available || !condition ||
         (widget.hideEmpty && ["slots", "timers", "party"].includes(widget.kind) && reading.value === 0);
+      if (mount.node.hidden !== hidden) mount.node.hidden = hidden;
       if (widget.enabled && reading.available && widget.kind === "party" && widget.source !== "friendship") hpOwned = true;
       if (widget.enabled && reading.available && widget.kind === "gauge") {
         if (widget.source === "stamina") staminaOwned = true;
         if (widget.source === "hp") hpOwned = true;
       }
       // 위젯 설정은 설정 객체가 바뀔 때만 새로 정규화되므로(위 configSource) 정체성으로 비교한다.
-      // 예전에는 매 프레임 위젯마다 [widget, reading] 전체를 JSON.stringify 했다.
-      if (widget !== mount.drawnWidget || readingSignature !== mount.signature) {
+      // 읽기 값은 필드만 대조한다 — 매 프레임 JSON.stringify 하면 위젯마다 문자열이 생긴다.
+      if (widget !== mount.drawnWidget || !sameReading(mount.drawnReading, reading)) {
         drawHudWidget(mount.node, widget, reading);
-        mount.signature = readingSignature;
+        mount.drawnReading = reading;
         mount.drawnWidget = widget;
       }
       let width = Math.min(size.width - 8, widget.width);
@@ -120,15 +135,50 @@ export class FieldHud {
           if (!blocked) break;
         }
       }
-      const autoMapWidth = config.theme === "collector" && widget.source === "map";
-      Object.assign(mount.node.style, { left: `${x}px`, top: `${y}px`, width: autoMapWidth ? "auto" : `${width}px`, maxWidth: autoMapWidth ? `${size.width - x - 8}px` : "", height: `${height}px` });
-      mount.node.dataset.avoiding = String(anchor !== widget.anchor);
+      const autoMap = config.theme === "collector" && widget.source === "map";
+      const mapRight = autoMap ? size.width - x - 8 : 0;
+      const avoiding = anchor !== widget.anchor;
+      const layout = mount.layout;
+      // Standing still used to assign left/top/width/height every frame (5 strings × each widget).
+      if (!layout || layout.x !== x || layout.y !== y || layout.width !== width || layout.height !== height
+        || layout.autoMap !== autoMap || layout.mapRight !== mapRight || layout.avoiding !== avoiding) {
+        mount.layout = { x, y, width, height, autoMap, mapRight, avoiding };
+        Object.assign(mount.node.style, {
+          left: `${x}px`, top: `${y}px`,
+          width: autoMap ? "auto" : `${width}px`,
+          maxWidth: autoMap ? `${mapRight}px` : "",
+          height: `${height}px`,
+        });
+        writeDataset(mount.node, "avoiding", avoiding ? "true" : "false");
+      }
     }
-    this.host.dataset.hudStamina = String(staminaOwned);
-    this.host.dataset.hudHp = String(hpOwned);
+    writeDataset(this.host, "hudStamina", String(staminaOwned));
+    writeDataset(this.host, "hudHp", String(hpOwned));
   }
   destroy(): void {
     this.root.remove(); this.mounts.clear();
     for (const key of ["fieldHud", "hudFont", "hudObjective", "hudStamina", "hudHp"]) delete this.host.dataset[key];
   }
+}
+
+function writeDataset(node: HTMLElement, key: string, value: string): void {
+  if (node.dataset[key] !== value) node.dataset[key] = value;
+}
+
+function sameReading(cached: HudReading | undefined, reading: HudReading): boolean {
+  if (!cached || cached.available !== reading.available || cached.value !== reading.value || cached.max !== reading.max
+    || cached.text !== reading.text || cached.detail !== reading.detail) return false;
+  const left = cached.entries;
+  const right = reading.entries;
+  if (left === right) return true;
+  if (!left || !right || left.length !== right.length) return false;
+  for (let index = 0; index < left.length; index += 1) {
+    if (!sameEntry(left[index]!, right[index]!)) return false;
+  }
+  return true;
+}
+
+function sameEntry(left: HudEntry, right: HudEntry): boolean {
+  return left.name === right.name && left.value === right.value && left.max === right.max
+    && left.icon === right.icon && left.key === right.key && left.selected === right.selected;
 }

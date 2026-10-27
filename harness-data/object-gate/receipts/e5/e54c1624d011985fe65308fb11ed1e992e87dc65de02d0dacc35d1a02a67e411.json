@@ -1,0 +1,372 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e54c1624d011985fe65308fb11ed1e992e87dc65de02d0dacc35d1a02a67e411",
+ "width": 64,
+ "height": 32,
+ "kind": "flat",
+ "name": "low stone proclamation platform set into a plaza floor, 3/4 top-down: large light flagstone top with a border of rim stones and an inlaid blue disc with a gold star, a one-course front riser and one step",
+ "label": "beodeul_city/capital/capital_dais",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 15,
+  "tileColorsP90": 18,
+  "darkV5": 57,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 8
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "flagstone platform top with rim stones and inlaid disc",
+      "rows": "1-18",
+      "evidence": "a",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front riser and step (light stone blocks)",
+      "rows": "20-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 18,
+    "front_face_rows": 11,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-18 form a large flagstone top, with mortar lines and an inlaid blue and gold disc at rows 3-11. Row 19 is a dark front-edge line (L=63) across the width. Below it, rows 20-30 show a front riser of block courses with mortar joints, and a darker line at row 30 starts the step at row 31. The top is much taller than a rim and the front face is 3+ rows, so the main body has both a top surface and a front face. No isometric side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate shows 12 visible tones per 16x16 tile, against 7 for the paving reference and 3 for the grass. Near-flat coverage is 1%, so there are no large flat fills. The flagstone top has light, mid and shadow stones, with mortar joints and speckle. The rim stones and the front riser are separated by value steps, and the one-course riser and step read as distinct planes. The blue disc with the gold star adds extra tonal variety. The dark edge pixels are only 30% neutral, so most outlines lean toward a tint of the adjacent stone rather than a uniform black sticker line. Together with the reference paving's 80% neutral edges, this reads as mixed. Per-stone shading is a little simpler than the cobble detail in the paving reference, but with 27 colours in total it is at or above the reference on the primary facts. A careful artist could accept it next to the reference.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 25203
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "main platform top (flagstones, rim stones, inlaid blue disc with gold star)",
+      "rows": "1-18",
+      "evidence": "a",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "inlaid blue disc with gold star",
+      "rows": "3-11",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "step tread",
+      "rows": "20-26",
+      "evidence": "a",
+      "front_edge_line_row": 30,
+      "eave_shadow_rows": "27-29"
+     },
+     {
+      "part": "step riser",
+      "rows": "31-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 18,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main platform is a wide flagstone surface in rows 1-18, ending in a dark front-edge line at row 19. A second, lower flagstone band (the step tread) fills rows 20-26. It darkens through rows 27-29 and ends in a dark line at row 30, with a thin riser strip at row 31. The one-course front riser is only partly in frame. The disc is an ellipse inlay, rows 3-11, set into the top surface. The front face is thin (about 5 rows, 27-31), but the large foreshortened top is clearly a horizontal surface seen from above. The drawing therefore reads as a stepped platform in 3/4 view rather than a pure flat decal."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate carries 12 visible tones per 16x16 tile, against 7 for the paving reference and 3 for the grass reference. Near-flat coverage is 1%, so there are no large flat fills. The flagstone top and the riser stones are shaded individually: highlight edges, a mid face and darker joints give about 5 lightness steps. The medallion has a dark blue rim, a blue field and a gold star. Only 30% of the dark edge pixels are neutral, so most of the outline leans toward the stone or blue material rather than being a uniform black sticker line. The remaining neutral edge pixels leave the outline mixed. Texture is moderate: stone speckle and per-stone highlights are present but sparser than the cobble grain of the paving reference. Overall it is at least as rich as the references on the primary facts and is not flat or sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20851
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "flagstone top with rim stones and inlaid blue disc with gold star",
+      "rows": "0-18",
+      "evidence": "a",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "inlaid blue disc with gold star (flat inlay in the top)",
+      "rows": "3-11",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front riser stone course",
+      "rows": "20-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "step (only its first row is visible at the bottom edge)",
+      "rows": "31-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 19,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-18 form a large paved top with flagstone joints and the inlaid disc. A dark 1-row front-edge line at row 19 (L=63) closes it. Below it, rows 20-29 are a vertical riser of light stone blocks with vertical joints, about 10 rows tall, shaded darker toward the bottom. Row 30 is a dark joint, and row 31 starts the step. The top surface and the front face are both clearly drawn, so it is a 3/4 view and not a flat slab. The drawing is a raised platform rather than a pure floor decal, but the flat kind plausibly matches it."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate measures 12 visible tones per 16x16 tile, against 7 for the paving reference and 3 for the grass, so it is at or above both on density. Near-flat coverage is 1%, close to the references' 0%, so there are no real flat fills. Only 30% of its dark edge pixels are neutral, which means most outlines lean toward a tinted stone tone rather than a uniform black sticker line. The flagstones, rim stones, riser course and step are separated mostly by value, with a few light-to-dark steps on the stone ramp (about 4-5). The inlaid disc and star add extra detail. The blocks are slightly cleaner and less grainy than the references' per-stone shading, but the evidence is not enough to call it shallow, so it passes."
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 17726
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "flagstone top with rim stones",
+      "rows": "0-18",
+      "evidence": "a",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": "19"
+     },
+     {
+      "part": "inlaid blue disc with gold star",
+      "rows": "2-11",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front riser",
+      "rows": "20-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "step",
+      "rows": "30-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 19,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a wide flagstone slab. Rows 0-18 are a large top surface of light stones with mortar joints, with the blue and gold disc inlaid in it. Row 19 is a dark front-edge line (L=63), and rows 20-29 are a vertical riser of stone blocks about 10 rows tall. A dark line at row 30 and a lighter strip at row 31 show the step. The top surface is much taller than a rim, so this is a 3/4 view, not a flat top-down slab. It is a low platform with a riser rather than a pure floor decal, but the flat kind still plausibly describes it."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 12 visible tones per tile, against 7 for the paving reference and 3 for the grass. Near-flat coverage is 1%, so there are no large single-colour areas, and the flagstones carry speckle and edge highlights. The rim stones, flagstone top, front riser and step are separated by value. Only 30% of the dark edge pixels are neutral, so the outlines lean toward a tinted stone tone rather than a uniform black sticker line. Weaknesses: the stone ramp has about 5 steps against Beodeul's 6, and the blocks look somewhat regular and brick-like. The inlaid disc is small but cleanly shaded. Overall it matches the references on the primary facts, so I pass it narrowly.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17372
+  }
+ ],
+ "decidedAt": "2026-10-23T01:44:13.426Z",
+ "cells": {
+  "16": [
+   "348e6c8901726cd9",
+   "52c04c528d813503",
+   "653b5627c2b86857",
+   "98a61c04d6f088d3",
+   "99c14055a7d99cfa",
+   "c08734b952123c31",
+   "cb5dcdded8160519",
+   "dea7dec048720991"
+  ],
+  "24": [
+   "164578cbec62fc11",
+   "21af17bec1dd8ac9",
+   "222891c3f6847f5d",
+   "358e2262f9af2fea",
+   "37f687e7aa7b40ca",
+   "42d25939168ce4fd",
+   "540d4c7a887e9364",
+   "5de4b0a83a9f5ad6",
+   "5f978f00a1eb7a19",
+   "6529c2eef17f4226",
+   "659481fb9226d012",
+   "659da496662e449b",
+   "6a1c2aa8a6463491",
+   "6b0af93a85530aba",
+   "6f9b22653a412965",
+   "715492b7eabfcdb3",
+   "74b6c521466d59d2",
+   "782495757b860d7b",
+   "7fa97f64936a4992",
+   "8147900ee987ea78",
+   "81ce1302ebdffc94",
+   "85307948d06e1646",
+   "878008d1cb553ce5",
+   "8de6479f3b38f4c7",
+   "90815b65e621bbf5",
+   "a0f85310dfe61421",
+   "be93564cdbca4c9f",
+   "cc4d37ffd9dcb2e2",
+   "ce4f359de9071339",
+   "cea8b9ec1a4c899b",
+   "d87eaf5cfa679ada",
+   "dbf5e7bb320a228c",
+   "e19199c56d16793c",
+   "e486ebf60cfa5f3f",
+   "f26047fbdaf408ea",
+   "f593ee3ae0316b06"
+  ],
+  "32": [
+   "815ffe956a0c2483",
+   "c7e3a60b2d088d91"
+  ],
+  "48": [
+   "03e671ac86de3b5c",
+   "0f1d7c63b1bbaea5",
+   "377f27ed6597afa4",
+   "46eb82e98018f429",
+   "4b75d093baeef2ff",
+   "77ce5685cee6014d",
+   "8dc9fe6bfaf358bc",
+   "995eb81b9443c124",
+   "ca7ac03dc74dba2e",
+   "cfa5bc54e1758b77",
+   "fd5c8239a7920162",
+   "ffe8dd87a0c05fbf"
+  ]
+ }
+}

@@ -6,6 +6,7 @@
 import { canMove, isPassable } from "@/project/collision";
 import type { GameMap, Project } from "@/project/types";
 import { playerAnchors } from "@/editor/tools/transferReachability";
+import { eventAlwaysBlocks } from "@/project/eventPassageBlock";
 import { trivialCode } from "./puzzle";
 
 type Obj = Record<string, unknown>;
@@ -246,6 +247,67 @@ export function weakPuzzleLocks(project: Project, changedIds?: ReadonlySet<strin
       if (found) break;
     }
     if (found) out.push(`「${ev.name || ev.id}」(${ev.id}): ${found}`);
+  }
+  return out;
+}
+
+/**
+ * 엔딩으로 가는 길의 상호작용 이벤트(열쇠·금고·문·엔딩·단서 스위치)가 걸어 닿지 않는다(J75, 2026-10-26 저택 argon-high:
+ * 서재 금고 (2,4) 둘레가 가구·벽으로 막혀 예배당 열쇠와 엔딩에 못 간다). 플레이어가 그 칸에 서거나 이웃 칸에서 마주 볼 수 있어야 한다.
+ * 걷기는 타일 통행과 늘 막는 이벤트(J75 실측: 한 칸 복도에 선 일기장 이벤트가 금고 가는 길을 막음)를 본다. 잠긴 문은 열린다고 낙관한다.
+ * 대상: 버튼·접촉으로 켜는 페이지가 엔딩·아이템 주기·숫자 입력·다른 페이지 조건에 쓰이는 스위치 켜기 중 하나를 하거나, 잠긴 문이다.
+ */
+export function unreachableCriticalEvents(project: Project): string[] {
+  const usedSwitches = new Set<string>();
+  for (const map of Object.values(project.maps)) for (const ev of map.events ?? []) for (const page of (ev.pages ?? []) as unknown as Obj[]) {
+    for (const c of conds(page)) if (c.kind === "switch" && c.switchId !== undefined) usedSwitches.add(String(c.switchId));
+    walk(page.commands, (cmd) => { const c = obj(cmd.condition); if (c?.kind === "switch" && c.switchId !== undefined) usedSwitches.add(String(c.switchId)); });
+  }
+  for (const ce of (project.commonEvents ?? []) as unknown as Obj[]) walk(ce.commands, (cmd) => { const c = obj(cmd.condition); if (c?.kind === "switch" && c.switchId !== undefined) usedSwitches.add(String(c.switchId)); });
+  // 계산된 착지(변수 좌표·변수 맵)로 들어오는 맵은 앵커를 다 알 수 없다 — 거짓 차단을 피해 그 맵은 보지 않는다. 대상 맵을 모르는 이동이 하나라도 있으면 전부 건너뛴다.
+  const computedLanding = new Set<string>();
+  let unknownTarget = false;
+  const scanTransfers = (node: unknown): void => {
+    if (Array.isArray(node)) { node.forEach(scanTransfers); return; }
+    const o = obj(node);
+    if (!o) return;
+    if (o.kind === "transfer") {
+      if (typeof o.mapId !== "string") unknownTarget = true;
+      else if (typeof o.x !== "number" || typeof o.y !== "number") computedLanding.add(o.mapId);
+    }
+    for (const v of Object.values(o)) if (v && typeof v === "object") scanTransfers(v);
+  };
+  for (const map of Object.values(project.maps)) for (const ev of map.events ?? []) scanTransfers(ev.pages);
+  scanTransfers(project.commonEvents ?? []);
+  if (unknownTarget) return [];
+  const out: string[] = [];
+  for (const map of Object.values(project.maps)) {
+    if (map.worldmapSource || computedLanding.has(map.id)) continue;
+    const critical = (map.events ?? []).flatMap((ev) => {
+      const why: string[] = [];
+      for (const page of (ev.pages ?? []) as unknown as Obj[]) {
+        const t = trig(page);
+        if (t === "auto" || t === "autorun" || t === "parallel") continue;
+        walk(page.commands, (cmd) => {
+          if (cmd.kind === "triggerEnding") why.push("엔딩");
+          else if (cmd.kind === "changeItem" && Number(cmd.amount ?? cmd.value ?? 1) > 0) why.push("아이템");
+          else if (/^input/u.test(String(cmd.kind))) why.push("숫자 입력");
+          else if (cmd.kind === "setSwitch" && cmd.value !== false && usedSwitches.has(String(cmd.switchId))) why.push("단서 스위치");
+        });
+      }
+      if (lockOf(ev)) why.push("잠긴 문");
+      return why.length ? [{ ev, why: [...new Set(why)] }] : [];
+    });
+    if (!critical.length) continue;
+    // 늘 막는 이벤트(모든 페이지가 보통 우선순위 — 한 칸 복도의 일기장·가구 이벤트)는 벽처럼 친다. 잠긴 문은 열린다고 본다.
+    const blocked = new Set((map.events ?? []).filter((ev) => eventAlwaysBlocks(ev) && !lockOf(ev)).map((ev) => `${ev.x},${ev.y}`));
+    const reach = reachWithout(project, map, blocked);
+    if (!reach) continue;
+    const at = (x: number, y: number) => reach.has(`${x},${y}`);
+    for (const { ev, why } of critical) {
+      if (at(ev.x, ev.y) || STEPS.some(([dx, dy]) => at(ev.x + dx, ev.y + dy))) continue;
+      out.push(`${map.name}의 「${ev.name || ev.id}」(${ev.id}, ${ev.x},${ev.y} · ${why.join("·")})에 걸어 닿지 못한다 — 그 칸도 네 이웃 칸도 시작·입구에서 이어지지 않는다(벽·가구나 한 칸 길을 막고 선 이벤트에 갇힘). 엔딩으로 가는 길이 끊긴다`);
+    }
   }
   return out;
 }

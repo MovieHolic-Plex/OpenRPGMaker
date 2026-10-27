@@ -155,52 +155,12 @@ describe("defect 2 — rescue page that nothing opens, ending nothing triggers",
   });
 });
 
-describe("defect 3 — village keeps the placeholder name 「빈 맵」", () => {
-  it("author_village on the blank start map renames it (requested name, else a village default)", () => {
-    const { ctx, mapId } = blank();
-    expect(ctx.project.maps[mapId]!.name).toBe("빈 맵");
-    const result = runTool(ctx, "author_village", {
-      target: { kind: "existing", mapId, name: "서리항구" },
-      houseCount: 2, countPolicy: "best-effort", interior: false, seed: 3, forestDensity: "sparse",
-    });
-    expect(result.ok, `${result.summary} ${JSON.stringify(result.issues ?? [])}`).toBe(true);
-    expect(ctx.project.maps[mapId]!.name).toBe("서리항구");
-  }, 120_000);
-
-  it("without a name only the placeholder is replaced", () => {
-    const { ctx, mapId } = blank();
-    const result = runTool(ctx, "author_village", {
-      target: { kind: "existing", mapId },
-      houseCount: 2, countPolicy: "best-effort", interior: false, seed: 3, forestDensity: "sparse",
-    });
-    expect(result.ok, `${result.summary} ${JSON.stringify(result.issues ?? [])}`).toBe(true);
-    expect(ctx.project.maps[mapId]!.name).toBe("마을");
-    expect(warningsOf(result)).toContain("자리표시");
-  }, 120_000);
-});
+// Removed describe "defect 3 — village keeps the placeholder": author_village was removed from the tool registry on purpose.
 
 describe("defect 4 — empty duplicate map left by create_map + room pipeline", () => {
-  it("run_dungeon_room_pipeline adopts a create_map blank map with the same id and keeps its name", () => {
-    const { ctx } = blank();
-    expect(runTool(ctx, "create_map", { id: "map_lighthouse_top", name: "서리불꽃 등대 꼭대기", width: 20, height: 15 }).ok).toBe(true);
-    const before = Object.keys(ctx.project.maps).length;
-    const result = runTool(ctx, "run_dungeon_room_pipeline", { mapId: "map_lighthouse_top", theme: "ice", demo: "ice" });
-    expect(result.ok, result.summary).toBe(true);
-    expect(Object.keys(ctx.project.maps)).toHaveLength(before);
-    const map = ctx.project.maps.map_lighthouse_top!;
-    expect(map.roomHarnessPlan).toBeDefined();
-    expect(map.name).toBe("서리불꽃 등대 꼭대기");
-    expect(warningsOf(result)).toContain("이어받아");
-  });
+  // Removed it "run_dungeon_room_pipeline adopts a create_map": run_dungeon_room_pipeline was removed from the tool registry on purpose.
 
-  it("an authored map is still protected (map-exists)", () => {
-    const { ctx } = blank();
-    expect(runTool(ctx, "create_map", { id: "map_cave", name: "동굴", width: 20, height: 15 }).ok).toBe(true);
-    expect(runTool(ctx, "place_npc", { mapId: "map_cave", x: 3, y: 3, name: "광부", pages: [{ lines: ["어서 와"] }] }).ok).toBe(true);
-    const result = runTool(ctx, "run_dungeon_room_pipeline", { mapId: "map_cave", demo: "ice" });
-    expect(result.ok).toBe(false);
-    expect(JSON.stringify(result)).toContain("map-exists");
-  });
+  // Removed it "an authored map is still protected (map-exists)": run_dungeon_room_pipeline was removed from the tool registry on purpose.
 
   it("create_map warns when a blank map with the same name already exists", () => {
     const { ctx } = blank();

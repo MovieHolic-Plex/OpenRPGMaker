@@ -94,7 +94,7 @@ def main():
         ps = [p['id'] for p in C.PIECES.values() if (not only or p['id'] in only) and ('--todo' not in a or C.status_of(p) != 'pass')]
         rows, bad = C.export(set(ps))
         for b in bad: print('  x', b)
-        path = os.path.join(C.GATE_DIR, 'items.jsonl')
+        path = os.environ.get('GATE_ITEMS') or os.path.join(C.GATE_DIR, 'items.jsonl')     # GATE_ITEMS: 작업자마다 따로(동시 실행)
         open(path, 'w').write(''.join(json.dumps(r, ensure_ascii=False) + '\n' for r in rows))
         print('%d images -> %s' % (len(rows), path)); return
     print(__doc__)

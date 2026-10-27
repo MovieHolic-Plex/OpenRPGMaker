@@ -85,7 +85,8 @@ describe("show_map_region whole-map coverage", () => {
   });
 });
 
-describe("review coverage of a map larger than the span cap", () => {
+// Heavy under CI load (15s default is too tight): renders a large map region by region.
+describe("review coverage of a map larger than the span cap", { timeout: 120_000 }, () => {
   // A 40x40 map used to need ceil(40/24)^2 = 4 clipped renders to satisfy the review gate's
   // (0,0)-to-(w,h) coverage requirement. 2026-09-17 독립 검수 해체 이후 이미지 커버리지는 승인 조건이
   // 아니다 — 여기서는 한 번의 whole-map 호출이 세션 경로에서 잘리지 않고, 결정적 검사로 승인되는 것만 고정한다.

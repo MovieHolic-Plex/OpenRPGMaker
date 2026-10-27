@@ -1,4 +1,5 @@
 import { calendarOptionsOf, evalActorQueryCondition, type ActorQuerySession } from "@/project/conditionActorQueries";
+import { withJosa } from "@/util/josa";
 import { ownsMonsterSpecies } from "@/project/monsterOwnership";
 import { growthEffects, permanentActorSkillIds } from '@/project/growth/runtime';
 import { executeM2BattleCommand as executeM2Command } from "@/battle/battleM2CommandExecutor";
@@ -15,7 +16,8 @@ import { evalRoguelikeRunCondition, type RoguelikeRunState } from "@/project/rog
 import { effectiveActorClassId, promoteActor as promoteActorClass, type ClassOverrideSession } from "@/project/sessionClass";
 import { badgeContext } from "@/project/badgeProgress";
 import type { ActorId, ActorInitialEquipment, Command, Condition, FaceGraphic, MessageWindowSettings, Project, ShowAnimationTarget, VariableOperand } from "@/project/types";
-import type { BattleEventCondition, BattleEventPageRecord, TroopRecord } from "@/project/types/database";
+import type { BattleEventCondition, BattleEventPageRecord, TroopBattleGuest, TroopRecord } from "@/project/types/database";
+import { normalizeTroopBattleGuests } from "@/project/databaseEnemyTroopRecordModel";
 
 export type BattleEventRuntimeState = {
   gameOverRequest?: { gameOverId: string; message?: string };
@@ -169,6 +171,11 @@ export type BattleEventRuntimeOptions = {
   // (refreshActorBattlerDerivedStats) — 런타임이 세션 paramBonuses 를 닫아 주입한다.
   // refreshSkills 는 전직처럼 클래스 스킬 셋이 바뀔 때만 true(장비 변경은 스킬 불변).
   readonly refreshActorDerivedStats?: (battler: MutableBattler, options?: { readonly refreshSkills?: boolean }) => void;
+  /**
+   * 트룹 손님(TroopRecord.battleGuests) 합류: 런타임이 그 배우의 배틀러를 이 전투에만 세운다.
+   * 세운 배틀러의 이름을 돌려준다. 세울 수 없으면(배우 없음·이미 있음·몬스터 파티 전투) undefined.
+   */
+  readonly joinBattleGuest?: (guest: TroopBattleGuest) => string | undefined;
 };
 
 export type BattleEventRuntimeResult =
@@ -206,16 +213,19 @@ type BattleExecFrame = {
   readonly commands: readonly Command[];
   pc: number;
   readonly loopBody?: boolean;
+  /** 이 루프 본문이 정상 완료된 횟수. loopBody 프레임만 쓴다. */
+  loopIterations?: number;
 };
 
 // 배틀 이벤트는 한 액션 비트 안에서 동기 실행되므로 맵 인터프리터(maxLoopIterations=100000,
-// 프레임 단위 yield)보다 엄격한 상한을 둔다. 도달 시 unsupported 로그 후 해당 흐름을 끝낸다.
+// 프레임 단위 yield)보다 엄격한 상한을 둔다. 도달 시 unsupported 로그 후 그 루프만 끝낸다.
+// 상한은 루프 본문마다 따로 센다. 호출 하나에 카운터를 두면 앞 루프가 상한을 쓴 뒤
+// 다음 루프가 한 바퀴 만에 끊긴다(맵 인터프리터 stack.ts 와 같은 계약).
 type BattleInvocation = {
   readonly page: BattleEventPageRecord;
   readonly context: BattleEventContext;
   readonly depth: number;
   readonly frames: BattleExecFrame[];
-  loopIterations: number;
   labelJumps: number;
 };
 
@@ -254,6 +264,11 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
   // 소유 이벤트 없는 전투에서 소유자 의존 조건이 평가되면 종류별로 1회만 추적 로그를 남긴다
   // (조건 평가는 tick/라운드마다 반복되므로 매번 기록하면 eventLogs 가 범람한다).
   const loggedOwnerlessConditions = new Set<OwnerlessConditionKind>();
+  // 트룹 손님은 페이지 목록 뒤에 붙는 한 번짜리 가상 페이지다 — 같은 조건 평가·같은 정지/재개 흐름을 탄다.
+  const guestPages = normalizeTroopBattleGuests(options.troopRecord.battleGuests).map((guest) => ({
+    guest,
+    page: { id: `battle-guest:${guest.actorId}`, name: `guest ${guest.actorId}`, conditions: guest.conditions, span: "battle", runOnce: true, commands: [] } satisfies BattleEventPageRecord,
+  }));
 
   function logOwnerlessConditionOnce(kind: OwnerlessConditionKind): void {
     if (loggedOwnerlessConditions.has(kind)) return;
@@ -300,10 +315,22 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
         if (invocations.at(-1) === invocation && invocation.frames.length === 0) invocations.pop();
         continue;
       }
-      const page = options.troopRecord.battleEventPages[batch.nextPage++];
+      const pageIndex = batch.nextPage++;
+      const authoredPages = options.troopRecord.battleEventPages;
+      const guestEntry = pageIndex >= authoredPages.length ? guestPages[pageIndex - authoredPages.length] : undefined;
+      const page = authoredPages[pageIndex] ?? guestEntry?.page;
       if (!page) { batch = undefined; break; }
       const context = batch.context;
       if (!shouldRunBattleEventPage(page, context)) continue;
+      if (guestEntry) {
+        firedBattleEventPageIds.add(page.id);
+        const name = options.joinBattleGuest?.(guestEntry.guest);
+        if (!name) { logUnsupported(page, context, `battle guest ${guestEntry.guest.actorId} could not join`); continue; }
+        logs.push({ pageId: page.id, round: context.turn, triggerId: page.id, kind: "fired", detail: `guest join ${guestEntry.guest.actorId}` });
+        const body = guestEntry.guest.message ?? `${withJosa(name, "이/가")} 합류했다!`;
+        pushInvocation(page, [{ kind: "text", body }], context, 0);
+        continue;
+      }
       logs.push({ pageId: page.id, round: context.turn, triggerId: page.id, kind: "fired" });
       if (pageRunsOnce(page)) firedBattleEventPageIds.add(page.id);
       if (pageHasRoundCadenceCondition(page)) firedBattleEventPageRoundKeys.add(pageRoundKey(page, context));
@@ -314,7 +341,7 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
 
   function pushInvocation(page: BattleEventPageRecord, commands: readonly Command[], context: BattleEventContext, depth: number): void {
     if (depth > 8) { logUnsupported(page, context, "common event recursion limit"); return; }
-    invocations.push({ page, context, depth, frames: [{ commands, pc: 0 }], loopIterations: 0, labelJumps: 0 });
+    invocations.push({ page, context, depth, frames: [{ commands, pc: 0 }], labelJumps: 0 });
   }
 
   function resumeChoice(requestId: number, index: number): BattleEventRuntimeResult | undefined {
@@ -477,11 +504,12 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
         frames.pop();
         if (frame.loopBody) {
           // 루프 본문이 정상 완료(breakLoop/gotoLabel 이탈 없이)되면 재진입한다.
-          invocation.loopIterations += 1;
-          if (invocation.loopIterations >= MAX_BATTLE_LOOP_ITERATIONS) {
+          // 완료 횟수는 이 프레임의 것 — 같은 페이지의 다른 루프와 더하지 않는다.
+          const iterations = (frame.loopIterations ?? 0) + 1;
+          if (iterations >= MAX_BATTLE_LOOP_ITERATIONS) {
             logUnsupported(page, context, "loop iteration limit reached");
           } else {
-            frames.push({ commands: frame.commands, pc: 0, loopBody: true });
+            frames.push({ commands: frame.commands, pc: 0, loopBody: true, loopIterations: iterations });
           }
         }
         continue;
@@ -548,7 +576,7 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
         }
         case "loop":
           // 빈 본문 루프는 무의미하므로 건너뛴다(맵 commandCatalog 와 동일).
-          if (command.body.length > 0) frames.push({ commands: command.body, pc: 0, loopBody: true });
+          if (command.body.length > 0) frames.push({ commands: command.body, pc: 0, loopBody: true, loopIterations: 0 });
           break;
         case "promoteActor": {
           // 전직 판정/전이 후 success/failure 분기를 fork 와 같은 프레임으로 쌓는다

@@ -31,7 +31,8 @@ function readReply(callId: string, resourceId: string): ChatResult {
   };
 }
 
-describe("audio detail after session compaction", () => {
+// Heavy under CI load (15s default is too tight): runs a real AssistantSession with compaction.
+describe("audio detail after session compaction", { timeout: 120_000 }, () => {
   it("returns current full detail when a clean session is synchronized after compaction", async () => {
     // Given: a real old tool result, followed by enough history for manual compaction.
     const oldDescription = "AUDIO_OLD_7E2A";

@@ -1,0 +1,19 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "e2ef6e668d903bd7ce55fb556d55fd736fb473677c56b1997c86180a7f96258f",
+ "profileHash": "4d8774b517f41638",
+ "kind": "structure",
+ "decision": "allow",
+ "decidedBy": "supervisor (Claude Opus 5.5)",
+ "decidedAt": "2026-10-27T10:50:38.906Z",
+ "by": "delegated",
+ "delegatedBy": "delegated by user to supervisor 2026-10-27",
+ "evidence": "/home/main/z-project/rpg-zzu-object-gate-holds/harness-data/object-gate/vqa/astel-capital-20261027.json",
+ "via": "review-page",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 평면 채움 (3/4)"
+ ],
+ "note": "capital_watergate_s — Argon adversarial VQA r2 (decoys rejected) + r3 PASS; AI receipt advisory (uncalibrated)",
+ "sig": "ac21ac3b8aa65cf9218d56c5e5ec138e5a825a5ad5ea9395e13f21b5a0497fd1"
+}

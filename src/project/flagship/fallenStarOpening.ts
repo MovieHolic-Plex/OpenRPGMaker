@@ -69,7 +69,7 @@ const key = (atMs: number, value: number, ease?: AnimaticKey["ease"]): AnimaticK
 
 // ── 카메라와 시차 ───────────────────────────────────────────────────────
 // 렌더러: 깊이 p 인 층의 점 X 는 화면 X − (카메라 − 화면 가운데)·p 에 그려진다(줌 1).
-// 카메라 값은 화면 가운데 근처(|x| ≤ 120, |y| ≤ 67)면 「가운데 기준 오프셋」으로 읽히므로 세계 좌표를 그보다 크게 잡는다.
+// 0ms 값이 가운데 띠(|x| ≤ 너비/4, |y| ≤ 높이/4) 안이면 컷 내내 가운데 오프셋이고, 밖이면 세계 좌표다. 이 컷은 세계 좌표로 시작한다.
 
 function camAt(cam: CamKeys, t: number): Point {
   return { x: sampleAnimaticTrack(cam.x, t, CENTER.x), y: sampleAnimaticTrack(cam.y, t, CENTER.y) };

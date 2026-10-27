@@ -110,15 +110,29 @@ Enter 로 맡기면 곧바로 닫혀 다음 칸을 누를 수 있다. 맡긴 일
 - 이벤트 추가(`scope:"map"` + `eventId`, 칸 목록 없음)는 EditScene 이 번들 캐릭셋을 뒤늦게 싣는다 — 없으면 처음 쓰는 상자·주민 그림이 빈 칸 표식으로 보였다.
 - 브라우저 증거: `test/e2e/_event-ai-queue-shots.spec.ts` → `verify-shots/event-ai-queue/` (8칸, 최대 동시 호출 4, 7개 배치·1개 막힘, 되돌리기 1회 = 이벤트 1개).
 
-## 이벤트 레이어에 겹쳐 넣지 않는다 (2026-10-25)
+## 이벤트 레이어에 겹쳐 넣지 않는다 (2026-10-25, 드래그 2026-10-26)
 
 우클릭 「붙여넣기」와 이벤트 레이어 Ctrl+V(`pasteEventAt`)는 붙이는 이벤트의 **몸 사각**이
 이미 있는 이벤트의 몸과 겹치면 넣지 않고 「이미 다른 이벤트가 있는 칸입니다.」를 알린다.
-되돌리기 스냅샷도 남기지 않는다. 끌어 옮기기(`DragOperationHandler.commitEventMoveDrag`)와 같은 문장이다.
-앵커만 보던 붙이기는 2칸 이상 이벤트의 머리·옆 칸 위에 복제본을 숨겼다. 클릭은 배열에서 먼저 깔린
-이벤트를 집으므로 붙여넣은 쪽은 없는 것처럼 보인다.
+몸 사각이 맵 밖으로 나가도 넣지 않고 「이벤트 몸이 맵 밖으로 나갑니다.」를 알린다.
+앵커만 맵 안인 넓은·키 큰 이벤트도 포함한다. 판정은 끌어 옮기기와 같은 `eventBodyFitsMap` 이다.
+되돌리기 스냅샷도 남기지 않는다.
+
+끌어 옮기기(`planEventDragMove`)는 잡은 칸이 커서 아래에 남도록 앵커를 포인터가 움직인
+칸 수만큼만 옮긴다. 1칸 이벤트는 커서가 곧 앵커라 드롭 칸이 새 위치다. 2칸 이상에서
+머리·옆 칸을 잡고 끌어도 그 칸이 커서 아래에 남는다. 놓은 뒤 몸 사각이 다른 이벤트와
+겹치면 붙여넣기와 같은 「이미 다른 이벤트가 있는 칸입니다.」를 알리고, 맵 밖으로 나가면
+「이벤트 몸이 맵 밖으로 나갑니다.」를 알린다. 거절은 되돌리기 스냅샷을 남기지 않는다.
+앵커만 보던 붙이기·옮기기는 2칸 이상 이벤트의 머리·옆 칸 위에 몸을 숨겼다. 클릭은 배열에서
+먼저 깔린 이벤트를 집으므로 나중에 놓은 쪽은 없는 것처럼 보인다.
+
 「이벤트 생성」「장소 이동 이벤트 생성」「탈것 시작 위치」도 그 칸을 이미 덮는 이벤트가 있으면 새로 만들지 않는다.
-계약: `test/eventLayerContextMenu.test.ts`.
+
+우클릭 「잘라내기」·「삭제」는 `deleteEditorEvent` 가 남기는 맵 스냅샷 **한 칸**만 쓴다.
+그 앞에 프로젝트 스냅샷을 더 쌓으면 종류가 달라 합쳐지지 않아, 이벤트가 돌아온 뒤에도
+라벨 「편집」인 빈 단계가 남고 그 다음 되돌리기가 앞선 작업을 건드리지 못한다.
+
+계약: `test/eventLayerContextMenu.test.ts`, `test/eventDragMove.test.ts`.
 
 ## 조수에서도 이벤트 명령 생성기 사용 (2026-09-20)
 
@@ -204,11 +218,11 @@ Enter 로 맡기면 곧바로 닫혀 다음 칸을 누를 수 있다. 맡긴 일
 - **Data Query**(m2-217)에 같은 조회 14종을 더했다 — `actorLevel/actorHp/actorMp/actorMaxHp/actorHpPercent/actorHasState/partyLeaderIndex/partySize/playerFacing/playtimeSeconds/steps/clearCount/weekday/stringLength`. 식(m2-216)은 `leaderLevel·leaderHp·leaderMp·leaderHpPercent·partySize·playtime·steps·clearCount` 를 식별자로 읽는다.
 - **문자 입력**: `enterHeroName.stringVariableId` 를 주면 배우 이름 대신 문자열 변수에 저장한다(`prompt` 가 창 제목). 대사에서 `\T[id]` 로 찍는다(`\S[n]` 은 이미 속도 제어라 `T`).
 - 세션 새 칸 `playerFacing`·`stringVariables`·`stepCount` 는 세이브에 들어가고, `clearHistory` 는 **세이브에 넣지 않는다**(회차는 슬롯이 아니라 기기에 속한다).
-- 편집기: 조건 종류 선택기·고급 조건 목록 모두 `actorQueryConditionForm.ts` 하나가 그린다. 없는 배우·상태·엔딩 참조는 초안 검증이 `condition.<kind>.reference` 경고로 잡는다.
+- 편집기: 조건 종류 선택기·고급 조건 목록 모두 `actorQueryConditionForm.ts` 하나가 그린다. 없는 배우·상태·엔딩 참조는 초안 검증이 `condition.<kind>.reference` 경고로 잡는다. 요일 칸은 조건 분기 창이 폼을 다시 그리지 않아도 앞서 켠·끈 요일을 누적해 저장하고, 아래 문장도 그 배열을 따른다.
 - **추격 훅(#28)**: 추격자 `movement.pursuit.lostSwitchId` 는 수색 끝에 포기하는 순간 켜고 다시 발견하면 끈다. `followSwitchId` 는 문을 따라 다른 맵으로 넘어오기 시작하면 켠다(`horrorRuntime.ts` / `pursuitDoors.ts`). 페이지 조건으로 「따돌렸다」·「문이 열린다」 연출을 건다. 페이지 추격 패널과 `configure_object_behavior` 의 `pursuit` 에 노출, `test/mgPursuitHooks.test.ts`.
 - **파티 스킬 조건(`partyKnowsSkill{skillId,present?}`, 2026-10-15)**: 「이 스킬을 아는 구성원이 파티에 있다」 — 바위깨기·물 건너기 같은 필드 스킬 게이트의 페이지 조건·분기 조건. `partySkills.ts` 가 배우(습득표·직업·성장 트리·장비)와 몬스터 파티를 한꺼번에 푼다. 평가기는 둘(session·pageResolution)과 전투 이벤트라 한 군데만 고치면 어긋난다.
 - **배지 수 조건(`badgeCount{op,value}`, 2026-10-16)**: 「배지를 N개 이상 받았다」 — 몬스터 캠페인 `badges[].switchId` 가 켜진 개수(정의가 없으면 `mx_badge_N` 규약 스위치)를 비교한다. 해석기는 `project/badgeProgress.ts` 하나이고 `partySkillContext` 가 캠페인 배지 목록을 실어 모든 페이지 해석 호출처에 퍼진다(전투 이벤트는 `badgeContext`). 도구: `place_badge_gate`. 자세한 규칙은 `openwiki/monster-badge-progression.md`.
-- 난이도·아이템 사용 조건(`difficulty`·`itemUsed`)은 간단 행이 없어 고급 조건 목록에 나온다(`pageConditionLayout.ts`).
+- 난이도·아이템 사용 조건(`difficulty`·`itemUsed`)은 간단 행이 없어 고급 조건 목록에 나온다(`pageConditionLayout.ts`). 검토 종은 그 행의 `event-page-advanced-condition-difficulty-<순번>`·`event-page-advanced-condition-item-used-<순번>` 으로 간다(`pageConditionField`).
 
 ## 구역(로케이션) 조건분기 (OPRN-OUT-020, 2026-09-10)
 
@@ -556,7 +570,7 @@ Event authoring, event pages, event commands, move routes, command dialogs, and 
 - **Transparent trunk on lower:** Chip 290 etc. are transparent. On **lower** alone they show black holes (no underlay). Editor/play render must composite **grass under trunk** when drawing a tree-trunk lower tile (`createTrunkOnGrassObject` / play `renderTile` grass-then-trunk). Data stays `lower=290` for solid passage; only the draw path adds the grass underlay.
 - **Tree pair post-hook (required):** Every tree trunk (lower/upper 290/291/292/293) must have its matching canopy on **upper** of the cell **above** (290??60, 291??61, 292??62, 293??63). Implemented in `repairTreePairsOnMap` / `repairTreePairsOnProject` (`src/project/lint/repairTreePairs.ts`). Runs as write-tool postprocess in `toolRunner` (before commit) and after manual paint/erase/fill in `tileActions`. Orphan trunks on row y=0 are removed (no cell above).
 - Selection-based deterministic building palette work lives in `src/editor/panels/buildPalette.ts` and `src/editor/panels/buildPaletteCore.ts`, mounted from `src/editor/panels/editorZoomToolbar.ts`. It consumes `editorState.selection`, stamps path/water/roof/tree/NPC/prop primitives without LLM calls, and routes AI-fill through the existing region task modal/runRegionTask path. The house primitive converts the drag rectangle plus the selected shape (`rect`, `l`, or `u`) into `build_house_kit` wings and exposes the two learned kits (`blue-stone`, `bright-plaster`) plus door-event/interior/window toggles. The village primitive calls `build_village` with `bounds` set to the drag rectangle so the builder's plaza, houses, paths, NPCs, and self-audit stay inside the selected area. When the select tool drag ends, `DragOperationHandler` emits `oprn:ai-selection-context`; `aiChatPanel` arms the bottom command bar with `ai-selection-chip`, focuses the input, and sends Enter through `runRegionTask` until the chip is cleared.
-- **Selection action chips** (`src/editor/selectionActionChips.ts`): left-select exposes a floating toolbar on `.phaser-container` (same slot as build palette when palette is off) with **복사(Copy) / 붙여넣기(Paste) / 지우기(Clear) / ✨AI / ✕(Deselect)** buttons plus a `W×H` size label. Paste is **clipboard-gated** (only shown when `editorState.clipboard` exists). Copy calls `copySelection`; Clear calls `clearSelectionRegion` (empties both layers); Deselect calls `clearSelection` (clears selection + pastePreview). **Paste preview mode:** Ctrl+V or the Paste chip enters `editorState.pastePreview = {x,y}` — a semi-transparent tile ghost follows the cursor (`renderPastePreviewGhost` in EditScene); the selection toolbar is hidden while the ghost is active (`shouldShowSelectionActionChips`). Left-click confirms via `confirmPastePreview` (commits `pasteClipboard` + toast, **does not** select the pasted region); Esc/right-click cancels via `cancelPastePreview`. Placement: `fixedSelectionChipsPosition` pins the toolbar to the **bottom-right** of the canvas; CSS: `.selection-action-chips { position:absolute; z-index:30; backdrop-filter }`. `mapClipboard.ts` owns `enterPastePreview`/`movePastePreview`/`confirmPastePreview`/`cancelPastePreview`/`clearSelection`/`clearSelectionRegion`. Esc handling is layered: `handleEscapeKey` in EditScene cancels paste preview first, then clears selection.
+- **Selection action chips** (`src/editor/selectionActionChips.ts`): left-select exposes a floating toolbar on `.phaser-container` (same slot as build palette when palette is off) with **복사(Copy) / 붙여넣기(Paste) / 지우기(Clear) / ✨AI / ✕(Deselect)** buttons plus a `W×H` size label. Paste is **clipboard-gated** (only shown when `editorState.clipboard` exists). Copy calls `copySelection`; Clear calls `clearSelectionRegion` (empties both layers); Deselect calls `clearSelection` (clears selection + pastePreview). **Paste preview mode:** Ctrl+V or the Paste chip enters `editorState.pastePreview = {x,y}` — a semi-transparent tile ghost follows the cursor (`renderPastePreviewGhost` in EditScene). The ghost draws the cell the paste will commit: layer 1, lower stack, layer 2, shadow, layer 3, upper stack, layer 4 (`pasteGhostPieces`; layers 2 and 4 are raw chips). The selection toolbar is hidden while the ghost is active (`shouldShowSelectionActionChips`). Left-click confirms via `confirmPastePreview` (commits `pasteClipboard` + toast, **does not** select the pasted region); Esc/right-click cancels via `cancelPastePreview`. Placement: `fixedSelectionChipsPosition` pins the toolbar to the **bottom-right** of the canvas; CSS: `.selection-action-chips { position:absolute; z-index:30; backdrop-filter }`. `mapClipboard.ts` owns `enterPastePreview`/`movePastePreview`/`confirmPastePreview`/`cancelPastePreview`/`clearSelection`/`clearSelectionRegion`. Esc handling is layered: `handleEscapeKey` in EditScene cancels paste preview first, then clears selection.
 - **Canvas work area fill (2026-09-18 갱신):** dense(standard/expert, 플로팅 툴바)에서 `.editor-canvas-scroll-shell` 은 normal flow + `flex:1` 로 배너 뒤에 바로 붙는다 — 고정 `top: 48px` / 배너 시 `74px` 예약이 배너 실측(42px)과 어긋나 상단 빈 띠를 남기던 결함 수정. beginner(도크 툴바)는 absolute 예약을 유지한다. 배너 있을 때 플로팅 툴바는 `.canvas-area:has(.persistence-mode-banner) .canvas-toolbar:not(.is-docked-chrome) { top: 50px }` 로 배너(42px) 아래에 뜬다 — 구 선택자(`.persistence-mode-banner ~ .canvas-toolbar`)는 배너가 호스트 안에 있어 성립하지 않았고 툴바가 배너 닫기 버튼을 가렸다. 도크 툴바(beginner)는 배너와 같은 행에 겹쳐 배너 텍스트를 가렸으므로 `body.editor-ui-beginner .canvas-area:has(.persistence-mode-banner) .canvas-toolbar.is-docked-chrome { top: 42px }` 로 배너 아래로 내린다 — body 접두는 도크 원 규칙(클래스 4+요소 1)을 이기기 위한 특이도다. 셸(absolute + top:auto)은 static 위치라 자동으로 따라 밀린다. `.phaser-container` 는 `display:block; width/height:100%`(고정 1024×768 아님). `fitCanvas()` 가 호스트 rect 에 맞춰 Phaser 를 리사이즈한다.
 - AI `create_map` in `src/editor/tools/mapTools.ts` creates plain grass maps by default. Its old `border: "wall"` outer frame is **no longer in the model-facing schema** (2026-09-11) — the assistant used to pick it on its own for every cave/dungeon/basement request; the runtime argument still works for scripts, tests and replayed conversations. Details and measurements: `editor-ai-tools.md`. House harness kits in `src/editor/houseKit.ts` add upper-layer windows by default on wall mid rows (`windows: false` preserves exact golden layouts).
 - **Map tree vs `project.maps`:** the map list UI (`mapList.ts`) only walks `project.mapTree`, not every key in `project.maps`. Orphan maps (written into `maps` without a tree node ??e.g. ad-hoc scripts) are invisible until reattached. `create_map` / UI `addMap` always update the tree. Load/normalize runs `repairMapTreeOrphans` (`src/project/mapTree.ts`, from `store.normalizeCurrentProject`) to attach orphans as root children and prune dead nodes. Prefer `create_map` over raw `maps[id]=??.
@@ -952,16 +966,16 @@ Event authoring, event pages, event commands, move routes, command dialogs, and 
 
 ### 함정: 부재 타이머는 0초로 읽혀 조건이 참이 된다
 
-세 평가기 모두 `(timers[timerId] ?? 0) <= condition.seconds` 다. 따라서 **타이머가 한 번도 켜지지
-않았어도** `seconds >= 0` 조건은 참이다(`0초 이하` 도 참). 이것은 이 엔진의 **의도된 계약**이며
+세 평가기 모두 꺼진 타이머를 `0`으로 읽고 `condition.op ?? "<="` 로 비교한다. 연산자를 적지 않은
+`N초 이하`(N ≥ 0)는 **타이머가 한 번도 켜지지 않아도** 참이다. 이것은 이 엔진의 **의도된 계약**이며
 `test/pageConditionsGuarantee.test.ts`, `test/commandContracts/fork.contract.test.ts`,
-`test/selfSwitch.test.ts` 가 고정하고 있다 — 거짓으로 만드는 유일한 방법은 **음수** 임계값이다.
+`test/selfSwitch.test.ts` 가 고정하고 있다. `>` · `>=` 에 양수 임계값을 주면 0초는 거짓이다.
 
 RM2K3/EasyRPG 와는 다르다(그쪽은 타이머가 **작동 중**이어야 한다). `PlaySession.timers` 에 running
 비트가 없고 `timer stop` 이 값을 지우지 않으므로, RM 정합은 스키마 변경이다. **"고치지" 말고**
-저작 시점 경고(`condition.timer.always-true`)로 보이게 두라.
-**음수는 폼에서 못 적는다** — 타이머 입력이 `min="0"` 이라 거짓으로 만드는 유일한 방법이 UI에 없다.
-대신 fork 폼이 `event-fork-timer-warning` 인라인 경고를 직접 보여준다(2026-09-18).
+저작 시점 경고(`condition.timer.always-true`)로 보이게 두라. 경고는 0초가 비교를 통과할 때만 낸다.
+`<= 60` 도 해당하고, `> 0` 은 해당하지 않는다. 분·초 칸을 고쳐도 저장된 `op` 는 유지한다.
+**음수는 폼에서 못 적는다.** 분기 폼과 페이지 조건 행의 비교 칸(`event-condition-timer-op`, `event-page-timer1-condition-op`)이 `op` 를 고친다. `<=` 는 기본값이라 필드를 빼 저장한다. fork 폼은 `event-fork-timer-warning` 으로 같은 문장을 보여 준다. 임계값이나 연산자가 바뀌면 그 문장을 다시 그린다(`shouldRerenderCommandForm`).
 
 ### 고급 조건 목록에서 극성을 벗기지 마라 (D08 재발 방지)
 
@@ -1086,9 +1100,12 @@ Only one unconditional text-only1×1 NPC page is allowed: story/commerce/battle 
 are rejected atomically. The same source tools serve browser and headless assistants.
 A fresh read_npc_layout is required before and after patrol writes by Pi production.
 
-Authored custom route.skippable:false now retries blocked absolute steps indefinitely;
-it cannot consume a blocked right step and later take its unmatched left step.
-Default/skippable custom, living replans and schedule retry limits keep their rules.
+Authored custom route.skippable:false, and a moveEvent command whose route.skippable is false,
+retry a blocked absolute step indefinitely. Page patrols and command-route NPCs set
+preserveBlockedSteps; a player moveEvent rewinds that step. They cannot consume a blocked
+right step and later take its unmatched left step.
+Default/skippable custom routes, a moveEvent that omits skippable, living replans and
+schedule retry limits keep their rules.
 Dialogues still pause autonomous movement. Entering a map applies its authored route.
 These checks do not replace native walking/collision evidence. Reviewed expedition
 layouts add27 ambient patrols in9 towns, retaining key story/vendor positions and

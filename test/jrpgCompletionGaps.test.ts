@@ -90,11 +90,12 @@ describe("채팅 한 줄 JRPG 요청 (jrpg-loop-1)", () => {
       startMapId: "m2",
       startPos: { x: 0, y: 0 },
       maps: {
-        map_blank_start: { id: "map_blank_start", name: "옛 씨앗 마을", width: 10, height: 10, tilesetId: "t", data: [new Array(100).fill(0)], events: [{ id: "ev_seed", name: "촌장", x: 1, y: 1, pages: [] }] },
-        m2: { id: "m2", name: "새 시작 마을", width: 10, height: 10, tilesetId: "t", data: [new Array(100).fill(0)], events: [] },
+        map_blank_start: { id: "map_blank_start", name: "옛 씨앗 마을", width: 10, height: 10, tilesetId: "t", lowerTiles: new Array(100).fill(0), upperTiles: new Array(100).fill(-1), events: [{ id: "ev_seed", name: "촌장", x: 1, y: 1, pages: [] }] },
+        m2: { id: "m2", name: "새 시작 마을", width: 10, height: 10, tilesetId: "t", lowerTiles: new Array(100).fill(0), upperTiles: new Array(100).fill(-1), events: [] },
       },
       tilesets: { t: { id: "t", name: "t", tileWidth: 16, tileHeight: 16, passability: {} } },
     } as unknown as Project;
+    // 맵 그래프 검사는 이제 시작 칸 통행도 본다(collision.isPassable) — 옛 `data` 배열 대신 실제 맵 모양(lowerTiles·upperTiles)으로 둔다.
     const findings = checkMapGraph(project, buildMapGraph(project));
     expect(findings.some((finding) => finding.code === "unreachable-map" && finding.where?.mapId === "map_blank_start")).toBe(false);
   });

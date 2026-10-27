@@ -16,7 +16,8 @@ import { completedHouseProject, houseMap, HOUSE_RECT, mutateProject } from "./fi
 
 type Variant = "empty" | "nulls" | "wrongTypes" | "deepHoles";
 
-const HOSTILE_ARGS_TIMEOUT_MS = 60_000;
+// Each variant builds a fresh blank project for every write tool; it exceeded 60s on CI runners.
+const HOSTILE_ARGS_TIMEOUT_MS = 300_000;
 
 /** 스키마에서 "그럴듯하지만 틀린" 인자를 만든다 — 필수 누락·null 원소·타입 뒤집기·중첩 구멍. */
 function hostileArgs(schema: JsonSchema, variant: Variant): Record<string, unknown> {

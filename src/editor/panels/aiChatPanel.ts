@@ -62,6 +62,7 @@ import { isAutonomyLevel, loadAiConfig, saveAiConfig, type AiConfig } from "@/ai
 import { isLocalCliProviderId } from "@/ai/localCliEngine";
 import { GOAL_MAX_TURNS, GOAL_TIMEOUT_MS } from "@/ai/piAgent/goalCommand";
 import { store } from "@/project/store";
+import { pendingLazyBundledTilesetIds } from "@/project/bundledTilesetDiff";
 import { parsePiCommand, plainPiCommand, runPiCommand, type ParsedPiCommand, type PiChangeReceipt, type PiRunOptions } from "./aiPiAgentCommand";
 import { aiProjectRunKey } from "@/editor/aiMapRunOwnership";
 import { createTeamPanel } from "./aiTeamPanel";
@@ -82,6 +83,7 @@ import { createInlineWorkCard } from "./aiInlineWorkCard";
 import { currentTeamActivity, setTeamStopHandler } from "@/ai/piAgent/teamActivity";
 import { DEFAULT_PI_TEAM, resolvePiRunPlan, type PiRunPlan } from "@/ai/piAgent/executionRoute";
 import { isAssistantV2Enabled } from "@/ai/v2/switch";
+import { priorRequestsNote } from "@/ai/v2/priorRequests";
 import { classifyPlainPiTurn, clarifyFollowUpText, selectedEventFact } from "@/ai/piAgent/plainTurn";
 import { applyMonsterIntentStart, needsMonsterKitStart } from "@/project/genrePresets";
 import { resolveContextWindow } from "@/ai/contextCompaction";
@@ -435,7 +437,12 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       if (disposed) return;
       warmHeavyWire(() => store.getCurrent(), (run) => schedule(() => { if (!disposed) run(); }));
       // 첫 체크포인트 적용의 왕복 검사·적용 권위 요약도 처음 한 번은 문서 전체를 훑는다 — 같은 한가한 틈에 미리 한다.
-      schedule(() => { if (!disposed) warmApplyCaches(store.getCurrent()); });
+      // 지연 번들 타일셋(bundledTilesetDiff.ts)이 남았으면 건너뛴다 — 문서 전체 요약은 모든 정의를 읽고 되돌린다. 첫 턴이 한다.
+      schedule(() => {
+        if (disposed) return;
+        const project = store.getCurrent();
+        if (pendingLazyBundledTilesetIds(project.tilesets).length === 0) warmApplyCaches(project);
+      });
     });
   };
   scheduleHeavyWireWarmup();
@@ -2298,7 +2305,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     const timing = createTurnTiming();
     // 조수 v2(기본 꺼짐): 의도 선언 모델 호출을 건너뛴다 — v2 는 실행 모델이 요청을 짓기 명세로 바로 해석한다(src/ai/v2).
     if (isAssistantV2Enabled() && turnOptions?.team !== true) {
-      return { command: plainPiCommand(text, "single", turnMapId), plan: { ...resolvePiRunPlan(currentAutonomy()), routingAudit: "assistant-v2" }, questionPromoted: false, intentNote: null, timing };
+      // 앞선 요청을 메모로 싣는다 — 실행마다 새 세션이라 「처음에 부탁한 대로」가 가리킬 곳이 없었다(J70).
+      const priorNote = priorRequestsNote([...controller.auditHistory, ...(controller.session?.getAuditEntries() ?? [])], text);
+      return { command: plainPiCommand(text, "single", turnMapId), plan: { ...resolvePiRunPlan(currentAutonomy()), routingAudit: "assistant-v2" }, questionPromoted: false, intentNote: priorNote, timing };
     }
     timing.start("intent");
     // 순수 부분(선언 → 계획·노출 툴·의도 노트)은 plainTurn.ts 가 소유한다 — 헤드리스 생성기(scripts/qa-game/gen.mts)와 같은 함수다.
@@ -3481,7 +3490,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       mapId: mapContext().mapId ?? "",
       // 모델 호출의 조건. 로컬 탐지·배지는 닫혀 있어도 돌아야 하므로(느낌표가 알림이다)
       // 이 값은 **비싼 원격 턴**만 막는다. 팝오버가 열려 있고 턴 중이 아니어야 한다.
-      active: !disposed && !turnBusy && document.visibilityState !== "hidden" && peek.isOpen(),
+      active: !disposed && !turnBusy && typeof document !== "undefined" && document.visibilityState !== "hidden" && peek.isOpen(),
     }),
     onCountChange: count => peek.setCount(count),
     request: suggestion => {

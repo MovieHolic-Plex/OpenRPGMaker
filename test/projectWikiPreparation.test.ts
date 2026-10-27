@@ -49,7 +49,8 @@ function validRecord(request: ChatRequest) {
     wiki: { kind: "knowledge", basis: "explicit", topic: "archive", sourceIds: [payload.sources[0].id] } };
 }
 
-describe("project-record preparation response boundary", () => {
+// Heavy under CI load (15s default is too tight): runs real AssistantSession turns.
+describe("project-record preparation response boundary", { timeout: 120_000 }, () => {
   it.each([capturedContent, '{"upserts":[]}', fence('{"upserts":[]}')])("completes a no-op without changing any project data %#", async (content) => {
     const h = preparation(content);
     const world = h.project.world;

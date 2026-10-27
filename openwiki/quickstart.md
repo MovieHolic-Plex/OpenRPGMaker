@@ -5,13 +5,15 @@
 이 페이지는 "무엇을 읽어라" 목록이 아니라 **이 저장소에서 헤매지 않는 방법**이다. 위에서부터 순서대로 쓰면 된다.
 사람용 개요는 `README.md`, 영역별 상세는 `openwiki/INDEX.md` 로 좌표를 잡아 필요한 절만 읽는다.
 
-## 0. 여기서 에이전트가 실제로 헤매는 이유 (실측 2026-08-30)
+## 0. 여기서 에이전트가 실제로 헤매는 이유
+
+위키 크기 세 줄은 `openwiki/INDEX.md` 머리글과 그 주의 표(2026-10-26)다. `src` 줄은 2026-08-30 실측이다.
 
 | 사실 | 그래서 벌어지는 일 | 대응 |
 |---|---|---|
-| 위키가 41쪽 약 1MB(약 27만 토큰) | "해당 영역 페이지를 읽어라" 를 따르면 코드 한 줄 보기 전에 예산이 3만 토큰 날아간다 | `openwiki/INDEX.md` 의 절 좌표로 잘라 읽는다 |
-| 7쪽이 읽기 도구 상한 50KB 초과 | `read` 가 **조용히 잘려서** 못 본 절을 "위키에 없다" 로 착각한다 | 잘리는 쪽 목록은 INDEX 상단에 있다. `grep -n` → `offset` 순서로 접근 |
-| 9쪽에 EUC-KR 모지바케 68줄 | 지시문이 `誘몃씪踰?` 처럼 깨져 읽을 수 없다 | 그 줄의 **파일 경로만** 믿고 의미는 소스에서 확인. 복원 불가 |
+| 위키가 187쪽 · 7194KB · 약 2,108,898 토큰 | 큰 페이지를 통째로 읽으면 `editor-ai-panel.md` 하나만 약 21만 토큰이다 | `openwiki/INDEX.md` 의 절 좌표로 잘라 읽는다. 머리글이 크기 정본이다 |
+| 30쪽이 읽기 도구 상한 50KB 를 넘고, 8쪽은 가장 큰 절도 넘는다 | `read` 가 **조용히 잘려서** 못 본 절을 "위키에 없다" 로 착각한다 | 잘리는 쪽 목록은 INDEX 상단. 절이 상한을 넘으면 그 절을 줄 번호로 더 자른다. `grep -n` → `offset` |
+| 7쪽에 EUC-KR 모지바케 71줄 | 지시문이 `誘몃씪踰?` 처럼 깨져 읽을 수 없다 | 그 줄의 **파일 경로만** 믿고 의미는 소스에서 확인. 목록은 INDEX 「한국어 산문이 깨진 페이지」 |
 | `src` 1,579파일(편집기만 602) · 코드+CSS 약 79.5만 줄 | 이름만 보고 파일을 찾다가 턴을 태운다 | 아래 3절 기능→파일 표에서 진입점을 먼저 고른다 |
 | 전체 `npm run typecheck` 는 기준선부터 빨간불(test/ 타입 에러) | 자기 변경이 만든 실패와 원래 있던 실패를 구분 못 한다 | `npm run typecheck:app` 과 `npm run gates` 만 게이트로 쓴다 (2절) |
 | 워크트리에 `node_modules` 가 없을 수 있다 | `npm run typecheck` 가 **전역 tsc 7** 로 떨어져 `baseUrl has been removed` 같은 가짜 설정 오류를 뱉는다 | 1절에서 워크트리를 먼저 보정한다 |
@@ -150,7 +152,7 @@ Git에는 카탈로그·검색어·해시만, 그림은 `stills-v1` Release에 �
 | 데이터베이스 창·탭·레코드 편집 | `src/editor/panels/database.ts`, `src/editor/panels/databaseSystemView.ts`, `src/editor/databaseActions.ts` |
 | DB 레코드 스키마·필드 | `src/project/types/database.ts`, `src/project/databaseRecordModel.ts`, `src/project/io/shapeDatabaseFields.ts` |
 | AI 조수 패널 UI·도크·컴포저 | `src/editor/panels/aiChatPanel.ts`(3,400줄), `src/editor/panels/aiComposer.ts`, `src/editor/panels/aiPanelLayout.ts`, `src/editor/panels/aiProposalCard.ts` |
-| AI 스튜디오(장면 레일·모니터·브리핑·덱) | `src/editor/panels/aiStudioShell.ts`, `src/styles/database/tabs-b-assistant-panel/08-studio-mode-start-screen.css` (설계 `docs/superpowers/specs/2026-09-03-ai-studio-console-design.md`) |
+| AI 스튜디오(장면 레일·모니터·브리핑·덱) | `src/editor/panels/aiStudioShell.ts`, `src/styles/database/tabs-b-assistant-panel/08-studio-mode-start-screen.css`. 배치 기록은 `openwiki/editor-ai-panel.md` 「스튜디오 3분할」(3552행)부터 |
 | AI 턴·툴 호출·컨텍스트 | `src/ai/assistantSession.ts`(5,433줄 — 클래스만 남았다), `src/ai/session/*`(순수 표면 14모듈), `src/ai/llmClient.ts`, `src/ai/contextBuilder.ts`, `src/ai/approvalPolicy.ts` |
 | AI 툴 추가·수정 | `src/editor/tools/toolRegistry.ts` + `src/editor/tools/*` |
 | 우클릭 영역 작업(AI 로 영역 채우기) | `src/editor/panels/regionTaskModal.ts`, `src/editor/regionTask/*` |
@@ -184,7 +186,7 @@ Git에는 카탈로그·검색어·해시만, 그림은 `stills-v1` Release에 �
 - 위키 유지: 구조 검사는 `npm run openwiki:verify`, 좌표 재생성은 `npm run openwiki:index`.
 - 페이지는 대부분 **날짜가 붙은 실측 기록**이다. 같은 주제에 여러 날짜가 있으면 **최신 날짜가 정본**이고,
   소스와 어긋나면 소스가 이긴다 — 고친 뒤 그 페이지도 같은 변경에서 갱신한다.
-- 문서가 이름을 부르는 파일이 없을 수도 있다(실측 60여 건, 정확한 목록은 INDEX). 대개 의도적으로 삭제된 모듈의 기록이다.
+- 문서가 이름을 부르는 파일이 없을 수도 있다(INDEX 기준 1,868건). 대개 의도적으로 삭제된 모듈의 기록이다.
   `git log --diff-filter=D -- '*<파일명>'` 로 삭제 커밋을 확인하면 30초에 끝난다. 목록은 INDEX 에 있다.
 
 ## 5. 끝났다고 말할 수 있는 조건

@@ -1,6 +1,11 @@
 export interface ZipEntry {
   readonly name: string;
   readonly bytes: Uint8Array;
+  /**
+   * Unix mode stored in the central directory (for example `0o100755`).
+   * Omitted entries stay unmarked so existing project and web zips keep their headers.
+   */
+  readonly unixMode?: number;
 }
 
 interface ZipCentralEntry {
@@ -11,6 +16,8 @@ interface ZipCentralEntry {
   readonly compressedSize: number;
   readonly uncompressedSize: number;
   readonly localOffset: number;
+  readonly versionMadeBy: number;
+  readonly externalAttributes: number;
 }
 
 export class ZipFormatError extends Error {
@@ -40,7 +47,7 @@ export function writeStoredZip(entries: readonly ZipEntry[]): Blob {
     const nameBytes = encoder.encode(entry.name);
     const crc = crc32(entry.bytes);
     const localHeader = createLocalHeader(nameBytes, entry.bytes.length, crc);
-    const centralHeader = createCentralHeader(nameBytes, entry.bytes.length, crc, offset);
+    const centralHeader = createCentralHeader(nameBytes, entry.bytes.length, crc, offset, entry.unixMode);
     localParts.push(toArrayBuffer(localHeader), toArrayBuffer(entry.bytes));
     centralParts.push(toArrayBuffer(centralHeader));
     offset += localHeader.length + entry.bytes.length;
@@ -84,6 +91,14 @@ export function readStoredZipEntry(bytes: Uint8Array, name: string): Uint8Array 
   return payload;
 }
 
+/** Unix permission bits recorded for one entry, when the central directory marked it as Unix. */
+export function readStoredZipUnixMode(bytes: Uint8Array, name: string): number | undefined {
+  const entry = readCentralDirectory(bytes).find((candidate) => candidate.name === name);
+  if (!entry || (entry.versionMadeBy >>> 8) !== 3) return undefined;
+  const mode = (entry.externalAttributes >>> 16) & 0xffff;
+  return mode === 0 ? undefined : mode;
+}
+
 function readCentralDirectory(bytes: Uint8Array): readonly ZipCentralEntry[] {
   const endOffset = findEndRecord(bytes);
   const entryCount = uint16(bytes, endOffset + 10);
@@ -118,6 +133,8 @@ function readCentralDirectory(bytes: Uint8Array): readonly ZipCentralEntry[] {
       compressedSize,
       uncompressedSize,
       localOffset,
+      versionMadeBy: uint16(bytes, offset + 4),
+      externalAttributes: uint32(bytes, offset + 38),
     });
     offset = nameEnd + extraLength + commentLength;
   }
@@ -147,10 +164,12 @@ function createLocalHeader(nameBytes: Uint8Array, size: number, crc: number): Ui
   return bytes;
 }
 
-function createCentralHeader(nameBytes: Uint8Array, size: number, crc: number, localOffset: number): Uint8Array {
+function createCentralHeader(nameBytes: Uint8Array, size: number, crc: number, localOffset: number, unixMode?: number): Uint8Array {
   const bytes = new Uint8Array(46 + nameBytes.length);
+  const unixPermission = typeof unixMode === "number" && unixMode > 0 ? unixMode & 0xffff : 0;
   setUint32(bytes, 0, CENTRAL_FILE_HEADER);
-  setUint16(bytes, 4, 20);
+  // Host OS in the high byte: 3 = Unix, so unzip keeps the executable bit. Unmarked entries stay DOS 2.0.
+  setUint16(bytes, 4, unixPermission !== 0 ? (3 << 8) | 20 : 20);
   setUint16(bytes, 6, 20);
   setUint16(bytes, 8, UTF8_FLAG);
   setUint16(bytes, 10, STORE_METHOD);
@@ -160,6 +179,7 @@ function createCentralHeader(nameBytes: Uint8Array, size: number, crc: number, l
   setUint32(bytes, 20, size);
   setUint32(bytes, 24, size);
   setUint16(bytes, 28, nameBytes.length);
+  if (unixPermission !== 0) setUint32(bytes, 38, unixPermission << 16);
   setUint32(bytes, 42, localOffset);
   bytes.set(nameBytes, 46);
   return bytes;

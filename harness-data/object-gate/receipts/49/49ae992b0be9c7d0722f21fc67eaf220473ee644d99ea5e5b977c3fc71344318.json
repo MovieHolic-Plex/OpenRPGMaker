@@ -1,0 +1,455 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "49ae992b0be9c7d0722f21fc67eaf220473ee644d99ea5e5b977c3fc71344318",
+ "width": 160,
+ "height": 48,
+ "kind": "terrain",
+ "name": "gap.ice_rock r4 A2",
+ "label": "dungeon/gap.ice_rock.r4.A2",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "화풍: 화풍 판정이 갈림(걸린 판정 2/4)",
+  "화풍: 판정자 fail (2/4)",
+  "화풍: 평면 채움 (1/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "refer",
+  "reasons": [
+   "화풍 판정이 갈림(걸린 판정 2/4)",
+   "판정자 fail (2/4)",
+   "평면 채움 (1/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "dungeon",
+   "fallback": true,
+   "reason": "칩셋 dungeon 의 화풍 기준 묶음이 없다",
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 8,
+  "tileColorsP90": 11,
+  "darkV5": 35,
+  "nearBlackEdge": 0.2,
+  "opaqueTiles": 25
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "left tile: snow-dusted grey rock ground with a lighter snow ledge line at rows 12-14",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "middle tile: speckled snow and rock ground texture",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right upper tile: icicle wall face with a 2-row snow cap",
+      "rows": "0-1",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right lower tile: checkered floor or transparency pattern",
+      "rows": "32-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "This is a 160x48 sheet of several flat terrain tiles, not a standing object. The left and middle tiles are flat ground textures with no front face. The right tile (rows 0-31) is a vertical icicle wall face with a 2-row snow cap at rows 0-1, which counts as a rim, not a top surface. Below it, rows 28-31 are dark shadow, and rows 32-47 are a checkered floor or transparency pattern. There is no object volume with a top plus a front face, so it fits none of the object categories and is reported as other."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 7 visible tones per tile, matching the paving reference (7) and above the grass reference (3). Its near-flat coverage is 13%, which is low and not a flat-fill problem, although the left slab areas are the plainest part of the patch. Its dark edge pixels are 0% neutral, so the outlines lean blue-slate, the dark tone of the adjacent ice, and are not a black sticker line. The middle speckled snow and the icicle fringe show several distinct lightness steps (about 5) with per-crystal highlights and grain. The left slab is somewhat smoother than the references, but it still has edge bevels and tonal variation. A careful artist would accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14846
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "left ground tile, snow-edged stone",
+      "rows": "0-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "middle speckled snow-stone ground tile",
+      "rows": "0-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right icicle wall, snow cap at top",
+      "rows": "0-1",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right icicle wall face with dark base",
+      "rows": "2-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bottom checkered grey ground strip",
+      "rows": "32-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "This is a sheet of terrain tiles rather than a single standing object. Columns 0-31 hold a snow-edged stone floor tile, a speckled snow-stone tile, and an icicle wall; the 160 px width stays constant over rows 0-31. Rows 32-47 hold a checkered grey ground fill at 80 px wide. The icicle wall has a 2-row snow cap (rows 0-1) and a vertical icicle face (rows 2-27) that darkens into a shadow base (rows 28-31). The cap has no front-edge line or eave shadow, so it is a rim and not a top surface. Nothing in the sheet reads as a standing body with a top and a front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is an ice-rock ground patch with a cool blue-grey ramp of about 5 steps: dark, mid, light, pale and white speckle. Its measured 7 visible tones per tile match the paving reference (7) and beat the grass reference (3). Near-flat coverage is 13%, against 0% for both references, so a few areas are plain. In the picture, the left rocky panels (the top-left block and its lower neighbour) have large smooth mid-blue areas with only a few highlight edges, which looks flatter than the references. The speckled snow/ice middle section is richer, with scattered highlight dots, and the icicle strip on the right has several tones with vertical highlights. Dark edge pixels are 0% neutral, so the outlines lean blue-slate, which suits the material and is not a black sticker line. Overall it is competent but slightly thinner than the references, because the plain panels read as flat and lack per-stone shading and grain. A careful artist would likely accept the speckle and icicles but ask for more grain on the rock panels.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 13832
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "left tile: grey-blue stone ground with pale snow edge strips",
+      "rows": "0-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "middle tile: speckled snow and rock ground",
+      "rows": "0-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right tile: snow cap over a wall of icicles",
+      "rows": "0-1",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right tile: icicle face with dark shadow base",
+      "rows": "2-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "28-31"
+     },
+     {
+      "part": "bottom-left tile: plain grey checker ground",
+      "rows": "32-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "This is a sheet of terrain tiles, not a standing object. Rows 0-31 hold three 53-px-wide tiles: a stone ground with snow edge strips, a speckled snow and rock ground, and an ice-wall tile. The ice-wall tile has a snow cap in rows 0-1 and a vertical icicle face in rows 2-27, ending in dark shadow in rows 28-31. That cap is only a 1-2 row rim. Rows 32-47 (width 80) are a flat grey checker ground tile. There is no single volume with a top surface and a front face, so the 3/4 rule for objects does not apply."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 7 visible tones per tile, matching the paving reference (7) and well above the grass reference (3). Near-flat coverage is 13%, low, so only small areas are flat. Dark edge pixels are 0% neutral, so the edges lean blue-slate rather than black, which fits dark_material_tone. By eye, the plain rock tiles have a light top bevel and some speckle. The snow-speckle tile has many scattered highlights over a mid base. The icicle strip has a graded ramp from light to deep blue. The rock blocks are a bit smoother than the references, so texture is 'some' rather than 'rich'. Overall it would sit acceptably next to the references and does not look like a sticker.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16086
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "snow lip along the top of the icicle wall (right section)",
+      "rows": "0-1",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "icicle wall face (right section)",
+      "rows": "2-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone ledge tile with snow patches (left section)",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "snow-speckled ground (middle section)",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "This is a terrain sheet of three tile types: a stone tile with snow ledges at left, a flat speckled ground tile in the middle, and an icicle wall at right. Rows 0-31 are 160 wide and rows 32-47 are 80 wide. In the right-hand wall the only top-like band is a 1-2 row snow lip (rows 0-1, x=119 L=215/185). It has no front-edge line and no eave shadow, so it counts as a rim. Below it, rows 2-31 are a vertical ice face that runs from light ice (#e6f0fa) through blue to a dark base (#242c38). The middle ground tile is flat texture with no height. Overall the sheet is elevation-style wall and ground tiles with no 3/4 top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The primary facts are mostly fine. The candidate has 7 visible tones per tile, matching the paving reference and beating the grass reference's 3. Its dark edge pixels are 0% neutral, so the outlines lean blue-slate rather than black, which counts as dark_material_tone. Against that, near-flat coverage is 13% where both references are 0%, and the picture agrees: the left rock/snow tiles have large mid-blue areas with only a few edge highlights and no grain. Only the speckled snow tile and the icicle strip carry real texture. The whole piece uses just 19 colours, which gives roughly 4 steps per material against the references' 5-6, and the per-stone shading is thin. The result sits slightly below the references in richness, so I fail it on the flat fills and shallow ramps.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 19176
+  }
+ ],
+ "decidedAt": "2026-10-27T10:51:03.489Z",
+ "cells": {
+  "16": [
+   "00d917827dfa90a5",
+   "0feedd3b6f112f19",
+   "18deac30e4cc4524",
+   "1e92477fefda1f48",
+   "251ecedb7662f069",
+   "27b2e380c731fb01",
+   "369e1ad07224b8dc",
+   "3a65e4719abd30b1",
+   "3ef8fa8bace3e91f",
+   "411e97b633274d9f",
+   "4bd799959c258c42",
+   "577f299512ef0a44",
+   "62ea711c41abd679",
+   "645eefa46ce7e4e6",
+   "73efb3c202b42fd5",
+   "8110ad9646145b9c",
+   "9915dffc2f4c2d46",
+   "a0ec253b183d380b",
+   "a9ab0b3a94721da7",
+   "acb63348556ecd18",
+   "b2edbdd578008f33",
+   "e5998fd596447934",
+   "eda03bff9f471b1d",
+   "f0638eed4e93d3fb",
+   "f9614afd51aa9d1a"
+  ],
+  "24": [
+   "08528438f06a4e56",
+   "0a49f6651aee7b89",
+   "0a99b2bf9a045370",
+   "0b8e06b2fbeeaa35",
+   "0f35a5fec8e20cbe",
+   "14cfc85469a88f52",
+   "15644ffd17417597",
+   "15c8c496ec593db0",
+   "1a7a948dde248eb8",
+   "1ca91fe0576e5442",
+   "1e40642fa6f43595",
+   "2b23f2b5136475f8",
+   "3fddf7ec7a586c32",
+   "4fb8b8819b83681a",
+   "5a6b01e7f93b9ed9",
+   "5e49c5e4368104a7",
+   "6af73c2aa2fae2ce",
+   "755bcfac5796dc8d",
+   "80fdd7f31f4f94d0",
+   "8692087fa32e0ac5",
+   "89cc09a2a916c642",
+   "9f20d2b69f6ba945",
+   "a03969015c978016",
+   "ab7053471f4b207e",
+   "af7835d05843742e",
+   "b64d84ea06492f82",
+   "b6f14b2c108c9693",
+   "bc2e7f1479379d2c",
+   "bd3ae56f539a9477",
+   "be68054fdded1c51",
+   "c0ddb76ba3b36060",
+   "cc4c61bef6ca8d30",
+   "ce2b887494adfd4b",
+   "d0bdf92b0acc5465",
+   "d51a1728d4699cab",
+   "d6082494f895dfe3",
+   "d83932c9a6dfc771",
+   "db51cac2523a13d8",
+   "dd7d77c12e03c7ec",
+   "eaefe4b1b109788a",
+   "eed2eedfcc59e8e1",
+   "fec8dca4a5fbdf01"
+  ],
+  "32": [
+   "12bf6b31e44b41b7",
+   "1a840574db667078",
+   "1b8b2718751fb78f",
+   "21cc5762a5e3a44e",
+   "37c007bf048bd311",
+   "4f1be66b805b03cf",
+   "598adedb9851df20",
+   "5d05656f67ba1cfa",
+   "6106d0fb385877f7",
+   "6577fe7bedf4b3ec",
+   "8987bd51e0a9e7e7",
+   "a775059bd915fe35",
+   "af3d4c106d68a113",
+   "b0ff5b5e1c7daea0",
+   "bcddc2652330c408",
+   "bd969732efab50df",
+   "f33d3ad18011daa4",
+   "f540f494139ba427"
+  ],
+  "48": [
+   "04d3b0ffb89a8c0c",
+   "1654f66fa37aa5a0",
+   "1849711d3265b5c1",
+   "21713c8ac705420d",
+   "26913aea5eecaf2e",
+   "29925d808f604b81",
+   "2eef692f5d7acb41",
+   "4a7dae2963af2423",
+   "80cb90f399418eff",
+   "92039efd999e550d",
+   "e7354b2914cc8023",
+   "ea714f1065a9db20"
+  ]
+ }
+}

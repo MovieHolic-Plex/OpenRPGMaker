@@ -79,6 +79,15 @@ interface AgentProgress {
   lastLine: string;
 }
 
+/**
+ * 그림 전달 상태가 ok:false 면 모델이 그림을 받지 못한 것이다(piAgentRuntime imageStatus, J69). 그때 검수 실패를
+ * 「검수 보고가 없다」로 적으면 원인을 숨긴다 — 모델 탓으로 적고 고칠 방법을 준다.
+ */
+export const BLIND_MODEL_FINDING = '이 모델은 그림을 못 본다 — 그림 보는 모델을 연결하라(AI 설정에서 그림 시험을 통과한 모델을 검수·주 모델로 고른다). 그림 없이 한 시각 검수는 인정하지 않는다.';
+export function isBlindImageStatus(event: { readonly type: string; readonly name?: string; readonly ok?: boolean }): boolean {
+  return event.type === 'execution_status' && event.ok === false && typeof event.name === 'string' && /(?:\.image|^map\.background)\.delivered$/u.test(event.name);
+}
+
 /** 사용 한도·429 로 끊긴 오류인가(실제 Argon 시험에서 작업자가 429 로 죽은 채 팀이 끝났다). */
 export function isRateLimitMessage(message: string): boolean {
   return /\b429\b|rate.?limit|too many requests|resource.?exhausted|quota|사용 한도|한도에 도달/iu.test(message);
@@ -580,7 +589,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
     progress.set(agentId, { turns: 0, toolCalls: 0, toolErrors: 0, lastLine: "" });
     emit({ type: "agent_spawn", agentId, role: "reviewer", mapId, mapName: mapName(mapId), task, memberId: member.id, label: member.label });
     let verdict: { ok: boolean; findings: string[]; artChecks?: unknown } | null = null;
-    let imageDelivered = false;
+    let imageDelivered = false, imageBlind = false;
     const reportTool: PiToolShape = {
       name: "report_review",
       label: "report_review",
@@ -616,6 +625,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
           onEvent(event) {
             reviewOptions.onEvent?.(event);
             if (event.type === 'execution_status' && event.name === 'map.image.delivered' && event.ok) imageDelivered = true;
+            if (isBlindImageStatus(event)) imageBlind = true;
           } },
       );
     } catch (error) {
@@ -627,7 +637,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
     if (romanceArt) result.findings.push(...romanceArtReviewFindings(result.artChecks), ...romanceTownLayoutFindings(snapshot), ...romanceStageFlatFindings(snapshot));
     if (authoringHarnessFor(base)) {
       result.findings.push(...(inspectAuthoringHarness(snapshot, base)?.blockers ?? []));
-      if (!imageDelivered) { result.ok = false; result.findings.push('실제 맵 이미지를 보지 않아 시각 검수를 인정하지 않습니다. show_map_region으로 원본을 확인하세요.'); }
+      if (!imageDelivered) { result.ok = false; result.findings.push(imageBlind ? BLIND_MODEL_FINDING : '실제 맵 이미지를 보지 않아 시각 검수를 인정하지 않습니다. show_map_region으로 원본을 확인하세요.'); }
       if (result.findings.length) result.ok = false;
       authoringReview = { signature: reviewSignature!, ok: result.ok };
     }
@@ -1010,6 +1020,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
     const delivered = new Set<string>();
     const requiredArt = presentationArtIds(snapshot);
     const deliveredArt = new Set<string>();
+    let firstSceneBlind = false;
     let verdict: { ok: boolean; blockers: string[] } | undefined;
     const member = reviewers[0] ?? builders[0]!;
     const agentId = `reviewer-${++counters.reviewer}`;
@@ -1052,6 +1063,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
       { ...reviewOptions, readOnlyTools: true, toolNames: ['show_map_region', 'get_map_region', 'get_event', 'get_opening', 'get_title_screen', 'show_title_opening', 'get_database_records', 'run_lint', 'check_reachability'], extraTools: [reportTool],
         onEvent(event) {
           reviewOptions.onEvent?.(event);
+          if (isBlindImageStatus(event)) firstSceneBlind = true;
           if (event.type === 'execution_status' && event.name === 'presentation.image.delivered' && event.ok) {
             const ids = (event.data as { resourceIds?: unknown } | undefined)?.resourceIds;
             if (Array.isArray(ids)) for (const id of ids) if (typeof id === 'string' && requiredArt.includes(id)) deliveredArt.add(id);
@@ -1066,7 +1078,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
       toolCalls += done.stats.toolCalls; toolErrors += done.stats.toolErrors; subTurns += done.stats.turns; subUsage = addPiAgentUsage(subUsage, done.stats.usage);
       if (changedProjectKeys(snapshot, done.project).length) throw new Error('읽기 전용 첫 장면 검수가 변경을 반환했습니다.');
       const report = verdict as { ok: boolean; blockers: string[] } | undefined;
-      if (!report?.ok || report.blockers.length || mapIds.some(id => !delivered.has(id)) || requiredArt.some(id => !deliveredArt.has(id))) throw new Error('첫 장면 검수 실패: ' + (report?.blockers.join(' / ') || '실제 이미지 확인/검수 보고가 없습니다.'));
+      if (!report?.ok || report.blockers.length || mapIds.some(id => !delivered.has(id)) || requiredArt.some(id => !deliveredArt.has(id))) throw new Error('첫 장면 검수 실패: ' + (firstSceneBlind && (mapIds.some(id => !delivered.has(id)) || requiredArt.some(id => !deliveredArt.has(id))) ? [BLIND_MODEL_FINDING, ...(report?.blockers ?? [])].join(' / ') : (report?.blockers.join(' / ') || '실제 이미지 확인/검수 보고가 없습니다.')));
       reviewedFirstScene = firstSceneSignature(working, receipt);
       emit({ type: 'execution_status', name: 'first_scene.review_passed', ok: true, summary: '실제 장소·대상·동선과 작품 타이틀/오프닝 원화 일치를 확인했습니다.' });
       emit({ type: 'agent_done', agentId, ok: true, summary: '첫 장면 이미지 확인', stats: done.stats, changedKeys: [], spills: [], conflicts: [] });

@@ -32,6 +32,7 @@ function mockModeDependencies(): {
       }),
       loadFallbackProject,
       isSharedDemoSession: () => false,
+      subscribe: vi.fn(() => () => undefined),
       loadSharedDemo: vi.fn(async () => null),
     },
     setDevProjectFactory: vi.fn(),
@@ -69,6 +70,7 @@ function mockModeDependencies(): {
   }));
   vi.doMock("@/editor/mapEditHistory", () => ({
     MAP_EDIT_HISTORY_EVENT: "map-edit-history",
+    getMapEditHistoryEntries: vi.fn(() => []),
   }));
   vi.doMock("@/editor/panels/menu", () => ({
     renderTopbar: vi.fn(),
@@ -91,10 +93,14 @@ function mockModeDependencies(): {
   vi.doMock("@/project/defaults/defaultProject", () => ({
     createSampleAdventureProject: () => ({ kind: "sample-fallback" }),
     createBlankProject: () => ({ kind: "blank-fallback" }),
+    // The 「새 작업으로 시작」 button now builds the starter blank project.
+    createStarterBlankProject: () => ({ kind: "blank-fallback" }),
   }));
   vi.doMock("@/project/defaults", () => ({
     createSampleAdventureProject: () => ({ kind: "sample-fallback" }),
     createBlankProject: () => ({ kind: "blank-fallback" }),
+    // The 「새 작업으로 시작」 button now builds the starter blank project.
+    createStarterBlankProject: () => ({ kind: "blank-fallback" }),
   }));
   return { discardDevProjectOverride, loadFallbackProject, renderEditor, rendered };
 }
@@ -113,7 +119,8 @@ async function bootFailureScreen(): Promise<{
   return { root: fakeElement(root), ...mocks };
 }
 
-describe("UXC D01 프로젝트 로드 실패 폴백", () => {
+// Heavy under CI load (15s default is too tight): boots the editor fallback with a blank project.
+describe("UXC D01 프로젝트 로드 실패 폴백", { timeout: 120_000 }, () => {
   // Compile the large app graph before timing the recovery interactions.
   // Each test still resets module state and retains its normal timeout.
   beforeAll(async () => {

@@ -20,7 +20,7 @@ describe("atlas_biome_interior = hand-pixel v5", () => {
     expect(t.family).toBe("oprn-atlas");
     expect(t.count).toBe(ATLAS_BIOME_INTERIOR_COUNT);
     expect(t.tilesPerRow).toBe(48);
-    expect(t.structureKits!.length).toBe(527);   // v5 381 + 함께 쓰기 변형 5 + 고른 새 기물(new/items.json)
+    expect(t.structureKits!.length).toBe(Object.keys(HAND_INTERIOR_SPEC.objects).length);   // 사양 기물마다 킷 하나(527 → 635, handInteriorSpec.json 이 자랐다)
     expect(t.structureKits!.every((k) => k.id.startsWith("hand-interior:"))).toBe(true);
     expect(t.referenceDocuments!.map((c) => c.id)).toContain("hand-interior-v5");
     // strips are 12 frames and never cross a sheet row
@@ -28,9 +28,8 @@ describe("atlas_biome_interior = hand-pixel v5", () => {
     // the RM2k3 transparency harness does not lift the baked layers
     const fresh = createAtlasBiomeInteriorTileset();
     expect(t.priority).toEqual(fresh.priority);
-    const d = p.tilesets.atlas_biome_dungeon!;
-    expect(d.family).toBe("oprn-atlas");
-    expect(d.count).toBe(1140);
+    // 갈라 낸 EasyRPG 계열 던전 시트(atlas_biome_dungeon)는 2026-10-07 저작권 정리로 기본 프로젝트에서 빠졌다 — 던전은 등록 장소 가져오기로 간다.
+    expect(p.tilesets.atlas_biome_dungeon).toBeUndefined();
   });
 
   it("an older save's Tibo-numbered definition is replaced whole; maps drawn with it stay and a warning is left", () => {
@@ -45,7 +44,8 @@ describe("atlas_biome_interior = hand-pixel v5", () => {
     const t = p.tilesets.atlas_biome_interior!;
     expect(t.count).toBe(ATLAS_BIOME_INTERIOR_COUNT);
     expect(t.structureKits!.some((k) => k.id === "tibo-bed")).toBe(false);
-    expect(t.referenceDocuments!.map((c) => c.id).sort()).toEqual(["hand-interior-v5", "mine"]);
+    // 기존 사본에는 번들 「계단 입구」 용도가 덧붙는다(ensureStairEntranceReferences, #3247).
+    expect(t.referenceDocuments!.map((c) => c.id).sort()).toEqual(["hand-interior-v5", "mine", "stair-entrance"]);
     expect(p.maps.old).toEqual(old);
     expect(atlasBiomeInteriorReplacementWarnings.length).toBe(n + 1);
     expect(atlasBiomeInteriorReplacementWarnings.at(-1)).toContain("old");
@@ -71,7 +71,8 @@ describe("atlas_biome_interior = hand-pixel v5", () => {
     expect(t.count).toBe(ATLAS_BIOME_INTERIOR_COUNT);
     expect(t.structureKits!.length).toBe(cur.structureKits!.length);
     expect(t.referenceDocuments!.find((c) => c.id === "hand-interior-v5")!.documents.length).toBeGreaterThan(0);
-    expect(t.referenceDocuments!.map((c) => c.id).sort()).toEqual(["hand-interior-v5", "mine"]);
+    // 기존 사본에는 번들 「계단 입구」 용도가 덧붙는다(ensureStairEntranceReferences, #3247).
+    expect(t.referenceDocuments!.map((c) => c.id).sort()).toEqual(["hand-interior-v5", "mine", "stair-entrance"]);
     expect(p.maps.m).toEqual(map);
     expect(atlasBiomeInteriorReplacementWarnings.length).toBe(n);
   });

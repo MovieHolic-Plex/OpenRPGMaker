@@ -1,6 +1,7 @@
 import { monsterSaveSummary, readMonsterSaveSummary, type MonsterSaveSummary } from "@/project/monsterSaveSummary";
 import { parseEncounterGuard } from "@/project/encounterGuard";
 import { isEmptySpriteLook, normalizeLetterboxPercent, normalizeSpriteLook, type SpriteLook } from "@/project/eventCommands/cinematicStaging";
+import { FREEZE_STYLES, type FreezeStyle } from "@/player/interpreter/screenEffectPlan";
 import { isNeutralScreenDistortion, normalizeScreenDistortion } from "@/project/eventCommands/screenDistortion";
 import { normalizeBattleReports, type BattleReport } from "@/project/battleReports";
 import { isNeutralScreenFilter, normalizeScreenFilter } from "@/project/eventCommands/screenFilter";
@@ -23,6 +24,7 @@ import { normalizeRelationships } from "@/project/relationshipState";
 import { normalizeCharacterFootprint } from "@/project/footprint";
 import {
   clampFriendship,
+  DEFAULT_MESSAGE_WINDOW_SETTINGS,
   startSession,
   type AudioCommandState,
   type PictureState,
@@ -62,6 +64,7 @@ import {
   isStringRecord,
   isActorSkillIdsRecord,
   isActorSkillPpRecord,
+  isKnownWeaknessesRecord,
   isActorStateIdsRecord,
   isActorVitalsRecord,
   isBooleanRecord,
@@ -226,6 +229,8 @@ export type SaveSnapshot = {
     readonly galleryUnlocks?: PlaySession["galleryUnlocks"];
     readonly dialogueBacklog?: PlaySession["dialogueBacklog"];
     readonly dialogueRead?: PlaySession["dialogueRead"];
+    /** «문장 표시 설정». 기본 창이면 생략 — 옛 세이브는 불러올 때 기본 창이다. */
+    readonly messageWindowSettings?: PlaySession["messageWindowSettings"];
     readonly dailyGifts?: PlaySession["dailyGifts"];
     readonly dailyTalks?: PlaySession["dailyTalks"];
     readonly socialLoop?: PlaySession["socialLoop"];
@@ -288,6 +293,14 @@ export type SaveSnapshot = {
     // Change Save Access 등 접근 플래그(m2Runtime.access). 세이브 복원 대상.
     readonly access?: Partial<Record<"escape" | "menu" | "save" | "teleportation", boolean>>;
     readonly systemAudio?: Record<string, string>;
+    /**
+     * 「현재 BGM 기억」이 적어 둔 곡 id. 지금 나오는 곡(`audio.bgm`)과는 별개다.
+     * 없거나 깨진 옛 세이브는 기억한 곡이 없고, 「기억한 BGM 재생」은 아무 곡도 틀지 않는다.
+     * volume(0..100)과 fadeInMs 는 그때 곡에 붙어 있던 값이다. 없으면 기본 음량·페이드.
+     */
+    readonly memorizedBgm?: string;
+    readonly memorizedBgmVolume?: number;
+    readonly memorizedBgmFadeInMs?: number;
   };
 };
 
@@ -310,6 +323,13 @@ export type SaveScreenState = {
   readonly letterbox?: number;
   /** 캐릭터 모습 효과. 키 = spriteLookKey. */
   readonly spriteLooks?: Readonly<Record<string, SpriteLook>>;
+  /**
+   * 정지 화면. 찍은 그림은 넣지 않는다 — 불러온 뒤 그 순간의 필드를 다시 찍는다.
+   * 없거나 깨진 옛 세이브는 정지 화면 없이 불러온다.
+   */
+  readonly freeze?: { readonly style: FreezeStyle; readonly at: number };
+  /** 정지 화면이 들어오고 걷히는 시간(ms). 없거나 0이면 즉시. */
+  readonly freezeDurationMs?: number;
 };
 
 export type SaveWriteResult =
@@ -440,6 +460,7 @@ export function createSaveSnapshot(project: Project, input: PlaySession): SaveSn
   const session = prepareLifeSnapshot(project, input);
   const normalizedItems = normalizeItemTransitionState(session, project.database.items);
   const bundleReceiptIds = normalizedBundleReceiptIds(session.completedBundleIds, session.bundleRewardAppliedIds);
+  const messageWindowSettings = persistedMessageWindowSettings(session.messageWindowSettings);
   return {
     schemaVersion: project.meta.publication ? 6 : SAVE_SCHEMA_VERSION,
     ...(project.meta.publication ? { identity: saveIdentity(project.meta.publication) } : {}),
@@ -540,6 +561,7 @@ export function createSaveSnapshot(project: Project, input: PlaySession): SaveSn
       galleryUnlocks: normalizeGalleryUnlocks(session.galleryUnlocks),
       dialogueBacklog: normalizeBacklog(session.dialogueBacklog),
       dialogueRead: normalizeReadKeys(session.dialogueRead),
+      ...(messageWindowSettings ? { messageWindowSettings } : {}),
       dailyGifts: structuredClone(session.dailyGifts ?? {}),
       dailyTalks: structuredClone(session.dailyTalks ?? {}),
       ...(session.socialLoop ? { socialLoop: structuredClone(session.socialLoop) } : {}),
@@ -599,11 +621,12 @@ export function createSaveSnapshot(project: Project, input: PlaySession): SaveSn
       mapBackground: pickMapBackground(session),
       systemAudio: parseSystemAudioState(session.m2Runtime?.system),
       access: session.m2Runtime?.access && Object.keys(session.m2Runtime.access).length > 0 ? { ...session.m2Runtime.access } : undefined,
+      ...persistedMemorizedBgmFields(session.m2Runtime?.audio),
     },
   };
 }
 
-// 지속형 화면 효과(색조/날씨/숨김)만 추려 세이브에 담는다. 값이 전혀 없으면 생략.
+// 지속형 화면 효과(색조/날씨/숨김/정지 화면)만 추려 세이브에 담는다. 값이 전혀 없으면 생략.
 function pickScreenState(session: PlaySession): SaveScreenState | undefined {
   const screen = session.m2Runtime?.screen;
   if (!screen) return undefined;
@@ -611,8 +634,10 @@ function pickScreenState(session: PlaySession): SaveScreenState | undefined {
   const distortion = isNeutralScreenDistortion(screen.distortion) ? undefined : screen.distortion;
   const letterbox = screen.letterbox && screen.letterbox > 0 ? screen.letterbox : undefined;
   const spriteLooks = parseSpriteLooks(screen.spriteLooks);
+  const freeze = parseFreezeFrame(screen.freeze);
+  const freezeDurationMs = freeze ? parseFreezeDurationMs(screen.freezeDurationMs) : undefined;
   if (tint === undefined && weather === undefined && hidden === undefined && tintDurationMs === undefined && filter === undefined && !distortion
-    && letterbox === undefined && !spriteLooks) {
+    && letterbox === undefined && !spriteLooks && !freeze) {
     return undefined;
   }
   return {
@@ -621,6 +646,8 @@ function pickScreenState(session: PlaySession): SaveScreenState | undefined {
     ...(distortion ? { distortion: { ...distortion } } : {}),
     ...(letterbox !== undefined ? { letterbox } : {}),
     ...(spriteLooks ? { spriteLooks } : {}),
+    ...(freeze ? { freeze } : {}),
+    ...(freezeDurationMs !== undefined ? { freezeDurationMs } : {}),
   };
 }
 
@@ -903,6 +930,8 @@ export function applySaveSnapshot(project: Project, input: SaveSnapshot): PlaySe
   const dialogueRead = normalizeReadKeys(snapshot.session.dialogueRead);
   if (dialogueRead) session.dialogueRead = dialogueRead;
   else delete session.dialogueRead;
+  const messageWindowSettings = parseMessageWindowSettings(snapshot.session.messageWindowSettings);
+  if (messageWindowSettings) session.messageWindowSettings = messageWindowSettings;
   session.dailyGifts = structuredClone(snapshot.session.dailyGifts ?? {});
   session.dailyTalks = structuredClone(snapshot.session.dailyTalks ?? {});
   if (snapshot.session.socialLoop) session.socialLoop = structuredClone(snapshot.session.socialLoop);
@@ -996,6 +1025,15 @@ export function applySaveSnapshot(project: Project, input: SaveSnapshot): PlaySe
   if (snapshot.session.screen) applyScreenState(session, snapshot.session.screen);
   applyMapBackground(session, parseMapBackground(snapshot.session.mapBackground));
   if (snapshot.session.systemAudio) Object.assign(ensureM2Runtime(session).system, snapshot.session.systemAudio);
+  const memorizedBgm = persistedMemorizedBgm(snapshot.session.memorizedBgm);
+  if (memorizedBgm) {
+    const audio = ensureM2Runtime(session).audio;
+    audio.memorizedBgm = memorizedBgm;
+    const volume = persistedMemorizedBgmVolume(snapshot.session.memorizedBgmVolume);
+    const fadeInMs = persistedMemorizedBgmFadeInMs(snapshot.session.memorizedBgmFadeInMs);
+    if (volume !== undefined) audio.memorizedBgmVolume = volume;
+    if (fadeInMs !== undefined) audio.memorizedBgmFadeInMs = fadeInMs;
+  }
   if (snapshot.session.access) {
     const runtime = ensureM2Runtime(session);
     runtime.access = { ...snapshot.session.access };
@@ -1124,6 +1162,10 @@ function applyScreenState(session: PlaySession, screen: SaveScreenState): void {
     runtime.screen.letterboxDurationMs = 0;
   }
   if (screen.spriteLooks !== undefined) runtime.screen.spriteLooks = structuredClone(screen.spriteLooks) as Record<string, SpriteLook>;
+  if (screen.freeze !== undefined) {
+    runtime.screen.freeze = { style: screen.freeze.style, at: screen.freeze.at };
+    runtime.screen.freezeDurationMs = screen.freezeDurationMs ?? 0;
+  }
 }
 
 /** 모습 효과 표를 정규화한다. 빈 효과는 버리고, 남는 게 없으면 undefined. */
@@ -1324,6 +1366,7 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
   }
   const battleResult = parseBattleResult(session.battleResult);
   if (battleResult === "invalid") return { ok: false, message: "Invalid battle result" };
+  const memorizedBgm = persistedMemorizedBgmFields(session);
   const parsedOverrides = parseFactionStanceOverrides(session.factionStanceOverrides);
   const audio = parseAudioState(session.audio);
   if (!audio.ok) return { ok: false, message: audio.message };
@@ -1386,7 +1429,7 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       actorApProgress: isActorSkillPpRecord(session.actorApProgress) ? session.actorApProgress : undefined,
       learnedViaAp: isActorSkillIdsRecord(session.learnedViaAp) ? session.learnedViaAp : undefined,
       actorRageEnemyIds: isActorSkillIdsRecord(session.actorRageEnemyIds) ? session.actorRageEnemyIds : undefined,
-      knownWeaknesses: isActorSkillPpRecord(session.knownWeaknesses) ? session.knownWeaknesses : undefined,
+      knownWeaknesses: isKnownWeaknessesRecord(session.knownWeaknesses) ? session.knownWeaknesses : undefined,
       actorLevels: isNumberRecord(session.actorLevels) ? session.actorLevels : undefined,
       actorVitals: isActorVitalsRecord(session.actorVitals) ? session.actorVitals : undefined,
       horror: isHorrorState(session.horror) ? session.horror : undefined,
@@ -1409,6 +1452,7 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       galleryUnlocks: normalizeGalleryUnlocks(session.galleryUnlocks),
       dialogueBacklog: normalizeBacklog(session.dialogueBacklog),
       dialogueRead: normalizeReadKeys(session.dialogueRead),
+      messageWindowSettings: parseMessageWindowSettings(session.messageWindowSettings),
       dailyGifts: isStringRecord(session.dailyGifts) ? session.dailyGifts : undefined,
       dailyTalks: isStringRecord(session.dailyTalks) ? session.dailyTalks : undefined,
       ...(isSocialLoopDayState(session.socialLoop) ? { socialLoop: session.socialLoop } : {}),
@@ -1473,6 +1517,7 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       mapBackground: parseMapBackground(session.mapBackground),
       systemAudio: parseSystemAudioState(session.systemAudio),
       access: parseAccessState(session.access),
+      ...memorizedBgm,
     },
   };
 }
@@ -1488,6 +1533,34 @@ function parsePartySets(value: unknown): PlaySession["partySets"] {
     sets[id] = { actorIds: [...entry.actorIds], mapId: entry.mapId, x: Math.trunc(entry.x), y: Math.trunc(entry.y) };
   }
   return Object.keys(sets).length > 0 ? sets : undefined;
+}
+
+/** 기본 대사창은 적지 않는다. 깨진 값은 버린다 — 그 칸 때문에 세이브 전체를 거절하지 않는다. */
+function persistedMessageWindowSettings(value: unknown): PlaySession["messageWindowSettings"] | undefined {
+  const parsed = parseMessageWindowSettings(value);
+  if (!parsed) return undefined;
+  const defaults = DEFAULT_MESSAGE_WINDOW_SETTINGS;
+  if (parsed.format === defaults.format
+    && parsed.position === defaults.position
+    && parsed.preventObscuringPlayer === defaults.preventObscuringPlayer
+    && parsed.allowEventMovementDuringWait === defaults.allowEventMovementDuringWait) {
+    return undefined;
+  }
+  return parsed;
+}
+
+function parseMessageWindowSettings(value: unknown): PlaySession["messageWindowSettings"] | undefined {
+  if (!isRecord(value)) return undefined;
+  const format = value.format === "transparent" ? "transparent" : value.format === "normal" ? "normal" : undefined;
+  const position = value.position === "top" || value.position === "center" || value.position === "bottom" ? value.position : undefined;
+  if (!format || !position) return undefined;
+  if (typeof value.preventObscuringPlayer !== "boolean" || typeof value.allowEventMovementDuringWait !== "boolean") return undefined;
+  return {
+    format,
+    position,
+    preventObscuringPlayer: value.preventObscuringPlayer,
+    allowEventMovementDuringWait: value.allowEventMovementDuringWait,
+  };
 }
 
 function parseItemUseCharges(value: unknown): Record<string, number> {
@@ -1511,6 +1584,8 @@ function parseScreenState(value: unknown): SaveScreenState | undefined {
     distortion?: SaveScreenState["distortion"];
     letterbox?: number;
     spriteLooks?: SaveScreenState["spriteLooks"];
+    freeze?: SaveScreenState["freeze"];
+    freezeDurationMs?: number;
   } = {};
   if (typeof value.tint === "string") result.tint = value.tint;
   if (typeof value.weather === "string") result.weather = value.weather;
@@ -1528,7 +1603,75 @@ function parseScreenState(value: unknown): SaveScreenState | undefined {
   if (letterbox > 0) result.letterbox = letterbox;
   const spriteLooks = parseSpriteLooks(value.spriteLooks);
   if (spriteLooks) result.spriteLooks = spriteLooks;
+  const freeze = parseFreezeFrame(value.freeze);
+  if (freeze) {
+    result.freeze = freeze;
+    const freezeDurationMs = parseFreezeDurationMs(value.freezeDurationMs);
+    if (freezeDurationMs !== undefined) result.freezeDurationMs = freezeDurationMs;
+  }
   return Object.keys(result).length > 0 ? result : undefined;
+}
+
+/** 정지 화면이 들어오고 걷히는 시간. 0·음수·비숫자는 적지 않는다(불러오면 즉시). */
+const FREEZE_DURATION_LIMIT_MS = 600_000;
+
+function parseFreezeDurationMs(value: unknown): number | undefined {
+  if (typeof value !== "number" || !Number.isFinite(value) || value <= 0) return undefined;
+  const ms = Math.round(value);
+  return ms > 0 && ms <= FREEZE_DURATION_LIMIT_MS ? ms : undefined;
+}
+
+/**
+ * 정지 화면 기록. 색감이 목록 밖이거나 다시 찍기 횟수가 정수가 아니면 버린다 —
+ * 그 칸 때문에 세이브 전체를 거절하지 않는다. 찍은 그림은 이 기록에 없다.
+ */
+function parseFreezeFrame(value: unknown): SaveScreenState["freeze"] {
+  if (!isRecord(value) || typeof value.style !== "string") return undefined;
+  const style = value.style.trim().toLowerCase();
+  if (!(FREEZE_STYLES as readonly string[]).includes(style)) return undefined;
+  if (typeof value.at !== "number" || !Number.isFinite(value.at)) return undefined;
+  const at = Math.trunc(value.at);
+  if (at < 1 || at > 1_000_000) return undefined;
+  return { style: style as FreezeStyle, at };
+}
+
+/**
+ * 「현재 BGM 기억」. 빈 문자열·깨진 값은 적지 않는다 — 그 칸 때문에 세이브 전체를 거절하지 않는다.
+ * 지금 재생 중인 곡(`audio.bgm`)은 길이 제한이 없으므로, 기억한 id 만 비정상적으로 길 때 그 칸을 버린다.
+ */
+const MEMORIZED_BGM_LIMIT = 1024;
+
+function persistedMemorizedBgm(value: unknown): string | undefined {
+  if (typeof value !== "string") return undefined;
+  const id = value.trim();
+  if (!id || id.length > MEMORIZED_BGM_LIMIT) return undefined;
+  return id;
+}
+
+function persistedMemorizedBgmVolume(value: unknown): number | undefined {
+  if (typeof value !== "number" || !Number.isFinite(value) || value < 0 || value > 100) return undefined;
+  return value;
+}
+
+function persistedMemorizedBgmFadeInMs(value: unknown): number | undefined {
+  if (typeof value !== "number" || !Number.isFinite(value) || value < 0 || value > 60_000) return undefined;
+  return value;
+}
+
+function persistedMemorizedBgmFields(source: {
+  readonly memorizedBgm?: unknown;
+  readonly memorizedBgmVolume?: unknown;
+  readonly memorizedBgmFadeInMs?: unknown;
+} | undefined): { memorizedBgm?: string; memorizedBgmVolume?: number; memorizedBgmFadeInMs?: number } {
+  const memorizedBgm = persistedMemorizedBgm(source?.memorizedBgm);
+  if (!memorizedBgm) return {};
+  const volume = persistedMemorizedBgmVolume(source?.memorizedBgmVolume);
+  const fadeInMs = persistedMemorizedBgmFadeInMs(source?.memorizedBgmFadeInMs);
+  return {
+    memorizedBgm,
+    ...(volume === undefined ? {} : { memorizedBgmVolume: volume }),
+    ...(fadeInMs === undefined ? {} : { memorizedBgmFadeInMs: fadeInMs }),
+  };
 }
 
 function parseSystemAudioState(value: unknown): SaveSnapshot["session"]["systemAudio"] {

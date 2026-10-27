@@ -19,6 +19,7 @@ import { terrainTagAt } from "@/project/terrainAt";
 import { boardedVehicleId, isVehicleId, setParkedVehicleLocation } from "@/project/vehicles";
 import { runtimeEventViewById, runtimeEventViewsForMap, type RuntimeEventPositions } from "@/project/runtimeEventState";
 import { normalizeWeatherParams, parseWeather, weatherToRuntimeString } from "@/player/weather/weatherModel";
+import { HIDE_SHOW_SCREEN_FADE_MS } from "./screenEffectPlan";
 import { ensureM2Runtime, pushM2History } from "./m2RuntimeState";
 import { isSystemBgmCue, isSystemSeCue } from "@/project/systemAudioOverrides";
 import { isSystemAudioSlot, systemAudioOverrideKey } from "@/player/systemAudioSlots";
@@ -61,6 +62,8 @@ function executeByTitle(
   if (executeModernCommand(session, runtime, title, fields, context)) return;
   if (title === "Hide Screen" || title === "Show Screen") {
     runtime.screen.hidden = title === "Hide Screen";
+    // 한 프레임 컷이 아니라 편집기 미리보기와 같은 길이의 페이드. 세이브에는 남기지 않는다.
+    runtime.screen.hideFadeMs = HIDE_SHOW_SCREEN_FADE_MS;
     return;
   }
   if (title === "End Event Processing") {
@@ -109,7 +112,7 @@ function executeByTitle(
     return;
   }
   if (title === "Memorize Current BGM") {
-    runtime.audio.memorizedBgm = currentBgm(session);
+    memorizeCurrentBgm(session, runtime);
     return;
   }
   if (title === "Play Memorized BGM") {
@@ -321,16 +324,16 @@ function upsertPicture(session: PlaySessionLike, fields: M2CommandFields): void 
     x: fieldNumber(fields, "x", previous?.x ?? 0),
     y: fieldNumber(fields, "y", previous?.y ?? 0),
   };
-  // 선택 필드는 명령에 포함될 때만 기록(기존 테스트의 정확한 형태 비교 유지).
-  if (hasField(fields, "scale") || hasField(fields, "zoom")) {
-    (picture as { scale?: number }).scale = fieldNumber(fields, hasField(fields, "scale") ? "scale" : "zoom", 100);
-  }
-  if (hasField(fields, "opacity")) {
-    (picture as { opacity?: number }).opacity = fieldNumber(fields, "opacity", 255);
-  }
-  if (hasField(fields, "rotation") || hasField(fields, "angle")) {
-    (picture as { rotation?: number }).rotation = fieldNumber(fields, hasField(fields, "rotation") ? "rotation" : "angle", 0);
-  }
+  // 위치만 옮기는 그림 이동(컷신 비트·편집기 폼)은 배율·불투명·회전을 안 적는다.
+  // 그 칸을 빼 버리면 렌더러가 기본값(100%·완전 불투명·0°)으로 읽어, 기울이거나
+  // 흐리게 둔 그림이 이동하는 동안 펴지고 선명해진다. 적힌 값만 바꾸고 나머지는
+  // 지금 그림을 잇는다. 아직 그림이 없으면 칸을 만들지 않는다(최소 기록).
+  const scale = carriedPictureNumber(fields, ["scale", "zoom"], previous?.scale, 100);
+  if (scale !== undefined) (picture as { scale?: number }).scale = scale;
+  const opacity = carriedPictureNumber(fields, ["opacity"], previous?.opacity, 255);
+  if (opacity !== undefined) (picture as { opacity?: number }).opacity = opacity;
+  const rotation = carriedPictureNumber(fields, ["rotation", "angle"], previous?.rotation, 0);
+  if (rotation !== undefined) (picture as { rotation?: number }).rotation = rotation;
   if (hasField(fields, "duration") || hasField(fields, "durationMs")) {
     (picture as { durationMs?: number }).durationMs = hasField(fields, "durationMs")
       ? Math.max(0, Math.round(fieldNumber(fields, "durationMs", 0)))
@@ -352,6 +355,17 @@ function hasField(fields: M2CommandFields, key: string): boolean {
   return Object.prototype.hasOwnProperty.call(fields, key) && fields[key] !== undefined;
 }
 
+/** 명령에 적힌 첫 칸. 없으면 앞 그림의 값(그것도 없으면 undefined — 기본값 칸을 새로 만들지 않는다). */
+function carriedPictureNumber(
+  fields: M2CommandFields,
+  keys: readonly string[],
+  previous: number | undefined,
+  fallback: number,
+): number | undefined {
+  const key = keys.find((candidate) => hasField(fields, candidate));
+  return key ? fieldNumber(fields, key, fallback) : previous;
+}
+
 // Legacy picture commands used the duration field as seconds for small values.
 function toDurationMs(value: number): number {
   if (!Number.isFinite(value) || value <= 0) return 0;
@@ -367,17 +381,56 @@ function recordSystemAudioChange(runtime: M2RuntimeState, title: string, fields:
   if (isSystemAudioSlot(slot)) runtime.system[systemAudioOverrideKey(slot)] = resourceId;
 }
 
-function currentBgm(session: PlaySessionLike): string {
-  return session.audio?.bgm?.resourceId ?? "";
+const MEMORIZED_BGM_FADE_LIMIT_MS = 60_000;
+
+function finiteInRange(value: unknown, min: number, max: number): number | undefined {
+  if (typeof value !== "number" || !Number.isFinite(value) || value < min || value > max) return undefined;
+  return value;
+}
+
+/** Volume and fade captured with the memorized resource. Omitted fields keep today's defaults. */
+export type MemorizedBgmPlayback = {
+  readonly resourceId: string;
+  readonly volume?: number;
+  readonly fadeInMs?: number;
+};
+
+export function memorizedBgmPlayback(runtime: M2RuntimeState | undefined): MemorizedBgmPlayback | undefined {
+  const resourceId = typeof runtime?.audio.memorizedBgm === "string" ? runtime.audio.memorizedBgm.trim() : "";
+  if (!resourceId) return undefined;
+  const volume = finiteInRange(runtime?.audio.memorizedBgmVolume, 0, 100);
+  const fadeInMs = finiteInRange(runtime?.audio.memorizedBgmFadeInMs, 0, MEMORIZED_BGM_FADE_LIMIT_MS);
+  return {
+    resourceId,
+    ...(volume === undefined ? {} : { volume }),
+    ...(fadeInMs === undefined ? {} : { fadeInMs }),
+  };
+}
+
+function memorizeCurrentBgm(session: PlaySessionLike, runtime: M2RuntimeState): void {
+  const track = session.audio?.bgm;
+  const resourceId = track?.resourceId ?? "";
+  runtime.audio.memorizedBgm = resourceId;
+  const playback = resourceId.trim() ? track : undefined;
+  const volume = finiteInRange(playback?.volume, 0, 100);
+  const fadeInMs = finiteInRange(playback?.fadeInMs, 0, MEMORIZED_BGM_FADE_LIMIT_MS);
+  if (volume === undefined) delete runtime.audio.memorizedBgmVolume;
+  else runtime.audio.memorizedBgmVolume = volume;
+  if (fadeInMs === undefined) delete runtime.audio.memorizedBgmFadeInMs;
+  else runtime.audio.memorizedBgmFadeInMs = fadeInMs;
 }
 
 function playMemorizedBgm(session: PlaySessionLike, runtime: M2RuntimeState): void {
-  const memorized = fieldString(runtime.audio, "memorizedBgm", "");
-  if (memorized) {
-    session.audio ??= {};
-    session.audio.bgm = { resourceId: memorized, loop: true };
-  }
-  runtime.audio.playedMemorizedBgm = memorized;
+  const playback = memorizedBgmPlayback(runtime);
+  runtime.audio.playedMemorizedBgm = playback?.resourceId ?? "";
+  if (!playback) return;
+  session.audio ??= {};
+  session.audio.bgm = {
+    resourceId: playback.resourceId,
+    loop: true,
+    ...(playback.volume === undefined ? {} : { volume: playback.volume }),
+    ...(playback.fadeInMs === undefined ? {} : { fadeInMs: playback.fadeInMs }),
+  };
 }
 
 function accessKey(title: string): keyof M2RuntimeState["access"] {

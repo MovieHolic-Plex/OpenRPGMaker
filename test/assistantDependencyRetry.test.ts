@@ -10,6 +10,12 @@ import { getMapEditHistoryEntries, resetMapEditHistory } from "@/editor/mapEditH
 import * as commits from "@/project/projectCommitLog";
 import { fixedDeclarer } from "./intentFixture";
 import { approvedReviewResponse } from "./independentReviewFixture";
+import { withRetiredCombinedTownMaps } from "./support/retiredCombinedTownMaps";
+
+// Tests here build the ~63MB blank project (createBlankProject) and drive assistant sessions or editor
+// panels over it, fingerprinting/copying it per session. Under ci-full load (8 workers on 4-core runners)
+// single tests measured 10-50s, past vitest's 15s default, so the budget is raised for this file only.
+vi.setConfig({ testTimeout: 120_000 });
 
 type Call = { name: string; args: Record<string, unknown> };
 type ToolEvent = Extract<SessionEvent, { type: "tool_call" }>;
@@ -33,6 +39,10 @@ function setup(rounds: Call[][], options: { planned?: boolean; maxToolCalls?: nu
   const ctx = { project: createBlankProject() };
   for (const id of ["m1", "m2"]) expect(runTool(ctx, "create_map", { id, name: id, width: 20, height: 20 }).ok).toBe(true);
   for (const c of [npc(), npc(GOOD_PAGES, "npc_other")]) expect(runTool(ctx, c.name, c.args).ok).toBe(true);
+  // These cases measure batch prerequisites, not the tileset-reference gate. On the current default (beodeul_city)
+  // fill_region is refused until the model reads its reference documents (tilesetReferenceEvidence), so every map
+  // runs on the retired combined-town sheet, which has none (same pattern as aiSpecGate.test.ts).
+  withRetiredCombinedTownMaps(ctx.project);
   vi.stubEnv("VITE_LEGACY_DB_ANON_KEY", "test-anon-key");
   vi.stubEnv("VITE_LEGACY_DB_PROJECT_ID", "rpg-zzu-test-project");
   vi.stubEnv("VITE_LEGACY_DB_URL", "http://dbserver:8100");

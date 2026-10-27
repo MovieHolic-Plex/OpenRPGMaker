@@ -143,11 +143,13 @@ import { applyBattleHitGauges, clampPartyGauge, initialPartyGauge, seedBattleGau
 import { applyStateEffectsWithEmotion, createWeaknessTracker, emotionDamageMultiplier } from "@/battle/battleEmotion";
 import {
   areaTargets,
+  nextLivingBattler,
   requestedTargetId,
   resolveBattleTargets,
   skillRevivesDefeatedAllies,
   targetIdFor,
   targetScopeForCommand,
+  type BattleTargetResolution,
   type BattleTargetScope,
 } from "@/battle/battleTargetResolver";
 import { actorAutoTactic, actorFightsAutomatically, chooseAutoBattleCommand } from "@/battle/battleAuto";
@@ -156,7 +158,8 @@ import { effectiveActorEquipment } from "@/project/equipmentRules";
 import { orderGen1TurnActions, type Gen1TurnOrderEntry } from "@/battle/battleStrictOrder";
 import { attemptGen1Capture } from "@/battle/gen1/capture";
 import { effectiveTeamSwapCost, resolveBattleTeams } from "@/battle/battleTeams";
-import type { TeamSwapCost } from "@/project/types";
+import type { ActorAutoTactic, TeamSwapCost } from "@/project/types";
+import type { TroopBattleGuest } from "@/project/types/database";
 import { restoredMovePp } from "@/project/monsterMedicine";
 import {
   applyGen1MajorStatus,
@@ -167,6 +170,7 @@ import {
   stepGen1Confusion,
   gen1EffectChanceSucceeds,
   gen1MajorStatusBlockedByType,
+  gen1StatusMoveBlockedByTargetType,
   gen1ParalyzedSpeed,
   readGen1MajorStatus,
   stepGen1MajorStatus,
@@ -374,9 +378,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   const usePartyMonsters =
     (options.project.system.battleParty === "monsters" || options.project.system.monsterBattleParty === true)
     && (options.partyMonsters?.length ?? 0) > 0;
-  const actors = usePartyMonsters
-    ? monsterPartyBattlers(options.project, options.partyMonsters ?? [])
-    : actorBattlers(options.project, {
+  const actorBattlerInputs = {
         names: options.party?.names,
         faceResourceIds: options.party?.faceResourceIds,
         levels: sessionState.actorLevels ?? options.party?.levels,
@@ -390,8 +392,10 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         growthProgress: sessionState.growthProgress ?? options.party?.growthProgress,
         promotionLineage: sessionState.promotionLineage ?? options.party?.promotionLineage,
         stateIds: options.party?.stateIds,
-        partyActorIds: options.party?.partyActorIds,
-      });
+      };
+  const actors = usePartyMonsters
+    ? monsterPartyBattlers(options.project, options.partyMonsters ?? [])
+    : actorBattlers(options.project, { ...actorBattlerInputs, partyActorIds: options.party?.partyActorIds });
   if (!usePartyMonsters) applySkillLoadoutsToBattlers(options.project, actors, sessionState.actorSkillLoadouts);
   const enemies = enemyBattlers(options.project, troopRecord, options.enemyLevel !== undefined ? { wildLevel: options.enemyLevel } : undefined);
   // 리미트·기력·파티 게이지(battleGauges). 끈 프로젝트는 필드를 만들지 않는다.
@@ -424,6 +428,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   const teamResting = new Set<string>();
   /** 연계 대기 중인 배우(게이지 100 유지·충전 제외). 아군 누군가의 차례가 오면 풀려 resumedFromHold 로 옮긴다. */
   const heldForCombo = new Set<string>();
+  /** 전투 중 합류한 트룹 손님(recordId → 작전). 손님은 배우 DB 의 autoBattle 과 상관없이 자동으로 싸운다. */
+  const guestTactics = new Map<string, ActorAutoTactic | undefined>();
   /** 연계 대기에서 풀려 다시 차례를 받는 배우 — 차례 시작 처리(지속 피해·턴 수)를 두 번 받지 않는다. */
   const resumedFromHold = new Set<string>();
   let activeActorIds: ActorId[] = battleTeams
@@ -761,8 +767,29 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     playAudio: options.playAudio,
     stopAudio: options.stopAudio,
     moveEnemy: moveEnemyByTarget,
+    joinBattleGuest,
   });
   markActiveParticipants();
+
+  /**
+   * 트룹 손님(TroopRecord.battleGuests) 합류. 이 전투의 배틀러 목록·전열에만 넣는다 — 파티 명단(partyActorIds)에는
+   * 넣지 않으므로 전투가 끝나면 저절로 빠지고 경험치·전리품 몫(rewardActorIds)도 없다. 손님은 늘 작전대로 자동으로 싸운다.
+   * 세션의 상처(vitals)·상태는 물려받지 않는다(가득 찬 몸으로 들어온다). 몬스터 파티·gen1·팀 교대 전투는 받지 않는다.
+   */
+  function joinBattleGuest(guest: TroopBattleGuest): string | undefined {
+    if (gen1 || usePartyMonsters || battleTeams || result) return undefined;
+    if (actors.some((actor) => actor.recordId === guest.actorId)) return undefined;
+    if (!options.project.database.actors.some((record) => record.id === guest.actorId)) return undefined;
+    const [battler] = actorBattlers(options.project, { ...actorBattlerInputs, vitals: undefined, stateIds: undefined, partyActorIds: [guest.actorId] });
+    if (!battler) return undefined;
+    applySkillLoadoutsToBattlers(options.project, [battler], sessionState.actorSkillLoadouts);
+    seedBattleGauges(options.project, [battler]);
+    battler.gauge = 0;
+    actors.push(battler);
+    activeActorIds = [...activeActorIds, battler.recordId as ActorId];
+    guestTactics.set(battler.recordId, guest.tactic);
+    return battler.name;
+  }
 
   function battlerSide(battler: MutableBattler): "actor" | "enemy" {
     return actors.some((entry) => entry.id === battler.id) ? "actor" : "enemy";
@@ -840,20 +867,33 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     const stateRecords = gen1StateRecords();
     for (const effect of effects) {
       const stateRecord = stateRecords.find((state) => state.id === effect.stateId);
+      const moveType = move ? gen1CanonicalTypeForId(options.project, move.type) : undefined;
+      const targetCanonicalTypes = battlerTypes(options.project, target).flatMap((typeId) => {
+        const canonical = gen1CanonicalTypeForId(options.project, typeId);
+        return canonical ? [canonical] : [];
+      });
       if (
         effect.operation === "add"
         && stateRecord?.gen1MajorStatus
         && move
         && gen1MajorStatusBlockedByType(
           stateRecord.gen1MajorStatus,
-          gen1CanonicalTypeForId(options.project, move.type),
-          battlerTypes(options.project, target).flatMap((typeId) => {
-            const canonical = gen1CanonicalTypeForId(options.project, typeId);
-            return canonical ? [canonical] : [];
-          }),
+          moveType,
+          targetCanonicalTypes,
           move.kind,
         )
-      ) continue;
+      ) {
+        // 상태 기술이 타입 때문에 막히면 그 이유를 말한다. 이미 다른 주요 상태가 있어도
+        // 「이미 마비 상태다」로 읽히면 기술이 그 상태 때문에 막힌 것처럼 보인다.
+        if (move.kind === "status") {
+          const immune = gen1StatusMoveBlockedByTargetType(stateRecord.gen1MajorStatus, moveType, targetCanonicalTypes);
+          if (immune) {
+            const label = typeName(gen1ElementIdForCanonical(options.project, immune));
+            recordSpecial(user, target, `${withJosa(target.name, "은/는")} ${label} 타입이라 ${stateName(effect.stateId)} 상태에 걸리지 않는다!`);
+          }
+        }
+        continue;
+      }
       if (!gen1EffectChanceSucceeds(effect.chance, nextGen1Byte)) continue;
       if (effect.operation === "remove") {
         if (!target.stateIds.includes(effect.stateId)) continue;
@@ -1669,6 +1709,12 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       requestedTargetId: requestedTargetId(command),
       area: command.kind === "skill" ? lookupSkill(command.skillId)?.area : undefined,
     });
+    // strict 는 라운드 시작에 대상을 고르고 나중에 실행한다. 그 사이 쓰러진 단일 상대는
+    // 같은 편 다음 생존자로 돌린다. 없는 id 는 돌리지 않고, 아군 힐은 아래 가장-아픈-동료 규칙을 유지한다.
+    if (resolution.targets.length === 0 && resolution.scope === "enemy") {
+      const redirected = retargetDownedSelection(resolution, requestedTargetId(command), command.kind === "skill" ? lookupSkill(command.skillId)?.area : undefined);
+      if (redirected.length > 0) return { ...resolution, targets: redirected };
+    }
     // 직접 실행 경로(테스트/헤드리스)에서 ally 계열 대상이 명시되지 않으면
     // 가장 아픈 생존 동료를 자동 선택한다(전투 UI 의 beginTargetSelection 은 그대로).
     if (resolution.targets.length === 0 && (resolution.scope === "ally" || resolution.scope === "allAllies" || resolution.scope === "self")) {
@@ -1678,6 +1724,21 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       if (ally) return { ...resolution, targets: [ally] };
     }
     return resolution;
+  }
+
+  /**
+   * 요청한 단일 대상이 후보에 없으면(이미 쓰러짐·교체·한 마리씩 싸울 때 다음 상대) 명단의 다음 생존 후보.
+   * 요청 id 가 전투 명단에 없으면 빈 배열 — 오타·없는 적으로 다른 대상을 때리지 않는다.
+   */
+  function retargetDownedSelection(
+    resolution: BattleTargetResolution<MutableBattler>,
+    requested: string | undefined,
+    area: SkillRecord["area"],
+  ): readonly MutableBattler[] {
+    if (resolution.targets.length > 0 || !resolution.requiresSelection || !requested) return resolution.targets;
+    const roster = resolution.side === "enemy" ? enemies : actors;
+    const next = nextLivingBattler(roster, resolution.candidates, requested);
+    return next ? areaTargets(next, resolution.candidates, area) : resolution.targets;
   }
 
   // 커맨드 자체의 적법성(대상 해결 전). isValidActorCommand 와 beginActorCommand 가
@@ -1779,26 +1840,39 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         // 소모되던 결함(계약: "consume one inventory unit per command"). applyItem 은
         // 효과 적용만 담당하고, finite-use 전환(transitionItemState)은 여기서 1회 돈다.
         if (targets.length > 0) consumeItemUse(command.itemId);
+        // 도구도 한 차례다. 독·화상은 회복 뒤에 깎인다(해독하면 잔여 피해 없음).
+        applyGen1Residual(actor);
         break;
       }
-      case "capture":
+      case "capture": {
         applyCapture(actor, command.captureItemId, command.targetEnemyId);
+        // applyCapture 가 클로저로 lastCaptureResult 를 채운다. 바로 위 대입이 undefined 라
+        // 흐름 분석은 그 대입을 못 보고, 실패 여부만 읽으려면 좁히기를 풀어 준다.
+        const captureResult = lastCaptureResult as BattleCaptureResultSnapshot | undefined;
+        // 잡히면 전투가 끝난다. 실패한 던지기만 그 차례의 잔여 피해를 받는다.
+        if (!captureResult?.success) applyGen1Residual(actor);
         break;
+      }
       case "defend":
         actor.defending = true;
         recordTimeline({ kind: "action", side: "actor", userRecordId: actor.recordId, targetId: actor.id, commandKind: "defend" });
+        applyGen1Residual(actor);
         break;
       case "escape":
         attemptEscape();
         recordTimeline({ kind: "action", side: "actor", userRecordId: actor.recordId, targetId: actor.id, commandKind: "escape", success: escaped });
+        // 도망에 성공하면 전투가 끝난다. 실패만 그 차례의 잔여 피해를 받는다.
+        if (!escaped) applyGen1Residual(actor);
         break;
       case "switch":
+        // 교체로 빠지면 그 몬스터의 차례 말 독·화상은 없다(필드에 없다).
         switchActiveActor(actor.recordId, command.targetActorId);
         break;
       case "commonEvent":
         // 실행은 이 행동 뒤 트룹 이벤트 흐름(applyTroopEvents) 앞머리에서 — 문장·선택지가 같은 정지·재개를 탄다.
         battleEvents.queueCommonEvent(command.commonEventId);
         recordTimeline({ kind: "action", side: "actor", userRecordId: actor.recordId, targetId: actor.id, commandKind: "commonEvent" });
+        applyGen1Residual(actor);
         break;
     }
   }
@@ -2193,13 +2267,14 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
 
   /** 자동 전투 배우의 이번 차례 명령. 수동 배우·gen1·고를 명령이 없으면 undefined(메뉴를 연다). */
   function autoActorCommand(actor: MutableBattler): ActorCommand | undefined {
-    if (gen1 || usePartyMonsters || !actorFightsAutomatically(options.project, actor.recordId, actor.classId)) return undefined;
+    const guest = guestTactics.has(actor.recordId);
+    if (gen1 || usePartyMonsters || (!guest && !actorFightsAutomatically(options.project, actor.recordId, actor.classId))) return undefined;
     const savedPhase = phase;
     const savedActorId = activeActorId;
     phase = "actorCommand";
     activeActorId = actor.recordId;
     try {
-      const command = chooseAutoBattleCommand(options.project, snapshot(), rng, actorAutoTactic(options.project, actor.recordId));
+      const command = chooseAutoBattleCommand(options.project, snapshot(), rng, guest ? guestTactics.get(actor.recordId) : actorAutoTactic(options.project, actor.recordId));
       return command && isValidActorCommand(actor, command) ? command : undefined;
     } finally {
       phase = savedPhase;
@@ -2500,6 +2575,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       switchCandidateActorIds: switchCandidateActors().map((actor) => actor.recordId),
       ...(battleTeams ? { teams: teamSnapshots(), activeTeamId, teamSwapCost } : {}),
       participatingActorIds: [...participatingActorIds],
+      ...(guestTactics.size > 0 ? { guestActorIds: [...guestTactics.keys()] as ActorId[] } : {}),
       actors: activeActors().map((actor, index) => withCharging(actor, battlerSnapshot(actor, activeActorPosition(index), actorPoseContext))),
       reserveActors: reserveActors().map((actor) => battlerSnapshot(actor, undefined, { showActionPose: false })),
       enemies: enemiesInBattle.map((enemy) => withCharging(enemy, battlerSnapshot(enemy, undefined, poseContext))),
@@ -2716,10 +2792,11 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         area: skill.area,
         includeDefeatedAllies: skillRevivesDefeatedAllies(skill),
       });
-      const targets = resolution.requiresSelection
-        ? resolution.targets
-        : resolution.targets;
-      if (targets.length === 0) return;
+      const targets = retargetDownedSelection(resolution, requestedTargetId, skill.area);
+      if (targets.length === 0) {
+        applyGen1Residual(enemy);
+        return;
+      }
       // Red/Blue non-link opponents do not decrement PP. Player-controlled
       // battlers still use the normal finite-PP path above.
       if (!gen1) consumeBattleSkillResource(options.project, enemy, skillId);
@@ -2731,10 +2808,13 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       return;
     }
     const refreshedTargetId = refreshedEnemyTargetId(enemy, action?.targetIds?.[0]);
-    const aimed = refreshedTargetId
-      ? activeActors().find((actor) => actor.id === refreshedTargetId)
-      : chooseBasicEnemyTarget(enemy);
-    if (!aimed) return;
+    const livingActors = activeActors().filter((actor) => actor.hp > 0);
+    // 계획한 아군이 그 사이 쓰러졌으면 시체에게 피해를 넣지 않고 다음 생존 아군을 때린다.
+    const aimed = !refreshedTargetId
+      ? chooseBasicEnemyTarget(enemy)
+      : livingActors.find((actor) => actor.id === refreshedTargetId)
+        ?? nextLivingBattler(actors, livingActors, refreshedTargetId);
+    if (!aimed || aimed.hp <= 0) return;
     if (!prepareGen1CombatAction(enemy)) return;
     if (gen1) {
       applyGen1Struggle(enemy, aimed, "enemyAttack");
@@ -3092,10 +3172,26 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     if (!usesNativeMedicineEffects && skillId) {
       applySkillCast(user, targets, skillId, "item", 1, attachItemAnimation);
     } else {
+      // 해독초·맑은 종처럼 HP/MP 가 안 움직이는 약은 0 회복 줄을 남기지 않는다.
+      // 그 줄이 있으면 화면이 「효과가 충분하지 않았다」·「합계 0 회복했다」로 읽고,
+      // 바로 다음 줄에서 독이 풀렸다고 말한다. 대상 전원이 그대로일 때만 무효 한 줄을 남긴다.
+      const unchanged: MutableBattler[] = [];
       for (const target of targets) {
+        const beforeLength = timeline.length;
         applyItemRecovery(user, target, item);
         applyStates(user, target, itemStateEffectsForBattle(item));
-        attachItemAnimation(target);
+        if (timeline.length === beforeLength) unchanged.push(target);
+        else attachItemAnimation(target);
+      }
+      if (unchanged.length === targets.length && unchanged[0]) {
+        recordAction({
+          userRecordId: user.recordId,
+          targetId: unchanged[0].id,
+          hit: true,
+          amount: 0,
+          critical: false,
+        }, "action", "item");
+        attachItemAnimation(unchanged[0]);
       }
     }
   }
@@ -3186,6 +3282,9 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       // PP is its own resource: never send a PP amount to the HP/MP ledger.
       if (hpGain === 0 && mpGain === 0) return;
     }
+    // 이미 가득 찼거나 회복량이 없는 약은 HP/MP 원장에 0 을 싣지 않는다.
+    // 상태 치료만 된 경우는 상태 엔트리가, 아무 변화도 없는 경우는 호출부가 무효 행동을 남긴다.
+    if (hpGain === 0 && mpGain === 0) return;
     const resource: "hp" | "mp" = hpGain > 0 ? "hp" : "mp";
     recordAction({
       userRecordId: user.recordId,
@@ -4608,7 +4707,10 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     if (applied.hit && effectKind === "damage" && applied.amount > 0 && !usesMagicalDefense(options.project, skill?.elementId)) {
       applyContactAbility(user, target);
     }
-    if (applied.hit && (effectKind !== "damage" || applied.amount > 0)) {
+    // 피해로 쓰러뜨린 대상에게는 부가 상태·능력 단계를 걸지 않는다 — rm2k3 경로와 같은 계약.
+    // 쓰러진 몬스터에게 「화상에 걸렸다!」가 이어지던 결함(amount 는 0보다 커도 HP 는 이미 0).
+    const livingStatusTarget = effectKind !== "damage" || (applied.amount > 0 && target.hp > 0);
+    if (applied.hit && livingStatusTarget) {
       const stateEffects = defrosted
         ? skill?.stateEffects?.filter((stateEffect) => {
             const state = options.project.database.states.find((record) => record.id === stateEffect.stateId);
@@ -4620,7 +4722,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         kind: effectKind === "damage" ? "damage" : "status",
       });
     }
-    if (applied.hit && (effectKind !== "damage" || applied.amount > 0)) applyStatStageEffects(user, target, skill);
+    if (applied.hit && livingStatusTarget) applyStatStageEffects(user, target, skill);
     if (applied.hit && skill?.effect?.kind === "switch" && skill.effect.switchId) {
       battleEventState.switches[skill.effect.switchId] = true;
     }

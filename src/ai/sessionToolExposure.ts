@@ -86,6 +86,9 @@ function schemasForIntent(intent: IntentDeclaration | null): OpenAiTool[] {
   // JRPG 한 장 시공기는 여러 맵을 한 번에 짓는다 — 지은 뒤 통행·그림을 확인할 도구를 함께 보인다.
   if (names.includes("author_jrpg_chapter")) names.push("author_jrpg_chapter", "check_reachability", "show_map_region", "run_lint");
   if (names.some(n => ["author_map_puzzle", "list_puzzle_presets", "compile_puzzle"].includes(n))) names.push("list_puzzle_presets", "author_map_puzzle", "compile_puzzle", "check_reachability", "show_map_region", "run_lint");
+  // 퀘스트 저작 도구를 고른 요청에는 같은 묶음과 완료 검사 verify_quest 를 함께 보인다 — 프롬프트는 verify_quest 통과를
+  // 완료 기준으로 삼으라고 하는데(promptPolicies), 선언이 create_quest 만 고르면 모델이 검사 도구를 모른다.
+  if (names.some(n => ["create_quest", "define_quest", "verify_quest"].includes(n))) names.push("define_quest", "create_quest", "verify_quest");
   if (names.includes("stamp_object")) names.push("list_spatial_designs", "show_map_region");
   if (names.some(n => ["place_npc", "make_villager", "upsert_event", "list_npc_graphics"].includes(n))) names.push("place_npc", "list_npc_graphics");
   return toolSchemasForNames(names) as OpenAiTool[];

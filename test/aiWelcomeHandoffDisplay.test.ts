@@ -43,7 +43,7 @@ beforeEach(() => {
   editorState.set({ currentMapId: null, selection: null });
   restoreDom = installFakeDom();
   // 잠금 막(aiLockScrim)이 window 이벤트를 듣는다 — fakeDom 은 window 를 만들지 않는다.
-  vi.stubGlobal("window", { addEventListener: () => {}, removeEventListener: () => {}, dispatchEvent: () => true });
+  vi.stubGlobal("window", { addEventListener: () => {}, removeEventListener: () => {}, dispatchEvent: () => true, setInterval: () => 0, clearInterval: () => undefined });
   const storage = new Map<string, string>();
   vi.stubGlobal("localStorage", {
     getItem: (key: string) => storage.get(key) ?? null,

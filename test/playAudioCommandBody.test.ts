@@ -100,4 +100,93 @@ describe("playAudio command body", () => {
       false
     );
   });
+
+  it("shows authored loudness and keeps volume, fade, and BGS when the clip changes", () => {
+    const body = playAudioBodyForTest(
+      {
+        path: [0],
+        actions: {
+          addCommand: () => undefined,
+          insertCommand: () => undefined,
+          replaceCommand: (_path, command) => {
+            replaced = command;
+          },
+          deleteCommand: () => undefined,
+          moveCommand: () => undefined,
+        },
+      },
+      { kind: "playAudio", resourceId: "cc0-music-field-loop", loop: true, channel: "bgs", volume: 0.6, fadeInMs: 1500 }
+    );
+    host.append(body);
+
+    const volume = body.querySelector('[data-testid="play-audio-volume"]') as HTMLInputElement;
+    const fade = body.querySelector('[data-testid="play-audio-fade"]') as HTMLInputElement;
+    expect(volume.value).toBe("60");
+    expect(fade.value).toBe("1.5");
+    expect(body.querySelector('[data-testid="play-audio-channel-note"]')?.textContent).toContain("환경음");
+
+    const select = body.querySelector('[data-testid="play-audio-resource-select"]') as HTMLSelectElement;
+    select.value = "cc0-bgm-town";
+    select.dispatchEvent(new Event("change"));
+    expect(replaced).toMatchObject({
+      kind: "playAudio",
+      resourceId: "cc0-bgm-town",
+      loop: true,
+      channel: "bgs",
+      volume: 0.6,
+      fadeInMs: 1500,
+    });
+
+    volume.value = "40";
+    volume.dispatchEvent(new Event("change"));
+    expect(replaced).toMatchObject({ volume: 40, channel: "bgs", fadeInMs: 1500 });
+
+    fade.value = "0";
+    fade.dispatchEvent(new Event("change"));
+    expect(replaced).toMatchObject({ volume: 40, fadeInMs: 0, channel: "bgs" });
+  it("does not stop audio when a form that never previewed is removed", async () => {
+    const body = mountedAudioBody(host);
+    const stop = vi.spyOn(getAudioEngine(), "stopAll");
+    host.remove();
+    await flushMutations();
+    expect(body.isConnected).toBe(false);
+    expect(stop).not.toHaveBeenCalled();
+  });
+
+  it("stops a preview when the form leaves the document", async () => {
+    const body = mountedAudioBody(host);
+    const engine = getAudioEngine();
+    const stop = vi.spyOn(engine, "stopAll");
+    vi.spyOn(engine, "play").mockImplementation(() => undefined);
+    (body.querySelector('[data-testid="play-audio-preview"]') as HTMLButtonElement).click();
+    // The preview button fades whatever was already playing, then starts this form's track.
+    expect(stop).toHaveBeenCalledTimes(1);
+    expect(stop).toHaveBeenCalledWith(true);
+
+    host.remove();
+    await flushMutations();
+    expect(stop).toHaveBeenCalledTimes(2);
+    expect(stop).toHaveBeenLastCalledWith(false);  });
 });
+
+function mountedAudioBody(parent: HTMLElement): HTMLElement {
+  const body = playAudioBodyForTest(
+    {
+      path: [0],
+      actions: {
+        addCommand: () => undefined,
+        insertCommand: () => undefined,
+        replaceCommand: () => undefined,
+        deleteCommand: () => undefined,
+        moveCommand: () => undefined,
+      },
+    },
+    { kind: "playAudio", resourceId: "cc0-music-field-loop", loop: true }
+  );
+  parent.append(body);
+  return body;
+}
+
+function flushMutations(): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, 0));
+}

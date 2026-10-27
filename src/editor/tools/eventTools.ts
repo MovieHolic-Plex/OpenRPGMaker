@@ -45,6 +45,7 @@ import { sharedFaceForCharset } from "@/project/sharedCharacterFaceResolver";
 import { reconcileSharedFaceWithCharset as reconcileFaceWithCharset } from "@/project/sharedCharacterFaceResolver";
 import { decodeCharsetFrameIndex } from "@/assets/easyrpgRtp";
 import { searchResources } from "@/assets/resourceSearch";
+import { pickNpcGraphic } from "@/assets/charsetQuery";
 import {
   charsetGraphic,
   compileSimplePages,
@@ -2384,7 +2385,8 @@ export function resolveTransferEndpoint(
   const endpoint = transferEndpoint(project, map, requested.x, requested.y, fixed ? 0 : 3, localNotes, fixed);
   const reach = walkableFromAnchors(project, map);
   // 앵커도 후보 시작점(원자리)도 없으면 후보를 지어내지 않는다 — 실패 원인 안내(A:/B:)를 유지.
-  if (!reach && !endpoint) {
+  // 맵 밖 좌표(근처 반경에서도 자리를 못 찾은 경우)는 다른 칸으로 지어 옮기지 않는다 — 맵 크기 안내(A:/B:)로 실패시킨다.
+  if (!endpoint && (!reach || !inMapBounds(map, requested.x, requested.y))) {
     notes.push(...localNotes);
     return endpoint;
   }
@@ -2856,6 +2858,26 @@ const createTransferPair: ToolDefinition = {
     assertDoorExitWidths(draft, mapA, endpointA.gate, mapB, endpointB.gate, a.doorAt, b.doorAt);
     // 문 그림 칸이 트리거 칸이다(장면 다듬기 교훈: 문앞 보도에서 발동하면 «문에 닿기 전에 들어간다»).
     // 문앞 칸(원래 출입구 자리)은 반대쪽에서 오는 착지가 된다 — 문을 등지고 선다.
+    // 3×3 지하철 계단처럼 큰 입구 그림의 가운데를 주면 착지점(가장 가까운 통행 칸)이 그림에서 두 칸 떨어져 문 칸 판정이 빠졌다 —
+    // 문이 보도의 맨 바닥 칸에 서고, 조수가 그 문을 계단 위 보도로 옮겼다(2026-10-27 romance-j91 J103: 계단 그림은 안 열림).
+    // 같은 그림 덩어리(4방 이웃 문 그림 칸)에서 착지점 바로 옆 칸을 문 칸으로 쓴다.
+    const doorClusterCellBeside = (map: GameMap, req: Point, landing: Point): Point | null => {
+      if (!isDoorArtCell(draft, map, req.x, req.y)) return null;
+      const seen = new Set<string>([`${req.x},${req.y}`]);
+      const queue: Point[] = [{ x: req.x, y: req.y }];
+      for (let i = 0; i < queue.length && queue.length <= 36; i += 1) {
+        const cell = queue[i]!;
+        if (Math.abs(cell.x - landing.x) + Math.abs(cell.y - landing.y) === 1) return cell;
+        for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+          const next = { x: cell.x + dx, y: cell.y + dy };
+          const key = `${next.x},${next.y}`;
+          if (seen.has(key) || !isDoorArtCell(draft, map, next.x, next.y)) continue;
+          seen.add(key);
+          queue.push(next);
+        }
+      }
+      return null;
+    };
     const onDoorCell = (map: GameMap, req: { x: number; y: number; doorAt?: Point }, endpoint: { gate: Point; landing: Point }): { gate: Point; landing: Point; bump: boolean } => {
       if (!onDoor) return { ...endpoint, bump: false };
       // 실내 벽에 박힌 엘리베이터·계단은 그림 칸 바로 아래가 「탈 자리」(build_hand_interior_room 이 알려 주는 칸)다 —
@@ -2864,7 +2886,8 @@ const createTransferPair: ToolDefinition = {
         && isDoorArtCell(draft, map, req.x, req.y - 1) ? { x: req.x, y: req.y - 1 } : null;
       const door = req.doorAt
         ?? (isDoorArtCell(draft, map, req.x, req.y) && Math.abs(req.x - endpoint.gate.x) + Math.abs(req.y - endpoint.gate.y) === 1 ? { x: req.x, y: req.y } : null)
-        ?? above;
+        ?? above
+        ?? (req.x === endpoint.gate.x && req.y === endpoint.gate.y ? null : doorClusterCellBeside(map, req, endpoint.gate));
       if (!door || (door.x === endpoint.gate.x && door.y === endpoint.gate.y)) return { ...endpoint, bump: false };
       if (map.events.some((event) => event.x === door.x && event.y === door.y)) return { ...endpoint, bump: false };
       return { gate: door, landing: endpoint.gate, bump: !isPassable(draft, map, door.x, door.y) };
@@ -3024,7 +3047,7 @@ const placeBattleBlocker: ToolDefinition = {
 const placeTrap: ToolDefinition = {
   name: "place_trap",
   description:
-    "즉사 트랩 이벤트를 배치한다. at:{x,y} 또는 cells:[{x,y}]를 받으며 trigger는 touch/action. respawnCheckpoint=true면 맵 진입 auto 체크포인트 이벤트를 추가한다.  함정·즉사 트랩 요청의 정본. 트랩+체크포인트+추격을 한 번에 원하면 make_horror_loop."
+    "즉사 트랩 이벤트를 배치한다. at:{x,y} 또는 cells:[{x,y}]를 받으며 trigger는 touch/action. respawnCheckpoint=true면 맵 진입 auto 체크포인트 이벤트를 추가한다(죽으면 그 자리에서 다시 — 얻은 물건·스위치·조명 같은 진행은 그대로, 추격자는 제자리로).  함정·즉사 트랩 요청의 정본. 트랩+체크포인트+추격을 한 번에 원하면 make_horror_loop."
     + "touch 트랩은 밟을 수 있어야 하므로 통행 불가 칸이면 근처(반경 3) 통행 가능 칸으로 자동 착지한다.",
   mode: "write",
   parameters: {
@@ -3276,6 +3299,27 @@ function chaserSpawnWarnings(project: Project, mapId: string, chaserId: string, 
     .map((entry) => `${entry.line}. 추격자를 시야 밖(벽 너머·다른 방)에 두거나 set_start_position 으로 시작을 옮기거나, 체크포인트를 추격 구역 앞(문 밖)으로 옮기세요.`);
 }
 
+/** make_chase_scene caughtPenalty — 없는 적 그룹·맵·맵 밖 좌표는 거절. */
+function readCaughtPenalty(draft: Project, raw: unknown): { troopId?: string; text?: string; sendTo?: { mapId: string; x: number; y: number } } | undefined {
+  if (raw === undefined || raw === null) return undefined;
+  if (typeof raw !== "object") throw new ToolError("caughtPenalty 는 {troopId?, sendTo?:{mapId,x,y}, text?} 입니다.", { code: "invalid-args" });
+  const r = raw as Record<string, unknown>;
+  const troopId = typeof r.troopId === "string" && r.troopId.trim() ? r.troopId.trim() : undefined;
+  if (troopId && !draft.database.troops.some((t) => t.id === troopId)) throw new ToolError(`caughtPenalty.troopId 적 그룹이 없습니다: ${troopId}`, { code: "troop-not-found" });
+  let sendTo: { mapId: string; x: number; y: number } | undefined;
+  if (r.sendTo && typeof r.sendTo === "object") {
+    const t = r.sendTo as Record<string, unknown>;
+    const mapId = String(t.mapId ?? ""), x = Number(t.x), y = Number(t.y);
+    const target = draft.maps[mapId];
+    if (!target) throw new ToolError(`caughtPenalty.sendTo 맵이 없습니다: ${mapId}`, { code: "map-not-found" });
+    if (!Number.isInteger(x) || !Number.isInteger(y) || x < 0 || y < 0 || x >= target.width || y >= target.height) throw new ToolError("caughtPenalty.sendTo 좌표가 맵 밖입니다.", { code: "invalid-args" });
+    sendTo = { mapId, x, y };
+  }
+  const text = typeof r.text === "string" && r.text.trim() ? r.text.trim() : undefined;
+  if (!troopId && !sendTo && !text) return undefined;
+  return { ...(troopId ? { troopId } : {}), ...(sendTo ? { sendTo } : {}), ...(text ? { text } : {}) };
+}
+
 const makeChaseScene: ToolDefinition = {
   name: "make_chase_scene",
   description:
@@ -3310,6 +3354,14 @@ const makeChaseScene: ToolDefinition = {
         },
       },
       killOnTouch: { type: "boolean" },
+      caughtPenalty: {
+        type: "object",
+        description: "붙잡히면 게임 오버 대신 값을 치른다(잠입·통금 순찰): text 한 줄 → troopId 가 있으면 그 무리와 도망 불가 전투(져도 게임 오버 아님, 끝나면 파티 회복) → sendTo 칸으로 끌려간다(생략 = 이 맵 출발 칸 대신 제자리). killOnTouch 와 같이 쓸 수 없다.",
+        properties: {
+          troopId: { type: "string" }, text: { type: "string" },
+          sendTo: { type: "object", properties: { mapId: { type: "string" }, x: { type: "integer" }, y: { type: "integer" } }, required: ["mapId", "x", "y"] },
+        },
+      },
       safeZone: { ...RECT_SCHEMA, description: "{x,y,w,h} 안전 지대 — 이 안의 주인공은 절대 잡히지 않는다. 세이브 방·계단참 같은 몇 칸짜리 구역만. 추격 통로를 덮지 말 것" },
       activateSwitch: { type: "string" },
       checkpointOnEntry: { type: "boolean" },
@@ -3367,7 +3419,19 @@ const makeChaseScene: ToolDefinition = {
     }
     const pursuit = parsedPursuit && activateSwitch && parsedPursuit.tracking === undefined
       ? { ...parsedPursuit, tracking: "persistent" as const } : parsedPursuit;
-    const commands: Command[] = args.killOnTouch === true ? [{ kind: "killPlayer", message: "붙잡혔다." }] : [];
+    const penalty = readCaughtPenalty(draft, args.caughtPenalty);
+    if (penalty && args.killOnTouch === true) throw new ToolError("caughtPenalty 와 killOnTouch 는 같이 쓸 수 없습니다 — 붙잡히면 게임 오버인지, 끌려가는지 하나만 고르세요.", { code: "invalid-args" });
+    const commands: Command[] = args.killOnTouch === true ? [{ kind: "killPlayer", message: "붙잡혔다." }]
+      : penalty ? [
+        { kind: "showEmote", target: { eventId: id }, emote: "exclamation", durationMs: 600 } as Command,
+        { kind: "text", body: penalty.text ?? "붙잡혔다!" } as Command,
+        ...(penalty.troopId ? [
+          { kind: "battleProcessing", troopId: penalty.troopId, canEscape: false, canLose: true } as unknown as Command,
+          // 져도 게임 오버가 아니므로, 쓰러진 파티(HP 0)가 그대로 걸어 다니다 다음 싸움에서 곧장 끝나지 않게 되살린다(독립 플레이 판정 실측).
+          { kind: "recoverAll" } as unknown as Command,
+        ] : []),
+        ...(penalty.sendTo ? [{ kind: "transfer", mapId: penalty.sendTo.mapId, x: penalty.sendTo.x, y: penalty.sendTo.y, direction: "down", fade: "black" } as Command] : []),
+      ] : [];
     const patrolRoute = args.patrol === undefined ? undefined : chaserPatrolRoute(draft, map, { x: placement.x, y: placement.y }, args.patrol, id);
     const event: GameEvent = {
       id,
@@ -3618,9 +3682,12 @@ const placeStorageChest: ToolDefinition = {
     const { x, y, adjusted } = placement;
     const id = (args.id as string | undefined) ?? genId("ev_storage_chest");
     const name = (args.name as string | undefined) ?? "보관 상자";
-    // 이름·템플릿이 금고를 가리키면 금고 그림(object2#2), 아니면 서랍장. 「철제 금고」가 서랍장으로 서던 경로(2026-09-27).
+    // 이름·템플릿이 금고를 가리키면 금고 그림, 아니면 서랍장. 「철제 금고」가 서랍장으로 서던 경로(2026-09-27).
+    // object2#2 는 원본 대조로 「원형 바닥 판」으로 정정됐다(characterReferenceCorrections) — 금고 칩이 없으면
+    // 모든 금고 보관 상자가 graphic-not-found 로 실패했다. 금고 라벨 칩(프로젝트 덮어쓰기 포함)이 없을 때만 서랍장으로 선다.
     const vault = args.template === "vault" || /금고|vault|safe/iu.test(name);
-    const graphic = resolveGraphic({ query: vault ? "금고" : "서랍장" }, { overrides: draft.charsetLabels });
+    const pick = { overrides: draft.charsetLabels };
+    const graphic = vault && pickNpcGraphic("금고", pick) ? resolveGraphic({ query: "금고" }, pick) : resolveGraphic({ query: "서랍장" }, pick);
     const chestIdRaw = typeof args.chestId === "string" ? args.chestId.trim() : "";
     const chestId = chestIdRaw || `storage_${id}`;
     const templateRaw = typeof args.template === "string" ? args.template.trim() : "farm";

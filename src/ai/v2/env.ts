@@ -34,6 +34,8 @@ export interface PiAssistantV2Env {
   readonly signal?: AbortSignal;
   /** 다음 지시의 첫 모델 호출에 tool_choice «required» 를 건다(한 번만). 화면 검수 고치기 차례가 글만 쓰고 끝나지 않게. 로컬 CLI 고리는 무시한다. */
   readonly requireToolNextTurn?: () => void;
+  /** 다음 지시 앞에서 대화 기록을 비운다(한 번). 화면 검수 고치기 차례가 긴 실행의 문맥을 다시 싣지 않게(J78). 시스템 지시는 그대로. */
+  readonly freshContextNextTurn?: () => void;
   /** 빌려 쓰는 v1 도구가 이 실행의 관문(참고문서 읽기·캐릭터 칩 선택)·맵 범위·보조 호출을 같이 쓰게 하는 옵션. */
   readonly toolsetOptions?: Pick<ResolvePiToolOptions, "referenceGate" | "charsetGate" | "scopeMapIds" | "scopeAllowsSystem" | "findToolsCallable" | "eventAssistChat">;
 }

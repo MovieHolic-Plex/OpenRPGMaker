@@ -19391,6 +19391,1128 @@ null,
 ],
 "passage": "solid",
 "layer": "upper"
+},
+{
+"key": "85da99b6d14d418ced056c4c",
+"origin": "gap.ice_rock/*/gap-ice-r5:A1@1b33ffeb",
+"label": "버들항 던전 · 얼음 바위(서리 윗면) 천장 윗면(북동남서 열림)",
+"description": "방 사이를 채우는 얼음 바위(서리 윗면) 윗면 오토타일(마스크 0). 막힘. 그룹 `beodeul_dungeon_ice_rock`. 바닥·벽 앞면과 닿는 쪽에 불규칙한 바위 윤곽.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"rock"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "8a9d33516e5966e08322ac67",
+"origin": "gap.ice_rock/*/gap-ice-r5:A1@1b33ffeb",
+"label": "버들항 던전 · 얼음 바위(서리 윗면) 천장 윗면(동남서 열림)",
+"description": "방 사이를 채우는 얼음 바위(서리 윗면) 윗면 오토타일(마스크 1). 막힘. 그룹 `beodeul_dungeon_ice_rock`. 바닥·벽 앞면과 닿는 쪽에 불규칙한 바위 윤곽.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"rock"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "67e600dc4927f74e6d8b4d62",
+"origin": "gap.ice_rock/*/gap-ice-r5:A1@1b33ffeb",
+"label": "버들항 던전 · 얼음 바위(서리 윗면) 천장 윗면(북남서 열림)",
+"description": "방 사이를 채우는 얼음 바위(서리 윗면) 윗면 오토타일(마스크 2). 막힘. 그룹 `beodeul_dungeon_ice_rock`. 바닥·벽 앞면과 닿는 쪽에 불규칙한 바위 윤곽.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"rock"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "60ee4fcf3ede9f1dbb48f5dc",
+"origin": "gap.ice_rock/*/gap-ice-r5:A1@1b33ffeb",
+"label": "버들항 던전 · 얼음 바위(서리 윗면) 천장 윗면(남서 열림)",
+"description": "방 사이를 채우는 얼음 바위(서리 윗면) 윗면 오토타일(마스크 3). 막힘. 그룹 `beodeul_dungeon_ice_rock`. 바닥·벽 앞면과 닿는 쪽에 불규칙한 바위 윤곽.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"rock"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "f41010a43b29a277e1348c28",
+"origin": "gap.ice_rock/*/gap-ice-r5:A1@1b33ffeb",
+"label": "버들항 던전 · 얼음 바위(서리 윗면) 천장 윗면(북동서 열림)",
+"description": "방 사이를 채우는 얼음 바위(서리 윗면) 윗면 오토타일(마스크 4). 막힘. 그룹 `beodeul_dungeon_ice_rock`. 바닥·벽 앞면과 닿는 쪽에 불규칙한 바위 윤곽.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"rock"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "610c85dd5baaad70866ac110",
+"origin": "gap.ice_rock/*/gap-ice-r5:A1@1b33ffeb",
+"label": "버들항 던전 · 얼음 바위(서리 윗면) 천장 윗면(동서 열림)",
+"description": "방 사이를 채우는 얼음 바위(서리 윗면) 윗면 오토타일(마스크 5). 막힘. 그룹 `beodeul_dungeon_ice_rock`. 바닥·벽 앞면과 닿는 쪽에 불규칙한 바위 윤곽.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"rock"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "23f6e66c487d3d7f2ad53db6",
+"origin": "gap.ice_rock/*/gap-ice-r5:A1@1b33ffeb",
+"label": "버들항 던전 · 얼음 바위(서리 윗면) 천장 윗면(북서 열림)",
+"description": "방 사이를 채우는 얼음 바위(서리 윗면) 윗면 오토타일(마스크 6). 막힘. 그룹 `beodeul_dungeon_ice_rock`. 바닥·벽 앞면과 닿는 쪽에 불규칙한 바위 윤곽.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"rock"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "3f1ffd7c08c22274670e172e",
+"origin": "gap.ice_rock/*/gap-ice-r5:A1@1b33ffeb",
+"label": "버들항 던전 · 얼음 바위(서리 윗면) 천장 윗면(서 열림)",
+"description": "방 사이를 채우는 얼음 바위(서리 윗면) 윗면 오토타일(마스크 7). 막힘. 그룹 `beodeul_dungeon_ice_rock`. 바닥·벽 앞면과 닿는 쪽에 불규칙한 바위 윤곽.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"rock"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "f4d79c2f7d4082cf50343d5a",
+"origin": "gap.ice_rock/*/gap-ice-r5:A1@1b33ffeb",
+"label": "버들항 던전 · 얼음 바위(서리 윗면) 천장 윗면(북동남 열림)",
+"description": "방 사이를 채우는 얼음 바위(서리 윗면) 윗면 오토타일(마스크 8). 막힘. 그룹 `beodeul_dungeon_ice_rock`. 바닥·벽 앞면과 닿는 쪽에 불규칙한 바위 윤곽.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"rock"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "a7fe3b4572d9c657bc563575",
+"origin": "gap.ice_rock/*/gap-ice-r5:A1@1b33ffeb",
+"label": "버들항 던전 · 얼음 바위(서리 윗면) 천장 윗면(동남 열림)",
+"description": "방 사이를 채우는 얼음 바위(서리 윗면) 윗면 오토타일(마스크 9). 막힘. 그룹 `beodeul_dungeon_ice_rock`. 바닥·벽 앞면과 닿는 쪽에 불규칙한 바위 윤곽.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"rock"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "377ae7bb167f33aa8a2681df",
+"origin": "gap.ice_rock/*/gap-ice-r5:A1@1b33ffeb",
+"label": "버들항 던전 · 얼음 바위(서리 윗면) 천장 윗면(북남 열림)",
+"description": "방 사이를 채우는 얼음 바위(서리 윗면) 윗면 오토타일(마스크 10). 막힘. 그룹 `beodeul_dungeon_ice_rock`. 바닥·벽 앞면과 닿는 쪽에 불규칙한 바위 윤곽.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"rock"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "8f4b3bb489fb8be9f014165e",
+"origin": "gap.ice_rock/*/gap-ice-r5:A1@1b33ffeb",
+"label": "버들항 던전 · 얼음 바위(서리 윗면) 천장 윗면(남 열림)",
+"description": "방 사이를 채우는 얼음 바위(서리 윗면) 윗면 오토타일(마스크 11). 막힘. 그룹 `beodeul_dungeon_ice_rock`. 바닥·벽 앞면과 닿는 쪽에 불규칙한 바위 윤곽.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"rock"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "ce5191cafd4e2d965ee5980c",
+"origin": "gap.ice_rock/*/gap-ice-r5:A1@1b33ffeb",
+"label": "버들항 던전 · 얼음 바위(서리 윗면) 천장 윗면(북동 열림)",
+"description": "방 사이를 채우는 얼음 바위(서리 윗면) 윗면 오토타일(마스크 12). 막힘. 그룹 `beodeul_dungeon_ice_rock`. 바닥·벽 앞면과 닿는 쪽에 불규칙한 바위 윤곽.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"rock"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "fe28ba75a5bf00304fb40e75",
+"origin": "gap.ice_rock/*/gap-ice-r5:A1@1b33ffeb",
+"label": "버들항 던전 · 얼음 바위(서리 윗면) 천장 윗면(동 열림)",
+"description": "방 사이를 채우는 얼음 바위(서리 윗면) 윗면 오토타일(마스크 13). 막힘. 그룹 `beodeul_dungeon_ice_rock`. 바닥·벽 앞면과 닿는 쪽에 불규칙한 바위 윤곽.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"rock"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "029760144580110875a1d0fa",
+"origin": "gap.ice_rock/*/gap-ice-r5:A1@1b33ffeb",
+"label": "버들항 던전 · 얼음 바위(서리 윗면) 천장 윗면(북 열림)",
+"description": "방 사이를 채우는 얼음 바위(서리 윗면) 윗면 오토타일(마스크 14). 막힘. 그룹 `beodeul_dungeon_ice_rock`. 바닥·벽 앞면과 닿는 쪽에 불규칙한 바위 윤곽.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"rock"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "f42e5c785dfc6a8b646bbfa4",
+"origin": "gap.ice_rock/*/gap-ice-r5:A1@1b33ffeb",
+"label": "버들항 던전 · 얼음 바위(서리 윗면) 천장 윗면 몸통",
+"description": "방 사이를 채우는 얼음 바위(서리 윗면) 윗면 오토타일(마스크 15). 막힘. 그룹 `beodeul_dungeon_ice_rock`. 바닥·벽 앞면과 닿는 쪽에 불규칙한 바위 윤곽.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"rock"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "f4ca9aa5c4460aa485171ec7",
+"origin": "gap.ice_rock/*/gap-ice-r5:A1@1b33ffeb",
+"label": "버들항 던전 · 얼음 바위(서리 윗면) 천장 윗면(남서 열림)",
+"description": "방 사이를 채우는 얼음 바위(서리 윗면) 윗면 오토타일(마스크 19). 막힘. 그룹 `beodeul_dungeon_ice_rock`. 바닥·벽 앞면과 닿는 쪽에 불규칙한 바위 윤곽.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"rock"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "dcaba36184aaea2698601572",
+"origin": "gap.ice_rock/*/gap-ice-r5:A1@1b33ffeb",
+"label": "버들항 던전 · 얼음 바위(서리 윗면) 천장 윗면(서 열림)",
+"description": "방 사이를 채우는 얼음 바위(서리 윗면) 윗면 오토타일(마스크 23). 막힘. 그룹 `beodeul_dungeon_ice_rock`. 바닥·벽 앞면과 닿는 쪽에 불규칙한 바위 윤곽.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"rock"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "bdd1f8e5d323f5e2914af360",
+"origin": "gap.ice_rock/*/gap-ice-r5:A1@1b33ffeb",
+"label": "버들항 던전 · 얼음 바위(서리 윗면) 천장 윗면(남 열림)",
+"description": "방 사이를 채우는 얼음 바위(서리 윗면) 윗면 오토타일(마스크 27). 막힘. 그룹 `beodeul_dungeon_ice_rock`. 바닥·벽 앞면과 닿는 쪽에 불규칙한 바위 윤곽.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"rock"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "bdc5287d56e731d20646cfbd",
+"origin": "gap.ice_rock/*/gap-ice-r5:A1@1b33ffeb",
+"label": "버들항 던전 · 얼음 바위(서리 윗면) 천장 윗면 몸통",
+"description": "방 사이를 채우는 얼음 바위(서리 윗면) 윗면 오토타일(마스크 31). 막힘. 그룹 `beodeul_dungeon_ice_rock`. 바닥·벽 앞면과 닿는 쪽에 불규칙한 바위 윤곽.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"rock"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "527bdeda95bd454d82bcaabd",
+"origin": "gap.ice_rock/*/gap-ice-r5:A1@1b33ffeb",
+"label": "버들항 던전 · 얼음 바위(서리 윗면) 천장 윗면(북서 열림)",
+"description": "방 사이를 채우는 얼음 바위(서리 윗면) 윗면 오토타일(마스크 38). 막힘. 그룹 `beodeul_dungeon_ice_rock`. 바닥·벽 앞면과 닿는 쪽에 불규칙한 바위 윤곽.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"rock"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "fa0012093e86ec2a9b3a1a4b",
+"origin": "gap.ice_rock/*/gap-ice-r5:A1@1b33ffeb",
+"label": "버들항 던전 · 얼음 바위(서리 윗면) 천장 윗면(서 열림)",
+"description": "방 사이를 채우는 얼음 바위(서리 윗면) 윗면 오토타일(마스크 39). 막힘. 그룹 `beodeul_dungeon_ice_rock`. 바닥·벽 앞면과 닿는 쪽에 불규칙한 바위 윤곽.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"rock"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "1aa99853d977b7deaf618f1c",
+"origin": "gap.ice_rock/*/gap-ice-r5:A1@1b33ffeb",
+"label": "버들항 던전 · 얼음 바위(서리 윗면) 천장 윗면(북 열림)",
+"description": "방 사이를 채우는 얼음 바위(서리 윗면) 윗면 오토타일(마스크 46). 막힘. 그룹 `beodeul_dungeon_ice_rock`. 바닥·벽 앞면과 닿는 쪽에 불규칙한 바위 윤곽.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"rock"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "bee3fbd3399257eba1931afc",
+"origin": "gap.ice_rock/*/gap-ice-r5:A1@1b33ffeb",
+"label": "버들항 던전 · 얼음 바위(서리 윗면) 천장 윗면 몸통",
+"description": "방 사이를 채우는 얼음 바위(서리 윗면) 윗면 오토타일(마스크 47). 막힘. 그룹 `beodeul_dungeon_ice_rock`. 바닥·벽 앞면과 닿는 쪽에 불규칙한 바위 윤곽.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"rock"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "b788dcba4718354245472924",
+"origin": "gap.ice_rock/*/gap-ice-r5:A1@1b33ffeb",
+"label": "버들항 던전 · 얼음 바위(서리 윗면) 천장 윗면(서 열림)",
+"description": "방 사이를 채우는 얼음 바위(서리 윗면) 윗면 오토타일(마스크 55). 막힘. 그룹 `beodeul_dungeon_ice_rock`. 바닥·벽 앞면과 닿는 쪽에 불규칙한 바위 윤곽.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"rock"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "34422e68d72cd6b76400c76f",
+"origin": "gap.ice_rock/*/gap-ice-r5:A1@1b33ffeb",
+"label": "버들항 던전 · 얼음 바위(서리 윗면) 천장 윗면 몸통",
+"description": "방 사이를 채우는 얼음 바위(서리 윗면) 윗면 오토타일(마스크 63). 막힘. 그룹 `beodeul_dungeon_ice_rock`. 바닥·벽 앞면과 닿는 쪽에 불규칙한 바위 윤곽.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"rock"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "add532affb18f829fed9b8d8",
+"origin": "gap.ice_rock/*/gap-ice-r5:A1@1b33ffeb",
+"label": "버들항 던전 · 얼음 바위(서리 윗면) 천장 윗면(북동 열림)",
+"description": "방 사이를 채우는 얼음 바위(서리 윗면) 윗면 오토타일(마스크 76). 막힘. 그룹 `beodeul_dungeon_ice_rock`. 바닥·벽 앞면과 닿는 쪽에 불규칙한 바위 윤곽.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"rock"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "4bef2e52b00d4b7e90983be6",
+"origin": "gap.ice_rock/*/gap-ice-r5:A1@1b33ffeb",
+"label": "버들항 던전 · 얼음 바위(서리 윗면) 천장 윗면(동 열림)",
+"description": "방 사이를 채우는 얼음 바위(서리 윗면) 윗면 오토타일(마스크 77). 막힘. 그룹 `beodeul_dungeon_ice_rock`. 바닥·벽 앞면과 닿는 쪽에 불규칙한 바위 윤곽.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"rock"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "80904e0e8700880c93889541",
+"origin": "gap.ice_rock/*/gap-ice-r5:A1@1b33ffeb",
+"label": "버들항 던전 · 얼음 바위(서리 윗면) 천장 윗면(북 열림)",
+"description": "방 사이를 채우는 얼음 바위(서리 윗면) 윗면 오토타일(마스크 78). 막힘. 그룹 `beodeul_dungeon_ice_rock`. 바닥·벽 앞면과 닿는 쪽에 불규칙한 바위 윤곽.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"rock"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "9dc0e314d7e72941c4a1121e",
+"origin": "gap.ice_rock/*/gap-ice-r5:A1@1b33ffeb",
+"label": "버들항 던전 · 얼음 바위(서리 윗면) 천장 윗면 몸통",
+"description": "방 사이를 채우는 얼음 바위(서리 윗면) 윗면 오토타일(마스크 79). 막힘. 그룹 `beodeul_dungeon_ice_rock`. 바닥·벽 앞면과 닿는 쪽에 불규칙한 바위 윤곽.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"rock"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "317fc05cbdb5d9ebbe410ec6",
+"origin": "gap.ice_rock/*/gap-ice-r5:A1@1b33ffeb",
+"label": "버들항 던전 · 얼음 바위(서리 윗면) 천장 윗면 몸통",
+"description": "방 사이를 채우는 얼음 바위(서리 윗면) 윗면 오토타일(마스크 95). 막힘. 그룹 `beodeul_dungeon_ice_rock`. 바닥·벽 앞면과 닿는 쪽에 불규칙한 바위 윤곽.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"rock"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "ce2bc2d91da89352a06c987e",
+"origin": "gap.ice_rock/*/gap-ice-r5:A1@1b33ffeb",
+"label": "버들항 던전 · 얼음 바위(서리 윗면) 천장 윗면(북 열림)",
+"description": "방 사이를 채우는 얼음 바위(서리 윗면) 윗면 오토타일(마스크 110). 막힘. 그룹 `beodeul_dungeon_ice_rock`. 바닥·벽 앞면과 닿는 쪽에 불규칙한 바위 윤곽.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"rock"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "1df24c7a448b8995913791c0",
+"origin": "gap.ice_rock/*/gap-ice-r5:A1@1b33ffeb",
+"label": "버들항 던전 · 얼음 바위(서리 윗면) 천장 윗면 몸통",
+"description": "방 사이를 채우는 얼음 바위(서리 윗면) 윗면 오토타일(마스크 111). 막힘. 그룹 `beodeul_dungeon_ice_rock`. 바닥·벽 앞면과 닿는 쪽에 불규칙한 바위 윤곽.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"rock"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "6ee6816d1b6f04bba063dfff",
+"origin": "gap.ice_rock/*/gap-ice-r5:A1@1b33ffeb",
+"label": "버들항 던전 · 얼음 바위(서리 윗면) 천장 윗면 몸통",
+"description": "방 사이를 채우는 얼음 바위(서리 윗면) 윗면 오토타일(마스크 127). 막힘. 그룹 `beodeul_dungeon_ice_rock`. 바닥·벽 앞면과 닿는 쪽에 불규칙한 바위 윤곽.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"rock"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "81d3b028ff8c5d137d8fce05",
+"origin": "gap.ice_rock/*/gap-ice-r5:A1@1b33ffeb",
+"label": "버들항 던전 · 얼음 바위(서리 윗면) 천장 윗면(동남 열림)",
+"description": "방 사이를 채우는 얼음 바위(서리 윗면) 윗면 오토타일(마스크 137). 막힘. 그룹 `beodeul_dungeon_ice_rock`. 바닥·벽 앞면과 닿는 쪽에 불규칙한 바위 윤곽.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"rock"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "04fcb9b23ce48fbf74ea1cad",
+"origin": "gap.ice_rock/*/gap-ice-r5:A1@1b33ffeb",
+"label": "버들항 던전 · 얼음 바위(서리 윗면) 천장 윗면(남 열림)",
+"description": "방 사이를 채우는 얼음 바위(서리 윗면) 윗면 오토타일(마스크 139). 막힘. 그룹 `beodeul_dungeon_ice_rock`. 바닥·벽 앞면과 닿는 쪽에 불규칙한 바위 윤곽.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"rock"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "de2e5f12ac255c7dd26cc0e8",
+"origin": "gap.ice_rock/*/gap-ice-r5:A1@1b33ffeb",
+"label": "버들항 던전 · 얼음 바위(서리 윗면) 천장 윗면(동 열림)",
+"description": "방 사이를 채우는 얼음 바위(서리 윗면) 윗면 오토타일(마스크 141). 막힘. 그룹 `beodeul_dungeon_ice_rock`. 바닥·벽 앞면과 닿는 쪽에 불규칙한 바위 윤곽.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"rock"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "ea38190a65674878c275043f",
+"origin": "gap.ice_rock/*/gap-ice-r5:A1@1b33ffeb",
+"label": "버들항 던전 · 얼음 바위(서리 윗면) 천장 윗면 몸통",
+"description": "방 사이를 채우는 얼음 바위(서리 윗면) 윗면 오토타일(마스크 143). 막힘. 그룹 `beodeul_dungeon_ice_rock`. 바닥·벽 앞면과 닿는 쪽에 불규칙한 바위 윤곽.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"rock"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "a3ebc2ba324b512e382387ad",
+"origin": "gap.ice_rock/*/gap-ice-r5:A1@1b33ffeb",
+"label": "버들항 던전 · 얼음 바위(서리 윗면) 천장 윗면(남 열림)",
+"description": "방 사이를 채우는 얼음 바위(서리 윗면) 윗면 오토타일(마스크 155). 막힘. 그룹 `beodeul_dungeon_ice_rock`. 바닥·벽 앞면과 닿는 쪽에 불규칙한 바위 윤곽.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"rock"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "baa5be53ba0200022446b040",
+"origin": "gap.ice_rock/*/gap-ice-r5:A1@1b33ffeb",
+"label": "버들항 던전 · 얼음 바위(서리 윗면) 천장 윗면 몸통",
+"description": "방 사이를 채우는 얼음 바위(서리 윗면) 윗면 오토타일(마스크 159). 막힘. 그룹 `beodeul_dungeon_ice_rock`. 바닥·벽 앞면과 닿는 쪽에 불규칙한 바위 윤곽.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"rock"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "68f4924cae81ff0fc035e5c0",
+"origin": "gap.ice_rock/*/gap-ice-r5:A1@1b33ffeb",
+"label": "버들항 던전 · 얼음 바위(서리 윗면) 천장 윗면 몸통",
+"description": "방 사이를 채우는 얼음 바위(서리 윗면) 윗면 오토타일(마스크 175). 막힘. 그룹 `beodeul_dungeon_ice_rock`. 바닥·벽 앞면과 닿는 쪽에 불규칙한 바위 윤곽.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"rock"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "4e02ee39e0e11356704bbc1f",
+"origin": "gap.ice_rock/*/gap-ice-r5:A1@1b33ffeb",
+"label": "버들항 던전 · 얼음 바위(서리 윗면) 천장 윗면 몸통",
+"description": "방 사이를 채우는 얼음 바위(서리 윗면) 윗면 오토타일(마스크 191). 막힘. 그룹 `beodeul_dungeon_ice_rock`. 바닥·벽 앞면과 닿는 쪽에 불규칙한 바위 윤곽.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"rock"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "fa4c0a0341e94d9c763dbdf4",
+"origin": "gap.ice_rock/*/gap-ice-r5:A1@1b33ffeb",
+"label": "버들항 던전 · 얼음 바위(서리 윗면) 천장 윗면(동 열림)",
+"description": "방 사이를 채우는 얼음 바위(서리 윗면) 윗면 오토타일(마스크 205). 막힘. 그룹 `beodeul_dungeon_ice_rock`. 바닥·벽 앞면과 닿는 쪽에 불규칙한 바위 윤곽.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"rock"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "b44edf60e7181b4d8713c4f1",
+"origin": "gap.ice_rock/*/gap-ice-r5:A1@1b33ffeb",
+"label": "버들항 던전 · 얼음 바위(서리 윗면) 천장 윗면 몸통",
+"description": "방 사이를 채우는 얼음 바위(서리 윗면) 윗면 오토타일(마스크 207). 막힘. 그룹 `beodeul_dungeon_ice_rock`. 바닥·벽 앞면과 닿는 쪽에 불규칙한 바위 윤곽.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"rock"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "1432a3c55571197fd9d17d4b",
+"origin": "gap.ice_rock/*/gap-ice-r5:A1@1b33ffeb",
+"label": "버들항 던전 · 얼음 바위(서리 윗면) 천장 윗면 몸통",
+"description": "방 사이를 채우는 얼음 바위(서리 윗면) 윗면 오토타일(마스크 223). 막힘. 그룹 `beodeul_dungeon_ice_rock`. 바닥·벽 앞면과 닿는 쪽에 불규칙한 바위 윤곽.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"rock"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "6eac0d4d6e4b129ef3982029",
+"origin": "gap.ice_rock/*/gap-ice-r5:A1@1b33ffeb",
+"label": "버들항 던전 · 얼음 바위(서리 윗면) 천장 윗면 몸통",
+"description": "방 사이를 채우는 얼음 바위(서리 윗면) 윗면 오토타일(마스크 239). 막힘. 그룹 `beodeul_dungeon_ice_rock`. 바닥·벽 앞면과 닿는 쪽에 불규칙한 바위 윤곽.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"rock"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "d92dbc43f3741e66e97c223c",
+"origin": "gap.ice_rock/*/gap-ice-r5:A1@1b33ffeb",
+"label": "버들항 던전 · 얼음 바위(서리 윗면) 천장 윗면 몸통",
+"description": "방 사이를 채우는 얼음 바위(서리 윗면) 윗면 오토타일(마스크 255). 막힘. 그룹 `beodeul_dungeon_ice_rock`. 바닥·벽 앞면과 닿는 쪽에 불규칙한 바위 윤곽.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"rock"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "bb1c3ccbab4709069627afa6",
+"origin": "gap.ice_rock/*/gap-ice-r5:A1@1b33ffeb",
+"label": "버들항 던전 · 얼음 바위(서리 윗면) 천장 윗면 몸통",
+"description": "방 사이를 채우는 얼음 바위(서리 윗면) 윗면 오토타일(마스크 255). 막힘. 그룹 `beodeul_dungeon_ice_rock`. 바닥·벽 앞면과 닿는 쪽에 불규칙한 바위 윤곽.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"rock"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "0fbc2efb10175b5f58d94c1a",
+"origin": "gap.ice_rock/*/gap-ice-r5:A1@1b33ffeb",
+"label": "버들항 던전 · 얼음 바위(서리 윗면) 천장 윗면 몸통",
+"description": "방 사이를 채우는 얼음 바위(서리 윗면) 윗면 오토타일(마스크 255). 막힘. 그룹 `beodeul_dungeon_ice_rock`. 바닥·벽 앞면과 닿는 쪽에 불규칙한 바위 윤곽.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"rock"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "89be02af262877ab2614d507",
+"origin": "gap.ice_rock/*/gap-ice-r5:A1@1b33ffeb",
+"label": "버들항 던전 · 얼음 바위(서리 윗면) 천장 윗면 몸통",
+"description": "방 사이를 채우는 얼음 바위(서리 윗면) 윗면 오토타일(마스크 255). 막힘. 그룹 `beodeul_dungeon_ice_rock`. 바닥·벽 앞면과 닿는 쪽에 불규칙한 바위 윤곽.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"rock"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "b5b9d9fe7d9bfbbf3627fdf1",
+"origin": "gap.ice_rock/*/gap-ice-r5:A1@1b33ffeb",
+"label": "버들항 던전 · 얼음 바위(서리 윗면) 천장 윗면 몸통",
+"description": "방 사이를 채우는 얼음 바위(서리 윗면) 윗면 오토타일(마스크 255). 막힘. 그룹 `beodeul_dungeon_ice_rock`. 바닥·벽 앞면과 닿는 쪽에 불규칙한 바위 윤곽.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"rock"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "01dd87ffbe6b1ad4d4f51487",
+"origin": "gap.ice_rock/*/gap-ice-r5:A1@1b33ffeb",
+"label": "버들항 던전 · 얼음 바위(서리 윗면) 천장 윗면 몸통",
+"description": "방 사이를 채우는 얼음 바위(서리 윗면) 윗면 오토타일(마스크 255). 막힘. 그룹 `beodeul_dungeon_ice_rock`. 바닥·벽 앞면과 닿는 쪽에 불규칙한 바위 윤곽.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"rock"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "1dbcff84a3f0f77cfe38c9ae",
+"origin": "gap.ice_rock/*/gap-ice-r5:A1@1b33ffeb",
+"label": "버들항 던전 · 얼음 바위(서리 윗면) 천장 윗면 몸통",
+"description": "방 사이를 채우는 얼음 바위(서리 윗면) 윗면 오토타일(마스크 255). 막힘. 그룹 `beodeul_dungeon_ice_rock`. 바닥·벽 앞면과 닿는 쪽에 불규칙한 바위 윤곽.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"rock"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "33b417b850ee43815d4f4a67",
+"origin": "gap.ice_rock/*/gap-ice-r5:A1@1b33ffeb",
+"label": "버들항 던전 · 얼음 바위(서리 윗면) 천장 윗면 몸통",
+"description": "방 사이를 채우는 얼음 바위(서리 윗면) 윗면 오토타일(마스크 255). 막힘. 그룹 `beodeul_dungeon_ice_rock`. 바닥·벽 앞면과 닿는 쪽에 불규칙한 바위 윤곽.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"rock"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "7fe6b23ce45365b3bd79df3f",
+"origin": "gap.ice_rock/*/gap-ice-r5:A1@1b33ffeb",
+"label": "버들항 던전 · 얼음 바위(서리 윗면) 앞면 윗단 서끝",
+"description": "얼음 바위(서리 윗면) 의 남쪽 벽 앞면 2단(윗단 = 천장 바로 밑, 아랫단 = 바닥에 닿음). 막힘.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"벽",
+"wall",
+"face",
+"rock"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "3047b0cac08a3852e24a04d9",
+"origin": "gap.ice_rock/*/gap-ice-r5:A1@1b33ffeb",
+"label": "버들항 던전 · 얼음 바위(서리 윗면) 앞면 윗단 가운데",
+"description": "얼음 바위(서리 윗면) 의 남쪽 벽 앞면 2단(윗단 = 천장 바로 밑, 아랫단 = 바닥에 닿음). 막힘.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"벽",
+"wall",
+"face",
+"rock"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "da142435cebb45516de469b7",
+"origin": "gap.ice_rock/*/gap-ice-r5:A1@1b33ffeb",
+"label": "버들항 던전 · 얼음 바위(서리 윗면) 앞면 윗단 동끝",
+"description": "얼음 바위(서리 윗면) 의 남쪽 벽 앞면 2단(윗단 = 천장 바로 밑, 아랫단 = 바닥에 닿음). 막힘.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"벽",
+"wall",
+"face",
+"rock"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "e74556a709109373d88a2af2",
+"origin": "gap.ice_rock/*/gap-ice-r5:A1@1b33ffeb",
+"label": "버들항 던전 · 얼음 바위(서리 윗면) 앞면 윗단 홑칸",
+"description": "얼음 바위(서리 윗면) 의 남쪽 벽 앞면 2단(윗단 = 천장 바로 밑, 아랫단 = 바닥에 닿음). 막힘.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"벽",
+"wall",
+"face",
+"rock"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "8123d4eaabd8e47d02d360ff",
+"origin": "gap.ice_rock/*/gap-ice-r5:A1@1b33ffeb",
+"label": "버들항 던전 · 얼음 바위(서리 윗면) 앞면 아랫단 서끝",
+"description": "얼음 바위(서리 윗면) 의 남쪽 벽 앞면 2단(윗단 = 천장 바로 밑, 아랫단 = 바닥에 닿음). 막힘.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"벽",
+"wall",
+"face",
+"rock"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "d315ade2b03c15c529716945",
+"origin": "gap.ice_rock/*/gap-ice-r5:A1@1b33ffeb",
+"label": "버들항 던전 · 얼음 바위(서리 윗면) 앞면 아랫단 가운데",
+"description": "얼음 바위(서리 윗면) 의 남쪽 벽 앞면 2단(윗단 = 천장 바로 밑, 아랫단 = 바닥에 닿음). 막힘.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"벽",
+"wall",
+"face",
+"rock"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "79507fff4473f0c17343701d",
+"origin": "gap.ice_rock/*/gap-ice-r5:A1@1b33ffeb",
+"label": "버들항 던전 · 얼음 바위(서리 윗면) 앞면 아랫단 동끝",
+"description": "얼음 바위(서리 윗면) 의 남쪽 벽 앞면 2단(윗단 = 천장 바로 밑, 아랫단 = 바닥에 닿음). 막힘.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"벽",
+"wall",
+"face",
+"rock"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "9a288db14d58ca0f86db0f21",
+"origin": "gap.ice_rock/*/gap-ice-r5:A1@1b33ffeb",
+"label": "버들항 던전 · 얼음 바위(서리 윗면) 앞면 아랫단 홑칸",
+"description": "얼음 바위(서리 윗면) 의 남쪽 벽 앞면 2단(윗단 = 천장 바로 밑, 아랫단 = 바닥에 닿음). 막힘.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"벽",
+"wall",
+"face",
+"rock"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "6f1af20b73d1833550df3f05",
+"origin": "gap.ice_rock/*/gap-ice-r5:A1@1b33ffeb",
+"label": "버들항 던전 · 얼음 바위(서리 윗면) 앞면 윗단 가운데 덩이 2/3",
+"description": "얼음 바위(서리 윗면) 의 남쪽 벽 앞면 가운데 칸 — 3칸 주기 덩이의 2번째 열. 막힘.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"벽",
+"wall",
+"face",
+"rock"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "7aa9aaaf4154360032536b7b",
+"origin": "gap.ice_rock/*/gap-ice-r5:A1@1b33ffeb",
+"label": "버들항 던전 · 얼음 바위(서리 윗면) 앞면 윗단 가운데 덩이 3/3",
+"description": "얼음 바위(서리 윗면) 의 남쪽 벽 앞면 가운데 칸 — 3칸 주기 덩이의 3번째 열. 막힘.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"벽",
+"wall",
+"face",
+"rock"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "fd3af8a144bc886d0f316437",
+"origin": "gap.ice_rock/*/gap-ice-r5:A1@1b33ffeb",
+"label": "버들항 던전 · 얼음 바위(서리 윗면) 앞면 아랫단 가운데 덩이 2/3",
+"description": "얼음 바위(서리 윗면) 의 남쪽 벽 앞면 가운데 칸 — 3칸 주기 덩이의 2번째 열. 막힘.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"벽",
+"wall",
+"face",
+"rock"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "d7c59ce2896c9e8743b0e57d",
+"origin": "gap.ice_rock/*/gap-ice-r5:A1@1b33ffeb",
+"label": "버들항 던전 · 얼음 바위(서리 윗면) 앞면 아랫단 가운데 덩이 3/3",
+"description": "얼음 바위(서리 윗면) 의 남쪽 벽 앞면 가운데 칸 — 3칸 주기 덩이의 3번째 열. 막힘.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"벽",
+"wall",
+"face",
+"rock"
+],
+"passage": "solid",
+"layer": "lower"
 }
 ],
 "defs": {
@@ -22405,6 +23527,394 @@ null,
 30737
 ]
 ]
+},
+"beodeul_dungeon_ice_rock": {
+"id": "beodeul_dungeon_ice_rock",
+"name": "버들항 던전 얼음 바위(서리 윗면)",
+"neighborhood": 8,
+"edgeConnects": true,
+"memberTileIds": [
+30742,
+30743,
+30744,
+30745,
+30746,
+30747,
+30748,
+30749,
+30750,
+30751,
+30752,
+30753,
+30754,
+30755,
+30756,
+30757,
+30758,
+30759,
+30760,
+30761,
+30762,
+30763,
+30764,
+30765,
+30766,
+30767,
+30768,
+30769,
+30770,
+30771,
+30772,
+30773,
+30774,
+30775,
+30776,
+30777,
+30778,
+30779,
+30780,
+30781,
+30782,
+30783,
+30784,
+30785,
+30786,
+30787,
+30788,
+30789,
+30790,
+30791,
+30792,
+30793,
+30794,
+30795
+],
+"connectTileIds": [
+30742,
+30743,
+30744,
+30745,
+30746,
+30747,
+30748,
+30749,
+30750,
+30751,
+30752,
+30753,
+30754,
+30755,
+30756,
+30757,
+30758,
+30759,
+30760,
+30761,
+30762,
+30763,
+30764,
+30765,
+30766,
+30767,
+30768,
+30769,
+30770,
+30771,
+30772,
+30773,
+30774,
+30775,
+30776,
+30777,
+30778,
+30779,
+30780,
+30781,
+30782,
+30783,
+30784,
+30785,
+30786,
+30787,
+30788,
+30789,
+30790,
+30791,
+30792,
+30793,
+30794,
+30795
+],
+"variantMap": {
+"0": 30742,
+"1": 30743,
+"2": 30744,
+"3": 30745,
+"4": 30746,
+"5": 30747,
+"6": 30748,
+"7": 30749,
+"8": 30750,
+"9": 30751,
+"10": 30752,
+"11": 30753,
+"12": 30754,
+"13": 30755,
+"14": 30756,
+"15": 30757,
+"16": 30742,
+"17": 30743,
+"18": 30744,
+"19": 30758,
+"20": 30746,
+"21": 30747,
+"22": 30748,
+"23": 30759,
+"24": 30750,
+"25": 30751,
+"26": 30752,
+"27": 30760,
+"28": 30754,
+"29": 30755,
+"30": 30756,
+"31": 30761,
+"32": 30742,
+"33": 30743,
+"34": 30744,
+"35": 30745,
+"36": 30746,
+"37": 30747,
+"38": 30762,
+"39": 30763,
+"40": 30750,
+"41": 30751,
+"42": 30752,
+"43": 30753,
+"44": 30754,
+"45": 30755,
+"46": 30764,
+"47": 30765,
+"48": 30742,
+"49": 30743,
+"50": 30744,
+"51": 30758,
+"52": 30746,
+"53": 30747,
+"54": 30762,
+"55": 30766,
+"56": 30750,
+"57": 30751,
+"58": 30752,
+"59": 30760,
+"60": 30754,
+"61": 30755,
+"62": 30764,
+"63": 30767,
+"64": 30742,
+"65": 30743,
+"66": 30744,
+"67": 30745,
+"68": 30746,
+"69": 30747,
+"70": 30748,
+"71": 30749,
+"72": 30750,
+"73": 30751,
+"74": 30752,
+"75": 30753,
+"76": 30768,
+"77": 30769,
+"78": 30770,
+"79": 30771,
+"80": 30742,
+"81": 30743,
+"82": 30744,
+"83": 30758,
+"84": 30746,
+"85": 30747,
+"86": 30748,
+"87": 30759,
+"88": 30750,
+"89": 30751,
+"90": 30752,
+"91": 30760,
+"92": 30768,
+"93": 30769,
+"94": 30770,
+"95": 30772,
+"96": 30742,
+"97": 30743,
+"98": 30744,
+"99": 30745,
+"100": 30746,
+"101": 30747,
+"102": 30762,
+"103": 30763,
+"104": 30750,
+"105": 30751,
+"106": 30752,
+"107": 30753,
+"108": 30768,
+"109": 30769,
+"110": 30773,
+"111": 30774,
+"112": 30742,
+"113": 30743,
+"114": 30744,
+"115": 30758,
+"116": 30746,
+"117": 30747,
+"118": 30762,
+"119": 30766,
+"120": 30750,
+"121": 30751,
+"122": 30752,
+"123": 30760,
+"124": 30768,
+"125": 30769,
+"126": 30773,
+"127": 30775,
+"128": 30742,
+"129": 30743,
+"130": 30744,
+"131": 30745,
+"132": 30746,
+"133": 30747,
+"134": 30748,
+"135": 30749,
+"136": 30750,
+"137": 30776,
+"138": 30752,
+"139": 30777,
+"140": 30754,
+"141": 30778,
+"142": 30756,
+"143": 30779,
+"144": 30742,
+"145": 30743,
+"146": 30744,
+"147": 30758,
+"148": 30746,
+"149": 30747,
+"150": 30748,
+"151": 30759,
+"152": 30750,
+"153": 30776,
+"154": 30752,
+"155": 30780,
+"156": 30754,
+"157": 30778,
+"158": 30756,
+"159": 30781,
+"160": 30742,
+"161": 30743,
+"162": 30744,
+"163": 30745,
+"164": 30746,
+"165": 30747,
+"166": 30762,
+"167": 30763,
+"168": 30750,
+"169": 30776,
+"170": 30752,
+"171": 30777,
+"172": 30754,
+"173": 30778,
+"174": 30764,
+"175": 30782,
+"176": 30742,
+"177": 30743,
+"178": 30744,
+"179": 30758,
+"180": 30746,
+"181": 30747,
+"182": 30762,
+"183": 30766,
+"184": 30750,
+"185": 30776,
+"186": 30752,
+"187": 30780,
+"188": 30754,
+"189": 30778,
+"190": 30764,
+"191": 30783,
+"192": 30742,
+"193": 30743,
+"194": 30744,
+"195": 30745,
+"196": 30746,
+"197": 30747,
+"198": 30748,
+"199": 30749,
+"200": 30750,
+"201": 30776,
+"202": 30752,
+"203": 30777,
+"204": 30768,
+"205": 30784,
+"206": 30770,
+"207": 30785,
+"208": 30742,
+"209": 30743,
+"210": 30744,
+"211": 30758,
+"212": 30746,
+"213": 30747,
+"214": 30748,
+"215": 30759,
+"216": 30750,
+"217": 30776,
+"218": 30752,
+"219": 30780,
+"220": 30768,
+"221": 30784,
+"222": 30770,
+"223": 30786,
+"224": 30742,
+"225": 30743,
+"226": 30744,
+"227": 30745,
+"228": 30746,
+"229": 30747,
+"230": 30762,
+"231": 30763,
+"232": 30750,
+"233": 30776,
+"234": 30752,
+"235": 30777,
+"236": 30768,
+"237": 30784,
+"238": 30773,
+"239": 30787,
+"240": 30742,
+"241": 30743,
+"242": 30744,
+"243": 30758,
+"244": 30746,
+"245": 30747,
+"246": 30762,
+"247": 30766,
+"248": 30750,
+"249": 30776,
+"250": 30752,
+"251": 30780,
+"252": 30768,
+"253": 30784,
+"254": 30773,
+"255": 30788
+},
+"interiorVariants": [
+[
+30788,
+30789,
+30790,
+30791,
+30792,
+30793,
+30794,
+30795
+]
+]
 }
 },
 "tileGroups": {
@@ -23374,6 +24884,84 @@ null,
 ],
 "description": "벽 레버 두 상태 — 키트 bd-dg-lever-up, bd-dg-lever-down. 하네스 gap-props-r1 A1.",
 "placementRules": "벽 앞면 아랫단(바닥 바로 위 줄)에 건다. 바로 남쪽 바닥 칸에서 조사한다."
+},
+"beodeul:dungeon_gap_ice-rock": {
+"id": "beodeul:dungeon_gap_ice-rock",
+"name": "버들항 던전 얼음 바위(서리 윗면)",
+"role": "wall",
+"source": "bundled-default",
+"defaultLayer": "lower",
+"confidence": "high",
+"tileIds": [
+30742,
+30743,
+30744,
+30745,
+30746,
+30747,
+30748,
+30749,
+30750,
+30751,
+30752,
+30753,
+30754,
+30755,
+30756,
+30757,
+30758,
+30759,
+30760,
+30761,
+30762,
+30763,
+30764,
+30765,
+30766,
+30767,
+30768,
+30769,
+30770,
+30771,
+30772,
+30773,
+30774,
+30775,
+30776,
+30777,
+30778,
+30779,
+30780,
+30781,
+30782,
+30783,
+30784,
+30785,
+30786,
+30787,
+30788,
+30789,
+30790,
+30791,
+30792,
+30793,
+30794,
+30795,
+30796,
+30797,
+30798,
+30799,
+30800,
+30801,
+30802,
+30803,
+30804,
+30805,
+30806,
+30807
+],
+"description": "검은 허공 대신 결 있는 얼음 바위(서리 윗면) 윗면 오토타일 `beodeul_dungeon_ice_rock` + 남쪽 앞면 2단(키트 `bd-dg-ice-rock-face`). 하네스 dungeon-chipset gap-ice-r5 A1.",
+"placementRules": "방·통로 바깥 칸을 오토타일로 칠하고(이웃이 같은 윗면이면 연결), 바닥 북쪽 변 위 두 줄은 앞면 키트. author_dungeon 이 저절로 쓴다."
 }
 },
 "structureKits": {
@@ -27213,6 +28801,163 @@ null,
 "동굴"
 ]
 }
+},
+"bd-dg-ice-rock-face": {
+"id": "bd-dg-ice-rock-face",
+"kind": "section",
+"name": "버들항 던전 · 얼음 바위(서리 윗면) 벽 앞면 3×2",
+"width": 3,
+"height": 2,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+30796,
+30797,
+30798
+],
+"upperTiles": [
+-1,
+-1,
+-1
+]
+},
+{
+"tiles": [
+30800,
+30801,
+30802
+],
+"upperTiles": [
+-1,
+-1,
+-1
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "얼음 바위(서리 윗면) 아래 남쪽 벽 앞면 2단 — 열 0 서끝(왼쪽 마구리) · 1 가운데(가로 반복) · 2 동끝. 윗면 오토타일 `beodeul_dungeon_ice_rock` 바로 밑에 놓는다.",
+"placementRules": "바닥 북쪽 변 바로 위 두 줄. 가로로 늘릴 때는 가운데 열을 반복하고 양 끝에 서끝·동끝. 한 칸 폭 벽은 face-single.",
+"tags": [
+"버들항",
+"던전",
+"벽",
+"앞면",
+"rock"
+],
+"role": "wall",
+"repeatability": "repeat",
+"layerHome": "lower",
+"themes": [
+"dungeon",
+"던전",
+"cave",
+"동굴"
+]
+}
+},
+"bd-dg-ice-rock-face-single": {
+"id": "bd-dg-ice-rock-face-single",
+"kind": "object",
+"name": "버들항 던전 · 얼음 바위(서리 윗면) 벽 앞면 한 칸 1×2",
+"width": 1,
+"height": 2,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+30799
+],
+"upperTiles": [
+-1
+]
+},
+{
+"tiles": [
+30803
+],
+"upperTiles": [
+-1
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "얼음 바위(서리 윗면) 앞면 2단의 홑칸(양쪽 마구리).",
+"placementRules": "양옆에 같은 줄 앞면이 없는 한 칸 폭 벽.",
+"tags": [
+"버들항",
+"던전",
+"벽",
+"앞면",
+"rock"
+],
+"role": "wall",
+"repeatability": "fixed",
+"layerHome": "lower",
+"themes": [
+"dungeon",
+"던전",
+"cave",
+"동굴"
+]
+}
+},
+"bd-dg-ice-rock-face-mid": {
+"id": "bd-dg-ice-rock-face-mid",
+"kind": "section",
+"name": "버들항 던전 · 얼음 바위(서리 윗면) 벽 앞면 가운데 덩이 3×2",
+"width": 3,
+"height": 2,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+30797,
+30804,
+30805
+],
+"upperTiles": [
+-1,
+-1,
+-1
+]
+},
+{
+"tiles": [
+30801,
+30806,
+30807
+],
+"upperTiles": [
+-1,
+-1,
+-1
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "얼음 바위(서리 윗면) 앞면 가운데 칸의 48px 덩이 — 열 (벽 줄 안 순번 % 3). 끝 마구리는 `bd-dg-ice-rock-face` 열 0·2.",
+"placementRules": "벽 줄 첫 칸(왼끝 마구리)부터 세어 가운데 칸 i 에 열 i % 3. 이 순서라야 마구리와 덩이가 이어진다.",
+"tags": [
+"버들항",
+"던전",
+"벽",
+"앞면",
+"rock"
+],
+"role": "wall",
+"repeatability": "repeat",
+"layerHome": "lower",
+"themes": [
+"dungeon",
+"던전",
+"cave",
+"동굴"
+]
+}
 }
 }
 },
@@ -27476,6 +29221,25 @@ null,
 "structureKits": [
 "bd-dg-lever-up",
 "bd-dg-lever-down"
+]
+}
+},
+"gap.ice_rock|*": {
+"round": "gap-ice-r5",
+"letter": "A1",
+"sha256": "1b33ffeb92571ee3d50024aa7209a155cb123740287fd5b4c3e7063cab8857a8",
+"gate": "pass",
+"defs": {
+"autotileGroups": [
+"beodeul_dungeon_ice_rock"
+],
+"tileGroups": [
+"beodeul:dungeon_gap_ice-rock"
+],
+"structureKits": [
+"bd-dg-ice-rock-face",
+"bd-dg-ice-rock-face-single",
+"bd-dg-ice-rock-face-mid"
 ]
 }
 }

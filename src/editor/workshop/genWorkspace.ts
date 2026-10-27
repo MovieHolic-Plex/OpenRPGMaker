@@ -330,10 +330,10 @@ function photoStep(showPack: (pack: LocalPack) => void): HTMLElement {
         const st = await hostGenStatus(jobId);
         if (st.state === "running") {
           const left = st.expectMs && st.elapsedMs !== undefined ? Math.max(1, Math.round((st.expectMs - st.elapsedMs) / 60000)) : 0;
-          setStatus(st.stage === "packing" ? "고른 캐릭터를 묶는 중…" : left ? `사진에 맞는 머리·몸을 고르고 색을 칠하는 중… (약 ${left}분 남음)` : "사진에 맞는 머리·몸을 고르고 색을 칠하는 중…");
+          setStatus(st.stage === "packing" ? "고른 캐릭터를 묶는 중…" : left ? `사진을 그림으로 옮기고 맞는 머리·몸을 고르는 중… (약 ${left}분 남음)` : "사진을 그림으로 옮기고 맞는 머리·몸을 고르는 중…");
           continue;
         }
-        if (st.state === "picking" && st.photoCandidates) { showCandidates(st.photoCandidates); start.disabled = !photo; return; }
+        if (st.state === "picking" && st.photoCandidates) { showCandidates(st.photoCandidates, st.photoPicture); start.disabled = !photo; return; }
         if (st.state === "done" && st.pack) {
           const pack = await packFromHost(st.pack, "사진으로 만들기");
           setStatus("묶었어요. 아래 「이 게임에 넣기」를 눌러 넣어요.", "is-done");
@@ -352,9 +352,16 @@ function photoStep(showPack: (pack: LocalPack) => void): HTMLElement {
     }
   };
 
-  const showCandidates = (list: readonly import("./oneClick/hostGen").HostPhotoCandidate[]): void => {
+  const showCandidates = (list: readonly import("./oneClick/hostGen").HostPhotoCandidate[], picture?: "photo" | "description" | "none"): void => {
     clearChildren(picks);
     setStatus(`후보 ${list.length}명이에요. 마음에 드는 하나를 골라 주세요. 눈이 자연스럽고 오류 없는 것이 앞에 있어요.`);
+    // 그림 없이 고른 후보는 덜 닮는다 — 왜 그런지, 어떻게 하면 나아지는지 사용자가 알게 한다.
+    const how = picture === "description"
+      ? "그림 도구가 이 사진을 그대로 그리지 않아서(유명인 사진 등), 사진 속 모습을 글로 옮겨 그린 그림으로 골랐어요."
+      : picture === "none"
+        ? "그림 도구가 없어 사진의 특징만 보고 골랐어요. 내 컴퓨터에 Codex CLI 를 설치하고 로그인하면 사진을 그림으로 옮겨 더 비슷하게 골라요."
+        : null;
+    if (how) picks.append(el("p", { class: "workshop-photo-note", text: how, dataset: { testid: "workshop-gen-photo-note", picture: picture ?? "" } }));
     for (const c of list) {
       const pick = el("button", {
         class: "workshop-primary", text: "이 캐릭터로", attrs: { type: "button" }, dataset: { testid: "workshop-gen-photo-pick", rank: String(c.rank) },

@@ -11,6 +11,7 @@ import {
 } from "@/project/aiPreviewContracts";
 import { combinedTownTileset as defaultTileset, defaultTilesets } from "@/project/defaults/defaultAssets";
 import { COMBINED_TOWN_TILESET_ID, COMBINED_TOWN_TILESET_TEXTURE_KEY } from "@/project/defaults/constants";
+import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 
 function firstNonDefaultTileset() {
   const tilesets = defaultTilesets();
@@ -307,7 +308,8 @@ describe("AI preview theme contracts", () => {
     expect(AI_PREVIEW_THEME_METADATA_PACKS.dungeon.bundledTextureIds).toEqual(["tex_easyrpg_chipset_dungeon"]);
     expect(AI_PREVIEW_THEME_METADATA_PACKS["interior-house"].bundledTextureIds).toEqual(["tex_easyrpg_chipset_interior"]);
 
-    const tilesets = defaultTilesets();
+    // 신뢰 팩은 지운 EasyRPG 던전·실내 시트의 정확한 텍스처를 요구한다 — 그 정의를 들고 있는 옛 저장본처럼 되살린다.
+    const { tilesets } = withRetiredEasyRpgTilesets({ tilesets: defaultTilesets() });
     const dungeon = evaluateThemeEligibility(tilesets.easyrpg_chipset_dungeon, "dungeon");
     const interior = evaluateThemeEligibility(tilesets.easyrpg_chipset_interior, "interior-house");
 

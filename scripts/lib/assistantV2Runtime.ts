@@ -2,12 +2,15 @@
 // 시스템 지시를 v2 카드로 바꾼다. v1 레지스트리 도구는 하나도 노출하지 않는다(options.toolNames 가 아무것도 고르지 않는다).
 // 켜는 곳: 편집기 ?assistant=v2 또는 localStorage oprn:assistant-v2=1 → 요청 assistantVersion:"v2" → 워커가 여기로 보낸다.
 import { createHash } from "node:crypto";
+import { PNG } from "pngjs";
+import { applyMapLighting, litShotNote, type LitShot } from "../../src/ai/v2/vqaLighting.ts";
+import type { GameMap, Project } from "../../src/project/types.ts";
 import { runPiAgent, type RunPiAgentOptions } from "./piAgentRuntime.ts";
 import type { PiAgentDoneEvent, PiAgentEvent, PiAgentRequest } from "../../src/ai/piAgent/protocol.ts";
 import { buildV2SystemPrompt } from "../../src/ai/v2/prompt.ts";
 import { createV2Tools, V2Session, v2FinishGate } from "../../src/ai/v2/verbs.ts";
 import { shipBlockers } from "../../src/ai/v2/shipChecks.ts";
-import { pickVqaReviewer, reviewVqaRound, vqaClean, vqaFixRetry, vqaFollowUp, vqaLeftoverInstruction, vqaShotPlan, vqaReviewerLabel, vqaShouldContinue, vqaSummary, wantsWholeGame, VQA_MAX_ROUNDS, type VqaReviewerPick, type VqaRound, type VqaShot } from "../../src/ai/v2/vqa.ts";
+import { reviewVqaRound, vqaReviewerCandidates, vqaClean, vqaFixBrief, vqaFixRetry, vqaFollowUp, vqaLeftoverInstruction, vqaShotPlan, vqaReviewerLabel, vqaShouldContinue, vqaSummary, wantsWholeGame, VQA_MAX_ROUNDS, type VqaReviewerPick, type VqaRound, type VqaShot } from "../../src/ai/v2/vqa.ts";
 import { familyOfProviderId } from "../../src/ai/assistantRoles.ts";
 import type { PiAssistantV2Env } from "../../src/ai/v2/env.ts";
 import { adviseTurn, advisorFollowUp, withShipBlockers, advisorSummary, compactToolLog, summarizeProjectDiff, type AdvisorToolCall, type AdvisorVerdict } from "../../src/ai/v2/advisor.ts";
@@ -29,22 +32,43 @@ const safeDiff = (env: PiAssistantV2Env): string => {
 const projectFingerprint = (project: unknown): string => { try { return createHash("sha256").update(JSON.stringify(project)).digest("hex"); } catch { return ""; } };
 const vqaEnabled = (request: PiAgentRequest): boolean => process.env.OPRN_V2_VQA !== "0" && !request.readOnly && wantsWholeGame(request.task);
 
+/** PNG dataURL 에 맵 조명을 입힌다. 해독·인코딩이 실패하면 undefined(원래 그림을 쓴다). */
+function litMapImage(dataUrl: string, map: GameMap, project: Project): { image: string; lit: LitShot } | undefined {
+  try {
+    const m = /^data:image\/png;base64,(.+)$/u.exec(dataUrl);
+    if (!m) return undefined;
+    const png = PNG.sync.read(Buffer.from(m[1]!, "base64"));
+    const lit = applyMapLighting(png.data, png.width, png.height, map, project);
+    if (!lit.applied) return undefined;
+    return { image: `data:image/png;base64,${PNG.sync.write(png).toString("base64")}`, lit };
+  } catch { return undefined; }
+}
+
 async function captureVqaShots(env: PiAssistantV2Env): Promise<{ shots: VqaShot[]; failed: string[] }> {
   const changed = new Set(Object.keys(env.ctx.project.maps).filter((id) => env.request.project.maps[id] !== env.ctx.project.maps[id]));
   const shots: VqaShot[] = [], failed: string[] = [];
   for (const item of vqaShotPlan(env.ctx.project, changed)) {
     try {
       let image: string | undefined;
+      let where = item.where;
       if (item.kind === "map" && item.ref && env.render) {
         const map = env.ctx.project.maps[item.ref]!;
         image = await env.render(item.ref, 0, 0, map.width, map.height);
+        // 맵 그림은 조명을 그리지 않는다 — 게임처럼 어둠·빛을 입혀 검수자가 실제 화면의 밝기를 보게 한다.
+        if (image && map.defaultLighting?.ambient) {
+          const lit = litMapImage(image, map, env.ctx.project);
+          if (lit) { image = lit.image; where = `${item.where}${litShotNote(lit.lit)}`; }
+          else where = `${item.where} — 조명을 입히지 못한 편집기 그림(게임에서는 어둠 ${map.defaultLighting.ambient})`;
+        }
       } else if (env.renderArt && item.shotId && item.atMs) image = await env.renderArt({ shotId: item.shotId, atMs: item.atMs });
       else if (env.renderArt && item.ref) image = await env.renderArt({ resourceId: item.ref });
-      if (image) shots.push({ where: item.where, kind: item.kind, ...(item.ref ? { ref: item.ref } : {}), image });
-      else failed.push(item.where);
+      if (image) shots.push({ where, kind: item.kind, ...(item.ref ? { ref: item.ref } : {}), image });
+      else failed.push(`${item.where}: 그릴 경로 없음`);
     } catch (error) {
       if (env.signal?.aborted) throw error;
-      failed.push(item.where);
+      // 왜 못 찍었는지 남긴다(2026-10-26 hf2-school-claude-j79: 타이틀 그림이 판마다 「못 찍음 1」로만 남았다 — 원인은 이 설치에 없는 오프닝 스틸 팩 그림).
+      const reason = error instanceof Error ? error.message : String(error);
+      failed.push(`${item.where}${item.ref ? `(${item.ref})` : ""}: ${reason.slice(0, 160)}`);
     }
   }
   return { shots, failed };
@@ -72,7 +96,8 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
   // 고치기 차례 감시: 고치기 지시를 낼 때의 도구 기록 길이. 다음 걸음에서 그대로면 그 차례는 도구 0회 — 판으로 세지 않는다.
   let fixFromCalls: number | undefined;
   let fixRetried = false;
-  let vqaReviewer: VqaReviewerPick | undefined;
+  let vqaCandidates: VqaReviewerPick[] | undefined;
+  let vqaCandidateIndex = 0;
   let vqaMs = 0;
   let vqaReviewedFingerprint: string | undefined;
   const runVqaRound = async (env: PiAssistantV2Env): Promise<VqaRound> => {
@@ -83,7 +108,9 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
       env.emit({ type: "execution_status", name: "v2.vqa", ok: false, summary: `화면 검수 못 함 — ${round.problem}`, data: round });
       return round;
     }
-    vqaReviewer ??= pickVqaReviewer({
+    // 검수자 후보(다른 계열 먼저, 같은 계열은 맨 뒤 — «같은 계열 검수»). 한 후보가 답하지 못하면(호출 실패·빈 답·JSON 없음) 같은 그림을 다음 후보에게.
+    // 답한 후보는 다음 판에도 그대로 쓴다. 검수를 말없이 건너뛰지 않는다 — 끝내 아무도 못 답하면 «검수 못 함» 판으로 남는다.
+    vqaCandidates ??= vqaReviewerCandidates({
       main: { provider: env.request.provider, model: env.request.model ?? "" },
       ...(env.request.roleModels?.vision ? { vision: env.request.roleModels.vision } : {}),
       ...(env.request.assistantRoles?.advisor && env.request.assistantRoles.advisor !== "off" ? { advisor: env.request.assistantRoles.advisor } : {}),
@@ -94,14 +121,29 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
     });
     const t0 = Date.now();
     const { shots, failed } = await captureVqaShots(env);
-    const reviewer = vqaReviewerLabel(vqaReviewer);
-    // 주 모델이 검수자일 때도 roleChat 으로 부른다 — Argon 이면 그림을 보는 high 별칭으로 가야 한다(sideChat 은 주 모델 강도 그대로).
-    const chat = env.roleChat ? (messages: readonly unknown[], signal?: AbortSignal) => env.roleChat!(vqaReviewer!, messages, signal) : env.sideChat;
-    const round = await reviewVqaRound({ task: env.request.task, shots, round: vqaRounds.length + 1, previous: vqaRounds.at(-1)?.defects ?? [], chat, reviewer, ...(env.signal ? { signal: env.signal } : {}) });
-    const withFailed: VqaRound = failed.length && !round.problem && !shots.length ? { ...round, problem: `그림을 찍지 못함: ${failed.join(", ")}` } : round;
+    const tried: string[] = [];
+    let round: VqaRound | undefined;
+    let reviewer = "-";
+    for (const [index, pick] of vqaCandidates.entries()) {
+      if (index < vqaCandidateIndex) continue;
+      reviewer = vqaReviewerLabel(pick);
+      // 주 모델이 검수자일 때도 roleChat 으로 부른다 — Argon 이면 그림을 보는 high 별칭으로 가야 한다(sideChat 은 주 모델 강도 그대로).
+      const chat = env.roleChat ? (messages: readonly unknown[], signal?: AbortSignal) => env.roleChat!(pick, messages, signal) : env.sideChat;
+      round = await reviewVqaRound({ task: env.request.task, shots, round: vqaRounds.length + 1, previous: vqaRounds.at(-1)?.defects ?? [], chat, reviewer, ...(env.signal ? { signal: env.signal } : {}) });
+      // 그림이 없는 판은 검수자 탓이 아니다 — 다음 후보로 넘기지 않는다.
+      if (!round.problem || !shots.length) { vqaCandidateIndex = index; break; }
+      tried.push(`${reviewer}: ${round.problem}`);
+      env.emit({ type: "execution_status", name: "v2.vqa.reviewer_fallback", ok: false, summary: `화면 검수자 ${reviewer} 가 답하지 못함(${round.problem}) — 다음 검수자로`, data: { reviewer, problem: round.problem } });
+      vqaCandidateIndex = index + 1;
+    }
+    // 모두 답하지 못한 판 뒤에는 다음 판에서 처음 후보부터 다시 시도한다(일시 장애일 수 있다).
+    if (vqaCandidateIndex >= vqaCandidates.length) vqaCandidateIndex = 0;
+    if (!round) round = { round: vqaRounds.length + 1, shots: [], defects: [], ms: 0, reviewer: "-", problem: "검수자 후보가 없음" };
+    else if (round.problem && tried.length > 1) round = { ...round, problem: `검수자 ${tried.length}명 모두 답하지 못함 — ${tried.join(" / ").slice(0, 400)}` };
+    const withFailed: VqaRound = failed.length && !round.problem && !shots.length ? { ...round, problem: `그림을 찍지 못함: ${failed.join(", ").slice(0, 400)}` } : round;
     vqaRounds.push(withFailed);
     vqaMs += Date.now() - t0;
-    env.emit({ type: "execution_status", name: "v2.vqa", ok: vqaClean(withFailed), summary: `화면 검수 ${withFailed.round}/${VQA_MAX_ROUNDS} · ${withFailed.problem ?? `결함 ${withFailed.defects.length}건`} · 그림 ${shots.length}장${failed.length ? ` (못 찍음 ${failed.length})` : ""} · ${reviewer} · ${Math.round((Date.now() - t0) / 1000)}초`,
+    env.emit({ type: "execution_status", name: "v2.vqa", ok: vqaClean(withFailed), summary: `화면 검수 ${withFailed.round}/${VQA_MAX_ROUNDS} · ${withFailed.problem ?? `결함 ${withFailed.defects.length}건`} · 그림 ${shots.length}장${failed.length ? ` (못 찍음 ${failed.length}: ${failed.join(" / ").slice(0, 300)})` : ""} · ${reviewer} · ${Math.round((Date.now() - t0) / 1000)}초`,
       data: { ...withFailed, failed } });
     return withFailed;
   };
@@ -116,7 +158,8 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
         fixRetried = true;
         env.emit({ type: "execution_status", name: "v2.vqa.fix_retry", ok: false, summary: `화면 검수 ${previous.round}/${VQA_MAX_ROUNDS} 고치기 차례에 도구 0회 — 판으로 세지 않고 결함 ${previous.defects.length}건을 다시 주며 도구 호출을 강제`, data: { round: previous.round, defects: previous.defects.length } });
         env.requireToolNextTurn?.();
-        return vqaFixRetry(previous);
+        env.freshContextNextTurn?.();
+        return vqaFixRetry(previous, vqaFixBrief(env.request.task, env.ctx.project, previous.defects, draft));
       }
       fixFromCalls = undefined;
       vqaPhase = "final-check";
@@ -136,8 +179,11 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
     const noRenderPath = !env.render && !env.renderArt;
     if (!noRenderPath && !vqaClean(round) && vqaShouldContinue(vqaRounds)) {
       // 검수 못 한 판(결함 0, problem)은 고칠 것이 없다 — 도구 강제·0회 감시는 결함이 있는 판에만.
-      if (round.defects.length) { fixFromCalls = calls.length; env.requireToolNextTurn?.(); }
-      return vqaFollowUp(round);
+      if (!round.defects.length) return vqaFollowUp(round);
+      fixFromCalls = calls.length;
+      env.requireToolNextTurn?.();
+      env.freshContextNextTurn?.();
+      return vqaFollowUp(round, vqaFixBrief(env.request.task, env.ctx.project, round.defects, draft), vqaRounds.at(-2));
     }
     // 결함이 남은 채 끝나면 조수가 최종 보고에 남은 목록을 쓰게 한 번 더 돌린다(고치지 말고 정직하게). 그 보고는 검토자가 실제 변경에 대어 본다.
     if (vqaClean(round)) { vqaPhase = "done"; return undefined; }

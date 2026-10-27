@@ -446,6 +446,23 @@ export function createBattleSequencer(
       : `${withJosa(fallen.name, "이/가")} 쓰러졌다!`;
   }
 
+  /** HP 를 깎는 타격. 독·화상·맹독·혼란 자해·모래바람·싸라기눈은 damage 가 아니라 stateUpkeep 이다. */
+  function entryDealsHp(entry: BattleTimelineEntrySnapshot | undefined): entry is BattleTimelineEntrySnapshot {
+    return Boolean(entry?.targetId) && (entry?.amount ?? 0) > 0 && (entry?.kind === "damage" || entry?.kind === "stateUpkeep");
+  }
+
+  /** 선고는 자기 문장에 이미 「쓰러졌다」가 있다. 격파 대사를 한 번 더 붙이지 않는다. */
+  function upkeepAnnouncesFaint(entry: BattleTimelineEntrySnapshot): boolean {
+    return entry.kind === "stateUpkeep" && Boolean(entry.message?.includes("쓰러"));
+  }
+
+  /** 이 위치 뒤에 아직 재생할 타격·회복·빗나감·잔여 피해가 있는가. 결판 도장은 그게 끝난 뒤에 찍는다. */
+  function laterBattleStrike(entries: readonly BattleTimelineEntrySnapshot[], from: number): boolean {
+    return entries.slice(from).some((later) =>
+      later.kind === "damage" || later.kind === "healing" || later.kind === "miss"
+      || (later.kind === "stateUpkeep" && (later.amount ?? 0) > 0));
+  }
+
   /** 이 엔트리가 대상을 쓰러뜨린 마지막 유효타면 그 대상(표시 이름·편). 아니면 undefined. */
   function fallenTarget(
     entries: readonly BattleTimelineEntrySnapshot[],
@@ -453,7 +470,7 @@ export function createBattleSequencer(
     snapshot: BattleSnapshot,
   ): { readonly target: Parameters<typeof emeraldFaintLine>[0]; readonly name: string; readonly isEnemy: boolean } | undefined {
     const entry = entries[index];
-    if (entry.kind !== "damage" || !entry.targetId || (entry.amount ?? 0) <= 0) return undefined;
+    if (!entryDealsHp(entry) || upkeepAnnouncesFaint(entry)) return undefined;
     const departed = snapshot.departedEnemies?.find((enemy) => enemy.id === entry.targetId);
     const target = snapshot.enemies.find((enemy) => enemy.id === entry.targetId)
       ?? departed
@@ -463,7 +480,7 @@ export function createBattleSequencer(
     if (!target?.defeated) return undefined;
     for (let i = index + 1; i < entries.length; i += 1) {
       const later = entries[i];
-      if (later.targetId === entry.targetId && later.kind === "damage" && (later.amount ?? 0) > 0) return undefined;
+      if (later?.targetId === entry.targetId && entryDealsHp(later)) return undefined;
     }
     const isEnemy = Boolean(departed) || snapshot.enemies.some((enemy) => enemy.id === entry.targetId);
     const peers = isEnemy ? snapshot.enemies : snapshot.actors;
@@ -515,8 +532,20 @@ export function createBattleSequencer(
     const resultEntry = resultFromTimeline(entry);
     // 상태 엔트리는 userRecordId·targetId 를 들고 있어 resultEntry 가 만들어진다 — 예전에는 그래서
     // enemyActionDirectorState 로 떨어져 「발키리의 공격! 효과가 충분하지 않았다.」로 읽혔다(2026-09-29 실측).
+    // 상태만 치료한 약의 첫 엔트리는 stateRemoved 다. 명령 대사가 그 줄을 통째로 바꾸면
+    // 「독이 풀렸다」가 사라진다. 레트로 한 줄 창은 둘째 줄을 숨기므로, 선언과 상태 문장을
+    // 한 배열에 넣지 않고 이어서 읽힌다. 피해·회복 문장이 이미 있으면 명령 대사가 그 엔트리를 차지한다.
+    const statusAfterCommand = (firstDirector && entryOffset === firstDirectorIndex && (entry.kind === "stateAdded" || entry.kind === "stateRemoved"))
+      ? (() => {
+        const kept = firstDirector.lines.filter((line) => line && line !== "효과가 충분하지 않았다.");
+        if (kept.length > 1) return undefined;
+        const status = timelineDirectorState(entry, snapshot).lines.filter(Boolean);
+        if (status.length === 0) return undefined;
+        return { declaration: kept.slice(0, 1), status };
+      })()
+      : undefined;
     const rawDirector = (firstDirector && entryOffset === firstDirectorIndex)
-      ? firstDirector
+      ? (statusAfterCommand ? { ...firstDirector, lines: statusAfterCommand.declaration } : firstDirector)
       : actionEntryDirectorState(entry, snapshot)
         // 적 교체 엔트리도 userRecordId·targetId 가 있어 「○○의 공격!」으로 읽혔다 — 교체 문장으로.
         ?? (STATE_ENTRY_KINDS.has(entry.kind) || entry.kind === "switch" ? timelineDirectorState(entry, snapshot)
@@ -574,6 +603,20 @@ export function createBattleSequencer(
     }
     const visual = entry.kind === "damage" || entry.kind === "healing" || entry.kind === "miss"
       || entry.kind === "action" || entry.kind === "capture" || entry.kind === "stateUpkeep" || entry.kind === "stateRecovery";
+    if (statusAfterCommand) {
+      hooks.onDirectorState(directorBase);
+      hooks.onSyncView();
+      const statusPopup = entry.kind === "stateAdded" && entry.targetId
+        ? { targetId: entry.targetId, amount: 0, critical: false, healing: false, label: stateLabel(entry.stateId) }
+        : undefined;
+      delay(() => {
+        hooks.onDirectorState({ step: "acting", lines: [...statusAfterCommand.status], targetId: entry.targetId });
+        if (statusPopup) hooks.onDamageFeedback(statusPopup);
+        hooks.onSyncView();
+        delay(() => { if (statusPopup) hooks.onDamageFeedback(undefined); continueNext(); }, BATTLE_STATE_LINE_MS);
+      }, BATTLE_LOG_MS);
+      return;
+    }
     if (entry.kind === "stateAdded" && entry.targetId) {
       // 상태 이름이 대상 위에 숫자 팝업처럼 잠깐 떠오른다(표시 전용 label 피드백).
       hooks.onDirectorState(directorBase);
@@ -629,8 +672,7 @@ export function createBattleSequencer(
     // 결판을 내는 막타: 뒤에 남은 피해·회복·빗나감 엔트리가 없고 결과가 이미 정해졌으면, 격파 대사와
     // 동시에 결과 도장을 찍고 대사 체류를 줄인다 — 대사 660ms + 결과 홀드 900ms 동안 빈 필드만
     // 보였다(2026-09-25 녹화). finishTurn 의 onResultPending 은 같은 결과면 표시 계층이 무시한다.
-    const decisive = Boolean(killLine && snapshot.result && !entries.slice(entryOffset + 1)
-      .some((later) => later.kind === "damage" || later.kind === "healing" || later.kind === "miss"));
+    const decisive = Boolean(killLine && snapshot.result && !laterBattleStrike(entries, entryOffset + 1));
     const afterBeats = killLine
       ? (): void => {
         hooks.onActionMotion?.(undefined);
@@ -819,8 +861,7 @@ export function createBattleSequencer(
       const allies = fallen.filter((row) => !row.isEnemy).map((row) => row.name);
       if (enemies.length) lines.push(`${withJosa(enemies.join(", "), "을/를")} 쓰러뜨렸다!`);
       if (allies.length) lines.push(`${withJosa(allies.join(", "), "이/가")} 쓰러졌다!`);
-      const decisive = Boolean(lines.length && snapshot.result && !entries.slice(group.end)
-        .some((later) => later.kind === "damage" || later.kind === "healing" || later.kind === "miss"));
+      const decisive = Boolean(lines.length && snapshot.result && !laterBattleStrike(entries, group.end));
       // 이 광역기로 쓰러진 대상의 상태 변화(걸림→죽어서 풀림)는 말하지 않는다 — 「쓰러뜨렸다」 뒤에 「민첩이 내려갔다/풀렸다」가 붙었다(2026-10-24 실측).
       const fallenIds = new Set(fallen.map((row) => row.target.id));
       const toStates = (): void => {
@@ -1037,7 +1078,23 @@ export function createBattleSequencer(
     if (target && adds.every((stateId) => target.stateIds.includes(stateId))) {
       return { failLine: `${withJosa(name, "은/는")} 이미 ${stateLabel(adds[0])} 상태다.` };
     }
+    // 주요 상태는 하나만 걸린다. 화상에 걸린 대상에게 마비가 막히면 「효과가 없었다」는
+    // 기술이 빗나간 것처럼 읽힌다 — 이미 있는 상태 이름을 말한다. 피해 기술의 부가 실패는
+    // 이 함수에 들어오지 않는다(action·피해 0 보조 기술만).
+    const occupied = target ? occupiedMajorStatusName(adds, target.stateIds) : undefined;
+    if (occupied) return { failLine: `${withJosa(name, "은/는")} 이미 ${occupied} 상태다.` };
     return { failLine: `${name}에게는 효과가 없었다.` };
+  }
+
+  /** 걸려고 한 상태 중 주요 상태가 있고, 대상에 다른 주요 상태가 이미 있으면 그 이름. */
+  function occupiedMajorStatusName(adds: readonly string[], stateIds: readonly string[]): string | undefined {
+    const byId = new Map(store.getCurrent().database.states.map((state) => [state.id, state]));
+    if (!adds.some((stateId) => byId.get(stateId)?.gen1MajorStatus)) return undefined;
+    for (const stateId of stateIds) {
+      const state = byId.get(stateId);
+      if (state?.gen1MajorStatus && !adds.includes(stateId)) return state.name;
+    }
+    return undefined;
   }
 
   /** 능력치 단계 변화(statStage)가 실린 special 엔트리의 문장 — 에메랄드 문장 규칙이면 「상대/야생 이름」을 쓴다. 아니면 undefined. */

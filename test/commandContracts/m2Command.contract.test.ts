@@ -10,6 +10,7 @@ import {
 import type { Command, M2CommandFields } from "@/project/types";
 import type { ContractRunOptions, ContractRunResult } from "./harness";
 import { CONTRACT_EVENT_ID, runCommandContract } from "./harness";
+import { HIDE_SHOW_SCREEN_FADE_MS } from "@/player/interpreter/screenEffectPlan";
 
 type M2Command = Extract<Command, { kind: "m2Command" }>;
 type MapSemanticContract = {
@@ -45,8 +46,14 @@ const MAP_FULL_CONTRACTS: readonly MapSemanticContract[] = [
   contract("m2-043-get-event-id", { variableId: "event_result", x: 1, y: 1 }, (result) => {
     expect(result.session.variables.event_result).toBe(1);
   }),
-  contract("m2-044-hide-screen", {}, (result) => expect(result.session.m2Runtime?.screen.hidden).toBe(true)),
-  contract("m2-045-show-screen", {}, (result) => expect(result.session.m2Runtime?.screen.hidden).toBe(false)),
+  contract("m2-044-hide-screen", {}, (result) => {
+    expect(result.session.m2Runtime?.screen.hidden).toBe(true);
+    expect(result.pauses).toContainEqual({ kind: "wait", ms: HIDE_SHOW_SCREEN_FADE_MS });
+  }),
+  contract("m2-045-show-screen", {}, (result) => {
+    expect(result.session.m2Runtime?.screen.hidden).toBe(false);
+    expect(result.pauses).toContainEqual({ kind: "wait", ms: HIDE_SHOW_SCREEN_FADE_MS });
+  }),
   contract("m2-078-open-menu-screen", {}, pauseContract("openMenuScreen")),
   contract("m2-093-open-load-menu", {}, pauseContract("openLoadMenu")),
   contract("m2-205-pathfind-move", { target: "this-event", x: 8, y: 7, speed: 3, wait: false }, (result) => {
@@ -132,6 +139,13 @@ const MAP_FULL_CONTRACTS: readonly MapSemanticContract[] = [
   }),
   contract("m2-225-sprite-look", { target: "this-event", eventId: "", reset: false, pose: "fallen", tint: "keep", tintHex: "", tintFill: "keep", flip: "keep", afterimage: "keep", angle: "", opacity: "" }, (result) => {
     expect(result.pauses).toContainEqual(expect.objectContaining({ kind: "spriteLook", target: { kind: "event", eventId: CONTRACT_EVENT_ID } }));
+  }),
+  // 승강기 타기·일지 한 줄(Fallen Star 1.22, #3509)도 맵 문맥 full 명령이다.
+  contract("m2-226-lift-ride", { mode: "depart", direction: "up", distance: 5, durationMs: 3000, x: 2, y: 3, width: 2, depth: 2, se: "", wait: true }, (result) => {
+    expect(result.pauses).toContainEqual(expect.objectContaining({ kind: "liftRide" }));
+  }),
+  contract("m2-227-journal-line", { action: "write", lineId: "oath", writer: "리아", date: "1일", text: "별이 떨어졌다." }, (result) => {
+    expect(result.session.storyJournal).toContainEqual(expect.objectContaining({ id: "oath", text: "별이 떨어졌다.", state: "normal" }));
   }),
 ];
 

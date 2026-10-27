@@ -176,14 +176,15 @@ describe("DB write tools", () => {
 
   // 추리 도그푸딩 gen: 지어낸 배경 id 가 커밋 게이트에서 변경 전체(제목·음악 포함)를 되돌렸다 — 호출 시점에 짚는다.
   it("set_title_screen rejects an unknown background id at call time with real candidates", () => {
+    // EasyRPG 타이틀 그림(easyrpg-title-*)은 2026-10-07 저작권 정리로 지웠다 — 지금 번들 타이틀(oprn-title-*)로 잰다.
     const ctx: ToolContext = { project: createBlankProject() };
-    const bad = runTool(ctx, "set_title_screen", { title: "안개 저택", backgroundResourceId: "easyrpg-title-nope-1" }, { dryRun: false });
+    const bad = runTool(ctx, "set_title_screen", { title: "안개 저택", backgroundResourceId: "oprn-title-nope-1" }, { dryRun: false });
     expect(bad.ok).toBe(false);
     const message = JSON.stringify(bad.issues);
     expect(message).toContain("없는 리소스");
     expect(message).toContain("list_resources");
-    expect(message).toMatch(/easyrpg-title-title\d/u);
-    expect(runTool(ctx, "set_title_screen", { title: "안개 저택", backgroundResourceId: "easyrpg-title-title2" }, { dryRun: false }).ok).toBe(true);
+    expect(message).toMatch(/비슷한 실제 id: oprn-title-(?!nope)/u);
+    expect(runTool(ctx, "set_title_screen", { title: "안개 저택", backgroundResourceId: "oprn-title-blue" }, { dryRun: false }).ok).toBe(true);
   });
 
   it("set_title_screen creates titleScreen when missing and nested-merges sounds/titleGraphic", () => {
@@ -194,7 +195,7 @@ describe("DB write tools", () => {
       title: "신규 타이틀",
       menuLabels: { quit: "닫기" },
       sounds: { confirmSeResourceId: "easyrpg-sound-decision1" },
-      titleGraphic: { mode: "both", resourceId: "easyrpg-title-title1", x: 40, y: 20 },
+      titleGraphic: { mode: "both", resourceId: "oprn-title-bright", x: 40, y: 20 },
     }, { dryRun: false });
     expect(created.ok, JSON.stringify(created.issues)).toBe(true);
     expect(ctx.project.system.titleScreen?.title).toBe("신규 타이틀");
@@ -203,7 +204,7 @@ describe("DB write tools", () => {
     expect(ctx.project.system.titleScreen?.sounds).toEqual({ confirmSeResourceId: "easyrpg-sound-decision1" });
     expect(ctx.project.system.titleScreen?.titleGraphic).toEqual({
       mode: "both",
-      resourceId: "easyrpg-title-title1",
+      resourceId: "oprn-title-bright",
       x: 40,
       y: 20,
     });
@@ -212,7 +213,7 @@ describe("DB write tools", () => {
       title: "신규 타이틀",
       sounds: { cursorSeResourceId: "easyrpg-sound-cursor1" },
       titleGraphic: { y: 88 },
-      backgroundResourceId: "easyrpg-title-title2",
+      backgroundResourceId: "oprn-title-blue",
     }, { dryRun: false });
     expect(merged.ok, JSON.stringify(merged.issues)).toBe(true);
     expect(ctx.project.system.titleScreen?.sounds).toEqual({
@@ -221,24 +222,25 @@ describe("DB write tools", () => {
     });
     expect(ctx.project.system.titleScreen?.titleGraphic).toEqual({
       mode: "both",
-      resourceId: "easyrpg-title-title1",
+      resourceId: "oprn-title-bright",
       x: 40,
       y: 88,
     });
-    expect(ctx.project.system.titleScreen?.backgroundResourceId).toBe("easyrpg-title-title2");
+    expect(ctx.project.system.titleScreen?.backgroundResourceId).toBe("oprn-title-blue");
     // background must not clear system.titleResourceId
     expect(ctx.project.system.titleResourceId).toBeDefined();
   });
 
   it("set_type_chart는 제거된 타입을 가리키는 기존 전투 참조를 경고와 함께 정리한다", () => {
     const ctx: ToolContext = { project: createBlankProject() };
-    ctx.project.system.typeChart = { types: ["grass"], multipliers: { grass: { grass: 1 } } };
+    // "grass" 는 이제 기본 DB 속성(defaultElementRecords, #2603)이라 정리 대상이 아니다 — 차트에만 있던 타입은 DB 에 없는 id 로 잰다.
+    ctx.project.system.typeChart = { types: ["moss"], multipliers: { moss: { moss: 1 } } };
     const skill = ctx.project.database.skills[0]!;
     const item = ctx.project.database.items[0]!;
     const equipment = ctx.project.database.equipment[0]!;
-    skill.elementId = "grass";
-    item.equipmentProfile.attackElementIds = ["grass"];
-    equipment.elementalDefenseIds = ["grass"];
+    skill.elementId = "moss";
+    item.equipmentProfile.attackElementIds = ["moss"];
+    equipment.elementalDefenseIds = ["moss"];
 
     const result = runTool(ctx, "set_type_chart", {
       types: ["fire", "ice", "lightning"],
@@ -256,9 +258,9 @@ describe("DB write tools", () => {
     expect(ctx.project.database.equipment[0]?.elementalDefenseIds).toEqual([]);
     const warnings = result.diff?.warnings.join("\n") ?? "";
     expect(warnings).toMatch(/기존 속성 참조 \d+건/);
-    expect(warnings).toContain(`skill ${skill.id}.elementId=grass`);
-    expect(warnings).toContain(`item ${item.id}.attackElementIds=grass`);
-    expect(warnings).toContain(`equipment ${equipment.id}.elementalDefenseIds=grass`);
+    expect(warnings).toContain(`skill ${skill.id}.elementId=moss`);
+    expect(warnings).toContain(`item ${item.id}.attackElementIds=moss`);
+    expect(warnings).toContain(`equipment ${equipment.id}.elementalDefenseIds=moss`);
   });
 
   // 2026-09-03 실측(DB AI 바 턴): 모델이 조회 없이 skill_0001·item_0001 자리표시 id 를 넣자 일반 무결성

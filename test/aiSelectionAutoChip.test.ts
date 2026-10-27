@@ -8,7 +8,7 @@ import { findByTestId, installFakeDom, type FakeElement } from "./fakeDom";
 describe("selection auto chip", () => {
   let restore: () => void;
   beforeEach(() => {
-    restore = installFakeDom();
+    restore = installFakeDom({ window: true });
     store.replace(createBlankProject());
     editorState.set({ selection: null, currentMapId: store.getCurrent().startMapId });
     document.body.append(renderAiChatPanel());

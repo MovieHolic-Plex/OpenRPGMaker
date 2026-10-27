@@ -388,6 +388,18 @@ export function sampleAnimaticTrack(keys: AnimaticKey[] | undefined, atMs: numbe
   }
   return keys[keys.length - 1].value;
 }
+/**
+ * Camera axis in stage pixels. A value inside ±25% of the stage at 0 ms is a centre-relative
+ * offset (small pans such as y: 0 → 30). That choice is fixed for the whole shot. Recentering
+ * each sample only while it stayed inside the band made a pan jump by half the stage the moment
+ * it crossed the line. An axis that starts outside the band is a world coordinate throughout,
+ * including while the pan passes through the centre.
+ */
+export function resolveAnimaticCameraAxis(sampled: number, keys: AnimaticKey[] | undefined, fallback: number, span: number): number {
+  const origin = sampleAnimaticTrack(keys, 0, fallback);
+  if (Math.abs(origin) <= span * 0.25) return sampled + span / 2;
+  return sampled;
+}
 /** Seeded intensity multiplier shared by shafts and glows. Pure function of time. */
 export function animaticPulseValue(pulse: AnimaticPulse | undefined, atMs: number, startMs = 0): number {
   if (!pulse) return 1;

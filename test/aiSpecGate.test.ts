@@ -3,7 +3,7 @@
 // - 남은 것은 기존 구조물 보호 하나: 기준선 맵의 구조물·물·절벽은 confirmDestroy / overExisting 선언 없이 덮지 않는다.
 // - 검증기(validateBuildSpec)와 영역 추출(affectedRegions)은 그대로 결정적이다.
 // - 3회 거부·자동 확장·plannedMap 불일치·밑그림 없음 차단은 더 이상 없다(PR #892 후속 코멘트 실측).
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { AssistantSession, METADATA_ONLY_TOOLS } from "@/ai/assistantSession";
 import {
   SPATIAL_BUILD_TOOLS,
@@ -16,6 +16,13 @@ import {
 } from "@/ai/buildSpec";
 import { runTool } from "@/editor/tools";
 import { createBlankProject } from "@/project/defaults";
+import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
+import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
+
+// Tests here build the ~63MB blank project (createBlankProject) and drive assistant sessions or editor
+// panels over it, fingerprinting/copying it per session. Under ci-full load (8 workers on 4-core runners)
+// single tests measured 10-50s, past vitest's 15s default, so the budget is raised for this file only.
+vi.setConfig({ testTimeout: 120_000 });
 
 type ChatResult = import("@/ai/llmClient").ChatResult;
 
@@ -39,17 +46,20 @@ function finalMsg(text: string): ChatResult {
 }
 
 // authMode 는 AiConfig 필수 필드다 — 빠뜨리면 이 상수를 쓰는 모든 세션 생성 지점이 타입 에러가 된다.
+const SPEC_TOOL_ARGS = { id: "m1", name: "스펙 테스트", width: 20, height: 20 };
 const CONFIG = { authMode: "apiKey" as const, baseUrl: "x", model: "stub-model", apiKey: "sk", maxToolCalls: 12, maxTokens: 8192 };
 
 // 20×20 맵 m1이 있는 프로젝트.
+// m1 은 은퇴한 합본 마을 칩셋 위에 둔다: 시험이 쓰는 타일 240(풀밭)·build_house 는 합본 마을 것이고, 지금 기본인 beodeul_city 에서
+// 240 은 벽이며 참고문서 선행 읽기 관문(tilesetReferenceEvidence)이 스펙 게이트보다 먼저 쓰기를 막는다. 조수 실행은 EasyRPG 계열
+// create_map 을 거부하므로(2026-10-06) 맵은 세션 밖에서 미리 만든다.
 function projectWithMap() {
-  const ctx = { project: createBlankProject() };
-  const created = runTool(ctx, "create_map", { id: "m1", name: "스펙 테스트", width: 20, height: 20 });
+  const ctx = { project: withRetiredEasyRpgTilesets(createBlankProject()) };
+  const created = runTool(ctx, "create_map", { ...SPEC_TOOL_ARGS, tilesetId: COMBINED_TOWN_TILESET_ID });
   expect(created.ok).toBe(true);
   return ctx.project;
 }
 
-const SPEC_TOOL_ARGS = { id: "m1", name: "스펙 테스트", width: 20, height: 20 };
 
 describe("buildSpec 검증기(결정적)", () => {
   it("planned new-map descriptor supplies synthetic dimensions before map creation", () => {
@@ -103,6 +113,31 @@ describe("buildSpec 검증기(결정적)", () => {
     } as unknown as BuildSpec;
     const issues = validateBuildSpec(project, spec);
     expect(issues.filter((issue) => issue.severity === "error")).toEqual([]);
+  });
+
+  it("plannedMap 폭·높이도 숫자 문자열을 정수로 읽어 합성 경계로 쓴다", () => {
+    const project = createBlankProject();
+    const accepted = validateBuildSpec(project, {
+      mapId: "planned_village",
+      plannedMap: { mapId: "planned_village", width: "24", height: " 20 " },
+      assets: [{ id: "마을", kind: "village", x: "2", y: "2", w: "20", h: "16" }],
+    } as unknown as BuildSpec);
+    expect(accepted.filter((issue) => issue.severity === "error")).toEqual([]);
+
+    const tooSmall = validateBuildSpec(project, {
+      mapId: "planned_village",
+      plannedMap: { mapId: "planned_village", width: "10", height: "10" },
+      assets: [{ id: "마을", kind: "village", x: 2, y: 2, w: 20, h: 16 }],
+    } as unknown as BuildSpec);
+    expect(tooSmall.some((issue) => issue.severity === "error" && issue.message.includes("10×10"))).toBe(true);
+    expect(tooSmall.some((issue) => issue.message.includes("1 이상의 정수"))).toBe(false);
+
+    const grown = validateBuildSpec(projectWithMap(), {
+      mapId: "m1",
+      plannedMap: { mapId: "m1", width: "40", height: "30" },
+      assets: [{ id: "집E", kind: "house", x: 22, y: 22, w: 6, h: 6 }],
+    } as unknown as BuildSpec);
+    expect(grown.filter((issue) => issue.severity === "error")).toEqual([]);
   });
 
   it("같은 층(lower) 에셋 겹침은 error — 두 id를 모두 언급", () => {
@@ -172,33 +207,7 @@ describe("buildSpec 검증기(결정적)", () => {
 });
 
 describe("affectedRegions — 툴 인자에서 영향 영역 추출", () => {
-  it("canonical house/village nested targets resolve exact map regions", () => {
-    // Given: canonical single/lots house requests and existing/new village targets.
-    const single = affectedRegions("author_house", {
-      kind: "single", mapId: "m1", wings: [{ x: 2, y: 3, w: 7, h: 6 }],
-    });
-    const lots = affectedRegions("author_house", {
-      kind: "lots", mapId: "m1", houses: [{ wings: [{ x: 10, y: 4, w: 6, h: 5 }] }],
-    });
-    const existing = affectedRegions("author_village", {
-      target: { kind: "existing", mapId: "m1", bounds: { x: 3, y: 4, w: 12, h: 10 } },
-    });
-    const planned = affectedRegions("author_village", {
-      target: { kind: "new", mapId: "m2", name: "새 마을", width: 30, height: 28, plannedMap: { mapId: "m2", width: 30, height: 28 } },
-    });
-
-    // When/Then: nested map identity and synthetic dimensions are preserved.
-    expect(single).toEqual([
-      { mapId: "m1", x: 2, y: 3, w: 7, h: 6 },
-      { mapId: "m1", x: 5, y: 9, w: 1, h: 1 },
-    ]);
-    expect(lots).toEqual([
-      { mapId: "m1", x: 10, y: 4, w: 6, h: 5 },
-      { mapId: "m1", x: 10, y: 9, w: 6, h: 3 },
-    ]);
-    expect(existing).toEqual([{ mapId: "m1", x: 3, y: 4, w: 12, h: 10 }]);
-    expect(planned).toEqual([{ mapId: "m2", x: 0, y: 0, w: 30, h: 28 }]);
-  });
+  // Removed it "canonical house/village nested targets resolve": author_house and author_village were removed from the tool registry on purpose (affectedRegions no longer has their argument shapes).
 
   it("paint_tiles rect(from/to), cells, build_house(width/height), place_npc(1×1), paint_road(points)", () => {
     expect(affectedRegions("paint_tiles", { mapId: "m1", from: { x: 3, y: 4 }, to: { x: 5, y: 6 } }))
@@ -213,25 +222,7 @@ describe("affectedRegions — 툴 인자에서 영향 영역 추출", () => {
       .toEqual([{ mapId: "m1", x: 0, y: 9, w: 1, h: 1 }, { mapId: "m1", x: 19, y: 9, w: 1, h: 1 }]);
   });
 
-  it("author_house wings는 합집합 bounding rect가 아니라 날개별 영역과 문 앞 1칸으로 추출한다", () => {
-    expect(affectedRegions("author_house", {
-      kind: "single",
-      mapId: "m1",
-      kitId: "blue-stone",
-      interior: "exterior-only",
-      door: true,
-      yard: [],
-      wings: [
-        { x: 2, y: 2, w: 5, h: 5 },
-        { x: 9, y: 2, w: 5, h: 5 },
-      ],
-    })).toEqual([
-      { mapId: "m1", x: 2, y: 2, w: 5, h: 5 },
-      { mapId: "m1", x: 4, y: 7, w: 1, h: 1 },
-      { mapId: "m1", x: 9, y: 2, w: 5, h: 5 },
-      { mapId: "m1", x: 11, y: 7, w: 1, h: 1 },
-    ]);
-  });
+  // Removed it "author_house wings는 합집합 bounding rect가": author_house was removed from the tool registry on purpose (affectedRegions no longer has its argument shape).
 
   it("regionsCoveredBySpec — 영역 밖 셀 수와 예시 좌표", () => {
     const assets = [{ id: "집A", kind: "house", x: 2, y: 2, w: 6, h: 6 }];
@@ -257,54 +248,23 @@ describe("implicitSpecFromContext — 사용자 선택 영역은 암묵적 명�
   });
 });
 
-describe("세션 스펙 게이트", () => {
-  it("plannedMap 불일치는 더 이상 게이트가 아니다 — 빌더가 자기 인자를 검증한다", async () => {
-    // Given: a valid synthetic BuildSpec followed by a mismatched canonical new-map target.
-    const chat = scriptedChat([
-      toolCallMsg("set_build_spec", {
-        mapId: "planned_village",
-        plannedMap: { mapId: "planned_village", width: 24, height: 20 },
-        assets: [{ id: "마을", kind: "village", x: 0, y: 0, w: 24, h: 20 }],
-      }, "c1"),
-      toolCallMsg("author_village", {
-        target: {
-          kind: "new", mapId: "planned_village", name: "새 마을", width: 25, height: 20,
-          plannedMap: { mapId: "planned_village", width: 25, height: 20 },
-        },
-        houseCount: 2,
-        countPolicy: "exact",
-      }, "c2"),
-      finalMsg("대상 크기를 다시 맞추겠습니다."),
-    ]);
-    const session = new AssistantSession(createBlankProject(), { config: CONFIG, chat });
-    const events: Array<{ name: string; ok: boolean; summary: string }> = [];
-
-    // When: the mismatched canonical call reaches the session gate.
-    await session.sendUserMessage("새 마을 만들어줘", (event) => {
-      if (event.type === "tool_call") events.push({ name: event.name, ok: event.result.ok, summary: event.result.summary });
-    });
-
-    // Then: the session gate does not intervene; whatever happens is the builder's own verdict.
-    const village = events.find((event) => event.name === "author_village");
-    expect(village).toBeDefined();
-    expect(village?.summary).not.toContain("스펙 게이트");
-    expect(village?.summary).not.toContain("plannedMap 불일치");
-  });
+// 세션 케이스는 프로젝트 전체를 몇 번씩 복제·검사해 호스티드 러너에서 7~17초 걸린다(CI 40281674433·40289940108) — 설정 기본 15초가
+// 아니라 aiAssistantSession 세션 테스트와 같은 30초 예산을 준다.
+describe("세션 스펙 게이트", { timeout: 30_000 }, () => {
+  // Removed it "plannedMap 불일치는 더 이상 게이트가 아니다": author_village was removed from the tool registry on purpose.
 
   it("스펙 없이 공간 툴 호출 → 그대로 실행된다(밑그림 없음은 차단 사유가 아니다)", async () => {
     expect(SPATIAL_BUILD_TOOLS.has("build_house")).toBe(true);
     expect(SPATIAL_BUILD_TOOLS.has("create_map")).toBe(false);
     const chat = scriptedChat([
-      toolCallMsg("create_map", SPEC_TOOL_ARGS, "c1"),
       toolCallMsg("build_house", { mapId: "m1", x: 2, y: 2, width: 6, height: 7, material: "plaster" }, "c2"),
       finalMsg("밑그림이 필요합니다."),
     ]);
-    const session = new AssistantSession(createBlankProject(), { config: CONFIG, chat });
+    const session = new AssistantSession(projectWithMap(), { config: CONFIG, chat });
     const events: { name: string; ok: boolean; summary: string }[] = [];
     await session.sendUserMessage("야외 집 지어줘", (e) => {
       if (e.type === "tool_call") events.push({ name: e.name, ok: e.result.ok, summary: e.result.summary });
     });
-    expect(events.find((e) => e.name === "create_map")!.ok).toBe(true);
     const house = events.find((e) => e.name === "build_house")!;
     expect(house.ok).toBe(true);
     expect(house.summary).not.toContain("스펙 게이트");
@@ -358,13 +318,12 @@ describe("세션 스펙 게이트", () => {
       ],
     };
     const chat = scriptedChat([
-      toolCallMsg("create_map", SPEC_TOOL_ARGS, "c1"),
       toolCallMsg("set_build_spec", badSpec, "c2"),
       toolCallMsg("set_build_spec", goodSpec, "c3"),
       toolCallMsg("paint_tiles", { mapId: "m1", from: { x: 3, y: 3 }, to: { x: 5, y: 5 }, mode: "rect", layer: "lower", tile: 240 }, "c4"),
       finalMsg("집A 자리를 준비했습니다."),
     ]);
-    const session = new AssistantSession(createBlankProject(), { config: CONFIG, chat });
+    const session = new AssistantSession(projectWithMap(), { config: CONFIG, chat });
     const events: { name: string; ok: boolean }[] = [];
     const result = await session.sendUserMessage("마을 만들어줘", (e) => {
       if (e.type === "tool_call") events.push({ name: e.name, ok: e.result.ok });
@@ -372,18 +331,17 @@ describe("세션 스펙 게이트", () => {
     expect(events.filter((e) => e.name === "set_build_spec").map((e) => e.ok)).toEqual([false, true]);
     expect(events.find((e) => e.name === "paint_tiles")!.ok).toBe(true);
     // 스펙 자체는 프로젝트 변경이 아니므로 제안에 포함되지 않는다.
-    expect(result.proposedCalls.map((c) => c.name).sort()).toEqual(["create_map", "paint_tiles"]);
+    expect(result.proposedCalls.map((c) => c.name).sort()).toEqual(["paint_tiles"]);
     expect(session.getActiveSpec()?.assets.length).toBe(2);
   });
 
   it("할당 영역 밖 빈 영역 빌드는 차단하지 않고 경고 없이 통과한다", async () => {
     const chat = scriptedChat([
-      toolCallMsg("create_map", SPEC_TOOL_ARGS, "c1"),
       toolCallMsg("set_build_spec", { mapId: "m1", assets: [{ id: "집A", kind: "house", x: 2, y: 2, w: 6, h: 6 }] }, "c2"),
       toolCallMsg("paint_tiles", { mapId: "m1", from: { x: 15, y: 15 }, to: { x: 16, y: 16 }, mode: "rect", layer: "lower", tile: 240 }, "c3"),
       finalMsg("명세를 넓혀 칠했습니다."),
     ]);
-    const session = new AssistantSession(createBlankProject(), { config: CONFIG, chat });
+    const session = new AssistantSession(projectWithMap(), { config: CONFIG, chat });
     const events: { name: string; ok: boolean; summary: string }[] = [];
     await session.sendUserMessage("야외 집 지어줘", (e) => {
       if (e.type === "tool_call") events.push({ name: e.name, ok: e.result.ok, summary: e.result.summary });
@@ -396,12 +354,11 @@ describe("세션 스펙 게이트", () => {
 
   it("할당 영역 동쪽 +1칸 초과는 경고 없이 통과", async () => {
     const chat = scriptedChat([
-      toolCallMsg("create_map", SPEC_TOOL_ARGS, "c1"),
       toolCallMsg("set_build_spec", { mapId: "m1", assets: [{ id: "집A", kind: "house", x: 2, y: 2, w: 6, h: 6 }] }, "c2"),
       toolCallMsg("paint_tiles", { mapId: "m1", from: { x: 6, y: 3 }, to: { x: 8, y: 3 }, mode: "rect", layer: "lower", tile: 240 }, "c3"),
       finalMsg("경계 근처까지 칠했습니다."),
     ]);
-    const session = new AssistantSession(createBlankProject(), { config: CONFIG, chat });
+    const session = new AssistantSession(projectWithMap(), { config: CONFIG, chat });
     const events: Array<{ name: string; ok: boolean; issues?: Array<{ severity: string; code: string; message: string }>; warnings?: string[] }> = [];
     await session.sendUserMessage("야외 집 지어줘", (e) => {
       if (e.type === "tool_call") {
@@ -420,12 +377,11 @@ describe("세션 스펙 게이트", () => {
 
   it("할당 영역 동쪽 +2칸 초과도 경고 없이 통과", async () => {
     const chat = scriptedChat([
-      toolCallMsg("create_map", SPEC_TOOL_ARGS, "c1"),
       toolCallMsg("set_build_spec", { mapId: "m1", assets: [{ id: "길", kind: "road", x: 2, y: 2, w: 6, h: 6 }] }, "c2"),
       toolCallMsg("paint_tiles", { mapId: "m1", from: { x: 6, y: 4 }, to: { x: 9, y: 4 }, mode: "rect", layer: "lower", tile: 240 }, "c3"),
       finalMsg("길을 조금 넓혔습니다."),
     ]);
-    const session = new AssistantSession(createBlankProject(), { config: CONFIG, chat });
+    const session = new AssistantSession(projectWithMap(), { config: CONFIG, chat });
     const events: Array<{ name: string; ok: boolean; issues?: Array<{ severity: string; code: string; message: string }> }> = [];
     await session.sendUserMessage("길 칠해줘", (e) => {
       if (e.type === "tool_call") {
@@ -443,12 +399,11 @@ describe("세션 스펙 게이트", () => {
 
   it("할당 영역 동쪽 +3칸 초과도 빈 영역이면 경고 없이 통과", async () => {
     const chat = scriptedChat([
-      toolCallMsg("create_map", SPEC_TOOL_ARGS, "c1"),
       toolCallMsg("set_build_spec", { mapId: "m1", assets: [{ id: "길", kind: "road", x: 2, y: 2, w: 6, h: 6 }] }, "c2"),
       toolCallMsg("paint_tiles", { mapId: "m1", from: { x: 7, y: 4 }, to: { x: 10, y: 4 }, mode: "rect", layer: "lower", tile: 240 }, "c3"),
       finalMsg("명세를 넓혀 칠했습니다."),
     ]);
-    const session = new AssistantSession(createBlankProject(), { config: CONFIG, chat });
+    const session = new AssistantSession(projectWithMap(), { config: CONFIG, chat });
     const events: Array<{ name: string; ok: boolean; summary: string; issues?: Array<{ message: string }> }> = [];
     await session.sendUserMessage("길 칠해줘", (e) => {
       if (e.type === "tool_call") {
@@ -547,37 +502,11 @@ describe("세션 스펙 게이트", () => {
     expect(events[0]?.issues?.some((issue) => issue.code === "spec-gate-auto-expand")).toBeFalsy();
   });
 
-  it("16×16 맵에서 스펙과 동일한 3개 wings author_house는 bounding rect 오차단 없이 통과한다", async () => {
-    const spec = {
-      mapId: "m1",
-      title: "작은 집 3채",
-      assets: [
-        { id: "house1", kind: "house", x: 2, y: 2, w: 5, h: 5 },
-        { id: "house2", kind: "house", x: 9, y: 2, w: 5, h: 5 },
-        { id: "house3", kind: "house", x: 2, y: 9, w: 5, h: 5 },
-      ],
-    };
-    const wings = spec.assets.map(({ x, y, w, h }) => ({ x, y, w, h }));
-    const chat = scriptedChat([
-      toolCallMsg("create_map", { id: "m1", name: "작은 맵", width: 16, height: 16 }, "c1"),
-      toolCallMsg("set_build_spec", spec, "c2"),
-      toolCallMsg("author_house", { kind: "lots", mapId: "m1", seed: 1, houses: wings.map((wing) => ({ kitId: "blue-stone", wings: [wing], interior: "exterior-only", door: true, yard: [] })) }, "c3"),
-      finalMsg("집 3채를 배치했습니다."),
-    ]);
-    const session = new AssistantSession(createBlankProject(), { config: CONFIG, chat });
-    const events: Array<{ name: string; ok: boolean; summary: string }> = [];
-    await session.sendUserMessage("작은 야외 집 3개 만들어줘", (e) => {
-      if (e.type === "tool_call") events.push({ name: e.name, ok: e.result.ok, summary: e.result.summary });
-    });
-    const house = events.find((event) => event.name === "author_house")!;
-    expect(house.ok, house.summary).toBe(true);
-    expect(house.summary).not.toContain("할당 영역 밖");
-  });
+  // Removed it "16×16 맵에서 스펙과 동일한 3개 wings author_house": author_house was removed from the tool registry on purpose.
 
   it("밑그림 밖이라도 기존 구조물 위 쓰기는 차단된다 — 남은 유일한 게이트", async () => {
     const project = (() => {
-      const ctx = { project: createBlankProject() };
-      expect(runTool(ctx, "create_map", { id: "m1", name: "t", width: 20, height: 20 }).ok).toBe(true);
+      const ctx = { project: projectWithMap() };
       expect(runTool(ctx, "build_house", { mapId: "m1", origin: { x: 3, y: 3 }, width: 6, height: 7, material: "plaster", naturalness: 0 }).ok).toBe(true);
       return ctx.project;
     })();
@@ -600,7 +529,6 @@ describe("세션 스펙 게이트", () => {
   it("스펙 검증 3회 실패 → 폐기 안내는 남지만 공간 툴은 실행된다(밑그림은 선택 사항)", async () => {
     const bad = { mapId: "m1", assets: [{ id: "a", kind: "house", x: 18, y: 18, w: 9, h: 9 }] };
     const chat = scriptedChat([
-      toolCallMsg("create_map", SPEC_TOOL_ARGS, "c1"),
       toolCallMsg("set_build_spec", bad, "c2"),
       toolCallMsg("set_build_spec", bad, "c3"),
       toolCallMsg("set_build_spec", bad, "c4"),
@@ -608,7 +536,7 @@ describe("세션 스펙 게이트", () => {
       toolCallMsg("paint_tiles", { mapId: "m1", from: { x: 1, y: 1 }, to: { x: 2, y: 2 }, mode: "rect", layer: "lower", tile: 240 }, "c6"),
       finalMsg("어디에 지을지 알려주세요. [선택지] 영역 지정 | 중단"),
     ]);
-    const session = new AssistantSession(createBlankProject(), { config: CONFIG, chat });
+    const session = new AssistantSession(projectWithMap(), { config: CONFIG, chat });
     const events: { name: string; ok: boolean; summary: string }[] = [];
     await session.sendUserMessage("집?", (e) => {
       if (e.type === "tool_call") events.push({ name: e.name, ok: e.result.ok, summary: e.result.summary });
@@ -638,8 +566,7 @@ describe("세션 스펙 게이트", () => {
 // clear 에셋이 기존 구조물(집 등 지어진 타일)을 덮으면 confirmDestroy 없이는 거부한다.
 describe("스펙 게이트 — 구조물 보호(집 삭제 방지)", () => {
   function projectWithHouse() {
-    const ctx = { project: createBlankProject() };
-    expect(runTool(ctx, "create_map", { id: "m1", name: "t", width: 20, height: 20 }).ok).toBe(true);
+    const ctx = { project: projectWithMap() };
     // 집 (3,3) 6×7 → 점유 x∈[3,9), y∈[3,10)
     expect(runTool(ctx, "build_house", { mapId: "m1", origin: { x: 3, y: 3 }, width: 6, height: 7, material: "plaster", naturalness: 0 }).ok).toBe(true);
     return ctx.project;

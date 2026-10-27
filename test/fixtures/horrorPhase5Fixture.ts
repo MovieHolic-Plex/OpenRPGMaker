@@ -1,6 +1,7 @@
 import { charsetFrameIndex } from "@/assets/easyrpgRtp";
 import { createBlankProject, TILE } from "@/project/defaults";
 import type { Command, EventPage, GameEvent, GameMap, Project } from "@/project/types";
+import { startOnRetiredCombinedTown } from "../support/retiredEasyRpgTilesets";
 
 export const PHASE5_MAP_ID = "map_phase5_chase_demo";
 export const PHASE5_CHASER_ID = "ev_phase5_chaser";
@@ -10,7 +11,8 @@ export const PHASE5_FOLLOWER_EVENT_ID = "ev_phase5_add_follower";
 const PASSIVE: EventPage["movement"] = { type: "fixed", speed: 3, frequency: 3 };
 
 export function createHorrorPhase5Fixture(): Project {
-  const project = createBlankProject();
+  // 바닥·벽을 TILE.*(합본 마을 번호)로 깐다 — 2026-10-07 정리 뒤 기본이 beodeul_city 라 시작 맵을 합본 마을에 둔다.
+  const project = startOnRetiredCombinedTown(createBlankProject());
   const map = project.maps[project.startMapId];
   map.id = PHASE5_MAP_ID;
   map.name = "추격자 복도 데모";

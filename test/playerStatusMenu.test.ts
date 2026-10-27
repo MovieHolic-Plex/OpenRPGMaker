@@ -3,7 +3,7 @@ import { renderPlayerStatusMenu } from "@/player/playerStatusMenu";
 import { createBlankProject, DEFAULT_EQUIPMENT_ID } from "@/project/defaults";
 import { startSession } from "@/project/session";
 import { useItemFromMenu, type MenuItemUseResult } from "@/player/playerItemUse";
-import type { SaveSlotReadResult } from "@/player/saveSlots";
+import { createSaveSnapshot, type SaveSlotReadResult } from "@/player/saveSlots";
 import type { PlayerStatusMenuActions } from "@/player/playerStatusMenuTypes";
 import { findByTestId, installFakeDom, renderWithFakeDom } from "./fakeDom";
 
@@ -69,7 +69,8 @@ describe("player status menu", () => {
         renderPlayerStatusMenu({ project, session, slots: [], actions: noopActions }),
       );
 
-      expect(findByTestId(menu, "status-menu-time")?.textContent).toBe("6:31");
+      // 시계는 시:분(h:mm)이다(#3296 formatPlayClock) — 391초는 0시간 6분.
+      expect(findByTestId(menu, "status-menu-time")?.textContent).toBe("0:06");
     } finally {
       restoreDom();
     }
@@ -126,6 +127,56 @@ describe("player status menu", () => {
       const slot = findByTestId(menu, "save-slot-1");
       expect(slot?.textContent).toContain("비어 있음");
       expect(slot?.className).toContain("selected");
+    } finally {
+      restoreDom();
+    }
+  });
+
+  it("shows the level and save clock on every filled slot, and the full date on the selected one", () => {
+    const restoreDom = installFakeDom();
+    try {
+      const project = createBlankProject();
+      const session = startSession(project);
+      const older = {
+        ...createSaveSnapshot(project, session),
+        savedAt: new Date(2026, 7, 14, 5, 5).toISOString(),
+        mapName: "폐등대 창고",
+        partyLevel: 12,
+        playTimeSeconds: 18_000,
+      };
+      const newer = {
+        ...createSaveSnapshot(project, session),
+        savedAt: new Date(2026, 9, 27, 5, 40).toISOString(),
+        mapName: "안개 항구 마을",
+        partyLevel: 4,
+        playTimeSeconds: 900,
+      };
+      const slots: SaveSlotReadResult[] = [
+        { kind: "present", slot: 1, snapshot: newer },
+        { kind: "present", slot: 2, snapshot: older },
+        { kind: "empty", slot: 3 },
+      ];
+      const menu = renderWithFakeDom(() =>
+        renderPlayerStatusMenu({
+          project,
+          session,
+          slots,
+          selectedCommand: "save",
+          mode: "function",
+          selectedDetailActionIndex: 0,
+          actions: noopActions,
+        }),
+      );
+
+      const first = findByTestId(menu, "save-slot-1");
+      const second = findByTestId(menu, "save-slot-2");
+      expect(first?.querySelector(".status-menu-detail-value")?.textContent).toBe("저장됨 · L4 · 10/27 05:40");
+      expect(second?.querySelector(".status-menu-detail-value")?.textContent).toBe("저장됨 · L12 · 08/14 05:05");
+      const detail = findByTestId(menu, "status-menu-showcase-description")?.textContent ?? "";
+      expect(detail).toContain("안개 항구 마을");
+      expect(detail).toContain("15:00");
+      expect(detail).toContain("2026.10.27 05:40");
+      expect(detail).not.toContain("폐등대 창고");
     } finally {
       restoreDom();
     }
@@ -563,6 +614,102 @@ describe("player status menu", () => {
 
       expect(replace).toHaveBeenCalledWith("monster_pending", pendingSkill.id, oldSkill.id);
       expect(reject).toHaveBeenCalledWith("monster_pending", pendingSkill.id);
+    } finally {
+      restoreDom();
+    }
+  });
+
+  it("lists a loadable autosave above the manual slots and keeps it off the save screen", () => {
+    const restoreDom = installFakeDom();
+    try {
+      const project = createBlankProject();
+      project.system.menuUiStyle = "workbench";
+      const session = startSession(project);
+      const snapshot = {
+        ...createSaveSnapshot(project, session),
+        savedBy: "auto" as const,
+        autosaveTrigger: "transfer" as const,
+      };
+      const slots: SaveSlotReadResult[] = [
+        { kind: "empty", slot: 1 },
+        { kind: "empty", slot: 2 },
+        { kind: "empty", slot: 3 },
+      ];
+      const onLoadAutosave = vi.fn();
+      const menu = renderWithFakeDom(() => renderPlayerStatusMenu({
+        project,
+        session,
+        slots,
+        autosave: { kind: "present", snapshot },
+        selectedCommand: "load",
+        mode: "function",
+        actions: { ...noopActions, onLoadAutosave },
+      }));
+      const auto = findByTestId(menu, "load-slot-auto");
+      expect(auto?.textContent).toContain("자동 저장");
+      expect(auto?.getAttribute("aria-label")).toContain("맵 이동");
+      auto?.click();
+      expect(onLoadAutosave).toHaveBeenCalledOnce();
+      expect(findByTestId(menu, "load-slot-1")).not.toBeNull();
+
+      const saveMenu = renderWithFakeDom(() => renderPlayerStatusMenu({
+        project,
+        session,
+        slots,
+        autosave: { kind: "present", snapshot },
+        selectedCommand: "save",
+        mode: "function",
+        actions: { ...noopActions, onLoadAutosave },
+      }));
+      expect(findByTestId(saveMenu, "load-slot-auto")).toBeNull();
+
+      const corrupt = renderWithFakeDom(() => renderPlayerStatusMenu({
+        project,
+        session,
+        slots,
+        autosave: { kind: "corrupt", message: "Invalid switches" },
+        selectedCommand: "load",
+        mode: "function",
+        actions: { ...noopActions, onLoadAutosave },
+      }));
+      const corruptRow = findByTestId(corrupt, "load-slot-auto");
+      expect(corruptRow?.textContent).toContain("손상됨");
+      expect(corruptRow?.textContent).toContain("Invalid switches");
+      corruptRow?.click();
+      expect(onLoadAutosave).toHaveBeenCalledOnce();
+
+      const blocked = renderWithFakeDom(() => renderPlayerStatusMenu({
+        project,
+        session,
+        slots,
+        autosave: {
+          kind: "present",
+          snapshot: {
+            ...snapshot,
+            autosaveTrigger: "battleVictory",
+            session: { ...snapshot.session, currentMapId: "missing-map" },
+          },
+        },
+        selectedCommand: "load",
+        mode: "function",
+        actions: { ...noopActions, onLoadAutosave },
+      }));
+      const blockedRow = findByTestId(blocked, "load-slot-auto");
+      expect(blockedRow?.textContent).toContain("이어서 할 수 없음");
+      expect(blockedRow?.textContent).toContain("저장 당시의 맵이 이 프로젝트에 없습니다");
+      blockedRow?.click();
+      expect(onLoadAutosave).toHaveBeenCalledOnce();
+
+      const empty = renderWithFakeDom(() => renderPlayerStatusMenu({
+        project,
+        session,
+        slots,
+        autosave: { kind: "empty" },
+        selectedCommand: "load",
+        mode: "function",
+        actions: noopActions,
+      }));
+      expect(findByTestId(empty, "load-slot-auto")).toBeNull();
     } finally {
       restoreDom();
     }

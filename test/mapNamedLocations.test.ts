@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
-import { TILE } from "@/project/defaults/constants";
+import { DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
+import { blankFillTileFor } from "@/project/defaults/defaultMaps";
+
+// 로케이션 계약은 칩셋과 무관하다 — 현재 기본 칩셋(버들항)의 빈 풀밭 위에서 잰다. 합본 마을은 2026-10-07 정리로 새 프로젝트에서 빠졌다.
+const GROUND = blankFillTileFor(DEFAULT_TILESET_ID);
 import { deserialize, serialize } from "@/project/io";
 import { projectLint } from "@/project/lint/projectLint";
 import { cloneGameMap } from "@/project/mapClone";
@@ -38,9 +42,9 @@ function projectWithMap(width = 20, height = 20, layoutPlan?: MapLayoutPlan): Pr
     name: "로케이션 맵",
     width,
     height,
-    tilesetId: "easyrpg_chipset_combined_town",
+    tilesetId: DEFAULT_TILESET_ID,
     tileSize: 16,
-    lowerTiles: new Array(width * height).fill(TILE.GRASS),
+    lowerTiles: new Array(width * height).fill(GROUND),
     upperTiles: new Array(width * height).fill(TILE.EMPTY),
     events: [],
     ...(layoutPlan ? { layoutPlan } : {}),
@@ -155,7 +159,7 @@ describe("map named locations — map resize, shift and copy", () => {
 
     map.width = 8;
     map.height = 8;
-    map.lowerTiles = new Array(64).fill(TILE.GRASS);
+    map.lowerTiles = new Array(64).fill(GROUND);
     map.upperTiles = new Array(64).fill(TILE.EMPTY);
     const codes = projectLint(project).map((issue) => issue.code);
     expect(codes).toContain("map-location-degenerate");

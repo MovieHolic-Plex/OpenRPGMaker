@@ -19,6 +19,14 @@ const ROW = "button, [role='menuitem'], [role='option'], [role='button'], li, .r
  * 그 안의 목록(아이템 쓰기·장비 바꾸기 등 되돌리기 어려운 결정)은 여전히 첫 탭 = 커서, 두 번째 = 결정이다.
  */
 const EXCLUDE = "[role='tab'], .touch-pad, .name-entry-overlay, [data-testid='dialogue-log'], [data-testid='dialogue-backlog'], input, textarea, select, .play-fullscreen-toggle, .status-menu-command-rail";
+/** 고르면 바로 여는 줄 무리(EXCLUDE 안이지만 눌림 영역 넓히기는 받는다). */
+const ONE_TAP = ".status-menu-command-rail";
+/** 눌림 영역을 넓히지 않는 곳 — EXCLUDE 에서 한 번 탭 줄(ONE_TAP)만 뺀 것. */
+const NO_SNAP = EXCLUDE.split(", ").filter((selector) => selector !== ONE_TAP).join(", ");
+/** 줄 밖 탭을 줄로 받아 주는 거리(화면 px). 줄 둘레 22px — 혼자 선 줄이면 어느 방향이든 44px 이상이다. */
+const SNAP_REACH = 22;
+/** 떠 있는 동안 맵이 탭을 받지 않는 창(touchTap BUSY 와 같은 무리). */
+const MODAL_WINDOW = ".choices-active, [data-testid='main-menu'], .runtime-shop-overlay, [data-testid='battle-scene']";
 const MAX_STEPS = 40;
 const DOWN_TO_CLICK_MS = 1500;
 
@@ -40,6 +48,61 @@ export function findListRow(target: EventTarget | null, root: Element): Element 
     if (group.length >= 2 && group.some((row) => row.matches(MARK))) return el;
   }
   return null;
+}
+
+/** 줄 무리에 드는가: 같은 태그 형제 줄 둘 이상이고 선택 표시가 있거나, 한 번 탭 무리(ESC 메뉴 명령 줄)다. */
+function isSnapRow(row: Element): boolean {
+  if (row.closest(NO_SNAP)) return false;
+  const group = siblingsOf(row);
+  return group.length >= 2 && (group.some((candidate) => candidate.matches(MARK)) || row.closest(ONE_TAP) !== null);
+}
+
+/** 그 자리에 실제로 보이는 줄인가(스크롤·잘림·덮임으로 가려진 줄은 받지 않는다). */
+function visibleAt(row: Element, x: number, y: number): boolean {
+  const hit = row.ownerDocument.elementFromPoint(x, y);
+  return hit !== null && (hit === row || row.contains(hit));
+}
+
+/**
+ * 손가락 눌림 영역(2026-10-27): 그려진 줄은 PC 와 같게 두고, 줄 사이·줄 끝·창 여백을 탭해도 가장 가까운 줄이 받는다.
+ * 탭한 요소가 그 줄을 품은 바탕(목록·창·무대)일 때만이다 — 다른 단추·설명 칸 위 탭은 그대로 그 요소의 것이다.
+ * 맵 위 탭은 메뉴·선택지·상점·전투 창이 떠 있을 때(맵이 탭을 안 받을 때)만 그 창 줄로 받는다.
+ * 줄에서 SNAP_REACH 안이어야 하고, 여럿이면 가장 가까운 줄이다. 줄 위를 직접 탭하면 그 줄(브라우저 기본)이다.
+ */
+export function snapRowAt(root: Element, target: EventTarget | null, x: number, y: number): Element | null {
+  if (!(target instanceof Element) || !root.contains(target)) return null;
+  if (target.closest(NO_SNAP) || target.closest(`${ROW}, a, label, summary`)) return null;
+  // 맵(캔버스) 위 탭은 창이 떠 있어 맵이 탭을 받지 않을 때만 창 가장자리 줄로 받는다 — 선택지 창은 둘레 여백이 거의 없다.
+  const onMap = target.matches("canvas, .phaser-container");
+  let best: Element | null = null;
+  let bestDistance = Infinity;
+  for (const row of root.querySelectorAll(ROW)) {
+    if (onMap ? !row.closest(MODAL_WINDOW) : !target.contains(row)) continue;
+    const box = row.getBoundingClientRect();
+    if (box.width <= 0 || box.height <= 0) continue;
+    const dx = Math.max(box.left - x, 0, x - box.right);
+    const dy = Math.max(box.top - y, 0, y - box.bottom);
+    if (dx > SNAP_REACH || dy > SNAP_REACH) continue;
+    const distance = Math.hypot(dx, dy);
+    if (distance >= bestDistance || !isSnapRow(row)) continue;
+    // 줄 안쪽으로 2px 들인 가장 가까운 점이 실제로 그 줄이어야 한다(무대 배율 때문에 적중 경계가 상자와 1px 가까이 어긋난다).
+    const px = Math.min(Math.max(x, box.left + 2), box.right - 2);
+    const py = Math.min(Math.max(y, box.top + 2), box.bottom - 2);
+    if (!visibleAt(row, px, py)) continue;
+    best = row;
+    bestDistance = distance;
+  }
+  return best;
+}
+
+/** 그 자리를 탭하면 어느 줄이 받는가(직접 탭 + 넓힌 영역). QA 측정과 바탕 탭(touchTap) 판정이 같이 쓴다. */
+export function touchRowAt(root: Element, x: number, y: number): Element | null {
+  const target = root.ownerDocument.elementFromPoint(x, y);
+  if (!target || !root.contains(target)) return null;
+  const direct = target.closest(ROW);
+  if (direct && root.contains(direct) && (findListRow(target, root) === direct || (direct.closest(ONE_TAP) && isSnapRow(direct)))) return direct;
+  if (direct) return null;
+  return snapRowAt(root, target, x, y);
 }
 
 export function isRowSelected(row: Element): boolean {
@@ -148,18 +211,41 @@ export async function moveCursorToRow(row: Element): Promise<boolean> {
 export function installTouchListTap(root: HTMLElement): () => void {
   const controller = new AbortController();
   const signal = controller.signal;
-  let pending: { row: Element; wasSelected: boolean; at: number } | null = null;
+  let pending: { row: Element; wasSelected: boolean; at: number; snapped: boolean } | null = null;
   let replaying = false;
+  const replayClick = (row: Element): void => {
+    replaying = true;
+    try { (row as HTMLElement).click(); } finally { replaying = false; }
+  };
+  (window as unknown as { __oprnTouchRowAt?: (x: number, y: number) => Element | null }).__oprnTouchRowAt = (x, y) => touchRowAt(root, x, y);
+  signal.addEventListener("abort", () => { delete (window as unknown as { __oprnTouchRowAt?: unknown }).__oprnTouchRowAt; });
   root.addEventListener("pointerdown", (event) => {
     if (event.pointerType === "mouse") { pending = null; return; }
     const row = findListRow(event.target, root);
-    pending = row ? { row, wasSelected: isRowSelected(row), at: performance.now() } : null;
+    if (row) { pending = { row, wasSelected: isRowSelected(row), at: performance.now(), snapped: false }; return; }
+    const snapped = snapRowAt(root, event.target, event.clientX, event.clientY);
+    pending = snapped ? { row: snapped, wasSelected: isRowSelected(snapped), at: performance.now(), snapped: true } : null;
   }, { capture: true, signal });
   root.addEventListener("click", (event) => {
     if (replaying) return;
     const start = pending;
     pending = null;
     if (!start || performance.now() - start.at > DOWN_TO_CLICK_MS) return;
+    if (start.snapped) {
+      // 줄 밖(넓힌 영역) 탭: 바탕의 클릭은 삼키고 그 줄을 탭한 것과 똑같이 처리한다.
+      if (!start.row.isConnected) return;
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      if (start.row.closest(ONE_TAP)) { replayClick(start.row); return; }
+      if (start.wasSelected) {
+        if (start.row.matches("button, [role='menuitem'], [role='option'], [role='button']")) replayClick(start.row);
+        else press("Enter");
+        return;
+      }
+      const target = start.row;
+      void moveCursorToRow(target).then((ok) => { if (!ok && target.isConnected) replayClick(target); });
+      return;
+    }
     const row = findListRow(event.target, root);
     if (!row) return;
     if (start.row.isConnected && row !== start.row && !row.contains(start.row) && !start.row.contains(row)) return;
@@ -173,8 +259,7 @@ export function installTouchListTap(root: HTMLElement): () => void {
     void moveCursorToRow(row).then((ok) => {
       if (ok || !row.isConnected) return;
       // 이 줄의 무리가 키를 받지 않는다(다른 창이 활성) — 예전처럼 바로 실행한다.
-      replaying = true;
-      try { (row as HTMLElement).click(); } finally { replaying = false; }
+      replayClick(row);
     });
   }, { capture: true, signal });
   return () => controller.abort();

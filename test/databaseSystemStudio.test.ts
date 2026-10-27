@@ -94,8 +94,13 @@ describe("database system studio", () => {
     expect(findByTestId(host, "db-system-studio-card-display")?.textContent).toContain("640×360");
     expect(findByTestId(host, "db-system-studio-card-combat")?.textContent).toContain("턴 전투");
     expect(findByTestId(host, "db-system-studio-card-combat")?.textContent).toContain("2명");
-    expect(findByTestId(host, "db-system-studio-card-combat")?.textContent).toContain("도트 측면 · 유리 창");
-    expect(findByTestId(host, "db-system-studio-card-combat")?.textContent).toContain("Gen1");
+    // 전투 카드는 이제 스킨 이름·전투 모델 대신 「전투 방식」(측면/몬스터 두 단추)과 「전투 화면」 요약을 보인다
+    // (자료집 전투 정리 — databaseSystemStudio.ts ruleCardGrid, 공개 기준 커밋 0d4f13e7c8 에 이미 반영). 저작 값에서 나온다:
+    // battleUiStyle retro2003 → 측면, pokemon → 몬스터.
+    expect(findByTestId(host, "db-system-studio-card-combat")?.textContent).toContain("도트 측면 (RM2003식)");
+    store.update((draft) => { draft.system.battleUiStyle = "pokemon"; });
+    const monsterHost = renderSystem();
+    expect(findByTestId(monsterHost, "db-system-studio-card-combat")?.textContent).toContain("몬스터 대치 (포켓몬식)");
     expect(findByTestId(host, "db-system-studio-card-features")?.textContent).toContain("생활 스킬사용");
     expect(findByTestId(host, "db-system-studio-card-features")?.textContent).toContain("액션 전투사용");
 

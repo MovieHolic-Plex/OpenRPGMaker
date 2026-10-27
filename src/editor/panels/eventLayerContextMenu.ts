@@ -11,7 +11,7 @@ import {
   type MapContextMenuItem,
   type MapContextMenuPoint,
 } from "@/editor/panels/mapContextMenu";
-import { eventAtPoint, eventBodyRect } from "@/project/eventFootprintQuery";
+import { eventAtPoint, eventBodyFitsMap, eventBodyRect } from "@/project/eventFootprintQuery";
 import { rectsOverlap } from "@/project/footprint";
 import { store } from "@/project/store";
 import type { Command, EventPage, GameEvent, MapId } from "@/project/types";
@@ -20,6 +20,7 @@ import { toast } from "@/util/toast";
 
 /** 끌어 옮기기(DragOperationHandler)와 같은 문장. 카탈로그 키라 문구를 바꾸면 번역도 같이 고친다. */
 const OCCUPIED_EVENT_CELL_MESSAGE = "이미 다른 이벤트가 있는 칸입니다.";
+const OUTSIDE_EVENT_BODY_MESSAGE = "이벤트 몸이 맵 밖으로 나갑니다.";
 
 export type EventLayerContextMenuTarget = {
   readonly mapId: MapId;
@@ -216,6 +217,11 @@ export function pasteEventAt(target: EventLayerContextMenuTarget): void {
   const map = store.getCurrent().maps[target.mapId];
   if (!map || !inBounds(target, map)) return;
   const event = cloneEventForPaste(eventClipboard, target);
+  // 앵커만 맵 안이어도 2칸 이상 이벤트의 머리·옆 칸은 맵 밖일 수 있다. 끌어 옮기기와 같은 식.
+  if (!eventBodyFitsMap(event, map.width, map.height)) {
+    toast(OUTSIDE_EVENT_BODY_MESSAGE, "error");
+    return;
+  }
   // 앵커만 보면 2칸 이상 이벤트의 머리·옆 칸 위에 복제본이 숨는다. 클릭은 먼저 깔린
   // 이벤트를 집으므로 붙여넣은 쪽은 화면에 없는 것처럼 보인다. 끌어 옮기기와 같이 거절한다.
   if (placementOverlapsExisting(target, event)) {
@@ -247,7 +253,9 @@ function placementOverlapsExisting(target: EventLayerContextMenuTarget, incoming
 function deleteEventAt(target: EventLayerContextMenuTarget): void {
   const event = eventAtTarget(target);
   if (!event) return;
-  recordProjectSnapshot();
+  // deleteEditorEvent 가 삭제 직전 맵 스냅샷을 한 칸 남긴다. 여기서 프로젝트
+  // 스냅샷을 한 번 더 쌓으면 종류가 달라 합쳐지지 않고, 이벤트를 되돌린 뒤에도
+  // 「편집」 빈 단계가 남아 그 다음 되돌리기를 삼킨다. 잘라내기도 이 경로다.
   deleteEditorEvent(target.mapId, event.id);
 }
 

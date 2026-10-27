@@ -18,6 +18,17 @@ vi.mock("@/editor/panels/aiPiAgentCommand", async (importOriginal) => ({
   runPiCommand: vi.fn(async () => true),
 }));
 
+// 의도 선언은 실제 모델을 부른다. CI 에는 모델이 없어 선언이 fallback 으로 떨어지고, 쓰기 턴의 fallback 은 실행 전에
+// 「지시를 해석하지 못했습니다」로 끝난다(plainTurn.ts classifyPlainPiTurn). 이 파일은 턴이 돈 뒤의 카드만 보므로 판정을 고정한다
+// (aiChatPanelComposerMode 와 같은 방식).
+vi.mock("@/ai/intentDeclarationClient", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/ai/intentDeclarationClient")>()),
+  declareIntentCached: vi.fn(async () => ({
+    intent: { mode: "create", source: "llm", needsPlan: false, clarify: null, tools: [] },
+    elapsedMs: 1,
+  }) as never),
+}));
+
 let restoreDom: (() => void) | null = null;
 
 function installFakeLocalStorage(): void {
@@ -40,7 +51,7 @@ beforeEach(() => {
   vi.mocked(runPiCommand).mockClear();
   store.replace(createBlankProject());
   editorState.set({ currentMapId: null, selection: null });
-  restoreDom = installFakeDom();
+  restoreDom = installFakeDom({ window: true });
   installFakeLocalStorage();
   localStorage.setItem(AI_CONFIG_STORAGE_KEY, JSON.stringify(defaultAiConfig()));
 });

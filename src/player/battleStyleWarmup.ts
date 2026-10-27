@@ -53,12 +53,40 @@ export function warmBattleStyles(host: HTMLElement, snapshot: BattleSnapshot): v
     );
     host.append(stage);
     void scene.offsetHeight;
+    // 그림도 여기서 데운다. 스타일만 데우면 실제 마운트가 img.src·배경 url 을 처음 요청하고
+    // 그 요청이 커버가 걷힌 뒤 도착한다(2026-10-27 실측: mount 단계에서 515KB 재다운로드).
+    // 무대는 아래 finally 에서 **같은 동기 호출 안에서** 떼야 한다 — 이 모듈의 계약이고
+    // test/battleStyleWarmup.test.ts 가 stage.isConnected === false 로 지킨다. 그래서 DOM 을
+    // 붙여 둔 채 기다리지 않고, URL 만 모아 Image() 로 요청만 띄운다(요청은 DOM 수명과 무관하다).
+    preloadImages(scene);
   } catch {
     // 준비는 최적화일 뿐이다 — 실패해도 실제 마운트가 같은 일을 한다.
   } finally {
     stage.remove();
+
     // 배경 물결 캔버스는 rAF 루프를 건다 — 한 번도 연결된 적 없는 채로 떼어졌으니 스스로 멈추지 않는다.
     for (const backdrop of scene.querySelectorAll<HTMLElement>("[data-testid='battle-backdrop']")) clearBattleBackdropMotion(backdrop);
   }
 }
 
+/**
+ * 데운 DOM 이 참조하는 그림을 브라우저에 실제로 요청한다.
+ *
+ * img.src 대입이나 배경 url 은 노드가 같은 동기 호출에서 떨어지면 요청이 취소된다. 여기서는 DOM 을
+ * 떼기 전에 URL 만 모아 `Image()` 프로브로 띄운다 — 프로브의 요청은 DOM 수명과 무관하게 진행돼
+ * 캐시에 남고, 무대는 계약대로 즉시 사라진다. 기다리지 않는다(준비는 최적화이지 관문이 아니다).
+ */
+function preloadImages(scene: HTMLElement): void {
+  if (typeof Image !== "function") return;
+  const urls = new Set<string>();
+  for (const image of scene.querySelectorAll<HTMLImageElement>("img")) if (image.src) urls.add(image.src);
+  for (const node of scene.querySelectorAll<HTMLElement>("*")) {
+    const match = /url\("?([^")]+)"?\)/u.exec(node.style.backgroundImage);
+    if (match?.[1]) urls.add(match[1]);
+  }
+  for (const url of urls) {
+    const probe = new Image();
+    probe.decoding = "async";
+    probe.src = url;
+  }
+}

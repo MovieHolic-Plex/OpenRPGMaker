@@ -107,4 +107,57 @@ def main(out, only=None):
     print('wasteland', len(wl), 'beodeul', len(bd))
 
 
-if __name__ == '__main__': main(sys.argv[1], sys.argv[3] if len(sys.argv) > 3 and sys.argv[2] == '--only' else None)
+PAIRS = [   # (분류, 버들항 기준 키트, 황무지 조각들) — r64: 버들항에서 잰 키를 황무지에 맞춘다
+    ('small hut', 'bd-pick-snowfield-hut', ['shack-a', 'shack-c', 'hut-sheet', 'hut-stove', 'lean-doors']),
+    ('shed / big shack', 'bd-pick-snowfield-shed', ['shack-b', 'container-home', 'shack-2f']),
+    ('house / ruin', 'bd-house-h101_2', ['husk-a', 'husk-b', 'husk-e']),
+    ('tall house / tall ruin', 'bd-house-h102_1', ['husk-tall', 'husk-g', 'husk-h']),
+    ('tent', 'bd-dg-goblin-tent', ['tent-tarp']),
+    ('tarp lean-to', 'bd-pick-shipwreck-reef-tarp-lean', ['lean-to']),
+    ('stall', 'bd-pick-walled-market-cloth-stall', ['stall-a', 'stall-b', 'market-shelter']),
+    ('wagon / vehicle', 'bd-pick-walled-market-wagon', ['car-rust-h', 'car-rust-v', 'van-rust']),
+    ('lamp', 'bd-pick-snowfield-lamp', ['lamp-broken']),
+    ('dead tree', 'bd-pick-swamp-stilt-snag', ['dead-tree']),
+    ('boulder', 'bd-pick-mountain-pass-boulder-l', ['rubble-pile', 'scrap-heap']),
+    ('fence', 'bd-out-fence-run', ['fence-h', 'barricade-h']),
+    ('barrel', 'bd-pick-mining-valley-barrel', ['drums', 'tyres']),
+    ('crate', 'bd-prop-crate_apple', ['crates']),
+]
+
+
+def pairs_strip(out):
+    """한 줄에 한 분류: [주인공+버들항] | [주인공+황무지 …] — 같은 배율·같은 바닥선, 위에 키(px)와 주인공 대비 비율."""
+    h = hero(); hh, _ = bbox_h(h)
+    rows = []
+    for cat, bd, ids in PAIRS:
+        items = [('B', bd, beodeul_kit(bd))] + [('W', i, C.render(C.PIECES[i])) for i in ids if i in C.PIECES]
+        rows.append((cat, items))
+    gap, pad, lab = 10, 4, 12
+    W = 0; heights = []
+    for cat, items in rows:
+        w = 110 + sum(max(26 + a.shape[1], 100) + gap for _, _, a in items) + 14
+        W = max(W, w); heights.append(max(max(a.shape[0] for _, _, a in items), 32) + lab + 2 * pad)
+    img = Image.new('RGBA', (W, sum(heights) + 4), (92, 88, 82, 255)); d = ImageDraw.Draw(img)
+    y = 0; table = []
+    for (cat, items), H in zip(rows, heights):
+        d.rectangle([0, y, W, y + H - 1], outline=(70, 66, 60, 255))
+        d.text((4, y + H // 2 - 6), cat, fill=(240, 236, 228, 255))
+        x = 110; base = y + H - pad
+        for n, (src, pid, a) in enumerate(items):
+            if n == 1:
+                d.line([(x - 6, y + 2), (x - 6, y + H - 3)], fill=(200, 170, 90, 255), width=2); x += 6
+            img.alpha_composite(Image.fromarray(h), (x, base - 32))
+            img.alpha_composite(Image.fromarray(a), (x + 26, base - a.shape[0]))
+            oh, _ = bbox_h(a)
+            d.text((x, y + 2), '%s %dpx x%.2f' % ('BD' if src == 'B' else 'WL', oh, oh / hh), fill=(255, 220, 150, 255) if src == 'B' else (200, 230, 255, 255))
+            table.append(dict(category=cat, side=src, id=pid, drawn_h_px=oh, ratio_to_hero=round(oh / hh, 2)))
+            x += max(26 + a.shape[1], 100) + gap
+        y += H
+    img = img.convert('RGB'); img.save(out + '-1x.png')
+    img.resize((img.width * 3, img.height * 3), Image.NEAREST).save(out + '-3x.png')
+    json.dump(table, open(out + '.json', 'w'), indent=1)
+    return table
+
+
+if __name__ == '__main__' and len(sys.argv) > 2 and sys.argv[2] == '--pairs': pairs_strip(os.path.join(sys.argv[1], 'pairs'))
+elif __name__ == '__main__': main(sys.argv[1], sys.argv[3] if len(sys.argv) > 3 and sys.argv[2] == '--only' else None)

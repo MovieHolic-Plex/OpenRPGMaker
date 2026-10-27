@@ -41,7 +41,8 @@ describe("database record list thumbnails", () => {
 
     const animation = thumb("battleAnimations", project.database.battleAnimations[0], project);
     expect(animation.className).toContain("db-list-thumb-animation");
-    expect(animation.style.backgroundImage).toContain("/assets/easyrpg/battle/");
+    // EasyRPG 전투 애니메이션 시트는 2026-10-07 저작권 정리로 지웠다 — 기본 애니메이션은 생성 효과 시트를 쓴다.
+    expect(animation.style.backgroundImage).toContain("/assets/generated/effects/");
   });
 
   it("returns visual thumbnails for classes, troops, and states", () => {

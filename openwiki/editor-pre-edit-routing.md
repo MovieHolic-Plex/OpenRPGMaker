@@ -11,7 +11,7 @@
 ## 공식 맵 상한 1024×1024 (2026-10-01)
 
 `src/project/mapSizeLimits.ts`의 `MAX_TOOL_MAP_DIMENSION = 1024`가 유일한 상한이다.
-새 맵 창·맵 가장자리 확장·편집기 맵 선택·조수 생성/크기변경·lint는 이 계약을 함께 쓴다.
+새 맵 창·맵 설정 크기·맵 가장자리 확장·편집기 맵 선택·조수 생성/크기변경·lint는 이 계약을 함께 쓴다.
 공간 설계의 `SPATIAL_SIZE_MAX`, 조수 공간 스키마, 공간 캔버스 입력과 마을 오브젝트
 `previewSize`도 같은 상수를 따른다. 1024까지 받아들이고 1025 이상은 기존 경로처럼
 거부한다(가장자리 드래그 확장은 상한에서 멈춘다). 새 크기 제한 숫자를 하드코딩하지 않는다.
@@ -95,8 +95,10 @@ Read this before editing editor-facing behavior. Identifies which workflow owns 
   에디터 Phaser(`renderTileCellLayer`) 순서는 1 → 1층 스택 → 2 → 그림자 → 3 → 3층 스택 → 4.
   **알려진 차이:** 캔버스·에디터는 순서대로 겹쳐 4층이 언제나 3층 위지만, 게임은 깊이 규칙이라 3층 ★ + 4층 ×/○ 칸에서
   3층 ★ 가 위다([runtime-pre-edit-routing.md](runtime-pre-edit-routing.md) 같은 날 절).
-- 아직 1·3층만 보는 곳(PR ②·③ 몫): 붙여넣기 미리보기(`EditScene.ts`), `houseInteriors.ts`,
-  `eventTools` 의 빈 칸 판정. (`changeset.tileBuffersDiffer`·`countTileChanges`·Pi 고스트 증분은 2026-09-25 에 네 층을 알게 됐다.) 조수 쓰기 도구(`paint_tiles`·`fill_region`·`tile_erase`·
+- 붙여넣기 미리보기(`EditScene.renderPastePreviewGhost`, 조각 순서 `pastePreviewGhost.ts`)는 확정 붙여넣기와 같이
+  1층·1층 스택·2층·그림자·3층·3층 스택·4층을 그린다. 2·4층은 합성 없는 칩이다(2026-10-26).
+  아직 1·3층만 보는 곳: `houseInteriors.ts`, `eventTools` 의 빈 칸 판정.
+  (`changeset.tileBuffersDiffer`·`countTileChanges`·Pi 고스트 증분은 2026-09-25 에 네 층을 알게 됐다.) 조수 쓰기 도구(`paint_tiles`·`fill_region`·`tile_erase`·
   `clear_region`·`clear_map`·`mirror_region`·`copy_map_region`·`stamp_layer_block`·`paint_shadow`)는 네 층을 안다 —
   계약은 [editor-ai-tools.md](editor-ai-tools.md) 「조수 쓰기 도구의 네 층」 절(2026-09-25).
 - `mapHelpers.setLower` 는 그 칸의 2·3·4층·그림자를 함께 비운다. 선택 칸이 모두 빈 맵의 키 정리는
@@ -361,6 +363,8 @@ Phaser 3.90 에서 이 재생성은 **O(N²)** 다: `Container.add` 가 자식�
   주인공이고, 다듬기·복사·붙여넣기·지우기·걷기 전투·구조물 저장·해제는 같은 상자 안 30px 아이콘이다.
   Enter 실행(한글 조합 중 Enter 는 무시), Shift+Enter 줄바꿈, 입력이 있으면 `initialInstruction`+`autoRun`,
   비어 있으면 전체 AI 작업 창. 입력창이 비어 있는 동안 Ctrl+C·Ctrl+V·Del 은 캔버스 동작으로 넘기고,
+  캔버스에 포커스가 있을 때도 Delete 는 지금 맵의 선택 영역을 지운다(붙여넣기 미리보기 중에는 지우지 않는다.
+  이벤트 레이어에서 이벤트가 선택된 경우는 그 이벤트를 지운다).
   Esc 는 글을 지우거나(있으면) 선택을 해제한다. 아이콘 이름은 `delayedTooltipRollout` 에 등록돼 있다.
   `selection-chip-ai` 는 DOM 상 첫 버튼(Tab 순서·e2e 계약)이고 화면에서는 CSS `order` 로 맨 끝이다.
 - **lazy 창은 들어온 칸만 더하지 말고 나간 칸을 지운다 (2026-09-22).** `renderVisibleEditSceneTiles` 가
@@ -922,6 +926,7 @@ authoring. Generic world CRUD and blanket lint/digests remain excluded.
 - **Topbar team controls:** `src/editor/teamWorkflowUi.ts` + `menu.ts` place **AI 설정**, history, and identity (guest) as right-end controls inside `.editor-topbar-trailing` (before window controls). Test Play and **Quick battle test** remain in edit mode; expert also keeps classic `toolbar-battle-test`, and the Game menu keeps `menu-game-battle-test`. Random battle dispatches `oprn:test-play-window` with `{ kind: "random-battle" }`; fixed-troop tests use `{ kind: "troop-battle", troopId }`. History and identity popovers dismiss on outside pointerdown and close each other. The windowed test-play shell keeps only its title and close control at widths up to 480px so redundant controls cannot cover the play surface.
 - Map canvas, tile placement, brush behavior, selection, copy/paste, undo, and map dimensions: start in `src/editor/EditScene.ts`, `src/editor/tileActions.ts`, and nearby `src/editor/tile*`, `src/editor/map*`, or `src/editor/structure*` modules.
 - **Paint hover flash:** while `isPainting` or a shape drag is active, map hover preview is suppressed (`shouldShowPaintHoverPreview` in `editSceneHoverPreview.ts` + `EditScene.suppressPaintHoverPreview`). Prevents raw palette tiles (e.g. dirt body) from flashing over autotile-shaped map cells after a stroke. Hover restores on pointerup.
+- **상위 채우기는 같은 바닥으로만 번진다 (2026-10-27):** 상위 층이 비어 있으면 칸마다 같은 빈 값이라, 바닥을 안 보고 채우면 풀밭에 장식을 깔려다가 물·길·벽까지 덮인다. `fillTile` 은 상위일 때 시작 칸과 `lowerTiles` 가 같은 이웃만 잇는다(`mapHelpers.floodFillCells` 의 2층 규칙과 같다). 바닥 채우기는 같은 바닥 타일만 잇는다. 계약: `test/tileActions.m1.test.ts`.
 - **Lower must not mutate upper (data + draw):** pure lower-terrain paint/fill never writes `upperTiles` and skips tree-pair repair. Incremental map redraw also co-renders upper cells for every dirty lower cell (`uniqueRenderableTileCells`) and sorts `tileLayer` by depth so re-added lower tiles cannot cover props for a frame. Tests: `test/layerRouting.m1.test.ts`, `test/editSceneRender.test.ts`.
 - **빈 하위 칸 체커는 신호다 — 지우지 말고, AI 가 그걸 기본 바닥으로 남기지 못하게 막는다 (2026-08-27):** `editSceneRender.ts` 의 `createEmptyTile` 이 `lowerTiles[i] < 0` 인 칸에 짙은 체커(0x15171c/0x1a1d23)를 깐다. 이 체커는 "여기 바닥이 없다"를 눈에 보이게 하는 **의도된 신호이며 사용자가 유지를 요구했다** — 크림 캔버스로 바꾸면 문제가 안 보여서 더 나쁘다. 실제 결함은 조수가 그 상태를 만들어 놓는 것이었다: `tile_erase` 만 하위를 `TILE.EMPTY` 로 남겨 `clear_region`(기본 잔디)·`planMarketErase`·`resize_map`·`applyMapShift` 와 어긋났다. 2026-09-07: `tile_erase(kind:"all")` 는 `baseGroundTile(map, rect, tileset)`으로 현재 타일셋의 역할·레이어·통행 규칙에 맞는 관측 지면만 복원한다(rect 밖 우선 → 안쪽, 동률은 행 순서). 벽·지붕·소품·수역·통행 불가 타일은 후보가 아니며, 후보가 없으면 `erase-ground-unresolved`로 양 레이어 변경 전에 실패한다(잔디 폴백 없음). 사용자 확정 역할·레이어·통행 규칙은 보존한다. `data.groundTile`은 복원 타일이며 upper-only는 바닥 선택 없이 null을 보고한다. upper 발판 제거의 시작/transfer 목적지 보호와 완료된 집 소유권 보호는 그대로다. 상세 계약: `openwiki/editor-ai-tools.md`, 회귀: `test/tileEraseGround.test.ts`. 진짜 구멍(하늘 맵·허공)은 `clear_region` 의 `fill="empty"` 로만 만든다. 계약 테스트: `test/constructionToolsV3.test.ts` (tile_erase 3케이스), `test/editSceneRender.test.ts`. 별개 사안: **플레이** 캔버스는 `createPlayGame.ts` 의 `#000` 이라 빈 lower·lower 에 놓인 투명 칩은 여전히 순수 검정으로 보인다(잔디 받침 합성은 기본 칩셋 나무 밑동에만 걸린다).
 - **덧그림 공백 스포이트 (2026-08-31):** 덧그림 레이어에서 우클릭/집기가 빈 칸이면 `TILE.EMPTY`(-1)를 집는다. 이후 칠하기는 그 레이어 지우개(`eraseVisibleTilesBulk`)로 동작하고, 바닥은 건드리지 않는다. 바닥 레이어의 보이는 타일 집기(상위 있으면 상위, 없으면 하위)는 그대로다. 소유: `tilePicking.layerTilePickAt` → `TilePaintEngine.pickVisibleTileAt` / `pickTileAt`. `tileLayerHome(EMPTY)` 는 `"both"` 라서 `effectiveLayer` 가 요청 레이어를 유지한다 — `priority[-1] → lower` 폴백이면 공백 붓이 바닥을 비운다. **지우개 지면 복원:** 하위 슬롯을 스프라이트가 차지한 채(`isSpriteOccupyingLower`: 나무 밑동 + 상위 홈 소품) `EMPTY` 로 비우면 체커/플레이 `#000` 이 드러난다. 지형(잔디·물) 지우기는 구멍을 남기고, 스프라이트 지우기는 주변 지면(`groundTileNear`, 없으면 잔디)으로 되돌린다. 덧그림을 지웠을 때 그 칸 하위가 비어 있고 주변에 지면이 있으면 구멍도 메운다. 계약: `test/tilePicking.test.ts`, `test/upperLayerBlankPick.test.ts`, `test/layerRouting.m1.test.ts`, `test/tileActions.m1.test.ts`.

@@ -1,0 +1,411 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9046d6c0bbd71136e6c4a6522d9906f193e18b756fb8762ca99e257993f4e220",
+ "width": 16,
+ "height": 48,
+ "kind": "other",
+ "name": "royal street lamp, 3/4 top-down: square stone pedestal (top face seen from above, front face with a small blue plaque), dark iron post with gold bands, curled iron brackets, an octagonal lantern with warm lit glass and a gold crown cap",
+ "label": "beodeul_city/capital/capital_lamp",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "2ad36264365ed8d5"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 18,
+  "tileColorsP90": 18,
+  "darkV5": 30,
+  "nearBlackEdge": 0.22,
+  "opaqueTiles": 1
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "borderline",
+   "borderline",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "gold crown cap and blue lantern roof",
+      "rows": "0-7",
+      "evidence": "c",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "octagonal lantern glass body",
+      "rows": "8-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lantern base plate and brackets",
+      "rows": "14-16",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "iron post with gold bands",
+      "rows": "17-35",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone pedestal top face",
+      "rows": "36-40",
+      "evidence": "a",
+      "front_edge_line_row": 40,
+      "eave_shadow_rows": "41"
+     },
+     {
+      "part": "pedestal front face with blue plaque",
+      "rows": "41-45",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is the stone pedestal, rows 36-45, 12 px wide. Its top face is the light band at rows 36-40 (L about 218-221), 5 rows tall. It ends in a slightly darker edge at row 40-41, and the front face with the blue plaque sits below at rows 41-45 (about 5 rows). The lantern has a sloped blue and gold roof (rows 2-7, widening from 1 to 11 px) above its glass body, so it also reads as a top surface. The thin post needs no top. No isometric side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a thin, tall lamp about one tile wide, so I judged it mainly by eye and by its measured facts. It has 17 visible tones per full tile, level with prop-stall-cheese (17) and close to prop-well-roofed (20). It has 0% near-flat coverage and 23 distinct colours, more than the thin prop-lamp-crook reference (14). The lantern shows a lit-glass ramp, the gold bands and crown cap carry highlight and shadow, and the pedestal has a lit top face and a shaded front with a plaque, so there are no large flat fills. About 51% of the dark edge pixels are neutral. That is between the near-black lamp-crook (100%) and the tinted hedge and cheese stall (0-1%), so I rate the outline mixed. The post and pedestal show roughly 3-4 steps per material against the references' 5-6, a little shallower but acceptable at this size. Next to the crook lamp it looks richer, not thinner or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20624
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stone pedestal top face",
+      "rows": "36-40",
+      "evidence": "a",
+      "front_edge_line_row": 40,
+      "eave_shadow_rows": "41"
+     },
+     {
+      "part": "lantern roof (blue pyramid with gold crown cap)",
+      "rows": "2-7",
+      "evidence": "c",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lantern glass body and iron base ring",
+      "rows": "8-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "iron post with gold bands",
+      "rows": "17-35",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": {
+     "cap_rows": 2,
+     "cap_width": 11,
+     "shaft_width": 3,
+     "rounded_at_both_edges": false
+    },
+    "reads_as": "three_quarter",
+    "evidence": "The main body is the stone pedestal, rows 36-45 and 12 px wide. Rows 36-40 are a light top face, with a front-edge line around row 40 and a darker shaded band below it. Rows 41-45 are the front face with the blue plaque and a dark base row at 45, so the front face is about 5 rows. The lantern has a sloped blue and gold roof plane above its glass body (rows 2-7, evidence c). The dark base ring at rows 14-15 is a flat band, not an ellipse. The post (rows 17-35) is a 3 px wide vertical shaft."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a thin lamp on a stone pedestal, so it is sparse. It is still clearly richer than the thin reference, prop-lamp-crook, which is a plain post with a neutral outline. On the primary facts it matches the dense references: 17 visible tones per tile against 17 for the cheese stall and 20 for the roofed well, and 0% near-flat coverage like every reference. The pedestal shows a lit top face, a shaded front face and a plaque. The lantern has a warm glass gradient and a gold cap with several steps. The iron post and gold bands read as separate materials rather than one flat body. Dark edge pixels are 51% neutral, which is mixed: the iron and plaque edges lean neutral, while the stone and gold edges look tinted. That is near the bench (44%) and well (33%) and far from the uniform sticker look of the crook lamp (100%). Ramps of about 5 steps are slightly shallower than the references' 5-6, but there are no flat fills and the piece would not look thinner or flatter next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 22177
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stone pedestal top face",
+      "rows": "36-40",
+      "evidence": "a",
+      "front_edge_line_row": 40,
+      "eave_shadow_rows": "41"
+     },
+     {
+      "part": "lantern pyramid roof and gold crown cap",
+      "rows": "0-7",
+      "evidence": "c",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lantern glass body",
+      "rows": "8-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lantern base plate",
+      "rows": "14-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "iron post",
+      "rows": "18-35",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": {
+     "cap_rows": 6,
+     "cap_width": 11,
+     "shaft_width": 3,
+     "rounded_at_both_edges": false
+    },
+    "reads_as": "three_quarter",
+    "evidence": "The pedestal (rows 36-45, 12 wide) has a light top face on rows 36-40 (L about 218-221). Rows 41-45 are a darker gray front face (L 176 down to 147) carrying the blue plaque, so the top ends in a front edge near row 40 with shading below. The lantern is topped by a stepped pyramid roof on rows 2-7 (widths 3, 5, 7, 9, 11, 11), a sloped plane above a gold eave band on rows 6-7. Below it are lit glass rows 8-13 and a dark base plate on rows 14-15. The thin post on rows 18-35 is only a vertical shaft. The roof is a hat shape that ends flat, not an ellipse plate."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 17 visible tones per tile, level with the stall (17) and the well (20) and far above the thin crook lamp (0, only 14 colours in total). Near-flat coverage is 0%, so there are no large flat fills. The image is small and low resolution, so the read is approximate. The pedestal, the iron post with its gold bands, the octagonal lantern and the gold cap each appear to have about 3-4 steps, slightly fewer than the roughly 5 on the well and stall. The lit glass and the blue plaque add small accents. The dark edges are about 51% neutral, so the outline is mixed: partly tinted, partly near-black. That sits within the range of the bench (44%) and the well (33%), not the fully neutral 100% of the crook lamp. It does not look like a uniform black sticker outline. A careful artist would accept it beside the crook lamp, which it clearly out-details.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19593
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stone pedestal top",
+      "rows": "36-40",
+      "evidence": "a",
+      "front_edge_line_row": 41,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pedestal front face with plaque",
+      "rows": "41-45",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lantern pyramid roof with gold eave band",
+      "rows": "2-7",
+      "evidence": "c",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8"
+     },
+     {
+      "part": "lantern glass body and dark base",
+      "rows": "8-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "iron post",
+      "rows": "17-35",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": {
+     "cap_rows": 6,
+     "cap_width": 11,
+     "shaft_width": 3,
+     "rounded_at_both_edges": false
+    },
+    "reads_as": "three_quarter",
+    "evidence": "The main body is the stone pedestal (width 12, rows 36-45). Rows 36-40 form a light top face (L about 218) that ends at a lighter-to-darker change at row 41. Rows 41-45 are a darker front face (L 176 down to 147) with a blue plaque. The top is 5 rows and the front face is 5 rows. The lantern has a sloped blue pyramid roof (rows 2-7) over a gold eave band, which is a roof plane. The roof's width profile grows steadily from 1 to 11 and ends flat, so it is a hat and not an ellipse cap. The thin post is a vertical shaft and does not need a top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 17 visible tones per 16x16 tile, the same as prop-stall-cheese (17) and close to prop-well-roofed (20). That is well above the thin prop-lamp-crook reference, which has about 14 colours in total. Near-flat coverage is 0%, so there are no flat fills. The pedestal has a lit top face, a shaded front and a plaque. The lantern has glass, a gold cap and gold bands, and the post carries several tones. Each material ramp has about 4 steps, a little under Beodeul's 5-6. About half the dark edge pixels are neutral (51%), against 100% for the lamp-crook reference and 33% for the well. The dark iron post is naturally near-neutral, while the stone and gold areas lean toward their material tone, so I call the outline mixed. It does not read as a uniform black sticker line. Placed next to the references, the lamp is not thinner or flatter than the lamp-crook and is comparable in richness to the stall and well.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20415
+  }
+ ],
+ "decidedAt": "2026-10-23T01:44:13.459Z",
+ "cells": {
+  "16": [
+   "08daeb2ed14cddd2",
+   "4cd7ed851ad31901",
+   "5a7f0a3346be2f61"
+  ],
+  "24": [
+   "1de2a25b3636fc9d",
+   "3c8a13f2f2f684d6",
+   "477b9437bde11a37",
+   "54a8528cc379a243",
+   "5a8182ed3052d7c4",
+   "cf7991feb0576cae"
+  ],
+  "32": [
+   "010795f5a139de95",
+   "1124ef58bd6a0fec",
+   "3eea7692789bfdbc",
+   "410194460102e440",
+   "5ade91e628354294",
+   "6198ae26fd1867fc",
+   "7f95ba63e04c9763",
+   "995c78005fd02bdb",
+   "c0707fc832888df2",
+   "c8482deb36ca6e50",
+   "cbca3e55e008a86e",
+   "f380c658bc2f41c7"
+  ],
+  "48": [
+   "44e37ab8a8e92c52",
+   "b921a67b37f8068d",
+   "fa286c8044cc7f2d"
+  ]
+ }
+}

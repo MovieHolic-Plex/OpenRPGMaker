@@ -128,7 +128,8 @@ export function prepareWebExport(project: Project): PreparedWebExport {
   const exportProject = exportProjection(project);
   // 번들 정의와 같은 타일셋은 참조로 싣는다 — 플레이어 번들이 같은 정의를 이미 갖고 있다(bundledTilesetRefs.ts, S4).
   // 출판 판본(meta.publication)은 보관된 옛 런타임이 읽을 수 있으니 예전처럼 통째로 싣는다.
-  const projectJson = serialize(project.meta.publication ? exportProject : withBundledTilesetRefs(exportProject));
+  // 플레이어가 읽는 자기완결 문서 — 번들 차이 저장(bundledTilesetDiff.ts)은 쓰지 않는다. 번들과 같은 것만 위의 참조로 싣는다.
+  const projectJson = serialize(project.meta.publication ? exportProject : withBundledTilesetRefs(exportProject), { inlineBundledTilesets: true });
   deserialize(projectJson);
   const assets = collectWebExportAssets(exportProject);
   const projectJsonBytes = encoder.encode(projectJson).length;

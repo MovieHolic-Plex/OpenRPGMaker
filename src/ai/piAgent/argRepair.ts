@@ -150,3 +150,33 @@ export function shapeLoopRefusal(toolName: string, schema: unknown, errorLines: 
     + ` 방법을 바꾼다: 아래 최소 예시대로 필수 칸을 채워 부르거나, 다른 도구로 하거나, 못 하는 것이면 보고에 적는다.`
     + ` 최소 예시: ${JSON.stringify(requiredShapeExample(schema))}`;
 }
+
+/**
+ * 실행 거절 되풀이(2026-10-26 hf3 저택: stamp_object 가 「참고문서 선행 읽기 필요」로 29번 거절, 모델은 같은 호출만 되풀이) —
+ * 인자 모양이 아니라 도구 자체가 같은 문장으로 거절할 때. 첫 줄(숫자 포함, 자리마다 다른 배치 실패는 다른 문장)을 서명으로 쓴다.
+ */
+export function refusalSignature(message: string): string {
+  return message.split("\n")[0]!.replace(/\s+/gu, " ").trim().slice(0, 200);
+}
+
+/** 오류문이 이미 «이렇게 부르라»고 적은 호출(예: read_tileset_reference({...})) 하나를 뽑는다. */
+export function requiredCallIn(message: string): string | undefined {
+  const match = /\b([a-z][a-z0-9_]{2,})\((\{[^\n]{0,400}?\})\)/u.exec(message);
+  return match ? `${match[1]}(${match[2]})` : undefined;
+}
+
+/** 같은 거절 두 번째 — 오류문이 요구하는 선행 호출을 정확히 짚는다. */
+export function repeatedRefusalHint(toolName: string, message: string, times: number): string {
+  const call = requiredCallIn(message);
+  return `\n\n[같은 거절 ${times}번째] 「${toolName}」을(를) 같은 상태로 다시 불러도 똑같이 거절된다. `
+    + (call ? `먼저 정확히 이 호출을 한다: ${call} — 그다음 「${toolName}」을(를) 다시 부른다.` : `위 오류가 요구하는 것을 먼저 고친 뒤에 다시 부른다.`)
+    + ` 세 번째도 같으면 거절하고 방법을 바꾸라고 한다.`;
+}
+
+/** 같은 거절 세 번째 이상 — 방법을 바꾸라고 한다. */
+export function refusalLoopRefusal(toolName: string, signature: string, times: number, message: string): string {
+  const call = requiredCallIn(message);
+  return `「${toolName}」 호출을 거절했다 — 같은 거절(${signature.slice(0, 200)})이 ${times}번째다. 같은 호출을 되풀이하지 않는다. 방법을 바꾼다: `
+    + (call ? `${call} 을(를) 먼저 하거나, ` : "")
+    + `다른 도구·다른 자리로 하거나, 못 하는 것이면 최종 보고에 남은 일로 적는다.`;
+}

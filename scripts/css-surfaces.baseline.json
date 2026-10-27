@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-25T14:06:52.622Z",
+  "generatedAt": "2026-10-26T12:31:41.542Z",
   "counts": {
     "tokens": {
       "important": 0,
@@ -42,7 +42,7 @@
       "hubs": 0
     },
     "runtime": {
-      "important": 133,
+      "important": 124,
       "unlayered": 0,
       "hubs": 0
     },
@@ -1852,6 +1852,7 @@
     "R2|database/tabs-b-assistant-panel/34-ai-presence.css|.ai-side-threads-title|ai-side-threads-title",
     "R2|database/tabs-b-assistant-panel/34-ai-presence.css|.ai-side-threads-toggle::before|ai-side-threads-toggle",
     "R2|database/tabs-b-assistant-panel/34-ai-presence.css|.ai-side-threads-toggle|ai-side-threads-toggle",
+    "R2|database/tabs-b-assistant-panel/34-ai-presence.css|.ai-side-threads[data-attention=\"answer\"]|ai-side-threads",
     "R2|database/tabs-b-assistant-panel/34-ai-presence.css|.ai-side-threads[data-attention=\"failed\"]|ai-side-threads",
     "R2|database/tabs-b-assistant-panel/34-ai-presence.css|.ai-side-threads[data-attention=\"review\"]|ai-side-threads",
     "R2|database/tabs-b-assistant-panel/34-ai-presence.css|.ai-side-threads[data-open=\"true\"] .ai-side-threads-toggle::before|ai-side-threads",

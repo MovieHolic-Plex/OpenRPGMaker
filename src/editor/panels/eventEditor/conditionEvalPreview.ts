@@ -10,6 +10,7 @@ import { createPreviewSimState, previewSessionFromSimState, resolvePreviewLocati
 
 import { relationshipStateName } from "@/project/relationshipState";
 import { insideLocationSentence } from "@/editor/mapLocationLabels";
+import { timerThresholdLabel } from "./timerConditionText";
 type PreviewVerdict = boolean | undefined;
 
 /**
@@ -155,6 +156,11 @@ function evaluatePreviewCondition(
   return evalCondition(session, condition, hostEventId, locations ? { map: { locations } } : undefined);
 }
 
+/** 조건 분기 폼의 한 줄 문장. 폼을 다시 그리지 않을 때도 이 문장만 갱신한다. */
+export function conditionPreviewSentence(condition: Condition | undefined): string {
+  return describeCondition(condition);
+}
+
 function describeCondition(condition: Condition | undefined): string {
   if (!condition) return "(조건 없음)";
   switch (condition.kind) {
@@ -173,7 +179,7 @@ function describeCondition(condition: Condition | undefined): string {
     case "gold":
       return `소지금 ${comparison(condition.op, condition.amount)}`;
     case "timer":
-      return `${condition.timerId === "timer1" ? "타이머 1" : "타이머 2"} ${condition.seconds}초 이하`;
+      return `${condition.timerId === "timer1" ? "타이머 1" : "타이머 2"} ${timerThresholdLabel(condition)}`;
     case "timePhase":
       return `시간대 ${timePhaseName(condition.phase)}`;
     case "season":

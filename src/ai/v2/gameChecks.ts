@@ -15,7 +15,11 @@ import { lookMismatches, oversizedSprites, pristineFantasyHero, titleBackdropMis
 import { dryBoats, dryBridges, placementProblems, type PlacementProblem } from "./placementRules";
 import { offPurposeProps } from "./roomPurpose";
 import { unsafeSpawnLines } from "@/project/chaserSpawnSafety";
+import { npcMoveDurationMs, npcPageMoveIntervalMs, PLAYER_WALK_STEP_MS } from "@/project/characterMotion";
+import { fieldApproachRecipe } from "@/project/fieldApproachStyle";
 import { projectCanLoseHp, resolvedHudWidgets } from "@/project/fieldHud";
+import { gameHasCombat } from "@/project/combatPresence";
+import { FACTORY_HERO_ARMS } from "./genreDefaults";
 
 type Obj = Record<string, unknown>;
 const obj = (v: unknown): Obj | undefined => (v && typeof v === "object" && !Array.isArray(v) ? (v as Obj) : undefined);
@@ -33,6 +37,52 @@ function eventsOf(project: Project): Map<string, EventRef> {
     out.set(`common/${String(c.id)}`, { mapId: "common", id: String(c.id), name: String(c.name ?? c.id), pages: [{ commands: c.commands ?? [] }] });
   }
   return out;
+}
+
+/**
+ * 시간 체계 달력과 따로 날짜를 세는 변수(J18): 잠자기(sleepUntilMorning)·하루 넘기기(advanceTime days)와 같은 명령 줄에서 +1 되거나,
+ * 이름이 날짜 세기(일수·일차·날짜·day)인데 +1 되는 변수. onDayEnd 공통 이벤트 안의 카운트는 달력과 함께 가므로 뺀다.
+ */
+export function dayCounterVariables(project: Project, onDayEnd?: string): { id: string; name: string; where: string }[] {
+  const names = new Map((project.variables ?? []).map((v) => [v.id, v.name || v.id] as const));
+  const found = new Map<string, string>();
+  const scan = (commands: unknown, where: string): void => {
+    const lists: unknown[][] = [];
+    const collect = (list: unknown): void => {
+      if (!Array.isArray(list)) return;
+      lists.push(list);
+      for (const raw of list) {
+        const c = obj(raw);
+        if (!c) continue;
+        for (const [key, child] of Object.entries(c)) {
+          if (key === "condition" || !Array.isArray(child)) continue;
+          if (child.some((x) => obj(x)?.kind)) collect(child);
+          else for (const x of child) { const o = obj(x); if (o) { collect(o.branch); collect(o.commands); } }
+        }
+      }
+    };
+    collect(commands);
+    for (const list of lists) {
+      const cmds = list.map(obj).filter((c): c is Obj => !!c);
+      const sleeps = cmds.some((c) => c.kind === "sleepUntilMorning" || (c.kind === "advanceTime" && Number(c.days ?? 0) > 0));
+      for (const c of cmds) {
+        if (c.kind !== "setVariable" || c.op !== "+=" || Number(c.value) !== 1 || typeof c.variableId !== "string") continue;
+        const name = names.get(c.variableId) ?? c.variableId;
+        // 날짜를 세는 이름만 본다(호감도·피로처럼 잠잘 때 같이 오르는 변수는 아니다). 영어는 낱말 경계(birthday·holiday·today 제외).
+        // 이름만으로 잡을 때는 「일수·일차·N일째」, 잠자기 줄과 함께면 「날짜·며칠」도 날짜 세기로 본다.
+        const label = `${name} ${c.variableId}`;
+        const dayName = /일수|일차|일째|(?:^|[^a-z])days?(?:_?(?:count|elapsed|passed|num))?(?![a-z])/iu.test(label);
+        if (dayName || (sleeps && /날짜|며칠/u.test(label))) if (!found.has(c.variableId)) found.set(c.variableId, where);
+      }
+    }
+  };
+  for (const map of Object.values(project.maps)) for (const ev of map.events ?? []) for (const page of (ev.pages ?? []) as unknown as Obj[]) scan(page.commands, `「${ev.name || ev.id}」`);
+  for (const ce of project.commonEvents ?? []) {
+    const c = ce as unknown as Obj;
+    if (onDayEnd && c.id === onDayEnd) continue;
+    scan(c.commands, `공통 이벤트 「${String(c.name ?? c.id)}」`);
+  }
+  return [...found].map(([id, where]) => ({ id, name: names.get(id) ?? id, where }));
 }
 
 /** 이 실행이 새로 만들거나 바꾼 이벤트. */
@@ -228,6 +278,38 @@ export function skippableClues(project: Project): string[] {
         break;
       }
     });
+  }
+  return out;
+}
+
+/**
+ * 걸어 도망치는 주인공을 못 따라오는 추격자(J77, 2026-10-26 저택 argon-high: patch_event_page 가 frequency 5 를 넣어
+ * 한 칸 160ms 걸음 + 240ms 쉼 = 400ms — 주인공 걷기 160ms/칸의 40% 속도). 한 칸 걸음이 주인공 걸음보다 느리거나,
+ * 걸음 사이 쉼이 최소(80ms, frequency 8)보다 길면 잡을 수 없다. 다가오는 방식(approachStyle)을 고른 추격자는 일부러 고른 걸음새라 보지 않는다.
+ * 전투로 이어지는 필드 적(battleProcessing)은 보지 않는다 — 잡히면 끝나는 위협만.
+ */
+export function slowChasers(project: Project, changedIds?: ReadonlySet<string>): string[] {
+  const out: string[] = [];
+  // 공통 이벤트를 거쳐 전투로 가는 추격자(필드 적)도 뺀다.
+  const battleCommons = new Set(((project.commonEvents ?? []) as unknown as Obj[]).filter((ce) => JSON.stringify(ce.commands ?? []).includes("battleProcessing")).map((ce) => String(ce.id)));
+  const startsBattle = (commands: unknown): boolean => {
+    const text = JSON.stringify(commands ?? []);
+    if (text.includes("battleProcessing")) return true;
+    return [...battleCommons].some((id) => text.includes(`"${id}"`));
+  };
+  for (const map of Object.values(project.maps)) for (const ev of map.events ?? []) {
+    if (changedIds && !changedIds.has(ev.id)) continue;
+    for (const page of (ev.pages ?? []) as unknown as Obj[]) {
+      const mv = obj(page.movement);
+      if (mv?.type !== "chase" || startsBattle(page.commands)) continue;
+      // 다가오는 방식(approachStyle: 육중·둥실·통통…)은 일부러 고른 걸음새다 — 그 추격자는 이 검사로 보지 않는다.
+      if (fieldApproachRecipe(mv.approachStyle)) continue;
+      const stepMs = npcMoveDurationMs(Number(mv.speed ?? 3));
+      const pauseMs = npcPageMoveIntervalMs({ frequency: Number(mv.frequency ?? 3), ...(typeof mv.moveIntervalMs === "number" ? { moveIntervalMs: mv.moveIntervalMs } : {}) });
+      if (stepMs <= PLAYER_WALK_STEP_MS && pauseMs <= 80) continue;
+      out.push(`「${ev.name || ev.id}」(${ev.id}) 추격자가 한 칸에 ${Math.round(stepMs + pauseMs)}ms(걸음 ${stepMs}ms + 쉼 ${Math.round(pauseMs)}ms · speed ${String(mv.speed ?? 3)}·frequency ${String(mv.frequency ?? 3)}) — 주인공 걷기(${PLAYER_WALK_STEP_MS}ms/칸)를 못 따라와 걸어서 도망치면 잡히지 않는다`);
+      break;
+    }
   }
   return out;
 }
@@ -569,6 +651,8 @@ export function gameContentProblems(before: Project, after: Project, task: strin
       const dead = guessable ? deadClues(after, changedIds) : [];
       if (dead.length) problems.push(`[게임 검사 퍼즐] ${dead.slice(0, 3).join(" / ")} — 퍼즐 이벤트가 그 스위치를 보지 않아 단서를 안 읽어도 풀린다. 퍼즐 이벤트의 첫 페이지는 「뭔가 단서가 필요하다」 대사만 두고, 정답 고르기·보상은 그 단서 스위치 조건의 다음 페이지로 옮긴다.`);
     }
+    const slow = slowChasers(after, changedIds);
+    if (slow.length) problems.push(`[게임 검사 위협] ${slow.slice(0, 3).join(" / ")}. 추격 페이지 movement 를 speed 6 이상·frequency 8 로 두거나(빠른 걸음새가 필요하면 approachStyle dash·swoop) — make_chase_scene 기본값(speed 6·frequency 8)이 그 값이다. 느린 추격이 의도면(숨바꼭질형) 보고에 적는다.`);
     const chasers = vanishingChasers(after).filter((line) => [...changedIds].some((id) => line.includes(`(${id})`)));
     if (chasers.length) problems.push(`[게임 검사 위협] ${chasers.slice(0, 3).join(" / ")}. 숨기가 «이번 한 번» 지나가게 하는 것이면 그 스위치를 다시 끈다(예: 옷장에서 나온 뒤 기다렸다 setSwitch false, 또는 맵을 나갈 때), 영영 사라지는 것이 요청이면 보고에 적는다.`);
   }
@@ -687,6 +771,19 @@ export function gameContentProblems(before: Project, after: Project, task: strin
     }
     if (off.length) problems.push(`[게임 검사 시계] 시간 체계가 켜져 있어 화면 시계(HUD)가 따로 흐르는데, ${off.slice(0, 3).join(", ")} 은 밤을 스위치와 화면 색으로만 만든다 — 「자정」 뒤에도 시계는 아침 시각을 보인다. 밤으로 바꾸는 갈래에 {kind:'setTime',hour:24,minute:0}(자정), 낮으로 돌리는 갈래에 {kind:'setTime',hour:6,minute:0} 을 같이 넣는다. 시계가 필요 없는 이야기면 configure_time_system{enabled:false} 로 끈다.`);
   }
+  // 날짜를 두 번 센다(2026-10-25 판정 J18, 서울 연애): 시간 체계가 켜져 HUD 달력이 「봄 4일」을 보이는데 대사·엔딩은
+  // 「서울에서 보낸 일수」 변수로 1일차를 센다. 대화마다 advanceTime 이 달력을 넘기고 잠자기가 또 넘겨 두 날짜가 어긋난다.
+  // onDayEnd 공통 이벤트 안의 카운트(set_deadline_ending 의 var_days_elapsed)는 달력과 같이 넘어가므로 뺀다.
+  {
+    const ts = after.system.timeSystem as { enabled?: boolean; onDayEnd?: string } | undefined;
+    const dualDays = ts?.enabled ? dayCounterVariables(after, ts.onDayEnd) : [];
+    const touched = changed.some((ev) => allCommands(ev).some((r) => r.cmd.kind === "setVariable" && dualDays.some((d) => d.id === r.cmd.variableId)))
+      || JSON.stringify(before.system.timeSystem ?? null) !== JSON.stringify(after.system.timeSystem ?? null);
+    if (dualDays.length && touched) {
+      const v = dualDays[0]!;
+      problems.push(`[게임 검사 시계] 시간 체계가 켜져 HUD 달력(「봄 N일」)이 따로 흐르는데, 날짜를 변수 「${v.name}」(${v.id})로 또 센다(${v.where}) — 대화의 advanceTime·잠자기가 달력을 넘겨 화면 날짜와 대사·엔딩의 「N일차」가 어긋난다. 하나만 쓴다: 변수로 세려면 configure_time_system{enabled:false} 로 달력을 끄고(잠자기 대신 화면 전환·대사로 하루를 넘긴다), 달력을 쓰려면 그 변수를 지우고 날짜는 set_deadline_ending(onDayEnd 카운트)으로 센다.`);
+    }
+  }
   // 「제1막 끝」 카드: 대사 한 줄로 흉내 내면 게임이 그대로 이어진다 — 진짜 엔딩(막 끝 화면)이어야 한다(fs-end-act).
   if (/제\s*\d+\s*막\s*끝|막이?\s*끝나|막 끝/u.test(task) && !kinds.has("triggerEnding")) {
     problems.push("[게임 검사 엔딩] 요청에 「막 끝」 화면이 있는데 바꾼 이벤트에 진짜 엔딩 명령이 없다 — 대사 「제1막 끝」만으로는 게임이 그대로 이어진다. define_ending{id:'ending_act1',presentation:{finalTitle:'제1막 끝',badge:'제2막으로 이어집니다'}} 뒤 그 장면 끝에 {kind:'triggerEnding',endingId:'ending_act1'} 를 넣는다.");
@@ -750,6 +847,13 @@ export function gameContentProblems(before: Project, after: Project, task: strin
   return problems;
 }
 
+/** 장비 칸에서 사라진 것이 모두 공장 기본 장비인가. */
+function onlyFactoryGearRemoved(before: unknown, after: unknown): boolean {
+  const b = (before ?? {}) as Record<string, unknown>, a = (after ?? {}) as Record<string, unknown>;
+  const gone = Object.keys(b).filter((slot) => b[slot] && a[slot] !== b[slot]);
+  return gone.length > 0 && gone.every((slot) => FACTORY_HERO_ARMS[slot] === b[slot] && !a[slot]);
+}
+
 /** 값의 크기(배열 길이·객체의 빈 아닌 칸 수·빈 아닌 값 1). */
 function fill(v: unknown): number {
   if (Array.isArray(v)) return v.length;
@@ -771,7 +875,9 @@ export function battleDataEmptied(before: Project, after: Project, task: string)
     for (const r of ((after.database as unknown as Obj)[section] as Obj[] | undefined) ?? []) {
       const prev = old.get(String(r.id));
       if (!prev) continue;
-      const lost = BATTLE_DATA[section].filter((k) => fill(prev[k]) > 0 && fill(r[k]) < fill(prev[k]));
+      // 전투 없는 게임에서 공장 기본 장비(검·방패·갑옷…)만 뺀 것은 장르 기본값이다 — 「되돌려라」 하지 않는다(J88: 그 말에 조수가 검·방패를 다시 넣었다).
+      const lost = BATTLE_DATA[section].filter((k) => fill(prev[k]) > 0 && fill(r[k]) < fill(prev[k]))
+        .filter((k) => !(section === "actors" && k === "initialEquipment" && !gameHasCombat(after) && onlyFactoryGearRemoved(prev[k], r[k])));
       if (!lost.length) continue;
       out.push(`[게임 검사 부작용] 기존 ${section === "actors" ? "배우" : "직업"} 「${String(r.name ?? r.id)}」의 전투 데이터(${lost.join(",")})를 비웠다 — 요청은 그 데이터를 지우라는 것이 아니다. 메뉴·화면에서 숨기는 것은 데이터 지우기가 아니다: 원래 값으로 되돌리고(${section === "actors" ? "upsert_actor" : "upsert_class"}), 메뉴 항목은 configure_field_menu{preset:'story'} 로, 체력 표시는 set_field_hud{off:true} 로 뺀다.`);
     }
@@ -847,7 +953,7 @@ export function unaskedChanges(before: Project, after: Project, task: string): s
         const size = (ev.pages ?? []).reduce((n, pg) => n + (pg.commands?.length ?? 0), 0);
         const auto = (ev.pages ?? []).some((pg) => ["auto", "parallel"].includes(String((pg.trigger as { kind?: string } | undefined)?.kind ?? "")));
         if (size < 3) continue;
-        out.push(`[게임 검사 부작용] 요청에 없는데 기존 이벤트 「${ev.name || ev.id}」(${ev.id}${auto ? ", 자동 실행 컷신" : ""}, 명령 ${size}개)를 지웠다 — 그 장면·대사가 게임에서 사라진다. 요청과 상관없으면 같은 내용으로 되살리고, 일부러 대신했으면 보고에 무엇을 왜 지웠는지 적는다.`);
+        out.push(`[게임 검사 부작용] 요청에 없는데 기존 이벤트 「${ev.name || ev.id}」(${ev.id}${auto ? ", 자동 실행 컷신" : ""}, 명령 ${size}개)를 지웠다 — 그 장면·대사가 게임에서 사라진다. 요청과 상관없으면 restore_event{eventId:"${ev.id}"} 로 요청 전 그대로 되살리고(기억으로 다시 쓰지 않는다), 일부러 대신했으면 보고에 무엇을 왜 지웠는지 적는다.`);
       }
     }
   }

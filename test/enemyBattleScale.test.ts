@@ -7,6 +7,7 @@ import { updateDatabaseRecord } from "@/editor/databaseActions";
 import { runTool } from "@/editor/tools/toolRunner";
 import { renderEnemyRecordForm } from "@/editor/panels/databaseEnemyRecordView";
 import { battleField, syncBattleField } from "@/player/battleFieldDom";
+import { retroDamage } from "@/player/battleRetroMotion";
 import { createBlankProject } from "@/project/defaults";
 import { deserialize, serialize } from "@/project/io/serialize";
 import { store } from "@/project/store";
@@ -147,8 +148,21 @@ describe("enemy size in the supported battle presentations", () => {
       expect(bat.style.getPropertyValue("--battle-enemy-scale")).toBe("0.5");
     }
     syncBattleField(field, snapshot, undefined, { hitTargetId: "enemy_stone_golem" });
-    expect(golem?.classList.contains("battle-pose-hit")).toBe(true);
+    if (skin === "pokemon") {
+      expect(golem?.classList.contains("battle-pose-hit")).toBe(true);
+    } else {
+      // The dot side-view skin draws the golem from its 9-cell pixel sheet. Pixel-sheet enemies keep the
+      // semantic pose at idle/dead (battleRetroMotion.retroMotionPose) and show the hit as a sheet cell
+      // chosen by retroPixelEnemyCell, driven by retroDamage — so assert that channel, not the pose class.
+      if (!golem || !image) throw new Error("Missing golem pixel-sheet nodes");
+      expect(golem.dataset.pixelEnemy).toBe("stomp");
+      retroDamage(golem, { targetId: golem.dataset.testid ?? "", amount: 12, critical: false, healing: false }, false);
+      expect(image.dataset.pixelCell).toBe("hit");
+      // The transient hit cell expires on a timer; the detached test field repaints on the next sync.
+      vi.advanceTimersByTime(400);
+    }
     syncBattleField(field, snapshot, undefined, { calm: true });
+    if (skin === "retro2003") expect(image?.dataset.pixelCell).toBe("idle");
     // Then: sizing has not taken over transform, scale or the animation channel.
     expect(golem?.querySelector(".battle-enemy-image")).toBe(image);
     expect(golem?.style.getPropertyValue("--battle-enemy-scale")).toBe("1.75");

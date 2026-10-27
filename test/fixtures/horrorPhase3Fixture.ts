@@ -1,6 +1,7 @@
 import { runTool } from "@/editor/tools";
 import { createBlankProject, TILE } from "@/project/defaults";
 import type { Project } from "@/project/types";
+import { startOnRetiredCombinedTown } from "../support/retiredEasyRpgTilesets";
 
 export const HORROR_FLAG_SWITCH = "sw_horror_truth";
 export const HORROR_SCORE_VARIABLE = "var_horror_score";
@@ -8,7 +9,8 @@ export const HORROR_TRUE_ENDING = "ending_horror_true";
 export const HORROR_BAD_ENDING = "ending_horror_bad";
 
 export function createHorrorPhase3Fixture(): Project {
-  const project = createBlankProject();
+  // 바닥을 TILE.GRASS(합본 마을 번호)로 깐다 — 2026-10-07 정리 뒤 기본이 beodeul_city 라 시작 맵을 합본 마을에 둔다.
+  const project = startOnRetiredCombinedTown(createBlankProject());
   const map = project.maps[project.startMapId];
   if (!map) throw new Error("start map missing");
   map.name = "체크포인트 트랩 방";

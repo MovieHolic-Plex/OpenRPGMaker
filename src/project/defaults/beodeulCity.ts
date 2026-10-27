@@ -69,6 +69,7 @@ export const isBeodeulDungeonGapAutotile = (id: string): boolean => /^beodeul_du
  */
 export const BEODEUL_DUNGEON_THEME_BASE = 30848;
 export const BEODEUL_DUNGEON_THEME_KIT_PREFIX = "bd-pick-dungeon-theme-";
+export const BEODEUL_DUNGEON_THEME2_KIT_PREFIX = "bd-pick-dungeon-theme2-";
 /**
  * 쓰임 마당 바닥(2026-10-22 village-art, scripts/content/beodeul-yard/bake_yard.py · yard_art.py): 던전 주제 꼬리(~33,151) 바로 뒤 두 행 256칸(33,152~33,407: 마당 71칸, 포도나무 줄 16칸 33,223~, 판석→흙 가장자리 129칸 33,239~ `beodeul_yard_flag_dirt`).
  * 2026-10-24 main 의 던전 gap·주제 꼬리가 29,568~ 를 먼저 차지해 29,568 에서 33,024 로, 2026-10-25 main 의 주제 꼬리가 33,151 까지 늘어 다시 33,152 로 옮겼다(덧붙이기 전용, main 에 나간 적 없는 번호).
@@ -78,6 +79,19 @@ export const BEODEUL_DUNGEON_THEME_KIT_PREFIX = "bd-pick-dungeon-theme-";
 export const BEODEUL_YARD_BASE = 33152;
 export const BEODEUL_YARD_KIT_PREFIX = "bd-yard-";
 export const BEODEUL_YARD_AUTOTILE_IDS: readonly string[] = ["beodeul_yard_cobble", "beodeul_yard_dirt", "beodeul_yard_flag"];
+/**
+ * 왕도 아스텔 묶음(2026-10-27, scripts/content/beodeul-capital/bake_capital.py · capital_art.py): 마당 꼬리(~33,407) 바로 뒤.
+ * 파란 원뿔 둥근 성벽 탑·운하 수문(북·남)·광장 분수·포고 단·왕실 깃대·벽걸이 깃발·방패·왕실 가로등·쌍등·운하 선착 계단·갑문 —
+ * 키트 `bd-capital-*`, 칸 묶음 `beodeul:capital_*`. 번들 소유, 덧붙이기 전용.
+ */
+export const BEODEUL_CAPITAL_BASE = 33408;
+export const BEODEUL_CAPITAL_KIT_PREFIX = "bd-capital-";
+/**
+ * 던전 주제 2 묶음(2026-10-27, scripts/content/beodeul-dungeon/bake_theme2.py): 왕도 꼬리(~33,663) 바로 뒤. 주제 꼬리(30,848~33,151)는
+ * 마당 꼬리에 막혀 자랄 수 없어(출하된 번호를 옮기면 저장된 맵이 깨진다) 큰 조각을 시트 끝에 덧붙인다 — 첫 조각은 마계 판석 밭 14×10 + 벽 밑 그늘 줄.
+ * 키트 `bd-pick-dungeon-theme2-*`, 칸 묶음 `beodeul:dungeon_theme2*`. 번들 소유, 덧붙이기 전용. 칸 정본 tiledata/beodeul-dungeon/theme2/.
+ */
+export const BEODEUL_DUNGEON_THEME2_BASE = 33664;
 /** 고른 조각 키트 id 머리. 번들이 소유한다(기존 사본에서 같은 id 는 번들 것으로 바꾼다). */
 export const BEODEUL_PICK_KIT_PREFIX = "bd-pick-";
 /**
@@ -204,11 +218,16 @@ export function ensureBeodeulCityTileset(tileset: TilesetDef, project?: Relocati
     // 던전 gap 꼬리(29,568~)도 같다: 그 자리에 이식 칸을 쓴 사본은 성벽 끝까지만 받고 bd-dg 키트·gap 오토타일도 받지 않는다(시공기는 옛 천장·물로 물러선다).
     const gapBlocked = wallBlocked || grafts.some(graft => graft.targetTile >= BEODEUL_DUNGEON_GAP_BASE && graft.targetTile < BEODEUL_YARD_BASE);
     // 마당 바닥 꼬리(33,152~)도 같다: 그 자리에 이식 칸을 쓴 사본은 던전 주제 끝까지만 받고 마당 오토타일·키트를 받지 않는다(쓰임 덩이는 마당 없이 풀밭에 앉는다).
-    const yardBlocked = gapBlocked || grafts.some(graft => graft.targetTile >= BEODEUL_YARD_BASE && graft.targetTile < sheet.count);
-    const limit = dungeonBlocked ? BEODEUL_DUNGEON_CEILING_BASE : wallBlocked ? BEODEUL_TOWN_WALL_BASE : gapBlocked ? BEODEUL_DUNGEON_GAP_BASE : yardBlocked ? BEODEUL_YARD_BASE : sheet.count;
+    const yardBlocked = gapBlocked || grafts.some(graft => graft.targetTile >= BEODEUL_YARD_BASE && graft.targetTile < BEODEUL_CAPITAL_BASE);
+    // 왕도 아스텔 꼬리(33,408~)도 같다: 그 자리에 이식 칸을 쓴 사본은 마당 끝까지만 받고 bd-capital 키트·묶음을 받지 않는다.
+    const capitalBlocked = yardBlocked || grafts.some(graft => graft.targetTile >= BEODEUL_CAPITAL_BASE && graft.targetTile < BEODEUL_DUNGEON_THEME2_BASE);
+    // 던전 주제 2 꼬리(33,664~)도 같다: 그 자리에 이식 칸을 쓴 사본은 왕도 끝까지만 받고 주제 2 키트(bd-pick-dungeon-theme2-*)를 받지 않는다(마계 바닥은 옛 주제 바닥으로 물러선다).
+    const theme2Blocked = capitalBlocked || grafts.some(graft => graft.targetTile >= BEODEUL_DUNGEON_THEME2_BASE && graft.targetTile < sheet.count);
+    const limit = dungeonBlocked ? BEODEUL_DUNGEON_CEILING_BASE : wallBlocked ? BEODEUL_TOWN_WALL_BASE : gapBlocked ? BEODEUL_DUNGEON_GAP_BASE : yardBlocked ? BEODEUL_YARD_BASE
+      : capitalBlocked ? BEODEUL_CAPITAL_BASE : theme2Blocked ? BEODEUL_DUNGEON_THEME2_BASE : sheet.count;
     const extended = extendPickedParts(tileset, limit);
-    const farm = mergeShippedFarm(tileset, !dungeonBlocked, !wallBlocked, !gapBlocked, !yardBlocked);
-    return mergeShippedKits(tileset, !wallBlocked, !gapBlocked, !yardBlocked) || extended || farm || familyFixed || !!moved;
+    const farm = mergeShippedFarm(tileset, !dungeonBlocked, !wallBlocked, !gapBlocked, !yardBlocked, !capitalBlocked);
+    return mergeShippedKits(tileset, !wallBlocked, !gapBlocked, !yardBlocked, !capitalBlocked, !theme2Blocked) || extended || farm || familyFixed || !!moved;
   }
   const fresh = createBeodeulCityTileset();
   tileset.count = fresh.count;
@@ -255,16 +274,17 @@ function extendPickedParts(tileset: TilesetDef, limit: number = sheet.count): bo
 }
 
 /** Shipped kits the copy lacks are added (by id); bundle-owned `bd-pick-*` kits are replaced by the shipped ones. Others stay. */
-function mergeShippedKits(tileset: TilesetDef, withWall = true, withGap = true, withYard = true): boolean {
+function mergeShippedKits(tileset: TilesetDef, withWall = true, withGap = true, withYard = true, withCapital = true, withTheme2 = true): boolean {
   const shipped = (data().structureKits as unknown as StructureKitDef[]).filter(kit => (withWall || !kit.id.startsWith(BEODEUL_WALL_KIT_PREFIX))
     && (withGap || (!kit.id.startsWith(BEODEUL_DUNGEON_GAP_KIT_PREFIX) && !kit.id.startsWith(BEODEUL_DUNGEON_THEME_KIT_PREFIX)))
-    && (withYard || !kit.id.startsWith(BEODEUL_YARD_KIT_PREFIX)));
+    && (withTheme2 || !kit.id.startsWith(BEODEUL_DUNGEON_THEME2_KIT_PREFIX))
+    && (withYard || !kit.id.startsWith(BEODEUL_YARD_KIT_PREFIX)) && (withCapital || !kit.id.startsWith(BEODEUL_CAPITAL_KIT_PREFIX)));
   const shippedById = new Map(shipped.map(kit => [kit.id, kit]));
   const current = tileset.structureKits ?? [];
   let changed = false;
   const kept = current.filter(kit => {
     if (!kit.id.startsWith(BEODEUL_PICK_KIT_PREFIX) && !kit.id.startsWith(BEODEUL_FARM_KIT_PREFIX) && !kit.id.startsWith(BEODEUL_WALL_KIT_PREFIX)
-      && !kit.id.startsWith(BEODEUL_DUNGEON_GAP_KIT_PREFIX) && !kit.id.startsWith(BEODEUL_YARD_KIT_PREFIX)) return true;
+      && !kit.id.startsWith(BEODEUL_DUNGEON_GAP_KIT_PREFIX) && !kit.id.startsWith(BEODEUL_YARD_KIT_PREFIX) && !kit.id.startsWith(BEODEUL_CAPITAL_KIT_PREFIX)) return true;
     const ship = shippedById.get(kit.id);
     if (!ship) { changed = true; return false; }                       // a pick that was dropped from the bundle
     if (JSON.stringify(ship) !== JSON.stringify(kit)) { changed = true; return false; }
@@ -281,7 +301,7 @@ function mergeShippedKits(tileset: TilesetDef, withWall = true, withGap = true, 
  * 농장·던전 천장 오토타일과 칸 묶음은 번들 소유(같은 id 는 번들 것으로 바꾸고, 없으면 더한다). 칸 그림·표는 extendPickedParts 가 꼬리째 들여온다.
  * 이 단계가 없으면 칸만 생기고 `farmland` 그룹이 없어 기존 프로젝트의 농사 런타임이 단색 흙 폴백을 쓴다.
  */
-function mergeShippedFarm(tileset: TilesetDef, withDungeon = true, withWall = true, withGap = true, withYard = true): boolean {
+function mergeShippedFarm(tileset: TilesetDef, withDungeon = true, withWall = true, withGap = true, withYard = true, withCapital = true): boolean {
   let changed = false;
   const groups = [...(tileset.autotileGroups ?? [])];
   for (const shipped of data().autotileGroups as unknown as AutotileGroup[]) {
@@ -296,7 +316,8 @@ function mergeShippedFarm(tileset: TilesetDef, withDungeon = true, withWall = tr
   let groupsChanged = false;
   for (const shipped of data().tileGroups as unknown as TileGroupMetadata[]) {
     if (!shipped.id.startsWith("beodeul:farm") && !(withDungeon && shipped.id === "beodeul:dungeon_ceiling")
-      && !(withWall && shipped.id.startsWith("beodeul:town_wall")) && !(withGap && (shipped.id.startsWith("beodeul:dungeon_gap") || shipped.id.startsWith("beodeul:dungeon_theme"))) && !(withYard && shipped.id.startsWith("beodeul:yard"))) continue;
+      && !(withWall && shipped.id.startsWith("beodeul:town_wall")) && !(withGap && (shipped.id.startsWith("beodeul:dungeon_gap") || shipped.id.startsWith("beodeul:dungeon_theme"))) && !(withYard && shipped.id.startsWith("beodeul:yard"))
+      && !(withCapital && shipped.id.startsWith("beodeul:capital"))) continue;
     const i = tileGroups.findIndex(group => group.id === shipped.id);
     if (i < 0) { tileGroups.push(structuredClone(shipped)); groupsChanged = true; }
     else if (JSON.stringify(tileGroups[i]) !== JSON.stringify(shipped)) { tileGroups[i] = structuredClone(shipped); groupsChanged = true; }

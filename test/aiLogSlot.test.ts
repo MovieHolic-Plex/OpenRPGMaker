@@ -21,7 +21,7 @@ let storage: Map<string, string>;
 beforeEach(() => {
   store.replace(createBlankProject());
   resetMapEditHistory();
-  restoreDom = installFakeDom();
+  restoreDom = installFakeDom({ window: true });
   storage = new Map();
   Object.defineProperty(globalThis, "localStorage", {
     configurable: true,

@@ -35,6 +35,33 @@ v1 의 `script_cutscene` 비트로 옮긴다(`events.ts`).
 음악 낱말(음악·배경음·브금·BGM·팡파르·사운드트랙·OST)이 있으면 `FALLEN_TIERS` 음악 단이 `recommend_bgm`·`store_find_music`·`store_install`·`set_game_audio`·`get_database_records` 를 싣는다.
 맵·시스템 음악 연결이 바뀌었으면 마감 검사가 「playAudio 이벤트」를 더 요구하지 않는다(`gameChecks.ts` `audioBindingsChanged`). 기본은 조수가 묻지 않고 스토어 곡을 넣어 잇고, 걸지 않았으면 마감 검사가 `set_game_audio`(필요하면 `store_find_music` → `store_install`)를 요구한다. 사용자가 「먼저 묻기」를 켰을 때만 음악 카드가 질문으로 세져 관문이 재촉하지 않는다. 스토어 음악 길은 `openwiki/asset-store.md` 「조수가 스토어 음악을 찾아 넣는다」.
 
+## 새 플레이어 길잡이 — 목표 줄·보이는 이야기 이벤트 (2026-10-26, J90~J96)
+
+사람 판정자가 엔딩에 못 닿는 게임이 자동 플레이로는 통과했다(연애 j90: 투명 「집 현관」, 장난감 가게 j90: 오프닝이 옮긴 인형).
+- `set_objective{text, at:'start' | eventId}` 동사(`src/ai/v2/discoverability.ts` planObjective) — UI 명령 `objectiveChip`(m2-214)을 넣어
+  화면 오른쪽 위 「현재 목표」 줄을 바꾼다. 목표 줄은 상태라 불러오기·장면 재생성 뒤에도 남는다(`zoneFeedback.lastObjective`).
+  이야기·연애 기본 HUD 와 `set_field_hud{off:true}` 는 목표 줄을 켜 둔다.
+- 출하 막음(`shipChecks.shipBlockers`): `critical-invisible`(엔딩·이정표 이벤트가 투명이고 반짝임·작은 물건이 없음 — 건물 벽면 한 칸은 안 셈),
+  `objective-missing`(목표 줄 없음·시작 목표 없음·이정표 뒤 목표 안 바뀜), `romance-gap`(연애 완료 검사 = 호감 변수 미연결 등을 경고가 아니라 막음).
+- 자동 플레이(`qa/gameCheck/autoPlay`)는 컷신 `moveEvent` 가 옮긴 인물 칸으로 걸어간다(`sceneTestRunner.applyMoveEventForRunner`, 결과 `movedEvents`,
+  저장 지점에서 이어 도는 판도 `initialEventPositions` 로 같은 자리).
+- 컨셉 카드 한 줄(「… (회상 스토리)」)도 `wantsWholeGame` — 1턴부터 출하 검사·화면 검수가 돈다.
+- 화면 검수: 앞 판과 같은 결함은 ↻ 표시와 함께 「고친 뒤 show_map_region 으로 직접 보기·다른 물건으로 바꾸기·인물 그림 바꾸기」 지시. 오프닝 프레임은 `bare:true`
+  로 그려 「샷 id · ms」 글씨를 검수자에게 보이지 않는다(그 글씨를 세 판 내내 결함으로 짚었다).
+
+### 2차 (2026-10-27, J98·J101~J106 — romance-j91·toy-j91 판정)
+
+- **목표 줄 「어디」(J105)**: `set_objective` 가 글에 다른 장소 이름이 나오거나 `where`(이벤트·장소 id/이름)를 받으면 그 입구의 방위를 붙인다 — 「(지하철역 입구: 동네 거리 남동쪽)」(`discoverability.withWhere`, 맵 3×3 방위 `mapRegion`). 이름만 대고 방위가 없는 목표는 `objective-missing` 이 짚는다. `at:'start'` 는 시작 맵 자동 실행에 이미 있는 목표를 바꾼다(조건 달린 오프닝 페이지여도).
+- **목표 줄 글자 크기(J105)**: 논리 해상도 1024×768 무대에서 7px 그대로라 읽을 수 없었다. `fieldHud.ts` 가 무대에 `--play-ui-scale`(높이/240)을 걸고 목표 줄 `font-size`·`top` 이 그것을 곱한다.
+- **set_objective 가 늘 실패하던 원인**: 조수 「통째 다시 보내기」 거부(`assistantRewriteGuard`)가 동사의 `upsert_event` 까지 막았다 — `replacePages:true` 로 보낸다.
+- **차 간격(J102)**: 한국 거리 구성기 차 간격 6초 → 14초(버스 40초). 6초면 차선마다 줄이 서 횡단보도 밖에서는 못 건넜다.
+- **그려진 입구(J103·J104)**: 출하 막힘 `entrance-off-art` — 투명 출입구·이야기 이벤트가 문·계단·스크린도어 그림 옆(대각 포함, 또는 바닥 한 칸 건너) 맨바닥에 있고 그 그림 칸에 이벤트가 없으면 막는다. 「도어」(스크린도어)를 문 낱말에 넣었다. `create_transfer_pair` 는 3×3 계단 그림 가운데를 받아도 착지점 옆 그림 칸에 문을 세운다.
+- **이튿날 같은 대사(J106)**: 출하 막힘 `dialogue-repeat` — 하루 변수(`+=` 로 오르고 페이지 조건 `>=` 로 두 번 넘게 읽힘) 구간 페이지가 여러 날을 덮는데 그 안에서 날로 가르지 않으면 막는다.
+- **짙은 화면 색(J98)**: 출하 막힘 `field-tint-heavy` — 페이지가 알파 0.4 이상 화면 색을 남긴 채 끝나면 막는다. v2 컷신 `tint:'night'` 기본값 0.5 → 0.3.
+- **엔딩 제목 중복(J101)**: 엔딩 마지막 장에서 부제가 큰 글자와 같으면 부제를 뺀다(`playSceneOverlays`).
+- **오프닝 「없음」은 오진이었다**: 저장본은 애니메틱을 `meta.oprnCinematicTimelines` 캡슐에 넣고 `system.opening` 에는 정지 그림 대체본을 둔다. 내보낸 JSON 을 `decodeCinematicWire` 없이 읽으면 오프닝이 한 장뿐으로 보인다.
+- **자동 플레이 부딪힘 문(J97, #3740)**: 장면 실행기가 막힌 문 그림 칸의 same 층 접촉 이벤트를 부딪힘으로 연다(런타임과 같다).
+
 ## 켜는 법
 
 - 편집기 주소 `?assistant=v2`, 또는 `localStorage['oprn:assistant-v2'] = '1'`(`src/ai/v2/switch.ts`). `?assistant=v1` 이나 `'0'` 이면 끈다. **기본은 v1** — 기본을 바꾸는 것은 사용자 결정이다.
@@ -48,6 +75,7 @@ v1 의 `script_cutscene` 비트로 옮긴다(`events.ts`).
 
 - `toolNames: ["__assistant_v2__"]` + `initialToolNames: []` → 레지스트리 도구 0개 노출. 대신 v2 동사 8개(`verbs.ts`):
   `make_place · edit_place · add_people · add_event · draw_object · place_object · inspect · ask_user`.
+- 동사 인자 중 감싸는 칸 하나(`make_place` 의 spec, `add_people` 의 people 등)는 `src/ai/v2/flatWrapper.ts` 가 최상위로 펴 보여 주고 실행 직전에 다시 감싼다. 예전에 감싸 보낸 호출도 통과한다. 목록과 최상위 칸이 같이 오면, 필수 칸이 찬 최상위는 한 명 더로 붙이고, 한 명짜리 목록의 빈 칸은 채우며, 필수 칸이 빈 찌꺼기는 목록 전체를 거절하지 않고 버린다. 객체 칸은 최상위 값으로 빈 자리를 채우고, 이미 감싼 값이 있으면 그 값을 남긴다.
 - 동사는 `wrapTool` 을 거친다 → 체크포인트·실시간 시공 재생(constructionLogs)·맵 소유권·맵별 대기열·사용량 집계·로컬 CLI 엔진이 v1 과 같다.
   동사 안에서 `env.checkpoint` 로 **첫 짓기를 비평 전에** 편집기에 싣는다(사용자는 비평을 기다리지 않는다).
 - `options.v2` 가 있으면 v1 의 낱말별 지시(regex system prompt)·몬스터/오프닝 제작·완료 검사·배치 품질 권고·특징 확인표가 꺼진다. 없으면 v1 은 한 줄도 달라지지 않는다.

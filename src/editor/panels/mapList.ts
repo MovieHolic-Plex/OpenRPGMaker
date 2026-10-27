@@ -216,6 +216,7 @@ export function renderMapList(container: HTMLElement, options?: { readonly varia
     section.append(tree);
   }
   container.append(section);
+  renderedMapFilterQuery = mapFilterQuery;
   mapListRenderVersions.set(container, (mapListRenderVersions.get(container) ?? 0) + 1);
   if (typeof globalThis.requestAnimationFrame === "function") {
     globalThis.requestAnimationFrame(() => {
@@ -345,6 +346,36 @@ function toggleMapFilterExpansion(): void {
     ?.focus();
 }
 
+/** 한글·일본어 IME 조합 중 input. 요소를 갈아끼우면 조합 중인 음절이 끊긴다. */
+/** 마지막으로 목록에 반영된 필터. 조합 중 값은 mapFilterQuery 에만 있고 여기엔 아직 없다. */
+let renderedMapFilterQuery = "";
+
+/** 한글·일본어 IME 조합 중 input. 요소를 갈아끼우면 조합이 끊긴다. */function isImeComposingInput(event: Event): boolean {
+  return "isComposing" in event && (event as InputEvent).isComposing === true;
+}
+
+/**
+ * 필터 문자열을 반영해 목록을 다시 그린 뒤, 방금 치던 자리에 커서를 되돌린다.
+ * 다시 그리기 전에는 항상 끝으로 보내서, 단어 가운데를 고치면 다음 글자가 맨 뒤에 붙었다.
+ * 조합이 끝난 직후 같은 값의 input 이 한 번 더 오면, 이미 떨어진 칸의 커서로 되돌리지 않는다.
+ */
+function commitMapFilterQuery(source: HTMLInputElement): void {
+  const value = source.value;
+  // 같은 문자열이면 트리는 이미 맞다. 조합을 취소하면 중간 글자를 지우고,
+  // 조합 종료 뒤에 오는 input 은 떨어진 칸의 커서를 다시 밀지 않는다.
+  if (value === renderedMapFilterQuery) {
+    mapFilterQuery = value;
+    return;
+  }
+  const caret = source.selectionStart ?? value.length;
+  mapFilterQuery = value;
+  rerenderMapList();
+  const input = currentMapListContainer?.querySelector<HTMLInputElement>("[data-testid='map-tree-filter']");
+  input?.focus();
+  if (!input) return;
+  const next = Math.max(0, Math.min(caret, input.value.length));
+  input.setSelectionRange(next, next);}
+
 function makeFilterField(mapCount: number): HTMLElement {
   const expanded = isFilterExpanded(mapCount);
   const chips = el("div", { class: "map-tree-filter-facets" });
@@ -370,6 +401,11 @@ function makeFilterField(mapCount: number): HTMLElement {
   // CSS 의 :has(.map-tree-facet.is-active) 는 is-active 를 토글하는 모든 곳(레이어 스위처
   // 포함)에서 BODY 까지 스타일 무효화를 일으켜 3.7k 요소 재계산(~50ms)을 만든다.
   // 필터는 렌더마다 새로 지어지므로 정적 클래스로 같은 판정을 한다.
+
+  // 글자마다 목록을 다시 짓는다. 그때 입력칸도 새 노드가 되므로, 커서를 끝으로 밀면
+  // 단어 중간에 끼워 넣은 글자 다음이 아니라 맨 끝에서 이어서 치게 된다. 한글·일본어 IME 는
+  // 그 교체만으로 조합 중인 음절이 끊기므로, 조합이 끝나기 전에는 목록을 건드리지 않는다.
+  let composing = false;
   const wrap = el("div", {
     class: "map-tree-filter" + (mapFilterFacet !== "all" ? " has-active-facet" : ""),
     children: [
@@ -383,12 +419,20 @@ function makeFilterField(mapCount: number): HTMLElement {
         value: mapFilterQuery,
         dataset: { testid: "map-tree-filter" },
         on: {
+          compositionstart: () => {
+            composing = true;
+          },
           input: (event) => {
-            mapFilterQuery = (event.target as HTMLInputElement).value;
-            rerenderMapList();
-            const input = currentMapListContainer?.querySelector<HTMLInputElement>("[data-testid='map-tree-filter']");
-            input?.focus();
-            if (input) input.setSelectionRange(mapFilterQuery.length, mapFilterQuery.length);
+            const source = event.target as HTMLInputElement;
+            if (composing || isImeComposingInput(event)) {
+              mapFilterQuery = source.value;
+              return;
+            }
+            commitMapFilterQuery(source);
+          },
+          compositionend: (event) => {
+            composing = false;
+            commitMapFilterQuery(event.target as HTMLInputElement);
           },
         },
       }),
@@ -519,6 +563,7 @@ function renderNode(spec: RenderNodeSpec): void {
     // 있고, 목록 칸의 1fr 트랙은 이름을 읽는 데 써야 한다. 다만 0 일 때는 그 자리에
     // '고립'을 남긴다: 이게 유일하게 행에서 손을 써야 하는 신호다.
     if (isBasicRow && isUnlinked) metaBits.push("고립");
+    if (!isFolder && !isBasicRow) metaBits.push(`문 ${links?.outgoingTransfers ?? 0}개`);
     // 시작 배지는 이름 줄 끝에 둔다. 행 그리드의 열로 두면 메타 줄까지 그 폭을 잃어
     // 「문 N개」가 말줄임됐다(UI 감사 05-maps-03) — 메타 줄은 배지 아래까지 쓴다.
     const nameLine = el("div", {
@@ -534,13 +579,15 @@ function renderNode(spec: RenderNodeSpec): void {
           : []),
       ],
     });
+    // 한 텍스트 노드로 붙이면 `{0}×{1} · 이벤트 {2}` 가 뒤의 「N개 · 문 M개」까지
+    // 삼켜 영어가 "Events 1" 이 된다. 조각마다 텍스트 노드를 나눈다.
     item.append(el("div", {
       class: "map-tree-copy",
       children: [
         nameLine,
         el("span", {
           class: "map-tree-meta" + (isUnlinked ? " is-unlinked" : ""),
-          text: isFolder || isBasicRow ? metaBits.join(" · ") : `${metaBits.join(" · ")} · 문 ${links?.outgoingTransfers ?? 0}개`,
+          children: metaBits.flatMap((bit, index) => index === 0 ? [bit] : [" · ", bit]),
           attrs: {
             title: isFolder
               ? "플레이 맵이 아닙니다. 정리용 폴더입니다."
@@ -1429,6 +1476,7 @@ function beginTreeBoxSelect(event: Event, tree: HTMLElement): void {
 
 export function resetMapListUiStateForTests(): void {
   mapFilterQuery = "";
+  renderedMapFilterQuery = "";
   mapFilterFacet = "all";
   filterExpandedByUser = false;
   lastExpandedMapId = null;

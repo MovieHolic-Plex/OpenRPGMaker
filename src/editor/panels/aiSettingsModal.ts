@@ -3,6 +3,7 @@ import { modelForRole, type RoleModel } from "@/ai/modelRoles";
 import { PIXEL_MODEL_CHOICES, resolvePixelModel } from "@/ai/pixelModel";
 // AI 설정 전용 모달 — 채팅 본문과 분리된 설정 표면.
 // loadAiConfig/saveAiConfig 자동 저장 계약을 유지한다.
+import { formatEditorDate } from "@/i18n";
 
 import { configForUltrabrain, DEFAULT_ULTRABRAIN_MODEL } from "@/ai/ultrabrainConfig";
 import { DEFAULT_PI_APPLY, DEFAULT_PI_TEAM } from "@/ai/piAgent/executionRoute";
@@ -599,7 +600,7 @@ export function renderAiSettingsForm(options: {
     attrs: { role: "status", "aria-live": "polite" },
     dataset: { testid: "ai-config-saved-hint" },
   });
-  const savedAtText = (): string => `자동 저장됨 · ${new Date().toLocaleTimeString("ko-KR", {
+  const savedAtText = (): string => `자동 저장됨 · ${formatEditorDate(new Date(), {
     hour: "2-digit",
     minute: "2-digit",
   })}`;
@@ -929,7 +930,8 @@ export function renderAiSettingsForm(options: {
   let connectedRoutes: Awaited<ReturnType<typeof fetchConnectedRoutes>> = [];
   const refreshRoleMatrix = (): void => roleMatrix?.refresh(collect(), connectedRoutes);
   const reloadConnectedRoutes = (): void => {
-    void fetchConnectedRoutes().then((routes) => { connectedRoutes = routes; refreshRoleMatrix(); }, () => undefined);
+    // 응답이 문서가 걷힌 뒤(모달 닫힘·테스트 정리) 오면 다시 그리지 않는다.
+    void fetchConnectedRoutes().then((routes) => { connectedRoutes = routes; if (typeof document !== "undefined") refreshRoleMatrix(); }, () => undefined);
   };
   roleMatrix.refresh(config, connectedRoutes);
   reloadConnectedRoutes();

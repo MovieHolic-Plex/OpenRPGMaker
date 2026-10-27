@@ -40,9 +40,14 @@ export type M2RecordedFallback = {
 
 export type M2ScreenRuntimeState = {
   flash?: string;
-  /** performance.now() 시각. 이 시각 전까지 syncScreenEffects 가 플래시 오버레이를 유지한다. */
+  /** performance.now() 시각. 이 시각이 지나면 syncScreenEffects 가 플래시용으로 덮어쓴 색조를 되돌린다. */
   flashUntilMs?: number;
   hidden?: boolean;
+  /**
+   * 화면 숨기기/표시가 방금 건 페이드(ms). 세이브하지 않는다.
+   * 첫 화면 동기화가 읽고 지운다 — 불러온 숨김 화면은 페이드를 다시 틀지 않고 검게 선다.
+   */
+  hideFadeMs?: number;
   shake?: number;
   tint?: string;
   // 색조 전환에 걸릴 시간(ms). 0/미지정이면 즉시 적용.
@@ -59,7 +64,8 @@ export type M2ScreenRuntimeState = {
   letterboxDurationMs?: number;
   /**
    * 정지 화면(프리즈 프레임). 켠 순간의 필드 그림을 한 장 찍어 그림 위·대사창 아래에 세운다(뒤의 맵·인물은 계속 돈다).
-   * at = 켤 때마다 1 씩 늘어 「다시 찍기」를 구분한다. 불러오기 뒤에는 그때 화면을 다시 찍는다. `screenEffectPlan` freeze/unfreeze.
+   * at = 켤 때마다 1 씩 늘어 「다시 찍기」를 구분한다. 세이브에는 색감·횟수·전환 시간만 남고,
+   * 불러오기 뒤에는 그때 화면을 다시 찍는다(찍은 그림은 세이브에 넣지 않는다). `screenEffectPlan` freeze/unfreeze.
    */
   freeze?: { style: import("@/player/interpreter/screenEffectPlan").FreezeStyle; at: number };
   /** 정지 화면이 들어오고(하얗게 번쩍 → 멈춤) 걷히는 시간(ms). */
@@ -85,7 +91,11 @@ export type M2SoundLayerState = {
 export type M2AudioRuntimeState = {
   memorizedBgm?: string;
   playedMemorizedBgm?: string;
-} & Record<string, M2SoundLayerState | string | undefined>;
+  /** Authored track volume (0..100) captured with Memorize BGM. Absent = default full volume. */
+  memorizedBgmVolume?: number;
+  /** Fade-in (ms) captured with Memorize BGM. Absent = no authored fade. 0 is an instant start. */
+  memorizedBgmFadeInMs?: number;
+} & Record<string, M2SoundLayerState | string | number | undefined>;
 
 export type M2ActorRuntimeState = {
   battleCommands?: string;

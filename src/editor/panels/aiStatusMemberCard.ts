@@ -8,6 +8,7 @@
 // DOM 계약: `ai-status-pop-head` · `ai-status-pop-task-card` · `ai-status-pop-now-banner` · `ai-status-pop-media` · `ai-status-pop-timeline`.
 
 import { currentTeamActivity } from "@/ai/piAgent/teamActivity";
+import { formatEditorDate } from "@/i18n";
 import type { TeamBoardAgent, TeamBoardState } from "@/ai/piAgent/teamBoardState";
 import { el } from "@/util/dom";
 import { activityEntryIndex } from "./aiActivityIndex";
@@ -123,7 +124,7 @@ export function createStatusMemberCard(): {
       : [...presence.recent].reverse();
     const rows = steps.length ? steps.map((step, index) => {
       const status = step.failed ? "error" : step.running ? "running" : "ok";
-      const time = step.running ? "진행 중" : [step.at ? new Date(step.at).toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false }) : "", took(step.ms)].filter(Boolean).join(" · ");
+      const time = step.running ? "진행 중" : [step.at ? formatEditorDate(new Date(step.at), { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false }) : "", took(step.ms)].filter(Boolean).join(" · ");
       return el("li", { dataset: { status }, children: [
         el("span", { class: "ai-status-step-mark", attrs: { "aria-label": status === "error" ? "실패" : status === "running" ? "진행 중" : "완료" }, children: [
           status === "running" ? el("span", { class: "ai-status-spinner is-small" }) : deckIcon(status === "error" ? "x" : "check", { size: 15 }),

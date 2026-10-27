@@ -29,10 +29,12 @@ function out(value: object, code = 0): never {
 }
 
 /** 데모 → 스토어 주소·글. 소개 글은 첫 화면 「기본 게임」 선반(builtinGames.ts)과 같다. */
-const DEMOS: Record<string, { readonly slug: string; readonly builtin: string; readonly description: string; readonly pointer?: boolean }> = {
+type StoreShelf = { readonly title: string; readonly genre: string; readonly description: string; readonly cover: string; readonly frames: readonly string[] };
+/** builtin = 첫 화면 「기본 게임」 선반 id. 선반에 없는 데모는 shelf 에 스토어용 제목·그림을 직접 둔다. */
+const DEMOS: Record<string, { readonly slug: string; readonly builtin?: string; readonly shelf?: StoreShelf; readonly description: string; readonly pointer?: boolean }> = {
   "chrono-bell": {
     slug: "fallen-star", builtin: "chrono-bell",
-    description: "OPRN 에디터의 대표 데모 JRPG 입니다. 북쪽 숲에 떨어진 별, 그 속에서 깨어난 기계 소녀, 그리고 별을 쫓는 심문관.\n제1막(약 20분)을 처음부터 끝까지 플레이할 수 있습니다. 전투·대화·컷신·세이브가 모두 들어 있습니다.",
+    description: "OPRN 에디터의 대표 데모 JRPG 입니다. 북쪽 숲에 떨어진 별, 그 속에서 깨어난 기계 소녀, 그리고 별을 쫓는 심문관.\n제1막(약 20분)과 제2막 「빌린 불」 앞부분 — 감방 탈출과 통금의 밤, 개구멍 추격, 불탄 새벽샘, 2층 요새의 창기사 새라, 설원 고개, 「대답의 등」 축제가 열리는 나루 마을 서리나루까지 — 를 플레이할 수 있습니다. 전투·대화·컷신·세이브가 모두 들어 있습니다.",
   },
   "emerald-crown": {
     slug: "astra-horizon", builtin: "emerald-crown", pointer: true,
@@ -41,6 +43,17 @@ const DEMOS: Record<string, { readonly slug: string; readonly builtin: string; r
   "first-love": {
     slug: "first-love", builtin: "first-love",
     description: "OPRN 에디터로 만든 오피스 로맨스 데모입니다. 첫 출근 날 사수로 배정된 사람은 10년 전 그 선배였습니다. 그런데 그는 「처음 뵙겠습니다」라고 합니다.\n선택에 따라 엔딩이 셋으로 갈립니다(약 20분).",
+  },
+  "shitamachi-fourth-season": {
+    slug: "shitamachi-fourth-season",
+    shelf: {
+      title: "시타마치의 네 번째 계절",
+      genre: "청춘 로맨스 · 약 15분 · 엔딩 4개",
+      description: "여덟 살까지 살던 시타마치로 돌아온 지 세 계절. 내일 밤은 아케이드 등롱 축제다 — 누구와 등롱 길을 걸을까.",
+      cover: "/assets/start/builtin/shitamachi-title.webp",
+      frames: ["/assets/start/builtin/shitamachi-title.webp", "/assets/start/builtin/shitamachi-op1.webp", "/assets/start/builtin/shitamachi-street.webp", "/assets/start/builtin/shitamachi-bakery.webp"],
+    },
+    description: "OPRN 에디터로 만든 청춘 로맨스 데모입니다. 하진은 어릴 적 살던 도쿄 시타마치 상점가로 돌아왔습니다. 축제 전날, 정문 큰 등롱에 넣을 소원 등롱 세 개를 모아야 합니다 — 소꿉친구 지호의 빵집, 전철에서 늘 마주치는 유나의 목욕탕, 학생회장 서연의 진흥회 사무소.\n누구와 등롱 길을 걷고 어떤 마음을 전하느냐에 따라 엔딩이 넷으로 갈립니다(약 15분).",
   },
 };
 const ALIASES: Record<string, FlagshipDemoId> = { "fallen-star": "chrono-bell", "astra-horizon": "emerald-crown" };
@@ -149,7 +162,7 @@ const demoArg = arg("--demo") ?? "";
 const demoId = (ALIASES[demoArg] ?? demoArg) as FlagshipDemoId;
 const demo = DEMOS[demoId];
 if (!demo || !(FLAGSHIP_DEMO_IDS as readonly string[]).includes(demoId)) out({ ok: false, error: `--demo 은 ${Object.keys(DEMOS).join("|")}` }, 2);
-const builtin = BUILTIN_GAMES.find((game) => game.id === demo.builtin)!;
+const builtin: StoreShelf = demo.shelf ?? BUILTIN_GAMES.find((game) => game.id === demo.builtin)!;
 
 // 데모 빌더는 맵 BGM 이 «설치됨»인지 본다. 이 체크아웃(또는 OPRN_ASSET_ROOTS)에 실제로 있는 곡 파일을 설치 목록으로 쓴다 —
 // 없는 곡은 여전히 거절되고, 있는 곡은 판본 파일에 함께 실린다.

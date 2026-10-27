@@ -32,6 +32,11 @@ describe("AI 기록 날짜/턴 접기(제안 6)", () => {
       const day = new Date("2026-07-11T10:00:00");
       expect(aiDayKey(day)).toBe("2026-07-11");
       expect(formatAiDayLabel(day)).toContain("2026");
+      const labeled = new Date(2026, 6, 11, 10, 0, 0);
+      expect(formatAiDayLabel(labeled, "ko")).toMatch(/2026년/);
+      expect(formatAiDayLabel(labeled, "en")).toMatch(/July/);
+      expect(formatAiDayLabel(labeled, "ja")).toMatch(/2026年7月11日/);
+      expect(formatAiDayLabel(labeled, "en")).not.toMatch(/[가-힣]/);
       expect(parseAiDayDate("2026-07-11T12:00:00").getDate()).toBe(11);
 
       const first = ensureDayDivider(log as unknown as HTMLElement, day);

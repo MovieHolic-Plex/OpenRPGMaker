@@ -66,11 +66,14 @@ export function reviewChanges(before: Project, after: Project): ReviewInput["cha
   const right = { ...after, world: aiVisibleWorld(after.world) } as unknown as Record<string, unknown>;
   return [...new Set([...Object.keys(before), ...Object.keys(after)])].sort().flatMap(key => {
     if (JSON.stringify(left[key]) === JSON.stringify(right[key])) return [];
-    if (key === "maps") {
-      return [...new Set([...Object.keys(before.maps), ...Object.keys(after.maps)])].flatMap(id => {
-        const a = before.maps[id], b = after.maps[id];
+    // Maps and tilesets are diffed per id: the bundled tileset collection alone is ~120MB since the
+    // beodeul/jp_city sheets, so a whole-collection delta made every tileset edit unreviewable.
+    if (key === "maps" || key === "tilesets") {
+      const a0 = (before[key] ?? {}) as Record<string, unknown>, b0 = (after[key] ?? {}) as Record<string, unknown>;
+      return [...new Set([...Object.keys(a0), ...Object.keys(b0)])].flatMap(id => {
+        const a = a0[id], b = b0[id];
         return JSON.stringify(a) === JSON.stringify(b) ? [] : [
-          { path: `/maps/${id}`, before: a ?? null, after: b ?? null }];
+          { path: `/${key}/${id}`, before: a ?? null, after: b ?? null }];
       });
     }
     if (key === "database") {

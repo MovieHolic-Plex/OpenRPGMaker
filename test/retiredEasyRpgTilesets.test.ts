@@ -9,6 +9,7 @@ import { createBlankProject } from "@/project/defaults";
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 import { defaultOutdoorTilesetId } from "@/project/defaults/outdoorTileset";
 import { isRetiredEasyRpgTileset } from "@/project/retiredEasyRpgTilesets";
+import { retiredEasyRpgTileset, RETIRED_COMBINED_TOWN_TILESET_ID } from "./support/retiredEasyRpgTilesets";
 
 const START = "map_blank_start";
 
@@ -18,6 +19,15 @@ function assistant(project = createBlankProject()): ToolContext {
 
 function createMap(ctx: ToolContext, tilesetId: string, id = "map_x") {
   return runTool(ctx, "create_map", { id, name: "새 맵", width: 20, height: 15, tilesetId }, { dryRun: false });
+}
+
+/**
+ * 숲마을(forest_harmony) 정의를 아직 들고 있는 옛 저장본. 숲마을 그림·정의는 2026-10-07 저작권 정리로 지워 되살릴 원본이 없다 —
+ * 숲마을은 합본 마을 재칠(family "easyrpg")이었으므로 합본 마을 정의를 그 id 로 들인다. 판정은 id 와 계보로만 한다.
+ */
+function withOldForestVillage(project = createBlankProject()) {
+  project.tilesets.forest_harmony = { ...retiredEasyRpgTileset(RETIRED_COMBINED_TOWN_TILESET_ID), id: "forest_harmony", name: "숲마을" };
+  return project;
 }
 
 beforeEach(() => {
@@ -53,7 +63,7 @@ describe("조수 실행 차단", () => {
   });
 
   it("이미 숲마을 칩셋으로 깐 맵은 조수도 계속 고친다", () => {
-    const human: ToolContext = { project: createBlankProject(), currentMapId: START };
+    const human: ToolContext = { project: withOldForestVillage(), currentMapId: START };
     expect(createMap(human, "forest_harmony", "map_forest").ok).toBe(true);
     const ctx: ToolContext = { project: human.project, currentMapId: "map_forest", assistantRun: true };
     const result = runTool(ctx, "set_map_properties", { mapId: "map_forest", name: "옛 숲" }, { dryRun: false });
@@ -62,12 +72,13 @@ describe("조수 실행 차단", () => {
   });
 
   it("조수 표시가 없는 실행(편집기 UI·스크립트)은 그대로", () => {
-    const ctx: ToolContext = { project: createBlankProject(), currentMapId: START };
+    const ctx: ToolContext = { project: withOldForestVillage(), currentMapId: START };
     expect(createMap(ctx, "forest_harmony").ok).toBe(true);
   });
 
   it("EasyRPG 생성기는 조수에게 숨기고 실행은 남긴다", () => {
-    for (const name of ["run_dungeon_room_pipeline", "start_dungeon_room_session", "generate_map"]) {
+    // run_dungeon_room_pipeline·start_dungeon_room_session 은 레지스트리에서 일부러 뺐다(#3641 이 그 호출 사례를 은퇴) — 남은 생성기만 본다.
+    for (const name of ["generate_map"]) {
       const tool = getTool(name);
       expect(tool?.deprecated, name).toBe(true);
       expect(tool?.supersededBy, name).toBe("import_region_reference");

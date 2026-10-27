@@ -70,6 +70,21 @@ describe("editor keyboard shortcuts", () => {
     expect(handleEditorKey(keyEvent("q"))).toBe(false);
   });
 
+  it("한글 IME 가 key 를 Process 로 바꿔도 물리 키로 도구를 고른다", () => {
+    editorState.set({ tool: "select", layer: "lower" });
+    expect(handleEditorKey({
+      key: "Process",
+      code: "KeyB",
+      keyCode: 229,
+      ctrlKey: false,
+      metaKey: false,
+      altKey: false,
+      target: undefined,
+      preventDefault: () => {},
+    } as unknown as KeyboardEvent)).toBe(true);
+    expect(editorState.get().tool).toBe("paint");
+  });
+
   it("문자 단축키 V/B/E/G/N/I가 도구를 전환한다", () => {
     expect(handleEditorKey(keyEvent("v"))).toBe(true);
     expect(editorState.get().tool).toBe("select");
@@ -95,6 +110,8 @@ describe("editor keyboard shortcuts", () => {
       commands: [],
     };
     map.events = [event];
+    const tileIndex = 1 * map.width + 1;
+    map.lowerTiles[tileIndex] = 7;
     store.replace(project);
     editorState.set({
       currentMapId: project.startMapId,
@@ -102,6 +119,7 @@ describe("editor keyboard shortcuts", () => {
       selectedEventId: event.id,
       selectedEventPageId: null,
       tool: "event",
+      selection: { mapId: project.startMapId, x: 1, y: 1, width: 1, height: 1 },
     });
 
     vi.stubGlobal("confirm", vi.fn(() => true));
@@ -111,5 +129,48 @@ describe("editor keyboard shortcuts", () => {
     expect(store.getCurrent().maps[project.startMapId]?.events).toEqual([]);
     expect(editorState.get().selectedEventId).toBeNull();
     expect(editorState.get().selectedEventPageId).toBeNull();
+    // 같은 칸에 타일 선택이 있어도 이벤트 삭제가 우선이라 타일은 남는다.
+    expect(store.getCurrent().maps[project.startMapId]?.lowerTiles[tileIndex]).toBe(7);
+  });
+
+  it("Delete on a tile layer clears the selected region and leaves the rest", () => {
+    const project = createBlankProject();
+    const map = project.maps[project.startMapId]!;
+    const index = 1 * map.width + 1;
+    const neighbor = map.lowerTiles[0];
+    map.lowerTiles[index] = 7;
+    map.upperTiles[index] = 9;
+    store.replace(project);
+    editorState.set({
+      currentMapId: project.startMapId,
+      layer: "lower",
+      tool: "select",
+      selection: { mapId: project.startMapId, x: 1, y: 1, width: 1, height: 1 },
+    });
+
+    expect(handleEditorKey(keyEvent("Delete"))).toBe(true);
+
+    const next = store.getCurrent().maps[project.startMapId]!;
+    expect(next.lowerTiles[index]).toBe(-1);
+    expect(next.upperTiles[index]).toBe(-1);
+    expect(next.lowerTiles[0]).toBe(neighbor);
+    expect(editorState.get().selection).toEqual({ mapId: project.startMapId, x: 1, y: 1, width: 1, height: 1 });
+  });
+
+  it("Delete does nothing when no region is selected and does not clear during paste preview", () => {
+    const project = createBlankProject();
+    const map = project.maps[project.startMapId]!;
+    const kept = map.lowerTiles[0];
+    store.replace(project);
+    editorState.set({ currentMapId: project.startMapId, layer: "lower", tool: "select", selection: null });
+    expect(handleEditorKey(keyEvent("Delete"))).toBe(false);
+    expect(store.getCurrent().maps[project.startMapId]?.lowerTiles[0]).toBe(kept);
+
+    editorState.set({
+      selection: { mapId: project.startMapId, x: 0, y: 0, width: 1, height: 1 },
+      pastePreview: { x: 2, y: 2 },
+    });
+    expect(handleEditorKey(keyEvent("Delete"))).toBe(false);
+    expect(store.getCurrent().maps[project.startMapId]?.lowerTiles[0]).toBe(kept);
   });
 });

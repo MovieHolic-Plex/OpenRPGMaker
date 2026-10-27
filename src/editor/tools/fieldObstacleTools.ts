@@ -23,7 +23,7 @@ export const FIELD_OBSTACLE_KINDS = ['rock', 'tree', 'water', 'dark', 'waterfall
 type ObstacleKind = (typeof FIELD_OBSTACLE_KINDS)[number];
 
 const DIRS: Record<Dir, readonly [number, number]> = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] };
-const KEYS = ['mapId', 'x', 'y', 'kind', 'requiresSkillId', 'requiresActorId', 'skillName', 'name', 'tile', 'passTile', 'direction', 'length', 'span', 'fullWidth', 'machine', 'hint', 'blockedText', 'requiresBadge', 'requiresSwitchId', 'giverX', 'giverY', 'giverMapId', 'id'] as const;
+const KEYS = ['mapId', 'x', 'y', 'kind', 'requiresSkillId', 'requiresActorId', 'skillName', 'name', 'tile', 'tileAbove', 'passTile', 'direction', 'length', 'span', 'fullWidth', 'machine', 'hint', 'blockedText', 'requiresBadge', 'requiresSwitchId', 'giverX', 'giverY', 'giverMapId', 'id'] as const;
 
 /** 종류별 기본: 독자 기술 이름(원작 이름을 쓰지 않는다), 안내 대사, 칩셋 타일 라벨 패턴. */
 const DEFAULTS: Record<ObstacleKind, { skillId: string; skillName: string; skillText: string; blocked: string; event: string; tile?: RegExp; pass?: RegExp; hmName: string }> = {
@@ -335,6 +335,7 @@ export const FIELD_OBSTACLE_TOOLS: readonly ToolDefinition[] = [
       skillName: { type: 'string', description: '새로 만들 때 기술 이름(독자 이름 — 원작 이름은 쓰지 않는다). 이미 있는 스킬이면 무시' },
       name: { type: 'string', description: '이벤트 이름(생략=종류별 기본)' },
       tile: { type: 'integer', description: 'rock·tree 에 깔 막는 칸 번호(생략=칩셋에서 자동). 칩셋에 없으면 필요 — tile_query' },
+      tileAbove: { type: 'integer', description: 'rock·tree: 두 칸 높이 그림(얼음 덩이·큰 바위)의 윗머리 칸 번호 — 막는 칸 바로 위 칸 위층에 얹고, 기술로 열면 함께 걷는다. 생략=한 칸 그림' },
       passTile: { type: 'integer', description: 'water·waterfall 에서 기술을 쓰면 놓이는 다리·발판 칸 번호(생략=칩셋에서 나무다리·디딤돌 자동)' },
       direction: { type: 'string', enum: ['up', 'down', 'left', 'right'], description: 'water·waterfall·gap: (x,y)에서 건너갈 방향(기본 right=물, up=폭포, gap 은 자동 탐지). rock·tree 의 span: 막는 줄이 뻗는 방향(생략=도로 폭이 좁은 쪽 축)' },
       length: { type: 'integer', description: 'water·waterfall: 건널 칸 수 1..12(기본 water 3, waterfall 2). gap: 틈 폭 1..2(생략=자동)' },
@@ -402,7 +403,7 @@ export const FIELD_OBSTACLE_TOOLS: readonly ToolDefinition[] = [
       if (previous) {
         for (const page of previous.pages ?? []) {
           for (const command of page.commands) {
-            if (command.kind === 'changeTile' && command.mapId === map.id && command.x === previous.x && command.y === previous.y) {
+            if (command.kind === 'changeTile' && command.mapId === map.id && command.x === previous.x && (command.y === previous.y || command.y === previous.y - 1)) {
               writeLayer(map, command.layer, command.y * map.width + command.x, command.tile);
               warnings.push(`같은 id '${id}' 의 앞선 장애물 칸 (${previous.x}, ${previous.y}) 의 막는 타일을 원래대로 되돌렸습니다.`);
             }
@@ -413,7 +414,7 @@ export const FIELD_OBSTACLE_TOOLS: readonly ToolDefinition[] = [
       const extraPrefix = `${id}_c`;
       for (const extra of map.events.filter((entry) => entry.id.startsWith(extraPrefix) && /^\d+$/u.test(entry.id.slice(extraPrefix.length)))) {
         for (const page of extra.pages ?? []) for (const command of page.commands) {
-          if (command.kind === 'changeTile' && command.mapId === map.id && command.x === extra.x && command.y === extra.y) writeLayer(map, command.layer, command.y * map.width + command.x, command.tile);
+          if (command.kind === 'changeTile' && command.mapId === map.id && command.x === extra.x && (command.y === extra.y || command.y === extra.y - 1)) writeLayer(map, command.layer, command.y * map.width + command.x, command.tile);
         }
       }
       map.events = map.events.filter((entry) => !(entry.id.startsWith(extraPrefix) && /^\d+$/u.test(entry.id.slice(extraPrefix.length))));
@@ -429,6 +430,8 @@ export const FIELD_OBSTACLE_TOOLS: readonly ToolDefinition[] = [
       const pages: EventPage[] = [];
       const clearCommands: Command[] = [];
       let usedTile: number | undefined;
+      let tileAbove: number | undefined;
+      if (args.tileAbove !== undefined && k !== 'rock' && k !== 'tree') throw new ToolError(`tileAbove 는 rock·tree 장애물(두 칸 높이 그림의 윗머리)에만 씁니다 — ${k} 에는 쓰지 않습니다.`, { code: 'invalid-args' });
       let cells: { x: number; y: number }[] = [{ x, y }];
 
       // rock·tree 는 칸마다 막는 타일 + 보조 이벤트를 둔다(칸마다 서서 바라보며 기술을 쓸 수 있어야 하므로). water·waterfall·dark 는 이벤트 하나.
@@ -438,6 +441,7 @@ export const FIELD_OBSTACLE_TOOLS: readonly ToolDefinition[] = [
       if (k === 'rock' || k === 'tree') {
         if (!isPassable(draft, map, x, y)) throw new ToolError(`(${x}, ${y}) 는 이미 막힌 칸입니다 — 바위·덩굴은 걸어갈 수 있는 길 칸에 놓아 길을 막습니다. get_map_region 으로 길 칸을 확인하세요.`, { code: 'obstacle-not-on-path', mapId: map.id, x, y });
         usedTile = chosenTile(args.tile, 'tile', draft.tilesets[map.tilesetId]?.count) ?? tilesByLabel(draft, map, base.tile!)[0];
+        tileAbove = chosenTile(args.tileAbove, 'tileAbove', draft.tilesets[map.tilesetId]?.count);
         if (usedTile === undefined) throw new ToolError(`칩셋 '${map.tilesetId}' 에 ${k === 'tree' ? '자르기 나무' : '깨지는 바위'} 칸이 없습니다 — tile 로 막는 칸 번호를 직접 주세요(tile_query 로 '${k === 'tree' ? '나무·덤불' : '바위'}' 검색). 이 장애물은 monster_wild 칩셋 맵에서 그림까지 자동으로 깔립니다.`, { code: 'obstacle-tile-missing', mapId: map.id });
         // 막는 줄의 축: direction 이 있으면 그 축, 없으면 도로 폭이 좁은 쪽(도로는 긴 쪽으로 달린다).
         const horizontalRun = walkableRun(draft, map, x, y, true);
@@ -468,7 +472,15 @@ export const FIELD_OBSTACLE_TOOLS: readonly ToolDefinition[] = [
           writeLayer(scratch, layer, index, usedTile);
           if (isPassable(probe, scratch, cell.x, cell.y)) throw new ToolError(`타일 ${usedTile} 은 통행 가능이라 길을 막지 못합니다 — 막히는 칸(바위·나무)을 tile 로 고르세요(tile_query).`, { code: 'obstacle-tile-passable', mapId: map.id });
           writeLayer(map, layer, index, usedTile);
-          perCell.push({ x: cell.x, y: cell.y, clear: [{ kind: 'changeTile', mapId: map.id, layer, x: cell.x, y: cell.y, tile: original }] });
+          const clear: Command[] = [{ kind: 'changeTile', mapId: map.id, layer, x: cell.x, y: cell.y, tile: original }];
+          // 두 칸 높이 장애물(얼음 덩이·큰 바위의 윗머리): 바로 위 칸 위층에 머리를 얹고, 열리면 함께 걷는다.
+          if (tileAbove !== undefined && cell.y > 0) {
+            const aboveIndex = (cell.y - 1) * map.width + cell.x;
+            const aboveOriginal = readLayer(map, 'upper', aboveIndex);
+            writeLayer(map, 'upper', aboveIndex, tileAbove);
+            clear.push({ kind: 'changeTile', mapId: map.id, layer: 'upper', x: cell.x, y: cell.y - 1, tile: aboveOriginal });
+          }
+          perCell.push({ x: cell.x, y: cell.y, clear });
         }
         perCell.sort((a, b) => Number(b.x === x && b.y === y) - Number(a.x === x && a.y === y)); // 기본 이벤트(id)가 (x,y) 칸
         cells = perCell.map((entry) => ({ x: entry.x, y: entry.y }));

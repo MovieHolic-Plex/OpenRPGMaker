@@ -1,3 +1,4 @@
+import { updateFieldEnemyClashes } from "@/player/playSceneFieldEnemyClash";
 import { cancelPointerRoute, consumePendingTapAction } from "@/player/playScenePointerMove";
 import { showBattleAdmissionError } from "@/player/playSceneOverlays";
 import { transitBlocksCell, tryBoardTransit } from "@/player/playSceneTransit";
@@ -161,6 +162,7 @@ export function updatePlayScene(scene: PlaySceneContext, deltaMs: number): void 
   // Forced event routes must progress while the interpreter awaits completion.
   // The NPC updater keeps unrelated autonomous routes paused during dialogue.
   scene.updateAutonomousNPCs(deltaMs);
+  updateFieldEnemyClashes(scene, deltaMs);
   updateAmbientFlyers(scene, deltaMs);
   if (canUpdateWaitingEvents(scene) || conditionWaitScenes.has(scene)) {
     scene.updateParallelEvents(deltaMs);
@@ -453,16 +455,35 @@ function tryStartMove(scene: PlaySceneContext, input: InputState): void {
     }
     return;
   }
-  scene.facing = facingForStep(step.dx, step.dy);
-  const nx = scene.tileX + step.dx;
-  const ny = scene.tileY + step.dy;
-  if (tryStartLedgeHop(scene, body, step.dx, step.dy)) return;
+  // 지형이 열린 대각은 직선으로 그린다. 모서리 칸의 사람은 그 선 위에 있으므로, 벽과 같이
+  // 열린 축으로 미끄러진다. 목적지 칸의 사람은 여기서 빼지 않는다 — 아래 막힘 검사가 그 칸에서 멈춘다.
+  let dx = step.dx;
+  let dy = step.dy;
+  if (dx !== 0 && dy !== 0) {
+    const blockH = findBlockingEventForPlayerBody(scene, body, scene.tileX + dx, scene.tileY);
+    const blockV = findBlockingEventForPlayerBody(scene, body, scene.tileX, scene.tileY + dy);
+    if (blockH || blockV) {
+      if (!blockH) dy = 0;
+      else if (!blockV) dx = 0;
+      else {
+        scene.facing = input.dir ?? facingForStep(dx, dy);
+        const bumped = blockH ?? blockV;
+        if (diagnosticObserved("collision")) publishDiagnostic({ category: "collision", phase: "event", x: scene.tileX + (blockH ? dx : 0), y: scene.tileY + (blockH ? 0 : dy) });
+        firePlayerTouchEvent(scene, bumped.event.id, bumped.trigger.kind);
+        return;
+      }
+    }
+  }
+  scene.facing = facingForStep(dx, dy);
+  const nx = scene.tileX + dx;
+  const ny = scene.tileY + dy;
+  if (tryStartLedgeHop(scene, body, dx, dy)) return;
   const blockingEvent = findBlockingEventForPlayerBody(scene, body, nx, ny);
   if (blockingEvent) {
-    scene.facing = facingForStep(step.dx, step.dy);
+    scene.facing = facingForStep(dx, dy);
     // Pushing is cardinal. A diagonal collision must never move the body
     // diagonally while the object slides along only one axis.
-    if (step.dx !== 0 && step.dy !== 0 || !tryStartFurniturePush(scene, blockingEvent)) {
+    if (dx !== 0 && dy !== 0 || !tryStartFurniturePush(scene, blockingEvent)) {
       if (diagnosticObserved("collision")) publishDiagnostic({ category: "collision", phase: "event", x: nx, y: ny });
       firePlayerTouchEvent(scene, blockingEvent.event.id, blockingEvent.trigger.kind);
     }
@@ -613,8 +634,13 @@ function advancePlayerRouteCommands(scene: PlaySceneContext): void {
     const command = route.moves[route.index];
     route.index += 1;
     if (command && applyPlayerRouteCommand(scene, route, command)) return; // 이동 시작 → 이번 프레임 종료
-    if (command?.kind === "move" && route.stopOnBlocked) {
+    if ((command?.kind === "move" || command?.kind === "stepForward") && route.stopOnBlocked) {
       scene.playerRoute = null;
+      return;
+    }
+    // skippable:false — 막힌 걸음을 소비하면 다음 명령(반대 방향 등)이 엉뚱한 칸에서 실행된다.
+    if ((command?.kind === "move" || command?.kind === "stepForward") && route.preserveBlockedSteps) {
+      route.index -= 1;
       return;
     }
   }
@@ -721,7 +747,8 @@ function startPlayerRouteStep(scene: PlaySceneContext, route: PlayerRouteState, 
   }
   const body = resolvePlayerBody(store.getCurrent(), scene.session);
   // 강제 이동 루트도 몸 크기를 존중한다 — 3x3 주인공이 커맨드로는 벽을 뚫으면 안 된다.
-  if (!playerCanStep(scene, body, delta.x, delta.y)) return false; // 막히면 건너뜀
+  // 막히면 false. 호출측은 기본으로 이 걸음을 소비하고, preserveBlockedSteps 면 같은 걸음을 다시 시도한다.
+  if (!playerCanStep(scene, body, delta.x, delta.y)) return false;
   // Force-move routes still respect same-as-characters solid events (RM2K3 character collision).
   const blockingEvent = findBlockingEventForPlayerBody(scene, body, nx, ny);
   if (blockingEvent) {

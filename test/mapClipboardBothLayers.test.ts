@@ -6,6 +6,8 @@ import { createBlankProject, TILE } from "@/project/defaults";
 import { topTileInStack } from "@/project/mapOverlayTiles";
 import { store } from "@/project/store";
 import type { GameMap, MapId } from "@/project/types";
+// TILE.* / 263·319·85·378 are combined-town chip ids; new projects start on beodeul_city since the 2026-10-07 copyright purge.
+import { startOnRetiredCombinedTown } from "./support/retiredEasyRpgTilesets";
 
 // 영역 복사/붙여넣기는 하위+상위 레이어를 통째로 옮겨야 한다(RM2K3 관례).
 // 이전에는 현재 편집 레이어 하나만 복사되어 건물(하위 벽 + 상위 지붕) 같은
@@ -31,7 +33,7 @@ function startMapId(): MapId {
 }
 
 beforeEach(() => {
-  store.replace(createBlankProject());
+  store.replace(startOnRetiredCombinedTown(createBlankProject()));
   editorState.set({
     currentMapId: null,
     tool: "select",

@@ -78,7 +78,18 @@ export type StepResult =
       y: number;
       tile: number;
     }
-  | { kind: "moveEvent"; eventId: string; moves: MoveCommand[]; repeat: boolean; wait?: boolean }
+  | {
+      kind: "moveEvent";
+      eventId: string;
+      moves: MoveCommand[];
+      repeat: boolean;
+      wait?: boolean;
+      /**
+       * Present only when the authored route set `skippable: false`.
+       * Omitted means the historical default: a blocked step is consumed.
+       */
+      skippable?: false;
+    }
   | { kind: "openChest"; chestId: string } & import("@/project/storageChest").OpenChestFields
   | { kind: "openSaveMenu" }
   | { kind: "openMenuScreen"; screen?: "monster-box" }
@@ -219,7 +230,7 @@ export type StepResult =
       branchOnNotEnoughGold?: boolean;
     }
   | { kind: "gameOver"; message?: string; gameOverId?: string }
-  | { kind: "returnToTitle"; title?: string; message?: string; presentation?: import("@/project/cinematicSettings").EndingPresentation; clear?: { readonly endingId: string } };
+  | { kind: "returnToTitle"; title?: string; message?: string; presentation?: import("@/project/cinematicSettings").EndingPresentation; clear?: { readonly endingId: string }; continueTo?: import("@/project/types").EndingContinueTo };
 
 export type ResumeValue = number | boolean | string | undefined | void | "failed";
 export type PendingStep = Exclude<StepResult["kind"], "done"> | "waitUntil";

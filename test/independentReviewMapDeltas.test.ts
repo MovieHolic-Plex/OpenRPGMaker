@@ -6,6 +6,8 @@ import { extractOriginalContext, originalContextWindow } from "@/ai/originalCont
 import { createBlankMap, createBlankProject } from "@/project/defaults";
 import type { Project } from "@/project/types";
 import { independentReviewPayload } from "./independentReviewFixture";
+// The 2026-10-07 default (beodeul_city, ~7MB) alone overflows complete review evidence; these window/scope cases keep the small retired sheet.
+import { RETIRED_COMBINED_TOWN_TILESET_ID, startOnRetiredCombinedTown } from "./support/retiredEasyRpgTilesets";
 
 function reviewInput(before: Project, after: Project): ReviewInput {
   const changes = reviewChanges(before, after);
@@ -20,13 +22,13 @@ function reviewInput(before: Project, after: Project): ReviewInput {
 
 describe("independent review map deltas", () => {
   it.each([false, true])("fits a complete small-map rename with five unchanged 256x256 maps (preset references: %s)", withPresets => {
-    const before = createBlankProject();
+    const before = startOnRetiredCombinedTown(createBlankProject());
     const target = before.maps[before.startMapId];
     if (!target) throw new Error("Blank project requires its start map");
     expect([target.width, target.height]).toEqual([20, 15]);
     for (let i = 0; i < 5; i++) {
       const id = `unchanged_${i}`;
-      before.maps[id] = { ...createBlankMap(id, 256, 256), id };
+      before.maps[id] = { ...createBlankMap(id, 256, 256, RETIRED_COMBINED_TOWN_TILESET_ID), id };
       if (withPresets) (before.testPresets ??= []).push({ id: `preset_${i}`, name: `Preset ${i}`,
         startMapId: id, startPos: { x: i + 1, y: i + 2 }, gold: 100 + i });
     }
@@ -35,9 +37,8 @@ describe("independent review map deltas", () => {
     after.maps[target.id] = renamed;
     const input = reviewInput(before, after);
     const config = defaultAiConfig();
-    // 공장 기본 모델은 2026-09-26 에 3.8-flash 로 바뀌었다 — Ultrabrain 역할이 이미 그 모델을 쓰고,
-    // 실행 루프의 기본 사고 강도(minimal/low)도 그 모델의 지원 집합이다(실측: low 가 high 의 약 2/3 지연).
-    expect(config.model).toBe("gemini-3.8-flash");
+    // 공장 기본 모델은 2026-10-14 에 gemini-4-argon 으로 바뀌었다(#2535, 조수 기본 = Argon medium).
+    expect(config.model).toBe("gemini-4-argon");
 
     // Both whole-collection deltas and unconditional preset map closure overflow here.
     const request = buildIndependentReviewRequest(config, input);
@@ -59,16 +60,16 @@ describe("independent review map deltas", () => {
   });
 
   it("retains complete changed, added and deleted maps and omits unchanged IDs", () => {
-    const before = createBlankProject();
-    const changed = { ...createBlankMap("Old map", 2, 2), id: "changed",
+    const before = startOnRetiredCombinedTown(createBlankProject());
+    const changed = { ...createBlankMap("Old map", 2, 2, RETIRED_COMBINED_TOWN_TILESET_ID), id: "changed",
       lowerTileStacks: { 0: [1, 2] }, upperTileStacks: { 3: [3, 4] },
       roomHarnessPlan: { kitId: "fixture", plan: { nested: { preserve: "complete values" } } } };
-    const deleted = { ...createBlankMap("Deleted map", 3, 2), id: "deleted" };
+    const deleted = { ...createBlankMap("Deleted map", 3, 2, RETIRED_COMBINED_TOWN_TILESET_ID), id: "deleted" };
     before.maps[changed.id] = changed;
     before.maps[deleted.id] = deleted;
     const after = structuredClone(before);
     const revised = { ...structuredClone(changed), name: "New map", lowerTiles: [4, 3, 2, 1] };
-    const added = { ...createBlankMap("Added map", 2, 3), id: "added" };
+    const added = { ...createBlankMap("Added map", 2, 3, RETIRED_COMBINED_TOWN_TILESET_ID), id: "added" };
     after.maps[changed.id] = revised;
     delete after.maps[deleted.id];
     after.maps[added.id] = added;
@@ -82,8 +83,8 @@ describe("independent review map deltas", () => {
   });
 
   it("still refuses genuinely oversized complete changed-map evidence on the default reviewer", () => {
-    const before = createBlankProject();
-    const target = { ...createBlankMap("Large target", 512, 512), id: before.startMapId };
+    const before = startOnRetiredCombinedTown(createBlankProject());
+    const target = { ...createBlankMap("Large target", 512, 512, RETIRED_COMBINED_TOWN_TILESET_ID), id: before.startMapId };
     before.maps[target.id] = target;
     const after = structuredClone(before);
     after.maps[target.id] = { ...structuredClone(target), name: "Renamed large target" };

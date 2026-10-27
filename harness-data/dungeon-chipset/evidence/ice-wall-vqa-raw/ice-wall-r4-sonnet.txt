@@ -1,0 +1,28 @@
+VERDICT: FAIL
+A1: FAIL
+A2: FAIL
+
+Coordinates are in the 3x scene images (864x576 left half) unless noted. A1 = narrow-column front face. A2 = broad-column front face with dark star marks.
+
+Both candidates
+- Floor contact (6): the bottom of every front face is a hard, ruler-straight near-black band (y~140 on the north wall, y~285 on the middle wall, y~480/525 on the small walls). It meets the light snow floor with no shadow falloff, no snow drift, and no broken edge. The wall reads as a dark rectangle placed on top of the floor. Beodeul's wall base blends into the ground.
+- Top face (1, 7): the top face is a flat mid-blue-grey fill with sparse 1px light dots (x<50 and the strip above the north wall). Read as rock from above, it carries too little information per tile. It has no ridges, no cracks, and no 2-3 step shading. The frost is only a thin pale lip along the wall top (y~47). Beodeul has several shading steps and varied texture per tile.
+- Rim (5): a pale blue-white 2-3px lip runs along the whole top edge of the front face, and the outcrops (x~385-480, x~672-720) have a pale cap. It reads as an outline rim and not as frost lying on rock. The lip is an unbroken straight line.
+- Front face (2): the translucent ice is a saturated flat blue. It has no rock visible through it, no depth gradient, and no sense of a surface behind it. The dark pillars between the columns are plain dark slate. It reads as blue bars or a curtain over a black base, not ice over rock. The only gradient is horizontal banding.
+- 3/4 correctness (7): no side faces. The wall ends (x~48, x~528, x~816) are hard vertical cuts. There are no end caps or rounded corners, and the face just stops against the floor.
+
+A1 (narrow columns)
+- Stamp repetition (4): in the north wall (x 48-528) the columns recur at an almost constant period of about 16-17px at 1x. Each carries the same cross-brace mark, at about y~68 and again at y~75. The wall reads as a picket fence of one repeated column. The 16px stamp is obvious.
+- Icicles (3): the tips end at a similar depth (y~120-130) and are all vertical parallelograms of the same width. Only the dark-pillar spacing varies, and not by much. They are not convincingly uneven.
+- Piece sheet (x8): the 48px run (x~640-1280) shows evenly spaced vertical bars with pointed bottoms. They look like organ pipes, not icicles.
+
+A2 (broad columns)
+- Stamp repetition (4): the dark star glyph and the cross mark recur at a regular period of about 32px along the north wall (x~108, 190, 280, 330, 400, 470, ...). The pale cross-brace sits on the same row in every column. Because the marks are so distinctive and so regular, the repetition is more visible than in A1.
+- Icicles (3): the broad columns are uniform in width. The jagged black base looks like torn paper, not icicle tips. The unevenness is a dark spiky base and not ice hanging unevenly.
+- Pattern (2): the dark 4-point "star" marks look like rivets or holes, not ice features. The pale "T" brace lines look like stitching or bars.
+
+Quality vs Beodeul (8): at the same scale both are cleaner but much flatter than Beodeul. Beodeul has varied texture, soft transitions to the floor, and no repeated glyphs. The floor tiles are good and make the wall look worse by contrast.
+
+Minor notes
+- Outcrop top caps (x~385-480, y~340-385) have jagged tops that match the floor edge style. That part is fine.
+- No dark outline rim around the silhouettes. The lip is light, so that part of the brief is met, but see Rim above.

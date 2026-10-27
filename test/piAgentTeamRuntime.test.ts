@@ -773,26 +773,8 @@ describe("팀 초기 생성 — 맵 사이 연결 계약", () => {
 });
 
 
-describe("팀 마을 완료 상태", () => {
-  it("팀원 완료 정보를 최종 병합본에서 재검사해 done에도 미완료를 남긴다", async () => {
-    const project = seeded();
-    const events: PiAgentEvent[] = [];
-    const runAgent: NonNullable<RunPiTeamOptions["runAgent"]> = async (req, opts) => {
-      const extra = opts.extraTools ?? [];
-      if (extra.some(tool => tool.name === "assign_map_agent")) {
-        await callTool(extra, "assign_map_agent", { mapId: "map_a", task: "마을", member: "builder" });
-        await callTool(extra, "wait_agents", {});
-        return doneWith(req.project);
-      }
-      const next = built(req.project, "map_a", "아직 집이 없는 마을");
-      return { ...doneWith(next, ["maps.map_a"]), villageCompletion: { mapIds: ["map_a"], issues: [] } };
-    };
-    const done = await runPiTeam(request(project), { runAgent, onEvent: event => events.push(event) });
-    expect(done.villageCompletion?.mapIds).toEqual(["map_a"]);
-    expect(done.villageCompletion?.issues.join("\n")).toContain("문 앞 좌표가 0개");
-    expect(events.some(event => event.type === "agent_done" && event.agentId.startsWith("orchestrator-") && !event.ok)).toBe(true);
-  });
-});
+// 「팀 마을 완료 상태」(done.villageCompletion 재검사) 는 뺐다 — villageCompletion 검사가 src 에서 제거됐다(공개 기준선 이전, 런타임·팀 결과에 그 필드가 더는 없다).
+
 
 describe("팀 런타임 — 429 자동 재시도(finish 단계)", () => {
   // 깨질 것: 시공 팀원이 429 로 죽은 채 팀장이 finish 하면 일이 안 된 채로 끝났다(romance-real-2 b1/b2, jrpg-real-1 J04).

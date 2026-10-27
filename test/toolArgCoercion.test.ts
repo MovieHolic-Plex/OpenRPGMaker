@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { runTool } from "@/editor/tools";
+import { getTool, runTool, validateArgs } from "@/editor/tools";
 import { normalizeToolArgs } from "@/editor/tools/toolRunner";
 import { createBlankProject } from "@/project/defaults";
 import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
@@ -150,6 +150,8 @@ describe("tool argument coercion", () => {
     });
 
     expect(normalized).toMatchObject({ width: 13, height: 8 });
+    expect(normalized).not.toHaveProperty("w");
+    expect(normalized).not.toHaveProperty("h");
   });
 
   it("keeps top-level coordinates ahead of wrapper coordinates", () => {
@@ -161,6 +163,71 @@ describe("tool argument coercion", () => {
     });
 
     expect(normalized).toMatchObject({ x: 9, y: 8, w: 3, h: 4 });
+    expect(normalized).not.toHaveProperty("rect");
+  });
+
+  it("drops a coordinate wrapper after copying so a strict tool accepts the call", () => {
+    const normalized = normalizeToolArgs("place_field_obstacle", {
+      mapId: MAP_ID,
+      kind: "gap",
+      bounds: { x: 4, y: 6 },
+    });
+
+    expect(normalized).toEqual({ mapId: MAP_ID, kind: "gap", x: 4, y: 6 });
+    expect(validateArgs(getTool("place_field_obstacle")!.parameters, normalized)).toEqual([]);
+  });
+
+  it("keeps a wrapper that did not hold coordinates so the unknown key is still rejected", () => {
+    const normalized = normalizeToolArgs("place_field_obstacle", {
+      mapId: MAP_ID,
+      x: 1,
+      y: 2,
+      kind: "tree",
+      rect: { note: "not a coordinate" },
+    });
+
+    expect(normalized).toMatchObject({ rect: { note: "not a coordinate" } });
+    expect(validateArgs(getTool("place_field_obstacle")!.parameters, normalized).join("\n")).toContain("허용되지 않은 인자: rect");
+  });
+
+  it("hoists nested cell wrappers, including mapId, and drops the wrapper key", () => {
+    const normalized = normalizeToolArgs("author_party_split", {
+      mapId: "map_tower",
+      splitAt: { rect: { x: 10, y: 18, mapId: "map_tower_2" } },
+      groups: [
+        { actorIds: ["actor_a"], pos: { x: 3, y: 15 } },
+        { actorIds: ["actor_b"], x: 17, y: 15 },
+      ],
+      rejoin: { x: 10, y: 2 },
+    }) as { splitAt: Record<string, unknown>; groups: Record<string, unknown>[] };
+
+    expect(normalized.splitAt).toEqual({ x: 10, y: 18, mapId: "map_tower_2" });
+    expect(normalized.groups[0]).toEqual({ actorIds: ["actor_a"], x: 3, y: 15 });
+  });
+
+  it("maps nested w/h onto width/height and drops an at-wrapper", () => {
+    const normalized = normalizeToolArgs("make_timed_escape", {
+      mapId: "map_lake",
+      exit: { x: 1, y: 2, w: 4, h: 1 },
+      checkpoint: { mapId: "map_shrine", at: { x: 3, y: 4 } },
+    }) as { exit: Record<string, unknown>; checkpoint: Record<string, unknown> };
+
+    expect(normalized.exit).toEqual({ x: 1, y: 2, width: 4, height: 1 });
+    expect(normalized.checkpoint).toEqual({ mapId: "map_shrine", x: 3, y: 4 });
+  });
+
+  it("drops flat coordinates after wrapping them into the single rect field", () => {
+    const normalized = normalizeToolArgs("build_wall", {
+      mapId: MAP_ID,
+      x: 2,
+      y: 5,
+      w: 4,
+      h: 4,
+      material: "흰 집 벽",
+    });
+
+    expect(normalized).toMatchObject({ mapId: MAP_ID, material: "흰 집 벽", rect: { x: 2, y: 5, w: 4, h: 4 } });
+    for (const key of ["x", "y", "w", "h", "width", "height"]) expect(normalized).not.toHaveProperty(key);
   });
 
   it("adds a retry example to v1 region schema validation errors", () => {

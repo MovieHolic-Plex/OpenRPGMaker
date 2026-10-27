@@ -3,7 +3,7 @@
 // 그리고 줄 하나를 그 자리에서 고치는 편집기. 쓰기는 dialogueActions(되돌리기 스냅샷 + 감사 라벨)를 지난다.
 
 import { store } from "@/project/store";
-import { dialogueKindLabel, dialogueLineUsesMessageWindow, type DialogueLine } from "@/editor/dialogue/dialogueIndex";
+import { dialogueKindLabel, dialogueLineUsesMessageWindow, registryFieldLabel, type DialogueLine } from "@/editor/dialogue/dialogueIndex";
 import { dialogueMeasureKey, estimateLineFit, registerMeasuredDialogueFit } from "@/editor/dialogue/dialogueEdits";
 import { writeDialogueWindow, type DialogueWindowRecord } from "@/project/dialogueDesk";
 import { editDialogueLine } from "@/editor/dialogue/dialogueActions";
@@ -101,7 +101,12 @@ export function fitBadge(fit: DialogueFit | undefined): HTMLElement {
 }
 
 export function speakerLabel(line: DialogueLine): string {
-  return line.speaker || (line.kind === "text" ? "내레이션" : dialogueKindLabel(line.kind));
+  return line.speaker || registryFieldLabel(line) || (line.kind === "text" ? "내레이션" : dialogueKindLabel(line.kind));
+}
+
+/** 「이동」할 편집 화면이 있는 줄인가. 퀘스트·엔딩 레지스트리 글은 따로 여는 화면이 없어 이 표에서만 고친다. */
+export function lineHasJumpTarget(line: DialogueLine): boolean {
+  return line.scope !== "quest" && line.scope !== "ending";
 }
 
 export function jumpToLine(line: DialogueLine, panelRoot: HTMLElement): void {

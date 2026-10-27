@@ -34,6 +34,8 @@ const LIQUID_OK = /boat|dock|driftwood|fish-net|bridge|lily|raft/;
 const isLiquidTile = (ts: TilesetDef, tile: number): boolean => tile >= 0 && (ts.tileMeta?.[tile]?.tags ?? []).includes("water");
 /** 벽에 뚫린 문·아치 — 그 밑 줄은 벽 앞면 위, 바로 남쪽은 걷는 바닥. */
 const WALL_DOOR = /arch-|secret-door|door-/;
+/** 통로 목에 끼우는 내리닫이 쇠창살문(tileGate.ts) — 목보다 넓은 문틀 칸은 일부러 목 양끝 벽 위에 얹힌다. */
+const NECK_GATE = /portcullis/;
 
 /** 키트 → 받침 규칙 종류. 던전 테마 키트만(그 밖은 null — 이 모듈이 보지 않는다). */
 export function kitSupportKind(kit: StructureKitDef): SupportKind | null {
@@ -103,7 +105,7 @@ function supportProblems(map: GameMap, ts: TilesetDef, kit: StructureKitDef, kin
     if (kind === "face") continue;
     if (surface === "ceiling") problems.push(`(${X},${Y}) 가 ${SURFACE_KO.ceiling} 칸이다 — 허공에는 물체를 놓지 않는다`);
     else if (kind !== "mount" && surface === "ground" && isLiquidTile(ts, at(map, X, Y)) && !LIQUID_OK.test(kit.id)) problems.push(`(${X},${Y}) 가 물·용암 칸이다 — 걸을 수 없는 칸 위에는 물체를 놓지 않는다(배·말뚝만 예외)`);
-    else if (kind === "stand" && bottom && surface === "wall") problems.push(`(${X},${Y}) 밑이 벽이다 — 물체는 걷는 바닥 위에 선다`);
+    else if (kind === "stand" && bottom && surface === "wall" && !NECK_GATE.test(kit.id)) problems.push(`(${X},${Y}) 밑이 벽이다 — 물체는 걷는 바닥 위에 선다`);
     else if (kind === "mount" && surface !== "wall") problems.push(`(${X},${Y}) 가 ${SURFACE_KO[surface]} 칸이다 — 벽 앞면에 거는 물건은 벽 칸에만 건다`);
   }
   if (kind === "door") {
@@ -202,7 +204,7 @@ export function groundSupportIssues(map: GameMap, ts: TilesetDef | undefined, op
         let why: string | null = null;
         if (surface === "ceiling") why = `${SURFACE_KO.ceiling} 위에 놓였다`;
         else if (entry.kind !== "mount" && surface === "ground" && isLiquidTile(ts, at(map, x, y)) && !LIQUID_OK.test(entry.kitId)) why = "물·용암 칸 위에 놓였다(걸을 수 없는 칸)";
-        else if (entry.kind === "stand" && entry.bottom && surface === "wall") why = "벽 칸 위에 서 있다";
+        else if (entry.kind === "stand" && entry.bottom && surface === "wall" && !NECK_GATE.test(entry.kitId)) why = "벽 칸 위에 서 있다";
         else if (entry.kind === "mount" && surface !== "wall") why = `${SURFACE_KO[surface]} 칸에 걸려 있다(벽 앞면에만 건다)`;
         else if (entry.kind === "door" && entry.bottom) {
           const south = y + 1 < H ? supportSurfaceOf(ts, at(map, x, y + 1)) : "ground";
@@ -219,6 +221,9 @@ export function groundSupportIssues(map: GameMap, ts: TilesetDef | undefined, op
   if (opts.events !== false) {
     for (const event of map.events ?? []) {
       if (issues.length >= MAX_ISSUES_PER_MAP) break;
+      // 보이지 않는 자동·병렬 이벤트(맵 진입 분위기·날씨, 도착 장면)는 칸에 선 물체가 아니다 — 받침을 따지지 않는다
+      // (set_scene_mood 가 (0,0) 에 두는 날씨 이벤트가 던전 맵 허공 칸이라 거절됐다, 2026-10-26).
+      if (isInvisibleLogicEvent(event)) continue;
       const surface = supportSurfaceOf(ts, at(map, event.x, event.y));
       if (surface === "ceiling") {
         issues.push({ severity: "error", code: "ground-support", x: event.x, y: event.y, eventId: event.id,
@@ -240,4 +245,16 @@ export function groundSupportIssues(map: GameMap, ts: TilesetDef | undefined, op
     }
   }
   return issues;
+}
+
+/** 모든 페이지가 그림 없는(투명) 자동·병렬 실행 이벤트 — 맵 논리용이라 바닥 받침이 필요 없다. */
+function isInvisibleLogicEvent(event: { trigger?: { kind?: string }; pages?: readonly { trigger?: { kind?: string }; graphic?: unknown }[] }): boolean {
+  const pages = event.pages ?? [];
+  if (pages.length === 0) return event.trigger?.kind === "auto" || event.trigger?.kind === "parallel";
+  return pages.every((page) => {
+    const g = page.graphic as { transparent?: boolean; sprite?: unknown; tileId?: unknown } | undefined;
+    const invisible = !g || g.transparent === true || (!g.sprite && g.tileId === undefined);
+    const kind = page.trigger?.kind ?? event.trigger?.kind;
+    return invisible && (kind === "auto" || kind === "parallel" || kind === "action");
+  }) && pages.some((page) => { const k = page.trigger?.kind ?? event.trigger?.kind; return k === "auto" || k === "parallel"; });
 }

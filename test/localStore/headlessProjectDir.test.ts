@@ -17,6 +17,8 @@ function runTool(args: readonly string[]): unknown {
   const output = execFileSync("node", ["scripts/oprn-tools.mjs", ...args], {
     encoding: "utf8",
     stdio: ["ignore", "pipe", "pipe"],
+    // --list 는 도구 카탈로그 전체(약 2.4MB)를 찍는다 — 기본 1MB 버퍼로는 ENOBUFS 로 끊겼다.
+    maxBuffer: 64 * 1024 * 1024,
   });
   return JSON.parse(output) as unknown;
 }

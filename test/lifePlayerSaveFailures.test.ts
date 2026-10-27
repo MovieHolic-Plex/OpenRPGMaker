@@ -9,6 +9,9 @@ vi.mock("@/player/runtimeJuice", () => ({ emitRuntimeJuice: vi.fn(() => ({})) })
 vi.mock("@/player/audio", () => ({
   getAudioEngine: vi.fn(() => ({ setQaInstrumentation: vi.fn() })),
   playAudioCommand: vi.fn(), stopAudioCommand: vi.fn(),
+  // 플레이어 정리 경로가 stopAllAudio 등을 부르게 되면서 mock 에도 같은 이름이 있어야 한다.
+  stopAllAudio: vi.fn(), stopAudioChannel: vi.fn(), playSoundEffect: vi.fn(), playMusicEffect: vi.fn(), resumeAudioState: vi.fn(),
+  AUDIO_HANDOFF_REGISTRY_KEY: "audioHandoffOwned",
 }));
 vi.mock("@/player/runtimeDebugPanel", () => ({ renderRuntimeDebugPanel: () => document.createElement("div") }));
 

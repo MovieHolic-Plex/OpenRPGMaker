@@ -422,6 +422,8 @@ describe("포켓몬 단일 대상 자동 확정", () => {
     const troop = project.database.troops.find((entry) => entry.id === "troop_pkmn_new_pair")!;
     troop.members = [...(troop.members ?? []), { enemyId: "enemy_pkmn_puddlup", x: 220, y: 132 }];
     troop.enemyIds = troop.members.map((member) => member.enemyId);
+    // 포켓몬 화면의 종 몬스터 여럿은 기본(activeSlots 1)이면 한 마리씩 나온다(runtime singleFileEnemies, 2026-10-07) — 둘을 함께 세운다.
+    troop.activeSlots = 2;
     const rt = start(project, "troop_pkmn_new_pair");
     expect(rt.snapshot().enemies.length).toBe(2);
     const skillId = rt.snapshot().actors[0]?.skillIds[0];

@@ -12,7 +12,7 @@ import {
   tickEncounterGuard,
   troopWildLevel,
 } from "@/project/encounterGuard";
-import { normalizeItemRecord } from "@/project/databaseRecordModel";
+import { normalizeItemRecord, normalizeSystemRecords } from "@/project/databaseRecordModel";
 import { activeItemEffects, itemAllowsBattle, itemAllowsMenu } from "@/project/itemUsage";
 import { useItemFromMenu } from "@/player/playerItemUse";
 import { largestWaterRect } from "@/project/examples/monsterExpedition/fieldItems";
@@ -64,6 +64,17 @@ describe("escape grace after fleeing", () => {
     delete project.system.escapeGraceSteps;
     delete project.system.battleParty; delete project.system.monsterBattleParty;
     expect(escapeGraceStepsOf(project)).toBe(0);
+  });
+  it("keeps an authored step count through the project save whitelist, including an explicit 0", () => {
+    // Break: normalizeSystemRecords is a whitelist. A missing field vanishes on one save/load,
+    // so a monster game that turned grace off (0) or set 12 silently returns to the default 4.
+    expect(normalizeSystemRecords({ startActorIds: [] }).escapeGraceSteps).toBeUndefined();
+    expect(normalizeSystemRecords({ startActorIds: [], escapeGraceSteps: 0 }).escapeGraceSteps).toBe(0);
+    expect(normalizeSystemRecords({ startActorIds: [], escapeGraceSteps: 12.8 }).escapeGraceSteps).toBe(12);
+    expect(normalizeSystemRecords({ startActorIds: [], escapeGraceSteps: 500 }).escapeGraceSteps).toBe(99);
+    expect(normalizeSystemRecords({ startActorIds: [], escapeGraceSteps: Number.NaN }).escapeGraceSteps).toBeUndefined();
+    const kept = normalizeSystemRecords({ startActorIds: [], escapeGraceSteps: 0, battleParty: "monsters" });
+    expect(escapeGraceStepsOf({ system: kept })).toBe(0);
   });
   it("suppresses exactly N steps, then the session field disappears", () => {
     const { project, session } = setup();

@@ -3,7 +3,8 @@ import {
   listDatabaseResourceOptions,
   openDatabaseResourcePickerDialog,
 } from "@/editor/panels/databaseResourcePickerDialog";
-import { getAudioEngine, playAudioCommand, stopAudioCommand } from "@/player/audio";
+import { getAudioEngine, playAudioCommand, stopAllAudio, stopAudioCommand } from "@/player/audio";
+import { authoredVolumePercent } from "@/player/audio/fade";
 import { listAudioResources } from "@/assets/audioResourceCatalog";
 import { audioDescriptionView, audioPlayback } from "@/editor/panels/audioResourcePresentation";
 import { store } from "@/project/store";
@@ -57,7 +58,8 @@ import {
   showEmoteBody,
   showPictureBody,
 } from "./commandBodyPage3Native";
-import { renderTransferPicker, transferDirectionLabel, transferFadeLabel } from "./transferPlayerDialog";
+import { transferEditorSummary } from "./commandSummary";
+import { renderTransferPicker } from "./transferPlayerDialog";
 import {
   CHARSET_CHARACTER_COUNT,
   CHARSET_FRAME_COUNT,
@@ -75,7 +77,7 @@ import {
   setClass,
 } from "./npcGraphicPickerControls";
 import { HOUSE_DOOR_CHARSET_TEXTURE } from "@/editor/houseInteriors";
-import type { Command, EventPageGraphic, GameEvent, GameMap, Project } from "@/project/types";
+import type { AudioCommandChannel, Command, EventPageGraphic, GameEvent, GameMap, Project } from "@/project/types";
 import type { CommandEditContext } from "./types";
 
 export function renderAdvancedCommandBody(
@@ -557,24 +559,35 @@ function transferBody(context: CommandEditContext, cmd: Extract<Command, { kind:
     class: "transfer-command-editor transfer-command-editor-inline",
     dataset: { testid: "event-transfer-player-dialog" },
   });
+  const summaryText = el("span", {
+    class: "transfer-command-summary",
+    text: transferEditorSummary(seeded),
+    dataset: { testid: "transfer-command-summary" },
+  });
+  const badge = passable === undefined
+    ? null
+    : el("span", {
+      class: `rich-badge ${passable ? "passable" : "blocked"}`,
+      text: passable ? "통행 가능" : "통행 불가 타일!",
+      dataset: { testid: "transfer-passability-badge", passable: String(passable) },
+    });
+  const paintSummary = (command: Extract<Command, { kind: "transfer" }>): void => {
+    summaryText.textContent = transferEditorSummary(command);
+    if (!badge) return;
+    const nextMap = command.mapId ? project.maps[command.mapId] : undefined;
+    if (!nextMap) return;
+    const nextPassable = isPassable(project, nextMap, command.x, command.y);
+    badge.className = `rich-badge ${nextPassable ? "passable" : "blocked"}`;
+    badge.textContent = nextPassable ? "통행 가능" : "통행 불가 타일!";
+    badge.dataset.passable = String(nextPassable);
+  };
+  const commit = (command: Extract<Command, { kind: "transfer" }>): void => {
+    paintSummary(command);
+    context.actions.replaceCommand(context.path, command);
+  };
   const summary = el("div", {
     class: "transfer-command-summary-row",
-    children: [
-      el("span", {
-        class: "transfer-command-summary",
-        text: `${map?.name ?? (seeded.mapId || "(맵)")} (${seeded.x}, ${seeded.y}) / ${transferDirectionLabel(seeded.direction)} / 페이드: ${transferFadeLabel(seeded.fade)}`,
-        dataset: { testid: "transfer-command-summary" },
-      }),
-      ...(passable === undefined
-        ? []
-        : [
-            el("span", {
-              class: `rich-badge ${passable ? "passable" : "blocked"}`,
-              text: passable ? "통행 가능" : "통행 불가 타일!",
-              dataset: { testid: "transfer-passability-badge", passable: String(passable) },
-            }),
-          ]),
-    ],
+    children: badge ? [summaryText, badge] : [summaryText],
   });
   const pickerHost = el("div", {
     class: "transfer-command-inline-picker",
@@ -587,16 +600,29 @@ function transferBody(context: CommandEditContext, cmd: Extract<Command, { kind:
       command: seeded,
       hideFooter: true,
       liveApply: true,
-      onApply: (command) => context.actions.replaceCommand(context.path, command),
+      latestCommand: () => latestTransfer(context, seeded),
+      onApply: commit,
     },
     () => undefined
   );
-  host.append(summary, transferDoorRow(context, seeded), pickerHost);
+  host.append(summary, transferDoorRow(context, seeded, commit), pickerHost);
   return host;
 }
 
+function latestTransfer(
+  context: CommandEditContext,
+  fallback: Extract<Command, { kind: "transfer" }>,
+): Extract<Command, { kind: "transfer" }> {
+  const current = context.getCurrentCommand?.();
+  return current?.kind === "transfer" ? current : fallback;
+}
+
 /** 문 열림 연출: 자동(문 그림이 있는 칸에서만) / 켜기 / 끄기 — transfer.door 생략·true·false. */
-function transferDoorRow(context: CommandEditContext, cmd: Extract<Command, { kind: "transfer" }>): HTMLElement {
+function transferDoorRow(
+  context: CommandEditContext,
+  cmd: Extract<Command, { kind: "transfer" }>,
+  commit: (command: Extract<Command, { kind: "transfer" }>) => void,
+): HTMLElement {
   const select = el("select", { dataset: { testid: "transfer-door-mode" }, attrs: { "aria-label": "문 열림 연출" } }) as HTMLSelectElement;
   for (const [value, label] of [["auto", "자동"], ["on", "켜기"], ["off", "끄기"]] as const) {
     const option = el("option", { text: label, attrs: { value } }) as HTMLOptionElement;
@@ -604,9 +630,11 @@ function transferDoorRow(context: CommandEditContext, cmd: Extract<Command, { ki
   }
   select.value = cmd.door === true ? "on" : cmd.door === false ? "off" : "auto";
   select.addEventListener("change", () => {
-    const { door: _drop, ...rest } = cmd;
+    // 맵 피커는 이 폼을 다시 그리지 않는다. 열릴 때의 cmd 로 덮으면 방금 고른 방향·페이드가 사라진다.
+    const current = latestTransfer(context, cmd);
+    const { door: _drop, ...rest } = current;
     const next = select.value === "on" ? { ...rest, door: true } : select.value === "off" ? { ...rest, door: false } : rest;
-    context.actions.replaceCommand(context.path, next as Extract<Command, { kind: "transfer" }>);
+    commit(next);
   });
   return el("label", {
     class: "transfer-command-door-row",
@@ -1389,12 +1417,29 @@ function skillSubtitle(record: { readonly mpCost: { readonly flat: number }; rea
   return `MP ${record.mpCost.flat} · 위력 ${record.power} · ${scopeLabel}${typeLabel}`;
 }
 
+// 미리 듣기를 시작한 뒤에만 감시한다. 폼이 대화상자 닫기·인스펙터 교체로 문서에서 빠지면 그 재생을 끊는다.
+function stopOwnedAudioPreviewWhenDetached(node: HTMLElement, active: () => boolean, stop: () => void): void {
+  if (typeof MutationObserver === "undefined" || typeof document === "undefined" || !document.body) return;
+  const observer = new MutationObserver(() => {
+    if (node.isConnected) return;
+    observer.disconnect();
+    if (!active()) return;
+    stop();
+  });
+  observer.observe(document.body, { childList: true, subtree: true });
+}
+
 function playAudioBody(context: CommandEditContext, cmd: Extract<Command, { kind: "playAudio" }>): HTMLElement {
   getAudioEngine().installUnlockListeners();
 
-  let channel: "bgm" | "se" = cmd.loop ? "bgm" : "se";
+  let routed: AudioCommandChannel | undefined = cmd.channel;
+  let channel: "bgm" | "se" = routed === "se" || routed === "me" ? "se" : routed === "bgm" || routed === "bgs" ? "bgm" : cmd.loop ? "bgm" : "se";
   let resourceId = cmd.resourceId.trim();
-
+  let volumeTouched = false;
+  let fadeTouched = false;
+  // 미리 듣기는 게임 엔진을 쓴다. 이 폼이 재생을 시작한 뒤에 문서에서 빠지면 그 곡만 끊는다.
+  let previewStarted = false;
+  let previewDetachWatching = false;
   const wrap = el("div", {
     class: "play-audio-command-body cream-command-form",
     dataset: { testid: "play-audio-command-body" },
@@ -1424,12 +1469,60 @@ function playAudioBody(context: CommandEditContext, cmd: Extract<Command, { kind
     dataset: { testid: "play-audio-meta" },
   });
 
+  const volumeInput = el("input", {
+    attrs: { type: "number", min: "0", max: "100", step: "1", inputmode: "numeric", "aria-label": "이 소리의 음량 (%)" },
+    value: String(authoredVolumePercent(cmd.volume)),
+    dataset: { testid: "play-audio-volume" },
+  }) as HTMLInputElement;
+  const fadeInput = el("input", {
+    attrs: { type: "number", min: "0", max: "60", step: "0.1", inputmode: "decimal", "aria-label": "페이드인 (초)", placeholder: "기본" },
+    value: cmd.fadeInMs === undefined ? "" : String(cmd.fadeInMs / 1000),
+    dataset: { testid: "play-audio-fade" },
+  }) as HTMLInputElement;
+  const channelNote = el("p", { class: "play-audio-mix-hint", dataset: { testid: "play-audio-channel-note" } });
+
+  const volumeToWrite = (): number | undefined => {
+    if (!volumeTouched) return cmd.volume;
+    const raw = volumeInput.value.trim();
+    if (raw === "") return cmd.volume;
+    const percent = Math.round(Number(raw));
+    if (!Number.isFinite(percent)) return cmd.volume;
+    const clamped = Math.max(0, Math.min(100, percent));
+    if (clamped === 100 && cmd.volume === undefined) return undefined;
+    return clamped;
+  };
+  const fadeToWrite = (): number | undefined => {
+    if (!fadeTouched) return cmd.fadeInMs;
+    const raw = fadeInput.value.trim();
+    if (raw === "") return undefined;
+    const seconds = Number(raw);
+    if (!Number.isFinite(seconds)) return cmd.fadeInMs;
+    return Math.max(0, Math.min(60_000, Math.round(seconds * 1000)));
+  };
+  const playbackChannel = (): AudioCommandChannel | undefined => {
+    if (routed === "bgs" && channel === "bgm") return "bgs";
+    if (routed === "me" && channel === "se") return "me";
+    if (routed === "bgm" || routed === "se") return routed;
+    return undefined;
+  };
+  const authoredFields = (): { channel?: AudioCommandChannel; volume?: number; fadeInMs?: number } => {
+    const playback = playbackChannel();
+    const volume = volumeToWrite();
+    const fadeInMs = fadeToWrite();
+    return {
+      ...(playback === undefined ? {} : { channel: playback }),
+      ...(volume === undefined ? {} : { volume }),
+      ...(fadeInMs === undefined ? {} : { fadeInMs }),
+    };
+  };
+
   const apply = (): void => {
     if (audioPlayback(resourceId, store.getCurrent()).midi) return;
     context.actions.replaceCommand(context.path, {
       kind: "playAudio",
       resourceId,
       loop: channel === "bgm",
+      ...authoredFields(),
     });
     refreshMeta();
   };
@@ -1471,7 +1564,10 @@ function playAudioBody(context: CommandEditContext, cmd: Extract<Command, { kind
           dataset: { testid: `play-audio-channel-${option.value}` },
           on: {
             click: () => {
-              channel = option.value;
+              const next = option.value;
+              if (next === "bgm" && (routed === "se" || routed === "me")) routed = "bgm";
+              if (next === "se" && (routed === "bgm" || routed === "bgs")) routed = "se";
+              channel = next;
               // Prefer a sensible default when switching channel with empty/wrong-kind id.
               const catalog = catalogFor(channel, store.getCurrent());
               if (!resourceId || !catalog.some((entry) => entry.id === resourceId)) {
@@ -1557,8 +1653,16 @@ function playAudioBody(context: CommandEditContext, cmd: Extract<Command, { kind
           return;
         }
         stopAudioCommand();
+        playAudioCommand({ resourceId, loop: channel === "bgm", ...authoredFields() }, store.getCurrent());
         playAudioCommand({ resourceId, loop: channel === "bgm" }, store.getCurrent());
-        status.textContent = `재생 중: ${currentOptionLabel(list) || currentAudioLabel(resourceId, store.getCurrent())}`;
+        previewStarted = true;
+        if (!previewDetachWatching) {
+          previewDetachWatching = true;
+          stopOwnedAudioPreviewWhenDetached(wrap, () => previewStarted, () => {
+            previewStarted = false;
+            stopAllAudio();
+          });
+        }        status.textContent = `재생 중: ${currentOptionLabel(list) || currentAudioLabel(resourceId, store.getCurrent())}`;
       },
     },
   });
@@ -1600,16 +1704,52 @@ function playAudioBody(context: CommandEditContext, cmd: Extract<Command, { kind
       ? "장면·분위기 검색 (예: 마을, 보스, 비)"
       : "장면·행동 검색 (예: 문, 구매, 마법)";
     browseBtn.textContent = channel === "bgm" ? "배경음 목록 열기…" : "효과음 목록 열기…";
+    const special = playbackChannel();
+    if (special === "bgs") {
+      channelNote.hidden = false;
+      channelNote.textContent = "환경음(BGS)입니다. 맵 배경음과 겹쳐 재생됩니다. 효과음으로 바꾸면 한 번만 재생됩니다.";
+    } else if (special === "me") {
+      channelNote.hidden = false;
+      channelNote.textContent = "효과 음악(ME)입니다. 배경음 음량을 따르고 한 번만 재생됩니다.";
+    } else {
+      channelNote.hidden = true;
+      channelNote.textContent = "";
+    }
   };
+  volumeInput.addEventListener("change", () => {
+    volumeTouched = true;
+    apply();
+  });
+  fadeInput.addEventListener("change", () => {
+    fadeTouched = true;
+    apply();
+  });
 
   rebuildChannelButtons();
   refreshChannelCopy();
   fillList();
   refreshMeta();
 
+  const mixRow = el("div", {
+    class: "play-audio-mix-row",
+    children: [
+      el("label", {
+        children: [el("span", { text: "음량 (%)" }), volumeInput],
+      }),
+      el("label", {
+        children: [el("span", { text: "페이드인 (초)" }), fadeInput],
+      }),
+    ],
+  });
   wrap.append(
     el("div", { class: "play-audio-label", text: "채널" }),
     channelRow,
+    channelNote,
+    mixRow,
+    el("p", {
+      class: "play-audio-mix-hint",
+      text: "음량은 이 명령만 줄입니다. 플레이어의 배경음·효과음 설정과 곱해집니다. 페이드인을 비우면 배경음은 짧게 스며들고, 0이면 바로 재생됩니다.",
+    }),
     el("div", { class: "play-audio-label", text: "곡" }),
     search,
     resultCount,
@@ -1622,7 +1762,7 @@ function playAudioBody(context: CommandEditContext, cmd: Extract<Command, { kind
     status,
     el("div", {
       class: "empty-hint",
-      text: "배경음은 반복되고, 효과음은 한 번만 재생됩니다. 미리 듣기는 브라우저가 재생할 수 있는 소리만 됩니다.",
+      text: "배경음은 반복되고, 효과음은 한 번만 재생됩니다. 곡을 바꿔도 음량·페이드·환경음은 유지됩니다. 미리 듣기는 그 음량으로 재생됩니다.",
       dataset: { testid: "play-audio-channel-hint" },
     })
   );

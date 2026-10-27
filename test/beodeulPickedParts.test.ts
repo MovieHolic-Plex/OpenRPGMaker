@@ -18,6 +18,8 @@ function oldCopy(): TilesetDef {
   ts.animationStrips = (ts.animationStrips ?? []).filter(strip => strip.baseTile < base);
   ts.structureKits = (ts.structureKits ?? []).filter(kit => !kit.id.startsWith(BEODEUL_PICK_KIT_PREFIX));
   ts.referenceDocuments = (ts.referenceDocuments ?? []).filter(cat => !cat.id.startsWith("beodeul-picks-"));
+  // 새 사본은 시트 끝 뒤에 형태·검수·매싱 건물 이식 칸(tileGrafts)을 갖고 태어난다 — 옛 사본에는 그 칸이 없다.
+  ts.tileGrafts = (ts.tileGrafts ?? []).filter(graft => graft.targetTile < base);
   return ts;
 }
 
@@ -51,10 +53,11 @@ describe("버들항 고른 조각", () => {
     expect(ensureBeodeulCityTileset(ts)).toBe(true);
     expect(ensureBeodeulCityReferences(ts)).toBe(true);
     const fresh = createBeodeulCityTileset();
-    expect(ts.count).toBe(fresh.count);
+    // ensureBeodeulCityTileset 은 번들 시트 끝(BEODEUL_CITY_TILE_COUNT)까지 맞춘다. 그 뒤 이식 칸은 형태·검수·매싱 ensure 의 몫이다.
+    expect(ts.count).toBe(BEODEUL_CITY_TILE_COUNT);
     expect(ts.passability.slice(0, BEODEUL_CITY_BASE_COUNT)).toEqual(before);
-    expect(ts.passability.slice(BEODEUL_CITY_BASE_COUNT)).toEqual(fresh.passability.slice(BEODEUL_CITY_BASE_COUNT));
-    expect(ts.tileMeta).toHaveLength(fresh.count);
+    expect(ts.passability.slice(BEODEUL_CITY_BASE_COUNT)).toEqual(fresh.passability.slice(BEODEUL_CITY_BASE_COUNT, BEODEUL_CITY_TILE_COUNT));
+    expect(ts.tileMeta).toHaveLength(BEODEUL_CITY_TILE_COUNT);
     expect(ts.structureKits!.some(kit => kit.id === "my-kit")).toBe(true);
     expect(ts.structureKits!.filter(kit => kit.id.startsWith(BEODEUL_PICK_KIT_PREFIX)).length)
       .toBe(fresh.structureKits!.filter(kit => kit.id.startsWith(BEODEUL_PICK_KIT_PREFIX)).length);

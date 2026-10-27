@@ -3,6 +3,7 @@ import { poissonScatter } from "@/editor/tools/naturalScatter";
 import { placePropsOnDraft } from "@/editor/tools/placePropsDomain";
 import { createBlankMap, createBlankProject, TILE } from "@/project/defaults";
 import { mulberry32 } from "@/util/rng";
+import { useRetiredCombinedTown, withRetiredCombinedTownMaps } from "./support/retiredCombinedTownMaps";
 
 function everyPredicateVisits(run: () => void): number {
   const original = Array.prototype.every;
@@ -31,8 +32,9 @@ function pointSomePredicateVisits(run: () => void): number {
 }
 
 function fixture() {
-  const project = createBlankProject();
-  const map = createBlankMap("Sparse contract", 20, 20);
+  // 「나무 상자」(237)·TILE.GRASS·TILE.FLOWERS 는 합본 마을 칩셋 번호다 — 정리 전 빈 프로젝트처럼 그 칩셋 위에서 잰다.
+  const project = withRetiredCombinedTownMaps(createBlankProject());
+  const map = useRetiredCombinedTown(createBlankMap("Sparse contract", 20, 20));
   map.id = "sparse-contract";
   project.maps[map.id] = map;
   return { project, map, area: { x: 2, y: 2, w: 16, h: 16 } };

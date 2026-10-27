@@ -9,6 +9,9 @@
 //   tp/<troopId>/<pageId>/<path>#<field>              적 그룹 전투 이벤트 페이지
 //   ta/<troopId>/<victory|defeat|escape>/<path>#<field> 적 그룹 전투 뒤
 //   db/<items|equipment|skills>/<recordId>#description  자료집 설명
+//   qs/<questKey>#<title|summary|step<i>|node<i>>      퀘스트 일지에 뜨는 제목·요약·단계 이름(2026-10-27)
+//   en/<endingId>#<name|kicker|credits>                 엔딩 화면 제목·머리말·크레딧
+//   ep/<endingId>/<beatPath>#<text|line<i>>           엔딩 에필로그 say 비트(대화창에 뜬다)
 // <path> 는 `eventCommandPaths` 의 명령 경로(짝수 칸=명령 번호, 홀수 칸=분기 번호, 음수 가능)를 점으로 이은 것이다.
 // 명령을 끼우거나 지우면 뒤쪽 줄 id 가 바뀐다 — 그래서 모든 쓰기는 내용 해시(hash)를 함께 받아 낡은 id·낡은 원문을 거절한다.
 
@@ -19,9 +22,10 @@ import { eventDisplayName } from "@/project/eventDisplayName";
 import { contentFingerprint } from "@/util/fingerprint";
 import { troopAfterBattleLists } from "@/project/troopAfterBattle";
 import { normalizeSpeakerName } from "@/project/dialogueDesk";
+import { isQuestGraphDef, isStepQuestDef, type AnyQuestDef } from "@/project/quest/questDef";
 
-export type DialogueLineKind = "text" | "choicePrompt" | "choiceOption" | "presentPrompt" | "ending" | "gameOver" | "description";
-export type DialogueLineScope = "map" | "common" | "troop" | "database";
+export type DialogueLineKind = "text" | "choicePrompt" | "choiceOption" | "presentPrompt" | "ending" | "gameOver" | "description" | "quest";
+export type DialogueLineScope = "map" | "common" | "troop" | "database" | "quest" | "ending";
 export type DialogueDescriptionCollection = "items" | "equipment" | "skills";
 
 export interface DialogueLine {
@@ -47,6 +51,8 @@ export interface DialogueLine {
   readonly pageIndex?: number;
   readonly commonEventId?: string;
   readonly troopId?: string;
+  readonly questKey?: string;
+  readonly endingId?: string;
   readonly collection?: DialogueDescriptionCollection;
   readonly recordId?: string;
   readonly path: readonly number[];
@@ -140,6 +146,73 @@ function walkCommands(commands: readonly Command[], owner: WalkOwner, out: Dialo
   visit(commands, [], false);
 }
 
+
+interface LooseSayBeat { kind?: unknown; speaker?: unknown; text?: unknown; lines?: unknown; beats?: unknown; emotion?: unknown; context?: unknown; face?: { resourceId?: unknown } }
+
+/** 엔딩 레지스트리: 에필로그 say 비트(대화창 줄)는 늘, 제목·머리말·크레딧은 설명 글과 함께(withMeta). */
+function collectEndingLines(project: Project, out: DialogueLine[], counter: { n: number }, withMeta: boolean): void {
+  for (const ending of project.endings ?? []) {
+    const label = `엔딩 › ${ending.name || ending.id}`;
+    const base = { endingId: ending.id, eventName: ending.name || ending.id };
+    const meta = (field: string, text: string | undefined): void => {
+      if (!withMeta || !text?.trim()) return;
+      out.push({
+        ...base, id: `en/${encodeSegment(ending.id)}#${field}`, kind: "ending", scope: "ending", speaker: "", text,
+        hash: dialogueTextHash(text), order: counter.n++, groupKey: `en/${ending.id}`, groupLabel: label, path: [], field, withFace: false, drafted: false,
+      });
+    };
+    meta("name", ending.name);
+    meta("kicker", ending.presentation?.kicker);
+    meta("credits", ending.presentation?.credits);
+    const visit = (beats: readonly unknown[], container: readonly number[]): void => {
+      beats.forEach((raw, index) => {
+        const beat = (raw && typeof raw === "object" ? raw : {}) as LooseSayBeat;
+        const path = [...container, index];
+        if (beat.kind === "parallel" && Array.isArray(beat.beats)) { visit(beat.beats, path); return; }
+        if (beat.kind !== "say") return;
+        const speaker = typeof beat.speaker === "string" ? normalizeSpeakerName(beat.speaker) : "";
+        const fields: [string, string][] = Array.isArray(beat.lines) && beat.lines.length > 0
+          ? beat.lines.map((line, lineIndex) => [`line${lineIndex}`, typeof line === "string" ? line : ""] as [string, string])
+          : typeof beat.text === "string" && beat.text ? [["text", beat.text]] : [];
+        for (const [field, text] of fields) {
+          out.push({
+            ...base, id: `ep/${encodeSegment(ending.id)}/${pathKey(path)}#${field}`, kind: "text", scope: "ending", speaker, text,
+            hash: dialogueTextHash(text), order: counter.n++, groupKey: `ep/${ending.id}`, groupLabel: `${label} › 에필로그`, path, field,
+            withFace: Boolean(beat.face && typeof beat.face === "object" && beat.face.resourceId), drafted: false,
+            ...(typeof beat.emotion === "string" && beat.emotion ? { emotion: beat.emotion } : {}),
+            ...(typeof beat.context === "string" && beat.context ? { context: beat.context } : {}),
+          });
+        }
+      });
+    };
+    visit(ending.epilogue ?? [], []);
+  }
+}
+
+function questKeyOf(quest: AnyQuestDef): string {
+  return isQuestGraphDef(quest) ? quest.id : quest.key;
+}
+
+/** 퀘스트 일지(메뉴)에 뜨는 글. 단계 대사(lines)는 컴파일된 이벤트 명령으로 이미 색인에 있다. */
+function collectQuestLines(project: Project, out: DialogueLine[], counter: { n: number }): void {
+  for (const quest of project.quests ?? []) {
+    const key = questKeyOf(quest);
+    if (!key) continue;
+    const push = (field: string, text: string | undefined): void => {
+      if (!text?.trim()) return;
+      out.push({
+        id: `qs/${encodeSegment(key)}#${field}`, kind: "quest", scope: "quest", speaker: "", text, hash: dialogueTextHash(text),
+        order: counter.n++, groupKey: `qs/${key}`, groupLabel: `퀘스트 › ${quest.title || key}`, questKey: key, eventName: quest.title || key,
+        path: [], field, withFace: false, drafted: false,
+      });
+    };
+    push("title", quest.title);
+    push("summary", quest.summary);
+    if (isQuestGraphDef(quest)) quest.nodes.forEach((node, index) => push(`node${index}`, node.description));
+    else if (isStepQuestDef(quest)) quest.steps.forEach((step, index) => push(`step${index}`, step.label));
+  }
+}
+
 /** 프로젝트의 모든 대사 줄. 읽는 순서(맵 → 이벤트 → 페이지 → 명령, 공용 이벤트, 적 그룹, 자료집 설명). */
 export function collectDialogueLines(project: Project, options: { readonly includeDescriptions?: boolean } = {}): DialogueLine[] {
   const out: DialogueLine[] = [];
@@ -204,6 +277,8 @@ export function collectDialogueLines(project: Project, options: { readonly inclu
       }, out, counter);
     }
   }
+  collectEndingLines(project, out, counter, options.includeDescriptions !== false);
+  if (options.includeDescriptions !== false) collectQuestLines(project, out, counter);
   if (options.includeDescriptions !== false) {
     const collections: readonly [DialogueDescriptionCollection, string][] = [["items", "아이템"], ["equipment", "장비"], ["skills", "스킬"]];
     for (const [collection, label] of collections) {
@@ -236,7 +311,7 @@ export function collectDialogueLines(project: Project, options: { readonly inclu
 }
 
 export interface ParsedDialogueLineId {
-  readonly scope: "ev" | "ce" | "tp" | "ta" | "db";
+  readonly scope: "ev" | "ce" | "tp" | "ta" | "db" | "qs" | "en" | "ep";
   readonly segments: readonly string[];
   readonly path: readonly number[];
   readonly field: string;
@@ -277,6 +352,18 @@ export function parseDialogueLineId(id: string): ParsedDialogueLineId | null {
       const segments = expect(4);
       const path = parsePath(parts[3]);
       return segments && path ? { scope, segments, path, field } : null;
+    }
+    case "qs":
+    case "en": {
+      if (parts.length !== 2) return null;
+      const key = decode(parts[1] ?? "");
+      return key ? { scope, segments: [key], path: [], field } : null;
+    }
+    case "ep": {
+      if (parts.length !== 3) return null;
+      const endingId = decode(parts[1] ?? "");
+      const path = parts[2] === "" || parts[2] === undefined ? null : parts[2].split(".").map(Number);
+      return endingId !== null && path && path.every(Number.isInteger) ? { scope, segments: [endingId], path, field } : null;
     }
     case "db": {
       if (parts.length !== 3 || field !== "description") return null;
@@ -337,6 +424,7 @@ export function resolveDialogueSlot(project: Project, id: string): DialogueSlot 
     if (!record) return null;
     return { text: record.description ?? "", drafted: false, write(next) { record.description = next; } };
   }
+  if (parsed.scope === "qs" || parsed.scope === "en" || parsed.scope === "ep") return resolveRegistrySlot(project, parsed);
   const root = rootCommandList(project, parsed);
   if (!root) return null;
   const command = resolveCommandAtPath(root.commands, parsed.path);
@@ -362,6 +450,53 @@ export function resolveDialogueSlot(project: Project, id: string): DialogueSlot 
     default:
       return null;
   }
+}
+
+/**
+ * 퀘스트·엔딩 레지스트리 칸. 레지스트리 정의는 읽기 전용 타입이라 쓰기는 그 자리 객체를 직접 바꾼다
+ * (스토어 변경기·도구 초안 안에서만 부른다 — 이벤트 명령 칸과 같다).
+ */
+function resolveRegistrySlot(project: Project, parsed: ParsedDialogueLineId): DialogueSlot | null {
+  const slot = (holder: Record<string, unknown> | undefined, key: string): DialogueSlot | null => {
+    if (!holder || typeof holder[key] !== "string") return null;
+    return { text: holder[key] as string, drafted: false, write(next) { holder[key] = next; } };
+  };
+  if (parsed.scope === "qs") {
+    const quest = (project.quests ?? []).find((candidate) => questKeyOf(candidate) === parsed.segments[0]);
+    if (!quest) return null;
+    const record = quest as unknown as Record<string, unknown>;
+    if (parsed.field === "title" || parsed.field === "summary") return slot(record, parsed.field);
+    const node = /^node(\d+)$/u.exec(parsed.field);
+    if (node && isQuestGraphDef(quest)) return slot(quest.nodes[Number(node[1])] as unknown as Record<string, unknown> | undefined, "description");
+    const step = /^step(\d+)$/u.exec(parsed.field);
+    if (step && isStepQuestDef(quest)) return slot(quest.steps[Number(step[1])] as unknown as Record<string, unknown> | undefined, "label");
+    return null;
+  }
+  const ending = (project.endings ?? []).find((candidate) => candidate.id === parsed.segments[0]);
+  if (!ending) return null;
+  if (parsed.scope === "en") {
+    if (parsed.field === "name") return slot(ending as unknown as Record<string, unknown>, "name");
+    if (parsed.field === "kicker" || parsed.field === "credits") return slot(ending.presentation as Record<string, unknown> | undefined, parsed.field);
+    return null;
+  }
+  let beats: unknown[] | undefined = ending.epilogue;
+  let beat: Record<string, unknown> | undefined;
+  for (let depth = 0; depth < parsed.path.length; depth += 1) {
+    const candidate = beats?.[parsed.path[depth]!];
+    beat = candidate && typeof candidate === "object" ? candidate as Record<string, unknown> : undefined;
+    if (!beat) return null;
+    beats = depth < parsed.path.length - 1 ? (Array.isArray(beat.beats) ? beat.beats : undefined) : undefined;
+  }
+  if (!beat || beat.kind !== "say") return null;
+  if (parsed.field === "text") return slot(beat, "text");
+  const line = /^line(\d+)$/u.exec(parsed.field);
+  if (line && Array.isArray(beat.lines)) {
+    const list = beat.lines as unknown[];
+    const index = Number(line[1]);
+    if (typeof list[index] !== "string") return null;
+    return { text: list[index] as string, drafted: false, write(next) { list[index] = next; } };
+  }
+  return null;
 }
 
 /** 앞뒤 문맥: 같은 무리 안에서 before 줄 앞, after 줄 뒤. */
@@ -395,7 +530,22 @@ export function dialogueKindLabel(kind: DialogueLineKind): string {
     case "ending": return "엔딩";
     case "gameOver": return "게임 오버";
     case "description": return "설명";
+    case "quest": return "퀘스트";
   }
+}
+
+/** 퀘스트·엔딩 화면 글이 어느 칸인지(제목·요약·단계 N·머리말·크레딧). 그 밖의 줄은 undefined. */
+export function registryFieldLabel(line: Pick<DialogueLine, "scope" | "kind" | "field">): string | undefined {
+  if (line.scope === "quest") {
+    if (line.field === "title") return "퀘스트 제목";
+    if (line.field === "summary") return "퀘스트 요약";
+    const step = /^(?:step|node)(\d+)$/u.exec(line.field);
+    return step ? `퀘스트 ${Number(step[1]) + 1}단계` : "퀘스트";
+  }
+  if (line.scope === "ending" && line.kind === "ending") {
+    return line.field === "name" ? "엔딩 제목" : line.field === "kicker" ? "엔딩 머리말" : line.field === "credits" ? "엔딩 크레딧" : "엔딩";
+  }
+  return undefined;
 }
 
 /** 창 넘침 판정 대상인가 — 대화창에 뜨는 줄만(선택지 항목·설명·엔딩은 다른 창이다). */

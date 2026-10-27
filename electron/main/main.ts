@@ -6,20 +6,26 @@ import { normalizeTeamUrl } from "../serve/localNetwork";
 import { join, resolve } from "node:path";
 import { BrowserWindow, Menu, app, clipboard, dialog, ipcMain, shell, type IpcMainInvokeEvent } from "electron";
 import { OPRN_APP_SCHEME, OPRN_CHANNELS } from "../shared/channels";
+import { folderSwitchFlushOk, isAppRendererFrame } from "../shared/folderSwitch";
 import { isWindowControlAction, windowChromeFor, type WindowState } from "../shared/windowControl";
 import { registerIpcHandlers } from "./ipc";
 import { registerAssetBrowser } from "./assetBrowser";
 import { acceptStoreDeepLink, registerAssetStore } from "./assetStore";
 import { findStoreDeepLinkArg } from "../../src/assetStore/deepLink";
-import { electronUserArgIndex, inspectCliProjectArgs, inspectCurrentCliProject } from "./cliProject";
+import { electronUserArgIndex, inspectCliProjectArgs, inspectCurrentCliProject, projectDirFromOpenPath } from "./cliProject";
+import { decideWindowClose, nextQuitHeld, shouldRetryQuit } from "./closeFlow";
+import { planWindowReload } from "../shared/reloadFlow";
+import { chosenDirectory, directoryDialogParent, directoryDialogProperties, pickAppWindow } from "./directoryDialog";
 import { registerAppProtocol, registerAssetProtocol } from "./protocols";
 import { captureLastViewBeforeClose, forgetLastViewWindow, markEditorLeft, markEditorSettled, readLastView, scheduleLastViewAfterSave } from "./lastView";
-import { createProjectSessionRegistry } from "./sessions";
+import { firstShowSteps } from "./windowShow";
+import { SessionConsumerClosed, createProjectSessionRegistry } from "./sessions";
 import { startCompanionServer, type CompanionServer } from "./companion";
-import { describeRecentProjects, listRecentTeams, prepareNewProjectDir, recentProjectCoverSource, rememberRecentProject, rememberRecentTeam, suggestProjectDir, writeRecentProjectCover } from "./recent";
+import { acceptMenuFolder, prepareNewProjectDir } from "./newProjectDir";
+import { describeRecentProjects, listRecentTeams, recentProjectCoverSource, rememberRecentProject, rememberRecentTeam, suggestProjectDir, writeRecentProjectCover } from "./recent";
 import { openTeamWindow } from "./teamWindow";
 import type { Splash } from "./splash";
-import { rendererDirectory, windowIconPath, type BootContext, type SecondInstanceLaunch } from "./bootContext";
+import { peekPendingProjectDir, rendererDirectory, takePendingOpenFiles, windowIconPath, type BootContext, type SecondInstanceLaunch } from "./bootContext";
 import type { JoinTeamResult } from "../shared/start";
 import { TEAM_COLLAB_ENABLED } from "../shared/teamCollab";
 
@@ -57,13 +63,100 @@ const TEAM_HOST_PORTS = [9840, 9841, 9842, 9843, 9844, 9845, 9846, 9847, 9848, 9
 
 const closing = new Set<number>();
 const closeTimers = new Map<number, ReturnType<typeof setTimeout>>();
+/** 편집기가 새로고침 저장 리스너를 붙인 창. 그 전에는 메모리 편집이 없다. */
+const flushReady = new Set<number>();
+/** 보기 메뉴·개발자 도구 새로고침을 위해 저장 중인 창. 값은 캐시를 무시할지. */
+const reloadFlushing = new Map<number, "soft" | "hard">();
+const reloadTimers = new Map<number, ReturnType<typeof setTimeout>>();
+/** 저장을 마친 직후의 reload() 만, 다른 beforeunload(미적용 초안)가 새로고침을 삼키지 않게 한다. */
+const reloadArmed = new Set<number>();
+/** 렌더러가 미저장이라 이번 새로고침을 막았다. will-prevent-unload 한 번만 소비한다. */
+const unsavedReloadBlock = new Set<number>();
+/** 이번 새로고침이 캐시를 무시하는지. 저장이 끝난 뒤의 reload() 까지 유지한다. */
+const reloadHard = new Set<number>();
+/**
+ * 사용자가 Quit 을 요청했다. 프로젝트 창이 저장 때문에 close 를 막으면 Electron 이 종료를 취소하므로
+ * (app.quit 문서), 그 저장이 끝난 뒤에 다시 건다. 마지막 창을 그냥 닫는 것과는 다르다 — macOS 는 그때 앱이 남는다.
+ */
+let quitRequested = false;
+/** 열린 프로젝트의 저장이 Quit 을 한 번 막았다. 막을 일이 없었으면(시작 화면) 다시 종료하지 않는다. */
+let quitHeld = false;
 
 function destroyWindow(window: BrowserWindow): void {
+  if (window.isDestroyed()) return;
   const id = window.webContents.id;
   const timer = closeTimers.get(id);
   if (timer) clearTimeout(timer);
   closeTimers.delete(id);
-  if (!window.isDestroyed()) window.destroy();
+  window.destroy();
+}
+
+function abandonReloadFlush(id: number): void {
+  reloadFlushing.delete(id);
+  const timer = reloadTimers.get(id);
+  if (timer) clearTimeout(timer);
+  reloadTimers.delete(id);
+  unsavedReloadBlock.delete(id);
+  reloadArmed.delete(id);
+}
+
+const RELOAD_BLOCKED_MESSAGE = "저장하지 못해 새로고침하지 않았습니다.";
+const RELOAD_BLOCKED_DETAIL = "방금 한 편집이 아직 디스크에 없습니다. 저장이 끝난 뒤 다시 시도해 주세요.";
+
+function performReload(window: BrowserWindow, hard: boolean): void {
+  if (window.isDestroyed()) return;
+  const id = window.webContents.id;
+  // beforeunload 답은 reload() 가 돌아온 뒤에 온다. 막히면 will-prevent-unload 가 이 집합을 본다.
+  reloadArmed.add(id);
+  if (hard) reloadHard.add(id);
+  else reloadHard.delete(id);
+  if (hard) window.webContents.reloadIgnoringCache();
+  else window.webContents.reload();
+  // 이동이 취소되고 이벤트도 없으면 다음 막힘을 통과시키지 않는다.
+  setTimeout(() => { reloadArmed.delete(id); }, 10_000);
+}
+
+/** 보기 → 새로고침, 그리고 개발자 도구가 막힌 새로고침. 저장이 안전하지 않으면 창을 그대로 둔다. */
+function beginReloadFlush(window: BrowserWindow, hard: boolean, becauseDirty = false): void {
+  if (window.isDestroyed()) return;
+  const id = window.webContents.id;
+  const plan = planWindowReload({
+    hasSession: sessions.get(id) !== null,
+    flushListenerReady: flushReady.has(id),
+    closeFlushInProgress: closing.has(id),
+    reloadFlushInProgress: reloadFlushing.has(id),
+  });
+  if (plan === "ignore") return;
+  if (hard) reloadHard.add(id);
+  else reloadHard.delete(id);
+  if (plan === "reload-now") {
+    // 미저장인데 저장 리스너·세션이 없으면 바로 새로고침하지 않는다. 그러면 편집이 사라진다.
+    if (becauseDirty) {
+      void dialog.showMessageBox(window, { type: "warning", message: RELOAD_BLOCKED_MESSAGE, detail: RELOAD_BLOCKED_DETAIL }).catch((error: unknown) => {
+        console.warn("[project] 새로고침 안내를 띄우지 못했습니다:", error);
+      });
+      return;
+    }
+    performReload(window, hard);
+    return;
+  }
+  reloadFlushing.set(id, hard ? "hard" : "soft");
+  window.webContents.send(OPRN_CHANNELS.lifecycleFlushBeforeReload);
+  reloadTimers.set(id, setTimeout(() => {
+    if (!reloadFlushing.has(id)) return;
+    abandonReloadFlush(id);
+    if (window.isDestroyed() || closing.has(id)) return;
+    void dialog.showMessageBox(window, { type: "warning", message: RELOAD_BLOCKED_MESSAGE, detail: RELOAD_BLOCKED_DETAIL }).catch((error: unknown) => {
+      console.warn("[project] 새로고침 안내를 띄우지 못했습니다:", error);
+    });
+  }, CLOSE_FLUSH_TIMEOUT_MS));
+}
+
+function retryQuitIfFlushHeldIt(): void {
+  const pending = (): boolean => shouldRetryQuit({ quitRequested, quitHeld, windowsStillFlushing: closing.size });
+  if (!pending()) return;
+  // 같은 종료에서 다른 창의 close 가 이 핸들러보다 늦게 올 수 있다. 한 틱 뒤에, 아직 저장 중인 창이 없을 때만 다시 건다.
+  setTimeout(() => { if (pending()) app.quit(); }, 0);
 }
 
 /**
@@ -73,14 +166,28 @@ function destroyWindow(window: BrowserWindow): void {
  */
 const CLOSE_FLUSH_TIMEOUT_MS = 60_000;
 
+/** 편집기가 파일 메뉴의 폴더 교체 저장을 받을 수 있다. 문서를 떠나면 지운다. createWindow 보다 위에 둔다. */
+const replaceFlushReady = new Set<number>();
+/** 그 저장의 보고를 기다리는 창. */
+const replaceFlushWaiters = new Map<number, (payload: unknown) => void>();
+/** 같은 창에서 폴더 대화상자를 두 번 열지 않는다. */
+const folderSwitching = new Set<number>();
+
 // 닫기는 flush → ack → destroy 다(설계서 7.3). 렌더러가 상한 안에 flush-done 을 부르지 않으면 강제로 닫는다.
+// 저장을 기다리는 동안의 두 번째 close 는 막는다(closeFlow.ts). 막지 않으면 연타·Quit 이 저장을 끊는다.
 function installCloseFlow(window: BrowserWindow): void {
   const id = window.webContents.id;
   window.on("close", (event) => {
-    if (closing.has(id)) return;
     const session = sessions.get(id);
-    if (!session) return;
+    const decision = decideWindowClose(closing.has(id), session !== null);
+    if (decision === "allow") return;
     event.preventDefault();
+    quitHeld = nextQuitHeld(quitHeld, quitRequested, decision);
+    if (decision === "hold") return;
+    // 새로고침 저장이 진행 중이면 그 저장은 닫기로 넘긴다. 끝나자마자 페이지를 다시 열지 않는다.
+    abandonReloadFlush(id);
+    // flush 는 세션이 있을 때만 나온다. 없으면 닫기를 막아 둔 채 두면 창이 남지 않게 바로 없앤다.
+    if (session === null) { destroyWindow(window); return; }
     closing.add(id);
     window.webContents.send(OPRN_CHANNELS.lifecycleFlushBeforeClose);
     closeTimers.set(id, setTimeout(() => destroyWindow(window), CLOSE_FLUSH_TIMEOUT_MS));
@@ -90,11 +197,15 @@ function installCloseFlow(window: BrowserWindow): void {
   });
   window.on("closed", () => {
     forgetLastViewWindow(id);
+    abandonReloadFlush(id);
+    flushReady.delete(id);
+    reloadHard.delete(id);
     closing.delete(id);
     const timer = closeTimers.get(id);
     if (timer) clearTimeout(timer);
     closeTimers.delete(id);
     sessions.close(id);
+    retryQuitIfFlushHeldIt();
   });
 }
 
@@ -120,8 +231,23 @@ const START_READY_FALLBACK_MS = 6_000;
 
 /** createWindow 로 만든 앱 창. 스플래시(data: 문서)는 여기 없다. */
 const appWindows = new Set<BrowserWindow>();
-/** 명령줄로 이 창에 연 프로젝트. QA 의 OPRN_OPEN_PROJECT_DIR 와 따로 둔다(그 변수는 잠금을 끈다). */
+/** 파일 메뉴가 스플래시·팀 창에 붙지 않도록, 마지막으로 앞에 있던 앱 창. */
+let lastAppWindow: BrowserWindow | null = null;
+/** 명령줄·macOS open-file 로 이 창에 연 프로젝트. QA 의 OPRN_OPEN_PROJECT_DIR 와 따로 둔다(그 변수는 잠금을 끈다). */
 const explicitProjectDir = new WeakMap<BrowserWindow, string>();
+/** 한 번이라도 처음 보이기(전체화면)를 탄 창. 사용자가 전체화면에서 나온 뒤 다시 앞으로 가져올 때 전체화면을 켜지 않는다. */
+const presentedWindows = new WeakSet<BrowserWindow>();
+
+/** 숨겨 둔 창을 처음 보인다. 순서는 windowShow.ts — 맥은 보인 뒤 전체화면, 그 밖은 전체화면 뒤 보이기. */
+function presentAppWindow(window: BrowserWindow): void {
+  if (window.isDestroyed() || presentedWindows.has(window)) return;
+  presentedWindows.add(window);
+  for (const step of firstShowSteps(process.platform)) {
+    if (window.isDestroyed()) return;
+    if (step === "fullscreen") window.setFullScreen(true);
+    else window.show();
+  }
+}
 
 function opensStartScreen(projectDir: string | undefined): boolean {
   return process.env.OPRN_SMOKE_PAGE === undefined && projectDir === undefined && process.env.OPRN_OPEN_PROJECT_DIR === undefined;
@@ -178,6 +304,8 @@ function createWindow(options: { readonly splash?: () => Splash | undefined; rea
   const id = window.webContents.id;
   if (options.projectDir) explicitProjectDir.set(window, options.projectDir);
   appWindows.add(window);
+  lastAppWindow = window;
+  window.on("focus", () => { lastAppWindow = window; });
 
   let shown = false;
   /** 스플래시에 오류를 띄웠다 — 「다시 시도」 전에는 대체 타이머가 빈 창을 보이지 않는다. */
@@ -186,11 +314,12 @@ function createWindow(options: { readonly splash?: () => Splash | undefined; rea
     if (shown || failed || window.isDestroyed()) return;
     shown = true;
     revealOnStartReady.delete(id);
-    // 맥은 숨은 창에 전체화면을 걸면 무시될 수 있어 보인 뒤에 건다. 그 밖은 전체화면을 건 뒤 보여 크기 튐이 없다.
-    if (process.platform === "darwin") { window.show(); window.setFullScreen(true); }
-    else { window.setFullScreen(true); window.show(); }
-    mainMark("windowShown");
-    if (process.env.OPRN_STARTUP_TRACE === "1") process.stderr.write(`[startup] window shown (${reason})\n`);
+    // 두 번째 실행·open-file 이 이미 이 창을 앞으로 가져왔으면 전체화면을 다시 켜지 않는다.
+    if (!presentedWindows.has(window)) {
+      presentAppWindow(window);
+      mainMark("windowShown");
+      if (process.env.OPRN_STARTUP_TRACE === "1") process.stderr.write(`[startup] window shown (${reason})\n`);
+    }
     splash()?.close();
   };
   const fail = (detail: string): void => {
@@ -237,9 +366,44 @@ function createWindow(options: { readonly splash?: () => Splash | undefined; rea
   window.on("unmaximize", broadcastState);
   window.on("restore", broadcastState);
   window.on("minimize", broadcastState);
-  window.on("closed", () => { revealOnStartReady.delete(id); appWindows.delete(window); explicitProjectDir.delete(window); });
+  window.on("closed", () => {
+    revealOnStartReady.delete(id);
+    replaceFlushReady.delete(id);
+    appWindows.delete(window);
+    explicitProjectDir.delete(window);
+    if (lastAppWindow === window) lastAppWindow = null;
+  });
   // 문서를 떠나면(시작 화면 ↔ 편집기·새로고침) 다시 «부팅을 마쳤다» 신호가 올 때까지 찍지 않는다.
-  window.webContents.on("did-start-navigation", (details) => { if (details.isMainFrame && !details.isSameDocument) markEditorLeft(id); });
+  window.webContents.on("did-start-navigation", (details) => {
+    if (!details.isMainFrame || details.isSameDocument) return;
+    markEditorLeft(id);
+    // 새 문서는 리스너를 다시 붙일 때까지 메모리 편집이 없다.
+    flushReady.delete(id);
+    reloadArmed.delete(id);
+    reloadHard.delete(id);
+  });
+  // 개발자 도구의 새로고침은 메뉴를 타지 않는다. 렌더러가 미저장으로 막으면 저장한 뒤 다시 연다.
+  // 저장을 마친 reload() 가 다른 beforeunload(미적용 초안)에 막히면 그 새로고침은 그대로 진행한다.
+  window.webContents.on("will-prevent-unload", (event) => {
+    const webContentsId = window.webContents.id;
+    if (unsavedReloadBlock.has(webContentsId)) {
+      const hard = reloadHard.has(webContentsId);
+      unsavedReloadBlock.delete(webContentsId);
+      reloadArmed.delete(webContentsId);
+      beginReloadFlush(window, hard, true);
+      return;
+    }
+    if (!reloadArmed.has(webContentsId)) return;
+    reloadArmed.delete(webContentsId);
+    event.preventDefault();
+  });
+  // 폴더 교체 저장도 새 문서가 준비됐다고 알릴 때까지 기다리지 않는다 — 부팅 중에는 저장할 변경이 없다.
+  window.webContents.on("did-start-navigation", (details) => {
+    if (details.isMainFrame && !details.isSameDocument) {
+      markEditorLeft(id);
+      replaceFlushReady.delete(id);
+    }
+  });
   window.webContents.on("will-navigate", (event, url) => {
     if (!url.startsWith(`${OPRN_APP_SCHEME}://`)) event.preventDefault();
   });
@@ -250,6 +414,19 @@ function createWindow(options: { readonly splash?: () => Splash | undefined; rea
   installCloseFlow(window);
   if (!options.deferLoad) loadWindowContent(window);
   return window;
+}
+
+/**
+ * 이 창의 프로젝트 세션. 여는 중에 창이 닫히면 null — 스토어는 레지스트리가 닫는다.
+ * 죽은 webContents 에 SQLite 를 붙이면 파일 잠금이 앱이 꺼질 때까지 남는다.
+ */
+async function openWindowSession(webContentsId: number, projectDir: string) {
+  try {
+    return await sessions.open(webContentsId, projectDir);
+  } catch (error) {
+    if (error instanceof SessionConsumerClosed) return null;
+    throw error;
+  }
 }
 
 /** 창에 첫 문서를 싣는다 — 시작 화면, QA 진입점(OPRN_SMOKE_PAGE·OPRN_OPEN_PROJECT_DIR), 명령줄 폴더, 또는 편집기. */
@@ -269,9 +446,15 @@ function loadWindowContent(window: BrowserWindow): void {
   else if (devServerUrl) void window.loadURL(devServerUrl);
   else void window.loadURL(`${OPRN_APP_SCHEME}://oprn/index.html`);
   if (bootProjectDir !== undefined) {
-    void sessions.open(window.webContents.id, bootProjectDir).then((session) => {
+    const webContentsId = window.webContents.id;
+    void openWindowSession(webContentsId, bootProjectDir).then((session) => {
+      if (!session || window.isDestroyed()) {
+        if (session) sessions.close(webContentsId);
+        explicitProjectDir.delete(window);
+        if (!session && !window.isDestroyed() && !smokePage) void window.loadURL(`${OPRN_APP_SCHEME}://oprn/start-screen.html`);
+        return;
+      }
       if (openedByCli) rememberRecentProject(session.projectDir, session.store.info().title ?? session.projectDir);
-      if (window.isDestroyed()) return;
       if (devServerUrl) void window.loadURL(devServerUrl);
       else void window.loadURL(`${OPRN_APP_SCHEME}://oprn/index.html`);
     }).catch((error: unknown) => {
@@ -290,9 +473,14 @@ function rendererEntryUrl(): string {
 
 /** 폴더를 이 창의 세션으로 열고 편집기 문서로 넘긴다. 파일 메뉴가 쓰는 경로. */
 async function adoptFolder(window: BrowserWindow, projectDir: string, title?: string): Promise<void> {
-  const session = await sessions.open(window.webContents.id, projectDir);
+  const webContentsId = window.webContents.id;
+  const session = await openWindowSession(webContentsId, projectDir);
+  if (!session || window.isDestroyed()) {
+    if (session) sessions.close(webContentsId);
+    return;
+  }
   rememberRecentProject(projectDir, title ?? session.store.info().title ?? projectDir);
-  if (!window.isDestroyed()) void window.loadURL(rendererEntryUrl());
+  void window.loadURL(rendererEntryUrl());
 }
 
 function dismissSplash(): void {
@@ -303,7 +491,11 @@ function dismissSplash(): void {
 function focusAppWindow(window: BrowserWindow): void {
   if (window.isDestroyed()) return;
   if (window.isMinimized()) window.restore();
-  window.show();
+  // 스플래시 뒤에 숨은 창은 아직 전체화면이 아니다. 그냥 show 하면 창 모드로 뜨고, 6초 뒤 폴백이 전체화면으로 튀긴다.
+  if (!presentedWindows.has(window)) {
+    presentAppWindow(window);
+    mainMark("windowShown");
+  } else window.show();
   window.focus();
 }
 
@@ -329,12 +521,12 @@ function idleStartWindow(): BrowserWindow | null {
   return null;
 }
 
-/** 두 번째 실행이 넘긴 프로젝트. 같은 폴더가 이미 있으면 그 창을 앞으로 가져온다. */
+/** 두 번째 실행·macOS open-file 이 넘긴 프로젝트. 같은 폴더가 이미 있으면 그 창을 앞으로 가져온다. */
 async function openProjectFromCli(projectDir: string): Promise<void> {
   const resolved = safeRealpath(projectDir);
   const existing = windowAlreadyOpening(resolved);
   if (existing) { dismissSplash(); focusAppWindow(existing); return; }
-  console.log(`[project] 명령줄 폴더를 엽니다: ${resolved}`);
+  console.log(`[project] 폴더를 엽니다: ${resolved}`);
   dismissSplash();
   const idle = idleStartWindow();
   if (idle) {
@@ -351,7 +543,115 @@ async function openProjectFromCli(projectDir: string): Promise<void> {
 }
 
 function focusedWindow(): BrowserWindow | null {
-  return BrowserWindow.getFocusedWindow() ?? BrowserWindow.getAllWindows()[0] ?? null;
+  return pickAppWindow({
+    focused: BrowserWindow.getFocusedWindow(),
+    lastFocused: lastAppWindow,
+    windows: [...appWindows],
+    isAppWindow: (window) => appWindows.has(window),
+    isDestroyed: (window) => window.isDestroyed(),
+  });
+}
+
+/**
+ * 폴더 선택 창. 살아 있는 앱 창이 있으면 그 창에 붙여 전체화면 뒤로 숨지 않게 한다.
+ * 고른 경로만 돌려주고, 취소면 null.
+ */
+function askForDirectory(owner: BrowserWindow | null, title: string, createDirectory = false): Promise<string | null> {
+  const parent = directoryDialogParent(owner);
+  const options = { title, properties: directoryDialogProperties(createDirectory) };
+  const pending = parent ? dialog.showOpenDialog(parent, options) : dialog.showOpenDialog(options);
+  return pending.then(chosenDirectory);
+}
+
+function trustedRendererSender(event: {
+  readonly senderFrame: { readonly url: string; readonly parent?: unknown } | null;
+  readonly sender: { getURL(): string };
+}): boolean {
+  // 하위 프레임은 거절한다. 메인 프레임의 parent 는 없고, 프레임 정보가 없으면 보낸 문서 주소로 본다.
+  if (event.senderFrame && event.senderFrame.parent != null) return false;
+  const url = event.senderFrame?.url || event.sender.getURL();
+  return isAppRendererFrame(url, process.env.ELECTRON_RENDERER_URL);
+}
+
+type FolderSwitchFlush = "ok" | "blocked" | "timeout" | "closed" | "skip";
+
+/**
+ * 이 창에 열린 프로젝트가 있고 편집기가 저장 요청을 받을 준비가 됐으면 flush 를 기다린다.
+ * 시작 화면·부팅 전은 skip — 아직 렌더러에 저장할 변경이 없다.
+ */
+function waitForFolderSwitchFlush(window: BrowserWindow): Promise<FolderSwitchFlush> {
+  const id = window.webContents.id;
+  if (closing.has(id)) return Promise.resolve("closed");
+  if (sessions.get(id) === null || !replaceFlushReady.has(id)) return Promise.resolve("skip");
+  return new Promise((resolve) => {
+    let settled = false;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const finish = (result: FolderSwitchFlush): void => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      if (!window.isDestroyed()) window.removeListener("closed", onClosed);
+      if (replaceFlushWaiters.get(id) === onDone) replaceFlushWaiters.delete(id);
+      resolve(result);
+    };
+    const onDone = (payload: unknown): void => finish(folderSwitchFlushOk(payload) ? "ok" : "blocked");
+    const onClosed = (): void => finish("closed");
+    timer = setTimeout(() => finish("timeout"), CLOSE_FLUSH_TIMEOUT_MS);
+    replaceFlushWaiters.set(id, onDone);
+    window.once("closed", onClosed);
+    if (window.webContents.isDestroyed()) finish("closed");
+    else window.webContents.send(OPRN_CHANNELS.lifecycleFlushBeforeReplace);
+  });
+}
+
+/** 파일 메뉴의 새 프로젝트·폴더 열기. 열린 프로젝트는 저장이 끝난 뒤에만 바꾼다. 실패는 창으로 보여 준다. */
+function openChosenFolder(window: BrowserWindow, options: {
+  readonly title: string;
+  readonly createDirectory?: boolean;
+  readonly recentTitle?: string;
+  readonly failure: string;
+}): void {
+  const id = window.webContents.id;
+  if (folderSwitching.has(id)) return;
+  folderSwitching.add(id);
+  void (async () => {
+    try {
+      const picked = await askForDirectory(window, options.title, options.createDirectory === true);
+      if (!picked || window.isDestroyed()) return;
+      const flushed = await waitForFolderSwitchFlush(window);
+      if (flushed === "closed" || window.isDestroyed() || closing.has(window.webContents.id)) return;
+      if (flushed === "blocked" || flushed === "timeout") {
+        const detail = flushed === "timeout"
+          ? "저장이 시간 안에 끝나지 않았습니다. 이 프로젝트는 그대로 두었습니다."
+          : "저장하지 못한 변경이 남아 있습니다. 이 프로젝트는 그대로 두었습니다.";
+        await dialog.showMessageBox(window, { type: "warning", message: "폴더를 바꾸지 않았습니다", detail }).catch((dialogError: unknown) => {
+          console.warn("[project] 오류 창을 띄우지 못했습니다:", dialogError);
+        });
+        return;
+      }
+      const dir = acceptMenuFolder(picked, options.createDirectory === true ? "new" : "open");
+      await adoptFolder(window, dir, options.recentTitle);
+    } catch (error) {
+      console.warn("[project] 폴더를 열지 못했습니다:", error);
+      if (window.isDestroyed()) return;
+      const detail = error instanceof Error ? error.message : String(error);
+      await dialog.showMessageBox(window, { type: "error", message: options.failure, detail }).catch((dialogError: unknown) => {
+        console.warn("[project] 오류 창을 띄우지 못했습니다:", dialogError);
+      });
+    } finally {
+      folderSwitching.delete(id);
+    }
+  })();
+}
+
+/** macOS 는 마지막 창을 닫아도 앱이 남는다. 그때 파일 메뉴는 창을 하나 만든 뒤 대화상자를 연다. */
+function fileMenuWindow(): BrowserWindow | null {
+  const existing = focusedWindow();
+  if (existing) return existing;
+  if (process.platform !== "darwin") return null;
+  const created = createWindow();
+  presentAppWindow(created);
+  return created;
 }
 
 /** @deprecated multi-user team collaboration is not supported yet (2026-10-21).
@@ -458,10 +758,9 @@ function buildMenu(): void {
           label: "새 프로젝트",
           accelerator: "CmdOrCtrl+N",
           click: () => {
-            const window = focusedWindow();
+            const window = fileMenuWindow();
             if (!window) return;
-            void dialog.showOpenDialog(window, { properties: ["openDirectory", "createDirectory"], title: "새 프로젝트 폴더 선택" })
-              .then((result) => (result.canceled || result.filePaths.length === 0 ? null : adoptFolder(window, result.filePaths[0], "새 프로젝트")));
+            openChosenFolder(window, { title: "새 프로젝트 폴더 선택", createDirectory: true, recentTitle: "새 프로젝트", failure: "새 프로젝트를 만들지 못했습니다." });
           },
         },
         {
@@ -469,11 +768,10 @@ function buildMenu(): void {
           label: "폴더 열기",
           accelerator: "CmdOrCtrl+O",
           click: () => {
-            const window = focusedWindow();
+            const window = fileMenuWindow();
             if (!window) return;
             // 메뉴 경로는 폴더에 project.sqlite 가 없어도 연다 — initLocalProjectStore 가 만든다.
-            void dialog.showOpenDialog(window, { properties: ["openDirectory"], title: "프로젝트 폴더 열기" })
-              .then((result) => (result.canceled || result.filePaths.length === 0 ? null : adoptFolder(window, result.filePaths[0])));
+            openChosenFolder(window, { title: "프로젝트 폴더 열기", failure: "폴더를 열지 못했습니다." });
           },
         },
         { type: "separator" },
@@ -515,7 +813,22 @@ function buildMenu(): void {
       ],
     },
     { role: "editMenu" },
-    { role: "viewMenu" },
+    {
+      // 기본 viewMenu 의 Reload 는 저장 없이 webContents.reload() 를 부른다.
+      // 라벨·단축키는 Electron 역할과 같다. 개발자 도구·확대·전체화면은 역할을 그대로 둔다.
+      label: "View",
+      submenu: [
+        { label: "Reload", accelerator: "CmdOrCtrl+R", click: () => { const window = focusedWindow(); if (window) beginReloadFlush(window, false); } },
+        { label: "Force Reload", accelerator: "Shift+CmdOrCtrl+R", click: () => { const window = focusedWindow(); if (window) beginReloadFlush(window, true); } },
+        { role: "toggleDevTools" },
+        { type: "separator" },
+        { role: "resetZoom" },
+        { role: "zoomIn" },
+        { role: "zoomOut" },
+        { type: "separator" },
+        { role: "togglefullscreen" },
+      ],
+    },
     { role: "windowMenu" },
   ]));
 }
@@ -527,9 +840,17 @@ export async function startApp(boot: BootContext): Promise<void> {
   activeSplash = splash;
   const cli = inspectCurrentCliProject();
   warnIgnoredCliPaths(cli.ignored);
+  // open-file 이 ready 전에 왔으면 명령줄과 같이 첫 창이 그 프로젝트를 연다. 스플래시를 기다리면 편집기 신호가 없어 6초 숨는다.
+  const openedAtBoot = cli.dir ?? peekPendingProjectDir();
   if (cli.dir) console.log(`[project] 명령줄 폴더를 엽니다: ${cli.dir}`);
+  else if (openedAtBoot) console.log(`[project] 연 폴더를 엽니다: ${openedAtBoot}`);
   mainMark("createWindow");
-  const firstWindow = createWindow({ splash: () => splash, deferLoad: true, projectDir: cli.dir ?? undefined });
+  const firstWindow = createWindow({
+    splash: openedAtBoot ? undefined : () => splash,
+    deferLoad: true,
+    projectDir: openedAtBoot ?? undefined,
+  });
+  if (openedAtBoot) dismissSplash();
   mainMark("windowCreated");
   boot.setRetry(() => { if (!firstWindow.isDestroyed()) loadWindowContent(firstWindow); });
   const workerBinName = process.platform === "win32" ? "oh-my-pi-worker.exe" : "oh-my-pi-worker";
@@ -555,6 +876,14 @@ export async function startApp(boot: BootContext): Promise<void> {
   ipcMain.on(OPRN_CHANNELS.companionToken, (event) => {
     event.returnValue = companionServer?.token ?? null;
   });
+  ipcMain.on(OPRN_CHANNELS.lifecycleFlushReplaceDone, (event, payload: unknown) => {
+    if (!trustedRendererSender(event)) return;
+    replaceFlushWaiters.get(event.sender.id)?.(payload);
+  });
+  ipcMain.on(OPRN_CHANNELS.lifecycleFlushReplaceReady, (event) => {
+    if (!trustedRendererSender(event)) return;
+    replaceFlushReady.add(event.sender.id);
+  });
   buildMenu();
   registerAppProtocol(rendererDir, () => sessions.firstProjectDir() ?? process.cwd(), () => companionServer?.origin ?? null);
   registerAssetProtocol(sessions);
@@ -563,7 +892,33 @@ export async function startApp(boot: BootContext): Promise<void> {
   mainMark("windowLoading");
   ipcMain.handle(OPRN_CHANNELS.lifecycleFlushDone, (event) => {
     const window = BrowserWindow.fromWebContents(event.sender);
-    if (window) destroyWindow(window);
+    // 닫기 저장을 걸어 둔 창만 없앤다. 저장을 요청하지 않았는데 오면 편집 중인 창을 닫지 않는다.
+    if (!window || window.isDestroyed() || !closing.has(event.sender.id)) return false;
+    destroyWindow(window);
+    return true;
+  });
+  ipcMain.on(OPRN_CHANNELS.lifecycleFlushReady, (event) => {
+    if (event.senderFrame?.parent == null) flushReady.add(event.sender.id);
+    event.returnValue = true;
+  });
+  ipcMain.on(OPRN_CHANNELS.lifecycleReloadBlocked, (event) => {
+    if (event.senderFrame?.parent == null) unsavedReloadBlock.add(event.sender.id);
+    event.returnValue = true;
+  });
+  ipcMain.handle(OPRN_CHANNELS.lifecycleFlushReloadDone, (event, ok: unknown) => {
+    const id = event.sender.id;
+    const hard = reloadFlushing.get(id) === "hard";
+    if (!reloadFlushing.has(id)) return false;
+    abandonReloadFlush(id);
+    const window = BrowserWindow.fromWebContents(event.sender);
+    if (!window || window.isDestroyed() || closing.has(id)) return false;
+    if (ok !== true) {
+      void dialog.showMessageBox(window, { type: "warning", message: RELOAD_BLOCKED_MESSAGE, detail: RELOAD_BLOCKED_DETAIL }).catch((error: unknown) => {
+        console.warn("[project] 새로고침 안내를 띄우지 못했습니다:", error);
+      });
+      return false;
+    }
+    performReload(window, hard);
     return true;
   });
   ipcMain.on(OPRN_CHANNELS.resumeEditorReady, (event) => {
@@ -619,51 +974,53 @@ export async function startApp(boot: BootContext): Promise<void> {
     const title = typeof input?.title === "string" ? input.title : undefined;
     return typeof input?.root === "string" && input.root ? suggestProjectDir(title, input.root) : suggestProjectDir(title);
   });
-  ipcMain.handle(OPRN_CHANNELS.startChooseProjectRoot, async (event: IpcMainInvokeEvent, payload: unknown) => {
-    const owner = BrowserWindow.fromWebContents(event.sender);
-    const options = { properties: ["openDirectory", "createDirectory"] as Array<"openDirectory" | "createDirectory">, title: "새 게임을 만들 위치 선택" };
-    const result = owner ? await dialog.showOpenDialog(owner, options) : await dialog.showOpenDialog(options);
-    return result.canceled || result.filePaths.length === 0 ? null : result.filePaths[0];
-  });
+  ipcMain.handle(OPRN_CHANNELS.startChooseProjectRoot, (event: IpcMainInvokeEvent, _payload: unknown) =>
+    askForDirectory(BrowserWindow.fromWebContents(event.sender), "새 게임을 만들 위치 선택", true));
   ipcMain.handle(OPRN_CHANNELS.startOpenFolder, async (event: IpcMainInvokeEvent, payload: unknown) => {
+    const senderId = event.sender.id;
     const requested = (payload as { readonly projectDir?: unknown } | null)?.projectDir;
     if (typeof requested === "string") {
       if (!requested || !sessions.directoryExists(requested)) throw new Error("열 프로젝트 폴더를 찾지 못했습니다.");
-      const session = await sessions.open(event.sender.id, requested);
+      const session = await openWindowSession(senderId, requested);
+      if (!session) return null;
       rememberRecentProject(session.projectDir, session.store.info().title ?? requested);
       return { projectDir: session.projectDir, isNew: false, projectId: session.store.projectId };
     }
-    const { dialog } = await import("electron");
-    const result = await dialog.showOpenDialog({ properties: ["openDirectory"], title: "프로젝트 폴더 열기" });
-    if (result.canceled || result.filePaths.length === 0) return null;
-    const dir = result.filePaths[0];
+    const dir = await askForDirectory(BrowserWindow.fromWebContents(event.sender), "프로젝트 폴더 열기");
+    if (!dir || event.sender.isDestroyed()) return null;
     // project.sqlite 가 없는 폴더도 그냥 연다 — 스토어가 만들어지고 렌더러의 store.load()
     // 가 빈 프로젝트를 심는다. isNew 는 시작 화면이 “새 프로젝트로 채택” 토스트를 띄우는 용도다.
     const isNew = !sessions.directoryExists(dir);
-    const session = await sessions.open(event.sender.id, dir);
+    const session = await openWindowSession(senderId, dir);
+    if (!session) return null;
     rememberRecentProject(dir, session.store.info().title ?? dir);
     return { projectDir: dir, isNew, projectId: session.store.projectId };
   });
   ipcMain.handle(OPRN_CHANNELS.startOpenRecent, async (event: IpcMainInvokeEvent, payload: unknown) => {
+    const senderId = event.sender.id;
     const input = payload as { readonly projectDir?: unknown };
     const dir = typeof input?.projectDir === "string" ? input.projectDir : "";
     if (!dir || !sessions.directoryExists(dir)) return null;
-    const session = await sessions.open(event.sender.id, dir);
+    const session = await openWindowSession(senderId, dir);
+    if (!session) return null;
     rememberRecentProject(dir, session.store.info().title ?? dir);
     return { projectDir: dir, projectId: session.store.projectId };
   });
   ipcMain.handle(OPRN_CHANNELS.startCreateProject, async (event: IpcMainInvokeEvent, payload: unknown) => {
+    const senderId = event.sender.id;
     const input = payload as { readonly title?: string; readonly seed?: string; readonly projectDir?: string };
     let dir: string;
-    // 시작 화면은 저장 위치를 미리 보여 주고 확정된 경로를 보낸다. 편집기 메뉴 경로는 예전처럼 대화상자를 연다.
+    // 시작 화면은 저장 위치를 미리 보여 주고 확정된 경로를 보낸다. 경로가 없으면 대화상자를 연다.
+    // 어느 쪽이든 파일이 있는 폴더는 거절한다.
     if (typeof input?.projectDir === "string" && input.projectDir) {
       dir = prepareNewProjectDir(input.projectDir);
     } else {
-      const result = await dialog.showOpenDialog({ properties: ["openDirectory", "createDirectory"], title: "새 프로젝트 폴더 선택" });
-      if (result.canceled || result.filePaths.length === 0) return null;
-      dir = result.filePaths[0];
+      const picked = await askForDirectory(BrowserWindow.fromWebContents(event.sender), "새 프로젝트 폴더 선택", true);
+      if (!picked || event.sender.isDestroyed()) return null;
+      dir = acceptMenuFolder(picked, "new");
     }
-    const session = await sessions.open(event.sender.id, dir);
+    const session = await openWindowSession(senderId, dir);
+    if (!session) return null;
     // 시드(장르 프리셋 등)를 새 폴더에 심는다 — 빈 폴더로 시작하면 렌더러가 리로드 뒤에 적용할 수 없다.
     if (typeof input.seed === "string" && input.seed.length > 0) await session.store.saveSerialized(input.seed);
     rememberRecentProject(session.projectDir, input.title ?? "새 프로젝트");
@@ -695,6 +1052,9 @@ export async function startApp(boot: BootContext): Promise<void> {
   mainMark("handlersRegistered");
   // 첫 실행 인자(Windows·Linux)와 본체를 읽기 전에 온 링크·두 번째 실행을 이제 처리한다. 이후 것은 바로 받는다.
   // 두 번째 실행: 프로젝트 폴더면 그 폴더를 연다. 링크만 있으면 창을 더 열지 않는다. 둘 다 없으면 새 시작 화면.
+  // macOS 는 폴더를 second-instance argv 가 아니라 open-file 로 보낸다. 둘은 순서가 정해져 있지 않아,
+  // 경로 없는 두 번째 실행은 open-file 이 같은 폴더를 여는 동안이면 시작 화면을 더 만들지 않는다.
+  let lastOpenFileAt = 0;
   const onSecondInstance = (launch: SecondInstanceLaunch): void => {
     const link = findStoreDeepLinkArg(launch.argv);
     if (link) acceptStoreDeepLink(link);
@@ -710,16 +1070,40 @@ export async function startApp(boot: BootContext): Promise<void> {
       void openProjectFromCli(found.dir);
       return;
     }
-    if (!link) createWindow();
+    if (!link) {
+      if (process.platform === "darwin") {
+        setTimeout(() => {
+          if (quitRequested || Date.now() - lastOpenFileAt < 1000) return;
+          createWindow();
+        }, 200);
+        return;
+      }
+      createWindow();
+    }
   };
   const early = boot.attachLinks(acceptStoreDeepLink, onSecondInstance);
   const initialLink = findStoreDeepLinkArg(process.argv);
   for (const link of [...(initialLink ? [initialLink] : []), ...early.links]) acceptStoreDeepLink(link);
   for (const launch of early.secondInstances) onSecondInstance(launch);
+  // macOS open-file. 첫 창이 이미 이 폴더를 열었으면 다시 열지 않는다(숨은 창을 창 모드로 띄우지 않게).
+  const acceptOpenedPath = (filePath: string): void => {
+    if (process.env.OPRN_SMOKE_PAGE !== undefined || process.env.OPRN_OPEN_PROJECT_DIR !== undefined) return;
+    const dir = projectDirFromOpenPath(filePath);
+    if (!dir) {
+      console.warn(`[project] 연 항목을 프로젝트로 열지 않았습니다 (project.sqlite 가 있는 폴더가 아님): ${filePath}`);
+      return;
+    }
+    lastOpenFileAt = Date.now();
+    if (openedAtBoot && safeRealpath(dir) === safeRealpath(openedAtBoot)) return;
+    void openProjectFromCli(dir);
+  };
+  for (const filePath of takePendingOpenFiles(acceptOpenedPath)) acceptOpenedPath(filePath);
   app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
   });
 }
+
+app.on("before-quit", () => { quitRequested = true; });
 
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") app.quit();

@@ -1,5 +1,7 @@
 import { isEmeraldMonsterStyle } from "@/project/emeraldMonsterStyle";
-import { skillHelp, skillHelpTagLine } from "@/battle/skillHelp";
+import { skillHelp, skillHelpTagLine, type SkillHelpUser } from "@/battle/skillHelp";
+import { battleSkillMpCostFor, battleSkillResource2Cost } from "@/battle/battleSkillUse";
+import { resource2Config } from "@/battle/battleGauges";
 import { withCloudStatus } from "@/player/cloudOtherSaves";
 import { captureConditionLabel } from "@/battle/captureBalls";
 import { roJosa, withJosa } from "@/util/josa";
@@ -26,13 +28,14 @@ import { canCraft, combinationPartnersOf, combinationRecipeFor } from "@/project
 import { actorLoadoutSlots, equippedBattleSkillIds } from "@/project/skillLoadout";
 import { actorDerivedStats } from '@/battle/battleBattlers';
 import { machineSkillOf, menuItemUnavailableReason, previewEvolutionStoneTarget, previewMenuItemTarget, previewMonsterMachine, previewMonsterMedicine, targetsPartyMonsters } from "@/player/playerItemUse";
-import type { SaveSlotIndex, SaveSlotReadResult } from "@/player/saveSlots";
+import { snapshotLoadBlocker, type SaveSlotReadResult, type SaveSnapshot } from "@/player/saveSlots";
 import { canEquip, effectiveActorEquipment, equipmentSlotAccepts } from "@/project/equipmentRules";
 import { resolveActorName, resolveActorFaceResourceId } from "@/project/sessionActorCommands";
 import { listPartyBondEntries, partyBondMeter } from "@/project/partyBonds";
 import { defaultActorFaceResourceId, normalizeActorRecord } from "@/project/actorModel";
 import type { StatusMenuStatDelta } from "@/player/playerStatusMenuDetailTypes";
 import { effectiveActorClassId } from "@/project/sessionClass";
+import { resolveTerms } from "@/project/terms";
 import { actorFieldStateNames, KNOCKED_OUT_STATE_NAME } from "@/player/actorFieldStates";
 import type { PlaySession } from "@/project/session";
 import type {
@@ -104,7 +107,7 @@ export function createStatusMenuDetail(options: StatusMenuDetailOptions): Status
     case "region-map":
     case "campaign-progress": return createMonsterCampaignDetail(options, options.selectedCommand);
     case "save": return saveDetail(options);
-    case "load": return loadDetail(options.slots, options.onLoadSlot, options.project);
+    case "load": return loadDetail(options);
     case "status": return usesMonsterParty(options.project) ? monsterPartyStatusDetail(options) : statusDetail(options.project, options.session);
     case "row": return rowDetail(options);
     case "formation": return formationDetail(options);
@@ -548,6 +551,7 @@ function skillDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
     if (!actor) return { title: "스킬", entries: [], emptyLabel: "파티원을 찾을 수 없습니다" };
     if (options.growthTab && options.growthTab !== "skills") return createGrowthMenu(options);
     const skills = learnedSkills(project, session, actor);
+    const skillUser = skillMenuActorUser(project, session, actor);
     const slots = actorLoadoutSlots(actor);
     if (slots !== undefined) {
       // 장착 칸이 있는 배우: 행을 고르면 장착/해제. 전투는 장착한 스킬만 쓴다(project/skillLoadout.ts).
@@ -558,8 +562,8 @@ function skillDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
         entries: skills.map((skill) => ({
           label: `${equipped.has(skill.id) ? "● " : "○ "}${skill.name}`,
           icon: skillEntryIcon(project, skill),
-          value: equipped.has(skill.id) ? "장착" : `MP ${skill.mpCost.flat}`,
-          description: fieldSkillDescription(project, skill),
+          value: skillMenuRowValue(project, skill, skillUser),
+          description: fieldSkillDescription(project, skill, skillUser),
           testId: `status-menu-skill-${actor.id}-${skill.id}`,
           attributes: { loadoutEquipped: equipped.has(skill.id) ? "true" : "false" },
           onActivate: options.onToggleSkillLoadout
@@ -576,13 +580,13 @@ function skillDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
       entries: skills.map((skill) => ({
         label: skill.name,
         icon: skillEntryIcon(project, skill),
-        value: skill.fieldCommonEventId ? `MP ${skill.mpCost.flat} · 필드에서 사용` : `MP ${skill.mpCost.flat}`,
-        description: fieldSkillDescription(project, skill),
+        value: skillMenuRowValue(project, skill, skillUser),
+        description: fieldSkillDescription(project, skill, skillUser),
         testId: `status-menu-skill-${actor.id}-${skill.id}`,
         onActivate: options.onSelectSkill ? () => options.onSelectSkill?.(skill.id) : undefined,
       })),
       emptyLabel: "사용할 수 있는 스킬이 없습니다",
-      hint: options.selectedSkillId ? "선택한 스킬 정보를 확인했습니다." : "스킬을 선택하면 설명을 확인합니다.",
+      hint: "설명은 커서를 올리면 아래에 보입니다. 필드 스킬만 Enter로 사용합니다.",
     };
   }
 
@@ -722,19 +726,53 @@ function saveDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
   };
 }
 
-function loadDetail(slots: readonly SaveSlotReadResult[], onLoadSlot: ((slot: SaveSlotIndex) => void) | undefined, project: Project): StatusMenuDetail {
+function loadDetail(options: Pick<StatusMenuDetailOptions, "slots" | "onLoadSlot" | "project" | "autosave" | "onLoadAutosave">): StatusMenuDetail {
+  const { slots, onLoadSlot, project } = options;
   const text = saveText(project);
+  const autosave = autosaveLoadEntry(options);
   return {
     title: withCloudStatus(text("load.title")),
-    entries: slots.map((slot) => ({
-      label: text("save.slot", slot.slot),
-      ...saveSlotEntryParts(slot, false, vnSaveCards(project), text),
-      testId: `load-slot-${slot.slot}`,
-      onActivate: onLoadSlot && slot.kind === "present" ? () => onLoadSlot(slot.slot) : undefined,
-      disabled: slot.kind !== "present",
-    })),
+    entries: [
+      ...(autosave ? [autosave] : []),
+      ...slots.map((slot) => ({
+        label: text("save.slot", slot.slot),
+        ...saveSlotEntryParts(slot, false, vnSaveCards(project), text),
+        testId: `load-slot-${slot.slot}`,
+        onActivate: onLoadSlot && slot.kind === "present" ? () => onLoadSlot(slot.slot) : undefined,
+        disabled: slot.kind !== "present",
+      })),
+    ],
     hint: text("load.hint"),
   };
+}
+
+function autosaveLoadEntry(options: Pick<StatusMenuDetailOptions, "project" | "autosave" | "onLoadAutosave">): StatusMenuDetailEntry | undefined {
+  const autosave = options.autosave;
+  if (!autosave || autosave.kind === "empty") return undefined;
+  const text = saveText(options.project);
+  const label = text("save.autosave");
+  if (autosave.kind === "corrupt") {
+    return { label, value: text("save.corrupt"), description: autosave.message, testId: "load-slot-auto" };
+  }
+  const blocker = snapshotLoadBlocker(options.project, autosave.snapshot);
+  if (blocker) {
+    return { label, value: text("save.blocked"), description: blocker, testId: "load-slot-auto" };
+  }
+  const parts = savedSnapshotParts(autosave.snapshot, false, vnSaveCards(options.project), text);
+  const trigger = autosaveTriggerText(autosave.snapshot.autosaveTrigger, text);
+  return {
+    label,
+    value: parts.value,
+    description: [trigger, parts.description].filter(Boolean).join(" / "),
+    testId: "load-slot-auto",
+    onActivate: options.onLoadAutosave,
+  };
+}
+
+function autosaveTriggerText(trigger: SaveSnapshot["autosaveTrigger"], text: (key: VnUiKey) => string): string | undefined {
+  if (trigger === "transfer") return text("save.trigger.transfer");
+  if (trigger === "battleVictory") return text("save.trigger.battleVictory");
+  return undefined;
 }
 
 function statusDetail(project: Project, session: PlaySession): StatusMenuDetail {
@@ -1229,13 +1267,42 @@ function equipmentEntryIcon(equipment: EquipmentRecord | undefined): NonNullable
   };
 }
 
-// 스킬은 애니메이션 시트의 첫 셀을 썸네일로 쓴다. 시트 전체를 축소하지 않도록 규격도 넘긴다.
+/**
+ * 스킬 행의 소모 글자. 전투 명령 메뉴(battleSkillMpCostFor)와 같은 값 —
+ * 고정 MP + 최대 MP %, 장비 「MP 소모 절반」, 연계 몫, 켠 제2 자원, 프로젝트 MP 용어.
+ */
+function skillMenuActorUser(project: Project, session: PlaySession, actor: ActorRecord): SkillHelpUser {
+  const level = session.actorLevels[actor.id] ?? actor.initialLevel;
+  const derived = actorDerivedStats(project, normalizeActorRecord(actor), {
+    level,
+    classOverrides: session.classOverrides,
+    promotionLineage: session.promotionLineage,
+    growthProgress: session.growthProgress,
+    paramBonuses: session.actorParamBonuses?.[actor.id],
+    equipment: effectiveActorEquipment(project, actor, session.actorEquipment[actor.id], effectiveActorClassId(project, session, actor.id)),
+  });
+  return {
+    recordId: actor.id,
+    maxMp: derived.maxMp,
+    ...(derived.equipmentEffects.halfMpCost ? { equipmentEffects: { halfMpCost: true } } : {}),
+  };
+}
+
+function skillMenuRowValue(project: Project, skill: SkillRecord, user: SkillHelpUser): string {
+  const mpName = resolveTerms(project).mp || "MP";
+  const mp = `${mpName} ${battleSkillMpCostFor(skill, user)}`;
+  const resource2 = battleSkillResource2Cost(project, skill);
+  const cost = resource2 > 0 ? `${mp} · ${resource2Config(project)?.label || "기력"} ${resource2}` : mp;
+  return skill.fieldCommonEventId ? `${cost} · 필드에서 사용` : cost;
+}
+
 /** 필드 스킬 화면의 설명 — 전투 도움말 창과 같은 문장(battle/skillHelp): 한 줄 설명 + 꼬리표 줄. */
-function fieldSkillDescription(project: Project, skill: SkillRecord): string {
-  const help = skillHelp(project, skill);
+function fieldSkillDescription(project: Project, skill: SkillRecord, user?: SkillHelpUser): string {
+  const help = skillHelp(project, skill, user);
   return [help.description || skillKindLabel(skill), skillHelpTagLine(help), help.comboNames ? `연계: ${help.comboNames.join(" × ")} · ${help.cost}` : ""].filter(Boolean).join("\n");
 }
 
+// 스킬은 애니메이션 시트의 첫 셀을 썸네일로 쓴다. 시트 전체를 축소하지 않도록 규격도 넘긴다.
 function skillEntryIcon(project: Project, skill: SkillRecord): NonNullable<StatusMenuDetailEntry["icon"]> {
   const animation = skill.animationId
     ? project.database.battleAnimations.find((entry) => entry.id === skill.animationId)
@@ -1248,7 +1315,9 @@ function skillEntryIcon(project: Project, skill: SkillRecord): NonNullable<Statu
   };
 }
 
-// 메타가 길면 value(우측 1줄)가 아니라 description(전폭 2줄) 행으로 내려 라벨과 겹치지 않게 한다.
+// 행의 오른쪽은 칸을 고르기 전에 비교하는 값이다. 「저장됨」만 있으면 세 칸이 같아 보이고,
+// 플레이 시간만으로는 더 짧은 옛 저장을 다시 이은 뒤의 최신 칸을 구분하지 못한다.
+// 레벨과 저장 시각을 행에 두고, 장소·플레이 시간·전체 날짜는 고른 칸의 설명에 둔다.
 function saveSlotEntryParts(
   slot: SaveSlotReadResult,
   confirmingOverwrite: boolean,
@@ -1259,32 +1328,80 @@ function saveSlotEntryParts(
     case "empty": return { value: text("save.empty") };
     case "corrupt": return { value: text("save.corrupt") };
     case "present": {
-      const parts = [slot.snapshot.projectTitle];
-      if (typeof slot.snapshot.partyLevel === "number") parts.push(`L${slot.snapshot.partyLevel}`);
-      if (slot.snapshot.mapName) parts.push(slot.snapshot.mapName);
-      if (typeof slot.snapshot.playTimeSeconds === "number") parts.push(formatPlayTime(slot.snapshot.playTimeSeconds));
-      const monster = slot.snapshot.monsterSummary;
+      const snapshot = slot.snapshot;
+      const level = typeof snapshot.partyLevel === "number" ? `L${snapshot.partyLevel}` : undefined;
+      const played = typeof snapshot.playTimeSeconds === "number" ? formatPlayTime(snapshot.playTimeSeconds) : undefined;
+      const when = formatSaveDate(snapshot.savedAt) || undefined;
+      const monster = snapshot.monsterSummary;
       if (monster) {
-        // 몬스터 수집 게임: 고른 칸의 쇼케이스(설명)에 도감·배지·주인공·장소·시간·파티. 행의 오른쪽 값은 짧게 둔다(쇼케이스가 열리면 목록 폭이 좁다).
         const progress = [`도감 ${monster.caught}/${monster.dexTotal}`, ...(monster.badgeTotal > 0 ? [`배지 ${monster.badges}/${monster.badgeTotal}`] : [])].join(" · ");
-        const where = [progress, monster.trainer, slot.snapshot.mapName, typeof slot.snapshot.playTimeSeconds === "number" ? formatPlayTime(slot.snapshot.playTimeSeconds) : undefined, `파티 ${monster.party}`];
-        return { value: confirmingOverwrite ? text("save.overwrite") : text("save.saved"), description: where.filter(Boolean).join(" / ") };
+        const where = [progress, monster.trainer, snapshot.mapName, played, `파티 ${monster.party}`, when];
+        return { value: saveSlotGlance(snapshot, confirmingOverwrite, text), description: where.filter(Boolean).join("\n") };
       }
-      // 미연시 세이브 카드(saveCards): 날짜와 저장 시점의 마지막 대사 한 줄을 함께 보인다.
-      if (vnCard) {
-        const when = formatSaveDate(slot.snapshot.savedAt);
-        if (when) parts.push(when);
-        if (slot.snapshot.sceneLine) parts.push(`“${slot.snapshot.sceneLine}”`);
-      }
+      const lines = [
+        snapshot.projectTitle,
+        snapshot.mapName,
+        [level, played].filter(Boolean).join(" · "),
+        when,
+        vnCard && snapshot.sceneLine ? `“${snapshot.sceneLine}”` : "",
+      ].filter((line) => Boolean(line));
       return {
-        value: confirmingOverwrite ? text("save.overwrite") : text("save.saved"),
-        description: parts.join(" / "),
+        value: saveSlotGlance(snapshot, confirmingOverwrite, text),
+        description: lines.join("\n"),
       };
     }
-    default: return assertNever(slot);
+    case "present": return savedSnapshotParts(slot.snapshot, confirmingOverwrite, vnCard, text);    default: return assertNever(slot);
   }
 }
 
+function saveSlotGlance(
+  snapshot: SaveSnapshot,
+  confirmingOverwrite: boolean,
+  text: (key: VnUiKey) => string,
+): string {
+  if (confirmingOverwrite) return text("save.overwrite");
+  const level = typeof snapshot.partyLevel === "number" ? `L${snapshot.partyLevel}` : "";
+  const when = formatSaveSlotClock(snapshot.savedAt);
+  const extra = [level, when].filter(Boolean).join(" · ");
+  return extra ? `${text("save.saved")} · ${extra}` : text("save.saved");
+}
+
+/** 행에 넣는 짧은 저장 시각. 연도는 고른 칸의 전체 날짜가 맡는다. */
+function formatSaveSlotClock(iso: string): string {
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return "";
+  const pad2 = (value: number): string => String(value).padStart(2, "0");
+  return `${pad2(date.getMonth() + 1)}/${pad2(date.getDate())} ${pad2(date.getHours())}:${pad2(date.getMinutes())}`;
+}
+
+function savedSnapshotParts(
+  snapshot: SaveSnapshot,
+  confirmingOverwrite: boolean,
+  vnCard: boolean,
+  text: (key: VnUiKey) => string,
+): { value: string; description?: string } {
+  const parts = [snapshot.projectTitle];
+  if (typeof snapshot.partyLevel === "number") parts.push(`L${snapshot.partyLevel}`);
+  if (snapshot.mapName) parts.push(snapshot.mapName);
+  if (typeof snapshot.playTimeSeconds === "number") parts.push(formatPlayTime(snapshot.playTimeSeconds));
+  const monster = snapshot.monsterSummary;
+  if (monster) {
+    // 몬스터 수집 게임: 고른 칸의 쇼케이스(설명)에 도감·배지·주인공·장소·시간·파티. 행의 오른쪽 값은 짧게 둔다(쇼케이스가 열리면 목록 폭이 좁다).
+    const progress = [`도감 ${monster.caught}/${monster.dexTotal}`, ...(monster.badgeTotal > 0 ? [`배지 ${monster.badges}/${monster.badgeTotal}`] : [])].join(" · ");
+    const where = [progress, monster.trainer, snapshot.mapName, typeof snapshot.playTimeSeconds === "number" ? formatPlayTime(snapshot.playTimeSeconds) : undefined, `파티 ${monster.party}`];
+    return { value: confirmingOverwrite ? text("save.overwrite") : text("save.saved"), description: where.filter(Boolean).join(" / ") };
+  }
+  // 미연시 세이브 카드(saveCards): 날짜와 저장 시점의 마지막 대사 한 줄을 함께 보인다.
+  if (vnCard) {
+    const when = formatSaveDate(snapshot.savedAt);
+    if (when) parts.push(when);
+    if (snapshot.sceneLine) parts.push(`“${snapshot.sceneLine}”`);
+  }
+  return {
+    value: confirmingOverwrite ? text("save.overwrite") : text("save.saved"),
+    description: parts.join(" / "),
+  };
+}
 
 function skillKindLabel(skill: SkillRecord): string {
   switch (skill.effect.kind) {

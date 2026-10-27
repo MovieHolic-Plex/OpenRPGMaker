@@ -47,11 +47,11 @@ import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
 import type { CommandExecution, Frame, InterpreterState, PendingStep, StagingTarget, StepResult } from "@/player/interpreter/types";
 import { breakLoop, gotoLabel, pushFrame, pushLoopFrame } from "@/player/interpreter/stack";
 import { presentableItems } from "@/player/interpreter/presentItem";
-import { executeM2RuntimeCommand, relocateM2Events } from "@/player/interpreter/m2Runtime";
+import { executeM2RuntimeCommand, memorizedBgmPlayback, relocateM2Events } from "@/player/interpreter/m2Runtime";
 import { fieldBoolean, fieldNumber, fieldString } from "@/player/interpreter/m2RuntimeFields";
 import { recordSoundLayer, waitConditionMet } from "@/player/interpreter/m2ModernRuntime";
 import { ensureM2Runtime } from "@/player/interpreter/m2RuntimeState";
-import { planScreenEffect } from "@/player/interpreter/screenEffectPlan";
+import { HIDE_SHOW_SCREEN_FADE_MS, planScreenEffect } from "@/player/interpreter/screenEffectPlan";
 import type { RuntimeCameraTarget } from "@/project/sessionRuntimeTypes"
 import { beginCutsceneControl, endCutsceneControl } from "@/player/cutsceneControl";
 import { saveSessionCheckpoint } from "@/player/checkpoints";
@@ -229,9 +229,16 @@ function executeM2Command(
   if (entry.title === "Fadeout BGM") return pause("stopAudio", { kind: "stopAudio", channel: "bgm" });
 
   if (entry.title === "Play Memorized BGM" && executeM2RuntimeCommand(state.session, entry, command, m2Context)) {
-    const memorized = state.session.m2Runtime?.audio?.playedMemorizedBgm;
-    if (typeof memorized === "string" && memorized.length > 0) {
-      return pause("playAudio", { kind: "playAudio", resourceId: memorized, loop: true, channel: "bgm" });
+    const memorized = memorizedBgmPlayback(state.session.m2Runtime);
+    if (memorized) {
+      return pause("playAudio", {
+        kind: "playAudio",
+        resourceId: memorized.resourceId,
+        loop: true,
+        channel: "bgm",
+        ...(memorized.volume === undefined ? {} : { volume: memorized.volume }),
+        ...(memorized.fadeInMs === undefined ? {} : { fadeInMs: memorized.fadeInMs }),
+      });
     }
     return resumeNext(frame);
   }
@@ -334,6 +341,11 @@ function executeM2Command(
 
   if (entry.title === "Stop All Movement" && executeM2RuntimeCommand(state.session, entry, command, m2Context)) {
     return pause("stopAllMovement", { kind: "stopAllMovement" });
+  }
+
+  // 화면 숨기기/표시는 페이드가 끝난 뒤에 다음 명령이 시작한다. 안 기다리면 대사가 검게 덮이는 도중에 뜬다.
+  if ((entry.title === "Hide Screen" || entry.title === "Show Screen") && executeM2RuntimeCommand(state.session, entry, command, m2Context)) {
+    return pause("wait", { kind: "wait", ms: HIDE_SHOW_SCREEN_FADE_MS });
   }
 
   // 일회성 화면 효과: 상태 기록(executeM2RuntimeCommand) 후 블로킹 pause 로 플레이어에 위임.
@@ -442,12 +454,12 @@ function executeM2Command(
   }
 }
 
-function saveCheckpoint(state: InterpreterState): void {
+function saveCheckpoint(state: InterpreterState, label?: string): void {
   if (!state.project) {
     console.warn("[interpreter] checkpointSave skipped: project context missing");
     return;
   }
-  saveSessionCheckpoint(state.project, state.session as PlaySession);
+  saveSessionCheckpoint(state.project, state.session as PlaySession, label);
 }
 
 function advanceCommandMinutes(command: Extract<Command, { kind: "advanceTime" }>): number {
@@ -470,6 +482,8 @@ function killParty(state: InterpreterState): void {
 
 // 에필로그 끝에 붙는 합성 ending 명령 → 실제로 본 엔딩 id. 저작된 ending 명령은 클리어가 아니다.
 const ENDING_CLEAR_COMMANDS = new WeakMap<Command, string>();
+/** 다음 막으로 이어지는 엔딩(EndingDef.continueTo) — 에필로그 뒤 마지막 명령에 붙인다. */
+const ENDING_CONTINUE_COMMANDS = new WeakMap<Command, import("@/project/types").EndingContinueTo>();
 // 에필로그 안의 문장 명령. 스킵(대사창 읽기 보조)은 이 글을 절대 건너뛰지 않는다 — StepResult text 의 endingEpilogue.
 const ENDING_EPILOGUE_TEXT = new WeakSet<Command>();
 
@@ -508,6 +522,7 @@ function triggerEnding(
   const clear = { endingId: ending.id };
   const finalCommand: Command = { kind: "ending", title: ending.name, message: "", ...(ending.presentation ? { presentation: ending.presentation } : {}) };
   ENDING_CLEAR_COMMANDS.set(finalCommand, ending.id);
+  if (ending.continueTo) ENDING_CONTINUE_COMMANDS.set(finalCommand, ending.continueTo);
   const epilogueCommands = compileEndingEpilogue(state, ending);
   for (const epilogueCommand of epilogueCommands) {
     if (epilogueCommand.kind === "text") ENDING_EPILOGUE_TEXT.add(epilogueCommand);
@@ -515,7 +530,7 @@ function triggerEnding(
   if (epilogueCommands.length > 0 && pushFrame(state, [...epilogueCommands, finalCommand])) {
     return { kind: "continue" };
   }
-  return pause("returnToTitle", { kind: "returnToTitle", title: ending.name, message: "", clear, ...(ending.presentation ? { presentation: ending.presentation } : {}) });
+  return pause("returnToTitle", { kind: "returnToTitle", title: ending.name, message: "", clear, ...(ending.presentation ? { presentation: ending.presentation } : {}), ...(ending.continueTo ? { continueTo: ending.continueTo } : {}) });
 }
 
 function selectEnding(
@@ -749,6 +764,9 @@ export function executeCommand(
         moves: command.route.moves,
         repeat: command.route.repeat,
         wait: command.route.wait === true,
+        // 생략·true 는 막힌 걸음을 소비하는 기존 동작. false 만 단계에 실어
+        // 페이지 순찰과 같은 «막히면 그 걸음을 다시» 계약을 플레이어·NPC 경로에 전달한다.
+        ...(command.route.skippable === false ? { skippable: false as const } : {}),
       });
     case "setEventGraphicPattern":
       return pause("setEventGraphicPattern", {
@@ -861,7 +879,7 @@ export function executeCommand(
       });
     }
     case "checkpointSave":
-      saveCheckpoint(state);
+      saveCheckpoint(state, command.label);
       return resumeNext(frame);
     case "openSaveMenu":
       return pause("openSaveMenu", { kind: "openSaveMenu" });
@@ -915,12 +933,14 @@ export function executeCommand(
       return pause("gameOver", { kind: "gameOver", ...(command.gameOverId ? { gameOverId: command.gameOverId } : {}) });
     case "ending": {
       const clearedEndingId = ENDING_CLEAR_COMMANDS.get(command);
+      const continueTo = ENDING_CONTINUE_COMMANDS.get(command);
       return pause("returnToTitle", {
         kind: "returnToTitle",
         title: command.title,
         message: command.message,
         ...(clearedEndingId ? { clear: { endingId: clearedEndingId } } : {}),
         ...(command.presentation ? { presentation: command.presentation } : {}),
+        ...(continueTo ? { continueTo } : {}),
       });
     }
     case "returnToTitle":

@@ -20,7 +20,7 @@ afterEach(async () => {
 });
 
 it.each(["indexeddb", "memory"] as const)("opens interrupted legacy history without admitting execution on %s", async backend => {
-  restoreDom = installFakeDom();
+  restoreDom = installFakeDom({ window: true });
   vi.stubGlobal("indexedDB", backend === "indexeddb" ? new IDBFactory() : undefined);
   resetAiRecordDbForTest();
   const values = new Map([[AI_CONFIG_STORAGE_KEY, JSON.stringify({ ...defaultAiConfig(), agentMode: "chat" })]]);

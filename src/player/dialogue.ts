@@ -52,7 +52,7 @@ import {
   type DialoguePresentationProfile,
 } from "@/player/dialoguePresentation";
 import { prefersReducedMotion } from "@/player/characterLanding";
-import { isCancelKey, isConfirmKey, isTextEntryTarget, normalizeKey } from "@/player/keyBindings";
+import { directionForKey, isCancelKey, isConfirmKey, isTextEntryTarget, keyboardEventKey } from "@/player/keyBindings";
 import { applySystemWindowSkinVariable } from "@/player/systemGraphics";
 import { resolveAudioSource } from "@/player/audio/audioResources";
 import { lineVoiceActive, playLineVoice, stopLineVoice } from "@/player/lineVoice";
@@ -175,6 +175,9 @@ export type DialogueChoicesRequest = DialogueSurfaceSettings & {
 };
 
 const DEFAULT_DIALOGUE_CHAR_DELAY_MS = 24;
+
+/** 선택 질문 노드 id. 한 화면에 창은 하나지만, 연속 선택마다 새 노드가 생긴다. */
+let choicePromptSerial = 0;
 
 type DialoguePlaybackToken =
   | { readonly kind: "char" }
@@ -673,7 +676,7 @@ export function createDialogueUI(
   const recordLog = (request: DialogueTextRequest, look: DialogueLook, toBacklog = true): { readonly text: string; readonly speaker?: string } | undefined => {
     const text = parseDialogueText(request.body, request.textContext).map((segment) => segment.text).join("").trim();
     if (!text) return undefined;
-    const speaker = look.hideName ? undefined : nameplateSpeaker(request.speaker);
+    const speaker = look.hideName ? undefined : nameplateSpeaker(request.speaker, request.textContext);
     logEntries.push({
       text,
       context: look.context,
@@ -815,7 +818,7 @@ export function createDialogueUI(
         node.append(faceEl);
       }
       const column = el("div", { class: "dialogue-corner-text" });
-      const cornerName = look.hideName ? undefined : nameplateSpeaker(request.speaker);
+      const cornerName = look.hideName ? undefined : nameplateSpeaker(request.speaker, request.textContext);
       if (cornerName) {
         const name = el("strong", { class: "dialogue-corner-name", text: cornerName });
         if (look.nameColor) name.style.color = look.nameColor;
@@ -885,7 +888,10 @@ export function createDialogueUI(
     const voiceUrl = voiceFile ? resolveAudioSource(voiceFile, activeProjectForRequest) : null;
     if (voiceUrl) playLineVoice(voiceUrl);
     else stopLineVoice();
-    const requestedLook = request.look ?? resolveDialogueLook(activeProjectForRequest, { speaker: request.speaker, emotion: request.emotion });
+    const requestedLook = request.look ?? resolveDialogueLook(activeProjectForRequest, {
+      speaker: resolveDialogueSpeakerName(request.speaker, request.textContext) ?? request.speaker,
+      emotion: request.emotion,
+    });
     if (isNonBlockingContainer(requestedLook.container)) {
       // 흘림·코너 대사는 대사 상자를 건드리지 않고, 기다리지도 않는다.
       showAmbient(request, voiceUrl ? { ...requestedLook, voice: null } : requestedLook);
@@ -937,7 +943,7 @@ export function createDialogueUI(
           delete overlay.dataset.dialogueStage;
           overlay.style.removeProperty("--dialogue-ui-scale");
         }
-        const speakerName = nameplateSpeaker(request.speaker);
+        const speakerName = nameplateSpeaker(request.speaker, request.textContext);
         const allowPortrait = !look.hideFace && !balloon && vnLookShowsPortraits(vnLook);
         const stagedSpeakerFace = !wasOpen
           ? undefined
@@ -1587,7 +1593,11 @@ export function createDialogueUI(
 
       const onKey = (e: KeyboardEvent) => {
         // 텍스트 입력 컨트롤(런타임 디버그 패널)에 치는 Enter/Space 는 대사 진행이 아니다.
-        if (settled || e.repeat || e.isComposing || isTextEntryTarget(e.target)) return;
+        // 한글 IME 는 key 를 Process 로 바꾸므로, 진행·취소는 물리 키를 본다.
+        if (settled || e.repeat) return;
+        const key = keyboardEventKey(e);
+        if (key === "Process" || key === "Unidentified") return;
+        if ((e.isComposing && key === e.key) || isTextEntryTarget(e.target)) return;
         if (system) {
           // Ctrl 은 누르는 동안만 스킵. 누르고 있다가 다른 키가 Ctrl 없이 눌리면(놓친 keyup) 스킵을 푼다.
           if (ctrlSkip && !e.ctrlKey) ctrlSkip = false;
@@ -1598,7 +1608,7 @@ export function createDialogueUI(
             setHidden(false);
             return;
           }
-          if (e.key === "Control" && system.skip.enabled && !backlogViewIsOpen()) {
+          if (key === "Control" && system.skip.enabled && !backlogViewIsOpen()) {
             ctrlSkip = true;
             delete overlay.dataset.readingStop;
             reevaluate();
@@ -1616,7 +1626,7 @@ export function createDialogueUI(
             }
           }
           // 오토·스킵 중 결정키·취소키는 읽기 보조만 끈다(글을 넘기지도, 메뉴를 열지도 않는다).
-          if (readingMode !== "off" && (isDialogueAdvanceKey(e.key) || e.key === "Escape")) {
+          if (readingMode !== "off" && (isDialogueAdvanceKey(key) || key === "Escape")) {
             e.preventDefault();
             e.stopImmediatePropagation();
             stopReading("manual");
@@ -1624,7 +1634,7 @@ export function createDialogueUI(
           }
         }
         if (handleLogKey(e)) return;
-        if (isDialogueAdvanceKey(e.key)) {
+        if (isDialogueAdvanceKey(key)) {
           e.preventDefault();
           e.stopImmediatePropagation();
           advance();
@@ -1766,6 +1776,10 @@ export function createDialogueUI(
       // 고정 틀: 대사 상자 크기·자리는 그대로 두고, 선택지 칸은 그 위(창이 위에 있으면 아래)에 따로 뜬다.
       // 틀에는 질문(prompt)이, 질문이 없으면 바로 앞 대사가 그대로 남는다. 둘 다 없으면 빈 틀이다.
       const frame = choiceFrame(request, framePrevious, choiceLook);
+      // 질문은 틀 본문에만 있다. 목록이 그 노드를 이름으로 삼아야 포커스가 단추에 있어도 질문이 읽힌다.
+      const promptId = frame.dataset.choicePromptId;
+      if (promptId) choicesEl.setAttribute("aria-labelledby", promptId);
+      else choicesEl.setAttribute("aria-label", dialogueUiText(system, "backlog.choice"));
       if (frame) {
         overlay.classList.add("choices-framed");
         applyTextSettings(overlay, frame, request, position);
@@ -1828,22 +1842,23 @@ export function createDialogueUI(
         }
       };
       onKey = (e: KeyboardEvent) => {
-        if (settled || e.isComposing) return;
+        if (settled || isTextEntryTarget(e.target)) return;
+        const key = keyboardEventKey(e);
+        if (key === "Process" || key === "Unidentified") return;
+        if (e.isComposing && key === e.key) return;
         // 열린 직후의 결정·숫자 키는 버린다 — 앞 대사를 넘기려고 연타한 Enter 가, 선택지가 그려진 바로 그 순간 닿아
         // 플레이어가 읽지도 못한 0번이 골라지던 결함(첫사랑 r11·r8 재현: 선택지 등장과 Enter 가 같은 0.1초).
         // 실제 키 입력(isTrusted)만 막는다. 단위 테스트의 합성 이벤트는 그대로 지나간다.
-        if (e.isTrusted && performance.now() - openedAt < CHOICE_CONFIRM_GRACE_MS && (isConfirmKey(e.key) || /^[1-9]$/.test(e.key))) {
+        if (e.isTrusted && performance.now() - openedAt < CHOICE_CONFIRM_GRACE_MS && (isConfirmKey(key) || /^[1-9]$/.test(key))) {
           e.preventDefault();
           return;
         }
         sawKeyDown = true;
-        if (e.repeat && (isConfirmKey(e.key) || isCancelKey(e.key) || /^[1-9]$/.test(e.key))) {
+        if (e.repeat && (isConfirmKey(key) || isCancelKey(key) || /^[1-9]$/.test(key))) {
           e.preventDefault();
           return;
         }
-        // 입력창에 치는 숫자·Enter 가 선택지를 고르면 안 된다(텍스트 입력 컨트롤은 게임 키가 아니다).
-        if (isTextEntryTarget(e.target)) return;
-        const n = parseInt(e.key, 10);
+        const n = parseInt(key, 10);
         if (!isNaN(n) && n >= 1 && n <= request.options.length && !document.querySelector("[data-testid='title-screen']")) {
           e.preventDefault();
           e.stopPropagation();
@@ -1851,7 +1866,7 @@ export function createDialogueUI(
           return;
         }
         // 취소는 X/Esc 둘 다. 선택지에서 X 만 죽어 있던 결함(적대 리뷰 5).
-        if (isCancelKey(e.key)) {
+        if (isCancelKey(key)) {
           const cancelIndex = cancelChoiceIndex(request.cancelBehavior, request.options.length);
           if (cancelIndex !== null) {
             e.preventDefault();
@@ -1859,19 +1874,18 @@ export function createDialogueUI(
           }
           return;
         }
-        if (normalizeKey(e.key) === "arrowup") {
+        // 필드·전투·상태 메뉴와 같이 W/S 도 위아래다. ←→ 는 받지 않는다 — 패드 스틱이
+        // 대각선이면 ArrowDown 과 ArrowRight 가 한 번에 오고, 둘 다 「다음」이면 한 줄을 건너뛴다.
+        const dir = directionForKey(key);
+        if (dir === "up" || dir === "down") {
           e.preventDefault();
-          setSelected((selectedIndex + request.options.length - 1) % request.options.length);
-          return;
-        }
-        if (normalizeKey(e.key) === "arrowdown") {
-          e.preventDefault();
-          setSelected((selectedIndex + 1) % request.options.length);
+          const delta = dir === "up" ? request.options.length - 1 : 1;
+          setSelected((selectedIndex + delta) % request.options.length);
           return;
         }
         // 결정은 Z/Enter/Space/E. Enter·Space 만 받아서 대사를 Z 로 넘기다가
         // 선택지가 뜨는 순간 Z 가 죽던 결함(적대 리뷰 1).
-        if (isConfirmKey(e.key)) {
+        if (isConfirmKey(key)) {
           e.preventDefault();
           finish(selectedIndex);
         }
@@ -1903,6 +1917,16 @@ export function createDialogueUI(
       choicesWindow.append(choicesEl);
       if (frame) overlay.append(frame);
       overlay.append(choicesWindow, ...choiceBehindPortraits);
+      // 질문은 타이핑되지 않는다. 창이 붙는 순간 한 번만 알린다 — 글자마다 갱신하면 질문이 조각나 읽힌다.
+      if (promptId) {
+        const announcement = el("div", {
+          class: "dialogue-choice-announcement",
+          dataset: { testid: "dialogue-choice-announcement" },
+          attrs: { role: "status", "aria-atomic": "true" },
+        });
+        overlay.append(announcement);
+        announcement.textContent = document.getElementById(promptId)?.textContent?.trim() ?? "";
+      }
       if (system) applyWindowOpacity(choicesWindow, getEffectiveReadingPreferences(system.defaults).windowOpacity);
       if (system && frame) applyWindowOpacity(frame, getEffectiveReadingPreferences(system.defaults).windowOpacity);
       if (frame) beginEnter(frame, choicesProfile.enterMs, !wasOpen);
@@ -2410,17 +2434,27 @@ function dialoguePagesOverflowBody(bodyEl: HTMLElement, pages: readonly Dialogue
  */
 function choiceFrame(request: DialogueChoicesRequest, previous: HTMLElement | undefined, look: DialogueLook): HTMLElement {
   let frame: HTMLElement;
+  let promptBody: HTMLElement | undefined;
   if (!request.prompt && previous) {
     frame = previous.cloneNode(true) as HTMLElement;
     frame.querySelectorAll(".dialogue-page-cursor, .continue-hint, .dialogue-log-button").forEach((node) => node.remove());
     frame.classList.remove("page-ready", "dialogue-beat-shake");
     for (const key of ["dialogueShake", "dialogueFlash", "dialogueCharReveal", "dialogueBeats"]) delete frame.dataset[key];
+    // 앞 대사의 사본은 이미 읽힌 글이다. 장식만 남기고 접근성 트리에서는 뺀다.
+    frame.setAttribute("aria-hidden", "true");
   } else {
     frame = dialogueBox("", "dialogue-choice-frame");
     const content = el("div", { class: "dialogue-content" });
     const column = el("div", { class: "dialogue-text-column" });
     const body = el("div", { class: "body" });
-    if (request.prompt) renderDialogueSegments(body, parseDialogueText(request.prompt, request.textContext));
+    if (request.prompt) {
+      renderDialogueSegments(body, parseDialogueText(request.prompt, request.textContext));
+      choicePromptSerial += 1;
+      body.id = `dialogue-choice-prompt-${choicePromptSerial}`;
+      promptBody = body;
+    } else {
+      frame.setAttribute("aria-hidden", "true");
+    }
     column.append(body);
     content.append(column);
     frame.append(content);
@@ -2429,7 +2463,8 @@ function choiceFrame(request: DialogueChoicesRequest, previous: HTMLElement | un
   frame.classList.add("choices-frame");
   frame.dataset.testid = "dialogue-choice-frame";
   frame.removeAttribute("data-play-input-owner");
-  frame.setAttribute("aria-hidden", "true");
+  // 질문이 있는 틀은 숨기지 않는다. aria-hidden 조상 안의 글은 목록 이름(aria-labelledby)으로도 버려진다.
+  if (promptBody) frame.dataset.choicePromptId = promptBody.id;
   return frame;
 }
 
@@ -2447,9 +2482,6 @@ function dialogueBox(extraClass: string, testId: string): HTMLElement {
   return box;
 }
 
-// 대사 진행은 결정 키만. Esc 는 취소 키인데 여기서만 "진행"으로 동작해
-// 취소가 확인 역할을 하던 결함(적대 리뷰 4)을 잘라냈다. 메시지 창에서 취소는
-// RM 관례대로 아무 일도 하지 않는다 — X 와 Esc 가 이제 동일하게 무반응이다.
 /**
  * 이름표로 보일 화자. 「내레이션」 같은 서술 표기는 인물이 아니다 — 생성 모델이 서술 줄에 speaker:"내레이션" 을
  * 달아 엔딩 에필로그에 「내레이션」 이름표가 떴다(2026-09-24 추리 도그푸딩). 이름표 없이 서술로 보인다.
@@ -2458,17 +2490,35 @@ const NARRATION_SPEAKER = /^(?:내레이션|나레이션|해설|서술|narration
 
 /** 본문 앞에 이름표와 같은 이름이 또 붙어 있으면 걷은 요청을 돌려준다(dialogueSpeakerEcho.ts). */
 function withoutSpeakerEcho(request: DialogueTextRequest): DialogueTextRequest {
-  if (!nameplateSpeaker(request.speaker)) return request;
-  const body = stripSpeakerEcho(request.body, request.speaker);
+  const raw = request.speaker?.trim();
+  if (!nameplateSpeaker(raw)) return request;
+  const plate = resolveDialogueSpeakerName(raw, request.textContext);
+  const byRaw = stripSpeakerEcho(request.body, raw);
+  const body = plate && plate !== raw && byRaw === request.body ? stripSpeakerEcho(request.body, plate) : byRaw;
   return body === request.body ? request : { ...request, body };
 }
 
-export function nameplateSpeaker(speaker: string | undefined): string | undefined {
+/**
+ * 이름표·화자 프로필에 쓸 이름. `\n[1]`·`\v[1]`·`\t[id]` 는 본문과 같은 규칙으로 푼다.
+ * 코드가 비면(없는 배우 번호) 원문을 남겨 오타가 이름표에 그대로 보이게 한다.
+ */
+export function resolveDialogueSpeakerName(speaker: string | undefined, context?: DialogueTextContext): string | undefined {
   const name = speaker?.trim();
-  if (!name || NARRATION_SPEAKER.test(name)) return undefined;
-  return name;
+  if (!name) return undefined;
+  if (!context || !name.includes("\\")) return name;
+  const resolved = resolveDialogueText(name, context).trim();
+  return resolved || name;
 }
 
+export function nameplateSpeaker(speaker: string | undefined, context?: DialogueTextContext): string | undefined {
+  const raw = speaker?.trim();
+  if (!raw || NARRATION_SPEAKER.test(raw)) return undefined;
+  return resolveDialogueSpeakerName(raw, context);
+}
+
+// 대사 진행은 결정 키만. Esc 는 취소 키인데 여기서만 "진행"으로 동작해
+// 취소가 확인 역할을 하던 결함(적대 리뷰 4)을 잘라냈다. 메시지 창에서 취소는
+// RM 관례대로 아무 일도 하지 않는다 — X 와 Esc 가 이제 동일하게 무반응이다.
 export function isDialogueAdvanceKey(key: string): boolean {
   return isConfirmKey(key);
 }
@@ -2708,15 +2758,26 @@ function renderFace(face: FaceGraphic): HTMLElement {
   });
 }
 
+/** Quoted CSS `url("…")` 를 닫거나 이스케이프하는 글자. */
+const DIALOGUE_CSS_URL_BREAK = /["\\\u0000-\u001f\u007f]/u;
+const DIALOGUE_ROOT_IMAGE_URL = /^\/[A-Za-z0-9/_\-.]+\.(?:png|jpe?g|webp|gif)$/iu;
+const DIALOGUE_DATA_IMAGE_URL = /^data:image\/(?:png|jpeg|webp|gif);base64,[A-Za-z0-9+/=]+$/iu;
+const DIALOGUE_ASSET_SCHEME_URL = /^oprn-asset:\/\/[^/?#]+\/[0-9a-f]{64}$/iu;
+const DIALOGUE_ASSET_HOST_URL = /^\/__oprn\/asset\/(?:[^/?#]+\/)?[0-9a-f]{64}$/iu;
+const DIALOGUE_HTTP_IMAGE_EXT = /\.(?:png|jpe?g|webp|gif)$/iu;
+
 function safeResourceImageUrl(url: string | null): string | null {
-  if (url === null) return null;
-  if (/^\/[A-Za-z0-9/_\-.]+\.png$/u.test(url) || /^\/[A-Za-z0-9/_\-.]+\.jpe?g$/u.test(url)) return url;
-  if (/^data:image\/(?:png|jpeg);base64,[A-Za-z0-9+/=]+$/u.test(url)) return url;
-  // The resource resolver rebases exported assets, including deployment subpaths.
-  // Keep the PNG/JPEG contract and reject characters that escape a quoted CSS URL.
-  if (/^https?:\/\//u.test(url) && !/["\\\u0000-\u001f\u007f]/u.test(url)) {
+  if (url === null || DIALOGUE_CSS_URL_BREAK.test(url)) return null;
+  // 묶음 얼굴·초상은 루트 경로다. 올린 그림은 png/jpeg 뿐 아니라 webp·gif 도 온다.
+  if (DIALOGUE_ROOT_IMAGE_URL.test(url) || DIALOGUE_DATA_IMAGE_URL.test(url)) return url;
+  // 데스크톱·브라우저 호스트의 올린 그림은 확장자 없는 내용 주소다.
+  // `oprn-asset://<프로젝트>/<sha256>`, `/__oprn/asset/<프로젝트>/<sha256>`.
+  // 확장자를 요구하면 대사창만 얼굴이 빈 칸이 된다(상태 메뉴는 같은 주소를 그대로 그린다).
+  if (DIALOGUE_ASSET_SCHEME_URL.test(url) || DIALOGUE_ASSET_HOST_URL.test(url)) return url;
+  // 내보내기 플레이어는 배포 하위 경로를 포함한 http(s) 로 다시 쓴다. 경로의 확장자만 본다.
+  if (/^https?:\/\//u.test(url)) {
     try {
-      if (/\.(?:png|jpe?g)$/u.test(new URL(url).pathname)) return url;
+      if (DIALOGUE_HTTP_IMAGE_EXT.test(new URL(url).pathname)) return url;
     } catch (error) {
       if (!(error instanceof TypeError)) throw error;
       return null;

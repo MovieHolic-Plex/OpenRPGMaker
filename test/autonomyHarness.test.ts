@@ -79,7 +79,8 @@ describe("자율성 다이얼 — 설정 round-trip", () => {
   });
 });
 
-describe("자율성 다이얼 — 하네스 동작", () => {
+// Heavy under CI load (15s default is too tight): each case drives up to 48 scripted AssistantSession turns over a blank project.
+describe("자율성 다이얼 — 하네스 동작", { timeout: 120_000 }, () => {
   it("confirm 은 턴루프 상한을 6으로 깎는다", async () => {
     // Break: 레벨 상한이 없으면 maxToolCalls=2000 그대로 2000회가 아니라 chat 소진(401)으로 죽는다.
     // confirm 은 플래너를 먼저 돌리므로(planOnly) 대본 첫 응답은 플래너용 direct — 툴콜 6회만 센다.

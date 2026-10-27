@@ -180,6 +180,28 @@ SQLite revision 7 저장·재로드와 전용 플레이어 8비트(모든 집 �
   Opus VQA 뒤 「delegated by user to supervisor 2026-10-21」 허용을 18323 API 로 기록했다. 3/4 관문 정식 통과(보정 프로필 영수증)는 아니다.
 - 화면: http://mdc-server:18301/beodeul-town-wall-1.html
 
+## 왕도 아스텔 조각 bd-capital (2026-10-27) — 칸 33,408~, 마당 꼬리 바로 뒤
+
+- **그림**: `scripts/content/beodeul-capital/capital_art.py`(코드 손 도트, 버들항 시트 색만, 빛 왼쪽 위). **굽기**: `bake_capital.py`(그림 해시마다 관문 확인) · `--gate-export DIR` · `--samples DIR` · `--no-gate`(개발 시험만, 커밋 금지).
+- **실은 조각(16 키트, 182칸)**: 파란 원뿔 둥근 성벽 탑 3×11(보통 · 불 켠 창 · 서/동 모서리, 0행 = 성벽 윗면 첫 줄 − 4), 운하 수문 4×4(북 안쪽 면 · 남 바깥 면), 광장 분수 4×4(세 프레임), 포고 단 4×2(바닥 층),
+  왕실 깃대 1×3, 벽걸이 깃발 1×2 · 방패 1×1(성벽 앞면 위 4층에 겹친다), 왕실 가로등 1×3 · 쌍등 2×3, 운하 선착 계단 1×3(서·동 둑, 바닥 층), 운하 갑문 6×2(가운데 네 열 바닥 층 + 양쪽 둑 물레). 키트 `bd-capital-*`, 칸 묶음 `beodeul:capital_wall`·`_plaza`·`_canal`.
+- **운하 3판(2026-10-27 사용자 「cmp-5 운하가 이상하다」)**: 2판(따뜻한 사암 계단 · 가로 널 갑문 앞면)을 버리고 버들항 원본 화소를 바탕으로 다시 그렸다 — 물·둑 테 = 강·운하 물 오토타일(23,089 · 23,153 · 23,137) 화소,
+  계단 = 버들항 돌계단(코 dee0dd · 디딤 c4c6c3 · 챌판 그늘 3e403d 5px 주기 + 단마다 엇갈린 돌 이음), 갑문 밑 = 성벽 밑 둑(원본 렌더 47,61 칸)의 물턱·물줄기·물거품·물결 줄, 널 = 부두 널.
+- **관문**: object-gate 영수증(프로필 미보정 — 조언) + 독립 Argon 적대 VQA 한 명(r1 은 숨긴 반려 표본 둘까지 통과시켜 무효, r2 에서 반려 표본·남쪽 수문 방패·쌍등을 떨어뜨림, r3 에서 다시 그린 것 통과) 뒤 18323 위임 허용(`by: "delegated"`, 근거 `harness-data/object-gate/vqa/astel-capital-20261027*.{json,md}`).
+  화풍 판정자는 계단·갑문·남쪽 수문을 「평면 채움」으로 fail 했다(버들항 원본 계단도 평면이다) — 조언 영수증이 fail 인 그림을 위임 허용으로 굽는다는 뜻이다.
+- **꼬리 사슬**: `bake_wall.py` → `bake_gap.py --from-store` → `bake_theme.py --from-store` → `bake_yard.py` → `bake_capital.py`. 앞 스크립트는 시트를 자기 끝에서 자르므로 `bake_yard.py` 가 끝에서 이 스크립트를 다시 부른다. 마당 꼬리가 33,408 을 넘으면 이 스크립트가 멈춘다.
+- **기존 사본**: `ensureBeodeulCityTileset` 이 꼬리 칸 표와 `bd-capital-*` 키트·`beodeul:capital*` 묶음을 더한다. 그 자리(33,408~)에 이식 칸이 있는 사본은 받지 않는다(`capitalBlocked`).
+- **성문루 깊이**: `bake_wall.py` 가 성문루 양옆 기둥 칸(cx 0·3, 비통행 ×)에 `foot-dy:N`(성문루 밑동 줄까지의 칸 수, 런타임 `characterDepth.ts`)을 단다. 없으면 기둥이 제 줄로 정렬돼 통로를 지나는 캐릭터가 기둥 위에 그려졌다.
+- **견본·증거**: `scripts/content/beodeul-capital/sample-map.mts`(새 프로젝트 번들만으로 34×30 견본 → project.sqlite 저장 → 다시 열어 네 층 대조) · `scripts/qa/runtime/astel-capital.capture.mjs`(전용 플레이어, 카메라 1배) · `tiledata/beodeul-capital/evidence/`.
+- 『폴른 스타』 왕도 맵(fs_hub 재건, `fallenAstel.ts`)은 사용자가 버렸다 — 이 묶음은 조각만 싣는다.
+
+
+## 던전 주제 2 꼬리 bd-pick-dungeon-theme2 (2026-10-27) — 칸 33,664~, 왕도 꼬리 바로 뒤
+- **왜**: 던전 주제 꼬리(30,848~33,151)는 뒤에 마당 꼬리가 붙어 자랄 수 없다. 출하된 번호를 옮기면(마당 BASE 이동) 저장된 맵이 깨지므로, 큰 조각은 시트 맨 끝에 새 꼬리로 덧붙인다(덧붙이기 전용, 감독 결정).
+- **첫 조각**: 마계 바닥 `other.ground` theme-floors-r12 — 224×160 판석 밭(키트 `bd-pick-dungeon-theme2-otherworld-floor` 14×10) + 벽 밑 그늘 줄(`…-otherworld-floor-wall-shade` 14×1), 154칸(33,664~33,817, 두 행).
+  시공기(profiles.ts `floor.field`)는 걷는 바닥을 칸 위치로 감아 깔고(방마다 밭 시작 해시 어긋남), 북쪽이 걷지 못하는 칸은 그늘 줄 같은 열. 오토타일은 없다(가장자리 47 변형을 쓰지 않는다).
+- **굽기**: `python3 scripts/content/beodeul-dungeon/bake_theme2.py` (칸 정본 `tiledata/beodeul-dungeon/theme2/`). 꼬리 사슬 끝: `bake_capital.py` 가 끝에서 `bake_theme2.py --from-store` 를 부른다. `bake_theme.py` 는 판석 밭(meta `fieldCols`) 항목을 「넘김」 하고 옛 정의를 지운다(옛 칸은 시트에 남아 옛 맵이 그대로 그린다).
+- **기존 사본**: `ensureBeodeulCityTileset` 이 꼬리 칸 표와 `bd-pick-dungeon-theme2-*` 키트를 더한다. 그 자리(33,664~)에 이식 칸이 있는 사본은 받지 않는다(`theme2Blocked`) — 시공기는 옛 주제 바닥 키트로 물러선다.
 ## 민가·성당 외장: 원본 보존 보정 (2026-10-04 사용자 정정)
 
 사용자 조건은 모든 집의 기초, 창문 다양화, 문 하나, 집별 벽 콘셉트 하나와 교회다.

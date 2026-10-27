@@ -10,6 +10,7 @@ import { currentChapterLabel } from "@/project/newGamePlus";
 import { DEFAULT_FRIENDSHIP_MAX, isGiftSystemEnabled, listFriendshipEntries } from "@/project/friendship";
 import { friendshipDisplayMax, socialLoopSummary } from "@/project/socialLoop";
 import { usesRelationshipMenu } from "@/project/relationshipMenu";
+import { gameHasCombat, gameUsesMoney } from "@/project/combatPresence";
 import { hasPartyBonds } from "@/project/partyBonds";
 import { backlogEnabled, normalizeBacklog, resolveDialogueSystem } from "@/project/dialogueSystem";
 import { dialogueUiText } from "@/player/dialogueUiStrings";
@@ -229,6 +230,10 @@ export type RelationshipMenuOverview = {
 export type PlayerStatusMenuSnapshot = {
   /** 관계 중심 게임이면 있다 — 있으면 렌더러는 HP/MP/EX 대신 이것을 그린다. */
   readonly relationship?: RelationshipMenuOverview;
+  /** 전투가 없는 게임(공포·이야기·추리)이면 있다 — 렌더러는 직업·Lv·HP·MP·EX 대신 주인공 이름만 그린다(J88). */
+  readonly story?: { readonly leadName: string };
+  /** 돈 칸을 보일지 — 돈을 쓰지 않는 게임(상점·여관·돈 바꾸기·전투 보상 없음)이면 「0G」 를 두지 않는다(J88). */
+  readonly showGold?: boolean;
   readonly commands: readonly StatusMenuCommand[];
   readonly commandLabels: readonly string[];
   readonly partyRows: readonly PlayerStatusMenuPartyRow[];
@@ -363,8 +368,11 @@ export function createPlayerStatusMenuSnapshot(
   });
 
   const relationship = usesRelationshipMenu(project) ? relationshipOverview(project, session, partyRows[0]?.name ?? "") : undefined;
+  const story = !relationship && !gameHasCombat(project) ? { leadName: partyRows[0]?.name ?? project.meta.title } : undefined;
   return {
     ...(relationship ? { relationship } : {}),
+    ...(story ? { story } : {}),
+    showGold: !relationship && (gameUsesMoney(project) || session.gold > 0),
     commands,
     commandLabels: commands.map((command) => command.label),
     partyRows,

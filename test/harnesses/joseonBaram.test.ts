@@ -250,9 +250,10 @@ describe("joseon-baram CLI (기존 도구를 실제로 부른다, 정본 파일�
     // 방 지도는 빌더에 방 id 를 넘기고, 사냥터·동굴은 조각 게이트 대신 빌더 단언이 막는다고 말한다
     const room = capture();
     expect(await main(["map", "joseon_in_throne", "--dry"], room)).toBe(0);
-    expect(room.text()).toContain("pal_demo.py joseon_in_throne --candidate");
-    expect(room.text()).toContain("JS_PROFILE=palace_int");
-    expect(room.text()).toContain("M3 물체 피복");
+    // 궁 실내 방은 이제 demo_palace_in.py 가 interior 프로필로 굽는다(harness-data/joseon-baram/seed.json 의 joseon_in_* 항목).
+    expect(room.text()).toContain("demo_palace_in.py joseon_in_throne");
+    expect(room.text()).toContain("JS_PROFILE=interior");
+    expect(room.text()).toContain("물체 ≥0");
     const field = capture();
     expect(await main(["map", "joseon_field", "--dry"], field)).toBe(0);
     expect(field.text()).toContain("demo_field.py");

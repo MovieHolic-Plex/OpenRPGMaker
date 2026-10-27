@@ -1,7 +1,8 @@
+import { isPendingLazyTileset } from "../bundledTilesetLazy";
 import { QUEST_PRESET_IDS } from '@/project/quest/questPresetIds';
 import { troopAfterBattleLists } from "@/project/troopAfterBattle";
 import { canonicalizeCommandFieldAliases } from "@/project/eventCommands/commandFieldAliases";
-import { validateEndingPresentation } from "./shapeDatabaseFields";
+import { validateEndingContinueTo, validateEndingPresentation } from "./shapeDatabaseFields";
 import { referenceOwner } from "../tilesetReferences";
 import { normalizeMapClimate } from "../mapClimate";
 import { normalizeVisualTopOverhangPx } from "../mapVisualBounds";
@@ -71,8 +72,9 @@ export function validateProjectV2(data: JsonRecord): ProjectV2 {
   validateMeta(data.meta);
   validateAssets(data.assets);
   const tilesets = requireRecord("tilesets", data.tilesets);
-  for (const [id, tileset] of Object.entries(tilesets)) validateTileset(id, tileset);
-  for (const tileset of Object.values(tilesets)) referenceOwner({ tilesets } as unknown as Project, tileset as Project["tilesets"][string]);
+  // 지연 번들 타일셋(bundledTilesetDiff.ts)은 번들 정의 + 저장된 차이라 검사를 되돌릴 때까지 미룬다 — 여기서 읽으면 정의를 모두 읽는다.
+  for (const [id, tileset] of Object.entries(tilesets)) if (!isPendingLazyTileset(tileset)) validateTileset(id, tileset);
+  for (const tileset of Object.values(tilesets)) if (!isPendingLazyTileset(tileset)) referenceOwner({ tilesets } as unknown as Project, tileset as Project["tilesets"][string]);
   validateSwitches(data.switches);
   validateVariables(data.variables);
   validateStoryFlags(data.storyFlags, idSet(data.switches), idSet(data.variables));
@@ -127,8 +129,9 @@ function normalizeProjectV4(data: JsonRecord, adoptParsed = false): Project {
   validateAssets(data.assets);
   validateResourceProfiles(data.resourceProfiles);
   const tilesets = requireRecord("tilesets", data.tilesets);
-  for (const [id, tileset] of Object.entries(tilesets)) validateTileset(id, tileset);
-  for (const tileset of Object.values(tilesets)) referenceOwner({ tilesets } as unknown as Project, tileset as Project["tilesets"][string]);
+  // 지연 번들 타일셋은 되돌릴 때까지 검사를 미룬다(validateProjectV2 와 같은 이유).
+  for (const [id, tileset] of Object.entries(tilesets)) if (!isPendingLazyTileset(tileset)) validateTileset(id, tileset);
+  for (const tileset of Object.values(tilesets)) if (!isPendingLazyTileset(tileset)) referenceOwner({ tilesets } as unknown as Project, tileset as Project["tilesets"][string]);
   validateSwitches(data.switches);
   validateVariables(data.variables);
   validateCommonEvents(data.commonEvents);
@@ -380,6 +383,7 @@ function validateEndings(value: unknown): void {
     }
     if (ending.presentation !== undefined) validateEndingPresentation(ending.presentation, `endings[${index}].presentation`);
     if (ending.priority !== undefined) requireNumber(`endings[${index}].priority`, ending.priority);
+    if (ending.continueTo !== undefined) validateEndingContinueTo(ending.continueTo, `endings[${index}].continueTo`);
     if (ending.epilogue !== undefined) {
       for (const [beatIndex, beat] of requireArray(`endings[${index}].epilogue`, ending.epilogue).entries()) {
         requireRecord(`endings[${index}].epilogue[${beatIndex}]`, beat);

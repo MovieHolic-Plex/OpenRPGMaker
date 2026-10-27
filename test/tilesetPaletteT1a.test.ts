@@ -1,12 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { buildSystemPrompt } from "@/ai/contextBuilder";
+import { buildSystemPrompt, DEFAULT_BUDGET_CHARS } from "@/ai/contextBuilder";
 import { lintTilesetPalettes } from "@/editor/lint/tilesetPaletteLint";
 import { proposalSummaryLines } from "@/editor/panels/aiChatPanel";
 import { proposalHumanSummaryLine } from "@/editor/panels/aiProposalSummary";
 import { runTool } from "@/editor/tools/toolRunner";
 import type { ToolContext, ToolResult } from "@/editor/tools/types";
 import { createBlankProject } from "@/project/defaults";
-import { TILE } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID, TILE } from "@/project/defaults/constants";
 import { deserialize, serialize } from "@/project/io";
 import {
   confidenceScore,
@@ -16,6 +16,7 @@ import {
   tileMetaOrigin,
 } from "@/project/tilesetPalette";
 import type { GameMap, PalettePreset, Project, TileAiMetadata, TilesetDef } from "@/project/types";
+import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 
 const EMPTY = TILE.EMPTY;
 
@@ -71,9 +72,12 @@ function preset(patch: Partial<PalettePreset> = {}): PalettePreset {
   };
 }
 
-function contextWithMap(width = 18, height = 18): { readonly ctx: ToolContext; readonly mapId: string; readonly tileset: TilesetDef } {
-  const ctx: ToolContext = { project: createBlankProject() };
-  const created = runTool(ctx, "create_map", { id: "map_palette_t1a", name: "Palette T1a", width, height });
+function contextWithMap(width = 18, height = 18, onRetiredCombinedTown = false): { readonly ctx: ToolContext; readonly mapId: string; readonly tileset: TilesetDef } {
+  const ctx: ToolContext = { project: onRetiredCombinedTown ? withRetiredEasyRpgTilesets(createBlankProject()) : createBlankProject() };
+  const created = runTool(ctx, "create_map", {
+    id: "map_palette_t1a", name: "Palette T1a", width, height,
+    ...(onRetiredCombinedTown ? { tilesetId: COMBINED_TOWN_TILESET_ID } : {}),
+  });
   expect(created.ok, created.summary).toBe(true);
   const map = ctx.project.maps.map_palette_t1a;
   if (!map) throw new Error("missing test map");
@@ -288,7 +292,8 @@ describe("tileset palette AX tools T1a", () => {
     tileset.palettePresets = [preset({ name: "Cave", slots: [{ role: "ground", tileIds: [1, 2] }, { role: "wall", tileIds: [3] }] })];
     ensureMeta(tileset)[3] = { label: "Maybe wall", description: "", confidence: 0.4 };
 
-    const prompt = buildSystemPrompt(project, { budgetChars: 20000 });
+    // A 20,000-char budget no longer reaches the digest: the in-budget sections before it are longer now (digest appears from ~30,000).
+    const prompt = buildSystemPrompt(project, { budgetChars: DEFAULT_BUDGET_CHARS });
 
     expect(prompt).toContain("## 타일 어휘 다이제스트");
     expect(prompt).toContain("Cave");
@@ -304,7 +309,8 @@ describe("tileset palette AX tools T1a", () => {
     // 진짜로 "보여줄 것이 없을 때" 생략되는지 검증하려면 그룹도 함께 비워야 한다.
     startTileset(project).tileGroups = [];
 
-    const prompt = buildSystemPrompt(project, { budgetChars: 20000 });
+    // Same budget as the positive cases, so an omission means "nothing to show", not "cut by the budget".
+    const prompt = buildSystemPrompt(project, { budgetChars: DEFAULT_BUDGET_CHARS });
 
     expect(prompt).not.toContain("## 타일 어휘 다이제스트");
   });
@@ -312,10 +318,11 @@ describe("tileset palette AX tools T1a", () => {
   it("contextBuilder includes tile vocabulary digest with approved group ids by role even without presets", () => {
     const project = createBlankProject();
 
-    const prompt = buildSystemPrompt(project, { budgetChars: 20000 });
+    const prompt = buildSystemPrompt(project, { budgetChars: DEFAULT_BUDGET_CHARS });
 
     expect(prompt).toContain("## 타일 어휘 다이제스트");
-    expect(prompt).toMatch(/wall:/);
+    // The default start tileset is beodeul_city now; its approved groups are listed by role (path/ground/water, no wall group).
+    expect(prompt).toMatch(/^- ground: /m);
   });
 
   it("query_tiles filters by preset and role and returns tile details", () => {
@@ -447,8 +454,9 @@ describe("tileset palette placement parameters T1a", () => {
   });
 
   it("build_house applies preset role tiles and replays with the same seed", () => {
-    const first = contextWithMap(24, 24);
-    const second = contextWithMap(24, 24);
+    // build_house stamps the combined-town house kit; on beodeul_city the preset wall tile lands elsewhere. Run on the retired sheet.
+    const first = contextWithMap(24, 24, true);
+    const second = contextWithMap(24, 24, true);
     addToolPreset(first.tileset, [{ role: "wall", tileIds: [51] }]);
     addToolPreset(second.tileset, [{ role: "wall", tileIds: [51] }]);
     const args = { origin: { x: 2, y: 2 }, width: 8, height: 8, material: "plaster", presetId: "pp_tools", paletteRole: "wall", seed: 11 };
@@ -463,22 +471,5 @@ describe("tileset palette placement parameters T1a", () => {
     expect(mapOf(first.ctx, first.mapId).lowerTiles).toContain(51);
   });
 
-  it("stamp_structure applies preset role tiles and replays with the same seed", () => {
-    const first = contextWithMap(24, 24);
-    const second = contextWithMap(24, 24);
-    first.tileset.priority[61] = "upper";
-    second.tileset.priority[61] = "upper";
-    addToolPreset(first.tileset, [{ role: "roof", tileIds: [61] }]);
-    addToolPreset(second.tileset, [{ role: "roof", tileIds: [61] }]);
-    const args = { template: "plaster", origin: { x: 2, y: 2 }, presetId: "pp_tools", paletteRole: "roof", seed: 13 };
-
-    const a = runTool(first.ctx, "stamp_structure", { mapId: first.mapId, ...args });
-    const b = runTool(second.ctx, "stamp_structure", { mapId: second.mapId, ...args });
-
-    expectOk(a);
-    expectOk(b);
-    expect(dataRecord<{ paletteTiles: number }>(a).paletteTiles).toBeGreaterThan(0);
-    expect(mapOf(first.ctx, first.mapId).upperTiles).toEqual(mapOf(second.ctx, second.mapId).upperTiles);
-    expect(mapOf(first.ctx, first.mapId).upperTiles).toContain(61);
-  });
+  // Removed it "stamp_structure applies preset role tiles": stamp_structure was removed from the tool registry on purpose.
 });

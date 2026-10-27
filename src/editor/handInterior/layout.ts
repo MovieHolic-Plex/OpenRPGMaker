@@ -395,6 +395,9 @@ function programVariation(tilesetId: string, req: LayoutRequest): { v: ModernPro
 interface Want { id: string; kind: string; tw: number; th: number; bw: number; bh: number; minW: number; minH: number; floor?: string; wall?: string; template?: InteriorRoomTemplate; dress?: HallDress }
 interface Rect { x: number; y: number; w: number; h: number }
 
+/** 바깥 출구 틈을 내지 않는 방 — 전철 차내는 남쪽 벽이 좌석·문 그림이라 틈이 좌석 사이에 났다(J45). 드나들기는 벽면의 차 문(st-car-door) 앞 칸이다. */
+const NO_EXTERIOR_EXIT_KINDS: ReadonlySet<string> = new Set(["traincar"]);
+
 export class LayoutError extends Error { constructor(message: string) { super(message); this.name = "LayoutError"; } }
 
 /** 요청 → 방 목록(목표 크기·견본). */
@@ -442,7 +445,10 @@ export function layoutWants(tilesetId: string, req: LayoutRequest): Want[] {
     const hasStairwell = Boolean(template?.items.some((it) => it.t === "o" && /stairwell/u.test(it.id)));
     const small = !hasStairwell && /^(hall|corridor|genkan|toilet|bath|unitbath|dressing|cell)$/u.test(q.kind);
     const minH = Math.max(small ? 4 : 5, Math.min(th, small ? 4 : 5));
-    return { id, kind: q.kind, tw, th: Math.max(th, minH), bw: tw0, bh: Math.max(th0, minH), minW: Math.max(2, Math.min(tw, 3) - (tw <= 2 ? 1 : 0)), minH,
+    // 견본 폭을 가로지르는 띠(선로·물길 같은 넓이 키트 't' 가 x 0 에서 견본 폭 끝까지)가 든 방은 견본보다 좁아지면 띠가 통째로 빠진다
+    // (2026-10-25 J45: 승강장이 15칸으로 잘려 16칸 선로·승강장 끝 줄·승차 표시가 모두 빠졌다) — 그 방의 최소 폭은 견본 폭이다.
+    const spansWidth = Boolean(template?.items.some((it) => it.t === "t" && it.x === 0 && (it.w ?? 0) >= template.w));
+    return { id, kind: q.kind, tw, th: Math.max(th, minH), bw: tw0, bh: Math.max(th0, minH), minW: spansWidth ? tw : Math.max(2, Math.min(tw, 3) - (tw <= 2 ? 1 : 0)), minH,
       floor: q.floor ?? pal?.[0] ?? template?.floor, wall: q.wall ?? pal?.[1] ?? template?.wall, template };
   });
 }
@@ -816,7 +822,7 @@ function buildCandidatesForVariant(
         score: Math.round(score * 100) / 100,
         rooms,
         connect,
-        exit: { room: entrance, ...(vary?.v.noExteriorExit ? { width: 0 } : exitX !== undefined ? { x: exitX } : {}) },
+        exit: { room: entrance, ...(vary?.v.noExteriorExit || NO_EXTERIOR_EXIT_KINDS.has(exitRoom.kind) ? { width: 0 } : exitX !== undefined ? { x: exitX } : {}) },
         notes,
         styleVariant,
       });

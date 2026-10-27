@@ -1,0 +1,405 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "834919d01242b9e85cf1b41f99c01ed608508b21d1f7986797991537e6802ec8",
+ "width": 64,
+ "height": 80,
+ "kind": "structure",
+ "name": "small scrap-metal shack: patched corrugated sheet roof seen from above as a sloped top plane, front wall of mixed scrap sheets with a plank door",
+ "label": "wasteland_ruins/shack-a",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "wasteland_ruins",
+   "fallback": true,
+   "reason": "칩셋 wasteland_ruins 의 화풍 기준 묶음이 없다",
+   "hash": "5f62fef078ef7661"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 17,
+  "tileColorsP90": 23,
+  "darkV5": 39,
+  "nearBlackEdge": 0.26,
+  "opaqueTiles": 16
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "borderline",
+   "right",
+   "right",
+   "right",
+   "right",
+   "wrong",
+   "right",
+   "right",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "patched corrugated sheet roof (overlapping sheet courses)",
+      "rows": "11-42",
+      "evidence": "c",
+      "front_edge_line_row": 42,
+      "eave_shadow_rows": "43-44"
+     },
+     {
+      "part": "front wall of scrap sheets with plank door and window",
+      "rows": "43-78",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 32,
+    "front_face_rows": 36,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The roof fills rows 11-42 as a sloped plane built from stacked corrugated sheet courses. Course edge lines sit at rows 20, 28, 36 and 42; row 42 is a light eave line (L=155) with dark eave shadow in rows 43-44. The silhouette widens from 54 to 64 px over the roof rows, which gives the roof an overhang. Below it is a front wall 36 rows tall (rows 43-78) with a plank door, a window and mixed scrap sheets. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a whole building like the references, with a roof plane, a front wall and a door. It is smaller than the references. It shows 17 visible tones per 16x16 tile against 12 and 10 for the references, so it is at or above them. Near-flat coverage is 0%, the same as the references, and the roof shows corrugation bands and patch panels. The walls are mixed scrap sheets with vertical plank grain, and the door has frame and plank detail. The window has a blue frame, and I read it as light-toned. The dark edge pixels are 0% neutral, so the outlines lean toward the neighbouring material (dark brown or rust beside the walls, dark slate beside the roof) rather than black. Each material ramp has about 4 steps, one fewer than Beodeul's 5-6, but the patchwork of many different scrap tones adds variety. No flat fills are visible. A careful artist would accept it next to the references without it looking thinner or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15896
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "patched corrugated sheet roof (stacked overlapping sheet tiers)",
+      "rows": "11-42",
+      "evidence": "c",
+      "front_edge_line_row": 42,
+      "eave_shadow_rows": "43-45"
+     },
+     {
+      "part": "front wall of scrap sheets with plank door and window",
+      "rows": "44-78",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 32,
+    "front_face_rows": 35,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The roof is a large sloped plane in rows 11-42. It is built from overlapping sheet tiers, each ending in a light edge line (rows 20, 28, 36). The bottom eave line is the light row 42, followed by dark eave shadow at rows 43-45. Below it the south wall (rows 44-78) holds the plank door, a window and scrap panels, giving about 35 rows of front face. The silhouette widens from 54 to 64 px going down the roof and then holds near 62 px on the wall, so the roof overhangs the wall. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 17 visible tones per tile, against 12 and 10 for the references. Near-flat coverage is 0%, the same as both references. Its dark edge pixels are 0% neutral, so the outline is tinted. By eye, the roof is a sloped plane of corrugated sheets with light and dark ridges and patched panels. The front wall mixes rust-brown, blue-grey and plank panels with a framed window and a plank door. Each material has roughly 4-5 steps, slightly fewer than the references' 5-6, and the shack is smaller, but its density and texture do not look thinner or flatter than the references. It does not look like a sticker. I found no large flat fills.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14740
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "patched corrugated scrap roof (stacked overlapping sheet courses, sloped plane)",
+      "rows": "11-42",
+      "evidence": "c",
+      "front_edge_line_row": 42,
+      "eave_shadow_rows": "43-44"
+     },
+     {
+      "part": "front wall of mixed scrap sheets with plank door and window",
+      "rows": "43-78",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 32,
+    "front_face_rows": 36,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The roof is a large sloped plane at rows 11-42, built from several overlapping sheet courses. Each course ends in a light edge line (rows 20, 28, 36), and the last one is a light line at row 42 (L=155). Rows 43-44 below it are a darker eave shadow (L~62-71). The vertical front wall below runs rows 43-78 (36 rows) and holds the plank door, a window and patched scrap sheets. The silhouette widens slightly from 54 px to 64 px going down the roof, which fits a roof plane with overhang. No side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a whole building (roof, front wall, door, window), so it matches the reference kind. It measures 17 visible tones per 16x16 tile against 12 and 10 for the references. Near-flat coverage is 0%, the same as both references, and 0% of its dark edge pixels are neutral, so the outlines carry a tint. By eye, the outlines are dark blue-grey beside the metal and dark brown beside the rust and plank panels, not a uniform black line. The roof is built from corrugation stripes with lighter and darker sheet patches. The wall mixes rust-brown, teal and blue-grey scrap panels, with a plank door and a paned window, so the surfaces are broken up and not flat fills. Each material carries about 4-5 lightness steps, slightly fewer than the references' 5-6. The only distinct colour count that is much lower is the total (36 vs 185), which is expected for a locked palette. The shack looks as detailed as the references, so it passes.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15955
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "patched corrugated sheet roof (four overlapping sheet tiers)",
+      "rows": "11-42",
+      "evidence": "c",
+      "front_edge_line_row": 42,
+      "eave_shadow_rows": "43-44"
+     },
+     {
+      "part": "front wall of scrap sheets with plank door and window",
+      "rows": "44-78",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 32,
+    "front_face_rows": 35,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The roof is a large sloped plane in rows 11-42. Overlapping sheet tiers have light lower-edge lines at rows 20, 28, 36 and 42, and the bottom eave line at row 42 is followed by dark shadow in rows 43-45. The silhouette widens from 54 to 64 px going down, consistent with a roof plane. Below it, rows 44-78 give a 35-row vertical front wall with a plank door, a window and mixed scrap panels. There is no isometric side face, so this reads as a three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 17 visible tones per 16x16 tile, against 12 and 10 for the references, and 0% near-flat coverage, the same as both references. Its dark edge pixels are 0% neutral, so the outlines lean toward the adjacent material (dark brown beside wood, dark blue-grey beside metal) rather than forming a black sticker line. By eye, the roof is a sloped plane of corrugated strips and patch sheets with per-sheet highlights and rivet dots. The front wall mixes rust-brown, teal and grey scrap sheets with vertical grain, and the plank door and the window each have their own light and dark steps. Each material ramp shows about 4-5 steps, slightly fewer than Beodeul's 5-6, but there are no large flat areas and the building reads as equally busy and well-shaded next to the references. It is smaller than the references, which is acceptable. The whole piece uses only 36 colours, consistent with a locked palette, yet its visible texture does not look thinner than theirs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15643
+  }
+ ],
+ "decidedAt": "2026-10-25T14:13:51.717Z",
+ "cells": {
+  "16": [
+   "01eed042095fe18c",
+   "0aac998e1405cbd1",
+   "16fcc1fdbd2ce22f",
+   "1e8ea3a85e8103d7",
+   "27f372c131044442",
+   "2a2bd37206a60f25",
+   "5abe8c4630cc5de5",
+   "6af1517a58334cc0",
+   "6ec16e0d18e58d4d",
+   "6f6f571e9b07eac0",
+   "737cad3a9608ad26",
+   "81058985d6f23224",
+   "860dcdab14219903",
+   "8a2eba24c2081606",
+   "98ff8b5352eb1d89",
+   "b08837865c7d06e5",
+   "b2c01d12ad9ab758",
+   "c8cbdc720cbcbcba",
+   "d1a7999964699dbc",
+   "da2d7915918b2ac5"
+  ],
+  "24": [
+   "051538fd3abd3325",
+   "07c28650d8c3e384",
+   "0bd8990c0e102141",
+   "15e70a353f1fa3e2",
+   "160ed0003f03db17",
+   "166725448daa7b40",
+   "19590aa21e5a8bdf",
+   "19e7b0382f2dec29",
+   "1cad9c1e0359cc16",
+   "1cd9fba0849ce4e6",
+   "1dfb9c743b3de17e",
+   "204c7fc5cbec876a",
+   "256dcd610b722213",
+   "296a16652c32ac5e",
+   "2da8fccacca4e188",
+   "2e2b1080b08e97d9",
+   "2f2355d7acb38381",
+   "32903731f72f99f2",
+   "418dd058536a3f27",
+   "4952b98f59d257de",
+   "4b8303c0092a7de0",
+   "4ba0dd7b596da81f",
+   "4d5002b73e37e7f4",
+   "4e02bebc972239a9",
+   "5122d9579eeaeabf",
+   "5af2e4494576caed",
+   "5cb324ded6f90dbf",
+   "6cc24031b61c24c7",
+   "6ee149de4c547a40",
+   "735f513ef62cc678",
+   "75bb428f6bba4377",
+   "7c7b8d85d1edbe5c",
+   "7ef39ea52e19902f",
+   "7f62c86528039242",
+   "81c2dd181f7b641f",
+   "86a63e70197c2028",
+   "89e6404b7873c342",
+   "909117265c86d4d6",
+   "9861f99d171ff204",
+   "9fda139477aab5c5",
+   "a203d5da4ca93623",
+   "a89355925b0b611a",
+   "b47eb2e2d04017d7",
+   "b4fc0f35f573f644",
+   "b8ce7a0c35ac695e",
+   "ca3d69abb3274a6c",
+   "cb29b18757ab711e",
+   "ce3e8624cc3c9a14",
+   "d75d0af7bc432c4e",
+   "d8f7491ac3439720",
+   "d9a29d13c67c5cb6",
+   "dacb9c7344b60824",
+   "dd54f4bf8077802d",
+   "e262f2dfd6726e16",
+   "e85561d2e4979acf",
+   "ec9a3afba7786a7a",
+   "ef62b4250da9e4de",
+   "f295e023e59b1646",
+   "f7cc328ff2e7d217",
+   "f7ff504f0d35e838",
+   "f8b290f55179a404",
+   "fccce9474ed14a78",
+   "fef76d55822e731d"
+  ],
+  "32": [
+   "23735fa66d1b5476",
+   "2f947ef4f1882462",
+   "4589fc32976a0078",
+   "6091c9d41faf9c4f",
+   "694f94f411f3eae6",
+   "7104dacf1238fdab",
+   "812a0f5b08bef9a6",
+   "85d6b46f5b53ee53",
+   "96da2d8ccbef0e0e",
+   "ca66cbb38046a0c1",
+   "e45083fef921c140",
+   "fc87b5d0ba1fa4a7"
+  ],
+  "48": [
+   "0c2fb1a02d167e9d",
+   "1b99c4da704249c9",
+   "1dac76b5f42772b3",
+   "2774e81866e1bad3",
+   "2cd5e9d0f567b4ad",
+   "4221f3f4129becbe",
+   "48b3f80c71ce59c9",
+   "5e237dbcb5f80a14",
+   "71fddc81a4d038be",
+   "77b4923706fe6ab2",
+   "7eb862f9d84d0a56",
+   "84adcb34dd8d95c9",
+   "86b1ab713cb78939",
+   "945bb2f10487057e",
+   "9a3cf2cb4f313f9a",
+   "a20fefbe336d7aa0",
+   "a34b862dcd444899",
+   "a987988c3d496f34",
+   "ac3554c4cebf2daf",
+   "b8aed138e02ce316",
+   "bb666724b5f60a9c",
+   "ce33b902f8ed921b",
+   "f8b686c0990fe200",
+   "faeb715cdd698ea6"
+  ]
+ }
+}

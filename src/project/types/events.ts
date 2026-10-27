@@ -581,7 +581,11 @@ export type Command =
       channel?: AudioCommandChannel;
       /** 이 요청의 페이드인 길이(ms). 생략하면 엔진 기본값. */
       fadeInMs?: number;
-      /** Track gain (0..1), multiplied by the user's group volume. */
+      /**
+       * Loudness for this command, multiplied by the player's group volume.
+       * A fraction in (0, 1) is a gain (0.6 = 60%). 0 and 1..100 are percents
+       * (63 = 63%). Omitted means full volume.
+       */
       volume?: number;
     }
   | {
@@ -786,6 +790,8 @@ export interface NpcSight {
    * (conditionEventSight.inViewCone) — a field monster sees what is in front of it, not behind.
    */
   facing: "any" | "forward" | "cone";
+  /** cone 의 벌어진 각(도, 30~180). 생략 = 90°(옆 폭 ≤ 앞 거리). 넓을수록 곁눈으로도 본다 — 순찰 기사·경계병. */
+  coneDegrees?: number;
 }
 export interface DetectionEncounter {
   sight: NpcSight;
@@ -839,6 +845,11 @@ export interface EventPageMovement {
   pathfind?: boolean;
   /** 추적 결정 간격(ms) 명시 오버라이드. 생략 시 frequency 랭크로 결정. */
   moveIntervalMs?: number;
+  /**
+   * chase 전용 «추격 박자»(ms/칸): 쫓는 동안 한 칸에 드는 시간. 저작 도구가 speed·moveIntervalMs 를 이 값에 맞춰 쓰고,
+   * 이 값이 있으면 다가오는 방식(approachStyle)이 칸 사이 쉼을 지우지 않는다 — 몸짓은 남고 빠르기는 이 값이 정한다.
+   */
+  chaseStepMs?: number;
   /** chase 전용. 시야에 처음 들어온 순간 말풍선+짧은 멈춤 뒤 추격을 시작한다. */
   sightAlert?: ChaseSightAlert;
   /**
@@ -961,6 +972,12 @@ export interface GameEvent {
   socialCalendar?: SocialCalendar;
   /** Opt-in shop buy-price discount when buyer friendship with this merchant meets minFriendship. */
   socialShop?: SocialShop;
+  /**
+   * 보이는 필드 적(place_field_enemy)의 진영(project.factions 의 id). 적대(태도 -1 이하)인 진영의 보이는 적과
+   * 2칸 안에서 마주치면 맵 위에서 짧게 부딪히고 전력이 약한 쪽이 사라진다(맵에 다시 들어오면 돌아온다).
+   * 생략 = 진영 싸움 없음(옛 맵 그대로). 판정 project/fieldEnemyClash.ts, 연출 player/playSceneFieldEnemyClash.ts.
+   */
+  fieldFactionId?: string;
   draft?: EventDraftMeta;
 }
 

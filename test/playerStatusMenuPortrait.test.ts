@@ -28,8 +28,18 @@ const noopActions: PlayerStatusMenuActions = {
   onToTitle: () => undefined,
 };
 
-function renderPartyFaceStyle(faceResourceId: string): string {
+/**
+ * 파티 행 얼굴(status-menu-face-N)은 작업 패널 스킨의 파티 패널에 있다. 기본 스킨이 2026-09-28 workbench → pixel(파티 걷기 그림 첫 화면)로
+ * 바뀌어 기본 프로젝트에서는 그 패널이 그려지지 않는다 — 얼굴 계약은 작업 패널 스킨에서 잰다.
+ */
+function partyPanelProject() {
   const project = createBlankProject();
+  project.system.menuUiStyle = "workbench";
+  return project;
+}
+
+function renderPartyFaceStyle(faceResourceId: string): string {
+  const project = partyPanelProject();
   const session = startSession(project);
   const hero = project.database.actors.find((actor) => actor.id === session.partyActorIds[0])!;
   hero.faceResourceId = faceResourceId;
@@ -80,7 +90,7 @@ describe("player status menu party portrait", () => {
   it("keeps the name-initial placeholder when the face resource does not resolve", () => {
     const restoreDom = installFakeDom();
     try {
-      const project = createBlankProject();
+      const project = partyPanelProject();
       const session = startSession(project);
       const hero = project.database.actors.find((actor) => actor.id === session.partyActorIds[0])!;
       hero.faceResourceId = "missing-face-resource";

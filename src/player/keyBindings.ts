@@ -212,6 +212,76 @@ export function isTextEntryFocused(): boolean {
   if (typeof document === "undefined") return false;
   return isTextEntryTarget(document.activeElement);
 }
+
+/**
+ * 한글·일본어 IME 가 조합 중인 keydown. `isComposing` 이 꺼진 첫 이벤트도 keyCode 229 / "Process" 다.
+ * 이름 입력처럼 글자를 받는 화면은 이 이벤트를 단축키로 쓰지 않는다.
+ */
+export function isImeCompositionEvent(event: { readonly isComposing?: boolean; readonly key?: string; readonly keyCode?: number }): boolean {
+  return event.isComposing === true || event.key === "Process" || event.key === "Unidentified" || event.keyCode === 229;
+}
+
+/**
+ * IME 가 `event.key` 를 "Process" 로 바꿔도 `event.code` 에는 물리 키가 남는다.
+ * 조합이 아닌 키는 그대로 돌려준다. 복원 못 하면 "Process" 가 그대로라 호출부가 버린다.
+ */
+export function keyboardEventKey(event: { readonly key: string; readonly code?: string; readonly keyCode?: number }): string {
+  if (!isImeCompositionEvent(event)) return event.key;
+  return keyFromPhysicalCode(event.code ?? "") ?? event.key;
+}
+
+/** 텍스트 칸·복원 못 한 IME 조합은 게임 키가 아니다. 칸 밖에서는 물리 키로 걷고 확인한다. */
+export function runtimeKeyFromEvent(event: {
+  readonly key: string;
+  readonly code?: string;
+  readonly keyCode?: number;
+  readonly isComposing?: boolean;
+  readonly target?: unknown;
+}): string | null {
+  if (isTextEntryTarget(event.target)) return null;
+  const key = keyboardEventKey(event);
+  if (key === "Process" || key === "Unidentified") return null;
+  // 브라우저가 글자 자체를 보낸 조합(복원된 물리 키가 아님)은 게임 입력으로 쓰지 않는다.
+  if (event.isComposing && key === event.key) return null;
+  return key;
+}
+
+function keyFromPhysicalCode(code: string): string | null {
+  const letter = /^Key([A-Z])$/.exec(code);
+  if (letter) return letter[1]!.toLowerCase();
+  const digit = /^Digit([0-9])$/.exec(code);
+  if (digit) return digit[1]!;
+  const numpad = /^Numpad([0-9])$/.exec(code);
+  if (numpad) return numpad[1]!;
+  switch (code) {
+    case "Space": return " ";
+    case "Enter":
+    case "NumpadEnter": return "Enter";
+    case "Escape": return "Escape";
+    case "ShiftLeft":
+    case "ShiftRight": return "Shift";
+    case "Tab": return "Tab";
+    case "Backspace": return "Backspace";
+    case "Delete": return "Delete";
+    case "Minus":
+    case "NumpadSubtract": return "-";
+    case "Equal": return "=";
+    case "NumpadAdd": return "+";
+    case "BracketLeft": return "[";
+    case "BracketRight": return "]";
+    case "PageUp": return "PageUp";
+    case "PageDown": return "PageDown";
+    case "Home": return "Home";
+    case "End": return "End";
+    case "ArrowUp":
+    case "ArrowDown":
+    case "ArrowLeft":
+    case "ArrowRight":
+      return code;
+    default:
+      return null;
+  }
+}
   
 
 // ── 화면 안내 문구 ──

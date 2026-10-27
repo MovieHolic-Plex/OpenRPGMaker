@@ -136,29 +136,72 @@ export function vqaDefectLine(d: VqaDefect, index: number): string {
   const target = d.target?.kind === "map" && d.target.ref ? ` (mapId: ${d.target.ref})`
     : d.target?.kind === "title" ? " (타이틀 화면 — set_title_screen)"
     : d.target?.kind === "opening" ? " (오프닝 — 오프닝 장면 다시 그리기)" : "";
-  return `${index + 1}. [${d.severity === "blocker" ? "막음" : "다듬기"}] ${d.where}${target} — ${d.what}`;
+  const sparse = d.target?.kind === "map" && d.target.ref && SPARSE_ROOM.test(`${d.where} ${d.what}`)
+    ? ` → dress_room({ mapId: "${d.target.ref}", at: 그 방 바닥 한 칸, purpose: "<그 방의 쓰임>" }) 으로 채운다(물건을 하나씩 찍지 않는다)` : "";
+  return `${index + 1}. [${d.severity === "blocker" ? "막음" : "다듬기"}] ${d.where}${target} — ${d.what}${sparse}`;
 }
+
+/** 「방이 비었다·빈 바닥이 많다」 결함 — 고치기 동사는 dress_room 이다(2026-10-26: 고치기 차례가 stamp_object 로 하나씩 찍다 겹침 거부에 막혀 결함이 1건에서 멈췄다). */
+const SPARSE_ROOM = /빈 바닥|맨바닥|빈 방|텅 빈|empty room|bare floor|(방|실|복도|바닥|공간|교실|room|office|classroom|floor|corridor|hall)[^.。\n]{0,24}(비어|비었|텅|휑|허전|썰렁|empty|bare|sparse|barren)|(비어|비었|텅|휑|허전|썰렁|empty|bare|sparse|barren)[^.。\n]{0,24}(방|실|복도|바닥|공간|room|floor|corridor|hall)/i;
 
 /**
  * 고치기 차례가 도구를 하나도 부르지 않고 글만 쓰고 끝났을 때(2026-10-25 실측: 결함 9→9→9, 판마다 도구 0회) — 그 차례는 판으로 세지 않고,
  * 결함 목록을 다시 주며 한 번 더 고치게 한다. 이 지시와 함께 첫 모델 호출에 tool_choice required 가 걸린다.
  */
-export function vqaFixRetry(round: VqaRound): string {
+export function vqaFixRetry(round: VqaRound, brief?: string): string {
   return [
+    ...(brief ? [brief, ""] : []),
     `[화면 검수 ${round.round}/${VQA_MAX_ROUNDS} — 고치기 다시] 앞 차례에서 도구를 하나도 부르지 않고 보고만 고쳤다. 보고를 고치는 것은 고치기가 아니다. 지금 도구로 아래 결함을 하나씩 고친다 — 결함마다 대상 맵·그림을 바꾸는 도구를 부른다.`,
     ...round.defects.map(vqaDefectLine),
     "정말 고칠 수 없는 결함은 고치지 말고 최종 보고에 «미해결»로 남긴다. 고치지 않은 결함을 «고쳤다»고 쓰지 않는다.",
   ].join("\n");
 }
 
-/** 조수에게 줄 고치기 지시(판 사이). */
-export function vqaFollowUp(round: VqaRound): string {
+/**
+ * 고치기 차례의 자기완결 머리글(J78): 고치기 차례는 앞 대화를 비우고 시작한다(로컬 Claude CLI 가 긴 실행 끝에 「Autocompact is thrashing」으로
+ * 죽었다). 그래서 요청 원문과 결함 대상 맵의 요약(이름·id·크기·이벤트)만 싣는다. 더 필요하면 조수가 도구로 다시 본다.
+ */
+export function vqaFixBrief(task: string, project: Project, defects: readonly VqaDefect[], lastReport?: string): string {
+  const mapIds = [...new Set(defects.flatMap((d) => (d.target?.kind === "map" && d.target.ref ? [d.target.ref] : [])))];
+  const maps = mapIds.flatMap((id) => {
+    const map = project.maps[id];
+    if (!map) return [];
+    const events = (map.events ?? []).slice(0, 14).map((ev) => `${ev.name || ev.id}@${ev.x},${ev.y}`).join(", ");
+    return [`- 맵 «${map.name}» (mapId: ${id}, ${map.width}×${map.height}, 타일셋 ${map.tilesetId ?? "?"})${id === project.startMapId ? " · 시작 맵" : ""} — 이벤트 ${(map.events ?? []).length}개${events ? `: ${events}${(map.events ?? []).length > 14 ? " …" : ""}` : ""}`];
+  });
+  const others = Object.values(project.maps).filter((m) => !mapIds.includes(m.id)).map((m) => `«${m.name}»(${m.id})`).slice(0, 12);
+  return [
+    "[고치기 차례 — 앞 대화는 비웠다. 게임은 이미 지어져 있다. 아래 요청·결함·맵 요약만 보고, 필요한 것은 도구(show_map_region·get_event·inspect)로 다시 본다.]",
+    `사용자 요청(원문): «${task.slice(0, 1200)}»`,
+    `게임 제목: «${project.meta?.title ?? ""}»`,
+    ...(maps.length ? ["결함이 난 맵:", ...maps] : []),
+    ...(others.length ? [`다른 맵: ${others.join(", ")}`] : []),
+    // 최종 보고는 앞 보고를 대신한다 — 비운 대화에서도 무엇을 지었는지 다시 쓸 수 있게 앞 보고를 싣는다(잘라서).
+    ...(lastReport?.trim() ? [`앞 보고(이것을 고쳐 최종 보고로 쓴다):\n${lastReport.trim().slice(0, 2000)}${lastReport.trim().length > 2000 ? " …" : ""}`] : []),
+  ].join("\n");
+}
+
+/** 앞 판에도 있던 결함인가 — 같은 대상(맵·그림)이고 위치·내용 낱말이 겹친다. */
+export function vqaRepeated(defect: VqaDefect, previous: VqaRound | undefined): boolean {
+  if (!previous) return false;
+  const words = (text: string) => new Set(text.toLowerCase().split(/[^\p{L}\p{N}]+/u).filter((w) => w.length >= 2));
+  const mine = words(`${defect.where} ${defect.what}`);
+  return previous.defects.some((old) => (old.target?.kind ?? "") === (defect.target?.kind ?? "") && (old.target?.ref ?? "") === (defect.target?.ref ?? "")
+    && [...words(`${old.where} ${old.what}`)].filter((w) => mine.has(w)).length >= 3);
+}
+
+/** 조수에게 줄 고치기 지시(판 사이). previous = 바로 앞 판 — 같은 결함이 다시 나오면 앞 고치기가 화면에서 효과가 없었다는 뜻이다. */
+export function vqaFollowUp(round: VqaRound, brief?: string, previous?: VqaRound): string {
   if (round.problem && !round.defects.length) {
     return `[화면 검수 ${round.round}/${VQA_MAX_ROUNDS}] 검수를 하지 못했다(${round.problem}). 다시 찍어 검수하도록 할 것이 없으면 최종 보고에 «화면 검수 미완료»라고 쓴다.`;
   }
   return [
+    ...(brief ? [brief, ""] : []),
     `[화면 검수 ${round.round}/${VQA_MAX_ROUNDS}] 다른 모델의 검수자(${round.reviewer})가 실제 그림에서 아래 결함을 찾았다. 각각 고친다 — 맵은 show_map_region 으로 다시 보고, 타이틀·오프닝은 다시 그려 확인한다. 고칠 수 없으면 고치지 말고 최종 보고에 남은 결함으로 쓴다.`,
-    ...round.defects.map(vqaDefectLine),
+    ...round.defects.map((d, i) => vqaDefectLine(d, i) + (vqaRepeated(d, previous) ? " ↻ 앞 판에도 같은 결함 — 앞 고치기가 화면에서 효과가 없었다" : "")),
+    // 2026-10-26 toy-j90: 2→2→2. 검 진열대를 빼고 「장난감 선반」을 onOverlap:'nearest' 로 찍었더니 같은 구석에 내려앉았고, 파란 갑옷 인물(NPC 그림)은
+    // 다른 갑옷 그림으로만 바뀌었다. 조수는 고친 뒤 한 번도 그 자리를 보지 않았다.
+    ...(round.defects.some((d) => vqaRepeated(d, previous)) ? ["↻ 표시 결함은 같은 방법을 되풀이하지 않는다: (1) 고친 뒤 show_map_region 으로 그 자리를 직접 본다(찍은 물건이 어디에 내려앉았는지·무엇으로 보이는지), (2) 비슷한 물건을 옆에 다시 찍지 말고 전혀 다른 물건으로 바꾸거나 빼고, (3) 인물(이벤트) 그림 때문이면 그 인물의 그림을 결함과 거리가 먼 것으로 바꾸거나 숨긴다. 그래도 안 되면 «미해결»로 남긴다."] : []),
     "보고만 다시 쓰는 것은 고치기가 아니다 — 이 차례에는 도구로 그림을 바꾼다(도구를 하나도 부르지 않으면 이 판은 세지 않고 한 번 더 시킨 뒤, 그래도 안 하면 «미해결»로 끝난다). 고치지 않은 결함을 «고쳤다»고 쓰지 않는다.",
     "다 고친 뒤 「최종 보고(앞 보고를 고침):」로 시작하는 보고 하나로 앞 보고를 대신한다. 검수자가 다음 판에서 같은 그림을 다시 본다.",
   ].join("\n");
@@ -168,7 +211,8 @@ export function vqaFollowUp(round: VqaRound): string {
 export function vqaSummary(rounds: readonly VqaRound[]): { readonly clean: boolean; readonly text: string; readonly leftover: readonly VqaDefect[] } {
   const last = rounds.at(-1);
   if (!last) return { clean: false, text: "화면 검수: 돌지 않음", leftover: [] };
-  const counts = rounds.map((r) => (r.problem && !r.defects.length ? "검수 못 함" : `${r.defects.length}건`)).join(" → ");
+  const weak = rounds.some((r) => r.reviewer.includes("같은 계열 검수")) ? " · 「같은 계열 검수」(약한 증거)" : "";
+  const counts = rounds.map((r) => (r.problem && !r.defects.length ? "검수 못 함" : `${r.defects.length}건`)).join(" → ") + weak;
   if (vqaClean(last)) return { clean: true, text: `화면 검수 ${rounds.length}판: ${counts} — 마지막 판 결함 없음`, leftover: [] };
   return { clean: false, text: `화면 검수 ${rounds.length}판: ${counts} — 남은 결함 ${last.defects.length}건${last.problem ? ` (${last.problem})` : ""}`, leftover: last.defects };
 }
@@ -205,29 +249,49 @@ export function vqaVisionModel(pick: { readonly provider: string; readonly model
   if (pick.provider.startsWith("openai-compat:")) return { provider: pick.provider, model: "gemini-4-argon-high" };
   return { provider: pick.provider, model: "gemini-4-argon", effort: "high" };
 }
-/** 검수자 표시 이름 — 실제로 부른 별칭을 보인다(판정자가 «눈 먼 판»을 가려낼 수 있게). */
+/** 검수자 표시 이름 — 실제로 부른 별칭을 보인다(판정자가 «눈 먼 판»을 가려낼 수 있게). 같은 계열은 «같은 계열 검수»(약한 증거)로 표시한다. */
 export const vqaReviewerLabel = (pick: VqaReviewerPick): string =>
-  `${pick.provider}/${pick.effort === "high" && pick.model === "gemini-4-argon" ? "gemini-4-argon-high" : pick.model}${pick.sameAsMain ? " (주 모델과 같은 계열 — 다른 계열 계정 없음)" : ""}`;
-export function pickVqaReviewer(input: {
+  `${pick.provider}/${pick.effort === "high" && pick.model === "gemini-4-argon" ? "gemini-4-argon-high" : pick.model}${pick.sameAsMain ? " 「같은 계열 검수」(다른 계열 검수자가 답하지 못함 — 약한 증거)" : ""}`;
+
+export interface VqaReviewerInput {
   readonly main: { readonly provider: string; readonly model: string };
   readonly vision?: { readonly provider: string; readonly model: string };
   readonly advisor?: { readonly provider: string; readonly model: string };
   readonly keyed: ReadonlySet<string>;
   readonly familyOf: (providerId: string) => string | undefined;
-}): VqaReviewerPick {
+}
+
+/**
+ * 검수자 후보 차례(2026-10-26 결정): 다른 계열을 모두 먼저, 그다음에만 같은 계열(«같은 계열 검수» 표시, 약한 증거).
+ * 다른 계열: «눈» 칸 → 검토자 칸 → 키 있는 기본 계정 → 로컬 CLI(Claude Sonnet·Codex GPT·Gemini).
+ * 같은 계열: 명시한 «눈» 칸(예: argon-high) → 검토자 칸 → 주 모델. 실행기는 앞 후보가 답하지 못하면(호출 실패·빈 답·JSON 없음) 다음 후보로 같은 그림을 다시 보낸다.
+ */
+export function vqaReviewerCandidates(input: VqaReviewerInput): VqaReviewerPick[] {
   const mainFamily = input.familyOf(input.main.provider);
   const differs = (provider: string) => { const f = input.familyOf(provider); return Boolean(f && f !== mainFamily); };
   const seesImages = (provider: string) => !/deepseek/iu.test(provider) && input.familyOf(provider) !== "deepseek";
   const usable = (provider: string) => input.keyed.has(provider) || provider.startsWith("local-cli:");
-  if (input.vision && usable(input.vision.provider) && differs(input.vision.provider)) return { ...vqaVisionModel(input.vision), sameAsMain: false };
-  if (input.advisor && usable(input.advisor.provider) && seesImages(input.advisor.provider) && differs(input.advisor.provider)) return { ...vqaVisionModel(input.advisor), sameAsMain: false };
-  const defaults: readonly { provider: string; model: string }[] = [
-    { provider: "google-antigravity", model: "gemini-4-argon" },
-    { provider: "openai-codex", model: "gpt-6.1-sol" },
-  ];
-  // 키 있는 다른 계열 계정이 없으면 로컬 Claude CLI 의 Sonnet(주 모델이 Claude 가 아닐 때만). CLI 가 없으면 호출이 실패해 «검수 못 함» 판이 된다(깨끗한 판이 아니다).
-  const other = defaults.find((d) => input.keyed.has(d.provider) && differs(d.provider))
-    ?? (differs("local-cli:claude") ? { provider: "local-cli:claude", model: "claude-sonnet-5-5" } : undefined);
-  if (other) return { ...vqaVisionModel(other), sameAsMain: false };
-  return { ...vqaVisionModel(input.main), sameAsMain: true };
+  const out: VqaReviewerPick[] = [];
+  const add = (slot: { provider: string; model: string } | undefined, sameAsMain: boolean) => {
+    if (!slot) return;
+    const pick = { ...vqaVisionModel(slot), sameAsMain };
+    if (!out.some((p) => p.provider === pick.provider && p.model === pick.model && p.effort === pick.effort)) out.push(pick);
+  };
+  if (input.vision && usable(input.vision.provider) && differs(input.vision.provider)) add(input.vision, false);
+  if (input.advisor && usable(input.advisor.provider) && seesImages(input.advisor.provider) && differs(input.advisor.provider)) add(input.advisor, false);
+  for (const d of [{ provider: "google-antigravity", model: "gemini-4-argon" }, { provider: "openai-codex", model: "gpt-6.1-sol" }]) {
+    if (input.keyed.has(d.provider) && differs(d.provider)) add(d, false);
+  }
+  // 키 있는 다른 계열 계정이 없거나 답하지 못하면 로컬 CLI. 설치돼 있지 않으면 호출이 실패해 다음 후보로 넘어간다.
+  for (const d of [{ provider: "local-cli:claude", model: "claude-sonnet-5-5" }, { provider: "local-cli:codex", model: "gpt-6.1-sol" }, { provider: "local-cli:gemini", model: "gemini-4-argon" }]) {
+    if (differs(d.provider)) add(d, false);
+  }
+  if (input.vision && usable(input.vision.provider) && !differs(input.vision.provider)) add(input.vision, true);
+  if (input.advisor && usable(input.advisor.provider) && seesImages(input.advisor.provider) && !differs(input.advisor.provider)) add(input.advisor, true);
+  add(input.main, true);
+  return out;
+}
+
+export function pickVqaReviewer(input: VqaReviewerInput): VqaReviewerPick {
+  return vqaReviewerCandidates(input)[0]!;
 }

@@ -45,7 +45,7 @@ export type AudioChannel = "bgm" | "bgs" | "ambient" | "me" | "se";
 export type AudioTrackState = {
   readonly resourceId: string;
   readonly loop: boolean;
-  /** Authored track volume, 0..100; independent of the user mixer. */
+  /** Authored loudness: percent 0..100, or a gain fraction in (0, 1). Independent of the user mixer. */
   readonly volume?: number;
   readonly fadeInMs?: number;
 };
@@ -384,7 +384,7 @@ export interface PlaySession {
   mapOverrides: Record<MapId, MapTileOverrides>;
   /**
    * 카운트다운 타이머 중 지금 흐르는 것(timerId → 진행 중). 값(`timers`)만 저장하면 불러온 뒤 시계가 멈춘다 —
-   * 장면의 runtimeTimers 가 이 표로 다시 짜인다(PlayScene.applySession). 없으면 모두 멈춘 상태.
+   * 장면의 runtimeTimers 가 이 표로 다시 짜인다(PlayScene.create · applySession). 없으면 모두 멈춘 상태.
    */
   timerActive?: Record<string, boolean>;
   farmPlots?: FarmPlots;
@@ -423,6 +423,10 @@ export interface PlaySession {
   audio: AudioCommandState;
   systemAudioOverrides?: import("./systemAudioOverrides").SystemAudioOverrides;
   pictures: Record<string, PictureState>;
+  /**
+   * «문장 표시 설정»이 남긴 대사창(형식·위치·가림 방지·대기 중 이벤트 이동).
+   * 기본값과 다를 때만 세이브에 실린다. 없거나 깨진 옛 세이브는 기본 창으로 불러온다.
+   */
   messageWindowSettings?: MessageWindowSettings;
   m2Runtime?: M2RuntimeState;
   // 누적 플레이 타임(초). 매 프레임 update 에서 증가.

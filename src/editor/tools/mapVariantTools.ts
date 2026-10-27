@@ -17,7 +17,7 @@ import { COORD_SCHEMA, RECT_SCHEMA } from "./schemaShapes";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 import { assertMapIdAvailable } from "./mapHelpers";
 
-const VARIANT_KEYS = ["id", "name", "era", "look", "keepIntact", "tilesetId", "tileRemap", "tileOverrides", "removeEvents"] as const;
+const VARIANT_KEYS = ["id", "name", "era", "look", "keepIntact", "scorch", "tilesetId", "tileRemap", "tileOverrides", "removeEvents"] as const;
 const OVERRIDE_KEYS = ["layer", "rect", "cells", "tile"] as const;
 const REMAP_KEYS = ["from", "to"] as const;
 const RESYNC_KEYS = ["variantId", "sourceMapId", "rects", "layers", "tileRemap", "tileOverrides"] as const;
@@ -226,7 +226,10 @@ function createVariant(draft: Project, source: GameMap, raw: Record<string, unkn
   if (look !== null && typeof look === "object") throw new ToolError(`${label}: ${look.error}`, { code: "invalid-args" });
   const keepIntact = parseKeepIntact(raw.keepIntact);
   if (keepIntact !== undefined && typeof keepIntact === "object" && "error" in keepIntact) throw new ToolError(`${label}: ${keepIntact.error}`, { code: "invalid-args" });
-  if (look !== null) report.look = applyVariantLook(draft, copy, look, warnings, label, keepIntact === undefined ? {} : { keepIntact });
+  const scorch = raw.scorch === undefined ? undefined : raw.scorch === "whole" || raw.scorch === "sites" ? raw.scorch : null;
+  if (scorch === null) throw new ToolError(`${label}: scorch 는 "sites"(집터 둘레, 기본) | "whole"(남긴 집만 빼고 맵 전체) 입니다.`, { code: "invalid-args" });
+  if (scorch !== undefined && look !== "burned") warnings.push(`${label}: scorch 는 look:burned 에서만 쓰입니다.`);
+  if (look !== null) report.look = applyVariantLook(draft, copy, look, warnings, label, { ...(keepIntact === undefined ? {} : { keepIntact }), ...(scorch ? { scorch } : {}) });
   else if (keepIntact !== undefined) warnings.push(`${label}: look 이 없어(none 이거나 era·name 낱말로 못 골라) 철거가 없으므로 keepIntact 는 쓰이지 않았습니다.`);
 
   if (raw.tileOverrides !== undefined) {
@@ -295,6 +298,7 @@ const deriveMapVariant: ToolDefinition = {
           properties: {
             id: { type: "string" }, name: { type: "string" }, era: { type: "string" }, tilesetId: { type: "string" },
             look: { type: "string", enum: [...VARIANT_LOOKS, "none"], description: "시대 겉모습 프리셋. 생략하면 era·name·id 낱말로 자동 선택, none 이면 끔. burned = 불탄 마을(집 자리·길 유지)" },
+            scorch: { type: "string", enum: ["sites", "whole"], description: "look:burned 그을림 범위 — sites(기본: 집터 둘레만) | whole(마을 전체가 불탄 경우: 남긴 집 둘레만 빼고 맵 전체 풀을 잿빛 땅, 나무를 고사목·그루터기로)" },
             keepIntact: { type: "string", description: `철거하지 않고 멀쩡히 남길 건물 한 채: ${KEEP_INTACT_SIDES.join("|")}(방위 끝 건물·가운데 건물) 또는 "x,y"(그 칸을 덮거나 가장 가까운 건물)` },
             tileRemap: { type: "array", items: { type: "object", properties: { from: { type: "integer" }, to: { type: "integer" } }, required: ["from", "to"] } },
             tileOverrides: {

@@ -201,8 +201,9 @@ function openElementMaxCountDialog(current: number, onApply: (count: number) => 
   backdrop.append(
     el("div", {
       class: "db-enemy-dialog",
+      attrs: { role: "dialog", "aria-modal": "true", "aria-labelledby": "db-elements-max-title" },
       children: [
-        el("header", { text: "속성 최대 개수" }),
+        el("header", { text: "속성 최대 개수", attrs: { id: "db-elements-max-title" } }),
         el("main", {
           children: [
             el("label", {
@@ -214,8 +215,8 @@ function openElementMaxCountDialog(current: number, onApply: (count: number) => 
         el("footer", {
           children: [
             el("button", {
-              class: "btn small",
-              text: "OK",
+              class: "btn small primary",
+              text: "확인",
               dataset: { testid: "db-elements-max-ok" },
               attrs: { type: "button" },
               on: {
@@ -227,7 +228,7 @@ function openElementMaxCountDialog(current: number, onApply: (count: number) => 
             }),
             el("button", {
               class: "btn small",
-              text: "Cancel",
+              text: "취소",
               dataset: { testid: "db-elements-max-cancel" },
               attrs: { type: "button" },
               on: { click: close },

@@ -210,21 +210,22 @@ describe("player deployment manifest", () => {
   });
 
   it.each([
-    ["missing chunk", { unavailablePath: "assets/chunk.js" }, "bundle-unavailable"],
-    ["tampered chunk", { tamperedPath: "assets/chunk.js" }, "bundle-integrity-mismatch"],
-    ["wrong chunk byte count", { tamperedPath: "player.js" }, "bundle-integrity-mismatch"],
-    ["missing runtime asset", { unavailablePath: RUNTIME_ASSET_PATH }, "runtime-asset-unavailable"],
-    ["tampered runtime asset", { tamperedPath: RUNTIME_ASSET_PATH }, "runtime-asset-integrity-mismatch"],
-    ["interrupted bundle read", { interruptPath: "assets/chunk.js" }, "bundle-unavailable"],
-  ])("rejects %s before ZIP success", async (_name, options, expectedCode) => {
+    ["missing chunk", { unavailablePath: "assets/chunk.js" }, "bundle-unavailable", "assets/chunk.js"],
+    ["tampered chunk", { tamperedPath: "assets/chunk.js" }, "bundle-integrity-mismatch", "assets/chunk.js"],
+    ["wrong chunk byte count", { tamperedPath: "player.js" }, "bundle-integrity-mismatch", "player.js"],
+    ["missing runtime asset", { unavailablePath: RUNTIME_ASSET_PATH }, "runtime-asset-unavailable", RUNTIME_ASSET_PATH],
+    ["tampered runtime asset", { tamperedPath: RUNTIME_ASSET_PATH }, "runtime-asset-integrity-mismatch", RUNTIME_ASSET_PATH],
+    ["interrupted bundle read", { interruptPath: "assets/chunk.js" }, "bundle-unavailable", "assets/chunk.js"],
+  ])("rejects %s before ZIP success", async (_name, options, expectedCode, expectedPath) => {
     const fixture = await deploymentFixture(options);
 
     await expect(discoverWebPlayerBundleFiles(BUNDLE_BASE, fixture.fetchBytes)).rejects.toMatchObject({
       code: expectedCode,
+      paths: [expectedPath],
     });
   });
 
-  it("returns a value-free actionable error for a failed dependency read", async () => {
+  it("names the missing bundle file and omits the host path from a failed read", async () => {
     const sensitiveMarker = `sk-${"T".repeat(32)}`;
     const hostPath = "C:/private/build/player.js";
     const fixture = await deploymentFixture({ unavailablePath: "player.js" });
@@ -235,7 +236,8 @@ describe("player deployment manifest", () => {
 
     const error = await discoverWebPlayerBundleFiles(BUNDLE_BASE, failingFetch).catch((caught: unknown) => caught);
 
-    expect(error).toMatchObject({ code: "bundle-unavailable" });
+    expect(error).toMatchObject({ code: "bundle-unavailable", paths: ["player.js"] });
+    expect(String(error)).toContain("player.js");
     expect(String(error)).not.toContain(hostPath);
     expect(String(error)).not.toContain(sensitiveMarker);
   });
@@ -253,7 +255,7 @@ describe("player deployment manifest", () => {
 
     const error = await discoverWebPlayerBundleFiles(BUNDLE_BASE, failingFetch).catch((caught: unknown) => caught);
 
-    expect(error).toMatchObject({ code: expectedCode });
+    expect(error).toMatchObject({ code: expectedCode, paths: [failingPath] });
     expect(JSON.stringify(error)).not.toContain("canary");
     expect(String(error)).not.toContain("C:/private");
   });
@@ -309,7 +311,7 @@ describe("player deployment manifest", () => {
     await expect(createWebPlayerExportPackage(createBlankProject(), {
       bundleBase: BUNDLE_BASE,
       fetchBytes: fixture.fetchBytes,
-    })).rejects.toMatchObject({ code: "zip-path-collision" });
+    })).rejects.toMatchObject({ code: "zip-path-collision", paths: ["project.json", "PROJECT.JSON"] });
   });
 
   it("rejects case-colliding generated uploaded-asset paths", async () => {
@@ -327,10 +329,16 @@ describe("player deployment manifest", () => {
       iconResourceId: "hero",
     };
 
-    await expect(createWebPlayerExportPackage(project, {
+    const error = await createWebPlayerExportPackage(project, {
       bundleBase: BUNDLE_BASE,
       fetchBytes: fixture.fetchBytes,
-    })).rejects.toMatchObject({ code: "zip-path-collision" });
+    }).catch((caught: unknown) => caught);
+
+    expect(error).toMatchObject({ code: "zip-path-collision" });
+    expect([...(error as { paths: string[] }).paths].sort()).toEqual([
+      "assets/uploaded/Hero.png",
+      "assets/uploaded/hero.png",
+    ].sort());
   });
 
   it("rejects a full-casefold collision across deployment and generated ZIP entries", async () => {
@@ -344,13 +352,23 @@ describe("player deployment manifest", () => {
     await expect(createWebPlayerExportPackage(project, {
       bundleBase: BUNDLE_BASE,
       fetchBytes: fixture.fetchBytes,
-    })).rejects.toMatchObject({ code: "zip-path-collision" });
+    })).rejects.toMatchObject({
+      code: "zip-path-collision",
+      paths: ["assets/uploaded/STRASSE.png", "assets/uploaded/Straße.png"],
+    });
   });
 
   it.each([undefined, "pokemon", "retro2003"] as const)("writes the exact verified deployment closure and project payload into the ZIP for %s", async skin => {
     const fixture = await deploymentFixture();
     const project = createBlankProject();
     project.system.battleUiStyle = skin;
+    // 기본 액터는 이제 칩셋 배틀러(charset-battler-*)를 써서 생성 영웅 뒷모습(-back)이 파생되지 않는다.
+    // 포켓몬 스킨의 뒷모습 동봉을 보려면 생성 영웅 전투 시트를 쓰는 액터 넷을 둔다(partySpriteResources actorBackSpriteId).
+    if (skin === "pokemon") {
+      project.database.actors.slice(0, 4).forEach((actor, index) => {
+        actor.battleCharacterResourceId = `generated-actor-hero-0${index + 1}-battle`;
+      });
+    }
 
     const result = await createWebPlayerExportPackage(project, {
       bundleBase: BUNDLE_BASE,
@@ -360,6 +378,8 @@ describe("player deployment manifest", () => {
     const projectAssetPaths = collectWebExportAssets(prepareWebExport(project).project).map((asset) => asset.zipPath);
     const expectedPaths = [...new Set([
       "project.json",
+      // 불러오는 중 화면이 project.json 보다 먼저 읽는 안내(webExportZip exactWebExportEntries loadingInfo, #3318).
+      "loading.json",
       ...fixture.artifactPaths,
       RUNTIME_ASSET_PATH,
       ...projectAssetPaths,

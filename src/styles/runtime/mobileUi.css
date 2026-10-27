@@ -237,7 +237,7 @@
   border-radius: 999px;
   background: rgba(27, 36, 48, 0.8);
   color: #c9d2dc;
-  font: 600 12px/16px system-ui, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+  font: 600 12px/16px var(--font-system-ui);
   animation: oprn-rotate-hint-out 0.6s ease 6s forwards;
 }
 .play-viewport[data-touch-layout="landscape"]::after { display: none; }
@@ -388,7 +388,7 @@
   background: rgba(8, 10, 18, 0.9);
   border: 1px solid rgba(255, 255, 255, 0.35);
   color: #eef2ff;
-  font: 600 13px/1.45 system-ui, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+  font: 600 13px/1.45 var(--font-system-ui);
   pointer-events: auto;
 }
 
@@ -396,15 +396,17 @@
    도트 스킨 명령 창은 줄 간격 14 게임 px 라 폰에서 손가락 하나에 줄 세 개가 걸렸다. 터치 UI 에서는 줄 높이를
    화면 44px(--touch-menu-row, playSurface 가 메뉴 배율로 나눠 게임 px 로 준다)로 벌린다 — 글자 크기는 그대로다.
    세로 창 칸은 남는 높이만큼(최대 400) 늘어나 돈·장소·시간 창이 명령 창 아래에 그대로 들어간다.
-   가로는 무대 높이(270)가 모자라 장소·시간을 접고 돈만 남긴다. */
-.play-viewport[data-touch-ui] .oprn-status-menu.main-menu[data-menu-skin="pixel"] {
+   가로(2026-10-27): 폰 가로는 PC 와 같은 모양이어야 한다 — 줄 높이·접힌 창을 바꾸지 않는다. 벌린 줄은 SE(667×375)에서
+   「기록」「시스템」을 창 밖으로 밀어 탭할 수 없었다. 가로의 손가락 크기는 보이지 않는 눌림 영역(touchListTap snapRowAt)이 맡는다.
+   그래서 아래 세 규칙은 세로(data-touch-layout="portrait")에만 건다. */
+.play-viewport[data-touch-layout="portrait"] .oprn-status-menu.main-menu[data-menu-skin="pixel"] {
   --px-dock-h: max(94px, calc(var(--status-menu-command-count, 6) * var(--touch-menu-row, 14px) + 8px));
 }
-.play-viewport[data-touch-ui] .oprn-status-menu.main-menu[data-menu-skin="pixel"] .status-menu-primary-dock > .status-menu-command {
+.play-viewport[data-touch-layout="portrait"] .oprn-status-menu.main-menu[data-menu-skin="pixel"] .status-menu-primary-dock > .status-menu-command {
   flex: 0 0 var(--touch-menu-row, 14px);
   touch-action: manipulation;
 }
-.play-viewport[data-touch-ui]:not([data-window-panel]) .oprn-status-menu.main-menu[data-menu-skin="pixel"][data-status-menu-screen="main"] :is(.status-menu-location, .status-menu-time, .status-menu-chapter) { display: none; }
+.play-viewport[data-touch-layout="portrait"]:not([data-window-panel]) .oprn-status-menu.main-menu[data-menu-skin="pixel"][data-status-menu-screen="main"] :is(.status-menu-location, .status-menu-time, .status-menu-chapter) { display: none; }
 
 /* 가로 겹침 — 창이 무대 아래쪽을 쓰는 동안(대사 창·흉상, 전투 명령 창·파티 게이지) 조이스틱·A/B 를 위로 올린다(2026-10-25).
    중심선을 0.68배(화면 높이의 62% → 42%)로 올리고 조이스틱 칸도 그 아래까지만 받아, 창 위의 탭을 조이스틱이 가로채지 않는다.

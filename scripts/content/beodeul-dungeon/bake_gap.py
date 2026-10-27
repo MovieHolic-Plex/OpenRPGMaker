@@ -354,6 +354,25 @@ def bake_rock(st, p, line, meta, origin):
             desc=f"{what} 앞면 2단의 홑칸(양쪽 마구리).", rules="양옆에 같은 줄 앞면이 없는 한 칸 폭 벽.", tags=["벽", "앞면", "rock"],
             role="wall", layer_home="lower"),
     ]
+    mid = meta.get("face_mid")
+    if mid is not None:   # 48px 가운데 덩이(3칸 폭) — 시공기가 벽 가운데 칸을 벽 줄 첫 칸부터 센 위상으로 고른다(16px 반복이 보이지 않게)
+        assert mid.w == 3 * T and mid.h == 2 * T, (mid.w, mid.h)
+        mrows = []
+        for lv in (0, 1):
+            row = []
+            for c in range(3):
+                t = dot.Cv(T, T)
+                t.a[:] = mid.a[lv * T:(lv + 1) * T, c * T:(c + 1) * T]
+                tid = st.cell(t, cm(f"버들항 던전 · {what} 앞면 {'윗단' if lv == 0 else '아랫단'} 가운데 덩이 {c + 1}/3",
+                                    f"{what} 의 남쪽 벽 앞면 가운데 칸 — 3칸 주기 덩이의 {c + 1}번째 열. 막힘.",
+                                    ["벽", "wall", "face", "rock"], "solid", "lower"), origin)
+                cells[(lv, f"덩이{c}")] = tid
+                row.append(tid)
+            mrows.append(row)
+        kits.append(kit(f"{KIT_PREFIX}{fk}-face-mid", f"버들항 던전 · {what} 벽 앞면 가운데 덩이 3×2", 3, 2, [[-1] * 3] * 2, mrows,
+                        desc=f"{what} 앞면 가운데 칸의 48px 덩이 — 열 (벽 줄 안 순번 % 3). 끝 마구리는 `{KIT_PREFIX}{fk}-face` 열 0·2.",
+                        rules="벽 줄 첫 칸(왼끝 마구리)부터 세어 가운데 칸 i 에 열 i % 3. 이 순서라야 마구리와 덩이가 이어진다.",
+                        tags=["벽", "앞면", "rock"], role="wall", repeat="repeat", layer_home="lower"))
     tg = dict(id=f"{TILEGROUP_PREFIX}_{fk}", name=f"버들항 던전 {what}", role="wall", source="bundled-default", defaultLayer="lower", confidence="high",
               tileIds=sorted(set(g["memberTileIds"]) | set(cells.values())),
               description=f"검은 허공 대신 결 있는 {what} 윗면 오토타일 `{gid}` + 남쪽 앞면 2단(키트 `{KIT_PREFIX}{fk}-face`). 하네스 dungeon-chipset {p['round']} {p['letter']}.",

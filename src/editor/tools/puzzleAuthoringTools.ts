@@ -23,7 +23,7 @@ import {
   textCmd,
 } from "./puzzleKit";
 import { PUZZLE_MECHANICS } from "./puzzleMechanics";
-import { analysePuzzleModel, hashSeed, type MechanicDef, type PuzzlePlayStep } from "./puzzleMechanicCore";
+import { analysePuzzleModel, hashSeed, type MechanicContext, type MechanicDef, type PuzzlePlayStep } from "./puzzleMechanicCore";
 import { claimPuzzleRoomWindow } from "./puzzleRoomScenery";
 import { NEW_QUALITY_PRESETS, QUALITY_OVERRIDES } from "./puzzlePresetQuality";
 import { chestOpenCommands, chestOpenedGraphic, lootGrantCommands } from "@/editor/lootFeedback";
@@ -852,6 +852,27 @@ interface ResolvedPuzzleReward {
   readonly summaryLabel: string;
 }
 
+/** failPenalty 인자 — 들켰을 때 벌(stealth_guard_patrol). 없는 적 그룹·맵은 거절. */
+function readFailPenalty(draft: Project, raw: unknown): MechanicContext["failPenalty"] | undefined {
+  if (raw === undefined || raw === null) return undefined;
+  if (typeof raw !== "object") throw new ToolError("failPenalty 는 {troopId?, sendTo?:{mapId,x,y}, text?} 입니다.", { code: "invalid-args" });
+  const r = raw as Record<string, unknown>;
+  const troopId = typeof r.troopId === "string" && r.troopId.trim() ? r.troopId.trim() : undefined;
+  if (troopId && !draft.database.troops.some((t) => t.id === troopId)) throw new ToolError(`failPenalty.troopId 적 그룹이 없습니다: ${troopId}`, { code: "troop-not-found" });
+  let sendTo: { mapId: string; x: number; y: number } | undefined;
+  if (r.sendTo && typeof r.sendTo === "object") {
+    const t = r.sendTo as Record<string, unknown>;
+    const mapId = String(t.mapId ?? ""), x = Number(t.x), y = Number(t.y);
+    const target = draft.maps[mapId];
+    if (!target) throw new ToolError(`failPenalty.sendTo 맵이 없습니다: ${mapId}`, { code: "map-not-found" });
+    if (!Number.isInteger(x) || !Number.isInteger(y) || x < 0 || y < 0 || x >= target.width || y >= target.height) throw new ToolError("failPenalty.sendTo 좌표가 맵 밖입니다.", { code: "invalid-args" });
+    sendTo = { mapId, x, y };
+  }
+  const text = typeof r.text === "string" && r.text.trim() ? r.text.trim() : undefined;
+  if (!troopId && !sendTo && !text) return undefined;
+  return { ...(troopId ? { troopId } : {}), ...(sendTo ? { sendTo } : {}), ...(text ? { text } : {}) };
+}
+
 function preparePuzzleReward(
   draft: Project,
   preset: PuzzlePresetEntry,
@@ -970,6 +991,7 @@ function runMechanicPreset(
   const reward = preparePuzzleReward(draft, preset, args.reward);
   const title = typeof args.title === "string" && args.title.trim() ? args.title.trim() : undefined;
   const hint = typeof args.hintText === "string" && args.hintText.trim() ? args.hintText.trim() : undefined;
+  const failPenalty = readFailPenalty(draft, args.failPenalty);
   const switchIds: string[] = [solveSwitchId];
   const variableIds: string[] = [];
   const built = mechanic.build({
@@ -981,6 +1003,7 @@ function runMechanicPreset(
     rewardCommands: reward.grantCommands,
     ...(title ? { title } : {}),
     ...(hint ? { hint } : {}),
+    ...(failPenalty ? { failPenalty } : {}),
     seed: hashSeed(baseId),
     sw: (suffix, label) => {
       const id = `sw_${baseId}_${suffix}`;
@@ -1165,6 +1188,15 @@ const authorMapPuzzleTool: ToolDefinition = {
       },
       title: { type: "string", description: "퍼즐·장치 표시 이름 (선택)" },
       hintText: { type: "string", description: "단서 비석·도입 안내 대사 커스텀 문구 (선택)" },
+      failPenalty: {
+        type: "object", additionalProperties: false,
+        description: "들켰을 때 벌(잠입 stealth_guard_patrol). 생략 = 입구로 쫓겨남. troopId = 먼저 그 적 그룹과 싸움(도망 불가, 져도 게임 오버 아님) · sendTo = 쫓겨나는 곳(다른 맵 가능, 예: 감방으로 다시) · text = 들킨 대사",
+        properties: {
+          troopId: { type: "string" },
+          sendTo: { type: "object", additionalProperties: false, properties: { mapId: { type: "string" }, x: { type: "integer" }, y: { type: "integer" } }, required: ["mapId", "x", "y"] },
+          text: { type: "string" },
+        },
+      },
       reward: {
         type: "object",
         description: "{itemId?, itemName?, itemDescription?, gold?} 커스텀 보상 (생략 시 프리셋 기본 보상)",
