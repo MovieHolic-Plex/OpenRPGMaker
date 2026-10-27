@@ -13,7 +13,8 @@ import type { JsonSchema } from "@/editor/tools/types";
 const TILE_CHOICE_ARG = /^(tile|tiles|tileId|tileIds|material|materials|recipeId|presetId|paletteRole|template|objectId|kitId)$/;
 
 // 위 인자를 받지만 실제 칸은 코드가 고르는 도구. 이름은 프리셋·템플릿 선택일 뿐이라 게이트 대상이 아니다.
-const CODE_PICKS_TILES = new Set(["author_village", "place_concept", "place_storage_chest"]);
+// author_village·place_concept 는 2026-10-07 저작권 정리·손 도트 실내 전환으로 지워졌다.
+const CODE_PICKS_TILES = new Set(["place_storage_chest"]);
 
 // 번들인데 아직 참고문서가 없는 타일셋(2026-09-24 실측). 여기서 **빼는 것만** 허용한다 —
 // 새 번들 타일셋은 참고문서를 들고 태어나야 한다(AGENTS 「새 타일·타일 학습은 공용에 추가한다」).
