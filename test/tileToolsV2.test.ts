@@ -4,6 +4,7 @@ import { getTool, runTool, toOpenAiTools, LEGACY_TILE_KNOWLEDGE_SUPERSEDED, type
 import { REMOVED_V2_PLACE_TOOLS, V1_TILE_SUPERSEDED } from "@/editor/tools/v2";
 import { createBlankProject } from "@/project/defaults";
 import type { Project } from "@/project/types";
+import { startOnRetiredCombinedTown } from "./support/retiredEasyRpgTilesets";
 
 function freshProject(): { project: Project; mapId: string } {
   const project = createBlankProject();
@@ -72,7 +73,9 @@ describe("레거시 엔진 실행 호환 (이름 유지, LLM 비노출)", () => 
   });
 
   it("scatter_object 그룹 산포", () => {
-    const { project, mapId } = freshProject();
+    // 버들항 첫 그룹(길 포석 6×1)은 빈 풀밭 8×6 에 놓일 수 없다 — 이 시험이 쓰던 합본 마을 시작 맵으로 되돌린다.
+    const project = startOnRetiredCombinedTown(createBlankProject());
+    const mapId = project.startMapId;
     const tileset = project.tilesets[project.maps[mapId].tilesetId];
     const groupId = tileset.tileGroups?.[0]?.id;
     if (!groupId) return;
