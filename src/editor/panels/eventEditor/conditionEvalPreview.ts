@@ -155,6 +155,11 @@ function evaluatePreviewCondition(
   return evalCondition(session, condition, hostEventId, locations ? { map: { locations } } : undefined);
 }
 
+/** 조건 분기 폼의 한 줄 문장. 폼을 다시 그리지 않을 때도 이 문장만 갱신한다. */
+export function conditionPreviewSentence(condition: Condition | undefined): string {
+  return describeCondition(condition);
+}
+
 function describeCondition(condition: Condition | undefined): string {
   if (!condition) return "(조건 없음)";
   switch (condition.kind) {
