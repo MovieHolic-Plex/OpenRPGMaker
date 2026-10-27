@@ -8,6 +8,7 @@
 import { describe, expect, it } from "vitest";
 import { createInterpreter } from "@/player/interpreter";
 import { planScreenEffect } from "@/player/interpreter/screenEffectPlan";
+import { restoreTintAfterFlash } from "@/player/screen/flashTint";
 import { M2_COMMAND_CATALOG } from "@/project/eventCommands/m2Catalog";
 import { SCREEN_EFFECT_OPTIONS } from "@/project/eventCommands/m2ModernCatalog";
 import type { Command, M2CommandFields } from "@/project/types";
@@ -87,6 +88,39 @@ describe("Screen Effect 런타임 배선", () => {
   it("weather 가 날씨 상태에 도달한다", () => {
     const { screen } = runScreenEffect({ effect: "weather", value: "rain,0.9", durationMs: 0 });
     expect(screen?.weather).toBe("rain,0.9");
+  });
+
+  it("플래시가 끝나면 덮기 전의 색조로 돌아간다", () => {
+    const session = mkSession();
+    const result = createInterpreter(
+      [
+        screenEffectCommand({ effect: "fadeOut", value: "", durationMs: 600 }),
+        screenEffectCommand({ effect: "flash", value: "red", durationMs: 300 }),
+      ],
+      session,
+    ).start();
+    expect(result.kind).toBe("flashScreen");
+    // 플래시 동안에는 색조 칸이 빨강이라 오버레이가 보인다.
+    expect(session.m2Runtime?.screen.tint).toBe("red");
+    restoreTintAfterFlash(session.m2Runtime?.screen);
+    expect(session.m2Runtime?.screen.tint).toBe("0,0,0,1");
+    expect(session.m2Runtime?.screen.tintDurationMs).toBe(0);
+    expect(session.m2Runtime?.screen.flash).toBeUndefined();
+    expect(session.m2Runtime?.screen.flashUntilMs).toBeUndefined();
+  });
+
+  it("흰색 플래시도 페이드 아웃의 검정을 none 으로 지우지 않는다", () => {
+    const session = mkSession();
+    createInterpreter(
+      [
+        screenEffectCommand({ effect: "fadeOut", value: "", durationMs: 600 }),
+        screenEffectCommand({ effect: "flash", value: "white", durationMs: 300 }),
+      ],
+      session,
+    ).start();
+    expect(session.m2Runtime?.screen.tint).toBe("255,255,255,0.85");
+    restoreTintAfterFlash(session.m2Runtime?.screen);
+    expect(session.m2Runtime?.screen.tint).toBe("0,0,0,1");
   });
 
   it("flash 는 카메라 경로용 flashScreen StepResult 를 낸다", () => {
