@@ -121,7 +121,7 @@ npm run dev              # 開発サーバー (http://localhost:9999)
 npm run build:packaged   # ホスト / デスクトップ用レンダラーのビルド
 npm run build:player     # 単体の Web ゲームプレイヤー
 npm start -- --project-dir /path/to/project   # 既存の SQLite プロジェクトを開く
-npm test                 # ユニットテスト
+npm test                 # ユニットテスト（GitHub CI。ローカルは OPRN_LOCAL_TESTS=1 がないとすぐ終了）
 ```
 
 - 設計・データ・エディタの資料は [`openwiki/`](openwiki/) にあります（現在は韓国語）。まず [`openwiki/quickstart.md`](openwiki/quickstart.md) と [`openwiki/PROJECT_WIKI.md`](openwiki/PROJECT_WIKI.md) から。

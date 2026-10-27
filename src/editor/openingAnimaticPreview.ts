@@ -68,8 +68,10 @@ export type AnimaticPreviewResult = { readonly dataUrl: string; readonly measure
 
 /** 미리보기 그림과 같은 프레임에서 잰 수치를 함께 돌려준다 — 조수의 완료 검토가 숫자로 판단하게. */
 export async function renderOpeningAnimaticPreviewDetailed(project: Project, data: unknown, signal = new AbortController().signal): Promise<AnimaticPreviewResult> {
-  const request = data as { shotId?: unknown; atMs?: unknown }, scene = project.system.opening?.scenes.find(s => s.id === request.shotId);
+  const request = data as { shotId?: unknown; atMs?: unknown; bare?: unknown }, scene = project.system.opening?.scenes.find(s => s.id === request.shotId);
   if (!scene || scene.kind !== 'animatic') throw Error('애니메틱 샷 없음.');
+  // bare: 화면 검수용 — 프레임 아래 「샷 id · ms」 글씨를 빼고 띠도 두지 않는다. 검수자가 그 글씨를 오프닝 화면의 글자로 읽고 세 판 내내 결함으로 짚었다(J96).
+  const bare = request.bare === true, band = bare ? 0 : 16;
   validateOpeningAnimatic(scene.composition, scene.durationMs);
   const times = request.atMs as number[];
   if (!Array.isArray(times) || !times.length || times.length > 4 || times.some(t => !Number.isSafeInteger(t) || t < 0 || t > scene.durationMs)) throw Error('프레임 시간은 샷 안의1~4개 정수입니다.');
@@ -78,9 +80,9 @@ export async function renderOpeningAnimaticPreviewDetailed(project: Project, dat
   const tileHeight = Math.min(480 / rows, tileWidth * scene.composition.height / scene.composition.width);
   const scale = Math.min(tileWidth / scene.composition.width, tileHeight / scene.composition.height);
   frame.width = Math.max(1, Math.round(scene.composition.width * scale)); frame.height = Math.max(1, Math.round(scene.composition.height * scale));
-  canvas.width = 512; canvas.height = Math.ceil(rows * (tileHeight + 16));
+  canvas.width = 512; canvas.height = Math.ceil(rows * (tileHeight + band));
   const ctx = canvas.getContext('2d')!; ctx.fillStyle = '#121820'; ctx.fillRect(0, 0, canvas.width, canvas.height); ctx.font = '12px sans-serif';
-  for (const [i, t] of times.entries()) { signal.throwIfAborted(); drawAnimaticFrame(frame, scene.composition, images, t, { durationMs: scene.durationMs }); const x = i % columns * tileWidth, y = Math.floor(i / columns) * (tileHeight + 16); ctx.drawImage(frame, x + (tileWidth - frame.width) / 2, y + (tileHeight - frame.height) / 2); ctx.fillStyle = '#ffffff'; ctx.fillText(`${scene.id}  ${t}ms`, x + 4, y + tileHeight + 12); }
+  for (const [i, t] of times.entries()) { signal.throwIfAborted(); drawAnimaticFrame(frame, scene.composition, images, t, { durationMs: scene.durationMs }); const x = i % columns * tileWidth, y = Math.floor(i / columns) * (tileHeight + band); ctx.drawImage(frame, x + (tileWidth - frame.width) / 2, y + (tileHeight - frame.height) / 2); if (!bare) { ctx.fillStyle = '#ffffff'; ctx.fillText(`${scene.id}  ${t}ms`, x + 4, y + tileHeight + 12); } }
   return { dataUrl: canvas.toDataURL('image/png'), measurements: measureAnimaticFrames(scene.composition, images, scene.durationMs, times), shotId: scene.id };
 }
 

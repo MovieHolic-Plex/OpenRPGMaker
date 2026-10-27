@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { MAP_SHIFT_NOTE } from "@/editor/panels/mapShiftCopy";
-import { matchSupportedLocale, resolveLocale } from "@/i18n/locale";
+import { editorIntlLocale, matchSupportedLocale, resolveLocale } from "@/i18n/locale";
 import { createTranslator } from "@/i18n/translator";
 import en from "@/i18n/catalogs/en.json";
 import ja from "@/i18n/catalogs/ja.json";
@@ -34,6 +34,29 @@ describe("resolveLocale", () => {
     expect(resolveLocale({ languages: ["en-US"], automation: true })).toBe("ko");
     expect(resolveLocale({ languages: ["en-US"], automation: true, forceDetect: true })).toBe("en");
     expect(resolveLocale({ saved: "ja", languages: ["en-US"], automation: true })).toBe("ja");
+  });
+});
+
+describe("editorIntlLocale", () => {
+  const day = new Date(2026, 6, 11, 10, 0, 0);
+  const options: Intl.DateTimeFormatOptions = { year: "numeric", month: "long", day: "numeric", weekday: "short" };
+
+  it("keeps Korean dates on ko-KR and uses the chosen language otherwise", () => {
+    expect(editorIntlLocale("ko")).toBe("ko-KR");
+    expect(editorIntlLocale("en")).toBe("en");
+    expect(editorIntlLocale("ja")).toBe("ja");
+    expect(editorIntlLocale("zh")).toBe("zh-CN");
+    const ko = day.toLocaleDateString(editorIntlLocale("ko"), options);
+    const en = day.toLocaleDateString(editorIntlLocale("en"), options);
+    const ja = day.toLocaleDateString(editorIntlLocale("ja"), options);
+    const zh = day.toLocaleDateString(editorIntlLocale("zh"), options);
+    expect(ko).toBe(day.toLocaleDateString("ko-KR", options));
+    expect(ko).toMatch(/2026년/);
+    expect(en).toMatch(/July/);
+    expect(en).toMatch(/2026/);
+    expect(ja).toMatch(/2026年7月11日/);
+    expect(zh).toMatch(/2026年7月11日/);
+    for (const label of [en, ja, zh]) expect(label).not.toMatch(/[가-힣]/);
   });
 });
 
@@ -194,5 +217,42 @@ describe("shipped catalogs", () => {
     expect(zh["하위 맵"]).toBe("子地图");
     expect(en["하위 조건"]).toBe("Sub-conditions");
     expect(createTranslator(en).translate("하위 3")).toBe("3 sub");
+  });
+
+  it("calls terrain reachability a passability preview, not vehicle traffic or a corridor", () => {
+    // 지형 도구의 통행 미리보기는 시작 위치에서 걸어 닿는 땅을 칠한다. 차 흐름(traffic)도, 복도(passage)도 아니다.
+    const sentence = "경사로·기물, 지형 설계, 통행 미리보기는 아래 도구에서 고릅니다.";
+    expect(en["통행"]).toBe("Passability");
+    expect(en["통행 보기"]).toBe("View passability");
+    expect(en["통행 미리보기"]).toBe("Passability preview");
+    expect(en[sentence]).toBe("Choose ramps/props, terrain design, and passability preview from the tools below.");
+    expect(en["통행 미리보기"].toLowerCase()).not.toMatch(/traffic|\bpassage\b/);
+    expect(en[sentence].toLowerCase()).not.toMatch(/traffic|\bpassage\b/);
+    expect(ja["통행 보기"]).toBe("通行を見る");
+    expect(ja["통행 미리보기"]).toBe("通行プレビュー");
+    expect(ja[sentence]).toContain("通行");
+    expect(zh["통행 보기"]).toBe("查看通行");
+    expect(zh["통행 미리보기"]).toBe("通行预览");
+    expect(zh[sentence]).toContain("通行");
+    expect(createTranslator(en).translate("통행 보기")).toBe("View passability");
+    expect(createTranslator(en).translate("통행 미리보기")).toBe("Passability preview");
+    expect(createTranslator(en).translate(sentence)).toBe(en[sentence]);
+    expect(createTranslator(ja).translate("통행 보기")).toBe("通行を見る");
+    expect(createTranslator(zh).translate("통행 미리보기")).toBe("通行预览");
+  });
+
+  it("describes right-drag region select as a release, not placing an object", () => {
+    // 도움말의 우클릭 드래그. 「놓으면」은 드래그를 떼는 것이고, 그 뒤에 뜨는 동작은
+    // AI 작업·복사·지우기·구조물로 저장이다. 「저장」은 구조물에만 붙는다.
+    const hint = "영역 선택 — 놓으면 AI 작업·복사·지우기·구조물로 저장";
+    expect(en[hint]).toBe("Select region — when you release: 「AI task」, copy, erase, and 「Save as structure」");
+    expect(en[hint].toLowerCase()).not.toMatch(/placed|save as ai/);
+    expect(ja[hint]).toBe("範囲選択 — 離すと「AIタスク」·コピー·消去·「構造物として保存」");
+    expect(ja[hint]).not.toMatch(/配置|リージョン/);
+    expect(zh[hint]).toBe("选择区域 — 松开后：「AI 任务」·复制·擦除·「保存为结构物」");
+    expect(zh[hint]).not.toMatch(/放置|保存为AI/);
+    expect(createTranslator(en).translate(hint)).toBe(en[hint]);
+    expect(createTranslator(ja).translate(hint)).toBe(ja[hint]);
+    expect(createTranslator(zh).translate(hint)).toBe(zh[hint]);
   });
 });

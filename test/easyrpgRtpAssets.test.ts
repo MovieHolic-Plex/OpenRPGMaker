@@ -28,33 +28,9 @@ describe("EasyRPG RTP asset manifest", () => {
   it("lists the inspected EasyRPG RTP asset categories when the scoped RTP import is generated", () => {
     const categories = new Set(EASYRPG_RTP_ASSETS.map((asset) => asset.category));
 
-    expect(categories).toEqual(
-      new Set([
-        "backdrop",
-        "battle",
-        "battleWeapon",
-        "charset",
-        "chipset",
-        "faceset",
-        "gameOver",
-        "monster",
-        "music",
-        "picture",
-        "sound",
-        "system",
-        "system2",
-        "title",
-      ])
-    );
-    expect(EASYRPG_RTP_ASSETS.filter((asset) => asset.category === "chipset")).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          id: "easyrpg-chipset-exterior",
-          path: "assets/easyrpg/chipset/Exterior.png",
-          sourcePath: "ChipSet/Exterior.png",
-        }),
-      ])
-    );
+    // 전투 배경·전투·무기·칩셋·게임오버·몬스터·그림·시스템·타이틀은 2026-10-07 저작권 정리로 지웠다 — 남은 네 갈래만 목록에 있다.
+    expect(categories).toEqual(new Set(["charset", "faceset", "music", "sound"]));
+    expect(EASYRPG_RTP_ASSETS.filter((asset) => (asset.category as string) === "chipset")).toEqual([]);
     expect(EASYRPG_CHARSET_ASSETS.length).toBeGreaterThanOrEqual(17);
   });
 
@@ -80,7 +56,8 @@ describe("EasyRPG RTP asset manifest", () => {
 
   it("keeps every RTP manifest entry as a bundled file, and every entry except the legacy faceset sheets as a resource profile", async () => {
     const fs = await loadFs();
-    expect(EASYRPG_RTP_ASSETS.length).toBe(188);
+    // 정리 전 188 → 캐릭터 17 + 얼굴 시트 5 + 음악 30 + 효과음 96.
+    expect(EASYRPG_RTP_ASSETS.length).toBe(148);
 
     const missingFiles = EASYRPG_RTP_ASSETS
       .filter((asset) => !fs.existsSync(`public/${asset.path}`))

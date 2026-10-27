@@ -21,6 +21,22 @@
   - 함정: `author_forest_route` 를 끝 맵 가장자리에서 이을 때 덧층(lower/upperOverlay)이 남아 「unreachable」 — 파낸 칸의 덧층도 비우게 고침. `originEdge(…, walkFrom)` 은 걸어 들어올 칸에서 BFS 한다.
   - 함정: 승강 장치 도착 칸이 발판 위라 `trigger:"touch"` 면 걸어 나가다 도로 탄다 → `place_lift trigger:"action"`(새 인자).
   - 함정: 하넬 체크포인트 — 발판에서 오른쪽 3칸이 가끔 2칸만 간다(따라오는 동료와 엉킴). 넉넉히 5칸 걷게 하면 하넬에 막혀 멈춘다.
+  - B1~B5 는 PR #3643 으로 머지됨(2026-10-26 저녁).
+  - B6 북방 관문 요새: `author_dungeon castle rooms`(성문 홀·안뜰·감방·무기고·계단 홀·rampart 보스방) + `entrance{fromMapId 새벽샘, x:24,y:0}` + 새벽샘 북쪽 `paint_road`. 경비견은 populate, 순찰 기사는 칩을 줘 따로. 새라: `upsert_actor`(용기사, Actor1 #3)·`upsert_enemy`(charset-battler-actor1-3)·`upsert_troop` + `upsert_troop_battle_page` 둘. 새라 이벤트 `battleProcessing canLose branchOnResult` — 지면 요새 감방에서 깸, 이기면 선택 1(창 돌려줌 → 유대 +1 / 맡아 둠 → 별쇠 조각)·합류·설원 길로 이동.
+  - 일반 기능: 문으로 들어가는 던전 1층(entryStair door)과 야외 잇기가 transfer-retrigger 로 늘 실패하던 버그(`dungeonLinkTools` 가 문 칸을 doorAt 으로) · `upsert_enemy` 가 걷기 칩 전투 시트(charset-battler-*)를 사람 적 그림으로 받음 · `author_snow_route paintGaps`(얼음 구멍으로 틈을 실제로 막음, 잇기 뒤에 칠함)·`linkFrom:false`.
+  - B7 서리 가도: 설원 길 두 장(눈→눈보라), 얼음 틈 둘 = `place_field_obstacle gap requiresActorId 새라`, 고개 모닥불 `configure_party_bonds`(엘레나·새라, 새라 유대 2 → 창 휘두르기).
+  - 함정: `author_dungeon` populate 의 보이는 적·보스는 몬스터 그림 무리만 놓는다(사람 칩 무리는 조용히 건너뜀 — runTool 결과에 경고가 안 실린다). 함정: 도구 안에서도 잇기 뒤엔 맵 객체가 바뀐다(설원 틈 칠하기 버그였다).
+  - B8 서리나루: `author_beodeul_town theme snow seed 81`(못·얼음낚시터·얼음 구멍이 마을 문법에 있다). 고개 끝 출구 ↔ 마을 남쪽 `create_transfer_pair`. 하르마(세린 이야기, Q5 얼음 구멍 → 은빛 송어 → 「하르마의 은빛 노」 얼음 저항 장신구), 징발대 병사(Q6 새라 한마디 → 여관 공짜·새라 유대 +1), 여관(`build_hand_interior_room program inn` + doorAt 문), 못가 등불 셋.
+  - 일반 기능: 출입구 도달 검사(`walkableFromAnchors`·`largestWalkGroup`)가 주인공을 뛰어넘기게 하는 이벤트(moveEvent @player jump — 틈 도약)를 길로 친다. 전에는 틈 너머 출구가 「걸어 닿지 않는다」로 거절됐다.
+  - B9 얼음 위의 등: `duplicate_map events:"doors"` 밤 판, 여관 주인 「밤을 기다림」 페이지로 넘어간다. 발렌(1막 칩) 선택 2(칼/등, 확인서가 있으면 세린 이름), 흔들림·섬광, `make_timed_escape`(얼음 칸만 남쪽부터 20초, 검은 물 23152) → 북쪽 하늘탑(`author_dungeon tower floors 4 teleporter`, 이번엔 문만) 문은 발렌 뒤에만.
+  - 일반 기능: `make_timed_escape startCellsSwitchId` — 재시도 시작 칸이 컷신 전에는 안 켜지게. `groundSupport` 가 보이지 않는 자동·병렬 이벤트(맵 분위기 날씨)는 받침을 따지지 않는다(던전 맵 (0,0) 허공에서 set_scene_mood 가 거절됐다).
+  - 함정: 날씨는 맵을 넘어 남는다 — 새벽샘 안개가 요새 안에, 서리나루 눈발이 여관 안에 따라 들어왔다. 실내·다음 맵에 `set_scene_mood weather none` 을 준다.
+  - 함정: fadeOut 뒤 transfer 하면 화면이 검은 채로 다음 맵 도착 대사가 돈다 — 도착 자동 이벤트 첫 줄에 fadeIn.
+  - 함정: 선택지 앞 대사가 여섯 줄이면 Enter 10번으로 모자라다(글자 흘림 1번 + 넘김 1번) — repeatUntil maxRounds 넉넉히.
+  - 정본 revision 4(굽기 bake6, 맵 31) → revision 5(bake7, 맵 33) 저장·재로드 OK.
+  - B9 수정: 발렌을 탈출 이벤트보다 먼저 세운다 — `make_timed_escape` 가 다른 이벤트가 선 칸은 무너뜨리지 않는다(전에는 무너짐 이벤트가 발렌 칸을 덮어 말을 안 받았다). 무너짐은 칸마다가 아니라 줄마다 이어진 얼음 덩이 하나씩(steps = 줄별 연속 구간).
+  - **1.23 판본 끝 = B8 서리나루 여관**(`FS2_RELEASE_STOP = "B8"`). 하르마 뒤 여관 주인 오사 「판본 끝」 페이지: 회복·「제2막 「빌린 불」 — 여기까지」 막 카드·저장 메뉴. 밤 판(`fs2_frostford_night`)으로 가는 이동이 아예 없다(굽기 JSON 에서 바깥 맵이 밤 판·하늘탑을 가리키는 곳 0 확인). 다음 판본에서 B9 를 열려면 `FS2_RELEASE_STOP = null` — 그러면 같은 페이지 자리에 밤으로 넘어가는 페이지가 들어간다. 체크포인트 `act2-b8-stop`.
+  - 정본 revision 6(bake8) → bake9 저장.
   - 탐침: `/tmp/fs2/act2probe.mts` 는 vite-node 로 돈다: `OPRN_ASSUME_ALL_BGM_INSTALLED=1 node --max-old-space-size=12000 node_modules/vite-node/dist/cli.mjs --script /tmp/fs2/act2probe.mts`(tsx 는 .css import 로 죽는다). 타입 검사는 `/tmp/fs2/tsconfig.json`(만진 파일 + src/vite-env.d.ts).
 
 ## 1. 머지됨 (main)

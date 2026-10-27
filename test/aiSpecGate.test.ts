@@ -115,6 +115,31 @@ describe("buildSpec 검증기(결정적)", () => {
     expect(issues.filter((issue) => issue.severity === "error")).toEqual([]);
   });
 
+  it("plannedMap 폭·높이도 숫자 문자열을 정수로 읽어 합성 경계로 쓴다", () => {
+    const project = createBlankProject();
+    const accepted = validateBuildSpec(project, {
+      mapId: "planned_village",
+      plannedMap: { mapId: "planned_village", width: "24", height: " 20 " },
+      assets: [{ id: "마을", kind: "village", x: "2", y: "2", w: "20", h: "16" }],
+    } as unknown as BuildSpec);
+    expect(accepted.filter((issue) => issue.severity === "error")).toEqual([]);
+
+    const tooSmall = validateBuildSpec(project, {
+      mapId: "planned_village",
+      plannedMap: { mapId: "planned_village", width: "10", height: "10" },
+      assets: [{ id: "마을", kind: "village", x: 2, y: 2, w: 20, h: 16 }],
+    } as unknown as BuildSpec);
+    expect(tooSmall.some((issue) => issue.severity === "error" && issue.message.includes("10×10"))).toBe(true);
+    expect(tooSmall.some((issue) => issue.message.includes("1 이상의 정수"))).toBe(false);
+
+    const grown = validateBuildSpec(projectWithMap(), {
+      mapId: "m1",
+      plannedMap: { mapId: "m1", width: "40", height: "30" },
+      assets: [{ id: "집E", kind: "house", x: 22, y: 22, w: 6, h: 6 }],
+    } as unknown as BuildSpec);
+    expect(grown.filter((issue) => issue.severity === "error")).toEqual([]);
+  });
+
   it("같은 층(lower) 에셋 겹침은 error — 두 id를 모두 언급", () => {
     const project = projectWithMap();
     const spec: BuildSpec = {

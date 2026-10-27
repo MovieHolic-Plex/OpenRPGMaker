@@ -1,3 +1,4 @@
+import { eventDisplayName } from "@/project/eventDisplayName";
 import type { GameEvent, GameMap, Project, SwitchDef, VariableDef } from "@/project/types";
 
 export type SearchKind = "map" | "mapEvent" | "commonEvent" | "switch" | "variable";
@@ -108,10 +109,12 @@ function matchingEventResults(map: GameMap, event: GameEvent, query: string): Di
       target: { kind: "event", mapId: map.id, eventId: event.id },
     }));
   }
-  if (!matches(query, event.id)) return [];
+  // 페이지 제목과 별개인 저작 이름(GameEvent.name). 헤더·마커와 같은 eventDisplayName.
+  // 페이지가 자동 이름(「페이지 1」)만 있으면 그 문자열로는 이벤트를 못 찾는다.
+  if (!matches(query, event.name ?? "", event.id)) return [];
   return [{
     kind: "mapEvent",
-    name: displayName(event.pages?.[0]?.name ?? "", event.id),
+    name: eventDisplayName(event),
     location: displayName(map.name, map.id),
     detail: `${event.id} · (${event.x}, ${event.y})`,
     target: { kind: "event", mapId: map.id, eventId: event.id },
@@ -174,11 +177,6 @@ function referencesValue(value: unknown, kind: "switch" | "variable", id: string
   if (kind === "variable" && record.variableId === id) return true;
   if (kind === "variable" && record.kind === "var" && record.id === id) return true;
   return Object.values(record).some((entry) => referencesValue(entry, kind, id));
-}
-
-function eventDisplayName(event: GameEvent): string {
-  const name = event.pages?.find((page) => page.name.trim())?.name ?? "";
-  return displayName(name, event.id);
 }
 
 function matches(query: string, ...values: readonly string[]): boolean {

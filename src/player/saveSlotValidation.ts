@@ -82,6 +82,18 @@ export function isActorSkillPpRecord(value: unknown): value is NonNullable<PlayS
   );
 }
 
+/**
+ * 알아낸 약점 장부. 칸 값은 피해 배율이다(1 초과 약점, 1 미만 저항, 0 무효, 음수 흡수).
+ * PP 장부(`isActorSkillPpRecord`)는 0 미만을 거절하므로, 그 검사로 읽으면 흡수 칸 하나가 장부 전체를 지운다.
+ */
+export function isKnownWeaknessesRecord(value: unknown): value is NonNullable<PlaySession["knownWeaknesses"]> {
+  if (!isRecord(value)) return false;
+  return Object.values(value).every((row) =>
+    isRecord(row)
+    && Object.values(row).every((rate) => typeof rate === "number" && Number.isFinite(rate)),
+  );
+}
+
 export function isActorParamBonusRecord(value: unknown): value is Record<string, Partial<Record<ActorParameterKey, number>>> {
   if (!isRecord(value)) return false;
   return Object.values(value).every((bonuses) => {

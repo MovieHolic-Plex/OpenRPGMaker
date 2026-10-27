@@ -101,7 +101,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/emerald-monster-art-v2.md` | 3 | `emerald-art-v2-register-npc.mjs`, `public/assets/emerald-monster/cast/uploaded-cast.json`, `verify-shots/emerald-art-v2-20261004/SUMMARY.md` |
 | `openwiki/emerald-monster-production.md` | 3 | `docs/content/emerald-monster-production-contract.md`, `scripts/content/emerald-field-cast.py`, `verify-shots/emerald-monster-2026-10-04/REPORT.md` |
 | `openwiki/feature16-battle-ui.md` | 1 | `verify-shots/runtime-qa/feature16-battle-ui/SUMMARY.md` |
-| `openwiki/getting-started.ko.md` | 3 | `.oprn-local.json`, `docs/specs/2026-06-18-rpg-maker-mvp-design.md`, `io.test.ts` |
+| `openwiki/getting-started.ko.md` | 1 | `.oprn-local.json` |
 | `openwiki/growth-trees.md` | 3 | `.omo/evidence/growth-integrated/browser-presets/report.json`, `applied-bundle.json`, `verify-shots/runtime-qa/growth-tree/SUMMARY.md` |
 | `openwiki/harnesses/README.md` | 1 | `docs/superpowers/specs/2026-10-05-unified-harness-production.md` |
 | `openwiki/harnesses/assistant-capability.md` | 22 | `REPORT.md`, `agent-briefs.json`, `assessment.json`, `asset-receipts.json`, `before/after/original/trace.json`, `boxes.json`, `dist/export-player/player.html`, `film-log.json`, `live.json`, `map-portals/after.png`, `matrix-native.json`, `matrix-score.json`, `matrix-validation.json`, `native-result.json`, `output/qa/vn2/seed-novn.json`, `page-errors.json`, `project.json`, `report.html`, `runtime-recheck.json`, `seed-novn.json`, `selfcheck.json`, `visual.json` |
@@ -314,15 +314,16 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L213` 바로 플레이 게임 (2026-10-23)
   - `L307` 조수와 평가 (2026-10-25)
 
-### `openwiki/assistant-v2.md` — 17KB · 119줄 · ~5,045 토큰
+### `openwiki/assistant-v2.md` — 19KB · 134줄 · ~5,752 토큰
 
 - `L16` 다양성 — 같은 요청이 같은 맵이 되지 않게 (2026-10-23)
 - `L24` 게임 요소 — 퀘스트·아이템·전투·파티·스위치 (2026-10-24)
-- `L38` 켜는 법
-- `L45` 구조 — v1 실행기를 그대로 쓴다
-- `L61` 빌더가 하는 것 / 못 하는 것
-- `L97` 시험
-- `L105` v1 비교 결과 (2026-10-23, 코드 e06766bd8d)
+- `L38` 새 플레이어 길잡이 — 목표 줄·보이는 이야기 이벤트 (2026-10-26, J90~J96)
+- `L52` 켜는 법
+- `L59` 구조 — v1 실행기를 그대로 쓴다
+- `L76` 빌더가 하는 것 / 못 하는 것
+- `L112` 시험
+- `L120` v1 비교 결과 (2026-10-23, 코드 e06766bd8d)
 
 ### `openwiki/atlas-biome-interior.md` — 77KB · 439줄 · ~23,044 토큰 · 통째읽기 잘림
 
@@ -1475,7 +1476,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L81` 안전 장치 (도구가 거절하는 것)
 - `L89` 알려진 한계
 
-### `openwiki/getting-started.ko.md` — 20KB · 307줄 · ~6,290 토큰
+### `openwiki/getting-started.ko.md` — 22KB · 306줄 · ~6,628 토큰
 
 - `L5` 처음 시작하기
   - `L23` AI와 함께 만들기
@@ -1483,16 +1484,16 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L36` 저장과 백업 복구
   - `L51` 막혔을 때
 - `L62` 개발자용 명령
-- `L79` 주요 기능
-- `L92` 지원 맵 타일
-- `L110` 사용법
-  - `L112` EDIT 모드
-  - `L119` PLAY 모드
-  - `L126` 이벤트 명령
-- `L138` 설치 가이드
-- `L270` 아키텍처
-- `L278` 데이터 스키마
-- `L284` 테스트
+- `L80` 주요 기능
+- `L93` 지원 맵 타일
+- `L111` 사용법
+  - `L113` EDIT 모드
+  - `L120` PLAY 모드
+  - `L127` 이벤트 명령
+- `L139` 설치 가이드
+- `L271` 아키텍처
+- `L279` 데이터 스키마
+- `L285` 테스트
 
 ### `openwiki/gothic-manor.md` — 10KB · 77줄 · ~3,072 토큰
 

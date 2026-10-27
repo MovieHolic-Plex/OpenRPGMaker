@@ -278,14 +278,14 @@ describe("side-view battle runtime", () => {
       { enemyId: "enemy_slime", x: 120, y: 128, hidden: false },
       { enemyId: "enemy_dragon", x: 196, y: 96, hidden: true },
     ];
-    troop.previewBackgroundResourceId = "easyrpg-backdrop-sky1";
+    troop.previewBackgroundResourceId = "battle-scenery-cave";
     troop.battleEventPages.splice(0, troop.battleEventPages.length, {
       id: "m2_encounter_and_backdrop",
       name: "Enemy encounter and battleback",
       conditions: [{ kind: "actorCommand", actorId: "actor_hero", commandId: "defend" }],
       span: "battle",
       commands: [
-        { kind: "m2Command", commandId: "m2-102-change-battleback", fields: { resourceId: "easyrpg-backdrop-dawn1" } },
+        { kind: "m2Command", commandId: "m2-102-change-battleback", fields: { resourceId: "battle-scenery-forest" } },
         { kind: "m2Command", commandId: "m2-101-enemy-encounter", fields: { target: "enemy-2" } },
       ],
     });
@@ -298,12 +298,12 @@ describe("side-view battle runtime", () => {
     });
     runtime.tick(1_000);
 
-    expect(runtime.snapshot().backdropResourceId).toBe("easyrpg-backdrop-sky1");
+    expect(runtime.snapshot().backdropResourceId).toBe("battle-scenery-cave");
     expect(runtime.snapshot().enemies.map((enemy) => enemy.id)).toEqual(["enemy-1"]);
 
     runtime.performActorCommand({ kind: "defend" });
 
-    expect(runtime.snapshot().backdropResourceId).toBe("easyrpg-backdrop-dawn1");
+    expect(runtime.snapshot().backdropResourceId).toBe("battle-scenery-forest");
     expect(runtime.snapshot().enemies.map((enemy) => enemy.recordId)).toEqual(["enemy_slime", "enemy_dragon"]);
     expect(runtime.snapshot().result).toBeUndefined();
   });
@@ -317,7 +317,7 @@ describe("side-view battle runtime", () => {
       { enemyId: "enemy_slime", x: 120, y: 128, hidden: false },
       { enemyId: "enemy_dragon", x: 196, y: 96, hidden: true },
     ];
-    troop.previewBackgroundResourceId = "easyrpg-backdrop-sky1";
+    troop.previewBackgroundResourceId = "battle-scenery-cave";
     troop.battleEventPages.splice(0, troop.battleEventPages.length, {
       id: "m2_invalid_encounter_and_backdrop",
       name: "Invalid encounter and battleback",
@@ -340,7 +340,7 @@ describe("side-view battle runtime", () => {
 
     runtime.performActorCommand({ kind: "defend" });
 
-    expect(runtime.snapshot().backdropResourceId).toBe("easyrpg-backdrop-sky1");
+    expect(runtime.snapshot().backdropResourceId).toBe("battle-scenery-cave");
     expect(runtime.snapshot().enemies.map((enemy) => enemy.recordId)).toEqual(["enemy_slime"]);
   });
 

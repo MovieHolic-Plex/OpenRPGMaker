@@ -3,7 +3,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { pathToFileURL } from "node:url";
 import { afterEach, describe, expect, it } from "vitest";
-import { CLI_PROJECT_STORE_FILE, electronUserArgIndex, inspectCliProjectArgs } from "../electron/main/cliProject";
+import { CLI_PROJECT_STORE_FILE, electronUserArgIndex, inspectCliProjectArgs, projectDirFromOpenPath, shouldBootToStartScreen } from "../electron/main/cliProject";
 
 const roots: string[] = [];
 
@@ -143,6 +143,50 @@ describe("CLI project folder arguments", () => {
       ignored: ["file://%"],
     });
     expect(inspectCliProjectArgs(["/opt/OPRN/oprn"], root)).toEqual({ dir: null, ignored: [] });
+  });
+
+  it("opens a folder from macOS open-file when it contains project.sqlite", () => {
+    const root = scratch();
+    const game = project(root);
+    expect(projectDirFromOpenPath(game)).toBe(game);
+  });
+
+  it("opens the parent folder when open-file points at project.sqlite", () => {
+    const root = scratch();
+    const game = project(root);
+    expect(projectDirFromOpenPath(join(game, CLI_PROJECT_STORE_FILE))).toBe(game);
+  });
+
+  it("does not open a file, an empty folder, or a directory named project.sqlite", () => {
+    const root = scratch();
+    const empty = join(root, "empty");
+    mkdirSync(empty);
+    const notes = join(root, "notes.txt");
+    writeFileSync(notes, "hello");
+    const odd = join(root, "odd");
+    mkdirSync(join(odd, CLI_PROJECT_STORE_FILE), { recursive: true });
+    expect(projectDirFromOpenPath(notes)).toBeNull();
+    expect(projectDirFromOpenPath(empty)).toBeNull();
+    expect(projectDirFromOpenPath(odd)).toBeNull();
+    expect(projectDirFromOpenPath(join(odd, CLI_PROJECT_STORE_FILE))).toBeNull();
+    expect(projectDirFromOpenPath("")).toBeNull();
+  });
+
+  it("follows an open-file symlink to the project directory", () => {
+    const root = scratch();
+    const game = project(root, "real");
+    const link = join(root, "link");
+    symlinkSync(game, link);
+    expect(projectDirFromOpenPath(link)).toBe(game);
+  });
+
+  it("skips the start screen only for QA or a project chosen on the command line or via open-file", () => {
+    const none = { smokePage: false, openProjectDirEnv: false, cliProjectDir: null, openFileProjectDir: null };
+    expect(shouldBootToStartScreen(none)).toBe(true);
+    expect(shouldBootToStartScreen({ ...none, cliProjectDir: "/games/quest" })).toBe(false);
+    expect(shouldBootToStartScreen({ ...none, openFileProjectDir: "/games/quest" })).toBe(false);
+    expect(shouldBootToStartScreen({ ...none, smokePage: true })).toBe(false);
+    expect(shouldBootToStartScreen({ ...none, openProjectDirEnv: true, openFileProjectDir: "/games/quest" })).toBe(false);
   });
 
   it("swallows a probe that throws", () => {

@@ -153,7 +153,7 @@ r3:
 ## 맹독·혼란 — gen1 전투의 상태이상 보강 (2026-10-16, poke-depth PR2)
 
 - 범위: **`battleModel: "gen1"` 프로젝트(몬스터 수집)만.** 다른 전투 모델에서는 같은 레코드가 일반 상태처럼만 돈다(`upsert_state` 가 경고).
-- 맹독 = `StateRecord.gen1MajorStatus: "toxic"`(독·화상·수면·얼음·마비와 같은 주요 상태 슬롯, 서로 배타). 차례 말마다 `stateTurns[id]` 카운터가 1→15(`gen1NextToxicCounter`)로 올라 **최대 HP 1/16 × 카운터**를 깎는다(`applyGen1PostActionResidual({kind:"toxic",toxicCounter})`). 교체해서 빠지면 카운터 0(`resetVolatileStatesOnSwitchOut`). 독·강철 타입은 독과 같이 맹독에 안 걸린다(`gen1MajorStatusBlockedByType`). 필드 걸음 독(`applyGen1FieldPoisonStep`)·포획 보너스·상태 오라는 독과 같다. 일반 독은 그대로 고정 1/16.
+- 맹독 = `StateRecord.gen1MajorStatus: "toxic"`(독·화상·수면·얼음·마비와 같은 주요 상태 슬롯, 서로 배타). 차례 말마다 `stateTurns[id]` 카운터가 1→15(`gen1NextToxicCounter`)로 올라 **최대 HP 1/16 × 카운터**를 깎는다(`applyGen1PostActionResidual({kind:"toxic",toxicCounter})`). 교체해서 빠지면 카운터 0(`resetVolatileStatesOnSwitchOut`). 독·강철 타입은 독과 같이 맹독에 안 걸린다(`gen1MajorStatusBlockedByType`). 불꽃 타입은 화상, 얼음 타입은 얼음에 걸리지 않는다 — 기술을 준 타입이 달라도, 타입이 없는 접촉 특성도(`gen1StatusMoveBlockedByTargetType`). 상태 기술이 그래서 막히면 「○○은 불꽃 타입이라 화상 상태에 걸리지 않는다!」. 이미 다른 주요 상태가 있어도 「이미 ○○ 상태다」로 바꾸지 않는다. 피해 기술의 부가 실패는 문장을 남기지 않는다. 필드 걸음 독(`applyGen1FieldPoisonStep`)·포획 보너스·상태 오라는 독과 같다. 일반 독은 그대로 고정 1/16.
 - 혼란 = `StateRecord.volatileStatus: "confusion"`(**새 선택 필드**, 생략=옛 동작). 주요 상태와 겹쳐 걸리고(`readGen1MajorStatus` 는 이 필드가 있는 상태를 주요 상태로 안 읽는다), 걸릴 때 바이트 하나로 남는 행동 수 2~5(`gen1ConfusionTurns`, `stateTurns[id]` 에 저장)가 정해진다. `prepareGen1CombatAction` 이 주요 상태(수면·얼음·마비) 뒤에 `stepGen1ConfusionBeforeAction` 을 부른다: 카운터를 하나 줄여 0 이면 풀리고(`stateRemoved`, reason natural, 그 행동은 정상), 아니면 바이트 하나로 절반(<128)이 **위력 40 무속성 물리 자해**(`gen1ConfusionSelfDamage`: 급소·자속·난수 없음, 자기 공격·방어에 상태·단계 배율 적용, 최소 1)로 그 행동을 잃는다. 자해는 `stateUpkeep` 엔트리(`userRecordId`+문장 「○○은 혼란에 빠져 자신을 공격했다!」)로 기록되고, 시퀀서는 이를 「명령을 못 쓴 차례」로 읽는다(`commandIncapacitated`) — 안 그러면 적의 첫 엔트리가 아군 명령 대사로 읽힌다. 이미 혼란이면 다시 안 걸리고 바이트도 안 쓴다. 교체해서 빠지면 풀린다. 전투가 끝나면 `removeOnBattleEnd` 로 풀린다(상태 레코드에 `runtimeEffects:{removeOnBattleEnd:true}`).
 - RNG: 맹독은 바이트를 안 쓴다(걸리는 순간의 확률 굴림만). 혼란은 걸릴 때 1바이트, 행동마다 1바이트(풀리는 행동은 0바이트). 이 상태를 안 쓰는 게임의 난수열은 그대로다.
 - 화면: 배지 `TOX`(진보라)·`CNF`(분홍, `stateIconToken` 이 `confus`·`toxic` 를 읽는다 — 옛 코드는 `confuse` 만 읽어 `state_confusion` 이 점(●)으로 떨어졌다). 에메랄드 문장: 「○○은 맹독에 걸렸다!」「○○은 맹독의 피해를 입었다!」「○○은 혼란에 빠졌다!」「○○의 혼란이 풀렸다!」. 혼란 오라(`confuse-stars`)는 `state_confusion` id 에 이미 매핑돼 있어 머리 위에 별이 돈다.
@@ -819,7 +819,7 @@ SQLite 저장소를 자동 변경하는 이관은 수행하지 않는다.
   `timelineDirectorState` → 「슬라임 1은 스톱에 걸렸다!」「…의 공격이 올랐다!」(「○○ 상승/하락」 이름) 「…의 암흑이 풀렸다.」 한 줄씩 800ms(`BATTLE_STATE_LINE_MS`).
   피해 0 보조 기술은 둘째 줄(효과가 충분하지 않았다)을 떼고, 뒤따르는 상태 변화가 없는데 기술에 상태 부여가 있으면 recover 뒤 「…에게는 효과가 없었다.」 한 비트(`supportOutcome`, 기술은 이름으로 찾는다).
   stateAdded 는 `DamageFeedback.label` 팝업(숫자 경로 재사용, `battle-damage-popup-status`, battleDom 이 원장·타격·효과음을 건너뜀)으로 상태 이름이 떠오른다.
-  이미 걸린 상태라 새로 안 붙었으면 「…은 이미 프로텍트 상태다.」(실패 아님). 훔치기처럼 action 없이 special 한 줄만 남기는 명령은
+  이미 걸린 상태라 새로 안 붙었으면 「…은 이미 프로텍트 상태다.」(실패 아님). gen1 주요 상태가 서로 달라 안 붙었으면(화상 중에 마비 등) 「…은 이미 화상 상태다.」— 「효과가 없었다」로 읽히면 기술이 빗나간 것처럼 보인다. 피해 기술의 부가 실패는 이 문장을 쓰지 않는다. 훔치기처럼 action 없이 special 한 줄만 남기는 명령은
   명령 대사가 그 엔트리를 차지해 결과가 사라졌다 → 명령 줄 뒤에 special 줄을 따로 읽힌다(`specialAfterCommand`).
   배지는 스냅샷이 아니라 **재생된 타임라인** 기준 — `stateView` 가 아직 재생 안 한 stateAdded/Removed 를 되감아 「걸렸다!」 비트에 붙는다.
 
@@ -2351,7 +2351,7 @@ retro2003 sideview 의 명령 창은 `data-look-command`(actor 156px · keys 152
 - **연계 MP 나누기** `SkillRecord.comboMpCosts [{actorId, mp}]` — 참가자별 몫. 없는 참가자는 `mpCost`. `battleSkillMpCostFor(skill, user)` 가 단일 권위(장비 절반 적용).
 - **약점 공략** `SkillRecord.exploitStates {stateIds, bonusPercent, consume?}` — 대상이 그 상태면 피해 ×(1+bonus/100), `consume` 이면 그 상태를 지운다(기술 자신의 상태 효과보다 먼저). 타임라인 `exploit:true` → 숫자 아래 「공략!」.
   「깔기 → 거두기」 짝(둔화 → 십자베기, 기절 → 광선 조준)을 만드는 수단이다.
-- **쓰러뜨린 대상에게 상태를 걸지 않는다** — 피해 기술의 상태 효과는 대상 HP 가 남았을 때만(녹화에서 「쓰러뜨렸다!」 다음 「화상에 걸렸다!」가 떴다).
+- **쓰러뜨린 대상에게 상태를 걸지 않는다** — 피해 기술의 상태 효과는 대상 HP 가 남았을 때만(녹화에서 「쓰러뜨렸다!」 다음 「화상에 걸렸다!」가 떴다). gen1(몬스터 수집) 피해도 같다. 쓰러뜨린 타격의 부가 상태(화상 등)와 능력 단계는 걸리지 않는다.
 - **결과 팡파레** `src/player/battleFanfareDom.ts` + `system.battleFanfare`(`src/project/battleFanfare.ts`, 기본값은 저장 안 함) — 도트 결과 화면의 레벨 업 창 넘기기 줄에:
   레벨 업 창 머리 「LEVEL UP!」 배너(빛줄기·파티클·능력치 줄 차례 등장) → 그 배우가 배운 기술마다 「새 기술 습득!」 카드(속성색 문장·비용·꼬리표·설명) → 이번에 해금 조건이 채워진 연계기마다 「새 연계기!」 카드(`newlyUnlockedCombos`).
   `levelUp`·`skillLearned`·`comboUnlocked`·`style`(burst·classic·minimal)·`sound`. 소리는 합성 `levelUp`·`skillLearned`·`combo`.
@@ -2380,6 +2380,6 @@ retro2003 sideview 의 명령 창은 `data-look-command`(actor 156px · keys 152
 
 - **미리 알려 주지 않는다.** 기술 설명·한 줄 도움말·결과 「새 기술 습득!」 카드·아이템 설명에 「늑대 약점」「거미는 창에 약하다」처럼 적 이름을 들어 상성을 쓰지 않는다(폴른 스타 `battleRoles.ts`·`battleDepth.ts`·`battleItems.ts` 문장을 고쳤다). 기술 자신의 성질(비용·대상·속성·「둔해진 적 +50%」 같은 조건부 위력)은 남는다 — 한 줄 도움말의 약점 공략 꼬리표는 「민첩 하락 +50%」(옛 「… 노림」).
 - **발견** `src/battle/weaknessDiscovery.ts` — 런타임이 피해 엔트리의 상성 배율을 속성·피해 종류로 나눠(`effectivenessParts`: `element:<id>` · `type:physical|magic`, 배율 1 은 빠짐) `BattleActionResultSnapshot.effectivenessParts` 에 싣는다(통상 공격·기술 두 곳, gen1/몬스터 경로는 제외). `recordAction` 이 아군 → 적 타격이면 `recordWeaknessDiscovery(knownWeaknesses, enemy.recordId, parts)` — 새 칸이면 타임라인 `weaknessDiscovered:true` → 시퀀서 피드백 → 숫자 아래 꼬리표가 「약점 발견!」·「저항 발견!」·「무효 발견!」(크게, `data-weakness-discovered`). 이후 타격은 늘 쓰던 「약점!」·「저항」.
-- **기록** `PlaySession.knownWeaknesses` (적 레코드 id → key → 배율). `playSceneBattle` 이 `session.knownWeaknesses ??= {}` 객체를 `sessionState.knownWeaknesses` 로 넘기고 전투가 **그 객체에 직접** 적는다 — 보상 정산을 거치지 않으므로 져도 도망쳐도 남는다. 세이브 슬롯이 저장·복원한다(`saveSlots.ts`, 검증 `isActorSkillPpRecord` 모양). 세션이 없으면 그 전투만의 장부.
+- **기록** `PlaySession.knownWeaknesses` (적 레코드 id → key → 배율). `playSceneBattle` 이 `session.knownWeaknesses ??= {}` 객체를 `sessionState.knownWeaknesses` 로 넘기고 전투가 **그 객체에 직접** 적는다 — 보상 정산을 거치지 않으므로 져도 도망쳐도 남는다. 세이브 슬롯이 저장·복원한다(`saveSlots.ts`, 검증 `isKnownWeaknessesRecord` — 유한한 배율, 흡수처럼 음수도 포함). PP 검증(`isActorSkillPpRecord`, 0 이상)으로 읽으면 흡수 칸 하나가 장부 전체를 버린다. 세션이 없으면 그 전투만의 장부.
 - **공개 설정** `system.battleStaging.revealWeakness`: never · afterDiscovery(기본) · always. 대상 고르기(`battleDom.syncWeaknessReveal`, 명령 패널을 만들 때마다)가 지금 명령(통상 공격 = 무기 속성·물리, 기술 = 속성·statistic 으로 물리/마법)의 `revealedEffectiveness` 를 적마다 구해 적 노드 위 칩(`battle-weakness-reveal`)과 대상 목록 줄 이름 옆(`.battle-weakness-row`)에 「약점」·「저항」·「무효」를 단다. afterDiscovery 는 아는 칸만 곱한다. 스냅샷 `knownWeaknesses` 가 그 객체다.
 - QA: `fallen-battle-depth.json` `weakness-discovery`(첫 대상 고르기 칩 없음 `measureLayout reveal-before: null` → 화염검 「약점 발견!」 → 다음 화염검 대상 고르기 칩·목록 「약점」).

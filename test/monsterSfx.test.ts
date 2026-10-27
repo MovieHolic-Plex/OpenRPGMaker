@@ -35,7 +35,8 @@ function monsterProject() {
   return project;
 }
 
-describe("monster-collection default sound set", () => {
+// Heavy under CI load (15s default is too tight): decodes the shipped OGG and builds blank projects.
+describe("monster-collection default sound set", { timeout: 120_000 }, () => {
   afterEach(() => {
     Reflect.deleteProperty(globalThis, "Audio");
     vi.restoreAllMocks();

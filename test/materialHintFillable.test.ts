@@ -5,12 +5,16 @@ import { runTool, type ToolContext } from "@/editor/tools";
 import { createBlankProject } from "@/project/defaults";
 import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import { resolveMaterialByLabel } from "@/project/tileVocabulary";
+import { withRetiredCombinedTownMaps } from "./support/retiredCombinedTownMaps";
+
+// 재료 라벨(돌바닥·물·모래·흙길·목골 석벽 집 벽·탁자)은 합본 마을 칩셋 어휘다 — 정리 전 빈 프로젝트처럼 합본 마을 맵에서 잰다.
+const blankCombinedTownProject = () => withRetiredCombinedTownMaps(createBlankProject());
 
 const MAP_ID = "map_blank_start";
 
 describe("면 채우기 재료 힌트", () => {
   it("있는 라벨이지만 채울 수 없는 재료(돌바닥)는 이유와 채울 수 있는 재료를 준다", () => {
-    const tileset = createBlankProject().tilesets[COMBINED_TOWN_TILESET_ID];
+    const tileset = blankCombinedTownProject().tilesets[COMBINED_TOWN_TILESET_ID];
     const result = resolveMaterialByLabel(tileset, "돌바닥", { preferGroup: true, preferRoles: ["water", "terrain"], requireAutotileGroup: true });
     expect(result.status).toBe("missing");
     if (result.status !== "missing") return;
@@ -21,7 +25,7 @@ describe("면 채우기 재료 힌트", () => {
   });
 
   it("fill_region 실패 문구는 실패한 라벨을 다시 추천하지 않고 채울 수 있는 재료를 든다", () => {
-    const ctx: ToolContext = { project: createBlankProject() };
+    const ctx: ToolContext = { project: blankCombinedTownProject() };
     const result = runTool(ctx, "fill_region", { mapId: MAP_ID, rect: { x: 2, y: 2, w: 3, h: 3 }, material: "돌바닥" });
     expect(result.ok).toBe(false);
     expect(result.summary).not.toMatch(/비슷한 라벨[^:]*: "돌바닥"/u);
@@ -30,12 +34,13 @@ describe("면 채우기 재료 힌트", () => {
   });
 
   // qa-game mystery-3: 벽 재료로 fill_region 을 같은 인자로 11번 재시도했다 — 어느 도구로 갈지 알려 준다.
-  it("벽 재료는 build_wall·place_concept 로, 가구는 place_props 로 보낸다", () => {
-    const ctx: ToolContext = { project: createBlankProject() };
+  it("벽 재료는 build_wall·build_hand_interior_room 으로, 가구는 place_props 로 보낸다", () => {
+    const ctx: ToolContext = { project: blankCombinedTownProject() };
     const wall = runTool(ctx, "fill_region", { mapId: MAP_ID, rect: { x: 2, y: 2, w: 3, h: 3 }, material: "목골 석벽 집 벽 확장" });
     expect(wall.ok).toBe(false);
     expect(wall.summary).toContain("build_wall");
-    expect(wall.summary).toContain("place_concept");
+    // place_concept 는 레지스트리에서 빠졌다 — 실내 전체는 build_hand_interior_room 으로 보낸다(tileVocabulary.notFillableRoute).
+    expect(wall.summary).toContain("build_hand_interior_room");
     const table = runTool(ctx, "fill_region", { mapId: MAP_ID, rect: { x: 2, y: 2, w: 3, h: 3 }, material: "탁자(가로)" });
     expect(table.ok).toBe(false);
     expect(table.summary).toMatch(/place_props|build_wall/u);

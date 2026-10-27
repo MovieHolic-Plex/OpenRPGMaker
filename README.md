@@ -121,7 +121,7 @@ npm run dev              # dev server (http://localhost:9999)
 npm run build:packaged   # hosted / desktop renderer build
 npm run build:player     # standalone web-game player
 npm start -- --project-dir /path/to/project   # serve an existing SQLite project
-npm test                 # unit tests
+npm test                 # unit tests (GitHub CI; locally exits unless OPRN_LOCAL_TESTS=1)
 ```
 
 - Architecture, data and editor guides live in [`openwiki/`](openwiki/) — start with [`openwiki/quickstart.md`](openwiki/quickstart.md) and [`openwiki/PROJECT_WIKI.md`](openwiki/PROJECT_WIKI.md).

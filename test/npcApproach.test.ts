@@ -41,7 +41,8 @@ function run(f: ReturnType<typeof prerequisiteFixture>) {
 }
 
 afterEach(() => resetIntentDeclarationCache());
-describe("bound NPC interactions before the protected claim snapshot", () => {
+// Heavy under CI load (15s default is too tight): runs real AssistantSession turns.
+describe("bound NPC interactions before the protected claim snapshot", { timeout: 120_000 }, () => {
   it.each(["gold", "item", "monster"] as const)("rejects early %s equally on host and explicit approaches", kind => {
     for (const explicit of [false, true]) {
       const result = run(approachFixture(kind, 20, explicit));

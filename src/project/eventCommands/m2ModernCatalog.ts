@@ -184,6 +184,7 @@ const UI_SURFACE_OPTIONS: readonly M2CommandFieldOption[] = [
   { value: "hud", label: "HUD" },
   { value: "banner", label: "배너" },
   { value: "menuPrompt", label: "메뉴 프롬프트" },
+  { value: "objectiveChip", label: "현재 목표(계속 표시)" },
 ];
 
 const DEBUG_LEVEL_OPTIONS: readonly M2CommandFieldOption[] = [

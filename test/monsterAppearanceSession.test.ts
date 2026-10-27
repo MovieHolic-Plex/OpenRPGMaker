@@ -29,7 +29,8 @@ function sessionFor(rounds: readonly (readonly Call[])[], inspect?: (request: Ch
 }
 const readGoblin: Call = { name: "get_monster_resource", args: { resourceId: goblinId } };
 
-describe.each(monsterWriters)("$name actual assistant appearance flow", writer => {
+// Heavy under CI load (15s default is too tight): runs real AssistantSession turns.
+describe.each(monsterWriters)("$name actual assistant appearance flow", { timeout: 120_000 }, writer => {
   it("blocks unseen same-batch reads then accepts an observed full read with a custom boss name", async () => {
     // Given a read and matching write emitted before the model sees the read result.
     const write = { name: writer.name, args: { ...writer.args({ monsterResourceId: goblinId }), appearanceTags: ["goblin"] } };

@@ -24,6 +24,20 @@
   letter-spacing: 2px;
 }
 
+/* 방향키로 고른 글자. 눈에 보이는 칸은 그대로 두고, 알림만 화면 밖에 둔다. */
+.name-entry-announcement {
+  border: 0;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}
+
 .name-entry-bar {
   display: flex;
   gap: 4px;
@@ -280,6 +294,14 @@
   .name-entry-showcase.confirmed .name-entry-cell.filled {
     animation: none;
   }
+}
+
+/* 플레이어 「메뉴 움직임 줄이기」는 운영체제 설정과 별개다. 같은 연출을 끈다. */
+.name-entry-overlay[data-reduced-motion="true"] .name-entry-showcase-stars,
+.name-entry-overlay[data-reduced-motion="true"] .name-entry-showcase-ring,
+.name-entry-overlay[data-reduced-motion="true"].confirmed .name-entry-showcase-burst,
+.name-entry-overlay[data-reduced-motion="true"].confirmed .name-entry-cell.filled {
+  animation: none;
 }
 
 /* 문자표 말고는 줄어들지 않는다(스크롤은 문자표만). */

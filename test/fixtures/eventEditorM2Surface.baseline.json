@@ -19938,7 +19938,8 @@
     "toast",
     "hud",
     "banner",
-    "menuPrompt"
+    "menuPrompt",
+    "objectiveChip"
    ]
   },
   "labels": [
@@ -19950,7 +19951,7 @@
    "div": 8,
    "input": 1,
    "label": 3,
-   "option": 4,
+   "option": 5,
    "select": 1,
    "textarea": 1
   },
@@ -20517,6 +20518,8 @@
    "m2-command-eventId-record-select",
    "m2-command-eventId-record-selected-name",
    "m2-command-preset-option-select",
+   "m2-command-sizePercent-input",
+   "m2-command-sizePercent-note",
    "m2-command-target-option-select",
    "m2-command-wait-checkbox",
    "m2-command-x-input",
@@ -20537,6 +20540,7 @@
    "m2-command-durationMs-input": "input[number]{}",
    "m2-command-eventId-record-select": "select{hidden}",
    "m2-command-preset-option-select": "select{}",
+   "m2-command-sizePercent-input": "input[number]{}",
    "m2-command-target-option-select": "select{}",
    "m2-command-wait-checkbox": "input[checkbox]{}",
    "m2-command-x-input": "input[number]{hidden}",
@@ -20572,12 +20576,13 @@
    "시간(ms)",
    "어디에",
    "이벤트(특정 이벤트일 때)",
-   "종류"
+   "종류",
+   "크기(%)"
   ],
   "tags": {
-   "div": 16,
-   "input": 4,
-   "label": 7,
+   "div": 19,
+   "input": 5,
+   "label": 8,
    "option": 15,
    "select": 3
   },
@@ -20589,6 +20594,8 @@
    "m2-command-eventId-record-select": "select",
    "m2-command-eventId-record-selected-name": "div",
    "m2-command-preset-option-select": "select",
+   "m2-command-sizePercent-input": "input",
+   "m2-command-sizePercent-note": "div",
    "m2-command-target-option-select": "select",
    "m2-command-wait-checkbox": "input",
    "m2-command-x-input": "input",
@@ -20596,10 +20603,11 @@
   },
   "texts": {
    "event-command-edit-summary": "기타 명령",
-   "m2-command-durationMs-note": "적용 범위 #~#"
+   "m2-command-durationMs-note": "적용 범위 #~#",
+   "m2-command-sizePercent-note": "적용 범위 #~#"
   },
-  "testidCount": 11,
-  "controlCount": 7
+  "testidCount": 13,
+  "controlCount": 8
  },
  "m2-225-sprite-look": {
   "testids": [
@@ -20824,5 +20832,78 @@
   },
   "testidCount": 16,
   "controlCount": 10
+ },
+ "m2-227-journal-line": {
+  "testids": [
+   "event-command-edit-summary",
+   "m2-command-action-option-select",
+   "m2-command-body-m2-227-journal-line",
+   "m2-command-date-input",
+   "m2-command-learnActorId-input",
+   "m2-command-learnSkillId-input",
+   "m2-command-lineId-input",
+   "m2-command-resultSwitchId-input",
+   "m2-command-text-textarea",
+   "m2-command-writer-input"
+  ],
+  "classes": [
+   "cream-command-form",
+   "cream-command-form-head",
+   "empty-hint",
+   "field",
+   "m2-command-body"
+  ],
+  "controls": {
+   "m2-command-action-option-select": "select{}",
+   "m2-command-date-input": "input[text]{}",
+   "m2-command-learnActorId-input": "input[text]{}",
+   "m2-command-learnSkillId-input": "input[text]{}",
+   "m2-command-lineId-input": "input[text]{}",
+   "m2-command-resultSwitchId-input": "input[text]{}",
+   "m2-command-text-textarea": "textarea{}",
+   "m2-command-writer-input": "input[text]{}"
+  },
+  "selectOptions": {
+   "m2-command-action-option-select": [
+    "write",
+    "erase",
+    "reread"
+   ]
+  },
+  "labels": [
+   "날짜 칸",
+   "내용",
+   "다시 읽을 때 기술을 배울 배우",
+   "다시 읽을 때 배울 기술",
+   "동작",
+   "실제로 바뀌면 켤 스위치",
+   "줄 id(지우기·다시 읽기가 가리킨다, 쓰기는 비우면 자동)",
+   "필체(일지 필체 id 또는 이름)"
+  ],
+  "tags": {
+   "div": 13,
+   "input": 6,
+   "label": 8,
+   "option": 3,
+   "select": 1,
+   "textarea": 1
+  },
+  "tagByTestid": {
+   "event-command-edit-summary": "div",
+   "m2-command-action-option-select": "select",
+   "m2-command-body-m2-227-journal-line": "div",
+   "m2-command-date-input": "input",
+   "m2-command-learnActorId-input": "input",
+   "m2-command-learnSkillId-input": "input",
+   "m2-command-lineId-input": "input",
+   "m2-command-resultSwitchId-input": "input",
+   "m2-command-text-textarea": "textarea",
+   "m2-command-writer-input": "input"
+  },
+  "texts": {
+   "event-command-edit-summary": "기타 명령"
+  },
+  "testidCount": 10,
+  "controlCount": 8
  }
 }

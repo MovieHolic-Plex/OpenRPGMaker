@@ -1,3 +1,4 @@
+import { formatEditorDate } from "@/i18n";
 import type { ProjectBackupEntry } from "@/project/persistence/backupTypes";
 import { el } from "@/util/dom";
 import { isTopModal, registerModal, unregisterModal } from "./modalStack";
@@ -19,7 +20,7 @@ export function showBackupRestoreDialog(backups: readonly ProjectBackupEntry[], 
       dataset: { testid: "backup-restore-select" },
       children: backups.map((backup) => el("option", {
         attrs: { value: backup.id },
-        text: `${new Date(backup.createdAt).toLocaleString("ko-KR")} · ${backup.title} · 저장 ${backup.revision} · 소재 ${backup.assetCount}개`,
+        text: `${formatEditorDate(new Date(backup.createdAt))} · ${backup.title} · 저장 ${backup.revision} · 소재 ${backup.assetCount}개`,
       })),
     });
     const cancel = el("button", {

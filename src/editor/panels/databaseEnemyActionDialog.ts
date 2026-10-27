@@ -80,12 +80,12 @@ export function openActionDialog(record: EnemyRecord, index: number, action: Ene
     panel("행동 후 스위치 OFF", [switchOff]),
     panel("행동", [modeHost]),
   ], [
-    { label: "OK", testid: "db-enemy-action-ok", action: () => {
+    { label: "확인", testid: "db-enemy-action-ok", primary: true, action: () => {
       syncAction();
       updateDatabaseRecord("enemies", record.id, { actions: replaceAction(currentEnemy(record).actions, index, nextAction) });
       rerender();
     } },
-    { label: "Cancel", testid: "db-enemy-action-cancel" },
+    { label: "취소", testid: "db-enemy-action-cancel" },
   ], opener);
   // openDialog closes after its action callback; intercept invalid confirmation
   // before that shared click handler without changing other dialog contracts.

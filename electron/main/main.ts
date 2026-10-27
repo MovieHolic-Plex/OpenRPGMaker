@@ -11,16 +11,18 @@ import { registerIpcHandlers } from "./ipc";
 import { registerAssetBrowser } from "./assetBrowser";
 import { acceptStoreDeepLink, registerAssetStore } from "./assetStore";
 import { findStoreDeepLinkArg } from "../../src/assetStore/deepLink";
-import { electronUserArgIndex, inspectCliProjectArgs, inspectCurrentCliProject } from "./cliProject";
+import { electronUserArgIndex, inspectCliProjectArgs, inspectCurrentCliProject, projectDirFromOpenPath } from "./cliProject";
+import { decideWindowClose, nextQuitHeld, shouldRetryQuit } from "./closeFlow";
 import { chosenDirectory, directoryDialogParent, directoryDialogProperties, pickAppWindow } from "./directoryDialog";
 import { registerAppProtocol, registerAssetProtocol } from "./protocols";
 import { captureLastViewBeforeClose, forgetLastViewWindow, markEditorLeft, markEditorSettled, readLastView, scheduleLastViewAfterSave } from "./lastView";
+import { firstShowSteps } from "./windowShow";
 import { SessionConsumerClosed, createProjectSessionRegistry } from "./sessions";
 import { startCompanionServer, type CompanionServer } from "./companion";
 import { describeRecentProjects, listRecentTeams, prepareNewProjectDir, recentProjectCoverSource, rememberRecentProject, rememberRecentTeam, suggestProjectDir, writeRecentProjectCover } from "./recent";
 import { openTeamWindow } from "./teamWindow";
 import type { Splash } from "./splash";
-import { rendererDirectory, windowIconPath, type BootContext, type SecondInstanceLaunch } from "./bootContext";
+import { peekPendingProjectDir, rendererDirectory, takePendingOpenFiles, windowIconPath, type BootContext, type SecondInstanceLaunch } from "./bootContext";
 import type { JoinTeamResult } from "../shared/start";
 import { TEAM_COLLAB_ENABLED } from "../shared/teamCollab";
 
@@ -58,13 +60,28 @@ const TEAM_HOST_PORTS = [9840, 9841, 9842, 9843, 9844, 9845, 9846, 9847, 9848, 9
 
 const closing = new Set<number>();
 const closeTimers = new Map<number, ReturnType<typeof setTimeout>>();
+/**
+ * 사용자가 Quit 을 요청했다. 프로젝트 창이 저장 때문에 close 를 막으면 Electron 이 종료를 취소하므로
+ * (app.quit 문서), 그 저장이 끝난 뒤에 다시 건다. 마지막 창을 그냥 닫는 것과는 다르다 — macOS 는 그때 앱이 남는다.
+ */
+let quitRequested = false;
+/** 열린 프로젝트의 저장이 Quit 을 한 번 막았다. 막을 일이 없었으면(시작 화면) 다시 종료하지 않는다. */
+let quitHeld = false;
 
 function destroyWindow(window: BrowserWindow): void {
+  if (window.isDestroyed()) return;
   const id = window.webContents.id;
   const timer = closeTimers.get(id);
   if (timer) clearTimeout(timer);
   closeTimers.delete(id);
-  if (!window.isDestroyed()) window.destroy();
+  window.destroy();
+}
+
+function retryQuitIfFlushHeldIt(): void {
+  const pending = (): boolean => shouldRetryQuit({ quitRequested, quitHeld, windowsStillFlushing: closing.size });
+  if (!pending()) return;
+  // 같은 종료에서 다른 창의 close 가 이 핸들러보다 늦게 올 수 있다. 한 틱 뒤에, 아직 저장 중인 창이 없을 때만 다시 건다.
+  setTimeout(() => { if (pending()) app.quit(); }, 0);
 }
 
 /**
@@ -75,13 +92,18 @@ function destroyWindow(window: BrowserWindow): void {
 const CLOSE_FLUSH_TIMEOUT_MS = 60_000;
 
 // 닫기는 flush → ack → destroy 다(설계서 7.3). 렌더러가 상한 안에 flush-done 을 부르지 않으면 강제로 닫는다.
+// 저장을 기다리는 동안의 두 번째 close 는 막는다(closeFlow.ts). 막지 않으면 연타·Quit 이 저장을 끊는다.
 function installCloseFlow(window: BrowserWindow): void {
   const id = window.webContents.id;
   window.on("close", (event) => {
-    if (closing.has(id)) return;
     const session = sessions.get(id);
-    if (!session) return;
+    const decision = decideWindowClose(closing.has(id), session !== null);
+    if (decision === "allow") return;
     event.preventDefault();
+    quitHeld = nextQuitHeld(quitHeld, quitRequested, decision);
+    if (decision === "hold") return;
+    // flush 는 세션이 있을 때만 나온다. 없으면 닫기를 막아 둔 채 두면 창이 남지 않게 바로 없앤다.
+    if (session === null) { destroyWindow(window); return; }
     closing.add(id);
     window.webContents.send(OPRN_CHANNELS.lifecycleFlushBeforeClose);
     closeTimers.set(id, setTimeout(() => destroyWindow(window), CLOSE_FLUSH_TIMEOUT_MS));
@@ -96,6 +118,7 @@ function installCloseFlow(window: BrowserWindow): void {
     if (timer) clearTimeout(timer);
     closeTimers.delete(id);
     sessions.close(id);
+    retryQuitIfFlushHeldIt();
   });
 }
 
@@ -123,8 +146,21 @@ const START_READY_FALLBACK_MS = 6_000;
 const appWindows = new Set<BrowserWindow>();
 /** 파일 메뉴가 스플래시·팀 창에 붙지 않도록, 마지막으로 앞에 있던 앱 창. */
 let lastAppWindow: BrowserWindow | null = null;
-/** 명령줄로 이 창에 연 프로젝트. QA 의 OPRN_OPEN_PROJECT_DIR 와 따로 둔다(그 변수는 잠금을 끈다). */
+/** 명령줄·macOS open-file 로 이 창에 연 프로젝트. QA 의 OPRN_OPEN_PROJECT_DIR 와 따로 둔다(그 변수는 잠금을 끈다). */
 const explicitProjectDir = new WeakMap<BrowserWindow, string>();
+/** 한 번이라도 처음 보이기(전체화면)를 탄 창. 사용자가 전체화면에서 나온 뒤 다시 앞으로 가져올 때 전체화면을 켜지 않는다. */
+const presentedWindows = new WeakSet<BrowserWindow>();
+
+/** 숨겨 둔 창을 처음 보인다. 순서는 windowShow.ts — 맥은 보인 뒤 전체화면, 그 밖은 전체화면 뒤 보이기. */
+function presentAppWindow(window: BrowserWindow): void {
+  if (window.isDestroyed() || presentedWindows.has(window)) return;
+  presentedWindows.add(window);
+  for (const step of firstShowSteps(process.platform)) {
+    if (window.isDestroyed()) return;
+    if (step === "fullscreen") window.setFullScreen(true);
+    else window.show();
+  }
+}
 
 function opensStartScreen(projectDir: string | undefined): boolean {
   return process.env.OPRN_SMOKE_PAGE === undefined && projectDir === undefined && process.env.OPRN_OPEN_PROJECT_DIR === undefined;
@@ -191,11 +227,12 @@ function createWindow(options: { readonly splash?: () => Splash | undefined; rea
     if (shown || failed || window.isDestroyed()) return;
     shown = true;
     revealOnStartReady.delete(id);
-    // 맥은 숨은 창에 전체화면을 걸면 무시될 수 있어 보인 뒤에 건다. 그 밖은 전체화면을 건 뒤 보여 크기 튐이 없다.
-    if (process.platform === "darwin") { window.show(); window.setFullScreen(true); }
-    else { window.setFullScreen(true); window.show(); }
-    mainMark("windowShown");
-    if (process.env.OPRN_STARTUP_TRACE === "1") process.stderr.write(`[startup] window shown (${reason})\n`);
+    // 두 번째 실행·open-file 이 이미 이 창을 앞으로 가져왔으면 전체화면을 다시 켜지 않는다.
+    if (!presentedWindows.has(window)) {
+      presentAppWindow(window);
+      mainMark("windowShown");
+      if (process.env.OPRN_STARTUP_TRACE === "1") process.stderr.write(`[startup] window shown (${reason})\n`);
+    }
     splash()?.close();
   };
   const fail = (detail: string): void => {
@@ -337,7 +374,11 @@ function dismissSplash(): void {
 function focusAppWindow(window: BrowserWindow): void {
   if (window.isDestroyed()) return;
   if (window.isMinimized()) window.restore();
-  window.show();
+  // 스플래시 뒤에 숨은 창은 아직 전체화면이 아니다. 그냥 show 하면 창 모드로 뜨고, 6초 뒤 폴백이 전체화면으로 튀긴다.
+  if (!presentedWindows.has(window)) {
+    presentAppWindow(window);
+    mainMark("windowShown");
+  } else window.show();
   window.focus();
 }
 
@@ -363,12 +404,12 @@ function idleStartWindow(): BrowserWindow | null {
   return null;
 }
 
-/** 두 번째 실행이 넘긴 프로젝트. 같은 폴더가 이미 있으면 그 창을 앞으로 가져온다. */
+/** 두 번째 실행·macOS open-file 이 넘긴 프로젝트. 같은 폴더가 이미 있으면 그 창을 앞으로 가져온다. */
 async function openProjectFromCli(projectDir: string): Promise<void> {
   const resolved = safeRealpath(projectDir);
   const existing = windowAlreadyOpening(resolved);
   if (existing) { dismissSplash(); focusAppWindow(existing); return; }
-  console.log(`[project] 명령줄 폴더를 엽니다: ${resolved}`);
+  console.log(`[project] 폴더를 엽니다: ${resolved}`);
   dismissSplash();
   const idle = idleStartWindow();
   if (idle) {
@@ -599,9 +640,17 @@ export async function startApp(boot: BootContext): Promise<void> {
   activeSplash = splash;
   const cli = inspectCurrentCliProject();
   warnIgnoredCliPaths(cli.ignored);
+  // open-file 이 ready 전에 왔으면 명령줄과 같이 첫 창이 그 프로젝트를 연다. 스플래시를 기다리면 편집기 신호가 없어 6초 숨는다.
+  const openedAtBoot = cli.dir ?? peekPendingProjectDir();
   if (cli.dir) console.log(`[project] 명령줄 폴더를 엽니다: ${cli.dir}`);
+  else if (openedAtBoot) console.log(`[project] 연 폴더를 엽니다: ${openedAtBoot}`);
   mainMark("createWindow");
-  const firstWindow = createWindow({ splash: () => splash, deferLoad: true, projectDir: cli.dir ?? undefined });
+  const firstWindow = createWindow({
+    splash: openedAtBoot ? undefined : () => splash,
+    deferLoad: true,
+    projectDir: openedAtBoot ?? undefined,
+  });
+  if (openedAtBoot) dismissSplash();
   mainMark("windowCreated");
   boot.setRetry(() => { if (!firstWindow.isDestroyed()) loadWindowContent(firstWindow); });
   const workerBinName = process.platform === "win32" ? "oh-my-pi-worker.exe" : "oh-my-pi-worker";
@@ -635,7 +684,9 @@ export async function startApp(boot: BootContext): Promise<void> {
   mainMark("windowLoading");
   ipcMain.handle(OPRN_CHANNELS.lifecycleFlushDone, (event) => {
     const window = BrowserWindow.fromWebContents(event.sender);
-    if (window) destroyWindow(window);
+    // 닫기 저장을 걸어 둔 창만 없앤다. 저장을 요청하지 않았는데 오면 편집 중인 창을 닫지 않는다.
+    if (!window || window.isDestroyed() || !closing.has(event.sender.id)) return false;
+    destroyWindow(window);
     return true;
   });
   ipcMain.on(OPRN_CHANNELS.resumeEditorReady, (event) => {
@@ -768,6 +819,9 @@ export async function startApp(boot: BootContext): Promise<void> {
   mainMark("handlersRegistered");
   // 첫 실행 인자(Windows·Linux)와 본체를 읽기 전에 온 링크·두 번째 실행을 이제 처리한다. 이후 것은 바로 받는다.
   // 두 번째 실행: 프로젝트 폴더면 그 폴더를 연다. 링크만 있으면 창을 더 열지 않는다. 둘 다 없으면 새 시작 화면.
+  // macOS 는 폴더를 second-instance argv 가 아니라 open-file 로 보낸다. 둘은 순서가 정해져 있지 않아,
+  // 경로 없는 두 번째 실행은 open-file 이 같은 폴더를 여는 동안이면 시작 화면을 더 만들지 않는다.
+  let lastOpenFileAt = 0;
   const onSecondInstance = (launch: SecondInstanceLaunch): void => {
     const link = findStoreDeepLinkArg(launch.argv);
     if (link) acceptStoreDeepLink(link);
@@ -783,16 +837,40 @@ export async function startApp(boot: BootContext): Promise<void> {
       void openProjectFromCli(found.dir);
       return;
     }
-    if (!link) createWindow();
+    if (!link) {
+      if (process.platform === "darwin") {
+        setTimeout(() => {
+          if (quitRequested || Date.now() - lastOpenFileAt < 1000) return;
+          createWindow();
+        }, 200);
+        return;
+      }
+      createWindow();
+    }
   };
   const early = boot.attachLinks(acceptStoreDeepLink, onSecondInstance);
   const initialLink = findStoreDeepLinkArg(process.argv);
   for (const link of [...(initialLink ? [initialLink] : []), ...early.links]) acceptStoreDeepLink(link);
   for (const launch of early.secondInstances) onSecondInstance(launch);
+  // macOS open-file. 첫 창이 이미 이 폴더를 열었으면 다시 열지 않는다(숨은 창을 창 모드로 띄우지 않게).
+  const acceptOpenedPath = (filePath: string): void => {
+    if (process.env.OPRN_SMOKE_PAGE !== undefined || process.env.OPRN_OPEN_PROJECT_DIR !== undefined) return;
+    const dir = projectDirFromOpenPath(filePath);
+    if (!dir) {
+      console.warn(`[project] 연 항목을 프로젝트로 열지 않았습니다 (project.sqlite 가 있는 폴더가 아님): ${filePath}`);
+      return;
+    }
+    lastOpenFileAt = Date.now();
+    if (openedAtBoot && safeRealpath(dir) === safeRealpath(openedAtBoot)) return;
+    void openProjectFromCli(dir);
+  };
+  for (const filePath of takePendingOpenFiles(acceptOpenedPath)) acceptOpenedPath(filePath);
   app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
   });
 }
+
+app.on("before-quit", () => { quitRequested = true; });
 
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") app.quit();

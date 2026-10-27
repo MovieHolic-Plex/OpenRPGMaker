@@ -168,6 +168,7 @@ import {
   stepGen1Confusion,
   gen1EffectChanceSucceeds,
   gen1MajorStatusBlockedByType,
+  gen1StatusMoveBlockedByTargetType,
   gen1ParalyzedSpeed,
   readGen1MajorStatus,
   stepGen1MajorStatus,
@@ -864,20 +865,33 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     const stateRecords = gen1StateRecords();
     for (const effect of effects) {
       const stateRecord = stateRecords.find((state) => state.id === effect.stateId);
+      const moveType = move ? gen1CanonicalTypeForId(options.project, move.type) : undefined;
+      const targetCanonicalTypes = battlerTypes(options.project, target).flatMap((typeId) => {
+        const canonical = gen1CanonicalTypeForId(options.project, typeId);
+        return canonical ? [canonical] : [];
+      });
       if (
         effect.operation === "add"
         && stateRecord?.gen1MajorStatus
         && move
         && gen1MajorStatusBlockedByType(
           stateRecord.gen1MajorStatus,
-          gen1CanonicalTypeForId(options.project, move.type),
-          battlerTypes(options.project, target).flatMap((typeId) => {
-            const canonical = gen1CanonicalTypeForId(options.project, typeId);
-            return canonical ? [canonical] : [];
-          }),
+          moveType,
+          targetCanonicalTypes,
           move.kind,
         )
-      ) continue;
+      ) {
+        // 상태 기술이 타입 때문에 막히면 그 이유를 말한다. 이미 다른 주요 상태가 있어도
+        // 「이미 마비 상태다」로 읽히면 기술이 그 상태 때문에 막힌 것처럼 보인다.
+        if (move.kind === "status") {
+          const immune = gen1StatusMoveBlockedByTargetType(stateRecord.gen1MajorStatus, moveType, targetCanonicalTypes);
+          if (immune) {
+            const label = typeName(gen1ElementIdForCanonical(options.project, immune));
+            recordSpecial(user, target, `${withJosa(target.name, "은/는")} ${label} 타입이라 ${stateName(effect.stateId)} 상태에 걸리지 않는다!`);
+          }
+        }
+        continue;
+      }
       if (!gen1EffectChanceSucceeds(effect.chance, nextGen1Byte)) continue;
       if (effect.operation === "remove") {
         if (!target.stateIds.includes(effect.stateId)) continue;
@@ -4634,7 +4648,10 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     if (applied.hit && effectKind === "damage" && applied.amount > 0 && !usesMagicalDefense(options.project, skill?.elementId)) {
       applyContactAbility(user, target);
     }
-    if (applied.hit && (effectKind !== "damage" || applied.amount > 0)) {
+    // 피해로 쓰러뜨린 대상에게는 부가 상태·능력 단계를 걸지 않는다 — rm2k3 경로와 같은 계약.
+    // 쓰러진 몬스터에게 「화상에 걸렸다!」가 이어지던 결함(amount 는 0보다 커도 HP 는 이미 0).
+    const livingStatusTarget = effectKind !== "damage" || (applied.amount > 0 && target.hp > 0);
+    if (applied.hit && livingStatusTarget) {
       const stateEffects = defrosted
         ? skill?.stateEffects?.filter((stateEffect) => {
             const state = options.project.database.states.find((record) => record.id === stateEffect.stateId);
@@ -4646,7 +4663,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         kind: effectKind === "damage" ? "damage" : "status",
       });
     }
-    if (applied.hit && (effectKind !== "damage" || applied.amount > 0)) applyStatStageEffects(user, target, skill);
+    if (applied.hit && livingStatusTarget) applyStatStageEffects(user, target, skill);
     if (applied.hit && skill?.effect?.kind === "switch" && skill.effect.switchId) {
       battleEventState.switches[skill.effect.switchId] = true;
     }

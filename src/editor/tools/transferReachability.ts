@@ -72,6 +72,7 @@ export function largestWalkGroup(project: Project, map: GameMap, blocked: Readon
   let best: number[] = [];
   const width = map.width;
   const total = map.width * map.height;
+  const jumps = playerJumpLinks(project, map);
   for (let start = 0; start < total; start += 1) {
     if (visited.has(start)) continue;
     const sx = start % width;
@@ -95,6 +96,14 @@ export function largestWalkGroup(project: Project, map: GameMap, blocked: Readon
         visited.add(key);
         group.push(key);
         queue.push({ x: nx, y: ny });
+      }
+      // 틈 도약 이벤트가 잇는 건너편도 같은 바닥이다(walkableFromAnchors 와 같은 규칙).
+      for (const to of jumps.get(cell.y * width + cell.x) ?? []) {
+        const tx = to % width, ty = Math.floor(to / width);
+        if (visited.has(to) || blocked.has(`${tx},${ty}`)) continue;
+        visited.add(to);
+        group.push(to);
+        queue.push({ x: tx, y: ty });
       }
     }
     if (group.length > best.length) best = group;
@@ -191,6 +200,7 @@ export function walkableFromAnchors(project: Project, map: GameMap): Set<number>
     seen.add(key);
     queue.push(anchor);
   }
+  const jumps = playerJumpLinks(project, map);
   for (let i = 0; i < queue.length; i += 1) {
     const cell = queue[i]!;
     for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
@@ -202,8 +212,42 @@ export function walkableFromAnchors(project: Project, map: GameMap): Set<number>
       seen.add(key);
       queue.push({ x, y });
     }
+    // 이벤트가 주인공을 뛰어넘기게 하는 칸(틈 도약 — place_field_obstacle gap 등)도 길이다: 그 칸에서 착지 칸으로.
+    for (const to of jumps.get(cell.y * map.width + cell.x) ?? []) {
+      if (seen.has(to)) continue;
+      seen.add(to);
+      queue.push({ x: to % map.width, y: Math.floor(to / map.width) });
+    }
   }
   return seen;
+}
+
+/**
+ * 이벤트 칸 → 그 이벤트가 주인공을 옮겨 놓는 착지 칸(moveEvent @player 의 jump 합).
+ * 틈 도약(place_field_obstacle kind gap)처럼 걸어서는 끊긴 길을 이벤트가 잇는 곳 — 이것을 모르면 틈 너머 출구가
+ * 「걸어 닿지 않는다」로 거절됐다(2026-10-26 설원 길 끝 → 서리나루).
+ */
+function playerJumpLinks(project: Project, map: GameMap): Map<number, number[]> {
+  const out = new Map<number, number[]>();
+  const visit = (node: unknown, from: { x: number; y: number }): void => {
+    if (Array.isArray(node)) { for (const n of node) visit(n, from); return; }
+    if (!node || typeof node !== "object") return;
+    const rec = node as Record<string, unknown>;
+    if (rec.kind === "moveEvent" && rec.eventId === "@player") {
+      const moves = ((rec.route as { moves?: unknown } | undefined)?.moves ?? []) as { kind?: string; dx?: number; dy?: number }[];
+      let dx = 0, dy = 0, jumped = false;
+      for (const m of moves) if (m.kind === "jump") { dx += Number(m.dx ?? 0); dy += Number(m.dy ?? 0); jumped = true; }
+      const x = from.x + dx, y = from.y + dy;
+      if (jumped && (dx || dy) && inMapBounds(map, x, y) && isPassable(project, map, x, y)) {
+        const k = from.y * map.width + from.x;
+        out.set(k, [...(out.get(k) ?? []), y * map.width + x]);
+      }
+      return;
+    }
+    for (const v of Object.values(rec)) if (v && typeof v === "object") visit(v, from);
+  };
+  for (const ev of map.events ?? []) for (const page of ev.pages ?? []) visit(page.commands, { x: ev.x, y: ev.y });
+  return out;
 }
 
 const CARDINAL_STEPS = [[1, 0], [-1, 0], [0, 1], [0, -1]] as const;

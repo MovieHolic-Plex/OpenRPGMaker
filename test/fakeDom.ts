@@ -92,6 +92,19 @@ export class FakeNode {
     return this.childNodes[0] ?? null;
   }
 
+  /** Node.nextSibling/previousSibling — quickBuildPanel 이 `insertBefore(x, cards.nextSibling)` 로 끼운다. */
+  get nextSibling(): FakeNode | null {
+    const siblings = this.parentNode?.childNodes;
+    if (!siblings) return null;
+    return siblings[siblings.indexOf(this) + 1] ?? null;
+  }
+
+  get previousSibling(): FakeNode | null {
+    const siblings = this.parentNode?.childNodes;
+    if (!siblings) return null;
+    return siblings[siblings.indexOf(this) - 1] ?? null;
+  }
+
   get textContent(): string {
     return `${this.ownText}${this.childNodes.map((child) => child.textContent).join("")}`;
   }

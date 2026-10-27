@@ -18,6 +18,8 @@ import { unsafeSpawnLines } from "@/project/chaserSpawnSafety";
 import { npcMoveDurationMs, npcPageMoveIntervalMs, PLAYER_WALK_STEP_MS } from "@/project/characterMotion";
 import { fieldApproachRecipe } from "@/project/fieldApproachStyle";
 import { projectCanLoseHp, resolvedHudWidgets } from "@/project/fieldHud";
+import { gameHasCombat } from "@/project/combatPresence";
+import { FACTORY_HERO_ARMS } from "./genreDefaults";
 
 type Obj = Record<string, unknown>;
 const obj = (v: unknown): Obj | undefined => (v && typeof v === "object" && !Array.isArray(v) ? (v as Obj) : undefined);
@@ -845,6 +847,13 @@ export function gameContentProblems(before: Project, after: Project, task: strin
   return problems;
 }
 
+/** 장비 칸에서 사라진 것이 모두 공장 기본 장비인가. */
+function onlyFactoryGearRemoved(before: unknown, after: unknown): boolean {
+  const b = (before ?? {}) as Record<string, unknown>, a = (after ?? {}) as Record<string, unknown>;
+  const gone = Object.keys(b).filter((slot) => b[slot] && a[slot] !== b[slot]);
+  return gone.length > 0 && gone.every((slot) => FACTORY_HERO_ARMS[slot] === b[slot] && !a[slot]);
+}
+
 /** 값의 크기(배열 길이·객체의 빈 아닌 칸 수·빈 아닌 값 1). */
 function fill(v: unknown): number {
   if (Array.isArray(v)) return v.length;
@@ -866,7 +875,9 @@ export function battleDataEmptied(before: Project, after: Project, task: string)
     for (const r of ((after.database as unknown as Obj)[section] as Obj[] | undefined) ?? []) {
       const prev = old.get(String(r.id));
       if (!prev) continue;
-      const lost = BATTLE_DATA[section].filter((k) => fill(prev[k]) > 0 && fill(r[k]) < fill(prev[k]));
+      // 전투 없는 게임에서 공장 기본 장비(검·방패·갑옷…)만 뺀 것은 장르 기본값이다 — 「되돌려라」 하지 않는다(J88: 그 말에 조수가 검·방패를 다시 넣었다).
+      const lost = BATTLE_DATA[section].filter((k) => fill(prev[k]) > 0 && fill(r[k]) < fill(prev[k]))
+        .filter((k) => !(section === "actors" && k === "initialEquipment" && !gameHasCombat(after) && onlyFactoryGearRemoved(prev[k], r[k])));
       if (!lost.length) continue;
       out.push(`[게임 검사 부작용] 기존 ${section === "actors" ? "배우" : "직업"} 「${String(r.name ?? r.id)}」의 전투 데이터(${lost.join(",")})를 비웠다 — 요청은 그 데이터를 지우라는 것이 아니다. 메뉴·화면에서 숨기는 것은 데이터 지우기가 아니다: 원래 값으로 되돌리고(${section === "actors" ? "upsert_actor" : "upsert_class"}), 메뉴 항목은 configure_field_menu{preset:'story'} 로, 체력 표시는 set_field_hud{off:true} 로 뺀다.`);
     }

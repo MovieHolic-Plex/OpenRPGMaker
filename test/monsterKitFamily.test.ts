@@ -10,6 +10,7 @@ import { applyGenrePreset } from "@/project/genrePresets";
 import { tilesetFamily } from "@/project/tilesetFamily";
 import { getTool } from "@/editor/tools/toolRegistry";
 import { removedMapIds } from "@/ai/approvalPolicy";
+import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 
 beforeEach(() => resetMapEditHistory());
 
@@ -54,7 +55,8 @@ describe("몬스터 칩셋 계열", () => {
   });
 
   it("폐기 EasyRPG 칩셋 거부는 같은 계열 몬스터 시트를 대안으로 알려 준다", () => {
-    const ctx: ToolContext = { project: monsterProject(), currentMapId: "map_blank_start", assistantRun: true };
+    // 거부 경로는 폐기 칩셋 정의를 아직 들고 있는 옛 저장본에서 탄다 — 정리 뒤 새 프로젝트에는 그 정의가 없어 「타일셋 없음」으로 먼저 끝난다.
+    const ctx: ToolContext = { project: withRetiredEasyRpgTilesets(monsterProject()), currentMapId: "map_blank_start", assistantRun: true };
     const result = runTool(ctx, "create_map", { id: "map_cave", name: "동굴", width: 20, height: 15, tilesetId: "easyrpg_chipset_dungeon" }, { dryRun: false });
     expect(result.ok).toBe(false);
     expect(result.issues?.[0]?.message).toContain("monster_dungeon");

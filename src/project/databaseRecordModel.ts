@@ -3,7 +3,7 @@ import { normalizeChargeBreak, normalizeFixedDamage, normalizeMultiHit } from "@
 import { normalizeShinyRate } from "@/project/monsterIdentity";
 import { CHARACTER_MOTION_STYLES } from "@/battle/characterMotion";
 import { normalizeHeldItemEffect } from "@/battle/heldItems";
-import { normalizeRepelSteps } from "@/project/encounterGuard";
+import { ESCAPE_GRACE_STEPS_MAX, normalizeRepelSteps } from "@/project/encounterGuard";
 import { normalizeBattleGimmick } from "@/battle/battleGimmickRules";
 import { normalizeGallerySettings } from "./gallery";
 import { normalizeBattleAura } from "@/assets/battleStateAuras";
@@ -378,6 +378,11 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
   { const boxNames = normalizeMonsterBoxNames(system.monsterBoxNames); if (boxNames) records.monsterBoxNames = boxNames; }
   if (fonts) records.fonts = fonts;
   if (system.monsterBattleParty !== undefined) records.monsterBattleParty = system.monsterBattleParty === true;
+  // 도망 뒤 무적 걸음. 생략은 장르 기본(몬스터 파티 4, 그 밖 0)이고, 0 은 «끔»이라 반드시 남긴다.
+  // 화이트리스트라 여기 없으면 저장/로드 1회 왕복에 사라지고 몬스터 게임이 다시 4걸음으로 돌아간다.
+  if (typeof system.escapeGraceSteps === "number" && Number.isFinite(system.escapeGraceSteps)) {
+    records.escapeGraceSteps = clampInteger(system.escapeGraceSteps, 0, ESCAPE_GRACE_STEPS_MAX);
+  }
   // 색이 다른 개체 확률 — 화이트리스트라 여기 없으면 저장/로드 1회 왕복에 사라진다.
   { const shinyRate = normalizeShinyRate(system.shinyRate); if (shinyRate !== undefined) records.shinyRate = shinyRate; }
   if (system.giftSystem !== undefined) records.giftSystem = system.giftSystem === true;

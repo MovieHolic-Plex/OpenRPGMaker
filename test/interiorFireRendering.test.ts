@@ -4,9 +4,11 @@ import { startSession } from "@/project/session";
 import { store } from "@/project/store";
 import { renderTiles } from "@/player/playSceneMapRuntime";
 import { mockSprite, mockTileImage } from "./runtimeEventPageFixtures";
+import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 
 for (const layer of ["lower", "upper"] as const) it(`animates interior fire on the ${layer} layer but leaves the cold hearth static`, () => {
-  const project = createBlankProject();
+  // 불 타일 124(폭포 띠 애니)·식은 화덕 463 은 EasyRPG 실내 칩셋 번호다 — 옛 저장본이 들고 있는 그 정의를 되살린다.
+  const project = withRetiredEasyRpgTilesets(createBlankProject());
   const map = project.maps[project.startMapId];
   if (!map) throw new Error("Map missing");
   map.tilesetId = "easyrpg_chipset_interior";

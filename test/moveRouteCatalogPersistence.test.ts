@@ -71,7 +71,8 @@ function catalogCommands(project: Project): readonly { readonly testId: string; 
   });
 }
 
-describe("이동 경로 팔레트 persistence", () => {
+// Heavy under CI load (15s default is too tight): round-trips every palette command through a blank project (~70s measured on CI).
+describe("이동 경로 팔레트 persistence", { timeout: 180_000 }, () => {
   it("BREAK: 「효과음 재생」 기본값이 실재하는 리소스다 — 없는 id 면 이벤트 저장이 통째로 막힌다", () => {
     // 예전 기본값은 `"se_route_chime"` 이었다. 어느 카탈로그에도 없는 문자열이라, 효과음 칸을
     // 손대지 않고 버튼만 누른 사용자는 「적용」에서 "오류 1개" 토스트만 보고 이벤트를 잃었다.

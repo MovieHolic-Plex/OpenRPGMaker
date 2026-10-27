@@ -5,6 +5,156 @@
 
 <!-- releases -->
 
+## 0.351.5 — 2026-10-27
+
+### 수정
+
+- **player** — 전투 준비가 그림까지 데운다 + main 의 winners 부채 갱신 (#3714) (`c2bd6a9`)
+
+## 0.351.4 — 2026-10-27
+
+### 수정
+
+- **bench** — battle-warmup 이 실제로 있는 데모 팩토리를 쓰게 한다 (#3712) (`890f6c9`)
+- **input** — read physical keys while an IME is composing (#3711) (`4e50b1c`)
+- **desktop** — open a project folder from macOS Open With (#3710) (`5d61bea`)
+- **battle** — block burn and freeze by the target's type (#3709) (`17c9ff4`)
+- **ai** — accept numeric strings for verification check indexes (#3707) (`e59d586`)
+- **editor** — keep a dragged event body on the grabbed cell (#3706) (`1ec06d8`)
+- **player** — name the gallery viewer and announce picture changes (#3705) (`ead83a5`)
+- **i18n** — format editor dates in the chosen language (#3704) (`73aa8f3`)
+- **editor** — use Korean confirm and cancel on database dialogs (#3703) (`5796453`)
+- **project** — keep escape grace steps across project save (#3702) (`9a667da`)
+
+### 성능
+
+- **player** — skip unchanged time-tint redraws (#3708) (`f3ec52b`)
+
+### 테스트
+
+- **player** — gamepad 반복 단언의 산술을 바로잡는다 (총 keydown ↔ ArrowDown 혼동) (#3698) (`d7bb216`)
+
+### CI
+
+- **surface** — m2-214-ui-command 에 objectiveChip 선택지가 늘어난 것을 스냅샷에 반영 (1건) (#3699) (`d42d08f`)
+
+### 잡무
+
+- **ci** — #3690 의 nameEntry.css 접근성 규칙이 밀어낸 winners 래칫을 현재 트리로 (#3701) (`102b78a`)
+- **ci** — 통과 확인된 두 파일을 테스트 기준선에서 제거 (635 → 633) (#3700) (`5072085`)
+
+## 0.351.3 — 2026-10-27
+
+### 수정
+
+- **export** — fail when an uploaded media file cannot be read (#3695) (`f609864`)
+- **ai** — accept numeric strings for plannedMap width and height (#3694) (`452cafe`)
+- **battle** — name the major status that blocked a status move (#3692) (`e5287c8`)
+- **player** — name the name-entry dialog and speak the grid character (#3690) (`20a13e3`)
+- **editor** — draw every copied layer in the paste preview (#3689) (`52359ac`)
+- **player** — keep absorb weakness notes across save and load (#3687) (`e1d55d8`)
+- **i18n** — describe region select as a drag release, not a placement (#3686) (`077d2b8`)
+
+### 문서
+
+- point getting-started at the live schema and CI-only tests (#3688) (`87a4008`)
+
+### 테스트
+
+- **ai** — verificationNativeScopes 의 두 it.each 에 자기 예산(60s)을 준다 (#3696) (`3fc8852`)
+
+## 0.351.2 — 2026-10-27
+
+### 수정
+
+- **ci** — 브라우저 축이 player QA 서버를 스스로 띄운다 (9944) (#3683) (`7387ceb`)
+
+### 잡무
+
+- **ci** — #3680 의 dialogue.css 선언이 밀어낸 winners 래칫을 현재 트리로 (#3684) (`994b3d1`)
+
+## 0.351.1 — 2026-10-27
+
+### 수정
+
+- **battle** — skip secondary status when a gen1 hit knocks the target out (#3680) (`5f36944`)
+- **player** — announce the choice question to assistive tech (#3679) (`ab496a4`)
+- **player** — repeat held gamepad and touch directions (#3678) (`abdb603`)
+- **desktop** — keep the close save running if the window is closed again (#3677) (`cd7ebff`)
+- **export** — drop new tileset study docs from the player bundle (#3676) (`dcd9eb2`)
+
+## 0.351.0 — 2026-10-27
+
+### 기능
+
+- **fallen** — act 2 B6–B9 (요새·새라, 서리 가도, 서리나루) — 1.23 stops at the 서리나루 inn (#3674) (`b6a4132`)
+- **ai** — new-player discoverability — objective line, visible story events, cutscene-aware auto-play (J90-J96) (#3669) (`847345b`)
+
+### 수정
+
+- **ai** — keep a valid people list when flat fields sit beside it (#3673) (`0418532`)
+- **i18n** — call reachability a passability preview, not traffic (#3672) (`4b2ed65`)
+- **player** — keep memorized BGM across save and load (#3671) (`a619df2`)
+- **editor** — find map events by their authored name (#3670) (`38b504a`)
+
+### 테스트
+
+- **player** — J88 이후 「돈 0G」 숨김 계약에 systemShell 기대를 맞추고 짝 검증 추가 (#3667) (`996ae33`)
+
+### CI
+
+- **surface** — #3546 「일지」 명령(m2-227-journal-line)이 바꾼 M2·포털 스냅샷 반영 (#3666) (`c77b356`)
+
+### 잡무
+
+- **ci** — 16샤드 실행이 통과 확인한 두 파일을 기준선에서 뺀다 (#3668) (`7f33dc8`)
+
+## 0.350.6 — 2026-10-27
+
+### 수정
+
+- **ci** — 주의 표시 색을 하드코딩 hex 대신 --warning 토큰으로, ai-side-threads 표면 소유 선언 (#3664) (`f7f96ba`)
+
+### 테스트
+
+- **ci** — timeout batch to-01 — explicit suite timeouts, unstick export/graft boots; 26 files leave the baseline (#3663) (`1b9d3ef`)
+
+### CI
+
+- prune stale baseline entries (ci-full 40318900099) + storeEventDraftPreserve budget (#3662) (`55b08ab`)
+
+## 0.350.5 — 2026-10-26
+
+### 수정
+
+- **test-dom** — env2 — fake-DOM/window gaps in 36 ci-full files; 27 files leave the gates baseline (#3661) (`2e22802`)
+- **ai** — no-battle defaults, visible stair exits, unlit darkness (J87, J88, J89) (#3660) (`fa82ce8`)
+- **test** — move 33 combined_town/EasyRPG tests onto retired sheets or current defaults; drop them from gates baseline (#3657) (`63b6298`)
+
+### CI
+
+- **full** — 16 vitest shards — shard 1 lost its runner at 8 shards (#3659) (`7aea117`)
+
+## 0.350.4 — 2026-10-26
+
+### 수정
+
+- **ai-v2** — move_object on hand-edited rooms; dress_room floor decor (#3654) (`499304b`)
+
+### CI
+
+- **fast** — run the CSS ratchet on every PR; fold #3628's attention colour into the review rule (#3655) (`6f407e6`)
+
+## 0.350.3 — 2026-10-26
+
+### 수정
+
+- **ai-v2** — dress_room verb for empty-room/bare-floor defects; scene test warns on unwalkable player cells (#3651) (`5367773`)
+
+### CI
+
+- rebuild gates baseline from 8-shard ci-full with tags; fix list in .omo/ci-fix-list.md (#3652) (`4c7b572`)
+
 ## 0.350.2 — 2026-10-26
 
 ### 수정

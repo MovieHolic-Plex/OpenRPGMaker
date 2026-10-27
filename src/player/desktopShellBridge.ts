@@ -14,9 +14,11 @@
  * 3. 내장 HTML5 Gamepad API 폴링 루프 (Steam Deck / Xbox / DualSense 컨트롤러):
  *    별도 설정 없이 패드 연결 시 D-Pad / 좌측 스틱 → 방향키, A(0) → Enter/Z, B(1) → Escape/X,
  *    X(2)/LB(4) → Shift, Y(3)/Start(9) → Escape 키 이벤트를 합성해 타이틀·필드·전투·대사창 전체가
- *    패드로 완벽히 조작된다.
+ *    패드로 조작된다. 방향키를 누르고 있으면 키보드 반복과 같이 `repeat` keydown 을 보낸다
+ *    (메뉴 커서가 한 칸에서 멈추지 않게). 확인·취소는 가장자리에서 한 번만 보낸다.
  */
 import type { DesktopDisplayMode, DesktopExportPlatform } from "@/project/desktopGameExport";
+import { HeldDirectionRepeat } from "@/player/heldDirectionRepeat";
 
 export interface DesktopShellBootConfig {
   readonly enabled?: boolean;
@@ -308,10 +310,11 @@ function startGamepadPolling(state: DesktopShellRuntimeState): () => void {
     return () => {};
   }
   const pressedKeys = new Set<string>();
+  const directionRepeat = new HeldDirectionRepeat();
   let rafId = 0;
   let active = true;
 
-  const dispatchSyntheticKey = (type: "keydown" | "keyup", key: string, code: string): void => {
+  const dispatchSyntheticKey = (type: "keydown" | "keyup", key: string, code: string, repeat = false): void => {
     // One event, on the focused element, so it bubbles through document to window once.
     // A second copy dispatched on window made one pad press confirm twice: the first
     // event already reaches window listeners (battle, tactics). That second event also
@@ -323,6 +326,7 @@ function startGamepadPolling(state: DesktopShellRuntimeState): () => void {
       code,
       bubbles: true,
       cancelable: true,
+      repeat,
     }));
   };
 
@@ -347,6 +351,7 @@ function startGamepadPolling(state: DesktopShellRuntimeState): () => void {
     state.gamepadConnected = false;
     state.gamepadId = null;
     releasePressedKeys();
+    directionRepeat.clear();
   };
 
   const poll = (): void => {
@@ -384,6 +389,18 @@ function startGamepadPolling(state: DesktopShellRuntimeState): () => void {
         }
         pressedKeys.clear();
         for (const token of nextPressed) pressedKeys.add(token);
+        // Held directions repeat like a keyboard key so a stick in a menu keeps
+        // moving the cursor. The first tick only arms the timer. Confirm and
+        // cancel are not in this list, so a held A stays one press.
+        const heldDirections: string[] = [];
+        for (const token of nextPressed) {
+          const key = token.split("|")[0] ?? "";
+          if (key.startsWith("Arrow")) heldDirections.push(key);
+        }
+        const now = typeof performance !== "undefined" ? performance.now() : 0;
+        for (const key of directionRepeat.tick(heldDirections, now)) {
+          dispatchSyntheticKey("keydown", key, key, true);
+        }
       } else if (state.gamepadConnected || pressedKeys.size > 0) {
         // `gamepaddisconnected` clears the flag before this poll. Releasing
         // only while the flag is still true left the held key stuck.
@@ -423,6 +440,7 @@ function startGamepadPolling(state: DesktopShellRuntimeState): () => void {
       window.cancelAnimationFrame(rafId);
     }
     releasePressedKeys();
+    directionRepeat.clear();
     window.removeEventListener("gamepadconnected", onGamepadConnected as EventListener);
     window.removeEventListener("gamepaddisconnected", onGamepadDisconnected as EventListener);
   };

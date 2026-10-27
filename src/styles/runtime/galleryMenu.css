@@ -59,6 +59,20 @@
   text-align: center;
 }
 
+/* 넘긴 그림의 이름. 보이는 캡션은 그대로 두고, 알림만 화면 밖에 둔다. */
+.gallery-viewer-announcement {
+  border: 0;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}
+
 /* 닫기: 캡션(8px)과 균형이 맞는 크기. 예전 `font: inherit` 은 16px 로 캡션보다 두 배 커서 눈에 띄게 어긋났다(2026-10-17 리뷰 C3). */
 .gallery-viewer-close {
   background: transparent;
