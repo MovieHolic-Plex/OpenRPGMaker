@@ -1255,6 +1255,16 @@ def quay_steps(side="W"):
                     if k in (0, 1): c = WET_RISER if wet else ST_RISER
                     elif k == 2: c = WET_NOSE if wet else ST_NOSE
                     else: c = WET_TREAD if wet else ST_TREAD
+                    step_i = (y + 3) // 5
+                    joint = 4 + (step_i * 3) % 5                                    # 단마다 엇갈린 돌 이음
+                    if k >= 2 and xs == joint: c = ST_CHEEK_IN2 if not wet else WET_RISER
+                    elif k == 1 and xs == joint: c = COOL[0]
+                    elif k >= 3 and not wet:
+                        g = h("quay3", side, x, y) % 9                            # 디딤 돌결(밝은 점 · 패인 점)
+                        if g == 0: c = COOL[6]
+                        elif g == 1: c = COOL[9]
+                        elif g == 2 and xs > joint: c = COOL[7]
+                    elif k >= 3 and wet and h("quay3w", x, y) % 5 == 0: c = hx("#45716f")
                     if xs == 3: c = ST_CHEEK_DK if k in (0, 1) else (ST_CHEEK_IN if k == 2 else ST_CHEEK_IN2)   # 둑 쪽 안 모서리
                     if xs == 11 and side == "W": c = ST_CHEEK_DK if k in (0, 1) else ST_CHEEK_IN2            # 볼 쪽 그늘
                 else:
@@ -1262,6 +1272,8 @@ def quay_steps(side="W"):
                     j = xs - 12
                     c = (ST_CHEEK, ST_TREAD, ST_TREAD, COOL[0])[j] if side == "W" else (ST_CHEEK, COOL[5], COOL[5], ST_TREAD)[j]
                     if j in (1, 2) and y % 8 == 7: c = COOL[5] if side == "W" else ST_CHEEK   # 볼 돌 이음
+                    elif j in (1, 2) and h("quay3c", side, x, y) % 7 == 0: c = COOL[6] if c == ST_TREAD else COOL[4]
+                    elif j in (1, 2) and y % 8 == 0 and c == ST_TREAD: c = COOL[9]                       # 돌 윗 모서리 빛
                     if y == WATER_Y - 1: c = WET_TREAD if j in (1, 2) else c
             else:
                 # 물: 운하 화소 · 첫 줄 물턱 거품 · 잠긴 단이 희미하게
@@ -1292,11 +1304,17 @@ def canal_lock():
                     c = PIER[1] if x % 4 == 0 else PIER[2]
                     if y == DECK_Y0 and x % 4 != 0: c = PIER[3] if x % 8 < 4 else PIER[2]          # 빛 받은 윗 끝
                     if x % 4 == 3 and y > DECK_Y0 + 1 and (x // 4 + y) % 5 == 0: c = PIER[1]       # 결 한 점
+                    g = h("lock3", x, y) % 11
+                    if x % 4 != 0 and y > DECK_Y0 and g == 0: c = WOOD[4]                       # 결 그늘
+                    elif x % 4 == 1 and y > DECK_Y0 and g in (1, 2): c = PIER[3]               # 널 왼쪽 빛
+                    elif x % 4 == 3 and y > DECK_Y0 and g in (3, 4, 5): c = WOOD[4]            # 널 오른쪽 그늘
+                    if y == DECK_Y1 - 1 and x % 4 != 0: c = WOOD[4]                             # 앞 끝 바로 위 그늘
                 if x in (0, 63): c = PIER[0]
             elif y <= FACE_Y1:
                 # 갑문 앞면(남쪽, 짙다): 가로 들보 두 단 · 쇠띠 · 가운데 맞물림
                 k = y - DECK_Y1 - 1                        # 0..4
-                c = (PIER[2], PIER[1], PIER[1], PIER[0], WOOD[1])[k]
+                c = (PIER[3], PIER[2], PIER[1], PIER[0], WOOD[1])[k]
+                if k in (1, 2) and h("lock3f", x // 3, y) % 4 == 0: c = WOOD[4] if k == 1 else PIER[0]
                 if x % 16 in (5, 6) and k < 4: c = IRON[2] if x % 16 == 5 else IRON[1]
                 if x in (31, 32): c = PIER[0] if x == 32 else PIER[1]
                 if kerb: c = (ST_TREAD, ST_TREAD, ST_CHEEK)[x] if x <= 2 else (ST_CHEEK, COOL[5], COOL[5])[x - 61]
