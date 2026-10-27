@@ -20,7 +20,11 @@
   단일 HTML 빌드 청크에 Phaser 고지(`node_modules/phaser/LICENSE.md`)를 붙인다. 외부 패키지가 늘면 여기에 고지를 더한다.
 - **내보낸 게임에 실리는 것은 전부 MIT로 공개되는 셈이다.** 플레이어 import 그래프(`src/player/exportEntry.ts`에서 시작)에
   에디터·하네스·프롬프트 코드를 끌어들이지 말 것. 실측(2026-10-07): `src/project/gameDesignBrief.ts`가
-  `harnesses/_core/registry`를 import해서 `interior-props` 러너(약 243KB)가 내보낸 게임 청크로 나간다 — 미수정.
+  `harnesses/_core/registry`를 import해서 `interior-props` 러너(약 243KB)와 공방 object-gen 키트(`api.openai.com` 주소 포함)가
+  내보낸 게임 청크로 나갔다. 2026-10-27 수정: 스키마는 계약만 담은 `src/harnesses/_core/contracts.ts`를 쓴다(계약 있는 하네스를
+  추가하면 여기에도 한 줄 — `test/harnessContracts.test.ts`가 레지스트리와 대조). 같은 날부터 `scripts/lib/playerBundleGuard.mjs`가
+  두 플레이어 빌드에 붙어 `src/ai/`·하네스 레지스트리·하네스 `editor/`·공방 키트 모듈이나 AI 제공자 주소가 들어오면 import 사슬을 찍고
+  빌드를 멈춘다. `test/playerBuild.test.ts`가 같은 목록으로 산출물을 다시 훑는다.
   그래프 확인: `node scripts/oss/runtime-graph.mjs` — 런타임 소스 수, 외부 패키지, 끌려 들어온 editor·harnesses·testing 파일을 보여 준다.
 - **제3자 자료**는 `public/assets/ATTRIBUTION.md`에 적힌 것만 원 라이선스로 남는다. 새로 들이지 않는다(2026-10-07 정리 결정).
 - **이름:** 공개 저장소 이름은 `OpenRPGMaker`(사용자 결정, 2026-10-07). 제품 표시명은 그대로 `src/brand.ts`의 OPRN 계열이고,

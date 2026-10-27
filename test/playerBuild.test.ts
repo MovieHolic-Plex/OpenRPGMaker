@@ -3,6 +3,7 @@ import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { build, type Plugin } from "vite";
 import { describe, expect, it } from "vitest";
+import { PLAYER_FORBIDDEN_HOSTS, PLAYER_FORBIDDEN_MODULES } from "../scripts/lib/playerBundleGuard.mjs";
 
 const PLAYER_ENV_PREFIX = "OPENRPG_PLAYER_";
 const TEXT_ARTIFACT_PATTERN = /\.(?:css|html|js|map)$/u;
@@ -18,6 +19,9 @@ const FORBIDDEN_ARTIFACT_MARKERS = [
   { label: "remote-activity-endpoint", pattern: /__oprn\/ai-activity/iu },
   { label: "editor-public-env", pattern: /VITE_(?:LLM|LEGACY_DB|YUNWU)/u },
   { label: "remote-api-endpoint", pattern: /api\.(?:anthropic|openai)\.com/iu },
+  // 2026-10-27: the workshop object-gen kit (api.openai.com host list) reached the player through
+  // gameDesignBrief -> harness registry. The build guard and this scan share one host list.
+  ...PLAYER_FORBIDDEN_HOSTS,
 ] as const;
 
 type ScanFinding = {
@@ -85,7 +89,7 @@ describe("player build output", () => {
       const html = await readFile(join(outputDir, "player.html"), "utf8");
       const report = await scanPlayerArtifacts(outputDir);
       const forbiddenModules = transformedModuleIds.filter((id) =>
-        /(?:\/src\/ai\/|legacyDbProject(?:Config|Sync)|tileMetadataDb)/iu.test(id),
+        PLAYER_FORBIDDEN_MODULES.some((rule) => rule.pattern.test(id)),
       );
 
       // Then
@@ -100,6 +104,29 @@ describe("player build output", () => {
       await rm(outputDir, { recursive: true, force: true });
     }
   }, 120_000);
+
+  it("keeps the build guard's module and host lists covering the known leaks", () => {
+    const leakedModules = [
+      "/repo/src/ai/activityLog.ts",
+      "/repo/src/harnesses/_core/registry.ts",
+      "/repo/src/harnesses/_core/workshop/genKits/object-gen.json",
+      "/repo/src/harnesses/interior-props/editor/runner.ts",
+      "/repo/src/editor/workshop/workshopSession.ts",
+    ];
+    const allowedModules = [
+      "/repo/src/harnesses/_core/contracts.ts",
+      "/repo/src/harnesses/romance-scene/contract.ts",
+      "/repo/src/project/gameDesignBrief.ts",
+    ];
+    const matches = (id: string) => PLAYER_FORBIDDEN_MODULES.some((rule) => rule.pattern.test(id));
+    expect(leakedModules.filter((id) => !matches(id))).toEqual([]);
+    expect(allowedModules.filter(matches)).toEqual([]);
+
+    const hosts = ["https://api.openai.com/v1", "generativelanguage.googleapis.com", "api.anthropic.com", "openrouter.ai"];
+    const hostMatches = (text: string) => PLAYER_FORBIDDEN_HOSTS.some((rule) => rule.pattern.test(text));
+    expect(hosts.filter((host) => !hostMatches(host))).toEqual([]);
+    expect(hostMatches("https://cdn.openrpgmaker.com/assets/a.png")).toBe(false);
+  });
 
   it("rejects a disposable forbidden import and fake secret without echoing matched values", async () => {
     // Given
