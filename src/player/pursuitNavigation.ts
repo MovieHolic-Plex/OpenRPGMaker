@@ -16,6 +16,20 @@ export function pursuitState(world: PursuitWorld, view: RuntimeEventView): Pursu
   return states[view.event.id] ??= { home: { mapId: world.map.id, x: view.x, y: view.y }, active: awake, searchMs: 0, doors: [] };
 }
 
+/**
+ * 추격자가 붙잡은 주인공을 다른 맵으로 끌고 가면(잠입 순찰의 「붙잡히면 감방」) 그 추격자는 제 자리(home)로 돌아가 쫓기를 멈춘다.
+ * 추격자 위치는 맵을 떠나도 남으므로(eventLocations), 그대로 두면 다시 들어서자마자 같은 자리에서 또 붙잡혔다
+ * (2026-10-27 폴른 막사 독립 플레이 판정: 감방 → 막사 입구 → 즉시 재포획을 여섯 번). 게임 오버 재시작의 resetPursuersForRetry 와 같은 규칙.
+ */
+export function sendPursuerHome(session: PlaySession, eventId: string): boolean {
+  const state = session.horror?.pursuits[eventId];
+  if (!state) return false;
+  const location = session.eventLocations[eventId];
+  session.eventLocations[eventId] = { ...(location ?? {}), mapId: state.home.mapId, x: state.home.x, y: state.home.y, direction: location?.direction ?? "down" };
+  delete session.horror!.pursuits[eventId];
+  return true;
+}
+
 /** All pursuit paths use the same feet/body policy as autonomous movement. */
 export function pursuitPass(world: PursuitWorld, view: RuntimeEventView, targetEventId?: string): ChasePassSize {
   // 막는 이벤트 목록은 이 통행 판정기 하나(= 추격 결정 한 번)에서만 공유한다.
