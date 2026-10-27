@@ -7,9 +7,11 @@ import { createBlankProject, TILE } from "@/project/defaults";
 import { composePartialProject } from "@/editor/regionTask/partialApplyCompose";
 import { groupRegionChanges } from "@/editor/regionTask/regionChangeGroups";
 import type { MapId, Project, RegionRect } from "@/project/types";
+import { startOnRetiredCombinedTown } from "./support/retiredEasyRpgTilesets";
 
 function makeProject(): { project: Project; mapId: MapId } {
-  const project = createBlankProject();
+  // TILE.* 는 합본 마을 번호다 — 버들항 기본 칩셋(2026-10-07) 대신 잔디로 깐 합본 마을 시작 맵에서 잰다.
+  const project = startOnRetiredCombinedTown(createBlankProject());
   return { project, mapId: project.startMapId };
 }
 

@@ -10,15 +10,14 @@ SQLite 정본에서 읽어, 두 인물을 세운 런타임 픽스처 JSON 을 �
   python3 scripts/qa/runtime/counter-walk-fixture.py <project.sqlite> tmp/cw-fix/inn-counter-walk.json [--counter-off]
 --counter-off 는 counterTiles=[] 로 카운터 속성을 끈 대조군(고치기 전 동작)이다.
 """
-import json, pathlib, sqlite3, sys
+import json, pathlib, subprocess, sys
 
 def load(db: str) -> dict:
-    c = sqlite3.connect(pathlib.Path(db).resolve().as_uri() + "?mode=ro", uri=True)
-    text = c.execute("select current_json from project").fetchone()[0]
-    marker = '{"$blob":"'
-    parts = text.split(marker)
-    blobs = dict(c.execute("select sha256,body from tileset_blobs").fetchall()) if len(parts) > 1 else {}
-    return json.loads(parts[0] + "".join(blobs[p[:64]] + p[66:] for p in parts[1:]))
+    # 앱과 같은 읽기(차이 저장된 번들 타일셋까지 되돌림) — scripts/content/read-project-sqlite.mts
+    root = pathlib.Path(__file__).resolve().parents[3]
+    text = subprocess.run(["npx", "tsx", "scripts/content/read-project-sqlite.mts", str(pathlib.Path(db).resolve())],
+                          cwd=root, check=True, capture_output=True, text=True).stdout
+    return json.loads(text)
 
 def main() -> None:
     src, out = sys.argv[1], sys.argv[2]

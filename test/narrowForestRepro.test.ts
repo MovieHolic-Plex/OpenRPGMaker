@@ -6,12 +6,14 @@ import { createBlankProject } from "@/project/defaults";
 import { isTreeTrunkTileId } from "@/project/tilesetHarness";
 import { runTool } from "@/editor/tools/toolRunner";
 import type { GameMap } from "@/project/types";
+import { RETIRED_COMBINED_TOWN_TILESET_ID, withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 
 const props = CONSTRUCTION_TOOLS_V3.find((entry) => entry.name === "place_props")!;
 
 function narrowForest() {
-  const context = { project: createBlankProject() };
-  expect(runTool(context, "create_map", { id: "map_n", name: "좁은 숲", width: 20, height: 15 }).ok).toBe(true);
+  // 이 시험은 합본 마을 숲 번호(덤불 289, 밑동 290/292/293)를 잰다 — 저작권 정리(2026-10-07) 뒤 기본 칩셋이 버들항이라 합본 마을을 되살려 그 위에 만든다.
+  const context = { project: withRetiredEasyRpgTilesets(createBlankProject()) };
+  expect(runTool(context, "create_map", { id: "map_n", name: "좁은 숲", width: 20, height: 15, tilesetId: RETIRED_COMBINED_TOWN_TILESET_ID }).ok).toBe(true);
   const result = props.run(context.project, {
     mapId: "map_n",
     area: { x: 0, y: 0, w: 5, h: 15 },

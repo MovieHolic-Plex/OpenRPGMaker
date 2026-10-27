@@ -121,10 +121,15 @@ describe("P2 spatial persistence", () => {
     const parsed = applySaveSnapshot(project, read.snapshot);
     // Non-JSON Infinity cannot be preserved losslessly on direct apply; reject the whole draft.
     expect(() => applySaveSnapshot(project, snapshot)).toThrow();
-    expect(Object.values(parsed.lifeRecovery?.claims ?? {})).toHaveLength(5);
+    // #3474: 저장 JSON 은 수가 아닌 수(Infinity)를 0 으로 적는다(읽기 검사가 슬롯 전체를 버리지 않게) —
+    // 그래서 저장 경로의 shed_unsafe 는 x=0 의 정상 배치로 돌아오고, 회수 기록은 나머지 넷이다.
+    expect(Object.values(parsed.lifeRecovery?.claims ?? {}).map((claim) => claim.sourceId).sort()).toEqual([
+      "shed_oob", "shed_unknown", "table_collision", "table_invalid_orientation",
+    ]);
     for (const restored of [parsed]) {
       expect(restored.farmBuildingPlacements).toEqual({
         shed_valid: expect.objectContaining({ instanceId: "shed_valid", x: 2, y: 2 }),
+        shed_unsafe: expect.objectContaining({ instanceId: "shed_unsafe", x: 0, y: 2 }),
       });
       expect(restored.homeDecorationPlacements).toEqual({});
     }
