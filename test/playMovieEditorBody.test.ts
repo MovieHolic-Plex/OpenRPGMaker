@@ -135,31 +135,24 @@ describe("playMovie 편집기 본문", () => {
     select.value = "movie-ending";
     select.dispatchEvent(new Event("change"));
 
-    expect(lastCommand(replaceCommand)).toEqual({ kind: "playMovie", resourceId: "movie-ending" });
+    // 본문은 대기·스킵을 늘 명시해 쓴다 — 생략은 런타임에서 true 다(commandCatalog playMovie `wait !== false`).
+    expect(lastCommand(replaceCommand)).toEqual({ kind: "playMovie", resourceId: "movie-ending", wait: true, skippable: true });
     expect(findByTestId(body, "play-movie-preview-video")?.getAttribute("src")).toBe(MP4_DATA_URL);
   });
 
   it("완료 대기·스킵 허용 토글이 명령 모양에 그대로 반영된다", () => {
     const replaceCommand = vi.fn();
+    // 생략한 대기·스킵은 런타임 기본값 true 로 보인다(commandCatalog playMovie `wait !== false`) — 끄는 쪽부터 누른다.
     const body = movieBody({ kind: "playMovie", resourceId: "movie-opening" }, replaceCommand);
 
-    (findByTestId(body, "play-movie-wait-select-segment-true") as FakeElement).dispatchEvent(new Event("click"));
-    expect(lastCommand(replaceCommand)).toEqual({ kind: "playMovie", resourceId: "movie-opening", wait: true });
-
-    (findByTestId(body, "play-movie-skippable-select-segment-true") as FakeElement).dispatchEvent(new Event("click"));
-    expect(lastCommand(replaceCommand)).toEqual({
-      kind: "playMovie",
-      resourceId: "movie-opening",
-      wait: true,
-      skippable: true,
-    });
-
     (findByTestId(body, "play-movie-wait-select-segment-false") as FakeElement).dispatchEvent(new Event("click"));
-    expect(lastCommand(replaceCommand)).toEqual({
-      kind: "playMovie",
-      resourceId: "movie-opening",
-      skippable: true,
-    });
+    expect(lastCommand(replaceCommand)).toEqual({ kind: "playMovie", resourceId: "movie-opening", wait: false, skippable: true });
+
+    (findByTestId(body, "play-movie-skippable-select-segment-false") as FakeElement).dispatchEvent(new Event("click"));
+    expect(lastCommand(replaceCommand)).toEqual({ kind: "playMovie", resourceId: "movie-opening", wait: false, skippable: false });
+
+    (findByTestId(body, "play-movie-wait-select-segment-true") as FakeElement).dispatchEvent(new Event("click"));
+    expect(lastCommand(replaceCommand)).toEqual({ kind: "playMovie", resourceId: "movie-opening", wait: true, skippable: false });
   });
 
   it("번들 샘플 클립 파일이 dev 서버 경로 그대로 레포에 있다", () => {
