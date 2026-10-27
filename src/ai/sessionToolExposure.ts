@@ -14,22 +14,9 @@ import type { IntentDeclaration } from "./intentDeclaration";
 import { toOpenAiTools, type OpenAiTool } from "@/editor/tools";
 import type { WorkPlan } from "./workPlan";
 import { DEFAULT_COMPACTION_SETTINGS, estimateContextTokens } from "./contextCompaction";
+import { DISCOVERY_CONTROL_TOOL_NAMES } from "./firstRequestTools";
 
-/** Read/control tools that must remain reachable before any search round. */
-export const DISCOVERY_CONTROL_TOOL_NAMES: readonly string[] = [
-  "find_tools",
-  "list_authoring_presets",
-  "read_authoring_preset",
-  "read_project_wiki",
-  "get_project_summary",
-  "get_map_region",
-  "find_events",
-  "get_event",
-  "find_layout_regions",
-  "get_database_records",
-  "list_resources",
-  "focus_editor_view",
-];
+export { DISCOVERY_CONTROL_TOOL_NAMES };
 
 export interface SessionToolExposureInput {
   readonly requestText: string;

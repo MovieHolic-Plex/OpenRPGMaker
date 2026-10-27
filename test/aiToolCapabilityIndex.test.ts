@@ -1,11 +1,12 @@
 import { describe, expect, it } from "vitest";
 import { buildSystemPrompt, DEFAULT_BUDGET_CHARS } from "@/ai/contextBuilder";
-import { buildTaskRecipes, buildToolCapabilityIndex } from "@/ai/toolCapabilityIndex";
-import { isMonsterOnlyTool } from "@/project/genreLockMonsterAssets";
+import { buildTaskRecipes, buildToolCapabilityIndex, isIndexCoreTool } from "@/ai/toolCapabilityIndex";
 import { ASSISTANT_PRESENTATION_BLOCK } from "@/ai/eventBeatStaging";
 import { EVENT_PAGE_SEMANTICS_BLOCK } from "@/ai/eventPageSemantics";
-import { activeTools, allTools, createEmptyToolProject } from "@/editor/tools";
+import { activeTools, allTools, createEmptyToolProject, runTool } from "@/editor/tools";
 import { createBlankProject } from "@/project/defaults";
+import { genreLockHidesTool } from "@/project/genreLock";
+import { isMonsterOnlyTool, monsterToolHiddenInRun } from "@/project/genreLockMonsterAssets";
 
 // 색인은 프롬프트 앞머리에 붙으므로 기본 예산(12000)에서도 살아남지만,
 // 기존 후순위 섹션(현재 맵 요약 등)까지 함께 보려면 예산을 넉넉히 준다.
@@ -24,39 +25,65 @@ const CALIBRATED_MIN_BUDGET = 6000;
 // 이 상한이 프롬프트 예산을 잡아먹지는 않는다 — buildSystemPrompt 가 색인 길이만큼 예산을 늘려
 // 기존 섹션 자리를 지키기 때문이다(아래 "does not push ... over its budget" 케이스가 그것을 고정한다).
 // 상한을 올릴 때는 이 주석의 실측 자수를 함께 갱신한다 — 조용한 상향은 금지다.
-const INDEX_CHAR_CEILING = 6100;
+// → 2026-10-27: 활성 465개 전부를 이름으로 싣던 색인이 9,924자로 상한을 넘었다. 상한을 올리지 않고 색인을 바꿨다 —
+//   핵심 동사(core 도메인 + 첫 요청 조회·제어 도구)만 이름으로 싣고, 나머지는 영역별 도구 수와 찾기 낱말로 find_tools 에 보낸다.
+//   실측 2,232자. 상한을 6,100 → 3,000 으로 내린다(래칫).
+const INDEX_CHAR_CEILING = 3000;
 
 function liveToolNames(): readonly string[] {
   return [...new Set(activeTools().filter((tool) => tool.deprecated !== true && tool.supersededBy === undefined).map((tool) => tool.name))];
 }
 
-/** 몬스터 프로젝트가 아닌 곳의 프롬프트는 포켓몬식 도구 이름을 색인에서 뺀다(#2812, contextBuilder withFixedBlocks). */
-function promptToolNames(): readonly string[] {
-  return liveToolNames().filter((name) => !isMonsterOnlyTool(name));
+function liveCoreNames(): readonly string[] {
+  return [...new Set(activeTools().filter((tool) => tool.deprecated !== true && tool.supersededBy === undefined && isIndexCoreTool(tool)).map((tool) => tool.name))];
+}
+
+function listedNames(index: string): string[] {
+  const body = index.split("### 색인 사용 규칙")[0] ?? "";
+  return body.split("\n").filter((line) => line.startsWith("- "))
+    .flatMap((line) => (line.split(": ")[1] ?? "").split(", ")).map((name) => name.trim()).filter((name) => name.length > 0);
 }
 
 describe("tool capability index", () => {
-  it("advertises every live registry tool inside the system prompt", () => {
+  it("advertises the core verbs by name inside the system prompt", () => {
     const project = createEmptyToolProject();
     const prompt = buildSystemPrompt(project);
-    const names = promptToolNames();
+    const core = liveCoreNames();
 
-    const missing = names.filter((name) => !prompt.includes(name));
-
-    expect(missing).toEqual([]);
-    expect(names.length).toBeGreaterThan(100);
+    expect(core).toContain("find_tools");
+    expect(core.filter((name) => !prompt.includes(name))).toEqual([]);
+    expect(liveToolNames().length).toBeGreaterThan(100);
   });
 
-  it("indexes only the supplied active capabilities", () => {
+  it("counts every live tool exactly once across the areas", () => {
+    const index = buildToolCapabilityIndex();
+    const counts = [...index.matchAll(/^- [^(\n]+\((\d+)/gmu)].map((match) => Number(match[1]));
+    expect(counts.reduce((sum, count) => sum + count, 0)).toBe(liveToolNames().length);
+    expect(index).toContain(`활성 ${liveToolNames().length}개`);
+  });
+
+  it("every live tool not named in the index is one exact-name find_tools call away", () => {
+    const index = buildToolCapabilityIndex();
+    const project = createEmptyToolProject();
+    const unreachable = liveToolNames()
+      // 장르·몬스터 잠금이 이 프로젝트에서 일부러 가리는 도구는 find_tools 도 돌려주지 않는다(그 잠금의 계약).
+      .filter((name) => name !== "find_tools" && !index.includes(name) && !genreLockHidesTool(project, name) && !monsterToolHiddenInRun(project, name))
+      .filter((name) => {
+        const result = runTool({ project }, "find_tools", { query: name });
+        const matches = (result.data as { matches?: { name: string }[] } | undefined)?.matches ?? [];
+        return !result.ok || !matches.some((match) => match.name === name);
+      });
+    expect(unreachable).toEqual([]);
+  });
+
+  it("indexes only the supplied active capabilities when every name is requested", () => {
     const readTools = activeTools().filter((tool) => tool.mode === "read");
-    const body = buildToolCapabilityIndex(readTools).split("### 색인 사용 규칙")[0] ?? "";
-    const listed = body.split("\n").filter((line) => line.startsWith("- "))
-      .flatMap((line) => (line.split(": ")[1] ?? "").split(", "));
+    const listed = listedNames(buildToolCapabilityIndex(readTools, { listAllNames: true }));
     expect(listed.sort()).toEqual([...new Set(readTools.map((tool) => tool.name))].sort());
   });
 
   it("never advertises a deprecated (superseded) tool", () => {
-    const index = buildToolCapabilityIndex();
+    const index = buildToolCapabilityIndex(allTools(), { listAllNames: true });
     const deprecated = allTools().filter((tool) => tool.supersededBy !== undefined).map((tool) => tool.name);
     expect(deprecated.length).toBeGreaterThan(0);
 
@@ -85,7 +112,7 @@ describe("tool capability index", () => {
 
   it("survives the smallest calibrated budget", () => {
     const prompt = buildSystemPrompt(createBlankProject(), { budgetChars: CALIBRATED_MIN_BUDGET });
-    const missing = promptToolNames().filter((name) => !prompt.includes(name));
+    const missing = liveCoreNames().filter((name) => !prompt.includes(name));
 
     expect(missing).toEqual([]);
     expect(prompt).toContain("find_tools(query)");
@@ -95,11 +122,14 @@ describe("tool capability index", () => {
     const prompt = buildSystemPrompt(createEmptyToolProject("x"), {});
 
     // 베이스 실측: 이 fixture 는 색인 이전에 11,978자로 예산(12,000) 이하였다. 예산 밖 고정 블록이
-    // 그 자리를 먹지 않았음을 고정한다. 고정 블록은 넷이다 — 툴 능력 색인(몬스터 도구 뺀 것, #2812) + 작업 레시피 +
-    // 이벤트 페이지 의미론 + 충격 연출.
+    // 그 자리를 먹지 않았음을 고정한다. 고정 블록은 넷이다 — 툴 능력 색인 + 레시피 + 이벤트 페이지 의미론 + 충격 연출.
     expect(prompt).not.toContain("[예산 초과");
+    // 몬스터 프로젝트가 아니면 프롬프트의 색인은 몬스터 전용 도구를 뺀 목록으로 만들고, 레시피도 monster-* 줄을 뺀 고정 블록이다
+    // (contextBuilder.withFixedBlocks). 같은 입력으로 다시 만들어야 정확히 걷어낼 수 있다.
+    const fixedIndex = buildToolCapabilityIndex(activeTools().filter((tool) => !isMonsterOnlyTool(tool.name)));
+    expect(prompt).toContain(`${fixedIndex}\n\n`);
     const withoutFixed = prompt
-      .replace(`${buildToolCapabilityIndex(activeTools().filter((tool) => !isMonsterOnlyTool(tool.name)))}\n\n`, "")
+      .replace(`${fixedIndex}\n\n`, "")
       .replace(`${buildTaskRecipes({ monster: false })}\n\n`, "")
       .replace(`${EVENT_PAGE_SEMANTICS_BLOCK}\n\n`, "")
       .replace(`${ASSISTANT_PRESENTATION_BLOCK}\n\n`, "");
@@ -120,15 +150,8 @@ describe("tool capability index", () => {
     expect(buildToolCapabilityIndex().length).toBeLessThanOrEqual(INDEX_CHAR_CEILING);
   });
 
-  it("covers every live tool exactly once in the index body", () => {
-    const index = buildToolCapabilityIndex();
-    const body = index.split("### 색인 사용 규칙")[0] ?? "";
-    const listed = body
-      .split("\n")
-      .filter((line) => line.startsWith("- "))
-      .flatMap((line) => (line.split(": ")[1] ?? "").split(", "))
-      .map((name) => name.trim())
-      .filter((name) => name.length > 0);
+  it("covers every live tool exactly once in the full-name listing", () => {
+    const listed = listedNames(buildToolCapabilityIndex(activeTools(), { listAllNames: true }));
 
     expect([...listed].sort()).toEqual([...liveToolNames()].sort());
     expect(new Set(listed).size).toBe(listed.length);

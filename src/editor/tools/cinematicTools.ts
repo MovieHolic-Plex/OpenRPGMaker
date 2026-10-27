@@ -694,7 +694,8 @@ const editOpening: ToolDefinition = {
       op: { type: "string", enum: OPENING_EDIT_OPS },
       index: { type: "integer", minimum: 0 },
       sceneId: { type: "string" },
-      scene: OPENING_SCENE_SCHEMA,
+      // set_opening.scenes[] 와 같은 모양이다. 큰 장면 스키마를 두 번 싣지 않는다(2026-10-27 오프닝 계열 예산) — run 이 normalizeScene 으로 같은 검사를 한다.
+      scene: { type: "object", description: "장면 하나. set_opening.scenes[] 항목과 같은 모양(kind 필수, text|image|video|animatic). update 는 장면 전체를 보낸다." },
       enabled: { type: "boolean" },
       skippable: { type: "boolean" },
       musicResourceId: { type: "string" },

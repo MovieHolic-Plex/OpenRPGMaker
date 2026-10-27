@@ -59,7 +59,7 @@ test("AI reaches every editor area from the running editor", async ({ page }) =>
     const toolModeModule = await load("/src/editor/assistantToolMode.ts");
     const storeModule = await load("/src/project/store.ts");
 
-    const activeTools = toolsModule.activeTools as () => readonly { readonly name: string }[];
+    const activeTools = toolsModule.activeTools as () => readonly { readonly name: string; readonly domains?: readonly string[] }[];
     const toOpenAiTools = toolsModule.toOpenAiTools as (
       defs: undefined,
       options: { domains: ReadonlySet<string> },
@@ -84,7 +84,8 @@ test("AI reaches every editor area from the running editor", async ({ page }) =>
 
     return {
       activeToolCount: active.length,
-      missingFromIndex: active.map((tool) => tool.name).filter((name) => !prompt.includes(name)),
+      // 색인은 핵심 동사만 이름으로 싣는다(2026-10-27) — 나머지는 find_tools 로 찾는다.
+      missingFromIndex: active.filter((tool) => tool.domains?.includes("core")).map((tool) => tool.name).filter((name) => !prompt.includes(name)),
       hasRuleBlock: prompt.includes("find_tools") && prompt.includes("결함"),
       promptChars: prompt.length,
       indexChars: capabilityIndex.length,
@@ -114,7 +115,7 @@ test("AI reaches every editor area from the running editor", async ({ page }) =>
   // 잘렸다(truncated=true). 색인은 그 상태를 바꾸지 않고 문자 비용만 예산에 더한다(15,922 = 12,077+3,845).
   // 따라서 잘림 자체가 아니라 "색인이 잘리는 쪽에 있지 않다"를 고정한다.
   expect(probe.indexSurvivesTruncation).toBe(true);
-  expect(probe.indexChars).toBeLessThanOrEqual(4600);
+  expect(probe.indexChars).toBeLessThanOrEqual(3000);
 
   expect(probe.domainExposedHasTool).toBe(false);
   expect(probe.escalatedNames).toContain(NL_EXPECTED_TOOL);

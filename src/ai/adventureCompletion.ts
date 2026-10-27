@@ -5,7 +5,6 @@ import { startStateOf } from "@/project/session";
 import { eventCommandBranches } from "@/editor/eventCommandBranches";
 import { worldCanonHasContent } from "@/project/world/canon";
 import { gameStructureProblems } from "./gameStructureGuard";
-import { OPENING_ANIMATIC_AUTHORING_TOOLS } from "./piAgent/openingProduction";
 
 /** Declared by the intent model, never inferred from incidental NPC/building words. */
 export interface AdventureRequirements {
@@ -25,7 +24,10 @@ export function adventureToolNames(required: AdventureRequirements | undefined):
   // A full RPG starts with its authored identity, not only maps and encounters.
   // Keep these in the preflight set so the first writer round can actually create
   // the protagonist's appearance/loadout and record the world/character canon.
-  return ["get_project_summary", "get_database_records", "read_project_wiki", "find_events", "list_resources", "generate_image_asset", "recommend_bgm", "get_soundtrack", "generate_original_bgm", "generate_original_se", "set_map_properties", "set_title_screen", "show_map_region", "upsert_event", "upsert_actor", "upsert_character_profile", "set_world_canon", "upsert_item", "upsert_equipment", "set_session_start", ...OPENING_ANIMATIC_AUTHORING_TOOLS,
+  // 오프닝 애니메틱 도구 30개는 여기 싣지 않는다(2026-10-27): 첫 요청이 97개로 불어 상한 80을 넘었다. 오프닝은 맨 끝 단계라
+  // 입구 둘(plan_opening·get_animatic_capabilities)만 보이고 나머지는 find_tools 로 찾는다. 새 게임 한 줄 요청의 Pi 경로는
+  // plainTurn 이 OPENING_ANIMATIC_AUTHORING_TOOLS 를 따로 얹는다(requestsFullGameOpeningProduction).
+  return ["get_project_summary", "get_database_records", "read_project_wiki", "find_events", "list_resources", "generate_image_asset", "recommend_bgm", "get_soundtrack", "generate_original_bgm", "generate_original_se", "set_map_properties", "set_title_screen", "show_map_region", "upsert_event", "upsert_actor", "upsert_character_profile", "set_world_canon", "upsert_item", "upsert_equipment", "set_session_start", "plan_opening", "get_animatic_capabilities",
     ...(required.world || required.village || required.dungeon ? ["plan_world", "build_world"] : []),
     ...(required.village ? ["author_beodeul_town", "inspect_terrain", "place_terrain_house"] : []),
     // EasyRPG 던전 생성기는 폐기(retiredEasyRpgTilesets.ts). 던전은 author_dungeon(칩셋 어댑터), 어댑터가 못 짓는 장소는 등록 장소 가져오기.

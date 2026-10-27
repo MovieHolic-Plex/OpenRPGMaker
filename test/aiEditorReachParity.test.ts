@@ -108,9 +108,15 @@ describe("AI editor reach parity — every audited authored-data surface has a t
     expect(offenders).toEqual([]);
   });
 
-  it("every new facade is advertised in the prompt capability index", () => {
-    const index = buildToolCapabilityIndex();
-    const missing = REQUIRED_FACADES.map(({ tool }) => tool).filter((name) => !index.includes(name));
+  // 색인은 2026-10-27 부터 핵심 동사만 이름으로 싣는다 — 나머지 도구의 도달성은 「색인이 가리키는 find_tools 가 이름으로 돌려준다」로 잰다.
+  it("every new facade is reachable from the prompt capability index through find_tools", () => {
+    expect(buildToolCapabilityIndex()).toContain("find_tools(query)");
+    const project = createEmptyToolProject();
+    const missing = REQUIRED_FACADES.map(({ tool }) => tool).filter((name) => {
+      const result = runTool({ project }, "find_tools", { query: name });
+      const matches = (result.data as { matches?: { name: string }[] } | undefined)?.matches ?? [];
+      return !matches.some((match) => match.name === name);
+    });
     expect(missing).toEqual([]);
   });
 

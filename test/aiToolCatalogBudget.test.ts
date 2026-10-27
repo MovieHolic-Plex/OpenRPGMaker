@@ -25,6 +25,10 @@ const CATALOG_TOKEN_CEILING = 99_000;
  * 스키마·설명을 깎아 메우면 실제 능력(빛줄기 먼지·말풍선 상자·자막 큐 등)이 사라진다 — 그래서
  * 이 계열만 올리고 좁은 창 상한과 전체 카탈로그 상한은 그대로 둔다. 이 도구가 막대인간 배우를
  * 없애고 배경과 같은 도트 크기를 강제하므로, 늘어난 151토큰은 의도한 값이다.
+ *
+ * 2026-10-27: set_opening_sprite_states 가 목록에 빠진 채 38도구 7,774토큰으로 넘었다. 상한은 그대로 두고
+ * edit_opening.scene 이 set_opening 의 큰 장면 스키마를 두 번째로 싣던 것을 짧은 객체 설명으로 바꿨다
+ * (검사는 run 의 normalizeScene 이 같다). 실측은 PR 본문.
  */
 const OPENING_FAMILY_TOKEN_CEILING = 7_400;
 
@@ -58,7 +62,7 @@ describe("AI 툴 카탈로그 예산", () => {
       "create_opening_animatic_shot", "edit_opening", "generate_opening_image", "generate_opening_layer", "get_opening", "get_opening_direction",
       "get_opening_references", "inspect_opening_timeline", "list_opening_media", "make_opening_storybook", "plan_opening", "preview_opening_animatic",
       "preview_opening_reference", "remove_opening", "remove_opening_audio_cue", "remove_opening_layer", "retime_opening_shot", "review_opening",
-      "set_opening", "set_opening_caption", "set_opening_pixel_grid", "set_opening_region_loop", "set_opening_transition", "show_opening_image",
+      "set_opening", "set_opening_caption", "set_opening_pixel_grid", "set_opening_region_loop", "set_opening_sprite_states", "set_opening_transition", "show_opening_image",
       "place_opening_background",
       "place_opening_charset_actor",
       "show_title_opening", "upsert_opening_audio_cue", "upsert_opening_emote", "upsert_opening_layer", "upsert_opening_light_fx",

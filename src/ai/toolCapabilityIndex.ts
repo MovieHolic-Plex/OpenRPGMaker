@@ -1,10 +1,12 @@
 // ai/toolCapabilityIndex.ts
 // 시스템 프롬프트에 붙는 "툴 능력 색인" 조립기. 순수 함수(브라우저 접근 금지, 프로젝트 불필요).
-// The index advertises the complete live registry by name. AssistantSession sends a
-// small control plane first and promotes missing schemas through find_tools; this
-// index is navigation, not a claim that every schema is in every request.
+// The first request carries only the core verbs by name plus, per editor area, a tool count
+// and the nouns that find_tools(query) answers to. Every other live tool stays reachable:
+// find_tools returns any schema by its exact name or by a feature word, and the next round
+// can call it. Listing all ~465 names cost ~9,900 characters on every request (2026-10-27).
 
 import { activeTools } from "@/editor/tools";
+import { DISCOVERY_CONTROL_TOOL_NAMES } from "./firstRequestTools";
 import { authoringPresetDiscoveryText } from '@/project/authoringPresets';
 import type { ToolDefinition, ToolDomain } from "@/editor/tools";
 
@@ -162,48 +164,103 @@ const AREA_ORDER: readonly { readonly domain: ToolDomain; readonly label: string
 
 const CATCH_ALL_LABEL = "기타";
 
-/** 여러 도메인을 가진 툴은 첫 도메인에만 실린다(중복 금지, 전수 1회 노출 보장). */
+/** 여러 도메인을 가진 툴은 첫 도메인에만 실린다(중복 금지, 전수 1회 집계 보장). */
 function areaLabelOf(tool: ToolDefinition): string {
   const first = tool.domains?.[0];
   const area = AREA_ORDER.find((entry) => entry.domain === first);
   return area?.label ?? CATCH_ALL_LABEL;
 }
 
+/** 찾기 낱말에서 뺄 동사·잡음 토막 — 이름의 명사 쪽이 find_tools 질의로 쓸모 있다. */
+const VERB_TOKENS = new Set([
+  "get", "set", "list", "upsert", "delete", "remove", "add", "create", "make", "read", "show", "check", "inspect", "find",
+  "author", "build", "place", "configure", "apply", "update", "edit", "run", "generate", "define", "manage", "preview",
+  "review", "plan", "compile", "derive", "import", "export", "link", "lay", "fill", "stamp", "tune", "assign", "attach",
+  "verify", "simulate", "evaluate", "resize", "duplicate", "move", "copy", "rename", "clear", "reset", "use", "ask", "to",
+  "of", "and", "or", "the", "for", "by", "from", "with", "in", "on", "at", "a", "an", "all", "new", "one",
+]);
+/** 영역마다 보이는 찾기 낱말 수. 늘리면 색인이 영역 수만큼 커진다. */
+const AREA_KEYWORD_COUNT = 16;
+
+/** 영역 도구 이름의 명사 토막 빈도 상위 n개(빈도 내림차순, 같으면 알파벳순) — 결정적. */
+function areaKeywords(names: readonly string[], count: number): string[] {
+  const freq = new Map<string, number>();
+  for (const name of names) {
+    for (const token of new Set(name.split("_"))) {
+      if (token.length < 3 || VERB_TOKENS.has(token)) continue;
+      freq.set(token, (freq.get(token) ?? 0) + 1);
+    }
+  }
+  return [...freq.entries()]
+    .sort((left, right) => right[1] - left[1] || (left[0] < right[0] ? -1 : left[0] > right[0] ? 1 : 0))
+    .slice(0, count)
+    .map(([token]) => token);
+}
+
+/** 이름으로 직접 보이는 핵심 동사 — core 도메인 도구와 첫 요청의 조회·제어 도구. */
+export function isIndexCoreTool(tool: ToolDefinition): boolean {
+  return tool.domains?.includes("core") === true || DISCOVERY_CONTROL_TOOL_NAMES.includes(tool.name);
+}
+
+export interface ToolCapabilityIndexOptions {
+  /** 넘긴 도구를 전부 이름으로 싣는다 — 이미 좁힌 작은 목록(오프닝 제작 경로)에만 쓴다. */
+  readonly listAllNames?: boolean;
+}
+
 /**
- * 활성(비 deprecated) 툴 이름만 영역별로 묶은 색인 텍스트.
+ * 활성(비 deprecated) 툴의 색인 텍스트. 기본은 핵심 동사 이름 + 영역별 도구 수·찾기 낱말이다.
  * 기본 입력은 activeTools() 이며, 호출자가 목록을 넘겨도 deprecated 는 다시 걸러낸다.
  */
-export function buildToolCapabilityIndex(tools: readonly ToolDefinition[] = activeTools()): string {
+export function buildToolCapabilityIndex(
+  tools: readonly ToolDefinition[] = activeTools(),
+  options: ToolCapabilityIndexOptions = {},
+): string {
   const live = tools.filter((tool) => tool.deprecated !== true && tool.supersededBy === undefined);
   const byLabel = new Map<string, string[]>();
   const seenNames = new Set<string>();
+  const coreNames: string[] = [];
   for (const tool of live) {
     if (seenNames.has(tool.name)) continue;
     seenNames.add(tool.name);
+    if (isIndexCoreTool(tool)) coreNames.push(tool.name);
     const label = areaLabelOf(tool);
     const bucket = byLabel.get(label) ?? [];
     bucket.push(tool.name);
     byLabel.set(label, bucket);
   }
+  const labels = [...AREA_ORDER.map(({ label }) => label), CATCH_ALL_LABEL];
 
-  const lines: string[] = [
-    `${TOOL_CAPABILITY_INDEX_HEADING}(활성 ${seenNames.size}개 · 라운드 스키마는 tools)`,
-    "활성 도구 이름은 전체 색인에 있다. 없는 스키마는 find_tools(query)로 찾는다. 질문 모드에서는 조회만 호출할 수 있다.",
-  ];
-  for (const { label } of AREA_ORDER) {
-    const names = byLabel.get(label);
-    if (!names || names.length === 0) continue;
-    lines.push(`- ${label}: ${names.join(", ")}`);
+  const lines: string[] = [];
+  if (options.listAllNames) {
+    lines.push(
+      `${TOOL_CAPABILITY_INDEX_HEADING}(활성 ${seenNames.size}개 · 라운드 스키마는 tools)`,
+      "활성 도구 이름은 전체 색인에 있다. 없는 스키마는 find_tools(query)로 찾는다. 질문 모드에서는 조회만 호출할 수 있다.",
+    );
+    for (const label of labels) {
+      const names = byLabel.get(label);
+      if (names && names.length > 0) lines.push(`- ${label}: ${names.join(", ")}`);
+    }
+  } else {
+    lines.push(
+      `${TOOL_CAPABILITY_INDEX_HEADING}(활성 ${seenNames.size}개 · 이름은 핵심만, 나머지는 find_tools)`,
+      `핵심: ${coreNames.join(", ")}`,
+      "영역별 도구 수와 찾기 낱말 — find_tools(query) 에 기능어(한국어·영어)나 정확한 툴 이름을 넣고, 좁히려면 domain 을 준다. 질문 모드에서는 조회만 호출할 수 있다.",
+    );
+    for (const label of labels) {
+      const names = byLabel.get(label);
+      if (!names || names.length === 0) continue;
+      const domain = AREA_ORDER.find((entry) => entry.label === label)?.domain;
+      const keywords = areaKeywords(names, AREA_KEYWORD_COUNT);
+      lines.push(`- ${label}(${names.length}${domain ? ` · domain:${domain}` : ""}): ${keywords.join(", ")}`);
+    }
   }
-  const rest = byLabel.get(CATCH_ALL_LABEL);
-  if (rest && rest.length > 0) lines.push(`- ${CATCH_ALL_LABEL}: ${rest.join(", ")}`);
 
   lines.push(
     "",
     RULE_HEADING,
-    "1. 목록에 있는 이름은 전부 호출 가능한 실제 기능이다.",
-    "2. 없는 스키마는 find_tools(query)로 찾고 다음 라운드에 호출한다. 빈 결과면 다른 기능어나 영문 툴 이름으로 다시 찾는다.",
-    "3. 목록에 있는 기능을 \"그 기능이 없습니다\"·\"지원하지 않습니다\"라고 보고하거나 work item 을 skip 하는 것은 결함이다 — 실제 도구 정의와 실행 결과를 확인한다.",
+    "1. 색인·tools·레시피에 나온 이름은 전부 호출 가능한 실제 기능이다. 여기에 이름이 없는 기능도 대부분 있다 — 먼저 find_tools(query)로 찾는다.",
+    "2. find_tools 결과 스키마는 다음 라운드에 호출할 수 있다. 빈 결과면 다른 기능어나 영문 툴 이름으로 다시 찾는다.",
+    "3. find_tools 로 찾아보지 않고 \"그 기능이 없습니다\"·\"지원하지 않습니다\"라고 보고하거나 work item 을 skip 하는 것은 결함이다 — 실제 도구 정의와 실행 결과를 확인한다.",
     "4. 단, UX 정책의 진짜 엔진 한계(3D, 외부 API/플러그인, 실제 배포 미지원)는 그대로다. 실시간 액션 전투는 set_action_combat과 make_action_enemy로 지원한다.",
   );
   return lines.join("\n");
