@@ -182,38 +182,7 @@ it("guards ordinary Ask apply even when an executor returns retained proposal ca
   expect(store.getCurrent()).toEqual(before);
 });
 
-it.each(["explicit", "inferred"] as const)("does not milestone-apply retained acceptance work in autonomous %s Ask", async mode => {
-  // Given: finished scheduling and a real canonical contract, with an unapplied successful write.
-  const map = store.getCurrent().maps[store.getCurrent().startMapId];
-  if (!map) throw new Error("Missing fixture map");
-  const responses = [tool("set_work_plan", { goal: "Inspect", requirements: [{ id: "size", title: "Size",
-    criteria: [{ kind: "mapDimensions", target: { mapId: map.id }, width: map.width, height: map.height }] }],
-    layers: [{ title: "Inspect", items: [{ title: "Inspect", instruction: "Inspect" }] }],
-  }), tool("skip_work_item", {}), tool("set_title_screen", { title: "ACCEPTANCE_DRAFT" })];
-  let round = 0;
-  let asking = false;
-  const session = new AssistantSession(store.getCurrent(), { yieldToUi: cooperativeNodeYield, config,
-    declareIntent: facts => fixedDeclarer({ mode: asking && mode === "inferred" ? "question" : "other" })(facts),
-    chat: async () => responses[round++] ?? final });
-  const f = runnerFor(session);
-  const actualApply = vi.spyOn(apply, "applyProposedProject");
-  const cancelled = await f.send("Inspect", {}, "ACCEPTANCE_DRAFT");
-  expect(cancelled.proposedCalls).toHaveLength(1);
-  expect(session.getAcceptanceSnapshot()).not.toBeNull();
-  expect(actualApply).toHaveBeenCalledTimes(0);
-  const before = structuredClone(store.getCurrent());
-  asking = true;
-  // When: an autonomous question reaches the final acceptance boundary with no new writes.
-  const question = await f.send("Why?", { autonomous: true, composerMode: mode === "explicit" ? "ask" : "do" });
-  // Then: neither milestone nor ordinary apply is authorized by retained acceptance work.
-  expect(actualApply).toHaveBeenCalledTimes(0);
-  expect(f.applyProposal).toHaveBeenCalledTimes(0);
-  expect(store.getCurrent()).toEqual(before);
-  expect(question.proposedCalls).toEqual([]);
-  expect(question.runOutcome?.delivery).toBe("no-change");
-  expect(session.syncBaselineFromStoreIfClean(store.getCurrent())).toBe(false);
-});
-
+// Removed it "does not milestone-apply retained acceptance work in autonomous %s Ask": the acceptance ledger was removed on purpose on 2026-09-17 ("assistant: 수용 원장(acceptance ledger)을 만들지 않는다"; getAcceptanceSnapshot is always null).
 it("keeps retained calls unauthorized when explicit Ask fails before intent", async () => {
   // Given: a cancelled draft and a fallible preparation boundary on the next send.
   let fail = false;

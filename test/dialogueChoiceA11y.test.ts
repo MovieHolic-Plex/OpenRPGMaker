@@ -66,4 +66,42 @@ describe("choice prompt accessibility", () => {
 
     dialogue.hide();
   });
+
+  it("moves the choice cursor with W and S as well as the arrow keys", () => {
+    store.replaceProject(createBlankProject());
+    const host = document.createElement("div");
+    document.body.append(host);
+    const dialogue = createDialogueUI(host);
+    const pending = dialogue.showChoices({
+      options: [{ text: "숲" }, { text: "마을" }, { text: "성" }],
+      playerTileY: 0,
+      mapHeight: 20,
+      textContext: { session, project: store.getCurrent() },
+    });
+    void pending.catch(() => undefined);
+
+    const selected = (): string | null =>
+      host.querySelector("[data-testid^='runtime-choice-'].selected")?.getAttribute("data-testid") ?? null;
+
+    const press = (key: string): void => {
+      document.dispatchEvent(new KeyboardEvent("keydown", { key, bubbles: true }));
+    };
+
+    expect(selected()).toBe("runtime-choice-0");
+    press("s");
+    expect(selected()).toBe("runtime-choice-1");
+    press("ArrowDown");
+    expect(selected()).toBe("runtime-choice-2");
+    press("w");
+    expect(selected()).toBe("runtime-choice-1");
+    press("W");
+    expect(selected()).toBe("runtime-choice-0");
+    press("ArrowUp");
+    expect(selected()).toBe("runtime-choice-2");
+    press("a");
+    press("ArrowRight");
+    expect(selected()).toBe("runtime-choice-2");
+
+    dialogue.hide();
+  });
 });

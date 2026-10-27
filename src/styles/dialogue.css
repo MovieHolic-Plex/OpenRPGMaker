@@ -851,6 +851,20 @@
   box-shadow: 0 0 0 1px rgba(255, 246, 168, 0.45);
 }
 
+/* 자릿수 알림. 칸은 숨겨져 있고 값은 스크립트가 넣으므로, 읽히는 문장만 화면 밖에 둔다. */
+.number-input-announcement {
+  border: 0;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}
+
 /* 포커스/타이핑용 숨김 입력 (Playwright fill 호환). */
 .number-input-typing {
   height: 1px;

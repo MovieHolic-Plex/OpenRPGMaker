@@ -1,7 +1,9 @@
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { getMapEditHistoryEntries, getMapEditHistoryState, resetMapEditHistory } from "@/editor/mapEditHistory";
 import { renderSystemTab } from "@/editor/panels/databaseSystemView";
+import { getAudioEngine } from "@/player/audio";
 import { createBlankProject } from "@/project/defaults";
+import { defaultTitleScreenSettings } from "@/project/defaults/defaultDatabase";
 import { store } from "@/project/store";
 import { findByTestId, installFakeDom, type FakeElement } from "./fakeDom";
 
@@ -61,6 +63,7 @@ describe("database system section navigation", () => {
   });
 
   afterEach(() => {
+    vi.restoreAllMocks();
     cleanupDom?.();
     cleanupDom = undefined;
   });
@@ -177,5 +180,23 @@ describe("database system section navigation", () => {
     expect(getMapEditHistoryEntries().length).toBe(entriesBefore);
     expect(getMapEditHistoryState().canUndo).toBe(false);
     expect(JSON.stringify(store.getCurrent())).toBe(projectBefore);
+  });
+
+  it("stops title BGM preview when leaving the title section", () => {
+    const project = createBlankProject();
+    project.system.titleScreen = { ...defaultTitleScreenSettings(), musicResourceId: "cc0-music-field-loop" };
+    store.replace(project);
+    const host = renderSystem();
+    document.body.append(host);
+    clickNav(host, "title");
+    const engine = getAudioEngine();
+    vi.spyOn(engine, "play").mockImplementation(() => undefined);
+    const stop = vi.spyOn(engine, "stopChannel");
+    clickNav(host, "startup");
+    expect(stop).not.toHaveBeenCalled();
+    clickNav(host, "title");
+    findByTestId(host, "db-title-bgm-play")!.click();
+    clickNav(host, "startup");
+    expect(stop).toHaveBeenCalledWith("bgm", 0);
   });
 });

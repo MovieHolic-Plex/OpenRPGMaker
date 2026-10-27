@@ -5,7 +5,8 @@ import { existsSync, readFileSync } from "node:fs";
 import { gunzipSync } from "node:zlib";
 import { extname, normalize, resolve, sep } from "node:path";
 import { pathToFileURL } from "node:url";
-import { net, protocol } from "electron";
+import { app, net, protocol } from "electron";
+import { catalogTrackForPath, ensureCachedTrack } from "./bgmOnDemand";
 import { ASSET_RESPONSE_CSP, assetCacheControl, safeAssetContentType } from "../shared/assetMime";
 import { OPRN_APP_SCHEME, OPRN_ASSET_SCHEME } from "../shared/channels";
 import { handleActivityMirror, isActivityMirrorPath } from "../../scripts/lib/activityMirror.mjs";
@@ -142,7 +143,12 @@ export function registerAppProtocol(rendererDir: string, activityLogBaseDir: () 
     if (target !== resolve(root, "index.html") && !target.startsWith(root + sep)) {
       return new Response("forbidden", { status: 403 });
     }
-    if (!existsSync(target)) return new Response("not found", { status: 404 });
+    if (!existsSync(target)) {
+      // 앱에 없는 카탈로그 BGM 은 공개 CDN 에서 받아 사용자 폴더에 두고 거기서 준다(bgmOnDemand.ts).
+      const track = catalogTrackForPath(relative);
+      const cached = track ? await ensureCachedTrack(track, resolve(app.getPath("userData"), "bgm-catalog")) : null;
+      return cached ? staticFileResponse(cached) : new Response("not found", { status: 404 });
+    }
     return staticFileResponse(target);
   }
 }

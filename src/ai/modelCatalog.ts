@@ -38,7 +38,6 @@ const ANTIGRAVITY_MODELS: readonly string[] = [
   "gemini-4-argon",
   "gemini-3.8-flash",
   "gemini-3.7-flash",
-  "gemini-4-argon",
   "claude-opus-4-5",
   "claude-opus-4-6",
   "claude-sonnet-4-5",

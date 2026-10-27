@@ -6,6 +6,11 @@ import { deserialize, serialize } from "@/project/io";
 import type { Project } from "@/project/types";
 import { offlineChatResponse } from "./fixtures/offlineChatResponse";
 import { approvedReviewResponse } from "./independentReviewFixture";
+import { fixedDeclarer } from "./intentFixture";
+
+// 선언자가 없으면 세션은 폴백 의도로 첫 목록을 코어 도구로 좁힌다(하이브리드 노출) — 모델이 오프닝 도구를
+// 고른 것처럼 선언을 주입한다(다른 세션 라우팅 테스트와 같은 픽스처).
+const OPENING_DECLARER = fixedDeclarer({ mode: "create", tools: ["get_opening", "set_opening", "remove_opening", "list_opening_media"] });
 
 const PICTURE = "picture-upload";
 const MOVIE = "movie-upload";
@@ -56,12 +61,15 @@ function final(text: string): ChatResult {
 describe("어시스턴트 오프닝 저작 루프", () => {
   it("exposes the opening tools and applies set_opening through the real session", async () => {
     const project = mediaProject();
+    // set_opening 은 음악을 주지 않으면 기존 오프닝 배경음악을 이어 쓴다(cinematicTools.ts) — 빈 프로젝트의 기본 곡.
+    const existingMusic = project.system.opening?.musicResourceId;
     const exposed: string[][] = [];
     const events: SessionEvent[] = [];
     let step = 0;
 
     const session = new AssistantSession(project, {
       config: testConfig(),
+      declareIntent: OPENING_DECLARER,
       chat: async (_config, request): Promise<ChatResult> => {
         const review = approvedReviewResponse(request);
         if (review) return offlineChatResponse(review);
@@ -92,6 +100,7 @@ describe("어시스턴트 오프닝 저작 루프", () => {
     expect(opening).toEqual({
       enabled: true,
       skippable: true,
+      ...(existingMusic ? { musicResourceId: existingMusic } : {}),
       scenes: [
         { id: "opening-scene-1", kind: "text", narration: "폭풍우 치던 밤", durationMs: 0 },
         { id: "opening-scene-2", kind: "image", resourceId: PICTURE, narration: "그날의 사진", durationMs: 4000, motion: "zoom" },
@@ -111,6 +120,7 @@ describe("어시스턴트 오프닝 저작 루프", () => {
 
     const session = new AssistantSession(project, {
       config: testConfig(),
+      declareIntent: OPENING_DECLARER,
       chat: async (_config, request): Promise<ChatResult> => {
         const review = approvedReviewResponse(request);
         if (review) return offlineChatResponse(review);

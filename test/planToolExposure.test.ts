@@ -44,15 +44,16 @@ describe("planRequiredToolNames", () => {
     const names = planRequiredToolNames(
       plan([
         { instruction: "set_encounter_table + upsert_enemy/upsert_troop 5종을 만든다" },
-        { instruction: "author_village 를 호출한다" },
+        // author_village 는 2026-10-07 저작권 정리로 삭제돼 레지스트리에 없다 — 지금 있는 place_props 로 본다.
+        { instruction: "place_props 를 호출한다" },
       ]),
     );
     expect(names).toContain("set_encounter_table");
     expect(names).toContain("upsert_enemy");
     expect(names).toContain("upsert_troop");
-    expect(names).toContain("author_village");
-    // "village" 단독 토큰은 툴이 아니다 — author_village 와 혼동하지 않는다.
-    expect(names).not.toContain("village");
+    expect(names).toContain("place_props");
+    // "props" 단독 토큰은 툴이 아니다 — place_props 와 혼동하지 않는다.
+    expect(names).not.toContain("props");
   });
 
   it("목표문에 적힌 툴도 수집한다", () => {
@@ -90,11 +91,12 @@ describe("planRequiredToolSchemas", () => {
   });
 
   it("deprecated 툴은 supersededBy 로 대체해 노출한다", () => {
-    // build_village(v1)는 deprecated + supersededBy=author_village — 계획이 v1 을 요구해도 v2 가 노출된다.
-    const schemas = planRequiredToolSchemas(plan([{ successTools: ["build_village"] }]));
+    // show_tiles 는 deprecated + supersededBy=tile_query — 계획이 옛 이름을 요구해도 대체 도구가 노출된다.
+    // (build_village→author_village 짝은 2026-10-07 저작권 정리로 둘 다 삭제됐다.)
+    const schemas = planRequiredToolSchemas(plan([{ successTools: ["show_tiles"] }]));
     const names = schemas.map((s) => s.function.name);
-    expect(names).toContain("author_village");
-    expect(names).not.toContain("build_village");
+    expect(names).toContain("tile_query");
+    expect(names).not.toContain("show_tiles");
     for (const schema of schemas) {
       expect(schema.type).toBe("function");
       expect(schema.function.description.length).toBeGreaterThan(0);

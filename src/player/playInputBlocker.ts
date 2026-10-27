@@ -31,6 +31,13 @@ type PlayPointerEvent = Pick<Event, "type" | "target"> & {
 /** 누름으로 취급하는 이벤트. 이동·호버는 포커스를 건드리지 않는다. */
 const PRESS_EVENTS = new Set<string>(["mousedown", "pointerdown", "touchstart"]);
 
+/** 휠로 읽는 목록. 누르기·호버는 그대로 막고, 스크롤만 브라우저에 맡긴다. */
+const WHEEL_SCROLL_SELECTOR = [
+  ".status-menu-detail-list",
+  ".dialogue-backlog-list",
+  ".dialogue-log-list",
+].join(", ");
+
 export function installPlayPointerBlocker(root: HTMLElement): () => void {
   const controller = new AbortController();
   const options = { capture: true, passive: false, signal: controller.signal };
@@ -80,8 +87,10 @@ function releaseStrandedTextEntryFocus(pressed: EventTarget | null): void {
 
 export function shouldBlockPlayPointerEvent(event: PlayPointerEvent): boolean {
   if (isExplicitPointerOwner(event.target)) return false;
-  // ESC 메뉴의 상세 목록(일정·엔딩 목록·갤러리 등)은 넘치면 휠로도 스크롤된다. 휠은 칸을 고르거나 누르지 않으므로 이 목록 위에서만 통과시킨다(2026-10-17 리뷰 B2: 휠이 막혀 scrollTop 이 0 이었다).
-  if (event.type === "wheel" && hasClosestTarget(event.target, ".status-menu-detail-list")) return false;
+  // 휠은 칸을 고르거나 누르지 않는다. 넘치는 읽기 목록 위에서만 통과시킨다.
+  // ESC 메뉴 상세(2026-10-17 리뷰 B2: 휠이 막혀 scrollTop 이 0)와 대화 기록·백로그.
+  // 백로그 안내는 「휠·↑↓ 넘겨 보기」인데, 키보드 전용 플레이에서 휠이 여기서 막혀 목록이 안 움직였다.
+  if (event.type === "wheel" && hasClosestTarget(event.target, WHEEL_SCROLL_SELECTOR)) return false;
   if (event.type !== "click") return true;
   // 키보드 커서 메뉴는 기존 버튼 핸들러를 재사용하기 위해 HTMLElement.click()을 합성한다.
   // 실제 마우스 click은 detail >= 1 이므로 막고, 키보드/테스트용 합성 click(detail 0/없음)은 통과시킨다.

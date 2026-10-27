@@ -2,11 +2,47 @@
 
 /* 라벨은 오버레이(검정~흰색 무엇이든) 위에 얹히니 자체 배경으로 대비를 확보한다. */
 .ecp-screen-effect-stage .ecp-fx-label {
-  z-index: 2;
+  z-index: 3;
   padding: var(--space-1) var(--space-2);
   border-radius: 999px;
   background: var(--bg-glass);
   box-shadow: 0 0 0 1px var(--border-subtle);
+}
+
+/* 레터박스 미리보기 — 런타임 띠(화면 높이 %)와 그 안쪽에 앉는 아래 대사창.
+   전이 없는 정지 그림이 도착 상태다. 재생 중에만 높이가 durationMs 동안 움직인다. */
+/* `ecp-screen-effect-${effect}` 가 무대 자신에도 붙으므로 띠 클래스에 effect 이름을 쓰지 않는다. */
+.ecp-letterbox-bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.ecp-letterbox-bar-top { top: 0; }
+.ecp-letterbox-bar-bottom { bottom: 0; }
+
+.ecp-letterbox-line {
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  z-index: 2;
+  height: 18%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  background: var(--bg-raised);
+  box-shadow: 0 0 0 1px var(--border-default);
+  color: var(--text-2);
+  font: 700 11px/1 var(--font-ui);
+  pointer-events: none;
+}
+
+.ecp-screen-effect-stage[data-play-state="playing"] .ecp-letterbox-bar:not(.is-fx-from),
+.ecp-screen-effect-stage[data-play-state="playing"] .ecp-letterbox-line:not(.is-fx-from) {
+  transition: height var(--ecp-fx-duration) ease-in-out, bottom var(--ecp-fx-duration) ease-in-out;
 }
 
 .ecp-screen-effect-play {

@@ -101,6 +101,48 @@ describe("screen effect authoring — stage and play control", () => {
     expect(overlay?.style.background).toBe("rgba(57,255,20,0.45)");
   });
 
+  it("letterbox preview draws the bars and parks the message line on their inner edge", () => {
+    const preview = previewOf({ effect: "letterbox", value: "12", durationMs: 800 });
+    const top = findByTestId(preview, "ecp-screen-effect-letterbox-top");
+    const bottom = findByTestId(preview, "ecp-screen-effect-letterbox-bottom");
+    const line = findByTestId(preview, "ecp-screen-effect-letterbox-line");
+    expect(top?.style.height).toBe("12%");
+    expect(bottom?.style.height).toBe("12%");
+    expect(line?.style.bottom).toBe("12%");
+    expect(preview.textContent).toContain("레터박스");
+    expect(preview.textContent).toContain("위아래 12%");
+    expect(preview.textContent).not.toContain("letterbox");
+
+    findByTestId(preview, "ecp-screen-effect-play")?.click();
+    expect(top?.className).toContain("is-fx-from");
+    expect(top?.style.height).toBe("0%");
+    expect(line?.style.bottom).toBe("0%");
+    flushFakeAnimationFrames();
+    expect(top?.className).not.toContain("is-fx-from");
+    expect(top?.style.height).toBe("12%");
+    expect(line?.style.bottom).toBe("12%");
+    expect(findByTestId(preview, "ecp-screen-effect-stage")?.style["--ecp-fx-duration"]).toBe("800ms");
+  });
+
+  it("an empty letterbox value previews the runtime default thickness", () => {
+    const preview = previewOf({ effect: "letterbox", value: "", durationMs: 300 });
+    expect(findByTestId(preview, "ecp-screen-effect-letterbox-top")?.style.height).toBe("12%");
+  });
+
+  it("a letterbox thicker than the runtime cap previews the capped bars", () => {
+    const preview = previewOf({ effect: "letterbox", value: "40", durationMs: 300 });
+    expect(findByTestId(preview, "ecp-screen-effect-letterbox-bottom")?.style.height).toBe("25%");
+    expect(preview.textContent).toContain("위아래 25%");
+  });
+
+  it("clear letterbox rests with the bars gone and the message line at the bottom", () => {
+    const preview = previewOf({ effect: "clearLetterbox", value: "", durationMs: 400 });
+    expect(findByTestId(preview, "ecp-screen-effect-letterbox-top")?.style.height).toBe("0%");
+    expect(findByTestId(preview, "ecp-screen-effect-letterbox-line")?.style.bottom).toBe("0%");
+    expect(preview.textContent).toContain("레터박스 걷기");
+    expect(preview.textContent).toContain("띠가 걷힌 뒤");
+  });
+
   it("invalid tint previews the runtime fallback (white wash) and says so (D3)", () => {
     const preview = previewOf({ effect: "tint", value: "#xyz", durationMs: 300 });
     const overlay = findByTestId(preview, "ecp-screen-effect-overlay");

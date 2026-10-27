@@ -15,6 +15,7 @@ import { getResourceProfileSpec } from "@/project/resourceProfiles";
 import { uploadedAssetUrl } from "@/project/persistence/assetAccessors";
 import type { Project, ResourceProfile, UploadedAsset } from "@/project/types";
 import { el } from "@/util/dom";
+import { toast } from "@/util/toast";
 import { jsonEqual } from "@/util/structuralJson";
 import { makeSvgIcon, type SvgIconName } from "@/editor/panels/tileToolbarIcons";
 import { deckIcon } from "./aiDeckIcons";
@@ -51,6 +52,8 @@ export type ResourceWorkbenchOptions = {
   /** 방금 가져온 자산 id. 그 줄을 짚어 주고 화면 안으로 끌어온다. */
   readonly recentAssetId?: string;
   readonly onDropFile?: (file: File) => void;
+  /** 폴더를 놓으면 이 확장자만 가져온다. 파일 하나를 놓는 경우는 기존 형식 검사를 탄다. */
+  readonly folderExtensions?: readonly string[];
   readonly onImportUrl?: (url: string) => void;
   /** 칩셋 탭에서 제작자 페이지를 연다. 파일은 그 페이지에서 사용자가 직접 받는다. */
   readonly onBrowseCreatorPage?: () => void;
@@ -143,6 +146,108 @@ export function refreshResourceWorkbenchCategories(container: HTMLElement): void
   workbenches.set(container, options);
 }
 
+/** 폴더 한 번에 가져오는 상한. 칩셋은 장마다 타일 크기를 묻으므로 무한정 열지 않는다. */
+export const RESOURCE_FOLDER_IMPORT_CAP = 24;
+const FOLDER_WALK_DEPTH = 4;
+const IMAGE_FOLDER_EXTENSIONS = ["png", "jpg", "jpeg", "webp", "gif"] as const;
+
+export type ResourceDropRead = {
+  readonly files: readonly File[];
+  readonly notice: string | null;
+  readonly noticeKind: "error" | "info";
+};
+
+function fileExtension(name: string): string {
+  const dot = name.lastIndexOf(".");
+  return dot <= 0 ? "" : name.slice(dot + 1).toLowerCase();
+}
+
+function entryOf(item: DataTransferItem): FileSystemEntry | null {
+  if (item.kind !== "file") return null;
+  try {
+    return item.webkitGetAsEntry?.() ?? null;
+  } catch {
+    return null;
+  }
+}
+
+function readFileEntry(entry: FileSystemFileEntry): Promise<File> {
+  return new Promise((resolve, reject) => entry.file(resolve, reject));
+}
+
+/**
+ * 끌어 놓은 항목에서 가져올 파일을 모은다.
+ * 폴더는 `dataTransfer.files` 에 폴더 이름만 한 장으로 들어오고, 그대로 가져오면
+ * 「알 수 없는 형식」이 뜬다. 폴더 안은 webkitGetAsEntry 로 읽고, 지금 분류의 확장자만 남긴다.
+ */
+export async function filesFromResourceDrop(
+  transfer: DataTransfer,
+  folderExtensions: readonly string[] = IMAGE_FOLDER_EXTENSIONS,
+): Promise<ResourceDropRead> {
+  const allowed = new Set(folderExtensions.map((ext) => ext.toLowerCase()));
+  const items = transfer.items ? [...transfer.items] : [];
+  const entries = items.map(entryOf).filter((entry): entry is FileSystemEntry => entry !== null);
+  if (entries.length === 0) {
+    return { files: transfer.files ? [...transfer.files] : [], notice: null, noticeKind: "info" };
+  }
+
+  const direct: File[] = [];
+  const fromFolders: File[] = [];
+  let sawDirectory = false;
+  let truncated = false;
+  const consider = async (entry: FileSystemFileEntry): Promise<void> => {
+    if (!allowed.has(fileExtension(entry.name))) return;
+    if (fromFolders.length >= RESOURCE_FOLDER_IMPORT_CAP) {
+      truncated = true;
+      return;
+    }
+    try {
+      fromFolders.push(await readFileEntry(entry));
+    } catch {
+      // 한 파일을 못 읽어도 같은 폴더의 나머지는 가져온다.
+    }
+  };
+  const walk = async (entry: FileSystemEntry, depth: number): Promise<void> => {
+    if (truncated) return;
+    if (depth > 0 && entry.name.startsWith(".")) return;
+    if (entry.isFile) {
+      await consider(entry as FileSystemFileEntry);
+      return;
+    }
+    if (!entry.isDirectory || depth >= FOLDER_WALK_DEPTH) return;
+    const reader = (entry as FileSystemDirectoryEntry).createReader();
+    for (;;) {
+      if (truncated) return;
+      const batch = await new Promise<FileSystemEntry[]>((resolve, reject) => reader.readEntries(resolve, reject));
+      if (batch.length === 0) break;
+      for (const child of batch) {
+        await walk(child, depth + 1);
+        if (truncated) return;
+      }
+    }
+  };
+  for (const entry of entries) {
+    if (entry.isDirectory) {
+      sawDirectory = true;
+      await walk(entry, 0);
+    } else if (entry.isFile) {
+      direct.push(await readFileEntry(entry as FileSystemFileEntry));
+    }
+  }
+  const files = [...direct, ...fromFolders];
+  if (sawDirectory && files.length === 0) {
+    return { files, notice: "이 폴더에서 지금 분류로 가져올 파일이 없습니다.", noticeKind: "error" };
+  }
+  if (truncated) {
+    return {
+      files,
+      notice: `폴더에서는 앞의 ${RESOURCE_FOLDER_IMPORT_CAP}개만 가져옵니다.`,
+      noticeKind: "info",
+    };
+  }
+  return { files, notice: null, noticeKind: "info" };
+}
+
 export function renderResourceWorkbench(container: HTMLElement, options: ResourceWorkbenchOptions): void {
   const project = store.getCurrent();
   // The monster catalog includes registrations absent from the project profile table.
@@ -183,13 +288,16 @@ export function renderResourceWorkbench(container: HTMLElement, options: Resourc
     shell.addEventListener("drop", (e) => {
       e.preventDefault();
       shell.classList.remove("rm-drag-over");
-      const files = e.dataTransfer?.files;
-      if (files && files.length > 0 && options.onDropFile) {
-        for (let i = 0; i < files.length; i++) {
-          const file = files[i];
-          if (file) options.onDropFile(file);
-        }
-      }
+      const transfer = e.dataTransfer;
+      if (!transfer || !options.onDropFile) return;
+      const deliver = options.onDropFile;
+      void filesFromResourceDrop(transfer, options.folderExtensions ?? IMAGE_FOLDER_EXTENSIONS).then(
+        (result) => {
+          if (result.notice) toast(result.notice, result.noticeKind);
+          for (const file of result.files) deliver(file);
+        },
+        () => toast("폴더를 읽지 못했습니다. 파일을 직접 끌어다 놓아 주세요.", "error"),
+      );
     });
   }
 
