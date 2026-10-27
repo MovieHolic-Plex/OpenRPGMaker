@@ -523,7 +523,9 @@ export function showEndingScreen(scene: PlaySceneContext, title: string, message
     // 부제와 요약 줄은 한 기둥 안에 흐른다 — 둘 다 절대 위치(55%·63%)였을 때 두 줄로 넘어간 엔딩 이름이
     // 「플레이 시간」 줄과 겹쳤다(시타마치 VQA before 12-ending-final).
     const meta = textNode("div", "ending-final-meta", "");
-    meta.append(textNode("div", "ending-final-caption", title));
+    // 큰 글자와 같은 이름을 한 번 더 쓰지 않는다 — 엔딩 이름을 finalTitle 로 그대로 둔 게임이 「마지막 밤의 손님들」을 두 줄 겹쳐 보였다(2026-10-27 toy-j91 J101).
+    const norm = (text: string): string => text.replace(/[\s「」『』"'·—-]/gu, "");
+    if (norm(title) !== norm(finalTitle.textContent ?? "")) meta.append(textNode("div", "ending-final-caption", title));
     const summary = endingSummaryLine(scene);
     if (summary) meta.append(textNode("div", "ending-final-summary", summary));
     final.append(meta);
