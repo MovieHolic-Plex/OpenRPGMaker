@@ -20,11 +20,12 @@ const NEW_STATE_IDS = [
   "state_silence",
 ] as const;
 
+// 위력은 아이템 재조정 뒤 기본 DB 값(defaultDatabaseStarterRecords.ts: 77·83·74·81)을 따른다.
 const ITEM_SKILLS = [
-  { id: "skill_item_frost_vial", elementId: "ice", power: 32, animationId: "anim_gen_ice_shatter" },
-  { id: "skill_item_quake_stone", elementId: "earth", power: 38, animationId: "anim_gen_earth_spike" },
-  { id: "skill_item_gale_fan", elementId: "wind", power: 29, animationId: "anim_gen_wind_slice" },
-  { id: "skill_item_shadow_dust", elementId: "dark", power: 36, animationId: "anim_gen_shadow_pulse" },
+  { id: "skill_item_frost_vial", elementId: "ice", power: 77, animationId: "anim_gen_ice_shatter" },
+  { id: "skill_item_quake_stone", elementId: "earth", power: 83, animationId: "anim_gen_earth_spike" },
+  { id: "skill_item_gale_fan", elementId: "wind", power: 74, animationId: "anim_gen_wind_slice" },
+  { id: "skill_item_shadow_dust", elementId: "dark", power: 81, animationId: "anim_gen_shadow_pulse" },
 ] as const;
 
 type BattleSetup = {

@@ -14,6 +14,7 @@ import {
   resetFollowerTrailNearPlayer,
 } from "@/project/followers";
 import { startSession } from "@/project/session";
+import { startOnRetiredCombinedTown } from "./support/retiredEasyRpgTilesets";
 import type { Command, EventPage, PlaySession, Project } from "@/project/types";
 
 const CAT = () => charsetFollowerGraphic("tex_easyrpg_charset_animal", 0);
@@ -65,7 +66,8 @@ describe("동료 간격 규칙", () => {
 
   it("맵 진입 궤적 초기화는 gap 만큼 길게 깔아 동료가 플레이어 칸에 겹치지 않게 한다", () => {
     const project = createBlankProject();
-    project.system.companions = { gap: 4 };
+    // 기본 따라오기는 빵부스러기(#3509) — 맵에 들어서면 일부러 주인공 칸에 겹쳐 선다. 간격 궤적은 spaced 모드에서 본다.
+    project.system.companions = { gap: 4, followMode: "spaced" };
     const session = startSession(project);
     addFollowerToSession(project, session, { actorId: "actor_hero", name: "가리" });
     addFollowerToSession(project, session, { graphic: CAT(), name: "야옹이" });
@@ -133,7 +135,8 @@ describe("동료 그래픽 프레임", () => {
 
 describe("동료 대형", () => {
   it("beside 대형은 앞 4명을 플레이어 인접 칸에 세우고 나머지는 일렬로 떨어뜨린다", () => {
-    const project = createBlankProject();
+    // TILE.GRASS 는 합본 마을 칸 번호다 — 버들항 시작 맵에 깔면 막힌 칸이 되어 옆자리가 사라진다(2026-10-07 정리).
+    const project = startOnRetiredCombinedTown(createBlankProject());
     project.system.companions = { formation: "beside" };
     const map = project.maps[project.startMapId];
     if (!map) throw new Error("map fixture missing");
@@ -158,7 +161,8 @@ describe("동료 대형", () => {
   });
 
   it("통행 불가 인접 칸은 옆자리로 쓰지 않는다", () => {
-    const project = createBlankProject();
+    // TILE.GRASS 는 합본 마을 칸 번호다 — 버들항 시작 맵에 깔면 막힌 칸이 되어 옆자리가 사라진다(2026-10-07 정리).
+    const project = startOnRetiredCombinedTown(createBlankProject());
     project.system.companions = { formation: "beside" };
     const map = project.maps[project.startMapId];
     if (!map) throw new Error("map fixture missing");

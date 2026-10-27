@@ -57,7 +57,8 @@ describe("전투 배경 겹", () => {
     const troop = normalizeTroopRecord({ id: "t", name: "동굴", enemyIds: [], backdropLayers: [{ preset: "mist", front: true, opacity: 40 }] });
     expect(troop.backdropLayers).toEqual([{ preset: "mist", front: true, opacity: 40 }]);
     const ctx = { project: createBlankProject() };
-    runTool(ctx, "upsert_enemy", { enemy: { id: "enemy_fx", name: "까마귀", stats: { maxHp: 30, attack: 10 } } });
+    // upsert_enemy 는 이름에 확실히 맞는 외형이 없으면 거절한다(monster-graphic-required) — 외형을 명시한다.
+    runTool(ctx, "upsert_enemy", { enemy: { id: "enemy_fx", name: "까마귀", monsterResourceId: "generated-enemy-bat-01", stats: { maxHp: 30, attack: 10 } } });
     const result = runTool(ctx, "upsert_troop", { troop: { id: "troop_fx", name: "폭풍 전야", enemyIds: ["enemy_fx"], backdropLayers: [{ preset: "rain" }, { preset: "fog", front: true, opacity: 35 }] } });
     expect(result.ok, JSON.stringify(result.issues)).toBe(true);
     expect(ctx.project.database.troops.find((entry) => entry.id === "troop_fx")?.backdropLayers).toHaveLength(2);
@@ -65,7 +66,7 @@ describe("전투 배경 겹", () => {
 
   it("members 만 준 새 트룹도 받는다(enemyIds 는 members 에서)", () => {
     const ctx = { project: createBlankProject() };
-    runTool(ctx, "upsert_enemy", { enemy: { id: "enemy_fx", name: "까마귀", stats: { maxHp: 30, attack: 10 } } });
+    runTool(ctx, "upsert_enemy", { enemy: { id: "enemy_fx", name: "까마귀", monsterResourceId: "generated-enemy-bat-01", stats: { maxHp: 30, attack: 10 } } });
     const result = runTool(ctx, "upsert_troop", { troop: { id: "troop_members", name: "배치만", members: [{ enemyId: "enemy_fx", x: 120, y: 140 }, { enemyId: "enemy_fx", x: 200, y: 150 }] } });
     expect(result.ok, JSON.stringify(result.issues)).toBe(true);
     expect(ctx.project.database.troops.find((entry) => entry.id === "troop_members")?.enemyIds).toEqual(["enemy_fx", "enemy_fx"]);
