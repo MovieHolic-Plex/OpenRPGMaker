@@ -195,6 +195,13 @@ SQLite revision 7 저장·재로드와 전용 플레이어 8비트(모든 집 �
 - **견본·증거**: `scripts/content/beodeul-capital/sample-map.mts`(새 프로젝트 번들만으로 34×30 견본 → project.sqlite 저장 → 다시 열어 네 층 대조) · `scripts/qa/runtime/astel-capital.capture.mjs`(전용 플레이어, 카메라 1배) · `tiledata/beodeul-capital/evidence/`.
 - 『폴른 스타』 왕도 맵(fs_hub 재건, `fallenAstel.ts`)은 사용자가 버렸다 — 이 묶음은 조각만 싣는다.
 
+
+## 던전 주제 2 꼬리 bd-pick-dungeon-theme2 (2026-10-27) — 칸 33,664~, 왕도 꼬리 바로 뒤
+- **왜**: 던전 주제 꼬리(30,848~33,151)는 뒤에 마당 꼬리가 붙어 자랄 수 없다. 출하된 번호를 옮기면(마당 BASE 이동) 저장된 맵이 깨지므로, 큰 조각은 시트 맨 끝에 새 꼬리로 덧붙인다(덧붙이기 전용, 감독 결정).
+- **첫 조각**: 마계 바닥 `other.ground` theme-floors-r12 — 224×160 판석 밭(키트 `bd-pick-dungeon-theme2-otherworld-floor` 14×10) + 벽 밑 그늘 줄(`…-otherworld-floor-wall-shade` 14×1), 154칸(33,664~33,817, 두 행).
+  시공기(profiles.ts `floor.field`)는 걷는 바닥을 칸 위치로 감아 깔고(방마다 밭 시작 해시 어긋남), 북쪽이 걷지 못하는 칸은 그늘 줄 같은 열. 오토타일은 없다(가장자리 47 변형을 쓰지 않는다).
+- **굽기**: `python3 scripts/content/beodeul-dungeon/bake_theme2.py` (칸 정본 `tiledata/beodeul-dungeon/theme2/`). 꼬리 사슬 끝: `bake_capital.py` 가 끝에서 `bake_theme2.py --from-store` 를 부른다. `bake_theme.py` 는 판석 밭(meta `fieldCols`) 항목을 「넘김」 하고 옛 정의를 지운다(옛 칸은 시트에 남아 옛 맵이 그대로 그린다).
+- **기존 사본**: `ensureBeodeulCityTileset` 이 꼬리 칸 표와 `bd-pick-dungeon-theme2-*` 키트를 더한다. 그 자리(33,664~)에 이식 칸이 있는 사본은 받지 않는다(`theme2Blocked`) — 시공기는 옛 주제 바닥 키트로 물러선다.
 ## 민가·성당 외장: 원본 보존 보정 (2026-10-04 사용자 정정)
 
 사용자 조건은 모든 집의 기초, 창문 다양화, 문 하나, 집별 벽 콘셉트 하나와 교회다.

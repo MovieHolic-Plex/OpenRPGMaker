@@ -1,0 +1,314 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e6aaedf8af6978fdf84e0df5ab4b6f87aade92f7a60d477802ffedd19c5b949c",
+ "width": 64,
+ "height": 16,
+ "kind": "terrain",
+ "name": "other.ground r3 A2",
+ "label": "dungeon/other.ground.r3.A2",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 평면 채움 (3/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (2/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "평면 채움 (3/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (2/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 3,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "dungeon",
+   "fallback": true,
+   "reason": "칩셋 dungeon 의 화풍 기준 묶음이 없다",
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 6,
+  "tileColorsP90": 7,
+  "darkV5": 35,
+  "nearBlackEdge": 0.21,
+  "opaqueTiles": 4
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ground tile texture (dark slate patches with purple crisscross lines)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a full 64x16 opaque seamless terrain tile. Column scan shows uniform lightness (L about 37) across rows 0-15 with no front-edge line, eave shadow, ellipse or front face. It is a flat top-down ground texture of dark slate patches separated by purple lines. This is expected for terrain and has no standing-object structure."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The measured facts are fine on paper: 5 visible tones per tile against 3 for grass and 7 for paving, 0% near-flat coverage, and 0% neutral dark edge pixels, so the dark tones lean blue rather than black. By eye the candidate is weaker than those numbers suggest. It shows as a thin band of dark zigzag or scale marks sitting on an empty slate field, not a full 4x3 patch with surface structure. The contrast between its tones is very low, so the marks read as one dark mass, and the pattern repeats mechanically. It has only 7 colours in total, against 80 for the grass, and it lacks the stone-by-stone shading and per-unit highlights of the paving. It would look thinner and flatter than either reference. With that doubt, I fail it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 16157
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ground tile texture (dark slate with purple crack pattern)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tile is a fully opaque 64x16 ground texture: a uniform dark slate-blue with a purple crack/vein pattern. The column scan shows one run across rows 0-15 with constant lightness (L~37). There is no front-edge line, eave shadow, vertical face or silhouette change, so it is a flat seamless terrain tile and not a standing object. It reads as a flat top-down surface, which is normal for terrain."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate does not read as a 4x3-tile ground patch. The board shows a large uniform dark slate field with only a thin zigzag band of dark blue pixels near the bottom. If that field is the candidate, it is a flat fill far larger than 5x5, which contradicts the 0% near-flat figure. The measured 5 visible tones and 7 raw colours per tile are low next to the grass reference (26 raw colours) and the 7-tone paving. The band shows only about 3 lightness steps and none of the per-stone shading or tuft clusters of the references. Dark edge pixels are 0% neutral, so the outline is tinted (dark_material_tone), and that is the one point in its favour. Even on the measured tone count alone it is no richer than the paving reference, and the picture shows a flat, sparse piece that does not cover the patch. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 13467
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ground tile (dark slate with purple crack pattern, full 64x16 swatch)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a flat, seamless terrain tile of dark slate patches separated by purple crack lines. The column scan shows uniform lightness (L about 37) over rows 0-15, and the width is a constant 64 across all rows. It has no front-edge line, no eave shadow, no ellipse, and no front face. This is a flat top-down ground texture, which is what the terrain kind expects, so it is not a standing object."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "By eye, the candidate is a dark slate field with only a thin zigzag band of dark blue along the bottom. It does not read as a 4x3-tile ground patch like the grass or paving references. Most of the area is one flat colour with no grain, tufts, stones or tile variation, so the 0% near-flat figure does not match what I see. Only about 7 colours exist in total, against 80 in the grass reference. The 5 visible tones per tile probably come from the band, not from a textured surface. The paving reference shows 7 tones with individually shaded stones, and the candidate has no equivalent. Dark edge pixels are tinted (0% neutral), so the outline is not a black sticker line, but that does not offset the missing surface texture and shading depth. A careful artist would not accept this next to the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 13058
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ground tile (dark slate with purple crack pattern)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tile is a full 64x16 opaque ground texture with uniform lightness (L about 37) in every column. It shows dark slate patches separated by purple crack lines and no front-edge line, eave shadow, ellipse or vertical front face. It is a flat terrain fill and not a standing object, so it reads as a top-down surface texture."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 3,
+    "evidence": "The candidate does not read as a 4x3-tile ground patch. Most of its area is a flat slate-blue field, and the only detail is a thin dark zigzag band of roughly 50x17 source pixels along the bottom. The zigzag is a repeated motif with little tonal variation, not grass tufts, soil grain or stones shaded one by one as in the Beodeul grass and paving references. I see about 4 usable lightness steps against 5-6 in the references. The measured facts are 5 visible tones per tile and 0% near-flat coverage, but the picture shows large uniform areas, so I treat the measured flat figure as unreliable here. Dark edge pixels are 0% neutral, so the outline is tinted blue-grey rather than near-black, which is fine. Overall it looks thinner and flatter than the references and does not fill the patch with texture the way they do.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 11653
+  }
+ ],
+ "decidedAt": "2026-10-25T11:47:03.929Z",
+ "cells": {
+  "16": [
+   "187fd7d3532c564b",
+   "5317144b8b6ba8ae",
+   "934b0dba3453897e",
+   "ba9dcf299ad78a6a"
+  ],
+  "24": [
+   "03177a14c136b54c",
+   "3f821767c3819a2b",
+   "40127ff1a33da193",
+   "45b5f626d9f480ec",
+   "674c7c9dc5d0986e",
+   "83b7510c214c6612",
+   "9dfdf03446584989",
+   "a7f9f98ff7fb4406",
+   "a9378f15eb77f4c8",
+   "a94f594d2d9de5d1",
+   "b978a1d9e4ed670a",
+   "bbe58ca772be139a",
+   "d3fa3b35c6bd803f",
+   "e0d5f5cffd9ab409",
+   "e0e5812eacef9f69",
+   "ef61ffee8e2b05e7",
+   "f2d276e65a293b17",
+   "f3c2be435bed0ec1"
+  ],
+  "32": [
+   "1f4e058ef16711d6",
+   "75442a0f600fae0d",
+   "8a3f883b89d50c17",
+   "d05f3ed29d289ccd"
+  ],
+  "48": [
+   "2e53c7b9a21c2436",
+   "3020421831b89e0e",
+   "523cb29a949a93ed",
+   "68fc74fc09c58a26",
+   "75ba5d99349ac3da",
+   "835e0f59735381fd",
+   "96957b9dae90002b",
+   "b50633de1f54533a",
+   "d531a9e1b43f10cd",
+   "d539a41ce0dd16e8",
+   "d6fdaf6486efd568",
+   "de3fd48080124ab7"
+  ]
+ }
+}

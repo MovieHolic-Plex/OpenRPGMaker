@@ -3564,6 +3564,37 @@
     "가운데 반복 이음 없음"
    ],
    "common": "테마 조각 — 재질이 동굴 줄과 무관한 그 주제 전용 그림"
+  },
+  {
+   "id": "tc.cave_stalactite",
+   "title": "종유석(벽 앞면 걸이) 1×1·2×1",
+   "kind": "objects",
+   "size": [
+    3,
+    1
+   ],
+   "layer": "upper",
+   "walk": "막힘(벽 앞면 위 덧칠 — 2칸 조각은 칸마다 x)",
+   "walk_grid": {
+    "기본": [
+     "x"
+    ]
+   },
+   "footprint": [
+    1,
+    1
+   ],
+   "brief": "자연 동굴 벽 앞면 윗단(바위 턱 바로 밑)에 매달린 흙빛 종유석. 그림 = [1칸|2칸]. 투명 바탕 — 줄 A 흙굴 바위 앞면에 얹힌다.",
+   "refs": [
+    "sea-cave:wall"
+   ],
+   "accept": [
+    "종유석으로 읽힘(이빨·창살·고드름 아님)",
+    "벽 앞면 위에서 보임",
+    "흙굴 바위와 같은 재질"
+   ],
+   "wave": "theme_climate",
+   "common": "동굴 바위 재질 걸이 — 줄 A 흙굴(자연 동굴) 한 벌"
   }
  ],
  "refs": {
@@ -4385,6 +4416,105 @@
     "gap.ice_rock"
    ],
    "lead": "r4 반려(납작한 윗면·흰 입술·파란 막대·자로 그은 밑 띠) → 고른 C2 바위 윗면에 서리, 앞면 = 층 진 바위 위 얇은 얼음 판(≈45%)·판 밑 고드름·바닥 눈 더미."
+  },
+  "theme-floors-r2": {
+   "module": "src/harnesses/dungeon-chipset/rounds/theme_floors_r2.py",
+   "wave": "theme_arcane",
+   "title": "던전 테마 바닥 다시 그림 theme-floors-r2",
+   "items": [
+    "other.ground"
+   ],
+   "lead": "r1 A2 Sonnet 블라인드 반려: 16px 세로 줄 반복·1화소 디더 잡음·돌/틈 대비 같음·벽 회녹과 색 끊김 → 엇갈린 돌, 결 절반·줄눈 곁, 틈 진하게, brick3 섞음."
+  },
+  "theme-floors-r3": {
+   "module": "src/harnesses/dungeon-chipset/rounds/theme_floors_r3.py",
+   "wave": "theme_arcane",
+   "title": "던전 테마 바닥 다시 그림 theme-floors-r3",
+   "items": [
+    "other.ground"
+   ],
+   "lead": "r2 A1 Argon 반려: 칸 경계 금 끊김·곧은 직교 금 격자·1화소 밝은 테(회로판)·올리브 막대 → 둘레 2화소 공유 계약, 대각 금, 테 없이 그늘 틈·일부 위 변 빛, 회녹은 빛 변 물만."
+  },
+  "theme-floors-r4": {
+   "module": "src/harnesses/dungeon-chipset/rounds/theme_floors_r4.py",
+   "wave": "theme_arcane",
+   "title": "던전 테마 바닥 다시 그림 theme-floors-r4",
+   "items": [
+    "other.ground"
+   ],
+   "lead": "r1~r3 손 판석 반려 → 허용된 theme-arcane-r1 arcane.tower_floor A1 짜임을 뼈대로 마계 색에 한 대 한 다시 칠함(A2 = 거울·순서 바꿈)."
+  },
+  "theme-floors-r5": {
+   "module": "src/harnesses/dungeon-chipset/rounds/theme_floors_r5.py",
+   "wave": "theme_arcane",
+   "title": "던전 테마 바닥 다시 그림 theme-floors-r5",
+   "items": [
+    "other.ground"
+   ],
+   "lead": "r2 A1 짜임 + 넓은 값 띠(vrock 전 단·arcane2, 6띠), 고정 둘레 고리(좌우 이음매), 올리브 막대 제거, 홈 깊이 변형별."
+  },
+  "theme-floors-r6": {
+   "module": "src/harnesses/dungeon-chipset/rounds/theme_floors_r6.py",
+   "wave": "theme_arcane",
+   "title": "던전 테마 바닥 다시 그림 theme-floors-r6",
+   "items": [
+    "other.ground"
+   ],
+   "lead": "r5 반려(16px 줄눈 격자·납작한 보라 덩이) → 둘레 무특징 잔결, 금은 칸 안에서만(빛 턱·그늘), 보라 빛 1~3화소, 판 볼록 덩이."
+  },
+  "theme-floors-r7": {
+   "module": "src/harnesses/dungeon-chipset/rounds/theme_floors_r7.py",
+   "wave": "theme_arcane",
+   "title": "던전 테마 바닥 다시 그림 theme-floors-r7",
+   "items": [
+    "other.ground"
+   ],
+   "lead": "r6 반려(칸마다 같은 금+점 격자·카펫 잔점) → 64×64 감김 판석 밭(판마다 기울기)·검은 줄눈·줄눈에서 새는 보라 빛, 16칸으로 잘라 몸통 변형."
+  },
+  "theme-floors-r8": {
+   "module": "src/harnesses/dungeon-chipset/rounds/theme_floors_r8.py",
+   "wave": "theme_arcane",
+   "title": "던전 테마 바닥 다시 그림 theme-floors-r8",
+   "items": [
+    "other.ground"
+   ],
+   "lead": "r7 반려(64px 반복·평면 판·가장자리 그늘 없음·적갈색·굵은 빛) → 128×96 밭(판 64), 3단 베벨, 보라 검정 바탕, 1px 줄눈 빛, 가장자리 그늘 사다리."
+  },
+  "theme-floors-r9": {
+   "module": "src/harnesses/dungeon-chipset/rounds/theme_floors_r9.py",
+   "wave": "theme_arcane",
+   "title": "던전 테마 바닥 다시 그림 theme-floors-r9",
+   "items": [
+    "other.ground"
+   ],
+   "lead": "r8 반려(가장자리 납작한 띠·붙인 판·2×2 반복) → 가장자리 47 변형 없이 112×80 밭을 칸 위치로 감아 깔고 벽 밑 줄은 그늘 줄 조각. 시트 여유 47칸 안(42칸)."
+  },
+  "theme-floors-r10": {
+   "module": "src/harnesses/dungeon-chipset/rounds/theme_floors_r10.py",
+   "wave": "theme_arcane",
+   "title": "던전 테마 바닥 다시 그림 theme-floors-r10",
+   "items": [
+    "other.ground"
+   ],
+   "lead": "r9 반려(넓은 바닥 112/80 반복) → 밝은 판 드물고 고르게, 빛 줄기 셋, 시공기 방마다 밭 시작 어긋남."
+  },
+  "theme-floors-r12": {
+   "module": "src/harnesses/dungeon-chipset/rounds/theme_floors_r12.py",
+   "wave": "theme_arcane",
+   "title": "던전 테마 바닥 theme-floors-r12",
+   "items": [
+    "other.ground"
+   ],
+   "lead": "r10 을 키움: 224×160 밭(칸 14×10) + 벽 밑 그늘 14, 시트 끝 주제 2 꼬리(33,664~)에 굽는다(감독 결정, 마당 BASE 는 그대로)."
+  },
+  "theme-cave-stal-r1": {
+   "module": "src/harnesses/dungeon-chipset/rounds/theme_cave_stal_r1.py",
+   "wave": "theme_climate",
+   "title": "자연 동굴 종유석 theme-cave-stal-r1",
+   "items": [
+    "tc.cave_stalactite"
+   ],
+   "lead": "profiles MISSING cave 종유석. 고른 고드름 A2 짜임을 줄 A 흙굴 바위 단(rim·cfloor)으로 — 1칸·2칸 손 그림."
   }
  }
 }

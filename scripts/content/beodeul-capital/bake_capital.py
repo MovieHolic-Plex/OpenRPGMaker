@@ -546,3 +546,8 @@ def main():
 
 if __name__ == "__main__":
     main()
+    # 왕도 꼬리 뒤(33,664~)의 던전 주제 2 꼬리(beodeul-dungeon/bake_theme2.py)는 이 스크립트가 시트를 다시 쓰면 잘린다 — 저장소대로 다시 붙인다.
+    _t2 = ROOT / "scripts/content/beodeul-dungeon/bake_theme2.py"
+    if not any(a in sys.argv for a in ("--gate-export", "--samples")) and _t2.exists() and (ROOT / "tiledata/beodeul-dungeon/theme2/cells.json").exists():
+        import subprocess
+        subprocess.run([sys.executable, str(_t2), "--from-store"], cwd=ROOT, check=True)

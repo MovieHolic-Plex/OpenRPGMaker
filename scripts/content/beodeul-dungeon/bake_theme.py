@@ -301,6 +301,38 @@ def bake_auto_floor(gid, kid, title, desc, rune_kid=None):
     return run
 
 
+def bake_field_floor(kid, title, desc):
+    """판석 밭 바닥(theme-floors-r9 마계 바닥): 오토타일 없이 키트 둘.
+    `<kid>` = 밭(fieldCols × 줄) — 시공기가 칸 위치로 감아 깐다(섞음 태그 없음).
+    `<kid>-wall-shade` = 밭 맨 윗줄과 같은 열 수의 「벽 밑 그늘 줄」 — 북쪽이 벽인 바닥 칸에 그 열 조각을 깐다."""
+    def run(st, p, line, meta, origin):
+        tags = ["주제", "바닥", "floor"] + themes_of(p["item"])[2:]
+        field, cols, shade = meta["field"], int(meta["fieldCols"]), meta["shadeRow"]
+        nrows = field.h // T
+        rows_ = []
+        for ry in range(nrows):
+            row = []
+            for cx in range(cols):
+                cv = dot.Cv(T, T)
+                cv.a[:] = field.a[ry * T:(ry + 1) * T, cx * T:(cx + 1) * T]
+                row.append(st.cell(cv, G.cm(f"버들항 던전 · {title} 밭 ({cx},{ry})", f"{desc} — 판석 밭 조각. 걸음.", tags, "passable", "lower"), origin))
+            rows_.append(row)
+        srow = [st.cell(t, G.cm(f"버들항 던전 · {title} 벽 밑 그늘 {i}", f"{desc} — 벽 바로 밑 바닥(벽 그림자). 걸음.", tags, "passable", "lower"), origin)
+                for i, t in enumerate(shade)]
+        kits = [G.kit(f"{KP}{kid}", f"버들항 던전 · {title} 판석 밭 {cols}×{nrows}", cols, nrows, blank(cols, nrows), rows_,
+                      desc=f"{desc} — {cols}×{nrows} 칸 판석 밭. 칸 위치로 감아 깐다(칸 (x,y) = 밭 (x%{cols}, y%{nrows})).",
+                      rules="걷는 바닥 전부. 섞지 말고 칸 위치로.", tags=tags, role="floor", repeat="repeat", layer_home="lower", themes=themes_of(p["item"])),
+                G.kit(f"{KP}{kid}-wall-shade", f"버들항 던전 · {title} 벽 밑 그늘 줄 {cols}×1", cols, 1, blank(cols, 1), [srow],
+                      desc=f"{desc} — 벽 바로 밑 줄. 열 = 칸 x % {cols} (밭 맨 윗줄과 같은 열).",
+                      rules="북쪽 이웃이 벽·천장인 바닥 칸.", tags=tags, role="floor", repeat="repeat", layer_home="lower", themes=themes_of(p["item"]))]
+        ids = sorted({t for k in kits for r in k["rows"] for t in r["tiles"] if t >= 0})
+        tg = dict(id=f"{G.TILEGROUP_PREFIX}_{p['item'].replace('.', '_')}", name=f"버들항 던전 주제 {title}", role="floor", source="bundled-default",
+                  defaultLayer="lower", confidence="high", tileIds=ids,
+                  description=f"{title} 판석 밭 {KP}{kid} + 벽 밑 그늘 {KP}{kid}-wall-shade. 하네스 {p['round']} {p['letter']}.", placementRules="걷는 바닥 전부.")
+        return [], [tg], kits
+    return run
+
+
 def bake_face(prefix, what, material, item_key):
     """벽 앞면 키트(피라미드 앞면과 같은 부품 배치) — prefix 「otherworld」 → otherworld-face-3h|2h(-glyph|-base|-alt)."""
     def run(st, p, line, meta, origin):
@@ -346,7 +378,8 @@ def bake_rim(gid, what, material, item_key):
 
 
 HANDLERS = {"arcane.tower_floor": bake_auto_floor("beodeul_dungeon_theme_tower_floor", "tower-floor", "마법탑 돌 바닥", "마법탑의 다듬은 돌 바닥", "tower-rune"),
-            "other.ground": bake_auto_floor("beodeul_dungeon_theme_otherworld_ground", "otherworld-floor", "마계 검은 돌 바닥", "마계의 갈라진 보라 검은 돌 바닥"),
+            "other.ground": (lambda st, p, line, meta, origin: (bake_field_floor("otherworld-floor", "마계 검은 돌 바닥", "마계의 갈라진 보라 검은 돌 바닥")
+                             if meta.get("fieldCols") else bake_auto_floor("beodeul_dungeon_theme_otherworld_ground", "otherworld-floor", "마계 검은 돌 바닥", "마계의 갈라진 보라 검은 돌 바닥"))(st, p, line, meta, origin)),
             "tc.pyr_floor": bake_pyr_floor, "tc.pyr_face": bake_pyr_face, "tc.pyr_rim": bake_pyr_rim, "tc.pyr_sand_trap": bake_pyr_sand_trap,
             "wall.other_face": bake_face("otherworld", "마계", "흑요석", "otherworld"), "wall.tower_face": bake_face("tower", "마법탑", "마름돌", "tower"),
             "wall.other_rim": bake_rim("beodeul_dungeon_ceiling_void", "마계", "흑요석", "otherworld"),
@@ -475,6 +508,14 @@ def main():
             continue
         origin = f"{p['item']}/{line}/{p['round']}:{p['letter']}@{dot.image_hash(im)[:8]}"
         before = st.added
+        if meta.get("fieldCols"):
+            # 큰 판석 밭(theme-floors-r12~)은 주제 2 꼬리(bake_theme2.py, 시트 끝)에 굽는다 — 이 꼬리의 옛 정의는 지운다(옛 칸은 남는다).
+            prev = st.baked.pop(f"{p['item']}|{line}", None)
+            for kind_, ids in ((prev or {}).get("defs") or {}).items():
+                for i in ids:
+                    st.defs[kind_].pop(i, None)
+            report.append(f"  넘김  {p['item']:24} {p['round']} {p['letter']} — 판석 밭은 bake_theme2.py 가 굽는다")
+            continue
         handler = HANDLERS.get(p["item"])
         if not handler and "parts" not in meta:
             report.append(f"  건너뜀 {p['item']:24} {p['letter']} — 부품 없는 항목(오토타일·벽)은 HANDLERS 에 손을 달아야 굽는다")

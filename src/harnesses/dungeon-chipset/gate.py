@@ -106,7 +106,16 @@ def autotile_checks(name, at):
         res16 = seam_big(dot.tiled(at.body32, 4, 4), 16, 16)
         seams += [f'{name} 32몸통 16칸 경계 {ax} {b:.1f} > 안쪽 {i:.1f}' for ax, b, i, f in res16 if f]
         info.append(', '.join(f'{name} 32몸통 16칸 {ax} {b:.1f}/{i:.1f}' for ax, b, i, _ in res16))
-    if len(at.bodies) > 1:   # 몸통 변형: 엔진과 같은 해시로 8×8 섞어 깔고 경계를 본다
+    field = getattr(at, 'field', None)
+    if field is not None:
+        # 판석 밭(칸 위치로 감아 까는 바닥, theme-floors-r8): 시공기가 실제로 까는 그대로 밭을 2×2 로 이어 깔고,
+        # 16px 칸 경계와 밭 감김 경계(밭 폭·높이마다) 둘 다 같은 기준(경계 > 안쪽×1.5 이고 +8)으로 본다. 해시 섞음은 이 바닥에 일어나지 않는다.
+        big = dot.tiled(field, 2, 2)
+        for w_, h_, nm in ((16, 16, '칸'), (field.w, field.h, '밭 감김')):
+            res = seam_big(big, w_, h_)
+            seams += [f'{name} 밭 {nm} {ax} 경계 {b:.1f} > 안쪽 {i:.1f}' for ax, b, i, f in res if f]
+            info.append(', '.join(f'{name} 밭 {nm} {ax} {b:.1f}/{i:.1f}' for ax, b, i, _ in res))
+    elif len(at.bodies) > 1:   # 몸통 변형: 엔진과 같은 해시로 8×8 섞어 깔고 경계를 본다
         res = seam_big(dot.mosaic(at, 8, 8), 16, 16)
         seams += [f'{name} 몸통 변형 섞음 {ax} 경계 {b:.1f} > 안쪽 {i:.1f}' for ax, b, i, f in res if f]
         info.append(', '.join(f'{name} 변형 섞음 {ax} {b:.1f}/{i:.1f}' for ax, b, i, _ in res))

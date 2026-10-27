@@ -1,0 +1,24 @@
+VERDICT: PASS
+
+No major defect for real use (built dungeons, 20x15 open room). Minor notes below.
+
+(1) Purple-black slabs: yes. Irregular Voronoi-like slabs, dark violet fill (~#2a2145 range) with near-black crack lines. Reads as purple stone, clearly different from the grey/blue Beodeul cave/volcano floor. Slab sizes vary (small ~8px to large ~35px), polygon outlines are not axis-aligned.
+
+(2) Repeat / grid / seams:
+- No 16px mortar lattice or tile seam anywhere. No straight lines at 16px multiples in 20x15 (floor-20x15-3x.png), in the 40x30 plane, or in any built dungeon.
+- 20x15 plane: a repeat exists but is NOT noticeable on slab structure. It is detectable only via the sparse glow dashes: the same glow marks recur at +672px (=224px) horizontally, e.g. (97,43)->(770,43), (263,138)->(935,138), (145,212)->(818,212), and at +480px (=160px) vertically, e.g. (97,43)->(97,523), (770,43)->(770,523), (460,90)->(460,570), (263,138)->(263,618). The two copies of a slab cluster around (97,43)/(770,43) look alike if you hunt for it, but nothing reads as a pattern at normal viewing. Minor.
+- 40x30 plane at 1x: the repeat is faintly visible as a regular lattice of tiny violet dots (about every 224 px across, 160 px down, e.g. around x~47/270/495, y~70/230/390). Slab texture itself does not show an obvious tiling. Minor note only (not a blocker per brief).
+- Built dungeons (seed1/2/3): floor patches are irregular, broken by walls, void, crystals, props; no repeat visible at all.
+
+(3) Flat fills / noise: slab interiors carry fine speckle plus a lighter top-left bevel and darker edge on most slabs; at 3x they are not flat fills. A few large slabs read slightly smooth/low-contrast (e.g. around (440,200) and (330,310) in the 20x15 3x image). It is cleaner and less noisy than the Beodeul reference, not flat. Minor.
+
+(4) Glow: very weak. Only single 3-4px violet dashes in a few cracks (3x: (97,43), (460,90), (263,138), (145,212), (363,430)). In built dungeons at 1x the floor glow is almost invisible; the violet read comes from crystals/portal/braziers, not the floor. Brief says "faint ... in some cracks", so acceptable, but if anything the floor under-delivers "demonic glow". Minor / optional: a few more or longer glowing crack segments.
+
+(5) Wall contact: built-seed1-crop-3x.png - floor below brick wall at (480-620,100-170) and under ledges at (140-380,140-200) is darker and shaded, giving contact shadow; wall-shade row at the top of the 20x15 plane is visibly darker and merges cleanly into the field. No light gap or bright seam between wall and floor. Ledge/stalactite bands overlay the floor correctly.
+
+(6) Quality vs Beodeul (same 3x): Beodeul volcano floor is a dithered noise field with rock edges and props; the otherworld floor is a more structured cracked slab mosaic with cleaner outlines and consistent light direction. Comparable or better in readability and consistent scale. Slight caveat: the uniform dark crack outlines and similar slab sizes give a little "cobble/vector mosaic" feel and the tonal range is narrow (dark overall), but it does not look cheap next to the reference and the otherworld identity is clear.
+
+Defects (all minor):
+- Glow marks repeat on a 224x160 lattice, visible at 40x30 1x as a regular dot grid, and detectable at 20x15 3x only by comparing glow positions.
+- Glow too sparse/small to read in built dungeons at 1x.
+- A few large slabs in the 20x15 plane (~(440,200), ~(330,310)) look smooth/low-detail.
