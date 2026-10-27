@@ -293,7 +293,7 @@ const utilityRecordSchema: JsonSchema = {
     battleBackgroundResourceId: { type: "string", description: BATTLE_BACKDROP_ID_HINT },
     footstepSoundResourceId: { type: "string" },
     characterDisplay: { type: "string", enum: ["normal", "transparent"] },
-    vehiclePassage: { type: "object", properties: { boat: { type: "boolean" }, ship: { type: "boolean" }, airshipLand: { type: "boolean" }, chocobo: { type: "boolean", description: "초코보가 걸을 수 없는 칸(숲 등)도 지난다" }, cart: { type: "boolean", description: "광산 수레가 다니는 칸(레일)" }, raft: { type: "boolean", description: "뗏목이 다니는 칸(강·얕은 물)" } }, additionalProperties: false },
+    vehiclePassage: { type: "object", properties: { boat: { type: "boolean" }, ship: { type: "boolean" }, airshipLand: { type: "boolean" }, chocobo: { type: "boolean", description: "초코보가 걸을 수 없는 칸(숲 등)도 지난다" }, cart: { type: "boolean", description: "광산 수레가 다니는 칸(레일)" }, raft: { type: "boolean", description: "뗏목이 다니는 칸(강·얕은 물). false 면 소형선만 다니는 물(호수 폴백)에서도 못 간다. 빼면 그 폴백" } }, additionalProperties: false },
     skillSubsetName: { type: "string" },
     skillId: { type: "string" },
     commonEventId: { type: "string", description: "battleCommands kind:commonEvent — 고르면 전투 중에 실행할 공통 이벤트 id(메시지·선택지·변수 조작을 그대로 쓴다)" },
@@ -346,7 +346,9 @@ const upsertDatabaseUtility: ToolDefinition = {
           airshipLand: (passage as Record<string, unknown>).airshipLand === true,
           ...((passage as Record<string, unknown>).chocobo === true ? { chocobo: true } : {}),
           ...((passage as Record<string, unknown>).cart === true ? { cart: true } : {}),
-          ...((passage as Record<string, unknown>).raft === true ? { raft: true } : {}),
+          ...((passage as Record<string, unknown>).raft === true || (passage as Record<string, unknown>).raft === false
+            ? { raft: (passage as Record<string, unknown>).raft === true }
+            : {}),
         },
       };
       draft.database.terrains ??= [];
