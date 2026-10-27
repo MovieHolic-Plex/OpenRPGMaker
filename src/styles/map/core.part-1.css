@@ -156,6 +156,8 @@ body[data-editor-tool="pan"] { --editor-tool-cursor: grab; }
 body[data-editor-tool="select"] { --editor-tool-cursor: crosshair; }
 body[data-editor-tool="collision"] { --editor-tool-cursor: not-allowed; }
 body[data-editor-tool="event"] { --editor-tool-cursor: pointer; }
+/* 높이 붓(relief)도 매핑이 없어 default 로 떨어졌다 — 땅을 올리고 내리는 붓이므로 위아래 화살표. */
+body[data-editor-tool="relief"] { --editor-tool-cursor: ns-resize; }
 
 /* 패닝 중에는 손을 쥔 모양으로 — 드래그가 먹고 있다는 즉시 신호. */
 body[data-editor-tool="pan"] .editor-layout .canvas-area .phaser-container:active {
