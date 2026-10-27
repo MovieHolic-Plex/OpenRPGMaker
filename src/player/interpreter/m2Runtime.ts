@@ -321,16 +321,16 @@ function upsertPicture(session: PlaySessionLike, fields: M2CommandFields): void 
     x: fieldNumber(fields, "x", previous?.x ?? 0),
     y: fieldNumber(fields, "y", previous?.y ?? 0),
   };
-  // 선택 필드는 명령에 포함될 때만 기록(기존 테스트의 정확한 형태 비교 유지).
-  if (hasField(fields, "scale") || hasField(fields, "zoom")) {
-    (picture as { scale?: number }).scale = fieldNumber(fields, hasField(fields, "scale") ? "scale" : "zoom", 100);
-  }
-  if (hasField(fields, "opacity")) {
-    (picture as { opacity?: number }).opacity = fieldNumber(fields, "opacity", 255);
-  }
-  if (hasField(fields, "rotation") || hasField(fields, "angle")) {
-    (picture as { rotation?: number }).rotation = fieldNumber(fields, hasField(fields, "rotation") ? "rotation" : "angle", 0);
-  }
+  // 위치만 옮기는 그림 이동(컷신 비트·편집기 폼)은 배율·불투명·회전을 안 적는다.
+  // 그 칸을 빼 버리면 렌더러가 기본값(100%·완전 불투명·0°)으로 읽어, 기울이거나
+  // 흐리게 둔 그림이 이동하는 동안 펴지고 선명해진다. 적힌 값만 바꾸고 나머지는
+  // 지금 그림을 잇는다. 아직 그림이 없으면 칸을 만들지 않는다(최소 기록).
+  const scale = carriedPictureNumber(fields, ["scale", "zoom"], previous?.scale, 100);
+  if (scale !== undefined) (picture as { scale?: number }).scale = scale;
+  const opacity = carriedPictureNumber(fields, ["opacity"], previous?.opacity, 255);
+  if (opacity !== undefined) (picture as { opacity?: number }).opacity = opacity;
+  const rotation = carriedPictureNumber(fields, ["rotation", "angle"], previous?.rotation, 0);
+  if (rotation !== undefined) (picture as { rotation?: number }).rotation = rotation;
   if (hasField(fields, "duration") || hasField(fields, "durationMs")) {
     (picture as { durationMs?: number }).durationMs = hasField(fields, "durationMs")
       ? Math.max(0, Math.round(fieldNumber(fields, "durationMs", 0)))
@@ -350,6 +350,17 @@ function upsertPicture(session: PlaySessionLike, fields: M2CommandFields): void 
 // 필드 존재 여부(값이 undefined 가 아님).
 function hasField(fields: M2CommandFields, key: string): boolean {
   return Object.prototype.hasOwnProperty.call(fields, key) && fields[key] !== undefined;
+}
+
+/** 명령에 적힌 첫 칸. 없으면 앞 그림의 값(그것도 없으면 undefined — 기본값 칸을 새로 만들지 않는다). */
+function carriedPictureNumber(
+  fields: M2CommandFields,
+  keys: readonly string[],
+  previous: number | undefined,
+  fallback: number,
+): number | undefined {
+  const key = keys.find((candidate) => hasField(fields, candidate));
+  return key ? fieldNumber(fields, key, fallback) : previous;
 }
 
 // Legacy picture commands used the duration field as seconds for small values.
