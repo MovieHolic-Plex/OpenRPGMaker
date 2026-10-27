@@ -60,21 +60,34 @@ export class ToolImageRasterImage {
 
   set src(value: string) {
     this.currentSrc = value;
-    queueMicrotask(() => {
-      try {
-        const raster = readRaster(value);
-        this.width = raster.width;
-        this.height = raster.height;
-        this.naturalWidth = raster.width;
-        this.naturalHeight = raster.height;
-        this.data = new Uint8ClampedArray(raster.data);
-        this.complete = true;
-        this.onload?.();
-      } catch (error) {
-        this.onerror?.(error);
-      }
+    this.loading = new Promise<void>((resolve, reject) => {
+      queueMicrotask(() => {
+        try {
+          const raster = readRaster(value);
+          this.width = raster.width;
+          this.height = raster.height;
+          this.naturalWidth = raster.width;
+          this.naturalHeight = raster.height;
+          this.data = new Uint8ClampedArray(raster.data);
+          this.complete = true;
+          this.onload?.();
+          resolve();
+        } catch (error) {
+          this.onerror?.(error);
+          reject(error);
+        }
+      });
     });
+    // 로드 실패를 onerror 로만 듣는 호출자도 있으므로 decode() 를 부르지 않으면 거부를 삼킨다.
+    this.loading.catch(() => undefined);
   }
+
+  // HTMLImageElement.decode(): 정적 사물 그림(cc0 아이콘 등)은 loadUnkeyedSpriteImage 가 onload 대신 이것을 기다린다.
+  decode(): Promise<void> {
+    return this.loading;
+  }
+
+  private loading: Promise<void> = Promise.resolve();
 }
 
 /** pngjs-backed Canvas stand-in used by tool image evidence tests. */
