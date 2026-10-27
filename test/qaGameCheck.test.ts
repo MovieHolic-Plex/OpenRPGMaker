@@ -149,6 +149,9 @@ describe("qa gameCheck — 무작위 인카운터 소모전", () => {
 // 보스(드래곤 급)를 잡아서 혼자·합류 파티·확인 레벨로 각각 다르게 이기게 만든 변형.
 // 패배는 게임 오버(canLose:false) — 자동 플레이가 「승리 분기 목표 미도달」로 보고하는 실제 보스전 손실을 재현한다.
 // 2026-09-24 도그푸딩 등대지기의 겨울(혼자만 패배, 동료 합류 후엔 엔딩)·잿불 광산(합류 파티도 도달 레벨에선 패배).
+// 보스 HP 는 기본 프로젝트 밸런스(createBlankProject 의 배우·기술)에 맞춘 값이다. 기본 밸런스가 바뀌어 옛 값(576·2000)은
+// 이미 2026-10-09 공개 기준(0d4f13e7c8)에서 두 실행 모두 졌다 — 그 앞 이력은 이 저장소에 없다. 2026-10-27 재측정 창:
+// 혼자 패배·합류 승리 = HP 300~500, 합류도 도달 레벨에선 패배·Lv10 모의전 승리 = HP 800~1200(성장 곡선). 각 창 가운데 값을 쓴다.
 function bossBattleProject(options: { maxHp: number; attack: number; growCurves?: boolean }): Project {
   const project = buildQaFixture("clean");
   const tyrant = structuredClone(project.database.enemies.find((enemy) => enemy.id === "enemy_dragon")!);
@@ -176,7 +179,7 @@ function bossBattleProject(options: { maxHp: number; attack: number; growCurves?
 
 describe("qa gameCheck — 보스 전투 패배는 전투 패배로 보고하고 레벨·합류 전제는 경고로 낮춘다", () => {
   it("혼자만 지고 동료 합류 실행은 엔딩까지 가면 막힘이 아니다(등대지기의 겨울 r3)", () => {
-    const report = runGameCheck(bossBattleProject({ maxHp: 576, attack: 130 }), { autoPlayBudgetMs: 20_000 });
+    const report = runGameCheck(bossBattleProject({ maxHp: 400, attack: 130 }), { autoPlayBudgetMs: 20_000 });
     const solo = report.autoPlay!.runs.find((run) => run.label === "기본 경로")!;
     expect(solo.ok).toBe(false);
     expect(solo.failure?.detail).toMatch(/이벤트 전투에서 패배해 게임 오버 — 승리 분기의 목표 명령에 닿지 않았습니다/u);
@@ -189,7 +192,7 @@ describe("qa gameCheck — 보스 전투 패배는 전투 패배로 보고하고
   });
 
   it("동료 합류 파티도 도달 레벨에선 지지만 확인 레벨(Lv10) 모의전에서 이기면 경고로 낮춘다(잿불 광산 r2)", () => {
-    const report = runGameCheck(bossBattleProject({ maxHp: 2000, attack: 140, growCurves: true }), { autoPlayBudgetMs: 20_000 });
+    const report = runGameCheck(bossBattleProject({ maxHp: 1000, attack: 140, growCurves: true }), { autoPlayBudgetMs: 20_000 });
     expect(codes(report as ReturnType<typeof check>)).toEqual([]);
     const warning = report.findings.find((finding) => finding.code === "autoplay-boss-attrition");
     expect(warning?.message).toContain("모의전으로는 동료 합류 파티 2명 Lv10 에서 승률");
