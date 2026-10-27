@@ -1,14 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { createBlankProject } from "@/project/defaults";
 import { resolveMaterialByLabel } from "@/project/tileVocabulary";
+import { retiredEasyRpgTileset } from "./support/retiredEasyRpgTilesets";
 
 /** 실패 모드 F3(`.omo/evidence/ai-assistant-failure-modes.md`): 모델이 `tile_query` 에서 본 그룹 이름을
  * 그대로 써도 해석기가 완전 일치만 받아 "찾지 못했습니다" 로 끝났고, 후보 목록마저 비어 있었다. */
 describe("타일 어휘 — 그룹 이름 후보와 실패 메시지", () => {
-  const tileset = (() => {
-    const project = createBlankProject();
-    return project.tilesets[Object.keys(project.tilesets)[0]!]!;
-  })();
+  // 옛 첫 칩셋 = 합본 마을. 2026-10-07 저작권 정리로 새 프로젝트의 첫 칩셋이 beodeul_city 가 되어 옛 칩셋을 직접 만든다(#3560 방식).
+  const tileset = retiredEasyRpgTileset("easyrpg_chipset_combined_town");
 
   it("그룹 이름의 앞머리만 말해도 그 그룹으로 시공한다", () => {
     const access = resolveMaterialByLabel(tileset, "꽃", { preferGroup: true });

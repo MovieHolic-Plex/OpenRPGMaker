@@ -2,11 +2,13 @@ import { describe, expect, it } from "vitest";
 import { runTool, type ToolContext } from "@/editor/tools";
 import { createBlankProject } from "@/project/defaults";
 import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
+import { retiredEasyRpgTileset } from "./support/retiredEasyRpgTilesets";
 
 function context(): ToolContext {
   const project = createBlankProject();
   const start = project.maps[project.startMapId];
-  const base = project.tilesets[COMBINED_TOWN_TILESET_ID];
+  // 합본 마을 시트는 2026-10-07 저작권 정리로 새 프로젝트에서 빠졌다 — 옛 정의를 틀로 쓴다(#3560 과 같은 방식). 없으면 tile_info 가 시트 크기를 못 읽는다.
+  const base = project.tilesets[COMBINED_TOWN_TILESET_ID] ?? retiredEasyRpgTileset(COMBINED_TOWN_TILESET_ID);
   for (const [id, count] of [["tiles_start", 2], ["tiles_target", 3], ["tiles_explicit", 1]] as const) {
     project.tilesets[id] = {
       ...structuredClone(base), id, count, tilesPerRow: 1,

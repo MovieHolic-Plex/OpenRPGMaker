@@ -5,10 +5,13 @@ import { selectPaletteTile } from "@/editor/panels/tilePalette";
 import { SAND_TILE } from "@/project/defaults/chipsetMapping";
 import { createBlankProject, TILE } from "@/project/defaults";
 import { store } from "@/project/store";
+import { startOnRetiredCombinedTown } from "./support/retiredEasyRpgTilesets";
 
 describe("tile palette selection", () => {
   beforeEach(() => {
-    store.replace(createBlankProject());
+    // 울타리 378·소품 441·FLOWERS·모래 번호는 합본 마을 시트 기준이다. 새 프로젝트는 beodeul_city 로 시작하므로
+    // (2026-10-07 저작권 정리, #3560 과 같은 이유) 옛 저장본처럼 시작 맵을 합본 마을 위에 둔다.
+    store.replace(startOnRetiredCombinedTown(createBlankProject()));
     editorState.set({ currentMapId: null, layer: "upper", tool: "fill", selectedTile: TILE.GRASS });
   });
 

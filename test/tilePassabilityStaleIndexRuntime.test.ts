@@ -26,6 +26,7 @@ import { store } from "@/project/store";
 import { terrainMayReach } from "@/project/tilePassabilityComponents";
 import type { EventPage, GameEvent, GameMap, Project } from "@/project/types";
 import { mockSprite } from "./runtimeEventPageFixtures";
+import { RETIRED_COMBINED_TOWN_TILESET_ID, withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 
 const SIZE = 12;
 const MAP_ID = "map_stale_index";
@@ -37,9 +38,12 @@ const DOOR = { x: WALL_X, y: 1 };
 type ScheduleScene = Parameters<typeof updateNpcSchedules>[0] & Parameters<typeof updateAutonomousNPCs>[0];
 
 function walledProject(): { readonly project: Project; readonly map: GameMap } {
-  const project = createBlankProject();
+  // TILE.GRASS/WATER 는 합본 마을 칩셋 번호다 — 2026-10-07 저작권 정리로 새 프로젝트 기본(beodeul_city)에서 뜻이 달라져 옛 칩셋을 심는다(#3560 과 같은 방식).
+  const project = withRetiredEasyRpgTilesets(createBlankProject());
   const map = createBlankMap("낡은 색인 테스트", SIZE, SIZE);
   map.id = MAP_ID;
+  map.tilesetId = RETIRED_COMBINED_TOWN_TILESET_ID;
+  map.tileSize = project.tilesets[RETIRED_COMBINED_TOWN_TILESET_ID]!.tileSize;
   map.lowerTiles = new Array(SIZE * SIZE).fill(TILE.GRASS);
   map.upperTiles = new Array(SIZE * SIZE).fill(-1);
   for (let y = 0; y < SIZE; y += 1) map.lowerTiles[y * SIZE + WALL_X] = TILE.WATER;
