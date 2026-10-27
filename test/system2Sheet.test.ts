@@ -87,7 +87,8 @@ describe("applyBattleSystemGraphic System2 wiring", () => {
       const node = document.createElement("div") as unknown as FakeElement;
       applyBattleSystemGraphic(node as unknown as HTMLElement);
 
-      expect(node.style["--runtime-battle-system2"]).toContain("System2C.png");
+      // EasyRPG System2 시트 파일은 2026-10-07 저작권 정리로 지워졌다 — 그림 URL 은 없고 게이지 변수만 남는다.
+      expect(node.style["--runtime-battle-system2"]).toBeUndefined();
       expect(node.style["--system2-hp-fill-size"]).toBe("250% 4800%");
       expect(node.style["--system2-sp-fill-size"]).toBe("250% 4800%");
       expect(node.style["--system2-at-fill-size"]).toBe("250% 4800%");

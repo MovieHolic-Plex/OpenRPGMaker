@@ -39,7 +39,8 @@ describe("system graphics resource application", () => {
     expect(battleNode.style["--runtime-window-skin"]).toContain("windowskin-warm.png");
     expect(systemNode.dataset.systemResource).toBe("windowskin-warm");
     // System2 is gauge chrome only — never border-image fill (that flooded orange panels).
-    expect(battleNode.style["--runtime-battle-system2"]).toContain("System2B.png");
+    // EasyRPG System2 시트 파일은 2026-10-07 저작권 정리로 지워졌다 — 옛 id 는 남되 그림 URL 은 풀리지 않는다.
+    expect(battleNode.style["--runtime-battle-system2"]).toBeUndefined();
     expect(battleNode.dataset.battleSystemResource).toBe("easyrpg-system2-system2-b");
   });
 
@@ -55,7 +56,8 @@ describe("system graphics resource application", () => {
 
   it("applies title background from resource id", () => {
     const node = document.createElement("div") as unknown as FakeElement;
-    applyTitleScreenBackground(node as unknown as HTMLElement, "easyrpg-title-title3");
-    expect(node.style.backgroundImage).toContain("Title3.png");
+    // EasyRPG Title3 은 2026-10-07 저작권 정리로 지워졌다 — 지금 기본 타이틀(oprn-title-field)로 잰다.
+    applyTitleScreenBackground(node as unknown as HTMLElement, "oprn-title-field");
+    expect(node.style.backgroundImage).toContain("oprn-title-field.png");
   });
 });
