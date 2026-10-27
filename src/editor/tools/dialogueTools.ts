@@ -56,6 +56,24 @@ function matchesKind(line: DialogueLine, kind: string): boolean {
   return true;
 }
 
+/**
+ * 게임 속 물건을 부르는 말은 사람마다 다르다(사용자 「터미널」 ↔ 게임 글 「단말」·이벤트 「기계 패널」).
+ * 낱말 그대로는 한 줄도 없을 때만 이 묶음으로 넓히고, 넓혔다는 사실을 결과에 적는다.
+ */
+const QUERY_SYNONYMS: readonly (readonly string[])[] = [
+  ["터미널", "단말", "단말기", "콘솔", "컴퓨터", "패널", "모니터", "화면"],
+  ["표지판", "팻말", "간판", "안내판", "비석", "표지석"],
+  ["편지", "서신", "쪽지", "메모"],
+  ["일기", "일지", "기록", "수첩"],
+  ["책", "책장", "서가", "고서"],
+  ["게시판", "벽보", "공고"],
+];
+
+function widenQuery(query: string): readonly string[] {
+  const group = QUERY_SYNONYMS.find((words) => words.some((word) => word === query || query.includes(word)));
+  return group ? group.filter((word) => word !== query) : [];
+}
+
 /** 맵을 뺀 같은 거르개 결과를 자리(맵·공용 이벤트·전투…)별로 센다. 많은 순 6곳. */
 function otherMapCounts(project: Project, lines: readonly DialogueLine[]): { mapId?: string; where: string; count: number }[] {
   const counts = new Map<string, { mapId?: string; where: string; count: number }>();
@@ -79,7 +97,7 @@ const listDialogue: ToolDefinition = {
   parameters: {
     type: "object",
     properties: {
-      query: { type: "string", description: "원문·화자·자리(맵·이벤트 이름)에 들어 있는 낱말." },
+      query: { type: "string", description: "원문·화자·자리(맵·이벤트 이름)에 들어 있는 낱말. 그대로는 없으면 같은 물건을 부르는 다른 말(터미널→단말·패널…)로 넓혀 찾고 결과에 밝힌다." },
       speaker: { type: "string", description: "이 화자의 대사만(대사 명령의 화자 이름 그대로)." },
       mapId: { type: "string", description: "이 맵의 이벤트 대사만. 사용자가 맵을 말하지 않았으면 비운다(대사는 다른 맵에 있을 수 있다). 0줄이면 결과의 elsewhere 가 다른 맵을 알려 준다." },
       scope: { type: "string", enum: ["all", "map", "common", "troop", "database", "quest", "ending"], description: "map=맵 이벤트, common=공용 이벤트, troop=적 그룹 전투 이벤트, database=아이템·장비·스킬 설명, quest=퀘스트 일지 제목·요약·단계, ending=엔딩 제목·머리말·크레딧·에필로그 대사." },
@@ -108,12 +126,20 @@ const listDialogue: ToolDefinition = {
     // 화자 칸은 자유 문자열이다(「심문관 발렌」). 정확히 같은 이름이 없으면 이름에 낱말이 든 화자를 모두 본다.
     const exactSpeaker = !speaker || all.some((line) => line.speaker === speaker);
     const speakerMatches = (name: string): boolean => !speaker || (exactSpeaker ? name === speaker : name.includes(speaker));
+    const haystack = (line: DialogueLine): string => `${line.text}\n${line.speaker}\n${line.groupLabel}`.toLocaleLowerCase();
+    // 낱말 그대로는 어느 맵에도 없으면 같은 물건을 부르는 다른 말로 넓힌다.
+    const widened = query && !all.some((line) => haystack(line).includes(query)) ? widenQuery(query) : [];
+    const queryHits = (line: DialogueLine): boolean => {
+      if (!query) return true;
+      const text = haystack(line);
+      return text.includes(query) || widened.some((word) => text.includes(word));
+    };
     const matches = (line: DialogueLine, withMap: boolean): boolean =>
       (scope === "all" || line.scope === scope)
       && matchesKind(line, kind)
       && speakerMatches(line.speaker)
       && (!withMap || !mapId || line.mapId === mapId)
-      && (!query || `${line.text}\n${line.speaker}\n${line.groupLabel}`.toLocaleLowerCase().includes(query))
+      && queryHits(line)
       && Array.from(line.text).length >= minChars
       && (args.overflowOnly !== true || (dialogueLineUsesMessageWindow(line) && estimateLineFit(project, line, line.text)?.overflow === true));
     const filtered = all.filter((line) => matches(line, true));
@@ -137,9 +163,10 @@ const listDialogue: ToolDefinition = {
       : {};
     return {
       summary: `대사 ${filtered.length}줄 중 ${page.length}줄 (offset ${offset}${nextOffset !== null ? ` → 다음 ${nextOffset}` : ""})`
+        + (widened.length ? ` — 「${query}」 그대로는 게임 글에 없어 ${widened.join("·")} 로 넓혀 찾았다` : "")
         + (elsewhere.length ? ` — 이 맵에는 없고 다른 곳에 있다: ${elsewhere.map((entry) => `${entry.where} ${entry.count}줄`).join(", ")}. mapId 를 빼거나 그 맵 id 로 다시 부른다` : "")
         + (exactSpeaker ? "" : ` — 화자 「${speaker}」가 정확히 없어 이름에 그 낱말이 든 화자(${[...new Set(filtered.map((line) => line.speaker))].slice(0, 6).join("·") || "없음"})를 보였다`),
-      data: { total: filtered.length, offset, nextOffset, rows: page.map((line) => compactRow(project, line, pending)), ...(elsewhere.length ? { elsewhere } : {}), ...head },
+      data: { total: filtered.length, offset, nextOffset, rows: page.map((line) => compactRow(project, line, pending)), ...(elsewhere.length ? { elsewhere } : {}), ...(widened.length ? { widenedQuery: widened } : {}), ...head },
     };
   },
 };
