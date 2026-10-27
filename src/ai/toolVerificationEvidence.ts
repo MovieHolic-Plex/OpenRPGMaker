@@ -102,12 +102,24 @@ function coerceSchemaInteger(value: unknown): number | null {
   return typeof numeric === "number" && Number.isSafeInteger(numeric) ? numeric : null;
 }
 
+/**
+ * set_work_plan skips schema normalization, so one verification check or one
+ * interaction target often arrives as the object itself. Preflight already wraps
+ * that shape, then rejects the plan because the stored item dropped it.
+ * A string, null, or other non-object stays absent.
+ */
+function singleOrList(raw: unknown): readonly unknown[] | null {
+  if (Array.isArray(raw)) return raw;
+  return acceptanceRecord(raw) ? [raw] : null;
+}
+
 /** Partial ownership can be retained while pending; executable scopes require every interaction. */
 export function parseSceneInteractionTargets(input: SceneTestInput, raw: unknown, complete = true): SceneInteractionReceipt[] | null {
-  if (!Array.isArray(raw)) return null;
+  const list = singleOrList(raw);
+  if (!list) return null;
   const targets: SceneInteractionReceipt[] = [];
   let previous = -1;
-  for (const target of raw) {
+  for (const target of list) {
     const stepIndex = acceptanceRecord(target) ? coerceSchemaInteger(target.stepIndex) : null;
     if (!acceptanceRecord(target) || Object.keys(target).some(k => !["stepIndex", "mapId", "eventId"].includes(k))
       || stepIndex === null || stepIndex <= previous
@@ -121,8 +133,9 @@ export function parseSceneInteractionTargets(input: SceneTestInput, raw: unknown
 }
 
 export function parseVerificationChecks(raw: unknown): readonly VerificationCheck[] | undefined {
-  if (!Array.isArray(raw)) return undefined;
-  const parsed = raw.flatMap((entry): VerificationCheck[] => {
+  const list = singleOrList(raw);
+  if (!list) return undefined;
+  const parsed = list.flatMap((entry): VerificationCheck[] => {
     if (!acceptanceRecord(entry) || typeof entry.tool !== "string" || !VERIFICATION_TOOL_NAMES.has(entry.tool)
       || (entry.checkId !== undefined && (typeof entry.checkId !== "string" || !entry.checkId))) return [];
     const reference = typeof entry.checkId === "string" ? { checkId: entry.checkId } : {};
@@ -142,7 +155,7 @@ export function parseVerificationChecks(raw: unknown): readonly VerificationChec
     }
     return entry.interactionTargets === undefined ? [{ ...reference, tool: entry.tool, args }] : [];
   });
-  return parsed.length === raw.length ? parsed : undefined;
+  return parsed.length === list.length ? parsed : undefined;
 }
 
 function sceneIdentity(args: Record<string, unknown>): unknown {
