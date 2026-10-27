@@ -55,7 +55,7 @@ def main():
     if sheet_count < G.BASE:
         sys.exit(f"시트 count {sheet_count} < 주제 2 시작 {G.BASE} — 왕도 꼬리(bake_capital.py)부터 굽는다")
     report, blocked = [], []
-    for p, line in B.current_picks():
+    for p, line in B.current_picks()[0]:
         if p["item"] not in THEME2_ITEMS:
             continue
         m, cv, meta = G.render(p)

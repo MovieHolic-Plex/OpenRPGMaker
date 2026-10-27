@@ -306,3 +306,11 @@ OBJECT_GATE_DATA=/home/main/z-project/rpg-zzu-object-gate-holds/harness-data/obj
 - 탑 링 키트는 구웠지만 시공기가 아직 자동으로 놓지 않는다.
 
 증거: `verify-shots/dungeon-gap-bake/`(`compose-proof.mts` → `render-proof.py`, 장면 f0~f3, `castle-tower-door-door-open.png`).
+
+
+## 2026-10-27 판: 얼음굴 벽 gap-ice-r5 · 마계 바닥 theme-floors-r12 · 동굴 종유석
+- **얼음굴 벽 `gap.ice_rock`** — r3·r4 독립 Sonnet 반려 뒤 r5 A1(고른 줄 C2 바위 윗면 + 서리, 층 진 바위 위 결정면 얼음 막·고드름·눈 더미) 위임 허용으로 굽힘(#3863). 원문 `evidence/ice-wall-vqa-raw/`.
+- **마계 바닥 `other.ground`** — r5~r10 반려(16px 줄눈 격자 → 평면 판 → 가장자리 띠 → 넓은 판에서 밭 반복). r12 = 224×160 판석 밭을 칸 위치로 감아 깔기 + 벽 밑 그늘 줄, 주제 2 꼬리(시트 끝 33,664~)에 굽는다. 원문 `evidence/og-vqa-raw/og-r12-sonnet.txt`(PASS).
+  판석 밭 판은 meta `fieldCols`·`field`·`shadeRow` 를 내고, 관문 S 는 해시 섞음 대신 밭을 그대로 깔아 16px 칸 경계·밭 감김 경계를 잰다(`gate.py autotile_checks` 의 `at.field`).
+  왕 타일(가장자리 색 16칸) 시도는 16px 격자로 읽혀 버렸다(판 기록 없음).
+- **동굴 종유석 `tc.cave_stalactite`** — profiles MISSING cave. 고드름 A2 짜임을 줄 A 흙굴 바위 단으로(theme-cave-stal-r1).

@@ -799,18 +799,6 @@
    "evidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-arcane-r1-panel-3.json"
   },
   {
-   "round": "theme-arcane-r1",
-   "item": "other.ground",
-   "line": "*",
-   "letter": "A2",
-   "sha256": "91dbc23f6164cc54c36188bf529ff5e39787c755920c8d51ea56ce00350e9671",
-   "note": "",
-   "at": "2026-10-23T13:53:52",
-   "by": "delegated",
-   "delegatedBy": "delegated by user to supervisor 2026-10-23",
-   "evidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-arcane-r1-panel-10.json"
-  },
-  {
    "round": "theme-earth-r1",
    "item": "earth.rails",
    "line": "*",
@@ -1217,6 +1205,18 @@
    "by": "delegated",
    "delegatedBy": "delegated by user to supervisor 2026-10-27",
    "evidence": "harness-data/dungeon-chipset/evidence/2026-10-27-gap-ice-r5-panel.json"
+  },
+  {
+   "round": "theme-floors-r12",
+   "item": "other.ground",
+   "line": "*",
+   "letter": "A1",
+   "sha256": "42c3f8e1503b12c465448d622295e3374fe193dd2b7849dbe969687e859c424c",
+   "note": "Sonnet VQA r12 PASS; object-gate PASS (advisory)",
+   "at": "2026-10-27T21:29:01",
+   "by": "delegated",
+   "delegatedBy": "delegated by user to supervisor 2026-10-27",
+   "evidence": "harness-data/dungeon-chipset/evidence/2026-10-27-other-ground-r12-panel.json"
   }
  ],
  "rejects": [],

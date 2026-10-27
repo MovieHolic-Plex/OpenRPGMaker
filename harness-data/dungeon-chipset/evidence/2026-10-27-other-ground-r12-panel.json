@@ -1,0 +1,6 @@
+{"date":"2026-10-27","round":"theme-floors-r12","item":"other.ground","pick":"A1","artSha256":"42c3f8e1503b12c465448d622295e3374fe193dd2b7849dbe969687e859c424c",
+ "objectGate":{"A1":"PASS fc5e1b4ec3847e770face792cf686cce4c9f475afaad2389d3dd9f9e54abb342 terrain (profile uncalibrated: advisory)"},
+ "vqa":{"reviewer":"klb-sonnet-5-5 (one blind adversarial reviewer)","history":"r5-r10 FAIL; r12 PASS (built dungeons + 20x15 plane; minor: glow lattice faint at 40x30 1x)",
+        "raw":["harness-data/dungeon-chipset/evidence/og-vqa-raw/og-r12-sonnet.txt"]},
+ "bake":"theme2 tail at sheet end (33,664~), coordinator decision 2026-10-27: append-only, BEODEUL_YARD_BASE unchanged",
+ "decision":"supervisor-delegated allow of A1 (user delegated decisions to supervisor; 2026-10-21 rule)"}

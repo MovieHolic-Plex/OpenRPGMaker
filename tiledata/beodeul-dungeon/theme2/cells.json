@@ -1,0 +1,3408 @@
+{
+"base": 33664,
+"cells": [
+{
+"key": "a12ab38b740548579bc03788",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (0,0)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "06ad35cd68e22e57c8b584eb",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (1,0)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "3c387d91e99fdc32250ef839",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (2,0)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "f8bb868801a51ba57476261b",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (3,0)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "cf941b04af3bc78f3521dc61",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (4,0)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "3c22112d4cf0abe7c417abea",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (5,0)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "c31aae8db65111c2ace37382",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (6,0)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "005fbe7d37a7387420bbde7a",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (7,0)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "2dd803022716b837a1eeac1f",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (8,0)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "37de691791a2628294d1f68c",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (9,0)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "0e11a221d384fb74d74dfd1b",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (10,0)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "ed4ca9e90876fcb5c83671b8",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (11,0)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "1e15b388effce160c112e1d2",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (12,0)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "33748b4e848accab5194265b",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (13,0)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "53453c5c99205c7ef9c986fe",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (0,1)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "5717514c920613b9241c6f16",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (1,1)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "3b40053366e897f0c02069dd",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (2,1)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "1f0f3e3b13adf3357e39bc0c",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (3,1)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "62f5c624741a19e580161f24",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (4,1)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "318e2595f6259458971abd68",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (5,1)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "17ada1c6354776bfb16346ca",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (6,1)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "2705edd7dbb570215d59eb2e",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (7,1)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "fef13d502191eb056f3963e3",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (8,1)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "1d806047b1c5a6d3afb5467f",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (9,1)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "7c14131a97deccb1343d02fc",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (10,1)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "82b724875aa0bf33dea23ca4",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (11,1)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "614e750ff2084d4056840433",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (12,1)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "cef3c89c66f722b3600defe5",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (13,1)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "4dfd36a84612e9573bfa1ba0",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (0,2)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "0bdedb0da95e12cb9c050eac",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (1,2)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "978a0fd4a8c6e99838d0401b",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (2,2)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "85b346b239ba310e8e3225cb",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (3,2)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "00b504f291e0a5445247de9e",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (4,2)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "82a7f8d737d1a917f6a34ada",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (5,2)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "9c589d8671de0f7a0276bbe6",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (6,2)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "6d14215a06b9c85e82f08d0d",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (7,2)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "e5fe0dba28ece7d2903a1260",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (8,2)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "09ec7ba949a829b5a95542e0",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (9,2)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "48400e0efcacb684e24837a7",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (10,2)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "96b720bf3306b9ea4632633c",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (11,2)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "382c4173c85efcebcdc33637",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (12,2)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "9d4ca3ac97409fc534caa30a",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (13,2)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "88ce397d7ee39eb0d0eaea38",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (0,3)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "ef2efca0f65b66f1e93b5cfe",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (1,3)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "0cedc2461834a9e005e1c276",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (2,3)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "b080687c988c42ee338c77d0",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (3,3)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "8532afcc209874df3a713e61",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (4,3)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "7a97f232dd94d1789864c9ef",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (5,3)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "039085a4e86254ff7887922f",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (6,3)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "c196313e9398b8bd8661c55a",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (7,3)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "d1d9b635122e04c55081ac56",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (8,3)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "e16ac80362547fef318d9b26",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (9,3)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "a105db2e7fe3515285457864",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (10,3)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "819625368b475fa5d36bfdc5",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (11,3)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "b049b719453149f63ae20ad5",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (12,3)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "ac79b93e6aed8705c61d4e9d",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (13,3)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "50b28f9f8168ae43e8cb862d",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (0,4)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "8b7df69f77021ba9ca9e8296",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (1,4)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "6e0bc7884950aae392d68526",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (2,4)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "1d5524ae299bd3721c58d111",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (3,4)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "fc4b2532886b374b2ca76d5d",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (4,4)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "647959c5742d234fc733b824",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (5,4)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "ad157be50df72f6bf8b11ec6",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (6,4)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "3122d730b14b3cea340ef2a7",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (7,4)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "05752a7dc3a37dcea3b1c359",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (8,4)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "40a337fc46bfa6e8a2e1b52a",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (9,4)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "1d40342cad9f34727f391235",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (10,4)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "0e94ec6efa8cc966e3b239b5",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (11,4)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "30122c09d898ea461edc926b",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (12,4)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "189a674c1b3d00dabe2140f7",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (13,4)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "4344bcd6be104c3d93801012",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (0,5)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "2a0c4f01f58feca08d256a27",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (1,5)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "ad1a3bb1f7208de55315fabd",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (2,5)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "fd70217256f7aad3a23a56f0",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (3,5)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "ad16a28c8e901454269e237b",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (4,5)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "2f1ff982bb6d49bc967f80c6",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (5,5)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "d1c786e4708a1aeacf1278a1",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (6,5)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "f76c468d384e83e29724f602",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (7,5)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "080f6c2dc1b10dd0712ea0b1",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (8,5)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "591c6fe7bf4c26e6986784e1",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (9,5)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "99d4344a571b2be7fb27850a",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (10,5)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "a970ed48dedd548cc640e92a",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (11,5)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "bd0fd96501e620562bc2ad8d",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (12,5)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "fd2dc2386f61234aac9a1258",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (13,5)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "431f818ade4dc3765e752a7b",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (0,6)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "473dffea834cd54b865866bc",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (1,6)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "2e62d88ea4c5249dce733cd7",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (2,6)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "3c169cd406e2e4a185e6c0fc",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (3,6)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "c1c748f07ddf128af9550212",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (4,6)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "05462035f0ebd0a298995ef1",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (5,6)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "66dcbe962a6b217c4c6126af",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (6,6)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "148f9d806d6fca3cb34e9c5c",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (7,6)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "f6c8bba26878628252c9b85d",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (8,6)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "c6af99a5a68155f90b3de7b7",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (9,6)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "0f8039ebfb1c19c8a6fbfd3b",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (10,6)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "361c27a9281e11d07a61098f",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (11,6)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "d93e30cab90db1798b8f0a24",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (12,6)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "3f7918f72715e0235333fe05",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (13,6)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "e71a96c8220b4058e458c390",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (0,7)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "1159af8b0bccb199abc5e808",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (1,7)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "a2e56420b0f41eb0bf437e5d",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (2,7)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "99ca618705ebf00a9f6dcafc",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (3,7)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "c195090bca54e0a8597a0133",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (4,7)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "b844a4f5ef782296ea10d3c3",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (5,7)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "609e649b39a14b3db7bb3840",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (6,7)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "7c9bf2a120ed7d211f9b33f1",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (7,7)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "74e54767786ca477c69c1624",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (8,7)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "4951517afbfc572419329873",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (9,7)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "cea7691118c97ce1df9878f0",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (10,7)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "3949a072dfd0253baf8eac6c",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (11,7)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "96b8662404718c9be67169f1",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (12,7)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "a8ce9767b006f1c6fa11a147",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (13,7)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "d7ce2e7f8735dc82e681a729",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (0,8)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "a7634d32577e38eee5baf6a9",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (1,8)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "93d322d981133f8e146c39ee",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (2,8)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "b1279d0f76c0ff3d0f4c96df",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (3,8)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "d2b49c6b932eca7e76223d4b",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (4,8)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "5d431c0cdc08fbfe5bfc5f73",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (5,8)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "10379df8f772c1df9f2a4534",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (6,8)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "58f02a42d1845d680bfc7f72",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (7,8)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "33893e03a86414a9d803a352",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (8,8)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "9ceaeb4c9bdeef30ca905d2d",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (9,8)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "c717bd5c2abf655d06dd9a60",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (10,8)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "63af3f7961b5b036b797feb5",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (11,8)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "40f3bb45943828629c4dd7ed",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (12,8)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "52d6996afc604d74bb29ede3",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (13,8)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "69b4586459fb58322a2f15f9",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (0,9)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "7344f9c5061691e95e11e3d9",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (1,9)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "48cb582431af84cd7899811b",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (2,9)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "93c60aab64c86307ffb35ce8",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (3,9)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "a50e933f935e1ec853faae04",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (4,9)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "e032341a44f4c9f70009fe53",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (5,9)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "7675f73193b721a2c6c81e03",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (6,9)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "e0be921a749ba179e0b510ef",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (7,9)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "5b2aecc6a2ba347f4bad4d77",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (8,9)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "c05cad137124c77afb826fef",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (9,9)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "cfc8d88abd815ebac9ca41c5",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (10,9)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "1cd215c0e44aa5cfe2db434e",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (11,9)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "1ee20450f8d0eda65bbdb722",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (12,9)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "03a9f677d874e2b150df73a5",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 밭 (13,9)",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 판석 밭 조각. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "387b3679f8435c00621625f7",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 벽 밑 그늘 0",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 벽 바로 밑 바닥(벽 그림자). 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "bd24a44e1ba0607250e23a92",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 벽 밑 그늘 1",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 벽 바로 밑 바닥(벽 그림자). 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "e3445737435401610429f054",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 벽 밑 그늘 2",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 벽 바로 밑 바닥(벽 그림자). 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "d561c446333b1e3cf57e0c5f",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 벽 밑 그늘 3",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 벽 바로 밑 바닥(벽 그림자). 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "59c9b5704f93af979ecf04a8",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 벽 밑 그늘 4",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 벽 바로 밑 바닥(벽 그림자). 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "757b2886d75f3c092ed95dbd",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 벽 밑 그늘 5",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 벽 바로 밑 바닥(벽 그림자). 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "8bb4f1a9d39e546efa169757",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 벽 밑 그늘 6",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 벽 바로 밑 바닥(벽 그림자). 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "b2e81e6d344bdc01a1bdf309",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 벽 밑 그늘 7",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 벽 바로 밑 바닥(벽 그림자). 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "10441dee92d698f4ed4c5a24",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 벽 밑 그늘 8",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 벽 바로 밑 바닥(벽 그림자). 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "0670bc6fac1253e7730e1eed",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 벽 밑 그늘 9",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 벽 바로 밑 바닥(벽 그림자). 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "107dfcbcc3bdfd203ac4859c",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 벽 밑 그늘 10",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 벽 바로 밑 바닥(벽 그림자). 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "fcbe1190e24aa020f267469c",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 벽 밑 그늘 11",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 벽 바로 밑 바닥(벽 그림자). 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "afbf3d0ff31c48044146d4a3",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 벽 밑 그늘 12",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 벽 바로 밑 바닥(벽 그림자). 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "9ef6b0c4b1cc4ce0d8150e2a",
+"origin": "other.ground/*/theme-floors-r12:A1@42c3f8e1",
+"label": "버들항 던전 · 마계 검은 돌 바닥 벽 밑 그늘 13",
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 벽 바로 밑 바닥(벽 그림자). 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+}
+],
+"defs": {
+"autotileGroups": {},
+"tileGroups": {
+"beodeul:dungeon_theme2_other_ground": {
+"id": "beodeul:dungeon_theme2_other_ground",
+"name": "버들항 던전 주제 마계 검은 돌 바닥",
+"role": "floor",
+"source": "bundled-default",
+"defaultLayer": "lower",
+"confidence": "high",
+"tileIds": [
+33664,
+33665,
+33666,
+33667,
+33668,
+33669,
+33670,
+33671,
+33672,
+33673,
+33674,
+33675,
+33676,
+33677,
+33678,
+33679,
+33680,
+33681,
+33682,
+33683,
+33684,
+33685,
+33686,
+33687,
+33688,
+33689,
+33690,
+33691,
+33692,
+33693,
+33694,
+33695,
+33696,
+33697,
+33698,
+33699,
+33700,
+33701,
+33702,
+33703,
+33704,
+33705,
+33706,
+33707,
+33708,
+33709,
+33710,
+33711,
+33712,
+33713,
+33714,
+33715,
+33716,
+33717,
+33718,
+33719,
+33720,
+33721,
+33722,
+33723,
+33724,
+33725,
+33726,
+33727,
+33728,
+33729,
+33730,
+33731,
+33732,
+33733,
+33734,
+33735,
+33736,
+33737,
+33738,
+33739,
+33740,
+33741,
+33742,
+33743,
+33744,
+33745,
+33746,
+33747,
+33748,
+33749,
+33750,
+33751,
+33752,
+33753,
+33754,
+33755,
+33756,
+33757,
+33758,
+33759,
+33760,
+33761,
+33762,
+33763,
+33764,
+33765,
+33766,
+33767,
+33768,
+33769,
+33770,
+33771,
+33772,
+33773,
+33774,
+33775,
+33776,
+33777,
+33778,
+33779,
+33780,
+33781,
+33782,
+33783,
+33784,
+33785,
+33786,
+33787,
+33788,
+33789,
+33790,
+33791,
+33792,
+33793,
+33794,
+33795,
+33796,
+33797,
+33798,
+33799,
+33800,
+33801,
+33802,
+33803,
+33804,
+33805,
+33806,
+33807,
+33808,
+33809,
+33810,
+33811,
+33812,
+33813,
+33814,
+33815,
+33816,
+33817
+],
+"description": "마계 검은 돌 바닥 판석 밭 bd-pick-dungeon-theme2-otherworld-floor + 벽 밑 그늘 bd-pick-dungeon-theme2-otherworld-floor-wall-shade. 하네스 theme-floors-r12 A1.",
+"placementRules": "걷는 바닥 전부."
+}
+},
+"structureKits": {
+"bd-pick-dungeon-theme2-otherworld-floor": {
+"id": "bd-pick-dungeon-theme2-otherworld-floor",
+"kind": "section",
+"name": "버들항 던전 · 마계 검은 돌 바닥 판석 밭 14×10",
+"width": 14,
+"height": 10,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+33664,
+33665,
+33666,
+33667,
+33668,
+33669,
+33670,
+33671,
+33672,
+33673,
+33674,
+33675,
+33676,
+33677
+],
+"upperTiles": [
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1
+]
+},
+{
+"tiles": [
+33678,
+33679,
+33680,
+33681,
+33682,
+33683,
+33684,
+33685,
+33686,
+33687,
+33688,
+33689,
+33690,
+33691
+],
+"upperTiles": [
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1
+]
+},
+{
+"tiles": [
+33692,
+33693,
+33694,
+33695,
+33696,
+33697,
+33698,
+33699,
+33700,
+33701,
+33702,
+33703,
+33704,
+33705
+],
+"upperTiles": [
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1
+]
+},
+{
+"tiles": [
+33706,
+33707,
+33708,
+33709,
+33710,
+33711,
+33712,
+33713,
+33714,
+33715,
+33716,
+33717,
+33718,
+33719
+],
+"upperTiles": [
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1
+]
+},
+{
+"tiles": [
+33720,
+33721,
+33722,
+33723,
+33724,
+33725,
+33726,
+33727,
+33728,
+33729,
+33730,
+33731,
+33732,
+33733
+],
+"upperTiles": [
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1
+]
+},
+{
+"tiles": [
+33734,
+33735,
+33736,
+33737,
+33738,
+33739,
+33740,
+33741,
+33742,
+33743,
+33744,
+33745,
+33746,
+33747
+],
+"upperTiles": [
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1
+]
+},
+{
+"tiles": [
+33748,
+33749,
+33750,
+33751,
+33752,
+33753,
+33754,
+33755,
+33756,
+33757,
+33758,
+33759,
+33760,
+33761
+],
+"upperTiles": [
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1
+]
+},
+{
+"tiles": [
+33762,
+33763,
+33764,
+33765,
+33766,
+33767,
+33768,
+33769,
+33770,
+33771,
+33772,
+33773,
+33774,
+33775
+],
+"upperTiles": [
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1
+]
+},
+{
+"tiles": [
+33776,
+33777,
+33778,
+33779,
+33780,
+33781,
+33782,
+33783,
+33784,
+33785,
+33786,
+33787,
+33788,
+33789
+],
+"upperTiles": [
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1
+]
+},
+{
+"tiles": [
+33790,
+33791,
+33792,
+33793,
+33794,
+33795,
+33796,
+33797,
+33798,
+33799,
+33800,
+33801,
+33802,
+33803
+],
+"upperTiles": [
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 14×10 칸 판석 밭. 칸 위치로 감아 깐다(칸 (x,y) = 밭 (x%14, y%10)).",
+"placementRules": "걷는 바닥 전부. 섞지 말고 칸 위치로.",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"role": "floor",
+"repeatability": "repeat",
+"layerHome": "lower",
+"themes": [
+"dungeon",
+"던전",
+"otherworld",
+"마계"
+]
+}
+},
+"bd-pick-dungeon-theme2-otherworld-floor-wall-shade": {
+"id": "bd-pick-dungeon-theme2-otherworld-floor-wall-shade",
+"kind": "section",
+"name": "버들항 던전 · 마계 검은 돌 바닥 벽 밑 그늘 줄 14×1",
+"width": 14,
+"height": 1,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+33804,
+33805,
+33806,
+33807,
+33808,
+33809,
+33810,
+33811,
+33812,
+33813,
+33814,
+33815,
+33816,
+33817
+],
+"upperTiles": [
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "마계의 갈라진 보라 검은 돌 바닥 — 벽 바로 밑 줄. 열 = 칸 x % 14 (밭 맨 윗줄과 같은 열).",
+"placementRules": "북쪽 이웃이 벽·천장인 바닥 칸.",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"role": "floor",
+"repeatability": "repeat",
+"layerHome": "lower",
+"themes": [
+"dungeon",
+"던전",
+"otherworld",
+"마계"
+]
+}
+}
+}
+},
+"baked": {
+"other.ground|*": {
+"round": "theme-floors-r12",
+"letter": "A1",
+"sha256": "42c3f8e1503b12c465448d622295e3374fe193dd2b7849dbe969687e859c424c",
+"gate": "pass",
+"defs": {
+"autotileGroups": [],
+"tileGroups": [
+"beodeul:dungeon_theme2_other_ground"
+],
+"structureKits": [
+"bd-pick-dungeon-theme2-otherworld-floor",
+"bd-pick-dungeon-theme2-otherworld-floor-wall-shade"
+]
+}
+}
+}
+}
