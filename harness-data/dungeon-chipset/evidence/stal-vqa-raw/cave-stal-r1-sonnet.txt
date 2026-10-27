@@ -1,0 +1,13 @@
+VERDICT: FAIL
+A1: PASS
+A2: FAIL
+
+A1 (PASS, minor): chunky tapered cones (1-tile ~2 cones, 2-tile ~3 cones with size variation), read as stalactites hanging from the ledge. Tan rock tone matches ledge/floor material; visible against the dark brown wall.
+ - Minor: dark "L"-hook shadow artifact at scene-3x crop coords ~(330-380,285-390) and ~(130-170,570-590); reads as a shadow notch, not a cone. Tidy if cheap.
+ - Minor: only ~2-3 px of tan shows per cone at game scale; dark outline/shadow dominates. Fine, not a gate failure.
+ - Minor: dithered/textured Beodeul-style rock grain is only partly matched (reference sea-cave has no stalactites, so comparison limited to texture).
+
+A2 (FAIL):
+ - Thin, uniform vertical bars (~5 per tile, equal width/spacing) joined by a dark "U" arc at scene-3x crop coords ~(300-440,290-390) and ~(110-240,480-590). Reads as a cage / iron bars / comb teeth, not tapered rock cones.
+ - No taper/size variation, so fails "stalactites, not teeth/bars/icicles".
+ - The 1-tile piece has the same bar pattern; the 2-tile piece just repeats it taller.

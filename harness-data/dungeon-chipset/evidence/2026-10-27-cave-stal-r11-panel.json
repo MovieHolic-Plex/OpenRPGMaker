@@ -1,0 +1,7 @@
+{"date":"2026-10-27","round":"theme-cave-stal-r11","item":"tc.cave_stalactite","pick":"A1",
+ "pixelSha256":"8776259abf7a6bc9a825a942f6469c49c2ef67da90fd9a5b3d9af1b2bf4d8da1",
+ "kit":"two tile rows tall (1x2 single, 2x2 double) on the two-row rock wall front face",
+ "vqa":{"reviewer":"klb-sonnet-5-5","verdict":"PASS (A/B/C/D all PASS; C borderline)","raw":"harness-data/dungeon-chipset/evidence/stal-vqa-raw/cave-stal-r11-ingame-sonnet.txt",
+        "history":"in-map reviews r4-r8 and r12 FAIL (raw files in stal-vqa-raw/); r11 is the only in-map PASS"},
+ "objectGate":{"A1":"FAIL style (advisory, profile uncalibrated): judge 4/4 fail on tone count / near-neutral outline; 3/4 view ok. receipt 8776259abf7a6bc9a825a942f6469c49c2ef67da90fd9a5b3d9af1b2bf4d8da1"},
+ "decision":"supervisor-delegated allow of r11 A1 (coordinator decision 2026-10-27: in-map Sonnet PASS is the receipt; style judge advisory)"}

@@ -1,0 +1,12 @@
+VERDICT: FAIL
+A: PASS - Marginal. In the 8x piece the tapered triangles with a lit left side and a dark right edge read as rock stalactites, not teeth, bars or a comb. In the 3x in-game crops they shrink to short, stubby pale drips (about 4-6 px) that look closer to wax or stain smears than hanging rock.
+B: PASS - Marginal. They hang from the ledge rim with no seams, floating tips or holes in cave1-b (~330,215), cave1-c (~360,205) and cave1-a (~260,205). The exception is the right-hand one in cave1-d (~575-595,145-175). It sits at the wall-end corner, has a curved hook silhouette, and looks half off the wall face.
+C: FAIL - The stalactite body is the pale floor/rim tan, but it hangs over the dark brown, wavy-banded wall face. The result is a light patch with no mid-tone transition, so it looks pasted on rather than carved from the wall. The wall's own banding and teal speckle do not carry into the stalactite. The lit/shaded split exists only at the 8x piece scale. At 1x in cave@1-0 and cave@2-0 they are 1-2 pixel pale ticks that are hard to find, so the piece is effectively invisible and adds nothing. It does not reach the Beodeul quality bar.
+D: PASS - Roughly 1-2 per wall segment, irregularly spaced, with no uniform fringe. It is on the sparse side. Several walls in both maps (long bottom walls in cave@1-0 at ~(80-290,465), ~(385-495,650); cave@2-0 at ~(275-385,640)) have none, and the visible ones look near-identical (the same 1-tile drip shape reused).
+- cave1-a (~245-285,190-230): the 2-tile piece reads as a pale smudge with a stubby double lobe, not clearly rock. Its tan is much lighter than the wall bands beside it.
+- cave1-b (~315-345,200-235): good attachment, but the colour contrast is too weak, and a 3x view is needed to see it.
+- cave1-c (~345-380,190-225): the lit side is almost the same value as the ledge, so the shape melts into the rim. There is no outline-dark pixel on the rock side.
+- cave1-d (~435-480,140-175): the pale lobes sit over the upper wall band. They are acceptable in shape but too light.
+- cave1-d (~570-600,140-180): the curved, hook-like piece at the wall corner looks half off the face (an odd cut-off).
+- The 1x full maps (cave@1-0 ~(240-300,175-190), cave@2-0 ~(330-385,70-85)): barely visible, with no read as stalactites.
+- Fix direction: darken the body to the wall's mid-brown with a lighter lit edge only, add one dark base/shadow pixel under the rim, and make them longer (2-3 tiles tall in places) so they read at 1x.

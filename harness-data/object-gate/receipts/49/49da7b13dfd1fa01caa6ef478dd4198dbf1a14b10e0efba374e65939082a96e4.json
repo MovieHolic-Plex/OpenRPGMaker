@@ -1,0 +1,332 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "49da7b13dfd1fa01caa6ef478dd4198dbf1a14b10e0efba374e65939082a96e4",
+ "width": 48,
+ "height": 16,
+ "kind": "wall_mounted",
+ "name": "tc.cave_stalactite r3 A1",
+ "label": "dungeon/tc.cave_stalactite.r3.A1",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)",
+  "화풍: 질감 없음 (2/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "명암 3단 < 4 (4/4)",
+   "질감 없음 (2/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 4,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "dungeon",
+   "fallback": true,
+   "reason": "칩셋 dungeon 의 화풍 기준 묶음이 없다",
+   "hash": "2ad36264365ed8d5"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 70,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cave ceiling band with hanging stalactites",
+      "rows": "0-1",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stalactites (tapering cones)",
+      "rows": "2-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 13,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The object is a strip of stalactites hanging from a 2-row ceiling band (rows 0-1, width 48), and the points taper from width 29 at row 2 to 1 at row 14. All of it is drawn as a vertical face seen head-on, with light and dark shading down each cone. No horizontal top surface is visible: there is no front-edge line, no eave shadow and no ellipse. The 2-row band is only an outline or rim. As a flat wall-mounted piece it reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a thin, sparse strip of hanging stalactite spikes, so the per-tile facts (0 visible tones, 0% flat coverage) say nothing here and I judged by eye. It has only 9 distinct colours, against 14 on the bench and lamp references. Each spike reads as a light body, one mid tone and a dark edge, so about 3 shading steps where the references show 5-6. The dark edge pixels are 44% near-neutral, which is mixed: some lean tinted, but others are close to grey, and this partly gives the sticker look. The spikes carry little grain, with no per-stalactite highlight, rock speckle or clustered shading. Next to the shaded bench slats and the well stones it looks thinner and flatter. No large flat blocks were measured (0% flat coverage), but the richness is below the references, so I fail it when in doubt.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 11156
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ceiling band with stalactite tops",
+      "rows": "0-1",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "hanging stalactite cones",
+      "rows": "2-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The object is a row of stalactites hanging from a 2-row ceiling strip (rows 0-1, full width 48). The strip is a thin front-facing band with no front-edge line or eave shadow. The stalactites taper from width 29 at row 2 to 1 at row 14 and are shaded as vertical cones, with a light left side and dark right side. No horizontal surface, ellipse or roof plane is drawn. For a flat wall-mounted piece this is a front elevation, with no top and no receding side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a thin row of small stalactite spikes with only 9 distinct colours in total, against 14-40 in the references. Each spike shows about 2-3 lightness steps (a pale grey-beige body with a darker edge and a dark tip) and no per-stone shading or grain. The per-tile tone count is 0 because the piece is sparse, so I judged density by eye. Next to the bench, hedge, stall and well it looks thinner and flatter. The dark edge pixels are 44% neutral, so the outline is partly untinted and partly tinted, which I call mixed. The bench has the same 44% figure, but its wood still carries more tonal steps. The spikes read as plain sticker-like silhouettes rather than shaded rock formations, and a careful artist would not accept them beside the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 9363
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ceiling rock band with hanging stalactites",
+      "rows": "0-1",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stalactite cones",
+      "rows": "2-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The object is a row of stalactites hanging from a 2-row ceiling strip at the top. The width profile tapers steadily from 48 px at rows 0-1 down to 1 px at row 14, so the shapes are cones seen face-on. There is no ellipse, no front-edge line and no eave shadow. The rows 0-1 strip is only a 1-2 row rim where the stalactites attach. Light and dark columns on the cones give a flat shaded vertical look, not a horizontal surface. This is a front elevation of a wall-mounted piece with no top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a thin row of hanging stalactites. It uses only 9 distinct colours in total, and the board shows roughly 3 tones: a pale body, a mid grey-brown, and a dark tip or edge. The pieces look like small, sparse spikes with little per-spike shading, no clear highlight-to-deep ramp, and little grain or clustering. The 44% near-neutral dark edge share means the outline is partly neutral and partly tinted, so it reads as mixed. The per-tile median is 0 because the piece is sparse, so I did not count that against it. By eye, though, it looks thinner, flatter and more sticker-like than the richer references (well, stall, hedge), which have 5-6 shading steps and scalloped or speckled texture. A careful artist would not accept it next to those references. It is closer to the bench and lamp, which are also sparse, but even those show more distinct steps (14 colours). Shading depth and density are shallow, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 8933
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ceiling strip with stalactites hanging from it",
+      "rows": "0-1",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stalactite bodies (tapering cones)",
+      "rows": "2-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 13,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The object is a row of stalactites hanging from a thin 2-row ceiling strip at rows 0-1 (width 48). Below that the silhouette narrows steadily (29 down to 1 by row 14), forming tapering cones with light and dark shading, with no front-edge line, no eave shadow and no ellipse. The strip at the top is a 2-row band along the outline, which reads as a rim at most. There is no horizontal surface visible, so the object is a flat front elevation as expected for a wall-mounted piece."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is a thin row of hanging stalactite spikes with only 9 distinct colours in total. By eye, each spike shows about 3 lightness steps: a light edge, a mid grey-beige and a darker tip or edge. The references use about 5-6 steps per material, and the well and stall also carry per-element grain and clusters. The spikes have no grain, speckle, per-stone shading or rock-texture dots. Each is a narrow wedge with one shade and a thin edge. Tile-level tone counts are 0 because the piece is sparse, so I judged density by eye. Next to the bench and lamp it is comparable in sparseness, but it is flatter and thinner than the richer props. The darkest edge pixels are 44% near-neutral, which is mixed: some are tinted and some are plain grey, so the outline reads partly as a sticker line instead of a dark tone of the adjacent rock. Nothing here matches the layered shading and texture of the well, stall or hedge, so a careful artist would not accept it beside them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 9817
+  }
+ ],
+ "decidedAt": "2026-10-27T12:53:17.323Z",
+ "cells": {
+  "16": [
+   "2be6629eaf112979",
+   "7e63ac92c698d161",
+   "8d96f7c0cf48a3ff"
+  ],
+  "24": [
+   "0364d91a8d7d62a9",
+   "d111a998673798d2",
+   "e4da93dc28bd00ae",
+   "f4da40bef221c7be"
+  ],
+  "32": [
+   "1fd21f5a2452dc04",
+   "2933f3d111990583",
+   "3366c6465cda0fed",
+   "3ffed94d791b95a3",
+   "500ec0353aafc0a9",
+   "50bd73b58188ccf7",
+   "6a3c7db50068d5f1",
+   "a17cc16a5911402e",
+   "a94db6966a68266f",
+   "cbcd60b5c8611982",
+   "d68f087434c0e1e7",
+   "faf0fc356eeb6774"
+  ],
+  "48": [
+   "4c2872ef5a39235e",
+   "8eb1aa7f4c6e3564"
+  ]
+ }
+}

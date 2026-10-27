@@ -314,3 +314,19 @@ OBJECT_GATE_DATA=/home/main/z-project/rpg-zzu-object-gate-holds/harness-data/obj
   판석 밭 판은 meta `fieldCols`·`field`·`shadeRow` 를 내고, 관문 S 는 해시 섞음 대신 밭을 그대로 깔아 16px 칸 경계·밭 감김 경계를 잰다(`gate.py autotile_checks` 의 `at.field`).
   왕 타일(가장자리 색 16칸) 시도는 16px 격자로 읽혀 버렸다(판 기록 없음).
 - **동굴 종유석 `tc.cave_stalactite`** — profiles MISSING cave. 고드름 A2 짜임을 줄 A 흙굴 바위 단으로(theme-cave-stal-r1).
+  지도 속 Sonnet 검수가 r4~r8 을 모두 반려했다(빗살·밝은 얼룩·1배에서 안 보임) — 근본 원인은 벽 앞면 한 칸(16px) 높이 한계. **r11 = 두 칸 높이**(1×2 `stalactites`·2×2 `stalactites-2w`,
+  벽 앞면 두 줄 전체) 가 유일한 지도 속 PASS(`evidence/stal-vqa-raw/cave-stal-r11-ingame-sonnet.txt`). object-gate 화풍 판정(미보정·조언)은 r11 을 반려하고 r12(더 밝고 톤 많음)를 통과시켰으나
+  r12 는 지도 속 검수 FAIL — 두 판정이 반대로 당겨서 조정자 결정으로 **r11 A1 위임 허용**(영수증 = 지도 속 PASS 원문, `evidence/2026-10-27-cave-stal-r11-panel.json`).
+  배치: `dress.ts stalactites()` 를 덩굴보다 먼저(덩굴이 벽 칸을 다 먹어 0개였다), 덩이 사이 같은 줄 5칸 이상, 2칸은 오른 칸도 벽 칸일 때만(벽 끝 갈고리 반려).
+  얼음굴 잡동사니에서 흙빛 동굴 석순(CV stalagmite-1)을 뺐다(감사 「얼음 동굴에 갈색 석순」).
+- **입구 계단 대체** — 입구 방 북쪽 벽에 평평한 줄이 없으면 바깥 출구가 아예 없었다(동굴·얼음·마계 시드 2). 이제 입구 방 바닥 계단으로 물러선다. 12주제 × 시드 1~8 = 96벌 모두 출구 있음.
+
+### 보류(parked) — 다음 판이 이어받을 것
+- **숲 오솔길** (profiles MISSING forest) — 통로·방 사이를 잡음 비용 다익스트라로 잇고 `beodeul_yard_dirt` 8방 오토타일로 까는 배선은 만들었으나 지도 속 Sonnet FAIL
+  (`~/claude-viz/dungeon-themes-3-raw/forest-path-sonnet.txt`: 자로 그은 도로·곧은 2칸 띠·막다른 토막, 마당 흙 타일의 남쪽 변이 돋운 턱이라 길로 안 읽힘).
+  배선 patch: `~/claude-viz/dungeon-themes-3-raw/parked/forest-path-compose.patch`(compose.ts) + profiles `path` 필드(`parked/profiles-all.patch` 안). 다음 판: 남쪽 턱 없는 오솔길 전용 오토타일을 그리고 그 위에 배선을 다시 얹는다.
+- **늪 숲 수관** (profiles MISSING swamp) — `append-beodeul-forest-canopy.py` 에 `bog` 양식(맹그로브·탁한 올리브·물빛 그늘·이끼 가닥, 주기 4 = 425칸)과 «새 양식만 시트 끝에 덧붙이기» 경로를 만들었다.
+  Sonnet: 숲과 구별됨 PASS, 그러나 수관이 ~32px 주기로 줄지어 벽지처럼 보이고 바닥이 평범한 흙이라 FAIL(`~/claude-viz/dungeon-themes-3-raw/r11-stal-and-swamp-sonnet.txt`).
+  patch: `~/claude-viz/dungeon-themes-3-raw/parked/swamp-bog.patch`(굽기 스크립트·TS 타입) — 자연 시트(beodeul-nature)는 되돌렸다(덧붙이면 count 3568→4000, 기존 칸 무변).
+  다음 판: 주기를 키울 칸 여유가 없으니(4096px 한도, 남은 528칸) 수관 자리 흔들림을 키우거나 늪 전용 작은 낱 나무 섞기로 반복을 깬다.
+- **탑** — 층 이동 이벤트는 모두 있다(벽 계단·바닥 계단·마법진). 계단 그림 가시성·층 모양 재사용은 손대지 않았다.

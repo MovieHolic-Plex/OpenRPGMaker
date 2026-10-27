@@ -1,0 +1,13 @@
+VERDICT: FAIL
+A: FAIL - Isolated clusters (crop c) read as stalactites, but where several tiles are placed side by side (crops a and b) they merge into one evenly spaced fringe of thin 1px shafts with pale tips. That reads as a comb, drip row or icicle fringe, not as separate natural rock formations.
+B: PASS - They attach cleanly under the ledge rim, hang inside the wall face and do not float over floor. I found no seams, transparent holes or cut-off tips. The shafts are very thin (1px) where they meet the rim, so they look stuck on rather than grown out of the rock, but that is minor.
+C: FAIL - The pale cream/tan is much brighter than the dark-brown banded wall face. They have no darker shadow side and no lit/shaded split like the Beodeul rock. The outlines are too thin and clean for the layered rock texture around them. At 1x they show up as small light flecks, so they are visible but read as noise or dripping dots, not as rock formations.
+D: PASS - There are only a few clusters per map, put on the upper walls (map @1: about 4 to 5 spots, map @2: about 5 spots). That is not too dense. But the clusters look near-identical in shape and spacing, and several long walls get none. Placement is fine; the repeated shape is the weak point.
+
+Issues (3x crop coordinates):
+- cave1-stal-a-3x: cluster at x~335-430, y~145-180 is a regular row of 6-8 thin pale shafts of similar length, like a comb. The second cluster at x~190-285, y~190-235 is the same, with an evenly spaced skinny tip at x~270. Both are brighter than the wall and have almost no volume.
+- cave1-stal-b-3x: runs at x~240-335, y~195-230 and x~385-480, y~190-225 are the worst. Near-regular spacing of about 10px, mostly uniform lengths and 1px width make a picket-fence or teeth look.
+- cave1-stal-c-3x: x~195-240, y~188-225 and x~290-335, y~188-222 are the best. They have chunkier bases and varied length and read as stalactites. They are still too pale and have no dark shading.
+- Palette: the tan stalactite colour is not the wall's own mid/dark browns. It looks like the ledge-rim highlight colour hung down. Re-shade with 2-3 wall-palette values (lit left, shaded right, darker tip) and thicker 2-3px bases.
+- Rhythm: adjacent 1-tile and 2-tile variants should be broken up with gaps of at least 1 tile and different shapes, so a long fringe does not form.
+- Full maps at 1x: the clusters are the same width across maps, so repetition shows. A few slimmer or broken single drips would help.
