@@ -16,8 +16,8 @@ import { conditionForm, databasePicker, selfSwitchControl } from "./conditionFor
 import { aiImageGenerateField } from "@/editor/panels/aiImageGenerateField";
 import { faceDisplayModeOf, renderFaceGallery, renderFacesetPreview } from "./facesetPreview";
 import { conditionPreviewSentence, renderConditionEvalPreview } from "./conditionEvalPreview";
-import { renderConditionEvalPreview } from "./conditionEvalPreview";
-import { idleTimerWarningMessage } from "./timerConditionText";import { renderCommandPreview } from "./commandPreview";
+import { idleTimerWarningMessage } from "./timerConditionText";
+import { renderCommandPreview } from "./commandPreview";
 import {
   BOOLEAN_OPTIONS,
   TIMER_ACTION_OPTIONS,

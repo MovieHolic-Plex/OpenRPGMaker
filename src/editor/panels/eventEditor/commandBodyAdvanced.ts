@@ -3,9 +3,9 @@ import {
   listDatabaseResourceOptions,
   openDatabaseResourcePickerDialog,
 } from "@/editor/panels/databaseResourcePickerDialog";
-import { getAudioEngine, playAudioCommand, stopAudioCommand } from "@/player/audio";
+import { getAudioEngine, playAudioCommand, stopAllAudio, stopAudioCommand } from "@/player/audio";
 import { authoredVolumePercent } from "@/player/audio/fade";
-import { getAudioEngine, playAudioCommand, stopAllAudio, stopAudioCommand } from "@/player/audio";import { listAudioResources } from "@/assets/audioResourceCatalog";
+import { listAudioResources } from "@/assets/audioResourceCatalog";
 import { audioDescriptionView, audioPlayback } from "@/editor/panels/audioResourcePresentation";
 import { store } from "@/project/store";
 import { applyCharsetLabelOverrides, charsetSemanticsForTexture } from "@/assets/charsetSemantics";

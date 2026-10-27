@@ -365,7 +365,7 @@ export async function playBattle(
                 // 암전이 끝난 뒤에야 떼고, cleanup 이 그 전에 지우지 않도록 소유권을 놓는다.
                 const authoredGameOver = result === "defeat" ? snapshot.eventState.gameOverRequest : undefined;
                 const terminalDefeat = result === "defeat" && (!snapshot.canLose || !!authoredGameOver);
-                let coverTimer: ReturnType<typeof window.setTimeout> | undefined;
+                let coverTimer: number | undefined;
                 if (terminalDefeat) {
                   exitTransition = undefined;
                   const fadeOutMs = resolveGameOverSettings(project.system, authoredGameOver?.gameOverId)?.timing?.fadeOutMs;

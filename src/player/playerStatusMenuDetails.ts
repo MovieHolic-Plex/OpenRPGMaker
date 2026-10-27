@@ -28,8 +28,8 @@ import { canCraft, combinationPartnersOf, combinationRecipeFor } from "@/project
 import { actorLoadoutSlots, equippedBattleSkillIds } from "@/project/skillLoadout";
 import { actorDerivedStats } from '@/battle/battleBattlers';
 import { machineSkillOf, menuItemUnavailableReason, previewEvolutionStoneTarget, previewMenuItemTarget, previewMonsterMachine, previewMonsterMedicine, targetsPartyMonsters } from "@/player/playerItemUse";
-import type { SaveSlotIndex, SaveSlotReadResult, SaveSnapshot } from "@/player/saveSlots";
-import { snapshotLoadBlocker, type SaveSlotReadResult, type SaveSnapshot } from "@/player/saveSlots";import { canEquip, effectiveActorEquipment, equipmentSlotAccepts } from "@/project/equipmentRules";
+import { snapshotLoadBlocker, type SaveSlotReadResult, type SaveSnapshot } from "@/player/saveSlots";
+import { canEquip, effectiveActorEquipment, equipmentSlotAccepts } from "@/project/equipmentRules";
 import { resolveActorName, resolveActorFaceResourceId } from "@/project/sessionActorCommands";
 import { listPartyBondEntries, partyBondMeter } from "@/project/partyBonds";
 import { defaultActorFaceResourceId, normalizeActorRecord } from "@/project/actorModel";

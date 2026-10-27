@@ -928,10 +928,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       if (inputKey) {
         event.preventDefault();
         inputPrompt.press(inputKey);
-      const promptKey: SkillInputKey | undefined = dir ?? (isBattleConfirmKey(key) ? "confirm" : isBattleCancelKey(key) ? "cancel" : undefined);
-      if (promptKey) {
-        event.preventDefault();
-        inputPrompt.press(promptKey);      }
+      }
       return;
     }
     if (sequenceBusy) {
@@ -1003,10 +1000,10 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   // Shift 단독 토글: keydown 에서 조합 여부를 기록하고, keyup 에서 단독이었을 때만
   // 속도를 토글한다. Shift+A(대문자)·Shift+Z 같은 조합에서는 토글되지 않는다(결함 2).
   function onWindowKeyup(event: KeyboardEvent): void {
-    if (keyboardEventKey(event) !== "Shift") return;
     // keydown 과 같이, IME 가 key 를 Process 로 바꿔도 Shift 를 놓친 것으로 본다.
     const key = keyboardEventKey(event);
-    if (key !== "Shift") return;    if (options.runtime.snapshot().eventChoice || options.runtime.snapshot().eventPause) { shiftHeld = false; shiftCombined = false; return; }
+    if (key !== "Shift") return;
+    if (options.runtime.snapshot().eventChoice || options.runtime.snapshot().eventPause) { shiftHeld = false; shiftCombined = false; return; }
     // 텍스트 입력 중에는 토글하지 않는다. 연출 중에는 허용한다 — 배속은 재생을
     // 보면서 조절하는 컨트롤이다(코덱스 리뷰 C6).
     if (shiftHeld && !shiftCombined && root.isConnected && !isTextInputTarget(event.target)) {
