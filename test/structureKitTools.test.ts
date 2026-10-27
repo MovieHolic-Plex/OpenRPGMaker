@@ -202,7 +202,8 @@ describe("AI 가 받는 구조물 정보", () => {
 
     expect(prompt).toContain("우물");
     expect(prompt).toContain("사람 팔레트 전용");
-    expect(prompt).toContain("author_house");
+    // author_house 는 2026-10-07 저작권 정리로 지워졌다(toolRegistry CONSTRUCTION_WRITE_SUPERSEDED 주석) — 집 안내는 place_terrain_house.
+    expect(prompt).toContain("place_terrain_house");
     expect(prompt).not.toMatch(/시공은 구조물 스탬프/);
   });
 });
@@ -302,7 +303,8 @@ describe("structureKit 하네스 툴 — 등록 스탬프를 읽는다", () => {
 
     expect(prompt).toContain("사람 팔레트 전용");
     expect(prompt).toContain("성벽 단면");
-    expect(prompt).toContain("author_house");
+    // author_house 는 2026-10-07 저작권 정리로 지워졌다(toolRegistry CONSTRUCTION_WRITE_SUPERSEDED 주석) — 집 안내는 place_terrain_house.
+    expect(prompt).toContain("place_terrain_house");
   });
 });
 
@@ -400,7 +402,8 @@ describe("증분 축 — 세로로 무한히 이어지는 구조물", () => {
     const prompt = buildSystemPrompt(context.project);
     expect(prompt).toContain("성벽 기둥");
     expect(prompt).toContain("사람 팔레트 전용");
-    expect(prompt).toContain("author_house");
+    // author_house 는 2026-10-07 저작권 정리로 지워졌다(toolRegistry CONSTRUCTION_WRITE_SUPERSEDED 주석) — 집 안내는 place_terrain_house.
+    expect(prompt).toContain("place_terrain_house");
     expect(prompt).not.toContain("repeatY");
   });
 });
