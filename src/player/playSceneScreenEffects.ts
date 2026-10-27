@@ -240,9 +240,7 @@ function setImmediateColor(host: HTMLElement, color: Rgba, mode: string): void {
 
 function applyTintColor(host: HTMLElement, target: Rgba, durationMs: number, mode: string): void {
   const anim = animFor(host);
-  // 같은 색으로 이미 트윈 중이면 시계를 되돌리지 않는다. 화면 갱신(다음 명령, 병렬 이벤트)이
-  // 페이드를 처음부터 다시 틀면, 300ms 숨기기가 다음 줄에서 끊기거나 검정에 닿지 못한다.
-  if (rgbaEqual(anim.to, target) && anim.durationMs > 0 && anim.mode === mode) return;
+  if (rgbaEqual(anim.to, target) && anim.durationMs > 0 && anim.mode === mode && durationMs === anim.durationMs) return;
   if (durationMs <= 0 || rgbaEqual(anim.displayed, target)) {
     anim.displayed = target;
     anim.from = target;

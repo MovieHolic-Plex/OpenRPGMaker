@@ -76,25 +76,39 @@ function showLicenseDialog(body: string | null, onClose?: () => void): void {
   dialog.dataset.testid = "title-credits-dialog";
   const pre = view.document.createElement("div");
   pre.className = "rm-license-dialog-body";
+  pre.tabIndex = 0;
+  pre.setAttribute("aria-label", "저작자 표기");
   renderLicenseText(pre, body ?? licenseNoticeText());
   const heading = view.document.createElement("h2");
   heading.className = "rm-license-dialog-title";
   heading.textContent = "크레딧";
+  const hint = view.document.createElement("p");
+  hint.className = "rm-license-dialog-hint";
+  hint.id = "title-credits-hint";
+  hint.textContent = "↑↓ 로 읽고, Esc 로 닫습니다";
   const close = view.document.createElement("button");
   close.type = "button";
   close.textContent = "닫기";
   close.className = "rm-license-dialog-close";
   close.addEventListener("click", () => dialog.close());
+  dialog.setAttribute("aria-describedby", hint.id);
   // Own keys before editor/document capture handlers (including their Escape stack).
+  // 포커스는 닫기 단추에 있다. 본문이 창보다 길어 스크롤이 필요한데, 단추에 포커스가
+  // 있으면 방향키의 기본 동작이 본문을 움직이지 않는다. 여기서 직접 민다.
   const onKeyDown = (event: KeyboardEvent): void => {
     if (!dialog.open || !dialog.isConnected) return;
     event.stopPropagation();
-    if (event.isComposing || (!isCancelKey(event.key) && !isConfirmKey(event.key))) return;
+    if (event.isComposing) return;
+    if (scrollCreditsBody(pre, event.key)) {
+      event.preventDefault();
+      return;
+    }
+    if (!isCancelKey(event.key) && !isConfirmKey(event.key)) return;
     event.preventDefault();
     if (!event.repeat) dialog.close();
   };
   view.addEventListener("keydown", onKeyDown, true);
-  dialog.append(heading, pre, close);
+  dialog.append(heading, hint, pre, close);
   dialog.addEventListener("close", () => {
     view.removeEventListener("keydown", onKeyDown, true);
     dialog.remove();
@@ -104,4 +118,22 @@ function showLicenseDialog(body: string | null, onClose?: () => void): void {
   if (typeof dialog.showModal === "function") dialog.showModal();
   else dialog.setAttribute("open", "");
   close.focus({ preventScroll: true });
+}
+
+/** 닫기 단추에 포커스가 있어도 긴 저작자 표기를 키보드로 읽게 한다. */
+function scrollCreditsBody(body: HTMLElement, key: string): boolean {
+  const line = 32;
+  const page = Math.max(line * 3, Math.round((body.clientHeight || line * 8) * 0.85));
+  let next = body.scrollTop;
+  switch (key) {
+    case "ArrowDown": next += line; break;
+    case "ArrowUp": next -= line; break;
+    case "PageDown": next += page; break;
+    case "PageUp": next -= page; break;
+    case "Home": next = 0; break;
+    case "End": next = body.scrollHeight; break;
+    default: return false;
+  }
+  body.scrollTop = Math.max(0, next);
+  return true;
 }

@@ -44,6 +44,8 @@ describe("publication authority", () => {
   });
   it("DEFAULT asks before destructive mutation; refusal leaves the store unchanged", async () => {
     h.confirm = false;
+    // 손대지 않은 빈 맵을 지우는 것은 묻지 않는다(#3123 turnProtectedBefore) — 저작된 맵(바닥 두 종류)을 지울 때만 묻는다.
+    (h.current as Project).maps.b!.lowerTiles = [1, 2];
     const base = h.current as Project;
     const next = structuredClone(base); delete next.maps.b;
     await expect(createPiPublication(base, "default", surface()).publish(checkpoint(next, "remove_map"))).rejects.toThrow("취소");

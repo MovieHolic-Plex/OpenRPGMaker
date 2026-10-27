@@ -91,7 +91,11 @@ export type M2SoundLayerState = {
 export type M2AudioRuntimeState = {
   memorizedBgm?: string;
   playedMemorizedBgm?: string;
-} & Record<string, M2SoundLayerState | string | undefined>;
+  /** Authored track volume (0..100) captured with Memorize BGM. Absent = default full volume. */
+  memorizedBgmVolume?: number;
+  /** Fade-in (ms) captured with Memorize BGM. Absent = no authored fade. 0 is an instant start. */
+  memorizedBgmFadeInMs?: number;
+} & Record<string, M2SoundLayerState | string | number | undefined>;
 
 export type M2ActorRuntimeState = {
   battleCommands?: string;

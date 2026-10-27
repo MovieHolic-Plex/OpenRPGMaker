@@ -46,7 +46,8 @@ describe("조사 퍼즐 이벤트 통행 가능 배치", () => {
   it("push-switches는 물 발판을 착지시키고 막힌 발판만 건너뛰며 남은 배선을 맞춘다", () => {
     const { project, map, mapId } = fixture();
     setSolid(map, 4, 4, TILE.WATER);
-    solidBlock(map, 10, 8, 3, TILE.WATER);
+    // 자동 착지 탐색 반경이 5칸이 됐다(#2894) — 막힌 발판은 반경 5 블록으로 둘러야 skip 된다.
+    solidBlock(map, 10, 8, 5, TILE.WATER);
     expect(isPassable(project, map, 4, 4)).toBe(false);
     expect(isPassable(project, map, 10, 8)).toBe(false);
 
@@ -79,9 +80,12 @@ describe("조사 퍼즐 이벤트 통행 가능 배치", () => {
 
   it("push-switches는 같은 자동 착지 칸을 재사용하지 않고 남은 발판을 건너뛴다", () => {
     const { project, map, mapId } = fixture();
-    solidBlock(map, 8, 8, 3, TILE.WATER);
-    solidBlock(map, 9, 8, 3, TILE.WATER);
-    setSolid(map, 6, 5, TILE.GRASS);
+    // 탐색 반경 5칸(#2894) 안의 착지 칸이 블록 윗변의 (6, 3) 하나뿐이도록 반경 5 블록으로 막는다(옛 반경 3 의 (6, 5) 와 같은 자리).
+    // 버들항 기본 칩셋에서 TILE.GRASS 는 통행 불가다 — 맵의 빈 바닥 타일로 착지 칸을 연다.
+    const ground = map.lowerTiles[0]!;
+    solidBlock(map, 8, 8, 5, TILE.WATER);
+    solidBlock(map, 9, 8, 5, TILE.WATER);
+    setSolid(map, 6, 3, ground);
 
     const result = getTool("compile_puzzle")!.run(project, {
       mapId,
@@ -101,9 +105,12 @@ describe("조사 퍼즐 이벤트 통행 가능 배치", () => {
 
   it("switch-sequence는 같은 자동 착지 칸을 재사용하지 않고 남은 노드를 건너뛴다", () => {
     const { project, map, mapId } = fixture();
-    solidBlock(map, 8, 8, 3, TILE.WATER);
-    solidBlock(map, 9, 8, 3, TILE.WATER);
-    setSolid(map, 6, 5, TILE.GRASS);
+    // 탐색 반경 5칸(#2894) 안의 착지 칸이 블록 윗변의 (6, 3) 하나뿐이도록 반경 5 블록으로 막는다(옛 반경 3 의 (6, 5) 와 같은 자리).
+    // 버들항 기본 칩셋에서 TILE.GRASS 는 통행 불가다 — 맵의 빈 바닥 타일로 착지 칸을 연다.
+    const ground = map.lowerTiles[0]!;
+    solidBlock(map, 8, 8, 5, TILE.WATER);
+    solidBlock(map, 9, 8, 5, TILE.WATER);
+    setSolid(map, 6, 3, ground);
 
     const result = getTool("compile_puzzle")!.run(project, {
       mapId,

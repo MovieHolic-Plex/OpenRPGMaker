@@ -39,6 +39,8 @@
 }
 
 .zone-feedback-objective {
+  /* 목표 줄은 늘 읽혀야 한다 — 고해상도 무대(--play-ui-scale, fieldHud.ts)에서도 같은 크기로 보이게 키운다(J105). 320×240 에서는 1배 그대로. */
+  font-size: calc(var(--runtime-font-size-9) * var(--play-ui-scale, 1));
   right: var(--space-2);
   top: var(--space-2);
 }

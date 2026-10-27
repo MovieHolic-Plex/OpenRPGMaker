@@ -98,7 +98,8 @@ describe("shared AI audio draft integration", () => {
     }
     expect(data.entries.find(entry => entry.id === "cc0-bgm-rtp-btl-001"))
       .toMatchObject({ model: "gemini-3.1-pro-high", review: "human-corrected-ai-draft" });
-    for (const id of ["cc0-se-orp-npc-slime-slime8", "cc0-se-kis-footstep-carpet-003", "easyrpg-sound-ice9"]) {
+    // cc0-se-kis-footstep-carpet-003 left the SE catalog and the draft set in the public baseline (0d4f13e7c8).
+    for (const id of ["cc0-se-orp-npc-slime-slime8", "easyrpg-sound-ice9"]) {
       expect(data.entries.find(entry => entry.id === id))
         .toMatchObject({ model: "gemini-3.1-pro-high", review: "unverified-ai-draft" });
     }

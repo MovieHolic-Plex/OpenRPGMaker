@@ -33,8 +33,7 @@ function hideShowFadeLabel(named: string, fallback: string): string {
   const label = named || fallback;
   return `${label} · ${HIDE_SHOW_SCREEN_FADE_MS}ms`;
 }
-
-export type CommandSummaryTone =
+import { timerThresholdLabel } from "./timerConditionText";export type CommandSummaryTone =
   | "plain"
   | "command"
   | "value"
@@ -186,17 +185,7 @@ const commandSummaryPartHandlers: CommandSummaryPartHandlers = {
   advanceCropGrowth: (cmd) => commandLine("작물 성장 진행", valuePart(`${cmd.days}일`)),
   setTime: (cmd) => commandLine("시간 설정", valuePart(`${String(cmd.hour).padStart(2, "0")}:${String(cmd.minute ?? 0).padStart(2, "0")}`)),
   sleepUntilMorning: () => [commandPart("다음날 아침까지 취침")],
-  transfer: (cmd) => cmd.direction && cmd.direction !== "retain"
-    ? commandLine(
-        "장소 이동",
-        ...mapThumbParts(cmd.mapId),
-        valuePart(mapName(cmd.mapId)),
-        plainPart(" ("),
-        valuePart(`${cmd.x},${cmd.y}`),
-        plainPart(") / "),
-        valuePart(transferDirectionSummary(cmd.direction))
-      )
-    : commandLine("장소 이동", ...mapThumbParts(cmd.mapId), valuePart(mapName(cmd.mapId)), plainPart(" ("), valuePart(`${cmd.x},${cmd.y}`), plainPart(")")),
+  transfer: (cmd) => commandLine("장소 이동", ...transferListParts(cmd)),
   moveEvent: (cmd) => commandLine(
     "이동 경로 설정",
     ...moveRouteSpriteParts(cmd),
@@ -381,6 +370,7 @@ const commandSummaryPartHandlers: CommandSummaryPartHandlers = {
     commandLine(
       "그림 표시",
       valuePart(`위치 (${cmd.x}, ${cmd.y})`),
+      ...(cmd.waitForPicture ? [plainPart(" / "), valuePart("끝날 때까지 대기")] : []),
     ),
   erasePicture: (cmd) => commandLine("그림 지우기", valuePart(pictureSlotCaption(cmd.pictureId))),
   playAudio: (cmd) => commandLine("소리 재생", valuePart(audioName(cmd.resourceId))),
@@ -513,6 +503,47 @@ function equipmentIconParts(id: string): readonly CommandSummaryIconPart[] {
   const project = store.getCurrent();
   const record = project.database.equipment.find((equipment) => equipment.id === id);
   return record?.iconResourceId ? [iconPart(record.iconResourceId)] : [];
+}
+
+function transferFadeWord(fade: "black" | "white" | "none"): string {
+  if (fade === "white") return "흰색";
+  if (fade === "none") return "없음";
+  return "검정";
+}
+
+/** 편집 폼·미리보기 한 줄. 방향·페이드는 기본값이어도 적고, 문 연출은 자동이 아닐 때만 붙인다. */
+export function transferEditorSummary(cmd: {
+  mapId: string;
+  x: number;
+  y: number;
+  direction?: "retain" | "up" | "right" | "down" | "left";
+  fade?: "black" | "white" | "none";
+  door?: boolean;
+}): string {
+  const project = store.getCurrent();
+  const map = cmd.mapId ? project.maps[cmd.mapId] : undefined;
+  const name = map?.name || cmd.mapId || "(맵)";
+  const door = cmd.door === true ? " / 문 열림" : cmd.door === false ? " / 문 연출 없음" : "";
+  return `${name} (${cmd.x}, ${cmd.y}) / ${transferDirectionSummary(cmd.direction ?? "retain")} / 페이드: ${transferFadeWord(cmd.fade ?? "black")}${door}`;
+}
+
+function transferListParts(cmd: Extract<Command, { kind: "transfer" }>): readonly CommandSummaryToken[] {
+  const parts: CommandSummaryToken[] = [
+    ...mapThumbParts(cmd.mapId),
+    valuePart(mapName(cmd.mapId)),
+    plainPart(" ("),
+    valuePart(`${cmd.x},${cmd.y}`),
+    plainPart(")"),
+  ];
+  if (cmd.direction && cmd.direction !== "retain") {
+    parts.push(plainPart(" / "), valuePart(transferDirectionSummary(cmd.direction)));
+  }
+  if (cmd.fade && cmd.fade !== "black") {
+    parts.push(plainPart(" / "), valuePart(`페이드 ${transferFadeWord(cmd.fade)}`));
+  }
+  if (cmd.door === true) parts.push(plainPart(" / "), valuePart("문 열림"));
+  else if (cmd.door === false) parts.push(plainPart(" / "), valuePart("문 연출 없음"));
+  return parts;
 }
 
 function transferDirectionSummary(direction: "retain" | "up" | "right" | "down" | "left"): string {
@@ -1231,7 +1262,7 @@ function conditionSummary(condition: Extract<Command, { kind: "fork" }>['conditi
     case "gold":
       return `소지금 ${compareAmountLabel(condition.op, condition.amount)}`;
     case "timer":
-      return `${timerIdLabel(condition.timerId)} ${condition.seconds}초 이하`;
+      return `${timerIdLabel(condition.timerId)} ${timerThresholdLabel(condition)}`;
     case "timePhase":
       return `시간대 ${timePhaseLabel(condition.phase)}`;
     case "season":

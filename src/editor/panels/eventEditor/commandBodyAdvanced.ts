@@ -3,7 +3,7 @@ import {
   listDatabaseResourceOptions,
   openDatabaseResourcePickerDialog,
 } from "@/editor/panels/databaseResourcePickerDialog";
-import { getAudioEngine, playAudioCommand, stopAudioCommand } from "@/player/audio";
+import { getAudioEngine, playAudioCommand, stopAllAudio, stopAudioCommand } from "@/player/audio";
 import { listAudioResources } from "@/assets/audioResourceCatalog";
 import { audioDescriptionView, audioPlayback } from "@/editor/panels/audioResourcePresentation";
 import { store } from "@/project/store";
@@ -57,7 +57,8 @@ import {
   showEmoteBody,
   showPictureBody,
 } from "./commandBodyPage3Native";
-import { renderTransferPicker, transferDirectionLabel, transferFadeLabel } from "./transferPlayerDialog";
+import { transferEditorSummary } from "./commandSummary";
+import { renderTransferPicker } from "./transferPlayerDialog";
 import {
   CHARSET_CHARACTER_COUNT,
   CHARSET_FRAME_COUNT,
@@ -557,24 +558,35 @@ function transferBody(context: CommandEditContext, cmd: Extract<Command, { kind:
     class: "transfer-command-editor transfer-command-editor-inline",
     dataset: { testid: "event-transfer-player-dialog" },
   });
+  const summaryText = el("span", {
+    class: "transfer-command-summary",
+    text: transferEditorSummary(seeded),
+    dataset: { testid: "transfer-command-summary" },
+  });
+  const badge = passable === undefined
+    ? null
+    : el("span", {
+      class: `rich-badge ${passable ? "passable" : "blocked"}`,
+      text: passable ? "통행 가능" : "통행 불가 타일!",
+      dataset: { testid: "transfer-passability-badge", passable: String(passable) },
+    });
+  const paintSummary = (command: Extract<Command, { kind: "transfer" }>): void => {
+    summaryText.textContent = transferEditorSummary(command);
+    if (!badge) return;
+    const nextMap = command.mapId ? project.maps[command.mapId] : undefined;
+    if (!nextMap) return;
+    const nextPassable = isPassable(project, nextMap, command.x, command.y);
+    badge.className = `rich-badge ${nextPassable ? "passable" : "blocked"}`;
+    badge.textContent = nextPassable ? "통행 가능" : "통행 불가 타일!";
+    badge.dataset.passable = String(nextPassable);
+  };
+  const commit = (command: Extract<Command, { kind: "transfer" }>): void => {
+    paintSummary(command);
+    context.actions.replaceCommand(context.path, command);
+  };
   const summary = el("div", {
     class: "transfer-command-summary-row",
-    children: [
-      el("span", {
-        class: "transfer-command-summary",
-        text: `${map?.name ?? (seeded.mapId || "(맵)")} (${seeded.x}, ${seeded.y}) / ${transferDirectionLabel(seeded.direction)} / 페이드: ${transferFadeLabel(seeded.fade)}`,
-        dataset: { testid: "transfer-command-summary" },
-      }),
-      ...(passable === undefined
-        ? []
-        : [
-            el("span", {
-              class: `rich-badge ${passable ? "passable" : "blocked"}`,
-              text: passable ? "통행 가능" : "통행 불가 타일!",
-              dataset: { testid: "transfer-passability-badge", passable: String(passable) },
-            }),
-          ]),
-    ],
+    children: badge ? [summaryText, badge] : [summaryText],
   });
   const pickerHost = el("div", {
     class: "transfer-command-inline-picker",
@@ -587,16 +599,29 @@ function transferBody(context: CommandEditContext, cmd: Extract<Command, { kind:
       command: seeded,
       hideFooter: true,
       liveApply: true,
-      onApply: (command) => context.actions.replaceCommand(context.path, command),
+      latestCommand: () => latestTransfer(context, seeded),
+      onApply: commit,
     },
     () => undefined
   );
-  host.append(summary, transferDoorRow(context, seeded), pickerHost);
+  host.append(summary, transferDoorRow(context, seeded, commit), pickerHost);
   return host;
 }
 
+function latestTransfer(
+  context: CommandEditContext,
+  fallback: Extract<Command, { kind: "transfer" }>,
+): Extract<Command, { kind: "transfer" }> {
+  const current = context.getCurrentCommand?.();
+  return current?.kind === "transfer" ? current : fallback;
+}
+
 /** 문 열림 연출: 자동(문 그림이 있는 칸에서만) / 켜기 / 끄기 — transfer.door 생략·true·false. */
-function transferDoorRow(context: CommandEditContext, cmd: Extract<Command, { kind: "transfer" }>): HTMLElement {
+function transferDoorRow(
+  context: CommandEditContext,
+  cmd: Extract<Command, { kind: "transfer" }>,
+  commit: (command: Extract<Command, { kind: "transfer" }>) => void,
+): HTMLElement {
   const select = el("select", { dataset: { testid: "transfer-door-mode" }, attrs: { "aria-label": "문 열림 연출" } }) as HTMLSelectElement;
   for (const [value, label] of [["auto", "자동"], ["on", "켜기"], ["off", "끄기"]] as const) {
     const option = el("option", { text: label, attrs: { value } }) as HTMLOptionElement;
@@ -604,9 +629,11 @@ function transferDoorRow(context: CommandEditContext, cmd: Extract<Command, { ki
   }
   select.value = cmd.door === true ? "on" : cmd.door === false ? "off" : "auto";
   select.addEventListener("change", () => {
-    const { door: _drop, ...rest } = cmd;
+    // 맵 피커는 이 폼을 다시 그리지 않는다. 열릴 때의 cmd 로 덮으면 방금 고른 방향·페이드가 사라진다.
+    const current = latestTransfer(context, cmd);
+    const { door: _drop, ...rest } = current;
     const next = select.value === "on" ? { ...rest, door: true } : select.value === "off" ? { ...rest, door: false } : rest;
-    context.actions.replaceCommand(context.path, next as Extract<Command, { kind: "transfer" }>);
+    commit(next);
   });
   return el("label", {
     class: "transfer-command-door-row",
@@ -1389,11 +1416,26 @@ function skillSubtitle(record: { readonly mpCost: { readonly flat: number }; rea
   return `MP ${record.mpCost.flat} · 위력 ${record.power} · ${scopeLabel}${typeLabel}`;
 }
 
+// 미리 듣기를 시작한 뒤에만 감시한다. 폼이 대화상자 닫기·인스펙터 교체로 문서에서 빠지면 그 재생을 끊는다.
+function stopOwnedAudioPreviewWhenDetached(node: HTMLElement, active: () => boolean, stop: () => void): void {
+  if (typeof MutationObserver === "undefined" || typeof document === "undefined" || !document.body) return;
+  const observer = new MutationObserver(() => {
+    if (node.isConnected) return;
+    observer.disconnect();
+    if (!active()) return;
+    stop();
+  });
+  observer.observe(document.body, { childList: true, subtree: true });
+}
+
 function playAudioBody(context: CommandEditContext, cmd: Extract<Command, { kind: "playAudio" }>): HTMLElement {
   getAudioEngine().installUnlockListeners();
 
   let channel: "bgm" | "se" = cmd.loop ? "bgm" : "se";
   let resourceId = cmd.resourceId.trim();
+  // 미리 듣기는 게임 엔진을 쓴다. 이 폼이 재생을 시작한 뒤에 문서에서 빠지면 그 곡만 끊는다.
+  let previewStarted = false;
+  let previewDetachWatching = false;
 
   const wrap = el("div", {
     class: "play-audio-command-body cream-command-form",
@@ -1558,6 +1600,14 @@ function playAudioBody(context: CommandEditContext, cmd: Extract<Command, { kind
         }
         stopAudioCommand();
         playAudioCommand({ resourceId, loop: channel === "bgm" }, store.getCurrent());
+        previewStarted = true;
+        if (!previewDetachWatching) {
+          previewDetachWatching = true;
+          stopOwnedAudioPreviewWhenDetached(wrap, () => previewStarted, () => {
+            previewStarted = false;
+            stopAllAudio();
+          });
+        }
         status.textContent = `재생 중: ${currentOptionLabel(list) || currentAudioLabel(resourceId, store.getCurrent())}`;
       },
     },

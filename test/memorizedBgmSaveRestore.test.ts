@@ -65,6 +65,52 @@ describe("세이브/로드 — 기억한 BGM", () => {
     expect(replay).toMatchObject({ kind: "playAudio", resourceId: "field-theme", loop: true, channel: "bgm" });
   });
 
+  it("기억한 음량 0과 페이드 0은 세이브를 건너도 재생 스텝에 남는다", () => {
+    const project = createBlankProject();
+    const session = startSession(project);
+    session.audio.bgm = { resourceId: "field-theme", loop: true, volume: 0, fadeInMs: 0 };
+    drain(project, session, [m2("Memorize Current BGM")]);
+    session.audio.bgm = { resourceId: "battle-theme", loop: true, volume: 80, fadeInMs: 400 };
+
+    const storage = new MemoryStorage();
+    expect(saveToSlot(storage, 1, createSaveSnapshot(project, session))).toEqual({ ok: true });
+    const saved = readSaveSlot(storage, 1);
+    if (saved.kind !== "present") throw new Error(`Save was ${saved.kind}`);
+    expect(saved.snapshot.session.memorizedBgm).toBe("field-theme");
+    expect(saved.snapshot.session.memorizedBgmVolume).toBe(0);
+    expect(saved.snapshot.session.memorizedBgmFadeInMs).toBe(0);
+
+    const restored = applySaveSnapshot(project, saved.snapshot);
+    expect(restored.m2Runtime?.audio?.memorizedBgmVolume).toBe(0);
+    expect(restored.m2Runtime?.audio?.memorizedBgmFadeInMs).toBe(0);
+    const replay = createInterpreter([m2("Play Memorized BGM")], restored, project).start();
+    expect(replay).toEqual({ kind: "playAudio", resourceId: "field-theme", loop: true, channel: "bgm", volume: 0, fadeInMs: 0 });
+    expect(restored.audio.bgm).toEqual({ resourceId: "field-theme", loop: true, volume: 0, fadeInMs: 0 });
+  });
+
+  it("깨진 기억 음량은 곡 id 를 남긴 채 그 칸만 버린다", () => {
+    const project = createBlankProject();
+    const session = startSession(project);
+    session.audio.bgm = { resourceId: "field-theme", loop: true, volume: 40, fadeInMs: 250 };
+    drain(project, session, [m2("Memorize Current BGM")]);
+    const raw = JSON.parse(JSON.stringify(createSaveSnapshot(project, session))) as {
+      session: { memorizedBgmVolume?: unknown; memorizedBgmFadeInMs?: unknown; gold: number };
+    };
+    raw.session.memorizedBgmVolume = "loud";
+    raw.session.memorizedBgmFadeInMs = -1;
+    const storage = new MemoryStorage();
+    storage.setItem(saveSlotKey(1), JSON.stringify(raw));
+
+    const saved = readSaveSlot(storage, 1);
+    if (saved.kind !== "present") throw new Error(`Save was ${saved.kind}: ${saved.kind === "corrupt" ? saved.message : ""}`);
+    expect(saved.snapshot.session.memorizedBgm).toBe("field-theme");
+    expect(saved.snapshot.session.memorizedBgmVolume).toBeUndefined();
+    expect(saved.snapshot.session.memorizedBgmFadeInMs).toBeUndefined();
+    const restored = applySaveSnapshot(project, saved.snapshot);
+    const replay = createInterpreter([m2("Play Memorized BGM")], restored, project).start();
+    expect(replay).toEqual({ kind: "playAudio", resourceId: "field-theme", loop: true, channel: "bgm" });
+  });
+
   it("기억한 곡이 없으면 칸을 만들지 않고, 재생은 요청을 내지 않는다", () => {
     const project = createBlankProject();
     const session = startSession(project);

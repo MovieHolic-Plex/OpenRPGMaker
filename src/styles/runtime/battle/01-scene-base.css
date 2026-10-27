@@ -344,6 +344,11 @@
   display: none;
 }
 
+/* 도주 불가처럼 잠깐 띄운 안내(data-battle-notice)는 명령 중에도 문장 창을 연다. */
+.battle-scene[data-battle-director-step="command"][data-battle-notice="true"] .battle-message-window {
+  display: grid;
+}
+
 .battle-scene[data-battle-phase="targetSelect"] .battle-message-window {
   display: grid;
 }

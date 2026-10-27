@@ -269,19 +269,19 @@
 @keyframes ending-cg-figure-in { from { opacity: 0; translate: 0 2cqh; } to { opacity: 1; translate: 0 0; } }
 
 /* 에메랄드 엔딩(D04): 도트 글꼴(Galmuri9 18px 격자)·전당 등록 쪽. 비도트 system-ui 와 7·9·10px 글자는 이 게임에 없다. */
-.terminal-scene[data-monster-style="emerald"] { font-family: "Galmuri9", "Noto Sans CJK KR", "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif; letter-spacing: 0; }
-.terminal-scene[data-monster-style="emerald"] .ending-kicker { font: 18px/24px "Galmuri9", "Noto Sans CJK KR", "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif; letter-spacing: 0; opacity: .8; }
-.terminal-scene[data-monster-style="emerald"] .ending-heading { font: 36px/48px "Galmuri9", "Noto Sans CJK KR", "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif; word-break: keep-all; overflow-wrap: break-word; text-wrap: balance; }
+.terminal-scene[data-monster-style="emerald"] { font-family: var(--font-pixel-small); letter-spacing: 0; }
+.terminal-scene[data-monster-style="emerald"] .ending-kicker { font: 18px/24px var(--font-pixel-small); letter-spacing: 0; opacity: .8; }
+.terminal-scene[data-monster-style="emerald"] .ending-heading { font: 36px/48px var(--font-pixel-small); word-break: keep-all; overflow-wrap: break-word; text-wrap: balance; }
 .terminal-scene[data-monster-style="emerald"] .ending-message,
 .terminal-scene[data-monster-style="emerald"] .ending-final-caption,
 .terminal-scene[data-monster-style="emerald"] .game-over-hint,
 .terminal-scene[data-monster-style="emerald"] .ending-credits-roll,
-.terminal-scene[data-monster-style="emerald"] .game-over-actions .game-over-choice { word-break: keep-all; font: 18px/24px "Galmuri9", "Noto Sans CJK KR", "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif; letter-spacing: 0; }
-.terminal-scene[data-monster-style="emerald"] .ending-final-title { font: 36px/48px "Galmuri9", "Noto Sans CJK KR", "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif; letter-spacing: 0; word-break: keep-all; text-wrap: balance; }
+.terminal-scene[data-monster-style="emerald"] .game-over-actions .game-over-choice { word-break: keep-all; font: 18px/24px var(--font-pixel-small); letter-spacing: 0; }
+.terminal-scene[data-monster-style="emerald"] .ending-final-title { font: 36px/48px var(--font-pixel-small); letter-spacing: 0; word-break: keep-all; text-wrap: balance; }
 .ending-hall { position: absolute; inset: 0 0 40px; display: grid; align-content: center; justify-items: center; gap: 12px; animation: game-over-reveal 280ms ease-out both; }
-.ending-hall-title { font: 36px/48px "Galmuri9", "Noto Sans CJK KR", "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif; color: #f8f0c8; text-shadow: 2px 2px #284050; }
+.ending-hall-title { font: 36px/48px var(--font-pixel-small); color: #f8f0c8; text-shadow: 2px 2px #284050; }
 .ending-hall-grid { display: grid; grid-template-columns: repeat(2, 192px); gap: 8px 16px; }
-.ending-hall-card { display: grid; grid-template-columns: 48px minmax(0, 1fr); grid-template-rows: 24px 24px; align-items: center; column-gap: 4px; padding: 4px 8px; background: #f8f8e8; border: 4px solid #486050; box-shadow: 4px 4px #90a080; color: #384840; box-sizing: border-box; font: 18px/24px "Galmuri9", "Noto Sans CJK KR", "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif; }
+.ending-hall-card { display: grid; grid-template-columns: 48px minmax(0, 1fr); grid-template-rows: 24px 24px; align-items: center; column-gap: 4px; padding: 4px 8px; background: #f8f8e8; border: 4px solid #486050; box-shadow: 4px 4px #90a080; color: #384840; box-sizing: border-box; font: 18px/24px var(--font-pixel-small); }
 .ending-hall-face { grid-row: 1 / 3; width: 48px; height: 48px; background-size: contain; background-repeat: no-repeat; background-position: center; image-rendering: pixelated; }
 .ending-hall-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .ending-hall-level { color: #586858; }
@@ -290,7 +290,7 @@
 /* 에메랄드 블랙아웃(D31): 검은 바탕 + 필드 대사창과 같은 문장창(아래 80px) + 제목. Galmuri9 18px 격자 글꼴, 정수 좌표. */
 .terminal-scene[data-monster-style="emerald"] .blackout-title {
   position: absolute; top: 112px; left: 0; right: 0; text-align: center;
-  font: 36px/48px "Galmuri9", "Noto Sans CJK KR", "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif; letter-spacing: 0;
+  font: 36px/48px var(--font-pixel-small); letter-spacing: 0;
   color: #f8f0c8; text-shadow: 2px 2px #284050;
   animation: terminal-reveal 650ms ease-out both;
 }
@@ -298,5 +298,5 @@
   top: auto; bottom: 0; left: 0; right: 0; height: 80px; box-sizing: border-box; padding: 12px 28px;
   background: #f8f8e8; border: 4px solid #487068; box-shadow: inset 0 0 0 4px #a8c0a0; border-radius: 0;
   color: #384840; text-align: left; text-shadow: none; white-space: pre-wrap; word-break: keep-all; overflow-wrap: break-word; overflow: hidden;
-  font: 18px/24px "Galmuri9", "Noto Sans CJK KR", "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif; letter-spacing: 0;
+  font: 18px/24px var(--font-pixel-small); letter-spacing: 0;
 }

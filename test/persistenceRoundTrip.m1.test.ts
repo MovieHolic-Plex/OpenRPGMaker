@@ -8,6 +8,8 @@ import { eraseTile, fillTile, paintTile, toggleCollision } from "@/editor/action
 import { createBlankProject, TILE } from "@/project/defaults";
 import { store } from "@/project/store";
 import type { GameMap, Project } from "@/project/types";
+// TILE.* / 263·319·85·378 are combined-town chip ids; new projects start on beodeul_city since the 2026-10-07 copyright purge.
+import { startOnRetiredCombinedTown } from "./support/retiredEasyRpgTilesets";
 
 function roundTrip(project: Project): Project {
   return deserialize(serialize(project));
@@ -15,7 +17,7 @@ function roundTrip(project: Project): Project {
 
 describe("타일 편집 왕복 보존", () => {
   it("페인트한 lower 타일이 복원된다", () => {
-    store.replace(createBlankProject());
+    store.replace(startOnRetiredCombinedTown(createBlankProject()));
     const mapId = store.getCurrent().startMapId;
     paintTile(mapId, "lower", 1, 2, TILE.WATER);
 
@@ -26,7 +28,7 @@ describe("타일 편집 왕복 보존", () => {
   });
 
   it("flood fill 결과가 복원된다", () => {
-    store.replace(createBlankProject());
+    store.replace(startOnRetiredCombinedTown(createBlankProject()));
     const mapId = store.getCurrent().startMapId;
     fillTile(mapId, "lower", 0, 0, TILE.GRASS);
 
@@ -37,7 +39,7 @@ describe("타일 편집 왕복 보존", () => {
   });
 
   it("지운 타일(EMPTY)이 복원된다", () => {
-    store.replace(createBlankProject());
+    store.replace(startOnRetiredCombinedTown(createBlankProject()));
     const mapId = store.getCurrent().startMapId;
     paintTile(mapId, "lower", 3, 3, TILE.WATER);
     eraseTile(mapId, "lower", 3, 3);
@@ -49,7 +51,7 @@ describe("타일 편집 왕복 보존", () => {
   });
 
   it("upper 오버레이 타일이 복원된다", () => {
-    store.replace(createBlankProject());
+    store.replace(startOnRetiredCombinedTown(createBlankProject()));
     const mapId = store.getCurrent().startMapId;
     paintTile(mapId, "upper", 5, 5, TILE.FLOWERS);
 
@@ -63,7 +65,7 @@ describe("타일 편집 왕복 보존", () => {
   });
 
   it("양쪽 레이어의 독립 타일이 모두 복원된다", () => {
-    store.replace(createBlankProject());
+    store.replace(startOnRetiredCombinedTown(createBlankProject()));
     const mapId = store.getCurrent().startMapId;
     paintTile(mapId, "lower", 2, 2, TILE.WATER);
     paintTile(mapId, "upper", 2, 2, TILE.FLOWERS);
@@ -77,7 +79,7 @@ describe("타일 편집 왕복 보존", () => {
 
 describe("통행(passability) 편집 왕복 보존", () => {
   it("토글한 통행 변경이 복원된다", () => {
-    store.replace(createBlankProject());
+    store.replace(startOnRetiredCombinedTown(createBlankProject()));
     const mapId = store.getCurrent().startMapId;
     paintTile(mapId, "lower", 0, 0, TILE.GRASS);
     // 토글 전 원본 통행을 미리 캡처 (GRASS는 기본 passable)
@@ -97,7 +99,7 @@ describe("통행(passability) 편집 왕복 보존", () => {
   });
 
   it("두 번 토글(왕복)한 통행은 원본과 동일하게 복원된다", () => {
-    store.replace(createBlankProject());
+    store.replace(startOnRetiredCombinedTown(createBlankProject()));
     const mapId = store.getCurrent().startMapId;
     paintTile(mapId, "lower", 1, 1, TILE.GRASS);
     toggleCollision(mapId, 1, 1);
@@ -113,7 +115,7 @@ describe("통행(passability) 편집 왕복 보존", () => {
 
 describe("타일셋 메타데이터 왕복 보존", () => {
   it("tileMeta 배열이 보존된다", () => {
-    store.replace(createBlankProject());
+    store.replace(startOnRetiredCombinedTown(createBlankProject()));
     const project = store.getCurrent();
     const ts = project.tilesets[project.maps[project.startMapId].tilesetId];
 
@@ -123,7 +125,7 @@ describe("타일셋 메타데이터 왕복 보존", () => {
   });
 
   it("tileGroups가 보존된다", () => {
-    store.replace(createBlankProject());
+    store.replace(startOnRetiredCombinedTown(createBlankProject()));
     const project = store.getCurrent();
     const ts = project.tilesets[project.maps[project.startMapId].tilesetId];
 
@@ -135,7 +137,7 @@ describe("타일셋 메타데이터 왕복 보존", () => {
 
 describe("맵 크기/구조 왕복 보존", () => {
   it("width/height가 보존된다", () => {
-    store.replace(createBlankProject());
+    store.replace(startOnRetiredCombinedTown(createBlankProject()));
     const project = store.getCurrent();
     const map = project.maps[project.startMapId];
     const before = { width: map.width, height: map.height };
@@ -146,7 +148,7 @@ describe("맵 크기/구조 왕복 보존", () => {
   });
 
   it("lowerTiles/upperTiles 길이가 보존된다", () => {
-    store.replace(createBlankProject());
+    store.replace(startOnRetiredCombinedTown(createBlankProject()));
     const project = store.getCurrent();
     const map = project.maps[project.startMapId] as GameMap;
     const expectedLen = map.width * map.height;
