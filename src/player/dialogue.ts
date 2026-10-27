@@ -2741,15 +2741,26 @@ function renderFace(face: FaceGraphic): HTMLElement {
   });
 }
 
+/** Quoted CSS `url("…")` 를 닫거나 이스케이프하는 글자. */
+const DIALOGUE_CSS_URL_BREAK = /["\\\u0000-\u001f\u007f]/u;
+const DIALOGUE_ROOT_IMAGE_URL = /^\/[A-Za-z0-9/_\-.]+\.(?:png|jpe?g|webp|gif)$/iu;
+const DIALOGUE_DATA_IMAGE_URL = /^data:image\/(?:png|jpeg|webp|gif);base64,[A-Za-z0-9+/=]+$/iu;
+const DIALOGUE_ASSET_SCHEME_URL = /^oprn-asset:\/\/[^/?#]+\/[0-9a-f]{64}$/iu;
+const DIALOGUE_ASSET_HOST_URL = /^\/__oprn\/asset\/(?:[^/?#]+\/)?[0-9a-f]{64}$/iu;
+const DIALOGUE_HTTP_IMAGE_EXT = /\.(?:png|jpe?g|webp|gif)$/iu;
+
 function safeResourceImageUrl(url: string | null): string | null {
-  if (url === null) return null;
-  if (/^\/[A-Za-z0-9/_\-.]+\.png$/u.test(url) || /^\/[A-Za-z0-9/_\-.]+\.jpe?g$/u.test(url)) return url;
-  if (/^data:image\/(?:png|jpeg);base64,[A-Za-z0-9+/=]+$/u.test(url)) return url;
-  // The resource resolver rebases exported assets, including deployment subpaths.
-  // Keep the PNG/JPEG contract and reject characters that escape a quoted CSS URL.
-  if (/^https?:\/\//u.test(url) && !/["\\\u0000-\u001f\u007f]/u.test(url)) {
+  if (url === null || DIALOGUE_CSS_URL_BREAK.test(url)) return null;
+  // 묶음 얼굴·초상은 루트 경로다. 올린 그림은 png/jpeg 뿐 아니라 webp·gif 도 온다.
+  if (DIALOGUE_ROOT_IMAGE_URL.test(url) || DIALOGUE_DATA_IMAGE_URL.test(url)) return url;
+  // 데스크톱·브라우저 호스트의 올린 그림은 확장자 없는 내용 주소다.
+  // `oprn-asset://<프로젝트>/<sha256>`, `/__oprn/asset/<프로젝트>/<sha256>`.
+  // 확장자를 요구하면 대사창만 얼굴이 빈 칸이 된다(상태 메뉴는 같은 주소를 그대로 그린다).
+  if (DIALOGUE_ASSET_SCHEME_URL.test(url) || DIALOGUE_ASSET_HOST_URL.test(url)) return url;
+  // 내보내기 플레이어는 배포 하위 경로를 포함한 http(s) 로 다시 쓴다. 경로의 확장자만 본다.
+  if (/^https?:\/\//u.test(url)) {
     try {
-      if (/\.(?:png|jpe?g)$/u.test(new URL(url).pathname)) return url;
+      if (DIALOGUE_HTTP_IMAGE_EXT.test(new URL(url).pathname)) return url;
     } catch (error) {
       if (!(error instanceof TypeError)) throw error;
       return null;

@@ -74,6 +74,9 @@ describe("dialogue portrait resource resolution", () => {
     'https://example.test/face.png");color:red;--x:url("face.png',
     "https://example.test/face\\.png", "https://example.test/face\n.png",
     "https://[invalid/face.png",
+    "oprn-asset://project/not-a-sha",
+    `oprn-asset://project/${"ab".repeat(32)}");color:red`,
+    `/__oprn/asset/${"ab".repeat(31)}`,
   ])("keeps invalid image URLs rejected: %s", async (url) => {
     // Given: exercise the resolver's inline boundary, including non-image resources.
     registerInlineAssets({ [assetPath.slice(1)]: url });
@@ -85,5 +88,24 @@ describe("dialogue portrait resource resolution", () => {
     expect(ready).toBe(true);
     expect(face?.classList.contains("missing")).toBe(true);
     expect(face?.style.getPropertyValue("--face-url")).toBe("");
+  });
+
+  const sha = "ab".repeat(32);
+  it.each([
+    `oprn-asset://550e8400-e29b-41d4-a716-446655440000/${sha}`,
+    `/__oprn/asset/${encodeURIComponent("/projects/My Game")}/${sha}`,
+    `/__oprn/asset/${sha}`,
+    "data:image/webp;base64,UklGRgAAAA==",
+    "https://games.example.test/faces/hero.webp",
+    "/assets/uploaded/hero.gif",
+  ])("draws an uploaded face from %s", async (expected) => {
+    registerInlineAssets({ [assetPath.slice(1)]: expected });
+
+    const { face, ready } = await renderPortrait();
+
+    expect(ready).toBe(true);
+    expect(face?.classList.contains("dialogue-face-image")).toBe(true);
+    expect(face?.classList.contains("missing")).toBe(false);
+    expect(face?.style.getPropertyValue("--face-url")).toBe(`url("${expected}")`);
   });
 });
