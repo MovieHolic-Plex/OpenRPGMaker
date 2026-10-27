@@ -127,6 +127,10 @@ width/height와 기존 전체 셀 배열 형태는 그대로이며 스키마/릴
   `defaultDatabaseUtilityRecords.ts`는 기존 17개 슬롯 뒤에 grass를 추가한다. 의존성 폐쇄가 빠진 행만 보충하고 같은 ID의 저자 행은 유지한다.
   누락 시 기존 프로젝트 부팅이 `Bundled retro roster dependency missing: elements.grass`로 중단된다.
 
+## 장비 능력치 보너스 (2026-10-27)
+
+`EquipmentRecord.statBonuses` 의 공격·방어·정신·민첩은 −9999~9999 다. 무거운 창·갑옷의 민첩 감점(음수)이 `normalizeStatBonuses` 에서 0으로 잘려 프로젝트 저장 왕복에 사라지던 것을 고쳤다. 생략한 칸은 0이고, 아이템 장비 프로필(−500~500)·씨앗(−50~50) 범위는 그대로다.
+
 ## FF6 마석 성장 — 선택 필드 (2026-10-15)
 
 모두 값이 있을 때만 저장한다(옛 프로젝트·세이브 불변). 형태: 장비 `apGrants`·`apRate`·`levelUpBonus`, 적 `rewards.ap`, 스킬 `oncePerBattle`, 장비 부위 `equipmentSlots[].equipsAs`(도형 검사 `shapeDatabaseFields`).
