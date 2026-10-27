@@ -561,6 +561,43 @@ function expandEraseCompanions(
   return [...out.values()];
 }
 
+const FILL_NEIGHBORS = [[-1, 0], [1, 0], [0, -1], [0, 1]] as const;
+
+/**
+ * 시작 칸과 같은 타일로 4방향 이어진 영역.
+ * 상위 층은 바닥(`lowerTiles`)도 시작 칸과 같아야 한다. 상위가 비어 있으면 맵 전체가
+ * 같은 빈 값이라, 바닥을 안 보면 풀밭에 장식을 채우려다 물·길·벽까지 덮인다
+ * (`mapHelpers.floodFillCells` 의 2층 규칙과 같다).
+ */
+function floodFillPoints(map: GameMap, layer: TileLayer, x: number, y: number): RoadPoint[] {
+  const tiles = layer === "lower" ? map.lowerTiles : map.upperTiles;
+  const startIdx = y * map.width + x;
+  const target = tiles[startIdx];
+  const matchGround = layer === "upper";
+  const ground = matchGround ? map.lowerTiles[startIdx] : undefined;
+  const queue = [startIdx];
+  const seen = new Set<number>([startIdx]);
+  const points: RoadPoint[] = [];
+  for (let head = 0; head < queue.length; head += 1) {
+    const idx = queue[head]!;
+    const cx = idx % map.width;
+    const cy = Math.floor(idx / map.width);
+    points.push({ x: cx, y: cy });
+    for (const [dx, dy] of FILL_NEIGHBORS) {
+      const nx = cx + dx;
+      const ny = cy + dy;
+      if (!inMap(map, nx, ny)) continue;
+      const ni = ny * map.width + nx;
+      if (seen.has(ni)) continue;
+      if (tiles[ni] !== target) continue;
+      if (matchGround && map.lowerTiles[ni] !== ground) continue;
+      seen.add(ni);
+      queue.push(ni);
+    }
+  }
+  return points;
+}
+
 export function fillTile(mapId: MapId, layer: TileLayer, x: number, y: number, newTile: number, options: TilePaintOptions = {}): void {
   const fillPlan = planFillTile(mapId, layer, x, y, newTile);
   const current = store.getCurrent();
@@ -586,32 +623,9 @@ export function fillTile(mapId: MapId, layer: TileLayer, x: number, y: number, n
     if (!inMap(m, x, y)) return;
     const targetLayer = effectiveLayer(tileset, layer, newTile);
     const targetArr = targetLayer === "lower" ? m.lowerTiles : m.upperTiles;
-    const startIdx = y * m.width + x;
-    const target = targetArr[startIdx];
-    const queue = [startIdx];
-    const seen = new Set<number>([startIdx]);
-    const changedPoints: RoadPoint[] = [];
-    for (let head = 0; head < queue.length; head += 1) {
-      const idx = queue[head]!;
-      const cx = idx % m.width;
-      const cy = Math.floor(idx / m.width);
-      setTileSafe(m, targetLayer, cx, cy, newTile);
-      changedPoints.push({ x: cx, y: cy });
-      const neighbors = [
-        [cx - 1, cy],
-        [cx + 1, cy],
-        [cx, cy - 1],
-        [cx, cy + 1],
-      ] as const;
-      for (const [nx, ny] of neighbors) {
-        if (!inMap(m, nx, ny)) continue;
-        const ni = ny * m.width + nx;
-        if (seen.has(ni)) continue;
-        if (targetArr[ni] !== target) continue;
-        seen.add(ni);
-        queue.push(ni);
-      }
-    }
+    const target = targetArr[y * m.width + x];
+    const changedPoints = floodFillPoints(m, targetLayer, x, y);
+    for (const point of changedPoints) setTileSafe(m, targetLayer, point.x, point.y, newTile);
     shapeTerrainAfterLowerEdit(m, tileset, {
       layer: targetLayer,
       points: changedPoints,
@@ -636,33 +650,7 @@ function planFillTile(mapId: MapId, layer: TileLayer, x: number, y: number, newT
   const map = project.maps[mapId];
   if (!map || !inMap(map, x, y)) return { layer, points: [] };
   const targetLayer = effectiveLayer(project.tilesets[map.tilesetId], layer, newTile);
-  const targetArr = targetLayer === "lower" ? map.lowerTiles : map.upperTiles;
-  const startIdx = y * map.width + x;
-  const target = targetArr[startIdx];
-  const queue = [startIdx];
-  const seen = new Set<number>([startIdx]);
-  const points: RoadPoint[] = [];
-  for (let head = 0; head < queue.length; head += 1) {
-    const idx = queue[head]!;
-    const cx = idx % map.width;
-    const cy = Math.floor(idx / map.width);
-    points.push({ x: cx, y: cy });
-    const neighbors = [
-      [cx - 1, cy],
-      [cx + 1, cy],
-      [cx, cy - 1],
-      [cx, cy + 1],
-    ] as const;
-    for (const [nx, ny] of neighbors) {
-      if (!inMap(map, nx, ny)) continue;
-      const ni = ny * map.width + nx;
-      if (seen.has(ni)) continue;
-      if (targetArr[ni] !== target) continue;
-      seen.add(ni);
-      queue.push(ni);
-    }
-  }
-  return { layer: targetLayer, points };
+  return { layer: targetLayer, points: floodFillPoints(map, targetLayer, x, y) };
 }
 
 function changedTileCellsForEdit(mapId: MapId, layer: TileLayer, points: readonly RoadPoint[], autoConnect: boolean): readonly ProjectChangeCell[] {
