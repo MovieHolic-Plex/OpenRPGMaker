@@ -1,0 +1,313 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3b408183f8e30cc3989662d74bd98a4b6578752da7f73c018bc174017229727a",
+ "width": 48,
+ "height": 16,
+ "kind": "wall_mounted",
+ "name": "tc.cave_stalactite r2 A1",
+ "label": "dungeon/tc.cave_stalactite.r2.A1",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 질감 없음 (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "질감 없음 (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 4,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "dungeon",
+   "fallback": true,
+   "reason": "칩셋 dungeon 의 화풍 기준 묶음이 없다",
+   "hash": "2ad36264365ed8d5"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 48,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stalactite cluster hanging from the ceiling edge (rock mass tapering to points)",
+      "rows": "0-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The object is a wall-mounted cave stalactite cluster seen face-on. The silhouette is widest at the top (rows 0-4, width 48 down to 28) and tapers to a point at row 14. No ellipse, edge line or eave shadow marks a horizontal surface. Rows 0-1 are a flat band at the ceiling attachment, and it is the hanging rock's own face with no front-edge line. The tapering spikes and dark crevice lines are vertical face detail. Because the object is wall-mounted and flat, it reads as a front elevation with no top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a small row of grey-brown stalactites with only 6 distinct colours in total, against 11-40 for the references. Each spike reads as about 3 tones (light face, mid, dark edge), so shading is shallow next to the 5-6 steps in the hedge, well and stall. The measured facts are mostly uninformative: tones per tile are 0 because the piece is smaller than a tile, and flat coverage is 0%. The 51% neutral share of dark edge pixels means the outline is mixed and partly greyish, with little material tint. By eye the spikes are thin and sparse, with no per-rock facets, grain, speckle or highlight clusters. They look flatter and more sticker-like than the well's stonework or the hedge's leaf clumps. A careful artist would not accept them next to the references because they look thinner and less textured.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 8690
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cave ceiling rock band with stalactites hanging from it",
+      "rows": "0-4",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The object is a wall-mounted cluster of stalactites. A wide rock band spans the top rows 0-1 at width 48, then tapers to a point by row 14. The silhouette narrows steadily from 48 to 1 with no widening and narrowing, so there is no ellipse. No row ends in a front-edge line with an eave shadow, and no contents or roof plane are visible. The shaded vertical streaks (dark at x=12 rows 2-8) read as hanging spikes seen face-on. It is a flat front-facing drawing, which suits a wall-mounted kind, and it shows no top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a row of small stalactites with only 6 distinct colours in total, against 11-40 for the references. Each spike shows about 3 tones: a light top band, a mid body and a darker tip. The references (hedge, well, stall) show 5-6 steps per material with per-element highlights and grain. The stalactites look thin and sticker-like beside them, with little per-spike shading or rock texture such as chips, cracks or speckle. The dark edge pixels are about 51% neutral, which is mixed and gives no clear material-tone outline. The piece is sparse, so the per-tile facts are 0 and cannot be used against it. Judged by eye it is still visibly shallower and flatter than the same-kind references, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 8675
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stalactite cluster body (hanging cones with dark shadow streaks)",
+      "rows": "0-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The silhouette is widest at rows 2-4 (width 28-31) and tapers steadily to a point at row 14. Rows 0-1 are a flat attachment strip, 48 wide, with no front-edge line and no eave shadow. The cones are drawn face-on with vertical dark streaks, and no ellipse or horizontal surface appears anywhere. It reads as a flat hanging elevation mounted on the ceiling or wall, with no visible top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a row of small stalactites with only 6 distinct colours in total, against 11-40 for the references. It shows about 3 lightness steps (a light highlight, a mid tone and a dark edge) where the Beodeul props use 5-6. The stalactites are thin and sparse, so the per-tile measures are 0 and do not count against it. By eye, though, each spike is a narrow tapered wedge with little grain, no per-form speckle and no stone-by-stone shading. The references (well, stall, hedge) have clustered texture dots and several tones per material. About half of the dark edge pixels are neutral (51%), so the outline is partly tinted and partly grey-black, which I read as mixed. Next to the references it looks thinner, flatter and more sticker-like, and the shading and texture fall short of the Beodeul standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 13633
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ceiling attachment band at top of stalactite cluster",
+      "rows": "0-1",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "hanging stalactite cones",
+      "rows": "2-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The silhouette is 48 px wide at rows 0-1 and tapers to a point at row 14, so it is a row of hanging cones. Column scans show only vertical shading, with dark crack lines at x=12 and light and dark stripes at x=35. No front-edge line, eave shadow, ellipse, roof plane or visible contents appear anywhere. The object is a flat front view mounted on the wall or ceiling. Nothing in it calls for a horizontal top surface, so it reads as front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a row of small stalactites drawn with only 6 distinct colours in total, against 11-40 for the references. That gives roughly 3 lightness steps on the rock, where Beodeul uses about 5-6 per material. The forms read as thin tan or grey spikes with little per-spike modelling, no clustered grain, no speckle and no stone-by-stone shading. The sheet is too small to fill a 16x16 tile, so the tile-density fact is 0 and I judged by eye. Next to the well, stall and hedge it looks thinner, flatter and more sticker-like. The edge pixels are about half neutral, so the outline is mixed, with no clear dark tint of the rock tone. Near-flat coverage is 0%, but only because the spikes are so small. A careful artist would not accept it beside the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 10875
+  }
+ ],
+ "decidedAt": "2026-10-27T12:49:50.997Z",
+ "cells": {
+  "16": [
+   "2e08010ad3c8df76",
+   "922db99642cc2d2f",
+   "cce6ea36769fb12e"
+  ],
+  "24": [
+   "64828c315be58563",
+   "9286d7a96e157ca5",
+   "ae2e47f75f7a7ec6",
+   "f44e644010f58bf6"
+  ],
+  "32": [
+   "2ed6f734b0b49448",
+   "570bb35dfdf99f8f",
+   "6c2f981d66029391",
+   "73da2a67168ce541",
+   "77568cf5bba9ea47",
+   "798d4959e7f1d361",
+   "b64a547208216c7a",
+   "c4494d6ef3843535",
+   "d529c6d2646638c6",
+   "d879a2784b959f0f",
+   "f193cca83f26876f",
+   "faa4fa31635d6b93"
+  ],
+  "48": [
+   "66059b13d82d0ad8",
+   "b4128cd96609ddb2"
+  ]
+ }
+}

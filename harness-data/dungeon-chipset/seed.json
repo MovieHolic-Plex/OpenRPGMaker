@@ -4515,6 +4515,33 @@
     "tc.cave_stalactite"
    ],
    "lead": "profiles MISSING cave 종유석. 고른 고드름 A2 짜임을 줄 A 흙굴 바위 단(rim·cfloor)으로 — 1칸·2칸 손 그림."
+  },
+  "theme-cave-stal-r2": {
+   "module": "src/harnesses/dungeon-chipset/rounds/theme_cave_stal_r2.py",
+   "wave": "theme_climate",
+   "title": "자연 동굴 종유석 theme-cave-stal-r2",
+   "items": [
+    "tc.cave_stalactite"
+   ],
+   "lead": "r1 A1(Sonnet PASS) 모양 + object-gate 화풍 반려(질감 없음) 고침: 바위 결·처마 잔점·이끼."
+  },
+  "theme-cave-stal-r3": {
+   "module": "src/harnesses/dungeon-chipset/rounds/theme_cave_stal_r3.py",
+   "wave": "theme_climate",
+   "title": "자연 동굴 종유석 theme-cave-stal-r3",
+   "items": [
+    "tc.cave_stalactite"
+   ],
+   "lead": "r2 object-gate 화풍 반려(색 6·3단·무채색 윤곽) → 종유석마다 단면 6단, 갈색 윤곽, 결 띠, 처마 이끼."
+  },
+  "theme-cave-stal-r4": {
+   "module": "src/harnesses/dungeon-chipset/rounds/theme_cave_stal_r4.py",
+   "wave": "theme_climate",
+   "title": "자연 동굴 종유석 theme-cave-stal-r4",
+   "items": [
+    "tc.cave_stalactite"
+   ],
+   "lead": "r2·r3 화풍 반려 근본 원인(투명 칸 가는 가시) → 칸 폭 바위 처마 띠 + 굵은 원뿔, 명암 6단."
   }
  }
 }
