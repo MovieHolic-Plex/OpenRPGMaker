@@ -224,7 +224,7 @@
   background-size: 250% 100%, 100% 100%;
   color: transparent;
   filter: drop-shadow(0 0.625cqw 0 var(--oprn-logo-edge)) drop-shadow(0 1.25cqw 3.125cqw var(--oprn-logo-glow));
-  font-family: var(--font-serif);
+  font-family: var(--font-title-display);
   font-size: 7.1875cqw;
   font-weight: 700;
   letter-spacing: 0.06em;
@@ -263,7 +263,7 @@
 
 .database-modal-backdrop .db-title-workbench-subtitle {
   color: rgb(236 240 246 / 88%);
-  font-family: var(--font-serif);
+  font-family: var(--font-title-display);
   font-size: 2.5cqw;
   letter-spacing: 0.32em;
   pointer-events: none;
@@ -324,7 +324,7 @@
 
 .database-modal-backdrop .db-title-workbench-menu[data-menu-style="plain"] .db-title-workbench-menu-item {
   color: rgb(226 232 240 / 78%);
-  font-family: var(--font-serif);
+  font-family: var(--font-title-menu);
   letter-spacing: 0.08em;
   padding: 0.3125cqw 1.25cqw 0.3125cqw 3.75cqw;
   text-shadow: 0 0.3125cqw 0.9375cqw rgb(0 0 0 / 90%), 0 0 2.5cqw rgb(0 0 0 / 60%);

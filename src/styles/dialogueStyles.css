@@ -189,7 +189,7 @@
   --runtime-dialogue-speaker-inset: 12px;
   /* 갈무리 11 은 12px 격자 글꼴 — 무대 정수 배율(1·2·4배)에서 획이 화소에 딱 맞는다. 예전 Galmuri9 9px 는 격자(10px) 밖이라
      2배 무대에서 18px 로 그려져 획이 2·3px 로 들쭉날쭉했다(2026-10-24 폴른 스타 검수 「글자가 깨진다」). 본문 줄 높이 1.5 = 18px. */
-  --runtime-dialogue-font: var(--font-pixel);
+  --runtime-dialogue-font: var(--font-pixel-text);
   --runtime-dialogue-font-size: 12px;
   --dlg-bg: rgba(17, 28, 35, 0.82);
   --dlg-border: 1px solid rgb(173, 181, 151);

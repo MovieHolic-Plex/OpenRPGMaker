@@ -537,7 +537,7 @@
   --oprn-logo-fill: linear-gradient(180deg, #ffffff 0%, #f1f4f8 45%, #cfd8e3 56%, #ffffff 100%);
   --oprn-logo-edge: rgb(6 10 20 / 92%);
   --oprn-logo-glow: rgb(0 0 0 / 80%);
-  font-family: var(--font-serif);
+  font-family: var(--font-title-display);
   font-size: 27px;
   font-weight: 700;
   letter-spacing: 0.06em;
@@ -594,7 +594,7 @@
 .rm-title-screen .rm-title-logo-subtitle {
   position: absolute;
   z-index: 3;
-  font-family: var(--font-serif);
+  font-family: var(--font-title-display);
   font-size: 8px;
   letter-spacing: 0.32em;
   text-transform: uppercase;
@@ -631,7 +631,7 @@
   background: none;
   box-shadow: none;
   color: rgb(226 232 240 / 78%);
-  font-family: var(--font-serif);
+  font-family: var(--font-title-menu);
   letter-spacing: 0.08em;
   padding: 1px 4px 1px 12px;
   position: relative;
