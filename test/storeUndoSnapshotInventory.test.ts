@@ -35,7 +35,8 @@ const SNAPSHOT = /recordProjectSnapshot|recordMapSnapshot/u;
  * 고쳤으면 줄을 지워라. 지우지 않으면 이 테스트가 실패해서 알려 준다.
  */
 const KNOWN_WITHOUT_SNAPSHOT: readonly string[] = [
-  "src/editor/eventActions.ts",
+  // 데모 열기는 프로젝트 열기와 같은 통째 교체다(#3752) — 되돌리기 대상 편집이 아니다.
+  "src/editor/flagshipDemoLoader.ts",
   "src/editor/harnessSuggestion/structureKitActions.ts",
   "src/editor/mapParentLink.ts",
   "src/editor/mapPlanningActions.ts",
