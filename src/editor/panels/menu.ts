@@ -937,8 +937,12 @@ async function createProjectFromDialog(): Promise<void> {
 }
 
 async function newScarloxyDemoProject(): Promise<void> {
+  // 다른 예제처럼 새 프로젝트 폴더로 만든다. 예전에는 지금 열린 호스트 프로젝트를 통째로 갈아 끼워 자동 저장이 덮어썼다.
+  const project = createScarloxyDemoProject();
+  const { openProjectAsNewFolder } = await import("@/editor/flagshipDemoLoader");
+  if (await openProjectAsNewFolder(project, project.meta.title || "Scarloxy 몬스터 초원")) return;
   if (!(await showConfirm({ title: "Scarloxy 데모", message: "현재 작업을 지우고 Scarloxy 몬스터 초원 데모 프로젝트를 시작할까요?", confirmLabel: "시작", danger: true }))) return;
-  store.replaceProject(createScarloxyDemoProject());
+  store.replaceProject(project);
   focusLoadedProjectStartMap();
   toast("Scarloxy 몬스터 초원 데모를 불러왔습니다", "ok");
 }
