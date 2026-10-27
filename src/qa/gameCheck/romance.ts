@@ -13,6 +13,7 @@ import { ROMANCE_TITLE_SUBTITLE } from "@/project/romancePreset";
 import { romanceTitleArtSettingGap, romanceTitleMismatch, romanceTitleMismatchMessage } from "@/project/romanceTitleArt";
 import { ROMANCE_PLACEHOLDER_NAMES, SEGMENT_END_ENDING_ID, SEGMENT_END_EVENT_ID, SEGMENT_ROUTE_MAP_ID, SEGMENT_STARTER_EVENT_ID } from "@/project/playableSegmentContract";
 import { TILE } from "@/project/defaults/constants";
+import { isWaterRole } from "@/project/tileRoles";
 import { isWaterChipsetTile } from "@/project/defaults/chipsetMapping";
 import { isLakeAutotileTile } from "@/project/defaults/lakeAutotile";
 import type { Command, EventPage, GameEvent, GameMap, Project, TilesetDef } from "@/project/types";
@@ -109,7 +110,7 @@ function deadlineWithoutFallback(project: Project): string | undefined {
 function isWaterTile(tileset: TilesetDef | undefined, tile: number | undefined): boolean {
   if (typeof tile !== "number" || tile < 0) return false;
   const meta = tileset?.tileMeta?.[tile];
-  if (meta && (meta.role !== undefined || (meta.tags?.length ?? 0) > 0)) return meta.role === "water" || meta.tags?.some((tag) => tag === "water" || tag === "물") === true;
+  if (meta && (meta.role !== undefined || (meta.tags?.length ?? 0) > 0)) return isWaterRole(meta.role) || meta.tags?.some((tag) => tag === "water" || tag === "물") === true;
   return tile === TILE.WATER || isWaterChipsetTile(tile) || isLakeAutotileTile(tile, tileset);
 }
 

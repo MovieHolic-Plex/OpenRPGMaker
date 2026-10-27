@@ -89,6 +89,7 @@ import { clearTileStack, topTileInStack } from "@/project/mapOverlayTiles";
 import { terrainLocked } from "@/project/terrainDesign";
 import { invalidateReliefSlopes, rampCode } from "@/project/relief/walk";
 import type { GameEvent, GameMap, Project, TilesetDef } from "@/project/types";
+import { isWaterRole } from "@/project/tileRoles";
 /** 계획 호출 하나에 허용하는 벽시계(의도 선언과 같다). 수리 호출도 같은 값을 따로 쓴다. */
 export const STAMP_PLAN_TIMEOUT_MS = 20_000;
 
@@ -485,7 +486,7 @@ function isWaterCell(map: GameMap, tileset: TilesetDef | undefined, x: number, y
   if ((map.upperTiles[index] ?? -1) >= 0) return false;
   const lower = map.lowerTiles[index] ?? -1;
   const meta = tileset?.tileMeta?.[lower];
-  return meta?.role === "water" || /물|강|호수|바다|연못|용암|수로/u.test(meta?.label ?? "");
+  return isWaterRole(meta?.role) || /물|강|호수|바다|연못|용암|수로/u.test(meta?.label ?? "");
 }
 
 function isRoadCell(map: GameMap, tileset: TilesetDef | undefined, x: number, y: number): boolean {
@@ -1364,7 +1365,7 @@ function expandTownRoads(
     if (plazaTiles.has(l)) return true;
     const lMeta = tileset.tileMeta?.[l];
     const uMeta = tileset.tileMeta?.[u];
-    if (lMeta?.role === "water" || uMeta?.role === "water") return true;
+    if (isWaterRole(lMeta?.role) || isWaterRole(uMeta?.role)) return true;
     if (/물|강|다리|호수|바다|연못/u.test(`${lMeta?.label ?? ""} ${uMeta?.label ?? ""}`)) return true;
     for (const p of previewMap.structurePlacements ?? []) {
       if (x >= p.x && x < p.x + p.w && y >= p.y && y < p.y + p.h) return true;

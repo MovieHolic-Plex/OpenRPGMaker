@@ -11,6 +11,7 @@ import { createJpCityTileset } from "@/project/defaults/jpCity";
 import { translateTiles } from "@/project/objectStamp";
 import { isWaterfrontRouteName, type StartPlan } from "@/project/startVariety";
 import type { GameMap, Project, TilesetDef } from "@/project/types";
+import { isWaterRole } from "@/project/tileRoles";
 export interface RouteStyle {
   /** 길 폭(칸). */
   readonly roadWidth: number;
@@ -489,7 +490,7 @@ export function sanitizeRiversidePromenade(project: Project, map: GameMap): bool
   const W = map.width, H = map.height;
   const meta = project.tilesets[map.tilesetId]?.tileMeta;
   // 강물은 칸 설명(role·태그 water — 이식한 연못 오토타일 포함)이나 예전 물 칸 번호로 센다.
-  const isWater = (t: number): boolean => t === 23 || t === 849 || t === 32 || (t >= 0 && (meta?.[t]?.role === "water" || meta?.[t]?.tags?.includes("water") === true));
+  const isWater = (t: number): boolean => t === 23 || t === 849 || t === 32 || (t >= 0 && (isWaterRole(meta?.[t]?.role) || meta?.[t]?.tags?.includes("water") === true));
   let waterCells = 0;
   let row0Water = 0;
   const waterRows = new Set<number>();
