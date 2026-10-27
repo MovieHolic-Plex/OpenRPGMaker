@@ -38,7 +38,7 @@ store.update 안에서 루트 키 **삭제**는 반영되지 않으므로 쓰기
 `variant?: { of, preset?, spec }`(2026-10-15, 선택) — `derive_world_variant` 가 파생한 변형 세계의 원본: `of` 는 기준 지도 id, `spec` 은 키트 `terrain.variant`
 (`WorldmapVariantSpec`: ops·palette·icon_preset·journey·protect_roads…). 없으면 일반 세계 지도. 옛 문서는 그대로 열린다(마이그레이션 없음).
 `EncounterConditions.terrainId?: string`(2026-10-15, 선택) — 서 있는 칸 지형 레코드 id 와 같을 때만 그 항목이 나온다. 없으면 지형 무관(옛 동작).
-`DatabaseTerrainRecord.vehiclePassage.{chocobo?,cart?,raft?}`(선택) — 초코보가 걸을 수 없는 칸도 지남 / 광산 수레가 다니는 칸 / 뗏목이 다니는 칸. 없으면 false.
+`DatabaseTerrainRecord.vehiclePassage.{chocobo?,cart?,raft?}`(선택) — 초코보가 걸을 수 없는 칸도 지남 / 광산 수레가 다니는 칸 / 뗏목이 다니는 칸. chocobo·cart 를 빼면 false. raft 를 빼면 소형선만 다니는 물(boat 이고 ship 이 아님)은 뗏목을 허용하고, `raft: false` 는 그 폴백을 끈다. 불러오기 정규화는 그 false 를 지우지 않는다.
 
 ## 캐릭터별 전투 동작 (2026-10-03)
 

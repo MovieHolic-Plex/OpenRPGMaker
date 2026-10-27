@@ -583,7 +583,7 @@ source `defaults/beodeulArchitecture.ts`, `beodeulArchitectureTools.ts`; `author
 - `place_vehicle {vehicle: boat|ship|airship|chocobo|cart|raft, mapId, x, y, characterIndex?}` (2026-10-15: 초코보·광산 수레·뗏목 추가, 모르는 인자 거절) (`src/editor/tools/vehicleTools.ts`, 도메인 event,
   라벨 「탈것 세우기」): `system.vehicles` 에 종류당 한 항목을 쓰고 다시 부르면 옮긴다. characterIndex 는 EasyRPG
   `Vehicles.png` 의 칸이다(기본 boat 0 소형선, ship 1 대형선, airship 2 비행선; 288×256 은 일반 8칸 시트다).
-- **걷는 탈것 셋 (2026-10-15, FF6급 감사 #28).** `vehicleCanEnter`(`src/project/vehicles.ts`) 규칙: 뗏목 = 지형 `vehiclePassage.raft` 참(강) 또는 boat 참·ship 거짓(호수)·이름표 water — 바다는 못 간다 /
+- **걷는 탈것 셋 (2026-10-15, FF6급 감사 #28).** `vehicleCanEnter`(`src/project/vehicles.ts`) 규칙: 뗏목 = 지형 `vehiclePassage.raft` 참(강), 또는 raft 를 적지 않은 boat 참·ship 거짓(호수)·이름표 water. `raft: false` 는 그 호수 폴백을 끄며 불러오기와 `upsert_database_utility` 가 그 false 를 지우지 않는다 — 바다는 못 간다 /
   초코보 = 걸을 수 있는 칸 + `vehiclePassage.chocobo` 참 + 이름표 tree·forest(통행 불가 숲도 지난다), 물·산은 불가, 걸음 두 배 / 광산 수레 = `vehiclePassage.cart` 참 또는 칸 이름에 선로·레일·궤도·rail(가드레일 제외)이 든 칸만, 걸음 두 배.
   그림은 새 도트 없이 기존 칩: 초코보 = Animal 시트 말(칸 5, `vehicleSheet`), 수레 = Vehicles 5(임시 무한궤도 차), 뗏목 = Vehicles 0. 월드맵 키트 지도는 지형 태그(`terrain_world_*`)로 바다 boat·ship / 강 boat·raft / 숲 chocobo 가 이미 붙는다.
   레일 칸이 칩셋에 없으면(버들항) `set_tile_rules` terrainTag 로 `cart` 참인 지형 레코드를 붙인다. 이벤트 편집기 「탈것 위치 설정」·M2 카탈로그 선택지도 여섯 종이다. 시험: `ct-vehicle-walkers`.
