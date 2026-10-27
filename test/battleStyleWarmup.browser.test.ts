@@ -14,11 +14,21 @@ describe("battle style preparation in the exported player", () => {
       const rows = JSON.parse(readFileSync(output, "utf8"));
       const current = rows.find((r: any) => r.variant === "current");
       const cold = rows.find((r: any) => r.variant === "cold");
+      const sum = (entries: any[], key: "bytes" | "decoded"): number =>
+        entries.reduce((total, entry) => total + (entry[key] ?? 0), 0);
+      const urls = (entries: any[]): string[] => entries.map((entry) => entry.url).sort();
+
       expect(current.warm.width).toBe(640);
       expect(current.warm.images).toBeGreaterThan(0);
       expect(current.warm.backgrounds).toBeGreaterThan(0);
-      expect(current.requests.filter((r: any) => r.phase === "mount")).toHaveLength(0);
-      expect(current.requests.map((r: any) => r.url).sort()).toEqual(cold.requests.map((r: any) => r.url).sort());
+
+      // 계약은 "준비가 그림을 실제로 받았고, 마운트가 그걸 다시 받지 않는가" 다. 응답 이벤트 개수로
+      // 재면 개발 서버의 조건부 재검증(304)까지 세어 오탐이 난다(2026-10-27 실측: 304 는 정상).
+      const warmDecoded = sum(current.phases.warm, "decoded");
+      expect(warmDecoded).toBeGreaterThan(0);
+      expect(sum(current.phases.mount, "decoded")).toBe(0);
+      expect(sum(current.phases.mount, "bytes")).toBeLessThan(Math.max(4_096, warmDecoded * 0.1));
+      expect([...urls(current.phases.warm), ...urls(current.phases.mount)].sort()).toEqual(urls(cold.phases.mount));
     } finally {
       rmSync(output, { force: true });
     }
