@@ -266,11 +266,12 @@ describe("acceptance and requirement schema/runtime contract", () => {
     expect(item?.properties?.kind).toEqual({ type: "string", enum: [
       "mapCount", "mapDimensions", "eventCount", "targetChange", "preserve", "imageReviewed", "actionCombat",
       "toolVerdict", "shopPurchase", "mapRoundTrip", "npcReward", "functionalUnresolved", "reachability", "gameTitle",
-      "projectTitle", "itemValues", "projectPreserve", "wikiDeclaration",
+      // dbRecordValues(collection·recordId·recordName·fields)는 저장된 DB 값 증명용으로 추가된 기준이다.
+      "projectTitle", "itemValues", "dbRecordValues", "projectPreserve", "wikiDeclaration",
     ] });
     expect(Object.keys(item?.properties ?? {}).sort()).toEqual([
-      "allowedChanges", "args", "combatMode", "count", "destination", "documentId", "expectations", "from", "height", "interactionTargets", "item", "itemId",
-      "kind", "name", "outgoing", "price", "reason", "region", "requirement", "returning", "scope", "seller", "sourceQuote",
+      "allowedChanges", "args", "collection", "combatMode", "count", "destination", "documentId", "expectations", "fields", "from", "height", "interactionTargets", "item", "itemId",
+      "kind", "name", "outgoing", "price", "reason", "recordId", "recordName", "region", "requirement", "returning", "scope", "seller", "sourceQuote",
       "start", "target", "targets", "title", "to", "tool", "unitPrice", "width",
     ]);
     expect(item?.properties?.args).toMatchObject({ type: "object", additionalProperties: true });
