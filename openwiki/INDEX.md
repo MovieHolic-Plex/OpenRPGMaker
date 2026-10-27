@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **187쪽 / 7236KB / 약 2,121,508 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **187쪽 / 7242KB / 약 2,123,442 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -40,7 +40,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/runtime-battle.md` | 431KB | 32KB | 2386 | ~126,498 |
 | `openwiki/runtime-m2-flow-controls.md` | 51KB | 22KB | 340 | ~13,907 |
 | `openwiki/runtime-pre-edit-routing.md` | 176KB | 96KB ⚠상한 초과 — 절을 더 쪼개라 | 1086 | ~52,274 |
-| `openwiki/runtime-project-schema.md` | 251KB | 72KB ⚠상한 초과 — 절을 더 쪼개라 | 1793 | ~70,872 |
+| `openwiki/runtime-project-schema.md` | 257KB | 77KB ⚠상한 초과 — 절을 더 쪼개라 | 1807 | ~72,540 |
 | `openwiki/runtime-sessions.md` | 152KB | 62KB ⚠상한 초과 — 절을 더 쪼개라 | 865 | ~41,421 |
 | `openwiki/team-project-host.md` | 51KB | 5KB | 536 | ~15,628 |
 | `openwiki/testing.md` | 252KB | 48KB | 2337 | ~70,877 |
@@ -291,7 +291,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L253` Live editor AI assistant MCP (same UI session)
 - `L272` Refreshing the wiki
 
-### `openwiki/architecture.md` — 33KB · 161줄 · ~9,425 토큰
+### `openwiki/architecture.md` — 34KB · 162줄 · ~9,691 토큰
 
 절 제목 없음 (평면 목록 페이지).
 
@@ -2873,7 +2873,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L1067` 미연시 추가 화면 — 갤러리 잠금·엔딩 목록·세이브 카드 (2026-10-17, 미연시 시스템 UI 2단계)
 - `L1080` 인물 연출 런타임 — approach·turnToward·대사 자동 돌아보기 (2026-10-22)
 
-### `openwiki/runtime-project-schema.md` — 251KB · 1793줄 · ~70,872 토큰 · 통째읽기 잘림
+### `openwiki/runtime-project-schema.md` — 257KB · 1807줄 · ~72,540 토큰 · 통째읽기 잘림
 
 - `L3` 대사 책상 — 선택 필드 `project.dialogueDesk` (2026-10-24)
 - `L14` 세계 지도 연결 정의 — 선택 필드 `project.worldAtlases` (2026-10-05)
@@ -2934,47 +2934,47 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L1028` Showcase media save-copy durability (issue #693, 2026-09-08)
 - `L1068` 공용 첫 방문 데모 — 읽기 전용 저장 계약 (2026-09-14)
 - `L1102` Project schema & persistence
-- `L1353` Optional medicine PP recovery (2026-10-03)
-- `L1363` Variable arithmetic & loop runtime (2026-08-07)
-- `L1368` Canonical event-draft projection (2026-07-30)
-- `L1375` P2 general buildings and home decorations (2026-08-25)
-- `L1382` 이벤트 초안 보관함: 명시적 저장은 자기가 대체한 디바운스를 취소한다 (2026-08-29)
-- `L1400` Boot normalizers must not create dangling references (2026-08-30)
-- `L1426` `.oprn` 은 단일 파일 게임 컨테이너다 — 편집기와 플레이어 양쪽이 읽는다 (2026-08-30)
-- `L1460` 성장 트리 선택 확장 (2026-09-05)
-- `L1466` 마을 설계서 (2026-09-05)
-- `L1472` 공포 게임 제작 기능 (2026-09-05)
-  - `L1476` 저장된 대사 별칭과 맵 오버레이 (2026-09-05)
-- `L1480` NPC 표시 이름 (2026-09-05)
-- `L1493` 연결 실내 도면의 영속성 (2026-09-05)
-- `L1497` 개념 장소 형상 (2026-09-05)
-- `L1501` Optional village decoration attachments (2026-09-13)
-- `L1512` Optional map climate (Feature16, 2026-09-21)
-- `L1529` Optional authored combat rules (feature16, 2026-09-21)
-- `L1532` AI 저작 보조 설정의 프로젝트 지속성 (Feature16, 2026-09-21)
-- `L1545` 구름량 optional 필드 (2026-09-21)
-  - `L1557` Map atmosphere layers (2026-09-21)
-- `L1578` 필드 HUD 설정 (2026-09-21)
-  - `L1588` HUD 장르·서체 확장 (2026-09-21)
-- `L1600` 타일셋 참고문서 데이터 (2026-09-21)
-- `L1604` 몬스터 보유 조건 연결 작업 (2026-09-25, 진행 중)
-- `L1658` Optional authored slide tables (2026-10-04)
-- `L1668` Uploaded charset pose cadence (2026-10-05)
-- `L1677` 재편집 지형과 게임 높이 규칙 (2026-10-03)
-- `L1686` Optional internal authoring contract
-  - `L1690` Desktop fullscreen and mouse controls (2026-10-04)
-  - `L1705` Cinematic image direction (2026-10-04)
-- `L1714` 글자·장면 오프닝 연출 (2026-10-04)
-- `L1724` 자유 크기 인물 프레임의 발 기준점 (2026-10-06)
-  - `L1741` 공용 native 프레임 정의 보존 (2026-10-06)
-- `L1749` 필드 기술(HM) 선택 필드 (2026-10-15)
-- `L1755` 포켓몬풍 필드·진행 규칙 선택 필드 (2026-10-15, poke-fix-p)
-- `L1762` ItemRecord.heldEffect · MonsterInstance.heldItemId (2026-10-16, poke-depth PR4)
-- `L1767` MonsterSpeciesRecord.ability (2026-10-16, poke-depth PR3)
-- `L1772` StateRecord.volatileStatus·gen1MajorStatus "toxic" (2026-10-16, poke-depth PR2)
-- `L1777` SkillRecord.statStageEffects (2026-10-16, poke-depth PR1)
-- `L1782` SkillRecord.weather (2026-10-16, poke-depth PR5)
-- `L1790` ItemCaptureProfile.condition · MonsterInstance.caughtBallId (2026-10-16, poke-depth PR6)
+- `L1367` Optional medicine PP recovery (2026-10-03)
+- `L1377` Variable arithmetic & loop runtime (2026-08-07)
+- `L1382` Canonical event-draft projection (2026-07-30)
+- `L1389` P2 general buildings and home decorations (2026-08-25)
+- `L1396` 이벤트 초안 보관함: 명시적 저장은 자기가 대체한 디바운스를 취소한다 (2026-08-29)
+- `L1414` Boot normalizers must not create dangling references (2026-08-30)
+- `L1440` `.oprn` 은 단일 파일 게임 컨테이너다 — 편집기와 플레이어 양쪽이 읽는다 (2026-08-30)
+- `L1474` 성장 트리 선택 확장 (2026-09-05)
+- `L1480` 마을 설계서 (2026-09-05)
+- `L1486` 공포 게임 제작 기능 (2026-09-05)
+  - `L1490` 저장된 대사 별칭과 맵 오버레이 (2026-09-05)
+- `L1494` NPC 표시 이름 (2026-09-05)
+- `L1507` 연결 실내 도면의 영속성 (2026-09-05)
+- `L1511` 개념 장소 형상 (2026-09-05)
+- `L1515` Optional village decoration attachments (2026-09-13)
+- `L1526` Optional map climate (Feature16, 2026-09-21)
+- `L1543` Optional authored combat rules (feature16, 2026-09-21)
+- `L1546` AI 저작 보조 설정의 프로젝트 지속성 (Feature16, 2026-09-21)
+- `L1559` 구름량 optional 필드 (2026-09-21)
+  - `L1571` Map atmosphere layers (2026-09-21)
+- `L1592` 필드 HUD 설정 (2026-09-21)
+  - `L1602` HUD 장르·서체 확장 (2026-09-21)
+- `L1614` 타일셋 참고문서 데이터 (2026-09-21)
+- `L1618` 몬스터 보유 조건 연결 작업 (2026-09-25, 진행 중)
+- `L1672` Optional authored slide tables (2026-10-04)
+- `L1682` Uploaded charset pose cadence (2026-10-05)
+- `L1691` 재편집 지형과 게임 높이 규칙 (2026-10-03)
+- `L1700` Optional internal authoring contract
+  - `L1704` Desktop fullscreen and mouse controls (2026-10-04)
+  - `L1719` Cinematic image direction (2026-10-04)
+- `L1728` 글자·장면 오프닝 연출 (2026-10-04)
+- `L1738` 자유 크기 인물 프레임의 발 기준점 (2026-10-06)
+  - `L1755` 공용 native 프레임 정의 보존 (2026-10-06)
+- `L1763` 필드 기술(HM) 선택 필드 (2026-10-15)
+- `L1769` 포켓몬풍 필드·진행 규칙 선택 필드 (2026-10-15, poke-fix-p)
+- `L1776` ItemRecord.heldEffect · MonsterInstance.heldItemId (2026-10-16, poke-depth PR4)
+- `L1781` MonsterSpeciesRecord.ability (2026-10-16, poke-depth PR3)
+- `L1786` StateRecord.volatileStatus·gen1MajorStatus "toxic" (2026-10-16, poke-depth PR2)
+- `L1791` SkillRecord.statStageEffects (2026-10-16, poke-depth PR1)
+- `L1796` SkillRecord.weather (2026-10-16, poke-depth PR5)
+- `L1804` ItemCaptureProfile.condition · MonsterInstance.caughtBallId (2026-10-16, poke-depth PR6)
 
 ### `openwiki/runtime-sessions.md` — 152KB · 865줄 · ~41,421 토큰 · 통째읽기 잘림
 

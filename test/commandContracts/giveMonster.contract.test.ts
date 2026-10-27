@@ -2,7 +2,9 @@
 // G1 계약: giveMonster (Phase 9a 몬스터 지급 커맨드).
 import { describe, expect, it } from "vitest";
 import type { Command } from "@/project/types";
-import { MONSTER_PARTY_MAX } from "@/project/monsterCollection";
+import { DEFAULT_MONSTER_EXP_CURVE, MONSTER_PARTY_MAX } from "@/project/monsterCollection";
+import { totalExpForLevel } from "@/project/actorModel";
+import { createBlankProject } from "@/project/defaults";
 import { roundtripCommands, runCommandContract } from "./harness";
 
 function command(speciesId = "species_wild_slime", level = 4): Command {
@@ -20,7 +22,8 @@ describe("giveMonster 계약", () => {
       speciesId: "species_wild_slime",
       nickname: "계약 슬라임",
       level: 4,
-      exp: 0,
+      // 경험치는 누적값이라 지급 몬스터는 그 레벨의 바닥에서 시작한다(monsterCollection.giveMonster).
+      exp: totalExpForLevel(createBlankProject().database.monsterSpecies?.find((entry) => entry.id === "species_wild_slime")?.expCurve ?? DEFAULT_MONSTER_EXP_CURVE, 4),
       friendship: 70,
     });
     expect(result.warnings).toEqual([]);

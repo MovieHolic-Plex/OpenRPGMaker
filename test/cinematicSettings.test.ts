@@ -30,7 +30,8 @@ function authoredProject(): Project {
     video: uploaded("video", "movie", "video/mp4"),
     voice: uploaded("voice", "sound", "audio/ogg"),
     background: uploaded("background", "gameOver", "image/webp"),
-    unused: uploaded("unused", "picture", "image/png"),
+    // id 가 흔한 낱말이면 프로젝트 문자열 집계에 우연히 걸린다(jp_city 칸 role 「unused」) — 아무도 안 쓰는 id 로 둔다.
+    unused_still_upload: uploaded("unused_still_upload", "picture", "image/png"),
   };
   project.system.opening = sequence();
   project.system.gameOver = {

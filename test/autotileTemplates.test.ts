@@ -12,6 +12,7 @@ import { COBBLE_TILE } from "@/project/defaults/chipsetMapping";
 import { COMBINED_TOWN_TILESET_ID, DEFAULT_TILE_COUNT, DEFAULT_TILES_PER_ROW } from "@/project/defaults/constants";
 import { deserialize, serialize } from "@/project/io";
 import { store } from "@/project/store";
+import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 
 // 오토타일 템플릿 위저드 회귀 테스트 — 순수 계산(buildTemplateGroup)과
 // 커밋 액션(addAutotileGroupFromTemplate)의 내장 폴백 승계/애니 스트립 추가를 고정한다.
@@ -105,7 +106,8 @@ describe("buildTemplateGroup", () => {
 
 describe("addAutotileGroupFromTemplate", () => {
   beforeEach(() => {
-    store.replace(createBlankProject());
+    // 합본 마을 칩셋은 2026-10-07 저작권 정리로 새 프로젝트에서 빠졌다 — 그 칩셋이 남은 옛 저장본을 재현한다.
+    store.replace(withRetiredEasyRpgTilesets(createBlankProject()));
   });
 
   it("(e) 첫 커스텀 그룹 추가 시 내장 그룹(흙길/모래/포석/경작지)이 승계되어 살아남는다", () => {

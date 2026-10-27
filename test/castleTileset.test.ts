@@ -1,36 +1,10 @@
 import type Phaser from "phaser";
 import { describe, expect, it, vi } from "vitest";
 import { registerTilesetTextureFrames } from "@/assets/bundled";
-import { createBlankProject } from "@/project/defaults";
-import { ensureBundledResourceProfiles, ensureBundledTilesets } from "@/project/defaults/defaultAssets";
-import { CASTLE_TILESET_ID, CASTLE_TILESET_TEXTURE_KEY } from "@/project/defaults/constants";
-import { collectWebExportAssets } from "@/project/webExportAssets";
+import { CASTLE_TILESET_TEXTURE_KEY } from "@/project/defaults/constants";
 
 describe("bundled Castle atlas", () => {
-  it("adds the atlas to old projects without changing maps or overwriting tile settings on reload", () => {
-    const project = createBlankProject();
-    const maps = structuredClone(project.maps);
-    delete project.tilesets[CASTLE_TILESET_ID];
-    project.resourceProfiles = project.resourceProfiles.filter(row => row.assetId !== CASTLE_TILESET_TEXTURE_KEY);
-    ensureBundledTilesets(project);
-    ensureBundledResourceProfiles(project);
-    const castle = project.tilesets[CASTLE_TILESET_ID];
-    expect(castle).toMatchObject({ kind: "custom", tileSize: 16, tilesPerRow: 32, count: 1024 });
-    expect(castle.passability[770].up).toBe(true); // grass, beyond the legacy 480-cell limit
-    expect(castle.passability[20].up).toBe(false); // stone wall
-    castle.priority[770] = "upper";
-    castle.passability[770].up = false;
-    castle.tileMeta![770].label = "내 잔디";
-    const authored = structuredClone(castle);
-    ensureBundledTilesets(project);
-    ensureBundledResourceProfiles(project);
-    expect(project.tilesets[CASTLE_TILESET_ID]).toEqual(authored);
-    expect(project.maps).toEqual(maps);
-    expect(project.resourceProfiles.filter(row => row.assetId === CASTLE_TILESET_TEXTURE_KEY)).toEqual([
-      expect.objectContaining({ tileWidth: 16, tileHeight: 16, imageWidth: 512, imageHeight: 512 }),
-    ]);
-  });
-
+  // 「옛 프로젝트에 성채 아틀라스를 심는다」 사례는 뺐다 — OpenGameArt 성채 PNG·번들 정의는 2026-10-07 저작권 정리로 지워졌다(ensureBundledTilesets 가 더는 심지 않는다).
   it("registers complete 32-column frames, including baked texture keys", () => {
     for (const key of [CASTLE_TILESET_TEXTURE_KEY, `${CASTLE_TILESET_TEXTURE_KEY}__transparent_ff00ff`]) {
       const add = vi.fn();
@@ -49,9 +23,5 @@ describe("bundled Castle atlas", () => {
     }
   });
 
-  it("ships the attribution notice alongside the original PNG", () => {
-    const paths = collectWebExportAssets(createBlankProject()).map(asset => asset.zipPath);
-    expect(paths).toContain("assets/opengameart-castle-tiles.png");
-    expect(paths).toContain("assets/opengameart-castle-tiles-CREDITS.txt");
-  });
+  // 「성채 PNG·출처 고지를 웹 내보내기에 싣는다」 사례도 같은 정리로 뺐다 — 내보낼 성채 그림이 없다.
 });

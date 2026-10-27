@@ -11,7 +11,7 @@ describe("store.loadFallbackProject — 로드 실패 복구", () => {
     vi.unstubAllEnvs();
   });
 
-  it("예제 프로젝트를 메모리로 열고, 원격 저장은 꺼진 채(loaded=true) 시작한다", async () => {
+  it("시작용 프로젝트를 메모리로 열고, 원격 저장은 꺼진 채(loaded=true) 시작한다", async () => {
     vi.stubGlobal("window", {
       location: { hostname: "127.0.0.1", pathname: "/", search: "" },
       localStorage: { getItem: () => null, setItem: () => undefined },
@@ -21,10 +21,12 @@ describe("store.loadFallbackProject — 로드 실패 복구", () => {
     vi.resetModules();
 
     const { store } = await import("@/project/store");
-    const { createSampleAdventureProject } = await import("@/project/defaults/defaultProject");
+    // 예제 프로젝트(createSampleAdventureProject)는 2026-10-07 저작권 정리로 지워졌다 — 부팅 실패 복구는 이제
+    // 시작용 빈 프로젝트를 연다(src/app/mode.ts 의 loadFallbackProject(createStarterBlankProject())).
+    const { createStarterBlankProject } = await import("@/project/defaults");
     expect(store.isLoaded()).toBe(false);
 
-    await store.loadFallbackProject(createSampleAdventureProject());
+    await store.loadFallbackProject(createStarterBlankProject());
 
     expect(store.isLoaded()).toBe(true);
     expect(Object.keys(store.getCurrent().maps).length).toBeGreaterThan(0);
