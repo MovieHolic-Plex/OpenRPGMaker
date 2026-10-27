@@ -6,6 +6,8 @@ import { builtinGeneratedResourceIds, resolveAssetResourceUrl } from "@/assets/g
 import { resolveAppearancePortrait } from "@/project/characterAppearances";
 import type { Project } from "@/project/types";
 import {
+  CAST_PORTRAIT_SETS,
+  SHARED_PORTRAIT_DIALOGUE_EXPRESSIONS,
   MODERN_PORTRAIT_EXPRESSIONS,
   MODERN_PORTRAIT_SETS,
   SHARED_PORTRAIT_ASSETS,
@@ -17,9 +19,12 @@ import {
 } from "@/assets/sharedPortraitAssets";
 
 describe("공용 표정 세트 흉상·전신", () => {
-  it("76세트 × 2모양 × 16표정 + 현대 연애 24세트 × 2모양 × 5표정 = 2672장이고 파일이 모두 있다", () => {
+  // 캐스트 흉상 세트(CAST_PORTRAIT_SETS, 대사 5표정·흉상만)가 #3435 폴른 스타 심문관으로 더해졌다.
+  it("76세트 × 2모양 × 16표정 + 현대 연애 24세트 × 2모양 × 5표정 + 캐스트 흉상 세트 × 5표정 = 2677장이고 파일이 모두 있다", () => {
     expect(FACE_EXPRESSION_SETS).toHaveLength(76);
-    expect(SHARED_PORTRAIT_ASSETS).toHaveLength(2432 + MODERN_PORTRAIT_SETS.length * 2 * MODERN_PORTRAIT_EXPRESSIONS.length);
+    expect(SHARED_PORTRAIT_ASSETS).toHaveLength(
+      2432 + MODERN_PORTRAIT_SETS.length * 2 * MODERN_PORTRAIT_EXPRESSIONS.length + CAST_PORTRAIT_SETS.length * SHARED_PORTRAIT_DIALOGUE_EXPRESSIONS.length,
+    );
     const missing = SHARED_PORTRAIT_ASSETS.filter((asset) => !existsSync(path.join("public", asset.path))).map((asset) => asset.path);
     expect(missing).toEqual([]);
   });
