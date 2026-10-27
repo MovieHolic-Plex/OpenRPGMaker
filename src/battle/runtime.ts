@@ -3132,10 +3132,26 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     if (!usesNativeMedicineEffects && skillId) {
       applySkillCast(user, targets, skillId, "item", 1, attachItemAnimation);
     } else {
+      // 해독초·맑은 종처럼 HP/MP 가 안 움직이는 약은 0 회복 줄을 남기지 않는다.
+      // 그 줄이 있으면 화면이 「효과가 충분하지 않았다」·「합계 0 회복했다」로 읽고,
+      // 바로 다음 줄에서 독이 풀렸다고 말한다. 대상 전원이 그대로일 때만 무효 한 줄을 남긴다.
+      const unchanged: MutableBattler[] = [];
       for (const target of targets) {
+        const beforeLength = timeline.length;
         applyItemRecovery(user, target, item);
         applyStates(user, target, itemStateEffectsForBattle(item));
-        attachItemAnimation(target);
+        if (timeline.length === beforeLength) unchanged.push(target);
+        else attachItemAnimation(target);
+      }
+      if (unchanged.length === targets.length && unchanged[0]) {
+        recordAction({
+          userRecordId: user.recordId,
+          targetId: unchanged[0].id,
+          hit: true,
+          amount: 0,
+          critical: false,
+        }, "action", "item");
+        attachItemAnimation(unchanged[0]);
       }
     }
   }
@@ -3226,6 +3242,9 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       // PP is its own resource: never send a PP amount to the HP/MP ledger.
       if (hpGain === 0 && mpGain === 0) return;
     }
+    // 이미 가득 찼거나 회복량이 없는 약은 HP/MP 원장에 0 을 싣지 않는다.
+    // 상태 치료만 된 경우는 상태 엔트리가, 아무 변화도 없는 경우는 호출부가 무효 행동을 남긴다.
+    if (hpGain === 0 && mpGain === 0) return;
     const resource: "hp" | "mp" = hpGain > 0 ? "hp" : "mp";
     recordAction({
       userRecordId: user.recordId,

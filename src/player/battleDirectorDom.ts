@@ -201,6 +201,10 @@ export function actorCommandDirectorState(
   const ownEntry = (entry: BattleSnapshot["timeline"][number]) => entry.userRecordId === actor?.recordId
     && (entry.kind === "damage" || entry.kind === "miss" || entry.kind === "healing" || entry.kind === "action");
   const delta = after.timeline.slice(before.timeline.length);
+  // 해독초처럼 HP 는 그대로이고 상태만 바뀐 명령. 0 회복 엔트리가 없으면 lastActionResult
+  // (이전 공격)를 빌려 「피해!」나 「효과가 충분하지 않았다」로 읽히지 않게 한다.
+  const actorStateChange = delta.some((entry) =>
+    (entry.kind === "stateAdded" || entry.kind === "stateRemoved") && entry.userRecordId === actor?.recordId);
   const commandEntry = delta.find((entry) => ownEntry(entry) && entry.targetId === commanded?.id) ?? delta.find(ownEntry);
   const target = commandEntry && commandEntry.targetId !== commanded?.id
     ? [...after.enemies, ...after.actors, ...(after.departedEnemies ?? [])].find((battler) => battler.id === commandEntry.targetId) ?? commanded
@@ -217,6 +221,8 @@ export function actorCommandDirectorState(
       ...(options.describeEffectiveness && commandEntry.effectiveness !== undefined ? { effectiveness: commandEntry.effectiveness } : {}),
     }
     // 결과 엔트리가 없는 명령(못 움직인 차례 등)에 남의 결과를 붙이지 않는다.
+    // 상태만 바뀐 약도 이전 타격의 lastActionResult 를 빌리지 않는다.
+    : actorStateChange ? undefined
     : after.lastActionResult?.userRecordId !== actor?.recordId ? undefined
     : after.lastActionResult && !options.describeEffectiveness
       ? { ...after.lastActionResult, effectiveness: undefined }
@@ -244,9 +250,12 @@ export function actorCommandDirectorState(
       commandLine(command, actor, before),
       impactLine(command, target, impact, result, after, effect),
     ];
+  // 상태가 실제로 풀리거나 걸렸으면 「효과가 충분하지 않았다」는 거짓 실패다.
+  // 회복·피해 문장은 그대로 둔다. HP 가 이미 가득 찬 약은 상태 변화가 없어 이 줄을 유지한다.
+  const spoken = actorStateChange ? lines.filter((line) => line !== "효과가 충분하지 않았다.") : lines;
   return {
     step: impact > 0 ? "impact" : "acting",
-    lines,
+    lines: spoken,
     activeActorRecordId: actor?.recordId,
     targetId: target?.id,
   };
