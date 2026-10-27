@@ -421,7 +421,9 @@ describe("이벤트 레이어 좌클릭 드래그 소유권", () => {
   it("맵 경계 밖에서 시작한 드래그도 팬이다(옮길 이벤트가 없다)", () => {
     const harness = dragHarness();
     const map = store.getCurrent().maps[store.getCurrent().startMapId];
-    const outside = map.width + 3;
+    // 맵 테두리 바깥 56px 띠는 크기 드래그가 먼저 가져간다(mapEdgeGrow.ts MAP_EDGE_GROW_BAND_PX) —
+    // 팬 소유권을 보려면 띠 밖(>3.5칸)에서 시작해야 한다.
+    const outside = map.width + 6;
     harness.input.emit("pointerdown", pointerAt(outside, 2, { isDown: true }));
     harness.input.emit("pointermove", pointerAt(outside - 4, 2, { isDown: true }));
     expect(harness.camera.scrollX).toBe(4 * TILE_SIZE);
