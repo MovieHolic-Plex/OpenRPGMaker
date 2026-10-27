@@ -99,20 +99,7 @@ describe("spatial inspector drawer", () => {
     expect(host.querySelector(".spatial-inspector-name")?.textContent).not.toBe("Workshop Chair");
   });
 
-  it("clears legacy origin when the canonical Regions tab is clicked after villages", () => {
-    setDatabaseActiveTab("villages");
-    renderDatabasePanel(host);
-    expect(spatialSession().legacyOrigin).toBe("villages");
-    expect(spatialSession().tab).toBe("regions");
-    expect(spatialSession().regionKindFilter).toBe("settlement");
-    expect(host.querySelector("[data-testid=spatial-village-back]")).not.toBeNull();
-    host.querySelector<HTMLButtonElement>("[data-testid='db-tab-spatial-regions']")?.click();
-    expect(getDatabaseActiveTab()).toBe("spatialRegions");
-    expect(spatialSession().tab).toBe("regions");
-    expect(spatialSession().legacyOrigin).toBeNull();
-    expect(spatialSession().regionKindFilter).toBeNull();
-    expect(host.querySelector(".spatial-legacy-host")).toBeNull();
-  });
+  // "clears legacy origin ... after villages" 사례는 villages 탭 폐지(탭 메타 제거)로 퇴역(d).
 
   it("counts authored kits in the objects rail badge", () => {
     const first = Object.keys(store.getCurrent().tilesets)[0];

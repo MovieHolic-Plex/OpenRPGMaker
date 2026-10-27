@@ -68,7 +68,9 @@ describe("spatialSourceLabel", () => {
 describe("spatialGalleryEmptyCopy", () => {
   it("gives instances mode a placement hint and design mode a creation hint", () => {
     expect(spatialGalleryEmptyCopy("instances", "spaces").title).toBe("배치된 곳이 없습니다");
-    expect(spatialGalleryEmptyCopy("design", "regions").title).toBe("내 지역 설계가 없습니다");
+    // regions 탭은 필터형 문구(조건에 맞는 지역이 없습니다)를 쓴다 — spatialFeedback.ts 의 regions 분기.
+    expect(spatialGalleryEmptyCopy("design", "regions").title).toBe("조건에 맞는 지역이 없습니다");
+    expect(spatialGalleryEmptyCopy("design", "objects").title).toBe("내 오브젝트 설계가 없습니다");
     expect(spatialGalleryEmptyCopy("design", "regions").body).toContain("추가");
   });
 });

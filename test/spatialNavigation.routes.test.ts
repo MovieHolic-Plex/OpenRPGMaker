@@ -44,8 +44,7 @@ describe("legacy spatial route replacement", () => {
     ["structureKits", "spatialObjects"],
     ["tilesetSpaces", "spatialSpaces"],
     ["scratchConcepts", "spatialPlaces"],
-    ["villages", "spatialRegions"],
-    ["worldGen", "spatialRegions"],
+    // villages·worldGen 레거시 탭은 DATABASE_TAB_META 에서 제거됨(마을 탭 폐지) — 이 두 경로 사례는 퇴역(d).
   ] as const)("maps %s to %s without seeding catalogs", (legacy, canonical) => {
     expect(resolveCanonicalDatabaseTab(legacy)).toBe(canonical);
     const before = structuredClone(store.getCurrent());
@@ -78,18 +77,5 @@ describe("legacy spatial route replacement", () => {
     expect(store.getCurrent().tilesets[Object.keys(store.getCurrent().tilesets)[0]!]?.scratchConceptBundles).toBeUndefined();
   });
 
-  it("clears villages compatibility when the canonical Regions rail is clicked again", () => {
-    renderDatabasePanel(host);
-    switchDatabaseActiveTab("villages", host);
-    expect(spatialSession().legacyOrigin).toBe("villages");
-    expect(spatialSession().tab).toBe("regions");
-    expect(spatialSession().regionKindFilter).toBe("settlement");
-    const regions = host.querySelector<HTMLButtonElement>("[data-testid='db-tab-spatial-regions']");
-    expect(regions).not.toBeNull();
-    regions?.click();
-    expect(getDatabaseActiveTab()).toBe("spatialRegions");
-    expect(spatialSession().legacyOrigin).toBeNull();
-    expect(spatialSession().regionKindFilter).toBeNull();
-    expect(host.querySelector(".spatial-legacy-host")).toBeNull();
-  });
+  // "clears villages compatibility" 사례는 villages 탭 폐지(탭 메타 제거)로 퇴역(d).
 });

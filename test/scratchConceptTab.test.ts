@@ -14,16 +14,20 @@ import { CONCEPT_FACILITY_TEMPLATES } from "@/project/defaults/conceptFacilityTe
 import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import { cloneConceptBundle, SCRATCH_INN_BUNDLE } from "@/project/defaults/scratchInnBundle";
 import { validateTileset } from "@/project/io/shapeResourceFields";
+import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import type { ConceptBundleRecord } from "@/project/types";
 import type { TilesetDef } from "@/project/types";
 import { FakeElement, installFakeDom } from "./fakeDom";
+import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 import { SCRATCH_INN_BUNDLE as LEGACY_INN_BUNDLE } from "./fixtures/legacyConceptInn";
 
 let restoreDom: (() => void) | undefined;
 
 beforeEach(() => {
   restoreDom = installFakeDom();
+  // 새 프로젝트에는 EasyRPG 실내·합본 마을 시트가 없다(2026-10-07 저작권 정리, #3539·#3540) — 옛 저장본을 재현한다.
+  store.replace(withRetiredEasyRpgTilesets(createBlankProject()));
   resetScratchConceptTabSession();
 });
 
