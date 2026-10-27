@@ -457,6 +457,9 @@ def royal_shield(cv, cx, y, small=False):
             else:
                 c = ROYAL[3] if xx < cx - 1 else ROYAL[2] if xx < cx + 2 else ROYAL[1]
                 if yy == 1: c = ramp_step(ROYAL, c, 1)
+                elif yy >= hgt - 6: c = ramp_step(ROYAL, c, -1)                       # 밑으로 갈수록 짙다(볼록한 판)
+                if xx == x0 + inset + 1 and 0 < yy < hgt - 2: c = ROYAL[4] if yy < hgt - 6 else ROYAL[3]   # 왼쪽 안 테 빛(두께)
+                if yy == 1 and x0 + inset < xx < cx: c = ROYAL[4]                  # 윗 테 빛
             cv.set(xx, y + yy, c)
         cv.shade(x0 + w - inset, y + yy + 1, -2)
     for xx in range(x0 + 1, x0 + w): cv.shade(xx, y + hgt, -2)
@@ -962,7 +965,11 @@ def lamp_double():
         cv.set(15 + dx + (1 if dx > 0 else 0), dy, IRON[1])
     for cx in (5, 26):
         cv.set(cx, 11, IRON[1]); cv.set(cx, 8, GOLD[3])
-        lantern(cv, cx, 12)
+        lantern_small(cv, cx, 12)                      # 홑 가로등과 같은 등롱(뿔 지붕 윗면 · 처마 테 윗면이 보인다)
+    # 받침 윗면 뒤 테를 한 줄로 닫고 그 밑 줄을 빛 받는 뒤 턱으로(홑 가로등과 같은 처리 — 윗면이 면으로 읽힌다)
+    for x in range(9, 23):
+        cv.set(x, 35, EDGE if x < 21 else OUT2)
+        if 9 < x < 22: cv.set(x, 36, COOL[11] if x < 20 else COOL[9])
     # 가로팔 밑 작은 왕실 기(기둥 양옆)
     for bx in (10, 19):
         for yy in range(11, 20):
