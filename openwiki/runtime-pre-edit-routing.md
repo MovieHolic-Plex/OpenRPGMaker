@@ -590,9 +590,12 @@ Phaser `preRender` 는 경계가 있으면 따라가기·패닝 뒤 clamp 를 �
   규칙을 각자 복사해 두고 어긋나 있었고, `eventTouch` 는 NPC 가 플레이어에게 걸어오는 쪽만 발동했다.
   이동 유형이 정지면 무버가 없으므로 그 트리거는 영원히 실행되지 않았다
   (회귀: `test/runtimeEventTouchPlayerCollision.test.ts`).
-- **애니메이션 유형은 `normal`/`fixedGraphic` 만 구현돼 있다.** `step`, `fixedDirectionStep`,
-  `fixedDirection`, `fourFrame` 은 저작되지만 `playSceneAutonomousSprites.ts` 가 normal 로 취급한다.
-  정지 애니메이션은 무버 없는 이벤트에도 프레임 클록이 필요하므로 별도 작업이다.
+- **애니메이션 유형.** `fixedGraphic` 은 프레임을 바꾸지 않는다. `fixedDirection`·`fixedDirectionStep` 은
+  자율 이동 중에도 페이지 방향을 유지한다(`playScenePageMoveRoutes` 가 `mover.directionFix`).
+  `step`·`fixedDirectionStep`·`fourFrame` 은 서 있을 때도 걷기 주기(왼·가운데·오른·가운데)를 재생한다
+  (`updateStoppedStepAnimations`). 무버가 없는 정지 이벤트(횃불·깃발)도 같은 시계로 돈다. 주기는 그 페이지
+  이동 속도의 한 칸 시간 절반이다. 걷는 중에는 걸음 프레임이 우선하고, `eventGraphicPatternOverrides` 와
+  이동 경로의 애니메이션 OFF 는 덮지 않는다.
 - **Action combat runtime:** for real-time action combat (`system.actionCombat` + `map.actionCombat`), routing, pure rule modules in `src/battle/action/`, and scene integration in `src/player/playSceneActionCombat.ts`, see `openwiki/runtime-action-combat.md`.
 
 ## 게임 화면의 2층·그림자·4층 (MZ식 4층, 2026-09-24)
