@@ -56,7 +56,8 @@ describe("bundled EasyRPG RTP assets", () => {
       // 칸 메타가 있는 시트는 bundled-default/unknown 으로 시작한다. 버들항 덧그림 시트(warm_trees·door·ground…)는
       // 칸 메타 없이 kit/조각 정의만 들고 다니므로 tileMeta 가 비어 있다 — 그때는 출처 칸이 없다.
       expect(id).not.toBe(COMBINED_TOWN_TILESET_ID);
-      if (Object.keys(tileset.tileMeta ?? {}).length === 0) continue;
+      // 덧그림 시트(beodeul_forest_trunks 등)는 통행 칸 메타만 들고 출처 필드가 없다 — 출처를 적은 시트만 본다.
+      if (!Object.values(tileset.tileMeta ?? {}).some((meta) => meta?.source !== undefined)) continue;
       const source = tileset.tileMeta?.[0]?.source;
       expect(["bundled-default", "unknown"], id).toContain(source);
     }
