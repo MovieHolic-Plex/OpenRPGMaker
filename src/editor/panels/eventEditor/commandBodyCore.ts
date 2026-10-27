@@ -429,8 +429,26 @@ function textBody(context: CommandEditContext, cmd: Extract<Command, { kind: "te
           class: "event-command-text-speaker-field",
           children: [
             el("span", { class: "event-command-text-body-label", text: "말하는 사람" }),
-            speaker,
+            el("div", {
+              class: "event-command-text-speaker-row",
+              children: [
+                speaker,
+                el("button", {
+                  class: "btn small",
+                  text: "주인공 이름",
+                  attrs: { type: "button", title: "이름표에 그 배우의 현재 이름을 넣습니다." },
+                  dataset: { testid: "event-command-text-speaker-actor-name" },
+                  on: {
+                    click: (event) => {
+                      event.preventDefault();
+                      fillSpeakerFromActor(speaker, apply);
+                    },
+                  },
+                }),
+              ],
+            }),
             el("small", { text: "비워 두면 이름표를 숨깁니다." }),
+            el("small", { text: "\\n[1]은 미리보기와 게임에서 그 배우의 현재 이름으로 바뀝니다." }),
           ],
         }),
         el("div", {
@@ -593,6 +611,20 @@ function textVariableSlot(id: string): number | undefined {
   const resolvedId = [`var_${String(index).padStart(4, "0")}`, String(index), `v${index}`]
     .find(candidate => variables[candidate] !== undefined);
   return resolvedId === id ? index : undefined;
+}
+
+function fillSpeakerFromActor(target: HTMLInputElement, commit: () => void): void {
+  openRecordPickerPanel({
+    kind: "actor",
+    currentId: "",
+    onSelect: (id) => {
+      const index = store.getCurrent().database.actors.findIndex((actor) => actor.id === id) + 1;
+      if (index <= 0) return;
+      target.value = `\\n[${index}]`;
+      commit();
+      target.focus();
+    },
+  });
 }
 
 function selectTextRecord(body: HTMLTextAreaElement, kind: "actor" | "variable", commit: () => void): void {

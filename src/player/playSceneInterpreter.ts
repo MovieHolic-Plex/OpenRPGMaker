@@ -31,6 +31,7 @@ import { stageBusts } from "@/player/playSceneBustStage";
 import { playInn, playShop } from "@/player/playSceneCommerce";
 import { playOpenChest } from "@/player/playSceneChest";
 import { dialogueHost, dialogueUi } from "@/player/playSceneDom";
+import { resolveDialogueSpeakerName } from "@/player/dialogue";
 import { showNameEntry } from "@/player/nameEntry/nameEntryOverlay";
 import { nameEntryShowcaseHero } from "@/player/nameEntry/nameEntryShowcase";
 import { applyTimerStep } from "@/player/playSceneTimers";
@@ -417,10 +418,12 @@ async function consumeBlockingStep(
   switch (step.kind) {
     case "text": {
       const project = store.getCurrent();
+      const textContext = { session: scene.session, project };
       const event = step.speaker === undefined && currentEventId
         ? runtimeEventViewsForMap(project, scene.map, scene.session, scene.eventPositions).find((view) => view.event.id === currentEventId)?.event
         : undefined;
-      const speaker = step.speaker ?? getCharacterProfile(project, event?.characterId)?.displayName;
+      const authoredSpeaker = step.speaker ?? getCharacterProfile(project, event?.characterId)?.displayName;
+      const speaker = resolveDialogueSpeakerName(authoredSpeaker, textContext) ?? authoredSpeaker;
       markCompanionSpeaking(project, scene, speaker);
       // 말하는 인물이 듣는 인물 쪽으로 돈다(둘 다 맵에 있고 가까울 때, text.autoFace=false 면 안 돈다).
       applyDialogueFacing(scene, step, currentEventId);
@@ -441,7 +444,7 @@ async function consumeBlockingStep(
         face: staged ? staged.face : step.face,
         ...(staged ? { stageListener: true, ...(staged.listenerFace ? { listenerFace: staged.listenerFace } : {}) } : step.listenerFace ? { listenerFace: step.listenerFace } : {}),
         settings: textWindowSettings(scene.session.messageWindowSettings ?? DEFAULT_MESSAGE_WINDOW_SETTINGS, step.position),
-        textContext: { session: scene.session, project: store.getCurrent() },
+        textContext,
         playerTileY: scene.tileY,
         mapHeight: scene.map.height,
         ...playerScreenYOf(scene),

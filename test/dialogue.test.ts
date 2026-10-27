@@ -5,6 +5,7 @@ import {
   dialogueSpeedDelayMs,
   isDialogueAdvanceKey,
   nameplateSpeaker,
+  resolveDialogueSpeakerName,
   resolveDialogueText,
 } from "@/player/dialogue";
 import { dialoguePresentationProfile } from "@/player/dialoguePresentation";
@@ -118,6 +119,51 @@ describe("narration speaker", () => {
     expect(nameplateSpeaker("")).toBeUndefined();
     expect(nameplateSpeaker("모로 박사")).toBe("모로 박사");
     expect(nameplateSpeaker("내레이션 담당 할머니")).toBe("내레이션 담당 할머니");
+  });
+
+  it("resolves actor, variable, and string codes in the name box", () => {
+    const project = createBlankProject();
+    const actorId = project.database.actors[0]!.id;
+    const context = {
+      session: {
+        variables: { var_0001: 3 },
+        actorNames: { [actorId]: "민수" },
+        stringVariables: { hero: "하늘" },
+      },
+      project,
+    };
+    expect(nameplateSpeaker("\\n[1]", context)).toBe("민수");
+    expect(nameplateSpeaker("\\t[hero]", context)).toBe("하늘");
+    expect(nameplateSpeaker("용사의 \\v[1]", context)).toBe("용사의 3");
+    expect(nameplateSpeaker("마을 촌장", context)).toBe("마을 촌장");
+    expect(nameplateSpeaker("내레이션", context)).toBeUndefined();
+    expect(nameplateSpeaker("\\n[99]", context)).toBe("\\n[99]");
+    expect(resolveDialogueSpeakerName("\\n[1]", context)).toBe("민수");
+  });
+
+  it("shows the renamed actor in the name box when the speaker is a name code", async () => {
+    vi.useFakeTimers();
+    const project = createBlankProject();
+    const actorId = project.database.actors[0]!.id;
+    const host = document.createElement("div");
+    document.body.append(host);
+    const dialogue = createDialogueUI(host);
+    const shown = dialogue.showText({
+      speaker: "\\n[1]",
+      body: "오늘도 모험이야.",
+      playerTileY: 0,
+      mapHeight: 20,
+      textContext: {
+        session: { variables: {}, actorNames: { [actorId]: "민수" } },
+        project,
+      },
+    });
+    expect(host.querySelector("[data-testid='dialogue-speaker']")?.textContent).toBe("민수");
+    await vi.advanceTimersByTimeAsync(200);
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+    await shown;
+    vi.useRealTimers();
   });
 });
 
