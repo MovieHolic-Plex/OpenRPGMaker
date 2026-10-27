@@ -11,7 +11,6 @@ import { runDirectInteriorRoomDraft } from "@/editor/regionTask/runDirectRoomDra
 import type { RegionTaskResult } from "@/editor/regionTask/runRegionTask";
 import { createBlankProject } from "@/project/defaults";
 import { type FakeElement, findByTestId, installFakeDom } from "./fakeDom";
-import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 import type { Project, RegionRect } from "@/project/types";
 
 const REGION: RegionRect = { x: 0, y: 0, width: 3, height: 3 };
@@ -323,8 +322,7 @@ describe("quota-independent interior entry", () => {
   });
 
   it("starts a connected room from the UI without invoking the AI runner", async () => {
-    // 직접 실내 초안은 villager-room-v1(옛 EasyRPG 실내 칩셋)으로 짓는다 — 그 칩셋은 PR #2335 로 기본 프로젝트에서 빠져 직접 넣는다.
-    const base = withRetiredEasyRpgTilesets(createBlankProject());
+    const base = createBlankProject();
     const before = JSON.stringify(base);
     const aiRun = vi.fn(async (): Promise<RegionTaskResult> => {
       throw new Error("AI runner must not be called");
