@@ -246,6 +246,123 @@ describe("desktop shell gamepad", () => {
     expect(downs).toHaveLength(beforeRelease);
     expect(downs.filter((event) => event.key === "Enter")).toHaveLength(1);
   });
+
+  it("releases a tilted stick when the window blurs and presses it again when focus returns", () => {
+    const frames: FrameRequestCallback[] = [];
+    const restoreRaf = stubAnimationFrame(frames);
+    cleanups.push(restoreRaf);
+
+    let now = 2_000;
+    const nowSpy = vi.spyOn(performance, "now").mockImplementation(() => now);
+    cleanups.push(() => nowSpy.mockRestore());
+
+    let axisX = 0;
+    let southPressed = false;
+    const restorePads = stubGamepads(() => [gamepadWithStick(axisX, 0, southPressed)]);
+    cleanups.push(restorePads);
+
+    const events: KeyboardEvent[] = [];
+    const onKey = (event: Event): void => {
+      if (event instanceof KeyboardEvent) events.push(event);
+    };
+    window.addEventListener("keydown", onKey);
+    window.addEventListener("keyup", onKey);
+    cleanups.push(() => {
+      window.removeEventListener("keydown", onKey);
+      window.removeEventListener("keyup", onKey);
+    });
+
+    const cleanup = installDesktopShellBridge(document.body, { gamepadPolling: true });
+    cleanups.push(cleanup);
+
+    flushFrame(frames);
+    axisX = -1;
+    southPressed = true;
+    flushFrame(frames);
+    expect(events.map((event) => `${event.type}:${event.key}:${event.repeat}`)).toEqual([
+      "keydown:Enter:false",
+      "keydown:ArrowLeft:false",
+    ]);
+
+    // Past the repeat delay, but the window is going away before the next poll.
+    now = 2_600;
+    window.dispatchEvent(new Event("blur"));
+    expect(events.map((event) => `${event.type}:${event.key}`)).toEqual([
+      "keydown:Enter",
+      "keydown:ArrowLeft",
+      "keyup:ArrowLeft",
+    ]);
+
+    flushFrame(frames);
+    expect(events.filter((event) => event.key === "ArrowLeft" && event.type === "keydown")).toHaveLength(1);
+    expect(events.filter((event) => event.key === "Enter" && event.type === "keydown")).toHaveLength(1);
+
+    // Releasing A while blurred still produces keyup, and does not repeat the confirm on focus.
+    southPressed = false;
+    flushFrame(frames);
+    expect(events.filter((event) => event.key === "Enter" && event.type === "keyup")).toHaveLength(1);
+
+    window.dispatchEvent(new Event("focus"));
+    now = 3_200;
+    flushFrame(frames);
+    expect(events.filter((event) => event.key === "ArrowLeft" && event.type === "keydown")).toHaveLength(2);
+    expect(events.filter((event) => event.key === "ArrowLeft" && event.repeat)).toHaveLength(0);
+    expect(events.filter((event) => event.key === "Enter" && event.type === "keydown")).toHaveLength(1);
+  });
+
+  it("releases a tilted stick when the page hides and presses it again when the page is visible", () => {
+    const frames: FrameRequestCallback[] = [];
+    const restoreRaf = stubAnimationFrame(frames);
+    cleanups.push(restoreRaf);
+
+    const previousVisibility = Object.getOwnPropertyDescriptor(document, "visibilityState");
+    const setVisibility = (value: DocumentVisibilityState): void => {
+      Object.defineProperty(document, "visibilityState", { configurable: true, value });
+    };
+    cleanups.push(() => {
+      if (previousVisibility) Object.defineProperty(document, "visibilityState", previousVisibility);
+      else delete (document as { visibilityState?: unknown }).visibilityState;
+    });
+
+    let axisY = 0;
+    const restorePads = stubGamepads(() => [gamepadWithStick(0, axisY)]);
+    cleanups.push(restorePads);
+
+    const events: KeyboardEvent[] = [];
+    const onKey = (event: Event): void => {
+      if (event instanceof KeyboardEvent && event.key === "ArrowDown") events.push(event);
+    };
+    window.addEventListener("keydown", onKey);
+    window.addEventListener("keyup", onKey);
+    cleanups.push(() => {
+      window.removeEventListener("keydown", onKey);
+      window.removeEventListener("keyup", onKey);
+    });
+
+    const cleanup = installDesktopShellBridge(document.body, { gamepadPolling: true });
+    cleanups.push(cleanup);
+
+    flushFrame(frames);
+    axisY = 1;
+    flushFrame(frames);
+    expect(events.map((event) => event.type)).toEqual(["keydown"]);
+
+    setVisibility("hidden");
+    document.dispatchEvent(new Event("visibilitychange"));
+    expect(events.map((event) => event.type)).toEqual(["keydown", "keyup"]);
+
+    flushFrame(frames);
+    expect(events).toHaveLength(2);
+
+    setVisibility("visible");
+    document.dispatchEvent(new Event("visibilitychange"));
+    flushFrame(frames);
+    expect(events.map((event) => `${event.type}:${event.repeat}`)).toEqual([
+      "keydown:false",
+      "keyup:false",
+      "keydown:false",
+    ]);
+  });
 });
 
 function stubAnimationFrame(frames: FrameRequestCallback[]): () => void {
