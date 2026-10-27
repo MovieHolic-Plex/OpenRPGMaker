@@ -136,7 +136,8 @@ describe("spatial geography actions", () => {
     const raster = host.querySelector<HTMLCanvasElement>("[data-testid='spatial-geography-raster']");
     expect(raster?.dataset.width).toBe("128");
     expect(raster?.dataset.height).toBe("96");
-    expect(raster?.dataset.tileset === "easyrpg_chipset_world" || raster?.dataset.tileset?.startsWith("world_structures_")).toBe(true);
+    // 세계·지역 기본 예시 지형은 #2906 에서 easyrpg_chipset_world 대신 worldmap_selected 로 옮겼다.
+    expect(raster?.dataset.tileset === "worldmap_selected" || raster?.dataset.tileset?.startsWith("world_structures_")).toBe(true);
     const liveMaps = Object.keys(store.getCurrent().maps);
     const preview = geographyPreviewMap(store.getCurrent(), regionOf(recipe.id));
     expect(preview.error).toBeUndefined();
