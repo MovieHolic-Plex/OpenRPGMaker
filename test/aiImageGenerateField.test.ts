@@ -47,6 +47,8 @@ describe("aiImageGenerateField", () => {
     vi.stubGlobal(
       "fetch",
       vi.fn(async (_url: unknown, init?: { body?: unknown }) => {
+        // The default image route first probes /auth/status (ChatGPT → Google fallback, da29a9f402); count only the generate POST.
+        if (init?.body === undefined) return new Response(JSON.stringify({}), { status: 200, headers: { "Content-Type": "application/json" } });
         seen.push(String((init?.body as string | undefined) ?? ""));
         return new Response(
           JSON.stringify({

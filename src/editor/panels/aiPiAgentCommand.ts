@@ -357,8 +357,8 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
     if (identity !== JSON.stringify(store.getProjectIdentity())) return false;
   }
   // 부팅 정규화를 첫 화면 뒤로 미뤘으면(새 빌드 첫 실행) 끝난 문서를 기준으로 잡는다 — 정규화 전 기준은 곧 낡은 기준이 된다.
+  // 중단은 여기서 던지지 않는다 — 아래 실행 경로가 중단을 「cancelled」 결과로 보고한다(던지면 결과 4축이 비어 남는다).
   await store.whenBootNormalized();
-  surface.signal?.throwIfAborted();
   const base = store.getCurrent();
   const { base: proposalBase, baseline } = captureApplyAuthority(base);
   const config = loadAiConfig();

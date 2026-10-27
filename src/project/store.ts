@@ -37,6 +37,7 @@ import { applyAudioDescriptionDelta } from "./audioDescriptions";
 import { applyMonsterMetadataDelta } from "./monsterMetadata";
 import { serialize, serializeForComparison } from "./io";
 import { projectWireView } from "./io/serialize";
+import { forgetBundledTilesetDiffViews, primeBundledTilesetDiffViews } from "./bundledTilesetDiff";
 import {
   applyEventDraftVault,
   clearEventDraftVault,
@@ -1159,6 +1160,10 @@ class ProjectStore {
       if (stale()) return;
       // 요약 기억이 아직 없는 타일셋(부팅 정규화를 건너뛴 문서는 로드가 요약을 미룬다 — electronRepository)은 여기서 하나씩 양보하며 먼저 만든다.
       // 한 번에 문서 전체를 요약하면 첫 화면 뒤에 메인 스레드가 7.8s 멈췄다(2026-10-14 실측, 타일셋 379칸 98MB).
+      // 번들 타일셋 차이(bundledTilesetDiff.ts)도 하나씩 양보하며 먼저 만든다 — 아래 동기 저장 보기가 한 번에 만들면 약 1s 멈춘다.
+      await primeBundledTilesetDiffViews(this.current, yieldToTask, stale);
+      if (baseline !== this.current) await primeBundledTilesetDiffViews(baseline, yieldToTask, stale);
+      if (stale()) return;
       await primeSharedEntryDigests(projectWireView(this.current), yieldToTask, stale);
       if (stale()) return;
       // 로드 직후 정규화가 current 의 요약을 이미 만들었다. 복제본인 기준본은 기억이 비어 있어 같은 문서를 처음부터
@@ -1856,6 +1861,8 @@ class ProjectStore {
     const appliedNormalizers = normalizers.filter(([, applied]) => applied).map(([name]) => name);
     const changed = digestChanges ? before !== jsonContentDigest(this.current) : !skipNormalizers && appliedNormalizers.length > 0;
     if (!skipNormalizers) forgetTrustedSharedEntries();
+    // 정규화기가 타일셋 원소를 제자리에서 고쳤을 수 있다 — 그 전에 만든 번들 차이 보기는 버리고 다음 저장 보기에서 다시 만든다.
+    if (!skipNormalizers) forgetBundledTilesetDiffViews(this.current);
     // 표식은 변경 판정(요약 대조) 뒤에 새긴다 — 표식 때문에 «정규화기가 손댔다»고 오판하지 않는다.
     const stamped = !skipNormalizers && bootMarker !== null;
     if (stamped) stampBootNormalization(this.current, bootMarker);

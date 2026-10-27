@@ -12,9 +12,9 @@ Work order (cheapest first): timeout → fake-DOM/env gaps → combined_town / o
 | tag | files |
 |---|---|
 | removed | 2 |
-| timeout | 17 |
+| timeout | 13 |
 | external | 0 |
-| drift | 461 |
+| drift | 276 |
 
 ## removed (2)
 
@@ -23,29 +23,23 @@ Work order (cheapest first): timeout → fake-DOM/env gaps → combined_town / o
 - **1** — `AssertionError: 알 수 없는 툴: run_interior_room_pipeline: expected false to be true // Object.is equality`
   - [ ] `test/interiorPipelineMapReplacement.test.ts`
 
-## timeout (17)
+## timeout (13)
 
-- **8** — `Error: Test timed out in Nms.`
-  - [ ] `test/aiAskRetainedDraft.test.ts`
-  - [ ] `test/aiRunReentry.test.ts`
+- **6** — `Error: Test timed out in Nms.`
   - [ ] `test/buildSpecOverlapRecovery.test.ts`
   - [ ] `test/monsterAppearanceHttp.test.ts`
   - [ ] `test/monsterAppearanceSession.test.ts`
   - [ ] `test/npcPrerequisiteSession.test.ts`
   - [ ] `test/npcRewardSession.test.ts`
   - [ ] `test/toolHostileArgs.test.ts`
-- **1** — `ReferenceError: window is not defined`
-  - [ ] `test/aiChatPanelSettings.test.ts`
-- **1** — `AssertionError: expected null to match object { status: 'blocked', …(N) }`
-  - [ ] `test/aiRequiredOutcomes.test.ts`
-- **1** — `AssertionError: expected false to be true // Object.is equality`
-  - [ ] `test/assistantBatchCompletion.test.ts`
 - **1** — `ReferenceError: ResizeObserver is not defined`
   - [ ] `test/databaseSystemModern.test.ts`
-- **1** — `AssertionError: expected undefined to be 'approved' // Object.is equality`
-  - [ ] `test/eventCommandScopedSession.test.ts`
 - **1** — `AssertionError: expected null to be '/assets/easyrpg/title/TitleN.png' // Object.is equality`
   - [ ] `test/exportAssetResolution.test.ts`
+- **1** — `Error: expected { kind: 'not-configured' } to deeply equal { kind: 'connected', source: 'remote' }`
+  - [ ] `test/mapEditHistoryProjectSwitch.test.ts`
+- **1** — `AssertionError: expected { width: N, height: N } to be null`
+  - [ ] `test/mapGrowthOnFixRequests.test.ts`
 - **1** — `AssertionError: expected { id: 'stat_enemy', …(N) } to match object { …(N) }`
   - [ ] `test/monsterAppearanceAssetIdentity.test.ts`
 - **1** — `AssertionError: expected [] to deeply equal [ N, +N ]`
@@ -53,52 +47,11 @@ Work order (cheapest first): timeout → fake-DOM/env gaps → combined_town / o
 - **1** — `AssertionError: expected 'OPRN Studio저장된 작업을 바로 열 수 없습니다기존 저장본은…' to contain '예제 작업으로 시작'`
   - [ ] `test/uxcLoadFailure.test.ts`
 
-## drift (461)
+## drift (276)
 
-- **37** — `AssertionError: expected false to be true // Object.is equality`
-  - [ ] `test/aiAssistantPanel.test.ts`
-  - [ ] `test/aiDocTools.test.ts`
-  - [ ] `test/aiPreviewGenerator.test.ts`
-  - [ ] `test/assetStoreCharacterPortraits.test.ts`
-  - [ ] `test/autotileEngine.test.ts`
-  - [ ] `test/autotileTemplates.test.ts`
-  - [ ] `test/collision.test.ts`
-  - [ ] `test/genreLockLateRoster.test.ts`
-  - [ ] `test/harnesses/monsterCollectSpecies.test.ts`
-  - [ ] `test/mapEditCommands.test.ts`
-  - [ ] `test/materialPolicy.test.ts`
-  - [ ] `test/monsterToolFirstLock.test.ts`
-  - [ ] `test/mysteryCaseTool.test.ts`
-  - [ ] `test/oprnEnv.test.ts`
-  - [ ] `test/placePropsZeroPlacement.test.ts`
-  - [ ] `test/playBootAssetSelection.test.ts`
-  - [ ] `test/playerFootprint.test.ts`
-  - [ ] `test/regionTaskGateExcluded.test.ts`
-  - [ ] `test/remoteProjectCertificate.test.ts`
-  - [ ] `test/resourceManagerDedup.test.ts`
-  - [ ] `test/rm2003DatabaseUiEvidence.test.ts`
-  - [ ] `test/romanceFix3.test.ts`
-  - [ ] `test/runtimeLag8.test.ts`
-  - [ ] `test/spatialCatalog.test.ts`
-  - [ ] `test/spatialCatalogPictureRender.test.ts`
-  - [ ] `test/spatialGeographyActions.test.ts`
-  - [ ] `test/spatialInteriorLayout.test.ts`
-  - [ ] `test/spatialSourceBuildUi.test.ts`
-  - [ ] `test/stampDragPerfContracts.test.ts`
-  - [ ] `test/textLegacyLines.test.ts`
-  - [ ] `test/tileGrafts.test.ts`
-  - [ ] `test/treasureChestPlacement.test.ts`
-  - [ ] `test/webExportZipPruning.test.ts`
-  - [ ] `test/wildRouteBeodeul.test.ts`
-  - [ ] `test/workItemOutcomeTargetMap.test.ts`
-  - [ ] `test/workPlanMapOutcomes.test.ts`
-- **35** — `(no message)`
+- **31** — `(no message)`
   - [ ] `test/e2ePaletteTileVisibility.test.ts`
   - [ ] `test/eventPreviewPaintCssom.test.ts`
-  - [ ] `test/mapBackgroundRuntime.test.ts`
-  - [ ] `test/monsterPresentation.test.ts`
-  - [ ] `test/pageConditionsGuarantee.test.ts`
-  - [ ] `test/phase8aGrowthRuntime.test.ts`
   - [ ] `test/piTeamSharedControls.test.ts`
   - [ ] `test/placementMatchingAudit.test.ts`
   - [ ] `test/playerBodyProjectPersistence.test.ts`
@@ -128,22 +81,33 @@ Work order (cheapest first): timeout → fake-DOM/env gaps → combined_town / o
   - [ ] `test/verificationPlanAtomicityReuse.test.ts`
   - [ ] `test/vnLook.test.ts`
   - [ ] `test/workshop/interiorPropsRunner.test.ts`
-- **25** — `AssertionError: expected N to be N // Object.is equality`
-  - [ ] `test/actions.test.ts`
-  - [ ] `test/agentBlueprintHardening.test.ts`
-  - [ ] `test/aiImageGenerateField.test.ts`
-  - [ ] `test/aiRunCheckpointStore.test.ts`
-  - [ ] `test/aiV2AfterPage.test.ts`
-  - [ ] `test/battleAdversarialFixes.test.ts`
-  - [ ] `test/battleRewardsToSession.test.ts`
-  - [ ] `test/beodeulMassingTileset.test.ts`
-  - [ ] `test/beodeulPickedParts.test.ts`
+- **24** — `AssertionError: expected false to be true // Object.is equality`
+  - [ ] `test/genreLockLateRoster.test.ts`
+  - [ ] `test/harnesses/monsterCollectSpecies.test.ts`
+  - [ ] `test/placePropsZeroPlacement.test.ts`
+  - [ ] `test/playBootAssetSelection.test.ts`
+  - [ ] `test/playerFootprint.test.ts`
+  - [ ] `test/regionTaskGateExcluded.test.ts`
+  - [ ] `test/remoteProjectCertificate.test.ts`
+  - [ ] `test/resourceManagerDedup.test.ts`
+  - [ ] `test/rm2003DatabaseUiEvidence.test.ts`
+  - [ ] `test/romanceFix3.test.ts`
+  - [ ] `test/runtimeLag8.test.ts`
+  - [ ] `test/spatialCatalog.test.ts`
+  - [ ] `test/spatialCatalogPictureRender.test.ts`
+  - [ ] `test/spatialGeographyActions.test.ts`
+  - [ ] `test/spatialInteriorLayout.test.ts`
+  - [ ] `test/spatialSourceBuildUi.test.ts`
+  - [ ] `test/stampDragPerfContracts.test.ts`
+  - [ ] `test/textLegacyLines.test.ts`
+  - [ ] `test/tileGrafts.test.ts`
+  - [ ] `test/treasureChestPlacement.test.ts`
+  - [ ] `test/webExportZipPruning.test.ts`
+  - [ ] `test/wildRouteBeodeul.test.ts`
+  - [ ] `test/workItemOutcomeTargetMap.test.ts`
+  - [ ] `test/workPlanMapOutcomes.test.ts`
+- **11** — `AssertionError: expected N to be N // Object.is equality`
   - [ ] `test/clusterAssistAltParity.test.ts`
-  - [ ] `test/comboBrushPlacement.test.ts`
-  - [ ] `test/consumedApprovalReporting.test.ts`
-  - [ ] `test/mapCanvasTexture.test.ts`
-  - [ ] `test/mapClipboardBothLayers.test.ts`
-  - [ ] `test/monsterStatRules.test.ts`
   - [ ] `test/qaGameCheckHorror.test.ts`
   - [ ] `test/regionSelectionPastePreview.test.ts`
   - [ ] `test/seCatalog.test.ts`
@@ -154,22 +118,15 @@ Work order (cheapest first): timeout → fake-DOM/env gaps → combined_town / o
   - [ ] `test/terrainPlacement.test.ts`
   - [ ] `test/tileActions.m1.test.ts`
   - [ ] `test/upperLayerBlankPick.test.ts`
-- **13** — `AssertionError: expected true to be false // Object.is equality`
-  - [ ] `test/actionHud.test.ts`
-  - [ ] `test/agentToolFollowups.test.ts`
+- **7** — `AssertionError: expected true to be false // Object.is equality`
   - [ ] `test/functionalInterpreterResume.test.ts`
-  - [ ] `test/mapDeletionIntegrity.test.ts`
-  - [ ] `test/mgL8SideView.test.ts`
-  - [ ] `test/moveRouteEventTargetPicker.test.ts`
-  - [ ] `test/persistence/projectPatchReferenceDocuments.test.ts`
   - [ ] `test/piCheckpointProtocol.test.ts`
   - [ ] `test/placePropsAdversarialHardening.test.ts`
   - [ ] `test/sceneInteractExtras.test.ts`
   - [ ] `test/spatialAuthoringContinuationCapability.test.ts`
   - [ ] `test/toolRegistry.test.ts`
   - [ ] `test/walkEncounterAuthoring.test.ts`
-- **8** — `AssertionError: expected '{"version":N,"meta":{"title":"새 프로젝트"…' to be '{"version":N,"meta":{"title":"새 프로젝트"…' // Obje`
-  - [ ] `test/autotileGroupPersistence.test.ts`
+- **7** — `AssertionError: expected '{"version":N,"meta":{"title":"새 프로젝트"…' to be '{"version":N,"meta":{"title":"새 프로젝트"…' // Obje`
   - [ ] `test/mapBackgroundRules.test.ts`
   - [ ] `test/p1FoundationSchema.test.ts`
   - [ ] `test/p2ProjectSchema.test.ts`
@@ -177,94 +134,62 @@ Work order (cheapest first): timeout → fake-DOM/env gaps → combined_town / o
   - [ ] `test/spatialGeographyControllerLifecycle.test.ts`
   - [ ] `test/spatialGeographyControllerMotion.test.ts`
   - [ ] `test/spatialGeographyControllerTransactions.test.ts`
-- **7** — `AssertionError: expected [ …(N) ] to deeply equal []`
+- **5** — `AssertionError: expected [ …(N) ] to deeply equal []`
   - [ ] `test/charsetCatalogCoverage.test.ts`
   - [ ] `test/charsetQuery.test.ts`
-  - [ ] `test/comboBrushCatalog.test.ts`
   - [ ] `test/fontFamilyTokenGuard.test.ts`
-  - [ ] `test/persistence/electronBoundary.test.ts`
   - [ ] `test/roleNameComparisonGate.test.ts`
   - [ ] `test/toolSchemaProviderCompat.test.ts`
-- **5** — `AssertionError: expected [] to have a length of N but got +N`
-  - [ ] `test/agentGhostPreview.test.ts`
-  - [ ] `test/clusterAssistUi.test.ts`
-  - [ ] `test/reviewedPlaceCatalog.test.ts`
-  - [ ] `test/runtimePerfHotPaths.test.ts`
-  - [ ] `test/tileEraseGround.test.ts`
-- **5** — `AssertionError: expected +N to be N // Object.is equality`
-  - [ ] `test/aiUiPerformance.test.ts`
-  - [ ] `test/audioDescriptionEditor.test.ts`
-  - [ ] `test/combinedTownAutotileAudit.test.ts`
-  - [ ] `test/shopRuntimeUx.test.ts`
-  - [ ] `test/starterVillage.test.ts`
-- **4** — `AssertionError: expected [ Array(N) ] to deeply equal []`
-  - [ ] `test/adventureCompletion.test.ts`
-  - [ ] `test/persistence/coreBoundary.test.ts`
-  - [ ] `test/playerRuntimeAudioIds.test.ts`
-  - [ ] `test/workshop/mapObjectsRunner.test.ts`
 - **4** — `TypeError: rail.root.after is not a function`
   - [ ] `test/aiAutonomousRunSurface.test.ts`
   - [ ] `test/aiChatPanelComposerMode.test.ts`
   - [ ] `test/aiDeckMove.test.ts`
   - [ ] `test/aiPanelAutoExpand.test.ts`
-- **4** — `AssertionError: expected -N to be N // Object.is equality`
-  - [ ] `test/clusterAssistRecovery.test.ts`
-  - [ ] `test/toolsHouseAndRules.test.ts`
-  - [ ] `test/transparentTileLayerRouting.test.ts`
-  - [ ] `test/treePlacementNamespaces.test.ts`
-- **4** — `AssertionError: expected N to be +N // Object.is equality`
-  - [ ] `test/harnesses/joseonBaram.test.ts`
-  - [ ] `test/regionTaskClip.test.ts`
-  - [ ] `test/reliefUx2Contracts.test.ts`
-  - [ ] `test/terrainEvolution.test.ts`
 - **4** — `AssertionError: expected null not to be null`
   - [ ] `test/playableSegment.test.ts`
   - [ ] `test/regionTaskModalEnhancements.test.ts`
   - [ ] `test/spatialIntegratedAuthoring.test.ts`
   - [ ] `test/spatialPlacesLibraryLayout.test.ts`
-- **3** — `AssertionError: expected undefined to be an instance of ToolError`
-  - [ ] `test/aiEventPlacementPassability.test.ts`
-  - [ ] `test/aiPlacementStarterMonsters.test.ts`
-  - [ ] `test/aiPlacementStoryArc.test.ts`
+- **3** — `AssertionError: expected [ Array(N) ] to deeply equal []`
+  - [ ] `test/adventureCompletion.test.ts`
+  - [ ] `test/playerRuntimeAudioIds.test.ts`
+  - [ ] `test/workshop/mapObjectsRunner.test.ts`
 - **3** — `ReferenceError: window is not defined`
   - [ ] `test/aiPanelChrome.test.ts`
   - [ ] `test/aiPiChangeReceipt.test.ts`
   - [ ] `test/aiStudioShell.test.ts`
-- **3** — `AssertionError: expected undefined to be 'blocked' // Object.is equality`
-  - [ ] `test/aiRequiredQuestionDispatch.test.ts`
-  - [ ] `test/assistantFinalAudit.test.ts`
-  - [ ] `test/functionalClarification.test.ts`
 - **3** — `AssertionError: expected N to be greater than N`
   - [ ] `test/aiWorkItemOutcomeGateSmoke.test.ts`
   - [ ] `test/regionBlend.test.ts`
   - [ ] `test/runtimeMoveRouteCommands.test.ts`
-- **3** — `TypeError: Cannot read properties of undefined (reading 'Latest')`
-  - [ ] `test/appStorageMigration.test.ts`
-  - [ ] `test/noLocalProjectDb.test.ts`
-- **3** — `AssertionError: the given combination of arguments (undefined and string) is invalid for this assertion. You can use an `
-  - [ ] `test/battleGaugePrediction.test.ts`
-  - [ ] `test/system2Sheet.test.ts`
-  - [ ] `test/systemGraphics.test.ts`
-- **3** — `ToolError: 개념 꾸러미에서 장소 "study"를 찾지 못했습니다. 지금 부를 수 있는 장소: inn/kitchen · inn/pantry · inn/dining · inn/reception · inn/dor`
-  - [ ] `test/compactInteriorGeneration.test.ts`
-  - [ ] `test/houseTopology.test.ts`
-  - [ ] `test/openInteriorZones.test.ts`
+- **3** — `AssertionError: expected N to be +N // Object.is equality`
+  - [ ] `test/regionTaskClip.test.ts`
+  - [ ] `test/reliefUx2Contracts.test.ts`
+  - [ ] `test/terrainEvolution.test.ts`
+- **3** — `AssertionError: expected [] to have a length of N but got +N`
+  - [ ] `test/reviewedPlaceCatalog.test.ts`
+  - [ ] `test/runtimePerfHotPaths.test.ts`
+  - [ ] `test/tileEraseGround.test.ts`
 - **3** — `TypeError: Cannot read properties of null (reading 'click')`
   - [ ] `test/scratchConceptTab.test.ts`
   - [ ] `test/structureKitPartKindMenu.test.ts`
   - [ ] `test/tilesetSpacesTab.test.ts`
-- **2** — `AssertionError: expected null to be truthy`
-  - [ ] `test/aiConversationLog.test.ts`
-  - [ ] `test/comboBrushPaletteUi.test.ts`
+- **3** — `AssertionError: expected -N to be N // Object.is equality`
+  - [ ] `test/toolsHouseAndRules.test.ts`
+  - [ ] `test/transparentTileLayerRouting.test.ts`
+  - [ ] `test/treePlacementNamespaces.test.ts`
+- **2** — `AssertionError: expected undefined to be 'approved' // Object.is equality`
+  - [ ] `test/aiAuthoredBaselineSurfaces.test.ts`
+  - [ ] `test/eventCommandScopedSession.test.ts`
 - **2** — `AssertionError: expected N to be less than N`
   - [ ] `test/aiToolExposureHybrid.test.ts`
   - [ ] `test/largeProjectPerf.test.ts`
+- **2** — `ToolError: 개념 꾸러미에서 장소 "study"를 찾지 못했습니다. 지금 부를 수 있는 장소: inn/kitchen · inn/pantry · inn/dining · inn/reception · inn/dor`
+  - [ ] `test/compactInteriorGeneration.test.ts`
+  - [ ] `test/houseTopology.test.ts`
 - **2** — `TypeError: Cannot read properties of undefined (reading 'parentNode')`
   - [ ] `test/editorLayoutPersist.test.ts`
   - [ ] `test/leftDockPanels.test.ts`
-- **2** — `AssertionError: expected undefined to be truthy`
-  - [ ] `test/openingPresets.test.ts`
-  - [ ] `test/tilesetFamily.test.ts`
 - **2** — `AssertionError: expected N not to be N // Object.is equality`
   - [ ] `test/placeChestSavepoint.test.ts`
   - [ ] `test/sidebarFocusModes.test.ts`
@@ -277,68 +202,26 @@ Work order (cheapest first): timeout → fake-DOM/env gaps → combined_town / o
 - **2** — `AssertionError: expected [ { …(N) }, { …(N) }, …(N) ] to have a length of N but got N`
   - [ ] `test/scarloxyPeopleGallery4.test.ts`
   - [ ] `test/sharedPortraitAssets.test.ts`
+- **2** — `AssertionError: expected +N to be N // Object.is equality`
+  - [ ] `test/shopRuntimeUx.test.ts`
+  - [ ] `test/starterVillage.test.ts`
 - **2** — `AssertionError: expected '당신은 브라우저 기반 ND RPG 에디터의 개발 어시스턴트입니다.\…' to contain 'author_house'`
   - [ ] `test/structureKitPlacementConditions.test.ts`
   - [ ] `test/structureKitTools.test.ts`
+- **2** — `AssertionError: the given combination of arguments (undefined and string) is invalid for this assertion. You can use an `
+  - [ ] `test/system2Sheet.test.ts`
+  - [ ] `test/systemGraphics.test.ts`
 - **2** — `AssertionError: expected 'lower' to be 'upper' // Object.is equality`
   - [ ] `test/tileLayerClassification.test.ts`
   - [ ] `test/tilePaletteSelection.test.ts`
-- **1** — `AssertionError: expected undefined to deeply equal { width: N, height: N }`
-  - [ ] `test/actionCombatFootprint.test.ts`
-- **1** — `TypeError: Cannot read properties of undefined (reading 'once')`
-  - [ ] `test/actionCombatRuntimeProof.test.ts`
-- **1** — `AssertionError: expected [] to deeply equal [ { mapId: 'mN', x: +N, y: +N, …(N) } ]`
-  - [ ] `test/agentBlueprint.test.ts`
-- **1** — `AssertionError: expected '## 툴 능력 색인(활성 N개 · 라운드 스키마는 tools)\…' to contain '집 다양성(필수)'`
-  - [ ] `test/agentUxPolicyPrompt.test.ts`
-- **1** — `TypeError: this.sweep.clear is not a function`
-  - [ ] `test/aiActivityCanvasChip.test.ts`
 - **1** — `AssertionError: expected [ 'add_battle_guest', …(N) ] to deeply equal [ 'add_battle_guest', …(N) ]`
   - [ ] `test/aiActivityNarration.test.ts`
 - **1** — `AssertionError: expected { version: N, meta: { …(N) }, …(N) } to be { version: N, meta: { …(N) }, …(N) } // Object.is eq`
   - [ ] `test/aiApplyCommitCorrelation.test.ts`
-- **1** — `AssertionError: expected null to deeply equal { Object (mapId, x, ...) }`
-  - [ ] `test/aiAssistantTurnCleanup.test.ts`
-- **1** — `AssertionError: ccN-se-kjg-N-bit-jingles-jingles-nesN: expected false to be true // Object.is equality`
-  - [ ] `test/aiAudioPromptBias.test.ts`
-- **1** — `AssertionError: expected 'AI 연결 서비스에 닿지 못했어요. ‘연결 확인’을 눌러 다시 확인…' to contain 'ai:oauth'`
-  - [ ] `test/aiAuthSettingsSeparation.test.ts`
-- **1** — `AssertionError: expected undefined to be 'approved' // Object.is equality`
-  - [ ] `test/aiAuthoredBaselineSurfaces.test.ts`
 - **1** — `TypeError: Cannot set properties of undefined (setting 'tileGroups')`
   - [ ] `test/aiClusterAssist.test.ts`
-- **1** — `AssertionError: 빈 맵에 NPC 'Schema' 배치 (N, N) — 페이지 N개 — SimplePage 정규화 경고 N건: expected true to be false // Object.is equa`
-  - [ ] `test/aiCommandSchemaContract.test.ts`
-- **1** — `AssertionError: expected 'http://N.N.N.N:N/auth/status?pr…' to be '/auth/status?provider=google-antigrav…' // Object.is `
-  - [ ] `test/aiCompanionSameOrigin.test.ts`
 - **1** — `AssertionError: expected [ true, true, false, false ] to deeply equal [ true, true, true, true ]`
   - [ ] `test/aiCompletionAccounting.test.ts`
-- **1** — `AssertionError: expected undefined to deeply equal [ 'yolo', 'auto', 'default', …(N) ]`
-  - [ ] `test/aiComposerEffort.test.ts`
-- **1** — `AssertionError: expected '이 서버는 AI 연결을 꺼 둔 채로 실행됐어요. 다시 시작해도 풀리…' to contain 'OPRN_HOST_OWNER_AI=N'`
-  - [ ] `test/aiConnectionStatus.test.ts`
-- **1** — `AssertionError: expected { name: '서슬 늑대', …(N) } to deeply equal { name: '서슬 늑대', …(N) }`
-  - [ ] `test/aiDatabaseGeneration.test.ts`
-- **1** — `AssertionError: expected '## 툴 능력 색인(활성 N개 · 라운드 스키마는 tools)\…' to contain '상태별 NPC'`
-  - [ ] `test/aiEventPageSemantics.test.ts`
-- **1** — `AssertionError: 붉은 용: expected 'generated-enemy-slime-red generated-e…' to contain 'dragon-red'`
-  - [ ] `test/aiGraphicAutofill.test.ts`
-- **1** — `Error: AI test signal was not delivered`
-  - [ ] `test/aiImageGenerateQueue.test.ts`
-- **1** — `AssertionError: expected { authMode: 'chatgpt', …(N) } to match object { providerId: 'openai-codex', …(N) }`
-  - [ ] `test/aiImageSettings.test.ts`
-- **1** — `AssertionError: expected '지금부터 \'맵 인터뷰\'를 진행합니다. 목표: 내가 직접 깐 이 …' to contain 'author_house'`
-  - [ ] `test/aiInterviewUx.test.ts`
-- **1** — `AssertionError: expected 'gemini-N-argon' to be 'batch-model' // Object.is equality`
-  - [ ] `test/aiLlmClient.test.ts`
-- **1** — `AssertionError: 본문 요청에 오프닝 툴이 노출되어야 한다: expected [ 'find_tools', …(N) ] to deeply equal ArrayContaining{…}`
-  - [ ] `test/aiOpeningAuthoring.test.ts`
-- **1** — `Error: Missing real assessment`
-  - [ ] `test/aiOutcomePresentation.test.ts`
-- **1** — `AssertionError: expected { created: N, skipped: +N, …(N) } to match object { created: N, skipped: N }`
-  - [ ] `test/aiPlacementInvestigationPuzzles.test.ts`
-- **1** — `AssertionError: expected 'openai-codex' to be 'google-antigravity' // Object.is equality`
-  - [ ] `test/aiProviderSelection.test.ts`
 - **1** — `AssertionError: expected [ { status: 'attempted', …(N) }, …(N) ] to deeply equal [ { status: 'attempted', …(N) }, …(N) ]`
   - [ ] `test/aiRunEndProof.test.ts`
 - **1** — `AssertionError: expected '' to be 'Npx' // Object.is equality`
@@ -347,250 +230,54 @@ Work order (cheapest first): timeout → fake-DOM/env gaps → combined_town / o
   - [ ] `test/aiToolCapabilityIndex.test.ts`
 - **1** — `AssertionError: expected [ 'animate_opening_camera', …(N) ] to deeply equal [ 'animate_opening_camera', …(N) ]`
   - [ ] `test/aiToolCatalogBudget.test.ts`
-- **1** — `AssertionError: expected 'author house' to be '집 짓기' // Object.is equality`
-  - [ ] `test/aiToolLabels.test.ts`
-- **1** — `AssertionError: expected { id: 'anim_hit', name: '타격', …(N) } to match object { id: 'anim_hit', …(N) }`
-  - [ ] `test/animationSchema.test.ts`
-- **1** — `AssertionError: expected { kind: 'project' } to deeply equal { kind: 'map', mapId: 'mN' }`
-  - [ ] `test/applyChangesetToStore.test.ts`
 - **1** — `TypeError: Cannot read properties of null (reading 'items')`
   - [ ] `test/approachCorrection.test.ts`
-- **1** — `AssertionError: expected 'medium' to be 'high' // Object.is equality`
-  - [ ] `test/assistantExecutionEffort.test.ts`
 - **1** — `AssertionError: expected 'error' to be 'max-tool-calls' // Object.is equality`
   - [ ] `test/assistantNativeReadDelivery.test.ts`
 - **1** — `AssertionError: expected [] to include '⚠ 범위: 이 제안에는 이전 계획(숲 마을)이 포함되어 있습니다.'`
   - [ ] `test/assistantProposalAssembly.test.ts`
-- **1** — `AssertionError: expected [ 'find_tools', …(N) ] to include 'set_type_chart'`
-  - [ ] `test/assistantSessionIntent.test.ts`
-- **1** — `AssertionError: expected { id: 'beodeul_city', …(N) } to match object { id: 'beodeul_city', …(N) }`
-  - [ ] `test/assistantUx2SpatialRoundtrip.test.ts`
-- **1** — `AssertionError: expected undefined to match object { model: 'gemini-N.N-pro-high', …(N) }`
-  - [ ] `test/audioAiDescriptions.test.ts`
 - **1** — `AssertionError: expected [ { index: +N, label: '편집', …(N) } ] to have a length of N but got N`
   - [ ] `test/authoredProjectBaseline.test.ts`
 - **1** — `AssertionError: {"tools":[]}: expected undefined to be 'approved' // Object.is equality`
   - [ ] `test/authoredSoftConfirmReviewEquality.test.ts`
-- **1** — `AssertionError: expected "vi.fn()" to be called N times, but got N times`
-  - [ ] `test/authoringTasks.test.ts`
-- **1** — `AssertionError: expected undefined to be 'tail' // Object.is equality`
-  - [ ] `test/battleAnimationFollowUps.test.ts`
-- **1** — `AssertionError: expected [ 'skill_sword_slash', …(N) ] to include 'skill_gunner_snipe'`
-  - [ ] `test/battleChoreographyAuditRegressions.test.ts`
-- **1** — `AssertionError: expected [ 'messageWindowSettings', …(N) ] to deeply equal ArrayContaining{…}`
-  - [ ] `test/battleConditionStateBridge.test.ts`
 - **1** — `AssertionError: expected { id: 'anim_hit', …(N) } to deeply equal { id: 'anim_hit', …(N) }`
   - [ ] `test/battleDataAuditRegressions.test.ts`
-- **1** — `AssertionError: .battle-enemy.defeated 에 정적 opacity 가 남아 있으면 막타 프레임에 그대로 드러난다:`
-  - [ ] `test/battleDefeatedSpriteOpacity.test.ts`
-- **1** — `AssertionError: expected '전사가 N 피해를 입었다! 효과가 별로인 듯하다…' to be '효과가 별로인 듯하다…' // Object.is equality`
-  - [ ] `test/battleEffectivenessMessage.test.ts`
 - **1** — `AssertionError: expected -N.N to be greater than or equal to N.N`
   - [ ] `test/battleEnemyFit.test.ts`
 - **1** — `AssertionError: expected [ 'bravely', 'chrono', 'ff', …(N) ] to deeply equal [ 'pokemon', 'retroN' ]`
   - [ ] `test/battleEnemyPlacementGeometry.test.ts`
-- **1** — `Error: 타격감 선택이 없다`
-  - [ ] `test/battleHitFeelPreset.test.ts`
-- **1** — `AssertionError: expected undefined to be 'approach' // Object.is equality`
-  - [ ] `test/battleHitIntensity.test.ts`
-- **1** — `AssertionError: expected 'resolved' to be 'actorCommand' // Object.is equality`
-  - [ ] `test/battleMonsterMedicine.test.ts`
-- **1** — `AssertionError: expected { fx: N.N, fy: N.N } to deeply equal { fx: N.N, fy: N.N }`
-  - [ ] `test/battleOnField.test.ts`
-- **1** — `AssertionError: expected 'battle-scenery-plains' to be 'battle-scenery-forest' // Object.is equality`
-  - [ ] `test/battlePoseHitFeelBackdropEvents.test.ts`
 - **1** — `Error: Expected encounter state change did not occur`
   - [ ] `test/battleResultTransitionFailure.test.ts`
-- **1** — `AssertionError: expected '' to match /무엇을 할까|게이지/`
-  - [ ] `test/battleSequencer.test.ts`
-- **1** — `AssertionError: expected '/assets/scarloxy/scarloxy-backdrop-fo…' to match /battle-skins\/.*\.png$/.*\.png$`
-  - [ ] `test/battleSkinRegistry.test.ts`
-- **1** — `AssertionError: [{"severity":"error","code":"enemy-not-found","message":"존재하지 않는 enemyId: enemy_fx — 허용 예시: enemy_slime,`
-  - [ ] `test/battleStaging.test.ts`
-- **1** — `AssertionError: expected <span …(N)>…(N)</span> to be null`
-  - [ ] `test/battleStatusBadgeToken.test.ts`
 - **1** — `AssertionError: generated-actor-hero-N-back: 칸 종횡비가 표시 상자(N×N)와 다르다: expected N.N to be close to N.N, received differenc`
   - [ ] `test/battlerBackIdleAnimation.test.ts`
-- **1** — `AssertionError: expected 'Npx Npx' to be 'Npx -Npx' // Object.is equality`
-  - [ ] `test/battlerPoseFrame.test.ts`
-- **1** — `AssertionError: expected '클릭' to be '턴 되감기' // Object.is equality`
-  - [ ] `test/betweenTurnLog.test.ts`
-- **1** — `AssertionError: expected 'MovieHolic-Plex/OpenRPGMaker' to be 'MovieHolic-Plex/rpg-zzu' // Object.is equality`
-  - [ ] `test/bgmCatalog.test.ts`
-- **1** — `TypeError: createSampleAdventureProject is not a function`
-  - [ ] `test/bootLoadFailureRecovery.test.ts`
-- **1** — `AssertionError: 'set_map_properties' 커밋 거부(무결성 오류) — 시작 위치가 통행 불가 타일입니다: (N, N) — 칠한 타일이 통행 불가이거나 시작 칸이 막혔습니다. set_start`
-  - [ ] `test/buildWallPatternHint.test.ts`
-- **1** — `TypeError: Cannot read properties of undefined (reading 'startsWith')`
-  - [ ] `test/bundledReferenceImages.test.ts`
-- **1** — `AssertionError: expected 'bbNafNfNdcNcaNbNfNbNccb…' to be 'NdNeadNbcNcbNeedNeeNbNfcNeN…' // Object.is equality`
-  - [ ] `test/canonicalProjectDigest.test.ts`
-- **1** — `AssertionError: expected undefined to match object { kind: 'custom', tileSize: N, …(N) }`
-  - [ ] `test/castleTileset.test.ts`
-- **1** — `AssertionError: expected { id: 'skill_item_frost_vial', …(N) } to match object { elementId: 'ice', power: N, …(N) }`
-  - [ ] `test/catalogStateElementExpansion.test.ts`
-- **1** — `AssertionError: expected [ { kind: 'picture', …(N) }, …(N) ] to have a length of N but got N`
-  - [ ] `test/cc0IconAssets.test.ts`
 - **1** — `AssertionError: expected [ 'find_tools', …(N) ] to include 'generate_character_appearance'`
   - [ ] `test/characterAppearanceAssistant.test.ts`
-- **1** — `AssertionError: expected '공용 분류 · 붉은 갑옷 여전사 · 얼굴 지정 · 근사 · 사람 ·…' to contain '금발 붉은 갑옷 기사'`
-  - [ ] `test/characterAppearanceEditor.test.ts`
-- **1** — `ProjectFormatError: characterAppearance look: face requires an existing faceset resource: generated-actor-hero-N-face`
-  - [ ] `test/characterAppearanceSets.test.ts`
-- **1** — `AssertionError: expected 'x' to be 'star' // Object.is equality`
-  - [ ] `test/characterDepthYSort.test.ts`
-- **1** — `AssertionError: expected [Function] to not throw an error but 'Error: mappings[N].attributes.age: …' was thrown`
-  - [ ] `test/characterGraphics.test.ts`
-- **1** — `AssertionError: expected 'movement.patrol → movement.route(순찰 경…' not to contain 'sight'`
-  - [ ] `test/chaserPatrolAndSpawnSafety.test.ts`
-- **1** — `AssertionError: expected { kind: 'returnToTitle', …(N) } to deeply equal { kind: 'returnToTitle', …(N) }`
-  - [ ] `test/checkpointEndingRuntime.test.ts`
-- **1** — `AssertionError: expected [] to include 'tile:N'`
-  - [ ] `test/chipsetLabelCorrections.test.ts`
-- **1** — `AssertionError: expected '{"version":N,"meta":{"title":"새 프로젝트"…' to deeply equal '{"version":N,"meta":{"title":"새 프로젝트"`
-  - [ ] `test/cinematicPresentation.test.ts`
 - **1** — `AssertionError: expected 'video' to be 'text' // Object.is equality`
   - [ ] `test/cinematicSequence.test.ts`
-- **1** — `AssertionError: expected [ 'image', 'unused', 'video', 'voice' ] to deeply equal [ 'image', 'video', 'voice' ]`
-  - [ ] `test/cinematicSettings.test.ts`
-- **1** — `AssertionError: expected { enabled: true, …(N) } to deeply equal { enabled: true, …(N) }`
-  - [ ] `test/cinematicTools.test.ts`
-- **1** — `TypeError: surface.signal?.throwIfAborted is not a function`
-  - [ ] `test/clearMapPanelApproval.test.ts`
-- **1** — `AssertionError: expected { effectiveLayer: 'N', …(N) } to match object { autoClusterTiles: N, …(N) }`
-  - [ ] `test/clusterRulePlacement.test.ts`
-- **1** — `AssertionError: expected { instanceId: 'monster_N', …(N) } to match object { …(N) }`
-  - [ ] `test/commandContracts/giveMonster.contract.test.ts`
-- **1** — `AssertionError: expected Set{ 'mN-N-change-actor-name', …(N) } to deeply equal Set{ 'mN-N-change-parameters', …(N) }`
-  - [ ] `test/commandContracts/m2Command.contract.test.ts`
-- **1** — `AssertionError: expected [Function] to not throw an error but 'ProjectFormatError: test가 객체가 아닙니다.' was thrown`
-  - [ ] `test/commandKindCoverage.test.ts`
-- **1** — `TypeError: Cannot read properties of undefined (reading 'run')`
-  - [ ] `test/commandRegistry.test.ts`
-- **1** — `AssertionError: expected { x: N, y: N } to not deeply equal { x: N, y: N }`
-  - [ ] `test/companionRules.test.ts`
-- **1** — `AssertionError: expected { width: N, height: N } to deeply equal undefined`
-  - [ ] `test/conceptMakeGame.test.ts`
-- **1** — `Cannot read properties of undefined (reading 'satisfying')`
-  - [ ] `test/conditionEvaluatorParity.test.ts`
-- **1** — `AssertionError: expected '당신은 브라우저 기반 ND RPG 에디터의 개발 어시스턴트입니다.\…' to contain '북쪽 반복 절벽'`
-  - [ ] `test/contextBuilder.test.ts`
-- **1** — `AssertionError: expected "error" to be called with arguments: [ …(N) ][Nm`
-  - [ ] `test/conversationStore.test.ts`
-- **1** — `AssertionError: expected 'false' to be 'true' // Object.is equality`
-- **1** — `AssertionError: expected <div …(N)>…(N)</div> to be <div …(N)>…(N)</div> // Object.is equality`
-- **1** — `Error: Missing action field: turn-start`
-- **1** — `AssertionError: expected [ 'bundled-default', 'unknown' ] to include undefined`
-- **1** — `AssertionError: expected [ …(N) ] to deeply equal [ …(N) ]`
-- **1** — `Error: missing control event-view-toggle-preview`
 - **1** — `AssertionError: expected null to be 'event-command-spawn-troop' // Object.is equality`
   - [ ] `test/eventValidationRecoveryFields.test.ts`
 - **1** — `PiAgentClientError: Pi 에이전트가 결과를 돌려주지 않았습니다`
   - [ ] `test/feature16-ai-transport.test.ts`
+- **1** — `AssertionError: expected undefined to be 'blocked' // Object.is equality`
+  - [ ] `test/functionalClarification.test.ts`
 - **1** — `AssertionError: expected [ 'toilet', 'kitchen', 'hall', …(N) ] to deeply equal ArrayContaining{…}`
   - [ ] `test/handInteriorLayout.test.ts`
 - **1** — `Error: independent-review-window-exceeded: complete evidence does not fit; no approval`
   - [ ] `test/independentReviewEvidenceScale.test.ts`
 - **1** — `AssertionError: expected [] to deeply equal ArrayContaining{…}`
   - [ ] `test/localDiagnosticSources.test.ts`
-- **1** — `AssertionError: expected [ { index: N, …(N) }, …(N) ] to have a length of N but got N`
-  - [ ] `test/m2EventCommandCatalog.test.ts`
-- **1** — `AssertionError: expected [ 'mN-N-show-text', …(N) ] to have a length of N but got N`
-  - [ ] `test/m2RuntimeSupportCompleteness.test.ts`
 - **1** — `AssertionError: expected '변경 저장: 타일 N, DB N, 시스템' to be '변경 저장: 타일 N' // Object.is equality`
   - [ ] `test/manualCommitDiff.test.ts`
-- **1** — `AssertionError: 'set_map_properties' 실행 실패: 없는 배경 세트: oga-craftpix-hills — oprn-sky-day, oprn-sky-day-city, oprn-sunset,`
-  - [ ] `test/mapBackgroundAssistantTools.test.ts`
-- **1** — `AssertionError: expected [ 'oprn-sky-day', …(N) ] to deeply equal [ 'oprn-sky-day', 'oprn-sunset', …(N) ]`
-  - [ ] `test/mapBackgroundPanoramas.test.ts`
-- **1** — `AssertionError: 'generate_map' 실행 실패: 타일셋 'beodeul_city' 전용 맵 생성 로직이 아직 없습니다: expected false to be true // Object.is equ`
-  - [ ] `test/mapBgmVariety.test.ts`
-- **1** — `Error: expected { kind: 'not-configured' } to deeply equal { kind: 'connected', source: 'remote' }`
-  - [ ] `test/mapEditHistoryProjectSwitch.test.ts`
-- **1** — `AssertionError: expected { width: N, height: N } to be null`
-  - [ ] `test/mapGrowthOnFixRequests.test.ts`
-- **1** — `AssertionError: expected { terrainDesign: { …(N) } } to deeply equal {}`
-  - [ ] `test/mapLayers.test.ts`
-- **1** — `Error: Expected background toggle`
-  - [ ] `test/mapProps.test.ts`
-- **1** — `AssertionError: expected null to deeply equal { Object (cellCount, x, ...) }`
-  - [ ] `test/mapRegionWaterAndCompact.test.ts`
-- **1** — `AssertionError: 잔디 위 관문인데 못 건넜다: expected false to be true // Object.is equality`
-  - [ ] `test/mapTravelReachability.test.ts`
-- **1** — `TypeError: Cannot read properties of undefined (reading 'tiles')`
-  - [ ] `test/materialSlotBoard.test.ts`
-- **1** — `AssertionError: ground 슬롯이 비었다: expected undefined to be defined`
-  - [ ] `test/materialSlots.test.ts`
-- **1** — `AssertionError: expected undefined to be 'scroll palette' // Object.is equality`
-  - [ ] `test/mgL5bvisBackdropMotion.test.ts`
-- **1** — `TypeError: Cannot read properties of undefined (reading 'setTintMode')`
-  - [ ] `test/mgL8ActionAllies.test.ts`
 - **1** — `TypeError: Cannot read properties of undefined (reading 'length')`
   - [ ] `test/modeTransitions.test.ts`
-- **1** — `AssertionError: expected [ 'claude-opus-N-N', …(N) ] to deeply equal [ 'claude-opus-N-N', …(N) ]`
-  - [ ] `test/modelCatalog.test.ts`
-- **1** — `AssertionError: expected 'gemini-N-argon' to be 'custom-writer' // Object.is equality`
-  - [ ] `test/modelRoles.test.ts`
-- **1** — `ProjectFormatError: monsterCampaign: unknown city map`
-  - [ ] `test/monsterBadgeGating.test.ts`
-- **1** — `AssertionError: expected '새 프로젝트' not to be '새 프로젝트' // Object.is equality`
-  - [ ] `test/monsterCampaignTitle.test.ts`
-- **1** — `AssertionError: expected 'label' to be 'choices' // Object.is equality`
-  - [ ] `test/monsterCollection.test.ts`
-- **1** — `AssertionError: expected { reason: undefined, level: N, …(N) } to match object { levelBefore: N, levelAfter: N }`
-  - [ ] `test/monsterFieldItems.test.ts`
-- **1** — `ProjectFormatError: enemy enemy_slime: speciesId does not exist: species_wild_slime. 사용 가능한 id(N개): sp_carp (get_databas`
-  - [ ] `test/monsterFishing.test.ts`
 - **1** — `AssertionError: 'upsert_enemy' 실행 실패: enemy.transparent는 허용되지 않는 필드입니다. 허용 필드: id, name, speciesId, monsterResourceId, b`
   - [ ] `test/monsterGraphicReliability.test.ts`
-- **1** — `Error: Monster and PP skill fixtures are required`
-  - [ ] `test/monsterPartyMenuDogfood.test.ts`
-- **1** — `AssertionError: expected Set{ …(N) } to deeply equal Set{ …(N) }`
-  - [ ] `test/monsterResourceCatalog.test.ts`
-- **1** — `AssertionError: expected [ { …(N) }, { …(N) }, { …(N) }, …(N) ] to have a length of N but got N`
-  - [ ] `test/monsterReverseLock.test.ts`
-- **1** — `TypeError: actual value must be number or bigint, received "object"`
-  - [ ] `test/monsterTownShopCenter.test.ts`
-- **1** — `AssertionError: expected '{"h":N,"lower":[[N,N,N],[N,N,N]],"map…' to be '{"h":N,"lower":[[N,N,N],[N,N,N]],"map…' // Obje`
-  - [ ] `test/mzLayerVision.test.ts`
 - **1** — `TypeError: Cannot read properties of undefined (reading 'tileSize')`
   - [ ] `test/mzLayerWriteTools.test.ts`
-- **1** — `AssertionError: expected N.N to be greater than or equal to N.N`
-  - [ ] `test/narrowForestRepro.test.ts`
-- **1** — `NaturalVillageAuthoringError: 북쪽 ㄱ자 도예가 집: 문 N,N`
-  - [ ] `test/naturalVillageReference.test.ts`
-- **1** — `store.subscribe is not a function`
-  - [ ] `test/newProjectPresetHandoff.test.ts`
-- **1** — `TypeError: Cannot read properties of undefined (reading 'then')`
-  - [ ] `test/npcBattleLifecycle.test.ts`
-- **1** — `TypeError: __vite_ssr_import_N__.store.updateEvent is not a function`
-  - [ ] `test/npcBehaviorAuthoring.test.ts`
-- **1** — `AssertionError: expected { moves: [], step: +N, …(N) } to match object { moveDurationMs: N, …(N) }`
-  - [ ] `test/npcPursuitRegression.test.ts`
-- **1** — `AssertionError: expected { ok: false, …(N) } to deeply equal { ok: true }`
-  - [ ] `test/npcRewardAcceptance.test.ts`
-- **1** — `AssertionError: expected "vi.fn()" to be called at least once`
-  - [ ] `test/openingMusicRuntime.test.ts`
-- **1** — `AssertionError: expected [ …(N) ] to deeply equal [ ObjectContaining{…} ]`
-  - [ ] `test/p1ReferenceIntegrity.test.ts`
-- **1** — `AssertionError: expected [ { id: 'recovery:N', …(N) }, …(N) ] to have a length of N but got N`
-  - [ ] `test/p2SpatialPersistence.test.ts`
-- **1** — `AssertionError: expected { color: 'blue', value: '', …(N) } to match object { color: 'blue', value: '', …(N) }`
-  - [ ] `test/page3CommandBodies.test.ts`
-- **1** — `AssertionError: expected [ { id: 'chunk-lower-N', …(N) } ] to have a length of N but got N`
-  - [ ] `test/partialApplyCompose.test.ts`
 - **1** — `AssertionError: expected '{"version":N,"meta":{"title":"Scarlox…' to be '{"version":N,"meta":{"title":"Scarlox…' // Obje`
   - [ ] `test/persistence/electronRepository.test.ts`
-- **1** — `AssertionError: expected undefined to be true // Object.is equality`
-  - [ ] `test/persistenceRoundTrip.m1.test.ts`
 - **1** — `TypeError: __vite_ssr_import_N__.store.getDbPersistenceStatus is not a function`
   - [ ] `test/piAgentRunOutcome.test.ts`
-- **1** — `SyntaxError: Unexpected token 'o', "[object ArrayBuffer]" is not valid JSON`
-  - [ ] `test/piAgentStreamLiveness.test.ts`
-- **1** — `AssertionError: expected '정원사만들기N명 작업 중달빛 숲 — 집 한 채달빛 숲 — 길 잇기' to contain '시공'`
-  - [ ] `test/piAgentTeamBoardRender.test.ts`
-- **1** — `AssertionError: expected undefined to deeply equal [ 'map_a' ]`
-  - [ ] `test/piAgentTeamRuntime.test.ts`
 - **1** — `AssertionError: expected [ …(N) ] to include '기본 빈 맵의 장소 구성이 그대로입니다: map_blank_start'`
   - [ ] `test/piFirstPlay.test.ts`
 - **1** — `Error: promise resolved "{ maps: { a: { id: 'a', …(N) } } }" instead of rejecting`
@@ -747,6 +434,8 @@ Work order (cheapest first): timeout → fake-DOM/env gaps → combined_town / o
   - [ ] `test/tileToolsV2.test.ts`
 - **1** — `AssertionError: expected 'missing' to be 'approved' // Object.is equality`
   - [ ] `test/tileVocabularyNarratedLabels.test.ts`
+- **1** — `AssertionError: expected undefined to be truthy`
+  - [ ] `test/tilesetFamily.test.ts`
 - **1** — `AssertionError: expected 'invalid' to be 'valid' // Object.is equality`
   - [ ] `test/tilesetKnowledgeContract.test.ts`
 - **1** — `TypeError: Cannot read properties of undefined (reading 'description')`

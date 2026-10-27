@@ -20,6 +20,9 @@ function connectedAdventure() {
   const back = structuredClone(event); back.id = "return"; back.pages[0].commands[0].mapId = start.id;
   dungeon.events.push(back);
   dungeon.events.push({ ...structuredClone(event), id: "treasure", x: p.startPos.x + 2, commands: [{ kind: "changeGold", op: "+=", amount: 10 }], pages: [] });
+  // The completion guard also requires a defined ending that some event triggers (gameStructureGuard.ts, #2624).
+  p.endings = [{ id: "ending_test", name: "Test ending", conditions: [], priority: 0 }];
+  dungeon.events.push({ ...structuredClone(event), id: "finale", x: p.startPos.x + 3, commands: [{ kind: "triggerEnding", endingId: "ending_test" }], pages: [] });
   dungeon.encounterRate = 10; dungeon.troopIds = [p.database.troops[0].id];
   p.system.startActorIds = p.database.actors.slice(0, 2).map(a => a.id);
   p.session.partyActorIds = [...p.system.startActorIds];

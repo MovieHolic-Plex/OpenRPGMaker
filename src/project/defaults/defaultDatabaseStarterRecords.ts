@@ -114,7 +114,8 @@ export function defaultSkillRecords(): SkillRecord[] {
     // retro2003 몬스터 스킬 42개(계약 src/assets/retroMonsterSkills.ts). 도트 적 행동이 쓴다(defaultBattleRecords).
     ...retroMonsterSkillRecords(),
     ...defaultSharedItemBattleSkills(),
-    ...defaultBattleMotionSkills(),
+    // 로드 정규화와 같은 모양(키 순서·빈 stateEffects)으로 둔다 — 아니면 저장→재로드 바이트가 달라진다.
+    ...defaultBattleMotionSkills().map((record) => normalizeSkillRecord(record)),
   ];
   applyGeneratedBattleEffectSkillBindings(records);
   return records;

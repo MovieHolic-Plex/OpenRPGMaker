@@ -63,7 +63,7 @@ describe('connected pursuit continuity', () => {
 
   it('counts unseen search time during activeMove ticks, not only idle decisions', () => {
     const f = pursuitFixture(); f.playerAt(5, 2);
-    updateAutonomousNPCs(f.scene, 800); // Real movement reserves (3,2) and starts its 320ms tween.
+    updateAutonomousNPCs(f.scene, 800); // Real movement reserves (3,2) and starts its 240ms tween.
     expect(f.mover().activeMove).toMatchObject({ toX: 3, toY: 2, elapsedMs: 0 });
     f.scene.map.lowerTiles[24] = 1;
     expect(seesPlayer(f.world(), f.view())).toBe(false);
@@ -73,12 +73,15 @@ describe('connected pursuit continuity', () => {
   });
 });
 
+// speed 4 의 한 칸은 240ms 다 — #3231(자연스러운 NPC 걸음 속도)이 속도 표를 바꿨다(예전 320ms).
+const STEP_MS = 240;
+
 describe('door travel uses authored cadence and current phase', () => {
   it.each([0, 200])('includes the remaining interval when the idle timer is %i ms', timer => {
     const f = pursuitFixture(); f.acquire(); f.mover().timer = timer;
-    expect(f.mover()).toMatchObject({ moveDurationMs: 320, moveIntervalMs: 800 });
+    expect(f.mover()).toMatchObject({ moveDurationMs: STEP_MS, moveIntervalMs: 800 });
     f.queue(); f.enter(f.b);
-    const expectedMs = 500 + 2 * (320 + 800) - timer;
+    const expectedMs = 500 + 2 * (STEP_MS + 800) - timer;
     advancePursuitDoors(f.world(), expectedMs - 1);
     expect(f.scene.session.eventLocations.pursuer?.mapId).toBe(f.a.id);
     advancePursuitDoors(f.world(), 1);
@@ -90,7 +93,7 @@ describe('door travel uses authored cadence and current phase', () => {
     updateAutonomousNPCs(f.scene, 800); updateAutonomousNPCs(f.scene, 160);
     expect(f.mover().activeMove).toMatchObject({ toX: 3, elapsedMs: 160 });
     f.queue(); f.enter(f.b);
-    const expectedMs = 160 + 2 * (800 + 320) + 500;
+    const expectedMs = (STEP_MS - 160) + 2 * (800 + STEP_MS) + 500;
     advancePursuitDoors(f.world(), expectedMs - 1);
     expect(f.scene.session.eventLocations.pursuer?.mapId).toBe(f.a.id);
     advancePursuitDoors(f.world(), 1);
@@ -100,7 +103,7 @@ describe('door travel uses authored cadence and current phase', () => {
   it('includes the authored interval on rapid B-to-C travel too', () => {
     const f = pursuitFixture(); f.acquire(); f.queue(); f.enter(f.b, 4, 2); f.queue(f.c);
     expect(f.state().doors).toHaveLength(2);
-    expect(f.state().doors[1]?.remainingMs).toBe(500 + 2 * (800 + 320));
+    expect(f.state().doors[1]?.remainingMs).toBe(500 + 2 * (800 + STEP_MS));
   });
 
   it('consumes game-time remainder across already admitted rapid legs', () => {
