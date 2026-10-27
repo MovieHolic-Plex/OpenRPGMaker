@@ -1817,26 +1817,35 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         // 소모되던 결함(계약: "consume one inventory unit per command"). applyItem 은
         // 효과 적용만 담당하고, finite-use 전환(transitionItemState)은 여기서 1회 돈다.
         if (targets.length > 0) consumeItemUse(command.itemId);
+        // 도구도 한 차례다. 독·화상은 회복 뒤에 깎인다(해독하면 잔여 피해 없음).
+        applyGen1Residual(actor);
         break;
       }
       case "capture":
         applyCapture(actor, command.captureItemId, command.targetEnemyId);
+        // 잡히면 전투가 끝난다. 실패한 던지기만 그 차례의 잔여 피해를 받는다.
+        if (!lastCaptureResult?.success) applyGen1Residual(actor);
         break;
       case "defend":
         actor.defending = true;
         recordTimeline({ kind: "action", side: "actor", userRecordId: actor.recordId, targetId: actor.id, commandKind: "defend" });
+        applyGen1Residual(actor);
         break;
       case "escape":
         attemptEscape();
         recordTimeline({ kind: "action", side: "actor", userRecordId: actor.recordId, targetId: actor.id, commandKind: "escape", success: escaped });
+        // 도망에 성공하면 전투가 끝난다. 실패만 그 차례의 잔여 피해를 받는다.
+        if (!escaped) applyGen1Residual(actor);
         break;
       case "switch":
+        // 교체로 빠지면 그 몬스터의 차례 말 독·화상은 없다(필드에 없다).
         switchActiveActor(actor.recordId, command.targetActorId);
         break;
       case "commonEvent":
         // 실행은 이 행동 뒤 트룹 이벤트 흐름(applyTroopEvents) 앞머리에서 — 문장·선택지가 같은 정지·재개를 탄다.
         battleEvents.queueCommonEvent(command.commonEventId);
         recordTimeline({ kind: "action", side: "actor", userRecordId: actor.recordId, targetId: actor.id, commandKind: "commonEvent" });
+        applyGen1Residual(actor);
         break;
     }
   }
@@ -2759,7 +2768,11 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       const targets = resolution.requiresSelection
         ? resolution.targets
         : resolution.targets;
-      if (targets.length === 0) return;
+      if (targets.length === 0) {
+        // 기술은 고르고 맞출 대상이 없어도 차례는 쓴다. 독·화상 잔여 피해를 건너뛰면 그 턴만 공짜가 된다.
+        applyGen1Residual(enemy);
+        return;
+      }
       // Red/Blue non-link opponents do not decrement PP. Player-controlled
       // battlers still use the normal finite-PP path above.
       if (!gen1) consumeBattleSkillResource(options.project, enemy, skillId);
