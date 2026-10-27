@@ -428,7 +428,11 @@ export function towerFloorShapes(floors: number, seed: number, asked: readonly u
     const want = asked[k - 1];
     if (typeof want === "string" && (pool as readonly string[]).includes(want)) { out.push(want as TowerFloorShape); continue; }
     const choices = pool.filter((sh) => sh !== out[k - 2]);
-    out.push(choices[Math.floor(towerHash(seed, 31 + k) * choices.length)]!);
+    // 이웃 시드끼리 같은 층이 같은 꼴이 되지 않게: 시드 순서로 돌아가며 고르고(층마다 출발점을 해시로 어긋냄), 아래층과 같으면 다음 것(2026-10-27 themes audit tower 「두 시드 2층이 같은 판」).
+    const start = Math.floor(towerHash(0, 31 + k) * pool.length);
+    let pickI = (((seed + start) % pool.length) + pool.length) % pool.length;
+    if (pool[pickI] === out[k - 2]) pickI = (pickI + 1) % pool.length;
+    out.push(choices.includes(pool[pickI]!) ? pool[pickI]! : choices[0]!);
   }
   return out;
 }
@@ -535,7 +539,15 @@ function authorDungeon(draft: Project, argsIn: Record<string, unknown>): ToolExe
   if (insp) {
     const req = inferDungeonRequest(`${insp} ${typeof args.name === "string" ? args.name : ""}`);
     if (args.type === undefined && req.type) args.type = req.type;
-    if (args.layout === undefined && req.layout) args.layout = req.layout;
+    // 게임 참고의 배치는 기본값일 뿐 고정이 아니다 — 고정하면 「FF6 광산」 두 번이 같은 뼈대(한 줄 갱도)였다(2026-10-27 themes audit mine).
+    // 시드로 셋 중 하나를 고른다: 참고 배치를 맨 앞에 두고 나머지 두 가족을 잇는 순서(참고 · 다음 · 그다음) — 이웃 시드끼리 늘 다른 뼈대.
+    // 「vertical」(층 쌓기)은 층 구조라 늘 지킨다.
+    if (args.layout === undefined && req.layout) {
+      const s = Number.isInteger(args.seed) ? (args.seed as number) : defaultSeed(draft, args);
+      const fams = ["linear", "hub", "loop"] as const;
+      const order = req.layout === "vertical" ? [] : [req.layout, ...fams.filter((f) => f !== req.layout)];
+      args.layout = req.layout === "vertical" ? req.layout : order[((s % 3) + 3) % 3];
+    }
     if (args.gimmick === undefined && args.puzzle === undefined && req.gimmick && (DUNGEON_GIMMICKS as readonly string[]).includes(req.gimmick)) args.gimmick = req.gimmick;
     if (req.reference) refNote.push(`참고 「${req.reference.label}」: ${req.reference.note}.`);
   }
