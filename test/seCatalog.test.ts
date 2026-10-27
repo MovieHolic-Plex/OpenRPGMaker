@@ -1,4 +1,4 @@
-// CC0 효과음 카탈로그(635개) 배선 가드.
+// CC0 효과음 카탈로그(258개) 배선 가드.
 //
 // 이 파일이 지키는 것은 네 가지다.
 //  1) 카탈로그 자체가 줄거나 깨지지 않는다(생성 스크립트 회귀).
@@ -24,8 +24,9 @@ import { searchResources } from "@/assets/resourceSearch";
 import { createBlankProject } from "@/project/defaults";
 
 describe("CC0 효과음 카탈로그", () => {
-  it("635개가 실려 있고 런타임/메타데이터 목록이 일치한다", () => {
-    expect(SE_CATALOG_COUNT).toBe(635);
+  // 2026-10-07 저작권 정리로 Kenney 5팩이 빠져 635 → 258개(OpenGameArt 3팩)다 — src/assets/seCatalog.ts 머리말.
+  it("258개가 실려 있고 런타임/메타데이터 목록이 일치한다", () => {
+    expect(SE_CATALOG_COUNT).toBe(258);
     expect(SE_CATALOG).toHaveLength(SE_CATALOG_COUNT);
     expect(new Set(seCatalogResourceIds())).toEqual(new Set(SE_CATALOG.map((e) => e.id)));
   });
@@ -105,47 +106,13 @@ describe("CC0 효과음 카탈로그", () => {
   });
 
   it("한국어 장면어로 효과음을 찾을 수 있다 — 영어 파일명만으로는 감독이 못 찾는다", () => {
-    for (const query of ["결정", "취소", "동전", "포효", "자물쇠", "징글"]) {
+    // 결정·취소·징글은 Kenney 팩 소리였다(2026-10-07 저작권 정리로 삭제) — 남은 OpenGameArt 팩의 장면어로 잰다.
+    for (const query of ["동전", "포효", "자물쇠", "문"]) {
       const hits = searchResources("se", query);
       expect(hits.length, `"${query}" 검색 결과 없음`).toBeGreaterThan(0);
       expect(hits.some((h) => h.id.startsWith("se:cc0-se-"))).toBe(true);
     }
   });
 
-  it("RPG 발소리와 재질 충돌음을 한국어로 찾아 이벤트에 넣을 수 있다", () => {
-    const expected = [
-      "se:cc0-se-kra-footstep00",
-      "se:cc0-se-kis-footstep-grass-000",
-      "se:cc0-se-kis-impactmining-000",
-    ];
-    for (const id of expected) {
-      expect(searchResources("se", "*").some((hit) => hit.id === id), `${id} 없음`).toBe(true);
-    }
-    expect(searchResources("se", "발소리").some((hit) => hit.id === expected[1])).toBe(true);
-    expect(searchResources("se", "채굴").some((hit) => hit.id === expected[2])).toBe(true);
-  });
-  // 징글 이름은 원본이 숫자뿐이다(`jingles_NES12`). 음향 방향은 삼중 검산을 통과해
-  // `scripts/se/accepted-contours.json` 에 남은 것만 제목에 달린다 — 그 배선이 사라지면
-  // 징글은 다시 "8비트 징글 04" 가 되어 상승/하강을 구분할 수단이 없어진다.
-  it("징글은 삼중 검산으로 확정된 음향 방향을 제목·태그로 가진다", () => {
-    const jingles = SE_CATALOG.filter((e) => e.category === "징글 (ME)");
-    const directed = jingles.filter((e) => e.tags.includes("상승") || e.tags.includes("하강"));
-    expect(directed.length).toBeGreaterThan(20);
-    for (const e of directed) {
-      const dir = e.tags.includes("상승") ? "상승" : "하강";
-      expect(e.title).toContain(`(${dir})`);
-      expect(e.tags).toContain(dir === "상승" ? "올라가는" : "내려가는");
-    }
-    // 방향이 확정되지 않은 징글에는 방향 어휘를 달지 않는다(추정 금지).
-    for (const e of jingles.filter((x) => !directed.includes(x))) {
-      expect(e.title).not.toMatch(/\((상승|하강)\)/);
-    }
-    for (const dir of ["상승", "하강"]) {
-      const hits = searchResources("se", dir);
-      expect(
-        hits.some((h) => h.id.startsWith("se:cc0-se-kjg-")),
-        `"${dir}" 검색에 징글 없음`,
-      ).toBe(true);
-    }
-  });
+  // 「RPG 발소리·재질 충돌음」(kra-/kis- id)과 「징글 음향 방향」(kjg- id) 사례는 Kenney 팩이 2026-10-07 저작권 정리로 지워져 은퇴했다.
 });

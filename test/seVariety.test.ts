@@ -57,7 +57,9 @@ describe("pickSeVariant", () => {
       expect(pickSeVariant(pool, 42)).toBe(pickSeVariant(pool, 42));
       expect(pickSeVariant(pool, 7)).toBe(pickSeVariant(pool, 7));
       const distinct = poolIdsForSeeds(pool, [1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 99, 128, 256, 777, 2026]);
-      expect(distinct.length, pool[0]).toBeGreaterThan(1);
+      // 문 풀은 Kenney 문 소리가 2026-10-07 저작권 정리로 빠져 한 개뿐이다(seThemeVariants.ts) — 후보가 여럿인 풀만 갈린다.
+      if (pool.length > 1) expect(distinct.length, pool[0]).toBeGreaterThan(1);
+      else expect(distinct).toEqual([pool[0]]);
       for (const id of distinct) {
         expect(pool).toContain(catalogId(id));
       }
@@ -77,8 +79,9 @@ describe("pickSeVariant", () => {
 
 describe("SE 변형 풀", () => {
   it("모든 후보 id 가 카탈로그·런타임에서 풀린다", () => {
-    for (const pool of Object.values(SE_VARIANT_POOLS)) {
-      expect(pool.length).toBeGreaterThanOrEqual(3);
+    for (const [name, pool] of Object.entries(SE_VARIANT_POOLS)) {
+      // 문 열기·닫기는 Kenney 문 소리 삭제(2026-10-07 저작권 정리)로 OSX 짝 하나만 남았다.
+      expect(pool.length, name).toBeGreaterThanOrEqual(name === "doorOpen" || name === "doorClose" ? 1 : 3);
       for (const id of pool) catalogId(id);
     }
     expect(DOOR_OPEN_SE_POOL.length).toBe(DOOR_CLOSE_SE_POOL.length);
@@ -136,7 +139,9 @@ describe("SE 변형 풀", () => {
     }
     expect(goldIds.size).toBeGreaterThan(1);
     expect(itemIds.size).toBeGreaterThan(1);
-    expect(doorIds.size).toBeGreaterThan(1);
+    // 문 열기 풀은 후보가 하나뿐이다(2026-10-07 저작권 정리) — 갈림 대신 그 하나로 고정되는지 잰다.
+    if (DOOR_OPEN_SE_POOL.length > 1) expect(doorIds.size).toBeGreaterThan(1);
+    else expect([...doorIds]).toEqual([DOOR_OPEN_SE_POOL[0]]);
     for (const id of goldIds) expect(LOOT_GOLD_SE_POOL).toContain(id);
     for (const id of itemIds) expect(LOOT_ITEM_SE_POOL).toContain(id);
     for (const id of doorIds) expect(DOOR_OPEN_SE_POOL).toContain(id);
