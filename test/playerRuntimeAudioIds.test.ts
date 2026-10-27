@@ -22,9 +22,13 @@ function playerSourceFiles(dir: string): string[] {
   return out;
 }
 
+// 플레이어가 재생하지만 src/player 밖으로 옮긴 정의 — FALLBACK_BGM_RESOURCE_ID 는 project/mapMusic.ts 로 옮겨
+// player/mapBgm.ts 가 다시 내보낸다(공개 기준 커밋 0d4f13e7c8 시점부터).
+const PLAYER_PLAYBACK_FILES_OUTSIDE_PLAYER = ["src/project/mapMusic.ts"];
+
 function hardcodedIdsInPlayerSource(): Map<string, string[]> {
   const found = new Map<string, string[]>();
-  for (const file of playerSourceFiles(PLAYER_DIR)) {
+  for (const file of [...playerSourceFiles(PLAYER_DIR), ...PLAYER_PLAYBACK_FILES_OUTSIDE_PLAYER]) {
     const text = readFileSync(file, "utf8");
     for (const match of text.matchAll(AUDIO_ID_PATTERN)) {
       const id = match[0].slice(1, -1);

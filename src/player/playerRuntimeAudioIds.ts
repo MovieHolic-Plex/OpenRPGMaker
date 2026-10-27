@@ -28,6 +28,8 @@ export const PLAYER_RUNTIME_AUDIO_RESOURCE_IDS: readonly string[] = Object.freez
   "easyrpg-sound-decision2",
   // battleJuice — 전투 연출 + RTP 판본 차이용 폴백
   "easyrpg-sound-attack1",
+  // battleComboPartners — 합동 공격 타격음
+  "easyrpg-sound-attack2",
   "easyrpg-sound-barrier1",
   "easyrpg-sound-blow4",
   // 승리음. #989ec8da 에서 chime2 → chime1 로 갈렸다 — 감시 테스트가 양방향으로 잡아 줬다.
