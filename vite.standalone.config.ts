@@ -4,6 +4,7 @@ import { resolve } from "node:path";
 import { writePlayerArtifactManifest } from "./scripts/lib/playerArtifactContract.mjs";
 import { writeReleaseCollector } from "./scripts/lib/releaseCollectorBuild.mjs";
 import { appVersionPlugin } from "./scripts/lib/appVersion.mjs";
+import { playerBundleGuardPlugin } from "./scripts/lib/playerBundleGuard.mjs";
 import { playerEditorOnlyAssetsVitePlugin } from "./scripts/lib/playerEditorOnlyAssets.mjs";
 import { runtimeLicenseBannerPlugin } from "./scripts/lib/runtimeLicenseBanner.mjs";
 
@@ -34,7 +35,7 @@ export default defineConfig({
       await writeReleaseCollector(thisRoot, outputDirectory);
       await writePlayerArtifactManifest({ artifactRoot: outputDirectory, repoRoot: thisRoot });
     },
-  }, playerEditorOnlyAssetsVitePlugin(), appVersionPlugin(), runtimeLicenseBannerPlugin(fileURLToPath(new URL("./LICENSE-RUNTIME.md", import.meta.url)))],
+  }, playerBundleGuardPlugin(), playerEditorOnlyAssetsVitePlugin(), appVersionPlugin(), runtimeLicenseBannerPlugin(fileURLToPath(new URL("./LICENSE-RUNTIME.md", import.meta.url)))],
   // iife 출력은 import.meta.url 을 `{}.url`(undefined)로 그린다. 그러면 `new URL("data:…", import.meta.url)` 같은
   // 정적 에셋 참조(retroSkillChoreography 의 도트 효과 시트)가 «Invalid base URL» 로 부팅을 통째로 막았다
   // (2026-10-23 실측: 실행형 HTML 이 타이틀 없이 빈 화면). 에셋은 전부 data: 로 인라인되므로 기준 주소는 형식만 맞으면 된다.
