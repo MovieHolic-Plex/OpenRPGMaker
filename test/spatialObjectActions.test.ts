@@ -3,14 +3,11 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { editorState } from "@/editor/editorState";
 import { recordProjectSnapshot, resetMapEditHistory, undoMapEdit } from "@/editor/mapEditHistory";
 import { INTERIOR_OBJECT_CATALOG } from "@/editor/interiorObjectCatalog";
-import { listSpatialGalleryCards } from "@/editor/panels/spatialCatalog";
-import { spatialCardDomSelector } from "@/editor/panels/spatialPresentation";
 import { renderDatabasePanel, setDatabaseActiveTab } from "@/editor/panels/database";
 import {
   resetSpatialAuthoringSessions,
   selectSpatialDesign,
   setSpatialTab,
-  spatialSession,
 } from "@/editor/panels/spatialAuthoringSession";
 import {
   applyAuthoringPreview,
@@ -146,8 +143,7 @@ describe("spatial object draft actions", () => {
 });
 
 describe("spatial tiles and objects surfaces", () => {
-  // The tiles tab now shows the tileset library (renderTilesetsTab); the placed-instance tiles editor was retired ("Tiles have no placed-instance authoring modes", spatialShell.ts).
-  it("renders the tileset library on the tiles tab without writing the project", () => {
+  it("renders the live tileset editor on the tiles tab without writing the project", () => {
     // Given
     const host = document.createElement("div");
     host.className = "database-modal-body";
@@ -160,7 +156,8 @@ describe("spatial tiles and objects surfaces", () => {
     renderDatabasePanel(host);
 
     // Then
-    expect(host.querySelector("[data-testid='tileset-db-search']")).not.toBeNull();
+    expect(host.querySelector("[data-testid='spatial-tiles-editor']")).not.toBeNull();
+    expect(host.querySelector("[data-testid='spatial-canvas']")).not.toBeNull();
     expect(store.getCurrent()).toEqual(before);
     host.remove();
   });
@@ -176,14 +173,9 @@ describe("spatial tiles and objects surfaces", () => {
 
     // When
     renderDatabasePanel(host);
-    // The inspector opens only after a card is selected (asset browser, #2888 era shell).
-    // Only source "default" cards are builtin-locked (copy control); pick bed_v like spatialShellDrawer.test.ts.
-    const bed = listSpatialGalleryCards(spatialSession()).find(card => card.objectId === "bed_v");
-    host.querySelector<HTMLButtonElement>(bed ? spatialCardDomSelector(bed.id) : "[data-card-id]")?.click();
 
     // Then
-    const diag = JSON.stringify({ bed: bed?.id, s: spatialSession(), h: host.innerHTML.slice(0, 600) });
-    expect(host.querySelector("[data-testid='spatial-object-preview']"), diag).not.toBeNull();
+    expect(host.querySelector("[data-testid='spatial-object-preview']")).not.toBeNull();
     expect(host.querySelector("[data-testid='spatial-object-copy']")).not.toBeNull();
     expect(host.querySelector("[data-testid='spatial-object-name']")).not.toBeNull();
     expect(store.getCurrent()).toEqual(before);
@@ -299,16 +291,12 @@ describe("spatial object UI wiring", () => {
     // Given
     loadLibraryProject();
     bindIdentityController();
-    selectSpatialDesign(libraryObjectCardId("desk"));
     setDatabaseActiveTab("spatialObjects");
     setSpatialTab("objects");
     const host = document.createElement("div");
     host.className = "database-modal-body";
     document.body.append(host);
     renderDatabasePanel(host);
-    // Copy control exists only on source "default" cards (builtinLocked), so copy a builtin (bed_v), not the library desk.
-    const bed = listSpatialGalleryCards(spatialSession()).find(card => card.objectId === "bed_v");
-    host.querySelector<HTMLButtonElement>(bed ? spatialCardDomSelector(bed.id) : "[data-card-id]")?.click();
     const before = structuredClone(store.getCurrent());
     const originalKits = Object.values(before.tilesets).flatMap((tileset) => tileset.structureKits ?? []).map((kit) => kit.id);
 

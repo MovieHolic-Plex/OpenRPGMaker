@@ -40,31 +40,27 @@ afterEach(() => {
 
 describe("spatial inspector drawer", () => {
   it("exposes a user-controlled inspector toggle that does not start open", () => {
-    // Given / When — 레거시 scratchConcepts 경로는 상세 무대가 없다(#2888 이후 places 탭이 정본).
-    setDatabaseActiveTab("spatialPlaces");
+    // Given / When
     renderDatabasePanel(host);
     const toggle = host.querySelector<HTMLButtonElement>("[data-testid='spatial-inspector-toggle']");
     const inspector = host.querySelector("[data-testid='spatial-inspector']");
 
     // Then
     expect(toggle, "1024 inspector must be selectable").not.toBeNull();
-    expect(inspector?.classList.contains("is-open") ?? false).toBe(false);
+    expect(inspector?.classList.contains("is-open")).toBe(false);
     toggle?.click();
-    expect(host.querySelector("[data-testid='spatial-inspector']")?.classList.contains("is-open"), JSON.stringify({ s: spatialSession(), h: host.innerHTML.slice(0, 500) })).toBe(true);
+    expect(host.querySelector("[data-testid='spatial-inspector']")?.classList.contains("is-open")).toBe(true);
   });
 
   it("selects a coherent default without a prior design id", () => {
     setDatabaseActiveTab("spatialPlaces");
     renderDatabasePanel(host);
-    // #2888 이후 상세 무대는 지연된다(spatialShell deferDetailStage) — 「상세」 토글로 연 뒤에 이름을 비교한다.
-    const detailToggle = host.querySelector<HTMLButtonElement>("[data-testid='spatial-inspector-toggle']");
-    if (detailToggle?.getAttribute("aria-pressed") !== "true") detailToggle?.click();
     const selected = host.querySelector("[data-testid^='spatial-card-'].is-selected");
     const header = host.querySelector("[data-testid='spatial-name']")?.textContent ?? "";
     const inspector = host.querySelector(".spatial-inspector-name")?.textContent ?? "";
     expect(selected).not.toBeNull();
     expect(spatialSession().designId).toBe(selected?.getAttribute("data-card-id"));
-    expect(header, JSON.stringify({ s: spatialSession(), sel: selected?.outerHTML.slice(0, 200), ih: host.querySelector("[data-testid='spatial-inspector']")?.outerHTML.slice(0, 400) })).toBe(inspector);
+    expect(header).toBe(inspector);
     expect(header).not.toBe("장소");
   });
 
@@ -103,7 +99,20 @@ describe("spatial inspector drawer", () => {
     expect(host.querySelector(".spatial-inspector-name")?.textContent).not.toBe("Workshop Chair");
   });
 
-  // "clears legacy origin ... after villages" 사례는 villages 탭 폐지(탭 메타 제거)로 퇴역(d).
+  it("clears legacy origin when the canonical Regions tab is clicked after villages", () => {
+    setDatabaseActiveTab("villages");
+    renderDatabasePanel(host);
+    expect(spatialSession().legacyOrigin).toBe("villages");
+    expect(spatialSession().tab).toBe("regions");
+    expect(spatialSession().regionKindFilter).toBe("settlement");
+    expect(host.querySelector("[data-testid=spatial-village-back]")).not.toBeNull();
+    host.querySelector<HTMLButtonElement>("[data-testid='db-tab-spatial-regions']")?.click();
+    expect(getDatabaseActiveTab()).toBe("spatialRegions");
+    expect(spatialSession().tab).toBe("regions");
+    expect(spatialSession().legacyOrigin).toBeNull();
+    expect(spatialSession().regionKindFilter).toBeNull();
+    expect(host.querySelector(".spatial-legacy-host")).toBeNull();
+  });
 
   it("counts authored kits in the objects rail badge", () => {
     const first = Object.keys(store.getCurrent().tilesets)[0];
@@ -149,8 +158,6 @@ describe("spatial inspector drawer", () => {
     setDatabaseActiveTab("spatialObjects");
     renderDatabasePanel(host);
     host.querySelector<HTMLButtonElement>("[data-testid='spatial-source-own']")?.click();
-    // 카탈로그가 쪽 매김(PAGE_SIZE)이라 버들항 키트에 밀려 첫 쪽에 없다 — 타일셋 레일로 좁힌 뒤 찾는다.
-    host.querySelector<HTMLButtonElement>("[data-tileset-id='atlas::west']")?.click();
     const id = spatialPresentationId("tileset-kit", "atlas::west", "bed");
     const card = host.querySelector(spatialCardDomSelector(id));
     expect(card, "opaque card selector").not.toBeNull();
