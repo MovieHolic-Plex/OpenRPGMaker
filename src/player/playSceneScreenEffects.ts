@@ -1,5 +1,6 @@
 import { dialogueHost } from "@/player/playSceneDom";
 import { el } from "@/util/dom";
+import { restoreTintAfterFlash } from "@/player/screen/flashTint";
 import {
   interpolateRgba,
   isVisibleTint,
@@ -79,16 +80,23 @@ export function syncScreenEffects(scene: PlaySceneContext): void {
   if (flash) flashHolds.delete(host);
 
   const screen = scene.session.m2Runtime?.screen;
-
+  // 플래시가 색조 칸을 빌린 뒤 기한이 지났으면, 그 전에 있던 색조로 되돌린다.
+  // 홀드가 아직 보이면 위에서 이미 돌아갔으므로 여기서는 플래시가 끝난 프레임만 정리한다.
+  if (screen && typeof screen.flashUntilMs === "number" && nowMs() >= screen.flashUntilMs) {
+    restoreTintAfterFlash(screen);
+  }
+  // 숨기기/표시가 방금 건 페이드. 한 번 읽고 지워서, 불러온 숨김 화면은 다시 페이드하지 않는다.
+  const fadeMs = screen?.hideFadeMs ?? 0;
+  if (fadeMs > 0 && screen) delete screen.hideFadeMs;
   const hidden = screen?.hidden === true;
-  // 우선순위: 화면 숨김(즉시, 불투명 검정) > 색조(트윈 가능).
+  // 우선순위: 화면 숨김(페이드 또는 즉시 검정) > 색조(트윈 가능).
   if (hidden) {
-    setImmediateColor(host, { r: 0, g: 0, b: 0, a: 1 }, "screen-hidden");
+    applyTintColor(host, { r: 0, g: 0, b: 0, a: 1 }, fadeMs, "screen-hidden");
     return;
   }
   const target = parseTintColor(screen?.tint);
-  const durationMs = screen?.tintDurationMs ?? 0;
-  applyTintColor(host, target, durationMs);
+  const durationMs = fadeMs > 0 ? fadeMs : (screen?.tintDurationMs ?? 0);
+  applyTintColor(host, target, durationMs, "screen-tint");
   applyScreenFilter(host, screen?.filter ? normalizeScreenFilter(screen.filter) : NEUTRAL_SCREEN_FILTER, durationMs);
 }
 
@@ -197,6 +205,7 @@ type TintAnim = {
   startedAt: number;
   durationMs: number;
   rafId: number;
+  mode: string;
 };
 
 const tintAnimations = new WeakMap<HTMLElement, TintAnim>();
@@ -217,6 +226,7 @@ function animFor(host: HTMLElement): TintAnim {
       startedAt: 0,
       durationMs: 0,
       rafId: 0,
+      mode: "screen-tint",
     };
     tintAnimations.set(host, anim);
   }
@@ -229,28 +239,27 @@ function setImmediateColor(host: HTMLElement, color: Rgba, mode: string): void {
   anim.from = color;
   anim.to = color;
   anim.durationMs = 0;
+  anim.mode = mode;
   renderColor(host, color, mode);
 }
 
-function applyTintColor(host: HTMLElement, target: Rgba, durationMs: number): void {
+function applyTintColor(host: HTMLElement, target: Rgba, durationMs: number, mode: string): void {
   const anim = animFor(host);
-  // 이미 같은 목표·같은 시간으로 트윈 중이면 매 동기화마다 다시 시작하지 않는다.
-  // refreshRuntimeSurfaces 가 명령마다 syncScreenEffects 를 부르므로, 여기서 시계를
-  // 되돌리면 페이드가 목표 색에 닿기 전에 남은 시간만큼 늘어난다. 색 필터 경로와 같다.
-  // 목표나 전환 시간이 바뀐 명령은 지금 보이는 색에서 새로 시작한다.
-  if (rgbaEqual(anim.to, target) && anim.durationMs > 0 && durationMs === anim.durationMs) return;
+  if (rgbaEqual(anim.to, target) && anim.durationMs > 0 && anim.mode === mode && durationMs === anim.durationMs) return;
   if (durationMs <= 0 || rgbaEqual(anim.displayed, target)) {
     anim.displayed = target;
     anim.from = target;
     anim.to = target;
     anim.durationMs = 0;
-    renderColor(host, target, "screen-tint");
+    anim.mode = mode;
+    renderColor(host, target, mode);
     return;
   }
   anim.from = anim.displayed;
   anim.to = target;
   anim.startedAt = nowMs();
   anim.durationMs = durationMs;
+  anim.mode = mode;
   ensureTintTicker(host, anim);
 }
 
@@ -258,14 +267,14 @@ function ensureTintTicker(host: HTMLElement, anim: TintAnim): void {
   if (typeof requestAnimationFrame !== "function") {
     anim.displayed = anim.to;
     anim.durationMs = 0;
-    renderColor(host, anim.to, "screen-tint");
+    renderColor(host, anim.to, anim.mode);
     return;
   }
   if (anim.rafId !== 0) return;
   const tick = (): void => {
     const t = anim.durationMs <= 0 ? 1 : Math.max(0, Math.min(1, (nowMs() - anim.startedAt) / anim.durationMs));
     anim.displayed = interpolateRgba(anim.from, anim.to, t);
-    renderColor(host, anim.displayed, "screen-tint");
+    renderColor(host, anim.displayed, anim.mode);
     if (t >= 1) {
       anim.displayed = anim.to;
       anim.from = anim.to;

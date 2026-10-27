@@ -8,6 +8,7 @@ import { fieldBoolean, fieldNumber, fieldString } from "./m2RuntimeFields";
 import { coordinateAxisSpec, resolveDestination } from "@/project/eventCommands/coordinateDestination";
 import { beginCutsceneControl, endCutsceneControl } from "@/player/cutsceneControl";
 import { planScreenEffect } from "./screenEffectPlan";
+import { rememberTintForFlash } from "@/player/screen/flashTint";
 import { doorKey } from "@/project/eventCommands/doorAnimation";
 import { pushM2History } from "./m2RuntimeState";
 import { calendarOptionsOf, sessionQueryValue } from "@/project/conditionActorQueries";
@@ -213,6 +214,9 @@ function applyScreenEffect(session: PlaySessionLike, runtime: M2RuntimeState, fi
     case "flash": {
       // Fade/tint already paint a sized overlay on .play-stage. Reuse that path so
       // Test Play screenshots see pixels change (dedicated flash nodes were 0×0).
+      // The tint is only for the flash window — rememberTintForFlash / restoreTintAfterFlash
+      // put back whatever color was on screen (a fade-out's black, a sepia grade, or none).
+      rememberTintForFlash(runtime.screen);
       runtime.screen.flash = plan.color;
       runtime.screen.flashUntilMs = (typeof performance !== "undefined" && typeof performance.now === "function"
         ? performance.now()

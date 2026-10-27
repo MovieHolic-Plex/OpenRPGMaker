@@ -14,13 +14,15 @@ import { acceptStoreDeepLink, registerAssetStore } from "./assetStore";
 import { findStoreDeepLinkArg } from "../../src/assetStore/deepLink";
 import { electronUserArgIndex, inspectCliProjectArgs, inspectCurrentCliProject, projectDirFromOpenPath } from "./cliProject";
 import { decideWindowClose, nextQuitHeld, shouldRetryQuit } from "./closeFlow";
+import { planWindowReload } from "../shared/reloadFlow";
 import { chosenDirectory, directoryDialogParent, directoryDialogProperties, pickAppWindow } from "./directoryDialog";
 import { registerAppProtocol, registerAssetProtocol } from "./protocols";
 import { captureLastViewBeforeClose, forgetLastViewWindow, markEditorLeft, markEditorSettled, readLastView, scheduleLastViewAfterSave } from "./lastView";
 import { firstShowSteps } from "./windowShow";
 import { SessionConsumerClosed, createProjectSessionRegistry } from "./sessions";
 import { startCompanionServer, type CompanionServer } from "./companion";
-import { describeRecentProjects, listRecentTeams, prepareNewProjectDir, recentProjectCoverSource, rememberRecentProject, rememberRecentTeam, suggestProjectDir, writeRecentProjectCover } from "./recent";
+import { acceptMenuFolder, prepareNewProjectDir } from "./newProjectDir";
+import { describeRecentProjects, listRecentTeams, recentProjectCoverSource, rememberRecentProject, rememberRecentTeam, suggestProjectDir, writeRecentProjectCover } from "./recent";
 import { openTeamWindow } from "./teamWindow";
 import type { Splash } from "./splash";
 import { peekPendingProjectDir, rendererDirectory, takePendingOpenFiles, windowIconPath, type BootContext, type SecondInstanceLaunch } from "./bootContext";
@@ -61,6 +63,17 @@ const TEAM_HOST_PORTS = [9840, 9841, 9842, 9843, 9844, 9845, 9846, 9847, 9848, 9
 
 const closing = new Set<number>();
 const closeTimers = new Map<number, ReturnType<typeof setTimeout>>();
+/** 편집기가 새로고침 저장 리스너를 붙인 창. 그 전에는 메모리 편집이 없다. */
+const flushReady = new Set<number>();
+/** 보기 메뉴·개발자 도구 새로고침을 위해 저장 중인 창. 값은 캐시를 무시할지. */
+const reloadFlushing = new Map<number, "soft" | "hard">();
+const reloadTimers = new Map<number, ReturnType<typeof setTimeout>>();
+/** 저장을 마친 직후의 reload() 만, 다른 beforeunload(미적용 초안)가 새로고침을 삼키지 않게 한다. */
+const reloadArmed = new Set<number>();
+/** 렌더러가 미저장이라 이번 새로고침을 막았다. will-prevent-unload 한 번만 소비한다. */
+const unsavedReloadBlock = new Set<number>();
+/** 이번 새로고침이 캐시를 무시하는지. 저장이 끝난 뒤의 reload() 까지 유지한다. */
+const reloadHard = new Set<number>();
 /**
  * 사용자가 Quit 을 요청했다. 프로젝트 창이 저장 때문에 close 를 막으면 Electron 이 종료를 취소하므로
  * (app.quit 문서), 그 저장이 끝난 뒤에 다시 건다. 마지막 창을 그냥 닫는 것과는 다르다 — macOS 는 그때 앱이 남는다.
@@ -76,6 +89,67 @@ function destroyWindow(window: BrowserWindow): void {
   if (timer) clearTimeout(timer);
   closeTimers.delete(id);
   window.destroy();
+}
+
+function abandonReloadFlush(id: number): void {
+  reloadFlushing.delete(id);
+  const timer = reloadTimers.get(id);
+  if (timer) clearTimeout(timer);
+  reloadTimers.delete(id);
+  unsavedReloadBlock.delete(id);
+  reloadArmed.delete(id);
+}
+
+const RELOAD_BLOCKED_MESSAGE = "저장하지 못해 새로고침하지 않았습니다.";
+const RELOAD_BLOCKED_DETAIL = "방금 한 편집이 아직 디스크에 없습니다. 저장이 끝난 뒤 다시 시도해 주세요.";
+
+function performReload(window: BrowserWindow, hard: boolean): void {
+  if (window.isDestroyed()) return;
+  const id = window.webContents.id;
+  // beforeunload 답은 reload() 가 돌아온 뒤에 온다. 막히면 will-prevent-unload 가 이 집합을 본다.
+  reloadArmed.add(id);
+  if (hard) reloadHard.add(id);
+  else reloadHard.delete(id);
+  if (hard) window.webContents.reloadIgnoringCache();
+  else window.webContents.reload();
+  // 이동이 취소되고 이벤트도 없으면 다음 막힘을 통과시키지 않는다.
+  setTimeout(() => { reloadArmed.delete(id); }, 10_000);
+}
+
+/** 보기 → 새로고침, 그리고 개발자 도구가 막힌 새로고침. 저장이 안전하지 않으면 창을 그대로 둔다. */
+function beginReloadFlush(window: BrowserWindow, hard: boolean, becauseDirty = false): void {
+  if (window.isDestroyed()) return;
+  const id = window.webContents.id;
+  const plan = planWindowReload({
+    hasSession: sessions.get(id) !== null,
+    flushListenerReady: flushReady.has(id),
+    closeFlushInProgress: closing.has(id),
+    reloadFlushInProgress: reloadFlushing.has(id),
+  });
+  if (plan === "ignore") return;
+  if (hard) reloadHard.add(id);
+  else reloadHard.delete(id);
+  if (plan === "reload-now") {
+    // 미저장인데 저장 리스너·세션이 없으면 바로 새로고침하지 않는다. 그러면 편집이 사라진다.
+    if (becauseDirty) {
+      void dialog.showMessageBox(window, { type: "warning", message: RELOAD_BLOCKED_MESSAGE, detail: RELOAD_BLOCKED_DETAIL }).catch((error: unknown) => {
+        console.warn("[project] 새로고침 안내를 띄우지 못했습니다:", error);
+      });
+      return;
+    }
+    performReload(window, hard);
+    return;
+  }
+  reloadFlushing.set(id, hard ? "hard" : "soft");
+  window.webContents.send(OPRN_CHANNELS.lifecycleFlushBeforeReload);
+  reloadTimers.set(id, setTimeout(() => {
+    if (!reloadFlushing.has(id)) return;
+    abandonReloadFlush(id);
+    if (window.isDestroyed() || closing.has(id)) return;
+    void dialog.showMessageBox(window, { type: "warning", message: RELOAD_BLOCKED_MESSAGE, detail: RELOAD_BLOCKED_DETAIL }).catch((error: unknown) => {
+      console.warn("[project] 새로고침 안내를 띄우지 못했습니다:", error);
+    });
+  }, CLOSE_FLUSH_TIMEOUT_MS));
 }
 
 function retryQuitIfFlushHeldIt(): void {
@@ -110,6 +184,8 @@ function installCloseFlow(window: BrowserWindow): void {
     event.preventDefault();
     quitHeld = nextQuitHeld(quitHeld, quitRequested, decision);
     if (decision === "hold") return;
+    // 새로고침 저장이 진행 중이면 그 저장은 닫기로 넘긴다. 끝나자마자 페이지를 다시 열지 않는다.
+    abandonReloadFlush(id);
     // flush 는 세션이 있을 때만 나온다. 없으면 닫기를 막아 둔 채 두면 창이 남지 않게 바로 없앤다.
     if (session === null) { destroyWindow(window); return; }
     closing.add(id);
@@ -121,6 +197,9 @@ function installCloseFlow(window: BrowserWindow): void {
   });
   window.on("closed", () => {
     forgetLastViewWindow(id);
+    abandonReloadFlush(id);
+    flushReady.delete(id);
+    reloadHard.delete(id);
     closing.delete(id);
     const timer = closeTimers.get(id);
     if (timer) clearTimeout(timer);
@@ -295,13 +374,34 @@ function createWindow(options: { readonly splash?: () => Splash | undefined; rea
     if (lastAppWindow === window) lastAppWindow = null;
   });
   // 문서를 떠나면(시작 화면 ↔ 편집기·새로고침) 다시 «부팅을 마쳤다» 신호가 올 때까지 찍지 않는다.
+  window.webContents.on("did-start-navigation", (details) => {
+    if (!details.isMainFrame || details.isSameDocument) return;
+    markEditorLeft(id);
+    // 새 문서는 리스너를 다시 붙일 때까지 메모리 편집이 없다.
+    flushReady.delete(id);
+    reloadArmed.delete(id);
+    reloadHard.delete(id);
+  });
+  // 개발자 도구의 새로고침은 메뉴를 타지 않는다. 렌더러가 미저장으로 막으면 저장한 뒤 다시 연다.
+  // 저장을 마친 reload() 가 다른 beforeunload(미적용 초안)에 막히면 그 새로고침은 그대로 진행한다.
+  window.webContents.on("will-prevent-unload", (event) => {
+    const webContentsId = window.webContents.id;
+    if (unsavedReloadBlock.has(webContentsId)) {
+      const hard = reloadHard.has(webContentsId);
+      unsavedReloadBlock.delete(webContentsId);
+      reloadArmed.delete(webContentsId);
+      beginReloadFlush(window, hard, true);
+      return;
+    }
+    if (!reloadArmed.has(webContentsId)) return;
+    reloadArmed.delete(webContentsId);
+    event.preventDefault();
   // 폴더 교체 저장도 새 문서가 준비됐다고 알릴 때까지 기다리지 않는다 — 부팅 중에는 저장할 변경이 없다.
   window.webContents.on("did-start-navigation", (details) => {
     if (details.isMainFrame && !details.isSameDocument) {
       markEditorLeft(id);
       replaceFlushReady.delete(id);
-    }
-  });
+    }  });
   window.webContents.on("will-navigate", (event, url) => {
     if (!url.startsWith(`${OPRN_APP_SCHEME}://`)) event.preventDefault();
   });
@@ -514,8 +614,8 @@ function openChosenFolder(window: BrowserWindow, options: {
   folderSwitching.add(id);
   void (async () => {
     try {
-      const dir = await askForDirectory(window, options.title, options.createDirectory === true);
-      if (!dir || window.isDestroyed()) return;
+      const picked = await askForDirectory(window, options.title, options.createDirectory === true);
+      if (!picked || window.isDestroyed()) return;
       const flushed = await waitForFolderSwitchFlush(window);
       if (flushed === "closed" || window.isDestroyed() || closing.has(window.webContents.id)) return;
       if (flushed === "blocked" || flushed === "timeout") {
@@ -527,6 +627,7 @@ function openChosenFolder(window: BrowserWindow, options: {
         });
         return;
       }
+      const dir = acceptMenuFolder(picked, options.createDirectory === true ? "new" : "open");
       await adoptFolder(window, dir, options.recentTitle);
     } catch (error) {
       console.warn("[project] 폴더를 열지 못했습니다:", error);
@@ -710,7 +811,22 @@ function buildMenu(): void {
       ],
     },
     { role: "editMenu" },
-    { role: "viewMenu" },
+    {
+      // 기본 viewMenu 의 Reload 는 저장 없이 webContents.reload() 를 부른다.
+      // 라벨·단축키는 Electron 역할과 같다. 개발자 도구·확대·전체화면은 역할을 그대로 둔다.
+      label: "View",
+      submenu: [
+        { label: "Reload", accelerator: "CmdOrCtrl+R", click: () => { const window = focusedWindow(); if (window) beginReloadFlush(window, false); } },
+        { label: "Force Reload", accelerator: "Shift+CmdOrCtrl+R", click: () => { const window = focusedWindow(); if (window) beginReloadFlush(window, true); } },
+        { role: "toggleDevTools" },
+        { type: "separator" },
+        { role: "resetZoom" },
+        { role: "zoomIn" },
+        { role: "zoomOut" },
+        { type: "separator" },
+        { role: "togglefullscreen" },
+      ],
+    },
     { role: "windowMenu" },
   ]));
 }
@@ -777,6 +893,30 @@ export async function startApp(boot: BootContext): Promise<void> {
     // 닫기 저장을 걸어 둔 창만 없앤다. 저장을 요청하지 않았는데 오면 편집 중인 창을 닫지 않는다.
     if (!window || window.isDestroyed() || !closing.has(event.sender.id)) return false;
     destroyWindow(window);
+    return true;
+  });
+  ipcMain.on(OPRN_CHANNELS.lifecycleFlushReady, (event) => {
+    if (event.senderFrame?.parent == null) flushReady.add(event.sender.id);
+    event.returnValue = true;
+  });
+  ipcMain.on(OPRN_CHANNELS.lifecycleReloadBlocked, (event) => {
+    if (event.senderFrame?.parent == null) unsavedReloadBlock.add(event.sender.id);
+    event.returnValue = true;
+  });
+  ipcMain.handle(OPRN_CHANNELS.lifecycleFlushReloadDone, (event, ok: unknown) => {
+    const id = event.sender.id;
+    const hard = reloadFlushing.get(id) === "hard";
+    if (!reloadFlushing.has(id)) return false;
+    abandonReloadFlush(id);
+    const window = BrowserWindow.fromWebContents(event.sender);
+    if (!window || window.isDestroyed() || closing.has(id)) return false;
+    if (ok !== true) {
+      void dialog.showMessageBox(window, { type: "warning", message: RELOAD_BLOCKED_MESSAGE, detail: RELOAD_BLOCKED_DETAIL }).catch((error: unknown) => {
+        console.warn("[project] 새로고침 안내를 띄우지 못했습니다:", error);
+      });
+      return false;
+    }
+    performReload(window, hard);
     return true;
   });
   ipcMain.on(OPRN_CHANNELS.resumeEditorReady, (event) => {
@@ -868,13 +1008,14 @@ export async function startApp(boot: BootContext): Promise<void> {
     const senderId = event.sender.id;
     const input = payload as { readonly title?: string; readonly seed?: string; readonly projectDir?: string };
     let dir: string;
-    // 시작 화면은 저장 위치를 미리 보여 주고 확정된 경로를 보낸다. 편집기 메뉴 경로는 예전처럼 대화상자를 연다.
+    // 시작 화면은 저장 위치를 미리 보여 주고 확정된 경로를 보낸다. 경로가 없으면 대화상자를 연다.
+    // 어느 쪽이든 파일이 있는 폴더는 거절한다.
     if (typeof input?.projectDir === "string" && input.projectDir) {
       dir = prepareNewProjectDir(input.projectDir);
     } else {
       const picked = await askForDirectory(BrowserWindow.fromWebContents(event.sender), "새 프로젝트 폴더 선택", true);
       if (!picked || event.sender.isDestroyed()) return null;
-      dir = picked;
+      dir = acceptMenuFolder(picked, "new");
     }
     const session = await openWindowSession(senderId, dir);
     if (!session) return null;

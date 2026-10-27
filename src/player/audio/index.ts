@@ -6,6 +6,7 @@ import { getPlayerPreferences } from '@/player/playerPreferences';
 import type { AudioChannel, AudioCommandState, AudioTrackState } from "@/project/session";
 import type { Project } from "@/project/types";
 import { AudioEngine, type AudioPlayOptions } from "./audioEngine";
+import { authoredTrackGain } from "./fade";
 import { audioChannelForCommand, resolveAudioSource } from "./audioResources";
 
 export { AudioEngine, type AudioPlayOptions, type AudioStateSnapshot } from "./audioEngine";
@@ -24,7 +25,7 @@ export {
   type AudioQueueState,
   type AudioRequest,
 } from "./audioQueue";
-export { computeFadeVolume, isFadeComplete, clampVolume } from "./fade";
+export { authoredTrackGain, authoredVolumePercent, computeFadeVolume, isFadeComplete, clampVolume } from "./fade";
 
 let engine: AudioEngine | null = null;
 
@@ -60,7 +61,7 @@ export function playAudioCommand(
   }
   getAudioEngine().play(channel, step.resourceId, url, step.loop, {
     ...options,
-    ...(step.volume === undefined ? {} : { gain: step.volume / 100 }),
+    ...(step.volume === undefined ? {} : { gain: authoredTrackGain(step.volume) }),
     ...(step.fadeInMs === undefined ? {} : { fadeInMs: step.fadeInMs }),
   });
 }

@@ -97,11 +97,17 @@ export type OprnBridgeLifecycle = {
   readonly flushDone: () => Promise<unknown>;
   /** 파일 → 저장(CmdOrCtrl+S). 메뉴가 보내는 flush 요청. */
   readonly onSaveRequest: (callback: () => void) => void;
+  /** 보기 → 새로고침. 데스크톱만. 저장이 안전할 때만 flushReloadDone(true). */
+  readonly onFlushBeforeReload?: (callback: () => void) => void;
+  readonly flushReloadDone?: (ok: boolean) => Promise<unknown>;
+  /** 위 리스너를 붙인 뒤 한 번. 그 전에는 메인이 바로 새로고침한다. */
+  readonly markFlushReady?: () => void;
+  /** beforeunload 가 미저장 때문에 새로고침을 막았음(동기). 메인이 저장 후 다시 연다. */
+  readonly noteUnsavedReloadBlock?: () => void;
   /** 파일 → 새 프로젝트·폴더 열기. 폴더를 바꾸기 전에 flush 하고 결과를 보고한다. */
   readonly onFlushBeforeReplace?: (callback: () => void) => void;
   readonly flushReplaceDone?: (report: { readonly kind: string; readonly dirty: boolean }) => void;
-  readonly flushReplaceReady?: () => void;
-};
+  readonly flushReplaceReady?: () => void;};
 export type OprnBridgeStart = {
   readonly recentProjects: () => Promise<readonly import("../../../electron/shared/start").RecentProjectEntry[]>;
   readonly openFolder: (payload?: { readonly projectDir?: string }) => Promise<{ readonly projectDir: string; readonly isNew: boolean; readonly projectId: string | null } | null>;

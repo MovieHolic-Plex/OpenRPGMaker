@@ -101,6 +101,16 @@ describe("command edit modal — image-rich preview", () => {
     expect(preview.textContent).toContain("마을에 온 걸");
   });
 
+  it("shows an actor name code in the name box as that actor's current name", () => {
+    const bs = String.fromCharCode(92);
+    const preview = renderWithFakeDom(() =>
+      renderCommandPreview({ kind: "text", speaker: `${bs}n[1]`, body: "오늘도 모험이야." })
+    );
+    const speaker = findByTestId(preview, "ecp-message-speaker");
+    expect(speaker?.textContent).toBe(store.getCurrent().database.actors[0]?.name);
+    expect(speaker?.textContent).not.toContain(bs);
+  });
+
 
   it("text preview resolves control codes and shows effect examples without raw escape syntax", () => {
     const bs = String.fromCharCode(92);

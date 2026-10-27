@@ -10,9 +10,9 @@ import { resolveTerms } from "@/project/terms";
 import { shopCatalogRecords } from "./shopEditorModel";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { DEFAULT_BATTLE_FIELD_BACKGROUND_ID } from "@/project/databaseEnemyTroopRecordModel";
+import { nameplateSpeaker, parseDialogueText, resolveDialogueSpeakerName, type DialogueTextContext } from "@/player/dialogue";
 import { parseDialogueText } from "@/player/dialogue";
-import { NUMBER_INPUT_CONFIRM_LABEL } from "@/player/dialogueNumberInput";
-import { resolveDialogueLook, type DialogueLook } from "@/project/dialogueStyles";
+import { NUMBER_INPUT_CONFIRM_LABEL } from "@/player/dialogueNumberInput";import { resolveDialogueLook, type DialogueLook } from "@/project/dialogueStyles";
 import { resolveFontStack } from "@/project/fontRegistry";
 import { applySystemWindowSkinVariable } from "@/player/systemGraphics";
 import { dialoguePresentationCssVars, dialoguePresentationProfile } from "@/player/dialoguePresentation";
@@ -41,8 +41,8 @@ import { pictureSlotCaption } from "./options";
 import { commandLabel } from "./commandPicker";
 import { commandSummaryParts, isSummaryIconPart, transferEditorSummary } from "./commandSummary";
 import { textBodyOf } from "@/project/io/rewriteLegacyDialogue";
-import { LETTERBOX_DEFAULT_PERCENT } from "@/project/eventCommands/cinematicStaging";
-import { planScreenEffect } from "@/player/interpreter/screenEffectPlan";
+import { HIDE_SHOW_SCREEN_FADE_MS, planScreenEffect, LETTERBOX_DEFAULT_PERCENT } from "@/project/eventCommands/cinematicStaging";
+import { planScreenEffect } from "@/player/interpreter/screenEffectPlan"
 import { clampMs } from "@/player/interpreter/commandCatalog";
 import { isRecognizedTintValue, isVisibleTint, parseTintColor, rgbaToCss } from "@/player/screen/tintModel";
 import { formatVariableFormula } from "./commandBodyVariable";
@@ -123,15 +123,18 @@ type VisualPreviewHandlers = {
 };
 
 const visualPreviewHandlers: VisualPreviewHandlers = {
-  text: (cmd, context) =>
-    messageWindowMock(cmd.speaker, textBodyOf(cmd), context?.face, {
+  text: (cmd, context) => {
+    const speaker = resolveDialogueSpeakerName(cmd.speaker, previewDialogueContext(context?.simState)) ?? cmd.speaker;
+    return messageWindowMock(cmd.speaker, textBodyOf(cmd), context?.face, {
       emotion: cmd.emotion,
       replay: context?.replayPresentation === true,
       simState: context?.simState,
+      look: resolveDialogueLook(store.getCurrent(), { speaker, style: cmd.style, context: cmd.context, container: cmd.container, emotion: cmd.emotion }),
+    });
+  },
       look: resolveDialogueLook(store.getCurrent(), { speaker: cmd.speaker, style: cmd.style, context: cmd.context, container: cmd.container, emotion: cmd.emotion }),
       windowPosition: cmd.position,
-    }),
-  changeFace: faceStage,
+    }),  changeFace: faceStage,
   displayTextSettings: settingsMessageMock,
   choices: choicesMock,
   inputNumber: inputNumberStage,
@@ -293,7 +296,10 @@ function messageWindowMock(
   const authored = body.trim().length > 0;
   const shownBody = authored ? body : SPEAK_SAMPLE_BODY;
   const rawSpeaker = (speaker?.trim() ?? "") || (authored ? "" : SPEAK_SAMPLE_SPEAKER);
-  const speakerName = look?.hideName || !rawSpeaker ? "" : rawSpeaker + (look?.nameSuffix ?? "");
+  const resolvedSpeaker = look?.hideName
+    ? ""
+    : (nameplateSpeaker(rawSpeaker, previewDialogueContext(presentation?.simState)) ?? "");
+  const speakerName = resolvedSpeaker ? resolvedSpeaker + (look?.nameSuffix ?? "") : "";
   const faceRight = face?.position === "right";
   const win = el("div", {
     class: [
@@ -465,8 +471,8 @@ export function renderDialogueLookSample(speaker: string, body: string, look: Di
   return frame;
 }
 
-/** Resolve RM control codes the same way play-mode dialogue does (editor preview). */
-function renderPreviewDialogueBody(body: string, simState?: PreviewSimState): HTMLElement {
+/** Same variable defaults and actor list the message body uses, so the name box resolves `\n[1]` too. */
+function previewDialogueContext(simState?: PreviewSimState): DialogueTextContext {
   const project = store.getCurrent();
   const variableDefaults: Record<string, number> = {};
   for (const entry of project.variables ?? []) {
@@ -476,10 +482,19 @@ function renderPreviewDialogueBody(body: string, simState?: PreviewSimState): HT
     const id = "var_" + String(i).padStart(4, "0");
     if (variableDefaults[id] === undefined) variableDefaults[id] = 0;
   }
-  const segments = parseDialogueText(body || "...", {
-    session: { variables: { ...variableDefaults, ...simState?.variables }, actorNames: {} },
+  return {
+    session: {
+      variables: { ...variableDefaults, ...simState?.variables },
+      actorNames: {},
+      ...(simState ? { gold: simState.gold } : {}),
+    },
     project,
-  });
+  };
+}
+
+/** Resolve RM control codes the same way play-mode dialogue does (editor preview). */
+function renderPreviewDialogueBody(body: string, simState?: PreviewSimState): HTMLElement {
+  const segments = parseDialogueText(body || "...", previewDialogueContext(simState));
   const bodyEl = el("div", {
     class: "body ecp-message-body",
     dataset: { testid: "ecp-message-body" },
@@ -1581,9 +1596,9 @@ function legacyScreenEffectCommand(
           durationMs: Number(m2Field(cmd, "durationMs", "300")),
         };
       case "Hide Screen":
-        return { effect: "fadeOut", value: "", durationMs: Number(m2Field(cmd, "durationMs", "300")) };
+        return { effect: "fadeOut", value: "", durationMs: HIDE_SHOW_SCREEN_FADE_MS };
       case "Show Screen":
-        return { effect: "fadeIn", value: "", durationMs: Number(m2Field(cmd, "durationMs", "300")) };
+        return { effect: "fadeIn", value: "", durationMs: HIDE_SHOW_SCREEN_FADE_MS };
       case "Set Weather Effects":
         return {
           effect: "weather",

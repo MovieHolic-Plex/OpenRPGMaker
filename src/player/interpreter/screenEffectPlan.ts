@@ -17,6 +17,13 @@ import { DOOR_DEFAULT_MS, parseDoorValue, type DoorSpec } from "@/project/eventC
  * 대응 경로가 없는 옵션은 조용히 삼키지 않고 `unsupported` 로 돌려 fallback 에 기록한다.
  */
 
+/**
+ * 화면 숨기기/표시가 거는 페이드 길이.
+ * 편집기 미리보기가 예전부터 300ms 로 재생했는데, 게임은 한 프레임에 잘랐다.
+ * 미리보기와 같은 길이로 맞춘다. 더 긴 페이드는 화면 효과 명령의 시간을 쓴다.
+ */
+export const HIDE_SHOW_SCREEN_FADE_MS = 300;
+
 /** 페이드아웃이 도달하는 색 — 불투명 검정. tintModel 의 "r,g,b,a" 형식. */
 const FADE_OUT_TINT = "0,0,0,1";
 /** 페이드인이 도달하는 색 — 투명. tintModel 이 "none" 을 TRANSPARENT_TINT 로 읽는다. */

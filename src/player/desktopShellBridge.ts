@@ -18,6 +18,8 @@
  *    상하좌우 우선 구역으로 읽는다 — 축마다 0.45 를 보면 45° 로 절반쯤 민 스틱(축 ≈ 0.42)이
  *    아무 방향도 내지 않는다. 방향키를 누르고 있으면 키보드 반복과 같이 `repeat` keydown 을 보낸다
  *    (메뉴 커서가 한 칸에서 멈추지 않게). 확인·취소는 가장자리에서 한 번만 보낸다.
+ *    창이 흐려지거나 페이지가 숨으면 스틱·D-pad 방향만 떼고, 다시 보이면 아직 기울인 스틱을
+ *    새로 누른 것으로 보낸다. 확인·취소는 그 사이 엣지를 만들지 않는다.
  */
 import type { DesktopDisplayMode, DesktopExportPlatform } from "@/project/desktopGameExport";
 import { HeldDirectionRepeat } from "@/player/heldDirectionRepeat";
@@ -334,9 +336,28 @@ function startGamepadPolling(state: DesktopShellRuntimeState): () => void {
   }
   const pressedKeys = new Set<string>();
   const directionRepeat = new HeldDirectionRepeat();
-  let stickSectorIndex: number | null = null;
-  let rafId = 0;
+  let windowBlurred = false;
+  let stickSectorIndex: number | null = null;  let rafId = 0;
   let active = true;
+
+  const isDirectionToken = (token: string): boolean => (token.split("|")[0] ?? "").startsWith("Arrow");
+
+  // Field movement clears every hold on window blur. If this loop kept the stick
+  // token, the next poll would not send a new keydown, so a stick that is still
+  // tilted would not walk again until it returned to center. Drop directions
+  // immediately. Confirm and cancel stay latched so coming back does not press A again.
+  const dropHeldDirections = (): void => {
+    directionRepeat.clear();
+    for (const token of [...pressedKeys]) {
+      if (!isDirectionToken(token)) continue;
+      pressedKeys.delete(token);
+      const [key, code] = token.split("|");
+      if (key && code) dispatchSyntheticKey("keyup", key, code);
+    }
+  };
+
+  const inputObscured = (): boolean =>
+    windowBlurred || (typeof document !== "undefined" && document.visibilityState === "hidden");
 
   const dispatchSyntheticKey = (type: "keydown" | "keyup", key: string, code: string, repeat = false): void => {
     // One event, on the focused element, so it bubbles through document to window once.
@@ -400,31 +421,50 @@ function startGamepadPolling(state: DesktopShellRuntimeState): () => void {
           nextPressed.add(`${key}|${key}`);
         }
 
-        for (const token of nextPressed) {
-          if (!pressedKeys.has(token)) {
-            const [key, code] = token.split("|");
-            if (key && code) dispatchSyntheticKey("keydown", key, code);
+        if (inputObscured()) {
+          // Keep tracking buttons so a held A does not confirm again when the
+          // window returns, but do not start new edges or direction repeats
+          // while the player cannot see the game. A release still sends keyup.
+          for (const token of [...nextPressed]) {
+            if (isDirectionToken(token)) nextPressed.delete(token);
           }
-        }
-        for (const token of pressedKeys) {
-          if (!nextPressed.has(token)) {
+          directionRepeat.clear();
+          for (const token of nextPressed) {
+            if (!pressedKeys.has(token)) pressedKeys.add(token);
+          }
+          for (const token of [...pressedKeys]) {
+            if (nextPressed.has(token)) continue;
             const [key, code] = token.split("|");
             if (key && code) dispatchSyntheticKey("keyup", key, code);
+            pressedKeys.delete(token);
           }
-        }
-        pressedKeys.clear();
-        for (const token of nextPressed) pressedKeys.add(token);
-        // Held directions repeat like a keyboard key so a stick in a menu keeps
-        // moving the cursor. The first tick only arms the timer. Confirm and
-        // cancel are not in this list, so a held A stays one press.
-        const heldDirections: string[] = [];
-        for (const token of nextPressed) {
-          const key = token.split("|")[0] ?? "";
-          if (key.startsWith("Arrow")) heldDirections.push(key);
-        }
-        const now = typeof performance !== "undefined" ? performance.now() : 0;
-        for (const key of directionRepeat.tick(heldDirections, now)) {
-          dispatchSyntheticKey("keydown", key, key, true);
+        } else {
+          for (const token of nextPressed) {
+            if (!pressedKeys.has(token)) {
+              const [key, code] = token.split("|");
+              if (key && code) dispatchSyntheticKey("keydown", key, code);
+            }
+          }
+          for (const token of pressedKeys) {
+            if (!nextPressed.has(token)) {
+              const [key, code] = token.split("|");
+              if (key && code) dispatchSyntheticKey("keyup", key, code);
+            }
+          }
+          pressedKeys.clear();
+          for (const token of nextPressed) pressedKeys.add(token);
+          // Held directions repeat like a keyboard key so a stick in a menu keeps
+          // moving the cursor. The first tick only arms the timer. Confirm and
+          // cancel are not in this list, so a held A stays one press.
+          const heldDirections: string[] = [];
+          for (const token of nextPressed) {
+            const key = token.split("|")[0] ?? "";
+            if (key.startsWith("Arrow")) heldDirections.push(key);
+          }
+          const now = typeof performance !== "undefined" ? performance.now() : 0;
+          for (const key of directionRepeat.tick(heldDirections, now)) {
+            dispatchSyntheticKey("keydown", key, key, true);
+          }
         }
       } else if (state.gamepadConnected || pressedKeys.size > 0) {
         // `gamepaddisconnected` clears the flag before this poll. Releasing
@@ -452,8 +492,21 @@ function startGamepadPolling(state: DesktopShellRuntimeState): () => void {
     }
     markDisconnected();
   };
+  const onWindowBlur = (): void => {
+    windowBlurred = true;
+    dropHeldDirections();
+  };
+  const onWindowFocus = (): void => {
+    windowBlurred = false;
+  };
+  const onVisibilityChange = (): void => {
+    if (document.visibilityState === "hidden") dropHeldDirections();
+  };
   window.addEventListener("gamepadconnected", onGamepadConnected as EventListener);
   window.addEventListener("gamepaddisconnected", onGamepadDisconnected as EventListener);
+  window.addEventListener("blur", onWindowBlur);
+  window.addEventListener("focus", onWindowFocus);
+  document.addEventListener("visibilitychange", onVisibilityChange);
 
   if (typeof window.requestAnimationFrame === "function") {
     rafId = window.requestAnimationFrame(poll);
@@ -468,5 +521,8 @@ function startGamepadPolling(state: DesktopShellRuntimeState): () => void {
     directionRepeat.clear();
     window.removeEventListener("gamepadconnected", onGamepadConnected as EventListener);
     window.removeEventListener("gamepaddisconnected", onGamepadDisconnected as EventListener);
+    window.removeEventListener("blur", onWindowBlur);
+    window.removeEventListener("focus", onWindowFocus);
+    document.removeEventListener("visibilitychange", onVisibilityChange);
   };
 }

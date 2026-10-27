@@ -40,9 +40,14 @@ export type M2RecordedFallback = {
 
 export type M2ScreenRuntimeState = {
   flash?: string;
-  /** performance.now() 시각. 이 시각 전까지 syncScreenEffects 가 플래시 오버레이를 유지한다. */
+  /** performance.now() 시각. 이 시각이 지나면 syncScreenEffects 가 플래시용으로 덮어쓴 색조를 되돌린다. */
   flashUntilMs?: number;
   hidden?: boolean;
+  /**
+   * 화면 숨기기/표시가 방금 건 페이드(ms). 세이브하지 않는다.
+   * 첫 화면 동기화가 읽고 지운다 — 불러온 숨김 화면은 페이드를 다시 틀지 않고 검게 선다.
+   */
+  hideFadeMs?: number;
   shake?: number;
   tint?: string;
   // 색조 전환에 걸릴 시간(ms). 0/미지정이면 즉시 적용.

@@ -84,6 +84,12 @@ const bridge = {
     onSaveRequest: (callback: () => void): void => {
       ipcRenderer.on(OPRN_CHANNELS.lifecycleSave, () => callback());
     },
+    onFlushBeforeReload: (callback: () => void): void => {
+      ipcRenderer.on(OPRN_CHANNELS.lifecycleFlushBeforeReload, () => callback());
+    },
+    flushReloadDone: (ok: boolean) => ipcRenderer.invoke(OPRN_CHANNELS.lifecycleFlushReloadDone, ok === true),
+    markFlushReady: (): void => { ipcRenderer.sendSync(OPRN_CHANNELS.lifecycleFlushReady); },
+    noteUnsavedReloadBlock: (): void => { ipcRenderer.sendSync(OPRN_CHANNELS.lifecycleReloadBlocked); },
     onFlushBeforeReplace: (callback: () => void): void => {
       ipcRenderer.on(OPRN_CHANNELS.lifecycleFlushBeforeReplace, () => callback());
     },
@@ -92,8 +98,7 @@ const bridge = {
     },
     flushReplaceReady: (): void => {
       ipcRenderer.send(OPRN_CHANNELS.lifecycleFlushReplaceReady);
-    },
-  },
+    },  },
   /** 편집기 부팅 동안 보일 마지막 편집 화면 그림. 없으면 null. public/boot-splash.js 가 부른다. */
   resume: { lastView: invoke(OPRN_CHANNELS.resumeLastView), editorReady: (): void => ipcRenderer.send(OPRN_CHANNELS.resumeEditorReady) },
   start: {

@@ -581,7 +581,11 @@ export type Command =
       channel?: AudioCommandChannel;
       /** 이 요청의 페이드인 길이(ms). 생략하면 엔진 기본값. */
       fadeInMs?: number;
-      /** Track gain (0..1), multiplied by the user's group volume. */
+      /**
+       * Loudness for this command, multiplied by the player's group volume.
+       * A fraction in (0, 1) is a gain (0.6 = 60%). 0 and 1..100 are percents
+       * (63 = 63%). Omitted means full volume.
+       */
       volume?: number;
     }
   | {

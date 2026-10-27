@@ -145,17 +145,17 @@
     grid-template-columns: repeat(auto-fit, minmax(218px, 1fr));
   }
 
-  /* 조건 라벨 칸(4.75rem)이 «이 이벤트 기억»(72px 필요)을 잘랐다. */
+  /* 넓은 시트에서도 라벨 칸은 기본 6rem 과 같다 — 5.5rem 은 «이 이벤트 기억» 끝에 여유가 없었다. */
   .event-editor .event-editor-settings-accordion-body .event-condition-row {
-    grid-template-columns: 16px 5.5rem minmax(0, 1fr) auto;
+    grid-template-columns: 16px 6rem minmax(0, 1fr) auto;
   }
 }
 
-/* 좁은 폭(레일 아래로 펼치는 폴백)에서 남던 잘림 2건.
-   268px 컬럼에서는 라벨 칸을 넓힐 여유가 없으므로 줄바꿈을 허용하고,
-   컨트롤에는 접미사 칸까지 내준다. 실측: `이 이벤트 기억` 67/72px,
-   `파티에 있음`(커스텀 셀렉트 값) 44/63px. */
-@media (max-width: 1440px) {
+/* 설정 칸 자체가 좁을 때만 라벨을 접는다. 예전 `@media (max-width: 1440px)` 는
+   명령 중심 레일(288px)에서도 «이 이벤트 기억»을 3rem(48px)에 넣어
+   «이 / 이벤트 / 기억» 세 줄로 접었다. 칸이 260px 미만일 때만 그 폴백을 쓴다
+   (≤1100 의 232px·≤900 의 196px). 실측: 라벨 72px, «파티에 있음» 값 63px. */
+@container evt-settings-rail (max-width: 260px) {
   /* 라벨은 줄바꿈이 되므로 칸을 좁혀도 잘리지 않는다. 아낀 폭은 컨트롤로 간다. */
   .event-editor .event-editor-settings-accordion-body .event-condition-row {
     grid-template-columns: 16px 3rem minmax(0, 1fr) auto;

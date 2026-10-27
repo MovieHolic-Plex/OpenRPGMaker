@@ -241,6 +241,31 @@ describe("fillTile — flood fill", () => {
     expect(at(map, 3, 3)).toBe(TILE.WATER);
   });
 
+  it("상위 채우기는 같은 바닥으로만 번지고 물·떨어진 풀밭은 비워 둔다", () => {
+    const mapId = store.getCurrent().startMapId;
+    store.update((project) => {
+      const map = project.maps[mapId];
+      if (!map) return;
+      map.lowerTiles.fill(TILE.WATER);
+      map.upperTiles.fill(TILE.EMPTY);
+      const w = map.width;
+      map.lowerTiles[1 * w + 1] = TILE.GRASS;
+      map.lowerTiles[1 * w + 2] = TILE.GRASS;
+      map.lowerTiles[1 * w + 4] = TILE.GRASS;
+    });
+
+    // 빈 프로젝트 타일셋은 버들항이다. TILE.FLOWERS(288)는 그 시트에서 하위 칸이라
+    // 상위 채우기 표본이 되지 않는다. 2836은 상위 소품이고 오토타일 묶음에 없다.
+    const upperProp = 2836;
+    fillTile(mapId, "upper", 1, 1, upperProp);
+
+    const map = currentMap();
+    expect(upperAt(map, 1, 1)).toBe(upperProp);
+    expect(upperAt(map, 2, 1)).toBe(upperProp);
+    expect(upperAt(map, 4, 1)).toBe(TILE.EMPTY);
+    expect(upperAt(map, 0, 1)).toBe(TILE.EMPTY);
+    expect(at(map, 1, 1)).toBe(TILE.GRASS);
+    expect(at(map, 0, 1)).toBe(TILE.WATER);
   it("오토타일 몸통·변·모서리를 한 재료로 채우고 다른 지형은 남긴다", () => {
     const project = store.getCurrent();
     const mapId = project.startMapId;
@@ -290,8 +315,7 @@ describe("fillTile — flood fill", () => {
     expect(at(after, 3, 1)).toBe(linked);
     expect(at(after, 5, 5)).toBe(edge);
     expect(at(after, 3, 3)).toBe(corner);
-    expect(at(after, 4, 4)).toBe(outside);
-  });
+    expect(at(after, 4, 4)).toBe(outside);  });
 });
 
 describe("eraseTile", () => {
