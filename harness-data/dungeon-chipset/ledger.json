@@ -1222,294 +1222,6 @@
  "rejects": [],
  "runs": [
   {
-   "round": "theme-props-r7",
-   "at": "2026-10-25T00:18:55",
-   "fail": 0,
-   "warn": 0,
-   "warnByCode": {},
-   "polish": [],
-   "hashes": {
-    "wall.ice_face": {
-     "A1": "47c1d381b88f7ff75451eaa0bc9b1cc428cdb8efdecaf3df0da53d98e8b50f22",
-     "A2": "04f6a8735700ea2aca2d53de888839960af0a2c077319fc02131e664de287926"
-    }
-   }
-  },
-  {
-   "round": "theme-props-r9",
-   "at": "2026-10-25T00:30:27",
-   "fail": 0,
-   "warn": 0,
-   "warnByCode": {},
-   "polish": [],
-   "hashes": {
-    "wall.ice_face": {
-     "A1": "2a76287ec285b58d2b2c91e26e53505fdb8b897e5f72f0731ed2d8a09dc3fd8a",
-     "A2": "42050950715a8be81df0b097fca296e281493c3779129e509a89a144ed5af5d9",
-     "A3": "2cc755f2c16c8169e9c21208b04686482d71bdf1da6b2b429a7dd7d0dcb0a16d"
-    }
-   }
-  },
-  {
-   "round": "theme-props-r9",
-   "at": "2026-10-25T00:31:27",
-   "fail": 0,
-   "warn": 0,
-   "warnByCode": {},
-   "polish": [],
-   "hashes": {
-    "wall.ice_face": {
-     "A1": "5c43f770850071f8d28cd20a15c814069627d98c6b77bbd630dc23392c80eb9b",
-     "A2": "f2ec02d1446f90c9e1c19a09f24afcb7322936fa39171240bcbe3918068de4c8",
-     "A3": "aac0e398ed8188379a83f4a9d513b1c38c12fbe0d713091da00c3cb95b08ec52"
-    }
-   }
-  },
-  {
-   "round": "theme-props-r9",
-   "at": "2026-10-25T00:32:16",
-   "fail": 0,
-   "warn": 0,
-   "warnByCode": {},
-   "polish": [],
-   "hashes": {
-    "wall.ice_face": {
-     "A1": "99bfd378770c08728f805e8d30832db4d5ecbed9bb5607b5cae97e685b27ae6a",
-     "A2": "889c45ed901027bf88b76a8edb50ee1ea4c5867e503293e285e69887d775a691",
-     "A3": "d31a9cb14bf2360e7c78a27898a10b2ce217e66f788722fef3a2a50c140981ac"
-    }
-   }
-  },
-  {
-   "round": "theme-props-r10",
-   "at": "2026-10-25T00:57:43",
-   "fail": 2,
-   "warn": 0,
-   "warnByCode": {},
-   "polish": [],
-   "hashes": {
-    "wall.ice_face": {
-     "A1": "0558e87c8a6240fd3d75eda6274d952edd535391cf2eb666eb47fbf949a9594f",
-     "A2": "4647458328fa478af346326fad72d8e6fbf2b115dd9d41ad954c973b06e7bee7"
-    }
-   }
-  },
-  {
-   "round": "theme-props-r10",
-   "at": "2026-10-25T00:58:07",
-   "fail": 0,
-   "warn": 0,
-   "warnByCode": {},
-   "polish": [],
-   "hashes": {
-    "wall.ice_face": {
-     "A1": "5c30df9076bac58614abccc81b3ad7fc2c4575f8730f16bc01130695b885c821",
-     "A2": "45bcf65f0eb2fadf212e20450def0f525bc04d079d767501e1b1b32b420beb1d"
-    }
-   }
-  },
-  {
-   "round": "theme-props-r10",
-   "at": "2026-10-25T00:59:05",
-   "fail": 0,
-   "warn": 0,
-   "warnByCode": {},
-   "polish": [],
-   "hashes": {
-    "wall.ice_face": {
-     "A1": "a3bb58d82e515d01714c4bb7f16c6db0c4de349a9f3d6dea77f6606f6509da30",
-     "A2": "1bb864fe92b90e4d804dd5937663385dd7e66291e2f501e2c145ec99471d39fa"
-    }
-   }
-  },
-  {
-   "round": "theme-props-r10",
-   "at": "2026-10-25T00:59:46",
-   "fail": 0,
-   "warn": 0,
-   "warnByCode": {},
-   "polish": [],
-   "hashes": {
-    "wall.ice_face": {
-     "A1": "612922631e8df32e83682f0fbcdd391ca0096822a6e1cdf9543139716f4beb09",
-     "A2": "1f06528ab7ba9ba7a75b8dcc48a769e8fb70415ba3aa4062be493ac92e512baa"
-    }
-   }
-  },
-  {
-   "round": "theme-props-r10",
-   "at": "2026-10-25T01:10:10",
-   "fail": 0,
-   "warn": 0,
-   "warnByCode": {},
-   "polish": [],
-   "hashes": {
-    "wall.ice_face": {
-     "A1": "874e9f008cbbb8890d585e5ddc028de3f036f920ddecd961ac6209bfe499ce3f",
-     "A2": "c23afeeee93c7296644ddecb598397651e31e36d339762d170ec512ab92e2812"
-    }
-   }
-  },
-  {
-   "round": "theme-props-r10",
-   "at": "2026-10-25T01:10:46",
-   "fail": 0,
-   "warn": 0,
-   "warnByCode": {},
-   "polish": [],
-   "hashes": {
-    "wall.ice_face": {
-     "A1": "690e1f79c1c26f449c4c86581cf827bf6bcd85b4786a56488da3f005cd3cb8e7",
-     "A2": "8a6ad554e1f05bcea893beeaf0f0b3f4a3eee929740fea610061f171bb510378"
-    }
-   }
-  },
-  {
-   "round": "theme-floors-r1",
-   "at": "2026-10-25T11:31:21",
-   "fail": 0,
-   "warn": 2,
-   "warnByCode": {
-    "OUTLINE": 2
-   },
-   "polish": [
-    {
-     "item": "other.ground",
-     "key": "A1",
-     "code": "OUTLINE",
-     "msg": "가장자리 66화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: ground 북변 빛 쪽 먹·0단 100%; ground 서변 빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
-    },
-    {
-     "item": "other.ground",
-     "key": "A2",
-     "code": "OUTLINE",
-     "msg": "가장자리 64화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: ground 북변 빛 쪽 먹·0단 100%; ground 서변 빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
-    }
-   ],
-   "hashes": {
-    "other.ground": {
-     "A1": "b0a157107c3221b8da720ee88458c2b7587afa066213517f0bc1785fcd6d765e",
-     "A2": "e06ff7196ba5ec8f14b65af74b5f37cdbd566efb2222c42b2e4a953f8871ddf4"
-    }
-   }
-  },
-  {
-   "round": "theme-floors-r1",
-   "at": "2026-10-25T11:31:51",
-   "fail": 0,
-   "warn": 0,
-   "warnByCode": {},
-   "polish": [],
-   "hashes": {
-    "other.ground": {
-     "A1": "b0a157107c3221b8da720ee88458c2b7587afa066213517f0bc1785fcd6d765e",
-     "A2": "e06ff7196ba5ec8f14b65af74b5f37cdbd566efb2222c42b2e4a953f8871ddf4"
-    }
-   }
-  },
-  {
-   "round": "theme-floors-r1",
-   "at": "2026-10-25T11:32:22",
-   "fail": 0,
-   "warn": 0,
-   "warnByCode": {},
-   "polish": [],
-   "hashes": {
-    "other.ground": {
-     "A1": "150de57508b0db4d63d82fc222d7d7abbcf8cd0cc9c4bdb6e1213cbadf2963ec",
-     "A2": "f1ab6d91b12d497ccc82f87ab39e1bd9758184b835397dce1f4f9fccbaa9672d"
-    }
-   }
-  },
-  {
-   "round": "theme-floors-r1",
-   "at": "2026-10-25T15:13:55",
-   "fail": 0,
-   "warn": 0,
-   "warnByCode": {},
-   "polish": [],
-   "hashes": {
-    "other.ground": {
-     "A1": "fc20b1908b81a6b0edb63fde5ba138a200b7809d99d40180872172d1c56954d3",
-     "A2": "f1ab6d91b12d497ccc82f87ab39e1bd9758184b835397dce1f4f9fccbaa9672d"
-    }
-   }
-  },
-  {
-   "round": "theme-floors-r1",
-   "at": "2026-10-25T15:14:17",
-   "fail": 0,
-   "warn": 0,
-   "warnByCode": {},
-   "polish": [],
-   "hashes": {
-    "other.ground": {
-     "A1": "499988ef8d7d7820033c8c0e8654702bc27f9ed8af6cd0e7edd161e09256e8a0",
-     "A2": "f1ab6d91b12d497ccc82f87ab39e1bd9758184b835397dce1f4f9fccbaa9672d"
-    }
-   }
-  },
-  {
-   "round": "theme-floors-r1",
-   "at": "2026-10-25T17:14:12",
-   "fail": 0,
-   "warn": 1,
-   "warnByCode": {
-    "OUTLINE": 1
-   },
-   "polish": [
-    {
-     "item": "other.ground",
-     "key": "A1",
-     "code": "OUTLINE",
-     "msg": "가장자리 64화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: ground 북변 빛 쪽 먹·0단 56% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
-    }
-   ],
-   "hashes": {
-    "other.ground": {
-     "A1": "a50befbaee778be83ea4f34809599864a444fe2e3a0445d55ba06688faf18630",
-     "A2": "f1ab6d91b12d497ccc82f87ab39e1bd9758184b835397dce1f4f9fccbaa9672d"
-    }
-   }
-  },
-  {
-   "round": "theme-floors-r1",
-   "at": "2026-10-25T17:14:49",
-   "fail": 0,
-   "warn": 1,
-   "warnByCode": {
-    "OUTLINE": 1
-   },
-   "polish": [
-    {
-     "item": "other.ground",
-     "key": "A1",
-     "code": "OUTLINE",
-     "msg": "가장자리 64화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: ground 북변 빛 쪽 먹·0단 56% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
-    }
-   ],
-   "hashes": {
-    "other.ground": {
-     "A1": "eb4b90e77265c1b05fd34bb6cc74215b3e0be102b747579e64932465453c9adc",
-     "A2": "f1ab6d91b12d497ccc82f87ab39e1bd9758184b835397dce1f4f9fccbaa9672d"
-    }
-   }
-  },
-  {
-   "round": "theme-floors-r1",
-   "at": "2026-10-25T17:15:06",
-   "fail": 0,
-   "warn": 0,
-   "warnByCode": {},
-   "polish": [],
-   "hashes": {
-    "other.ground": {
-     "A1": "eb4b90e77265c1b05fd34bb6cc74215b3e0be102b747579e64932465453c9adc",
-     "A2": "f1ab6d91b12d497ccc82f87ab39e1bd9758184b835397dce1f4f9fccbaa9672d"
-    }
-   }
-  },
-  {
    "round": "theme-floors-r1",
    "at": "2026-10-25T17:15:28",
    "fail": 0,
@@ -2019,6 +1731,135 @@
    "hashes": {
     "other.ground": {
      "A1": "939225f97454be338eb75b35d13d02701b05f9264009237283aca3fdaddd24b9"
+    }
+   }
+  },
+  {
+   "round": "theme-floors-r12",
+   "at": "2026-10-27T21:14:45",
+   "fail": 0,
+   "warn": 0,
+   "warnByCode": {},
+   "polish": [],
+   "hashes": {
+    "other.ground": {
+     "A1": "42c3f8e1503b12c465448d622295e3374fe193dd2b7849dbe969687e859c424c"
+    }
+   }
+  },
+  {
+   "round": "theme-cave-stal-r1",
+   "at": "2026-10-27T21:25:07",
+   "fail": 0,
+   "warn": 2,
+   "warnByCode": {
+    "CONTRAST": 2
+   },
+   "polish": [
+    {
+     "item": "tc.cave_stalactite",
+     "key": "A1",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 바닥에 묻힘(하한 0.15): 1칸(1칸) 그늘 쪽 0.38 vs 바닥 0.46 차 0.09; 2칸(2칸) 그늘 쪽 0.38 vs 바닥 0.46 차 0.08 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 1칸(1칸) 그늘 쪽 0.38 vs 바닥 0.38 차 0.01; 2칸(2칸) 그늘 쪽 0.38 vs 바닥 0.38 차 0.00 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 바닥에 묻힘(하한 0.15): 1칸(1칸) 그늘 쪽 0.38 vs 바닥 0.44 차 0.06; 2칸(2칸) 그늘 쪽 0.38 vs 바닥 0.44 차 0.06 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다)"
+    },
+    {
+     "item": "tc.cave_stalactite",
+     "key": "A2",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 바닥에 묻힘(하한 0.15): 1칸(1칸) 그늘 쪽 0.39 vs 바닥 0.46 차 0.07; 2칸(2칸) 그늘 쪽 0.39 vs 바닥 0.46 차 0.07 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 1칸(1칸) 그늘 쪽 0.39 vs 바닥 0.38 차 0.01; 2칸(2칸) 그늘 쪽 0.39 vs 바닥 0.38 차 0.01 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 바닥에 묻힘(하한 0.15): 1칸(1칸) 그늘 쪽 0.39 vs 바닥 0.44 차 0.05; 2칸(2칸) 그늘 쪽 0.39 vs 바닥 0.44 차 0.05 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다)"
+    }
+   ],
+   "hashes": {
+    "tc.cave_stalactite": {
+     "A1": "f5ef054632b183708178f2e1cd54a5d26202d5426c4759581cbfb60d680b3992",
+     "A2": "a024c045323df4fc263d8f8519b04703ef93455f088b03fe3110d07d8b09ee74"
+    }
+   }
+  },
+  {
+   "round": "theme-cave-stal-r1",
+   "at": "2026-10-27T21:25:33",
+   "fail": 0,
+   "warn": 2,
+   "warnByCode": {
+    "CONTRAST": 2
+   },
+   "polish": [
+    {
+     "item": "tc.cave_stalactite",
+     "key": "A1",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 바닥에 묻힘(하한 0.15): 2칸(2칸) 그늘 쪽 0.31 vs 바닥 0.46 차 0.15 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 1칸(1칸) 그늘 쪽 0.30 vs 바닥 0.38 차 0.08; 2칸(2칸) 그늘 쪽 0.31 vs 바닥 0.38 차 0.07 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 바닥에 묻힘(하한 0.15): 1칸(1칸) 그늘 쪽 0.30 vs 바닥 0.44 차 0.14; 2칸(2칸) 그늘 쪽 0.31 vs 바닥 0.44 차 0.13 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다)"
+    },
+    {
+     "item": "tc.cave_stalactite",
+     "key": "A2",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 바닥에 묻힘(하한 0.15): 2칸(2칸) 그늘 쪽 0.31 vs 바닥 0.46 차 0.15 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 1칸(1칸) 그늘 쪽 0.31 vs 바닥 0.38 차 0.07; 2칸(2칸) 그늘 쪽 0.31 vs 바닥 0.38 차 0.07 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 바닥에 묻힘(하한 0.15): 1칸(1칸) 그늘 쪽 0.31 vs 바닥 0.44 차 0.13; 2칸(2칸) 그늘 쪽 0.31 vs 바닥 0.44 차 0.13 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다)"
+    }
+   ],
+   "hashes": {
+    "tc.cave_stalactite": {
+     "A1": "baba0a11a1d6ad2382ac3594835483e709eace25a5cf359a1b40405ca5cba333",
+     "A2": "60c0e26b0d401753565aa807b3e75233abbea2a6720f1552b7fc2814863c3d6e"
+    }
+   }
+  },
+  {
+   "round": "theme-cave-stal-r1",
+   "at": "2026-10-27T21:26:23",
+   "fail": 0,
+   "warn": 2,
+   "warnByCode": {
+    "CONTRAST": 2
+   },
+   "polish": [
+    {
+     "item": "tc.cave_stalactite",
+     "key": "A1",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 바닥에 묻힘(하한 0.15): 2칸(2칸) 그늘 쪽 0.31 vs 바닥 0.46 차 0.15 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 1칸(1칸) 그늘 쪽 0.30 vs 바닥 0.38 차 0.08; 2칸(2칸) 그늘 쪽 0.31 vs 바닥 0.38 차 0.07 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 바닥에 묻힘(하한 0.15): 1칸(1칸) 그늘 쪽 0.30 vs 바닥 0.44 차 0.14; 2칸(2칸) 그늘 쪽 0.31 vs 바닥 0.44 차 0.13 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다)"
+    },
+    {
+     "item": "tc.cave_stalactite",
+     "key": "A2",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 바닥에 묻힘(하한 0.15): 2칸(2칸) 그늘 쪽 0.31 vs 바닥 0.46 차 0.15 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 1칸(1칸) 그늘 쪽 0.31 vs 바닥 0.38 차 0.07; 2칸(2칸) 그늘 쪽 0.31 vs 바닥 0.38 차 0.07 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 바닥에 묻힘(하한 0.15): 1칸(1칸) 그늘 쪽 0.31 vs 바닥 0.44 차 0.13; 2칸(2칸) 그늘 쪽 0.31 vs 바닥 0.44 차 0.13 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다)"
+    }
+   ],
+   "hashes": {
+    "tc.cave_stalactite": {
+     "A1": "baba0a11a1d6ad2382ac3594835483e709eace25a5cf359a1b40405ca5cba333",
+     "A2": "60c0e26b0d401753565aa807b3e75233abbea2a6720f1552b7fc2814863c3d6e"
+    }
+   }
+  },
+  {
+   "round": "theme-cave-stal-r1",
+   "at": "2026-10-27T21:27:12",
+   "fail": 0,
+   "warn": 2,
+   "warnByCode": {
+    "CONTRAST": 2
+   },
+   "polish": [
+    {
+     "item": "tc.cave_stalactite",
+     "key": "A1",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 1칸(1칸) 그늘 쪽 0.28 vs 바닥 0.46 차 0.18; 2칸(2칸) 그늘 쪽 0.30 vs 바닥 0.46 차 0.17 / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 1칸(1칸) 그늘 쪽 0.28 vs 바닥 0.38 차 0.10; 2칸(2칸) 그늘 쪽 0.30 vs 바닥 0.38 차 0.09 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 바닥에 묻힘(하한 0.15): 2칸(2칸) 그늘 쪽 0.30 vs 바닥 0.44 차 0.14 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다)"
+    },
+    {
+     "item": "tc.cave_stalactite",
+     "key": "A2",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 1칸(1칸) 그늘 쪽 0.28 vs 바닥 0.46 차 0.18; 2칸(2칸) 그늘 쪽 0.28 vs 바닥 0.46 차 0.18 / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 1칸(1칸) 그늘 쪽 0.28 vs 바닥 0.38 차 0.10; 2칸(2칸) 그늘 쪽 0.28 vs 바닥 0.38 차 0.10 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 1칸(1칸) 그늘 쪽 0.28 vs 바닥 0.44 차 0.16; 2칸(2칸) 그늘 쪽 0.28 vs 바닥 0.44 차 0.16"
+    }
+   ],
+   "hashes": {
+    "tc.cave_stalactite": {
+     "A1": "583db89c3b4143dce6d545e238f1394d208fb091cd2209a6b5261107c5d053c5",
+     "A2": "64458c6dd905bdb673457442a1aa0005dfad05f96074ef6e35d0c3c77a10881c"
     }
    }
   }

@@ -3564,6 +3564,37 @@
     "가운데 반복 이음 없음"
    ],
    "common": "테마 조각 — 재질이 동굴 줄과 무관한 그 주제 전용 그림"
+  },
+  {
+   "id": "tc.cave_stalactite",
+   "title": "종유석(벽 앞면 걸이) 1×1·2×1",
+   "kind": "objects",
+   "size": [
+    3,
+    1
+   ],
+   "layer": "upper",
+   "walk": "막힘(벽 앞면 위 덧칠 — 2칸 조각은 칸마다 x)",
+   "walk_grid": {
+    "기본": [
+     "x"
+    ]
+   },
+   "footprint": [
+    1,
+    1
+   ],
+   "brief": "자연 동굴 벽 앞면 윗단(바위 턱 바로 밑)에 매달린 흙빛 종유석. 그림 = [1칸|2칸]. 투명 바탕 — 줄 A 흙굴 바위 앞면에 얹힌다.",
+   "refs": [
+    "sea-cave:wall"
+   ],
+   "accept": [
+    "종유석으로 읽힘(이빨·창살·고드름 아님)",
+    "벽 앞면 위에서 보임",
+    "흙굴 바위와 같은 재질"
+   ],
+   "wave": "theme_climate",
+   "common": "동굴 바위 재질 걸이 — 줄 A 흙굴(자연 동굴) 한 벌"
   }
  ],
  "refs": {
@@ -4466,6 +4497,24 @@
     "other.ground"
    ],
    "lead": "r9 반려(넓은 바닥 112/80 반복) → 밝은 판 드물고 고르게, 빛 줄기 셋, 시공기 방마다 밭 시작 어긋남."
+  },
+  "theme-floors-r12": {
+   "module": "src/harnesses/dungeon-chipset/rounds/theme_floors_r12.py",
+   "wave": "theme_arcane",
+   "title": "던전 테마 바닥 theme-floors-r12",
+   "items": [
+    "other.ground"
+   ],
+   "lead": "r10 을 키움: 224×160 밭(칸 14×10) + 벽 밑 그늘 14, 시트 끝 주제 2 꼬리(33,664~)에 굽는다(감독 결정, 마당 BASE 는 그대로)."
+  },
+  "theme-cave-stal-r1": {
+   "module": "src/harnesses/dungeon-chipset/rounds/theme_cave_stal_r1.py",
+   "wave": "theme_climate",
+   "title": "자연 동굴 종유석 theme-cave-stal-r1",
+   "items": [
+    "tc.cave_stalactite"
+   ],
+   "lead": "profiles MISSING cave 종유석. 고른 고드름 A2 짜임을 줄 A 흙굴 바위 단(rim·cfloor)으로 — 1칸·2칸 손 그림."
   }
  }
 }

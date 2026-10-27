@@ -63,6 +63,8 @@ const SN = (id: string) => `bd-pick-snowfield-${id}`;
 const SWP = (id: string) => `bd-pick-swamp-stilt-${id}`;
 /** 새 테마 그림(dungeon-themes 하네스 굽기, 2026-10-23~) — 구워지기 전에는 hasKit 이 거짓이라 뒤의 기존 키트로 물러선다. */
 export const TK = (id: string) => `bd-pick-dungeon-theme-${id}`;
+/** 주제 2 꼬리(bake_theme2.py, 시트 끝 33,664~) 키트. */
+export const TK2 = (id: string) => `bd-pick-dungeon-theme2-${id}`;
 
 export const PROFILES: Record<BeodeulDungeonType, TypeProfile> = {
   catacomb: {
@@ -153,17 +155,15 @@ export const PROFILES: Record<BeodeulDungeonType, TypeProfile> = {
   otherworld: {
     ...GRAMMAR.otherworld,
     face: { h3: [TK("otherworld-face-3h"), C("face-cave-3h")], h2: [TK("otherworld-face-2h"), C("face-cave-2h")] },
-    // 마계 판석 밭(theme-floors-r9): 7×5 칸 밭을 칸 위치로 감아 깔고 벽 밑 줄은 그늘 줄 키트. 옛 사본(섞음 키트·오토타일)은 「섞음」 태그로 섞인다.
-    floor: { base: [TK("otherworld-floor"), M("ground-slagg")], patches: [], field: TK("otherworld-floor") },
+    // 마계 판석 밭(theme-floors-r12, 주제 2 꼬리): 14×10 칸 밭을 칸 위치로 감아 깔고 벽 밑 줄은 그늘 줄 키트. 옛 사본(섞음 키트·오토타일)은 「섞음」 태그로 섞인다.
+    floor: { base: [TK2("otherworld-floor"), TK("otherworld-floor"), M("ground-slagg")], patches: [], field: TK2("otherworld-floor") },
     ceiling: ["beodeul_dungeon_ceiling_void"],
   },
 };
 
+// 2026-10-27 다시 셈: 예전 목록의 대부분이 그 뒤 판에서 채워졌다 — 얼음굴(gap-ice r1·r5 바닥·벽·빙판·고드름), 광산 선로 15·갱목·광맥,
+// 화산 줄 C 바위 벽 + 32px 용암·식은 껍질, 동굴 줄 A 흙굴 천장·벽, 숲·늪 수관·물가 둑. 남은 것만 적는다.
 export const MISSING: Record<string, string[]> = {
-  forest: ["숲 바닥 오솔길 오토타일(지금은 숲길 키트 무늬)", "자연 물가 연못 가장자리"],
-  swamp: ["늪물 자연 물가 가장자리(지금은 가장자리 없는 늪물 무늬)"],
-  volcano: ["현무암·재 바닥 2×2 변형 3종(금 간 틈에 불씨)", "현무암 벽 앞면 3h/2h", "용암 가장자리 식은 껍질 오토타일"],
-  mine: ["선로 타일(가로·세로·모서리 4·T)", "갱목 지지대(벽 걸이 1×2·바닥 기둥 1×2)", "광맥 벽 앞면 변형", "채굴장 벽 광석 장식"],
-  cave: ["갈색 테두리 동굴 천장 오토타일(지금은 회색 석벽 띠)", "종유석 천장 늘어짐"],
-  ice: ["얼음 동굴 전부(바닥·벽·천장·빙판·고드름) — beodeul_city 에는 없다. snow_north 의 ice-cave 실내 한 방만 별도 칩셋에 있다"],
+  cave: ["종유석 천장 늘어짐(천장 칸 장식)"],
+  forest: ["숲 바닥 오솔길 오토타일(지금은 맨 잔디 + 풀·고사리 장식)"],
 };

@@ -508,6 +508,14 @@ def main():
             continue
         origin = f"{p['item']}/{line}/{p['round']}:{p['letter']}@{dot.image_hash(im)[:8]}"
         before = st.added
+        if meta.get("fieldCols"):
+            # 큰 판석 밭(theme-floors-r12~)은 주제 2 꼬리(bake_theme2.py, 시트 끝)에 굽는다 — 이 꼬리의 옛 정의는 지운다(옛 칸은 남는다).
+            prev = st.baked.pop(f"{p['item']}|{line}", None)
+            for kind_, ids in ((prev or {}).get("defs") or {}).items():
+                for i in ids:
+                    st.defs[kind_].pop(i, None)
+            report.append(f"  넘김  {p['item']:24} {p['round']} {p['letter']} — 판석 밭은 bake_theme2.py 가 굽는다")
+            continue
         handler = HANDLERS.get(p["item"])
         if not handler and "parts" not in meta:
             report.append(f"  건너뜀 {p['item']:24} {p['letter']} — 부품 없는 항목(오토타일·벽)은 HANDLERS 에 손을 달아야 굽는다")
