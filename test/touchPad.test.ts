@@ -83,6 +83,15 @@ function setElementSize(element: HTMLElement, width: number, height: number): vo
   });
 }
 
+function expectCenterContained(inner: DOMRect, outer: DOMRect): void {
+  expect(Number.isFinite(inner.x)).toBe(true);
+  expect(Number.isFinite(inner.y)).toBe(true);
+  expect(inner.left + inner.width / 2).toBeGreaterThanOrEqual(outer.left);
+  expect(inner.left + inner.width / 2).toBeLessThanOrEqual(outer.right);
+  expect(inner.top + inner.height / 2).toBeGreaterThanOrEqual(outer.top);
+  expect(inner.top + inner.height / 2).toBeLessThanOrEqual(outer.bottom);
+}
+
 function expectRectContained(inner: DOMRect, outer: DOMRect): void {
   expect(Number.isFinite(inner.x)).toBe(true);
   expect(Number.isFinite(inner.y)).toBe(true);
@@ -265,17 +274,20 @@ describe("touch pad capability and input parity", () => {
     );
     const trace = keyboardTrace();
 
+    // 7dc3e36a76: 끝까지 밀면 달린다(Shift) — 손잡이는 달리기 고리(반지름 70%) 밖까지(78%) 움직여 판 가장자리를 넘을 수 있다.
+    // f8adba2eac: 손가락이 반경 밖으로 멀리 끌면 조이스틱 중심이 따라온다. 그래서 손잡이는 무대 안에, 손잡이 중심은 판 안에 있어야 한다.
     base.dispatchEvent(pointerEvent("pointerdown", { clientX: 1_000, clientY: 1_000 }));
     const diagonalKnobRect = knob.getBoundingClientRect();
-    expectRectContained(diagonalKnobRect, baseRect);
+    expectCenterContained(diagonalKnobRect, baseRect);
     expectRectContained(diagonalKnobRect, stageRect);
-    expect(trace.events).toEqual(["keydown:ArrowRight", "keydown:ArrowDown"]);
+    expect(trace.events).toEqual(["keydown:ArrowRight", "keydown:ArrowDown", "keydown:Shift"]);
 
     base.dispatchEvent(pointerEvent("pointermove", { clientX: 1_000, clientY: 172 }));
     const cardinalKnobRect = knob.getBoundingClientRect();
-    expectRectContained(cardinalKnobRect, baseRect);
+    expectCenterContained(cardinalKnobRect, baseRect);
     expectRectContained(cardinalKnobRect, stageRect);
-    expect(trace.events).toEqual(["keydown:ArrowRight", "keydown:ArrowDown", "keyup:ArrowDown"]);
+    // 중심이 손가락을 따라 (1000,1000) 쪽으로 끌려갔으므로 (1000,172) 는 그 중심의 위쪽이다.
+    expect(trace.events).toEqual(["keydown:ArrowRight", "keydown:ArrowDown", "keydown:Shift", "keyup:ArrowRight", "keyup:ArrowDown", "keydown:ArrowUp"]);
 
     baseRect = new DOMRect();
     knobGeometryAvailable = false;
@@ -287,7 +299,10 @@ describe("touch pad capability and input parity", () => {
 
     base.dispatchEvent(pointerEvent("pointerup", { clientX: -1_000, clientY: 0 }));
 
-    expect(trace.events).toEqual(["keydown:ArrowRight", "keydown:ArrowDown", "keyup:ArrowDown", "keyup:ArrowRight", "keydown:ArrowLeft", "keyup:ArrowLeft"]);
+    expect(trace.events).toEqual([
+      "keydown:ArrowRight", "keydown:ArrowDown", "keydown:Shift", "keyup:ArrowRight", "keyup:ArrowDown", "keydown:ArrowUp",
+      "keyup:ArrowUp", "keydown:ArrowLeft", "keyup:Shift", "keyup:ArrowLeft",
+    ]);
     trace.cleanup();
     handle.cleanup();
     cleanupBlocker();
