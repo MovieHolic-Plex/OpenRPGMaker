@@ -9,7 +9,10 @@ import { createLegacyLifeProject } from "./fixtures/life-full/legacyProject";
 describe("player body Project persistence", () => {
   it("keeps legacy absent fields absent and Project4 bytes stable", () => {
     const project = createLegacyLifeProject();
-    const raw = serialize(project);
+    // Compare against the once-loaded form, as #3810 did for the p1/p2 schema tests: load drops the new-project
+    // default system.battleUiStyle="retro2003", so the first save and the re-save differ only in representation.
+    // This test still catches a load that invents playerFootprint/playerPassRows.
+    const raw = serialize(deserialize(serialize(project)));
     const loaded = deserialize(raw);
     expect(loaded.version).toBe(4);
     expect(serialize(loaded)).toBe(raw);
