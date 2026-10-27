@@ -2843,7 +2843,7 @@ const setTitleScreen: ToolDefinition = {
       backgroundFit: { type: "string", enum: TITLE_BACKGROUND_FITS, description: "배경 맞춤. 기본 cover(비율 유지해 채움). stretch 는 레거시." },
       backgroundRendering: { type: "string", enum: TITLE_BACKGROUND_RENDERINGS, description: "smooth(그린 키아트) | pixelated(도트 배경)" },
       logoStyle: { type: "string", enum: TITLE_LOGO_STYLES, description: "제목 글자 질감. 지정하면 기본 편집 문구(A NEW ADVENTURE)를 숨긴다." },
-      logoSubtitle: { type: "string", description: "로고 밑 작은 부제(예: OATH OF THE BLADE). 빈 문자열이면 해제." },
+      logoSubtitle: { type: "string", description: "제목 아래 부제. 적으면 기본 문구(A NEW ADVENTURE)를 대신해 제목 아래에 나온다. 로고 질감이 없어도 보인다. 빈 문자열이면 해제." },
       menuStyle: { type: "string", enum: TITLE_MENU_STYLES, description: "window(창) | plain(키아트 위 글자 메뉴)" },
       menuFontPx: { type: "integer", minimum: 10, maximum: 24, description: "타이틀 메뉴 글자 크기(논리 px 10~24). 생략·0 = 스킨 기본(11px). 넓은 화면(480 폭 이상)이나 큰 키아트 위 글자 메뉴는 14~18 이 읽기 좋다. CSS 를 고치지 말고 이 값으로." },
       sequence: {

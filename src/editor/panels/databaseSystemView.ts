@@ -2751,7 +2751,7 @@ function titleLogoStyleControls(titleScreen: TitleScreenSettings, rerender: Syst
       });
       rerender();
     }),
-    textControl("로고 부제", titleScreen.logoSubtitle ?? "", (value) => {
+    textControl("부제", titleScreen.logoSubtitle ?? "", (value) => {
       updateTitleScreen((settings) => {
         const trimmed = value.trim().slice(0, MAX_TITLE_LOGO_SUBTITLE_LENGTH);
         if (trimmed) settings.logoSubtitle = trimmed;
@@ -2759,6 +2759,7 @@ function titleLogoStyleControls(titleScreen: TitleScreenSettings, rerender: Syst
       }, "system:title-screen:logo-subtitle");
       rerender("effects");
     }, "db-field-title-screen-logo-subtitle"),
+    systemHelp("부제를 적으면 타이틀의 「A NEW ADVENTURE / 이야기가 시작되는 곳」 대신 그 문장이 제목 아래에 나옵니다. 로고 스타일이 기본이어도 같습니다. 비우면 기본 문구로 돌아갑니다."),
   ];
 }
 
@@ -3452,11 +3453,11 @@ function titleScreenWorkbenchPreview(
         if (introDelayMs > 0) titleNode.style.animationDelay = `${introDelayMs}ms`;
       }
       stage.append(titleNode);
-      if (titleScreen.logoStyle && titleScreen.logoSubtitle) {
+      if (titleScreen.logoSubtitle) {
         const subtitle = el("div", {
           class: "db-title-workbench-subtitle",
           text: titleScreen.logoSubtitle,
-          dataset: { testid: "db-title-workbench-subtitle", logoStyle: titleScreen.logoStyle },
+          dataset: { testid: "db-title-workbench-subtitle", logoStyle: titleScreen.logoStyle ?? "plain" },
         });
         placeTitleSubtitle(subtitle, titleScreen);
         stage.append(subtitle);
