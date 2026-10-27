@@ -26,8 +26,9 @@ describe("editable terrain and gameplay contracts",()=>{
   const restored=normalizeTerrainDesign(JSON.parse(JSON.stringify(map.terrainDesign)),256);expect(restored).toEqual(map.terrainDesign);const copy=clone(map);copy.terrainDesign!.features![0].points[0].x=7;expect(map.terrainDesign!.features![0].points[0].x).toBe(4);
   expect(remapTerrainDesign(map.terrainDesign,256,i=>i)?.features).toBeUndefined();expect(remapTerrainDesign(map.terrainDesign,256,i=>i)?.gameplay?.visionBlocking).toBe(true);
  });
+ // 401b26d89b: auto ramps need a full-length flight (hi-lo+1 cells) plus a foot landing, so heights are 1 and 2 to fit the 16x16 map; the old 2/5 geometry cannot hold a 6-cell flight.
  it("connects narrow successive heights and separates ramps with different low banks",()=>{
-  const {map}=fixture();map.relief=emptyRelief(16,16);for(let y=4;y<=10;y++)for(let x=5;x<=7;x++)map.relief.levels[y*16+x]=2;for(let y=4;y<=10;y++)for(let x=11;x<=13;x++)map.relief.levels[y*16+x]=5;
+  const {map}=fixture();map.relief=emptyRelief(16,16);for(let y=4;y<=10;y++)for(let x=4;x<=5;x++)map.relief.levels[y*16+x]=1;for(let y=4;y<=10;y++)for(let x=13;x<=15;x++)map.relief.levels[y*16+x]=2;
   const road=Array.from({length:14},(_,x)=>({x:x+1,y:7})),touched=new Set(road.map(p=>p.y*16+p.x));const result=connectTerrainRoad(map,road,1,touched);expect(result.blocked).toBe(0);for(let n=1;n<road.length;n++)expect(reliefAllowsStep(map.relief,road[n-1].x,7,road[n].x,7)).toBe(true);
   expect(reliefSlopes(map.relief).length).toBeGreaterThan(1);
  });
