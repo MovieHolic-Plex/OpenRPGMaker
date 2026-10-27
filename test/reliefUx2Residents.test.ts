@@ -127,19 +127,21 @@ describe("relief UX2 resident editor cells/chunks", () => {
     resetCullableTiles(f.scene);
   });
 
-  it("updates the editor lift after a same-object first/last hill", () => {
+  // store.updateMapTiles copies relief before the writer runs (cloneExtraLayers, already in the public baseline
+  // 0d4f13e7c8): a first/last hill written through the draft publishes a new relief object each time, and the
+  // revision-aware lift must follow it rather than a cached flat/hill answer.
+  it("updates the editor lift across a first/last hill written through the store", () => {
     const f = residentFixture();
-    // Create the flat object after store normalization so it survives by identity.
     store.updateMapTiles(f.id, d => { d.relief = emptyRelief(96, 96); }, { relief: true });
-    let map = store.getCurrent().maps[f.id]!, relief = map.relief!;
-    prepareReliefRead(map); expect(reliefCellLiftPx(relief, 10, 10, 16)).toBe(0);
-    store.updateMapTiles(f.id, () => {
-      for (let y = 8; y < 16; y++) for (let x = 8; x < 16; x++) relief.levels[y * 96 + x] = 2;
+    let map = store.getCurrent().maps[f.id]!;
+    prepareReliefRead(map); expect(reliefCellLiftPx(map.relief!, 10, 10, 16)).toBe(0);
+    store.updateMapTiles(f.id, d => {
+      for (let y = 8; y < 16; y++) for (let x = 8; x < 16; x++) d.relief!.levels[y * 96 + x] = 2;
     }, { relief: true });
     map = store.getCurrent().maps[f.id]!; prepareReliefRead(map);
-    expect(map.relief).toBe(relief); expect(reliefCellLiftPx(relief, 10, 10, 16)).toBe(32);
-    store.updateMapTiles(f.id, () => relief.levels.fill(0), { relief: true });
-    prepareReliefRead(store.getCurrent().maps[f.id]!);
-    expect(reliefCellLiftPx(relief, 10, 10, 16)).toBe(0);
+    expect(reliefCellLiftPx(map.relief!, 10, 10, 16)).toBe(32);
+    store.updateMapTiles(f.id, d => d.relief!.levels.fill(0), { relief: true });
+    map = store.getCurrent().maps[f.id]!; prepareReliefRead(map);
+    expect(reliefCellLiftPx(map.relief!, 10, 10, 16)).toBe(0);
   });
 });
