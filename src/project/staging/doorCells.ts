@@ -4,7 +4,7 @@
 // 출하 플레이어가 그 모듈을 끌어오지 않게 여기로 뺐다(2026-10-22).
 import type { GameMap, Project, TilesetDef } from "../types";
 
-const DOOR_WORDS = /(?<![창주])문(?![양자서장제구화턱])|door|(?<!인)도어|입구|출입|출구|현관|계단|stair|엘리베이터|승강기|에스컬레이터|escalator|elevator|lift|사다리|ladder|개찰|portal|포털|게이트|gate|구멍|hole|셔터|맨홀|manhole|동굴 입/iu;
+const DOOR_WORDS = /(?<![창주])문(?![양자서장제구화턱])|door|(?<![인웃])도어|입구|출입|출구|현관|계단|stair|엘리베이터|승강기|에스컬레이터|escalator|elevator|lift|사다리|ladder|개찰|portal|포털|게이트|gate|구멍|hole|셔터|맨홀|manhole|동굴 입/iu;
 const STAIR_DOWN = /내려가|아래로|하강|down|下り|구멍|hole/iu;
 const STAIR_UP = /올라가|위로|상승|\bup\b|上り/iu;
 

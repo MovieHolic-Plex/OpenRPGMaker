@@ -2885,7 +2885,7 @@ const createTransferPair: ToolDefinition = {
       const door = req.doorAt
         ?? (isDoorArtCell(draft, map, req.x, req.y) && Math.abs(req.x - endpoint.gate.x) + Math.abs(req.y - endpoint.gate.y) === 1 ? { x: req.x, y: req.y } : null)
         ?? above
-        ?? doorClusterCellBeside(map, req, endpoint.gate);
+        ?? (req.x === endpoint.gate.x && req.y === endpoint.gate.y ? null : doorClusterCellBeside(map, req, endpoint.gate));
       if (!door || (door.x === endpoint.gate.x && door.y === endpoint.gate.y)) return { ...endpoint, bump: false };
       if (map.events.some((event) => event.x === door.x && event.y === door.y)) return { ...endpoint, bump: false };
       return { gate: door, landing: endpoint.gate, bump: !isPassable(draft, map, door.x, door.y) };

@@ -166,6 +166,8 @@ export function objectiveGaps(project: Project): string[] {
     visitPageCommands(page, ({ command }) => {
       if (vague >= 3 || !isObjectiveCommand(command)) return;
       const message = String((command.fields as Record<string, unknown>).message);
+      // 이미 방위가 붙은 목표(「(… 입구: … 남동쪽)」·「(지하철역 북쪽)」)는 통과 — where 로 붙인 힌트는 글 속 장소 이름 힌트와 다를 수 있다.
+      if (/입구:|\([^()]*(북|남|동|서|가운데)[^()]*\)\s*$/u.test(message)) return;
       if (withWhere(project, fromMapId, message) === message) return;
       vague += 1;
       gaps.push(`목표 「${message.slice(0, 40)}」 가 다른 장소 이름만 대고 그 입구가 어디인지 말하지 않는다 — 새 플레이어가 길을 못 찾는다. 같은 글로 set_objective 를 다시 부르면 「(지하철역 입구: 동네 거리 남동쪽)」 처럼 방위가 붙는다(where 로 대상 이벤트·장소를 줄 수도 있다).`);
@@ -384,6 +386,24 @@ export interface OffArtEntrance {
  * romance-j91: 지하철 계단 그림 두 칸 위 보도에 역 문(J103), 열차 스크린도어 아래 칸에 하루 끝 열차 이벤트(J104).
  * 문 그림 칸에 아무 이벤트도 없을 때만 짚는다(이미 다른 이벤트가 그 문을 맡았으면 그 문이 따로 산다).
  */
+/** 문 그림 덩어리(4방 이웃)에 이미 이벤트가 서 있나 — 넓은 계단 한 칸에 문이 있으면 그 덩어리는 주인이 있다. */
+function doorClusterTaken(project: Project, map: GameMap, x: number, y: number, taken: ReadonlySet<string>): boolean {
+  const seen = new Set<string>([`${x},${y}`]);
+  const queue = [{ x, y }];
+  for (let i = 0; i < queue.length && queue.length <= 49; i += 1) {
+    const cell = queue[i]!;
+    if (taken.has(`${cell.x},${cell.y}`)) return true;
+    for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+      const next = { x: cell.x + dx, y: cell.y + dy };
+      const key = `${next.x},${next.y}`;
+      if (seen.has(key) || !isDoorArtCell(project, map, next.x, next.y)) continue;
+      seen.add(key);
+      queue.push(next);
+    }
+  }
+  return false;
+}
+
 export function offArtEntrances(project: Project): OffArtEntrance[] {
   const story = new Set(storyEvents(project).map((event) => `${event.mapId}|${event.eventId}`));
   const out: OffArtEntrance[] = [];
@@ -407,6 +427,7 @@ export function offArtEntrances(project: Project): OffArtEntrance[] {
       for (const [dx, dy] of [[0, -1], [0, 1], [-1, 0], [1, 0], [-1, -1], [1, -1], [-1, 1], [1, 1], [0, -2], [0, 2], [-2, 0], [2, 0]] as const) {
         const x = event.x + dx, y = event.y + dy;
         if (!isDoorArtCell(project, map, x, y) || taken.has(`${x},${y}`)) continue;
+        if (doorClusterTaken(project, map, x, y, taken)) continue;
         if ((Math.abs(dx) === 2 || Math.abs(dy) === 2) && (!isPassable(project, map, event.x + dx / 2, event.y + dy / 2) || isDoorArtCell(project, map, event.x + dx / 2, event.y + dy / 2))) continue;
         // 칸막이·건물 벽에 붙은 같은 문 덩어리에 이미 다른 이벤트가 있으면 이 이벤트의 문이 아니다.
         door = { x, y };
@@ -441,7 +462,12 @@ function dayVariables(project: Project): Set<string> {
       }
     }
   }
-  return new Set([...thresholds].filter(([id, values]) => raised.has(id) && values.size >= 2).map(([id]) => id));
+  // 이름이 날짜를 말하는 변수만 — 호감·진행도·처치 수도 += 로 오르고 >= 로 읽힌다(검토 지적).
+  const names = new Map<string, string>();
+  const vars = (project as unknown as { variables?: unknown }).variables;
+  if (Array.isArray(vars)) for (const v of vars as { id?: string; name?: string }[]) { if (v?.id) names.set(v.id, v.name ?? ""); }
+  else if (vars && typeof vars === "object") for (const [id, v] of Object.entries(vars as Record<string, unknown>)) names.set(id, typeof v === "string" ? v : String((v as { name?: string })?.name ?? ""));
+  return new Set([...thresholds].filter(([id, values]) => raised.has(id) && values.size >= 2 && /일|날|day/iu.test(names.get(id) ?? "")).map(([id]) => id));
 }
 
 /** 하루 변수와 비교하는 가장 큰 날(마지막 날 판정 fork 의 >= 7 등). */
@@ -470,9 +496,10 @@ export function repeatedDayDialogue(project: Project): RepeatedDayPage[] {
         const leaves = (page.conditions ?? []).flatMap((condition) => conditionLeaves(condition as never));
         const day = leaves.find((leaf) => leaf.kind === "variable" && leaf.variableId === dayVar && (leaf.op === ">=" || leaf.op === ">"));
         const other = leaves.some((leaf) => !(leaf.kind === "variable" && leaf.variableId === dayVar));
-        return { page, index, start: day ? (day.op === ">" ? Number(day.value) + 1 : Number(day.value)) : (other ? undefined : 1) };
-      }).filter((entry): entry is { page: typeof pages[number]; index: number; start: number } => entry.start !== undefined);
-      if (keyed.length < 2) continue;
+        return { page, index, explicit: !!day, start: day ? (day.op === ">" ? Number(day.value) + 1 : Number(day.value)) : (other ? undefined : 1) };
+      }).filter((entry): entry is { page: typeof pages[number]; index: number; explicit: boolean; start: number } => entry.start !== undefined);
+      // 조건 없는 첫 페이지를 1일째로 보는 것은 날짜 페이지가 둘 이상인 인물만(가게 주인의 평소 인사는 빼고).
+      if (keyed.filter((entry) => entry.explicit).length < 2) continue;
       const starts = [...new Set(keyed.map((entry) => entry.start))].sort((a, b) => a - b);
       const lastDay = maxDay(project, dayVar);
       for (const entry of keyed) {

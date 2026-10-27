@@ -61,7 +61,7 @@
 [data-hud-hp="true"] .action-hud-hp,
 [data-hud-stamina="true"] .action-hud-stamina { display:none; }
 [data-hud-objective="false"] .zone-feedback-objective { display:none; }
-[data-field-hud]:not([data-field-hud="legacy"]) .zone-feedback-objective { top:calc(88px * var(--play-ui-scale, 1)); max-width:44%; font-size:calc(8px * var(--play-ui-scale, 1)); }
+[data-field-hud]:not([data-field-hud="legacy"]) .zone-feedback-objective { top:calc(88px * var(--play-ui-scale, 1)); max-width:40%; font-size:calc(7px * var(--play-ui-scale, 1)); }
 .play-stage:has(> [data-testid="main-menu"]) > .field-hud,
 .play-stage:has([data-testid="battle-scene"]) > .field-hud,
 .play-stage:has(> .dialogue-overlay:not(:empty)) > .field-hud { display:none; }
