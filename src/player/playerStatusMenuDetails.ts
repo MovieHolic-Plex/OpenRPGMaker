@@ -1,5 +1,7 @@
 import { isEmeraldMonsterStyle } from "@/project/emeraldMonsterStyle";
-import { skillHelp, skillHelpTagLine } from "@/battle/skillHelp";
+import { skillHelp, skillHelpTagLine, type SkillHelpUser } from "@/battle/skillHelp";
+import { battleSkillMpCostFor, battleSkillResource2Cost } from "@/battle/battleSkillUse";
+import { resource2Config } from "@/battle/battleGauges";
 import { withCloudStatus } from "@/player/cloudOtherSaves";
 import { captureConditionLabel } from "@/battle/captureBalls";
 import { roJosa, withJosa } from "@/util/josa";
@@ -33,6 +35,7 @@ import { listPartyBondEntries, partyBondMeter } from "@/project/partyBonds";
 import { defaultActorFaceResourceId, normalizeActorRecord } from "@/project/actorModel";
 import type { StatusMenuStatDelta } from "@/player/playerStatusMenuDetailTypes";
 import { effectiveActorClassId } from "@/project/sessionClass";
+import { resolveTerms } from "@/project/terms";
 import { actorFieldStateNames, KNOCKED_OUT_STATE_NAME } from "@/player/actorFieldStates";
 import type { PlaySession } from "@/project/session";
 import type {
@@ -548,6 +551,7 @@ function skillDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
     if (!actor) return { title: "스킬", entries: [], emptyLabel: "파티원을 찾을 수 없습니다" };
     if (options.growthTab && options.growthTab !== "skills") return createGrowthMenu(options);
     const skills = learnedSkills(project, session, actor);
+    const skillUser = skillMenuActorUser(project, session, actor);
     const slots = actorLoadoutSlots(actor);
     if (slots !== undefined) {
       // 장착 칸이 있는 배우: 행을 고르면 장착/해제. 전투는 장착한 스킬만 쓴다(project/skillLoadout.ts).
@@ -558,8 +562,8 @@ function skillDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
         entries: skills.map((skill) => ({
           label: `${equipped.has(skill.id) ? "● " : "○ "}${skill.name}`,
           icon: skillEntryIcon(project, skill),
-          value: equipped.has(skill.id) ? "장착" : `MP ${skill.mpCost.flat}`,
-          description: fieldSkillDescription(project, skill),
+          value: skillMenuRowValue(project, skill, skillUser),
+          description: fieldSkillDescription(project, skill, skillUser),
           testId: `status-menu-skill-${actor.id}-${skill.id}`,
           attributes: { loadoutEquipped: equipped.has(skill.id) ? "true" : "false" },
           onActivate: options.onToggleSkillLoadout
@@ -576,8 +580,8 @@ function skillDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
       entries: skills.map((skill) => ({
         label: skill.name,
         icon: skillEntryIcon(project, skill),
-        value: skill.fieldCommonEventId ? `MP ${skill.mpCost.flat} · 필드에서 사용` : `MP ${skill.mpCost.flat}`,
-        description: fieldSkillDescription(project, skill),
+        value: skillMenuRowValue(project, skill, skillUser),
+        description: fieldSkillDescription(project, skill, skillUser),
         testId: `status-menu-skill-${actor.id}-${skill.id}`,
         onActivate: options.onSelectSkill ? () => options.onSelectSkill?.(skill.id) : undefined,
       })),
@@ -1229,13 +1233,42 @@ function equipmentEntryIcon(equipment: EquipmentRecord | undefined): NonNullable
   };
 }
 
-// 스킬은 애니메이션 시트의 첫 셀을 썸네일로 쓴다. 시트 전체를 축소하지 않도록 규격도 넘긴다.
+/**
+ * 스킬 행의 소모 글자. 전투 명령 메뉴(battleSkillMpCostFor)와 같은 값 —
+ * 고정 MP + 최대 MP %, 장비 「MP 소모 절반」, 연계 몫, 켠 제2 자원, 프로젝트 MP 용어.
+ */
+function skillMenuActorUser(project: Project, session: PlaySession, actor: ActorRecord): SkillHelpUser {
+  const level = session.actorLevels[actor.id] ?? actor.initialLevel;
+  const derived = actorDerivedStats(project, normalizeActorRecord(actor), {
+    level,
+    classOverrides: session.classOverrides,
+    promotionLineage: session.promotionLineage,
+    growthProgress: session.growthProgress,
+    paramBonuses: session.actorParamBonuses?.[actor.id],
+    equipment: effectiveActorEquipment(project, actor, session.actorEquipment[actor.id], effectiveActorClassId(project, session, actor.id)),
+  });
+  return {
+    recordId: actor.id,
+    maxMp: derived.maxMp,
+    ...(derived.equipmentEffects.halfMpCost ? { equipmentEffects: { halfMpCost: true } } : {}),
+  };
+}
+
+function skillMenuRowValue(project: Project, skill: SkillRecord, user: SkillHelpUser): string {
+  const mpName = resolveTerms(project).mp || "MP";
+  const mp = `${mpName} ${battleSkillMpCostFor(skill, user)}`;
+  const resource2 = battleSkillResource2Cost(project, skill);
+  const cost = resource2 > 0 ? `${mp} · ${resource2Config(project)?.label || "기력"} ${resource2}` : mp;
+  return skill.fieldCommonEventId ? `${cost} · 필드에서 사용` : cost;
+}
+
 /** 필드 스킬 화면의 설명 — 전투 도움말 창과 같은 문장(battle/skillHelp): 한 줄 설명 + 꼬리표 줄. */
-function fieldSkillDescription(project: Project, skill: SkillRecord): string {
-  const help = skillHelp(project, skill);
+function fieldSkillDescription(project: Project, skill: SkillRecord, user?: SkillHelpUser): string {
+  const help = skillHelp(project, skill, user);
   return [help.description || skillKindLabel(skill), skillHelpTagLine(help), help.comboNames ? `연계: ${help.comboNames.join(" × ")} · ${help.cost}` : ""].filter(Boolean).join("\n");
 }
 
+// 스킬은 애니메이션 시트의 첫 셀을 썸네일로 쓴다. 시트 전체를 축소하지 않도록 규격도 넘긴다.
 function skillEntryIcon(project: Project, skill: SkillRecord): NonNullable<StatusMenuDetailEntry["icon"]> {
   const animation = skill.animationId
     ? project.database.battleAnimations.find((entry) => entry.id === skill.animationId)
