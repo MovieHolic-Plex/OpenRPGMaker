@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
+import { flushPendingManualProjectCommit } from "@/project/projectCommitLog";
 import { installElectronBridgeSession, type ElectronBridgeSession } from "./support/electronBridgeSession";
 
 let session: ElectronBridgeSession | null = null;
@@ -57,6 +58,9 @@ describe("저장 영수증의 계보 (Electron 브리지)", () => {
     const result = await store.flush();
     expect(result.kind).toBe("saved");
 
+    // 사람 저장 커밋은 저장을 막지 않도록 유휴 때 모아 기록한다(projectCommitLog scheduleWhenIdle) — 그 대기를 지금 비운다.
+    flushPendingManualProjectCommit();
+    await vi.waitFor(() => expect(session!.commitInputs().length).toBeGreaterThanOrEqual(1));
     const inputs = session!.commitInputs() as readonly { projectDir?: string; summary?: string }[];
     expect(inputs.length).toBeGreaterThanOrEqual(1);
     expect(inputs.at(-1)?.projectDir).toBe("/tmp/oprn-proof-fixture");
