@@ -28,6 +28,8 @@ export type MockSprite = MockTileImage & {
   setAlpha(alpha: number): void;
   setTexture(texture: string, frame?: string | number): void;
   setScale(value: number): void;
+  setVisible(visible: boolean): void;
+  visible?: boolean;
   destroy(): void;
 };
 
@@ -120,6 +122,10 @@ export function mockSprite(x = 0, y = 0, textureKey = "tex_easyrpg_charset_peopl
       if (frame !== undefined) sprite.frame = frame;
     },
     setScale: () => undefined,
+    // 동료 동기화가 setVisible 을 부른다(playSceneFollowers) — 모의 스프라이트에도 둔다.
+    setVisible(visible) {
+      sprite.visible = visible;
+    },
     destroy: () => undefined,
   };
   return sprite;

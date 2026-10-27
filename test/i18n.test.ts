@@ -219,6 +219,18 @@ describe("shipped catalogs", () => {
     expect(createTranslator(en).translate("하위 3")).toBe("3 sub");
   });
 
+  it("uses a singular English count for one map event and one door", () => {
+    // 맵 트리 메타는 「20×15 · 이벤트 1개 · 문 1개」를 조각으로 번역한다.
+    // 한 줄로 붙으면 `{0}×{1} · 이벤트 {2}` 가 개수를 삼켜 "Events 1" 이 된다.
+    const translator = createTranslator(en);
+    expect(translator.translate("이벤트 1개")).toBe("1 event");
+    expect(translator.translate("이벤트 2개")).toBe("2 events");
+    expect(translator.translate("이벤트 0개")).toBe("0 events");
+    expect(translator.translate("문 1개")).toBe("1 door");
+    expect(translator.translate("문 2개")).toBe("2 doors");
+    expect(translator.translate("문 0개")).toBe("0 doors");
+  });
+
   it("calls terrain reachability a passability preview, not vehicle traffic or a corridor", () => {
     // 지형 도구의 통행 미리보기는 시작 위치에서 걸어 닿는 땅을 칠한다. 차 흐름(traffic)도, 복도(passage)도 아니다.
     const sentence = "경사로·기물, 지형 설계, 통행 미리보기는 아래 도구에서 고릅니다.";
@@ -239,6 +251,36 @@ describe("shipped catalogs", () => {
     expect(createTranslator(en).translate(sentence)).toBe(en[sentence]);
     expect(createTranslator(ja).translate("통행 보기")).toBe("通行を見る");
     expect(createTranslator(zh).translate("통행 미리보기")).toBe("通行预览");
+  });
+
+  it("names a map's parent separately from the upper tile layer, and its vertical size as height", () => {
+    // 새 맵 칸의 글자가 「상위」·「세로」이면 영어는 Upper layer·Vertical, 일본어는 上位·縦,
+    // 중국어는 上层·纵向가 된다. 부모 맵과 칸수에는 그 낱말을 쓰지 않는다.
+    expect(en["상위"]).toBe("Upper layer");
+    expect(ja["상위"]).toBe("上位");
+    expect(zh["상위"]).toBe("上层");
+    expect(en["상위 맵"]).toBe("Parent map");
+    expect(ja["상위 맵"]).toBe("上位マップ");
+    expect(zh["상위 맵"]).toBe("上级地图");
+    expect(en["세로"]).toBe("Vertical");
+    expect(ja["세로"]).toBe("縦");
+    expect(zh["세로"]).toBe("纵向");
+    expect(en["높이"]).toBe("Height");
+    expect(ja["높이"]).toBe("高さ");
+    expect(zh["높이"]).toBe("高度");
+    const english = createTranslator(en);
+    const japanese = createTranslator(ja);
+    const chinese = createTranslator(zh);
+    expect(english.translate("상위 맵")).toBe("Parent map");
+    expect(english.translate("상위 맵")).not.toBe(english.translate("상위"));
+    expect(japanese.translate("상위 맵")).toBe("上位マップ");
+    expect(chinese.translate("상위 맵")).toBe("上级地图");
+    expect(english.translate("높이")).toBe("Height");
+    expect(japanese.translate("높이")).toBe("高さ");
+    expect(chinese.translate("높이")).toBe("高度");
+    // 기본 선택 값은 「그 맵의 자식으로 둔다」이다. Submaps of 는 목록처럼 읽힌다.
+    expect(en["{0}의 하위"]).toBe("Child of {0}");
+    expect(english.translate("빈 맵의 하위")).toBe("Child of Empty map");
   });
 
   it("describes right-drag region select as a release, not placing an object", () => {
@@ -287,5 +329,15 @@ describe("shipped catalogs", () => {
     expect(english.translate('"가나" 와 일치하는 스위치가 없습니다.')).toBe('No Switch matches "가나".');
     expect(createTranslator(ja).translate("아이템이 아직 없습니다.")).toBe("アイテム がまだありません。");
     expect(createTranslator(zh).translate("주인공이 아직 없습니다.")).toBe("还没有 角色。");
-  });
+  it("calls a number-input digit a digit, and one digit stays singular in English", () => {
+    // 숫자 입력 미리보기의 「N자리 · 대기 중」은 자릿수다. 좌석이 아니다.
+    expect(createTranslator(en).translate("1자리 · 대기 중")).toBe("1 digit · waiting");
+    expect(createTranslator(en).translate("4자리 · 대기 중")).toBe("4 digits · waiting");
+    expect(en["{0}자리 · 대기 중"]).not.toMatch(/seat/i);
+    expect(createTranslator(ja).translate("1자리 · 대기 중")).toBe("1桁 · 待機中");
+    expect(createTranslator(ja).translate("4자리 · 대기 중")).toBe("4桁 · 待機中");
+    expect(ja["{0}자리 · 대기 중"]).not.toContain("席");
+    expect(createTranslator(zh).translate("1자리 · 대기 중")).toBe("1位 · 等待中");
+    expect(createTranslator(zh).translate("4자리 · 대기 중")).toBe("4位 · 等待中");
+    expect(zh["{0}자리 · 대기 중"]).not.toContain("名额");  });
 });

@@ -192,7 +192,7 @@ npm run harness -- game-concepts publish --target staging|prod --yes-prod|http:/
 | 조각 | 위치 | 하는 일 |
 |---|---|---|
 | 판정(순수) | `src/assetStore/deepLink.ts` `parseStoreDeepLink` | 경로 `store/install`(`oprn://store/install`·`oprn:store/install` 둘 다), `store` 출처 = 에디터가 쓰는 스토어 주소(`AssetStoreClient.url`)의 출처, slug = `STORE_SLUG`, 판본 = 양의 안전 정수. 틀리면 한국어 사유 |
-| OS 등록·받기 | `electron/main/main.ts` | `setAsDefaultProtocolClient("oprn")`(개발 실행은 `OPRN_REGISTER_PROTOCOL=1` 일 때만), 배포 앱만 한 번만 실행 잠금(QA 하니스가 여러 개 띄우므로), `second-instance`(Windows·Linux 인자)·`open-url`(macOS 링크)·`open-file`(macOS 폴더·`project.sqlite`)·첫 실행 인자. 같은 인자에서 `project.sqlite` 가 있는 폴더는 그 프로젝트를 연다(`electron/main/cliProject.ts`). 링크만 있으면 창을 더 열지 않고, 링크도 폴더도 없으면 새 창(시작 화면) |
+| OS 등록·받기 | `electron/main/main.ts` | `setAsDefaultProtocolClient("oprn")`(개발 실행은 `OPRN_REGISTER_PROTOCOL=1` 일 때만), 배포 앱만 한 번만 실행 잠금(QA 하니스가 여러 개 띄우므로), `second-instance`(Windows·Linux 인자)·`open-url`(macOS 링크)·`open-file`(macOS 폴더·`project.sqlite`)·첫 실행 인자. 같은 인자에서 `project.sqlite` 가 있는 폴더, 또는 그 파일 자체는 그 프로젝트를 연다(`electron/main/cliProject.ts`). 링크만 있으면 창을 더 열지 않고, 링크도 폴더도 없으면 새 창(시작 화면) |
 | 맡겨 두기 | `electron/main/assetStore.ts` `acceptStoreDeepLink` | 검사한 요청을 맡겨 두고(10분) 프로젝트가 열린 편집기 창에 `oprn:store.openLink` 로 알린다. 편집기는 `oprn:store.takeOpenLink` 로 꺼낸다(프로젝트 세션이 있는 창만). 편집기가 없으면 「프로젝트를 열면 이어서」 안내 |
 | 편집기 | `src/editor/assetStore/storeOpenLink.ts` → `openAssetStoreForLink` | 부팅 뒤 한 번 꺼내고 알림을 듣는다. 스토어 창을 그 상품 상세로 열고 확인 카드(`store-link-confirm`) 「스토어에서 「제목」 vN 을 받아 이 프로젝트에 넣을까요?」. 「받아서 넣기」(`store-link-add`)만 기존 넣기 경로(`addToProject` → 받기 → `addStoreItemToProject`)를 탄다 |
 

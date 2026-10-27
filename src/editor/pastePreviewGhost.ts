@@ -1,4 +1,6 @@
 import type { TileClipboard } from "@/editor/editorState";
+import { cellLift, reliefLiftField, type ReliefLiftField } from "@/project/relief/screen";
+import type { ReliefData } from "@/project/relief/types";
 
 /**
  * 붙여넣기 고스트가 그리는 한 칸의 조각. 순서는 맵 렌더와 같다:
@@ -12,6 +14,35 @@ export type PasteGhostPiece =
 /** 고스트의 1·2층 알파. 3·4층은 그보다 진하게 두어 위층이 읽힌다. */
 const LOWER_ALPHA = 0.4;
 const UPPER_ALPHA = 0.55;
+
+/**
+ * 클립보드가 높이를 들고 있을 때의 칸 들림(단).
+ * 평지 스탬프는 null — 고스트는 땅바닥에 두고, 목적지의 옛 언덕 높이는 쓰지 않는다.
+ * 반환 필드의 x·y 는 스탬프 좌상단 기준이다.
+ * 포인터가 움직일 때마다 고스트가 이 값을 다시 묻으므로, 같은 클립보드 객체는 한 번만 계산한다.
+ */
+const stampLiftFields = new WeakMap<TileClipboard, ReliefLiftField | null>();
+
+export function pasteStampLiftField(clipboard: TileClipboard): ReliefLiftField | null {
+  const cached = stampLiftFields.get(clipboard);
+  if (cached !== undefined) return cached;
+  const stamp = clipboard.relief;
+  const raised = stamp != null && (stamp.levels.some((level) => level > 0) || (stamp.ramps?.some((ramp) => ramp > 0) ?? false));
+  const field = raised && stamp
+    ? reliefLiftField({
+      width: clipboard.width,
+      height: clipboard.height,
+      levels: stamp.levels.slice(),
+      ...(stamp.ramps ? { ramps: stamp.ramps.slice() } : {}),
+    } satisfies ReliefData)
+    : null;
+  stampLiftFields.set(clipboard, field);
+  return field;
+}
+
+export function pasteGhostLiftSteps(field: ReliefLiftField | null, x: number, y: number): number {
+  return field ? cellLift(field, x, y) : 0;
+}
 
 /**
  * 클립보드 칸 `index` 를 확정 붙여넣기와 같은 순서로 펼친다.

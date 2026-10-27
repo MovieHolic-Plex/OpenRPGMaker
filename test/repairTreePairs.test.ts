@@ -1,9 +1,13 @@
 import { describe, expect, it } from "vitest";
-import { createBlankProject } from "@/project/defaults";
+import { createBlankProject as createBlankDefaultProject } from "@/project/defaults";
 import { TILE } from "@/project/defaults/constants";
 import { repairTreePairsOnMap, repairTreePairsOnProject } from "@/project/lint/repairTreePairs";
 import { runTool } from "@/editor/tools/toolRunner";
 import { resolveForestCanopyReplacementExemptTileIds } from "@/editor/tools/forestComposition";
+import { startOnRetiredCombinedTown } from "./support/retiredEasyRpgTilesets";
+
+// TILE.* 는 합본 마을 칩 번호다 — 2026-10-07 저작권 정리 뒤 새 프로젝트 시작 맵이 버들항이라 옛 저장본처럼 합본 마을 위에서 시작한다.
+const createBlankProject = () => startOnRetiredCombinedTown(createBlankDefaultProject());
 
 const MAP = "map_blank_start";
 
@@ -144,14 +148,11 @@ describe("repairTreePairs", () => {
     const hookedMap = ctx.project.maps[MAP];
     hookedMap.lowerTiles[5 * hookedMap.width + 5] = 290;
     hookedMap.upperTiles[4 * hookedMap.width + 5] = 237;
-    const hooked = runTool(ctx, "place_npc", {
-      mapId: MAP,
-      x: 1,
-      y: 1,
-      name: "테스트",
-      pages: [{ lines: ["ok"] }],
-    });
-    expect(hooked.ok).toBe(true);
+    // 이벤트·DB 편집은 나무를 고치지 않는다(toolRunner: 「Event/DB/name edits must not normalize trees」) —
+    // 같은 맵의 다른 칸을 칠하는 래스터 도구로 post-write hook 을 태운다. (밑동을 상자 밑에 직접 칠하는 것은
+    // paint_tiles 의 동반 배치 규칙이 이제 먼저 거부한다.)
+    const hooked = runTool(ctx, "paint_tiles", { mapId: MAP, layer: "lower", mode: "cells", tile: TILE.PATH, cells: [{ x: 10, y: 10 }] });
+    expect(hooked.ok, hooked.summary).toBe(true);
     expect(ctx.project.maps[MAP].upperTiles[4 * hookedMap.width + 5]).toBe(260);
   });
 });

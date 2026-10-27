@@ -1188,12 +1188,13 @@ function normalizeStateEffects(effects: readonly Partial<DatabaseStateEffect>[] 
     .map((effect) => ({ stateId: effect.stateId, chance: clampInteger(effect.chance ?? 100, 0, 100), operation: effect.operation ?? "add" }));
 }
 
+/** 장비 능력치. 음수는 무거운 무기·갑옷의 감점이다 — 0으로 자르면 저장 왕복에 사라진다. */
 function normalizeStatBonuses(bonuses: Partial<EquipmentStatBonuses> | undefined): EquipmentStatBonuses {
   return {
-    attack: clampInteger(bonuses?.attack ?? 0, 0, 9999),
-    defense: clampInteger(bonuses?.defense ?? 0, 0, 9999),
-    mind: clampInteger(bonuses?.mind ?? 0, 0, 9999),
-    agility: clampInteger(bonuses?.agility ?? 0, 0, 9999),
+    attack: clampInteger(bonuses?.attack ?? 0, -9999, 9999),
+    defense: clampInteger(bonuses?.defense ?? 0, -9999, 9999),
+    mind: clampInteger(bonuses?.mind ?? 0, -9999, 9999),
+    agility: clampInteger(bonuses?.agility ?? 0, -9999, 9999),
   };
 }
 

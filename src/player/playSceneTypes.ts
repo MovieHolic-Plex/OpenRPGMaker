@@ -200,6 +200,12 @@ export interface PlayerRouteState {
    * 없으면 닿기(playerTouch) 놀래킴의 대사창이 떠 있는데 주인공이 목적지까지 계속 걸었다(2026-10-25 심판 J62, 공포 학교).
    */
   yieldsToEvents?: boolean;
+  /**
+   * moveEvent `route.skippable === false`. 막힌 걸음(move·stepForward)은 버리고
+   * 다음 명령으로 가지 않고, 다음 프레임에 같은 걸음을 다시 시도한다.
+   * 페이지 순찰의 `preserveBlockedSteps` 와 같은 계약이다.
+   */
+  preserveBlockedSteps?: boolean;
   /** 이 경로는 달린다(맵 탭으로 먼 곳에 갈 때 — playScenePointerMove TAP_RUN_MIN_STEPS). 생략 = 걷기(이벤트 강제 이동). */
   dash?: boolean;
 }
