@@ -81,6 +81,23 @@ const ACTIONS = {
   titleArt: forms("타이틀 화면을 그리는 중", "타이틀 화면을 그렸어요", "타이틀 화면 그리기를 실패했어요"),
   mapBackgroundImage: forms("맵 배경 그림을 만드는 중", "맵 배경 그림을 만들어 연결했어요", "맵 배경 그림 만들기를 실패했어요"),
   openingImage: forms("오프닝 그림을 만드는 중", "오프닝 그림을 만들었어요", "오프닝 그림 만들기를 실패했어요"),
+  editOpening: forms("오프닝을 다듬는 중", "오프닝을 다듬었어요", "오프닝 다듬기를 실패했어요"),
+  titleScreen: forms("타이틀 화면을 다듬는 중", "타이틀 화면을 다듬었어요", "타이틀 화면 다듬기를 실패했어요"),
+  composeMap: forms("맵을 구성하는 중", "맵을 구성했어요", "맵 구성을 실패했어요"),
+  dungeon: forms("던전을 만드는 중", "던전을 만들었어요", "던전 만들기를 실패했어요"),
+  interior: forms("실내를 만드는 중", "실내를 만들었어요", "실내 만들기를 실패했어요"),
+  linkInterior: forms("실내를 잇는 중", "실내를 이었어요", "실내 잇기를 실패했어요"),
+  terrain: forms("지형을 다듬는 중", "지형을 다듬었어요", "지형 다듬기를 실패했어요"),
+  monsterGame: forms("몬스터 게임을 만드는 중", "몬스터 게임을 만들었어요", "몬스터 게임 만들기를 실패했어요"),
+  image: forms("그림을 만드는 중", "그림을 만들었어요", "그림 만들기를 실패했어요"),
+  pixelArt: forms("도트를 찍는 중", "도트를 찍었어요", "도트 찍기를 실패했어요"),
+  music: forms("음악을 만드는 중", "음악을 만들었어요", "음악 만들기를 실패했어요"),
+  sound: forms("효과음을 만드는 중", "효과음을 만들었어요", "효과음 만들기를 실패했어요"),
+  media: forms("영상·소리 파일을 변환하는 중", "영상·소리 파일을 변환했어요", "영상·소리 파일 변환을 실패했어요"),
+  dialogue: forms("대사를 다듬는 중", "대사를 다듬었어요", "대사 다듬기를 실패했어요"),
+  replaceText: forms("문구를 바꾸는 중", "문구를 바꿨어요", "문구 바꾸기를 실패했어요"),
+  editEvent: forms("이벤트를 고치는 중", "이벤트를 고쳤어요", "이벤트 고치기를 실패했어요"),
+  webSearch: forms("웹에서 찾아보는 중", "웹에서 찾아봤어요", "웹에서 찾지 못했어요"),
 } as const;
 
 const READ_ONLY_MAP = new Set([
@@ -155,6 +172,44 @@ addFamily(ACTIONS.openingImage, "generate_opening_image");
 addFamily(ACTIONS.mapBackgroundImage, "generate_map_background");
 addFamily(ACTIONS.titleArt, "generate_title_art");
 addFamily(ACTIONS.removeOpening, "remove_opening");
+// 2026-10 이후 등록된 도구들 — 일반 문구(「작업을 진행하는 중」)로 떨어지지 않게 하나씩 정했다.
+addFamily(ACTIONS.editOpening, "animate_opening_camera animate_opening_layer apply_opening_motion apply_opening_walk retime_opening_shot set_opening_caption set_opening_pixel_grid set_opening_region_loop set_opening_sprite_states set_opening_transition upsert_opening_audio_cue upsert_opening_emote upsert_opening_layer upsert_opening_light_fx place_opening_background place_opening_charset_actor remove_opening_audio_cue remove_opening_layer configure_opening_entry configure_opening_portrait_motion");
+addFamily(ACTIONS.opening, "create_opening_animatic_shot make_opening_storybook");
+addFamily(ACTIONS.plan, "plan_opening");
+addFamily(ACTIONS.openingImage, "generate_opening_layer");
+addFamily(ACTIONS.titleScreen, "configure_title_intro improve_title_screen");
+addFamily(ACTIONS.village, "author_beodeul_town compose_beodeul_courtyard_village naturalize_beodeul_hamlet refine_beodeul_village dress_village_quarter");
+addFamily(ACTIONS.composeMap, "compose_campus_grounds compose_desert_east_map compose_jp_city_street compose_jp_region compose_modern_city_street compose_pirate_isles_map compose_prehistoric_map compose_sengoku_edo_map compose_sf_station_map compose_sky_island_map compose_snow_north_map compose_space_blueprint compose_steampunk_city_map compose_wasteland_map dress_beodeul_ground dress_joseon_market refine_beodeul_courtyard_vegetation harmonize_beodeul_daylight furnish_outdoor_area build_scene_setting build_shared_scene build_concept_example build_gothic_place build_wizarding_space derive_world_variant author_forest_route author_snow_route");
+addFamily(ACTIONS.dungeon, "author_beodeul_dungeon author_dungeon");
+addFamily(ACTIONS.interior, "build_hand_interior_room compose_desert_east_room");
+addFamily(ACTIONS.linkInterior, "link_campus_interior link_desert_east_interior link_jp_city_interior link_modern_city_interior link_prehistoric_interior link_sengoku_edo_interior link_sky_island_interior link_snow_north_interior link_steampunk_interior");
+addFamily(ACTIONS.terrain, "design_terrain edit_world_terrain sculpt_relief place_terrain_ramp");
+addFamily(ACTIONS.road, "lay_terrain_road");
+addFamily(ACTIONS.paint, "paint_jp_forest paint_shadow");
+addFamily(ACTIONS.house, "place_terrain_house resize_terrain_house_roof");
+addFamily(ACTIONS.structure, "stamp_layer_block stamp_tileset_object stamp_worldmap_icon author_worldmap_structure build_jp_city_building place_lift place_badge_gate apply_beodeul_door_animation");
+addFamily(ACTIONS.monsterGame, "build_monster_game build_monster_expedition build_monster_tournament");
+addFamily(ACTIONS.configure, "configure_monster_campaign configure_monster_style configure_field_menu configure_shop_presentation configure_story_journal configure_party_bonds set_dialogue_system set_field_hud set_vn_extras set_vn_look set_game_audio set_game_over apply_romance_preset");
+addFamily(ACTIONS.database, "define_monster_families rename_monster_species");
+addFamily(ACTIONS.deleteDatabase, "delete_character_profile");
+addFamily(ACTIONS.image, "generate_cutscene_art generate_game_over_image generate_image_asset");
+addFamily(ACTIONS.pixelArt, "author_pixel_art author_actor_charset author_enemy_pixel_sheet edit_enemy_pixel_sheet");
+addFamily(ACTIONS.music, "compose_music generate_original_bgm");
+addFamily(ACTIONS.sound, "generate_original_se");
+addFamily(ACTIONS.media, "run_ffmpeg");
+addFamily(ACTIONS.story, "author_mystery_case author_party_split author_romance_scene set_romance_stage set_scene_summaries set_world_canon");
+addFamily(ACTIONS.quest, "set_deadline_ending");
+addFamily(ACTIONS.event, "make_timed_escape place_search_containers");
+addFamily(ACTIONS.editEvent, "patch_event_page event_command_assist");
+addFamily(ACTIONS.dialogue, "rewrite_dialogue set_speaker_voice");
+addFamily(ACTIONS.replaceText, "replace_text_in_project");
+addFamily(ACTIONS.person, "add_street_walkers set_street_traffic configure_npc_patrol set_party");
+addFamily(ACTIONS.battle, "upsert_choreography duplicate_choreography set_enemy_skill_choreography upsert_combo_tech set_field_approach_style");
+addFamily(ACTIONS.editMap, "set_map_transit");
+addFamily(ACTIONS.world, "link_world_entrance");
+addFamily(ACTIONS.validate, "validate_tile_assembly");
+addFamily(ACTIONS.inspect, "recommend_bgm");
+addFamily(ACTIONS.webSearch, "web_search");
 
 function readOnlyAction(toolName: string): ActionForms | undefined {
   if (["list_tileset_references", "read_tileset_reference", "read_spatial_reference", "read_region_reference"].includes(toolName)) return ACTIONS.inspectReference;
@@ -166,7 +221,7 @@ function readOnlyAction(toolName: string): ActionForms | undefined {
   if (READ_ONLY_QUEST.has(toolName)) return ACTIONS.inspectQuest;
   // `check_` 로 시작하므로 아래 일반 규칙이 먼저 삼킨다 — 내보내기 점검은 「정보를 살펴봤어요」가 아니다.
   if (toolName === "check_export_readiness" || toolName === "export_game") return ACTIONS.export;
-  if (/^(?:get|read|list|show|query|analyze|find|suggest|preview|render|explain|check|evaluate)_/.test(toolName)) {
+  if (/^(?:get|read|list|show|query|analyze|find|suggest|preview|render|explain|check|evaluate|inspect|review)_/.test(toolName)) {
     return ACTIONS.inspect;
   }
   if (/^(?:lint)_/.test(toolName) || toolName === "tile_query" || toolName === "run_lint") {
