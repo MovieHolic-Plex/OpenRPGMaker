@@ -6282,10 +6282,10 @@
   {
    "id": "act2-b2-lamp-hang",
    "label": "제2막 B2 Q4 — 잠긴 집 문고리에 꺼진 등을 건다",
-   "note": "act2Opening.ts lampQuestDoors",
+   "note": "act2Opening.ts lampQuestDoors — 낮 광장에서 실내로 이어지던 집 문만(약방 문 31,31)",
    "mapId": "fs2_hub_night",
-   "x": 47,
-   "y": 16,
+   "x": 31,
+   "y": 32,
    "facing": "up",
    "switches": {
     "sw_fs_main_started": true,
@@ -6954,6 +6954,11 @@
     {
      "id": "caught",
      "ops": [
+      {
+       "kind": "move",
+       "dir": "right",
+       "steps": 1
+      },
       {
        "kind": "move",
        "dir": "up",

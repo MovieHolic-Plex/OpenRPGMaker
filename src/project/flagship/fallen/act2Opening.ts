@@ -462,14 +462,20 @@ const SW_Q4_DONE = "sw_fs2_q4_lamps_done";
 const SW_Q4_LAMP = "sw_fs2_q4_lamp_";
 
 /** Q4 — 잠긴 집 문 셋에 「등 걸기」 페이지를 단다. 미레에게서 먼 문부터 서로 멀리 떨어진 셋(순찰 길목을 지나게). */
-function lampQuestDoors(project: Project): void {
+function lampQuestDoors(project: Project, hubId: string): void {
   for (const [id, name] of [[SW_Q4_TAKEN, "B2 Q4: 꺼진 등을 맡았다"], [SW_Q4_DONE, "B2 Q4: 꺼진 등 — 보상"],
     [`${SW_Q4_LAMP}0`, "B2 Q4: 등 1"], [`${SW_Q4_LAMP}1`, "B2 Q4: 등 2"], [`${SW_Q4_LAMP}2`, "B2 Q4: 등 3"]] as const) ensureSwitch(project, id, name);
   const hub = M(project, FS2_HUB_NIGHT_ID);
+  const day = M(project, hubId);
+  const leadsIndoors = (e: GameEvent): boolean => {
+    const orig = day.events.find((o) => o.x === e.x && o.y === e.y);
+    const to = JSON.stringify(orig?.pages ?? []).match(/"kind":"transfer","mapId":"([^"]+)"/)?.[1];
+    return !!to && project.maps[to]?.tilesetId === "atlas_biome_interior";
+  };
   const locked = hub.events.filter((e) => {
     const text = JSON.stringify(e.pages ?? []);
-    // 대장간 문은 B4 가 뒷문 페이지로 다시 쓴다 — 등 걸 문에서 뺀다.
-    return text.includes("통금이다. 문이 안에서 굳게 잠겨 있다.") && !text.includes('"kind":"transfer"') && !(e.x === SMITHY.hubDoor.x && e.y === SMITHY.hubDoor.y);
+    // 대장간 문은 B4 가 뒷문 페이지로 다시 쓴다 — 등 걸 문에서 뺀다. 집 문만: 낮 광장에서 그 문이 실내 맵으로 이어지던 것(성문·숲 출구 제외).
+    return text.includes("통금이다. 문이 안에서 굳게 잠겨 있다.") && !text.includes('"kind":"transfer"') && !(e.x === SMITHY.hubDoor.x && e.y === SMITHY.hubDoor.y) && leadsIndoors(e);
   });
   const picked: GameEvent[] = [];
   const far = (e: GameEvent) => Math.min(Math.hypot(e.x - MIRE_AT.x, e.y - MIRE_AT.y) * 0.5, ...picked.map((p) => Math.hypot(e.x - p.x, e.y - p.y)));
@@ -564,7 +570,7 @@ function curfewHub(project: Project, exec: Exec, hubId: string): void {
       { name: "꺼진 등(뒤)", conditions: [sw(SW_Q4_DONE)], commands: [say(MIRE, "아침이 오면 저 등에 불부터 켤 거야. 꼭 돌아와.")] },
     ],
   });
-  lampQuestDoors(project);
+  lampQuestDoors(project, hubId);
   exec(project, "place_npc", {
     mapId: FS2_HUB_NIGHT_ID, id: "ev_fs2_night_toby", name: TOBY, x: TOBY_AT.x, y: TOBY_AT.y, movement: "fixed", graphic: toby,
     pages: [
@@ -1635,8 +1641,11 @@ function frostFestival(project: Project, exec: Exec, hubId: string, work: Cell):
   ensureSwitch(project, SW_FROST_LAMP, "B8: 대답의 등을 띄웠다");
   // 해 질 녘 — 덮개 세기 0.32 짙은 보랏빛, 등불마다 따뜻한 빛.
   exec(project, "set_lighting_volume", {
-    mapId: FS2_FROST_ID, applyMode: "map", ambient: 0.32, color: "#2a1d3a",
-    sources: FS2_FROST.lamps.map((c, i) => ({ id: `answer_lamp_${i}`, at: { x: c.x, y: c.y }, radius: 3, intensity: 0.8, color: "#ffc070", flicker: true })),
+    mapId: FS2_FROST_ID, applyMode: "map", ambient: 0.5, color: "#2a1838",
+    sources: [
+      ...FS2_FROST.lamps.map((c, i) => ({ id: `answer_lamp_${i}`, at: { x: c.x, y: c.y }, radius: 3, intensity: 0.9, color: "#ffc070", flicker: true })),
+      { id: "player", at: { kind: "player" }, radius: 3, intensity: 0.3, color: "#ffd8a0" },
+    ],
   });
   const first = FS2_FROST.lamps[0];
   if (first) {
