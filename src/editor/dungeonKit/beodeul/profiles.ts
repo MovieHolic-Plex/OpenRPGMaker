@@ -29,6 +29,9 @@ export interface FloorSpec {
   readonly mix?: boolean;
   /** mix 로 고를 칸 번호(키트 행 우선 평면 번호). 비우면 전부 — 한 칸만 튀는 무늬(금·불씨 줄)가 칸마다 되풀이되던 것을 뺀다(2026-10-25 floor VQA). */
   readonly mixCells?: readonly number[];
+  /** 판석 밭(마계 바닥 theme-floors-r9): 이 키트가 구워져 있으면 걷는 바닥을 칸 위치로 감아 깔고(섞지 않음),
+   *  북쪽이 벽·천장인 칸은 `<field>-wall-shade` 의 같은 열 칸(벽 그림자)으로. 없는 옛 사본이면 base 로 물러선다. */
+  readonly field?: string;
 }
 
 export interface TypeProfile extends GrammarInfo {
@@ -150,9 +153,8 @@ export const PROFILES: Record<BeodeulDungeonType, TypeProfile> = {
   otherworld: {
     ...GRAMMAR.otherworld,
     face: { h3: [TK("otherworld-face-3h"), C("face-cave-3h")], h2: [TK("otherworld-face-2h"), C("face-cave-2h")] },
-    // 마계 판석 밭(theme-floors-r7): 몸통 4×4 키트를 칸 위치로 감아 깐다(섞지 않는다) — 64px 마다 되풀이되는 이음 없는 판석·줄눈·빛 틈.
-    //   옛 사본(섞음 키트)은 키트 태그 「섞음」 이 있어 그대로 섞인다. 옛 화산 재 바닥 물러섬은 mixCells 없이 칸 무늬 그대로.
-    floor: { base: [TK("otherworld-floor"), M("ground-slagg")], patches: [] },
+    // 마계 판석 밭(theme-floors-r9): 7×5 칸 밭을 칸 위치로 감아 깔고 벽 밑 줄은 그늘 줄 키트. 옛 사본(섞음 키트·오토타일)은 「섞음」 태그로 섞인다.
+    floor: { base: [TK("otherworld-floor"), M("ground-slagg")], patches: [], field: TK("otherworld-floor") },
     ceiling: ["beodeul_dungeon_ceiling_void"],
   },
 };
