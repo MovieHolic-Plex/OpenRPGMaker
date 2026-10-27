@@ -5,6 +5,12 @@
 
 <!-- releases -->
 
+## 0.354.0 — 2026-10-27
+
+### 기능
+
+- **fallen** — act 2 gap fixes, harder detection, 1.24 release stop at the sky tower (#3858) (`954280b`)
+
 ## 0.353.2 — 2026-10-27
 
 ### 수정
