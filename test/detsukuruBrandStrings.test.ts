@@ -14,7 +14,6 @@ import { extname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import { PRODUCT_BRAND, PRODUCT_SLUG, PRODUCT_TAGLINE } from "@/brand";
-import { transformSync, type Loader } from "esbuild";
 
 const REPO_ROOT = fileURLToPath(new URL("..", import.meta.url));
 const SRC_ROOT = join(REPO_ROOT, "src");
@@ -52,7 +51,8 @@ function legacyLiteral(label: string, literal: string): { readonly label: string
 }
 
 const FORBIDDEN_PATTERNS: readonly { readonly label: string; readonly re: RegExp }[] = [
-  { label: "RPG Maker 제품명", re: /RPG\s+MAKER/i },
+  // 「2D top-down JRPG maker」 같은 일반 명사는 제품명이 아니다 — 앞에 글자가 붙은 RPG 는 잡지 않는다.
+  { label: "RPG Maker 제품명", re: /(?<![A-Za-z])RPG\s+MAKER/i },
   { label: "RPG 만들기(한국 정식 제품명)", re: /RPG\s*만들기/ },
   { label: "쯔꾸르 / 쯔구르 (ツクール 음차)", re: /쯔꾸르|쯔구르/ },
   { label: "ツクール", re: /ツクール/ },
@@ -253,25 +253,135 @@ const EXEMPT_PREFIXES: readonly string[] = [
   "src/styles/runtime/battle-skins/",
 ];
 
+/**
+ * 일부러 남긴 타사 이름 — (파일, 패턴 라벨) 쌍으로만 허용하고 각각 이유를 적는다. 줄 번호에 묶지 않는다.
+ * 호환·가져오기 안내, 스토어의 제3자 팩 차단 목록·차단 메시지, 사용자가 부르는 장르 낱말, 그 번역이다.
+ * OPRN 자기 옛 이름(rpgzzu·rpg-zzu·RPG ZZU 계열)은 여기 올릴 수 없다 — 아래 테스트가 막는다.
+ */
+const INTENTIONAL_THIRD_PARTY: readonly { readonly file: string; readonly labels: readonly string[]; readonly reason: string }[] = [
+  { file: "src/assetStore/format.ts", labels: ["쯔꾸르 / 쯔구르 (ツクール 음차)", "ツクール"], reason: "스토어 제3자 팩 차단 낱말 목록(올리기를 막는 값)" },
+  { file: "src/assetStore/pack.ts", labels: ["RPG Maker 제품명"], reason: "제3자 팩 업로드 거절 메시지 — 무엇이 막혔는지 이름을 댄다" },
+  { file: "src/editor/assetStore/storeShare.ts", labels: ["RPG Maker 제품명"], reason: "스토어 올리기 점검 — 막힌 제3자 팩 계열을 알려 준다" },
+  { file: "src/assets/assistantSkills.json", labels: ["RPG Maker 제품명"], reason: "스토어 제출 스킬의 «올리지 말 것» 목록" },
+  { file: "src/editor/mvPackImport.ts", labels: ["RPG Maker 제품명"], reason: "사용자가 가진 MV 팩을 가져오는 호환 경로의 안내" },
+  { file: "src/editor/tools/tilesetObjectTools.ts", labels: ["RPG Maker 제품명"], reason: "사용자가 올린 MV 팩 프리셋을 가리키는 도구 설명" },
+  { file: "src/editor/panels/tilesetRoomKitPanel.ts", labels: ["RPG Maker 제품명", "심볼 접두사 rpgMaker"], reason: "올린 시트가 MV/MZ 오토타일 배치인지 알아보는 호환 판별과 그 안내" },
+  { file: "src/project/roomKit.ts", labels: ["심볼 접두사 rpgMaker"], reason: "같은 호환 판별 함수(rpgMakerAutotileSheet·rpgMakerBlockPicks)" },
+  { file: "src/editor/tools/eventTools.ts", labels: ["RPG Maker 제품명"], reason: "조수에게 속도 눈금이 MV 와 다르다고 알리는 호환 주의" },
+  { file: "src/editor/tools/tileMetadataTools.ts", labels: ["RPG Maker 제품명"], reason: "counter 속성이 MV 의 카운터 속성과 같다는 호환 설명" },
+  { file: "src/harnesses/_core/workshop/genKits/object-gen.json", labels: ["RPG Maker 제품명"], reason: "도트 판정자 프롬프트의 시점 비유와 금지 낱말 목록" },
+  { file: "src/i18n/catalogs/en.json", labels: ["RPG Maker 제품명"], reason: "위 호환·차단 메시지와 RTP 개변 자료 라이선스 안내의 번역" },
+  { file: "src/i18n/catalogs/ja.json", labels: ["RPG Maker 제품명"], reason: "위 호환·차단 메시지와 RTP 개변 자료 라이선스 안내의 번역" },
+  { file: "src/i18n/catalogs/zh.json", labels: ["RPG Maker 제품명"], reason: "위 호환·차단 메시지와 RTP 개변 자료 라이선스 안내의 번역" },
+  { file: "src/project/genreLock.ts", labels: ["라벨에 포켓몬"], reason: "사용자가 고르는 장르 이름(몬스터 수집) — 사용자가 그렇게 부른다" },
+  { file: "src/editor/dungeonKit/genres.ts", labels: ["라벨에 포켓몬"], reason: "던전 장르 고르기의 장르 이름" },
+  { file: "src/editor/dungeonKit/grammar.ts", labels: ["라벨에 포켓몬", "라벨에 크로노 트리거", "라벨에 드퀘/드래곤 퀘스트"], reason: "사용자 요청 낱말을 던전 문법으로 옮기는 표 — 라벨은 사용자가 쓴 참조 이름" },
+  { file: "src/harnesses/charset-actor/harness.ts", labels: ["라벨에 RM2000/RM2003"], reason: "RM2000 CharSet 판형 호환 하네스의 제목(내부 저작 도구)" },
+];
+/** 자기 옛 이름 패턴 라벨 — 허용 목록에 올라갈 수 없다. */
+const SELF_NAME_LABEL = /zzu|rpgzzu|rpg-zzu|__rpg|RPGZZU|RPG_ZZU/i;
+function intentionalThirdParty(relativePath: string, label: string): boolean {
+  if (SELF_NAME_LABEL.test(label)) return false;
+  const normalized = relativePath.replace(/\\/g, "/");
+  return INTENTIONAL_THIRD_PARTY.some((entry) => entry.file === normalized && entry.labels.includes(label));
+}
+
 function isExempt(relativePath: string): boolean {
   const normalized = relativePath.replace(/\\/g, "/");
   return EXEMPT_PREFIXES.some((prefix) => normalized === prefix || normalized.startsWith(prefix));
 }
 
-const COMMENT_STRIPPABLE_EXTENSIONS = new Set([".ts", ".tsx", ".mts", ".mjs", ".cjs", ".js"]);
+const COMMENT_STRIPPABLE_EXTENSIONS = new Set([".ts", ".tsx", ".mts", ".cjs", ".mjs", ".js", ".css"]);
+
+/**
+ * 주석만 지운다(문자열·템플릿·정규식 리터럴 안의 주석 모양 글자는 남긴다). 지운 블록 주석의 줄바꿈은 남겨 줄 번호를 지킨다.
+ * TypeScript 7 은 JS 컴파일러 API 가 없고, esbuild 변환은 클래스 멤버·문장에 붙은 주석을 그대로 남겨서(실측: src/player/input.ts)
+ * 작은 어휘 분석기로 직접 뗀다. CSS 는 블록 주석만 있다.
+ */
+function stripComments(source: string, css: boolean): string {
+  let out = "";
+  let i = 0;
+  const templateDepth: number[] = []; // 템플릿 ${ 안의 중괄호 깊이
+  let braceDepth = 0;
+  let lastSignificant = "";
+  const regexCanStart = (): boolean => lastSignificant === "" || /[(,=:[!&|?{};+\-*%<>~^]$/.test(lastSignificant)
+    || /(?:^|[^\w$])(?:return|typeof|case|do|else|in|of|void|yield|await)$/.test(out.trimEnd().slice(-8));
+  const readQuoted = (quote: string): void => {
+    out += source[i++];
+    while (i < source.length) {
+      const ch = source[i];
+      out += ch; i += 1;
+      if (ch === "\\") { out += source[i] ?? ""; i += 1; continue; }
+      if (ch === quote || (ch === "\n" && quote !== "`")) break;
+    }
+  };
+  const readTemplate = (): void => {
+    out += source[i++];
+    while (i < source.length) {
+      const ch = source[i];
+      if (ch === "\\") { out += ch + (source[i + 1] ?? ""); i += 2; continue; }
+      if (ch === "`") { out += ch; i += 1; return; }
+      if (ch === "$" && source[i + 1] === "{") { out += "${"; i += 2; templateDepth.push(braceDepth); braceDepth += 1; return; }
+      out += ch; i += 1;
+    }
+  };
+  while (i < source.length) {
+    const ch = source[i];
+    const next = source[i + 1];
+    if (ch === "/" && next === "*") {
+      const close = source.indexOf("*/", i + 2);
+      const body = close < 0 ? source.slice(i) : source.slice(i, close + 2);
+      out += body.replace(/[^\n]/g, "");
+      i += body.length;
+      continue;
+    }
+    if (!css && ch === "/" && next === "/") {
+      while (i < source.length && source[i] !== "\n") i += 1;
+      continue;
+    }
+    if (ch === "\"" || ch === "'") { readQuoted(ch); lastSignificant = "a"; continue; }
+    if (!css && ch === "`") { readTemplate(); lastSignificant = "a"; continue; }
+    if (!css && ch === "/" && regexCanStart()) {
+      out += source[i++];
+      let inClass = false;
+      while (i < source.length && source[i] !== "\n") {
+        const c = source[i];
+        out += c; i += 1;
+        if (c === "\\") { out += source[i] ?? ""; i += 1; continue; }
+        if (c === "[") inClass = true;
+        else if (c === "]") inClass = false;
+        else if (c === "/" && !inClass) break;
+      }
+      lastSignificant = "a";
+      continue;
+    }
+    if (!css && ch === "{") braceDepth += 1;
+    if (!css && ch === "}") {
+      braceDepth -= 1;
+      if (templateDepth.length && templateDepth[templateDepth.length - 1] === braceDepth) {
+        templateDepth.pop();
+        out += ch; i += 1;
+        // 템플릿 본문으로 돌아간다 — 여는 ` 없이 이어 읽는다.
+        while (i < source.length) {
+          const c = source[i];
+          if (c === "\\") { out += c + (source[i + 1] ?? ""); i += 2; continue; }
+          if (c === "`") { out += c; i += 1; break; }
+          if (c === "$" && source[i + 1] === "{") { out += "${"; i += 2; templateDepth.push(braceDepth); braceDepth += 1; break; }
+          out += c; i += 1;
+        }
+        lastSignificant = "a";
+        continue;
+      }
+    }
+    if (!/\s/.test(ch)) lastSignificant = ch;
+    out += ch; i += 1;
+  }
+  return out;
+}
 
 function shippingSource(source: string, extension: string): string {
-  if (COMMENT_STRIPPABLE_EXTENSIONS.has(extension)) {
-    // TypeScript 7(package.json ^7.0.2)은 JS 컴파일러 API(createSourceFile·createPrinter)를 없앴다 — esbuild 로 주석만 뗀다.
-    // 문자열 안의 주석 모양 글자는 남고, 비ASCII 는 utf8 그대로 둔다.
-    const loader: Loader = extension === ".tsx" ? "tsx" : extension === ".ts" || extension === ".mts" ? "ts" : "js";
-    try {
-      return transformSync(source, { loader, charset: "utf8", legalComments: "none" }).code;
-    } catch {
-      return source; // esbuild 가 못 읽는 선언 파일(.d.mts 등)은 원문 그대로 본다 — 더 엄격한 쪽
-    }
-  }
-  return source;
+  if (!COMMENT_STRIPPABLE_EXTENSIONS.has(extension)) return source;
+  return stripComments(source, extension === ".css");
 }
 
 function walkTooling(dir: string, out: string[] = []): string[] {
@@ -306,7 +416,7 @@ describe("탈-쯔구르: 출하 문자열", () => {
       lines.forEach((line, index) => {
         if (ASSET_PATH_LINE.test(line)) return;
         for (const { label, re } of FORBIDDEN_PATTERNS) {
-          if (re.test(line)) offenders.push(`${rel.replace(/\\/g, "/")}:${index + 1} [${label}] ${line.trim().slice(0, 120)}`);
+          if (re.test(line) && !intentionalThirdParty(rel, label)) offenders.push(`${rel.replace(/\\/g, "/")}:${index + 1} [${label}] ${line.trim().slice(0, 120)}`);
         }
       });
     }
@@ -363,6 +473,19 @@ describe("탈-쯔구르: 출하 문자열", () => {
     expect(EXEMPT_PREFIXES.length).toBeLessThanOrEqual(3);
   });
 
+  it("일부러 남긴 타사 이름 목록은 이유가 있고, 자기 옛 이름은 올릴 수 없다", () => {
+    const labels = new Set([...FORBIDDEN_PATTERNS, ...FRANCHISE_LABEL_FORBIDDEN, ...LABEL_LIKE_FORBIDDEN].map((pattern) => pattern.label));
+    for (const entry of INTENTIONAL_THIRD_PARTY) {
+      expect(entry.reason.trim(), entry.file).not.toBe("");
+      expect(statSync(join(REPO_ROOT, entry.file)).isFile(), entry.file).toBe(true);
+      for (const label of entry.labels) {
+        expect(labels.has(label), `${entry.file}: 없는 패턴 라벨 ${label}`).toBe(true);
+        expect(SELF_NAME_LABEL.test(label), `${entry.file}: 자기 옛 이름은 허용할 수 없다 (${label})`).toBe(false);
+      }
+    }
+    expect(intentionalThirdParty("src/assetStore/format.ts", "구 저장 키 접두사 rpg-zzu")).toBe(false);
+  });
+
   // 전투 스킨 라벨은 자료집→시스템 드롭다운에 그대로 뿌려진다(databaseSystemView.ts).
   // id 는 저장 데이터라 못 바꾸지만 라벨은 사용자에게 보이는 문자열이므로 여기서 지킨다.
   it("전투 스킨 라벨에 타사 제품·프랜차이즈 이름이 없다", async () => {
@@ -405,7 +528,7 @@ describe("탈-쯔구르: 출하 문자열", () => {
         .forEach((line, index) => {
           if (ASSET_PATH_LINE.test(line)) return;
           for (const { label, re } of FRANCHISE_LABEL_FORBIDDEN) {
-            if (re.test(line)) offenders.push(`${rel}:${index + 1} [${label}] ${line.trim().slice(0, 110)}`);
+            if (re.test(line) && !intentionalThirdParty(rel, label)) offenders.push(`${rel}:${index + 1} [${label}] ${line.trim().slice(0, 110)}`);
           }
         });
     }
@@ -421,7 +544,7 @@ describe("탈-쯔구르: 출하 문자열", () => {
       const lines = readFileSync(file, "utf8").split(/\r?\n/);
       lines.forEach((line, index) => {
         for (const { label, re } of LABEL_LIKE_FORBIDDEN) {
-          if (re.test(line)) offenders.push(`${rel}:${index + 1} [${label}] ${line.trim().slice(0, 120)}`);
+          if (re.test(line) && !intentionalThirdParty(rel, label)) offenders.push(`${rel}:${index + 1} [${label}] ${line.trim().slice(0, 120)}`);
         }
       });
     }
