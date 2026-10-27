@@ -191,12 +191,15 @@ describe("event editor UI density", () => {
     expect(workbench).toBeTruthy();
     expect(inspector?.hidden).toBe(false);
     expect(inspector?.querySelector(".event-preview-heading")?.textContent).toBe("미리보기");
-    expect(workbench?.classList.contains("has-command-inspector")).toBe(false);
+    // 미리보기 칸이 보이면 작업대는 has-command-inspector 를 달고 태어난다(PR #3211). 선택 전엔 화면 차이가 없다 —
+    // 선택 여부는 commandPath 로 본다.
+    expect(inspector?.dataset.commandPath).toBeUndefined();
 
     firstCommand?.click();
 
     expect(inspector?.hidden).toBe(false);
     expect(workbench?.classList.contains("has-command-inspector")).toBe(true);
+    expect(inspector?.dataset.commandPath).toBeDefined();
     expect(inspector?.querySelector('[data-testid="event-inspector-preview"]')).toBeTruthy();
     expect(inspector?.querySelector('[data-testid="event-inspector-body"]')).toBeNull();
   });

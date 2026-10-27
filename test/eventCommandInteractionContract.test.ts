@@ -116,9 +116,11 @@ describe("page command interaction contract", () => {
     head().click();
     editorState.set({ selectedEventPageId: "p2" });
     expect(selectedCommandPath()).toBeUndefined();
-    // 인스펙터 칸은 미리보기 우선 표면이라 선택이 없어도 숨기지 않는다(commandInspector.hideInspector, PR #3211) — 선택 해제는 has-command-inspector 로 본다.
+    // 인스펙터 칸은 미리보기 우선 표면이라 선택이 없어도 숨기지 않는다(PR #3211). 작업대는 미리보기 칸이 보이면
+    // has-command-inspector 를 달고 태어나며, 선택 전에는 그 클래스가 화면에 아무 차이도 만들지 않는다
+    // (1440·1180·1024 캡처가 있을 때와 뗐을 때 화소 동일) — 선택 해제는 인스펙터의 commandPath 로 본다.
     expect(button("event-editor-inspector").hidden).toBe(false);
-    expect(document.querySelector(".event-editor-workbench")?.classList.contains("has-command-inspector")).toBe(false);
+    expect(button("event-editor-inspector").dataset.commandPath).toBeUndefined();
   });
   it("clears selection rather than selecting the next positional command after deletion", () => {
     head().click();

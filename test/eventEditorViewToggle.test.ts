@@ -118,7 +118,8 @@ describe("이벤트 에디터 뷰 토글", () => {
     const inspector = host.querySelector<HTMLElement>('[data-testid="event-editor-inspector"]');
     // 인스펙터 칼럼은 미리보기 우선(PR #3211): 선택 전에도 숨지 않고 미리보기를 보여 준다.
     expect(inspector?.hidden).toBe(false);
-    expect(host.querySelector(".event-editor-workbench")?.classList.contains("has-command-inspector")).toBe(false);
+    // 작업대는 미리보기 칸이 보이면 has-command-inspector 를 달고 태어난다 — 선택 전 상태는 commandPath 로 본다.
+    expect(inspector?.dataset.commandPath).toBeUndefined();
 
     click(host, "event-storyboard-card-1");
 
