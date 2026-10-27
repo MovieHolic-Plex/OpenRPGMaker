@@ -247,7 +247,9 @@ function placementOverlapsExisting(target: EventLayerContextMenuTarget, incoming
 function deleteEventAt(target: EventLayerContextMenuTarget): void {
   const event = eventAtTarget(target);
   if (!event) return;
-  recordProjectSnapshot();
+  // deleteEditorEvent 가 삭제 직전 맵 스냅샷을 한 칸 남긴다. 여기서 프로젝트
+  // 스냅샷을 한 번 더 쌓으면 종류가 달라 합쳐지지 않고, 이벤트를 되돌린 뒤에도
+  // 「편집」 빈 단계가 남아 그 다음 되돌리기를 삼킨다. 잘라내기도 이 경로다.
   deleteEditorEvent(target.mapId, event.id);
 }
 

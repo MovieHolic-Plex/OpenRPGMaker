@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { setStartMap } from "@/editor/actions";
 import { editorState } from "@/editor/editorState";
-import { getMapEditHistoryEntries, resetMapEditHistory } from "@/editor/mapEditHistory";
+import { getMapEditHistoryEntries, redoMapEdit, resetMapEditHistory, undoMapEdit } from "@/editor/mapEditHistory";
 import { openNewEventEditorModal } from "@/editor/panels/eventEditor/modal";
 import {
   clearEventLayerClipboard,
@@ -198,6 +198,31 @@ describe("event layer context menu", () => {
     const pasted = store.getCurrent().maps[target.mapId].events.find((item) => item.x === clearTarget.x && item.y === clearTarget.y);
     expect(pasted?.id).not.toBe(source.id);
     expect(pasted?.pages?.[0]?.footprint).toEqual({ width: 3, height: 1 });
+    expect(getMapEditHistoryEntries()).toHaveLength(1);
+  });
+
+  it("cuts an event in one undo step and keeps it on the clipboard", () => {
+    resetMapEditHistory();
+    const source = sampleEvent("event-cut", 1, 1);
+    store.update((project) => {
+      project.maps[target.mapId]?.events.push(source);
+    });
+    const sourceTarget = { ...target, x: 1, y: 1 };
+
+    eventLayerContextMenuItems(sourceTarget).find((item) => item.id === "cut")?.action();
+
+    expect(store.getCurrent().maps[target.mapId].events.map((item) => item.id)).toEqual([]);
+    expect(eventLayerContextMenuItems(target).find((item) => item.id === "paste")?.disabled).toBe(false);
+    expect(getMapEditHistoryEntries()).toEqual([
+      expect.objectContaining({ label: "이벤트 삭제: event-cut", steps: 1 }),
+    ]);
+
+    expect(undoMapEdit()).toBe(true);
+    expect(store.getCurrent().maps[target.mapId].events.map((item) => item.id)).toEqual(["event-cut"]);
+    expect(getMapEditHistoryEntries()).toHaveLength(0);
+
+    expect(redoMapEdit()).toBe(true);
+    expect(store.getCurrent().maps[target.mapId].events.map((item) => item.id)).toEqual([]);
     expect(getMapEditHistoryEntries()).toHaveLength(1);
   });
 
