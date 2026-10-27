@@ -51,7 +51,8 @@ describe("로컬 서버가 브라우저에 로컬 정본을 연다", () => {
   it("index.html 에 브리지 설정과 스크립트를 주입하고 브리지 원문을 준다", async () => {
     const html = await (await fetch(`${server.url}/`)).text();
 
-    expect(html).toContain(`window.__OPRN_BRIDGE__={"endpoint":"/__oprn/bridge","token":"${server.token}","companionToken":"`);
+    // requestBodyEncoding:"gzip" 가 token 과 companionToken 사이에 있다(공개 기준 커밋 0d4f13e7c8, 브리지 요청 본문 gzip).
+    expect(html).toContain(`window.__OPRN_BRIDGE__={"endpoint":"/__oprn/bridge","token":"${server.token}","requestBodyEncoding":"gzip","companionToken":"`);
     expect(html).toContain('<script src="/__oprn/bridge.js"></script>');
     expect(html).toContain('<div id="app">');
 
