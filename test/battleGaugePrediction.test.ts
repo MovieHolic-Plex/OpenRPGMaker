@@ -29,7 +29,9 @@ describe("gauge director prediction follows the runtime scheduler", () => {
     }
     expect(chargingDirectorState(before).lines).toEqual([]);
     runtime.tick(10_000);
-    expect(runtime.snapshot().actionLog[0]?.side).toBe("enemy");
+    // actionLog 항목에는 side 가 없다 — 누가 쳤는지는 userRecordId(와 timeline 의 side)로 본다.
+    expect(runtime.snapshot().actionLog[0]?.userRecordId).toBe(enemy.id);
+    expect(runtime.snapshot().timeline[0]?.side).toBe("enemy");
     runtime.cancel();
   });
 
