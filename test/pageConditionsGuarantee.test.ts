@@ -138,6 +138,9 @@ function sampleCondition(kind: (typeof CONDITION_KINDS)[number]): EventPageCondi
       return { kind: "hiding", value: true };
     case "pursuitActive":
       return { kind: "pursuitActive", value: true };
+    case "eventSeesPlayer":
+      // #3317 에서 더해진 시선 조건 — 같은 방·벽 검사를 끄고 거리만 잰다(바로 옆 칸은 방향과 무관하게 본다).
+      return { kind: "eventSeesPlayer", eventId: "ev_runtime", range: 5, sameRoom: false };
     case "clearCount":
       return { kind: "clearCount", op: ">=", value: 1 };
     case "endingSeen":
@@ -283,6 +286,7 @@ describe("page conditions working guarantee (all kinds)", () => {
      sampleCondition("relativeFacing"),
      sampleCondition("hiding"),
      sampleCondition("pursuitActive"),
+     sampleCondition("eventSeesPlayer"),
      sampleCondition("clearCount"),
      sampleCondition("endingSeen"),
      sampleCondition("newGamePlus"),
@@ -685,6 +689,12 @@ describe("page conditions working guarantee (all kinds)", () => {
           break;
         case "pursuitActive":
           query.horror = { pursuits: { chaser: { active: true } } };
+          break;
+        case "eventSeesPlayer":
+          // 이벤트가 (0,0) 에, 주인공은 바로 아래 (0,1) 에 있다.
+          query.eventLocations = { [condition.eventId]: { mapId: "m", x: 0, y: 0, direction: "down" } };
+          query.currentMapId = "m";
+          query.y = 1;
           break;
         case "clearCount":
           query.clearHistory = { count: condition.value, endingIds: [] };
