@@ -362,6 +362,13 @@ describe("player deployment manifest", () => {
     const fixture = await deploymentFixture();
     const project = createBlankProject();
     project.system.battleUiStyle = skin;
+    // 기본 액터는 이제 칩셋 배틀러(charset-battler-*)를 써서 생성 영웅 뒷모습(-back)이 파생되지 않는다.
+    // 포켓몬 스킨의 뒷모습 동봉을 보려면 생성 영웅 전투 시트를 쓰는 액터 넷을 둔다(partySpriteResources actorBackSpriteId).
+    if (skin === "pokemon") {
+      project.database.actors.slice(0, 4).forEach((actor, index) => {
+        actor.battleCharacterResourceId = `generated-actor-hero-0${index + 1}-battle`;
+      });
+    }
 
     const result = await createWebPlayerExportPackage(project, {
       bundleBase: BUNDLE_BASE,
