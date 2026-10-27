@@ -23,11 +23,29 @@ import { createBlankProject } from "@/project/defaults";
 import type { PlaySession } from "@/project/session";
 import { armSaveWriteSignal } from "./e2e/saveWriteSignal";
 
+// On happy-dom 21 (#3310) the quota-failure spy on window.localStorage.setItem below survives
+// vi.restoreAllMocks, so every later save in this file failed with "저장 공간이 부족합니다" (CI run
+// 40463902992 traced the throw to that spy). Each test gets its own plain in-memory Storage instead.
+// The shipped pixel-skin save path writes in a real browser (runtime QA, 2026-10-27).
+class MemoryStorage implements Storage {
+  #items = new Map<string, string>();
+  get length(): number { return this.#items.size; }
+  clear(): void { this.#items.clear(); }
+  getItem(key: string): string | null { return this.#items.get(String(key)) ?? null; }
+  key(index: number): string | null { return Array.from(this.#items.keys())[index] ?? null; }
+  removeItem(key: string): void { this.#items.delete(String(key)); }
+  setItem(key: string, value: string): void { this.#items.set(String(key), String(value)); }
+}
+
 let main: HTMLElement;
 let session: PlaySession;
 let registry: Map<string, unknown>;
 
 beforeEach(async () => {
+  vi.stubGlobal("localStorage", new MemoryStorage());
+  if (window.localStorage !== globalThis.localStorage) {
+    Object.defineProperty(window, "localStorage", { configurable: true, value: globalThis.localStorage });
+  }
   window.localStorage.clear();
   window.sessionStorage.clear();
   setSaveSlotStorageNamespace(null);
@@ -45,7 +63,9 @@ beforeEach(async () => {
     };
     return {
       destroy: vi.fn(),
-      registry: { set: (key: string, value: unknown) => registry.set(key, value) },
+      // player.ts onKeyDown reads registry.get('initialPresentationPending') before routing any key; without
+      // get() the handler threw, so Enter on a save slot never reached the menu.
+      registry: { set: (key: string, value: unknown) => registry.set(key, value), get: (key: string) => registry.get(key) },
       events: { once: () => undefined, off: () => undefined },
       scene: { getScene: () => scene },
     };
@@ -53,7 +73,10 @@ beforeEach(async () => {
   main = document.createElement("div");
   document.body.append(main);
   await new Promise<void>((resolve) => {
-    renderPlayer(main, { autoStartRun: true, trackGlobalGame: false, onPlayBootSuccess: resolve });
+    // A blank project has a New Game opening, and the player now boots the engine behind it, so boot success
+    // arrives while the opening still owns the keyboard (player.ts bootRun / onKeyDown). This suite is about
+    // the save menu, so the host skips the opening, as the editor test-play window can.
+    renderPlayer(main, { autoStartRun: true, trackGlobalGame: false, shouldPlayOpening: () => false, onPlayBootSuccess: resolve });
   });
 });
 
@@ -64,6 +87,7 @@ afterEach(() => {
   main.remove();
   window.localStorage.clear();
   vi.restoreAllMocks();
+  vi.unstubAllGlobals();
 });
 
 function openSaveMenu(): void {
@@ -144,7 +168,7 @@ describe("event-opened save menu in the shipping player shell", () => {
     expect(readSaveSlot(window.localStorage, 1).kind).toBe("empty");
   });
 
-  it("shows slots immediately and saves, navigates and backs out through the keyboard", () => {
+  it("shows slots immediately and saves, navigates and backs out through the keyboard", async () => {
     openSaveMenu();
     expectSaveScreen();
     expect(menu().querySelector("[data-testid='save-slot-1']")?.getAttribute("aria-current")).toBe("true");
@@ -161,8 +185,9 @@ describe("event-opened save menu in the shipping player shell", () => {
     const closingMenu = menu();
     keyDown("Escape");
     expect(closingMenu.dataset.statusMenuClosing).toBe("1");
-    // The shipping close helper removes immediately when Web Animations is unavailable.
-    expect(closingMenu.isConnected).toBe(false);
+    // happy-dom 21 (#3310) implements Element.animate, so the shipping close helper removes the panel when
+    // its 120ms exit animation finishes instead of immediately (playerStatusMenuMotion.closeStatusMenu).
+    await vi.waitFor(() => expect(closingMenu.isConnected).toBe(false));
   });
 
   it("keeps overwrite confirmation cancellable and resets it on direct re-entry", () => {
