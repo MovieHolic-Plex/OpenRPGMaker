@@ -14,6 +14,8 @@ import { showGameOverScreen, showEndingScreen } from "@/player/playSceneOverlays
 import { renderPlayer, teardownPlayer, type PlayerRunControls } from "@/player/player";
 import { setExportedProject } from "@/player/exportProjectStoreShim";
 import { createBlankProject } from "@/project/defaults";
+import { vnExtrasLanguage } from "@/project/vnExtras";
+import { vnUiText } from "@/player/vnExtrasStrings";
 import { startSession, type PlaySession } from "@/project/session";
 const sequence = { enabled: true, skippable: true, scenes: [
   { id: "opening-1", kind: "text" as const, narration: "<b>opening</b>", durationMs: 0 },
@@ -21,6 +23,7 @@ const sequence = { enabled: true, skippable: true, scenes: [
 let main: HTMLElement;
 let project: ReturnType<typeof createBlankProject>;
 let controls: PlayerRunControls;
+let games: { destroy: ReturnType<typeof vi.fn>; activateInitialPresentation: ReturnType<typeof vi.fn> }[];
 function key(key: string, repeat = false): KeyboardEvent {
   const event = new KeyboardEvent("keydown", { key, repeat, bubbles: true, cancelable: true });
   (document.activeElement ?? document).dispatchEvent(event);
@@ -34,41 +37,59 @@ beforeEach(() => {
   setExportedProject(project);
   main = document.createElement("main");
   document.body.append(main);
+  games = [];
   mode.startPlayGame.mockReset();
-  mode.startPlayGame.mockImplementation(async (_host: HTMLElement, session: PlaySession) => ({
-    destroy: vi.fn(), registry: { set: vi.fn() }, events: { once: vi.fn(), off: vi.fn() },
-    scene: { getScene: () => ({ session, getSession: () => session, applySession: vi.fn(),
-      refreshRuntimeSurfaces: vi.fn(), sys: { settings: { status: 5 } } }) },
-  }));
+  mode.startPlayGame.mockImplementation(async (_host: HTMLElement, session: PlaySession) => {
+    const destroy = vi.fn();
+    const activateInitialPresentation = vi.fn();
+    games.push({ destroy, activateInitialPresentation });
+    return {
+      destroy, registry: { set: vi.fn(), get: vi.fn() }, events: { once: vi.fn(), off: vi.fn() },
+      scene: { getScene: () => ({ session, getSession: () => session, applySession: vi.fn(), activateInitialPresentation,
+        refreshRuntimeSurfaces: vi.fn(), sys: { settings: { status: 5 } } }) },
+    };
+  });
 });
 afterEach(() => { teardownPlayer(); main.remove(); vi.useRealTimers(); vi.restoreAllMocks(); });
+// The player now starts the engine behind a New Game opening and holds the field (time, events, input,
+// map audio) until the presentation handoff: bootRun passes initialPresentationPending to startPlayGame
+// and calls PlayScene.activateInitialPresentation() once the opening ends (src/player/player.ts bootRun,
+// in the public baseline 0d4f13e7c8; the handoff cover was refined in #3568). So "no boot during the
+// opening" became "one boot, presentation held until the opening ends, never a second boot".
 describe("opening at the real player shell seam", () => {
-  it("defers New Game boot until opening completes without input fallthrough", async () => {
+  it("boots the engine once behind the opening and holds the field until it completes, without input fallthrough", async () => {
     renderPlayer(main, { trackGlobalGame: false });
     key("Enter");
     await vi.advanceTimersByTimeAsync(180);
-    expect(mode.startPlayGame).not.toHaveBeenCalled();
     expect(main.querySelector('[data-testid="cinematic-sequence"]')).not.toBeNull();
+    expect(mode.startPlayGame).toHaveBeenCalledTimes(1);
+    expect(mode.startPlayGame.mock.calls[0]?.[2]).toMatchObject({ initialPresentationPending: true });
+    expect(games[0]?.activateInitialPresentation).not.toHaveBeenCalled();
     expect(key("Enter", true).defaultPrevented).toBe(true);
-    expect(mode.startPlayGame).not.toHaveBeenCalled();
     const fallthrough = vi.fn();
     document.addEventListener("keydown", fallthrough);
     key("Enter");
     await Promise.resolve();
     expect(fallthrough).not.toHaveBeenCalled();
     document.removeEventListener("keydown", fallthrough);
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(games[0]?.activateInitialPresentation).toHaveBeenCalledTimes(1);
     expect(mode.startPlayGame).toHaveBeenCalledTimes(1);
     expect(main.querySelector('[data-testid="main-menu"]')).toBeNull();
   });
   it("runs autoStart and fresh restart but cancels stale openings on title return", async () => {
     renderPlayer(main, { autoStartRun: true, trackGlobalGame: false, onRunControlsReady: value => { controls = value; } });
-    expect(mode.startPlayGame).not.toHaveBeenCalled();
+    expect(mode.startPlayGame).toHaveBeenCalledTimes(1);
     controls.restartRun();
-    await vi.advanceTimersByTimeAsync(1100);
+    expect(mode.startPlayGame).toHaveBeenCalledTimes(2);
+    await vi.advanceTimersByTimeAsync(100);
     expect(main.querySelectorAll('[data-testid="cinematic-sequence"]')).toHaveLength(1);
     controls.returnToTitle();
-    await Promise.resolve();
-    expect(mode.startPlayGame).not.toHaveBeenCalled();
+    await vi.advanceTimersByTimeAsync(1100);
+    expect(mode.startPlayGame).toHaveBeenCalledTimes(2);
+    expect(games.every(game => game.destroy.mock.calls.length > 0)).toBe(true);
+    expect(games.some(game => game.activateInitialPresentation.mock.calls.length > 0)).toBe(false);
+    expect(main.querySelector('[data-testid="cinematic-sequence"]')).toBeNull();
     expect(main.querySelector('[data-testid="title-screen"]')).not.toBeNull();
   });
   it("lets the host skip the opening per run without reopening the player", async () => {
@@ -81,9 +102,10 @@ describe("opening at the real player shell seam", () => {
 
     playOpening = true;
     controls.restartRun();
-    // 같은 창에서 다시 켜면 다음 런부터 오프닝이 돌아온다.
+    // 같은 창에서 다시 켜면 다음 런부터 오프닝이 돌아온다(엔진은 오프닝 뒤에서 함께 뜬다).
     expect(main.querySelector('[data-testid="cinematic-sequence"]')).not.toBeNull();
-    expect(mode.startPlayGame).toHaveBeenCalledTimes(1);
+    expect(mode.startPlayGame).toHaveBeenCalledTimes(2);
+    expect(mode.startPlayGame.mock.calls[1]?.[2]).toMatchObject({ initialPresentationPending: true });
     await Promise.resolve();
   });
   it.each(["loaded", "test-here", "selected-event"] as const)("bypasses opening for %s", async kind => {
@@ -96,11 +118,14 @@ describe("opening at the real player shell seam", () => {
     expect(main.querySelector('[data-testid="cinematic-sequence"]')).toBeNull();
     await Promise.resolve();
   });
-  it("never boots after teardown during opening or pending title confirmation", async () => {
+  it("destroys the engine started behind an opening on teardown and never boots after a pending title confirmation", async () => {
     renderPlayer(main, { autoStartRun: true, trackGlobalGame: false });
+    expect(mode.startPlayGame).toHaveBeenCalledTimes(1);
     teardownPlayer();
-    await Promise.resolve();
-    expect(mode.startPlayGame).not.toHaveBeenCalled();
+    await vi.advanceTimersByTimeAsync(10);
+    expect(games[0]?.destroy).toHaveBeenCalled();
+    expect(games[0]?.activateInitialPresentation).not.toHaveBeenCalled();
+    mode.startPlayGame.mockClear();
     renderPlayer(main, { trackGlobalGame: false });
     key("Enter");
     teardownPlayer();
@@ -115,6 +140,8 @@ describe("game-over sequence lifecycle", () => {
     const events = new EventEmitter();
     const scene = {
       game: { registry: { get: () => main } }, events,
+      // The final ending card reads the session for its party/play-time summary line (endingSummaryLine).
+      session: startSession(project),
       hasCheckpoint: () => checkpoint, restoreCheckpoint: vi.fn(), returnToTitle: vi.fn(),
       input_: { releaseAllKeys: vi.fn() },
     };
@@ -168,8 +195,12 @@ describe("game-over sequence lifecycle", () => {
     key("Enter");
     await vi.advanceTimersByTimeAsync(1400);
     expect(main.querySelector(".ending-credits-roll")?.textContent).toBe("Story\nTravellers");
+    // #3225: holding a confirm key fast-forwards the roll; Escape (cancel) skips straight to the final card.
     key("Enter");
-    expect(main.querySelector(".ending-final-title")?.textContent).toBe("THE END");
+    expect(main.querySelector(".ending-final-title")).toBeNull();
+    key("Escape");
+    // #3214: the final card speaks the game language (ko blank project -> 「끝」, not "THE END").
+    expect(main.querySelector(".ending-final-title")?.textContent).toBe(vnUiText(vnExtrasLanguage(project), "ending.theEnd"));
     expect(title).not.toHaveBeenCalled();
     key("Enter", true);
     expect(title).not.toHaveBeenCalled();
@@ -202,10 +233,9 @@ describe("game-over sequence lifecycle", () => {
     expect(main.querySelector('.runtime-overlay-message')?.textContent).toBe(project.system.gameOver.message);
     expect(main.querySelector('.game-over-panel')).toBeNull();
     expect(main.querySelector('.game-over-screen')).not.toBeNull();
-    const art = main.querySelector<HTMLImageElement>('.cinematic-background');
-    expect(art?.src).toContain('Game%20Over.png');
-    expect(main.querySelector<HTMLElement>('.game-over-heading')?.hidden).toBe(true);
-    art?.dispatchEvent(new Event('error'));
+    // The default EasyRPG "Game Over.png" was removed in the 2026-10-07 copyright purge (#2335) and its id is
+    // retired (#3302, src/assets/retiredAssets.ts), so the classic screen falls back to the text heading.
+    expect(main.querySelector('.cinematic-background')).toBeNull();
     expect(main.querySelector<HTMLElement>('.game-over-heading')?.hidden).toBe(false);
     events.emit("destroy");
     expect(main.querySelector('[data-testid="game-over-screen"]')).toBeNull();
