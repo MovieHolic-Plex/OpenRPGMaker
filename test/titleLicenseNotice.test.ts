@@ -47,6 +47,43 @@ describe("title credits keyboard ownership", () => {
       document.removeEventListener("keydown", behind, true);
     }
   });
+
+  it("scrolls the notice with arrows and page keys without closing", async () => {
+    openLicenseDialog();
+    await vi.waitFor(() => expect(document.querySelector("dialog[open]")).not.toBeNull());
+    const body = document.querySelector<HTMLElement>(".rm-license-dialog-body")!;
+    const button = document.querySelector<HTMLButtonElement>(".rm-license-dialog-close")!;
+    expect(document.querySelector("#title-credits-hint")?.textContent).toBe("↑↓ 로 읽고, Esc 로 닫습니다");
+    expect(body.getAttribute("aria-label")).toBe("저작자 표기");
+    expect(body.tabIndex).toBe(0);
+    const press = (key: string): KeyboardEvent => {
+      const event = new KeyboardEvent("keydown", { key, bubbles: true, cancelable: true });
+      button.dispatchEvent(event);
+      return event;
+    };
+    const down = press("ArrowDown");
+    expect(down.defaultPrevented).toBe(true);
+    expect(body.scrollTop).toBe(32);
+    expect(document.querySelector("dialog[open]")).not.toBeNull();
+    const page = Math.max(96, Math.round((body.clientHeight || 256) * 0.85));
+    press("PageDown");
+    expect(body.scrollTop).toBe(32 + page);
+    press("Home");
+    expect(body.scrollTop).toBe(0);
+    press("End");
+    expect(body.scrollTop).toBe(body.scrollHeight);
+    press("ArrowUp");
+    expect(body.scrollTop).toBe(Math.max(0, body.scrollHeight - 32));
+    const behind = vi.fn();
+    document.addEventListener("keydown", behind, true);
+    try {
+      press("PageUp");
+      expect(behind).not.toHaveBeenCalled();
+    } finally {
+      document.removeEventListener("keydown", behind, true);
+    }
+    expect(document.querySelector("dialog[open]")).not.toBeNull();
+  });
 });
 
 describe("title credits include asset store items", () => {
