@@ -14,17 +14,19 @@ function flatProject() {
   return project;
 }
 
+// 「전투 기록」(battle-reports)이 기록 묶음에, 「설정」(options)이 시스템 트레이에 들어왔다(공개 기준 커밋 0d4f13e7c8) —
+// 기록 명령이 언제나 둘 이상이라 평면 레일에서도 「기록 ▸」 로 접힌다.
 describe("flat status menu rail (painted skins)", () => {
   it("행동·파티를 펼치고 임무는 그대로, 저장은 꺼내고 시스템은 접는다", () => {
     const project = flatProject();
     expect(listStatusMenuRailIds(project, startSession(project))).toEqual([
-      "items", "skills", "equipment", "status", "row", "formation", "monsters", "quests", "save", "system-menu",
+      "items", "skills", "equipment", "status", "row", "formation", "monsters", "record-menu", "save", "system-menu",
     ]);
   });
 
-  it("시스템 트레이는 저장을 빼고 로드·대기·타이틀만 담는다", () => {
+  it("시스템 트레이는 저장을 빼고 로드·대기·설정·타이틀만 담는다", () => {
     const project = flatProject();
-    expect(listStatusMenuGroupCommandIds("system-menu", project, startSession(project))).toEqual(["load", "wait", "to-title"]);
+    expect(listStatusMenuGroupCommandIds("system-menu", project, startSession(project))).toEqual(["load", "wait", "options", "to-title"]);
   });
 
   it("기록 명령이 둘 이상이면 「기록 ▸」 로 접는다", () => {
@@ -34,7 +36,7 @@ describe("flat status menu rail (painted skins)", () => {
     const rail = listStatusMenuRailIds(project, session);
     expect(rail).toContain("record-menu");
     expect(rail).not.toContain("quests");
-    expect(listStatusMenuGroupCommandIds("record-menu", project, session)).toEqual(["quests", "relationships"]);
+    expect(listStatusMenuGroupCommandIds("record-menu", project, session)).toEqual(["battle-reports", "quests", "relationships"]);
   });
 
   it("커서 강조 대상: 펼친 명령은 자신, 접힌 명령은 그룹 항목", () => {
@@ -44,7 +46,7 @@ describe("flat status menu rail (painted skins)", () => {
     expect(statusMenuRailIdForCommand("save", project, session)).toBe("save");
     expect(statusMenuRailIdForCommand("load", project, session)).toBe("system-menu");
     expect(statusMenuRailIdForCommand("to-title", project, session)).toBe("system-menu");
-    expect(statusMenuRailIdForCommand("quests", project, session)).toBe("quests");
+    expect(statusMenuRailIdForCommand("quests", project, session)).toBe("record-menu");
     expect(statusMenuRailIdForCommand("system-menu", project, session)).toBe("system-menu");
   });
 
@@ -54,7 +56,7 @@ describe("flat status menu rail (painted skins)", () => {
     expect(listStatusMenuRailIds(project, session)).toEqual(["items", "skills", "equipment", "party-menu", "record-menu", "system-menu"]);
     expect(statusMenuRailIdForCommand("status", project, session)).toBe("party-menu");
     expect(statusMenuRailIdForCommand("status")).toBe("party-menu");
-    expect(listStatusMenuGroupCommandIds("system-menu", project, session)).toEqual(["save", "load", "wait", "to-title"]);
+    expect(listStatusMenuGroupCommandIds("system-menu", project, session)).toEqual(["save", "load", "wait", "options", "to-title"]);
   });
 });
 
