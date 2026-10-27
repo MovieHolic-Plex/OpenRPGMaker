@@ -1889,6 +1889,10 @@ intent or authoring quality. Live OAuth providers were disconnected during this 
   `OPENING_ANIMATIC_AUTHORING_TOOLS` 를 따로 얹으므로 그 경로의 오프닝 노출은 그대로다. RPG 고정 의도: 97개 → 70개(73,584 → 67,236토큰).
 - **오프닝 계열 예산**: `edit_opening.scene` 이 `set_opening` 의 큰 장면 스키마를 두 번째로 싣던 것을 짧은 객체 설명으로 바꿨다
   (검사는 `run` 의 `normalizeScene` 이 같다). 목록에 빠져 있던 `set_opening_sprite_states` 를 넣고 38도구 7,774 → 6,774토큰.
+- 실조수 확인(2026-10-27, dev 서버 + 실제 입력창, `local-cli:claude` opus): 「이 맵에 NPC 하나 넣어줘」는 첫 목록 28개로
+  get_map_region → read_npc_layout → list_npc_graphics → place_npc → get_event, 실패 0. 「작은 게임 하나 만들어줘」는 계획 턴 + 실행 턴
+  97호출(실패 1 — author_dungeon 이 완성된 집 보호 영역을 거절, 바로 다른 자리로 성공), find_tools 13회는 전부 정확한 이름으로 찾아 성공,
+  「도구가 없다」로 막힌 곳 0. 실제 프롬프트의 색인 절은 2,230자. 임시 세션(blankProject)이라 정본 저장 검증은 아니다.
 - 남은 큰 몫: 레시피 블록(`buildTaskRecipes`)이 약 45,000자로 첫 요청 시스템 프롬프트의 가장 큰 고정 블록이다. 이번 변경 밖이다.
 
 Regression seams: `aiChatPanelComposerMode`, `piAgentRunOutcome`, `piAgentToolAdapter`,
