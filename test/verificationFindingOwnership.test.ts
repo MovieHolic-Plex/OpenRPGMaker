@@ -128,7 +128,8 @@ describe("map-qualified unresolved finding ownership", () => {
     let both: ReturnType<AssistantSession["getVerificationSnapshot"]> | undefined;
     const patch = (mapId: string, eventId: string, commands: Command[]): Call => {
       const event = f.project.maps[mapId]!.events.find(event => event.id === eventId)!;
-      return { name: "upsert_event", args: { mapId, event: { id: eventId,
+      // 조수 실행은 pages 통째 재전송을 거부한다(assistantRewriteGuard, 2026-10-07) — 이 시험은 의도적으로 한 페이지를 통째로 바꾸므로 replacePages 를 명시한다.
+      return { name: "upsert_event", args: { mapId, replacePages: true, event: { id: eventId,
         pages: [{ ...structuredClone(event.pages![0]!), commands }] } } };
     };
     const route = (mapId: string) => patch(f.root.id, "doorA", [{ kind: "transfer", mapId, x: 2, y: 2 }]);

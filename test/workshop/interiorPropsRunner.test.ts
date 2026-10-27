@@ -4,7 +4,8 @@ import { makePalette, renderGrid } from "@/harnesses/_core/workshop/grid";
 import type { DrawContext, Grid, Verdict, WorkshopEnv } from "@/harnesses/_core/workshop/types";
 import { interiorGate, interiorHardCheck, parseInteriorVerdict, TOP_MIN } from "@/harnesses/interior-props/editor/checks";
 import { cropCells, itemFromDefinition, itemFromSpec, newItemKey, specObjects, VIEW_FAIL } from "@/harnesses/interior-props/editor/items";
-import { DIRECTIONS, NEW_DIRECTIONS, drawBrief, reviewBrief } from "@/harnesses/interior-props/editor/prompts";
+import { DIRECTIONS, drawBrief, reviewBrief } from "@/harnesses/interior-props/editor/prompts";
+import { OG_DIRECTIONS } from "@/harnesses/_core/workshop/objectGenFlow";
 import { createInteriorRunner } from "@/harnesses/interior-props/editor/runner";
 import { basePaletteEntries, INTERIOR_SHADOWS, paletteForItem, V5_RAMPS } from "@/harnesses/interior-props/editor/palette";
 
@@ -39,9 +40,10 @@ describe("팔레트", () => {
 });
 
 describe("기물 사전", () => {
-  it("번들 사양 527종, 캔버스는 칸 경계, padTop 은 지금 그림의 투명 윗줄", () => {
+  it("번들 사양 635종, 캔버스는 칸 경계, padTop 은 지금 그림의 투명 윗줄", () => {
     const objects = specObjects();
-    expect(objects.length).toBe(527);
+    // 번들 사양이 527 → 635종으로 늘었다(기물 추가).
+    expect(objects.length).toBe(635);
     const [, crate] = objects.find(([key]) => key === "crate:cabbage")!;
     const blank = { width: 16, height: 16, data: new Uint8ClampedArray(16 * 16 * 4) };
     blank.data.fill(255, 4 * 16 * 3); // 위 3줄은 투명, 나머지 칠함
@@ -104,13 +106,15 @@ describe("깨짐 검사·꼭대기 면 판정", () => {
     expect(interiorHardCheck(item, solid(all), solid(box())).join()).toContain("귀퉁이");
   });
   const verdict = (topRows: number | null): Verdict => ({ verdict: "PASS", codes: [], top: "윗판", topRows, reasons: "", fix: "", worse: false });
+  // 새 기물(isNew)은 윗면 25% 규칙(THIN)이 먼저 걸리므로, FRONT 규칙은 있는 기물로 검사한다.
   it(`가구는 꼭대기 윗면 ${TOP_MIN}행 미만이면 FRONT 로 떨어뜨린다`, () => {
-    const gated = interiorGate(item, verdict(2));
+    const existing = { ...item, isNew: false };
+    const gated = interiorGate(existing, verdict(2));
     expect([gated.verdict, gated.codes]).toEqual(["FAIL", ["FRONT"]]);
     expect(gated.fix).toContain("3행");
-    expect(interiorGate(item, verdict(3)).verdict).toBe("PASS");
-    expect(interiorGate({ ...item, kind: "hang" }, verdict(1)).verdict).toBe("PASS");
-    expect(interiorGate(item, verdict(null)).verdict).toBe("PASS");
+    expect(interiorGate(existing, verdict(3)).verdict).toBe("PASS");
+    expect(interiorGate({ ...existing, kind: "hang" }, verdict(1)).verdict).toBe("PASS");
+    expect(interiorGate(existing, verdict(null)).verdict).toBe("PASS");
   });
   it("검수 답 해석: top_rows·대소문자·못 읽은 답", () => {
     expect(parseInteriorVerdict('```json\n{"verdict":"pass","codes":[],"top":"윗판 4행","top_rows":4,"reasons":"ok","fix":"","worse":false}\n```'))
@@ -147,7 +151,7 @@ describe("interior-props 실행기", () => {
     await expect(runner.prepare(env)).resolves.toBeUndefined();
   });
 
-  it("방향: 있는 기물은 DIRECTIONS, 새 기물은 NEW_DIRECTIONS, 3장", async () => {
+  it("방향: 있는 기물은 DIRECTIONS, 새 기물은 object-gen 후보 A·B(OG_DIRECTIONS), 후보 3장", async () => {
     const runner = createInteriorRunner();
     const env = fakeEnv();
     await runner.prepare(env);
@@ -158,7 +162,7 @@ describe("interior-props 실행기", () => {
     const existing = items.find((i) => i.key === "crate:cabbage")!;
     const fresh = items.find((i) => i.key === "new:herb")!;
     expect(runner.directions(existing)).toEqual(DIRECTIONS);
-    expect(runner.directions(fresh)).toEqual(NEW_DIRECTIONS);
+    expect(runner.directions(fresh)).toEqual(OG_DIRECTIONS);
     expect(runner.candidates).toBe(3);
     expect(runner.currentGrid(fresh)).toBeNull();
   });
