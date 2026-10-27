@@ -780,7 +780,13 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
           stairsUp = { x: entryStair.x, y: entryStair.y, front: entryStair.front };
           counts["stairs-up"] = 1;
         }
-        if (!s) warnings.push(`입구 방 북쪽 벽에 ${entryKind === "door" ? "문" : "올라가는 계단"}을 놓을 평평한 벽이 없다.`);
+        if (!s) {
+          // 북쪽 벽이 울퉁불퉁해 계단·문을 걸 평평한 벽이 없으면 입구 방 바닥 계단으로 — 바깥 출구가 아예 없는 던전이 나왔다
+          // (2026-10-27 themes audit: cave·ice·otherworld 시드 2 가 출구 0개).
+          entryStair = floorHole(r, (x, y) => Math.abs(x - cx) * 2 + Math.abs(y - (r.y + 2)) * 3);
+          if (entryStair) counts["stairs-down"] = (counts["stairs-down"] ?? 0) + 1;
+          else warnings.push(`입구 방 북쪽 벽에 ${entryKind === "door" ? "문" : "올라가는 계단"}을 놓을 평평한 벽도, 바닥 계단 자리도 없다.`);
+        }
       }
     }
     // 탑: 다음 층으로 올라가는 계단은 가장 깊은 방 북쪽 벽(장식보다 먼저 자리를 잡는다).
