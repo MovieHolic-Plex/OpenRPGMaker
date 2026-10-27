@@ -85,10 +85,12 @@ describe("status menu skins", () => {
     } finally { restore(); }
   });
 
-  it("기본 스킨은 workbench 속성을 달고 파티 개요·사이드 파티가 없다", () => {
+  // 미설정 기본 스킨은 2026-09-28 에 workbench → pixel 로 바뀌었다(menuSkins/registry DEFAULT_MENU_SKIN_ID) — workbench 는 명시해 본다.
+  it("workbench 스킨은 workbench 속성을 달고 파티 개요·사이드 파티가 없다", () => {
     const restore = installFakeDom();
     try {
-      const menu = render(undefined);
+      expect(render(undefined).getAttribute("data-menu-skin")).toBe("pixel");
+      const menu = render("workbench");
       expect(menu.getAttribute("data-menu-skin")).toBe("workbench");
       expect(menu.getAttribute("data-menu-skin-icons")).toBe("glyph");
       expect(menu.getAttribute("data-menu-skin-landing")).toBe("work");
