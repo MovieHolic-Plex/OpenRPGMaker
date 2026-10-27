@@ -28,8 +28,8 @@ import { canCraft, combinationPartnersOf, combinationRecipeFor } from "@/project
 import { actorLoadoutSlots, equippedBattleSkillIds } from "@/project/skillLoadout";
 import { actorDerivedStats } from '@/battle/battleBattlers';
 import { machineSkillOf, menuItemUnavailableReason, previewEvolutionStoneTarget, previewMenuItemTarget, previewMonsterMachine, previewMonsterMedicine, targetsPartyMonsters } from "@/player/playerItemUse";
-import { snapshotLoadBlocker, type SaveSlotReadResult, type SaveSnapshot } from "@/player/saveSlots";
-import { canEquip, effectiveActorEquipment, equipmentSlotAccepts } from "@/project/equipmentRules";
+import type { SaveSlotIndex, SaveSlotReadResult, SaveSnapshot } from "@/player/saveSlots";
+import { snapshotLoadBlocker, type SaveSlotReadResult, type SaveSnapshot } from "@/player/saveSlots";import { canEquip, effectiveActorEquipment, equipmentSlotAccepts } from "@/project/equipmentRules";
 import { resolveActorName, resolveActorFaceResourceId } from "@/project/sessionActorCommands";
 import { listPartyBondEntries, partyBondMeter } from "@/project/partyBonds";
 import { defaultActorFaceResourceId, normalizeActorRecord } from "@/project/actorModel";
@@ -1315,7 +1315,9 @@ function skillEntryIcon(project: Project, skill: SkillRecord): NonNullable<Statu
   };
 }
 
-// 메타가 길면 value(우측 1줄)가 아니라 description(전폭 2줄) 행으로 내려 라벨과 겹치지 않게 한다.
+// 행의 오른쪽은 칸을 고르기 전에 비교하는 값이다. 「저장됨」만 있으면 세 칸이 같아 보이고,
+// 플레이 시간만으로는 더 짧은 옛 저장을 다시 이은 뒤의 최신 칸을 구분하지 못한다.
+// 레벨과 저장 시각을 행에 두고, 장소·플레이 시간·전체 날짜는 고른 칸의 설명에 둔다.
 function saveSlotEntryParts(
   slot: SaveSlotReadResult,
   confirmingOverwrite: boolean,
@@ -1325,11 +1327,52 @@ function saveSlotEntryParts(
   switch (slot.kind) {
     case "empty": return { value: text("save.empty") };
     case "corrupt": return { value: text("save.corrupt") };
-    case "present": return savedSnapshotParts(slot.snapshot, confirmingOverwrite, vnCard, text);
-    default: return assertNever(slot);
+    case "present": {
+      const snapshot = slot.snapshot;
+      const level = typeof snapshot.partyLevel === "number" ? `L${snapshot.partyLevel}` : undefined;
+      const played = typeof snapshot.playTimeSeconds === "number" ? formatPlayTime(snapshot.playTimeSeconds) : undefined;
+      const when = formatSaveDate(snapshot.savedAt) || undefined;
+      const monster = snapshot.monsterSummary;
+      if (monster) {
+        const progress = [`도감 ${monster.caught}/${monster.dexTotal}`, ...(monster.badgeTotal > 0 ? [`배지 ${monster.badges}/${monster.badgeTotal}`] : [])].join(" · ");
+        const where = [progress, monster.trainer, snapshot.mapName, played, `파티 ${monster.party}`, when];
+        return { value: saveSlotGlance(snapshot, confirmingOverwrite, text), description: where.filter(Boolean).join("\n") };
+      }
+      const lines = [
+        snapshot.projectTitle,
+        snapshot.mapName,
+        [level, played].filter(Boolean).join(" · "),
+        when,
+        vnCard && snapshot.sceneLine ? `“${snapshot.sceneLine}”` : "",
+      ].filter((line) => Boolean(line));
+      return {
+        value: saveSlotGlance(snapshot, confirmingOverwrite, text),
+        description: lines.join("\n"),
+      };
+    }
+    case "present": return savedSnapshotParts(slot.snapshot, confirmingOverwrite, vnCard, text);    default: return assertNever(slot);
   }
 }
 
+function saveSlotGlance(
+  snapshot: SaveSnapshot,
+  confirmingOverwrite: boolean,
+  text: (key: VnUiKey) => string,
+): string {
+  if (confirmingOverwrite) return text("save.overwrite");
+  const level = typeof snapshot.partyLevel === "number" ? `L${snapshot.partyLevel}` : "";
+  const when = formatSaveSlotClock(snapshot.savedAt);
+  const extra = [level, when].filter(Boolean).join(" · ");
+  return extra ? `${text("save.saved")} · ${extra}` : text("save.saved");
+}
+
+/** 행에 넣는 짧은 저장 시각. 연도는 고른 칸의 전체 날짜가 맡는다. */
+function formatSaveSlotClock(iso: string): string {
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return "";
+  const pad2 = (value: number): string => String(value).padStart(2, "0");
+  return `${pad2(date.getMonth() + 1)}/${pad2(date.getDate())} ${pad2(date.getHours())}:${pad2(date.getMinutes())}`;
+}
 
 function savedSnapshotParts(
   snapshot: SaveSnapshot,
