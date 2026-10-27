@@ -7,6 +7,8 @@ import { describe, expect, it } from "vitest";
 
 const encoder = new TextEncoder();
 const PRUNED_CARD = FARMING_LIFE_UI_ASSETS.animals.replace(/^\//, "");
+// 새 프로젝트가 늘 담는 칩셋 그림. 옛 easyrpg-chipset-exterior.png 는 2026-10-07 저작권 정리로 빠졌고 기본 칩셋은 버들항이다.
+const KEEPER_CHIPSET = "assets/beodeul-city/beodeul-city-chipset.png";
 
 function bundleFile(zipPath: string) {
   return { sourcePath: zipPath, zipPath, bytes: encoder.encode(`bytes:${zipPath}`) };
@@ -27,7 +29,7 @@ describe("web export zip pruning", () => {
     const prepared = prepareWebExport(project);
     const planned = new Set(prepared.assets.map((asset) => asset.zipPath));
     const offeredButUnplanned = PRUNED_CARD;
-    const offeredAndPlanned = "assets/easyrpg-chipset-exterior.png";
+    const offeredAndPlanned = KEEPER_CHIPSET;
 
     // When
     const entries = await exactWebExportEntries(
@@ -49,7 +51,7 @@ describe("web export zip pruning", () => {
     const project = createBlankProject();
     const prepared = prepareWebExport(project);
     const cards = Object.values(FARMING_LIFE_UI_ASSETS).map((path) => path.replace(/^\//, ""));
-    const keeper = "assets/easyrpg-chipset-exterior.png";
+    const keeper = KEEPER_CHIPSET;
 
     // When
     const entries = await exactWebExportEntries(

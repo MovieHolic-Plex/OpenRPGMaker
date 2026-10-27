@@ -48,6 +48,10 @@ function zipPathsFor(faceId: string): readonly string[] {
   return collectWebExportAssets(project).map((asset) => asset.zipPath);
 }
 
+function zipPathsForBlank(): readonly string[] {
+  return collectWebExportAssets(prepareWebExport(createBlankProject()).project).map((asset) => asset.zipPath);
+}
+
 describe("내보내기의 얼굴 낱장", () => {
   it("changeFace 가 가리키는 낱장 PNG 를 zip 에 담는다", () => {
     const paths = zipPathsFor("easyrpg-faceset-people1-07");
@@ -55,8 +59,11 @@ describe("내보내기의 얼굴 낱장", () => {
   });
 
   it("생성 얼굴 낱장도 담는다", () => {
-    const paths = zipPathsFor("generated-actor-hero-01-face-03");
-    expect(paths).toContain("assets/generated/starter/hero-01-face/03.png");
+    // hero-01-face 낱장은 그림 파일이 없어 null 로 해석된다(generatedAssetResourceResolver) — 지금 있는 생성 낱장 중
+    // 빈 프로젝트 내보내기에 들지 않는 것을 써서, 대사의 changeFace 가 직접 끌어오는지 본다.
+    const paths = zipPathsFor("generated-faceset-missing-scarloxy-10");
+    expect(paths).toContain("assets/generated/faceset/missing-scarloxy/10.png");
+    expect(zipPathsForBlank()).not.toContain("assets/generated/faceset/missing-scarloxy/10.png");
   });
 
   it("주인공 기본 얼굴은 아무것도 안 해도 담긴다", () => {
