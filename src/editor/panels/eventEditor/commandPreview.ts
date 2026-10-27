@@ -11,8 +11,8 @@ import { shopCatalogRecords } from "./shopEditorModel";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { DEFAULT_BATTLE_FIELD_BACKGROUND_ID } from "@/project/databaseEnemyTroopRecordModel";
 import { nameplateSpeaker, parseDialogueText, resolveDialogueSpeakerName, type DialogueTextContext } from "@/player/dialogue";
-import { parseDialogueText } from "@/player/dialogue";
-import { NUMBER_INPUT_CONFIRM_LABEL } from "@/player/dialogueNumberInput";import { resolveDialogueLook, type DialogueLook } from "@/project/dialogueStyles";
+import { NUMBER_INPUT_CONFIRM_LABEL } from "@/player/dialogueNumberInput";
+import { resolveDialogueLook, type DialogueLook } from "@/project/dialogueStyles";
 import { resolveFontStack } from "@/project/fontRegistry";
 import { applySystemWindowSkinVariable } from "@/player/systemGraphics";
 import { dialoguePresentationCssVars, dialoguePresentationProfile } from "@/player/dialoguePresentation";
@@ -41,8 +41,8 @@ import { pictureSlotCaption } from "./options";
 import { commandLabel } from "./commandPicker";
 import { commandSummaryParts, isSummaryIconPart, transferEditorSummary } from "./commandSummary";
 import { textBodyOf } from "@/project/io/rewriteLegacyDialogue";
-import { HIDE_SHOW_SCREEN_FADE_MS, planScreenEffect, LETTERBOX_DEFAULT_PERCENT } from "@/project/eventCommands/cinematicStaging";
-import { planScreenEffect } from "@/player/interpreter/screenEffectPlan"
+import { LETTERBOX_DEFAULT_PERCENT } from "@/project/eventCommands/cinematicStaging";
+import { HIDE_SHOW_SCREEN_FADE_MS, planScreenEffect } from "@/player/interpreter/screenEffectPlan";
 import { clampMs } from "@/player/interpreter/commandCatalog";
 import { isRecognizedTintValue, isVisibleTint, parseTintColor, rgbaToCss } from "@/player/screen/tintModel";
 import { formatVariableFormula } from "./commandBodyVariable";
@@ -130,11 +130,10 @@ const visualPreviewHandlers: VisualPreviewHandlers = {
       replay: context?.replayPresentation === true,
       simState: context?.simState,
       look: resolveDialogueLook(store.getCurrent(), { speaker, style: cmd.style, context: cmd.context, container: cmd.container, emotion: cmd.emotion }),
+      windowPosition: cmd.position,
     });
   },
-      look: resolveDialogueLook(store.getCurrent(), { speaker: cmd.speaker, style: cmd.style, context: cmd.context, container: cmd.container, emotion: cmd.emotion }),
-      windowPosition: cmd.position,
-    }),  changeFace: faceStage,
+  changeFace: faceStage,
   displayTextSettings: settingsMessageMock,
   choices: choicesMock,
   inputNumber: inputNumberStage,

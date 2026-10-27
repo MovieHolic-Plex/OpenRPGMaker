@@ -354,19 +354,6 @@ let renderedMapFilterQuery = "";
   return "isComposing" in event && (event as InputEvent).isComposing === true;
 }
 
-function mapFilterInput(event: Event): HTMLInputElement | null {
-  const node = event.currentTarget ?? event.target;
-  if (!node || typeof (node as HTMLInputElement).value !== "string") return null;
-  return node as HTMLInputElement;
-}
-
-function restoreMapFilterCaret(start: number, end: number): void {
-  const input = currentMapListContainer?.querySelector<HTMLInputElement>("[data-testid='map-tree-filter']");
-  if (!input) return;
-  input.focus();
-  const caret = Math.max(0, Math.min(start, input.value.length));
-  const caretEnd = Math.max(caret, Math.min(end, input.value.length));
-  input.setSelectionRange(caret, caretEnd);
 /**
  * 필터 문자열을 반영해 목록을 다시 그린 뒤, 방금 치던 자리에 커서를 되돌린다.
  * 다시 그리기 전에는 항상 끝으로 보내서, 단어 가운데를 고치면 다음 글자가 맨 뒤에 붙었다.
@@ -419,18 +406,6 @@ function makeFilterField(mapCount: number): HTMLElement {
   // 단어 중간에 끼워 넣은 글자 다음이 아니라 맨 끝에서 이어서 치게 된다. 한글·일본어 IME 는
   // 그 교체만으로 조합 중인 음절이 끊기므로, 조합이 끝나기 전에는 목록을 건드리지 않는다.
   let composing = false;
-  const commitFilter = (input: HTMLInputElement): void => {
-    if (composing) return;
-    const value = input.value;
-    const start = input.selectionStart ?? value.length;
-    const end = input.selectionEnd ?? start;
-    // 같은 문자열이면 목록은 이미 맞다. 조합이 끝난 직후 같은 값의 input 이 한 번 더 오면
-    // 이미 맞춘 커서를 끝으로 되돌리지 않는다.
-    if (value === mapFilterQuery) return;
-    mapFilterQuery = value;
-    rerenderMapList();
-    restoreMapFilterCaret(start, end);
-  };
   const wrap = el("div", {
     class: "map-tree-filter" + (mapFilterFacet !== "all" ? " has-active-facet" : ""),
     children: [
@@ -447,27 +422,18 @@ function makeFilterField(mapCount: number): HTMLElement {
           compositionstart: () => {
             composing = true;
           },
-          compositionend: (event) => {
-            composing = false;
-            const input = mapFilterInput(event);
-            if (input) commitFilter(input);
-          },
-          input: (event) => {
-            if (composing || isImeComposingInput(event)) return;
-            const input = mapFilterInput(event);
-            if (input) commitFilter(input);
-          // 목록을 다시 그리면 input 요소가 바뀐다. 커서를 끝으로 밀면 가운데 수정이
-          // 다음 글자부터 맨 뒤에 붙고, 조합 중에 그리면 한글 IME 가 끊긴다.
           input: (event) => {
             const source = event.target as HTMLInputElement;
-            if (isImeComposingInput(event)) {
+            if (composing || isImeComposingInput(event)) {
               mapFilterQuery = source.value;
               return;
             }
             commitMapFilterQuery(source);
           },
           compositionend: (event) => {
-            commitMapFilterQuery(event.target as HTMLInputElement);          },
+            composing = false;
+            commitMapFilterQuery(event.target as HTMLInputElement);
+          },
         },
       }),
       chips,

@@ -1844,11 +1844,15 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         applyGen1Residual(actor);
         break;
       }
-      case "capture":
+      case "capture": {
         applyCapture(actor, command.captureItemId, command.targetEnemyId);
+        // applyCapture 가 클로저로 lastCaptureResult 를 채운다. 바로 위 대입이 undefined 라
+        // 흐름 분석은 그 대입을 못 보고, 실패 여부만 읽으려면 좁히기를 풀어 준다.
+        const captureResult = lastCaptureResult as BattleCaptureResultSnapshot | undefined;
         // 잡히면 전투가 끝난다. 실패한 던지기만 그 차례의 잔여 피해를 받는다.
-        if (!lastCaptureResult?.success) applyGen1Residual(actor);
+        if (!captureResult?.success) applyGen1Residual(actor);
         break;
+      }
       case "defend":
         actor.defending = true;
         recordTimeline({ kind: "action", side: "actor", userRecordId: actor.recordId, targetId: actor.id, commandKind: "defend" });
