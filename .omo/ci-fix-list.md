@@ -645,7 +645,6 @@ Work order (cheapest first): timeout → fake-DOM/env gaps → combined_town / o
 - **1** — `AssertionError: expected '명령위에서 아래로 차례대로 실행됩니다N개' to contain '이 페이지가 하는 일'`
   - [ ] `test/eventEditorLayoutHierarchy.test.ts`
 - **1** — `AssertionError: [MN(commandId)] 표면이 기준선과 다르다 (N건)`
-  - [ ] `test/eventEditorM2Surface.baseline.test.ts`
 - **1** — `AssertionError: expected undefined to be '페이지 N' // Object.is equality`
   - [ ] `test/eventEditorModal.test.ts`
 - **1** — `AssertionError: Picker controls changed from the pre-feature contract; badge removal must not remove or replace controls`
@@ -815,7 +814,6 @@ Work order (cheapest first): timeout → fake-DOM/env gaps → combined_town / o
 - **1** — `TypeError: __vite_ssr_import_N__.store.updateEvent is not a function`
   - [ ] `test/npcBehaviorAuthoring.test.ts`
 - **1** — `AssertionError: expected { x: N, y: N } to deeply equal { x: N, y: N, direction: 'right' }`
-  - [ ] `test/npcPlayerCollision.test.ts`
 - **1** — `AssertionError: expected { moves: [], step: +N, …(N) } to match object { moveDurationMs: N, …(N) }`
   - [ ] `test/npcPursuitRegression.test.ts`
 - **1** — `AssertionError: expected { ok: false, …(N) } to deeply equal { ok: true }`
