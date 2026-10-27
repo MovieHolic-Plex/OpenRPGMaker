@@ -7,10 +7,11 @@ import { deserializeStoredProjectJson } from "../../src/project/persistence/core
 import { mergeTeamProject, validateMergedTeamProject } from "../../src/project/persistence/core/teamMerge";
 import type { MapSaveConflict } from "../../src/project/persistence/core/mapMerge";
 import { projectWireView } from "../../src/project/io/serialize";
+import { BUNDLED_TILESET_DIFF } from "../../src/project/bundledTilesetDiff";
 import type { GameMap, Project, UploadedAsset, UploadedAssetRef } from "../../src/project/types";
 import { applyStorePragmas, openNodeSqliteDriver, readDataVersion, type Driver, type DriverValue } from "./driver";
 import { LocalStoreError } from "./errors";
-import { ASSETS_DIR, BACKUPS_DIR, LOCAL_STORE_FORMAT_VERSION, META_KEYS, PROJECT_STORE_FILE, STORE_DDL, TILESET_BLOBS_DDL } from "./schema";
+import { ASSETS_DIR, BACKUPS_DIR, LOCAL_STORE_FORMAT_FOLDED, LOCAL_STORE_FORMAT_VERSION, META_KEYS, PROJECT_STORE_FILE, STORE_DDL, TILESET_BLOBS_DDL } from "./schema";
 import { blobOfText, createFoldHashCache, deepFreeze, foldDocument, foldedTilesetShas, foldSubmittedText, type FoldedDocument, type TilesetBlob } from "./tilesetFold";
 import { assetFileName, readVerifiedAsset, writeAssetFile } from "./assetFiles";
 
@@ -214,6 +215,9 @@ function sha256HexOfText(value: string): string {
   return createHash("sha256").update(value, "utf8").digest("hex");
 }
 
+/** 번들 타일셋 차이 본문의 표지(src/project/bundledTilesetDiff.ts BUNDLED_TILESET_DIFF). 이것이 있으면 저장소 형식 3 이다. */
+const BUNDLED_TILESET_DIFF_MARKER = `"${BUNDLED_TILESET_DIFF}":`;
+
 /** 호스트가 쓰는 와이어. 접힌 행 글과 펼친 글의 해시를 함께 든다(tilesetFold.ts). */
 type HostWire = FoldedDocument;
 
@@ -224,7 +228,11 @@ function writeProjectRow(driver: Driver, project: Project, wire: HostWire, proje
   for (const row of driver.prepare("SELECT sha256 FROM tileset_blobs").all([])) storedBlobShas.add(String(row.sha256));
   const insertBlob = driver.prepare("INSERT INTO tileset_blobs (sha256, body, created_at) VALUES (?, ?, ?)");
   for (const [sha, text] of wire.blobs) if (!storedBlobShas.has(sha)) insertBlob.run([sha, text, now]);
-  if (wire.blobs.size > 0) writeMeta(driver, META_KEYS.formatVersion, String(LOCAL_STORE_FORMAT_VERSION));
+  if (wire.blobs.size > 0) {
+    let diffs = false;
+    for (const text of wire.blobs.values()) if (text.includes(BUNDLED_TILESET_DIFF_MARKER)) { diffs = true; break; }
+    writeMeta(driver, META_KEYS.formatVersion, String(diffs ? LOCAL_STORE_FORMAT_VERSION : LOCAL_STORE_FORMAT_FOLDED));
+  }
   driver.prepare(
     `INSERT INTO project (id, project_id, title, document_version, current_json, current_sha256, revision, updated_at)
      VALUES (1, ?, ?, ?, ?, ?, ?, ?)
