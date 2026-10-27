@@ -888,6 +888,11 @@ function movePlayerOneStep(state: RunnerState, x: number, y: number): string | n
   const map = currentMap(state);
   if (!map) return `현재 맵 없음: ${state.session.currentMapId}`;
   if (!canMove(state.project, map, state.session.x, state.session.y, x, y)) {
+    // 런타임과 같은 규칙(playSceneMovement 「지나갈 수 없는 그림 칸」): 막힌 문짝·계단 그림 칸 위의 같은 층 접촉 이벤트는 부딪히면 발동한다.
+    // 이것을 빼면 거리 건물 문(create_transfer_pair 가 막힌 문 칸에 priority same 으로 세운 문)을 자동 플레이가 못 열어 출하가 막혔다(2026-10-27 romance-j91).
+    const cardinal = Math.abs(x - state.session.x) + Math.abs(y - state.session.y) === 1;
+    const bumped = cardinal ? findBlockingRuntimeEventAtInMap(state.project, map, state.session, state.eventPositions, x, y) : undefined;
+    if (bumped && firesOnPlayerCollision(bumped.trigger.kind)) return runEventView(state, bumped);
     return `이동 불가: ${map.id} (${state.session.x},${state.session.y}) -> (${x},${y})`;
   }
   const blocking = findBlockingRuntimeEventAtInMap(state.project, map, state.session, state.eventPositions, x, y);
