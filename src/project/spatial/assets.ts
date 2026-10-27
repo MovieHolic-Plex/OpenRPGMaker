@@ -1,4 +1,4 @@
-import { bundledTilesetById } from "../defaults/defaultAssets";
+import { bundledTilesetById, retiredEasyRpgChipsetTileset } from "../defaults/defaultAssets";
 import { interiorObjectById, type InteriorObjectDef } from "../defaults/interiorObjectCatalog";
 import { EASYRPG_INTERIOR_TILESET_ID as INTERIOR_TILESET_ID } from "../mapCreateSpec";
 import type { StructureKitDef, TilesetDef } from "../types";
@@ -12,7 +12,9 @@ type BundledInteriorAtlas = Readonly<{ image: TilesetDef["image"]; kind: Tileset
 let bundledInteriorAtlasMemo: BundledInteriorAtlas | null | undefined;
 function bundledInteriorAtlas(): BundledInteriorAtlas | null {
   if (bundledInteriorAtlasMemo !== undefined) return bundledInteriorAtlasMemo;
-  const tileset = bundledTilesetById(INTERIOR_TILESET_ID);
+  // 번들에 없으면 옛 저장본이 들고 있는 같은 시트의 모양(retiredEasyRpgChipsetTileset)을 서명으로 쓴다 — 그 저장본의 내장 기물이 계속 읽힌다.
+  // 이 서명과 맞는 타일셋 정의가 프로젝트에 없으면 resolveSpatialGraphic 은 전과 같이 undefined 다(새 프로젝트는 영향 없음).
+  const tileset = bundledTilesetById(INTERIOR_TILESET_ID) ?? retiredEasyRpgChipsetTileset("tex_easyrpg_chipset_interior", "실내");
   bundledInteriorAtlasMemo = tileset
     ? Object.freeze({
       image: Object.freeze({ ...tileset.image }), kind: tileset.kind,
@@ -27,6 +29,7 @@ export type ResolvedSpatialGraphic =
   | { readonly source: "builtin"; readonly object: InteriorObjectDef };
 
 function eligibleInteriorAtlas(tileset: TilesetDef): boolean {
+  if (tileset.image.type !== "bundled") return false;
   const atlas = bundledInteriorAtlas();
   return atlas !== null
     && tileset.image.type === "bundled"
