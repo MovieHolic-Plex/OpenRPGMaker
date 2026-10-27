@@ -21,7 +21,8 @@ beforeEach(() => resetMapEditHistory());
 
 interface Row { id: string; name: string; desc: string; role: string; sheet: number; index: number; tags: string[]; source: { slotRgbaSha256: string } }
 const ROWS = (roster as { characters: Row[] }).characters;
-const NEW = ROWS.filter((row) => row.sheet >= 11);
+// 시트 14(아스트라 4칸)는 #3225 에서 따로 덧붙었다 — 갤러리 4 는 시트 11~13 만이다.
+const NEW = ROWS.filter((row) => row.sheet >= 11 && row.sheet <= 13);
 const GALLERY = JSON.parse(readFileSync(resolve(process.cwd(), "harness-data/charset-actor/scarloxy-people/gallery4.json"), "utf8")) as { chips: { id: string; slotRgbaSha256: string }[] };
 
 function slotHash(sheet: number, index: number): string {
@@ -41,8 +42,8 @@ describe("ScarloxyPeople11~13 (갤러리 4 합성 22종)", () => {
     expect(NEW.filter((r) => r.sheet === 11).map((r) => r.index)).toEqual([0, 1, 2, 3, 4, 5, 6, 7]);
     expect(NEW.filter((r) => r.sheet === 12).map((r) => r.index)).toEqual([0, 1, 2, 3, 4, 5, 6, 7]);
     expect(NEW.filter((r) => r.sheet === 13).map((r) => r.index)).toEqual([0, 1, 2, 3, 4, 5]);
-    expect(ROWS).toHaveLength(90);
-    expect(new Set(ROWS.map((r) => r.id)).size).toBe(90);
+    expect(ROWS).toHaveLength(94); // 90 + 아스트라 4칸(#3225)
+    expect(new Set(ROWS.map((r) => r.id)).size).toBe(94);
     expect(ROWS.find((r) => r.id === "scarloxy-officer-navy")).toMatchObject({ sheet: 1, index: 0 });
     expect(ROWS.find((r) => r.id === "scarloxy-rookie-boy")).toMatchObject({ sheet: 10, index: 4 });
     expect(ROWS.some((r) => r.sheet === 8 && r.index === 3)).toBe(false);   // 사용자가 뺀 빈 칸 유지
@@ -72,7 +73,7 @@ describe("ScarloxyPeople11~13 (갤러리 4 합성 22종)", () => {
       expect(entry?.label).toBe(row.name);
       expect(entry?.appearance).toBe(row.desc);
     }
-    expect(SCARLOXY_PEOPLE_CHARSET_SEMANTICS).toHaveLength(90);
+    expect(SCARLOXY_PEOPLE_CHARSET_SEMANTICS).toHaveLength(94); // 아스트라 4칸(#3225) 포함
   });
   it("몬스터 수집 잠금이 새 칩을 허용하고 RTP 사람 칩은 계속 거부한다", () => {
     const project: Project = createBlankProject();
