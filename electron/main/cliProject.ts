@@ -5,7 +5,8 @@
 //
 // 메뉴 「폴더 열기」는 project.sqlite 가 없는 폴더도 연다(스토어를 만든다). 명령줄은 그렇게 하지 않는다.
 // 오타가 난 경로에 project.sqlite 를 심으면 사용자의 폴더가 프로젝트가 된다. 없거나 프로젝트가 아니면 무시한다.
-// macOS Finder 「다음으로 열기」는 argv 가 아니라 open-file 이다. 폴더거나, 고른 파일이 project.sqlite 이면 그 폴더를 연다.
+// 폴더거나, 고른 파일이 project.sqlite 이면 그 폴더를 연다. macOS Finder 는 argv 가 아니라 open-file 로 같은 경로를 넘기고,
+// Windows·Linux 파일 연결과 이미 떠 있는 앱의 두 번째 실행은 argv 로 그 파일을 넘긴다.
 import { realpathSync, statSync } from "node:fs";
 import { homedir } from "node:os";
 import { basename, dirname, join, resolve } from "node:path";
@@ -44,12 +45,12 @@ export function isOprnDeepLink(arg: string): boolean {
 
 /**
  * 위치 인자 중 첫 프로젝트 폴더. 스위치·oprn: 링크·실행 파일 경로는 건너뛴다.
+ * 인자가 `project.sqlite` 파일이면 그 부모 폴더를 연다(open-file 과 같은 규칙).
  * 경로처럼 보이는데 프로젝트가 아니면 `ignored` 에 넣고 계속 본다(하나 실패가 다음 인자를 막지 않는다).
  */
 export function inspectCliProjectArgs(argv: readonly string[], cwd: string, options: CliProjectOptions = {}): CliProjectHit {
   const fromIndex = options.fromIndex ?? 1;
   const home = options.homedir ?? homedir();
-  const isProjectDir = options.isProjectDir ?? defaultIsProjectDir;
   const ignored: string[] = [];
   for (let index = Math.max(0, fromIndex); index < argv.length; index += 1) {
     const raw = argv[index];
@@ -61,17 +62,14 @@ export function inspectCliProjectArgs(argv: readonly string[], cwd: string, opti
       if (looksLikePathAttempt(arg)) ignored.push(arg);
       continue;
     }
-    let matched = false;
+    // 이미 절대 경로다. projectDirFromOpenPath 가 폴더·project.sqlite 파일을 같은 규칙으로 가른다.
+    let dir: string | null = null;
     try {
-      matched = isProjectDir(abs);
+      dir = projectDirFromOpenPath(abs, options);
     } catch {
-      matched = false;
+      dir = null;
     }
-    if (matched) {
-      let dir = abs;
-      try { dir = realpathSync(abs); } catch { /* 검사기가 아직 없는 경로를 가리키면 해석한 경로를 그대로 둔다. */ }
-      return { dir, ignored };
-    }
+    if (dir) return { dir, ignored };
     // 배포 래퍼가 앱 경로(app.asar·main.cjs)를 인자로 넣는 경우가 있다. 폴더가 아니므로 경고하지 않는다.
     if (looksLikePathAttempt(arg) && !isAppEntryFile(abs)) ignored.push(abs);
   }
