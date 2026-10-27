@@ -252,7 +252,16 @@ describe("combo brush — hover preview shares the placement model", () => {
     const originX = map.width - 2;
 
     const added: { x: number; y: number }[] = [];
-    const layer = { add: (object: unknown) => { void object; }, removeAll: () => {} } as never;
+    // 미리보기는 같은 키면 다시 그리지 않으려 레이어 데이터(getData/setData)와 list 를 읽는다 — Phaser 컨테이너 표면을 갖춘다.
+    const data = new Map<string, unknown>();
+    const list: unknown[] = [];
+    const layer = {
+      add: (object: unknown) => { list.push(object); },
+      removeAll: () => { list.length = 0; },
+      getData: (key: string) => data.get(key),
+      setData: (key: string, value: unknown) => { data.set(key, value); },
+      list,
+    } as never;
     const scene = {
       add: {
         rectangle: (x: number, y: number) => {
