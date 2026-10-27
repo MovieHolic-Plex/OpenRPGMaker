@@ -10,6 +10,7 @@ import { createChipsetTileObject } from "@/editor/chipsetTileRender";
 import { getMapEditHistoryState, recordProjectSnapshot, redoMapEdit, resetMapEditHistory, undoMapEdit } from "@/editor/mapEditHistory";
 import { createBlankProject, TILE } from "@/project/defaults";
 import { store } from "@/project/store";
+import { startOnRetiredCombinedTown } from "./support/retiredEasyRpgTilesets";
 import type { PaletteStamp } from "@/editor/tilePaletteStamp";
 
 // Only graphics creation is replaced; real shelf clicks, drag routing, engine,
@@ -53,7 +54,8 @@ function harness() {
 beforeEach(() => {
   document.body.innerHTML = "";
   vi.clearAllMocks();
-  store.replace(createBlankProject());
+  // 2026-10-07 저작권 정리로 새 프로젝트의 시작 맵은 beodeul_city 다 — 이 시험의 TILE.*·21/51 번호는 합본 마을 시트 것이라 옛 저장본 정의를 심는다(#3539 방식).
+  store.replace(startOnRetiredCombinedTown(createBlankProject()));
   resetMapEditHistory();
   editorState.set({ tool: "paint", layer: "lower", paintShape: "pen", brushSize: 1,
     selectedTile: TILE.GRASS, activePaletteStamp: null, autoConnectMode: false });
@@ -181,6 +183,19 @@ describe("brush selection routes", () => {
   });
 });
 
+// 호버 미리보기가 같은 키면 다시 안 그리려고 레이어의 getData/setData/list 를 읽는다(공개 기준 커밋부터) — 가짜 레이어도 그 면을 갖춘다.
+function fakeHoverLayer() {
+  const data = new Map<string, unknown>();
+  const list: unknown[] = [];
+  return {
+    list,
+    getData: (key: string) => data.get(key),
+    setData: (key: string, value: unknown) => { data.set(key, value); },
+    removeAll: () => { list.length = 0; },
+    add: (child: unknown) => { list.push(child); },
+  };
+}
+
 describe("brush hover footprints", () => {
   it.each([1, 2, 3, 4] as const)("previews exactly size %i for paint, erase and upper blank brushes, including clipped edges", (size) => {
     const project = store.getCurrent();
@@ -195,7 +210,7 @@ describe("brush hover footprints", () => {
         } } };
         vi.mocked(createChipsetTileObject).mockClear();
         renderHoverTilePreview({ centerX: center, centerY: center, mapId: project.startMapId,
-          scene: scene as never, layer: { removeAll: () => {}, add: () => {} } as never });
+          scene: scene as never, layer: fakeHoverLayer() as never });
         const expected: number[][] = [];
         const start = center - Math.floor(size / 2);
         for (let y = Math.max(0, start); y < start + size; y++) {

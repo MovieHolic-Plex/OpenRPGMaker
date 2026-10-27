@@ -6,6 +6,7 @@ import { DIRT_ROAD_TILE, SAND_TILE } from "@/project/defaults/chipsetMapping";
 import { store } from "@/project/store";
 import type { GameMap } from "@/project/types";
 import { findByTestId, installFakeDom } from "./fakeDom";
+import { startOnRetiredCombinedTown } from "./support/retiredEasyRpgTilesets";
 
 // M1 핵심 워크플로우 단위 검증: 타일 페인트/채우기/지우개 + 통행 토글.
 // 브라우저 없이 store.update 경로의 결과를 직접 단언한다.
@@ -25,7 +26,8 @@ function upperAt(map: GameMap, x: number, y: number): number {
 }
 
 beforeEach(() => {
-  store.replace(createBlankProject());
+  // 2026-10-07 저작권 정리로 새 프로젝트의 시작 맵은 beodeul_city 다 — 이 시험의 TILE.*·270/260 번호는 합본 마을·실내 시트 것이라 옛 저장본 정의를 심는다(#3539 방식).
+  store.replace(startOnRetiredCombinedTown(createBlankProject()));
 });
 
 describe("paintTile — layer routing", () => {

@@ -7,17 +7,31 @@ import { COMBINED_TOWN_TILESET_ID, TILE } from "@/project/defaults/constants";
 import { blockedFlag, passableFlag, setPassageMark } from "@/project/tilesetPassage";
 import { confirmUserTileMetadata } from "@/project/tilesetPalette";
 import { completedHouseProject, HOUSE_RECT } from "./fixtures/completedHouse";
+import { startOnRetiredCombinedTown } from "./support/retiredEasyRpgTilesets";
 
 const MAP_ID = "erase_ground";
 const RECT = { x: 1, y: 1, w: 10, h: 8 };
 
 function context(): ToolContext {
-  const ctx = { project: createBlankProject() };
+  // 2026-10-07 저작권 정리로 새 프로젝트 시작 맵이 합본 마을 시트가 아니다 — 이 계약(240 풀·306 벽·합본 벽 그룹)은 그 시트 기준이라 옛 저장본 상태를 재현한다(#3539 방식).
+  const ctx = { project: startOnRetiredCombinedTown(createBlankProject()) };
   const created = runTool(ctx, "create_map", {
-    id: MAP_ID, name: "Erase ground fixture", width: 12, height: 10, border: "wall", bgm: { mode: "none" },
+    id: MAP_ID, tilesetId: COMBINED_TOWN_TILESET_ID, name: "Erase ground fixture", width: 12, height: 10, border: "wall", bgm: { mode: "none" },
   });
   expect(created.ok, JSON.stringify(created.issues)).toBe(true);
   return ctx;
+}
+
+function houseOnRetiredCombinedTown() {
+  const project = completedHouseProject();
+  const map = project.maps[project.startMapId];
+  const [lower33, upper33, lower44] = [map.lowerTiles[3 * map.width + 3], map.upperTiles[3 * map.width + 3], map.lowerTiles[4 * map.width + 4]];
+  startOnRetiredCombinedTown(project);
+  map.upperTiles.fill(TILE.EMPTY);
+  map.lowerTiles[3 * map.width + 3] = lower33;
+  map.upperTiles[3 * map.width + 3] = upper33;
+  map.lowerTiles[4 * map.width + 4] = lower44;
+  return project;
 }
 
 describe("tile_erase compatible observed ground", () => {
@@ -164,7 +178,8 @@ describe("tile_erase compatible observed ground", () => {
   });
 
   it.each(["both", "lower", "upper"])("retains recorded house ownership atomically (%s)", (layer) => {
-    const ctx = { project: completedHouseProject() };
+    // 합본 마을 시트 위 집(원래 계약) — 정리 뒤 새 프로젝트는 버들항 시트라 바닥 번호가 다르다.
+    const ctx = { project: houseOnRetiredCombinedTown() };
     const before = structuredClone(ctx.project);
     const result = runTool(ctx, "tile_erase", { mapId: ctx.project.startMapId, rect: HOUSE_RECT, layer });
     expect(result.ok).toBe(false);

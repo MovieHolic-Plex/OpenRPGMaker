@@ -15,10 +15,12 @@ import { DIRT_ROAD_TILE } from "@/project/defaults/chipsetMapping";
 import { appendTileToStack } from "@/project/mapOverlayTiles";
 import { store } from "@/project/store";
 import type { TilesetDef } from "@/project/types";
+import { startOnRetiredCombinedTown } from "./support/retiredEasyRpgTilesets";
 
 describe("tile brush tools", () => {
   beforeEach(() => {
-    store.replace(createBlankProject());
+    // 2026-10-07 저작권 정리로 새 프로젝트의 시작 맵은 beodeul_city 다 — DIRT_ROAD_TILE·TILE.* 은 합본 마을 시트 번호라 옛 저장본 정의를 심는다(#3539 방식).
+    store.replace(startOnRetiredCombinedTown(createBlankProject()));
     clearFavoriteTilesForTest();
     editorState.set({
       autoConnectMode: true,

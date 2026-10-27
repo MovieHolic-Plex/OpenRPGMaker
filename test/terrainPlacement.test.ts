@@ -19,7 +19,7 @@ describe("terrain placement contracts",()=>{
       const plan=planReliefRamp(map,{x,y,face:"top"},width,false);
       expect(plan.ok).toBe(true);plan.apply!(map);
       expect(map.relief!.levels).toEqual(before);
-      expect(map.relief!.ramps!.filter(v=>v===rampCode(dir)).length).toBe(width*3);
+      expect(map.relief!.ramps!.filter(v=>v===rampCode(dir)).length).toBe(width*2); // 7938c47f5a: 경사로 길이 = 절벽 높이(hi-lo=2), 착지 칸을 더하지 않는다
       expect(reliefSlopes(map.relief!)).toEqual([expect.objectContaining({dir,lo:0,hi:2})]);
     });
   }
