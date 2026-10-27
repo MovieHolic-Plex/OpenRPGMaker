@@ -2653,6 +2653,7 @@ CSS로 접힌 작은 창·도크 상태에서는 참조 변경을 계속 반영�
 - **연계기** 탭 id `comboTechs`(testid `db-tab-combo-techs`, 레일에는 없고 스킬 탭 보기 전환 줄의 세 번째 — 스킬 편집 · 성장 트리 · 연계기). `src/editor/panels/databaseComboTechView.ts`.
   연계기(`comboActorIds` 2명 이상)마다 카드: 미리보기 줄(참가자 · 몫 · 전투 도움말 꼬리표), 참가자 칸 셋(시전자·동료 1·동료 2(없음=듀얼)) 각각 MP 몫과 「배워야 하는 기술」(그 배우·직업 습득표), 이름·설명·대상·속성·위력·타수·합체 능력치, 접힌 「도트 연출」 고르기(`retroChoreographyPicker`). 「새 연계기」(`db-combo-add`)는 시작 파티 앞 둘로 만든다.
   저장은 `updateDatabaseRecord("skills", …)` — `updateSkillRecord` 화이트리스트에 `comboMpCosts`·`exploitStates` 추가.
+  같은 목록에 `gaugeShift`·`chargeTurns`·`summonResourceId`·`learnable`·`inputSequence`·`battleGimmick` 이 있어야 스킬 폼의 게이지 밀기·힘 모으기·소환·청마법·입력 커맨드·전투 기믹이 남는다. 적 `stealItems` 도 `updateEnemyRecord` 에 있어야 훔치기 표가 남는다.
 - 스킬 「전투 규칙」 카드에 **약점 공략** 셋(`feature16-exploit-state`·`-bonus`·`-consume`). 상태 하나 고르기 UI 이고, 여러 상태는 조수 도구로(카드가 「외 N개」를 보인다).
 - 「전투 화면」 탭에 **레벨 업 · 기술 습득 연출** 카드(`db-battle-fanfare-card`): 세기·LEVEL UP 배너·새 기술 카드·새 연계기 카드·소리 → `system.battleFanfare`.
 - (2026-10-25, fs-battle-3) 「전투 화면」 탭 **전투 연출** 카드(`db-battle-staging-card`): `db-battle-staging-lunge`·`-cutin`·`-fx`·`-hint` → `system.battleStaging`. 적 탭 「달려드는 속도 (%)」 슬라이더(`db-field-enemy-lunge-speed`, 25~300, 100 이면 필드 삭제). 연계기 카드 안 접힌 「컷인 · 착탄 연출」(`db-combo-tint-<id>` 색, 흔들림, 느린 화면, 작은 글) → `SkillRecord.comboStaging`(`updateSkillRecord` 화이트리스트).
