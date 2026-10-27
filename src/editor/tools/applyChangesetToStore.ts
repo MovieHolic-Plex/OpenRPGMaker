@@ -570,5 +570,8 @@ export async function applyProposedProject(
   resetManualProjectCommitBaseline(appliedProject);
   // Applied work already has a commit and mutation audit entry. Do not turn it
   // into another authored document or attribute a later live edit to this apply.
-  return { ok: true, commit: commitRow, applied: commitProject, commitProject, preservedCells, ...(merge ? { merge } : {}) };
+  // `applied` is the live project after this apply returns — a synchronous subscriber or an edit made while the commit
+  // was awaited is already in it — while `commitProject` stays exactly what this apply committed. Callers rebase on
+  // `applied`; returning the commit snapshot there rebased the session onto a project the editor no longer shows.
+  return { ok: true, commit: commitRow, applied: store.getCurrent(), commitProject, preservedCells, ...(merge ? { merge } : {}) };
 }
