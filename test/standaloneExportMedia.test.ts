@@ -24,6 +24,8 @@ describe("standalone export with separated media", () => {
     const project = createBlankProject();
     project.assets.uploaded.asset_ref = { id: "asset_ref", name: "참조 자산", kind: "sprite", ref: REF, meta: {} };
     project.resourceProfiles.push({ kind: "chipset", name: "참조 자산", tileWidth: 16, tileHeight: 16, imageWidth: 16, imageHeight: 16, assetId: "asset_ref" });
+    // 칩셋 카탈로그 행만으로는 「쓰인 자산」이 아니다(webExportAssets isChipsetCatalogRow, #3293) — 실제로 쓰는 자리(타이틀 배경)에 건다.
+    project.system.titleResourceId = "asset_ref";
     setUploadedAssetResolver({
       url: (ref) => `oprn-asset://local/${ref.sha256}`,
       bytes: async () => PNG_BYTES,
@@ -47,6 +49,7 @@ describe("standalone export with separated media", () => {
       meta: {},
     };
     project.resourceProfiles.push({ kind: "chipset", name: "인라인 자산", tileWidth: 16, tileHeight: 16, imageWidth: 16, imageHeight: 16, assetId: "asset_inline" });
+    project.system.titleResourceId = "asset_inline"; // 칩셋 카탈로그 행만으로는 내보내기에 남지 않는다 — 위와 같다.
     let asked = 0;
     setUploadedAssetResolver({
       url: () => "",
