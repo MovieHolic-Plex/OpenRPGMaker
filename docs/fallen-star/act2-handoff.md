@@ -38,6 +38,16 @@
   - **1.23 판본 끝 = B8 서리나루 여관**(`FS2_RELEASE_STOP = "B8"`). 하르마 뒤 여관 주인 오사 「판본 끝」 페이지: 회복·「제2막 「빌린 불」 — 여기까지」 막 카드·저장 메뉴. 밤 판(`fs2_frostford_night`)으로 가는 이동이 아예 없다(굽기 JSON 에서 바깥 맵이 밤 판·하늘탑을 가리키는 곳 0 확인). 다음 판본에서 B9 를 열려면 `FS2_RELEASE_STOP = null` — 그러면 같은 페이지 자리에 밤으로 넘어가는 페이지가 들어간다. 체크포인트 `act2-b8-stop`.
   - 정본 revision 6(bake8) → bake9 저장.
   - **1.23 운영 게시 (2026-10-27)**: PR #3674 머지 → bake10 → build:player → `store:publish-game --target production`(contentHash d58631f1…, `STORE_PUBLISH_PRODUCTION_URL=https://store.openrpgmaker.com` 도 env 로 줘야 한다). 소식 글 #2(그림 3장, news-shots). 게시 전 출하 플레이어 체크포인트 24개(ending→act2-bridge→B1~B8→act2-b8-stop) 통과. act2-b9-valen 은 탈출 끝 하늘탑 도착(waitForMap)에서 실패 — 다음 판본 전에 고칠 것.
+  - **1.24 작업 (2026-10-27, 브랜치 agent/fs2-b9)** — 적대적 VQA(`~/fs2-vqa/vqa-raw.md`, 계획 대 빌드) 격차를 큰 것부터 고침:
+    - 새라 키트(창기사 클래스·스킬 5·연계기 5)·유대 해금, 새라=로한의 딸 대사, 창 돌려주기 선택은 실제 장비 교환.
+    - B6 요새 2층(`author_dungeon floorRooms` — 층마다 방 목록, 새 인자)·레버 쇠창살·쇠뇌병 보초, 새라는 2층 성벽 위.
+    - B7 엘레나 불씨 녹이기(`place_field_obstacle tileAbove`, 얼음 수정 1×2), B2 Q4 「꺼진 등」(미레 → 잠긴 집 셋 문고리 → 별빛빵 ×2), 빵 둘.
+    - B4 브람 고백을 숲 가장자리로: 개구멍에서 들킴 → `place_field_enemy appearSwitchId/vanishSwitchId`(새 인자, 경보형 추격) 기사 둘 → 입구에서 13줄 북쪽 가로 한 줄 전체가 숲 그늘(밟으면 기사 물러남·고백). 숲 어귀 밤 조명.
+    - B1 막사 순찰 기사(`make_chase_scene caughtPenalty` — 새 인자, 붙잡히면 전투 → 감방), B5 `derive_map_variant scorch:"whole"`(마을 전체 그을림) + 원본 맵 `remove_map`.
+    - B8 해 질 녘 「대답의 등」(조명 덮개+등불 광원, 첫 등에서 한 줄 띄우기 선택), 얼음낚시 노인, 집 셋 실내(등 만드는 집 tailor·어부 fish·하르마 narshe — 손 도트 실내 v5, 사람 칩은 1막 광장 칩).
+    - 난이도·알아채기: 필드 몬스터 160ms/칸·시야 8·부채꼴 110°, 밤 순찰 시야 8·140°·수색 7초(`set_field_detection`).
+  - 「실내 17곳 옛 Tibo 번호」 경고는 **오탐**: 정의는 v5 인데 `stamp_tileset_object` 이식(tileGrafts)으로 칸 수가 시트보다 커져 `isHandInteriorV5Definition` 이 옛 정의로 오판, 통째 갈아 끼우며 경고했다. 출하 플레이어 방 전수(fallen-rooms 17곳) 모두 정상. 판정에서 이식 칸을 빼고, 같은 시트 새로 고침에서 이식 꼬리를 보존하도록 고침(`atlasBiomeInterior.ts`).
+  - 함정: checkpoints 시나리오는 부팅 때 **현재 소스로** 폴른 프로젝트를 다시 짓는다 — QA 도는 중에 소스를 고치면 그 판이 섞인다.
   - 탐침: `/tmp/fs2/act2probe.mts` 는 vite-node 로 돈다: `OPRN_ASSUME_ALL_BGM_INSTALLED=1 node --max-old-space-size=12000 node_modules/vite-node/dist/cli.mjs --script /tmp/fs2/act2probe.mts`(tsx 는 .css import 로 죽는다). 타입 검사는 `/tmp/fs2/tsconfig.json`(만진 파일 + src/vite-env.d.ts).
 
 ## 1. 머지됨 (main)
