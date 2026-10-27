@@ -277,4 +277,30 @@ describe("shipped catalogs", () => {
     }
     expect(japanese.translate(regionIds)).toContain("リージョン");
   });
+
+  it("calls furniture push directions a push, not a camera pan", () => {
+    // 이벤트 「물체 동작」의 체크박스는 가구를 미는 방향이다.
+    // 「왼쪽」+「로」는 「왼쪽로」가 되고, 「{0}로 밀기」는 화면 밀기(Pan/スクロール/平移)로 읽혔다.
+    const labels = ["위로 밀기", "아래로 밀기", "왼쪽으로 밀기", "오른쪽으로 밀기"] as const;
+    expect(createTranslator(en).translate("위로 밀기")).toBe("Push up");
+    expect(createTranslator(en).translate("아래로 밀기")).toBe("Push down");
+    expect(createTranslator(en).translate("왼쪽으로 밀기")).toBe("Push left");
+    expect(createTranslator(en).translate("오른쪽으로 밀기")).toBe("Push right");
+    expect(createTranslator(ja).translate("위로 밀기")).toBe("上へ押す");
+    expect(createTranslator(ja).translate("아래로 밀기")).toBe("下へ押す");
+    expect(createTranslator(ja).translate("왼쪽으로 밀기")).toBe("左へ押す");
+    expect(createTranslator(ja).translate("오른쪽으로 밀기")).toBe("右へ押す");
+    expect(createTranslator(zh).translate("위로 밀기")).toBe("向上推");
+    expect(createTranslator(zh).translate("아래로 밀기")).toBe("向下推");
+    expect(createTranslator(zh).translate("왼쪽으로 밀기")).toBe("向左推");
+    expect(createTranslator(zh).translate("오른쪽으로 밀기")).toBe("向右推");
+    for (const label of labels) {
+      expect(createTranslator(en).translate(label)?.toLowerCase()).not.toMatch(/pan|scroll/);
+      expect(createTranslator(ja).translate(label)).not.toContain("スクロール");
+      expect(createTranslator(zh).translate(label)).not.toContain("平移");
+    }
+    expect(en["{0}로 밀기"].toLowerCase()).not.toMatch(/pan|scroll/);
+    expect(ja["{0}로 밀기"]).not.toContain("スクロール");
+    expect(zh["{0}로 밀기"]).not.toContain("平移");
+  });
 });
