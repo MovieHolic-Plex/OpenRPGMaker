@@ -97,22 +97,7 @@ describe("project switch invalidates map edit history", () => {
     expect(currentMapName()).toBe("이전 프로젝트 맵");
   });
 
-  it("drops the undo stack after a transactional new remote project switch", async () => {
-    await stubRemoteProject(projectNamed("원격 기준 맵"));
-    await expect(store.reconnectRemotePersistence()).resolves.toEqual({ kind: "connected", source: "remote" });
-    resetMapEditHistory();
-    recordProjectSnapshot("이전 프로젝트 편집");
-    expect(getMapEditHistoryState().canUndo).toBe(true);
-    const candidate = projectNamed("새 원격 프로젝트 맵");
-
-    await store.loadNewRemoteProjectTransactionally(candidate, { projectId: "next-project" }, {
-      createProjectId: () => "unused-project-id",
-      saveTarget: async (project) => ({ kind: "saved", project }),
-      reloadTarget: async () => structuredClone(candidate),
-    });
-
-    expect(getMapEditHistoryState().canUndo).toBe(false);
-  });
+  // 「transactional new remote project switch」 는 뺐다 — store.loadNewRemoteProjectTransactionally 가 저장소 정리(LegacyDb 은퇴)로 없어졌다.
 
   it("drops the undo stack after reconnecting to the selected remote project", async () => {
     await stubRemoteProject(projectNamed("선택한 원격 프로젝트 맵"));
