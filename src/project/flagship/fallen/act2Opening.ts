@@ -1376,7 +1376,7 @@ function frostford(project: Project, exec: Exec, hubId: string): void {
  * 판본이 끝나는 비트 — "B8" 이면 서리나루 여관에서 「제2막 계속 — 다음 업데이트」 카드와 저장 화면으로 멈추고, B9 밤 판으로 가는 이동을 만들지 않는다.
  * B9 를 실제로 내보낼 때 null 로 바꾼다(그러면 여관 주인이 밤 판으로 보낸다).
  */
-export const FS2_RELEASE_STOP: "B8" | null = "B8";
+export const FS2_RELEASE_STOP: "B8" | null = null;
 export const FS2_FROST_NIGHT_ID = "fs2_frostford_night";
 export const FS2_TOWER_ID = "fs2_sky_tower";
 const SW_NIGHT = "sw_fs2_frost_night";

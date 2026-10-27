@@ -5662,9 +5662,9 @@
       },
       {
        "kind": "repeatUntil",
-       "testid": "dialogue-box",
-       "state": "absent",
-       "maxRounds": 24,
+       "testid": "runtime-timer-hud",
+       "state": "present",
+       "maxRounds": 40,
        "ops": [
         {
          "kind": "key",
@@ -5673,14 +5673,26 @@
         {
          "kind": "hold",
          "dir": null,
-         "ms": 1100
+         "ms": 900
         }
        ]
       },
       {
-       "kind": "hold",
-       "dir": null,
-       "ms": 600
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 4,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 700
+        }
+       ]
       }
      ],
      "shot": true
@@ -5711,14 +5723,9 @@
         {
          "kind": "hold",
          "dir": null,
-         "ms": 1100
+         "ms": 900
         }
        ]
-      },
-      {
-       "kind": "hold",
-       "dir": null,
-       "ms": 800
       }
      ],
      "shot": true
