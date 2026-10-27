@@ -8,18 +8,18 @@ import { describe, expect, it } from "vitest";
 // 흘리면 투명 픽셀의 RGB (0,0,0) 이 배경색 중앙값으로 잡혀서, 허용 오차(62) 안에 드는
 // **피사체의 검은 1px 외곽선이 통째로 지워진다**. 픽셀아트에서 외곽선이 사라지면 실루엣이
 // 무너지는데 예외는 안 난다 — 조용히 망가지는 부류라 테스트로 잡아야 한다.
-import Jimp from "jimp";
+import { Jimp, ResizeStrategy } from "jimp"; // jimp 1.x: 기본 내보내기 없음, 생성자는 옵션 객체
 import { processSprite } from "../scripts/asset-gen/spriteProcess.mjs";
 
 const TMP = ".omo/asset-gen-tmp/test";
 
 /** 검은 외곽선을 가진 파란 사각형. 픽셀아트의 최소 재현 — 외곽선 보존을 재려면 필요하다. */
-async function outlinedBlob(width: number, height: number, background: number | null): Promise<Jimp> {
-  const canvas = new Jimp(width, height, background ?? 0x00000000);
+async function outlinedBlob(width: number, height: number, background: number | null): Promise<InstanceType<typeof Jimp>> {
+  const canvas = new Jimp({ width, height, color: background ?? 0x00000000 });
   const w = Math.floor(width * 0.4);
   const h = Math.floor(height * 0.6);
-  const outline = new Jimp(w, h, 0x101010ff);
-  const fill = new Jimp(w - 8, h - 8, 0x2050c0ff);
+  const outline = new Jimp({ width: w, height: h, color: 0x101010ff });
+  const fill = new Jimp({ width: w - 8, height: h - 8, color: 0x2050c0ff });
   outline.composite(fill, 4, 4);
   canvas.composite(outline, Math.floor((width - w) / 2), Math.floor((height - h) / 2));
   return canvas;
@@ -44,7 +44,7 @@ describe("processSprite source shapes", () => {
     await mkdir(TMP, { recursive: true });
     const source = `${TMP}/magenta-src.png`;
     const out = `${TMP}/magenta-48.png`;
-    await (await outlinedBlob(400, 400, 0xff00ffff)).writeAsync(source);
+    await (await outlinedBlob(400, 400, 0xff00ffff)).write(source as `${string}.${string}`);
 
     const report = await processSprite(source, out, 48);
 
@@ -58,9 +58,9 @@ describe("processSprite source shapes", () => {
     await mkdir(TMP, { recursive: true });
     const source = `${TMP}/alpha-src.png`;
     const out = `${TMP}/alpha-48.png`;
-    await (await outlinedBlob(400, 400, null)).writeAsync(source);
+    await (await outlinedBlob(400, 400, null)).write(source as `${string}.${string}`);
 
-    const report = await processSprite(source, out, 48, Jimp.RESIZE_BEZIER);
+    const report = await processSprite(source, out, 48, ResizeStrategy.BEZIER);
 
     expect(report.preKeyed).toBe(true);
     expect(report.content).toEqual({ w: 160, h: 240 });
@@ -74,7 +74,7 @@ describe("processSprite source shapes", () => {
     const { mkdir } = await import("node:fs/promises");
     await mkdir(TMP, { recursive: true });
     const source = `${TMP}/grey-src.png`;
-    await new Jimp(200, 200, 0x303030ff).writeAsync(source);
+    await new Jimp({ width: 200, height: 200, color: 0x303030ff }).write(source as `${string}.${string}`);
 
     await expect(processSprite(source, `${TMP}/grey-48.png`, 48)).rejects.toThrow();
   });

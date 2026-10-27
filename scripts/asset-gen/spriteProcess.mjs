@@ -11,7 +11,8 @@
 //      투명 픽셀의 RGB 는 (0,0,0) 이라 배경색 중앙값이 검정으로 잡히고, 그러면 허용 오차
 //      안에 드는 **피사체의 검은 1px 외곽선이 통째로 지워진다**. 침식도 건너뛴다 —
 //      JPEG 번짐이 없으므로 깎을 게 없고, 깎으면 외곽선만 얇아진다.
-import Jimp from "jimp";
+// jimp 1.x 에는 기본 내보내기가 없다(이름 내보내기 Jimp·ResizeStrategy). 0.x 식 호출을 그대로 두면 import 에서 죽는다.
+import { Jimp, ResizeStrategy } from "jimp";
 
 // 배경 판정은 **테두리에서 시작하는 flood fill** 로 한다. 절대 색거리(#FF00FF 기준)로
 // 하면 두 방향으로 다 실패한다(둘 다 실측):
@@ -158,7 +159,7 @@ function erodeAlpha(image, radius) {
 }
 
 /**
- * @param {number} [filter] Jimp.RESIZE_* 축소 필터. 기본 NEAREST_NEIGHBOR.
+ * @param {string} [filter] ResizeStrategy.* 축소 필터. 기본 NEAREST_NEIGHBOR.
  *   16~96px 아이콘·몬스터는 원본 대비 축소율이 작아 니어리스트가 가장 선명하다.
  *   48px 전투 프레임처럼 20배 이상 줄일 때는 니어리스트가 한 픽셀만 찍어
  *   칼날 같은 얇은 형태를 잃고 JPEG 노이즈를 그대로 굳힌다(실측: 48px 에 705색).
@@ -170,7 +171,7 @@ function erodeAlpha(image, radius) {
  *   attack 이 content 1024×1024 로 나와 외곽선에 마젠타 프린지가 그대로 남았다).
  * @throws 배경이 마젠타가 아니거나(알파 소스가 아닐 때) 내용이 없으면 던진다.
  */
-export async function processSprite(inputPath, outputPath, size, filter = Jimp.RESIZE_NEAREST_NEIGHBOR) {
+export async function processSprite(inputPath, outputPath, size, filter = ResizeStrategy.NEAREST_NEIGHBOR) {
   const image = await Jimp.read(inputPath);
   const source = { w: image.bitmap.width, h: image.bitmap.height };
   // 알파로 이미 배경이 빠진 소스는 키잉을 건너뛴다. 돌리면 배경색이 검정으로 잡혀
@@ -230,14 +231,14 @@ export async function processSprite(inputPath, outputPath, size, filter = Jimp.R
   const side = Math.max(w, h);
   const cropX = Math.max(0, Math.min(minX - Math.floor((side - w) / 2), image.bitmap.width - side));
   const cropY = Math.max(0, Math.min(minY - Math.floor((side - h) / 2), image.bitmap.height - side));
-  image.crop(cropX, cropY, Math.min(side, image.bitmap.width - cropX), Math.min(side, image.bitmap.height - cropY));
+  image.crop({ x: cropX, y: cropY, w: Math.min(side, image.bitmap.width - cropX), h: Math.min(side, image.bitmap.height - cropY) });
 
   // 픽셀아트는 보간하면 뭉개진다.
-  image.resize(size, size, filter);
+  image.resize({ w: size, h: size, mode: filter });
   // 축소로 생긴 반투명 픽셀을 이진화한다 — 런타임이 알파 블렌딩을 하지 않는다.
   image.scan(0, 0, image.bitmap.width, image.bitmap.height, function (x, y, idx) {
     this.bitmap.data[idx + 3] = this.bitmap.data[idx + 3] >= 128 ? 255 : 0;
   });
-  await image.writeAsync(outputPath);
+  await image.write(outputPath);
   return { keyedRatio, content: { w, h }, source, preKeyed };
 }
