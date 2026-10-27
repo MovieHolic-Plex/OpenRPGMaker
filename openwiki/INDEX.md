@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **187쪽 / 7242KB / 약 2,123,442 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **187쪽 / 7243KB / 약 2,123,701 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -468,7 +468,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L954` 마당 바닥 오토타일 (2026-10-23, village-art)
 - `L967` 자연 기물 beodeul_organic (2026-10-24) — 숲·들판의 바위·덤불·통나무·버섯·들꽃·고사리·풀·이끼 돌·고목·사당 돌
 
-### `openwiki/bgm-catalog.md` — 26KB · 354줄 · ~6,772 토큰
+### `openwiki/bgm-catalog.md` — 27KB · 362줄 · ~7,031 토큰
 
 - `L8` Why this exists
 - `L19` Facts an agent needs
@@ -479,12 +479,13 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L152` Regenerating
   - `L162` sha256 caveat
 - `L170` CDN wiring
-- `L200` How authors reach the tracks
-- `L232` Project audio descriptions
-  - `L264` Shared AI analysis drafts (2026-09-08)
-- `L305` Traps
-- `L339` 후보가 없는 오프닝의 원곡 (2026-10-04)
-- `L346` 맵 OST·키 입력 효과음의 직접 저작 (2026-10-05)
+- `L200` Desktop app and baked demos (2026-10-27)
+- `L208` How authors reach the tracks
+- `L240` Project audio descriptions
+  - `L272` Shared AI analysis drafts (2026-09-08)
+- `L313` Traps
+- `L347` 후보가 없는 오프닝의 원곡 (2026-10-04)
+- `L354` 맵 OST·키 입력 효과음의 직접 저작 (2026-10-05)
 
 ### `openwiki/character-battle-motion.md` — 5KB · 59줄 · ~1,407 토큰
 
