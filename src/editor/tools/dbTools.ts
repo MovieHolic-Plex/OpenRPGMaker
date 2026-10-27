@@ -20,6 +20,7 @@ import { actionSkillClearProperties, authoredSkillProperties, combatConditionSch
 import { equipmentSlots, equipmentSlotRemovalBlocker, hasEquipmentSlot, removeEquipmentSlot, upsertEquipmentSlot } from "@/project/equipmentSlots";
 import { mergeRecordPatch } from "./mergeRecordPatch";
 import { projectDatabaseReferenceMessage } from "@/editor/databaseRecordReferences";
+import { BUNDLED_BATTLE_MOTIONS } from "@/assets/battleMotionCatalog";
 import { nearbyRetroChoreographies, resolveSkillChoreography, retroChoreographyIdForClone, retroChoreographyKind } from "@/assets/retroSkillCatalog";
 import { BATTLE_AURA_IDS, normalizeBattleAura } from "@/assets/battleStateAuras";
 import { recommendRetroChoreography } from "@/assets/retroChoreographyRecommend";
@@ -1672,6 +1673,8 @@ function validateSkillRetroPatch(draft: Project, patch: unknown): void {
   }
   const id = value.trim();
   if (!id || retroChoreographyKind(id)) return;
+  // 공용 동작 32종(chor_builtin_*)은 프로젝트 레코드가 아니라 번들 — 전투가 그대로 풀어 쓴다(resolveSkillChoreography).
+  if (BUNDLED_BATTLE_MOTIONS.some((motion) => motion.id === id)) return;
   const records = draft.database.skillChoreographies ?? [];
   if (records.some((record) => record.id === id)) return;
   const near = nearbyRetroChoreographies(id, 5, records).map((entry) => `${entry.id}(${entry.name}, ${entry.motion})`);
