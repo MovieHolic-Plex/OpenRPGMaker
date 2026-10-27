@@ -615,8 +615,13 @@ function advancePlayerRouteCommands(scene: PlaySceneContext): void {
     const command = route.moves[route.index];
     route.index += 1;
     if (command && applyPlayerRouteCommand(scene, route, command)) return; // 이동 시작 → 이번 프레임 종료
-    if (command?.kind === "move" && route.stopOnBlocked) {
+    if ((command?.kind === "move" || command?.kind === "stepForward") && route.stopOnBlocked) {
       scene.playerRoute = null;
+      return;
+    }
+    // skippable:false — 막힌 걸음을 소비하면 다음 명령(반대 방향 등)이 엉뚱한 칸에서 실행된다.
+    if ((command?.kind === "move" || command?.kind === "stepForward") && route.preserveBlockedSteps) {
+      route.index -= 1;
       return;
     }
   }
@@ -723,7 +728,8 @@ function startPlayerRouteStep(scene: PlaySceneContext, route: PlayerRouteState, 
   }
   const body = resolvePlayerBody(store.getCurrent(), scene.session);
   // 강제 이동 루트도 몸 크기를 존중한다 — 3x3 주인공이 커맨드로는 벽을 뚫으면 안 된다.
-  if (!playerCanStep(scene, body, delta.x, delta.y)) return false; // 막히면 건너뜀
+  // 막히면 false. 호출측은 기본으로 이 걸음을 소비하고, preserveBlockedSteps 면 같은 걸음을 다시 시도한다.
+  if (!playerCanStep(scene, body, delta.x, delta.y)) return false;
   // Force-move routes still respect same-as-characters solid events (RM2K3 character collision).
   const blockingEvent = findBlockingEventForPlayerBody(scene, body, nx, ny);
   if (blockingEvent) {

@@ -752,6 +752,9 @@ export function executeCommand(
         moves: command.route.moves,
         repeat: command.route.repeat,
         wait: command.route.wait === true,
+        // 생략·true 는 막힌 걸음을 소비하는 기존 동작. false 만 단계에 실어
+        // 페이지 순찰과 같은 «막히면 그 걸음을 다시» 계약을 플레이어·NPC 경로에 전달한다.
+        ...(command.route.skippable === false ? { skippable: false as const } : {}),
       });
     case "setEventGraphicPattern":
       return pause("setEventGraphicPattern", {
