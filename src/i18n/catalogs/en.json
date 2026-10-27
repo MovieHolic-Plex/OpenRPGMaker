@@ -18248,4 +18248,7 @@
 "사진을 그림으로 옮기고 맞는 머리·몸을 고르는 중… (약 {0}분 남음)":"Turning the photo into a picture and choosing a head and body… (about {0} min left)",
 "사진을 그림으로 옮기고 맞는 머리·몸을 고르는 중…":"Turning the photo into a picture and choosing a head and body…",
 "그림 도구가 이 사진을 그대로 그리지 않아서(유명인 사진 등), 사진 속 모습을 글로 옮겨 그린 그림으로 골랐어요.":"The drawing tool would not draw this photo as it is (a famous person, for example), so the candidates were chosen from a picture drawn from a description of how the person looks.",
-"그림 도구가 없어 사진의 특징만 보고 골랐어요. 내 컴퓨터에 Codex CLI 를 설치하고 로그인하면 사진을 그림으로 옮겨 더 비슷하게 골라요.":"No drawing tool was found, so the candidates were chosen from the photo's features alone. Install and log in to the Codex CLI on your computer to turn the photo into a picture and get closer matches."}
+"그림 도구가 없어 사진의 특징만 보고 골랐어요. 내 컴퓨터에 Codex CLI 를 설치하고 로그인하면 사진을 그림으로 옮겨 더 비슷하게 골라요.":"No drawing tool was found, so the candidates were chosen from the photo's features alone. Install and log in to the Codex CLI on your computer to turn the photo into a picture and get closer matches.",
+"이 폴더에서 지금 분류로 가져올 파일이 없습니다.":"This folder has no files this category can import.",
+"폴더에서는 앞의 {0}개만 가져옵니다.":"Only the first {0} files from the folder will be imported.",
+"폴더를 읽지 못했습니다. 파일을 직접 끌어다 놓아 주세요.":"Could not read that folder. Drop the files themselves instead."}
