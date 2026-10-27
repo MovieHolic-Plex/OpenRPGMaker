@@ -2253,6 +2253,8 @@ Native trainer assets must also survive `webExportAssets.collectProjectStrings`:
 - 명령 대사(`actorCommandDirectorState`)는 이 액터의 결과 엔트리를 붙인다. 명령한 상대가 이미 쓰러져 런타임이 다음 상대로 돌렸으면
   이 액터의 첫 결과를 쓰고, 못 찾으면 `lastActionResult` 는 **이 액터 것일 때만** 빌린다. 예전에는 상대의 마지막 타격을 빌려
   「새싹토의 새싹치기! / 효과가 굉장했다!」(풀→얼음)로 읽혔다.
+- strict 라운드는 명령을 모아 둔 뒤 속도 순으로 실행한다. 그 사이 단일 대상이 쓰러지면 그 공격·기술·적 통상 공격은
+  같은 명단의 다음 생존자에게 간다(`nextLivingBattler`). 명단에 없는 id 는 돌리지 않는다. 아군 회복은 가장 다친 생존 동료 규칙을 유지한다.
 - 액터의 첫 엔트리가 `incapacitated` 이면 명령 대사를 붙이지 않는다(`battleSequencer` `commandIncapacitated`).
   에메랄드 문장은 `emeraldMajorStatusLine`: 얼어 버렸다 / 얼어붙어서 움직일 수 없다 / 얼음이 녹았다, 잠·마비·독·화상.
 - 1세대 얼음은 기본적으로 치료 전까지 못 움직인다. 상태 레코드의 `recoverNaturallyChance` 가 있으면 행동 전 그 %로 녹는다

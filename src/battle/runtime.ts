@@ -143,11 +143,13 @@ import { applyBattleHitGauges, clampPartyGauge, initialPartyGauge, seedBattleGau
 import { applyStateEffectsWithEmotion, createWeaknessTracker, emotionDamageMultiplier } from "@/battle/battleEmotion";
 import {
   areaTargets,
+  nextLivingBattler,
   requestedTargetId,
   resolveBattleTargets,
   skillRevivesDefeatedAllies,
   targetIdFor,
   targetScopeForCommand,
+  type BattleTargetResolution,
   type BattleTargetScope,
 } from "@/battle/battleTargetResolver";
 import { actorAutoTactic, actorFightsAutomatically, chooseAutoBattleCommand } from "@/battle/battleAuto";
@@ -1707,6 +1709,12 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       requestedTargetId: requestedTargetId(command),
       area: command.kind === "skill" ? lookupSkill(command.skillId)?.area : undefined,
     });
+    // strict 는 라운드 시작에 대상을 고르고 나중에 실행한다. 그 사이 쓰러진 단일 상대는
+    // 같은 편 다음 생존자로 돌린다. 없는 id 는 돌리지 않고, 아군 힐은 아래 가장-아픈-동료 규칙을 유지한다.
+    if (resolution.targets.length === 0 && resolution.scope === "enemy") {
+      const redirected = retargetDownedSelection(resolution, requestedTargetId(command), command.kind === "skill" ? lookupSkill(command.skillId)?.area : undefined);
+      if (redirected.length > 0) return { ...resolution, targets: redirected };
+    }
     // 직접 실행 경로(테스트/헤드리스)에서 ally 계열 대상이 명시되지 않으면
     // 가장 아픈 생존 동료를 자동 선택한다(전투 UI 의 beginTargetSelection 은 그대로).
     if (resolution.targets.length === 0 && (resolution.scope === "ally" || resolution.scope === "allAllies" || resolution.scope === "self")) {
@@ -1716,6 +1724,21 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       if (ally) return { ...resolution, targets: [ally] };
     }
     return resolution;
+  }
+
+  /**
+   * 요청한 단일 대상이 후보에 없으면(이미 쓰러짐·교체·한 마리씩 싸울 때 다음 상대) 명단의 다음 생존 후보.
+   * 요청 id 가 전투 명단에 없으면 빈 배열 — 오타·없는 적으로 다른 대상을 때리지 않는다.
+   */
+  function retargetDownedSelection(
+    resolution: BattleTargetResolution<MutableBattler>,
+    requested: string | undefined,
+    area: SkillRecord["area"],
+  ): readonly MutableBattler[] {
+    if (resolution.targets.length > 0 || !resolution.requiresSelection || !requested) return resolution.targets;
+    const roster = resolution.side === "enemy" ? enemies : actors;
+    const next = nextLivingBattler(roster, resolution.candidates, requested);
+    return next ? areaTargets(next, resolution.candidates, area) : resolution.targets;
   }
 
   // 커맨드 자체의 적법성(대상 해결 전). isValidActorCommand 와 beginActorCommand 가
@@ -2756,9 +2779,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         area: skill.area,
         includeDefeatedAllies: skillRevivesDefeatedAllies(skill),
       });
-      const targets = resolution.requiresSelection
-        ? resolution.targets
-        : resolution.targets;
+      const targets = retargetDownedSelection(resolution, requestedTargetId, skill.area);
       if (targets.length === 0) return;
       // Red/Blue non-link opponents do not decrement PP. Player-controlled
       // battlers still use the normal finite-PP path above.
@@ -2771,10 +2792,13 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       return;
     }
     const refreshedTargetId = refreshedEnemyTargetId(enemy, action?.targetIds?.[0]);
-    const aimed = refreshedTargetId
-      ? activeActors().find((actor) => actor.id === refreshedTargetId)
-      : chooseBasicEnemyTarget(enemy);
-    if (!aimed) return;
+    const livingActors = activeActors().filter((actor) => actor.hp > 0);
+    // 계획한 아군이 그 사이 쓰러졌으면 시체에게 피해를 넣지 않고 다음 생존 아군을 때린다.
+    const aimed = !refreshedTargetId
+      ? chooseBasicEnemyTarget(enemy)
+      : livingActors.find((actor) => actor.id === refreshedTargetId)
+        ?? nextLivingBattler(actors, livingActors, refreshedTargetId);
+    if (!aimed || aimed.hp <= 0) return;
     if (!prepareGen1CombatAction(enemy)) return;
     if (gen1) {
       applyGen1Struggle(enemy, aimed, "enemyAttack");
