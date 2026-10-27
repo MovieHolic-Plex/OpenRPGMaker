@@ -9,6 +9,7 @@ import { createBlankProject } from "@/project/defaults";
 import { defaultTilesets } from "@/project/defaults/defaultAssets";
 import { DUNGEON_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsDungeon";
 import { resolveMaterialByLabel } from "@/project/tileVocabulary";
+import { retiredEasyRpgTileset } from "./support/retiredEasyRpgTilesets";
 
 const slot = (graphic: ReturnType<typeof resolveGraphic>) => ({
   sheet: graphic.sprite?.id,
@@ -50,17 +51,19 @@ describe("못 찾은 그림은 거절한다", () => {
     expect(res.ok).toBe(false);
     expect(res.issues?.[0]?.code).toBe("graphic-not-found");
   });
-  it("이름이 「철제 금고」인 보관 상자는 금고 그림이다", () => {
+  // object2#2 는 원본 대조로 「원형 바닥 판」으로 정정돼 금고 칩이 없다 — 금고 보관 상자는 실패 대신 서랍장(object2#7)으로 선다.
+  it("이름이 「철제 금고」인 보관 상자는 금고 칩이 없으면 서랍장으로 선다", () => {
     const ctx: ToolContext = { project: createBlankProject() };
     const res = runTool(ctx, "place_storage_chest", { mapId: ctx.project.startMapId, x: 4, y: 4, name: "철제 금고" });
     expect(res.ok, res.summary).toBe(true);
     const event = ctx.project.maps[ctx.project.startMapId]!.events.find((entry) => entry.name === "철제 금고" || entry.pages?.[0]?.name === "철제 금고");
-    expect(slot(event!.pages![0]!.graphic)).toEqual({ sheet: "tex_easyrpg_charset_object2", index: 2 });
+    expect(slot(event!.pages![0]!.graphic)).toEqual({ sheet: "tex_easyrpg_charset_object2", index: 7 });
   });
 });
 
 describe("재료 이름은 수식어를 버리고 풀리지 않는다", () => {
-  const town = defaultTilesets()["easyrpg_chipset_combined_town"]!;
+  // 합본 마을은 2026-10-07 저작권 정리로 기본 타일셋에서 빠졌다 — 옛 저장본의 정의로 시험한다.
+  const town = retiredEasyRpgTileset("easyrpg_chipset_combined_town");
   it("「황금 나무 상자」는 나무 상자로 자동 시공되지 않는다", () => {
     const hit = resolveMaterialByLabel(town, "황금 나무 상자", { preferGroup: true, preferRoles: ["prop", "terrain"] });
     expect(hit.status === "approved" && "tileId" in hit ? hit.tileId : undefined).not.toBe(237);
@@ -73,17 +76,7 @@ describe("재료 이름은 수식어를 버리고 풀리지 않는다", () => {
 
 describe("타일 라벨은 그 시트의 그림을 말한다", () => {
   const tilesets = defaultTilesets();
-  it("표 없는 번들 시트는 합본 마을 라벨을 통째로 물려받지 않는다", () => {
-    const castle = tilesets["opengameart_castle"]!;
-    const labels = new Map(bundledTileSemantics(castle).map((entry) => [entry.index, entry.label]));
-    expect(labels.get(266)).toBeUndefined();
-  });
-  it("숲마을은 합본 마을과 픽셀이 같은 칸만 그 라벨을 쓴다", () => {
-    const forest = tilesets["forest_harmony"]!;
-    const own = bundledTileSemantics(forest);
-    expect(own.length).toBeGreaterThan(100);
-    expect(own.length).toBeLessThan(244);
-  });
+  // 「표 없는 번들 시트(opengameart_castle)」·「숲마을(forest_harmony) 라벨 상속」 사례는 은퇴 — 두 시트가 2026-10-07 저작권 정리로 삭제됐다.
   it("tileMeta 에 설명 없는 칸이 있어도 타일 검색이 죽지 않는다", () => {
     for (const id of ["forest_harmony", "forest_harmony_snow", "atlas_biome_jungle"]) {
       expect(() => searchResources("tile", "나무", { tileset: tilesets[id] })).not.toThrow();
@@ -99,17 +92,9 @@ describe("타일 라벨은 그 시트의 그림을 말한다", () => {
     expect(label(118)).toMatch(/수정/u);
     expect(label(117)).toMatch(/레일/u);
   });
-  it("사용자 확정(2026-09-28): 배·레트로 시트의 계단·선체·성벽 라벨", () => {
-    const tilesets = defaultTilesets();
-    const at = (id: string, tile: number) => bundledTileSemantics(tilesets[id]).find((entry) => entry.index === tile)?.label ?? "";
-    expect(at("easyrpg_chipset_ship", 474)).toMatch(/내려가는 계단/u);
-    expect(at("easyrpg_chipset_ship", 475)).toMatch(/내려가는 계단/u);
-    for (const hull of [262, 289, 293, 319, 322, 323, 349, 410]) expect(at("easyrpg_chipset_ship", hull)).toMatch(/배|선체|선수/u);
-    expect(at("easyrpg_chipset_retro_exterior", 268)).toMatch(/올라가는 계단/u);
-    expect(at("easyrpg_chipset_retro_exterior", 350)).toBe("빨간 우체통");
-    expect(at("easyrpg_chipset_retro_exterior", 359)).toBe("동굴 입구 하단 바닥");
-    expect(at("easyrpg_chipset_retro_exterior", 382)).toMatch(/우물/u);
-    for (const wall of [434, 435, 464]) expect(at("easyrpg_chipset_retro_house", wall)).toMatch(/성벽/u);
+  // 배·레트로 외부/집 시트 라벨은 은퇴 — 그 시트들이 2026-10-07 저작권 정리로 삭제됐다. 옛 저장본이 들고 있는 월드·실내 정의만 남겨 본다.
+  it("사용자 확정(2026-09-28): 옛 저장본 월드·실내 시트 라벨", () => {
+    const at = (id: string, tile: number) => bundledTileSemantics(retiredEasyRpgTileset(id)).find((entry) => entry.index === tile)?.label ?? "";
     expect(at("easyrpg_chipset_retro_world", 444)).toMatch(/올라가는 계단/u);
     expect(at("easyrpg_chipset_retro_world", 475)).toMatch(/내려가는 계단/u);
     expect(at("easyrpg_chipset_world", 282)).toMatch(/바위/u);

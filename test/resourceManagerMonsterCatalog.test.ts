@@ -70,7 +70,8 @@ describe("resource manager monster tab", () => {
     // 첫 카탈로그 항목(generated-enemy-slime-01)이 자동 선택된다 — 원시 id 가 아니라
     // 카탈로그 이름·태그·검토 상태·설명이 인스펙터에 표시돼야 한다.
     const inspector = container.querySelector(".rm-preview-well");
-    expect(inspector?.textContent).toContain("초록 슬라임");
+    // 카탈로그 이름은 공개 기준선(0d4f13e7c8)부터 「푸른 슬라임」이다(monsterCatalogData.json).
+    expect(inspector?.textContent).toContain("푸른 슬라임");
     expect(inspector?.textContent).toContain("generated-enemy-slime-01");
     expect(inspector?.textContent).toContain("검토됨");
     expect(inspector?.textContent).toContain("슬라임");
