@@ -212,7 +212,8 @@ describe("set_vn_extras", () => {
 
   it("rejects wrong types and unknown arguments with a hint", () => {
     const ctx = { project: createBlankProject() };
-    for (const args of [{ endings: "true" }, { language: "fr" }, { preset: "visual" }, { endingsHideUnseen: 1 }, { cgs: true }]) {
+    // 문자열 "true"/"false" 는 #3226(1150b31d27, jsonSchema coerceForSchema)부터 불리언으로 읽는다 — 틀린 타입 표본은 "yes".
+    for (const args of [{ endings: "yes" }, { language: "fr" }, { preset: "visual" }, { endingsHideUnseen: 1 }, { cgs: true }]) {
       const result = runTool(ctx, "set_vn_extras", args as never);
       expect(result.ok, JSON.stringify(args)).toBe(false);
       expect(result.summary.length).toBeGreaterThan(10);
