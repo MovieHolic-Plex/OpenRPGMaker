@@ -9,7 +9,8 @@ describe("aiToolLabels — 툴 이름을 사람 말로", () => {
     expect(toolLabel("place_npc")).toBe("NPC 배치");
     expect(toolLabel("find_layout_regions")).toBe("빈 자리 찾기");
     expect(toolLabel("get_map_region")).toBe("영역 읽기");
-    expect(toolLabel("author_house")).toBe("집 짓기");
+    // author_house 는 제거됐다 — 야외 집은 place_terrain_house 가 짓는다.
+    expect(toolLabel("place_terrain_house")).toBe("지형 위 집 놓기");
   });
 
   it("웹 검색은 사전에 있다 — 없으면 화면에 영문 함수명이 그대로 보인다", () => {
@@ -29,11 +30,11 @@ describe("aiToolLabels — 툴 이름을 사람 말로", () => {
     // Break: 조회 툴에 편집 아이콘이 붙거나 폴백이 undefined 다.
     expect(toolIconKey("get_map_region")).toBe("grid");
     expect(toolIconKey("place_npc")).toBe("user");
-    expect(toolIconKey("author_house")).toBe("house");
+    expect(toolIconKey("place_terrain_house")).toBe("house"); // author_house 제거 뒤의 집 도구.
     expect(toolIconKey("get_something_new")).toBe("search");
     expect(toolIconKey("nothing_known")).toBe("wrench");
     expect(toolGroup("list_whatever")).toBe("inspect");
-    expect(toolGroup("stamp_structure")).toBe("build");
+    expect(toolGroup("stamp_object")).toBe("build"); // stamp_structure 제거 뒤의 찍기 도구.
   });
 
   it("사전의 모든 아이콘 키는 실제 아이콘 이름이다", () => {
@@ -47,8 +48,9 @@ describe("aiToolLabels — 툴 이름을 사람 말로", () => {
   it("요약은 라벨을 화살표로 잇고 넷을 넘으면 줄임표", () => {
     // Break: 구분자가 바뀌거나 상한이 없어 헤더 한 줄이 넘친다.
     expect(toolLabelSummary(["get_map_region", "find_layout_regions"])).toBe("영역 읽기 → 빈 자리 찾기");
-    expect(toolLabelSummary(["get_map_region", "find_layout_regions", "stamp_structure", "place_npc", "set_shop_stock"]))
-      .toBe("영역 읽기 → 빈 자리 찾기 → 건물 찍기 → NPC 배치 → …");
+    // stamp_structure 는 제거됐다 — 찍기는 stamp_object 다.
+    expect(toolLabelSummary(["get_map_region", "find_layout_regions", "stamp_object", "place_npc", "set_shop_stock"]))
+      .toBe("영역 읽기 → 빈 자리 찾기 → 공용 오브젝트 찍기 → NPC 배치 → …");
     expect(toolLabelSummary([])).toBe("");
   });
 

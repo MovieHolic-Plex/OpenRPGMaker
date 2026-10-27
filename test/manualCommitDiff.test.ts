@@ -11,6 +11,7 @@
 
 import { afterEach, beforeEach, describe, expect, it, vi, type MockInstance } from "vitest";
 import { createBlankProject } from "@/project/defaults";
+import { deserialize, serialize } from "@/project/io";
 import { projectWithoutEventDrafts } from "@/project/eventDrafts";
 import { _resetEventDraftVaultForTest } from "@/project/eventDraftVault";
 import type { MemoryRepository } from "@/project/persistence/memoryRepository";
@@ -55,7 +56,9 @@ afterEach(() => {
 describe("수동 저장 커밋 summary 는 실제 diff 다", () => {
   it("타일을 칠하고 저장하면 summary 가 '시스템' 이 아니라 타일 변경을 담는다", async () => {
     const { store } = await import("@/project/store");
-    store.replaceProject(createBlankProject());
+    // 한 번 읽은 모양으로 시작한다 — 메모리 저장소의 저장본은 로드를 거쳐 기본값(battleUiStyle="retro2003")이 생략되므로,
+    // 날 프로젝트를 기준본으로 두면 표현 차이가 «시스템 변경»으로 잡힌다.
+    store.replaceProject(deserialize(serialize(createBlankProject())));
     store._setPersistenceStateForTest({ loaded: true, remotePersistenceEnabled: true, disabledReason: null });
     // 저장 직전에 서버가 갖고 있던 내용 = diff baseline.
     store._setPersistedBaselineForTest(structuredClone(projectWithoutEventDrafts(store.getCurrent())));

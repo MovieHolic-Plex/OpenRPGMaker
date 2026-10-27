@@ -16,9 +16,10 @@
 //    저장 보기가 동기 XHR 을 부르지 않는다. 로드는 되돌리기 전에 그 정의를 미리 읽는다(electronRepository).
 //  - 내보내기(webExport·.oprn)는 자기완결이어야 하므로 통째로 싣는다(serialize 의 inlineBundledTilesets).
 //  - 되돌리기(롤백): WRITE_BUNDLED_TILESET_DIFFS 를 끄면 다음 저장부터 통째로 싣는다. 읽기는 항상 켜 둔다.
-import { bundledTilesetById, bundledTilesetDefinitionReady } from "./defaults/defaultAssets";
+import { bundledTilesetById, bundledTilesetDefinitionReady, preloadBundledTilesetDefinitions } from "./defaults/defaultAssets";
 import { BUNDLED_TILESET_REF } from "./bundledTilesetRefs";
 import { jsonEqual } from "@/util/structuralJson";
+import { isPendingLazyTileset, markLazyTilesetMaterialized, markPendingLazyTileset } from "./bundledTilesetLazy";
 import type { TilesetDef } from "./types";
 
 export const BUNDLED_TILESET_DIFF = "bundledTilesetDiff";
@@ -182,13 +183,24 @@ function comparisonBase(id: string): Record<string, unknown> | undefined {
  * `tileset` 은 스토어 항목, `wire` 는 버려진 필드를 뺀 같은 항목(omitRetiredTerrainTemplates 결과)이다.
  */
 export function bundledTilesetDiffView(id: string, tileset: TilesetDef, wire: object): Record<string, unknown> | undefined {
+  const lazy = lazyStates.get(tileset);
+  if (lazy && isPendingLazyTileset(tileset)) {
+    // 아직 되돌리지 않은 지연 타일셋은 받은 차이 그대로가 저장 모양이다(되돌려도 같은 값). 키가 지워지는 등 손을 탔으면 되돌린 뒤 다시 비교한다.
+    if (writeDiffs && lazyUntouched(tileset, lazy)) return lazy.view;
+    lazy.materialize();
+  }
   if (!writeDiffs) return undefined;
   const record = tileset as unknown as Record<string, unknown>;
   const cached = views.get(tileset);
   if (cached && sameFingerprint(record, cached.fingerprint)) return cached.view ?? undefined;
   const ready = bundledTilesetDefinitionReady(id);
   if (ready === undefined) return undefined; // 번들 id 가 아니다.
-  if (!ready) return undefined; // 정의를 아직 읽지 않았다 — 기억하지 않는다(읽으면 다음 보기부터 차이로 싣는다).
+  if (!ready) {
+    // 정의를 아직 읽지 않았다(편집기의 지연 정의). 이 객체는 이번 세션 동안 통째로 싣는다 — 정의가 중간에 읽혀도 같은 객체의
+    // 저장 모양이 바뀌지 않게 기억한다. 바뀐 항목(새 객체)은 그때 다시 판단한다.
+    views.set(tileset, { fingerprint: fingerprintOf(record), view: null });
+    return undefined;
+  }
   const base = comparisonBase(id);
   let view: Record<string, unknown> | null = null;
   if (base && jsonEqual(record.image, base.image)) {
@@ -212,7 +224,7 @@ export async function primeBundledTilesetDiffViews(
   if (!writeDiffs) return;
   for (const [id, tileset] of Object.entries(project.tilesets)) {
     if (stale()) return;
-    if (!tileset || Object.hasOwn(tileset, "terrainTemplates")) continue;
+    if (!tileset || Object.hasOwn(tileset, "terrainTemplates") || isPendingLazyTileset(tileset)) continue;
     const cached = views.get(tileset);
     if (cached && sameFingerprint(tileset as unknown as Record<string, unknown>, cached.fingerprint)) continue;
     bundledTilesetDiffView(id, tileset, tileset);
@@ -336,6 +348,88 @@ function deepFreeze<T>(value: T): T {
   return value;
 }
 
+// ── 지연 되돌리기 ──────────────────────────────────────────────────────────
+// 편집기 로드는 맵이 쓰는 번들 타일셋만 곧바로 되돌린다. 나머지는 머리(id·name·image·count …)만 든 객체로 두고,
+// 무거운 필드(칸 표·킷·참고문서 …)를 처음 읽거나 어떤 필드든 쓰면 그때 번들 정의를 읽어 되돌린다(같은 객체가 제자리에서 온전해진다).
+// 왜(2026-10-27): 로드마다 번들 정의 JSON 약 47MB 를 모두 읽고 타일셋 수십 개를 되돌렸다 — 맵이 쓰는 것은 대개 서너 개다.
+//  - 열거·복제·직렬화(Object.keys·structuredClone·JSON.stringify·펼침)는 모든 키를 읽으므로 되돌린다 — 값은 언제나 온전한 타일셋과 같다.
+//  - 저장 보기는 되돌리지 않고 받은 차이를 그대로 싣는다. 검사(validateTileset)는 되돌릴 때까지 미룬다(번들 + 저장된 차이라 이미 통과한 모양).
+//  - 되돌리기 전에 지운 키는 되돌린 뒤에도 없다. 다른 판의 번들이 새로 가진 필드는 되돌린 뒤에야 보인다.
+type LazyState = { readonly view: Record<string, unknown>; readonly keys: readonly string[]; readonly getters: ReadonlyMap<string, () => unknown>; readonly materialize: () => void };
+const lazyStates = new WeakMap<object, LazyState>();
+let lazyPolicy: ((id: string) => boolean) | null = null;
+
+/** `run` 동안의 되돌리기에서 `eager` 에 없는 번들 타일셋은 지연으로 둔다(편집기 로드 전용). */
+export function withLazyBundledTilesets<T>(eager: ReadonlySet<string>, run: () => T): T {
+  const previous = lazyPolicy;
+  lazyPolicy = (id) => !eager.has(id);
+  try { return run(); } finally { lazyPolicy = previous; }
+}
+
+function lazyUntouched(tileset: object, state: LazyState): boolean {
+  const keys = Object.keys(tileset);
+  if (keys.length !== state.keys.length) return false;
+  for (let index = 0; index < keys.length; index += 1) {
+    const key = keys[index]!;
+    if (key !== state.keys[index] || Object.getOwnPropertyDescriptor(tileset, key)?.get !== state.getters.get(key)) return false;
+  }
+  return true;
+}
+
+function lazyTileset(id: string, view: Record<string, unknown>): Record<string, unknown> {
+  const diff = readDiff(id, view[BUNDLED_TILESET_DIFF]);
+  const out: Record<string, unknown> = {};
+  const getters = new Map<string, () => unknown>();
+  const listed = new Set(diff.keys);
+  let done = false;
+  const materialize = (): void => {
+    if (done) return;
+    done = true;
+    const base = bundledTilesetById(id) as unknown as Record<string, unknown> | undefined;
+    if (!base) throw new BundledTilesetDiffError(`번들 타일셋 ${id} 의 정의가 이 앱에 없습니다 — 이 프로젝트를 저장한 앱(같은 판 이상)으로 열어 주세요.`);
+    const full = restoreOne(id, view, base, { rebased: 0, missing: 0 });
+    for (const key of Object.keys(full)) {
+      const descriptor = Object.getOwnPropertyDescriptor(out, key);
+      const ours = descriptor ? descriptor.get !== undefined && descriptor.get === getters.get(key) : !listed.has(key);
+      if (ours) Object.defineProperty(out, key, { value: full[key], writable: true, enumerable: true, configurable: true });
+    }
+    markLazyTilesetMaterialized(out, id);
+  };
+  for (const key of diff.keys) {
+    const header = HEADER.has(key) && present(view[key]);
+    const get = header ? (): unknown => (done ? out[key] : view[key]) : (): unknown => { materialize(); return out[key]; };
+    Object.defineProperty(out, key, {
+      get,
+      set(value: unknown) { materialize(); out[key] = value; },
+      enumerable: true,
+      configurable: true,
+    });
+    getters.set(key, get);
+  }
+  markPendingLazyTileset(out);
+  lazyStates.set(out, { view, keys: diff.keys, getters, materialize });
+  return out;
+}
+
+/** 지연 타일셋이면 지금 되돌린다(그렇지 않으면 아무 일도 하지 않는다). */
+export function materializeLazyBundledTileset(tileset: unknown): void {
+  if (tileset && typeof tileset === "object" && isPendingLazyTileset(tileset)) lazyStates.get(tileset)?.materialize();
+}
+
+/** 아직 되돌리지 않은 지연 번들 타일셋의 id. */
+export function pendingLazyBundledTilesetIds(tilesets: Readonly<Record<string, unknown>>): string[] {
+  return Object.keys(tilesets).filter((id) => isPendingLazyTileset(tilesets[id]));
+}
+
+/**
+ * 모든 타일셋을 읽을 화면(자료집·조수 턴)이 열리기 전에 지연 타일셋의 번들 정의를 비동기로 읽어 둔다 — 읽지 않으면 되돌리기가
+ * 메인 스레드의 동기 요청(bundledJson.ts 대비책)으로 정의를 읽는다. 읽을 것이 없으면 null.
+ */
+export function preloadPendingLazyBundledTilesets(tilesets: Readonly<Record<string, unknown>>): Promise<void> | null {
+  const ids = pendingLazyBundledTilesetIds(tilesets);
+  return ids.length > 0 ? preloadBundledTilesetDefinitions(ids) : null;
+}
+
 /** 얼린 차이 보기(호스트 문서 트리의 공유 본문) → 얼린 되돌린 타일셋. 같은 본문이면 같은 객체를 돌려준다. */
 const frozenRestores = new WeakMap<object, Record<string, unknown>>();
 
@@ -357,6 +451,7 @@ export function restoreBundledTilesetDiffs(data: { tilesets?: unknown }): Bundle
     if (!isRecord(value) || !Object.hasOwn(value, BUNDLED_TILESET_DIFF)) continue;
     const frozen = Object.isFrozen(value);
     let tileset = frozen ? frozenRestores.get(value) : undefined;
+    if (!tileset && !frozen && lazyPolicy?.(id)) tileset = lazyTileset(id, value);
     if (!tileset) {
       const base = bundledTilesetById(id) as unknown as Record<string, unknown> | undefined;
       if (!base) throw new BundledTilesetDiffError(`번들 타일셋 ${id} 의 정의가 이 앱에 없습니다 — 이 프로젝트를 저장한 앱(같은 판 이상)으로 열어 주세요.`);
