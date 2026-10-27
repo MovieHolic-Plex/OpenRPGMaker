@@ -1,0 +1,39 @@
+VERDICT: FAIL
+
+Judged from the images only. Coordinates: room-scene-3x is 480x384 and the floor spans x48-432, y145-335, so each tile is 48px at 3x. The mixed floor image is 3x, left half 0-575. edge-variants is 3x. The patch image is 8x on a 64x48 patch.
+
+Major defects
+1. Repeated motif per tile (point 2), major.
+   - In the room scene every 48px cell has the same dark diagonal crack at its top-left or top-centre. Examples: x~60,y~160; x~108,y~160; x~155,y~160; x~205,y~160; x~300,y~160; x~350,y~160; x~395,y~160. The same pattern recurs in rows y~210, y~255 and y~305.
+   - The cracks form a visible 16px lattice of dark flecks, with a violet dot in many of them.
+   - In the 12x8 mixed floor (left half) the dark cracks and violet dots recur at about a 48px (16px at 1x) pitch in both axes. Examples: x~25,y~15; x~75,y~15; x~160,y~25; x~265,y~15; x~320,y~20; x~415,y~60.
+   - The variants differ only slightly in crack angle, so the mix does not break the grid.
+   - The brief's "no identical motif per tile" is not met, and the previous round's identical diagonal crack in each tile is still there.
+2. Does not read as stone slabs (point 1), major.
+   - The body is a uniform maroon/plum speckle: a dither of 3-4 close purple-brown values, with scattered dark pixels. It reads as carpet, gravel or noise. There are no slabs, no slab outlines or edges, and no large shape structure.
+   - It is also maroon/plum, not purple-black. Mean value is mid-dark red-purple (x8 patch, whole area), with no near-black depth.
+   - It is not distinct from an ordinary cave floor apart from hue. It reads as a red-purple recolour of a rubble floor.
+3. Noise/carpet texture (point 3), major.
+   - Patch x8: the whole 64x48 area is salt-and-pepper 1-2px clumps of equal weight, with no large-scale value variation or clumping.
+   - Information per tile is high in pixel count but low in structure. There is no light direction and no sense of raised slabs.
+4. Edge variants are effectively identical (point 5), major.
+   - All 47 edge variants (edge-variants-3x, 8 columns x 6 rows) show the same body crop with the same top-left dark crack and violet dot at x~10-25,y~15-30 inside every cell. This is true of the cells at row 1 (x~15,y~15), row 3 (x~125,y~120) and row 6 (x~330,y~265).
+   - The only difference is a faint 1px darker rim and a slightly different corner shade. At 3x there is no visible bevel, shading step or transition to wall or void, and the 47 shapes are not distinguishable.
+   - In the room scene the wall/floor join at y~145 is a hard line. The floor goes straight to full body brightness against a flat dark line, with no gradient shadow under the brick wall. The room border (spiky grey-blue frame) is a different asset, and the floor meets it with no shading either.
+   - The edges are not shaded as the brief requires.
+5. Seams.
+   - Several tile borders show a faint horizontal and vertical brightness step: room scene at x~96, 192, 288, 336 and y~190, 240, 290, and the mixed floor at about every 48px column.
+   - This is minor to moderate on its own, but with the repeated cracks it makes the grid visible.
+
+Cracks and glow (point 4)
+- The violet glow is a single 2-3px bright blue-violet dot on a crack, with no halo or falloff. The dots are too uniform in size, too bright and too regularly placed (about one per tile), so the glow reads as sprinkled pixels, not light in cracks.
+- The cracks are short, thin and similar in length and angle. They do not link up into a crack network across tiles.
+- Minor: cracks are drawn only in the upper-left of each tile and are cut off at the tile boundary (e.g. room scene x~147,y~170), so crack lines end at tile borders.
+
+Quality vs Beodeul volcano (point 6)
+- Beodeul's floor (right half of the mixed image) is darker, low-chroma and organic. It uses large patchy value zones with a clear light/dark clumping scale, with no per-tile motif.
+- The candidate is more saturated and noisier at the single-pixel scale, flatter at the large scale, and visibly gridded. At the same scale it does not reach the Beodeul bar.
+
+Minor notes
+- The palette is coherent (purple family) and the glow colour contrasts well with the body. With a darker body, slab structure and a fixed per-tile motif removed, this could work.
+- The violet dots are the only element that suggests "otherworld".

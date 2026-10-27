@@ -1,0 +1,10 @@
+VERDICT: FAIL
+- Visible 16px repeat grid: dark horizontal mortar bands recur at every tile row (scene y~120-135, 248-262, 376-390, x8 px) giving a striped 4-row lattice rather than a continuous floor.
+- Hard top/bottom seams: tile bottom edge rows are uniformly dark and meet the next tile's top highlight with no shared stone crossing (scene y=128, 256, 384 across full width).
+- Left/right seams: vertical dark gaps align at tile boundaries x=128, 256, 384 in several rows (e.g. scene x=120-136, y=0-128; x=376-392, y=256-384), cracks stop dead at edges.
+- Purple void patches are flat single-value fills with no shading bands (variant 1 x=10-60,y=70-120 in x8 strip; variant 4 x=455-505,y=70-120), read as paint blobs, not inlay/glow.
+- Purple blobs clipped at tile edge (scene x=456-512,y=0-40; x=0-40,y=180-230) create hard cut shapes at seams.
+- Diagonal gray crack lines repeat identically per variant (strip x=190-260,y=40-110; scene repeats at x=70-120,y=200-240 and x=330-380,y=70-110) making repetition obvious.
+- Stone faces mostly a single mid blue-gray with ~3 value bands; little internal texture.
+- Stray isolated light pixels along crack ends (strip x~300,y~25; x~420,y~60).
+- Overall reads as cracked stone, but grid and flat purple fail the bar.
