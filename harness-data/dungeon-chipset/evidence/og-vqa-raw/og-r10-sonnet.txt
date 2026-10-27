@@ -1,0 +1,31 @@
+VERDICT: FAIL
+
+Judged from the images only. Coordinates:
+- floor-20x15-3x is 960x720 at 3x, so the 112x80 field repeat is 336px horizontally and 240px vertically.
+- built-seed1-1x is 736x944. built-seed2-1x is 640x880.
+- built-seed1-crop-3x and beodeul-volcano-crop-3x are 720x480.
+
+Summary: the floor now reads as even, dark purple-black cobble slabs with a believable wall contact. In the real built dungeons I cannot find a repeat. The one blocking defect is that the repeat is still plainly visible in the unbroken 20x15 test floor, the same test r9 failed on. The only thing that changed is that the repeat is less salient, not gone. The worst-case caveat does not clear it, because the brief says "no visible repeat when tiled widely" and this is the test for that.
+
+Major defect
+1. The 112/80 repeat is still noticeable in the 20x15 floor (point 2).
+   - The Voronoi cell layout is a literal copy every 336px. The large dark arch-topped cell at x~135-190, y~50-140 returns at x~470-525 and x~805-860, and again 240px lower at y~290-380 and y~530-620. The group of pointed cells at x~235-290, y~60-130 returns at x~570-625 and x~905-960.
+   - The glow streaks sit on the same lattice. At y~45 they are at x~100, 435 and 770. At y~140 they are at x~262, 598 and 935. At y~195 they are at x~170, 505 and 840. At y~285 they are at x~100, 435 and 770 again. At y~380 they are at x~262, 598 and 935.
+   - Removing the bright landmark slabs lowered the contrast of the repeat, but a 3x5 grid of identical blocks is still easy to see once you look for it. The eye finds it quickly in the dark cell outlines.
+   - This is the worst case (one plane, no room offsets, no props). The built dungeons are the actual use.
+   - Built dungeons: I do not see the repeat. In built-seed1 and built-seed2 the large open rooms are irregular and broken up by props, void and cliffs. For example seed1 x~290-470, y~480-610 and x~420-580, y~690-880, and seed2 x~330-560, y~230-400. With the hashed per-room offset I find no matching glow streak or cell group. In the seed1 3x crop (x~190-600, y~190-480) I cannot find a repeat either.
+   - A room larger than about 14x10 tiles with a clean open interior would still show the repeat. The PASS in real dungeons depends on rooms staying irregular.
+
+Moderate and minor
+2. Glow (point 4), moderate. The brief asks for a faint violet glow in some cracks. There are only three 2-6px streaks per field, and they are nearly invisible at 1x. In seed1 and seed2 at 1x I can see only a few violet specks. The otherworld read comes from the hue and the props (crystals, portal, throne, runes), not from the floor. It is faint in spirit but borderline absent, and it is on a grid in the 20x15 test. A few more streaks of varied length, or one or two slightly stronger ones in different places, would meet the brief better.
+3. Tone evenness / flat fills (point 3), moderate. With the landmark slabs gone, the slab tones are very close. In the 3x crop (x~190-600, y~190-480) the floor is a mass of near-identical dark violet cells with 1px black outlines. Each cell has faint horizontal grain and only a hint of a lit top-left edge. At 1x it reads as a dark, calm, slightly textured plane, which fits the volcano reference. At 3x it is flatter per slab than Beodeul's multi-tone texture.
+4. Outline (point 2), minor. The uniform 1px near-black outline round every cell reads as cobblestone or a Voronoi pattern more than cracks in slabs. It does not form a 16px grid and there are no tile seams, so this is a style note.
+5. Wall contact (point 5), no blocking defect. The under-wall shade row in the 20x15 floor (y~0-12) is a thin dark strip. In the built dungeons the contact under the brick walls reads as a soft dark band (e.g. seed1 x~210-400, y~215-250, and seed2 x~240-340, y~85-100) that blends into the first slab row. The floor edges against cliffs and void look natural. They do not look pasted on.
+
+Purple-black (point 1): pass. The palette is a consistent deep indigo/violet with no maroon slabs left.
+
+Quality vs Beodeul (point 6)
+- Beodeul's volcano floor is a grey, low-chroma, organic noise with no repeating motif. This floor is cleaner, with clear slab structure, and it works well beside the props in the built dungeons. Information per tile is comparable. Per-slab shading steps are fewer.
+- In the real dungeons it reaches the Beodeul bar. In the open-plane test it does not, because of the repeat.
+
+What would clear it: make the 20x15 test clean. For example, add a second or larger field, or mix two fields per region. Alternatively vary the glow set and offset the field per row band so that cell groups do not recur on a 336/240px lattice. If the project accepts per-room hashed offsets as sufficient and does not require the unbroken-plane test, the built dungeons alone are a PASS in my view.
