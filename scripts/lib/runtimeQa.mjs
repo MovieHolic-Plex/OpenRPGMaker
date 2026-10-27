@@ -15,6 +15,8 @@ export const DEFAULT_SEED = 1;
 
 /** 시나리오가 쓸 수 있는 op 종류. 목록 밖은 정규화 단계에서 거부한다. */
 export const OP_KINDS = [
+  // 떠 있는 출하 플레이어를 바깥에서 한 걸음씩 조작한다(runtimeQaInteractive.mjs · scripts/qa/play-step.mjs) — 독립 플레이 판정용.
+  "interactive",
   "audioAction",
   "measureLayout",
   // 플레이 세션(scripts/qa/play)이 쓰는 op. 시나리오로 그대로 옮길 수 있도록 런타임 op 로 둔다 —

@@ -231,6 +231,11 @@ export async function applyOp(page, op, runState) {
       await cinematicQaOp(page, op);
       return;
     }
+    case "interactive": {
+      const { interactiveQaOp } = await import("./runtimeQaInteractive.mjs");
+      await interactiveQaOp(page, op, runState, applyOp);
+      return;
+    }
     case "battle": {
       const { battleQaOp } = await import("./runtimeQaBattle.mjs");
       await battleQaOp(page, op);
