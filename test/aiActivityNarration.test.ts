@@ -9,9 +9,8 @@ import {
 import { allTools } from "@/editor/tools";
 
 const INTERNAL_TOOL_NAME = /\b[a-z][a-z0-9]*(?:_[a-z0-9]+)+\b/u;
+// The *_room_session / *_room_build / *_room_pipeline tools were removed (hand interior v5, 2026-09-29), so they leave both lists.
 const EXPLICIT_FALLBACK_FAMILY = new Set([
-  "advance_dungeon_room_build",
-  "advance_interior_room_build",
   "configure_collections",
   "configure_fishing",
   "configure_game_systems",
@@ -25,8 +24,6 @@ const EXPLICIT_FALLBACK_FAMILY = new Set([
   "prune_unused",
   "rename_switch",
   "rename_variable",
-  "run_dungeon_room_pipeline",
-  "run_interior_room_pipeline",
   "set_cluster_rule",
   "set_group_layout",
   "set_lighting_volume",
@@ -34,18 +31,9 @@ const EXPLICIT_FALLBACK_FAMILY = new Set([
   "set_project_settings",
   "set_scene_mood",
   "set_session_farm_state",
-  "start_dungeon_room_session",
-  "start_interior_room_session",
   "upsert_test_preset",
 ]);
-const EXPLICIT_GENERIC_FAMILY = new Set([
-  "advance_dungeon_room_build",
-  "advance_interior_room_build",
-  "run_dungeon_room_pipeline",
-  "run_interior_room_pipeline",
-  "start_dungeon_room_session",
-  "start_interior_room_session",
-]);
+const EXPLICIT_GENERIC_FAMILY = new Set<string>([]);
 
 function registeredToolNames(): string[] {
   const toolsRoot = new URL("../src/editor/tools/", import.meta.url);
@@ -114,11 +102,13 @@ describe("AI 도구 활동 문장", () => {
   });
 
   it("레지스트리에 등록된 모든 도구에서 내부 이름을 노출하지 않는다", () => {
-    const registeredNames = registeredToolNames();
-    const registryNames = allTools().map((tool) => tool.name).sort();
+    const declaredNames = registeredToolNames();
+    const registeredNames = allTools().map((tool) => tool.name).sort();
     // 두 수집 경로가 동시에 무너져도 통과하는 것을 막는 바닥값. 실제 등록 도구는 224개다.
-    expect(registryNames.length).toBeGreaterThanOrEqual(200);
-    expect(registeredNames).toEqual(registryNames);
+    expect(registeredNames.length).toBeGreaterThanOrEqual(200);
+    // Literal `name: "x_y"` declarations must all be registered. Tools declared through helpers (`tool('…')`, `definition('…')`)
+    // or name constants are invisible to this scan, so the registry is the list every narration check iterates.
+    expect(declaredNames.filter((name) => !registeredNames.includes(name))).toEqual([]);
 
     for (const toolName of registeredNames) {
       const { line } = narrateAiActivity({ toolName });
