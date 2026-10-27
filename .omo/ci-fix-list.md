@@ -418,7 +418,6 @@ Work order (cheapest first): timeout → fake-DOM/env gaps → combined_town / o
 - **1** — `AssertionError: expected [ [ …(N) ], …(N) ] to deeply equal [ …(N) ]`
   - [ ] `test/playerBootFactory.test.ts`
 - **1** — `PlayerArtifactScanError: Player artifact scan failed (remote-activity-table:N, editor-module-path:N, remote-api-endpoint`
-  - [ ] `test/playerBuild.test.ts`
 - **1** — `AssertionError: expected "vi.fn()" to not be called at all, but actually been called N times[Nm`
   - [ ] `test/playerCinematics.test.ts`
 - **1** — `AssertionError: expected [ 'assets/ATTRIBUTION.md', …(N) ] to deeply equal [ 'assets/ATTRIBUTION.md', …(N) ]`
