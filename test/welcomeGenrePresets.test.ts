@@ -50,8 +50,9 @@ describe("welcomeGenrePresets", () => {
     expect(gallery).toContain("make_gallery_room");
     expect(gallery).toContain("필수 템플릿 툴");
     // 실내(전시실·화실) 벽 시공 — 2026-09-24 갤러리 r3: 바닥 fill_region 만 반복해 방이 빈 판이었다.
-    expect(gallery).toContain("place_concept");
-    expect(gallery).toContain("get_concept_facility");
+    // place_concept·get_concept_facility 는 지워졌고 손 도트 실내 v5 의 build_hand_interior_room·list_hand_interior_parts 가 대신한다(AGENTS.md 「실내는 손 도트 v5 하나」).
+    expect(gallery).toContain("build_hand_interior_room");
+    expect(gallery).toContain("list_hand_interior_parts");
     const school = buildWelcomeGenrePresetPrompt(welcomeGenrePresetById("school-horror")!);
     expect(school).toContain("make_horror_loop");
     expect(school).toContain("make_chase_scene");
@@ -77,10 +78,11 @@ describe("welcomeGenrePresets", () => {
     });
     expect(prompt).toContain("hidingSpots");
     expect(prompt).toContain("compile_puzzle");
-    expect(prompt).toContain("place_concept");
+    // place_concept 은 지워졌다 — 실내 방은 build_hand_interior_room 으로 짓는다.
+    expect(prompt).toContain("build_hand_interior_room");
     expect(prompt).not.toContain("set_life_flower");
     const names = (mentionedToolSchemas(prompt) as { function: { name: string } }[]).map((tool) => tool.function.name);
-    expect(names).toEqual(expect.arrayContaining(["make_chase_scene", "compile_puzzle", "place_concept", "place_door"]));
+    expect(names).toEqual(expect.arrayContaining(["make_chase_scene", "compile_puzzle", "build_hand_interior_room", "place_door"]));
   });
 
   it("free-text gallery intent injects make_gallery_room", () => {
