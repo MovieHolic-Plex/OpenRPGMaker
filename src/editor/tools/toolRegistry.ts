@@ -137,7 +137,6 @@ import { MAP_BACKGROUND_GENERATION_TOOLS } from "./mapBackgroundGenerationTool";
 import { TITLE_ART_TOOLS } from "./titleArtTools";
 import { PRESENTATION_TOOLS } from "./presentationTools";
 import { TITLE_IMPROVE_TOOLS } from "./titleImproveTools";
-import { AUDIO_DESCRIPTION_TOOLS } from "./audioDescriptionTools";
 import { ORIGINAL_MUSIC_TOOLS } from './originalMusicTools';
 import { VISION_QUERY_TOOLS } from "./visionQueryTools";
 import { VIEW_FOCUS_TOOLS } from "./viewFocusTools";
@@ -436,7 +435,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(TITLE_ART_TOOLS, "system"),
   ...withDomain(PRESENTATION_TOOLS, "system"),
   ...withDomain(TITLE_IMPROVE_TOOLS, "system"),
-  ...withDomain(AUDIO_DESCRIPTION_TOOLS, "system"),
+  // AUDIO_DESCRIPTION_TOOLS(get_audio_resource·recommend_bgm·set_audio_description)는 RESOURCE_TOOLS 가 이미 싣는다 — 두 번 넣으면 같은 함수 선언이 중복으로 나간다.
   ...withDomain(ORIGINAL_MUSIC_TOOLS, 'system'),
   ...withDomain(EXPORT_TOOLS, "system"),
   ...withDomain(PLAY_TOOLS, "system"),
