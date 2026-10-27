@@ -116,7 +116,8 @@ describe("run_scene_test", () => {
   it.each([['choice1', true, 25], ['choice2', true, 0], ['disallow', false, 0], [undefined, false, 0]] as const)(
     "matches player cancellation for %s", (cancelBehavior, ok, goldDelta) => {
       const project = createBlankProject(), map = project.maps[project.startMapId]!;
-      const initialGold = project.session.gold;
+      // 빈 프로젝트의 시작 상태에는 gold 가 없고 세션이 0 으로 시작한다(src/project/session.ts start.gold ?? 0).
+      const initialGold = project.session.gold ?? 0;
       map.events.push({ id: 'cancel-contract', x: 2, y: 3, trigger: { kind: 'action' }, commands: [
         { kind: 'choices', cancelBehavior, options: [
           { text: 'Paid', branch: [{ kind: 'changeGold', op: '+=', amount: 25 }] },

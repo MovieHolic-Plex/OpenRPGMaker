@@ -246,7 +246,8 @@ describe("run_scene_test lighting integration", () => {
       steps: [
         { kind: "interact" },
         { kind: "expect", animationPlaying: true, switchOff: switchId },
-        { kind: "wait", ticks: 30 },
+        // anim_hit 은 8프레임 × 75ms = 600ms(생성 이펙트 카탈로그 간격) — 옛 30틱(480ms)으로는 끝나지 않는다.
+        { kind: "wait", ticks: 45 },
         { kind: "expect", animationPlaying: false, switchOn: switchId },
       ],
     });

@@ -23,6 +23,7 @@ import { startSession } from "@/project/session";
 import { store } from "@/project/store";
 import type { Command, GameMap, MoveCommand } from "@/project/types";
 import { event, mockSprite, page } from "./runtimeEventPageFixtures";
+import { startOnRetiredCombinedTown } from "./support/retiredEasyRpgTilesets";
 
 const FRAME_MS = 1000 / 60;
 /** 160ms 걸음 = 10 논리 프레임. 한 걸음에 여유를 둔 프레임 수. */
@@ -58,7 +59,8 @@ type AuthoredProject = {
  * 갈아 끼우면 harness 가 들고 있는 map/session 이 스토어의 것과 갈라진다.
  */
 function authorProject(specs: readonly RouteSpec[], buildMap?: (map: GameMap) => void): AuthoredProject {
-  const draft = createBlankProject();
+  // 합본 마을 칸 위에서 걷는다 — 기본 칩셋이 버들항이 된 뒤(2026-09-30) TILE.GRASS(240)는 벽이다.
+  const draft = startOnRetiredCombinedTown(createBlankProject(), { interiorHarness: false });
   // 저장 검사(validateProjectReferences)는 setSwitch 대상이 선언돼 있어야 통과시킨다.
   draft.switches = [...draft.switches, { id: DONE_SWITCH, name: "루트 완료" }];
   const draftMap = draft.maps[draft.startMapId]!;
@@ -185,6 +187,8 @@ function routeHarness(map: GameMap): RouteHarness {
     characterHopScales: new Map(),
     eventGraphicPatternOverrides: new Map(),
     runtimeDom: { upsertEventMarker: () => undefined },
+    // transferTo 가 월드 아틀라스 확인에 쓴다(playSceneMapCommands) — 스텁에 없어 터졌다.
+    getMapId: () => scene.map.id,
     running: false,
     inputEnabled: true,
     registerAutonomousMover: (eventId: string, moves: MoveCommand[], repeat: boolean) =>

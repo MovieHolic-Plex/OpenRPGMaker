@@ -130,7 +130,9 @@ describe("피커 옵션", () => {
   it("고를 수 있는 옵션은 전부 렌더 경로가 있다", () => {
     // 렌더러 없는 옵션이 목록에 남아 있으면 조용한 실패가 다시 생긴다.
     for (const option of SCREEN_EFFECT_OPTIONS) {
-      expect(planScreenEffect(option.value, "", 300).kind, `${option.value} 에 렌더 경로가 없다`).not.toBe("unsupported");
+      // 문 열기·닫기는 값(x,y,너비,높이,slide|swing,left|right)이 있어야 계획이 선다 — 값 없는 호출은 door 계획 도입(#3450 이후) 때부터 unsupported 다.
+      const value = option.value === "doorOpen" || option.value === "doorClose" ? "3,4,1,2,slide,left" : "";
+      expect(planScreenEffect(option.value, value, 300).kind, `${option.value} 에 렌더 경로가 없다`).not.toBe("unsupported");
     }
   });
 });

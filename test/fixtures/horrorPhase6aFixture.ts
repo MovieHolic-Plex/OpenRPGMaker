@@ -1,5 +1,6 @@
 import { charsetFrameIndex } from "@/assets/easyrpgRtp";
 import { createBlankProject, TILE } from "@/project/defaults";
+import { startOnRetiredCombinedTown } from "../support/retiredEasyRpgTilesets";
 import type { Command, EventPage, GameEvent, GameMap, Project } from "@/project/types";
 
 export const PHASE6A_MAP_ID = "map_phase6a_dark_corridor";
@@ -13,7 +14,8 @@ export const PHASE6B_STORM_AUTO_EVENT_ID = "ev_phase6b_storm_auto";
 const PASSIVE: EventPage["movement"] = { type: "fixed", speed: 3, frequency: 3 };
 
 export function createHorrorPhase6aFixture(): Project {
-  const project = createBlankProject();
+  // TILE.* 는 합본 마을 칸 번호 — 기본 칩셋이 버들항이 된 뒤(2026-09-30)로는 합본 시트를 직접 쓴다.
+  const project = startOnRetiredCombinedTown(createBlankProject(), { interiorHarness: false });
   const map = project.maps[project.startMapId];
   map.id = PHASE6A_MAP_ID;
   map.name = "Phase 6a 암전 복도";

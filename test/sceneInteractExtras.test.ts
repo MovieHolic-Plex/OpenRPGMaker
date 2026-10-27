@@ -32,15 +32,17 @@ describe("scene test interact extras", () => {
 
   it("names walk/face for interact extras", () => {
     const { project, mapId } = withTalker();
-    const result = runTool({ project }, "run_scene_test", { mapId, start: { x: 4, y: 3 }, steps: [{ kind: "interact", eventId: "ev_kai", adjacent: true, to: { x: 4, y: 3 } }] });
+    // {to,adjacent} 는 이제 walk+interact 로 자동 분리된다(playTools splitInteractWalkSteps, JRPG 도그푸딩 ember-4). 분리할 수 없는 dir 는 여전히 거부하며 face 를 안내한다.
+    const result = runTool({ project }, "run_scene_test", { mapId, start: { x: 4, y: 3 }, steps: [{ kind: "interact", eventId: "ev_kai", dir: "right", to: { x: 4, y: 3 } }] });
     expect(result.ok).toBe(false);
-    expect(result.summary).toContain("walk");
+    expect(result.summary).toContain("face");
   });
 });
 
 describe("find_tools exact name ignores a wrong domain", () => {
   it("returns the named tool even when domain does not list it", () => {
-    const result = runTool({ project: createBlankProject() }, "find_tools", { query: "evaluate_village_look", domain: "map" });
-    expect((result.data as { matches: { name: string }[] }).matches.map(match => match.name)).toEqual(["evaluate_village_look"]);
+    // evaluate_village_look 은 도구가 사라졌다(routeManifest 항목만 남음) — domain "system" 인 run_scene_test 를 domain "map" 으로 찾아도 이름이 우선하는지 본다.
+    const result = runTool({ project: createBlankProject() }, "find_tools", { query: "run_scene_test", domain: "map" });
+    expect((result.data as { matches: { name: string }[] }).matches.map(match => match.name)).toEqual(["run_scene_test"]);
   });
 });

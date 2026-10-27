@@ -15,9 +15,10 @@ import { startSession } from "@/project/session";
 import { store } from "@/project/store";
 import type { GameEvent, GameMap, MoveCommand, NpcScheduleEntry, Project } from "@/project/types";
 import { mockSprite } from "./runtimeEventPageFixtures";
+import { RETIRED_COMBINED_TOWN_TILESET_ID, withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 
 function openMap(id: string, size = 12): GameMap {
-  const map = createBlankMap("경로 테스트", size, size);
+  const map = createBlankMap("경로 테스트", size, size, RETIRED_COMBINED_TOWN_TILESET_ID); // TILE.* 는 합본 마을 칸 번호 — 기본 칩셋이 버들항이 된 뒤(2026-09-30) 옛 칩셋을 명시한다
   map.id = id;
   map.lowerTiles = new Array(size * size).fill(TILE.GRASS);
   map.upperTiles = new Array(size * size).fill(-1);
@@ -25,7 +26,7 @@ function openMap(id: string, size = 12): GameMap {
 }
 
 function projectWith(...maps: GameMap[]): Project {
-  const project = createBlankProject();
+  const project = withRetiredEasyRpgTilesets(createBlankProject(), { interiorHarness: false });
   project.maps = Object.fromEntries(maps.map((map) => [map.id, map]));
   project.mapTree = {
     mapId: maps[0].id,

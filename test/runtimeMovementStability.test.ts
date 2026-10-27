@@ -32,6 +32,7 @@ import { createBlankProject, TILE } from "@/project/defaults";
 import { startSession } from "@/project/session";
 import { store } from "@/project/store";
 import { LocalDiagnosticSession } from "@/util/localDiagnosticSession";
+import { startOnRetiredCombinedTown } from "./support/retiredEasyRpgTilesets";
 
 const FRAME_MS = 1000 / 60;
 
@@ -104,7 +105,7 @@ type MovementHarness = {
 };
 
 function movementHarness(): MovementHarness {
-  const project = createBlankProject();
+  const project = startOnRetiredCombinedTown(createBlankProject(), { interiorHarness: false });
   const map = project.maps[project.startMapId]!;
   map.lowerTiles.fill(TILE.GRASS);
   map.upperTiles.fill(-1);
@@ -409,7 +410,7 @@ type TileImage = {
 };
 
 function tileScene(): { scene: Parameters<typeof renderTiles>[0]; created: TileImage[]; map: ReturnType<typeof createBlankProject>["maps"][string]; session: ReturnType<typeof startSession> } {
-  const project = createBlankProject();
+  const project = startOnRetiredCombinedTown(createBlankProject(), { interiorHarness: false });
   const map = project.maps[project.startMapId]!;
   map.lowerTiles.fill(TILE.GRASS);
   map.upperTiles.fill(-1);
@@ -501,7 +502,7 @@ function tilesetTextureOf(placed: ReadonlyArray<{ texture: string }>): string {
 
 describe("이벤트 스프라이트 재생성 중 보간 위치", () => {
   it("걷는 중인 NPC 를 다시 그리면 목적지가 아니라 보간 위치에 놓는다", () => {
-    const project = createBlankProject();
+    const project = startOnRetiredCombinedTown(createBlankProject(), { interiorHarness: false });
     const map = project.maps[project.startMapId]!;
     map.lowerTiles.fill(TILE.GRASS);
     map.upperTiles.fill(-1);

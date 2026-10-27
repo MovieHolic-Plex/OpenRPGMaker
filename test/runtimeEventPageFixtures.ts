@@ -1,4 +1,5 @@
 import { createBlankProject } from "@/project/defaults";
+import { startOnRetiredCombinedTown } from "./support/retiredEasyRpgTilesets";
 import { startSession } from "@/project/session";
 import { store } from "@/project/store";
 import type { EventPage, GameEvent } from "@/project/types";
@@ -182,12 +183,15 @@ export function renderSceneWith(overrides: Partial<EventPage>): Parameters<typeo
   };
 }
 
-export function movementScene(overrides: Partial<EventPage>): Parameters<typeof registerPageMoveRoutes>[0] {
-  return movementSceneWithPages([pageWith(overrides)]);
+export function movementScene(overrides: Partial<EventPage>, options?: MovementSceneOptions): Parameters<typeof registerPageMoveRoutes>[0] {
+  return movementSceneWithPages([pageWith(overrides)], options);
 }
 
-export function movementSceneWithPages(pages: EventPage[]): Parameters<typeof registerPageMoveRoutes>[0] {
-  const project = createBlankProject();
+/** combinedTown: 이동 시험이 걸을 수 있는 칸이 필요하면 켠다 — 기본 칩셋이 버들항이 된 뒤(2026-09-30) 빈 맵 0번 칸은 벽이다. */
+export interface MovementSceneOptions { readonly combinedTown?: boolean }
+
+export function movementSceneWithPages(pages: EventPage[], options?: MovementSceneOptions): Parameters<typeof registerPageMoveRoutes>[0] {
+  const project = options?.combinedTown ? startOnRetiredCombinedTown(createBlankProject(), { interiorHarness: false }) : createBlankProject();
   const map = project.maps[project.startMapId];
   map.events = [event("npc", 1, 1, pages)];
   store.replace(project);

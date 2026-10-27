@@ -6,7 +6,11 @@ import {
   registerPageMoveRoutes,
 } from "@/player/playScenePageMoveRoutes";
 import { registerAutonomousMover } from "@/player/playSceneSchedulers";
-import { movementScene, movementSceneWithPages, pageWith } from "./runtimeEventPageFixtures";
+import { movementScene as baseMovementScene, movementSceneWithPages as baseMovementSceneWithPages, pageWith } from "./runtimeEventPageFixtures";
+import type { EventPage } from "@/project/types";
+// 이동 시험은 걸을 수 있는 합본 마을 칸이 필요하다(기본 칩셋이 버들항이 된 뒤, 2026-09-30).
+const movementScene = (o: Partial<EventPage>) => baseMovementScene(o, { combinedTown: true });
+const movementSceneWithPages = (p: EventPage[]) => baseMovementSceneWithPages(p, { combinedTown: true });
 
 describe("runtime event page movement", () => {
   it("registers NPC autonomous movement from page movement type, speed, and frequency", () => {

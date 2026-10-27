@@ -12,11 +12,13 @@ import { findBlockingRuntimeEventAtInMap,
 findRuntimeEventAtInMap,
 initialRuntimeEventPositions, } from "@/project/runtimeEventState"
 import { event, mockSprite, pageWith } from "./runtimeEventPageFixtures";
+import { startOnRetiredCombinedTown } from "./support/retiredEasyRpgTilesets";
 
 describe("runtime NPC living map travel", () => {
   it("routes an NPC through map connections to a living destination on another map", () => {
     // Given: an NPC has a living destination in the starter house and an NPC-enabled door connection.
-    const project = createBlankProject();
+    // 합본 마을 칸 위에서 걷는다 — 기본 칩셋이 버들항이 된 뒤(2026-09-30) 빈 맵 0번 칸은 벽이다.
+    const project = startOnRetiredCombinedTown(createBlankProject(), { interiorHarness: false });
     const sourceMap = project.maps[project.startMapId];
     if (!sourceMap) throw new Error("missing default source map");
     const targetMap = createStarterHouseInteriorMap(sourceMap.id);

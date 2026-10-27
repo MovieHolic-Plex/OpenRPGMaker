@@ -88,7 +88,9 @@ describe("사각 질의의 앵커 사전 거르기", () => {
       for (let x = 0; x < 16; x += 1) {
         const rect = pointRect(x, y);
         const body = all.find((view) => view.bodyRect.left <= x && x <= view.bodyRect.right && view.bodyRect.top <= y && y <= view.bodyRect.bottom
-          && view.trigger.kind === "action");
+          && view.trigger.kind === "action"
+          // 페이지가 다 꺼진 이벤트는 조사 대상이 아니다 — 첫사랑 r2 수정(findEventOverlappingRect 주석)이 들인 규칙.
+          && (view.page || !(view.event.pages?.length ?? 0)));
         expect(findEventOverlappingRect(project, map, session, positions, rect, "action")?.event.id, `body ${x},${y}`).toBe(body?.event.id);
         const pass = all.find((view) => view.passRect.left <= x && x <= view.passRect.right && view.passRect.top <= y && y <= view.passRect.bottom
           && view.priority === "same" && view.overlapForbidden);

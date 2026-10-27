@@ -6,7 +6,9 @@ import {
   npcMoveIntervalMs,
   registerPageMoveRoutes,
 } from "@/player/playScenePageMoveRoutes";
-import { mockSprite, movementScene } from "./runtimeEventPageFixtures";
+import { mockSprite, movementScene as baseMovementScene } from "./runtimeEventPageFixtures";
+// 이동 시험은 걸을 수 있는 합본 마을 칸이 필요하다(기본 칩셋이 버들항이 된 뒤, 2026-09-30).
+const movementScene = (o: Parameters<typeof baseMovementScene>[0]) => baseMovementScene(o, { combinedTown: true });
 
 describe("runtime move route commands", () => {
   it("executes every custom NPC move-route command family during play updates", () => {

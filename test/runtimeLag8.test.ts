@@ -10,6 +10,7 @@ import { invalidateTilePassabilityComponents } from "@/project/tilePassabilityCo
 import * as collision from "@/project/collision";
 import * as footprint from "@/project/footprint";
 import { TILE } from "@/project/defaults/constants";
+import { startOnRetiredCombinedTown } from "./support/retiredEasyRpgTilesets";
 import type { Command, GameEvent } from "@/project/types";
 import type { Frame } from "@/player/interpreter/types";
 import { syncWeatherLayer } from "@/player/playSceneWeather";
@@ -19,7 +20,8 @@ import { graphicsRecorder } from "./fixtures/runtimeLag8Graphics";
 vi.mock("@/player/audio", () => ({ getAudioEngine: () => ({ weather: { update() {} }, isUnlocked: () => false }) }));
 vi.mock("@/player/playSceneAtmosphere", () => ({ syncAtmosphere() {} }));
 afterEach(() => vi.restoreAllMocks());
-function world() { const project = createBlankProject(); return { project, map: project.maps[project.startMapId]!, session: startSession(project) }; }
+function world() { const project = startOnRetiredCombinedTown(createBlankProject(), { interiorHarness: false }); // TILE.* 는 합본 마을 칸 — 기본 칩셋이 버들항이 된 뒤(2026-09-30)
+   return { project, map: project.maps[project.startMapId]!, session: startSession(project) }; }
 function linear(stack: Frame[], name: string): boolean {
   for (let i = stack.length - 1; i >= 0; i--) {
     for (let j = 0; j < stack[i]!.commands.length; j++) {
