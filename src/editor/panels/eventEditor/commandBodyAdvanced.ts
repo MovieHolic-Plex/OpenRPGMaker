@@ -4,6 +4,7 @@ import {
   openDatabaseResourcePickerDialog,
 } from "@/editor/panels/databaseResourcePickerDialog";
 import { getAudioEngine, playAudioCommand, stopAudioCommand } from "@/player/audio";
+import { authoredVolumePercent } from "@/player/audio/fade";
 import { listAudioResources } from "@/assets/audioResourceCatalog";
 import { audioDescriptionView, audioPlayback } from "@/editor/panels/audioResourcePresentation";
 import { store } from "@/project/store";
@@ -75,7 +76,7 @@ import {
   setClass,
 } from "./npcGraphicPickerControls";
 import { HOUSE_DOOR_CHARSET_TEXTURE } from "@/editor/houseInteriors";
-import type { Command, EventPageGraphic, GameEvent, GameMap, Project } from "@/project/types";
+import type { AudioCommandChannel, Command, EventPageGraphic, GameEvent, GameMap, Project } from "@/project/types";
 import type { CommandEditContext } from "./types";
 
 export function renderAdvancedCommandBody(
@@ -1392,8 +1393,11 @@ function skillSubtitle(record: { readonly mpCost: { readonly flat: number }; rea
 function playAudioBody(context: CommandEditContext, cmd: Extract<Command, { kind: "playAudio" }>): HTMLElement {
   getAudioEngine().installUnlockListeners();
 
-  let channel: "bgm" | "se" = cmd.loop ? "bgm" : "se";
+  let routed: AudioCommandChannel | undefined = cmd.channel;
+  let channel: "bgm" | "se" = routed === "se" || routed === "me" ? "se" : routed === "bgm" || routed === "bgs" ? "bgm" : cmd.loop ? "bgm" : "se";
   let resourceId = cmd.resourceId.trim();
+  let volumeTouched = false;
+  let fadeTouched = false;
 
   const wrap = el("div", {
     class: "play-audio-command-body cream-command-form",
@@ -1424,12 +1428,60 @@ function playAudioBody(context: CommandEditContext, cmd: Extract<Command, { kind
     dataset: { testid: "play-audio-meta" },
   });
 
+  const volumeInput = el("input", {
+    attrs: { type: "number", min: "0", max: "100", step: "1", inputmode: "numeric", "aria-label": "이 소리의 음량 (%)" },
+    value: String(authoredVolumePercent(cmd.volume)),
+    dataset: { testid: "play-audio-volume" },
+  }) as HTMLInputElement;
+  const fadeInput = el("input", {
+    attrs: { type: "number", min: "0", max: "60", step: "0.1", inputmode: "decimal", "aria-label": "페이드인 (초)", placeholder: "기본" },
+    value: cmd.fadeInMs === undefined ? "" : String(cmd.fadeInMs / 1000),
+    dataset: { testid: "play-audio-fade" },
+  }) as HTMLInputElement;
+  const channelNote = el("p", { class: "play-audio-mix-hint", dataset: { testid: "play-audio-channel-note" } });
+
+  const volumeToWrite = (): number | undefined => {
+    if (!volumeTouched) return cmd.volume;
+    const raw = volumeInput.value.trim();
+    if (raw === "") return cmd.volume;
+    const percent = Math.round(Number(raw));
+    if (!Number.isFinite(percent)) return cmd.volume;
+    const clamped = Math.max(0, Math.min(100, percent));
+    if (clamped === 100 && cmd.volume === undefined) return undefined;
+    return clamped;
+  };
+  const fadeToWrite = (): number | undefined => {
+    if (!fadeTouched) return cmd.fadeInMs;
+    const raw = fadeInput.value.trim();
+    if (raw === "") return undefined;
+    const seconds = Number(raw);
+    if (!Number.isFinite(seconds)) return cmd.fadeInMs;
+    return Math.max(0, Math.min(60_000, Math.round(seconds * 1000)));
+  };
+  const playbackChannel = (): AudioCommandChannel | undefined => {
+    if (routed === "bgs" && channel === "bgm") return "bgs";
+    if (routed === "me" && channel === "se") return "me";
+    if (routed === "bgm" || routed === "se") return routed;
+    return undefined;
+  };
+  const authoredFields = (): { channel?: AudioCommandChannel; volume?: number; fadeInMs?: number } => {
+    const playback = playbackChannel();
+    const volume = volumeToWrite();
+    const fadeInMs = fadeToWrite();
+    return {
+      ...(playback === undefined ? {} : { channel: playback }),
+      ...(volume === undefined ? {} : { volume }),
+      ...(fadeInMs === undefined ? {} : { fadeInMs }),
+    };
+  };
+
   const apply = (): void => {
     if (audioPlayback(resourceId, store.getCurrent()).midi) return;
     context.actions.replaceCommand(context.path, {
       kind: "playAudio",
       resourceId,
       loop: channel === "bgm",
+      ...authoredFields(),
     });
     refreshMeta();
   };
@@ -1471,7 +1523,10 @@ function playAudioBody(context: CommandEditContext, cmd: Extract<Command, { kind
           dataset: { testid: `play-audio-channel-${option.value}` },
           on: {
             click: () => {
-              channel = option.value;
+              const next = option.value;
+              if (next === "bgm" && (routed === "se" || routed === "me")) routed = "bgm";
+              if (next === "se" && (routed === "bgm" || routed === "bgs")) routed = "se";
+              channel = next;
               // Prefer a sensible default when switching channel with empty/wrong-kind id.
               const catalog = catalogFor(channel, store.getCurrent());
               if (!resourceId || !catalog.some((entry) => entry.id === resourceId)) {
@@ -1557,7 +1612,7 @@ function playAudioBody(context: CommandEditContext, cmd: Extract<Command, { kind
           return;
         }
         stopAudioCommand();
-        playAudioCommand({ resourceId, loop: channel === "bgm" }, store.getCurrent());
+        playAudioCommand({ resourceId, loop: channel === "bgm", ...authoredFields() }, store.getCurrent());
         status.textContent = `재생 중: ${currentOptionLabel(list) || currentAudioLabel(resourceId, store.getCurrent())}`;
       },
     },
@@ -1600,16 +1655,52 @@ function playAudioBody(context: CommandEditContext, cmd: Extract<Command, { kind
       ? "장면·분위기 검색 (예: 마을, 보스, 비)"
       : "장면·행동 검색 (예: 문, 구매, 마법)";
     browseBtn.textContent = channel === "bgm" ? "배경음 목록 열기…" : "효과음 목록 열기…";
+    const special = playbackChannel();
+    if (special === "bgs") {
+      channelNote.hidden = false;
+      channelNote.textContent = "환경음(BGS)입니다. 맵 배경음과 겹쳐 재생됩니다. 효과음으로 바꾸면 한 번만 재생됩니다.";
+    } else if (special === "me") {
+      channelNote.hidden = false;
+      channelNote.textContent = "효과 음악(ME)입니다. 배경음 음량을 따르고 한 번만 재생됩니다.";
+    } else {
+      channelNote.hidden = true;
+      channelNote.textContent = "";
+    }
   };
+  volumeInput.addEventListener("change", () => {
+    volumeTouched = true;
+    apply();
+  });
+  fadeInput.addEventListener("change", () => {
+    fadeTouched = true;
+    apply();
+  });
 
   rebuildChannelButtons();
   refreshChannelCopy();
   fillList();
   refreshMeta();
 
+  const mixRow = el("div", {
+    class: "play-audio-mix-row",
+    children: [
+      el("label", {
+        children: [el("span", { text: "음량 (%)" }), volumeInput],
+      }),
+      el("label", {
+        children: [el("span", { text: "페이드인 (초)" }), fadeInput],
+      }),
+    ],
+  });
   wrap.append(
     el("div", { class: "play-audio-label", text: "채널" }),
     channelRow,
+    channelNote,
+    mixRow,
+    el("p", {
+      class: "play-audio-mix-hint",
+      text: "음량은 이 명령만 줄입니다. 플레이어의 배경음·효과음 설정과 곱해집니다. 페이드인을 비우면 배경음은 짧게 스며들고, 0이면 바로 재생됩니다.",
+    }),
     el("div", { class: "play-audio-label", text: "곡" }),
     search,
     resultCount,
@@ -1622,7 +1713,7 @@ function playAudioBody(context: CommandEditContext, cmd: Extract<Command, { kind
     status,
     el("div", {
       class: "empty-hint",
-      text: "배경음은 반복되고, 효과음은 한 번만 재생됩니다. 미리 듣기는 브라우저가 재생할 수 있는 소리만 됩니다.",
+      text: "배경음은 반복되고, 효과음은 한 번만 재생됩니다. 곡을 바꿔도 음량·페이드·환경음은 유지됩니다. 미리 듣기는 그 음량으로 재생됩니다.",
       dataset: { testid: "play-audio-channel-hint" },
     })
   );

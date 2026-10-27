@@ -12,6 +12,7 @@ import {
 } from "./options";
 import { formatWeightedBranchSummary } from "./weightedBranchTable";
 import { BGM_CATALOG } from "@/assets/bgmCatalog";
+import { authoredVolumePercent } from "@/player/audio/fade";
 import { m2CommandById, type M2CommandFieldSpec } from "@/project/eventCommands/m2Catalog";
 import { tintDurationMs } from "@/project/eventCommands/tintDuration";
 import { screenFilterFromFields } from "@/project/eventCommands/screenFilter";
@@ -376,7 +377,7 @@ const commandSummaryPartHandlers: CommandSummaryPartHandlers = {
       valuePart(`위치 (${cmd.x}, ${cmd.y})`),
     ),
   erasePicture: (cmd) => commandLine("그림 지우기", valuePart(pictureSlotCaption(cmd.pictureId))),
-  playAudio: (cmd) => commandLine("소리 재생", valuePart(audioName(cmd.resourceId))),
+  playAudio: (cmd) => commandLine("소리 재생", valuePart(audioName(cmd.resourceId)), ...playAudioMixParts(cmd)),
   playMovie: (cmd) => commandLine(
     "동영상 재생",
     valuePart(movieName(cmd.resourceId)),
@@ -1376,6 +1377,25 @@ function humanizeAuthorId(id: string): string {
   const trimmed = id.trim();
   if (!trimmed) return "(없음)";
   return trimmed.replace(/^item_/, "").replace(/^(bgm|se|cc0-bgm)-/, "").replace(/_/g, " ");
+}
+
+function playAudioFadeLabel(ms: number): string {
+  const seconds = ms / 1000;
+  const text = Number.isInteger(seconds) ? String(seconds) : seconds.toFixed(1).replace(/\.0$/, "");
+  return `${text}초`;
+}
+
+function playAudioMixParts(cmd: Extract<Command, { kind: "playAudio" }>): CommandSummaryPart[] {
+  const parts: CommandSummaryPart[] = [];
+  if (cmd.channel === "bgs") parts.push(plainPart(" · "), valuePart("환경음"));
+  else if (cmd.channel === "me") parts.push(plainPart(" · "), valuePart("효과 음악"));
+  if (cmd.volume !== undefined && authoredVolumePercent(cmd.volume) !== 100) {
+    parts.push(plainPart(" · "), valuePart(`${authoredVolumePercent(cmd.volume)}%`));
+  }
+  if (cmd.fadeInMs !== undefined && cmd.fadeInMs > 0) {
+    parts.push(plainPart(" · "), valuePart(`페이드 ${playAudioFadeLabel(cmd.fadeInMs)}`));
+  }
+  return parts;
 }
 
 function audioName(id: string): string {

@@ -22,3 +22,23 @@ export function clampVolume(volume: number): number {
   if (volume > 1) return 1;
   return volume;
 }
+
+/**
+ * Authored playAudio loudness.
+ * A fraction in (0, 1) is already a gain — 0.6 means 60%, the scale on the command
+ * type and on scenes that ask for a quieter door or train.
+ * 0 and every other finite value are RPG Maker percents — 63 means 63%, including
+ * Sound Layer and save data. 1 stays 1% so an explicit percent is not treated as full.
+ */
+export function authoredTrackGain(volume: number): number {
+  if (!Number.isFinite(volume)) return 1;
+  if (volume > 0 && volume < 1) return clampVolume(volume);
+  return clampVolume(volume / 100);
+}
+
+/** The percent a creator should see for an authored volume. Omitted volume is full. */
+export function authoredVolumePercent(volume: number | undefined): number {
+  if (volume === undefined || !Number.isFinite(volume)) return 100;
+  if (volume > 0 && volume < 1) return Math.round(volume * 100);
+  return Math.max(0, Math.min(100, Math.round(volume)));
+}

@@ -100,4 +100,49 @@ describe("playAudio command body", () => {
       false
     );
   });
+
+  it("shows authored loudness and keeps volume, fade, and BGS when the clip changes", () => {
+    const body = playAudioBodyForTest(
+      {
+        path: [0],
+        actions: {
+          addCommand: () => undefined,
+          insertCommand: () => undefined,
+          replaceCommand: (_path, command) => {
+            replaced = command;
+          },
+          deleteCommand: () => undefined,
+          moveCommand: () => undefined,
+        },
+      },
+      { kind: "playAudio", resourceId: "cc0-music-field-loop", loop: true, channel: "bgs", volume: 0.6, fadeInMs: 1500 }
+    );
+    host.append(body);
+
+    const volume = body.querySelector('[data-testid="play-audio-volume"]') as HTMLInputElement;
+    const fade = body.querySelector('[data-testid="play-audio-fade"]') as HTMLInputElement;
+    expect(volume.value).toBe("60");
+    expect(fade.value).toBe("1.5");
+    expect(body.querySelector('[data-testid="play-audio-channel-note"]')?.textContent).toContain("환경음");
+
+    const select = body.querySelector('[data-testid="play-audio-resource-select"]') as HTMLSelectElement;
+    select.value = "cc0-bgm-town";
+    select.dispatchEvent(new Event("change"));
+    expect(replaced).toMatchObject({
+      kind: "playAudio",
+      resourceId: "cc0-bgm-town",
+      loop: true,
+      channel: "bgs",
+      volume: 0.6,
+      fadeInMs: 1500,
+    });
+
+    volume.value = "40";
+    volume.dispatchEvent(new Event("change"));
+    expect(replaced).toMatchObject({ volume: 40, channel: "bgs", fadeInMs: 1500 });
+
+    fade.value = "0";
+    fade.dispatchEvent(new Event("change"));
+    expect(replaced).toMatchObject({ volume: 40, fadeInMs: 0, channel: "bgs" });
+  });
 });

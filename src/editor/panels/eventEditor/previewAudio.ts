@@ -1,3 +1,4 @@
+import { authoredVolumePercent } from "@/player/audio/fade";
 import { el } from "@/util/dom";
 import type { Command } from "@/project/types";
 
@@ -18,12 +19,18 @@ export function previewAudio(cmd: Extract<Command, { kind: "playAudio" | "stopAu
   root.append(el("div", { class: "ecp-audio-icon play", text: "▶" }));
   root.append(el("div", { class: "ecp-audio-name", text: cmd.resourceId || "(소리 선택 없음)" }));
   root.append(renderWaveform());
-  root.append(
-    el("div", {
-      class: "ecp-audio-badges",
-      children: [el("span", { class: `ecp-audio-badge ${cmd.loop ? "on" : "off"}`, text: cmd.loop ? "반복 재생" : "1회 재생" })],
-    })
-  );
+  const badges = [el("span", { class: `ecp-audio-badge ${cmd.loop ? "on" : "off"}`, text: cmd.loop ? "반복 재생" : "1회 재생" })];
+  if (cmd.channel === "bgs") badges.push(el("span", { class: "ecp-audio-badge on", text: "환경음" }));
+  else if (cmd.channel === "me") badges.push(el("span", { class: "ecp-audio-badge on", text: "효과 음악" }));
+  if (cmd.volume !== undefined && authoredVolumePercent(cmd.volume) !== 100) {
+    badges.push(el("span", { class: "ecp-audio-badge off", text: `음량 ${authoredVolumePercent(cmd.volume)}%` }));
+  }
+  if (cmd.fadeInMs !== undefined && cmd.fadeInMs > 0) {
+    const seconds = cmd.fadeInMs / 1000;
+    const text = Number.isInteger(seconds) ? String(seconds) : seconds.toFixed(1).replace(/\.0$/, "");
+    badges.push(el("span", { class: "ecp-audio-badge off", text: `페이드 ${text}초` }));
+  }
+  root.append(el("div", { class: "ecp-audio-badges", children: badges }));
   return root;
 }
 
