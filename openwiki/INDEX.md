@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **187쪽 / 7242KB / 약 2,123,442 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **187쪽 / 7243KB / 약 2,123,674 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -574,13 +574,13 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L35` 조수 경로
 - `L39` 현황 (2026-10-14)
 
-### `openwiki/desktop-window-controls.md` — 8KB · 80줄 · ~2,495 토큰
+### `openwiki/desktop-window-controls.md` — 9KB · 81줄 · ~2,727 토큰
 
 - `L5` 한눈에
 - `L21` 코드 지도
 - `L37` 계약
-- `L58` 화면별 여백·끌기 (여기가 어긋나기 쉽다)
-- `L71` 실측 (이 저장소 Linux, xvfb + xfwm4, Electron 44.7.0)
+- `L59` 화면별 여백·끌기 (여기가 어긋나기 쉽다)
+- `L72` 실측 (이 저장소 Linux, xvfb + xfwm4, Electron 44.7.0)
 
 ### `openwiki/dungeon-themes.md` — 21KB · 120줄 · ~6,147 토큰
 

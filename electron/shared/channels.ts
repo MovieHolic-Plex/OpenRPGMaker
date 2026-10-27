@@ -52,6 +52,13 @@ export const OPRN_CHANNELS = {
   lifecycleFlushBeforeClose: "oprn:lifecycle.flush-before-close",
   lifecycleFlushDone: "oprn:lifecycle.flush-done",
   lifecycleSave: "oprn:lifecycle.save",
+  /** 보기 → 새로고침. 렌더러가 store.flush() 를 끝내고 flush-reload-done 으로 결과를 알린다. */
+  lifecycleFlushBeforeReload: "oprn:lifecycle.flush-before-reload",
+  lifecycleFlushReloadDone: "oprn:lifecycle.flush-reload-done",
+  /** 편집기가 새로고침 저장 리스너를 붙였다. 그 전에는 메모리 편집이 없다. */
+  lifecycleFlushReady: "oprn:lifecycle.flush-ready",
+  /** beforeunload 가 미저장 때문에 새로고침을 막았다(동기). 메인이 저장한 뒤 다시 연다. */
+  lifecycleReloadBlocked: "oprn:lifecycle.reload-blocked",
   /** 이 창이 연 프로젝트의 «마지막 편집 화면» 그림(편집기 부팅 동안 읽기 전용 자리표시). electron/main/lastView.ts */
   resumeLastView: "oprn:resume.lastView",
   /** 편집기가 부팅 로더를 걷었다 — 이제 이 창을 마지막 편집 화면으로 찍어도 된다. */
