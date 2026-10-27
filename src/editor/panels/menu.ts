@@ -106,6 +106,7 @@ let disposeStudioButton: (() => void) | null = null;
 let disposeAiConnectionChip: (() => void) | null = null;
 let disposeFullscreenButton: (() => void) | null = null;
 let disposeTopbarFit: (() => void) | null = null;
+let disposeProjectLabel: (() => void) | null = null;
 let lastLoggedAutoSaveKind: AutoSaveState["kind"] | null = null;
 // 실패 에피소드가 진행 중인가. error 로 켜지고 saved/idle 로 꺼진다 — 재시도 중(saving)에도
 // 칩을 붙잡아 두는 데 쓴다. 톱바가 다시 그려져도 에피소드는 이어져야 하므로 모듈 상태다.
@@ -130,6 +131,8 @@ export function renderTopbar(topbar: HTMLElement): void {
   disposeFullscreenButton = null;
   disposeTopbarFit?.();
   disposeTopbarFit = null;
+  disposeProjectLabel?.();
+  disposeProjectLabel = null;
   while (topbar.firstChild) topbar.removeChild(topbar.firstChild);
   const mode = getMode();
   const menuBar = el("div", {
@@ -140,9 +143,11 @@ export function renderTopbar(topbar: HTMLElement): void {
   // 왼쪽 — 파일·자료 묶음.
   const lead = el("div", { class: "studio-bar-lead", dataset: { testid: "studio-bar-lead" } });
   const projectLabel = projectMenuLabel();
+  const projectButton = renderMenu("project", projectLabel, menuCommands("project", topbar), { chevron: true, className: "studio-project-button", title: `프로젝트 — ${projectLabel}` });
+  disposeProjectLabel = watchProjectMenuLabel(projectButton);
   lead.append(
     renderProductBrand(),
-    renderMenu("project", projectLabel, menuCommands("project", topbar), { chevron: true, className: "studio-project-button", title: `프로젝트 — ${projectLabel}` }),
+    projectButton,
     renderSaveButton(),
     renderTopbarSaveStatus(topbar),
     toolButton({ testId: "toolbar-database", icon: "database", label: headerLabel("databaseShort"), title: headerLabel("database"), onClick: () => openDatabaseModalLazy() }),
@@ -228,6 +233,22 @@ export function renderTopbar(topbar: HTMLElement): void {
 export function projectMenuLabel(): string {
   const title = store.getCurrent().meta?.title?.trim();
   return title && title.length > 0 ? title : "제목 없는 프로젝트";
+}
+
+/**
+ * 자료집 「게임 타이틀」처럼 프로젝트 이름만 바뀌는 편집은 편집 기록 이벤트를 매 글자마다
+ * 내지 않는다. 톱바를 통째로 다시 그리지 않고, 이름이 달라질 때만 이 단추의 글자를 바꾼다.
+ */
+function watchProjectMenuLabel(button: HTMLElement): () => void {
+  let shown = projectMenuLabel();
+  return store.subscribe(() => {
+    const next = projectMenuLabel();
+    if (next === shown || !button.isConnected) return;
+    shown = next;
+    const label = button.querySelector(".oprn-menu-item-label");
+    if (label) label.textContent = next;
+    button.setAttribute("title", `프로젝트 — ${next}`);
+  });
 }
 
 /**
