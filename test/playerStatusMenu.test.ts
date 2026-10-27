@@ -3,7 +3,7 @@ import { renderPlayerStatusMenu } from "@/player/playerStatusMenu";
 import { createBlankProject, DEFAULT_EQUIPMENT_ID } from "@/project/defaults";
 import { startSession } from "@/project/session";
 import { useItemFromMenu, type MenuItemUseResult } from "@/player/playerItemUse";
-import type { SaveSlotReadResult } from "@/player/saveSlots";
+import { createSaveSnapshot, type SaveSlotReadResult } from "@/player/saveSlots";
 import type { PlayerStatusMenuActions } from "@/player/playerStatusMenuTypes";
 import { findByTestId, installFakeDom, renderWithFakeDom } from "./fakeDom";
 
@@ -126,6 +126,56 @@ describe("player status menu", () => {
       const slot = findByTestId(menu, "save-slot-1");
       expect(slot?.textContent).toContain("비어 있음");
       expect(slot?.className).toContain("selected");
+    } finally {
+      restoreDom();
+    }
+  });
+
+  it("shows the level and save clock on every filled slot, and the full date on the selected one", () => {
+    const restoreDom = installFakeDom();
+    try {
+      const project = createBlankProject();
+      const session = startSession(project);
+      const older = {
+        ...createSaveSnapshot(project, session),
+        savedAt: new Date(2026, 7, 14, 5, 5).toISOString(),
+        mapName: "폐등대 창고",
+        partyLevel: 12,
+        playTimeSeconds: 18_000,
+      };
+      const newer = {
+        ...createSaveSnapshot(project, session),
+        savedAt: new Date(2026, 9, 27, 5, 40).toISOString(),
+        mapName: "안개 항구 마을",
+        partyLevel: 4,
+        playTimeSeconds: 900,
+      };
+      const slots: SaveSlotReadResult[] = [
+        { kind: "present", slot: 1, snapshot: newer },
+        { kind: "present", slot: 2, snapshot: older },
+        { kind: "empty", slot: 3 },
+      ];
+      const menu = renderWithFakeDom(() =>
+        renderPlayerStatusMenu({
+          project,
+          session,
+          slots,
+          selectedCommand: "save",
+          mode: "function",
+          selectedDetailActionIndex: 0,
+          actions: noopActions,
+        }),
+      );
+
+      const first = findByTestId(menu, "save-slot-1");
+      const second = findByTestId(menu, "save-slot-2");
+      expect(first?.querySelector(".status-menu-detail-value")?.textContent).toBe("저장됨 · L4 · 10/27 05:40");
+      expect(second?.querySelector(".status-menu-detail-value")?.textContent).toBe("저장됨 · L12 · 08/14 05:05");
+      const detail = findByTestId(menu, "status-menu-showcase-description")?.textContent ?? "";
+      expect(detail).toContain("안개 항구 마을");
+      expect(detail).toContain("15:00");
+      expect(detail).toContain("2026.10.27 05:40");
+      expect(detail).not.toContain("폐등대 창고");
     } finally {
       restoreDom();
     }
