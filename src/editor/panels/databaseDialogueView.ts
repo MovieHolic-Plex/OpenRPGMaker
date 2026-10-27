@@ -249,7 +249,8 @@ function renderLineRow(line: DialogueLine, project: Project, panelRoot: HTMLElem
         dataset: { testid: "db-dialogue-jump" },
         on: { click: () => jumpToLine(line, panelRoot) },
       })
-      : el("span", { class: "db-dialogue-jump-none", attrs: { "aria-hidden": "true" } }),
+      // 표의 넷째 칸 자리만 채운다(따로 여는 편집 화면이 없는 퀘스트·엔딩 글).
+      : el("span", { attrs: { "aria-hidden": "true" } }),
   );
   return row;
 }
