@@ -28,8 +28,17 @@ for(let round=0;round<Number(process.env.BATTLE_WARMUP_ROUNDS ?? 3);round++) for
  const cdp=await page.context().newCDPSession(page);await cdp.send('Performance.enable');
  const metrics=async()=>Object.fromEntries((await cdp.send('Performance.getMetrics')).metrics.map(x=>[x.name,x.value]));
  await page.evaluate(()=>{performance.setResourceTimingBufferSize(5000);performance.clearResourceTimings();});
- let phase='warm';const requests:any[]=[];page.on('response',async r=>{if(r.request().resourceType()==='image')requests.push({phase,url:r.url(),status:r.status()});});
+ // 그림 전송량을 **단계별 바이트**로 잰다. 응답 이벤트 개수로 재면 개발 서버의 조건부 재검증(304)까지
+ // 세어 "캐시에서 재사용했는가" 를 판정하지 못한다(2026-10-27 실측: 304 는 정상 동작, 오탐이었다).
+ const imageEntries=async()=>page.evaluate(()=>performance.getEntriesByType('resource')
+  .filter((x:any)=>/[.](png|jpe?g|webp|gif|avif|svg)([?#]|$)/i.test(x.name))
+  .map((x:any)=>({url:x.name,bytes:x.transferSize,decoded:x.decodedBodySize})));
+ const phaseEntries=async(since:number)=>(await imageEntries()).slice(since);
+ // resource timing 항목은 요청이 **끝날 때** 생긴다. 준비 단계가 끝나기 전에 단계를 넘기면
+ // 늦게 도착한 준비 요청이 mount 로 계산된다(2026-10-27 실측: warm 이 받은 515KB 가 mount 로 잡혔다).
+ const settleImages=async()=>{let prev=-1,stable=0;for(let i=0;i<120;i++){const n=(await imageEntries()).length;if(n===prev){if(++stable>=2)return n;}else{stable=0;prev=n;}await page.waitForTimeout(50);}return prev;};
  const a=await metrics();
+ const warmStart=(await imageEntries()).length;
  const warm=await page.evaluate(variant=>{
   const {host,battle,warm}= (window as any).bench;
   const append=host.append.bind(host);let images=0,backgrounds=0,width=0;
@@ -44,14 +53,17 @@ for(let round=0;round<Number(process.env.BATTLE_WARMUP_ROUNDS ?? 3);round++) for
   const t=performance.now();if(variant!=='cold')warm.warmBattleStyles(host,battle.snapshot());const ms=performance.now()-t;
   host.append=append;return {ms,images,backgrounds,width};
  },variant);
- await page.waitForTimeout(300);const b=await metrics();phase='mount';
+ await settleImages();const b=await metrics();
+ const warmPhase=await phaseEntries(warmStart);
+ const mountStart=(await imageEntries()).length;
  const mount=await page.evaluate(()=>{const b=(window as any).bench;const t=performance.now();b.controller=b.dom.mountBattleScene({host:b.host,runtime:b.battle,onResult:()=>{},introHold:true});return performance.now()-t;});
- const c=await metrics();await page.waitForTimeout(300);
+ const c=await metrics();await settleImages();
+ const mountPhase=await phaseEntries(mountStart);
  const resources=await page.evaluate(()=>performance.getEntriesByType('resource').filter((x:any)=>x.initiatorType==='img'||x.initiatorType==='css').map((x:any)=>({url:x.name,bytes:x.transferSize,decoded:x.decodedBodySize})));
- rows.push({round,variant,warm,mount,warmLayout:(b.LayoutDuration-a.LayoutDuration)*1000,mountLayout:(c.LayoutDuration-b.LayoutDuration)*1000,mountStyle:(c.RecalcStyleDuration-b.RecalcStyleDuration)*1000,requests,resources});
+ rows.push({round,variant,warm,mount,phases:{warm:warmPhase,mount:mountPhase},warmLayout:(b.LayoutDuration-a.LayoutDuration)*1000,mountLayout:(c.LayoutDuration-b.LayoutDuration)*1000,mountStyle:(c.RecalcStyleDuration-b.RecalcStyleDuration)*1000,resources});
  if(round===0 && variant==='current' && process.env.BATTLE_WARMUP_SCREENSHOT)await page.screenshot({path:process.env.BATTLE_WARMUP_SCREENSHOT});
  console.log(JSON.stringify(rows.at(-1)));
  await page.evaluate(()=>{const b=(window as any).bench;b.controller.destroy();b.battle.cancel();});await page.close();
 }
-writeFileSync(process.env.BATTLE_WARMUP_OUTPUT ?? '/tmp/lvD-save/battle-browser.json',JSON.stringify(rows,null,2));console.log(rows.map(({requests,resources,...r})=>r));
+writeFileSync(process.env.BATTLE_WARMUP_OUTPUT ?? '/tmp/lvD-save/battle-browser.json',JSON.stringify(rows,null,2));console.log(rows.map(({phases,resources,...r})=>r));
 }finally{await browser.close();}
