@@ -172,7 +172,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/pokemon-like-field-kit.md` | 3 | `compose.mjs`, `lib/musicScore.ts`, `package.mjs` |
 | `openwiki/project-wiki.md` | 2 | `projectWikiSession.test.ts`, `projectWikiTimeout.test.ts` |
 | `openwiki/quest-preset-research.md` | 2 | `verify-shots/quest-library/SUMMARY.md`, `verify-shots/quest-play-proof/SUMMARY.md` |
-| `openwiki/quickstart.md` | 2 | `.oprn-local.json`, `docs/superpowers/specs/2026-09-03-ai-studio-console-design.md` |
+| `openwiki/quickstart.md` | 1 | `.oprn-local.json` |
 | `openwiki/release-and-version.md` | 2 | `docs/superpowers/specs/2026-09-15-oprn-local-sqlite-store-design.md`, `src/games.ts` |
 | `openwiki/relief-terrain.md` | 5 | `verify-shots/relief-slope-fix/SUMMARY.md`, `verify-shots/terrain-ai-edit/SUMMARY.md`, `verify-shots/terrain-assistant-live/SUMMARY.md`, `verify-shots/terrain-body-rims/SUMMARY.md`, `verify-shots/terrain-seams/SUMMARY.md` |
 | `openwiki/runtime-action-combat.md` | 4 | `export-player/player.html`, `src/project/defaults/actionCombatDemoProject.ts`, `test/actionDemoProject.test.ts`, `test/e2e/_verify-action-demo.spec.ts` |
@@ -2610,18 +2610,18 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L56` 한계와 완료 근거의 구분
 - `L73` 재현
 
-### `openwiki/quickstart.md` — 19KB · 196줄 · ~5,755 토큰
+### `openwiki/quickstart.md` — 20KB · 198줄 · ~5,828 토큰
 
-- `L8` 0. 여기서 에이전트가 실제로 헤매는 이유 (실측 2026-08-30)
-- `L19` 1. 환경 — 여기가 틀리면 이후 전부 헛수고
-- `L54` 팀 SQLite 호스트 (2026-09-18)
-- `L62` 1a. Mac / 개인 로컬 실행 (2026-09-21)
-- `L79` 1b. 전체 BGM은 Release 팩으로 설치
-- `L95` 1c. 오프닝 이미지 팩
-- `L102` 2. 검증 — 무엇이 진짜 게이트인가
-- `L129` 3. 어디를 고치나 — 기능 → 진입 파일
-- `L178` 4. 위키를 읽는 법
-- `L190` 5. 끝났다고 말할 수 있는 조건
+- `L8` 0. 여기서 에이전트가 실제로 헤매는 이유
+- `L21` 1. 환경 — 여기가 틀리면 이후 전부 헛수고
+- `L56` 팀 SQLite 호스트 (2026-09-18)
+- `L64` 1a. Mac / 개인 로컬 실행 (2026-09-21)
+- `L81` 1b. 전체 BGM은 Release 팩으로 설치
+- `L97` 1c. 오프닝 이미지 팩
+- `L104` 2. 검증 — 무엇이 진짜 게이트인가
+- `L131` 3. 어디를 고치나 — 기능 → 진입 파일
+- `L180` 4. 위키를 읽는 법
+- `L192` 5. 끝났다고 말할 수 있는 조건
 
 ### `openwiki/release-and-version.md` — 18KB · 248줄 · ~5,388 토큰
 
