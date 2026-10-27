@@ -20,6 +20,18 @@ const CAMPAIGN: MonsterCampaignConfig = {
   id: "c", name: "원정", speciesIds: [], speciesNotes: {}, locations: [], objectives: [],
   badges: [1, 2, 3].map((n) => ({ id: `badge_${n}`, name: `배지${n}`, switchId: `mx_badge_${n}`, cityMapId: "map" })),
 };
+/**
+ * CAMPAIGN's badges point at a placeholder city map ("map"); load validation (io/references.ts) and
+ * configure_monster_campaign require each badge's city map and switch to exist in the project.
+ */
+function campaignIn(project: Project): MonsterCampaignConfig {
+  const campaign = structuredClone(CAMPAIGN);
+  for (const badge of campaign.badges) {
+    badge.cityMapId = project.startMapId;
+    if (!project.switches.some((entry) => entry.id === badge.switchId)) project.switches.push({ id: badge.switchId, name: badge.name });
+  }
+  return campaign;
+}
 const session = (switches: Record<string, boolean>) => ({ switches, variables: {}, partyActorIds: [], flags: {}, actorVitals: {}, x: 0, y: 0, currentMapId: "m" });
 
 describe("badgeCount 조건", () => {
@@ -102,7 +114,7 @@ describe("복종 레벨 상한 — 규칙", () => {
 
   it("기본값에서는 직렬화에 나타나지 않는다", () => {
     const project = createScarloxyPokemonDemoProject();
-    project.system.monsterCampaign = structuredClone(CAMPAIGN);
+    project.system.monsterCampaign = campaignIn(project);
     expect(serialize(project)).not.toContain("obedienceLevelCaps");
     project.system.monsterCampaign.obedienceLevelCaps = { enabled: true, caps: [{ badges: 0, maxLevel: 20 }] };
     expect(deserialize(serialize(project)).system.monsterCampaign?.obedienceLevelCaps).toEqual({ enabled: true, caps: [{ badges: 0, maxLevel: 20 }] });
@@ -189,7 +201,7 @@ describe("도구 — place_badge_gate / configure_monster_campaign {obedienceLev
 
   it("configure_monster_campaign: 켜기(caps 생략=기본 사다리)·끄기(필드 제거)", () => {
     const project = prepared();
-    project.system.monsterCampaign = structuredClone(CAMPAIGN);
+    project.system.monsterCampaign = campaignIn(project);
     const ctx = ctxOf(project);
     const on = runTool(ctx, "configure_monster_campaign", { obedienceLevelCaps: { enabled: true } }, { dryRun: false });
     expect(on.ok, on.summary).toBe(true);
