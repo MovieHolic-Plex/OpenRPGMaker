@@ -285,7 +285,7 @@ describe("AssistantSession accepted-revision proof", () => {
     expect(next).toMatchObject({ status: "succeeded", verified: true, commitId: null });
     expect(next.receipt?.revisionId).not.toBe(receipt?.revisionId);
     expect(f.savedAudits()).toHaveLength(2);
-  });
+  }, 60_000); // Same budget as the other full-session cases in this file: a real session plus repository proof.
 
   it.each(["cancelled", "disabled", "target", "content", "local-edit"] as const)("does not promote %s during the read or replace editor state", async (failure) => {
     const f = await fixture();
@@ -330,7 +330,7 @@ describe("AssistantSession accepted-revision proof", () => {
     expect(proof).toMatchObject({ status: "succeeded", verified: true, commitId: f.commits[0] });
     expect(proof?.commitId).toMatch(/^[a-f0-9-]{36}$/);
     expect(f.requests.filter((r) => r.op === "commit-list")).toHaveLength(0);
-  });
+  }, 60_000); // Same budget as the other full-session cases in this file: a real session plus repository proof.
 
   it("project proof can succeed when the separate commit log fails", async () => {
     const f = await fixture();
@@ -338,7 +338,7 @@ describe("AssistantSession accepted-revision proof", () => {
     await f.run();
     expect(f.session.getRunEndProof()).toMatchObject({ status: "succeeded", verified: true, commitId: null });
     expect(f.savedAudits()).toHaveLength(1);
-  });
+  }, 60_000); // Same budget as the other full-session cases in this file: a real session plus repository proof.
 
   it("proves a normal no-plan apply through the reusable path without replaying the tool", async () => {
     const f = await fixture(false);
@@ -355,7 +355,7 @@ describe("AssistantSession accepted-revision proof", () => {
     f.session.rebaseProject(f.store.getCurrent());
     expect(await f.session.proveAppliedRevision()).toMatchObject({ status: "succeeded", verified: true, commitId: applied.commit.commitId });
     expect(f.commits).toHaveLength(1);
-  });
+  }, 60_000); // Same budget as the other full-session cases in this file: a real session plus repository proof.
 
   it("does not correlate a later human edit with an in-flight apply commit", async () => {
     const f = await fixture(false);
@@ -396,7 +396,7 @@ describe("AssistantSession accepted-revision proof", () => {
     expect(f.session.getRunEndProof()).toMatchObject({ status: "succeeded", verified: true, receipt });
     expect(f.chatCalls()).toBe(chats);
     expect(f.commits).toHaveLength(1);
-  });
+  }, 60_000); // Same budget as the other full-session cases in this file: a real session plus repository proof.
 
   it.each(["pending", "applied"] as const)("retryLastTurn proves %s milestones after a recovered LLM failure without replaying tools", async state => {
     const f = await fixture();
