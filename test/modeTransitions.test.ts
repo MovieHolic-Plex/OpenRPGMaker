@@ -1,9 +1,9 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { bounded, deferred } from "./persistenceTestSignals";
 
-// 플레이어는 파일 머리에서 가로챈다(vi.mock 은 끌어올려진다). 테스트 안의 vi.doMock 은 테스트 파일 자신의
-// import 에만 걸리고 mode.ts 의 동적 import("@/player/player") 는 진짜 모듈을 받았다(CI 진단: 같은 테스트에서
-// 테스트 쪽 import 는 목, mode.ts 쪽은 진짜 renderPlayer 가 store.getCurrent().meta.publication 에서 죽었다).
+// 플레이어는 파일 머리에서 가로챈다(vi.mock 은 끌어올려진다). 아래에서 목 모듈을 한 번 미리 불러 둔다 —
+// CI 진단: 두 전환이 동시에 import("@/player/player") 를 부르면 두 번째(Promise.all index 1)가 진짜 모듈을 받아
+// renderPlayer 가 목 store 의 meta.publication 에서 죽었다. 첫 import 를 끝내 두면 둘 다 같은 목을 받는다.
 const player = vi.hoisted(() => ({ renderPlayer: vi.fn(), teardownPlayer: vi.fn() }));
 vi.mock("@/player/player", () => player);
 
@@ -124,6 +124,7 @@ describe("mode transitions", () => {
     }));
 
     const { bootApp, enterMode } = await import("@/app/mode");
+    await import("@/player/player");
     const root = document.createElement("div");
     await bootApp(root);
 
