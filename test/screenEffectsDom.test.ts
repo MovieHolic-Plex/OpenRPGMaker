@@ -1,6 +1,9 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { readFileSync } from "node:fs";
+import { createInterpreter } from "@/player/interpreter";
 import { SCREEN_EFFECT_Z_INDEX, syncScreenEffects } from "@/player/playSceneScreenEffects";
+import { M2_COMMAND_CATALOG } from "@/project/eventCommands/m2Catalog";
+import type { Command, M2CommandFields } from "@/project/types";
 import { FakeElement, installFakeDom, findByTestId } from "./fakeDom";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import type { PlaySessionLike } from "@/project/sessionRuntimeTypes"
@@ -160,5 +163,32 @@ describe("syncScreenEffects — DOM 오버레이", () => {
 
     const layer = findByTestId(hostOf(scene), "runtime-screen-effect");
     expect(layer!.style.background).toBe("rgba(128,64,32,0.45)");
+  });
+
+  it("색 플래시가 끝나면 덮기 전의 검정 페이드가 다시 보인다", () => {
+    const session = mkSession();
+    const entry = M2_COMMAND_CATALOG.find((row) => row.title === "Screen Effect");
+    if (!entry) throw new Error("Screen Effect missing");
+    const screenEffect = (fields: M2CommandFields): Command =>
+      ({ kind: "m2Command", commandId: entry.id, fields }) as unknown as Command;
+    createInterpreter(
+      [
+        screenEffect({ effect: "fadeOut", value: "", durationMs: 600 }),
+        screenEffect({ effect: "flash", value: "#ff0000", durationMs: 300 }),
+      ],
+      session,
+    ).start();
+    const scene = mkScene(session);
+    session.m2Runtime!.screen.flashUntilMs = Number.POSITIVE_INFINITY;
+    syncScreenEffects(scene);
+    const during = findByTestId(hostOf(scene), "runtime-screen-effect");
+    expect(during?.style.background).toBe("rgba(255,0,0,0.45)");
+
+    session.m2Runtime!.screen.flashUntilMs = 0;
+    syncScreenEffects(scene);
+    const after = findByTestId(hostOf(scene), "runtime-screen-effect");
+    expect(session.m2Runtime!.screen.tint).toBe("0,0,0,1");
+    expect(after?.style.background).toBe("rgba(0,0,0,1)");
+    expect(after?.dataset.mode).toBe("screen-tint");
   });
 });

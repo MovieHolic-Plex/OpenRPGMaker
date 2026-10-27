@@ -1,5 +1,6 @@
 import { dialogueHost } from "@/player/playSceneDom";
 import { el } from "@/util/dom";
+import { restoreTintAfterFlash } from "@/player/screen/flashTint";
 import {
   interpolateRgba,
   isVisibleTint,
@@ -79,6 +80,11 @@ export function syncScreenEffects(scene: PlaySceneContext): void {
   if (flash) flashHolds.delete(host);
 
   const screen = scene.session.m2Runtime?.screen;
+  // 플래시가 색조 칸을 빌린 뒤 기한이 지났으면, 그 전에 있던 색조로 되돌린다.
+  // 홀드가 아직 보이면 위에서 이미 돌아갔으므로 여기서는 플래시가 끝난 프레임만 정리한다.
+  if (screen && typeof screen.flashUntilMs === "number" && nowMs() >= screen.flashUntilMs) {
+    restoreTintAfterFlash(screen);
+  }
 
   const hidden = screen?.hidden === true;
   // 우선순위: 화면 숨김(즉시, 불투명 검정) > 색조(트윈 가능).

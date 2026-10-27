@@ -15,6 +15,7 @@ import type { StepResult } from "@/player/interpreter";
 import { applyMapOverrides, fireAutoTriggers } from "@/player/playSceneMapRuntime";
 import { dialogueHost } from "@/player/playSceneDom";
 import { holdScreenFlash } from "@/player/playSceneScreenEffects";
+import { restoreTintAfterFlash } from "@/player/screen/flashTint";
 import { parseTransitionKind, usesOverlayTransition } from "@/player/transitions/transitionModel";
 import { runTransitionPhase } from "@/player/transitions/transitionOverlay";
 import type { PlaySceneContext, TransferRequest } from "@/player/playSceneTypes";
@@ -232,11 +233,9 @@ export function flashCamera(scene: PlaySceneContext, step: FlashScreenStep): Pro
       if (settled) return;
       settled = true;
       graphics?.destroy();
-      const screen = scene.session.m2Runtime?.screen;
-      if (screen?.tint === "255,255,255,0.85") {
-        screen.tint = "none";
-        screen.tintDurationMs = 0;
-      }
+      // 흰색만 "none" 으로 지우면 빨강·파랑 플래시가 색조로 남고, 흰색은 페이드 아웃의
+      // 검정을 지워 버린다. 플래시가 덮기 전에 있던 색조로 되돌린다.
+      restoreTintAfterFlash(scene.session.m2Runtime?.screen);
       resolve();
     };
     const timeout = typeof window !== "undefined" && typeof window.setTimeout === "function"
