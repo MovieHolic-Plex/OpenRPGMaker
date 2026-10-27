@@ -228,11 +228,11 @@ function writeProjectRow(driver: Driver, project: Project, wire: HostWire, proje
   for (const row of driver.prepare("SELECT sha256 FROM tileset_blobs").all([])) storedBlobShas.add(String(row.sha256));
   const insertBlob = driver.prepare("INSERT INTO tileset_blobs (sha256, body, created_at) VALUES (?, ?, ?)");
   for (const [sha, text] of wire.blobs) if (!storedBlobShas.has(sha)) insertBlob.run([sha, text, now]);
-  if (wire.blobs.size > 0) {
-    let diffs = false;
-    for (const text of wire.blobs.values()) if (text.includes(BUNDLED_TILESET_DIFF_MARKER)) { diffs = true; break; }
-    writeMeta(driver, META_KEYS.formatVersion, String(diffs ? LOCAL_STORE_FORMAT_VERSION : LOCAL_STORE_FORMAT_FOLDED));
-  }
+  // 접지 못한 글(foldSubmittedText 의 안전망: 본문 없이 행 글 하나)에도 차이가 있을 수 있다 — 행 글도 본다.
+  let diffs = wire.folded.includes(BUNDLED_TILESET_DIFF_MARKER);
+  if (!diffs) for (const text of wire.blobs.values()) if (text.includes(BUNDLED_TILESET_DIFF_MARKER)) { diffs = true; break; }
+  if (diffs) writeMeta(driver, META_KEYS.formatVersion, String(LOCAL_STORE_FORMAT_VERSION));
+  else if (wire.blobs.size > 0) writeMeta(driver, META_KEYS.formatVersion, String(LOCAL_STORE_FORMAT_FOLDED));
   driver.prepare(
     `INSERT INTO project (id, project_id, title, document_version, current_json, current_sha256, revision, updated_at)
      VALUES (1, ?, ?, ?, ?, ?, ?, ?)

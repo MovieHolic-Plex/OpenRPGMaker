@@ -37,7 +37,7 @@ import { applyAudioDescriptionDelta } from "./audioDescriptions";
 import { applyMonsterMetadataDelta } from "./monsterMetadata";
 import { serialize, serializeForComparison } from "./io";
 import { projectWireView } from "./io/serialize";
-import { primeBundledTilesetDiffViews } from "./bundledTilesetDiff";
+import { forgetBundledTilesetDiffViews, primeBundledTilesetDiffViews } from "./bundledTilesetDiff";
 import {
   applyEventDraftVault,
   clearEventDraftVault,
@@ -1861,6 +1861,8 @@ class ProjectStore {
     const appliedNormalizers = normalizers.filter(([, applied]) => applied).map(([name]) => name);
     const changed = digestChanges ? before !== jsonContentDigest(this.current) : !skipNormalizers && appliedNormalizers.length > 0;
     if (!skipNormalizers) forgetTrustedSharedEntries();
+    // 정규화기가 타일셋 원소를 제자리에서 고쳤을 수 있다 — 그 전에 만든 번들 차이 보기는 버리고 다음 저장 보기에서 다시 만든다.
+    if (!skipNormalizers) forgetBundledTilesetDiffViews(this.current);
     // 표식은 변경 판정(요약 대조) 뒤에 새긴다 — 표식 때문에 «정규화기가 손댔다»고 오판하지 않는다.
     const stamped = !skipNormalizers && bootMarker !== null;
     if (stamped) stampBootNormalization(this.current, bootMarker);

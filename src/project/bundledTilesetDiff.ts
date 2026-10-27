@@ -220,6 +220,14 @@ export async function primeBundledTilesetDiffViews(
   }
 }
 
+/**
+ * 이 프로젝트 타일셋들의 기억한 차이 보기를 버린다. 로드 정규화(ensure*)처럼 타일셋 원소 객체 안을 제자리에서 고칠 수 있는
+ * 일 뒤에 부른다 — 기억 대조(필드·원소 정체)는 원소 객체 안의 속성 변경을 못 본다.
+ */
+export function forgetBundledTilesetDiffViews(project: { readonly tilesets: Readonly<Record<string, TilesetDef>> }): void {
+  for (const tileset of Object.values(project.tilesets)) if (tileset && !Object.isFrozen(tileset)) views.delete(tileset);
+}
+
 // ── 되돌리기 ──────────────────────────────────────────────────────────────
 
 export class BundledTilesetDiffError extends Error {}
@@ -354,7 +362,8 @@ export function restoreBundledTilesetDiffs(data: { tilesets?: unknown }): Bundle
       if (!base) throw new BundledTilesetDiffError(`번들 타일셋 ${id} 의 정의가 이 앱에 없습니다 — 이 프로젝트를 저장한 앱(같은 판 이상)으로 열어 주세요.`);
       tileset = restoreOne(id, value, base, counters);
       if (frozen) {
-        deepFreeze(tileset);
+        // 번들 정의 생성자가 정의 JSON 기억과 원소를 공유할 수 있다 — 그 기억까지 얼리지 않게 떼어 낸 사본을 얼린다.
+        tileset = deepFreeze(structuredClone(tileset));
         frozenRestores.set(value, tileset);
         // 얼린 결과는 바뀌지 않으므로 저장 보기는 받은 본문 그대로다(호스트가 같은 본문 글을 다시 쓴다).
         views.set(tileset, { fingerprint: fingerprintOf(tileset), view: value });
