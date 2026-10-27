@@ -209,7 +209,8 @@ describe("event editor command board", () => {
     expect(eventAiStagedCommands(mapId, NESTED_EVENT_ID, "p1")).toEqual([{ kind: "text", body: "B" }]);
     expect(remove.querySelector(".cmd-step")).toBeNull();
     expect(keep.querySelector(".cmd-step")?.textContent).toBe("1");
-    expect(count.textContent).toBe("1개");
+    // 초안은 별도 모달에만 그리고 적용 전까지 저작 명령 목록(과 개수 배지)을 유지한다(content.ts stagedHost 주석) — 배지는 저작된 A,B 둘.
+    expect(count.textContent).toBe("2개");
   });
 
   it("renumbers the staged result contiguously when an add row is excluded", async () => {
@@ -235,7 +236,8 @@ describe("event editor command board", () => {
     const excludedAdd = host.querySelector<HTMLElement>('[data-testid="ai-event-staged-row-add"]')!;
     expect(excludedAdd.querySelector(".cmd-step")).toBeNull();
     expect(steps).toEqual(["1", "2"]);
-    expect(host.querySelector('[data-testid="event-editor-command-count"]')?.textContent).toBe("2개");
+    // 초안은 적용 전까지 저작 명령 개수 배지에 반영되지 않는다(content.ts stagedHost 주석) — 저작된 명령은 A 하나.
+    expect(host.querySelector('[data-testid="event-editor-command-count"]')?.textContent).toBe("1개");
   });
 
   // 이 줄은 원래 `<button>` 이었지만 `dblclick` 만 들어서 한 번 누르면 아무 일도 없었다.
