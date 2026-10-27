@@ -13,12 +13,12 @@ const input = (text: string, piTeam: boolean, autonomy = resolveAutonomy("balanc
 
 describe("장르 프리셋 첫 요청", () => {
   it.each([true, false])("의도 선언 없이 쓰기 실행으로 분류한다 (팀=%s)", async (piTeam) => {
-    const { declarer, run } = input(`${GENRE_PRESET_BRIEF_PREFIX} 몬스터 수집\n\n기획…`, piTeam);
+    // 「몬스터 수집」 프리셋은 2026-10-14 자유도 감사 #3·#5 부터 몬스터 칩셋 캠페인 경로(단독·도구 좁힘)로 먼저 빠진다 — 일반 장르로 본다.
+    const { declarer, run } = input(`${GENRE_PRESET_BRIEF_PREFIX} 연애 시뮬레이션\n\n기획…`, piTeam);
     const out = await run();
     expect(declarer).not.toHaveBeenCalled();
     expect(out.mode).toBe(piTeam ? "team" : "single");
     expect(out.plan).toMatchObject({ readOnly: false, routineEdit: false });
-    expect(out.plan.villageContract).toBeUndefined();
     // 도구를 좁히지 않는다 — 게임 전체 저작은 DB·시스템·맵 도구를 모두 쓴다.
     expect(out.initialToolNames).toBeUndefined();
   });
