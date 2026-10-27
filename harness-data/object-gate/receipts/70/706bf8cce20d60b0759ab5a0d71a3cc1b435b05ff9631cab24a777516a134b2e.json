@@ -1,0 +1,296 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "706bf8cce20d60b0759ab5a0d71a3cc1b435b05ff9631cab24a777516a134b2e",
+ "width": 64,
+ "height": 16,
+ "kind": "terrain",
+ "name": "other.ground r6 A1",
+ "label": "dungeon/other.ground.r6.A1",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (3/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (3/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 4,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "dungeon",
+   "fallback": true,
+   "reason": "칩셋 dungeon 의 화풍 기준 묶음이 없다",
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 8,
+  "tileColorsP90": 8,
+  "darkV5": 44,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 4
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ground tile texture, full 64x16 block",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a full-width 64x16 mottled purple/dark ground texture with no silhouette variation (width 64 on every row). There is no front-edge line, eave shadow, ellipse, or standing volume. It is a flat terrain tile with no distinct front face, consistent with the terrain kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a dark purple-red ground strip with swirled crack and vein marks. It has about 5 distinguishable lightness steps, from a deep violet base through mid purples to lighter violet highlights. The marks are scattered irregularly, so no area reads as a flat fill. The measured facts support this: 8 visible tones per tile against 3 for the grass reference and 7 for the paving reference, and 0% near-flat coverage like both references. The dark edge pixels are 0% neutral, so the outline leans purple-brown like the material rather than being a black sticker line. Its texture is less fine than the grass or paving grain, and the strip is smaller than a full 4x3 patch. Neither is a style failure, and the density is at or above the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 11928
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ground texture fill",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tile is a full 64x16 opaque rectangle (width 64 on every row 0-15). It is a mottled purple and dark-violet ground texture with a few dark crack-like diagonal streaks and a few lighter violet pixels. The column scans show only irregular alternating dark and mid bands of 2-6 rows. None of them is a front-edge line, eave shadow, ellipse, or a vertical face. There is no front face and no standing object, so it is a flat top-down ground fill, which is what a terrain tile is expected to be."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is meant to be a 4x3 ground patch but shows only a thin strip about 4 tiles wide by 1 tile tall. The rest of the board is flat grey, so the patch does not read as a laid ground surface. The strip is a dark purple-red base with a few darker and lighter squiggle marks. I count about 4 lightness steps, against about 6 on the paving and grass references. Its 8 visible tones per tile match the paving (7) and beat the grass (3), and its near-flat coverage is 0%. That density is mostly hue variation, though, and the squiggles are sparse and low-contrast, not the per-stone shading or tufted grain of the references. The dark edge pixels are not neutral (0% near-neutral), so the outline leans toward a material tone. There is no clear highlight-to-deep ramp and no per-element shading. A careful artist would not accept it next to the references: it is thinner, flatter and less structured, and it is the wrong size for a 4x3 patch.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 14612
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ground texture fill",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tile is a fully opaque 64x16 rectangle (width 64 on every row, rows 0-15). It is filled with mottled dark purple and mauve noise, with a few darker crack lines and a few light-violet pixels. There is no front-edge line, no eave shadow, no ellipse, and no vertical front face. The column scans show only alternating dark and mid bands about 2-6 rows tall, which are texture rather than structure. It reads as a flat top-down ground texture with no standing volume, which is expected for a terrain tile."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is a thin dark purple strip of cracked ground with blue and pink flecks, sitting in a large empty grey field. It is not a 4x3-tile ground patch like the grass and paving references, which fill their whole area, so it reads as a sliver and not as a tileable surface. By the measured facts it has 8 visible tones per tile against 3 for grass and 7 for paving. Near-flat coverage is 0% and 0% of its dark edge pixels are neutral, so there are no flat fills and the dark tones lean purple. Those numbers are not the problem. By eye, the whole palette is only 8 colours, and the main purple ramp has about 4 distinguishable steps. The speckle is sparse and the surface lacks the per-stone or per-tuft shading of the references. Because the piece does not cover the required patch and its shading and texture are thinner than the references, I fail it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 14245
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ground texture fill",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tile is a 64x16 fully opaque, uniform-width texture (width 64 on every row). It is a mottled purple ground fill with dark crack lines and a few lighter violet pixels. It has no front-edge line, eave shadow, ellipse, or separate front face, so it reads as a flat top-down ground surface, which fits the terrain kind. The column scans show only irregular alternation of light and dark patches, not a top band over a front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is a thin dark purple-brown strip, only about 10 source pixels tall and 50 wide. A 4x3-tile ground patch would be about 64x48, so this does not read as one. The measured facts are acceptable: 8 visible tones per tile against 7 for paving and 3 for grass, 0% near-flat coverage, and 0% neutral dark edge pixels, so the outline is tinted rather than near-black. However, the whole piece uses only 8 colours in total, against 80 for the grass reference. The main ramp has about 4 steps, against 5-6 for the references. The blue-violet marks look like scattered streaks, not shaded individual elements such as stones or tufts. It is also too small to judge texture against a full reference tile. A careful artist would not accept it next to the references as a full ground patch, so with the wrong shape and a shallower ramp I fail it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 13410
+  }
+ ],
+ "decidedAt": "2026-10-27T10:49:50.622Z",
+ "cells": {
+  "16": [
+   "09aafd656f2d7f91",
+   "26d21af8aaf842f5",
+   "c203c831ef38523d",
+   "f50c9550b11796ad"
+  ],
+  "24": [
+   "0da096fbff6e920d",
+   "12968b35e3739835",
+   "2c27c8d0276663f6",
+   "44eab2ef51e8a63f",
+   "4c837f96911d99e9",
+   "50a9ee36756f8b75",
+   "661976b7e4ae10f8",
+   "68ddd264e2e4b9a2",
+   "7e088e32fe184f08",
+   "7f0b17dcb424f0ed",
+   "8ea64c9dd910338c",
+   "8fb87591d51a9082",
+   "c7ea12f27b8efa28",
+   "c811e0de824e90f9",
+   "d5c56a9a3144653b",
+   "e03d56c979f87ab7",
+   "f77754f4aca266a3",
+   "f7d6847e7c3b7163"
+  ],
+  "32": [
+   "436f2d9e81e2c1f7",
+   "d2e590817db3722e",
+   "eb832ba03e27638e",
+   "ebbf481d76c99893"
+  ],
+  "48": [
+   "0c18f62aa5ca4df7",
+   "0cdb51d3058e9509",
+   "2ab807c9806b5366",
+   "2c35e38362de3591",
+   "2f7cccb8a9d920f4",
+   "3abc1ecd9c43b952",
+   "3dcbe82430481c20",
+   "483dc7ed14466bb8",
+   "9304fac6a9991551",
+   "ee88e8fbce8d218a",
+   "f183c2ecfeb4c6ba",
+   "fb10dbf427b44a97"
+  ]
+ }
+}
