@@ -371,6 +371,8 @@ describe("player deployment manifest", () => {
     const projectAssetPaths = collectWebExportAssets(prepareWebExport(project).project).map((asset) => asset.zipPath);
     const expectedPaths = [...new Set([
       "project.json",
+      // 불러오는 중 화면이 project.json 보다 먼저 읽는 안내(webExportZip exactWebExportEntries loadingInfo, #3318).
+      "loading.json",
       ...fixture.artifactPaths,
       RUNTIME_ASSET_PATH,
       ...projectAssetPaths,
