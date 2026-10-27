@@ -5,6 +5,38 @@
 
 <!-- releases -->
 
+## 0.352.0 — 2026-10-27
+
+### 기능
+
+- **workshop** — 사진으로 만들기 — 그림을 그려 후보를 고르고, 어떻게 그렸는지 알린다 (#3449) (`c1544cc`)
+
+### 수정
+
+- **desktop** — open a project.sqlite file passed on the command line (#3718) (`1d1eb76`)
+- **player** — 전투 준비가 그림을 데우되 무대는 즉시 떼고, 계약을 warm URL 재사용으로 판정 (#3794) (`3c1abd8`)
+- **demos** — keep Fallen Star's grafted interior tiles on load; Scarloxy sample opens as a new project folder (#3779) (`cf0ddb2`)
+- **demos** — desktop app opens Fallen Star — bake demos into desktop packages; builder fallback BGM (#3752) (`3b56fcb`)
+- **qa** — scene runner fires a same-layer touch door on bump, like the runtime (#3740) (`66862f1`)
+
+### 성능
+
+- **project** — store bundled tilesets as diffs against the bundle (78MB → 4.4MB blank project) (#3774) (`3e6c80e`)
+
+### 문서
+
+- **openwiki** — 생성 인덱스를 현재 위키로 재생성 (깨진 줄 표가 낡아 ci-full 샤드 13이 섰다) (#3781) (`a3c38c9`)
+
+### 테스트
+
+- retire acceptance-ledger cases; aiChatPanelSettings follows the current UI (#3780) (`6ffbf5a`)
+- **ci** — drift slice 1 — 62 of 74 drift files green on CI (#3751) (`febc15c`)
+
+### CI
+
+- pinned numpy/Pillow for joseon-baram harness tests (#3770) (`84c7552`)
+- **fast** — openwiki 인덱스를 PR 레인에서 검사하고, 지금 낡은 인덱스를 재생성한다 (#3783) (`7ea941e`)
+
 ## 0.351.6 — 2026-10-27
 
 ### 수정
