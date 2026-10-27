@@ -11,7 +11,6 @@ type LoopCommand = Extract<Command, { kind: "loop" }>;
 export function loopBody(context: CommandEditContext, cmd: LoopCommand): HTMLElement {
   const wrap = el("div", {
     class: "loop-body-editor cream-command-form",
-    attrs: { style: "border:1px solid var(--border);padding:4px;margin-top:4px;border-radius:3px;" },
     dataset: { testid: "event-loop-body" },
   });
 
@@ -98,7 +97,10 @@ function renderLoopItem(working: Command[], index: number, commit: () => void, r
   }
   item.append(badge);
   if (command.kind === "text") {
-    const body = el("textarea", { dataset: { testid: `event-loop-body-text-${index}` } }) as HTMLTextAreaElement;
+    const body = el("textarea", {
+      attrs: { "aria-label": "반복 문장" },
+      dataset: { testid: `event-loop-body-text-${index}` },
+    }) as HTMLTextAreaElement;
     body.value = command.body;
     body.addEventListener("change", () => {
       working[index] = { kind: "text", body: body.value };
@@ -113,7 +115,8 @@ function renderLoopItem(working: Command[], index: number, commit: () => void, r
     el("button", {
       class: "btn danger",
       dataset: { testid: `event-loop-body-delete-${index}` },
-      text: "×",
+      text: "삭제",
+      attrs: { type: "button", title: "이 반복 명령 삭제", "aria-label": "이 반복 명령 삭제" },
       on: {
         click: () => {
           const nextFocus = index > 0 ? index - 1 : 0;
@@ -133,12 +136,14 @@ function renderLoopAddRow(working: Command[], commit: () => void, rerender: () =
   const addRow = el("div", { dataset: { testid: "event-loop-body-add-row" } });
   const sel = commandKindSelect("text");
   sel.dataset.testid = "event-loop-body-add-kind";
+  sel.setAttribute("aria-label", "추가할 명령");
   addRow.append(
     sel,
     el("button", {
       class: "btn",
       dataset: { testid: "event-loop-body-add" },
       text: "+ 명령",
+      attrs: { type: "button" },
       on: {
         click: () => {
           working.push(newCommand(selectedOptionValue(sel, COMMAND_KIND_OPTIONS, "text")));

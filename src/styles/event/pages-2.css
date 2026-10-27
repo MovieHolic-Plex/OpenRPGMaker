@@ -332,6 +332,71 @@
   margin-left: 6px;
 }
 
+/* 반복 본문은 인스펙터 안의 작은 목록인데 명령 칼럼과 .cmd-list 를 같이 쓴다.
+   dialogs-5.css 의 `.event-editor-modal-window .event-editor .cmd-list`(패딩 아래 24px·
+   배경)와 forms-6.css 의 스크롤·min-height:0 이 폼 그리드 안으로 들어와, 명령 한 줄에도
+   빈 스크롤 칸이 생긴다. 인라인 border 는 var(--border) 를 썼는데 이벤트 에디터에는
+   그 변수가 없어 테두리 선언이 통째로 버려졌다. 여기 특이도(클래스 4)로 칼럼 규칙을 이긴다. */
+.event-editor-modal-window .event-editor .loop-body-editor {
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-s);
+  margin-top: var(--space-1);
+  padding: var(--space-1);
+}
+
+.event-editor-modal-window .event-editor .loop-body-editor > .cmd-list {
+  background: transparent;
+  border-left: 0;
+  flex: none;
+  margin: 0;
+  min-height: auto;
+  overflow: visible;
+  padding: 0;
+}
+
+.event-editor-modal-window .event-editor .loop-body-editor > .cmd-list > .cmd-item {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-bottom: 0;
+}
+
+.event-editor-modal-window .event-editor .loop-body-editor > .cmd-list > .cmd-item > .btn {
+  margin-left: auto;
+}
+
+.event-editor-modal-window .event-editor .loop-body-editor > .cmd-list > .cmd-item > textarea {
+  flex: 1 0 100%;
+}
+
+.event-editor-modal-window .event-editor .loop-body-editor .cmd-kind {
+  overflow: visible;
+  text-overflow: clip;
+  white-space: normal;
+}
+
+.event-editor-modal-window .event-editor .loop-body-editor .event-loop-break-badge {
+  margin-left: 0;
+}
+
+.event-editor-modal-window .event-editor .loop-body-editor > .cmd-list + div {
+  align-items: center;
+  display: flex;
+  gap: var(--space-2);
+}
+
+.event-editor-modal-window .event-editor .loop-body-editor > .cmd-list + div > select {
+  flex: 1 1 auto;
+  min-width: 0;
+  width: auto;
+}
+
+.event-editor-modal-window .event-editor .loop-body-editor .btn:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: 2px;
+}
+
 /* 묶음 조건(all/any/not) 편집기와 겹침·통행 안내문.
  * 이 블록은 233px 좌측 레일 폭에서 실측하고 맞췄다 — 고정 px 컬럼을 되돌리면
  * select 라벨과 버튼 글자가 잘린다(«조건 추가» → «건 추가»). */
