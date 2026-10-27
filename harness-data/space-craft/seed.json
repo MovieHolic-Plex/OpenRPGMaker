@@ -10698,6 +10698,35 @@
    ],
    "verify": "미레 페이지 조건 = 세 등 스위치 / 문 이벤트 페이지 '등 걸기'·'등이 걸린 문'",
    "suiteCategory": "fs2-lamp-errand"
+  },
+  {
+   "category": "game",
+   "kind": "logic",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "id": "fs2-patrol-caught",
+   "prompt": "막사 잠입 퍼즐에 상자 줄 사이 통로를 천천히 오가는 순찰 기사 하나를 더해 줘. 등 뒤로 지나가야 하고, 붙잡히면 게임 오버가 아니라 경비 둘과 싸운 뒤 감방으로 끌려가게.",
+   "requires": [
+    "make_chase_scene patrol waypoints",
+    "caughtPenalty {troopId, sendTo, text}",
+    "killOnTouch 아님"
+   ],
+   "verify": "추격자 페이지 commands = 텍스트 → battleProcessing canEscape:false canLose:true → transfer sendTo",
+   "suiteCategory": "fs2-patrol-caught"
+  },
+  {
+   "category": "game",
+   "kind": "logic",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "id": "fs2-whole-burned-village",
+   "prompt": "강가 마을을 한 번 짓고, 서른 해 전 불에 다 타 버린 모습의 변형 맵을 만들어 줘. 북쪽 끝 집 한 채만 멀쩡하고 나머지 땅은 풀까지 다 잿빛이어야 해.",
+   "requires": [
+    "derive_map_variant look burned keepIntact north scorch whole",
+    "원본은 쓰고 나면 remove_map"
+   ],
+   "verify": "변형 맵 lowerTiles 대부분이 잿빛 땅 · 남은 집 발자국만 풀 · 원본 맵 없음",
+   "suiteCategory": "fs2-whole-burned-village"
   }
  ],
  "gates": {

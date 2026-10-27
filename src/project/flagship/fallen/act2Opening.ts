@@ -94,6 +94,8 @@ const BARRACKS = {
   entry: { x: 10, y: 13 } as Cell,
   ladder: { x: 18, y: 3 } as Cell,
   ladderFoot: { x: 18, y: 5 } as Cell,
+  /** 순찰 기사가 오가는 통로(상자 두 줄 사이) 양 끝. */
+  patrol: [{ x: 3, y: 10 }, { x: 15, y: 10 }] as Cell[],
 };
 /** 광장(통금의 밤) — 사다리를 오르면 서는 칸: 광장 동쪽 초소 뒤 골목. */
 const HUB_ARRIVE: Cell = { x: 52, y: 25 };
@@ -365,6 +367,17 @@ function barracks(project: Project, exec: Exec): void {
     reward: { itemId: FS2_GEAR_ITEM, itemName: "압수품 꾸러미", itemDescription: "초소에 빼앗겼던 짐. 카엘의 검과 엘레나의 책이 그대로 있다." },
     // 들키면 경비 둘과 싸우고(도망 불가) 감방으로 다시 끌려간다 — 실수에 값을 치른다.
     failPenalty: { troopId: FS2_BARRACKS_GUARDS, sendTo: { mapId: FS2_CELL_ID, x: CELL.arrive.x, y: CELL.arrive.y }, text: "경비병: 「거기 누구냐! 탈옥수다!」 — 등불에 들켰다." },
+  });
+  // 순찰 기사 — 두 상자 줄 사이 통로를 천천히 오간다(계획 B1 「순찰 기사 은신」). 등 뒤로, 그가 끝에서 돌아설 때 건넌다.
+  // 붙잡히면 등불 시야와 같은 벌(경비 둘과 도망 불가 전투 → 감방).
+  exec(project, "make_chase_scene", {
+    mapId: FS2_BARRACKS_ID,
+    chaser: { at: BARRACKS.patrol[0], graphic: { selectionId: "charset:tex_easyrpg_charset_people3:7" }, speed: 5, sightRange: 2 },
+    patrol: { waypoints: BARRACKS.patrol },
+    pursuit: { scope: "map", doorDelayMs: 0, searchMs: 1500, onLost: "return" },
+    caughtPenalty: { troopId: FS2_BARRACKS_GUARDS, sendTo: { mapId: FS2_CELL_ID, x: CELL.arrive.x, y: CELL.arrive.y }, text: "순찰 기사: 「멈춰! 탈옥수다!」 — 순찰에게 붙잡혔다." },
+    checkpointOnEntry: false,
+    mood: false,
   });
   // 북동 벽 사다리 — 광장 초소 뒷골목으로. 압수품을 되찾기 전엔 「짐부터」.
   exec(project, "stamp_object", { objectId: "kit:atlas_biome_interior/hand-interior:ship ladder", mapId: FS2_BARRACKS_ID, x: BARRACKS.ladder.x, y: BARRACKS.ladder.y });
@@ -978,7 +991,7 @@ function dawnwell(project: Project, exec: Exec): void {
   const town0 = exec(project, "author_beodeul_town", { id: FS2_DAWNWELL_BASE, name: "새벽샘 (서른 해 전)", houseCount: 5, theme: "river", form: "street", water: "none", seed: 31 }) as
     { doors?: { kit: string; x: number; y: number }[] } | undefined;
   const derived = exec(project, "derive_map_variant", {
-    sourceMapId: FS2_DAWNWELL_BASE, variants: [{ id: FS2_DAWNWELL_ID, name: "새벽샘 터", look: "burned", keepIntact: "north" }],
+    sourceMapId: FS2_DAWNWELL_BASE, variants: [{ id: FS2_DAWNWELL_ID, name: "새벽샘 터", look: "burned", keepIntact: "north", scorch: "whole" }],
   }) as { variants?: { look?: { keptIntact?: { kitId: string; x: number; y: number; w: number; h: number } } }[] } | undefined;
   const kept = derived?.variants?.[0]?.look?.keptIntact;
   if (!kept) throw new Error("[fallen-star act2] 새벽샘 남은 집이 없다");
@@ -987,6 +1000,8 @@ function dawnwell(project: Project, exec: Exec): void {
   const front = town0?.doors?.find((d) => d.kit === `bd-house-${kept.kitId.replace(/^bd-house-/, "")}` || d.kit === kept.kitId);
   if (!front) throw new Error(`[fallen-star act2] 남은 집(${kept.kitId}) 문을 못 찾음`);
   DAWN.front = { x: front.x, y: front.y };
+  // 서른 해 전 원본은 변형을 뽑은 뒤 쓸 데가 없다 — 남기면 연결 없는 고아 맵이 된다.
+  exec(project, "remove_map", { mapId: FS2_DAWNWELL_BASE });
   exec(project, "set_map_properties", { mapId: FS2_DAWNWELL_ID, mapRole: "field" });
   exec(project, "set_scene_mood", {
     mapId: FS2_DAWNWELL_ID, applyMode: "map",
