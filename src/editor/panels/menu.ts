@@ -48,6 +48,7 @@ import { downloadBlob } from "@/util/downloadBlob";
 import { clearChildren, el } from "@/util/dom";
 import { createLogger } from "@/util/logger";
 import { toast } from "@/util/toast";
+import { beginGameExport, endGameExport } from "./gameExportNotice";
 import { projectRepository } from "@/project/persistence/repository";
 import { sameProjectTarget } from "@/project/persistence/target";
 import { persistenceSurfaceVisible } from "@/editor/persistenceRecoveryUi";
@@ -1093,39 +1094,39 @@ function openDesktopSteamStudio(topbar: HTMLElement): void {
 }
 
 async function doExportDesktopSteamGame(options: DesktopSteamExportOptions = {}): Promise<void> {
+  if (!beginGameExport("데스크톱 · Steam Depot 패키지를 조립하는 중... (resources/game.pak 아카이브 패킹)")) return;
   try {
     await store.flush().catch((error) => {
       console.error("[desktop-steam-export] flush before export failed:", error);
-      toast("저장은 실패했지만 현재 상태로 데스크톱 · Steam 패키지를 만듭니다", "info");
+      toast("저장은 실패했지만 현재 상태로 데스크톱 · Steam 패키지를 만듭니다", { kind: "info", durationMs: 8_000 });
     });
-    toast("데스크톱 · Steam Depot 패키지를 조립하는 중... (resources/game.pak 아카이브 패킹)", "info");
     const project = store.getCurrent();
     const result = await createDesktopSteamExportPackage(project, options);
     downloadBlob(result.blob, result.fileName);
     const pakMb = (result.summary.pakArchiveBytes / 1048576).toFixed(1);
-    toast(
-      `Steam · 데스크톱 패키지 완료: ${result.summary.executablePath} + game.pak(${pakMb}MB), 에셋 ${result.summary.assetCount}개`,
+    endGameExport(
+      `Steam · 데스크톱 빌드 완료: ${result.summary.executablePath} (game.pak ${pakMb}MB, 에셋 ${result.summary.assetCount}개)`,
       "ok",
     );
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-    toast(t(`데스크톱 · Steam 패키지 빌드 실패: ${message}`), "error");
+    endGameExport(`데스크톱 · Steam 패키지 빌드 실패: ${message}`, "error");
   }
 }
 
 async function doExportWebGame(): Promise<void> {
+  if (!beginGameExport("게임 번들을 만드는 중...")) return;
   try {
     await store.flush().catch((error) => {
       console.error("[web-export] flush before export failed:", error);
-      toast("저장은 실패했지만 현재 상태를 게임 번들로 내보냅니다", "info");
+      toast("저장은 실패했지만 현재 상태를 게임 번들로 내보냅니다", { kind: "info", durationMs: 8_000 });
     });
-    toast("게임 번들을 만드는 중...", "info");
     const project = store.getCurrent();
     const result = await createWebPlayerExportPackage(project);
     downloadBlob(result.blob, webExportFileName(project));
     const skipped = result.summary.skippedRetiredResources;
     if (skipped.length > 0) console.warn("[web-export] skipped retired (deleted) art:", skipped);
-    toast(
+    endGameExport(
       skipped.length === 0
         ? `게임 내보내기 완료: 맵 ${result.summary.mapCount}개, 에셋 ${result.summary.assetCount}개`
         : `게임 내보내기 완료(경고): 맵 ${result.summary.mapCount}개, 에셋 ${result.summary.assetCount}개, 삭제된 그림 ${skipped.length}개는 빼고 냈습니다`,
@@ -1133,7 +1134,7 @@ async function doExportWebGame(): Promise<void> {
     );
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-    toast(`게임 내보내기 실패: ${message}`, "error");
+    endGameExport(`게임 내보내기 실패: ${message}`, "error");
   }
 }
 
@@ -1142,12 +1143,12 @@ async function doExportWebGame(): Promise<void> {
  * 문서 안에 넣는다는 점만 다르다 — `file://` 에서는 옆 파일도 못 읽기 때문이다.
  */
 async function doExportStandaloneHtml(): Promise<void> {
+  if (!beginGameExport("실행형 HTML 을 만드는 중... (에셋을 문서에 넣느라 수십 초 걸립니다)")) return;
   try {
     await store.flush().catch((error) => {
       console.error("[standalone-export] flush before export failed:", error);
-      toast("저장은 실패했지만 현재 상태로 실행형 HTML 을 만듭니다", "info");
+      toast("저장은 실패했지만 현재 상태로 실행형 HTML 을 만듭니다", { kind: "info", durationMs: 8_000 });
     });
-    toast("실행형 HTML 을 만드는 중... (에셋을 문서에 넣느라 수십 초 걸립니다)", "info");
     const result = await createStandaloneHtmlExport(store.getCurrent());
     downloadBlob(result.blob, result.fileName);
     const done = {
@@ -1156,10 +1157,10 @@ async function doExportStandaloneHtml(): Promise<void> {
       missingCount: result.summary.missingAssets.length,
     };
     if (done.missingCount > 0) console.warn("[standalone-export] skipped retired (deleted) art:", result.summary.missingAssets);
-    toast(standaloneExportDoneMessage(done), standaloneExportDoneKind(done));
+    endGameExport(standaloneExportDoneMessage(done), standaloneExportDoneKind(done));
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-    toast(`실행형 HTML 내보내기 실패: ${message}`, "error");
+    endGameExport(`실행형 HTML 내보내기 실패: ${message}`, "error");
   }
 }
 
