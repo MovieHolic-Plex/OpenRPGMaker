@@ -26,6 +26,18 @@ CSS 는 `dialogue-desk.css` 아래 「대본 보기」 묶음.
   받기·고치기로 다시 그려도 스크롤 자리를 지킨다. 장면 요약 쓰기는 `setSceneSummary`(라벨 `장면 요약: …`).
 - 테스트 id: `db-script-outline-row`(`data-ref`), `db-script-scene`(`data-ref`), `db-script-line`(`data-ref` = S12.3), `db-script-proposal`, `db-script-accept`, `db-script-accept-all`, `db-script-summary-edit`.
 
+## 대사 색인에 퀘스트·엔딩 글 추가 (2026-10-27)
+
+색인(`collectDialogueLines`)이 이벤트 명령 밖에 있는 플레이어 글을 놓치고 있었다. 실측(폴른 스타 1막 새 굽기): 색인 3,931줄 중 퀘스트·엔딩 0줄.
+이제 함께 모은다(같은 해시·제어 코드·길이 관문, 같은 받기/되돌리기 경로):
+
+- `qs/<퀘스트 key|graph id>#title|summary|step<i>|node<i>` — 퀘스트 일지(메뉴)에 뜨는 제목·요약·단계 이름(`step.label`)·그래프 단계 설명. 단계 대사(`lines`)는 컴파일된 이벤트 명령으로 이미 색인에 있다. 폴른 스타 22줄.
+- `en/<엔딩 id>#name|kicker|credits` — 엔딩 화면 제목·머리말·크레딧. 폴른 스타 3줄.
+- `ep/<엔딩 id>/<비트 경로>#text|line<i>` — 엔딩 에필로그의 `say` 비트(대화창에 뜬다, `parallel` 안도). 화자가 있어 화자 거르개·말투 메모·창 넘침 판정을 그대로 탄다. 폴른 스타 1막은 에필로그가 비어 있어 0줄(합성 에필로그로 쓰기·제어 코드 거절 확인).
+- 종류 `quest`, 범위 `quest`·`ending`. 목록 보기 종류 거르개 「퀘스트·엔딩」, `list_dialogue` 의 `scope: quest|ending`·`kind: quest`.
+- 에필로그 줄은 `includeDescriptions:false`(레일 배지·대본)에도 들어간다. 퀘스트·엔딩 화면 글은 설명과 같이 빠진다.
+- 따로 여는 편집 화면이 없어 「이동」 단추를 달지 않는다(`lineHasJumpTarget`). 이 표에서 바로 고친다.
+
 ## 이야기 › 대사 탭 — 모든 대사 한 화면, 창 넘침, 말투 메모, 조수 윤문 받기 (2026-10-24)
 
 자료집 「이야기」 그룹의 `dialogue` 탭(`db-tab-dialogue`, 렌더 `src/editor/panels/databaseDialogueView.ts`, CSS `src/styles/database/dialogue-desk.css`).
