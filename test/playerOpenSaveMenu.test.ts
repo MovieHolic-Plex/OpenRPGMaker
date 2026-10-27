@@ -186,6 +186,31 @@ describe("event-opened save menu in the shipping player shell", () => {
     expect(readSaveSlot(window.localStorage, 1)).toMatchObject({ snapshot: { session: { gold: 20 } } });
   });
 
+  it("cancels overwrite confirmation when the cursor leaves that slot", () => {
+    openSaveMenu();
+    session.gold = 10;
+    keyDown("Enter");
+    session.gold = 20;
+    keyDown("Enter");
+    expect(menu().textContent).toContain("덮어쓰려면 다시 선택하세요");
+    expect(menu().querySelector("[data-testid='save-slot-1']")?.textContent).toContain("덮어쓰기 확인");
+
+    keyDown("ArrowDown");
+    expect(menu().querySelector("[data-testid='save-slot-2']")?.getAttribute("aria-current")).toBe("true");
+    expect(menu().textContent).not.toContain("덮어쓰려면 다시 선택하세요");
+    expect(menu().textContent).not.toContain("같은 슬롯을 다시 선택하면 덮어씁니다");
+    expect(menu().querySelector("[data-testid='save-slot-1']")?.textContent).not.toContain("덮어쓰기 확인");
+    expect(menu().textContent).toContain("저장할 슬롯을 선택하세요");
+    keyDown("Enter");
+    expect(readSaveSlot(window.localStorage, 2)).toMatchObject({ kind: "present", snapshot: { session: { gold: 20 } } });
+    expect(readSaveSlot(window.localStorage, 1)).toMatchObject({ snapshot: { session: { gold: 10 } } });
+
+    keyDown("ArrowUp");
+    keyDown("Enter");
+    expect(menu().textContent).toContain("덮어쓰려면 다시 선택하세요");
+    expect(readSaveSlot(window.localStorage, 1)).toMatchObject({ snapshot: { session: { gold: 10 } } });
+  });
+
   it.each(["map", "session"] as const)("preserves the %s save restriction on direct entry", (restriction) => {
     if (restriction === "map") store.getCurrent().maps[session.currentMapId].disableSave = true;
     else ensureM2Runtime(session).access.save = false;

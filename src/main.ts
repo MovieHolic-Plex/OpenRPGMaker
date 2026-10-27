@@ -90,7 +90,19 @@ if (typeof window !== "undefined" && window.location) {
         },
       );
     });
-  }
+    // 파일 → 새 프로젝트·폴더 열기. flush 가 끝나고 남은 변경이 없을 때만 메인이 폴더를 바꾼다.
+    window.oprn.lifecycle.onFlushBeforeReplace?.(() => {
+      void store.flush().then(
+        (result) => {
+          window.oprn?.lifecycle.flushReplaceDone?.({ kind: result.kind, dirty: store.hasUnsavedChanges() });
+        },
+        (error: unknown) => {
+          console.error("[store] 폴더를 바꾸기 전에 저장하지 못했습니다:", error);
+          window.oprn?.lifecycle.flushReplaceDone?.({ kind: "error", dirty: true });
+        },
+      );
+    });
+    window.oprn.lifecycle.flushReplaceReady?.();  }
 
   window.addEventListener("beforeunload", (event) => {
     if (window.oprn?.closeIsHostDriven === true) {

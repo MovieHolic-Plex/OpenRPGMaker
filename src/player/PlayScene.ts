@@ -293,6 +293,9 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
       return host instanceof HTMLElement ? host : undefined;
     }, { qaInstrumentation, playResolution });
     this.session = this.initialSession(project);
+    // 타이틀 불러오기·이어하기는 새 장면을 연다. 인게임 applySession 과 같이
+    // 저장 때 흐르던 카운트다운을 여기서 되살리지 않으면 남은 초만 남고 시계는 멈춘다.
+    restoreRuntimeTimers(this);
     startChaseSpawnGrace(this);
     this.zoneFeedback = createPlaySceneZoneFeedback(this.session);
     // dialogueHost 는 player.ts 가 게임 생성 후 registry 에 넣으므로 여기선 아직 없을 수 있다.

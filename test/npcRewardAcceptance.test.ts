@@ -152,11 +152,12 @@ describe("request-declared NPC rewards", () => {
     const tool = DB_TOOLS.find((entry) => entry.name === "give_starter_monsters");
     if (!tool) throw new Error("Missing starter tool");
     tool.run(project, { speciesIds: ["species_leafling", "species_sparkit"], actorEvent: { eventId: "ev_mira", x: 2, y: 3 } });
-    const required: NpcRewardRequirement[] = [{ target: { eventId: "ev_mira" }, grants: [{ kind: "monster", id: "species_leafling", count: 1 }], oneTime: true, choices: [0] }];
+    // #2727: 스타터를 고르면 「첫 동료로 정할까요?」 예/아니오가 이어진다 — 선택은 [종, 예(0)] 두 번이다.
+    const required: NpcRewardRequirement[] = [{ target: { eventId: "ev_mira" }, grants: [{ kind: "monster", id: "species_leafling", count: 1 }], oneTime: true, choices: [0, 0] }];
     expect(verifyNpcRewardsPlayable(project, required)).toEqual({ ok: true });
-    expect(verifyNpcRewardsPlayable(project, [{ ...required[0], choices: [1] }]).ok).toBe(false);
+    expect(verifyNpcRewardsPlayable(project, [{ ...required[0], choices: [1, 0] }]).ok).toBe(false);
     const proof = sceneTool(project, [
-      { kind: "snapshotRewards" }, { kind: "interact", eventId: "ev_mira" }, { kind: "choose", index: 0 },
+      { kind: "snapshotRewards" }, { kind: "interact", eventId: "ev_mira" }, { kind: "choose", index: 0 }, { kind: "choose", index: 0 },
       { kind: "expect", ownedMonsterDelta: { species_leafling: 1 }, interactionComplete: true },
       { kind: "snapshotRewards" }, { kind: "interact", eventId: "ev_mira" },
       { kind: "expect", ownedMonsterDelta: { species_leafling: 0 }, interactionComplete: true },

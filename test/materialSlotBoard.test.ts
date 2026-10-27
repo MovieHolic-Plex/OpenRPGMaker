@@ -10,14 +10,14 @@ import { resolveMaterialSlots } from "@/editor/operators/materialSlots";
 import { renderMaterialSlotBoard } from "@/editor/panels/materialSlotBoard";
 import { forestPaletteFromSlots } from "@/editor/regionTask/forestWrites";
 import { ensureBuildPaletteTileGroups } from "@/editor/panels/buildPaletteCore";
-import { createBlankProject } from "@/project/defaults";
+import { RETIRED_COMBINED_TOWN_TILESET_ID, retiredEasyRpgTileset } from "./support/retiredEasyRpgTilesets";
 import type { TilesetDef } from "@/project/types";
 import { type FakeElement, findByTestId, installFakeDom } from "./fakeDom";
 
+// The combined-town sheet is no longer the start map's tileset (beodeul_city since the 2026-10-07 copyright purge);
+// build the retired definition explicitly, as an old save carries it.
 function combinedTownTileset(): TilesetDef {
-  const project = createBlankProject();
-  const map = project.maps[project.startMapId]!;
-  const tileset = project.tilesets[map.tilesetId]!;
+  const tileset = retiredEasyRpgTileset(RETIRED_COMBINED_TOWN_TILESET_ID);
   ensureBuildPaletteTileGroups(tileset);
   return tileset;
 }

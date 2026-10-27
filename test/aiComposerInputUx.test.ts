@@ -102,6 +102,22 @@ describe("E1 전송 버튼은 보낼 게 있을 때만 준비된 상태", () => 
   });
 });
 
+describe("작업 설정 버튼은 적용 방식 목록과 같은 말을 한다", () => {
+  it("기본값은 큰 삭제 확인을 숨기지 않고, 자동 검수는 바로 반영이라고 말한다", () => {
+    const panel = renderPanel();
+    const button = findByTestId(panel, "ai-composer-settings") as unknown as FakeElement;
+    const select = findByTestId(panel, "ai-composer-apply-mode") as unknown as HTMLSelectElement;
+
+    expect(button.textContent).toBe("바로 반영 · 큰 삭제만 확인");
+    expect(button.getAttribute("aria-label")).toBe("작업 설정 · 바로 반영 · 큰 삭제만 확인");
+
+    select.value = "auto";
+    select.dispatchEvent(new Event("change"));
+    expect(button.textContent).toBe("바로 반영 · 자동 검수");
+    expect(button.getAttribute("aria-label")).toBe("작업 설정 · 바로 반영 · 자동 검수");
+  });
+});
+
 describe("E3 힌트는 포커스 중에만", () => {
   it("포커스 전에는 액션 행에 포커스 표시가 없고, 포커스하면 붙고 blur 하면 떨어진다", () => {
     const panel = renderPanel();

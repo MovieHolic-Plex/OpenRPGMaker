@@ -28,6 +28,7 @@
 | `electron/main/windowShow.ts` | 숨은 창을 처음 보이는 순서(macOS 는 보인 뒤 전체화면, 그 밖은 전체화면 뒤 보이기) |
 | `electron/main/closeFlow.ts` | 닫기 한 번의 결정(`allow`/`flush`/`hold`)과, 저장 때문에 취소된 Quit 을 다시 걸지 |
 | `electron/main/directoryDialog.ts` | 폴더 선택 대화상자를 살아 있는 앱 창에 붙인다. 파일 메뉴는 스플래시·팀 창이 아니라 그 창을 고른다 |
+| `electron/shared/folderSwitch.ts` | 파일 메뉴가 다른 폴더로 넘어가기 전에 보는 저장 결과. 미저장이 남으면 거절 |
 | `electron/preload/index.ts` | `oprn.platform`(동기), `oprn.windowState()`, `oprn.onWindowState(cb)` |
 | `src/app/windowChrome.ts` | `desktopWindowChrome()` — 브릿지가 없으면 `null`(브라우저·팀) |
 | `src/start/windowControls.ts` | 단추 마운트(`src/main.ts`·`startScreen.ts` 가 `mountWindowControls()` 호출, 한 번만 단다) |
@@ -46,6 +47,7 @@
   끝나면 종료를 다시 요청한다. 시작 화면처럼 막을 창이 없으면 첫 Quit 이 그대로 끝난다. macOS 는 마지막 창을 그냥
   닫아도 앱이 남지만, Quit 은 저장 뒤에 앱을 끝낸다.
 - **폴더 선택 대화상자는 앱 창에 붙인다.** 시작 화면 「폴더 열기」·파일 메뉴는 `electron/main/directoryDialog.ts` 가 살아 있는 편집기 창을 부모로 넘긴다. 부모 없이 열면 모달이 아니어서 전체화면 창 뒤로 가고, 시작 화면은 그동안 바빠 보인다. 포커스가 스플래시·팀 창이어도 파일 메뉴는 그 창이 아니라 앱 창을 쓴다. 열기에 실패하면 메시지 상자를 띄운다.
+- **파일 메뉴로 다른 폴더를 열면 먼저 저장한다.** 새 프로젝트·폴더 열기는 대화상자에서 고른 뒤, 그 창의 편집기가 저장 요청을 받을 준비가 됐으면 flush 가 끝나고 미저장 변경이 없을 때만 폴더를 바꾼다(`electron/shared/folderSwitch.ts`). 저장이 실패하거나 시간이 넘으면 경고만 띄우고 이 프로젝트를 그대로 둔다. 시작 화면(열린 세션 없음)과 편집기 부팅 전(아직 저장할 변경이 없음)은 바로 연다. macOS 에서 창을 모두 닫아도 앱이 남으면 파일 메뉴가 창을 하나 만든 다음 대화상자를 연다.
 - **전체화면에서 「이전 크기로」** 는 전체화면만 벗어난다(그 전 창 크기/최대화 상태로 복귀). 최대화 단추 아이콘은
   최대화 **또는** 전체화면이면 ❐(복원), 아니면 ▢. 전체화면 단추는 `aria-pressed`.
 - 상태는 단추 밖에서도 바뀐다(끌기 영역 더블클릭·키·창 관리자) → 렌더러는 클릭 결과를 추측하지 않고 `onWindowState` push 만 믿는다.

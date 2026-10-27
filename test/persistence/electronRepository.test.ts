@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { createScarloxyDemoProject } from "@/project/defaults/defaultProject";
 import { projectWithoutEventDrafts } from "@/project/eventDrafts";
-import { serialize } from "@/project/io";
+import { deserialize, serialize } from "@/project/io";
 import { createElectronRepository, hasElectronBridge, type OprnBridge } from "@/project/persistence/electronRepository";
 import { adoptElectronOpenProject, projectRepository } from "@/project/persistence/repository";
 import { setUploadedAssetResolver } from "@/project/persistence/assetAccessors";
@@ -196,6 +196,7 @@ describe("folded host loads", () => {
     expect(second!.project.tilesets[edited]!.name).toBe(PROJECT.tilesets[edited]!.name);
     // IndexedDB 가 없는 시험 환경이라 다시 푸는 타일셋만 호스트에 다시 묻는다.
     expect(requested.flat()).toEqual(["0".padStart(64, "0")]);
-    expect(serialize(second!.project)).toBe(serialize(PROJECT));
+    // 로드는 기본값 생략·빠진 얼굴 채우기를 한다 — 기준은 같은 글을 한 번 읽은 내용이다.
+    expect(serialize(second!.project)).toBe(serialize(deserialize(SERIALIZED)));
   });
 });

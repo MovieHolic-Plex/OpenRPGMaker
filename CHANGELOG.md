@@ -5,6 +5,71 @@
 
 <!-- releases -->
 
+## 0.353.1 — 2026-10-27
+
+### 수정
+
+- **input** — read a diagonal gamepad stick inside the square dead zone (#3730) (`f4940dd`)
+- **ci** — slice-4 decisions — enemy/species transparent, Pi outcome keeps response-final/blocked, layer-1 paint keeps layer 2 (#3846) (`c094d63`)
+- **css** — route every font stack through the role tokens (#3761) (`70cd648`)
+
+### 테스트
+
+- **ci** — slice-5 drift fixes — 60 files green, 5 product fixes (#3822) (`cb32080`)
+
+## 0.353.0 — 2026-10-27
+
+### 기능
+
+- **ai** — objective says where, drawn entrances work, no repeated day dialogue (J98, J101-J106) (#3795) (`7a85bb6`)
+
+### 수정
+
+- **export** — escape game titles in the Steam launcher and VDF (#3719) (`1f665b1`)
+- **desktop** — demo music plays — embed demo BGM in baked demos, fetch other catalog tracks on demand (#3796) (`4cd15e1`)
+
+### 성능
+
+- **editor** — restore only map-used bundled tilesets on load; route tileset_blobs readers through deserialize (#3810) (`34cbea8`)
+
+### 테스트
+
+- **ci** — fix drift slice 0 — 51 vitest files green, 7 re-tagged timeout (#3765) (`a901a08`)
+- **persistence** — follow #3774 bundled-tileset diffs — electron may import bundledTilesetDiff; restore the patched tileset before checking its reference documents (#3811) (`8da9778`)
+- **ci** — slice-4 drift fixes — 62 files green, 4 product fixes (#3807) (`923287d`)
+
+## 0.352.0 — 2026-10-27
+
+### 기능
+
+- **workshop** — 사진으로 만들기 — 그림을 그려 후보를 고르고, 어떻게 그렸는지 알린다 (#3449) (`c1544cc`)
+
+### 수정
+
+- **desktop** — open a project.sqlite file passed on the command line (#3718) (`1d1eb76`)
+- **player** — 전투 준비가 그림을 데우되 무대는 즉시 떼고, 계약을 warm URL 재사용으로 판정 (#3794) (`3c1abd8`)
+- **demos** — keep Fallen Star's grafted interior tiles on load; Scarloxy sample opens as a new project folder (#3779) (`cf0ddb2`)
+- **demos** — desktop app opens Fallen Star — bake demos into desktop packages; builder fallback BGM (#3752) (`3b56fcb`)
+- **qa** — scene runner fires a same-layer touch door on bump, like the runtime (#3740) (`66862f1`)
+
+### 성능
+
+- **project** — store bundled tilesets as diffs against the bundle (78MB → 4.4MB blank project) (#3774) (`3e6c80e`)
+
+### 문서
+
+- **openwiki** — 생성 인덱스를 현재 위키로 재생성 (깨진 줄 표가 낡아 ci-full 샤드 13이 섰다) (#3781) (`a3c38c9`)
+
+### 테스트
+
+- retire acceptance-ledger cases; aiChatPanelSettings follows the current UI (#3780) (`6ffbf5a`)
+- **ci** — drift slice 1 — 62 of 74 drift files green on CI (#3751) (`febc15c`)
+
+### CI
+
+- pinned numpy/Pillow for joseon-baram harness tests (#3770) (`84c7552`)
+- **fast** — openwiki 인덱스를 PR 레인에서 검사하고, 지금 낡은 인덱스를 재생성한다 (#3783) (`7ea941e`)
+
 ## 0.351.6 — 2026-10-27
 
 ### 수정
