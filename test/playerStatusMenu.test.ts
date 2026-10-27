@@ -69,7 +69,8 @@ describe("player status menu", () => {
         renderPlayerStatusMenu({ project, session, slots: [], actions: noopActions }),
       );
 
-      expect(findByTestId(menu, "status-menu-time")?.textContent).toBe("6:31");
+      // 시계는 시:분(h:mm)이다(#3296 formatPlayClock) — 391초는 0시간 6분.
+      expect(findByTestId(menu, "status-menu-time")?.textContent).toBe("0:06");
     } finally {
       restoreDom();
     }

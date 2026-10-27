@@ -74,6 +74,8 @@ describe("pixel window menu (default skin)", () => {
       const { project, session } = fourParty();
       session.actorStateIds = { actor_mage: ["state_poison"] };
       session.inventory = { item_antidote: 1, item_potion: 1 };
+      // startSession 이 시작 파티의 체력을 이미 채워 두므로(fourParty 의 ??= 는 주인공을 건너뛴다) 회복 대상 주인공을 다치게 둔다.
+      session.actorVitals.actor_hero = { hp: 50, maxHp: 100, mp: 5, maxMp: 20 };
       const antidote = renderWithFakeDom(() => renderPlayerStatusMenu({ project, session, slots: [], actions, mode: "function", selectedCommand: "items", targetItemId: "item_antidote" }));
       expect(findByTestId(antidote, "status-menu-item-target-actor_mage-states")?.textContent).toBe("독 → 정상");
       expect(findByTestId(antidote, "status-menu-item-target-actor_hero-states")?.textContent).toBe("정상");
