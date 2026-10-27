@@ -16,7 +16,8 @@ describe("checkpoint transport", () => {
     expect(resolvePiCheckpoint(event.checkpointId, { ok: true })).toBe(true);
     await pending;
     expect(released).toBe(true);
-    expect(resolvePiCheckpoint(event.checkpointId, { ok: true })).toBe(false);
+    // 재전달은 409 대신 이미 받은 결정으로 인정한다(piCheckpointBroker `resolved` 집합, 재연결 workerJson). 두 번 풀리지는 않는다.
+    expect(resolvePiCheckpoint(event.checkpointId, { ok: true })).toBe(true);
   });
   it("abort retires the pending capability", async () => {
     const controller = new AbortController();
