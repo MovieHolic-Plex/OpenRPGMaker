@@ -203,8 +203,8 @@
    창 배치(논리 320×240): 왼쪽 큰 창(파티 개요 / 작업 패널) · 오른쪽 명령 창 · 소지금 창 · 시간 창 · 아래 조작 줄. */
 .oprn-status-menu.main-menu[data-menu-skin="pixel"] {
   /* 글자는 도트 글꼴의 격자 크기만 쓴다(#3341): 본문 갈무리 11 = 12px, 작은 글자 갈무리 9 = 10px. 게임 px 이라 어느 기기든 같은 배치다(2026-10-24). */
-  --px-menu-font: "Galmuri11 Regular", var(--runtime-pixel-font);
-  --px-small-font: "Galmuri9", var(--runtime-pixel-font);
+  --px-menu-font: var(--font-pixel);
+  --px-small-font: var(--runtime-pixel-font);
   --status-edge-ivory: var(--px-ink);
   --status-edge-muted: var(--px-ink-dim);
   --status-edge-amber: var(--px-accent);

@@ -103,7 +103,7 @@
 .battle-scene[data-battle-motion="retro"][data-battle-motion="retro"][data-battle-ui-style] .battle-damage-popup.battle-damage-popup {
   animation: retro-number 800ms linear both;
   color: #fff;
-  font-family: "Galmuri11", "NeoDunggeunmo", monospace;
+  font-family: var(--font-pixel);
   font-size: 24px;
   text-shadow: 2px 2px #101020, -2px 0 #101020, 0 -2px #101020;
 }

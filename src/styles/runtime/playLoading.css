@@ -238,7 +238,7 @@
 .player-layout[data-monster-style="emerald"] .play-loading-spinner,
 .player-layout[data-monster-style="emerald"] .play-loading-hint,
 .player-layout[data-monster-style="emerald"] .play-loading-stage { display: none; }
-.player-layout[data-monster-style="emerald"] .play-loading-message { color: #384840; font: 18px/24px "Galmuri9", "Noto Sans CJK KR", "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif; letter-spacing: 0; }
+.player-layout[data-monster-style="emerald"] .play-loading-message { color: #384840; font: 18px/24px var(--font-pixel); letter-spacing: 0; }
 .player-layout[data-monster-style="emerald"] .play-loading-bar { background: #f8f8e8; border: 2px solid #586058; border-radius: 0; box-sizing: border-box; height: 10px; width: 160px; }
 .player-layout[data-monster-style="emerald"] .play-loading-bar-fill { background: #48b888; border-radius: 0; }
 /* 에메랄드 미니 창은 스피너를 숨기므로 불확정 막대가 유일한 진행 표시다. */

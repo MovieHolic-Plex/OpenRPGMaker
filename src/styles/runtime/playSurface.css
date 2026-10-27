@@ -256,7 +256,7 @@
 .cinematic-sequence {
   box-sizing: border-box;
   background: #000;
-  font-family: var(--runtime-ui-font, system-ui, sans-serif);
+  font-family: var(--runtime-ui-font);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -365,31 +365,31 @@
 .cinematic-sequence[data-presentation="storybook"][data-monster-style="emerald"] .cinematic-narration {
   top:auto;bottom:16px;left:14px;width:calc(100% - 28px - 40px);min-height:72px;max-height:none;overflow:visible;padding:4px 14px 22px;
   border:6px double #55615f;background:#fffef0;color:#303840;
-  font-family:"Galmuri9",monospace;font-size:18px;line-height:24px;
+  font-family:var(--font-pixel);font-size:18px;line-height:24px;
   box-shadow:inset 0 0 0 2px #baccc7;white-space:pre-wrap;text-align:left;
 }
 /* 쪽 안내는 대사창 안쪽 아래 띠(본문 흐름 밖)에 작은 글자로 둔다.
    bottom 26px = 창 bottom 16 + 테두리 6 + 4, right 68px = 창 오른쪽 여백 54(14+40) + 테두리 6 + 8. */
 .cinematic-sequence[data-monster-style="emerald"] .cinematic-book-hint {
-  width:auto;right:68px;bottom:26px;font:10px/12px "Galmuri9",monospace;color:#445450;z-index:3;
+  width:auto;right:68px;bottom:26px;font:10px/12px var(--font-pixel);color:#445450;z-index:3;
 }
 .player-layout.system-shell .rm-title-screen[data-monster-style="emerald"] {
   background-color: #0b5264;
   image-rendering: pixelated;
-  font-family: Galmuri9, monospace;
+  font-family: var(--font-pixel);
 }
 .player-layout.system-shell .rm-title-screen[data-monster-style="emerald"]::before {
   background: transparent;
 }
 .player-layout.system-shell .rm-title-screen[data-monster-style="emerald"] .rm-title-screen-title[data-logo-style] {
   left: 6%; top: 12%; width: 57%; max-width: 57%;
-  margin: 0; font: 33px/40px "Galmuri11 Bold", Galmuri9, monospace;
+  margin: 0; font: 33px/40px var(--font-pixel);
   letter-spacing: 0; color: #f5efc5; text-shadow: 2px 2px #153b48;
   -webkit-text-stroke: 0; overflow-wrap: anywhere;
 }
 .player-layout.system-shell .rm-title-screen[data-monster-style="emerald"] .rm-title-logo-subtitle {
   left: 6%; top: 34%; width: 58%; color: #e8efce;
-  font: 700 8px/12px Galmuri9, monospace; text-shadow: 1px 1px #153b48;
+  font: 700 8px/12px var(--runtime-pixel-font); text-shadow: 1px 1px #153b48;
   letter-spacing: 0; transform: none;
   /* 예전 18px 은 맞춤 계산(fitTitleSubtitle, 8px 기준)이 한 줄로 판정해 nowrap 을 남겨 오른쪽에서 잘렸다(2026-10-20).
      Galmuri9 원래 크기 9px 로 두고 폭 58% 안에서 접는다 — 두 줄 제목 아래 두 줄이어도 메뉴(48%) 위에서 끝난다. */
@@ -404,7 +404,7 @@
   box-shadow: inset 0 0 0 2px #bbcabc, 2px 2px #153b48;
 }
 .player-layout.system-shell .rm-title-screen[data-monster-style="emerald"] .rm-title-menu[data-menu-style="plain"] .rm-title-menu-button {
-  color: #334940; font: 16px/20px Galmuri9, monospace;
+  color: #334940; font: 16px/20px var(--font-pixel);
   min-height: 0; padding: 1px 4px 1px 16px; margin: 0;
   background: transparent; border: 0; border-radius: 0;
   text-align: left; letter-spacing: 0; text-shadow: none;
@@ -430,9 +430,9 @@
 .cinematic-frame[data-presented="true"] .cinematic-narration[data-layout="bottom"] { position: absolute; bottom: calc(var(--cinematic-letterbox) + 8px); left: 0; right: 0; width: auto; max-width: none; max-height: 40%; text-align: center; padding: 10px 8%; background: linear-gradient(0deg, #000d 0%, #000c 65%, #0000 100%); }
 .cinematic-frame[data-presented="true"] .cinematic-narration[data-layout="left"] { position: absolute; left: 9%; top: 27%; width: 68%; text-align: left; }
 .cinematic-frame[data-presented="true"] .cinematic-narration[data-layout="credits"] { position: absolute; top: 0; max-height: none; overflow: visible; text-align: center; }
-.cinematic-narration[data-font="serif"] { font-family: 'Noto Serif KR', 'Nanum Myeongjo', 'Batang', Georgia, serif; }
-.cinematic-narration[data-font="sans"] { font-family: system-ui, sans-serif; }
-.cinematic-narration[data-font="pixel"] { font-family: Galmuri9, var(--runtime-ui-font, monospace); }
+.cinematic-narration[data-font="serif"] { font-family: var(--font-serif); }
+.cinematic-narration[data-font="sans"] { font-family: var(--font-ui); }
+.cinematic-narration[data-font="pixel"] { font-family: var(--font-pixel); }
 .cinematic-letterbox { position: absolute; inset: 0; pointer-events: none; z-index: 1; background: linear-gradient(to bottom, #000 0% var(--cinematic-letterbox), transparent var(--cinematic-letterbox) calc(100% - var(--cinematic-letterbox)), #000 calc(100% - var(--cinematic-letterbox)) 100%); }
 .cinematic-shot .cinematic-layer {
   position: absolute;
@@ -447,7 +447,7 @@
 
 /* 시네마틱 오프닝: 건너뛰기 안내(3초 뒤 서서히) · 레터박스 막대 안 한 줄 자막. */
 /* 밝은 하늘·모래 위에서 흰 글자만으로는 보이지 않았다(2026-10-20 검수) — 어두운 바탕 띠를 깐다. */
-.cinematic-skip-hint { position: absolute; top: 8px; right: 10px; z-index: 5; font: 9px/12px Galmuri9, system-ui, sans-serif; color: #fff; background: #0b1420c0; padding: 2px 6px; text-shadow: none; border: 0; border-radius: 0; margin: 0; cursor: pointer; touch-action: manipulation; pointer-events: auto; opacity: .85; }
+.cinematic-skip-hint { position: absolute; top: 8px; right: 10px; z-index: 5; font: 9px/12px var(--font-pixel); color: #fff; background: #0b1420c0; padding: 2px 6px; text-shadow: none; border: 0; border-radius: 0; margin: 0; cursor: pointer; touch-action: manipulation; pointer-events: auto; opacity: .85; }
 /* Visible from the first frame: it is re-created every shot, so a delayed fade-in hid the tap target for 3 s of each shot. */
 .cinematic-skip-hint:hover, .cinematic-skip-hint:active { opacity: 1; }
 .cinematic-frame[data-presented="true"] .cinematic-narration[data-layout="bar"] { position: absolute; left: 0; right: 0; bottom: 0; height: var(--cinematic-letterbox); width: auto; max-width: none; max-height: none; padding: 0 6%; display: flex; align-items: center; justify-content: center; text-align: center; background: none; overflow: hidden; }
@@ -457,7 +457,7 @@
 .play-viewport[data-layout="portrait"]::after {
   color: #98a090;
   content: attr(data-rotate-hint);
-  font: 15px/20px "Galmuri9", "Noto Sans CJK KR", "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+  font: 15px/20px var(--font-pixel);
   left: 0;
   padding: 0 12px;
   pointer-events: none;

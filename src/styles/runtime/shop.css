@@ -1347,7 +1347,7 @@
   transform-origin: 50% 50%;
 }
 .player-layout .play-viewport > .runtime-overlay.runtime-shop-overlay.runtime-shop-preset-pixel {
-  --shop-ui-font: "Galmuri11 Regular", var(--runtime-pixel-font);
+  --shop-ui-font: var(--font-pixel);
   --shop-text-body: 12px;
   --shop-text-title: 12px;
   --shop-text-small: 12px;

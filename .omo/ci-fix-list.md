@@ -185,10 +185,9 @@ Work order (cheapest first): timeout → fake-DOM/env gaps → combined_town / o
   - [ ] `test/spatialGeographyControllerLifecycle.test.ts`
   - [ ] `test/spatialGeographyControllerMotion.test.ts`
   - [ ] `test/spatialGeographyControllerTransactions.test.ts`
-- **8** — `AssertionError: expected [ …(N) ] to deeply equal []`
+- **7** — `AssertionError: expected [ …(N) ] to deeply equal []`
   - [ ] `test/charsetCatalogCoverage.test.ts`
   - [ ] `test/charsetQuery.test.ts`
-  - [ ] `test/fontFamilyTokenGuard.test.ts`
   - [ ] `test/persistence/electronBoundary.test.ts`
   - [ ] `test/playerEditorOnlyAssets.test.ts`
   - [ ] `test/roleNameComparisonGate.test.ts`

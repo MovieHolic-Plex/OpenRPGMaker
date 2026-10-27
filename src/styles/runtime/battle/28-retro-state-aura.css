@@ -206,7 +206,7 @@
 .battle-aura[data-aura="charm-heart"]::before,
 .battle-aura[data-aura="charm-heart"]::after {
   animation: aura-rise-letter 1.8s linear infinite;
-  font: bold 18px/1 "Galmuri11", "NeoDunggeunmo", monospace;
+  font: bold 18px/1 var(--font-pixel);
   left: 60%;
   opacity: 0;
   position: absolute;
@@ -250,7 +250,7 @@
   border-radius: 8px;
   color: #1a2350;
   content: "…";
-  font: bold 13px/14px "Galmuri11", "NeoDunggeunmo", monospace;
+  font: bold 13px/14px var(--font-pixel);
   left: calc(100% - 6px);
   padding: 0 6px 2px;
   position: absolute;
@@ -277,7 +277,7 @@
   animation: aura-orbit 1.2s linear infinite;
   color: #ffe45a;
   content: "★";
-  font: bold 14px/1 sans-serif;
+  font: bold 14px/1 var(--font-ui);
   left: calc(50% - 7px);
   position: absolute;
   text-shadow: 1px 1px #5a4300, -1px 0 #5a4300;

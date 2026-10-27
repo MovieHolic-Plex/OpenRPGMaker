@@ -1121,7 +1121,7 @@
   left: 0;
   right: 0;
   text-align: center;
-  font: 700 9px/1 system-ui, sans-serif;
+  font: 700 9px/1 var(--font-ui);
   color: var(--look-acc, var(--retro-accent));
 }
 .battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-command="keys"] .battle-standard-root .battle-command:nth-child(1)::after { content: "Y"; }
