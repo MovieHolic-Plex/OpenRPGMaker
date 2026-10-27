@@ -8,6 +8,7 @@ import { createInterpreter } from "@/player/interpreter";
 import { createSaveSnapshot, applySaveSnapshot, type SaveSnapshot } from "@/player/saveSlots";
 import { applyBattleRewardsToSession } from "@/player/battleRewardsToSession";
 import { canEquip } from "@/project/equipmentRules";
+import { normalizeActorRecord, totalExpForLevel } from "@/project/actorModel";
 import { createStatusMenuDetail } from "@/player/playerStatusMenuDetails";
 import { runTool } from "@/editor/tools/toolRunner";
 import { changeActorClass, effectiveActorClassId, promoteActor } from "@/project/sessionClass";
@@ -15,6 +16,10 @@ import { startSession, type PlaySession } from "@/project/session";
 import type { Command, Project } from "@/project/types";
 
 const HERO_ID = "actor_hero";
+/** #3234: 보상은 누적 경험치를 현재 레벨의 바닥으로 올린 뒤 더한다 — 그 바닥. */
+function heroExpFloor(project: Project, level: number): number {
+  return totalExpForLevel(normalizeActorRecord(project.database.actors.find((actor) => actor.id === HERO_ID)!).expCurve, level);
+}
 const GUARDIAN_ID = "actor_guardian";
 const APPRENTICE_CLASS_ID = "class_apprentice_warrior";
 const WARRIOR_CLASS_ID = "class_warrior_phase8";
@@ -400,12 +405,12 @@ describe("Phase 8a 보상 정책", () => {
     session = startSession(project);
     session.actorLevels[HERO_ID] = 6;
     applyBattleRewardsToSession(session, { result: "victory", rewards: { exp: 100, gold: 0, items: [], enemyLevel: 1 }, participatingActorIds: [HERO_ID] }, project);
-    expect(session.actorExperience[HERO_ID]).toBe(50);
+    expect(session.actorExperience[HERO_ID]).toBe(heroExpFloor(project, 6) + 50);
 
     session = startSession(project);
     session.actorLevels[HERO_ID] = 11;
     applyBattleRewardsToSession(session, { result: "victory", rewards: { exp: 100, gold: 0, items: [], enemyLevel: 1 }, participatingActorIds: [HERO_ID] }, project);
-    expect(session.actorExperience[HERO_ID]).toBe(10);
+    expect(session.actorExperience[HERO_ID]).toBe(heroExpFloor(project, 11) + 10);
   });
 
   it("simulate_battle 참전 기록으로 참전자만 EXP와 레벨차 페널티를 적용한다", () => {
@@ -438,7 +443,7 @@ describe("Phase 8a 보상 정책", () => {
     }, project);
 
     expect(simulated.participatingActorIds).toEqual([HERO_ID]);
-    expect(session.actorExperience[HERO_ID]).toBe(10);
+    expect(session.actorExperience[HERO_ID]).toBe(heroExpFloor(project, 11) + 10);
     expect(session.actorExperience[GUARDIAN_ID]).toBe(0);
   });
 });

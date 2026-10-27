@@ -178,7 +178,10 @@ try {
   };
   execFileSync("npm", ["ci"], { cwd: buildDir, stdio: "inherit", env });
   execFileSync("node", ["scripts/build-electron.mjs"], { cwd: buildDir, stdio: "inherit", env });
-  execFileSync("npx", ["vite", "build", "--configLoader", "runner"], { cwd: buildDir, stdio: "inherit", env });
+  // 카탈로그 BGM 은 데스크톱이 처음 재생할 때 받는다(electron/main/bgmOnDemand.ts) — 281곡 모두 «쓸 수 있음».
+  execFileSync("npx", ["vite", "build", "--configLoader", "runner"], { cwd: buildDir, stdio: "inherit", env: { ...env, OPRN_ASSUME_ALL_BGM_INSTALLED: "1" } });
+  // 예제 프로젝트(dist/demos) — 편집기 「예제 프로젝트」·컨셉 피드 «열기»가 읽는다. desktop-release.yml 과 같은 절차.
+  execFileSync("npm", ["run", "bake:demos"], { cwd: buildDir, stdio: "inherit", env });
   // icon-tool.js is CJS. Without this, Node walks up to ~/package.json ("type":"module") and dies on require.
   writeFileSync(join(homedir(), ".cache/electron-builder/package.json"), "{\"type\":\"commonjs\"}\n");
   execFileSync(

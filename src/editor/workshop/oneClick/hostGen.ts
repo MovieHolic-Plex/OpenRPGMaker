@@ -51,6 +51,8 @@ export interface HostGenStatus {
   readonly asked?: number | null;
   readonly pack?: { readonly manifest: StorePackManifest; readonly blobs: Readonly<Record<string, string>> };
   readonly photoCandidates?: readonly HostPhotoCandidate[];
+  /** 후보를 고를 때 쓴 그림: 사진에서 그림(photo) · 사진 속 모습을 글로 옮겨 그림(description, 그림 도구가 사진을 거절할 때) · 그림 없이 특징만(none) */
+  readonly photoPicture?: "photo" | "description" | "none";
 }
 
 async function call<T>(method: "GET" | "POST", path: string, body?: unknown): Promise<T> {

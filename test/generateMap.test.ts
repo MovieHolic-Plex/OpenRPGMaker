@@ -8,6 +8,7 @@ import { createEmptyToolProject } from "@/editor/tools/emptyProject";
 import { runTool } from "@/editor/tools/toolRunner";
 import type { ToolContext } from "@/editor/tools/types";
 import { getTool, toOpenAiTools } from "@/editor/tools/toolRegistry";
+import { MAP_GENERATION_PROFILES } from "@/editor/tools/mapGenerationProfiles";
 import { isPassable } from "@/project/collision";
 import { BUNDLED_EASYRPG_CHIPSET_ASSETS, bundledEasyRpgTilesetId } from "@/assets/bundled";
 import { ensureBundledTilesets } from "@/project/defaults/defaultAssets";
@@ -16,6 +17,12 @@ import { markUserTileRuntimeMetadata } from "@/editor/runtimeTileMetadata";
 import { MAX_TOOL_MAP_DIMENSION } from '@/project/mapSizeLimits';
 
 const THEMES = ["village", "forest", "cave"] as const;
+// 2026-10-07 저작권 정리로 EasyRPG·숲마을 생성 프로필이 지워져 남은 프로필은 Scarloxy 셋뿐이고, 기본 칩셋(beodeul_city)에는 프로필이 없다
+// (mapGenerationProfiles.ts) — 타일셋을 말하지 않은 생성 시험은 테마마다 팔레트가 다른 Scarloxy 들판(wilds)에서 본다.
+const GENERATION_TILESET_ID = "scarloxy_chipset_wilds";
+function generate(ctx: ToolContext, args: Record<string, unknown>, options?: Parameters<typeof runTool>[3]) {
+  return runTool(ctx, "generate_map", { tilesetId: GENERATION_TILESET_ID, ...args }, options);
+}
 const SEEDS = [1, 99] as const;
 
 describe("generate_map", () => {
@@ -29,10 +36,7 @@ describe("generate_map", () => {
           { x: 10, y: 18 },
         ];
         const entrance = { x: 1, y: 10 };
-        const result = runTool(
-          ctx,
-          "generate_map",
-          { theme, width: 22, height: 22, entrance, pois, chokepoints: 25, seed, id: `gen_${theme}_${seed}` },
+        const result = generate(ctx, { theme, width: 22, height: 22, entrance, pois, chokepoints: 25, seed, id: `gen_${theme}_${seed}` },
           { dryRun: false }
         );
         expect(result.ok).toBe(true);
@@ -55,10 +59,7 @@ describe("generate_map", () => {
     const ctx: ToolContext = { project: createEmptyToolProject() };
     const entrance = { x: 1, y: 1 };
     const pois = [{ x: 20, y: 20 }, { x: 20, y: 1 }, { x: 1, y: 20 }];
-    const result = runTool(
-      ctx,
-      "generate_map",
-      { theme: "cave", width: 22, height: 22, entrance, pois, chokepoints: 90, seed: 7, id: "gen_dense" },
+    const result = generate(ctx, { theme: "cave", width: 22, height: 22, entrance, pois, chokepoints: 90, seed: 7, id: "gen_dense" },
       { dryRun: false }
     );
     expect(result.ok).toBe(true);
@@ -68,7 +69,7 @@ describe("generate_map", () => {
 
   it("지원 상한 초과 생성은 거부하고 분할 맵 대안을 안내한다", () => {
     const ctx: ToolContext = { project: createEmptyToolProject() };
-    const result = runTool(ctx, "generate_map", { theme: "forest", tilesetId: 'easyrpg_chipset_combined_town', width: MAX_TOOL_MAP_DIMENSION + 1, height: 32, id: "gen_huge" });
+    const result = generate(ctx, { theme: "forest", width: MAX_TOOL_MAP_DIMENSION + 1, height: 32, id: "gen_huge" });
     expect(result.ok).toBe(false);
     expect(result.summary).toContain(`최대 ${MAX_TOOL_MAP_DIMENSION}×${MAX_TOOL_MAP_DIMENSION}`);
     expect(result.summary).toContain("여러 맵");
@@ -82,11 +83,30 @@ describe("generate_map", () => {
     let conceptInteriors = 0;
     let manualAtlases = 0;
 
-    for (const asset of BUNDLED_EASYRPG_CHIPSET_ASSETS) {
-      const tilesetId = bundledEasyRpgTilesetId(asset.textureKey);
+    // All atlases share one loaded project (each case writes its own map id); building and cloning a fresh
+    // full bundle per atlas (48 bundled sheets since the beodeul/jp_city bundles) blew the 15s case budget.
+    let sharedCtx: ToolContext | undefined;
+    const loadedCtx = (): ToolContext => {
       const ctx: ToolContext = { project: createEmptyToolProject() };
       // Match the editor's loaded state; generation is not a tileset normalizer.
       ensureBundledTilesets(ctx.project);
+      return ctx;
+    };
+    for (const asset of BUNDLED_EASYRPG_CHIPSET_ASSETS) {
+      const tilesetId = bundledEasyRpgTilesetId(asset.textureKey);
+      if (!MAP_GENERATION_PROFILES.has(tilesetId)) {
+        sharedCtx ??= loadedCtx();
+        const result = generate(sharedCtx, {
+          id: `map_${tilesetId}`, name: asset.name, theme: "village", tilesetId, width: 20, height: 16, seed: 7, border: "wall",
+        });
+        // 수동 저작용 번들 아틀라스(성채·버들항 계열 등) — 생성 팔레트가 없다. 2026-10-07 정리 뒤 프로필은 Scarloxy 셋만 남았다.
+        expect(result.ok, tilesetId).toBe(false);
+        expect(result.issues?.some(issue => issue.code === "unsupported-tileset"), tilesetId).toBe(true);
+        expect(sharedCtx.project.maps[`map_${tilesetId}`]).toBeUndefined();
+        manualAtlases += 1;
+        continue;
+      }
+      const ctx = (sharedCtx ??= loadedCtx());
       if (tilesetId === "modern_exteriors_nocturne") {
         // Modern has no bundled solid rule. Exercise dispatch with an explicitly
         // authored obstacle; the untouched default is separately required to fail.
@@ -94,8 +114,9 @@ describe("generate_map", () => {
         tileset.passability[30] = blockedFlag();
         markUserTileRuntimeMetadata(tileset, 30, { passage: "solid" });
       }
-      const beforeTilesets = structuredClone(ctx.project.tilesets);
-      const result = runTool(ctx, "generate_map", {
+      const beforeTilesetIds = Object.keys(ctx.project.tilesets).sort();
+      const beforeTileset = structuredClone(ctx.project.tilesets[tilesetId]);
+      const result = generate(ctx, {
         id: `map_${tilesetId}`,
         name: asset.name,
         theme: "village",
@@ -106,14 +127,6 @@ describe("generate_map", () => {
         border: "wall",
       });
 
-      if (tilesetId === "opengameart_castle") {
-        // This atlas is bundled for manual authoring; no RM2K generation palette applies.
-        expect(result.ok).toBe(false);
-        expect(result.issues?.some(issue => issue.code === "unsupported-tileset")).toBe(true);
-        expect(ctx.project.maps[`map_${tilesetId}`]).toBeUndefined();
-        manualAtlases += 1;
-        continue;
-      }
       if (["easyrpg_chipset_interior", "easyrpg_chipset_retro_house", "scarloxy_chipset_indoor"].includes(tilesetId)) {
         expect(result.ok).toBe(false);
         expect(result.issues?.some(issue => issue.code === "concept-interior-required")).toBe(true);
@@ -131,7 +144,9 @@ describe("generate_map", () => {
       expect(new Set(map?.lowerTiles).size, tilesetId).toBeGreaterThanOrEqual(2);
       expect(isPassable(ctx.project, map!, 0, 0)).toBe(false);
       expect(isPassable(ctx.project, map!, 1, Math.floor(map!.height / 2))).toBe(true);
-      expect(ctx.project.tilesets).toEqual(beforeTilesets);
+      // Generation is not a tileset normalizer: no sheet added or removed, the target sheet untouched.
+      expect(Object.keys(ctx.project.tilesets).sort()).toEqual(beforeTilesetIds);
+      expect(ctx.project.tilesets[tilesetId]).toEqual(beforeTileset);
       profileKeys.add(data.generationProfile);
     }
 
@@ -157,10 +172,7 @@ describe("generate_map", () => {
     for (const theme of THEMES) {
       it(`${theme}: border 생략 시 외곽에 장애물 벽을 두르지 않는다`, () => {
         const ctx: ToolContext = { project: createEmptyToolProject() };
-        const result = runTool(
-          ctx,
-          "generate_map",
-          { theme, width: 20, height: 16, chokepoints: 0, seed: 3, id: `gen_open_${theme}` },
+        const result = generate(ctx, { theme, width: 20, height: 16, chokepoints: 0, seed: 3, id: `gen_open_${theme}` },
           { dryRun: false },
         );
         expect(result.ok, result.summary).toBe(true);
@@ -181,10 +193,7 @@ describe("generate_map", () => {
 
     it("border 생략 시 기본 입구는 맵 가장자리에 붙는다", () => {
       const ctx: ToolContext = { project: createEmptyToolProject() };
-      const result = runTool(
-        ctx,
-        "generate_map",
-        { theme: "village", width: 20, height: 16, chokepoints: 0, seed: 3, id: "gen_edge_entrance" },
+      const result = generate(ctx, { theme: "village", width: 20, height: 16, chokepoints: 0, seed: 3, id: "gen_edge_entrance" },
         { dryRun: false },
       );
       expect(result.ok, result.summary).toBe(true);
@@ -193,10 +202,7 @@ describe("generate_map", () => {
 
     it("border:\"wall\" 은 종전처럼 외곽 4변을 봉인한다", () => {
       const ctx: ToolContext = { project: createEmptyToolProject() };
-      const result = runTool(
-        ctx,
-        "generate_map",
-        { theme: "cave", width: 20, height: 16, chokepoints: 0, seed: 3, id: "gen_sealed", border: "wall" },
+      const result = generate(ctx, { theme: "cave", width: 20, height: 16, chokepoints: 0, seed: 3, id: "gen_sealed", border: "wall" },
         { dryRun: false },
       );
       expect(result.ok, result.summary).toBe(true);
@@ -210,7 +216,7 @@ describe("generate_map", () => {
 
     it("알 수 없는 border 값은 조용히 무시되지 않고 거부된다", () => {
       const ctx: ToolContext = { project: createEmptyToolProject() };
-      const result = runTool(ctx, "generate_map", { theme: "village", width: 20, height: 16, id: "gen_bad", border: "walls" });
+      const result = generate(ctx, { theme: "village", width: 20, height: 16, id: "gen_bad", border: "walls" });
       expect(result.ok).toBe(false);
       expect(result.issues?.map((issue) => issue.message).join(" ")).toContain("border");
       expect(ctx.project.maps.gen_bad).toBeUndefined();
@@ -231,13 +237,13 @@ describe("generate_map", () => {
   it("등록되지 않은 타일셋은 다른 타일 문법으로 대체하지 않는다", () => {
     const ctx: ToolContext = { project: createEmptyToolProject() };
     ctx.project.tilesets.uploaded_custom = {
-      ...ctx.project.tilesets.easyrpg_chipset_combined_town!,
+      ...ctx.project.tilesets[GENERATION_TILESET_ID]!,
       id: "uploaded_custom",
       name: "업로드 타일셋",
       image: { type: "generated", id: "uploaded_custom" },
     };
 
-    const result = runTool(ctx, "generate_map", {
+    const result = generate(ctx, {
       id: "map_custom",
       theme: "village",
       tilesetId: "uploaded_custom",

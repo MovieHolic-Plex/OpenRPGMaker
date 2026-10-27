@@ -1,6 +1,6 @@
 /** @vitest-environment happy-dom */
 import { beforeEach, describe, expect, it } from "vitest";
-import { POSE_FRAME, type BattleBattlerPose } from "@/battle/battlePose";
+import { EXTENDED_POSE_FRAME, POSE_FRAME, type BattleBattlerPose } from "@/battle/battlePose";
 import { createBattleRuntime } from "@/battle/runtime";
 import { applyBattlerPoseForTest, battleField } from "@/player/battleFieldDom";
 import { deserialize } from "@/project/io";
@@ -70,13 +70,11 @@ describe("applyBattlerPose background position", () => {
   // 여기까지는 산식만 잰다. 아래는 **실제 전투 필드를 렌더해서** 스냅샷의 포즈가 시트의
   // 어느 칸으로 이어지는지 본다 — 런타임 스크린샷(Playwright)이 이 환경에서 안 돌아가므로,
   // DOM 레벨에서 같은 경로를 태우는 것이 가장 강한 증거다.
-  it.each([
-    ["defend", `0px -${FRAME}px`],
-    ["dead", `-${FRAME}px -${FRAME}px`],
-  ] as const)("전투 필드 렌더에서 %s 포즈가 행 1 을 가리킨다", (pose, expected) => {
+  // 측면(retro2003)은 이제 생성 영웅 시트 대신 걷기 칩 전투 시트(24포즈, EXTENDED_POSE_FRAME)로 파티를 그린다
+  // (charsetBattlers.resolvePartyBattleCharset: retro && generatedHero → 칩 대응). 그래서 실제 필드 렌더에서는
+  // 고전 모션이 고른 칸(battlePoseFrame)이 EXTENDED_POSE_FRAME 좌표로 이어지는지 본다.
+  it.each(["defend", "dead"] as const)("전투 필드 렌더에서 %s 포즈가 확장 시트의 그 칸을 가리킨다", (pose) => {
     const project = deserialize(JSON.stringify(battleFixture));
-    // 48px 전투 시트(.battle-actor-sprite)는 **정면(front) 파티 스킨**에서만 필드에 선다. 픽스처 기본
-    // 스킨(rm2000)은 뒷모습 <img> 를 쓰므로 여기서는 사이드뷰 스킨을 명시한다.
     (project.system as { battleUiStyle?: string }).battleUiStyle = "retro2003";
     store.replace(project);
     const runtime = createBattleRuntime({
@@ -89,15 +87,23 @@ describe("applyBattlerPose background position", () => {
     const snapshot = runtime.snapshot();
     const actor = snapshot.actors[0];
     expect(actor, "픽스처에 아군 배틀러가 있다").toBeTruthy();
-    // 스냅샷은 타입만 readonly 인 순수 객체다. 포즈만 바꿔 렌더 경로를 태운다.
     (actor as { pose: BattleBattlerPose }).pose = pose;
+    // 확장 시트의 방어 칸은 스냅샷 pose 가 아니라 defending 표시에서 온다(battleRetroMotion extendedMotionPose).
+    if (pose === "defend") (actor as { defending: boolean }).defending = true;
 
     const field = battleField(snapshot);
+    const node = field.querySelector<HTMLElement>(".battle-actor-group .battle-actor");
     const sprite = field.querySelector<HTMLElement>(".battle-actor-group .battle-actor-sprite");
 
-    expect(sprite, "아군이 생성 전투 시트로 그려진다").toBeTruthy();
-    expect(sprite?.style.backgroundPosition).toBe(expected);
-    // 시트 전체가 (프레임×3)×(프레임×8) 로 깔려야 행 1 이 프레임 안에 들어온다.
+    expect(sprite, "아군이 전투 시트로 그려진다").toBeTruthy();
+    const drawn = node?.dataset.battlePoseFrame;
+    expect(drawn, "확장 시트는 그린 칸 이름을 남긴다").toBeTruthy();
+    // 쓰러짐은 먼저 휘청 칸(dying)을 거쳐 dead 로 눕는다.
+    expect(drawn).toBe(pose === "defend" ? "defend" : "dying");
+    const frame = EXTENDED_POSE_FRAME[drawn as keyof typeof EXTENDED_POSE_FRAME];
+    expect(frame).toBeTruthy();
+    const offset = (value: number) => (value === 0 ? "0px" : `-${value}px`);
+    expect(sprite?.style.backgroundPosition).toBe(`${offset(frame.col * FRAME)} ${offset(frame.row * FRAME)}`);
     expect(sprite?.style.backgroundSize).toBe(`${FRAME * 3}px ${FRAME * 8}px`);
   });
 

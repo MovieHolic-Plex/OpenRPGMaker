@@ -14,6 +14,7 @@ import { createBlankProject } from "@/project/defaults";
 import { COMBINED_TOWN_TILESET_ID, TILE } from "@/project/defaults/constants";
 import { EXTRA_LAYER_KEYS, layerTileAt, setLayerTileAt, setShadowAt, shadowAt } from "@/project/mapLayers";
 import type { AutotileGroup, GameMap } from "@/project/types";
+import { startOnRetiredCombinedTown } from "./support/retiredEasyRpgTilesets";
 
 const MAP_ID = "map_blank_start";
 // 2층 풀 장식 시험용 4방향 그룹(번호는 합성 — 기본 칩셋 내장 그룹과 겹치지 않게 고른다).
@@ -24,11 +25,9 @@ const DECO_GROUP: AutotileGroup = {
 };
 
 function context(withDecoGroup = false): ToolContext {
-  const project = createBlankProject();
   // 시험은 합본 마을 칩 번호(TILE.*)를 쓴다 — 빈 프로젝트 시작 맵의 기본 칩셋이 바뀌어도 같은 칩셋 위에서 잰다.
-  const start = project.maps[MAP_ID]!;
-  start.tilesetId = COMBINED_TOWN_TILESET_ID;
-  start.tileSize = project.tilesets[COMBINED_TOWN_TILESET_ID]!.tileSize;
+  // 저작권 정리(2026-10-07) 뒤 합본 마을 칩셋은 새 프로젝트에 없다 — 시험 지원 도우미로 되살린다.
+  const project = startOnRetiredCombinedTown(createBlankProject());
   if (withDecoGroup) project.tilesets[COMBINED_TOWN_TILESET_ID]!.autotileGroups = [DECO_GROUP];
   return { project };
 }
@@ -63,11 +62,15 @@ describe("paint_tiles — 네 층", () => {
     expect(rLower.data).toMatchObject({ effectiveLayer: "1" });
   });
 
-  it("1층을 칠하면 그 칸의 2층을 지우고, 마지막 2층 칸이 비면 키가 빠진다", () => {
+  // 제품 규칙(src/editor/tools/mapTools.ts applyClusterAwarePaint): 한 층을 칠해도 다른 층을 말없이 지우지 않는다 —
+  // 조수 칠하기는 수동 붓을 따른다. 2층을 비우는 것은 tile_erase 층 "2" 의 일이다.
+  it("1층을 칠해도 그 칸의 2층은 남고, 2층을 지워 마지막 칸이 비면 키가 빠진다", () => {
     const ctx = context();
     ok(ctx, "paint_tiles", { mapId: MAP_ID, layer: "2", mode: "cells", tile: 20, cells: [{ x: 3, y: 3 }] });
     expect(mapOf(ctx).lowerOverlayTiles).toBeDefined();
     ok(ctx, "paint_tiles", { mapId: MAP_ID, layer: "1", mode: "cells", tile: TILE.GRASS, cells: [{ x: 3, y: 3 }] });
+    expect(layerTileAt(mapOf(ctx), 2, idx(mapOf(ctx), 3, 3))).toBe(20);
+    ok(ctx, "tile_erase", { mapId: MAP_ID, rect: { x: 3, y: 3, w: 1, h: 1 }, layer: "2" });
     expectNoExtraKeys(mapOf(ctx));
   });
 

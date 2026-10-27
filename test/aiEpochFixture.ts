@@ -26,10 +26,13 @@ export function deferred<T>() {
   const promise = new Promise<T>((done, fail) => { resolve = done; reject = fail; });
   return { promise, resolve, reject };
 }
+// Hang guard, not a performance budget. Some callers bound a whole session turn over the ~63MB blank project,
+// which takes 10-30s on a loaded 4-core CI runner; 10s turned those slow-but-live turns into failures.
+const EPOCH_SIGNAL_DEADLINE_MS = 60_000;
 export async function bounded<T>(promise: Promise<T>): Promise<T> {
   let deadline: ReturnType<typeof setTimeout> | undefined;
   try { return await Promise.race([promise, new Promise<never>((_, reject) => {
-    deadline = setTimeout(() => reject(new Error("Epoch signal deadline")), 10_000);
+    deadline = setTimeout(() => reject(new Error("Epoch signal deadline")), EPOCH_SIGNAL_DEADLINE_MS);
   })]); }
   finally { clearTimeout(deadline); }
 }

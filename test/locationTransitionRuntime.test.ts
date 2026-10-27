@@ -7,6 +7,7 @@
 import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
 import { TILE } from "@/project/defaults/constants";
+import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 import { addMapLocation, deleteMapLocation, resizeMapLocation } from "@/project/mapNamedLocations";
 import { runSceneTest } from "@/testing/sceneTestRunner";
 import {
@@ -40,7 +41,8 @@ function blankMap(id: string, name: string, width = 16, height = 16): GameMap {
  * (선언 없는 id 는 startSession 이 시드하지 않는다).
  */
 function projectWithPlaza(): { project: Project; mapId: string; plazaId: string } {
-  const project = createBlankProject();
+  // 맵이 TILE.GRASS(합본 마을 번호)로 깔린다 — 2026-10-07 정리 뒤 새 프로젝트에 없는 그 칩셋을 옛 저장본처럼 싣는다.
+  const project = withRetiredEasyRpgTilesets(createBlankProject());
   project.switches = [...project.switches, { id: ENTERED, name: "들어옴" }, { id: LEFT, name: "나감" }];
   project.variables = [...project.variables, { id: ENTER_COUNT, name: "진입 횟수" }];
   const map = blankMap("map_plaza", "광장 맵");

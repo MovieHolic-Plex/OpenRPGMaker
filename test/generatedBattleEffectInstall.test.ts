@@ -130,7 +130,10 @@ describe("generated battle effect pack installation", () => {
     const result = installGeneratedBattleEffectPack();
     const installed = store.getCurrent();
 
-    expect(result.addedAnimations).toBe(34);
+    // 34장 시트를 쓰는 기본 기록은 이제 37개다 — 옛 id(anim_hit·anim_sword·anim_arrow 등)도 생성 시트를 가리킨다(2026-10-03 EasyRPG 전투 시트 정리).
+    const expectedRecords = createBlankProject().database.battleAnimations.filter((record) => GENERATED_EFFECT_RESOURCE_IDS.includes(record.resourceId ?? "")).length;
+    expect(new Set(installed.database.battleAnimations.filter((record) => GENERATED_EFFECT_RESOURCE_IDS.includes(record.resourceId ?? "")).map((record) => record.resourceId)).size).toBe(34);
+    expect(result.addedAnimations).toBe(expectedRecords);
     expect(result.updatedSkills).toBe(Object.keys(EXPECTED_SKILL_ANIMATIONS).length);
     expect(result.updatedActors).toBe(project.database.actors.length);
     expect(result.updatedClasses).toBe(Object.keys(EXPECTED_CLASS_ANIMATIONS).length);

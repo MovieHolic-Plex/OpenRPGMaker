@@ -8,6 +8,7 @@ import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 const FAKE_CLI = `import json, sys, pathlib
 args = sys.argv[1:]
 if args[0] == "photo":
+    assert "--no-picture" not in args          # the host lets char-gen draw a picture (or fall back) itself
     out = pathlib.Path(args[args.index("--out") + 1]) / "candidates"
     out.mkdir(parents=True)
     rows = []
@@ -16,7 +17,7 @@ if args[0] == "photo":
         (out / f"0{i}.gif").write_bytes(b"GIF89a")
         rows.append(dict(rank=i, head="H%d" % i, body="B", fit=7, chip=f"0{i}.chr.txt", preview=f"0{i}.gif",
                          checks=dict(errors="ok", flaws=[], walk="skipped", eyes_place=i, passed=i == 1)))
-    (out / "candidates.json").write_text(json.dumps(dict(candidates=rows)))
+    (out / "candidates.json").write_text(json.dumps(dict(picture="description", candidates=rows)))
 elif args[0] == "pack":
     src, dest = pathlib.Path(args[1]), pathlib.Path(args[2])
     chip = (src / "chip.chr.txt").read_text() + " " + json.loads((src / "meta.json").read_text())["key"]
@@ -71,6 +72,7 @@ describe("char-gen photo on the host", () => {
     expect(cands.map((c) => c.rank)).toEqual([1, 2]);
     expect(cands[0]!.passed).toBe(true);
     expect(cands[0]!.gif.startsWith("data:image/gif;base64,")).toBe(true);
+    expect(picking.photoPicture).toBe("description");     // the screen tells the user the photo itself was not drawn
     expect(gen.pickWorkshopGen({ jobId, rank: 9 }).ok).toBe(false);
     expect(gen.pickWorkshopGen({ jobId, rank: 2, title: "고른 사람" }).ok).toBe(true);
     const done = await until(jobId, "done");

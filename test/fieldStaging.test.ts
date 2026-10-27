@@ -53,7 +53,12 @@ describe("레터박스", () => {
   });
 
   it("화면 효과 선택지 전부에 렌더 경로가 있다 — 조용한 실패 없음", () => {
-    for (const option of SCREEN_EFFECT_OPTIONS) expect(planScreenEffect(option.value, "", 300).kind).not.toBe("unsupported");
+    // 문 열기·닫기(#3375)는 값에 문 칸(x,y,너비,높이,방식,방향)이 있어야 렌더 경로가 생긴다 — 빈 값은 unsupported 로 기록된다.
+    const doorValue = "2,3,2,2,slide,left";
+    for (const option of SCREEN_EFFECT_OPTIONS) {
+      const value = option.value === "doorOpen" || option.value === "doorClose" ? doorValue : "";
+      expect(planScreenEffect(option.value, value, 300).kind, option.value).not.toBe("unsupported");
+    }
   });
 });
 
@@ -136,7 +141,8 @@ describe("컷신 연출 비트", () => {
       ],
     });
     expect(result.ok, JSON.stringify(result.issues)).toBe(true);
-    expect(JSON.stringify(result.warnings)).toContain("kind 가 빠진 비트 4개");
+    // 쓰기 도구의 경고는 실행기가 diff.warnings 로 옮긴다(toolRunner).
+    expect(JSON.stringify(result.diff?.warnings ?? result.warnings)).toContain("kind 가 빠진 비트 4개");
   });
 
   it("연출 지침 도구가 등록돼 있다", () => {

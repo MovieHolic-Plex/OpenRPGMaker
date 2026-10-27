@@ -11,6 +11,11 @@ import { independentReviewPayload } from "./independentReviewFixture";
 import { fixedDeclarer } from "./intentFixture";
 import { unboundCriterionCheck, verificationEvent, verificationJourney } from "./fixtures/verificationOwnership";
 
+// Tests here build the ~63MB blank project (createBlankProject) and drive assistant sessions or editor
+// panels over it, fingerprinting/copying it per session. Under ci-full load (8 workers on 4-core runners)
+// single tests measured 10-50s, past vitest's 15s default, so the budget is raised for this file only.
+vi.setConfig({ testTimeout: 120_000 });
+
 const reach = "check_reachability";
 const scene = "run_scene_test";
 type Call = { name: string; args: Record<string, unknown> };

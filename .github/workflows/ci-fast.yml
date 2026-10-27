@@ -107,6 +107,20 @@ jobs:
       - name: CSS 래칫
         run: node scripts/verify-gates.mjs --only css
 
+      # openwiki/INDEX.md 는 생성 파일이다. 문서를 고치고 재생성하지 않으면 ci-full 의
+      # openwikiIndexGarbled 가 4시간 뒤에야 빨개진다 — 2026-10-27 실측: #3781 로 맞춘 직후에도
+      # 문서를 건드리는 PR 5건이 대기 중이라 main 에서 곧바로 다시 낡았다(44줄 차이).
+      # CSS 래칫과 같은 이유로 PR 레인에 둔다. 생성은 몇 초면 끝난다.
+      - name: openwiki 인덱스 최신
+        run: |
+          set -euo pipefail
+          node scripts/openwiki-index.mjs
+          if ! git diff --quiet -- openwiki/INDEX.md; then
+            echo "::error::openwiki/INDEX.md 가 낡았다 — 'npm run openwiki:index' 로 재생성해 커밋하라."
+            git diff --stat -- openwiki/INDEX.md
+            exit 1
+          fi
+
       - name: parity 스위트
         run: npm run test:parity
 

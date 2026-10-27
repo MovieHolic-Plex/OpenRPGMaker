@@ -17,11 +17,13 @@ import { store } from "@/project/store";
 import type { MapId } from "@/project/types";
 import { resetToastsForTest } from "@/util/toast";
 import { findByTestId, installFakeDom, renderWithFakeDom } from "./fakeDom";
+// 합본 마을(EasyRPG) 칩셋의 타일 번호·그룹을 겨냥한 시험 — 2026-10-07 정리 뒤 새 프로젝트에 없어 옛 저장본처럼 다시 심는다.
+import { startOnRetiredCombinedTown } from "./support/retiredEasyRpgTilesets";
 
 let restoreFakeDom: () => void;
 
 function seed(): MapId {
-  const project = createBlankProject();
+  const project = startOnRetiredCombinedTown(createBlankProject());
   const map = project.maps[project.startMapId];
   map.width = 8;
   map.height = 8;

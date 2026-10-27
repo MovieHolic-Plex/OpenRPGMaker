@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import ts from "typescript";
+// typescript 7 (#2396) ships no JS compiler API (`import ts from "typescript"` is only { version }); parse with vite's oxc parser instead.
+import { parseSync } from "vite";
 
 type DirentLike = {
   readonly name: string;
@@ -26,6 +27,15 @@ const removedLocalDbFiles = [
   "src/project/tileMetadataDbSchema.ts",
 ] as const;
 
+// Device-local IndexedDB stores that hold no project data — each is a disposable cache or a per-device library.
+// The project's canonical store stays the host SQLite; these are deliberate product features, not project-DB fallbacks.
+const deviceCacheFiles: ReadonlySet<string> = new Set([
+  "src/project/persistence/tilesetBlobCache.ts", // tileset body cache keyed by SHA-256 (refetched from the host on miss)
+  "src/project/sharedContentCache.ts", // shared-content response cache (ETag + parsed snapshot)
+  "src/editor/terrainStampLibrary.ts", // per-device terrain stamp library (oprn-terrain-library), shared across projects
+  "src/editor/workshop/queue/jobStore.ts", // workshop job queue oprn-workshop-jobs (#3212)
+]);
+
 const forbiddenRuntimePatterns = [
   "indexedDB",
   "openDatabase(",
@@ -36,20 +46,35 @@ const forbiddenRuntimePatterns = [
   "projectRecoveredHouseTemplateProject",
 ] as const;
 
+type AstNode = { readonly type: string; readonly [key: string]: unknown };
+
+function isAstNode(value: unknown): value is AstNode {
+  return typeof value === "object" && value !== null && typeof (value as { type?: unknown }).type === "string";
+}
+
+function usesIndexedDb(node: unknown, parent: AstNode | null): boolean {
+  if (Array.isArray(node)) return node.some((child) => usesIndexedDb(child, parent));
+  if (!isAstNode(node)) return false;
+  if (node.type === "Identifier" && node.name === "indexedDB") {
+    // A capability check cannot read or write project data. Every actual access,
+    // including aliases and computed property access, remains forbidden here.
+    return !(parent?.type === "UnaryExpression" && parent.operator === "typeof");
+  }
+  if (node.type === "Literal" && node.value === "indexedDB") return true;
+  if (node.type === "TemplateLiteral") {
+    const quasis = node.quasis as readonly { readonly value: { readonly cooked: string | null } }[];
+    const expressions = node.expressions as readonly unknown[];
+    if (expressions.length === 0 && quasis.length === 1 && quasis[0]?.value.cooked === "indexedDB") return true;
+  }
+  return Object.entries(node).some(([key, child]) => key !== "parent" && typeof child === "object" && child !== null && usesIndexedDb(child, node));
+}
+
 function forbiddenLocalDbReferences(text: string): readonly string[] {
-  const source = text.includes("indexedDB")
-    ? ts.createSourceFile("runtime.ts", text, ts.ScriptTarget.Latest, true)
-    : null;
-  const usesIndexedDb = (node: ts.Node): boolean => {
-    if ((ts.isIdentifier(node) || ts.isStringLiteralLike(node)) && node.text === "indexedDB") {
-      // A capability check cannot read or write project data. Every actual access,
-      // including aliases and computed property access, remains forbidden here.
-      return !(ts.isIdentifier(node) && ts.isTypeOfExpression(node.parent));
-    }
-    return ts.forEachChild(node, usesIndexedDb) ?? false;
-  };
+  const program = text.includes("indexedDB") ? parseSync("runtime.ts", text, { lang: "ts" }).program : null;
+  // Prose naming the host's canonical file (ontology contracts: "lives in project.sqlite") is not a database driver.
+  const driverText = text.replaceAll("project.sqlite", "");
   return forbiddenRuntimePatterns.filter((pattern) =>
-    pattern === "indexedDB" ? source !== null && usesIndexedDb(source) : text.includes(pattern),
+    pattern === "indexedDB" ? program !== null && usesIndexedDb(program, null) : driverText.includes(pattern),
   );
 }
 
@@ -68,6 +93,7 @@ describe("렌더러는 로컬 DB 를 열지 않는다 — 정본 SQLite 는 elec
     const offenders: string[] = [];
 
     for (const file of files) {
+      if (deviceCacheFiles.has(file)) continue;
       const text = fs.readFileSync(file, "utf8");
       for (const pattern of forbiddenLocalDbReferences(text)) offenders.push(`${file}: ${pattern}`);
     }

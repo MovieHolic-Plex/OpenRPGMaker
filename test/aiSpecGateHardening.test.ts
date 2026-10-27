@@ -1,6 +1,6 @@
 // 밑그림(BuildSpec) 게이트 강화 — 2026-09-03 적대적 리뷰에서 확정한 결함의 회귀 테스트.
 // 각 it 의 첫 줄 주석이 "이 테스트를 빨갛게 만드는 프로덕션 변경"(name the break)이다.
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { AssistantSession } from "@/ai/assistantSession";
 import {
   SPATIAL_BUILD_TOOLS,
@@ -16,10 +16,16 @@ import { formatMaterialLabelHint } from "@/ai/turnGuide";
 import { buildRegionTaskMessage } from "@/editor/regionTask/runRegionTask";
 import { getTool, runTool } from "@/editor/tools";
 import { createBlankProject } from "@/project/defaults";
-import { TILE } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID, TILE } from "@/project/defaults/constants";
 import type { GameMap, Project } from "@/project/types";
 import { independentReviewPayload } from "./independentReviewFixture";
 import { fixedDeclarer } from "./intentFixture";
+import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
+
+// Tests here build the ~63MB blank project (createBlankProject) and drive assistant sessions or editor
+// panels over it, fingerprinting/copying it per session. Under ci-full load (8 workers on 4-core runners)
+// single tests measured 10-50s, past vitest's 15s default, so the budget is raised for this file only.
+vi.setConfig({ testTimeout: 120_000 });
 
 type ChatResult = import("@/ai/llmClient").ChatResult;
 const CONFIG = { authMode: "apiKey" as const, baseUrl: "x", model: "stub-model", apiKey: "sk", maxToolCalls: 12, maxTokens: 8192 };
@@ -47,9 +53,12 @@ function toolCallMsg(name: string, args: unknown, id: string): ChatResult {
 function finalMsg(text: string): ChatResult {
   return { message: { role: "assistant", content: text, tool_calls: undefined }, finishReason: "stop" } as ChatResult;
 }
+// m1 sits on the retired combined-town sheet, as in aiSpecGate.test.ts: these cases use its tile ids (TILE.GRASS=240,
+// WALL, sand/path terrain) and harness vocabulary. On the current default (beodeul_city) 240 is a wall, and the
+// tileset-reference read gate (tilesetReferenceEvidence) refuses tile writes before the structure guard is reached.
 function mkProject(width = 20, height = 20): Project {
-  const ctx = { project: createBlankProject() };
-  const created = runTool(ctx, "create_map", { id: "m1", name: "게이트", width, height });
+  const ctx = { project: withRetiredEasyRpgTilesets(createBlankProject()) };
+  const created = runTool(ctx, "create_map", { id: "m1", name: "게이트", width, height, tilesetId: COMBINED_TOWN_TILESET_ID });
   if (!created.ok) throw new Error(created.summary);
   return ctx.project;
 }
@@ -155,6 +164,36 @@ describe("기존 내용 보호는 밑그림 안에서도 — 기준선(사용자
     await session.sendUserMessage("철거해줘", collect(events));
     expect(events.find((event) => event.name === "clear_region")?.ok).toBe(true);
     expect(countLower(session.getProposedProject().maps.m1, TILE.WALL)).toBe(0);
+  });
+
+  it("confirmDestroy 문자열 true 도 철거 의도로 읽고 clear_region 을 통과시킨다", async () => {
+    // break: set_build_spec 이 스키마 정규화를 안 거치므로 "true" 를 === true 로만 보면 선언이 버려지고 정리가 막힌다.
+    const project = mkProject();
+    fillLower(project.maps.m1, 3, 3, 4, 4, TILE.WALL);
+    const asset = { id: "c", kind: "clear", x: 2, y: 2, w: 6, h: 6, confirmDestroy: " true " };
+    expect(errors(project, { mapId: "m1", assets: [asset] })).toEqual([]);
+    expect(normalizeBuildSpec({ mapId: "m1", assets: [asset] } as unknown as BuildSpec).assets[0]?.confirmDestroy).toBe(true);
+    const chat = scriptedChat([
+      toolCallMsg("set_build_spec", { mapId: "m1", assets: [{ ...asset, confirmDestroy: "true" }] }, "c1"),
+      toolCallMsg("clear_region", { mapId: "m1", x: 2, y: 2, w: 6, h: 6 }, "c2"),
+      finalMsg("끝"),
+    ]);
+    const session = new AssistantSession(project, { config: CONFIG, chat });
+    const events: Ev[] = [];
+    await session.sendUserMessage("철거해줘", collect(events));
+    expect(events.find((event) => event.name === "set_build_spec")?.ok).toBe(true);
+    expect(session.getActiveSpec()?.assets[0]?.confirmDestroy).toBe(true);
+    expect(events.find((event) => event.name === "clear_region")?.ok).toBe(true);
+    expect(countLower(session.getProposedProject().maps.m1, TILE.WALL)).toBe(0);
+  });
+
+  it("confirmDestroy 문자열 false 는 철거 허가가 아니다", () => {
+    // break: 아무 문자열이나 true 로 읽으면 거부해야 할 철거가 통과한다.
+    const project = mkProject();
+    fillLower(project.maps.m1, 3, 3, 4, 4, TILE.WALL);
+    const refused = errors(project, { mapId: "m1", assets: [{ id: "c", kind: "clear", x: 2, y: 2, w: 6, h: 6, confirmDestroy: "false" }] });
+    expect(refused.join(" ")).toContain("confirmDestroy");
+    expect(normalizeBuildSpec({ mapId: "m1", assets: [{ id: "c", kind: "clear", x: 2, y: 2, w: 6, h: 6, confirmDestroy: "FALSE" }] } as unknown as BuildSpec).assets[0]?.confirmDestroy).toBeUndefined();
   });
 
   it("overExisting 을 선언한 배치 에셋 자리의 기존 구조물은 덮을 수 있다", async () => {

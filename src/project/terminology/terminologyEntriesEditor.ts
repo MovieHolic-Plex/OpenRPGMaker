@@ -36,8 +36,8 @@ export const TERMINOLOGY_ENTRIES_EDITOR = [
     area: "EditorShell",
     partOfSpeech: "noun",
     surface: "editor",
-    note: "Ctrl+K search surface. Never shorten to 팔레트 / palette — that means the tile palette.",
-    acceptedKoAliases: ["명령 · 맵 · 스킬 검색 팔레트"],
+    note: "Ctrl+K search surface. Never shorten to 팔레트 / palette — that means the tile palette. It runs commands and jumps to maps.",
+    deprecatedKoAliases: ["명령 · 맵 · 스킬 검색 팔레트"],
     sources: ["src/editor/panels/helpModal.ts", "src/editor/commandRegistry.ts"],
   },
   {

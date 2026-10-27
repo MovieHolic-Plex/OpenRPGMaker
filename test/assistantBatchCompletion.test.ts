@@ -8,6 +8,12 @@ import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { fixedDeclarer } from "./intentFixture";
 import { approvedReviewResponse } from "./independentReviewFixture";
+import { withRetiredCombinedTownMaps } from "./support/retiredCombinedTownMaps";
+
+// Tests here build the ~63MB blank project (createBlankProject) and drive assistant sessions or editor
+// panels over it, fingerprinting/copying it per session. Under ci-full load (8 workers on 4-core runners)
+// single tests measured 10-50s, past vitest's 15s default, so the budget is raised for this file only.
+vi.setConfig({ testTimeout: 120_000 });
 
 type Call = { name: string; args: Record<string, unknown> };
 type ToolEvent = Extract<SessionEvent, { type: "tool_call" }>;
@@ -29,6 +35,10 @@ afterEach(() => {
 function harness(rounds: Call[][]) {
   const context = { project: createBlankProject() };
   expect(runTool(context, "create_map", { id: "map_other", name: "Other", width: 20, height: 15 }).ok).toBe(true);
+  // These cases measure batch dependency/completion, not the tileset-reference gate. On the current default
+  // (beodeul_city) place_props is refused until the model reads its reference documents
+  // (tilesetReferenceEvidence), so both maps run on the retired combined-town sheet, which has none.
+  withRetiredCombinedTownMaps(context.project);
   vi.stubEnv("VITE_LEGACY_DB_URL", "http://dbserver:8100");
   vi.stubEnv("VITE_LEGACY_DB_ANON_KEY", "test-key");
   vi.stubEnv("VITE_LEGACY_DB_PROJECT_ID", "test-batch");
@@ -121,21 +131,7 @@ describe("audit batch dependency and completion lifecycle", () => {
     expect(h.events.find((event) => event.name === "complete_work_item")?.result.ok).toBe(false);
   });
 
-  it("does not bypass open acceptance when every work item is done", async () => {
-    const mapId = createBlankProject().startMapId;
-    const promised = call("set_work_plan", {
-      ...plan.args,
-      acceptance: [{ id: "map-change", title: "Map change", criteria: [
-        { kind: "targetChange", target: { mapId }, region: { x: 2, y: 2, w: 2, h: 2 } },
-      ] }],
-    });
-    const h = harness([[promised], [title], [complete]]);
-    await h.session.sendUserMessage("제목과 지도 검증", h.collect, undefined, { autonomous: true });
-    expect(h.session.getWorkPlan()?.layers[0].items[0].status).toBe("done");
-    expect(h.session.getAcceptanceSnapshot()?.status).not.toBe("verified");
-    expect(h.events.find((event) => event.name === "complete_work_item")?.result.ok).toBe(false);
-  });
-
+  // Removed it "does not bypass open acceptance when every work item is done": the acceptance ledger was removed on purpose on 2026-09-17 ("assistant: 수용 원장(acceptance ledger)을 만들지 않는다"; getAcceptanceSnapshot is always null).
   it("records malformed optional lint as unsuccessful without inventing a completion-blocking finding", async () => {
     const h = harness([[plan], [title], [call("run_lint", { reachability: false })], [complete]]);
     await h.session.sendUserMessage("제목 설정 후 검증", h.collect, undefined, { autonomous: true });

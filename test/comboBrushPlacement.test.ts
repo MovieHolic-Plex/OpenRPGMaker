@@ -29,6 +29,8 @@ import { createBlankProject, TILE } from "@/project/defaults";
 import { store } from "@/project/store";
 import type { PaletteStamp, PaletteStampCell } from "@/editor/tilePaletteStamp";
 import { resetToastsForTest } from "@/util/toast";
+// 큐레이션 조합 붓은 합본 마을(EasyRPG) 칸 번호로 정의돼 있다 — 2026-10-07 정리 뒤 시작 맵을 그 칩셋으로 되돌려 본다.
+import { startOnRetiredCombinedTown } from "./support/retiredEasyRpgTilesets";
 
 // Only Phaser graphics creation is replaced. Engine, tile mutation, history and
 // editor state stay connected — the point of this file is the real path.
@@ -102,7 +104,7 @@ beforeEach(() => {
   document.body.innerHTML = "";
   vi.clearAllMocks();
   resetToastsForTest();
-  store.replace(createBlankProject());
+  store.replace(startOnRetiredCombinedTown(createBlankProject()));
   resetMapEditHistory();
   editorState.set({
     activePaletteStamp: null,
@@ -250,7 +252,16 @@ describe("combo brush — hover preview shares the placement model", () => {
     const originX = map.width - 2;
 
     const added: { x: number; y: number }[] = [];
-    const layer = { add: (object: unknown) => { void object; }, removeAll: () => {} } as never;
+    // 미리보기는 같은 키면 다시 그리지 않으려 레이어 데이터(getData/setData)와 list 를 읽는다 — Phaser 컨테이너 표면을 갖춘다.
+    const data = new Map<string, unknown>();
+    const list: unknown[] = [];
+    const layer = {
+      add: (object: unknown) => { list.push(object); },
+      removeAll: () => { list.length = 0; },
+      getData: (key: string) => data.get(key),
+      setData: (key: string, value: unknown) => { data.set(key, value); },
+      list,
+    } as never;
     const scene = {
       add: {
         rectangle: (x: number, y: number) => {

@@ -46,7 +46,7 @@ describe("local store assets", () => {
     writeFileSync(join(projectDir, "assets", `${ref.sha256}.png`), PNG_BYTES.slice(0, 3));
     await expect(store.assetBytes(ref.sha256)).rejects.toThrow("손상");
     await store.putAsset(PNG_BYTES, { mime: "image/png", extension: "png" });
-    expect(await store.assetBytes(ref.sha256)).toEqual(PNG_BYTES);
+    expect(new Uint8Array(await store.assetBytes(ref.sha256))).toEqual(PNG_BYTES); // assetBytes 는 Node Buffer 를 돌려준다 — 바이트만 비교한다.
     expect(readdirSync(join(projectDir, "assets")).some(name => name.endsWith(".pending"))).toBe(false);
   });
 
@@ -59,7 +59,7 @@ describe("local store assets", () => {
     expect(again.sha256).toBe(ref.sha256);
     expect(existsSync(join(projectDir, "assets", `${ref.sha256}.png`))).toBe(true);
     expect(store.listAssets()).toHaveLength(1);
-    expect(await store.assetBytes(ref.sha256)).toEqual(PNG_BYTES);
+    expect(new Uint8Array(await store.assetBytes(ref.sha256))).toEqual(PNG_BYTES); // assetBytes 는 Node Buffer 를 돌려준다 — 바이트만 비교한다.
   });
 
   it("separateInlineMedia 가 base64 를 파일로 기고 두 번째 호출은 no-op 이다", async () => {
@@ -71,7 +71,7 @@ describe("local store assets", () => {
     expect(migrated?.dataUrl).toBeUndefined();
     expect(migrated?.ref?.mime).toBe("image/png");
     expect(migrated?.ref?.extension).toBe("png");
-    expect(await store.assetBytes(migrated?.ref?.sha256 ?? "")).toEqual(PNG_BYTES);
+    expect(new Uint8Array(await store.assetBytes(migrated?.ref?.sha256 ?? ""))).toEqual(PNG_BYTES); // assetBytes 는 Node Buffer 를 돌려준다 — 바이트만 비교한다.
     expect(store.loadSnapshot()?.sha256).toBe(first.sha256);
     expect(store.listCommits(5).filter((commit) => commit.summary === MEDIA_COMMIT_SUMMARY)).toHaveLength(1);
 

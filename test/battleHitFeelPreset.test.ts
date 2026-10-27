@@ -5,7 +5,7 @@
  * 히트스톱 진동 · 베기 궤적)을 묶는다. 화면 증거는 output/combat-qa/hitfeel-*(player.html 프로브).
  */
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { renderSystemTab } from "@/editor/panels/databaseSystemView";
+import { renderBattleScreenTab } from "@/editor/panels/databaseBattleScreenTab";
 import { runTool } from "@/editor/tools";
 import { normalizeSystemRecords } from "@/project/databaseRecordModel";
 import { createBlankProject } from "@/project/defaults";
@@ -42,7 +42,8 @@ describe("system.battleHitFeel — 저장 계약", () => {
   });
 });
 
-describe("자료집 시스템 탭 — 타격감 선택", () => {
+// 타격감 선택은 시스템 탭에서 자료집 「전투 화면」 탭의 타격감 카드로 옮겨졌다(databaseBattleScreenTab.ts).
+describe("자료집 전투 화면 탭 — 타격감 선택", () => {
   beforeEach(() => {
     store.replace(createBlankProject());
   });
@@ -53,11 +54,7 @@ describe("자료집 시스템 탭 — 타격감 선택", () => {
   function renderSystem(): HTMLElement {
     const host = document.createElement("div");
     document.body.append(host);
-    const rerender = (): void => {
-      host.replaceChildren();
-      renderSystemTab(host, rerender);
-    };
-    rerender();
+    renderBattleScreenTab(host);
     return host;
   }
 

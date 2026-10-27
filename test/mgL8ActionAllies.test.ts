@@ -24,15 +24,23 @@ function graphicsStub() {
 }
 
 function spriteStub(x: number, y: number) {
-  return {
+  const sprite = {
     x, y, displayWidth: 16, displayHeight: 16, originX: 0.5, originY: 1,
     scaleX: 1, scaleY: 1, alpha: 1,
     texture: { key: "stub" }, frame: { name: 0 },
     setTintFill: vi.fn(), clearTint: vi.fn(), setPosition: vi.fn(), setOrigin: vi.fn(),
     setDisplaySize: vi.fn(), setDepth: vi.fn(), setScale: vi.fn(), destroy: vi.fn(),
-    setAlpha: vi.fn(), setTint: vi.fn(), setVisible: vi.fn(), setFrame: vi.fn(), setFlipX: vi.fn(),
+    setAlpha: vi.fn(), setVisible: vi.fn(), setFrame: vi.fn(), setFlipX: vi.fn(),
   };
+  // Phaser 4 (d7f9e4bb82): hits flash with setTint(...).setTintMode(Phaser.TintModes.FILL) — both chain.
+  const chained = sprite as typeof sprite & { setTint: ReturnType<typeof vi.fn>; setTintMode: ReturnType<typeof vi.fn> };
+  chained.setTint = vi.fn(() => chained);
+  chained.setTintMode = vi.fn(() => chained);
+  return chained;
 }
+
+// The runtime reads the Phaser namespace from the global the bundle installs (phaserRuntimeBundled.ts).
+vi.stubGlobal("Phaser", { TintModes: { MULTIPLY: 0, FILL: 1 } });
 
 const HERO = "hero_a";
 const ALLY = "hero_b";

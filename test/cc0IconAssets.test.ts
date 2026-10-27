@@ -28,7 +28,8 @@ describe("safe CC0 item and equipment icons", () => {
     const allRefs = [...itemRefs, ...equipmentRefs];
 
     expect(allRefs.every((id) => typeof id === "string" && allowedIds.has(id))).toBe(true);
-    expect(project.resourceProfiles.filter((profile) => profile.assetId?.startsWith("cc0-jetrel-"))).toHaveLength(CC0_ICON_ASSETS.length);
+    // 카탈로그에는 cc0-jetrel-* 말고도 직접 그린 oprn-item-* 아이콘이 함께 실린다 — 접두사 대신 카탈로그 id 로 센다.
+    expect(project.resourceProfiles.filter((profile) => profile.assetId !== undefined && allowedIds.has(profile.assetId))).toHaveLength(CC0_ICON_ASSETS.length);
   });
 
   it("ships a broad JRPG item catalog that uses every catalog icon across items and equipment", () => {

@@ -156,6 +156,8 @@ describe("consumed approval reporting (subscribed autonomous apply)", () => {
 
   it("cancellation before any apply preserves no approval to report", async () => {
     const f = priceFixture();
+    // 기본 물약 값은 기본 DB 가 정한다(바뀔 수 있다) — 시작 값 그대로 남는지만 본다.
+    const before = store.getCurrent().database.items.find(i => i.id === "item_potion")?.price;
     try {
       const controller = new AbortController();
       const events: SessionEvent[] = [];
@@ -167,7 +169,8 @@ describe("consumed approval reporting (subscribed autonomous apply)", () => {
       expect(result.appliedCalls ?? []).toEqual([]);
       expect(result.review?.status).not.toBe("approved");
       expect(f.session.isDraftReviewApproved()).toBe(false);
-      expect(store.getCurrent().database.items.find(i => i.id === "item_potion")?.price).toBe(50);
+      expect(before).not.toBe(333);
+      expect(store.getCurrent().database.items.find(i => i.id === "item_potion")?.price).toBe(before);
     } finally { f.done(); }
   }, 60_000);
 

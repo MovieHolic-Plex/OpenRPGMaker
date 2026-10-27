@@ -197,6 +197,14 @@ VITE_BGM_CDN_BASE=https://cheapcdn.sgp1.cdn.digitaloceanspaces.com
 - Credentials (`DO_SPACES_KEY/SECRET/BUCKET/REGION`) are non-`VITE` — they are never inlined into
   the client bundle. Keep them in `.env.local`.
 
+## Desktop app and baked demos (2026-10-27)
+
+The desktop app ships without the pack. Before this, Fallen Star played 3 of its 27 tracks there, Shitamachi 5 of 8 and First Love 6 of 12.
+
+- `bake:demos` (`scripts/content/bake-flagship-demos.mts`) copies every catalog track the baked demos reference into `<out>/assets/cc0/audio/catalog/`. It takes the file from `public/` when it is installed and the SHA-256 matches. Otherwise it downloads that one file from the per-track public CDN (`RELEASE.cdn`) and checks the hash. The demos therefore play offline.
+- Desktop `app://` requests for a catalog file that is not in the app go to `electron/main/bgmOnDemand.ts`. It downloads the file once from the same CDN, checks the size and SHA-256 against `assets/bgm-release-v1.json`, and caches it in `<userData>/bgm-catalog/`. The renderer always uses the local path.
+- Desktop renderer builds set `OPRN_ASSUME_ALL_BGM_INSTALLED=1`, so the editor and the assistant treat all 281 tracks as usable (`desktop-release.yml`, `release-desktop.mjs`).
+
 ## How authors reach the tracks
 
 - **Map properties → BGM tab → 지정 곡.** This used to be a bare resource-id text field; with 281
