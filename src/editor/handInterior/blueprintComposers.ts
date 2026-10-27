@@ -488,11 +488,12 @@ export function composeOfficeLobby(spec: HandInteriorSpec, nuance: SpaceNuance, 
   const tx = m.x0 + 2, ty = m.y0 + 3;
   s.keepRect(m.x0, m.y0 + 1, m.x1, m.y0 + 1);
   if (s.table("mci-t-meeting", tx, ty, tw, 2, true)) {
-    for (let k = 0; k < tw; k++) { s.put("mci-chair-office-s", tx + k, ty - 1); s.put("mci-chair-office-n", tx + k, ty + 2); }
+    // 사무용 의자 그림이 2칸 폭(위로 1칸)이 되었다(R13 #2973) — 칸마다 놓으면 서로 겹쳐 4층이 차므로 2칸 간격으로 놓고, 탁상 물건은 북쪽 줄에만 둔다(남쪽 의자 윗부분이 아랫줄을 덮는다).
+    for (let k = 0; k + 1 < tw; k += 2) { s.put("mci-chair-office-s", tx + k, ty - 1); s.put("mci-chair-office-n", tx + k, ty + 2); }
     s.put("mci-cafe-chair-e", tx - 1, ty); s.put("mci-cafe-chair-e", tx - 1, ty + 1);
     s.put("mci-cafe-chair-w", tx + tw, ty); s.put("mci-cafe-chair-w", tx + tw, ty + 1);
     const g = ["mci-g-laptop", "mci-g-papers", "mci-g-coffee", "mci-g-laptop", "mci-g-papers", "mci-g-coffee", "mci-g-phone"];
-    for (let k = 0; k < tw; k++) s.goods(g[(k + seed) % g.length]!, tx + k, ty + (k % 2));
+    for (let k = 0; k < tw; k++) s.goods(g[(k + seed) % g.length]!, tx + k, ty);
   }
   if (ty + 4 <= m.y1) {
     s.put("lounge-sofa-cream", m.x0 + 1, m.y1);

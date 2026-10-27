@@ -52,8 +52,9 @@ describe("프로젝트 되돌리기 스냅샷의 타일셋 공유", () => {
     const before = store.getCurrent();
     const mapId = before.startMapId;
     const tilesBefore = before.maps[mapId]!.lowerTiles.slice();
+    // "흙" 은 옛 합본 마을 재료 — 정리(0d4f13e7c8) 뒤 기본 타일셋 beodeul_city 의 재료 이름으로 바꾼다.
     const results = applyToolSequenceToStore([
-      { name: "fill_region", args: { mapId, rect: { x: 0, y: 0, w: 4, h: 4 }, material: "흙" } },
+      { name: "fill_region", args: { mapId, rect: { x: 0, y: 0, w: 4, h: 4 }, material: "버들항 모랫길" } },
     ], { continueOnError: true });
     expect(results[0]?.ok).toBe(true);
     expect(store.getCurrent().maps[mapId]!.lowerTiles).not.toEqual(tilesBefore);
@@ -79,7 +80,12 @@ describe("프로젝트 되돌리기 스냅샷의 타일셋 공유", () => {
     recordProjectSnapshot("무엇이든");
     store.update((draft) => { draft.maps[draft.startMapId]!.lowerTiles[0] = 9; });
     expect(undoMapEdit()).toBe(true);
-    expect(store.getCurrent().tilesets[id]).not.toBe(shared);
+    // 되돌리기는 타일셋을 쓰기 시 복제(COW)로 공유한다(mapEditHistory.ts applySnapshotToProject 주석) — 객체 동일성이 아니라
+    // "되돌린 뒤 고쳐도 기록(옛 객체)이 변하지 않는다"는 계약을 확인한다.
+    const oldName = shared!.name;
+    store.update((draft) => { draft.tilesets[id]!.name = oldName + " 바뀜"; });
+    expect(store.getCurrent().tilesets[id]!.name).toBe(oldName + " 바뀜");
+    expect(shared!.name).toBe(oldName);
   });
 });
 

@@ -18,6 +18,7 @@ import { store } from "@/project/store";
 import { blockedFlag, passableFlag } from "@/project/tilesetPassage";
 import type { MapId, PlacementSurfaceCondition, SectionStructureKitDef, TilesetDef } from "@/project/types";
 import { resetToastsForTest } from "@/util/toast";
+import { withRetiredCombinedTownMaps } from "./support/retiredCombinedTownMaps";
 
 const WALL_TILE = 300;
 const FLOOR_TILE = 400;
@@ -47,7 +48,8 @@ function stoveKit(conditions: readonly PlacementSurfaceCondition[]): SectionStru
 }
 
 function seed(conditions: readonly PlacementSurfaceCondition[]): { mapId: MapId; tileset: TilesetDef } {
-  store.replace(createBlankProject());
+  // 합본 마을 번호(300·400·21·51)를 쓰는 시험 — 정리(0d4f13e7c8) 뒤 빈 프로젝트엔 없어 되살린다(#3657 패턴).
+  store.replace(withRetiredCombinedTownMaps(createBlankProject()));
   resetMapEditHistory();
   const mapId = store.getCurrent().startMapId;
   store.update((project) => {

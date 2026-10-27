@@ -3,8 +3,9 @@ import { PLACEMENT_TOOLS } from "@/editor/tools/placementTools";
 import { runTool } from "@/editor/tools/toolRunner";
 import type { ToolDefinition, ToolExecResult } from "@/editor/tools/types";
 import { createBlankProject } from "@/project/defaults";
-import { TILE } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID, TILE } from "@/project/defaults/constants";
 import type { GameEvent, GameMap, Project, TileGroupMetadata } from "@/project/types";
+import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 
 const GROUP_ID = "tree_pair";
 const TREE_TOP = 260;
@@ -56,8 +57,9 @@ function scatterTool(): ToolDefinition {
 }
 
 function createProject(width = 20, height = 20): { readonly project: Project; readonly map: GameMap } {
-  const context = { project: createBlankProject() };
-  const result = runTool(context, "create_map", { id: "map_scatter", name: "배치 테스트", width, height });
+  // 이 시험은 합본 마을 칸 번호(260·290·100~119·390)를 쓴다 — 정리(0d4f13e7c8) 뒤 빈 프로젝트엔 그 정의가 없어 되살려 쓴다(#3657 패턴).
+  const context = { project: withRetiredEasyRpgTilesets(createBlankProject()) };
+  const result = runTool(context, "create_map", { id: "map_scatter", name: "배치 테스트", width, height, tilesetId: COMBINED_TOWN_TILESET_ID });
   expect(result.ok, result.summary).toBe(true);
   const map = context.project.maps.map_scatter;
   addTreeGroup(context.project, map.tilesetId);

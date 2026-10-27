@@ -6,7 +6,8 @@ import { saveSelectionAsStructureKit } from "@/editor/harnessSuggestion/structur
 import { renderSelectionActionChips } from "@/editor/selectionActionChips";
 import type { TileSelection } from "@/editor/editorState";
 import { store } from "@/project/store";
-import { TILE } from "@/project/defaults";
+import { TILE, createBlankProject } from "@/project/defaults";
+import { withRetiredCombinedTownMaps } from "./support/retiredCombinedTownMaps";
 import type { GameMap, StructureKitDef } from "@/project/types";
 import { findByTestId, installFakeDom, type FakeElement } from "./fakeDom";
 
@@ -79,6 +80,8 @@ describe("structureKitFromMapRegion — 맵 구획을 section 킷으로 추출(�
 describe("saveSelectionAsStructureKit — 현재 맵 타일셋에만 등록", () => {
   let restoreKits: () => void;
   beforeEach(() => {
+    // 합본 마을·EasyRPG 실내 칩셋을 겨냥한다 — 정리(0d4f13e7c8) 뒤 빈 프로젝트엔 없으니 되살린다(#3657 패턴).
+    store.replace(withRetiredCombinedTownMaps(createBlankProject()));
     const before = new Map<string, StructureKitDef[] | undefined>(
       Object.values(store.getCurrent().tilesets).map((tileset) => [
         tileset.id,

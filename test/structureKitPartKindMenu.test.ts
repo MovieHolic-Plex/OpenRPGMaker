@@ -10,6 +10,8 @@ import { openStructureKitEditor } from "@/editor/panels/structureKitEditorDialog
 import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import { store } from "@/project/store";
 import type { SectionStructureKitDef } from "@/project/types";
+import { createBlankProject } from "@/project/defaults";
+import { withRetiredCombinedTownMaps } from "./support/retiredCombinedTownMaps";
 import { FakeElement, installFakeDom } from "./fakeDom";
 
 let restoreDom: (() => void) | undefined;
@@ -36,6 +38,15 @@ function installFakeWindow(): () => void {
 beforeEach(() => {
   restoreDom = installFakeDom();
   restoreWindow = installFakeWindow();
+  // 이 시험은 합본 마을(EasyRPG) 칩셋을 겨냥한다 — 정리(0d4f13e7c8) 뒤 빈 프로젝트엔 없으니 정의와 시작 맵을 되살린다(#3657 패턴).
+  // 되살린 정의엔 로드 정규화가 심는 킷(실내 가구 카탈로그·버들항 내장 킷)이 있으므로 등록 킷 0개 상태로 시작한다.
+  store.replace(withRetiredCombinedTownMaps(createBlankProject()));
+  store.update((project) => {
+    for (const tileset of Object.values(project.tilesets)) {
+      delete tileset.structureKits;
+      delete tileset.scratchConceptBundles;
+    }
+  });
 });
 
 afterEach(() => {

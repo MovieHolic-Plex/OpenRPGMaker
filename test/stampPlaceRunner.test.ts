@@ -5,6 +5,7 @@ import type { AiConfig, ChatRequest, ChatResult } from "@/ai/llmClient";
 import type { ToolResult } from "@/editor/tools/types";
 import { runStampPlaceWith, type StampChatFn, type StampRunDeps } from "@/editor/stampPlaceRunner";
 import { createBlankProject } from "@/project/defaults";
+import { withRetiredCombinedTownMaps } from "./support/retiredCombinedTownMaps";
 
 const CONFIG = { authMode: "apiKey", baseUrl: "x", model: "m", liteModel: "lite", apiKey: "k", maxTokens: 512, maxToolCalls: 4 } as AiConfig;
 
@@ -15,7 +16,8 @@ function reply(content: string): ChatResult {
 type Call = { name: string; args: Record<string, unknown> };
 
 const VISUAL: Readonly<Record<string, true>> = { fill_region: true, place_props: true, paint_road: true, paint_tiles: true, tile_erase: true, build_wall: true, place_door: true, stamp_tileset_object: true, place_terrain_house: true, build_jp_city_building: true };
-const BASE_PROJECT = createBlankProject();
+// 우물·집·상자 배치 사실은 합본 마을 칸을 가정한다 — 정리(0d4f13e7c8) 뒤 기본 beodeul_city 라서 되살린다(#3657 패턴).
+const BASE_PROJECT = withRetiredCombinedTownMaps(createBlankProject());
 
 function harness(options: {
   readonly replies?: readonly string[];

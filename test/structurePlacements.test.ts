@@ -33,6 +33,7 @@ import {
 } from "@/project/structurePlacements";
 import { store } from "@/project/store";
 import type { GameMap, MapId, Project, SectionStructureKitDef, TilesetDef } from "@/project/types";
+import { withRetiredCombinedTownMaps } from "./support/retiredCombinedTownMaps";
 
 /** 3×2 오두막 단면 — 등록 킷(내 스탬프)과 같은 shape. */
 const HUT_KIT: SectionStructureKitDef = {
@@ -54,7 +55,8 @@ function tilesetIdOf(project: Project, mapId: MapId): string {
 
 /** 등록 킷 하나를 가진 스토어 프로젝트. 사람 스탬프 경로(store 기반)용. */
 function seedStoreWithKit(kit: SectionStructureKitDef = HUT_KIT): { mapId: MapId; tilesetId: string } {
-  store.replace(createBlankProject());
+  // 킷 타일(19·49·116)은 합본 마을 번호 — 정리(0d4f13e7c8) 뒤 빈 프로젝트(버들항)에선 49 가 다시 찍히지 않아 되살린다(#3657 패턴).
+  store.replace(withRetiredCombinedTownMaps(createBlankProject()));
   resetMapEditHistory();
   const mapId = store.getCurrent().startMapId;
   const tilesetId = tilesetIdOf(store.getCurrent(), mapId);
@@ -108,7 +110,7 @@ function createPaintEngine(mapId: MapId, tileset: TilesetDef): {
 }
 
 beforeEach(() => {
-  store.replace(createBlankProject());
+  store.replace(withRetiredCombinedTownMaps(createBlankProject()));
   resetMapEditHistory();
 });
 
