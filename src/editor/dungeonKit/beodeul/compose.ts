@@ -350,10 +350,14 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
     if (fl.tile !== undefined && id === pick(fl.base)) { lower[idx(x, y)] = fl.tile; continue; }
     // 판석 밭: 칸 위치로 감아 깐다. 북쪽이 걷지 못하는 칸(벽 앞면·천장)이면 벽 밑 그늘 줄의 같은 열.
     if (fl.field && id === fl.field && hasKit(fl.field) && !kit(fl.field).ai?.tags?.includes("섞음")) {
-      const rows = kit(fl.field).rows, w = rows[0]!.tiles.length;
+      const rows = kit(fl.field).rows, w = rows[0]!.tiles.length, h = rows.length;
+      // 방마다 밭을 다른 자리에서 시작한다(밭 한 장의 112/80px 반복이 넓은 방에서 벽지처럼 줄지어 보였다 — 2026-10-27 og r9 VQA).
+      // 통로·방 밖 칸은 어긋남 0. 방 경계에서 판이 끊기지만 방 둘레는 대개 벽·문목이라 넓게 드러나지 않는다.
+      const ox = r ? Math.floor(hash01(r.x, r.y, seed * 7 + 5) * w) : 0, oy = r ? Math.floor(hash01(r.y, r.x, seed * 7 + 9) * h) : 0;
+      const fx = (x + ox) % w, fy = (y + oy) % h;
       const shadeId = `${fl.field}-wall-shade`;
-      if (y > 0 && !isWalk(x, y - 1) && !bridge[idx(x, y - 1)] && hasKit(shadeId)) { lower[idx(x, y)] = kit(shadeId).rows[0]!.tiles[x % w]!; continue; }
-      lower[idx(x, y)] = rows[y % rows.length]!.tiles[x % w]!;
+      if (y > 0 && !isWalk(x, y - 1) && !bridge[idx(x, y - 1)] && hasKit(shadeId)) { lower[idx(x, y)] = kit(shadeId).rows[0]!.tiles[fx]!; continue; }
+      lower[idx(x, y)] = rows[fy]!.tiles[fx]!;
       continue;
     }
     // 섞음: 바닥 칸을 키트 무늬 순서 대신 해시로 고른다 — 키트 무늬 그대로 깔면 2~3칸 주기 반복이 넓은 방에서 격자로 드러났다(2026-10-25 floor VQA r4).
