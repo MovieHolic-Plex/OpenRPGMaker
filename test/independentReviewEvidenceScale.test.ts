@@ -147,7 +147,9 @@ describe("review evidence contexts", () => {
     const before = startOnRetiredCombinedTown(createBlankProject());
     declareFlagSpace(before, 400);
     const target = before.startMapId;
-    before.maps[target] = { ...createBlankMap(target, 512, 512, RETIRED_COMBINED_TOWN_TILESET_ID), id: target };
+    // 640x640 (was 512x512): the overflow premise sat at 3.88M of the 4M body ceiling after the default
+    // database grew, so the large unchanged target no longer reliably overflowed on its own.
+    before.maps[target] = { ...createBlankMap(target, 640, 640, RETIRED_COMBINED_TOWN_TILESET_ID), id: target };
     before.maps.map_small = { ...createBlankMap("map_small", 8, 8, RETIRED_COMBINED_TOWN_TILESET_ID), id: "map_small" };
     const after = structuredClone(before);
     after.maps.map_small = { ...after.maps.map_small!, name: "Renamed small" };
@@ -266,7 +268,8 @@ describe("review evidence fit ladder", () => {
 
   it("never omits a reference that differs between the two sides", () => {
     const { before, after, target } = scene();
-    const tilesetId = Object.keys(after.tilesets)[0]!;
+    // The sheet the reviewed map actually references; Object.keys(...)[0] is now an unreferenced ~7MB bundled sheet.
+    const tilesetId = after.maps[target]!.tilesetId;
     after.tilesets[tilesetId] = { ...after.tilesets[tilesetId]!, name: "Retitled tileset" };
     const [actor] = after.database.actors;
     expect(actor).toBeDefined();
