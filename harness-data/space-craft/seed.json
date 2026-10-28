@@ -10809,6 +10809,33 @@
    ],
    "verify": "결정 그림의 위 칸을 옆에서 보고 눌러도 「기록하시겠습니까?」가 뜬다(출하 플레이어)",
    "suiteCategory": "fs2-savepoint-whole-object"
+  },
+  {
+   "category": "game",
+   "kind": "logic",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "id": "fs2-lift-resting-glow",
+   "prompt": "우물 밑 승강 발판이 멈춰 있을 땐 안 보여서 어디 서야 할지 몰라. 타는 칸이 은은히 빛나게 해 줘.",
+   "requires": [
+    "place_lift — 멈춘 탑승 칸 이벤트에 glow·nearSparkle"
+   ],
+   "verify": "우물 밑 지도에서 발판 칸이 푸르게 빛나고, 그 위에서 조사하면 천문대로 올라간다(출하 플레이어)",
+   "suiteCategory": "fs2-lift-resting-glow"
+  },
+  {
+   "category": "game",
+   "kind": "logic",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "id": "fs2-patrol-pair-troop",
+   "prompt": "밤 도시 통금 순찰이 셋씩 나와서 이 레벨로는 못 이겨. 순찰을 병사+창병 둘로 줄여 줘.",
+   "requires": [
+    "upsert_troop 둘짜리 무리",
+    "place_field_enemy troopId 교체"
+   ],
+   "verify": "밤 광장 순찰과 부딪히면 적이 둘만 나온다(출하 플레이어)",
+   "suiteCategory": "fs2-patrol-pair-troop"
   }
  ],
  "gates": {

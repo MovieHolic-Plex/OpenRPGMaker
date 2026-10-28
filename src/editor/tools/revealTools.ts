@@ -260,6 +260,9 @@ const placeLift: ToolDefinition = {
           conditions: switchId ? [{ kind: "switch", switchId, value: true }] as EventPage["conditions"] : [],
           graphic: { transparent: true } as EventPage["graphic"],
           trigger, priority: "below", overlapForbidden: false, animationType: "fixedGraphic", movement: FIXED_MOVEMENT,
+          // 쉬는 발판은 그림이 없다(타는 순간 «Lift Ride» 가 그린다) — 발판 가운데가 은은히 빛나고 다가가면 반짝여 찾을 수 있게
+          // (독립 판정 2026-10-28: 우물 밑 승강 장치를 못 보고 「막다른 방」이라 적었다).
+          ...(dx === 0 && dy === 0 ? { glow: { radius: Math.max(1, Math.ceil(Math.max(width, depth) / 2)), color: "#9fd0ff", offsetX: (width - 1) / 2, offsetY: (depth - 1) / 2 }, nearSparkle: { radius: 2 } } : {}),
           commands: JSON.parse(JSON.stringify(rideCmds)) as Command[],
         }],
       } as GameEvent;

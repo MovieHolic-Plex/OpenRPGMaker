@@ -478,6 +478,7 @@ function hubNight(project: Project, exec: Exec, hubId: string): void {
 // ════════════════════════════════════════════════════════════════════
 
 export const FS2_PATROL_TROOP = "troop_fs2_curfew_patrol";
+const FS2_PATROL_PAIR = "troop_fs2_curfew_pair";
 const SW_SPOON = "sw_fs2_toby_spoon";
 const SW_CARRIAGE = "sw_fs2_heard_carriage";
 const SW_MIRE = "sw_fs2_mire_well";
@@ -533,7 +534,8 @@ function lampQuestDoors(project: Project, hubId: string): void {
     const lamp = `${SW_Q4_LAMP}${i}`;
     door.pages = [
       ...door.pages!,
-      { ...base, id: `${door.id}_q4_hang`, name: "등 걸기", conditions: [sw(SW_Q4_TAKEN)], commands: [
+      // 등을 맡은 뒤에는 걸 문 셋이 은은히 빛난다(독립 판정: 어느 문에 거는지 몰라 잠긴 문마다 눌렀다).
+      { ...base, id: `${door.id}_q4_hang`, name: "등 걸기", conditions: [sw(SW_Q4_TAKEN)], glow: { radius: 1, color: "#ffc070" }, nearSparkle: { radius: 2 }, commands: [
         narrate("문고리에 꺼진 등을 걸었다."),
         item(FS2_UNLIT_LAMP, -1),
         setSw(lamp),
@@ -558,12 +560,14 @@ function curfewHub(project: Project, exec: Exec, hubId: string): void {
   exec(project, "upsert_troop", { troop: {
     id: FS2_PATROL_TROOP, name: "통금 순찰대", enemyIds: ["enemy_fs2_night_soldier", "enemy_fs2_night_spearman", "enemy_fs2_night_soldier"],
   } });
+  // 광장 순찰은 둘씩 — 레벨 8 파티에게 셋(740 HP)은 「벽」이었다(독립 전체 판정: 광장 전투 10번에 0승). 요새·숲 어귀는 셋 그대로.
+  exec(project, "upsert_troop", { troop: { id: FS2_PATROL_PAIR, name: "통금 순찰 둘", enemyIds: ["enemy_fs2_night_soldier", "enemy_fs2_night_spearman"] } });
   // 점령된 밤의 광장은 「필드」다 — 마을 판정이면 보이는 적을 거절한다(set_map_properties mapRole).
   exec(project, "set_map_properties", { mapId: FS2_HUB_NIGHT_ID, mapRole: "field" });
   const knight = hubChip(project, hubId, "ev_fs_knight");
   PATROLS.forEach((p, i) => {
     exec(project, "place_field_enemy", {
-      mapId: FS2_HUB_NIGHT_ID, x: p.at.x, y: p.at.y, troopId: FS2_PATROL_TROOP, behavior: "chase",
+      mapId: FS2_HUB_NIGHT_ID, x: p.at.x, y: p.at.y, troopId: FS2_PATROL_PAIR, behavior: "chase",
       patrol: { length: p.length, axis: p.axis }, sightRange: 5, vision: "cone", pace: "normal", approachStyle: "dash",
       graphic: knight, alert: "exclamation", respawnSec: 45, clearSwitchId: `sw_fs2_patrol_${i}_down`,
       // 지면 광장 입구(사다리 뚜껑 문)에서 다시 — 타이틀로 내쫓지 않는다(독립 판정: 통금 순찰에 지고 1막부터 다시).
@@ -719,6 +723,8 @@ function observatoryNight(project: Project, exec: Exec, obsId: string): void {
       page(`${id}_p`, "우물", [], [narrate("깊은 우물이다. 바닥이 보이지 않는다.")]),
       page(`${id}_down`, "사다리", [sw(SW_MIRE)], [
         narrate("우물 안쪽 벽에 쇠 사다리가 박혀 있다.\n미레 아주머니 말대로다."),
+        // 독립 판정(전체 판정): 우물 밑 방을 막다른 곳으로 읽었다 — 승강 장치 발판을 짚는다(발판은 빛난다, place_lift).
+        say(ELENA, "밑에 그 승강 장치가 있을 거야. 지하에서 탔던 거.\n빛나는 발판에 올라서서 조사해 보자."),
         se("cc0-se-osx-wooded-box-open"),
         transfer(FS2_SHAFT_ID, SHAFT.arrive, "down"),
       ]),
@@ -2313,7 +2319,7 @@ function detection(project: Project, exec: Exec): void {
     const troop = JSON.stringify(pages).match(/"troopId":"([^"]+)"/)?.[1];
     if (troop === FS2_CROSSBOW_TROOP) continue;
     if (e.id.startsWith("ev_fs2_b4_knight_")) continue;   // 개구멍 추격 기사는 경보로 나타나 사방을 본다(놓을 때 값 그대로)   // 쇠뇌병은 놓을 때 준 보초 값(좁은 부채꼴·긴 시야)을 그대로 쓴다
-    (troop === FS2_PATROL_TROOP ? patrolIds : beastIds).push(e.id);
+    (troop === FS2_PATROL_TROOP || troop === FS2_PATROL_PAIR ? patrolIds : beastIds).push(e.id);
   }
   if (patrolIds.length) exec(project, "set_field_detection", { mapIds: act2Maps, eventIds: patrolIds, sightRange: 8, coneDegrees: 140, alertMs: 250, searchMs: 7000, giveUpRange: 16, chaseStepMs: 200 });
   if (beastIds.length) exec(project, "set_field_detection", { mapIds: act2Maps, eventIds: beastIds, sightRange: 8, coneDegrees: 110, alertMs: 350, chaseStepMs: 160 });
