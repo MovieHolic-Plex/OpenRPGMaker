@@ -787,6 +787,7 @@ export const interiorBuilder: PlaceBuilder = {
       const hits = (rs: typeof own) => (rs ? words.filter((w) => findPart(rs, w)).length : -1);
       if (base && words.length && hits(base) > hits(own)) { notes.push(`주인공 물건(${words.join("·")})이 ${tilesetId} 에 ${Math.max(0, hits(own))}개, 기본 판타지 실내에 ${hits(base)}개 있어 기본 판타지 실내로 지었다`); tilesetId = HAND_INTERIOR_TILESET_ID; }
     }
+    if (/murim|wuxia|무협|무림|강호|객잔|문파|협객/iu.test(`${spec.name} ${spec.style ?? ""} ${spec.theme ?? ""}`)) missing.push(`${spec.name} — 무협 실내(무림 전용 칩셋 murim_wuxia 가 번들에 없어 ${tilesetId} 로 지었다)`);
     const roomSpec = roomSpecOf(run.ctx.project.tilesets[tilesetId]);
     if (!roomSpec) return { ok: false, mapIds: [], summary: `실내 칩셋 ${tilesetId} 이 이 프로젝트에 없다`, warnings: [], missingArt: [spec.name], calls: run.calls };
     // hints.newMap: make_place 가 「이번에 지은 다른 장소」를 덮지 않게 새 맵을 요구했다(2026-10-25 G27: 지하 예배당을 지은 맵에 저택을 다시 지어 예배당이 사라졌다).

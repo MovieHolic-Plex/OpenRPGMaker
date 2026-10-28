@@ -60,6 +60,8 @@ export function villageArgs(spec: PlaceSpec): { args: Record<string, unknown>; m
   if (has(text, /harbou?r|항구|포구/) && args.theme === "coast") args.harbour = true;
   const count = spec.size === "small" ? 3 : spec.size === "large" ? 5 : spec.size === "medium" ? 4 : undefined;
   if (count) args.houseCount = count;
+  // 무협(중국 무림)은 전용 칩셋이 아직 번들에 없다(murim-chipset 하네스는 후보 단계) — 지어낸 대체 대신 버들항으로 지었다고 알린다.
+  if (has(text, /murim|wuxia|무협|무림|강호|객잔|문파|협객/)) missing.push("무협 마을(무림 전용 칩셋 murim_wuxia 가 번들에 없어 버들항 판타지 마을로 지었다)");
   if (has(text, /church|교회|chapel|성당/)) missing.push("교회(새 마을은 교회를 짓지 못함 — 고정 예제 작은 마을에만 있음)");
   if (has(text, /inn\b|여관|tavern|주점/) && args.form !== "plaza") warnings.push("여관은 광장 마을의 북쪽 앵커로만 앉는다(form plaza 아님 — 앵커 건물이 따로 놓임)");
   for (const [key, value] of Object.entries(spec.hints ?? {})) {

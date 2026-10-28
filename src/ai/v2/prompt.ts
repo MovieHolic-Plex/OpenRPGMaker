@@ -5,6 +5,7 @@ import { VILLAGE_CARD } from "./builders/village";
 import { DUNGEON_CARD } from "./builders/dungeon";
 import { JP_CITY_CARD } from "./builders/jpCity";
 import { MODERN_KR_CARD } from "./builders/modernCity";
+import { JOSEON_CARD, JOSEON_WORDS } from "./builders/joseon";
 import { PEOPLE_CARD } from "./people";
 import { EVENT_CARD } from "./events";
 import { DRAW_OBJECT_CARD } from "./drawObject";
@@ -47,7 +48,8 @@ export function conditionalCards(project: Project, currentMapId?: string, task =
   const tileset = project.tilesets[project.maps[currentMapId ?? project.startMapId]?.tilesetId ?? ""];
   const monster = MONSTER_WORDS.test(task) || /^oprn-monster/u.test(tileset?.family ?? "");
   const contract = project.gameDesignBrief?.implementation?.harnessId === "romance-scene";
-  return [...(monster ? [MONSTER_TOWN_CARD] : []), ...(contract || SCENE_WORDS.test(task) ? [SCENE_CARD] : []), ...(wantsGameTools(task) ? [GAME_CARD, ...[fallenTierCard(task)].filter(Boolean)] : []), ...(wantsTerrainTools(task) ? [TERRAIN_CARD] : []), ...(wantsStoreTools(task) ? [storeTierCard(task)] : []), ...(makeGameOn() && wantsMakeGame(task) ? [MAKE_GAME_CARD] : [])];
+  const joseon = JOSEON_WORDS.test(task) || tileset?.id === "joseon_baram";
+  return [...(monster ? [MONSTER_TOWN_CARD] : []), ...(joseon ? [JOSEON_CARD] : []), ...(contract || SCENE_WORDS.test(task) ? [SCENE_CARD] : []), ...(wantsGameTools(task) ? [GAME_CARD, ...[fallenTierCard(task)].filter(Boolean)] : []), ...(wantsTerrainTools(task) ? [TERRAIN_CARD] : []), ...(wantsStoreTools(task) ? [storeTierCard(task)] : []), ...(makeGameOn() && wantsMakeGame(task) ? [MAKE_GAME_CARD] : [])];
 }
 
 export function buildV2SystemPrompt(project: Project, currentMapId?: string, task?: string): string[] {
