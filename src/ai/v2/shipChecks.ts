@@ -185,6 +185,41 @@ export function endingClosureProblems(project: Project): ShipBlocker[] {
   return out;
 }
 
+/** 이벤트·공통 이벤트 명령이 쓰는(조건이 아닌 자리에 나오는) 스위치·변수 id. 조건(conditions·condition) 안은 읽기라 뺀다. */
+export function writtenStateIds(project: Project): { switches: Set<string>; variables: Set<string> } {
+  const switches = new Set<string>(Object.entries(project.session?.switches ?? {}).filter(([, v]) => v).map(([k]) => k));
+  const variables = new Set<string>(Object.keys(project.session?.variables ?? {}));
+  const visit = (node: unknown, depth = 0): void => {
+    if (depth > 40 || !node || typeof node !== "object") return;
+    if (Array.isArray(node)) { for (const item of node) visit(item, depth + 1); return; }
+    const o = node as Obj;
+    if (typeof o.switchId === "string" && o.value !== false) switches.add(o.switchId);
+    if (typeof o.variableId === "string") variables.add(o.variableId);
+    for (const [key, value] of Object.entries(o)) if (key !== "conditions" && key !== "condition" && value && typeof value === "object") visit(value, depth + 1);
+  };
+  for (const map of Object.values(project.maps)) for (const ev of map.events ?? []) for (const page of ((ev as unknown as Obj).pages as Obj[] | undefined) ?? []) visit(page.commands);
+  for (const ce of (project.commonEvents ?? []) as unknown as Obj[]) visit(ce.commands);
+  return { switches, variables };
+}
+
+/**
+ * 엔딩 id 로 부르는 엔딩의 조건이 아무도 켜지 않는 스위치·변수를 기다린다(2026-10-29 vm1 flash 방탈출: 「탈출 문」이 triggerEnding 을 부르는데 엔딩 조건
+ * switch_escape_success 를 켜는 곳이 없어 엔딩이 나지 않았다 — 자동 플레이 «페이지 2 대신 다른 페이지»). 친밀도·회차 조건은 보지 않는다.
+ */
+export function endingConditionsUnset(project: Project): ShipBlocker[] {
+  const written = writtenStateIds(project);
+  // 엔딩 id 를 집어 부르는 명령이 있는 엔딩만 — id 없이 부르면 조건으로 엔딩을 고르므로 조건이 곧 갈래다.
+  const targeted = new Set(allCommands(project).filter((r) => r.cmd.kind === "triggerEnding" && typeof r.cmd.endingId === "string").map((r) => String(r.cmd.endingId)));
+  const out: ShipBlocker[] = [];
+  for (const e of (project.endings ?? []).filter((ending) => targeted.has(ending.id))) {
+    const dead = (e.conditions ?? []).filter((c) => (c.kind === "switch" && c.value !== false && !written.switches.has(c.switchId)) || (c.kind === "variable" && !written.variables.has(c.variableId)));
+    if (!dead.length) continue;
+    const ids = dead.map((c) => c.kind === "switch" ? c.switchId : (c as { variableId: string }).variableId);
+    out.push({ id: "ending-condition-unset", message: `엔딩 「${e.name}」의 조건 ${ids.join("·")} 을 켜는 이벤트가 없어 엔딩을 부르는 명령이 돌아도 엔딩이 나지 않는다 — define_ending 의 conditions 에서 빼거나(엔딩을 부르는 이벤트가 곧 관문이다) 그 이벤트에서 그 스위치를 켠다.`, evidence: `${e.id}: ${ids.join(",")}` });
+  }
+  return out;
+}
+
 /** 제목이 퍼즐 답을 말한다(2026-10-25 공포 저택 J60: 「10시 24분의 저택」 = 금고 암호 1024). */
 export function titleSpoilers(project: Project): ShipBlocker[] {
   const title = String(((project.system as unknown as Obj).titleScreen as Obj | undefined)?.title ?? project.meta.title ?? "");
@@ -462,7 +497,7 @@ export function shipBlockers(project: Project, task: string): ShipBlocker[] {
     message: `전투가 있는데(${sites.slice(0, 3).join(", ")}${sites.length > 3 ? ` 외 ${sites.length - 3}곳` : ""}) 여관·회복약·회복 기술·상점 회복약이 하나도 없어 깎인 HP 가 돌아오지 않는다 — build_blueprint_path 를 다시 부르면 시작 맵에 회복의 샘(전원 회복·저장)과 시작 회복약 3개를 넣고 목표 줄이 샘 자리를 가리킨다. 직접 고치려면 place_savepoint{mapId:시작 맵, heal:true} 와 set_session_start{inventory:{item_potion:3}}.`,
     evidence: `battleSites=${sites.length} healingSources=0`,
   }] : [];
-  return [...blueprint, ...noHealing, ...hidden, ...unlit, ...invisible, ...offArt, ...repeats, ...tints, ...objectives, ...romance, ...editorDefaultsLeft(project), ...endingClosureProblems(project), ...openingWithoutPlace(project), ...offPremiseArt(project, task), ...defaultPlaceLeaks(project, task), ...titleMismatch(project, task), ...assemblyTimeMismatches(project).map((m): ShipBlocker => ({ id: "assembly-time-mismatch", message: m.message, evidence: m.evidence })), ...requestedFeatureGaps(project, task), ...chaserWithoutHiding(project), ...unreachable, ...spoilers];
+  return [...blueprint, ...noHealing, ...hidden, ...unlit, ...invisible, ...offArt, ...repeats, ...tints, ...objectives, ...romance, ...editorDefaultsLeft(project), ...endingClosureProblems(project), ...endingConditionsUnset(project), ...openingWithoutPlace(project), ...offPremiseArt(project, task), ...defaultPlaceLeaks(project, task), ...titleMismatch(project, task), ...assemblyTimeMismatches(project).map((m): ShipBlocker => ({ id: "assembly-time-mismatch", message: m.message, evidence: m.evidence })), ...requestedFeatureGaps(project, task), ...chaserWithoutHiding(project), ...unreachable, ...spoilers];
 }
 
 /** 게임이 «아직 안 지어졌다»는 신호 — 뼈대 자리표시만 남았거나 엔딩이 없다(편집기 기본 HUD·창 같은 마감 항목은 여기서 보지 않는다). */

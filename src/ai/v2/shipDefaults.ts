@@ -18,8 +18,8 @@ import { createBlankProject } from "@/project/defaults";
 import { blueprintPlaceName, pickTitleArtForStory, blueprintPremiseText, blueprintStoryText } from "@/project/blueprintAssembly";
 import { sharedFaceForCharset } from "@/project/sharedCharacterFaceResolver";
 import type { Project } from "@/project/types";
-import { defaultPlaceLeaks, editorDefaultsLeft, endingClosureProblems } from "./shipChecks";
-import { doorCellBlocked, offArtEntrances } from "./discoverability";
+import { defaultPlaceLeaks, editorDefaultsLeft, endingClosureProblems, endingConditionsUnset, writtenStateIds } from "./shipChecks";
+import { doorCellBlocked, offArtEntrances, planObjective, staleMilestoneTargets } from "./discoverability";
 import { normalizeGameOverSettings } from "@/project/cinematicSettings";
 
 type Obj = Record<string, unknown>;
@@ -39,6 +39,8 @@ export function applyShipDefaults(project: Project, task = project.gameBlueprint
   if (left.has("window-look")) applied.push(...fillWindowLook(project));
   if (left.has("game-over")) applied.push(...fillGameOver(project));
   if (offArtEntrances(project).length) applied.push(...moveEntrancesOntoArt(project));
+  if (staleMilestoneTargets(project).length) applied.push(...fillStaleObjectives(project));
+  if (endingConditionsUnset(project).length) applied.push(...dropDeadEndingConditions(project));
   if (endingClosureProblems(project).length) applied.push(...fillEndingClosure(project));
   // 기본 지명 걷어내기는 엔딩 글을 채운 뒤에 — 채운 글(청사진 느낌 칸)에도 그 지명이 들 수 있다.
   applied.push(...removeDefaultPlaceWords(project, task));
@@ -317,6 +319,50 @@ function moveEntrancesOntoArt(project: Project): string[] {
     event.y = entry.door.y;
     if (blocked) for (const page of event.pages ?? []) { page.priority = "same"; page.overlapForbidden = true; }
     out.push(`입구 「${entry.name}」(${map.name || map.id}) (${entry.x},${entry.y}) → 그림 칸 (${entry.door.x},${entry.door.y})${blocked ? " · 부딪혀 열림" : ""}`);
+  }
+  return out;
+}
+
+/**
+ * 이야기를 한 단계 넘기면서 다음 목표를 안 바꾸는 이정표 이벤트(objectiveGaps)에 다음 목표를 건다 — 청사진 다음 단계 이벤트가 있으면 그것,
+ * 없으면 이 이벤트가 켠 스위치·준 아이템을 읽는 첫 이벤트를 「찾아가자」로. 거는 자리·「어디」 힌트는 set_objective 와 같은 planObjective.
+ * 다음 대상을 모르면(엔딩 정의만 읽는다) 건너뛴다.
+ */
+function fillStaleObjectives(project: Project): string[] {
+  const out: string[] = [];
+  const steps = project.gameBlueprint?.steps ?? [];
+  const object = (word: string): string => `${word}${hasFinal(word) ? "을" : "를"}`;
+  for (const { event, readers } of staleMilestoneTargets(project)) {
+    const k = steps.findIndex((step) => step.event === event.eventId || step.event === event.name);
+    const nextStep = k >= 0 ? steps[k + 1] : undefined;
+    const stepTarget = nextStep ? Object.values(project.maps).flatMap((m) => (m.events ?? []).filter((e) => e.id === nextStep.event || e.name === nextStep.event).map((e) => String(e.name ?? e.id))).at(0) : undefined;
+    const target = stepTarget ?? readers.map((r) => r.name).find((n) => n && !/^ev_/u.test(n));
+    if (!target) continue;
+    const plan = planObjective(project, { text: `${object(`「${target}」`)} 찾아가자`, eventId: event.eventId, mapId: event.mapId });
+    if (!plan.ok) continue;
+    for (const { mapId, event: next } of plan.events) {
+      const map = project.maps[mapId];
+      if (!map) continue;
+      map.events = map.events.map((e) => e.id === next.id ? next as unknown as typeof e : e);
+    }
+    out.push(`다음 목표: ${event.name} 뒤 → 「${target}」`);
+  }
+  return out;
+}
+
+/**
+ * 엔딩 조건 중 아무 이벤트도 켜지 않는 스위치·변수(endingConditionsUnset)를 뺀다 — 엔딩을 부르는 이벤트가 곧 관문이다.
+ * 켜는 곳이 있는 조건·친밀도·회차 조건은 그대로 둔다.
+ */
+function dropDeadEndingConditions(project: Project): string[] {
+  const written = writtenStateIds(project);
+  const targeted = new Set(endingConditionsUnset(project).map((b) => b.evidence.split(":")[0]!));
+  const out: string[] = [];
+  for (const ending of (project.endings ?? []).filter((e) => targeted.has(e.id))) {
+    const keep = (ending.conditions ?? []).filter((c) => !((c.kind === "switch" && c.value !== false && !written.switches.has(c.switchId)) || (c.kind === "variable" && !written.variables.has(c.variableId))));
+    if (keep.length === (ending.conditions ?? []).length) continue;
+    out.push(`엔딩 「${ending.name}」 조건 ${(ending.conditions ?? []).length - keep.length}개 뺌(켜는 이벤트 없음)`);
+    ending.conditions = keep;
   }
   return out;
 }

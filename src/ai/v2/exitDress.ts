@@ -259,6 +259,10 @@ export function dressInteriorExits(run: BuildRun, mapId: string): ExitDressResul
   const door = events.find((e) => isDoorName(String((e as { name?: string }).name ?? "")) && !hasTransfer(e.pages ?? e.commands))
     ?? events.find((e) => endsGame(e) && !visible(e) && !hasTransfer(e.pages ?? e.commands) && (escapeGame || lockish(e)));
   const tileLabel = (t: number) => String(((project0.tilesets[map.tilesetId]?.tileMeta ?? []) as unknown as ({ label?: string } | undefined)[])[t]?.label ?? "");
+  const start = project0.startMapId === mapId ? project0.startPos : undefined;
+  const closable = gaps.every((g) => !events.some((e) => e.x === g.x && e.y === g.y) && !(start && start.x === g.x && start.y === g.y));
+  let movedStart: Cell | undefined;
+  const withStart = (project: Project): Project => movedStart ? { ...project, startPos: movedStart } as Project : project;
   /** 막다른 남쪽 틈을 메운다: 틈 칸과 그 바로 위 칸에 걸친 그림(모델이 틈에 세운 문 등)을 걷고, 틈을 공허로 바꾼 뒤 둘레 띠를 다시 칠한다. */
   const closeGaps = () => {
     // 틈을 메운다: 틈 칸과 그 바로 위 칸에 걸친 그림(모델이 틈에 세운 문 등)을 걷고, 틈을 공허로 바꾼 뒤 둘레 띠를 다시 칠한다.
@@ -271,11 +275,22 @@ export function dressInteriorExits(run: BuildRun, mapId: string): ExitDressResul
       map.lowerTiles[i] = k.S.void;
     }
     reband(k, map, (x, y) => gaps.some((g) => Math.abs(g.x - x) <= 1 && Math.abs(g.y - y) <= 1));
+    // 시작 칸이 틈 위였으면(2026-10-29 vm1 terra 방탈출: 문 자리를 찾아 틈을 메우자 시작 칸 (3,7)이 벽이 됐다) 틈에서 가장 가까운 걸을 수 있는 칸으로 옮긴다.
+    if (start && gaps.some((g) => g.x === start.x && g.y === start.y)) {
+      const probe = { ...project0, maps: { ...project0.maps, [mapId]: map } } as Project;
+      const taken = new Set(events.map((e) => `${e.x},${e.y}`));
+      let best: Cell | undefined;
+      for (let y = 0; y < map.height; y += 1) for (let x = 0; x < w; x += 1) {
+        if (taken.has(`${x},${y}`) || gaps.some((g) => g.x === x && g.y === y) || !isPassable(probe, map, x, y)) continue;
+        const d = Math.abs(x - start.x) + Math.abs(y - start.y), bd = best ? Math.abs(best.x - start.x) + Math.abs(best.y - start.y) : Infinity;
+        if (d < bd || (d === bd && best && (y < best.y || (y === best.y && x < best.x)))) best = { x, y };
+      }
+      if (best) { movedStart = best; notes.push(`시작 칸 (${start.x},${start.y})이 메운 틈 위라 (${best.x},${best.y})로 옮김`); }
+    }
     changed = true;
     notes.push(`막다른 남쪽 출구 ${gaps.map((g) => `(${g.x},${g.y})`).join("")}를 벽으로 메움(이동 칸이 없는 틈)`);
   };
-  const start = project0.startMapId === mapId ? project0.startPos : undefined;
-  const closable = gaps.every((g) => !events.some((e) => e.x === g.x && e.y === g.y) && !(start && start.x === g.x && start.y === g.y));
+
   if (dead && door) {
     const S = k.S;
     const locked = (door.pages ?? []).some((p) => (p.conditions ?? []).length > 0) || (door.pages ?? []).length > 1;
@@ -335,7 +350,7 @@ export function dressInteriorExits(run: BuildRun, mapId: string): ExitDressResul
           else setLayerTileAt(map, 3, i, tile!);
         }
       }
-      run.ctx.project = { ...run.ctx.project, maps: { ...run.ctx.project.maps, [mapId]: map } } as Project;
+      run.ctx.project = withStart({ ...run.ctx.project, maps: { ...run.ctx.project.maps, [mapId]: map } } as Project);
       // 그 칸에 있던 조용한 이벤트(시작 목표 등)는 문이 있던 자리로 비켜 둔다(먼저 비키고, 문이 옮긴 뒤 그 자리로 — move_event 는 찬 칸이면 옆 칸으로 민다).
       const sitters = events.filter((e) => e.id !== door.id && e.x === at!.x && e.y === at!.y && (silent(e) || (evicting && !visible(e) && !hasTransfer(e.pages ?? e.commands))));
       // 문과 그 칸의 이벤트를 자리 바꿈한다(한 번에 — move_event 로 차례로 옮기면 찬 칸에서 옆 칸으로 밀려 문이 가구 칸에 섰다).
@@ -362,6 +377,6 @@ export function dressInteriorExits(run: BuildRun, mapId: string): ExitDressResul
   // 틈은 벽에 난 좁은 목(3칸 이하, 붙어 있음)만 — 남쪽 줄 전체가 바닥인 바깥 거리(standin errand «동네 거리»)는 틈이 아니다.
   const narrow = gaps.length > 0 && gaps.length <= 3 && gaps.every((g, i) => i === 0 || g.x === gaps[i - 1]!.x + 1);
   if (dead && !door && closable && narrow) closeGaps();
-  if (changed) run.ctx.project = { ...run.ctx.project, maps: { ...run.ctx.project.maps, [mapId]: map } } as Project;
+  if (changed) run.ctx.project = withStart({ ...run.ctx.project, maps: { ...run.ctx.project.maps, [mapId]: map } } as Project);
   return { notes };
 }

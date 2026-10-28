@@ -17,6 +17,8 @@ import { resolveWhere } from "./people";
 import type { BuildRun, ContentBuildResult } from "./types";
 import { BLUEPRINT_PATH_IDS, battleStepBypass, codeStepBypass, escapeLeaks, eventGives, isBattleStep, isCodeStep, victoryGatedSwitches, walkBlueprint } from "./blueprint";
 import { pickFittedTroops } from "@/editor/tools/jrpgVolumeTools";
+import { fitTroopCopy } from "@/editor/tools/bossThreatScaling";
+import { simulateBattle } from "@/battle/simulate";
 import { trivialCode } from "./puzzle";
 import { repairEventReach } from "./eventReach";
 import { dressInteriorExits } from "./exitDress";
@@ -167,6 +169,7 @@ export function buildBlueprintPath(run: BuildRun, text: readonly PathStepText[] 
   const extra: string[] = [];
   try { extra.push(...gateKeyedEntrances(run)); } catch { /* 잠금 실패는 경로를 깨지 않는다 */ }
   try { extra.push(...gateBattleSteps(run)); } catch { /* 전투 잠금 실패는 경로를 깨지 않는다 */ }
+  try { extra.push(...fitUnwinnableStepBattles(run)); } catch { /* 맞추기 실패는 경로를 깨지 않는다 */ }
   try { const heal = ensureHealingAccess(run); if (heal.length) extra.push(`회복 길을 넣었다: ${heal.join(", ")}`); } catch { /* 회복 넣기 실패는 경로를 깨지 않는다 */ }
   return extra.length ? { ...result, summary: `${result.summary} ${extra.join(". ")}.` } : result;
 }
@@ -278,6 +281,65 @@ export function gateBattleSteps(run: BuildRun): string[] {
     }
     const event = { ...structuredClone(ev), pages: out };
     if (!run.call("upsert_event", { mapId: map.id, event: event as unknown as Record<string, unknown>, replacePages: true }).ok) notes.pop();
+  }
+  return notes;
+}
+
+/** 시작 파티가 이 정도도 못 이기면 «길을 막는 전투»가 아니라 막힌 길이다. */
+const STEP_BATTLE_MIN_WIN = 0.5;
+
+/**
+ * 청사진 단계 맵의 «이겨야 넘어가는» 전투(도망 불가 또는 보스 이름)를 시작 파티·시작 레벨로 모의하고, 승률이 STEP_BATTLE_MIN_WIN 아래면
+ * 그 전투를 시작 파티에 맞춘 사본 무리(fitTroopCopy — 원본 DB 적은 그대로)로 바꾼다. 결정적(모의 시드 고정)·되풀이 안전(맞춘 사본은 다시 안 맞춘다).
+ * 왜(2026-10-29 vm1 argon·flash jrpg): 승리 관문을 건 뒤 옛 빌더의 마왕(Lv3, 승률 0)이 길을 막아 자동 플레이가 보스전 패배로 끝났다.
+ */
+export function fitUnwinnableStepBattles(run: BuildRun): string[] {
+  const bp = run.ctx.project.gameBlueprint;
+  if (!bp) return [];
+  const project = run.ctx.project;
+  if (project.system.battleParty === "monsters" || project.system.monsterBattleParty === true) return [];
+  const party = (project.system.startActorIds ?? []).filter((id) => project.database.actors.some((a) => a.id === id));
+  if (!party.length) return [];
+  const level = Math.max(1, ...party.map((id) => project.database.actors.find((a) => a.id === id)!.initialLevel ?? 1));
+  const mapIds = [...new Set(bp.steps.map((step) => mapFor(project, step.place)?.id).filter((id): id is string => !!id))];
+  const verdict = new Map<string, string | undefined>();
+  const notes: string[] = [];
+  for (const mapId of mapIds) {
+    const map = run.ctx.project.maps[mapId];
+    if (!map) continue;
+    for (const ev of map.events ?? []) {
+      const text = JSON.stringify(ev.pages ?? []);
+      if (!text.includes('"battleProcessing"')) continue;
+      const pages = structuredClone(ev.pages ?? []) as unknown as RawPage[];
+      let changed = false;
+      const visit = (node: unknown): void => {
+        if (Array.isArray(node)) { node.forEach(visit); return; }
+        if (!node || typeof node !== "object") return;
+        const cmd = node as Record<string, unknown>;
+        if (cmd.kind === "battleProcessing" && typeof cmd.troopId === "string") {
+          const troopId = cmd.troopId;
+          const gating = cmd.canEscape === false || /boss|보스|마왕/iu.test(`${ev.id} ${troopId} ${run.ctx.project.database.troops.find((t) => t.id === troopId)?.name ?? ""}`);
+          if (gating) {
+            if (!verdict.has(troopId)) {
+              let replace: string | undefined;
+              try {
+                const sim = simulateBattle({ project: run.ctx.project, troopId, heroLevel: level, partyActorIds: party, n: 12, seed: 7, useSkills: true });
+                if (sim.winRate < STEP_BATTLE_MIN_WIN) {
+                  const fitted = fitTroopCopy(run.ctx.project, troopId, "boss");
+                  if (fitted && fitted !== troopId) { replace = fitted; notes.push(`「${ev.name ?? ev.id}」 전투 ${troopId}(승률 ${Math.round(sim.winRate * 100)}%)를 시작 파티에 맞춘 ${fitted} 로`); }
+                }
+              } catch { /* 모의 실패는 그대로 둔다 */ }
+              verdict.set(troopId, replace);
+            }
+            const replace = verdict.get(troopId);
+            if (replace) { cmd.troopId = replace; changed = true; }
+          }
+        }
+        for (const value of Object.values(cmd)) if (value && typeof value === "object") visit(value);
+      };
+      visit(pages);
+      if (changed) run.call("upsert_event", { mapId, event: { ...structuredClone(ev), pages } as unknown as Record<string, unknown>, replacePages: true });
+    }
   }
   return notes;
 }

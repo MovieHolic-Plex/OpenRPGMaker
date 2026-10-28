@@ -180,6 +180,24 @@ export function objectiveGaps(project: Project): string[] {
   return gaps;
 }
 
+/**
+ * 다음 목표를 바꾸지 않는 이정표 이벤트(objectiveGaps 의 마지막 항목과 같은 판정)와, 그 이벤트가 쓰는 스위치·아이템을 읽는 다음 이벤트들.
+ * 출하 기본값(shipDefaults)이 「다음 이벤트를 찾아가자」 목표를 거는 데 쓴다. 엔딩 정의만 읽으면 readers 가 빈 목록이다.
+ */
+export function staleMilestoneTargets(project: Project): { readonly event: StoryEvent; readonly readers: readonly { readonly mapId: string; readonly eventId: string; readonly name: string }[] }[] {
+  const read = readers(project);
+  const where = new Map<string, { mapId: string; name: string }>();
+  for (const map of Object.values(project.maps)) for (const event of map.events ?? []) where.set(event.id, { mapId: map.id, name: String(event.name ?? event.id) });
+  const stale = storyEvents(project).filter((event) => event.milestone && !event.ends && !event.setsObjective);
+  return stale.map((event) => {
+    const keys = new Set<Key>();
+    for (const page of allPages(project)) if (page.event?.id === event.eventId && page.pageIndex === event.pageIndex) visitPageCommands(page, ({ command }) => { for (const w of writesOf(command)) if (w.milestone) keys.add(w.key); });
+    const ids = new Set<string>();
+    for (const key of keys) for (const owner of read.get(key) ?? []) if (owner && owner !== event.eventId) ids.add(owner);
+    return { event, readers: [...ids].sort().flatMap((id) => { const at = where.get(id); return at ? [{ mapId: at.mapId, eventId: id, name: at.name }] : []; }) };
+  });
+}
+
 const isMilestoneWrite = (command: RawCommand): boolean =>
   command.kind === "setSwitch" ? command.value === true : command.kind === "changeItem" ? command.op !== "-=" : false;
 /** childLists 가 돌려주는 목록은 사본이다 — 넣기는 원본 배열에 해야 하므로 키로 원본을 다시 찾는다(탐지와 같은 분기를 걷는다). */

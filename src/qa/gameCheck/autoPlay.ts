@@ -1767,6 +1767,42 @@ function targetCaps(project: Project, visit: CommandVisit): Map<string, number> 
   return caps;
 }
 
+/**
+ * 같은 맵에서 길을 막는 이벤트(지금 페이지가 막는다)를 «스위치 ON» 페이지에서 지나갈 수 있게 바꾸는 스위치의 세터 목표들.
+ * 계획(planCriticalPath)은 목표 이벤트의 페이지 조건만 선행으로 잡으므로, 길 위 장애물을 치우는 레버는 여기서 찾는다.
+ */
+function pathOpenerGoals(project: Project, mapId: string | undefined): Goal[] {
+  const map = mapId ? project.maps[mapId] : undefined;
+  if (!map) return [];
+  const passable = (page: { priority?: string; overlapForbidden?: boolean; trigger?: { kind?: string } }): boolean =>
+    !((page.priority ?? "same") === "same" && (page.overlapForbidden ?? true)) && !["playerTouch", "touch", "eventTouch"].includes(page.trigger?.kind ?? "");
+  const openers = new Set<string>();
+  for (const event of map.events ?? []) {
+    const pages = event.pages ?? [];
+    if (!pages.length || passable(pages[0]!)) continue;
+    for (const page of pages.slice(1)) {
+      if (!passable(page)) continue;
+      for (const condition of (page.conditions ?? []) as unknown as RawCommand[]) {
+        if (condition.kind === "switch" && condition.value === true && typeof condition.switchId === "string") openers.add(condition.switchId);
+      }
+    }
+  }
+  if (!openers.size) return [];
+  const goals: Goal[] = [];
+  for (const page of allPages(project)) {
+    if (page.map?.id !== mapId || !page.event) continue;
+    visitPageCommands(page, (visit) => {
+      const command = visit.command;
+      if (command.kind !== "setSwitch" || command.value !== true || typeof command.switchId !== "string" || !openers.has(command.switchId)) return;
+      if (requirementsOf(project, visit).some((req) => !satisfiedAtStart(project, req))) return;
+      const id = command.switchId;
+      if (goals.some((goal) => goal.visit.command.switchId === id)) return;
+      goals.push({ label: `${requirementLabel(project, { kind: "switch", id })} 켜기(길 막힘 풀기)`, visit, done: (session) => session.switches[id] === true });
+    });
+  }
+  return goals;
+}
+
 function runPlan(project: Project, label: string, goals: readonly Goal[], deadline: number, preamble: readonly string[] = []): AutoPlayRun {
   const started = Date.now();
   const first = quietScene(project, []);
@@ -1798,6 +1834,19 @@ function runPlan(project: Project, label: string, goals: readonly Goal[], deadli
         queue.splice(later, 1);
         step = executeGoal(driver, goal);
         break;
+      }
+    }
+    // 레버가 바위를 치우는 길(스위치가 켜지면 막던 이벤트가 지나갈 수 있는 페이지로 바뀐다)은 계획에 없다 — 목표의
+    // 선행 조건이 아니라 길 위의 장애물이라서다. 같은 맵의 그런 스위치 세터를 하나씩 켜 보고 다시 시도한다
+    // (2026-10-29 vm1 terra/jrpg: 마왕의 동굴 레버 (6,12) → 막힌 바위 (12,14)·(12,15) → 마왕 (20,8)).
+    if (!step.ok && !step.soft && /걸어갈 길이 없습니다/u.test(step.detail)) {
+      for (const opener of pathOpenerGoals(project, goal.visit.page.map?.id)) {
+        if (opener.done?.(driver.last.session, driver.last)) continue;
+        const opened = executeGoal(driver, opener);
+        if (!opened.ok) continue;
+        steps.push(opened);
+        step = executeGoal(driver, goal);
+        if (step.ok || !/걸어갈 길이 없습니다/u.test(step.detail)) break;
       }
     }
     steps.push(step);
