@@ -320,7 +320,7 @@ function frostford(project: Project, exec: Exec, hubId: string): void {
   FS2_FROST.innDoor = inn.door;
   FS2_FROST.innExit = buildRoom(project, exec, FS2_FROST_INN_ID, INN);
   linkDoor(project, exec, inn, FS2_FROST_INN_ID, FS2_FROST.innExit);
-  placeNpc(project, exec, FS2_FROST_INN_ID, { x: 9, y: 4 }, {
+  placeNpc(project, exec, FS2_FROST_INN_ID, { x: 10, y: 7 }, {
     id: "ev_fs2_frost_innkeeper", name: OSA, graphic: { textureKey: "tex_easyrpg_charset_people2", characterIndex: 4 },
     pages: [
       { name: "기본", commands: [say(OSA, "장작을 다 뺏겨서 방이 좀 차요.\n대신 담요는 두툼해요. 하룻밤에 20골드."), { kind: "inn", price: 20 }] },
@@ -504,7 +504,8 @@ function frostFestival(project: Project, exec: Exec, L: FrostLayout): void {
   });
   const first = L.lamps[0];
   if (!first) return;
-  addEv(project, FS2_FROST_ID, "ev_fs2_frost_answer_lamp", "대답의 등", { x: first.x, y: first.y + 1 }, [
+  // 등불 기둥 밑동 칸(막힘)에 같은 층으로 — 그 앞 길에 서서 등을 바라보고 누른다.
+  addEv(project, FS2_FROST_ID, "ev_fs2_frost_answer_lamp", "대답의 등", { x: first.x, y: first.y }, [
     page("ev_fs2_frost_answer_lamp_p", "대답의 등", [], [
       narrate("기슭에 종이 등이 줄지어 있다. 등마다\n한 줄씩 글씨가 적혀 있다.\n「잘 지내」「밥 먹었니」「오늘은 별이 많다」"),
       { kind: "choices", prompt: "등 하나에 한 줄을 적어 띄울까?", options: [
@@ -518,8 +519,8 @@ function frostFestival(project: Project, exec: Exec, L: FrostLayout): void {
         ] },
         { text: "그냥 본다", branch: [] },
       ] } as unknown as Command,
-    ], { priority: "below", trigger: { kind: "action" } }),
-    page("ev_fs2_frost_answer_lamp_done", "띄운 뒤", [sw(SW_FROST_LAMP)], [narrate("우리가 띄운 등이 호수 위를 천천히 건너간다.")], { priority: "below", trigger: { kind: "action" } }),
+    ], { priority: "same", trigger: { kind: "action" } }),
+    page("ev_fs2_frost_answer_lamp_done", "띄운 뒤", [sw(SW_FROST_LAMP)], [narrate("우리가 띄운 등이 호수 위를 천천히 건너간다.")], { priority: "same", trigger: { kind: "action" } }),
   ]);
 }
 
@@ -625,6 +626,14 @@ function lanternNight(project: Project, exec: Exec): void {
     page("ev_fs2_lake_pillar_on", "켜짐", [sw(SW_VALEN_MET)], [...pillarLights, wait(600000)], { trigger: { kind: "parallel" }, priority: "below" }),
   ]);
 
+}
+
+/** 탈출은 하늘탑 문(author_dungeon 입구 착지 칸 검사)을 지은 뒤에 짓는다 — 출구 칸 이벤트가 먼저 있으면 착지 칸이 없다고 거절한다. */
+function iceEscape(project: Project, exec: Exec): void {
+  const L = LAYOUT!;
+  const night = M(project, FS2_FROST_NIGHT_ID);
+  const W = night.width;
+  const key = (c: Cell) => c.y * W + c.x;
   // 탈출 — 뒤에서 쫓아오는 붕괴. 사당 앞에서 걸어 닿는 거리(BFS) 순으로 초마다 한 묶음, 1초 전에 금.
   const start = L.shrineFront;
   const preSet = new Set(L.preCracks.flatMap((p) => p.cells.map(key)));
@@ -790,5 +799,6 @@ export function buildFrostford(project: Project, exec: Exec, hubId: string): voi
   frostford(project, exec, hubId);
   lanternNight(project, exec);
   skyTower(project, exec);
+  iceEscape(project, exec);
   lanternNightEvents(project);
 }

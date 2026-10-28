@@ -109,7 +109,9 @@ export function paintFrostford(project: Project, exec: Exec, mapId: string, name
   const lakeBlob = (x: number, y: number): boolean => {
     const ex = (x - 21) / 17.6, ey = (y - 21.2) / 12.6, a = Math.atan2(ey, ex);
     const lim = 1 + 0.06 * Math.sin(a * 3 + 0.9) + 0.045 * Math.sin(a * 5 + 2.2) + 0.03 * Math.sin(a * 8 + 0.4);
-    const main = Math.abs(ex) ** 3.1 + Math.abs(ey) ** 3.1 <= lim ** 3.1;
+    // 남쪽 기슭은 휘어진 선 — 가운데(큰 부두)가 남쪽으로 불룩, 서쪽은 북쪽으로 물러난다. 동쪽은 낚시 만이 따로 내려온다.
+    const shoreBottom = 31.4 + 2.3 * Math.sin((x - 14) * 0.26) + 0.8 * Math.sin(x * 0.7 + 1);
+    const main = Math.abs(ex) ** 3.1 + Math.abs(ey) ** 3.1 <= lim ** 3.1 && y <= shoreBottom;
     const bx = (x - 32.5) / 6.4, by = (y - 27.6) / 4.6, b = Math.atan2(by, bx);
     const bay = bx * bx + by * by <= (1 + 0.1 * Math.sin(b * 3 + 0.5)) ** 2;
     const cape = ((x - 6.5) / 4.2) ** 2 + ((y - 30.5) / 3.6) ** 2 <= 1;   // 남서쪽 눈 곶(비대칭)
@@ -348,7 +350,7 @@ export function paintFrostford(project: Project, exec: Exec, mapId: string, name
   stamp("bd-pick-swamp-stilt-rowboat", smallPierX - 2, smallEnd - 1);
   stamp(SNOW("ice-boat"), 8, 25);
   stamp(SNOW("ice-row"), 14, 30);
-  stamp(SNOW("ice-row"), 26, 30);
+  stamp(SNOW("ice-row"), 27, 33);
 
   // 얼음 낚시터 — 동쪽 만에 구멍 셋, 걸상·생선 상자.
   const holes: Cell[] = [];
@@ -496,8 +498,8 @@ export function paintFrostford(project: Project, exec: Exec, mapId: string, name
     for (let dy = -2; dy <= 2; dy += 1) for (let dx = -2; dx <= 2; dx += 1) if (inMap(x + dx, y + dy) && emptyAt(idx(x + dx, y + dy))) empty += 1;
     if (empty < 13) continue;
     const r = hash01(x, y, 41);
-    if (r < 0.5) stamp(SNOW("pine"), x, y - 3) || stamp(SNOW("mound"), x, y);
-    else if (r < 0.72) stamp(SNOW("rock"), x, y - 1);
+    if (r < 0.62) { if (!stamp(SNOW("pine"), x, y - 3) && hash01(x, y, 42) < 0.4) stamp(SNOW("rock"), x, y - 1); }
+    else if (r < 0.85) stamp(SNOW("rock"), x, y - 1);
     else stamp(SNOW("mound"), x, y);
   }
 
