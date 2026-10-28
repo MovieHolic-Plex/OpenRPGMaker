@@ -320,7 +320,9 @@ export function renderReviewMapPng(project: Project, map: GameMap, scale = 1): {
 function drawEventCharset(context: PngContext, project: Project, event: GameMap["events"][number], ex: number, ey: number, size: number): boolean {
   const evName = `${event.name ?? ""} ${event.pages?.[0]?.name ?? ""}`;
   const pageGraphic = event.pages?.[0]?.graphic;
-  const spriteId = pageGraphic?.sprite?.type === "bundled" || pageGraphic?.sprite?.type === "uploaded" ? pageGraphic.sprite.id : event.graphic?.textureKey;
+  // 옛 이벤트 모양(페이지 밖 graphic)도 읽는다 — 지금 GameEvent 타입에는 없다.
+  const legacyGraphic = (event as { graphic?: { textureKey?: string; pattern?: number; characterIndex?: number; direction?: string } }).graphic;
+  const spriteId = pageGraphic?.sprite?.type === "bundled" || pageGraphic?.sprite?.type === "uploaded" ? pageGraphic.sprite.id : legacyGraphic?.textureKey;
   // 표지판(이정표): Object1 0번(나무 문) 대신 나무 표지판 픽셀 아이콘을 그린다.
   if (/이정표|표지판|푯말|안내판/u.test(evName) && (!spriteId || spriteId === "tex_easyrpg_charset_object1")) {
     context.fillStyle = "rgba(92, 58, 33, 1)";
@@ -346,7 +348,7 @@ function drawEventCharset(context: PngContext, project: Project, event: GameMap[
   if (!spriteId) return false;
   const asset = findCharsetAsset(spriteId);
   const uploaded = project.assets.uploaded[spriteId];
-  const url = asset?.url ?? (uploaded ? uploadedAssetUrl(uploaded) || refDataUrl(uploaded.ref) : null) ?? resolveAssetResourceUrl(spriteId, { project });
+  const url = (asset as { url?: string } | undefined)?.url ?? (uploaded ? uploadedAssetUrl(uploaded) || refDataUrl(uploaded.ref) : null) ?? resolveAssetResourceUrl(spriteId, { project });
   const file = url && /^\/?assets\//u.test(url) ? path.join("public", url.replace(/^\//u, "").split("?")[0]!) : null;
   const bytes = url?.startsWith("data:image/") ? Buffer.from(url.slice(url.indexOf(",") + 1), "base64")
     : file && fs.existsSync(file) ? fs.readFileSync(file) : null;
@@ -356,7 +358,7 @@ function drawEventCharset(context: PngContext, project: Project, event: GameMap[
     const raster: Raster = { width: decoded.width, height: decoded.height, data: new Uint8Array(decoded.data) };
     // RTP 캐릭터셋은 좌상단(0,0) 배경색이 투명 키색이다.
     if (raster.data[3] === 255) {
-      applyTransparentColorKey(raster.data, [raster.data[0]!, raster.data[1]!, raster.data[2]!]);
+      applyTransparentColorKey(new Uint8ClampedArray(raster.data.buffer, raster.data.byteOffset, raster.data.byteLength)); // 같은 메모리를 보는 뷰 — 왼쪽 위 픽셀이 투명색(예전에 넘기던 [r,g,b] 인자는 함수가 읽지 않았다)
     }
     // 필드 적의 생성 몬스터 그림(generated-enemy-*): 런타임은 초상 한 장을 32px(2칸) 상자에 맞춰 발밑 가운데로 그린다(eventSpriteResources fitSize 32).
     // 칩 칸으로 자르면 투명 구석만 잘려 적이 안 보였다(2026-10-23 assistant-dungeons VQA 「투명 적」).
@@ -366,12 +368,12 @@ function drawEventCharset(context: PngContext, project: Project, event: GameMap[
       context.drawImage(raster, 0, 0, raster.width, raster.height, ex + Math.round((size - dw) / 2), ey + size - dh, dw, dh);
       return true;
     }
-    const rawPattern = pageGraphic?.pattern ?? event.graphic?.pattern;
+    const rawPattern = pageGraphic?.pattern ?? legacyGraphic?.pattern;
     const selection = typeof rawPattern === "number" && rawPattern >= 3
       ? decodeCharsetFrameIndex(rawPattern)
       : {
-          characterIndex: event.graphic?.characterIndex ?? 0,
-          direction: (pageGraphic?.direction ?? event.graphic?.direction ?? "down") as "down" | "left" | "right" | "up",
+          characterIndex: legacyGraphic?.characterIndex ?? 0,
+          direction: (pageGraphic?.direction ?? legacyGraphic?.direction ?? "down") as "down" | "left" | "right" | "up",
           pattern: (typeof rawPattern === "number" ? rawPattern : 1) as 0 | 1 | 2,
         };
     const frame = charsetFrameSource(selection);

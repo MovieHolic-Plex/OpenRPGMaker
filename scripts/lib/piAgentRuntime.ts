@@ -77,13 +77,12 @@ import { explainOpenAiCompatRunError, guardedOpenAiCompatFetch, shapeOpenAiCompa
 import { isOpenAiCompatProviderId } from "../../src/ai/openAiCompat.ts";
 import { PLAN_EXECUTION_REKICK, ULTRABRAIN_PLAN_HEADING } from "../../src/ai/piAgent/planExecution.ts";
 import { WHOLE_GAME_REKICKS, unbuiltGameSigns, wantsWholeGame, wholeGameRekickPrompt } from "../../src/ai/v2/shipChecks.ts";
-import { addPiAgentUsage, changedProjectKeys, PI_AGENT_DEFAULT_TIMEOUT_MS, PI_MAP_LOSS_DECLINED_PREFIX, piMapScopeGuard, restoreCheckpointProject, slimCheckpointProject, slimProjectForWire, snapshotProjectKeepingHeavy, slimDoneEvent, unchangedHeavyKeys, type PiAgentDoneEvent, type PiAgentEvent, type PiAgentRequest, type PiAgentUsage, type PiCheckpointHeavyKey } from "../../src/ai/piAgent/protocol.ts";
+import { addPiAgentUsage, changedProjectKeys, PI_AGENT_DEFAULT_TIMEOUT_MS, PI_MAP_LOSS_DECLINED_PREFIX, piMapScopeGuard, restoreCheckpointProject, slimProjectForWire, snapshotProjectKeepingHeavy, slimDoneEvent, type PiAgentDoneEvent, type PiAgentEvent, type PiAgentRequest, type PiAgentUsage, type PiCheckpointHeavyKey } from "../../src/ai/piAgent/protocol.ts";
 import { normalizePiThinkingLevel } from "../../src/ai/piAgent/thinkingLevel.ts";
 import { antigravityToolEnumPayload } from "./ohMyPiToolEnums.ts";
 import { searchWebWithCodex } from "./codexWebSearchRuntime.ts";
 import { WEB_SEARCH_TOOL } from "../../src/editor/tools/webSearchTool.ts";
 import { mergeConstructionLogs } from "../../src/editor/tools/constructionLog.ts";
-import { CODEX_PROVIDER_ID } from "../../src/ai/oauth/credentials.ts";
 import { setWorldmapBuilder } from "../../src/editor/worldmap/worldmapBuild.ts";
 import { buildWorldmap } from "./worldmapBuild.mjs";
 import type { GameMap, Project } from "../../src/project/types.ts";
@@ -1114,7 +1113,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     },
     initialState: {
       systemPrompt,
-      model,
+      model: model as never,
       ...(thinkingLevel ? { thinkingLevel: thinkingLevel as never } : {}),
       tools: tools as never,
     },
@@ -1381,7 +1380,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       const fingerprint = openingProduction.cutsceneFingerprint(ctx.project);
       if (openingProduction.hasCutsceneReview(fingerprint)) return;
       // 시작 맵의 자동 컷신은 전부 잰다 — 옛 컷신이 남은 채 새 이벤트가 따로 생기면(실측) 둘이 겹쳐 재생된다.
-      const probes = autoEvents.map(e => ({ event: e, page: e.pages.find(isCutscenePage)! }))
+      const probes = autoEvents.map(e => ({ event: e, page: e.pages!.find(isCutscenePage)! }))
         .map(({ event, page }) => ({ event, probe: probeCutscene(ctx.project, page.commands, ctx.project.system.playResolution ?? DEFAULT_PLAY_RESOLUTION) }));
       const merged = probes.flatMap(({ event, probe }) => probe.issues.map(issue => (probes.length > 1 ? `[이벤트 ${event.id}] ` : '') + issue));
       if (probes.length > 1) merged.push(`시작 맵에 자동 컷신 이벤트가 ${probes.length}개(${probes.map(p => p.event.id).join(', ')})라 겹쳐 재생됩니다. 하나만 남기세요 — script_cutscene_staged 에 eventId 를 주어 기존 것을 대체하거나, 쓸모없는 이벤트를 지우세요.`);

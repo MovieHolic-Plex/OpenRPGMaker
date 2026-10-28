@@ -5,7 +5,7 @@ import type { ToolContext, ToolResult } from '../../src/editor/tools/types';
 import { TITLE_ART_TOOL } from '../../src/editor/tools/titleArtTools';
 import { OPENING_IMAGE_TOOL } from '../../src/editor/tools/cinematicTools';
 import { generateTitleArt, titleArtToolCalls } from '../../src/editor/titleArtGeneration';
-import { generateOpeningStill } from '../../src/editor/openingImageGeneration';
+import { generateOpeningStill, type OpeningStillRequest } from '../../src/editor/openingImageGeneration';
 import { fitTitleArtEffects } from '../../src/editor/titleArtFitting';
 import { DEFAULT_IMAGE_MODEL, DEFAULT_IMAGE_PROVIDER_ID } from '../../src/ai/imageModelCatalog';
 import type { PiOpeningProduction } from '../../src/ai/piAgent/openingProduction';
@@ -89,11 +89,12 @@ export function createPiPresentationTool(
       const args = params && typeof params === 'object' ? params as Record<string, unknown> : {};
       let result: ToolResult;
       let dataUrl: string;
+      // 등록 뒤 썸네일(try 밖)도 읽는다 — try 안에 두면 그 줄이 resourceId 를 못 찾는다.
+      let resourceId = '';
       let visuals: ActivityVisual[] = [];
       try {
         signal?.throwIfAborted();
         const generateImage = createWorkerImageGenerator(request, keyFor);
-        let resourceId: string;
         const say = (summary: string) => options.progress?.(summary, id);
         if (definition.name === TITLE_ART_TOOL) {
           const count = Math.min(3, Math.max(1, Math.trunc(Number(args.candidates)) || 1));
@@ -123,7 +124,7 @@ export function createPiPresentationTool(
         } else {
           const withBible = options.openingProduction?.withBible(args) ?? args;
           const count = Math.min(3, Math.max(1, Math.trunc(Number(args.candidates)) || 1));
-          const stillOptions = { signal, generateImage,
+          const stillOptions: OpeningStillRequest = { signal, generateImage,
             hasTransparentPixels: async dataUrl => {
               const JimpModule = await import('jimp') as any; const Jimp = JimpModule.Jimp ?? JimpModule.default;
               const { data } = (await Jimp.read(Buffer.from(dataUrl.slice(dataUrl.indexOf(',') + 1), 'base64'))).bitmap;

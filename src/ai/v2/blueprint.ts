@@ -153,8 +153,9 @@ export function eventGives(project: Project, ev: GameEvent): { switches: string[
 }
 
 /** 페이지가 열리는 조건(스위치·아이템·변수) — 한 페이지라도 조건이 다 채워질 수 있으면 그 이벤트는 열린다. */
-function pageNeeds(page: Obj): { kind: "switch" | "item" | "variable"; id: string }[] {
-  return leafConds(page).flatMap((c) => c.kind === "switch" && c.value !== false && c.switchId !== undefined ? [{ kind: "switch" as const, id: String(c.switchId) }]
+type PageNeed = { kind: "switch" | "item" | "variable"; id: string };
+function pageNeeds(page: Obj): PageNeed[] {
+  return leafConds(page).flatMap((c): PageNeed[] => c.kind === "switch" && c.value !== false && c.switchId !== undefined ? [{ kind: "switch" as const, id: String(c.switchId) }]
     : c.kind === "item" && c.present !== false && c.itemId !== undefined ? [{ kind: "item" as const, id: String(c.itemId) }]
       : c.kind === "variable" && c.variableId !== undefined && Number(c.value ?? 0) > 0 && /^(>=|>|==)$/u.test(String(c.op ?? "")) ? [{ kind: "variable" as const, id: String(c.variableId) }] : []);
 }
