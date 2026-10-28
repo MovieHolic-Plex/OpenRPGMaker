@@ -4924,12 +4924,17 @@
       {
        "kind": "move",
        "dir": "up",
+       "steps": 6
+      },
+      {
+       "kind": "move",
+       "dir": "right",
        "steps": 3
       },
       {
        "kind": "hold",
        "dir": null,
-       "ms": 6000
+       "ms": 5000
       }
      ],
      "shot": true
@@ -5006,7 +5011,23 @@
       {
        "kind": "hold",
        "dir": null,
-       "ms": 1500
+       "ms": 2500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "walk",
+     "ops": [
+      {
+       "kind": "move",
+       "dir": "left",
+       "steps": 2
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1200
       }
      ],
      "shot": true

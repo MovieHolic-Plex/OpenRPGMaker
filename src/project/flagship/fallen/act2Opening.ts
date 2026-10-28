@@ -1151,9 +1151,12 @@ function dawnwell(project: Project, exec: Exec): void {
       sightRange: 6, vision: "cone", pace: "normal", approachStyle: style, respawnSec, checkpointOnEntry: true });
   };
   for (const mapId of [north1!, field!]) exec(project, "set_map_properties", { mapId, mapRole: "field" });
-  // 전투 배경 — 밤 숲 어귀는 숲, 재의 들판·마을 터는 들판 그림(무리마다 밤·잿빛 연기 겹이 덮는다).
+  // 전투 배경 — 밤 숲 어귀는 숲, 재의 들판·마을 터는 바위 그림(황무지·화산지대와 같은 갈래 — 들판 그림은 초록 풀이라 잿빛 땅과 어긋났다).
+  // 무리마다 밤·잿빛 연기·불티 겹이 덮는다.
   exec(project, "set_map_properties", { mapId: north1!, battleBackground: "battle-scenery-forest" });
-  for (const mapId of [field!, FS2_DAWNWELL_ID]) exec(project, "set_map_properties", { mapId, battleBackground: "battle-scenery-plains" });
+  for (const mapId of [field!, FS2_DAWNWELL_ID]) exec(project, "set_map_properties", { mapId, battleBackground: "battle-scenery-cave" });
+  // 재의 들판 — 숲길 도구가 깐 짙은 안개(0.55)가 잿빛 땅을 하얗게 덮어 버렸다. 옅은 연기 + 해 질 녘 잿빛 빛으로.
+  exec(project, "set_scene_mood", { mapId: field!, applyMode: "map", weather: { kind: "fog", intensity: 0.22 }, lighting: { ambient: 0.4, color: "#5a4650" } });
   const W = (id: string) => M(project, id).width, H = (id: string) => M(project, id).height;
   try { foe(north1!, "troop_fs2_starved_dogs", Math.floor(W(north1!) / 2), Math.floor(H(north1!) / 2), "dash"); } catch { /* 그 칸 거절 */ }
   try { foe(north1!, "troop_fs2_ash_crows", Math.floor(W(north1!) / 2) + 4, Math.floor(H(north1!) / 3), "swoop"); } catch { /* 그 칸 거절 */ }
@@ -1319,6 +1322,9 @@ const FS2_SARAH_TROOP = "troop_fs2_sarah";
 const FS2_CROSSBOW = "enemy_fs2_fort_crossbow";
 const FS2_CROSSBOW_TROOP = "troop_fs2_fort_crossbows";
 const FS2_FORT_DOGS = "troop_fs2_fort_dogs";
+/** 안뜰(바깥 눈밭) 무리 — 요새 안 무리와 적은 같고 전투 배경만 눈밭. */
+const FS2_FORT_DOGS_OUT = "troop_fs2_fort_dogs_out";
+const FS2_KNIGHT_TROOP_OUT = "troop_fs2_fort_knights_out";
 const SW_SARAH = "sw_fs2_sarah_joined";
 const SW_SPEAR_BACK = "sw_fs2_spear_returned";
 const SW_SPEAR_KEPT = "sw_fs2_spear_kept";
@@ -1478,7 +1484,7 @@ const COURT: {
 function fortCourt(project: Project, exec: Exec): void {
   const d = exec(project, "author_beodeul_town", {
     id: FS2_FORT_COURT_ID, name: "북방 관문 요새", theme: "snow", walls: true, houseCount: 3, wallGate: "NS", width: 38, height: 36, seed: 65,
-  }) as { walls?: { gates?: { side: string; x: number }[]; stairs?: number[] }; doors?: { kit: string; x: number; y: number }[] } | undefined;
+  }) as { walls?: { gates?: { side: string; x: number }[]; stairs?: number[]; towers?: { side: string; x: number; corner?: boolean }[] }; doors?: { kit: string; x: number; y: number }[] } | undefined;
   const gateN = d?.walls?.gates?.find((g) => g.side === "N")?.x, gateS = d?.walls?.gates?.find((g) => g.side === "S")?.x;
   const stair = d?.walls?.stairs?.[0];
   const keepDoor = d?.doors?.find((door) => door.kit === "bd-pick-snowfield-bath");
@@ -1541,7 +1547,7 @@ function fortCourt(project: Project, exec: Exec): void {
   ] as const) put(kitId, x, y);
   // 깃대·봉화대(마을 소품)를 다 세운 뒤에 필드 맵으로 — 필드 맵에는 마을 소품 도장이 막힌다.
   exec(project, "set_map_properties", { mapId: FS2_FORT_COURT_ID, mapRole: "field", battleBackground: "battle-scenery-snow" });
-  exec(project, "set_scene_mood", { mapId: FS2_FORT_COURT_ID, applyMode: "map", weather: { kind: "snow", intensity: 0.35 }, lighting: { ambient: 0.62, color: "#5a6478" } });
+  exec(project, "set_scene_mood", { mapId: FS2_FORT_COURT_ID, applyMode: "map", weather: { kind: "snow", intensity: 0.35 }, lighting: { ambient: 0.35, color: "#5a6478" } });
   // 새벽샘 북쪽 길 ↔ 남문 밖.
   const a = originEdge(project, M(project, FS2_DAWNWELL_ID), "north", DAWN.entry);
   const b = originEdge(project, M(project, FS2_FORT_COURT_ID), "south", { x: gateS, y: H0 + COURT_PAD - 3 });
@@ -1554,13 +1560,17 @@ function fortCourt(project: Project, exec: Exec): void {
   for (let x = gateN + 3; x < court2.width - 1; x += 1) if (walkable(x, row) && walkable(x, row - 1)) spots.push(x);
   if (spots.length < 6) throw new Error(`[fallen-star act2] 성벽 위 길이 짧다: ${spots.join(",")}`);
   COURT.sarah = { x: spots[1]!, y: row - 1 };
-  COURT.arrive = { x: spots.find((x) => x >= stair - 2) ?? spots[spots.length - 1]!, y: row };
+  // 2층 홀 문으로 나오면 — 북쪽 망루(성벽 위로 솟은 3칸 탑) 바로 서쪽 칸. 망루 칸은 탑 그림에 가려 주인공이 안 보였다.
+  const tower = d?.walls?.towers?.filter((t) => t.side === "N" && !t.corner && t.x > gateN + 2).sort((a, b) => a.x - b.x)[0];
+  const arriveX = tower ? tower.x - 1 : spots[spots.length - 1]!;
+  if (!spots.includes(arriveX) || arriveX - COURT.sarah.x < 2) throw new Error(`[fallen-star act2] 성벽 위 도착 칸이 이상하다: ${arriveX} (새라 ${COURT.sarah.x}, 길 ${spots.join(",")})`);
+  COURT.arrive = { x: arriveX, y: row };
   // 개 무리 — 훈련장 앞. 순찰 기사 — 본채 앞 마당(보면 바로 달려든다).
   const foe = (troopId: string, x: number, y: number, style: string, extra: Rec = {}): void => {
     exec(project, "place_field_enemy", { mapId: FS2_FORT_COURT_ID, x, y, troopId, behavior: "chase", patrol: { length: 2, axis: "horizontal" },
       sightRange: 6, vision: "cone", pace: "normal", approachStyle: style, respawnSec: 90, checkpointOnEntry: true, ...extra });
   };
-  foe(FS2_FORT_DOGS, 8, COURT_PAD + 16, "dash");
+  foe(FS2_FORT_DOGS_OUT, 8, COURT_PAD + 16, "dash");
   void foe;
 }
 
@@ -1614,9 +1624,12 @@ function northFortress(project: Project, exec: Exec, hubId: string): void {
   exec(project, "upsert_troop", { troop: { id: FS2_KNIGHT_TROOP, name: "순찰 기사", enemyIds: [FS2_FORT_KNIGHT, FS2_FORT_KNIGHT], ...stone } });
   exec(project, "upsert_troop", { troop: { id: FS2_GATE_CAPTAIN_TROOP, name: "요새 수문장", enemyIds: [FS2_FORT_KNIGHT, FS2_FORT_DOG], ...stone } });
   exec(project, "upsert_troop", { troop: { id: FS2_CROSSBOW_TROOP, name: "요새 쇠뇌병", enemyIds: [FS2_CROSSBOW, FS2_CROSSBOW], ...stone } });
-  // 성벽 위 결투 — 바깥 하늘 아래(들판 그림 + 밤 겹). 새라 + 경비견 하나(VQA 2차: 개 둘이면 Lv8 파티가 전멸).
+  const snowField = { previewBackgroundResourceId: "battle-scenery-snow", backdropLayers: [{ preset: "clouds", opacity: 40 }] };
+  exec(project, "upsert_troop", { troop: { id: FS2_FORT_DOGS_OUT, name: "요새 경비견", enemyIds: [FS2_FORT_DOG, FS2_FORT_DOG], ...snowField } });
+  exec(project, "upsert_troop", { troop: { id: FS2_KNIGHT_TROOP_OUT, name: "순찰 기사", enemyIds: [FS2_FORT_KNIGHT, FS2_FORT_KNIGHT], ...snowField } });
+  // 성벽 위 결투 — 바깥 하늘 아래 눈 덮인 성벽(눈밭 그림 + 밤 겹). 새라 + 경비견 하나(VQA 2차: 개 둘이면 Lv8 파티가 전멸).
   exec(project, "upsert_troop", { troop: { id: FS2_SARAH_TROOP, name: "성벽 위의 새라", enemyIds: [FS2_SARAH_ENEMY, FS2_FORT_DOG], uncapturable: true,
-    previewBackgroundResourceId: "battle-scenery-plains", backdropLayers: [{ preset: "night", opacity: 65 }, { preset: "clouds", opacity: 45 }] } });
+    previewBackgroundResourceId: "battle-scenery-snow", backdropLayers: [{ preset: "night", opacity: 65 }, { preset: "clouds", opacity: 45 }] } });
   exec(project, "upsert_troop_battle_page", { troopId: FS2_SARAH_TROOP, page: {
     id: "fs2_sarah_open", name: "새라 — 시작", span: "battle", conditions: [{ kind: "onRound", round: 1 }],
     commands: [say(SARAH, "물지는 마라. 넘어뜨리기만 해."), say(ELENA, "개부터 떼어 놓자!\n새라 씨 창은 길어. 너무 붙지 마!")],
@@ -1691,7 +1704,7 @@ function northFortress(project: Project, exec: Exec, hubId: string): void {
     if (count === 0) throw new Error(`[fallen-star act2] ${mapId} 에 보초를 하나도 못 세웠다(${roomIds.join("·")}): ${why}`);
   };
   // 안뜰 순찰 기사 — 본채 문 앞 마당을 가로로 오간다. 남문으로 들어서 본채로 가려면 이 기사를 지나야 한다.
-  exec(project, "place_field_enemy", { mapId: FS2_FORT_COURT_ID, x: COURT.keep.x - 9, y: COURT.keep.y + 4, graphic: knight, troopId: FS2_KNIGHT_TROOP, behavior: "chase",
+  exec(project, "place_field_enemy", { mapId: FS2_FORT_COURT_ID, x: COURT.keep.x - 9, y: COURT.keep.y + 4, graphic: knight, troopId: FS2_KNIGHT_TROOP_OUT, behavior: "chase",
     patrol: { length: 3, axis: "horizontal" }, sightRange: 5, vision: "cone", pace: "normal", approachStyle: "dash", alert: "exclamation",
     respawnSec: 0, clearSwitchId: "sw_fs2_fort_knight_court_down", checkpointOnEntry: true });
   post(FS2_FORTRESS_ID, FORT.rooms, ["yard", "stair"], 2, (n) => ({
@@ -1778,6 +1791,8 @@ function fortressEvents(project: Project): void {
   const fort = M(project, FS2_FORTRESS_ID);
   const top = M(project, FS2_FORT_TOP_ID);
   const court = M(project, FS2_FORT_COURT_ID);
+  // 성 던전 도구가 요새 안 두 층에 구름 바다 배경을 깔았다 — 돌방 벽 너머로 하늘이 보여 공중 성처럼 읽혔다. 요새 안은 벽 너머가 어둡다.
+  for (const map of [fort, top]) delete (map as unknown as Rec).background;
   // 2층 성주 홀 북쪽 문 → 바깥 성벽 위. 성벽 위 같은 자리(망루 곁)에서 다시 들어간다.
   addEvent(top, "ev_fs2_fort_wall_door", "성벽으로 나가는 문", FORT.sarah, [
     page("ev_fs2_fort_wall_door_p", "성벽으로", [], [se("cc0-se-osx-door-open"), transfer(FS2_FORT_COURT_ID, COURT.arrive, "left")], { trigger: { kind: "playerTouch" }, priority: "below" }),
@@ -2846,7 +2861,7 @@ const DETECTION_PROFILES: { troops: string[]; args: Rec }[] = [
   { troops: [FS2_PATROL_TROOP], args: { sightRange: 6, coneDegrees: 120, alertMs: 250, rush: true, rushSteps: 3, rushStepMs: 110, chaseStepMs: 170, searchMs: 4000, giveUpRange: 12 } },
   { troops: ["troop_fs2_starved_dogs", "troop_fs2_ash_crows", "troop_fs2_fort_dogs", "troop_fs2_frost_wolves", "troop_fs2_frost_mixed"], args: { sightRange: 7, coneDegrees: 110, alertMs: 150, rush: true, rushSteps: 4, rushStepMs: 100, chaseStepMs: 160 } },
   { troops: ["troop_fs2_ash_wisps", "troop_fs2_frost_bats"], args: { sightRange: 7, coneDegrees: 120, alertMs: 200, rush: true, rushSteps: 3, rushStepMs: 110, chaseStepMs: 170 } },
-  { troops: [FS2_KNIGHT_TROOP, FS2_GATE_CAPTAIN_TROOP], args: { sightRange: 7, coneDegrees: 120, alertMs: 200, rush: true, rushSteps: 5, rushStepMs: 100, chaseStepMs: 170, searchMs: 5000, giveUpRange: 14 } },
+  { troops: [FS2_KNIGHT_TROOP, FS2_KNIGHT_TROOP_OUT, FS2_GATE_CAPTAIN_TROOP], args: { sightRange: 7, coneDegrees: 120, alertMs: 200, rush: true, rushSteps: 5, rushStepMs: 100, chaseStepMs: 170, searchMs: 5000, giveUpRange: 14 } },
   { troops: ["troop_fs2_ash_snakes"], args: { sightRange: 6, coneDegrees: 100, alertMs: 350, rush: false, chaseStepMs: 300 } },
   { troops: ["troop_fs2_cinder_golem"], args: { sightRange: 6, coneDegrees: 90, alertMs: 600, rush: false, chaseStepMs: 400, giveUpRange: 8 } },
 ];
