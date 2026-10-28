@@ -5161,7 +5161,7 @@
   {
    "id": "act2-b8-arrive",
    "label": "제2막 B8 — 눈보라 고개 끝 → 서리나루 도착",
-   "note": "act2Opening.ts frostford — create_transfer_pair 고개 출구 ↔ 마을 남쪽(틈 도약을 길로 인정)",
+   "note": "frostford.ts — 설원 길 출구 ↔ 마을 남쪽 어귀(21,63), 광장 서쪽으로 지나 큰 부두 끝 하르마 앞(20,31)까지 걷기",
    "mapId": "map_snow_north_2",
    "x": 10,
    "y": 2,
@@ -5256,12 +5256,22 @@
       {
        "kind": "hold",
        "dir": null,
-       "ms": 1200
+       "ms": 800
       },
       {
        "kind": "move",
        "dir": "up",
-       "steps": 6
+       "steps": 14
+      },
+      {
+       "kind": "move",
+       "dir": "left",
+       "steps": 1
+      },
+      {
+       "kind": "move",
+       "dir": "up",
+       "steps": 18
       },
       {
        "kind": "hold",
@@ -5276,10 +5286,10 @@
   {
    "id": "act2-b8-harma",
    "label": "제2막 B8 — 하르마: 세린 이야기, 은빛 송어 부탁",
-   "note": "act2Opening.ts frostford — 하르마(16,13)",
+   "note": "frostford.ts — 하르마(큰 부두 끝 20,30)",
    "mapId": "fs2_frostford",
-   "x": 16,
-   "y": 14,
+   "x": 20,
+   "y": 31,
    "facing": "up",
    "switches": {
     "sw_fs_main_started": true,
@@ -5375,10 +5385,10 @@
   {
    "id": "act2-b8-fish",
    "label": "제2막 B8 Q5 — 얼음 구멍에서 은빛 송어 → 하르마의 은빛 노",
-   "note": "act2Opening.ts frostford — 얼음 구멍(14,9)",
+   "note": "frostford.ts — 동쪽 낚시 만 얼음 구멍(30,29) → 부두 끝 하르마(20,30)",
    "mapId": "fs2_frostford",
-   "x": 14,
-   "y": 10,
+   "x": 30,
+   "y": 30,
    "facing": "up",
    "switches": {
     "sw_fs_main_started": true,
@@ -5470,18 +5480,12 @@
      "ops": [
       {
        "kind": "move",
-       "dir": "down",
-       "steps": 3
+       "dir": "left",
+       "steps": 9
       },
       {
-       "kind": "move",
-       "dir": "right",
-       "steps": 1
-      },
-      {
-       "kind": "move",
-       "dir": "right",
-       "steps": 1
+       "kind": "face",
+       "dir": "left"
       },
       {
        "kind": "hold",
@@ -5532,10 +5536,10 @@
   {
    "id": "act2-b8-sled",
    "label": "제2막 B8 Q6 — 징발대 병사와 새라: 장작 썰매를 마을로",
-   "note": "act2Opening.ts frostford — 징발대(20,10)",
+   "note": "frostford.ts — 징발 창고 앞 썰매 곁 병사(12,51)",
    "mapId": "fs2_frostford",
-   "x": 20,
-   "y": 11,
+   "x": 12,
+   "y": 52,
    "facing": "up",
    "switches": {
     "sw_fs_main_started": true,
@@ -5631,10 +5635,10 @@
   {
    "id": "act2-b8-inn",
    "label": "제2막 B8 — 서리나루 여관(별빛 결정)",
-   "note": "act2Opening.ts frostford — 여관 문",
+   "note": "frostford.ts — 광장 동쪽 여관(문 31,49)",
    "mapId": "fs2_frostford",
    "x": 31,
-   "y": 20,
+   "y": 50,
    "facing": "up",
    "switches": {
     "sw_fs_main_started": true,
@@ -5713,11 +5717,11 @@
   {
    "id": "act2-b9-night",
    "label": "제2막 B9 — 여관에서 밤을 기다려 얼음 위의 밤으로",
-   "note": "act2Opening.ts lanternNightEvents — 여관 주인 밤 페이지",
+   "note": "frostford.ts lanternNightEvents — 여관 주인(10,7) 밤 페이지",
    "mapId": "fs2_frostford_inn",
-   "x": 23,
-   "y": 15,
-   "facing": "up",
+   "x": 9,
+   "y": 7,
+   "facing": "right",
    "switches": {
     "sw_fs_main_started": true,
     "sw_fs_main_done": true,
@@ -5846,11 +5850,11 @@
   },
   {
    "id": "act2-b9-valen",
-   "label": "제2막 B9 — 얼음 위의 발렌: 등을 같이 띄운다(세린 이름) → 갈라지는 얼음 탈출 → 하늘탑",
-   "note": "act2Opening.ts lanternNight — 발렌(8,13), make_timed_escape",
+   "label": "제2막 B9 — 섬 사당의 발렌: 등을 같이 띄운다 → 탑 빛기둥(카메라) → 갈라지는 얼음 탈출 → 하늘탑",
+   "note": "frostford.ts lanternNight — 섬 사당 앞 발렌(21,26), iceEscape make_timed_escape(지그재그 3번 꺾기)",
    "mapId": "fs2_frostford_night",
-   "x": 8,
-   "y": 14,
+   "x": 21,
+   "y": 27,
    "facing": "up",
    "switches": {
     "sw_fs_main_started": true,
@@ -6009,19 +6013,99 @@
      "ops": [
       {
        "kind": "move",
+       "dir": "left",
+       "steps": 1
+      },
+      {
+       "kind": "move",
        "dir": "up",
-       "steps": 9
+       "steps": 1
+      },
+      {
+       "kind": "move",
+       "dir": "left",
+       "steps": 1
+      },
+      {
+       "kind": "move",
+       "dir": "up",
+       "steps": 5
+      },
+      {
+       "kind": "move",
+       "dir": "left",
+       "steps": 7
+      },
+      {
+       "kind": "move",
+       "dir": "up",
+       "steps": 1
+      },
+      {
+       "kind": "move",
+       "dir": "left",
+       "steps": 3
+      },
+      {
+       "kind": "move",
+       "dir": "up",
+       "steps": 4
+      },
+      {
+       "kind": "move",
+       "dir": "right",
+       "steps": 14
+      },
+      {
+       "kind": "move",
+       "dir": "up",
+       "steps": 1
+      },
+      {
+       "kind": "move",
+       "dir": "right",
+       "steps": 8
+      },
+      {
+       "kind": "move",
+       "dir": "up",
+       "steps": 4
+      },
+      {
+       "kind": "move",
+       "dir": "left",
+       "steps": 6
+      },
+      {
+       "kind": "move",
+       "dir": "up",
+       "steps": 1
+      },
+      {
+       "kind": "move",
+       "dir": "left",
+       "steps": 3
+      },
+      {
+       "kind": "move",
+       "dir": "up",
+       "steps": 1
+      },
+      {
+       "kind": "move",
+       "dir": "left",
+       "steps": 1
       },
       {
        "kind": "hold",
        "dir": null,
-       "ms": 800
+       "ms": 1200
       },
       {
        "kind": "repeatUntil",
        "testid": "dialogue-box",
        "state": "absent",
-       "maxRounds": 4,
+       "maxRounds": 6,
        "ops": [
         {
          "kind": "key",
@@ -6043,7 +6127,7 @@
       {
        "kind": "move",
        "dir": "up",
-       "steps": 3
+       "steps": 1
       },
       {
        "kind": "waitForMap",
@@ -6054,6 +6138,243 @@
        "kind": "hold",
        "dir": null,
        "ms": 1500
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "act2-b9-fail",
+   "label": "제2막 B9 — 탈출 실패: 붕괴 파도에 빠지면 사당 앞에서 다시(대화 없이), 섬 위 줄을 밟으면 다시 시작",
+   "note": "frostford.ts lanternNight — 섬 사당 앞 발렌(21,26), iceEscape make_timed_escape(지그재그 3번 꺾기)",
+   "mapId": "fs2_frostford_night",
+   "x": 21,
+   "y": 27,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_done": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs2_act2_started": true,
+    "sw_fs2_out_of_cells": true,
+    "sw_fs2_hub_arrived": true,
+    "sw_fs2_mire_well": true,
+    "sw_fs2_heard_carriage": true,
+    "sw_fs2_hanel_told": true,
+    "sw_fs2_rohan_spear": true,
+    "sw_fs2_bram_hole": true,
+    "sw_fs2_dawn_mem_0": true,
+    "sw_fs2_dawn_mem_1": true,
+    "sw_fs2_dawn_mem_2": true,
+    "sw_fs2_serin_form": true,
+    "sw_fs2_sarah_joined": true,
+    "sw_fs2_snow_arrived": true,
+    "sw_fs2_spear_returned": true,
+    "sw_fs2_frost_arrived": true,
+    "sw_fs2_harma_told": true,
+    "sw_fs2_q5_trout_asked": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 14
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 14
+    },
+    {
+     "actorId": "actor_fs2_sarah",
+     "level": 14
+    }
+   ],
+   "items": {
+    "item_fs2_serin_form": 1
+   },
+   "beats": [
+    {
+     "id": "meet",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 800
+      },
+      {
+       "kind": "action"
+      },
+      {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 15000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "choice",
+     "ops": [
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-choice-frame",
+       "state": "present",
+       "maxRounds": 12,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 1100
+        }
+       ]
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1200
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "lantern",
+     "ops": [
+      {
+       "kind": "key",
+       "key": "ArrowDown"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 400
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1200
+      },
+      {
+       "kind": "repeatUntil",
+       "testid": "runtime-timer-hud",
+       "state": "present",
+       "maxRounds": 40,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 900
+        }
+       ]
+      },
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 4,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 700
+        }
+       ]
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "fall",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 9000
+      },
+      {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 15000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1200
+      },
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 6,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 900
+        }
+       ]
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "retry",
+     "ops": [
+      {
+       "kind": "move",
+       "dir": "left",
+       "steps": 1
+      },
+      {
+       "kind": "move",
+       "dir": "up",
+       "steps": 1
+      },
+      {
+       "kind": "move",
+       "dir": "left",
+       "steps": 1
+      },
+      {
+       "kind": "move",
+       "dir": "up",
+       "steps": 5
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 2500
       }
      ],
      "shot": true
@@ -6476,10 +6797,10 @@
   {
    "id": "act2-b8-festival",
    "label": "제2막 B8 — 해 질 녘 못가, 「대답의 등」 하나를 띄운다",
-   "note": "act2Opening.ts frostFestival",
+   "note": "frostford.ts frostFestival — 기슭 첫 등불 기둥(18,35)",
    "mapId": "fs2_frostford",
-   "x": 6,
-   "y": 15,
+   "x": 18,
+   "y": 36,
    "facing": "up",
    "switches": {
     "sw_fs_main_started": true,
@@ -6601,10 +6922,10 @@
   {
    "id": "act2-b8-home-lamp",
    "label": "제2막 B8 — 서리나루 등 만드는 집 — 소이",
-   "note": "act2Opening.ts frostHome",
+   "note": "frostford.ts — 집 문 앞",
    "mapId": "fs2_frostford",
-   "x": 3,
-   "y": 21,
+   "x": 11,
+   "y": 58,
    "facing": "up",
    "switches": {
     "sw_fs_main_started": true,
@@ -6677,8 +6998,18 @@
        "steps": 2
       },
       {
+       "kind": "move",
+       "dir": "left",
+       "steps": 1
+      },
+      {
+       "kind": "move",
+       "dir": "up",
+       "steps": 3
+      },
+      {
        "kind": "face",
-       "dir": "up"
+       "dir": "right"
       },
       {
        "kind": "action"
@@ -6702,10 +7033,10 @@
   {
    "id": "act2-b8-home-fisher",
    "label": "제2막 B8 — 서리나루 어부 도윤의 집",
-   "note": "act2Opening.ts frostHome",
+   "note": "frostford.ts — 집 문 앞",
    "mapId": "fs2_frostford",
-   "x": 24,
-   "y": 20,
+   "x": 31,
+   "y": 58,
    "facing": "up",
    "switches": {
     "sw_fs_main_started": true,
@@ -6775,6 +7106,11 @@
       {
        "kind": "move",
        "dir": "up",
+       "steps": 1
+      },
+      {
+       "kind": "move",
+       "dir": "right",
        "steps": 2
       },
       {
@@ -6803,10 +7139,10 @@
   {
    "id": "act2-b8-home-harma",
    "label": "제2막 B8 — 서리나루 하르마의 집 — 손주 나래",
-   "note": "act2Opening.ts frostHome",
+   "note": "frostford.ts — 집 문 앞",
    "mapId": "fs2_frostford",
-   "x": 39,
-   "y": 19,
+   "x": 16,
+   "y": 43,
    "facing": "up",
    "switches": {
     "sw_fs_main_started": true,
@@ -6876,7 +7212,12 @@
       {
        "kind": "move",
        "dir": "up",
-       "steps": 2
+       "steps": 1
+      },
+      {
+       "kind": "move",
+       "dir": "left",
+       "steps": 1
       },
       {
        "kind": "face",
