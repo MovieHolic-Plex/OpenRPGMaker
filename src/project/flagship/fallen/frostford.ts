@@ -85,9 +85,10 @@ const flash = (color: string, ms: number): Command => m2("m2-202-screen-effect",
 const fadeOut = (ms = 1200): Command => m2("m2-202-screen-effect", { effect: "fadeOut", value: "", durationMs: ms });
 const fadeIn = (ms = 900): Command => m2("m2-202-screen-effect", { effect: "fadeIn", value: "", durationMs: ms });
 const sparkle = (x: number, y: number, ms: number): Command => m2("m2-224-particle-effect", { preset: "sparkle", target: "tile", x, y, durationMs: ms, wait: false });
-/** 잠근 채 미끄러진다 — lock 이 없으면 다 간 뒤 곧장 주인공을 다시 따라간다. 돌아오기는 scrollBack. */
-const scroll = (direction: Dir, distance: number, ms: number): Command => m2("m2-049-scroll-map", { direction, distance: String(distance), durationMs: String(ms), wait: "true", lock: "true" });
-const scrollBack = (ms: number): Command => m2("m2-049-scroll-map", { mode: "return", durationMs: String(ms), wait: "true" });
+// 카메라 연출은 Camera Control(m2-201) — 장면 상태(session.camera)에 「고정」으로 남는다. Scroll Map(m2-049)은
+// lock 을 줘도 세션에 안 남아서 다음 인터프리터 스텝의 화면 갱신이 곧장 주인공을 다시 따라간다(실측: 탑이 한 박자도 안 보였다).
+const panTo = (x: number, y: number, ms: number): Command => m2("m2-201-camera-control", { mode: "panTo", target: "screen", x: String(x), y: String(y), durationMs: String(ms), wait: "true" });
+const panBack = (ms: number): Command => m2("m2-201-camera-control", { mode: "return", durationMs: String(ms), wait: "true" });
 const cutBegin = (): Command => ({ kind: "cutsceneControl", mode: "begin", skippable: true } as unknown as Command);
 const cutEnd = (): Command => ({ kind: "cutsceneControl", mode: "end" } as unknown as Command);
 const cutLabel = (): Command => ({ kind: "label", name: "cutscene_end" } as unknown as Command);
@@ -569,7 +570,6 @@ function lanternNight(project: Project, exec: Exec): void {
 
   // 발렌 — 섬 사당 앞, 등 하나를 든 채.
   const vc = chipOf(project, "ev_fs_valen");
-  const scrollUp = Math.max(0, L.shrineFront.y - 7);
   addEv(project, FS2_FROST_NIGHT_ID, "ev_fs2_lake_valen", VALEN, L.valen, [
     page("ev_fs2_lake_valen_p", "얼음 위의 발렌", [], [
       cutBegin(),
@@ -601,7 +601,7 @@ function lanternNight(project: Project, exec: Exec): void {
       shake(6, 900),
       se("easyrpg-sound-ice2"),
       narrate("쩌억— 발밑 깊은 데서 얼음 우는 소리."),
-      scroll("up", scrollUp, 1800),
+      panTo(L.gateDoor[0]!.x, 4, 1800),
       se("easyrpg-sound-holy3"),
       ...pillarLights,
       flash("#dff2ff", 450),
@@ -609,7 +609,7 @@ function lanternNight(project: Project, exec: Exec): void {
       wait(1200),
       narrate("절벽 위 탑 문 너머로 빛기둥이 솟는다!"),
       wait(600),
-      scrollBack(1300),
+      panBack(1300),
       say(VALEN, "…렌즈가 벌써 열렸군. 늦었다."),
       route("ev_fs2_lake_valen", ["left", "left", "up", "up", "up", "up"].map((dir) => ({ kind: "move", dir })), true),
       setSw(SW_VALEN_MET),

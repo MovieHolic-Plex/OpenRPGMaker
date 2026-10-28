@@ -6257,17 +6257,13 @@
         {
          "kind": "move",
          "dir": "up"
-        },
-        {
-         "kind": "move",
-         "dir": "left"
         }
        ]
       },
       {
        "kind": "waitForPosition",
        "mapId": "fs2_frostford_night",
-       "x": 21,
+       "x": 22,
        "y": 9,
        "timeoutMs": 40000
       }
