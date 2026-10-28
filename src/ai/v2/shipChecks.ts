@@ -4,6 +4,7 @@
 // 기본 이름(주인공)·기본 얼굴·기본 음악이 그대로 남았고(공포 저택 1턴·시타마치), 엔딩은 대사 한 줄이었다.
 // 기준은 빈 프로젝트(createBlankProject) 자체다 — 그 값과 같으면 «아무도 고르지 않은» 기본값이다.
 // 순수 함수(프로젝트만 읽는다). v2FinishGate 가 출하 차단으로, 조언자가 막는 항목(shipBlockers)으로 같이 부른다.
+import { chaserMapsWithoutHiding } from "@/project/chaserHiding";
 import { createBlankProject } from "@/project/defaults";
 import type { Project } from "@/project/types";
 import { findOpeningStillMood } from "@/assets/openingStillMoods";
@@ -388,6 +389,17 @@ export const REQUESTED_FEATURES: readonly RequestedFeature[] = [
     fix: "사물함·옷장·청소도구함 같은 보이는 물건 칸을 숨을 곳으로 한다 — 그 칸에 가구를 놓고(place_object·draw_object) configure_object_behavior{kind:'hiding'} 또는 make_chase_scene 의 hidingSpots 로 그 칸을 준다. 맨바닥의 투명 은신처는 숨을 곳으로 치지 않는다",
   },
 ];
+/**
+ * 추격자가 있는데 그 맵에 숨을 곳(interaction hiding)이 0곳이다(2026-10-29 standin horror 「폐병원」: 순찰·즉사 추격자, 은신처 0).
+ * 기획이 «숨기» 를 말하지 않아도 막는다 — 쫓기기만 하고 피할 수단이 없다. 고칠 수 있는 결함: 맵에 있는 옷장·사물함·침대·커튼에 건다.
+ */
+export function chaserWithoutHiding(project: Project): ShipBlocker[] {
+  return chaserMapsWithoutHiding(project).slice(0, 4).map((m): ShipBlocker => ({
+    id: "chaser-no-hiding",
+    message: `「${m.mapName}」 에 추격자(${m.chaserId})가 있는데 숨을 곳이 0곳이다 — 쫓기면 피할 수단이 없다. 그 맵의 옷장·사물함·침대·커튼 칸을 make_chase_scene 의 hidingSpots 또는 configure_object_behavior{kind:'hiding'} 로 은신처로 한다(순찰 길에서 걸어서 2~14걸음). 그런 가구가 없으면 place_object 로 사물함·옷장을 놓고 그 칸을 준다.`,
+    evidence: `${m.mapId} ${m.chaserId}`,
+  }));
+}
 export function requestedFeatureGaps(project: Project, task: string): ShipBlocker[] {
   return REQUESTED_FEATURES.filter((f) => f.words.test(task) && !f.present(project)).map((f) => ({
     id: "requested-feature-missing",
@@ -442,7 +454,7 @@ export function shipBlockers(project: Project, task: string): ShipBlocker[] {
   // 청사진 경로를 데이터로 걷는다(2026-10-28): 맵·이벤트가 있나, 걸어 닿나, 조건을 켜는 곳이 앞에 있나, 마지막이 엔딩인가.
   const blueprint: ShipBlocker[] = project.gameBlueprint ? walkBlueprint(project).blockers.slice(0, 6)
     : [{ id: "blueprint-missing", message: "이 게임의 청사진이 없다 — write_blueprint 로 새 플레이어 목표 한 줄·시작부터 엔딩까지 핵심 경로(장소·이벤트·조건)·엔딩을 지금 지은 이름 그대로 쓴다.", evidence: "project.gameBlueprint=undefined" }];
-  return [...blueprint, ...hidden, ...unlit, ...invisible, ...offArt, ...repeats, ...tints, ...objectives, ...romance, ...editorDefaultsLeft(project), ...endingClosureProblems(project), ...openingWithoutPlace(project), ...offPremiseArt(project, task), ...defaultPlaceLeaks(project, task), ...titleMismatch(project, task), ...assemblyTimeMismatches(project).map((m): ShipBlocker => ({ id: "assembly-time-mismatch", message: m.message, evidence: m.evidence })), ...requestedFeatureGaps(project, task), ...unreachable, ...spoilers];
+  return [...blueprint, ...hidden, ...unlit, ...invisible, ...offArt, ...repeats, ...tints, ...objectives, ...romance, ...editorDefaultsLeft(project), ...endingClosureProblems(project), ...openingWithoutPlace(project), ...offPremiseArt(project, task), ...defaultPlaceLeaks(project, task), ...titleMismatch(project, task), ...assemblyTimeMismatches(project).map((m): ShipBlocker => ({ id: "assembly-time-mismatch", message: m.message, evidence: m.evidence })), ...requestedFeatureGaps(project, task), ...chaserWithoutHiding(project), ...unreachable, ...spoilers];
 }
 
 /** 게임이 «아직 안 지어졌다»는 신호 — 뼈대 자리표시만 남았거나 엔딩이 없다(편집기 기본 HUD·창 같은 마감 항목은 여기서 보지 않는다). */

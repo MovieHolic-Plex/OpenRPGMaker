@@ -18,6 +18,12 @@
 `pageHorror.ts`는 기존 `updateEventPage` 경로를 사용하므로 초안·취소·적용·편집 감사 로그를 공유한다.
 AI도 `make_chase_scene.pursuit`와 `configure_object_behavior`로 같은 페이지 필드를 저작한다.
 학교 호러 프리셋 지시(`HORROR_CHASE_AUTHORING_GUIDE`)는 방을 `place_concept`로, 은신을 옷장과 같은 칸의 `hidingSpots`로, 숫자 암호를 `compile_puzzle` `password`(inputNumber)로 만든다. 추격 스위치를 꺼서 숨는 척을 하거나 선택지 보기에 암호 숫자를 적지 않는다.
+**추격자 맵의 은신처는 0곳이 될 수 없다(2026-10-29).** standin horror 「폐병원」은 순찰·즉사 추격자가 있는데 숨을 곳이 0곳이었다(조수가 hidingSpots 를 주지 않았다).
+`src/project/chaserHiding.ts` `ensureChaserHidingSpots` 가 맵에 이미 있는 숨을 만한 가구(옷장·사물함·캐비닛 > 침대 > 커튼·책상, 협탁·모니터·걸대 제외 — 타일 이름표 `objectClusterAt`)
+중 순찰 길(집 칸 + `movement.route`)에서 발 칸까지 걸어서 2~14걸음(벽 너머 맨해튼 거리 아님 — canMove BFS)인 막힌 가구 칸 1~2곳(서로 4칸 넘게; 가까운 곳이 하나라도 있으면 먼 곳으로 채우지 않는다)에 투명 `interaction hiding` 이벤트(`ev_hide_<추격자>_<n>`, 이름 「숨을 곳: 가구」)를 결정적으로 건다.
+부르는 곳: `make_chase_scene` 이 hidingSpots 를 생략했을 때(명시 `[]` 면 안 둔다), 조수 v2 끝맺음 `session.clearLanes`(어느 경로로 놓인 추격자든), 소급 `npx tsx scripts/content/apply-chaser-hiding.mts <폴더> [--dry]`(저장 후 다시 열어 확인).
+새 그림은 그리지 않는다 — 그런 가구가 없으면 빈 채로 두고, 출하 검사 `chaserWithoutHiding`(`src/ai/v2/shipChecks.ts`, id `chaser-no-hiding`)이 «고칠 수 있는 결함»으로 막는다(place_object 로 사물함을 놓고 hidingSpots).
+런타임 확인: `whole-game-horror` 시나리오의 hide → 추격자 2칸 안 통과 → 5칸 밖 → 나오기(`openwiki/testing.md`).
 가구 그림은 이벤트에 지정하고 아래 타일은 비운다. 정적 의자 타일에 속성을 붙이는 기능은 아니다.
 물체 동작은 일반 조사 명령보다 우선한다. 기존 명령이 있으면 정적 검사가 경고한다.
 
