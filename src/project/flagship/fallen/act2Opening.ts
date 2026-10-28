@@ -1177,7 +1177,7 @@ function kitCenterTile(project: Project, tilesetId: string, kitId: string): numb
 
 /**
  * 새벽샘 터 다듬기(v1.25 VQA) — derive_map_variant scorch:"whole" 은 남긴 집 발자국과 둘레 한 칸을 빼서
- * 한가운데 연두 잔디 사각형(12×11)이 남았다. 그 자리도 그을리고, 잠긴 집 벽·지붕에 그을음(그림자 얼룩)을 얹는다.
+ * 한가운데 연두 잔디 사각형(12×11)이 남았다. 그 자리도 그을리고, 잠긴 집 둘레를 숯 바닥·숯더미로 두른다(집 그림 자체는 새로 그리지 않는다).
  */
 function scorchDawnwell(project: Project, exec: Exec, kept: { x: number; y: number; w: number; h: number }): void {
   const town = M(project, FS2_DAWNWELL_ID);
@@ -1187,34 +1187,98 @@ function scorchDawnwell(project: Project, exec: Exec, kept: { x: number; y: numb
     if (x >= 0 && y >= 0 && x < town.width && y < town.height) mask[y * town.width + x] = 1;
   }
   applyVariantTerrain(town, tileset, "scorched", 0x5eed31, mask);
-  // 그을음 — 지붕 아래쪽 절반과 벽은 짙게, 지붕 위는 듬성듬성. 칸마다 같은 무늬가 되지 않게 좌표로 섞는다.
-  const soot: Rec[] = [];
-  for (let y = kept.y; y < kept.y + kept.h; y += 1) for (let x = kept.x; x < kept.x + kept.w; x += 1) {
-    const depth = (y - kept.y) / Math.max(1, kept.h - 1);
-    const h = ((x * 73856093) ^ (y * 19349663)) >>> 0;
-    const want = depth > 0.55 ? 0.45 : 0.22;
-    let bits = 0;
-    for (let q = 0; q < 4; q += 1) if (((h >>> (q * 7)) % 100) / 100 < want) bits |= 1 << q;
-    if (bits) soot.push({ x, y, bits });
+  // 모랫길 오토타일은 가장자리에 풀 테두리가 그려져 있어 잿빛 땅 위에 연두 줄로 남았다 — 길은 그을린 마당 흙으로 덮는다.
+  const meta = tileset?.tileMeta ?? [];
+  const yard = kitCenterTile(project, town.tilesetId, "bd-pick-mining-valley-ground-yard");
+  const ash = kitCenterTile(project, town.tilesetId, "bd-pick-mining-valley-ground-slagg");
+  town.lowerTiles.forEach((t, i) => { if (t >= 0 && meta[t]?.tags?.includes("sand")) town.lowerTiles[i] = yard; });
+  // 잠긴 집 — 벽은 버텼지만 둘레 한 칸은 숯 바닥, 앞마당 풀 장식은 걷는다. 집 앞 두 귀퉁이에 숯더미·불씨.
+  for (let y = kept.y - 1; y <= kept.y + kept.h; y += 1) for (let x = kept.x - 1; x <= kept.x + kept.w; x += 1) {
+    if (x < 0 || y < 0 || x >= town.width || y >= town.height) continue;
+    const i = y * town.width + x;
+    const ring = x === kept.x - 1 || y === kept.y - 1 || x === kept.x + kept.w || y === kept.y + kept.h;
+    const lo = town.lowerTiles[i] ?? -1;
+    if (ring && lo >= 0 && isPassable(project, town, x, y) && (town.upperTiles[i] ?? -1) < 0) town.lowerTiles[i] = ash;
+    const up = town.upperTiles[i] ?? -1;
+    if (up >= 0 && meta[up]?.tags?.includes("decal") && /풀|꽃|고사리|덤불/.test(meta[up]?.label ?? "")) town.upperTiles[i] = -1;
   }
-  if (soot.length) exec(project, "paint_shadow", { mapId: FS2_DAWNWELL_ID, cells: soot, mode: "add" });
+  for (const [x, y, id] of [[kept.x - 2, kept.y + kept.h - 2, "bd-pick-volcano-cave-coal-pile"], [kept.x + kept.w, kept.y + kept.h - 2, "bd-pick-volcano-cave-pillar-fallen"], [kept.x + 1, kept.y + kept.h + 1, "bd-pick-volcano-cave-ember-a"]] as const) {
+    try { exec(project, "stamp_object", { objectId: `kit:beodeul_city/${id}`, mapId: FS2_DAWNWELL_ID, x, y }); } catch { /* 자리 없음 — 건너뛴다 */ }
+  }
 }
 
 /**
- * 재의 들판 — 북쪽 숲 어귀는 숲 그늘 줄(B4 도착선) 너머 북쪽만, 재의 들판은 전부 불탄 숲으로(초록 수관 → 고사목·숯·바위, 풀 → 그을린 흙).
- * 숲 그늘 줄과 그 남쪽 개구멍 빈터는 초록으로 둔다 — 브람의 「아직은 내 숲」이 그 줄이다.
+ * 재의 들판 — 들불이 숲 사이 빈터를 태웠다. 숲 덩이(두 겹 수관·줄기)는 그대로 두고, 나무가 없는 빈터 땅만 그을린 흙·잿빛 마당 얼룩으로,
+ * 풀꽃·고사리는 덩어리 진 곳에서만 불씨 자국·자갈로(나머지는 지운다), 빈터 가장자리에 마른 고목 덩이 몇(고목 + 그루터기·숯더미).
+ * 북쪽 숲 어귀는 숲 그늘 줄(B4 도착선) 너머 북쪽만 태운다 — 그 줄과 남쪽 개구멍 빈터가 브람의 「아직은 내 숲」이다.
+ * (v1.25 1차 시도: 마을용 그을림 도구를 숲길 맵에 그대로 썼더니 위층 나무만 걷혀 수관 사이에 통나무·숯더미가 박혔다 — 그래서 빈터만 다룬다.)
  */
-function scorchAshFields(project: Project): void {
+function scorchAshFields(project: Project, exec: Exec): void {
   const [north1, field] = FS2_NORTH_ROUTE.mapIds;
   const edgeY = FS2_B4.edge[0]?.y ?? 0;
-  for (const [mapId, seed] of [[north1!, 0xa5e1], [field!, 0xa5e2]] as const) {
+  const tileset = project.tilesets[M(project, field!).tilesetId];
+  const meta = tileset?.tileMeta ?? [];
+  const grafts = new Map((tileset?.tileGrafts ?? []).map((g) => [g.targetTile, g.sourceChipset]));
+  const tags = (t: number | undefined): readonly string[] => (t === undefined || t < 0 ? [] : meta[t]?.tags ?? []);
+  const isTreeish = (t: number | undefined): boolean => t !== undefined && t >= 0 && (tags(t).includes("tree") || grafts.get(t) === "tex_beodeul_forest_trunks" || grafts.get(t) === "tex_beodeul_nature");
+  const base = kitCenterTile(project, field ? M(project, field).tilesetId : "beodeul_city", "bd-pick-temple-ruins-floor-dirt");
+  const patch = kitCenterTile(project, M(project, field!).tilesetId, "bd-pick-mining-valley-ground-yard");
+  const kitUpper = (id: string): number => {
+    const kit = tileset?.structureKits?.find((k) => k.id === id) as { rows: { upperTiles?: number[] }[] } | undefined;
+    return kit?.rows[0]?.upperTiles?.find((t) => t >= 0) ?? -1;
+  };
+  const embers = ["bd-pick-volcano-cave-ember-a", "bd-pick-mountain-pass-scree-a", "bd-pick-mountain-pass-scree-b"].map(kitUpper).filter((t) => t >= 0);
+  const hash = (a: number, b: number, c: number): number => (((a * 73856093) ^ (b * 19349663) ^ (c * 83492791)) >>> 0) % 100;
+  for (const [mapId, seed] of [[north1!, 11], [field!, 12]] as const) {
     const map = M(project, mapId);
-    let mask: Uint8Array | undefined;
-    if (mapId === north1) {
-      mask = new Uint8Array(map.width * map.height);
-      for (let y = 0; y < Math.max(0, edgeY - 4); y += 1) for (let x = 0; x < map.width; x += 1) mask[y * map.width + x] = 1;
+    const W = map.width;
+    const yMax = mapId === north1 ? Math.max(0, edgeY - 4) : map.height;
+    const layers = [map.lowerTiles, map.lowerOverlayTiles, map.upperTiles, map.upperOverlayTiles];
+    const open = (x: number, y: number): boolean => {
+      const i = y * W + x;
+      if (layers.some((l) => isTreeish(l?.[i]))) return false;
+      const lo = map.lowerTiles[i];
+      return lo !== undefined && lo >= 0 && (tags(lo).includes("grass") || grafts.get(lo) === "tex_beodeul_ground");
+    };
+    for (let y = 0; y < yMax; y += 1) for (let x = 0; x < W; x += 1) {
+      const i = y * W + x;
+      if (open(x, y)) {
+        const blob = hash(Math.floor((x + (y % 2)) / 4) + seed, Math.floor(y / 3), seed);
+        map.lowerTiles[i] = blob < 28 ? patch : base;
+        if (map.lowerOverlayTiles) map.lowerOverlayTiles[i] = -1;
+      }
+      // 풀꽃·고사리·버섯 장식 — 6×6 묶음 셋 중 하나쯤에만 불씨·자갈로 남긴다.
+      const up = map.upperTiles[i] ?? -1;
+      if (up >= 0 && tags(up).includes("decal") && /들꽃|고사리|버섯|헤더|풀/.test(meta[up]?.label ?? "")) {
+        map.upperTiles[i] = hash(Math.floor(x / 6), Math.floor(y / 6), seed + 7) < 36 && embers.length ? embers[hash(x, y, seed) % embers.length]! : -1;
+      }
     }
-    applyVariantTerrain(map, project.tilesets[map.tilesetId], "scorched", seed, mask);
+    // 마른 고목 덩이 — 빈터 가장자리(숲에서 한두 칸) 세 곳, 서로 8칸 넘게 떨어뜨린다.
+    const anchors: Cell[] = [];
+    for (let y = 2; y < yMax - 5 && anchors.length < 3; y += 1) for (let x = 2; x < W - 4 && anchors.length < 3; x += 1) {
+      if (hash(x, y, seed + 3) > 6) continue;
+      if (anchors.some((a) => Math.abs(a.x - x) + Math.abs(a.y - y) < 9)) continue;
+      let ok = true;
+      for (let dy = 0; dy < 4 && ok; dy += 1) for (let dx = 0; dx < 3 && ok; dx += 1) ok = open(x + dx, y + dy) && isPassable(project, map, x + dx, y + dy) && (map.upperTiles[(y + dy) * W + x + dx] ?? -1) < 0;
+      if (!ok || map.events.some((e) => Math.abs(e.x - (x + 1)) + Math.abs(e.y - (y + 2)) <= 4)) continue;
+      // 길(모랫길)에서 두 칸 떼고, 숲에서 세 칸 안쪽 — 빈터 한가운데 혼자 서지 않게.
+      let nearPath = false, nearForest = false;
+      for (let dy = -2; dy <= 5; dy += 1) for (let dx = -2; dx <= 4; dx += 1) {
+        const xx = x + dx, yy = y + dy;
+        if (xx < 0 || yy < 0 || xx >= W || yy >= map.height) continue;
+        const ii = yy * W + xx;
+        if (tags(map.lowerTiles[ii]).includes("sand")) nearPath = true;
+        if (layers.some((l) => isTreeish(l?.[ii]))) nearForest = true;
+      }
+      if (nearPath || !nearForest) continue;
+      try {
+        exec(project, "stamp_object", { objectId: "kit:beodeul_city/bd-pick-swamp-stilt-snag", mapId, x, y });
+        anchors.push({ x, y });
+        for (const [dx, dy, id] of [[3, 3, "bd-pick-deep-forest-path-stump"], [-1, 3, "bd-pick-volcano-cave-coal-pile"]] as const) {
+          try { exec(project, "stamp_object", { objectId: `kit:beodeul_city/${id}`, mapId, x: x + dx, y: y + dy }); } catch { /* 곁가지 — 자리 없으면 건너뛴다 */ }
+        }
+      } catch { /* 도장이 거절 — 다음 자리 */ }
+    }
   }
 }
 
@@ -1927,11 +1991,13 @@ function frostFoes(project: Project, exec: Exec, maps: { mapId: string; entry: C
     const want = Math.round(total * t);
     const cands = [...route].map(cellOf).filter((c) => avoid.every((a) => Math.abs(a.x - c.x) + Math.abs(a.y - c.y) > 5))
       .sort((a, b) => Math.abs((dist.get(`${a.x},${a.y}`) ?? 0) - want) - Math.abs((dist.get(`${b.x},${b.y}`) ?? 0) - want));
-    for (const c of cands.slice(0, 12)) if (foe(mapId, troopId, c, style)) return c;
+    // 입구 시야(매복 금지)·이벤트 곁은 도구가 거절한다 — 가까운 걸음부터 넉넉히 시도한다.
+    for (const c of cands.slice(0, 80)) if (foe(mapId, troopId, c, style)) return c;
     return null;
   };
   maps.forEach((m, i) => {
-    const gapSet = new Set(m.gaps.flat().map((c) => `${c.x},${c.y}`));
+    // 틈(새라 도약)과 얼음 덩이(엘레나 불씨)는 건넌다고 친다 — 막힌 칸으로 세면 첫 틈 너머가 「닿지 않는 곳」이 됐다.
+    const gapSet = new Set([...m.gaps.flat(), ...M(project, m.mapId).events.filter((e) => e.id.startsWith("ev_fs2_snow_ice")).map((e) => ({ x: e.x, y: e.y }))].map((c) => `${c.x},${c.y}`));
     const start = i === 0 ? FS2_SNOW.entry : { x: m.entry.x, y: m.entry.y - 1 };
     const dist = reach(m.mapId, start, gapSet);
     // 본길 — 출구(없으면 가장 먼 칸)에서 걸음 수를 거꾸로 따라 내려온 칸들.
@@ -1973,13 +2039,21 @@ function frostFoes(project: Project, exec: Exec, maps: { mapId: string; entry: C
       // 상자와 본길 사이(곁길 중간)에 박쥐 떼.
       const mid = [...offRoute.entries()].filter(([k, d]) => d >= 1 && d <= 2 && avoid.every((a) => { const c = cellOf(k); return Math.abs(a.x - c.x) + Math.abs(a.y - c.y) > 4; }))
         .map(([k]) => cellOf(k)).sort((a, b) => (Math.abs(a.x - chest!.x) + Math.abs(a.y - chest!.y)) - (Math.abs(b.x - chest!.x) + Math.abs(b.y - chest!.y)));
-      for (const at of mid.slice(0, 10)) if (foe(m.mapId, "troop_fs2_frost_bats", at, "swoop")) { avoid.push(at); break; }
+      let bats = false;
+      for (const at of mid.slice(0, 40)) if (foe(m.mapId, "troop_fs2_frost_bats", at, "swoop")) { avoid.push(at); bats = true; break; }
+      if (!bats) onRoute(m.mapId, dist, route, 0.65, "troop_fs2_frost_bats", "swoop", avoid);
     } else {
       // 눈보라 고개 — 갈림 고리(본길에서 먼 칸)에 늑대+박쥐, 고개 위(본길 70%)에 늑대 둘.
-      for (const at of nooks.slice(0, 12)) if (avoid.every((a) => Math.abs(a.x - at.x) + Math.abs(a.y - at.y) > 5) && foe(m.mapId, "troop_fs2_frost_mixed", at, "dash")) { avoid.push(at); break; }
+      let mixed = false;
+      for (const at of nooks.slice(0, 40)) if (avoid.every((a) => Math.abs(a.x - at.x) + Math.abs(a.y - at.y) > 5) && foe(m.mapId, "troop_fs2_frost_mixed", at, "dash")) { avoid.push(at); mixed = true; break; }
+      if (!mixed) { const at = onRoute(m.mapId, dist, route, 0.4, "troop_fs2_frost_mixed", "dash", avoid); if (at) avoid.push(at); }
       onRoute(m.mapId, dist, route, 0.7, "troop_fs2_frost_wolves", "dash", avoid);
     }
   });
+  for (const m of maps) {
+    const n = M(project, m.mapId).events.filter((e) => JSON.stringify(e.pages ?? []).includes("troop_fs2_frost_")).length;
+    if (n < 2) throw new Error(`[fallen-star act2] ${m.mapId} 에 서리 무리를 둘 이상 못 세웠다(${n})`);
+  }
 }
 /** B7 곁길 보물 자리(QA·체크포인트). */
 export const FS2_SNOW_EXTRA: { chest: Cell } = { chest: { x: 0, y: 0 } };
@@ -2582,7 +2656,7 @@ export function applyFallenAct2Opening(project: Project, exec: Exec, ids: Fallen
   bridge(project, exec);
   northGateEvents(project, exec, ids.hub);
   // 숲 그늘 줄(B4)이 정해진 뒤에 그 북쪽만 태운다.
-  scorchAshFields(project);
+  scorchAshFields(project, exec);
   dawnwellEvents(project);
   northFortress(project, exec, ids.hub);
   snowPass(project, exec);

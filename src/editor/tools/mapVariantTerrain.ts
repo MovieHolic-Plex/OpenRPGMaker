@@ -234,10 +234,16 @@ export function applyVariantTerrain(copy: GameMap, tileset: Tileset | undefined,
       const xs = component.map((cell) => cell % width), ys = component.map((cell) => Math.floor(cell / width));
       const minX = Math.min(...xs), minY = Math.min(...ys), maxX = Math.max(...xs), maxY = Math.max(...ys);
       const taken = new Set<number>();
-      const order = swaps.map((piece, n) => ({ piece, key: hash32(`${seed}:swap:${start}:${n}`) })).sort((a, b) => a.key - b.key).map((entry) => entry.piece);
+      // 불탄 숲은 고목(가장 큰 조각)부터 — 남은 자리를 그루터기·통나무가 메운다.
+      const order = swaps.map((piece, n) => ({ piece, key: hash32(`${seed}:swap:${start}:${n}`) }))
+        .sort((a, b) => (profile === "scorched" && component.length > 16 ? b.piece.cells.length - a.piece.cells.length : 0) || a.key - b.key).map((entry) => entry.piece);
       let placed = 0;
-      const budget = profile === "scorched" && component.length <= 16 && !clump(start) ? 0 : component.length >= 9 ? 2 : 1;
-      for (const piece of order) {
+      // 불탄 숲 덩어리는 선 채 죽은 고목을 덩어리 크기만큼 더 세운다(12칸에 하나) — 통나무·숯더미 줄만 깔리면 「목재 야적장」으로 보였다(v1.25 VQA).
+      const budget = profile === "scorched" && component.length <= 16 && !clump(start) ? 0
+        : profile === "scorched" && component.length > 16 ? Math.max(2, Math.floor(component.length / 12))
+        : component.length >= 9 ? 2 : 1;
+      const sequence = profile === "scorched" && component.length > 16 && order[0] ? [...Array.from({ length: budget }, () => order[0]!), ...order.slice(1)] : order;
+      for (const piece of sequence) {
         if (placed >= budget) break;
         fit: for (let y = maxY - piece.h + 1; y >= minY; y -= 1) {
           for (let x = minX; x + piece.w - 1 <= maxX; x += 1) {
