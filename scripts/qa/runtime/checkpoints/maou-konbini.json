@@ -1,0 +1,212 @@
+{
+ "set": "maou-konbini",
+ "query": {
+  "demo": "maou-konbini",
+  "e2eVitals": "1"
+ },
+ "viewport": {
+  "width": 480,
+  "height": 270
+ },
+ "defaultBeats": [
+  {
+   "id": "arrive",
+   "ops": [
+    {
+     "kind": "hold",
+     "dir": null,
+     "ms": 2500
+    }
+   ],
+   "shot": true
+  }
+ ],
+ "checkpoints": [
+  {
+   "id": "mk-throne",
+   "label": "옥좌의 방 — 새 게임(마왕 본모습)",
+   "mapId": "map_mk_throne",
+   "x": 23,
+   "y": 5,
+   "facing": "down",
+   "party": [
+    {
+     "actorId": "actor_mk_maou_true",
+     "level": 40
+    }
+   ]
+  },
+  {
+   "id": "mk-room",
+   "label": "원룸 — 전생 직후",
+   "mapId": "map_mk_room",
+   "x": 3,
+   "y": 5,
+   "facing": "down",
+   "variables": {
+    "var_mk_stage": 1
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 12
+    }
+   ]
+  },
+  {
+   "id": "mk-interview",
+   "label": "상점가 — 첫 출근(면접 전)",
+   "mapId": "map_mk_street",
+   "x": 14,
+   "y": 9,
+   "facing": "left",
+   "variables": {
+    "var_mk_stage": 2
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 12
+    }
+   ]
+  },
+  {
+   "id": "mk-day1",
+   "label": "편의점 — 첫째 날 계산대 앞",
+   "mapId": "map_mk_konbini",
+   "x": 12,
+   "y": 11,
+   "facing": "down",
+   "variables": {
+    "var_mk_stage": 3,
+    "var_mk_tasks": 0,
+    "var_mk_service": 2
+   },
+   "switches": {
+    "sw_mk_on_shift": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 12
+    }
+   ]
+  },
+  {
+   "id": "mk-evening1",
+   "label": "상점가 — 첫째 날 저녁(리리 재회)",
+   "mapId": "map_mk_street",
+   "x": 3,
+   "y": 9,
+   "facing": "right",
+   "variables": {
+    "var_mk_stage": 4,
+    "var_mk_service": 5
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 12
+    }
+   ]
+  },
+  {
+   "id": "mk-day2",
+   "label": "편의점 — 둘째 날 아침 브리핑",
+   "mapId": "map_mk_konbini",
+   "x": 8,
+   "y": 14,
+   "facing": "up",
+   "variables": {
+    "var_mk_stage": 5,
+    "var_mk_tasks": 0,
+    "var_mk_service": 5
+   },
+   "switches": {
+    "sw_mk_lily_met": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 12
+    }
+   ]
+  },
+  {
+   "id": "mk-meeting",
+   "label": "상점가 — 둘째 날 저녁(공원 회의 전)",
+   "mapId": "map_mk_street",
+   "x": 3,
+   "y": 9,
+   "facing": "right",
+   "variables": {
+    "var_mk_stage": 6,
+    "var_mk_service": 8
+   },
+   "switches": {
+    "sw_mk_lily_met": true,
+    "sw_mk_tanaka_order": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 12
+    }
+   ]
+  },
+  {
+   "id": "mk-night",
+   "label": "편의점 — 사흘째 야간 브리핑",
+   "mapId": "map_mk_konbini",
+   "x": 8,
+   "y": 14,
+   "facing": "up",
+   "variables": {
+    "var_mk_stage": 7,
+    "var_mk_tasks": 0,
+    "var_mk_service": 8
+   },
+   "switches": {
+    "sw_mk_lily_met": true,
+    "sw_mk_tanaka_order": true,
+    "sw_mk_meeting_done": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 12
+    }
+   ]
+  },
+  {
+   "id": "mk-crisis",
+   "label": "편의점 — 위기 직전(업무 3/3, 선택지로 이어짐)",
+   "mapId": "map_mk_konbini",
+   "x": 12,
+   "y": 11,
+   "facing": "down",
+   "variables": {
+    "var_mk_stage": 7,
+    "var_mk_tasks": 3,
+    "var_mk_service": 8
+   },
+   "switches": {
+    "sw_mk_lily_met": true,
+    "sw_mk_tanaka_order": true,
+    "sw_mk_meeting_done": true,
+    "sw_mk_brief3": true,
+    "sw_mk_t_reg3": true,
+    "sw_mk_t_box3": true,
+    "sw_mk_t_waste3": true,
+    "sw_ev_mk_c3a_out": true,
+    "sw_ev_mk_c3b_out": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 12
+    }
+   ]
+  }
+ ]
+}

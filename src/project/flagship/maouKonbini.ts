@@ -195,7 +195,7 @@ function setupDatabase(project: Project): void {
   makeTroop("troop_mk_power", "편의점의 결전 · 마왕 재림", "enemy_mk_leon_awake", "battle-scenery-cave",
     [{ preset: "glow", opacity: 60 }, { preset: "lightRays", opacity: 40 }, { preset: "embers", opacity: 50 }]);
   makeTroop("troop_mk_manual", "편의점의 결전 · 알바 매뉴얼", "enemy_mk_leon_angry", "battle-scenery-plains",
-    [{ preset: "stars", opacity: 55 }, { preset: "glow", opacity: 35 }]);
+    [{ preset: "glow", opacity: 25 }]);
 }
 
 // ── 맵 짓기 ──
@@ -1237,7 +1237,7 @@ function buildOpening(project: Project): void {
       { id: "line1", text: "이것은 세계를 멸망시키려던 마왕이", y: 92, size: 13, color: "#fff0dc", startMs: 500 },
       { id: "line2", text: "편의점에서 일하게 되는 이야기다.", y: 120, size: 13, color: "#ffd479", startMs: 2600 },
     ] });
-  shot("mk_op_konbini", 6200, M.konbini, { x: 12, y: 11 }, 2, [
+  shot("mk_op_konbini", 6200, M.konbini, { x: 12, y: 12 }, 2, [
     { id: "maou", res: "oprn-charset-modern2", idx: 3, cell: { x: 12, y: 11 } },
     { id: "hina", res: "oprn-charset-modern2", idx: 5, cell: { x: 14, y: 10 }, dir: "left" },
     { id: "cust", res: "oprn-charset-modern3", idx: 1, cell: { x: 12, y: 13 }, dir: "up" },
