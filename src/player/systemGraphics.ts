@@ -5,6 +5,7 @@ import { transparentColorKeyDataUrl } from "@/assets/transparentColorKeyBackgrou
 import { DEFAULT_RUNTIME_WINDOW_SKIN_ID, normalizeSystemWindowSkinId } from "@/project/databaseRecordModel";
 import type { Project, TitleBackgroundFit, TitleBackgroundRendering } from "@/project/types";
 import { openingMapViewMapId } from "@/project/openingMapView";
+import { titleMapFrame, TITLE_MAP_SHADE } from "./titleMapFraming";
 import { renderMapViewCanvas } from "./mapBackgroundMapView";
 
 function resourceUrl(resourceId: string | undefined, project?: Project): string | undefined {
@@ -44,6 +45,7 @@ export function applyTitleScreenBackground(
   if (mapId && applyTitleMapView(node, resourceId!, mapId, project ?? store.getCurrent())) return;
   delete node.dataset.titleMapView;
   delete node.dataset.titleMapViewState;
+  delete node.dataset.titleMapViewScale;
   const url = resourceUrl(resourceId, project);
   if (url) {
     const fit = options?.fit ?? "stretch";
@@ -59,36 +61,47 @@ export function applyTitleScreenBackground(
 }
 
 /**
- * 타이틀 배경 「게임 속 맵 그대로」(map-view:<mapId>) — 그 맵의 타일 층을 원 크기로 그려 도트 그대로 화면을 덮는다(2026-10-28).
+ * 타이틀 배경 「게임 속 맵 그대로」(map-view:<mapId>) — 그 맵의 타일 층을 원 크기로 그려 정수 1~2배로 깐다(2026-10-28).
+ * 틀(배율·보일 쪽)은 titleMapFraming.ts, 제목·메뉴가 읽히게 어두운 판(비네트·왼쪽 그라데이션)을 위에 겹친다.
  * 맞는 번들 그림이 없는 게임(방탈출·조선·마법 학교…)의 타이틀이 그 게임의 첫 장소가 된다 — 화풍이 게임과 같고 게임마다 다르다.
  * 그리기는 비동기라 처음엔 검은 바탕이고, 다 그리면 그림을 깐다. 타이틀은 방향키마다 다시 그려지므로 맵 객체마다 결과를 담아 둔다.
  */
-const titleMapViewUrls = new WeakMap<object, string | Promise<string | null>>();
+type TitleMapImage = { readonly url: string; readonly width: number; readonly height: number };
+const titleMapViewUrls = new WeakMap<object, TitleMapImage | Promise<TitleMapImage | null>>();
 function applyTitleMapView(node: HTMLElement, resourceId: string, mapId: string, project: Project): boolean {
   const map = project.maps[mapId];
   if (!map) return false;
   node.dataset.titleMapView = mapId;
   node.style.backgroundColor = "#000";
-  node.style.backgroundSize = "cover";
   node.style.backgroundRepeat = "no-repeat";
-  node.style.backgroundPosition = "center";
   node.style.imageRendering = "pixelated";
+  const start = project.startMapId === mapId && project.startPos ? { mapId, x: project.startPos.x, y: project.startPos.y } : undefined;
+  // 틀 잡기는 화면 크기가 있어야 한다 — 아직 붙지 않은 노드는 다음 그림 차례에 다시 잰다.
+  const paint = (image: TitleMapImage, retry = true): void => {
+    const vw = node.clientWidth, vh = node.clientHeight;
+    if ((!vw || !vh) && retry && typeof requestAnimationFrame === "function") { requestAnimationFrame(() => { if (node.dataset.titleResource === resourceId) paint(image, false); }); }
+    const frame = titleMapFrame(map, start, image.width, image.height, vw || 1024, vh || 768);
+    node.style.backgroundImage = [...TITLE_MAP_SHADE, `url("${image.url}")`].join(", ");
+    node.style.backgroundSize = [...TITLE_MAP_SHADE.map(() => "100% 100%"), `${frame.width}px ${frame.height}px`].join(", ");
+    node.style.backgroundPosition = [...TITLE_MAP_SHADE.map(() => "0 0"), `${frame.x}px ${frame.y}px`].join(", ");
+    node.dataset.titleMapViewScale = String(frame.scale);
+    node.dataset.titleMapViewState = "ready";
+  };
   const cached = titleMapViewUrls.get(map);
-  if (typeof cached === "string") { node.style.backgroundImage = `url("${cached}")`; node.dataset.titleMapViewState = "ready"; return true; }
+  if (cached && !(cached instanceof Promise)) { paint(cached); return true; }
   node.style.backgroundImage = "";
   node.dataset.titleMapViewState = "pending";
   const pending = cached ?? renderMapViewCanvas(project, { mapId, scale: 1, haze: 0, desaturate: 0, hazeColor: "#000000" })
     .then((canvas) => {
-      const url = canvas?.toDataURL("image/png") ?? null;
-      if (url) titleMapViewUrls.set(map, url); else titleMapViewUrls.delete(map);
-      return url;
+      const image = canvas ? { url: canvas.toDataURL("image/png"), width: canvas.width, height: canvas.height } : null;
+      if (image) titleMapViewUrls.set(map, image); else titleMapViewUrls.delete(map);
+      return image;
     })
     .catch(() => { titleMapViewUrls.delete(map); return null; });
   if (!cached) titleMapViewUrls.set(map, pending);
-  void pending.then((url) => {
+  void pending.then((image) => {
     if (node.dataset.titleResource !== resourceId) return;
-    if (url) node.style.backgroundImage = `url("${url}")`;
-    node.dataset.titleMapViewState = url ? "ready" : "failed";
+    if (image) paint(image); else node.dataset.titleMapViewState = "failed";
   });
   return true;
 }
