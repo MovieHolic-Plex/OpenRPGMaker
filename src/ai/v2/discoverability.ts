@@ -15,6 +15,9 @@ import { objectClusterAt } from "@/project/objectFootprint";
 import { isDoorArtCell } from "@/project/staging/doorCells";
 import { isPassable } from "@/project/collision";
 import type { GameMap, Project } from "@/project/types";
+import { mapRoute, objectiveTargetViews } from "@/player/objectiveTarget";
+import type { RuntimeEventView } from "@/project/runtimeEventState";
+import { computeReachableCells } from "@/project/lint/reachability";
 
 export const OBJECTIVE_COMMAND_ID = "m2-214-ui-command";
 export const OBJECTIVE_SURFACE = "objectiveChip";
@@ -159,6 +162,8 @@ export function objectiveGaps(project: Project): string[] {
   let atStart = false;
   for (const page of startPages(project)) visitPageCommands(page, ({ command }) => { if (isObjectiveCommand(command)) atStart = true; });
   if (!atStart) gaps.push("게임을 시작했을 때 「현재 목표」 줄이 비어 있다 — 시작 맵의 자동 실행(오프닝 뒤 첫 컷신)에서 목표를 건다: set_objective{text, at:'start'}.");
+  const startGap = startObjectiveReachGap(project);
+  if (startGap) gaps.push(startGap);
   // 「어디」 — 다른 장소 이름만 대고 그 입구가 어디인지 말하지 않는 목표(J105: 「지하철역의 지훈」 만 보고 역 입구를 못 찾았다).
   let vague = 0;
   for (const page of allPages(project)) {
@@ -196,6 +201,84 @@ export function staleMilestoneTargets(project: Project): { readonly event: Story
     for (const key of keys) for (const owner of read.get(key) ?? []) if (owner && owner !== event.eventId) ids.add(owner);
     return { event, readers: [...ids].sort().flatMap((id) => { const at = where.get(id); return at ? [{ mapId: at.mapId, eventId: id, name: at.name }] : []; }) };
   });
+}
+
+/** 맵의 이벤트를 첫 페이지로 본 정적 보기 — 목표 표시 해석(objectiveTargetViews)을 빌더 쪽에서 같은 규칙으로 돌린다. */
+function staticEventViews(map: GameMap): RuntimeEventView[] {
+  return (map.events ?? []).map((event) => {
+    const page = event.pages?.[0];
+    return { event, page, pageId: page?.id, x: event.x, y: event.y, trigger: page?.trigger ?? event.trigger ?? { kind: "action" } } as unknown as RuntimeEventView;
+  });
+}
+
+/**
+ * 시작 직후 플레이어가 선 자리에서 시작 목표가 가리키는 대상(이벤트·출구)까지 걸어갈 수 있나 — 런타임 목표 표시와 같은 해석으로 대상을 고른다.
+ * 대상을 못 고르는데 꼬리가 「(… 입구: …)」 면(문을 약속했는데 시작 맵에 그 문이 없다) 그것도 짚는다.
+ */
+export function startObjectiveReachGap(project: Project): string | undefined {
+  const map = project.maps[project.startMapId];
+  const sp = project.startPos as Cell | undefined;
+  if (!map || !sp) return undefined;
+  let message: string | undefined;
+  for (const page of startPages(project)) visitPageCommands(page, ({ command }) => {
+    if (message === undefined && isObjectiveCommand(command)) message = String((command.fields as Record<string, unknown>).message);
+  });
+  if (!message) return undefined;
+  const targets = objectiveTargetViews(project, map, staticEventViews(map), message);
+  if (!targets.length) {
+    return /입구:/u.test(message) ? `시작 목표 「${message.slice(0, 50)}」 가 입구를 가리키는데 시작 맵 「${map.name ?? map.id}」 에서 그리로 가는 출구(옮기기 이벤트)를 찾지 못한다 — 출구를 잇거나 목표를 다시 건다(set_objective at:'start').` : undefined;
+  }
+  const reach = computeReachableCells(project, map, sp.x, sp.y);
+  const near = (view: RuntimeEventView) => [[0, 0], [1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => reach.has(`${view.x + dx!},${view.y + dy!}`));
+  if (targets.some(near)) return undefined;
+  const t = targets[0]!;
+  return `시작 자리(${sp.x},${sp.y})에서 시작 목표의 대상 「${String(t.event.name ?? t.event.id)}」(${t.x},${t.y}) 까지 걸어갈 수 없다 — 새 플레이어는 첫 목표에 닿지 못한다. 길을 트거나 대상·시작 자리를 옮긴다.`;
+}
+
+/**
+ * 「(<맵> 입구: …)」 꼬리를 지금 맵 연결로 다시 쓴다(끝맺음 조립에서 한 번, 모델 없음).
+ * 목표 글은 짓는 도중에 걸리고 문·맵은 그 뒤에도 바뀐다 — 마지막 상태에서 «목표가 걸리는 자리에서 본 첫 출구» 방위와
+ * 그 뒤 대상(다음 청사진 단계 이벤트)을 다시 붙인다. 바꾼 목표 수를 돌려준다.
+ */
+export function refreshObjectiveRoutes(project: Project): number {
+  const steps = project.gameBlueprint?.steps ?? [];
+  const find = (ref: string | undefined) => {
+    if (!ref) return undefined;
+    for (const map of Object.values(project.maps)) {
+      const event = (map.events ?? []).find((e) => e.id === ref || e.name === ref);
+      if (event) return { map, event };
+    }
+    return undefined;
+  };
+  let changed = 0;
+  for (const map of Object.values(project.maps)) for (const event of map.events ?? []) {
+    const k = steps.findIndex((step) => step.event === event.id || step.event === event.name);
+    for (const page of event.pages ?? []) {
+      const opening = map.id === project.startMapId && ["auto", "parallel"].includes(String((page.trigger as { kind?: string } | undefined)?.kind));
+      const origin: Cell = opening && project.startPos ? project.startPos as Cell : { x: event.x, y: event.y };
+      const next = k >= 0 ? find(steps[k + 1]?.event) : opening ? find(steps[0]?.event) : undefined;
+      const visit = (list: RawCommand[]): void => {
+        for (const command of list) {
+          for (const child of childLists(command)) { const raw = rawChild(command, child.key); if (raw) visit(raw); }
+          if (!isObjectiveCommand(command)) continue;
+          const fields = command.fields as Record<string, unknown>;
+          const message = String(fields.message ?? "");
+          const tail = /\s*\(([^()]*?)\s*입구:[^()]*\)\s*$/u.exec(message);
+          if (!tail) continue;
+          const named = Object.values(project.maps).find((m) => bare(m.name ?? "") === bare(tail[1]!));
+          if (!named) continue;
+          const base = message.slice(0, tail.index).trimEnd();
+          // 다음 단계 이벤트가 그 입구 맵(또는 그 맵을 거쳐 가는 곳)에 있으면 그 이벤트를, 아니면 입구 맵을 가리킨다.
+          const route = next && next.map.id !== map.id ? mapRoute(project, map.id, next.map.id) : undefined;
+          const where = next && (next.map.id === map.id || route?.includes(named.id)) ? next.event.id : named.id;
+          const updated = withWhere(project, map.id, base, where, origin);
+          if (updated !== message && updated !== base) { fields.message = updated; changed += 1; }
+        }
+      };
+      visit((page.commands as RawCommand[] | undefined) ?? []);
+    }
+  }
+  return changed;
 }
 
 const isMilestoneWrite = (command: RawCommand): boolean =>
@@ -242,6 +325,19 @@ function transferTargets(value: unknown, out: Set<string>): void {
   for (const child of Object.values(record)) if (child && typeof child === "object") transferTargets(child, out);
 }
 
+type Cell = { readonly x: number; readonly y: number };
+const BEARINGS = ["동쪽", "남동쪽", "남쪽", "남서쪽", "서쪽", "북서쪽", "북쪽", "북동쪽"] as const;
+/**
+ * origin 에서 본 to 의 방위(8방). 2칸 안이면 「바로 옆」.
+ * 왜(2026-10-29 vm2 terra jrpg): 맵을 3×3 으로 나눈 방위는 「서쪽」 띠에 선 문을 「서쪽」이라 불렀는데, 플레이어는 이미 맵 서쪽 끝(1,4)에 있었고
+ * 문은 같은 줄 26칸 남쪽(1,30)이었다 — 판정자가 「목표의 서쪽은 이미 맵 끝」이라며 길을 못 찾았다. 목표가 걸리는 자리에서 본 방위를 쓴다.
+ */
+export function bearingWord(origin: Cell, to: Cell): string {
+  const dx = to.x - origin.x, dy = to.y - origin.y;
+  if (Math.abs(dx) + Math.abs(dy) <= 2) return "바로 옆";
+  return BEARINGS[(((Math.round(Math.atan2(dy, dx) / (Math.PI / 4))) % 8) + 8) % 8]!;
+}
+
 /** from 맵에서 to 맵으로 바로 가는 문(옮기기 이벤트) 자리들. */
 function gatesTo(from: GameMap, toMapId: string): { x: number; y: number }[] {
   const out: { x: number; y: number }[] = [];
@@ -266,7 +362,7 @@ function namedMaps(project: Project, text: string, except: string): GameMap[] {
  * 「어디」 한 줄 — 목표가 걸리는 맵(from)에서 본 자리. 같은 맵의 대상은 그 맵의 방위, 다른 맵은 거기로 가는 문의 방위.
  * 새 플레이어가 「지하철역」이 어디인지 몰라 2일차에 멈췄다(2026-10-27 romance-j91 J105).
  */
-export function whereHint(project: Project, fromMapId: string, target: { mapId: string; x?: number; y?: number; label?: string }): string | undefined {
+export function whereHint(project: Project, fromMapId: string, target: { mapId: string; x?: number; y?: number; label?: string }, origin?: Cell): string | undefined {
   const from = project.maps[fromMapId];
   const to = project.maps[target.mapId];
   if (!from || !to) return undefined;
@@ -274,13 +370,22 @@ export function whereHint(project: Project, fromMapId: string, target: { mapId: 
   // 방위까지 붙이면 개발 메모처럼 읽히고 목표 칩이 4~5줄로 접혔다(2026-10-29 VQA 트리아지 B, 12건). 이름이 없으면 방위 한 낱말.
   if (to.id === from.id) {
     if (target.x === undefined || target.y === undefined) return undefined;
-    return target.label?.trim() || mapRegion(from, target.x, target.y);
+    return target.label?.trim() || (origin ? bearingWord(origin, { x: target.x, y: target.y }) : mapRegion(from, target.x, target.y));
   }
-  // 다른 맵: 그 맵으로 가는 문의 방위(지금 맵 이름은 빼고) — 새 플레이어가 「지하철역」 이 어디인지 몰라 멈춘 것(J105)은 이것으로 푼다.
-  const gates = gatesTo(from, to.id);
+  // 다른 맵: 지금 맵에서 «첫 출구»의 방위(지금 맵 이름은 빼고) — 새 플레이어가 「지하철역」 이 어디인지 몰라 멈춘 것(J105)은 이것으로 푼다.
+  // 바로 가는 문이 없으면 맵 경로의 첫 맵으로 가는 문을 가리키고 목적지를 「→」 뒤에 적는다(2026-10-29 vm2 flash jrpg: 숲에서 동굴로 가는 문은
+  // 없고 마을을 거쳐야 하는데 목표는 「마왕의 동굴」만 말해 숲 안에서 동굴 입구를 찾다 막혔다). 대상 이벤트 이름도 「→」 뒤에 붙여,
+  // 그 맵에 들어선 뒤 런타임 목표 표시(src/player/objectiveTarget)가 그 이벤트를 짚게 한다.
+  const route = mapRoute(project, from.id, to.id);
+  const hop = route?.[1] ? project.maps[route[1]] : undefined;
+  if (!hop) return undefined;
+  const gates = gatesTo(from, hop.id);
   if (gates.length === 0) return undefined;
-  const regions = [...new Set(gates.map((gate) => mapRegion(from, gate.x, gate.y)))].slice(0, 2).join("·");
-  return `${to.name ?? to.id} 입구: ${regions}`;
+  const near = origin ? [...gates].sort((a, b) => Math.abs(a.x - origin.x) + Math.abs(a.y - origin.y) - (Math.abs(b.x - origin.x) + Math.abs(b.y - origin.y)))[0]! : undefined;
+  const dir = near && origin ? bearingWord(origin, near) : [...new Set(gates.map((gate) => mapRegion(from, gate.x, gate.y)))].slice(0, 2).join("·");
+  const label = target.label?.trim();
+  if (hop.id === to.id) return `${to.name ?? to.id} 입구: ${dir}${label ? ` → ${label}` : ""}`;
+  return `${hop.name ?? hop.id} 입구: ${dir} → ${to.name ?? to.id}${label ? ` · ${label}` : ""}`;
 }
 
 /** 글에 이름이 나온 이벤트(두 글자 이상, 긴 이름 먼저, 목표 맵의 것 먼저). 출입구·자동 실행 목표 이벤트는 뺀다. */
@@ -298,25 +403,25 @@ function namedEvent(project: Project, text: string, fromMapId: string): { mapId:
 }
 
 /** 목표 글에 「어디」를 붙인다 — where(이벤트·맵 이름/id)를 주거나, 글에 다른 맵 이름이 나오면 그 맵으로 가는 문의 방위를 붙인다. */
-export function withWhere(project: Project, fromMapId: string, text: string, where?: string): string {
+export function withWhere(project: Project, fromMapId: string, text: string, where?: string, origin?: Cell): string {
   const hints: string[] = [];
   if (where) {
     for (const map of Object.values(project.maps)) {
       const event = (map.events ?? []).find((candidate) => candidate.id === where || candidate.name === where);
       if (event) {
-        const hint = whereHint(project, fromMapId, { mapId: map.id, x: event.x, y: event.y, ...(event.name ? { label: event.name } : {}) });
+        const hint = whereHint(project, fromMapId, { mapId: map.id, x: event.x, y: event.y, ...(event.name ? { label: event.name } : {}) }, origin);
         if (hint) hints.push(hint);
         break;
       }
       if (map.id === where || map.name === where) {
-        const hint = whereHint(project, fromMapId, { mapId: map.id });
+        const hint = whereHint(project, fromMapId, { mapId: map.id }, origin);
         if (hint) hints.push(hint);
         break;
       }
     }
   }
   if (hints.length === 0) for (const map of namedMaps(project, text, fromMapId)) {
-    const hint = whereHint(project, fromMapId, { mapId: map.id });
+    const hint = whereHint(project, fromMapId, { mapId: map.id }, origin);
     if (hint) hints.push(hint);
     if (hints.length >= 2) break;
   }
@@ -324,7 +429,7 @@ export function withWhere(project: Project, fromMapId: string, text: string, whe
   // 「책장 주변에서 두 번째 단서를 찾자」 에 어디가 안 붙어 판정자가 「조사할 위치를 잡는 데 헤맸다」).
   if (hints.length === 0) {
     const named = namedEvent(project, text, fromMapId);
-    if (named) { const hint = whereHint(project, fromMapId, named); if (hint) hints.push(hint); }
+    if (named) { const hint = whereHint(project, fromMapId, named, origin); if (hint) hints.push(hint); }
   }
   const extra = hints.filter((hint) => !text.includes(hint));
   return extra.length ? `${text} (${extra.join(" / ")})` : text;
@@ -364,12 +469,16 @@ export function planObjective(project: Project, input: { readonly text: string; 
   if (input.at === "start" || (!input.eventId && !input.mapId)) {
     const map = project.maps[project.startMapId];
     if (!map) return { ok: false, summary: "시작 맵이 없다", events: [] };
-    text = withWhere(project, map.id, raw, input.where);
-    // 시작 목표에 「어디」가 없으면 청사진 첫 단계 이벤트 자리를 붙인다 — 「서재 안을 조사해 첫 번째 단서를 찾자」만으로는 어느 가구인지 모른다.
+    const startOrigin = (project.startPos ?? undefined) as Cell | undefined;
+    // 시작 목표의 「어디」는 청사진 첫 단계 이벤트다(where 를 따로 주지 않았으면) — 글에 나온 먼 장소(「마왕의 동굴」)가 아니라
+    // 지금 할 첫 일. 2026-10-29 vm2 flash jrpg: 시작 목표가 「(마왕의 동굴 입구: 남쪽)」 를 달아 첫 단계 「마을 시작」(시작 자리 3칸 위)을
+    // 건너뛰게 했고, 열쇠 없이 동굴에 들어가면 막힌다.
     const firstStep = project.gameBlueprint?.steps[0];
+    const firstStepEvent = firstStep ? Object.values(project.maps).flatMap((m) => (m.events ?? []).filter((e) => e.id === firstStep.event || e.name === firstStep.event))[0] : undefined;
+    text = withWhere(project, map.id, raw, input.where ?? firstStepEvent?.id, startOrigin);
     if (text === raw && !input.where && firstStep) {
       const target = Object.values(project.maps).flatMap((m) => (m.events ?? []).filter((e) => e.id === firstStep.event || e.name === firstStep.event).map((e) => ({ mapId: m.id, x: e.x, y: e.y, label: String(e.name ?? firstStep.event) })))[0];
-      const hint = target ? whereHint(project, map.id, target) : undefined;
+      const hint = target ? whereHint(project, map.id, target, startOrigin) : undefined;
       if (hint && !raw.includes(hint)) text = `${raw} (${hint})`;
     }
     // 시작 맵 자동 실행에 이미 목표가 있으면 그 자리를 바꾼다(조건 달린 오프닝 페이지여도) — 새 이벤트를 하나 더 두면 두 목표가 겨룬다.
@@ -426,14 +535,15 @@ export function planObjective(project: Project, input: { readonly text: string; 
   for (const map of maps) {
     const found = (map.events ?? []).find((event) => event.id === input.eventId || event.name === input.eventId);
     if (!found) continue;
-    text = withWhere(project, map.id, raw, input.where);
+    const eventOrigin = { x: found.x, y: found.y };
+    text = withWhere(project, map.id, raw, input.where, eventOrigin);
     // 「어디」가 안 붙었고 이 이벤트가 청사진 단계면 다음 단계 이벤트 자리를 붙인다(「…문을 열고 탈출하자」 → 「(잠긴 문)」).
     const steps = project.gameBlueprint?.steps ?? [];
     const k = steps.findIndex((step) => step.event === found.id || step.event === found.name);
     const nextStep = k >= 0 ? steps[k + 1] : undefined;
     if (text === raw && !input.where && nextStep) {
       const target = Object.values(project.maps).flatMap((m) => (m.events ?? []).filter((e) => e.id === nextStep.event || e.name === nextStep.event).map((e) => ({ mapId: m.id, x: e.x, y: e.y, label: String(e.name ?? nextStep.event) })))[0];
-      const hint = target ? whereHint(project, map.id, target) : undefined;
+      const hint = target ? whereHint(project, map.id, target, eventOrigin) : undefined;
       if (hint && !raw.includes(hint)) text = `${raw} (${hint})`;
     }
     const event = structuredClone(found) as unknown as Record<string, unknown> & { pages?: Record<string, unknown>[]; commands?: RawCommand[] };
