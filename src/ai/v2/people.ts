@@ -744,6 +744,12 @@ export function pickPersonGraphic(project: Project, map: GameMap, role: string |
     const g = e.pages?.[0]?.graphic as { sprite?: { id?: string }; pattern?: number } | undefined;
     if (g?.sprite?.id && typeof g.pattern === "number" && g.pattern >= 3) used.add(`${g.sprite.id}#${decodeCharsetFrameIndex(g.pattern).characterIndex}`);
   }
+  // 주인공(시작 파티) 칩은 NPC 에 쓰지 않는다 — 2026-10-29 vm mystery: 용의자 「마부 한스」가 탐정 주인공과 같은 칩으로 서 있었다.
+  const resKey = (s: string) => s.replace(/^tex_/u, "").replace(/[_-]/gu, "").toLowerCase();
+  const heroes = new Set((project.system?.startActorIds ?? []).flatMap((id) => {
+    const actor = project.database.actors.find((a) => a.id === id) as { characterResourceId?: string; characterIndex?: number } | undefined;
+    return actor?.characterResourceId ? [`${resKey(actor.characterResourceId)}#${actor.characterIndex ?? 0}`] : [];
+  }));
   const overrides = (project as unknown as { charsetLabels?: Parameters<typeof queryNpcGraphics>[2] }).charsetLabels;
   let best: (PersonGraphic & { score: number }) | undefined;
   // 장르 잠금(몬스터 수집·현대 연애)이 강제 중이면 허용 칩만 — 막힌 칩을 골라 place_npc 가 거부하던 길을 미리 막는다.
@@ -762,6 +768,7 @@ export function pickPersonGraphic(project: Project, map: GameMap, role: string |
       const key = `${e.textureKey}#${e.characterIndex}`;
       const score = qi * 100 + rank + (face ? 0 : 70) + (familyFits(map, e.textureKey) ? 0 : 45)
         + (gender && e.gender && e.gender !== "none" && e.gender !== gender ? 25 : 0) + (used.has(key) ? 15 : 0)
+        + (heroes.has(`${resKey(e.textureKey)}#${e.characterIndex}`) ? 300 : 0)
         // 특이한 차림(이국 터번·닌자·요정·난쟁이·수녀)은 그렇게 말했을 때만 — 마을 촌장이 터번 노인으로 나왔다.
         + (ODD_LOOK.test(text) && !ODD_LOOK.test(asked) ? 20 : 0);
       if (!best || score < best.score) best = { textureKey: e.textureKey, characterIndex: e.characterIndex, label: e.label, query: q, score, ...(face ? { faceResourceId: face } : {}) };

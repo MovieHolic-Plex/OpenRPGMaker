@@ -31,6 +31,11 @@ const THINGS: readonly [RegExp, readonly string[], readonly string[]][] = [
   [/금고|자물쇠|비밀번호|암호|safe|lock|password|code/iu, ["cashbox", "sealbox"], ["safe", "royal chest"]],
   [/상자|궤짝|chest|crate/iu, ["sealbox", "box"], ["chest", "sea chest", "crate"]],
   [/찻잔|잔\b|컵|cup|mug/iu, ["cup", "mug"], []],
+  // 추리 단서(2026-10-29 vm mystery 「젖은 장화 자국 위치를 못 찾았다」) — 바닥 자국은 물웅덩이, 천·단추는 옷감, 장물·돈주머니는 자루.
+  [/장화|발자국|자국|진흙|흙탕|물기|젖은|footprint|mud|boot/iu, [], ["drip puddle", "straw pile"]],
+  [/천\s*조각|옷감|헝겊|단추|소매|cloth|button|fabric/iu, ["clothfold", "spools", "yarn"], ["luggage trunk"]],
+  [/장물|돈주머니|금주머니|주머니|보물|금시계|시계|pouch|loot/iu, ["coins", "gem"], ["loot sacks", "coin pile"]],
+  [/증거품|증거|단서|흔적|evidence|clue/iu, ["sealbox", "papers"], ["luggage trunk", "chest"]],
   [/깃펜|펜\b|quill|잉크|ink/iu, ["quill", "inkwell"], []],
 ];
 

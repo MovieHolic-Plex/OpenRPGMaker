@@ -29,6 +29,7 @@ import { buildEvent } from "./events";
 import { drawObject } from "./drawObject";
 import { buildScene, SCENE_SCHEMA, type SceneSpec } from "./scene";
 import { buildPuzzleChain, sealLockedRoom, type ChainArgs } from "./puzzle";
+import { stageMysteryCase } from "./mysteryCase";
 import { BUILD_BLUEPRINT_PATH_SCHEMA, blueprintMapFor, buildBlueprintPath, sealEscapeExits, type PathStepText } from "./blueprintPath";
 import { clearTargetFronts, clearTransferLanes } from "./eventReach";
 import { dressInteriorExits } from "./exitDress";
@@ -523,6 +524,9 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     const notes: string[] = retireBlankStart(run);
     // 방탈출이면 청사진 장소 밖으로 조건 없이 나가는 이동을 치운다(빈 맵이 아닌 바깥 맵 — retireBlankStart 가 못 치운다). 틈은 아래 출구 마감이 메운다.
     notes.push(...sealEscapeExits(run));
+    // 추리 청사진이 투명 칸 일직선이면(2026-10-29 vm mystery 판정 「NPC 없음·추리·선택 없음」) 용의자·증거 제시·범인 고르기를 세운다.
+    // 모델이 사건을 이미 지었으면 단서 칸 소품만 본다(mysteryCase.ts). 경로를 다시 짓지 않은 판(막힘 없음)도 여기서 세운다.
+    try { notes.push(...stageMysteryCase(run)); } catch { /* 추리 세우기 실패는 끝맺음을 깨지 않는다 */ }
     // 추격자가 있는데 숨을 곳이 0곳인 맵(2026-10-29 standin horror 「폐병원」) — 맵에 있는 옷장·사물함·침대·커튼 1~2곳을 순찰 길 가까이에서 은신처로.
     for (const [mapId, map0] of Object.entries(env.ctx.project.maps)) {
       if (!chaserEvents(map0).length) continue;

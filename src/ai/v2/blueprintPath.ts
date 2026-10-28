@@ -25,6 +25,7 @@ import { dressInteriorExits } from "./exitDress";
 import { OBJECTIVE_SURFACE, planObjective } from "./discoverability";
 import { settleExamineSpots } from "./examineSpot";
 import { ensureHealingAccess } from "./healingAccess";
+import { stageMysteryCase } from "./mysteryCase";
 
 /**
  * 이미 지은 청사진 단계 이벤트·퍼즐 고리 이벤트를 걸어 가 조사할 수 있는 자리로 옮긴다(내용은 그대로). 옮긴 것 목록.
@@ -162,6 +163,7 @@ export interface BlueprintPathResult extends ContentBuildResult {
  *    (열쇠가 엔딩 이벤트에만 걸려 동굴엔 그냥 들어가졌다 — 「열쇠가 어디에도 쓰이지 않았다」). 청사진에 needs 가 없으면 잠그지 않는다.
  *  - 싸워 이기는 단계(「마왕과의 결전」)가 이기지 않아도 넘어가면 그 맵 보스 전투의 승리 스위치를 조건으로 건다(보스가 없으면 그 이벤트 안에서 싸우고 승리 갈래에서만 넘어간다).
  *  - 전투가 있는데 회복할 길이 없으면 시작 맵에 회복의 샘과 시작 회복약(healingAccess.ts).
+ *  - 추리 청사진이면 용의자 셋·증거 제시·범인 고르기(mysteryCase.ts).
  * 둘 다 이미 지은 경로를 그대로 두는 경우(다시 짓지 않음)에도 한다.
  */
 export function buildBlueprintPath(run: BuildRun, text: readonly PathStepText[] = []): BlueprintPathResult {
@@ -171,6 +173,7 @@ export function buildBlueprintPath(run: BuildRun, text: readonly PathStepText[] 
   try { extra.push(...gateBattleSteps(run)); } catch { /* 전투 잠금 실패는 경로를 깨지 않는다 */ }
   try { extra.push(...fitUnwinnableStepBattles(run)); } catch { /* 맞추기 실패는 경로를 깨지 않는다 */ }
   try { const heal = ensureHealingAccess(run); if (heal.length) extra.push(`회복 길을 넣었다: ${heal.join(", ")}`); } catch { /* 회복 넣기 실패는 경로를 깨지 않는다 */ }
+  try { extra.push(...stageMysteryCase(run)); } catch { /* 추리 사건 세우기 실패는 경로를 깨지 않는다 */ }
   return extra.length ? { ...result, summary: `${result.summary} ${extra.join(". ")}.` } : result;
 }
 
