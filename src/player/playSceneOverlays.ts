@@ -267,7 +267,8 @@ function renderDefeatMenu(terminal: TerminalScene, scene: GameOverPresentationAc
     const hint = textNode("div", "game-over-hint", "↑↓ 선택   ·   Z / Enter 결정");
     overlay.append(hint);
     const messageBody = overlay.querySelector<HTMLElement>(".game-over-message");
-    if (messageBody && messageBody.scrollHeight > messageBody.clientHeight) {
+    // 한 줄짜리 본문도 소수 줄 높이(9px×1.5) 반올림으로 scrollHeight 가 1 크게 나와 「PgUp/PgDn 본문」 안내가 붙었다 — 1px 는 넘침이 아니다.
+    if (messageBody && messageBody.scrollHeight > messageBody.clientHeight + 1) {
       hint.textContent += "   ·   PgUp/PgDn 본문";
       window.addEventListener("keydown", event => {
         if (event.isComposing || !["PageUp", "PageDown"].includes(event.key)) return;

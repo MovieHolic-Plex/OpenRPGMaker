@@ -46,6 +46,23 @@
   color: #b9b3aa;
   text-shadow: 0 1px 3px #000;
 }
+/* 배경 그림이 깔린 게임 오버: 본문·선택지가 그림 속 인물·불빛 위에 그대로 겹쳐 읽히지 않았다
+   (2026-10-29 잊힌 지하묘지 실측 — 「…모험가를 삼켰다」가 횃불 든 일행 위를 지나갔다). 글 폭만큼 어두운 판을 깐다. */
+.game-over-screen:has(> .cinematic-background) .game-over-message {
+  left: 50%;
+  right: auto;
+  width: max-content;
+  max-width: 84%;
+  transform: translateX(-50%);
+  box-sizing: border-box;
+  padding: 1px 8px;
+  background: rgb(8 8 9 / 0.74);
+  color: #d8d2c8;
+  text-align: center;
+}
+.game-over-screen:has(> .cinematic-background) .game-over-actions .game-over-choice {
+  background: rgb(8 8 9 / 0.74);
+}
 .game-over-actions {
   position: absolute;
   top: 72%;
