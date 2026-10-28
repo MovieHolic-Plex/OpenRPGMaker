@@ -12,6 +12,7 @@ import { createV2Tools, V2Session, v2FinishGate } from "../../src/ai/v2/verbs.ts
 import { BLUEPRINT_PATH_IDS, walkBlueprint } from "../../src/ai/v2/blueprint.ts";
 import { shipBlockers } from "../../src/ai/v2/shipChecks.ts";
 import { applyBlueprintAssembly } from "../../src/project/blueprintAssembly.ts";
+import { assembledReport, isProviderErrorReply } from "../../src/ai/v2/finalReport.ts";
 import { reviewVqaRound, vqaReviewerCandidates, vqaClean, vqaFixBrief, vqaFixRetry, vqaFollowUp, vqaLeftoverInstruction, vqaShotPlan, vqaReviewerLabel, vqaShouldContinue, vqaSummary, wantsWholeGame, VQA_MAX_ROUNDS, VQA_ROUND_CAP, vqaBlockers, vqaActionable, vqaLedgerLine, type VqaReviewerPick, type VqaRound, type VqaShot } from "../../src/ai/v2/vqa.ts";
 import { familyOfProviderId } from "../../src/ai/assistantRoles.ts";
 import type { PiAssistantV2Env } from "../../src/ai/v2/env.ts";
@@ -86,9 +87,20 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
   const onEvent = (event: PiAgentEvent) => {
     if (event.type === "tool_start") argsById.set(event.id, event.args);
     else if (event.type === "tool_end") { calls.push({ name: event.name, ok: event.ok, args: argsById.get(event.id), summary: event.summary }); argsById.delete(event.id); }
-    else if (event.type === "assistant" && event.text.trim()) draft = event.text;
+    else if (event.type === "assistant") {
+      // 제공자 일반 오류 문장(«Sorry, something went wrong» 등)은 보고가 아니다 — 대화창에 보내지 않는다. 그러면 앞의 정직한 보고가 마지막 답으로 남는다.
+      // 앞에 보고가 하나도 없으면 실제 프로젝트 상태로 조립한 보고를 대신 보낸다(2026-10-28 mt3 flash·mt2 argon escape).
+      if (isProviderErrorReply(event.text)) {
+        options.onEvent?.({ type: "execution_status", name: "v2.answer.provider_error", ok: false, at: Date.now(), summary: `모델이 보고 대신 제공자 오류 문장을 돌려줌 — 최종 답으로 쓰지 않음: ${JSON.stringify(event.text.trim().slice(0, 120))}` });
+        if (!draft) { draft = assembledReport(lastProject()); options.onEvent?.({ type: "assistant", text: draft }); }
+        return;
+      }
+      draft = event.text;
+    }
     options.onEvent?.(event);
   };
+  let liveEnv: PiAssistantV2Env | undefined;
+  const lastProject = () => liveEnv?.ctx.project ?? request.project;
   let advice: AdvisorVerdict | undefined;
   // 검토자가 더한 시간: 검토 호출(advice.ms) + 검토자 글로 한 차례 더 돈 시간(followMs, 막음이 있을 때만).
   let followFrom = 0, followMs = 0;
@@ -207,6 +219,50 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
     vqaPhase = "final-check";
     return vqaLeftoverInstruction(vqaRounds);
   };
+  // 청사진 자동 짓기(장소 → 경로 → 출구·이동 칸 마감 → 조립 기본값). 한 실행에 한 번씩(세션 깃발). 무엇을 지었는지 조수에게 줄 글.
+  // 끝맺음 관문 ① 에서 부르고, 그 뒤 차례(검토자 재검토·화면 검수 고치기)에서 청사진이 처음 생겼을 때도 부른다(2026-10-28 mt3 flash:
+  // 턴 1 은 첫 끝맺음에 청사진이 없었고, 고치기 차례에 write_blueprint 만 부른 뒤 끝나 장소 0으로 남았다).
+  const autoBuild = async (env: PiAssistantV2Env): Promise<string | undefined> => {
+    let autoPath: string | undefined;
+    if (env.ctx.project.gameBlueprint) {
+      const done: string[] = [];
+      let walked = walkBlueprint(env.ctx.project).blockers;
+      if (session.buildPlaces && !session.autoPlacesDone && walked.some((b) => b.id === "blueprint-place-missing" || b.id === "blueprint-place-unreachable")) {
+        session.autoPlacesDone = true;
+        const notes = await session.buildPlaces();
+        env.emit({ type: "execution_status", name: "v2.blueprint.auto_places", ok: true, summary: `청사진 장소 자동 짓기 — ${notes.join(" / ").slice(0, 300)}` });
+        if (notes.length) done.push(`장소: ${notes.join(" / ").slice(0, 700)}`);
+        walked = walkBlueprint(env.ctx.project).blockers;
+      }
+      if (session.buildPath && !session.autoPathDone && walked.some((b) => BLUEPRINT_PATH_IDS.has(b.id))) {
+        session.autoPathDone = true;
+        const built = await session.buildPath(walked.map((b) => b.id).join(","));
+        env.emit({ type: "execution_status", name: "v2.blueprint.auto_path", ok: built.ok, summary: `청사진 경로 자동 짓기 — ${built.summary.slice(0, 300)}` });
+        done.push(built.ok ? `경로: ${built.summary.slice(0, 600)}` : `경로 짓기 실패: ${built.summary.slice(0, 400)} — 이 이유를 고친 뒤 build_blueprint_path 를 부른다.`);
+      }
+      if (session.clearLanes && !session.autoLanesDone) {
+        session.autoLanesDone = true;
+        const lanes = await session.clearLanes();
+        if (lanes.length) {
+          env.emit({ type: "execution_status", name: "v2.blueprint.auto_lanes", ok: true, summary: `출구·이동 칸 마감 — ${lanes.join(" / ").slice(0, 300)}` });
+          done.push(`출구·이동 칸 마감: ${lanes.join(" / ").slice(0, 500)}`);
+        }
+      }
+      if (done.length) autoPath = [`[자동으로 지음] 청사진이 엔딩까지 이어지지 않거나 길목·출구가 막혀 함수가 대신 지었다 — 최종 보고에 「자동으로 지음:」으로 이 목록을 그대로 적는다(네가 지었다고 쓰지 않는다):`, ...done.map((d) => `- ${d}`), "대사를 다듬으려면 build_blueprint_path{steps:[{id,lines,lockedLines}]} 로 다시 부른다(같은 이벤트를 고쳐 쓴다). 자동으로 지은 장소를 꾸미려면 edit_place·dress_room."].join("\n");
+    }
+    // 조립 기본값(2026-10-28): 청사진이 있는 게임 요청이면 아무도 고르지 않은 타이틀 그림·기본 문구·기본 왕국 오프닝을 청사진에 맞춘다 — 모델이 부르지 않아도.
+    // 장소 자동 짓기 뒤에 둔다(시작 맵이 생긴 뒤라야 그 맵 화면을 타이틀로 쓸 수 있다).
+    if (wantsWholeGame(env.request.task)) {
+      const assembled = applyBlueprintAssembly(env.ctx.project);
+      if (assembled.length) {
+        env.emit({ type: "execution_status", name: "v2.assembly", ok: true, summary: `청사진 조립 기본값: ${assembled.join(" · ")}` });
+        await env.checkpoint("blueprint_assembly");
+      }
+    }
+    return autoPath;
+  };
+  const lateBuildPending = (env: PiAssistantV2Env) => Boolean(env.ctx.project.gameBlueprint) && (!session.autoPlacesDone || !session.autoPathDone || !session.autoLanesDone)
+    && (!session.autoLanesDone || walkBlueprint(env.ctx.project).blockers.some((b) => b.id === "blueprint-place-missing" || b.id === "blueprint-place-unreachable" || BLUEPRINT_PATH_IDS.has(b.id)));
   const done = await runPiAgent({
     ...request,
     systemPrompt: buildV2SystemPrompt(request.project, request.currentMapId, request.task),
@@ -223,6 +279,17 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
       // 화면 검수: 판마다 한 차례 + 고치기 다시 한 번 + 남은 결함 보고 + 그 보고의 최종 검토 후속.
       maxRounds: 2 + VQA_ROUND_CAP + 3,
       afterMain: async (env) => {
+        liveEnv = env;
+        // 끝맺음 ① 뒤에 청사진이 처음 생겼거나 다시 끊겼으면 지금 짓는다 — 화면 검수는 지은 뒤의 그림으로 다시 한 판.
+        if (vqaPhase !== "advisor" && lateBuildPending(env)) {
+          const late = await autoBuild(env);
+          if (late) {
+            vqaPhase = "vqa";
+            const gate = v2FinishGate(session, env);
+            env.emit({ type: "execution_status", name: "v2.blueprint.late", ok: true, summary: "끝맺음 뒤에 생긴 청사진을 함수가 지었다 — 지은 뒤 화면 검수를 다시 돈다" });
+            return gate ? `${late}\n\n${gate}` : late;
+          }
+        }
         if (vqaPhase === "advisor-recheck") {
           if (followFrom) followMs = Date.now() - followFrom;
           vqaPhase = "vqa";
@@ -248,42 +315,7 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
         // 청사진 경로가 끊긴 채 끝내려 하면 함수가 청사진대로 짓는다 — 모델이 무엇을 불렀든(2026-10-28 mt2: Flash·Argon 둘 다
         // define_ending 만 하고 엔딩 호출이 없었다. standin 묶음: 장소 셋을 적고 하나만 지었다).
         // ① 없는 장소는 이름·장르로 추정해 짓고, 있는데 닿지 않는 장소는 앞 단계 장소와 잇는다. ② 그다음 경로(이벤트·조건·엔딩).
-        let autoPath: string | undefined;
-        if (env.ctx.project.gameBlueprint) {
-          const done: string[] = [];
-          let walked = walkBlueprint(env.ctx.project).blockers;
-          if (session.buildPlaces && !session.autoPlacesDone && walked.some((b) => b.id === "blueprint-place-missing" || b.id === "blueprint-place-unreachable")) {
-            session.autoPlacesDone = true;
-            const notes = await session.buildPlaces();
-            env.emit({ type: "execution_status", name: "v2.blueprint.auto_places", ok: true, summary: `청사진 장소 자동 짓기 — ${notes.join(" / ").slice(0, 300)}` });
-            if (notes.length) done.push(`장소: ${notes.join(" / ").slice(0, 700)}`);
-            walked = walkBlueprint(env.ctx.project).blockers;
-          }
-          if (session.buildPath && !session.autoPathDone && walked.some((b) => BLUEPRINT_PATH_IDS.has(b.id))) {
-            session.autoPathDone = true;
-            const built = await session.buildPath(walked.map((b) => b.id).join(","));
-            env.emit({ type: "execution_status", name: "v2.blueprint.auto_path", ok: built.ok, summary: `청사진 경로 자동 짓기 — ${built.summary.slice(0, 300)}` });
-            done.push(built.ok ? `경로: ${built.summary.slice(0, 600)}` : `경로 짓기 실패: ${built.summary.slice(0, 400)} — 이 이유를 고친 뒤 build_blueprint_path 를 부른다.`);
-          }
-          if (session.clearLanes && !session.autoLanesDone) {
-            session.autoLanesDone = true;
-            const lanes = await session.clearLanes();
-            if (lanes.length) {
-              env.emit({ type: "execution_status", name: "v2.blueprint.auto_lanes", ok: true, summary: `출구·이동 칸 마감 — ${lanes.join(" / ").slice(0, 300)}` });
-              done.push(`출구·이동 칸 마감: ${lanes.join(" / ").slice(0, 500)}`);
-            }
-          }
-          if (done.length) autoPath = [`[자동으로 지음] 청사진이 엔딩까지 이어지지 않거나 길목·출구가 막혀 함수가 대신 지었다 — 최종 보고에 「자동으로 지음:」으로 이 목록을 그대로 적는다(네가 지었다고 쓰지 않는다):`, ...done.map((d) => `- ${d}`), "대사를 다듬으려면 build_blueprint_path{steps:[{id,lines,lockedLines}]} 로 다시 부른다(같은 이벤트를 고쳐 쓴다). 자동으로 지은 장소를 꾸미려면 edit_place·dress_room."].join("\n");
-        }
-        // 조립 기본값(2026-10-28): 청사진이 있는 게임 요청이면 아무도 고르지 않은 타이틀 그림·기본 문구·기본 왕국 오프닝을 청사진에 맞춘다 — 모델이 부르지 않아도.
-        // 장소 자동 짓기 뒤에 둔다(시작 맵이 생긴 뒤라야 그 맵 화면을 타이틀로 쓸 수 있다).
-        if (wantsWholeGame(env.request.task)) {
-          const assembled = applyBlueprintAssembly(env.ctx.project);
-          if (assembled.length) {
-            env.emit({ type: "execution_status", name: "v2.assembly", ok: true, summary: `청사진 조립 기본값: ${assembled.join(" · ")}` });
-            await env.checkpoint("blueprint_assembly");
-          }
-        }
+        const autoPath = await autoBuild(env);
         const gate0 = v2FinishGate(session, env);
         const gate = autoPath ? (gate0 ? `${autoPath}\n\n${gate0}` : autoPath) : gate0;
         let text: string | undefined = gate;

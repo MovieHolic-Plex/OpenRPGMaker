@@ -31,6 +31,7 @@ import { buildPuzzleChain, sealLockedRoom, type ChainArgs } from "./puzzle";
 import { BUILD_BLUEPRINT_PATH_SCHEMA, blueprintMapFor, buildBlueprintPath, type PathStepText } from "./blueprintPath";
 import { clearTransferLanes } from "./eventReach";
 import { dressInteriorExits } from "./exitDress";
+import { isPlaceholderMap, retireBlankStart } from "./blankStart";
 import { dungeonGateSpot, pickTransferSpot } from "./transferSpot";
 import { guessPlaceSpec } from "./placeGuess";
 // 콘텐츠 동사(컷신 무대·연출 비평·물건 자리 계획) — finishContent·addEvent·drawObjectVerb·placeObject 가 쓴다.
@@ -510,7 +511,8 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
   };
   // 끝맺음(2026-10-28 standin jrpg): 컷신에서 주인공에게 다가온 소녀가 동굴 입구 착지 칸 앞에 서서 자동 플레이가 막혔다.
   session.clearLanes = async () => {
-    const notes: string[] = [];
+    // 쓰지 않는 빈 시작 맵(잔디 한 장)을 먼저 치운다 — 그쪽으로 가던 이동이 사라진 막다른 틈은 아래 출구 마감이 문 그림으로 닫는다.
+    const notes: string[] = retireBlankStart(run);
     for (const mapId of Object.keys(env.ctx.project.maps)) {
       // 실내 출구·공허 마감(막다른 남쪽 틈 메우기·문 그림·남색 공허 칸) — 화면 검수 장부 builder-exit/builder-tiles.
       for (const n of dressInteriorExits(run, mapId).notes) notes.push(`${env.ctx.project.maps[mapId]?.name ?? mapId}: ${n}`);
@@ -938,7 +940,9 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     const bp = env.ctx.project.gameBlueprint;
     if (!bp) return [];
     const notes: string[] = [];
-    let prev: { mapId: string; spec?: PlaceSpec; result?: PlaceBuildResult } = { mapId: env.ctx.project.startMapId };
+    // 시작 맵이 빈 자리표시 맵(잔디 한 장)이면 그 맵과 잇지 않는다 — 장소를 지은 뒤 retireBlankStart 가 시작을 첫 장소로 옮기고 빈 맵을 지운다.
+    const start0 = env.ctx.project.maps[env.ctx.project.startMapId];
+    let prev: { mapId: string; spec?: PlaceSpec; result?: PlaceBuildResult } = { mapId: start0 && isPlaceholderMap(start0) ? "" : env.ctx.project.startMapId };
     for (const step of bp.steps) {
       let map = blueprintMapFor(env.ctx.project, step.place);
       if (!map) {
@@ -948,7 +952,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
         if (!builder) { notes.push(`「${step.place}」(${spec.type}) — 짓는 빌더가 없다`); continue; }
         env.emit({ type: "execution_status", name: "v2.build", ok: true, summary: `청사진 장소 「${step.place}」 자동으로 짓는 중(${builder.id})` });
         await builder.prepare?.(spec);
-        const sub = { ...env.ctx, project: env.ctx.project, currentMapId: prev.mapId };
+        const sub = { ...env.ctx, project: env.ctx.project, currentMapId: prev.mapId || env.ctx.project.startMapId };
         const subRun = createBuildRun(sub);
         const result = builder.build(subRun, spec);
         env.ctx.project = sub.project;
@@ -973,6 +977,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
       }
       prev = { mapId: map.id, ...(known ? { spec: known.spec, result: known.result } : {}) };
     }
+    for (const n of retireBlankStart(run)) notes.push(n);
     if (notes.length) await env.checkpoint("auto_places");
     return notes;
   };

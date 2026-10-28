@@ -153,6 +153,7 @@ const OUTSIDE: readonly (readonly [VqaDefectKind, RegExp, string, (readonly Targ
   ["builder-tiles", /타일 ?(스타일|질감)|질감과 색이 서로 달|아무 타일도|남색 (빈|공백)|단색 [^.。]{0,6}공백|격자 ?선|그리드/u, "타일 짜임·빈 공백은 빌더 템플릿 문제다", ["map"]],
   ["missing-art", /맞는 그림이 없|그림이 없어|칩셋에 없|플레이스홀더|placeholder/iu, "칩셋에 맞는 그림이 없다", ["map"]],
 ];
+const EMPTY_MAP = /빈 맵|기본 (초록 )?잔디|잔디 (타일 )?(하나|한 장|한 가지|만)|(오브젝트|물체|사물|가구)[^.。]{0,8}(하나도 |아무것도 )?없|에디터 기본|플레이 공간이 (만들어지지|없)/u;
 /** 타이틀·오프닝 그림 «품질»(잘림·격자·구도)은 모델이 고칠 수 없다. 장르·장소에 안 맞는 그림·기본 템플릿 오프닝은 고칠 수 있다(다른 그림·map-view 타이틀·오프닝 끄기). */
 const TITLE_QUALITY = /잘(려|린|림|렸)|구도|격자|그리드|여백|공백|마름모|끊겨|흐릿|번져/u;
 export function vqaClassify(d: VqaDefect): VqaDefectClass {
@@ -161,6 +162,10 @@ export function vqaClassify(d: VqaDefect): VqaDefectClass {
   const target = d.target?.kind;
   if ((target === "title" || target === "opening") && TITLE_QUALITY.test(d.what) && !/글자|제목|문구|자막/u.test(d.what))
     return { fixable: false, kind: "title-art", why: "타이틀·오프닝 그림 자체의 품질(잘림·구도·격자)은 자원 문제다" };
+  // 빈 맵(바닥 한 장·오브젝트 없음·기본 잔디)은 그림이 없어서가 아니라 장소를 안 지었거나 안 쓰는 맵이 남은 것 — 짓거나 지우면 된다
+  // (2026-10-28 mt3 flash: «빈 맵» 잔디 한 장이 missing-art 로 빠져 아무도 고치지 않았다).
+  if (target === "map" && (EMPTY_MAP.test(text) || /«빈 맵»/u.test(d.where)))
+    return { fixable: true, kind: "fixable", why: "빈 맵은 장소를 짓거나(make_place) 쓰지 않는 맵을 지우면(remove_map) 고친다 — 마감 게이트도 빈 시작 맵을 치운다" };
   for (const [kind, re, why, only] of OUTSIDE) if ((!only || only.includes(target)) && re.test(text)) return { fixable: false, kind, why };
   return { fixable: true, kind: "fixable", why: "가구·빈 방·이벤트·대사·그림 선택은 동사로 고친다" };
 }

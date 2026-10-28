@@ -13,7 +13,7 @@ import { roomSpecOf, type HandInteriorSpec } from "@/editor/handInterior/builder
 import { isPassable } from "@/project/collision";
 import { layerTileAt, setLayerTileAt } from "@/project/mapLayers";
 import type { GameEvent, GameMap, Project } from "@/project/types";
-import { isDoorName, reachableCells } from "./eventReach";
+import { isDoorName, reachableCells, unreachableEvents } from "./eventReach";
 import type { BuildRun } from "./types";
 
 type Cell = { x: number; y: number };
@@ -121,10 +121,18 @@ function doorPiece(S: HandInteriorSpec, locked: boolean): { id: string; cells: r
 
 function free(map: GameMap, layer: Layer, i: number): boolean { return layerTileAt(map, layer as 1 | 2 | 3 | 4, i) < 0; }
 
+/** 자리를 차지하지 않는 이벤트(그림 없고 페이지가 자동·병렬이거나 빈 것 — 시작 목표 같은 것). 문 칸을 막지 않는다. */
+function silent(e: GameEvent): boolean {
+  return (e.pages ?? []).length > 0 && (e.pages ?? []).every((p) => {
+    const t = p.trigger as unknown; const kind = typeof t === "string" ? t : (t as { kind?: string } | undefined)?.kind;
+    return (kind === "auto" || kind === "parallel" || !(p.commands ?? []).length) && !(p.graphic && !p.graphic.transparent && (p.graphic.sprite || p.graphic.appearanceId));
+  });
+}
+
 /** 북쪽 벽 발치의 문 칸 후보 D: D 는 걷는 바닥, 위 두 칸은 벽면, 아래 칸은 걸어 닿는 빈 바닥. */
 function northDoorCells(project: Project, map: GameMap, k: Kit, reach: Uint8Array, events: readonly GameEvent[]): Cell[] {
   const w = map.width;
-  const taken = new Set(events.map((e) => e.y * w + e.x));
+  const taken = new Set(events.filter((e) => !silent(e)).map((e) => e.y * w + e.x));
   const out: Cell[] = [];
   for (let y = 2; y < map.height - 1; y++) for (let x = 0; x < w; x++) {
     const i = y * w + x;
@@ -165,14 +173,18 @@ export function dressInteriorExits(run: BuildRun, mapId: string): ExitDressResul
   }
   const usedGap = (g: Cell) => exitEvents.some((e) => Math.abs(e.x - g.x) + Math.abs(e.y - g.y) <= 1) || landings.has(g.y * w + g.x) || landings.has((g.y - 1) * w + g.x);
   const dead = gaps.length > 0 && !gaps.some(usedGap);
-  const door = events.find((e) => isDoorName(String((e as { name?: string }).name ?? "")) && !hasTransfer(e.pages ?? e.commands));
+  // 문 노릇을 할 이벤트: 이름이 문인 것, 없으면 이 맵에서 엔딩을 부르는 그림 없는 장치(방탈출의 «비밀번호 입력» — 잠긴 문 그림 위로 옮기면 그 문이 자물쇠가 된다).
+  const visible = (e: GameEvent) => (e.pages ?? []).some((p) => { const g = p.graphic; return Boolean(g && !g.transparent && (g.sprite || g.appearanceId)); });
+  const endsGame = (e: GameEvent) => JSON.stringify(e.pages ?? []).includes('"triggerEnding"');
+  const door = events.find((e) => isDoorName(String((e as { name?: string }).name ?? "")) && !hasTransfer(e.pages ?? e.commands))
+    ?? events.find((e) => endsGame(e) && !visible(e) && !hasTransfer(e.pages ?? e.commands));
   if (dead && door) {
     const S = k.S;
     const locked = (door.pages ?? []).some((p) => (p.conditions ?? []).length > 0) || (door.pages ?? []).length > 1;
     const piece = doorPiece(S, locked);
     const tileLabel = (t: number) => String(((project0.tilesets[map.tilesetId]?.tileMeta ?? []) as unknown as ({ label?: string } | undefined)[])[t]?.label ?? "");
     const onDoorArt = (() => { const t = layerTileAt(map, 3, door.y * w + door.x); return t >= 0 && /문/u.test(tileLabel(t)) && door.y < map.height - 2; })();
-    // 문 자리를 먼저 정한다 — 세울 자리가 없으면 틈도 그대로 둔다(출구가 아예 사라지면 더 나쁘다).
+    // 문 자리를 먼저 정한다.
     let at: Cell | undefined;
     if (piece && !onDoorArt) {
       const probe = structuredClone(map);
@@ -182,10 +194,21 @@ export function dressInteriorExits(run: BuildRun, mapId: string): ExitDressResul
       const others = events.filter((e) => e.id !== door.id);
       const cands = reach ? northDoorCells(probeProject, probe, k, reach, others) : [];
       cands.sort((a, b) => (Math.abs(a.x - door.x) + Math.abs(a.y - door.y)) - (Math.abs(b.x - door.x) + Math.abs(b.y - door.y)) || a.y - b.y || a.x - b.x);
-      at = cands.find((c) => piece.cells.every(([dx, dy, , layer]) => { const i = (c.y + piece.anchorDy + dy!) * w + c.x + dx!; return i >= 0 && free(map, (layer === 2 ? 2 : 3) as Layer, i); }));
-      if (!at) notes.push(`문 「${door.name ?? door.id}」: 북벽 발치가 가구로 다 차서 문 그림을 세울 자리가 없다 — 남쪽 틈은 그대로 둠`);
-    } else if (!piece) notes.push("이 칩셋에 벽에 세울 문 그림이 없다 — 남쪽 틈은 그대로 둠");
-    if (at || onDoorArt) {
+      // 문이 그 칸에 서도 다른 이벤트에 여전히 걸어 가 말을 걸 수 있어야 한다(2026-10-28 mt3: 문이 «조사 시작»으로 가는 유일한 칸을 막았다).
+      const before = new Set(unreachableEvents(probeProject, mapId));
+      const keepsReach = (c: Cell) => {
+        const trial = { ...probe, events: probe.events.map((e) => e.id === door.id ? { ...e, x: c.x, y: c.y } : e) } as GameMap;
+        return unreachableEvents({ ...probeProject, maps: { ...probeProject.maps, [mapId]: trial } } as Project, mapId).every((id) => before.has(id) || id === door.id);
+      };
+      at = cands.find((c) => piece.cells.every(([dx, dy, , layer]) => { const i = (c.y + piece.anchorDy + dy!) * w + c.x + dx!; return i >= 0 && free(map, (layer === 2 ? 2 : 3) as Layer, i); }) && keepsReach(c));
+    }
+    // 문 자리가 없어도, 아무 데로도 이어지지 않는 틈 위에 아무것도(이벤트·시작 칸) 없으면 벽으로 메운다 — 어둠으로 뻗은 막다른 통로보다 닫힌 벽이 낫다
+    // (2026-10-28 mt3 flash: 빈 시작 맵을 치운 뒤 밀실 남쪽 틈이 막다른 길이 됐고, 북벽 발치는 가구와 «조사 시작»으로 가는 길뿐이었다).
+    const start = project0.startMapId === mapId ? project0.startPos : undefined;
+    const closable = gaps.every((g) => !events.some((e) => e.x === g.x && e.y === g.y) && !(start && start.x === g.x && start.y === g.y));
+    if (!at && !onDoorArt) notes.push(!piece ? "이 칩셋에 벽에 세울 문 그림이 없다" : `문 「${door.name ?? door.id}」: 북벽 발치에 문 그림을 세울 자리가 없다(가구·다른 이벤트로 가는 길)`);
+    if (!at && !onDoorArt && !closable) notes.push("남쪽 틈 위에 이벤트·시작 칸이 있어 틈은 그대로 둠");
+    if (at || onDoorArt || closable) {
       // 틈을 메운다: 틈 칸과 그 바로 위 칸에 걸친 그림(모델이 틈에 세운 문 등)을 걷고, 틈을 공허로 바꾼 뒤 둘레 띠를 다시 칠한다.
       for (const g of gaps) {
         const i = g.y * w + g.x, up = i - w;
@@ -212,7 +235,11 @@ export function dressInteriorExits(run: BuildRun, mapId: string): ExitDressResul
         }
       }
       run.ctx.project = { ...run.ctx.project, maps: { ...run.ctx.project.maps, [mapId]: map } } as Project;
+      // 그 칸에 있던 조용한 이벤트(시작 목표 등)는 문이 있던 자리로 비켜 둔다(먼저 비키고, 문이 옮긴 뒤 그 자리로 — move_event 는 찬 칸이면 옆 칸으로 민다).
+      const sitters = events.filter((e) => e.id !== door.id && e.x === at!.x && e.y === at!.y && silent(e));
+      for (const e of sitters) run.call("move_event", { mapId, eventId: e.id, x: door.x, y: door.y });
       const res = run.call("move_event", { mapId, eventId: door.id, x: at.x, y: at.y });
+      if (res.ok) for (const e of sitters) run.call("move_event", { mapId, eventId: e.id, x: door.x, y: door.y });
       notes.push(res.ok ? `문 「${door.name ?? door.id}」 (${door.x},${door.y})→(${at.x},${at.y}) 북벽 발치에 ${piece.id} 그림` : `문 옮기기 실패: ${String(res.summary).slice(0, 100)}`);
       return { notes };
     }
