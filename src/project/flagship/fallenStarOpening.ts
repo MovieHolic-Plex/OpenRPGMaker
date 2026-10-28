@@ -139,7 +139,7 @@ function skyShot(): OpeningAnimatic {
     // 어둠에서 천천히 밝아진다. 첫 2초 남짓은 게임이 뒤에서 맵을 짓느라 바쁜 때라(실측: 출하 플레이어에서 첫 컷 0.3~2.3초에 화면이 멎는다)
     // 그동안은 검게 두어 멎음이 보이지 않게 한다(그래서 이 컷만 세 마디). 음악은 처음부터 흐른다.
     screenFill("dawn", "#03050d", [key(0, 1), key(2600, 1), key(4600, 0, "ease-in-out")]),
-    caption([{ atMs: 4200, text: "별을 읽는 왕도 아스텔. 그날 밤도 하늘은 고요했다." }]),
+    caption([{ atMs: 4200, text: "별을 읽는 왕도 아스텔. 그날 밤도 하늘은 조용했다." }]),
   ], { keys: SKY_CAM }, { kind: "cut", durationMs: 1 });
 }
 
@@ -166,7 +166,7 @@ function crackShot(): OpeningAnimatic {
     particles("burst", "sparks", "#ffd8a0", { x: star.x - 70, y: star.y - 60, width: 140, height: 120 }, 60, 17, { startMs: hit, endMs: 2600, keys: { opacity: [key(hit, 1), key(2600, 0, "ease-in")] } }),
     screenFill("tint", "#ff7a30", [key(0, 0), key(hit, 0), key(hit + 300, 0.22, "ease-out"), key(3000, 0.1)], "screen"),
     screenFill("flash", "#ffffff", [key(0, 0), key(hit - 40, 0), key(hit + 40, 0.95), key(hit + 520, 0, "ease-out")]),
-    caption([{ atMs: 1500, text: "그리고 별 하나가, 갈라졌다." }]),
+    caption([{ atMs: 1500, text: "그러다 별 하나가 쪼개졌다." }]),
   ], { keys: cam, shake: { atMs: hit, durationMs: 1000, amplitude: 5, frequency: 18, seed: 7 } }, { kind: "cut", durationMs: 1 }, [
     { id: "glass", resourceId: SE.glass, atMs: hit - 150, durationMs: 900, volume: 0.6 },
     { id: "boom", resourceId: SE.boom, atMs: hit, durationMs: 1200, volume: 0.9 },
@@ -214,7 +214,7 @@ function fallShot(): OpeningAnimatic {
     // 지나가는 불빛이 왕도를 붉게 물들인다.
     screenFill("warm", "#ff8a40", [key(0, 0), key(3800, 0.08, "ease-in"), key(FALL_HIT, 0.14), key(6000, 0.2)], "screen"),
     screenFill("flash", "#fff4d8", [key(0, 0), key(FALL_HIT, 0), key(FALL_HIT + 80, 0.85), key(5750, 0.12, "ease-out"), key(6000, 0.3, "ease-in")]),
-    caption([{ atMs: 1200, text: "불꼬리를 끌며, 왕도 북쪽 숲으로." }]),
+    caption([{ atMs: 1200, text: "불꼬리를 끌고 왕도 북쪽 숲으로 떨어졌다." }]),
   ], { keys: FALL_CAM, shake: { atMs: FALL_HIT, durationMs: 740, amplitude: 4, frequency: 14, seed: 4 } }, { kind: "cut", durationMs: 1 }, [
     { id: "roar", resourceId: SE.fire, atMs: 0, durationMs: 2600, volume: 0.55, fadeOutMs: 900 },
     { id: "roar-2", resourceId: SE.fire, atMs: 2400, durationMs: 2600, volume: 0.7, fadeOutMs: 900 },
@@ -237,7 +237,7 @@ function aftermathShot(): OpeningAnimatic {
     particles("embers", "sparks", "#ffb070", { x: pod.x - 90, y: pod.y - 60, width: 180, height: 100 }, 26, 9, { parallax: 1.25, keys: { opacity: [key(0, 0.95), key(3600, 0, "ease-in")] }, endMs: 3600 }),
     particles("fireflies", "dust", "#d8ff88", { x: pod.x - 200, y: pod.y - 110, width: 400, height: 200 }, 22, 31, { parallax: 1.4, startMs: 2400, keys: { opacity: [key(2400, 0), key(4200, 0.85, "ease-in-out")] } }),
     screenFill("cool", "#203a68", [key(0, 0), key(2000, 0), key(6000, 0.22, "ease-in-out")], "multiply"),
-    caption([{ atMs: 1500, text: "북쪽 숲 깊은 곳. 그 한가운데, 은빛 알이 숨 쉬듯 빛났다." }]),
+    caption([{ atMs: 1500, text: "북쪽 숲 한복판에서 은빛 알 하나가 숨 쉬듯 빛났다." }]),
   ], { keys: cam }, { kind: "flash", durationMs: 450, color: "#fff2d0" }, [
     { id: "rubble", resourceId: SE.rubble, atMs: 0, durationMs: 1500, volume: 0.6 },
     { id: "crackle", resourceId: SE.crackle, atMs: 300, durationMs: 2400, volume: 0.25, fadeOutMs: 1200 },
@@ -265,7 +265,7 @@ function bellShot(): OpeningAnimatic {
     { id: "kael-looks", kind: "emote", role: "effect", x: kael.x - 7, y: kael.y - 23, width: 14, height: 16, startMs: 2600, endMs: 5600, emote: { preset: "exclaim", tail: "down", popMs: 160, outMs: 220 } },
     { id: "elena-looks", kind: "emote", role: "effect", x: elena.x - 7, y: elena.y - 23, width: 14, height: 16, startMs: 3500, endMs: 5600, emote: { preset: "question", tail: "down", popMs: 160, outMs: 220 } },
     particles("fireflies", "dust", "#d8ff88", { x: 60, y: 120, width: 420, height: 160 }, 14, 41, { parallax: 1.3, opacity: 0.6 }),
-    caption([{ atMs: 400, text: "그 밤, 천문대의 종이 울렸다." }, { atMs: 3000, text: "견습 별지기 카엘은 북쪽 하늘을 올려다보았다." }]),
+    caption([{ atMs: 400, text: "그날 밤, 천문대 종이 울렸다." }, { atMs: 3000, text: "견습 별지기 카엘은 북쪽 하늘을 올려다보았다." }]),
   ], { keys: cam }, { kind: "fade", durationMs: 500 }, [
     { id: "bell-1", resourceId: SE.bell, atMs: 0, durationMs: 1400, volume: 0.8 },
     { id: "bell-2", resourceId: SE.bell, atMs: 2 * BEAT, durationMs: 1400, volume: 0.7 },
