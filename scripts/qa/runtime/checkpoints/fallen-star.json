@@ -7043,6 +7043,11 @@
        "steps": 3
       },
       {
+       "kind": "move",
+       "dir": "right",
+       "steps": 1
+      },
+      {
        "kind": "face",
        "dir": "right"
       },
@@ -7140,13 +7145,33 @@
      "ops": [
       {
        "kind": "move",
-       "dir": "up",
+       "dir": "right",
        "steps": 1
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 400
       },
       {
        "kind": "move",
        "dir": "right",
-       "steps": 2
+       "steps": 1
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 400
+      },
+      {
+       "kind": "move",
+       "dir": "up",
+       "steps": 1
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 400
       },
       {
        "kind": "face",
@@ -7246,13 +7271,23 @@
      "ops": [
       {
        "kind": "move",
+       "dir": "left",
+       "steps": 1
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 400
+      },
+      {
+       "kind": "move",
        "dir": "up",
        "steps": 1
       },
       {
-       "kind": "move",
-       "dir": "left",
-       "steps": 1
+       "kind": "hold",
+       "dir": null,
+       "ms": 400
       },
       {
        "kind": "face",
