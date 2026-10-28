@@ -88,12 +88,17 @@
 }
 
 .rm-inspector-empty-icon {
-  font-size: 32px;
-  opacity: 0.5;
+  display: inline-flex;
+  color: var(--text-3);
+}
+
+.rm-inspector-empty-icon svg {
+  width: 32px;
+  height: 32px;
 }
 
 .rm-inspector-empty-text {
-  font: 400 11px/1.5 var(--font-ui);
+  font: 400 12px/1.5 var(--font-ui);
   word-break: keep-all;
 }
 

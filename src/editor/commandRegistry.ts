@@ -19,6 +19,7 @@ import { openResourceModal } from "@/editor/panels/resourceModal";
 import { openWorldCodexPanel, openWorldPanel } from "@/editor/panels/worldEntries";
 import { saveProjectNow } from "@/editor/saveActions";
 import { uiLabel } from "@/editor/uiCopy";
+import { store } from "@/project/store";
 import type { MapId, Project } from "@/project/types";
 import { INSPECTION_COMMANDS } from '@/editor/panels/sidebarInspectionPins';
 import { openSidebarInspection } from '@/editor/panels/tileToolbarMenus';
@@ -57,6 +58,16 @@ function runTool(tool: Tool): void {
   else editorState.set({ tool });
 }
 
+const DUPLICATED_TASKS: ReadonlySet<string> = new Set(["data", "test"]);
+
+async function openCurrentMapSettings(): Promise<void> {
+  const mapId = editorState.get().currentMapId;
+  const map = mapId ? store.getCurrent().maps[mapId] : undefined;
+  if (!map) return;
+  const { openMapPropertiesDialog } = await import("@/editor/panels/mapPropertiesDialog");
+  openMapPropertiesDialog(map.id, map.name);
+}
+
 export function listEditorCommands(): readonly EditorCommand[] {
   return [
     ...INSPECTION_COMMANDS.map((id): EditorCommand => ({
@@ -68,7 +79,8 @@ export function listEditorCommands(): readonly EditorCommand[] {
         openSidebarInspection(id);
       },
     })),
-    ...AUTHORING_TASKS.map((task): EditorCommand => ({
+    // 「작업: 데이터」·「작업: 테스트」는 아래 「자료집 열기」·「테스트 실행」과 같은 일을 다른 이름으로 했다 — 한 명령 한 이름.
+    ...AUTHORING_TASKS.filter((task) => !DUPLICATED_TASKS.has(task.id)).map((task): EditorCommand => ({
       id: `authoring-task-${task.id}`,
       label: `작업: ${task.label}`,
       category: "화면",
@@ -84,9 +96,18 @@ export function listEditorCommands(): readonly EditorCommand[] {
       run: () => runTool(tool.id),
     })),
     // keywords 에 구 용어(하위/상위)를 남긴다 — 예전 용어로 검색하는 사용자를 위해.
-    { id: "layer-lower", label: "레이어: 바닥", category: "레이어", keywords: ["lower", "타일", "바닥", "하위"], hotkey: "F5", run: () => applyLayer("lower") },
-    { id: "layer-upper", label: "레이어: 상위", category: "레이어", keywords: ["upper", "오브젝트", "덧그림", "장식", "상위"], hotkey: "F6", run: () => applyLayer("upper") },
-    { id: "layer-event", label: "레이어: 이벤트", category: "레이어", keywords: ["event", "이벤트"], hotkey: "F7", run: () => applyLayer("event") },
+    // F5(새로고침)·F6(브라우저 영역 이동)은 쓰지 않는다 — hotkeys.ts 의 Shift+1/2/3.
+    { id: "layer-lower", label: "레이어: 바닥", category: "레이어", keywords: ["lower", "타일", "바닥", "하위"], hotkey: "Shift+1", run: () => applyLayer("lower") },
+    { id: "layer-upper", label: "레이어: 상위", category: "레이어", keywords: ["upper", "오브젝트", "덧그림", "장식", "상위"], hotkey: "Shift+2", run: () => applyLayer("upper") },
+    { id: "layer-event", label: "레이어: 이벤트", category: "레이어", keywords: ["event", "이벤트"], hotkey: "Shift+3", run: () => applyLayer("event") },
+    // 맵 설정(크기·배경 음악·타일 그림판)은 맵 목록 우클릭에만 있었다 — 팔레트에서 같은 창을 연다.
+    {
+      id: "map-settings",
+      label: "맵 설정 열기 — 크기·배경 음악",
+      category: "화면",
+      keywords: ["map settings", "map properties", "size", "bgm", "맵 설정", "맵 속성", "크기", "배경 음악", "음악", "타일 그림판", "타일셋"],
+      run: () => { void openCurrentMapSettings(); },
+    },
     // 도크 프리셋 명령(「화면: 프리셋 — 맵 중심/이벤트 중심/데이터 중심」)은 2026-09-03 에 걷었다.
     // 톱바 작업 칩과 함께 사라진 개념이고, 패널 표시는 아래 「패널 — 열기/닫기」 명령이 이미 다룬다.
     // 패널 도킹 — ⌘K 에서 좌/우 도크로 바로 보낸다. 호스트 없는 도크는 명령 자체를 내놓지 않고
@@ -115,7 +136,7 @@ export function listEditorCommands(): readonly EditorCommand[] {
       id: "test-play",
       label: `화면: ${uiLabel("testPlay")}`,
       category: "화면",
-      keywords: ["play", "run", "실행", "테스트", "시연"],
+      keywords: ["play", "run", "test", "실행", "테스트", "시연"],
       run: () => runAuthoringTask("test"),
     },
     {
@@ -130,7 +151,7 @@ export function listEditorCommands(): readonly EditorCommand[] {
       id: "open-database",
       label: `화면: ${uiLabel("database")} 열기`,
       category: "화면",
-      keywords: ["database", "db", "데이터베이스", "자료집", "액터", "스킬"],
+      keywords: ["database", "db", "data", "데이터베이스", "데이터", "자료", "자료집", "액터", "스킬"],
       run: () => runAuthoringTask("data"),
     },
     // 음악·효과음과 맵·이벤트 찾기는 2026-09-03 까지 팔레트에 없었다 — 표준 모드에서는 「도구 ▾」
@@ -189,8 +210,10 @@ export function listEditorCommands(): readonly EditorCommand[] {
       label: "도움말: 단축키 보기",
       category: "화면",
       keywords: ["help", "shortcut", "도움말", "단축키", "키"],
+      hotkey: "?",
+      // 이름대로 단축키 절에서 연다(예전에는 가이드 맨 위 「개요」가 열렸다).
       run: () => {
-        void import("@/editor/panels/helpModal").then((mod) => mod.openHelpModal());
+        void import("@/editor/panels/helpModal").then((mod) => mod.openHelpModal("shortcuts"));
       },
     },
   ];

@@ -2,7 +2,8 @@
 // 에디터 단축키 매핑.
 // 도구/레이어/줌/저장/실행취소를 키보드로 조작한다.
 // F키 레이어 전환은 데스크톱 타일 에디터의 일반 관례를 웹 키보드 규칙에 맞게 재구성했다.
-//   - F5/F6/F7: 하위/상위/이벤트 레이어
+//   - Shift+1/2/3: 바닥/상위/이벤트 레이어 (F7 = 이벤트 레이어도 남는다)
+//     F5(새로고침)·F6(주소창·페이지 영역 이동)은 키보드·보조기기 사용자의 브라우저 키라 가로채지 않는다.
 //   - 1~7: 도구 순서 (연필/채우기/스포이트/이동/선택/통행/이벤트)
 //   - 숫자/+-: 정수 줌
 //   - Ctrl+S: 저장, Ctrl+Z/Y: 실행취소/다시실행, Ctrl+C/V: 복사/붙여넣기
@@ -233,6 +234,9 @@ const TOOL_LETTER_HOTKEYS: Readonly<Record<string, Tool>> = {
   i: "eyedropper",
 };
 
+/** Shift+숫자 레이어 키(물리 키 code 기준). */
+const SHIFT_LAYER_KEYS: Readonly<Record<string, Layer>> = { Digit1: "lower", Digit2: "upper", Digit3: "event" };
+
 /** 레이어 전환 시 이벤트 레이어면 도구를 event로, 나가면 paint로 되돌린다. */
 export function applyLayer(layer: Layer): void {
   dismissLocationDrawModeForLayer(layer);
@@ -262,17 +266,14 @@ export function handleEditorKey(event: KeyboardEvent): boolean {
 
   if (handleEditorDeleteKey(event)) return true;
 
-  // F5/F6/F7: 레이어 (하위/상위/이벤트).
-  if (event.code === "F5") {
+  // Shift+1/2/3: 레이어 (바닥/상위/이벤트). 물리 키(code)로 고른다 — Shift 를 누르면 key 는 「!」「@」 같은 기호다.
+  const shiftLayer = event.shiftKey ? SHIFT_LAYER_KEYS[event.code] : undefined;
+  if (shiftLayer) {
     event.preventDefault();
-    applyLayer("lower");
+    applyLayer(shiftLayer);
     return true;
   }
-  if (event.code === "F6") {
-    event.preventDefault();
-    applyLayer("upper");
-    return true;
-  }
+  // F7: 이벤트 레이어(예전 F5/F6/F7 줄에서 브라우저 키와 겹치지 않는 하나만 남겼다).
   if (event.code === "F7") {
     event.preventDefault();
     applyLayer("event");
