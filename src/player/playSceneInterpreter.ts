@@ -452,6 +452,7 @@ async function consumeBlockingStep(
         emotion: step.emotion,
         ...(step.voiceResourceId ? { voiceResourceId: step.voiceResourceId } : {}),
         ...(step.endingEpilogue ? { endingEpilogue: true } : {}),
+        ...(step.beforeChoices ? { beforeChoices: true } : {}),
       });
       {
         const skipped = skipController.takeResult();

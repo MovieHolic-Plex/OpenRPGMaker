@@ -6,7 +6,7 @@ import { characterBaseOrigin } from "./characterOrigin";
 import type Phaser from "phaser";
 import { ensureM2Runtime } from "@/player/interpreter/m2RuntimeState";
 import type { StepResult } from "@/player/interpreter/types";
-import { characterSpriteY } from "@/player/characterDepth";
+import { characterDepth, characterSpriteY } from "@/player/characterDepth";
 import { runtimeMapWorldScale } from "@/player/runtimeViewScale";
 import { screenOverlayHost } from "@/player/playSceneScreenEffects";
 import { syncDoors } from "@/player/playSceneDoors";
@@ -234,7 +234,7 @@ function targetSprite(scene: PlaySceneContext, target: ParticleStep["target"], c
 }
 
 /** 파티클 한 번. 다 사라지면(뿜기 시간 + 수명) 이행되는 약속을 돌려준다 — wait 면 흐름이 기다린다. */
-export function playParticleEffect(scene: PlaySceneContext, step: ParticleStep, currentEventId?: string): Promise<void> {
+export function playParticleEffect(scene: PlaySceneContext, step: ParticleStep, currentEventId?: string, depth: number = PARTICLE_DEPTH): Promise<void> {
   ensureFxTextures(scene);
   const recipe = RECIPES[step.preset];
   // 크기(%)는 입자 그림과 퍼지는 거리를 함께 키운다(레시피 수치가 모두 s 배) — 1배 화면에서 서류·불티가 점으로 보이던 것을 키운다.
@@ -247,7 +247,7 @@ export function playParticleEffect(scene: PlaySceneContext, step: ParticleStep, 
   // 따라가는 이미터는 원점(0,0)에 만든다. startFollow 는 입자를 대상의 월드 좌표에 뿌리는데 이미터 위치도
   // 그리기 변환에 더해져, 대상 자리에 만들면 좌표가 두 번 더해져 화면 밖에 그려졌다(2026-10-02 실측).
   const emitter = scene.add.particles(sprite ? 0 : x, sprite ? 0 : y, recipe.texture, recipe.config(scale));
-  emitter.setDepth(PARTICLE_DEPTH);
+  emitter.setDepth(depth);
   if (sprite) emitter.startFollow(sprite);
   const longestLife = step.preset === "paper" || step.preset === "petals" ? 2400 : 1500;
   return new Promise((resolve) => {
@@ -604,7 +604,10 @@ function syncNearSparkles(scene: PlaySceneContext, now: number): void {
     if (distance > near.radius) { state.inside.delete(id); continue; }
     if (state.inside.has(id)) continue;
     state.inside.add(id);
-    void playParticleEffect(scene, { kind: "particleEffect", preset: near.preset ?? "sparkle", target: { kind: "tile", x: view.x, y: view.y }, durationMs: 900, wait: false });
+    // 표지 반짝임은 그 칸의 사물과 같은 줄 깊이에 둔다 — 맨 위(PARTICLE_DEPTH)에 두면 바로 아래 칸에 선 주인공의 얼굴을 덮었다
+    // (2026-10-29 VQA mt3 argon·flash: 책상 표지 반짝이가 주인공 머리 위로 쏟아져 「얼굴이 가려진다·어디가 대상인지 모른다」). 앞 줄 사람은 반짝이를 가린다.
+    const markerDepth = characterDepth("same", characterSpriteY(view.y, mapTileSize(map))) + 0.5;
+    void playParticleEffect(scene, { kind: "particleEffect", preset: near.preset ?? "sparkle", target: { kind: "tile", x: view.x, y: view.y }, durationMs: 900, wait: false }, undefined, markerDepth);
   }
 }
 

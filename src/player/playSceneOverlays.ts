@@ -16,6 +16,7 @@ import { isEmeraldMonsterStyle } from "@/project/emeraldMonsterStyle";
 import { monsterMenuIconResourceId, monsterUiEntry } from "@/player/playerMonsterPartyModel";
 import { resolveEndingCouplePortraits } from "@/player/dialogue";
 import { ANY_FRIENDSHIP_KEY } from "@/project/session";
+import { resolveActorName } from "@/project/sessionActorCommands";
 import type { FaceGraphic } from "@/project/types";
 import { sharedPortraitRendering } from "@/assets/sharedPortraitAssets";
 import { vnUiText, type VnUiKey } from "@/player/vnExtrasStrings";
@@ -311,11 +312,17 @@ function emeraldHallOfFame(scene: PlaySceneContext): HTMLElement | undefined {
   return hall;
 }
 
-function endingKicker(presentation?: EndingPresentation): string {
+function endingKicker(scene: PlaySceneContext, presentation?: EndingPresentation): string {
   const own = presentation?.kicker?.trim();
   if (own) return own;
   if (presentation?.tone === "dark") return endingText("ending.kicker.dark");
-  return endingText(usesRelationshipMenu(store.getCurrent()) ? "ending.kicker.couple" : "ending.kicker.journey");
+  const project = store.getCurrent();
+  if (usesRelationshipMenu(project)) return endingText("ending.kicker.couple");
+  // 혼자 갇혔다 나오는 방탈출 같은 1인 이야기에 「우리의 여정」은 남의 문구였다(VQA mt3 flash 156·terra 214) — 주인공 이름으로.
+  const party = scene.session.partyActorIds ?? [];
+  const solo = party.length === 1 ? project.database.actors.find((actor) => actor.id === party[0]) : undefined;
+  const name = solo ? resolveActorName(scene.session, solo).trim() : "";
+  return name ? endingText("ending.kicker.solo", name) : endingText("ending.kicker.journey");
 }
 
 /** 마지막 장의 큰 글자. 저작한 finalTitle → 막·장 끝이면 「제1막 끝」 → 「끝」(게임 언어). */
@@ -487,7 +494,7 @@ export function showEndingScreen(scene: PlaySceneContext, title: string, message
       badge.dataset.testid = "ending-badge";
       epilogue.append(badge);
     }
-    epilogue.append(textNode("div", "ending-kicker", endingKicker(presentation)));
+    epilogue.append(textNode("div", "ending-kicker", endingKicker(scene, presentation)));
     // 「본제 · 부제」 이름은 구분점에서 줄을 나눈다 — 점이 줄 끝에 매달리지 않게 점은 빼고 부제를 둘째 줄로 보낸다.
     const heading = textNode("h1", "ending-heading", "");
     (title || endingText("ending.heading")).split(/\s+[·・•]\s+/).forEach((part, index) => {

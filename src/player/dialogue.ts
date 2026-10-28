@@ -115,6 +115,11 @@ export type DialogueTextRequest = DialogueSurfaceSettings & {
   /** 엔딩 에필로그의 글. 스킵은 이 글을 절대 건너뛰지 않는다(interpreter text 단계의 endingEpilogue). */
   readonly endingEpilogue?: boolean;
   /**
+   * 바로 뒤에 질문 없는 선택지가 온다(interpreter text 단계). 마지막 쪽이 다 나오면 키를 기다리지 않고 닫아
+   * 선택지가 이 글을 틀에 남긴 채 함께 뜬다. ▼ 만 보이고 선택지가 안 보이던 막힘(VQA mt3 terra 197). 말풍선은 틀에 남지 않아 예외.
+   */
+  readonly beforeChoices?: boolean;
+  /**
    * 「문장 표시」 커맨드의 연출 선택자. 감정 이름이 그대로 연출 프로파일을 고른다
    * (src/player/dialoguePresentation.ts). 모르는 값과 빈 값은 neutral 로 떨어진다.
    */
@@ -1361,12 +1366,13 @@ export function createDialogueUI(
         }
         pageRenderer?.revealAll();
         markPageReady();
-        if (autoClosePage) timer = window.setTimeout(advance, 0);
+        if (autoClosePage || closesIntoChoices()) timer = window.setTimeout(advance, 0);
       };
+      const closesIntoChoices = (): boolean => request.beforeChoices === true && !useBalloon && pageIndex === pages.length - 1;
       const completeTypedPage = (): void => {
         pageRenderer?.revealAll();
         markPageReady();
-        if (autoClosePage) timer = window.setTimeout(advance, 0);
+        if (autoClosePage || closesIntoChoices()) timer = window.setTimeout(advance, 0);
       };
       const typeStep = (): void => {
         const tokens = currentTokens();

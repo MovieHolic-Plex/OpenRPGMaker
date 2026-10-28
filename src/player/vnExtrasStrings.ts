@@ -72,6 +72,7 @@ export type VnUiKey =
   | "ending.kicker.dark"
   | "ending.kicker.couple"
   | "ending.kicker.journey"
+  | "ending.kicker.solo"
   | "ending.hallOfFame"
   | "ending.continue"
   | "ending.creditsSkip"
@@ -146,6 +147,7 @@ export const VN_UI_STRINGS: Readonly<Record<VnUiKey, Row>> = {
   "ending.kicker.dark": { ko: "이야기의 끝", en: "The end of the story", ja: "物語の終わり", zh: "故事的终点" },
   "ending.kicker.couple": { ko: "두 사람의 이야기", en: "Their story", ja: "ふたりの物語", zh: "两个人的故事" },
   "ending.kicker.journey": { ko: "우리의 여정", en: "Our journey", ja: "わたしたちの旅", zh: "我们的旅程" },
+  "ending.kicker.solo": { ko: "{0}의 이야기", en: "{0}'s story", ja: "{0}の物語", zh: "{0}的故事" },
   "ending.hallOfFame": { ko: "전당 등록!", en: "Hall of Fame!", ja: "殿堂入り!", zh: "荣登殿堂!" },
   "ending.continue": { ko: "Z / Enter 계속", en: "Z / Enter  Continue", ja: "Z / Enter 次へ", zh: "Z / Enter 继续" },
   "ending.creditsSkip": { ko: "Z / Enter 누르면 빠르게   ·   Esc 건너뛰기", en: "Hold Z / Enter  Fast   ·   Esc  Skip", ja: "Z / Enter 長押しで早送り   ·   Esc とばす", zh: "按住 Z / Enter 快进   ·   Esc 跳过" },
