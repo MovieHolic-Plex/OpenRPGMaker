@@ -3867,7 +3867,7 @@
   {
    "id": "act2-b4-hole",
    "label": "제2막 B4 — 성벽 밑 브람, 개구멍에서 들킨다 → 숲 어귀 추격 → 숲 그늘 고백",
-   "note": "act2Opening.ts bram (39,16) · hole (38,15) → map_field_north_1 forestEdgeChase(make_chase_scene 기사 둘, 경보 스위치, 돌진 5칸@100ms) — 숲 그늘 줄 y=28(입구 위 10칸)",
+   "note": "act2Opening.ts bram (39,16) · hole (38,15) → map_field_north_1 forestEdgeChase(make_chase_scene 기사 둘, 경보 스위치, 놀람 1.4초·돌진 4칸@100ms) — 숲 그늘 줄 y=28(입구 위 10칸)",
    "mapId": "fs2_hub_night",
    "x": 38,
    "y": 16,
@@ -3993,7 +3993,7 @@
       {
        "kind": "hold",
        "dir": null,
-       "ms": 1600
+       "ms": 300
       }
      ],
      "shot": true
@@ -4480,21 +4480,22 @@
        "timeoutMs": 180000,
        "plan": {
         "actor_hero": [
+         "skill_hero_rush_pierce@last",
          "skill_hero_rush_pierce",
          "skill_hero_rush_pierce",
          "attack",
          "skill_hero_rush_pierce",
          "attack",
          "skill_hero_rush_pierce",
-         "attack",
          "attack"
         ],
         "actor_fs_elena": [
          "skill_mage_fireball",
+         "skill_heal@1",
          "skill_mage_fireball",
          "skill_heal@0",
          "skill_mage_fireball",
-         "skill_heal@0",
+         "item:item_potion@1",
          "skill_mage_fireball",
          "skill_heal@0",
          "attack"

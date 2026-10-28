@@ -1005,8 +1005,8 @@ function forestEdgeChase(project: Project, exec: Exec, mapId: string, hubId: str
     } catch (e) { why = String((e as Error).message).slice(0, 300); /* 그 칸은 도구가 거절 — 다음 자리 */ }
   }
   if (!knightIds.length) throw new Error(`[fallen-star act2] 숲 어귀에 추격 기사를 못 세웠다(후보 ${near.length}칸): ${why}`);
-  // 기사 추격 — 시야 9, 발견 0.2초, 다섯 칸 돌진(칸당 0.1초), 평소 0.17초/칸(주인공 0.16초보다 조금 느림).
-  exec(project, "set_field_detection", { mapIds: [mapId], eventIds: knightIds, sightRange: 9, alertMs: 200, chaseStepMs: 170, rush: true, rushSteps: 5, rushStepMs: 100, searchMs: 4000, giveUpRange: 20 });
+  // 기사 추격 — 시야 9. 개구멍을 빠져나온 직후라 「거기 서라!」 1.4초 뒤에 움직인다(그동안 달려야 산다), 네 칸 돌진(칸당 0.1초), 평소 0.17초/칸(주인공 0.16초보다 조금 느림).
+  exec(project, "set_field_detection", { mapIds: [mapId], eventIds: knightIds, sightRange: 9, alertMs: 1400, chaseStepMs: 170, rush: true, rushSteps: 4, rushStepMs: 100, searchMs: 4000, giveUpRange: 20 });
   // 붙잡히면 개구멍 앞(광장)으로 — 도구 검사 뒤에 직접 붙인다(위 caughtPenalty 주석).
   for (const id of knightIds) {
     const chasePage = M(project, mapId).events.find((e) => e.id === id)?.pages?.[0];
