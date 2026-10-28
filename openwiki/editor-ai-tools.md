@@ -3851,3 +3851,19 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
 - **보이는 적 진영 싸움(과제 11 확인 결과):** `set_factions` 는 액션 전투 구역 스폰(`FieldSpawnDef.factionId`)에만 먹었고 `place_field_enemy` 의 심볼 적(맵 이벤트)에는 진영이 없었다.
   이제 `GameEvent.fieldFactionId` 를 달 수 있다 — `place_field_enemy{factionId}`(생략 = 선두 적 레코드의 factionId 가 정의된 진영이면 그것). 정의 안 된 진영은 `unknown-faction` 으로 거절.
   런타임 `player/playSceneFieldEnemyClash.ts`(판정 `project/fieldEnemyClash.ts`): 적대(태도 -1 이하) 진영의 보이는 적이 맨해튼 2칸 안에 들면 둘 다 분노 말풍선 → 적 그룹 전력(HP+능력치×4 합)이 약한 쪽이 붉게 깜빡이다 지워진다(eraseEvent 와 같은 뜻, 맵 재진입 시 복귀). 대화·전투 중엔 멈춘다. 플레이어는 두 진영 모두에게 여전히 덮쳐진다. 진영을 안 단 옛 맵은 그대로다.
+
+## `write_blueprint` — 게임 청사진 먼저 (2026-10-28, suite-blueprint)
+
+게임 하나를 만드는 요청(`wantsWholeGame`)이면 v2 조수는 짓기 전에 청사진 한 장을 쓴다. 청사진에는 새 플레이어 목표 한 줄(`playerGoal`), 시작부터 엔딩까지의 핵심 경로 `steps`(장소·이벤트·할 일·조건·결과·느낌), 엔딩이 들어간다.
+- 저장: `project.gameBlueprint`(`src/project/gameBlueprint.ts`, 로더 `io/shape.ts` 가 정규화). SQLite `current_json` 에 함께 저장되고 내보내기에도 실린다. 옛 프로젝트는 이 필드가 없고 동작도 그대로다.
+- 강제: 청사진 없이 `make_place`·`make_game` 을 부르면 「먼저 write_blueprint」라며 거절한다(`verbs.ts` `blueprintGate`).
+- 고정: `buildV2SystemPrompt` 가 핵심 지시 바로 뒤에 청사진 글(`gameBlueprintText`)을 박아 매 차례 대조한다. 카드 `BLUEPRINT_CARD` 는 게임 요청이거나 청사진이 있을 때만 싣는다.
+- 출하 검사(`src/ai/v2/blueprint.ts` `walkBlueprint` → `shipBlockers`): 다섯 가지를 데이터로 걷는다.
+  1. 단계마다 맵·이벤트가 있나(이름 또는 id, 한쪽이 다른 쪽을 품으면 같다고 본다)
+  2. 시작에서 문·길로 걸어 닿나(`walkGame`)
+  3. 페이지 조건(스위치·아이템·변수 ≥)을 켜는 곳이 그 단계 또는 앞 단계, 아니면 경로 밖 이벤트에 있나. 자기 자신이 켜는 카운터도 통과로 본다.
+  4. 이벤트에 명령이 있나
+  5. 마지막 단계가 엔딩을 부르나(직접, 공통 이벤트, 또는 그 단계가 켠 조건으로 열리는 다른 이벤트)
+
+  청사진이 없는 게임 요청은 `blueprint-missing` 으로 막는다.
+- 측정: 고정 프롬프트 스위트(저장소 밖 `~/z-project/assistant-whole-game/suite/`)의 판정자는 `playerGoal` 한 줄만 받는다. 엔딩 여부는 판정자의 말이 아니라 플레이어 클리어 기록(`:clear-record:v1`)으로 센다.
