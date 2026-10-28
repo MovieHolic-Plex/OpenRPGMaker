@@ -240,7 +240,7 @@ body .left-panel-stack[data-testid="left-map-root"] {
   display: grid;
   gap: 1px 8px;
   grid-template-columns: minmax(0, 1fr) auto;
-  grid-template-rows: 24px 18px;
+  grid-template-rows: 28px 18px;
   min-width: 0;
   padding: 6px 8px;
   position: relative;
@@ -249,10 +249,11 @@ body .left-panel-stack[data-testid="left-map-root"] {
   border-top: 1px solid var(--border-subtle, rgba(42, 37, 33, 0.12));
 }
 .authoring-journey-stage[aria-current="step"] {
-  box-shadow: inset 2px 0 0 var(--accent);
+  background: var(--accent-muted, color-mix(in srgb, var(--accent) 10%, transparent));
+  border-radius: var(--radius-s, 3px);
 }
 .authoring-journey-stage.has-issues {
-  box-shadow: inset 2px 0 0 var(--danger, #C6403D);
+  background: color-mix(in srgb, var(--danger, #C6403D) 8%, transparent);
 }
 .authoring-journey-stage.is-acknowledged:not(.is-complete) {
   background: color-mix(in srgb, var(--accent) 5%, transparent);
@@ -280,8 +281,8 @@ body .left-panel-stack[data-testid="left-map-root"] {
 .authoring-journey-task:disabled { color: var(--danger, #C6403D); cursor: not-allowed; }
 
 .authoring-journey-evidence {
-  color: var(--text-3, #6B5F52);
-  font: 500 11px/1.1 var(--font-ui, system-ui, sans-serif);
+  color: var(--text-2, #4A4038);
+  font: 500 12px/1.2 var(--font-ui, system-ui, sans-serif);
   grid-column: 1 / -1;
   grid-row: 2;
   overflow: hidden;
@@ -290,22 +291,26 @@ body .left-panel-stack[data-testid="left-map-root"] {
 }
 
 .authoring-journey-manual {
-  background: transparent;
-  border: 0;
-  color: var(--text-3, #6B5F52);
+  background: var(--bg-raised, #FFFFFF);
+  border: 1px solid var(--border-default, rgba(42, 37, 33, 0.20));
+  border-radius: var(--radius-s, 3px);
+  color: var(--text-1, #2A2521);
   cursor: pointer;
-  font: 600 11px/1 var(--font-ui, system-ui, sans-serif);
+  font: 500 12px/1 var(--font-ui, system-ui, sans-serif);
   grid-column: 2;
   grid-row: 1;
-  min-height: 24px;
-  min-width: 24px;
-  padding: 2px 4px;
+  min-height: 28px;
+  min-width: 28px;
+  padding: 2px 8px;
 }
+.authoring-journey-manual[aria-pressed="true"] { background: var(--bg-inset, #F1EDE6); color: var(--text-2, #4A4038); }
+.authoring-journey-state { font-weight: 600; }
+.authoring-journey-state.is-done { color: var(--success, #2E7D4F); }
 .authoring-journey-manual:focus-visible { outline: 2px solid var(--accent); }
 
 .authoring-journey-reference-issues {
   color: var(--danger, #C6403D);
-  font: 600 11px/1 var(--font-ui, system-ui, sans-serif);
+  font: 600 12px/1 var(--font-ui, system-ui, sans-serif);
   grid-column: 1 / -1;
   position: static;
 }
@@ -327,7 +332,7 @@ body .left-panel-stack[data-testid="left-map-root"] {
   width: auto;
 }
 .authoring-journey-reference-list {
-  font: 500 11px/1.35 var(--font-ui, system-ui, sans-serif);
+  font: 500 12px/1.35 var(--font-ui, system-ui, sans-serif);
   margin: 0 0 8px;
   padding-left: 18px;
 }

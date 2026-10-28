@@ -779,6 +779,7 @@ html[data-ai-render="off"] {
 .ai-chat-panel.is-left-sidebar.is-collapsed:not(.is-studio) .ai-collapsed-restore-dot { margin: 0; flex: 0 0 auto; }
 .ai-chat-panel.is-left-sidebar.is-collapsed:not(.is-studio) > .ai-collapsed-undo:not([hidden]) {
   position: static; display: flex; align-items: center; justify-content: center; flex: 0 0 auto;
+.left-progress-mark svg { display: block; }
   width: 32px; height: 32px; margin-top: 8px; padding: 0; transform: none;
   border: 1px solid var(--border-default); border-radius: var(--radius-s); background: var(--bg-raised); color: var(--text-1);
 }
@@ -792,8 +793,8 @@ html[data-ai-render="off"] {
   display: flex; flex-direction: column; gap: 14px; font: 400 12px/1.5 var(--font-ui); color: var(--text-1);
 }
 .left-progress-pane[hidden], .left-links-pane[hidden] { display: none; }
-.left-progress-count { font: 600 11px var(--font-ui); color: var(--text-3); }
-.left-links-hint { margin: 0; color: var(--text-3); font-size: 11.5px; line-height: 1.6; }
+.left-progress-count { font: 600 12px var(--font-ui); color: var(--text-2); }
+.left-links-hint { margin: 0; color: var(--text-2); font-size: 12px; line-height: 1.6; }
 
 .left-progress-head, .left-links-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
 .left-progress-head strong, .left-links-head strong { font: 600 13px var(--font-ui); }
@@ -810,9 +811,9 @@ html[data-ai-render="off"] {
 .left-progress-step.is-claimed .left-progress-mark { background: transparent; border: 1px dashed var(--text-muted, currentColor); color: var(--text-muted, inherit); }
 .left-progress-step.is-next .left-progress-mark { border-color: var(--accent); color: var(--accent); }
 .left-progress-copy { flex: 1 1 150px; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
-.left-progress-copy strong { font: 600 12.5px var(--font-ui); }
-.left-progress-detail { color: var(--text-3); font-size: 11.5px; overflow-wrap: anywhere; }
-.left-progress-hint { color: var(--text-2); font-size: 11.5px; }
+.left-progress-copy strong { font: 600 13px var(--font-ui); }
+.left-progress-detail { color: var(--text-2); font-size: 12px; overflow-wrap: anywhere; }
+.left-progress-hint { color: var(--text-2); font-size: 12px; }
 .left-progress-go, .left-progress-ack {
   flex: none; min-height: 24px; padding: 0 8px; border: 1px solid var(--border-default); border-radius: var(--radius-s);
   background: var(--bg-raised); color: var(--text-1); font: 500 11.5px var(--font-ui); cursor: pointer;

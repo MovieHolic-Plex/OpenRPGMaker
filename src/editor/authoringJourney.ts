@@ -10,6 +10,7 @@ export type ManualJourneyStageId = "map" | "event" | "data";
 export type AuthoringJourneyCompletion =
   | "project"
   | "map-change"
+  | "map-tiles"
   | "committed-event"
   | "database-change"
   | "test-boot"
@@ -57,6 +58,27 @@ export function countJourneyCommittedEvents(events: readonly GameEvent[]): numbe
   return count;
 }
 
+const tiledLayers = new WeakMap<readonly number[], boolean>();
+
+/** 칸이 하나라도 칠해진 층인지. 칠하기는 배열을 바꾸므로 배열 단위로 기억한다. */
+function layerHasTiles(tiles: readonly number[] | undefined): boolean {
+  if (!tiles) return false;
+  const cached = tiledLayers.get(tiles);
+  if (cached !== undefined) return cached;
+  const has = tiles.some((tile) => tile >= 0);
+  tiledLayers.set(tiles, has);
+  return has;
+}
+
+/** 타일이 깔린 맵 수 — 새 맵은 기본 바닥으로 채워져 태어나므로, 사용자 붓질만 세면 「칠하면 끝」이 영영 안 끝났다. */
+export function countTiledMaps(project: Project): number {
+  let count = 0;
+  for (const map of Object.values(project.maps)) {
+    if (layerHasTiles(map.lowerTiles) || layerHasTiles(map.upperTiles)) count += 1;
+  }
+  return count;
+}
+
 export function emptyAuthoringJourneyProgress(): AuthoringJourneyProgress {
   return {
     mapTouched: false,
@@ -93,6 +115,7 @@ export function evaluateAuthoringJourney(
   const committedEventCount = Object.values(project.maps)
     .reduce((count, map) => count + countJourneyCommittedEvents(map.events), 0);
   const referenceIssueCount = referenceIssues.length;
+  const tiledMapCount = countTiledMaps(project);
   // 참조 문제는 테스트를 막지 않는다 — 지적은 데이터 단계가 하고, 테스트 완료는 실제 부팅으로 판정한다.
   const testComplete = progress.testedProjectFingerprint !== null
     && progress.testedProjectFingerprint === authoringProjectFingerprint(project);
@@ -109,11 +132,14 @@ export function evaluateAuthoringJourney(
     {
       id: "map",
       label: "맵",
-      completion: progress.mapTouched ? "map-change" : null,
+      completion: progress.mapTouched ? "map-change" : tiledMapCount > 0 ? "map-tiles" : null,
       acknowledgement: acknowledged.has("map") ? "acknowledged" : null,
+      // 프로젝트 행이 이미 「맵 N개」를 말한다 — 여기서는 칠한 상태만 말한다.
       detail: progress.mapTouched
-        ? "맵 변경 감지"
-        : acknowledged.has("map") ? "확인됨 · 변경 증거 없음" : `맵 ${mapCount}개`,
+        ? "맵을 고쳤어요"
+        : tiledMapCount > 0
+          ? "타일이 깔린 맵이 있어요"
+          : acknowledged.has("map") ? "직접 표시함 · 타일 없음" : "아직 타일이 없어요",
       referenceIssueCount: 0,
     },
     {
@@ -122,8 +148,8 @@ export function evaluateAuthoringJourney(
       completion: committedEventCount > 0 ? "committed-event" : null,
       acknowledgement: acknowledged.has("event") ? "acknowledged" : null,
       detail: committedEventCount > 0
-        ? `커밋 ${committedEventCount}개`
-        : acknowledged.has("event") ? "확인됨 · 커밋 증거 없음" : "커밋 0개",
+        ? `이벤트 ${committedEventCount}개`
+        : acknowledged.has("event") ? "직접 표시함 · 이벤트 없음" : "이벤트 0개",
       referenceIssueCount: 0,
     },
     {
@@ -135,7 +161,7 @@ export function evaluateAuthoringJourney(
         ? `참조 문제 ${referenceIssueCount}개`
         : progress.databaseTouched
           ? "DB 변경 감지"
-          : acknowledged.has("data") ? "확인됨 · DB 변경 증거 없음" : "참조 정상",
+          : acknowledged.has("data") ? "직접 표시함 · 고친 항목 없음" : "참조 정상",
       referenceIssueCount,
     },
     {
