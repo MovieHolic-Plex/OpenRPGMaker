@@ -16,6 +16,7 @@ import { FS_SILVER_SPOON } from "./townLife";
 import { FS_KEEPER_SEAL } from "./battleItems";
 import { originEdge } from "@/editor/tools/forestRouteTool";
 import { canMove } from "@/project/collision";
+import { applyVariantTerrain } from "@/editor/tools/mapVariantTerrain";
 
 /** 도구 실행 — 결과 data 를 돌려준다(author_forest_route 처럼 만든 맵 id 가 결과에만 있는 도구). */
 type Exec = (project: Project, name: string, args: Record<string, unknown>) => unknown;
@@ -936,47 +937,75 @@ function walkSteps(project: Project, map: GameMap, from: Cell): Map<string, numb
 }
 
 /**
- * B4 숲 가장자리 — 개구멍을 빠지자 등불에 들켰다. 순찰 기사 둘이 경보(place_field_enemy appearSwitchId)로 나타나 쫓고,
- * 입구에서 열두 걸음쯤 북쪽 숲 그늘의 한 줄(그 거리의 모든 칸)에 닿으면 기사들이 돌아서고 브람이 서른 해 전 일을 고백한다.
+ * B4 숲 가장자리 — 개구멍을 빠지자 등불에 들켰다. 순찰 기사 둘이 경보(make_chase_scene activateSwitch)로 깨어 쫓는다.
+ * 기사는 다섯~여섯 걸음 떨어진 곳에서 깨어 0.2초 멈칫한 뒤 다섯 칸을 칸당 0.1초로 내닫는다(v1.25 VQA: 예전엔 기사가 느려 추격이 아니었다).
+ * 입구에서 여덟~열 줄 북쪽의 「숲 그늘」 줄(그림자로 칠하고 달빛을 그 앞까지만 비춘다 — 눈에 보이는 도착선)에 닿으면 기사들이 돌아서고
+ * 브람이 서른 해 전 일을 고백한다. 붙잡히면 전투 없이 개구멍 안쪽으로 도로 기어들어 다시 시도한다.
  */
 function forestEdgeChase(project: Project, exec: Exec, mapId: string, hubId: string, bramChip: { textureKey: string; characterIndex: number }): void {
   const map = M(project, mapId);
   const arrive = { x: FS2_NORTH_ROUTE.entry.x, y: FS2_NORTH_ROUTE.entry.y - 1 };
   const dist = walkSteps(project, map, arrive);
   const cells = (d: number) => [...dist.entries()].filter(([, v]) => v === d).map(([k]) => { const [x, y] = k.split(",").map(Number); return { x: x!, y: y! }; });
-  // 숲 그늘 줄 — 입구에서 열~열네 줄 북쪽의 가로 한 줄 전체(걸어 닿는 칸만). 맵 좌우 끝이 막고 있어 북쪽으로 가려면 반드시 밟는다.
+  // 숲 그늘 줄 — 입구에서 여덟~열 줄 북쪽의 가로 한 줄 전체(걸어 닿는 칸만). 맵 좌우 끝이 막고 있어 북쪽으로 가려면 반드시 밟는다.
   const row = (y: number) => [...dist.keys()].map((k) => { const [x, yy] = k.split(",").map(Number); return { x: x!, y: yy! }; }).filter((c) => c.y === y);
   let edge: Cell[] = [];
   let edgeY = 0;
-  for (let y = arrive.y - 10; y >= Math.max(1, arrive.y - 14); y -= 1) {
+  for (let y = arrive.y - 8; y >= Math.max(1, arrive.y - 10); y -= 1) {
     const r = row(y);
     if (r.length && (!edge.length || r.length < edge.length)) { edge = r; edgeY = y; }
   }
   if (!edge.length || edge.length > 28) throw new Error(`[fallen-star act2] 숲 가장자리 줄을 못 골랐다(${edge.length}칸)`);
   FS2_B4.edge = edge;
-  // 밤 숲 — 1막 낮 숲길과 다른 맵처럼 보이게 어둡게, 주인공 곁만 희미하게.
+  // 숲 그늘 — 도착선 줄과 그 북쪽 두 줄을 그림자로 덮고(가로 전체), 남쪽 한 줄은 위 절반만 — 그늘의 가장자리가 보인다.
+  const shade: Rec[] = [];
+  for (let x = 0; x < map.width; x += 1) {
+    for (let y = edgeY - 2; y <= edgeY; y += 1) if (y >= 0) shade.push({ x, y, bits: 15 });
+    if (edgeY + 1 < map.height) shade.push({ x, y: edgeY + 1, quarters: ["tl", "tr"] });
+  }
+  exec(project, "paint_shadow", { mapId, cells: shade, mode: "add" });
+  // 밤 숲 — 1막 낮 숲길과 다른 맵처럼 어둡게. 개구멍~숲 그늘 사이 빈터에만 달빛이 들어, 그늘 줄이 어둠의 경계로 읽힌다.
+  const moonY = Math.round((arrive.y + edgeY) / 2) + 1;
   exec(project, "set_lighting_volume", {
-    mapId, applyMode: "map", ambient: 0.66, color: "#0a1024",
-    sources: [{ id: "player", at: { kind: "player" }, radius: 3, intensity: 0.4, color: "#9fb4ff" }],
+    mapId, applyMode: "map", ambient: 0.7, color: "#0a1024",
+    sources: [
+      { id: "moon", at: { x: arrive.x, y: moonY }, radius: Math.max(4, arrive.y - edgeY - 3), intensity: 0.45, color: "#c4d2ff" },
+      { id: "player", at: { kind: "player" }, radius: 3, intensity: 0.35, color: "#9fb4ff" },
+    ],
   });
-  // 순찰 기사 둘 — 경보가 켜지면 개구멍 곁에 나타나 쫓는다. 숲 가장자리에 닿으면 물러난다.
+  // 순찰 기사 둘 — 경보가 켜지면 개구멍 곁 다섯~여섯 걸음에서 깨어 쫓는다. 숲 그늘에 닿으면 사라진다(전투 없음).
   const knight = hubChip(project, hubId, "ev_fs_knight");
-  const near = [...cells(3), ...cells(4), ...cells(5)].sort((a, b) => Math.abs(b.x - arrive.x) - Math.abs(a.x - arrive.x));
-  let placed = 0;
+  const near = [...cells(5), ...cells(6)].filter((c) => c.y > edgeY + 2).sort((a, b) => Math.abs(b.x - arrive.x) - Math.abs(a.x - arrive.x));
+  const knightIds: string[] = [];
   for (const at of near) {
-    if (placed >= 2) break;
-    if (placed === 1 && FS2_B4.knights[0] && Math.sign(at.x - arrive.x) === Math.sign(FS2_B4.knights[0].x - arrive.x)) continue;
+    if (knightIds.length >= 2) break;
+    if (knightIds.length === 1 && FS2_B4.knights[0] && Math.sign(at.x - arrive.x) === Math.sign(FS2_B4.knights[0].x - arrive.x)) continue;
     try {
-      exec(project, "place_field_enemy", {
-        mapId, x: at.x, y: at.y, id: `ev_fs2_b4_knight_${placed}`, troopId: FS2_PATROL_TROOP, behavior: "chase", sightRange: 9, giveUpRange: 20,
-        pace: "fast", chaseStepMs: 230, alertMs: 250, approachStyle: "dash", graphic: knight, alert: "exclamation",
-        appearSwitchId: SW_B4_ALARM, vanishSwitchId: SW_B4_EDGE, clearSwitchId: `sw_fs2_b4_knight_${placed}_down`, checkpointOnEntry: true,
-      });
-      FS2_B4.knights.push(at);
-      placed += 1;
+      const made = exec(project, "make_chase_scene", {
+        mapId,
+        chaser: { at, graphic: { selectionId: `charset:${knight.textureKey}:${knight.characterIndex}` }, speed: 5, sightRange: 9 },
+        pursuit: { scope: "map", doorDelayMs: 0, searchMs: 4000, onLost: "wait" },
+        caughtPenalty: {
+          text: "순찰 기사: 「잡았다, 이 쥐새끼들!」\n카엘은 손을 뿌리치고 개구멍 안으로 도로 기어들었다.",
+          sendTo: { mapId: FS2_HUB_NIGHT_ID, x: HOLE.front.x, y: HOLE.front.y },
+        },
+        activateSwitch: SW_B4_ALARM,
+        checkpointOnEntry: false,
+        mood: false,
+      }) as { eventId?: string } | undefined;
+      if (!made?.eventId) continue;
+      const ev = M(project, mapId).events.find((e) => e.id === made.eventId);
+      if (ev) {
+        (ev as unknown as Rec).name = "순찰 기사";
+        ev.pages = [...(ev.pages ?? []), page(`${made.eventId}_gone`, "물러남", [sw(SW_B4_EDGE)], [], { priority: "below", graphic: { transparent: true } }) as EventPage];
+        FS2_B4.knights.push({ x: ev.x, y: ev.y });
+      }
+      knightIds.push(made.eventId);
     } catch { /* 그 칸은 도구가 거절 — 다음 자리 */ }
   }
-  if (!placed) throw new Error("[fallen-star act2] 숲 어귀에 추격 기사를 못 세웠다");
+  if (!knightIds.length) throw new Error("[fallen-star act2] 숲 어귀에 추격 기사를 못 세웠다");
+  // 기사 추격 — 시야 9, 발견 0.2초, 다섯 칸 돌진(칸당 0.1초), 평소 0.17초/칸(주인공 0.16초보다 조금 느림).
+  exec(project, "set_field_detection", { mapIds: [mapId], eventIds: knightIds, sightRange: 9, alertMs: 200, chaseStepMs: 170, rush: true, rushSteps: 5, rushStepMs: 100, searchMs: 4000, giveUpRange: 20 });
   // 브람 — 숲 그늘 줄 너머 한두 걸음.
   const beyond = [...row(edgeY - 1), ...row(edgeY - 2)];
   const bramAt = beyond.sort((a, b) => Math.abs(a.x - arrive.x) - Math.abs(b.x - arrive.x))[0];
@@ -1094,6 +1123,7 @@ function dawnwell(project: Project, exec: Exec): void {
   // 서른 해 전 원본은 변형을 뽑은 뒤 쓸 데가 없다 — 남기면 연결 없는 고아 맵이 된다.
   exec(project, "remove_map", { mapId: FS2_DAWNWELL_BASE });
   exec(project, "set_map_properties", { mapId: FS2_DAWNWELL_ID, mapRole: "field" });
+  scorchDawnwell(project, exec, kept);
   exec(project, "set_scene_mood", {
     mapId: FS2_DAWNWELL_ID, applyMode: "map",
     lighting: { ambient: 0.4, color: "#3a3440" }, weather: { kind: "fog", intensity: 0.45 },
@@ -1131,6 +1161,57 @@ function dawnwell(project: Project, exec: Exec): void {
   exec(project, "place_savepoint", { mapId: FS2_DAWNWELL_ID, x: b.x + 2, y: b.y - 3, id: "ev_fs2_dawnwell_save", name: "별빛 결정", mode: "slot",
     objectId: SAVE_CRYSTAL, prompt: "기록하시겠습니까?", sparkleRadius: 2 });
 }
+/** 버들항 구역 키트 가운데 칸 — 그을린 바닥 칠하기용. */
+function kitCenterTile(project: Project, tilesetId: string, kitId: string): number {
+  const kit = project.tilesets[tilesetId]?.structureKits?.find((k) => k.id === kitId) as { width: number; height: number; rows: { tiles: number[] }[] } | undefined;
+  const tile = kit?.rows[Math.floor(kit.height / 2)]?.tiles[Math.floor(kit.width / 2)];
+  if (tile === undefined || tile < 0) throw new Error(`[fallen-star act2] 키트 ${kitId} 가 없다`);
+  return tile;
+}
+
+/**
+ * 새벽샘 터 다듬기(v1.25 VQA) — derive_map_variant scorch:"whole" 은 남긴 집 발자국과 둘레 한 칸을 빼서
+ * 한가운데 연두 잔디 사각형(12×11)이 남았다. 그 자리도 그을리고, 잠긴 집 벽·지붕에 그을음(그림자 얼룩)을 얹는다.
+ */
+function scorchDawnwell(project: Project, exec: Exec, kept: { x: number; y: number; w: number; h: number }): void {
+  const town = M(project, FS2_DAWNWELL_ID);
+  const tileset = project.tilesets[town.tilesetId];
+  const mask = new Uint8Array(town.width * town.height);
+  for (let y = kept.y - 2; y < kept.y + kept.h + 2; y += 1) for (let x = kept.x - 2; x < kept.x + kept.w + 2; x += 1) {
+    if (x >= 0 && y >= 0 && x < town.width && y < town.height) mask[y * town.width + x] = 1;
+  }
+  applyVariantTerrain(town, tileset, "scorched", 0x5eed31, mask);
+  // 그을음 — 지붕 아래쪽 절반과 벽은 짙게, 지붕 위는 듬성듬성. 칸마다 같은 무늬가 되지 않게 좌표로 섞는다.
+  const soot: Rec[] = [];
+  for (let y = kept.y; y < kept.y + kept.h; y += 1) for (let x = kept.x; x < kept.x + kept.w; x += 1) {
+    const depth = (y - kept.y) / Math.max(1, kept.h - 1);
+    const h = ((x * 73856093) ^ (y * 19349663)) >>> 0;
+    const want = depth > 0.55 ? 0.45 : 0.22;
+    let bits = 0;
+    for (let q = 0; q < 4; q += 1) if (((h >>> (q * 7)) % 100) / 100 < want) bits |= 1 << q;
+    if (bits) soot.push({ x, y, bits });
+  }
+  if (soot.length) exec(project, "paint_shadow", { mapId: FS2_DAWNWELL_ID, cells: soot, mode: "add" });
+}
+
+/**
+ * 재의 들판 — 북쪽 숲 어귀는 숲 그늘 줄(B4 도착선) 너머 북쪽만, 재의 들판은 전부 불탄 숲으로(초록 수관 → 고사목·숯·바위, 풀 → 그을린 흙).
+ * 숲 그늘 줄과 그 남쪽 개구멍 빈터는 초록으로 둔다 — 브람의 「아직은 내 숲」이 그 줄이다.
+ */
+function scorchAshFields(project: Project): void {
+  const [north1, field] = FS2_NORTH_ROUTE.mapIds;
+  const edgeY = FS2_B4.edge[0]?.y ?? 0;
+  for (const [mapId, seed] of [[north1!, 0xa5e1], [field!, 0xa5e2]] as const) {
+    const map = M(project, mapId);
+    let mask: Uint8Array | undefined;
+    if (mapId === north1) {
+      mask = new Uint8Array(map.width * map.height);
+      for (let y = 0; y < Math.max(0, edgeY - 4); y += 1) for (let x = 0; x < map.width; x += 1) mask[y * map.width + x] = 1;
+    }
+    applyVariantTerrain(map, project.tilesets[map.tilesetId], "scorched", seed, mask);
+  }
+}
+
 const DAWN: { kept: { x: number; y: number; w: number; h: number; kitId?: string }; entry: Cell; front: Cell } = { kept: { x: 0, y: 0, w: 0, h: 0 }, entry: { x: 0, y: 0 }, front: { x: 0, y: 0 } };
 
 function dawnwellEvents(project: Project): void {
@@ -1401,7 +1482,17 @@ function northFortress(project: Project, exec: Exec, hubId: string): void {
     commands: [say(SARAH, "…그 창, 아버지가 벼린 거지.\n손잡이 무늬가 내 창이랑 같아."), say(KAEL, "네. 아저씨가 새라 씨 걱정을 많이 하셨어요.")],
   } });
   // 새벽샘 북쪽 — 돌길에서 맵 끝까지 흙길을 내 요새 입구로 이끈다(풀밭 한가운데 출구로 보이지 않게).
-  exec(project, "paint_road", { mapId: FS2_DAWNWELL_ID, points: [{ x: FORT_GATE.x, y: 6 }, { x: FORT_GATE.x, y: 0 }], style: "dirt", naturalness: 0 });
+  // paint_road dirt 는 버들항 칩셋에서 검은 칸 기둥으로 찍혔다(v1.25 VQA) — 그을린 마당 흙 칸으로 직접 깐다.
+  {
+    const town = M(project, FS2_DAWNWELL_ID);
+    const yard = kitCenterTile(project, town.tilesetId, "bd-pick-mining-valley-ground-yard");
+    for (let y = 0; y <= 6; y += 1) {
+      const i = y * town.width + FORT_GATE.x;
+      town.lowerTiles[i] = yard;
+      town.upperTiles[i] = -1;
+      if (town.lowerOverlayTiles) town.lowerOverlayTiles[i] = -1;
+    }
+  }
   // 요새 — 새벽샘 북쪽 길 끝. 2층으로 짓고(층마다 방 목록), 2층 성벽 위 결투장 앞을 레버 쇠창살로 막는다.
   // 보이는 적(경비견)·상자·쉼터·1층 수문장(경비 병사+창병)은 도구가 채운다. 사람 순찰·쇠뇌병은 아래에서 칩을 주고 따로 놓는다.
   const d = exec(project, "author_dungeon", {
@@ -1571,7 +1662,7 @@ function snowPass(project: Project, exec: Exec): void {
   const d = exec(project, "author_snow_route", {
     fromMapId: FS2_FORT_TOP_ID, side: "north", count: 2, names: ["서리 가도", "눈보라 고개"], moods: ["snow", "blizzard"],
     gapCount: 2, gapWidth: 1, paintGaps: true, linkFrom: false, openEnd: true, seed: 71,
-  }) as { maps?: { mapId: string; entry: Cell; exit: Cell | null; clearing: Cell; gaps: { from: Cell; to: Cell; seals: boolean }[] }[] } | undefined;
+  }) as { maps?: { mapId: string; entry: Cell; exit: Cell | null; clearing: Cell; gaps: { cells: Cell[]; from: Cell; to: Cell; seals: boolean }[] }[] } | undefined;
   const maps = d?.maps ?? [];
   if (maps.length < 2) throw new Error("[fallen-star act2] 설원 길이 두 장이 아니다");
   FS2_SNOW.mapIds = maps.map((m) => m.mapId);
@@ -1656,7 +1747,147 @@ function snowPass(project: Project, exec: Exec): void {
     ],
     campfires: [{ mapId: FS2_SNOW.mapIds[1]!, x: fire.x, y: fire.y + 1, id: "ev_fs2_snow_fire", name: "모닥불" }],
   });
+  frostFoes(project, exec, maps.map((m) => ({ mapId: m.mapId, entry: m.entry, exit: m.exit, gaps: m.gaps.map((g) => g.cells) })), fire);
 }
+
+/**
+ * B7 서리 가도의 적·갈림길 보물·얼음 틈 그늘(v1.25 VQA: 두 장이 같은 길로 보였고 적이 없었으며 틈이 얼음판으로 읽혔다).
+ * 난이도 곡선 — 새라 합류 뒤 Lv9 셋이 싸운다. 서리늑대(Lv9, HP 240, 공 84, EXP 80)·서리박쥐(Lv9, HP 200, 민 92, 냉기 구슬, EXP 65).
+ * 모의전(n=40, 카엘 Lv9 검·엘레나·새라): 박쥐 셋 승 100% / 통상 공격만 78%, 늑대+박쥐 둘 승 100% / 73%.
+ * 무리 셋 모두 잡으면 EXP 160+195+210=565 — 요새 끝 Lv9(2629) 에서 탑 앞 Lv10(3252) 근처.
+ * - 서리 가도(눈): 길 곁 막다른 빈터에 보물(불사조 깃) 하나, 그 앞을 박쥐 떼가 지킨다. 늑대 둘은 첫 굽이.
+ * - 눈보라 고개: 서쪽 갈림 고리에 늑대+박쥐, 고개 위에 늑대 둘. 모닥불 곁은 비운다.
+ * 얼음 틈 칸은 그림자로 덮고 앞뒤 칸 절반을 어둡게 — 길을 가로지르는 검은 금으로 읽힌다(새 그림 없음).
+ */
+const FS2_FROST_WOLF = "enemy_fs2_frost_wolf";
+const FS2_FROST_BAT = "enemy_fs2_frost_bat";
+const FROST_LAYERS = [{ preset: "snow" }, { preset: "mist", opacity: 50 }];
+function frostFoes(project: Project, exec: Exec, maps: { mapId: string; entry: Cell; exit: Cell | null; gaps: Cell[][] }[], fire: Cell): void {
+  copyEnemy(project, exec, "enemy_fs_wolf", {
+    id: FS2_FROST_WOLF, name: "서리늑대", monsterResourceId: "generated-enemy-wolf-dire", level: 9,
+    stats: { maxHp: 240, maxMp: 0, attack: 84, defense: 32, mind: 20, agility: 70 },
+    skillIds: ["skill_attack", "skill_mon_savage_maul"], actions: [act("skill_attack", 5), act("skill_mon_savage_maul", 3)],
+    rewards: { exp: 80, gold: 16, dropRatePercent: 0, drops: [potionDrop(10)] },
+  });
+  copyEnemy(project, exec, "enemy_bat_cave", {
+    id: FS2_FROST_BAT, name: "서리박쥐", monsterResourceId: "generated-enemy-bat-cave", level: 9,
+    stats: { maxHp: 200, maxMp: 20, attack: 76, defense: 24, mind: 60, agility: 92 },
+    skillIds: ["skill_attack", "skill_mon_frost_orb"], actions: [act("skill_attack", 5), act("skill_mon_frost_orb", 3)],
+    rewards: { exp: 65, gold: 14, dropRatePercent: 0, drops: [potionDrop(8)] },
+  });
+  for (const [id, name, members] of [
+    ["troop_fs2_frost_wolves", "서리늑대 한 쌍", [FS2_FROST_WOLF, FS2_FROST_WOLF]],
+    ["troop_fs2_frost_bats", "서리박쥐 떼", [FS2_FROST_BAT, FS2_FROST_BAT, FS2_FROST_BAT]],
+    ["troop_fs2_frost_mixed", "늑대와 박쥐", [FS2_FROST_WOLF, FS2_FROST_BAT, FS2_FROST_BAT]],
+  ] as const) {
+    exec(project, "upsert_troop", { troop: { id, name, enemyIds: [...members], previewBackgroundResourceId: "battle-scenery-snow", backdropLayers: FROST_LAYERS } });
+  }
+  // 얼음 틈 — 틈 칸은 그림자 가득, 진행 방향 앞뒤 칸은 틈 쪽 절반만.
+  for (const m of maps) {
+    const cells: Rec[] = [];
+    for (const band of m.gaps) {
+      const inBand = new Set(band.map((c) => `${c.x},${c.y}`));
+      const map = M(project, m.mapId);
+      for (const c of band) {
+        cells.push({ x: c.x, y: c.y, bits: 15 });
+        for (const [dx, dy, bits] of [[0, -1, 12], [0, 1, 3], [-1, 0, 10], [1, 0, 5]] as const) {
+          const n = { x: c.x + dx, y: c.y + dy };
+          if (n.x < 0 || n.y < 0 || n.x >= map.width || n.y >= map.height || inBand.has(`${n.x},${n.y}`)) continue;
+          cells.push({ x: n.x, y: n.y, bits });
+        }
+      }
+    }
+    if (cells.length) exec(project, "paint_shadow", { mapId: m.mapId, cells, mode: "add" });
+  }
+  // 걸어 닿는 칸 — 틈은 건넌다고 치고(새라 도약), 입구에서 센 걸음 수.
+  const reach = (mapId: string, from: Cell, gapCells: Set<string>): Map<string, number> => {
+    const map = M(project, mapId);
+    const dist = new Map<string, number>([[`${from.x},${from.y}`, 0]]);
+    const queue: Cell[] = [from];
+    while (queue.length) {
+      const c = queue.shift()!;
+      const d = dist.get(`${c.x},${c.y}`)!;
+      for (const [dx, dy] of [[0, -1], [1, 0], [-1, 0], [0, 1]] as const) {
+        const n = { x: c.x + dx, y: c.y + dy };
+        const key = `${n.x},${n.y}`;
+        if (dist.has(key) || n.x < 0 || n.y < 0 || n.x >= map.width || n.y >= map.height) continue;
+        if (!gapCells.has(key) && !gapCells.has(`${c.x},${c.y}`) && !canMove(project, map, c.x, c.y, n.x, n.y)) continue;
+        dist.set(key, d + 1);
+        queue.push(n);
+      }
+    }
+    return dist;
+  };
+  const cellOf = (k: string): Cell => { const [x, y] = k.split(",").map(Number); return { x: x!, y: y! }; };
+  const foe = (mapId: string, troopId: string, at: Cell, style: string): boolean => {
+    try {
+      exec(project, "place_field_enemy", { mapId, x: at.x, y: at.y, troopId, behavior: "chase", patrol: { length: 2, axis: at.x % 2 ? "horizontal" : "vertical" },
+        sightRange: 7, vision: "cone", pace: "normal", approachStyle: style, respawnSec: 120, checkpointOnEntry: true });
+      return true;
+    } catch { return false; }
+  };
+  /** 입구→출구 걸음 비율 t 근처(본길 위)에서 무리를 세운다 — 거절되면 이웃 걸음으로. */
+  const onRoute = (mapId: string, dist: Map<string, number>, route: Set<string>, t: number, troopId: string, style: string, avoid: Cell[]): Cell | null => {
+    const total = Math.max(...[...route].map((k) => dist.get(k) ?? 0));
+    const want = Math.round(total * t);
+    const cands = [...route].map(cellOf).filter((c) => avoid.every((a) => Math.abs(a.x - c.x) + Math.abs(a.y - c.y) > 5))
+      .sort((a, b) => Math.abs((dist.get(`${a.x},${a.y}`) ?? 0) - want) - Math.abs((dist.get(`${b.x},${b.y}`) ?? 0) - want));
+    for (const c of cands.slice(0, 12)) if (foe(mapId, troopId, c, style)) return c;
+    return null;
+  };
+  maps.forEach((m, i) => {
+    const gapSet = new Set(m.gaps.flat().map((c) => `${c.x},${c.y}`));
+    const start = i === 0 ? FS2_SNOW.entry : { x: m.entry.x, y: m.entry.y - 1 };
+    const dist = reach(m.mapId, start, gapSet);
+    // 본길 — 출구(없으면 가장 먼 칸)에서 걸음 수를 거꾸로 따라 내려온 칸들.
+    const far = m.exit && dist.has(`${m.exit.x},${m.exit.y}`) ? m.exit : cellOf([...dist.entries()].sort((a, b) => b[1] - a[1])[0]![0]);
+    const route = new Set<string>();
+    let cur = far;
+    while (cur) {
+      route.add(`${cur.x},${cur.y}`);
+      const d = dist.get(`${cur.x},${cur.y}`)!;
+      if (d === 0) break;
+      const next: Cell | undefined = [[0, -1], [1, 0], [-1, 0], [0, 1]].map(([dx, dy]) => ({ x: cur.x + dx!, y: cur.y + dy! })).find((n) => dist.get(`${n.x},${n.y}`) === d - 1);
+      if (!next) break;
+      cur = next;
+    }
+    // 본길에서 떨어진 정도 — 막다른 빈터·갈림 고리를 찾는다.
+    const offRoute = new Map<string, number>();
+    const q: string[] = [...route];
+    for (const k of route) offRoute.set(k, 0);
+    while (q.length) {
+      const k = q.shift()!; const c = cellOf(k); const d = offRoute.get(k)!;
+      for (const [dx, dy] of [[0, -1], [1, 0], [-1, 0], [0, 1]] as const) {
+        const nk = `${c.x + dx},${c.y + dy}`;
+        if (!dist.has(nk) || offRoute.has(nk)) continue;
+        offRoute.set(nk, d + 1); q.push(nk);
+      }
+    }
+    const nooks = [...offRoute.entries()].filter(([k, d]) => d >= 3 && (dist.get(k) ?? 0) > 6).sort((a, b) => b[1] - a[1]).map(([k]) => cellOf(k));
+    const avoid: Cell[] = [start, ...(i === 1 ? [fire] : [])];
+    if (i === 0) {
+      // 서리 가도 — 첫 굽이 늑대 둘, 막다른 빈터 보물 + 그 앞 박쥐 떼.
+      const w = onRoute(m.mapId, dist, route, 0.3, "troop_fs2_frost_wolves", "dash", avoid);
+      if (w) avoid.push(w);
+      let chest: Cell | null = null;
+      for (const at of nooks.slice(0, 10)) {
+        try { exec(project, "place_chest", { mapId: m.mapId, x: at.x, y: at.y, contents: { itemId: "item_phoenix_down", gold: 120 }, name: "눈에 묻힌 짐 상자", id: "ev_fs2_snow_chest" }); chest = at; break; } catch { /* 다음 자리 */ }
+      }
+      if (!chest) throw new Error("[fallen-star act2] 서리 가도 곁길 보물 자리가 없다");
+      FS2_SNOW_EXTRA.chest = chest;
+      // 상자와 본길 사이(곁길 중간)에 박쥐 떼.
+      const mid = [...offRoute.entries()].filter(([k, d]) => d >= 1 && d <= 2 && avoid.every((a) => { const c = cellOf(k); return Math.abs(a.x - c.x) + Math.abs(a.y - c.y) > 4; }))
+        .map(([k]) => cellOf(k)).sort((a, b) => (Math.abs(a.x - chest!.x) + Math.abs(a.y - chest!.y)) - (Math.abs(b.x - chest!.x) + Math.abs(b.y - chest!.y)));
+      for (const at of mid.slice(0, 10)) if (foe(m.mapId, "troop_fs2_frost_bats", at, "swoop")) { avoid.push(at); break; }
+    } else {
+      // 눈보라 고개 — 갈림 고리(본길에서 먼 칸)에 늑대+박쥐, 고개 위(본길 70%)에 늑대 둘.
+      for (const at of nooks.slice(0, 12)) if (avoid.every((a) => Math.abs(a.x - at.x) + Math.abs(a.y - at.y) > 5) && foe(m.mapId, "troop_fs2_frost_mixed", at, "dash")) { avoid.push(at); break; }
+      onRoute(m.mapId, dist, route, 0.7, "troop_fs2_frost_wolves", "dash", avoid);
+    }
+  });
+}
+/** B7 곁길 보물 자리(QA·체크포인트). */
+export const FS2_SNOW_EXTRA: { chest: Cell } = { chest: { x: 0, y: 0 } };
 
 // ════════════════════════════════════════════════════════════════════
 // 11. B8 서리나루 — 얼어붙은 못가 나루 마을(author_beodeul_town theme snow). 하르마(세린 이야기 · 잔 일 Q5 얼음 낚시),
@@ -2255,6 +2486,8 @@ export function applyFallenAct2Opening(project: Project, exec: Exec, ids: Fallen
   cellEvents(M(project, FS2_CELL_ID));
   bridge(project, exec);
   northGateEvents(project, exec, ids.hub);
+  // 숲 그늘 줄(B4)이 정해진 뒤에 그 북쪽만 태운다.
+  scorchAshFields(project);
   dawnwellEvents(project);
   northFortress(project, exec, ids.hub);
   snowPass(project, exec);
@@ -2335,23 +2568,40 @@ function widenEdgeGates(project: Project): void {
 }
 
 /**
- * 알아채기·다가오기(set_field_detection). 2026-10-27 사용자 지시:
- * - 필드 몬스터: 보면 약 3배 빨리 다가온다(보통 추격 480ms/칸 → 160ms/칸 = 주인공 걷기), 더 멀리서 알아본다(시야 8칸, 부채꼴 110°), 놀람 짧게.
- * - 밤 순찰 병사: 더 넓게 찾고 더 예민하다 — 시야 8칸, 부채꼴 140°, 알아채면 0.25초 만에, 놓쳐도 7초 동안 뒤진다, 16칸까지 쫓는다.
+ * 알아채기·다가오기(set_field_detection) — v1.25 무리별 성격(난이도 곡선 VQA). 주인공 걷기는 칸당 160ms.
+ * - 짐승(들개·재까마귀·요새 사냥개·서리 늑대): 시야 7, 놀람 0.15초, 네 칸 돌진(칸당 0.1초), 평소 160ms.
+ * - 도깨비·박쥐: 놀람 0.2초, 세 칸 돌진(칸당 0.11초), 평소 170ms.
+ * - 야경꾼(B2): 시야 6, 놀람 0.25초, 세 칸 돌진(0.11초), 평소 170ms — 약한 경비, 남북 길은 비워 둔다.
+ * - 순찰 기사(B6 부터): 시야 7, 놀람 0.2초, 다섯 칸 돌진(0.1초), 평소 170ms.
+ * - 재뱀·숯덩이 골렘: 느린 정예 — 돌진 없음, 뱀 300ms·골렘 400ms/칸, 골렘은 0.6초 늦게 알아챈다(피해 갈 수 있다).
+ * 막사(시야 3 잠입 퍼즐)·B4 개구멍 기사·쇠뇌병(보초 값)은 놓을 때 정한 값을 그대로 쓴다. 닿으면 곧바로 전투다(place_field_enemy).
  */
+const DETECTION_PROFILES: { troops: string[]; args: Rec }[] = [
+  { troops: [FS2_PATROL_TROOP], args: { sightRange: 6, coneDegrees: 120, alertMs: 250, rush: true, rushSteps: 3, rushStepMs: 110, chaseStepMs: 170, searchMs: 4000, giveUpRange: 12 } },
+  { troops: ["troop_fs2_starved_dogs", "troop_fs2_ash_crows", "troop_fs2_fort_dogs", "troop_fs2_frost_wolves", "troop_fs2_frost_mixed"], args: { sightRange: 7, coneDegrees: 110, alertMs: 150, rush: true, rushSteps: 4, rushStepMs: 100, chaseStepMs: 160 } },
+  { troops: ["troop_fs2_ash_wisps", "troop_fs2_frost_bats"], args: { sightRange: 7, coneDegrees: 120, alertMs: 200, rush: true, rushSteps: 3, rushStepMs: 110, chaseStepMs: 170 } },
+  { troops: [FS2_KNIGHT_TROOP, FS2_GATE_CAPTAIN_TROOP], args: { sightRange: 7, coneDegrees: 120, alertMs: 200, rush: true, rushSteps: 5, rushStepMs: 100, chaseStepMs: 170, searchMs: 5000, giveUpRange: 14 } },
+  { troops: ["troop_fs2_ash_snakes"], args: { sightRange: 6, coneDegrees: 100, alertMs: 350, rush: false, chaseStepMs: 300 } },
+  { troops: ["troop_fs2_cinder_golem"], args: { sightRange: 6, coneDegrees: 90, alertMs: 600, rush: false, chaseStepMs: 400, giveUpRange: 8 } },
+];
 function detection(project: Project, exec: Exec): void {
   const routeMaps = [...FS2_NORTH_ROUTE.mapIds, ...FS2_SNOW.mapIds];
-  // 막사는 시야 2칸의 잠입 퍼즐이다. 야외 적 설정으로 덮으면 순찰에서 떨어진 동쪽 통로까지 감지한다.
+  // 막사는 시야 3칸의 잠입 퍼즐이다. 야외 적 설정으로 덮으면 순찰에서 떨어진 동쪽 통로까지 감지한다.
   const act2Maps = Object.keys(project.maps).filter((id) => id !== FS2_BARRACKS_ID && (id.startsWith("fs2_") || routeMaps.includes(id)));
-  const patrolIds: string[] = []; const beastIds: string[] = [];
+  const byTroop = new Map<string, string[]>();
   for (const id of act2Maps) for (const e of M(project, id).events) {
     const pages = e.pages ?? [];
     if (!pages.some((p) => p.movement?.type === "chase")) continue;
     const troop = JSON.stringify(pages).match(/"troopId":"([^"]+)"/)?.[1];
-    if (troop === FS2_CROSSBOW_TROOP) continue;
-    if (e.id.startsWith("ev_fs2_b4_knight_")) continue;   // 개구멍 추격 기사는 경보로 나타나 사방을 본다(놓을 때 값 그대로)   // 쇠뇌병은 놓을 때 준 보초 값(좁은 부채꼴·긴 시야)을 그대로 쓴다
-    (troop === FS2_PATROL_TROOP ? patrolIds : beastIds).push(e.id);
+    if (!troop || troop === FS2_CROSSBOW_TROOP) continue;   // 쇠뇌병은 놓을 때 준 보초 값(좁은 부채꼴·긴 시야)을 그대로 쓴다
+    byTroop.set(troop, [...(byTroop.get(troop) ?? []), e.id]);
   }
-  if (patrolIds.length) exec(project, "set_field_detection", { mapIds: act2Maps, eventIds: patrolIds, sightRange: 8, coneDegrees: 140, alertMs: 250, searchMs: 7000, giveUpRange: 16, chaseStepMs: 200 });
-  if (beastIds.length) exec(project, "set_field_detection", { mapIds: act2Maps, eventIds: beastIds, sightRange: 8, coneDegrees: 110, alertMs: 350, chaseStepMs: 160 });
+  for (const profile of DETECTION_PROFILES) {
+    const ids = profile.troops.flatMap((t) => byTroop.get(t) ?? []);
+    for (const t of profile.troops) byTroop.delete(t);
+    if (ids.length) exec(project, "set_field_detection", { mapIds: act2Maps, eventIds: ids, ...profile.args });
+  }
+  // 목록에 없는 무리(새로 더한 적)는 짐승 기본값 — 빠뜨려도 느린 옛 추격으로 남지 않게.
+  const rest = [...byTroop.values()].flat();
+  if (rest.length) exec(project, "set_field_detection", { mapIds: act2Maps, eventIds: rest, ...DETECTION_PROFILES[1]!.args });
 }
