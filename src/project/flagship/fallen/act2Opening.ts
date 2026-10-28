@@ -1589,6 +1589,8 @@ function snowPass(project: Project, exec: Exec): void {
       say(ELENA, "…불이라면 나도 있어. 손바닥만 한 거지만."),
       { kind: "learnSkill", actorId: "actor_fs_elena", skillId: FS2_SKILL_EMBER_MELT, action: "learn" } as unknown as Command,
       narrate("엘레나는 필드에서 「불씨 녹이기」를 쓸 수 있다 — 길을 막은 얼음 덩이를 조사해 보자.", { context: "system" }),
+      // 독립 판정(재판정 둘): 북쪽 언 못이 벽으로 읽혀 남쪽 굽은 길만 한 시간 헤맸다 — 북쪽 길이 못 위라는 것을 짚는다.
+      say(SARAH, "북쪽 길은 저 언 못 위로 나 있어.\n갈라진 틈 앞에서 날 불러. 창으로 넘겨 줄게."),
       setSw(SW_SNOW_ARRIVE),
     ], { trigger: { kind: "auto" }, priority: "below" }),
     // 뒤 페이지가 이긴다 — 한 번 본 뒤에는 멈춘다.
