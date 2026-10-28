@@ -15,7 +15,8 @@ import { MODERN_PROGRAM_VARIATION, type ModernProgramVariation } from "./modernP
 import { VENUE_SCALE_CONTRACT } from "./venueScale";
 
 type Pair = readonly [string, string] | { readonly a: string; readonly b: string };
-export interface LayoutRoomRequest { readonly id?: string; readonly kind: string; readonly w?: number; readonly h?: number; readonly floor?: string; readonly wall?: string }
+/** template: 이 방에 쓸 견본 id(빌더 내부) — 같은 게임에 같은 용도 방이 또 있으면 다른 견본 변형을 돌려 쓰게 조수 v2 빌더가 정한다. */
+export interface LayoutRoomRequest { readonly id?: string; readonly kind: string; readonly w?: number; readonly h?: number; readonly floor?: string; readonly wall?: string; readonly template?: string }
 export interface LayoutRequest {
   /** 예제 맵 key(house-1f·bakery…) 또는 건물 id(jp_house·tavern…) — 그 예제의 방 종류 목록을 쓴다. */
   readonly program?: string;
@@ -433,7 +434,8 @@ export function layoutWants(tilesetId: string, req: LayoutRequest): Want[] {
     const ownBuilding = P && style === "any" && !ownMap.length ? all.filter((t) => t.building === programBuilding) : [];
     const pool = ownMap.length ? ownMap : ownBuilding.length ? ownBuilding : all;
     // 크기를 주지 않았으면 같은 종류 견본 중 하나를 고른다(seed 마다 다른 견본 — 같은 집이 반복되지 않게).
-    const template = near ? pool[0] : pool[Math.floor(r() * pool.length)];
+    const forced = q.template ? roomTemplates(tilesetId).find((t) => t.id === q.template && t.kind === q.kind) : undefined;
+    const template = forced ?? (near ? pool[0] : pool[Math.floor(r() * pool.length)]);
     const [dw, dh] = DEFAULT_SIZE[q.kind] ?? (/_shop$/u.test(q.kind) ? DEFAULT_SIZE.shop! : [6, 5]);
     // 변주 seed 면 큰 방을 조금 넓혀 가구 간격을 바꾼다(견본보다 작아지지는 않는다).
     const grow = vary && vary.k > 0 && !near && !vary.v.fixed?.includes(q.kind);
