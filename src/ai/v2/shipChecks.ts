@@ -25,6 +25,39 @@ import { battleSites, healingSources } from "./combatChecks";
 type Obj = Record<string, unknown>;
 export interface ShipBlocker { readonly id: string; readonly message: string; readonly evidence: string }
 
+/** 반짝임만 있고 아무 일도 안 하는 페이지 — 조사해도 대사·아이템이 없어 판정자가 「반짝이는 곳을 눌러도 무반응」 이라 막혔다(2026-10-29 vm3 terra jrpg 판정). 숨을 곳(interaction)은 뺀다. */
+export function emptySparkles(project: Project): { mapId: string; eventId: string; x: number; y: number; page: number }[] {
+  const out: { mapId: string; eventId: string; x: number; y: number; page: number }[] = [];
+  for (const map of Object.values(project.maps)) for (const event of map.events ?? []) (event.pages ?? []).forEach((page, i) => {
+    const raw = page as unknown as Obj;
+    if (!raw.nearSparkle || raw.interaction || (Array.isArray(raw.commands) && raw.commands.length)) return;
+    out.push({ mapId: map.id, eventId: event.id, x: event.x, y: event.y, page: i });
+  });
+  return out;
+}
+
+/**
+ * 제자리 옮기기 — 같은 맵의 자기 칸이나 바로 옆 칸(1칸 이내)으로 옮기는 이동 명령. 화면이 깜빡이고 제자리로 돌아올 뿐이라 플레이어는 문이 고장 났다고 읽는다
+ * (2026-10-29 판정 요청). 함정(「꺼지는 바닥」→ 방 입구, 16칸)처럼 멀리 되돌리는 같은 맵 이동은 의도라 짚지 않는다.
+ */
+export function selfLoopTransfers(project: Project): { mapId: string; eventId: string; x: number; y: number; to: { x: number; y: number } }[] {
+  const out: { mapId: string; eventId: string; x: number; y: number; to: { x: number; y: number } }[] = [];
+  const walk = (value: unknown, hit: (c: Obj) => void): void => {
+    if (Array.isArray(value)) { value.forEach((v) => walk(v, hit)); return; }
+    if (!value || typeof value !== "object") return;
+    const c = value as Obj;
+    if (c.kind === "transfer") hit(c);
+    for (const child of Object.values(c)) if (child && typeof child === "object") walk(child, hit);
+  };
+  for (const map of Object.values(project.maps)) for (const event of map.events ?? []) {
+    walk(event.pages ?? [], (c) => {
+      if (c.mapId !== map.id || typeof c.x !== "number" || typeof c.y !== "number") return;
+      if (Math.max(Math.abs(c.x - event.x), Math.abs(c.y - event.y)) <= 1) out.push({ mapId: map.id, eventId: event.id, x: event.x, y: event.y, to: { x: c.x, y: c.y } });
+    });
+  }
+  return out;
+}
+
 /** 게임 하나를 만들거나 완성하는 요청(작은 고치기 요청에는 출하 검사를 걸지 않는다). */
 // 컨셉 카드 한 줄(「폐업 직전 태엽 장난감 가게, 밤마다 손님이 깨어난다 (회상 스토리)」)도 게임 하나를 만드는 요청이다 — 끝의 (장르) 괄호가 표지.
 // 2026-10-26 toy-j90: 이 한 줄이 출하 검사·화면 검수 없이 1턴을 끝냈다.
@@ -478,6 +511,8 @@ export function shipBlockers(project: Project, task: string): ShipBlocker[] {
   const spoilers = titleSpoilers(project);
   if (!wantsWholeGame(task)) return spoilers;
   // 엔딩 길의 열쇠·금고·문·엔딩 이벤트에 걸어 닿지 못하면 게임을 끝낼 수 없다(J75) — 출하 차단.
+  const sparkles = emptySparkles(project).slice(0, 4).map((hit): ShipBlocker => ({ id: "empty-sparkle", message: `「${project.maps[hit.mapId]?.name ?? hit.mapId}」 ${hit.eventId}(${hit.x},${hit.y}) 페이지 ${hit.page + 1} 이 반짝이는데 조사해도 아무 일도 없다 — 반짝임을 떼거나 대사 한 줄을 넣는다.`, evidence: `${hit.mapId} ${hit.eventId} p${hit.page}` }));
+  const selfLoops = selfLoopTransfers(project).slice(0, 4).map((loop): ShipBlocker => ({ id: "transfer-self-loop", message: `「${project.maps[loop.mapId]?.name ?? loop.mapId}」 ${loop.eventId}(${loop.x},${loop.y}) 이 같은 맵 바로 옆 칸 (${loop.to.x},${loop.to.y}) 으로 옮긴다 — 제자리로 돌아올 뿐이라 고장 난 문처럼 보인다. 옮기기를 지우거나 다른 맵·먼 칸으로 잇는다.`, evidence: `${loop.mapId} ${loop.eventId} → (${loop.to.x},${loop.to.y})` }));
   const unreachable = unreachableCriticalEvents(project).map((message): ShipBlocker => ({ id: "critical-unreachable", message: `${message}. 이벤트를 걸어 닿는 칸 옆으로 move_event 하거나 막는 가구를 치운다.`, evidence: message.slice(0, 120) }));
   // 계단 출구가 숨은 칸이다(J87) — 계단 앞에서 계단 쪽으로 걸어도 이동이 없다.
   const hiddenExits = hiddenStairExits(project).slice(0, 4);
@@ -526,7 +561,7 @@ export function shipBlockers(project: Project, task: string): ShipBlocker[] {
     message: `전투가 있는데(${sites.slice(0, 3).join(", ")}${sites.length > 3 ? ` 외 ${sites.length - 3}곳` : ""}) 여관·회복약·회복 기술·상점 회복약이 하나도 없어 깎인 HP 가 돌아오지 않는다 — build_blueprint_path 를 다시 부르면 시작 맵에 회복의 샘(전원 회복·저장)과 시작 회복약 3개를 넣고 목표 줄이 샘 자리를 가리킨다. 직접 고치려면 place_savepoint{mapId:시작 맵, heal:true} 와 set_session_start{inventory:{item_potion:3}}.`,
     evidence: `battleSites=${sites.length} healingSources=0`,
   }] : [];
-  return [...blueprint, ...noHealing, ...hidden, ...unlit, ...invisible, ...offArt, ...repeats, ...tints, ...objectives, ...romance, ...editorDefaultsLeft(project), ...endingClosureProblems(project), ...endingConditionsUnset(project), ...openingWithoutPlace(project), ...offPremiseArt(project, task), ...defaultPlaceLeaks(project, task), ...titleMismatch(project, task), ...assemblyTimeMismatches(project).map((m): ShipBlocker => ({ id: "assembly-time-mismatch", message: m.message, evidence: m.evidence })), ...requestedFeatureGaps(project, task), ...chaserWithoutHiding(project), ...unreachable, ...spoilers];
+  return [...blueprint, ...noHealing, ...hidden, ...unlit, ...invisible, ...offArt, ...repeats, ...tints, ...objectives, ...romance, ...editorDefaultsLeft(project), ...endingClosureProblems(project), ...endingConditionsUnset(project), ...openingWithoutPlace(project), ...offPremiseArt(project, task), ...defaultPlaceLeaks(project, task), ...titleMismatch(project, task), ...assemblyTimeMismatches(project).map((m): ShipBlocker => ({ id: "assembly-time-mismatch", message: m.message, evidence: m.evidence })), ...requestedFeatureGaps(project, task), ...chaserWithoutHiding(project), ...selfLoops, ...sparkles, ...unreachable, ...spoilers];
 }
 
 /** 게임이 «아직 안 지어졌다»는 신호 — 뼈대 자리표시만 남았거나 엔딩이 없다(편집기 기본 HUD·창 같은 마감 항목은 여기서 보지 않는다). */

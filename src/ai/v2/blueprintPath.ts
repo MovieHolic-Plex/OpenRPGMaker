@@ -178,6 +178,7 @@ export function buildBlueprintPath(run: BuildRun, text: readonly PathStepText[] 
   try { extra.push(...gateKeyedEntrances(run)); } catch { /* 잠금 실패는 경로를 깨지 않는다 */ }
   try { extra.push(...gateEntrySteps(run)); } catch { /* 들어가기 단계 잠금 실패는 경로를 깨지 않는다 */ }
   try { extra.push(...gateBattleSteps(run)); } catch { /* 전투 잠금 실패는 경로를 깨지 않는다 */ }
+  try { extra.push(...orderStepBattles(run)); } catch { /* 순서 보호 실패는 경로를 깨지 않는다 */ }
   try { extra.push(...fitUnwinnableStepBattles(run)); } catch { /* 맞추기 실패는 경로를 깨지 않는다 */ }
   try { const heal = ensureHealingAccess(run); if (heal.length) extra.push(`회복 길을 넣었다: ${heal.join(", ")}`); } catch { /* 회복 넣기 실패는 경로를 깨지 않는다 */ }
   try { extra.push(...stageMysteryCase(run)); } catch { /* 추리 사건 세우기 실패는 경로를 깨지 않는다 */ }
@@ -253,7 +254,11 @@ export function gateEntrySteps(run: BuildRun): string[] {
   const notes: string[] = [];
   const findEvent = (ref: string) => {
     for (const map of Object.values(run.ctx.project.maps)) {
-      const ev = (map.events ?? []).find((e) => e.id === ref) ?? (map.events ?? []).find((e) => !e.id.startsWith("ev_objective") && sameName(String((e as { name?: string }).name ?? ""), ref));
+      const ev = (map.events ?? []).find((e) => e.id === ref) ?? (map.events ?? []).find((e) => norm(String((e as { name?: string }).name ?? "")) === norm(ref));
+      if (ev) return { map, ev };
+    }
+    for (const map of Object.values(run.ctx.project.maps)) {
+      const ev = (map.events ?? []).find((e) => !e.id.startsWith("ev_objective") && sameName(String((e as { name?: string }).name ?? ""), ref));
       if (ev) return { map, ev };
     }
     return undefined;
@@ -385,6 +390,80 @@ export function gateBattleSteps(run: BuildRun): string[] {
     const event = { ...structuredClone(ev), pages: out };
     if (!run.call("upsert_event", { mapId: map.id, event: event as unknown as Record<string, unknown>, replacePages: true }).ok) notes.pop();
   }
+  return notes;
+}
+
+/**
+ * 단계 순서 보호(2026-10-29 vm3 terra jrpg): 「마왕과의 결전」 이 「은신처 발견」(앞 단계 스위치)과 마왕 승리 스위치를 둘 다 요구하는데,
+ * 마왕 전투 이벤트는 조건 없이 서 있어 앞 단계 단서(2칸 옆 「동굴의 흔적」)를 보기 전에 부딪혀 싸웠고, 이긴 뒤 목표 「마왕과의 결전을 마무리하자」 가
+ * 채울 길 없는 조건(은신처 발견)에 막혔다. 단계 이벤트의 넘어가는 페이지가 승리 스위치 W 와 함께 요구하는 다른 스위치(앞 단계가 켜는 것)를,
+ * W 를 켜는 전투 이벤트의 싸우는 페이지 조건에도 건다 — 앞 단계 전에는 그 적이 나타나지 않는다. 결정적·되풀이 안전.
+ * 안내 줄도 고친다: 「X이 있어야 할 것 같다.」 만 말하던 잠김 대사에, X 를 주는 앞 단계 이벤트 이름을 붙인다.
+ */
+export function orderStepBattles(run: BuildRun): string[] {
+  return orderStepBattlesIn(run.ctx.project);
+}
+
+/** orderStepBattles 의 본체 — 프로젝트를 제자리에서 고친다(끝맺음 조립 finishAutoBuild 도 부른다: 경로를 다시 짓지 않는 판에도 돌게). */
+export function orderStepBattlesIn(project: Project): string[] {
+  const bp = project.gameBlueprint;
+  if (!bp) return [];
+  const notes: string[] = [];
+  const won = victoryGatedSwitches(project);
+  type Ev = GameMap["events"][number];
+  const all: { map: GameMap; ev: Ev }[] = Object.values(project.maps).flatMap((map) => (map.events ?? []).map((ev) => ({ map, ev })));
+  const setsSwitch = (value: unknown, id: string): boolean => JSON.stringify(value ?? []).includes(`"switchId":"${id}"`) && JSON.stringify(value ?? []).includes('"setSwitch"');
+  // 이름은 같은 이름 먼저 — 「마왕과의 결전」 이 품은 짧은 이름(보스 「마왕」)을 먼저 잡지 않게.
+  const stepEvents = bp.steps.map((step) => all.find((r) => r.ev.id === step.event) ?? all.find((r) => norm(String((r.ev as { name?: string }).name ?? "")) === norm(step.event)) ?? all.find((r) => !r.ev.id.startsWith("ev_objective") && sameName(String((r.ev as { name?: string }).name ?? ""), step.event)));
+  for (const ref of stepEvents) {
+    if (!ref) continue;
+    for (const page of (ref.ev.pages ?? []) as unknown as RawPage[]) {
+      const conds = (page.conditions ?? []) as { kind?: string; switchId?: string }[];
+      const w = conds.find((c) => c.kind === "switch" && c.switchId && won.has(c.switchId))?.switchId;
+      if (!w || !pageMoves(page)) continue;
+      const prereqs = conds.filter((c) => c.kind === "switch" && c.switchId && c.switchId !== w).map((c) => c.switchId!);
+      if (!prereqs.length) continue;
+      const holder = all.find((r) => r.ev.id !== ref.ev.id && (r.ev.pages ?? []).some((pg) => JSON.stringify(pg.commands ?? []).includes('"battleProcessing"') && setsSwitch(pg.commands, w)));
+      if (!holder) continue;
+      // 앞 단계 스위치를 다른 이벤트(전투 이벤트 자신이 아닌)가 켜야 건다 — 아무도 안 켜면 적이 영영 안 나타난다.
+      const need = prereqs.filter((id) => all.some((r) => r.ev.id !== holder.ev.id && (r.ev.pages ?? []).some((pg) => setsSwitch(pg.commands, id))));
+      if (!need.length) continue;
+      let touched = false;
+      const pages = ((holder.ev.pages ?? []) as unknown as RawPage[]).map((pg) => {
+        const fights = JSON.stringify(pg.commands ?? []).includes('"battleProcessing"') && setsSwitch(pg.commands, w);
+        const have = new Set(((pg.conditions ?? []) as { switchId?: string }[]).map((c) => c.switchId));
+        const add = fights ? need.filter((id) => !have.has(id)) : [];
+        if (!add.length) return structuredClone(pg);
+        touched = true;
+        return { ...structuredClone(pg), conditions: [...(pg.conditions ?? []), ...add.map((id) => ({ kind: "switch", switchId: id, value: true }))] };
+      });
+      if (touched) {
+        holder.map.events = holder.map.events.map((e) => e.id === holder.ev.id ? { ...e, pages: pages as unknown as typeof e.pages } : e);
+        notes.push(`${String((holder.ev as { name?: string }).name || holder.ev.id)} 전투는 「${String((ref.ev as { name?: string }).name ?? ref.ev.id)}」 앞 단계 뒤에만 나타난다`);
+      }
+    }
+  }
+  // 잠김 대사 「X이 있어야 할 것 같다.」 → X 를 주는 앞 단계 이벤트를 함께 말한다.
+  bp.steps.forEach((_step, k) => {
+    const ref = stepEvents[k];
+    const prev = k > 0 ? bp.steps[k - 1] : undefined;
+    const prevRef = k > 0 ? stepEvents[k - 1] : undefined;
+    if (!ref || !prev?.gives || !prevRef) return;
+    const prevName = String((prevRef.ev as { name?: string }).name ?? prev.event);
+    const where = prevRef.map.id === ref.map.id ? "" : `${prevRef.map.name ?? prevRef.map.id}의 `;
+    let touched = false;
+    const pages = ((ref.ev.pages ?? []) as unknown as RawPage[]).map((pg) => {
+      const cmds = (pg.commands ?? []) as { kind?: string; body?: string }[];
+      const hit = cmds.findIndex((c) => c.kind === "text" && typeof c.body === "string" && /^(.+?)(이|가) 있어야 할 것 같다\.$/u.test(c.body) && sameName(/^(.+?)(이|가) 있어야/u.exec(c.body)![1]!, prev.gives!));
+      if (hit < 0) return structuredClone(pg);
+      touched = true;
+      const next = structuredClone(cmds);
+      next[hit] = { ...next[hit], body: `${next[hit]!.body} 먼저 ${where}「${prevName}」${josa(prevName, "을", "를")} 마쳐야 한다.` };
+      return { ...structuredClone(pg), commands: next };
+    });
+    if (touched) ref.map.events = ref.map.events.map((e) => e.id === ref.ev.id ? { ...e, pages: pages as unknown as typeof e.pages } : e);
+    if (touched) notes.push(`「${String((ref.ev as { name?: string }).name ?? ref.ev.id)}」 잠김 대사가 「${prevName}」 을 가리킨다`);
+  });
   return notes;
 }
 

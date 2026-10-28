@@ -18,7 +18,7 @@ import { createBlankProject } from "@/project/defaults";
 import { blueprintPlaceName, pickTitleArtForStory, blueprintPremiseText, blueprintStoryText } from "@/project/blueprintAssembly";
 import { sharedFaceForCharset } from "@/project/sharedCharacterFaceResolver";
 import type { Project } from "@/project/types";
-import { defaultPlaceLeaks, editorDefaultsLeft, endingClosureProblems, endingConditionsUnset, writtenStateIds } from "./shipChecks";
+import { defaultPlaceLeaks, editorDefaultsLeft, endingClosureProblems, endingConditionsUnset, emptySparkles, selfLoopTransfers, writtenStateIds } from "./shipChecks";
 import { doorCellBlocked, offArtEntrances, planObjective, repeatingStartObjectives, staleMilestoneTargets } from "./discoverability";
 import { normalizeGameOverSettings } from "@/project/cinematicSettings";
 import { fieldMenu, storyFieldMenu } from "@/project/fieldMenu";
@@ -46,6 +46,8 @@ export function applyShipDefaults(project: Project, task = project.gameBlueprint
   if (repeatingStartObjectives(project).length) applied.push(...moveRepeatingStartObjective(project));
   if (staleMilestoneTargets(project).length) applied.push(...fillStaleObjectives(project));
   if (endingConditionsUnset(project).length) applied.push(...dropDeadEndingConditions(project));
+  if (selfLoopTransfers(project).length) applied.push(...dropSelfLoopTransfers(project));
+  if (emptySparkles(project).length) applied.push(...dropEmptySparkles(project));
   applied.push(...forkStackedEndingCalls(project));
   if (endingClosureProblems(project).length) applied.push(...fillEndingClosure(project));
   // 기본 지명 걷어내기는 엔딩 글을 채운 뒤에 — 채운 글(청사진 느낌 칸)에도 그 지명이 들 수 있다.
@@ -579,4 +581,43 @@ function removeDefaultPlaceWords(project: Project, task: string): string[] {
     if (touched.length) out.push(`기본 지명 「${word}」 걷어냄: ${touched.slice(0, 4).join(" · ")}`);
   }
   return out;
+}
+
+// ── 제자리 옮기기 ─────────────────────────────────────────────────────────
+
+/** 같은 맵 1칸 이내로 옮기는 명령을 지운다(selfLoopTransfers). 옮기기만 하던 투명 이벤트는 통째로 지운다. */
+function dropSelfLoopTransfers(project: Project): string[] {
+  const notes: string[] = [];
+  for (const loop of selfLoopTransfers(project)) {
+    const map = project.maps[loop.mapId];
+    const event = map?.events.find((e) => e.id === loop.eventId);
+    if (!map || !event) continue;
+    const strip = (list: unknown): unknown[] => (Array.isArray(list) ? list : []).flatMap((raw) => {
+      const c = raw as Record<string, unknown>;
+      if (c?.kind === "transfer" && c.mapId === loop.mapId && c.x === loop.to.x && c.y === loop.to.y) return [];
+      const copy: Record<string, unknown> = { ...c };
+      for (const [key, value] of Object.entries(copy)) if (Array.isArray(value) && value.some((v) => v && typeof v === "object" && "kind" in (v as object))) copy[key] = strip(value);
+      if (Array.isArray(copy.options)) copy.options = (copy.options as Record<string, unknown>[]).map((o) => ({ ...o, branch: strip(o.branch) }));
+      return [copy];
+    });
+    const pages = (event.pages ?? []).map((page) => ({ ...page, commands: strip(page.commands) as typeof page.commands }));
+    const empty = pages.every((page) => !(page.commands ?? []).length) && pages.every((page) => (page.graphic as { transparent?: boolean } | undefined)?.transparent === true);
+    map.events = empty ? map.events.filter((e) => e.id !== event.id) : map.events.map((e) => e.id === event.id ? { ...e, pages } : e);
+    notes.push(`제자리 옮기기 ${empty ? "이벤트" : "명령"} 지움: ${map.name ?? map.id} ${event.id}(${loop.x},${loop.y})`);
+  }
+  return notes;
+}
+
+/** 아무 일도 안 하는 페이지의 반짝임을 뗀다(emptySparkles). 반짝임은 «여기 할 일이 있다» 는 약속이다. */
+function dropEmptySparkles(project: Project): string[] {
+  const notes: string[] = [];
+  for (const hit of emptySparkles(project)) {
+    const map = project.maps[hit.mapId];
+    const event = map?.events.find((e) => e.id === hit.eventId);
+    const page = event?.pages?.[hit.page] as unknown as Record<string, unknown> | undefined;
+    if (!page) continue;
+    delete page.nearSparkle;
+    notes.push(`빈 반짝임 뗌: ${map!.name ?? map!.id} ${hit.eventId}(${hit.x},${hit.y})`);
+  }
+  return notes;
 }
