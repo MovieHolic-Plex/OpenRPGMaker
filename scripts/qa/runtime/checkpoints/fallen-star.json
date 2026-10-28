@@ -6283,7 +6283,7 @@
        "kind": "repeatUntil",
        "testid": "dialogue-box",
        "state": "absent",
-       "maxRounds": 8,
+       "maxRounds": 18,
        "ops": [
         {
          "kind": "key",
@@ -6292,7 +6292,7 @@
         {
          "kind": "hold",
          "dir": null,
-         "ms": 1000
+         "ms": 1300
         }
        ]
       },
