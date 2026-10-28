@@ -103,7 +103,7 @@
 /* ── 뒤 일정을 가리는 무조건 행 경고 ──────────────────────────────────── */
 .event-editor .event-schedule-shadow-warning {
   background: var(--warning-muted);
-  border-left: 3px solid var(--warning);
+  border: 1px solid color-mix(in srgb, var(--warning) 35%, transparent);
   border-radius: 6px;
   color: var(--warning);
   font: 600 11px/1.45 var(--font-ui);

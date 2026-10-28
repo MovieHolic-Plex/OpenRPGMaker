@@ -97,6 +97,21 @@
   padding: 2px 4px 2px 8px;
 }
 
+.event-editor-modal-header .event-id-readout > .event-id-readout-summary {
+  color: var(--text-3);
+  flex: 0 0 auto;
+  font-size: 10px;
+  margin: 0;
+  white-space: nowrap;
+}
+
+.event-editor-modal-header .event-id-readout-body {
+  align-items: center;
+  display: inline-flex;
+  gap: 4px;
+  min-width: 0;
+}
+
 .event-editor-modal-header .event-id-readout-label {
   color: var(--text-3);
   flex: 0 0 auto;
