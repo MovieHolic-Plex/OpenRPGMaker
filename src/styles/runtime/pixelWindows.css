@@ -252,10 +252,12 @@
   width: 78px;
 }
 .oprn-status-menu.main-menu[data-menu-skin="pixel"][data-status-menu-screen="main"] .status-menu-gold { color: var(--px-ink); font-size: 12px; top: calc(var(--px-dock-h, 94px) + 10px); }
-.oprn-status-menu.main-menu[data-menu-skin="pixel"][data-status-menu-screen="main"] .status-menu-location { color: var(--px-ink-dim); font-size: 10px; font-family: var(--px-small-font); top: calc(var(--px-dock-h, 94px) + 32px); }
-.oprn-status-menu.main-menu[data-menu-skin="pixel"][data-status-menu-screen="main"] .status-menu-time { color: var(--px-ink-dim); top: calc(var(--px-dock-h, 94px) + 52px); }
+/* 장소 이름은 맨 아래 창에서 줄을 바꿔 다 보인다 — 78px 한 줄 말줄임이라 「잊힌 지하묘…」처럼 층수가 잘렸다(장부 hud #47). 시간 창을 위로 올렸다. */
+.oprn-status-menu.main-menu[data-menu-skin="pixel"][data-status-menu-screen="main"] .status-menu-location { color: var(--px-ink-dim); font-size: 10px; font-family: var(--px-small-font); line-height: 12px; overflow: visible; text-overflow: clip; top: calc(var(--px-dock-h, 94px) + 52px); white-space: normal; }
+.oprn-status-menu.main-menu[data-menu-skin="pixel"][data-status-menu-screen="main"]:has(.status-menu-chapter) .status-menu-location { top: calc(var(--px-dock-h, 94px) + 92px); }
+.oprn-status-menu.main-menu[data-menu-skin="pixel"][data-status-menu-screen="main"] .status-menu-time { color: var(--px-ink-dim); top: calc(var(--px-dock-h, 94px) + 32px); }
 /* 장(NG+ 회차) — 시간 창 아래 같은 폭. 이야기 진행이 첫 화면에서 보인다. */
-.oprn-status-menu.main-menu[data-menu-skin="pixel"][data-status-menu-screen="main"] .status-menu-chapter { color: var(--px-accent); top: calc(var(--px-dock-h, 94px) + 72px); }
+.oprn-status-menu.main-menu[data-menu-skin="pixel"][data-status-menu-screen="main"] .status-menu-chapter { color: var(--px-accent); top: calc(var(--px-dock-h, 94px) + 52px); }
 
 /* 명령 창 — 오른쪽 위, 손가락 커서. 두 모드에서 같은 자리라 화면을 넘겨도 창이 움직이지 않는다. */
 .oprn-status-menu.main-menu[data-menu-skin="pixel"] .status-menu-primary-dock {
