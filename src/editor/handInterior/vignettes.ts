@@ -160,7 +160,7 @@ export function extractVignettes(tilesetId: string, S: HandInteriorSpec, templat
 /** 막힌 바닥이 방 바닥의 이 몫을 넘으면 더 놓지 않는다(6×7 서재에 상자·책상이 빽빽해 갇힌 판을 막는다). 제작자 예제 v5 방은 막힘 중앙값 40%·사분위 33~50%. */
 export const VIGNETTE_DENSITY = 0.45;
 /** 가운데 묶음은 바닥이 이만큼은 돼야 놓는다(작은 방 가운데 식탁이 통로를 끊는다). */
-const CENTRE_MIN_FLOOR = 30;
+const CENTRE_MIN_FLOOR = 20;
 
 export interface VignetteFurnishOptions {
   /** 방 id → 고른 묶음(묶음 id 또는 몸통 기물 id·낱말). 모델이 고를 때. 없으면 방 종류로 함수가 고른다. */
@@ -194,7 +194,6 @@ function wallColumns(it: InteriorTemplateItem, S: HandInteriorSpec): string[] {
   if (o.kind === "hang" || o.kind === "wall" || (o.kind === "floor" && o.up >= 8)) return Array.from({ length: Math.max(1, o.w) }, (_, dx) => `${it.x + dx}`);
   return [];
 }
-const FACING = /\b(chair|stool|bench|seat)\b.*\b[EW]\b|\b[EW]$/u;
 
 /** 홀로 선 단품 — 막는 기물이 하나뿐인 가운데 묶음(마네킹·의자). */
 const isSingle = (v: Vignette): boolean => v.wall === "C" && v.area <= 2 && v.items.filter((it) => it.t !== "g" && it.t !== "l").length === 1;
@@ -342,16 +341,23 @@ export function furnishWithVignettes(base: HandInteriorInput, rooms: readonly La
       }
       return out;
     };
-    const mirrorable = (v: Vignette) => !v.items.some((it) => FACING.test(it.id) || (it.t === "o" && (S.objects[it.id]?.facing === "E" || S.objects[it.id]?.facing === "W")));
-    /** 대칭 짝 — 북·남 벽 묶음은 좌우 맞은편 같은 줄에, 서·동 벽 묶음은 맞은편 벽에(방향 있는 기물이 없으면 뒤집어). */
+    /**
+     * 맞은편 짝. 가운데 묶음(탁자 세트·의자 줄)만 같은 묶음을 되풀이한다 — 벽 묶음·단품을 좌우로 똑같이 복사하면 검수에서 「복붙」으로 읽힌다(벤치 room-vig-1029:
+     * 서재 망원경 세트·연구실 솥/바구니). 벽 묶음 맞은편에는 몸통이 다른 같은 벽 묶음(폭 비슷한 것)을 놓아 균형만 맞춘다.
+     */
     const pair = (v: Vignette, px: number, py: number): void => {
-      if ((uses.get(v.id) ?? 0) >= Math.max(2, v.perRoom)) return;
       if (v.h === 0 && hangCount() >= hangCap) return;
+      if (v.wall === "C") return;
+      const others = (wall: Vignette["wall"]) => cands.filter((q) => q !== v && q.h > 0 && q.wall === wall && q.main !== v.main && Math.abs(q.w - v.w) <= 1
+        && (uses.get(q.id) ?? 0) === 0 && (mains.get(q.main) ?? 0) === 0);
       if (v.wall === "N" || v.wall === "S") {
-        const mx = room.x0 + room.x1 - (px + v.w - 1);
-        if (Math.abs(mx - px) >= v.w) tryPlace(v, mx, py);
-      } else if ((v.wall === "W" || v.wall === "E") && mirrorable(v)) {
-        tryPlace({ ...v, wall: v.wall === "W" ? "E" : "W" }, v.wall === "W" ? room.x1 - v.w + 1 : room.x0, py, true);
+        for (const q of others(v.wall)) {
+          const mx = room.x0 + room.x1 - (px + q.w - 1);
+          if (Math.abs(mx - px) >= Math.max(v.w, q.w) && tryPlace(q, mx, v.wall === "S" ? room.y1 - q.h + 1 : py)) { mains.set(q.main, 1); return; }
+        }
+      } else if (v.wall === "W" || v.wall === "E") {
+        const opp = v.wall === "W" ? "E" : "W";
+        for (const q of others(opp)) if (tryPlace(q, opp === "E" ? room.x1 - q.w + 1 : room.x0, py)) { mains.set(q.main, 1); return; }
       }
     };
     const place = (v: Vignette, anchor: boolean): boolean => {
@@ -363,12 +369,12 @@ export function furnishWithVignettes(base: HandInteriorInput, rooms: readonly La
     const hangCount = () => cands.filter((q) => q.h === 0).reduce((n, q) => n + (uses.get(q.id) ?? 0), 0);
     const recipe = vignetteRecipe(cands, S, floor);
     const mains = new Map<string, number>();
-    const cap = (v: Vignette) => (v.id.startsWith("core:") ? Math.max(2, v.perRoom) : 2);   // 같은 묶음은 대칭 짝까지
+    const cap = (v: Vignette) => (v.id.startsWith("core:") ? Math.max(2, v.perRoom) : v.wall === "C" ? 2 : 1);   // 가운데 묶음만 두 번(탁자 줄), 벽 묶음은 한 번
     const tryRole = (list: readonly Vignette[], want: number, anchor: boolean, stopAt = density): number => {
       let got = 0;
       for (const v of list) {
         if (got >= want || blockedCells >= floor * stopAt) break;
-        if ((uses.get(v.id) ?? 0) >= cap(v) || (!v.id.startsWith("core:") && (mains.get(v.main) ?? 0) >= 2)) continue;
+        if ((uses.get(v.id) ?? 0) >= cap(v) || (!v.id.startsWith("core:") && (mains.get(v.main) ?? 0) >= (v.wall === "C" ? 2 : 1))) continue;
         const before = uses.get(v.id) ?? 0;
         if (place(v, anchor)) { got++; mains.set(v.main, (mains.get(v.main) ?? 0) + (uses.get(v.id) ?? 0) - before); }
       }
@@ -407,11 +413,14 @@ export interface VignetteRecipe {
   readonly small: readonly Vignette[]; readonly hangs: readonly Vignette[];
   readonly counts: { readonly anchors: number; readonly centre: number; readonly support: number };
 }
+/** 앉을 것 — 가운데 탁자 묶음은 의자가 딸린 것을 먼저(벤치 room-vig-1029 여관: 의자 없는 식탁). */
+const SEAT = /chair|stool|bench|seat|sofa|pew/u;
 const USE_WORDS = new Set(["read", "counter", "sleep", "heal", "save"]);
 /** 후보 묶음 → 역할별 순서(견본 빈도·이 용도에만 나옴·쓰임·크기) + 바닥 넓이에 따른 개수. */
 export function vignetteRecipe(cands: readonly Vignette[], S: HandInteriorSpec, floor: number): VignetteRecipe {
   const useful = (v: Vignette) => v.items.some((it) => it.t === "o" && (S.objects[it.id]?.use ?? []).some((u) => USE_WORDS.has(u)));
-  const score = (v: Vignette) => v.count + (v.kinds.length === 1 ? 1 : 0) + v.area / 4 + (useful(v) ? 1 : 0) + (v.id.startsWith("core:") ? 5 : 0);
+  const seated = (v: Vignette) => v.wall === "C" && v.items.some((it) => SEAT.test(it.id)) && v.items.some((it) => !SEAT.test(it.id) && it.t === "o");
+  const score = (v: Vignette) => (seated(v) ? 3 : 0) + v.count + (v.kinds.length === 1 ? 1 : 0) + v.area / 4 + (useful(v) ? 1 : 0) + (v.id.startsWith("core:") ? 5 : 0);
   const by = (list: Vignette[]) => list.sort((a, b) => score(b) - score(a) || a.id.localeCompare(b.id));
   const ground = cands.filter((v) => v.h > 0);
   const anchors = by(ground.filter((v) => v.wall !== "C" && (v.area >= 3 || (useful(v) && v.area >= 2))));

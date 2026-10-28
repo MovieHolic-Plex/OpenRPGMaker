@@ -843,7 +843,9 @@ export const interiorBuilder: PlaceBuilder = {
       return { id: zone.id ?? (n > 1 ? `${kind}${n}` : kind), kind, ...sized, min: { w: Math.max(5, minW), h: Math.max(6, minH) }, ...(zone.keep?.floor ? { floor: zone.keep.floor } : {}), ...(zone.keep?.wall ? { wall: zone.keep.wall } : {}), zone };
     });
     const hints = spec.hints ?? {};
-    const variant = typeof hints.variant === "number" ? hints.variant : (spec.salt ?? 0) % 4;
+    // 묶음 길은 방 크기를 묶음 발자국으로 정했다 — 배치 변주 C·D 는 한 방을 가로 +4·사방 +2 칸 키워(서재 6×6 → 10×6·8×8) 그 크기를 버린다.
+    // 묶음 길에서는 모델이 변주를 직접 고를 때만 쓰고, 소금(salt)으로는 고르지 않는다(견본·묶음 고르기는 seed 가 바꾼다).
+    const variant = typeof hints.variant === "number" ? hints.variant : hints.furnish === "template" ? (spec.salt ?? 0) % 4 : 0;
     const seed = typeof hints.seed === "number" ? hints.seed : undefined;
     const layoutSeed = seed ?? (spec.salt ? 1 + (spec.salt % 99991) : undefined);
     // 가구: 기본은 기물 묶음 배치기(vignettes.ts) — 방 용도에 맞는 묶음을 벽·앞 통로·밀도 규칙으로 놓고, 빈 바닥은 메우지 않고 방을 줄인다.
@@ -872,7 +874,7 @@ export const interiorBuilder: PlaceBuilder = {
         const got = shares();
         const layout = base.layout as { rooms: { id?: string; w?: number; h?: number }[] };
         let changed = false;
-        // 막힘 비율만 보면 앞 통로 줄 덕에 30% 를 넘어도 1배 화면은 맨바닥 덩이가 넓다 — 맨바닥(2×2 덩이, 실내 기준 15%)이 35% 를 넘는 방도 줄인다.
+        // 막힘 비율만 보면 앞 통로 줄 덕에 30% 를 넘어도 1배 화면은 맨바닥 덩이가 넓다 — 맨바닥(2×2 덩이, 실내 기준 15%)이 30% 를 넘는 방도 줄인다.
         const m = run.ctx.project.maps[builtId];
         const bareOfRoom = (id: string): number => {
           const l = (m?.locations ?? []).find((q) => (q.tags ?? []).includes("hand-layout-room") && q.name === rooms.find((z) => z.id === id)?.kind);
@@ -884,11 +886,13 @@ export const interiorBuilder: PlaceBuilder = {
           const bare = bareOfRoom(id);
           if (!v || !r.w || !r.h) return r;
           const byShare = v.blockedShare < 0.3 || v.blockedShare > 0.44 ? Math.max(0.05, v.blockedShare) / VIGNETTE_TARGET : 1;
-          const byBare = bare > 35 ? (1 - bare / 100) / 0.72 : 1;
+          const byBare = bare > 30 ? (1 - bare / 100) / 0.75 : 1;
           const want = Math.min(byShare, byBare);
           if (want === 1) return r;
-          const f = Math.sqrt(Math.max(0.5, Math.min(1.6, want)));
-          const w = Math.max(rooms[i]!.min.w, Math.round(r.w * f)), fh = Math.max(rooms[i]!.min.h - 2, Math.round((r.h - 2) * f));
+          // 줄일 때는 깊이를 먼저 — 묶음은 북벽·가운데에 서므로 남는 맨바닥은 문 쪽 아래 줄에 모인다(벤치 room-vig-1029 서재·침실).
+          const k = Math.max(0.5, Math.min(1.6, want));
+          const fw = k < 1 ? Math.pow(k, 0.3) : Math.sqrt(k), fd = k < 1 ? Math.pow(k, 0.7) : Math.sqrt(k);
+          const w = Math.max(rooms[i]!.min.w, Math.round(r.w * fw)), fh = Math.max(rooms[i]!.min.h - 2, Math.round((r.h - 2) * fd));
           if (w === r.w && fh + 2 === r.h) return r;
           changed = true;
           return { ...r, w, h: fh + 2 };
@@ -898,7 +902,11 @@ export const interiorBuilder: PlaceBuilder = {
         const attempt = build(run, next);
         const before = layout.rooms.map((r) => `${r.w}×${r.h}`).join(",");
         if (!attempt.ok || !reachOk(attempt)) { build(run, base); notes.push(`방 넓이 고치기(${before} → ${resized.map((r) => `${r.w}×${r.h}`).join(",")}) 실패: ${attempt.ok ? "닿지 못한 바닥" : attempt.summary.slice(0, 100)}`); break; }
+        // 줄인 방에 묶음이 덜 들어가면(서재 책상 세트가 빠지고 책장·안락의자만 남았다) 줄이지 않는다 — 빈 바닥보다 빠진 가구가 더 나쁘다.
+        const placedOf = (a: Attempt) => ((a.data?.layout as { rooms?: { vignettes?: { placed: string[] } }[] } | undefined)?.rooms ?? []).reduce((n, q) => n + (q.vignettes?.placed.length ?? 0), 0);
+        if (placedOf(attempt) < placedOf(first)) { build(run, base); notes.push(`방 넓이 고치기(${before} → ${resized.map((r) => `${r.w}×${r.h}`).join(",")})는 기물 묶음이 ${placedOf(first)} → ${placedOf(attempt)}개로 줄어 버렸다`); break; }
         first = attempt; base = next;
+        if (process.env.OPRN_VIGNETTE_DEBUG) notes.push(`다시 지은 배치: ${JSON.stringify((attempt.data?.layout as { rooms?: unknown[] } | undefined)?.rooms?.map((q) => { const o = q as Record<string, unknown>; return { id: o.id, x: o.x, y: o.y, w: o.w, h: o.h, v: o.vignettes }; }))} 요청 ${JSON.stringify((next.layout as {rooms:unknown}).rooms)} 결과 ${JSON.stringify(Object.keys(attempt.data ?? {}))} ${JSON.stringify((attempt.data?.layout as Record<string, unknown> | undefined) && Object.fromEntries(Object.entries(attempt.data!.layout as Record<string, unknown>).filter(([k]) => k !== "rooms")))}`);
         notes.push(`방 넓이를 기물 묶음 막힘 목표(36%)·맨바닥에 맞춰 ${before} → ${resized.map((r) => `${r.w}×${r.h}`).join(",")} 로 고쳐 지었다`);
       }
     }
