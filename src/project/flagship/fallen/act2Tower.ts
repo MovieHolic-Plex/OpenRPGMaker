@@ -61,7 +61,8 @@ const SW_PAGE_HAND = "sw_fs2_page_hand_read";
 const SW_BE_WELL = "sw_fs2_iris_be_well";
 export const FS2_SW_STOP_B11 = "sw_fs2_release_stop_b11";
 
-const SKILL_SHOCK = "skill_fs_iris_shock";
+const SKILL_RAPID = "skill_gunner_rapid_fire";
+const IRIS_RELAY_CLASS = "class_fs2_iris_relay";
 const SKILL_SHOT = "skill_gunner_shot";
 const SKILL_SNIPE = "skill_gunner_snipe";
 export const FS2_SKILL_FINGERLIGHT = "skill_fs2_iris_fingerlight";
@@ -247,6 +248,14 @@ function towerData(project: Project, exec: Exec): void {
   ] as const) {
     exec(project, "upsert_troop", { troop: { id, name, enemyIds: [...members], previewBackgroundResourceId: "battle-scenery-cave", backdropLayers: TOWER_LAYERS } });
   }
+  // 이리스 「회수 대기」 직업 — 성광 사수와 같되 광선 조준·광자 연사·충전 광선포를 직업이 주지 않는다(일지를 다시 읽어야 돌아온다).
+  // 전격탄은 이리스 몸에 붙은 기술(배우 습득)이라 남는다.
+  const gunner = project.database.classes.find((c) => c.id === "class_gunner");
+  if (!gunner) throw new Error("[fallen-star tower] class_gunner 가 없다");
+  const relay = { ...structuredClone(gunner), id: IRIS_RELAY_CLASS, learnedSkills: gunner.learnedSkills.filter((l) => ![SKILL_SHOT, SKILL_RAPID, SKILL_SNIPE].includes(l.skillId)) } as typeof gunner;
+  delete (relay as { promotions?: unknown }).promotions;
+  project.database.classes = [...project.database.classes.filter((c) => c.id !== IRIS_RELAY_CLASS), relay];
+  gunner.promotions = [...(gunner.promotions ?? []).filter((pr) => pr.toClassId !== IRIS_RELAY_CLASS), { toClassId: IRIS_RELAY_CLASS, requires: { switchId: SW_IRIS_WAKE } }];
   // 이리스 기술 — 손끝 빛(필드 기술, place_field_obstacle 이 공통 이벤트를 붙인다)과 「잘 지내」(일지 쪽 셋을 다 읽으면).
   exec(project, "upsert_skill", { skill: {
     id: FS2_SKILL_BE_WELL, name: "잘 지내", scope: "allAllies", type: "normal", power: 60, variance: 10, hitRate: 100,
@@ -724,6 +733,7 @@ function floorFour(project: Project, exec: Exec): void {
     page("ev_fs2_t4_iris_awake", "깨어남", [sw(SW_IRIS_WAKE)], [], { graphic: chip(IRIS_CHIP[0], IRIS_CHIP[1], "down"), priority: "same", overlapForbidden: true }),
     page("ev_fs2_t4_iris_joined", "합류", [sw(SW_IRIS_BACK)], [], { priority: "below" }),
   ]);
+  const forgetThree = (): Command[] => [SKILL_SHOT, SKILL_RAPID, SKILL_SNIPE].map((id) => learn(IRIS_ID, id, "forget"));
   // 관 — 재회 장면.
   const reunion: Command[] = [
     cutBegin(), letterbox(),
@@ -737,7 +747,9 @@ function floorFour(project: Project, exec: Exec): void {
     fx("sparkle", T4.coffin.x + 1, T4.coffin.y + 1, 1400),
     flash("white", 500),
     setSw(SW_IRIS_WAKE),
-    learn(IRIS_ID, SKILL_SHOCK, "forget"), learn(IRIS_ID, SKILL_SHOT, "forget"), learn(IRIS_ID, SKILL_SNIPE, "forget"),
+    // 직업이 주는 기술은 「잊기」로 안 지워진다 — 회수 대기 직업으로 옮겨(지금까지 배운 것을 세션으로 옮긴다) 셋을 잊게 한다.
+    { kind: "promoteActor", actorId: IRIS_ID, toClassId: IRIS_RELAY_CLASS } as unknown as Command,
+    ...forgetThree(),
     wait(700),
     camTo("ev_fs2_t4_iris", 900, 1.25),
     say(IRIS, "…신호, 수신. 현지 시각 불명.\n귀환 준비 중입니다. 기록을 정리합니다."),
@@ -752,10 +764,10 @@ function floorFour(project: Project, exec: Exec): void {
     say(SARAH, "발렌 님이 끊겠다던 줄이 이거였군."),
     say(KAEL, "…괜찮아. 내가 읽어 줄게.\n약속했잖아."),
     bgm(IRIS_BGM, 2500),
-    narrate("카엘이 바랜 쪽을 짚는다. 제 글씨다."),
+    narrate("카엘이 바랜 쪽을 짚는다. 카엘의 글씨다."),
     say(KAEL, "「오늘, 이리스가 빵을 먹었다.\n따뜻했다고 했다.」 …기억나?"),
     fx("heal", T4.iris.x, T4.iris.y, 1200), se("easyrpg-sound-recovery7"),
-    sys("이리스가 「전격탄」을 다시 떠올렸다."),
+    sys("이리스가 「광선 조준」을 다시 떠올렸다."),
     wait(500),
     say(IRIS, "맛은 안 나요.\n그런데 이 줄은 따뜻해요."),
     say(IRIS, "한 번 더 읽어 주세요. 몇 번이고."),
@@ -773,7 +785,7 @@ function floorFour(project: Project, exec: Exec): void {
     camBack(900),
     { kind: "changeParty", actorId: IRIS_ID, action: "add" } as unknown as Command,
     { kind: "changeLevel", actorId: IRIS_ID, op: "=", amount: 13 } as unknown as Command,
-    learn(IRIS_ID, SKILL_SHOT, "forget"), learn(IRIS_ID, SKILL_SNIPE, "forget"),
+    ...forgetThree(),
     learn(IRIS_ID, FS2_SKILL_FINGERLIGHT),
     { kind: "recoverAll", actorId: IRIS_ID } as unknown as Command,
     setSw(SW_IRIS_BACK),
@@ -827,7 +839,7 @@ function floorFour(project: Project, exec: Exec): void {
       narrate("바닥에 일지 한 쪽이 떨어져 있다. 카엘 글씨다."),
       say(KAEL, "「별 이름을 셋 알려 줬다.\n이리스는 맨 끝 별이 제일 좋댔다.」"),
       fx("heal", T4.pageStar.x, T4.pageStar.y, 1000), se("easyrpg-sound-recovery7"),
-      sys("이리스가 「광선 조준」을 다시 떠올렸다."),
+      sys("이리스가 「충전 광선포」를 다시 떠올렸다."),
       say(IRIS, "맨 끝 별. 제일 늦게 뜨는 별이요.\n…기다려 주는 것 같아서 좋았어요."),
       setSw(SW_PAGE_NAME),
       ...readBoth,
@@ -840,7 +852,7 @@ function floorFour(project: Project, exec: Exec): void {
       narrate("또 한 쪽. 이번엔 반듯한 이리스 글씨다."),
       say(KAEL, "「엘레나가 손을 녹여 줬다.\n손은 안 시린데, 좋았다.」"),
       fx("heal", T4.pageHand.x, T4.pageHand.y, 1000), se("easyrpg-sound-recovery7"),
-      sys("이리스가 「충전 광선포」를 다시 떠올렸다."),
+      sys("이리스가 「광자 연사」를 다시 떠올렸다."),
       say(ELENA, "…그걸 적어 뒀어?"),
       say(IRIS, "좋았던 건 다 적어요.\n안 그러면 지워지니까요."),
       setSw(SW_PAGE_HAND),
@@ -881,9 +893,9 @@ function floorFour(project: Project, exec: Exec): void {
     lines: [
       // 같은 대사 뒤에 넣으면 나중 줄이 앞에 붙는다 — 거꾸로 준다.
       { ...P("ev_fs2_t4_coffin", "ev_fs2_t4_coffin_p", "품에 안고 있던 일지를"), action: "write", lineId: "fs2_last", writer: "iris", date: "마차 나흘째", text: "잊어도 괜찮다. 카엘이 읽어 줄 거다." },
-      { ...P("ev_fs2_t4_coffin", "ev_fs2_t4_coffin_p", "품에 안고 있던 일지를"), action: "write", lineId: "fs2_hand", writer: "iris", date: "마차 사흘째", text: "엘레나가 손을 녹여 줬다. 손은 안 시린데, 좋았다.", learnActorId: IRIS_ID, learnSkillId: SKILL_SNIPE },
-      { ...P("ev_fs2_t4_coffin", "ev_fs2_t4_coffin_p", "품에 안고 있던 일지를"), action: "write", lineId: "fs2_star", writer: "kael", date: "광장의 밤", text: "별 이름을 셋 알려 줬다. 이리스는 맨 끝 별이 제일 좋댔다.", learnActorId: IRIS_ID, learnSkillId: SKILL_SHOT },
-      { ...P("ev_fs2_t4_coffin", "ev_fs2_t4_coffin_p", "품에 안고 있던 일지를"), action: "write", lineId: "fs2_bread", writer: "kael", date: "이튿날", text: "오늘, 이리스가 빵을 먹었다. 따뜻했다고 했다.", learnActorId: IRIS_ID, learnSkillId: SKILL_SHOCK },
+      { ...P("ev_fs2_t4_coffin", "ev_fs2_t4_coffin_p", "품에 안고 있던 일지를"), action: "write", lineId: "fs2_hand", writer: "iris", date: "마차 사흘째", text: "엘레나가 손을 녹여 줬다. 손은 안 시린데, 좋았다.", learnActorId: IRIS_ID, learnSkillId: SKILL_RAPID },
+      { ...P("ev_fs2_t4_coffin", "ev_fs2_t4_coffin_p", "품에 안고 있던 일지를"), action: "write", lineId: "fs2_star", writer: "kael", date: "광장의 밤", text: "별 이름을 셋 알려 줬다. 이리스는 맨 끝 별이 제일 좋댔다.", learnActorId: IRIS_ID, learnSkillId: SKILL_SNIPE },
+      { ...P("ev_fs2_t4_coffin", "ev_fs2_t4_coffin_p", "품에 안고 있던 일지를"), action: "write", lineId: "fs2_bread", writer: "kael", date: "이튿날", text: "오늘, 이리스가 빵을 먹었다. 따뜻했다고 했다.", learnActorId: IRIS_ID, learnSkillId: SKILL_SHOT },
       { ...P("ev_fs2_t4_coffin", "ev_fs2_t4_coffin_p", "품에 안고 있던 일지를"), action: "write", lineId: "fs2_first", writer: "kael", date: "별 떨어진 밤", text: "숲에 떨어진 아이가 깨어났다. 「잘 지내」라고 했더니 대답이 왔다." },
       { ...P("ev_fs2_t4_coffin", "ev_fs2_t4_coffin_p", "넘기는 쪽마다"), action: "erase", lineId: "fs2_hand" },
       { ...P("ev_fs2_t4_coffin", "ev_fs2_t4_coffin_p", "넘기는 쪽마다"), action: "erase", lineId: "fs2_star" },
@@ -918,6 +930,7 @@ function towerCommon(project: Project, exec: Exec): void {
   if (!quest) throw new Error("[fallen-star tower] 임무 fs2_main 이 없다");
   const nodes = quest.nodes.map((n) => (JSON.stringify(n.completesWhen).includes(SW_STOP_B9_OLD) ? { ...n, completesWhen: { kind: "switch", switchId: SW_T1_ARRIVE, value: true } } : n));
   const more: [string, string][] = [
+    ...(nodes.some((n) => JSON.stringify(n.completesWhen).includes(SW_T1_ARRIVE)) ? [] : [[SW_T1_ARRIVE, "하늘탑에 들어선다"] as [string, string]]),
     [SW_T2_DONE, "2층에서 갈린 두 쪽이 서로 쇠창살을 열어 다시 만난다"],
     [SW_T3_SOLVED, "3층 거울 두 개를 돌려 빛을 계단으로 보낸다"],
     [SW_IRIS_BACK, "4층 렌즈 대기실의 관에서 이리스를 찾는다"],
