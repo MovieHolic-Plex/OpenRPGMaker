@@ -181,7 +181,8 @@ export function createStudioDirectorBoard(options: StudioDirectorBoardOptions = 
 
   const genreButtons = GENRES.map((g) => el("button", {
     class: "ai-studio-director-genre-pill",
-    attrs: { type: "button", "aria-pressed": "false", title: "자동 판정을 덮어쓰고 이 장르 관점으로 봅니다" },
+    // 이름은 보이는 라벨로 시작한다 — 세 알약이 같은 툴팁 문장을 이름으로 갖던 것을 고쳤다(C-64).
+    attrs: { type: "button", "aria-pressed": "false", title: `${GENRE_META[g].label} — 자동 판정 대신 이 장르 관점으로 봅니다` },
     dataset: { testid: `ai-studio-genre-${g}`, genre: g },
     text: GENRE_META[g].label,
     on: { click: () => { genreOverride = g; selectedBeatId = null; refresh(); } },
@@ -349,7 +350,7 @@ export function createStudioDirectorBoard(options: StudioDirectorBoardOptions = 
       class: "ai-studio-director-live-controls",
       dataset: { testid: "ai-studio-live-controls" },
       children: [
-        el("label", { class: "ai-studio-director-control is-bgm", children: [el("span", { text: "BGM" }), bgmSelect] }),
+        el("label", { class: "ai-studio-director-control is-bgm", children: [el("span", { text: "배경음" }), bgmSelect] }),
         el("div", { class: "ai-studio-director-control", children: [el("span", { text: "시간대" }), el("div", { class: "ai-studio-director-segs", children: tintButtons })] }),
         el("label", {
           class: "ai-studio-director-control",
@@ -412,7 +413,8 @@ export function createStudioDirectorBoard(options: StudioDirectorBoardOptions = 
           children: [
             el("div", {
               children: [
-                el("span", { class: "ai-studio-director-kicker", text: `${beat.stepLabel} · ${beat.roleLabel} · ${beat.mapMeta}` }),
+                // 크기·이벤트 수는 왼쪽 카드가 이미 말한다 — 같은 사실을 되풀이하지 않는다(C-66).
+                el("span", { class: "ai-studio-director-kicker", text: `${beat.stepLabel} · ${beat.roleLabel}` }),
                 el("h3", { class: "ai-studio-director-inspector-title", dataset: { testid: "ai-studio-inspector-title" }, text: beat.title }),
               ],
             }),
@@ -456,7 +458,7 @@ export function createStudioDirectorBoard(options: StudioDirectorBoardOptions = 
         el("div", {
           class: "ai-studio-director-section",
           children: [
-            el("div", { class: "ai-studio-director-section-head", children: [el("strong", { text: "이 맵의 핵심 이벤트" }), el("span", { text: `${beat.events.length}개 중 ${keyEvents.length}` })] }),
+            el("div", { class: "ai-studio-director-section-head", children: [el("strong", { text: "이 맵의 핵심 이벤트" }), ...(beat.events.length ? [el("span", { text: `${beat.events.length}개 중 ${keyEvents.length}` })] : [])] }),
             keyEvents.length
               ? el("ul", {
                   class: "ai-studio-director-event-list",
@@ -478,14 +480,27 @@ export function createStudioDirectorBoard(options: StudioDirectorBoardOptions = 
                     ],
                   })),
                 })
-              : el("p", { class: "ai-studio-director-empty", text: "인물·문·전투 이벤트가 없습니다." }),
+              // 빈 목록에는 다음 행동을 함께 둔다(C-66).
+              : el("div", {
+                  class: "ai-studio-director-empty-row",
+                  children: [
+                    el("p", { class: "ai-studio-director-empty", text: "인물·문·전투 이벤트가 없습니다." }),
+                    el("button", {
+                      class: "ai-studio-director-btn is-small",
+                      attrs: { type: "button" },
+                      dataset: { testid: "ai-studio-empty-events-ask" },
+                      text: "조수에게 배치 맡기기",
+                      on: { click: () => pick(`「${beat.title}」에 분위기에 맞는 인물·문 이벤트를 배치해 줘.`) },
+                    }),
+                  ],
+                }),
           ],
         }),
         el("div", {
           class: "ai-studio-director-section",
           dataset: { testid: "ai-studio-planning-pin" },
           children: [
-            el("div", { class: "ai-studio-director-section-head", children: [el("strong", { text: "고정 기획 노트" }), el("span", { text: `${beat.planningNotes.length}건` })] }),
+            el("div", { class: "ai-studio-director-section-head", children: [el("strong", { text: "고정 기획 노트" }), ...(beat.planningNotes.length ? [el("span", { text: `${beat.planningNotes.length}건` })] : [])] }),
             ...(beat.planningNotes.length ? [el("ul", { class: "ai-studio-director-planning-list", children: beat.planningNotes.map((n) => el("li", { text: n })) })] : []),
             el("input", {
               class: "ai-studio-director-planning-input",
@@ -509,7 +524,7 @@ export function createStudioDirectorBoard(options: StudioDirectorBoardOptions = 
 
     const chips: DirectorPromptChip[] = [
       ...beat.defects.map((d) => ({ label: `수리: ${d.badge}`, prompt: d.aiPrompt, tone: "fix" as const })),
-      { label: "대사 다듬기", prompt: `「${beat.title}」(${beat.mapId})의 인물 대사 ${beat.lines.length}줄을 캐릭터 성격이 드러나게 다듬고, 대사가 없는 인물에게 2줄씩 추가해 줘.`, tone: "idea" },
+      { label: "대사 다듬기", prompt: `「${beat.title}」의 인물 대사 ${beat.lines.length}줄을 캐릭터 성격이 드러나게 다듬고, 대사가 없는 인물에게 2줄씩 추가해 줘.`, tone: "idea" },
       { label: "장면 연출 추가", prompt: `「${beat.title}」에 처음 들어올 때 한 번만 재생되는 짧은 연출(카메라 이동·말풍선·효과음)을 만들어 줘.`, tone: "idea" },
       { label: "다음 장면 연결", prompt: `「${beat.title}」 다음에 올 맵을 이야기 흐름에 맞게 만들고 문으로 양방향 연결해 줘.`, tone: "idea" },
     ];
@@ -556,10 +571,10 @@ export function createStudioDirectorBoard(options: StudioDirectorBoardOptions = 
       return input;
     };
     const chips: DirectorPromptChip[] = [
-      ...board.endings.filter((e) => !e.reachable).map((e) => ({ label: `엔딩 연결: ${e.name}`, prompt: `엔딩 「${e.name}」(${e.id})이 도달 불가입니다(${e.reason}). 조건을 채울 수 있게 선택지·이벤트를 보강해 줘.`, tone: "fix" as const })),
+      ...board.endings.filter((e) => !e.reachable).map((e) => ({ label: `엔딩 연결: ${e.name}`, prompt: `엔딩 「${e.name}」이 도달 불가입니다(${e.reason}). 조건을 채울 수 있게 선택지·이벤트를 보강해 줘.`, tone: "fix" as const })),
       ...board.cast.filter((c) => c.warn).slice(0, 3).map((c) => ({ label: `보강: ${c.name}`, prompt: `「${c.name}」 문제: ${c.warn}. 프로젝트 흐름에 맞게 고쳐 줘.`, tone: "fix" as const })),
-      ...board.flags.filter((f) => f.warn).slice(0, 2).map((f) => ({ label: `플래그: ${f.name}`, prompt: `${f.kind === "switch" ? "스위치" : f.kind === "friendship" ? "호감도" : "변수"} 「${f.name}」(${f.id}) 문제: ${f.warn}. 쓰는 곳과 읽는 곳이 맞물리게 이벤트를 고쳐 줘.`, tone: "fix" as const })),
-      ...board.endings.filter((e) => e.reachable).slice(0, 2).map((e) => ({ label: `엔딩 연출: ${e.name}`, prompt: `엔딩 「${e.name}」(${e.id}, 조건: ${e.conditionText})에 들어가기 직전 장면과 엔딩 컷신 연출을 강화해 줘. 조건 수치는 바꾸지 마.`, tone: "idea" as const })),
+      ...board.flags.filter((f) => f.warn).slice(0, 2).map((f) => ({ label: `플래그: ${f.name}`, prompt: `${f.kind === "switch" ? "스위치" : f.kind === "friendship" ? "호감도" : "변수"} 「${f.name}」 문제: ${f.warn}. 쓰는 곳과 읽는 곳이 맞물리게 이벤트를 고쳐 줘.`, tone: "fix" as const })),
+      ...board.endings.filter((e) => e.reachable).slice(0, 2).map((e) => ({ label: `엔딩 연출: ${e.name}`, prompt: `엔딩 「${e.name}」(조건: ${e.conditionText})에 들어가기 직전 장면과 엔딩 컷신 연출을 강화해 줘. 조건 수치는 바꾸지 마.`, tone: "idea" as const })),
       ...(board.cast.length > 0 ? [{ label: "인물 대사 개성", prompt: `${board.cast.slice(0, 4).map((c) => `「${c.name}」`).join("·")}의 대사를 찾아 말투가 서로 구분되게 다듬어 줘. 사건 순서와 조건은 유지해.`, tone: "idea" as const }] : []),
       { label: "장르 밸런스 점검", prompt: `${GENRE_META[genre].shortLabel} 관점에서 이 프로젝트의 ${genre === "romance" ? "호감도 곡선과 엔딩 분기" : genre === "monster-taming" ? "출현 테이블과 레벨 곡선" : "파티 합류 시점과 보스 난이도"}를 점검하고 고칠 점을 제안해 줘.`, tone: "idea" },
     ];

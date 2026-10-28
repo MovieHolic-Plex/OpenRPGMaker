@@ -257,7 +257,7 @@ export function buildBeats(project: Project, genre: StudioDirectorGenre): Direct
       defects.push({
         badge: "도달 불가 맵",
         detail: `시작 맵 ${project.maps[project.startMapId]?.name ?? project.startMapId}에서 이동 이벤트를 따라가도 「${name}」에 닿지 않습니다.`,
-        aiPrompt: `「${name}」(${map.id})이 시작 맵에서 도달 불가입니다. 이야기 흐름상 알맞은 이전 맵에 이 맵으로 가는 문/이동 이벤트를 만들어 연결해 줘.`,
+        aiPrompt: `「${name}」이 시작 맵에서 도달 불가입니다. 이야기 흐름상 알맞은 이전 맵에 이 맵으로 가는 문/이동 이벤트를 만들어 연결해 줘.`,
       });
     }
     if (danglingDoors.length > 0) {
@@ -277,7 +277,7 @@ export function buildBeats(project: Project, genre: StudioDirectorGenre): Direct
       defects.push({
         badge: "야생 출현 0종",
         detail: `「${name}」은 ${ROLE_LABEL[role] ?? role} 맵인데 출현 테이블·필드 스폰이 비어 있어 야생 몬스터를 만날 수 없습니다.`,
-        aiPrompt: `「${name}」(${map.id})에 이 지역 분위기에 맞는 야생 몬스터 출현 테이블을 3~4종, 레벨 범위와 함께 구성해 줘.`,
+        aiPrompt: `「${name}」에 이 지역 분위기에 맞는 야생 몬스터 출현 테이블을 3~4종, 레벨 범위와 함께 구성해 줘.`,
       });
     }
     const npcCount = events.filter((e) => e.kind === "npc").length;
@@ -306,7 +306,7 @@ export function buildBeats(project: Project, genre: StudioDirectorGenre): Direct
     const bgm = map.bgm?.mode === "custom" ? map.bgm.resourceId ?? null : null;
     return {
       id: `beat-${map.id}`,
-      stepLabel: `BEAT ${index}${isStart ? " · 시작" : ""}`,
+      stepLabel: `장면 ${index}${isStart ? " · 시작" : ""}`,
       mapId: map.id,
       title: name,
       mapMeta: `${map.width}×${map.height} · 이벤트 ${map.events.length} · 대사 ${lines.length}줄`,
