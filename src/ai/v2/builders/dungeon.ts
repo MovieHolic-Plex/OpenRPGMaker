@@ -4,12 +4,13 @@
 // 층마다 보이는 적 수, 가장 깊은 곳 상자, 보스 그림이 잡몹·수문장과 다르게.
 import { isBlankMap } from "@/editor/tools/mapEmptiness";
 import { dungeonTheme } from "@/editor/tools/dungeonThemeTroops";
+import { fitEnemyToStartParty } from "@/editor/tools/bossThreatScaling";
 import { pickTroops } from "@/editor/tools/jrpgVolumeTools";
 import { DUNGEON_TYPES, type DungeonType } from "@/editor/dungeonKit/types";
 import { isPassable } from "@/project/collision";
 import { terrainReachability } from "@/project/terrainReachability";
 import { cloneProjectSharingSharedDictionaries } from "@/project/projectClone";
-import type { GameMap, Project } from "@/project/types";
+import type { EnemyRecord, GameMap, Project } from "@/project/types";
 import { createBuildRun } from "../buildRun";
 import type { BuildRun, BuilderCall, PlaceBuildResult, PlaceBuilder, PlaceRecord, PlaceSpec } from "../types";
 
@@ -214,6 +215,9 @@ function ensureFoeTroop(run: BuildRun, enemyId: string, role: "field" | "boss" |
   const s = source as unknown as Record<string, unknown>;
   const copy: Record<string, unknown> = { id: enemyIdCopy, name: name ?? source.name, stats };
   for (const key of ["monsterResourceId", "battleScalePercent", "level", "skillIds", "rewards", "actions", "criticalHit", "attackOptions"]) if (s[key] !== undefined) copy[key] = structuredClone(s[key]);
+  // 세기는 시작 파티에 맞춘다(dungeonThemeTroops 와 같은 맞춤) — 비례 옮기기는 파티가 없을 때만.
+  const fit = fitEnemyToStartParty(project, { ...source, id: enemyIdCopy, stats } as unknown as EnemyRecord, role, count);
+  if (fit) { copy.stats = fit.stats; copy.level = fit.level; if (fit.actions) copy.actions = fit.actions; if (fit.skillIds) copy.skillIds = fit.skillIds; }
   const made = run.call("upsert_enemy", { enemy: copy, role: role === "boss" ? "boss" : "normal" });
   const useId = made.ok ? enemyIdCopy : enemyId;
   const r = run.call("upsert_troop", { troop: { id: troopId, name: role === "field" ? `${source.name} 무리` : name ?? source.name, enemyIds: Array.from({ length: count }, () => useId) } });

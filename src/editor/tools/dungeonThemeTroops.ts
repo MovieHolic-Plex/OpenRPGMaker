@@ -2,7 +2,8 @@
 // 지하 묘지·잠긴 신전·고블린 굴·탑 보스가 모두 「붉은 드래곤」이었고(VQA major), 화산 동굴 잡몹은 슬라임이었다.
 // 이제 종류(type)·소굴(lair)·잠김(flooded)·탑(direction up)·이름 낱말로 주제를 정하고, 기본 데이터베이스에 이미 있는 적의 그림을 빌려
 // 이 던전 전용 적 그룹을 만든다. 세기는 원래 고르던 그룹(조율된 잡몹·가장 센 보스)에 맞춰 능력치를 비례로 옮긴다 — 균형은 그대로, 그림·이름만 주제.
-import type { Project } from "@/project/types";
+import type { EnemyRecord, Project } from "@/project/types";
+import { fitEnemyToStartParty } from "./bossThreatScaling";
 
 type Role = "field" | "midBoss" | "boss";
 interface Theme { readonly id: string; readonly label: string; readonly field: readonly string[]; readonly midBoss: string; readonly boss: string; readonly bossName?: string }
@@ -109,6 +110,15 @@ export function ensureThemeTroop(project: Project, theme: Theme, role: Role, lik
     const e = project.database.enemies.find((x) => x.id === enemyId)!;
     const st = e.stats as unknown as Record<string, number>;
     if (st && typeof st.maxHp === "number") st.maxHp = Math.max(1, Math.round(st.maxHp / count));
+  }
+  // 세기의 정본은 시작 파티다 — 비례로 옮긴 값은 파티가 없을 때만 남는다(vm1-1029 jrpg: 임프 Lv35·마왕 Lv42 를 Lv1 혼자 상대).
+  const made = project.database.enemies.find((x) => x.id === enemyId);
+  const fit = made ? fitEnemyToStartParty(project, made as EnemyRecord, role, count) : undefined;
+  if (made && fit) {
+    made.stats = fit.stats;
+    (made as { level?: number }).level = fit.level;
+    if (fit.actions) made.actions = fit.actions;
+    if (fit.skillIds) (made as { skillIds?: readonly string[] }).skillIds = fit.skillIds;
   }
   return troopId;
 }
