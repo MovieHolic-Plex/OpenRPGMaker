@@ -515,6 +515,8 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  /* 한 줄 말줄임 글자가 목록 칸의 최소 폭을 밀어 넓히지 않게 한다(본문 폭은 0 으로 계산). */
+  contain: inline-size;
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-toolbar .db-toolbar-reason.is-pulsed {

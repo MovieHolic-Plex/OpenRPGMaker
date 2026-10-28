@@ -1325,5 +1325,5 @@
 /* 세계 개요 본문 칸은 창 높이에 맞춰 줄어든다 — 320px 고정이면 1366×768·1024×640 에서 아래 「초안 잡기·이어쓰기」
    막대가 바닥 막대에 잘렸다(V-overlays-modals-42, V-shell-topbar-32). 내용이 길어지면 칸이 자란다(field-sizing). */
 .database-modal-backdrop .database-modal-window .database-modal-body .world-document-workspace .db-world-canon-body {
-  min-height: clamp(120px, calc(100vh - 512px), 320px);
+  min-height: clamp(120px, calc(100vh - 530px), 320px);
 }

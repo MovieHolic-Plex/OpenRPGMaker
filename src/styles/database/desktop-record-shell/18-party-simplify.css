@@ -305,11 +305,13 @@
     grid-template-columns: minmax(300px, 0.8fr) minmax(320px, 1.2fr);
   }
 
-  .database-modal-body .db-actor-studio-workspace .db-studio-table-pane {
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-actor-studio-workspace .db-studio-table-pane {
     grid-template-rows: auto minmax(0, 1fr) auto auto;
+    padding: 0;
+    row-gap: 0;
   }
 
-  .database-modal-body .db-actor-studio-workspace .db-studio-table-pane > .db-actor-studio-tools {
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-actor-studio-workspace .db-studio-table-pane > .db-actor-studio-tools {
     align-items: center;
     display: flex;
     gap: 8px;
@@ -326,19 +328,19 @@
     height: 32px;
   }
 
-  .database-modal-body .db-actor-studio-workspace .db-studio-table-pane > .db-actor-studio-table {
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-actor-studio-workspace .db-studio-table-pane > .db-actor-studio-table {
     grid-row: 2;
   }
 
-  .database-modal-body .db-actor-studio-workspace .db-studio-table-pane > .oprn-record-list-footer {
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-actor-studio-workspace .db-studio-table-pane > .oprn-record-list-footer {
     grid-row: 3;
   }
 
-  .database-modal-body .db-actor-studio-workspace .db-studio-table-pane > .db-toolbar {
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-actor-studio-workspace .db-studio-table-pane > .db-toolbar {
     flex-wrap: wrap;
     gap: 6px;
     grid-row: 4;
-    padding: 8px 12px;
+    padding: 6px 12px;
   }
 
   .database-modal-body .db-actor-studio-workspace .db-studio-table-pane > .db-toolbar .btn {
@@ -346,8 +348,8 @@
   }
 
   .database-modal-body .db-actor-studio-workspace .db-actor-studio-table button.db-actor-table-row {
-    min-height: 48px;
-    padding: 6px 14px;
+    min-height: 46px;
+    padding: 5px 14px;
   }
 
   .database-modal-body .db-actor-studio-workspace .db-actor-studio-table .db-actor-table-header {
