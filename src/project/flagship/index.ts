@@ -11,6 +11,7 @@ import {
 import { createChronoBellFlagshipDemo } from "./chronoBell";
 import { createEmeraldCrownFlagshipDemo } from "./emeraldCrown";
 import { createFirstLoveFlagshipDemo } from "./firstLove";
+import { createMaouKonbiniFlagshipDemo } from "./maouKonbini";
 import { createShitamachiFourthSeasonFlagshipDemo } from "./shitamachiFourthSeason";
 import {
   FLAGSHIP_DEMO_IDS,
@@ -30,6 +31,7 @@ export {
   createChronoBellFlagshipDemo,
   createEmeraldCrownFlagshipDemo,
   createFirstLoveFlagshipDemo,
+  createMaouKonbiniFlagshipDemo,
   createShitamachiFourthSeasonFlagshipDemo,
   flagshipBeatManifestForChoice,
   formatFlagshipExemplarPrompt,
@@ -67,6 +69,12 @@ export const FLAGSHIP_DEMO_SPECS: Readonly<Record<FlagshipDemoId, FlagshipDemoSp
     choiceId: "story-cutscene",
     manifest: FLAGSHIP_BEAT_MANIFESTS["first-love"],
     build: createFirstLoveFlagshipDemo,
+  },
+  "maou-konbini": {
+    id: "maou-konbini",
+    choiceId: "story-cutscene",
+    manifest: FLAGSHIP_BEAT_MANIFESTS["maou-konbini"],
+    build: createMaouKonbiniFlagshipDemo,
   },
 };
 

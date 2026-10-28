@@ -84,6 +84,8 @@ const BUILTIN_GENERATED_RESOURCE_URLS: Record<string, string | null> = {
   // 『시타마치의 네 번째 계절』 타이틀·오프닝 5컷·엔딩 4장(2026-10-25, 같은 모델·같은 화풍, 공용 전신 초상 참조 시트로 인물 일치). 후보 2~3장 중 감독 선택 —
   // 출처·프롬프트: public/assets/generated/title/shitamachi-keyart-provenance.json.
   "oprn-shitamachi-title": "/assets/generated/title/shitamachi-title.jpg",
+  // 『전생한 마왕, 편의점 알바 시작하다』 타이틀 — 이 데모의 상점가 맵(jp_city)을 그대로 그린 그림(새 도트 아님). 생성기 scripts/content/maou-konbini/render_title.py.
+  "oprn-maou-konbini-title": "/assets/generated/title/maou-konbini-title.png",
   "oprn-shitamachi-yuna": "/assets/generated/title/shitamachi-yuna.jpg",
   "oprn-shitamachi-op-train": "/assets/generated/title/shitamachi-op-train.jpg",
   "oprn-shitamachi-op-arcade": "/assets/generated/title/shitamachi-op-arcade.jpg",
