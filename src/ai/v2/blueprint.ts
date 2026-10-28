@@ -225,6 +225,77 @@ export function codeStepBypass(project: Project, ev: GameEvent): string | undefi
   return undefined;
 }
 
+// ── 전투 단계 ─────────────────────────────────────────────────────────────
+// 왜(2026-10-29 vm1 flash jrpg): 청사진 마지막 단계 「마왕과의 결전 — 마왕을 처치한다」를 경로 빌더가 열쇠 줍기·엔딩 고리로 지었고,
+// 던전 빌더의 보스 전투는 따로 서 있었다. 열쇠만 있으면 보스를 지나쳐 「마왕과의 결전」을 조사해 엔딩이 났다(이기지 않아도).
+// 번호 단계와 같은 방식: 넘어가는(엔딩·스위치·아이템·이동) 명령이 전투 승리 갈래 안에만 있거나, 승리 갈래에서만 켜지는 스위치를 조건으로 건다.
+
+/** 싸워 이기는 행동 낱말. */
+export const BATTLE_STEP_WORDS = /결전|전투|처치|쓰러뜨|물리치|격파|무찌르|무찔|토벌|대결|보스전|battle|fight|defeat|slay|boss/iu;
+/** 듣기·묻기 단계(「마왕을 처치할 방법을 듣는다」)는 싸우는 단계가 아니다. */
+const TALK_ACTION = /대화|듣는|듣고|묻는|물어|이야기|말을\s*건|방법을|소문|정보/u;
+/** 청사진 단계가 싸워 이기는 단계인가(이벤트 이름에 전투 낱말, 또는 행동에 전투 낱말이 있고 듣기·묻기 단계가 아니다). */
+export function isBattleStep(step: { readonly event: string; readonly action: string }): boolean {
+  return BATTLE_STEP_WORDS.test(step.event) || (BATTLE_STEP_WORDS.test(step.action) && !TALK_ACTION.test(step.action));
+}
+const isVictoryFork = (cmd: Obj) => cmd.kind === "fork" && obj(cmd.condition)?.kind === "battleResult" && obj(cmd.condition)?.result === "victory";
+/** 명령 목록에서 전투 승리 갈래 밖에 있는 넘어가는 명령(첫 것). */
+function progressOutsideVictory(list: unknown): Obj | undefined {
+  if (!Array.isArray(list)) return undefined;
+  for (const raw of list) {
+    const cmd = obj(raw);
+    if (!cmd) continue;
+    if (progresses(cmd)) return cmd;
+    for (const [key, value] of Object.entries(cmd)) {
+      if (!Array.isArray(value)) continue;
+      if (isVictoryFork(cmd) && key === "then") continue;
+      if (cmd.kind === "battleProcessing" && key === "victoryBranch") continue;
+      if (/^(then|else|branch|commands|body|loop|beats)$/u.test(key) || /Branch$/u.test(key)) { const hit = progressOutsideVictory(value); if (hit) return hit; }
+    }
+    if (Array.isArray(cmd.options)) for (const o of cmd.options) { const hit = progressOutsideVictory(obj(o)?.branch); if (hit) return hit; }
+  }
+  return undefined;
+}
+/** 전투 승리 갈래 안에서만 켜지는 스위치 — 그 스위치를 조건으로 건 페이지는 이긴 뒤에만 열린다. */
+export function victoryGatedSwitches(project: Project): Set<string> {
+  const out = new Set<string>();
+  const lists = [...Object.values(project.maps).flatMap((m) => (m.events ?? []).flatMap((ev) => pagesOf(ev).map((p) => p.commands))), ...((project.commonEvents ?? []) as unknown as Obj[]).map((ce) => ce.commands)];
+  for (const list of lists) walk(list, (cmd) => {
+    const inside = isVictoryFork(cmd) ? cmd.then : cmd.kind === "battleProcessing" ? cmd.victoryBranch : undefined;
+    walk(inside, (c) => { if (c.kind === "setSwitch" && c.value !== false && c.switchId !== undefined) out.add(String(c.switchId)); });
+  });
+  // 같은 스위치를 승리 갈래 밖에서도 켜면 이긴 표시가 아니다.
+  for (const list of lists) {
+    const outside = (l: unknown): void => {
+      if (!Array.isArray(l)) return;
+      for (const raw of l) {
+        const cmd = obj(raw);
+        if (!cmd) continue;
+        if (cmd.kind === "setSwitch" && cmd.value !== false) out.delete(String(cmd.switchId));
+        for (const [key, value] of Object.entries(cmd)) if (Array.isArray(value) && !(isVictoryFork(cmd) && key === "then") && !(cmd.kind === "battleProcessing" && key === "victoryBranch") && (/^(then|else|branch|commands|body|loop|beats)$/u.test(key) || /Branch$/u.test(key))) outside(value);
+      }
+    };
+    outside(list);
+  }
+  return out;
+}
+/** 전투 단계 이벤트가 정말 이겨야 넘어가나. 넘어가는 페이지마다 승리 스위치 조건이거나, 넘어가는 명령이 승리 갈래 안에만 있다. 아니면 설명. */
+export function battleStepBypass(project: Project, ev: GameEvent): string | undefined {
+  const won = victoryGatedSwitches(project);
+  for (const [i, page] of pagesOf(ev).entries()) {
+    let moves = false;
+    walk(page.commands, (c) => { if (progresses(c)) moves = true; });
+    if (!moves) continue;
+    if (leafConds(page).some((c) => c.kind === "switch" && c.value !== false && won.has(String(c.switchId)))) continue;
+    const bare = progressOutsideVictory(page.commands);
+    if (!bare) continue;
+    let fights = false;
+    walk(page.commands, (c) => { if (c.kind === "battleProcessing") fights = true; });
+    return fights ? `${i + 1}쪽이 전투 결과와 상관없이(승리 갈래 밖) ${String(bare.kind)} 를 한다` : `${i + 1}쪽이 전투 없이 ${String(bare.kind)} 를 한다(보스를 이긴 표시 스위치를 조건으로 걸지 않았다)`;
+  }
+  return undefined;
+}
+
 // ── 갇힌 방에서 걸어 나가는 길 ─────────────────────────────────────────────
 // 왜(2026-10-29 mt3 flash 방탈출): 밀실 남쪽 틈에 시작 «빈 맵»으로 가는 이동 칸이 조건 없이 남아, 잠긴 방인데 걸어서 나갔다.
 // 빈 시작 맵 은퇴(blankStart.ts)는 자리표시 맵만 치우므로, 장소 맵이 아니면서 그림이 있는 맵(옛 마을·현관)으로 가는 출구는 못 잡는다.
@@ -328,6 +399,12 @@ export function walkBlueprint(project: Project): BlueprintWalk {
     if (!r.ev || !r.map || !isCodeStep(r.step)) continue;
     const why = codeStepBypass(project, r.ev);
     if (why) add("blueprint-code-bypass", `청사진 ${r.step.id} 「${r.step.event}」(${r.map.id} ${r.ev.id}) 은 번호·암호를 맞히는 단계(${r.step.action})인데 ${why} — 조사만 하면 ${r === resolved.at(-1) ? "엔딩" : "다음 단계"}로 넘어가 퍼즐이 없다.`, `${r.step.id} ${r.ev.id} ${why}`);
+  }
+  // 3b') 싸워 이기는 단계가 정말 이겨야 넘어가나(보스를 지나쳐 조사만 해도 엔딩이 나오지 않나).
+  for (const r of resolved) {
+    if (!r.ev || !r.map || isCodeStep(r.step) || !isBattleStep(r.step)) continue;
+    const why = battleStepBypass(project, r.ev);
+    if (why) add("blueprint-battle-bypass", `청사진 ${r.step.id} 「${r.step.event}」(${r.map.id} ${r.ev.id}) 은 싸워 이기는 단계(${r.step.action})인데 ${why} — 이기지 않아도 ${r === resolved.at(-1) ? "엔딩" : "다음 단계"}로 넘어간다. build_blueprint_path 를 다시 부르면 그 맵 보스 전투의 승리 스위치를 조건으로 걸거나(보스가 없으면 이 이벤트 안에서 싸우고 승리 갈래에서만) 넘어가게 고친다.`, `${r.step.id} ${r.ev.id} ${why}`);
   }
   // 3c) 갇힌 방 게임인데 청사진 장소 밖으로 조건 없이 걸어 나가는 이동이 있나.
   for (const leak of escapeLeaks(project)) add("blueprint-escape-leak", `방탈출 청사진인데 「${project.maps[leak.mapId]?.name ?? leak.mapId}」(${leak.mapId}) (${leak.x},${leak.y}) 이동 ${leak.eventId} 가 조건 없이 청사진 장소가 아닌 「${project.maps[leak.toMapId]?.name ?? leak.toMapId}」(${leak.toMapId})로 나간다 — 잠긴 방을 퍼즐 없이 걸어서 빠져나간다.`, `${leak.mapId} ${leak.eventId} → ${leak.toMapId}`);

@@ -15,7 +15,8 @@ import { normalizeGameBlueprint, type GameBlueprint } from "@/project/gameBluepr
 import { buildPuzzleChain, type ChainLink } from "./puzzle";
 import { resolveWhere } from "./people";
 import type { BuildRun, ContentBuildResult } from "./types";
-import { BLUEPRINT_PATH_IDS, codeStepBypass, escapeLeaks, eventGives, isCodeStep, walkBlueprint } from "./blueprint";
+import { BLUEPRINT_PATH_IDS, battleStepBypass, codeStepBypass, escapeLeaks, eventGives, isBattleStep, isCodeStep, victoryGatedSwitches, walkBlueprint } from "./blueprint";
+import { pickFittedTroops } from "@/editor/tools/jrpgVolumeTools";
 import { trivialCode } from "./puzzle";
 import { repairEventReach } from "./eventReach";
 import { dressInteriorExits } from "./exitDress";
@@ -157,6 +158,7 @@ export interface BlueprintPathResult extends ContentBuildResult {
  * 청사진 경로를 짓고, 그 뒤 두 가지를 결정적으로 맞춘다(2026-10-29 vm1 flash jrpg 판정):
  *  - 청사진 단계가 「<장소> 열쇠」 같은 열쇠를 needs 로 적었고 그 단계가 앞 단계와 다른 맵이면, 앞 맵에서 그 맵으로 가는 문을 열쇠로 잠근다
  *    (열쇠가 엔딩 이벤트에만 걸려 동굴엔 그냥 들어가졌다 — 「열쇠가 어디에도 쓰이지 않았다」). 청사진에 needs 가 없으면 잠그지 않는다.
+ *  - 싸워 이기는 단계(「마왕과의 결전」)가 이기지 않아도 넘어가면 그 맵 보스 전투의 승리 스위치를 조건으로 건다(보스가 없으면 그 이벤트 안에서 싸우고 승리 갈래에서만 넘어간다).
  *  - 전투가 있는데 회복할 길이 없으면 시작 맵에 회복의 샘과 시작 회복약(healingAccess.ts).
  * 둘 다 이미 지은 경로를 그대로 두는 경우(다시 짓지 않음)에도 한다.
  */
@@ -164,6 +166,7 @@ export function buildBlueprintPath(run: BuildRun, text: readonly PathStepText[] 
   const result = buildBlueprintPathCore(run, text);
   const extra: string[] = [];
   try { extra.push(...gateKeyedEntrances(run)); } catch { /* 잠금 실패는 경로를 깨지 않는다 */ }
+  try { extra.push(...gateBattleSteps(run)); } catch { /* 전투 잠금 실패는 경로를 깨지 않는다 */ }
   try { const heal = ensureHealingAccess(run); if (heal.length) extra.push(`회복 길을 넣었다: ${heal.join(", ")}`); } catch { /* 회복 넣기 실패는 경로를 깨지 않는다 */ }
   return extra.length ? { ...result, summary: `${result.summary} ${extra.join(". ")}.` } : result;
 }
@@ -206,6 +209,76 @@ export function gateKeyedEntrances(run: BuildRun): string[] {
       if (run.call("upsert_event", { mapId: prev.id, event: event as unknown as Record<string, unknown>, replacePages: true }).ok) notes.push(`${prev.name ?? prev.id} → ${here.name ?? here.id} 문(${gate.x},${gate.y})을 「${need}」로 잠갔다`);
     }
   });
+  return notes;
+}
+
+type RawPage = Record<string, unknown> & { conditions?: unknown[]; commands?: unknown[] };
+const PROGRESS = new Set(["triggerEnding", "setSwitch", "changeItem", "transfer"]);
+function pageMoves(page: RawPage): boolean {
+  const text = JSON.stringify(page.commands ?? []);
+  return [...PROGRESS].some((k) => text.includes(`"kind":"${k}"`));
+}
+
+/**
+ * 싸워 이기는 청사진 단계가 이기지 않아도 넘어가면(blueprint-battle-bypass) 고친다. 결정적·되풀이 안전.
+ *  - 그 맵에 승리 갈래에서만 스위치를 켜는 전투 이벤트(보스)가 있으면: 넘어가는 페이지에 그 스위치 조건을 더하고, 바로 앞에 같은 조건의
+ *    「먼저 <보스>를 쓰러뜨려야 한다」 페이지를 둔다(열쇠는 있는데 아직 못 이긴 때).
+ *  - 없으면: 그 페이지 안에서 시작 파티에 맞춘 보스 그룹과 싸우고(도망·패배 불가), 원래 명령은 승리 갈래에서만 한다.
+ */
+export function gateBattleSteps(run: BuildRun): string[] {
+  const bp = run.ctx.project.gameBlueprint;
+  if (!bp) return [];
+  const notes: string[] = [];
+  for (const step of bp.steps) {
+    if (isCodeStep(step) || !isBattleStep(step)) continue;
+    const project = run.ctx.project;
+    const map = mapFor(project, step.place);
+    const ev = map?.events.find((e) => e.id === step.event || norm(String((e as { name?: string }).name ?? "")) === norm(step.event))
+      ?? map?.events.find((e) => !e.id.startsWith("ev_objective") && sameName(String((e as { name?: string }).name ?? ""), step.event));
+    if (!map || !ev || !battleStepBypass(project, ev)) continue;
+    const won = victoryGatedSwitches(project);
+    const bosses = map.events.filter((e) => e.id !== ev.id).flatMap((e) => {
+      const text = JSON.stringify(e.pages ?? []);
+      const sw = [...text.matchAll(/"switchId":"([^"]+)"/gu)].map((m) => m[1]!).find((id) => won.has(id));
+      const troopId = /"troopId":"([^"]+)"/u.exec(text)?.[1];
+      // 보스·수문장만 — 도망칠 수 있는 떠도는 잡몹(임프 무리)을 「이겨야 할 상대」로 걸지 않는다.
+      const boss = /boss|보스/iu.test(`${e.id} ${troopId ?? ""}`) || text.includes('"canEscape":false');
+      return sw && boss ? [{ event: e, sw, troopId, named: /boss|보스/iu.test(`${e.id} ${troopId ?? ""}`) }] : [];
+    });
+    const boss = bosses.find((b) => b.named) ?? bosses.at(-1);
+    const pages = structuredClone(ev.pages ?? []) as unknown as RawPage[];
+    const out: RawPage[] = [];
+    if (boss) {
+      const troop = project.database.troops.find((t) => t.id === boss.troopId);
+      const name = troop?.name ?? "길을 막는 적";
+      const cond = { kind: "switch", switchId: boss.sw, value: true };
+      for (const page of pages) {
+        const gated = (page.conditions ?? []).some((c) => (c as { switchId?: string }).switchId === boss.sw);
+        if (!pageMoves(page) || gated) { out.push(page); continue; }
+        out.push({ ...structuredClone(page), id: `${String(page.id ?? "p")}_unbeaten`, name: "아직 못 이김", commands: [{ kind: "text", body: `먼저 ${name}${josa(name, "을", "를")} 쓰러뜨려야 한다.` }] });
+        out.push({ ...page, conditions: [...(page.conditions ?? []), cond] });
+      }
+      notes.push(`「${step.event}」은 ${name}(${boss.event.id}) 승리 뒤에만 넘어간다`);
+      // 보스 승리가 이제 이정표다 — 이긴 뒤 목표 줄이 이 단계 이벤트를 가리키게 한다(없으면 앞 목표가 남아 길을 잃는다).
+      if (!JSON.stringify(boss.event.pages ?? []).includes(OBJECTIVE_SURFACE)) {
+        const plan = planObjective(run.ctx.project, { text: `${step.event}${josa(step.event, "을", "를")} 마무리하자`, eventId: boss.event.id, mapId: map.id, where: ev.id });
+        if (plan.ok) for (const entry of plan.events) run.call("upsert_event", { mapId: entry.mapId, event: entry.event, replacePages: true });
+      }
+    } else {
+      const troopId = pickFittedTroops(project, undefined).boss;
+      if (!troopId) continue;
+      for (const page of pages) {
+        if (!pageMoves(page)) { out.push(page); continue; }
+        out.push({ ...page, commands: [
+          { kind: "battleProcessing", troopId, canEscape: false, canLose: false },
+          { kind: "fork", condition: { kind: "battleResult", result: "victory" }, then: page.commands ?? [] },
+        ] });
+      }
+      notes.push(`「${step.event}」 안에서 ${troopId} 와 싸우고 이겨야 넘어간다`);
+    }
+    const event = { ...structuredClone(ev), pages: out };
+    if (!run.call("upsert_event", { mapId: map.id, event: event as unknown as Record<string, unknown>, replacePages: true }).ok) notes.pop();
+  }
   return notes;
 }
 
