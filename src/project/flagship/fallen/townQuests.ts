@@ -177,7 +177,7 @@ function plazaPeople(project: Project, hubId: string): void {
       say(TOBI, "아직 말하면 안 돼.\n말하면 안 이뤄진댔어. 발렌 아저씨가."),
       fork(sw(Q2_DONE), [
         say(IRIS, "그럼 저도… 친구예요?"),
-        say(TOBI, "당연하지! 기계면 어때.\n기계가 더 튼튼하잖아."),
+        say(TOBI, "당연하지! 기계여도 돼.\n기계가 더 튼튼하잖아."),
       ]),
     ] },
   ]);
@@ -189,7 +189,7 @@ function plazaPeople(project: Project, hubId: string): void {
   rewritePages(gate, [
     { name: "기본", conditions: [], commands: [
       gateQ1,
-      say(GATE, "문 나서서 북쪽으로 꺾으면 바로 숲이다.\n심문관들은 아직 남쪽 골짜기를 뒤지고 있지."),
+      say(GATE, "문 나서면 바로 숲이다.\n심문관들은 남쪽 골짜기부터 뒤진다더군."),
       say(GATE, "숲길은 브람 영감이 훤하다.\n북쪽 숲은 이틀 안에 심문관이 직접 뒤진다더군."),
       say(GATE, "별지기가 숲엔 왜 가나. …묻지 않겠다.\n길에서 벗어나지 마라. 늑대가 사납다."),
     ] },
@@ -291,7 +291,7 @@ function toma(project: Project): void {
     say(TOMA, "바구니에 누운 아기가\n배곯을까 봐서요. …이제야 말하네요."),
     say(KAEL, "…토마 아저씨였어요?\n계단에 있던 빵이."),
     say(TOMA, "열일곱 해 동안 한 번도 안 들켰는데,\n오늘 반죽이 안 부풀어서 들켜 버렸어요."),
-    narrate("「별빛빵」을 받았다.\n토마네 가게에 새 빵이 늘었다."),
+    narrate("「별빛빵」을 받았다.\n이제 토마네 가게에서 「별빛빵」도 판다."),
     item(FS_BREAD_STARLIGHT, 1),
     setSw(Q1_DONE),
   ];
@@ -441,7 +441,7 @@ function rohan(project: Project): void {
     item(EMBER, -1),
     say(ROHAN, "서른 해 전 새벽샘에서\n나는 창을 들고 서 있었다."),
     say(ROHAN, "재를 헤치고 나온 아이가 있었다.\n…이름이 발렌이었지?"),
-    say(ROHAN, "그 애한테 내가 뭐라 했는지 아냐.\n「고개 들어라」. 그 말밖에 못 했다."),
+    say(ROHAN, "그 애한테 내가 뭐라 했는지 아느냐.\n「고개 들어라」. 그 말밖에 못 했다."),
     say(ROHAN, "좀 더 다정하게 말해 줄걸 그랬다."),
     say(KAEL, "…아저씨."),
     say(ROHAN, "이 창은 내 딸이 쓸 거다.\n네 몫은 따로 만들어 뒀다. 가져가라."),
@@ -456,7 +456,7 @@ function rohan(project: Project): void {
     choices([
       ["푸른 불꽃 창", forged(SPEAR_REWARD, "푸른 불꽃 창", [])],
       ["별쇠 장검", [fork(has(STARIRON), forged(SWORD_REWARD, "별쇠 장검", [item(STARIRON, -1)]), [
-        say(ROHAN, "별쇠 조각이 없잖나. 공터 파편 더미를 뒤져라.\n재료는 그때까지 네가 갖고 있고."),
+        say(ROHAN, "별쇠 조각이 없잖나. 공터 파편 더미를 뒤져라.\n재료는 그때까지 네가 갖고 있어라."),
         giveBack,
       ])]],
       ["나중에", [giveBack]],
@@ -580,7 +580,7 @@ function bridgeScene(project: Project, hubId: string): string | null {
   const warned = "var_fs_scold_bridge";
   ensureVariable(project, warned, "다리 상자 경고(문지기)");
   const p0 = box.pages![0]!;
-  p0.commands = [fork(varCond(warned, "<", 2), [say(GATE, "어이, 거기서 뭘 뒤져!"), addVar(warned, 1)]), ...(p0.commands as Command[])];
+  p0.commands = [fork(varCond(warned, "<", 2), [say(GATE, "어이, 거기서 뭘 하는 거냐!"), addVar(warned, 1)]), ...(p0.commands as Command[])];
 
   const tobiStill = mustEvent(project, hubId, "ev_fs_kid");
   const spot = [...span].filter((c) => !hub.events.some((e) => e.x === c.x && e.y === c.y) && isPassable(project, hub, c.x, c.y))

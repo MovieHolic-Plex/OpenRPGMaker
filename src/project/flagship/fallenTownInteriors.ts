@@ -92,13 +92,13 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
           // 벽난로 앞 — 자동 자리는 짐을 쌓은 뒷광 통로 입구(30,10)에 서서 길을 막았다.
           at: { x: 27, y: 8 },
           lines: ["별 떨어진 밤 노래를 짓고 있소.\n「북쪽 숲에 은빛 알이 내려앉았네」…\n운이 영 안 맞는구려."],
-          after: ["은빛 머리 아가씨라… 노래 속 별의 딸 같구려.\n걱정 마시오, 교단 앞에선 이 노래 안 부르리다."],
+          after: ["은빛 머리 아가씨라… 노래 속 별의 딸 같구려.\n걱정 마시오. 교단 앞에선 안 부르리다."],
         },
         {
           id: "ev_fs_inn_guest", name: "길손", query: "중년 남성 주민", chip: ["tex_easyrpg_charset_people4", 3],
           at: { x: 14, y: 5 },
           lines: ["북쪽 숲 위로 빛기둥이 솟는 걸 봤소.\n새벽부터 교단 기사들이 성문을 지키더군."],
-          after: ["심문관 발렌이 숲으로 갔다더군.\n떨어진 별을 찾는다는데, 찾아서 어쩌려는지."],
+          after: ["심문관 발렌이 숲으로 갔다더군.\n떨어진 별을 찾는다는데…\n찾아서 어쩔 셈인지 모르겠소."],
         },
       ],
     },
@@ -191,7 +191,7 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
       people: [
         {
           id: "ev_fs_lisa", name: "리사", query: "젊은 여성", chip: ["tex_easyrpg_charset_people3", 3], at: { x: 9, y: 14 }, roam: ["living", "kitchen"],
-          lines: ["심문관 발렌이 왔다면서요?\n교단은 그 별을\n「불경한 하늘의 물건」이라 부른대요.", "우리 애가 밤새 창밖만 보더라고요.\n별이 노래를 부른다나요.", "아, 손님. 서랍이나 옷장은 만지지 마세요.\n눈만 마주쳐도 다 알아요."],
+          lines: ["심문관 발렌이 왔다면서요?\n교단은 그 별을\n「불경한 하늘의 물건」이라 부른대요.", "우리 애가 밤새 창밖만 보더라고요.\n별이 노래를 부른다나요.", "아, 손님. 서랍이나 옷장은 만지지 마세요.\n집 어디서든 저랑 눈 마주치면 다 알아요."],
           after: ["그 은빛 머리 아가씨, 잘 숨겨요.\n심문관은 한 번 본 얼굴은 안 잊는대요."],
         },
       ],
@@ -204,7 +204,7 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
         {
           id: "ev_fs_smith", name: "대장장이 로한", query: "중년 남성 주민", chip: ["tex_easyrpg_charset_people1", 0], behindCounter: true,
           lines: ["…뭘 보나.\n쓸 만한 놈만 골라 놨다.\n검은 다루기 쉽고, 창은 한 걸음 더 닿는다.",
-            "심문회가 칼을 갈러 왔었다.\n그쪽 일은 손 뗐다.\n쇳값이 아침마다 뛰는 판인데도."],
+            "심문회가 칼을 갈러 왔었다.\n그쪽 일은 손 뗐다.\n쇳값은 아침마다 뛰는 판이다."],
           after: ["…그 애, 사람이 아니라지.\n쇳소리가 나는군. 고장 난 소리는 아니고.\n목숨 걸 거면 제대로 된 걸 들어라."],
           commands: [{ kind: "shop", shopType: "normal", itemIds: fallenSmithyStock(project), allowSell: true }],
         },

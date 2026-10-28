@@ -218,7 +218,7 @@ function hanelMeetsIris(project: Project, obs: GameMap): void {
     say(H, "렌즈라면 이 밑에 있다.\n서고 바닥 돌뚜껑 아래, 옛 별지기 방에."),
     say(H, "그 방은 내가 닫지 않았다.\n…내 스승이 닫으셨지. 그것만 안다."),
     say(ELENA, "이리스가 준 열쇠가 그 홈에 맞아요."),
-    say(H, "그럼 내려가거라.\n서두르더라도 발밑은 조심하고."),
+    say(H, "그럼 내려가거라.\n서두르되, 발밑은 조심하거라."),
     setSw(SW_HANEL_MET_IRIS),
   ], [
     say(H, "서고 바닥 돌뚜껑이다.\n조심해 내려가거라."),

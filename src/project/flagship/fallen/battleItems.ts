@@ -85,11 +85,11 @@ export function applyFallenBattleItems(project: Project): void {
   const potion = byId<ItemRecord>(db.items, FS_POTION);
   potion.hpRecovery = { flat: 40, percentMax: 25 };
   potion.price = 60;
-  potion.description = "아군 하나의 HP를 40 + 최대 HP 25%만큼 채운다.\n카엘이 마시면 170쯤 찬다.";
+  potion.description = "HP를 40 + 최대 HP 25% 채운다.\n카엘이 마시면 170쯤 찬다.";
   const hiPotion = byId<ItemRecord>(db.items, FS_HI_POTION);
   hiPotion.hpRecovery = { flat: 100, percentMax: 50 };
   hiPotion.price = 180;
-  hiPotion.description = "아군 하나의 HP를 100 + 최대 HP 50%만큼 채운다.\n카엘이 마시면 360쯤 찬다.";
+  hiPotion.description = "HP를 100 + 최대 HP 50% 채운다.\n카엘이 마시면 360쯤 찬다.";
 
   // ── 스킬 복제 도구 ───────────────────────────────────────────────────────
   const cloneSkill = (fromId: string, id: string, patch: Partial<SkillRecord>): void => {
@@ -174,7 +174,7 @@ export function applyFallenBattleItems(project: Project): void {
   goods(FS_WISP_EMBER, "푸른 불씨", 45, "도깨비불에서 떨어진 불씨다. 차갑게 탄다.\n손은 안 데는데, 주머니는 탄다.", "cc0-jetrel-gen-phoenix-ash");
   goods(FS_STARIRON_SHARD, "별쇠 조각", 220, "별에서 떨어진 쇳조각이다. 차고 환하다.\n만지면 아주 먼 데서 종소리가 들린다.", "cc0-jetrel-gen-ore-iron");
   goods(FS_KEEPER_SEAL, "별지기 인장", 300, "수호상이 쥐고 있던 옛 별지기 인장이다.\n뒷면에 이름 한 줄을 새겼다 지운 자국이 있다.", "cc0-jetrel-gen-badge-guard");
-  goods(FS_SCORCHED_GLOVE, "그을린 장갑", 150, "빛 속성 저항이 조금 오르는 왼손 장갑이다.\n수놓은 이름이 지워져 있다. 카엘이 한참 들여다본다.", "cc0-jetrel-gloves");
+  goods(FS_SCORCHED_GLOVE, "그을린 장갑", 150, "빛 속성 저항이 조금 오르는 왼손 장갑이다.\n수놓은 이름이 지워져 있다.\n카엘이 한참 들여다본다.", "cc0-jetrel-gloves");
   goods(FS_STAR_SHARD, "별조각", 400, "떨어진 별에서 나온 조각이다. 아주 드물다.\n상점에서 값을 잘 쳐 준다.", "cc0-jetrel-crystal");
 
   // ── 드롭 표 ────────────────────────────────────────────────────────────────
@@ -223,7 +223,7 @@ export function applyFallenBattleItems(project: Project): void {
   });
   weapon(FS_SWORD_STAR, {
     name: "별쇠 장검", price: 640,
-    description: "공격 22, 민첩 +10, 급소 확률 +22%. 바람결 검의 윗급이다.\n칼날에 별자리처럼 점이 박혀 있다.",
+    description: "공격 22, 민첩 +10, 급소 확률 +22%.\n바람결 검보다 한 수 위다.\n칼날에 별자리처럼 점이 박혀 있다.",
     statBonuses: { attack: 22, defense: 0, mind: 0, agility: 10 }, attackElementIds: ["sword"], criticalRate: 22, accuracy: 100,
   });
   weapon(FS_SPEAR_PIKE, {
@@ -234,7 +234,7 @@ export function applyFallenBattleItems(project: Project): void {
   });
   weapon(FS_SPEAR_STAR, {
     name: "별꿰기 창", price: 640,
-    description: "공격 34, 민첩 -2. 회피를 무시한다. 푸른 불꽃 창의 윗급이다.\n별빛 맺힌 창끝은 수호상의 돌 몸도 꿰뚫는다.",
+    description: "공격 34, 민첩 -2. 회피를 무시한다.\n철심 창보다 한 수 위다.\n별빛 맺힌 창끝은 수호상의 돌 몸도 꿰뚫는다.",
     statBonuses: { attack: 34, defense: 0, mind: 0, agility: -2 }, attackElementIds: ["spear"], criticalRate: 3, accuracy: 100,
     effectFlags: { ...ZERO_FLAGS, ignoreDodge: true },
   });

@@ -81,7 +81,7 @@ export function applyFallenBattleRoles(project: Project): void {
   });
   tune("skill_hero_rush_pierce", {
     power: 70, elementId: "spear", damageFormula: "power + a.atk * 1.1", weaponAffinity: spearBond, mpCost: { flat: 5, percentMax: 0 },
-    description: "방어를 무시하고 꿰뚫는다. 창을 들면 위력이 40% 오른다.\n딱정벌레나 수호상에게 좋다.",
+    description: "방어를 무시하고 꿰뚫는다. 창을 들면 +40%.\n딱정벌레나 수호상에게 좋다.",
   });
   tune("skill_hero_rising_blade", {
     power: 40, elementId: "sword", stateEffects: [{ stateId: "state_defense_down", chance: 100, operation: "add" }],
@@ -107,7 +107,7 @@ export function applyFallenBattleRoles(project: Project): void {
   tune("skill_mage_blizzard", {
     power: 54, elementId: "ice", mpCost: { flat: 10, percentMax: 0 },
     stateEffects: [{ stateId: "state_agility_down", chance: 40, operation: "add" }],
-    description: "적 전체에 얼음 속성 피해를 준다. 40% 확률로 둔해진다.\n도깨비불 떼를 한 번에 잡는다.",
+    description: "적 전체에 얼음 속성 피해를 준다.\n40% 확률로 둔해진다.\n도깨비불 떼를 한 번에 잡는다.",
   });
   tune("skill_mage_chain_lightning", {
     power: 50, elementId: "thunder", mpCost: { flat: 12, percentMax: 0 },
@@ -116,7 +116,7 @@ export function applyFallenBattleRoles(project: Project): void {
   });
   tune("skill_sleep_mist", {
     mpCost: { flat: 4, percentMax: 0 }, stateEffects: [{ stateId: "state_sleep", chance: 85, operation: "add" }],
-    description: "한 대상을 85% 확률로 재운다. 보스에게는 잘 안 듣는다.\n맞으면 깨고, 길어야 3차례 잔다.",
+    description: "한 대상을 85% 확률로 재운다.\n보스에게는 잘 안 듣는다.\n맞으면 깨고, 길어야 3차례 잔다.",
   });
   tune("skill_weaken", {
     mpCost: { flat: 3, percentMax: 0 }, stateEffects: [{ stateId: "state_defense_down", chance: 100, operation: "add" }],
@@ -149,7 +149,7 @@ export function applyFallenBattleRoles(project: Project): void {
   const rod = normalizeEquipmentRecord({
     ...clone(find<EquipmentRecord>(db.equipment, "equip_scout_dagger")),
     id: FS_STAR_ROD, name: "별빛 사출봉", slot: "weapon", price: 0,
-    description: "활 계열 원거리 무기다. 사격 기술 위력이 40% 오른다.\n이리스와 함께 떨어졌다. 끝의 구슬에 빛을 모아 쏜다.",
+    description: "활 계열 원거리 무기다. 사격 기술 +40%.\n이리스와 함께 떨어졌다.\n끝의 구슬에 빛을 모아 쏜다.",
     statBonuses: { attack: 16, defense: 0, mind: 4, agility: 4 },
     equippableActorIds: [IRIS], twoHanded: false, attackElementIds: ["bow"], criticalRate: 10, accuracy: 100,
     iconResourceId: undefined, imageResourceId: undefined,
@@ -178,7 +178,7 @@ export function applyFallenBattleRoles(project: Project): void {
   });
   tune("skill_gunner_butt_strike", {
     name: "봉 내려치기", power: 50, elementId: "hit", stateEffects: [{ stateId: "state_stop", chance: 60, operation: "add" }],
-    description: "사출봉으로 내려쳐 60% 확률로 기절시킨다.\n기절은 2차례를 넘지 않는다. 보스와 돌 몸은 버틴다.",
+    description: "사출봉으로 내려쳐 60% 확률로 기절시킨다.\n기절은 2차례를 넘지 않는다.\n보스와 돌 몸은 버틴다.",
   });
   // Lv10 이후 기술도 「총·수류탄」이 아니라 사출봉의 빛으로 읽히게 이름과 한 줄 설명을 바꾼다(메커니즘은 그대로).
   tune("skill_gunner_grenade", { name: "성광탄", weaponAffinity: { elementIds: ["bow"], bonusPercent: 25 },
@@ -357,7 +357,7 @@ export function applyFallenBattleRoles(project: Project): void {
   const blade = normalizeEquipmentRecord({
     ...clone(find<EquipmentRecord>(db.equipment, "equip_sword")),
     id: FS_JUDGMENT_BLADE, name: "심판의 장검", slot: "weapon", price: 0,
-    description: "검과 빛 속성을 띠고 「단죄의 일섬」을 쓴다.\n평타는 25% 확률로 방어를 깎는다.\n심문관이 쓰던 검이다. 칼자루에 새긴 이름이 깎여 나갔다.",
+    description: "검 계열 빛 속성. 「단죄의 일섬」을 쓴다.\n평타는 25% 확률로 방어를 깎는다.\n심문관의 검. 칼자루에 새긴 이름이 깎였다.",
     statBonuses: { attack: 30, defense: 0, mind: 6, agility: 4 },
     equippableActorIds: [DEFAULT_ACTOR_ID], twoHanded: false,
     attackElementIds: ["sword", "holy"], stateInflictIds: ["state_defense_down"], stateInflictionChance: 25,
@@ -374,7 +374,7 @@ export function applyFallenBattleRoles(project: Project): void {
   const ether = find<ItemRecord>(db.items, "item_ether");
   ether.mpRecovery = { flat: 10, percentMax: 40 };
   ether.price = 90;
-  ether.description = "아군 하나의 MP를 10 + 최대 MP 40%만큼 채운다.\n약재상 오든이 판다.";
+  ether.description = "MP를 10 + 최대 MP 40% 채운다.\n약재상 오든이 판다.";
 }
 
 /** 1막 숲 구역별 트룹(id, 이름, 적). 숲 맵이 여섯으로 나뉘면 FS_AREA_ENCOUNTERS 가 맵마다 단다. */

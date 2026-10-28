@@ -119,7 +119,7 @@ export function applyFallenBattleDepth(project: Project, exec: ToolExec): void {
   // ── 이리스: 멈춘 적을 노리는 저격수 + 게이지 늦추기 ────────────────────────────────────
   tune("skill_gunner_shot", {
     exploitStates: { stateIds: ["state_stop", "state_sleep", "state_paralysis"], bonusPercent: 50 },
-    description: "급소 50%로 두 배. 사출봉을 들면 +40%.\n기절, 잠, 마비로 멈춘 적에게 +50%.",
+    description: "급소 확률 50%, 급소는 두 배로 들어간다.\n사출봉을 들면 +40%.\n기절, 잠, 마비로 멈춘 적에게 +50%.",
   });
   tune("skill_gunner_rapid_fire", {
     gaugeShift: -10,

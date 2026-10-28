@@ -454,7 +454,7 @@ export function buildFallenForestMaps(project: Project, ids: { hub: string; fore
     placeKit(project, id, "bd-pick-deep-forest-path-log-fallen", { x: 19, y: 10 }, guard, 2);
     placeKit(project, id, "bd-pick-deep-forest-path-hide-rack", { x: 18, y: 15 }, guard, 2);
     if (post) readable(project.maps[id]!, "hunter_note", "사냥꾼의 쪽지", { x: post.x, y: post.y + 1 }, [
-      narrate("(쪽지) 별 떨어진 뒤로 늑대가 북에 몰린다.\n쉼터는 비운다. 필요한 건 챙겨 가라. 브람"),
+      narrate("(쪽지) 별 떨어진 뒤로 늑대가 북쪽에 몰린다.\n쉼터는 비운다. 필요한 건 챙겨 가라. ──브람"),
     ]);
   }
   // ⑤ 깊은 숲: 브람 곁 모닥불, 두 번째 별 표지석(돌무덤), 숨은 물건.

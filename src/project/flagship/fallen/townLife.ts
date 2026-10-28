@@ -104,7 +104,7 @@ export function ensureFallenTownDatabase(project: Project): void {
   addItem(bread("fs_bread_hearty", "든든한 곡물빵", 70, "공격과 방어가 오른다. 여관에서 쉴 때까지 간다.\n씹을수록 힘이 나는 빵.", {
     hp: 20, stateEffects: [{ stateId: "fs_state_bread_hearty", chance: 100, operation: "add" }],
   }));
-  addItem(bread("fs_bread_mystery", "토마의 수상한 빵", 40, "힘이 날 때도, 체력이 찰 때도, 탈이 날 때도 있다.\n속에 뭐가 들었는지는 토마도 모른다.", {
+  addItem(bread("fs_bread_mystery", "토마의 수상한 빵", 40, "힘이 나거나, HP가 차거나, 탈이 난다.\n속에 뭐가 들었는지는 토마도 모른다.", {
     hp: 12, stateEffects: [
       { stateId: "state_attack_up", chance: 40, operation: "add" },
       { stateId: "fs_state_bread_warm", chance: 40, operation: "add" },
@@ -112,7 +112,7 @@ export function ensureFallenTownDatabase(project: Project): void {
       { stateId: "state_sleep", chance: 15, operation: "add" },
     ],
   }));
-  addItem(bread("fs_bread_stale", "묵은 빵", 8, "HP를 넉넉히 채우지만 가끔 탈이 난다.\n어제 못 판 딱딱한 빵. 값이 싸다.", {
+  addItem(bread("fs_bread_stale", "묵은 빵", 8, "HP를 조금 채우지만 가끔 탈이 난다.\n어제 못 판 딱딱한 빵. 값이 싸다.", {
     hp: 25, stateEffects: [{ stateId: "state_poison", chance: 35, operation: "add" }],
   }));
   // 대본 4절·14절 — 토마의 납작빵과 이리스 합류 뒤에 열리는 네 가지 빵.
@@ -176,7 +176,7 @@ const HOUSE_FINDS: Readonly<Record<string, readonly { label: RegExp; loot: Loot 
 const STREET_FINDS: readonly { label: RegExp; loot: Loot }[] = [];
 /** 아무것도 챙길 것 없는 수납이 보여 주는 한 줄 — 그 집 살림의 결. */
 const FLAVOR: readonly [RegExp, string][] = [
-  [/생선 상자/, "생선 비린내만 남았다. 오늘 잡은 건 벌써 다 팔렸나 보다."],
+  [/생선 상자/, "생선 비린내만 남았다.\n오늘 잡은 건 벌써 다 팔렸나 보다."],
   [/선원 궤짝/, "선원 궤짝에 큼직한 자물쇠가 걸려 있다."],
   [/쌓인 상자/, "빈 상자들이 비뚤게 쌓여 있다."],
   [/곡식 자루/, "곡식이 가득하다. 어느 집 한 철 양식이다."],
@@ -184,12 +184,12 @@ const FLAVOR: readonly [RegExp, string][] = [
   [/술통 선반/, "술통마다 날짜가 적혀 있다. 반듯한 글씨다."],
   [/약재 서랍장/, "서랍마다 약초 이름이 적혀 있다.\n함부로 섞으면 안 될 것 같다."],
   [/약초 바구니/, "말린 약초 냄새가 코를 찌른다."],
-  [/양모 바구니/, "털실 뭉치가 굴러다닌다. 뜨다 만 목도리가 걸려 있다."],
+  [/양모 바구니/, "털실 뭉치가 굴러다닌다.\n뜨다 만 목도리가 걸려 있다."],
   [/사과 통/, "사과가 반쯤 남아 있다. 하나같이 멍이 들었다."],
   [/담금질 통/, "검은 물이 고여 있다. 쇳내가 올라온다."],
   [/숯 통/, "숯가루만 손에 묻었다."],
   [/무기 통/, "날 빠진 창 자루가 잔뜩 꽂혀 있다."],
-  [/찬장/, "그릇이 가지런히 쌓여 있다. 이 빠진 것도 버리지 않았다."],
+  [/찬장/, "그릇이 가지런히 쌓여 있다.\n이 빠진 것도 버리지 않았다."],
   [/옷장/, "옷이 가지런히 걸려 있다. 남의 옷장이다."],
   [/화장대/, "작은 거울과 머리끈이 놓여 있다."],
   [/협탁/, "협탁 위에 누가 두고 간 빗이 하나 있다."],

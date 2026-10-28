@@ -455,7 +455,7 @@ function addBridgeValenAndScopeScene(project: Project, ids: { hub: string; obser
     const Q1 = "sw_fs_q_bread_done";
     const nine_a: Command[] = [
       say("이리스", "…이게 하늘이에요?\n이렇게 작은 점들이?"),
-      say(FS_NAMES.hero, "멀어서 작아 보이는 거야."),
+      say(FS_NAMES.hero, "작은 게 아니라, 먼 거야."),
       say("이리스", "저렇게 많이 반짝이는데…\n소리는 하나도 안 들려요."),
     ];
     const nine_b: Command[] = [
@@ -1709,7 +1709,7 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
       say("엘레나", "아, 이것도 챙겨. 숲에 짐승이 많대."),
       { kind: "changeItem", itemId: "item_potion", op: "+=", amount: 3 } as Command,
       narrate("「회복약」 3개를 받았다."),
-      say("엘레나", "이것도. 천문대 창고에 있던 거야.\n검이든 창이든 손에 맞는 걸로 써."),
+      say("엘레나", "그리고 이거, 천문대 창고에서 나온 거야.\n검이든 창이든 손에 맞는 걸로 써."),
       { kind: "changeItem", itemId: FS_SWORD_GALE, op: "+=", amount: 1 } as Command,
       { kind: "changeItem", itemId: FS_SPEAR_PIKE, op: "+=", amount: 1 } as Command,
       narrate("「바람결 검」과 「철심 창」을 받았다.\n「장비」 메뉴에서 바꿔 들면 된다."),
