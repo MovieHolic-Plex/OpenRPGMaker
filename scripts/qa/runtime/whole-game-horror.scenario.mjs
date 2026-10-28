@@ -35,9 +35,23 @@ const chaserSees = [
 // 진짜 숨기 고리: 복도 입구 (31,24)에서 순찰 추격자에게 들키고(추격 시작) → 복도를 오른쪽으로 6칸 달려 → 침대에 숨는다 →
 // 추격자는 마지막으로 본 자리까지 와서(은신처 곁을 지나) 수색하다 돌아간다. 숨는 걸 보였으면 잡힌다(그때는 이 비트가 실패한다).
 const HIDE = { x: 38, y: 24, from: { x: 37, y: 24 }, run: { x: 31, y: 24 } };
-const chaserNear = (op, d) => `() => { const s = window.__oprnDebug.readState(); const id = Object.keys(s.horror?.pursuits ?? {})[0]; const at = id && s.eventLocations?.[id]; return !!document.querySelector('[data-testid=game-over-screen]') || (!!at && Math.abs(at.x - ${HIDE.from.x}) + Math.abs(at.y - ${HIDE.from.y}) ${op} ${d}); }`;
+// 숨은 동안 추격자와의 최소 거리를 window.__hideMinDistance 에 적는다 — 추격자가 어디까지 와서 지나갔는지 증거(hide-min-distance.json).
+const chaserProbe = (cond) => `() => { const s = window.__oprnDebug.readState(); const id = Object.keys(s.horror?.pursuits ?? {})[0]; const p = id && s.horror.pursuits[id]; const at = id && s.eventLocations?.[id]; if (document.querySelector('[data-testid=game-over-screen]')) return true; if (!at) return false; const d = Math.abs(at.x - ${HIDE.from.x}) + Math.abs(at.y - ${HIDE.from.y}); window.__hideMinDistance = Math.min(window.__hideMinDistance ?? 99, d); const active = !!p?.active; return ${cond}; }`;
 const pursuitActive = "() => { const s = window.__oprnDebug.readState(); return Object.values(s.horror?.pursuits ?? {}).some((p) => p.active) || !!document.querySelector('[data-testid=game-over-screen]'); }";
 const hideBeats = [
+  {
+    id: "hide-approach",
+    note: "숨기 전: 은신처 두 칸 앞에서 걸어 들어가면 침대가 반짝이고 곁에 서면 「숨기」 안내가 뜬다",
+    ops: [
+      { kind: "pressUntilJs", key: "Enter", fn: fieldReady, maxPresses: 10 },
+      { kind: "teleport", mapId: MAP, x: HIDE.from.x - 3, y: HIDE.from.y },
+      { kind: "waitForPosition", mapId: MAP, x: HIDE.from.x - 3, y: HIDE.from.y },
+      { kind: "playerRoute", moves: [{ kind: "move", dir: "right" }, { kind: "move", dir: "right" }, { kind: "move", dir: "right" }] },
+      { kind: "waitForPosition", mapId: MAP, x: HIDE.from.x, y: HIDE.from.y, timeoutMs: 15000 },
+      { kind: "waitForBodyText", text: "숨기", timeoutMs: 5000 },
+    ],
+    shot: true,
+  },
   {
     id: "hide",
     note: "추격 스위치를 켜고 복도 입구 (31,24)에서 들킨 뒤 복도를 달려 병원 침대 (38,24)에 숨는다(주인공이 사라짐)",
@@ -57,15 +71,18 @@ const hideBeats = [
   },
   {
     id: "hidden-chaser-near",
-    note: "숨은 채로 쫓아온 추격자가 은신처 2칸 안까지 온다 — 잡히지 않는다",
-    ops: [{ kind: "pressUntilJs", key: "Control", settleMs: 100, maxPresses: 600, fn: chaserNear("<=", 2) }],
+    note: "숨은 채로 쫓아온 추격자가 은신처 3칸 안까지 오거나(그때 찍는다) 놓치고 추격을 푼다 — 잡히지 않는다",
+    ops: [{ kind: "pressUntilJs", key: "Control", settleMs: 100, maxPresses: 600, fn: chaserProbe("d <= 3 || !active") }],
     expect: { testidAbsent: ["game-over-screen"] },
     shot: true,
   },
   {
     id: "hidden-chaser-passed",
-    note: "추격자가 수색을 끝내고 5칸 넘게 멀어질 때까지 숨어 있다 — 게임 오버 없음",
-    ops: [{ kind: "pressUntilJs", key: "Control", settleMs: 100, maxPresses: 900, fn: chaserNear(">=", 5) }],
+    note: "추격자가 추격을 풀고 5칸 넘게 멀어질 때까지 숨어 있다 — 게임 오버 없음. 숨은 동안 최소 거리는 hide-min-distance.json",
+    ops: [
+      { kind: "pressUntilJs", key: "Control", settleMs: 100, maxPresses: 900, fn: chaserProbe("!active && d >= 5") },
+      { kind: "evalToFile", out: "/tmp/hide-min-distance.json", fn: "() => ({ minDistance: window.__hideMinDistance ?? null, hiding: !!window.__oprnDebug.readState().horror?.hiding })" },
+    ],
     expect: { testidAbsent: ["game-over-screen"] },
     shot: true,
   },

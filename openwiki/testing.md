@@ -2367,7 +2367,7 @@ node scripts/runtime-qa.mjs --scenario whole-game-battle-jrpg --browser firefox 
 추격자 페이지 스위치(sw_0001, 원래는 금고 퍼즐 끝)를 켜고 순찰 사각형 왼쪽 변 위 (28,25)에 서서 추격자가 보고 3칸 안으로 올 때까지
 (`readState().horror.pursuits[*].active` + `eventLocations`) → 잡힘 → 공포 게임 오버 → 「다시 도망친다」 → 다시 잡힘 → 「타이틀로」 → 「기록 불러오기」.
 함정: 추격자는 바라보는 쪽만 본다 — 집 북쪽은 등 뒤라 영원히 안 잡힌다. `__oprnDebug.setSwitch/setVariable/giveItem` 은 이제 끝에
-`refreshRuntimeEntities` 를 불러 페이지 조건을 다시 본다(전에는 켠 페이지가 화면에도 이동에도 안 나왔다). 숨기 비트(hide → 숨은 채 추격자 2칸 안 통과 → 5칸 밖 → 나오기)는 은신처가 있는 판에서만 통과한다 — 원본 standin 판은 은신처 0곳이라 실패하고(전), `scripts/content/apply-chaser-hiding.mts` 로 소급한 사본(병원 침대 (38,24), 순찰에서 10걸음)에서 통과한다(후). 들킨 뒤 (31,24)→(37,24) 복도를 `playerRoute` 로 달려 숨는다.
+`refreshRuntimeEntities` 를 불러 페이지 조건을 다시 본다(전에는 켠 페이지가 화면에도 이동에도 안 나왔다). 숨기 비트(hide → 숨은 채 추격자 2칸 안 통과 → 5칸 밖 → 나오기)는 은신처가 있는 판에서만 통과한다 — 원본 standin 판은 은신처 0곳이라 실패하고(전), `scripts/content/apply-chaser-hiding.mts` 로 소급한 사본(병원 침대 (38,24), 순찰에서 10걸음)에서 통과한다(후). 들킨 뒤 (31,24)→(37,24) 복도를 `playerRoute` 로 달려 숨는다. 추격자가 얼마나 가까이 오는지는 판마다 다르다(부하·발견 시점 — 2칸·5칸 실측) — 근접 비트는 3칸 안 또는 추격 해제에서 넘어가고 최소 거리를 `/tmp/hide-min-distance.json` 에 적는다. 그 앞 hide-approach 비트가 반짝임·「숨기」 안내를 찍는다.
 
 이야기판 `whole-game-magic`·`whole-game-joseon`(standin magic 「별빛 마법학교」·joseon, 공통 비트 `wholeGameStoryCommon.mjs`): 타이틀 → 오프닝 두 장 →
 (magic) 첫 대사(흉상·이름표) → Esc 두 번으로 오프닝 컷신 건너뛰기 → 교장·사서 대화 → 기숙사 들어가기·나오기 → `setSwitch sw_0003` 뒤 천문탑 → 엘라 교수 대화 → 엔딩.
