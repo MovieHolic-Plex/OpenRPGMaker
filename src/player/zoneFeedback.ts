@@ -141,6 +141,11 @@ function activeMessage(message: TimedMessage | null, nowMs: number): TimedMessag
   return message && message.expiresAtMs > nowMs ? message : null;
 }
 
+/** 지금 「현재 목표」 글(목표 줄과 같은 규칙: 마지막 objectiveChip, 다 채운 n/n 은 없음). 메뉴 첫 화면도 쓴다. */
+export function currentObjectiveText(entries: readonly M2UiCommandState[] | undefined): string | null {
+  return entries ? lastObjective(entries) : null;
+}
+
 function lastObjective(entries: readonly M2UiCommandState[]): string | null {
   for (let index = entries.length - 1; index >= 0; index -= 1) {
     const entry = entries[index];
