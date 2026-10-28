@@ -82,8 +82,11 @@ async function enemyLanguage({ page }) {
     const hangul = (s) => (s.match(/[\\uac00-\\ud7a3]/g) || []).length;
     const opts = [...pane.querySelectorAll('select')].filter(vis).flatMap((s) => [...s.options].map((o) => o.text));
     const rawEnum = (all.match(/\\((enemy|player|neutral|default)\\)/g) || []).length + opts.filter((t) => /\\((enemy|player|neutral)\\)/.test(t)).length;
-    const badPlural = (all.match(/\\b1 (skills|actions|items|species)\\b/g) || []).length;
-    return { tagHangul: hangul(tagText), factionSelectHangul: hangul(selText), rawEnum, badPlural, tagText: tagText.slice(0, 160), selText: selText.slice(0, 120) };`);
+    // per text node: the joined innerText would read two chips (「Lv 1」「species」) as one phrase
+    const pluralHits = []; const tw = document.createTreeWalker(pane, NodeFilter.SHOW_TEXT); let tn;
+    while ((tn = tw.nextNode())) { const v = (tn.textContent || '').replace(/\\s+/g, ' '); if (/\\b1 (skills|actions|items|species)\\b/.test(v) && vis(tn.parentElement)) pluralHits.push(v.trim().slice(0, 40)); }
+    const badPlural = pluralHits.length;
+    return { tagHangul: hangul(tagText), factionSelectHangul: hangul(selText), rawEnum, badPlural, pluralText: pluralHits.join(' | ').slice(0, 160), tagText: tagText.slice(0, 160), selText: selText.slice(0, 120) };`);
   return { pass: m.tagHangul === 0 && m.factionSelectHangul === 0 && m.rawEnum === 0 && m.badPlural === 0, measured: m };
 }
 
@@ -401,9 +404,11 @@ async function stripes({ page }) {
       const sel = r.selectorText; if (!keys.some((k) => sel.includes(k))) continue;
       const st = r.style;
       const sides = ['Left', 'Right', 'Top', 'Bottom'].map((side) => ({ side, w: px(st[`border${side}Width`]), style: st[`border${side}Style`], color: st[`border${side}Color`] }));
+      // shorthands with var() leave the longhands empty in CSSOM, so read the declaration text as well
+      for (const x of sides) if (!x.w) { const m = r.cssText.match(new RegExp(`border-${x.side.toLowerCase()}(?:-width)?:\\s*([2-4])px`)); if (m) { x.w = Number(m[1]); x.style = 'solid'; } }
       const set = sides.filter((x) => x.w >= 2 && x.style !== 'none');
       if (set.length > 0 && set.length < 4) { edge++; if (samples.length < 8) samples.push(`edge ${sel.slice(-50)}`); }
-      else if (set.length === 4 && /accent/.test(st.borderColor || st.borderTopColor || '')) { outline++; if (samples.length < 8) samples.push(`outline ${sel.slice(-50)}`); }
+      else if ((set.length === 4 && /accent/.test(st.borderColor || st.borderTopColor || '')) || /border:\s*[2-4]px solid var\(--[a-z-]*accent/.test(r.cssText)) { outline++; if (samples.length < 8) samples.push(`outline ${sel.slice(-50)}`); }
       const sh = (st.boxShadow || '').replace(/var\([^)]*\)\)?|rgba?\([^)]*\)|color-mix\([^)]*\)\)?/g, 'C');
       if (/inset\s+-?[2-4]px\s+0(px)?(\s+0(px)?)?\s+C?/.test(sh)) { inset++; if (samples.length < 8) samples.push(`inset ${sel.slice(-50)}`); }
     }
