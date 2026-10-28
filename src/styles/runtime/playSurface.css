@@ -310,6 +310,11 @@
   padding: 8px;
   background: rgb(0 0 0 / 80%);
 }
+/* 애니메틱 인물이 아래 띠에 가려지고 카메라로도 못 비킬 때(cinematicSequence animaticBandClearance) 띠를 위로 옮긴다(장부 assembly #31). */
+.cinematic-sequence:not([data-scene-kind="text"]) .cinematic-narration.cinematic-narration--top {
+  margin-top: 0;
+  margin-bottom: auto;
+}
 /* 애니메틱 캔버스는 position:absolute 라 static 자막을 덮는다 - 연출 없는 애니메틱 컷도 자막이 캔버스 위에 와야 읽힌다. */
 .cinematic-sequence[data-scene-kind="animatic"] .cinematic-frame:not([data-presented="true"]) .cinematic-narration { position: relative; z-index: 1; }
 /* 자막 트랙이 있는 애니메틱 샷: 글은 캔버스 자막이 그린다 — 상자는 화면 읽기용으로만 남긴다(G49). */
@@ -440,6 +445,7 @@
 }
 /* 하단 자막: 배경 질감 위에서도 읽히도록 가장자리까지 이어지는 어두운 띠(글자 대비 우선). */
 .cinematic-frame[data-presented="true"] .cinematic-narration[data-layout="bottom"] { position: absolute; bottom: calc(var(--cinematic-letterbox) + 8px); left: 0; right: 0; width: auto; max-width: none; max-height: 40%; text-align: center; padding: 10px 8%; background: linear-gradient(0deg, #000d 0%, #000c 65%, #0000 100%); }
+.cinematic-frame[data-presented="true"] .cinematic-narration[data-layout="bottom"].cinematic-narration--top { bottom: auto; top: calc(var(--cinematic-letterbox) + 8px); background: linear-gradient(180deg, #000d 0%, #000c 65%, #0000 100%); }
 .cinematic-frame[data-presented="true"] .cinematic-narration[data-layout="left"] { position: absolute; left: 9%; top: 27%; width: 68%; text-align: left; }
 .cinematic-frame[data-presented="true"] .cinematic-narration[data-layout="credits"] { position: absolute; top: 0; max-height: none; overflow: visible; text-align: center; }
 .cinematic-narration[data-font="serif"] { font-family: var(--font-serif-myeongjo); }
