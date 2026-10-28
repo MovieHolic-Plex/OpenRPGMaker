@@ -10727,6 +10727,34 @@
    ],
    "verify": "변형 맵 lowerTiles 대부분이 잿빛 땅 · 남은 집 발자국만 풀 · 원본 맵 없음",
    "suiteCategory": "fs2-whole-burned-village"
+  },
+  {
+   "category": "game",
+   "kind": "logic",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "id": "fs2-retry-at-entry",
+   "prompt": "통금의 밤 광장 순찰 기사들이 세니까, 져서 게임 오버가 돼도 타이틀로 쫓겨나지 말고 광장에 처음 들어선 자리에서 다시 하게 해 줘.",
+   "requires": [
+    "place_field_enemy checkpointOnEntry:true (또는 이미 놓인 적 맵에 진입 체크포인트)",
+    "맵당 체크포인트 이벤트 하나"
+   ],
+   "verify": "맵에 <mapId>_checkpoint_auto 자동 이벤트(checkpointSave label map-entry) 하나, 필드 적 data.checkpointEventId",
+   "suiteCategory": "fs2-retry-at-entry"
+  },
+  {
+   "category": "game",
+   "kind": "logic",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "id": "fs2-pursuer-returns-home",
+   "prompt": "막사 순찰 기사에게 붙잡히면 감방으로 끌려가는데, 다시 막사로 올라오자마자 같은 자리에서 또 붙잡히지 않게 해 줘.",
+   "requires": [
+    "make_chase_scene caughtPenalty sendTo 로 다른 맵 이동",
+    "엔진: 추격자 접촉 페이지의 transfer 가 그 추격자를 제자리로(sendPursuerHome)"
+   ],
+   "verify": "붙잡혀 감방 → 막사 재입장 직후 추격자가 순찰 출발 칸에 있다(출하 플레이어)",
+   "suiteCategory": "fs2-pursuer-returns-home"
   }
  ],
  "gates": {
