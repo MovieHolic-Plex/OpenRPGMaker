@@ -192,25 +192,47 @@ function openGate(map: GameMap, at: Cell): Command[] {
 // 0. 데이터 — 스위치·물건·일지
 // ════════════════════════════════════════════════════════════════════
 
-/** 밤 순찰 병사(1막 병사 판을 세게) — B1 막사 경비(들키면 싸움)와 B2 통금 순찰대가 같이 쓴다. */
-function nightSoldiers(project: Project, exec: Exec): void {
-  // 통금 순찰대 — 1막 병사보다 한참 세다(들키면 아프다). 1막 레코드는 그대로 두고 밤 순찰 판을 따로 둔다.
-  // 시작 레벨(9) 모의전 60회: 승률 1.0 · 남은 HP 약 35% · 회복약 약 0.9개(2026-10-27).
-  for (const [baseId, id, name, stats] of [
-    ["enemy_fs_valen_soldier", "enemy_fs2_night_soldier", "통금 순찰 병사", { maxHp: 260, maxMp: 0, attack: 92, defense: 40, mind: 10, agility: 50 }],
-    ["enemy_fs_valen_spearman", "enemy_fs2_night_spearman", "통금 순찰 창병", { maxHp: 220, maxMp: 0, attack: 98, defense: 32, mind: 10, agility: 60 }],
-  ] as const) {
-    const base = project.database.enemies.find((e) => e.id === baseId);
-    if (!base) throw new Error(`[fallen-star act2] ${baseId} 가 없다`);
-    // 보상 — 1막 병사 값(경험 24)이면 셋을 이겨도 레벨이 안 오른다(독립 판정: 「이겨도 EXP 가 그대로」). 이긴 값이 남게.
-    const rewards = { exp: 80, gold: 12, dropRatePercent: 0, drops: [{ itemId: "item_potion", ratePercent: 15, quantity: 1, condition: { kind: "always" } }] };
-    const rec: Rec = { ...(JSON.parse(JSON.stringify(base)) as Rec), id, name, level: 9, stats, rewards };
-    for (const key of Object.keys(rec)) if (!ENEMY_TOOL_FIELDS.has(key)) delete rec[key];
-    exec(project, "upsert_enemy", { enemy: rec });
-  }
-  exec(project, "upsert_troop", { troop: { id: FS2_BARRACKS_GUARDS, name: "초소 경비", enemyIds: ["enemy_fs2_night_soldier", "enemy_fs2_night_spearman"] } });
-}
+/**
+ * 2막 사람 적 — 난이도 곡선(VQA 2차 2026-10-28): 왕도(B1·B2)는 약한 야경꾼만, 순찰 기사는 요새(B6)부터.
+ *   야경꾼 Lv5 HP140 — B1 막사(붙잡히면 전투 없이 감방)·B2 통금 광장(2인조 둘, 지면 쉬운 전투·이기면 사라짐).
+ *   순찰 기사 Lv9 HP300 — B6 요새 첫 등장. 들키면 짧게 몰아쳐 와 덮친다(돌진). 피해 가는 쪽이 이득.
+ * 1막 레코드는 그대로 두고 복사해 그림·능력치만 바꾼다. 야경꾼 그림은 1막 성문 경비 칩(People3 #7)과 같은 사람.
+ */
+const FS2_WATCHMAN = "enemy_fs2_watchman";
+const FS2_FORT_KNIGHT = "enemy_fs2_fort_knight";
 const FS2_BARRACKS_GUARDS = "troop_fs2_barracks_guards";
+/** 요새 순찰 기사 무리(1층 순찰)·수문장(1층 중간 보스 자리). */
+const FS2_KNIGHT_TROOP = "troop_fs2_fort_knights";
+const FS2_GATE_CAPTAIN_TROOP = "troop_fs2_fort_gate";
+/** 야경꾼 걷기 칩 — 1막 성문 경비(ev_fs_gate)와 같은 People3 #7. 기사(Actor1 #2) 칩이 아니다. */
+const WATCHMAN_CHIP = { textureKey: "tex_easyrpg_charset_people3", characterIndex: 7 };
+const potionDrop = (rate: number) => ({ itemId: "item_potion", ratePercent: rate, quantity: 1, condition: { kind: "always" } });
+const act = (skillId: string, priority: number) => ({ skillId, priority, condition: { kind: "always" }, switchOnAfterAction: { enabled: false }, switchOffAfterAction: { enabled: false } });
+/** 1막·앞 비트 적 레코드를 복사해 그림·능력치·기술만 바꾼다(upsert_enemy 가 받는 칸만). */
+function copyEnemy(project: Project, exec: Exec, fromId: string, patch: Rec): void {
+  const base = project.database.enemies.find((e) => e.id === fromId);
+  if (!base) throw new Error(`[fallen-star act2] ${fromId} 가 없다`);
+  const rec = { ...(JSON.parse(JSON.stringify(base)) as Rec), ...patch };
+  for (const key of Object.keys(rec)) if (!ENEMY_TOOL_FIELDS.has(key)) delete rec[key];
+  exec(project, "upsert_enemy", { enemy: rec });
+}
+
+function nightSoldiers(project: Project, exec: Exec): void {
+  copyEnemy(project, exec, "enemy_fs_valen_spearman", {
+    id: FS2_WATCHMAN, name: "야경꾼", level: 5, monsterResourceId: "charset-battler-people3-7",
+    stats: { maxHp: 140, maxMp: 0, attack: 50, defense: 18, mind: 10, agility: 46 },
+    // 몽둥이 휘두르기뿐 — 1막 병사 「검격」을 복사해 쓰지 않는다(VQA: 창병이 검격을 썼다).
+    skillIds: ["skill_attack"], actions: [act("skill_attack", 5)],
+    rewards: { exp: 30, gold: 8, dropRatePercent: 0, drops: [potionDrop(10)] },
+  });
+  copyEnemy(project, exec, "enemy_fs_valen_soldier", {
+    id: FS2_FORT_KNIGHT, name: "순찰 기사", level: 9, monsterResourceId: "charset-battler-actor1-2",
+    stats: { maxHp: 300, maxMp: 20, attack: 80, defense: 46, mind: 20, agility: 54 },
+    skillIds: ["skill_attack", "skill_sword_slash"], actions: [act("skill_attack", 6), act("skill_sword_slash", 4)],
+    rewards: { exp: 60, gold: 20, dropRatePercent: 0, drops: [potionDrop(15)] },
+  });
+  exec(project, "upsert_troop", { troop: { id: FS2_BARRACKS_GUARDS, name: "초소 야경꾼", enemyIds: [FS2_WATCHMAN, FS2_WATCHMAN], previewBackgroundResourceId: "battle-scenery-cave" } });
+}
 
 function database(project: Project, exec: Exec): void {
   nightSoldiers(project, exec);
@@ -380,17 +402,22 @@ function barracks(project: Project, exec: Exec): void {
     // 들키면 감방으로 끌려간다. 경비와의 전투는 뺐다 — 쉬운 전투가 매번 금화를 줘서, 붙잡히는 게 벌이 아니라 벌이였다(독립 판정: 29번 붙잡혀 696G).
     failPenalty: { sendTo: { mapId: FS2_CELL_ID, x: CELL.arrive.x, y: CELL.arrive.y }, text: "경비병: 「거기 누구냐! 탈옥이다!」\n등불에 들켜 지하 감방으로 도로 끌려갔다." },
   });
-  // 순찰 기사 — 두 상자 줄 사이 통로를 천천히 오간다(계획 B1 「순찰 기사 은신」). 등 뒤로, 그가 끝에서 돌아설 때 건넌다.
-  // 붙잡히면 등불 시야와 같은 벌(경비 둘과 도망 불가 전투 → 감방).
-  exec(project, "make_chase_scene", {
+  // 야경꾼 — 두 상자 줄 사이 통로를 천천히 오간다(난이도 곡선: 왕도에는 기사 대신 약한 야경꾼). 등 뒤로, 그가 끝에서 돌아설 때 건넌다.
+  // 보면 짧게 달려와 덮친다(돌진 4칸). 붙잡히면 전투 없이 감방으로 끌려간다.
+  const watch = exec(project, "make_chase_scene", {
     mapId: FS2_BARRACKS_ID,
-    chaser: { at: BARRACKS.patrol[0], graphic: { selectionId: "charset:tex_easyrpg_charset_people3:7" }, speed: 5, sightRange: 2 },
+    chaser: { at: BARRACKS.patrol[0], graphic: { selectionId: `charset:${WATCHMAN_CHIP.textureKey}:${WATCHMAN_CHIP.characterIndex}` }, speed: 5, sightRange: 3 },
     patrol: { waypoints: BARRACKS.patrol },
     pursuit: { scope: "map", doorDelayMs: 0, searchMs: 1500, onLost: "return" },
-    caughtPenalty: { sendTo: { mapId: FS2_CELL_ID, x: CELL.arrive.x, y: CELL.arrive.y }, text: "순찰 기사: 「멈춰! 탈옥이다!」\n순찰에게 붙잡혀 지하 감방으로 도로 끌려갔다." },
+    caughtPenalty: { sendTo: { mapId: FS2_CELL_ID, x: CELL.arrive.x, y: CELL.arrive.y }, text: "야경꾼: 「거기 서! 탈옥이다!」\n야경꾼에게 붙잡혀 지하 감방으로 끌려갔다." },
     checkpointOnEntry: false,
     mood: false,
-  });
+  }) as { eventId?: string } | undefined;
+  if (watch?.eventId) {
+    exec(project, "set_field_detection", { mapIds: [FS2_BARRACKS_ID], eventIds: [watch.eventId], alertMs: 200, rush: true, rushSteps: 4, rushStepMs: 100, searchMs: 1500 });
+    const ev = M(project, FS2_BARRACKS_ID).events.find((e) => e.id === watch.eventId);
+    if (ev) (ev as unknown as Rec).name = "야경꾼";
+  }
   // 처음 들어서면 엘레나가 방의 규칙을 짚는다 — 근무표·등불 빛·순찰(독립 판정: 입구 두 칸 옆 근무표를 끝내 안 읽고 29번 붙잡혔다).
   const hintId = "ev_fs2_barracks_enter";
   addEv(project, FS2_BARRACKS_ID, hintId, "막사에 들어섬", { x: 0, y: 0 }, [
@@ -479,12 +506,13 @@ export const FS2_PATROL_TROOP = "troop_fs2_curfew_patrol";
 const SW_SPOON = "sw_fs2_toby_spoon";
 const SW_CARRIAGE = "sw_fs2_heard_carriage";
 const SW_MIRE = "sw_fs2_mire_well";
-/** 순찰 기사 넷 — 광장 길목마다 하나. 앞쪽 부채꼴 시야라 등 뒤·그늘로 돌면 지나갈 수 있다. */
+/**
+ * 야경꾼 2인조 둘 — 광장 동쪽(뚜껑 문 골목 앞)과 가운데 우물 길목. 앞쪽 부채꼴 시야라 등 뒤·건물 그늘로 돌면 지나간다.
+ * 서쪽 빵집(미레) 길과 남쪽 여관(마르타) 길은 비워 둔다 — 순찰을 피하는 길이 늘 하나는 있게(VQA 2차: 넷이 모든 길목을 막았다).
+ */
 const PATROLS: { at: Cell; axis: "horizontal" | "vertical"; length: number }[] = [
   { at: { x: 44, y: 21 }, axis: "horizontal", length: 4 },
-  { at: { x: 36, y: 33 }, axis: "horizontal", length: 4 },
   { at: { x: 27, y: 25 }, axis: "vertical", length: 3 },
-  { at: { x: 14, y: 21 }, axis: "horizontal", length: 4 },
 ];
 /** 창틈 주민 — 문간에 서서 길을 알려 준다(place_npc 가 통행 칸으로 옮긴 자리 그대로). */
 const MIRE_AT: Cell = { x: 12, y: 12 };
@@ -553,16 +581,18 @@ function hubChip(project: Project, hubId: string, eventId: string): { textureKey
 function curfewHub(project: Project, exec: Exec, hubId: string): void {
   for (const [id, name] of [[SW_SPOON, "B2: 토비의 은수저"], [SW_CARRIAGE, "B2: 마르타 — 쇠 마차 북문으로"], [SW_MIRE, "B2: 미레 — 우물 길"]] as const) ensureSwitch(project, id, name);
   exec(project, "upsert_troop", { troop: {
-    id: FS2_PATROL_TROOP, name: "통금 순찰대", enemyIds: ["enemy_fs2_night_soldier", "enemy_fs2_night_spearman", "enemy_fs2_night_soldier"],
+    id: FS2_PATROL_TROOP, name: "야경꾼 2인조", enemyIds: [FS2_WATCHMAN, FS2_WATCHMAN],
+    // 밤 광장 싸움 — 들판 그림(맵 battleBackground)에 밤 겹(남색·별)을 덮는다. 낮 올리브 들판으로 뜨던 문제(VQA 2차).
+    backdropLayers: NIGHT_LAYERS,
   } });
   // 점령된 밤의 광장은 「필드」다 — 마을 판정이면 보이는 적을 거절한다(set_map_properties mapRole).
-  exec(project, "set_map_properties", { mapId: FS2_HUB_NIGHT_ID, mapRole: "field" });
-  const knight = hubChip(project, hubId, "ev_fs_knight");
+  exec(project, "set_map_properties", { mapId: FS2_HUB_NIGHT_ID, mapRole: "field", battleBackground: "battle-scenery-plains" });
   PATROLS.forEach((p, i) => {
     exec(project, "place_field_enemy", {
       mapId: FS2_HUB_NIGHT_ID, x: p.at.x, y: p.at.y, troopId: FS2_PATROL_TROOP, behavior: "chase",
-      patrol: { length: p.length, axis: p.axis }, sightRange: 5, vision: "cone", pace: "normal", approachStyle: "dash",
-      graphic: knight, alert: "exclamation", respawnSec: 45, clearSwitchId: `sw_fs2_patrol_${i}_down`,
+      patrol: { length: p.length, axis: p.axis }, sightRange: 6, vision: "cone", pace: "normal", approachStyle: "dash",
+      // 야경꾼 칩(1막 성문 경비) — 기사 칩이 아니다. 이기면 그 2인조는 사라진다(부활 없음).
+      graphic: WATCHMAN_CHIP, alert: "exclamation", respawnSec: 0, clearSwitchId: `sw_fs2_patrol_${i}_down`,
       // 지면 광장 입구(사다리 뚜껑 문)에서 다시 — 타이틀로 내쫓지 않는다(독립 판정: 통금 순찰에 지고 1막부터 다시).
       checkpointOnEntry: true,
     });
@@ -991,22 +1021,34 @@ export const FS2_CERT_ITEM = "item_fs2_serin_form";
 const SW_CERT = "sw_fs2_serin_form";
 const SW_MEMS = ["sw_fs2_dawn_mem_0", "sw_fs2_dawn_mem_1", "sw_fs2_dawn_mem_2"] as const;
 const SAVE_CRYSTAL = "kit:beodeul_city/bd-pick-dungeon-theme-crystal-pedestal";
-/** 재의 들판 적 — 이미 있는 몬스터 도트를 쓴다(새 그림 없음; graphicHue 는 전투가 읽지 않아 색은 원래대로). */
-const ASH_FOES: { id: string; name: string; art: string; hue: number; stats: Rec; style: string; elementRates?: Rec; skills: string[]; exp?: number }[] = [
-  { id: "enemy_fs2_ash_wisp", name: "잿불 도깨비", art: "generated-enemy-spirit-fire", hue: 200, style: "float", stats: { maxHp: 260, maxMp: 40, attack: 90, defense: 24, mind: 100, agility: 52 }, elementRates: { fire: "E", ice: "A", water: "A" }, skills: ["skill_attack", "skill_mon_frost_orb"] },
-  { id: "enemy_fs2_ash_crow", name: "재까마귀", art: "generated-enemy-bird-hawk", hue: 220, style: "swoop", stats: { maxHp: 190, maxMp: 0, attack: 92, defense: 24, mind: 20, agility: 80 }, skills: ["skill_attack"] },
-  { id: "enemy_fs2_cinder_golem", name: "숯덩이 골렘", art: "generated-enemy-golem-clay", hue: 240, style: "lumber", stats: { maxHp: 900, maxMp: 0, attack: 140, defense: 90, mind: 80, agility: 34 }, exp: 420, elementRates: { fire: "E", water: "A" }, skills: ["skill_attack", "skill_earth"] },
-  { id: "enemy_fs2_starved_dog", name: "굶은 들개", art: "generated-enemy-hound-hell", hue: 150, style: "dash", stats: { maxHp: 220, maxMp: 0, attack: 88, defense: 30, mind: 20, agility: 70 }, skills: ["skill_attack"] },
-  { id: "enemy_fs2_ash_snake", name: "재뱀", art: "generated-enemy-snake-viper", hue: 210, style: "slither", stats: { maxHp: 260, maxMp: 0, attack: 94, defense: 36, mind: 30, agility: 48 }, skills: ["skill_attack"] },
+/**
+ * 재의 들판 적 — 이미 있는 몬스터 도트를 쓴다(새 그림 없음). 난이도 곡선(VQA 2차): 2막 시작 Lv6 → 새벽샘 끝 Lv8.
+ * 모의전(simulate_battle n=40, 카엘+엘레나, 카엘 로한의 창, 2026-10-28) — 기술 자동 전투 / 통상 공격만:
+ *   들개 셋(Lv6)  승 100%·남은 HP 69% / 승 100%·회복약 1.7   까마귀 셋(Lv6) 100%·59% / 70%·1.1
+ *   재뱀 둘+까마귀(Lv7) 100%·83% / 100%·2.0   도깨비 셋(Lv7) 100%·69%·약 0.4 / 100%·2.3
+ *   숯덩이 골렘+도깨비(Lv7, 피할 수 있는 정예) 100%·68% / 100%·회복약 4.0
+ * 경험치 — 한 번씩 다 싸우면(들개·까마귀·도깨비·재뱀·마을 도깨비) 935 → Lv6 바닥 1145 + 935 = 2080 ≥ Lv8 문턱 2070.
+ */
+const ASH_FOES: { id: string; name: string; art: string; level: number; stats: Rec; style: string; elementRates?: Rec; skills: string[]; exp: number }[] = [
+  // 잿불 도깨비 — 불의 정령. 얼음 구체가 아니라 불(화염)을 쓴다(VQA: 도깨비가 얼음 기술).
+  { id: "enemy_fs2_ash_wisp", name: "잿불 도깨비", art: "generated-enemy-spirit-fire", level: 7, style: "float", stats: { maxHp: 170, maxMp: 40, attack: 58, defense: 22, mind: 90, agility: 52 }, elementRates: { fire: "E", ice: "A", water: "A" }, skills: ["skill_attack", "skill_fire"], exp: 70 },
+  { id: "enemy_fs2_ash_crow", name: "재까마귀", art: "generated-enemy-bird-hawk", level: 6, style: "swoop", stats: { maxHp: 130, maxMp: 0, attack: 76, defense: 18, mind: 20, agility: 78 }, skills: ["skill_attack"], exp: 55 },
+  { id: "enemy_fs2_cinder_golem", name: "숯덩이 골렘", art: "generated-enemy-golem-clay", level: 8, style: "lumber", stats: { maxHp: 700, maxMp: 0, attack: 118, defense: 72, mind: 60, agility: 30 }, elementRates: { fire: "E", water: "A" }, skills: ["skill_attack", "skill_earth"], exp: 280 },
+  { id: "enemy_fs2_starved_dog", name: "굶은 들개", art: "generated-enemy-hound-hell", level: 6, style: "dash", stats: { maxHp: 150, maxMp: 0, attack: 74, defense: 20, mind: 20, agility: 66 }, skills: ["skill_attack"], exp: 55 },
+  { id: "enemy_fs2_ash_snake", name: "재뱀", art: "generated-enemy-snake-viper", level: 7, style: "slither", stats: { maxHp: 180, maxMp: 0, attack: 78, defense: 30, mind: 30, agility: 40 }, skills: ["skill_attack"], exp: 65 },
 ];
-// 시작 레벨(10, 카엘·엘레나) 모의전 60회(기술 자동 전투, 2026-10-27): 들개 셋 승 1.0·남은 HP 35% · 까마귀 0.97·25% · 도깨비 0.97·32% · 재뱀 1.0·62% · 골렘 0.98·45%.
-const ASH_TROOPS: { id: string; name: string; members: string[] }[] = [
+/** 무리 — 숲 어귀(밤 숲)의 들개·까마귀는 밤 겹, 재의 들판·마을 터의 도깨비·뱀·골렘은 잿빛 연기 겹. 배경 그림(숲·들판)은 맵 battleBackground 가 정한다. */
+const ASH_TROOPS: { id: string; name: string; members: string[]; night?: boolean }[] = [
   { id: "troop_fs2_ash_wisps", name: "잿불 도깨비 떼", members: ["enemy_fs2_ash_wisp", "enemy_fs2_ash_wisp", "enemy_fs2_ash_wisp"] },
-  { id: "troop_fs2_ash_crows", name: "재까마귀 떼", members: ["enemy_fs2_ash_crow", "enemy_fs2_ash_crow", "enemy_fs2_ash_crow"] },
+  { id: "troop_fs2_ash_crows", name: "재까마귀 떼", members: ["enemy_fs2_ash_crow", "enemy_fs2_ash_crow", "enemy_fs2_ash_crow"], night: true },
   { id: "troop_fs2_cinder_golem", name: "숯덩이 골렘", members: ["enemy_fs2_cinder_golem", "enemy_fs2_ash_wisp"] },
-  { id: "troop_fs2_starved_dogs", name: "굶은 들개", members: ["enemy_fs2_starved_dog", "enemy_fs2_starved_dog", "enemy_fs2_starved_dog"] },
+  { id: "troop_fs2_starved_dogs", name: "굶은 들개", members: ["enemy_fs2_starved_dog", "enemy_fs2_starved_dog", "enemy_fs2_starved_dog"], night: true },
   { id: "troop_fs2_ash_snakes", name: "재뱀", members: ["enemy_fs2_ash_snake", "enemy_fs2_ash_snake", "enemy_fs2_ash_crow"] },
 ];
+/** 잿빛 들판·불탄 마을 터 전투 — 들판 그림에 잿빛 연기·불티를 덮는다(낮 올리브 들판으로 뜨던 문제). */
+const ASH_LAYERS = [{ preset: "smoke" }, { preset: "embers", opacity: 60 }];
+/** 밤 광장 전투 — 남색 밤 겹 + 별. */
+const NIGHT_LAYERS = [{ preset: "night" }, { preset: "stars", opacity: 70 }];
 
 const ENEMY_TOOL_FIELDS = new Set(["id", "name", "speciesId", "monsterResourceId", "battleScalePercent", "collapseEffect", "hideHp", "damageTypeRates", "criticalHit", "attackOptions", "skillIds", "level", "stats", "rewards", "actions", "reactions", "stealItems", "stateRates", "elementRates"]);
 function ashFoes(project: Project, exec: Exec): void {
@@ -1015,10 +1057,9 @@ function ashFoes(project: Project, exec: Exec): void {
   for (const f of ASH_FOES) {
     const rec = JSON.parse(JSON.stringify(base)) as Rec;
     Object.assign(rec, {
-      id: f.id, name: f.name, level: 10, monsterResourceId: f.art, stats: f.stats, skillIds: f.skills,
+      id: f.id, name: f.name, level: f.level, monsterResourceId: f.art, stats: f.stats, skillIds: f.skills,
       actions: f.skills.map((skillId, i) => ({ skillId, priority: i === 0 ? 7 : 8, condition: { kind: "always" }, switchOnAfterAction: { enabled: false }, switchOffAfterAction: { enabled: false } })),
-      // 경험 — 90 이면 레벨 10에서 다음까지(약 3900) 열다섯 판이 넘는다(독립 판정: 「16판 싸워도 레벨이 그대로」).
-      rewards: { exp: f.exp ?? 170, gold: 18, dropRatePercent: 0, drops: [{ itemId: "item_potion", ratePercent: 8, quantity: 1, condition: { kind: "always" } }] },
+      rewards: { exp: f.exp, gold: 14, dropRatePercent: 0, drops: [{ itemId: "item_potion", ratePercent: 8, quantity: 1, condition: { kind: "always" } }] },
       ...(f.elementRates ? { elementRates: { ...(base as unknown as Rec).elementRates as Rec, ...f.elementRates } } : {}),
     });
     delete rec.lungeSpeedPercent;
@@ -1026,7 +1067,7 @@ function ashFoes(project: Project, exec: Exec): void {
     for (const key of Object.keys(rec)) if (!ENEMY_TOOL_FIELDS.has(key)) delete rec[key];
     exec(project, "upsert_enemy", { enemy: rec });
   }
-  for (const t of ASH_TROOPS) exec(project, "upsert_troop", { troop: { id: t.id, name: t.name, enemyIds: t.members } });
+  for (const t of ASH_TROOPS) exec(project, "upsert_troop", { troop: { id: t.id, name: t.name, enemyIds: t.members, backdropLayers: t.night ? NIGHT_LAYERS : ASH_LAYERS } });
 }
 
 function dawnwell(project: Project, exec: Exec): void {
@@ -1065,23 +1106,27 @@ function dawnwell(project: Project, exec: Exec): void {
   const b = originEdge(project, town, "south");
   exec(project, "create_transfer_pair", { a: { mapId: field!, ...a }, b: { mapId: FS2_DAWNWELL_ID, ...b } });
   DAWN.entry = b;
-  // 보이는 적 — 숲 어귀엔 들개·까마귀, 들판엔 도깨비·뱀·골렘, 마을 터엔 도깨비·골렘.
-  const foe = (mapId: string, troopId: string, x: number, y: number, style: string): void => {
+  // 보이는 적 — 숲 어귀엔 들개·까마귀, 들판엔 도깨비·뱀·골렘(하나, 길에서 비켜 선 정예), 마을 터엔 도깨비.
+  // 알아채기·돌진은 detection() 이 종류별로 정한다(들짐승·도깨비는 보면 달려와 덮치고, 뱀·골렘은 느린 정예).
+  const foe = (mapId: string, troopId: string, x: number, y: number, style: string, respawnSec = 90): void => {
     try {
       exec(project, "place_field_enemy", { mapId, x, y, troopId, behavior: "chase", patrol: { length: 2, axis: x % 2 ? "horizontal" : "vertical" },
-        sightRange: 6, vision: "cone", pace: "normal", approachStyle: style, respawnSec: 60, checkpointOnEntry: true });
+        sightRange: 6, vision: "cone", pace: "normal", approachStyle: style, respawnSec, checkpointOnEntry: true });
     } catch { /* 그 칸은 도구가 거절(입구 곁·막힌 칸) — 건너뛴다 */ }
   };
   for (const mapId of [north1!, field!]) exec(project, "set_map_properties", { mapId, mapRole: "field" });
+  // 전투 배경 — 밤 숲 어귀는 숲, 재의 들판·마을 터는 들판 그림(무리마다 밤·잿빛 연기 겹이 덮는다).
+  exec(project, "set_map_properties", { mapId: north1!, battleBackground: "battle-scenery-forest" });
+  for (const mapId of [field!, FS2_DAWNWELL_ID]) exec(project, "set_map_properties", { mapId, battleBackground: "battle-scenery-plains" });
   const W = (id: string) => M(project, id).width, H = (id: string) => M(project, id).height;
   foe(north1!, "troop_fs2_starved_dogs", Math.floor(W(north1!) / 2), Math.floor(H(north1!) / 2), "dash");
   foe(north1!, "troop_fs2_ash_crows", Math.floor(W(north1!) / 2) + 4, Math.floor(H(north1!) / 3), "swoop");
   foe(field!, "troop_fs2_ash_wisps", Math.floor(W(field!) / 2), Math.floor(H(field!) / 2), "float");
   foe(field!, "troop_fs2_ash_snakes", Math.floor(W(field!) / 2) - 5, Math.floor(H(field!) * 2 / 3), "slither");
-  foe(field!, "troop_fs2_cinder_golem", Math.floor(W(field!) / 2) + 4, Math.floor(H(field!) / 4), "lumber");
-  // 마을 터 — 잠긴 집(서쪽) 앞을 비워 두고 동서 길목에.
+  // 골렘은 하나 — 이기면 다시 안 나온다. 피해 갈 수 있는 정예(느리고 돌진 없음).
+  foe(field!, "troop_fs2_cinder_golem", Math.floor(W(field!) / 2) + 4, Math.floor(H(field!) / 4), "lumber", 0);
+  // 마을 터 — 잠긴 집(서쪽) 앞을 비워 두고 서쪽 길목에 도깨비 한 무리.
   foe(FS2_DAWNWELL_ID, "troop_fs2_ash_wisps", 7, 22, "float");
-  foe(FS2_DAWNWELL_ID, "troop_fs2_cinder_golem", 30, 22, "lumber");
   // 별빛 결정 — 마을 터 입구 곁.
   exec(project, "place_savepoint", { mapId: FS2_DAWNWELL_ID, x: b.x + 2, y: b.y - 3, id: "ev_fs2_dawnwell_save", name: "별빛 결정", mode: "slot",
     objectId: SAVE_CRYSTAL, prompt: "기록하시겠습니까?", sparkleRadius: 2 });
@@ -1301,40 +1346,55 @@ function northFortress(project: Project, exec: Exec, hubId: string): void {
     description: "새라의 창끝에서 떼어 낸 별쇠. 로한이라면 창을 한 번 더 벼릴 수 있다.",
   } });
   sarahKit(project, exec);
-  // 새라 — 창기사(꿰뚫는 창·막아서기는 합류 때, 감싸기는 합류 +2). 합류 Lv10 = B6 에 닿는 파티 평균(11) −1.
+  // 새라 — 창기사(꿰뚫는 창·막아서기는 합류 때, 감싸기는 합류 +4). 합류 Lv8 = 새라에게 닿는 파티(Lv8, 요새를 다 싸우면 9).
+  // 능력치 곡선은 카엘 곡선을 따라간다(HP 6% 많고 방어 +3, 마력 −6) — 예전엔 직업 기본 곡선이라 Lv10 공격 95(카엘 1.8배)였다.
+  // 경험 곡선도 파티와 같게(예전 값 1/677/40 은 다른 동료와 레벨이 따로 놀았다).
+  const hero = project.database.actors.find((a) => a.id === "actor_hero");
+  if (!hero?.parameterCurves || !hero.expCurve) throw new Error("[fallen-star act2] 카엘 곡선이 없다");
+  const hc = hero.parameterCurves as unknown as Record<string, number[]>;
+  const tweak: Record<string, (v: number) => number> = { maxHp: (v) => Math.round(v * 1.06), defense: (v) => v + 3, mind: (v) => Math.max(1, v - 6) };
+  const sarahCurves = Object.fromEntries(Object.entries(hc).map(([k, arr]) => [k, arr.map((v) => (tweak[k] ?? ((x: number) => x))(v))]));
   exec(project, "upsert_actor", { actor: {
-    id: FS2_SARAH_ACTOR, name: SARAH, nickname: "북문의 창", classId: FS2_LANCER_CLASS, initialLevel: 10, maxLevel: 99,
+    id: FS2_SARAH_ACTOR, name: SARAH, nickname: "북문의 창", classId: FS2_LANCER_CLASS, initialLevel: 8, maxLevel: 99,
     faceResourceId: "easyrpg-faceset-actor1-03", characterResourceId: "easyrpg-charset-actor1", characterIndex: 3,
     battleCharacterResourceId: "charset-battler-actor1-3",
-    initialEquipment: { weapon: "equip_gen_spear_iron" },
+    parameterCurves: sarahCurves, expCurve: hero.expCurve,
+    initialEquipment: { weapon: "equip_gen_spear_iron", armor: "equip_leather_armor", helmet: "equip_traveler_hat" },
     learnedSkills: [],
   } });
   sarahCombos(project, exec);
-  // 적 판 새라·요새 경비견 — 1막 창병·B5 들개 레코드를 복사해 그림·능력치만 바꾼다.
-  const copyEnemy = (fromId: string, patch: Rec): void => {
-    const base = project.database.enemies.find((e) => e.id === fromId);
-    if (!base) throw new Error(`[fallen-star act2] ${fromId} 가 없다`);
-    const rec = { ...(JSON.parse(JSON.stringify(base)) as Rec), ...patch };
-    for (const key of Object.keys(rec)) if (!ENEMY_TOOL_FIELDS.has(key)) delete rec[key];
-    exec(project, "upsert_enemy", { enemy: rec });
-  };
-  const act = (skillId: string, priority: number) => ({ skillId, priority, condition: { kind: "always" }, switchOnAfterAction: { enabled: false }, switchOffAfterAction: { enabled: false } });
-  copyEnemy("enemy_fs_valen_spearman", {
-    id: FS2_SARAH_ENEMY, name: SARAH, level: 12, monsterResourceId: "charset-battler-actor1-3",
-    stats: { maxHp: 680, maxMp: 60, attack: 62, defense: 46, mind: 30, agility: 64 },
+  // 적 판 새라·요새 경비견·쇠뇌병 — 1막 창병·B5 들개·병사 레코드를 복사해 그림·능력치만 바꾼다.
+  // 모의전(n=40, 카엘+엘레나 Lv8, 카엘 로한의 창, 2026-10-28): 새라+경비견 — 기술 자동 전투 승 100%·파티 행동 11.7(≈6턴)·회복약 1.1·남은 HP 39%,
+  //   통상 공격만이면 0% — 기술(엘레나 불·카엘 돌진 찌르기)을 써야 이기는 보스. 지면 요새 감방에서 다시(게임 오버 아님).
+  //   VQA 표의 HP ~900 은 6~8턴을 못 채웠다(4턴) — 턴 목표를 따라 1400.
+  copyEnemy(project, exec, "enemy_fs_valen_spearman", {
+    id: FS2_SARAH_ENEMY, name: SARAH, level: 10, monsterResourceId: "charset-battler-actor1-3",
+    stats: { maxHp: 1400, maxMp: 60, attack: 66, defense: 50, mind: 30, agility: 64 },
     skillIds: ["skill_attack", "skill_dragoon_lance_thrust", "skill_fs_taunt"],
     actions: [act("skill_attack", 6), act("skill_dragoon_lance_thrust", 5), act("skill_fs_taunt", 3)],
-    rewards: { exp: 420, gold: 0, dropRatePercent: 0, drops: [] },
+    rewards: { exp: 450, gold: 0, dropRatePercent: 0, drops: [] },
   });
-  copyEnemy("enemy_fs2_starved_dog", {
-    id: FS2_FORT_DOG, name: "요새 경비견", level: 11, stats: { maxHp: 330, maxMp: 0, attack: 102, defense: 36, mind: 20, agility: 74 },
-    rewards: { exp: 100, gold: 12, dropRatePercent: 0, drops: [{ itemId: "item_potion", ratePercent: 8, quantity: 1, condition: { kind: "always" } }] },
+  // 요새 적 경험치는 낮게 — 다 싸워도 새라 앞에서 Lv9 를 넘지 않게(피해 가면 Lv8). 경비견 둘 70 · 기사 둘 120 · 쇠뇌병 둘 90 · 수문장 95.
+  copyEnemy(project, exec, "enemy_fs2_starved_dog", {
+    id: FS2_FORT_DOG, name: "요새 경비견", level: 8, stats: { maxHp: 200, maxMp: 0, attack: 80, defense: 28, mind: 20, agility: 72 },
+    rewards: { exp: 35, gold: 10, dropRatePercent: 0, drops: [potionDrop(8)] },
   });
-  exec(project, "upsert_troop", { troop: { id: FS2_FORT_DOGS, name: "요새 경비견", enemyIds: [FS2_FORT_DOG, FS2_FORT_DOG] } });
-  exec(project, "upsert_troop", { troop: { id: FS2_SARAH_TROOP, name: "성벽 위의 새라", enemyIds: [FS2_SARAH_ENEMY, FS2_FORT_DOG, FS2_FORT_DOG], uncapturable: true } });
+  copyEnemy(project, exec, "enemy_fs2_watchman", {
+    id: FS2_CROSSBOW, name: "요새 쇠뇌병", level: 8, monsterResourceId: "charset-battler-actor1-2",
+    stats: { maxHp: 180, maxMp: 0, attack: 82, defense: 26, mind: 10, agility: 66 },
+    rewards: { exp: 45, gold: 16, dropRatePercent: 0, drops: [potionDrop(10)] },
+  });
+  const stone = { previewBackgroundResourceId: "battle-scenery-cave" };
+  exec(project, "upsert_troop", { troop: { id: FS2_FORT_DOGS, name: "요새 경비견", enemyIds: [FS2_FORT_DOG, FS2_FORT_DOG], ...stone } });
+  exec(project, "upsert_troop", { troop: { id: FS2_KNIGHT_TROOP, name: "순찰 기사", enemyIds: [FS2_FORT_KNIGHT, FS2_FORT_KNIGHT], ...stone } });
+  exec(project, "upsert_troop", { troop: { id: FS2_GATE_CAPTAIN_TROOP, name: "요새 수문장", enemyIds: [FS2_FORT_KNIGHT, FS2_FORT_DOG], ...stone } });
+  exec(project, "upsert_troop", { troop: { id: FS2_CROSSBOW_TROOP, name: "요새 쇠뇌병", enemyIds: [FS2_CROSSBOW, FS2_CROSSBOW], ...stone } });
+  // 성벽 위 결투 — 바깥 하늘 아래(들판 그림 + 밤 겹). 새라 + 경비견 하나(VQA 2차: 개 둘이면 Lv8 파티가 전멸).
+  exec(project, "upsert_troop", { troop: { id: FS2_SARAH_TROOP, name: "성벽 위의 새라", enemyIds: [FS2_SARAH_ENEMY, FS2_FORT_DOG], uncapturable: true,
+    previewBackgroundResourceId: "battle-scenery-plains", backdropLayers: [{ preset: "night", opacity: 65 }, { preset: "clouds", opacity: 45 }] } });
   exec(project, "upsert_troop_battle_page", { troopId: FS2_SARAH_TROOP, page: {
     id: "fs2_sarah_open", name: "새라 — 시작", span: "battle", conditions: [{ kind: "onRound", round: 1 }],
-    commands: [say(SARAH, "개들아, 물지는 마라. 넘어뜨리기만."), say(ELENA, "개부터 떼어 놓자!\n새라 씨는 창이 길어. 너무 붙지 마!")],
+    commands: [say(SARAH, "물지는 마라. 넘어뜨리기만 해."), say(ELENA, "개부터 떼어 놓자!\n새라 씨 창은 길어. 너무 붙지 마!")],
   } });
   exec(project, "upsert_troop_battle_page", { troopId: FS2_SARAH_TROOP, page: {
     id: "fs2_sarah_half", name: "새라 — 반", span: "battle", conditions: [{ kind: "enemyHpBelow", enemyId: FS2_SARAH_ENEMY, percent: 50 }],
@@ -1342,18 +1402,11 @@ function northFortress(project: Project, exec: Exec, hubId: string): void {
   } });
   // 새벽샘 북쪽 — 돌길에서 맵 끝까지 흙길을 내 요새 입구로 이끈다(풀밭 한가운데 출구로 보이지 않게).
   exec(project, "paint_road", { mapId: FS2_DAWNWELL_ID, points: [{ x: FORT_GATE.x, y: 6 }, { x: FORT_GATE.x, y: 0 }], style: "dirt", naturalness: 0 });
-  // 요새 — 새벽샘 북쪽 길 끝. 방 문법으로 짓고, 보이는 적(경비견)·상자·쉼터는 도구가 채운다. 사람 순찰은 아래에서 칩을 주고 따로 놓는다.
-  // 쇠뇌병 — 2층 막사의 고정 보초. 시야가 길고 빠르게 겨눈다(닿기 전에 느낌표).
-  copyEnemy("enemy_fs2_night_soldier", {
-    id: FS2_CROSSBOW, name: "요새 쇠뇌병", level: 11, stats: { maxHp: 210, maxMp: 0, attack: 108, defense: 30, mind: 10, agility: 66 },
-    rewards: { exp: 110, gold: 18, dropRatePercent: 0, drops: [{ itemId: "item_potion", ratePercent: 8, quantity: 1, condition: { kind: "always" } }] },
-  });
-  exec(project, "upsert_troop", { troop: { id: FS2_CROSSBOW_TROOP, name: "요새 쇠뇌병", enemyIds: [FS2_CROSSBOW, "enemy_fs2_night_spearman"] } });
   // 요새 — 새벽샘 북쪽 길 끝. 2층으로 짓고(층마다 방 목록), 2층 성벽 위 결투장 앞을 레버 쇠창살로 막는다.
   // 보이는 적(경비견)·상자·쉼터·1층 수문장(경비 병사+창병)은 도구가 채운다. 사람 순찰·쇠뇌병은 아래에서 칩을 주고 따로 놓는다.
   const d = exec(project, "author_dungeon", {
     type: "castle", adapter: "beodeul", genre: "rpg", name: "북방 관문 요새", id: FS2_FORTRESS_ID, floors: 2, direction: "up", floorRooms: FORT_FLOORS,
-    populate: true, troops: { field: [FS2_FORT_DOGS], midBoss: FS2_BARRACKS_GUARDS, boss: FS2_FORT_DOGS }, gimmick: "lever", gateStyle: "portcullis",
+    populate: true, troops: { field: [FS2_FORT_DOGS], midBoss: FS2_GATE_CAPTAIN_TROOP, boss: FS2_FORT_DOGS }, gimmick: "lever", gateStyle: "portcullis",
     entrance: { fromMapId: FS2_DAWNWELL_ID, x: FORT_GATE.x, y: FORT_GATE.y }, seed: 61,
   }) as { floors?: string[]; floorData?: { rooms?: FortRoom[] }[] } | undefined;
   if (d?.floors?.[1] !== FS2_FORT_TOP_ID) throw new Error(`[fallen-star act2] 요새 2층 id 가 ${FS2_FORT_TOP_ID} 가 아니다(${d?.floors?.join(",")})`);
@@ -1375,7 +1428,8 @@ function northFortress(project: Project, exec: Exec, hubId: string): void {
     // 돌 요새 안 싸움 — 풀밭 배경 대신 돌 배경(측면 전투 겹 배경 종류에 성채가 없어 동굴 돌벽이 가장 가깝다).
     exec(project, "set_map_properties", { mapId, battleBackground: "battle-scenery-cave" });
   }
-  // 순찰 기사 — 광장 통금 순찰대와 같은 칩·같은 무리. 1층 안뜰·계단 홀에 하나씩. 쇠뇌병 — 2층 막사·망루 홀에 고정 보초.
+  // 순찰 기사 — 2막에서 처음 맞닥뜨리는 기사(난이도 곡선: 왕도엔 야경꾼뿐). 1층 안뜰·계단 홀에 하나씩. 보면 몰아쳐 온다(detection 돌진).
+  // 쇠뇌병 — 2층 막사·망루 홀에 고정 보초. 이기면 다시 안 나온다.
   const knight = hubChip(project, hubId, "ev_fs_knight");
   let k = 0;
   const post = (mapId: string, rooms: FortRoom[], roomIds: string[], want: number, args: (n: number) => Record<string, unknown>): void => {
@@ -1389,7 +1443,7 @@ function northFortress(project: Project, exec: Exec, hubId: string): void {
           // 경비견·상자·레버 곁은 피한다 — 붙어 서면 한 무리로 읽힌다(3칸, 자리가 없으면 2칸).
           if (M(project, mapId).events.some((e) => e.x + e.y > 0 && Math.max(Math.abs(e.x - at.x), Math.abs(e.y - at.y)) <= near)) continue;
           try {
-            exec(project, "place_field_enemy", { mapId, x: at.x, y: at.y, graphic: knight, alert: "exclamation", respawnSec: 60, clearSwitchId: `sw_fs2_fort_knight_${k}_down`, checkpointOnEntry: true, ...args(k) });
+            exec(project, "place_field_enemy", { mapId, x: at.x, y: at.y, graphic: knight, alert: "exclamation", respawnSec: 0, clearSwitchId: `sw_fs2_fort_knight_${k}_down`, checkpointOnEntry: true, ...args(k) });
             k += 1;
             count += 1;
             placed = true;
@@ -1402,7 +1456,7 @@ function northFortress(project: Project, exec: Exec, hubId: string): void {
     if (count === 0) throw new Error(`[fallen-star act2] ${mapId} 에 보초를 하나도 못 세웠다(${roomIds.join("·")}): ${why}`);
   };
   post(FS2_FORTRESS_ID, FORT.rooms, ["yard", "stair"], 2, (n) => ({
-    troopId: FS2_PATROL_TROOP, behavior: "chase", patrol: { length: 2, axis: n % 2 ? "vertical" : "horizontal" },
+    troopId: FS2_KNIGHT_TROOP, behavior: "chase", patrol: { length: 2, axis: n % 2 ? "vertical" : "horizontal" },
     sightRange: 5, vision: "cone", pace: "normal", approachStyle: "dash",
   }));
   post(FS2_FORT_TOP_ID, FORT.top, ["watch", "barracks", "landing"], 2, () => ({
