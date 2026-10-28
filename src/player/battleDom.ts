@@ -88,6 +88,8 @@ export interface BattleDomOptions {
   readonly audioContext?: BattleAudioContext;
   readonly onSnapshot?: (snapshot: BattleSnapshot) => void;
   readonly onResult: (result: BattleResult, snapshot: BattleSnapshot) => void;
+  /** 명령 첫 단계(대상 선택·하위 메뉴가 없을 때)에서 취소 키를 눌렀다. 전투 안에서 할 일이 없는 키라 테스트 창이 닫기에 쓴다. */
+  readonly onRootCancel?: () => void;
   readonly introHold?: boolean;
   /**
    * true 면 인트로 연출과 ATB 시계를 `controller.begin()` 까지 미룬다. 진입 연출이 `controller.ready` 를 기다리는 동안
@@ -1289,7 +1291,9 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       submenu = null;
       panelOptions.submenu = null;
       syncView();
+      return;
     }
+    if (snapshot.phase === "actorCommand" || snapshot.phase === "charging") options.onRootCancel?.();
   }
 
   function cancelTargetSelectionAndRestore(): void {
