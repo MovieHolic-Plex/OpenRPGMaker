@@ -768,7 +768,6 @@
 }
 
 .tileset-ai-analyze-copy li {
-  border-left: 2px solid var(--accent-border);
   padding-left: var(--space-3);
 }
 
@@ -800,10 +799,11 @@
 
 .tileset-ai-analyze-spinner {
   animation: tileset-ai-spin 1s steps(8) infinite;
-  border: 2px solid var(--border-default);
+  background: conic-gradient(var(--accent) 0 25%, var(--border-default) 0);
   border-radius: 999px;
-  border-top-color: var(--accent);
   height: 14px;
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 2px));
+  mask: radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 2px));
   width: 14px;
 }
 

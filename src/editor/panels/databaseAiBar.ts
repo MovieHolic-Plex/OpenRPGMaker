@@ -345,9 +345,9 @@ export function createDatabaseAiBar(options: DatabaseAiBarOptions): DatabaseAiBa
 
   const toggle = el("button", {
     class: "database-ai-toggle",
-    attrs: { type: "button", title: "AI 어시스턴트 열기", "aria-label": "에디터 AI 어시스턴트 열기", "aria-expanded": "false" },
+    attrs: { type: "button", title: "조수 열기", "aria-label": "AI 조수 열기", "aria-expanded": "false" },
     dataset: { testid: "database-ai-toggle" },
-    children: [icon("sparkle", "database-modal-icon"), "AI 어시스턴트"],
+    children: [icon("sparkle", "database-modal-icon"), "AI 조수"],
   }) as HTMLButtonElement;
 
   const input = el("input", {
@@ -363,7 +363,7 @@ export function createDatabaseAiBar(options: DatabaseAiBarOptions): DatabaseAiBa
   }) as HTMLButtonElement;
   const closeButton = el("button", {
     class: "database-ai-close",
-    attrs: { type: "button", title: "AI 어시스턴트 닫기", "aria-label": "데이터베이스 AI 어시스턴트 닫기" },
+    attrs: { type: "button", title: "조수 닫기", "aria-label": "AI 조수 닫기" },
     dataset: { testid: "database-ai-close" },
     children: [icon("close")],
   }) as HTMLButtonElement;
@@ -453,21 +453,22 @@ export function createDatabaseAiBar(options: DatabaseAiBarOptions): DatabaseAiBa
     class: "database-ai-head",
     children: [
       el("span", { class: "database-ai-mark", attrs: { "aria-hidden": "true" }, children: [icon("sparkle")] }),
-      // 단추와 같은 이름 — 「AI 어시스턴트」를 눌러 열어 놀고 다른 이름을 마주하게 하지 않는다.
-      el("span", { class: "database-ai-head-title", text: "AI 어시스턴트" }),
+      // 단추와 같은 이름 — 「AI 조수」를 눌러 열어 놓고 다른 이름을 마주하게 하지 않는다. 편집기 전체가
+      // 「조수」라 부른다(메인 레일·세계 개요 「조수 전달」) — 한 개념에 한 낱말(V-shell-topbar-36).
+      el("span", { class: "database-ai-head-title", text: "AI 조수" }),
       el("span", { class: "database-ai-head-spacer" }),
       closeButton,
     ],
   });
   const panel = el("div", {
     class: "database-ai-panel",
-    attrs: { role: "dialog", "aria-label": "데이터베이스 AI 어시스턴트" },
+    attrs: { role: "dialog", "aria-label": "AI 조수" },
     dataset: { testid: "database-ai-panel" },
     children: [heading, composer, contextRow, turn],
   });
   const bar = el("section", {
     class: "database-ai-bar",
-    attrs: { "aria-label": "에디터 AI 어시스턴트" },
+    attrs: { "aria-label": "AI 조수" },
     dataset: { testid: "database-ai-bar" },
     children: [panel],
   });
@@ -760,7 +761,7 @@ export function createDatabaseAiBar(options: DatabaseAiBarOptions): DatabaseAiBa
     }
     bar.hidden = !open;
     toggle.setAttribute("aria-expanded", String(open));
-    toggle.title = open ? "AI 어시스턴트 닫기" : "AI 어시스턴트 열기";
+    toggle.title = open ? "조수 닫기" : "조수 열기";
     if (open) {
       // 오버레이는 헤더와 발 단추 사이를 덮는다. 둘 다 도크·최대화·좁은 폭에서 높이가 바뀌므로
       // 상수로 박지 않고 열 때마다 실측한다. 발 단추(닫기·지금 저장)를 덮지 않는 이유는 두 가지다:

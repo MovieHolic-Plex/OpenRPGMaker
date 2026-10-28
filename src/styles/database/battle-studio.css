@@ -523,7 +523,7 @@
 
 .database-modal-backdrop .database-modal-window .db-studio-summary-metric {
   background: var(--db-studio-inset);
-  border-left: 2px solid var(--db-studio-accent-border);
+  border-radius: 6px;
   display: grid;
   gap: 3px;
   min-width: 0;

@@ -489,3 +489,33 @@
   }
 
 }
+
+/* 레코드 전환 확인(IS-075) — 고치던 칸의 레코드 이름을 밝히고 적용·되돌리기·계속 편집을 고른다. */
+.database-modal-backdrop .database-modal-window .database-record-switch-prompt {
+  background: var(--db-studio-surface, #fff);
+  border: 1px solid var(--db-studio-border-default, rgba(15, 23, 42, 0.12));
+  border-radius: 10px;
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.18);
+  display: grid;
+  gap: 12px;
+  left: 50%;
+  max-width: min(440px, calc(100% - 32px));
+  padding: 16px;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 30;
+}
+
+.database-modal-backdrop .database-modal-window .database-record-switch-title {
+  color: var(--db-studio-text-1, #0f172a);
+  font: 600 14px/1.45 var(--font-ui);
+  margin: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-record-switch-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}

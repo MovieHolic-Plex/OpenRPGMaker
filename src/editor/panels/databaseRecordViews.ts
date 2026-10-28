@@ -129,12 +129,9 @@ export function renderRecordTab(host: HTMLElement, collection: DatabaseCollectio
 
   // 레코드 선택 시: 리스트를 통째로 재빌드하지 않고 활성 행 표시 + 디테일만 교체한다.
   const onSelect = (id: string): void => {
-    // 선택이 바뀌면 삭제 무장을 해제한다 — 툴바는 여기서 재빌드되지 않으므로 그냥 두면
-    // A 를 arm 한 라벨(`정말 삭제?`)이 B 를 고른 뒤에도 남고, 그 상태에서 누른 첫 클릭은
-    // 가드에 막혀 **아무 반응 없이 삼켜진다**(실측: 삭제까지 2클릭 필요). 상태는 안전했지만
-    // 표시가 거짓말을 했다.
-    disarmDelete(collection);
+    // 툴바는 선택 때 다시 그리지 않는다 — 삭제 단추의 이름(대상)과 참조 잠금을 새 선택에 맞춘다.
     setSelectedRecordId(collection, id);
+    syncDeleteControl(collection);
     markActiveRow(listEl, id);
     renderDetail(id);
   };
@@ -353,102 +350,101 @@ function viewToggle(collection: DatabaseCollection, rerender: () => void): HTMLE
   return el("div", { class: "db-view-toggle-group", children: [toggleButton("gallery"), toggleButton("list")] });
 }
 
-const DELETE_CONFIRM_LABEL = "정말 삭제?";
 const DELETE_IDLE_LABEL = "삭제";
-const DELETE_CONFIRM_WINDOW_MS = 3000;
 
-// 삭제는 원클릭 즉시 실행하지 않는다 — 같은 버튼을 DELETE_CONFIRM_WINDOW_MS 안에 한 번 더
-// 눌러야 확정되는 2단계 확인이다(무확인 삭제로 인한 소실 사고 방지).
-// armedRecordId 로 "어떤 레코드에 대해 armed 되었는지"를 추적한다 — 그렇지 않으면
-// A 를 arm 한 뒤 3초 내 B 로 선택을 바꾸고 삭제를 다시 누르면 B 가 확인 없이
-// 즉시 삭제되는 사고가 난다(armed 상태가 레코드 전환을 가로질러 생존).
-// 무장 상태를 컬렉션별 모듈 레지스트리에 둔다 — 버튼 클로저 안에만 있으면 `onSelect`(툴바를
-// 재빌드하지 않는다)에서 해제할 방법이 없어 라벨이 낡는다.
-type ArmedDelete = { recordId: string; until: number; button: HTMLElement; timer: number | null };
-const ARMED_DELETE = new Map<DatabaseCollection, ArmedDelete>();
+// 삭제는 확인 없이 바로 실행한다 — 되돌리기(Ctrl+Z·바닥 막대)가 한 단계로 되살린다(IDEAL-STATE IS-091:
+// 되돌릴 수 있는 동작은 묻지 않는다). 예전의 「정말 삭제?」 두 번 누르기는 되돌릴 수 있는 동작에 확인을
+// 덧붙여 사람들이 확인을 건너뛰도록 길들였다.
+//
+// 지울 수 없는 레코드(다른 데이터가 참조 중)는 누른 뒤에 말풍선으로 알리지 않는다 — 말풍선이 삭제·복제
+// 버튼 위에 떠 포커스 링을 가렸다(J-p6-keyboard-11). 선택이 바뀔 때마다 미리 판정해 버튼을
+// aria-disabled 로 두고, 이유를 버튼 아래 상태 줄(aria-describedby)에 보인다. 포커스는 계속 받아서
+// 키보드 사용자도 이유를 듣는다.
+type DeleteControl = { readonly sync: () => void };
+const DELETE_CONTROLS = new Map<DatabaseCollection, DeleteControl>();
+let deleteReasonSequence = 0;
 
-function disarmDelete(collection: DatabaseCollection): void {
-  const armed = ARMED_DELETE.get(collection);
-  if (!armed) return;
-  if (armed.timer !== null) window.clearTimeout(armed.timer);
-  ARMED_DELETE.delete(collection);
-  armed.button.textContent = DELETE_IDLE_LABEL;
-  armed.button.classList.remove("confirming");
-  armed.button.setAttribute("aria-label", `선택한 ${COLLECTION_LABELS[collection]} 삭제`);
+function syncDeleteControl(collection: DatabaseCollection): void {
+  DELETE_CONTROLS.get(collection)?.sync();
+}
+
+function selectedRecordName(collection: DatabaseCollection, id: string | undefined): string {
+  if (!id) return "";
+  const records: readonly { readonly id: string; readonly name: string }[] = store.getCurrent().database[collection];
+  return records.find((record) => record.id === id)?.name.trim() || id;
 }
 
 export function deleteButton(collection: DatabaseCollection, rerender: () => void): HTMLElement {
-  // 툴바가 다시 그려지면 이전 버튼 참조는 죽는다 — 새 버튼이 주인이 되도록 등록을 비운다.
-  disarmDelete(collection);
-
+  const reasonId = `db-delete-reason-${collection}-${++deleteReasonSequence}`;
+  const reason = el("p", {
+    class: "db-toolbar-reason",
+    attrs: { id: reasonId, role: "status" },
+    dataset: { testid: "db-delete-reason" },
+  });
   const button = el("button", {
     class: "btn danger small",
     text: DELETE_IDLE_LABEL,
-    // 탭마다 "삭제" 가 여러 개(레코드 · 하위 행 · 페이지)라 접근명만으로는 무엇을 지우는지
-    // 알 수 없다. 보이는 글자는 좁은 툴바에 맞춰 두고 접근명에 컬렉션을 밝힌다.
-    attrs: { "aria-label": `선택한 ${COLLECTION_LABELS[collection]} 삭제` },
+    attrs: { type: "button" },
     dataset: { testid: "db-delete-selected" },
-    on: {
-      click: () => {
-        const selected = selectedRecordIdForSession(collection);
-        if (!selected) return;
-
-        // 선택은 필터와 무관하게 전체 목록에서 유지되므로, 칩·검색으로 가려진 레코드가
-        // 선택된 채로 남을 수 있다. 그 상태의 2단계 확인은 **화면에 없는 레코드**를 겨냥한다
-        // — 파괴 동작으로는 허용할 수 없다. 먼저 보이게 만들고 사용자에게 알린다.
-        const records = store.getCurrent().database[collection];
-        const isVisible = visibleRecordRows(collection, records).some((row) => row.record.id === selected);
-        if (!isVisible) {
-          disarmDelete(collection);
-          setSelectedRecordId(collection, selected, { reveal: true });
-          toast("선택한 레코드가 필터에 가려져 있었습니다. 목록에 표시했으니 확인하고 다시 누르세요.", "error");
-          rerender();
-          return;
-        }
-
-        // 참조 가드 실패는 어차피 삭제할 수 없는 시도이므로 기존처럼 즉시(1클릭) 에러를 알린다
-        // — 확인 단계를 강제하지 않는다.
-        const blockedMessage = databaseReferenceMessage(collection, selected);
-        if (blockedMessage) {
-          toast(blockedMessage, "error");
-          return;
-        }
-
-        const now = Date.now();
-        const armed = ARMED_DELETE.get(collection);
-        const isArmedForSelected = armed?.recordId === selected && now <= armed.until;
-        if (!isArmedForSelected) {
-          // 새로 arm 하는 대상이 이전 armed 대상과 달라도(레코드 전환) 그냥 이 레코드로
-          // 다시 arm 한다 — 삭제하지 않고 "정말 삭제?" 상태와 타이머만 리셋.
-          disarmDelete(collection);
-          button.textContent = DELETE_CONFIRM_LABEL;
-          button.classList.add("confirming");
-          // 글자만 바뀌면 화면 낭독기는 여전히 「선택한 … 삭제」로 읽는다. 확인 단계임을 접근명에도 싣는다.
-          button.setAttribute("aria-label", `${DELETE_CONFIRM_LABEL} 한 번 더 누르면 선택한 ${COLLECTION_LABELS[collection]}을(를) 삭제합니다`);
-          const timer = window.setTimeout(() => {
-            const current = ARMED_DELETE.get(collection);
-            if (current && current.button === button && Date.now() >= current.until) disarmDelete(collection);
-          }, DELETE_CONFIRM_WINDOW_MS + 100);
-          ARMED_DELETE.set(collection, { recordId: selected, until: now + DELETE_CONFIRM_WINDOW_MS, button, timer });
-          return;
-        }
-
-        disarmDelete(collection);
-        const result = deleteDatabaseRecord(collection, selected);
-        if (!result.ok) {
-          toast(result.message, "error");
-          return;
-        }
-        toast("삭제했습니다 — Ctrl+Z로 되돌릴 수 있습니다.", "ok");
-        // 삭제 후 선택은 첫 레코드로 점프하는데, 스크롤은 기존 위치가 복원된다. reveal 이
-        // 없으면 활성 행이 시야 밖에 있고, 다음 [삭제] 2단계 확인의 대상이 화면에 없는
-        // 레코드가 된다 — 파괴 동작으로는 위험한 조합이다.
-        setSelectedRecordId(collection, store.getCurrent().database[collection][0]?.id, { reveal: true });
-        rerender();
-      },
-    },
+  }) as HTMLButtonElement;
+  const sync = (): void => {
+    const selected = selectedRecordIdForSession(collection);
+    const name = selectedRecordName(collection, selected);
+    // 탭마다 「삭제」가 여러 개라 접근명에 대상을 싣는다. 컬렉션 이름(「주인공」)은 첫 레코드 이름과
+    // 같은 낱말이라 「선택한 주인공 삭제」는 첫 캐릭터를 지우는 버튼처럼 읽혔다(J-p6-keyboard-21).
+    button.setAttribute("aria-label", name ? `${name} 삭제` : `선택한 ${COLLECTION_LABELS[collection]} 삭제`);
+    const blocked = selected ? databaseReferenceMessage(collection, selected) : null;
+    button.classList.toggle("is-blocked", Boolean(blocked));
+    if (blocked) {
+      button.setAttribute("aria-disabled", "true");
+      button.setAttribute("aria-describedby", reasonId);
+      reason.textContent = `삭제할 수 없음 · ${blocked}`;
+      reason.title = blocked;
+      reason.hidden = false;
+    } else {
+      button.removeAttribute("aria-disabled");
+      button.removeAttribute("aria-describedby");
+      reason.textContent = "";
+      reason.removeAttribute("title");
+      reason.hidden = true;
+    }
+  };
+  button.addEventListener("click", () => {
+    const selected = selectedRecordIdForSession(collection);
+    if (!selected) return;
+    // 선택은 필터와 무관하게 전체 목록에서 유지되므로, 칩·검색으로 가려진 레코드가 선택된 채로
+    // 남을 수 있다. **화면에 없는 레코드**를 지우지 않는다 — 먼저 보이게 만들고 알린다.
+    const records = store.getCurrent().database[collection];
+    const isVisible = visibleRecordRows(collection, records).some((row) => row.record.id === selected);
+    if (!isVisible) {
+      setSelectedRecordId(collection, selected, { reveal: true });
+      toast("선택한 레코드가 필터에 가려져 있었습니다. 목록에 표시했으니 확인하고 다시 누르세요.", "error");
+      rerender();
+      return;
+    }
+    sync();
+    if (button.getAttribute("aria-disabled") === "true") {
+      // 이유는 이미 버튼 아래 상태 줄에 있다. 포커스를 빼앗거나 버튼을 덮는 말풍선은 띄우지 않는다.
+      reason.classList.remove("is-pulsed");
+      void reason.offsetWidth;
+      reason.classList.add("is-pulsed");
+      return;
+    }
+    const result = deleteDatabaseRecord(collection, selected);
+    if (!result.ok) {
+      reason.textContent = `삭제할 수 없음 · ${result.message}`;
+      reason.title = result.message;
+      reason.hidden = false;
+      return;
+    }
+    toast("삭제했습니다 — Ctrl+Z로 되돌릴 수 있습니다.", "ok");
+    // 삭제 후 선택은 첫 레코드로 점프한다. reveal 이 없으면 활성 행이 시야 밖에 남는다.
+    setSelectedRecordId(collection, store.getCurrent().database[collection][0]?.id, { reveal: true });
+    rerender();
   });
-  return button;
+  DELETE_CONTROLS.set(collection, { sync });
+  sync();
+  return el("span", { class: "db-toolbar-delete", children: [button, reason] });
 }
 
 const RECORD_SEARCH_TESTID = "db-record-search";
@@ -506,6 +502,27 @@ function recordSearch(collection: DatabaseCollection, rerender: () => void): HTM
     composing = false;
     clearSearchRerenderTimer();
     commitSearch();
+  });
+  // ↓ 는 결과 목록으로 내려간다 — 선택 행(없으면 첫 행)에 포커스를 둔다. 행 안에서는 ↑↓ 가 이미 이동한다
+  // (J-p6-keyboard-19: 예전에는 Tab 을 한 번 더 눌러야 했다). 조합 중의 ↓ 는 글자 확정이라 건드리지 않는다.
+  input.addEventListener("keydown", (event) => {
+    if (event.key !== "ArrowDown" || composing || event.isComposing) return;
+    const focusResultRow = (): boolean => {
+      const pane = document.querySelector(`[data-testid="${RECORD_SEARCH_TESTID}"]`)?.closest(".oprn-record-list-pane, .db-list-pane, .db-studio-table-pane");
+      const rows = pane ? Array.from(pane.querySelectorAll<HTMLElement>(".db-list-row, .db-gallery-card")) : [];
+      const target = rows.find((row) => row.classList.contains("active")) ?? rows[0];
+      target?.focus();
+      return Boolean(target);
+    };
+    event.preventDefault();
+    if (searchRerenderTimer === null) {
+      focusResultRow();
+      return;
+    }
+    // 아직 목록에 반영되지 않은 검색어는 지금 확정하고, 검색칸 포커스 복원(rAF) 다음 프레임에 행으로 간다.
+    clearSearchRerenderTimer();
+    commitSearch();
+    scheduleFrame(() => scheduleFrame(() => void focusResultRow()));
   });
   return el("div", { class: "db-search", children: [input] });
 }
