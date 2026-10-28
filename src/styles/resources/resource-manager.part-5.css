@@ -215,18 +215,3 @@
   gap: 6px;
   flex-shrink: 0;
 }
-
-.rm-format-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-}
-
-.rm-tag {
-  background: var(--bg-canvas);
-  border: 1px solid var(--border-subtle);
-  border-radius: 3px;
-  font: 600 9px/1 var(--font-mono);
-  color: var(--text-2);
-  padding: 2px 5px;
-}

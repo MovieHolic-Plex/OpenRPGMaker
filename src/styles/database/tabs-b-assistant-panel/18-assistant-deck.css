@@ -810,7 +810,7 @@ html[data-ai-render="off"] {
 .left-links-flag { padding: 1px 6px; border-radius: 8px; font: 600 12px var(--font-ui); }
 .left-links-flag.is-start { background: var(--accent-muted); color: var(--accent-active, var(--accent)); }
 /* 경고 칩 글자는 경고색보다 한 단계 어둡게 — 옅은 경고 바탕 위에서 4.5:1 을 넘긴다. */
-.left-links-flag.is-warn { background: var(--danger-muted); color: #9A2E2B; }
+.left-links-flag.is-warn { background: var(--danger-muted); color: var(--danger-strong); }
 .left-links-fix {
   align-self: flex-start; min-height: 28px; margin: 2px 6px 0; padding: 0 10px; border: 1px solid var(--border-default); border-radius: var(--radius-s);
   background: var(--bg-raised); color: var(--text-1); font: 500 12px var(--font-ui); cursor: pointer;

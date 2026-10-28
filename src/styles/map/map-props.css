@@ -669,11 +669,12 @@
 }
 
 /* 맵 만들기 창은 이벤트 하위 창 골격(.event-subdialog-body .btn, event 레이어)을 빌려 쓴다. map 레이어가 event 레이어보다
-   앞이라 명시도로는 이길 수 없어, 고른 시작 모양·주 동작·글자 단추의 색만 !important 로 지정한다. */
-.event-subdialog-body .map-create-preset[aria-pressed="true"] {
-  background: var(--accent-muted, #E8EAFB) !important;
-  border-color: var(--accent, #4A57D6) !important;
-  color: var(--text-1, #2A2521) !important;
+   앞이라 명시도로는 이길 수 없어, 고른 시작 모양·주 동작·글자 단추의 색만 !important 로 지정한다.
+   범위는 이 창 자신의 본문(.map-create-form)으로 건다 — 남의 표면(event)의 골격 클래스를 선택자에 쓰지 않는다. */
+.map-create-form .map-create-preset[aria-pressed="true"] {
+  background: var(--accent-muted) !important;
+  border-color: var(--accent) !important;
+  color: var(--text-1) !important;
   font-weight: 700;
 }
 
@@ -688,7 +689,7 @@
 }
 
 .map-create-times {
-  color: var(--text-2, #4A4038);
+  color: var(--text-2);
   font: 600 13px/32px var(--font-ui, system-ui, sans-serif);
 }
 
@@ -708,35 +709,35 @@
   gap: 4px;
 }
 
-.event-subdialog-body .map-create-actions .map-create-link {
+.map-create-form .map-create-actions .map-create-link {
   background: transparent !important;
   border-color: transparent !important;
   box-shadow: none !important;
-  color: var(--text-2, #4A4038) !important;
+  color: var(--text-2) !important;
   min-height: 32px;
   padding: 0 6px;
 }
 
-.event-subdialog-body .map-create-actions .map-create-link:hover {
-  background: var(--bg-hover, rgba(42, 37, 33, 0.06)) !important;
-  color: var(--text-1, #2A2521) !important;
+.map-create-form .map-create-actions .map-create-link:hover {
+  background: var(--bg-hover) !important;
+  color: var(--text-1) !important;
 }
 
-.event-subdialog-body .map-create-actions .map-create-cancel {
+.map-create-form .map-create-actions .map-create-cancel {
   min-height: 32px;
   min-width: 72px;
 }
 
-.event-subdialog-body .map-create-actions .map-create-submit {
-  background: var(--accent, #4A57D6) !important;
-  border-color: var(--accent, #4A57D6) !important;
-  color: var(--on-accent, #FFFFFF) !important;
+.map-create-form .map-create-actions .map-create-submit {
+  background: var(--accent) !important;
+  border-color: var(--accent) !important;
+  color: var(--on-accent) !important;
   min-height: 32px;
   min-width: 88px;
 }
 
-.event-subdialog-body .map-create-actions .map-create-submit:hover {
-  background: var(--accent-hover, var(--accent, #4A57D6)) !important;
+.map-create-form .map-create-actions .map-create-submit:hover {
+  background: var(--accent-hover) !important;
 }
 
 /* 아래 세 규칙(행 썸네일, 활성 썸네일 보더, 계층 들여쓰기 — 전부 스코프 없는

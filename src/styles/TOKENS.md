@@ -49,6 +49,7 @@ for(const m of s.matchAll(/(--[\w-]+)\s*:\s*([^;]+);/g)) console.log(`| \`${m[1]
 | `--cinema-accent` | `#edcea0` |
 | `--danger` | `#B5302E` |
 | `--danger-muted` | `rgba(198, 64, 61, 0.13)` |
+| `--danger-strong` | `#9A2E2B` |
 | `--success` | `#18764F` |
 | `--success-muted` | `rgba(24, 118, 79, 0.13)` |
 | `--warning` | `#7A5300` |
@@ -274,7 +275,7 @@ for(const m of s.matchAll(/(--[\w-]+)\s*:\s*([^;]+);/g)) console.log(`| \`${m[1]
   `overrides.css` 가 흐림(`backdrop-filter`)을 끈다.
 - **동작 줄이기** — `overrides.css` 의 `prefers-reduced-motion` 블록이 편집기 크롬의 전환·애니메이션을
   즉시 끝낸다(테스트 플레이 창 안의 게임 화면은 제외).
-- **한국어 줄바꿈** — `:root:lang(ko)` 가 `word-break: keep-all` 을 상속시킨다. 칸이 좁아도 어절 안에서 끊지 않는다.
+- **한국어 줄바꿈** — `html:lang(ko)`(base/index.css)가 `word-break: keep-all` 을 상속시킨다. 칸이 좁아도 어절 안에서 끊지 않는다.
 
 ## 6. 공용 아이콘
 

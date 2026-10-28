@@ -307,7 +307,7 @@
 }
 
 .help-modal-gesture {
-  color: var(--text-2, #5C5348);
+  color: var(--text-2);
   font: 600 12px/1.35 var(--font-ui, system-ui, "Malgun Gothic", sans-serif);
   white-space: nowrap;
 }

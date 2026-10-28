@@ -13,7 +13,7 @@
   /* 한국어는 어절 단위로 줄을 바꾼다(HIG C-10) — 「만듭니/다」「과일 상/자」가 생기지 않게.
      상속값이라 표면이 직접 word-break 를 정한 곳은 그대로다. 칸보다 긴 한 어절만 글자 단위로 꺾는다
      (break-word 는 anywhere 와 달리 최소 폭 계산을 바꾸지 않아 플렉스 배치가 줄지 않는다). */
-  :root:lang(ko) {
+  html:lang(ko) {
     overflow-wrap: break-word;
     word-break: keep-all;
   }

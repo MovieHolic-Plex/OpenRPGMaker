@@ -41,7 +41,7 @@
 /* 2026-10-28 HIG C-32: 「더 보기」는 막대 안에 펼치지 않고 단추 아래 떠 있는 판으로 연다.
    막대 폭이 바뀌지 않아 「…」가 제자리에 남고, 펼친 뒤 같은 자리를 눌러도 다른 단추가 눌리지 않는다. */
 .canvas-toolbar.is-expanded .canvas-toolbar-save-group {
-  background: var(--bg-overlay, #FFFFFF);
+  background: var(--bg-overlay);
   border: 1px solid var(--border-default);
   border-radius: var(--radius-s);
   box-shadow: var(--shadow-pop, 0 8px 24px rgba(30, 24, 18, 0.18));
@@ -77,7 +77,7 @@
 .canvas-toolbar .canvas-toolbar-zoom-group { position: relative; }
 .canvas-toolbar .canvas-toolbar-zoom-group.is-menu-open .canvas-toolbar-zoom-menu {
   align-items: stretch;
-  background: var(--bg-overlay, #FFFFFF);
+  background: var(--bg-overlay);
   border: 1px solid var(--border-default);
   border-radius: var(--radius-s);
   box-shadow: var(--shadow-pop, 0 8px 24px rgba(30, 24, 18, 0.18));
