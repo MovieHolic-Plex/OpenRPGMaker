@@ -343,8 +343,17 @@
     padding: 6px 12px;
   }
 
-  .database-modal-body .db-actor-studio-workspace .db-studio-table-pane > .db-toolbar .btn {
-    padding: 0 10px;
+  /* 툴바는 300px 목록 칸에서도 한 줄이다(900×600: 보기 전환이 둘째 줄로 떨어져 목록 한 줄을 먹었다). */
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-actor-studio-workspace .db-studio-table-pane > .db-toolbar {
+    column-gap: 4px;
+  }
+
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-actor-studio-workspace .db-studio-table-pane > .db-toolbar .btn {
+    padding: 0 8px;
+  }
+
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-actor-studio-workspace .db-studio-table-pane > .db-toolbar .db-view-toggle {
+    padding: 0 8px;
   }
 
   .database-modal-body .db-actor-studio-workspace .db-actor-studio-table button.db-actor-table-row {
