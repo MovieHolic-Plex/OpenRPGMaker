@@ -724,6 +724,8 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     // Loading replaces the old event run; its pending menu must not own the new session.
     this.running = false;
     this.setInputEnabled(true);
+    // 불러오기를 확정한 키 입력이 필드 조사로 새지 않게(정면 이벤트 재조사) — 다음 프레임에 쌓인 엣지를 버린다.
+    this.input_.dropPendingEdgesOnNextUpdate();
     const project = store.getCurrent();
     this.playerSprite = resolvePlayerSpriteResource(project, this.session);
     this.loadMap(this.session.currentMapId, { preserveErasedEvents: true, applyDefaultLighting: false, applyMapBgm: false });
