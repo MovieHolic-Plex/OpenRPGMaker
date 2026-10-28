@@ -1,7 +1,29 @@
 /* event 표면 — pages.css. 규칙 순서는 2026-09 세대 접기 전 유효 순서(event/index.css 평탄 순서)를 보존한다. */
 
-/* editor/core.part-2.css:204-211 */
+/* 이벤트 ID 는 기본으로 접힌 「고급 정보」 안에 있다(eventIdReadout.ts). */
 .event-id-readout {
+  min-width: 0;
+}
+
+.event-id-readout-summary {
+  color: var(--text-dim, unset);
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 600;
+  width: fit-content;
+}
+
+.event-id-readout-summary:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: 1px;
+}
+
+.event-id-readout[open] > .event-id-readout-summary {
+  margin-bottom: var(--space-1);
+}
+
+/* editor/core.part-2.css:204-211 */
+.event-id-readout-body {
   align-items: center;
   column-gap: var(--space-2);
   display: grid;

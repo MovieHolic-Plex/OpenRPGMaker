@@ -146,6 +146,8 @@ function leakScan(selector) {
     text += `\n${root.innerText || ''}`;
     for (const input of root.querySelectorAll('input,textarea')) {
       if (input.getClientRects().length === 0) continue;
+      // Content of a closed <details> keeps layout boxes (forced layout) but is not shown.
+      if (typeof input.checkVisibility === 'function' && !input.checkVisibility()) continue;
       const r = input.getBoundingClientRect();
       if (r.width < 2 || r.height < 2 || getComputedStyle(input).visibility === 'hidden') continue;
       text += `\n${input.value}`;
@@ -155,6 +157,7 @@ function leakScan(selector) {
     roots: roots.length,
     idHits: (text.match(/ev_[a-z0-9]{6,}/gi) || []).length,
     characterIdHits: (text.match(/characterId/g) || []).length,
+    samples: [...text.matchAll(/.{0,40}(ev_[a-z0-9]{6,}|characterId).{0,20}/gi)].map((m) => m[0]).slice(0, 4),
   };
 }
 
@@ -238,6 +241,7 @@ export const devices = [
         sidebarRoots: sideLeak.roots,
         sidebarIdHits: sideLeak.idHits,
         sidebarCharacterIdHits: sideLeak.characterIdHits,
+        leakSamples: [...modalLeak.samples, ...sideLeak.samples],
         saveButtonShortcut: shortcut.attr,
         saveButtonTitle: shortcut.title,
       };
