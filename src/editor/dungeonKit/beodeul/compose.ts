@@ -345,6 +345,22 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
       }
       if (!wet) for (const c of run) { bridge[c] = 0; liquid[c] = 0; }
     }
+    // 건너지 않는 다리 칸: 양옆(남북 또는 동서) 둘 다 물이 아닌 다리 칸은 물을 건너지 않는다 — 물 줄이기 뒤 물가 모서리에 한 칸 남은 다리가
+    // 「물 한가운데 떠 있는 나무 문짝」으로 읽혔다(2026-10-29 야외 VQA vm2 flash 동굴 (15,13)). 그런 칸은 바닥으로 되돌린다(걷는 길은 그대로).
+    const wetAt = (x: number, y: number) => inb(x, y) && liquid[idx(x, y)] === 1 && !bridge[idx(x, y)];
+    for (let pass = 0; pass < 3; pass += 1) {
+      let changed = 0;
+      for (let y = 0; y < H; y += 1) for (let x = 0; x < W; x += 1) {
+        if (!bridge[idx(x, y)]) continue;
+        if ((wetAt(x - 1, y) && wetAt(x + 1, y)) || (wetAt(x, y - 1) && wetAt(x, y + 1))) continue;
+        // 여러 칸 다리의 꺾인 칸(이웃이 다리이고 물에 닿는 칸)은 둔다
+        const linked = [[1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => inb(x + dx!, y + dy!) && bridge[idx(x + dx!, y + dy!)] === 1);
+        const wetN = [[1, 0], [-1, 0], [0, 1], [0, -1]].filter(([dx, dy]) => wetAt(x + dx!, y + dy!)).length;
+        if (linked && wetN >= 1) continue;
+        bridge[idx(x, y)] = 0; liquid[idx(x, y)] = 0; changed += 1;
+      }
+      if (!changed) break;
+    }
   }
   // ---- 바닥 칸: 종류별 바닥 키트(2×2·3×3 무늬) + 잡음 덩이 변형 + 칸마다 흩뿌림 + 물가 바닥. 액체·다리는 따로 칠한다. ----
   const fl = profile.floor;
@@ -1086,6 +1102,25 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
     for (const c of cells) { if (picked.every((p) => Math.abs(p.x - c.x) + Math.abs(p.y - c.y) >= 3)) picked.push({ x: c.x, y: c.y }); if (picked.length >= 6) break; }
     spots[r.id] = picked;
   }
+  // 상자 자리(방마다): 북쪽이 벽인 바닥 칸(벽을 등진 칸) — 물·다리에 닿지 않고(대각선 포함) 좌우·앞이 트인 칸, 방 가운데에서 가까운 순.
+  // 방 한가운데 트인 바닥의 상자는 「물길 옆에 떠 있는 상자」로 읽혔다(2026-10-29 야외 VQA vm2 flash 동굴).
+  const chestSpots: Record<string, { x: number; y: number }[]> = {};
+  rooms.forEach((r, ri) => {
+    const ccx = r.x + (r.w - 1) / 2, ccy = r.y + (r.h - 1) / 2;
+    const cells: { x: number; y: number; d: number }[] = [];
+    for (const [x, y] of floorCells(r, 0)) {
+      if (isFloor(x, y - 1) || upper[idx(x, y)]! >= 0 || blocked[idx(x, y)] || !seen[idx(x, y)] || doorstep[idx(x, y)] || reservedFront.has(idx(x, y))) continue;
+      if (![[1, 0], [-1, 0], [0, 1]].every(([ox, oy]) => stand(x + ox!, y + oy!) && roomAt[idx(x + ox!, y + oy!)] === ri)) continue;
+      let wet = false;
+      for (let dy = -1; dy <= 1 && !wet; dy += 1) for (let dx = -1; dx <= 1; dx += 1) if (inb(x + dx, y + dy) && (liquid[idx(x + dx, y + dy)] || bridge[idx(x + dx, y + dy)])) { wet = true; break; }
+      if (wet) continue;
+      cells.push({ x, y, d: Math.abs(x - ccx) + Math.abs(y - ccy) });
+    }
+    cells.sort((a, b) => a.d - b.d);
+    const picked: { x: number; y: number }[] = [];
+    for (const c of cells) { if (picked.every((p) => Math.abs(p.x - c.x) + Math.abs(p.y - c.y) >= 3)) picked.push({ x: c.x, y: c.y }); if (picked.length >= 4) break; }
+    chestSpots[r.id] = picked;
+  });
 
   void rimmed;
   void random;
@@ -1096,7 +1131,7 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
     entryStair, exitStair, sideDoor,
     ...(outdoor ? { canopy: { style: profile.canopy ?? "leaf", cells: canopyCells } } : {}),
     ...(profile.bank && bankCells.length ? { banks: { style: profile.bank, cells: bankCells } } : {}),
-    anchors: { boss: bossRoom?.id ?? null, treasure: vaultRoom?.id ?? null, gate }, spots, picture, counts, warnings,
+    anchors: { boss: bossRoom?.id ?? null, treasure: vaultRoom?.id ?? null, gate }, spots, chestSpots, picture, counts, warnings,
   };
 }
 

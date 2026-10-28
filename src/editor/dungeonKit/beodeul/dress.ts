@@ -105,7 +105,7 @@ export function dressTyped(c: DressCtx, type: DungeonType, r: PlacedRoom, rs: ()
     case "sewer": return dressSewer(c, r, rs, stairs, slots, centerFirst);
     case "temple": return dressTemple(c, r, rs, stairs, slots, centerFirst);
     case "mine": return dressMine(c, r, rs, stairs, slots, centerFirst);
-    case "cave": return dressCave(c, r, rs, stairs, slots);
+    case "cave": { const done = dressCave(c, r, rs, stairs, slots); if (done) cavePurpose(c, r, rs); return done; }
     case "volcano": return dressVolcano(c, r, rs, stairs, slots);
     case "labyrinth": return dressMaze(c, r, rs, stairs);
     case "forest": return dressForest(c, r, rs);
@@ -555,15 +555,21 @@ function dressCave(c: DressCtx, r: PlacedRoom, rs: () => number, s: Slot | null,
     }
     case "lake": {
       const shore = c.shuffle(rs, shoreCells(c, r));
-      let boat: [number, number] | null = null;
+      // 배는 물가 바로 옆 물 위에(2×2 전부 물) — 뭍에 얹힌 배로 읽혔다(2026-10-25 floor VQA r5 cave).
+      // 계류 말뚝을 맨 물가에 같이 세울 수 있을 때만 배를 남긴다 — 말뚝 없는 배는 물 위에 뜬 「나무 문짝」으로 읽혔다
+      // (2026-10-29 야외 VQA vm2 flash 동굴). 통나무·말뚝을 물가 아무 데나 흩으면 「물가에 떠 있는 용도 모를 통나무 기둥」으로 읽혔다
+      // (같은 날 동굴 물가 통나무·말뚝 7건) — 나머지 물가는 버섯·잔돌만.
+      let boat = false;
       for (const [x, y] of shore) {
-        // 배는 물가 바로 옆 물 위에(2×2 전부 물) — 뭍에 얹힌 배로 읽혔다(2026-10-25 floor VQA r5 cave).
-        if (!boat) for (const [dx, dy] of [[0, 1], [0, -2], [1, 0], [-2, 0]] as const) if (!boat && c.put(CV("boat"), x + dx, y + dy, { liquidOk: true, free: true })) boat = [x, y];
+        for (const [dx, dy] of [[0, 1], [0, -2], [1, 0], [-2, 0]] as const) {
+          const keep = { up: c.upper.slice(), lo: c.lower.slice(), counts: { ...c.counts } };
+          if (!c.put(CV("boat"), x + dx, y + dy, { liquidOk: true, free: true })) continue;
+          if ([[1, 0], [-1, 0], [0, -1]].some(([px, py]) => free(c, x + px!, y + py!) && stand(c, CV("dock-post"), x + px!, y + py!))) { boat = true; break; }
+          c.upper.splice(0, c.upper.length, ...keep.up); c.lower.splice(0, c.lower.length, ...keep.lo);
+          for (const k of Object.keys(c.counts)) delete c.counts[k]; Object.assign(c.counts, keep.counts);
+        }
         if (boat) break;
       }
-      // 계류 말뚝은 배를 맨 물가에 하나만. 통나무·말뚝을 물가 아무 데나 흩으면 「물가에 떠 있는 용도 모를 통나무 기둥」으로 읽혔다
-      // (2026-10-29 야외 VQA 동굴 물가 통나무·말뚝 7건) — 나머지 물가는 버섯·잔돌만.
-      if (boat) for (const [dx, dy] of [[1, 0], [-1, 0], [0, -1]] as const) if (free(c, boat[0] + dx, boat[1] + dy) && stand(c, CV("dock-post"), boat[0] + dx, boat[1] + dy)) break;
       let n = 0; for (const [x, y] of shore) { if (n >= 4) break; if (rs() < 0.45 && lonely(c, x, y, 1) && stand(c, c.weighted(rs, [[MUSH, 4], [CV("rubble-cave"), 1]]), x, y)) n += 1; }
       const e = c.edgeCells(r, rs);
       edgeClumps(c, rs, e, 2, CLUMP);
@@ -621,6 +627,67 @@ function dressCave(c: DressCtx, r: PlacedRoom, rs: () => number, s: Slot | null,
     }
     default: return false;
   }
+}
+
+/**
+ * 빈 바닥에 쓰임을 준다(2026-10-29 야외 VQA vm2 flash 동굴 「바닥 절반 이상이 텅 비었다」): 방(과 이어진 통로)에 5×5 가 통째로 빈 곳이 남으면
+ * 방 종류마다 정해진 자리 하나를 그 한가운데에 놓는다 — 굴·샘굴·보스 굴 = 괴물 둥지(뼈 더미 + 해골·뼈), 호수 굴 = 지난 탐험가의 야영 흔적(모닥불 + 짐).
+ * 한 장면은 맵에 둘까지(셋째부터 무너진 바위 더미, 그것도 둘까지).
+ * 흩뿌리기로 메우지 않는다(흩은 잔돌·뼈는 「길가 쓰레기」로 읽혔다) — 한 덩이의 장면이라 방의 쓰임이 읽힌다. 큰 방(넓이 120 넘음)은 둘까지.
+ */
+function cavePurpose(c: DressCtx, r: PlacedRoom, rs: () => number): number {
+  if (c.lair) return 0;
+  const W6 = 5;
+  const ri = c.rooms.indexOf(r);
+  const nest = r.kind === "cavern" || r.kind === "grotto" || r.kind === "boss";
+  const camp = r.kind === "lake";   // 입구 굴은 entranceCamp 가 이미 모닥불을 둔다
+  if (!nest && !camp) return 0;
+  const FIRE = c.hasKit("bd-pick-deep-forest-path-campfire") ? "bd-pick-deep-forest-path-campfire" : "bd-pick-shipwreck-reef-campfire";
+  const want = r.w * r.h > 120 ? 2 : 1;
+  const cx0 = r.x + r.w / 2, cy0 = r.y + r.h / 2;
+  let n = 0;
+  for (let k = 0; k < want; k += 1) {
+    // 5×5 빈 창 중 방 가운데에서 가까운 것(같은 판 = 같은 자리)
+    let best: [number, number] | null = null; let bd = Infinity;
+    for (let y0 = r.y - 2; y0 + W6 <= r.y + r.h + 2; y0 += 1) for (let x0 = r.x - 2; x0 + W6 <= r.x + r.w + 2; x0 += 1) {
+      if (!c.inb(x0, y0) || !c.inb(x0 + W6 - 1, y0 + W6 - 1)) continue;
+      let ok = true;
+      // 창은 이 방 칸과 통로 칸(방 번호 없음)에 걸쳐도 된다 — 넓은 빈 바닥은 방과 굽은 통로가 이어진 곳에 생겼다. 가운데 칸은 이 방.
+      for (let dy = 0; dy < W6 && ok; dy += 1) for (let dx = 0; dx < W6; dx += 1) { const ra = c.roomAt[c.idx(x0 + dx, y0 + dy)]; if (!free(c, x0 + dx, y0 + dy) || (ra !== ri && ra !== -1)) { ok = false; break; } }
+      if (!ok || c.roomAt[c.idx(x0 + 2, y0 + 2)] !== ri) continue;
+      const d = Math.abs(x0 + W6 / 2 - cx0) + Math.abs(y0 + W6 / 2 - cy0);
+      if (d < bd) { bd = d; best = [x0 + 1, y0 + 3]; }
+    }
+    if (!best) break;
+    const [x, y] = best;
+    // 같은 장면을 맵에 셋 이상 찍으면 복붙으로 읽힌다 — 종류마다 맵에 둘까지, 넘치면 무너진 바위 더미(바위 기둥·석순·잔돌)로.
+    // 보스 굴은 우두머리 자리(뼈 제단·약탈품)가 이미 그 방의 장면이다 — 뼈 더미를 또 두면 같은 더미 반복이 된다.
+    const kindNow = (nest && (r.kind === "boss" || (c.counts["monster-nest"] ?? 0) >= 2)) || (camp && (c.counts["explorer-camp"] ?? 0) >= 2) ? "rockfall" : nest ? "nest" : "camp";
+    if (kindNow === "rockfall") {
+      if ((c.counts["rockfall"] ?? 0) >= 2) break;
+      if (!stand(c, CV("rock-pillar-2"), x, y)) break;
+      stand(c, CV("stalagmite-1"), x + 1, y + 1);
+      stand(c, CV("rock-pillar-2"), x + 2, y - 1);
+      stand(c, CV("rubble-cave"), x - 1, y + 1);
+      c.counts["rockfall"] = (c.counts["rockfall"] ?? 0) + 1;
+    } else if (kindNow === "nest") {
+      // 둥지 뒤 바위 기둥이 먼저(뼈 더미는 잡동사니라 혼자 트인 바닥에는 못 선다 — put 의 받침 규칙)
+      if (!stand(c, CV("rock-pillar-2"), x + 2, y - 1)) break;
+      if (!stand(c, SW("bone-heap"), x, y)) break;
+      stand(c, SW("skulls"), x - 1, y + 1);
+      stand(c, c.weighted(rs, [[SW("bones"), 2], [CV("rubble-cave"), 1]]), x + 2, y + 1);
+      stand(c, SW("bones"), x + 1, y - 1);
+      c.counts["monster-nest"] = (c.counts["monster-nest"] ?? 0) + 1;
+    } else {
+      if (!stand(c, FIRE, x, y)) break;
+      stand(c, "bd-pick-walled-market-sack-pile", x - 2, y);
+      stand(c, c.weighted(rs, [[SW("crate"), 2], [SW("barrel"), 1]]), x + 2, y);
+      stand(c, SW("straw-bed"), x - 1, y + 2);
+      c.counts["explorer-camp"] = (c.counts["explorer-camp"] ?? 0) + 1;
+    }
+    n += 1;
+  }
+  return n;
 }
 
 /**

@@ -233,7 +233,7 @@ function buildFloor(draft: Project, args: Record<string, unknown>, floor: FloorO
     liquid: composed.liquid, width: composed.width, height: composed.height,
     entrance: composed.entrance, stairsUp: composed.stairsUp, stairsDown: composed.stairsDown, anchors: composed.anchors,
     entryStair: composed.entryStair ?? null, exitStair: composed.exitStair ?? null, sideDoor: composed.sideDoor ?? null,
-    rooms: composed.rooms.map((room) => ({ id: room.id, kind: room.kind, x: room.x, y: room.y, w: room.w, h: room.h, from: room.from, spots: composed.spots[room.id] ?? [] })),
+    rooms: composed.rooms.map((room) => ({ id: room.id, kind: room.kind, x: room.x, y: room.y, w: room.w, h: room.h, from: room.from, spots: composed.spots[room.id] ?? [], ...(composed.chestSpots?.[room.id]?.length ? { chestSpots: composed.chestSpots[room.id] } : {}) })),
     corridors: composed.corridors.map((c) => ({ from: c.a, to: c.b, dir: c.dir, ...(c.loop ? { loop: true } : {}), ...c.rect })),
     bridges: composed.picture.flatMap((row, y) => [...row].flatMap((ch, x) => (ch === "=" ? [{ x, y }] : []))),
     population, counts: composed.counts, warnings: composed.warnings,
@@ -374,7 +374,7 @@ function populateFloor(draft: Project, mapId: string, data: Record<string, unkno
   for (let r = bossRoom ? byId.get(bossRoom.from ?? "") : undefined, guard = 0; r && guard < 40; r = byId.get(r.from ?? ""), guard += 1) onRoute.add(r.id);
   const behindBoss = (id: string | undefined): boolean => { for (let r = byId.get(id ?? ""), guard = 0; r && guard < 40; r = byId.get(r.from ?? ""), guard += 1) if (r.id === bossRoom?.id) return true; return false; };
   const routeExtra: Array<Pt & { room?: string }> = [...onRoute].map((id) => byId.get(id)!).filter((r) => r.kind !== "entrance" && r.id !== restRoom?.id)
-    .flatMap((r) => r.spots.slice(-2).map((c) => ({ ...c, room: r.id })));
+    .flatMap((r) => [...(r.chestSpots ?? []), ...r.spots.slice(-2)].slice(0, 2).map((c) => ({ ...c, room: r.id })));
   const chestRank = (c: { room?: string }): number => (c.room === vaultId ? 0 : onRoute.has(c.room ?? "") ? 1 : behindBoss(c.room) ? 3 : 2);
   const chestPlan = [...planned("chests"), ...routeExtra].sort((a, b) => chestRank(a) - chestRank(b));
   let routeChest = false;

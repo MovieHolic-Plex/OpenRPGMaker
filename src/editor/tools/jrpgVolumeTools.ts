@@ -13,7 +13,7 @@ import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 
 export type Cell = { readonly x: number; readonly y: number };
 type Role = "inn" | "shop" | "elder";
-export type Room = { readonly id: string; readonly kind: string; readonly from: string | null; readonly spots: Cell[] };
+export type Room = { readonly id: string; readonly kind: string; readonly from: string | null; readonly spots: Cell[]; readonly chestSpots?: Cell[] };
 
 // 하위 도구의 data 는 unknown 이다 — 쓰는 필드만 좁혀 읽는다.
 type Rec = Record<string, unknown>;
@@ -29,7 +29,8 @@ export function asCell(v: unknown): Cell | undefined {
 export function asRoom(v: unknown): Room | undefined {
   const id = text(v, "id"), kind = text(v, "kind");
   if (!id || !kind) return undefined;
-  return { id, kind, from: text(v, "from") ?? null, spots: list(v, "spots").map(asCell).filter((c): c is Cell => !!c) };
+  const chestSpots = list(v, "chestSpots").map(asCell).filter((c): c is Cell => !!c);
+  return { id, kind, from: text(v, "from") ?? null, spots: list(v, "spots").map(asCell).filter((c): c is Cell => !!c), ...(chestSpots.length ? { chestSpots } : {}) };
 }
 const isLook = (v: unknown): v is VariantLook => typeof v === "string" && (VARIANT_LOOKS as readonly string[]).includes(v);
 

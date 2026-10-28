@@ -76,6 +76,7 @@ for (const dir of dirs) {
       const map = run.ctx.project.maps[id]; if (!map) continue;
       const file = path.join(out, `${tag}-c${i}-f${f}.png`);
       fs.writeFileSync(file, renderMapPng(run.ctx.project, map).png);
+      if (process.env.DUMP_PROJECT) fs.writeFileSync(file.replace(/\.png$/, ".project.json"), JSON.stringify({ ...run.ctx.project, maps: { [id]: map } }));
       console.log(`${file} ${spec.name} ${map.width}×${map.height} salt ${spec.salt} ${res.ok ? "" : "실패 " + res.summary.slice(0, 120)}`);
     }
   }

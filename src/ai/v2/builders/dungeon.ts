@@ -423,7 +423,11 @@ function topUp(run: BuildRun, floors: readonly string[], floorData: readonly Rec
       const deepChest = chests.some((e) => { const dd = dist[e.y * map.width + e.x]!; return dd >= maxD * (bossRoom ? 0.6 : 0.8) && (!bossRoom || inRoom(bossRoom, e)); });
       if (!deepChest) {
         const zone = [...cells].filter((c) => deepZone(c) && !near(c, 1));
-        const spot = (zone.some((c) => c.clean) ? zone.filter((c) => c.clean) : zone).sort((a, b) => b.d - a.d)[0];
+        // 벽을 등진 상자 자리(조립기 chestSpots: 물에서 떨어진 칸)가 먼저 — 트인 바닥 한가운데·물길 옆 상자는 떠 있어 보였다(2026-10-29 야외 VQA).
+        const backedSet = new Set(((d?.rooms ?? []) as { chestSpots?: Pt[] }[]).flatMap((r) => r.chestSpots ?? []).map((c) => c.y * map.width + c.x));
+        const rank = (c: Pt) => (backedSet.has(c.y * map.width + c.x) ? 0 : 1);
+        const pool = zone.some((c) => c.clean) ? zone.filter((c) => c.clean) : zone;
+        const spot = pool.sort((a, b) => rank(a) - rank(b) || b.d - a.d)[0];
         if (spot) {
           // 같은 그림 상자 셋부터는 「임시 표식」 린트 — 둘이면 얕은 상자 하나를 깊은 곳으로 옮긴다.
           if (chests.length >= 2) {

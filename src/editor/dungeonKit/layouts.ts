@@ -305,7 +305,7 @@ function layoutBlobOnce(spec: DungeonSpec, profile: GrammarInfo, salt: number): 
       const t = s / steps;
       const wob = (vnoise(t * len, phase, 6, seed) - 0.5) * 2 * amp * Math.sin(Math.PI * t);
       const x = a.cx + (b.cx - a.cx) * t + nxv * wob, y = a.cy + (b.cy - a.cy) * t + nyv * wob;
-      carveDisc(g, x, y, 1.6 + vnoise(x, y, 5, seed + 3) * 0.9, -1);
+      carveDisc(g, x, y, 1.3 + vnoise(x, y, 5, seed + 3) * 0.6, -1);   // 1.6~2.5 → 1.3~1.9: 3~5칸 폭 굽은 통로가 방보다 넓은 빈 바닥이 됐다(2026-10-29 야외 VQA vm2 flash 동굴 「바닥 절반 이상이 텅 비었다」)
     }
   };
   for (const [a, b] of edges) passage(nodes[a]!, nodes[b]!);
