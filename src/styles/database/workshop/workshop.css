@@ -237,7 +237,7 @@
 .workshop-oneclick-chip:hover { border-color: var(--accent); color: var(--accent-active, var(--accent)); background: var(--accent-muted); }
 .left-workshop-card-body .left-workshop-primary:disabled { opacity: 0.6; cursor: progress; }
 .workshop-oneclick-more { font-size: 12px; color: var(--text-2); }
-.workshop-oneclick-more > summary { cursor: pointer; width: max-content; display: flex; align-items: center; min-height: 32px; padding: 2px 8px; border-radius: var(--radius-s, 6px); color: var(--text-2); }
+.workshop-oneclick-more > summary { cursor: pointer; width: max-content; display: list-item; box-sizing: border-box; min-height: 32px; padding: 7px 8px; line-height: 18px; border-radius: var(--radius-s, 6px); color: var(--text-2); }
 .workshop-oneclick-more > summary:hover { color: var(--text-1); }
 .workshop-oneclick-fields { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 6px; margin-top: 6px; }
 .workshop-oneclick-field { display: grid; gap: 2px; font-size: 11.5px; color: var(--text-3); }
