@@ -3900,6 +3900,15 @@
       {
        "kind": "hold",
        "dir": null,
+       "ms": 300
+      },
+      {
+       "kind": "key",
+       "key": "Escape"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
        "ms": 600
       },
       {
@@ -3910,9 +3919,43 @@
        "kind": "action"
       },
       {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 5000
+      },
+      {
        "kind": "hold",
        "dir": null,
-       "ms": 2500
+       "ms": 1200
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "in-smithy",
+     "ops": [
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 6,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 700
+        }
+       ]
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1800
       }
      ],
      "shot": true

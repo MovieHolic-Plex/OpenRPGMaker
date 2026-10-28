@@ -410,8 +410,8 @@ function barracks(project: Project, exec: Exec): void {
   exec(project, "set_map_properties", { mapId: FS2_BARRACKS_ID, battleBackground: "battle-scenery-cave" });
   (M(project, FS2_BARRACKS_ID) as unknown as Rec).bgm = { mode: "custom", resourceId: "cc0-bgm-rtp-mys-002" };
   const ladderId = "ev_fs2_barracks_ladder";
-  // 독립 판정(judge10): 사다리 밑에서 Z 를 몰라 450걸음을 맴돌았다 — 지하 계단처럼 밟으면 오른다, 발치가 은은히 빛난다.
-  const LADDER_STEP: Rec = { priority: "below", trigger: { kind: "playerTouch" }, glow: { radius: 1, color: "#ffd890" }, nearSparkle: { radius: 2 } };
+  // 독립 판정(judge10): 사다리 밑에서 Z 를 몰라 450걸음을 맴돌았다 — 사다리 쪽으로 걸어 부딪히면 오른다(같은 층 닿기), 발치가 은은히 빛난다.
+  const LADDER_STEP: Rec = { priority: "same", trigger: { kind: "playerTouch" }, glow: { radius: 1, color: "#ffd890" }, nearSparkle: { radius: 2 } };
   addEv(project, FS2_BARRACKS_ID, ladderId, "광장으로 오르는 사다리", { x: BARRACKS.ladder.x, y: BARRACKS.ladder.y + 2 }, [
     page(`${ladderId}_wait`, "짐부터", [], [
       narrate("위로 오르는 사다리다. 바깥 바람이 내려온다."),
