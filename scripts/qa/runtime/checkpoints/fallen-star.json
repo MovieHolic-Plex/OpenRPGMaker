@@ -3241,7 +3241,7 @@
   {
    "id": "act2-b1-ladder",
    "label": "제2막 B1 — 막사 사다리 → 통금의 밤 광장",
-   "note": "act2Opening.ts barracks ladder (18,5) → fs2_hub_night (49,25) 골목 틈 아래",
+   "note": "act2Opening.ts barracks ladder (18,5) → fs2_hub_night (49,25) 골목 틈 아래 · 발치(18,5)를 밟으면 오른다(judge10)",
    "mapId": "fs2_barracks",
    "x": 18,
    "y": 6,
@@ -3277,7 +3277,9 @@
        "ms": 800
       },
       {
-       "kind": "action"
+       "kind": "move",
+       "dir": "up",
+       "steps": 1
       },
       {
        "kind": "waitFor",
