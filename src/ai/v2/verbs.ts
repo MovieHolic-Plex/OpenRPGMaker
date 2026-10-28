@@ -5,6 +5,7 @@ import { flattenWrapperTool } from "./flatWrapper";
 import type { PiToolShape, PiToolExecResult } from "@/ai/piAgent/toolAdapter";
 import { shipBlockers, wantsWholeGame } from "./shipChecks";
 import { applyBlueprintAssembly } from "@/project/blueprintAssembly";
+import { applyBlueprintOpening } from "@/editor/tools/blueprintOpening";
 import { WRITE_BLUEPRINT_SCHEMA, blueprintDesignerFromEnv, blueprintProgressNote, designBlueprint, parseBlueprintArgs, walkBlueprint } from "./blueprint";
 import { projectBrief } from "./prompt";
 import type { PiAssistantV2Env } from "./env";
@@ -480,6 +481,8 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
       }
       env.ctx.project.gameBlueprint = parsed.blueprint;
       const assembled = applyBlueprintAssembly(env.ctx.project);
+      // 맵을 이미 지은 뒤 청사진을 다시 쓴 경우에만 실제로 깐다(빈 맵이면 건너뛴다 — 끝맺음 조립이 다시 부른다).
+      try { assembled.push(...applyBlueprintOpening(env.ctx.project)); } catch { /* 끝맺음 조립이 다시 시도한다 */ }
       noteAssembly(assembled);
       const walked = walkBlueprint(env.ctx.project);
       await env.checkpoint("write_blueprint");
