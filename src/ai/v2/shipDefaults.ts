@@ -10,7 +10,7 @@
 // 두 번 불러도 결과가 같다(두 번째는 바꿀 것이 없다).
 import { listAudioResources } from "@/assets/audioResourceCatalog";
 import { findCharsetAsset } from "@/assets/charsetCatalog";
-import { queryNpcGraphics } from "@/assets/charsetQuery";
+import { findNpcGraphicMatches, queryNpcGraphics } from "@/assets/charsetQuery";
 import { findOpeningStillMood } from "@/assets/openingStillMoods";
 import { climateBattleBackground, dungeonBattleBackground, interiorBattleBackground, placeNameBattleBackground } from "@/battle/battleBackdrop";
 import { DEFAULT_BATTLE_FIELD_BACKGROUND_ID } from "@/project/databaseEnemyTroopRecordModel";
@@ -19,6 +19,8 @@ import { blueprintPlaceName, pickTitleArtForStory, blueprintPremiseText, bluepri
 import { sharedFaceForCharset } from "@/project/sharedCharacterFaceResolver";
 import type { Project } from "@/project/types";
 import { defaultPlaceLeaks, editorDefaultsLeft, endingClosureProblems } from "./shipChecks";
+import { doorCellBlocked, offArtEntrances } from "./discoverability";
+import { normalizeGameOverSettings } from "@/project/cinematicSettings";
 
 type Obj = Record<string, unknown>;
 
@@ -32,6 +34,11 @@ export function applyShipDefaults(project: Project, task = project.gameBlueprint
   if (left.has("battle-bgm")) applied.push(...fillBattleBgm(project));
   if (left.has("battle-background")) applied.push(...fillBattleBackgrounds(project, editorDefaultsLeft(project).find((b) => b.id === "battle-background")?.evidence ?? ""));
   if (left.has("hero-look") || left.has("party-faces")) applied.push(...fillPartyLooks(project));
+  // 이름은 모습 뒤(고른 칩의 성별로 이름을 고른다), 엔딩 맺음 앞(맺음 글이 새 이름을 쓴다).
+  if (left.has("party-names")) applied.push(...fillPartyNames(project));
+  if (left.has("window-look")) applied.push(...fillWindowLook(project));
+  if (left.has("game-over")) applied.push(...fillGameOver(project));
+  if (offArtEntrances(project).length) applied.push(...moveEntrancesOntoArt(project));
   if (endingClosureProblems(project).length) applied.push(...fillEndingClosure(project));
   // 기본 지명 걷어내기는 엔딩 글을 채운 뒤에 — 채운 글(청사진 느낌 칸)에도 그 지명이 들 수 있다.
   applied.push(...removeDefaultPlaceWords(project, task));
@@ -70,6 +77,40 @@ function fillBattleBgm(project: Project): string[] {
 
 // ── 전투 배경 ───────────────────────────────────────────────────────────
 
+/** 청사진 단계 순서로 이 맵 바로 앞 단계의 장소 맵들(장소는 맵 id 또는 맵 이름). */
+function blueprintPredecessors(project: Project, mapId: string): string[] {
+  const steps = project.gameBlueprint?.steps ?? [];
+  const map = project.maps[mapId];
+  const matches = (place: string) => Object.values(project.maps).filter((m) => m.id === place || (!!m.name?.trim() && m.name.trim() === place.trim())).map((m) => m.id);
+  const out: string[] = [];
+  for (let i = 1; i < steps.length; i += 1) {
+    const here = steps[i]!.place;
+    if (here !== mapId && map?.name?.trim() !== here.trim()) continue;
+    for (const id of matches(steps[i - 1]!.place)) if (id !== mapId) out.push(id);
+  }
+  return out;
+}
+
+/** 들어오는 길을 거꾸로 따라(가까운 것부터) 처음 만나는 던전·동굴 맵의 배경. 없으면 undefined. */
+function nearestDungeonAncestor(project: Project, mapId: string): string | undefined {
+  const seen = new Set([mapId]);
+  let frontier = [mapId];
+  while (frontier.length) {
+    const next: string[] = [];
+    for (const id of frontier) for (const from of [...entranceSources(project, id), ...blueprintPredecessors(project, id)].sort()) {
+      if (seen.has(from)) continue;
+      seen.add(from);
+      const own = project.maps[from]?.battleBackground;
+      if (own === "battle-scenery-cave") return own;
+      const dungeon = dungeonBattleBackground(project, from);
+      if (dungeon) return dungeon;
+      next.push(from);
+    }
+    frontier = next;
+  }
+  return undefined;
+}
+
 /**
  * 전투가 나는데 배경을 안 정한 맵에 런타임이 고를 배경을 맵 값으로 적는다 — resolveBattleBackdrop 의 맵 단계와 같은 순서
  * (기후 → 던전·동굴 → 장소 이름 → 실내 칩셋 → 숲). 지형 태그 배경은 런타임에서 맵 값보다 앞서므로 그대로 이긴다.
@@ -95,17 +136,18 @@ function entranceSources(project: Project, mapId: string): string[] {
 
 /**
  * 전투가 나는데 배경을 안 정한 맵에 런타임이 고를 배경을 맵 값으로 적는다 — resolveBattleBackdrop 의 맵 단계와 같은 순서
- * (기후 → 던전·동굴 → 장소 이름 → 실내 칩셋). 그 단계가 아무것도 못 고르는 맵(「마왕의 방」)은 그 맵으로 들어오는 맵의 배경을 잇고
- * (동굴 안쪽 방은 동굴), 그것도 없으면 런타임 기본(숲). 지형 태그 배경은 런타임에서 맵 값보다 앞서므로 그대로 이긴다.
+ * (기후 → 던전·동굴 → 장소 이름 → 실내 칩셋). 그 단계가 아무것도 못 고르는 맵(「마왕의 방」)은 들어오는 길(이동 명령 + 청사진 단계 순서)을 거꾸로 따라
+ * 가장 가까운 던전·동굴 조상의 배경, 없으면 바로 들어오는 맵의 배경, 그것도 없으면 런타임 기본(숲). 지형 태그 배경은 런타임에서 맵 값보다 앞서므로 그대로 이긴다.
  */
 function fillBattleBackgrounds(project: Project, evidence: string): string[] {
   const out: string[] = [];
   for (const mapId of [...new Set(evidence.split(",").map((s) => s.trim()).filter(Boolean))]) {
     const map = project.maps[mapId];
     if (!map || map.battleBackground) continue;
-    // 들어오는 맵이 여럿이면(마을에서도 동굴에서도) 막힌 곳(동굴) 배경을 먼저 — 안쪽 방은 바깥 마을보다 동굴에 가깝다.
+    // 맵 그래프(이동 명령 + 청사진 단계 순서)를 거꾸로 따라 가장 가까운 던전·동굴 조상 — 「마왕의 방」은 「마왕의 동굴」 안쪽이다.
+    const ancestor = nearestDungeonAncestor(project, mapId);
     const sources = entranceSources(project, mapId).map((from) => project.maps[from]?.battleBackground ?? runtimeMapBackground(project, from)).filter((id): id is string => !!id);
-    const inherited = sources.find((id) => id === "battle-scenery-cave") ?? sources[0];
+    const inherited = ancestor ?? sources[0];
     const id = runtimeMapBackground(project, mapId) ?? inherited ?? DEFAULT_BATTLE_FIELD_BACKGROUND_ID;
     map.battleBackground = id;
     out.push(`전투 배경 ${map.name || mapId} → ${id}`);
@@ -178,6 +220,103 @@ function fillPartyLooks(project: Project): string[] {
       if (paired && paired !== fa.faceResourceId) { actor.faceResourceId = paired; out.push(`${actor.name} 얼굴 → 지금 칩의 짝 얼굴 ${paired}`); }
       else if (!lookDefault) { delete (actor as { faceResourceId?: string }).faceResourceId; out.push(`${actor.name} 얼굴 비움(지금 칩에 검토된 짝 얼굴이 없다)`); }
     }
+  }
+  return out;
+}
+
+// ── 파티 이름 · 창 모양 · 게임 오버 · 입구 그림 ──────────────────────────────
+
+const MALE_NAMES = ["도윤", "하람", "이안", "시온", "태오", "라온"] as const;
+const FEMALE_NAMES = ["서린", "유하", "아린", "하은", "소이", "나래"] as const;
+const hashText = (text: string): number => { let h = 2166136261; for (let i = 0; i < text.length; i += 1) { h ^= text.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; };
+
+/**
+ * 시작 파티 중 편집기 기본 이름(「주인공」)이 남은 인물에 이름을 준다 — 칩 이름표·이야기 낱말이 여성을 말하면 여성 이름, 아니면 남성 이름에서
+ * 청사진 제목+인물 id 해시로 하나. 프로젝트의 다른 인물·이벤트 이름과 겹치는 이름은 건너뛴다.
+ */
+function fillPartyNames(project: Project): string[] {
+  const f = factory();
+  const fActors = new Map(f.database.actors.map((a) => [a.id, a]));
+  const taken = new Set<string>([...project.database.actors.map((a) => a.name.trim()), ...Object.values(project.maps).flatMap((m) => (m.events ?? []).map((e) => String(e.name ?? "").trim()))]);
+  const seed = project.gameBlueprint?.title ?? project.meta.title ?? "";
+  const out: string[] = [];
+  for (const id of project.system.startActorIds ?? []) {
+    const actor = project.database.actors.find((a) => a.id === id);
+    if (!actor || fActors.get(id)?.name !== actor.name) continue;
+    const chip = sharedChipLabel(actor.characterResourceId ?? "", actor.characterIndex ?? 0);
+    const premise = project.gameBlueprint ? blueprintPremiseText(project, project.gameBlueprint) : "";
+    const pool = FEMALE.test(`${chip} ${premise}`) ? FEMALE_NAMES : MALE_NAMES;
+    const start = hashText(`${seed}|${id}`) % pool.length;
+    const name = Array.from({ length: pool.length }, (_, i) => pool[(start + i) % pool.length]!).find((n) => !taken.has(n));
+    if (!name) continue;
+    out.push(`${actor.name} 이름 → ${name}`);
+    actor.name = name;
+    taken.add(name);
+  }
+  return out;
+}
+
+/** 칩 이름표(「젊은 여성 마법사」) — 성별 낱말을 읽는 데만 쓴다. */
+function sharedChipLabel(resourceId: string, index: number): string {
+  const textureKey = findCharsetAsset(resourceId)?.textureKey ?? resourceId;
+  return findNpcGraphicMatches("*").find((m) => m.entry.textureKey === textureKey && m.entry.characterIndex === index)?.entry.label ?? "";
+}
+
+/**
+ * 대화창·메뉴 모양을 아무도 고르지 않았다 — 장르로 ESC 메뉴 모양(menuUiStyle)을 고른다: 싸우는 판타지는 고전 청색 창, 추리·탈출·공포는 수첩,
+ * 그 밖은 여행 세로 명령창. 대사창 룩(연애 VN)·창 스킨은 건드리지 않는다.
+ */
+function fillWindowLook(project: Project): string[] {
+  const premise = project.gameBlueprint ? `${blueprintPremiseText(project, project.gameBlueprint)} ${project.gameBlueprint.ending.how}` : String(project.meta.title ?? "");
+  const style: NonNullable<Project["system"]["menuUiStyle"]> = /추리|탐정|미스터리|사건|탈출|밀실|escape|공포|호러|귀신|유령|horror/iu.test(premise) ? "journal"
+    : /마왕|용사|기사|판타지|RPG|던전|전투|모험/iu.test(premise) || battleSitesExist(project) ? "classic" : "field-list";
+  project.system.menuUiStyle = style;
+  return [`메뉴 모양 → ${style}`];
+}
+const battleSitesExist = (project: Project): boolean => Object.values(project.maps).some((m) => JSON.stringify(m.events ?? []).includes('"battleProcessing"'));
+
+/**
+ * 죽거나 질 수 있는데 게임 오버 화면이 기본이다 — 공포는 공포 연출(잡혔다), 그 밖은 고전(쓰러졌다). 글은 주인공 이름으로 짧게, 다시 하기·타이틀 단추는 기본.
+ */
+function fillGameOver(project: Project): string[] {
+  const premise = project.gameBlueprint ? blueprintPremiseText(project, project.gameBlueprint) : String(project.meta.title ?? "");
+  const hero = project.database.actors.find((a) => a.id === project.system.startActorIds?.[0])?.name?.trim() ?? "";
+  const horror = /공포|호러|귀신|유령|괴담|좀비|horror/iu.test(premise);
+  const settings = horror
+    ? { presentation: "horror" as const, title: "붙잡혔다", message: hero ? `${topic(hero)} 어둠 속에서 더는 도망칠 곳이 없었다.` : "어둠 속에서 더는 도망칠 곳이 없었다." }
+    : { presentation: "classic" as const, title: "쓰러졌다", message: hero ? `${topic(hero)} 힘이 다해 쓰러지고 말았다. 다시 일어나 도전하자.` : "힘이 다해 쓰러지고 말았다. 다시 일어나 도전하자." };
+  project.system.gameOver = normalizeGameOverSettings(settings);
+  return [`게임 오버 → ${settings.presentation} 「${settings.title}」`];
+}
+
+/**
+ * 그려진 입구(계단·문짝) 옆 맨바닥에 선 문·이야기 이벤트를 그림 칸으로 옮긴다(offArtEntrances — 출하 검사와 같은 판정). 그 칸이 막힌 칸이면
+ * 부딪혀 열리게(priority same, 겹침 금지). 다른 맵에서 그 칸으로 도착하는 이동이 있으면 옮기지 않는다(밟자마자 되돌아가는 왕복).
+ */
+function moveEntrancesOntoArt(project: Project): string[] {
+  const out: string[] = [];
+  const arrivals = new Set<string>();
+  const visit = (node: unknown, depth = 0): void => {
+    if (depth > 24 || !node || typeof node !== "object") return;
+    if (Array.isArray(node)) { for (const item of node) visit(item, depth + 1); return; }
+    const o = node as Obj;
+    if (o.kind === "transfer" && typeof o.mapId === "string") arrivals.add(`${o.mapId}|${String(o.x)},${String(o.y)}`);
+    for (const value of Object.values(o)) if (value && typeof value === "object") visit(value, depth + 1);
+  };
+  for (const map of Object.values(project.maps)) visit(map.events ?? []);
+  for (const ce of project.commonEvents ?? []) visit(ce);
+  const start = { mapId: project.startMapId, x: project.startPos?.x, y: project.startPos?.y };
+  for (const entry of offArtEntrances(project)) {
+    const map = project.maps[entry.mapId];
+    const event = map?.events.find((e) => e.id === entry.eventId);
+    if (!map || !event) continue;
+    if (arrivals.has(`${entry.mapId}|${entry.door.x},${entry.door.y}`)) continue;
+    if (start.mapId === entry.mapId && start.x === entry.door.x && start.y === entry.door.y) continue;
+    const blocked = doorCellBlocked(project, entry.mapId, entry.door.x, entry.door.y);
+    event.x = entry.door.x;
+    event.y = entry.door.y;
+    if (blocked) for (const page of event.pages ?? []) { page.priority = "same"; page.overlapForbidden = true; }
+    out.push(`입구 「${entry.name}」(${map.name || map.id}) (${entry.x},${entry.y}) → 그림 칸 (${entry.door.x},${entry.door.y})${blocked ? " · 부딪혀 열림" : ""}`);
   }
   return out;
 }
