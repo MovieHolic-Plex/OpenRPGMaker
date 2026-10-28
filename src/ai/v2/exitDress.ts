@@ -174,6 +174,51 @@ function wallDecorCells(map: GameMap, k: Kit, base: (t: number) => string, i: nu
   return seen.size <= 6 ? [...seen] : undefined;
 }
 
+/**
+ * 칸막이 방 사이 1칸 통로(북쪽 벽면 두 줄을 뚫은 틈)에 칩셋의 둥근 아치 문틀을 건다 — 벽면 사이 나무 바닥 한 줄이 «벽에 그린 무늬»로 읽혀
+ * 판정자가 입구를 못 찾았다(2026-10-29 standin magic 서고 옆 연구실·memory 할머니 집 부엌). 기존 문틀 그림만 쓴다(새 그림 없음).
+ * 틈 칸 (x,y)·(x,y+1) 이 걷는 바닥이고 양옆 네 칸이 벽면일 때. 여섯 칸 윗층이 비면 문틀(건 뒤 틈이 막히면 되돌림), 아니면 양쪽 입구 바닥에 발깔개.
+ */
+function archInnerDoorways(project: Project, map: GameMap, k: Kit): { arches: number; mats: number } {
+  const arch = k.S.objects["round arch"];
+  const mat = k.S.objects["doormat"];
+  const w = map.width;
+  const face = (x: number, y: number) => x >= 0 && y >= 0 && x < w && y < map.height && k.faces.has(map.lowerTiles[y * w + x]!);
+  const floor = (x: number, y: number) => x >= 0 && y >= 0 && x < w && y < map.height && !face(x, y) && isPassable(project, map, x, y);
+  const open = (x: number, y: number) => floor(x, y) && free(map, 2, y * w + x) && free(map, 3, y * w + x);
+  let arches = 0, mats = 0;
+  /** 통로 입구 바닥에 발깔개(2칸, 밟는 납작 그림) — 통로 칸 x 를 덮는 자리. */
+  const putMat = (x: number, y: number): boolean => {
+    if (!mat || mat.w !== 2) return false;
+    for (const left of [x, x - 1]) {
+      if (!open(left, y) || !open(left + 1, y)) continue;
+      for (const [dx, , tile, layer] of mat.cells) setLayerTileAt(map, (layer === 3 ? 3 : 2) as Layer, y * w + left + dx!, tile!);
+      return true;
+    }
+    return false;
+  };
+  for (let y = 1; y < map.height - 2; y++) for (let x = 1; x < w - 1; x++) {
+    if (!floor(x, y) || !floor(x, y + 1) || !floor(x, y + 2) || face(x, y - 1)) continue;
+    if (!face(x - 1, y) || !face(x + 1, y) || !face(x - 1, y + 1) || !face(x + 1, y + 1)) continue;
+    // ① 문틀이 들어가면 문틀.
+    if (arch && arch.w === 3 && arch.cells.length === 6) {
+      const cells = arch.cells.map(([dx, dy, tile]) => ({ i: (y + dy!) * w + x - 1 + dx!, tile: tile! }));
+      if (cells.every((c) => free(map, 3, c.i))) {
+        for (const c of cells) setLayerTileAt(map, 3, c.i, c.tile);
+        const probe = { ...project, maps: { ...project.maps, [map.id]: map } } as Project;
+        if (isPassable(probe, map, x, y) && isPassable(probe, map, x, y + 1)) { arches += 1; continue; }
+        for (const c of cells) setLayerTileAt(map, 3, c.i, -1);
+      }
+    }
+    // ② 벽 옆에 가구·걸이가 붙어 문틀이 안 들어가면(대부분 — 책장·괘종시계가 틈 바로 옆) 통로 양쪽 입구 바닥에 발깔개를 깐다.
+    //    위쪽 입구: 틈 바로 위가 트인 칸이면 그 칸, 위쪽도 한 칸 목(천장 띠 틈)이면 그 위 칸.
+    const upY = floor(x - 1, y - 1) || floor(x + 1, y - 1) ? y - 1 : y - 2;
+    const placed = Number(putMat(x, y + 2)) + Number(floor(x, upY) ? putMat(x, upY) : false);
+    if (placed) mats += 1;
+  }
+  return { arches, mats };
+}
+
 export interface ExitDressResult { readonly notes: string[] }
 
 /** 맵 하나의 출구·공허 마감. 실내 방 짓기 칩셋(roomKit)이 아닌 맵은 건드리지 않는다. */
@@ -189,6 +234,9 @@ export function dressInteriorExits(run: BuildRun, mapId: string): ExitDressResul
   // 2) 공허 칸.
   const voids = fillVoid(k, map);
   if (voids) { changed = true; notes.push(`빈 공허 칸 ${voids}개를 천장 띠로 이어 칠함`); }
+  // 3) 칸막이 방 사이 통로 문틀.
+  const doorways = archInnerDoorways(project0, map, k);
+  if (doorways.arches || doorways.mats) { changed = true; notes.push(`칸막이 방 사이 통로 입구 표시: 둥근 아치 문틀 ${doorways.arches}곳 · 발깔개 ${doorways.mats}곳`); }
   // 1) 막다른 남쪽 출구.
   const w = map.width;
   const gaps = southGaps(k, map);
