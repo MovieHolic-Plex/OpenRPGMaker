@@ -12,10 +12,10 @@ import { editorState } from "@/editor/editorState";
 import { toast } from "@/util/toast";
 
 export const SELECTION_CHIP_HINT_KEY = "oprn:hint-selection-chips-v1";
-export const SELECTION_CHIP_HINT_TEXT = "영역을 드래그하면 복사·붙여넣기·✨ AI 작업 버튼이 나타나요 — 선택한 곳을 자유롭게 다루세요.";
+export const SELECTION_CHIP_HINT_TEXT = "영역을 드래그해 잡으면 그 옆에 AI 지시 줄과 복사·붙여넣기·지우기가 나타나요.";
 
 export const RIGHT_DRAG_REGION_HINT_KEY = "oprn:hint-right-drag-region-v1";
-export const RIGHT_DRAG_REGION_HINT_TEXT = "영역을 잡았어요 — 「AI 작업」으로 이 구획을 통째로 만들거나, 복사·지우기로 직접 다룰 수 있어요.";
+export const RIGHT_DRAG_REGION_HINT_TEXT = "영역을 잡았어요. 옆 줄에 AI에게 시킬 일을 적거나 복사·지우기로 직접 다룰 수 있어요.";
 
 let installed = false;
 let lastTool: string | null = null;

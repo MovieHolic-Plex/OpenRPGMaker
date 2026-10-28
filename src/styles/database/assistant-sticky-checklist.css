@@ -145,13 +145,11 @@
 .ai-sticky-item[data-status="working"] > summary,
 .ai-sticky-item[data-status="verifying"] > summary {
   background: var(--accent-muted);
-  box-shadow: inset 2px 0 0 var(--accent);
 }
 .ai-sticky-item[data-status="blocked"] .ai-sticky-mark { border-color: var(--danger); background: var(--danger-muted); }
 .ai-sticky-item[data-status="blocked"] .ai-sticky-item-status { color: var(--danger); }
 .ai-sticky-item[data-status="blocked"] > summary {
   background: var(--danger-muted);
-  box-shadow: inset 2px 0 0 var(--danger);
 }
 .ai-sticky-item-detail { padding: 0 0 var(--space-3) var(--space-5); color: var(--text-2); font-size: var(--font-size-sm); }
 .ai-sticky-reason { margin: 0 0 var(--space-2); }

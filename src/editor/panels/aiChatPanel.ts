@@ -4,7 +4,7 @@ import { startAiCanvasProgress, type AiCanvasProgress } from "@/editor/aiCanvasP
 import { clearPromptInspection } from "@/ai/authoring/promptInspection";
 import { openAiAuthoringModal, closeAiAuthoringModal, type AiAuthoringTab } from "./aiAuthoring/modal";
 import { formatThrownDiagnostic } from "@/ai/errorDiagnostic";
-import { mountAssistantErrorDetail } from "./assistantErrorDetail";
+import { describeAiFailure, mountAiFailureActions, mountAssistantErrorDetail } from "./assistantErrorDetail";
 import { createActivityToolbar } from "./aiActivityView";
 import { onlyEventPageCommandsChanged } from "@/ai/eventCommandScope";
 import { createProjectSuggestions } from "./aiProjectSuggestions";
@@ -102,6 +102,7 @@ import { isGenrePresetBriefRequest } from "@/ai/genrePresetBrief";
 import { genId } from "@/util/id";
 import { createPendingWorkTracker } from "@/util/pendingWork";
 import { toast } from "@/util/toast";
+import { modelDisplayName } from "@/ai/modelDisplayName";
 import {
   AssistantSession,
   AGENT_RUN_MAX_TOTAL_STEPS,
@@ -210,7 +211,7 @@ import { openLocalDiagnosticsDialog } from "./localDiagnosticsDialog";
 import type { AiRunSurface, ConversationPersistTarget as ConversationPersistTargetContract } from "./aiRunSurface";
 import { getAiConnectionStatus } from "./aiConnectionStatus";
 import { runWhenPointerReleased } from "@/editor/pointerStrokeGate";
-import { createAiLockScrim } from "./aiLockScrim";
+import { AI_LOCK_DESCRIBEDBY, createAiLockScrim } from "./aiLockScrim";
 import {
   backupProjectSnapshot,
   dropSession,
@@ -1510,6 +1511,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     | { readonly mapId: string; readonly region: { readonly x: number; readonly y: number; readonly width: number; readonly height: number } }
     | null => {
     if (!selectionTaskActive) return null;
+    // 스튜디오는 맵 화면이 아니다 — 맵에서 잡은 선택이 스튜디오 지시에 범위로 따라가지 않는다(C-59).
+    // (`studio` 변수는 이 함수보다 아래에서 선언된다 — 조립 중 호출에서 TDZ 를 피하려고 body 클래스를 읽는다.)
+    if (typeof document !== "undefined" && document.body?.classList.contains("ai-studio-open")) return null;
     const state = editorState.get();
     const project = store.getCurrent();
     const mapId = state.currentMapId ?? project.startMapId ?? null;
@@ -2450,6 +2454,20 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     card.root.dataset.ticketId = String(ticket.id);
     card.ticket(ticket);
   };
+  // 해석 실패 말풍선: 사람 문장 + 「다시 시도」·「AI 설정 열기」, 서버 원문은 접힌 상세(C-73).
+  const appendIntentFailure = (reason: string, shown: string): void => {
+    const failure = describeAiFailure(reason);
+    const bubble = appendBubble("system", `지시를 해석하지 못했습니다. ${failure.summary}`);
+    mountAiFailureActions(bubble, {
+      failure,
+      onRetry: () => {
+        if (!input.value.trim()) input.value = shown;
+        syncInputHeight();
+        void send();
+      },
+      onOpenSettings: () => openAiSettings("first"),
+    });
+  };
   const send = async (): Promise<void> => {
     const typed = input.value.trim();
     // 입력창에 담긴 핸드오프를 그대로 보낼 때만 전체 지시문으로 바꾼다. 말풍선은 사용자가 본 문장이다.
@@ -2545,7 +2563,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         setStatus("대기");
         const reason = error instanceof Error ? error.message : String(error);
         void recordPiIntentFailure({ instruction: text, error: reason, mapId: editorState.get().currentMapId ?? null, model: loadAiConfig().model });
-        appendBubble("system", `지시를 해석하지 못했습니다: ${reason}`);
+        appendIntentFailure(reason, shown);
         return;
       }
       if (classified.clarify) {
@@ -2772,7 +2790,11 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       class: "ai-context-chip ai-selection-chip",
       dataset: { testid: "ai-selection-chip" },
       children: [
-        el("span", { text: `선택 (${selection.region.x},${selection.region.y}) ${selection.region.width}×${selection.region.height}` }),
+        // 사람 말로 크기만 보인다. 좌표는 title 에만 둔다(C-59).
+        el("span", {
+          text: `${selection.region.width}×${selection.region.height}칸 선택`,
+          attrs: { title: `선택 영역 · 왼쪽 위 (${selection.region.x}, ${selection.region.y}) · ${selection.region.width}×${selection.region.height}칸` },
+        }),
         el("button", {
           class: "ai-selection-chip-clear",
           children: [deckIcon("x", { size: 15 })],
@@ -2942,12 +2964,12 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // 접기 토글 — 상태는 localStorage에 유지되어 새로고침/모드 전환 후에도 기억된다.
   const collapseButton = el("button", {
     class: "ai-chat-collapse ai-composer-menu-btn",
-    attrs: { type: "button", title: "AI 패널 접기", "aria-label": "AI 패널 접기", "aria-controls": "ai-panel-deck", "aria-expanded": String(!collapsed) },
+    attrs: { type: "button", title: "조수 접기", "aria-label": "조수 접기", "aria-controls": "ai-panel-deck", "aria-expanded": String(!collapsed) },
     dataset: { testid: "ai-collapse" },
   }) as HTMLButtonElement;
   const collapsedRestore = createDirectorRestoreButton();
   collapsedRestore.setAttribute("aria-controls", "ai-panel-deck");
-  collapsedRestore.setAttribute("aria-label", "AI 패널 펼치기");
+  collapsedRestore.setAttribute("aria-label", "조수 펼치기");
   // 접힘 상태에서도 되돌리기가 남아야 한다 — 컴포저 행은 접히면 display:none 이다.
   // 클릭을 컴포저 버튼으로 위임해 동작·배지·말풍선이 한 경로만 지나게 한다.
   const collapsedUndo = createCollapsedUndoButton(() => {
@@ -3313,7 +3335,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     const model = config.model.trim();
     if (model.length === 0) return null;
     const level = AUTONOMY_LEVELS.find((entry) => entry.id === config.autonomyLevel);
-    return level ? `${model} · ${level.label}` : model;
+    const name = modelDisplayName(model);
+    return level ? `${name} · ${level.label}` : name;
   };
   // 지시줄 effort 셀렉트(자율성·추론 강도) — 설정 모달을 열지 않고 바로 고른다.
   // 자율성은 resolveAutonomy 프리셋으로 추론·작업모드까지 함께 저장한다(설정 모달 다이얼과 같은 동작).
@@ -3494,10 +3517,21 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     }),
     onCountChange: count => peek.setCount(count),
     request: suggestion => {
-      input.value = suggestion.request;
+      // 쓰던 초안을 덮지 않는다(C-74): 초안이 있으면 그 뒤에 덧붙이고 그렇게 했다고 알린다.
+      const draft = input.value.trim();
+      const next = suggestion.request.trim();
+      if (draft && draft !== next && !draft.includes(next)) {
+        input.value = `${draft}\n\n${next}`;
+        toast("입력 중이던 초안 뒤에 제안을 덧붙였습니다.", "info");
+      } else {
+        input.value = suggestion.request;
+      }
       input.dispatchEvent(new Event("input", { bubbles: true }));
-      input.focus();
       peek.close();
+      // 이어가기는 보이는 대화 탭에서 이어진다(C-61) — 예전에는 작업 탭에 남아 채워진 초안이 보이지 않았다.
+      restoreCollapsed();
+      workspace.showChat();
+      input.focus();
     },
     locate: suggestion => {
       focusEditorRegion({ mapId: suggestion.mapId, x: suggestion.x ?? 0, y: suggestion.y ?? 0, w: 1, h: 1 }, { highlight: true });
@@ -3531,7 +3565,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // 작업 목록 입구 — 열린 도크 위쪽(rail.actions)과 접힌 레일(collapsedRestore 옆). 둘 다 상태 줄의 「작업 N개」 와 같은 목록을 연다.
   const dockJobEntry = createJobEntry("dock");
   const railJobEntry = createJobEntry("rail");
-  rail.actions.append(dockJobEntry.button, composerShell.newChatButton, composerShell.menuToggle, collapseButton);
+  rail.actions.append(dockJobEntry.button, peek.headerButton, composerShell.newChatButton, composerShell.menuToggle, collapseButton);
+  peek.headerButton.addEventListener("click", () => suggestions.refresh());
   const secondaryActions = el("div", { class: "ai-chat-secondary-actions" });
   for (const [button, label] of [
     [composerShell.conversationsButton, "이전 대화"],
@@ -3583,6 +3618,14 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     onOpenSettings: () => openAiSettingsModal(),
     onLockChange: (locked) => {
       panel?.classList.toggle("is-ai-locked", locked);
+      // 입력은 계속 쓸 수 있게 두되(이어 쓰기), 보조기술에는 잠겼다는 사실과 이유를 같은 문장으로 알린다(C-60).
+      if (locked) {
+        input.setAttribute("aria-disabled", "true");
+        input.setAttribute("aria-describedby", AI_LOCK_DESCRIBEDBY);
+      } else {
+        input.removeAttribute("aria-disabled");
+        if (input.getAttribute("aria-describedby") === AI_LOCK_DESCRIBEDBY) input.removeAttribute("aria-describedby");
+      }
       // 막이 덮은 본문(스타터·대화 기록)은 키보드·낭독기로도 닿지 않게 한다. 막 자신과
       // 컴포저(commandBar, body 밖)는 살려 둔다 — 쓰다가 로그인하면 이어 쓸 수 있어야 한다.
       for (const child of body.children) {
@@ -3781,7 +3824,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // 두 번째 축이었고 함께 사라졌다.
   const syncCollapseButtonChrome = (): void => {
     const shut = collapsed;
-    const label = shut ? "AI 패널 펼치기" : "AI 패널 접기";
+    const label = shut ? "조수 펼치기" : "조수 접기";
     collapseButton.replaceChildren(deckIcon(studio ? "chevron-down" : "chevron-right"));
     collapseButton.setAttribute("title", label);
     collapseButton.setAttribute("aria-label", label);
@@ -3854,6 +3897,20 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   };
   collapseButton.addEventListener("click", toggleCollapsed);
   collapsedRestore.addEventListener("click", restoreCollapsed);
+  // 좁은 창(<1000px)에서는 도크가 캔버스 폭을 가져가지 못해 패널이 캔버스 위에 뜬다(C-57). 그때는 덮개 모드임을
+  // 숨기지 않는다 — 캔버스를 덮는 막을 깔고, 막을 누르면 패널을 접는다. 넓은 창에서는 CSS 가 막을 숨긴다.
+  const overlayScrim = el("div", {
+    class: "ai-panel-scrim",
+    attrs: { "aria-hidden": "true", title: "조수 접기" },
+    dataset: { testid: "ai-panel-scrim" },
+    on: { click: () => { if (!collapsed) toggleCollapsed(); } },
+  });
+  const mountOverlayScrim = (): void => {
+    const dock = panel.closest(".ai-right-dock");
+    if (dock && overlayScrim.parentElement !== dock) dock.prepend(overlayScrim);
+  };
+  panel.addEventListener("oprn:ai-panel-collapse", mountOverlayScrim);
+  if (typeof requestAnimationFrame === "function") requestAnimationFrame(mountOverlayScrim);
   commandBar.addEventListener("focusin", syncGlassIdle);
   commandBar.addEventListener("focusout", () => {
     // focusout 은 다음 포커스보다 먼저 난다 — 같은 틱의 새 activeElement 를 읽게 미룬다.
@@ -3938,6 +3995,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       publishAiStudioChange(false);
       applyHistoryOpen(false);
     }
+    // 선택 범위 칩은 맵 화면에서만 선다 — 스튜디오에 들어가면 걷고, 나오면 다시 붙인다(C-59).
+    refreshContextChips();
   };
   const fillStudioInput = (text: string): void => {
     input.value = text;
@@ -3970,7 +4029,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   };
   const composerMenu = createAiActionMenuItems({
     meta: {
-      compact: () => contextMeter.button.textContent?.trim() || null,
+      // 값(%)이 있을 때만 메타를 붙인다 — 세션 전의 빈 자리표시를 메뉴에 올리지 않는다(C-71).
+      compact: () => { const text = contextMeter.button.textContent?.trim() ?? ""; return /\d/u.test(text) ? text : null; },
       tools: () => String(filterToolCategories("").reduce((count, category) => count + category.tools.length, 0)),
       settings: () => modelChipLabel(),
     },
@@ -4058,9 +4118,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // Ctrl/Cmd+K — 통합 커맨드 팔레트(명령+맵). 패널 수명주기와 함께 등록/해제한다.
   const onCommandPaletteKeyDown = (event: KeyboardEvent): void => {
     if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") {
-      event.preventDefault();
-      // 모달(자료집·리소스 관리자 등)이 떠 있으면 열지 않는다 — 입력과 Esc 를 가로채기만 한다.
+      // 모달(자료집·리소스 관리자 등)이 떠 있으면 열지 않는다. 그때는 키를 «먹지» 않는다 — 기본 동작을 막으면
+      // 그 모달의 자기 Ctrl+K(이벤트 편집기 등)가 defaultPrevented 를 보고 물러났다. 막는 것은 여는 경우뿐이다.
       if (hasOpenModalLayer()) return;
+      event.preventDefault();
       openCommandPalette();
     }
   };
@@ -4281,7 +4342,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         setStatus("대기");
         const reason = error instanceof Error ? error.message : String(error);
         void recordPiIntentFailure({ instruction: text, error: reason, mapId: editorState.get().currentMapId ?? null, model: loadAiConfig().model });
-        appendBubble("system", `지시를 해석하지 못했습니다: ${reason}`);
+        appendIntentFailure(reason, shown);
         return;
       }
       const { command, plan, questionPromoted, initialToolNames, intentNote, timing } = classified;
