@@ -7,7 +7,9 @@ import { registerModal, unregisterModal } from "@/editor/ui/modalStack";
 import { el } from "@/util/dom";
 
 type ShortcutEntry = {
-  readonly keys: readonly string[];
+  /** 키보드 키(키캡으로 그린다). 마우스 동작은 gesture 로 쓴다 — 키가 아닌 것을 키캡으로 그리지 않는다. */
+  readonly keys?: readonly string[];
+  readonly gesture?: string;
   readonly desc: string;
 };
 
@@ -24,6 +26,8 @@ type GuideBlock =
 type GuideSection = {
   readonly id: string;
   readonly title: string;
+  /** 현재 화면을 찍은 그림만 넣는다. 옛 「AI RPG MAKER」 어두운 화면 캡처 다섯 장은 2026-10-28 에 뺐다
+   *  (지금 화면과 달라 길을 잘못 알려 줬다 — C-29·C-111). 새로 찍으면 다시 단다. */
   readonly image?: { readonly src: string; readonly alt: string; readonly caption: string };
   readonly blocks: readonly GuideBlock[];
 };
@@ -38,20 +42,20 @@ const SHORTCUT_SECTIONS: readonly ShortcutSection[] = [
       { keys: ["G"], desc: "채우기" },
       { keys: ["N"], desc: "이벤트 도구" },
       { keys: ["I"], desc: "타일 집기" },
-      { keys: ["1", "~", "7"], desc: "칠하기·채우기·타일 집기·화면 밀기·영역 선택·통행 표시·장면 놓기" },
+      { keys: ["1", "~", "7"], desc: "도구를 순서대로 고르기 (칠하기 … 장면 놓기)" },
       { keys: ["Space"], desc: "누르는 동안 화면 밀기" },
-      { keys: ["우클릭"], desc: "타일 집기 (구조물 위에서는 구조물 메뉴)" },
-      { keys: ["우클릭 드래그"], desc: "영역 선택 — 놓으면 AI 작업·복사·지우기·구조물로 저장" },
+      { gesture: "우클릭", desc: "타일 집기 (구조물 위에서는 구조물 메뉴)" },
+      { gesture: "우클릭 드래그", desc: "영역 선택 — AI 작업·복사·지우기" },
     ],
   },
   {
     title: "레이어 · 화면",
     entries: [
-      { keys: ["F5"], desc: "바닥 레이어" },
-      { keys: ["F6"], desc: "상위 레이어" },
-      { keys: ["F7"], desc: "이벤트 레이어" },
+      { keys: ["Shift", "1"], desc: "바닥 레이어" },
+      { keys: ["Shift", "2"], desc: "상위 레이어" },
+      { keys: ["Shift", "3"], desc: "이벤트 레이어 (F7 도 됩니다)" },
       { keys: ["+", "-"], desc: "줌 인 / 줌 아웃" },
-      { keys: ["가운데 드래그"], desc: "맵 화면 이동" },
+      { gesture: "가운데 드래그", desc: "맵 화면 이동" },
     ],
   },
   {
@@ -63,6 +67,10 @@ const SHORTCUT_SECTIONS: readonly ShortcutSection[] = [
       { keys: ["Ctrl", "C"], desc: "복사" },
       { keys: ["Ctrl", "V"], desc: "붙여넣기" },
       { keys: ["Ctrl", "K"], desc: "명령 팔레트 — 명령 실행 · 맵 이동" },
+      { keys: ["Ctrl", "Shift", "F"], desc: "맵·이벤트 찾기" },
+      { keys: ["Ctrl", "Alt", "M"], desc: "음악·효과음" },
+      { keys: ["Ctrl", "Alt", "W"], desc: "세계관" },
+      { keys: ["?"], desc: "단축키 보기" },
     ],
   },
 ];
@@ -71,11 +79,6 @@ const GUIDE_SECTIONS: readonly GuideSection[] = [
   {
     id: "overview",
     title: "개요",
-    image: {
-      src: "/assets/help/overview.png",
-      alt: `${PRODUCT_BRAND} 에디터 전체 화면`,
-      caption: "에디터 전체 화면 — 상단 바 한 줄, 왼쪽 타일 팔레트와 맵 트리, 중앙 캔버스로 구성됩니다.",
-    },
     blocks: [
       {
         kind: "p",
@@ -101,8 +104,8 @@ const GUIDE_SECTIONS: readonly GuideSection[] = [
       {
         kind: "list",
         items: [
-          "상단 바 — 한 줄입니다. 왼쪽은 프로젝트 이름(메뉴)·저장·[자료집]·[소재]·바닥·상위·이벤트, 이어서 세계관·음악·효과음·찾기 아이콘입니다. 가운데는 명령 팔레트(Ctrl+K)입니다. 오른쪽은 [▶ 테스트]·랜덤 전투 테스트·스튜디오·[보기]·도움말·기록·신원·AI 설정·전체화면입니다.",
-          "창이 좁으면 세계관·음악·효과음·찾기 아이콘이 [도구 더 보기]로 접힙니다. 배율은 캔버스 오른쪽 위의 −/+ 와 배율 목록입니다. 단계는 0.25·0.5·1·2·3·4·6·8배입니다.",
+          "상단 바 — 한 줄입니다. 왼쪽은 프로젝트 이름(메뉴)·저장·[자료집]·[소재]·지형 붓·바닥·상위·이벤트, 이어서 세계관·음악·효과음·찾기 아이콘과 지금 도구·저장 상태입니다. 가운데는 명령 팔레트(Ctrl+K)입니다. 오른쪽은 [테스트]·랜덤 전투 테스트·AI 스튜디오·[보기]·도움말·언어·저장 기록·신원·AI 설정·전체화면입니다.",
+          "창이 좁으면 세계관·음악·효과음·찾기·전체화면이 [도구 더 보기]로 접힙니다. 더 좁으면 상단 바를 옆으로 밀어 나머지 단추에 닿습니다. 배율은 캔버스 오른쪽 위의 −/+ 와 배율 목록입니다. 단계는 0.25·0.5·1·2·3·4·6·8배입니다.",
           "왼쪽 패널 — 타일 팔레트와 맵 트리가 있습니다. 팔레트에서 타일을 고르고 캔버스에 칠합니다.",
           "캔버스 — Phaser 기반 지도 편집기입니다. 휠로 줌, 가운데 버튼 드래그로 화면을 이동합니다.",
           "캔버스 우클릭 — 그 자리의 타일을 집습니다. 구조물 위에서는 구조물 메뉴가 열립니다.",
@@ -115,15 +118,10 @@ const GUIDE_SECTIONS: readonly GuideSection[] = [
   {
     id: "map",
     title: "지도 편집",
-    image: {
-      src: "/assets/help/map.png",
-      alt: "지도 편집 화면",
-      caption: "지도 편집 — 팔레트에서 타일을 골라 캔버스에 칠합니다. 줌 버튼으로 확대/축소할 수 있습니다.",
-    },
     blocks: [
       {
         kind: "p",
-        text: "지도는 세 개의 레이어로 겹쳐 그립니다. 바닥 레이어는 지면처럼 캐릭터 발밑에 깔리는 타일, 상위 레이어는 캐릭터 위로 덮어 그려지는 것(지붕, 나뭇가지 등), 이벤트 레이어는 NPC·문·보물상자 같은 이벤트가 놓이는 층입니다. F5/F6/F7 또는 헤더의 바닥·상위·이벤트 버튼으로 레이어를 전환합니다.",
+        text: "지도는 세 개의 레이어로 겹쳐 그립니다. 바닥 레이어는 지면처럼 캐릭터 발밑에 깔리는 타일, 상위 레이어는 캐릭터 위로 덮어 그려지는 것(지붕, 나뭇가지 등), 이벤트 레이어는 NPC·문·보물상자 같은 이벤트가 놓이는 층입니다. Shift+1/2/3 또는 헤더의 바닥·상위·이벤트 버튼으로 레이어를 전환합니다.",
       },
       {
         kind: "list",
@@ -146,11 +144,6 @@ const GUIDE_SECTIONS: readonly GuideSection[] = [
   {
     id: "event",
     title: "이벤트",
-    image: {
-      src: "/assets/help/event.png",
-      alt: "이벤트 편집기",
-      caption: "이벤트 편집기 — 페이지와 명령을 조립해 NPC 대사, 전투, 이동 같은 게임 로직을 만듭니다.",
-    },
     blocks: [
       {
         kind: "p",
@@ -175,11 +168,6 @@ const GUIDE_SECTIONS: readonly GuideSection[] = [
   {
     id: "database",
     title: "자료집",
-    image: {
-      src: "/assets/help/database.png",
-      alt: "자료집",
-      caption: "자료집 — 액터·직업·스킬·아이템·적 등 게임의 기초 데이터를 편집합니다.",
-    },
     blocks: [
       {
         kind: "p",
@@ -201,17 +189,12 @@ const GUIDE_SECTIONS: readonly GuideSection[] = [
   {
     id: "resource",
     title: "자료 · 세계관 · 오디오",
-    image: {
-      src: "/assets/help/resource.png",
-      alt: "자료 보관함",
-      caption: "자료 보관함 — 타일 그림판·캐릭터·음악·효과음 등 프로젝트 자료를 확인하고 교체합니다.",
-    },
     blocks: [
       {
         kind: "list",
         items: [
           "소재 보관함 — 상단 바의 [소재]에서 타일 그림판·캐릭터·얼굴 그림·음악·효과음 등 프로젝트에 포함된 리소스를 확인하고 교체합니다.",
-          "세계관 — 상단 바의 지구 아이콘(세계관)에서 세계 설정 문서를 편집합니다. 창이 좁으면 [도구 더 보기] 안에 있습니다.",
+          "세계관 — 상단 바의 책 아이콘(세계관)에서 세계 설정 문서를 편집합니다. 창이 좁으면 [도구 더 보기] 안에 있습니다.",
           "음악·효과음 미리듣기 — 상단 바의 음표 아이콘(음악·효과음)을 누르면 테스트 창이 열립니다. 음악과 효과음 탭을 바꾸고 곡을 고른 뒤 [재생]으로 듣습니다. 같은 곡을 이벤트의 BGM 재생·효과음 재생 명령에 지정합니다. 창이 좁으면 아이콘은 [도구 더 보기] 안에 있습니다.",
         ],
       },
@@ -228,9 +211,9 @@ const GUIDE_SECTIONS: readonly GuideSection[] = [
       {
         kind: "list",
         items: [
-          "테스트 실행 — 상단 바 오른쪽의 [▶ 테스트]로 편집 중인 게임을 편집기 위의 창에서 실행합니다. 제목 줄의 [편집으로] 또는 [×]로 편집으로 돌아옵니다. 게임 안의 Esc는 메뉴·취소입니다.",
+          "테스트 실행 — 상단 바 오른쪽의 [테스트]로 편집 중인 게임을 편집기 위의 창에서 실행합니다. 제목 줄의 [편집으로] 또는 [×]로 편집으로 돌아옵니다. 게임 안의 Esc는 메뉴·취소입니다.",
           "창 크기 — 제목 줄의 [창]과 [전체 화면]으로 바꿉니다. 창 모드에서는 모서리를 끌어 크기를 조절합니다.",
-          "랜덤 전투 테스트 — [▶ 테스트] 옆 검 아이콘입니다. 멤버가 편성된 적 그룹을 무작위로 골라 전투 화면을 바로 띄웁니다.",
+          "랜덤 전투 테스트 — [테스트] 옆 주사위 아이콘입니다. 멤버가 편성된 적 그룹을 무작위로 골라 전투 화면을 바로 띄웁니다.",
         ],
       },
     ],
@@ -272,6 +255,8 @@ const GUIDE_SECTIONS: readonly GuideSection[] = [
  */
 export function openHelpModal(sectionId?: string): void {
   document.querySelector("[data-testid='help-modal']")?.remove();
+  // 닫으면 연 자리로 초점을 돌려준다. 명령 팔레트처럼 연 자리가 이미 사라졌으면 도움말 메뉴 단추로 간다.
+  const returnFocus = document.activeElement instanceof HTMLElement && document.activeElement !== document.body ? document.activeElement : null;
 
   const closeButton = el("button", {
     class: "help-modal-close",
@@ -380,6 +365,8 @@ export function openHelpModal(sectionId?: string): void {
     observer.disconnect();
     unregisterModal(backdrop);
     backdrop.remove();
+    const target = returnFocus?.isConnected ? returnFocus : document.querySelector<HTMLElement>("[data-testid='menu-help']");
+    target?.focus();
   }
 
   closeButton.addEventListener("click", close);
@@ -406,12 +393,18 @@ export function openHelpModal(sectionId?: string): void {
   if (requested && sectionId) {
     requested.scrollIntoView({ block: "start" });
     setActiveNav(sectionId);
+    // 그 절의 제목으로 초점을 보낸다 — 낭독기는 제목부터 읽고, Tab 은 그 절에서 이어진다.
+    const heading = requested.querySelector<HTMLElement>("h3");
+    if (heading) {
+      heading.focus({ preventScroll: true });
+      return;
+    }
   }
   closeAction.focus();
 }
 
 function renderSection(section: GuideSection): HTMLElement {
-  const children: HTMLElement[] = [el("h3", { text: section.title })];
+  const children: HTMLElement[] = [el("h3", { text: section.title, attrs: { tabindex: "-1" } })];
   if (section.image) {
     children.push(
       el("figure", {
@@ -464,11 +457,13 @@ function shortcutCard(section: ShortcutSection): HTMLElement {
         class: "help-modal-shortcut-list",
         children: section.entries.flatMap((entry) => [
           el("dt", {
-            children: entry.keys.map((key) =>
-              key === "~"
-                ? el("span", { class: "help-modal-key-tilde", text: "~" })
-                : el("kbd", { class: "help-modal-key", text: key })
-            ),
+            children: entry.gesture
+              ? [el("span", { class: "help-modal-gesture", text: entry.gesture })]
+              : (entry.keys ?? []).map((key) =>
+                key === "~"
+                  ? el("span", { class: "help-modal-key-tilde", text: "~" })
+                  : el("kbd", { class: "help-modal-key", text: key })
+              ),
           }),
           el("dd", { text: entry.desc }),
         ]),
