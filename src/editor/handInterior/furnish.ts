@@ -33,7 +33,7 @@ function withItems(base: HandInteriorInput, items: readonly InteriorTemplateItem
 
 /** 문 틈 둘레(지나가는 칸) — 가구가 덮으면 안 된다. 문 양쪽으로 곧게 두 칸(2026-10-19 「집같은 작은 공간은 통행 안되는 곳도 많은거같음」 -
  *  한 칸만 비우면 둘째 칸 가구 때문에 문 앞에서 옆으로 꺾어 들어가야 했다). 가로 문의 아래 방은 벽면 두 줄 뒤 바닥 두 칸까지. */
-function doorwayCells(composed: ComposedRooms): Set<string> {
+export function doorwayCells(composed: ComposedRooms): Set<string> {
   const keep = new Set<string>();
   for (const o of composed.openings) {
     if (o.open) continue;   // 칸막이를 통째로 걷은 쌍은 어디로든 지나간다 — 닿는지는 조립기 검사가 본다
