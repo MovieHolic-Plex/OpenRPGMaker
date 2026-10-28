@@ -68,4 +68,14 @@
     }
   }
 
+  /* [전 표면→사용자 설정] 강제 색(고대비 모드)에서는 반투명 유리면·흐림이 글자와 경계를 흐린다(HIG IS-029).
+     흐림은 표면마다 제각각 걸려 있어 한꺼번에 끈다. 반투명 바탕 토큰은 base/theme.css 의 forced-colors 블록이 불투명·투명으로 바꾼다.
+     만기: 흐림을 쓰는 표면이 자기 forced-colors 블록을 갖추면 지운다. */
+  @media (forced-colors: active) {
+    *,
+    *::before,
+    *::after {
+      backdrop-filter: none !important;
+    }
+  }
 }
