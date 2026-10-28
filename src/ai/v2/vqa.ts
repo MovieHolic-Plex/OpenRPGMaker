@@ -7,6 +7,13 @@
 import type { Project } from "@/project/types";
 
 export const VQA_MAX_ROUNDS = 3;
+/**
+ * 플레이에 지장 주는 결함(blocker)이 남으면 출하 차단으로 보고 판을 더 준다(2026-10-28 사용자: «VQA 가 핵심»).
+ * 스위트 기준선에서 3판을 다 돌고도 결함이 남은 채 «보고만» 하고 끝난 게임이 절반이었다. polish 만 남으면 3판에서 멈춘다.
+ */
+export const VQA_BLOCKER_EXTRA_ROUNDS = 2;
+export const VQA_ROUND_CAP = VQA_MAX_ROUNDS + VQA_BLOCKER_EXTRA_ROUNDS;
+export const vqaBlockers = (round: VqaRound | undefined): readonly VqaDefect[] => (round?.defects ?? []).filter((d) => d.severity === "blocker");
 /** 한 판에 검수자에게 보내는 그림 수 상한. 맵이 많으면 시작 맵·이번에 바뀐 맵을 먼저. */
 export const VQA_MAX_IMAGES = 10;
 
@@ -126,7 +133,8 @@ export const vqaClean = (round: VqaRound): boolean => !round.problem && round.de
 /** 다음 판으로 갈지. 깨끗하면 멈춤, 3판이면 멈춤, 검수 불가가 두 판 이어지면 멈춤(그림 경로가 없는 실행). */
 export function vqaShouldContinue(rounds: readonly VqaRound[]): boolean {
   const last = rounds.at(-1);
-  if (!last || vqaClean(last) || rounds.length >= VQA_MAX_ROUNDS) return false;
+  if (!last || vqaClean(last)) return false;
+  if (rounds.length >= (vqaBlockers(last).length ? VQA_ROUND_CAP : VQA_MAX_ROUNDS)) return false;
   if (last.problem && rounds.at(-2)?.problem) return false;
   return true;
 }
@@ -221,7 +229,9 @@ export function vqaSummary(rounds: readonly VqaRound[]): { readonly clean: boole
 export function vqaLeftoverInstruction(rounds: readonly VqaRound[], why?: string): string {
   const summary = vqaSummary(rounds);
   const problem = rounds.at(-1)?.problem;
+  const blockers = vqaBlockers(rounds.at(-1));
   return [
+    ...(blockers.length ? [`[출하 차단 vqa-blocker] 플레이에 지장 주는 화면 결함 ${blockers.length}건이 ${rounds.length}판 뒤에도 남았다 — 이 게임은 «완성»이 아니다. 보고 첫 줄에 「아직 완성 아님: 화면 결함 ${blockers.length}건」이라고 쓴다.`] : []),
     `[화면 검수 끝 — ${summary.text}${why ? ` · ${why}` : ""}] 더 고치지 말고, 앞 보고를 대신하는 최종 보고를 「최종 보고(앞 보고를 고침):」로 시작해 쓴다. 끝에 아래 남은 것을 그대로 적는다(«다 됐다»고 쓰지 않는다):`,
     ...(summary.leftover.length ? summary.leftover.map((d) => `- ${d.where}: ${d.what}`) : [`- 화면 검수 미완료${problem ? `(${problem})` : ""}`]),
   ].join("\n");

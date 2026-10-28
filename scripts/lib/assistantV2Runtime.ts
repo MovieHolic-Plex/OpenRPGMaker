@@ -10,7 +10,7 @@ import type { PiAgentDoneEvent, PiAgentEvent, PiAgentRequest } from "../../src/a
 import { buildV2SystemPrompt } from "../../src/ai/v2/prompt.ts";
 import { createV2Tools, V2Session, v2FinishGate } from "../../src/ai/v2/verbs.ts";
 import { shipBlockers } from "../../src/ai/v2/shipChecks.ts";
-import { reviewVqaRound, vqaReviewerCandidates, vqaClean, vqaFixBrief, vqaFixRetry, vqaFollowUp, vqaLeftoverInstruction, vqaShotPlan, vqaReviewerLabel, vqaShouldContinue, vqaSummary, wantsWholeGame, VQA_MAX_ROUNDS, type VqaReviewerPick, type VqaRound, type VqaShot } from "../../src/ai/v2/vqa.ts";
+import { reviewVqaRound, vqaReviewerCandidates, vqaClean, vqaFixBrief, vqaFixRetry, vqaFollowUp, vqaLeftoverInstruction, vqaShotPlan, vqaReviewerLabel, vqaShouldContinue, vqaSummary, wantsWholeGame, VQA_MAX_ROUNDS, VQA_ROUND_CAP, vqaBlockers, type VqaReviewerPick, type VqaRound, type VqaShot } from "../../src/ai/v2/vqa.ts";
 import { familyOfProviderId } from "../../src/ai/assistantRoles.ts";
 import type { PiAssistantV2Env } from "../../src/ai/v2/env.ts";
 import { adviseTurn, advisorFollowUp, withShipBlockers, advisorSummary, compactToolLog, summarizeProjectDiff, type AdvisorToolCall, type AdvisorVerdict } from "../../src/ai/v2/advisor.ts";
@@ -143,7 +143,7 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
     const withFailed: VqaRound = failed.length && !round.problem && !shots.length ? { ...round, problem: `그림을 찍지 못함: ${failed.join(", ").slice(0, 400)}` } : round;
     vqaRounds.push(withFailed);
     vqaMs += Date.now() - t0;
-    env.emit({ type: "execution_status", name: "v2.vqa", ok: vqaClean(withFailed), summary: `화면 검수 ${withFailed.round}/${VQA_MAX_ROUNDS} · ${withFailed.problem ?? `결함 ${withFailed.defects.length}건`} · 그림 ${shots.length}장${failed.length ? ` (못 찍음 ${failed.length}: ${failed.join(" / ").slice(0, 300)})` : ""} · ${reviewer} · ${Math.round((Date.now() - t0) / 1000)}초`,
+    env.emit({ type: "execution_status", name: "v2.vqa", ok: vqaClean(withFailed), summary: `화면 검수 ${withFailed.round}/${withFailed.round > VQA_MAX_ROUNDS ? VQA_ROUND_CAP : VQA_MAX_ROUNDS} · ${withFailed.problem ?? `결함 ${withFailed.defects.length}건${vqaBlockers(withFailed).length ? `(막음 ${vqaBlockers(withFailed).length})` : ""}`} · 그림 ${shots.length}장${failed.length ? ` (못 찍음 ${failed.length}: ${failed.join(" / ").slice(0, 300)})` : ""} · ${reviewer} · ${Math.round((Date.now() - t0) / 1000)}초`,
       data: { ...withFailed, failed } });
     return withFailed;
   };
@@ -204,7 +204,7 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
       tools: (env) => createV2Tools(env, session),
       // 차례 순서: ① 끝맺음 관문 + 검토자 → (막음이면) ② 재검토(기록만) → ③ 화면 검수 1~3판(게임 전체 요청만). 판마다 결함이 있으면 고치는 한 바퀴.
       // 화면 검수: 판마다 한 차례 + 고치기 다시 한 번 + 남은 결함 보고 + 그 보고의 최종 검토 후속.
-      maxRounds: 2 + VQA_MAX_ROUNDS + 3,
+      maxRounds: 2 + VQA_ROUND_CAP + 3,
       afterMain: async (env) => {
         if (vqaPhase === "advisor-recheck") {
           if (followFrom) followMs = Date.now() - followFrom;
