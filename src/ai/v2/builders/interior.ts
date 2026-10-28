@@ -10,6 +10,7 @@ import { INTERIOR_BARE_FLOOR_LIMIT, measureInteriorBareFloor } from "@/editor/ha
 import type { BuildRun, PlaceBuilder, PlaceBuildResult, PlaceRecord, PlaceSpec, ZoneSpec } from "../types";
 import { interiorVenues, type InteriorVenue, type VenueStamp } from "./interiorVenues";
 import { kindServesPurpose, purposeOf, purposeSwap } from "../roomPurpose";
+import { DRESS_ROOM_TARGET, dressRoom, roomBarePct } from "./dressRoom";
 
 type Obj = { id: string; x: number; y: number };
 type Room = { id: string; x0: number; y0: number; x1: number; y1: number; floor?: string; wall?: string };
@@ -407,7 +408,11 @@ function pickTemplate(tilesetId: string, kind: string, size: string | undefined)
   const ts = roomTemplates(tilesetId).filter((t) => t.kind === kind);
   const own = ts.filter((t) => t.map === kind);
   const plain = ts.filter((t) => !EXOTIC_MAPS.has(t.map));
-  const pool = [...(own.length ? own : plain.length ? plain : ts)].sort((a, b) => a.w * a.h - b.w * b.h);
+  const base = own.length ? own : plain.length ? plain : ts;
+  // 가구 한 점당 바닥 12칸을 넘는 성긴 견본은 빼고 고른다(있으면) — 큰 학교의 입학 홀이 manor_1f 23×19(가구 16점, 점당 27칸)를 골라
+  // 맨바닥 60% 의 빈 광장이 됐다(2026-10-28 interior 장부 56·57 후속). 빈 바닥은 메우지 말고 방을 줄인다.
+  const dense = base.filter((t) => t.w * t.h <= 12 * Math.max(1, t.items?.length ?? 0));
+  const pool = [...(dense.length ? dense : base)].sort((a, b) => a.w * a.h - b.w * b.h);
   if (!pool.length) return undefined;
   return size === "small" ? pool[0] : size === "large" ? pool[pool.length - 1] : pool[Math.floor((pool.length - 1) / 2)];
 }
@@ -802,11 +807,13 @@ export const interiorBuilder: PlaceBuilder = {
     const rooms = firstFloor.map((zone) => {
       const kind = resolveKind(tilesetId, zone, notes, `${spec.name} ${spec.theme ?? ""}`, firstFloor.length === 1);
       const n = (used.get(kind) ?? 0) + 1; used.set(kind, n);
-      // 크기: small = 가장 작은 견본, medium = 가운데, large = 가장 큰 견본 × 1.3. 큰 주인공 물건이 들어갈 만큼은 넓힌다.
+      // 크기: small = 가장 작은 견본, medium = 가운데, large = 가장 큰 견본(한 방짜리면 × 1.3). 큰 주인공 물건이 들어갈 만큼은 넓힌다.
       const t = zone.keep?.w && zone.keep.h ? { w: zone.keep.w, h: zone.keep.h } : pickTemplate(tilesetId, kind, zone.size ?? spec.size);
       const need = (zone.anchors ?? []).map((a) => findPart(roomSpec, a)).filter((p): p is NonNullable<typeof p> => !!p && p.kind !== "hang");
-      const minW = Math.max(0, ...need.map((p) => p.w + 4)), minH = Math.max(0, ...need.map((p) => Math.max(1, p.h) + 6));
-      const grow = spec.size === "large" && !zone.keep ? scale : 1;
+      // 벽면 두 줄 + 물건 + 앞 통로 두 줄. 벽에 붙는 물건(벽난로·창)은 벽면 줄에 박히니 한 줄 덜.
+      const minW = Math.max(0, ...need.map((p) => p.w + 4)), minH = Math.max(0, ...need.map((p) => Math.max(1, p.h) + (p.kind === "wall" ? 4 : 5)));
+      // 여러 방 건물에서 「크다」는 방 수로 낸다 — 방마다 견본 × 1.3 으로 키우면 방이 내용보다 커져 빈 홀이 된다(마법학교 홀 30×25). 한 방짜리만 키운다.
+      const grow = spec.size === "large" && !zone.keep && firstFloor.length === 1 ? scale : 1;
       const sized = t ? { w: Math.max(minW, Math.round(t.w * grow)), h: Math.max(minH, Math.round(t.h * grow)) } : minW ? { w: minW, h: minH } : {};
       return { id: zone.id ?? (n > 1 ? `${kind}${n}` : kind), kind, ...sized, min: { w: Math.max(5, minW), h: Math.max(6, minH) }, ...(zone.keep?.floor ? { floor: zone.keep.floor } : {}), ...(zone.keep?.wall ? { wall: zone.keep.wall } : {}), zone };
     });
@@ -857,7 +864,7 @@ export const interiorBuilder: PlaceBuilder = {
       const bareCellsOf = () => { const m = run.ctx.project.maps[builtId]; return m ? measureInteriorBareFloor(run.ctx.project, m)?.bareCells ?? 0 : 0; };
       let cells = bareCellsOf();
       const stuck = new Set<string>();
-      for (let k = 0; k < 5 && pct > SHRINK_BARE_PCT; k++) {
+      for (let k = 0; k < 5; k++) {   // 전체가 괜찮아도 한 방이 비면 그 방을 줄인다
         const m = run.ctx.project.maps[builtId];
         const builtRooms = ((first.data?.rebuild as Rebuild | undefined)?.rooms ?? []);
         if (!m) break;
@@ -876,7 +883,7 @@ export const interiorBuilder: PlaceBuilder = {
         const li = worst ? layout.rooms.findIndex((q) => q.id === worst.r.id) : -1;
         const target = li >= 0 ? layout.rooms[li]! : undefined;
         const want = li >= 0 ? rooms[li] : undefined;
-        if (!worst || worst.s < 0.45 || !target?.w || !target.h || !want || target.w * target.h < 80) break;
+        if (!worst || worst.s < 0.4 || !target?.w || !target.h || !want || target.w * target.h < 40) break;
         const w = Math.max(want.min.w, Math.round(target.w * 0.7)), h = Math.max(want.min.h, Math.round(target.h * 0.7));
         if (w === target.w && h === target.h) { stuck.add(worst.r.id); continue; }
         const mat = builtRooms.find((q) => q.id === want.id);
@@ -941,7 +948,9 @@ export const interiorBuilder: PlaceBuilder = {
           if (smallPart) { notes.push(`${what}: 방(${room.id}, 바닥 ${floorArea}칸)에 비해 ${part.id}(${drawn}칸 그림)가 커서 ${smallPart.id} 로 바꿨다`); part = smallPart; }
         }
       }
-      if (rb.objects.some((o) => o.id === part.id) && !/계단|stair/iu.test(what)) { placed.push({ zone: room.id, what, id: part.id }); continue; }
+      // 이미 «그 방에» 있으면 놓은 것으로 친다 — 다른 방(견본)에 같은 가구가 있다고 넘기면 입학 홀의 「큰 벽난로」가 복도 견본 벽난로로 셈되어 홀이 비었다.
+      const inZone = (o: Obj) => { const r = rb.rooms.find((q) => q.id === room.id); return !r || (o.x >= r.x0 && o.x <= r.x1 && o.y >= r.y0 && o.y <= r.y1 + 1); };
+      if (rb.objects.some((o) => o.id === part.id && inZone(o)) && !/계단|stair/iu.test(what)) { placed.push({ zone: room.id, what, id: part.id }); continue; }
       // 올라가는 계단: 이 방이 맨 북쪽 바깥 벽에 닿지 않으면(위에 다른 방) 맨 북쪽 방 벽에 단다 — 칸막이 속으로 오르는 계단은 틀린 그림이다.
       const isUp = part.stairs === "up" || /stairs up/u.test(part.id);
       const top = Math.min(...rb.rooms.map((r) => r.y0));
@@ -993,6 +1002,8 @@ export const interiorBuilder: PlaceBuilder = {
     // 요청한 주인공 물건이 끝까지 남았는지 — 크기 줄이기·다시 짓기에서 「큰 망원경」이 빠진 채 끝났다(2026-10-23 비교).
     const finalIds = new Set(((args.objects as Obj[]) ?? []).map((o) => o.id));
     for (const p of placed) if (!/계단|stair/iu.test(p.what) && !finalIds.has(p.id) && !p.zone.startsWith("2층")) missing.push(`${p.what}(${p.zone}) — 최종 맵에 없다(놓은 뒤 밀려났다)`);
+    dressEmptyRooms(run, builtMapId, rooms.map((r) => ({ kind: r.kind, id: r.id, purpose: r.zone.purpose })), notes);
+    if (upperMapId && mapIds.includes(upperMapId)) dressEmptyRooms(run, upperMapId, [], notes);
     const entrance = Array.isArray(final.data?.entrance) ? (final.data!.entrance as { x: number; y: number }[])[0] : undefined;
     const state: InteriorState = { tilesetId, mapId: builtMapId, args, ...(upperMapId ? { upperMapId } : {}), ...(upperArgs ? { upperArgs } : {}), placed, ...(backDoor ? { backDoor } : {}) };
     const result: PlaceBuildResult = {
@@ -1007,6 +1018,27 @@ export const interiorBuilder: PlaceBuilder = {
 };
 
 /** 고치기: 앞 상태(마지막 인자)에서 출발해 주인공 물건만 더한다(방 배치는 그대로). */
+/**
+ * 방마다 쓰임 가구(교실=책상 줄·서고=책장·홀=벤치)가 서게 — 줄이고 메운 뒤에도 맨바닥 30% 넘는 방은 그 방 쓰임으로 dress_room 과 같은 규칙
+ * (벽 등진 자리·같은 가구 3점·깔개 1장)으로 채운다(2026-10-28 마법학교: 견본보다 작아진 교실에 책상 두 개만 남았다).
+ */
+function dressEmptyRooms(run: BuildRun, mapId: string, rooms: readonly { kind: string; id: string; purpose?: string }[], notes: string[]): void {
+  const m = run.ctx.project.maps[mapId];
+  if (!m) return;
+  const taken = new Map<string, number>();
+  for (const l of (m.locations ?? []).filter((q) => (q.tags ?? []).includes("hand-layout-room"))) {
+    const k = taken.get(l.name) ?? 0; taken.set(l.name, k + 1);
+    const zone = rooms.filter((r) => r.kind === l.name || r.id === l.name)[k];
+    const rect = { name: l.name, x0: l.x, y0: l.y, x1: l.x + l.w - 1, y1: l.y + l.h - 1 };
+    if (roomBarePct(run.ctx.project, run.ctx.project.maps[mapId]!, rect) <= DRESS_ROOM_TARGET) continue;
+    // 쓰임 낱말(「입학 홀」「교수 연구실」)이 칩셋 가구 표에 없으면 방 종류(entrance·study)로 다시 — 칩셋이 아는 낱말로 내려간다.
+    const at = { x: l.x + Math.floor(l.w / 2), y: l.y + l.h - 1 };
+    let dressed = dressRoom(run, mapId, at, String(zone?.purpose ?? zone?.kind ?? l.name));
+    for (const word of [zone?.kind, l.name]) if (!dressed.placed.length && word && /찾지 못했다/u.test(dressed.summary)) dressed = dressRoom(run, mapId, at, word);
+    if (dressed.placed.length) notes.push(`${l.name}: 맨바닥 ${dressed.before}% → ${dressed.after}% — 쓰임 가구 ${dressed.placed.length}점`);
+  }
+}
+
 export function interiorAddAnchors(run: BuildRun, record: PlaceRecord, adds: readonly { zone?: string; what: string; near?: { x: number; y: number } }[]): PlaceBuildResult {
   const state = record.result.state as InteriorState;
   const roomSpec = roomSpecOf(run.ctx.project.tilesets[state.tilesetId])!;
@@ -1039,9 +1071,11 @@ export function interiorAddAnchors(run: BuildRun, record: PlaceRecord, adds: rea
     args = done.args; rb = done.rb; placed.push({ zone: room.id, what: add.what, id: part.id });
   }
   const final = build(run, args);
+  const dressNotes: string[] = [];
+  if (final.ok) dressEmptyRooms(run, state.mapId, (record.spec.zones ?? []).map((z) => ({ kind: String(z.kind ?? ""), id: String(z.id ?? z.kind ?? ""), purpose: z.purpose })), dressNotes);
   return { ok: final.ok, mapIds: record.result.mapIds, ...(record.result.entrance ? { entrance: record.result.entrance } : {}),
     summary: `${record.spec.name}: 더한 물건 ${placed.slice(state.placed.length).map((p) => p.id).join(", ") || "없음"} — ${final.summary.slice(0, 160)}`,
-    warnings: [], missingArt: missing, calls: run.calls, state: { ...state, args, placed } };
+    warnings: dressNotes, missingArt: missing, calls: run.calls, state: { ...state, args, placed } };
 }
 
 // ───── 놓인 가구 하나 옮기기·돌리기·빼기(move_object) ─────

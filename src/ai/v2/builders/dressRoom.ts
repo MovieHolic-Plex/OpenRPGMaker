@@ -272,7 +272,13 @@ export function dressRoom(run: BuildRun, mapId: string, at: { x: number; y: numb
       const wallW = Array.from({ length: rows }, (_, j) => !floorCell(run.ctx.project, map(), x - 1, y + j)).every(Boolean);
       const wallE = Array.from({ length: rows }, (_, j) => !floorCell(run.ctx.project, map(), x + o.w, y + j)).every(Boolean);
       // 서는 가구는 벽을 등진 자리에만 둔다 — 가운데 빈 곳마다 책상·의자·바 의자를 흩뿌리면 「산재」로 읽혔다(2026-10-28). 가운데는 길로 남긴다.
-      if (!(wallN || wallW || wallE)) continue;
+      // 예외: 책상·장의자·탁자 줄(교실·예배당·서고 열람석)은 그 방의 쓰임 자체라 가운데에 줄지어 선다 — 같은 가구와 같은 줄·같은 열에 맞춘다.
+      const rowPiece = /desk|pew|table|책상|장의자|탁자|식탁/iu.test(label) && !/side|협탁|벽/iu.test(label);
+      if (!(wallN || wallW || wallE || rowPiece)) continue;
+      if (rowPiece && !(wallN || wallW || wallE)) {
+        const same = placedInRoom(spec, map(), room, id);
+        if (same.some((p) => p.y === y || p.x === x)) score += 12;
+      }
       // 이웃 가구와 맞붙지 않게: 좌우 한 칸 틈(벽 따라 줄짓는 같은 가구는 허용) — 장작 더미가 안락의자 등받이에 얹힌 듯 붙었다.
       const sideBusy = [-1, o.w].some((i) => Array.from({ length: rows }, (_, j) => j).some((j) => !noObjectAt(map(), x + i, y + j) && floorCell(run.ctx.project, map(), x + i, y + j)));
       if (sideBusy) score -= 20;

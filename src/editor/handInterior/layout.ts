@@ -553,6 +553,33 @@ function trimToTarget(rects: Map<string, Rect>, wants: Want[], entrance: string,
   }
 }
 
+/**
+ * 바깥 변을 깎고도 목표보다 2칸 넘게 큰 방은 안쪽 변(다른 방과 맞댄 변)도 깎는다 — 이웃과의 맞닿음(문을 낼 수 있는 이웃 쌍)이 그대로일 때만.
+ * 깎인 띠는 두꺼운 벽(2칸 이상 틈)이 된다. 왜(2026-10-28 interior 장부 56·57 후속): 나무 배치는 형제 방을 같은 폭으로 늘려
+ * 견본 6×6 입학 홀이 8×8 로 늘고 맨바닥 52% 가 됐다 — 바깥에 안 닿은 방은 trimToTarget 이 못 깎았다.
+ */
+function trimInner(rects: Map<string, Rect>, wants: Want[], entrance: string) {
+  const sig = (m: Map<string, Rect>, id: string) => adjacency(m).filter((e) => e.a === id || e.b === id).map((e) => `${[e.a, e.b].sort().join("|")}:${e.kind}`).sort().join(",");
+  for (const w of wants) {
+    const rc = rects.get(w.id)!;
+    const before = sig(rects, w.id);
+    const tryCut = (next: Rect) => {
+      const trial = new Map(rects); trial.set(w.id, next);
+      if (sig(trial, w.id) !== before) return false;
+      rects.set(w.id, next); return true;
+    };
+    for (let extra = rc.w - w.tw; extra >= 2; extra = rects.get(w.id)!.w - w.tw) {
+      const r = rects.get(w.id)!;
+      if (!tryCut({ ...r, w: r.w - extra }) && !tryCut({ ...r, x: r.x + extra, w: r.w - extra }) && !tryCut({ ...r, w: r.w - Math.ceil(extra / 2) }) && !tryCut({ ...r, x: r.x + Math.ceil(extra / 2), w: r.w - Math.ceil(extra / 2) })) break;
+    }
+    for (let extra = rects.get(w.id)!.h - w.th; extra >= 2; extra = rects.get(w.id)!.h - w.th) {
+      const r = rects.get(w.id)!;
+      const down = w.id !== entrance;   // 출구 방은 아래 변(출구)을 지킨다
+      if (!tryCut({ ...r, y: r.y + extra, h: r.h - extra }) && !(down && tryCut({ ...r, h: r.h - extra })) && !tryCut({ ...r, y: r.y + Math.ceil(extra / 2), h: r.h - Math.ceil(extra / 2) }) && !(down && tryCut({ ...r, h: r.h - Math.ceil(extra / 2) }))) break;
+    }
+  }
+}
+
 interface Edge { a: string; b: string; kind: "h" | "v" }
 function adjacency(rects: Map<string, Rect>): Edge[] {
   const out: Edge[] = [];
@@ -703,7 +730,7 @@ function buildCandidatesForVariant(
       W = tree.w; H = tree.h;
     } else rects = slice({ x: 1, y: 1, w: W, h: H }, order, entrance, r);
     if (!rects) continue;
-    if (!fromRows) trimToTarget(rects, wants, entrance, W, H);
+    if (!fromRows) { trimToTarget(rects, wants, entrance, W, H); trimInner(rects, wants, entrance); }
     {
       const mx = Math.min(...[...rects.values()].map((q) => q.x)) - 1, my = Math.min(...[...rects.values()].map((q) => q.y)) - 1;
       for (const q of rects.values()) { q.x -= mx; q.y -= my; }

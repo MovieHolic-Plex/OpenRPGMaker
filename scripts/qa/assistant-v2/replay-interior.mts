@@ -11,6 +11,7 @@ import type { PiAssistantV2Env } from "../../../src/ai/v2/env.ts";
 import type { ToolContext } from "../../../src/editor/tools/types.ts";
 import { measureInteriorBareFloor } from "../../../src/editor/handInterior/bareFloor.ts";
 import { isPassable } from "../../../src/project/collision.ts";
+import { roomBarePct } from "../../../src/ai/v2/builders/dressRoom.ts";
 
 const argv = process.argv.slice(2);
 const opt = (name: string, d: string) => { const i = argv.indexOf(`--${name}`); return i >= 0 ? argv[i + 1]! : d; };
@@ -93,6 +94,11 @@ for (const mapId of touched) {
   fs.writeFileSync(path.join(out, `${tag}-${mapId}.png`), renderMapPng(ctx.project, map, scale).png);
   const bare = measureInteriorBareFloor(ctx.project, map);
   log.push(`== ${mapId} ${map.name} ${map.width}x${map.height} bare=${bare?.pct ?? "-"}%`);
+  // 방마다 빈 바닥 — dress_room·빌더가 쓰는 자(roomBarePct: 2×2 맨바닥 덩이 ÷ 방 바닥 칸).
+  for (const l of (map.locations ?? []) as unknown as { name: string; x: number; y: number; w: number; h: number; tags?: string[] }[]) {
+    if (!(l.tags ?? []).includes("hand-layout-room")) continue;
+    log.push(`   room ${l.name} ${l.w}x${l.h} bare=${roomBarePct(ctx.project, map, { name: l.name, x0: l.x, y0: l.y, x1: l.x + l.w - 1, y1: l.y + l.h - 1 })}%`);
+  }
 }
 {
   const p = ctx.project, sm = p.maps[p.startMapId];
