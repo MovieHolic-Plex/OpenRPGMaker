@@ -5,6 +5,17 @@
 
 <!-- releases -->
 
+## 0.356.1 — 2026-10-28
+
+### 수정
+
+- **dialogue** — dialogue tab review fixes — clipped proposal buttons, counts, readable tool cards, accept-all confirm (#3872) (`0bda1d5`)
+- **player** — keep the harness registry and workshop object-gen kit out of the exported player; add a player bundle guard (#3870) (`de97846`)
+
+### 기타
+
+- Dungeon themes: cave stalactites, exit fallback, mine/tower seed variety (#3873) (`cdadb49`)
+
 ## 0.356.0 — 2026-10-27
 
 ### 기능
