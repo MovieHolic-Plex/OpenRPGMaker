@@ -350,6 +350,16 @@
   grid-template-columns: minmax(0, 1fr);
 }
 .battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-command-scroll-cue { grid-column: 1 / -1; }
+/* 「뒤로」는 머리줄(「스킬」) 오른쪽 빈자리에 앉는다. 목록 끝 행으로 두면 기술 3개만으로 4행 스크롤포트가
+   차서 뒤로 행 하나 때문에 「▾」가 기술 행 위에 떴다 — 기술은 다 보이는데 더 있다고 말했다(2026-10-29 실측). */
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-command-menu > .battle-submenu-header { grid-row: 1; grid-column: 1; }
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-command-menu:has(> .battle-submenu-header) > .battle-command[data-testid="actor-command-back"] {
+  grid-row: 1;
+  grid-column: 1;
+  justify-self: end;
+  width: auto;
+  min-width: 0;
+}
 /* 기술·아이템 목록은 파티 창 자리까지 넓게 편다(FF6 마법 목록처럼). 38fr 창(약 149px)에서는 22px 글자로 한글 3자부터 「홍…」「십자…」 로 잘리고,
    속성 꼬리표·MP 가 이름 자리를 더 먹어 기술 이름을 읽을 수 없었다(jrpg-loop-1 ct1 실측: 「홍련의 시공참」 143px 가 66px 에 갇힘). 목록이 열린 동안만 호스트가 두 열을 덮고, 닫히면 원래 자리로 돌아온다. */
 .battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"]:has(.battle-command-menu > .battle-submenu-header) .battle-command-host {

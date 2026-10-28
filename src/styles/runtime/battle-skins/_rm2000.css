@@ -617,6 +617,18 @@
   min-width: 0;
 }
 
+/* 무기 꼬리표(「검」)는 이름 바로 뒤에 붙고, 비용 배지만 오른쪽 끝으로 민다. space-between 이면
+   꼬리표가 행 가운데 떠서 어느 기술의 것인지 읽히지 않았다(2026-10-29 dungeon 십자베기 실측). */
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"] .battle-command-menu:has(> .battle-submenu-header) .battle-command-text {
+  justify-content: flex-start;
+}
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"] .battle-command-menu:has(> .battle-submenu-header) .battle-command-text .battle-command-tag {
+  align-self: center;
+}
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"] .battle-command-menu:has(> .battle-submenu-header) .battle-command-text small {
+  margin-left: auto;
+}
+
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"] .battle-command-menu:has(> .battle-submenu-header) .battle-command-text small {
   background: var(--rm-card-raised);
   border-radius: 6px;
