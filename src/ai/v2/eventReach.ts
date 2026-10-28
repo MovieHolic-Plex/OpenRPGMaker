@@ -64,6 +64,12 @@ const nextTo = (map: GameMap, reach: Uint8Array, c: Cell) => DIRS.some(([dx, dy]
   return x >= 0 && y >= 0 && x < map.width && y < map.height && !!reach[y * map.width + x];
 });
 
+/** 시작점·착지점에서 걸어 닿는 칸(막는 이벤트는 못 지난다). 앵커가 없으면 undefined. */
+export function reachableCells(project: Project, map: GameMap): Uint8Array | undefined {
+  const anchors = anchorsOf(project, map);
+  return anchors.length ? reachFrom(project, map, anchors, blockersOf(map)) : undefined;
+}
+
 /** 이 맵에서 걸어 가 말을 걸 수 없는 이벤트 id(앵커가 없는 맵은 판단하지 않는다). */
 export function unreachableEvents(project: Project, mapId: string, eventIds?: readonly string[]): string[] {
   const map = project.maps[mapId];
@@ -75,18 +81,25 @@ export function unreachableEvents(project: Project, mapId: string, eventIds?: re
 }
 
 const DOOR_NAME = /문|door|출구|현관|exit|gate/iu;
-const NOT_DOOR_NAME = /금고|창문|서랍|문서|문양|문장|주문|질문|자물쇠|lock|safe|window/iu;
-const DOOR_ART = /문|door|gate/iu;
-const NOT_DOOR_ART = /금고|창문|창틀|문양|문장|window|safe/iu;
+const NOT_DOOR_NAME = /금고|창문|서랍|문서|문양|문장|주문|질문|자물쇠|문지기|문하생|천문|lock|safe|window/iu;
+// 문 그림 이름표: 괄호를 뗀 이름이 「…문」「…문 통로」「…문칸」으로 끝나야 한다 — 「천문대 둥근 지붕」「큰 굴절 망원경(… 천문대 중심)」
+// 「고문대」가 문으로 잡혀 관측실 망원경 칸을 문으로 썼다(2026-10-28 task 5 조사).
+const DOOR_ART = /(?:문|문 ?통로|문칸|door|gate)$/iu;
+const NOT_DOOR_ART = /금고|창문|창틀|문양|문장|포문|뚜껑문|수문|천문|window|safe|hatch/iu;
+/** 이름표가 문 그림인가(괄호·「버들항 · 」 같은 앞머리를 떼고 본다). */
+export const isDoorArtLabel = (label: string): boolean => {
+  const base = label.replace(/\s*\([^)]*\)/gu, "").replace(/^.*·\s*/u, "").trim();
+  return !!base && DOOR_ART.test(base) && !NOT_DOOR_ART.test(base);
+};
 /** 이름이 문인 이벤트(탈출 문·현관문) — 문 옆 자물쇠·금고문은 아니다. */
 export const isDoorName = (name: string) => DOOR_NAME.test(name) && !NOT_DOOR_NAME.test(name);
 
 /** 그림 「문」 칸들(맨 아래 줄 — 사람이 서서 여는 칸). */
-function doorArtCells(project: Project, map: GameMap): Cell[] {
+export function doorArtCells(project: Project, map: GameMap): Cell[] {
   const m = map as unknown as Record<string, ArrayLike<number> | undefined>;
   const hit = (x: number, y: number) => ["lowerTiles", "lowerOverlayTiles", "upperTiles", "upperOverlayTiles"].some((k) => {
     const label = tileLabel(project, map, m[k]?.[y * map.width + x]);
-    return !!label && DOOR_ART.test(label) && !NOT_DOOR_ART.test(label);
+    return !!label && isDoorArtLabel(label);
   });
   const out: Cell[] = [];
   for (let y = 0; y < map.height; y++) for (let x = 0; x < map.width; x++) if (hit(x, y) && !(y + 1 < map.height && hit(x, y + 1))) out.push({ x, y });
@@ -296,6 +309,125 @@ export function repairEventReach(run: BuildRun, mapId: string, eventIds: readonl
         }
       }
     }
+  }
+  return { moved, stuck };
+}
+
+// ── 이동 칸 앞 비우기 ─────────────────────────────────────────────────────────────
+// 2026-10-28 standin jrpg 「버들마을과 마왕의 동굴」: 시작 컷신에서 소녀가 주인공에게 다가와(approach @player) 동굴 입구 착지 칸 (9,7)
+// 바로 앞 (9,8)에 섰다. 자동 플레이는 동굴 입구까지 걷다 그 NPC 에 막혀 엔딩에 못 갔다. 규칙:
+//  - 이 맵으로 들어오는 착지 칸과 그 둘레 한 칸, 이 맵의 이동 이벤트(문·입구) 둘레 한 칸에는 막는 이벤트가 서 있으면 안 된다.
+//  - 컷신에서 주인공에게 다가가는 이벤트는 «다가간 끝 칸»도 같은 규칙을 따른다(끝 칸은 BFS 최단 거리의 주인공 옆 칸들).
+// 어기면 그 이벤트의 자리를 가장 가까운, 위 칸들이 아닌 닿는 빈 바닥으로 옮긴다(다른 이벤트를 못 닿게 하는 자리는 고르지 않는다).
+
+function hasTransfer(node: unknown): boolean {
+  if (Array.isArray(node)) return node.some(hasTransfer);
+  if (!node || typeof node !== "object") return false;
+  const r = node as Record<string, unknown>;
+  if (r.kind === "transfer") return true;
+  return Object.values(r).some((v) => v && typeof v === "object" && hasTransfer(v));
+}
+
+/** 이 맵 이벤트들의 이동 명령 중 «id 가 주인공에게 다가가기»가 있나. */
+function approachesPlayer(map: GameMap, id: string): boolean {
+  let hit = false;
+  const visit = (node: unknown): void => {
+    if (hit || !node || typeof node !== "object") return;
+    if (Array.isArray(node)) { for (const n of node) visit(n); return; }
+    const r = node as Record<string, unknown>;
+    if (r.kind === "moveEvent" && r.eventId === id) {
+      const moves = ((r.route as { moves?: unknown[] } | undefined)?.moves ?? []) as Record<string, unknown>[];
+      if (moves.some((m) => m.kind === "approach" && (m.target === "@player" || m.target === "player"))) { hit = true; return; }
+    }
+    for (const v of Object.values(r)) if (v && typeof v === "object") visit(v);
+  };
+  for (const ev of map.events ?? []) visit(ev.pages ?? ev.commands);
+  return hit;
+}
+
+/** from 에서 걸어 player 옆에 닿는 최단 칸들(못 닿으면 빈 목록). */
+function approachEnds(project: Project, map: GameMap, from: Cell, player: Cell): Cell[] {
+  const w = map.width;
+  const near = new Set(DIRS.map(([dx, dy]) => (player.y + dy) * w + player.x + dx).filter((i) => i >= 0 && i < w * map.height));
+  const dist = new Int32Array(w * map.height).fill(-1);
+  const pIdx = player.y * w + player.x;
+  const q = [from.y * w + from.x];
+  dist[q[0]!] = 0;
+  let best = -1;
+  const out: Cell[] = [];
+  for (let k = 0; k < q.length; k++) {
+    const i = q[k]!, x = i % w, y = (i - x) / w;
+    if (best >= 0 && dist[i]! > best) break;
+    if (near.has(i)) { best = dist[i]!; out.push({ x, y }); continue; }
+    for (const [dx, dy] of DIRS) {
+      const nx = x + dx, ny = y + dy;
+      if (nx < 0 || ny < 0 || nx >= w || ny >= map.height) continue;
+      const j = ny * w + nx;
+      if (dist[j]! >= 0 || j === pIdx || !canMove(project, map, x, y, nx, ny)) continue;
+      dist[j] = dist[i]! + 1;
+      q.push(j);
+    }
+  }
+  return out;
+}
+
+/** 착지 칸·그 둘레, 이동 이벤트 둘레 — 막는 이벤트가 서면 안 되는 칸들. */
+export function transferLaneCells(project: Project, map: GameMap): Set<number> {
+  const w = map.width;
+  const out = new Set<number>();
+  const around = (c: Cell, self: boolean) => {
+    if (self) out.add(c.y * w + c.x);
+    for (const [dx, dy] of DIRS) { const x = c.x + dx, y = c.y + dy; if (x >= 0 && y >= 0 && x < w && y < map.height && isPassable(project, map, x, y)) out.add(y * w + x); }
+  };
+  const start = project.startMapId === map.id ? project.startPos : undefined;
+  for (const a of playerAnchors(project, map)) if (!(start && a.x === start.x && a.y === start.y)) around(a, true);
+  for (const ev of map.events ?? []) if (hasTransfer(ev.pages ?? ev.commands)) around(ev, false);
+  return out;
+}
+
+/** 이동 칸 앞을 막는(또는 컷신에서 다가가 막게 되는) 이벤트를 옆으로 옮긴다. */
+export function clearTransferLanes(run: BuildRun, mapId: string): ReachRepair {
+  const moved: string[] = [];
+  const stuck: string[] = [];
+  const first = run.ctx.project.maps[mapId];
+  if (!first) return { moved, stuck };
+  for (const id of first.events.map((e) => e.id)) {
+    const project = run.ctx.project;
+    const map = project.maps[mapId]!;
+    const ev = map.events.find((e) => e.id === id);
+    if (!ev || !eventBlocks(ev) || hasTransfer(ev.pages ?? ev.commands)) continue;
+    const lanes = transferLaneCells(project, map);
+    if (!lanes.size) continue;
+    const w = map.width;
+    const start = project.startMapId === mapId && project.startPos ? { x: project.startPos.x, y: project.startPos.y } : undefined;
+    const approach = !!start && approachesPlayer(map, id);
+    const bad = (c: Cell) => lanes.has(c.y * w + c.x) || (approach && approachEnds(project, map, c, start!).some((e) => lanes.has(e.y * w + e.x)));
+    if (!bad(ev)) continue;
+    const anchors = anchorsOf(project, map);
+    const othersBlocked = blockersOf(map, id);
+    const free = reachFrom(project, map, anchors, othersBlocked);
+    const others = map.events.filter((e) => e.id !== id);
+    const taken = new Set(others.map((e) => e.y * w + e.x));
+    const anchorSet = new Set(anchors.map((a) => a.y * w + a.x));
+    const okOthers = (reach: Uint8Array) => others.every((o) => (!free[o.y * w + o.x] && !nextTo(map, free, o)) || nextTo(map, reach, o) || !!reach[o.y * w + o.x]);
+    const cands: { c: Cell; s: number }[] = [];
+    for (let y = 0; y < map.height; y++) for (let x = 0; x < w; x++) {
+      const i = y * w + x;
+      if (!free[i] || taken.has(i) || anchorSet.has(i) || lanes.has(i)) continue;
+      cands.push({ c: { x, y }, s: Math.abs(x - ev.x) + Math.abs(y - ev.y) });
+    }
+    cands.sort((a, b) => a.s - b.s);
+    const target = cands.slice(0, 120).find(({ c }) => {
+      if (bad(c)) return false;
+      const blocked = new Set(othersBlocked);
+      blocked.add(c.y * w + c.x);
+      return okOthers(reachFrom(project, map, anchors, blocked));
+    })?.c;
+    const name = String((ev as { name?: string }).name ?? id);
+    if (!target) { stuck.push(`${name}(${ev.x},${ev.y})`); continue; }
+    const res = run.call("move_event", { mapId, eventId: id, x: target.x, y: target.y });
+    if (res.ok) moved.push(`${name} (${ev.x},${ev.y})→(${target.x},${target.y}) 이동 칸 앞 비움${approach ? "(컷신에서 다가가는 끝 칸 포함)" : ""}`);
+    else stuck.push(`${name}: ${String(res.summary).slice(0, 120)}`);
   }
   return { moved, stuck };
 }

@@ -668,6 +668,15 @@ export function dirTowardCell(from: Cell, to: Cell): Dir {
 const ROLE_LOOKS: ReadonlyArray<readonly [RegExp, readonly string[], ("male" | "female")?]> = [
   [/경비|문지기|수문장|파수|위병|보초|병사|군인|초병|guard|sentry|gatekeeper|soldier|watchman/i, ["병사", "guard"], "male"],
   [/촌장|이장|장로|원로|마을 ?어른|elder|chief|headman|mayor/i, ["할아버지", "노인"], "male"],
+  // 청사진 단계 이름의 직함(2026-10-28 standin joseon·magic: 포졸·주모·종사관·교수·사서가 전부 「중년 남성 주민」이 됐다).
+  [/포졸|포교|나졸|군졸|순라/i, ["병사", "guard"], "male"],
+  [/종사관|사또|대감|양반|관원|나리|선비|영주|귀족|noble|lord/i, ["귀족", "노학자"], "male"],
+  [/주모|여주인|안주인|주인댁/i, ["아줌마", "여관 주인"], "female"],
+  [/교장|학장|headmaster|principal/i, ["교수", "노학자"]],
+  [/교수|박사|학자|연구원|professor|scholar|researcher/i, ["교수", "노학자", "박사"]],
+  [/사서|librarian/i, ["사서", "노학자"]],
+  [/선생|교사|스승|teacher|tutor/i, ["선생", "교수"]],
+  [/의사|doctor|medic/i, ["박사", "연구원"]],
   [/할머니|노파|old woman|grandma/i, ["할머니", "노인"], "female"],
   [/할아버지|노인|영감|old man|grandpa/i, ["할아버지", "노인"], "male"],
   [/여관|바텐더|술집 ?주인|주점 ?주인|innkeeper|bartender|barkeep/i, ["여관 주인", "상인"]],

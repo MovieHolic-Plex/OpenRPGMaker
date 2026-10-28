@@ -28,6 +28,8 @@ import { drawObject } from "./drawObject";
 import { buildScene, SCENE_SCHEMA, type SceneSpec } from "./scene";
 import { buildPuzzleChain, sealLockedRoom, type ChainArgs } from "./puzzle";
 import { BUILD_BLUEPRINT_PATH_SCHEMA, blueprintMapFor, buildBlueprintPath, type PathStepText } from "./blueprintPath";
+import { clearTransferLanes } from "./eventReach";
+import { pickTransferSpot, roadEndSpot } from "./transferSpot";
 import { guessPlaceSpec } from "./placeGuess";
 // 콘텐츠 동사(컷신 무대·연출 비평·물건 자리 계획) — finishContent·addEvent·drawObjectVerb·placeObject 가 쓴다.
 import { critiqueStaging } from "./critic";
@@ -73,6 +75,10 @@ export class V2Session {
   autoPathDone = false;
   /** 끝맺음에서 청사진 장소를 함수가 대신 지었는가(한 번만). */
   autoPlacesDone = false;
+  /** 끝맺음에서 이동 칸 앞을 막는 이벤트를 옮겼는가(한 번만). */
+  autoLanesDone = false;
+  /** 이동 칸(착지·문) 앞을 막는 이벤트를 옆으로 옮긴다(createV2Tools 가 건다). 한 일 목록. */
+  clearLanes?: () => Promise<string[]>;
   /** 청사진에 있는데 없는(또는 닿지 않는) 장소를 짓고 앞 장소와 잇는다(createV2Tools 가 건다). 한 일 목록. */
   buildPlaces?: () => Promise<string[]>;
   /** 청사진 경로를 결정적으로 짓는다(createV2Tools 가 건다) — 끝맺음 단계가 모델 대신 부른다. */
@@ -500,6 +506,21 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     if (result.ok) await env.checkpoint("build_blueprint_path");
     return { ok: result.ok, summary: result.summary };
   };
+  // 끝맺음(2026-10-28 standin jrpg): 컷신에서 주인공에게 다가온 소녀가 동굴 입구 착지 칸 앞에 서서 자동 플레이가 막혔다.
+  session.clearLanes = async () => {
+    const notes: string[] = [];
+    for (const mapId of Object.keys(env.ctx.project.maps)) {
+      const r = clearTransferLanes(run, mapId);
+      const name = env.ctx.project.maps[mapId]?.name ?? mapId;
+      for (const m of r.moved) notes.push(`${name}: ${m}`);
+      for (const s of r.stuck) notes.push(`${name}: ${s} — 옮길 자리가 없어 그대로 둠`);
+    }
+    if (notes.length) {
+      recordWrite(env, run, `auto-lanes-${Date.now()}`, "move_event", { auto: "transfer-lanes" }, true, notes.join(" / ").slice(0, 400), {});
+      await env.checkpoint("clear_transfer_lanes");
+    }
+    return notes;
+  };
 
   const makePlace: PiToolShape = {
     name: "make_place", label: "장소 짓기", concurrency: "exclusive",
@@ -868,10 +889,21 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
           if (door) {
             const r = run.call("create_transfer_pair", { a: { mapId: parentMap, x: door.x, y: door.y, doorAt: { x: door.x, y: door.y - 1 } }, b: { mapId: childMap, x: result.entrance.x, y: result.entrance.y } });
             linked = r.ok; notes.push(r.ok ? `${pName} 집 문(${door.x},${door.y - 1}${door.kit ? ` ${door.kit}` : ""}) ↔ ${cName}` : `${pName} 집 문 잇기 실패: ${r.summary.slice(0, 160)}`);
+          } else {
+            // 지은 결과의 집 문 목록이 없으면(모델이 지은 부모 맵) 그 맵의 문 그림·계단·길 끝, 없으면 칩셋 문을 벽에 깔아 그 앞으로.
+            const spot = pickTransferSpot(run, parentMap, { side: side ?? "north", outdoor: !!parentSpec && isOutdoor(parentSpec), otherName: cName });
+            if (spot) {
+              const { note, ...a } = spot;
+              const r = run.call("create_transfer_pair", { a: { mapId: parentMap, ...a }, b: { mapId: childMap, x: result.entrance.x, y: result.entrance.y } });
+              linked = r.ok; notes.push(r.ok ? `${pName} ${note} ↔ ${cName}` : `${pName} ${note} 잇기 실패: ${r.summary.slice(0, 160)}`);
+            }
           }
         } else if (spec.type === "dungeon" || spec.type === "cave") {
           // 던전: 부모 맵의 걸어 닿는 칸 ↔ 던전 입구 계단(자리표시 출구가 있으면 그것을 바꾼다).
-          const at = edgeCell(env.ctx.project, env.ctx.project.maps[parentMap]!, side ?? "north");
+          // 바깥 부모면 가장자리 길 끝을 먼저(길이 동굴 입구로 이어진다), 없으면 예전처럼 걸어 닿는 가장자리 칸.
+          const parentOutdoor = !parentSpec || isOutdoor(parentSpec);
+          const road = parentOutdoor ? roadEndSpot(env.ctx.project, env.ctx.project.maps[parentMap]!, side ?? "north") : undefined;
+          const at = road ? { x: road.x, y: road.y } : edgeCell(env.ctx.project, env.ctx.project.maps[parentMap]!, side ?? "north");
           const r = at ? run.call("link_world_entrance", { worldMapId: parentMap, links: [{ x: at.x, y: at.y, toMapId: childMap }] }) : undefined;
           linked = !!r?.ok && hasTransferTo(parentMap, childMap);
           if (linked) notes.push(`${pName}(${at!.x},${at!.y}) ↔ ${cName} 입구`);
@@ -882,11 +914,15 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
         }
         if (!linked) {
           // 대신 걸어 닿는 칸끼리 문을 둔다(그림 없는 이동 칸) — 못 이은 채 두지 않는다.
+          // 문 그림·계단·길 끝을 먼저 고르고(없으면 칩셋 문을 벽에 깐다), 그래도 없을 때만 그림 없는 가장자리 칸.
           const dir = side ?? "north";
-          const a = edgeCell(env.ctx.project, env.ctx.project.maps[parentMap]!, dir);
-          const b = result.entrance && result.entrance.mapId === childMap ? { x: result.entrance.x, y: result.entrance.y } : edgeCell(env.ctx.project, env.ctx.project.maps[childMap]!, oppositeSide(dir));
+          const spotA = pickTransferSpot(run, parentMap, { side: dir, outdoor: !parentSpec || isOutdoor(parentSpec), otherName: cName });
+          const a = spotA ? { x: spotA.x, y: spotA.y, ...(spotA.doorAt ? { doorAt: spotA.doorAt } : {}) } : edgeCell(env.ctx.project, env.ctx.project.maps[parentMap]!, dir);
+          const spotB = result.entrance && result.entrance.mapId === childMap ? undefined : pickTransferSpot(run, childMap, { side: oppositeSide(dir), outdoor: isOutdoor(spec), otherName: pName });
+          const b = result.entrance && result.entrance.mapId === childMap ? { x: result.entrance.x, y: result.entrance.y } : spotB ? { x: spotB.x, y: spotB.y, ...(spotB.doorAt ? { doorAt: spotB.doorAt } : {}) } : edgeCell(env.ctx.project, env.ctx.project.maps[childMap]!, oppositeSide(dir));
           const r = a && b ? run.call("create_transfer_pair", { a: { mapId: parentMap, ...a }, b: { mapId: childMap, ...b } }) : undefined;
-          if (r?.ok) notes.push(`${pName}(${a!.x},${a!.y}) ↔ ${cName}(${b!.x},${b!.y}) — 문 그림 없이 이동 칸으로 이었다`);
+          const how = [spotA?.note, spotB?.note].filter(Boolean).join(" · ");
+          if (r?.ok) notes.push(`${pName}(${a!.x},${a!.y}) ↔ ${cName}(${b!.x},${b!.y}) — ${how || "문 그림 없이 이동 칸으로 이었다"}`);
           else notes.push(`${pName} ↔ ${cName}: 잇지 못했다(${r?.summary.slice(0, 120) ?? "걸어 닿는 칸이 없다"})`);
         }
     return notes.join(" / ");

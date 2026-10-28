@@ -2255,6 +2255,7 @@ ct-vehicle 은 별도 작업이 소유한다. 구조 가드(`src/ai/gameStructur
 1. **호감 문턱을 선행 요구로 안 봤다** — 페이지 조건 `friendshipAtLeast` 를 `leafRequirements` 가 버려서, 호감 20 이 필요한 고백 페이지를 호감 0 으로 한 번 조사하고 「다른 페이지가 실행됐다」로 오판. 이제 `Requirement` 종류 `friendship`(npcKey·value): 세터는 `changeFriendship(delta>0)`(npcKey 가 비면 이벤트 `characterId`), 완료는 `session.friendship[npcKey] ≥ value`, 변수 문턱과 같은 되풀이(`repeat`, 최대 20번)로 쌓는다.
 2. **NPC 일정을 안 봤다** — 러너는 일정이 있는 이벤트를 시각에 맞춰 `session.eventLocations` 의 다른 맵·칸에 세운다. 계획기는 저작 위치로 걸어가 「조사할 action 이벤트 없음」. `executeGoal` 이 `presentLocation()` 으로 지금 선 자리(맵·칸)를 쓴다.
 3. **하루 잠금이 공통 이벤트로 풀리는 걸 몰랐다** — 「오늘 만남 끝」 스위치를 침대 이벤트가 아니라 `timeSystem.onDayEnd` 공통 이벤트가 끈다. 계획기는 공통 이벤트 안 세터를 못 써서 「되풀이해도 문턱에 닿지 않습니다」. 이제 그 스위치를 `onDayEnd` 가 끄면 되풀이 준비로 `advanceDays 1`(`Goal.sleepDays`)을 쓴다. 목표 페이지가 같은 스위치 OFF 를 요구하면 선행 뒤에 하룻밤을 한 번 넣는다.
+5. (2026-10-28 추가) **컷신으로 옮겨진 NPC 를 저작 칸으로 봤다** — 시작 컷신이 NPC 를 주인공 옆으로 데려오면(`moveEvent approach`) 러너는 그 실제 자리(`SceneTestResult.movedEvents`)에서 「이동 대상에 막는 이벤트」로 멈추는데, 계획기 `pathMoves` 는 저작 칸을 피해 길을 짰다. 이제 `fireEvent` 가 `driver.last.movedEvents` 를 넘겨 현재 맵의 막는 이벤트를 지금 자리로 잰다(standin jrpg 「버들마을과 마왕의 동굴」 동굴 입구).
 4. (참고) 러너 쪽 호감 대화 재현은 `applySocialTalkForRunner`(`socialLoop` 켠 프로젝트) — 별도 PR.
 
 **정밀성 확인(반례 3종이 여전히 막힌다)**: 호감을 올리는 세터를 지운 사본, `onDayEnd` 리셋을 지운 사본, 일정이 문 없는 맵으로 보내는 사본 → 모두 `autoplay-failed`. 입력·출력은 `~/romance-fix-work/item3/`. 알려진 한계: `talkFriendship`(대화 자체가 호감을 주는 이벤트)는 세터 방문이 없어 아직 계획에 못 쓴다.

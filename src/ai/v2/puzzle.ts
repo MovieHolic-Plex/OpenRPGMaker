@@ -10,6 +10,7 @@ import { playerAnchors } from "@/editor/tools/transferReachability";
 import type { BuildRun, ContentBuildResult } from "./types";
 import { repairEventReach } from "./eventReach";
 import { fixObjectSheetFacing, showExaminedThing } from "./examineArt";
+import { isPersonName, personGraphicFor } from "./personName";
 
 type Obj = Record<string, unknown>;
 const STEPS = [[1, 0], [-1, 0], [0, 1], [0, -1]] as const;
@@ -238,6 +239,7 @@ export function buildPuzzleChain(run: BuildRun, args: ChainArgs): ContentBuildRe
     return got.kind === "flag" ? [{ kind: "switch", switchId: got.switchId, value: true }] : [{ kind: "item", itemId: got.itemId, present: true }];
   };
   const doors: { mapId: string; eventId: string }[] = [];
+  const personNotes: string[] = [];
   for (const [index, link] of args.links.entries()) {
     const mapId = link.mapId ?? args.mapId;
     const map = run.ctx.project.maps[mapId];
@@ -248,7 +250,15 @@ export function buildPuzzleChain(run: BuildRun, args: ChainArgs): ContentBuildRe
     const id = existing?.id ?? `ev_chain_${chainKey}_${index + 1}`;
     const look = existing ? structuredClone((existing.pages?.[0] as unknown as Obj | undefined) ?? {}) : {};
     // 그림 없는(투명) 조사 칸은 다가가면 반짝인다 — 새 플레이어가 어디를 조사할지 보이게(2026-10-28 청사진 경로).
-    const invisible = !existing || !Object.values((look.graphic as Obj | undefined) ?? {}).some((v) => v !== undefined && v !== "" && v !== 0 && v !== null);
+    // 「transparent:true」만 있는 그림도 그림 없음이다(sprite·tileId 가 없으면).
+    const lookGraphic = (look.graphic as Obj | undefined) ?? {};
+    let invisible = !existing || lookGraphic.transparent === true || (!lookGraphic.sprite && !lookGraphic.appearanceId && !(typeof lookGraphic.tileId === "number" && lookGraphic.tileId > 0));
+    // 이름이 사람(직함·호칭)이면 반짝이 칸 대신 공용 캐릭터 칩을 붙인다(2026-10-28 standin joseon 「주모」「포졸」「종사관」).
+    const personName = link.name ?? (existing as { name?: string } | undefined)?.name;
+    if (invisible && isPersonName(personName)) {
+      const person = personGraphicFor(run.ctx.project, map, personName!);
+      if (person) { look.graphic = person.graphic; invisible = false; personNotes.push(`${personName} → 「${person.label}」`); }
+    }
     const basePage = (extra: Obj): Obj => ({ trigger: look.trigger ?? { kind: "action" }, priority: look.priority ?? "same", graphic: look.graphic ?? {}, ...(look.movement ? { movement: look.movement } : {}), ...(look.animationType ? { animationType: look.animationType } : {}), ...(invisible ? { nearSparkle: { radius: 2 } } : (look.nearSparkle ? { nearSparkle: look.nearSparkle } : {})), conditions: [], ...extra });
     const need = link.needsCondition?.length ? link.needsCondition.map((c) => ({ ...c })) : condFor(link.needs);
     if (typeof need === "string") return fail(`${index + 1}번 고리: ${need}`);
@@ -330,5 +340,5 @@ export function buildPuzzleChain(run: BuildRun, args: ChainArgs): ContentBuildRe
   const seals = doors.filter((d) => args.links.find((l) => (l.eventId ?? "") === d.eventId)?.seal !== false).map((d) => sealLockedRoom(run, d.mapId, d.eventId));
   for (const s of seals) if (!s.ok) warnings.push(s.summary);
   const sealNote = `${reachNotes.length ? ` ${reachNotes.join(" / ")}.` : ""}${seals.length ? ` ${seals.map((s) => s.summary).join(" / ")}` : ""}`;
-  return { ok: true, mapIds: [...new Set(eventIds.map((e) => e.mapId))], eventIds, summary: `퍼즐 사슬 「${args.name}」 ${args.links.length}고리를 지었다(${args.links.map((l) => l.role).join(" → ")}).${sealNote}`, warnings, missingArt: [], calls: [] };
+  return { ok: true, mapIds: [...new Set(eventIds.map((e) => e.mapId))], eventIds, summary: `퍼즐 사슬 「${args.name}」 ${args.links.length}고리를 지었다(${args.links.map((l) => l.role).join(" → ")}).${personNotes.length ? ` 사람 그림: ${personNotes.join(", ")}.` : ""}${sealNote}`, warnings, missingArt: [], calls: [] };
 }

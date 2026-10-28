@@ -991,7 +991,7 @@ function relaysTo(event: GameEvent, targetId: string): boolean {
  * 한 칸씩 걷는 경로. 러너의 walk 는 밑에 깔린 다른 문(접촉 이벤트) 위를 지나가다 엉뚱한 맵으로 튄다 —
  * 여기서는 목표 말고 모든 이벤트 칸을 피해서 BFS 한다. 충돌은 런타임과 같은 canMove.
  */
-function pathMoves(project: Project, session: PlaySession, mapId: string, from: { x: number; y: number }, target: GameEvent, adjacent: boolean, ignoreIds?: ReadonlySet<string>): SceneStep[] | null {
+function pathMoves(project: Project, session: PlaySession, mapId: string, from: { x: number; y: number }, target: GameEvent, adjacent: boolean, ignoreIds?: ReadonlySet<string>, moved?: SceneTestResult["movedEvents"]): SceneStep[] | null {
   // 장치가 changeTile 로 연 길까지 본다(세션 오버라이드를 입힌 맵).
   const authored = project.maps[mapId];
   if (!authored) return null;
@@ -1026,7 +1026,10 @@ function pathMoves(project: Project, session: PlaySession, mapId: string, from: 
     const jump = (page?.commands ?? event.commands ?? []).find((command) => command.kind === "transfer");
     if (jump?.kind === "transfer" && jump.mapId === mapId) warps.set(`${event.x},${event.y}`, { x: jump.x, y: jump.y });
   }
-  const occupied = new Set((map.events ?? []).filter((event) => event.id !== target.id && !harmless(event) && !ignoreIds?.has(event.id)).map((event) => `${event.x},${event.y}`)
+  // 막는 이벤트는 지금 서 있는 자리로 잰다 — 컷신에서 주인공에게 다가온 NPC 를 저작 칸으로 보고 길을 짜면, 실행기는 실제 자리에서
+  // 「막는 이벤트」로 멈췄다(2026-10-28 standin jrpg: 소녀가 시작 컷신에서 (11,8)로 와 동굴 입구 가는 길을 막은 것으로 실패).
+  const liveCell = (event: GameEvent) => { const at = mapId === session.currentMapId ? moved?.[event.id] : undefined; return at ? `${at.x},${at.y}` : `${event.x},${event.y}`; };
+  const occupied = new Set((map.events ?? []).filter((event) => event.id !== target.id && !harmless(event) && !ignoreIds?.has(event.id)).map(liveCell)
     .filter((cell) => !relayCells.has(cell) && !warps.has(cell)));
   const isGoal = (x: number, y: number) => adjacent ? Math.abs(x - target.x) + Math.abs(y - target.y) === 1 : (x === target.x && y === target.y) || relayCells.has(`${x},${y}`);
   const key = (x: number, y: number) => `${x},${y}`;
@@ -1213,7 +1216,7 @@ function fireEvent(driver: Driver, event: GameEvent, visit: CommandVisit): strin
       return resolveChoices(driver, choiceSequence(visit));
     }
   }
-  let moves = pathMoves(driver.project, session, mapId, { x: session.x, y: session.y }, event, !touch);
+  let moves = pathMoves(driver.project, session, mapId, { x: session.x, y: session.y }, event, !touch, undefined, driver.last.movedEvents);
   let skillNote = "";
   if (!moves) {
     // 필드 스킬 문: 바위·물길을 필드 스킬(skill.fieldCommonEventId)로 열어야 지나가는 길이면 아는 스킬을 써 열어 본다.
@@ -1221,7 +1224,7 @@ function fireEvent(driver: Driver, event: GameEvent, visit: CommandVisit): strin
     skillNote = unlock.note;
     if (unlock.unlocked) {
       const now = driver.last.session;
-      moves = pathMoves(driver.project, now, now.currentMapId, { x: now.x, y: now.y }, event, !touch);
+      moves = pathMoves(driver.project, now, now.currentMapId, { x: now.x, y: now.y }, event, !touch, undefined, driver.last.movedEvents);
     }
   }
   if (!moves) return `${driver.project.maps[mapId]?.name ?? mapId} (${session.x},${session.y}) 에서 ${event.name ?? event.id} ${touch ? "칸" : "옆"} (${event.x},${event.y}) 까지 걸어갈 길이 없습니다(벽·물·다른 이벤트에 막힘).${skillNote}`;
