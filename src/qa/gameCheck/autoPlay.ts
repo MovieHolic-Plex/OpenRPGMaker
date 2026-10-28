@@ -213,6 +213,17 @@ function pageInputtedVariables(page: PageRef): Set<string> {
   return out;
 }
 
+/** 이 명령보다 앞서 같은 실행에서 「물건 개수 묻기」(m2-217-data-query itemCount)로 채우는 변수 → 그 물건 id. */
+function queriedItemCounts(visit: CommandVisit): Map<string, string> {
+  const out = new Map<string, string>();
+  for (const command of commandsRunBefore(visit)) {
+    if (command.kind !== "m2Command" || command.commandId !== "m2-217-data-query") continue;
+    const fields = command.fields as { query?: unknown; target?: unknown; variableId?: unknown } | undefined;
+    if (fields?.query === "itemCount" && typeof fields.target === "string" && typeof fields.variableId === "string") out.set(fields.variableId, fields.target);
+  }
+  return out;
+}
+
 /** 이 명령보다 먼저 실행되는 명령들 — 같은 목록의 앞 형제와 바깥 목록들의 앞 형제(분기 진입 전에 돈다). */
 function commandsRunBefore(visit: CommandVisit): RawCommand[] {
   const out: RawCommand[] = [];
@@ -289,7 +300,15 @@ function baseRequirementsOf(project: Project, visit: CommandVisit): Requirement[
       // (2026-09-24 추격 호러 r7: 금고 inputNumber→fork(var == 7419) 를 「세터 없는 선행」으로 오판해
       //  암호 이벤트와 열쇠 사슬이 전부 unresolved 로 뜨고 엔딩까지 못 갔다).
       const inputted = leaves.some((req) => req.kind === "variable") ? pageInputtedVariables(visit.page) : undefined;
-      reqs.push(...(inputted ? leaves.filter((req) => !(req.kind === "variable" && inputted.has(req.id))) : leaves));
+      // 같은 실행에서 앞서 「물건 개수 묻기」(m2-217 itemCount → 변수)로 채운 변수는 그 물건을 가진 것으로 푼다
+      // (2026-10-29 standin slice: author_quest 의 납품 단계 fork(var_…_quantity0 >= 1) 를 「세터 없는 선행」으로 봐 엔딩 계획이 끊겼다).
+      const counted = leaves.some((req) => req.kind === "variable") ? queriedItemCounts(visit) : undefined;
+      for (const req of inputted ? leaves.filter((req) => !(req.kind === "variable" && inputted.has(req.id))) : leaves) {
+        const item = req.kind === "variable" && counted ? counted.get(req.id) : undefined;
+        // 개수 문턱(≥3)은 계획이 세지 않는다 — 물건 하나를 선행으로 두고, 실제 개수는 러너가 런타임으로 돌려 본다(모자라면 그 목표가 실패로 남는다).
+        if (item && req.kind === "variable" && (req.op === ">=" || req.op === ">")) reqs.push({ kind: "item", id: item });
+        else reqs.push(req);
+      }
     }
     // 2026-09-24 갤러리 r2: 장미를 건넨 else 의 triggerEnding 을, 스위치가 꺼진 채로 같은 이벤트를 돌려 놓쳤다.
     if (segment.branch === "else") reqs.push(...elseBranchRequirements(segment.command.condition, visit.page));

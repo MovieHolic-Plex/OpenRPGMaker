@@ -2226,6 +2226,8 @@ dedicated exported player passed. Do not describe this as all browser checks gre
 - `qa:game check` 자동 플레이 — 길이 막히면 막은 조사 이벤트 앞에서 아는 필드 스킬을 쓴 뒤 길을 다시 잰다. `partyKnowsSkill` 선행 조건은 `learnSkill`/동료 합류로 채운다. 아는 사람이 없으면 `autoplay-failed` 문구가 「이 길 앞에서 learnedSkills/learnSkill/grantsSkillIds 로 가르쳐라」 까지 말한다.
 
 재현 프로젝트(poke slice-3, 1번 도로 바위): 스킬을 아는 배우가 없을 때 막힘 1(걸어갈 길 없음), 주인공 `learnedSkills:[{level:1,skillId:"mx_skill_rocksmash"}]` 면 막힘 0. 가르칠 곳이 아예 없으면(분실된 스킬) 막힘 2(참조 누락 + 위 안내).
+- 퀘스트 납품(`author_quest` → `questCompiler`): 갈래 앞에서 `m2-217-data-query` 의 `itemCount` 로 채운 변수(`var_…_quantity0 >= n`)는 계획에서 「그 물건 가지기」 선행으로 푼다 — 개수 문턱은 세지 않고 러너가 런타임으로 돌려 본다(모자라면 그 목표가 실패로 남는다). 전에는 「세터 없는 선행」으로 엔딩 계획이 끊겨 2026-10-28 standin slice(들꽃마을 세 부탁)가 거짓 `autoplay-failed` 였다.
+알려진 한계: 날마다 다른 페이지가 호감을 올리는 연애물(standin romance 카페 하은: 1~7일째 페이지마다 +호감, 출입문이 날을 넘김)은 계획이 한 세터 페이지를 되풀이하려다 「한 번만 열리는 세터」로 문턱 미달이 된다 — 게임은 정상(판정자가 엔딩 도달), 검사기 한계.
 알려진 한계: `storeParty`/`recallParty` 로 바뀐 파티 구성은 자동 플레이가 모델링하지 않는다(세트 안 배우를 선행 조건으로 보지 않음), 다단계 보스·`oncePerBattle` 은 기존 전투 해결기(첫 적을 계속 공격)에 맡긴다.
 - `ct-stage-performance`(`scripts/qa/runtime/ct-stage-performance*`) — `author_stage_performance` 로 저작한 공연 컷신을 출하 플레이어로 본다(가사·합창 코너 자막, 조명 어두움, 끝난 뒤 색조 복구). 크로미움은 `unshare -rn` 안에서.
 
