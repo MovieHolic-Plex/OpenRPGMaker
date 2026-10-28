@@ -6279,6 +6279,28 @@
      "id": "tower",
      "ops": [
       {
+       "kind": "hold",
+       "dir": null,
+       "ms": 2500
+      },
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 8,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 1000
+        }
+       ]
+      },
+      {
        "kind": "move",
        "dir": "up",
        "steps": 1
@@ -6286,7 +6308,7 @@
       {
        "kind": "waitForMap",
        "mapId": "fs2_sky_tower",
-       "timeoutMs": 12000
+       "timeoutMs": 15000
       },
       {
        "kind": "hold",

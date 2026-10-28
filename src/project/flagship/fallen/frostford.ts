@@ -85,7 +85,8 @@ const flash = (color: string, ms: number): Command => m2("m2-202-screen-effect",
 const fadeOut = (ms = 1200): Command => m2("m2-202-screen-effect", { effect: "fadeOut", value: "", durationMs: ms });
 const fadeIn = (ms = 900): Command => m2("m2-202-screen-effect", { effect: "fadeIn", value: "", durationMs: ms });
 const sparkle = (x: number, y: number, ms: number): Command => m2("m2-224-particle-effect", { preset: "sparkle", target: "tile", x, y, durationMs: ms, wait: false });
-const scroll = (direction: Dir, distance: number, ms: number): Command => m2("m2-049-scroll-map", { direction, distance: String(distance), durationMs: String(ms), wait: "true" });
+/** 잠근 채 미끄러진다 — lock 이 없으면 다 간 뒤 곧장 주인공을 다시 따라간다. 돌아오기는 scrollBack. */
+const scroll = (direction: Dir, distance: number, ms: number): Command => m2("m2-049-scroll-map", { direction, distance: String(distance), durationMs: String(ms), wait: "true", lock: "true" });
 const scrollBack = (ms: number): Command => m2("m2-049-scroll-map", { mode: "return", durationMs: String(ms), wait: "true" });
 const cutBegin = (): Command => ({ kind: "cutsceneControl", mode: "begin", skippable: true } as unknown as Command);
 const cutEnd = (): Command => ({ kind: "cutsceneControl", mode: "end" } as unknown as Command);
@@ -602,12 +603,12 @@ function lanternNight(project: Project, exec: Exec): void {
       narrate("쩌억— 발밑 깊은 데서 얼음 우는 소리."),
       scroll("up", scrollUp, 1800),
       se("easyrpg-sound-holy3"),
-      flash("#dff2ff", 900),
       ...pillarLights,
-      sparkle(L.gateDoor[0]!.x, 2, 2600), sparkle(L.gateDoor[1]!.x, 4, 2600), sparkle(L.gateDoor[0]!.x, 6, 2600),
-      wait(700),
+      flash("#dff2ff", 450),
+      sparkle(L.gateDoor[0]!.x, 2, 3200), sparkle(L.gateDoor[1]!.x, 4, 3200), sparkle(L.gateDoor[0]!.x, 6, 3200),
+      wait(1200),
       narrate("절벽 위 탑 문 너머로 빛기둥이 솟는다!"),
-      wait(500),
+      wait(600),
       scrollBack(1300),
       say(VALEN, "…렌즈가 벌써 열렸군. 늦었다."),
       route("ev_fs2_lake_valen", ["left", "left", "up", "up", "up", "up"].map((dir) => ({ kind: "move", dir })), true),
