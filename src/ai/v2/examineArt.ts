@@ -27,6 +27,9 @@ const THINGS: readonly [RegExp, readonly string[], readonly string[]][] = [
   [/보석|브로치|반지|목걸이|gem|jewel|ring|brooch|necklace/iu, ["gem", "gemr"], []],
   [/동전|금화|coin|돈/iu, ["coins"], []],
   [/작은 ?상자|보석함|함\b|box|casket/iu, ["sealbox", "box"], []],
+  // 「비밀번호 입력」「자물쇠」처럼 이름이 물건이 아닌 번호 자물쇠 단계 — 문맥 낱말(examineSpot.examineHint)로 금고를 세운다(2026-10-29 flash).
+  [/금고|자물쇠|비밀번호|암호|safe|lock|password|code/iu, ["cashbox", "sealbox"], ["safe", "royal chest"]],
+  [/상자|궤짝|chest|crate/iu, ["sealbox", "box"], ["chest", "sea chest", "crate"]],
   [/찻잔|잔\b|컵|cup|mug/iu, ["cup", "mug"], []],
   [/깃펜|펜\b|quill|잉크|ink/iu, ["quill", "inkwell"], []],
 ];
@@ -68,7 +71,7 @@ export function isObjectSheetGraphic(graphic: unknown): boolean {
  * 조사 이벤트 하나의 물건을 보이게 한다. 바꾼 것을 한 줄로 돌려준다(안 바꿨으면 undefined).
  * 손 도트 실내 칩셋이 아니거나, 이벤트가 이미 보이는 그림(칩)을 가졌거나, 이름이 아는 물건이 아니면 아무것도 안 한다.
  */
-export function showExaminedThing(run: BuildRun, mapId: string, eventId: string): string | undefined {
+export function showExaminedThing(run: BuildRun, mapId: string, eventId: string, hint = ""): string | undefined {
   const map0 = run.ctx.project.maps[mapId];
   const ev0 = map0?.events.find((e) => e.id === eventId);
   if (!map0 || !ev0) return undefined;
@@ -76,7 +79,8 @@ export function showExaminedThing(run: BuildRun, mapId: string, eventId: string)
   if (!spec) return undefined;
   if (!(ev0.pages ?? []).every((p) => isTransparent(p.graphic))) return undefined;
   const name = ev0.name ?? "";
-  const thing = THINGS.find(([re]) => re.test(name));
+  // 이름에 물건이 없으면(「조사 시작」) 문맥 낱말(단계 역할·대사 — examineSpot.examineHint)로 고른다.
+  const thing = THINGS.find(([re]) => re.test(name)) ?? (hint ? THINGS.find(([re]) => re.test(hint)) : undefined);
   if (!thing) return undefined;
   // 이미 그 물건 그림 위·앞에 섰다(금고 위의 금고 이벤트) — 그대로.
   if (objectEventFit(run.ctx.project, map0, ev0)?.ok) return undefined;

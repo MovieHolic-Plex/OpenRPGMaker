@@ -20,6 +20,7 @@ import { trivialCode } from "./puzzle";
 import { repairEventReach } from "./eventReach";
 import { dressInteriorExits } from "./exitDress";
 import { OBJECTIVE_SURFACE, planObjective } from "./discoverability";
+import { settleExamineSpots } from "./examineSpot";
 
 /**
  * 이미 지은 청사진 단계 이벤트·퍼즐 고리 이벤트를 걸어 가 조사할 수 있는 자리로 옮긴다(내용은 그대로). 옮긴 것 목록.
@@ -37,7 +38,7 @@ export function repairBlueprintReach(run: BuildRun): { moved: string[]; stuck: s
   }
   for (const map of Object.values(project.maps)) for (const ev of map.events ?? []) if (ev.id.startsWith("ev_chain_") && !ev.id.startsWith("ev_chain_seal_")) push(map.id, ev.id);
   const moved: string[] = [], stuck: string[] = [];
-  for (const [mapId, ids] of byMap) { const r = repairEventReach(run, mapId, ids); moved.push(...r.moved); stuck.push(...r.stuck); }
+  for (const [mapId, ids] of byMap) { const r = repairEventReach(run, mapId, ids); moved.push(...r.moved, ...settleExamineSpots(run, mapId, ids)); stuck.push(...r.stuck); }
   return { moved, stuck };
 }
 
