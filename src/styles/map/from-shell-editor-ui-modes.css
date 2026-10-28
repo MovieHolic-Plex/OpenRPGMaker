@@ -122,3 +122,17 @@
   height: 26px;
   padding: 0 10px;
 }
+
+/* 2026-10-28 HIG C-41: 원본 배치 시트의 칸 배율(타일 탭의 「확대」). 2배 32px · 3배 48px, 가로로 스크롤한다. */
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .chipset-sheet.custom-palette[data-sheet-zoom="2"] .chipset-grid.custom-palette-grid {
+  --chipset-cell: 32px;
+  min-width: calc(var(--custom-cols) * 32px) !important;
+}
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .chipset-sheet.custom-palette[data-sheet-zoom="3"] .chipset-grid.custom-palette-grid {
+  --chipset-cell: 48px;
+  min-width: calc(var(--custom-cols) * 48px) !important;
+}
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .tile-sheet-zoom {
+  flex: 0 0 auto;
+  min-height: 28px;
+}

@@ -399,3 +399,45 @@
 .relief-brush-controls .relief-brush-hint { flex: 1 0 100%; font: 500 11px/1.3 var(--font-ui); color: var(--text-2); padding-inline: 2px; }
 /* 이벤트 레이어: 탭(그리기)·붓 줄(「이벤트」)이 이미 말하므로 패널의 큰 「이벤트」 제목은 뺀다.
    목록 머리는 Finder 사이드바의 작은 회색 머리처럼. */
+
+/* 지금 편집하는 레이어 — 패널 머리에서 맵 이름 옆에 적는다. */
+.sidebar-map-header .sidebar-layer-badge {
+  color: var(--text-2);
+  flex: 0 0 auto;
+  font: 600 12px/1.2 var(--font-ui);
+  white-space: nowrap;
+}
+
+/* 2026-10-28 HIG C-34·C-35: 그리기 도구 줄은 두 줄로 고르게 나뉜다 — 첫 줄은 되돌리기·다시 실행 쌍과 「검사·기록」,
+   둘째 줄은 그리기 도구 다섯(선택·칠하기·지우기·채우기·타일 집기). 마지막 하나만 떨어지던 줄바꿈이 없다.
+   단추는 32px 표적이다(펼쳐보기는 폭만 24px). */
+.editor-layout .left-panel-stack[data-testid='left-palette-root'] .oprn-tile-toolbar {
+  align-items: flex-start;
+  flex-wrap: nowrap;
+}
+.editor-layout .left-panel-stack[data-testid='left-palette-root'] .oprn-tile-toolbar-scroll {
+  column-gap: 2px;
+  flex-wrap: wrap;
+  row-gap: 4px;
+}
+.editor-layout .left-panel-stack[data-testid='left-palette-root'] .oprn-tile-toolbar-scroll > .oprn-tile-toolbar-separator {
+  border: 0;
+  flex: 0 0 100%;
+  height: 0;
+  margin: 0;
+  width: auto;
+}
+.editor-layout .left-panel-stack[data-testid='left-palette-root'] .oprn-tile-toolbar-modes {
+  margin-left: 0;
+}
+.editor-layout .left-panel-stack[data-testid='left-palette-root'] .oprn-tile-tool {
+  height: 32px;
+  width: 32px;
+}
+.editor-layout .left-panel-stack[data-testid='left-palette-root'] .oprn-tile-tool.oprn-tile-history-toggle {
+  width: 24px;
+}
+.editor-layout .left-panel-stack[data-testid='left-palette-root'] .oprn-toolbar-menu > .oprn-tile-tool {
+  min-height: 32px;
+  min-width: 32px;
+}

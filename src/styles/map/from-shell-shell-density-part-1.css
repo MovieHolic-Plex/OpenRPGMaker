@@ -305,19 +305,40 @@
 
 /* shell/shell-density.part-1.css:294-303 */
 .tile-props-dialog-close {
+  align-items: center;
   background: none;
   border: 0;
+  border-radius: var(--radius-s, 6px);
   color: var(--text-2);
   cursor: pointer;
+  display: inline-flex;
   flex: 0 0 auto;
-  font-size: 17px;
-  line-height: 1;
-  padding: 0 3px;
+  height: 32px;
+  justify-content: center;
+  padding: 0;
+  width: 32px;
 }
 
 /* shell/shell-density.part-1.css:305-307 */
 .tile-props-dialog-close:hover {
+  background: var(--bg-hover);
   color: var(--text-1);
+}
+
+/* 창 안의 인스펙터는 창 테두리 하나만 쓴다(이중 테두리 없음). 글꼴은 앱 UI 글꼴이다. */
+.tile-props-dialog-body .tile-mapping-inspector {
+  background: none;
+  border: 0;
+  font-family: var(--font-ui);
+  font-size: 12px;
+  margin-top: 0;
+  padding: 0;
+}
+
+.tile-props-passage-note {
+  color: var(--text-2);
+  font-size: 12px;
+  margin: 0 0 6px;
 }
 
 /* shell/shell-density.part-1.css:309-312 */
