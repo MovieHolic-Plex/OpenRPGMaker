@@ -1037,7 +1037,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     return Array.from(commandHost.querySelectorAll<HTMLButtonElement>("button.battle-command:not(:disabled)"));
   }
 
-  function markMenuCursor(snapshot: BattleSnapshot, preferredTestId?: string): HTMLButtonElement | undefined {
+  function markMenuCursor(snapshot: BattleSnapshot, preferredTestId?: string, freshPanel = false): HTMLButtonElement | undefined {
     const buttons = enabledMenuButtons();
     for (const node of root.querySelectorAll<HTMLElement>("[data-battle-command-cursor]")) {
       node.removeAttribute("data-battle-command-cursor");
@@ -1062,7 +1062,12 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     // 일어나지 않는 화면이 첫인상이었다(실측 2026-09-17, monster-collect 프리셋).
     // 전부 비활성이면 예전처럼 첫 행에 선다 — 그때는 사유를 읽는 것이 유일하게 할 일이다.
     const firstUsable = buttons.find((button) => button.dataset.battleCommandInert !== "true");
-    const selected = buttons.find((button) => button.dataset.testid === savedId)
+    // 기억한 자리가 이번 턴엔 비활성이면(예: 지난 턴 「연계」, 이번 턴 동료가 쓰러짐) 기억을 버린다 —
+    // 커서가 회색 「연계」 위에서 시작해 확인키가 먹지 않아 「전투가 멈췄다」로 읽혔다(독립 판정 judge12).
+    // 새로 그린 패널(새 턴)에서만 버린다 — 같은 패널을 다시 맞출 땐 화살표로 간 비활성 행에 그대로 선다.
+    const remembered = buttons.find((button) => button.dataset.testid === savedId);
+    const rememberedUsable = remembered && !(freshPanel && preferredTestId === undefined && remembered.dataset.battleCommandInert === "true") ? remembered : undefined;
+    const selected = rememberedUsable
       ?? selectedTarget
       ?? firstUsable
       ?? buttons[0];
@@ -1539,7 +1544,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       syncEnemyTargetCursor(snapshot);
       return;
     }
-    const selected = markMenuCursor(snapshot);
+    const selected = markMenuCursor(snapshot, undefined, true);
     // 시퀀스(인트로·액션 비트)가 도는 동안 명령 패널은 숨어 있다. 여기서 focus() 하면 숨은 버튼에 포커스를 주려고
     // 동기 레이아웃만 강제된다(첫 전투 진입 focus 64ms 실측). 명령 국면이 되면 syncView 가 커서 버튼에 포커스를 준다.
     if (selected && !sequenceBusy && document.activeElement !== selected) selected.focus({ preventScroll: true });

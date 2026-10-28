@@ -10849,6 +10849,20 @@
    ],
    "verify": "임무 창 첫 화면에 「지금 할 일 / 6. 광장 남쪽 끝 대장간…」이 보인다(출하 플레이어)",
    "suiteCategory": "fs2-quest-next-step"
+  },
+  {
+   "category": "game",
+   "kind": "logic",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "id": "fs2-npc-reachable",
+   "prompt": "광장 성벽 밑에 서 있는 브람 영감한테 아무리 걸어도 닿을 수가 없어. 광장에서 걸어서 말 걸 수 있는 자리로 옮겨 줘.",
+   "requires": [
+    "통행 BFS(computeReachableCells) 로 대사 있는 NPC·조사 이벤트가 맵 입구에서 닿는지 확인",
+    "place_npc / 이벤트 좌표 이동 — 길을 막지 않는 막다른 끝"
+   ],
+   "verify": "밤 광장 도착 칸에서 걸어 브람에게 말을 걸고 바로 옆 개구멍을 조사할 수 있다(출하 플레이어)",
+   "suiteCategory": "fs2-npc-reachable"
   }
  ],
  "gates": {
