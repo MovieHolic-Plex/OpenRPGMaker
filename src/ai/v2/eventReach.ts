@@ -95,16 +95,114 @@ function doorArtCells(project: Project, map: GameMap): Cell[] {
   return out;
 }
 
+// ── 이름이 가리키는 물건 ─────────────────────────────────────────────────────────
+// 2026-10-28 mt2: 「책상 서랍의 쪽지」가 빈 바닥에 떠 있고(deepseek), 「낡은 기록」은 책장 앞 맨바닥 투명 칸이었다(terra),
+// VQA 「책상 위 일기장이 그림으로 안 보인다」(standin). 이벤트 이름의 명사를 칩셋 이름표와 맞춰 그 물건 칸 위에 이벤트를 둔다
+// (플레이어는 그 앞에 서서 조사한다). 맞는 물건이 맵에 없으면 그 명사의 1칸 물건 그림을 칩셋에서 골라 이벤트 칸에 깐다(새 도트 없음).
+
+/** 이름 낱말 → 그 물건 이름표 낱말. 위에서부터가 아니라 이름에서 먼저 나온 낱말이 이긴다(「벽난로 위의 그림」 → 벽난로). */
+const HOSTS: readonly (readonly [RegExp, readonly string[]])[] = [
+  [/책상|desk/iu, ["책상", "desk"]],
+  [/책장|서가|책꽂이|bookshelf|bookcase/iu, ["책장", "서가", "bookshelf"]],
+  [/벽난로|난로|fireplace|hearth/iu, ["벽난로", "난로", "fireplace"]],
+  [/금고|safe\b/iu, ["금고", "safe", "상자"]],
+  [/액자|초상화|그림|painting|portrait/iu, ["액자", "초상", "그림", "painting"]],
+  [/서랍|drawer/iu, ["서랍", "협탁", "책상", "drawer"]],
+  [/궤짝|상자|chest|crate|box/iu, ["상자", "궤짝", "chest", "crate"]],
+  [/탁자|테이블|식탁|table/iu, ["탁자", "식탁", "테이블", "table"]],
+  [/침대|bed\b/iu, ["침대", "bed"]],
+  [/옷장|wardrobe/iu, ["옷장", "wardrobe"]],
+  [/시계|clock/iu, ["시계", "clock"]],
+  [/지구본|지구의|globe/iu, ["지구본", "지구의", "globe"]],
+  [/촛대|candle/iu, ["촛대", "candle"]],
+  [/화분|plant/iu, ["화분", "plant"]],
+  [/화이트보드|칠판|게시판|board/iu, ["화이트보드", "칠판", "게시판"]],
+  [/선반|shelf/iu, ["선반", "shelf"]],
+  [/망원경|telescope/iu, ["망원경", "telescope"]],
+];
+/** 들고 다니는 작은 물건 — 이름에 물건 낱말이 없을 때 놓일 법한 가구, 그것도 없으면 깔 1칸 그림 낱말. */
+const ITEMS: readonly (readonly [RegExp, readonly string[], readonly string[]])[] = [
+  [/일기|일지|기록|장부|책|노트|diary|journal|book|record/iu, ["책장", "서가", "책 더미", "책상", "탁자"], ["책 더미", "책", "두루마리"]],
+  [/쪽지|메모|편지|종이|서류|문서|note|memo|letter|paper/iu, ["책상", "탁자", "서류", "서랍"], ["서류", "종이", "편지", "책 더미"]],
+  [/열쇠|key\b/iu, ["서랍", "상자", "책상"], ["상자"]],
+  [/보석|반지|목걸이|gem|ring/iu, ["상자", "서랍"], ["상자", "보석"]],
+];
+const NOT_OBJECT_LABEL = /바닥|벽면|천장|깔개|그림자|공허|floor|wall|ceiling|rug/iu;
+const baseLabel = (label: string) => label.replace(/\s*\((?:-?\d+,\s*-?\d+|프레임[^)]*)\)/gu, "").trim();
+
+/** 이 이름이 가리키는 물건의 이름표 낱말 목록들(앞선 것부터 시도). */
+function hostWords(name: string): string[][] {
+  const hits: { at: number; words: readonly string[] }[] = [];
+  for (const [re, words] of HOSTS) { const m = re.exec(name); if (m) hits.push({ at: m.index, words }); }
+  hits.sort((a, b) => a.at - b.at);
+  const out = hits.map((h) => [...h.words]);
+  for (const [re, hosts] of ITEMS) if (re.test(name)) out.push(...hosts.map((h) => [h]));
+  return out;
+}
+function itemTileWords(name: string): string[] {
+  for (const [re, , tiles] of ITEMS) if (re.test(name)) return [...tiles];
+  for (const [re, words] of HOSTS) if (re.test(name)) return [...words];
+  return [];
+}
+
+const LAYER_KEYS = ["upperOverlayTiles", "upperTiles", "lowerOverlayTiles", "lowerTiles"] as const;
+/** 이름표가 words 중 하나를 품은 물건 칸들(바닥·벽·천장 제외). */
+function objectCells(project: Project, map: GameMap, words: readonly string[]): Set<number> {
+  const m = map as unknown as Record<string, ArrayLike<number> | undefined>;
+  const lw = words.map((x) => x.toLowerCase());
+  const cache = new Map<number, boolean>();
+  const ok = (t: number | undefined) => {
+    if (typeof t !== "number" || t < 0) return false;
+    let hit = cache.get(t);
+    if (hit === undefined) { const label = baseLabel(tileLabel(project, map, t)).toLowerCase(); hit = !!label && !NOT_OBJECT_LABEL.test(label) && lw.some((x) => label.includes(x)); cache.set(t, hit); }
+    return hit;
+  };
+  const out = new Set<number>();
+  for (let i = 0; i < map.width * map.height; i++) if (LAYER_KEYS.some((k) => ok(m[k]?.[i]))) out.add(i);
+  return out;
+}
+
+/** 칩셋에서 words 낱말의 1칸 물건 그림 하나(이름표가 (0,0) 하나뿐인 것). */
+function singleTileObject(project: Project, map: GameMap, words: readonly string[]): { tile: number; label: string } | undefined {
+  const meta = (project.tilesets[map.tilesetId]?.tileMeta ?? []) as unknown as ({ label?: string } | undefined)[];
+  const parts = new Map<string, { tile: number; coords: Set<string> }>();
+  meta.forEach((t, i) => {
+    const label = t?.label;
+    if (!label || NOT_OBJECT_LABEL.test(label) || /프레임/u.test(label)) return;
+    const base = baseLabel(label);
+    const coord = /\((-?\d+,\s*-?\d+)\)/u.exec(label)?.[1]?.replace(/\s/gu, "") ?? "0,0";
+    const entry = parts.get(base) ?? { tile: -1, coords: new Set<string>() };
+    entry.coords.add(coord);
+    if (coord === "0,0" && entry.tile < 0) entry.tile = i;
+    parts.set(base, entry);
+  });
+  for (const word of words) {
+    for (const [base, entry] of parts) if (entry.tile >= 0 && entry.coords.size === 1 && base.includes(word)) return { tile: entry.tile, label: base };
+  }
+  return undefined;
+}
+
+/** 그림 없는(투명) 이벤트인가 — 모든 페이지에 그림이 없다. */
+function invisibleEvent(ev: GameEvent): boolean {
+  return (ev.pages ?? []).every((p) => { const g = (p.graphic ?? {}) as { sprite?: unknown; transparent?: boolean; tileId?: number }; return g.transparent === true || (!g.sprite && !(typeof g.tileId === "number" && g.tileId > 0)); });
+}
+
 export interface ReachRepair { readonly moved: string[]; readonly stuck: string[] }
 
 /**
- * 이벤트들(순서 = 고리 순서)을 걸어 가 말을 걸 수 있게 고친다. 막힌 이벤트·길목을 막는 이벤트는 가까운 좋은 칸으로 move_event,
- * 문 이름 이벤트는 그림 문 칸으로. 다른 이벤트(목록 밖 포함)를 못 닿게 만드는 자리는 고르지 않는다.
+ * 이벤트들(순서 = 고리 순서)을 걸어 가 말을 걸 수 있게 고친다.
+ *  1) 문 이름 이벤트는 그림 문 칸으로.
+ *  2) 이름이 가리키는 물건(책상·책장·벽난로·금고·그림·서랍·상자…)이 맵에 있으면 그 물건 칸 위로 — 앞(아래)에 설 칸이 있는 칸이 먼저.
+ *  3) 그래도 막혔거나 길목을 막으면 가까운 닿는 빈 바닥으로(물건 옆 우선).
+ *  4) 맞는 물건이 없고 그림 없는 이벤트면 그 명사의 1칸 물건 그림을 칩셋에서 골라 이벤트 칸에 깐다.
+ * 다른 이벤트(목록 밖 포함)를 못 닿게 만드는 자리는 고르지 않는다.
  */
 export function repairEventReach(run: BuildRun, mapId: string, eventIds: readonly string[]): ReachRepair {
   const moved: string[] = [];
   const stuck: string[] = [];
-  for (const id of eventIds) {
+  // 두 바퀴 — 앞 이벤트가 옮겨 가야 뒤 이벤트의 물건 앞이 열리기도 한다(deepseek: 책장 앞 일기장이 벽난로 앞 구석을 막았다).
+  for (const pass of [0, 1]) for (const id of eventIds) {
+    if (pass === 1) stuck.length = 0;
     const project = run.ctx.project;
     const map = project.maps[mapId];
     const ev = map?.events.find((e) => e.id === id);
@@ -115,7 +213,6 @@ export function repairEventReach(run: BuildRun, mapId: string, eventIds: readonl
     const othersBlocked = blockersOf(map, id);
     const free = reachFrom(project, map, anchors, othersBlocked);
     const others = (map.events ?? []).filter((e) => e.id !== id);
-    // 이 자리에 두면: 다른 이벤트가 다 그대로 닿고, 잃는 칸이 (자기 칸 말고) 없고, 자기 옆에 닿는 칸이 있다.
     const othersOk = (reach: Uint8Array) => others.every((o) => !free[o.y * w + o.x] && !nextTo(map, free, o) ? true : nextTo(map, reach, o) || !!reach[o.y * w + o.x]);
     // 길목을 막아 잃는 칸이 있어도 그 안에 이벤트가 없으면 괜찮다(막다른 구석 앞 책장) — 다른 이벤트를 못 닿게 하면 안 된다.
     const judge = (c: Cell): boolean => {
@@ -127,35 +224,78 @@ export function repairEventReach(run: BuildRun, mapId: string, eventIds: readonl
       return othersOk(reach);
     };
     const name = String((ev as { name?: string }).name ?? "");
+    const here = { x: ev.x, y: ev.y };
+    const taken = new Set(others.map((e) => e.y * w + e.x));
+    const anchorSet = new Set(anchors.map((a) => a.y * w + a.x));
+    const dist = (c: Cell) => Math.abs(c.x - ev.x) + Math.abs(c.y - ev.y);
+    const usable = (c: Cell) => !taken.has(c.y * w + c.x) && !anchorSet.has(c.y * w + c.x);
+    let target: Cell | undefined;
+    let why = "";
+    // 1) 문
     const door = isDoorName(name);
     const doors = door ? doorArtCells(project, map) : [];
-    const onDoor = doors.some((d) => d.x === ev.x && d.y === ev.y);
-    const here = { x: ev.x, y: ev.y };
-    const okHere = judge(here);
-    if (okHere && (!door || !doors.length || onDoor)) continue;
-    const taken = new Set((map.events ?? []).filter((e) => e.id !== id).map((e) => e.y * w + e.x));
-    const anchorSet = new Set(anchors.map((a) => a.y * w + a.x));
-    // 1) 문 이름이면 그림 문 칸(가까운 것부터).
-    let target: Cell | undefined;
-    if (door) target = [...doors].sort((a, b) => Math.abs(a.x - ev.x) + Math.abs(a.y - ev.y) - (Math.abs(b.x - ev.x) + Math.abs(b.y - ev.y)))
-      .find((c) => !taken.has(c.y * w + c.x) && !anchorSet.has(c.y * w + c.x) && judge(c));
-    if (!target && okHere) continue;
-    // 2) 아니면 닿는 빈 바닥 중 원래 자리에서 가까운 것 — 옆에 물건(못 지나는 칸)이 있으면 그 앞이라 더 낫다.
-    if (!target) {
+    if (door && doors.length) {
+      if (doors.some((d) => d.x === ev.x && d.y === ev.y) && judge(here)) continue;
+      target = [...doors].sort((a, b) => dist(a) - dist(b)).find((c) => usable(c) && judge(c));
+      if (target) why = " 문 그림 칸";
+    }
+    // 2) 이름이 가리키는 물건
+    let host = false;
+    if (!target && !door) {
+      for (const words of hostWords(name)) {
+        const cells = objectCells(project, map, words);
+        if (!cells.size) continue;
+        host = true;
+        if (cells.has(ev.y * w + ev.x) && judge(here)) break; // 이미 그 물건 위
+        // 물건 칸마다: 앞(아래) 칸에 닿으면 0, 옆 1, 뒤 2 + 원래 자리와의 거리.
+        const ranked: { c: Cell; s: number }[] = [];
+        for (const i of cells) {
+          const c = { x: i % w, y: Math.floor(i / w) };
+          if (!usable(c)) continue;
+          const side = (dx: number, dy: number) => { const x = c.x + dx, y = c.y + dy; return x >= 0 && y >= 0 && x < w && y < map.height && !!free[y * w + x] && !cells.has(y * w + x); };
+          const face = side(0, 1) ? 0 : side(-1, 0) || side(1, 0) ? 1 : side(0, -1) ? 2 : -1;
+          if (face < 0) continue;
+          ranked.push({ c, s: face * 4 + dist(c) * 0.2 });
+        }
+        ranked.sort((a, b) => a.s - b.s);
+        target = ranked.slice(0, 60).find(({ c }) => judge(c))?.c;
+        if (target) { why = ` ${baseLabel(tileLabel(project, map, (map as unknown as Record<string, ArrayLike<number>>).upperTiles?.[target.y * w + target.x]) || tileLabel(project, map, (map as unknown as Record<string, ArrayLike<number>>).upperOverlayTiles?.[target.y * w + target.x])) || words[0]} 위`; break; }
+      }
+      if (host && !target && judge(here)) continue;
+    }
+    // 3) 막혔거나 길목 — 가까운 닿는 빈 바닥(물건 옆 우선).
+    if (!target && !judge(here)) {
       const cands: { c: Cell; s: number }[] = [];
       for (let y = 0; y < map.height; y++) for (let x = 0; x < w; x++) {
         const i = y * w + x;
-        if (!free[i] || taken.has(i) || anchorSet.has(i)) continue;
+        if (!free[i] || !usable({ x, y })) continue;
         const besideThing = DIRS.some(([dx, dy]) => { const nx = x + dx, ny = y + dy; return nx >= 0 && ny >= 0 && nx < w && ny < map.height && (!isPassable(project, map, nx, ny) || objectAt(map, { x: nx, y: ny })); });
-        cands.push({ c: { x, y }, s: Math.abs(x - ev.x) + Math.abs(y - ev.y) + (besideThing ? 0 : 3) });
+        cands.push({ c: { x, y }, s: dist({ x, y }) + (besideThing ? 0 : 3) });
       }
       cands.sort((a, b) => a.s - b.s);
       target = cands.slice(0, 80).find(({ c }) => judge(c))?.c;
+      if (!target) { stuck.push(`${name || id}(${ev.x},${ev.y})`); continue; }
     }
-    if (!target) { stuck.push(`${name || id}(${ev.x},${ev.y})`); continue; }
-    const res = run.call("move_event", { mapId, eventId: id, x: target.x, y: target.y });
-    if (res.ok) moved.push(`${name || id} (${ev.x},${ev.y})→(${target.x},${target.y})${door && doors.some((d) => d.x === target!.x && d.y === target!.y) ? " 문 그림 칸" : ""}`);
-    else stuck.push(`${name || id}: ${String(res.summary).slice(0, 120)}`);
+    if (target) {
+      const res = run.call("move_event", { mapId, eventId: id, x: target.x, y: target.y });
+      if (res.ok) moved.push(`${name || id} (${ev.x},${ev.y})→(${target.x},${target.y})${why}`);
+      else { stuck.push(`${name || id}: ${String(res.summary).slice(0, 120)}`); continue; }
+    }
+    // 4) 맞는 물건이 맵에 없고 그림도 없으면 — 그 명사의 1칸 물건 그림을 이벤트 칸(빈 바닥)에 깐다.
+    if (!host && !door) {
+      const now = run.ctx.project.maps[mapId]!.events.find((e) => e.id === id)!;
+      const cellMap = run.ctx.project.maps[mapId]!;
+      const words = itemTileWords(name);
+      if (words.length && invisibleEvent(now) && !objectAt(cellMap, now) && isPassable(run.ctx.project, cellMap, now.x, now.y)) {
+        const art = singleTileObject(run.ctx.project, cellMap, words);
+        if (art) {
+          const copy = structuredClone(cellMap);
+          (copy.upperTiles as number[])[now.y * copy.width + now.x] = art.tile;
+          run.ctx.project = { ...run.ctx.project, maps: { ...run.ctx.project.maps, [mapId]: copy } } as Project;
+          moved.push(`${name || id} (${now.x},${now.y})에 「${art.label}」 그림`);
+        }
+      }
+    }
   }
   return { moved, stuck };
 }
