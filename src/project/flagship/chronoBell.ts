@@ -1021,20 +1021,27 @@ function marchOffAfterProclamation(project: Project, hub: GameMap): void {
   // 행렬이 떠나면 백성은 성문 쪽으로 고개를 돌려 배웅한다 — 빈 연설 자리를 보고 서 있었다(VQA r20 minor).
   const watch: Command[] = spots.map((spot, k) => ({ kind: "moveEvent", eventId: `ev_${FS_PREFIX}_crowd_${crowd[k]![0]}`,
     route: { moves: [{ kind: "turn", dir: face(spot, exit) }], repeat: false, wait: false, skippable: true } } as unknown as Command));
-  // F2 — 소원 빈 아이(복선). 포고 끝, 행진 직전: 토비가 발렌 앞으로 뛰어들고, 발렌은 아이에게 소원을 묻는다.
+  // F2 — 소원 빈 아이(복선). 포고 끝, 행진 직전: 겁먹은 토비가 걸어 나오고, 발렌은 아이에게 소원을 묻는다.
   // 왼손 장갑을 쥐었다 펴는 한 줄은 제2막 「망설임」의 첫 단서다. 토비가 마을에 없으면(마을 대본이 바뀌면) 건너뛴다.
   const tobi = hub.events.find((e) => e.id === `ev_${FS_PREFIX}_kid`);
   const wishSpot = tobi ? nearFree(project, hub, { x: valen.x, y: valen.y + 2 }, 4, tobi.id) : undefined;
-  const tobiTurn = (dir: Step, wait = true): Command => ({ kind: "moveEvent", eventId: tobi!.id,
-    route: { moves: [{ kind: "turn", dir }], repeat: false, wait, skippable: true } } as unknown as Command);
+  // 토비는 포고 처음부터 군중 앞줄(발렌 아래 서너 칸)에 서 있다가, 「먼저 본 자도 마찬가지다」에 겁을 먹고 걸어 나온다.
+  // 전에는 포고가 끝나면 발렌 코앞으로 순간이동해 대뜸 말을 걸었다 — 어색하다(사용자 2026-10-28).
+  const freeCell = (x: number, y: number): boolean => isPassable(project, hub, x, y) && !hub.events.some((e) => e.id !== tobi?.id && e.x === x && e.y === y);
+  const tobiSteps = !wishSpot ? 0 : [2, 1].find((d) => Array.from({ length: d }, (_, k) => freeCell(wishSpot.x, wishSpot.y + k + 1)).every(Boolean)) ?? 0;
+  const tobiStart = wishSpot ? { x: wishSpot.x, y: wishSpot.y + tobiSteps } : undefined;
+  const tobiPlace: Command[] = tobi && tobiStart ? [
+    { kind: "m2Command", commandId: "m2-040-set-event-location", fields: { target: tobi.id, mapId: hub.id, x: tobiStart.x, y: tobiStart.y } } as unknown as Command,
+    // 돌아다니는 아이라 포고 동안 제자리를 지키게 한다 — 위(발렌)를 보는 되풀이 경로가 자율 걸음을 덮는다. 걸어 나올 때 다음 경로가 이걸 바꾼다.
+    { kind: "moveEvent", eventId: tobi.id, route: { moves: [{ kind: "turn", dir: "up" }, { kind: "wait" }, { kind: "wait" }, { kind: "wait" }], repeat: true, wait: false, skippable: true } } as unknown as Command,
+  ] : [];
   const wish: Command[] = tobi && wishSpot ? [
-    { kind: "wait", ms: 500 } as Command,
-    { kind: "m2Command", commandId: "m2-040-set-event-location", fields: { target: tobi.id, mapId: hub.id, x: wishSpot.x, y: wishSpot.y } } as unknown as Command,
-    tobiTurn("up"),
+    { kind: "wait", ms: 300 } as Command,
     { kind: "showEmote", target: { eventId: tobi.id }, emote: "exclamation", durationMs: 600 } as unknown as Command,
-    say("꼬마 토비", "저, 저기요! 저도 별똥별 봤어요.\n소원도 빌었어요."),
-    { kind: "wait", ms: 400 } as Command,
-    say("심문관 발렌", "소원을 빌었다고? 뭘 빌었느냐."),
+    ...(tobiSteps > 0 ? [{ kind: "moveEvent", eventId: tobi.id, route: { moves: Array.from({ length: tobiSteps }, () => ({ kind: "move", dir: "up" })), repeat: false, wait: true, skippable: true } } as unknown as Command] : []),
+    say("꼬마 토비", "저… 저 어젯밤에 별똥별 봤는데요.\n저도 잡혀가요?"),
+    { kind: "wait", ms: 500 } as Command,
+    say("심문관 발렌", "…봤으면 소원도 빌었겠구나.\n뭘 빌었느냐."),
     { kind: "showEmote", target: { eventId: tobi.id }, emote: "sweat", durationMs: 600 } as unknown as Command,
     say("꼬마 토비", "비, 비밀이에요!"),
     { kind: "wait", ms: 700 } as Command,
@@ -1076,7 +1083,9 @@ function marchOffAfterProclamation(project: Project, hub: GameMap): void {
       const dir: Step = ddy < 0 && Math.abs(ddx) <= 2 * Math.abs(ddy) ? "up" : Math.abs(ddx) >= Math.abs(ddy) ? (ddx > 0 ? "right" : "left") : (ddy > 0 ? "down" : "up");
       return { kind: "moveEvent", eventId: e.id, route: { moves: [{ kind: "turn", dir }], repeat: false, wait: false, skippable: true } } as unknown as Command;
     });
-  list.splice(begin + 1, 0, { kind: "moveEvent", eventId: "@player", route: { moves: [{ kind: "turn", dir: towardValen }], repeat: false, wait: true, skippable: true } } as unknown as Command, ...listeners);
+  // 오프닝은 밤에 끝나고 광장은 낮이다 — 시간이 건너뛴 것을 한 줄로 알린다(사용자 2026-10-28 「오프닝 개선」).
+  list.splice(begin + 1, 0, narrate("이튿날 아침. 광장에 심문회 행렬이 섰다."), ...tobiPlace,
+    { kind: "moveEvent", eventId: "@player", route: { moves: [{ kind: "turn", dir: towardValen }], repeat: false, wait: true, skippable: true } } as unknown as Command, ...listeners);
   // 엘레나가 말할 때 주인공이 화면(아래)을 보고 있었다(VQA r5) — 엘레나 쪽(위)으로 돌아선다.
   const elenaLine = list.findIndex((c) => c.kind === "text" && String((c as { body?: string }).body).includes("들었지, 카엘"));
   // 위를 보면 RTP 주인공 칩 뒷모습(머리 뒤 흰 띠)이 얼굴처럼 읽혀 엘레나에게 등을 돌린 것으로 보였다(VQA r10 major) —

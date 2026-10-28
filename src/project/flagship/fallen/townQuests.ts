@@ -38,7 +38,6 @@ const BRAM = "숲지기 브람";
 export const FS_QUEST_FACE_ALIASES: Readonly<Record<string, string>> = { [MIRE]: "빵집 아주머니", [RINO]: KNIGHT };
 
 const SW_IRIS = "sw_fs_iris_joined";
-const SW_MARCHED = "sw_fs_knight_marched";
 
 // Q1 — 토마의 납작빵
 const Q1_ON = "sw_fs_q_bread_on";
@@ -252,7 +251,8 @@ function placeRino(project: Project, hub: GameMap): void {
       rinoSays("…별지기 꼬마들인가.\n오늘은 소란 피우지 마라. 부탁이다."),
     ]),
   ];
-  const page = pageLike(base, `${id}_p0`, "기사 리노 · 동문 초소", [sw(SW_MARCHED)], commands);
+  // 처음부터 초소에 서 있다 — 행렬이 떠난 뒤에야 나타나 「정문에 병사가 생긴다」로 보였다(사용자 2026-10-28).
+  const page = pageLike(base, `${id}_p0`, "기사 리노 · 동문 초소", [], commands);
   page.movement = { type: "fixed", speed: 3, frequency: 3 } as EventPage["movement"];
   hub.events.push({ id, name: "심문회 기사 리노", x: spot.x, y: spot.y, trigger: { kind: "action" }, commands: [], pages: [page] } as unknown as GameEvent);
 }

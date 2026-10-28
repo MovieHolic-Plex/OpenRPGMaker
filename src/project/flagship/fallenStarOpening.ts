@@ -18,6 +18,8 @@ const STAGE = { width: 480, height: 270 } as const;
 const CENTER = { x: STAGE.width / 2, y: STAGE.height / 2 } as const;
 const LETTERBOX = 0.12;
 const CAPTION_COLOR = "#fff0dc";
+/** 밤 땅 — 낮빛 그림을 짙은 남색 쪽으로 당긴다. */
+const NIGHT = { color: "#0e1736", amount: 0.5 } as const;
 /** 오프닝 곡 한 박(80 BPM 실측). 컷 길이는 마디(4박) 배수다. */
 const BEAT = 750;
 
@@ -208,7 +210,8 @@ function fallShot(): OpeningAnimatic {
     { ...glow("fireball", "#ffd890", { x: 0, y: 0 }, 60, { endMs: FALL_HIT + 100, glow: { inner: 0.35, pulse: { hz: 7, amount: 0.25, pattern: "flicker", seed: 2 } } }), keys: { x: offsetKeys(head.x, 30), y: offsetKeys(head.y, 30) } },
     { ...glow("fireball-core", "#ffffff", { x: 0, y: 0 }, 14, { endMs: FALL_HIT + 60 }), keys: { x: offsetKeys(head.x, 7), y: offsetKeys(head.y, 7) } },
     glow("impact-glow", "#ffe2a8", IMPACT, 320, { startMs: FALL_HIT, keys: { opacity: [key(FALL_HIT, 0), key(FALL_HIT + 140, 1, "ease-out"), key(6000, 0.75)] }, glow: { inner: 0.2, pulse: { hz: 3, amount: 0.2, pattern: "flicker", seed: 8 } } }),
-    art("fall-ground", { x: 0, y: FALL_GROUND_Y }),
+    // 밤 — 땅 그림이 낮처럼 밝아 「그날 밤」과 어긋났다(사용자 2026-10-28). 불투명 화소만 밤색으로 끌어내린다(하늘·등불은 그대로).
+    art("fall-ground", { x: 0, y: FALL_GROUND_Y }, { tint: NIGHT }),
     // 왕도의 등불 — 땅과 같은 깊이.
     flicker("bridge-lamp", { x: 150, y: FALL_GROUND_Y + 200 }, 24), flicker("lamp-b", { x: 215, y: FALL_GROUND_Y + 195 }), flicker("win-c", { x: 130, y: FALL_GROUND_Y + 125 }),
     // 지나가는 불빛이 왕도를 붉게 물들인다.
@@ -258,7 +261,7 @@ function bellShot(): OpeningAnimatic {
     ...nightSky({ x: cam.x, y: cam.y }, { nebula: 0.12, far: 0.3, near: 0.5, twinkle: 0.7 }),
     // 북쪽 숲은 아직 타고 있다 — 성벽 위 나무선 너머 붉은 빛(하늘과 땅 사이 깊이).
     glow("north-fire", "#ff8040", { x: 340, y: 46 }, 150, { parallax: 0.9, opacity: 0.55, glow: { inner: 0.2, pulse: { hz: 1.3, amount: 0.35, pattern: "flicker", seed: 14 } } }),
-    art("town-ground"),
+    art("town-ground", undefined, { tint: NIGHT }),
     flicker("door", { x: 205, y: 235 }, 26), flicker("lamp-l", { x: 162, y: 262 }), flicker("balcony", { x: 205, y: 178 }, 20),
     flicker("win-a", { x: 75, y: 160 }), flicker("win-b", { x: 470, y: 200 }, 18), flicker("bridge-lamp", { x: 130, y: 265 }),
     ring(0, 0), ring(1, 2 * BEAT), ring(2, 4 * BEAT),
