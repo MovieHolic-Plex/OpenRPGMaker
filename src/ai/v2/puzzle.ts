@@ -9,6 +9,7 @@ import type { GameMap, Project } from "@/project/types";
 import { playerAnchors } from "@/editor/tools/transferReachability";
 import type { BuildRun, ContentBuildResult } from "./types";
 import { repairEventReach } from "./eventReach";
+import { dressInteriorExits } from "./exitDress";
 import { fixObjectSheetFacing, showExaminedThing } from "./examineArt";
 import { isPersonName, personGraphicFor } from "./personName";
 
@@ -324,6 +325,9 @@ export function buildPuzzleChain(run: BuildRun, args: ChainArgs): ContentBuildRe
   // 막힌 고리·길목을 막는 고리는 가까운 닿는 칸으로 옮기고, 문 이름 고리는 그림 문 칸에 붙인다. 문 막기(seal) 전에 한다.
   const reachNotes: string[] = [];
   for (const mapId of [...new Set(eventIds.map((e) => e.mapId))]) {
+    // 막다른 남쪽 출구는 메우고 문 고리를 북벽 문 그림으로(exitDress) — 자리 고치기 전에 해야 문이 그 그림 칸에 붙는다.
+    const exits = dressInteriorExits(run, mapId);
+    if (exits.notes.length) reachNotes.push(`출구 마감: ${exits.notes.join(" / ")}`);
     const fixed = repairEventReach(run, mapId, eventIds.filter((e) => e.mapId === mapId).map((e) => e.eventId));
     if (fixed.moved.length) reachNotes.push(`닿게 옮김: ${fixed.moved.join(", ")}`);
     for (const s of fixed.stuck) warnings.push(`걸어 가서 조사할 자리를 못 찾았다: ${s}`);

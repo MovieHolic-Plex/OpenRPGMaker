@@ -30,6 +30,7 @@ import { buildScene, SCENE_SCHEMA, type SceneSpec } from "./scene";
 import { buildPuzzleChain, sealLockedRoom, type ChainArgs } from "./puzzle";
 import { BUILD_BLUEPRINT_PATH_SCHEMA, blueprintMapFor, buildBlueprintPath, type PathStepText } from "./blueprintPath";
 import { clearTransferLanes } from "./eventReach";
+import { dressInteriorExits } from "./exitDress";
 import { pickTransferSpot, roadEndSpot } from "./transferSpot";
 import { guessPlaceSpec } from "./placeGuess";
 // 콘텐츠 동사(컷신 무대·연출 비평·물건 자리 계획) — finishContent·addEvent·drawObjectVerb·placeObject 가 쓴다.
@@ -511,6 +512,8 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
   session.clearLanes = async () => {
     const notes: string[] = [];
     for (const mapId of Object.keys(env.ctx.project.maps)) {
+      // 실내 출구·공허 마감(막다른 남쪽 틈 메우기·문 그림·남색 공허 칸) — 화면 검수 장부 builder-exit/builder-tiles.
+      for (const n of dressInteriorExits(run, mapId).notes) notes.push(`${env.ctx.project.maps[mapId]?.name ?? mapId}: ${n}`);
       const r = clearTransferLanes(run, mapId);
       const name = env.ctx.project.maps[mapId]?.name ?? mapId;
       for (const m of r.moved) notes.push(`${name}: ${m}`);
