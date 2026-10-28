@@ -219,7 +219,7 @@ function database(project: Project): void {
     const skill = db.skills.find((s) => s.id === id) as SkillRecord | undefined;
     if (!skill) throw new Error(`[fallen-star act1] 기술 ${id} 이 없다`);
     skill.stateEffects = [...(skill.stateEffects ?? []).filter((e) => e.stateId !== FS_PIERCED_STATE), { stateId: FS_PIERCED_STATE, chance: 100, operation: "add" }];
-    if (!skill.description?.includes("관통상")) skill.description = `${skill.description ?? ""}\n맞은 곳에 「관통상」을 남긴다 — 단단한 비늘도 마법이 스미게 된다.`.trim();
+    if (!skill.description?.includes("관통상")) skill.description = `${skill.description ?? ""}\n맞은 자리에 「관통상」을 남긴다. 단단한 비늘에도 마법이 스며든다.`.trim();
   }
   // 다른 적은 관통상에 걸리지 않는다(마법 3배는 용의 비늘에만 뜻이 있다).
   for (const enemy of db.enemies) enemy.stateRates = { ...(enemy.stateRates ?? {}), [FS_PIERCED_STATE]: "E" } as EnemyRecord["stateRates"];
@@ -236,7 +236,7 @@ function database(project: Project): void {
   } as Partial<SkillRecord>));
   upsert(db.skills, skill("skill_fs_dragon_breath", {
     name: "달빛 숨결", scope: "allEnemies", power: 110, chargeTurns: 1, animationId: "anim_gen_ice_shatter", elementId: "ice",
-    description: "한 차례 숨을 모은 뒤 서리 빛을 내뿜는다. 모으는 동안 방어하라.", effect: { kind: "damage", statistic: "mind", affects: "hp" },
+    description: "숨을 한 번 크게 들이켰다가 서리 빛을 내뿜는다. 숨을 모을 때 방어하라.", effect: { kind: "damage", statistic: "mind", affects: "hp" },
   } as Partial<SkillRecord>));
   upsert(db.skills, skill("skill_fs_dragon_scales", {
     name: "비늘 세우기", scope: "self", power: 0, chargeTurns: undefined, animationId: "anim_gen_power_aura", elementId: undefined,
@@ -370,7 +370,7 @@ function valenCrash(project: Project, text: (body: string, speaker?: string) => 
   // 회로 — 발렌이 사라진 자리에 떨어진다(이벤트가 준다). 검은 그대로 떨군다.
   upsert(db.items, {
     ...clone(db.items.find((i) => i.id === "item_fs_star_key")!), id: FS_CIRCUIT_ITEM, name: "회로",
-    description: "발렌이 사라진 자리에 떨어져 있던 손바닥만 한 판. 금빛 선이 아직 희미하게 맥박친다. 이 땅의 누구도 이런 것을 만들지 못한다.",
+    description: "발렌이 사라진 자리에 떨어져 있던 손바닥만 한 판. 금빛 선이 아직 희미하게 맥박친다. 이 땅에선 아무도 이런 걸 못 만든다.",
   } as unknown as typeof db.items[number]);
 
   // 병사·창병·골렘.
@@ -443,7 +443,7 @@ function valenCrash(project: Project, text: (body: string, speaker?: string) => 
         commands: [
           setSw(SW_VALEN_P3),
           text("…별수 없군.", VALEN),
-          text("별지기의 금단의 주술 ──\n살을 내주고, 쇠를 입는다.", VALEN),
+          text("별지기들이 금한 주술 ──\n살을 내주고, 쇠를 입는다.", VALEN),
           anim(FS_VALEN_ENEMY, "anim_gen_holy_beam"),
           m2("m2-046-tint-screen", { color: "white", durationMs: 120 }), wait(260),
           st(FS_VALEN_ENEMY, "add", FS_VALEN_MACHINE_STATE),
@@ -487,7 +487,7 @@ function crashSite(project: Project, forestId: string): void {
   const at = stop;
   const puff = (dx: number, dy: number, ms: number): Command => fx("smoke", at.x + dx, at.y + dy, ms);
   const vanish: Command[] = [
-    narrate("쇠가 식는 소리. 톱니가 살갗 밑으로 가라앉고,\n발렌은 다시 사람의 모습으로 무릎을 짚는다."),
+    narrate("쇠가 식는 소리. 톱니가 살갗 밑으로 가라앉고,\n사람 모습으로 돌아온 발렌이 무릎을 짚는다."),
     say(VALEN, "삼십 년 전에도 그랬다.\n모두가 자기만 옳다고 믿었지."),
     say(VALEN, "…네가 틀렸기를 바란다.\n정말로."),
     narrate("발렌이 장갑 낀 왼손을 땅으로 내리친다."),
@@ -508,7 +508,7 @@ function crashSite(project: Project, forestId: string): void {
     wait(1500),
     narrate("연기가 걷혔을 때, 발렌은 그 자리에 없었다."),
     se("cc0-se-orp-inventory-metal-small2"),
-    narrate("그가 서 있던 자리에\n손바닥만 한 금속판이 떨어져 있다."),
+    narrate("발렌이 서 있던 자리에\n손바닥만 한 쇠판이 떨어져 있다."),
     item(FS_CIRCUIT_ITEM),
     narrate("「회로」를 손에 넣었다."),
     say(IRIS, "그 사람 몸 안에서… 저랑 같은 소리가 났어요.\n이건 그 사람한테서 떨어진 거예요."),
@@ -538,7 +538,7 @@ function crashSite(project: Project, forestId: string): void {
     flash("white", 120),
     setSw(SW_SOLDIERS_GONE),
     look(id, { tint: "gray", opacity: 45 }),
-    say(VALEN, "…숲지기인가.\n거둬라. 물러난다."),
+    say(VALEN, "…숲지기로군.\n거둬라. 물러간다."),
     look(id, { opacity: 15 }),
     wait(500),
     setSw(SW_STEP2),
@@ -561,7 +561,7 @@ function crashSite(project: Project, forestId: string): void {
   const pushedBack: Command[] = [
     { kind: "recoverAll" } as unknown as Command,
     say(ELENA, "물러서! 숨 고르고 다시 붙자."),
-    say(VALEN, "…그 정도인가."),
+    say(VALEN, "…그게 다냐."),
   ];
   // 1전과 2전 사이 — 병사들이 물러나고 발렌이 직접 나선다. 엘레나가 일행을 추스른다(두 전투를 한 숨에 버티지 않게).
   const squadDown: Command[] = [
@@ -628,10 +628,10 @@ function crashSite(project: Project, forestId: string): void {
     say(KAEL, "못 넘겨요.\n갈 거면 그냥 돌아가세요."),
     say(ELENA, "카엘, 저 사람 심문관이야.\n…정말 싸울 거야?"),
     say(KAEL, "응."),
-    say(VALEN, "좋다. 그럼 배워라.\n하늘의 것을 감싼 손이 무엇을 치르는지."),
+    say(VALEN, "좋다. 그럼 배워라.\n하늘의 것을 감싼 손이 어떤 값을 치르는지."),
     se("cc0-se-orp-battle-sword-unsheathe"),
     shake(3, 500),
-    narrate("발렌이 장검을 뽑는다. 칼날에 하얀 빛이 고인다."),
+    narrate("발렌이 장검을 뽑는다. 칼날에 하얀 빛이 맺힌다."),
     say(VALEN, "심문회, 앞으로.\n인형만 데려오면 된다."),
     cutLabel(),
     clearLetterbox(),
@@ -678,7 +678,7 @@ function vaultSeal(project: Project, vaultId: string): void {
         se("easyrpg-sound-chime2"),
         fx("sparkle", 15, 5, 1600),
         flash("white", 400),
-        narrate("렌즈가 방 안의 빛을 모아\n동쪽 바닥의 별 봉인으로 쏘아 내렸다."),
+        narrate("렌즈가 방 안의 빛을 모아\n동쪽 바닥 별 봉인에 내리꽂았다."),
         fx("magic", SEAL.x, SEAL.y, 1600), fx("sparkle", SEAL.x + 1, SEAL.y + 1, 1600),
         shake(2, 700),
         se("cc0-se-ors-stones-02"),
@@ -697,7 +697,7 @@ function vaultSeal(project: Project, vaultId: string): void {
   SEAL_CELLS.forEach((d, i) => {
     const sid = `ev_${FS_PREFIX}_vault_seal_${i}`;
     addEvent(vault, sid, "별 봉인", { x: SEAL.x + d.x, y: SEAL.y + d.y }, [
-      page(`${sid}_closed`, "닫힌 봉인", [], [narrate("별 무늬 돌뚜껑이 바닥에 박혀 있다.\n홈마다 빛이 닿아야 열리는 모양이다.")], { priority: "below" }),
+      page(`${sid}_closed`, "닫힌 봉인", [], [narrate("별 무늬 돌뚜껑이 바닥에 박혀 있다.\n홈마다 빛이 닿아야 열리나 보다.")], { priority: "below" }),
       page(`${sid}_open`, "열린 봉인", [sw(SW_SEAL_OPEN)], [toB3], { priority: "below", trigger: { kind: "playerTouch" } }),
     ]);
   });
@@ -828,7 +828,7 @@ function floorB3(project: Project, vault: GameMap): GameMap {
   const arriveId = `ev_${FS_PREFIX}_b3_arrive`;
   addEvent(map, arriveId, "회랑 입구", { x: 0, y: 0 }, [
     page(`${arriveId}_p`, "첫걸음", [{ kind: "selfSwitch", key: "A", value: false } as unknown as Condition], [
-      narrate("물에 잠겼다 마른 돌 냄새.\n별지기의 방 아래로, 또 하나의 층이 있었다."),
+      narrate("물에 잠겼다 마른 돌 냄새가 난다.\n별지기의 방 아래에 층이 하나 더 있었다."),
       say(IRIS, "신호는 더 아래에서 와요.\n이 층을 지나야 해요."),
       say(ELENA, "벽마다 교단 인장이 새겨져 있어.\n…우리보다 먼저 온 사람들이 있었네."),
       { kind: "setSelfSwitch", key: "A", value: true } as unknown as Command,
@@ -847,16 +847,16 @@ function floorB3(project: Project, vault: GameMap): GameMap {
     sign("석판", "순서를 어긴 손에는 종이 운다."),
   ]);
   read("b3_orders", "심문회 명령서", B3.ordersNE, [
-    sign("명령서", "(명령서) 심문회 지하반에 명한다.\n심문관께서 숲에서 돌아오시기 전에 반드시 「문지기의 방」을 연다."),
-    sign("명령서", "달의 문 손잡이는 해 다음이 달이다.\n거꾸로 당기면 경종이 울리니 다시는 틀리지 마라."),
-    sign("명령서", "최하층의 짐승에게는 접근을 금한다.\n성광 주문이 통하지 않아 이미 셋을 잃었다."),
+    sign("명령서", "(명령서) 심문회 지하반에 명한다.\n심문관께서 돌아오시기 전에 「문지기의 방」을 반드시 열 것."),
+    sign("명령서", "달의 문 손잡이는 해 먼저, 달 나중이다.\n거꾸로 당기면 경종이 울린다. 다시 틀리지 마라."),
+    sign("명령서", "최하층 짐승에게는 다가가지 말 것.\n성광 주문이 안 먹혀 벌써 셋을 잃었다."),
   ]);
   read("b3_diary", "찢긴 수첩", B3.diarySW, [
     sign("수첩", "아래층 비늘 짐승에게는\n기도도, 불도, 성광도 모두 미끄러진다."),
-    sign("수첩", "마르코가 비늘 틈에 창을 박아 넣었다.\n벌어진 틈으로 설교자님의 성광이 처음 스며들었다."),
+    sign("수첩", "마르코가 비늘 틈에 창을 박아 넣었다.\n그 틈으로 설교자님의 성광이 처음 먹혀들었다."),
     sign("수첩", "(찢긴 수첩) 세 배는 아팠을 거라며\n설교자님이 웃었다. 마르코는 돌아오지 못했다."),
-    say(ELENA, "먼저 창으로 비늘을 갈라야 주문을 넣을 수 있겠어."),
-    say(IRIS, "제 광선도 그 틈을 꿰뚫을 수 있어요."),
+    say(ELENA, "창으로 비늘부터 갈라야 주문이 들어가겠어."),
+    say(IRIS, "그 틈이면 제 광선도 들어가요."),
   ]);
 
   // 쇠살문과 레버.
@@ -865,7 +865,7 @@ function floorB3(project: Project, vault: GameMap): GameMap {
       narrate("벽에 녹슨 쇠 손잡이가 박혀 있다.\n윗면에 초승달이 새겨져 있다."),
       ...pullLever(map, B3.westLever),
       setSw(SW_WEST_LEVER),
-      narrate("철컥— 멀리 동쪽에서\n쇠살문이 끌려 올라가는 소리가 울린다."),
+      narrate("철컥— 멀리 동쪽에서\n쇠살문이 올라가는 소리가 울린다."),
       ...openGate(map, B3.eastGate),
       say(KAEL, "동쪽 길이 열렸어."),
     ]),
@@ -898,7 +898,7 @@ function floorB3(project: Project, vault: GameMap): GameMap {
         say(ELENA, "달의 문이야. 회랑 남쪽!"),
       ], [
         se("cc0-se-osx-switch-01"),
-        narrate("손잡이가 헛돌더니\n천장 어딘가에서 요란하게 종이 울린다."),
+        narrate("손잡이가 헛돌더니\n천장 어딘가에서 종이 요란하게 울린다."),
         fork(sw(SW_ALARM, false), [
           se("cc0-se-osx-bell-02"),
           shake(2, 600),
@@ -921,10 +921,10 @@ function floorB3(project: Project, vault: GameMap): GameMap {
   if (!ambushTemplate) throw new Error("[fallen-star act1] 광신도 견본(ev_fs_vault_foe1)이 없다");
   const ACTOR3: [string, number] = ["tex_easyrpg_charset_actor3", 2];
   const PEOPLE2: [string, number] = ["tex_easyrpg_charset_people2", 2];
-  foe(project, map, ambushTemplate, "b3_foe_gallery", B3.foes.gallery!, "troop_fs_fanatics", ACTOR3, [FANATIC, "이 회랑은 교단이 접수했다!\n돌아가라, 별지기 쥐들아!"]);
+  foe(project, map, ambushTemplate, "b3_foe_gallery", B3.foes.gallery!, "troop_fs_fanatics", ACTOR3, [FANATIC, "이 회랑은 교단이 차지했다!\n꺼져라, 별지기 쥐새끼들!"]);
   foe(project, map, ambushTemplate, "b3_foe_west", B3.foes.west!, "troop_fs_fanatic_sermon", PEOPLE2, ["광신도 설교자", "달의 방에 손대지 마라.\n이 손잡이는 심문관님의 몫이다."]);
-  foe(project, map, ambushTemplate, "b3_foe_east", B3.foes.east!, "troop_fs_fanatic_cell", ACTOR3, [FANATIC, "동쪽 문이 열렸다고?\n네놈들이 서쪽 손잡이를 당겼군!"]);
-  foe(project, map, ambushTemplate, "b3_foe_levers", B3.foes.levers!, "troop_fs_fanatic_sermon", PEOPLE2, ["광신도 설교자", "해와 달의 순서는\n믿는 자에게만 가르쳐 준다."]);
+  foe(project, map, ambushTemplate, "b3_foe_east", B3.foes.east!, "troop_fs_fanatic_cell", ACTOR3, [FANATIC, "동쪽 문이 열렸다고?\n네놈들이 서쪽 손잡이를 당겼구나!"]);
+  foe(project, map, ambushTemplate, "b3_foe_levers", B3.foes.levers!, "troop_fs_fanatic_sermon", PEOPLE2, ["광신도 설교자", "해와 달의 순서는\n믿는 자에게만 알려 준다."]);
   return map;
 }
 
@@ -963,22 +963,22 @@ function floorB4(project: Project): GameMap {
   const springId = `ev_${FS_PREFIX}_b4_spring`;
   addEvent(map, springId, "치유의 샘", B4.spring, [page(`${springId}_p`, "샘", [], [
     se("easyrpg-sound-recovery7"), m2("m2-224-particle-effect", { preset: "heal", target: "player", durationMs: 800, wait: false }),
-    narrate("차가운 샘물이 손끝을 타고 올라온다.\n상처가 아물고 마력이 다시 차오른다."),
+    narrate("손끝에 닿은 샘물이 차갑다.\n상처가 아물고 마력이 다시 차오른다."),
     { kind: "recoverAll" } as unknown as Command,
   ], { overlapForbidden: true })]);
   const woundedId = `ev_${FS_PREFIX}_b4_wounded`;
   addEvent(map, woundedId, "다친 광신도", B4.wounded, [
     page(`${woundedId}_p0`, "다친 광신도", [], [
       say(FANATIC, "…쫓아왔군. 상관없다.\n난 더는 못 걷는다."),
-      say(FANATIC, "들어가지 마라. 저놈 비늘은 주문을 삼킨다.\n형제 셋이 불 주문을 외다 쓰러졌다."),
-      say(KAEL, "어떻게 하면 이길 수 있어?"),
+      say(FANATIC, "들어가지 마라. 저놈 비늘은 주문을 삼킨다.\n형제 셋이 불 주문을 외다가 쓰러졌다."),
+      say(KAEL, "그럼 어떻게 해야 이겨요?"),
       say(FANATIC, "…창이다. 마르코가 창으로 비늘을 가르니\n그 틈으로만 성광이 먹혔다. 잠깐뿐이었지만."),
       say(FANATIC, "틈은 금방 닫힌다.\n가르고, 바로 쳐라. …그뿐이다."),
       say(ELENA, "샘물 좀 떠다 줄게요.\n여기서 기다려요."),
       { kind: "setSelfSwitch", key: "A", value: true } as unknown as Command,
     ], { graphic: chip("tex_easyrpg_charset_actor3", 2, "left"), overlapForbidden: true, animationType: "fixedGraphic" }),
     page(`${woundedId}_p1`, "다친 광신도(물 받음)", [{ kind: "selfSwitch", key: "A", value: true } as unknown as Condition], [
-      fork(sw(SW_DRAGON_DOWN), [say(FANATIC, "…정말 쓰러뜨렸군.\n그럼 나도 위로 기어 올라가 볼까.")],
+      fork(sw(SW_DRAGON_DOWN), [say(FANATIC, "…정말 쓰러뜨렸군.\n그럼 나도 기어서라도 올라가 볼까.")],
         [say(FANATIC, "가르고, 바로 쳐라.\n…살아서 돌아와라.")]),
     ], { graphic: chip("tex_easyrpg_charset_actor3", 2, "left"), overlapForbidden: true, animationType: "fixedGraphic" }),
   ]);
@@ -1002,12 +1002,12 @@ function floorB4(project: Project): GameMap {
       wait(500),
       setSw(SW_DRAGON_DOWN),
       look(dragonId, { reset: true }),
-      narrate("달빛의 용이 비늘을 떨구며\n푸른 빛가루로 흩어졌다."),
-      say(IRIS, "…문지기였어요. 무언가를 지키고 있었어요."),
+      narrate("달빛의 용이 비늘을 떨구더니\n푸른 빛가루가 되어 흩어졌다."),
+      say(IRIS, "…문지기였어요. 뭔가를 지키고 있었어요."),
       say(ELENA, "저 안쪽, 벽에서 빛이 깜빡여."),
     ], [
       { kind: "recoverAll" } as unknown as Command,
-      say(ELENA, "물러서! 그냥 주문으론 안 돼.\n…수첩 내용, 기억하지?"),
+      say(ELENA, "물러서! 그냥 주문으론 안 돼.\n…수첩에 적힌 거, 기억나지?"),
       route("@player", walk(["down", "down", "down"])),
     ]),
   ];
@@ -1038,7 +1038,7 @@ function floorB4(project: Project): GameMap {
         emote("player", "exclamation", 700),
         say(ELENA, "…용이잖아. 수첩에 적힌 그 비늘이야."),
         say(IRIS, "저 뒤 기계에서 신호가 나와요."),
-        say(KAEL, "내가 먼저 비늘을 가를게. 뒤를 부탁해."),
+        say(KAEL, "내가 먼저 비늘을 가를게. 뒤는 맡길게."),
         setSw(SW_DRAGON_MET),
         m2("m2-201-camera-control", { mode: "return", durationMs: "500", wait: "true" }),
         cutLabel(),
@@ -1058,14 +1058,14 @@ function floorB4(project: Project): GameMap {
       se("cc0-se-osx-machine-02"),
       narrate("카엘이 패널에 손을 얹자,\n유리 밑에서 녹색 글자가 깨어났다."),
       ...MOON_CHILD_FABLE.slice(0, 1).map(term),
-      say(ELENA, "이렇게 깊은 데 숨겨 둔 게… 옛날이야기야?"),
+      say(ELENA, "이렇게 깊은 데 숨겨 둔 게… 옛날이야기라고?"),
       ...MOON_CHILD_FABLE.slice(1, 4).map(term),
       say(IRIS, "…제가 처음 받은 명령문이에요."),
       ...MOON_CHILD_FABLE.slice(4, 6).map(term),
       say(KAEL, "숲의 젊은이 셋…\n표지석에 하넬 선생님 이름이 있었잖아."),
       ...MOON_CHILD_FABLE.slice(6, 7).map(term),
       say(ELENA, "샘가 마을이면… 발렌이 나왔다는 새벽샘이야."),
-      say(ELENA, "『빌려 준 불』이라니… 우리가 쓰는 마력이\n달에서 빌린 거였어?"),
+      say(ELENA, "『빌려 준 불』이라니… 우리가 쓰는 마력이\n달한테 빌린 거였어?"),
       ...MOON_CHILD_FABLE.slice(7, 8).map(term),
       say(IRIS, "넷째 아이. …저예요."),
       wait(400),
@@ -1151,9 +1151,9 @@ function hanelAfterCrash(project: Project, obsId: string): void {
         if (textsBefore >= 2) { let seen = 0; insertAt = l.findIndex((c) => c.kind === "text" && ++seen === 2) + 1; }
         l.splice(insertAt, 0,
           fork(sw(SW_VALEN_LOST), [
-            say(KAEL, "선생님, 추락지에 심문관이 왔어요.\n발렌이요. …브람 아저씨가 아니었으면 끝났을 거예요."),
+            say(KAEL, "선생님, 추락지에 심문관이 왔어요.\n발렌이요. …브람 아저씨 아니었으면 끝장났을 거예요."),
           ], [
-            say(KAEL, "선생님, 추락지에 심문관이 왔어요.\n발렌이요. 싸워서… 물리쳤어요."),
+            say(KAEL, "선생님, 추락지에 심문관이 왔어요.\n발렌이요. 싸워서… 겨우 쫓아냈어요."),
           ]),
           emote(hanel.id, "exclamation", 700),
           say(H, "…발렌이."),
@@ -1167,7 +1167,7 @@ function hanelAfterCrash(project: Project, obsId: string): void {
           narrate("카엘이 「회로」를 내밀었다.\n금빛 선이 아직 희미하게 맥박친다."),
           emote(hanel.id, "exclamation", 700),
           say(H, "…회로다. 별지기들이 「옛것」이라 불렀지.\n지금 이 땅에선 누구도 만들지 못한다."),
-          say(H, "발렌이 이런 걸 품고 있었다면…\n숨겨진 것은 하늘이 아니라 땅 밑에 있다."),
+          say(H, "발렌이 이런 걸 품고 있었다면…\n감춰진 건 하늘이 아니라 땅 밑에 있다."),
           say(H, "옛 별지기의 방 아래로 길이 이어진다.\n다만 그 밑엔 비늘 덮인 짐승이 산다."),
           say(ELENA, "짐승이요…?"),
           say(H, "그래서 아무도 가까이 가지 못했다.\n렌즈가 문을 열거든, 서두르지 말거라."),
@@ -1208,7 +1208,7 @@ function observatoryAlarm(project: Project, obsId: string, hubId: string, siegeF
       say(H, "카엘! 엘레나! …살아 있었구나.", { calling: true }),
       say(H, "방금 북쪽으로 빛줄기가 솟았다.\n온 마을이 보았을 게다.", { calling: true }),
       se("cc0-se-osx-bell-02"),
-      say(H, "…발렌이 기사단을 데려왔다.\n천문대 앞이 에워싸였다.", { calling: true }),
+      say(H, "…발렌이 기사단을 끌고 왔다.\n천문대 앞을 빙 에워쌌다.", { calling: true }),
       say(KAEL, "숲에서 그냥 물러난 게 아니었네요.\n여기서 기다리고 있었던 거예요."),
       say(IRIS, "제가 나가면 돼요.\n그럼 아무도 다치지 않아요."),
       say(KAEL, "안 돼."),
@@ -1321,13 +1321,13 @@ function siege(project: Project, hubId: string, front: Cell): void {
       wait(400),
       say(ELENA, "…사방이야."),
       se("cc0-se-orp-battle-sword-unsheathe"), wait(150), se("cc0-se-orp-battle-sword-unsheathe3"), wait(150), se("cc0-se-orp-battle-sword-unsheathe5"),
-      narrate("수십 자루의 칼이 한꺼번에 뽑혔다."),
+      narrate("칼 수십 자루가 한꺼번에 뽑혔다."),
       setSw(SW_SIEGE_VALEN),
       route(valenId, [{ kind: "setThrough", enabled: true }, ...walk(valenPath), { kind: "turn", dir: "up" }, { kind: "setThrough", enabled: false }]),
-      say(VALEN, "여기까지다. 멈춰 서라."),
+      say(VALEN, "거기 서라. 여기까지다."),
       say(VALEN, "하넬의 제자 카엘, 마도학자 엘레나.\n지하 봉인을 열고 하늘의 것을 숨긴 죄다."),
       say(VALEN, "오늘 밤, 누군가 하늘에 대답했다.\n솟아오른 빛을 온 마을이 보았다."),
-      say(IRIS, "…제가 물었기 때문이에요?"),
+      say(IRIS, "…제가 물어서 그런 거예요?"),
       emote(valenId, "ellipsis", 900),
       say(VALEN, "아니. 너는 묻기만 했다.\n대답한 것은 저 아이다."),
       say(KAEL, "대답하면 안 되는 거였어요?\n「잘 지내」 한마디가?"),

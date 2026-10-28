@@ -74,7 +74,7 @@ function roomAwareCue(event: GameEvent, map: GameMap, ownerId: string, name: str
     if (!first || first.kind !== "text") return; // 이미 방 이름 분기로 바뀌었으면(fork) 그대로 둔다.
     const cue = roomAwareCommands(ownerId, map.locations, (location) => {
       const room = roomName(location as { id: string; name?: string });
-      return room ? [narrate(`${room} 쪽에서 인기척이 난다. ${name}${josaGa(name)} 가까이 있다.`)] : null;
+      return room ? [narrate(`${room} 쪽에서 인기척이 난다. ${name}${josaGa(name)} 근처에 있다.`)] : null;
     }, [narrate(`가까이서 ${name}의 발소리가 난다.`)]);
     c.then = [...cue, ...(c.then ?? []).slice(1)];
     changed = true;

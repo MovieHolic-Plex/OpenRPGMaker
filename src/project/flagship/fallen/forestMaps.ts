@@ -405,8 +405,8 @@ export function buildFallenForestMaps(project: Project, ids: { hub: string; fore
         narrate("(사당) 이끼 낀 돌 사당이다.\n지붕 밑에 옛 별지기들의 별 무늬가 새겨져 있다."),
         narrate("(새긴 글) 빌린 불을 꺼뜨리지 말 것.\n달의 아이가 오거든 답할 것──「잘 지내나요?」"),
         narrate("(새긴 글) 그 아래 몇 줄은 정으로 쪼아 지웠다.\n남은 획은 둘. 「문」, 그리고 「비늘」."),
-        say("엘레나", "이 별 무늬, 천문대 서고 바닥에서 본 것 같아.\n누가 일부러 지운 거네."),
-        narrate("(사당) 향 주머니가 놓여 있다. 누군가 아직 이곳을 돌본다."),
+        say("엘레나", "이 별 무늬, 천문대 서고 바닥에서 본 것 같아.\n밑의 글은 누가 일부러 지웠고."),
+        narrate("(사당) 향 주머니가 놓여 있다. 누가 아직 여길 돌보나 보다."),
       ]);
       chest(id, { x: shrineAt.x + 2, y: shrineAt.y + 2 }, { itemId: FS_STAR_SCENT }, "사당 공물 상자");
       lights.push({ id: `light_${id}_shrine`, at: { x: shrineAt.x, y: shrineAt.y + 1 }, radius: 3, intensity: 0.8, color: "#a0c8ff", flicker: true });
@@ -430,7 +430,7 @@ export function buildFallenForestMaps(project: Project, ids: { hub: string; fore
         { kind: "playAudio", resourceId: "easyrpg-sound-recovery7", loop: false, channel: "se" } as unknown as Command,
         m2("m2-224-particle-effect", { preset: "sparkle", target: "tile", x: crystal.x, y: crystal.y, durationMs: 1000, wait: false }),
         m2("m2-224-particle-effect", { preset: "heal", target: "player", durationMs: 800, wait: false }),
-        narrate("제단 위 별 조각이 푸르게 맥박친다.\n손을 얹자 지친 몸에 온기가 번진다."),
+        narrate("제단 위 별 조각이 푸르게 맥박친다.\n손을 얹자 지친 몸에 온기가 퍼진다."),
         { kind: "recoverAll" } as unknown as Command,
         { kind: "checkpointSave", label: "savepoint" } as unknown as Command,
         { kind: "choices", prompt: "기록하시겠습니까?", cancelBehavior: "branch", options: [

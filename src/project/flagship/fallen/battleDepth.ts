@@ -89,7 +89,7 @@ export function applyFallenBattleDepth(project: Project, exec: ToolExec): void {
     effect: { kind: "support" },
     stateEffects: [{ stateId: "state_counter", chance: 100, operation: "add" }],
     retroChoreographyId: "skill_guard_counter",
-    description: "물리 공격을 맞으면 60% 로 되받아 벤다. 도발과 함께 쓰면 적이 스스로 칼을 맞는다.",
+    description: "물리 공격을 받으면 60% 확률로 되받아 벤다. 도발과 함께 쓰면 적이 제 발로 칼에 걸린다.",
   });
   learn("class_hero", 4, FS_TAUNT_SKILL);
   learn("class_hero", 8, FS_COUNTER_SKILL);
@@ -97,12 +97,12 @@ export function applyFallenBattleDepth(project: Project, exec: ToolExec): void {
   // ── 엘레나: 깔고 지키는 마도사 — 기세 꺾기(약화 대신)·정화·마법탄 흡수 ─────────────────────
   tune("skill_arcane_bolt", {
     drainPercent: 30,
-    description: "MP 2. 가장 싼 공격 마법 — 준 피해의 30% 만큼 HP 를 되찾는다.",
+    description: "MP 2. 가장 싼 공격 마법. 준 피해의 30%만큼 HP를 되찾는다.",
   });
   make("skill_weaken", FS_DAMPEN_SKILL, {
     name: "기세 꺾기", mpCost: { flat: 3, percentMax: 0 },
     stateEffects: [{ stateId: "state_attack_down", chance: 100, operation: "add" }],
-    description: "한 대상의 공격을 반으로(확정). 센 한 방을 준비하는 적에게 먼저. (방어 깎기는 카엘의 올려베기)",
+    description: "한 대상의 공격을 반으로 깎는다(확정). 큰 한 방을 준비하는 적에게 먼저. (방어 깎기는 카엘의 올려베기)",
   });
   make("skill_heal", FS_PURIFY_SKILL, {
     // 회복량 없는 support — 회복 기술이면 자동 전투 AI 가 치유 대신 고른다(모의전 실측: 용전 치유 절반이 정화로 샜다).
@@ -145,7 +145,7 @@ export function applyFallenBattleDepth(project: Project, exec: ToolExec): void {
   exec(project, "upsert_combo_tech", {
     id: FS_COMBO_FROST_LANCE,
     name: "성광 빙폭",
-    description: "엘레나의 얼음 안개를 이리스의 빛이 꿰뚫어 터뜨린다. 적 전체 얼음 + 확정 둔화 — 카엘의 십자베기가 이어 받는다.",
+    description: "엘레나의 얼음 안개를 이리스의 빛이 꿰뚫어 터뜨린다. 적 전체 얼음 + 확정 둔화. 카엘의 십자베기로 이어 가기 좋다.",
     actorIds: [ELENA, IRIS],
     requires: [{ actorId: ELENA, skillId: "skill_mage_blizzard" }, { actorId: IRIS, skillId: "skill_gunner_snipe" }],
     mpCosts: [{ actorId: ELENA, mp: 8 }, { actorId: IRIS, mp: 5 }],
@@ -156,7 +156,7 @@ export function applyFallenBattleDepth(project: Project, exec: ToolExec): void {
   exec(project, "upsert_combo_tech", {
     id: FS_COMBO_STARFALL,
     name: "폴른 스타",
-    description: "셋이 힘을 모아 별 하나를 떨어뜨린다. 적 전체 빛 — 세 사람의 공격력·마력 합으로 친다.",
+    description: "셋이 힘을 모아 별 하나를 떨어뜨린다. 적 전체 빛. 위력은 세 사람의 공격력·마력 합으로 정한다.",
     actorIds: [KAEL, ELENA, IRIS],
     requires: [
       { actorId: KAEL, skillId: "skill_hero_flame_sword" },

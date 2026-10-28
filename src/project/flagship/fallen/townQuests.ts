@@ -158,7 +158,7 @@ function plazaPeople(project: Project, hubId: string): void {
   rewritePages(mire, [
     { name: "기본", conditions: [], commands: [
       say(MIRE, "어젯밤 하늘이 대낮처럼 밝았지 뭐니.\n놀라서 반죽을 다 망쳤어."),
-      say(MIRE, "우리 토마도 오늘은 밀가루만 보고 있네.\n저이가 넋을 놓을 사람이 아닌데."),
+      say(MIRE, "우리 토마도 오늘은 밀가루만 멍하니 보고 있어.\n저이가 저럴 사람이 아닌데."),
     ] },
     { name: "이리스 합류 뒤", conditions: [sw(SW_IRIS)], commands: [
       say(MIRE, "그 아가씨, 은빛 머리 맞지?\n…아니, 못 본 걸로 해 두자. 난 못 봤어."),
@@ -170,13 +170,13 @@ function plazaPeople(project: Project, hubId: string): void {
   rewritePages(tobi, [
     { name: "기본", conditions: [], commands: [
       say(TOBI, "형도 별똥별 봤어? 나 소원 빌었다!\n뭘 빌었는지는 비밀이야."),
-      say(TOBI, "근데 있잖아, 별똥별이 방향 틀면\n소원이 이뤄진 거래. 누가 그랬는데."),
+      say(TOBI, "근데 있잖아, 별똥별이 방향을 틀면\n소원이 이뤄진 거래. 누가 그러던데."),
     ] },
     { name: "이리스 합류 뒤", conditions: [sw(SW_IRIS)], commands: [
       say(TOBI, "기계 누나지?\n저기, 내 소원 들어준 거 맞지!"),
       say(TOBI, "아직 말하면 안 돼.\n말하면 안 이뤄진댔어. 발렌 아저씨가."),
       fork(sw(Q2_DONE), [
-        say(IRIS, "저는, 친구 맞아요?"),
+        say(IRIS, "그럼 저도… 친구예요?"),
         say(TOBI, "그럼! 기계여도 돼.\n기계가 더 튼튼하잖아!"),
       ]),
     ] },
@@ -185,17 +185,17 @@ function plazaPeople(project: Project, hubId: string): void {
   tobi.pages!.push(hiddenPage(`${tobi.id}_q_bridge`, [sw(Q2_FLOUR), sw(Q2_FOUND, false)]));
 
   const gate = mustEvent(project, hubId, "ev_fs_gate");
-  const gateQ1 = breadHandOff(Q1_GATE, [say(GATE, "…딱딱하군. 근데 따뜻하네.\n브람 영감이 이 시간엔 공터 쪽 오두막에 있을 거야.")]);
+  const gateQ1 = breadHandOff(Q1_GATE, [say(GATE, "…딱딱하군. 그래도 따뜻하네.\n브람 영감은 이맘때면 공터 쪽 오두막에 있을 거다.")]);
   rewritePages(gate, [
     { name: "기본", conditions: [], commands: [
       gateQ1,
       say(GATE, "문 밖에서 북쪽으로 돌면 바로 숲이다.\n심문관들은 남쪽 골짜기부터 뒤진다더군."),
-      say(GATE, "숲길은 브람 영감이 제일 잘 안다.\n북쪽은 이틀 안에 직접 보신다더군."),
+      say(GATE, "숲길은 브람 영감이 제일 잘 안다.\n북쪽은 이틀 안에 심문관이 직접 본다더군."),
       say(GATE, "별지기가 숲엔 왜 가나. …묻지 않겠다.\n길에서 벗어나지 마라. 늑대가 사납다."),
     ] },
     { name: "이리스 합류 뒤", conditions: [sw(SW_IRIS)], commands: [
       gateQ1,
-      say(GATE, "어제 그 길로 나갔다가 셋이 돌아왔군.\n…난 둘만 센 걸로 하지."),
+      say(GATE, "둘이 나가더니 셋이 돌아왔군.\n…난 둘만 센 걸로 하지."),
     ] },
   ]);
 
@@ -242,7 +242,7 @@ function placeRino(project: Project, hub: GameMap): void {
       narrate("납작빵을 하나 건넸다."),
       item(FS_BREAD_FLAT, -1),
       say(KNIGHT, "…고맙다. 아침부터 아무것도 못 먹었어."),
-      say(KNIGHT, "대장님이 이틀 안에 직접 북쪽 숲을 보신다.\n그전까지 지도를 외워 두라 하셨고."),
+      say(KNIGHT, "대장님이 이틀 안에 북쪽 숲을 직접 보신다.\n그전에 숲 지도를 외워 두라시더군."),
       say(RINO, "…네가 어디로 갔는지는 못 본 걸로 한다.\n이름은 리노다. 잊어라."),
       setSw(named),
       setSw(Q1_RINO),
@@ -262,8 +262,8 @@ function bramBread(project: Project, forestId: string): void {
   const bram = findEvent(project.maps[forestId], "ev_fs_bram");
   if (!bram) return;
   const handOff = breadHandOff(Q1_BRAM, [
-    say(BRAM, "토마가 보냈나. 평생 부풀기만 해서\n걱정이더니, 이번 건 납작하군."),
-    say(BRAM, "고맙다고 전해라. 오늘은\n아무 데서도 얻어먹지 못했거든."),
+    say(BRAM, "토마가 보냈나. 그 친구 빵은 늘\n잘 부풀더니, 이번 건 납작하군."),
+    say(BRAM, "고맙다고 전해라. 오늘은\n어디서도 한술 못 얻어먹었거든."),
   ]);
   for (const page of bram.pages ?? []) {
     const list = page.commands as Command[];
@@ -287,8 +287,8 @@ function toma(project: Project): void {
   const complete: Command[] = [
     say(TOMA, "다 전했어요? 많이 딱딱했죠.\n…다들 뭐라고 하던가요?"),
     say(KAEL, "따뜻하다고 했어요. 모두요."),
-    say(TOMA, "이 모양, 기억나니? 열일곱 해 동안\n천문대 계단에 놓던 별 모양 빵이야."),
-    say(TOMA, "바구니 속 아기가 배고플까 봐.\n…이제 와서야 말하네."),
+    say(TOMA, "이 모양, 기억나요? 열일곱 해 동안\n천문대 계단에 두고 가던 별 모양 빵이에요."),
+    say(TOMA, "바구니 속 아기가 배고플까 봐서요.\n…이제야 말하네요."),
     say(KAEL, "…토마 아저씨였어요?\n계단에 있던 빵이."),
     say(TOMA, "열일곱 해 동안 한 번도 안 들켰는데,\n오늘 반죽이 안 부풀어서 들켰네요."),
     narrate("「별빛빵」을 받았다. 토마네 빵 목록이 늘었다."),
@@ -304,11 +304,11 @@ function toma(project: Project): void {
       shop(pre),
     ] },
     { name: "의뢰(Q1)", conditions: [sw(Q1_HEARD)], commands: [
-      say(TOMA, "오늘 새벽 반죽이 안 부풀었어요…\n이걸로라도 아침 못 챙긴 분들께 전해 줄래요?"),
+      say(TOMA, "오늘 새벽엔 반죽이 안 부풀었어요…\n이거라도 아침 거른 분들께 갖다줄래요?"),
       say(TOMA, "북문 문지기랑 오스본 어르신,\n심문회 기사님… 그리고 숲지기 브람도요."),
       choices([
         ["맡을게요", [
-          say(TOMA, "별빛은 아니지만 아직 따뜻해요.\n따뜻하면 됐죠. 부탁해요."),
+          say(TOMA, "별빛빵만은 못해도 아직 따뜻해요.\n따뜻하면 됐죠. 부탁해요."),
           narrate("납작빵 4개를 받았다. 의뢰 「토마의 납작빵」을 맡았다."),
           item(FS_BREAD_FLAT, 4),
           setVar(Q1_COUNT, 0),
@@ -340,11 +340,11 @@ function osborn(project: Project): void {
   const event = mustEvent(project, "fs_stargazer_home", "ev_fs_old_stargazer");
   const handOff = breadHandOff(Q1_OSBORN, [
     say(OSBORN, "반죽이 안 부풀었다고?\n별이 떨어진 밤엔 그랬지. 삼십 년 전에도."),
-    say(OSBORN, "…아니, 헛소리야.\n빵은 고맙네. 딱딱해서 이가 시리구먼."),
+    say(OSBORN, "…아니, 늙은이 헛소리일세.\n빵은 고맙네. 딱딱해서 이가 시리구먼."),
   ]);
   const base = [
     say(OSBORN, "나도 젊을 땐 저 천문대에서 별을 셌지.\n하넬 녀석이 내 자리를 물려받았고."),
-    say(OSBORN, "어젯밤 별은 궤도가 달랐어.\n떨어진 게 아니라… 내려앉은 듯했지."),
+    say(OSBORN, "어젯밤 별은 궤도가 달랐네.\n떨어졌다기보다… 내려앉는 것 같았지."),
   ];
   rewritePages(event, [
     { name: "기본", conditions: [], commands: [handOff, ...base, selfOn("B")] },
@@ -355,7 +355,7 @@ function osborn(project: Project): void {
     { name: "이리스 합류 뒤", conditions: [sw(SW_IRIS)], commands: [
       handOff,
       say(OSBORN, "하늘을 건너는 배라…\n하넬이 평생 찾던 답이 그 아이 안에 있겠구먼."),
-      say(OSBORN, "교단은 하늘을 두려워해. 두려운 건 덮으려 들지.\n조심하게, 카엘."),
+      say(OSBORN, "교단은 하늘을 두려워하네. 두려우면 덮으려 들지.\n조심하게, 카엘."),
     ] },
   ]);
 }
@@ -374,9 +374,9 @@ function marta(project: Project): void {
   const greet = say(MARTA, "어서 와요, 카엘. 어젯밤 별똥별 봤어요?\n손님들이 밤새 창가에 붙어 있었어요.");
   const price = say(MARTA, "하룻밤에 30골드예요. 푹 쉬고 가요.");
   const offer: Command[] = [
-    say(MARTA, "카엘, 잠깐만. 은수저가 여섯 벌이나 없어졌어.\n어젯밤엔 분명 있었는데."),
-    say(MARTA, "손님 중에 훔칠 사람은 없어.\n의심 가는 건… 아니, 차마 말 못 하겠다."),
-    say(MARTA, "찾아 주면 하룻밤은 공짜로 재워 줄게.\n부탁해도 될까?"),
+    say(MARTA, "카엘, 잠깐요. 은수저 여섯 벌이 없어졌어요.\n어젯밤엔 분명히 있었는데."),
+    say(MARTA, "손님 중엔 그럴 사람이 없어요.\n짚이는 데가… 아니, 차마 말 못 하겠네요."),
+    say(MARTA, "찾아 주면 하룻밤은 공짜로 재워 줄게요.\n부탁해도 될까요?"),
     choices([
       ["찾아 볼게요", [narrate("의뢰 「마르타의 은수저」를 맡았다."), setSw(Q2_ON)]],
       ["지금은 어려워요", [say(MARTA, "그래요, 바쁘면 어쩔 수 없죠.\n생각나면 다시 말해 줘요.")]],
@@ -399,7 +399,7 @@ function marta(project: Project): void {
     { name: "의뢰를 마침", conditions: [sw(Q2_DONE)], commands: [greet, price, ...innStay(30)] },
     { name: "이리스 합류 뒤", conditions: [sw(SW_IRIS)], commands: [...irisLines, { kind: "inn", price: 0 } as Command] },
     { name: "의뢰 중(Q2)", conditions: [sw(Q2_ON), sw(Q2_DONE, false)], commands: [
-      fork(sw(Q2_FOUND), complete, [say(MARTA, "손님 중에 훔칠 사람은 없어.\n의심 가는 건… 아니, 차마 말 못 하겠다.")]),
+      fork(sw(Q2_FOUND), complete, [say(MARTA, "손님 중엔 그럴 사람이 없어요.\n짚이는 데가… 아니, 차마 말 못 하겠네요.")]),
       fork(sw(SW_IRIS), [{ kind: "inn", price: 0 } as Command], [price, ...innStay(30)]),
     ] },
   ]);
@@ -442,17 +442,17 @@ function rohan(project: Project): void {
     say(ROHAN, "서른 해 전 새벽샘에서\n나는 창을 들고 서 있었다."),
     say(ROHAN, "재를 헤치고 나온 아이가 있었어.\n…발렌이란 이름이 맞지?"),
     say(ROHAN, "그 아이한테 내가 한 말은\n「살아서 미안하다」가 아니라 「고개 들어라」였다."),
-    say(ROHAN, "좀 더 다정하게 말해 줄 걸 그랬어."),
+    say(ROHAN, "좀 더 다정하게 말해 줄걸 그랬다."),
     say(KAEL, "…아저씨."),
-    say(ROHAN, "이 창은 내 딸이 쓸 거다.\n네가 쓸 몫은 따로 만들어 두었으니 가져가라."),
+    say(ROHAN, "이 창은 내 딸이 쓸 거다.\n네 몫은 따로 만들어 뒀다. 가져가라."),
     narrate(`「${rewardName}」을 받았다.`),
     item(rewardId, 1),
     setSw(Q3_DONE),
   ];
   const craft: Command[] = [
-    say(ROHAN, "…가져왔나. 그래, 제대로 된 송곳니다.\n창을 만들어 주마. 어떤 걸 원하나."),
+    say(ROHAN, "…가져왔군. 그래, 제대로 된 송곳니다.\n하나 만들어 주마. 뭘로 하겠나."),
     say(ROHAN, "하나는 「푸른 불꽃 창」. 불이 붙고\n한 줄에 둘을 꿴다."),
-    say(ROHAN, "다른 하나는 「별쇠 장검」. 속성은 없지만\n한 방은 가장 묵직하다. 별쇠 조각이 필요하다."),
+    say(ROHAN, "다른 하나는 「별쇠 장검」. 속성은 없지만\n한 방은 제일 묵직하다. 별쇠 조각이 필요하다."),
     choices([
       ["푸른 불꽃 창", forged(SPEAR_REWARD, "푸른 불꽃 창", [])],
       ["별쇠 장검", [fork(has(STARIRON), forged(SWORD_REWARD, "별쇠 장검", [item(STARIRON, -1)]), [
@@ -466,7 +466,7 @@ function rohan(project: Project): void {
     ...takeFangs,
     fork(all(varCond(Q3_FANGS, ">=", 3), has(EMBER)), craft, [
       giveBack,
-      say(ROHAN, "송곳니는 늑대에게서, 푸른 불씨는 도깨비불에게서 얻어라.\n둘 다 숲에 있으니 재료부터 구해 와라."),
+      say(ROHAN, "송곳니는 늑대한테서, 푸른 불씨는 도깨비불한테서 나온다.\n둘 다 숲에 있다. 구해 와라."),
     ]),
   ];
   rewritePages(event, [
@@ -516,7 +516,7 @@ function spoonClues(project: Project, hubId: string): Record<string, string> {
   const inn = pickBox(project.maps.fs_inn, [/^상자$/, /궤짝/, /통/]);
   if (inn) {
     cluePage(inn, "q2_inn", [sw(Q2_ON), sw(Q2_INN, false), sw(Q2_DONE, false)], [
-      narrate("저장고에는 은수저의 흔적이 없다.\n빈 상자 모서리에 작은 손자국이 있다."),
+      narrate("저장고엔 은수저가 없다.\n빈 상자 모서리에 작은 손자국이 찍혀 있다."),
       setSw(Q2_INN),
     ]);
     found.inn = inn.id;
@@ -532,7 +532,7 @@ function spoonClues(project: Project, hubId: string): Record<string, string> {
   const flour = pickBox(project.maps.fs_bakery_home, [/밀가루/, /^통$/]);
   if (flour) {
     cluePage(flour, "q2_flour", [sw(Q2_ON), sw(Q2_FLOUR, false), sw(Q2_DONE, false)], [
-      narrate("밀가루 통 속에 은수저 두 벌이 묻혀 있다.\n수저마다 하얀 가루가 내려앉았다."),
+      narrate("밀가루 통 속에 은수저 두 벌이 묻혀 있다.\n수저마다 밀가루가 하얗게 묻었다."),
       narrate("「은수저」 2벌을 찾았다.\n하얀 발자국이 광장 다리 쪽으로 이어진다."),
       item(FS_SILVER_SPOON, 2),
       setSw(Q2_FLOUR),
@@ -589,10 +589,10 @@ function bridgeScene(project: Project, hubId: string): string | null {
     emote("ev_fs_kid_bridge", "exclamation"),
     say(TOBI, "…형, 왔어?\n화내지 마. 나쁜 짓 한 거 아니야."),
     say(TOBI, "…별한테 줄 선물이야.\n별에서 아이가 온댔어."),
-    say(TOBI, "친구 없이 오면 심심하잖아.\n그래서 가장 반짝이는 걸 골랐어."),
-    say(KAEL, "…다음엔 말하고 가져가.\n같이 갖다 주러 가자."),
+    say(TOBI, "친구 없이 오면 심심하잖아.\n그래서 제일 반짝이는 걸 골랐어."),
+    say(KAEL, "…다음부턴 말하고 가져가.\n선물은 같이 갖다 주자."),
     say(KAEL, "대신 은수저는 마르타 누나한테 먼저 돌려주자."),
-    narrate("토비가 상자 속 은수저를 내밀었다. 은수저 여섯 벌을 모두 찾았다."),
+    narrate("토비가 상자 속 은수저를 내민다. 은수저 여섯 벌을 다 찾았다."),
     item(FS_SILVER_SPOON, 4),
     setSw(Q2_FOUND),
   ];
@@ -613,7 +613,7 @@ const SCOLDS: readonly Scold[] = [
   { mapId: "fs_inn", owner: "ev_fs_inn_keeper", key: "marta", line: [MARTA, "손님? 거긴 여관 창고예요!"], fine: 5 },
   { mapId: "fs_apothecary", owner: "ev_fs_apothecary", key: "oden", line: [ODEN, "허허, 남의 약초 집어 가면 병이 옮는다."], fine: 5 },
   { mapId: "fs_bakery_home", owner: "ev_fs_baker_husband", key: "toma", line: [TOMA, "밀가루는 파는 거예요. 그냥은 못 줘요."], fine: 3, only: /밀가루/ },
-  { mapId: "fs_smithy", owner: "ev_fs_smith", key: "rohan", line: [ROHAN, "남의 작업장에서 손버릇이 고약하군."], fine: 10 },
+  { mapId: "fs_smithy", owner: "ev_fs_smith", key: "rohan", line: [ROHAN, "남의 대장간에서 손버릇 한번 고약하군."], fine: 10 },
 ];
 
 /** townLife 가 단 뒤지기 명령에서 「챙기기」 부분만 꺼낸다(토마네는 주인 시야 분기의 맨 안쪽 else). */
@@ -662,7 +662,7 @@ function journal(project: Project): void {
     edges: nodes.slice(1).map(([nid], i) => ({ from: nodes[i]![0], to: nid })),
   });
   const defs: QuestGraphDef[] = [
-    q("fs_q_bread", "토마의 납작빵", "빵집 뒤채의 토마가 부풀지 않은 납작빵을 아침을 못 먹은 이들에게 나눠 달라고 했다.", [
+    q("fs_q_bread", "토마의 납작빵", "빵집 뒤채의 토마가 부풀지 않은 납작빵을 아침 거른 사람들에게 나눠 달라고 했다.", [
       ["accept", "토마에게 납작빵 넷을 받는다", [sw(Q1_ON)]],
       ["gate", "동문 문지기에게 건넨다", [sw(Q1_GATE)]],
       ["osborn", "늙은 별지기 오스본에게 건넨다", [sw(Q1_OSBORN)]],
@@ -670,7 +670,7 @@ function journal(project: Project): void {
       ["bram", "숲지기 브람에게 건넨다", [sw(Q1_BRAM)]],
       ["report", "빵집 뒤채의 토마에게 돌아간다", [sw(Q1_DONE)]],
     ]),
-    q("fs_q_spoon", "마르타의 은수저", "별빛 여관의 은수저 여섯 벌이 없어졌다. 마르타는 의심 가는 사람을 말하지 못했다.", [
+    q("fs_q_spoon", "마르타의 은수저", "별빛 여관의 은수저 여섯 벌이 없어졌다. 마르타는 짚이는 사람이 있는 눈치지만 말하지 못했다.", [
       ["accept", "마르타의 부탁을 듣는다", [sw(Q2_ON)]],
       ["trail", "여관 저장고·약방 자루·토마네 밀가루 통을 뒤져 흔적을 찾는다", [sw(Q2_FLOUR)]],
       ["bridge", "광장 다리 위 상자에서 은수저를 되찾는다", [sw(Q2_FOUND)]],
@@ -678,7 +678,7 @@ function journal(project: Project): void {
     ]),
     q("fs_q_spear", "로한의 창", "대장장이 로한은 창을 팔지 않는다. 값이 아니라 이유를 가져오라고 했다.", [
       ["accept", "로한에게 창 얘기를 꺼낸다", [sw(Q3_ON)]],
-      ["forge", "늑대 송곳니 셋과 푸른 불씨 하나를 로한에게 가져간다", [sw(Q3_DONE)]],
+      ["forge", "늑대 송곳니 셋과 푸른 불씨 하나를 구해 로한에게 가져간다", [sw(Q3_DONE)]],
     ]),
   ];
   const ids = new Set(defs.map((d) => d.id));

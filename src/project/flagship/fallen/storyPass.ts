@@ -169,7 +169,7 @@ function irisJoins(project: Project, forest: GameMap): void {
     say(IRIS, "저 위요. 거기서 부르는 소리를 따라\n여기까지 왔어요."),
     say(IRIS, "대답하려면 하늘을 향한 큰 눈이 있어야 해요.\n제 것은 떨어지면서 깨졌어요."),
     say(ELENA, "큰 눈이면… 망원경 말이구나.\n천문대에 선생님 렌즈가 있어."),
-    narrate("이리스가 관 가장자리를 붙든 채\n둘을 번갈아 본다."),
+    narrate("이리스가 관 가장자리를 붙든 채\n두 사람을 번갈아 본다."),
     say(IRIS, "…그럼, 저도 데려가 주실래요?\n여기 혼자 남는 건 싫어요."),
     dock(),
     {
@@ -181,9 +181,9 @@ function irisJoins(project: Project, forest: GameMap): void {
         ] },
         { text: "여기 숨어 있는 게 안전해", branch: [
           emote(irisId, "ellipsis", 800),
-          say(ELENA, "카엘, 심문관이 이 숲을 뒤지는 중이야.\n혼자 두면 금방 잡힐걸."),
+          say(ELENA, "카엘, 지금 심문관들이 이 숲을 뒤지고 있어.\n혼자 두면 금방 잡힐걸."),
           say(KAEL, "…그래, 내 생각이 짧았어.\n같이 가자, 이리스."),
-          say(IRIS, "…네. 이번엔 무섭지 않게\n따라갈게요."),
+          say(IRIS, "…네. 이번엔 안 무서워하고\n따라갈게요."),
         ] },
       ],
     } as unknown as Command,
@@ -492,7 +492,7 @@ function extraScolds(project: Project, ids: { hub: string; observatory: string }
       const id = `ev_${FS_PREFIX}_drawer_hanel`;
       const content = [
         narrate("(서랍) 접힌 정착 확인서가 한 장 들어 있다."),
-        narrate("기록자란엔 하넬의 이름이 적혀 있고,\n보증받을 사람의 이름 칸은 비어 있다."),
+        narrate("기록자 칸엔 하넬의 이름이 있고,\n보증받을 사람 칸은 비어 있다."),
       ];
       obs.events = obs.events.filter((e) => e.id !== id);
       obs.events.push(boxEvent(id, { name: "수납 · 목록 서랍장" }, spot.x, spot.y, [page(`${id}_p0`, "서랍", [], [
@@ -545,13 +545,13 @@ function extraScolds(project: Project, ids: { hub: string; observatory: string }
         { kind: "setSelfSwitch", key: "A", value: true } as Command,
       ];
       hub.events.push(boxEvent(id, { name: "수납 · 심문회 상자" }, spot.x, spot.y, [
-        page(`${id}_p0`, "봉인", [], [narrate("붉은 봉인이 찍힌 심문회 상자다.\n기사들 눈이 많아 지금은 손댈 수 없다.")]),
+        page(`${id}_p0`, "봉인", [], [narrate("붉은 봉인이 찍힌 심문회 상자다.\n보는 눈이 많아 지금은 손댈 수 없다.")]),
         page(`${id}_p1`, "뒤지기", [sw(SW_VALEN_MARCHED)], [seesFork(rino.id, 7, [
           emote(rino.id, "exclamation", 900),
           ...take,
           scoldOnce("var_fs_scold_inquisition", [say(RINO, "그건 심문관님 압수품이다!\n…못 본 걸로 해 줄 테니, 얼른 비켜.")], 15),
         ], take)]),
-        page(`${id}_p2`, "이미 뒤짐", [{ kind: "selfSwitch", key: "A", value: true } as unknown as Condition], [narrate("심문회 상자는 이미 열어 봤다.\n압수 목록의 빈 줄이 마음에 걸린다.")]),
+        page(`${id}_p2`, "이미 뒤짐", [{ kind: "selfSwitch", key: "A", value: true } as unknown as Condition], [narrate("심문회 상자는 이미 열어 봤다.\n압수 목록의 빈 줄이 자꾸 마음에 걸린다.")]),
       ]));
     }
   }
@@ -574,7 +574,7 @@ function extraScolds(project: Project, ids: { hub: string; observatory: string }
     if (smithy && spot) {
       const id = `ev_${FS_PREFIX}_drawer_anvil`;
       smithy.events.push(boxEvent(id, { name: "수납 · 모루 서랍" }, spot.x, spot.y, [page(`${id}_p0`, "서랍", [], [
-        narrate("(서랍) 손때 묻은 편지 한 통이 접혀 있다."),
+        narrate("(서랍) 손때 묻은 편지가 한 통 접혀 있다."),
         narrate("「아버지, 이제 쇠 말고 사람을 고쳐 주세요.\n— 새라」"),
         fork(all(sw("sw_fs_q_spear_on"), sw("sw_fs_q_spear_done", false)), [
           seesFork("ev_fs_smith", 6, [emote("ev_fs_smith", "ellipsis", 900), scoldOnce("var_fs_scold_rohan_anvil", [say(ROHAN, "…읽은 게냐. 읽어도 된다.")], 0)], [], true),

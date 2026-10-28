@@ -95,16 +95,16 @@ export function ensureFallenTownDatabase(project: Project): void {
       ...(extra.stateEffects ?? []),
     ],
   });
-  addItem(bread("fs_bread_warm", "갓 구운 온기빵", 45, "먹으면 HP 를 조금 채우고, 이후 몇 번의 전투 동안 턴마다 체력이 차오릅니다(가끔 식어서 풀립니다).", {
+  addItem(bread("fs_bread_warm", "갓 구운 온기빵", 45, "먹으면 HP를 조금 채우고, 몇 번의 전투 동안 턴마다 체력이 차오른다(가끔 식어서 풀린다).", {
     hp: 15, stateEffects: [{ stateId: "fs_state_bread_warm", chance: 100, operation: "add" }],
   }));
-  addItem(bread("fs_bread_herb", "약초 호밀빵", 55, "쓴 약초를 반죽에 넣어 구운 빵. 독과 수면을 풀고 HP 를 조금 채웁니다.", {
+  addItem(bread("fs_bread_herb", "약초 호밀빵", 55, "쓴 약초를 반죽에 넣어 구운 빵. 독과 수면을 풀고 HP를 조금 채운다.", {
     hp: 10, healStateIds: ["state_poison", "state_sleep"],
   }));
-  addItem(bread("fs_bread_hearty", "든든한 곡물빵", 70, "씹을수록 힘이 나는 빵. 공격과 방어가 오르며, 여관에서 푹 쉴 때까지 이어집니다.", {
+  addItem(bread("fs_bread_hearty", "든든한 곡물빵", 70, "씹을수록 힘이 나는 빵. 공격과 방어가 오르고, 여관에서 푹 쉴 때까지 간다.", {
     hp: 20, stateEffects: [{ stateId: "fs_state_bread_hearty", chance: 100, operation: "add" }],
   }));
-  addItem(bread("fs_bread_mystery", "토마의 수상한 빵", 40, "속에 뭐가 들었는지는 토마도 모릅니다. 힘이 날 수도, 체력이 차오를 수도, 탈이 날 수도 있습니다.", {
+  addItem(bread("fs_bread_mystery", "토마의 수상한 빵", 40, "속에 뭐가 들었는지는 토마도 모른다. 힘이 날 수도, 체력이 차오를 수도, 탈이 날 수도 있다.", {
     hp: 12, stateEffects: [
       { stateId: "state_attack_up", chance: 40, operation: "add" },
       { stateId: "fs_state_bread_warm", chance: 40, operation: "add" },
@@ -112,27 +112,27 @@ export function ensureFallenTownDatabase(project: Project): void {
       { stateId: "state_sleep", chance: 15, operation: "add" },
     ],
   }));
-  addItem(bread("fs_bread_stale", "묵은 빵", 8, "어제 못 판 딱딱한 빵. 싸고 배는 차지만 가끔 탈이 납니다.", {
+  addItem(bread("fs_bread_stale", "묵은 빵", 8, "어제 못 판 딱딱한 빵. 싸고 배는 부르지만 가끔 탈이 난다.", {
     hp: 25, stateEffects: [{ stateId: "state_poison", chance: 35, operation: "add" }],
   }));
   // 대본 4절·14절 — 토마의 납작빵과 이리스 합류 뒤에 열리는 네 가지 빵.
-  addItem(bread(FS_BREAD_FLAT, "납작빵", 15, "반죽이 안 부풀어서 납작하게 구운 빵. 딱딱하지만 따뜻하다. HP 를 조금 채웁니다.", { hp: 12 }));
-  addItem(bread(FS_BREAD_STARLIGHT, "별빛빵", 30, "꼭대기에 별 모양 홈이 파인 빵. 먹으면 눈이 밝아진다. HP 를 채우고 공격이 오릅니다.", {
+  addItem(bread(FS_BREAD_FLAT, "납작빵", 15, "반죽이 안 부풀어 납작하게 구운 빵. 딱딱하지만 따뜻하다. HP를 조금 채운다.", { hp: 12 }));
+  addItem(bread(FS_BREAD_STARLIGHT, "별빛빵", 30, "윗면에 별 모양 홈이 파인 빵. 먹으면 눈이 밝아진다. HP를 채우고 공격이 오른다.", {
     hp: 30, stateEffects: [{ stateId: "state_attack_up", chance: 100, operation: "add" }],
   }));
-  addItem(bread("fs_bread_ember", "불씨빵", 45, "화덕에서 막 꺼낸 불씨 같은 빵. 속까지 뜨겁다. 먹고 나면 몇 번의 전투 동안 체력이 차오릅니다.", {
+  addItem(bread("fs_bread_ember", "불씨빵", 45, "화덕에서 막 꺼낸 불씨 같은 빵. 속까지 뜨겁다. 먹으면 몇 번의 전투 동안 체력이 차오른다.", {
     hp: 20, stateEffects: [{ stateId: "fs_state_bread_warm", chance: 100, operation: "add" }],
   }));
   addItem(bread("fs_bread_wish", "소원빵", 20, "안에 쪽지가 들어 있다. 뭐라고 쓰였는지는 먹어 봐야 안다.", {
     hp: 15, stateEffects: [{ stateId: "state_attack_up", chance: 50, operation: "add" }],
   }));
-  addItem(bread("fs_bread_upside", "뒤집힌 빵", 10, "반죽을 거꾸로 굽는 실수에서 태어났다. 이상하게 맛있다.", { hp: 18 }));
+  addItem(bread("fs_bread_upside", "뒤집힌 빵", 10, "반죽을 거꾸로 구웠다가 나온 빵. 이상하게 맛있다.", { hp: 18 }));
   // 부업(은수저·숙박권)은 팔 수 없는 퀘스트 물건이다.
   const questThing = (id: string, name: string, description: string) => ({
     id, name, price: 0, description, scope: "ally" as const, type: "normalGoods" as const, occasion: "never" as const, consumable: false,
   });
   addItem(questThing(FS_SILVER_SPOON, "은수저", "여관 마르타의 은수저. 토비가 반짝이는 게 좋아서 가져갔다."));
-  addItem(questThing(FS_FREE_NIGHT, "무료 숙박권", "마르타의 여관에서 하룻밤 공짜. 여관 주인에게 건네면 된다."));
+  addItem(questThing(FS_FREE_NIGHT, "무료 숙박권", "마르타네 여관에서 하룻밤 공짜로 묵을 수 있다. 여관 주인에게 건네면 된다."));
 }
 
 // ───────────────────────── 수납 뒤지기 ─────────────────────────
@@ -179,7 +179,7 @@ const FLAVOR: readonly [RegExp, string][] = [
   [/생선 상자/, "생선 비린내만 남았다. 오늘 잡은 건 벌써 다 팔렸나 보다."],
   [/선원 궤짝/, "선원 궤짝은 자물쇠가 단단히 걸려 있다."],
   [/쌓인 상자/, "빈 상자들이 비뚤게 쌓여 있다."],
-  [/곡식 자루/, "곡식이 가득 차 있다. 누군가의 한 철 양식이다."],
+  [/곡식 자루/, "곡식이 가득하다. 누군가의 한 철 양식이다."],
   [/밀가루 자루/, "밀가루가 가득하다. 손을 넣었다가 소매만 하얘졌다."],
   [/술통 선반/, "술통마다 날짜가 적혀 있다. 반듯한 글씨다."],
   [/약재 서랍장/, "서랍마다 약초 이름이 적혀 있다.\n함부로 섞으면 안 될 것 같다."],
@@ -189,10 +189,10 @@ const FLAVOR: readonly [RegExp, string][] = [
   [/담금질 통/, "검은 물이 고여 있다. 쇳내가 올라온다."],
   [/숯 통/, "숯가루만 손에 묻었다."],
   [/무기 통/, "날이 빠진 창 자루들이 꽂혀 있다."],
-  [/찬장/, "그릇이 가지런히 쌓여 있다. 이가 빠진 것까지 버리지 않았다."],
+  [/찬장/, "그릇이 가지런히 쌓여 있다. 이 빠진 것도 버리지 않았다."],
   [/옷장/, "옷이 가지런히 걸려 있다. 남의 옷장이다."],
   [/화장대/, "작은 거울과 머리끈이 놓여 있다."],
-  [/협탁/, "협탁 위에 누가 두고 간 빗 하나가 놓여 있다."],
+  [/협탁/, "협탁 위에 누가 두고 간 빗이 하나 있다."],
   [/여행 가방/, "가방은 비어 있다. 오래 쓰지 않은 것 같다."],
   [/왕실 상자/, "장식만 화려하고 속은 비었다."],
   [/궤짝/, "궤짝 속엔 개어 둔 이불뿐이다."],
@@ -201,7 +201,7 @@ const FLAVOR: readonly [RegExp, string][] = [
   [/상자/, "상자 안엔 낡은 천 조각뿐이다."],
 ];
 function flavorLine(label: string): string {
-  return FLAVOR.find(([re]) => re.test(label))?.[1] ?? `${label}에는 눈여겨볼 것이 없다.`;
+  return FLAVOR.find(([re]) => re.test(label))?.[1] ?? `${label}에는 별것 없다.`;
 }
 
 /** 이 집(또는 거리)에서 정해 둔 보상을 칸마다 나눈다 — 나머지 칸은 살림 한 줄(flavor). */
@@ -253,7 +253,7 @@ const say = (speaker: string, body: string): Command => ({ kind: "text", speaker
 
 function lootCommands(project: Project, loot: Loot, label: string): Command[] {
   if (loot.kind === "flavor") return [narrate(flavorLine(label))];
-  if (loot.kind === "empty") return [narrate(`${label}${josa(label, "을", "를")} 뒤져 봤지만 먼지뿐이다. 비어 있다.`)];
+  if (loot.kind === "empty") return [narrate(`${label}${josa(label, "을", "를")} 뒤져 봤지만 먼지뿐이다.`)];
   if (loot.kind === "gold") {
     return [narrate(`${label} 바닥에서 ${loot.amount}G 를 찾았다.`), { kind: "changeGold", op: "+=", amount: loot.amount } as Command];
   }
@@ -282,7 +282,7 @@ type Owner = {
 const OWNERS: readonly Owner[] = [
   {
     mapId: "fs_lisa_home", person: "ev_fs_lisa", name: "리사", warnVar: VAR_LISA_WARNED, banSwitch: SW_LISA_BANNED,
-    cue: "부엌 쪽에서 달그락 소리가 난다. 리사가 가까이 있는 것 같다.",
+    cue: "부엌 쪽에서 달그락 소리가 난다. 리사가 근처에 있나 보다.",
     lines: {
       warn: ["…방금 거기, 손댔죠?\n이번 한 번만 못 본 걸로 해 줄게요.", "한 번만 더 내 물건에 손대면 당장 내쫓을 거예요.\n다시는 문도 안 열어 줄 거고요."],
       expel: ["내가 분명히 말했죠!\n남의 집 서랍을 또 뒤져요?", "당장 나가요!\n다시는 이 집 문턱도 넘지 말아요!"],
@@ -292,9 +292,9 @@ const OWNERS: readonly Owner[] = [
   },
   {
     mapId: "fs_stargazer_home", person: "ev_fs_old_stargazer", name: "오스본", warnVar: "var_fs_osborn_warned", banSwitch: "sw_fs_osborn_banned",
-    cue: "서재 쪽에서 책장 넘기는 소리와 낮은 헛기침이 들린다. 노인이 가까이 있다.",
+    cue: "서재 쪽에서 책장 넘기는 소리와 헛기침이 들린다. 오스본이 근처에 있다.",
     lines: {
-      warn: ["…이보게, 지금 내 궤짝에 손대지 않았나.\n별 보는 늙은이도 눈은 멀쩡하다네.", "이번만은 넘어가겠네.\n또 그러면 이 문을 다시는 열지 않을 걸세."],
+      warn: ["…이보게, 방금 내 궤짝에 손대지 않았나.\n별 보는 늙은이도 눈은 멀쩡하다네.", "이번만은 넘어가겠네.\n또 그러면 이 문을 다시는 열지 않을 걸세."],
       expel: ["내가 분명히 일렀네!\n또 남의 물건에 손을 대다니!", "나가게! 이 천문대 문턱을\n다시 넘을 생각도 말게!"],
       shove: "오스본의 지팡이에 떠밀려 집 밖으로 쫓겨났다.",
       banned: "문 너머에서 오스본의 지팡이 소리가 울린다.\n「손버릇 나쁜 이는 들이지 않네. 돌아가게!」",
@@ -302,10 +302,10 @@ const OWNERS: readonly Owner[] = [
   },
   {
     mapId: "fs_bakery_home", person: "ev_fs_baker_husband", name: "토마", warnVar: "var_fs_toma_warned", banSwitch: null,
-    cue: "오븐 쪽에서 반죽을 두드리는 소리가 난다. 토마가 멀지 않은 곳에 있다.",
+    cue: "화덕 쪽에서 반죽 치대는 소리가 난다. 토마가 멀지 않은 곳에 있다.",
     lines: {
-      warn: ["어이쿠, 손님! 내 빵 궤짝에 손댔소?\n이번 한 번은 못 본 걸로 하겠소.", "한 번만 더 그러면 가게 밖으로\n끌어낼 거요. 알겠소?"],
-      expel: ["내가 말했잖소! 또 뒤졌소?!", "나가시오! 오늘은 더 팔 빵 없소!"],
+      warn: ["어이쿠, 손님! 빵 궤짝은 왜 뒤져요?\n이번 한 번은 못 본 걸로 할게요.", "한 번만 더 그러면 가게 밖으로\n끌어낼 거예요. 알았죠?"],
+      expel: ["말했잖아요! 또 뒤졌어요?!", "나가요! 오늘은 더 팔 빵 없어요!"],
       shove: "토마에게 어깨를 잡혀 가게 밖으로 끌려 나왔다.",
       banned: "",
     },

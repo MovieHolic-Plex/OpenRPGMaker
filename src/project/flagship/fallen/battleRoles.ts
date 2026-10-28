@@ -81,18 +81,18 @@ export function applyFallenBattleRoles(project: Project): void {
   });
   tune("skill_hero_rush_pierce", {
     power: 70, elementId: "spear", damageFormula: "power + a.atk * 1.1", weaponAffinity: spearBond, mpCost: { flat: 5, percentMax: 0 },
-    description: "방어를 무시하고 꿰뚫는다. 딱정벌레·수호상용 — 창을 들면 +40%.",
+    description: "방어를 무시하고 꿰뚫는다. 딱정벌레·수호상에게 좋다. 창을 들면 +40%.",
   });
   tune("skill_hero_rising_blade", {
     power: 40, elementId: "sword", stateEffects: [{ stateId: "state_defense_down", chance: 100, operation: "add" }],
-    description: "약하게 베고 방어를 반으로 깎는다(확정). 단단한 적에게 먼저.",
+    description: "가볍게 베고 방어를 반으로 깎는다(확정). 단단한 적에게 먼저 쓴다.",
   });
   tune("skill_hero_flame_sword", {
     power: 78, elementId: "fire",
     description: "불 속성 베기.",
   });
   tune("skill_focus", {
-    description: "자기 공격을 두 배로(공격 상승). 다음 큰 기술 전에.",
+    description: "자기 공격을 두 배로 올린다(공격 상승). 큰 기술을 쓰기 전에.",
   });
 
   // ── 엘레나(마도학자): 광역 · 상태 · 치유/재생 · MP 회복 ───────────────────────
@@ -107,7 +107,7 @@ export function applyFallenBattleRoles(project: Project): void {
   tune("skill_mage_blizzard", {
     power: 54, elementId: "ice", mpCost: { flat: 10, percentMax: 0 },
     stateEffects: [{ stateId: "state_agility_down", chance: 40, operation: "add" }],
-    description: "적 전체 얼음 + 40% 둔화. 도깨비불 떼를 한 번에.",
+    description: "적 전체 얼음 + 40% 둔화. 도깨비불 떼를 한 번에 잡는다.",
   });
   tune("skill_mage_chain_lightning", {
     power: 50, elementId: "thunder", mpCost: { flat: 12, percentMax: 0 },
@@ -116,11 +116,11 @@ export function applyFallenBattleRoles(project: Project): void {
   });
   tune("skill_sleep_mist", {
     mpCost: { flat: 4, percentMax: 0 }, stateEffects: [{ stateId: "state_sleep", chance: 85, operation: "add" }],
-    description: "한 대상 수면 85%. 맞으면 깨고 최대 3차례. 보스는 잘 안 듣는다.",
+    description: "한 대상 수면 85%. 맞으면 깨며 최대 3차례. 보스에겐 잘 안 듣는다.",
   });
   tune("skill_weaken", {
     mpCost: { flat: 3, percentMax: 0 }, stateEffects: [{ stateId: "state_defense_down", chance: 100, operation: "add" }],
-    description: "한 대상 방어 반감(확정). 피해 없이 다음 공격을 키운다.",
+    description: "한 대상 방어 반감(확정). 피해는 없지만 다음 공격이 세진다.",
   });
   tune("skill_heal", {
     power: 40, mpCost: { flat: 4, percentMax: 0 }, stateEffects: [{ stateId: "state_regen", chance: 100, operation: "add" }],
@@ -128,13 +128,13 @@ export function applyFallenBattleRoles(project: Project): void {
   });
   tune("skill_mage_magic_missile", {
     power: 30, hitSequence: [1, 1, 1], hitRate: 100, mpCost: { flat: 4, percentMax: 0 },
-    description: "빗나가지 않는 세 발. 회피가 높거나 HP 가 적은 적 정리.",
+    description: "빗나가지 않는 세 발. 잘 피하는 적이나 HP가 얼마 안 남은 적에게.",
   });
   // MP 회복(사용자 지적 11): 차례를 쓰는 대가로 자기 MP 를 채운다.
   make("skill_heal", FS_MEDITATE_SKILL, {
     name: "명상", scope: "self", power: 14, mpCost: { flat: 0, percentMax: 0 }, stateEffects: [],
     effect: { kind: "healing", statistic: "mind", affects: "mp" },
-    description: "차례 하나를 써서 자기 MP 를 크게 채운다.",
+    description: "한 차례를 쉬며 자기 MP를 크게 채운다.",
   });
   const mageClass = db.classes.find((c) => c.id === "class_mage");
   if (mageClass && !mageClass.learnedSkills.some((row) => row.skillId === FS_MEDITATE_SKILL)) {
@@ -149,7 +149,7 @@ export function applyFallenBattleRoles(project: Project): void {
   const rod = normalizeEquipmentRecord({
     ...clone(find<EquipmentRecord>(db.equipment, "equip_scout_dagger")),
     id: FS_STAR_ROD, name: "별빛 사출봉", slot: "weapon", price: 0,
-    description: "원거리(활 계열) 무기. 사격 기술 +40%.\n별에서 함께 떨어진 봉. 끝의 구슬이 빛을 모아 쏜다.",
+    description: "원거리(활 계열) 무기. 사격 기술 +40%.\n이리스와 함께 떨어진 봉. 끝에 달린 구슬이 빛을 모아 쏜다.",
     statBonuses: { attack: 16, defense: 0, mind: 4, agility: 4 },
     equippableActorIds: [IRIS], twoHanded: false, attackElementIds: ["bow"], criticalRate: 10, accuracy: 100,
     iconResourceId: undefined, imageResourceId: undefined,
@@ -174,19 +174,19 @@ export function applyFallenBattleRoles(project: Project): void {
   tune("skill_gunner_snipe", {
     name: "충전 광선포", power: 120, elementId: "holy", animationId: "anim_gen_holy_beam", chargeTurns: 1,
     damageFormula: "power + a.atk * 1.4", mpCost: { flat: 6, percentMax: 0 },
-    description: "한 차례 빛을 모아 일직선을 꿰뚫는다(방어 무시·빛).",
+    description: "한 차례 빛을 모았다가 일직선으로 꿰뚫는다(방어 무시·빛).",
   });
   tune("skill_gunner_butt_strike", {
     name: "봉 내려치기", power: 50, elementId: "hit", stateEffects: [{ stateId: "state_stop", chance: 60, operation: "add" }],
-    description: "사출봉으로 내려쳐 60% 기절(최대 2차례). 보스·돌 몸은 버틴다.",
+    description: "사출봉으로 내려쳐 60% 기절(최대 2차례). 보스와 돌 몸은 버틴다.",
   });
   // Lv10 이후 기술도 「총·수류탄」이 아니라 사출봉의 빛으로 읽히게 이름과 한 줄 설명을 바꾼다(메커니즘은 그대로).
   tune("skill_gunner_grenade", { name: "성광탄", weaponAffinity: { elementIds: ["bow"], bonusPercent: 25 },
     description: "적 전체에 터지는 빛 구슬(사출봉 +25%)." });
-  tune("skill_gunner_flare", { name: "섬광 신호", description: "아군 전체 민첩 상승. 먼저 움직여야 할 때." });
+  tune("skill_gunner_flare", { name: "섬광 신호", description: "아군 전체 민첩 상승. 먼저 움직여야 할 때 쓴다." });
   tune("skill_gunner_spin_fire", { name: "회전 열선", description: "적 전체 불 속성 열선." });
   tune("skill_gunner_volley", { name: "유성 일제사격", weaponAffinity: { elementIds: ["bow"], bonusPercent: 25 },
-    description: "필살기. 적 전체에 유성 같은 빛을 쏟는다(사출봉 +25%)." });
+    description: "필살기. 적 전체에 유성처럼 빛을 퍼붓는다(사출봉 +25%)." });
   // 카엘·엘레나도 직업 이름을 역할에 맞춘다 — 카엘은 검이 주 무기, 창으로 바꾸면 찌르기가 세진다. 엘레나는 지팡이로 마력을 올리고 마법은 무기 공명이 없다.
   const heroClass = db.classes.find((c) => c.id === "class_hero");
   if (heroClass) heroClass.name = "별지기 검사";
@@ -307,7 +307,7 @@ export function applyFallenBattleRoles(project: Project): void {
   rates("enemy_fs_valen", {}, { state_sleep: "D", state_stop: "E", state_paralysis: "D", state_poison: "C", state_defense_down: "C" });
   tune("skill_fs_judgment", {
     elementId: "holy", power: 120, chargeTurns: 1,
-    description: "한 차례 빛을 모은 뒤 파티 전체에 쏟는다. 모으는 동안 방어하라.",
+    description: "한 차례 빛을 모았다가 파티 전체에 쏟아붓는다. 모으는 동안 방어하라.",
   });
   make("skill_hero_cross_slash", "skill_fs_valen_combo", {
     name: "단죄의 연격", power: 52, hitSequence: [1, 1], weaponAffinity: undefined, criticalRate: 10, mpCost: { flat: 0, percentMax: 0 },
@@ -357,7 +357,7 @@ export function applyFallenBattleRoles(project: Project): void {
   const blade = normalizeEquipmentRecord({
     ...clone(find<EquipmentRecord>(db.equipment, "equip_sword")),
     id: FS_JUDGMENT_BLADE, name: "심판의 장검", slot: "weapon", price: 0,
-    description: "검·빛 두 계열. 평타 25% 방어 하락, 기술 「단죄의 일섬」(HP 흡수).\n심문관의 검. 손잡이의 이름은 깎여 있다.",
+    description: "검·빛 두 계열. 평타 25% 방어 하락, 기술 「단죄의 일섬」(HP 흡수).\n심문관의 검. 손잡이에 새긴 이름이 깎여 나갔다.",
     statBonuses: { attack: 30, defense: 0, mind: 6, agility: 4 },
     equippableActorIds: [DEFAULT_ACTOR_ID], twoHanded: false,
     attackElementIds: ["sword", "holy"], stateInflictIds: ["state_defense_down"], stateInflictionChance: 25,

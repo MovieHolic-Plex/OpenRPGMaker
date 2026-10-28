@@ -255,7 +255,7 @@ function ensureNecklace(project: Project): void {
     name: "새벽샘 별조각 목걸이",
     slot: "accessory",
     price: 0,
-    description: "서른 해 전 새벽샘에 떨어진 별의 조각을 꿴 목걸이. 쥔 손에 별의 무게가 실린다 — 주는 피해 +30% · 치명타율 +10%.",
+    description: "서른 해 전 새벽샘에 떨어진 별 조각을 꿴 목걸이. 쥔 손에 별의 무게가 실린다. 주는 피해 +30% · 치명타율 +10%.",
     statBonuses: { attack: 0, defense: 0, mind: 0, agility: 0 },
     criticalRate: 10,
     damageDealtPercent: 30,
@@ -340,15 +340,15 @@ function hiddenNecklace(project: Project, hub: GameMap): Cell | null {
     id, name: "수납 · 이끼 낀 상자", x: spot.x, y: spot.y, trigger: { kind: "action" }, commands: [],
     pages: [
       pg(`${id}_p0`, "뒤지기", [], [
-        { kind: "text", body: "골목 끝에 놓인 이끼 낀 상자다.\n못이 녹슬어 뚜껑이 쉽게 들린다." },
+        { kind: "text", body: "골목 끝에 이끼 낀 상자가 있다.\n못이 녹슬어 뚜껑이 쉽게 들린다." },
         { kind: "text", body: "기름 먹인 천에 싸인 목걸이 하나.\n작은 돌이 별빛처럼 희미하게 빛난다." },
-        { kind: "text", body: "천에 바늘땀으로 「새벽샘」.\n서른 해 전, 별이 떨어진 마을의 이름이다." },
+        { kind: "text", body: "천에 「새벽샘」이라고 수놓여 있다.\n서른 해 전 별이 떨어진 마을 이름이다." },
         { kind: "changeItem", itemId: FS_DAWNWELL_NECKLACE, op: "+=", amount: 1 },
         { kind: "text", body: "「새벽샘 별조각 목걸이」를 손에 넣었다." },
         { kind: "setSelfSwitch", key: "A", value: true },
       ] as unknown as Command[]),
       pg(`${id}_p1`, "빈 상자", [{ kind: "selfSwitch", key: "A", value: true } as unknown as Condition], [
-        { kind: "text", body: "이끼 낀 빈 상자다. 누가 여기 숨겨 두었을까." } as Command,
+        { kind: "text", body: "이끼 낀 빈 상자다. 누가 여기 숨겨 뒀을까." } as Command,
       ]),
     ],
   } as unknown as GameEvent);
