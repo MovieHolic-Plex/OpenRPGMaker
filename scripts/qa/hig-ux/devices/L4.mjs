@@ -327,6 +327,11 @@ Object.assign(surfaces, {
   cards1440: { width: 1440, height: 900, lang: 'ko' },
   prefab1024: { width: 1024, height: 640, lang: 'ko' },
   sheet1440: { width: 1440, height: 900, lang: 'ko' },
+  // Before/after only (no device): surfaces opened through their real control.
+  baInspect1440: { width: 1440, height: 900, lang: 'ko', steps: ['aria:검사', 'wait:900'] },
+  baTileProps1440: { width: 1440, height: 900, lang: 'ko', steps: ['aria:타일 속성 열기', 'wait:900'] },
+  baPrefab1024: { width: 1024, height: 640, lang: 'ko', steps: ['text:프리팹', 'wait:900'] },
+  baEvent1440: { width: 1440, height: 900, lang: 'ko', steps: ['aria:이벤트 레이어', 'wait:900'] },
 });
 
 async function toolRowDevice({ page }) {

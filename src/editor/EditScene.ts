@@ -331,6 +331,16 @@ export class EditScene extends PhaserRuntime.Scene {
   private lastViewChromeKey = "";
   private lastCameraViewKey = "";
   private lastAppliedZoom = 0;
+  /**
+   * 맵 맞춤(fit) 상태. 맵에 들어오면 켜지고, 사용자가 배율을 직접 바꾸면 그 맵에서는 꺼진다.
+   * 켜져 있는 동안 캔버스·조수 가림이 바뀌면(첫 창, 조수 패널 열림, 스튜디오 복귀) 맵 전체가 보이는 배율로 다시 맞춘다.
+   */
+  private autoFit: { mapId: MapId; appliedZoom: number; key: string } | null = null;
+  private autoFitting = false;
+  private autoFitCount = 0;
+  /** 키보드로 칠할 칸(캔버스에 초점이 있을 때 화살표로 옮긴다). */
+  private keyboardCursor: { x: number; y: number } | null = null;
+  private detachCanvasKeyboard: (() => void) | null = null;
   private readonly tileIndex: EditSceneTileIndex = new Map();
   /** large-map lazy 경로의 타일 청크 컨테이너 저장소(비-lazy 맵은 사용하지 않는다). */
   private readonly tileChunks: Map<string, Phaser.GameObjects.Container> = new Map();
@@ -576,6 +586,8 @@ export class EditScene extends PhaserRuntime.Scene {
     this.agentFocusRenderer = new AgentFocusRenderer(this, this.agentFocusHighlightLayer, () => this.mapId());
     this.cameraPanController = new CameraPanController(this, {
       onPanStart: () => {
+        // 손으로 화면을 밀었다 — 이 맵에서는 더 맞추지 않는다.
+        this.autoFit = null;
         this.cancelCameraFocus();
         this.isPainting = false;
         this.lastPaintKey = "";
@@ -642,6 +654,7 @@ export class EditScene extends PhaserRuntime.Scene {
     this.unsubMapBackgroundPreview = subscribeMapBackgroundPreview(() => this.redraw());
 
     this.scale.on("resize", this.handleResize, this);
+    this.installCanvasKeyboard();
     window.addEventListener(BUILD_PALETTE_VISIBILITY_EVENT, this.handleBuildPaletteVisibilityChange);
     // 캔버스 화면 사각형 캐시는 창 크기·스크롤이 바뀌면 버린다(캡처: 안쪽 스크롤 컨테이너까지).
     window.addEventListener("resize", this.invalidateHostGeometry);
@@ -665,7 +678,10 @@ export class EditScene extends PhaserRuntime.Scene {
         __oprnEditSunlightStats?: () => unknown;
         __oprnEditReliefRebuild?: () => void;
         __oprnEditHoverRects?: () => readonly { readonly x: number; readonly y: number; readonly width: number; readonly height: number }[];
+        __oprnEditAutoFit?: () => unknown;
       };
+      // 맵 맞춤 상태(켜짐·마지막 기하 키·다시 맞춘 횟수) — 맞춤이 왜 안 움직였는지 스펙이 볼 수 있게 한다.
+      editWindow.__oprnEditAutoFit = () => ({ state: this.autoFit ? { ...this.autoFit } : null, refits: this.autoFitCount });
       // 조수가 실제로 읽는 뷰포트 스냅샷과, 그 스냅샷을 만든 기하학(캔버스·가림 제외·worldView·줌).
       // e2e 가 카메라·가림 계산을 다시 구현하면 두 소스가 갈라지므로 씬의 값을 그대로 내보낸다.
       editWindow.__oprnEditMapViewport = () => getEditorMapViewport();
@@ -729,6 +745,8 @@ export class EditScene extends PhaserRuntime.Scene {
     this.navigationGeometry = null;
     this.lastNavGeometryKey = "";
     this.scale.off("resize", this.handleResize, this);
+    this.detachCanvasKeyboard?.();
+    this.detachCanvasKeyboard = null;
     this.sys.events.off(PhaserRuntime.Scenes.Events.ADDED_TO_SCENE, this.requestRenderFrame);
     this.sys.events.off(PhaserRuntime.Scenes.Events.REMOVED_FROM_SCENE, this.requestRenderFrame);
     this.unbindBrowserContextMenuGuards();
@@ -798,7 +816,9 @@ export class EditScene extends PhaserRuntime.Scene {
         __oprnEditMapViewport?: unknown;
         __oprnEditVisibleArea?: unknown;
         __oprnEditHoverRects?: unknown;
+        __oprnEditAutoFit?: unknown;
       };
+      delete editWindow.__oprnEditAutoFit;
       delete editWindow.__oprnEditCamera;
       delete editWindow.__oprnEditWorldToClient;
       delete editWindow.__oprnEditMapViewport;
@@ -982,6 +1002,8 @@ export class EditScene extends PhaserRuntime.Scene {
     // 조수 카드 가림은 update() 가 TTL 안에 다시 잰다.
     this.navigationResizeObserver = new ResizeObserver(() => {
       this.overlayGeometryReadAtMs = 0;
+      // 맞춤이 켜져 있으면 크기 변화 뒤 한 프레임은 돌아야 새 배율을 계산한다.
+      if (this.autoFit) markEditRenderActive(this.game);
     });
     this.navigationResizeObserver.observe(this.game.canvas);
   }
@@ -994,6 +1016,7 @@ export class EditScene extends PhaserRuntime.Scene {
     if (!map) return;
     const area = this.cameraVisibleArea({ cachedGeometry: true });
     if (!area) return;
+    if (mapId && this.applyAutoFit(mapId, map, area)) return;
     // 무변화 프레임 조기 종료 — 카메라·캔버스·맵 크기가 모두 같으면 기하가 같다는 뜻이다.
     // 게이트 지점(맵 전환·applyCameraZoomOnly)에서 lastNavGeometryKey 를 비워 재동기화를 강제한다.
     const navKey = [
@@ -1034,6 +1057,83 @@ export class EditScene extends PhaserRuntime.Scene {
     const origin = camera.getWorldPoint(0, 0);
     this.cameraScrollbars.sync({ ...area, worldView: { ...area.worldView, x: origin.x, y: origin.y } }, map.width * this.activeTileSize(), map.height * this.activeTileSize());
     this.lastNavGeometryKey = navKey;
+  }
+
+  /**
+   * 맞춤이 켜져 있으면, 가림을 뺀 캔버스에 맵 전체가 들어가는 가장 큰 배율(1~2배)로 맞춘다.
+   * 1배로도 안 들어가는 큰 맵은 건드리지 않는다(읽을 수 없을 만큼 작아진다). 다시 맞췄으면(배율·가운데) true.
+   */
+  private applyAutoFit(mapId: MapId, map: GameMap, area: { canvas: CanvasRect; unoccluded: CanvasRect }): boolean {
+    const fit = this.autoFit;
+    if (!fit || fit.mapId !== mapId || this.autoFitting) return false;
+    const camera = this.cameras.main;
+    const zoomNow = editorState.get().zoom;
+    if (zoomNow !== fit.appliedZoom) {
+      // 사용자가 배율을 바꿨다 — 이 맵에서는 더 맞추지 않는다(화면 밀기는 onPanStart·panCameraBy 가 끈다).
+      this.autoFit = null;
+      return false;
+    }
+    if (area.canvas.width <= 0 || area.unoccluded.width <= 0 || area.unoccluded.height <= 0) return false;
+    // 크기 바뀜(resize) 알림 안에서는 카메라가 아직 옛 크기일 수 있다 — 그때 가운데를 잡으면 카메라가 줄어든 뒤 맵이 한쪽으로 밀린다.
+    // 카메라가 새 게임 크기를 따라잡은 다음 프레임에 맞춘다.
+    // DOM 캔버스가 먼저 줄고 Phaser 크기는 나중에 따라오는 경우도 같다 — 화면 비율이 카메라 비율과 다르면 아직 크기 바뀜 중이다.
+    const gameSize = this.scale.gameSize;
+    const cssAspect = area.canvas.width / area.canvas.height;
+    const cameraAspect = camera.width / camera.height;
+    if (
+      Math.round(camera.width) !== Math.round(gameSize.width)
+      || Math.round(camera.height) !== Math.round(gameSize.height)
+      || Math.abs(cssAspect - cameraAspect) > 0.01 * cameraAspect
+    ) {
+      markEditRenderActive(this.game);
+      return false;
+    }
+    // 카메라 크기도 키에 넣는다: 같은 화면 사각형이라도 카메라가 나중에 줄면 가운데를 다시 잡아야 한다.
+    const key = [camera.width, camera.height, area.canvas.width, area.canvas.height, area.unoccluded.x, area.unoccluded.y, area.unoccluded.width, area.unoccluded.height]
+      .map((value) => Math.round(value)).join("|");
+    if (key === fit.key) return false;
+    const cssPerCameraPx = area.canvas.width / camera.width;
+    const tile = this.activeTileSize();
+    const fits = (zoom: number) => map.width * tile * zoom * cssPerCameraPx <= area.unoccluded.width
+      && map.height * tile * zoom * cssPerCameraPx <= area.unoccluded.height;
+    const target = [...EDITOR_ZOOM_LEVELS].filter((level) => level >= 1 && level <= 2 && fits(level)).pop();
+    fit.key = key;
+    this.autoFitCount += 1;
+    // 1배로도 안 들어가는 큰 맵은 건드리지 않는다(읽을 수 없을 만큼 작아진다).
+    if (target === undefined) return false;
+    if (target !== zoomNow) {
+      fit.appliedZoom = target;
+      this.autoFitting = true;
+      try {
+        editorState.set({ zoom: target });
+      } finally {
+        this.autoFitting = false;
+      }
+      camera.setZoom(target);
+    }
+    // 맵 가운데를 가림 없는 영역 가운데에 둔다.
+    this.navigationGeometry = null;
+    this.lastNavGeometryKey = "";
+    camera.preRender();
+    const fresh = this.cameraVisibleArea();
+    if (fresh) {
+      const lookAt = cameraLookAtForTarget({
+        targetWorldX: (map.width * tile) / 2,
+        targetWorldY: (map.height * tile) / 2,
+        canvas: fresh.canvas,
+        unoccluded: fresh.unoccluded,
+        zoom: target,
+      });
+      camera.centerOn(lookAt.x, lookAt.y);
+    }
+    this.autoFitting = true;
+    try {
+      this.syncNavigationGeometry();
+    } finally {
+      this.autoFitting = false;
+    }
+    markEditRenderActive(this.game);
+    return true;
   }
 
   private syncPublishedViewport(): void {
@@ -1815,6 +1915,89 @@ export class EditScene extends PhaserRuntime.Scene {
     this.getDragOperationHandler().finish(ptr);
   }
 
+  /**
+   * 키보드만으로 지도를 칠하는 길. 캔버스는 Tab 으로 들어오는 「맵 캔버스」이고, 화살표가 칸 커서를 옮기며
+   * Space·Enter 가 지금 붓으로 그 칸을 칠한다(마우스 한 번 누름과 같은 스트로크 — 되돌리기 한 번).
+   * 초점이 캔버스에 있는 동안 화살표·Space 는 커서의 것이라 카메라 이동 단축키로 새지 않는다
+   * (data-editor-navigation-owner, hotkeys.shouldIgnoreEditorShortcut). Tab 은 가두지 않는다.
+   */
+  private installCanvasKeyboard(): void {
+    const canvas = this.game?.canvas;
+    if (!canvas || typeof canvas.addEventListener !== "function") return;
+    canvas.tabIndex = 0;
+    canvas.setAttribute("role", "application");
+    canvas.setAttribute("aria-roledescription", "맵 캔버스");
+    canvas.setAttribute("aria-label", "맵 캔버스 — 화살표로 칸을 옮기고 Space나 Enter로 칠합니다");
+    canvas.dataset.editorNavigationOwner = "true";
+    const onKeyDown = (event: KeyboardEvent): void => {
+      if (event.target !== canvas || event.altKey || event.ctrlKey || event.metaKey) return;
+      const step = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] }[event.key];
+      if (step) {
+        event.preventDefault();
+        event.stopPropagation();
+        this.moveKeyboardCursor(step[0]!, step[1]!);
+        return;
+      }
+      if (event.key === " " || event.key === "Enter") {
+        event.preventDefault();
+        event.stopPropagation();
+        this.paintAtKeyboardCursor();
+      }
+    };
+    const onFocus = (): void => {
+      if (!this.keyboardCursor) this.moveKeyboardCursor(0, 0);
+    };
+    const onBlur = (): void => {
+      if (this.keyboardCursor) this.clearHoverPreview();
+    };
+    canvas.addEventListener("keydown", onKeyDown);
+    canvas.addEventListener("focus", onFocus);
+    canvas.addEventListener("blur", onBlur);
+    this.detachCanvasKeyboard = () => {
+      canvas.removeEventListener("keydown", onKeyDown);
+      canvas.removeEventListener("focus", onFocus);
+      canvas.removeEventListener("blur", onBlur);
+    };
+  }
+
+  private moveKeyboardCursor(dx: number, dy: number): void {
+    const mid = this.mapId();
+    const map = mid ? store.getCurrent().maps[mid] : undefined;
+    if (!map) return;
+    const start = this.keyboardCursor ?? this.lastPointerTile ?? { x: Math.floor(map.width / 2), y: Math.floor(map.height / 2) };
+    const x = Math.max(0, Math.min(map.width - 1, start.x + dx));
+    const y = Math.max(0, Math.min(map.height - 1, start.y + dy));
+    this.keyboardCursor = { x, y };
+    this.lastPointerTile = { x, y };
+    setTileToolStatus("cursor-position", `${x},${y}`);
+    if (this.shouldRenderPaintHover()) this.renderHoverPreview(x, y, y);
+    markEditRenderActive(this.game);
+  }
+
+  private paintAtKeyboardCursor(): void {
+    const mid = this.mapId();
+    if (!mid || shouldDeferCameraFocus(this.pointerGestureState())) return;
+    if (!this.keyboardCursor) this.moveKeyboardCursor(0, 0);
+    const cell = this.keyboardCursor;
+    if (!cell) return;
+    const tile = this.activeTileSize();
+    const world = { x: (cell.x + 0.5) * tile, y: (cell.y + 0.5) * tile };
+    // 포인터 한 번 누름과 같은 경로를 쓴다 — 칸 좌표만 필요하므로 그 칸 가운데를 가리키는 포인터를 건넨다.
+    const pointer = { positionToCamera: () => world, x: 0, y: 0, worldX: world.x, worldY: world.y } as unknown as Phaser.Input.Pointer;
+    this.suppressPaintHoverPreview();
+    this.isPainting = true;
+    this.lastPaintKey = "";
+    try {
+      this.applyAtPointer(pointer);
+    } finally {
+      this.tilePaintEngine?.endStroke();
+      this.isPainting = false;
+      this.lastPaintKey = "";
+    }
+    if (this.shouldRenderPaintHover()) this.renderHoverPreview(cell.x, cell.y, cell.y);
+    markEditRenderActive(this.game);
+  }
+
   private applyAtPointer(ptr: Phaser.Input.Pointer): void {
     this.getTilePaintEngine().applyAtPointer(ptr);
   }
@@ -1954,6 +2137,7 @@ export class EditScene extends PhaserRuntime.Scene {
   }
 
   private panCameraBy(deltaX: number, deltaY: number): void {
+    this.autoFit = null;
     this.cancelCameraFocus();
     this.cameraPanController?.panBy(deltaX, deltaY);
   }
@@ -2391,6 +2575,7 @@ export class EditScene extends PhaserRuntime.Scene {
       this.lastPaintKey = "";
       this.dragOperationHandler?.clear();
       this.lastMaterializedTileWindowKey = "";
+      this.autoFit = { mapId: mid, appliedZoom: editorState.get().zoom, key: "" };
     }
     this.lastRenderedMapId = mid;
     this.lastChunkVisibilityKey = "";
