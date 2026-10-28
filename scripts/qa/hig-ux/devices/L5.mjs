@@ -39,7 +39,9 @@ async function isVisible(page, sel) {
 /** Expand the collapsed assistant (rail button) and wait for the composer. */
 async function expandPanel(page) {
   if (!(await isVisible(page, '[data-testid="ai-input"]'))) {
-    await clickTid(page, 'ai-collapsed-restore', 1200);
+    // DOM click: a transient toast over the rail must not turn this precondition into a 30 s actionability wait
+    await page.evaluate(() => document.querySelector('[data-testid="ai-collapsed-restore"]')?.click());
+    await wait(page, 1200);
   }
   await page.locator('[data-testid="ai-input"]').first().waitFor({ state: 'visible', timeout: 15_000 });
 }
@@ -189,11 +191,12 @@ async function notConnected(ctx) {
     const described = (el) => { if (!el) return 0; const disabled = el.disabled || el.getAttribute('aria-disabled') === 'true' || el.readOnly; const ids = (el.getAttribute('aria-describedby') || '').split(/\\s+/).filter(Boolean);
       const text = ids.map((id) => document.getElementById(id)?.textContent || '').join(' '); return disabled && /연결/.test(text) ? 1 : 0; };
     const panel = tid('ai-panel');
-    const blurred = [panel, ...panel.querySelectorAll('*')].filter((e) => { if (!vis(e)) return false; const s = getComputedStyle(e); return /blur\\(/.test(s.filter + ' ' + s.backdropFilter + ' ' + (s.webkitBackdropFilter || '')); }).length;
+    const blurredEls = [panel, ...panel.querySelectorAll('*')].filter((e) => { if (!vis(e)) return false; const s = getComputedStyle(e); return /blur\\(/.test(s.filter + ' ' + s.backdropFilter + ' ' + (s.webkitBackdropFilter || '')); });
+    const blurred = blurredEls.length; const blurredWhich = blurredEls.map((e) => (e.getAttribute('class') || e.tagName).split(' ')[0]).join(',');
     const dot = q('.ai-deck-rail-dot, .ai-deck-rail [class*=dot]')[0];
     const dotLabel = dot ? ((dot.getAttribute('title') || dot.getAttribute('aria-label') || '').trim() || (dot.parentElement?.getAttribute('title') || '').trim()) : '';
     const fakeStarter = q('[data-testid="ai-workspace-starter"]').length;
-    return { panelInputDescribed: described(tid('ai-input')), commandBarDescribed: described(tid('selection-chip-prompt')), blurredElements: blurred, dotLabelLen: dotLabel.length, fakeStarterVisible: fakeStarter };`);
+    return { panelInputDescribed: described(tid('ai-input')), commandBarDescribed: described(tid('selection-chip-prompt')), blurredElements: blurred, blurredWhich, dotLabelLen: dotLabel.length, fakeStarterVisible: fakeStarter };`);
   await page.keyboard.press('Escape');
   await clickTid(page, 'topbar-ai-studio', 2500);
   m.studioInputDescribed = await pe(page, `const el = q('.ai-studio [data-testid="ai-input"], [data-testid="ai-input"]')[0]; if (!el) return 0; const disabled = el.disabled || el.getAttribute('aria-disabled') === 'true' || el.readOnly;
@@ -382,9 +385,13 @@ async function settingsCopy(ctx) {
   const { page } = ctx;
   await expandPanel(page);
   await clickTid(page, 'ai-command-menu-toggle', 800);
+  // open the 고급·진단 group too, so every item is rendered and measured (closed <details> content has no text)
+  await page.evaluate(() => document.querySelectorAll('[data-testid="ai-command-menu"] details').forEach((d) => { d.open = true; }));
+  await wait(page, 400);
   const menu = await pe(page, `const m = q('[role=menu], .ai-command-menu, [data-testid="ai-command-menu"]')[0]; if (!m) return { menu: 0 };
     const t = textOf(m); const rows = [...m.querySelectorAll('*')].filter((e) => vis(e) && !e.children.length).map(textOf);
-    return { menu: 1, menuModelIds: (t.match(/\\b[a-z]+-\\d(\\.\\d)?-[a-z]+/g) || []).length, menuDashOnly: rows.filter((r) => r === '—' || /\\s—$/.test(r)).length, menuUnnamedItems: [...m.querySelectorAll('button,[role=menuitem]')].filter((b) => vis(b) && !(b.getAttribute('aria-label') || textOf(b))).length };`);
+    return { menu: 1, menuModelIds: (t.match(/\\b[a-z]+-\\d(\\.\\d)?-[a-z]+/g) || []).length, menuDashOnly: rows.filter((r) => r === '—' || /\\s—$/.test(r)).length, menuUnnamedItems: [...m.querySelectorAll('button,[role=menuitem]')].filter((b) => vis(b) && !(b.getAttribute('aria-label') || textOf(b))).length,
+      unnamedWhich: [...m.querySelectorAll('button,[role=menuitem]')].filter((b) => vis(b) && !(b.getAttribute('aria-label') || textOf(b))).slice(0, 6).map((b) => (b.dataset.testid || b.getAttribute('class') || '').slice(0, 30)).join(','), menuClass: (m.getAttribute('class') || '').slice(0, 40) };`);
   await page.keyboard.press('Escape');
   await clickTid(page, 'topbar-ai-settings', 1500);
   const conn = await pe(page, `const dlg = q('.ai-settings-window')[0]; const t = textOf(dlg);
@@ -419,7 +426,8 @@ async function failureMessage(ctx) {
   const m = await pe(page, `
     const bubble = [...document.querySelectorAll('.ai-chat-panel *')].filter((e) => vis(e) && /지시를 해석하지 못했습니다/.test(textOf(e))).sort((a, b) => textOf(a).length - textOf(b).length)[0];
     if (!bubble) return { failureShown: 0 };
-    const box = bubble.closest('[class*=bubble], [class*=message], article') || bubble;
+    // the bubble is the conversation row (appendBubble returns .ai-command-row-body)
+    const box = bubble.closest('[data-testid="ai-command-row"], [class*=bubble], [class*=message], article') || bubble;
     const t = textOf(box);
     const buttons = [...box.querySelectorAll('button')].filter(vis).map(textOf);
     return { failureShown: 1, braces: (t.match(/[{}]/g) || []).length, englishWords: (t.match(/\\b(quota|error|Please|RESOURCE_EXHAUSTED)\\b/gi) || []).length, resetTimeShown: /\\d+\\s*(일|시간|분)/.test(t) ? 1 : 0,
@@ -507,10 +515,45 @@ export const devices = [
     id: 'C-74',
     surface: 'w0-C-74',
     title: w0['C-74'].title,
-    // wave-0 device unchanged; the rail button is opened first by test id because C-62 renames its label.
+    // wave-0 device unchanged. Preconditions: AI connected (a draft is typed into a usable composer; while AI is
+    // not connected the composer is aria-disabled since C-60) and the rail opened by test id (C-62 renames its label).
     async run(ctx) {
+      await mockProvider(ctx.page);
       await expandPanel(ctx.page);
       return w0['C-74'].run(ctx);
     },
   },
 ];
+
+// ---------------------------------------------------------------- before/after setups (g004 L5-pairs runner)
+// Each prepare puts the page in the state its cluster's device measures; the runner screenshots it on
+// the baseline and on the head build and composes the pair with before-after.mjs composeSideBySide.
+const studio = async ({ page }) => clickTid(page, 'topbar-ai-studio', 2500);
+const selectOnCanvas = async ({ page }, expand = true) => {
+  if (expand) await expandPanel(page);
+  const d = await canvasDrag(page);
+  await dragSelect(page, d.from, d.to);
+};
+export const pairs = {
+  'C-56': { surface: 'canvasBar', prepare: (c) => selectOnCanvas(c) },
+  'C-57': { surface: 'narrow', prepare: async ({ page }) => { await page.setViewportSize({ width: 683, height: 427 }); await wait(page, 800); await mockProvider(page); await expandPanel(page); } },
+  'C-58': { surface: 'barActions', prepare: (c) => selectOnCanvas(c, false) },
+  'C-59': { surface: 'selChip', prepare: (c) => selectOnCanvas(c) },
+  'C-60': { surface: 'notConnected', prepare: (c) => selectOnCanvas(c) },
+  'C-61': { surface: 'entries', prepare: async ({ page }) => { await expandPanel(page); } },
+  'C-62': { surface: 'names', prepare: async ({ page }) => { await expandPanel(page); } },
+  'C-63': { surface: 'studio1024', prepare: studio },
+  'C-63-en': { surface: 'studioEn', prepare: studio },
+  'C-64': { surface: 'studioNames', prepare: studio },
+  'C-65': { surface: 'studioIds', prepare: studio },
+  'C-66': { surface: 'studioHier', prepare: studio },
+  'C-67': { surface: 'conn429', prepare: async ({ page }) => { await mockProvider(page, { quota: true }); await expandPanel(page); await sendAndFail(page, '여기에 작은 연못을 만들어 줘'); await page.locator('[data-testid="ai-connection-chip"]').first().click(); await wait(page, 1500); } },
+  'C-68': { surface: 'chipEn', prepare: async ({ page }) => { await page.locator('[data-testid="ai-connection-chip"]').first().hover(); await wait(page, 1600); } },
+  'C-69': { surface: 'usage429', prepare: async ({ page }) => { await mockProvider(page, { quota: true }); await expandPanel(page); await sendAndFail(page, '여기에 작은 연못을 만들어 줘'); await sendAndFail(page, '이 영역을 주변과 어울리게 다듬어 줘'); await clickTid(page, 'topbar-ai-settings', 1500); await clickTid(page, 'ai-settings-tab-usage', 2500); } },
+  'C-70': { surface: 'settingsFoot', prepare: async ({ page }) => clickTid(page, 'topbar-ai-settings', 1500) },
+  'C-71': { surface: 'settingsCopy', prepare: async ({ page }) => { await expandPanel(page); await clickTid(page, 'ai-command-menu-toggle', 800); } },
+  'C-72': { surface: 'settingsClose', prepare: async ({ page }) => clickTid(page, 'topbar-ai-settings', 1500) },
+  'C-73': { surface: 'fail429', prepare: async ({ page }) => { await mockProvider(page, { quota: true }); await expandPanel(page); await sendAndFail(page, '여기에 작은 연못을 만들어 줘'); } },
+  'C-74': { surface: 'w0-C-74', prepare: async ({ page }) => { await mockProvider(page); await expandPanel(page); await page.locator('[data-testid="ai-input"]').first().click(); await page.keyboard.type('테스트 초안'); await page.evaluate(() => document.querySelector('[data-testid="ai-suggestion-peek-header"], [data-testid="ai-suggestion-peek"]')?.click()); await wait(page, 1200); await page.evaluate(() => [...document.querySelectorAll('[data-testid="ai-project-suggestion"] button')].find((b) => /AI와 이어가기/.test(b.textContent || ''))?.click()); await wait(page, 1000); } },
+  'C-75': { surface: 'stripes', prepare: async ({ page }) => { await expandPanel(page); } },
+};
