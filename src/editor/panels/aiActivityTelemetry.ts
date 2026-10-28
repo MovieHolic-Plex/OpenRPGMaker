@@ -328,6 +328,70 @@ export function extractTargetScope(entry: ActivityEntry, level: string): TargetS
   };
 }
 
+const DIALOGUE_TOOL_NAMES = new Set([
+  "list_dialogue", "get_dialogue_context", "rewrite_dialogue", "set_speaker_voice",
+  "get_story_outline", "read_story_script", "set_scene_summaries",
+]);
+
+const DIALOGUE_SCOPE_LABELS: Readonly<Record<string, string>> = {
+  map: "맵 이벤트", common: "공용 이벤트", troop: "전투 이벤트", database: "자료집 설명", quest: "퀘스트 일지", ending: "엔딩",
+};
+const DIALOGUE_KIND_LABELS: Readonly<Record<string, string>> = {
+  line: "대사", choice: "선택지·질문", description: "설명", quest: "퀘스트·엔딩 글",
+};
+
+function shortQuote(value: string, max = 40): string {
+  const flat = value.replace(/\s+/gu, " ").trim();
+  return `「${flat.length > max ? `${flat.slice(0, max)}…` : flat}」`;
+}
+
+/** 대사 도구 카드 한 줄 — 인자를 JSON 대신 사람이 읽는 말로(2026-10-27 검수: edits 배열 원문이 비쳤다). */
+function dialogueToolBreakdown(name: string, args: Record<string, unknown>): string[] {
+  const text = (key: string): string => (typeof args[key] === "string" ? (args[key] as string).trim() : "");
+  const parts: string[] = [];
+  if (name === "list_dialogue") {
+    if (text("query")) parts.push(`검색어 ${shortQuote(text("query"), 24)}`);
+    if (text("speaker")) parts.push(`화자 ${text("speaker")}`);
+    if (text("mapId")) {
+      let mapName = text("mapId");
+      try { mapName = store.getCurrent().maps[mapName]?.name ?? mapName; } catch { /* 프로젝트가 없으면 id 그대로 */ }
+      parts.push(`맵 ${mapName}`);
+    }
+    const scope = DIALOGUE_SCOPE_LABELS[text("scope")];
+    if (scope) parts.push(`범위 ${scope}`);
+    const kind = DIALOGUE_KIND_LABELS[text("kind")];
+    if (kind) parts.push(`종류 ${kind}`);
+    if (args.overflowOnly === true) parts.push("창 넘침만");
+    if (typeof args.minChars === "number") parts.push(`${args.minChars}자 이상`);
+    if (parts.length === 0) parts.push("모든 대사");
+  } else if (name === "get_dialogue_context") {
+    parts.push(`앞 ${typeof args.before === "number" ? args.before : "기본"}줄 · 뒤 ${typeof args.after === "number" ? args.after : "기본"}줄`);
+  } else if (name === "rewrite_dialogue") {
+    const edits = Array.isArray(args.edits) ? args.edits : [];
+    parts.push(`${args.mode === "apply" ? "바로 고치기" : "고칠 제안"} ${edits.length}줄`);
+    if (text("instruction")) parts.push(`요청 ${shortQuote(text("instruction"))}`);
+    const first = edits.find((edit): edit is { text: string } => Boolean(edit) && typeof (edit as { text?: unknown }).text === "string");
+    if (first) parts.push(`예: ${shortQuote(first.text, 30)}`);
+    if (args.allowOverflow === true) parts.push("창 넘침 허용");
+  } else if (name === "set_speaker_voice") {
+    if (text("speaker")) parts.push(`화자 ${text("speaker")}`);
+    parts.push(text("note") ? `말투 ${shortQuote(text("note"))}` : "말투 메모 지우기");
+  } else if (name === "get_story_outline") {
+    parts.push(text("chapter") ? `막 ${text("chapter")}` : "모든 막");
+    if (args.includeSide === true) parts.push("곁가지 포함");
+  } else if (name === "read_story_script") {
+    if (text("chapter")) parts.push(`막 ${text("chapter")}`);
+    if (text("from") || text("to")) parts.push(`장면 ${text("from") || "처음"}~${text("to") || "끝"}`);
+    if (Array.isArray(args.scenes) && args.scenes.length > 0) parts.push(`장면 ${args.scenes.slice(0, 4).join("·")}${args.scenes.length > 4 ? ` 외 ${args.scenes.length - 4}개` : ""}`);
+    if (text("speaker")) parts.push(`화자 ${text("speaker")}`);
+    if (parts.length === 0) parts.push("대본 처음부터");
+  } else if (name === "set_scene_summaries") {
+    const items = Array.isArray(args.items) ? args.items : [];
+    parts.push(`장면 요약 ${items.length}개`);
+  }
+  return parts;
+}
+
 export function extractActionBreakdown(entry: ActivityEntry, level: string): string | null {
   if (entry.kind !== "tool") return null;
   const args = unwrapArgs(entry);
@@ -361,6 +425,9 @@ export function extractActionBreakdown(entry: ActivityEntry, level: string): str
       parts.push(`영역: (${args.x}, ${args.y})${w && h ? ` ${w}×${h}` : ""}`);
     }
     if (rawSummary && rawSummary !== "실행 중" && rawSummary !== "영역 확인") parts.push(rawSummary);
+  } else if (DIALOGUE_TOOL_NAMES.has(entry.name)) {
+    parts.push(...dialogueToolBreakdown(entry.name, args));
+    if (rawSummary && rawSummary !== "실행 중") parts.push(rawSummary);
   } else if (hasRealArgs) {
     const kv = Object.entries(args)
       .slice(0, 3)

@@ -27,7 +27,8 @@
   font-size: 12px; color: var(--db-studio-text-2); background: var(--db-studio-inset);
   border-radius: 999px; padding: 2px 10px;
 }
-.database-modal-backdrop .db-dialogue-proposal-list { display: grid; gap: var(--space-2); max-height: 46vh; overflow: auto; padding-right: 2px; }
+/* 목록 안에 따로 스크롤을 두지 않는다 — 상세 창 스크롤 안에 겹쳐 마지막 카드의 단추가 잘렸다(2026-10-27). 길면 「제안 더 보기」. */
+.database-modal-backdrop .db-dialogue-proposal-list { display: grid; gap: var(--space-2); }
 .database-modal-backdrop .db-dialogue-proposal {
   display: grid; gap: 6px; padding: 10px 12px; border-radius: 8px;
   border: 1px solid var(--db-studio-border-subtle); background: var(--db-studio-surface);
