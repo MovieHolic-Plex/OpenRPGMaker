@@ -239,6 +239,13 @@ Both manual and automatic readers reject duplicate JSON keys before last-key-win
 
 Session state, save slots, farming, friendship, calendar, lighting, weather, field spawns, and NPC schedules.
 
+## 저장 칸은 현재 목표 줄을 같이 남긴다 (2026-10-29)
+
+- 목표 줄(`zoneFeedback` 의 objectiveChip)은 `m2Runtime.ui` 에만 있어 저장 스냅숏에 빠졌다. 불러오면 목표가 비거나, 맵 진입마다 다시 도는 자동 페이지가 시작 목표를 다시 걸었다(vm2-1029 deepseek 방탈출 판정 공격 A6: 열쇠를 얻고 저장 → 불러오기 → 목표가 「일지를 읽자」로 되돌아감).
+- `saveSlots.ts`: 스냅숏 `session.objective`(선택, 200자 자름) = `currentObjectiveText(m2Runtime.ui)`. 적용 시 objectiveChip 하나로 되올린다. 옛 저장본은 필드가 없어 그대로 읽힌다(스키마 판 그대로).
+- 시작 목표를 반복 자동 페이지에 싣지 않는 쪽은 빌더 몫(`openwiki/assistant-v2.md` 「시작 목표는 한 번만 도는 페이지에」). 둘 다 있어야 한다 — 런타임만 고치면 반복 페이지가 덮어쓰고, 빌더만 고치면 목표가 사라진다.
+- 재현: `node scripts/runtime-qa.mjs --scenario save-load-objective --project <prepareWebExport 한 web.json> --netns` (원본 83MB 프로젝트는 브라우저가 죽으니 먼저 `prepareWebExport`). 단계별 목표·스위치·소지품 JSON 을 `QA_OBJ_OUT` 에 남긴다.
+
 ## Roguelike run kernel and field rooms (Phase 0–3, 2026-08-24)
 
 - `PlaySession.roguelikeRun` is optional runtime-only state, not authored project data. Version 1 stores `{ version, runId, seed, floor, status, flags, roomResetCounts, roomEventGenerationKeys, currentRoomId? }`; status is `active | completed | failed | abandoned`. `roomEventGenerationKeys` is saved so loading in the same room generation does not resurrect consumed one-shot events; old v1 saves without it normalize to `{}`. The pure authority is `src/project/roguelikeRun.ts`.
