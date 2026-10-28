@@ -44,6 +44,9 @@ const storeAutoInstall = !argv.includes('--store-ask-first');
 // --engine claude:claude-opus-5-5:medium → 조수 엔진을 로컬 CLI 로(제품 설정 「조수 엔진」 칸과 같은 저장값, src/ai/localCliEngine.ts). 비우면 계정 기본(Argon).
 const engineSpec = option('engine');
 const assistantEngine = engineSpec ? (() => { const [cli, model, effort] = engineSpec.split(':'); return { kind: 'local-cli', cli, ...(model ? { routineModel: model, deepModel: model } : {}), effort: effort || 'medium' }; })() : undefined;
+// --ai-config <json file>: AI 설정 칸(oprn:ai-config)을 이 값으로 시작한다 — 예: 모든 역할을 사용자 지정(OpenAI 호환) 엔드포인트의 한 모델로 고정.
+// 없으면 제품 기본(계정 Argon). 이 줄이 빠지면 스위트의 모델별 비교가 전부 기본 모델로 조용히 돈다(2026-10-28 실측).
+const aiConfigOverride = option('ai-config') ? JSON.parse(readFileSync(resolve(option('ai-config')), 'utf8')) : {};
 const turnTimeoutMs = Number(option('turn-timeout-ms') ?? 45 * 60_000);
 const sleep = ms => new Promise(done => setTimeout(done, ms));
 const json = (file, data) => writeFileSync(file, JSON.stringify(data, null, 2));
@@ -69,7 +72,7 @@ const browser = await firefox.launch({ firefoxUserPrefs: { 'network.notify.chang
 const requests = [], pageErrors = [];
 let editor, page;
 async function open() {
-  editor = await newEditor(browser, host.url, projectDir, assistantEngine ? { assistantEngine } : {}, { async onPage(p) {
+  editor = await newEditor(browser, host.url, projectDir, { ...aiConfigOverride, ...(assistantEngine ? { assistantEngine } : {}) }, { async onPage(p) {
     p.on('pageerror', error => pageErrors.push({ at: new Date().toISOString(), message: error.message.slice(0, 500) }));
     if (storeUrl) await installStoreBridge(p, storeUrl, { autoInstall: storeAutoInstall });
     await p.addInitScript(v2 => {
