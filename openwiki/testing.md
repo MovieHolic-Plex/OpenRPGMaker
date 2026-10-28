@@ -2374,4 +2374,8 @@ node scripts/runtime-qa.mjs --scenario whole-game-battle-jrpg --browser firefox 
 (joseon) 첫 필드 → 감옥 들어가기·나오기 → 주막 안(거리에서 들어가는 문이 없어 순간이동) → 나오기. 문 이동은 `transferBeat`(문 앞 순간이동 → 화살표를 `currentMapId` 가 바뀔 때까지).
 magic 첫 필드 비트가 「Esc 두 번」 회귀를 잡는다 — 대사 창이 떠 있는 컷신에서 건너뛰기가 안 되면 6회 뒤에도 「건너뛰기」 가 남아 실패한다.
 
+목표 대상판 `whole-game-objective-target`(VM 측정 판 아무거나, 2026-10-29): `OBJ_APPROACH='{"x","y","face"}'`(시작 맵의 시작 목표 대상 곁 칸) 를 주면
+첫 필드(목표 대상 칸의 금빛 표시) → 대상 곁에서 바라봄(안내 「Z 조사 · 이름」) → 조사·대사 넘김 → 다음 목표 대상 표시를 찍는다.
+VM 판 5개의 곁 칸: deepseek escape (3,4) up · terra escape (2,4) up · terra mystery (4,9) up · flash mystery (7,10) up · deepseek mystery (11,7) right.
+
 체크포인트도 같은 실물 게임으로 부팅된다(2026-10-29 — 전에는 `--checkpoint-set` 경로가 `--whole-game` 을 무시하고 기본 픽스처로 떨어져 «없는 맵» 으로 죽었다). 판정자가 멈춘 자리 하나를 확인할 때: 세트 파일에 `{ mapId, x, y, facing, beats }` 만 적고 `--scenario checkpoints --checkpoint-set <세트> --whole-game <폴더> --netns`. 예: standin monster 1번길 (19,20) 오른쪽 누르기 — 대화창 없이 제자리, 아래는 움직임 → 오른쪽 칸은 숲 경계(대사 잠금 아님).
