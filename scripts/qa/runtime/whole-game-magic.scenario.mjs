@@ -4,7 +4,7 @@
 //     --whole-game ~/z-project/assistant-whole-game/suite/runs/2026-10-28-standin/standin/magic/project --out /tmp/bq/magic
 //
 // 타이틀 → 오프닝 두 장면 → 입학 홀 컷신 첫 대사 → 필드 → 교장·사서 대화(흉상·이름표) → 기숙사 출입(계단 37,3 ↔ 5,12) →
-// 천문탑 계단(14,20, sw_0003 — 석상 수수께끼 끝을 켠다) → 엘라 교수(16,9) 대화 → 엔딩.
+// 교수 책상(49,33) 일지 → 석상(17,21) 수수께끼 → 천문탑 계단(14,20) → 엘라 교수(16,9) 대화 → 엔딩.
 import { fieldReady } from "./wholeGameBattleCommon.mjs";
 import { openingBeats, talkBeat, toFieldBeats, transferBeat } from "./wholeGameStoryCommon.mjs";
 
@@ -24,11 +24,33 @@ export default {
     transferBeat({ id: "dorm-enter", note: "입학 홀 북쪽 계단(37,3)으로 기숙사에 들어간다", mapId: HALL, from: { x: 37, y: 4 }, push: "up", to: DORM }),
     transferBeat({ id: "dorm-exit", note: "기숙사 출구(5,12)로 홀에 돌아온다", mapId: DORM, from: { x: 5, y: 11 }, push: "down", to: HALL }),
     {
-      id: "tower-enter",
-      note: "석상 수수께끼 끝(sw_0003)을 켜고 천문탑 계단(14,20)으로 오른다",
+      id: "riddle",
+      note: "실제 이야기 순서로: 교수 책상(49,33)을 열쇠로 열어 일지 → 문지기 석상(17,21) 수수께끼 「북두칠성」 → 목표가 「천문탑 계단을 올라…」로 바뀐다",
       ops: [
         { kind: "pressUntilJs", key: "Enter", fn: fieldReady, maxPresses: 30, settleMs: 700 },
-        { kind: "setSwitch", switchId: "sw_0003" },
+        { kind: "teleport", mapId: HALL, x: 49, y: 34 },
+        { kind: "waitForPosition", mapId: HALL, x: 49, y: 34 },
+        { kind: "face", dir: "up" },
+        { kind: "action" },
+        { kind: "waitForVisible", testid: "dialogue-box", minAlpha: 0.99, timeoutMs: 20000 },
+        { kind: "pressUntilJs", key: "Enter", fn: fieldReady, maxPresses: 30, settleMs: 700 },
+        { kind: "teleport", mapId: HALL, x: 17, y: 22 },
+        { kind: "waitForPosition", mapId: HALL, x: 17, y: 22 },
+        { kind: "face", dir: "up" },
+        { kind: "action" },
+        { kind: "pressUntilJs", key: "Enter", fn: `() => !!document.querySelector("[data-testid='dialogue-choice-frame']")`, maxPresses: 10, settleMs: 900 },
+        { kind: "key", key: "ArrowDown" },
+        { kind: "key", key: "Enter" },
+        { kind: "pressUntilJs", key: "Enter", fn: fieldReady, maxPresses: 30, settleMs: 700 },
+        { kind: "waitForBodyText", text: "천문탑 계단을 올라" },
+      ],
+      shot: true,
+    },
+    {
+      id: "tower-enter",
+      note: "천문탑 계단(14,20)으로 오른다 — 목표창이 지금 할 일(관측실에서 엘라 교수 찾기)을 보여야 한다",
+      ops: [
+        { kind: "pressUntilJs", key: "Enter", fn: fieldReady, maxPresses: 30, settleMs: 700 },
         { kind: "teleport", mapId: HALL, x: 14, y: 21 },
         { kind: "waitForPosition", mapId: HALL, x: 14, y: 21 },
         { kind: "pressUntilJs", key: "ArrowUp", fn: `() => window.__oprnDebug.readState().currentMapId === ${JSON.stringify(TOWER)}`, maxPresses: 12, settleMs: 500 },
