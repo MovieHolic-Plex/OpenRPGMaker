@@ -5,6 +5,12 @@
 
 <!-- releases -->
 
+## 0.356.3 — 2026-10-28
+
+### 수정
+
+- **qa-play** — qp mass-play — checkpoint boot, enforced budget, key aliases (#3876) (`65d1bf2`)
+
 ## 0.356.2 — 2026-10-28
 
 ### 수정
