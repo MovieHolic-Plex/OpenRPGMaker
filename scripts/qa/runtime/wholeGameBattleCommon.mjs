@@ -38,10 +38,62 @@ const PUSH_KEY = { right: "ArrowRight", left: "ArrowLeft", up: "ArrowUp", down: 
 
 /**
  * 접촉 발동 필드 적 두 마리로 승리·패배를 다 본다.
- *   win/lose: { mapId, x, y, push, label } — (x,y) 는 적 옆 칸, push 는 적 쪽 방향. 적이 오가도 계속 밀면 닿는다.
+ *   win/lose/escape: { mapId, x, y, push, label } — (x,y) 는 적 옆 칸, push 는 적 쪽 방향. 적이 오가도 계속 밀면 닿는다.
+ *   skill: { 배우id: 기술id } — 승리 전투에서 그 배우 차례에 그 기술을 쓴다(나머지는 방어) · item: 그 아이템을 가방에 3개 넣고 전투에서 한 번 쓴다.
+ *   escape: 승리 뒤 다른 적과 붙어 도주한다(실패하면 될 때까지).
  * 패배 쪽은 체력 1(e2eVitals 훅 — 시나리오 query 에 e2eVitals:"1")로 방어만 해 게임 오버 화면까지 간다.
  */
-export function fieldFoeBattleBeats({ win, lose }) {
+export function fieldFoeBattleBeats({ win, lose, escape, skill = null, item = null }) {
+  /** 다음 명령 카드가 뜰 때까지(연출이 끝나고 공격 단추가 다시 보인다). */
+  const nextCommand = [
+    { kind: "waitForAttr", testid: "battle-scene", attr: "data-battle-sequence-busy", value: "false", timeoutMs: 30000 },
+    { kind: "waitFor", testid: "actor-command-attack", state: "present", timeoutMs: 30000 },
+  ];
+  const extras = [
+    ...(skill ? [{
+      id: "battle-skill-fx",
+      note: `스킬(${Object.values(skill).join("·")}) → 연출 도중 — 기술이 없는 배우는 방어`,
+      ops: [
+        { kind: "battle", plan: skill, fallback: "defend", stopAfter: "skill", timeoutMs: 60000 },
+      ],
+      shot: true,
+    }] : []),
+    ...(item ? [{
+      id: "battle-item-fx",
+      note: `아이템 → ${item} → 연출 도중`,
+      ops: [
+        ...nextCommand,
+        { kind: "click", testid: "actor-command-item" },
+        { kind: "click", testid: `actor-item-${item}` },
+        { kind: "pressUntilJs", key: "Enter", fn: battleBusy, maxPresses: 6, settleMs: 300 },
+      ],
+      shot: true,
+    }] : []),
+  ];
+  const escapeBeats = escape ? [
+    {
+      id: "escape-enter",
+      note: `${escape.label} 에 접촉`,
+      ops: [
+        { kind: "teleport", mapId: escape.mapId, x: escape.x, y: escape.y },
+        { kind: "waitForPosition", mapId: escape.mapId, x: escape.x, y: escape.y },
+        { kind: "pressUntilJs", key: "Enter", fn: fieldReady, maxPresses: 10 },
+        { kind: "pressUntil", key: PUSH_KEY[escape.push], testid: "battle-scene", state: "present", maxPresses: 40, timeoutMs: 1200 },
+        { kind: "waitFor", testid: "actor-command-escape", state: "present", timeoutMs: 30000 },
+      ],
+      shot: true,
+    },
+    {
+      id: "escape",
+      note: "도주(실패하면 될 때까지) → 필드",
+      ops: [
+        { kind: "battle", fallback: "escape", untilEnd: true, resultHoldMs: 300, timeoutMs: 150000 },
+        { kind: "waitFor", testid: "battle-scene", state: "absent", timeoutMs: 30000 },
+        { kind: "pressUntilJs", key: "Enter", fn: fieldReady, maxPresses: 10 },
+      ],
+      shot: true,
+    },
+  ] : [];
   return [
     {
       id: "approach",
@@ -50,6 +102,7 @@ export function fieldFoeBattleBeats({ win, lose }) {
         { kind: "teleport", mapId: win.mapId, x: win.x, y: win.y },
         { kind: "waitForPosition", mapId: win.mapId, x: win.x, y: win.y },
         { kind: "pressUntilJs", key: "Enter", fn: fieldReady, maxPresses: 10 },
+        ...(item ? [{ kind: "giveItem", itemId: item, amount: 3 }] : []),
       ],
       shot: true,
     },
@@ -63,10 +116,12 @@ export function fieldFoeBattleBeats({ win, lose }) {
       expect: { testidPresent: ["battle-scene"], battlerGeometry: { minEnemies: 1 } },
       shot: true,
     },
+    ...extras,
     {
       id: "battle-attack-fx",
       note: "공격 명령 → 연출 도중",
       ops: [
+        ...(extras.length > 0 ? nextCommand : []),
         { kind: "click", testid: "actor-command-attack" },
         { kind: "pressUntilJs", key: "Enter", fn: battleBusy, maxPresses: 4, settleMs: 250 },
       ],
@@ -95,6 +150,7 @@ export function fieldFoeBattleBeats({ win, lose }) {
       ],
       shot: true,
     },
+    ...escapeBeats,
     {
       id: "defeat-enter",
       note: `체력 1 로 ${lose.label} 에 접촉`,

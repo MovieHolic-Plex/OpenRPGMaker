@@ -20,6 +20,7 @@ import {
 } from "@/player/cloudShadows";
 import { inBounds, isPassable } from "@/project/collision";
 import { store } from "@/project/store";
+import { terrainRecordAt } from "@/project/terrainAt";
 import { createSaveSnapshot, type SaveSnapshot } from "@/player/saveSlots";
 import { vehicleSpritesDebug } from "@/player/playSceneVehicles";
 import { PLAYER_COMBATANT_ID, type ActionEnemyState } from "@/player/actionCombatTypes";
@@ -40,6 +41,8 @@ export type RuntimeDebugHook = {
   setSeed: (seed: number) => void;
   /** 지금 세션을 실제 저장과 같은 모양으로 뜬다 — QA 체크포인트(scripts/qa/runtime/checkpoints) 수집용. */
   captureSave?: () => SaveSnapshot;
+  /** 지금 맵 (x,y) 칸의 지형 레코드 id(키큰풀 조우 칸 찾기 등). 번들 타일셋의 지형은 런타임에만 채워져 바깥에서 못 읽는다. */
+  terrainIdAt?: (x: number, y: number) => string | null;
   /**
    * 디버그 패널 라이브 줄이 매 프레임 읽는 값만. readState 는 생활 상태·이벤트 위치·몬스터를 복제해서
    * 큰 세션에서 호출당 수~수십 ms 다 — 접힌 패널이 그것을 60Hz 로 돌렸다. 선택 항목이라 옛 훅도 동작한다.
@@ -348,6 +351,7 @@ export function installPlaySceneTestHooks(
       syncRuntimeState();
     },
     captureSave: () => createSaveSnapshot(store.getCurrent(), getSession()),
+    terrainIdAt: (x, y) => terrainRecordAt(store.getCurrent(), { mapId: getSession().currentMapId, x, y })?.record.id ?? null,
     readLive: (switchId) => {
       const session = getSession();
       return {

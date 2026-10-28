@@ -2357,6 +2357,9 @@ node scripts/runtime-qa.mjs --scenario whole-game-battle-jrpg --browser firefox 
 시나리오 `whole-game-battle-{jrpg,dungeon,monster}` 는 공용 비트(`scripts/qa/runtime/wholeGameBattleCommon.mjs`)로
 타이틀 → 오프닝 건너뛰기(Esc 두 번) → 필드 적 옆 칸 순간이동 → 몸으로 밀어 접촉 발동 → 명령 → 공격 연출 → 승리 결과 창 →
 필드 복귀 → 체력 1(`?e2eVitals=1`) 패배 → 게임 오버까지 1배로 찍는다. 몬스터 판은 박사에게 첫 동료를 받은 뒤 트레이너에게 말을 건다.
+추가 비트(2026-10-29): 승리 전투에서 기술(`battle` op `plan` + `stopAfter:"skill"` — 연출 도중 멈춤)·아이템(`giveItem` op 로 가방에 넣고 사용)·
+도주(`fallback:"escape"`, 성공할 때까지), 몬스터 판은 1번길 키큰풀에서 `pressUntilJs keys:[→→→←←←]` 로 오가며 야생 조우 → 가방 → 포획 구슬
+(`capture:<itemId>`) → 포획 → 다시 조우 → 도망간다. 풀 칸은 런타임 `__oprnDebug.terrainIdAt(x,y)` 로 찾았다(번들 타일셋 지형은 내보낸 JSON 에 없다).
 함정: 전투 복귀 직후는 `battle-transition-overlay` 암전이라 필드 조건에서 빼야 하고, 결과 창·게임 오버는 미끄러지며 들어오므로
 `waitForVisible minAlpha 0.99` 뒤에 찍는다. 부하가 높으면 타이틀 첫 Enter 가 씹힌다 — 상태가 읽힐 때까지 누른다.
 

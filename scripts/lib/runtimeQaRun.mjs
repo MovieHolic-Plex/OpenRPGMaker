@@ -389,6 +389,10 @@ export async function applyOp(page, op, runState) {
     case "seed":
       await page.evaluate((seed) => window.__oprnDebug.setSeed(seed), op.seed);
       return;
+    case "giveItem":
+      // 실물 게임에 시작 아이템이 없을 때 전투 아이템 사용을 보려고 가방에 넣는다(__oprnDebug.giveItem — 실제 세션 인벤토리).
+      await page.evaluate(([itemId, amount]) => window.__oprnDebug.giveItem(itemId, amount), [op.itemId, op.amount ?? 1]);
+      return;
     case "setVitals":
       await page.evaluate(
         ([hp, mp, actorIds]) => {
@@ -706,7 +710,9 @@ export async function applyOp(page, op, runState) {
       for (let i = 0; i < max; i += 1) {
         if (await ok()) return;
         // times: 한 바퀴에 연달아 누를 횟수(「Esc 두 번: 컷신 건너뛰기」처럼 짧은 간격의 두 번 누르기).
-        for (let n = 0; n < (op.times ?? 1); n += 1) await page.keyboard.press(op.key ?? "Enter");
+        // keys: 바퀴마다 돌려 쓰는 키 목록(풀숲을 좌우로 오가며 조우를 기다릴 때). 없으면 key 하나.
+        const key = Array.isArray(op.keys) && op.keys.length > 0 ? op.keys[i % op.keys.length] : (op.key ?? "Enter");
+        for (let n = 0; n < (op.times ?? 1); n += 1) await page.keyboard.press(key);
         await page.waitForTimeout(op.settleMs ?? 450);
       }
       if (!(await ok())) throw new Error(`pressUntilJs: ${max}회 뒤에도 조건이 참이 아니다: ${op.fn}`);
