@@ -39,7 +39,7 @@ v1 의 `script_cutscene` 비트로 옮긴다(`events.ts`).
 
 사람 판정자가 엔딩에 못 닿는 게임이 자동 플레이로는 통과했다(연애 j90: 투명 「집 현관」, 장난감 가게 j90: 오프닝이 옮긴 인형).
 - `set_objective{text, at:'start' | eventId}` 동사(`src/ai/v2/discoverability.ts` planObjective) — UI 명령 `objectiveChip`(m2-214)을 넣어
-  화면 오른쪽 위 「현재 목표」 줄을 바꾼다. 목표 줄은 상태라 불러오기·장면 재생성 뒤에도 남는다(`zoneFeedback.lastObjective`).
+  「현재 목표」 줄을 바꾼다(자리는 런타임이 주인공·인물·HUD 를 피해 고른다 — `runtime-pre-edit-routing.md` 「목표 안내창 자리」). 목표 줄은 상태라 불러오기·장면 재생성 뒤에도 남는다(`zoneFeedback.lastObjective`).
   이야기·연애 기본 HUD 와 `set_field_hud{off:true}` 는 목표 줄을 켜 둔다.
 - 출하 막음(`shipChecks.shipBlockers`): `critical-invisible`(엔딩·이정표 이벤트가 투명이고 반짝임·작은 물건이 없음 — 건물 벽면 한 칸은 안 셈),
   `objective-missing`(목표 줄 없음·시작 목표 없음·이정표 뒤 목표 안 바뀜), `romance-gap`(연애 완료 검사 = 호감 변수 미연결 등을 경고가 아니라 막음).

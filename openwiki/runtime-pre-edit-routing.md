@@ -1,3 +1,18 @@
+## 목표 안내창 자리·한국어 줄바꿈·숫자 입력 (2026-10-28, 장부 hud.json)
+
+- **목표 안내창 자리**: `playSceneZoneFeedback.placeObjective` 가 300ms 마다(글이 바뀌면 즉시) `objectivePlacement.chooseObjectivePlacement` 로 고른다.
+  후보 = 네 모서리·위아래 가운데·맵 바깥 여백 띠(맵이 화면보다 작을 때), 좁힌 폭(넓이 보존 높이 어림) 후보.
+  값 = 주인공 덮음(60) ≫ 다른 HUD(80, `.field-hud > .hud-widget`·다른 안내 줄·손 슬롯·미니맵) ≫ 이벤트 그림(10) ≫ 맵 위(3). 지금 자리가 최선+0.6 안이면 옮기지 않는다.
+  CSS 의 오른쪽 위·`top:88px`(테마 HUD)는 씬 기하가 없을 때의 기본이다. 좌표 환산은 손 슬롯과 같다(worldView·zoom/`runtimePixelDensity`).
+  창은 거의 불투명(0.95)·`text-wrap: balance`. 에메랄드는 목표만 Galmuri9 10px(원래 격자).
+- **한국어 줄바꿈**: `.play-stage` 가 `word-break: keep-all; overflow-wrap: anywhere` — 무대 안 모든 창이 어절 단위로 꺾인다. 창마다 다시 넣지 않는다.
+- **숫자 입력**(`dialogueNumberInput.ts`): 자리 칸+커서. 숫자 키는 커서 자리에 쓰고 다음 자리로, ↑↓ 커서 자리 숫자, ←→ 자리, Backspace 지우기. 값은 앞에서부터 채운 글(뒤 빈칸 버림, 사이 빈칸 0) — 「12」 입력은 여전히 12.
+  칸·확인 색은 대사 글자색(currentColor)에서 뽑는다(종이 창 대비). 입력창이 떠 있는 동안 목표 안내는 숨는다(`SUPPRESSING_TEST_IDS`). 오버레이는 내용 높이로 자란다(`playSurface.css`).
+- **타이틀 복귀 상세**: 항목은 늘 있다. 첫 결정은 확인 대기(「진행을 버리고 타이틀로 · 확인」), 둘째가 돌아간다. 빈 상세 문구(「준비하지 못했습니다」)는 없앴다.
+- **메뉴 첫 화면 현재 목표**: `playerStatusMenu.withObjectiveCard` 가 개요 밑에 `zoneFeedback.currentObjectiveText` 를 붙인다(목표가 없으면 없음).
+- 컷신 건너뛰기 안내는 「Esc 두 번: 컷신 건너뛰기」(터치는 「B 두 번」).
+- 증거: `~/z-project/assistant-whole-game/suite/ledger/evidence/hud/`(전/후, 재현 `replay.mjs` — 출하 player.html 로 판정자 손·체크포인트를 다시 돈다).
+
 ## 카메라 스크롤은 캔버스 픽셀 격자에 맞춘다 (2026-10-23)
 
 `playSceneCamera.ts` `snapCameraScrollToCanvasPixels` 가 맵 카메라의 `clampX/clampY` 를 감싸 스크롤을 `1/zoom` 세계 픽셀 단위로 반올림한다.
