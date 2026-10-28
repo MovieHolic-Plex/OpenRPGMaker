@@ -221,8 +221,9 @@ function fallingStarShot(): OpeningAnimatic {
     // 박힌 자리에서 흙과 불티가 솟는다(땅보다 앞).
     particles("impact-debris", "sparks", "#ffcf90", { x: IMPACT.x - 120, y: IMPACT.y - 100, width: 240, height: 120 }, 70, 37,
       { startMs: FALL_HIT, keys: { opacity: [key(FALL_HIT, 1), key(FALL_MS, 0.5)] }, particles: { preset: "sparks", count: 70, seed: 37, speed: 26, size: 1 } }),
-    // 어둠에서 천천히 밝아진다(첫 2초 남짓은 게임이 뒤에서 맵을 짓느라 화면이 멎는 때라 검게 둔다).
-    screenFill("dawn", "#03050d", [key(0, 1), key(2600, 1), key(4600, 0, "ease-in-out")]),
+    // 첫 프레임부터 밤하늘이 보인다 — 어스름에서 1.2초 만에 밝아진다. 예전에는 「뒤에서 맵을 짓느라 멎는 때」라며 2.6초를 검게 두었고,
+    // 실제 멈춤(1.4초부터 3.2초)과 겹쳐 첫인상이 3.5초 검은 화면이었다(감독 v4 검수). 이제 멈춤 동안 시계를 붙잡는다(player.ts holdClockThroughStalls).
+    screenFill("dawn", "#03050d", [key(0, 0.55), key(1200, 0, "ease-out")]),
     // 갈라진 뒤 불빛이 하늘을 붉게 물들이고, 떨어질수록 짙어진다.
     screenFill("warm", "#ff8a40", [key(0, 0), key(hit, 0), key(hit + 300, 0.2, "ease-out"), key(hit + 1600, 0.07), key(FALL_HIT, 0.17, "ease-in"), key(FALL_MS, 0.1, "ease-out")], "screen"),
     // 섬광 — 숨 들이켜는 박에 하늘이 살짝 어두워졌다가(빛이 별로 빨려 든다), 갈라짐·충돌에 터진다.
@@ -242,7 +243,7 @@ function fallingStarShot(): OpeningAnimatic {
   }, { kind: "cut", durationMs: 1 }, [
     // 소리는 한 줄기다 — 밤바람 → 별이 차오르며 박마다 뛰는 울림 → 숨 들이켜기와 정적 → 금 가는 유리·깊은 쿵·흩어지는 반짝이 →
     // 다가오며 높아지고 밝아지는 굉음 → 박히기 직전 숨죽임 → 서브 드롭과 파편(scripts/content/fallen/opening-sfx.py). 재생 지연을 감안해 타격음은 40ms 일찍 건다.
-    { id: "air", resourceId: SE.air, atMs: 2400, durationMs: INHALE - 2550, volume: 1, fadeInMs: 1600, fadeOutMs: 900 },
+    { id: "air", resourceId: SE.air, atMs: 0, durationMs: INHALE - 150, volume: 1, fadeInMs: 1200, fadeOutMs: 900 },
     { id: "swell", resourceId: SE.swell, atMs: hit - 5400, durationMs: 5400, volume: 1 },
     { id: "crack", resourceId: SE.crack, atMs: hit - 40, durationMs: 4500, volume: 1 },
     { id: "roar", resourceId: SE.roar, atMs: FALL_HIT - 7350 - 40, durationMs: 7350, volume: 1 },
