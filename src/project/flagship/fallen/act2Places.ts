@@ -209,7 +209,7 @@ export const ASH_FIELD_PROPS: readonly PlaceProp[] = [
   ["bd-pick-deep-forest-path-stump", 7, 30],
   ["bd-pick-deep-forest-path-stump", 10, 21],
   ["bd-pick-volcano-cave-coal-pile", 5, 31],
-  ["bd-pick-deep-forest-path-log-fallen", 8, 23],
+  ["bd-pick-volcano-cave-pillar-fallen", 8, 23],
   ["bd-pick-volcano-cave-ember-a", 9, 31],
   ["bd-pick-volcano-cave-ember-a", 3, 30],
   ["bd-pick-aqueduct-sewer-bone-heap", 22, 24],
@@ -353,9 +353,8 @@ export function paintFortApproach(project: Project, map: GameMap, pad: number, g
   const upper = map.upperTiles.slice();
   for (let y = 0; y < pad; y += 1) for (let x = 0; x < W; x += 1) {
     const i = y * W + x;
-    const onRoad = x >= g0 && x <= g1;
-    const nearRoad = (x === g0 - 1 || x === g1 + 1) && h32(x, y, seed + 9) % 100 < 40;
-    lower[i] = onRoad || nearRoad ? road[h32(x, y, seed + 2) % road.length]! : snow[h32(x, y, seed + 3) % snow.length]!;
+    // 다져진 눈길은 성문 폭 그대로 곧게(가장자리를 흩으면 네모 얼룩으로 보였다).
+    lower[i] = x >= g0 && x <= g1 ? road[h32(x, y, seed + 2) % road.length]! : snow[h32(x, y, seed + 3) % snow.length]!;
     upper[i] = -1;
   }
   // 벼랑은 이 줄들 안에서만 칠한다(아래 성벽 줄은 건드리지 않는다).
