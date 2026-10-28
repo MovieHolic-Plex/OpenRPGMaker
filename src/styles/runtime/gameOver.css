@@ -103,6 +103,9 @@
 
 /* First remove the field, then reveal the result, then accept a new input. */
 .terminal-scene { background: #080809; outline: none; }
+/* 한국어 어절을 가운데서 자르지 않는다(「고맙습니 / 다.」 VQA hud#107). 넘치는 긴 낱말만 anywhere 로 끊는다. */
+.terminal-scene { word-break: keep-all; }
+.terminal-scene .ending-credits-roll { text-wrap: balance; }
 .terminal-scene[data-phase="fade-out"] { animation: terminal-darken var(--terminal-fade-ms, 900ms) ease-out both; }
 .terminal-scene[data-phase="exit"]::after {
   content: ""; position: absolute; inset: 0; z-index: 10;
