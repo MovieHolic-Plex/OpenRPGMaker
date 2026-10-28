@@ -1,3 +1,9 @@
+## 레트로 파티 창 수치 칸은 글자만큼 늘어난다 (2026-10-29)
+
+`_retro2003.css` 파티 창 줄의 HP·MP 칸은 `minmax(92px, max-content)` · `minmax(56px, max-content)` 이다. 92px 고정이면
+네 자리 최대 HP(「1447/1447」, 마왕의 동굴 실측)가 「1447/14」 로 MP 칸 밑에 잘렸다. 늘어난 폭은 이름 칸(`minmax(0,1fr)`, 말줄임)이 내준다.
+실물 게임 전투 QA 는 `qa:runtime --whole-game` (`openwiki/testing.md`).
+
 ## 피해 계열 받는 피해 %(물리·마법) · 상태가 바꿔 쓰는 값 · 「적이 상태에 걸렸다」 전투 조건 (2026-10-24)
 
 `EnemyRecord.damageTypeRates`(선택, `{ physical?, magic? }` 정수 %, 0~1000, 비면 저장 안 함)는 적이 **피해 계열별로** 받는 피해 배율이다.
