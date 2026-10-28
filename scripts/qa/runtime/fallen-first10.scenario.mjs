@@ -8,11 +8,11 @@ const at = (sceneId, ms = 2200) => [
   { kind: "hold", dir: null, ms },
 ];
 const opening = [
-  { id: "op-1-town", note: "오프닝 ① 밤의 도시", ops: [{ kind: "key", key: "Enter", holdMs: 90 }, { kind: "waitFor", testid: "cinematic-sequence", state: "present", timeoutMs: 60000 }, ...at("fs_op_night_town")], shot: true },
-  { id: "op-2-fall", note: "오프닝 ② 떨어지는 별", ops: at("fs_op_falling_star", 3800), shot: true },
-  { id: "op-3-obs", note: "오프닝 ③ 천문대", ops: at("fs_op_observatory"), shot: true },
-  { id: "op-4-crash", note: "오프닝 ④ 추락지(관으로 다가감)", ops: at("fs_op_crash", 5200), shot: true },
-  { id: "op-5-morning", note: "오프닝 ⑤ 아침", ops: at("fs_op_morning"), shot: true },
+  { id: "op-1-fall", note: "오프닝 ① 별이 떨어진다(갈라짐 직후)", ops: [{ kind: "key", key: "Enter", holdMs: 90 }, { kind: "waitFor", testid: "cinematic-sequence", state: "present", timeoutMs: 60000 }, ...at("fs_op_falling_star", 10600)], shot: true },
+  { id: "op-2-crash", note: "오프닝 ② 연기와 은빛 알", ops: at("fs_op_aftermath", 4000), shot: true },
+  { id: "op-3-obs", note: "오프닝 ③ 천문대 안, 첫 종", ops: at("fs_op_observatory", 1500), shot: true },
+  { id: "op-4-bell", note: "오프닝 ④ 종이 울린다·카엘", ops: at("fs_op_bell", 3500), shot: true },
+  { id: "op-5-title", note: "오프닝 ⑤ 제목", ops: at("fs_op_title", 5000), shot: true },
   { id: "boot", note: "오프닝 끝 → 광장", ops: [
     { kind: "pressUntil", key: "Escape", testid: "cinematic-sequence", state: "absent", maxPresses: 6 },
     { kind: "waitForRuntime", timeoutMs: 120000 }, { kind: "hold", dir: null, ms: 1500 },
