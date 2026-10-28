@@ -102,6 +102,7 @@ v1 의 `script_cutscene` 비트로 옮긴다(`events.ts`).
 - 시스템 지시(`prompt.ts`) = 역할·고리·규칙 + 지식 카드 7장(실내·마을·던전·일본 도시·사람·사건·없는 물건, 각 ≤900자) + 지금 프로젝트 맵 목록. 약 5천 자.
 - 비평가는 `env.sideChat`(= v1 `eventAssistChat`, 같은 모델) — 사용량은 `stats.review` 로 따로 모인다.
 - 끝맺음 관문(`v2FinishGate`): 고칠 수 있는 major·기계 실패가 남은 장소가 있으면 한 바퀴 더 돌게 한다.
+- 빈 자리표시 시작 맵(`isPlaceholderMap`)을 `edit_place` 로 「고치려」 하면서 구역(`addZones`)을 주면, 고칠 장소가 없으니 그 패치로 그 맵 자리에 실내를 `make_place` 로 짓는다(2026-10-29 방 과제: 10개 중 4개가 edit_place(map_blank_start) 실패 한 번으로 빈 맵인 채 끝났다).
 - 고치기가 더 나쁘면 되돌린다: `edit_place` 뒤 (기계 실패 + 비평 major) 수가 앞보다 늘면 앞 프로젝트로 되돌리고 `reverted:true` 를 돌려준다(바퀴는 쓴 것으로 센다).
 - 마을·던전·거리 빌더는 소품 하나하나·`dressing` 을 받지 않는다 — 그런 패치는 바퀴를 쓰지 않고 거절한다(같은 맵이 또 나와 바퀴만 쓰던 것).
 - 실패한 동사·예외도 `guard` 가 tool_end 에 ok:false·이유로 싣는다.

@@ -621,6 +621,12 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
         const now = [...new Set([...session.places.values()].flatMap((r) => r.result.mapIds))].filter((id) => env.ctx.project.maps[id]).map((id) => `${id}(${env.ctx.project.maps[id]!.name ?? ""})`);
         return text({ ok: false, summary: `${patch.mapId} 는 이제 없는 맵이다(앞의 다시 짓기로 층이 새 id 로 바뀌었다). 지금 v2 가 지은 맵: ${now.join(", ") || "없음"} — 이 id 로 고친다.` });
       }
+      // 빈 자리표시 시작 맵(풀밭 한 장)에 구역을 붙여 「고치려」 했다 — 고칠 장소가 없으니 그 구역으로 그 자리에 실내를 새로 짓는다
+      // (2026-10-29 방 과제 room-base/room-vig-1029: 교실·침실·예배당·주점 10개 중 4개가 edit_place(map_blank_start) 실패 한 번으로 빈 맵인 채 끝났다).
+      if (!record && existing && isPlaceholderMap(existing) && patch.addZones?.length && !(patch.set as { type?: string } | undefined)?.type) {
+        const spec = applyPatch({ type: "interior", name: patch.set?.name ?? existing.name ?? "실내", mapId: patch.mapId }, patch);
+        return makePlace.execute(id, { spec });
+      }
       if (!record) return text({ ok: false, summary: `${patch.mapId} 는 v2 가 지은 기록이 없고 다시 지을 방 구성도 읽지 못했다. make_place(mapId=${patch.mapId}) 로 그 자리에 새로 짓거나 못 한다고 알린다.` });
       if (record.rounds >= V2_MAX_REPAIR_ROUNDS) return text({ ok: false, summary: `고치기 상한(${V2_MAX_REPAIR_ROUNDS}바퀴)에 닿았다. 남은 문제를 사용자에게 보고한다.` });
       const builder = builderFor(record.spec)!;
