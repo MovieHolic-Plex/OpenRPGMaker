@@ -20,6 +20,7 @@ import { fieldMenu } from "@/project/fieldMenu";
 import { FACTORY_HERO_ARMS } from "./genreDefaults";
 import { walkBlueprint } from "./blueprint";
 import { assemblyTimeMismatches } from "@/project/blueprintAssembly";
+import { battleSites, healingSources } from "./combatChecks";
 
 type Obj = Record<string, unknown>;
 export interface ShipBlocker { readonly id: string; readonly message: string; readonly evidence: string }
@@ -454,7 +455,14 @@ export function shipBlockers(project: Project, task: string): ShipBlocker[] {
   // 청사진 경로를 데이터로 걷는다(2026-10-28): 맵·이벤트가 있나, 걸어 닿나, 조건을 켜는 곳이 앞에 있나, 마지막이 엔딩인가.
   const blueprint: ShipBlocker[] = project.gameBlueprint ? walkBlueprint(project).blockers.slice(0, 6)
     : [{ id: "blueprint-missing", message: "이 게임의 청사진이 없다 — write_blueprint 로 새 플레이어 목표 한 줄·시작부터 엔딩까지 핵심 경로(장소·이벤트·조건)·엔딩을 지금 지은 이름 그대로 쓴다.", evidence: "project.gameBlueprint=undefined" }];
-  return [...blueprint, ...hidden, ...unlit, ...invisible, ...offArt, ...repeats, ...tints, ...objectives, ...romance, ...editorDefaultsLeft(project), ...endingClosureProblems(project), ...openingWithoutPlace(project), ...offPremiseArt(project, task), ...defaultPlaceLeaks(project, task), ...titleMismatch(project, task), ...assemblyTimeMismatches(project).map((m): ShipBlocker => ({ id: "assembly-time-mismatch", message: m.message, evidence: m.evidence })), ...requestedFeatureGaps(project, task), ...chaserWithoutHiding(project), ...unreachable, ...spoilers];
+  // 전투가 있는데 HP 를 되찾을 길이 0(2026-10-29 vm1 flash jrpg 「전투 못 이김」) — 고칠 수 있는 결함: build_blueprint_path 가 결정적으로 넣는다.
+  const sites = battleSites(project);
+  const noHealing: ShipBlocker[] = sites.length && !healingSources(project).length ? [{
+    id: "combat-no-healing",
+    message: `전투가 있는데(${sites.slice(0, 3).join(", ")}${sites.length > 3 ? ` 외 ${sites.length - 3}곳` : ""}) 여관·회복약·회복 기술·상점 회복약이 하나도 없어 깎인 HP 가 돌아오지 않는다 — build_blueprint_path 를 다시 부르면 시작 맵에 회복의 샘(전원 회복·저장)과 시작 회복약 3개를 넣고 목표 줄이 샘 자리를 가리킨다. 직접 고치려면 place_savepoint{mapId:시작 맵, heal:true} 와 set_session_start{inventory:{item_potion:3}}.`,
+    evidence: `battleSites=${sites.length} healingSources=0`,
+  }] : [];
+  return [...blueprint, ...noHealing, ...hidden, ...unlit, ...invisible, ...offArt, ...repeats, ...tints, ...objectives, ...romance, ...editorDefaultsLeft(project), ...endingClosureProblems(project), ...openingWithoutPlace(project), ...offPremiseArt(project, task), ...defaultPlaceLeaks(project, task), ...titleMismatch(project, task), ...assemblyTimeMismatches(project).map((m): ShipBlocker => ({ id: "assembly-time-mismatch", message: m.message, evidence: m.evidence })), ...requestedFeatureGaps(project, task), ...chaserWithoutHiding(project), ...unreachable, ...spoilers];
 }
 
 /** 게임이 «아직 안 지어졌다»는 신호 — 뼈대 자리표시만 남았거나 엔딩이 없다(편집기 기본 HUD·창 같은 마감 항목은 여기서 보지 않는다). */

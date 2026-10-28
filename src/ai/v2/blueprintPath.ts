@@ -21,6 +21,7 @@ import { repairEventReach } from "./eventReach";
 import { dressInteriorExits } from "./exitDress";
 import { OBJECTIVE_SURFACE, planObjective } from "./discoverability";
 import { settleExamineSpots } from "./examineSpot";
+import { ensureHealingAccess } from "./healingAccess";
 
 /**
  * 이미 지은 청사진 단계 이벤트·퍼즐 고리 이벤트를 걸어 가 조사할 수 있는 자리로 옮긴다(내용은 그대로). 옮긴 것 목록.
@@ -152,7 +153,63 @@ export interface BlueprintPathResult extends ContentBuildResult {
  * 청사진 → 사슬 인자 → 짓기. 맵이 하나도 없으면(장소를 아직 안 지었으면) 거절한다.
  * 청사진의 장소가 없는 단계는 앞 단계 장소(없으면 시작 맵)에 둔다 — 청사진 place 는 그 맵 이름으로 맞춘다.
  */
+/**
+ * 청사진 경로를 짓고, 그 뒤 두 가지를 결정적으로 맞춘다(2026-10-29 vm1 flash jrpg 판정):
+ *  - 청사진 단계가 「<장소> 열쇠」 같은 열쇠를 needs 로 적었고 그 단계가 앞 단계와 다른 맵이면, 앞 맵에서 그 맵으로 가는 문을 열쇠로 잠근다
+ *    (열쇠가 엔딩 이벤트에만 걸려 동굴엔 그냥 들어가졌다 — 「열쇠가 어디에도 쓰이지 않았다」). 청사진에 needs 가 없으면 잠그지 않는다.
+ *  - 전투가 있는데 회복할 길이 없으면 시작 맵에 회복의 샘과 시작 회복약(healingAccess.ts).
+ * 둘 다 이미 지은 경로를 그대로 두는 경우(다시 짓지 않음)에도 한다.
+ */
 export function buildBlueprintPath(run: BuildRun, text: readonly PathStepText[] = []): BlueprintPathResult {
+  const result = buildBlueprintPathCore(run, text);
+  const extra: string[] = [];
+  try { extra.push(...gateKeyedEntrances(run)); } catch { /* 잠금 실패는 경로를 깨지 않는다 */ }
+  try { const heal = ensureHealingAccess(run); if (heal.length) extra.push(`회복 길을 넣었다: ${heal.join(", ")}`); } catch { /* 회복 넣기 실패는 경로를 깨지 않는다 */ }
+  return extra.length ? { ...result, summary: `${result.summary} ${extra.join(". ")}.` } : result;
+}
+
+/** 이벤트 페이지들이 옮겨 가는 맵 id. */
+function transfersTo(value: unknown, out: Set<string>): Set<string> {
+  if (Array.isArray(value)) { for (const v of value) transfersTo(v, out); return out; }
+  if (!value || typeof value !== "object") return out;
+  const record = value as Record<string, unknown>;
+  if (record.kind === "transfer" && typeof record.mapId === "string") out.add(record.mapId);
+  for (const child of Object.values(record)) if (child && typeof child === "object") transfersTo(child, out);
+  return out;
+}
+
+const KEY_WORD = /열쇠|키\b|key/iu;
+
+/** 청사진 needs 의 열쇠로 앞 맵 → 그 단계 맵 문을 잠근다(잠긴 페이지 + 열쇠가 있을 때의 원래 페이지). 이미 잠갔으면 그대로. */
+export function gateKeyedEntrances(run: BuildRun): string[] {
+  const project = run.ctx.project;
+  const bp = project.gameBlueprint;
+  if (!bp) return [];
+  const notes: string[] = [];
+  bp.steps.forEach((step, k) => {
+    if (k === 0) return;
+    const need = step.needs?.trim();
+    if (!need || /^(시작|없음|none|start)$/iu.test(need) || !isItem(need) || !KEY_WORD.test(need)) return;
+    const here = mapFor(run.ctx.project, step.place);
+    const prev = mapFor(run.ctx.project, bp.steps[k - 1]!.place);
+    if (!here || !prev || here.id === prev.id) return;
+    const item = run.ctx.project.database.items.find((i) => sameName(i.name ?? "", need));
+    if (!item) return;
+    for (const gate of prev.events ?? []) {
+      const pages = gate.pages ?? [];
+      if (!pages.length || !transfersTo(pages, new Set()).has(here.id)) continue;
+      if (pages.some((p) => (p.conditions ?? []).some((c) => (c as { kind?: string; itemId?: string }).kind === "item" && (c as { itemId?: string }).itemId === item.id))) continue;
+      const first = pages[0]!;
+      const locked = { ...structuredClone(first), id: `${first.id ?? "p"}_locked`, name: "잠김", conditions: [], commands: [{ kind: "text", body: `${need}${josa(need, "이", "가")} 있어야 들어갈 수 있을 것 같다.` }] };
+      const open = pages.map((p) => ({ ...structuredClone(p), conditions: [...(p.conditions ?? []), { kind: "item", itemId: item.id, present: true }] }));
+      const event = { ...structuredClone(gate), pages: [locked, ...open] };
+      if (run.call("upsert_event", { mapId: prev.id, event: event as unknown as Record<string, unknown>, replacePages: true }).ok) notes.push(`${prev.name ?? prev.id} → ${here.name ?? here.id} 문(${gate.x},${gate.y})을 「${need}」로 잠갔다`);
+    }
+  });
+  return notes;
+}
+
+function buildBlueprintPathCore(run: BuildRun, text: readonly PathStepText[] = []): BlueprintPathResult {
   const project0 = run.ctx.project;
   const bp = project0.gameBlueprint;
   const fail = (summary: string): BlueprintPathResult => ({ ok: false, mapIds: [], summary, warnings: [], missingArt: [], calls: [] });

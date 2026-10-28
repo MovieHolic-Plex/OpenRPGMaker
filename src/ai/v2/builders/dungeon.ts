@@ -5,6 +5,7 @@
 import { isBlankMap } from "@/editor/tools/mapEmptiness";
 import { dungeonTheme } from "@/editor/tools/dungeonThemeTroops";
 import { fitEnemyToStartParty } from "@/editor/tools/bossThreatScaling";
+import { ensureHealingAccess } from "../healingAccess";
 import { pickTroops } from "@/editor/tools/jrpgVolumeTools";
 import { DUNGEON_TYPES, type DungeonType } from "@/editor/dungeonKit/types";
 import { isPassable } from "@/project/collision";
@@ -602,6 +603,9 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
     const others = floors.flatMap((id) => (run.ctx.project.maps[id]?.events ?? []).filter((e) => isFoe(e.id) || /_guardian$/.test(e.id))).map((e) => art(run.ctx.project, JSON.stringify(e).match(/troop_[a-z0-9_]+/)?.[0]));
     if (others.includes(art(run.ctx.project, bossTroop))) warnings.push("보스 그림이 잡몹·수문장 그림과 같다");
   } else if (/boss|보스|주인|군주|용|히드라|대마법사/u.test(wanted)) warnings.push("보스를 놓지 못했다");
+  // 적을 둔 던전인데 이 게임에 회복할 길이 하나도 없으면 시작 맵에 회복의 샘·시작 회복약(2026-10-29 vm1 flash jrpg 「전투 못 이김」).
+  let healNote = "";
+  try { const heal = ensureHealingAccess(run); if (heal.length) healNote = ` · 회복 길을 넣었다: ${heal.join(", ")}`; } catch { /* 회복 넣기 실패는 던전을 깨지 않는다 */ }
   const calls: BuilderCall[] = run.calls.slice(firstCall);
   const first = floors[0]!;
   const ent = data.entrance as { x?: number; y?: number } | undefined;
@@ -611,7 +615,7 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
     : { mapId: first, x: ent?.x ?? Math.floor((num(data.width) ?? 40) / 2), y: ent?.y ?? Math.floor((num(data.height) ?? 30) / 2) };
   const seed = num(data.seed) ?? num(args.seed);
   const state: DungeonState = { args, seed, variant, floors };
-  const summary = `${spec.name}: ${type} ${floors.length}층${args.direction === "up" ? "(위로)" : ""}${args.flooded ? " · 물에 잠김" : ""}${args.lair ? " · 고블린 소굴" : ""}${data.gimmick ? ` · 장치 ${String(data.gimmick)}` : ""} (${num(data.width)}×${num(data.height)})`;
+  const summary = `${spec.name}: ${type} ${floors.length}층${args.direction === "up" ? "(위로)" : ""}${args.flooded ? " · 물에 잠김" : ""}${args.lair ? " · 고블린 소굴" : ""}${data.gimmick ? ` · 장치 ${String(data.gimmick)}` : ""} (${num(data.width)}×${num(data.height)})${healNote}`;
   return { ok: true, mapIds: floors, entrance, summary, warnings, missingArt: missing, calls, state };
 }
 
