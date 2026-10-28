@@ -5,6 +5,12 @@
 
 <!-- releases -->
 
+## 0.357.1 — 2026-10-29
+
+### 수정
+
+- **charset** — RefmapDoll - drop 133 chips that were mostly one original; re-pack 2,567 chips into 321 sheets (#3894) (`e6b2cdb`)
+
 ## 0.357.0 — 2026-10-28
 
 ### 기능
