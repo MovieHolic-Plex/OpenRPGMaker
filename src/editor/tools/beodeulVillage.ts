@@ -287,6 +287,10 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   const rand = rng(seed * 7919 + theme.length * 131 + 17);
   const ri = (a: number, b: number) => a + Math.floor(rand() * (b - a + 1));
   const choice = <T,>(xs: readonly T[]): T => xs[Math.floor(rand() * xs.length)]!;
+  /** 덩이 붙여 키우기: 이미 선 그루 p 곁 한 자리. 옆이면 위·아래로 한 칸 어긋나게(같은 줄 옆에 세우면 덤불·측백이 한 줄로 늘어섰다), 아니면 앞뒤로(수관이 겹친다). */
+  const clumpNext = (p: { x: number; y: number; w: number; h: number }, k: { w: number; h: number }): [number, number] =>
+    rand() < 0.6 ? [p.x + choice([-k.w, -k.w + 1, p.w - 1, p.w]), p.y + choice([-1, 1])]
+      : [p.x + ri(-1, 1), p.y + choice([-(k.h - 1), p.h - 1, Math.max(1, Math.floor(p.h / 2))])];
   const warnings: string[] = [...(terrainNote ? [terrainNote] : []), ...warnings0];
   const openLand = theme === "desert" || theme === "snow"; // 모래·눈은 트인 땅이 자연 — 빈 덩이 40칸까지, 화면당 40%까지
   // 자연 덧그림(2026-10-11, beodeul_nature): 강·바다는 돌 둑 운하 대신 흙·풀 둑, 오아시스 풀밭은 모래 위에 둥근 가장자리로 얹는다
@@ -1894,10 +1898,14 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     const cx = ri(1, W - 2), cy = ri(1, H - 2);
     if (at(cx, cy) !== FREE || distRoad[idx(cx, cy)]! < 3) continue;
     const n = openLand ? ri(2, 3) : ri(3, 5);
-    for (let m = 0; m < n * 6; m += 1) {
+    // 덩이는 붙여 키운다(2026-10-28 생활 마을 「흩뿌린 덤불」): 둘째 그루부터는 이미 선 그루 바로 곁(옆 한 키트 폭·위아래 한 칸)에만 —
+    // 가운데서 ±3칸 아무 데나 두면 덤불이 1~2칸씩 떨어진 낱개로 고르게 흩어져 점박이·격자로 읽혔다.
+    const members: { x: number; y: number; w: number; h: number }[] = []; let placed = 0;
+    for (let m = 0; m < n * 8 && placed < n; m += 1) {
       const k = K(choice(rand() < 0.75 ? trees : shrubs.length ? shrubs : trees));
-      const x = cx + ri(-3, 3) - Math.floor(k.w / 2), y = cy + ri(-2, 2) - k.h + 1;
-      if (treeFits(k, x, y, 2)) { claim(k, x, y, PROP, false); treeCount += 1; }
+      const p = members.length ? members[Math.floor(rand() * members.length)]! : undefined;
+      const [x, y] = p ? clumpNext(p, k) : [cx - Math.floor(k.w / 2), cy - k.h + 1];
+      if (treeFits(k, x, y, 2)) { claim(k, x, y, PROP, false); treeCount += 1; placed += 1; members.push({ x, y, w: k.w, h: k.h }); }
     }
   }
   // 남은 빈 땅: 큰 빈 덩이에만 작은 덩이(덤불 1~3 + 풀꽃 2~4)를 씨앗처럼 — 고르게 흩지 않는다(점박이 금지).
@@ -1919,10 +1927,13 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   };
   const tuft = (cx: number, cy: number, grove = false): number => {
     let n = 0;
-    const items = grove ? ri(3, 6) : ri(1, 3); const spread = grove ? 3 : 1;
-    for (let m = 0; m < items * (grove ? 3 : 1) && n < items && shrubs.length; m += 1) {
-      const k = K(choice(grove && trees.length && rand() < 0.6 ? trees : shrubs)); const x = cx + ri(-spread, spread), y = cy + ri(-spread, spread) - k.h + 1;
-      if (treeFits(k, x, y, 1)) { claim(k, x, y, PROP, false); n += 1; } }
+    const items = grove ? ri(3, 6) : ri(2, 3);
+    const members: { x: number; y: number; w: number; h: number }[] = [];
+    for (let m = 0; m < items * 4 && members.length < items && shrubs.length; m += 1) {
+      const k = K(choice(grove && trees.length && rand() < 0.6 ? trees : shrubs));
+      const p = members.length ? members[Math.floor(rand() * members.length)]! : undefined; // 덩이로 붙여 키운다(위 낱 나무 덩이와 같은 규칙)
+      const [x, y] = p ? clumpNext(p, k) : [cx, cy - k.h + 1];
+      if (treeFits(k, x, y, 1)) { claim(k, x, y, PROP, false); n += 1; members.push({ x, y, w: k.w, h: k.h }); } }
     // 풀꽃 키트는 2×1 도 있다 — 키트 전체 칸이 빈 땅일 때만(길 위로 삐져나오지 않게)
     for (let m = 0; m < (openLand ? ri(0, 1) : ri(1, 2)) && decals.length; m += 1) {
       const k = K(choice(decals)); const x = cx + ri(-2, 2), y = cy + ri(-1, 1);
@@ -1943,10 +1954,24 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       const c = idx(x, y), v = occ[c]!; if (v === WALLB) continue; n += 1;
       if (!cover[c] && (v === FREE || v === POND_RING || v === CLEAR || v === PROP || v === BLD || (v === FIELD && !decalAt.has(c)))) o += 1; }
     return n ? o / n : 0; };
-  for (let y0 = 0; y0 < H; y0 += 15) for (let x0 = 0; x0 < W; x0 += 20) {
+  // 화면 창은 늘 20×15 온 창으로 잰다(2026-10-28 조선·생활 마을): 맵 끝 화면(아래 4줄·오른쪽 2열 같은 자투리 띠)을 따로 재면
+  // 그 좁은 띠만 58% 로 채우느라 덤불·측백이 맵 가장자리를 따라 한 줄로 늘어섰다.
+  // 채울 자리는 이미 있는 덩이(나무·덤불·소품·숲·집) 곁을 먼저 고른다 — 빈 땅 한가운데 낱개로 흩뿌리면 점박이로 읽혔다(덩이로 자라게).
+  const nearClump = (x: number, y: number) => {
+    for (let dy = -3; dy <= 3; dy += 1) for (let dx = -3; dx <= 3; dx += 1) {
+      if (!inMap(x + dx, y + dy) || (dx === 0 && dy === 0)) continue; const v = occ[idx(x + dx, y + dy)];
+      if (v === PROP || v === FOREST || v === BLD) return true;
+    }
+    return false;
+  };
+  const screens: [number, number][] = [];
+  for (let y0 = 0; y0 < H; y0 += 15) for (let x0 = 0; x0 < W; x0 += 20) screens.push([Math.max(0, Math.min(x0, W - 20)), Math.max(0, Math.min(y0, H - 15))]);
+  for (const [x0, y0] of screens) {
     for (let t = 0; t < 200 && openShare(x0, y0) > (openLand ? 0.74 : 0.58); t += 1) {
       const x = x0 + ri(0, Math.min(19, W - 1 - x0)), y = y0 + ri(0, Math.min(14, H - 1 - y0));
-      if (occ[idx(x, y)] === FREE && distRoad[idx(x, y)]! >= 2) filler += tuft(x, y, openLand);
+      if (occ[idx(x, y)] !== FREE || distRoad[idx(x, y)]! < 2) continue;
+      if (t < 150 && !nearClump(x, y)) continue;
+      filler += tuft(x, y, openLand);
     }
   }
 
