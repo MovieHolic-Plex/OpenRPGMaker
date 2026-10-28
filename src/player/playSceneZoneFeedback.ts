@@ -3,7 +3,7 @@ import { store } from "@/project/store";
 import { stampEmeraldSurface } from "@/player/emeraldSurfaces";
 import type { RuntimeEventView } from "@/project/runtimeEventState"
 import type { PlaySceneContext } from "@/player/playSceneTypes";
-import { footprintContains } from "@/project/footprint";
+import { footprintBounds, footprintContains } from "@/project/footprint";
 import { mapTileSize } from "@/project/tileGeometry";
 import { runtimePixelDensity } from "@/player/runtimeViewScale";
 import type { GameMap } from "@/project/types";
@@ -214,7 +214,17 @@ function sceneGeometry(scene: ZoneFeedbackScene, host: HTMLElement): SceneGeomet
     if (rect.x + rect.width < 0 || rect.y + rect.height < 0 || rect.x > width || rect.y > height) continue;
     actors.push(rect);
   }
-  const map = scene.map ? toScreen({ x: 0, y: 0, width: scene.map.width * mapTileSize(scene.map), height: scene.map.height * mapTileSize(scene.map) }) : null;
+  const tile = scene.map ? mapTileSize(scene.map) : 0;
+  // 조사 대상(결정 키 이벤트)은 그림이 없는 투명 이벤트여도 피한다 — 방탈출의 책장·금고·벽시계가 대개 그렇다.
+  if (tile > 0) {
+    for (const view of scene.activeRuntimeEvents("action")) {
+      const b = footprintBounds(view.x, view.y, view.footprint);
+      const rect = toScreen({ x: b.left * tile, y: b.top * tile, width: (b.right - b.left + 1) * tile, height: (b.bottom - b.top + 1) * tile });
+      if (rect.x + rect.width < 0 || rect.y + rect.height < 0 || rect.x > width || rect.y > height) continue;
+      actors.push(rect);
+    }
+  }
+  const map = scene.map ? toScreen({ x: 0, y: 0, width: scene.map.width * tile, height: scene.map.height * tile }) : null;
   return { player, actors, map };
 }
 
