@@ -19,7 +19,7 @@ import { invisibleStoryEvents, objectiveGaps, offArtEntrances, doorCellBlocked, 
 import { fieldMenu } from "@/project/fieldMenu";
 import { FACTORY_HERO_ARMS } from "./genreDefaults";
 import { walkBlueprint } from "./blueprint";
-import { assemblyTimeMismatches } from "@/project/blueprintAssembly";
+import { assemblyTimeMismatches, blueprintStoryText } from "@/project/blueprintAssembly";
 import { battleSites, healingSources } from "./combatChecks";
 
 type Obj = Record<string, unknown>;
@@ -285,8 +285,10 @@ export function openingWithoutPlace(project: Project): ShipBlocker[] {
 }
 
 /** 그림 설명·태그가 말하는 계절·풍토 낱말 — 요청·게임 글에 같은 계열 낱말이 없으면 «다른 이야기 그림»이다. */
-const SETTING_WORDS: readonly { readonly key: string; readonly art: RegExp; readonly premise: RegExp }[] = [
-  { key: "눈·겨울", art: /눈 덮인|설원|겨울|눈 쌓인|winter|snow|얼음|오로라/iu, premise: /눈|겨울|설원|얼음|빙|크리스마스|winter|snow|ice/iu },
+// story = 청사진 이야기·부제처럼 긴 글에 쓰는 좁은 낱말(「눈을 떴다」의 눈은 겨울이 아니다). 없으면 premise.
+const SETTING_WORDS: readonly { readonly key: string; readonly art: RegExp; readonly premise: RegExp; readonly story?: RegExp }[] = [
+  { key: "눈·겨울", art: /눈 덮인|설원|겨울|눈 쌓인|winter|snow|얼음|오로라/iu, premise: /눈|겨울|설원|얼음|빙|크리스마스|winter|snow|ice/iu,
+    story: /눈보라|눈 덮|눈 쌓|눈이 내|눈 내리|눈발|눈송이|폭설|겨울|설원|빙판|얼음|크리스마스|winter|snow/iu },
   { key: "사막", art: /사막|모래|피라미드|desert|오아시스/iu, premise: /사막|모래|피라미드|오아시스|desert/iu },
   { key: "바다·해저", art: /해저|바다|항구|ocean|harbor/iu, premise: /바다|해저|항구|섬|배를|해변|ocean|sea|harbor/iu },
 ];
@@ -305,10 +307,13 @@ export function offPremiseArt(project: Project, task: string): ShipBlocker[] {
   const s = project.system as unknown as Obj;
   const title = (s.titleScreen ?? {}) as Obj;
   const titleBg = (title.backgroundResourceId ?? s.titleResourceId) as string | undefined;
+  // 청사진 이야기·타이틀 부제도 이야기다 — 조립(applyBlueprintAssembly)이 청사진 글로 타이틀 그림을 고르니 검사도 같은 글을 본다
+  // (2026-10-29 standin 추리 「눈보라에 갇힌 겨울밤 시골 여관」: 조립이 눈 마을을 골랐는데 요청 글에 눈이 없다고 막았다).
   const premise = [task, project.meta.title, String(title.title ?? ""), ...(project.endings ?? []).map((e) => e.name), ...Object.values(project.maps).map((m) => m.name)].join(" ");
+  const story = [String(title.logoSubtitle ?? ""), project.gameBlueprint ? blueprintStoryText(project, project.gameBlueprint) : ""].join("\n");
   const clash = (id: string | undefined): string | undefined => {
     const text = artText(id);
-    return SETTING_WORDS.find((w) => w.art.test(text) && !w.premise.test(premise))?.key;
+    return SETTING_WORDS.find((w) => w.art.test(text) && !w.premise.test(premise) && !(w.story ?? w.premise).test(story))?.key;
   };
   const out: ShipBlocker[] = [];
   // 편집기 기본 타이틀 그림은 title-image 가 이미 짚는다.
