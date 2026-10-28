@@ -9,6 +9,7 @@ import type { GameMap, Project } from "@/project/types";
 import { playerAnchors } from "@/editor/tools/transferReachability";
 import type { BuildRun, ContentBuildResult } from "./types";
 import { repairEventReach } from "./eventReach";
+import { fixObjectSheetFacing, showExaminedThing } from "./examineArt";
 
 type Obj = Record<string, unknown>;
 const STEPS = [[1, 0], [-1, 0], [0, 1], [0, -1]] as const;
@@ -316,6 +317,13 @@ export function buildPuzzleChain(run: BuildRun, args: ChainArgs): ContentBuildRe
     const fixed = repairEventReach(run, mapId, eventIds.filter((e) => e.mapId === mapId).map((e) => e.eventId));
     if (fixed.moved.length) reachNotes.push(`닿게 옮김: ${fixed.moved.join(", ")}`);
     for (const s of fixed.stuck) warnings.push(`걸어 가서 조사할 자리를 못 찾았다: ${s}`);
+  }
+  // 자리는 위 repairEventReach 가 정한다(정본). 여기서는 그 자리에서 조사할 물건이 그림으로 보이게만 한다(일기장·편지 → 바로 옆 책상 윗면 탁상 물건)
+  // — 이벤트를 옮기지 않는다. 칩 그림 사물(문·상자)은 조사할 때 돌아서지 않게.
+  for (const e of eventIds) {
+    fixObjectSheetFacing(run, e.mapId, e.eventId);
+    const shown = showExaminedThing(run, e.mapId, e.eventId);
+    if (shown) warnings.push(shown);
   }
   // 답이 단서에 실제로 적혀 있는가.
   for (const link of args.links) if (link.role === "code" && link.code && !args.links.some((l) => l.role === "clue" && (l.lines ?? []).some((line) => line.includes(link.code!)))) warnings.push(`정답 ${link.code} 이 어느 단서 lines 에도 없다 — 플레이어가 답을 알 길이 없다`);

@@ -569,6 +569,8 @@ function fillRequiredPageFields(event: GameEvent, page: Partial<EventPage>, page
       // 이름에 맞는 그림이 없으면 투명으로 두고 알린다. 이름과 무관한 대체 그림(예전 보석 표식)은 붙이지 않는다 —
       // 「고대 진실의 제단」이 보석으로 저장돼 제단 자리에 보석이 놓였다(2026-09-27 사용자 지적).
       page.graphic = object.graphic;
+      // 칩 그림 사물(문·철창·상자)은 조사하면 플레이어 쪽으로 돌아 다른 줄(열린 문짝)을 보였다 — 잠긴 문이 열린 문으로 보였다(2026-10-28 interior 장부 38).
+      if (!object.graphic.transparent && page.animationType === undefined) page.animationType = "fixedGraphic";
       warnings?.push(object.graphic.transparent
         ? `${event.id}.${pageId}: '${event.name ?? event.id}' 은(는) 말하는 인물이 아니라 조사할 사물로 보여 주민 그림을 세우지 않고 투명으로 두었습니다 — ` +
           `이대로는 바닥에서 보이지 않습니다. 그 칸에 사물 타일을 칠하거나(paint_tiles·place_props) graphic 을 지정하세요.`

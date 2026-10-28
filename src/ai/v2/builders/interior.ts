@@ -103,6 +103,9 @@ function resolveKind(tilesetId: string, zone: ZoneSpec, notes: string[], placeNa
   return fallback;
 }
 
+/** 견본 가구만 놓인 첫 짓기의 맨바닥이 이보다 넓으면 큰 방을 줄여 다시 짓는다(빈 바닥 메우기 전에). */
+const SHRINK_BARE_PCT = 35;
+
 /** 크기 낱말 → 견본 크기 배율. */
 const SCALE: Record<string, number> = { small: 0.85, medium: 1, large: 1.3 };
 
@@ -761,13 +764,13 @@ export const interiorBuilder: PlaceBuilder = {
       const minW = Math.max(0, ...need.map((p) => p.w + 4)), minH = Math.max(0, ...need.map((p) => Math.max(1, p.h) + 6));
       const grow = spec.size === "large" && !zone.keep ? scale : 1;
       const sized = t ? { w: Math.max(minW, Math.round(t.w * grow)), h: Math.max(minH, Math.round(t.h * grow)) } : minW ? { w: minW, h: minH } : {};
-      return { id: zone.id ?? (n > 1 ? `${kind}${n}` : kind), kind, ...sized, ...(zone.keep?.floor ? { floor: zone.keep.floor } : {}), ...(zone.keep?.wall ? { wall: zone.keep.wall } : {}), zone };
+      return { id: zone.id ?? (n > 1 ? `${kind}${n}` : kind), kind, ...sized, min: { w: Math.max(5, minW), h: Math.max(6, minH) }, ...(zone.keep?.floor ? { floor: zone.keep.floor } : {}), ...(zone.keep?.wall ? { wall: zone.keep.wall } : {}), zone };
     });
     const hints = spec.hints ?? {};
     const variant = typeof hints.variant === "number" ? hints.variant : (spec.salt ?? 0) % 4;
     const seed = typeof hints.seed === "number" ? hints.seed : undefined;
     const layoutSeed = seed ?? (spec.salt ? 1 + (spec.salt % 99991) : undefined);
-    const base: Record<string, unknown> = { tileset: tilesetId, mapId, name: spec.name, replace: mapId ? true : undefined,
+    let base: Record<string, unknown> = { tileset: tilesetId, mapId, name: spec.name, replace: mapId ? true : undefined,
       layout: { rooms: rooms.map((r) => clean({ id: r.id, kind: r.kind, w: r.w, h: r.h, floor: (r as { floor?: string }).floor, wall: (r as { wall?: string }).wall })), ...(variant ? { variant } : {}), ...(layoutSeed ? { seed: layoutSeed } : {}) } };
     let first = build(run, base);
     if (!first.ok) {
@@ -775,6 +778,35 @@ export const interiorBuilder: PlaceBuilder = {
       const fresh = { ...base, mapId: undefined, replace: undefined };
       first = build(run, fresh);
       if (!first.ok) return { ok: false, mapIds: [], summary: `실내를 짓지 못했다: ${first.summary}`, warnings: notes, missingArt: missing, calls: run.calls };
+    }
+    // 방 크기를 내용에 맞춘다 — 빈 바닥이 넓으면 메우지 말고 방을 줄인다(2026-10-28 interior 장부: 중간 크기 여관 홀이 견본 그대로 16×15,
+    // 견본 가구만으로 맨바닥 60% → fillBare·dress_room 이 식탁 열 벌·바 의자·벤치를 빈 곳마다 메워 「가구를 늘어놓은 전시장」이 됐다).
+    // 큰 방(견본 넓이 48칸 이상)만 0.85 → 0.72 → 0.62 배로 줄여 다시 지어 보고, 맨바닥이 줄어든 만큼만 받는다. 주인공 물건 자리(min)는 지킨다.
+    if (!rooms.some((r) => r.zone.keep) && spec.size !== "large") {
+      const builtId = String(first.data?.mapId ?? mapId);
+      const bareOf = () => { const m = run.ctx.project.maps[builtId]; return m ? measureInteriorBareFloor(run.ctx.project, m)?.pct ?? 0 : 0; };
+      let pct = bareOf();
+      let kept = base;
+      // 줄인 크기로는 다른 견본이 골라져 재질이 바뀐다(통나무 여관 홀이 푸른 얼룩 돌바닥이 됐다) — 첫 짓기의 바닥·벽면 재질을 물려준다.
+      const firstRooms = ((first.data?.rebuild as Rebuild | undefined)?.rooms ?? []);
+      for (const f of [0.85, 0.72, 0.62]) {
+        if (pct <= SHRINK_BARE_PCT) break;
+        const layout = base.layout as { rooms: { w?: number; h?: number }[] };
+        const shrunk = layout.rooms.map((r, i) => {
+          const want = rooms[i]!;
+          const mat = firstRooms.find((q) => q.id === want.id) ?? firstRooms[i];
+          const keepMat = { ...(mat?.floor ? { floor: mat.floor } : {}), ...(mat?.wall ? { wall: mat.wall } : {}), ...r };
+          if (!r.w || !r.h || r.w * r.h < 48) return keepMat;
+          return { ...keepMat, w: Math.max(want.min.w, Math.round(r.w * f)), h: Math.max(want.min.h, Math.round(r.h * f)) };
+        });
+        if (shrunk.every((r, i) => r.w === layout.rooms[i]!.w && r.h === layout.rooms[i]!.h)) break;
+        const next = { ...base, mapId: builtId, replace: true, layout: { ...layout, rooms: shrunk } };
+        const attempt = build(run, next);
+        const now = attempt.ok ? bareOf() : Infinity;
+        if (!attempt.ok || now >= pct) { build(run, kept); break; }
+        first = attempt; kept = next; pct = now;
+      }
+      if (kept !== base) { notes.push(`빈 바닥이 넓어 큰 방을 줄여 지었다(맨바닥 ${pct}%) — 빈 바닥은 가구로 메우지 않고 방 크기로 맞춘다`); base = kept; }
     }
     // 올라가는 계단이 든 방은 건물 맨 북쪽 바깥 벽에 붙어야 한다(칸막이 속 계단 경고) — 그런 배치 후보를 고른다.
     const stairZone = rooms.find((r) => (r.zone.anchors ?? []).some((a) => /계단|stair/iu.test(a) && /올라|위층|2층|up/iu.test(a)));
