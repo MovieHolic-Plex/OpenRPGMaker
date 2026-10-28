@@ -7,6 +7,8 @@ export type Catalog = Readonly<Record<string, string>>;
 
 const HANGUL = /[\uac00-\ud7a3]/;
 const PLACEHOLDER = /\{(\d+)\}/g;
+// 번역문 쪽 수량 자리: `{0|one:# map|other:# maps}`. 동적 자리 값의 수로 Intl.PluralRules 형태를 고르고 `#` 에 그 값을 넣는다.
+const PLURAL_PLACEHOLDER = /\{(\d+)\|([^{}]*)\}/g;
 // 템플릿 후보를 좁히는 앞/뒤 고정 글자 수. 동적 자리로 시작·끝나는 템플릿은 반대쪽 고정부로 찾는다.
 const BUCKET_CHARS = 2;
 // 화면에서 조각을 이어 붙이는 구분자. 앞의 것이 더 큰 단위다("칠하기 (B) — 고른 타일로 칠합니다").
@@ -20,9 +22,21 @@ type CompiledTemplate = {
   readonly target: string;
 };
 
+export type ScopedTranslation = { readonly selector: string; readonly target: string };
+
 export type Translator = {
   translate(text: string): string | null;
+  /** 같은 원문이 화면 자리마다 다른 뜻일 때의 번역. 카탈로그 키 `@scope(<CSS 선택자>) <원문>`. */
+  scoped(text: string): readonly ScopedTranslation[];
+  /** 번들 기본 데이터 이름(타일셋·타일 묶음·기본 맵). 카탈로그 키 `@data <원문>`. 원문 전체가 같을 때만. */
+  dataName(text: string): string | null;
 };
+
+// 카탈로그 키 `@scope(.ai-settings-rail) 연결` — 그 선택자 안에 놓인 글자에만 쓰는 번역.
+const SCOPED_KEY = /^@scope\((.+?)\) ([\s\S]+)$/;
+// 카탈로그 키 `@data 버들항 길 포석` — 번들 기본 데이터 이름. 저자 글자를 건너뛰는 자리(translate="no")에서도
+// 원문 전체가 이 이름과 같을 때만 바꾼다(사용자가 고친 이름은 사전에 없으니 그대로 남는다).
+const DATA_KEY = /^@data ([\s\S]+)$/;
 
 function hangulCount(text: string): number {
   return text.match(/[\uac00-\ud7a3]/g)?.length ?? 0;
@@ -53,15 +67,52 @@ function compileTemplate(source: string, target: string): CompiledTemplate {
   return { pattern: new RegExp(pattern), order, target };
 }
 
-export function createTranslator(catalog: Catalog): Translator {
+// "one:# map|other:# maps" 에서 값의 수에 맞는 형태. 수가 아니면 other.
+function pluralForm(forms: string, value: string, rules: Intl.PluralRules): string {
+  const options = new Map<string, string>();
+  for (const part of forms.split("|")) {
+    const colon = part.indexOf(":");
+    if (colon > 0) options.set(part.slice(0, colon).trim(), part.slice(colon + 1));
+  }
+  const count = Number(value.replace(/,/g, ""));
+  const category = value.trim() !== "" && Number.isFinite(count) ? rules.select(count) : "other";
+  const chosen = options.get(category) ?? options.get("other") ?? "";
+  return chosen.replace(/#/g, value);
+}
+
+export type TranslatorOptions = {
+  /** 수량 자리(`{0|one:..|other:..}`)의 복수 규칙 언어. */
+  readonly locale?: string;
+  /** 조각을 다시 이을 때 원문 구분자 대신 쓸 글자(영어는 줄표 대신 콜론). */
+  readonly joinSeparators?: Readonly<Partial<Record<(typeof SEGMENT_SEPARATORS)[number], string>>>;
+};
+
+export function createTranslator(catalog: Catalog, options: TranslatorOptions = {}): Translator {
+  const pluralRules = new Intl.PluralRules(options.locale ?? "en");
+  const joinSeparators = options.joinSeparators ?? {};
   const exact = new Map<string, string>();
   const byHead = new Map<string, string[]>();
   const byTail = new Map<string, string[]>();
   const loose: string[] = [];
   const compiled = new Map<string, CompiledTemplate>();
 
+  const scopedEntries = new Map<string, ScopedTranslation[]>();
+  const dataNames = new Map<string, string>();
+
   for (const [source, target] of Object.entries(catalog)) {
     if (typeof target !== "string" || target.length === 0) continue;
+    const scopedKey = SCOPED_KEY.exec(source);
+    if (scopedKey) {
+      const list = scopedEntries.get(normalizeSource(scopedKey[2])) ?? [];
+      list.push({ selector: scopedKey[1], target });
+      scopedEntries.set(normalizeSource(scopedKey[2]), list);
+      continue;
+    }
+    const dataKey = DATA_KEY.exec(source);
+    if (dataKey) {
+      dataNames.set(normalizeSource(dataKey[1]), target);
+      continue;
+    }
     const key = normalizeSource(source);
     if (!key.includes("{")) {
       exact.set(key, target);
@@ -81,6 +132,8 @@ export function createTranslator(catalog: Catalog): Translator {
     }
     compiled.set(key, compileTemplate(key, target));
   }
+
+  for (const [name, target] of dataNames) if (!exact.has(name)) exact.set(name, target);
 
   const translateExact = (text: string): string | null => exact.get(text) ?? null;
 
@@ -113,10 +166,16 @@ export function createTranslator(catalog: Catalog): Translator {
     // ("{0} 용어" ← "타일 팔레트와 맵 트리 · 쉬운 용어"). 반쯤 번역보다 원문 그대로가 낫다.
     const leftover = filled.reduce((sum, value) => sum + hangulCount(value), 0);
     if (leftover >= best.fixedHangul && leftover > 0) return null;
-    return template.target.replace(PLACEHOLDER, (whole, index: string) => {
+    const valueOf = (index: string): string | null => {
       const slot = template.order.indexOf(Number(index));
-      return slot < 0 ? whole : (filled[slot] ?? "");
-    });
+      return slot < 0 ? null : (filled[slot] ?? "");
+    };
+    return template.target
+      .replace(PLURAL_PLACEHOLDER, (whole, index: string, forms: string) => {
+        const value = valueOf(index);
+        return value === null ? whole : pluralForm(forms, value, pluralRules);
+      })
+      .replace(PLACEHOLDER, (whole, index: string) => valueOf(index) ?? whole);
   };
 
   // "칠하기 · 바닥" 처럼 조각을 이어 붙인 라벨. 조각마다 따로 찾고, 하나라도 번역되면
@@ -148,10 +207,16 @@ export function createTranslator(catalog: Catalog): Translator {
       if (hit !== null) changed = true;
       return hit ?? part;
     });
-    return changed ? parts.join(separator) : null;
+    return changed ? parts.join(joinSeparators[separator] ?? separator) : null;
   };
 
   return {
+    dataName(text: string): string | null {
+      return dataNames.get(normalizeSource(text)) ?? null;
+    },
+    scoped(text: string): readonly ScopedTranslation[] {
+      return scopedEntries.get(normalizeSource(text)) ?? [];
+    },
     translate(text: string): string | null {
       if (!containsHangul(text)) return null;
       const key = normalizeSource(text);
