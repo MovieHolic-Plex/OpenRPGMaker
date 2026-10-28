@@ -111,7 +111,8 @@ async function walkTo(page, x, y, timeout = 30_000) {
   while (Date.now() - t0 < timeout) {
     const s = await st(page); if (s && s.x === x && s.y === y) { ok = true; break; }
     const u = await ui(page); if (u.box !== null || u.choices.length) { ok = true; break; }
-    if (from && s && s.map !== from.map) { ok = true; break; }
+    // 장소를 옮기면 길 찾기를 끊는다 — 경로는 이동 뒤에도 살아남아 새 맵에서 엉뚱한 문으로 걸어 들어갔다.
+    if (from && s && s.map !== from.map) { ok = true; await page.evaluate(() => window.__oprnDebug.playerRoute([])); break; }
     await page.waitForTimeout(200);
   }
   const to = await st(page);

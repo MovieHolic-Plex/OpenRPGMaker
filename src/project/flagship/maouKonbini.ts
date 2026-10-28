@@ -162,6 +162,8 @@ function setupDatabase(project: Project): void {
   project.system.startActorIds = [MAOU_TRUE];
   project.session.partyActorIds = [MAOU_TRUE];
   project.system.battleLook = { ...project.system.battleLook, enemyHp: true, enemyNames: true };
+  // 전투 배경 = 지금 서 있는 맵(옥좌의 방·편의점). 「가게에서 싸우면 안 돼」가 화면으로 보인다.
+  project.system.battleBackdrop = "field";
 
   // 적
   const enemies = db.enemies;
@@ -169,7 +171,7 @@ function setupDatabase(project: Project): void {
   const act = (skillId: string, priority: number, condition: Enemy["actions"][number]["condition"] = { kind: "always" }) =>
     ({ skillId, priority, condition, switchOnAfterAction: { enabled: false }, switchOffAfterAction: { enabled: false } });
   const makeEnemy = (id: string, name: string, stats: Enemy["stats"], actions: Enemy["actions"], level: number): void => {
-    const enemy = { ...clone(template), id, name, monsterResourceId: "charset-battler-actor1-0", stats, actions, level, battleScalePercent: 170,
+    const enemy = { ...clone(template), id, name, monsterResourceId: "charset-battler-actor1-0", stats, actions, level, battleScalePercent: 125,
       skillIds: actions.map((a) => a.skillId) } as Enemy;
     enemy.rewards = { ...enemy.rewards, exp: 0, gold: 0 };
     const i = enemies.findIndex((e) => e.id === id);
@@ -1236,7 +1238,7 @@ function buildOpening(project: Project): void {
       { id: "line2", text: "편의점에서 일하게 되는 이야기다.", y: 120, size: 13, color: "#ffd479", startMs: 2600 },
     ] });
   shot("mk_op_konbini", 6200, M.konbini, { x: 12, y: 11 }, 2, [
-    { id: "maou", res: "oprn-charset-modern2", idx: 3, cell: { x: 12, y: 10 } },
+    { id: "maou", res: "oprn-charset-modern2", idx: 3, cell: { x: 12, y: 11 } },
     { id: "hina", res: "oprn-charset-modern2", idx: 5, cell: { x: 14, y: 10 }, dir: "left" },
     { id: "cust", res: "oprn-charset-modern3", idx: 1, cell: { x: 12, y: 13 }, dir: "up" },
   ], [
