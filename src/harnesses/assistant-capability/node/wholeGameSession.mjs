@@ -176,6 +176,17 @@ try {
       log(`\n## ${step} WAIT (continue observing from event ${mark})\n`);
     } else if (kind === 'txt') {
       if (await busy()) await waitSettle(mark, Date.now());
+      // 열린 결정 카드(맵 소실 확인 등)는 글로 답할 수 없다 — 실행이 그 카드의 단추를 기다리며 체크포인트 적용을 30분 붙잡고,
+      // 보낸 글은 그 뒤 대기열에 갇혀 턴 상한(45분)까지 0블록으로 멈췄다(2026-10-29 vm1 argon escape 003→004·jrpg 003→004).
+      // 글을 보내기 전에 결정 카드를 「그만두기」로 닫는다 — 내용을 지우지 않는 쪽. 워커는 그 변경만 되돌리고 실행을 잇는다.
+      const decision = page.locator('[data-testid="ai-decision-prompt"] [data-testid="ai-decision-cancel"]:not([disabled])');
+      if (await decision.count()) {
+        const card = (await cards()).find(c => c.testid === 'ai-decision-prompt');
+        await decision.last().click();
+        log(`\n## ${step} AUTO-DECLINE decision card before typed text (${new Date().toISOString()}): ${(card?.text ?? '').split('\n')[0].slice(0, 120)}\n`);
+        await sleep(3000);
+        if (await busy()) await waitSettle(await page.evaluate(() => (window.__capEvents ?? []).length), Date.now());
+      }
       // --snapshots: the stored project before each typed turn (advisor replay needs before/after; after = next turn's before or live.json).
       if (argv.includes('--snapshots')) { try { mkdirSync(resolve(out, 'snapshots'), { recursive: true }); writeRuntimeProject(projectDir, resolve(out, 'snapshots', `${step}-before.json`)); } catch (error) { log(`snapshot failed: ${error.message}\n`); } }
       await page.getByTestId('ai-input').fill(body);
