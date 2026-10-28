@@ -64,6 +64,37 @@ const TOOLBAR = `
     glyphButtons: btns.filter((b) => !b.querySelector('svg') && glyphOnly(textOf(b)) && textOf(b)).length,
     expandHasExpanded: exp && exp.hasAttribute('aria-expanded') ? 1 : 0, expandName: exp ? nameOf(exp) : '', badgeOverlapPx2: badgeOverlap };`;
 
+/**
+ * Expand the docked assistant through its rail restore control and wait for its composer. The control is resolved by
+ * test id: L5 renamed it from 「AI 패널 펼치기」 to 「조수 펼치기」, and the device must open it on both builds.
+ */
+async function openAssistant(page) {
+  const composer = page.locator('[data-testid="ai-input"]').first();
+  if (!(await composer.isVisible().catch(() => false))) {
+    await page.locator('[data-testid="ai-collapsed-restore"]').first().click({ timeout: 25_000 }).catch(() => {});
+  }
+  return composer.waitFor({ state: 'visible', timeout: 15_000 }).then(() => 1, () => 0);
+}
+
+/** Poll a geometry read until two reads 300 ms apart agree (the canvas refits over a few frames), at most 6 s. */
+async function settled(page, body, arg) {
+  let last = await pe(page, body, arg);
+  for (const deadline = Date.now() + 6000; Date.now() < deadline; ) {
+    await page.waitForTimeout(300);
+    const next = await pe(page, body, arg);
+    if (JSON.stringify(next) === JSON.stringify(last)) return next;
+    last = next;
+  }
+  return last;
+}
+
+async function toolbarWithAssistant(ctx) {
+  const assistantOpen = await openAssistant(ctx.page);
+  await settled(ctx.page, TOOLBAR);
+  const r = await toolbarDevice(ctx);
+  return { pass: r.pass && assistantOpen === 1, measured: { ...r.measured, assistantOpen } };
+}
+
 async function toolbarDevice(ctx) {
   const { page } = ctx;
   const before = await pe(page, TOOLBAR);
@@ -87,9 +118,9 @@ async function toolbarDevice(ctx) {
 export const surfaces = {
   progress1440: { width: 1440, height: 900, lang: 'ko', steps: ['aria:진행'] },
   fit1024: { width: 1024, height: 640, lang: 'ko' },
-  fitAi1440: { width: 1440, height: 900, lang: 'ko', steps: ['aria:AI 패널 펼치기', 'wait:1500'] },
+  fitAi1440: { width: 1440, height: 900, lang: 'ko' },
   toolbar1024: { width: 1024, height: 640, lang: 'ko' },
-  toolbarAi1024: { width: 1024, height: 640, lang: 'ko', steps: ['aria:AI 패널 펼치기', 'wait:1200'] },
+  toolbarAi1024: { width: 1024, height: 640, lang: 'ko' },
   toolbar900: { width: 900, height: 600, lang: 'ko' },
   links1440: { width: 1440, height: 900, lang: 'ko', steps: ['aria:연결'] },
   objects1920: { width: 1920, height: 1080, lang: 'ko', steps: ['aria:기물', 'wait:1200'] },
@@ -145,10 +176,10 @@ const PART1 = [
     surface: 'fitAi1440',
     title: 'Opening the assistant panel refits the map inside the remaining canvas',
     async run({ page }) {
-      await page.waitForTimeout(800);
-      const m = await pe(page, MAP_FIT, { w: 20, h: 15 });
+      const assistantOpen = await openAssistant(page);
+      const m = await settled(page, MAP_FIT, { w: 20, h: 15 });
       const panel = await pe(page, `return [...document.querySelectorAll('.ai-chat-panel, .ai-chat-sidebar-panel, [data-testid=ai-chat-panel]')].filter(vis).length;`);
-      return { pass: m.snapshot === 1 && m.fullyVisible === 1 && m.topLeftInsideUnoccluded === 1 && m.bottomRightInsideUnoccluded === 1, measured: { ...m, assistantSurfaces: panel } };
+      return { pass: assistantOpen === 1 && m.snapshot === 1 && m.fullyVisible === 1 && m.topLeftInsideUnoccluded === 1 && m.bottomRightInsideUnoccluded === 1, measured: { ...m, assistantSurfaces: panel, assistantOpen } };
     },
   },
   {
@@ -161,7 +192,7 @@ const PART1 = [
     id: 'C-32-ai-1024',
     surface: 'toolbarAi1024',
     title: 'Canvas toolbar stays one row and clear of the size badge with the assistant panel open at 1024x640',
-    run: toolbarDevice,
+    run: toolbarWithAssistant,
   },
   {
     id: 'C-32-900',
