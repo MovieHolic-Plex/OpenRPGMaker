@@ -1255,6 +1255,14 @@ function mapContextMenuItems(context: MapActionContext): readonly MapContextMenu
       testId: `map-menu-delete-${context.mapId}`,
     });
   } else {
+    // 지우는 항목은 메뉴 맨 끝에 모은다 — 일반 작업(맵 밀기) 뒤에 둬야 잘못 누르기 어렵다.
+    items.push({
+      action: () => openMapShiftDialog(context.mapId, context.mapName),
+      icon: "hand",
+      id: "shift",
+      label: "맵 밀기",
+      testId: `map-shift-${context.mapId}`,
+    });
     items.push({
       action: () => deleteAndSelectNext(context.mapId),
       disabled: !context.canDelete,
@@ -1272,14 +1280,6 @@ function mapContextMenuItems(context: MapActionContext): readonly MapContextMenu
       id: "delete-recursive",
       label: "하위 포함 삭제",
       testId: `map-menu-delete-recursive-${context.mapId}`,
-    });
-    items.push({
-      action: () => openMapShiftDialog(context.mapId, context.mapName),
-      icon: "hand",
-      id: "shift",
-      label: "맵 밀기",
-      separatorBefore: true,
-      testId: `map-shift-${context.mapId}`,
     });
   }
   return items;
