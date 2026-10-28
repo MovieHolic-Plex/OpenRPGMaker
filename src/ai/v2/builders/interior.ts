@@ -11,6 +11,7 @@ import type { BuildRun, PlaceBuilder, PlaceBuildResult, PlaceRecord, PlaceSpec, 
 import { interiorVenues, type InteriorVenue, type VenueStamp } from "./interiorVenues";
 import { kindServesPurpose, purposeOf, purposeSwap } from "../roomPurpose";
 import { DRESS_ROOM_TARGET, dressRoom, roomBarePct } from "./dressRoom";
+import { VIGNETTE_TARGET, vignetteRoomSize } from "@/editor/handInterior/vignettes";
 
 type Obj = { id: string; x: number; y: number };
 type Room = { id: string; x0: number; y0: number; x1: number; y1: number; floor?: string; wall?: string };
@@ -827,12 +828,17 @@ export const interiorBuilder: PlaceBuilder = {
       const kind = resolveKind(tilesetId, zone, notes, `${spec.name} ${spec.theme ?? ""}`, firstFloor.length === 1);
       const n = (used.get(kind) ?? 0) + 1; used.set(kind, n);
       // 크기: small = 가장 작은 견본, medium = 가운데, large = 가장 큰 견본(한 방짜리면 × 1.3). 큰 주인공 물건이 들어갈 만큼은 넓힌다.
-      const t = zone.keep?.w && zone.keep.h ? { w: zone.keep.w, h: zone.keep.h } : pickTemplate(tilesetId, kind, zone.size ?? spec.size);
+      // 묶음 길: 방 크기를 견본이 아니라 그 용도 레시피 묶음 발자국 ÷ 목표 막힘(36%)으로 정한다(작게 0.75·크게 1.3 배 넓이).
+      const sizeWord = zone.size ?? spec.size;
+      const vsize = spec.hints?.furnish !== "template" && !zone.keep
+        ? vignetteRoomSize(tilesetId, kind, roomSpec, { purpose: `${zone.kind} ${zone.purpose ?? ""} ${firstFloor.length === 1 ? spec.name : ""}`, ...(zone.vignettes?.length ? { picks: zone.vignettes } : {}), scale: sizeWord === "small" ? 0.75 : sizeWord === "large" ? 1.3 : 1 })
+        : undefined;
+      const t = zone.keep?.w && zone.keep.h ? { w: zone.keep.w, h: zone.keep.h } : vsize ?? pickTemplate(tilesetId, kind, sizeWord);
       const need = (zone.anchors ?? []).map((a) => findPart(roomSpec, a)).filter((p): p is NonNullable<typeof p> => !!p && p.kind !== "hang");
       // 벽면 두 줄 + 물건 + 앞 통로 두 줄. 벽에 붙는 물건(벽난로·창)은 벽면 줄에 박히니 한 줄 덜.
       const minW = Math.max(0, ...need.map((p) => p.w + 4)), minH = Math.max(0, ...need.map((p) => Math.max(1, p.h) + (p.kind === "wall" ? 4 : 5)));
       // 여러 방 건물에서 「크다」는 방 수로 낸다 — 방마다 견본 × 1.3 으로 키우면 방이 내용보다 커져 빈 홀이 된다(마법학교 홀 30×25). 한 방짜리만 키운다.
-      const grow = spec.size === "large" && !zone.keep && firstFloor.length === 1 ? scale : 1;
+      const grow = spec.size === "large" && !zone.keep && firstFloor.length === 1 && !vsize ? scale : 1;
       const sized = t ? { w: Math.max(minW, Math.round(t.w * grow)), h: Math.max(minH, Math.round(t.h * grow)) } : minW ? { w: minW, h: minH } : {};
       return { id: zone.id ?? (n > 1 ? `${kind}${n}` : kind), kind, ...sized, min: { w: Math.max(5, minW), h: Math.max(6, minH) }, ...(zone.keep?.floor ? { floor: zone.keep.floor } : {}), ...(zone.keep?.wall ? { wall: zone.keep.wall } : {}), zone };
     });
@@ -844,8 +850,9 @@ export const interiorBuilder: PlaceBuilder = {
     // hints.furnish:"template" 이면 옛 길(견본 한 벌 + 빈 바닥 메우기). 구역 vignettes(묶음 id·몸통 기물 id)는 모델이 고른 묶음.
     const vignette = hints.furnish !== "template";
     const picks = Object.fromEntries(rooms.filter((r) => r.zone.vignettes?.length).map((r) => [r.id, [...r.zone.vignettes!]]));
+    const purposes = Object.fromEntries(rooms.map((r) => [r.id, `${r.zone.kind} ${r.zone.purpose ?? ""} ${rooms.length === 1 ? `${spec.name} ${spec.theme ?? ""}` : ""}`.trim()]));
     let base: Record<string, unknown> = { tileset: tilesetId, mapId, name: spec.name, replace: mapId ? true : undefined,
-      layout: { rooms: rooms.map((r) => clean({ id: r.id, kind: r.kind, w: r.w, h: r.h, floor: (r as { floor?: string }).floor, wall: (r as { wall?: string }).wall })), ...(variant ? { variant } : {}), ...(layoutSeed ? { seed: layoutSeed } : {}), ...(vignette ? { furnish: "vignette", ...(Object.keys(picks).length ? { vignettes: picks } : {}) } : {}) } };
+      layout: { rooms: rooms.map((r) => clean({ id: r.id, kind: r.kind, w: r.w, h: r.h, floor: (r as { floor?: string }).floor, wall: (r as { wall?: string }).wall })), ...(variant ? { variant } : {}), ...(layoutSeed ? { seed: layoutSeed } : {}), ...(vignette ? { furnish: "vignette", purposes, ...(Object.keys(picks).length ? { vignettes: picks } : {}) } : {}) } };
     let first = build(run, base);
     if (!first.ok) {
       // 맵이 다른 칩셋의 살아 있는 맵이면 새 맵으로 짓는다(덮어쓰지 않는다).
@@ -857,7 +864,45 @@ export const interiorBuilder: PlaceBuilder = {
     // 견본 가구만으로 맨바닥 60% → fillBare·dress_room 이 식탁 열 벌·바 의자·벤치를 빈 곳마다 메워 「가구를 늘어놓은 전시장」이 됐다).
     // 큰 방(견본 넓이 48칸 이상)만 0.85 → 0.72 → 0.62 배로 줄여 다시 지어 보고, 맨바닥이 줄어든 만큼만 받는다. 주인공 물건 자리(min)는 지킨다.
     // 「large」도 줄인다 — 큰 학교를 견본 × 1.3 으로 지어 입학 홀이 맨바닥 60% 의 빈 광장이 됐다(2026-10-28 마법학교). 넓이는 요청보다 내용이 정한다.
-    if (!rooms.some((r) => r.zone.keep)) {
+    // 묶음 길: 방마다 막힌 바닥이 목표(30~44%, 예제 방 사분위 33~50%)를 벗어나면 그 비율만큼 방 넓이를 고쳐 한 번 다시 짓는다(남는 바닥은 메우지 않고 방을 줄인다).
+    if (vignette && !rooms.some((r) => r.zone.keep)) {
+      const builtId = String(first.data?.mapId ?? mapId);
+      const shares = () => new Map(((first.data?.layout as { rooms?: { id: string; vignettes?: { blockedShare: number; floor: number } }[] } | undefined)?.rooms ?? []).map((r) => [r.id, r.vignettes] as const));
+      for (let pass = 0; pass < 1; pass++) {
+        const got = shares();
+        const layout = base.layout as { rooms: { id?: string; w?: number; h?: number }[] };
+        let changed = false;
+        // 막힘 비율만 보면 앞 통로 줄 덕에 30% 를 넘어도 1배 화면은 맨바닥 덩이가 넓다 — 맨바닥(2×2 덩이, 실내 기준 15%)이 35% 를 넘는 방도 줄인다.
+        const m = run.ctx.project.maps[builtId];
+        const bareOfRoom = (id: string): number => {
+          const l = (m?.locations ?? []).find((q) => (q.tags ?? []).includes("hand-layout-room") && q.name === rooms.find((z) => z.id === id)?.kind);
+          return m && l ? roomBarePct(run.ctx.project, m, { name: l.name, x0: l.x, y0: l.y, x1: l.x + l.w - 1, y1: l.y + l.h - 1 }) : 0;
+        };
+        const resized = layout.rooms.map((r, i) => {
+          const id = String(r.id ?? rooms[i]!.id);
+          const v = got.get(id);
+          const bare = bareOfRoom(id);
+          if (!v || !r.w || !r.h) return r;
+          const byShare = v.blockedShare < 0.3 || v.blockedShare > 0.44 ? Math.max(0.05, v.blockedShare) / VIGNETTE_TARGET : 1;
+          const byBare = bare > 35 ? (1 - bare / 100) / 0.72 : 1;
+          const want = Math.min(byShare, byBare);
+          if (want === 1) return r;
+          const f = Math.sqrt(Math.max(0.5, Math.min(1.6, want)));
+          const w = Math.max(rooms[i]!.min.w, Math.round(r.w * f)), fh = Math.max(rooms[i]!.min.h - 2, Math.round((r.h - 2) * f));
+          if (w === r.w && fh + 2 === r.h) return r;
+          changed = true;
+          return { ...r, w, h: fh + 2 };
+        });
+        if (!changed) { if (process.env.OPRN_VIGNETTE_DEBUG) notes.push(`방 넓이 그대로: ${layout.rooms.map((r, i) => { const id = String(r.id ?? rooms[i]!.id); return `${id} ${r.w}x${r.h} min ${rooms[i]!.min.w}x${rooms[i]!.min.h} 막힘 ${got.get(id)?.blockedShare} 맨바닥 ${bareOfRoom(id)}`; }).join(", ")}`); break; }
+        const next = { ...base, mapId: builtId, replace: true, layout: { ...layout, rooms: resized } };
+        const attempt = build(run, next);
+        const before = layout.rooms.map((r) => `${r.w}×${r.h}`).join(",");
+        if (!attempt.ok || !reachOk(attempt)) { build(run, base); notes.push(`방 넓이 고치기(${before} → ${resized.map((r) => `${r.w}×${r.h}`).join(",")}) 실패: ${attempt.ok ? "닿지 못한 바닥" : attempt.summary.slice(0, 100)}`); break; }
+        first = attempt; base = next;
+        notes.push(`방 넓이를 기물 묶음 막힘 목표(36%)·맨바닥에 맞춰 ${before} → ${resized.map((r) => `${r.w}×${r.h}`).join(",")} 로 고쳐 지었다`);
+      }
+    }
+    if (!vignette && !rooms.some((r) => r.zone.keep)) {
       const builtId = String(first.data?.mapId ?? mapId);
       const bareOf = () => { const m = run.ctx.project.maps[builtId]; return m ? measureInteriorBareFloor(run.ctx.project, m)?.pct ?? 0 : 0; };
       let pct = bareOf();
@@ -1033,7 +1078,7 @@ export const interiorBuilder: PlaceBuilder = {
     }
     // 한 방짜리가 채운 뒤에도 맨바닥 30% 를 넘으면 한 단계 작은 크기로 다시 지어 본다 — 벽 쪽 자리가 없어 못 채우는 방은 방이 큰 것이다
     // (2026-10-28 연금술 공방 13×11 맨바닥 42%). 더 나아지면 그것을 쓰고, 아니면 되돌린다.
-    if (rooms.length === 1 && spec.size !== "small" && spec.hints?.downsized !== true) {
+    if (!vignette && rooms.length === 1 && spec.size !== "small" && spec.hints?.downsized !== true) {
       const barePctOf = (id: string) => {
         const mm = run.ctx.project.maps[id];
         const l = (mm?.locations ?? []).find((q) => (q.tags ?? []).includes("hand-layout-room"));

@@ -824,7 +824,7 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
         if (canon && programKinds(tilesetId, canon)) args = { ...args, layout: { ...lbag, program: canon } };
       }
     }
-    let picked: { c: LayoutCandidate; variant: number; variants: number; furnish: boolean; vignette?: { picks?: Record<string, string[]> } } | undefined;
+    let picked: { c: LayoutCandidate; variant: number; variants: number; furnish: boolean; vignette?: { picks?: Record<string, string[]>; purposes?: Record<string, string> } } | undefined;
     // 청사진 구성기가 있는 공간(오피스 로비·대학 강의동·왕성 알현실·백화점)은 견본 한 벌 대신 청사진 규칙으로 매번 새로 짠다 —
     // 2026-10-18 사용자 반려 「프리셋을 그대로 깔지 말고 AI 가 참고해서, 똑같이 깔지 말고」. 방 목록을 직접 준 layout 은 그대로 따른다.
     let blueprint: BlueprintInteriorArgs | undefined;
@@ -856,7 +856,7 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
         args = kept as typeof args;
         if (dropped.length) fitNotes.push(`layout 이 방 배치를 짜므로 같이 온 ${dropped.join("·")} 는 버리고 layout 대로 지었다(plan·rooms 를 직접 주려면 layout 을 빼라)`);
       }
-      const req = args.layout as LayoutRequest & { variant?: number; furnish?: boolean | "vignette" | "template"; vignettes?: Record<string, string[]> };
+      const req = args.layout as LayoutRequest & { variant?: number; furnish?: boolean | "vignette" | "template"; vignettes?: Record<string, string[]>; purposes?: Record<string, string> };
       const variant = Math.max(0, Math.floor(req.variant ?? 0));
       let cands: LayoutCandidate[];
       try { cands = layoutCandidates(tilesetId, req, spec, Math.max(4, variant + 1)); }
@@ -864,7 +864,7 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
       const c = cands[Math.min(variant, cands.length - 1)]!;
       // furnish:"vignette" = 견본 한 벌 대신 기물 묶음 배치기(vignettes.ts) — 방 용도에 맞는 묶음을 함수가 골라 벽·앞 통로·밀도를 지켜 놓는다.
       // vignettes:{방 id: [묶음 id·몸통 기물 id]} 로 모델이 묶음을 고를 수 있다.
-      picked = { c, variant: Math.min(variant, cands.length - 1), variants: cands.length, furnish: req.furnish !== false, ...(req.furnish === "vignette" ? { vignette: { ...(req.vignettes ? { picks: req.vignettes } : {}) } } : {}) };
+      picked = { c, variant: Math.min(variant, cands.length - 1), variants: cands.length, furnish: req.furnish !== false, ...(req.furnish === "vignette" ? { vignette: { ...(req.vignettes ? { picks: req.vignettes } : {}), ...(req.purposes ? { purposes: req.purposes } : {}) } } : {}) };
       const { layout: _l, ...rest } = args;
       args = { ...rest, rooms: c.rooms, connect: c.connect, exit: c.exit };
     }
