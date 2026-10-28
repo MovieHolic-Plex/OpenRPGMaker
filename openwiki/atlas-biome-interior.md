@@ -179,6 +179,8 @@ RM2k3 투명 칸 자동 보정(`applyCustomChipsetMinimalHarness`)에서 이 시
 
 ## 기물 묶음 배치 — vignette (2026-10-29, 사용자 결정)
 
+> **3단계(같은 날, 벤치 room-base/vig/vig2-1029 판정):** 기본 길은 다시 **장소 견본·방 견본**이다 — 견본이 있는 용도(예배당·여관·대장간)는 제작자 구성이 묶음 배치기보다 강했다(terra 평균 기준 91.5 > 묶음 90.2). 묶음 배치기는 **대체 길**: 조수 v2 실내 빌더가 구역마다 (a) `resolveKind` 가 그 용도의 견본을 못 찾아 다른 방 견본으로 떨어졌거나 (b) 고정 크기(keep)에 ±2칸 안으로 맞는 견본이 없을 때만 쓴다(`hints.furnish:"vignette"|"template"` 로 강제). 견본이 없거나 약한 용도는 아래 「손으로 짠 방 견본」으로 채운다.
+
 「방 통째 예시」(장소 견본·방 견본 한 벌 옮겨 심기 + 빈 바닥 메우기) 대신 **기물 묶음 라이브러리 + 결정적 배치기**. 모델은 방 용도(구역 kind)와 원하면 묶음(`zones[].vignettes`: 몸통 기물 id)만 고르고, 자리는 함수가 잡는다.
 
 - 라이브러리 `src/assets/interiorVignettes.json` — `bun scripts/content/interior-vignettes/extract.mts` 가 방 견본 JSON(제작자 예제 방)에서 굽는다. 묶음 = **맞닿은**(틈 0칸) 기물 무리(탁상 물건은 받친 가구와, 걸이는 바로 아래 가구와, 깔개는 깔개끼리). 방 견본 옮겨 심기(`templateClusters`)는 1칸 띄운 것까지 묶어 여관 홀이 통째로 한 덩이(14×10)가 됐다. 필드: 붙는 벽(N/S/W/E, C=가운데)·상자 크기·앞 비울 줄(예제에서 잼, 1~2)·막는 칸·몸통 기물·나온 횟수·한 방 되풀이 수·화풍 묶음. 실측: v5 122방 → 582묶음, jp_city 710, modern_city 948.
@@ -472,3 +474,15 @@ v5 의 작은 삼각대 망원경·천체 모형·지구본·1칸 별자리표·
 - **모델 A/B(E)** — 같은 B 루프에 조수를 Opus 5.5(`local-claude-opus-high.json`)로: 같은 묶음 점수 폴른 7.0/7.7/5.0(별지기 방은 빈 시작 맵에 지어 빈 바닥 40%+), 다른 실내 8.0/7.7/7.7.
   B(Sonnet) 7.0/7.7/8.0 · 7.7/8.0/7.7 과 같은 띠이고, 시간은 7~25분·도구 16~82회·토큰 1.8~5.2M 로 더 들었다. 격차는 모델이 아니라 루프·검수 조건 쪽이었다.
 - 결과·비교: `~/claude-viz/assistant-rooms-2.html`.
+
+## 손으로 짠 방 견본 (2026-10-29)
+
+예제 맵에 없거나 약한 용도를 칩셋에 이미 있는 기물만으로 짠 방 견본 15장(새 그림 없음): 교실 8×7·10×9·13×10(`classroom`), 잡화점 7×8·9×8(`general_store`), 연구실 9×7·10×8(`laboratory`), 감옥 7×8·11×9(`jail` — 같은 폭 감방 + 간수 자리), 예배당 13×9(`chapel`, 원본 성당처럼 동쪽 독립 제단을 보는 옆모습 회중석), 방탈출 작은 방 서재 6×7·8×8 / 침실 6×7·8×8 / 창고 6×7. 잡화점 11×9·예배당 10×9 는 5판 검수까지 휑한 바닥으로 떨어져 뺐다.
+
+- 원본 `scripts/content/interior-authored/rooms.mts`(글자 그림: hang 줄 + 바닥 줄, 기물 글자는 왼쪽 위 칸에만) → `bun scripts/content/interior-authored/build.mts` → `src/assets/interiorAuthoredRoomTemplates.json`(templates.ts 가 v5·plus 견본에 이어 붙인다). 지도 이름 `authored-<화풍>-<id>` — 화풍(town/noble/fantasy)은 그 종류 견본의 다수 화풍과 맞춰야 짓기가 고른다(침실은 town, 서재는 noble).
+- build 는 **그림 겹침 검사**(`lintTemplate`)를 건다 — 사양 cells 의 dx·dy 로 실제 그려지는 칸(키 큰 기물의 위 칸, 건 것의 벽면 두 줄)이 다른 기물과 겹치면 실패. 1판 적대 검수의 겹침(책장 위 창·지도, 두루마리 통이 위 책상을 덮음, 마법진 위 지구본)은 전부 이 종류였다.
+- `bun scripts/content/interior-authored/check.mts --out <dir>` — 견본 크기 그대로 짓기 도구(견본 길)로 지어 고른 견본·심은/빠진 가구(`furnishRooms` 의 `perRoom.missing`)·닿지 못한 바닥·맨바닥·1배 PNG. 빠진 가구는 대개 문 앞 칸·감방 틈 앞을 막은 의자, 벽 가구(괘종시계)를 아래 줄에 둔 것, 닫힌 감방(잠긴 문을 끼우면 감방 바닥이 닫혀 창살 덩이가 통째로 빠진다 — 감방은 한 칸 틈으로 둔다).
+- 학생 자리는 책상 1×1 + 북향 의자(학생 책상 `school desk` 그림은 의자가 위에 붙어 칠판을 등진다). 계산대는 벽 진열 앞 한 줄을 주인 통로로 비우고 그 앞에.
+- build 는 **닿음 검사**(`lintReach`)도 건다 — 문 칸(남벽 x = floor((w-1)/2))에서 모든 바닥과 모든 바닥 기물 옆 칸에 걸어서 닿는가, 문 위 두 줄·발깔개 오른쪽 칸이 비었는가(짓기가 그 칸의 가구를 빼거나 옮긴다 — 예배당 회중석이 옆 열로 밀려 붙었다).
+- 채택: 견본마다 Opus 적대 검수 PASS(major 이상 0, 2026-10-29 5판까지) + 두 검사 + check.mts 짓기(빠진 가구 0·닿지 못한 바닥 0). 증거 `~/z-project/assistant-whole-game/suite/ledger/evidence/interior/authored/`.
+- 이름: `KIND_WORDS` 에 실험·연구실 → laboratory(「연구」 서재 규칙보다 먼저), 교실·학교 → classroom, 잡화·만물 → general_store, 감옥·jail → jail. `roomPurpose` 의 교실·학교 쓰임(atlas)은 classroom, 가게 쓰임은 general_store 먼저.

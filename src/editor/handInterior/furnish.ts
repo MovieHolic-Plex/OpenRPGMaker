@@ -17,7 +17,7 @@ const SEAT = /chair|stool|bench|seat|cushion|zabuton|sofa-single/u;
 export interface FurnishResult {
   readonly input: HandInteriorInput;
   /** 방 id → [견본 id, 심은 수, 뺀 수] */
-  readonly perRoom: Record<string, { template: string; placed: number; dropped: number }>;
+  readonly perRoom: Record<string, { template: string; placed: number; dropped: number; missing?: string[] }>;
 }
 
 function withItems(base: HandInteriorInput, items: readonly InteriorTemplateItem[]): HandInteriorInput {
@@ -159,6 +159,7 @@ export function furnishRooms(base: HandInteriorInput, rooms: readonly LayoutRoom
       return !nrs.length || !footprint(it, S).some((c) => { const [cx, cy] = c.split(",").map(Number) as [number, number]; return nrs.some((nr) => cx >= nr.x0 - 1 && cx <= nr.x1 + 1 && cy >= nr.y0 - 1 && cy <= nr.y1); });
     };
     let placed = 0, dropped = 0;
+    const missing: string[] = [];
     let taken = new Set<string>();
     /** 한 점을 넣어 본다 — 싼 검사(방 안·문 앞·겹침) 뒤 조립기 검사. 되면 반영하고 true. */
     const tryPut = (it: InteriorTemplateItem): boolean => tryPutIn(it, taken, inside);
@@ -176,7 +177,7 @@ export function furnishRooms(base: HandInteriorInput, rooms: readonly LayoutRoom
       const nb = new Map<number, number[]>(c.members.map((k) => [k, c.links.filter(([p, q]) => p === k || q === k).map(([p, q]) => (p === k ? q : p))]));
       const primary = [...c.members].sort((p, q) => itemArea(t.items[q]!, S) - itemArea(t.items[p]!, S))[0]!;
       const saved = { input, errors, unreached, taken: new Set(taken) };
-      let best: { input: HandInteriorInput; errors: number; unreached: number; taken: Set<string>; n: number } | undefined;
+      let best: { input: HandInteriorInput; errors: number; unreached: number; taken: Set<string>; n: number; put: Set<number> } | undefined;
       let tried = 0;
       for (const [sx, sy] of clusterShifts(t, c, w, h, styleVariant)) {
         if (tried >= 6) break;
@@ -232,13 +233,15 @@ export function furnishRooms(base: HandInteriorInput, rooms: readonly LayoutRoom
           if (tryPut(shifted(items.get(k)!, ex, ey))) put.add(k);
         }
         const n = put.size;
-        if (n && (!best || n > best.n)) best = { input, errors, unreached, taken, n };
+        if (n && (!best || n > best.n)) best = { input, errors, unreached, taken, n, put: new Set(put) };
         if (n === c.members.length) break;
       }
       ({ input, errors, unreached, taken } = best ?? saved);
       placed += best?.n ?? 0; dropped += c.members.length - (best?.n ?? 0);
+      // 빠진 견본 가구(어떤 것이 왜 안 들어갔는지 견본 저작·검수에서 본다)
+      for (const k of c.members) if (!best?.put.has(k)) { const it = t.items[k]!; missing.push(`${it.id}@${it.x},${it.y}`); }
     }
-    perRoom[room.id] = { template: t.id, placed, dropped };
+    perRoom[room.id] = { template: t.id, placed, dropped, ...(missing.length ? { missing } : {}) };
   }
   return { input, perRoom };
 }
