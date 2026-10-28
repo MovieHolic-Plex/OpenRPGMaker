@@ -300,6 +300,9 @@ export function installPlaySceneTestHooks(
   const applyAndSync = (op: DebugOp): void => {
     applyDebugOp(getSession(), op);
     syncRuntimeState();
+    // 스위치·변수·가방이 바뀌면 이벤트 페이지 조건이 달라진다 — 인터프리터가 끝날 때처럼 이벤트 계층·페이지 이동 경로를 다시 건다.
+    // 이것 없이는 setSwitch 로 켠 추격자 페이지가 화면에도 이동에도 나타나지 않았다(공포판 sw_0001, 2026-10-29 실측).
+    if (op.kind !== "teleport") (scene as unknown as Partial<PlaySceneContext>).refreshRuntimeEntities?.();
   };
   w.__oprnDebug = {
     setSwitch: (switchId, value) => applyAndSync({ kind: "setSwitch", switchId, value }),

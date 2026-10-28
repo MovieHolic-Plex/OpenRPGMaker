@@ -393,6 +393,10 @@ export async function applyOp(page, op, runState) {
       // 실물 게임에 시작 아이템이 없을 때 전투 아이템 사용을 보려고 가방에 넣는다(__oprnDebug.giveItem — 실제 세션 인벤토리).
       await page.evaluate(([itemId, amount]) => window.__oprnDebug.giveItem(itemId, amount), [op.itemId, op.amount ?? 1]);
       return;
+    case "setSwitch":
+      // 실물 게임의 진행 스위치(예: 공포판 추격자 등장 sw_0001)를 퍼즐을 다 풀지 않고 켠다(__oprnDebug.setSwitch — 실제 세션).
+      await page.evaluate(([switchId, value]) => window.__oprnDebug.setSwitch(switchId, value), [op.switchId, op.value ?? true]);
+      return;
     case "setVitals":
       await page.evaluate(
         ([hp, mp, actorIds]) => {
