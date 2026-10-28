@@ -2335,3 +2335,21 @@ ct-vehicle 은 별도 작업이 소유한다. 구조 가드(`src/ai/gameStructur
   행에 testid 가 없다). 맵·이벤트 목록 조회도 없다(프로젝트 JSON 에서 읽어라). 대사는 «지금 떠 있는 창» 글자만
   보인다. 재현 계획을 세울 때 이 제약을 전제로 잡아라.
 
+
+### 실물 게임(SQLite) 전투 런타임 QA — `qa:runtime --whole-game` (2026-10-29)
+
+조수가 만든 게임은 `project.sqlite` + `assets/` 폴더라 커밋된 JSON 픽스처가 없고, 올린 그림(uploaded)은
+JSON 만으로는 안 나온다. `--whole-game <project 폴더>` 는 `wholeGamePlayer.mjs --serve` 를 띄워 제품
+`prepareWebExport` 투영 + 컴파일된 `dist/export-player` + 올린 그림(SHA 확인)으로 시나리오를 돌린다.
+먼저 `vite build --config vite.player.config.ts`(워크트리는 `VITE_CACHE_DIR=$PWD/.vite-cache/build`)로 dist 를 만든다.
+
+```sh
+node scripts/runtime-qa.mjs --scenario whole-game-battle-jrpg --browser firefox --netns \
+  --whole-game ~/z-project/assistant-whole-game/suite/runs/2026-10-28-standin/standin/jrpg/project --out /tmp/bq/jrpg
+```
+
+시나리오 `whole-game-battle-{jrpg,dungeon,monster}` 는 공용 비트(`scripts/qa/runtime/wholeGameBattleCommon.mjs`)로
+타이틀 → 오프닝 건너뛰기(Esc 두 번) → 필드 적 옆 칸 순간이동 → 몸으로 밀어 접촉 발동 → 명령 → 공격 연출 → 승리 결과 창 →
+필드 복귀 → 체력 1(`?e2eVitals=1`) 패배 → 게임 오버까지 1배로 찍는다. 몬스터 판은 박사에게 첫 동료를 받은 뒤 트레이너에게 말을 건다.
+함정: 전투 복귀 직후는 `battle-transition-overlay` 암전이라 필드 조건에서 빼야 하고, 결과 창·게임 오버는 미끄러지며 들어오므로
+`waitForVisible minAlpha 0.99` 뒤에 찍는다. 부하가 높으면 타이틀 첫 Enter 가 씹힌다 — 상태가 읽힐 때까지 누른다.

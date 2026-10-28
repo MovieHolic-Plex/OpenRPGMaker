@@ -705,7 +705,8 @@ export async function applyOp(page, op, runState) {
       const ok = () => page.evaluate(`(${op.fn})()`).catch(() => false);
       for (let i = 0; i < max; i += 1) {
         if (await ok()) return;
-        await page.keyboard.press(op.key ?? "Enter");
+        // times: 한 바퀴에 연달아 누를 횟수(「Esc 두 번: 컷신 건너뛰기」처럼 짧은 간격의 두 번 누르기).
+        for (let n = 0; n < (op.times ?? 1); n += 1) await page.keyboard.press(op.key ?? "Enter");
         await page.waitForTimeout(op.settleMs ?? 450);
       }
       if (!(await ok())) throw new Error(`pressUntilJs: ${max}회 뒤에도 조건이 참이 아니다: ${op.fn}`);

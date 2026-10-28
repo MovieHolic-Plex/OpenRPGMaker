@@ -23,6 +23,9 @@ async function dumpLog(page, op, issued) {
   await appendFile(path, `${JSON.stringify({ label: op.label ?? null, issued, log: await readBattleLog(page) })}\n`);
 }
 
+/** 포켓몬 스킨(「싸운다」→ 기술 목록)에서 attack 은 쓸 수 있는 첫 기술이다. */
+const FIRST_MOVE = "\u0000first-move";
+
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 async function readBattleUi(page) {
@@ -135,6 +138,15 @@ export async function battleQaOp(page, op) {
       continue;
     }
     const submenu = ui.menu.filter((id) => id.startsWith("actor-skill-") || id.startsWith("actor-item-"));
+    if (submenu.length > 0 && wanted === FIRST_MOVE) {
+      // 포켓몬 스킨 「싸운다」: 기술 목록에서 쓸 수 있는 첫 기술(보이는 단추는 이미 disabled 를 걸러 냈다).
+      const move = submenu.find((id) => id.startsWith("actor-skill-"));
+      wanted = null;
+      if (move) await press(page, move);
+      else await page.keyboard.press("Escape");
+      await sleep(300);
+      continue;
+    }
     if (submenu.length > 0 && wanted) {
       const id = wanted.startsWith("item:") ? `actor-item-${wanted.slice(5)}` : `actor-skill-${wanted}`;
       if (!(await press(page, id))) {
@@ -172,7 +184,8 @@ export async function battleQaOp(page, op) {
       const choice = at > 0 ? raw.slice(0, at) : raw;
       if (at > 0) { const t = raw.slice(at + 1); pendingTarget = /^\d+$/.test(t) ? Number(t) : t; }
       let ok = false;
-      if (choice === "attack") ok = await press(page, "actor-command-attack");
+      if (choice === "attack" && !root.includes("actor-command-attack") && root.includes("actor-command-fight")) { wanted = FIRST_MOVE; ok = await press(page, "actor-command-fight"); }
+      else if (choice === "attack") ok = await press(page, "actor-command-attack");
       else if (choice === "defend") ok = await press(page, "actor-command-defend");
       else if (choice.startsWith("item:")) { wanted = choice; ok = await press(page, "actor-command-item"); }
       // 연계기는 「연계」 명령의 목록에 있다(combo:<skillId>). 연계 명령이 없으면(옛 화면) 기술 목록에서 찾는다.
