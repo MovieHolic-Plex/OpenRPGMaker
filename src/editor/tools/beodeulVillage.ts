@@ -2074,6 +2074,21 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     const br = kitIndex.get(bridge.kit);
     if (br) { try { stampObjectTool.run(draft, { objectId: `kit:${TS_ID}/${bridge.kit}`, mapId, x: bridge.x, y: bridge.y }); stamped += 1; } catch (e) { failed += 1; warnings.push(`다리: ${(e as Error).message.slice(0, 160)}`); } }
     if (br) logConstructionTiles(draft.maps[mapId]!, "stamp", "다리", { rect: { x: bridge.x, y: bridge.y, w: br.w, h: br.h }, major: true });
+    // 돌다리 상판(가운데 두 줄)은 큰 마름돌 벽면 그림이라 길이 벽에 막힌 것처럼 보였다(2026-10-28 장부 120 「다리가 벽처럼 보임」).
+    // 상판 두 줄과 양 끝 길 마감 칸을 그 줄의 큰길 포석으로 바꿔 길이 다리 위로 이어지게 한다 — 뒷난간·앞난간·아치 줄은 그대로.
+    if (br && bridge.kit === "bd-pick-mountain-pass-stone-bridge") {
+      const m = draft.maps[mapId]!;
+      for (const y of [bridge.y + 1, bridge.y + 2]) {
+        const src: number[] = [];
+        for (let x = bridge.x - 2; x >= Math.max(0, bridge.x - 6); x -= 1) if (occ[idx(x, y)] === ROAD) src.push(m.lowerTiles[idx(x, y)]!);
+        for (let x = bridge.x + br.w + 1; x <= Math.min(W - 1, bridge.x + br.w + 5); x += 1) if (occ[idx(x, y)] === ROAD) src.push(m.lowerTiles[idx(x, y)]!);
+        if (!src.length) continue;
+        const cells: number[] = [];
+        for (let x = bridge.x; x < bridge.x + br.w; x += 1) cells.push(x);
+        for (const x of [bridge.x - 1, bridge.x + br.w]) if (inMap(x, y) && occ[idx(x, y)] === ROAD) cells.push(x);
+        cells.forEach((x, i) => { m.lowerTiles[idx(x, y)] = src[i % src.length]!; });
+      }
+    }
   }
 
   // 울타리: 공용 기초 칩셋(beodeul_ground)의 숲 울타리 조각을 이 타일셋에 옮겨 층 3에 잇는다
