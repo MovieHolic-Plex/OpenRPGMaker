@@ -92,7 +92,9 @@ const launchBrowser = () => browserType.launch({
   // 뒤 두 플래그: 이 머신의 tailscale·docker 인터페이스 때문에 크로미움이 «네트워크 바뀜» 으로 vite 모듈 요청을
   // 통째로 끊는다(net::ERR_NETWORK_CHANGED → 백지·훅 없음). 산발적이라 긴 실행이 «부하로 죽은» 것처럼 보인다.
   args: args.browser === "chromium"
-    ? ["--no-sandbox", "--use-gl=swiftshader", "--disable-gpu", "--disable-background-networking", "--disable-features=NetworkChangeNotifier"]
+    ? ["--no-sandbox", "--use-gl=swiftshader", "--disable-gpu", "--disable-background-networking", "--disable-features=NetworkChangeNotifier",
+      // 몇 시간짜리 대화형 판정에서 렌더러가 `Target crashed` 로 죽었다(판정 4회). 렌더러 V8 힙 상한을 키워 원인을 가른다 — 기본은 그대로.
+      ...(process.env.QA_RENDERER_HEAP_MB ? [`--js-flags=--max-old-space-size=${process.env.QA_RENDERER_HEAP_MB}`] : [])]
     : [],
 });
 

@@ -3961,6 +3961,152 @@
    ]
   },
   {
+   "id": "act2-b4-smithy-out",
+   "label": "제2막 B4 — 로한의 창을 받고 대장간 → 밤 광장(판정 중 렌더러가 죽은 자리)",
+   "note": "act2Opening.ts smithy door (7,10) → hub (29,43) · judge11 Target crashed",
+   "mapId": "fs2_smithy_night",
+   "x": 9,
+   "y": 7,
+   "facing": "down",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_done": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs2_act2_started": true,
+    "sw_fs2_out_of_cells": true,
+    "sw_fs2_hub_arrived": true,
+    "sw_fs2_mire_well": true,
+    "sw_fs2_hanel_told": true,
+    "sw_fs2_bread_given": true,
+    "sw_fs2_cell_open": true,
+    "sw_fs2_barracks_cleared": true,
+    "sw_fs2_gear_meds": true,
+    "sw_fs2_rohan_spear": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 9
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 9
+    }
+   ],
+   "items": {
+    "item_potion": 5,
+    "item_ether": 2,
+    "item_panacea": 1,
+    "item_phoenix_down": 2,
+    "item_fs_keeper_seal": 1
+   },
+   "gold": 120,
+   "beats": [
+    {
+     "id": "menu",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 800
+      },
+      {
+       "kind": "key",
+       "key": "Escape"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 500
+      },
+      {
+       "kind": "key",
+       "key": "ArrowDown"
+      },
+      {
+       "kind": "key",
+       "key": "ArrowDown"
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Escape"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 500
+      },
+      {
+       "kind": "key",
+       "key": "Escape"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 800
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "out",
+     "ops": [
+      {
+       "kind": "move",
+       "dir": "down",
+       "steps": 2
+      },
+      {
+       "kind": "move",
+       "dir": "left",
+       "steps": 2
+      },
+      {
+       "kind": "move",
+       "dir": "down",
+       "steps": 3
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 2500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "plaza",
+     "ops": [
+      {
+       "kind": "move",
+       "dir": "up",
+       "steps": 0
+      },
+      {
+       "kind": "move",
+       "dir": "right",
+       "steps": 3
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
    "id": "act2-b4-rohan",
    "label": "제2막 B4 — 대장간 뒷문, 로한의 별쇠 창·새라 소식",
    "note": "act2Opening.ts northGateEvents rohan (10,6) 계산대 (10,7)",
