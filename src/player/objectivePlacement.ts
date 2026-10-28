@@ -14,10 +14,14 @@ export type ObjectivePlacementInput = {
   readonly stage: { readonly width: number; readonly height: number };
   /** 지금 그려진 창 크기(최대 폭 maxWidth 로 줄바꿈된 결과). */
   readonly box: { readonly width: number; readonly height: number };
-  /** 창이 쓸 수 있는 최대 폭(지금 줄바꿈 기준). 좁은 후보는 이 폭에서 넓이를 보존해 높이를 어림한다. */
+  /** 창이 쓸 수 있는 최대 폭. 맵 위아래 여백 띠에 넣을 때 줄 수를 줄이려고 자연 폭보다 넓힐 수 있다. */
   readonly maxWidth: number;
   /** 창 폭을 이보다 좁히지 않는다. */
   readonly minWidth: number;
+  /** 맵 바깥 여백 띠에 넣을 때는 이 폭까지 좁힌다(글자 크기는 그대로, 줄만 는다). 없으면 minWidth. */
+  readonly minBandWidth?: number;
+  /** 폭 w 로 줄바꿈했을 때 실제 창 높이. 없으면 넓이 보존으로 어림한다. */
+  readonly measure?: (width: number) => number;
   readonly margin: number;
   readonly player: PlacementRect | null;
   readonly actors: readonly PlacementRect[];
@@ -53,7 +57,7 @@ function objectiveCandidates(input: ObjectivePlacementInput): Candidate[] {
   const { stage, margin: m } = input;
   const out: Candidate[] = [];
   const add = (x: number, y: number, width: number, height: number, bias: number): void => {
-    if (width < input.minWidth - 0.5 || x < 0 || y < 0 || x + width > stage.width + 0.5 || y + height > stage.height + 0.5) return;
+    if (width < Math.min(input.minWidth, input.minBandWidth ?? input.minWidth) - 0.5 || x < 0 || y < 0 || x + width > stage.width + 0.5 || y + height > stage.height + 0.5) return;
     out.push({ x, y, width, height, bias });
   };
   const corners = (width: number, height: number, extra: number): void => {
@@ -70,10 +74,6 @@ function objectiveCandidates(input: ObjectivePlacementInput): Candidate[] {
   const map = input.map;
   const widths = new Set<number>();
   for (const fraction of [0.75, 0.6]) widths.add(Math.round(input.box.width * fraction));
-  if (map) {
-    const leftBand = Math.floor(map.x - 2 * m), rightBand = Math.floor(stage.width - (map.x + map.width) - 2 * m);
-    for (const band of [leftBand, rightBand]) if (band >= input.minWidth && band < input.box.width) widths.add(band);
-  }
   for (const width of widths) {
     if (width >= input.box.width || width < input.minWidth) continue;
     const height = estimatedHeight(input, width);
@@ -85,6 +85,7 @@ function objectiveCandidates(input: ObjectivePlacementInput): Candidate[] {
       add(stage.width - width - m, y, width, height, 0.4);
     }
   }
+  if (map) bandCandidates(input, map, add);
   if (map) {
     // 맵 위·아래 여백 띠(맵 가장자리 바로 바깥).
     const above = map.y - input.box.height - m;
@@ -95,8 +96,52 @@ function objectiveCandidates(input: ObjectivePlacementInput): Candidate[] {
   return out;
 }
 
+/**
+ * 맵 바깥 여백 띠 후보 — 방을 전혀 덮지 않는 자리. 옆 띠는 띠 폭에 맞춰 창을 좁히고(줄 수가 는다),
+ * 위아래 띠는 띠 높이에 들어가는 가장 좁은 폭을 찾는다. 들어가지 않는 띠는 후보를 내지 않는다.
+ */
+function bandCandidates(input: ObjectivePlacementInput, map: PlacementRect, add: (x: number, y: number, width: number, height: number, bias: number) => void): void {
+  const { stage, margin: m, box } = input;
+  const minBand = Math.max(1, input.minBandWidth ?? input.minWidth);
+  const leftRoom = Math.floor(map.x - 2 * m), rightRoom = Math.floor(stage.width - (map.x + map.width) - 2 * m);
+  const sides: Array<[number, (width: number) => number]> = [
+    [rightRoom, width => stage.width - width - m],
+    [leftRoom, () => m],
+  ];
+  sides.forEach(([room, xOf], index) => {
+    if (room < minBand) return;
+    const width = Math.min(box.width, room);
+    const height = estimatedHeight(input, width);
+    const x = xOf(width);
+    // 같은 여백 자리면 키가 낮은 창(줄이 적은 창)이 낫다.
+    const bias = 0.05 * index + 0.5 * height / stage.height;
+    add(x, m, width, height, bias);
+    add(x, Math.max(m, Math.min(stage.height - height - m, map.y)), width, height, bias + 0.02);
+    add(x, stage.height - height - m, width, height, bias + 0.04);
+  });
+  const aboveRoom = Math.floor(map.y - 2 * m), belowRoom = Math.floor(stage.height - (map.y + map.height) - 2 * m);
+  const bands: Array<[number, (height: number) => number]> = [[aboveRoom, () => m], [belowRoom, height => stage.height - height - m]];
+  bands.forEach(([room, yOf], index) => {
+    if (room <= 0) return;
+    // 가장 좁으면서 띠 높이에 들어가는 폭(넓을수록 줄이 준다 — 자연 폭부터 화면 폭까지).
+    const maxWide = Math.min(Math.max(box.width, Math.floor(input.maxWidth)), Math.floor(stage.width - 2 * m));
+    const tries = [box.width];
+    for (let k = 1; k <= 4; k++) tries.push(Math.round(box.width + (maxWide - box.width) * k / 4));
+    for (const width of tries) {
+      if (width < minBand) continue;
+      const height = estimatedHeight(input, width);
+      if (height > room) continue;
+      const y = yOf(height), tall = 0.5 * height / stage.height;
+      add(stage.width - width - m, y, width, height, 0.1 + 0.1 * index + tall);
+      add(m, y, width, height, 0.15 + 0.1 * index + tall);
+      break;
+    }
+  });
+}
+
 function estimatedHeight(input: ObjectivePlacementInput, width: number): number {
   const box = input.box;
+  if (input.measure && Math.round(width) !== Math.round(box.width)) return input.measure(Math.round(width));
   if (width >= box.width) return box.height;
   // 줄 하나 더 생길 여유를 둔다(줄바꿈은 어절 단위라 넓이보다 조금 더 든다).
   return Math.ceil(box.height * (box.width / width) * 1.1);
@@ -119,7 +164,10 @@ function placementCost(box: PlacementRect, input: ObjectivePlacementInput): numb
   for (const hud of input.hud) cost += 80 * overlap(box, inflate(hud, 2)) / Math.max(1, Math.min(boxArea, area(hud)));
   // 맵 위를 덮는 넓이(여백 위는 공짜). 0~3.
   const map = input.map ?? { x: 0, y: 0, width: input.stage.width, height: input.stage.height };
-  cost += 3 * overlap(box, map) / boxArea;
+  const onMap = overlap(box, map);
+  // 방을 조금이라도 덮으면 고정 벌점 — 여백에 통째로 들어가는 자리가 있으면 그쪽이 늘 이긴다(주인공·HUD 덮음은 여전히 더 비싸다).
+  if (input.map && onMap > 0) cost += 4;
+  cost += 3 * onMap / boxArea;
   return cost;
 }
 

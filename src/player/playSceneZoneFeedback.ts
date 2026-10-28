@@ -163,17 +163,35 @@ function placeObjective(scene: ZoneFeedbackScene, feedback: PlaySceneZoneFeedbac
   const geometry = sceneGeometry(scene, host);
   if (!geometry) return;
   // 자연 크기(CSS 최대 폭으로 줄바꿈한 창)를 잰다 — 좁힌 폭은 아래에서 다시 건다.
-  element.style.width = "";
+  // 왼쪽 끝에 놓고 잰다 — 지난 자리(left)에 둔 채 재면 남은 폭만큼 줄어든 크기를 자연 크기로 잘못 읽는다.
+  Object.assign(element.style, { width: "", maxWidth: "", left: "0px", right: "auto" });
   const box = { width: element.offsetWidth, height: element.offsetHeight };
   if (box.width <= 0 || box.height <= 0) return;
   const stage = { width: host.clientWidth, height: host.clientHeight };
   const uiScale = Number.parseFloat(getComputedStyle(host).getPropertyValue("--play-ui-scale")) || 1;
   const margin = Math.round(4 * uiScale);
+  // 좁힌 폭의 실제 높이를 잰다(글자 크기는 그대로, 줄만 는다). 잰 뒤 자연 폭으로 되돌린다.
+  const heights = new Map<number, number>();
+  const measure = (width: number): number => {
+    const cached = heights.get(width);
+    if (cached !== undefined) return cached;
+    element.style.width = `${width}px`;
+    element.style.maxWidth = "none";
+    const height = element.offsetHeight;
+    heights.set(width, height);
+    return height;
+  };
+  const style = getComputedStyle(element);
+  const fontPx = Number.parseFloat(style.fontSize) || 10;
+  const padX = (Number.parseFloat(style.paddingLeft) || 0) + (Number.parseFloat(style.paddingRight) || 0);
   const placement = chooseObjectivePlacement({
     stage,
     box,
-    maxWidth: box.width,
+    maxWidth: stage.width - 2 * margin,
     minWidth: Math.min(box.width, Math.round(stage.width * 0.22)),
+    // 여백 띠에는 한 줄에 4글자 남짓까지 좁힌다(320×240 무대의 작은 방 옆 여백은 50~60px).
+    minBandWidth: Math.min(box.width, Math.round(fontPx * 4 + padX)),
+    measure,
     margin,
     player: geometry.player,
     actors: geometry.actors,
@@ -181,6 +199,7 @@ function placeObjective(scene: ZoneFeedbackScene, feedback: PlaySceneZoneFeedbac
     map: geometry.map,
     current: memo?.text === text ? memo.placement : null,
   });
+  element.style.width = ""; element.style.maxWidth = "";
   feedback.objectivePlace = { atMs: feedback.elapsedMs, text, placement };
   element.dataset.placed = "true";
   Object.assign(element.style, {
@@ -188,7 +207,8 @@ function placeObjective(scene: ZoneFeedbackScene, feedback: PlaySceneZoneFeedbac
     top: `${placement.y}px`,
     right: "auto",
     bottom: "auto",
-    width: placement.width < box.width ? `${placement.width}px` : "",
+    width: placement.width !== box.width ? `${placement.width}px` : "",
+    maxWidth: placement.width !== box.width ? "none" : "",
   });
 }
 
