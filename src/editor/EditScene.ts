@@ -335,7 +335,7 @@ export class EditScene extends PhaserRuntime.Scene {
    * 맵 맞춤(fit) 상태. 맵에 들어오면 켜지고, 사용자가 배율을 직접 바꾸면 그 맵에서는 꺼진다.
    * 켜져 있는 동안 캔버스·조수 가림이 바뀌면(첫 창, 조수 패널 열림, 스튜디오 복귀) 맵 전체가 보이는 배율로 다시 맞춘다.
    */
-  private autoFit: { mapId: MapId; appliedZoom: number; key: string } | null = null;
+  private autoFit: { mapId: MapId; appliedZoom: number; key: string; placed?: boolean } | null = null;
   private autoFitting = false;
   private autoFitCount = 0;
   /** 키보드로 칠할 칸(캔버스에 초점이 있을 때 화살표로 옮긴다). */
@@ -1100,8 +1100,12 @@ export class EditScene extends PhaserRuntime.Scene {
     fit.key = key;
     this.autoFitCount += 1;
     // 1배로도 안 들어가는 큰 맵은 건드리지 않는다(읽을 수 없을 만큼 작아진다).
-    if (target === undefined) return false;
-    if (target !== zoomNow) {
+    // 다만 이미 맞춰 둔 맵이 가림 때문에 넘치게 되면(좁은 창에서 조수 패널이 도킹) 배율은 두고 가운데만 다시 잡는다 —
+    // 그대로 두면 맵이 옛 캔버스 가운데에 남아 패널 쪽으로 밀리고 왼쪽은 빈 바닥이 된다.
+    if (target === undefined && !fit.placed) return false;
+    const zoom = target ?? zoomNow;
+    fit.placed = true;
+    if (target !== undefined && target !== zoomNow) {
       fit.appliedZoom = target;
       this.autoFitting = true;
       try {
@@ -1122,7 +1126,7 @@ export class EditScene extends PhaserRuntime.Scene {
         targetWorldY: (map.height * tile) / 2,
         canvas: fresh.canvas,
         unoccluded: fresh.unoccluded,
-        zoom: target,
+        zoom,
       });
       camera.centerOn(lookAt.x, lookAt.y);
     }
