@@ -3254,7 +3254,8 @@
     "sw_fs2_bread_given": true,
     "sw_fs2_cell_key_found": true,
     "sw_fs2_cell_open": true,
-    "sw_fs2_barracks_cleared": true
+    "sw_fs2_barracks_cleared": true,
+    "sw_fs2_barracks_entered": true
    },
    "party": [
     {
@@ -6902,7 +6903,7 @@
   },
   {
    "id": "act2-b1-patrol",
-   "label": "제2막 B1 — 막사 통로의 순찰 기사, 붙잡히면 전투 → 감방",
+   "label": "제2막 B1 — 막사 들어서면 엘레나의 귀띔 → 통로의 순찰 기사에게 붙잡히면 감방으로",
    "note": "act2Opening.ts barracks make_chase_scene caughtPenalty (3,10)↔(15,10)",
    "mapId": "fs2_barracks",
    "x": 10,
@@ -6932,9 +6933,43 @@
      "id": "look",
      "ops": [
       {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 20000
+      },
+      {
        "kind": "hold",
        "dir": null,
-       "ms": 3000
+       "ms": 1500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "hint-done",
+     "ops": [
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 12,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 700
+        }
+       ]
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
       }
      ],
      "shot": true
@@ -6972,20 +7007,34 @@
      "shot": true
     },
     {
-     "id": "battle",
+     "id": "dragged",
      "ops": [
       {
-       "kind": "pressUntil",
-       "key": "Enter",
-       "testid": "battle-scene",
-       "state": "present",
-       "maxPresses": 10,
-       "timeoutMs": 1200
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 8,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 700
+        }
+       ]
+      },
+      {
+       "kind": "waitForMap",
+       "mapId": "fs2_cell",
+       "timeoutMs": 20000
       },
       {
        "kind": "hold",
        "dir": null,
-       "ms": 2500
+       "ms": 1500
       }
      ],
      "shot": true
@@ -7043,7 +7092,8 @@
     "sw_fs2_bread_given": true,
     "sw_fs2_cell_key_found": true,
     "sw_fs2_cell_open": true,
-    "sw_fs2_barracks_cleared": true
+    "sw_fs2_barracks_cleared": true,
+    "sw_fs2_barracks_entered": true
    },
    "party": [
     {

@@ -215,7 +215,7 @@ function database(project: Project, exec: Exec): void {
   ] as const) ensureSwitch(project, id, name);
   exec(project, "upsert_item", { item: {
     id: FS2_BREAD_ITEM, name: "무거운 납작빵", type: "normalGoods", occasion: "never", consumable: false, price: 0,
-    description: "토마 아저씨가 구운 납작빵. 하나만 유난히 무겁다.\n「꼭꼭 씹어라. 꼭.」",
+    description: "토마 아저씨가 구운 납작빵. 하나만 유난히 무겁다.\n손으로는 안 쪼개진다 — 딱딱한 모서리에 대고 쪼개 볼까?",
   } });
   exec(project, "upsert_item", { item: {
     id: FS2_UNLIT_LAMP, name: "꺼진 등", type: "special", occasion: "never", consumable: false, price: 0,
@@ -372,7 +372,8 @@ function barracks(project: Project, exec: Exec): void {
     hintText: "근무표: 「붉은 초소는 붉은 깃발 종에, 푸른 초소는 푸른 깃발 종에 응답할 것.\n등불이 비추는 곳으로는 아무도 지나가지 말 것.」",
     reward: { itemId: FS2_GEAR_ITEM, itemName: "압수품 꾸러미", itemDescription: "초소에 빼앗겼던 짐. 카엘의 검과 엘레나의 책이 그대로 있다." },
     // 들키면 경비 둘과 싸우고(도망 불가) 감방으로 다시 끌려간다 — 실수에 값을 치른다.
-    failPenalty: { troopId: FS2_BARRACKS_GUARDS, sendTo: { mapId: FS2_CELL_ID, x: CELL.arrive.x, y: CELL.arrive.y }, text: "경비병: 「거기 누구냐! 탈옥수다!」 — 등불에 들켰다." },
+    // 들키면 감방으로 끌려간다. 경비와의 전투는 뺐다 — 쉬운 전투가 매번 금화를 줘서, 붙잡히는 게 벌이 아니라 벌이였다(독립 판정: 29번 붙잡혀 696G).
+    failPenalty: { sendTo: { mapId: FS2_CELL_ID, x: CELL.arrive.x, y: CELL.arrive.y }, text: "경비병: 「거기 누구냐! 탈옥수다!」 — 등불에 들켜 감방으로 끌려갔다." },
   });
   // 순찰 기사 — 두 상자 줄 사이 통로를 천천히 오간다(계획 B1 「순찰 기사 은신」). 등 뒤로, 그가 끝에서 돌아설 때 건넌다.
   // 붙잡히면 등불 시야와 같은 벌(경비 둘과 도망 불가 전투 → 감방).
@@ -381,10 +382,20 @@ function barracks(project: Project, exec: Exec): void {
     chaser: { at: BARRACKS.patrol[0], graphic: { selectionId: "charset:tex_easyrpg_charset_people3:7" }, speed: 5, sightRange: 2 },
     patrol: { waypoints: BARRACKS.patrol },
     pursuit: { scope: "map", doorDelayMs: 0, searchMs: 1500, onLost: "return" },
-    caughtPenalty: { troopId: FS2_BARRACKS_GUARDS, sendTo: { mapId: FS2_CELL_ID, x: CELL.arrive.x, y: CELL.arrive.y }, text: "순찰 기사: 「멈춰! 탈옥수다!」 — 순찰에게 붙잡혔다." },
+    caughtPenalty: { sendTo: { mapId: FS2_CELL_ID, x: CELL.arrive.x, y: CELL.arrive.y }, text: "순찰 기사: 「멈춰! 탈옥수다!」 — 순찰에게 붙잡혀 감방으로 끌려갔다." },
     checkpointOnEntry: false,
     mood: false,
   });
+  // 처음 들어서면 엘레나가 방의 규칙을 짚는다 — 근무표·등불 빛·순찰(독립 판정: 입구 두 칸 옆 근무표를 끝내 안 읽고 29번 붙잡혔다).
+  const hintId = "ev_fs2_barracks_enter";
+  addEv(project, FS2_BARRACKS_ID, hintId, "막사에 들어섬", { x: 0, y: 0 }, [
+    page(`${hintId}_p`, "막사 규칙", [sw("sw_fs2_barracks_entered", false)], [
+      setSw("sw_fs2_barracks_entered"),
+      say(ELENA, "(속삭임) 카엘, 입구 옆에 근무표가 있어. 먼저 읽어 보자."),
+      say(ELENA, "(속삭임) 등불 빛이 닿는 데는 밟지 마.\n저 순찰은 등을 돌렸을 때, 상자 줄 틈으로 건너."),
+    ], { trigger: { kind: "auto" } }),
+  ]);
+  ensureSwitch(project, "sw_fs2_barracks_entered", "B1: 막사에 처음 들어섬(규칙 귀띔)");
   // 북동 벽 사다리 — 광장 초소 뒷골목으로. 압수품을 되찾기 전엔 「짐부터」.
   exec(project, "stamp_object", { objectId: "kit:atlas_biome_interior/hand-interior:ship ladder", mapId: FS2_BARRACKS_ID, x: BARRACKS.ladder.x, y: BARRACKS.ladder.y });
   exec(project, "set_map_properties", { mapId: FS2_BARRACKS_ID, battleBackground: "battle-scenery-cave" });
@@ -531,6 +542,8 @@ function curfewHub(project: Project, exec: Exec, hubId: string): void {
       mapId: FS2_HUB_NIGHT_ID, x: p.at.x, y: p.at.y, troopId: FS2_PATROL_TROOP, behavior: "chase",
       patrol: { length: p.length, axis: p.axis }, sightRange: 5, vision: "cone", pace: "normal", approachStyle: "dash",
       graphic: knight, alert: "exclamation", respawnSec: 45, clearSwitchId: `sw_fs2_patrol_${i}_down`,
+      // 지면 광장 입구(사다리 뚜껑 문)에서 다시 — 타이틀로 내쫓지 않는다(독립 판정: 통금 순찰에 지고 1막부터 다시).
+      checkpointOnEntry: true,
     });
   });
   // 창틈 불빛 — 주민이 선 문간마다 작은 등잔(통금이라 다른 창은 다 어둡다).
@@ -904,7 +917,7 @@ function forestEdgeChase(project: Project, exec: Exec, mapId: string, hubId: str
       exec(project, "place_field_enemy", {
         mapId, x: at.x, y: at.y, id: `ev_fs2_b4_knight_${placed}`, troopId: FS2_PATROL_TROOP, behavior: "chase", sightRange: 9, giveUpRange: 20,
         pace: "fast", chaseStepMs: 230, alertMs: 250, approachStyle: "dash", graphic: knight, alert: "exclamation",
-        appearSwitchId: SW_B4_ALARM, vanishSwitchId: SW_B4_EDGE, clearSwitchId: `sw_fs2_b4_knight_${placed}_down`,
+        appearSwitchId: SW_B4_ALARM, vanishSwitchId: SW_B4_EDGE, clearSwitchId: `sw_fs2_b4_knight_${placed}_down`, checkpointOnEntry: true,
       });
       FS2_B4.knights.push(at);
       placed += 1;
@@ -1032,7 +1045,7 @@ function dawnwell(project: Project, exec: Exec): void {
   const foe = (mapId: string, troopId: string, x: number, y: number, style: string): void => {
     try {
       exec(project, "place_field_enemy", { mapId, x, y, troopId, behavior: "chase", patrol: { length: 2, axis: x % 2 ? "horizontal" : "vertical" },
-        sightRange: 6, vision: "cone", pace: "normal", approachStyle: style, respawnSec: 60 });
+        sightRange: 6, vision: "cone", pace: "normal", approachStyle: style, respawnSec: 60, checkpointOnEntry: true });
     } catch { /* 그 칸은 도구가 거절(입구 곁·막힌 칸) — 건너뛴다 */ }
   };
   for (const mapId of [north1!, field!]) exec(project, "set_map_properties", { mapId, mapRole: "field" });
@@ -1352,7 +1365,7 @@ function northFortress(project: Project, exec: Exec, hubId: string): void {
           // 경비견·상자·레버 곁은 피한다 — 붙어 서면 한 무리로 읽힌다(3칸, 자리가 없으면 2칸).
           if (M(project, mapId).events.some((e) => e.x + e.y > 0 && Math.max(Math.abs(e.x - at.x), Math.abs(e.y - at.y)) <= near)) continue;
           try {
-            exec(project, "place_field_enemy", { mapId, x: at.x, y: at.y, graphic: knight, alert: "exclamation", respawnSec: 60, clearSwitchId: `sw_fs2_fort_knight_${k}_down`, ...args(k) });
+            exec(project, "place_field_enemy", { mapId, x: at.x, y: at.y, graphic: knight, alert: "exclamation", respawnSec: 60, clearSwitchId: `sw_fs2_fort_knight_${k}_down`, checkpointOnEntry: true, ...args(k) });
             k += 1;
             count += 1;
             placed = true;

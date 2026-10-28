@@ -13,7 +13,7 @@ import { ToolError, type ToolDefinition, type ToolExecResult, type JsonSchema } 
 import { inMapBounds, requireMap } from './mapHelpers';
 import { resolveGraphic, type GraphicSpec } from './eventCompile';
 import { ensureNamedSwitch } from './flagHelpers';
-import { assertEventShape, placementAdjustedWarning, resolveEventPlacement, upsertEventIntoMap } from './eventTools';
+import { assertEventShape, ensureMapCheckpointEvent, placementAdjustedWarning, resolveEventPlacement, upsertEventIntoMap } from './eventTools';
 import { protectedCells } from './npcPatrolTools';
 import { walkableFromAnchors } from './transferReachability';
 import { entryCells } from '@/project/eventPassageBlock';
@@ -389,6 +389,7 @@ export const FIELD_ENEMY_TOOLS: readonly ToolDefinition[] = [
       clearSwitchId: { type: 'string', description: '승리 시 켜지는 스위치(생략 시 자동 생성). 퀘스트·문 조건으로 쓸 수 있다' },
       appearSwitchId: { type: 'string', description: '경보형 — 이 스위치가 켜져야 나타난다(그 전엔 없는 칸). 「들켰다! 기사들이 몰려온다」 같은 추격 장면: 이벤트가 스위치를 켜는 순간 이미 그 맵에 있는 주인공을 쫓는다. 주면 입구 시야 검사는 경고로 바뀐다(경보를 켜는 쪽이 장면을 책임진다)' },
       vanishSwitchId: { type: 'string', description: '이 스위치가 켜지면 사라진다(추격을 끝내는 안전 지점·도망 성공). appearSwitchId 와 같이 쓴다' },
+      checkpointOnEntry: { type: 'boolean', description: '이 맵에 처음 들어선 자리에 진입 체크포인트를 둔다(맵당 하나). 이 적에게 져서 게임 오버가 되면 「다시 시작」이 타이틀 대신 그 자리에서, 진행·HP 회복한 채로 이어진다. 세게 맞춘 순찰·추격 적이 있는 맵에 준다' },
       factionId: { type: 'string', description: '진영(set_factions 로 정의한 id). 적대(태도 -1 이하) 진영의 보이는 적과 2칸 안에서 마주치면 맵 위에서 짧게 부딪히고 전력이 약한 쪽이 사라진다(맵에 다시 들어오면 돌아온다). 플레이어는 두 진영 모두에게 덮쳐진다. 생략 = 선두 적 레코드의 factionId(있고 정의된 진영일 때), 그것도 없으면 진영 싸움 없음' },
       id: { type: 'string' },
     }, ['mapId', 'x', 'y']),
@@ -549,6 +550,8 @@ export const FIELD_ENEMY_TOOLS: readonly ToolDefinition[] = [
       const warnings: string[] = [];
       assertEventShape(event, warnings);
       upsertEventIntoMap(map, event);
+      // 지면 게임 오버 → 「타이틀로」 하나뿐이면 저장 없는 판은 처음부터다(2026-10-27 폴른 독립 판정: 통금 순찰에 지고 1막부터 다시).
+      const checkpointEventId = args.checkpointOnEntry === true ? ensureMapCheckpointEvent(draft, map) : undefined;
 
       if (placement.adjusted) warnings.push(placementAdjustedWarning(`필드 적 '${troopId}'`, { x, y }, start));
       if (graphicNote) warnings.push(graphicNote);
@@ -561,7 +564,7 @@ export const FIELD_ENEMY_TOOLS: readonly ToolDefinition[] = [
 
       return {
         summary: `${map.name} (${start.x}, ${start.y}) 에 필드 적 '${troopId}' — ${behavior}${patrol ? ` ${patrol.dirs.length}걸음 왕복` : ''}${behavior === 'chase' ? ` 시야 ${sightRaw}칸${patrol ? '(시야 밖 순찰)' : ''}·놓치면 복귀` : ''}`,
-        data: { eventId: id, clearSwitchId, behavior, x: start.x, y: start.y, cells: patrol ? cells : undefined, adjusted: placement.adjusted, ...(fieldFactionId ? { factionId: fieldFactionId } : {}) },
+        data: { eventId: id, clearSwitchId, behavior, x: start.x, y: start.y, cells: patrol ? cells : undefined, adjusted: placement.adjusted, ...(fieldFactionId ? { factionId: fieldFactionId } : {}), ...(checkpointEventId ? { checkpointEventId } : {}) },
         ...(warnings.length > 0 ? { warnings } : {}),
       };
     },

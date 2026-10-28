@@ -3958,7 +3958,7 @@ function trapEvent(
   };
 }
 
-function ensureMapCheckpointEvent(project: Project, map: GameMap): string {
+export function ensureMapCheckpointEvent(project: Project, map: GameMap): string {
   const existing = map.events.find((event) => event.id === `${map.id}_checkpoint_auto`);
   if (existing) return existing.id;
   const id = `${map.id}_checkpoint_auto`;
