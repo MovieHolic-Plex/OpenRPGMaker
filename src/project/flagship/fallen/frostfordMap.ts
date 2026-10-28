@@ -240,10 +240,12 @@ export function paintFrostford(project: Project, exec: Exec, mapId: string, name
   const roadRows = kitCells(tileset, SNOW("ground-road"));
   const plazaRows = kitCells(tileset, SNOW("ground-plaza"));
   const deckRows = kitCells(tileset, SNOW("ground-deck"));
-  const crackTiles = kitCells(tileset, SNOW("ground-ice")).flat();
   const groups = tileset.autotileGroups ?? [];
   const iceG = groups.find((g) => g.id === FROST_ICE_GROUP), waterG = groups.find((g) => g.id === FROST_WATER_GROUP);
   if (!iceG || !waterG) throw new Error("[fallen-star frostford] 던전 얼음·물 오토타일이 칩셋에 없다");
+  // 금 간 얼음(경고) = 얼음 오토타일의 「홀로 떨어진 조각」 칸 — 칸마다 테두리가 둘린 얼음 조각 사이로 검은 틈이 보인다(떨어져 나가는 얼음장).
+  // 설원 키트 「얼음」 칸은 던전 얼음보다 오히려 밝아 경고로 안 읽혔고(r1 원 해상도), 진청록 살얼음(온천 물) 칸은 막힘이라 쓸 수 없다.
+  const crackTiles = [iceG.variantMap["0"]!];
   const face = new Set<number>(), plateau = new Set<number>();
   for (let x = 0; x < W; x += 1) {
     const fb = faceBottom(x);
