@@ -146,7 +146,7 @@ function setupDatabase(project: Project): void {
   hero.classId = CLASS_CLERK;
   hero.characterResourceId = CAST.maou.resource;
   hero.characterIndex = CAST.maou.index;
-  hero.battleCharacterResourceId = "charset-battler-actor1-4";
+  hero.battleCharacterResourceId = "charset-battler-actor3-1";
   hero.initialLevel = 12;
   hero.learnedSkills = [];
   const face = reviewedFaceIdForCharset(CAST.maou.tex, CAST.maou.index);
@@ -169,7 +169,7 @@ function setupDatabase(project: Project): void {
   const act = (skillId: string, priority: number, condition: Enemy["actions"][number]["condition"] = { kind: "always" }) =>
     ({ skillId, priority, condition, switchOnAfterAction: { enabled: false }, switchOffAfterAction: { enabled: false } });
   const makeEnemy = (id: string, name: string, stats: Enemy["stats"], actions: Enemy["actions"], level: number): void => {
-    const enemy = { ...clone(template), id, name, monsterResourceId: "charset-battler-actor1-0", stats, actions, level, battleScalePercent: 240,
+    const enemy = { ...clone(template), id, name, monsterResourceId: "charset-battler-actor1-0", stats, actions, level, battleScalePercent: 170,
       skillIds: actions.map((a) => a.skillId) } as Enemy;
     enemy.rewards = { ...enemy.rewards, exp: 0, gold: 0 };
     const i = enemies.findIndex((e) => e.id === id);
@@ -404,9 +404,10 @@ function buildKonbini(project: Project, links: Links): Cell {
   const map = project.maps[M.konbini]!;
   const door = links.konbini.exit; // 자동문 칸
   const arrive = links.konbini.entry;
-  const REG = mustWalk(project, map, { x: 12, y: 11 }, "계산대 뒤 칸"); // 계산대 이벤트(정면 칸)
-  const CLERK = mustWalk(project, map, { x: 12, y: 10 }, "점원 자리");
-  mustBlock(project, map, { x: 12, y: 12 }, "계산대");
+  // 계산대 이벤트는 카운터 칸 위에 둔다 — 그림 없는 이벤트는 「같은 층」이어도 막지 않아서, 빈 칸에 두면 플레이어가 올라서고
+  // 정면 조사가 카운터 너머 손님에게 넘어갔다(실플레이 2026-10-29).
+  const REG = mustBlock(project, map, { x: 12, y: 12 }, "계산대");
+  const CLERK = mustWalk(project, map, { x: 12, y: 11 }, "점원 자리");
   const Q1 = mustWalk(project, map, { x: 12, y: 13 }, "손님 줄 1");
   const Q2 = mustWalk(project, map, { x: 12, y: 14 }, "손님 줄 2");
   const Q3 = mustWalk(project, map, { x: 11, y: 14 }, "손님 줄 3");
@@ -468,8 +469,8 @@ function buildKonbini(project: Project, links: Links): Cell {
     ...caption("명찰에는 큼직하게 「마오」라고 적혀 있다."),
     ...say("maou", "embarrassed", "……마오다. 잘 부탁한다."),
     faceHero(HINA_ID),
-    ...say("hina", "happy", "점장님, 신입이에요? 와, 머리 색 대박. 그거 염색이야?"),
-    ...say("maou", "base", "타고난 마력의 색이다."),
+    ...say("hina", "happy", "점장님, 신입이에요? 와, 말투 대박. 연극 동아리야?"),
+    ...say("maou", "base", "말투가 아니다. 품격이다."),
     ...say("hina", "happy", "ㅋㅋ 뭐야 그 설정. 나 히나. 대학생이고 여기 2년 차. 모르는 거 있음 물어봐~"),
     ...say("maou", "base", "히나라고 했나. 좋다. 너를 이 몸의 첫 번째 부하로 임명—"),
     ...say("hina", "base", "선배라고 불러."),
@@ -490,7 +491,7 @@ function buildKonbini(project: Project, links: Links): Cell {
   ]));
 
   // ── 점장(앞: 면접·퇴근 뒤 / 뒤: 근무 중 백룸) ──
-  ev(event(MGR_F, "사토미 점장", { x: 12, y: 10 }, [
+  ev(event(MGR_F, "사토미 점장", CLERK, [
     gone(`${MGR_F}_off`, []),
     page(`${MGR_F}_p2`, [varIs(V_STAGE, 2)], [], { who: "manager" }),
     page(`${MGR_F}_p4`, [varIs(V_STAGE, 4)], [faceHero(MGR_F), ...say("manager", "happy", "어라, 마오 군? 오늘은 퇴근했잖아. 푹 쉬고 내일 봐!")], { who: "manager" }),
@@ -649,7 +650,7 @@ function buildKonbini(project: Project, links: Links): Cell {
   ];
   const regIdle: Command[] = [...think("계산대. 지금은 손님이 없다.")];
   ev(event("ev_mk_register", "계산대", REG, [
-    page("ev_mk_register_p0", [], regIdle, { priority: "same" }),
+    page("ev_mk_register_p0", [swOn(SW_SHIFT)], regIdle, { priority: "same" }),
     page("ev_mk_register_p3", [varIs(V_STAGE, 3), swOff("sw_mk_t_reg1")], [...reg1, ...taskDone("sw_mk_t_reg1")], { priority: "same" }),
     page("ev_mk_register_p5", [varIs(V_STAGE, 5), swOff("sw_mk_t_reg2")], [...reg2, ...taskDone("sw_mk_t_reg2")], { priority: "same" }),
     page("ev_mk_register_p7", [varIs(V_STAGE, 7), swOff("sw_mk_t_reg3")], [...reg3, ...taskDone("sw_mk_t_reg3")], { priority: "same" }),
@@ -900,6 +901,7 @@ function buildCrisis(project: Project, map: GameMap, at: { door: Cell; gate: Cel
     stopBgm(),
     ...caption("새벽 2시. 손님이 끊긴 시간."),
     ...say("hina", "happy", "마오, 오늘 일 다 끝났네. 이제 아침까지 버티기만 하면 돼~"),
+    walkTo("@player", at.clerk), face("@player", "down"),
     { kind: "setLighting", ambient: 0.6, color: "#0a0820", transitionMs: 500 } as Command,
     playSe(SE_DARK), wait(500),
     { kind: "setLighting", ambient: 0.32, color: "#1a2350", transitionMs: 200 } as Command,

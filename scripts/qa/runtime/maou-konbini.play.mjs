@@ -29,13 +29,13 @@ log("doors", konDoorOnStreet && [konDoorOnStreet.x, konDoorOnStreet.y], roomDoor
 
 const HERO = [{ actorId: "actor_hero", level: 12 }];
 const CP = {
-  interview: { id: "mk-interview", mapId: "map_mk_street", x: roomDoorOnStreet.x, y: roomDoorOnStreet.y + 1, facing: "down", variables: { var_mk_stage: 2 }, party: HERO },
-  day1: { id: "mk-day1", mapId: "map_mk_konbini", x: 12, y: 10, facing: "down", variables: { var_mk_stage: 3, var_mk_tasks: 0, var_mk_service: 2 }, switches: { sw_mk_on_shift: true }, party: HERO },
-  evening1: { id: "mk-evening1", mapId: "map_mk_street", x: konDoorOnStreet.x, y: konDoorOnStreet.y + 1, facing: "down", variables: { var_mk_stage: 4, var_mk_service: 5 }, party: HERO },
+  interview: { id: "mk-interview", mapId: "map_mk_street", x: roomDoorOnStreet.x + 1, y: roomDoorOnStreet.y, facing: "left", variables: { var_mk_stage: 2 }, party: HERO },
+  day1: { id: "mk-day1", mapId: "map_mk_konbini", x: 12, y: 11, facing: "down", variables: { var_mk_stage: 3, var_mk_tasks: 0, var_mk_service: 2 }, switches: { sw_mk_on_shift: true }, party: HERO },
+  evening1: { id: "mk-evening1", mapId: "map_mk_street", x: konDoorOnStreet.x + 1, y: konDoorOnStreet.y, facing: "right", variables: { var_mk_stage: 4, var_mk_service: 5 }, party: HERO },
   day2: { id: "mk-day2", mapId: "map_mk_konbini", x: 8, y: 14, facing: "up", variables: { var_mk_stage: 5, var_mk_tasks: 0, var_mk_service: 5 }, switches: { sw_mk_lily_met: true }, party: HERO },
-  meeting: { id: "mk-meeting", mapId: "map_mk_street", x: konDoorOnStreet.x, y: konDoorOnStreet.y + 1, facing: "down", variables: { var_mk_stage: 6, var_mk_service: 8 }, switches: { sw_mk_lily_met: true, sw_mk_tanaka_order: true }, party: HERO },
+  meeting: { id: "mk-meeting", mapId: "map_mk_street", x: konDoorOnStreet.x + 1, y: konDoorOnStreet.y, facing: "right", variables: { var_mk_stage: 6, var_mk_service: 8 }, switches: { sw_mk_lily_met: true, sw_mk_tanaka_order: true }, party: HERO },
   night: { id: "mk-night", mapId: "map_mk_konbini", x: 8, y: 14, facing: "up", variables: { var_mk_stage: 7, var_mk_tasks: 0, var_mk_service: 8 }, switches: { sw_mk_lily_met: true, sw_mk_tanaka_order: true, sw_mk_meeting_done: true }, party: HERO },
-  power: { id: "mk-power", mapId: "map_mk_konbini", x: 12, y: 10, facing: "down", variables: { var_mk_stage: 7, var_mk_tasks: 3, var_mk_service: 8 }, switches: { sw_mk_lily_met: true, sw_mk_tanaka_order: true, sw_mk_meeting_done: true, sw_mk_brief3: true, sw_mk_t_reg3: true, sw_mk_t_box3: true, sw_mk_t_waste3: true, "sw_ev_mk_c3a_out": true, "sw_ev_mk_c3b_out": true }, party: HERO },
+  power: { id: "mk-power", mapId: "map_mk_konbini", x: 12, y: 11, facing: "down", variables: { var_mk_stage: 7, var_mk_tasks: 3, var_mk_service: 8 }, switches: { sw_mk_lily_met: true, sw_mk_tanaka_order: true, sw_mk_meeting_done: true, sw_mk_brief3: true, sw_mk_t_reg3: true, sw_mk_t_box3: true, sw_mk_t_waste3: true, "sw_ev_mk_c3a_out": true, "sw_ev_mk_c3b_out": true }, party: HERO },
 };
 
 const ui = (page) => page.evaluate(() => ({
@@ -94,7 +94,15 @@ async function play(page, seg, picks, until, opts) {
     await choose(page, seg, queue.length ? queue.shift() : 0);
   }
 }
-const idle = async (s) => s.box === null && !s.choices.length && !s.battle;
+/** 대사·선택지·전투가 2.5초 넘게 조용해야 「끝났다」 — 대사 사이 잠깐 빈 상자를 끝으로 오인하지 않는다. */
+let quietSince = null;
+const idle = async (s) => {
+  if (s.box !== null || s.choices.length || s.battle) { quietSince = null; return false; }
+  quietSince ??= Date.now();
+  if (Date.now() - quietSince < 2500) return false;
+  quietSince = null; return true;
+};
+const quietAnd = (cond) => async (s) => (await idle(s)) && (await cond(s));
 async function walkTo(page, x, y, timeout = 30_000) {
   await page.evaluate(([x, y]) => window.__oprnDebug.playerRoute([{ kind: "approach", x, y, distance: 0 }]), [x, y]);
   const t0 = Date.now();
@@ -203,8 +211,11 @@ try {
     await play(page, seg, [], async (s) => s.battle, { shotOn: /엉덩이|8분의 1|흔들리지/ }); mark("battle");
     shot(page, "battle-start", 2500);
     await battle(page, seg, ["skill_mk_dark_wave", "skill_mk_half_world", "skill_mk_hellfire", "skill_mk_dark_wave", "skill_mk_hellfire"]); mark("battle-end");
-    await play(page, seg, [], async (s) => { const x = await st(page); return x?.v?.var_mk_stage === 2 && s.box === null && !s.choices.length; }, { shotOn: /동귀어진|낯선 천장|0엔|폐기 도시락/ }); mark("flyer");
+    await play(page, seg, [], idle, { shotOn: /동귀어진|낯선 천장|0엔/ }); mark("woke");
+    await walkTo(page, roomExit.x, roomExit.y - 1);
+    await play(page, seg, [], idle, { shotOn: /폐기 도시락/ }); mark("flyer");
     shot(page, "room-after-flyer", 400);
+    await walkTo(page, roomExit.x, roomExit.y); await play(page, seg, [], idle);
     await walkTo(page, roomExit.x, roomExit.y); await page.waitForTimeout(2500); mark("street");
     shot(page, "street-first");
     await play(page, seg, [], idle);
@@ -212,8 +223,9 @@ try {
   if (only.has("interview")) await segment(browser, server, "interview", CP.interview, async (page, seg, mark) => {
     await ready(page); await page.waitForTimeout(1500); mark("ready");
     await play(page, seg, [], idle);
-    await walkTo(page, konDoorOnStreet.x, konDoorOnStreet.y + 1); await step(page, "up"); mark("enter");
-    await play(page, seg, [2, 1], async (s) => { const x = await st(page); return x?.v?.var_mk_stage === 3 && s.box === null && !s.choices.length; }, { shotOn: /이력서|마계|명찰|선배라고|매뉴얼 제1조/ }); mark("hired");
+    await walkTo(page, roomDoorOnStreet.x + 1, roomDoorOnStreet.y + 1); await walkTo(page, roomDoorOnStreet.x - 3, roomDoorOnStreet.y + 1);
+    await walkTo(page, konDoorOnStreet.x + 1, konDoorOnStreet.y); await walkTo(page, konDoorOnStreet.x, konDoorOnStreet.y); await page.waitForTimeout(2000); mark("enter");
+    await play(page, seg, [2, 1], quietAnd(async () => (await st(page))?.v?.var_mk_stage === 3), { shotOn: /이력서|마계|명찰|선배라고|매뉴얼 제1조/ }); mark("hired");
     shot(page, "shift-start", 600);
   });
   if (only.has("day1")) await segment(browser, server, "day1", CP.day1, async (page, seg, mark) => {
@@ -224,21 +236,21 @@ try {
     await play(page, seg, [1], idle, { shotOn: /무너졌어|중력/ }); mark("box-done");
     shot(page, "box-cleared", 300);
     await walkTo(page, 6, 12); await faceAndAct(page, "down");
-    await play(page, seg, [0], async (s) => { const x = await st(page); return x?.v?.var_mk_stage === 4 && x.map === "map_mk_street" && s.box === null; }, { shotOn: /분리수거|시련/ }); mark("day-end");
+    await play(page, seg, [0], quietAnd(async () => { const x = await st(page); return x?.v?.var_mk_stage === 4 && x.map === "map_mk_street"; }), { shotOn: /분리수거|시련/ }); mark("day-end");
   });
   if (only.has("evening1")) await segment(browser, server, "evening1", CP.evening1, async (page, seg, mark) => {
     await ready(page); await page.waitForTimeout(1500); mark("ready");
-    await play(page, seg, [], async (s) => { const x = await st(page); return s.box === null && !s.choices.length && x?.v && (await page.evaluate(() => window.__oprnDebug.readState().switches.sw_mk_lily_met)); }, { shotOn: /리리스|블랙 기업|재결성/ }); mark("lily");
+    await play(page, seg, [], quietAnd(() => page.evaluate(() => !!window.__oprnDebug.readState().switches.sw_mk_lily_met)), { shotOn: /리리스|블랙 기업|재결성/ }); mark("lily");
     const cat = ev("map_mk_street", "ev_mk_st_cat");
     await walkTo(page, cat.x + 1, cat.y); await faceAndAct(page, "left"); await play(page, seg, [], idle); mark("cat");
-    await walkTo(page, 31, 1); await step(page, "up"); await page.waitForTimeout(1500); mark("shrine");
+    await walkTo(page, 31, 0); await page.waitForTimeout(1500); mark("shrine");
     shot(page, "shrine", 800);
     const leon = ev("map_mk_shrine", "ev_mk_sh_leon");
     await walkTo(page, leon.x + 1, leon.y); await faceAndAct(page, "left"); await play(page, seg, [], idle, { shotOn: /세계의 절반을 주마|고기만두/ }); mark("leon");
     await walkTo(page, 29, 8); await faceAndAct(page, "up"); await play(page, seg, [2], idle); mark("pray");
     await walkTo(page, 23, 14); await faceAndAct(page, "down"); await play(page, seg, [], idle, { shotOn: /대흉/ }); mark("kuji");
-    await walkTo(page, 19, 26); await step(page, "down"); await page.waitForTimeout(1500); mark("back-street");
-    await walkTo(page, roomDoorOnStreet.x, roomDoorOnStreet.y + 1); await step(page, "up"); await page.waitForTimeout(1500); mark("room");
+    await walkTo(page, 19, 27); await page.waitForTimeout(1500); mark("back-street");
+    await walkTo(page, roomDoorOnStreet.x, roomDoorOnStreet.y); await page.waitForTimeout(1500); mark("room");
     await walkTo(page, 2, 5); await faceAndAct(page, "up");
     await play(page, seg, [], async (s) => { const x = await st(page); return x?.v?.var_mk_stage === 5 && x.map === "map_mk_konbini"; }); mark("slept");
     await page.waitForTimeout(1500);
@@ -250,12 +262,12 @@ try {
     await play(page, seg, [1, 2], idle, { shotOn: /늘 먹던|피로|본 적 있지|주먹이/ }); mark("register");
     await walkTo(page, 10, 8); await faceAndAct(page, "up"); await play(page, seg, [2], idle, { shotOn: /메이드/ }); mark("snack");
     await walkTo(page, 17, 8); await faceAndAct(page, "down");
-    await play(page, seg, [1], async (s) => { const x = await st(page); return x?.v?.var_mk_stage === 6 && x.map === "map_mk_street" && s.box === null; }, { shotOn: /999/ }); mark("order-end");
+    await play(page, seg, [1], quietAnd(async () => { const x = await st(page); return x?.v?.var_mk_stage === 6 && x.map === "map_mk_street"; }), { shotOn: /999/ }); mark("order-end");
   });
   if (only.has("meeting")) await segment(browser, server, "meeting", CP.meeting, async (page, seg, mark) => {
     await ready(page); await page.waitForTimeout(1500); mark("ready");
-    await walkTo(page, 31, 26); await step(page, "down"); await page.waitForTimeout(1500); mark("park");
-    await play(page, seg, [1], async (s) => s.box === null && !s.choices.length && (await page.evaluate(() => window.__oprnDebug.readState().switches.sw_mk_meeting_done)), { shotOn: /가르곤|회비|보름달/ }); mark("meeting-done");
+    await walkTo(page, 31, 27); await page.waitForTimeout(1500); mark("park");
+    await play(page, seg, [1], quietAnd(() => page.evaluate(() => !!window.__oprnDebug.readState().switches.sw_mk_meeting_done)), { shotOn: /가르곤|회비|보름달/ }); mark("meeting-done");
     shot(page, "park-after", 500);
   });
   if (only.has("night")) await segment(browser, server, "night", CP.night, async (page, seg, mark) => {
