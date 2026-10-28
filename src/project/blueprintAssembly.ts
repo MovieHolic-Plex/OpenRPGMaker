@@ -13,7 +13,8 @@ import { findOpeningPreset } from "@/editor/openingPresets";
 import { romanceTitleArtForText, ROMANCE_TITLE_RESOURCE_ID, isRomanceTitleArtId } from "@/project/romanceTitleArt";
 import type { GameBlueprint } from "@/project/gameBlueprint";
 import { openingMapViewMapId, openingMapViewResourceId } from "@/project/openingMapView";
-import type { Project } from "@/project/types";
+import { TILE } from "@/project/defaults/constants";
+import type { GameMap, Project } from "@/project/types";
 
 /** 편집기·씨앗이 깔아 둔(= 아무도 고르지 않은) 타이틀 배경. */
 const UNTOUCHED_TITLE_BACKGROUNDS: ReadonlySet<string> = new Set(["oprn-title-field", "rpg-zzu-title-field"]);
@@ -146,6 +147,12 @@ export function blueprintPlaceMapId(project: Project, blueprint: GameBlueprint):
  * 이 프로젝트의 청사진에 맞는 타이틀 그림: 강하게 맞는 번들 그림, 없으면 그 게임의 첫 장소(시작 맵)를 도트 그대로 그린 화면
  * (`map-view:<mapId>` — 오프닝의 「게임 속 맵 그대로」 배경과 같은 id, 플레이어가 타일 층을 그려 쓴다). 화풍이 게임과 같고 게임마다 다르다.
  */
+function blankMap(map: GameMap): boolean {
+  if (map.events.length > 0 || Object.keys(map.lowerTileStacks ?? {}).length > 0 || Object.keys(map.upperTileStacks ?? {}).length > 0) return false;
+  if (map.upperTiles.some((tile) => tile !== TILE.EMPTY)) return false;
+  return map.lowerTiles.every((tile) => tile === map.lowerTiles[0]);
+}
+
 export function pickBlueprintTitleArt(project: Project): TitleArtPick | undefined {
   const blueprint = project.gameBlueprint;
   if (!blueprint) return undefined;
@@ -153,7 +160,9 @@ export function pickBlueprintTitleArt(project: Project): TitleArtPick | undefine
   if (art) return art;
   const mapId = blueprintPlaceMapId(project, blueprint);
   const map = mapId ? project.maps[mapId] : undefined;
-  return map && project.tilesets[map.tilesetId] ? { id: openingMapViewResourceId(map.id), name: `${map.name || map.id} 맵 화면`, score: 0 } : undefined;
+  // 아직 아무것도 안 지은 빈 맵은 화면이 단색이고, 타이틀이 그 맵을 가리키면 빌더가 빈 시작 맵을 지우고 다시 짓는 길이 무결성 검사에 막힌다
+  // (2026-10-28 조선 재생: remove_map 「backgroundResourceId 가 존재하지 않습니다: map-view:map_blank_start」). 끝맺음 조립이 다시 고른다.
+  return map && project.tilesets[map.tilesetId] && !blankMap(map) ? { id: openingMapViewResourceId(map.id), name: `${map.name || map.id} 맵 화면`, score: 0 } : undefined;
 }
 
 /**
