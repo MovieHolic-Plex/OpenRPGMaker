@@ -43,6 +43,13 @@
   font-size: calc(var(--runtime-font-size-9) * var(--play-ui-scale, 1));
   right: var(--space-2);
   top: var(--space-2);
+  /* 바뀐 직후엔 또렷하고 4초 뒤 반투명으로 가라앉아 뒤의 방이 비친다(글이 바뀌면 setPromptLine 이 다시 튼다). */
+  animation: zone-objective-settle 6s ease-out forwards;
+}
+
+@keyframes zone-objective-settle {
+  0%, 65% { opacity: 1; }
+  100% { opacity: 0.4; }
 }
 
 .zone-feedback-prompt {

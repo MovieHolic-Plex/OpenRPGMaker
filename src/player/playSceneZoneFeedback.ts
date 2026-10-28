@@ -195,7 +195,7 @@ function renderFeedback(
 ): void {
   setLine(elements.banner, view.banner);
   setLine(elements.toast, view.toast);
-  setLine(elements.objective, view.objective);
+  setPromptLine(elements.objective, view.objective);
   setPromptLine(elements.prompt, view.prompt);
   const hasContent = Boolean(view.banner || view.toast || view.objective || view.prompt);
   if (view.suppressed || !hasContent) {
@@ -209,6 +209,9 @@ function renderFeedback(
 }
 
 /**
+ * 목표 줄도 같은 방식으로 다시 또렷해진다 — 글이 바뀔 때 또렷하고 몇 초 뒤 반투명으로 가라앉는다(zone-objective-settle).
+ * 작은 방을 화면에 채우면(playSceneCamera smallMapFillZoom) 오른쪽 위 목표 창이 책장·벽을 늘 덮었다(2026-10-28 적대 VQA).
+ *
  * 「Z 조사」 같은 상호작용 안내는 처음 보일 때만 또렷하고 몇 초 뒤 옅어진다(zoneFeedback.css 의 zone-prompt-settle).
  * 같은 이벤트 앞에 서 있는 내내 화면 아래에 남아 시각 소음이 됐다(폴른 스타 가혹 검수 r3~r5). 글이 바뀌면 다시 또렷해진다.
  */

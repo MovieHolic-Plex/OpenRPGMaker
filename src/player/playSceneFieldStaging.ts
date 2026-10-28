@@ -558,15 +558,17 @@ function syncEventGlows(scene: PlaySceneContext, now: number): void {
     }
   }
   // 숨 쉬는 빛: 1.8초 주기로 빛무리가 커졌다 작아지고, 2.4초마다 고리가 퍼진다.
+  // 더하기(ADD) 섞기라 밝은 돌바닥 위에서는 흰 덩이로 번져 바닥·석판 형태를 지웠다(2026-10-28 지하묘지 쉼터 결정, 적대 VQA).
+  // 빛무리·흰 심지·고리를 예전의 절반 남짓으로 낮춰 표지로만 읽히게 한다.
   for (const parts of state.parts.values()) {
     const breath = 0.5 + 0.5 * Math.sin((now / 1800 + parts.phase) * Math.PI * 2);
     const haloSize = parts.radiusPx * 2 * (0.85 + 0.25 * breath);
-    parts.halo.setPosition(parts.x, parts.y).setDisplaySize(haloSize, haloSize * 0.8).setAlpha(0.35 + 0.4 * breath);
+    parts.halo.setPosition(parts.x, parts.y).setDisplaySize(haloSize, haloSize * 0.8).setAlpha(0.18 + 0.2 * breath);
     const coreSize = parts.radiusPx * (0.55 + 0.2 * (1 - breath));
-    parts.core.setPosition(parts.x, parts.y).setDisplaySize(coreSize, coreSize).setAlpha(0.25 + 0.35 * breath);
+    parts.core.setPosition(parts.x, parts.y).setDisplaySize(coreSize, coreSize).setAlpha(0.1 + 0.15 * breath);
     const ringT = ((now / 2400 + parts.phase) % 1);
     const ringSize = parts.radiusPx * (0.4 + 1.9 * ringT);
-    parts.ring.setPosition(parts.x, parts.y + parts.radiusPx * 0.2).setDisplaySize(ringSize, ringSize * 0.5).setAlpha(0.7 * (1 - ringT));
+    parts.ring.setPosition(parts.x, parts.y + parts.radiusPx * 0.2).setDisplaySize(ringSize, ringSize * 0.5).setAlpha(0.45 * (1 - ringT));
     parts.twinkles.setPosition(parts.x, parts.y);
     parts.motes.setPosition(parts.x, parts.y);
   }
