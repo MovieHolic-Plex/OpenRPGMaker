@@ -76,7 +76,12 @@ const MID_WORD = `
   };
 `;
 
-async function keepAllDevice(ctx, selector, textNeedle = null) {
+/**
+ * narrow: a pane whose texts all fit on one line has nothing to sample (L4 shortened the links hint and object names),
+ * so each single-line, multi-word element is set to a width at least its longest word but narrower than the text,
+ * forcing a line break whose position the element's own word-break rule decides.
+ */
+async function keepAllDevice(ctx, selector, textNeedle = null, { narrow = false } = {}) {
   if (textNeedle) {
     await ctx.page
       .waitForFunction((n) => [...document.querySelectorAll('div, p, span')].some((e) => e.getClientRects().length && (e.textContent || '').includes(n)), textNeedle, { timeout: 15_000 })
@@ -87,10 +92,27 @@ async function keepAllDevice(ctx, selector, textNeedle = null) {
     `${MID_WORD}
      let els = [...document.querySelectorAll(arg.selector)].filter(vis);
      if (arg.needle) els = els.filter((e) => (e.textContent || '').includes(arg.needle)).sort((a, b) => a.textContent.length - b.textContent.length).slice(0, 1);
+     let narrowed = 0;
+     if (arg.narrow) {
+       const pen = document.createElement('canvas').getContext('2d');
+       for (const e of els) {
+         if (midWordBreaks(e).lines > 1) continue;
+         const s = getComputedStyle(e); pen.font = s.font;
+         const text = (e.textContent || '').trim(); const words = text.split(/\\s+/).filter(Boolean);
+         if (words.length < 2) continue;
+         const full = pen.measureText(text).width; const longest = Math.max(...words.map((w) => pen.measureText(w).width));
+         const content = Math.ceil(Math.max(longest + 6, full * 0.6));
+         if (content >= full) continue;
+         const box = s.boxSizing === 'border-box' ? ['paddingLeft', 'paddingRight', 'borderLeftWidth', 'borderRightWidth'].reduce((n, k) => n + parseFloat(s[k] || 0), 0) : 0;
+         const width = content + box;
+         if (s.display === 'inline') e.style.display = 'inline-block';
+         e.style.width = width + 'px'; e.style.maxWidth = width + 'px'; narrowed++;
+       }
+     }
      let breaks = 0, multiLine = 0; const samples = [];
      for (const e of els) { const r = midWordBreaks(e); breaks += r.breaks; if (r.lines > 1) multiLine++; samples.push(...r.samples); }
-     return { elements: els.length, multiLineElements: multiLine, midWordBreaks: breaks, bodyKeepAll: getComputedStyle(document.body).wordBreak === 'keep-all' ? 1 : 0, samples: samples.slice(0, 8) };`,
-    { selector, needle: textNeedle },
+     return { elements: els.length, narrowedElements: narrowed, multiLineElements: multiLine, midWordBreaks: breaks, bodyKeepAll: getComputedStyle(document.body).wordBreak === 'keep-all' ? 1 : 0, samples: samples.slice(0, 8) };`,
+    { selector, needle: textNeedle, narrow },
   );
   return { pass: m.elements > 0 && m.multiLineElements > 0 && m.midWordBreaks === 0 && m.bodyKeepAll === 1, measured: m };
 }
@@ -293,8 +315,8 @@ export const devices = [
   },
   { id: 'C-10-event-empty', surface: 'keepEvent', title: 'Korean event empty state breaks only between words', run: (ctx) => keepAllDevice(ctx, '.event-list-empty') },
   { id: 'C-10-progress', surface: 'keepProgress', title: 'Korean progress hint breaks only between words', run: (ctx) => keepAllDevice(ctx, '.left-progress-hint, .left-progress-detail') },
-  { id: 'C-10-links', surface: 'keepLinks', title: 'Korean links hint breaks only between words', run: (ctx) => keepAllDevice(ctx, '.left-links-hint') },
-  { id: 'C-10-objects', surface: 'keepObjects', title: 'Korean object card names break only between words', run: (ctx) => keepAllDevice(ctx, '.left-props-name') },
+  { id: 'C-10-links', surface: 'keepLinks', title: 'Korean links hint breaks only between words', run: (ctx) => keepAllDevice(ctx, '.left-links-hint', null, { narrow: true }) },
+  { id: 'C-10-objects', surface: 'keepObjects', title: 'Korean object card names break only between words', run: (ctx) => keepAllDevice(ctx, '.left-props-name', null, { narrow: true }) },
   { id: 'C-10-toast', surface: 'keepToast', title: 'Korean review card text breaks only between words', run: (ctx) => keepAllDevice(ctx, 'div, p, span', '기본 확인 결과만') },
   wave0('IS-029'),
   wave0('IS-061'),
