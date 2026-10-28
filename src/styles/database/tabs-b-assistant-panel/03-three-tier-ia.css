@@ -16,7 +16,7 @@
   display: none;
 }
 .ai-action-zone {
-  border-top: 2px solid var(--accent-border, var(--border-strong));
+  border-top: 1px solid var(--border-default);
   flex: 0 0 auto;
   max-height: 46vh;
   overflow-y: auto;
