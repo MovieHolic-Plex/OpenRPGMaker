@@ -820,3 +820,5 @@
 
 /* 지명 띠(에메랄드): 실내에서 가운데 위쪽은 안내 직원의 머리가 놓이는 자리다 — 띠를 왼쪽 위 모서리로 옮겨 가리지 않는다(2026-10-21 시각 QA). */
 .zone-feedback[data-monster-style="emerald"] .zone-feedback-banner { left: 6px; right: auto; top: 6px; transform: none; max-width: 60%; text-align: left; }
+/* 목표 안내창은 대사보다 한 단 작은 Galmuri9 원래 격자(10px)로 — 18px 로는 한 문장이 다섯 줄 판이 되어 마을 4분의 1을 덮었다(장부 hud #132·#133·#136). */
+.zone-feedback[data-monster-style="emerald"] .zone-feedback-objective { font: 10px/14px var(--font-pixel-small); padding: 3px 6px; max-width: 46%; }

@@ -51,6 +51,10 @@
   opacity: 1;
 }
 .play-stage {
+  /* 한국어는 어절(공백) 단위로 줄을 바꾼다 — 기본값은 글자 사이에서 꺾어 「암호/를」「가운/데」가 됐다(장부 hud.json).
+     무대 안 모든 창(목표 안내·대사·메뉴·엔딩)이 물려받는다. 공백 없는 긴 낱말은 anywhere 가 넘칠 때만 끊는다. */
+  word-break: keep-all;
+  overflow-wrap: anywhere;
   background: #000;
   height: var(--play-logical-height);
   left: var(--play-stage-left);
@@ -104,6 +108,12 @@
    위쪽 선택지도 대사용 높이(position-top 의 height)를 물려받으면 셋째 줄이 잘린다. */
 .player-layout .play-stage > .dialogue-overlay.choices-active.position-bottom,
 .player-layout .play-stage > .dialogue-overlay.choices-active.position-top {
+  height: auto;
+  min-height: min(var(--runtime-choice-panel-height, 26%), var(--play-visible-height));
+  max-height: calc(var(--play-visible-height) - 8px);
+}
+/* 숫자 입력창도 내용 높이로 자란다 — 대사용 높이(25%)를 물려받으면 제목·확인 단추가 창 밖으로 넘쳤다(장부 hud #35). */
+.player-layout .play-stage > .dialogue-overlay:has(> .number-input-box) {
   height: auto;
   min-height: min(var(--runtime-choice-panel-height, 26%), var(--play-visible-height));
   max-height: calc(var(--play-visible-height) - 8px);
