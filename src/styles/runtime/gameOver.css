@@ -63,6 +63,15 @@
 .game-over-screen:has(> .cinematic-background) .game-over-actions .game-over-choice {
   background: rgb(8 8 9 / 0.74);
 }
+/* 선택지 판들은 같은 폭으로 한 덩어리가 된다 — 글 길이마다 판 폭이 달라 계단처럼 어긋났다(2026-10-29 폐병원 「다시 도망친다」/「타이틀로 돌아가기」). */
+.game-over-screen:has(> .cinematic-background) .game-over-actions {
+  left: 50%;
+  right: auto;
+  width: max-content;
+  max-width: 84%;
+  transform: translateX(-50%);
+  align-items: stretch;
+}
 .game-over-actions {
   position: absolute;
   top: 72%;
