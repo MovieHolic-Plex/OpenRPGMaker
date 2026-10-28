@@ -482,6 +482,12 @@ v5 의 작은 삼각대 망원경·천체 모형·지구본·1칸 별자리표·
 - `lab bench` 그림에 빨강·흰 공이 그려져 있어 검수자가 몬스터 공(상용 IP)을 닮았다고 짚었다 — 연구소 견본에는 쓰지 않았다.
 - 이름: 객실·여관 방·손님 방 → inn_room 먼저(침실은 bedroom 먼저), 무기점 → weapon_shop, 민가·오두막 → living, 가게·상점 → general_store 먼저.
 
+**3판(같은 날, 다른 장르 + 다시 짠 큰 판 — 모두 43장):** 앞 판에서 떨어진 크기를 검수 지적대로 다시 짰다 — 여관 홀 9×8(`tavern-s2`, 계산대 뒤 통로 두 줄·4인 식탁)·13×8(`tavern-l2`), 민가 11×8(`house-l2`, 부엌·식탁·침대 세 구역), 몬스터 연구소 12×8(`laboratory-xl2`, 부화기·우리·먹이 구유). 다른 장르: 진료실 7×7(`clinic_exam`)·간호사실 7×7(`nurse_station`)·지하 영안실 8×7(`morgue`, 관 줄), 다락 6×6·8×7(`attic`), 할머니 집 거실 7×7(`living`)·장롱 있는 방 7×7(`bedroom`). 묶음 파일 `rooms-retry.mts`·`rooms-genre1.mts`·`rooms-genre2.mts`.
+- 떨어진 것(4판): 병실 `ward` 6×7·9×7 — `patient bed` 가 벽 기물이라 북벽 줄에만 놓여 아래 절반을 채울 병원 기물이 없다. 빵집·꽃집·옷가게·시골 잡화점 — 계산대 뒤 한 줄이면 「주인 자리 없음」, 두 줄이면 가운데가 휑했고, 계산대 위 탁상 물건이 서랍 앞면에 그려져 「서랍장」으로 읽혔다(탁상 물건 높이는 따로 볼 일). 할머니 집 거실 9×8.
+- **병원 그림이 없다**(필요한 그림): 방 가운데 놓는 철제 병원 침대(바닥 기물), 링거 걸이, 휠체어, 들것, 의료 카트, 커튼 레일 칸막이, 영안실 냉장 서랍장, 철제 부검대, 버려진 병원 소품(판자 댄 창·물 얼룩·흩어진 서류·쓰러진 침대).
+- `lab bench` 그림(빨강·흰 공 — 몬스터 공을 닮음)은 견본에서 뺐다(칩셋 그림은 그대로). laboratory-m 은 그걸 빼고 다시 받은 검수에서 떨어져 뺐다.
+- 이름: 영안실·안치실 → morgue, 병실·병동 → ward(견본 없으면 침실), 진료실 → clinic_exam, 간호사실 → nurse_station, 다락 → attic, 꽃집 → flower_shop(견본 없음 → 잡화점), 장롱 → bedroom. `roomPurpose` 병원 쓰임의 atlas 목록 = ward·clinic_exam·nurse_station·morgue.
+
 예제 맵에 없거나 약한 용도를 칩셋에 이미 있는 기물만으로 짠 방 견본 15장(새 그림 없음): 교실 8×7·10×9·13×10(`classroom`), 잡화점 7×8·9×8(`general_store`), 연구실 9×7·10×8(`laboratory`), 감옥 7×8·11×9(`jail` — 같은 폭 감방 + 간수 자리), 예배당 13×9(`chapel`, 원본 성당처럼 동쪽 독립 제단을 보는 옆모습 회중석), 방탈출 작은 방 서재 6×7·8×8 / 침실 6×7·8×8 / 창고 6×7. 잡화점 11×9·예배당 10×9 는 5판 검수까지 휑한 바닥으로 떨어져 뺐다.
 
 - 원본 `scripts/content/interior-authored/rooms.mts`(글자 그림: hang 줄 + 바닥 줄, 기물 글자는 왼쪽 위 칸에만) → `bun scripts/content/interior-authored/build.mts` → `src/assets/interiorAuthoredRoomTemplates.json`(templates.ts 가 v5·plus 견본에 이어 붙인다). 지도 이름 `authored-<화풍>-<id>` — 화풍(town/noble/fantasy)은 그 종류 견본의 다수 화풍과 맞춰야 짓기가 고른다(침실은 town, 서재는 noble).

@@ -31,6 +31,14 @@ function tilesetFor(style: string | undefined): string {
 const KIND_WORDS: readonly [RegExp, string[]][] = [
   [/선술집|주점|술집|tavern|pub|bar\b|홀/iu, ["tavern", "dining", "great_hall"]],
   [/부엌|주방|kitchen|조리/iu, ["kitchen", "prep"]],
+  // 다른 장르 실내(2026-10-29, 손으로 짠 견본): 병원(병실·진료실·간호사실·영안실), 다락, 꽃집. 「창고」·「침실」 규칙보다 먼저.
+  [/영안실|시체 ?안치|안치실|morgue/iu, ["morgue", "cellar"]],
+  [/병실|병동|입원실|\bward\b/iu, ["ward", "bedroom"]],
+  [/진료실|진찰실|진료|exam ?room/iu, ["clinic_exam", "ward"]],
+  [/간호사실|간호|nurse/iu, ["nurse_station", "clinic_exam"]],
+  [/다락|attic|loft/iu, ["attic", "storeroom"]],
+  [/꽃집|꽃 ?가게|flower ?shop|florist/iu, ["flower_shop", "general_store"]],
+  [/장롱/iu, ["bedroom"]],
   [/창고|저장|store ?room|pantry|식료/iu, ["storeroom", "pantry"]],
   [/지하|cellar|술 ?창고/iu, ["cellar", "storeroom"]],
   // 여관 객실은 inn_room 견본(침대·협탁·옷장·작은 탁자, 손으로 짠 5×6~7×7)이 먼저 — 침실 견본은 귀족 방 깔개로 2층 객실 아래 절반이 휑했다(2026-10-29 vm1 flash mystery).
@@ -72,7 +80,7 @@ const SUBKIND_WORDS: readonly [RegExp, string][] = [
   [/교무실|staff ?room/iu, "staff"], [/보건실|양호실|infirmary/iu, "infirmary"], [/음악실|밴드|band|music/iu, "band"], [/과학실|실험실|science|lab/iu, "sci"],
   [/교실|classroom/iu, "class"], [/현관|신발장|genkan/iu, "genkan"], [/계단|stair/iu, "stair"], [/복도|corridor|hall ?way/iu, "corridor"],
   [/병실|병동|ward/iu, "ward"], [/간호|nurse/iu, "nurse"], [/응급|emergency|er/iu, "er"], [/진료|진찰|exam/iu, "exam"], [/대기|waiting|lobby/iu, "wait"],
-  [/제의실|vestry/iu, "vestry"], [/서재|study/iu, "study"],
+  [/제의실|vestry/iu, "vestry"], [/서재|study/iu, "study"], [/영안실|안치|morgue/iu, "morgue"],
 ];
 /** 목적 문장이 집 방 자체를 말하는가(「주인 침실」「뒤쪽 부엌」) — 그러면 집 방 kind 를 그대로 둔다. */
 const HOME_ROOM_WORDS = /침실|침대|잠자|부엌|주방|창고|광|지하실|욕실|화장실|식당|bed ?room|kitchen|storage|store ?room|cellar|bath|dining/iu;

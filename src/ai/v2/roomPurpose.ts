@@ -97,8 +97,8 @@ export const ROOM_PURPOSES: readonly RoomPurpose[] = [
     offProps: HOME_PROPS,
   },
   {
-    id: "hospital", ko: "병원", words: /병원|병동|병실|진료|진찰|응급|간호|보건실|양호실|hospital|ward|clinic|surgery|infirmary/iu,
-    kinds: { modern_city: ["hosp-ward-west", "hosp-nurse-core", "hosp-er", "cl-exam-a", "cl-waiting", "waiting_room", "school-infirmary"], jp_city: ["hosp-ward", "hosp-exam", "hosp-lobby", "hosp-corridor", "infirmary"], modern_campus: ["infirmary"] },
+    id: "hospital", ko: "병원", words: /병원|병동|병실|진료|진찰|응급|간호|보건실|양호실|영안실|hospital|ward|clinic|surgery|infirmary|morgue/iu,
+    kinds: { atlas_biome_interior: ["ward", "clinic_exam", "nurse_station", "morgue"], modern_city: ["hosp-ward-west", "hosp-nurse-core", "hosp-er", "cl-exam-a", "cl-waiting", "waiting_room", "school-infirmary"], jp_city: ["hosp-ward", "hosp-exam", "hosp-lobby", "hosp-corridor", "infirmary"], modern_campus: ["infirmary"] },
     offProps: /안락의자|냉장고|찻상|벽난로|armchair|fridge/iu,
   },
   {

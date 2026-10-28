@@ -5,7 +5,8 @@ import type { AuthoredRoom } from "./lib.mts";
 
 const SCHOOL = { b: "cabinet:book+bookb+bookg", W: "window", B: "blackboard", M: "wall map", C: "wall clock", S: "bookshelf 2w", s: "bookshelf 1w", h: "chair S", e: "desk 1x1", n: "chair N", T: "desk 3x1", g: "globe", P: "potted fern", m: "map rolls", k: "chest" };
 const SHOP = { W: "window", L: "shelf:candle", R: "weapon rack", I: "item shop shelf", H: "helmet shelf", p: "cabinet:potion+potionb+potiong", j: "cabinet:jar+jarb+jarg", d: "cabinet:candle", C: "counter 3x1", c: "counter 4x1", D: "display 2x1", t: "table:potion+flask", A: "armor stand", b: "barrel", x: "crate", s: "sack", r: "arrow barrel", P: "potted fern", k: "chest" };
-const LAB = { x: "crate", W: "window", K: "shelf:skull+crystal", H: "hang:herb", V: "shelf:vial+flask", S: "bookshelf 2w", s: "bookshelf 1w", p: "specimen shelf", d: "apothecary drawers", c: "cauldron", A: "alembic", L: "lab bench", Z: "alchemy table", w: "work 2x1", o: "stool", b: "barrel", k: "chest", g: "globe", m: "magic circle" };
+// L 은 작업대(work 2x1) — 원래 lab bench 였으나 그림의 빨강·흰 공이 몬스터 공을 닮아 견본에서 뺐다(2026-10-29, 칩셋 그림은 그대로).
+const LAB = { x: "crate", W: "window", K: "shelf:skull+crystal", H: "hang:herb", V: "shelf:vial+flask", S: "bookshelf 2w", s: "bookshelf 1w", p: "specimen shelf", d: "apothecary drawers", c: "cauldron", A: "alembic", L: "work 2x1", Z: "alchemy table", w: "work 2x1", o: "stool", b: "barrel", k: "chest", g: "globe", m: "magic circle" };
 const JAIL = { g: "dining 3x1", S: "shackles", T: "wall torch", Z: "straw bed", u: "slop bucket", q: "drip puddle", t: "dining 2x1", o: "stool", R: "weapon barrel", A: "armor stand", B: "brazier", b: "barrel", k: "chest", x: "crate" };
 const CHAPEL = { W: "window", T: "tall stained window", L: "sanctuary lamp", A: "altar E", c: "candelabra", v: "votive stand", l: "lectern", p: "pew E2", f: "holy water font", P: "potted flowering", k: "chest" };
 const STUDY = { W: "window", M: "wall map", p: "picture", b: "cabinet:book+bookb+bookg", S: "bookshelf 2w", s: "bookshelf 1w", c: "clock", T: "desk 3x1", t: "desk 2x1", n: "chair N", a: "armchair", r: "dining 1x1", g: "globe", e: "telescope", k: "chest", m: "map rolls" };
@@ -75,16 +76,7 @@ export const ROOMS: AuthoredRoom[] = [
     ],
     goods: [[0, 2, "cashbox"], [1, 2, "scale"], [3, 2, "bell"], [2, 4, "potion"], [3, 4, "candle"]] },
   // ── 연구실(연금 작은 방 둘뿐) ── 실험대·연금 탁자 위에 기구, 솥·표본장·약재 서랍·책장, 큰 방은 가운데 마법진
-  { id: "laboratory-m", kind: "laboratory", style: "fantasy", floor: "flag", wall: "stone", legend: LAB,
-    hang: "...K..H.W",
-    plan: [
-      "S.p.c..d.",
-      ".........",
-      ".L....Z..",
-      ".o.....o.",
-      "k.......b",
-    ],
-    goods: [[6, 2, "mortar"], [7, 2, "potionb"]] },
+  // laboratory-m(9×7)은 lab bench(몬스터 공을 닮은 그림)를 빼고 다시 받은 Sonnet 검수에서 휑한 바닥·연금술 공방 인상으로 FAIL 해 뺐다(2026-10-29) — 연구실은 laboratory-s·l·xl2 가 맡는다.
   { id: "laboratory-l", kind: "laboratory", style: "fantasy", floor: "flag", wall: "stone", legend: LAB,
     hang: "...K.H..W.",
     plan: [
