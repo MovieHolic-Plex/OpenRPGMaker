@@ -46,7 +46,8 @@ v1 의 `script_cutscene` 비트로 옮긴다(`events.ts`).
 - 자동 플레이(`qa/gameCheck/autoPlay`)는 컷신 `moveEvent` 가 옮긴 인물 칸으로 걸어간다(`sceneTestRunner.applyMoveEventForRunner`, 결과 `movedEvents`,
   저장 지점에서 이어 도는 판도 `initialEventPositions` 로 같은 자리).
 - 컨셉 카드 한 줄(「… (회상 스토리)」)도 `wantsWholeGame` — 1턴부터 출하 검사·화면 검수가 돈다.
-- 화면 검수: 앞 판과 같은 결함은 ↻ 표시와 함께 「고친 뒤 show_map_region 으로 직접 보기·다른 물건으로 바꾸기·인물 그림 바꾸기」 지시. 오프닝 프레임은 `bare:true`
+- 화면 검수 결함 나누기(2026-10-28 fix-gamepath, mt2 terra 1턴 575초 중 대부분이 고치기 반복 — 9→6→5→4→4, 남은 넷은 조명 막·타이틀 그림 잘림·화풍 차이인데 모델이 조명값만 바꾸며 돌았다): `vqa.ts` `vqaClassify` 가 결함마다 «동사로 고칠 수 있는가»를 낱말·대상으로 정한다. 모델 밖 = 검수 그림에 주인공 없음(`player-not-drawn`)·타이틀 그림에 제목/메뉴 없음(`shot-limit`)·오프닝 자막 크기(`runtime-text`)·화풍/시점 차이(`art-style`)·칩 배율(`sprite-scale`)·화면 배율/여백/잘림(`runtime-screen`)·HUD·맵 조명/분위기(`lighting`)·실내 출구 통로/문틀(`builder-exit`)·타일 짜임/빈 공백/격자(`builder-tiles`)·칩셋에 그림 없음(`missing-art`)·타이틀/오프닝 그림 자체의 잘림·구도·격자(`title-art`). 그 밖(가구 겹침·빈 방·물건·이벤트·대사·장르에 안 맞는 타이틀/오프닝 그림 고르기)은 고칠 수 있다. `vqaActionable(round, previous)` = fix(넘김) / ledger(모델 밖) / stuck(고칠 수 있는 종류인데 앞 판에도 그대로 — `vqaRepeated`). 고치기 지시·다시 시키기·고치기 머리글에는 fix 만 싣는다. fix 가 0 이면 `vqaShouldContinue` 가 멈추고 실행기가 남은 결함 보고 지시로 끝낸다(막음 연장 판도 fix 막음이 있을 때만). 모델 밖 결함은 실행 상태 `v2.vqa.outside` 「런타임/빌더 결함(모델 밖) [종류] …」로 한 번씩 남아 ai-activity 기록에 쌓인다(우리가 모아 고칠 목록). 남은 결함 수·출하 차단·최종 보고 목록은 장부로 뺀 것까지 그대로 센다(`vqaSummary` 는 「그중 모델 밖 N건」을 덧붙인다). 분류 표: 저장소 밖 `ledger/evidence/gamepath/06-vqa-classify.txt`(저장된 턴 기록의 실제 결함 52건: 고침 21·모델 밖 31).
+- 화면 검수: 오프닝 프레임은 `bare:true`
   로 그려 「샷 id · ms」 글씨를 검수자에게 보이지 않는다(그 글씨를 세 판 내내 결함으로 짚었다).
 
 ### 2차 (2026-10-27, J98·J101~J106 — romance-j91·toy-j91 판정)

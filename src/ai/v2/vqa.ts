@@ -129,6 +129,62 @@ export async function reviewVqaRound(input: {
   }
 }
 
+// ── 고칠 수 있는 결함인가 ───────────────────────────────────────────────────────────
+// 2026-10-28 mt2 terra 방탈출 1턴 575초 중 대부분이 고치기 반복이었다(결함 9→6→5→4→4). 남은 넷은 조명 막·타이틀 그림 잘림·
+// 타이틀/맵 화풍 차이처럼 조수 동사로 못 고치는 것인데, 모델이 조명값만 바꾸며 돌았다. 결함마다 «동사로 고칠 수 있는가»를
+// 낱말로 결정적으로 나눈다. 못 고치는 것은 장부(ai-activity 「런타임/빌더 결함(모델 밖)」)로만 남기고 고치기 차례에 넘기지 않는다.
+// 남은 결함 수(보고·출하 차단)는 그대로 센다 — 장부로 뺐다고 결함이 사라지지 않는다.
+export type VqaDefectKind =
+  | "runtime-screen" | "runtime-hud" | "runtime-text" | "lighting" | "art-style" | "missing-art" | "title-art" | "sprite-scale" | "player-not-drawn" | "shot-limit" | "builder-exit" | "builder-tiles"
+  | "fixable";
+export interface VqaDefectClass { readonly fixable: boolean; readonly kind: VqaDefectKind; readonly why: string }
+type Target = VqaShot["kind"] | undefined;
+/** 순서대로 처음 맞는 것. only = 그 대상(맵·타이틀·오프닝) 결함에만. */
+const OUTSIDE: readonly (readonly [VqaDefectKind, RegExp, string, (readonly Target[])?])[] = [
+  ["player-not-drawn", /플레이어 ?캐릭터가 (어디에도 )?(보이지|없)|주인공이 (어디에도 )?(보이지|없)|player (character|sprite) (is )?(missing|not visible)/iu, "검수 그림은 편집기 렌더라 주인공을 그리지 않는다"],
+  ["shot-limit", /제목 글자|시작 버튼|메뉴 (글|항목|버튼)|타이틀 (글자|문구)가 (없|안 보)/u, "검수 그림은 타이틀 배경 그림만 찍는다(제목·메뉴는 런타임이 겹쳐 그린다)", ["title"]],
+  ["runtime-text", /(자막|오프닝 문구|문구|글씨)[^.。]{0,20}(작|읽기 어렵|안 읽)/u, "애니메틱 자막 크기·자리는 런타임 렌더가 정한다", ["opening"]],
+  ["art-style", /화풍|그림체|시점|아이소메트릭|isometric|회화풍|같은 게임으로 보이지/iu, "타이틀·오프닝 그림과 칩셋의 화풍 차이는 칩셋이 정한다"],
+  ["sprite-scale", /픽셀이 (굵|크)|해상도가 어긋|크기가 (안 맞|어긋)/u, "칩 그림 배율은 빌더·런타임이 정한다"],
+  ["runtime-screen", /배율|확대[^.。]{0,6}(되어|돼)|레터박스|검은 ?(띠|테두리|여백)|화면 (밖|아래|위|가장자리)[^.。]{0,10}(잘|끊|돌출)|가장자리에서 끊|여백|카메라|letterbox|margin/u, "화면 배율·여백·잘림은 런타임 화면 맞춤이 정한다"],
+  ["runtime-hud", /HUD|목표 ?(표시|창|칩)|상태창|미니맵|메뉴 ?창|체력 ?바|UI ?가/u, "HUD·UI 는 런타임이 그린다"],
+  ["lighting", /조명|어둠 ?\d|밝기|조도|광원|불빛|명암|색조|색감|분위기|긴장감|아늑|ambient|tint/iu, "맵 조명 막·분위기 색은 조명 값으로 해결되지 않는다(조명값만 바꾸며 돌았다)", ["map"]],
+  ["builder-exit", /(출구|출입구|출입문|통로|복도)[^.。]{0,40}(어두운|빈|끊|잘|돌출|공백|어디로)|문틀|문 표시가 없/u, "실내 출구 통로·문 모양은 방 빌더·런타임 여백이 정한다", ["map"]],
+  ["builder-tiles", /타일 ?(스타일|질감)|질감과 색이 서로 달|아무 타일도|남색 (빈|공백)|단색 [^.。]{0,6}공백|격자 ?선|그리드/u, "타일 짜임·빈 공백은 빌더 템플릿 문제다", ["map"]],
+  ["missing-art", /맞는 그림이 없|그림이 없어|칩셋에 없|플레이스홀더|placeholder/iu, "칩셋에 맞는 그림이 없다", ["map"]],
+];
+/** 타이틀·오프닝 그림 «품질»(잘림·격자·구도)은 모델이 고칠 수 없다. 장르·장소에 안 맞는 그림·기본 템플릿 오프닝은 고칠 수 있다(다른 그림·map-view 타이틀·오프닝 끄기). */
+const TITLE_QUALITY = /잘(려|린|림|렸)|구도|격자|그리드|여백|공백|마름모|끊겨|흐릿|번져/u;
+export function vqaClassify(d: VqaDefect): VqaDefectClass {
+  const spot = d.where.includes(" · ") ? d.where.slice(d.where.lastIndexOf(" · ") + 3) : "";
+  const text = `${spot} ${d.what}`;
+  const target = d.target?.kind;
+  if ((target === "title" || target === "opening") && TITLE_QUALITY.test(d.what) && !/글자|제목|문구|자막/u.test(d.what))
+    return { fixable: false, kind: "title-art", why: "타이틀·오프닝 그림 자체의 품질(잘림·구도·격자)은 자원 문제다" };
+  for (const [kind, re, why, only] of OUTSIDE) if ((!only || only.includes(target)) && re.test(text)) return { fixable: false, kind, why };
+  return { fixable: true, kind: "fixable", why: "가구·빈 방·이벤트·대사·그림 선택은 동사로 고친다" };
+}
+
+/**
+ * 이번 판 결함을 나눈다: fix = 고치기 차례에 넘길 것, ledger = 모델 밖(장부), stuck = 고칠 수 있는 종류지만 앞 판에도 그대로 있던 것
+ * (두 판 연속 그대로 — 고치기가 화면에서 효과가 없었다. 다음으로 넘어간다).
+ */
+export function vqaActionable(round: VqaRound | undefined, previous?: VqaRound): { fix: VqaDefect[]; ledger: VqaDefect[]; stuck: VqaDefect[] } {
+  const fix: VqaDefect[] = [], ledger: VqaDefect[] = [], stuck: VqaDefect[] = [];
+  for (const d of round?.defects ?? []) {
+    if (!vqaClassify(d).fixable) ledger.push(d);
+    else if (vqaRepeated(d, previous)) stuck.push(d);
+    else fix.push(d);
+  }
+  return { fix, ledger, stuck };
+}
+
+/** 장부 줄(ai-activity 실행 상태로 남는다) — 우리가 모아 런타임·빌더에서 고칠 결함. */
+export function vqaLedgerLine(d: VqaDefect): string {
+  const c = vqaClassify(d);
+  return `런타임/빌더 결함(모델 밖) [${c.kind}] ${d.where} — ${d.what} (${c.why})`;
+}
+
 /** 깨끗한 판 = 검수가 실제로 돌았고 결함 0. 검수하지 못한 판은 깨끗하지 않다. */
 export const vqaClean = (round: VqaRound): boolean => !round.problem && round.defects.length === 0;
 
@@ -136,7 +192,11 @@ export const vqaClean = (round: VqaRound): boolean => !round.problem && round.de
 export function vqaShouldContinue(rounds: readonly VqaRound[]): boolean {
   const last = rounds.at(-1);
   if (!last || vqaClean(last)) return false;
-  if (rounds.length >= (vqaBlockers(last).length ? VQA_ROUND_CAP : VQA_MAX_ROUNDS)) return false;
+  // 결함이 있는데 고칠 수 있는 것이 0(모두 모델 밖이거나 두 판 연속 그대로)이면 더 돌지 않는다. 검수 못 한 판(결함 0·problem)은 아래 규칙대로.
+  const act = vqaActionable(last, rounds.at(-2));
+  if (last.defects.length && !act.fix.length) return false;
+  // 판을 더 주는 막음(blocker) 연장은 고칠 수 있는 막음이 남았을 때만.
+  if (rounds.length >= (act.fix.some((d) => d.severity === "blocker") ? VQA_ROUND_CAP : VQA_MAX_ROUNDS)) return false;
   if (last.problem && rounds.at(-2)?.problem) return false;
   return true;
 }
@@ -162,7 +222,7 @@ export function vqaFixRetry(round: VqaRound, brief?: string): string {
   return [
     ...(brief ? [brief, ""] : []),
     `[화면 검수 ${round.round}/${VQA_MAX_ROUNDS} — 고치기 다시] 앞 차례에서 도구를 하나도 부르지 않고 보고만 고쳤다. 보고를 고치는 것은 고치기가 아니다. 지금 도구로 아래 결함을 하나씩 고친다 — 결함마다 대상 맵·그림을 바꾸는 도구를 부른다.`,
-    ...round.defects.map(vqaDefectLine),
+    ...vqaActionable(round).fix.map(vqaDefectLine),
     "정말 고칠 수 없는 결함은 고치지 말고 최종 보고에 «미해결»로 남긴다. 고치지 않은 결함을 «고쳤다»고 쓰지 않는다.",
   ].join("\n");
 }
@@ -208,10 +268,9 @@ export function vqaFollowUp(round: VqaRound, brief?: string, previous?: VqaRound
   return [
     ...(brief ? [brief, ""] : []),
     `[화면 검수 ${round.round}/${VQA_MAX_ROUNDS}] 다른 모델의 검수자(${round.reviewer})가 실제 그림에서 아래 결함을 찾았다. 각각 고친다 — 맵은 show_map_region 으로 다시 보고, 타이틀·오프닝은 다시 그려 확인한다. 고칠 수 없으면 고치지 말고 최종 보고에 남은 결함으로 쓴다.`,
-    ...round.defects.map((d, i) => vqaDefectLine(d, i) + (vqaRepeated(d, previous) ? " ↻ 앞 판에도 같은 결함 — 앞 고치기가 화면에서 효과가 없었다" : "")),
-    // 2026-10-26 toy-j90: 2→2→2. 검 진열대를 빼고 「장난감 선반」을 onOverlap:'nearest' 로 찍었더니 같은 구석에 내려앉았고, 파란 갑옷 인물(NPC 그림)은
-    // 다른 갑옷 그림으로만 바뀌었다. 조수는 고친 뒤 한 번도 그 자리를 보지 않았다.
-    ...(round.defects.some((d) => vqaRepeated(d, previous)) ? ["↻ 표시 결함은 같은 방법을 되풀이하지 않는다: (1) 고친 뒤 show_map_region 으로 그 자리를 직접 본다(찍은 물건이 어디에 내려앉았는지·무엇으로 보이는지), (2) 비슷한 물건을 옆에 다시 찍지 말고 전혀 다른 물건으로 바꾸거나 빼고, (3) 인물(이벤트) 그림 때문이면 그 인물의 그림을 결함과 거리가 먼 것으로 바꾸거나 숨긴다. 그래도 안 되면 «미해결»로 남긴다."] : []),
+    ...vqaActionable(round, previous).fix.map((d, i) => vqaDefectLine(d, i)),
+    // 모델 밖(런타임·빌더) 결함과 두 판 연속 그대로인 결함은 고치기 차례에 넘기지 않는다 — 남은 결함으로는 센다.
+    ...(() => { const a = vqaActionable(round, previous); const n = a.ledger.length + a.stuck.length; return n ? [`(이 밖에 결함 ${n}건 — 모델 밖 ${a.ledger.length}건은 런타임/빌더 장부로, 두 판 연속 그대로인 ${a.stuck.length}건은 미해결로 남긴다. 이것들은 고치지 말고, 최종 보고의 남은 결함에 그대로 센다.)`] : []; })(),
     "보고만 다시 쓰는 것은 고치기가 아니다 — 이 차례에는 도구로 그림을 바꾼다(도구를 하나도 부르지 않으면 이 판은 세지 않고 한 번 더 시킨 뒤, 그래도 안 하면 «미해결»로 끝난다). 고치지 않은 결함을 «고쳤다»고 쓰지 않는다.",
     "다 고친 뒤 「최종 보고(앞 보고를 고침):」로 시작하는 보고 하나로 앞 보고를 대신한다. 검수자가 다음 판에서 같은 그림을 다시 본다.",
   ].join("\n");
@@ -224,7 +283,8 @@ export function vqaSummary(rounds: readonly VqaRound[]): { readonly clean: boole
   const weak = rounds.some((r) => r.reviewer.includes("같은 계열 검수")) ? " · 「같은 계열 검수」(약한 증거)" : "";
   const counts = rounds.map((r) => (r.problem && !r.defects.length ? "검수 못 함" : `${r.defects.length}건`)).join(" → ") + weak;
   if (vqaClean(last)) return { clean: true, text: `화면 검수 ${rounds.length}판: ${counts} — 마지막 판 결함 없음`, leftover: [] };
-  return { clean: false, text: `화면 검수 ${rounds.length}판: ${counts} — 남은 결함 ${last.defects.length}건${last.problem ? ` (${last.problem})` : ""}`, leftover: last.defects };
+  const outside = last.defects.filter((d) => !vqaClassify(d).fixable).length;
+  return { clean: false, text: `화면 검수 ${rounds.length}판: ${counts} — 남은 결함 ${last.defects.length}건${outside ? `(그중 모델 밖 ${outside}건)` : ""}${last.problem ? ` (${last.problem})` : ""}`, leftover: last.defects };
 }
 
 /** 결함이 남은 채 고리가 끝났을 때 조수에게 줄 마지막 지시 — 더 고치지 말고 남은 목록을 보고에 그대로 쓴다. */
@@ -235,7 +295,7 @@ export function vqaLeftoverInstruction(rounds: readonly VqaRound[], why?: string
   return [
     ...(blockers.length ? [`[출하 차단 vqa-blocker] 플레이에 지장 주는 화면 결함 ${blockers.length}건이 ${rounds.length}판 뒤에도 남았다 — 이 게임은 «완성»이 아니다. 보고 첫 줄에 「아직 완성 아님: 화면 결함 ${blockers.length}건」이라고 쓴다.`] : []),
     `[화면 검수 끝 — ${summary.text}${why ? ` · ${why}` : ""}] 더 고치지 말고, 앞 보고를 대신하는 최종 보고를 「최종 보고(앞 보고를 고침):」로 시작해 쓴다. 끝에 아래 남은 것을 그대로 적는다(«다 됐다»고 쓰지 않는다):`,
-    ...(summary.leftover.length ? summary.leftover.map((d) => `- ${d.where}: ${d.what}`) : [`- 화면 검수 미완료${problem ? `(${problem})` : ""}`]),
+    ...(summary.leftover.length ? summary.leftover.map((d) => `- ${d.where}: ${d.what}${vqaClassify(d).fixable ? "" : " (런타임/빌더 결함 — 모델 밖)"}`) : [`- 화면 검수 미완료${problem ? `(${problem})` : ""}`]),
   ].join("\n");
 }
 
