@@ -129,11 +129,23 @@
    패널 최소 글자 11px · 최소 과녀 24px 에 맞춘다(2026-09-27). */
 .editor-layout .left-panel-stack .sidebar-paint-options .tile-brush-label,
 .editor-layout .left-panel-stack .sidebar-paint-options .tile-brush-chip {
-  font-size: 11px;
+  font-size: 12px;
 }
 .editor-layout .left-panel-stack .sidebar-paint-options .tile-brush-chip {
   line-height: 22px;
 }
+/* 이웃 연결·구조 보조: 이름이 고정된 켜고 끄기 단추(체크 표시 + 이름). 상태는 aria-pressed 와 체크가 말한다. */
+.editor-layout .left-panel-stack .tile-brush-chip.tile-brush-toggle {
+  align-items: center;
+  display: inline-flex;
+  font-family: var(--font-ui);
+  font-weight: 600;
+  gap: 4px;
+  min-height: 28px;
+  padding: 0 8px 0 6px;
+}
+.editor-layout .left-panel-stack .tile-brush-chip.tile-brush-toggle .tile-brush-toggle-mark { flex: none; }
+.editor-layout .left-panel-stack .tile-brush-chip.tile-brush-toggle:not(.active) { color: var(--text-2); font-weight: 500; }
 
 /* Focus modes: fixed task chrome, one growing sheet, bounded auxiliary surfaces. */
 .editor-layout .left-panel:has(> .left-panel-stack:only-child) {
