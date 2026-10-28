@@ -22,12 +22,14 @@ import { appendFile, mkdir, readFile, writeFile } from "node:fs/promises";
 import { basename, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { startPlayerQaServer } from "../../lib/runtimeQaRun.mjs";
+import { loadCheckpointSet, selectCheckpoints } from "../../lib/runtimeQaCheckpoints.mjs";
 import {
   bootPlayPage,
   capturePageErrors,
   captureSaveSnapshot,
   formatPlayState,
   launchPlayBrowser,
+  normalizePlayKey,
   prepareBoot,
   readAnchor,
   readPlayState,
@@ -119,6 +121,20 @@ function sanitize(name) {
 
 // ─────────────────────────────── serve (데몬) ───────────────────────────────
 
+/** `--checkpoint-set <세트> --checkpoint <id>` 로 타이틀을 건너뛰고 그 장면에서 시작한다. */
+async function resolveCheckpoint(flags) {
+  const setName = flags["checkpoint-set"];
+  if (!setName) {
+    if (flags.checkpoint) fail("--checkpoint 만으로는 시작할 수 없다 — --checkpoint-set <세트> 도 줘라");
+    return null;
+  }
+  const set = await loadCheckpointSet(String(setName));
+  if (!flags.checkpoint) fail(`--checkpoint-set ${setName} 에 --checkpoint <id> 가 필요하다 (있는 것: ${set.checkpoints.map((c) => c.id).join(", ")})`);
+  const picked = selectCheckpoints(set, String(flags.checkpoint));
+  if (picked.length !== 1) fail(`--checkpoint 는 하나만 고른다 (고른 것: ${picked.map((c) => c.id).join(", ")})`);
+  return picked[0];
+}
+
 async function serve(flags) {
   const outRoot = flags.out ? resolve(REPO_ROOT, String(flags.out)) : DEFAULT_OUT_ROOT;
   const gamesDir = flags["games-dir"] ? resolve(REPO_ROOT, String(flags["games-dir"])) : null;
@@ -148,6 +164,7 @@ async function serve(flags) {
   const viewport = parseViewport(flags.viewport ?? "1024x768");
   const seed = Number(flags.seed ?? 1);
 
+  const checkpoint = await resolveCheckpoint(flags);
   const boot = await prepareBoot({
     projectFile: game.file, entry: game.entry, dir, keepOpening: flags["keep-opening"] === true,
   });
@@ -182,7 +199,7 @@ async function serve(flags) {
   };
 
   try {
-    await bootPlayPage(page, { ...boot, viewport, seed, serverUrl: playerServer.url });
+    await bootPlayPage(page, { ...boot, viewport, seed, serverUrl: playerServer.url, checkpoint });
   } catch (error) {
     await page.screenshot({ path: join(dir, "boot-failure.png") }).catch(() => undefined);
     await writeFile(join(dir, "boot-failure.json"), JSON.stringify({
@@ -194,6 +211,18 @@ async function serve(flags) {
 
   const runState = {};
   let queue = Promise.resolve();
+  // 에이전트에게는 시계가 없다 — 프롬프트의 «20분»은 지켜지지 않는다(2026-10-27 실측: 18세션 전부 스스로 멈추지 않음).
+  // QP_BUDGET_SEC 가 있으면 state 에 경과/남은 시간을, 마지막 3분에는 모든 응답에 정리 지시를 붙인다.
+  const sessionStartedMs = Date.now();
+  const budgetSec = Number(process.env.QP_BUDGET_SEC ?? 0);
+  const budgetLine = ({ always }) => {
+    if (!(budgetSec > 0)) return "";
+    const elapsed = Math.floor((Date.now() - sessionStartedMs) / 1000);
+    const left = budgetSec - elapsed;
+    if (!always && left > 180) return "";
+    if (left <= 0) return `\ntime: 예산 ${Math.round(budgetSec / 60)}분 초과 — 조작을 멈추고 지금 findings.json 을 쓰라`;
+    return `\ntime: 경과 ${Math.floor(elapsed / 60)}분 / 예산 ${Math.round(budgetSec / 60)}분 · 남은 ${Math.ceil(left / 60)}분${left <= 180 ? " — 새 목표를 잡지 말고 정리하라" : ""}`;
+  };
   const record = async (entry) => {
     await appendFile(actionsPath, `${JSON.stringify(entry)}\n`);
   };
@@ -239,13 +268,13 @@ async function serve(flags) {
       }
       case "key": {
         if (!args[0]) throw new Error("key <k>");
-        return { text: await runOp({ kind: "key", key: args[0] }) };
+        return { text: await runOp({ kind: "key", key: normalizePlayKey(args[0]) }) };
       }
       case "hold": {
         if (!args[0]) throw new Error("hold <k> <ms>");
         const ms = Number(args[1] ?? 500);
         if (DIRECTIONS.has(args[0])) return { text: await runOp({ kind: "hold", dir: args[0], ms }) };
-        return { text: await runOp({ kind: "holdKey", key: args[0], ms }) };
+        return { text: await runOp({ kind: "holdKey", key: normalizePlayKey(args[0]), ms }) };
       }
       case "move": {
         const dir = args[0];
@@ -314,7 +343,7 @@ async function serve(flags) {
         const state = await readPlayState(page);
         await record({ t: new Date().toISOString(), command: name, op: { kind: "state" }, ok: true, observe: true,
           at: { screen: state.screen, mapId: state.mapId, x: state.x, y: state.y, dir: state.dir }, ...(await saveAnchor()) });
-        return { text: formatPlayState(state), data: state };
+        return { text: formatPlayState(state) + budgetLine({ always: true }), data: state };
       }
       case "text": {
         // Pixel fonts are easy to misread from a screenshot; quote this DOM text instead (repro textPresent reads the same).
@@ -394,7 +423,8 @@ async function serve(flags) {
       queue = queue.then(async () => {
         try {
           const result = await execute(payload.name, payload.args ?? []);
-          send(200, { ok: true, text: result.text, data: result.data });
+          const text = payload.name === "state" ? result.text : `${result.text}${budgetLine({ always: false })}`;
+          send(200, { ok: true, text, data: result.data });
         } catch (error) {
           send(200, { ok: false, error: String(error?.message ?? error) });
         }
@@ -417,6 +447,7 @@ async function serve(flags) {
     playerServerShared: playerServer.shared === true,
     viewport,
     seed,
+    checkpoint: checkpoint?.id ?? null,
     startedAt: new Date().toISOString(),
   };
   await writeFile(join(dir, "qp.ready"), `${JSON.stringify(ready, null, 2)}\n`);
@@ -457,7 +488,7 @@ async function main() {
   if (!subcommand || subcommand === "--help" || subcommand === "help") {
     process.stdout.write(
       "qp — 출하 플레이어 세션 CLI\n"
-      + "  serve --game <id|path> [--port P] [--player-url URL] [--games-dir DIR] [--out DIR] [--viewport WxH] [--seed N] [--headed] [--keep-opening]\n"
+      + "  serve --game <id|path> [--port P] [--player-url URL] [--games-dir DIR] [--out DIR] [--viewport WxH] [--seed N] [--headed] [--keep-opening] [--checkpoint-set SET --checkpoint ID]\n"
       + "  key <k> | action | face <dir> | hold <k> <ms> | move <up|down|left|right> [n] | click <x> <y> | clickTestid <id>\n"
       + "  wait <ms> | waitText <text> [timeoutMs] | waitTestid <id> [present|absent|visible] [timeoutMs]\n"
       + "  shot <name> | state | text | errors | teleport <mapId> <x> <y> | seed <n> | resize <W> <H> | reset | quit\n",

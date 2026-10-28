@@ -35,6 +35,23 @@ export const OBSERVE_ONLY_KINDS = new Set(["shot", "state", "text", "errors"]);
 
 /** 메뉴로 읽을 testid 패턴은 readPlayState 안에서 정의한다(페이지 함수는 모듈 스코프를 못 본다). */
 
+/**
+ * 에이전트가 흔히 쓰는 키 이름(down·Right·space·esc)을 Playwright 이름으로 바꾼다. 한 글자 키는 대소문자가
+ * 다른 키이므로(Z 는 Shift+z) 건드리지 않는다. 실측(2026-10-27 신기루 18세션): 별칭 없이 10건이 Unknown key 로 실패했다.
+ */
+const KEY_ALIASES = {
+  up: "ArrowUp", down: "ArrowDown", left: "ArrowLeft", right: "ArrowRight",
+  arrowup: "ArrowUp", arrowdown: "ArrowDown", arrowleft: "ArrowLeft", arrowright: "ArrowRight",
+  space: "Space", spacebar: "Space", enter: "Enter", return: "Enter", esc: "Escape", escape: "Escape",
+  shift: "Shift", ctrl: "Control", control: "Control", alt: "Alt", tab: "Tab", backspace: "Backspace",
+};
+
+export function normalizePlayKey(key) {
+  const raw = String(key ?? "");
+  if (raw.length <= 1) return raw;
+  return KEY_ALIASES[raw.toLowerCase()] ?? raw;
+}
+
 export async function launchPlayBrowser({ headless = true } = {}) {
   return chromium.launch({ headless, args: PLAY_BROWSER_ARGS });
 }
@@ -142,7 +159,9 @@ const REPO_ROOT = fileURLToPath(new URL("../../", import.meta.url));
 function projectForPlayer(file, dir) {
   const out = join(dir, "player-project.json");
   const viteNode = [resolve(REPO_ROOT, "node_modules/vite-node/dist/cli.mjs"), resolve(REPO_ROOT, "node_modules/vite-node/vite-node.mjs")].find((path) => existsSync(path));
-  if (!viteNode) return file;
+  // 설정·투영 소스가 없는 부분 체크아웃(원격 QA 상자)에서는 빌드가 매 세션 실패한다 — 시도하지 않는다.
+  const projection = resolve(REPO_ROOT, "src/harnesses/assistant-capability/node/runtimeProjection.ts");
+  if (!viteNode || !existsSync(resolve(REPO_ROOT, "vite.config.ts")) || !existsSync(projection)) return file;
   try {
     execFileSync(process.execPath, [viteNode, "--config", resolve(REPO_ROOT, "vite.config.ts"),
       resolve(REPO_ROOT, "src/harnesses/assistant-capability/node/runtimeProjection.ts"), "--", file, out],
@@ -300,6 +319,7 @@ export async function observeForExpect(page, { consoleErrors = [] } = {}) {
  * @returns {Promise<{note?: string}>}
  */
 export async function runPlayOp(page, op, runState = {}) {
+  if (op.kind === "key" || op.kind === "holdKey") op = { ...op, key: normalizePlayKey(op.key) };
   switch (op.kind) {
     case "move": {
       const steps = Math.max(1, Number(op.steps ?? 1));
@@ -332,8 +352,14 @@ export async function runPlayOp(page, op, runState = {}) {
     }
     case "reload": {
       await page.reload({ waitUntil: "domcontentloaded", timeout: op.timeoutMs ?? 180_000 });
-      await page.waitForSelector("[data-testid='title-screen']", { timeout: op.timeoutMs ?? 180_000 });
-      return { note: "reloaded to title" };
+      // 체크포인트로 부팅한 세션은 다시 그 체크포인트로 돌아가 타이틀이 없다 — 둘 중 먼저 뜨는 쪽을 기다린다.
+      // 실측(2026-10-27): 타이틀만 기다려 체크포인트 세션의 reset 이 10/10 타임아웃이었다.
+      const landed = await page.waitForSelector(
+        "[data-testid='title-screen'], [data-testid='runtime-state-json']",
+        { state: "attached", timeout: op.timeoutMs ?? 180_000 },
+      );
+      const where = await landed.evaluate((node) => node.dataset.testid);
+      return { note: where === "title-screen" ? "reloaded to title" : "reloaded to the session's start checkpoint" };
     }
     default: {
       // 훅이 필요한 op 만 훅 설치를 기다린다 — 타이틀에서 key 만 눌러도 되는 흐름을 막지 않는다.
