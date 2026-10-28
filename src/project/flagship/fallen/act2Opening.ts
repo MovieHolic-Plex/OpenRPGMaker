@@ -585,6 +585,8 @@ function curfewHub(project: Project, exec: Exec, hubId: string): void {
       ...[MIRE_AT, TOBY_AT, MARTA_AT].map((c, i) => ({ id: `crack${i}`, at: { x: c.x, y: c.y - 1 }, radius: 2, intensity: 0.7, color: "#ffc070", flicker: true })),
       // 뚜껑 문 골목의 출구 틈(한 칸) — 불빛이 새어 나와 보이게(엘레나가 도착 때 이 불빛을 짚는다).
       { id: "alley_gap", at: { x: HUB_ALLEY_GAP.x, y: HUB_ALLEY_GAP.y }, radius: 2, intensity: 0.75, color: "#ffc070", flicker: true },
+      // 대장간 뒷문 — 화덕 불빛이 샌다. 독립 판정(judge12·13): 「광장 남쪽 끝」을 시장 남쪽으로 읽고 100~200걸음 헤맸다.
+      { id: "smithy_forge", at: { x: SMITHY.hubDoor.x, y: SMITHY.hubDoor.y }, radius: 3, intensity: 0.85, color: "#ff9a40", flicker: true },
     ],
   });
   const mire = hubChip(project, hubId, "ev_fs_baker");
@@ -777,7 +779,8 @@ function observatoryNight(project: Project, exec: Exec, obsId: string): void {
     say(HANEL, "그 인장을 갖고 탑에 가거라.\n나머지는… 거기서, 내 입으로 하마."),
     say(KAEL, "선생님, 또 숙제예요?"),
     say(HANEL, "이번엔 내 숙제다."),
-    say(HANEL, "북문은 기사들이 막았다. 로한을 찾아가거라.\n광장 남쪽 끝 대장간 — 뒷문은 아무도 안 지킨다."),
+    say(HANEL, "북문은 기사들이 막았다. 로한을 찾아가거라."),
+    say(HANEL, "남쪽 성벽 바로 안쪽 뒷골목, 화덕 불빛 새는 대장간.\n뒷문은 아무도 안 지킨다."),
     setSw(SW_HANEL),
     cutLabel(),
     cutEnd(),
@@ -2256,7 +2259,7 @@ function act2Quest(project: Project, exec: Exec): void {
     [SW_OUT, "막사 금고에서 짐을 되찾아, 북동쪽 사다리로 광장에 오른다(등불·순찰을 피해)"],
     [SW_MIRE, "서쪽 수로 다리를 건너 북서쪽 끝, 빵집 문틈의 미레 아주머니를 찾는다(쉬어 갈 수 있다)"],
     [SW_HANEL, "광장 우물 사다리로 천문대에 숨어 들어가 하넬 선생을 만난다"],
-    [SW_ROHAN, "광장 남쪽 끝 대장간 뒷문으로 들어가 로한을 만난다"],
+    [SW_ROHAN, "남쪽 성벽 바로 안쪽 뒷골목, 화덕 불빛 새는 대장간 뒷문으로 들어가 로한을 만난다"],
     [SW_BRAM, "북문 서쪽 성벽 밑, 나무 그늘에서 등을 든 브람 영감을 찾는다"],
     [SW_B4_EDGE, "개구멍을 빠져 북쪽 숲 가장자리까지 달아난다"],
     [SW_CERT, "재의 들판을 지나 북쪽 새벽샘 터에서 세린의 흔적을 찾는다"],
