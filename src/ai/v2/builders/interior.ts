@@ -102,7 +102,9 @@ function resolveKind(tilesetId: string, zone: ZoneSpec, notes: string[], placeNa
     const said = `${zone.purpose ?? ""} ${zone.id ?? ""} ${raw}`;
     const sub = SUBKIND_WORDS.filter(([re]) => re.test(said)).map(([, t]) => t);
     const hit = sub.map((t) => list.find((k) => k.includes(t))).find(Boolean)
-      ?? (token.length >= 4 ? list.find((k) => k.replace(/[^a-z]/gu, "").includes(token)) : undefined) ?? list[0];
+      // 「shop」「room」 같은 두루 낱말은 이름 조각으로 고르지 않는다 — kind:"shop" 이 목록 첫째 잡화점(general_store)을 두고 이름에 shop 이 든 tailor_shop 을 골라
+      // 모험가 잡화점이 마네킹 옷가게가 됐다(2026-10-29 room-vig5 shop).
+      ?? (token.length >= 4 && !/^(shop|store|room|hall|place|house)$/u.test(token) ? list.find((k) => k.replace(/[^a-z]/gu, "").includes(token)) : undefined) ?? list[0];
     if (hit) { if (hit !== raw) notes.push(`구역 「${zone.id ?? raw}」은 ${purpose.ko} 쓰임이라 방 종류 ${raw} 대신 ${hit} 견본으로 지었다`); return hit; }
   }
   if (kinds.has(raw)) return raw;
