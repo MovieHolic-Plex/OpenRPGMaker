@@ -4,6 +4,8 @@
 import { computeEnemyTuning, simulateBattle } from "@/battle/simulate";
 import { normalizeEnemyRecord } from "@/project/databaseEnemyTroopRecordModel";
 import type { EnemyRecord } from "@/project/types";
+import { monsterSpeciesById } from "@/project/monsterCollection";
+import { monsterBalanceParty } from "./troopBalanceCheck";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 
 const simulateBattleTool: ToolDefinition = {
@@ -61,11 +63,15 @@ const simulateBattleTool: ToolDefinition = {
     if (missingActors.length > 0) {
       throw new ToolError(`partyActorIds 에 없는 배우: ${missingActors.join(", ")} — 배우 id: ${project.database.actors.slice(0, 8).map((actor) => actor.id).join(", ")}`, { code: "actor-not-found" });
     }
+    // 몬스터 파티 게임은 영웅이 아니라 몬스터가 싸운다 — 배우로 재면 «화염검·올려베기» 영웅 승률 100% 가 나와(2026-10-29 standin monster)
+    // 실제 스타터의 승패와 무관했다. 배우를 따로 주지 않으면 스타터(첫 관장 다음 원정 전투는 잡고 키운 파티)를 heroLevel 로 맞춰 잰다.
+    const monsterParty = partyActorIds && partyActorIds.length > 0 ? null : monsterBalanceParty(project, troopId, args.heroLevel as number);
     const result = simulateBattle({
       project,
       troopId,
       heroLevel: args.heroLevel as number,
       ...(partyActorIds && partyActorIds.length > 0 ? { partyActorIds } : {}),
+      ...(monsterParty && monsterParty.length > 0 ? { monsterParty, useSkills: true } : {}),
       inventory: args.inventory as Record<string, number> | undefined,
       potionItemId: args.potionItemId as string | undefined,
       ...(Array.isArray(args.switchesOn) ? { switchesOn: (args.switchesOn as unknown[]).filter((id): id is string => typeof id === "string") } : {}),
@@ -106,7 +112,7 @@ const simulateBattleTool: ToolDefinition = {
       );
     }
     return {
-      summary: `전투 시뮬(${troopId}, Lv${args.heroLevel}, n=${result.samples}): 승률 ${(result.winRate * 100).toFixed(0)}%, 평균 ${result.avgTurns.toFixed(1)}타${phaseNote}${skillNote}${chargeNote}`,
+      summary: `전투 시뮬(${troopId}, Lv${args.heroLevel}${monsterParty?.length ? ` 몬스터 ${monsterParty.map((monster) => monsterSpeciesById(project, monster.speciesId)?.name ?? monster.speciesId).join("·")}` : ""}, n=${result.samples}): 승률 ${(result.winRate * 100).toFixed(0)}%, 평균 ${result.avgTurns.toFixed(1)}타${phaseNote}${skillNote}${chargeNote}`,
       data: result,
       ...(warnings.length > 0 ? { warnings } : {}),
     };

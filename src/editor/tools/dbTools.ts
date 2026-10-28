@@ -1872,6 +1872,17 @@ function withEnemyIdsFromMembers(troop: unknown): unknown {
   return enemyIds.length > 0 ? { ...record, enemyIds } : troop;
 }
 
+/**
+ * 트룹 쓰기 요약의 밸런스 한 줄. 「레벨을 올려도 전멸」은 올린 파티도 질 때만 쓴다 — 몬스터 게임 경고는 «스타터보다 Lv4 높으면 이긴다»여도
+ * 「전멸」 낱말을 담아, 요약이 «레벨을 올려도 전멸»이라 거짓말하자 모델이 관장·챔피언을 한 마리 Lv7 로 깎았다(2026-10-29 standin monster).
+ */
+function troopWarningSummary(warnings: readonly string[]): string {
+  if (!warnings.length) return "";
+  if (warnings.some(w => /올려도 (?:전멸|이길 수 없)|지나갈 수 없는 잡몹/u.test(w))) return " — 밸런스 경고: 파티가 레벨을 올려도 전멸함";
+  if (warnings.some(w => w.includes("전멸"))) return " — 밸런스 경고: 지금 기준 파티로는 지고, 레벨을 올리면 이김(경고 참고)";
+  return " — 밸런스 경고: 적이 시작 파티에게 거의 피해를 주지 못함";
+}
+
 const upsertTroop: ToolDefinition = {
   name: "upsert_troop",
   description: "적 그룹(트룹) 레코드를 등록/수정한다. 기존 id는 전달 필드만 병합하고 나머지를 보존한다.",
@@ -1905,7 +1916,7 @@ const upsertTroop: ToolDefinition = {
     const outcome = upsertById(draft.database.troops, record);
     const warnings = troopBalanceWarnings(draft, record.id);
     return {
-      summary: `트룹 '${record.name}'(${memberCount}마리) ${outcome === "added" ? "추가" : "수정"}${warnings.length ? (warnings.some(w => w.includes("전멸")) ? " — 밸런스 경고: 파티가 레벨을 올려도 전멸함" : " — 밸런스 경고: 적이 시작 파티에게 거의 피해를 주지 못함") : ""}`,
+      summary: `트룹 '${record.name}'(${memberCount}마리) ${outcome === "added" ? "추가" : "수정"}${troopWarningSummary(warnings)}`,
       data: record,
       ...(warnings.length ? { warnings } : {}),
     };
