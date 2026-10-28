@@ -144,6 +144,12 @@ function eventSetter(project: Project, ev: GameEvent): Setter {
   return s;
 }
 
+/** 이벤트 하나가 (부르는 공통 이벤트까지) 켜는 스위치·주는 아이템·엔딩 호출 — 경로 빌더가 모델이 지은 단계를 그대로 두고 뒤 단계를 이을 때. */
+export function eventGives(project: Project, ev: GameEvent): { switches: string[]; items: string[]; ends: boolean } {
+  const s = eventSetter(project, ev);
+  return { switches: [...s.switches], items: [...s.items], ends: s.ends };
+}
+
 /** 페이지가 열리는 조건(스위치·아이템·변수) — 한 페이지라도 조건이 다 채워질 수 있으면 그 이벤트는 열린다. */
 function pageNeeds(page: Obj): { kind: "switch" | "item" | "variable"; id: string }[] {
   return leafConds(page).flatMap((c) => c.kind === "switch" && c.value !== false && c.switchId !== undefined ? [{ kind: "switch" as const, id: String(c.switchId) }]

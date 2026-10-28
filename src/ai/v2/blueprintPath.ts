@@ -15,7 +15,7 @@ import { normalizeGameBlueprint, type GameBlueprint } from "@/project/gameBluepr
 import { buildPuzzleChain, type ChainLink } from "./puzzle";
 import { resolveWhere } from "./people";
 import type { BuildRun, ContentBuildResult } from "./types";
-import { BLUEPRINT_PATH_IDS, walkBlueprint } from "./blueprint";
+import { BLUEPRINT_PATH_IDS, eventGives, walkBlueprint } from "./blueprint";
 import { repairEventReach } from "./eventReach";
 
 /**
@@ -72,6 +72,7 @@ function sameName(a: string, b: string): boolean {
   const [short, long] = x.length <= y.length ? [x, y] : [y, x];
   return short.length >= 2 && long.includes(short);
 }
+export function blueprintMapFor(project: Project, place: string): GameMap | undefined { return mapFor(project, place); }
 function mapFor(project: Project, place: string): GameMap | undefined {
   const maps = Object.values(project.maps);
   return maps.find((m) => m.id === place || norm(m.name ?? "") === norm(place)) ?? maps.find((m) => sameName(m.name ?? "", place));
@@ -84,6 +85,8 @@ const josa = (word: string, withBatchim: string, without: string) => {
   const code = last.charCodeAt(0) - 0xac00;
   return code >= 0 && code <= 11171 ? (code % 28 ? withBatchim : without) : `${withBatchim}(${without})`;
 };
+
+const RICH_KIND = /battle|shop|monster|trainer|recruit|encounter|party|gym|league|starter|capture/iu;
 
 export interface BlueprintPathResult extends ContentBuildResult {
   /** 실제 이름에 맞춘 청사진(지은 경우). */
@@ -109,6 +112,14 @@ export function buildBlueprintPath(run: BuildRun, text: readonly PathStepText[] 
     }
   }
 
+  // 모델이 지은 전투·상점·몬스터 같은 복잡한 단계 이벤트는 줍기 고리로 덮어쓰지 않는다(2026-10-28: 몬스터 리그 챔피언 이벤트).
+  const rich = bp.steps.flatMap((step) => {
+    const map = mapFor(project0, step.place);
+    const ev = map?.events.find((e) => e.id === step.event || norm(String((e as { name?: string }).name ?? "")) === norm(step.event));
+    const kinds = JSON.stringify(ev?.pages ?? []).match(/"kind":"([A-Za-z_]+)"/gu) ?? [];
+    return kinds.some((k) => RICH_KIND.test(k)) ? [`${step.id} ${step.event}`] : [];
+  });
+  if (rich.length) return fail(`청사진 단계 이벤트 ${rich.join("·")} 에 전투·상점·몬스터 같은 명령이 있어 다시 짓지 않았다 — 그 이벤트의 조건·결과(스위치)를 patch_event_page 로 앞뒤 단계와 맞춘다.`);
   // 1) 엔딩 — 청사진 ending 이름과 같은 엔딩이 있으면 그것, 없으면 하나뿐인 엔딩, 그래도 없으면 새로 정의한다.
   const endings = (project0.endings ?? []) as { id: string; name?: string }[];
   let ending = endings.find((e) => sameName(e.name ?? "", bp.ending.name)) ?? (endings.length === 1 ? endings[0] : undefined);
@@ -127,7 +138,11 @@ export function buildBlueprintPath(run: BuildRun, text: readonly PathStepText[] 
   const steps = bp.steps.map((s) => ({ ...s }));
   let prevMap: GameMap = fallbackMap;
   let prevGives: string | undefined;
+  // 앞 단계가 모델이 지은 이벤트 그대로면 그 이벤트가 켜는 스위치·주는 아이템이 다음 조건이다.
+  let prevCondition: Record<string, unknown>[] | undefined;
   const ids: string[] = [];
+  const linkStep: number[] = [];
+  const kept: string[] = [];
   steps.forEach((step, k) => {
     const last = k === steps.length - 1;
     let map = mapFor(run.ctx.project, step.place);
@@ -143,10 +158,22 @@ export function buildBlueprintPath(run: BuildRun, text: readonly PathStepText[] 
       taken.set(map.id, [...avoid, at]);
     }
     const t = byId.get(step.id);
+    // 대사를 주지 않았으면 모델이 지은 단계 이벤트(명령이 있고, 마지막이면 엔딩을 부르는 것)는 그대로 둔다 — 빠진 단계만 짓는다
+    // (standin magic: 마지막 장소 하나가 없을 뿐인데 교장·사서 대화까지 줍기로 덮을 뻔했다).
+    if (!text.length && existing && (existing.pages ?? []).some((p) => (p.commands ?? []).length) && (!last || eventGives(run.ctx.project, existing).ends)) {
+      const g = eventGives(run.ctx.project, existing);
+      prevCondition = g.switches[0] ? [{ kind: "switch", switchId: g.switches[0], value: true }] : g.items[0] ? [{ kind: "item", itemId: g.items[0], present: true }] : undefined;
+      prevGives = undefined;
+      kept.push(`${step.id} ${step.event}`);
+      ids.push(existing.id);
+      return;
+    }
     const needs = k > 0 ? prevGives : undefined;
     const needText = step.needs && !/^(시작|없음|none|start)$/iu.test(step.needs.trim()) ? step.needs : needs;
     const lockedDefault = needText ? [`${needText}${josa(needText, "이", "가")} 있어야 할 것 같다.`] : undefined;
-    const base = { mapId: map.id, ...(existing ? { eventId: existing.id } : { name: step.event, at: at! }), ...(needs ? { needs } : {}) };
+    const base = { mapId: map.id, ...(existing ? { eventId: existing.id } : { name: step.event, at: at! }), ...(needs ? { needs } : {}), ...(!needs && prevCondition ? { needsCondition: prevCondition } : {}) };
+    prevCondition = undefined;
+    linkStep.push(k);
     const lines = t?.lines?.length ? t.lines : [`${step.event}${josa(step.event, "을", "를")} 살펴보았다.`];
     if (last) {
       links.push({ ...base, role: "ending", endingId: ending!.id, lines: t?.lines?.length ? t.lines : [`${step.event}${josa(step.event, "을", "를")} 살펴보았다.`, bp.ending.how], ...(t?.lockedLines?.length || lockedDefault ? { lockedLines: t?.lockedLines?.length ? t.lockedLines : lockedDefault } : {}) });
@@ -162,13 +189,16 @@ export function buildBlueprintPath(run: BuildRun, text: readonly PathStepText[] 
     ids.push(existing?.id ?? "");
   });
 
+  if (!links.length) return { ok: true, mapIds: [], summary: `청사진 단계 이벤트가 모두 이미 있다(${kept.join(", ")}) — 다시 짓지 않았다.`, warnings, missingArt: [], calls: [] };
   const built = buildPuzzleChain(run, { mapId: fallbackMap.id, name: bp.title, links });
   if (!built.ok) return { ...built, warnings: [...warnings, ...built.warnings] };
 
   // 3) 청사진 이름을 실제로 지은 맵·이벤트에 맞춘다(출하 검사가 같은 이름으로 걷는다).
   const eventIds = built.eventIds ?? [];
-  steps.forEach((step, k) => {
-    const made = eventIds[k];
+  links.forEach((_, li) => {
+    const k = linkStep[li]!;
+    const step = steps[k]!;
+    const made = eventIds[li];
     if (!made) return;
     const map = run.ctx.project.maps[made.mapId];
     const ev = map?.events.find((e) => e.id === made.eventId);
@@ -178,6 +208,6 @@ export function buildBlueprintPath(run: BuildRun, text: readonly PathStepText[] 
   let blueprint: GameBlueprint | undefined;
   try { blueprint = normalizeGameBlueprint({ ...bp, steps }); } catch { blueprint = undefined; }
   if (blueprint) run.ctx.project = { ...run.ctx.project, gameBlueprint: blueprint };
-  const roles = links.map((l, i) => `${steps[i]!.id} ${steps[i]!.event}(${l.role}${l.needs ? ` ← ${l.needs}` : ""})`).join(" → ");
-  return { ...built, ...(blueprint ? { blueprint } : {}), warnings: [...warnings, ...built.warnings], summary: `청사진 경로를 지었다: ${roles} → 엔딩 「${ending!.name ?? ending!.id}」(${ending!.id}). ${built.summary}` };
+  const roles = links.map((l, i) => `${steps[linkStep[i]!]!.id} ${steps[linkStep[i]!]!.event}(${l.role}${l.needs ? ` ← ${l.needs}` : l.needsCondition ? " ← 앞 단계 이벤트가 켜는 것" : ""})`).join(" → ");
+  return { ...built, ...(blueprint ? { blueprint } : {}), warnings: [...warnings, ...built.warnings], summary: `청사진 경로를 지었다: ${kept.length ? `(그대로 둔 단계: ${kept.join(", ")}) ` : ""}${roles} → 엔딩 「${ending!.name ?? ending!.id}」(${ending!.id}). ${built.summary}` };
 }

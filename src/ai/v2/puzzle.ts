@@ -34,6 +34,8 @@ export interface ChainLink {
   readonly doneLines?: readonly string[];
   readonly reward?: { readonly item?: string; readonly flag?: string; readonly lines?: readonly string[] };
   readonly seal?: boolean;
+  /** needs 대신 쓰는 조건 그대로(사슬 밖 이벤트가 켜는 스위치·주는 아이템). */
+  readonly needsCondition?: readonly Record<string, unknown>[];
   /** ending: 부를 엔딩 id(조건이 차면 대사 뒤 triggerEnding). */
   readonly endingId?: string;
 }
@@ -247,7 +249,7 @@ export function buildPuzzleChain(run: BuildRun, args: ChainArgs): ContentBuildRe
     // 그림 없는(투명) 조사 칸은 다가가면 반짝인다 — 새 플레이어가 어디를 조사할지 보이게(2026-10-28 청사진 경로).
     const invisible = !existing || !Object.values((look.graphic as Obj | undefined) ?? {}).some((v) => v !== undefined && v !== "" && v !== 0 && v !== null);
     const basePage = (extra: Obj): Obj => ({ trigger: look.trigger ?? { kind: "action" }, priority: look.priority ?? "same", graphic: look.graphic ?? {}, ...(look.movement ? { movement: look.movement } : {}), ...(look.animationType ? { animationType: look.animationType } : {}), ...(invisible ? { nearSparkle: { radius: 2 } } : (look.nearSparkle ? { nearSparkle: look.nearSparkle } : {})), conditions: [], ...extra });
-    const need = condFor(link.needs);
+    const need = link.needsCondition?.length ? link.needsCondition.map((c) => ({ ...c })) : condFor(link.needs);
     if (typeof need === "string") return fail(`${index + 1}번 고리: ${need}`);
     const pages: Obj[] = [];
     const rewardCmds = (): Obj[] => {

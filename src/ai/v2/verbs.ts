@@ -26,7 +26,8 @@ import { buildEvent } from "./events";
 import { drawObject } from "./drawObject";
 import { buildScene, SCENE_SCHEMA, type SceneSpec } from "./scene";
 import { buildPuzzleChain, sealLockedRoom, type ChainArgs } from "./puzzle";
-import { BUILD_BLUEPRINT_PATH_SCHEMA, buildBlueprintPath, type PathStepText } from "./blueprintPath";
+import { BUILD_BLUEPRINT_PATH_SCHEMA, blueprintMapFor, buildBlueprintPath, type PathStepText } from "./blueprintPath";
+import { guessPlaceSpec } from "./placeGuess";
 // 콘텐츠 동사(컷신 무대·연출 비평·물건 자리 계획) — finishContent·addEvent·drawObjectVerb·placeObject 가 쓴다.
 import { critiqueStaging } from "./critic";
 import { createGameTools, wantsPuzzle, wantsGameTools, wantsStoreTools, wantsTerrainTools } from "./game";
@@ -69,6 +70,10 @@ export class V2Session {
   blueprintRewrites = 0;
   /** 끝맺음에서 청사진 경로를 함수가 대신 지었는가(한 번만). */
   autoPathDone = false;
+  /** 끝맺음에서 청사진 장소를 함수가 대신 지었는가(한 번만). */
+  autoPlacesDone = false;
+  /** 청사진에 있는데 없는(또는 닿지 않는) 장소를 짓고 앞 장소와 잇는다(createV2Tools 가 건다). 한 일 목록. */
+  buildPlaces?: () => Promise<string[]>;
   /** 청사진 경로를 결정적으로 짓는다(createV2Tools 가 건다) — 끝맺음 단계가 모델 대신 부른다. */
   buildPath?: (why: string) => Promise<{ ok: boolean; summary: string }>;
   criticCalls = 0;
@@ -841,6 +846,86 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     const walk = (node: unknown): boolean => Array.isArray(node) ? node.some(walk) : !!node && typeof node === "object" && (((node as { kind?: string; mapId?: string }).kind === "transfer" && (node as { mapId?: string }).mapId === toId) || Object.values(node).some(walk));
     return (env.ctx.project.maps[fromId]?.events ?? []).some((e) => walk(e.commands ?? []) || walk(e.pages ?? []));
   };
+  // 부모 맵 ↔ 새로 지은 자식 장소 잇기(make_game 과 끝맺음 자동 짓기가 같이 쓴다): 실내는 마을 집 문, 던전은 입구, 바깥끼리는 가장자리, 못 하면 이동 칸.
+  const linkChild = (parentMap: string, parentSpec: PlaceSpec | undefined, parentResult: PlaceBuildResult | undefined, spec: PlaceSpec, result: PlaceBuildResult, side?: "north" | "south" | "east" | "west"): string => {
+    const notes: string[] = [];
+    const childMap = result.mapIds[0]!;
+        const pName = env.ctx.project.maps[parentMap]?.name ?? parentMap, cName = env.ctx.project.maps[childMap]?.name ?? childMap;
+        if (hasTransferTo(parentMap, childMap)) return `${pName} ↔ ${cName}: 짓기에서 이어짐`;
+        const usedDoors = new Set<string>((env.ctx.project.maps[parentMap]?.events ?? []).map((e) => `${e.x},${e.y + 1}`));
+        let linked = false;
+        if (isInside(spec) && result.entrance) {
+          const door = pickDoor(villageDoors(parentResult ?? ({ state: undefined } as unknown as PlaceBuildResult)), spec.name, usedDoors, env.ctx.project.maps[parentMap]!);
+          if (door) {
+            const r = run.call("create_transfer_pair", { a: { mapId: parentMap, x: door.x, y: door.y, doorAt: { x: door.x, y: door.y - 1 } }, b: { mapId: childMap, x: result.entrance.x, y: result.entrance.y } });
+            linked = r.ok; notes.push(r.ok ? `${pName} 집 문(${door.x},${door.y - 1}${door.kit ? ` ${door.kit}` : ""}) ↔ ${cName}` : `${pName} 집 문 잇기 실패: ${r.summary.slice(0, 160)}`);
+          }
+        } else if (spec.type === "dungeon" || spec.type === "cave") {
+          // 던전: 부모 맵의 걸어 닿는 칸 ↔ 던전 입구 계단(자리표시 출구가 있으면 그것을 바꾼다).
+          const at = edgeCell(env.ctx.project, env.ctx.project.maps[parentMap]!, side ?? "north");
+          const r = at ? run.call("link_world_entrance", { worldMapId: parentMap, links: [{ x: at.x, y: at.y, toMapId: childMap }] }) : undefined;
+          linked = !!r?.ok && hasTransferTo(parentMap, childMap);
+          if (linked) notes.push(`${pName}(${at!.x},${at!.y}) ↔ ${cName} 입구`);
+        } else if (isOutdoor(spec) && !!parentSpec && isOutdoor(parentSpec)) {
+          const dir = side ?? "north";
+          const r = run.call("link_maps", { from: { mapId: parentMap, exit: { side: dir } }, to: { mapId: childMap, entry: { side: oppositeSide(dir) } } });
+          linked = r.ok; if (r.ok) notes.push(`${pName} ${dir} 가장자리 ↔ ${cName}`);
+        }
+        if (!linked) {
+          // 대신 걸어 닿는 칸끼리 문을 둔다(그림 없는 이동 칸) — 못 이은 채 두지 않는다.
+          const dir = side ?? "north";
+          const a = edgeCell(env.ctx.project, env.ctx.project.maps[parentMap]!, dir);
+          const b = result.entrance && result.entrance.mapId === childMap ? { x: result.entrance.x, y: result.entrance.y } : edgeCell(env.ctx.project, env.ctx.project.maps[childMap]!, oppositeSide(dir));
+          const r = a && b ? run.call("create_transfer_pair", { a: { mapId: parentMap, ...a }, b: { mapId: childMap, ...b } }) : undefined;
+          if (r?.ok) notes.push(`${pName}(${a!.x},${a!.y}) ↔ ${cName}(${b!.x},${b!.y}) — 문 그림 없이 이동 칸으로 이었다`);
+          else notes.push(`${pName} ↔ ${cName}: 잇지 못했다(${r?.summary.slice(0, 120) ?? "걸어 닿는 칸이 없다"})`);
+        }
+    return notes.join(" / ");
+  };
+  // 끝맺음 자동 짓기(2026-10-28 스위트): 청사진 장소가 없으면 이름·장르로 명세를 추정해 make_place 와 같은 빌더로 짓고 앞 단계 장소와 잇는다.
+  // 있는데 시작에서 걸어 닿지 않으면 잇기만 한다. 칩셋 계열은 placeGuess 가 같은 종류 기존 맵에서 물려받는다.
+  session.buildPlaces = async () => {
+    const bp = env.ctx.project.gameBlueprint;
+    if (!bp) return [];
+    const notes: string[] = [];
+    let prev: { mapId: string; spec?: PlaceSpec; result?: PlaceBuildResult } = { mapId: env.ctx.project.startMapId };
+    for (const step of bp.steps) {
+      let map = blueprintMapFor(env.ctx.project, step.place);
+      if (!map) {
+        const guess = guessPlaceSpec(step.place, env.ctx.project, bp.genre, String(task ?? ""));
+        const spec: PlaceSpec = { ...guess, salt: Math.floor(Math.random() * 1_000_000), ...(isInside(guess) ? { mapId: `map_auto_${Math.floor(Math.random() * 1e9).toString(36)}` } : {}) };
+        const builder = builderFor(spec);
+        if (!builder) { notes.push(`「${step.place}」(${spec.type}) — 짓는 빌더가 없다`); continue; }
+        env.emit({ type: "execution_status", name: "v2.build", ok: true, summary: `청사진 장소 「${step.place}」 자동으로 짓는 중(${builder.id})` });
+        await builder.prepare?.(spec);
+        const sub = { ...env.ctx, project: env.ctx.project, currentMapId: prev.mapId };
+        const subRun = createBuildRun(sub);
+        const result = builder.build(subRun, spec);
+        env.ctx.project = sub.project;
+        recordWrite(env, subRun, `auto-place-${step.id}`, "make_place", { spec, auto: true }, result.ok, result.summary, { mapIds: result.mapIds });
+        for (const m of result.missingArt) session.missingArt.add(m);
+        if (!result.ok || !result.mapIds[0] || !env.ctx.project.maps[result.mapIds[0]]) { notes.push(`「${step.place}」 짓기 실패: ${result.summary.slice(0, 160)}`); continue; }
+        const first = env.ctx.project.maps[result.mapIds[0]]!;
+        if (first.name !== step.place) run.call("set_map_properties", { mapId: first.id, name: step.place });
+        const record: PlaceRecord = { builder: builder.id, spec, result, rounds: 0 };
+        for (const mapId of result.mapIds) session.places.set(mapId, record);
+        const link = prev.mapId && env.ctx.project.maps[prev.mapId] && prev.mapId !== first.id ? linkChild(prev.mapId, prev.spec, prev.result, spec, result) : "";
+        notes.push(`「${step.place}」(${spec.type}${spec.style ? `·${spec.style}` : ""}, ${first.id}) 지음${link ? ` — ${link}` : ""}`);
+        map = env.ctx.project.maps[first.id];
+        prev = { mapId: first.id, spec, result };
+        continue;
+      }
+      const known = session.places.get(map.id);
+      if (prev.mapId !== map.id && env.ctx.project.maps[prev.mapId] && walkGame(env.ctx.project, [map.id]).unreached.includes(map.id)) {
+        const spec = known?.spec ?? guessPlaceSpec(map.name ?? step.place, env.ctx.project, bp.genre, String(task ?? ""));
+        const result: PlaceBuildResult = known?.result ?? { ok: true, mapIds: [map.id], summary: "", warnings: [], missingArt: [], calls: [] };
+        notes.push(`「${map.name ?? map.id}」 잇기 — ${linkChild(prev.mapId, prev.spec, prev.result, spec, result)}`);
+      }
+      prev = { mapId: map.id, ...(known ? { spec: known.spec, result: known.result } : {}) };
+    }
+    if (notes.length) await env.checkpoint("auto_places");
+    return notes;
+  };
   const makeGame: PiToolShape = {
     name: "make_game", label: "작은 게임 짓기", concurrency: "exclusive",
     description: "작은 게임 한 판 — 장소 여러 곳(5~8)을 짓고 부모-자식으로 잇고(마을 집 문↔실내, 바깥 가장자리끼리, 던전 입구), 사람·사건을 둔 뒤, 시작에서 모든 맵에 갔다 돌아오는 길을 기계로 걸어 보고 맵마다 비평을 돌려준다. 맵마다 make_place 를 따로 부르지 않는다.",
@@ -893,37 +978,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
         lines.push(`${place.key}: ${result.summary.slice(0, 200)}`);
         // 잇기
         if (!parent || !parentMap) continue;
-        const childMap = result.mapIds[0]!;
-        const pName = env.ctx.project.maps[parentMap]?.name ?? parentMap, cName = env.ctx.project.maps[childMap]?.name ?? childMap;
-        if (hasTransferTo(parentMap, childMap)) { linkNotes.push(`${pName} ↔ ${cName}: 짓기에서 이어짐`); continue; }
-        const usedDoors = new Set<string>((env.ctx.project.maps[parentMap]?.events ?? []).map((e) => `${e.x},${e.y + 1}`));
-        let linked = false;
-        if (isInside(spec) && result.entrance) {
-          const door = pickDoor(villageDoors(parent.result), spec.name, usedDoors, env.ctx.project.maps[parentMap]!);
-          if (door) {
-            const r = run.call("create_transfer_pair", { a: { mapId: parentMap, x: door.x, y: door.y, doorAt: { x: door.x, y: door.y - 1 } }, b: { mapId: childMap, x: result.entrance.x, y: result.entrance.y } });
-            linked = r.ok; linkNotes.push(r.ok ? `${pName} 집 문(${door.x},${door.y - 1}${door.kit ? ` ${door.kit}` : ""}) ↔ ${cName}` : `${pName} 집 문 잇기 실패: ${r.summary.slice(0, 160)}`);
-          }
-        } else if (spec.type === "dungeon" || spec.type === "cave") {
-          // 던전: 부모 맵의 걸어 닿는 칸 ↔ 던전 입구 계단(자리표시 출구가 있으면 그것을 바꾼다).
-          const at = edgeCell(env.ctx.project, env.ctx.project.maps[parentMap]!, place.side ?? "north");
-          const r = at ? run.call("link_world_entrance", { worldMapId: parentMap, links: [{ x: at.x, y: at.y, toMapId: childMap }] }) : undefined;
-          linked = !!r?.ok && hasTransferTo(parentMap, childMap);
-          if (linked) linkNotes.push(`${pName}(${at!.x},${at!.y}) ↔ ${cName} 입구`);
-        } else if (isOutdoor(spec) && isOutdoor(parent.spec)) {
-          const side = place.side ?? "north";
-          const r = run.call("link_maps", { from: { mapId: parentMap, exit: { side } }, to: { mapId: childMap, entry: { side: oppositeSide(side) } } });
-          linked = r.ok; if (r.ok) linkNotes.push(`${pName} ${side} 가장자리 ↔ ${cName}`);
-        }
-        if (!linked) {
-          // 대신 걸어 닿는 칸끼리 문을 둔다(그림 없는 이동 칸) — 못 이은 채 두지 않는다.
-          const side = place.side ?? "north";
-          const a = edgeCell(env.ctx.project, env.ctx.project.maps[parentMap]!, side);
-          const b = result.entrance && result.entrance.mapId === childMap ? { x: result.entrance.x, y: result.entrance.y } : edgeCell(env.ctx.project, env.ctx.project.maps[childMap]!, oppositeSide(side));
-          const r = a && b ? run.call("create_transfer_pair", { a: { mapId: parentMap, ...a }, b: { mapId: childMap, ...b } }) : undefined;
-          if (r?.ok) linkNotes.push(`${pName}(${a!.x},${a!.y}) ↔ ${cName}(${b!.x},${b!.y}) — 문 그림 없이 이동 칸으로 이었다`);
-          else linkNotes.push(`${pName} ↔ ${cName}: 잇지 못했다(${r?.summary.slice(0, 120) ?? "걸어 닿는 칸이 없다"})`);
-        }
+        linkNotes.push(linkChild(parentMap, parent.spec, parent.result, spec, result, place.side));
       }
       recordWrite(env, run, `${id}:links`, "make_game", { links: true }, true, linkNotes.join(" / ").slice(0, 400));
       // 사람·사건
