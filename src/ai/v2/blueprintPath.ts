@@ -19,6 +19,7 @@ import { BLUEPRINT_PATH_IDS, codeStepBypass, escapeLeaks, eventGives, isCodeStep
 import { trivialCode } from "./puzzle";
 import { repairEventReach } from "./eventReach";
 import { dressInteriorExits } from "./exitDress";
+import { OBJECTIVE_SURFACE, planObjective } from "./discoverability";
 
 /**
  * 이미 지은 청사진 단계 이벤트·퍼즐 고리 이벤트를 걸어 가 조사할 수 있는 자리로 옮긴다(내용은 그대로). 옮긴 것 목록.
@@ -296,6 +297,44 @@ export function buildBlueprintPath(run: BuildRun, text: readonly PathStepText[] 
   let blueprint: GameBlueprint | undefined;
   try { blueprint = normalizeGameBlueprint({ ...bp, steps }); } catch { blueprint = undefined; }
   if (blueprint) run.ctx.project = { ...run.ctx.project, gameBlueprint: blueprint };
+  const objectiveNotes = stepObjectives(run, steps, links.map((l, li) => ({ step: linkStep[li]!, name: l.name ?? "", made: eventIds[li] })));
   const roles = links.map((l, i) => `${linkStep[i]! < 0 ? `(단서) ${l.name}` : `${steps[linkStep[i]!]!.id} ${steps[linkStep[i]!]!.event}`}(${l.role}${l.code ? ` 번호 ${l.code}` : ""}${l.needs ? ` ← ${l.needs}` : l.needsCondition ? " ← 앞 단계 이벤트가 켜는 것" : ""})`).join(" → ");
-  return { ...built, ...(blueprint ? { blueprint } : {}), warnings: [...warnings, ...built.warnings], summary: `${sealed.length ? `${sealed.join(" / ")}. ` : ""}청사진 경로를 지었다: ${kept.length ? `(그대로 둔 단계: ${kept.join(", ")}) ` : ""}${roles} → 엔딩 「${ending!.name ?? ending!.id}」(${ending!.id}). ${built.summary}` };
+  return { ...built, ...(blueprint ? { blueprint } : {}), warnings: [...warnings, ...built.warnings], summary: `${sealed.length ? `${sealed.join(" / ")}. ` : ""}청사진 경로를 지었다: ${kept.length ? `(그대로 둔 단계: ${kept.join(", ")}) ` : ""}${roles} → 엔딩 「${ending!.name ?? ending!.id}」(${ending!.id}). ${built.summary}${objectiveNotes.length ? ` 목표 줄: ${objectiveNotes.join(" / ")}` : ""}` };
+}
+
+/**
+ * 단계마다 「현재 목표」 — 시작 목표(없을 때만)와, 단계 이벤트가 이정표를 켠 바로 뒤에 다음 단계 할 일 + 그 이벤트 자리.
+ * 왜(2026-10-28 mt3 argon escape): 사슬은 함수가 지었지만 목표 줄은 모델 몫이라, 모델이 set_objective 를 잘못 걸자(where 만 줌)
+ * 게임 시작부터 마지막 목표만 떠 판정자가 「조사할 위치를 잡는 데 헤맸다」. 이미 목표가 있는 이벤트는 건드리지 않는다
+ * (모델이 나중에 같은 이벤트에 set_objective 를 부르면 같은 자리를 바꾼다).
+ */
+function stepObjectives(run: BuildRun, steps: readonly { event: string; action: string }[], made: readonly { step: number; name: string; made?: { mapId: string; eventId: string } }[]): string[] {
+  const notes: string[] = [];
+  const has = (pages: unknown, auto = false): boolean => (Array.isArray(pages) ? pages : []).some((p: { trigger?: { kind?: string }; commands?: unknown }) => (!auto || ["auto", "parallel"].includes(String(p.trigger?.kind))) && JSON.stringify(p.commands ?? []).includes(OBJECTIVE_SURFACE));
+  const write = (plan: ReturnType<typeof planObjective>): boolean => {
+    if (!plan.ok) return false;
+    for (const entry of plan.events) if (!run.call("upsert_event", { mapId: entry.mapId, event: entry.event, replacePages: true }).ok) return false;
+    return true;
+  };
+  const project = run.ctx.project;
+  const start = project.maps[project.startMapId];
+  const bp = project.gameBlueprint;
+  if (bp && start && !(start.events ?? []).some((e) => has(e.pages, true))) {
+    const plan = planObjective(project, { at: "start", text: bp.playerGoal.trim().replace(/[.。!]+$/u, "") });
+    if (write(plan)) notes.push("시작 목표");
+  }
+  for (let i = 0; i + 1 < made.length; i += 1) {
+    const cur = made[i]!.made, next = made[i + 1]!.made;
+    // 다음 고리가 함수가 덧붙인 번호 단서(step < 0)면 그 단서를 살펴보라고 한다.
+    const k = made[i + 1]!.step;
+    const nextStep = k >= 0 ? steps[k] : undefined;
+    const nextName = made[i + 1]!.name;
+    if (!cur || !next || (!nextStep && !nextName)) continue;
+    const ev = run.ctx.project.maps[cur.mapId]?.events.find((e) => e.id === cur.eventId);
+    if (!ev || has(ev.pages)) continue;
+    const text = nextStep ? nextStep.action.trim().replace(/[.。!]+$/u, "").slice(0, 60) : `${nextName}${josa(nextName, "을", "를")} 살펴보자`;
+    if (write(planObjective(run.ctx.project, { text, eventId: cur.eventId, mapId: cur.mapId, where: next.eventId }))) notes.push(`${String(ev.name ?? ev.id)} 뒤`);
+  }
+  if (notes.length && run.ctx.project.system.fieldHud?.objective === false) run.call("set_field_hud", { objective: true });
+  return notes;
 }

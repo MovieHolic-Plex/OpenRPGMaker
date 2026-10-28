@@ -262,6 +262,20 @@ export function whereHint(project: Project, fromMapId: string, target: { mapId: 
   return `${to.name ?? to.id} 입구: ${from.name ?? from.id} ${regions}`;
 }
 
+/** 글에 이름이 나온 이벤트(두 글자 이상, 긴 이름 먼저, 목표 맵의 것 먼저). 출입구·자동 실행 목표 이벤트는 뺀다. */
+function namedEvent(project: Project, text: string, fromMapId: string): { mapId: string; x: number; y: number; label: string } | undefined {
+  const plain = bare(text);
+  const found: { mapId: string; x: number; y: number; label: string; len: number; here: boolean }[] = [];
+  for (const map of Object.values(project.maps)) for (const event of map.events ?? []) {
+    const name = String(event.name ?? "");
+    if (bare(name).length < 2 || event.id.startsWith("ev_objective") || event.id.startsWith("ev_gate_")) continue;
+    if (plain.includes(bare(name))) found.push({ mapId: map.id, x: event.x, y: event.y, label: name, len: bare(name).length, here: map.id === fromMapId });
+  }
+  found.sort((a, b) => Number(b.here) - Number(a.here) || b.len - a.len);
+  const best = found[0];
+  return best ? { mapId: best.mapId, x: best.x, y: best.y, label: best.label } : undefined;
+}
+
 /** 목표 글에 「어디」를 붙인다 — where(이벤트·맵 이름/id)를 주거나, 글에 다른 맵 이름이 나오면 그 맵으로 가는 문의 방위를 붙인다. */
 export function withWhere(project: Project, fromMapId: string, text: string, where?: string): string {
   const hints: string[] = [];
@@ -285,6 +299,12 @@ export function withWhere(project: Project, fromMapId: string, text: string, whe
     if (hint) hints.push(hint);
     if (hints.length >= 2) break;
   }
+  // 글에 이벤트 이름(「책장」)만 나오면 그 이벤트 자리 — 같은 맵이면 방위, 다른 맵이면 그 맵 입구(2026-10-28 mt3 argon escape:
+  // 「책장 주변에서 두 번째 단서를 찾자」 에 어디가 안 붙어 판정자가 「조사할 위치를 잡는 데 헤맸다」).
+  if (hints.length === 0) {
+    const named = namedEvent(project, text, fromMapId);
+    if (named) { const hint = whereHint(project, fromMapId, named); if (hint) hints.push(hint); }
+  }
   const extra = hints.filter((hint) => !text.includes(hint));
   return extra.length ? `${text} (${extra.join(" / ")})` : text;
 }
@@ -304,10 +324,33 @@ export function planObjective(project: Project, input: { readonly text: string; 
   const raw = input.text.trim().slice(0, 80);
   let text = raw;
   if (!text) return { ok: false, summary: "text 에 지금 할 일 한 줄을 준다(예: 「창고 상자에서 태엽 열쇠를 찾자」)", events: [] };
+  // where 만 준 다음 목표(2026-10-28 mt3 argon escape): set_objective{text:'책장 주변에서 두 번째 단서를 찾자', where:'책상'} ·
+  // {text:'…문을 열고 탈출하자', where:'책장'} — 모델은 where 를 «이 이벤트 뒤에»로 썼는데 eventId 가 없어 둘 다 시작 목표를 덮었고,
+  // 게임 시작부터 마지막 목표(「문을 열고 탈출하자 (책장…)」)가 떠 첫 단서(책상)로 가는 안내가 사라졌다.
+  // 시작 목표가 이미 있고, where 가 이정표(스위치 켜기·아이템 얻기)를 가진 이벤트인데 글이 그 이벤트를 가리키지 않으면
+  // (글이 where 이벤트 이름을 담으면 그게 대상이다) where 이벤트 뒤의 다음 목표로 건다. 「어디」는 글에 나온 이벤트 이름에서 붙는다.
+  if (input.at !== "start" && !input.eventId && !input.mapId && input.where) {
+    const start = project.maps[project.startMapId];
+    const hasStart = (start?.events ?? []).some((event) => (event.pages ?? []).some((page) => ["auto", "parallel"].includes(String((page.trigger as { kind?: string }).kind)) && JSON.stringify(page.commands ?? []).includes(OBJECTIVE_SURFACE)));
+    const trigger = Object.values(project.maps).flatMap((map) => (map.events ?? []).filter((event) => event.id === input.where || event.name === input.where))[0];
+    const milestone = trigger && JSON.stringify(trigger.pages ?? []).match(/"kind":"(setSwitch|changeItem)"/u);
+    const fromMap = trigger ? Object.values(project.maps).find((map) => (map.events ?? []).includes(trigger)) : undefined;
+    const namesTrigger = Boolean(trigger?.name) && bare(raw).includes(bare(String(trigger!.name)));
+    if (hasStart && trigger && milestone && fromMap && !namesTrigger) {
+      return planObjective(project, { text: raw, eventId: trigger.id, mapId: fromMap.id });
+    }
+  }
   if (input.at === "start" || (!input.eventId && !input.mapId)) {
     const map = project.maps[project.startMapId];
     if (!map) return { ok: false, summary: "시작 맵이 없다", events: [] };
     text = withWhere(project, map.id, raw, input.where);
+    // 시작 목표에 「어디」가 없으면 청사진 첫 단계 이벤트 자리를 붙인다 — 「서재 안을 조사해 첫 번째 단서를 찾자」만으로는 어느 가구인지 모른다.
+    const firstStep = project.gameBlueprint?.steps[0];
+    if (text === raw && !input.where && firstStep) {
+      const target = Object.values(project.maps).flatMap((m) => (m.events ?? []).filter((e) => e.id === firstStep.event || e.name === firstStep.event).map((e) => ({ mapId: m.id, x: e.x, y: e.y, label: String(e.name ?? firstStep.event) })))[0];
+      const hint = target ? whereHint(project, map.id, target) : undefined;
+      if (hint && !raw.includes(hint)) text = `${raw} (${hint})`;
+    }
     // 시작 맵 자동 실행에 이미 목표가 있으면 그 자리를 바꾼다(조건 달린 오프닝 페이지여도) — 새 이벤트를 하나 더 두면 두 목표가 겨룬다.
     const owner = (map.events ?? []).find((event) => (event.pages ?? []).some((page) => ["auto", "parallel"].includes(String((page.trigger as { kind?: string }).kind)) && JSON.stringify(page.commands ?? []).includes(OBJECTIVE_SURFACE)));
     if (owner) {
@@ -339,8 +382,16 @@ export function planObjective(project: Project, input: { readonly text: string; 
       return { ok: true, summary: `시작 목표 「${text}」 — ${map.name ?? map.id} 의 ${host.name ?? host.id} 시작 컷신 끝에 걸었다`, events: [{ mapId: map.id, event }] };
     }
     const taken = new Set((map.events ?? []).map((event) => `${event.x},${event.y}`));
+    // 걷는 칸에 둔다(upsert_event 가 막힌 칸을 거절한다 — mt3 argon 방에서 (0,0) 벽에 놓으려다 시작 목표가 통째로 빠졌다). 시작점에서 가까운 칸 먼저.
     let cell = { x: 0, y: 0 };
-    for (let i = 0; i < map.width * map.height; i += 1) { const c = { x: i % map.width, y: Math.floor(i / map.width) }; if (!taken.has(`${c.x},${c.y}`)) { cell = c; break; } }
+    let best = Infinity;
+    const sp = (project.startPos ?? { x: 0, y: 0 }) as { x: number; y: number };
+    for (let i = 0; i < map.width * map.height; i += 1) {
+      const c = { x: i % map.width, y: Math.floor(i / map.width) };
+      if (taken.has(`${c.x},${c.y}`) || !isPassable(project, map, c.x, c.y)) continue;
+      const d = Math.abs(c.x - sp.x) + Math.abs(c.y - sp.y);
+      if (d < best) { best = d; cell = c; }
+    }
     const event = {
       id: "ev_objective_start", name: "시작 목표", x: cell.x, y: cell.y,
       pages: [
@@ -355,6 +406,15 @@ export function planObjective(project: Project, input: { readonly text: string; 
     const found = (map.events ?? []).find((event) => event.id === input.eventId || event.name === input.eventId);
     if (!found) continue;
     text = withWhere(project, map.id, raw, input.where);
+    // 「어디」가 안 붙었고 이 이벤트가 청사진 단계면 다음 단계 이벤트 자리를 붙인다(「…문을 열고 탈출하자」 → 「(잠긴 문: 잠긴 서재 서쪽)」).
+    const steps = project.gameBlueprint?.steps ?? [];
+    const k = steps.findIndex((step) => step.event === found.id || step.event === found.name);
+    const nextStep = k >= 0 ? steps[k + 1] : undefined;
+    if (text === raw && !input.where && nextStep) {
+      const target = Object.values(project.maps).flatMap((m) => (m.events ?? []).filter((e) => e.id === nextStep.event || e.name === nextStep.event).map((e) => ({ mapId: m.id, x: e.x, y: e.y, label: String(e.name ?? nextStep.event) })))[0];
+      const hint = target ? whereHint(project, map.id, target) : undefined;
+      if (hint && !raw.includes(hint)) text = `${raw} (${hint})`;
+    }
     const event = structuredClone(found) as unknown as Record<string, unknown> & { pages?: Record<string, unknown>[]; commands?: RawCommand[] };
     let placed = 0;
     const lists: RawCommand[][] = event.pages?.length ? event.pages.map((page) => (page.commands as RawCommand[]) ?? []) : [event.commands ?? []];

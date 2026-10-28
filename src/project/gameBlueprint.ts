@@ -49,6 +49,21 @@ function bounded(label: string, value: unknown, max: number): string {
   return text;
 }
 
+// needs·gives 를 배열(또는 배열을 JSON 글로 감싼 것 — 「[\"첫 번째 단서\"]」·「[]」)로 보내는 모델이 있다(2026-10-28 mt3 argon escape:
+// 잠긴 책장이 「[]이(가) 있어야 할 것 같다.」, 단서가 「『[\"첫 번째 단서\"]』을(를) 알아냈다.」로 화면에 그대로 나왔다).
+// 사람 말 한 줄로 푼다: 항목은 「, 」로 잇고, 빈 배열은 없음(undefined).
+export function blueprintListText(value: unknown): unknown {
+  let v = value;
+  if (typeof v === "string") {
+    const t = v.trim();
+    if (/^\[[\s\S]*\]$/u.test(t)) { try { v = JSON.parse(t); } catch { return value; } }
+    else return value;
+  }
+  if (!Array.isArray(v)) return value;
+  const parts = v.map((x) => (typeof x === "string" ? x.trim() : typeof x === "number" ? String(x) : "")).filter(Boolean);
+  return parts.length ? parts.join(", ") : undefined;
+}
+
 /** 저장본·모델 입력 둘 다 이 한 곳으로 읽는다. 틀리면 무엇이 틀렸는지 한국어로 던진다. */
 export function normalizeGameBlueprint(value: unknown): GameBlueprint {
   const data = requireRecord("gameBlueprint", value);
@@ -61,13 +76,15 @@ export function normalizeGameBlueprint(value: unknown): GameBlueprint {
     const id = s.id === undefined ? `s${i + 1}` : bounded(`steps[${i}].id`, s.id, 12);
     assert(!seen.has(id), `청사진 단계 id 「${id}」가 겹친다.`);
     seen.add(id);
+    const needsRaw = blueprintListText(s.needs);
+    const givesRaw = blueprintListText(s.gives) ?? s.gives;
     return {
       id,
       place: bounded(`steps[${i}].place`, s.place, 60),
       event: bounded(`steps[${i}].event`, s.event, 60),
       action: bounded(`steps[${i}].action`, s.action, BLUEPRINT_LIMITS.text),
-      ...(s.needs === undefined || s.needs === null || (typeof s.needs === "string" && !s.needs.trim()) ? {} : { needs: bounded(`steps[${i}].needs`, s.needs, BLUEPRINT_LIMITS.text) }),
-      gives: bounded(`steps[${i}].gives`, s.gives, BLUEPRINT_LIMITS.text),
+      ...(needsRaw === undefined || needsRaw === null || (typeof needsRaw === "string" && !needsRaw.trim()) ? {} : { needs: bounded(`steps[${i}].needs`, needsRaw, BLUEPRINT_LIMITS.text) }),
+      gives: bounded(`steps[${i}].gives`, givesRaw, BLUEPRINT_LIMITS.text),
       feeling: bounded(`steps[${i}].feeling`, s.feeling, 60),
     };
   });
