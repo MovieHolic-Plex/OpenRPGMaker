@@ -39,7 +39,7 @@ function doorsTo(views: readonly RuntimeEventView[], mapIds: ReadonlySet<string>
 /**
  * 목표 글의 대상 이벤트들(지금 맵).
  * 1) 꼬리 「(이름: 자리)」의 이름과 같은 이벤트 — 「(<맵> 입구: …)」 면 그 맵으로 가는 문.
- * 2) 글에 이름이 나온 이벤트(두 글자 이상, 가장 긴 이름).
+ * 2) 글에 이름이 나온 이벤트(두 글자 이상, 다른 나온 이름에 품긴 짧은 이름은 뺀다).
  * 3) 글에 이름이 나온 다른 맵으로 가는 문.
  */
 export function objectiveTargetViews(project: Pick<Project, "maps">, map: GameMap, views: readonly RuntimeEventView[], text: string | null | undefined): RuntimeEventView[] {
@@ -63,14 +63,9 @@ export function objectiveTargetViews(project: Pick<Project, "maps">, map: GameMa
     if (exact.length) return exact;
   }
   const plain = bare(objective);
-  let best: RuntimeEventView[] = [];
-  let bestLength = 0;
-  for (const view of candidates) {
-    const name = bare(view.event.name ?? "");
-    if (name.length < 2 || name.length < bestLength || !plain.includes(name)) continue;
-    if (name.length > bestLength) { best = [view]; bestLength = name.length; }
-    else best.push(view);
-  }
+  // 글에 이름이 나온 이벤트 전부 — 다른 나온 이름의 일부인 것(「상인」 ⊂ 「상인 도윤」)은 뺀다. 용의자 셋을 한 목표가 부르면 셋 다.
+  const named0 = candidates.filter((view) => { const name = bare(view.event.name ?? ""); return name.length >= 2 && plain.includes(name); });
+  const best = named0.filter((view) => { const name = bare(view.event.name ?? ""); return !named0.some((other) => { const o = bare(other.event.name ?? ""); return o.length > name.length && o.includes(name); }); });
   if (best.length) return best;
   const named = new Set(Object.values(project.maps).filter((other) => other.id !== map.id && bare(other.name ?? "").length >= 2 && plain.includes(bare(other.name ?? ""))).map((other) => other.id));
   return named.size ? doorsTo(doorCandidates, named) : [];

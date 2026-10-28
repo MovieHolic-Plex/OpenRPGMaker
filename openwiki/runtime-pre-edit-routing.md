@@ -23,7 +23,7 @@
   (이벤트 이름이 사람이 읽는 이름이면 그것, 문이면 가는 맵 이름, 아니면 그 칸 가구 이름표, 12자). 안내를 한 번만 보이는 규칙(`rememberPrompt` 키)은 그대로.
   VM 측정 판 5개 판정자 공통 「메모·시계·금고가 어느 오브젝트인지 모른다」.
 - **현재 목표 대상 표시**(2026-10-29): `playSceneFieldStaging.syncObjectiveMarkers` 가 지금 목표 글(`currentObjectiveText`)의 대상
-  (`objectiveTarget.objectiveTargetViews`: 꼬리 「(이름: 자리)」 이름의 이벤트 → 「(<맵> 입구: …)」면 그 맵으로 가는 문 → 글에 나온 가장 긴 이벤트 이름 → 글에 나온 다른 맵의 문)에
+  (`objectiveTarget.objectiveTargetViews`: 꼬리 「(이름: 자리)」 이름의 이벤트 → 「(<맵> 입구: …)」면 그 맵으로 가는 문 → 글에 나온 이벤트 이름 전부(다른 나온 이름에 품긴 짧은 이름은 뺀다 — 「용의자: 마부 한스·여행자 미라·상인 도윤」이면 셋 다) → 글에 나온 다른 맵의 문)에
   금빛 빛무리·바닥 고리를 거리와 무관하게 둔다(page.glow 보다 옅게, 깊이는 그 칸 사물 줄). 목표가 바뀌면 400ms 안에 옮긴다. QA: `objectiveMarkerIds(scene)`.
 - **오프닝 애니메틱 내레이션 띠**: `openingAnimaticRenderer.animaticBandClearance` 가 장면 전체에서 한 번, 띠 밑에 들어가는 인물(role actor)을
   띠 위로 올리는 카메라 y 보정을 구한다(띠 높이·배경 아래 끝 여유 이내). 배경이 끝나 못 올리고 위쪽에 인물이 없으면 띠를 위로(`cinematic-narration--top`).
