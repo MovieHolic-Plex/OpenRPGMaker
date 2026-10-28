@@ -5,6 +5,12 @@
 
 <!-- releases -->
 
+## 0.356.4 — 2026-10-28
+
+### 수정
+
+- **fallen** — act 2 playtest round — barracks stealth patrol, barracks battle backdrop, Frostford night guidance (#3878) (`a5a803b`)
+
 ## 0.356.3 — 2026-10-28
 
 ### 수정
