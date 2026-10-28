@@ -135,6 +135,7 @@ let authoringJourneyRoot: HTMLElement | null = null;
 // 저장 모드 배너 호스트는 항상 DOM에 두고 내용만 갈아 끼운다 — 공용 데모 → 사본 전환처럼
 // 부팅 뒤에 persistence 상태가 바뀌어도 배너가 붙고 떨어진다(emit(project) 가 repaint 를 탄다).
 let persistenceBannerHost: HTMLElement | null = null;
+let persistenceBannerObserver: ResizeObserver | null = null;
 let authoringJourneyOpen = false;
 let authoringJourneyReferenceIssues: readonly string[] | null = null;
 let unsubStore: (() => void) | null = null;
@@ -234,6 +235,14 @@ export function renderEditor(main: HTMLElement): void {
   const bannerHost = el("div", { class: "persistence-banner-host" });
   canvasArea.append(bannerHost);
   persistenceBannerHost = bannerHost;
+  // 조수 패널이 도킹해 캠버스 열이 좁아지면 배너가 두 줄로 접힌다 — 떠 있는 캠버스 도구 막대의 top 이 그 높이를 따라간다.
+  persistenceBannerObserver?.disconnect();
+  persistenceBannerObserver = typeof ResizeObserver === "function"
+    ? new ResizeObserver(() => {
+      canvasArea.style.setProperty("--persistence-banner-height", `${Math.round(bannerHost.getBoundingClientRect().height)}px`);
+    })
+    : null;
+  persistenceBannerObserver?.observe(bannerHost);
   paintPersistenceBanner();
   canvasArea.append(canvasScrollShell, mapLockBanner, canvasToolbar, authoringJourney, cursorDiagnostics);
   // 「지형」 막대·지형지물 팝업 — 지형 도구일 때만 보인다(reliefToolbar.ts).
@@ -534,6 +543,8 @@ export function teardownEditor(): void {
   mapLockBannerRoot = null;
   authoringJourneyRoot = null;
   persistenceBannerHost = null;
+  persistenceBannerObserver?.disconnect();
+  persistenceBannerObserver = null;
   authoringJourneyOpen = false;
   authoringJourneyReferenceIssues = null;
   authoringJourneyIssuesDocumentKey = null;
