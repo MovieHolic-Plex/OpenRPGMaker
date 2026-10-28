@@ -28,7 +28,7 @@ import type { ActorRecord as Actor, Command, EnemyRecord as Enemy, GameMap, Proj
 import { FLAGSHIP_BEAT_MANIFESTS } from "./beats";
 import {
   approach, bgm, CAST, caption, type Cell, choices, clearTint, emote, event, execTool, exitVia, face, faceHero, fadeIn, fadeOut, flash,
-  gone, ifCond, letter, mustBlock, mustWalk, nearestFree, page, playSe, say, setSw, setVar, shake, stopBgm, swOff, swOn, think, thinkAs,
+  gone, ifCond, letter, mustBlock, mustReach, mustWalk, nearestFree, page, playSe, say, setSw, setVar, shake, stopBgm, swOff, swOn, think, thinkAs,
   tint, transfer, varAtLeast, varIs, voice, wait, walk, walkTo, type Who,
 } from "./maouKonbiniKit";
 import type { FlagshipDemoBuildResult } from "./types";
@@ -822,6 +822,11 @@ function buildKonbini(project: Project, links: Links): Cell {
     page("ev_mk_ctrl_end_p7", [varIs(V_STAGE, 7), varAtLeast(V_TASKS, 3)], crisis, { trigger: "auto" }),
   ]));
 
+  // 업무 자리마다 점원 자리에서 걸어갈 수 있어야 한다(서 있는 점장·히나·손님 칸은 막힘으로 본다).
+  for (const [to, what] of [[{ x: BOX.x, y: BOX.y + 1 }, "상자 앞"], [{ x: TRASH.x, y: TRASH.y - 1 }, "분리수거함 앞"], [{ x: SNACK.x, y: SNACK.y + 1 }, "핫스낵 앞"],
+    [{ x: PC.x, y: PC.y - 1 }, "발주 단말 앞"], [{ x: WASTE.x, y: WASTE.y + 1 }, "폐기 선반 앞"], [GATE, "자동문 앞"]] as const) {
+    mustReach(project, map, CLERK, to, what);
+  }
   map.defaultLighting = { ambient: 0, color: "#000000", sources: [] };
   map.bgm = { mode: "custom", resourceId: BGM_SHOP } as GameMap["bgm"];
   return arrive;
@@ -978,7 +983,8 @@ function buildStreet(project: Project, links: Links, parkArrive: Cell, shrineArr
   ]));
   // 리리(첫째 날 저녁)
   const LILY = "ev_mk_st_lily";
-  const lilyAt = mustWalk(project, map, { x: 25, y: 9 }, "찻집 앞");
+  // 찻집 문(26,8) 옆, 아래 칸(27,10)이 비어 있어 인도를 막지 않는 자리.
+  const lilyAt = mustWalk(project, map, { x: 27, y: 9 }, "찻집 앞");
   const meet: Command[] = [
     wait(400),
     { kind: "setLighting", ambient: 0.4, color: "#ff7a3a", transitionMs: 0 } as Command,
@@ -1024,6 +1030,10 @@ function buildStreet(project: Project, links: Links, parkArrive: Cell, shrineArr
       { name: "하굣길 학생", graphic: { selectionId: "charset:oprn-charset-modern1:6" }, stops: [{ x: 16, y: 10 }, { x: 28, y: 10 }], lines: ["해피 마트 가라아게 레드 먹어 봤어? 진짜 맛있어."] },
     ],
   });
+  // 서 있는 인물(리리·고양이)이 인도를 끊지 않는다 — 편집기 문 칸에서 신사·공원·원룸까지.
+  for (const [to, what] of [[fromShrine, "신사 길"], [fromPark, "공원 길"], [{ x: 13, y: 9 }, "원룸 문"]] as const) {
+    mustReach(project, map, links.konbini.street, to, what);
+  }
   map.defaultLighting = { ambient: 0, color: "#000000", sources: [] };
   map.bgm = { mode: "custom", resourceId: BGM_STREET } as GameMap["bgm"];
   // 저녁(4·6)은 노을빛 — 병렬 이벤트가 들어설 때 한 번 칠한다.

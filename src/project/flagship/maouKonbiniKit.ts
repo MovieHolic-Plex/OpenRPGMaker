@@ -6,7 +6,7 @@
 import { charsetFrameIndex } from "@/assets/easyrpgRtp";
 import { runTool } from "@/editor/tools/toolRunner";
 import "@/editor/tools/toolRegistry";
-import { isPassable } from "@/project/collision";
+import { canMove, isPassable } from "@/project/collision";
 import { M2_COMMAND_CATALOG } from "@/project/eventCommands/m2Catalog";
 import type { Command, Dir, EventPage, EventPageCondition, GameEvent, GameMap, Project } from "@/project/types";
 
@@ -176,4 +176,28 @@ export function mustWalk(project: Project, map: GameMap, c: Cell, what: string):
 export function mustBlock(project: Project, map: GameMap, c: Cell, what: string): Cell {
   if (isPassable(project, map, c.x, c.y)) throw new Error(`[maou-konbini] ${map.id} ${what} (${c.x},${c.y}) 이 뚫렸다 — 방 생성 결과가 바뀌었다`);
   return c;
+}
+
+/**
+ * from 에서 to 까지 걸어갈 수 있어야 한다 — 서 있는 인물(같은 층 이벤트) 칸은 막힌 것으로 본다.
+ * 인도 폭이 두 칸뿐인 곳에 인물을 세우면 길이 끊긴다(실플레이 2026-10-29: 찻집 앞 리리가 신사·공원 길을 막았다).
+ */
+export function mustReach(project: Project, map: GameMap, from: Cell, to: Cell, what: string): void {
+  const standing = new Set(map.events.filter((e) => (e.pages ?? []).some((p) => p.priority === "same" && !!p.graphic?.sprite)).map((e) => `${e.x},${e.y}`));
+  const key = (x: number, y: number) => `${x},${y}`;
+  const seen = new Set([key(from.x, from.y)]);
+  const queue: Cell[] = [from];
+  while (queue.length) {
+    const c = queue.shift()!;
+    if (c.x === to.x && c.y === to.y) return;
+    for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+      const n = { x: c.x + dx, y: c.y + dy };
+      const k = key(n.x, n.y);
+      if (seen.has(k) || n.x < 0 || n.y < 0 || n.x >= map.width || n.y >= map.height) continue;
+      if (!canMove(project, map, c.x, c.y, n.x, n.y)) continue;
+      if (standing.has(k) && !(n.x === to.x && n.y === to.y)) continue;
+      seen.add(k); queue.push(n);
+    }
+  }
+  throw new Error(`[maou-konbini] ${map.id} ${what}: (${from.x},${from.y}) → (${to.x},${to.y}) 길이 끊겼다`);
 }
