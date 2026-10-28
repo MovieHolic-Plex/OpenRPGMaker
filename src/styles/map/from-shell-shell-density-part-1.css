@@ -83,7 +83,8 @@
 .layer-btn[aria-pressed="true"],
 .brush-size-btn.active,
 .brush-size-btn[aria-pressed="true"] {
-  box-shadow: inset 3px 0 0 var(--accent-primary);
+  background: var(--accent-muted);
+  box-shadow: none;
   font-weight: 700;
 }
 
