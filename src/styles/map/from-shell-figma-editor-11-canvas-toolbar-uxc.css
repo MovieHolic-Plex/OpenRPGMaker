@@ -37,10 +37,34 @@
   display: none;
 }
 
-/* shell/figma-editor/11-canvas-toolbar-uxc.css:27-30 */
-.canvas-toolbar.is-expanded .zoom-button,
+/* 2026-10-28 HIG C-32: 「더 보기」는 막대 안에 펼치지 않고 단추 아래 떠 있는 판으로 연다.
+   막대 폭이 바뀌지 않아 「…」가 제자리에 남고, 펼친 뒤 같은 자리를 눌러도 다른 단추가 눌리지 않는다. */
 .canvas-toolbar.is-expanded .canvas-toolbar-save-group {
-  display: inline-flex;
+  background: var(--bg-overlay, #FFFFFF);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-s);
+  box-shadow: var(--shadow-pop, 0 8px 24px rgba(30, 24, 18, 0.18));
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  padding: 4px;
+  position: absolute;
+  right: 0;
+  top: calc(100% + 6px);
+  z-index: 2;
+}
+.canvas-toolbar.is-expanded .canvas-toolbar-save-group > button {
+  gap: 8px;
+  justify-content: flex-start;
+  min-height: 32px;
+  min-width: 0;
+  padding: 0 10px 0 8px;
+  white-space: nowrap;
+  width: 100%;
+}
+.canvas-toolbar .canvas-toolbar-more-label {
+  font: 500 13px/1 var(--font-ui);
 }
 
 /* shell/figma-editor/11-canvas-toolbar-uxc.css:34-36 */
@@ -48,12 +72,22 @@
   display: none;
 }
 
-/* shell/figma-editor/11-canvas-toolbar-uxc.css:37-42 */
-.canvas-toolbar.is-expanded .canvas-toolbar-zoom-menu,
+/* 배율 목록도 막대 밖 떠 있는 판이다 — 열어도 막대가 늘어나지 않는다. */
+.canvas-toolbar .canvas-toolbar-zoom-group { position: relative; }
 .canvas-toolbar .canvas-toolbar-zoom-group.is-menu-open .canvas-toolbar-zoom-menu {
-  align-items: center;
-  display: inline-flex;
-  gap: 4px;
+  align-items: stretch;
+  background: var(--bg-overlay, #FFFFFF);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-s);
+  box-shadow: var(--shadow-pop, 0 8px 24px rgba(30, 24, 18, 0.18));
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  left: 0;
+  padding: 4px;
+  position: absolute;
+  top: calc(100% + 6px);
+  z-index: 2;
 }
 
 /* shell/figma-editor/11-canvas-toolbar-uxc.css:43-45 */
@@ -63,9 +97,9 @@
 
 /* shell/figma-editor/11-canvas-toolbar-uxc.css:47-51 */
 .canvas-toolbar-save-group {
-  border-left: 1px solid var(--editor-line);
-  margin-left: 4px;
-  padding-left: 6px;
+  border-left: 0;
+  margin-left: 0;
+  padding-left: 0;
 }
 
 /* shell/figma-editor/11-canvas-toolbar-uxc.css:53-66 */
@@ -83,10 +117,16 @@
   min-width: 30px;
   padding: 0;
 }
+.canvas-toolbar-expand[aria-expanded="true"] {
+  background: var(--bg-active, var(--bg-inset));
+  border-color: var(--border-strong);
+}
+.canvas-toolbar .zoom-stepper-btn svg,
+.canvas-toolbar-expand svg { display: block; }
 
 /* shell/figma-editor/11-canvas-toolbar-uxc.css:68-70 */
 .map-save-button {
-  min-width: 66px;
+  min-width: 0;
 }
 
 /* shell/figma-editor/11-canvas-toolbar-uxc.css:72-88 */
@@ -156,3 +196,36 @@ body .editor-canvas-scroll-shell {
   position: relative;
   top: auto;
 }
+
+/* 2026-10-28 HIG C-32: 캔버스 막대는 한 줄 40px 이다 — 단추 32px, 안쪽 여백 3px, 줄바꿈 없음.
+   넘치는 단추는 editorZoomToolbar.ts 가 「더 보기」 판으로 옮긴다(접어서 두 줄로 만들지 않는다). */
+.canvas-area .canvas-toolbar.is-icon-toolbar {
+  flex-wrap: nowrap;
+  gap: 2px;
+  padding: 3px;
+}
+.canvas-area .canvas-toolbar.is-icon-toolbar > .btn,
+.canvas-area .canvas-toolbar.is-icon-toolbar > .canvas-toolbar-expand,
+.canvas-area .canvas-toolbar.is-icon-toolbar .canvas-ai-workbench > .canvas-ai-action,
+.canvas-area .canvas-toolbar.is-icon-toolbar .canvas-toolbar-zoom-group > .zoom-stepper-btn {
+  height: 32px;
+  min-height: 32px;
+  min-width: 32px;
+  width: 32px;
+}
+.canvas-area .canvas-toolbar.is-icon-toolbar .canvas-toolbar-zoom-group > .zoom-stepper-current {
+  height: 32px;
+  min-height: 32px;
+}
+.canvas-area .canvas-toolbar.is-icon-toolbar .canvas-ai-workbench:empty { display: none; }
+/* 「더 보기」 판으로 옮겨진 단추: 아이콘 + 이름 한 줄. */
+.canvas-area .canvas-toolbar.is-icon-toolbar .canvas-toolbar-save-group > .is-overflow-item {
+  gap: 8px;
+  height: auto;
+  justify-content: flex-start;
+  min-height: 32px;
+  padding: 0 10px 0 8px;
+  white-space: nowrap;
+  width: 100%;
+}
+.canvas-area .canvas-toolbar.is-icon-toolbar .canvas-toolbar-save-group > .canvas-ai-action > span { display: inline; }
