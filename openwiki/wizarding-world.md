@@ -117,6 +117,10 @@ python3 scripts/content/wizarding/viz_wz.py             # ~/claude-viz/wizarding
   밝기 관문 최소 차 37.7(성채 슬레이트 바닥 68.5 대 성채 벽 106.3).
   레시피를 고치면 `space_recipes.py` 를 다시 돌리고 같은 검사를 한다.
 
+### 조수 v2 경로 (2026-10-28)
+
+조수 v2 `make_place` 는 마법 학교 낱말이 있으면 `src/ai/v2/builders/wizarding.ts` 로 간다 — 구역마다 이 도구 한 번, 첫 방 북·동·서 문과 다른 방 남문을 `create_transfer_pair` 로 잇고, 요청 소품은 세트 기물로(없으면 가장 가까운 기물 + 경고). 규칙은 `openwiki/assistant-v2.md`.
+
 ## 통행 관문 WZ-ISLAND
 
 `bake_refs_wz.py` 의 구조 검사와 `publish_places_wz.py` 는 걸을 수 있는 칸(모든 층이 통행)을 4방향 덩이로 세어, 가장 큰 덩이 밖의 칸을 `WZ-ISLAND`(갇힌 주머니)로 본다.
