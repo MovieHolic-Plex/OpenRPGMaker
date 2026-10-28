@@ -912,6 +912,13 @@ function questsDetail(project: Project, session: PlaySession): StatusMenuDetail 
         testId: `status-menu-quest-${quest.key}`,
         attributes: { "data-quest-row": "summary" },
       },
+      // 독립 판정: 상세 창에 요약·상태 밑 첫 단계(이미 끝낸 1번)만 보여 「지금 할 일」을 몰랐다 — 창이 스크롤되지 않으니 진행 중이면 요약 바로 밑에 다음 단계 한 줄.
+      ...(quest.state === "active" ? quest.steps.filter((step) => !step.done).slice(0, 1).map((step) => ({
+        label: "지금 할 일",
+        value: step.label,
+        testId: `status-menu-quest-next-${quest.key}`,
+        attributes: { "data-quest-row": "next" },
+      })) : []),
       {
         // 라벨이 「진행」이면 바로 아래 단계 행들과 같은 낱말이 세 번 겹쳐 읽힌다(실측: 「진행 / 진행 중 (0/3) /
         // 1. 진행 / 1. 대화 / 대기 중 …」). 이 행이 무엇인지 말하는 라벨을 쓴다.
@@ -921,14 +928,6 @@ function questsDetail(project: Project, session: PlaySession): StatusMenuDetail 
         testId: `status-menu-quest-state-${quest.key}`,
         attributes: { "data-quest-row": "state" },
       },
-      // 독립 판정: 상세 창에 상태 밑 첫 단계(이미 끝낸 1번)만 보여 「지금 할 일」을 몰랐다 — 진행 중이면 다음 단계를 먼저 한 줄.
-      ...(quest.state === "active" ? quest.steps.filter((step) => !step.done).slice(0, 1).map((step) => ({
-        label: "지금 할 일",
-        value: step.label,
-        description: "다음 단계",
-        testId: `status-menu-quest-next-${quest.key}`,
-        attributes: { "data-quest-row": "next" },
-      })) : []),
       ...quest.steps.map((step) => ({
         // step.label 이 이미 「N. 단계이름」이다 — 앞에 번호를 또 붙이고 상태를 라벨에 섞으면
         // 「1. 진행 / 1. 대화 / 대기 중」 세 줄이 되어 단계를 읽을 수 없다. 한 행 = 번호+이름+상태.

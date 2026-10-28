@@ -3783,7 +3783,7 @@
    "note": "act2Opening.ts smithy hubDoor (29,42) glow · playerStatusMenuDetails questsDetail next row (judge10)",
    "mapId": "fs2_hub_night",
    "x": 29,
-   "y": 44,
+   "y": 43,
    "facing": "up",
    "switches": {
     "sw_fs_main_started": true,
@@ -3889,8 +3889,9 @@
        "key": "Escape"
       },
       {
-       "kind": "key",
-       "key": "Escape"
+       "kind": "hold",
+       "dir": null,
+       "ms": 300
       },
       {
        "kind": "key",
@@ -3899,12 +3900,11 @@
       {
        "kind": "hold",
        "dir": null,
-       "ms": 500
+       "ms": 600
       },
       {
-       "kind": "move",
-       "dir": "up",
-       "steps": 1
+       "kind": "face",
+       "dir": "up"
       },
       {
        "kind": "action"
