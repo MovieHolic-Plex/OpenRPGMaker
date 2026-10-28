@@ -2367,6 +2367,6 @@ node scripts/runtime-qa.mjs --scenario whole-game-battle-jrpg --browser firefox 
 추격자 페이지 스위치(sw_0001, 원래는 금고 퍼즐 끝)를 켜고 순찰 사각형 왼쪽 변 위 (28,25)에 서서 추격자가 보고 3칸 안으로 올 때까지
 (`readState().horror.pursuits[*].active` + `eventLocations`) → 잡힘 → 공포 게임 오버 → 「다시 도망친다」 → 다시 잡힘 → 「타이틀로」 → 「기록 불러오기」.
 함정: 추격자는 바라보는 쪽만 본다 — 집 북쪽은 등 뒤라 영원히 안 잡힌다. `__oprnDebug.setSwitch/setVariable/giveItem` 은 이제 끝에
-`refreshRuntimeEntities` 를 불러 페이지 조건을 다시 본다(전에는 켠 페이지가 화면에도 이동에도 안 나왔다). 이 판에는 숨을 곳(interaction hiding)이 없다.
+`refreshRuntimeEntities` 를 불러 페이지 조건을 다시 본다(전에는 켠 페이지가 화면에도 이동에도 안 나왔다). 숨기 비트(hide → 숨은 채 추격자 2칸 안 통과 → 5칸 밖 → 나오기)는 은신처가 있는 판에서만 통과한다 — 원본 standin 판은 은신처 0곳이라 실패하고(전), `scripts/content/apply-chaser-hiding.mts` 로 소급한 사본(병원 침대 (38,24), 순찰에서 10걸음)에서 통과한다(후). 들킨 뒤 (31,24)→(37,24) 복도를 `playerRoute` 로 달려 숨는다.
 
 체크포인트도 같은 실물 게임으로 부팅된다(2026-10-29 — 전에는 `--checkpoint-set` 경로가 `--whole-game` 을 무시하고 기본 픽스처로 떨어져 «없는 맵» 으로 죽었다). 판정자가 멈춘 자리 하나를 확인할 때: 세트 파일에 `{ mapId, x, y, facing, beats }` 만 적고 `--scenario checkpoints --checkpoint-set <세트> --whole-game <폴더> --netns`. 예: standin monster 1번길 (19,20) 오른쪽 누르기 — 대화창 없이 제자리, 아래는 움직임 → 오른쪽 칸은 숲 경계(대사 잠금 아님).
