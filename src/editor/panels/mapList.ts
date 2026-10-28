@@ -569,7 +569,8 @@ function renderNode(spec: RenderNodeSpec): void {
     const nameLine = el("div", {
       class: "map-tree-name-line",
       children: [
-        el("span", { class: "map-tree-name", text: actionContext.mapName }),
+        // 좁은 패널에서 말줄임되면 전체 이름은 title 로 남는다.
+        el("span", { class: "map-tree-name", text: actionContext.mapName, attrs: { title: actionContext.mapName } }),
         ...(isStart
           ? [el("span", {
             class: isBasicRow ? "start-mark is-start" : "start-mark",
