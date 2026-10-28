@@ -27,6 +27,8 @@
   저작 VN 룩(`vnLook.css` `[data-vn-look]`)의 글자 크기도 이 변수를 곱해야 한다(빠뜨리면 넓은 창에 9px 한 줄).
 - **타이틀 글 가독성**: 부제·평문 메뉴는 1px 네 방향 어두운 테두리+넓은 그림자. 타이틀 입자(비·눈)는 `.rm-title-fx`(z 1) 안이라 글(z 3) 아래다 — 「비가 글 위」 신고는 층이 아니라 대비 문제였다.
   컷신 자막은 `text-wrap: balance`(「이십 / 년」 방지), 엔딩·크레딧(`.terminal-scene`)도 `keep-all`.
+- **타이틀 메뉴 창은 거의 불투명**(2026-10-29): 창 칠(`--runtime-window-fill-fallback`, 유리판 0.82) 아래에 `rgb(8 10 20 / 88%)` 받침을 한 겹 깐다(합쳐 약 0.98) — 칠만으로는 뒤 맵의 촛대·탁자가 메뉴 글자 뒤로 비쳤다. 평문 메뉴(`data-menu-style="plain"`)는 창이 없으므로 그대로.
+  도트 스킨 ESC 명령 줄은 16px(`--px-dock-h` 계산과 같은 값), 글자는 손가락 커서 뒤 5px(`padding-left: 19px`).
 - 증거: `~/z-project/assistant-whole-game/suite/ledger/evidence/hud/`(전/후, 재현 `replay.mjs` — 출하 player.html 로 판정자 손·체크포인트를 다시 돈다).
 
 ## 카메라 스크롤은 캔버스 픽셀 격자에 맞춘다 (2026-10-23)

@@ -218,7 +218,7 @@
   text-shadow: var(--px-shadow);
 }
 .oprn-status-menu.main-menu[data-menu-skin="pixel"] {
-  /* 명령 한 줄 14px + 위아래 안쪽 4px. 6항목까지는 예전 94px 그대로, 그보다 많으면 늘어나 마지막 항목이 창 밖으로 안 나간다(R10). 아래 돈·장소·시간·장 창은 그만큼 내려온다. */
+  /* 명령 한 줄 16px + 위아래 안쪽 4px. 6항목까지는 예전 94px 그대로, 그보다 많으면 늘어나 마지막 항목이 창 밖으로 안 나간다(R10). 아래 돈·장소·시간·장 창은 그만큼 내려온다. */
   --px-dock-h: max(94px, calc(var(--status-menu-command-count, 6) * 16px + 8px));
 }
 .oprn-status-menu.main-menu[data-menu-skin="pixel"]::before { background: var(--px-stage); border: 0; border-radius: 0; box-shadow: none; inset: 0; }
@@ -281,9 +281,11 @@
   border: 0;
   border-radius: 0;
   color: var(--px-ink);
-  flex: 0 0 14px;
+  /* 한 줄 16px(12px 글자 + 4px) — 14px 이면 위아래 글자가 붙고 손가락 커서가 이웃 줄 글자에 닿았다(VQA vm 31). 글자는 손가락(2+12px) 뒤 5px 띄운다. */
+  flex: 0 0 16px;
   font-size: 12px;
-  padding: 0 4px 0 17px;
+  line-height: 16px;
+  padding: 0 4px 0 19px;
   text-shadow: var(--px-shadow);
 }
 .oprn-status-menu.main-menu[data-menu-skin="pixel"] .status-menu-primary-dock > .status-menu-command.selected { background: transparent; color: var(--px-ink); }

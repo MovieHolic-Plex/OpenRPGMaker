@@ -286,7 +286,8 @@
    단, 창은 **내용 크기**만 생긴다(min-width 96px). 전면 루트에 fill 을 걸지 않으므로
    DB 타이틀 그래픽은 메뉴 밖 전역에서 그대로 보이고, 레터박스 RM 타이틀로 돌아가지도 않는다. */
 .player-layout.system-shell .rm-title-screen-editorial .rm-title-menu {
-  background: var(--runtime-window-fill-fallback);
+  /* 창 칠 아래에 짙은 받침을 한 겹 깐다 — 유리판(0.82)만으로는 타이틀 뒤 맵의 촛대·탁자가 메뉴 글자 뒤로 비쳤다(VQA vm 6·16, F 115, T 170). 합친 불투명도 약 0.98. */
+  background: linear-gradient(var(--runtime-window-fill-fallback), var(--runtime-window-fill-fallback)), rgb(8 10 20 / 88%);
   border: 1px solid var(--runtime-glass-hairline);
   border-radius: var(--runtime-glass-radius-small);
   box-shadow: none;
