@@ -1544,6 +1544,9 @@ function fortCourt(project: Project, exec: Exec): void {
     ["bd-pick-mining-valley-rack", 4, COURT_PAD + 10], ["bd-pick-mining-valley-rack", 7, COURT_PAD + 10], ["bd-pick-mining-valley-rack", 10, COURT_PAD + 10],
     ["bd-pick-snowfield-firewood", 12, COURT_PAD + 12], ["bd-pick-aqueduct-sewer-barrel", 3, COURT_PAD + 14], ["bd-pick-mining-valley-crates", 4, COURT_PAD + 14],
     ["bd-pick-mountain-pass-brazier", gateS - 2, court.height - 13], ["bd-pick-mountain-pass-brazier", gateS + 4, court.height - 13],
+    // 남서 망루 곁 보급 더미, 동쪽 마당 무기 시렁 — 빈 눈밭이 넓게 남지 않게.
+    ["bd-pick-snowfield-firewood", 4, court.height - 13], ["bd-pick-snowfield-pile", 7, court.height - 12], ["bd-pick-aqueduct-sewer-barrel", 3, court.height - 12],
+    ["bd-pick-mining-valley-rack", 32, court.height - 12], ["bd-pick-mining-valley-crates", 34, court.height - 14],
   ] as const) put(kitId, x, y);
   // 깃대·봉화대(마을 소품)를 다 세운 뒤에 필드 맵으로 — 필드 맵에는 마을 소품 도장이 막힌다.
   exec(project, "set_map_properties", { mapId: FS2_FORT_COURT_ID, mapRole: "field", battleBackground: "battle-scenery-snow" });
