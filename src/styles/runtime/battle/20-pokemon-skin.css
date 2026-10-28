@@ -1169,7 +1169,8 @@
   font-size: 27px;
   line-height: 1.45;
   color: #fff;
-  text-shadow: 2px 2px #080c0c;
+  /* 짙은 2px 검은 그림자가 글자를 두 번 찍은 듯 보였다(장부 hud #138) — 한 단 옅은 회청 그림자(GBA 대사 그림자 톤). */
+  text-shadow: 1px 1px #4a5560, 2px 2px rgb(40 46 52 / 55%);
 }
 .battle-scene[data-battle-ui-style="pokemon"] .battle-command-host {
   padding: 4px 5px 3px 3px;
