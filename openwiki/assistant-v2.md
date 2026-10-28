@@ -117,6 +117,11 @@ v1 의 `script_cutscene` 비트로 옮긴다(`events.ts`).
   하네스가 먼저 「그만두기」(내용을 지우지 않는 쪽)를 누르고 보낸다. 그전에는 실행이 카드 단추를 기다리며 체크포인트 적용을 30분 잡고(`piCheckpointBroker`),
   보낸 글은 그 뒤에 갇혀 다음 턴이 0블록으로 45분 멈췄다(vm1 argon escape 003→004·jrpg 003→004 — 「모델 무응답」으로 보였던 턴의 실제 원인).
 
+## 이벤트 자리·시작 칸 (2026-10-29 야외 자동 플레이)
+
+- **큰 몸 아래 칸 금지**(`people.ts eventBodyCells`·`resolveWhere`): 청사진 조사 칸은 1×1 보다 큰 이벤트(키운 보스 3×2 등)의 몸이 덮은 칸에 놓지 않는다. vm1 deepseek 「동굴 입구의 봉인」(10,7)·vm2 terra 「동굴의 흔적」(25,8)이 보스 몸 밑이라 자동 플레이가 조사할 이벤트를 못 찾았다.
+- **시작 칸은 가장 큰 걷는 덩이에**(`authorBeodeulTown.keepStartWalkable`, 이제 짓기 맨 끝): 지나갈 수 있어도 막힌 주머니(`largestWalkArea` 밖)면 옮긴다.
+
 ## 켜는 법
 
 - 편집기 주소 `?assistant=v2`, 또는 `localStorage['oprn:assistant-v2'] = '1'`(`src/ai/v2/switch.ts`). `?assistant=v1` 이나 `'0'` 이면 끈다. **기본은 v1** — 기본을 바꾸는 것은 사용자 결정이다.

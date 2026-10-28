@@ -8,7 +8,7 @@ import { harmonizeBeodeulDaylight } from './beodeulLightTools';
 import { MAX_TOOL_MAP_DIMENSION } from "@/project/mapSizeLimits";
 import type { GameMap, Project } from "@/project/types";
 import { isPassable } from "@/project/collision";
-import { openStartCell } from "./startOnBuiltMap";
+import { largestWalkArea, openStartCell } from "./startOnBuiltMap";
 import { CONSTRUCTION_TOOLS_V3 } from "./v3/constructionTools";
 import { assertMapIdAvailable } from "./mapHelpers";
 import { MAP_TOOLS, assignCreatedMapBgm } from "./mapTools";
@@ -109,12 +109,6 @@ export const AUTHOR_BEODEUL_TOWN_TOOL: ToolDefinition = {
     let result:ToolExecResult;
     try{ result=legacySmall?buildSmallBeodeulVillage(draft,args):buildTown(draft,args); }
     finally{ if(onStart) draft.startMapId=startMap; }
-    const builtMapId = (result.data as { mapId?: string } | undefined)?.mapId;
-    if (builtMapId && draft.startMapId === builtMapId) {
-      const moved = keepStartWalkable(draft, builtMapId);
-      if (moved) notes.push(moved);
-    }
-    if (notes.length) { result.warnings = [...notes, ...(result.warnings ?? [])]; result.summary = `${notes.join(' ')} ${result.summary}`; }
     const theme=String(args.theme??(args.harbour===true?'coast':'river'));
     const mapId=(result.data as {mapId?:string}|undefined)?.mapId;
     if(mapId&&legacySmall){
@@ -133,6 +127,12 @@ export const AUTHOR_BEODEUL_TOWN_TOOL: ToolDefinition = {
       const light=harmonizeBeodeulDaylight(draft,mapId);
       result.data={...(result.data as Record<string,unknown>),daylight:light.data};result.summary+=` ${light.summary}`;
     }
+    // 시작 칸 점검은 땅 꾸미기(덤불·풀포기)까지 끝난 뒤에 — 꾸미기 덤불이 시작 칸 둘레 틈을 막아 주머니에 가뒀다(2026-10-29 vm1 flash).
+    if (mapId && draft.startMapId === mapId) {
+      const moved = keepStartWalkable(draft, mapId);
+      if (moved) notes.push(moved);
+    }
+    if (notes.length) { result.warnings = [...notes, ...(result.warnings ?? [])]; result.summary = `${notes.join(' ')} ${result.summary}`; }
     return result;
   },
 };
@@ -182,11 +182,18 @@ function keepStartWalkable(draft: Project, mapId: string): string | null {
   const map = draft.maps[mapId];
   const start = draft.startPos;
   if (!map || !start) return null;
-  if (start.x < map.width && start.y < map.height && isPassable(draft, map, start.x, start.y)) return null;
-  const cell = openStartCell(draft, map, start);
+  // 통행 칸이어도 집·물레방아·덤불에 둘러싸인 몇 칸짜리 주머니면 옮긴다 — 시작이 8칸 주머니에 갇혀 마을 길·동굴 문에 못 닿았다
+  // (2026-10-29 vm1 flash jrpg 다시 짓기: 집과 물레방아 사이 (10,8), 동굴 잇기 실패·자동 플레이 실패).
+  const area = largestWalkArea(draft, map);
+  const inside = start.x < map.width && start.y < map.height;
+  const open = inside && isPassable(draft, map, start.x, start.y);
+  if (open && area.includes(start.y * map.width + start.x)) return null;
+  const cell = openStartCell(draft, map, start, area);
   if (!cell) return null;
   draft.startPos = { ...start, x: cell.x, y: cell.y };
-  return `시작 위치 (${start.x},${start.y}) 가 시공으로 막혀 가까운 트인 통행 칸 (${cell.x},${cell.y}) 로 옮겼다.`;
+  return open
+    ? `시작 위치 (${start.x},${start.y}) 가 시공으로 좁은 틈에 갇혀 마을 땅의 가까운 트인 칸 (${cell.x},${cell.y}) 로 옮겼다.`
+    : `시작 위치 (${start.x},${start.y}) 가 시공으로 막혀 가까운 트인 통행 칸 (${cell.x},${cell.y}) 로 옮겼다.`;
 }
 
 /** 바닥 한 가지만 깔리고 위층·이벤트·구조물이 없는 맵. */

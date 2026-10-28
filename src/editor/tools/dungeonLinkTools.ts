@@ -13,7 +13,7 @@ import { linkMapsInDraft, type LinkResult } from "./worldGraphTools";
 import { isDoorArtCell } from "@/project/staging/doorCells";
 import { isPassable } from "@/project/collision";
 import { protectedHouseCells } from "./houseProtection";
-import { walkableFromAnchors } from "./transferReachability";
+import { playerAnchors, walkableFromAnchors } from "./transferReachability";
 import { SHARED_OBJECT_TOOLS } from "./sharedObjectTools";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
 
@@ -123,11 +123,15 @@ export function linkEntranceInDraft(draft: Project, args: DungeonLinkArgs): { li
     && (c as { mapId?: string }).mapId !== fromMap.id)) && toGate && Math.abs(e.x - toGate.x) <= 1 && Math.abs(e.y - toGate.y) <= 1);
   if (otherExit) notes.push(`던전 ${toMap.id} 의 문 칸에는 이미 다른 야외로 나가는 문(${otherExit.id})이 있다 — 한 던전은 입구 하나가 원칙이다. 두 번째 문은 가까운 다른 빈 칸에 놓였으니 위치를 확인하라(여러 입구가 필요하면 입구마다 던전을 따로 짓는다).`);
   // 굴 입구(2026-10-25 J25): 숲·들판의 맨땅 출입구로 동굴에 들어가 «풀밭에서 갑자기 동굴»로 읽혔다. 버들항 바깥 맵이면 출입구 바로 위에 갱구를 찍는다.
+  // 잇기가 실패하면 찍은 갱구도 되돌린다 — 실패한 잇기가 갱구만 남겨 문 없는 굴 그림이 마을 길을 막았다(2026-10-29 vm1 flash).
+  const beforeMouth = structuredClone(draft.maps[fromMap.id]!);
   const mouth = caveMouth(draft, fromMap, fromGate);
   if (mouth) notes.push(mouth);
   const from = { mapId: fromMap.id, x: fromGate.x, y: fromGate.y };
   const to = { mapId: toMap.id, ...(toGate ? { x: toGate.x, y: toGate.y } : {}), ...(toLanding ? { entry: { x: toLanding.x, y: toLanding.y } } : {}), ...(toDoor ? { doorAt: { x: toDoor.x, y: toDoor.y } } : {}) };
-  const link = linkMapsInDraft(draft, { from, to, bidirectional: true, fade: args.fade ?? "black", registerEdge: true });
+  let link: LinkResult;
+  try { link = linkMapsInDraft(draft, { from, to, bidirectional: true, fade: args.fade ?? "black", registerEdge: true }); }
+  catch (error) { if (mouth) draft.maps[fromMap.id] = beforeMouth; throw error; }
   return { link, fromGate, ...(toGate ? { toGate } : {}), ...(placeName ? { placeName } : {}), notes };
 }
 
@@ -280,7 +284,35 @@ export function caveMouthSpotClear(draft: Project, map: GameMap, gate: Pt): bool
     if ((map.upperTiles[i] ?? -1) >= 0) return false;
     if (guarded.has(i) || map.events.some((e) => Math.abs(e.x - x) <= 1 && Math.abs(e.y - y) <= 1)) return false;
   }
-  return true;
+  return !mouthCutsWalk(draft, map, gate);
+}
+
+/**
+ * 갱구(3×4)를 찍으면 시작점·착지점에서 걸어 닿던 땅의 일부가 끊기는가 — 갱구가 집·물레방아 사이 좁은 목을 막아 시작 칸을 8칸 주머니에
+ * 가뒀고, 그 주머니 목에 문을 놓을 수 없어 마을↔동굴 잇기가 실패했다(2026-10-29 vm1 flash jrpg 다시 짓기).
+ */
+function mouthCutsWalk(draft: Project, map: GameMap, gate: Pt): boolean {
+  const anchors = playerAnchors(draft, map);
+  if (!anchors.length) return false;
+  const W = map.width, H = map.height;
+  const inRect = (x: number, y: number) => x >= gate.x - 2 && x <= gate.x && y >= gate.y - 4 && y <= gate.y - 1;
+  const bfs = (block: boolean): Uint8Array => {
+    const seen = new Uint8Array(W * H);
+    const q: number[] = [];
+    for (const a of anchors) if (a.x >= 0 && a.y >= 0 && a.x < W && a.y < H && !(block && inRect(a.x, a.y)) && !seen[a.y * W + a.x]) { seen[a.y * W + a.x] = 1; q.push(a.y * W + a.x); }
+    for (let k = 0; k < q.length; k += 1) {
+      const c = q[k]!, x = c % W, y = (c - x) / W;
+      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+        const nx = x + dx, ny = y + dy;
+        if (nx < 0 || ny < 0 || nx >= W || ny >= H || seen[ny * W + nx] || (block && inRect(nx, ny)) || !isPassable(draft, map, nx, ny)) continue;
+        seen[ny * W + nx] = 1; q.push(ny * W + nx);
+      }
+    }
+    return seen;
+  };
+  const before = bfs(false), after = bfs(true);
+  for (let i = 0; i < W * H; i += 1) if (before[i] && !after[i] && !inRect(i % W, (i - (i % W)) / W)) return true;
+  return false;
 }
 /** 바깥(실내·던전이 아닌) 버들항 맵의 출입구 칸 위에 문·계단 그림이 없으면 갱구(3×4, 문 칸 = 왼쪽 위+(2,3))를 출입구 바로 위에 찍는다. 못 찍으면 조용히 넘긴다(끝맺음 검사가 짚는다). */
 /**

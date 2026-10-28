@@ -16,7 +16,7 @@ import type { GameMap, Project } from "@/project/types";
 export const SEED_START_MAP_ID = "map_blank_start";
 
 /** 맵에서 가장 넓게 걸어 닿는 영역의 칸들(없거나 4칸 미만이면 빈 배열). */
-function largestWalkArea(project: Project, map: GameMap): number[] {
+export function largestWalkArea(project: Project, map: GameMap): number[] {
   const seen = new Uint8Array(map.width * map.height);
   let best: number[] = [];
   for (let i = 0; i < seen.length; i++) {

@@ -51,6 +51,22 @@ export function transferCells(map: GameMap): Cell[] {
 }
 
 /** 사람이 서서 막는 칸: 이동 칸이 아닌 이벤트 칸 전부(그림 있는 이벤트·기존 NPC). */
+/**
+ * 큰 몸(page.footprint)을 가진 이벤트가 덮는 칸 전부(앵커 칸 제외) — 키운 보스(3×2)처럼 그림이 여러 칸을 덮는다.
+ * 그 칸에 조사 칸을 두면 보스 그림 밑에 묻혀 보스를 쓰러뜨리기 전에는 조사할 수 없었다(2026-10-29 vm1 deepseek 「동굴 입구의 봉인」).
+ */
+export function eventBodyCells(map: GameMap): Set<number> {
+  const set = new Set<number>();
+  for (const e of eventsOf(map)) for (const p of e.pages ?? []) {
+    const fp = (p as { footprint?: { width?: number; height?: number } }).footprint;
+    const fw = Math.max(1, Math.floor(fp?.width ?? 1)), fh = Math.max(1, Math.floor(fp?.height ?? 1));
+    if (fw === 1 && fh === 1) continue;
+    const left = e.x - Math.floor((fw - 1) / 2);
+    for (let y = e.y - (fh - 1); y <= e.y; y++) for (let x = left; x < left + fw; x++) if (x >= 0 && y >= 0 && x < map.width && y < map.height && !(x === e.x && y === e.y)) set.add(y * map.width + x);
+  }
+  return set;
+}
+
 export function eventBlockers(map: GameMap): Set<number> {
   const set = new Set<number>();
   for (const e of eventsOf(map)) if (!hasTransfer(e)) set.add(e.y * map.width + e.x);
@@ -415,6 +431,7 @@ export function resolveWhere(
   const w = map.width;
   const start = walkStart(project, map);
   const blockers = eventBlockers(map);
+  const bodies = eventBodyCells(map);
   const reach = terrainReachability(project, map, start);
   const transferList = transferCells(map);
   const transfers = new Set(transferList.map((c) => c.y * w + c.x));
@@ -434,7 +451,7 @@ export function resolveWhere(
   const usableCell = (c: Cell): boolean => {
     if (!inside(c)) return false;
     const i = c.y * w + c.x;
-    if (!reach[i] || blockers.has(i) || transfers.has(i) || avoid.has(i) || lanes.has(i) || throats.has(i)) return false;
+    if (!reach[i] || blockers.has(i) || bodies.has(i) || transfers.has(i) || avoid.has(i) || lanes.has(i) || throats.has(i)) return false;
     if (playerStart && c.x === playerStart.x && c.y === playerStart.y) return false;
     // 사람은 시작 칸 바로 위·아래에 세우지 않는다 — 3/4 시점에서 주인공 머리 위에 다른 사람이 올라탄 것처럼 겹쳤다(2026-10-29 야외 VQA vm2 terra jrpg 319·350).
     if (!fp && playerStart && c.x === playerStart.x && Math.abs(c.y - playerStart.y) === 1) return false;
