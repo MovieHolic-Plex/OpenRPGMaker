@@ -19,6 +19,12 @@ export const AI_LOCK_SCRIM_TESTIDS = {
   action: "ai-lock-action",
 } as const;
 
+/** 막의 설명 문장 id. 패널·스튜디오 입력이 잠겨 있을 때 aria-describedby 로 가리킨다. */
+export const AI_LOCK_REASON_ID = "ai-lock-reason";
+export const AI_LOCK_TITLE_ID = "ai-lock-title";
+/** 잠긴 입력의 aria-describedby — 막의 제목(무엇이 필요한지)과 설명(왜)을 함께 읽는다. */
+export const AI_LOCK_DESCRIBEDBY = `${AI_LOCK_TITLE_ID} ${AI_LOCK_REASON_ID}`;
+
 export type AiLockScrim = {
   readonly element: HTMLElement;
   /** 연결 상태에 맞춰 막을 걷거나 덮는다. 돌려주는 값은 "지금 잠겼는가". */
@@ -37,9 +43,11 @@ export function createAiLockScrim(options: {
   readonly onOpenSettings: () => void;
   readonly onLockChange?: (locked: boolean) => void;
 }): AiLockScrim {
-  const titleEl = el("p", { class: "ai-lock-title", text: "AI 연결이 필요합니다" });
+  const titleEl = el("p", { class: "ai-lock-title", attrs: { id: AI_LOCK_TITLE_ID }, text: "AI 연결이 필요합니다" });
+  // 입력창들이 aria-describedby 로 이 문장을 가리킨다 — 「왜 못 쓰는지」를 막과 입력이 같은 말로 한다(C-60).
   const bodyEl = el("p", {
     class: "ai-lock-body",
+    attrs: { id: AI_LOCK_REASON_ID },
     text: "로그인하면 마을 만들기·NPC 배치·이벤트 작성을 AI 와 함께 할 수 있습니다.",
   });
   const actionEl = el("button", {
@@ -57,7 +65,6 @@ export function createAiLockScrim(options: {
       el("div", {
         class: "ai-lock-card",
         children: [
-          el("span", { class: "ai-lock-icon", attrs: { "aria-hidden": "true" }, text: "✦" }),
           titleEl,
           bodyEl,
           actionEl,

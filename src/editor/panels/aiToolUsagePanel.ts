@@ -34,6 +34,15 @@ export function renderAiToolUsagePanel(): HTMLElement {
   return host;
 }
 
+/**
+ * 조수에게 보낸 요청 수 — 성공·실패를 함께 센다(C-69). 도구 호출 집계만 보이면 의도 해석에서 실패한 요청이
+ * 「호출 0」 으로 사라져, 같은 화면의 「실행 영수증 2개」와 모순됐다. 원천은 턴마다 하나씩 남는 활동 기록이다.
+ */
+export function countAssistantRequests(): { readonly requests: number; readonly failed: number } {
+  const logs = listAiActivityLogs();
+  return { requests: logs.length, failed: logs.filter((log) => log.result.ok === false).length };
+}
+
 export async function loadToolUsageReport(): Promise<ToolUsageReport> {
   const projectId = store.getProjectIdentity().id;
   const observations: ToolUsageObservation[] = [];
@@ -106,6 +115,7 @@ function queryFromTrace(entry: ActivityEntry): string | undefined {
 }
 
 function renderReport(report: ToolUsageReport): HTMLElement {
+  const requests = countAssistantRequests();
   const selected = { name: report.tools[0]?.name ?? "" };
   const detail = el("div", { class: "ai-tool-usage-detail", dataset: { testid: "ai-tool-usage-detail" } });
   const rows = el("div", { class: "ai-tool-usage-rows", attrs: { role: "list" } });
@@ -152,9 +162,10 @@ function renderReport(report: ToolUsageReport): HTMLElement {
     class: "ai-tool-usage-report",
     children: [
       el("div", { class: "ai-tool-usage-stats", children: [
-        stat("호출", String(report.totals.calls)),
-        stat("도구", String(report.totals.tools)),
-        stat("실패", String(report.totals.failed)),
+        stat("요청", String(requests.requests)),
+        stat("실패한 요청", String(requests.failed)),
+        stat("도구 호출", String(report.totals.calls)),
+        stat("도구 실패", String(report.totals.failed)),
         stat("웹 검색", String(report.tools.find((tool) => tool.name === "web_search")?.calls ?? 0)),
       ] }),
       el("p", { class: "ai-config-help", text: sourceNote(report) }),

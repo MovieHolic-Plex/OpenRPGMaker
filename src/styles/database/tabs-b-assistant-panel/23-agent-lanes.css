@@ -7,18 +7,18 @@
 .ai-lane-hint,
 .ai-lane-empty-text {
   color: var(--text-3);
-  font-size: calc(11.5px * var(--ai-font-scale, 1));
+  font-size: calc(12px * var(--ai-font-scale, 1));
   margin: 0;
 }
 
 .ai-lane-notice {
   color: var(--warning);
-  font-size: calc(11.5px * var(--ai-font-scale, 1));
+  font-size: calc(12px * var(--ai-font-scale, 1));
 }
 
 .ai-lane-error {
   color: var(--danger);
-  font-size: calc(11.5px * var(--ai-font-scale, 1));
+  font-size: calc(12px * var(--ai-font-scale, 1));
   margin: 0;
 }
 
@@ -54,7 +54,7 @@
   color: var(--text-1);
   cursor: pointer;
   font-family: var(--font-ui);
-  font-size: calc(11.5px * var(--ai-font-scale, 1));
+  font-size: calc(12px * var(--ai-font-scale, 1));
   font-weight: var(--font-weight-semibold);
   padding: 4px 10px;
   white-space: nowrap;
@@ -205,7 +205,7 @@
 
 .ai-lane-instruction-text {
   color: var(--text-2);
-  font-size: calc(11.5px * var(--ai-font-scale, 1));
+  font-size: calc(12px * var(--ai-font-scale, 1));
   margin: 0;
 }
 
@@ -246,7 +246,7 @@
 
 .ai-lane-result-line {
   color: var(--text-2);
-  font-size: calc(11.5px * var(--ai-font-scale, 1));
+  font-size: calc(12px * var(--ai-font-scale, 1));
 }
 
 .ai-lane-result-line.is-warn {
@@ -419,10 +419,7 @@
   .lane-cell-actions .ai-lane-btn { padding: 4px 7px; }
   .lane-progress-bar { width: min(100%, 100px); }
 }
-@container (max-width: 560px) {
-  .ai-studio-tab span:not(.ai-studio-tab-badge) { display: none; }
-  .ai-studio-deck-actions .ai-studio-ghost-btn:not(.is-accent) { display: none; }
-}
+/* 좁은 덱에서도 탭 라벨은 남긴다(C-63) — 아이콘만 남으면 「변경」「활동」을 알아볼 수 없었다. 넘치는 행동은 머리 둘째 줄로 내려간다. */
 @container (max-width: 440px) {
   .ai-studio-deck-caption { display: none; }
 }
@@ -523,7 +520,7 @@
 .ai-lane-summary[data-state="running"] .ai-lane-summary-dot { box-shadow: 0 0 0 3px var(--accent-muted); }
 .ai-lane-summary-body { display: grid; flex: 1 1 auto; min-width: 0; }
 .ai-lane-summary-headline { color: var(--text-1); font-size: calc(12.5px * var(--ai-font-scale, 1)); }
-.ai-lane-summary-detail { color: var(--text-2); font-size: calc(11.5px * var(--ai-font-scale, 1)); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ai-lane-summary-detail { color: var(--text-2); font-size: calc(12px * var(--ai-font-scale, 1)); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .ai-lane-summary-open {
   background: transparent;
   border: 0;
