@@ -34,6 +34,7 @@ import { clearTransferLanes } from "./eventReach";
 import { dressInteriorExits } from "./exitDress";
 import { isPlaceholderMap, retireBlankStart } from "./blankStart";
 import { chaserEvents, ensureChaserHidingSpots, mapHidingEvents } from "@/project/chaserHiding";
+import { relocateLeadingFace } from "@/editor/tools/eventCompile";
 import { dungeonGateSpot, pickTransferSpot } from "./transferSpot";
 import { guessPlaceSpec } from "./placeGuess";
 // 콘텐츠 동사(컷신 무대·연출 비평·물건 자리 계획) — finishContent·addEvent·drawObjectVerb·placeObject 가 쓴다.
@@ -528,6 +529,26 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
         env.ctx.project = { ...env.ctx.project, maps: { ...env.ctx.project.maps, [mapId]: copy } } as Project;
         notes.push(`${map0.name}: 추격자 은신처 ${auto.placed.map((p) => `${p.label}(${p.x},${p.y})`).join(" · ")}`);
       } else if (auto.note) notes.push(`${auto.note} — 은신처 0곳`);
+    }
+    // 내레이션 줄에 인물 얼굴이 남지 않게(2026-10-29 standin 마법학교 천문탑: 「망원경 곁에 파란 모자의 여인이…」에 교수 흉상) —
+    // 맨 앞 얼굴 하나를 그 인물이 화자로 말하는 줄 바로 앞에만 다시 둔다. 모델이 patch_event_page 로 옛 순서를 되써도 여기서 고친다.
+    for (const [mapId, map0] of Object.entries(env.ctx.project.maps)) {
+      let fixed = 0;
+      const events = (map0.events ?? []).map((ev) => {
+        let changed = false;
+        const pages = (ev.pages ?? []).map((page) => {
+          const next = relocateLeadingFace(page.commands ?? [], ev.name ?? "");
+          if (!next) return page;
+          changed = true;
+          return { ...page, commands: next };
+        });
+        if (changed) fixed += 1;
+        return changed ? { ...ev, pages } : ev;
+      });
+      if (fixed) {
+        env.ctx.project = { ...env.ctx.project, maps: { ...env.ctx.project.maps, [mapId]: { ...map0, events } } } as Project;
+        notes.push(`${map0.name}: 인물 ${fixed}명의 얼굴을 그 인물 대사 바로 앞으로(내레이션 줄에서 뺌)`);
+      }
     }
     for (const mapId of Object.keys(env.ctx.project.maps)) {
       // 실내 출구·공허 마감(막다른 남쪽 틈 메우기·문 그림·남색 공허 칸) — 화면 검수 장부 builder-exit/builder-tiles.

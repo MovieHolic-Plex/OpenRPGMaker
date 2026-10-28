@@ -412,6 +412,11 @@ Scarloxy 주민은 `people`, 농장 동물은 `animal`로 분류한다. `animal`
 `list_resources(kind:faceset,query:'*')`의 첫 20개도 작은 얼굴만 반환했다.
 저수준 `upsert_event`에는 `place_npc`의 얼굴 자동 삽입이 적용되지 않는다.
 
+`place_npc`·`make_villager`(`compileSimplePage`)의 자동 얼굴은 맨 앞 한 번이 아니라 **그 인물이 화자로 말하는 줄 바로 앞에만** 들어간다(`placeSpeakerFace`) —
+내레이션(화자 없음)·주인공 줄 앞에서는 얼굴을 지우고(`changeFace resourceId:""`), 선택지 갈래는 갈래마다 따진다. 저자가 직접 넣은 `changeFace` 가 있으면 그 자리를 따른다.
+조수 v2 끝맺음(`clearLanes`)은 맨 앞 얼굴 하나뿐인 NPC 쪽을 같은 규칙으로 다시 놓는다(`relocateLeadingFace`, 그 인물 이름 화자 줄이 있을 때만) — 모델이 `patch_event_page` 로 옛 순서를 되써도 고쳐진다.
+실측(2026-10-29 standin 마법학교): 「망원경 곁에 파란 모자의 여인이 서 있다…」 내레이션과 사서의 「연구실 열쇠를 받았다.」에 그 인물 흉상이 이름표 없이 떴다.
+
 - 얼굴 스키마는 낱장·흉상·전신을 안내한다. `make_villager.face`도 같은 스키마를 쓴다.
 - `list_resources.portraitMode=face|bust|full`로 모양별 검색·페이지 이동한다. 전체 둘러보기는
   낱장과 공용 기본 표정 초상을 섞어 보여 주고 중복 id를 제거한다.
