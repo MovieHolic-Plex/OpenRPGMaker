@@ -223,9 +223,35 @@ export function codeStepBypass(project: Project, ev: GameEvent): string | undefi
   return undefined;
 }
 
+// ── 갇힌 방에서 걸어 나가는 길 ─────────────────────────────────────────────
+// 왜(2026-10-29 mt3 flash 방탈출): 밀실 남쪽 틈에 시작 «빈 맵»으로 가는 이동 칸이 조건 없이 남아, 잠긴 방인데 걸어서 나갔다.
+// 빈 시작 맵 은퇴(blankStart.ts)는 자리표시 맵만 치우므로, 장소 맵이 아니면서 그림이 있는 맵(옛 마을·현관)으로 가는 출구는 못 잡는다.
+
+/** 청사진이 갇힌 방을 빠져나가는 게임인가(엔딩 = 잠긴 문 열기). */
+export function isEscapeBlueprint(bp: GameBlueprint): boolean {
+  return /방\s*탈출|탈출|밀실|갇힌|갇혀|잠긴\s*방|escape|locked\s*room/iu.test([bp.playerGoal, bp.ending.name, bp.ending.how, bp.request ?? ""].join(" "));
+}
+/** 조건 없이 열리는 페이지에서 청사진 장소가 아닌 맵으로 가는 이동. */
+export interface EscapeLeak { readonly mapId: string; readonly eventId: string; readonly x: number; readonly y: number; readonly toMapId: string }
+export function escapeLeaks(project: Project): EscapeLeak[] {
+  const bp = project.gameBlueprint;
+  if (!bp || !isEscapeBlueprint(bp)) return [];
+  const places = new Set(bp.steps.flatMap((s) => { const m = findMap(project, s.place); return m ? [m.id] : []; }));
+  const out: EscapeLeak[] = [];
+  for (const mapId of places) for (const ev of project.maps[mapId]?.events ?? []) {
+    for (const page of pagesOf(ev)) {
+      if (leafConds(page).length) continue;
+      let to: string | undefined;
+      walk(page.commands, (cmd) => { if (!to && cmd.kind === "transfer" && typeof cmd.mapId === "string" && !places.has(cmd.mapId)) to = cmd.mapId; });
+      if (to) { out.push({ mapId, eventId: ev.id, x: ev.x, y: ev.y, toMapId: to }); break; }
+    }
+  }
+  return out;
+}
+
 /** 경로 막힘의 고칠 동사 한 줄 — 하위 도구(upsert_event·define_ending…)를 하나씩 맞추게 하지 않는다(2026-10-28 mt2 Flash: upsert_event 6번 인자 실패). */
 export const BLUEPRINT_PATH_FIX = "고치기: build_blueprint_path 를 한 번 부른다 — 청사진 단계대로 이벤트·조건·스위치·아이템·엔딩 호출을 함수가 짓는다(대사만 steps[{id,lines}] 로 준다).";
-export const BLUEPRINT_PATH_IDS: ReadonlySet<string> = new Set(["blueprint-event-unreachable", "blueprint-event-missing", "blueprint-event-empty", "blueprint-condition-unset", "blueprint-condition-order", "blueprint-no-ending", "blueprint-code-bypass"]);
+export const BLUEPRINT_PATH_IDS: ReadonlySet<string> = new Set(["blueprint-event-unreachable", "blueprint-event-missing", "blueprint-event-empty", "blueprint-condition-unset", "blueprint-condition-order", "blueprint-no-ending", "blueprint-code-bypass", "blueprint-escape-leak"]);
 
 export interface BlueprintWalk {
   readonly blockers: BlueprintBlocker[];
@@ -301,6 +327,8 @@ export function walkBlueprint(project: Project): BlueprintWalk {
     const why = codeStepBypass(project, r.ev);
     if (why) add("blueprint-code-bypass", `청사진 ${r.step.id} 「${r.step.event}」(${r.map.id} ${r.ev.id}) 은 번호·암호를 맞히는 단계(${r.step.action})인데 ${why} — 조사만 하면 ${r === resolved.at(-1) ? "엔딩" : "다음 단계"}로 넘어가 퍼즐이 없다.`, `${r.step.id} ${r.ev.id} ${why}`);
   }
+  // 3c) 갇힌 방 게임인데 청사진 장소 밖으로 조건 없이 걸어 나가는 이동이 있나.
+  for (const leak of escapeLeaks(project)) add("blueprint-escape-leak", `방탈출 청사진인데 「${project.maps[leak.mapId]?.name ?? leak.mapId}」(${leak.mapId}) (${leak.x},${leak.y}) 이동 ${leak.eventId} 가 조건 없이 청사진 장소가 아닌 「${project.maps[leak.toMapId]?.name ?? leak.toMapId}」(${leak.toMapId})로 나간다 — 잠긴 방을 퍼즐 없이 걸어서 빠져나간다.`, `${leak.mapId} ${leak.eventId} → ${leak.toMapId}`);
   // 4) 마지막 단계가 엔딩을 부르나 — 직접, 공통 이벤트로, 또는 켠 스위치가 여는 다른 이벤트(자동 실행 엔딩)로.
   const last = resolved.at(-1);
   if (last?.ev && last.map) {

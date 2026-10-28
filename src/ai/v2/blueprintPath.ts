@@ -15,9 +15,10 @@ import { normalizeGameBlueprint, type GameBlueprint } from "@/project/gameBluepr
 import { buildPuzzleChain, type ChainLink } from "./puzzle";
 import { resolveWhere } from "./people";
 import type { BuildRun, ContentBuildResult } from "./types";
-import { BLUEPRINT_PATH_IDS, codeStepBypass, eventGives, isCodeStep, walkBlueprint } from "./blueprint";
+import { BLUEPRINT_PATH_IDS, codeStepBypass, escapeLeaks, eventGives, isCodeStep, walkBlueprint } from "./blueprint";
 import { trivialCode } from "./puzzle";
 import { repairEventReach } from "./eventReach";
+import { dressInteriorExits } from "./exitDress";
 
 /**
  * 이미 지은 청사진 단계 이벤트·퍼즐 고리 이벤트를 걸어 가 조사할 수 있는 자리로 옮긴다(내용은 그대로). 옮긴 것 목록.
@@ -37,6 +38,46 @@ export function repairBlueprintReach(run: BuildRun): { moved: string[]; stuck: s
   const moved: string[] = [], stuck: string[] = [];
   for (const [mapId, ids] of byMap) { const r = repairEventReach(run, mapId, ids); moved.push(...r.moved); stuck.push(...r.stuck); }
   return { moved, stuck };
+}
+
+/**
+ * 갇힌 방 게임(isEscapeBlueprint)에서 청사진 장소 밖으로 조건 없이 나가는 이동 이벤트를 지운다 — 탈출은 엔딩(잠긴 문)으로만.
+ * 시작 맵이 장소 밖이면 시작을 청사진 첫 장소로 옮긴다(그 맵의 들어오던 착지 칸). 남는 막다른 틈은 exitDress 가 벽·문 그림으로 마감한다.
+ */
+export function sealEscapeExits(run: BuildRun): string[] {
+  const notes: string[] = [];
+  const leaks = escapeLeaks(run.ctx.project);
+  if (!leaks.length) return notes;
+  const project = run.ctx.project;
+  const bp = project.gameBlueprint!;
+  const first = bp.steps.map((s) => mapFor(project, s.place)).find((m): m is GameMap => Boolean(m));
+  const places = new Set(bp.steps.flatMap((s) => { const m = mapFor(project, s.place); return m ? [m.id] : []; }));
+  if (first && !places.has(project.startMapId)) {
+    // 장소 밖 시작 맵에서 첫 장소로 들어오던 착지 칸 — 없으면 시작을 옮기지 않는다(시작 맵에서 걸어 들어오는 게임은 그대로).
+    const landing = (project.maps[project.startMapId]?.events ?? []).flatMap((e) => JSON.stringify(e.pages ?? []).match(/\{[^{}]*"kind":"transfer"[^{}]*\}/gu) ?? [])
+      .map((t) => JSON.parse(t) as { mapId?: string; x?: number; y?: number }).find((t) => t.mapId === first.id && typeof t.x === "number" && typeof t.y === "number");
+    if (landing) {
+      const moved = run.call("set_start_position", { mapId: first.id, x: landing.x, y: landing.y });
+      if (moved.ok) notes.push(`방탈출 시작을 「${first.name ?? first.id}」(${landing.x},${landing.y})로 옮김(장소 밖 시작 맵에서 들어오던 자리)`);
+    }
+  }
+  for (const leak of leaks) {
+    const r = run.call("remove_event", { mapId: leak.mapId, eventId: leak.eventId });
+    if (r.ok) notes.push(`방탈출 「${project.maps[leak.mapId]?.name ?? leak.mapId}」의 바깥 이동 (${leak.x},${leak.y}) → 「${project.maps[leak.toMapId]?.name ?? leak.toMapId}」 지움(탈출은 잠긴 문으로만)`);
+  }
+  // 시작이 장소 안이면 장소 밖 맵은 이제 아무도 못 가는 맵이다 — 그 맵에서 방으로 들어오던 이동도 지운다. 남겨 두면 그 착지 칸 때문에
+  // exitDress 가 남쪽 틈을 «쓰는 입구»로 보고 메우지 않아, 어둠으로 뻗은 빈 통로가 남았다.
+  if (places.has(run.ctx.project.startMapId)) {
+    for (const m of Object.values(run.ctx.project.maps)) {
+      if (places.has(m.id)) continue;
+      for (const ev of m.events ?? []) {
+        if (!/"kind":"transfer"/u.test(JSON.stringify(ev.pages ?? [])) || ![...places].some((id) => JSON.stringify(ev.pages ?? []).includes(`"mapId":"${id}"`))) continue;
+        const r = run.call("remove_event", { mapId: m.id, eventId: ev.id });
+        if (r.ok) notes.push(`못 가는 바깥 맵 「${m.name ?? m.id}」에서 방으로 들어오던 이동 (${ev.x},${ev.y}) 지움`);
+      }
+    }
+  }
+  return notes;
 }
 
 /** 모델이 단계별로 덧붙일 수 있는 글(전부 선택). 숫자 자물쇠를 원하면 code 와 앞 단계 lines 에 그 답을. */
@@ -116,11 +157,14 @@ export function buildBlueprintPath(run: BuildRun, text: readonly PathStepText[] 
   if (!bp) return fail("청사진이 없다 — write_blueprint 로 먼저 쓴다.");
   const byId = new Map(text.map((t) => [t.id, t]));
   const warnings: string[] = [];
+  // 갇힌 방에서 걸어 나가는 이동부터 치운다(경로 막힘 blueprint-escape-leak) — 그 뒤 사슬·출구 마감이 틈을 메운다.
+  const sealed = sealEscapeExits(run);
   // 이미 지은 경로가 자리만 틀렸으면(닿지 않음·길목 막음) 옮기기만 한다 — 모델이 지은 숫자 자물쇠를 줍기로 덮어쓰지 않는다.
   if (!text.length) {
     const fixed = repairBlueprintReach(run);
     if (!walkBlueprint(run.ctx.project).blockers.some((b) => BLUEPRINT_PATH_IDS.has(b.id))) {
-      return { ok: true, mapIds: [], summary: fixed.moved.length ? `청사진 경로는 이미 엔딩까지 이어져 있어 다시 짓지 않고 자리만 고쳤다 — 걸어 가서 조사할 수 있게 옮김: ${fixed.moved.join(", ")}` : "청사진 경로가 이미 엔딩까지 이어져 있다 — 다시 짓지 않았다(대사를 바꾸려면 steps[{id,lines}] 를 준다).", warnings: fixed.stuck.map((s) => `조사할 자리를 못 찾았다: ${s}`), missingArt: [], calls: [] };
+      if (sealed.length) for (const mapId of Object.keys(run.ctx.project.maps)) for (const n of dressInteriorExits(run, mapId).notes) sealed.push(n);
+      return { ok: true, mapIds: [], summary: (sealed.length ? `${sealed.join(" / ")}. ` : "") + (fixed.moved.length ? `청사진 경로는 이미 엔딩까지 이어져 있어 다시 짓지 않고 자리만 고쳤다 — 걸어 가서 조사할 수 있게 옮김: ${fixed.moved.join(", ")}` : "청사진 경로가 이미 엔딩까지 이어져 있다 — 다시 짓지 않았다(대사를 바꾸려면 steps[{id,lines}] 를 준다)."), warnings: fixed.stuck.map((s) => `조사할 자리를 못 찾았다: ${s}`), missingArt: [], calls: [] };
     }
   }
 
@@ -231,7 +275,8 @@ export function buildBlueprintPath(run: BuildRun, text: readonly PathStepText[] 
     ids.push(existing?.id ?? "");
   });
 
-  if (!links.length) return { ok: true, mapIds: [], summary: `청사진 단계 이벤트가 모두 이미 있다(${kept.join(", ")}) — 다시 짓지 않았다.`, warnings, missingArt: [], calls: [] };
+  if (!links.length && sealed.length) for (const mapId of Object.keys(run.ctx.project.maps)) for (const n of dressInteriorExits(run, mapId).notes) sealed.push(n);
+  if (!links.length) return { ok: true, mapIds: [], summary: `${sealed.length ? `${sealed.join(" / ")}. ` : ""}청사진 단계 이벤트가 모두 이미 있다(${kept.join(", ")}) — 다시 짓지 않았다.`, warnings, missingArt: [], calls: [] };
   const built = buildPuzzleChain(run, { mapId: fallbackMap.id, name: bp.title, links });
   if (!built.ok) return { ...built, warnings: [...warnings, ...built.warnings] };
 
@@ -252,5 +297,5 @@ export function buildBlueprintPath(run: BuildRun, text: readonly PathStepText[] 
   try { blueprint = normalizeGameBlueprint({ ...bp, steps }); } catch { blueprint = undefined; }
   if (blueprint) run.ctx.project = { ...run.ctx.project, gameBlueprint: blueprint };
   const roles = links.map((l, i) => `${linkStep[i]! < 0 ? `(단서) ${l.name}` : `${steps[linkStep[i]!]!.id} ${steps[linkStep[i]!]!.event}`}(${l.role}${l.code ? ` 번호 ${l.code}` : ""}${l.needs ? ` ← ${l.needs}` : l.needsCondition ? " ← 앞 단계 이벤트가 켜는 것" : ""})`).join(" → ");
-  return { ...built, ...(blueprint ? { blueprint } : {}), warnings: [...warnings, ...built.warnings], summary: `청사진 경로를 지었다: ${kept.length ? `(그대로 둔 단계: ${kept.join(", ")}) ` : ""}${roles} → 엔딩 「${ending!.name ?? ending!.id}」(${ending!.id}). ${built.summary}` };
+  return { ...built, ...(blueprint ? { blueprint } : {}), warnings: [...warnings, ...built.warnings], summary: `${sealed.length ? `${sealed.join(" / ")}. ` : ""}청사진 경로를 지었다: ${kept.length ? `(그대로 둔 단계: ${kept.join(", ")}) ` : ""}${roles} → 엔딩 「${ending!.name ?? ending!.id}」(${ending!.id}). ${built.summary}` };
 }

@@ -29,7 +29,7 @@ import { buildEvent } from "./events";
 import { drawObject } from "./drawObject";
 import { buildScene, SCENE_SCHEMA, type SceneSpec } from "./scene";
 import { buildPuzzleChain, sealLockedRoom, type ChainArgs } from "./puzzle";
-import { BUILD_BLUEPRINT_PATH_SCHEMA, blueprintMapFor, buildBlueprintPath, type PathStepText } from "./blueprintPath";
+import { BUILD_BLUEPRINT_PATH_SCHEMA, blueprintMapFor, buildBlueprintPath, sealEscapeExits, type PathStepText } from "./blueprintPath";
 import { clearTransferLanes } from "./eventReach";
 import { dressInteriorExits } from "./exitDress";
 import { isPlaceholderMap, retireBlankStart } from "./blankStart";
@@ -516,6 +516,8 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
   session.clearLanes = async () => {
     // 쓰지 않는 빈 시작 맵(잔디 한 장)을 먼저 치운다 — 그쪽으로 가던 이동이 사라진 막다른 틈은 아래 출구 마감이 문 그림으로 닫는다.
     const notes: string[] = retireBlankStart(run);
+    // 방탈출이면 청사진 장소 밖으로 조건 없이 나가는 이동을 치운다(빈 맵이 아닌 바깥 맵 — retireBlankStart 가 못 치운다). 틈은 아래 출구 마감이 메운다.
+    notes.push(...sealEscapeExits(run));
     for (const mapId of Object.keys(env.ctx.project.maps)) {
       // 실내 출구·공허 마감(막다른 남쪽 틈 메우기·문 그림·남색 공허 칸) — 화면 검수 장부 builder-exit/builder-tiles.
       for (const n of dressInteriorExits(run, mapId).notes) notes.push(`${env.ctx.project.maps[mapId]?.name ?? mapId}: ${n}`);
