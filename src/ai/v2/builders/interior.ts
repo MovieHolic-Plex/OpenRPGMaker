@@ -593,13 +593,26 @@ function buildUpperFloor(run: BuildRun, roomSpec: HandInteriorSpec, tilesetId: s
       const m = run.ctx.project.maps[String(a.data?.mapId)];
       return m ? rr.reduce((n, r) => n + (r.x1 - r.x0 + 1) * (r.y1 - r.y0 + 3), 0) / (m.width * m.height) : 0;
     };
+    // 검은 바깥(공허 칸) 수가 먼저, 같으면 방 넓이 비율. 복도 폭도 ±2 로 바꿔 본다 — 객실 줄이 복도보다 두 칸 좁아 위층 맵 귀퉁이에
+    // 2×7 공허 덩이가 늘 남았다(2026-10-29 standin 마법학교 「별빛 기숙사」 13×16: 배치 후보 넷 모두 같은 귀퉁이가 검었다).
+    const voidCells = (a: Attempt) => {
+      const m = run.ctx.project.maps[String(a.data?.mapId)];
+      return m ? (m.lowerTiles as readonly number[]).reduce((n, t) => n + (t === roomSpec.void ? 1 : 0), 0) : Number.POSITIVE_INFINITY;
+    };
     if (up.ok) {
-      let best = { v: 0, f: fill(up) };
-      for (let v = 1; v <= 3; v++) {
-        const alt = build(run, { ...upBase, mapId: String(up.data?.mapId), replace: true, layout: { ...(upBase.layout as object), variant: v } });
-        if (alt.ok && fill(alt) > best.f + 0.02) best = { v, f: fill(alt) };
+      const rooms0 = (upBase.layout as { rooms: { id: string; kind: string; w?: number; h?: number }[] }).rooms;
+      const corridorW = rooms0.find((r) => typeof r.w === "number")?.w;
+      const widths = corridorW === undefined ? [undefined] : [...new Set([corridorW, corridorW - 2, corridorW - 1, corridorW + 1, corridorW + 2])].filter((w) => w >= 7);
+      const layoutFor = (w: number | undefined, v: number) => ({ rooms: rooms0.map((r) => (w !== undefined && typeof r.w === "number" ? { ...r, w } : r)), ...(v ? { variant: v } : {}) });
+      let best = { w: corridorW, v: 0, z: voidCells(up), f: fill(up) };
+      for (const w of widths) for (let v = 0; v <= 3; v++) {
+        if (w === corridorW && v === 0) continue;
+        const alt = build(run, { ...upBase, mapId: String(up.data?.mapId), replace: true, layout: layoutFor(w, v) });
+        if (!alt.ok) continue;
+        const z = voidCells(alt), f = fill(alt);
+        if (z < best.z || (z === best.z && f > best.f + 0.02)) best = { w, v, z, f };
       }
-      up = build(run, { ...upBase, mapId: String(up.data?.mapId), replace: true, layout: { ...(upBase.layout as object), ...(best.v ? { variant: best.v } : {}) } });
+      up = build(run, { ...upBase, mapId: String(up.data?.mapId), replace: true, layout: layoutFor(best.w, best.v) });
     }
     if (up.ok) {
       upperMapId = String(up.data?.mapId);
