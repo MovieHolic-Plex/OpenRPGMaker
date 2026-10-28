@@ -6,7 +6,7 @@
  * 그 그림에서 하늘만 오려 낸 땅 층(town-ground·fall-ground), 하늘은 OPRN 밤하늘 파노라마 세 겹(성운·먼 별·가까운 별)이다.
  *
  * 컷은 오프닝 곡(첫빛이 머무는 표지, 실측 마디 3.0초·박 0.75초, 첫 박 0.05초)의 마디에 맞춰 자른다:
- *   0  밤하늘(9s) → 9  별이 갈라진다(3s) → 12 숲 위로 떨어진다(6s) → 18 연기와 반딧불(6s) → 24 종이 울린다(6s) → 30 제목(9s) = 39s.
+ *   0  별이 떨어진다(한 컷 18s: 밤하늘 → 9.75 갈라짐 → 17.25 충돌) → 18 연기와 반딧불(6s) → 24 종이 울린다(6s) → 30 제목(9s) = 39s.
  * 컷 안의 타격(갈라짐·충돌·종)은 박 위에 둔다. 효과음은 컷 시계에 묶은 audioCues 라 그림과 어긋나지 않는다.
  * 모든 컷에 깊이가 다른 층이 셋 이상 있고 카메라는 천천히 민다. Esc 또는 오른쪽 위 「건너뛰기」를 탭하면 바로 맵으로 간다.
  */
@@ -31,6 +31,10 @@ const SE = {
   rubble: "cc0-se-ors-stones-02",
   crackle: "cc0-se-ors-spell-fire-05",
   bell: "cc0-se-osx-bell-01",
+  swell: "cc0-sound-fs-op-star-swell",
+  crack: "cc0-sound-fs-op-star-crack",
+  roar: "cc0-sound-fs-op-meteor-roar",
+  impact: "cc0-sound-fs-op-impact",
 } as const;
 
 type Point = { x: number; y: number };
@@ -106,88 +110,35 @@ function nightSky(cam: CamKeys, depth = { nebula: 0.12, far: 0.3, near: 0.55, tw
   ];
 }
 
-/** 화면 위치(카메라를 따라 움직이는 대상)를 세계 좌표 키로 바꾼다 — 카메라가 대상을 정확히 따라간다. */
-function follow(cam: CamKeys, screenPath: (t: number) => Point, from: number, to: number, step = 125, delay = 0, p = 1): { x: AnimaticKey[]; y: AnimaticKey[] } {
-  const x: AnimaticKey[] = [], y: AnimaticKey[] = [];
-  for (let t = from; t <= to; t += step) {
-    const s = screenPath(Math.max(from, t - delay)), c = camAt(cam, t);
-    x.push(key(t, Math.round((s.x + (c.x - CENTER.x) * p) * 10) / 10));
-    y.push(key(t, Math.round((s.y + (c.y - CENTER.y) * p) * 10) / 10));
-  }
-  return { x, y };
-}
-
 const offsetKeys = (keys: AnimaticKey[], by: number): AnimaticKey[] => keys.map(k => ({ ...k, value: k.value - by }));
 
 // upscale nearest: 정수 배율 캔버스에 그려 도트가 번지지 않는다(글자·빛은 그 해상도로).
 const shot = (layers: AnimaticLayer[], camera: OpeningAnimatic["camera"], transition: OpeningAnimatic["transition"], audioCues: OpeningAnimatic["audioCues"] = [], background = "#03050d"): OpeningAnimatic =>
   ({ width: STAGE.width, height: STAGE.height, background, letterbox: LETTERBOX, upscale: "nearest", layers, ...(camera ? { camera } : {}), ...(transition ? { transition } : {}), ...(audioCues.length ? { audioCues } : {}) });
 
-// ── 1. 밤하늘 ───────────────────────────────────────────────────────────
-/** 깊이가 다른 별들이 천천히 흐른다. 한 별만 점점 밝아진다. */
-const SKY_CAM: CamKeys = { x: [key(0, 290), key(9000, 380, "ease-in-out")], y: [key(0, 236), key(9000, 190, "ease-in-out")] };
-/** 큰 별은 먼 별과 같은 깊이 — 컷 끝에서 화면 (300,118). */
-const GREAT_STAR_P = 0.3;
-const GREAT_STAR = { x: 300 + (380 - CENTER.x) * GREAT_STAR_P, y: 118 + (190 - CENTER.y) * GREAT_STAR_P };
-
-function skyShot(): OpeningAnimatic {
-  return shot([
-    ...nightSky(SKY_CAM),
-    glow("great-star-halo", "#bcd8ff", GREAT_STAR, 46, { parallax: GREAT_STAR_P, keys: { opacity: [key(0, 0.25), key(6500, 0.55, "ease-in"), key(9000, 0.9, "ease-in")] },
-      glow: { inner: 0.2, pulse: { hz: 0.9, amount: 0.35, pattern: "pulse", seed: 5 } } }),
-    glow("great-star", "#ffffff", GREAT_STAR, 10, { parallax: GREAT_STAR_P, opacity: 0.95, glow: { inner: 0.5, pulse: { hz: 1.7, amount: 0.3, pattern: "flicker", seed: 9 } } }),
-    // 가장 가까운 겹 — 큰 별 몇 개가 카메라와 거의 같이 흐른다(깊이 1.0, 가장 빠르다).
-    particles("sky-close", "stars", "#f4f8ff", { x: 40, y: 50, width: 600, height: 290 }, 14, 29, { parallax: 1, opacity: 0.8, particles: { preset: "stars", count: 14, seed: 29, speed: 6, size: 1.6 } }),
-    // 어둠에서 천천히 밝아진다. 첫 2초 남짓은 게임이 뒤에서 맵을 짓느라 바쁜 때라(실측: 출하 플레이어에서 첫 컷 0.3~2.3초에 화면이 멎는다)
-    // 그동안은 검게 두어 멎음이 보이지 않게 한다(그래서 이 컷만 세 마디). 음악은 처음부터 흐른다.
-    screenFill("dawn", "#03050d", [key(0, 1), key(2600, 1), key(4600, 0, "ease-in-out")]),
-    caption([{ atMs: 4200, text: "별을 읽는 왕도 아스텔. 그날 밤도 하늘은 조용했다." }]),
-  ], { keys: SKY_CAM }, { kind: "cut", durationMs: 1 });
-}
-
-// ── 2. 별이 갈라진다 ────────────────────────────────────────────────────
-/** 큰 별에 다가선 컷. 둘째 박(0.75s)에 금이 가고 하얗게 터진다 — 섬광·흔들림·유리·폭음·징. 큰 조각은 오른쪽 아래로 떨어지기 시작한다. */
-function crackShot(): OpeningAnimatic {
-  const cam: CamKeys = { x: [key(0, 300), key(3000, 308, "ease-in-out")], y: [key(0, 160), key(3000, 156, "ease-in-out")] };
-  const star = { x: 300, y: 160 }, hit = BEAT;
-  const cracks = [-150, -95, -40, 15, 70, 128].map((angle, i): AnimaticLayer => ({
-    id: `crack-${i}`, kind: "shape", shape: "line", role: "effect", color: "#f4fbff", blend: "lighter", x: star.x, y: star.y, width: 26 + (i % 3) * 9, height: 1,
-    rotation: angle, startMs: hit - 120, endMs: hit + 420, keys: { scaleX: [key(hit - 120, 0.1), key(hit, 1, "ease-out")], opacity: [key(hit - 120, 1), key(hit + 420, 0, "ease-in")] },
-  }));
-  return shot([
-    ...nightSky(cam, { nebula: 0.1, far: 0.25, near: 0.5, twinkle: 0.75 }),
-    glow("halo", "#cfe4ff", star, 96, { endMs: hit + 200, keys: { scaleX: [key(0, 1), key(hit, 1.35, "ease-in")], scaleY: [key(0, 1), key(hit, 1.35, "ease-in")], opacity: [key(0, 0.6), key(hit, 1, "ease-in")] },
-      anchorX: 0.5, anchorY: 0.5, x: star.x, y: star.y, glow: { inner: 0.25, pulse: { hz: 4, amount: 0.4, pattern: "flicker", seed: 3 } } }),
-    glow("core", "#ffffff", star, 22, { endMs: hit + 60, glow: { inner: 0.6, pulse: { hz: 6, amount: 0.3, pattern: "flicker", seed: 4 } } }),
-    ...cracks,
-    // 터진 뒤: 작은 푸른 조각은 위로 사라지고, 큰 조각은 불붙어 오른쪽 아래로.
-    glow("shard-small", "#a8d8ff", star, 20, { startMs: hit, keys: { x: [key(hit, star.x - 10), key(3000, star.x - 120, "ease-out")], y: [key(hit, star.y - 10), key(3000, star.y - 70, "ease-out")], opacity: [key(hit, 1), key(3000, 0, "ease-in")] } }),
-    glow("shard-fire", "#ffb060", star, 54, { startMs: hit, keys: { x: [key(hit, star.x - 27), key(3000, star.x + 150, "ease-in")], y: [key(hit, star.y - 27), key(3000, star.y + 110, "ease-in")] },
-      glow: { inner: 0.3, pulse: { hz: 5, amount: 0.3, pattern: "flicker", seed: 6 } } }),
-    glow("shard-core", "#fff6e0", star, 16, { startMs: hit, keys: { x: [key(hit, star.x - 8), key(3000, star.x + 169, "ease-in")], y: [key(hit, star.y - 8), key(3000, star.y + 129, "ease-in")] } }),
-    particles("burst", "sparks", "#ffd8a0", { x: star.x - 70, y: star.y - 60, width: 140, height: 120 }, 60, 17, { startMs: hit, endMs: 2600, keys: { opacity: [key(hit, 1), key(2600, 0, "ease-in")] } }),
-    screenFill("tint", "#ff7a30", [key(0, 0), key(hit, 0), key(hit + 300, 0.22, "ease-out"), key(3000, 0.1)], "screen"),
-    screenFill("flash", "#ffffff", [key(0, 0), key(hit - 40, 0), key(hit + 40, 0.95), key(hit + 520, 0, "ease-out")]),
-    caption([{ atMs: 1500, text: "그러다 별 하나가 쪼개졌다." }]),
-  ], { keys: cam, shake: { atMs: hit, durationMs: 1000, amplitude: 5, frequency: 18, seed: 7 } }, { kind: "cut", durationMs: 1 }, [
-    { id: "glass", resourceId: SE.glass, atMs: hit - 150, durationMs: 900, volume: 0.6 },
-    { id: "boom", resourceId: SE.boom, atMs: hit, durationMs: 1200, volume: 0.9 },
-    { id: "gong", resourceId: SE.gong, atMs: hit, durationMs: 1800, volume: 0.55, fadeOutMs: 600 },
-  ]);
-}
-
-// ── 3. 숲 위로 떨어진다 ─────────────────────────────────────────────────
-/** 카메라가 불덩이를 따라 하늘에서 왕도 위로 내려온다. 불덩이는 왕도 북쪽 숲 나무 뒤로 떨어지고 지평선이 하얗게 터진다. */
+// ── 1. 별이 떨어진다 (한 컷) ──────────────────────────────────────────
+// 2026-10-29 사용자 「별이 떨어지는 장면이 연속적이지 않고 소리가 좀…」 — 밤하늘·갈라짐·낙하가 세 컷이라 별 자리·하늘 색·카메라가
+// 컷마다 튀었고, 소리는 컷이 바뀔 때마다 잘렸다(충돌음 0.74초). 이제 카메라 하나가 18초 동안 별을 올려다보다가, 갈라진 불덩이를 따라
+// 왕도 북쪽 숲까지 내려온다. 박자는 그대로다 — 갈라짐 9.75초(13박), 충돌 17.25초(23박).
+const CRACK = 9750;
+const FALL_HIT = 17250;
+const FALL_MS = 18000;
 const FALL_GROUND_Y = 400;
-const FALL_CAM: CamKeys = { x: [key(0, 244), key(5600, 264, "ease-in-out")], y: [key(0, 230), key(5600, 500, "ease-in-out")] };
-/** 떨어지는 곳 — fall 그림 위쪽(북쪽) 성벽 너머 숲의 나무선(그림 좌표 320,70). 왕도의 숲은 북쪽에 있다. */
+const GREAT_STAR_P = 0.3;
+const FALL_CAM: CamKeys = {
+  x: [key(0, 280), key(CRACK, 300, "ease-in-out"), key(FALL_HIT, 320, "ease-in"), key(FALL_MS, 322)],
+  y: [key(0, 250), key(CRACK, 200, "ease-in-out"), key(CRACK + 600, 198), key(FALL_HIT, 500, "ease-in"), key(FALL_MS, 503)],
+};
+/** 큰 별 — 먼 별과 같은 깊이. 갈라지는 순간 화면 (300,110). */
+const GREAT_STAR = { x: 300 + (300 - CENTER.x) * GREAT_STAR_P, y: 110 + (200 - CENTER.y) * GREAT_STAR_P };
+/** 떨어지는 곳 — fall 그림 위쪽(북쪽) 성벽 너머 숲의 나무선(그림 좌표 320,70). */
 const IMPACT = { x: 320, y: FALL_GROUND_Y + 70 };
-const FALL_HIT = 5250;
 
+/** 불덩이의 화면 위치 — 별 자리에서 터져 나와 화면 가운데 근처에 머물고, 카메라가 그를 따라 내려간다(땅이 밑에서 올라온다). */
 function fireballScreen(t: number): Point {
-  // 화면 위치 — 왼쪽 위에서 들어와 지평선(카메라와 함께 올라온다) 바로 위를 지나 나무 뒤로.
   const end = camAt(FALL_CAM, FALL_HIT), endScreen = { x: IMPACT.x - (end.x - CENTER.x), y: IMPACT.y - (end.y - CENTER.y) };
-  const path: [number, Point][] = [[0, { x: 40, y: 40 }], [1800, { x: 160, y: 70 }], [3800, { x: 250, y: 92 }], [FALL_HIT, endScreen]];
+  const path: [number, Point][] = [[CRACK, { x: 300, y: 110 }], [CRACK + 900, { x: 282, y: 124 }], [CRACK + 3500, { x: 252, y: 114 }], [FALL_HIT, endScreen]];
+  if (t <= CRACK) return path[0]![1];
   for (let i = 1; i < path.length; i++) {
     const [ta, a] = path[i - 1]!, [tb, b] = path[i]!;
     if (t <= tb) { const u = Math.max(0, (t - ta) / (tb - ta)); return { x: a.x + (b.x - a.x) * u, y: a.y + (b.y - a.y) * u }; }
@@ -195,34 +146,64 @@ function fireballScreen(t: number): Point {
   return endScreen;
 }
 
-function fallShot(): OpeningAnimatic {
-  const head = follow(FALL_CAM, fireballScreen, 0, FALL_HIT);
-  const trail = (id: string, delay: number, size: number, color: string, opacity: number): AnimaticLayer => {
-    const k = follow(FALL_CAM, fireballScreen, 0, FALL_HIT, 125, delay);
-    return { ...glow(id, color, { x: 0, y: 0 }, size, { opacity, endMs: FALL_HIT + 150, glow: { inner: 0.3, pulse: { hz: 6, amount: 0.3, pattern: "flicker", seed: size } } }),
-      keys: { x: offsetKeys(k.x, size / 2), y: offsetKeys(k.y, size / 2) } };
-  };
+/** 불덩이·꼬리의 세계 좌표 키. 꼬리는 머리가 delay 전에 있던 세계 자리를 따라온다 — 카메라가 내려가므로 머리 위로 길게 남는다. */
+function fireballTrack(delay: number, size: number): { x: AnimaticKey[]; y: AnimaticKey[] } {
+  const x: AnimaticKey[] = [], y: AnimaticKey[] = [];
+  for (let t = CRACK; t <= FALL_HIT; t += 125) {
+    const at = Math.max(CRACK, t - delay), s = fireballScreen(at), c = camAt(FALL_CAM, at);
+    x.push(key(t, Math.round((s.x + c.x - CENTER.x - size / 2) * 10) / 10));
+    y.push(key(t, Math.round((s.y + c.y - CENTER.y - size / 2) * 10) / 10));
+  }
+  return { x, y };
+}
+
+function fallingStarShot(): OpeningAnimatic {
+  const star = GREAT_STAR, p = GREAT_STAR_P, hit = CRACK;
+  const cracks = [-150, -40, 70].map((angle, i): AnimaticLayer => ({
+    id: `crack-${i}`, kind: "shape", shape: "line", role: "effect", color: "#f4fbff", blend: "lighter", x: star.x, y: star.y, width: 30 + i * 9, height: 1, parallax: p,
+    rotation: angle, startMs: hit - 120, endMs: hit + 420, keys: { scaleX: [key(hit - 120, 0.1), key(hit, 1, "ease-out")], opacity: [key(hit - 120, 1), key(hit + 420, 0, "ease-in")] },
+  }));
+  const trail = (id: string, delay: number, size: number, color: string, opacity: number): AnimaticLayer =>
+    ({ ...glow(id, color, { x: 0, y: 0 }, size, { opacity, startMs: CRACK, endMs: FALL_HIT + 150, glow: { inner: 0.3, pulse: { hz: 6, amount: 0.3, pattern: "flicker", seed: size } } }), keys: fireballTrack(delay, size) });
+  const head = fireballTrack(0, 0);
   return shot([
-    ...nightSky(FALL_CAM, { nebula: 0.12, far: 0.28, near: 0.5, twinkle: 0.7 }),
+    ...nightSky(FALL_CAM, { nebula: 0.12, far: GREAT_STAR_P, near: 0.5, twinkle: 0.72 }),
+    // 큰 별 — 점점 밝아지다가 갈라지는 박에 부풀어 터진다.
+    glow("great-star-halo", "#bcd8ff", star, 46, { parallax: p, endMs: hit + 200, anchorX: 0.5, anchorY: 0.5, x: star.x, y: star.y,
+      keys: { opacity: [key(0, 0.25), key(6500, 0.55, "ease-in"), key(hit, 1, "ease-in")], scaleX: [key(0, 1), key(hit - 900, 1.2), key(hit, 2.2, "ease-in")], scaleY: [key(0, 1), key(hit - 900, 1.2), key(hit, 2.2, "ease-in")] },
+      glow: { inner: 0.2, pulse: { hz: 0.9, amount: 0.35, pattern: "pulse", seed: 5 } } }),
+    glow("great-star", "#ffffff", star, 10, { parallax: p, endMs: hit + 60, opacity: 0.95, glow: { inner: 0.5, pulse: { hz: 1.7, amount: 0.3, pattern: "flicker", seed: 9 } } }),
+    ...cracks,
+    glow("shard-small", "#a8d8ff", star, 18, { parallax: p, startMs: hit, endMs: hit + 2600,
+      keys: { x: [key(hit, star.x - 9), key(hit + 2600, star.x - 110, "ease-out")], y: [key(hit, star.y - 9), key(hit + 2600, star.y - 60, "ease-out")], opacity: [key(hit, 1), key(hit + 2600, 0, "ease-in")] } }),
+    particles("burst", "sparks", "#ffd8a0", { x: star.x - 70, y: star.y - 60, width: 140, height: 120 }, 60, 17, { parallax: p, startMs: hit, endMs: hit + 2600, keys: { opacity: [key(hit, 1), key(hit + 2600, 0, "ease-in")] } }),
     // 불덩이와 꼬리 — 땅 층보다 먼저 그려 지평선의 나무가 앞을 가린다.
-    trail("trail-4", 620, 22, "#7a2a18", 0.3), trail("trail-3", 420, 28, "#c8401c", 0.4), trail("trail-2", 260, 36, "#ff6a30", 0.5), trail("trail-1", 120, 46, "#ff9a40", 0.65),
-    { ...particles("embers", "sparks", "#ffc080", { x: 0, y: 0, width: 90, height: 70 }, 40, 23, { endMs: FALL_HIT + 300 }), keys: { x: offsetKeys(head.x, 60), y: offsetKeys(head.y, 20) } },
-    { ...glow("fireball", "#ffd890", { x: 0, y: 0 }, 60, { endMs: FALL_HIT + 100, glow: { inner: 0.35, pulse: { hz: 7, amount: 0.25, pattern: "flicker", seed: 2 } } }), keys: { x: offsetKeys(head.x, 30), y: offsetKeys(head.y, 30) } },
-    { ...glow("fireball-core", "#ffffff", { x: 0, y: 0 }, 14, { endMs: FALL_HIT + 60 }), keys: { x: offsetKeys(head.x, 7), y: offsetKeys(head.y, 7) } },
-    glow("impact-glow", "#ffe2a8", IMPACT, 320, { startMs: FALL_HIT, keys: { opacity: [key(FALL_HIT, 0), key(FALL_HIT + 140, 1, "ease-out"), key(6000, 0.75)] }, glow: { inner: 0.2, pulse: { hz: 3, amount: 0.2, pattern: "flicker", seed: 8 } } }),
+    trail("trail-3", 520, 24, "#a8341a", 0.35), trail("trail-2", 300, 34, "#ff6a30", 0.5), trail("trail-1", 130, 46, "#ff9a40", 0.65),
+    { ...particles("embers", "sparks", "#ffc080", { x: 0, y: 0, width: 90, height: 70 }, 40, 23, { startMs: CRACK, endMs: FALL_HIT + 300 }), keys: { x: offsetKeys(head.x, 45), y: offsetKeys(head.y, 15) } },
+    { ...glow("fireball", "#ffd890", { x: 0, y: 0 }, 60, { startMs: CRACK, endMs: FALL_HIT + 100, glow: { inner: 0.35, pulse: { hz: 7, amount: 0.25, pattern: "flicker", seed: 2 } } }), keys: { x: offsetKeys(head.x, 30), y: offsetKeys(head.y, 30) } },
+    { ...glow("fireball-core", "#ffffff", { x: 0, y: 0 }, 14, { startMs: CRACK, endMs: FALL_HIT + 60 }), keys: { x: offsetKeys(head.x, 7), y: offsetKeys(head.y, 7) } },
+    glow("impact-glow", "#ffe2a8", IMPACT, 320, { startMs: FALL_HIT, keys: { opacity: [key(FALL_HIT, 0), key(FALL_HIT + 140, 1, "ease-out"), key(FALL_MS, 0.75)] }, glow: { inner: 0.2, pulse: { hz: 3, amount: 0.2, pattern: "flicker", seed: 8 } } }),
     // 밤 — 땅 그림이 낮처럼 밝아 「그날 밤」과 어긋났다(사용자 2026-10-28). 불투명 화소만 밤색으로 끌어내린다(하늘·등불은 그대로).
     art("fall-ground", { x: 0, y: FALL_GROUND_Y }, { tint: NIGHT }),
-    // 왕도의 등불 — 땅과 같은 깊이.
-    flicker("bridge-lamp", { x: 150, y: FALL_GROUND_Y + 200 }, 24), flicker("lamp-b", { x: 215, y: FALL_GROUND_Y + 195 }), flicker("win-c", { x: 130, y: FALL_GROUND_Y + 125 }),
-    // 지나가는 불빛이 왕도를 붉게 물들인다.
-    screenFill("warm", "#ff8a40", [key(0, 0), key(3800, 0.08, "ease-in"), key(FALL_HIT, 0.14), key(6000, 0.2)], "screen"),
-    screenFill("flash", "#fff4d8", [key(0, 0), key(FALL_HIT, 0), key(FALL_HIT + 80, 0.85), key(5750, 0.12, "ease-out"), key(6000, 0.3, "ease-in")]),
-    caption([{ atMs: 1200, text: "불꼬리를 끌고 왕도 북쪽 숲으로 떨어졌다." }]),
-  ], { keys: FALL_CAM, shake: { atMs: FALL_HIT, durationMs: 740, amplitude: 4, frequency: 14, seed: 4 } }, { kind: "cut", durationMs: 1 }, [
-    { id: "roar", resourceId: SE.fire, atMs: 0, durationMs: 2600, volume: 0.55, fadeOutMs: 900 },
-    { id: "roar-2", resourceId: SE.fire, atMs: 2400, durationMs: 2600, volume: 0.7, fadeOutMs: 900 },
-    { id: "impact", resourceId: SE.boom, atMs: FALL_HIT, durationMs: 740, volume: 1 },
-    { id: "impact-gong", resourceId: SE.gong, atMs: FALL_HIT, durationMs: 740, volume: 0.5 },
+    flicker("bridge-lamp", { x: 150, y: FALL_GROUND_Y + 200 }, 24), flicker("win-c", { x: 130, y: FALL_GROUND_Y + 125 }),
+    // 어둠에서 천천히 밝아진다(첫 2초 남짓은 게임이 뒤에서 맵을 짓느라 화면이 멎는 때라 검게 둔다).
+    screenFill("dawn", "#03050d", [key(0, 1), key(2600, 1), key(4600, 0, "ease-in-out")]),
+    // 갈라진 뒤 불빛이 하늘을 붉게 물들이고, 떨어질수록 짙어진다.
+    screenFill("warm", "#ff8a40", [key(0, 0), key(hit, 0), key(hit + 300, 0.2, "ease-out"), key(hit + 1600, 0.07), key(FALL_HIT, 0.15, "ease-in"), key(FALL_MS, 0.2)], "screen"),
+    screenFill("flash", "#fff4e0", [key(0, 0), key(hit - 40, 0), key(hit + 40, 0.95), key(hit + 520, 0, "ease-out"), key(FALL_HIT, 0), key(FALL_HIT + 80, 0.85), key(FALL_HIT + 500, 0.12, "ease-out"), key(FALL_MS, 0.3, "ease-in")]),
+    caption([{ atMs: 4200, text: "별을 읽는 왕도 아스텔. 그날 밤도 하늘은 조용했다." }, { atMs: hit + 700, text: "그러다 별 하나가 쪼개졌다." }, { atMs: hit + 3600, text: "불꼬리를 끌고 왕도 북쪽 숲으로 떨어졌다." }]),
+  ], {
+    keys: { ...FALL_CAM,
+      // 갈라지는 박에 카메라가 움찔 다가선다(흔들림은 충돌에 쓴다 — 컷당 하나).
+      zoom: [key(0, 1), key(hit - 60, 1), key(hit + 90, 1.08, "ease-out"), key(hit + 700, 1, "ease-in-out"), key(FALL_MS, 1)] },
+    shake: { atMs: FALL_HIT, durationMs: FALL_MS - FALL_HIT, amplitude: 5, frequency: 14, seed: 4 },
+  }, { kind: "cut", durationMs: 1 }, [
+    // 소리는 한 줄기다 — 별이 차오르는 반짝임 → 금 가는 소리 → 다가오는 굉음 → 박히기 직전 숨죽임 → 충돌(scripts/content/fallen/opening-sfx.py).
+    { id: "swell", resourceId: SE.swell, atMs: hit - 5400, durationMs: 5500, volume: 0.35 },
+    { id: "glass", resourceId: SE.glass, atMs: hit - 150, durationMs: 900, volume: 0.4 },
+    { id: "crack", resourceId: SE.crack, atMs: hit - 30, durationMs: 3000, volume: 1 },
+    { id: "roar", resourceId: SE.roar, atMs: hit + 100, durationMs: FALL_HIT - hit - 100, volume: 0.55 },
+    { id: "impact", resourceId: SE.impact, atMs: FALL_HIT, durationMs: FALL_MS - FALL_HIT, volume: 1 },
   ]);
 }
 
@@ -242,7 +223,9 @@ function aftermathShot(): OpeningAnimatic {
     screenFill("cool", "#203a68", [key(0, 0), key(2000, 0), key(6000, 0.22, "ease-in-out")], "multiply"),
     caption([{ atMs: 1500, text: "북쪽 숲 한복판에서 은빛 알 하나가 숨 쉬듯 빛났다." }]),
   ], { keys: cam }, { kind: "flash", durationMs: 450, color: "#fff2d0" }, [
-    { id: "rubble", resourceId: SE.rubble, atMs: 0, durationMs: 1500, volume: 0.6 },
+    // 충돌 땅울림이 컷을 넘어 이어진다 — 앞 컷에서 0.75초 들은 데서부터.
+    { id: "rumble", resourceId: SE.impact, atMs: 0, durationMs: 4200, volume: 1, offsetMs: FALL_MS - FALL_HIT, fadeOutMs: 1500 },
+    { id: "rubble", resourceId: SE.rubble, atMs: 300, durationMs: 1500, volume: 0.4 },
     { id: "crackle", resourceId: SE.crackle, atMs: 300, durationMs: 2400, volume: 0.25, fadeOutMs: 1200 },
   ]);
 }
@@ -305,9 +288,7 @@ function titleShot(): OpeningAnimatic {
 
 /** 컷 길이는 마디(3초) 배수. */
 const SHOTS: readonly { id: string; build: () => OpeningAnimatic; ms: number }[] = [
-  { id: "fs_op_sky", build: skyShot, ms: 9000 },
-  { id: "fs_op_crack", build: crackShot, ms: 3000 },
-  { id: "fs_op_fall", build: fallShot, ms: 6000 },
+  { id: "fs_op_falling_star", build: fallingStarShot, ms: FALL_MS },
   { id: "fs_op_aftermath", build: aftermathShot, ms: 6000 },
   { id: "fs_op_bell", build: bellShot, ms: 6000 },
   { id: "fs_op_title", build: titleShot, ms: 9000 },

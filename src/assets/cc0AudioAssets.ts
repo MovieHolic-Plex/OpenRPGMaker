@@ -36,6 +36,39 @@ export const CC0_AUDIO_ASSETS = [
     license: "CC0-1.0",
     sourceName: SOURCE_NAME,
   },
+  // ── 폴른 스타 오프닝 — 별이 갈라져 숲에 떨어지는 한 줄기 소리(자체 합성, scripts/content/fallen/opening-sfx.py) ──
+  {
+    id: "cc0-sound-fs-op-star-swell",
+    name: "오프닝 · 별이 차오름 (CC0)",
+    path: "assets/cc0/audio/opening/fs-op-star-swell.ogg",
+    kind: "sound",
+    license: "CC0-1.0",
+    sourceName: SOURCE_NAME,
+  },
+  {
+    id: "cc0-sound-fs-op-star-crack",
+    name: "오프닝 · 별이 갈라짐 (CC0)",
+    path: "assets/cc0/audio/opening/fs-op-star-crack.ogg",
+    kind: "sound",
+    license: "CC0-1.0",
+    sourceName: SOURCE_NAME,
+  },
+  {
+    id: "cc0-sound-fs-op-meteor-roar",
+    name: "오프닝 · 불덩이 굉음 (CC0)",
+    path: "assets/cc0/audio/opening/fs-op-meteor-roar.ogg",
+    kind: "sound",
+    license: "CC0-1.0",
+    sourceName: SOURCE_NAME,
+  },
+  {
+    id: "cc0-sound-fs-op-impact",
+    name: "오프닝 · 숲에 박힘 (CC0)",
+    path: "assets/cc0/audio/opening/fs-op-impact.ogg",
+    kind: "sound",
+    license: "CC0-1.0",
+    sourceName: SOURCE_NAME,
+  },
   // ── 실제 CC0 곡(OpenGameArt) ─────────────────────────────────────────────
   // 장면별로 하나씩: 필드 / 마을 / 실내(여관) / 던전 / 전투.
   // 이게 없으면 맵 BGM 배선(player/mapBgm.ts)이 가리킬 곡이 없어 게임이 여전히 무음이다.
