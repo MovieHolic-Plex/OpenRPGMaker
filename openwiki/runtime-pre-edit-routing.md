@@ -12,6 +12,11 @@
 - **메뉴 첫 화면 현재 목표**: `playerStatusMenu.withObjectiveCard` 가 개요 밑에 `zoneFeedback.currentObjectiveText` 를 붙인다(목표가 없으면 없음).
 - 컷신 건너뛰기 안내는 「Esc 두 번: 컷신 건너뛰기」(터치는 「B 두 번」).
 - 목표창은 `activeRuntimeEvents("action")` 발자국(보이지 않는 조사 지점 포함)도 피한다.
+- **맵 바깥 여백 우선**: 맵을 조금이라도 덮는 자리는 고정 벌점(+4)이라, 여백에 통째로 들어가는 자리가 있으면 늘 그쪽이다.
+  옆 띠는 폭을 띠에 맞춰 줄이고(글자 크기 그대로, 최소 약 4글자 폭), 위아래 띠는 띠 높이에 들어갈 때까지 넓힌다(`max-width` 를 그때만 풂).
+  높이는 실제로 잰다(`measure`). 자연 크기는 `left:0` 에서 잰다 — 지난 자리에 둔 채 재면 남은 폭만큼 줄어든 값을 읽는다.
+- **오프닝 애니메틱 내레이션 띠**: `openingAnimaticRenderer.animaticBandClearance` 가 장면 전체에서 한 번, 띠 밑에 들어가는 인물(role actor)을
+  띠 위로 올리는 카메라 y 보정을 구한다(띠 높이·배경 아래 끝 여유 이내). 배경이 끝나 못 올리고 위쪽에 인물이 없으면 띠를 위로(`cinematic-narration--top`).
 - **고해상도 무대 글자 배율**: 320×240 기준 UI 를 높이/240 ≥ 1.5 무대(연애 1024×768 등)에서 `playSurface.hiresUiZoom` 배(반올림)로 키운다 —
   뷰포트 `data-hires-ui` + `--hires-ui-zoom`, `playSurface.css` 끝 규칙이 일반 대사창·타이틀 글/메뉴·컷신 자막·건너뛰기 안내에 `zoom` 을 건다.
   zoom 은 px 글자·여백만 키우고 퍼센트 위치는 그대로다. 양쪽 전신 대사창(`data-dialogue-stage`)은 자기 `--dialogue-ui-scale` 을 쓰므로 빠지며,
