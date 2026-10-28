@@ -8,7 +8,7 @@
 //  - 이름이 문(탈출 문·현관…)이면 그림 「문」 칸에 붙인다 — 그 칸이 길목을 막는 것은 잠긴 문이라 괜찮지만 다른 조사 이벤트를 잃게 하면 안 된다.
 // 옮길 때는 원래 자리에서 가장 가까운, 가구 앞(옆이 못 지나는 물건 칸) 빈 바닥을 고른다.
 import { canMove, isPassable } from "@/project/collision";
-import { playerAnchors } from "@/editor/tools/transferReachability";
+import { playerAnchors, sameMapPassages } from "@/editor/tools/transferReachability";
 import type { GameEvent, GameMap, Project } from "@/project/types";
 import { objectAt, PERSON_SPOT_BAD, personSpotContext, personSpotCost, tileLabel } from "./people";
 import { objectBaseLabel, objectClusterAt } from "@/project/objectFootprint";
@@ -34,13 +34,27 @@ function anchorsOf(project: Project, map: GameMap): Cell[] {
   return start.length ? start : playerAnchors(project, map).filter((a) => isPassable(project, map, a.x, a.y));
 }
 
-/** 앵커에서 걸어 닿는 칸(blocked 는 못 지난다). */
+/** 앵커에서 걸어 닿는 칸(blocked 는 못 지난다). 같은 맵 안 이동 이벤트 옆에 닿으면 그 도착 칸에서도 이어 걷는다. */
 function reachFrom(project: Project, map: GameMap, anchors: readonly Cell[], blocked: ReadonlySet<number>): Uint8Array {
   const w = map.width;
   const seen = new Uint8Array(w * map.height);
   const q: number[] = [];
   for (const a of anchors) { const i = a.y * w + a.x; if (!seen[i] && !blocked.has(i)) { seen[i] = 1; q.push(i); } }
-  for (let k = 0; k < q.length; k++) {
+  const passages = sameMapPassages(map);
+  const used = new Set<number>();
+  for (let k = 0; ; k++) {
+    if (k >= q.length) {
+      // 닿은 칸 곁(또는 위)의 같은 맵 이동 이벤트 — 그 도착 칸을 새 앵커로.
+      let grew = false;
+      passages.forEach((p, n) => {
+        if (used.has(n)) return;
+        const on = !!seen[p.at.y * w + p.at.x];
+        if (!on && !DIRS.some(([dx, dy]) => { const x = p.at.x + dx, y = p.at.y + dy; return x >= 0 && y >= 0 && x < w && y < map.height && !!seen[y * w + x]; })) return;
+        used.add(n);
+        for (const t of p.to) { const i = t.y * w + t.x; if (!seen[i] && !blocked.has(i)) { seen[i] = 1; q.push(i); grew = true; } }
+      });
+      if (!grew) break;
+    }
     const i = q[k]!, x = i % w, y = (i - x) / w;
     for (const [dx, dy] of DIRS) {
       const nx = x + dx, ny = y + dy;

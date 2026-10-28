@@ -5,7 +5,7 @@
 // 파티에 없었다. 조각마다 따로 지으면 아무것도 사슬 전체를 보지 않는다 — 끝맺음 관문이 이 검사로 돌려보낸다. 순수 함수.
 import { canMove, isPassable } from "@/project/collision";
 import type { GameMap, Project } from "@/project/types";
-import { playerAnchors } from "@/editor/tools/transferReachability";
+import { playerAnchors, sameMapPassages } from "@/editor/tools/transferReachability";
 import { eventAlwaysBlocks } from "@/project/eventPassageBlock";
 import { trivialCode } from "./puzzle";
 
@@ -62,18 +62,8 @@ export function reachWithout(project: Project, map: GameMap, blocked: ReadonlySe
   // 같은 맵 안의 이동(체육관 덩굴 문·덤불 틈: 조사하면 문 건너 칸으로 옮긴다)도 길이다 — playerAnchors 는 다른 맵에서 들어오는 이동만 본다.
   // 닿는 칸(또는 그 이웃)에 선 이벤트의 같은 맵 이동 착지를 새 출발점으로 더한다(잠긴 문을 열린다고 보는 것과 같다). 2026-10-29 standin monster 새순 체육관.
   // 우회 검사(lockBypasses·장치 무용)는 따르지 않는다 — 문 자신의 이동이 「이미 건너편에 닿는다」로 보이게 된다.
-  const hops = !followHops ? [] : (map.events ?? []).flatMap((ev) => {
-    const out: { from: { x: number; y: number }; to: { x: number; y: number } }[] = [];
-    const scan = (node: unknown): void => {
-      if (Array.isArray(node)) { node.forEach(scan); return; }
-      const o = obj(node);
-      if (!o) return;
-      if (o.kind === "transfer" && o.mapId === map.id && typeof o.x === "number" && typeof o.y === "number") out.push({ from: { x: ev.x, y: ev.y }, to: { x: o.x, y: o.y } });
-      for (const v of Object.values(o)) if (v && typeof v === "object") scan(v);
-    };
-    scan(ev.pages);
-    return out;
-  });
+  // 통로 목록은 eventReach(끝맺음 도달 수리)와 같은 sameMapPassages 한 벌이다.
+  const hops = !followHops ? [] : sameMapPassages(map).flatMap((p) => p.to.map((to) => ({ from: p.at, to })));
   const used = new Set<number>();
   for (let i = 0; ; ) {
     for (; i < queue.length; i += 1) {
