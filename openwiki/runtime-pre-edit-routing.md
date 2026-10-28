@@ -10,7 +10,7 @@
   칸·확인 색은 대사 글자색(currentColor)에서 뽑는다(종이 창 대비). 입력창이 떠 있는 동안 목표 안내는 숨는다(`SUPPRESSING_TEST_IDS`). 오버레이는 내용 높이로 자란다(`playSurface.css`).
 - **타이틀 복귀 상세**: 항목은 늘 있다. 첫 결정은 확인 대기(「진행을 버리고 타이틀로 · 확인」), 둘째가 돌아간다. 빈 상세 문구(「준비하지 못했습니다」)는 없앴다.
 - **메뉴 첫 화면 현재 목표**: `playerStatusMenu.withObjectiveCard` 가 개요 밑에 `zoneFeedback.currentObjectiveText` 를 붙인다(목표가 없으면 없음).
-- 컷신 건너뛰기 안내는 「Esc 두 번: 컷신 건너뛰기」(터치는 「B 두 번」).
+- 컷신 건너뛰기 안내는 「Esc 두 번: 컷신 건너뛰기」(터치는 「B 두 번」). 대사 창이 떠 있어도 두 번째 Esc 에서 바로 건너뛴다 — `playSceneInterpreter` text 단계가 `showText` 와 `skipController.waitForSkip()` 을 경주시키고, 건너뛰면 `dialogue.close()`(2026-10-29; 전에는 창이 닫힐 때까지 기다려 Esc 를 아무리 눌러도 첫 줄 그대로였다).
 - 목표창은 `activeRuntimeEvents("action")` 발자국(보이지 않는 조사 지점 포함)도 피한다.
 - **맵 바깥 여백 우선**: 맵을 조금이라도 덮는 자리는 고정 벌점(+4)이라, 여백에 통째로 들어가는 자리가 있으면 늘 그쪽이다.
   옆 띠는 폭을 띠에 맞춰 줄이고(글자 크기 그대로), 위아래 띠는 띠 높이에 들어갈 때까지 넓힌다(`max-width` 를 그때만 풂).

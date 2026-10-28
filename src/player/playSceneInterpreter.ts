@@ -429,7 +429,7 @@ async function consumeBlockingStep(
       applyDialogueFacing(scene, step, currentEventId);
       // 흉상 좌우·듣는 흉상을 맵 위 자리로(text.bustSide = "stage").
       const staged = stageBusts(scene, step);
-      await dialogue.showText({
+      const shown = dialogue.showText({
         speaker,
         look: resolveDialogueLook(project, {
           speaker,
@@ -454,6 +454,16 @@ async function consumeBlockingStep(
         ...(step.endingEpilogue ? { endingEpilogue: true } : {}),
         ...(step.beforeChoices ? { beforeChoices: true } : {}),
       });
+      // 「Esc 두 번: 컷신 건너뛰기」는 대사가 떠 있을 때도 바로 끝나야 한다 — 대사 창이 닫히기를 기다리면
+      // 두 번 눌러도 창이 그대로라 안내가 거짓말이 됐다(2026-10-29 마법학교 오프닝 실측: Esc 12번에도 첫 줄 그대로).
+      const outcome = await Promise.race([
+        shown.then(() => "shown" as const),
+        skipController.waitForSkip().then(() => "skip" as const),
+      ]);
+      if (outcome === "skip") {
+        shown.catch(() => undefined);
+        dialogue.close();
+      }
       {
         const skipped = skipController.takeResult();
         if (skipped) return skipped;
