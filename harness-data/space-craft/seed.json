@@ -10836,6 +10836,19 @@
    ],
    "verify": "밤 광장 순찰과 부딪히면 적이 둘만 나온다(출하 플레이어)",
    "suiteCategory": "fs2-patrol-pair-troop"
+  },
+  {
+   "category": "game",
+   "kind": "logic",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "id": "fs2-quest-next-step",
+   "prompt": "기록 → 임무를 열면 이미 끝낸 1번 단계만 보여서 지금 뭘 해야 할지 모르겠어. 다음 할 일이 바로 보이게 해 줘.",
+   "requires": [
+    "define_quest 줄기 스위치 단계 — 진행 중 임무 상세에 「지금 할 일」(첫 미완료 단계)이 상태 바로 밑"
+   ],
+   "verify": "임무 창 첫 화면에 「지금 할 일 / 6. 광장 남쪽 끝 대장간…」이 보인다(출하 플레이어)",
+   "suiteCategory": "fs2-quest-next-step"
   }
  ],
  "gates": {
