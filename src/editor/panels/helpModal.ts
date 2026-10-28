@@ -348,13 +348,17 @@ export function openHelpModal(sectionId?: string): void {
     }
   }
 
+  // 끝까지 내리면 마지막 절(단축키)은 위 30% 띠에 닿지 못한다 — 그때는 마지막 절을 활성으로 둔다.
+  // 부드러운 스크롤은 교차 알림이 끝에 닿기 전에 멈추므로 scroll 사건에서도 같은 규칙을 적용한다.
+  const activateLastAtEnd = (): boolean => {
+    if (body.scrollTop <= 0 || body.scrollTop + body.clientHeight < body.scrollHeight - 2) return false;
+    setActiveNav(GUIDE_SECTIONS[GUIDE_SECTIONS.length - 1]?.id ?? "");
+    return true;
+  };
+  body.addEventListener("scroll", activateLastAtEnd, { passive: true });
   const observer = new IntersectionObserver(
     (entries) => {
-      // 끝까지 내리면 마지막 절(단축키)은 위 30% 띠에 닿지 못한다 — 그때는 마지막 절을 활성으로 둔다.
-      if (body.scrollTop > 0 && body.scrollTop + body.clientHeight >= body.scrollHeight - 2) {
-        setActiveNav(GUIDE_SECTIONS[GUIDE_SECTIONS.length - 1]?.id ?? "");
-        return;
-      }
+      if (activateLastAtEnd()) return;
       for (const entry of entries) {
         if (entry.isIntersecting) {
           setActiveNav((entry.target as HTMLElement).dataset.helpSection ?? "");
@@ -396,7 +400,8 @@ export function openHelpModal(sectionId?: string): void {
   // 호출부가 지정한 섹션으로 바로 이동한다. 스크롤은 부착 뒤여야 먹는다.
   const requested = sectionId ? sectionNodes.get(sectionId) : undefined;
   if (requested && sectionId) {
-    requested.scrollIntoView({ block: "start" });
+    // 부드러운 스크롤(CSS)을 쓰면 다른 초점 이동에 끊겨 절 중간에 멈췄다 — 처음 위치는 즉시 옮긴다.
+    requested.scrollIntoView({ block: "start", behavior: "instant" });
     setActiveNav(sectionId);
     // 그 절의 제목으로 초점을 보낸다 — 낭독기는 제목부터 읽고, Tab 은 그 절에서 이어진다.
     const heading = requested.querySelector<HTMLElement>("h3");
