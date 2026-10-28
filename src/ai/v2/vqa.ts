@@ -63,7 +63,9 @@ export function vqaShotPlan(project: Project, changedMapIds: ReadonlySet<string>
   const mapIds = Object.keys(project.maps);
   const ordered = [project.startMapId, ...mapIds.filter((id) => changedMapIds.has(id) && id !== project.startMapId), ...mapIds.filter((id) => !changedMapIds.has(id) && id !== project.startMapId)]
     .filter((id, i, all): id is string => Boolean(id && project.maps[id]) && all.indexOf(id) === i);
-  for (const id of ordered) plan.push({ kind: "map", where: `맵 «${project.maps[id]!.name}»${id === project.startMapId ? " (시작 맵)" : ""}`, ref: id });
+  // 맵 그림은 편집기 렌더라 주인공을 그리지 않는다 — 검수자·조수가 「시작 맵에 주인공이 안 보인다」를 결함으로 되풀이했다(2026-10-28 mt2 argon escape).
+  const startNote = project.startPos ? ` (시작 맵 · 주인공은 게임에서만 그려짐, 시작 칸 ${project.startPos.x},${project.startPos.y})` : " (시작 맵)";
+  for (const id of ordered) plan.push({ kind: "map", where: `맵 «${project.maps[id]!.name}»${id === project.startMapId ? startNote : ""}`, ref: id });
   return plan.slice(0, VQA_MAX_IMAGES);
 }
 
@@ -75,7 +77,7 @@ export function vqaPrompt(task: string, shots: readonly VqaShot[], round: number
     `Round ${round} of ${VQA_MAX_ROUNDS}. Images, in order: ${shots.map((s, i) => `[${i + 1}] ${s.where}`).join(" · ")}.`,
     ...(previous.length ? [`Last round you reported these; check whether each is still visible and report it again only if it is:\n${previous.map((d) => `- ${d.where}: ${d.what}`).join("\n")}`] : []),
     "Count as defects (with the exact image and spot): placeholder or editor-default art (generic fields, the default kingdom/sword opening, empty grey blocks); art that contradicts the request (wrong era, setting, characters, genre); unreadable or clipped text; characters standing inside walls, furniture or roofs; doors or exits that lead nowhere visible; rooms that are mostly empty floor; mismatched tile styles; a title that spoils the ending; obviously broken layering (tiles cut off, half trees).",
-    "Do NOT count: pixel-art style itself, small decoration choices, things that need sound or animation to judge, anything you cannot actually see in the image.",
+    "Do NOT count: pixel-art style itself, small decoration choices, things that need sound or animation to judge, anything you cannot actually see in the image, and a missing player character on a map image — map images are editor renders of the tiles and placed events; the player sprite is drawn only in the running game.",
     "Answer with JSON only: {\"defects\":[{\"image\":<number>,\"where\":\"<spot in that image, e.g. top-left, the shop counter>\",\"what\":\"<the defect in one Korean sentence>\",\"severity\":\"blocker\"|\"polish\"}]}. Empty list if you find nothing concrete. No more than 12 defects; most important first.",
   ].join("\n\n");
 }
