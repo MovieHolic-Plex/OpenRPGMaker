@@ -5,6 +5,16 @@
 
 <!-- releases -->
 
+## 0.357.0 — 2026-10-28
+
+### 기능
+
+- **charset** — RefmapDoll - 2,793 modified REFMAP walking chips, bundled, with assistant search (#3882) (`5de42f9`)
+
+### 수정
+
+- **charset** — RefmapDoll - drop 93 chips that were an original REFMAP person recoloured (2,700 chips, 338 sheets) (#3883) (`16ad4e3`)
+
 ## 0.356.5 — 2026-10-28
 
 ### 수정
