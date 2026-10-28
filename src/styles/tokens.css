@@ -46,8 +46,10 @@
 
   --text-1: #0F172A;
   --text-2: #475569;
-  --text-3: #626E89;
-  --text-placeholder: #626E89;
+  /* --text-3 은 #626E89 였다 — 순백 5.11 이지만 호버(--bg-hover)·눌림(--control-bg-active) 위에서
+     4.34·3.75 로 AA 미달이었다(HIG C-04). #566179 는 --control-bg-active 위에서도 4.56 이다. */
+  --text-3: #566179;
+  --text-placeholder: #566179;
   --text-disabled: #94A3B8;
 
   --accent: #4A57D6;
@@ -63,12 +65,17 @@
   --cinema-paper: #fff9eb;
   --cinema-accent: #edcea0;
 
-  --danger: #C6403D;
+  /* 상태 글자는 자기 -muted 배경 위에서 4.5 이상이어야 한다(HIG C-04): #C6403D 는 4.15, #8A5E00 은 바탕(inset) 위 4.23 이었다. */
+  --danger: #B5302E;
   --danger-muted: rgba(198, 64, 61, 0.13);
   --success: #18764F;
   --success-muted: rgba(24, 118, 79, 0.13);
-  --warning: #8A5E00;
+  --warning: #7A5300;
   --warning-muted: rgba(138, 94, 0, 0.13);
+
+  /* 순흑·순백 리터럴(#000/#fff)을 옮길 자리. 글자는 --black-soft, 어두운 바탕 위 글자는 --white-soft. */
+  --black-soft: #0F172A;
+  --white-soft: #F8FAFC;
 
   --radius-s: 6px;
   --radius-m: 10px;
