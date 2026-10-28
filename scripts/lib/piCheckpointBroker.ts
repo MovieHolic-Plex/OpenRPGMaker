@@ -20,6 +20,9 @@ export function requestPiCheckpoint(checkpoint: PiProjectCheckpoint, emit: (even
   return new Promise((resolve, reject) => {
     const cleanup = () => { pending.delete(checkpointId); clearTimeout(timer); signal.removeEventListener("abort", abort); };
     const abort = () => { cleanup(); reject(new Error("적용 대기가 중단되었습니다.")); };
+    // 30분은 «사람이 확인 카드에 답할 시간» 상한이다 — 적용 자체는 수 초다. 줄이지 않는다: 자리를 비운 사용자의 실행을 죽인다.
+    // 이 대기가 30분 내내 멈춘 사고(2026-10-29 vm1 argon, 카드에 글로 답함)는 타이머가 아니라 카드·새 메시지의 맞물림이었고,
+    // 보내기가 열린 카드를 먼저 닫아 푼다(src/editor/panels/aiDecisionPrompt.ts 「열린 카드 대장」).
     const timer = setTimeout(abort, 30 * 60 * 1000);
     signal.addEventListener("abort", abort, { once: true });
     pending.set(checkpointId, decision => {

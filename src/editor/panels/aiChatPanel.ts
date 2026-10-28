@@ -94,6 +94,7 @@ import { createTurnTiming, type TurnTimingRecorder } from "@/ai/turnTiming";
 import { combineDiffs } from "@/project/projectCommitLog";
 import { el } from "@/util/dom";
 import { mapRunQueue, type MapRunTicket } from "@/editor/aiMapRunQueue";
+import { blockingAssistantDecisions, readDecisionAnswer } from "./aiDecisionPrompt";
 import { createMapRunCard, type MapRunCard } from "./aiMapRunCard";
 import { createFeatureChecklistView } from "./aiFeatureChecklist";
 import { FEATURE_POLISH_DEFAULT, FEATURE_POLISH_TOOLS } from "@/ai/piAgent/featureReview";
@@ -607,6 +608,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   let pendingQuestion = false;
   /** 의도 선언의 되묻기를 보이고 멈춘 턴 — 다음 전송이 그 답이다. */
   let pendingClarify: { readonly text: string; readonly question: string } | null = null;
+  /** 앞 턴이 대기열에서 잡은 맵 키("*" = 프로젝트 전체). 앞 턴 확인 카드가 이 키로 열린 카드 대장에 오른다. */
+  let foregroundRunKey: string | undefined;
   const hasPendingQuestion = (): boolean => pendingQuestion;
   // applyCollapsed 정의 전에 턴이 잡혀도 안전한 바인딩(런타임 호출은 패널 마운트 이후).
   let expandForAiWork: () => void = () => {};
@@ -2204,6 +2207,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         },
         setStatus,
         getCurrentMapId: () => editorState.get().currentMapId ?? null,
+        ...(foregroundRunKey !== undefined ? { runKey: foregroundRunKey } : {}),
         signal: piRunController.signal,
         showChangeReceipt: (receipt) => showPiChangeReceipt(receipt, reviewCard ?? undefined),
         onReviewResolved: (applied) => { reviewCard?.finish({ ok: true, message: applied ? "적용 완료" : "버림" }); },
@@ -2361,6 +2365,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     readonly team: boolean;
     readonly mapId: string | null;
     readonly selection: PanelMapContext["selection"];
+    /** 대기열에서 잡는 맵 키("*" = 프로젝트 전체) — 이 실행의 확인 카드가 어느 요청을 붙잡는지(aiDecisionPrompt). */
+    readonly runKey?: string;
   }
   /** 앞 턴도 표에 올린다 — 같은 맵의 다음 요청이 그 뒤에 줄 선다. 돌려준 함수로 자리를 푼다. */
   const claimForegroundMapRun = (mapKey: string, label: string, exclusive: boolean): (() => void) => {
@@ -2410,6 +2416,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       appendReviewPrompt: (element) => card.attachPrompt(element),
       setStatus: (text) => card.setStatus(text),
       getCurrentMapId: () => run.mapId,
+      ...(run.runKey !== undefined ? { runKey: run.runKey } : {}),
       onRunAudit: (rows) => { controller.auditHistory.push(...rows); },
       onSpend: (spend) => {
         conversationSpend = { turns: conversationSpend.turns + spend.turns, tokens: conversationSpend.tokens + spend.tokens };
@@ -2421,7 +2428,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     if (tilesetQuestion && !disposed && owner === conversationId) showTilesetChangeCard(tilesetQuestion);
     if (storeCards.length && !disposed && owner === conversationId) showStoreCards(storeCards);
   };
-  const enqueueMapRun = (run: MapRunInput, mapKey: string, exclusive: boolean): void => {
+  const enqueueMapRun = (input: MapRunInput, mapKey: string, exclusive: boolean): void => {
+    const run: MapRunInput = { ...input, runKey: exclusive ? "*" : mapKey };
     const project = store.getCurrent();
     const mapName = run.mapId ? project.maps[run.mapId]?.name ?? run.mapId : "프로젝트 전체";
     appendBubble("user", run.shown);
@@ -2492,16 +2500,43 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     const exclusive = handoff?.team === true || explicit?.mode === "team"
       || loadAiConfig().piTeam === true || isGenrePresetBriefRequest(text);
     const queue = mapRunQueue();
+    // 이 요청을 붙잡을 확인 카드가 열려 있으면 먼저 닫는다 — 카드 주인은 단추를, 새 요청은 카드 주인을 기다려
+    // 둘 다 30분 적용 대기로 멈췄다(aiDecisionPrompt 「열린 카드 대장」, 2026-10-29 vm1 argon).
+    // 짧은 답 낱말(「예」「그만」)이면 카드 답으로 쓰고 끝낸다. 다른 요청이면 카드를 「그만두기」(내용 보존)로 닫고
+    // 그 사실을 조수에게 알린 뒤 요청을 처리한다 — 카드 주인 실행은 그 변경만 빼고 이어 가고, 이 요청은 그 뒤에 돈다.
+    const blocking = blockingAssistantDecisions(mapKey, exclusive);
+    let runText = text;
+    if (blocking.length > 0) {
+      const answer = !handoff && !clarified ? readDecisionAnswer(typed) : null;
+      if (answer !== null) {
+        const target = blocking[blocking.length - 1]!;
+        input.value = "";
+        composerHandoff = null;
+        syncInputHeight();
+        refreshSendEnabled();
+        appendBubble("user", shown);
+        appendBubble("system", `「${target.title}」 카드에 「${answer ? "확인" : "그만두기"}」 단추로 답했어요.`);
+        target.answer(answer, "typed");
+        return;
+      }
+      const titles = blocking.map(d => `「${d.title}」`).join(", ");
+      for (const decision of blocking) decision.answer(false, "new-message");
+      appendBubble("system", `새 요청이 와서 열린 확인 카드를 그만두기로 닫았어요(${titles}) — 그 변경은 적용하지 않고, 나머지 내용은 그대로 둡니다.`);
+      // 다음 실행의 조수도 앞 카드가 어떻게 끝났는지 알아야 같은 삭제를 다시 묻거나 «이미 지웠다»고 착각하지 않는다.
+      // 뒤에 붙인다 — 앞에 붙이면 명시 명령(/pi·team …) 해석과 의도 분류가 문장 머리를 잘못 읽는다.
+      runText = `${text}\n\n[참고: 앞 실행의 확인 카드 ${titles}는 사용자가 답하지 않고 이 요청을 보내 「그만두기」로 닫혔다 — 그 변경(맵 삭제·비우기 등)은 적용되지 않았다.]`;
+    }
     if (turnBusy || queue.forMap(mapKey).length > 0 || (exclusive && queue.running().length > 0)) {
       input.value = "";
       composerHandoff = null;
       syncInputHeight();
       refreshSendEnabled();
       const selection = mapContext().selection;
-      enqueueMapRun({ text, shown, team: handoff?.team === true, mapId: runMapId, selection: selection && selection.mapId === runMapId ? selection : null }, mapKey, exclusive);
+      enqueueMapRun({ text: runText, shown, team: handoff?.team === true, mapId: runMapId, selection: selection && selection.mapId === runMapId ? selection : null }, mapKey, exclusive);
       return;
     }
     const releaseMapRun = claimForegroundMapRun(mapKey, shown, exclusive);
+    foregroundRunKey = exclusive ? "*" : mapKey;
     input.value = "";
     composerHandoff = null;
     syncInputHeight();
@@ -2562,6 +2597,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       if (!turnBusy) finishWorkCard({ ok: true });
     } finally {
       releaseMapRun();
+      foregroundRunKey = undefined;
       progress.finish();
       if (canvasProgress === progress) {
         canvasProgress = null;
