@@ -198,13 +198,13 @@ REQUEST는 source(path/sha256), palette, canvas, origin과 poses(id/direction/fr
 - 배선: 시트 수는 명단 `sheets` 에서 나오므로 카탈로그·의미표·리졸버·참조 검증·`charsetFamily` 는 코드 변경 없음. 바뀐 것: `genreLock.ts` 안내 문장(1~13), `test/genreLockCharsets.test.ts`(의미표 90칸), 새 `test/scarloxyPeopleGallery4.test.ts`, 이벤트 편집기 표면 기준선 3개(people11~13 노드), QA 픽스처 `--part mix`(새 22종 + 기존 13종 섞은 35칸).
 - 검증(출하 경로): `scarloxy-people-chips-fixture.mts --part mix` + `scarloxy-people-chips.scenario.mjs`. 출처 크레딧은 `public/assets/ATTRIBUTION.md` 「ScarloxyPeople1-13」(새 시트는 기존 칩의 부위 조합과 색 변형임을 명시).
 
-## REFMAP 변형 인물 칩 RefmapDoll1~ — char-gen `refmap` 종이 인형 2,700종 (2026-10-28)
+## REFMAP 변형 인물 칩 RefmapDoll1~ — char-gen `refmap` 종이 인형 2,567종 (2026-10-28)
 
 사용자 결정(2026-10-28): REFMAP 제외의 예외로 「금지 풀고 넣기」, 설치는 「번들, 검수 위임」(사람 대신 Kiro Opus 눈 검사 통과분 전부).
 칩은 비공개 char-gen 의 `cli.py refmap` 이 만든다 — REFMAP 인물 242명 각자의 목 줄과 팔레트 색 종류(머리카락·모자·얼굴·수염·피부·옷·윤곽)를
 Claude 가 읽어 두고, 머리 덩어리(색 종류로 자른다, 선이 아님)를 다른 인물의 몸 목 위치·얼굴 가운데에 맞춰 얹고 턱 선을 다시 그린다.
 - 관문: 짝 58,322 → 크기(아이·어른·구부정)·성별·남자 머리+치마·피부 밝기·뒷머리 덮개 → 합성 후 만들어 넣은 칸(방향별 12칸 이하)·목 길이(피부 줄)·조각 결함·깜빡임 → 4,798 →
-  Kiro Opus(`ocx-claude-klb--claude-opus-5.5`, dolleye 프롬프트 + 「색 바꾸기 없음」) 눈 검사 → 2,793 → 같은 인물의 색 바꾼 쌍둥이끼리(시트와 그 `2` 변형의 같은 칸) 짝 93개 뺌(원본 인물을 색만 바꾼 것이 되므로; char-gen `pair_problem` 이 이제 막는다) → 2,700(시트 338장). 같은 칩을 다시 물으면 92% 같은 답(경계 칩은 흔들린다).
+  Kiro Opus(`ocx-claude-klb--claude-opus-5.5`, dolleye 프롬프트 + 「색 바꾸기 없음」) 눈 검사 → 2,793 → 같은 인물의 색 바꾼 쌍둥이끼리(시트와 그 `2` 변형의 같은 칸) 짝 93개 뺌(원본 인물을 색만 바꾼 것이 되므로; char-gen `pair_problem` 이 이제 막는다) → 2,700 → 원본 한쪽과 거의 같은 칩 133개 뺌(두건과 로브가 한 덩어리라 로브째 머리로 딸려 온 인물 8명은 머리로 안 씀, 한 방향 칸의 78% 이상이 머리 원본 그대로·80% 이상이 몸 원본 그대로·머리 조각이 목 아래 몸의 절반 이상인 칩은 char-gen 관문이 막는다) → 2,567(시트 321장). v0.357.0 의 2,700개 뒤로 다시 담아 칸 번호가 바뀌었다(사용자 결정 「B」, 2026-10-28). 같은 칩을 다시 물으면 92% 같은 답(경계 칩은 흔들린다).
 - 이름·외형 문장·역할·태그·성별·나이: Kiro Opus 가 칩 8개씩(앞·옆) 보고 적었다(원본 인물 꼬리표를 힌트로). 조수는 `list_npc_graphics` 로 이 말들을 찾는다.
 - 순서: 성별 → 체격 → 몸의 옷 종류 → 머리 인물 순으로 8개씩 시트에 담는다(비슷한 사람이 한 시트에 모인다).
 - 굽기: char-gen `python3 cli.py refmap --export <폴더>` → `python3 src/harnesses/charset-actor/install_refmap_dolls.py --from <폴더>`(`--check` 는 같은지만).
