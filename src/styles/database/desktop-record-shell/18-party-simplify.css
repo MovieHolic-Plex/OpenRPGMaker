@@ -276,3 +276,98 @@
   }
 }
 
+
+/* ── 주인공 목록: 좁은 창에서도 목록이 높이를 쓴다 (C-76·C-84, 2026-10-28) ───────────────
+   직업 열은 없앴다(이름과 다를 때만 둘째 줄). 남는 열(레벨·HP·맵 표시)은 값이 갈릴 때만 그려지고 폭은 고정이라
+   이름 칸이 가장 늦게 준다(J-p7-small-window-20). 개수·검색은 한 줄, 툴바도 한 줄이다. */
+@media (min-width: 1px) {
+  .database-modal-body .db-actor-studio-workspace .db-actor-studio-table[data-column-count="1"] .db-actor-table-row {
+    grid-template-columns: minmax(0, 1fr);
+    min-width: 0;
+  }
+
+  .database-modal-body .db-actor-studio-workspace .db-actor-studio-table[data-column-count="2"] .db-actor-table-row {
+    grid-template-columns: minmax(0, 1fr) 64px;
+    min-width: 0;
+  }
+
+  .database-modal-body .db-actor-studio-workspace .db-actor-studio-table[data-column-count="3"] .db-actor-table-row {
+    grid-template-columns: minmax(0, 1fr) 44px 64px;
+    min-width: 0;
+  }
+
+  .database-modal-body .db-actor-studio-workspace .db-actor-studio-table[data-column-count="4"] .db-actor-table-row {
+    grid-template-columns: minmax(0, 1fr) 44px 64px 64px;
+    min-width: 0;
+  }
+
+  .database-modal-body .oprn-record-workspace.oprn-record-actors.db-actor-studio-workspace:has(.db-actor-studio-table:is([data-column-count="1"], [data-column-count="2"], [data-column-count="3"])) {
+    grid-template-columns: minmax(300px, 0.8fr) minmax(320px, 1.2fr);
+  }
+
+  .database-modal-body .db-actor-studio-workspace .db-studio-table-pane {
+    grid-template-rows: auto minmax(0, 1fr) auto auto;
+  }
+
+  .database-modal-body .db-actor-studio-workspace .db-studio-table-pane > .db-actor-studio-tools {
+    align-items: center;
+    display: flex;
+    gap: 8px;
+    grid-row: 1;
+    padding: 8px 12px;
+  }
+
+  .database-modal-body .db-actor-studio-workspace .db-studio-table-pane > .db-actor-studio-tools > .db-search {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .database-modal-body .db-actor-studio-workspace .db-actor-studio-tools .db-search input {
+    height: 32px;
+  }
+
+  .database-modal-body .db-actor-studio-workspace .db-studio-table-pane > .db-actor-studio-table {
+    grid-row: 2;
+  }
+
+  .database-modal-body .db-actor-studio-workspace .db-studio-table-pane > .oprn-record-list-footer {
+    grid-row: 3;
+  }
+
+  .database-modal-body .db-actor-studio-workspace .db-studio-table-pane > .db-toolbar {
+    flex-wrap: wrap;
+    gap: 6px;
+    grid-row: 4;
+    padding: 8px 12px;
+  }
+
+  .database-modal-body .db-actor-studio-workspace .db-studio-table-pane > .db-toolbar .btn {
+    padding: 0 10px;
+  }
+
+  .database-modal-body .db-actor-studio-workspace .db-actor-studio-table button.db-actor-table-row {
+    min-height: 48px;
+    padding: 6px 14px;
+  }
+
+  .database-modal-body .db-actor-studio-workspace .db-actor-studio-table .db-actor-table-header {
+    padding: 0 14px;
+  }
+
+  /* 선택 행은 바탕색과 함께 굵기로도 구별된다(IS-076). 줄무늬는 쓰지 않는다(C-88). */
+  .database-modal-body .db-actor-studio-workspace .db-actor-studio-table button.db-actor-table-row.active {
+    font-weight: 700;
+  }
+
+  /* 긴 라벨(「스킬 장착 칸(0 = 제한 없음)」)은 줄을 바꾸고 숫자 칸은 최소 88px 를 지킨다 — 라벨이 열을 차지해
+     입력이 38px 로 줄고 값 0 이 안 보였다(V-database-01). */
+  .database-modal-backdrop .database-modal-window .database-modal-body .actor-identity .db-field {
+    grid-template-columns: minmax(0, var(--db2-label-col, 120px)) minmax(88px, 1fr);
+  }
+
+  .database-modal-backdrop .database-modal-window .database-modal-body .actor-identity .db-field > span:first-child {
+    min-width: 0;
+    overflow-wrap: anywhere;
+    white-space: normal;
+  }
+}
