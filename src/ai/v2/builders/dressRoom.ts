@@ -81,6 +81,8 @@ const DECOR_RULES: readonly [RegExp, RegExp][] = [
   // 깔개는 사람이 머무는 방·복도에 — 교실·체육관·창고·화장실에는 깔지 않는다(2026-10-26 프로브: 교실에 거실 깔개 7장).
   [/깔개|러그|rug|carpet|카펫/iu, /^(?!.*(교실|강의실|체육|강당|창고|화장실|부엌|주방|classroom|gym|storage|toilet|kitchen)).*(교장|원장|사무|교무|응접|거실|음악|도서|로비|현관|대기|회의|침실|복도|보건|상담|서재|office|living|music|library|lobby|meeting|bedroom|corridor|hall|study)/iu],
   [/매트|mat/iu, /유치원|놀이|체육|kinder|gym|play/iu],
+  // 연금술 공방·마법 실습실의 바닥은 마법진 하나가 쓰임을 말한다(2026-10-28 연금술 공방: 깔 것이 없어 맨바닥 42% 에서 멈췄다).
+  [/마법진|magic circle|rune circle|룬/iu, /연금|마법|의식|alchemy|magic|wizard|ritual|spell/iu],
   [/체크|checker/iu, /카페|식당|부엌|주방|화장실|cafe|kitchen|diner/iu],
   [/점자|tactile/iu, /역|승강장|지하철|station|platform|subway/iu],
   [/다다미|방석|이불|tatami|zabuton|futon|화로/iu, /다다미|와실|일본|다실|화실|tatami|japanese/iu],
@@ -180,7 +182,8 @@ export function placedInRoom(spec: HandInteriorSpec, map: GameMap, room: RoomRec
 function rugsInRoom(spec: HandInteriorSpec, map: GameMap, room: RoomRect): { x0: number; y0: number; x1: number; y1: number }[] {
   const out: { x0: number; y0: number; x1: number; y1: number }[] = [];
   for (const [id, o] of Object.entries(spec.objects)) {
-    if (o.kind !== "flat" || o.stairs || !RUG_WORD.test(`${id} ${o.ko}`)) continue;
+    // 출구 발깔개는 방 깔개가 아니다 — 세면 방 깔개 몫(1장)을 먹어 연금술 공방에 아무것도 못 깔았다.
+    if (o.kind !== "flat" || o.stairs || !RUG_WORD.test(`${id} ${o.ko}`) || /doormat|발깔개/iu.test(`${id} ${o.ko}`)) continue;
     for (const at of placedInRoom(spec, map, room, id)) out.push({ x0: at.x, y0: at.y, x1: at.x + o.w - 1, y1: at.y + Math.max(1, o.h) - 1 });
   }
   return out;
@@ -250,6 +253,7 @@ export function dressRoom(run: BuildRun, mapId: string, at: { x: number; y: numb
     // 교실의 책상은 줄지어 여럿, 교탁·칠판·피아노 같은 «하나뿐인 것»은 하나.
     const cap = /교실|강의실|classroom/iu.test(purpose) && /책상|desk/iu.test(label) && !/교탁|교사|teacher|lectern/iu.test(label) ? 8
       : /교탁|lectern|칠판|blackboard|피아노|piano|금고|safe/iu.test(label) ? 1
+      : /work \d|lab bench|alchemy table|작업대|실험대/iu.test(label) && area < 6 ? 3   // 공방·실험실의 작업대 줄은 그 방의 쓰임
       : area >= 6 ? 1 : area >= 2 ? 2 : PER_ITEM_CAP;
     // 이미 그 방에 놓인 것까지 센다 — 같은 방을 여러 번 채우면 바 의자·벤치가 열 넘게 쌓였다.
     const already = existing.get(id) ?? (existing.set(id, placedInRoom(spec, map(), room, id).length), existing.get(id)!);
@@ -273,7 +277,7 @@ export function dressRoom(run: BuildRun, mapId: string, at: { x: number; y: numb
       const wallE = Array.from({ length: rows }, (_, j) => !floorCell(run.ctx.project, map(), x + o.w, y + j)).every(Boolean);
       // 서는 가구는 벽을 등진 자리에만 둔다 — 가운데 빈 곳마다 책상·의자·바 의자를 흩뿌리면 「산재」로 읽혔다(2026-10-28). 가운데는 길로 남긴다.
       // 예외: 책상·장의자·탁자 줄(교실·예배당·서고 열람석)은 그 방의 쓰임 자체라 가운데에 줄지어 선다 — 같은 가구와 같은 줄·같은 열에 맞춘다.
-      const rowPiece = /desk|pew|table|책상|장의자|탁자|식탁/iu.test(label) && !/side|협탁|벽/iu.test(label);
+      const rowPiece = /desk|pew|table|work \d|lab bench|책상|장의자|탁자|식탁|작업대|실험대/iu.test(label) && !/side|협탁|벽/iu.test(label);
       if (!(wallN || wallW || wallE || rowPiece)) continue;
       if (rowPiece && !(wallN || wallW || wallE)) {
         const same = placedInRoom(spec, map(), room, id);

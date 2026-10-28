@@ -1005,6 +1005,23 @@ export const interiorBuilder: PlaceBuilder = {
     for (const p of placed) if (!/계단|stair/iu.test(p.what) && !finalIds.has(p.id) && !p.zone.startsWith("2층")) missing.push(`${p.what}(${p.zone}) — 최종 맵에 없다(놓은 뒤 밀려났다)`);
     dressEmptyRooms(run, builtMapId, rooms.map((r) => ({ kind: r.kind, id: r.id, purpose: r.zone.purpose })), notes);
     if (upperMapId && mapIds.includes(upperMapId)) dressEmptyRooms(run, upperMapId, [], notes);
+    // 한 방짜리가 채운 뒤에도 맨바닥 30% 를 넘으면 한 단계 작은 크기로 다시 지어 본다 — 벽 쪽 자리가 없어 못 채우는 방은 방이 큰 것이다
+    // (2026-10-28 연금술 공방 13×11 맨바닥 42%). 더 나아지면 그것을 쓰고, 아니면 되돌린다.
+    if (rooms.length === 1 && spec.size !== "small" && spec.hints?.downsized !== true) {
+      const barePctOf = (id: string) => {
+        const mm = run.ctx.project.maps[id];
+        const l = (mm?.locations ?? []).find((q) => (q.tags ?? []).includes("hand-layout-room"));
+        return mm && l ? roomBarePct(run.ctx.project, mm, { name: l.name, x0: l.x, y0: l.y, x1: l.x + l.w - 1, y1: l.y + l.h - 1 }) : 0;
+      };
+      const was = barePctOf(builtMapId);
+      if (was > DRESS_ROOM_TARGET) {
+        const snapshot = run.ctx.project;
+        const smaller = interiorBuilder.build(run, { ...spec, size: spec.size === "large" ? "medium" : "small", mapId: builtMapId, hints: { ...(spec.hints ?? {}), downsized: true } }, previous) as PlaceBuildResult;
+        const now = smaller.ok ? barePctOf(builtMapId) : Infinity;
+        if (smaller.ok && now < was) return { ...smaller, warnings: [`방이 내용보다 커서(맨바닥 ${was}%) 한 단계 작게 다시 지었다(${now}%)`, ...smaller.warnings] };
+        run.ctx.project = snapshot;
+      }
+    }
     const entrance = Array.isArray(final.data?.entrance) ? (final.data!.entrance as { x: number; y: number }[])[0] : undefined;
     const state: InteriorState = { tilesetId, mapId: builtMapId, args, ...(upperMapId ? { upperMapId } : {}), ...(upperArgs ? { upperArgs } : {}), placed, ...(backDoor ? { backDoor } : {}) };
     const result: PlaceBuildResult = {
