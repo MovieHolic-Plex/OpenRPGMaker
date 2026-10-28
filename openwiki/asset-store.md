@@ -41,6 +41,8 @@ IPC `oprn:store.upload` → `AssetStoreClient.upload`(검증 → `/api/v1/blobs/
 
 2026-10-06 결정. 이름으로 막는 안전장치이고, 권리 확인은 올리는 사람 몫이다.
 
+2026-10-28: REFMAP 변형 걷기 칩 `RefmapDoll<n>`(번들, `public/assets/ATTRIBUTION.md` 「RefmapDoll」)은 편집기·게임 안에서 쓰도록 들였다(사용자 결정). 스토어 쪽은 바꾸지 않는다 — 팩은 타일셋·올린 자산만 담아 번들 칩은 애초에 실리지 않고, 이름에 refmap 이 든 것은 계속 거절된다. REFMAP 조건이 소재 판매를 막기 때문이다.
+
 | 지점 | 무엇을 보나 |
 |---|---|
 | `storeThirdPartyName` (`format.ts`) | 공용 낱말표. rasak·라삭·refmap·rpgmaker·알만툴·쯔꾸르·ツクール 는 붙여 써도, paw·mv·mz·rtp 는 낱말로 떨어질 때만(camelCase·숫자 경계 분리, pawn·mvp 는 통과) |

@@ -509,6 +509,18 @@ Head and body donor (script chips) or base character (Argon chips) per chip are 
 - No image-generation output and no pixel of any other game is used.
 License: Scarloxy parts keep CC BY 4.0; the derived edits follow OPRN default-asset terms (free in games, no standalone redistribution; `openwiki/licensing.md`).
 
+## RefmapDoll walking chips — REFMAP characters, head of one on the body of another (2026-10-28)
+
+`generated/charsets/RefmapDoll1.png` … `RefmapDoll<n>.png` (288×256 each, 8 character slots × 3 patterns × 4 directions; count and names in `src/assets/refmapDollCharsets.json`) hold fantasy town people
+(villagers, merchants, knights, soldiers, nobles, maids, priests, mages, adventurers, elders, children) made by the private generator char-gen (`refmap` paper dolls):
+the head of one REFMAP character is lifted as a blob (hair, headwear, face, beard by colour class), moved onto the neck of another REFMAP character's body and the chin line is redrawn.
+**This is third-party material, modified.** It is not OPRN artwork and the OPRN Game Use License does not apply to it.
+- Upstream: **REFMAP** (Mack's FSM material), http://refmap.wixsite.com/fsm-material — RPG Maker 2000 character sets `2000charaset01`/`2000charaset02`. Terms (https://refmap-l.blog.jp/archives/8653555.html): free to use in games of any kind including commercial games; modified data may be redistributed with a note that it was modified; unmodified data may not be redistributed; the material itself may not be sold.
+- Credit line (keep it in your game's credits): `REFMAP (http://refmap.wixsite.com/fsm-material), modified`.
+- What this means here: use these chips in your games, free or paid. Do not sell or share the chips on their own (as a pack, sprite collection or store item) — the OPRN asset store refuses them by name. The unmodified REFMAP sheets are not in this repository.
+- How they were made and chosen: 58,322 head × body pairs of 242 REFMAP people → size, sex, skin, hair-cover, made-up-cell and neck checks → a look by a vision model (Kiro Opus, dolleye prompt) → 2,793 chips; the user delegated the review to that look (2026-10-28, "번들, 검수 위임"). Per-slot head/body source and RGBA SHA-256: `harness-data/charset-actor/refmap-dolls-source.json`; installer `src/harnesses/charset-actor/install_refmap_dolls.py`.
+- Names, appearance sentences, roles and tags were written by the same model looking at the chips.
+
 ## Workshop character card sample (2026-10-22)
 
 `workshop/char-gen-sample.png` (248×116, shown at 1× on the editor's 공방 「캐릭터」 card) is a composite of real char-gen output:
