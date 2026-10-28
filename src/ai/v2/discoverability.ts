@@ -170,7 +170,7 @@ export function objectiveGaps(project: Project): string[] {
       if (/입구:|\([^()]*(북|남|동|서|가운데)[^()]*\)\s*$/u.test(message)) return;
       if (withWhere(project, fromMapId, message) === message) return;
       vague += 1;
-      gaps.push(`목표 「${message.slice(0, 40)}」 가 다른 장소 이름만 대고 그 입구가 어디인지 말하지 않는다 — 새 플레이어가 길을 못 찾는다. 같은 글로 set_objective 를 다시 부르면 「(지하철역 입구: 동네 거리 남동쪽)」 처럼 방위가 붙는다(where 로 대상 이벤트·장소를 줄 수도 있다).`);
+      gaps.push(`목표 「${message.slice(0, 40)}」 가 다른 장소 이름만 대고 그 입구가 어디인지 말하지 않는다 — 새 플레이어가 길을 못 찾는다. 같은 글로 set_objective 를 다시 부르면 「(지하철역 입구: 남동쪽)」 처럼 방위가 붙는다(where 로 대상 이벤트·장소를 줄 수도 있다).`);
     });
   }
   const stale = storyEvents(project).filter((event) => event.milestone && !event.ends && !event.setsObjective);
@@ -252,14 +252,17 @@ export function whereHint(project: Project, fromMapId: string, target: { mapId: 
   const from = project.maps[fromMapId];
   const to = project.maps[target.mapId];
   if (!from || !to) return undefined;
+  // 같은 맵: 이벤트 이름만(「책장」) — 자리는 조사 칸 반짝이·목표 화살표가 가리킨다. 「(책장: 잠긴 서재 가운데)」 처럼 지금 서 있는 맵 이름과
+  // 방위까지 붙이면 개발 메모처럼 읽히고 목표 칩이 4~5줄로 접혔다(2026-10-29 VQA 트리아지 B, 12건). 이름이 없으면 방위 한 낱말.
   if (to.id === from.id) {
     if (target.x === undefined || target.y === undefined) return undefined;
-    return `${target.label ? `${target.label}: ` : ""}${from.name ?? from.id} ${mapRegion(from, target.x, target.y)}`;
+    return target.label?.trim() || mapRegion(from, target.x, target.y);
   }
+  // 다른 맵: 그 맵으로 가는 문의 방위(지금 맵 이름은 빼고) — 새 플레이어가 「지하철역」 이 어디인지 몰라 멈춘 것(J105)은 이것으로 푼다.
   const gates = gatesTo(from, to.id);
   if (gates.length === 0) return undefined;
   const regions = [...new Set(gates.map((gate) => mapRegion(from, gate.x, gate.y)))].slice(0, 2).join("·");
-  return `${to.name ?? to.id} 입구: ${from.name ?? from.id} ${regions}`;
+  return `${to.name ?? to.id} 입구: ${regions}`;
 }
 
 /** 글에 이름이 나온 이벤트(두 글자 이상, 긴 이름 먼저, 목표 맵의 것 먼저). 출입구·자동 실행 목표 이벤트는 뺀다. */
@@ -406,7 +409,7 @@ export function planObjective(project: Project, input: { readonly text: string; 
     const found = (map.events ?? []).find((event) => event.id === input.eventId || event.name === input.eventId);
     if (!found) continue;
     text = withWhere(project, map.id, raw, input.where);
-    // 「어디」가 안 붙었고 이 이벤트가 청사진 단계면 다음 단계 이벤트 자리를 붙인다(「…문을 열고 탈출하자」 → 「(잠긴 문: 잠긴 서재 서쪽)」).
+    // 「어디」가 안 붙었고 이 이벤트가 청사진 단계면 다음 단계 이벤트 자리를 붙인다(「…문을 열고 탈출하자」 → 「(잠긴 문)」).
     const steps = project.gameBlueprint?.steps ?? [];
     const k = steps.findIndex((step) => step.event === found.id || step.event === found.name);
     const nextStep = k >= 0 ? steps[k + 1] : undefined;

@@ -748,7 +748,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
   };
   const setObjectiveVerb: PiToolShape = {
     name: "set_objective", label: "현재 목표 걸기", concurrency: "exclusive",
-    description: "화면 오른쪽 위 「현재 목표」 줄에 지금 할 일 한 줄을 건다(불러오기·맵 이동 뒤에도 남는다). 게임을 만들면 반드시: at:'start' 로 시작 목표 하나, 그리고 이야기를 한 단계 넘기는 이벤트(열쇠를 줌·회상을 봄·스위치를 켬)마다 eventId 로 다음 목표 — 그 이벤트의 스위치 켜기·아이템 얻기 바로 뒤에 들어간다. 글은 장소·사람·물건 이름을 넣어 구체적으로(「창고 상자에서 태엽 열쇠를 찾자」, 「밤이 되면 집 현관에서 쉬자」). 「어디」도 붙는다: where 에 대상 이벤트·장소(id 또는 이름)를 주거나 글에 다른 장소 이름이 나오면 그 입구의 방위가 자동으로 붙는다(「(지하철역 입구: 동네 거리 남동쪽)」). 엔딩을 부르는 이벤트에는 필요 없다.",
+    description: "화면 오른쪽 위 「현재 목표」 줄에 지금 할 일 한 줄을 건다(불러오기·맵 이동 뒤에도 남는다). 게임을 만들면 반드시: at:'start' 로 시작 목표 하나, 그리고 이야기를 한 단계 넘기는 이벤트(열쇠를 줌·회상을 봄·스위치를 켬)마다 eventId 로 다음 목표 — 그 이벤트의 스위치 켜기·아이템 얻기 바로 뒤에 들어간다. 글은 장소·사람·물건 이름을 넣어 구체적으로(「창고 상자에서 태엽 열쇠를 찾자」, 「밤이 되면 집 현관에서 쉬자」). 「어디」도 붙는다: where 에 대상 이벤트·장소(id 또는 이름)를 주거나 글에 다른 장소 이름이 나오면 그 입구의 방위가 자동으로 붙는다(「(지하철역 입구: 남동쪽)」). 엔딩을 부르는 이벤트에는 필요 없다.",
     parameters: { type: "object", properties: {
       text: { type: "string", description: "지금 할 일 한 줄(80자 안)" },
       at: { type: "string", enum: ["start"], description: "start = 게임 시작 목표" },
