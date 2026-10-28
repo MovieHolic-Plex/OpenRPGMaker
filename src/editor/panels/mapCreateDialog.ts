@@ -23,7 +23,7 @@ export function openMapCreateDialog(request: MapCreateRequest = {}): void {
   let spec = resolveMapCreateDefaults(project, request);
   openEventSubdialog({
     title: spec.parentId ? "하위 맵 만들기" : "맵 만들기",
-    subtitle: "이름·크기·타일 그림판을 정한 뒤 만듭니다. 트리 계층은 이동 문이 아닙니다.",
+    subtitle: "시작 모양과 크기를 고르고 「만들기」를 누르세요.",
     testId: "map-create-dialog",
     width: "narrow",
     render: (body, close) => {
@@ -72,22 +72,33 @@ export function openMapCreateDialog(request: MapCreateRequest = {}): void {
         tileset.value = spec.tilesetId;
       };
 
-      const presets = el("div", { class: "map-create-presets" });
-      presets.append(el('button',{class:'btn',text:'빈 월드맵',attrs:{type:'button'},dataset:{testid:'map-create-worldmap-blank'},
-        on:{click:()=>{applyPreset('blank');tileset.value=WORLDMAP_AUTHORING_ID;width.value='48';height.value='36';}}}));
-      for (const [value, label] of [
-        ["blank", "빈 맵"],
-        ["inherit-parent", "부모와 같게"],
-        ["interior", "실내"],
-      ] as const) {
-        presets.append(el("button", {
-          class: "btn",
+      // 시작 모양은 하나만 고른다 — 고른 것이 눌린 상태(aria-pressed)로 보여야 무엇이 적용됐는지 안다.
+      const presets = el("div", { class: "map-create-presets", attrs: { role: "group", "aria-label": "시작 모양" } });
+      const presetButtons: HTMLButtonElement[] = [];
+      const press = (pressed: HTMLButtonElement): void => {
+        for (const button of presetButtons) button.setAttribute("aria-pressed", String(button === pressed));
+      };
+      const presetButton = (testid: string, label: string, title: string, onPick: () => void, pressed: boolean): HTMLButtonElement => {
+        const button = el("button", {
+          class: "btn map-create-preset",
           text: label,
-          attrs: { type: "button" },
-          dataset: { testid: `map-create-preset-${value}` },
-          on: { click: () => applyPreset(value) },
-        }));
+          attrs: { type: "button", title, "aria-pressed": String(pressed) },
+          dataset: { testid },
+          on: { click: () => { onPick(); press(button); } },
+        }) as HTMLButtonElement;
+        presetButtons.push(button);
+        return button;
+      };
+      // 「빈 맵」은 실제로 기본 바닥(풀)을 깔아 만든다 — 이름을 만들어지는 것과 맞춘다.
+      for (const [value, label, title] of [
+        ["blank", "풀밭 맵", "기본 바닥 타일을 깐 야외 맵"],
+        ["inherit-parent", "부모와 같게", "상위 맵과 같은 크기·타일 그림판"],
+        ["interior", "실내", "실내 타일 그림판의 작은 방"],
+      ] as const) {
+        presets.append(presetButton(`map-create-preset-${value}`, label, title, () => applyPreset(value), spec.preset === value));
       }
+      presets.append(presetButton("map-create-worldmap-blank", "빈 월드맵", "월드맵 그림판의 48×36 맵",
+        () => { applyPreset("blank"); tileset.value = WORLDMAP_AUTHORING_ID; width.value = "48"; height.value = "36"; }, false));
 
       const submit = (): void => {
         // 상한 초과는 조용히 줄이지 않고 여기서 거부한다 — 입력 max 속성은 직접 입력·붙여넣기로
@@ -115,38 +126,38 @@ export function openMapCreateDialog(request: MapCreateRequest = {}): void {
         el("div", { class: "map-create-form", children: [
           presets,
           field("이름", name),
-          field("가로", width),
-          field("높이", height),
+          el("div", { class: "map-create-size", children: [field("가로", width), el("span", { class: "map-create-times", text: "×", attrs: { "aria-hidden": "true" } }), field("높이", height)] }),
           field("타일 그림판", tileset),
           field("상위 맵", parent),
           el("p", {
             class: "map-create-hint",
-            text: t("상위를 고르지 않은 맵은 {0}의 하위로 들어갑니다. 나란히 서는 최상위 맵은 만들 수 없습니다.").replace("{0}", rootParentPrefix(project)),
+            text: "상위 맵에 넣어도 문은 생기지 않아요. 만든 뒤 맵 메뉴의 「부모와 왕복 이동 넣기」로 이을 수 있어요.",
           }),
-          el("p", {
-            class: "map-create-hint",
-            text: "상위에 넣는 것만으로는 문이 생기지 않습니다. 만든 뒤 메뉴에서 왕복 이동을 넣을 수 있습니다.",
-          }),
-          el("button", {
-            class: "btn primary",
-            text: "만들기",
-            attrs: { type: "button" },
-            dataset: { testid: "map-create-confirm" },
-            on: { click: submit },
-          }),
-          el('button', {class:'btn',text:'세계 지도 만들기',attrs:{type:'button'},dataset:{testid:'map-create-world-atlas'},on:{click:()=>{close();openWorldAtlasCreateDialog();}}}),
-          el("button", {
-            class: "btn",
-            text: "분류만 만들기",
-            attrs: { type: "button" },
-            dataset: { testid: "map-create-folder" },
-            on: {
-              click: () => {
-                addMapFolder(parent.value as MapId | "", name.value.trim() || "새 분류");
-                close();
-              },
-            },
-          }),
+          el("div", { class: "map-create-actions", children: [
+            el("div", { class: "map-create-secondary", children: [
+              el("button", { class: "btn map-create-link", text: "세계 지도 만들기…", attrs: { type: "button" }, dataset: { testid: "map-create-world-atlas" }, on: { click: () => { close(); openWorldAtlasCreateDialog(); } } }),
+              el("button", {
+                class: "btn map-create-link",
+                text: "분류만 만들기",
+                attrs: { type: "button", title: "맵이 아닌 정리용 폴더를 만듭니다" },
+                dataset: { testid: "map-create-folder" },
+                on: {
+                  click: () => {
+                    addMapFolder(parent.value as MapId | "", name.value.trim() || "새 분류");
+                    close();
+                  },
+                },
+              }),
+            ] }),
+            el("button", { class: "btn map-create-cancel", text: "취소", attrs: { type: "button" }, dataset: { testid: "map-create-cancel" }, on: { click: () => close() } }),
+            el("button", {
+              class: "btn primary map-create-submit",
+              text: "만들기",
+              attrs: { type: "button" },
+              dataset: { testid: "map-create-confirm" },
+              on: { click: submit },
+            }),
+          ] }),
         ] }),
       );
       name.focus();

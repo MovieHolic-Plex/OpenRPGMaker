@@ -200,7 +200,7 @@ function advancedBox(render: () => void): HTMLElement {
     fields.push(select("후보", a.count, [[1, "1장(가장 빠름)"], [2, "2장"], [3, "3장"]], (v) => { a.count = v; }, "workshop-oneclick-count"));
     fields.push(select("가로", a.w ?? 0, [[0, "알아서"], [1, "1칸"], [2, "2칸"], [3, "3칸"], [4, "4칸"], [5, "5칸"], [6, "6칸"]], (v) => { a.w = v || null; }, "workshop-oneclick-w"));
     fields.push(select("키", a.tall ?? 0, [[0, "알아서"], [1, "1칸"], [2, "2칸"], [3, "3칸"], [4, "4칸"], [5, "5칸"], [6, "6칸"]], (v) => { a.tall = v || null; }, "workshop-oneclick-tall"));
-    const manual = el("input", { attrs: { type: "checkbox" }, dataset: { testid: "workshop-oneclick-manual" } }) as HTMLInputElement;
+    const manual = el("input", { attrs: { type: "checkbox", "aria-label": "후보를 내가 직접 고르기" }, dataset: { testid: "workshop-oneclick-manual" } }) as HTMLInputElement;
     manual.checked = a.manual;
     manual.addEventListener("change", () => { a.manual = manual.checked; });
     fields.push(el("label", { class: "workshop-oneclick-check", children: [manual, el("span", { text: "후보를 내가 직접 고르기" })] }));
