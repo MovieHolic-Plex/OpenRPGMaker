@@ -2826,11 +2826,11 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 8
+     "level": 6
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 8
+     "level": 6
     }
    ],
    "beats": [
@@ -2932,11 +2932,11 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 8
+     "level": 6
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 8
+     "level": 6
     }
    ],
    "items": {
@@ -3260,11 +3260,11 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 8
+     "level": 6
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 8
+     "level": 6
     }
    ],
    "beats": [
@@ -3356,11 +3356,11 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 8
+     "level": 6
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 8
+     "level": 6
     }
    ],
    "beats": [
@@ -3448,11 +3448,11 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 8
+     "level": 6
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 8
+     "level": 6
     }
    ],
    "beats": [
@@ -3534,11 +3534,11 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 8
+     "level": 6
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 8
+     "level": 6
     }
    ],
    "beats": [
@@ -3591,11 +3591,11 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 8
+     "level": 6
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 8
+     "level": 6
     }
    ],
    "beats": [
@@ -3801,11 +3801,11 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 8
+     "level": 6
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 8
+     "level": 6
     }
    ],
    "beats": [
@@ -3891,11 +3891,11 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 8
+     "level": 6
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 8
+     "level": 6
     }
    ],
    "beats": [
@@ -4074,11 +4074,11 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 10
+     "level": 7
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 10
+     "level": 7
     }
    ],
    "beats": [
@@ -4104,7 +4104,14 @@
      ],
      "shot": true
     }
-   ]
+   ],
+   "sessionPatch": {
+    "actorEquipment": {
+     "actor_hero": {
+      "weapon": "equip_fs2_rohan_spear"
+     }
+    }
+   }
   },
   {
    "id": "act2-b5-door",
@@ -4133,11 +4140,11 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 10
+     "level": 8
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 10
+     "level": 8
     }
    ],
    "beats": [
@@ -4200,7 +4207,14 @@
      ],
      "shot": true
     }
-   ]
+   ],
+   "sessionPatch": {
+    "actorEquipment": {
+     "actor_hero": {
+      "weapon": "equip_fs2_rohan_spear"
+     }
+    }
+   }
   },
   {
    "id": "act2-b6-enter",
@@ -4230,11 +4244,11 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 12
+     "level": 8
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 12
+     "level": 8
     }
    ],
    "beats": [
@@ -4285,7 +4299,14 @@
      ],
      "shot": true
     }
-   ]
+   ],
+   "sessionPatch": {
+    "actorEquipment": {
+     "actor_hero": {
+      "weapon": "equip_fs2_rohan_spear"
+     }
+    }
+   }
   },
   {
    "id": "act2-b6-sarah",
@@ -4315,11 +4336,11 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 40
+     "level": 8
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 40
+     "level": 8
     }
    ],
    "beats": [
@@ -4500,7 +4521,14 @@
      ],
      "shot": true
     }
-   ]
+   ],
+   "sessionPatch": {
+    "actorEquipment": {
+     "actor_hero": {
+      "weapon": "equip_fs2_rohan_spear"
+     }
+    }
+   }
   },
   {
    "id": "act2-b6-lose",
@@ -4664,11 +4692,11 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 12
+     "level": 8
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 12
+     "level": 8
     }
    ],
    "beats": [
@@ -4754,7 +4782,14 @@
      ],
      "shot": true
     }
-   ]
+   ],
+   "sessionPatch": {
+    "actorEquipment": {
+     "actor_hero": {
+      "weapon": "equip_fs2_rohan_spear"
+     }
+    }
+   }
   },
   {
    "id": "act2-b7-gap",
@@ -4787,15 +4822,15 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 14
+     "level": 9
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 14
+     "level": 9
     },
     {
      "actorId": "actor_fs2_sarah",
-     "level": 14
+     "level": 9
     }
    ],
    "beats": [
@@ -4921,15 +4956,15 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 14
+     "level": 9
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 14
+     "level": 9
     },
     {
      "actorId": "actor_fs2_sarah",
-     "level": 14
+     "level": 9
     }
    ],
    "beats": [
@@ -5062,15 +5097,15 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 14
+     "level": 9
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 14
+     "level": 9
     },
     {
      "actorId": "actor_fs2_sarah",
-     "level": 14
+     "level": 9
     }
    ],
    "beats": [
@@ -6200,11 +6235,11 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 8
+     "level": 6
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 8
+     "level": 6
     }
    ],
    "beats": [
@@ -6314,11 +6349,11 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 8
+     "level": 6
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 8
+     "level": 6
     }
    ],
    "beats": [
@@ -6410,11 +6445,11 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 8
+     "level": 6
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 8
+     "level": 6
     }
    ],
    "beats": [
@@ -6921,11 +6956,11 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 8
+     "level": 6
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 8
+     "level": 6
     }
    ],
    "beats": [
@@ -7057,11 +7092,11 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 8
+     "level": 6
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 8
+     "level": 6
     }
    ],
    "beats": [
@@ -7098,11 +7133,11 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 8
+     "level": 6
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 8
+     "level": 6
     }
    ],
    "beats": [
@@ -7146,11 +7181,11 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 10
+     "level": 7
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 10
+     "level": 7
     }
    ],
    "beats": [
@@ -7169,7 +7204,14 @@
     "item_ether": 2,
     "item_panacea": 1
    },
-   "gold": 150
+   "gold": 150,
+   "sessionPatch": {
+    "actorEquipment": {
+     "actor_hero": {
+      "weapon": "equip_fs2_rohan_spear"
+     }
+    }
+   }
   },
   {
    "id": "act2-play-b7",
@@ -7208,15 +7250,15 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 14
+     "level": 9
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 14
+     "level": 9
     },
     {
      "actorId": "actor_fs2_sarah",
-     "level": 14
+     "level": 9
     }
    ],
    "beats": [
@@ -7259,11 +7301,11 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 8
+     "level": 6
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 8
+     "level": 6
     }
    ],
    "beats": [
@@ -7405,11 +7447,11 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 10
+     "level": 8
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 10
+     "level": 8
     }
    ],
    "beats": [
@@ -7434,7 +7476,14 @@
      ],
      "shot": true
     }
-   ]
+   ],
+   "sessionPatch": {
+    "actorEquipment": {
+     "actor_hero": {
+      "weapon": "equip_fs2_rohan_spear"
+     }
+    }
+   }
   }
  ]
 }

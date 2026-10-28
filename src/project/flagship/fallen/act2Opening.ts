@@ -15,7 +15,7 @@ import { FS_NAMES } from "../fallenStarStory";
 import { FS_SILVER_SPOON } from "./townLife";
 import { FS_KEEPER_SEAL } from "./battleItems";
 import { originEdge } from "@/editor/tools/forestRouteTool";
-import { canMove } from "@/project/collision";
+import { canMove, isPassable } from "@/project/collision";
 import { applyVariantTerrain } from "@/editor/tools/mapVariantTerrain";
 
 /** 도구 실행 — 결과 data 를 돌려준다(author_forest_route 처럼 만든 맵 id 가 결과에만 있는 도구). */
@@ -977,6 +977,7 @@ function forestEdgeChase(project: Project, exec: Exec, mapId: string, hubId: str
   const knight = hubChip(project, hubId, "ev_fs_knight");
   const near = [...cells(5), ...cells(6)].filter((c) => c.y > edgeY + 2).sort((a, b) => Math.abs(b.x - arrive.x) - Math.abs(a.x - arrive.x));
   const knightIds: string[] = [];
+  let why = "후보 없음";
   for (const at of near) {
     if (knightIds.length >= 2) break;
     if (knightIds.length === 1 && FS2_B4.knights[0] && Math.sign(at.x - arrive.x) === Math.sign(FS2_B4.knights[0].x - arrive.x)) continue;
@@ -985,9 +986,9 @@ function forestEdgeChase(project: Project, exec: Exec, mapId: string, hubId: str
         mapId,
         chaser: { at, graphic: { selectionId: `charset:${knight.textureKey}:${knight.characterIndex}` }, speed: 5, sightRange: 9 },
         pursuit: { scope: "map", doorDelayMs: 0, searchMs: 4000, onLost: "wait" },
+        // 끌려가는 곳(개구멍 앞)은 아래에서 직접 잇는다 — 도구의 통행 검사가 그 칸(광장 개구멍 앞, 돌아가는 이벤트도 같은 칸)을 막힌 칸으로 본다.
         caughtPenalty: {
-          text: "순찰 기사: 「잡았다, 이 쥐새끼들!」\n카엘은 손을 뿌리치고 개구멍 안으로 도로 기어들었다.",
-          sendTo: { mapId: FS2_HUB_NIGHT_ID, x: HOLE.front.x, y: HOLE.front.y },
+          text: "순찰 기사: 「잡았다, 이 쥐새끼들!」\n카엘은 손을 뿌리치고\n개구멍 안으로 도로 기어들었다.",
         },
         activateSwitch: SW_B4_ALARM,
         checkpointOnEntry: false,
@@ -1001,11 +1002,16 @@ function forestEdgeChase(project: Project, exec: Exec, mapId: string, hubId: str
         FS2_B4.knights.push({ x: ev.x, y: ev.y });
       }
       knightIds.push(made.eventId);
-    } catch { /* 그 칸은 도구가 거절 — 다음 자리 */ }
+    } catch (e) { why = String((e as Error).message).slice(0, 300); /* 그 칸은 도구가 거절 — 다음 자리 */ }
   }
-  if (!knightIds.length) throw new Error("[fallen-star act2] 숲 어귀에 추격 기사를 못 세웠다");
+  if (!knightIds.length) throw new Error(`[fallen-star act2] 숲 어귀에 추격 기사를 못 세웠다(후보 ${near.length}칸): ${why}`);
   // 기사 추격 — 시야 9, 발견 0.2초, 다섯 칸 돌진(칸당 0.1초), 평소 0.17초/칸(주인공 0.16초보다 조금 느림).
   exec(project, "set_field_detection", { mapIds: [mapId], eventIds: knightIds, sightRange: 9, alertMs: 200, chaseStepMs: 170, rush: true, rushSteps: 5, rushStepMs: 100, searchMs: 4000, giveUpRange: 20 });
+  // 붙잡히면 개구멍 앞(광장)으로 — 도구 검사 뒤에 직접 붙인다(위 caughtPenalty 주석).
+  for (const id of knightIds) {
+    const chasePage = M(project, mapId).events.find((e) => e.id === id)?.pages?.[0];
+    if (chasePage) chasePage.commands = [...(chasePage.commands ?? []), transfer(FS2_HUB_NIGHT_ID, HOLE.front, "down")];
+  }
   // 브람 — 숲 그늘 줄 너머 한두 걸음.
   const beyond = [...row(edgeY - 1), ...row(edgeY - 2)];
   const bramAt = beyond.sort((a, b) => Math.abs(a.x - arrive.x) - Math.abs(b.x - arrive.x))[0];
@@ -1553,6 +1559,95 @@ function northFortress(project: Project, exec: Exec, hubId: string): void {
   post(FS2_FORT_TOP_ID, FORT.top, ["watch", "barracks", "landing"], 2, () => ({
     troopId: FS2_CROSSBOW_TROOP, behavior: "chase", sightRange: 7, vision: "cone", coneDegrees: 70, alertMs: 450, chaseStepMs: 200, approachStyle: "dash",
   }));
+  fortressDress(project, exec);
+}
+
+/**
+ * 요새 방마다 쓰임새(v1.25 VQA: 2층 결투장이 왕좌·붉은 융단 알현실이었고, 1층 방들이 다 같은 빈 돌방이었다).
+ * - 2층 성벽 위(rampart): 옥좌·융단·갑옷 거치대를 걷어 내고 봉화대 둘·돌 부스러기 더미 — 바람 부는 성벽 위 결투장.
+ * - 1층 감방(cells): 볏짚 침상·바닥 쇠창살·양동이·매달린 새장. 무기고(armory): 갑옷 거치대 줄·모루 탁자·선반·통.
+ * - 2층 막사(barracks): 짚 침상 줄·통·상자 더미.
+ * 모두 버들항 칩셋에 있는 조각(새 그림 없음). 자리가 막히면 그 조각은 건너뛴다.
+ */
+function fortressDress(project: Project, exec: Exec): void {
+  const tileset = project.tilesets[M(project, FS2_FORT_TOP_ID).tilesetId];
+  const kits = new Map((tileset?.structureKits ?? []).map((k) => [k.id, k as unknown as { width: number; height: number; rows: { tiles: number[]; upperTiles?: number[] }[] }]));
+  const kitTiles = (ids: string[]): Set<number> => {
+    const out = new Set<number>();
+    for (const id of ids) for (const row of kits.get(id)?.rows ?? []) for (const t of [...row.tiles, ...(row.upperTiles ?? [])]) if (t >= 0) out.add(t);
+    return out;
+  };
+  // ① 성벽 위 — 알현실 조각을 걷어 낸다. 걷은 칸은 그 방에서 가장 흔한 바닥 칸으로.
+  const rampart = FORT.top.find((r) => r.id === "rampart");
+  const top = M(project, FS2_FORT_TOP_ID);
+  if (rampart) {
+    const royal = kitTiles(["bd-pick-dungeon-theme-throne", "bd-pick-dungeon-theme-carpet-runner", "bd-pick-dungeon-theme-carpet-runner-3w", "bd-pick-desert-oasis-rug", "bd-pick-dungeon-theme-armor-stand", "bd-pick-castle-catacombs-iron-maiden"]);
+    const floorCount = new Map<number, number>();
+    for (let y = rampart.y; y < rampart.y + rampart.h; y += 1) for (let x = rampart.x; x < rampart.x + rampart.w; x += 1) {
+      const i = y * top.width + x;
+      const lo = top.lowerTiles[i] ?? -1;
+      if (lo >= 0 && !royal.has(lo) && (top.upperTiles[i] ?? -1) < 0 && isPassable(project, top, x, y)) floorCount.set(lo, (floorCount.get(lo) ?? 0) + 1);
+    }
+    const floor = [...floorCount.entries()].sort((a, b) => b[1] - a[1])[0]?.[0];
+    let cleared = 0;
+    if (floor !== undefined) for (let y = rampart.y - 1; y <= rampart.y + rampart.h; y += 1) for (let x = rampart.x - 1; x <= rampart.x + rampart.w; x += 1) {
+      if (x < 0 || y < 0 || x >= top.width || y >= top.height) continue;
+      const i = y * top.width + x;
+      const hitLower = royal.has(top.lowerTiles[i] ?? -1), hitUpper = royal.has(top.upperTiles[i] ?? -1);
+      if (!hitLower && !hitUpper) continue;
+      if (hitLower) top.lowerTiles[i] = floor;
+      top.upperTiles[i] = -1;
+      if (top.upperOverlayTiles) top.upperOverlayTiles[i] = -1;
+      cleared += 1;
+    }
+    if (!cleared) throw new Error("[fallen-star act2] 성벽 위에 걷어 낼 옥좌·융단이 없다(도구 장식이 바뀌었나?)");
+  }
+  const stampAt = (mapId: string, kitId: string, x: number, y: number): boolean => {
+    const kit = kits.get(kitId);
+    const map = M(project, mapId);
+    if (!kit) return false;
+    for (let dy = 0; dy < kit.height; dy += 1) for (let dx = 0; dx < kit.width; dx += 1) {
+      const cx = x + dx, cy = y + dy;
+      if (cx < 1 || cy < 1 || cx >= map.width - 1 || cy >= map.height - 1 || !isPassable(project, map, cx, cy) || (map.upperTiles[cy * map.width + cx] ?? -1) >= 0) return false;
+      if (map.events.some((e) => e.x + e.y > 0 && Math.abs(e.x - cx) + Math.abs(e.y - cy) <= 1)) return false;
+    }
+    try { exec(project, "stamp_object", { objectId: `kit:beodeul_city/${kitId}`, mapId, x, y }); return true; } catch { return false; }
+  };
+  /** 방 윗줄(벽에 등 댄 줄)을 왼쪽부터 훑으며 n 개, 아니면 방 안 아무 곳. */
+  const along = (mapId: string, room: FortRoom | undefined, kitId: string, n: number, where: "north" | "south" | "any", step = 2): number => {
+    if (!room) return 0;
+    const kit = kits.get(kitId);
+    if (!kit) return 0;
+    let placed = 0;
+    const rows = where === "north" ? [room.y] : where === "south" ? [room.y + room.h - kit.height] : Array.from({ length: room.h }, (_, i) => room.y + i);
+    for (const y of rows) for (let x = room.x + 1; x + kit.width <= room.x + room.w - 1 && placed < n; x += 1) {
+      if (stampAt(mapId, kitId, x, y)) { placed += 1; x += step - 1 + kit.width - 1; }
+    }
+    return placed;
+  };
+  const room1 = (id: string) => FORT.rooms.find((r) => r.id === id);
+  const room2 = (id: string) => FORT.top.find((r) => r.id === id);
+  if (rampart) {
+    // 봉화대 둘 — 새라 자리 양옆 세 칸.
+    for (const dx of [-3, 3]) stampAt(FS2_FORT_TOP_ID, "bd-pick-mountain-pass-brazier", FORT.sarah.x + dx, FORT.sarah.y - 1);
+    // 무너진 성가퀴 돌 — 남쪽 모서리 한 덩이(같은 간격 흩뿌리지 않는다).
+    const sx = rampart.x + rampart.w - 3, sy = rampart.y + rampart.h - 2;
+    for (const [dx, dy, id] of [[0, 0, "bd-pick-castle-catacombs-rubble"], [1, 0, "bd-pick-mountain-pass-scree-a"], [0, -1, "bd-pick-mountain-pass-scree-b"]] as const) stampAt(FS2_FORT_TOP_ID, id, sx + dx, sy + dy);
+  }
+  // 감방 — 짚 침상·쇠창살·양동이·새장.
+  along(FS2_FORTRESS_ID, room1("cells"), "bd-pick-castle-catacombs-straw-bed", 3, "south", 2);
+  along(FS2_FORTRESS_ID, room1("cells"), "bd-pick-aqueduct-sewer-grate-floor", 1, "any", 3);
+  along(FS2_FORTRESS_ID, room1("cells"), "bd-pick-aqueduct-sewer-bucket", 1, "any", 3);
+  along(FS2_FORTRESS_ID, room1("cells"), "bd-pick-castle-catacombs-cage-hanging", 1, "north", 3);
+  // 무기고 — 갑옷 거치대 줄·모루 탁자·선반·통.
+  along(FS2_FORTRESS_ID, room1("armory"), "bd-pick-dungeon-theme-armor-stand", 3, "north", 1);
+  along(FS2_FORTRESS_ID, room1("armory"), "bd-pick-castle-catacombs-anvil-table", 1, "any", 2);
+  along(FS2_FORTRESS_ID, room1("armory"), "bd-pick-mining-valley-rack", 1, "north", 2);
+  along(FS2_FORTRESS_ID, room1("armory"), "bd-pick-aqueduct-sewer-barrel", 2, "south", 0);
+  // 2층 막사 — 짚 침상 줄·통·상자 더미.
+  along(FS2_FORT_TOP_ID, room2("barracks"), "bd-pick-aqueduct-sewer-straw-bed", 4, "north", 1);
+  along(FS2_FORT_TOP_ID, room2("barracks"), "bd-pick-mining-valley-crates", 1, "south", 2);
+  along(FS2_FORT_TOP_ID, room2("barracks"), "bd-pick-aqueduct-sewer-barrel", 2, "south", 0);
 }
 
 function fortressEvents(project: Project): void {
