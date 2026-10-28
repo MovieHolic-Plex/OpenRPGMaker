@@ -12,6 +12,8 @@ import type { GameMap, MapId, MapNamedLocation, Project } from "@/project/types"
 import { linkMapsInDraft, type LinkResult } from "./worldGraphTools";
 import { isDoorArtCell } from "@/project/staging/doorCells";
 import { isPassable } from "@/project/collision";
+import { protectedHouseCells } from "./houseProtection";
+import { walkableFromAnchors } from "./transferReachability";
 import { SHARED_OBJECT_TOOLS } from "./sharedObjectTools";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
 
@@ -255,11 +257,78 @@ const linkWorldEntrance: ToolDefinition = {
 export const DUNGEON_LINK_TOOLS: readonly ToolDefinition[] = [linkWorldEntrance];
 
 const CAVE_MOUTH_KIT = "kit:beodeul_city/bd-pick-mining-valley-adit";
+
+/**
+ * 출입구 칸 위에 갱구(3×4, 왼쪽 위 = 출입구 −2,−4)를 찍어도 되는 자리인가. 갱구를 안 찍는 맵(버들항 바깥이 아님)은 늘 참.
+ * 찍으면 그 3×4 의 밭·울타리·나무·집·길을 덮어쓴다 — 2026-10-28 jrpg 버들마을에서 시작점 곁 밀밭 울타리 안에 갱구가 박혔다.
+ * 그래서 칸마다 걸을 수 있고(밀·울타리·나무·집이 아님), 바닥이 그 맵의 바탕 땅(가장 흔한 바닥 그림, 길·광장·물 아님)이고, 이벤트가 없어야 한다.
+ */
+export function caveMouthSpotClear(draft: Project, map: GameMap, gate: Pt): boolean {
+  const role = (map as unknown as { mapRole?: string }).mapRole;
+  if (map.tilesetId !== "beodeul_city" || role === "dungeon" || role === "interior" || map.climate?.mode === "indoor") return true;
+  const counts = new Map<number, number>();
+  for (const t of map.lowerTiles) counts.set(t, (counts.get(t) ?? 0) + 1);
+  const ground = new Set([...counts].filter(([, n]) => n >= map.lowerTiles.length * 0.15).map(([t]) => t));
+  // 완성된 집의 보호 칸을 건드리면 던전 짓기 전체가 거절된다(커밋 검사) — 그 칸은 처음부터 피한다.
+  const guarded = new Set(protectedHouseCells(map).map((c) => c.y * map.width + c.x));
+  for (let y = gate.y - 4; y <= gate.y - 1; y += 1) for (let x = gate.x - 2; x <= gate.x; x += 1) {
+    if (x < 0 || y < 0 || x >= map.width || y >= map.height) return false;
+    const i = y * map.width + x;
+    // 걸을 수 있는 덧그림(풀포기·들꽃·그림자)은 덮어도 된다 — 막힌 칸(밀·울타리·나무·집)과 바탕 땅이 아닌 칸(길·광장·물)만 피한다.
+    if (!ground.has(map.lowerTiles[i]!) || !isPassable(draft, map, x, y)) return false;
+    if (guarded.has(i) || map.events.some((e) => Math.abs(e.x - x) <= 1 && Math.abs(e.y - y) <= 1)) return false;
+  }
+  return true;
+}
 /** 바깥(실내·던전이 아닌) 버들항 맵의 출입구 칸 위에 문·계단 그림이 없으면 갱구(3×4, 문 칸 = 왼쪽 위+(2,3))를 출입구 바로 위에 찍는다. 못 찍으면 조용히 넘긴다(끝맺음 검사가 짚는다). */
+/**
+ * 던전 바깥 문 자리 고르기 — 정본 하나(author_dungeon 기본 출구 attachDefaultExit 와 조수 v2 자동 연결 transferSpot.dungeonGateSpot 이 같이 쓴다).
+ * 모두 시작점·착지점에서 걸어 닿는 칸만. score 가 낮은 칸 먼저.
+ *  1) 갱구(3×4)가 맞는 칸(caveMouthSpotClear) 중 길 곁 — 길이 굴 입구로 이어진다.
+ *  2) 갱구가 맞는 칸 아무 데나.
+ *  3) 맵 가장자리의 길 끝(바탕 풀이 아닌 걷는 바닥) — 빽빽한 마을이면 「이 길로 나가면 동굴」로 읽힌다(갱구는 자리가 없어 안 찍힌다).
+ *  4) 맵 가장자리 아무 칸.
+ * 2026-10-28 jrpg 버들마을: 시작점에서 가장 가까운 칸이 밀밭 울타리 바로 아래라 갱구가 밭을 덮었다.
+ */
+export function pickDungeonGateSpot(draft: Project, map: GameMap, score: (c: Pt) => number): (Pt & { readonly why: string }) | undefined {
+  const W = map.width, H = map.height;
+  const reach = walkableFromAnchors(draft, map);
+  const reached = (x: number, y: number) => x >= 0 && y >= 0 && x < W && y < H && (!reach || reach.has(y * W + x));
+  const tally = new Map<number, number>();
+  for (const t of map.lowerTiles) tally.set(t, (tally.get(t) ?? 0) + 1);
+  const ground = [...tally].sort((a, b) => b[1] - a[1])[0]?.[0];
+  const meta = (draft.tilesets[map.tilesetId]?.tileMeta ?? []) as unknown as ({ label?: string; tags?: string[] } | undefined)[];
+  const pathTile = (t: number | undefined) => {
+    if (t === undefined || t < 0) return false;
+    const m = meta[t]; const tags = (m?.tags ?? []).map((x) => x.toLowerCase());
+    return tags.includes("road") || tags.includes("street") || tags.includes("path") || tags.includes("sand") || (/길/u.test(m?.label ?? "") && !/풀|잔디/u.test(m?.label ?? ""));
+  };
+  const nearPath = (x: number, y: number) => [-1, 0, 1].some((dy) => [-1, 0, 1, 2].some((dx2) => { const yy = y + dy + 1, xx = x + dx2 - 1; return xx >= 0 && yy >= 0 && xx < W && yy < H && pathTile(map.lowerTiles[yy * W + xx]); }));
+  const free = (x: number, y: number) => isPassable(draft, map, x, y) && !map.events.some((e) => Math.abs(e.x - x) + Math.abs(e.y - y) <= 1);
+  const tiers: [string, (x: number, y: number) => boolean][] = [
+    ["갱구 자리·길 곁", (x, y) => reached(x, y) && reached(x, y + 1) && caveMouthSpotClear(draft, map, { x, y }) && nearPath(x, y)],
+    ["갱구 자리", (x, y) => reached(x, y) && reached(x, y + 1) && caveMouthSpotClear(draft, map, { x, y })],
+    ["가장자리 길 끝", (x, y) => (x === 0 || y === 0 || x === W - 1 || y === H - 1) && reached(x, y) && map.lowerTiles[y * W + x] !== ground],
+    ["가장자리", (x, y) => (x === 0 || y === 0 || x === W - 1 || y === H - 1) && reached(x, y)],
+  ];
+  for (const [why, ok] of tiers) {
+    let best: Pt | undefined; let bd = Infinity;
+    for (let y = 0; y < H; y += 1) for (let x = 0; x < W; x += 1) {
+      if (!free(x, y) || !ok(x, y)) continue;
+      const d = score({ x, y });
+      if (d < bd) { bd = d; best = { x, y }; }
+    }
+    if (best) return { ...best, why };
+  }
+  return undefined;
+}
+
 function caveMouth(draft: Project, map: GameMap, gate: Pt): string | undefined {
   const role = (map as unknown as { mapRole?: string }).mapRole;
   if (map.tilesetId !== "beodeul_city" || role === "dungeon" || role === "interior" || map.climate?.mode === "indoor") return undefined;
   if ([0, -1].some((dy) => isDoorArtCell(draft, map, gate.x, gate.y + dy))) return undefined;
+  // 갱구 자리가 밭·울타리·나무·집·길·완성된 집 보호 칸을 덮으면 찍지 않는다(덮으면 밭 한가운데 굴이 박히거나 커밋이 통째로 거절된다).
+  if (!caveMouthSpotClear(draft, map, gate)) return undefined;
   const tool = SHARED_OBJECT_TOOLS.find((t) => t.name === "stamp_object");
   if (!tool?.run) return undefined;
   try {

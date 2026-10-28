@@ -20,7 +20,7 @@ import { upsertEventIntoMap } from "./eventTools";
 import { ensureNamedSwitch } from "./flagHelpers";
 import { asCell, asRoom, chestLoot, field, list, nested, pickTroops, placeRoamer, text, type Room } from "./jrpgVolumeTools";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
-import { DUNGEON_ENTRANCE_TAG, ENTRANCE_OPTION_SCHEMA, linkEntranceInDraft, parseEntranceOption } from "./dungeonLinkTools";
+import { DUNGEON_ENTRANCE_TAG, pickDungeonGateSpot, ENTRANCE_OPTION_SCHEMA, linkEntranceInDraft, parseEntranceOption } from "./dungeonLinkTools";
 import { dungeonTheme, ensureThemeTroop } from "./dungeonThemeTroops";
 import { beodeulNatureTileset, planBeodeulCanopy, writeBeodeulCanopy } from "./beodeulForest";
 import { BEODEUL_NATURE } from "@/project/defaults/beodeulNature";
@@ -500,12 +500,17 @@ function attachDefaultExit(draft: Project, mapId: string, data: Record<string, u
   if (sourceId) {
     const src = draft.maps[sourceId]!;
     const origin = draft.startMapId === sourceId ? draft.startPos : { x: Math.floor(src.width / 2), y: Math.floor(src.height / 2) };
-    // 시작 위치(또는 가운데)에서 가장 가까운, 이벤트 없고 아래 칸도 걸을 수 있는 칸을 바깥 쪽 문 칸으로 쓴다.
-    let best: Pt | null = null; let bd = Infinity;
-    for (let y = 1; y < src.height - 1; y += 1) for (let x = 1; x < src.width - 1; x += 1) {
-      if (!isPassable(draft, src, x, y) || !isPassable(draft, src, x, y + 1) || src.events.some((e) => Math.abs(e.x - x) + Math.abs(e.y - y) <= 1)) continue;
-      const d = Math.abs(x - origin.x) + Math.abs(y - origin.y);
-      if (d >= 2 && d < bd) { bd = d; best = { x, y }; }
+    // 문 자리는 정본 pickDungeonGateSpot(갱구가 맞는 칸 → 가장자리 길 끝)에서 시작점(또는 가운데)과 가까운 순으로.
+    // 못 찾으면 옛 규칙: 시작점에서 가장 가까운, 이벤트 없고 아래 칸도 걸을 수 있는 칸.
+    const near = (c: Pt) => { const d = Math.abs(c.x - origin.x) + Math.abs(c.y - origin.y); return d < 2 ? 999 : d; };
+    let best: Pt | null = pickDungeonGateSpot(draft, src, near) ?? null;
+    if (!best) {
+      let bd = Infinity;
+      for (let y = 1; y < src.height - 1; y += 1) for (let x = 1; x < src.width - 1; x += 1) {
+        if (!isPassable(draft, src, x, y) || !isPassable(draft, src, x, y + 1) || src.events.some((e) => Math.abs(e.x - x) + Math.abs(e.y - y) <= 1)) continue;
+        const d = Math.abs(x - origin.x) + Math.abs(y - origin.y);
+        if (d >= 2 && d < bd) { bd = d; best = { x, y }; }
+      }
     }
     if (best) {
       try {

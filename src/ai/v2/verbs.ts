@@ -31,7 +31,7 @@ import { buildPuzzleChain, sealLockedRoom, type ChainArgs } from "./puzzle";
 import { BUILD_BLUEPRINT_PATH_SCHEMA, blueprintMapFor, buildBlueprintPath, type PathStepText } from "./blueprintPath";
 import { clearTransferLanes } from "./eventReach";
 import { dressInteriorExits } from "./exitDress";
-import { pickTransferSpot, roadEndSpot } from "./transferSpot";
+import { dungeonGateSpot, pickTransferSpot } from "./transferSpot";
 import { guessPlaceSpec } from "./placeGuess";
 // 콘텐츠 동사(컷신 무대·연출 비평·물건 자리 계획) — finishContent·addEvent·drawObjectVerb·placeObject 가 쓴다.
 import { critiqueStaging } from "./critic";
@@ -904,10 +904,11 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
           }
         } else if (spec.type === "dungeon" || spec.type === "cave") {
           // 던전: 부모 맵의 걸어 닿는 칸 ↔ 던전 입구 계단(자리표시 출구가 있으면 그것을 바꾼다).
-          // 바깥 부모면 가장자리 길 끝을 먼저(길이 동굴 입구로 이어진다), 없으면 예전처럼 걸어 닿는 가장자리 칸.
-          const parentOutdoor = !parentSpec || isOutdoor(parentSpec);
-          const road = parentOutdoor ? roadEndSpot(env.ctx.project, env.ctx.project.maps[parentMap]!, side ?? "north") : undefined;
-          const at = road ? { x: road.x, y: road.y } : edgeCell(env.ctx.project, env.ctx.project.maps[parentMap]!, side ?? "north");
+          // 문 자리는 정본 하나(transferSpot.dungeonGateSpot = dungeonLinkTools.pickDungeonGateSpot): 갱구가 맞는 길 곁 칸 → 갱구 자리 → 가장자리 길 끝 → 가장자리.
+          // 못 찾으면 예전처럼 걸어 닿는 가장자리 칸.
+          const pm = env.ctx.project.maps[parentMap]!;
+          const gate = dungeonGateSpot(env.ctx.project, pm, side ?? "north");
+          const at = gate ? { x: gate.x, y: gate.y } : edgeCell(env.ctx.project, pm, side ?? "north");
           const r = at ? run.call("link_world_entrance", { worldMapId: parentMap, links: [{ x: at.x, y: at.y, toMapId: childMap }] }) : undefined;
           linked = !!r?.ok && hasTransferTo(parentMap, childMap);
           if (linked) notes.push(`${pName}(${at!.x},${at!.y}) ↔ ${cName} 입구`);

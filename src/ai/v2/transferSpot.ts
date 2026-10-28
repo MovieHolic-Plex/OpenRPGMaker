@@ -10,6 +10,7 @@ import type { GameMap, Project } from "@/project/types";
 import { doorArtCells, isDoorArtLabel, reachableCells } from "./eventReach";
 import { roadCellSet, tileLabel } from "./people";
 import type { BuildRun } from "./types";
+import { pickDungeonGateSpot } from "@/editor/tools/dungeonLinkTools";
 
 type Cell = { x: number; y: number };
 export type Side = "north" | "south" | "east" | "west";
@@ -85,6 +86,12 @@ export function roadEndSpot(project: Project, map: GameMap, side: Side): Transfe
   ends.sort((a, b) => sideScore(map, a, side) - sideScore(map, b, side) || a.y - b.y || a.x - b.x);
   const end = ends[0];
   return end ? { ...end, note: `가장자리 길 끝(${end.x},${end.y})` } : undefined;
+}
+
+/** 던전 바깥 문 자리 — 정본은 dungeonLinkTools.pickDungeonGateSpot(갱구가 맞는 길 곁 칸 → 갱구 자리 → 가장자리 길 끝 → 가장자리). side 쪽 먼저. */
+export function dungeonGateSpot(project: Project, map: GameMap, side: Side): TransferSpot | undefined {
+  const at = pickDungeonGateSpot(project, map, (c) => sideScore(map, c, side));
+  return at ? { x: at.x, y: at.y, note: `던전 문 자리 ${at.why}(${at.x},${at.y})` } : undefined;
 }
 
 /** 자동 연결 이동 칸 자리. stamp 가 일어나면 run.ctx.project 의 맵을 바꾼다. */
