@@ -921,6 +921,14 @@ function questsDetail(project: Project, session: PlaySession): StatusMenuDetail 
         testId: `status-menu-quest-state-${quest.key}`,
         attributes: { "data-quest-row": "state" },
       },
+      // 독립 판정: 상세 창에 상태 밑 첫 단계(이미 끝낸 1번)만 보여 「지금 할 일」을 몰랐다 — 진행 중이면 다음 단계를 먼저 한 줄.
+      ...(quest.state === "active" ? quest.steps.filter((step) => !step.done).slice(0, 1).map((step) => ({
+        label: "지금 할 일",
+        value: step.label,
+        description: "다음 단계",
+        testId: `status-menu-quest-next-${quest.key}`,
+        attributes: { "data-quest-row": "next" },
+      })) : []),
       ...quest.steps.map((step) => ({
         // step.label 이 이미 「N. 단계이름」이다 — 앞에 번호를 또 붙이고 상태를 라벨에 섞으면
         // 「1. 진행 / 1. 대화 / 대기 중」 세 줄이 되어 단계를 읽을 수 없다. 한 행 = 번호+이름+상태.

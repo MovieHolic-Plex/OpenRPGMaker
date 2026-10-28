@@ -672,8 +672,8 @@ export const FS2_SHAFT_ID = "fs2_well_shaft";
 export const FS2_OBS_NIGHT_ID = "fs2_obs_night";
 const SW_HANEL = "sw_fs2_hanel_told";
 const HANEL = "천문대장 하넬";
-/** 광장 우물(2×2 그림의 아랫줄) — 앞(y29)에서 위를 보고 조사. */
-const WELL: Cell[] = [{ x: 40, y: 28 }, { x: 41, y: 28 }];
+// 우물 그림(bd-prop-well_roofed 2×2, (40,27)) 네 칸 모두 — 독립 판정(judge10): 지붕 칸 옆에서 눌러 반응이 없어 50걸음을 헤맸다.
+const WELL: Cell[] = [{ x: 40, y: 28 }, { x: 41, y: 28 }, { x: 40, y: 27 }, { x: 41, y: 27 }];
 const WELL_FRONT: Cell = { x: 40, y: 29 };
 const SHAFT_PLAN = [
   "############",
@@ -776,7 +776,7 @@ function observatoryNight(project: Project, exec: Exec, obsId: string): void {
     say(HANEL, "그 인장을 갖고 탑에 가거라.\n나머지는… 거기서, 내 입으로 하마."),
     say(KAEL, "선생님, 또 숙제예요?"),
     say(HANEL, "이번엔 내 숙제다."),
-    say(HANEL, "북문은 기사들이 막았다. 로한을 찾아가거라.\n대장간 뒷문은 아무도 안 지킨다."),
+    say(HANEL, "북문은 기사들이 막았다. 로한을 찾아가거라.\n광장 남쪽 끝 대장간 — 뒷문은 아무도 안 지킨다."),
     setSw(SW_HANEL),
     cutLabel(),
     cutEnd(),
@@ -852,6 +852,8 @@ function northGateEvents(project: Project, exec: Exec, hubId: string): void {
   const door = hub.events.find((e) => e.x === SMITHY.hubDoor.x && e.y === SMITHY.hubDoor.y);
   if (!door?.pages?.length) throw new Error("[fallen-star act2] 대장간 문이 없다");
   door.pages = [door.pages[0]!, { ...door.pages[0]!, id: `${door.id}_fs2_open`, name: "뒷문(열림)", conditions: [sw(SW_HANEL)],
+    // 독립 판정(judge10): 하넬 뒤 대장간 문을 찾아 광장을 헤맸다 — 열린 뒷문에 불빛이 샌다.
+    glow: { radius: 1, color: "#ffb060" }, nearSparkle: { radius: 2 },
     commands: [narrate("대장간 뒷문이 살짝 열려 있다."), transfer(FS2_SMITHY_ID, SMITHY.arrive, "up")] } as EventPage];
   addEv(project, FS2_SMITHY_ID, "ev_fs2_smithy_door", "대장간 문", SMITHY.door, [
     page("ev_fs2_smithy_door_p", "문", [], [transfer(FS2_HUB_NIGHT_ID, SMITHY.hubFront, "down")], { trigger: { kind: "playerTouch" } }),
@@ -2250,7 +2252,7 @@ function act2Quest(project: Project, exec: Exec): void {
     [SW_OUT, "막사 금고에서 짐을 되찾아, 북동쪽 사다리로 광장에 오른다(등불·순찰을 피해)"],
     [SW_MIRE, "서쪽 수로 다리를 건너 북서쪽 끝, 빵집 문틈의 미레 아주머니를 찾는다(쉬어 갈 수 있다)"],
     [SW_HANEL, "광장 우물 사다리로 천문대에 숨어 들어가 하넬 선생을 만난다"],
-    [SW_ROHAN, "대장간 뒷문으로 들어가 로한을 만난다"],
+    [SW_ROHAN, "광장 남쪽 끝 대장간 뒷문으로 들어가 로한을 만난다"],
     [SW_BRAM, "광장 북쪽 성벽 밑의 브람 영감을 찾는다"],
     [SW_B4_EDGE, "개구멍을 빠져 북쪽 숲 가장자리까지 달아난다"],
     [SW_CERT, "재의 들판을 지나 북쪽 새벽샘 터에서 세린의 흔적을 찾는다"],

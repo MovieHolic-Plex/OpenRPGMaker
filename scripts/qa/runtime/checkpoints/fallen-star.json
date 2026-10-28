@@ -3778,6 +3778,148 @@
    ]
   },
   {
+   "id": "act2-b3-next",
+   "label": "제2막 B3 — 하넬 뒤: 대장간 뒷문 불빛 → 임무 「지금 할 일」",
+   "note": "act2Opening.ts smithy hubDoor (29,42) glow · playerStatusMenuDetails questsDetail next row (judge10)",
+   "mapId": "fs2_hub_night",
+   "x": 29,
+   "y": 44,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_done": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs2_act2_started": true,
+    "sw_fs2_bread_given": true,
+    "sw_fs2_cell_key_found": true,
+    "sw_fs2_cell_open": true,
+    "sw_fs2_barracks_cleared": true,
+    "sw_fs2_out_of_cells": true,
+    "sw_fs2_hub_arrived": true,
+    "sw_fs2_gear_meds": true,
+    "sw_fs2_mire_well": true,
+    "sw_fs2_hanel_told": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 8
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 8
+    }
+   ],
+   "beats": [
+    {
+     "id": "door-glow",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "quest-next",
+     "ops": [
+      {
+       "kind": "key",
+       "key": "x"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 400
+      },
+      {
+       "kind": "key",
+       "key": "ArrowDown"
+      },
+      {
+       "kind": "key",
+       "key": "ArrowDown"
+      },
+      {
+       "kind": "key",
+       "key": "ArrowDown"
+      },
+      {
+       "kind": "key",
+       "key": "ArrowDown"
+      },
+      {
+       "kind": "key",
+       "key": "z"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 300
+      },
+      {
+       "kind": "key",
+       "key": "ArrowDown"
+      },
+      {
+       "kind": "key",
+       "key": "z"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 900
+      },
+      {
+       "kind": "waitFor",
+       "testid": "status-menu-quest-next-fs2_main",
+       "state": "present",
+       "timeoutMs": 5000
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "enter-smithy",
+     "ops": [
+      {
+       "kind": "key",
+       "key": "Escape"
+      },
+      {
+       "kind": "key",
+       "key": "Escape"
+      },
+      {
+       "kind": "key",
+       "key": "Escape"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 500
+      },
+      {
+       "kind": "move",
+       "dir": "up",
+       "steps": 1
+      },
+      {
+       "kind": "action"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 2500
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
    "id": "act2-b4-rohan",
    "label": "제2막 B4 — 대장간 뒷문, 로한의 별쇠 창·새라 소식",
    "note": "act2Opening.ts northGateEvents rohan (10,6) 계산대 (10,7)",
