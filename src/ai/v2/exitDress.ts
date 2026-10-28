@@ -221,6 +221,50 @@ function archInnerDoorways(project: Project, map: GameMap, k: Kit): { arches: nu
 
 export interface ExitDressResult { readonly notes: string[] }
 
+/**
+ * 문 노릇 이벤트(이름이 문·출구, 이동 없음)가 하나이고 그 이벤트가 칩셋 문 그림 칸에 서 있는데, 이벤트 없는 같은 종류 문 그림이 또 있으면
+ * 그 가짜 문(과 둘레 문틀)을 걷는다. 이벤트 그림이 옛 EasyRPG 칩(철창 등)이면 투명으로 — 칸의 문 그림이 보이게.
+ * 왜(2026-10-29 vm2 deepseek 방탈출): 이벤트 「잠긴 나무 문」은 (3,3) 문 그림 위에 철창 칩으로 서 있고, 문틀 두른 같은 나무 문이 (5,3)에
+ * 이벤트 없이 또 있었다. 목표 「북쪽 나무 문을 열고」를 보고 (5,3)을 조사한 판정자는 무반응이라 열쇠를 들고도 「문이 안 열린다」고 했다.
+ */
+function clearDecoyDoorArt(project: Project, map: GameMap, k: Kit): string[] {
+  const w = map.width;
+  const meta = (project.tilesets[map.tilesetId]?.tileMeta ?? []) as unknown as ({ label?: string } | undefined)[];
+  const base = (t: number) => (t >= 0 ? String(meta[t]?.label ?? "").replace(/\s*\([^)]*\)\s*$/u, "").trim() : "");
+  const doorish = (name: string) => /문|door/iu.test(name) && !/문틀|문패|문양|창문|문서|arch|frame/iu.test(name);
+  const events = map.events ?? [];
+  const doors = events.filter((e) => isDoorName(String((e as { name?: string }).name ?? "")) && !hasTransfer(e.pages ?? e.commands));
+  if (doors.length !== 1) return [];
+  const door = doors[0]!;
+  const artName = base(layerTileAt(map, 3, door.y * w + door.x));
+  if (!doorish(artName) || k.faces.has(map.lowerTiles[door.y * w + door.x]!)) return [];
+  const notes: string[] = [];
+  for (let i = 0; i < w * map.height; i += 1) {
+    const x = i % w, y = Math.floor(i / w);
+    if (i === door.y * w + door.x || base(layerTileAt(map, 3, i)) !== artName || k.faces.has(map.lowerTiles[i]!)) continue;
+    if (events.some((e) => e.x === x && e.y === y)) continue;
+    // 문 칸과 그 위로 이어진 같은 문 조각, 둘레(좌우 한 칸·위 세 칸)의 문틀을 걷는다.
+    const cleared: number[] = [];
+    for (let yy = y; yy >= Math.max(0, y - 2); yy -= 1) {
+      const j = yy * w + x;
+      if (base(layerTileAt(map, 3, j)) !== artName && base(layerTileAt(map, 4, j)) !== artName) break;
+      for (const L of [3, 4] as const) if (base(layerTileAt(map, L, j)) === artName) { setLayerTileAt(map, L, j, -1); cleared.push(j); }
+    }
+    for (let yy = Math.max(0, y - 3); yy < y; yy += 1) for (let xx = Math.max(0, x - 1); xx <= Math.min(w - 1, x + 1); xx += 1) {
+      const j = yy * w + xx;
+      for (const L of [3, 4] as const) if (/문틀|arch/iu.test(base(layerTileAt(map, L, j)))) { setLayerTileAt(map, L, j, -1); cleared.push(j); }
+    }
+    if (cleared.length) notes.push(`이벤트 없는 같은 문 그림 「${artName}」 (${x},${y})(문틀 포함 ${cleared.length}칸)을 걷음 — 진짜 문 「${String((door as { name?: string }).name ?? door.id)}」은 (${door.x},${door.y})`);
+  }
+  // 문 그림 위에 선 옛 EasyRPG 칩은 투명으로(칸의 문 그림이 보이게).
+  const retro = (door.pages ?? []).some((p) => { const sprite = p.graphic?.sprite as { id?: string } | undefined; return typeof sprite?.id === "string" && sprite.id.startsWith("tex_easyrpg_"); });
+  if (retro) {
+    map.events = events.map((e) => e.id !== door.id ? e : { ...e, pages: (e.pages ?? []).map((p) => { const sprite = p.graphic?.sprite as { id?: string } | undefined; return typeof sprite?.id === "string" && sprite.id.startsWith("tex_easyrpg_") ? { ...p, graphic: { transparent: true } } : p; }) } as GameEvent);
+    notes.push(`문 「${String((door as { name?: string }).name ?? door.id)}」의 옛 칩 그림을 걷고 칸의 문 그림을 보이게 함`);
+  }
+  return notes;
+}
+
 /** 맵 하나의 출구·공허 마감. 실내 방 짓기 칩셋(roomKit)이 아닌 맵은 건드리지 않는다. */
 export function dressInteriorExits(run: BuildRun, mapId: string): ExitDressResult {
   const notes: string[] = [];
@@ -237,6 +281,9 @@ export function dressInteriorExits(run: BuildRun, mapId: string): ExitDressResul
   // 3) 칸막이 방 사이 통로 문틀.
   const doorways = archInnerDoorways(project0, map, k);
   if (doorways.arches || doorways.mats) { changed = true; notes.push(`칸막이 방 사이 통로 입구 표시: 둥근 아치 문틀 ${doorways.arches}곳 · 발깔개 ${doorways.mats}곳`); }
+  // 4) 겹친 문 그림 — 문 이벤트가 선 문 그림 말고 이벤트 없는 같은 문 그림이 또 있으면 그쪽은 조사해도 무반응인 가짜 문이다.
+  const decoys = clearDecoyDoorArt(project0, map, k);
+  if (decoys.length) { changed = true; notes.push(...decoys); }
   // 1) 막다른 남쪽 출구.
   const w = map.width;
   const gaps = southGaps(k, map);

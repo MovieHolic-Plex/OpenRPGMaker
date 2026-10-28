@@ -19,7 +19,7 @@ import { blueprintPlaceName, pickTitleArtForStory, blueprintPremiseText, bluepri
 import { sharedFaceForCharset } from "@/project/sharedCharacterFaceResolver";
 import type { Project } from "@/project/types";
 import { defaultPlaceLeaks, editorDefaultsLeft, endingClosureProblems, endingConditionsUnset, writtenStateIds } from "./shipChecks";
-import { doorCellBlocked, offArtEntrances, planObjective, staleMilestoneTargets } from "./discoverability";
+import { doorCellBlocked, offArtEntrances, planObjective, repeatingStartObjectives, staleMilestoneTargets } from "./discoverability";
 import { normalizeGameOverSettings } from "@/project/cinematicSettings";
 
 type Obj = Record<string, unknown>;
@@ -39,6 +39,7 @@ export function applyShipDefaults(project: Project, task = project.gameBlueprint
   if (left.has("window-look")) applied.push(...fillWindowLook(project));
   if (left.has("game-over")) applied.push(...fillGameOver(project));
   if (offArtEntrances(project).length) applied.push(...moveEntrancesOntoArt(project));
+  if (repeatingStartObjectives(project).length) applied.push(...moveRepeatingStartObjective(project));
   if (staleMilestoneTargets(project).length) applied.push(...fillStaleObjectives(project));
   if (endingConditionsUnset(project).length) applied.push(...dropDeadEndingConditions(project));
   if (endingClosureProblems(project).length) applied.push(...fillEndingClosure(project));
@@ -348,6 +349,24 @@ function fillStaleObjectives(project: Project): string[] {
     out.push(`다음 목표: ${event.name} 뒤 → 「${target}」`);
   }
   return out;
+}
+
+/**
+ * 맵에 들어올 때마다 도는 페이지(장면 분위기)에 걸린 시작 목표를 한 번만 도는 자리로 옮긴다(planObjective at:start 가 그 페이지에서 빼고 다시 건다).
+ * 왜(2026-10-29 vm2 deepseek 방탈출 A6): 열쇠를 얻고 저장 → 불러오기 하자 분위기 페이지가 다시 돌며 「일지를 읽자」로 되돌렸다.
+ */
+function moveRepeatingStartObjective(project: Project): string[] {
+  const first = repeatingStartObjectives(project)[0];
+  if (!first) return [];
+  const plan = planObjective(project, { at: "start", text: first.message });
+  if (!plan.ok) return [];
+  for (const { mapId, event: next } of plan.events) {
+    const map = project.maps[mapId];
+    if (!map) continue;
+    const has = map.events.some((e) => e.id === next.id);
+    map.events = has ? map.events.map((e) => e.id === next.id ? next as unknown as typeof e : e) : [...map.events, next as unknown as (typeof map.events)[number]];
+  }
+  return [`시작 목표를 매번 도는 「${first.eventId}」에서 옮김: ${plan.summary}`];
 }
 
 /**
