@@ -6012,114 +6012,268 @@
      "id": "run",
      "ops": [
       {
-       "kind": "hold",
-       "dir": "left",
-       "ms": 168
-      },
-      {
-       "kind": "hold",
-       "dir": "up",
-       "ms": 168
-      },
-      {
-       "kind": "hold",
-       "dir": "left",
-       "ms": 168
-      },
-      {
-       "kind": "hold",
-       "dir": "up",
-       "ms": 840
-      },
-      {
-       "kind": "hold",
-       "dir": "left",
-       "ms": 1176
-      },
-      {
-       "kind": "hold",
-       "dir": "up",
-       "ms": 168
-      },
-      {
-       "kind": "hold",
-       "dir": "left",
-       "ms": 504
-      },
-      {
-       "kind": "hold",
-       "dir": "up",
-       "ms": 672
-      },
-      {
-       "kind": "hold",
-       "dir": "right",
-       "ms": 2352
-      },
-      {
-       "kind": "hold",
-       "dir": "up",
-       "ms": 168
-      },
-      {
-       "kind": "hold",
-       "dir": "right",
-       "ms": 1344
-      },
-      {
-       "kind": "hold",
-       "dir": "up",
-       "ms": 672
-      },
-      {
-       "kind": "hold",
-       "dir": "left",
-       "ms": 1008
-      },
-      {
-       "kind": "hold",
-       "dir": "up",
-       "ms": 168
-      },
-      {
-       "kind": "hold",
-       "dir": "left",
-       "ms": 504
-      },
-      {
-       "kind": "hold",
-       "dir": "up",
-       "ms": 168
-      },
-      {
-       "kind": "hold",
-       "dir": "left",
-       "ms": 168
-      },
-      {
-       "kind": "hold",
-       "dir": null,
-       "ms": 1500
-      },
-      {
-       "kind": "repeatUntil",
-       "testid": "dialogue-box",
-       "state": "absent",
-       "maxRounds": 8,
-       "ops": [
+       "kind": "playerRoute",
+       "moves": [
         {
-         "kind": "key",
-         "key": "Enter"
+         "kind": "move",
+         "dir": "left"
         },
         {
-         "kind": "hold",
-         "dir": null,
-         "ms": 900
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
         }
        ]
+      },
+      {
+       "kind": "waitForPosition",
+       "mapId": "fs2_frostford_night",
+       "x": 21,
+       "y": 9,
+       "timeoutMs": 40000
       }
      ],
-     "shot": true
+     "shot": true,
+     "note": "게임 시계로 걷는다(playerRoute) — 무거운 호스트에서 실시간 키 누르기는 칸 수가 어긋난다"
     },
     {
      "id": "tower",
