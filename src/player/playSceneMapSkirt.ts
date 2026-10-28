@@ -5,6 +5,9 @@
 //  2) 맵 가장자리로 나가는 출구 통로가 검은 공간에서 일자로 끊겨 「덜 그린 맵」처럼 보였다(적대 VQA, standin escape·romance).
 // 그래서 여백이 보이는 맵에서만
 //  - 카메라 배경색을 맵 바깥 둘레(하층 타일)의 평균색으로 맞추고(어두운 색일 때만 — 밝은 들판이면 검정 유지),
+//  - 둘레 타일 안에 결 없이 이어지는 반 칸 조각(천장 체크무늬)이 있으면 그 무늬로 여백 전체를 덮는다(2026-10-29).
+//    평균색 단색만으로는 점무늬 천장 띠와 단색 여백의 경계가 「맵 바깥 빈 타일이 계단식으로 드러난다」로 읽혔다
+//    (적대 VQA 네 판 20건: vm-smoke terra·mt3 argon/flash/terra). 같은 무늬가 화면 끝까지 이어지면 방을 둘러싼 천장으로 읽힌다.
 //  - 맵 가장자리 줄에서 그 줄 대부분과 다른 하층 타일이고 안쪽 칸이 밟을 수 있는 칸(출구 통로 바닥·양옆 벽)을 바깥으로 몇 칸 이어 그린다.
 // 맵 데이터는 바꾸지 않는다. 이어 그린 칸은 화면에만 있고 걸을 수 없다(카메라 경계 밖이 아니라 맵 밖이다).
 import type Phaser from "phaser";
@@ -49,9 +52,26 @@ export function syncMapSkirt(scene: SkirtScene): void {
     return;
   }
   const textureKey = scene.resolveTilesetTexture?.(tileset) ?? tilesetTextureKey(tileset);
-  camera.setBackgroundColor(backdropColor(scene, map, textureKey));
+  const backdrop = backdropColor(scene, map, textureKey);
+  camera.setBackgroundColor(backdrop);
   const container = scene.add.container(0, 0);
   container.setDepth(MAP_BACKGROUND_LAYER_DEPTH + 2);
+  if (backdrop !== DEFAULT_BACKDROP) {
+    const fill = ceilingFillFrame(scene, map, textureKey);
+    if (fill) {
+      // 무늬 판은 맵 칸 격자에 맞춰 놓는다(반 칸 조각이 칸 원점에서 잘렸으므로 무늬 위상이 맵 둘레와 이어진다).
+      const viewWidth = camera.width / zoom, viewHeight = camera.height / zoom;
+      const pad = Math.ceil(Math.max(viewWidth, viewHeight) / size + 2) * size;
+      const pattern = scene.add.tileSprite(-pad, -pad, map.width * size + pad * 2, map.height * size + pad * 2, textureKey, fill);
+      pattern.setOrigin(0, 0);
+      const tint = darknessTint(scene);
+      if (tint !== undefined) pattern.setTint(tint);
+      // 맵 칸(하층 depth 0) 아래, 이어 그린 출구 칸(+2) 아래.
+      pattern.setDepth(MAP_BACKGROUND_LAYER_DEPTH + 1);
+      const covers = coverEdgeOutlines(scene, map, textureKey, fill, size, tint);
+      container.once("destroy", () => { pattern.destroy(); for (const cover of covers) cover.destroy(); });
+    }
+  }
   const project = store.getCurrent();
   const texture = scene.textures.exists(textureKey) ? scene.textures.get(textureKey) : undefined;
   const draw = (x: number, y: number, tile: number): void => {
@@ -101,6 +121,169 @@ export function syncMapSkirt(scene: SkirtScene): void {
     extendEdge(column(map.width - 1), 1, 0);
   }
   skirts.set(scene, container);
+}
+
+/**
+ * 여백을 덮을 반 칸 무늬 조각. 둘레에서 가장 흔한 하층 타일들의 네 사분면 가운데
+ *  - 줄·열 평균이 고르고(테두리 선·벽 모서리가 없음),
+ *  - 맞은편 끝 줄끼리 붙여도 안쪽 이웃 줄만큼만 다르면(반복해도 이음매가 없음)
+ * 그 조각을 텍스처 프레임으로 더해 이름을 돌려준다. 없으면 undefined(평균색 단색 그대로).
+ */
+function ceilingFillFrame(scene: SkirtScene, map: GameMap, textureKey: string): string | undefined {
+  const texture = scene.textures.exists(textureKey) ? scene.textures.get(textureKey) : undefined;
+  if (!texture) return undefined;
+  const counts = new Map<number, number>();
+  const count = (x: number, y: number): void => {
+    const tile = map.lowerTiles[y * map.width + x] ?? -1;
+    if (tile >= 0) counts.set(tile, (counts.get(tile) ?? 0) + 1);
+  };
+  for (let x = 0; x < map.width; x += 1) { count(x, 0); if (map.height > 1) count(x, map.height - 1); }
+  for (let y = 1; y < map.height - 1; y += 1) { count(0, y); if (map.width > 1) count(map.width - 1, y); }
+  const tiles = [...counts].sort((a, b) => b[1] - a[1]).map(([tile]) => tile).slice(0, 4);
+  for (const tile of tiles) {
+    const frameName = `tile_${tile}`;
+    if (!texture.has(frameName)) continue;
+    const frame = texture.get(frameName);
+    const half = Math.floor(Math.min(frame.width, frame.height) / 2);
+    if (half < 2) continue;
+    for (const [qx, qy] of [[1, 1], [0, 1], [1, 0], [0, 0]] as const) {
+      const name = `skirt_fill_${tile}_${qx}${qy}`;
+      const verdict = fillCache.get(`${textureKey}|${name}`);
+      if (verdict === false) continue;
+      if (verdict === undefined) {
+        const ok = patchTilesCleanly(scene, textureKey, frameName, qx * half, qy * half, half);
+        fillCache.set(`${textureKey}|${name}`, ok);
+        if (!ok) continue;
+      }
+      if (!texture.has(name)) texture.add(name, frame.sourceIndex, frame.cutX + qx * half, frame.cutY + qy * half, half, half);
+      return name;
+    }
+  }
+  return undefined;
+}
+
+/**
+ * 천장 둘레 타일의 바깥 끝 1px 테두리 선을 무늬로 덮는다. 무늬가 여백까지 이어져도 그 선이 남아 맵 둘레에 사각 틀이 그려졌다.
+ * 바깥 끝 줄만 무늬와 다르고 바로 안쪽 줄은 무늬와 같은 칸만 덮는다(벽 면·출구 바닥은 둘째 줄부터 무늬가 아니라 손대지 않는다).
+ */
+function coverEdgeOutlines(scene: SkirtScene, map: GameMap, textureKey: string, fill: string, size: number, tint: number | undefined): Phaser.GameObjects.TileSprite[] {
+  const fillLuma = frameLuma(scene, textureKey, fill);
+  if (fillLuma === undefined) return [];
+  const covers: Phaser.GameObjects.TileSprite[] = [];
+  const edges: { cells: { x: number; y: number }[]; side: "top" | "bottom" | "left" | "right" }[] = [
+    { cells: Array.from({ length: map.width }, (_, x) => ({ x, y: 0 })), side: "top" },
+    { cells: Array.from({ length: map.width }, (_, x) => ({ x, y: map.height - 1 })), side: "bottom" },
+    { cells: Array.from({ length: map.height }, (_, y) => ({ x: 0, y })), side: "left" },
+    { cells: Array.from({ length: map.height }, (_, y) => ({ x: map.width - 1, y })), side: "right" },
+  ];
+  for (const { cells, side } of edges) {
+    for (const cell of cells) {
+      const tile = map.lowerTiles[cell.y * map.width + cell.x] ?? -1;
+      if (tile < 0 || !outlineOnly(scene, textureKey, tile, side, fillLuma)) continue;
+      const x = cell.x * size + (side === "right" ? size - 1 : 0);
+      const y = cell.y * size + (side === "bottom" ? size - 1 : 0);
+      const vertical = side === "left" || side === "right";
+      const cover = scene.add.tileSprite(x, y, vertical ? 1 : size, vertical ? size : 1, textureKey, fill);
+      cover.setOrigin(0, 0);
+      // 무늬 위상을 맵 격자에 맞춘다(덮개 원점이 칸 원점에서 1px 밀린 오른쪽·아래 끝).
+      cover.tilePositionX = side === "right" ? size - 1 : 0;
+      cover.tilePositionY = side === "bottom" ? size - 1 : 0;
+      if (tint !== undefined) cover.setTint(tint);
+      // 하층(0)·그림자(0.02) 위, 상층 「o」 타일(첫 줄 depth 1) 아래.
+      cover.setDepth(0.5);
+      covers.push(cover);
+    }
+  }
+  return covers;
+}
+
+const outlineCache = new Map<string, boolean>();
+
+function outlineOnly(scene: SkirtScene, textureKey: string, tile: number, side: "top" | "bottom" | "left" | "right", fillLuma: number): boolean {
+  const key = `${textureKey}|${tile}|${side}`;
+  const cached = outlineCache.get(key);
+  if (cached !== undefined) return cached;
+  const frameName = `tile_${tile}`;
+  const texture = scene.textures.exists(textureKey) ? scene.textures.get(textureKey) : undefined;
+  const frame = texture?.has(frameName) ? texture.get(frameName) : undefined;
+  if (!frame) return false;
+  const length = side === "top" || side === "bottom" ? frame.width : frame.height;
+  const depth = side === "top" || side === "bottom" ? frame.height : frame.width;
+  const lineLuma = (offset: number): number | undefined => {
+    let sum = 0;
+    for (let i = 0; i < length; i += 1) {
+      const along = i;
+      const across = side === "top" || side === "left" ? offset : depth - 1 - offset;
+      const color = side === "top" || side === "bottom"
+        ? scene.textures.getPixel(along, across, textureKey, frameName)
+        : scene.textures.getPixel(across, along, textureKey, frameName);
+      if (!color || color.alpha < 250) return undefined;
+      sum += 0.299 * color.red + 0.587 * color.green + 0.114 * color.blue;
+    }
+    return sum / length;
+  };
+  const outer = lineLuma(0), next = lineLuma(1), third = lineLuma(2);
+  const near = (value: number | undefined) => value !== undefined && Math.abs(value - fillLuma) <= FILL_LINE_MAX_DEVIATION;
+  const result = outer !== undefined && Math.abs(outer - fillLuma) > OUTLINE_MIN_DIFF && near(next) && near(third);
+  outlineCache.set(key, result);
+  return result;
+}
+
+function frameLuma(scene: SkirtScene, textureKey: string, frameName: string): number | undefined {
+  const texture = scene.textures.exists(textureKey) ? scene.textures.get(textureKey) : undefined;
+  const frame = texture?.has(frameName) ? texture.get(frameName) : undefined;
+  if (!frame) return undefined;
+  let sum = 0, n = 0;
+  for (let y = 0; y < frame.height; y += 1) {
+    for (let x = 0; x < frame.width; x += 1) {
+      const color = scene.textures.getPixel(x, y, textureKey, frameName);
+      if (!color) continue;
+      sum += 0.299 * color.red + 0.587 * color.green + 0.114 * color.blue; n += 1;
+    }
+  }
+  return n > 0 ? sum / n : undefined;
+}
+
+const fillCache = new Map<string, boolean>();
+/** 무늬 조각 판정 상한 — 줄 평균이 조각 평균에서 벗어나도 되는 정도(0~255). 천장 체크무늬는 줄 평균이 같고, 어두운 1px 선 한 줄은 약 9 벗어난다(밀실 판 실측). */
+const FILL_LINE_MAX_DEVIATION = 4;
+/** 테두리 선으로 볼 최소 차이(줄 평균 대 무늬 평균). */
+const OUTLINE_MIN_DIFF = 6;
+
+function patchTilesCleanly(scene: SkirtScene, textureKey: string, frameName: string, ox: number, oy: number, size: number): boolean {
+  const px: number[][] = [];
+  for (let y = 0; y < size; y += 1) {
+    const row: number[] = [];
+    for (let x = 0; x < size; x += 1) {
+      const color = scene.textures.getPixel(ox + x, oy + y, textureKey, frameName);
+      if (!color || color.alpha < 250) return false;
+      row.push(0.299 * color.red + 0.587 * color.green + 0.114 * color.blue);
+    }
+    px.push(row);
+  }
+  const mean = px.flat().reduce((sum, value) => sum + value, 0) / (size * size);
+  if (mean / 255 > BACKDROP_MAX_LUMA) return false;
+  const rowMeans = px.map((row) => row.reduce((sum, value) => sum + value, 0) / size);
+  const colMeans = Array.from({ length: size }, (_, x) => px.reduce((sum, row) => sum + row[x]!, 0) / size);
+  if ([...rowMeans, ...colMeans].some((value) => Math.abs(value - mean) > FILL_LINE_MAX_DEVIATION)) return false;
+  // 이어 붙인 자리(끝 열→첫 열)가 안쪽 이웃 열 차이보다 크게 튀지 않아야 한다.
+  const columnDiff = (a: number, b: number) => px.reduce((sum, row) => sum + Math.abs(row[a]! - row[b]!), 0) / size;
+  const rowDiff = (a: number, b: number) => px[a]!.reduce((sum, value, x) => sum + Math.abs(value - px[b]![x]!), 0) / size;
+  let innerX = 0, innerY = 0;
+  for (let i = 0; i + 1 < size; i += 1) { innerX += columnDiff(i, i + 1); innerY += rowDiff(i, i + 1); }
+  innerX /= size - 1; innerY /= size - 1;
+  return columnDiff(size - 1, 0) <= innerX * 1.5 + 6 && rowDiff(size - 1, 0) <= innerY * 1.5 + 6;
+}
+
+/** 방의 어둠 막을 무늬 판에 곱할 색(어둠이 없으면 undefined). backdropColor 와 같은 섞기를 흰색에 한 값이다. */
+function darknessTint(scene: SkirtScene): number | undefined {
+  const lighting = normalizeLightingState(scene.session?.lighting);
+  if (!(lighting.ambient > 0)) return undefined;
+  const darkness = effectiveDarkness(lighting.color, lighting.ambient);
+  const mask = /^#([0-9a-f]{6})$/iu.exec(darkness.color);
+  const m = mask ? Number.parseInt(mask[1]!, 16) : 0;
+  const channel = (shift: number) => Math.round(255 * (1 - darkness.ambient) + ((m >> shift) & 255) * darkness.ambient);
+  return (channel(16) << 16) | (channel(8) << 8) | channel(0);
 }
 
 /** 맵 바깥 둘레 하층 타일의 평균색(어둠 막을 입힌 색). 밝으면 검정. */
