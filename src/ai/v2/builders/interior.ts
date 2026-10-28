@@ -1125,8 +1125,9 @@ export const interiorBuilder: PlaceBuilder = {
       // 손으로 짠 견본은 같은 종류(이름 첫 낱말이 같은 가구: counter 1x1 ↔ counter 3x1)가 이미 있으면 놓은 것으로 친다 — 덧놓으면 검수된 통로를 막는다.
       // 탁자·의자는 종류 묶음으로 본다(감옥 견본의 식탁 dining 3x1 이 있는데 「탁자」를 진열대 display 1x1 로 덧놓았다).
       const head = part.id.split(" ")[0]!;
-      const KIN = [/^(dining|desk|display|table|counter|work|lab)$/u, /^(chair|stool|bench|armchair|pew|sofa)$/u];
-      const same = (o: Obj) => { const h = o.id.split(/[ :]/u)[0]!; return h === head || KIN.some((k) => k.test(h) && k.test(head)); };
+      // 침대·책장도 묶음으로 본다 — 손으로 짠 침실(침대 있음)에 「큰 침대」를 canopy bed 로 덧놓아 침대가 둘이 됐다(room-vig6 bedroom).
+      const KIN = [/^(dining|desk|display|table|counter|work|lab)\b/u, /^(chair|stool|bench|armchair|pew|sofa)\b/u, /\bbed\b/u, /bookshelf|bookcase|^shelf\b/u, /wardrobe/u];
+      const same = (o: Obj) => { const h = o.id.split(/[ :]/u)[0]!; return h === head || KIN.some((k) => k.test(o.id) && k.test(part.id)); };
       if (settled && !/계단|stair/iu.test(what) && rb.objects.some((o) => same(o) && inZone(o))) { placed.push({ zone: room.id, what, id: part.id }); continue; }
       // 올라가는 계단: 이 방이 맨 북쪽 바깥 벽에 닿지 않으면(위에 다른 방) 맨 북쪽 방 벽에 단다 — 칸막이 속으로 오르는 계단은 틀린 그림이다.
       const isUp = part.stairs === "up" || /stairs up/u.test(part.id);
