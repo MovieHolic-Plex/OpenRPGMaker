@@ -170,9 +170,15 @@ export const CODE_STEP_WORDS = /비밀\s*번호|암호|패스\s*워드|숫자\s*
 /** 번호를 «주는» 단계(단서)의 gives 낱말 — 이런 단계는 맞히는 단계가 아니다. */
 const CODE_GIVES = /비밀\s*번호|암호|번호|단서|쪽지|힌트|password|code|clue|hint|note/iu;
 /** 청사진 단계가 번호·암호를 맞히는 단계인가(이벤트 이름·행동에 그 낱말이 있고, gives 가 번호·단서 자체가 아니다). */
-export function isCodeStep(step: { readonly event: string; readonly action: string; readonly gives: string }): boolean {
-  return CODE_STEP_WORDS.test(`${step.event} ${step.action}`) && !CODE_GIVES.test(step.gives);
+export function isCodeStep(step: { readonly event: string; readonly action: string; readonly gives: string; readonly needs?: string }): boolean {
+  if (CODE_GIVES.test(step.gives)) return false;
+  if (CODE_STEP_WORDS.test(`${step.event} ${step.action}`)) return true;
+  // 앞 단계가 준 번호·암호 단서로 무언가를 «여는» 단계도 번호를 맞히는 단계다(2026-10-29 vm2 flash 방탈출: s2 「금고 열기 — 단서를 조합해 얻은
+  // 번호로 금고를 열고 열쇠를 얻는다」, needs 「비밀번호 단서」 — 낱말이 「비밀번호 입력」이 아니라 걸리지 않아 조사만으로 열쇠가 나왔다).
+  return CODE_NEEDS.test(step.needs ?? "") && /번호|암호|열|풀/u.test(step.action);
 }
+/** 번호·암호를 주는 단서(needs 낱말). */
+const CODE_NEEDS = /비밀\s*번호|암호|번호|password|passcode|code/iu;
 const isInput = (cmd: Obj) => cmd.kind === "inputNumber" || (cmd.kind === "choices" && Array.isArray(cmd.options) && cmd.options.length > 1);
 const progresses = (cmd: Obj) => cmd.kind === "triggerEnding" || (cmd.kind === "setSwitch" && cmd.value !== false) || (cmd.kind === "changeItem" && cmd.op !== "-=") || cmd.kind === "transfer";
 /** 명령 목록(공통 이벤트 호출 포함)에 입력이 있나. */

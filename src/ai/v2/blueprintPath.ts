@@ -134,6 +134,11 @@ const josa = (word: string, withBatchim: string, without: string) => {
   const code = last.charCodeAt(0) - 0xac00;
   return code >= 0 && code <= 11171 ? (code % 28 ? withBatchim : without) : `${withBatchim}(${without})`;
 };
+/** 「책상 조사를 살펴보았다」처럼 이벤트 이름의 행동 낱말까지 읽지 않게 — 「책상을 살펴보았다」. */
+const lookLine = (event: string): string => {
+  const noun = event.replace(/\s*(조사하기|조사|살펴보기|확인하기|확인|열기|탈출하기|탈출|찾기|수색)$/u, "").trim() || event;
+  return `${noun}${josa(noun, "을", "를")} 살펴보았다.`;
+};
 
 /** 번호 단계의 정답 — 같은 청사진이면 늘 같은 네 자리(앞자리 0 없음, 흔한 번호 아님). */
 export function stepCode(seed: string): string {
@@ -396,7 +401,11 @@ function buildBlueprintPathCore(run: BuildRun, text: readonly PathStepText[] = [
   const ids: string[] = [];
   const linkStep: number[] = [];
   const kept: string[] = [];
+  // 바로 앞 단계가 모델(또는 앞선 빌드)이 지은 이벤트 그대로면 — 번호 단계의 답을 그 이벤트 대사에 적는다(따로 쪽지를 세우지 않는다).
+  let prevKept: { mapId: string; eventId: string; gives: string; event: string } | undefined;
   steps.forEach((step, k) => {
+    const keptBefore = prevKept;
+    prevKept = undefined;
     const last = k === steps.length - 1;
     let map = mapFor(run.ctx.project, step.place);
     if (!map) { map = prevMap; warnings.push(`${step.id} 장소 「${step.place}」 맵이 없어 「${map.name}」에 두었다`); step.place = map.name || map.id; }
@@ -421,6 +430,8 @@ function buildBlueprintPathCore(run: BuildRun, text: readonly PathStepText[] = [
       prevGives = undefined;
       kept.push(`${step.id} ${step.event}`);
       ids.push(existing.id);
+      prevKept = { mapId: map.id, eventId: existing.id, gives: step.gives, event: step.event };
+      fixLookLines(run, map.id, existing.id, step.event);
       return;
     }
     const needs = k > 0 ? prevGives : undefined;
@@ -434,7 +445,10 @@ function buildBlueprintPathCore(run: BuildRun, text: readonly PathStepText[] = [
     const code = isCodeStep(step) || t?.code ? (t?.code ?? stepCode(`${bp.title}|${step.id}|${step.event}`)) : undefined;
     if (code) {
       const prevLink = links.at(-1);
-      const told = prevLink && linkStep.at(-1) === k - 1 && (prevLink.lines ?? []).some((l) => l.includes(code));
+      let told = prevLink && linkStep.at(-1) === k - 1 && (prevLink.lines ?? []).some((l) => l.includes(code));
+      // 앞 단계가 그대로 둔 단서 이벤트(「비밀번호 단서」를 주는 책상)면 그 대사에 번호를 적는다 — 2026-10-29 vm2 flash: 「『비밀번호 단서』를
+      // 알아냈다」 뿐이라 판정자가 단서 내용을 읽을 수 없었다.
+      if (!told && keptBefore && /단서|번호|암호|쪽지|힌트|메모|clue|hint|note|code/iu.test(keptBefore.gives)) told = tellCode(run, keptBefore, code);
       if (!told) {
         const gated = Boolean(base.needs || base.needsCondition?.length);
         const keyed = gated && needText ? /^(.+?)\s*열쇠$/u.exec(needText.trim()) : null;
@@ -453,10 +467,10 @@ function buildBlueprintPathCore(run: BuildRun, text: readonly PathStepText[] = [
       }
     }
     linkStep.push(k);
-    const lines = t?.lines?.length ? t.lines : [`${step.event}${josa(step.event, "을", "를")} 살펴보았다.`];
+    const lines = t?.lines?.length ? t.lines : [lookLine(step.event)];
     const codeLocked = clueLearn ? ["번호 자물쇠가 걸려 있다. 번호를 알아야 열 수 있을 것 같다."] : undefined;
     if (last) {
-      const endLines = t?.lines?.length ? t.lines : code ? ["번호 자물쇠다. 알아낸 번호를 맞춰 보자."] : [`${step.event}${josa(step.event, "을", "를")} 살펴보았다.`, bp.ending.how];
+      const endLines = t?.lines?.length ? t.lines : code ? ["번호 자물쇠다. 알아낸 번호를 맞춰 보자."] : [lookLine(step.event), bp.ending.how];
       const locked = t?.lockedLines?.length ? t.lockedLines : codeLocked ?? lockedDefault;
       links.push({ ...base, role: "ending", endingId: ending!.id, lines: endLines, ...(code ? { code, reward: { lines: [bp.ending.how] }, ...(t?.options?.length ? { options: t.options } : {}), ...(t?.wrongLines?.length ? { wrongLines: t.wrongLines } : {}) } : {}), ...(locked ? { lockedLines: locked } : {}) });
     } else if (code) {
@@ -496,6 +510,38 @@ function buildBlueprintPathCore(run: BuildRun, text: readonly PathStepText[] = [
   const objectiveNotes = stepObjectives(run, steps, links.map((l, li) => ({ step: linkStep[li]!, name: l.name ?? "", made: eventIds[li] })));
   const roles = links.map((l, i) => `${linkStep[i]! < 0 ? `(단서) ${l.name}` : `${steps[linkStep[i]!]!.id} ${steps[linkStep[i]!]!.event}`}(${l.role}${l.code ? ` 번호 ${l.code}` : ""}${l.needs ? ` ← ${l.needs}` : l.needsCondition ? " ← 앞 단계 이벤트가 켜는 것" : ""})`).join(" → ");
   return { ...built, ...(blueprint ? { blueprint } : {}), warnings: [...warnings, ...built.warnings], summary: `${sealed.length ? `${sealed.join(" / ")}. ` : ""}청사진 경로를 지었다: ${kept.length ? `(그대로 둔 단계: ${kept.join(", ")}) ` : ""}${roles} → 엔딩 「${ending!.name ?? ending!.id}」(${ending!.id}). ${built.summary}${objectiveNotes.length ? ` 목표 줄: ${objectiveNotes.join(" / ")}` : ""}` };
+}
+
+/** 앞선 빌드가 남긴 「X 조사를 살펴보았다」(이벤트 이름 그대로) 대사를 「X를 살펴보았다」로 — 2026-10-29 vm2 flash 판정 「이벤트 이름을 그대로 노출」. */
+function fixLookLines(run: BuildRun, mapId: string, eventId: string, event: string): void {
+  const ev = run.ctx.project.maps[mapId]?.events.find((e) => e.id === eventId);
+  const raw = `${event}${josa(event, "을", "를")} 살펴보았다.`;
+  const fixed = lookLine(event);
+  if (!ev || raw === fixed || !JSON.stringify(ev.pages ?? []).includes(raw)) return;
+  const pages = structuredClone(ev.pages ?? []);
+  for (const page of pages) for (const c of (page.commands ?? []) as { kind: string; body?: string }[]) if (c.kind === "text" && c.body === raw) c.body = fixed;
+  run.call("upsert_event", { mapId, event: { ...ev, pages }, replacePages: true });
+}
+
+/**
+ * 그대로 둔 단서 이벤트의 «얻는» 페이지(스위치를 켜거나 아이템을 주는 것) 대사에 번호를 적는다. 이미 적혀 있으면 그대로.
+ * 「X 조사를 살펴보았다」 같은 이름 그대로의 대사도 「X를 살펴보았다」로 고친다. 성공하면 true.
+ */
+function tellCode(run: BuildRun, kept: { mapId: string; eventId: string; gives: string; event: string }, code: string): boolean {
+  const ev = run.ctx.project.maps[kept.mapId]?.events.find((e) => e.id === kept.eventId);
+  if (!ev) return false;
+  if (JSON.stringify(ev.pages ?? []).includes(code)) return true;
+  const gives = (c: { kind?: string; value?: unknown; op?: unknown }) => (c.kind === "setSwitch" && c.value !== false) || (c.kind === "changeItem" && c.op !== "-=");
+  const pageIndex = (ev.pages ?? []).findIndex((p) => (p.commands ?? []).some((c) => gives(c as { kind?: string })));
+  if (pageIndex < 0) return false;
+  const pages = structuredClone(ev.pages ?? []);
+  const cmds = pages[pageIndex]!.commands as { kind: string; body?: string }[];
+  for (const c of cmds) if (c.kind === "text" && typeof c.body === "string" && c.body === `${kept.event}${josa(kept.event, "을", "를")} 살펴보았다.`) c.body = lookLine(kept.event);
+  const at = cmds.findIndex((c) => gives(c));
+  const learned = cmds.findIndex((c) => c.kind === "text" && typeof c.body === "string" && c.body.includes(`『${kept.gives}』`));
+  const note = { kind: "text", body: `${kept.gives}: 네 자리 숫자 「${code}」가 적혀 있다.` };
+  cmds.splice(learned >= 0 && learned < at ? learned + 1 : at, 0, note);
+  return run.call("upsert_event", { mapId: kept.mapId, event: { ...ev, pages }, replacePages: true }).ok;
 }
 
 /**

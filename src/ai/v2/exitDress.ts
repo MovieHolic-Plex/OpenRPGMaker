@@ -290,18 +290,84 @@ export function dressInteriorExits(run: BuildRun, mapId: string): ExitDressResul
     changed = true;
     notes.push(`막다른 남쪽 출구 ${gaps.map((g) => `(${g.x},${g.y})`).join("")}를 벽으로 메움(이동 칸이 없는 틈)`);
   };
-
-  if (dead && door) {
+  /** 남쪽 벽에 출구 틈을 두고 문 이벤트를 거기로 옮긴다(방탈출, 북벽 문 자리가 없을 때). 성공하면 메모, 못 하면 undefined(맵은 그대로). */
+  const southExitDoor = (door: GameEvent): string[] | undefined => {
+    const work = structuredClone(map);
+    const inn = innerOf(k, work);
+    const y = work.height - 1;
+    const occupied = (x: number, yy: number) => events.some((e) => e.id !== door.id && !silent(e) && e.x === x && e.y === yy);
+    const probe0 = { ...project0, maps: { ...project0.maps, [mapId]: work } } as Project;
+    const reach0 = reachableCells(probe0, work);
+    // 틈 앞 칸: 걸어 닿는 바닥(밟는 깔개는 괜찮다), 자리를 차지한 이벤트 없음.
+    const front = (x: number) => isPassable(probe0, work, x, y - 1) && !k.faces.has(work.lowerTiles[(y - 1) * w + x]!) && !occupied(x, y - 1) && !!reach0?.[(y - 1) * w + x];
+    let g: Cell | undefined;
+    let carved = false;
+    if (gaps.length) {
+      const mid = gaps[Math.floor(gaps.length / 2)]!;
+      if (gaps.length === 1 && front(mid.x) && !occupied(mid.x, mid.y)) g = mid;
+    } else {
+      const cx = (w - 1) / 2;
+      const xs = [...Array(w).keys()].filter((x) => x > 0 && x < w - 1 && !inn(x, y) && inn(x, y - 1) && !inn(x - 1, y) && !inn(x + 1, y) && front(x))
+        .sort((a, b) => Math.abs(a - cx) - Math.abs(b - cx) || a - b);
+      for (const x of xs) {
+        const trial = structuredClone(work);
+        trial.lowerTiles[y * w + x] = trial.lowerTiles[(y - 1) * w + x]!;
+        for (const L of [2, 3, 4] as const) setLayerTileAt(trial, L, y * w + x, -1);
+        reband(k, trial, (xx, yy) => Math.abs(xx - x) <= 1 && Math.abs(yy - y) <= 1);
+        const tp = { ...project0, maps: { ...project0.maps, [mapId]: trial } } as Project;
+        if (!isPassable(tp, trial, x, y)) continue;
+        for (const key of Object.keys(trial) as (keyof GameMap)[]) (work as unknown as Record<string, unknown>)[key] = trial[key];
+        g = { x, y };
+        carved = true;
+        break;
+      }
+    }
+    if (!g) return undefined;
+    const gate = g;
+    const out: string[] = [];
+    // 발깔개(칩셋에 있으면) — 틈 앞 바닥 두 칸.
+    const mat = k.S.objects["doormat"];
+    if (mat && mat.w === 2) {
+      for (const left of [gate.x, gate.x - 1]) {
+        const ok = [left, left + 1].every((x) => x >= 0 && x < w && inn(x, gate.y - 1) && !k.faces.has(work.lowerTiles[(gate.y - 1) * w + x]!) && free(work, 2, (gate.y - 1) * w + x) && free(work, 3, (gate.y - 1) * w + x));
+        if (!ok) continue;
+        for (const [dx, , tile, layer] of mat.cells) setLayerTileAt(work, (layer === 3 ? 3 : 2) as Layer, (gate.y - 1) * w + left + dx!, tile!);
+        out.push(`출구 앞 발깔개 (${left},${gate.y - 1})`);
+        break;
+      }
+    }
+    // 틈 칸의 조용한 이벤트(시작 목표)는 문이 있던 자리로, 시작 칸이 틈이면 틈 앞으로.
+    const sitters = new Set(events.filter((e) => e.id !== door.id && silent(e) && e.x === gate.x && e.y === gate.y).map((e) => e.id));
+    const moved = { ...work, events: work.events.map((e) => e.id === door.id ? { ...e, x: gate.x, y: gate.y } : sitters.has(e.id) ? { ...e, x: door.x, y: door.y } : e) } as GameMap;
+    const newStart = start && start.x === gate.x && start.y === gate.y ? { x: gate.x, y: gate.y - 1 } : undefined;
+    let next = { ...project0, maps: { ...project0.maps, [mapId]: moved } } as Project;
+    if (newStart) next = { ...next, startPos: newStart } as Project;
+    else if (movedStart) next = { ...next, startPos: movedStart } as Project;
+    // 문을 옮겨도 다른 조사 칸에 여전히 닿아야 하고, 문에도 닿아야 한다.
+    const was = new Set(unreachableEvents(project0, mapId));
+    const now = unreachableEvents(next, mapId);
+    if (now.some((id) => !was.has(id) || id === door.id)) return undefined;
+    run.ctx.project = { ...run.ctx.project, ...(next.startPos !== project0.startPos ? { startPos: next.startPos } : {}), maps: { ...run.ctx.project.maps, [mapId]: moved } } as Project;
+    out.unshift(`문 「${door.name ?? door.id}」 (${door.x},${door.y})→(${gate.x},${gate.y}) 남쪽 벽 ${carved ? "새로 튼 틈" : "틈"}을 출구로(북벽 발치는 가구로 참)`);
+    if (newStart) out.push(`시작 칸 (${start!.x},${start!.y})→(${newStart.x},${newStart.y})`);
+    return out;
+  };
+  // 방탈출의 출구가 안 보이면(그림 없는 «잠긴 출구» 조사 칸, 또는 벽이 아닌 바닥 가운데 선 문 그림) 남쪽 틈이 없어도 북벽 발치에 문을 세운다
+  // (2026-10-29 VQA 트리아지 B: VM terra 「멈춘 시계의 방」 네 벽 어디에도 문이 없음, mt3 terra 잠긴 나무 문이 선반 아래 바닥에 서서 수납장처럼 읽힘).
+  const onDoorArt = door ? (() => { const t = layerTileAt(map, 3, door.y * w + door.x); return t >= 0 && /문/u.test(tileLabel(t)) && door.y < map.height - 2; })() : false;
+  const artAtWall = door ? onDoorArt && k.faces.has(map.lowerTiles[(door.y - 1) * w + door.x]!) : false;
+  const doorShown = door ? (onDoorArt ? artAtWall : visible(door)) : false;
+  if (door && (dead || (escapeGame && !doorShown))) {
     const S = k.S;
     const locked = (door.pages ?? []).some((p) => (p.conditions ?? []).length > 0) || (door.pages ?? []).length > 1;
     const piece = doorPiece(S, locked);
-    const onDoorArt = (() => { const t = layerTileAt(map, 3, door.y * w + door.x); return t >= 0 && /문/u.test(tileLabel(t)) && door.y < map.height - 2; })();
+    const keepArt = onDoorArt && artAtWall;
     // 문 자리를 먼저 정한다.
-    let at: (Cell & { clear?: number[] }) | undefined;
+    let at: (Cell & { clear?: number[]; relocate?: { from: number; to: number; tile: number; name: string } }) | undefined;
     let evicting = false;
-    if (piece && !onDoorArt) {
+    if (piece && !keepArt) {
       const probe = structuredClone(map);
-      for (const g of gaps) probe.lowerTiles[g.y * w + g.x] = S.void;
+      if (dead) for (const g of gaps) probe.lowerTiles[g.y * w + g.x] = S.void;
       const probeProject = { ...project0, maps: { ...project0.maps, [mapId]: probe } } as Project;
       const reach = reachableCells(probeProject, probe);
       const others = events.filter((e) => e.id !== door.id);
@@ -320,20 +386,74 @@ export function dressInteriorExits(run: BuildRun, mapId: string): ExitDressResul
       // 문이 그 칸에 서도 다른 이벤트에 여전히 걸어 가 말을 걸 수 있어야 한다(2026-10-28 mt3: 문이 «조사 시작»으로 가는 유일한 칸을 막았다).
       // lenient: 옮길 수 있는 이벤트는 셈하지 않는다(문을 세운 뒤 닿는 칸으로 옮긴다).
       const before = new Set(unreachableEvents(probeProject, mapId));
-      const keepsReach = (c: Cell, lenientMode: boolean) => {
-        const trial = { ...probe, events: probe.events.filter((e) => !(lenientMode && movable.has(e.id) && e.x === c.x && e.y === c.y)).map((e) => e.id === door.id ? { ...e, x: c.x, y: c.y } : e) } as GameMap;
+      const keepsReach = (c: Cell, lenientMode: boolean, base0: GameMap = probe) => {
+        const trial = { ...base0, events: base0.events.filter((e) => !(lenientMode && movable.has(e.id) && e.x === c.x && e.y === c.y)).map((e) => e.id === door.id ? { ...e, x: c.x, y: c.y } : e) } as GameMap;
         return unreachableEvents({ ...probeProject, maps: { ...probeProject.maps, [mapId]: trial } } as Project, mapId).every((id) => before.has(id) || id === door.id || (lenientMode && movable.has(id)));
       };
-      const fits = (c: Cell & { clear?: number[] }) => piece.cells.every(([dx, dy, , layer]) => { const i = (c.y + piece.anchorDy + dy!) * w + c.x + dx!; return i >= 0 && (free(map, (layer === 2 ? 2 : 3) as Layer, i) || !!c.clear?.includes(i)); });
+      const fits = (c: Cell & { clear?: number[] }, on: GameMap = map) => piece.cells.every(([dx, dy, , layer]) => { const i = (c.y + piece.anchorDy + dy!) * w + c.x + dx!; return i >= 0 && (free(on, (layer === 2 ? 2 : 3) as Layer, i) || !!c.clear?.includes(i)); });
       at = strict.find((c) => fits(c) && keepsReach(c, false));
       if (!at) { at = lenient.find((c) => fits(c) && keepsReach(c, true)); if (at) evicting = true; }
+      // 방탈출 출구가 안 보이는데 북벽 발치가 모두 차 있으면: 발치의 한 칸짜리 소품(1×1 책상·상자 — 같은 이름 이웃 없음, 이벤트 없음) 하나를
+      // 출구가 있던 칸으로 옮기고 그 자리에 문을 세운다(2026-10-29 mt3 terra 잠긴 방: 발치 다섯 칸이 책장·책상·두루마리 선반이었다). 큰 가구는 옮기지 않는다.
+      if (!at && escapeGame && !dead) {
+        const to = door.y * w + door.x;
+        const strayArt = onDoorArt && !artAtWall;
+        const stripArt = (m: GameMap) => {
+          const name = base(layerTileAt(m, 3, to));
+          for (let y = door.y; y >= Math.max(0, door.y - 2); y--) { const t = layerTileAt(m, 3, y * w + door.x); if (t < 0 || base(t) !== name) break; setLayerTileAt(m, 3, y * w + door.x, -1); }
+        };
+        if ((free(map, 3, to) || strayArt) && free(map, 2, to)) {
+          for (let y = 2; y < map.height - 1 && !at; y++) for (let x = 0; x < w && !at; x++) {
+            const i = y * w + x;
+            if (!k.faces.has(map.lowerTiles[i - w]!) || !k.faces.has(map.lowerTiles[i - 2 * w]!) || !free(map, 2, i)) continue;
+            const t = layerTileAt(map, 3, i);
+            const name = base(t);
+            if (t < 0 || !name || events.some((e) => e.x === x && e.y === y)) continue;
+            const lone = !([[1, 0], [-1, 0], [0, 1], [0, -1]] as const).some(([dx, dy]) => { const nx = x + dx, ny = y + dy; return nx >= 0 && ny >= 0 && nx < w && ny < map.height && base(layerTileAt(map, 3, ny * w + nx)) === name; });
+            if (!lone || !free(map, 3, i - w) || !free(map, 3, i - 2 * w)) continue;
+            const p2 = structuredClone(probe);
+            if (strayArt) stripArt(p2);
+            setLayerTileAt(p2, 3, i, -1);
+            setLayerTileAt(p2, 3, to, t);
+            const p2Project = { ...probeProject, maps: { ...probeProject.maps, [mapId]: p2 } } as Project;
+            const reach2 = reachableCells(p2Project, p2);
+            const cell = reach2 ? northDoorCells(p2Project, p2, k, reach2, others).find((c) => c.x === x && c.y === y && !c.clear) : undefined;
+            if (cell && fits(cell, p2) && keepsReach(cell, false, p2)) { at = { ...cell, relocate: { from: i, to, tile: t, name } }; }
+          }
+        }
+      }
     }
     // 문 자리가 없어도, 아무 데로도 이어지지 않는 틈 위에 아무것도(이벤트·시작 칸) 없으면 벽으로 메운다 — 어둠으로 뻗은 막다른 통로보다 닫힌 벽이 낫다
     // (2026-10-28 mt3 flash: 빈 시작 맵을 치운 뒤 밀실 남쪽 틈이 막다른 길이 됐고, 북벽 발치는 가구와 «조사 시작»으로 가는 길뿐이었다).
-    if (!at && !onDoorArt) notes.push(!piece ? "이 칩셋에 벽에 세울 문 그림이 없다" : `문 「${door.name ?? door.id}」: 북벽 발치에 문 그림을 세울 자리가 없다(가구·다른 이벤트로 가는 길)`);
-    if (!at && !onDoorArt && !closable) notes.push("남쪽 틈 위에 이벤트·시작 칸이 있어 틈은 그대로 둠");
-    if (at || onDoorArt || closable) closeGaps();
+    // 북벽 발치에 문을 못 세운 방탈출(가구로 꽉 찬 북벽): 출구를 남쪽 벽 틈으로 낸다 — 남쪽 틈이 있으면 그 틈, 없으면 바닥과 맞닿은
+    // 남쪽 띠 한 칸을 바닥으로 튼다. 문 이벤트를 틈 칸에 두고(그 앞에서 아래를 보고 조사), 칩셋에 발깔개가 있으면 틈 앞 바닥에 깐다.
+    // 왜(2026-10-29 vm2 판정): terra 「멈춘 시계의 방」은 잠긴 출구가 그림 없는 서쪽 구석 칸이고 남쪽 틈은 시작 칸이라, 판정자가
+    // 「출구처럼 보이는 아래 통로가 무반응·출구 위치가 어디에도 없다」고 했다. flash 「잠긴 방」은 문이 방 한가운데 보이지 않는 칸이었다.
+    if (!at && !keepArt && escapeGame && !visible(door) && door.y !== map.height - 1) {
+      const south = southExitDoor(door);
+      if (south) return { notes: [...notes, ...south] };
+    }
+    if (!at && !keepArt) notes.push(!piece ? "이 칩셋에 벽에 세울 문 그림이 없다" : `문 「${door.name ?? door.id}」: 북벽 발치에 문 그림을 세울 자리가 없다(가구·다른 이벤트로 가는 길)`);
+    if (dead && !at && !keepArt && !closable) notes.push("남쪽 틈 위에 이벤트·시작 칸이 있어 틈은 그대로 둠");
+    if (dead && (at || keepArt || closable)) closeGaps();
     if (at && piece) {
+      const mapBeforeDoor = structuredClone(map);
+      // 벽이 아닌 자리에 선 옛 문 그림(바닥 가운데 «잠긴 나무 문»)은 걷는다 — 문이 둘로 보이지 않게.
+      if (onDoorArt && !artAtWall) {
+        const base = (t: number) => tileLabel(t).replace(/\s*\([^)]*\)\s*$/u, "");
+        const name = base(layerTileAt(map, 3, door.y * w + door.x));
+        for (let y = door.y; y >= Math.max(0, door.y - 2); y--) {
+          const t = layerTileAt(map, 3, y * w + door.x);
+          if (t < 0 || base(t) !== name) break;
+          setLayerTileAt(map, 3, y * w + door.x, -1);
+        }
+        notes.push(`벽이 아닌 바닥에 서 있던 문 그림 「${name}」 (${door.x},${door.y})을 걷음`);
+      }
+      if (at.relocate) {
+        setLayerTileAt(map, 3, at.relocate.from, -1);
+        setLayerTileAt(map, 3, at.relocate.to, at.relocate.tile);
+        notes.push(`북벽 발치의 한 칸 소품 「${at.relocate.name}」을 출구가 있던 칸 (${door.x},${door.y})으로 옮기고 그 자리에 문을 세움`);
+      }
       // 걸이(창·액자)를 걷어 낸 자리에 문을 세운다.
       const cleared = at.clear ?? [];
       const clearedName = cleared.length ? tileLabel(layerTileAt(map, 3, cleared[0]!)).replace(/\s*\([^)]*\)\s*$/u, "") : "";
@@ -366,7 +486,15 @@ export function dressInteriorExits(run: BuildRun, mapId: string): ExitDressResul
         if (cut.length) {
           const fixed = repairEventReach(run, mapId, cut);
           if (fixed.moved.length) notes.push(`문 자리 때문에 막힌 조사 칸을 옮김: ${fixed.moved.join(", ")}`);
-          for (const st of fixed.stuck) notes.push(`문 자리 때문에 막힌 조사 칸을 옮길 곳이 없다: ${st}`);
+          // 옮길 곳이 없으면 문을 세우지 않는다 — 조사 칸에 못 가면 게임이 끝나지 않는다(2026-10-29 mt3 argon 6×7 서재 재생: 문이 «책장»으로 가는
+          // 유일한 칸 (2,3)에 서고, 옮길 빈 칸이 없어 자동 플레이가 막혔다). 틈 메우기는 남긴다.
+          if (fixed.stuck.length) {
+            run.ctx.project = { ...project0, maps: { ...project0.maps, [mapId]: dead && !keepArt && !closable ? map0 : mapBeforeDoor } } as Project;
+            const kept = notes.filter((note) => !/^문 「|^문 자리 때문에|^벽이 아닌 바닥에|^북벽 발치/u.test(note) && !(dead && !keepArt && !closable && /^막다른 남쪽/u.test(note)));
+            notes.length = 0;
+            notes.push(...kept);
+            notes.push(`문 「${door.name ?? door.id}」: 북벽 발치 (${at.x},${at.y})에 세우면 조사 칸(${fixed.stuck.join(", ")})으로 가는 길이 막혀 문을 세우지 않음`);
+          }
         }
       }
       return { notes };

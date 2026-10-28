@@ -93,3 +93,32 @@ export function retireBlankStart(run: BuildRun): string[] {
   }
   return notes;
 }
+
+/**
+ * 이벤트도 들어오는 이동도 없는 빈 껍데기 맵(게임 점검 orphan-empty-map)을 지운다 — 같은 이름의 쓰는 맵이 따로 있거나(장소를 두 번 지은 흔적),
+ * 청사진 장소가 아닌 맵(방탈출 봉인으로 끊긴 「밀실 뒷방」)만. 청사진 장소인데 그 이름의 맵이 이것뿐이면 지우지 않는다(장소 짓기 몫).
+ * 왜(2026-10-29 vm1 재생): argon/jrpg 「시작 마을」·「마왕의 방」, flash/mystery 「2층 객실」은 같은 이름 맵을 한 번 더 지은 빈 사본이었고,
+ * argon/escape 「밀실 뒷방」은 탈출 봉인이 들어오는 이동을 지워 고아가 됐다 — 엔딩까지는 가지만 점검 막힘으로 남았다.
+ */
+export function retireOrphanMaps(run: BuildRun): string[] {
+  const notes: string[] = [];
+  const norm = (s: string | undefined) => (s ?? "").replace(/\s+/gu, "").toLowerCase();
+  const inboundOf = (project: Project): Set<string> => {
+    const into = new Set<string>();
+    for (const m of Object.values(project.maps)) for (const e of m.events ?? []) for (const t of transfersOf(e.pages ?? (e as { commands?: unknown }).commands)) if (t.mapId !== m.id) into.add(t.mapId);
+    for (const ce of (project.commonEvents ?? []) as unknown as { commands?: unknown }[]) for (const t of transfersOf(ce.commands)) into.add(t.mapId);
+    return into;
+  };
+  const project0 = run.ctx.project;
+  const into = inboundOf(project0);
+  const orphan = (m: GameMap) => m.id !== project0.startMapId && !(m.events ?? []).length && !into.has(m.id);
+  const places = new Set((project0.gameBlueprint?.steps ?? []).map((s) => norm(s.place)));
+  for (const map of Object.values(project0.maps)) {
+    if (!orphan(map)) continue;
+    const twin = Object.values(project0.maps).find((m) => m.id !== map.id && norm(m.name) === norm(map.name) && !orphan(m));
+    if (!twin && places.has(norm(map.name))) continue;
+    const removed = run.call("remove_map", { mapId: map.id });
+    notes.push(removed.ok ? `빈 껍데기 맵 「${map.name}」(${map.id}) 지움(${twin ? `같은 이름 「${twin.name}」(${twin.id})을 쓴다` : "청사진 장소가 아니고 들어오는 길이 없다"})` : `빈 껍데기 맵 「${map.name}」 지우기 실패(${String(removed.summary).slice(0, 120)})`);
+  }
+  return notes;
+}
