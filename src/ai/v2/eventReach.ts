@@ -11,6 +11,7 @@ import { canMove, isPassable } from "@/project/collision";
 import { playerAnchors } from "@/editor/tools/transferReachability";
 import type { GameEvent, GameMap, Project } from "@/project/types";
 import { objectAt, tileLabel } from "./people";
+import { objectBaseLabel, objectClusterAt } from "@/project/objectFootprint";
 import type { BuildRun } from "./types";
 
 type Cell = { x: number; y: number };
@@ -430,4 +431,89 @@ export function clearTransferLanes(run: BuildRun, mapId: string): ReachRepair {
     else stuck.push(`${name}: ${String(res.summary).slice(0, 120)}`);
   }
   return { moved, stuck };
+}
+
+// ── 조사·대화 대상 앞 비우기 ──────────────────────────────────────────────────────
+// 2026-10-29 VM 측정 판(deepseek mystery 「은빛수레 여관」): 판정자 「가구·의자 때문에 NPC 앞으로 가는 길이 막히는 곳이 많다(베른·도릭·창고)」.
+// 닿는지 검사(unreachableEvents·repairEventReach)는 «어느 한 면»만 닿아도 통과시킨다 — 베른(12,7)은 앞(아래) 칸에 의자가 놓여
+// 옆·뒤로 돌아가야만 말을 걸 수 있었다. 3/4 시점에서 사람은 대상의 앞(아래 칸)에서 위를 보고 말을 건다고 기대한다.
+// 규칙: 조사·대화 이벤트의 아래 칸에 못 닿는데 둘레 한 칸 안의 앉는 가구(의자·걸상·벤치) 하나를 치우면 닿게 되면 그 가구를 치운다.
+// 탁자·장식장 같은 다른 가구는 건드리지 않는다(자리가 안 열리면 그대로 둔다 — 옆·뒤로는 여전히 닿는다).
+const SEAT_LABEL = /의자|걸상|스툴|벤치|장의자|chair|stool|bench/iu;
+
+const singleTileCache = new WeakMap<object, Set<string>>();
+/** 이름표가 (0,0) 한 칸뿐인 물건 이름들(그 칩셋). */
+function singleTileLabels(project: Project, map: GameMap): Set<string> {
+  const tileset = project.tilesets[map.tilesetId];
+  const meta = (tileset?.tileMeta ?? []) as unknown as ({ label?: string } | undefined)[];
+  const hit = singleTileCache.get(meta);
+  if (hit) return hit;
+  const parts = new Map<string, Set<string>>();
+  for (const t of meta) {
+    const label = t?.label;
+    if (!label) continue;
+    const coord = /\((-?\d+,\s*-?\d+)\)\s*$/u.exec(label)?.[1]?.replace(/\s/gu, "") ?? "0,0";
+    const base = objectBaseLabel(label);
+    (parts.get(base) ?? parts.set(base, new Set()).get(base)!).add(coord);
+  }
+  const out = new Set([...parts].filter(([, coords]) => coords.size === 1 && coords.has("0,0")).map(([base]) => base));
+  singleTileCache.set(meta, out);
+  return out;
+}
+
+export function clearTargetFronts(run: BuildRun, mapId: string): string[] {
+  const notes: string[] = [];
+  for (let round = 0; round < 12; round++) {
+    const project = run.ctx.project;
+    const map = project.maps[mapId];
+    if (!map) break;
+    const reach = reachableCells(project, map);
+    if (!reach) break;
+    const w = map.width;
+    const tileset = project.tilesets[map.tilesetId];
+    const baseOf = (t: number | undefined) => (typeof t === "number" && t >= 0 ? objectBaseLabel(tileset?.tileMeta?.[t]?.label ?? "") : "");
+    let changed = false;
+    for (const ev of map.events ?? []) {
+      if (ev.id.startsWith("ev_objective") || hasTransfer(ev.pages ?? ev.commands)) continue;
+      if (!(ev.pages ?? []).some((p) => (typeof p.trigger === "string" ? p.trigger : p.trigger?.kind) === "action")) continue;
+      const front = { x: ev.x, y: ev.y + 1 };
+      if (front.y >= map.height || reach[front.y * w + front.x]) continue;
+      if (!nextTo(map, reach, ev) && !reach[ev.y * w + ev.x]) continue; // 아예 못 닿는 것은 repairEventReach 몫
+      const seen = new Set<string>();
+      const seats: { label: string; cells: number[] }[] = [];
+      for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+        const cluster = objectClusterAt(project, map, front.x + dx, front.y + dy);
+        if (!cluster || !SEAT_LABEL.test(cluster.label)) continue;
+        const key = [...cluster.cells].sort((a, b) => a - b).join(",");
+        if (seen.has(key)) continue;
+        seen.add(key);
+        seats.push(cluster);
+      }
+      // 같은 이름표가 이어지면 의자 여럿이 한 묶음이 된다(탁자 둘레 의자 줄) — 한 칸짜리 의자면 칸마다 따로(앞 칸에 가까운 것부터) 치워 본다.
+      const units: { label: string; cells: number[] }[] = [];
+      const dist = (i: number) => Math.abs((i % w) - front.x) + Math.abs(Math.floor(i / w) - front.y);
+      for (const seat of seats) {
+        if (singleTileLabels(project, map).has(seat.label)) for (const i of [...seat.cells].sort((a, b) => dist(a) - dist(b))) units.push({ label: seat.label, cells: [i] });
+        else units.push(seat);
+      }
+      units.sort((a, b) => a.cells.length - b.cells.length || dist(a.cells[0]!) - dist(b.cells[0]!));
+      for (const seat of units) {
+        const copy = structuredClone(map) as GameMap & Record<string, number[] | undefined>;
+        for (const i of seat.cells) for (const key of ["upperTiles", "upperOverlayTiles"] as const) {
+          const layer = copy[key];
+          if (layer && baseOf(layer[i]) === seat.label) layer[i] = -1;
+        }
+        const trial = { ...project, maps: { ...project.maps, [mapId]: copy } } as Project;
+        const after = reachableCells(trial, copy);
+        if (!after?.[front.y * w + front.x]) continue;
+        run.ctx.project = trial;
+        notes.push(`${String(ev.name ?? ev.id)}(${ev.x},${ev.y}) 앞을 막던 「${seat.label}」 ${seat.cells.map((i) => `(${i % w},${Math.floor(i / w)})`).join("·")} 을 치움`);
+        changed = true;
+        break;
+      }
+      if (changed) break;
+    }
+    if (!changed) break;
+  }
+  return notes;
 }
