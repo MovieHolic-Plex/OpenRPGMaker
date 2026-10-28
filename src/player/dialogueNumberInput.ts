@@ -215,6 +215,10 @@ export function showNumberInput(
       if (isConfirmKey(event.key)) {
         event.preventDefault();
         event.stopPropagation();
+        // 아무 자리도 넣지 않은 결정 키·누르고 있는 결정 키는 확정하지 않는다 — 앞 대사를 넘기던 Enter 연타·누름 반복이
+        // 빈 칸 그대로(0) 입력창을 닫아 «철컥… 맞지 않는다»가 플레이어가 고르기도 전에 떴다(2026-10-29 vm3 flash escape 판정
+        // «자동 입력»). 빈 값 확정은 확인 단추를 직접 누를 때만.
+        if (event.repeat || !value) return;
         finish();
       }
     };

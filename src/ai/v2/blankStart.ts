@@ -5,6 +5,7 @@
 import { isPassable } from "@/project/collision";
 import type { GameEvent, GameMap, Project } from "@/project/types";
 import { blueprintMapFor } from "./blueprintPath";
+import { resolveWhere } from "./people";
 import type { BuildRun } from "./types";
 
 type Transfer = { mapId: string; x: number; y: number };
@@ -19,6 +20,71 @@ function transfersOf(node: unknown, out: Transfer[] = []): Transfer[] {
 }
 
 const commandKinds = (e: GameEvent): string[] => (e.pages ?? []).flatMap((p) => (p.commands ?? []).map((c) => String((c as { kind?: string }).kind)));
+
+/** 바닥 한 가지·위층/겹 없음(이벤트는 보지 않는다) — 잔디 한 장뿐인 맵. */
+export function isBareTileMap(map: GameMap): boolean {
+  if (Object.keys(map.lowerTileStacks ?? {}).length || Object.keys(map.upperTileStacks ?? {}).length) return false;
+  if (map.upperTiles.some((t) => t >= 0)) return false;
+  for (const key of ["lowerOverlayTiles", "upperOverlayTiles"] as const) {
+    const layer = (map as unknown as Record<string, number[] | undefined>)[key];
+    if (layer?.some((t) => t >= 0)) return false;
+  }
+  const first = map.lowerTiles[0];
+  return map.lowerTiles.every((t) => t === first);
+}
+
+// 청사진 장소가 빈 맵(2026-10-29 vm3 flash escape): 모델이 청사진 장소를 지금 맵 이름 「빈 맵」 그대로 적고 그 위에 책상·쪽지·자물쇠 이벤트만 두었다 —
+// 장소가 «있으니» 장소 자동 짓기가 돌지 않아 잔디 한 장 위의 반짝이 세 개로 끝났다(판정 «단일 빈 맵»). 끝맺음이 그런 단계의 장소 이름을
+// 요청·제목의 장소 낱말(「잠긴 방」…)로 바꿔 장소 짓기가 실제 방을 짓게 하고, 지은 뒤 빈 맵의 이벤트를 그 방으로 옮긴다(대사·스위치 그대로).
+const PLACE_NOUN = /([가-힣]+\s)?(밀실|다락방|지하실|서재|창고|연구실|실험실|교실|저택|오두막|감옥|독방|방)(?=$|[^가-힣]|의|에|에서|을|를|이|가|은|는)/u;
+/** 빈 맵을 가리키는 청사진 단계의 장소 이름을 바꾼다. 바꾼 이름 → 빈 맵 id. */
+export function renameBareBlueprintPlaces(project: Project): { project: Project; renamed: Map<string, string> } {
+  const renamed = new Map<string, string>();
+  const bp = project.gameBlueprint;
+  if (!bp) return { project, renamed };
+  const bareOf = new Map<string, string>();
+  for (const s of bp.steps) { const m = blueprintMapFor(project, s.place); if (m && isBareTileMap(m) && !bareOf.has(s.place)) bareOf.set(s.place, m.id); }
+  if (!bareOf.size) return { project, renamed };
+  const text = [bp.title, (bp as { request?: string }).request, bp.playerGoal].filter(Boolean).join(" ");
+  const noun = PLACE_NOUN.exec(text);
+  const base = noun ? `${noun[1] ?? ""}${noun[2]}`.trim() : "방";
+  const steps = bp.steps.map((s) => {
+    const bare = bareOf.get(s.place);
+    if (!bare) return s;
+    let name = [...renamed.entries()].find(([, id]) => id === bare)?.[0];
+    if (!name) {
+      name = base;
+      for (let n = 2; Object.values(project.maps).some((m) => m.name === name) || renamed.has(name); n += 1) name = `${base} ${n}`;
+      renamed.set(name, bare);
+    }
+    return { ...s, place: name };
+  });
+  return { project: { ...project, gameBlueprint: { ...bp, steps } }, renamed };
+}
+
+/** 빈 맵의 이동이 아닌 이벤트를 새 장소 맵으로 옮긴다(이름 낱말 앞 칸으로). 메모 목록. */
+export function moveBareEvents(project: Project, bareId: string, toId: string): { project: Project; notes: string[]; ids: string[] } {
+  const bare = project.maps[bareId], to = project.maps[toId];
+  if (!bare || !to || bareId === toId) return { project, notes: [], ids: [] };
+  const isTransferOnly = (e: GameEvent) => { const k = commandKinds(e); return k.length > 0 && k.every((x) => x === "transfer"); };
+  const moving = bare.events.filter((e) => !isTransferOnly(e));
+  if (!moving.length) return { project, notes: [], ids: [] };
+  let target: GameMap = { ...to, events: [...to.events] };
+  const taken: { x: number; y: number }[] = [];
+  const notes: string[] = [];
+  const ids: string[] = [];
+  for (const ev of moving) {
+    const cur = { ...project, maps: { ...project.maps, [toId]: target } };
+    const at = resolveWhere(cur, target, `${String((ev as { name?: string }).name ?? "")} 앞`, { avoid: taken, role: "event" }).cell;
+    taken.push(at);
+    const id = target.events.some((e) => e.id === ev.id) ? `${ev.id}_m` : ev.id;
+    target = { ...target, events: [...target.events, { ...ev, id, x: at.x, y: at.y }] };
+    ids.push(id);
+    notes.push(`「${String((ev as { name?: string }).name ?? ev.id)}」 빈 맵(${ev.x},${ev.y}) → 「${to.name}」(${at.x},${at.y})`);
+  }
+  const left = { ...bare, events: bare.events.filter((e) => isTransferOnly(e)) };
+  return { project: { ...project, maps: { ...project.maps, [bareId]: left, [toId]: target } }, notes, ids };
+}
 
 /** 바닥 한 가지·위층/겹 없음·이벤트는 이동만(사람 그림·대사 없음). */
 export function isPlaceholderMap(map: GameMap): boolean {
@@ -88,6 +154,11 @@ export function retireBlankStart(run: BuildRun): string[] {
       const r = run.call("remove_event", { mapId, eventId: event.id });
       if (r.ok) notes.push(`「${run.ctx.project.maps[mapId]?.name ?? mapId}」의 빈 맵 쪽 이동 「${event.name ?? event.id}」(${event.x},${event.y}) 지움`);
     }
+    // 오프닝·타이틀이 빈 맵 화면(map-view:<빈 맵>)을 배경으로 쓰면 지우기가 무결성 검사에서 막힌다(2026-10-29 vm3 flash escape:
+    // system.opening.scenes[0].composition) — 그 배경을 청사진 첫 장소 화면으로 바꾼 뒤 지운다.
+    const viewRef = `map-view:${blank.id}`;
+    const sys = JSON.stringify(run.ctx.project.system ?? {});
+    if (sys.includes(`"${viewRef}"`)) run.ctx.project = { ...run.ctx.project, system: JSON.parse(sys.split(`"${viewRef}"`).join(`"map-view:${first.id}"`)) };
     const removed = run.call("remove_map", { mapId: blank.id });
     notes.push(removed.ok ? `쓰지 않는 빈 맵 「${blank.name}」(${blank.id}) 지움` : `빈 맵 「${blank.name}」 지우기 실패(${String(removed.summary).slice(0, 120)})`);
   }

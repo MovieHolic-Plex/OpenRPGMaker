@@ -10,6 +10,7 @@
 //  - 마지막 단계는 조건이 차면 엔딩을 부른다(엔딩이 없으면 청사진 ending 으로 정의한다).
 // 짓는 것은 puzzle.ts 의 buildPuzzleChain(검증된 사슬 빌더) — 이 파일은 청사진 → 사슬 인자 번역과 자리 고르기만 한다.
 // 지은 뒤 청사진의 place·event 를 실제 맵·이벤트 이름에 맞춰 둔다(출하 검사 walkBlueprint 가 같은 이름으로 걷는다).
+import { alignCodeClues, shownToken } from "./codeClues";
 import type { GameMap, Project } from "@/project/types";
 import { normalizeGameBlueprint, type GameBlueprint } from "@/project/gameBlueprint";
 import { buildPuzzleChain, type ChainLink } from "./puzzle";
@@ -530,13 +531,17 @@ function buildBlueprintPathCore(run: BuildRun, text: readonly PathStepText[] = [
     }
     const needs = k > 0 ? prevGives : undefined;
     const needText = step.needs && !/^(시작|없음|none|start)$/iu.test(step.needs.trim()) ? step.needs : needs;
-    const lockedDefault = needText ? [`${needText}${josa(needText, "이", "가")} 있어야 할 것 같다.`] : undefined;
+    const needShown = needText ? shownToken(needText) : undefined;
+    const lockedDefault = needShown ? [`${needShown}${josa(needShown, "이", "가")} 있어야 할 것 같다.`] : undefined;
     let base: Omit<ChainLink, "role"> = { mapId: map.id, ...(existing ? { eventId: existing.id } : { name: step.event, at: at! }), ...(needs ? { needs } : {}), ...(!needs && prevCondition ? { needsCondition: prevCondition } : {}) };
     prevCondition = undefined;
     // 번호·암호 단계(「비밀번호 입력」「숫자 자물쇠」): 모델이 code 를 안 줬어도 함수가 정답을 정하고, 앞 단계 대사에 답이 없으면
     // 그 답을 적은 단서 고리를 바로 앞에 둔다(앞 단계 결과로 열린다) — 이 단계는 그 단서를 읽어야 열리고 번호를 맞혀야 넘어간다.
     let clueLearn: string | undefined;
-    const code = isCodeStep(step) || t?.code ? (t?.code ?? stepCode(`${bp.title}|${step.id}|${step.event}`)) : undefined;
+    // 모델이 code 를 안 줬어도 앞 단계·이 단계 대사(또는 그대로 둔 앞 이벤트 대사)에 번호를 적었으면 그 번호가 정답이다 — 함수가 새 번호를 정하면
+    // 단서 번호가 둘이 된다(2026-10-29 vm3 flash escape: 책상 「비밀번호는 4862다」 + 함수 쪽지 「5858」).
+    const told0 = isCodeStep(step) && !t?.code ? modelCode(run, [...(k > 0 ? byId.get(steps[k - 1]!.id)?.lines ?? [] : []), ...(t?.lines ?? [])], keptBefore) : undefined;
+    const code = isCodeStep(step) || t?.code ? (t?.code ?? told0 ?? stepCode(`${bp.title}|${step.id}|${step.event}`)) : undefined;
     if (code) {
       const prevLink = links.at(-1);
       let told = prevLink && linkStep.at(-1) === k - 1 && (prevLink.lines ?? []).some((l) => l.includes(code));
@@ -573,7 +578,8 @@ function buildBlueprintPathCore(run: BuildRun, text: readonly PathStepText[] = [
       links.push({ ...base, role: "code", code, ...(t?.options?.length ? { options: t.options } : {}), lines: t?.lines ?? ["번호 자물쇠다. 알아낸 번호를 맞춰 보자."], ...(locked ? { lockedLines: locked } : {}), ...(t?.wrongLines?.length ? { wrongLines: t.wrongLines } : {}), ...(t?.doneLines?.length ? { doneLines: t.doneLines } : {}), reward });
     } else {
       const item = isItem(step.gives);
-      const reward = item ? { item: step.gives } : { flag: step.gives, lines: [`『${step.gives}』${josa(step.gives, "을", "를")} 알아냈다.`] };
+      const givesShown = shownToken(step.gives);
+      const reward = item ? { item: step.gives } : { flag: step.gives, lines: [`『${givesShown}』${josa(givesShown, "을", "를")} 알아냈다.`] };
       links.push({ ...base, role: "pickup", lines, reward, ...(t?.lockedLines?.length ? { lockedLines: t.lockedLines } : lockedDefault ? { lockedLines: lockedDefault } : {}), doneLines: t?.doneLines?.length ? t.doneLines : ["더는 볼 것이 없다."] });
     }
     prevGives = step.gives;
@@ -601,9 +607,23 @@ function buildBlueprintPathCore(run: BuildRun, text: readonly PathStepText[] = [
   let blueprint: GameBlueprint | undefined;
   try { blueprint = normalizeGameBlueprint({ ...bp, steps }); } catch { blueprint = undefined; }
   if (blueprint) run.ctx.project = { ...run.ctx.project, gameBlueprint: blueprint };
+  // 자물쇠 대사가 입력 전에 결과(«입력하자 열렸다»)를 말하면 정답 뒤로 옮기고, 단서 번호와 정답을 맞춘다(codeClues.ts).
+  const aligned = alignCodeClues(run.ctx.project);
+  run.ctx.project = aligned.project;
   const objectiveNotes = stepObjectives(run, steps, links.map((l, li) => ({ step: linkStep[li]!, name: l.name ?? "", made: eventIds[li] })));
   const roles = links.map((l, i) => `${linkStep[i]! < 0 ? `(단서) ${l.name}` : `${steps[linkStep[i]!]!.id} ${steps[linkStep[i]!]!.event}`}(${l.role}${l.code ? ` 번호 ${l.code}` : ""}${l.needs ? ` ← ${l.needs}` : l.needsCondition ? " ← 앞 단계 이벤트가 켜는 것" : ""})`).join(" → ");
   return { ...built, ...(blueprint ? { blueprint } : {}), warnings: [...warnings, ...built.warnings], summary: `${sealed.length ? `${sealed.join(" / ")}. ` : ""}청사진 경로를 지었다: ${kept.length ? `(그대로 둔 단계: ${kept.join(", ")}) ` : ""}${roles} → 엔딩 「${ending!.name ?? ending!.id}」(${ending!.id}). ${built.summary}${objectiveNotes.length ? ` 목표 줄: ${objectiveNotes.join(" / ")}` : ""}` };
+}
+
+/** 모델 대사에 적힌 번호(3~6자리) 하나 — 둘 이상이면 고르지 않는다. */
+function modelCode(run: BuildRun, lines: readonly string[], kept: { mapId: string; eventId: string } | undefined): string | undefined {
+  const texts = [...lines];
+  if (kept) {
+    const ev = run.ctx.project.maps[kept.mapId]?.events.find((e) => e.id === kept.eventId);
+    for (const m of JSON.stringify(ev?.pages ?? []).matchAll(/"body":"((?:[^"\\]|\\.)*)"/gu)) texts.push(m[1]!);
+  }
+  const nums = [...new Set(texts.filter((l) => /비밀번호|번호|암호|숫자|자물쇠|code|password/iu.test(l)).flatMap((l) => l.match(/(?<!\d)\d{3,6}(?!\d)/gu) ?? []))];
+  return nums.length === 1 ? nums[0] : undefined;
 }
 
 /** 앞선 빌드가 남긴 「X 조사를 살펴보았다」(이벤트 이름 그대로) 대사를 「X를 살펴보았다」로 — 2026-10-29 vm2 flash 판정 「이벤트 이름을 그대로 노출」. */

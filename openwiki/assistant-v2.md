@@ -129,6 +129,20 @@ v1 의 `script_cutscene` 비트로 옮긴다(`events.ts`).
 - **큰 몸 아래 칸 금지**(`people.ts eventBodyCells`·`resolveWhere`): 청사진 조사 칸은 1×1 보다 큰 이벤트(키운 보스 3×2 등)의 몸이 덮은 칸에 놓지 않는다. vm1 deepseek 「동굴 입구의 봉인」(10,7)·vm2 terra 「동굴의 흔적」(25,8)이 보스 몸 밑이라 자동 플레이가 조사할 이벤트를 못 찾았다.
 - **시작 칸은 가장 큰 걷는 덩이에**(`authorBeodeulTown.keepStartWalkable`, 이제 짓기 맨 끝): 지나갈 수 있어도 막힌 주머니(`largestWalkArea` 밖)면 옮긴다.
 
+## 번호 자물쇠·빈 맵 탈출 (2026-10-29 vm3 flash escape 판정 «가짜 단서·자동 입력»·«단일 빈 맵»)
+
+- **단서 번호 = 정답**(`blueprintPath.modelCode`, `codeClues.alignCodeClues`): 모델이 code 를 안 줘도 앞 단계·이 단계 대사(또는 그대로 둔 앞 이벤트)에
+  번호가 하나 적혀 있으면 그것을 정답으로 쓴다(함수가 새 번호·쪽지를 만들지 않는다). 끝맺음과 경로 짓기 끝에서 이미 지은 자물쇠도 맞춘다 —
+  정답이 모델 대사에 없고 모델 «번호» 대사의 같은 자릿수 번호가 하나면 그 번호로 정답·함수 쪽지를 바꾸고, 정답이 있으면 다른 번호를 정답으로 고쳐 쓴다
+  (다른 자물쇠의 정답은 건드리지 않는다). 입력창 앞의 «입력하자 열렸다» 같은 결과 대사는 정답 분기 맨 앞으로 옮긴다.
+- **빈 값 결정 키로 입력창이 닫히지 않는다**(`src/player/dialogueNumberInput.ts`): 자리를 하나도 넣지 않은 Enter·누름 반복 Enter 는 무시 — 대사를 넘기던 Enter 가
+  빈 칸(0)으로 확정해 «맞지 않는다»가 먼저 떴다. 빈 값 확정은 확인 단추를 직접 누를 때만.
+- **청사진 영문 id 대사**(`codeClues.shownToken`·`humanizeBlueprintTokens`): gives/needs 가 `clue_number` 같은 영문 id 면 대사에는 뜻 낱말(단서·열쇠…)로.
+- **청사진 장소가 빈 맵**(`blankStart.renameBareBlueprintPlaces`·`moveBareEvents`, `finishAutoBuild`·`verbs.buildPlaces`): 장소가 잔디 한 장뿐인 맵(「빈 맵」)이면
+  요청·제목의 장소 낱말(「잠긴 방」…)로 이름을 바꿔 장소 자동 짓기가 실제 방을 짓고, 빈 맵의 이벤트를 그 방으로 옮긴 뒤 시작을 옮기고 빈 맵을 지운다.
+  옮긴 이벤트는 시작을 옮긴 뒤 `repairEventReach` 로 이름이 가리키는 물건(책상…)·문 그림 칸에 앉힌다. 오프닝·타이틀이 빈 맵 화면(`map-view:<id>`)을 쓰면
+  지우기 전에 첫 장소 화면으로 바꾼다(무결성 검사가 지우기를 막았다).
+
 ## 켜는 법
 
 - 편집기 주소 `?assistant=v2`, 또는 `localStorage['oprn:assistant-v2'] = '1'`(`src/ai/v2/switch.ts`). `?assistant=v1` 이나 `'0'` 이면 끈다. **기본은 v1** — 기본을 바꾸는 것은 사용자 결정이다.

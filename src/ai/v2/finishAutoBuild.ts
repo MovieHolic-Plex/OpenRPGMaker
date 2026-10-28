@@ -10,12 +10,23 @@ import { applyShipDefaults } from "./shipDefaults";
 import { refreshObjectiveRoutes } from "./discoverability";
 import { applyBlueprintAssembly } from "@/project/blueprintAssembly";
 import { applyBlueprintOpening } from "@/editor/tools/blueprintOpening";
+import { renameBareBlueprintPlaces } from "./blankStart";
+import { alignCodeClues, humanizeBlueprintTokens } from "./codeClues";
 
 /** 청사진 자동 짓기(한 실행에 한 번씩 — 세션 깃발). 무엇을 지었는지 조수에게 줄 글(없으면 undefined). */
 export async function runFinishAutoBuild(env: PiAssistantV2Env, session: V2Session): Promise<string | undefined> {
   let autoPath: string | undefined;
   if (env.ctx.project.gameBlueprint) {
     const done: string[] = [];
+    // 청사진 장소가 잔디 한 장뿐인 빈 맵이면 장소 이름을 요청의 장소 낱말로 바꿔 아래 장소 짓기가 실제 방을 짓게 한다(blankStart.renameBareBlueprintPlaces).
+    if (session.buildPlaces && !session.autoPlacesDone) {
+      const bare = renameBareBlueprintPlaces(env.ctx.project);
+      if (bare.renamed.size) {
+        env.ctx.project = bare.project;
+        session.barePlaces = bare.renamed;
+        done.push(`빈 맵 장소: 청사진 장소 「빈 맵」을 ${[...bare.renamed.keys()].map((n) => `「${n}」`).join("·")}(으)로 지을 장소로 바꿈`);
+      }
+    }
     let walked = walkBlueprint(env.ctx.project).blockers;
     if (session.buildPlaces && !session.autoPlacesDone && walked.some((b) => b.id === "blueprint-place-missing" || b.id === "blueprint-place-unreachable")) {
       session.autoPlacesDone = true;
@@ -31,6 +42,14 @@ export async function runFinishAutoBuild(env: PiAssistantV2Env, session: V2Sessi
       const built = await session.buildPath([...walked.map((b) => b.id), ...(noHealing ? ["combat-no-healing"] : [])].join(","));
       env.emit({ type: "execution_status", name: "v2.blueprint.auto_path", ok: built.ok, summary: `청사진 경로 자동 짓기 — ${built.summary.slice(0, 300)}` });
       done.push(built.ok ? `경로: ${built.summary.slice(0, 600)}` : `경로 짓기 실패: ${built.summary.slice(0, 400)} — 이 이유를 고친 뒤 build_blueprint_path 를 부른다.`);
+    }
+    // 번호 자물쇠 ↔ 단서 대사 맞추기 + 청사진 영문 id 대사 고치기(codeClues.ts) — 모델이 지은 경로에도 돈다.
+    {
+      const aligned = alignCodeClues(env.ctx.project);
+      const human = humanizeBlueprintTokens(aligned.project);
+      env.ctx.project = human.project;
+      const fixed = [...aligned.notes, ...(human.notes.length ? [`청사진 id 대사 ${human.notes.length}줄을 뜻 낱말로`] : [])];
+      if (fixed.length) done.push(`번호·단서 대사: ${fixed.join(" / ").slice(0, 500)}`);
     }
     if (session.clearLanes && !session.autoLanesDone) {
       session.autoLanesDone = true;

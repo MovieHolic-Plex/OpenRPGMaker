@@ -31,9 +31,9 @@ import { buildScene, SCENE_SCHEMA, type SceneSpec } from "./scene";
 import { buildPuzzleChain, sealLockedRoom, type ChainArgs } from "./puzzle";
 import { stageMysteryCase } from "./mysteryCase";
 import { BUILD_BLUEPRINT_PATH_SCHEMA, blueprintMapFor, buildBlueprintPath, sealEscapeExits, type PathStepText } from "./blueprintPath";
-import { clearTargetFronts, clearTransferLanes } from "./eventReach";
+import { clearTargetFronts, clearTransferLanes, repairEventReach } from "./eventReach";
 import { dressInteriorExits } from "./exitDress";
-import { isPlaceholderMap, retireBlankStart, retireOrphanMaps } from "./blankStart";
+import { isPlaceholderMap, moveBareEvents, retireBlankStart, retireOrphanMaps } from "./blankStart";
 import { chaserEvents, ensureChaserHidingSpots, mapHidingEvents, markHidingSpots } from "@/project/chaserHiding";
 import { relocateLeadingFace } from "@/editor/tools/eventCompile";
 import { dungeonGateSpot, pickTransferSpot } from "./transferSpot";
@@ -82,6 +82,8 @@ export class V2Session {
   autoPathDone = false;
   /** 끝맺음에서 청사진 장소를 함수가 대신 지었는가(한 번만). */
   autoPlacesDone = false;
+  /** 빈 맵을 가리키던 청사진 장소의 새 이름 → 그 빈 맵 id(renameBareBlueprintPlaces). 장소를 지으면 빈 맵 이벤트를 옮긴다. */
+  barePlaces?: Map<string, string>;
   /** 끝맺음에서 이동 칸 앞을 막는 이벤트를 옮겼는가(한 번만). */
   autoLanesDone = false;
   /** 이동 칸(착지·문) 앞을 막는 이벤트를 옆으로 옮긴다(createV2Tools 가 건다). 한 일 목록. */
@@ -1005,7 +1007,9 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     const notes: string[] = [];
     // 시작 맵이 빈 자리표시 맵(잔디 한 장)이면 그 맵과 잇지 않는다 — 장소를 지은 뒤 retireBlankStart 가 시작을 첫 장소로 옮기고 빈 맵을 지운다.
     const start0 = env.ctx.project.maps[env.ctx.project.startMapId];
-    let prev: { mapId: string; spec?: PlaceSpec; result?: PlaceBuildResult } = { mapId: start0 && isPlaceholderMap(start0) ? "" : env.ctx.project.startMapId };
+    const bareIds = new Set(session.barePlaces?.values() ?? []);
+    const settle: { mapId: string; ids: string[] }[] = [];
+    let prev: { mapId: string; spec?: PlaceSpec; result?: PlaceBuildResult } = { mapId: start0 && (isPlaceholderMap(start0) || bareIds.has(start0.id)) ? "" : env.ctx.project.startMapId };
     for (const step of bp.steps) {
       let map = blueprintMapFor(env.ctx.project, step.place);
       if (!map) {
@@ -1024,6 +1028,14 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
         if (!result.ok || !result.mapIds[0] || !env.ctx.project.maps[result.mapIds[0]]) { notes.push(`「${step.place}」 짓기 실패: ${result.summary.slice(0, 160)}`); continue; }
         const first = env.ctx.project.maps[result.mapIds[0]]!;
         if (first.name !== step.place) run.call("set_map_properties", { mapId: first.id, name: step.place });
+        const bareId = session.barePlaces?.get(step.place);
+        if (bareId) {
+          session.barePlaces!.delete(step.place);
+          const moved = moveBareEvents(env.ctx.project, bareId, first.id);
+          env.ctx.project = moved.project;
+          if (moved.notes.length) notes.push(`빈 맵 이벤트를 「${step.place}」로 옮김: ${moved.notes.join(", ")}`);
+          if (moved.ids.length) settle.push({ mapId: first.id, ids: moved.ids });
+        }
         const record: PlaceRecord = { builder: builder.id, spec, result, rounds: 0 };
         for (const mapId of result.mapIds) session.places.set(mapId, record);
         const link = prev.mapId && env.ctx.project.maps[prev.mapId] && prev.mapId !== first.id ? linkChild(prev.mapId, prev.spec, prev.result, spec, result) : "";
@@ -1041,6 +1053,9 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
       prev = { mapId: map.id, ...(known ? { spec: known.spec, result: known.result } : {}) };
     }
     for (const n of retireBlankStart(run)) notes.push(n);
+    // 옮긴 조사 이벤트를 이름이 가리키는 물건(책상·쪽지…)·문 그림 칸으로 — 빈 맵에서는 물건이 없어 아무 칸이었다.
+    // 시작이 새 방으로 옮겨진 뒤에 돈다(걸어 닿는지는 시작점에서 잰다).
+    for (const { mapId, ids } of settle) { const rep = repairEventReach(run, mapId, ids); if (rep.moved.length) notes.push(`옮긴 이벤트 자리 맞춤: ${rep.moved.join(", ").slice(0, 300)}`); }
     if (notes.length) await env.checkpoint("auto_places");
     return notes;
   };
