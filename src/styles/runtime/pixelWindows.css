@@ -86,6 +86,8 @@
 .battle-scene:is([data-battle-ui-style])[data-battle-skin][data-battle-skin-family][data-battle-layout] .battle-result-panel.battle-result-pixel .battle-result-title::after { content: "!"; }
 .battle-scene:is([data-battle-ui-style])[data-battle-skin][data-battle-skin-family][data-battle-layout] .battle-result-pixel .battle-result-summary-value { color: var(--px-gain); font-variant-numeric: tabular-nums; }
 .battle-scene:is([data-battle-ui-style])[data-battle-skin][data-battle-skin-family][data-battle-layout] .battle-result-pixel .battle-result-summary-gold { color: var(--px-accent); font-variant-numeric: tabular-nums; }
+/* 돈 단위(「G」) — 도트 글꼴의 G 는 6 과 같은 모양이라 「+37 G」가 「+37 6」으로 읽혔다(2026-10-29). 단위 글자만 획이 분명한 굵은 UI 글꼴로, 값과 같은 높이로 그린다. */
+.battle-scene:is([data-battle-ui-style])[data-battle-skin][data-battle-skin-family][data-battle-layout] .battle-result-panel.battle-result-pixel .battle-currency-unit { font-family: var(--font-ui); font-size: 1.05em; font-weight: 800; letter-spacing: 0; line-height: 1; }
 .battle-scene:is([data-battle-ui-style])[data-battle-skin][data-battle-skin-family][data-battle-layout] .battle-result-pixel .battle-result-summary-loot { color: var(--px-ink-faint); min-width: 0; overflow: hidden; text-overflow: ellipsis; }
 /* 파티 창 — 한 줄 4칸, 칸마다 세로로 쌓는다. 걷는 그림은 2배(48×64). */
 /* 칸 폭은 네 명 기준(25%)으로 고정하고 가운데 모은다 — 한 명 파티가 창 전체로 늘어나지 않게. */
