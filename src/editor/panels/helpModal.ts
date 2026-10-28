@@ -350,6 +350,11 @@ export function openHelpModal(sectionId?: string): void {
 
   const observer = new IntersectionObserver(
     (entries) => {
+      // 끝까지 내리면 마지막 절(단축키)은 위 30% 띠에 닿지 못한다 — 그때는 마지막 절을 활성으로 둔다.
+      if (body.scrollTop > 0 && body.scrollTop + body.clientHeight >= body.scrollHeight - 2) {
+        setActiveNav(GUIDE_SECTIONS[GUIDE_SECTIONS.length - 1]?.id ?? "");
+        return;
+      }
       for (const entry of entries) {
         if (entry.isIntersecting) {
           setActiveNav((entry.target as HTMLElement).dataset.helpSection ?? "");
