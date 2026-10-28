@@ -417,8 +417,9 @@ function barracks(project: Project, exec: Exec): void {
     page(`${ladderId}_go`, "오른다", [sw(SW_BARRACKS)], [
       // 독립 판정: 2막 내내 회복약이 하나도 없어 쓰러진 동료를 못 일으켰다 — 되찾은 짐 속 약을 챙긴다(한 번).
       say(ELENA, "꾸러미에 약 주머니도 그대로 있어.\n…다행이다. 챙겨 가자."),
-      se("cc0-se-orp-inventory-cloth"), item("item_potion", 5), item("item_ether", 2), item("item_panacea", 1),
-      narrate("회복약 ×5 · 마력약 ×2 · 만병통치약 ×1 을 챙겼다.", { context: "system" }),
+      // 독립 판정(재판정): 쓰러진 엘레나를 일으킬 길이 없어 남은 밤을 카엘 혼자 싸웠다 — 불사조 깃 둘.
+      se("cc0-se-orp-inventory-cloth"), item("item_potion", 5), item("item_ether", 2), item("item_panacea", 1), item("item_phoenix_down", 2),
+      narrate("회복약 ×5 · 마력약 ×2 · 만병통치약 ×1 · 불사조 깃 ×2 를 챙겼다.", { context: "system" }),
       setSw(SW_MEDS),
       se("cc0-se-osx-wooded-box-open"),
       narrate("사다리를 올라 뚜껑 문을 밀었다."),
@@ -464,7 +465,7 @@ function hubNight(project: Project, exec: Exec, hubId: string): void {
       say(KAEL, "통금이야. 기사들이 돌고 있어."),
       say(ELENA, "들키면 끝이야. 그늘로만 가자."),
       // 독립 판정: 뚜껑 문 골목이 캄캄하고 출구가 한 칸이라 40분을 헤맸다 — 나갈 틈과 첫 목적지를 짚는다.
-      say(ELENA, "저기, 골목 왼쪽 위 불빛 새는 틈.\n거기로 빠져서 광장 서쪽 빵집 — 미레 아주머니한테 가자."),
+      say(ELENA, "저기, 골목 왼쪽 위 불빛 새는 틈.\n거기로 빠져서 서쪽 수로 건너, 북서쪽 끝 빵집 — 미레 아주머니한테 가자."),
     ], { trigger: { kind: "auto" } }),
   ]);
   ensureSwitch(project, "sw_fs2_hub_arrived", "B1: 통금의 밤 광장에 나옴");
@@ -585,12 +586,19 @@ function curfewHub(project: Project, exec: Exec, hubId: string): void {
       { name: "문틈", commands: [
         say(MIRE, "(문틈으로) 쉿— 너희구나.\n리노가 빵은 잘 넣어 줬니?"),
         say(KAEL, "꼭꼭 씹었어요. 덕분에요."),
+        // 독립 판정(재판정): 광장에 쉴 곳이 없어 한 번 진 싸움이 밤 내내 이어졌다 — 미레네 문간이 숨 돌릴 곳.
+        say(MIRE, "다쳤구나. 들어와, 잠깐만. 국 한 그릇 떠 줄게."),
+        se("cc0-se-orp-inventory-cloth"),
+        { kind: "recoverAll" } as unknown as Command,
+        narrate("미레네 부엌에서 숨을 돌렸다. 기운이 돌아왔다.", { context: "system" }),
         say(MIRE, "천문대 정문엔 기사가 서 있어.\n광장 우물로 가. 바닥 사다리가 서고 밑으로 이어져."),
         setSw(SW_MIRE),
       ] },
       // 잔 일 Q4 「꺼진 등」 — 기사들이 거둬 간 집집 등을 몰래 문고리에 다시 건다(계획 4-6).
       { name: "문틈(다시)·꺼진 등", conditions: [sw(SW_MIRE)], commands: [
         say(MIRE, "우물이야. 등불 든 기사 앞으론 가지 말고."),
+        { kind: "recoverAll" } as unknown as Command,
+        narrate("미레가 물 한 잔을 내밀었다. 기운이 돌아왔다.", { context: "system" }),
         say(MIRE, "…하나만 더. 기사들이 집집 등을 다 거둬 갔어.\n통금에 등 거는 집은 반역이래."),
         say(MIRE, "이 셋, 몰래 문고리에 걸어 줄래?\n불은 안 켜도 돼. 걸려만 있으면 다들 알아."),
         { kind: "choices", prompt: "등을 맡을까?", options: [
@@ -625,9 +633,11 @@ function curfewHub(project: Project, exec: Exec, hubId: string): void {
         narrate("「은수저」를 받았다.", { context: "system" }),
         say(TOBY, "별한테 줄 선물. 이번엔 형이 갖다 줘."),
         say(KAEL, "…응. 꼭 전할게."),
+        // 독립 판정(재판정): 첫 목적지(미레)를 90분 동안 못 찾았다 — 길에서 만나는 토비가 길을 짚는다.
+        say(TOBY, "미레 아주머니가 형 찾았어.\n서쪽 다리 건너서, 맨 위 빵집 문 앞이야."),
         setSw(SW_SPOON),
       ] },
-      { name: "기둥 뒤(다시)", conditions: [sw(SW_SPOON)], commands: [say(TOBY, "엄마가 깨기 전에 들어가야 해. 형도 조심해.")] },
+      { name: "기둥 뒤(다시)", conditions: [sw(SW_SPOON)], commands: [say(TOBY, "엄마가 깨기 전에 들어가야 해. 형도 조심해."), say(TOBY, "미레 아주머니는 서쪽 다리 건너 맨 위 빵집이야.")] },
     ],
   });
   exec(project, "place_npc", {
@@ -2223,7 +2233,7 @@ function act2Quest(project: Project, exec: Exec): void {
     [SW_BREAD, "리노가 감방에 넣어 준 납작빵을 받는다"],
     [SW_CELL_OPEN, "감방 쇠살문을 연다 — 유난히 무거운 빵이 수상하다"],
     [SW_OUT, "막사 금고에서 짐을 되찾아, 북동쪽 사다리로 광장에 오른다(등불·순찰을 피해)"],
-    [SW_MIRE, "광장 서쪽 빵집 문틈의 미레 아주머니를 찾는다"],
+    [SW_MIRE, "서쪽 수로 다리를 건너 북서쪽 끝, 빵집 문틈의 미레 아주머니를 찾는다(쉬어 갈 수 있다)"],
     [SW_HANEL, "광장 우물 사다리로 천문대에 숨어 들어가 하넬 선생을 만난다"],
     [SW_ROHAN, "대장간 뒷문으로 들어가 로한을 만난다"],
     [SW_BRAM, "광장 북쪽 성벽 밑의 브람 영감을 찾는다"],

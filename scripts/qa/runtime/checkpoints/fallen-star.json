@@ -7308,7 +7308,7 @@
   {
    "id": "act2-play-b7",
    "label": "제2막 B7 서리 가도부터 대화형 플레이(독립 판정 구간)",
-   "note": "runtimeQaInteractive.mjs — QA_INTERACTIVE_DIR 폴더에 scripts/qa/play-step.mjs 로 조작을 보낸다",
+   "note": "runtimeQaInteractive.mjs — QA_INTERACTIVE_DIR 폴더에 scripts/qa/play-step.mjs 로 조작을 보낸다 · sw_fs2_snow_arrived 는 넣지 않는다 — 들어서는 장면이 엘레나에게 「불씨 녹이기」를 가르친다",
    "mapId": "map_snow_north_1",
    "x": 13,
    "y": 17,
@@ -7330,7 +7330,6 @@
     "sw_fs2_dawn_mem_2": true,
     "sw_fs2_serin_form": true,
     "sw_fs2_sarah_joined": true,
-    "sw_fs2_snow_arrived": true,
     "sw_fs2_spear_returned": true,
     "sw_fs2_bread_given": true,
     "sw_fs2_cell_open": true,
