@@ -57,6 +57,7 @@ You may batch a few ops in one call, for example `[{"kind":"move","dir":"up","st
 - You may save in game at save crystals.
 - If you are stuck for about 40 steps without progress, write down exactly where and why. Then either keep exploring or stop, if you truly cannot continue.
 - Total budget: about 6 hours of real time. Act 2 is long, so keep each step efficient: batch a few moves when the way is clear. Stop when you reach the sky tower card or the budget runs out.
+- Do not start, restart or relaunch the game session yourself, and do not run anything except `play-step.mjs` against it. If every step returns an error such as `Target crashed`, the session is dead: write your report and stop.
 - When finished, send `node scripts/qa/play-step.mjs /tmp/fs2/judge/play --quit` to close the game.
 
 ## Your report
