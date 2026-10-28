@@ -276,7 +276,9 @@ function renderDefeatMenu(terminal: TerminalScene, scene: GameOverPresentationAc
       }, { capture: true, signal: terminal.signal });
     }
     terminal.phase("choices");
-    terminal.menu(() => attachCursorMenu(overlay, { items: buttons, cancelEl: titleButton }));
+    // 취소(Esc·X)는 첫 항목 — 체크포인트가 있으면 「다시 시작」. 예전엔 취소가 「타이틀로」라 Esc 한 번에 저장 안 한 진행을 잃었다
+    // (2026-10-28 폴른 독립 판정: 게임 오버에서 Esc → 타이틀 → 새 게임으로 1막부터).
+    terminal.menu(() => attachCursorMenu(overlay, { items: buttons, cancelEl: buttons[0] ?? titleButton }));
   });
 }
 

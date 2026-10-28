@@ -40,6 +40,7 @@ const SW_KEY = "sw_fs2_cell_key_found";
 const SW_CELL_OPEN = "sw_fs2_cell_open";
 const SW_BARRACKS = "sw_fs2_barracks_cleared";
 const SW_OUT = "sw_fs2_out_of_cells";
+const SW_MEDS = "sw_fs2_gear_meds";
 
 // ── 감방 평면(21×11) ─────────────────────────────────────────────────────
 // 서쪽 = 감방(x1..12, y1..5, 남쪽 y6 쇠창살 줄, 가운데 x7 쇠살문) · 그 아래 복도(y7..9) · 동쪽 = 간수실(x14..19)과 막사로 오르는 돌 계단.
@@ -99,6 +100,8 @@ const BARRACKS = {
 };
 /** 광장(통금의 밤) — 사다리를 오르면 서는 칸: 광장 동쪽 초소 뒤 골목. */
 const HUB_ARRIVE: Cell = { x: 52, y: 25 };
+/** 뚜껑 문 골목(47..54, 25)에서 광장으로 나가는 유일한 틈 — (49,24)→(49,23). */
+const HUB_ALLEY_GAP: Cell = { x: 49, y: 24 };
 
 // ── 명령 조각(act1Finale.ts 와 같은 꼴) ─────────────────────────────────────
 const say = (speaker: string, body: string, extra: Rec = {}): Command => ({ kind: "text", speaker, body, ...extra } as unknown as Command);
@@ -199,7 +202,9 @@ function nightSoldiers(project: Project, exec: Exec): void {
   ] as const) {
     const base = project.database.enemies.find((e) => e.id === baseId);
     if (!base) throw new Error(`[fallen-star act2] ${baseId} 가 없다`);
-    const rec: Rec = { ...(JSON.parse(JSON.stringify(base)) as Rec), id, name, level: 9, stats };
+    // 보상 — 1막 병사 값(경험 24)이면 셋을 이겨도 레벨이 안 오른다(독립 판정: 「이겨도 EXP 가 그대로」). 이긴 값이 남게.
+    const rewards = { exp: 80, gold: 12, dropRatePercent: 0, drops: [{ itemId: "item_potion", ratePercent: 15, quantity: 1, condition: { kind: "always" } }] };
+    const rec: Rec = { ...(JSON.parse(JSON.stringify(base)) as Rec), id, name, level: 9, stats, rewards };
     for (const key of Object.keys(rec)) if (!ENEMY_TOOL_FIELDS.has(key)) delete rec[key];
     exec(project, "upsert_enemy", { enemy: rec });
   }
@@ -215,7 +220,7 @@ function database(project: Project, exec: Exec): void {
   ] as const) ensureSwitch(project, id, name);
   exec(project, "upsert_item", { item: {
     id: FS2_BREAD_ITEM, name: "무거운 납작빵", type: "normalGoods", occasion: "never", consumable: false, price: 0,
-    description: "토마 아저씨가 구운 납작빵. 하나만 유난히 무겁다.\n「꼭꼭 씹어라. 꼭.」",
+    description: "토마 아저씨가 구운 납작빵. 하나만 유난히 무겁다.\n손으로는 안 쪼개진다 — 딱딱한 모서리에 대고 쪼개 볼까?",
   } });
   exec(project, "upsert_item", { item: {
     id: FS2_UNLIT_LAMP, name: "꺼진 등", type: "special", occasion: "never", consumable: false, price: 0,
@@ -372,7 +377,8 @@ function barracks(project: Project, exec: Exec): void {
     hintText: "근무표: 「붉은 초소는 붉은 깃발 종에, 푸른 초소는 푸른 깃발 종에 응답할 것.\n등불이 비추는 곳으로는 아무도 지나가지 말 것.」",
     reward: { itemId: FS2_GEAR_ITEM, itemName: "압수품 꾸러미", itemDescription: "초소에 빼앗겼던 짐. 카엘의 검과 엘레나의 책이 그대로 있다." },
     // 들키면 경비 둘과 싸우고(도망 불가) 감방으로 다시 끌려간다 — 실수에 값을 치른다.
-    failPenalty: { troopId: FS2_BARRACKS_GUARDS, sendTo: { mapId: FS2_CELL_ID, x: CELL.arrive.x, y: CELL.arrive.y }, text: "경비병: 「거기 누구냐! 탈옥수다!」 — 등불에 들켰다." },
+    // 들키면 감방으로 끌려간다. 경비와의 전투는 뺐다 — 쉬운 전투가 매번 금화를 줘서, 붙잡히는 게 벌이 아니라 벌이였다(독립 판정: 29번 붙잡혀 696G).
+    failPenalty: { sendTo: { mapId: FS2_CELL_ID, x: CELL.arrive.x, y: CELL.arrive.y }, text: "경비병: 「거기 누구냐! 탈옥수다!」 — 등불에 들켜 초소 지하로 끌려갔다." },
   });
   // 순찰 기사 — 두 상자 줄 사이 통로를 천천히 오간다(계획 B1 「순찰 기사 은신」). 등 뒤로, 그가 끝에서 돌아설 때 건넌다.
   // 붙잡히면 등불 시야와 같은 벌(경비 둘과 도망 불가 전투 → 감방).
@@ -381,10 +387,23 @@ function barracks(project: Project, exec: Exec): void {
     chaser: { at: BARRACKS.patrol[0], graphic: { selectionId: "charset:tex_easyrpg_charset_people3:7" }, speed: 5, sightRange: 2 },
     patrol: { waypoints: BARRACKS.patrol },
     pursuit: { scope: "map", doorDelayMs: 0, searchMs: 1500, onLost: "return" },
-    caughtPenalty: { troopId: FS2_BARRACKS_GUARDS, sendTo: { mapId: FS2_CELL_ID, x: CELL.arrive.x, y: CELL.arrive.y }, text: "순찰 기사: 「멈춰! 탈옥수다!」 — 순찰에게 붙잡혔다." },
+    caughtPenalty: { sendTo: { mapId: FS2_CELL_ID, x: CELL.arrive.x, y: CELL.arrive.y }, text: "순찰 기사: 「멈춰! 탈옥수다!」 — 순찰에게 붙잡혀 초소 지하로 끌려갔다." },
     checkpointOnEntry: false,
     mood: false,
   });
+  // 처음 들어서면 엘레나가 방의 규칙을 짚는다 — 근무표·등불 빛·순찰(독립 판정: 입구 두 칸 옆 근무표를 끝내 안 읽고 29번 붙잡혔다).
+  const hintId = "ev_fs2_barracks_enter";
+  addEv(project, FS2_BARRACKS_ID, hintId, "막사에 들어섬", { x: 0, y: 0 }, [
+    page(`${hintId}_p`, "막사 규칙", [sw("sw_fs2_barracks_entered", false)], [
+      setSw("sw_fs2_barracks_entered"),
+      say(ELENA, "(속삭임) 카엘, 입구 옆에 근무표가 있어. 먼저 읽어 보자."),
+      say(ELENA, "(속삭임) 등불 빛이 닿는 데는 밟지 마.\n저 순찰은 등을 돌렸을 때, 상자 줄 틈으로 건너."),
+      // 독립 판정(2회차): 근무표의 「깃발 종」이 벽 깃발 장식으로만 읽혀 끝내 못 찾았다 — 동사(줄을 당긴다)를 짚는다.
+      say(ELENA, "(속삭임) 벽에 걸린 깃발 밑에 종 줄이 있어.\n앞에 서서 당기면, 그 색 초소 경비가 소리 쪽으로 돌아설 거야."),
+    ], { trigger: { kind: "auto" } }),
+  ]);
+  ensureSwitch(project, "sw_fs2_barracks_entered", "B1: 막사에 처음 들어섬(규칙 귀띔)");
+  ensureSwitch(project, SW_MEDS, "B1: 되찾은 짐에서 약을 챙김");
   // 북동 벽 사다리 — 광장 초소 뒷골목으로. 압수품을 되찾기 전엔 「짐부터」.
   exec(project, "stamp_object", { objectId: "kit:atlas_biome_interior/hand-interior:ship ladder", mapId: FS2_BARRACKS_ID, x: BARRACKS.ladder.x, y: BARRACKS.ladder.y });
   exec(project, "set_map_properties", { mapId: FS2_BARRACKS_ID, battleBackground: "battle-scenery-cave" });
@@ -396,6 +415,17 @@ function barracks(project: Project, exec: Exec): void {
       say(ELENA, "잠깐, 우리 짐. 저 금고에 있을 거야.\n빈손으로는 못 나가."),
     ]),
     page(`${ladderId}_go`, "오른다", [sw(SW_BARRACKS)], [
+      // 독립 판정: 2막 내내 회복약이 하나도 없어 쓰러진 동료를 못 일으켰다 — 되찾은 짐 속 약을 챙긴다(한 번).
+      say(ELENA, "꾸러미에 약 주머니도 그대로 있어.\n…다행이다. 챙겨 가자."),
+      se("cc0-se-orp-inventory-cloth"), item("item_potion", 5), item("item_ether", 2), item("item_panacea", 1),
+      narrate("회복약 ×5 · 마력약 ×2 · 만병통치약 ×1 을 챙겼다.", { context: "system" }),
+      setSw(SW_MEDS),
+      se("cc0-se-osx-wooded-box-open"),
+      narrate("사다리를 올라 뚜껑 문을 밀었다."),
+      setSw(SW_OUT),
+      transfer(FS2_HUB_NIGHT_ID, HUB_ARRIVE, "down"),
+    ]),
+    page(`${ladderId}_go2`, "오른다(다시)", [sw(SW_BARRACKS), sw(SW_MEDS)], [
       se("cc0-se-osx-wooded-box-open"),
       narrate("사다리를 올라 뚜껑 문을 밀었다."),
       setSw(SW_OUT),
@@ -433,6 +463,8 @@ function hubNight(project: Project, exec: Exec, hubId: string): void {
       narrate("광장은 캄캄했다. 집집 등불이 다 꺼져 있다.\n순찰 기사들의 손등만 흔들린다."),
       say(KAEL, "통금이야. 기사들이 돌고 있어."),
       say(ELENA, "들키면 끝이야. 그늘로만 가자."),
+      // 독립 판정: 뚜껑 문 골목이 캄캄하고 출구가 한 칸이라 40분을 헤맸다 — 나갈 틈과 첫 목적지를 짚는다.
+      say(ELENA, "저기, 골목 왼쪽 위 불빛 새는 틈.\n거기로 빠져서 광장 서쪽 빵집 — 미레 아주머니한테 가자."),
     ], { trigger: { kind: "auto" } }),
   ]);
   ensureSwitch(project, "sw_fs2_hub_arrived", "B1: 통금의 밤 광장에 나옴");
@@ -531,6 +563,8 @@ function curfewHub(project: Project, exec: Exec, hubId: string): void {
       mapId: FS2_HUB_NIGHT_ID, x: p.at.x, y: p.at.y, troopId: FS2_PATROL_TROOP, behavior: "chase",
       patrol: { length: p.length, axis: p.axis }, sightRange: 5, vision: "cone", pace: "normal", approachStyle: "dash",
       graphic: knight, alert: "exclamation", respawnSec: 45, clearSwitchId: `sw_fs2_patrol_${i}_down`,
+      // 지면 광장 입구(사다리 뚜껑 문)에서 다시 — 타이틀로 내쫓지 않는다(독립 판정: 통금 순찰에 지고 1막부터 다시).
+      checkpointOnEntry: true,
     });
   });
   // 창틈 불빛 — 주민이 선 문간마다 작은 등잔(통금이라 다른 창은 다 어둡다).
@@ -539,6 +573,8 @@ function curfewHub(project: Project, exec: Exec, hubId: string): void {
     sources: [
       { id: "lamp", at: { kind: "player" }, radius: 3, intensity: 0.45, color: "#9fb4ff" },
       ...[MIRE_AT, TOBY_AT, MARTA_AT].map((c, i) => ({ id: `crack${i}`, at: { x: c.x, y: c.y - 1 }, radius: 2, intensity: 0.7, color: "#ffc070", flicker: true })),
+      // 뚜껑 문 골목의 출구 틈(한 칸) — 불빛이 새어 나와 보이게(엘레나가 도착 때 이 불빛을 짚는다).
+      { id: "alley_gap", at: { x: HUB_ALLEY_GAP.x, y: HUB_ALLEY_GAP.y }, radius: 2, intensity: 0.75, color: "#ffc070", flicker: true },
     ],
   });
   const mire = hubChip(project, hubId, "ev_fs_baker");
@@ -904,7 +940,7 @@ function forestEdgeChase(project: Project, exec: Exec, mapId: string, hubId: str
       exec(project, "place_field_enemy", {
         mapId, x: at.x, y: at.y, id: `ev_fs2_b4_knight_${placed}`, troopId: FS2_PATROL_TROOP, behavior: "chase", sightRange: 9, giveUpRange: 20,
         pace: "fast", chaseStepMs: 230, alertMs: 250, approachStyle: "dash", graphic: knight, alert: "exclamation",
-        appearSwitchId: SW_B4_ALARM, vanishSwitchId: SW_B4_EDGE, clearSwitchId: `sw_fs2_b4_knight_${placed}_down`,
+        appearSwitchId: SW_B4_ALARM, vanishSwitchId: SW_B4_EDGE, clearSwitchId: `sw_fs2_b4_knight_${placed}_down`, checkpointOnEntry: true,
       });
       FS2_B4.knights.push(at);
       placed += 1;
@@ -956,10 +992,10 @@ const SW_CERT = "sw_fs2_serin_form";
 const SW_MEMS = ["sw_fs2_dawn_mem_0", "sw_fs2_dawn_mem_1", "sw_fs2_dawn_mem_2"] as const;
 const SAVE_CRYSTAL = "kit:beodeul_city/bd-pick-dungeon-theme-crystal-pedestal";
 /** 재의 들판 적 — 이미 있는 몬스터 도트를 쓴다(새 그림 없음; graphicHue 는 전투가 읽지 않아 색은 원래대로). */
-const ASH_FOES: { id: string; name: string; art: string; hue: number; stats: Rec; style: string; elementRates?: Rec; skills: string[] }[] = [
+const ASH_FOES: { id: string; name: string; art: string; hue: number; stats: Rec; style: string; elementRates?: Rec; skills: string[]; exp?: number }[] = [
   { id: "enemy_fs2_ash_wisp", name: "잿불 도깨비", art: "generated-enemy-spirit-fire", hue: 200, style: "float", stats: { maxHp: 260, maxMp: 40, attack: 90, defense: 24, mind: 100, agility: 52 }, elementRates: { fire: "E", ice: "A", water: "A" }, skills: ["skill_attack", "skill_mon_frost_orb"] },
   { id: "enemy_fs2_ash_crow", name: "재까마귀", art: "generated-enemy-bird-hawk", hue: 220, style: "swoop", stats: { maxHp: 190, maxMp: 0, attack: 92, defense: 24, mind: 20, agility: 80 }, skills: ["skill_attack"] },
-  { id: "enemy_fs2_cinder_golem", name: "숯덩이 골렘", art: "generated-enemy-golem-clay", hue: 240, style: "lumber", stats: { maxHp: 900, maxMp: 0, attack: 165, defense: 90, mind: 80, agility: 34 }, elementRates: { fire: "E", water: "A" }, skills: ["skill_attack", "skill_earth"] },
+  { id: "enemy_fs2_cinder_golem", name: "숯덩이 골렘", art: "generated-enemy-golem-clay", hue: 240, style: "lumber", stats: { maxHp: 900, maxMp: 0, attack: 140, defense: 90, mind: 80, agility: 34 }, exp: 420, elementRates: { fire: "E", water: "A" }, skills: ["skill_attack", "skill_earth"] },
   { id: "enemy_fs2_starved_dog", name: "굶은 들개", art: "generated-enemy-hound-hell", hue: 150, style: "dash", stats: { maxHp: 220, maxMp: 0, attack: 88, defense: 30, mind: 20, agility: 70 }, skills: ["skill_attack"] },
   { id: "enemy_fs2_ash_snake", name: "재뱀", art: "generated-enemy-snake-viper", hue: 210, style: "slither", stats: { maxHp: 260, maxMp: 0, attack: 94, defense: 36, mind: 30, agility: 48 }, skills: ["skill_attack"] },
 ];
@@ -981,7 +1017,8 @@ function ashFoes(project: Project, exec: Exec): void {
     Object.assign(rec, {
       id: f.id, name: f.name, level: 10, monsterResourceId: f.art, stats: f.stats, skillIds: f.skills,
       actions: f.skills.map((skillId, i) => ({ skillId, priority: i === 0 ? 7 : 8, condition: { kind: "always" }, switchOnAfterAction: { enabled: false }, switchOffAfterAction: { enabled: false } })),
-      rewards: { exp: 90, gold: 18, dropRatePercent: 0, drops: [{ itemId: "item_potion", ratePercent: 8, quantity: 1, condition: { kind: "always" } }] },
+      // 경험 — 90 이면 레벨 10에서 다음까지(약 3900) 열다섯 판이 넘는다(독립 판정: 「16판 싸워도 레벨이 그대로」).
+      rewards: { exp: f.exp ?? 170, gold: 18, dropRatePercent: 0, drops: [{ itemId: "item_potion", ratePercent: 8, quantity: 1, condition: { kind: "always" } }] },
       ...(f.elementRates ? { elementRates: { ...(base as unknown as Rec).elementRates as Rec, ...f.elementRates } } : {}),
     });
     delete rec.lungeSpeedPercent;
@@ -1032,7 +1069,7 @@ function dawnwell(project: Project, exec: Exec): void {
   const foe = (mapId: string, troopId: string, x: number, y: number, style: string): void => {
     try {
       exec(project, "place_field_enemy", { mapId, x, y, troopId, behavior: "chase", patrol: { length: 2, axis: x % 2 ? "horizontal" : "vertical" },
-        sightRange: 6, vision: "cone", pace: "normal", approachStyle: style, respawnSec: 60 });
+        sightRange: 6, vision: "cone", pace: "normal", approachStyle: style, respawnSec: 60, checkpointOnEntry: true });
     } catch { /* 그 칸은 도구가 거절(입구 곁·막힌 칸) — 건너뛴다 */ }
   };
   for (const mapId of [north1!, field!]) exec(project, "set_map_properties", { mapId, mapRole: "field" });
@@ -1352,7 +1389,7 @@ function northFortress(project: Project, exec: Exec, hubId: string): void {
           // 경비견·상자·레버 곁은 피한다 — 붙어 서면 한 무리로 읽힌다(3칸, 자리가 없으면 2칸).
           if (M(project, mapId).events.some((e) => e.x + e.y > 0 && Math.max(Math.abs(e.x - at.x), Math.abs(e.y - at.y)) <= near)) continue;
           try {
-            exec(project, "place_field_enemy", { mapId, x: at.x, y: at.y, graphic: knight, alert: "exclamation", respawnSec: 60, clearSwitchId: `sw_fs2_fort_knight_${k}_down`, ...args(k) });
+            exec(project, "place_field_enemy", { mapId, x: at.x, y: at.y, graphic: knight, alert: "exclamation", respawnSec: 60, clearSwitchId: `sw_fs2_fort_knight_${k}_down`, checkpointOnEntry: true, ...args(k) });
             k += 1;
             count += 1;
             placed = true;
@@ -2173,6 +2210,74 @@ export function applyFallenAct2Opening(project: Project, exec: Exec, ids: Fallen
   lanternNightEvents(project);
   fortressEvents(project);
   detection(project, exec);
+  widenEdgeGates(project);
+  act2Quest(project, exec);
+}
+
+/**
+ * 임무 일지 — 2막 줄기. 독립 판정 세 판 모두 「기록 → 임무」에 1막 「떨어진 별 완료」만 있고 지금 할 일이 없다고 했다.
+ * 노드는 이미 있는 줄기 스위치로 찬다(새 플래그 없음). 첫 노드(리노의 빵)는 여는 장면에서 차서 처음부터 「진행 중」이다.
+ */
+function act2Quest(project: Project, exec: Exec): void {
+  const steps: [string, string][] = [
+    [SW_BREAD, "리노가 감방에 넣어 준 납작빵을 받는다"],
+    [SW_CELL_OPEN, "감방 쇠살문을 연다 — 유난히 무거운 빵이 수상하다"],
+    [SW_OUT, "막사 금고에서 짐을 되찾아, 북동쪽 사다리로 광장에 오른다(등불·순찰을 피해)"],
+    [SW_MIRE, "광장 서쪽 빵집 문틈의 미레 아주머니를 찾는다"],
+    [SW_HANEL, "광장 우물 사다리로 천문대에 숨어 들어가 하넬 선생을 만난다"],
+    [SW_ROHAN, "대장간 뒷문으로 들어가 로한을 만난다"],
+    [SW_BRAM, "광장 북쪽 성벽 밑의 브람 영감을 찾는다"],
+    [SW_B4_EDGE, "개구멍을 빠져 북쪽 숲 가장자리까지 달아난다"],
+    [SW_CERT, "재의 들판을 지나 북쪽 새벽샘 터에서 세린의 흔적을 찾는다"],
+    [SW_SARAH, "북방 관문 요새에 들어가 북문의 창, 새라를 만난다"],
+    [SW_FROST_ARRIVE, "요새 북문으로 나가 서리 가도를 넘어 호수 마을 서리나루로"],
+    [SW_VALEN_MET, "서리나루의 밤, 얼음 호수 위 발렌을 만난다"],
+    [SW_ICE_DONE, "갈라지는 얼음을 건넌다"],
+    [SW_STOP_B9, "하늘탑에 들어선다"],
+  ];
+  const nodes = steps.map(([switchId, description], i) => ({ id: `fs2-${i + 1}`, description, completesWhen: { kind: "switch", switchId, value: true } }));
+  exec(project, "define_quest", {
+    id: "fs2_main", title: "빌린 불",
+    summary: "제2막. 점령된 왕도를 빠져나가 북쪽 하늘탑으로 — 발렌이 데려간 이리스를 쫓는다.",
+    nodes, edges: nodes.slice(1).map((n, i) => ({ from: nodes[i]!.id, to: n.id })),
+  });
+}
+
+/**
+ * 맵 가장자리 출구가 한 칸뿐이면 길 폭 전체로 넓힌다 — 같은 가장자리에서 출구와 이어진(안쪽 칸에서 걸어 들어갈 수 있는) 칸마다
+ * 출구 이벤트의 쌍둥이를 둔다. 독립 판정(2026-10-28): 재의 들판 북쪽 길은 x16~17 두 칸인데 출구 이벤트는 (15,0) 한 칸이라
+ * 길 끝까지 걸어도 아무 일이 없었다(「북쪽 길이 막혔다」로 60걸음을 헤맸다).
+ */
+function widenEdgeGates(project: Project): void {
+  const maps = Object.keys(project.maps).filter((id) => id.startsWith("fs2_") || FS2_NORTH_ROUTE.mapIds.includes(id) || FS2_SNOW.mapIds.includes(id));
+  for (const mapId of maps) {
+    const map = M(project, mapId);
+    const gates = map.events.filter((e) => {
+      const pg = e.pages?.[0];
+      return pg?.trigger?.kind === "playerTouch" && (e.pages ?? []).length === 1 && pg.commands.some((c) => c.kind === "transfer")
+        && (e.y === 0 || e.y === map.height - 1 || e.x === 0 || e.x === map.width - 1);
+    });
+    const taken = new Set(map.events.map((e) => `${e.x},${e.y}`));
+    for (const gate of gates) {
+      const horizontal = gate.y === 0 || gate.y === map.height - 1;
+      const inward = horizontal ? { x: 0, y: gate.y === 0 ? 1 : -1 } : { x: gate.x === 0 ? 1 : -1, y: 0 };
+      const enterable = (x: number, y: number) => x >= 0 && y >= 0 && x < map.width && y < map.height
+        && canMove(project, map, x + inward.x, y + inward.y, x, y);
+      let n = 0;
+      for (const sign of [1, -1]) {
+        for (let k = 1; k < 6; k += 1) {
+          const x = horizontal ? gate.x + sign * k : gate.x, y = horizontal ? gate.y : gate.y + sign * k;
+          const prevX = horizontal ? x - sign : x, prevY = horizontal ? y : y - sign;
+          if (!enterable(x, y) || !canMove(project, map, prevX, prevY, x, y)) break;
+          if (taken.has(`${x},${y}`)) continue;
+          map.events.push({ ...structuredClone(gate), id: `${gate.id}_w${sign > 0 ? "p" : "m"}${k}`, x, y });
+          taken.add(`${x},${y}`);
+          n += 1;
+        }
+      }
+      void n;
+    }
+  }
 }
 
 /**
