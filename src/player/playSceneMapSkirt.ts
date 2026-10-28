@@ -19,6 +19,8 @@ import type { GameMap, TilesetDef } from "@/project/types";
 
 /** 출구 통로를 바깥으로 이어 그리는 칸 수. 여백이 이보다 넓어도 그 뒤는 배경색이다. */
 const SKIRT_TILES = 8;
+/** 바깥으로 잇는 출구 토막의 최대 칸 수. */
+const MAX_EXIT_RUN = 4;
 /** 둘레 평균색이 이보다 밝으면(상대 밝기) 배경색으로 쓰지 않는다 — 밝은 들판·눈밭 둘레가 화면 전체를 칠하지 않게. */
 const BACKDROP_MAX_LUMA = 0.32;
 const DEFAULT_BACKDROP = "#000000";
@@ -67,10 +69,25 @@ export function syncMapSkirt(scene: SkirtScene): void {
     const counts = new Map<number, number>();
     for (const cell of cells) counts.set(lower(cell.x, cell.y), (counts.get(lower(cell.x, cell.y)) ?? 0) + 1);
     const dominant = [...counts].sort((a, b) => b[1] - a[1])[0]?.[0];
-    for (const cell of cells) {
+    const picked = cells.map((cell) => {
       const tile = lower(cell.x, cell.y);
-      if (tile === dominant || !open(cell.x - dx, cell.y - dy)) continue;
-      for (let step = 1; step <= SKIRT_TILES; step += 1) draw(cell.x + dx * step, cell.y + dy * step, tile);
+      // 이어 붙여도 이음매가 안 보이는 타일만 잇는다 — 벽 모서리 조각(테두리 선)을 옆으로 반복하면 창살 같은 줄무늬가 됐다.
+      // 출구 타일은 그 가장자리에 드물다(넉 칸 이하). 같은 벽 조각이 길게 이어진 옆벽은 가구에 끊겨 짧은 토막이 돼도 출구가 아니다.
+      return tile !== dominant && (counts.get(tile) ?? 0) <= MAX_EXIT_RUN && open(cell.x - dx, cell.y - dy) && tileSeamless(scene, textureKey, tile, dx !== 0 ? "x" : "y");
+    });
+    // 출구는 좁은 토막이다(통로 바닥 + 양옆 벽, 넉 칸까지). 긴 토막은 ㄱ자 방의 옆벽 같은 것이라 잇지 않는다(마법학교 기숙사 동쪽 벽이 창살처럼 이어졌다).
+    for (let start = 0; start < cells.length; start += 1) {
+      if (!picked[start]) continue;
+      let end = start;
+      while (end + 1 < cells.length && picked[end + 1]) end += 1;
+      if (end - start + 1 <= MAX_EXIT_RUN) {
+        for (let index = start; index <= end; index += 1) {
+          const cell = cells[index]!;
+          const tile = lower(cell.x, cell.y);
+          for (let step = 1; step <= SKIRT_TILES; step += 1) draw(cell.x + dx * step, cell.y + dy * step, tile);
+        }
+      }
+      start = end;
     }
   };
   const column = (x: number) => Array.from({ length: map.height }, (_, y) => ({ x, y }));
@@ -137,3 +154,35 @@ function tileColor(scene: SkirtScene, textureKey: string, tile: number): [number
   if (frame) tileColorCache.set(key, result);
   return result;
 }
+
+const seamCache = new Map<string, boolean>();
+
+/**
+ * 타일을 axis 방향으로 이어 붙였을 때 이음매가 안 보이는가 — 양 끝 줄(가로면 왼·오른 열, 세로면 위·아래 행) 화소의 평균 차이가 작다.
+ * 바닥 타일은 통과하고, 한쪽에만 테두리 선이 있는 벽 모서리 조각은 떨어진다.
+ */
+function tileSeamless(scene: SkirtScene, textureKey: string, tile: number, axis: "x" | "y"): boolean {
+  const key = `${textureKey}|${tile}|${axis}`;
+  const cached = seamCache.get(key);
+  if (cached !== undefined) return cached;
+  const frameName = `tile_${tile}`;
+  const texture = scene.textures.exists(textureKey) ? scene.textures.get(textureKey) : undefined;
+  const frame = texture?.has(frameName) ? texture.get(frameName) : undefined;
+  if (!frame) return false;
+  const samples = 8;
+  let diff = 0, n = 0;
+  for (let i = 0; i < samples; i += 1) {
+    const along = Math.floor(((i + 0.5) / samples) * (axis === "x" ? frame.height : frame.width));
+    const a = axis === "x" ? scene.textures.getPixel(0, along, textureKey, frameName) : scene.textures.getPixel(along, 0, textureKey, frameName);
+    const b = axis === "x" ? scene.textures.getPixel(frame.width - 1, along, textureKey, frameName) : scene.textures.getPixel(along, frame.height - 1, textureKey, frameName);
+    if (!a || !b) continue;
+    diff += (Math.abs(a.red - b.red) + Math.abs(a.green - b.green) + Math.abs(a.blue - b.blue)) / 3;
+    n += 1;
+  }
+  const result = n > 0 && diff / n <= SEAM_MAX_DIFF;
+  seamCache.set(key, result);
+  return result;
+}
+
+/** 이음매 판정 상한(채널 평균 차이, 0~255). */
+const SEAM_MAX_DIFF = 28;
