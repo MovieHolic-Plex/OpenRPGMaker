@@ -17,6 +17,7 @@ import { romanceCompletionGaps } from "@/qa/gameCheck/romance";
 import { invisibleStoryEvents, objectiveGaps, offArtEntrances, doorCellBlocked, repeatedDayDialogue, lingeringHeavyTints } from "./discoverability";
 import { fieldMenu } from "@/project/fieldMenu";
 import { FACTORY_HERO_ARMS } from "./genreDefaults";
+import { walkBlueprint } from "./blueprint";
 
 type Obj = Record<string, unknown>;
 export interface ShipBlocker { readonly id: string; readonly message: string; readonly evidence: string }
@@ -436,7 +437,10 @@ export function shipBlockers(project: Project, task: string): ShipBlocker[] {
     const finding = unlitDarkFinding(map);
     return finding ? [{ id: "dark-unlit", message: `「${map.name ?? map.id}」(${map.id}) ${finding.message.replace(/^시각 공백: /u, "")}`, evidence: `${map.id} ambient ${map.defaultLighting?.ambient}` }] : [];
   }).slice(0, 3);
-  return [...hidden, ...unlit, ...invisible, ...offArt, ...repeats, ...tints, ...objectives, ...romance, ...editorDefaultsLeft(project), ...endingClosureProblems(project), ...openingWithoutPlace(project), ...offPremiseArt(project, task), ...defaultPlaceLeaks(project, task), ...titleMismatch(project, task), ...requestedFeatureGaps(project, task), ...unreachable, ...spoilers];
+  // 청사진 경로를 데이터로 걷는다(2026-10-28): 맵·이벤트가 있나, 걸어 닿나, 조건을 켜는 곳이 앞에 있나, 마지막이 엔딩인가.
+  const blueprint: ShipBlocker[] = project.gameBlueprint ? walkBlueprint(project).blockers.slice(0, 6)
+    : [{ id: "blueprint-missing", message: "이 게임의 청사진이 없다 — write_blueprint 로 새 플레이어 목표 한 줄·시작부터 엔딩까지 핵심 경로(장소·이벤트·조건)·엔딩을 지금 지은 이름 그대로 쓴다.", evidence: "project.gameBlueprint=undefined" }];
+  return [...blueprint, ...hidden, ...unlit, ...invisible, ...offArt, ...repeats, ...tints, ...objectives, ...romance, ...editorDefaultsLeft(project), ...endingClosureProblems(project), ...openingWithoutPlace(project), ...offPremiseArt(project, task), ...defaultPlaceLeaks(project, task), ...titleMismatch(project, task), ...requestedFeatureGaps(project, task), ...unreachable, ...spoilers];
 }
 
 /** 게임이 «아직 안 지어졌다»는 신호 — 뼈대 자리표시만 남았거나 엔딩이 없다(편집기 기본 HUD·창 같은 마감 항목은 여기서 보지 않는다). */

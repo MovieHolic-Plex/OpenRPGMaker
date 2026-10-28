@@ -3,7 +3,8 @@
 // 「비평 major 0 + 기계 검사 통과」가 아닌 장소를 남긴 채 「다 됐다」고 말하지 못하게 한다.
 import { flattenWrapperTool } from "./flatWrapper";
 import type { PiToolShape, PiToolExecResult } from "@/ai/piAgent/toolAdapter";
-import { shipBlockers } from "./shipChecks";
+import { shipBlockers, wantsWholeGame } from "./shipChecks";
+import { WRITE_BLUEPRINT_SCHEMA, parseBlueprintArgs, walkBlueprint } from "./blueprint";
 import type { PiAssistantV2Env } from "./env";
 import { roomSpecOf } from "@/editor/handInterior/builder";
 import { createBuildRun, type RecordingBuildRun } from "./buildRun";
@@ -399,11 +400,31 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
         : "명세를 고쳐 다시 부르거나 못 하는 것을 보고한다." }, seen, 1);
   };
 
+  // 청사진 먼저(2026-10-28): 게임 하나를 만드는 요청이면 짓기 전에 write_blueprint 로 목표·핵심 경로·엔딩을 쓴다.
+  const blueprintGate = (): { ok: false; summary: string } | undefined => wantsWholeGame(String(task ?? "")) && !env.ctx.project.gameBlueprint
+    ? { ok: false, summary: "게임 하나를 만드는 요청이다 — 짓기 전에 write_blueprint 로 이 게임의 청사진(playerGoal·핵심 경로 steps·ending)을 먼저 쓴다. 그다음 청사진의 장소 이름 그대로 짓는다." }
+    : undefined;
+  const writeBlueprint: PiToolShape = {
+    name: "write_blueprint", label: "게임 청사진", concurrency: "exclusive",
+    description: "게임 하나를 짓기 전에 이 게임의 청사진(새 플레이어 목표 한 줄·시작부터 엔딩까지 핵심 경로·엔딩·장면마다 느낌)을 쓴다. 이미 있으면 통째로 바꾼다(실제 지은 이름에 맞출 때도). 결과로 지금 프로젝트에서 이 경로가 어디까지 이어지는지 돌려준다.",
+    parameters: WRITE_BLUEPRINT_SCHEMA as unknown as PiToolShape["parameters"],
+    async execute(_id, params) {
+      const parsed = parseBlueprintArgs(params, String(task ?? ""));
+      if ("error" in parsed) return text({ ok: false, summary: `청사진을 읽지 못했다: ${parsed.error}` });
+      env.ctx.project.gameBlueprint = parsed.blueprint;
+      const walked = walkBlueprint(env.ctx.project);
+      await env.checkpoint("write_blueprint");
+      return text({ ok: true, summary: `청사진을 걸었다(${parsed.blueprint.steps.length}단계). 이제 단계마다 청사진의 장소·이벤트 이름 그대로 짓는다.`, path: walked.lines, open: walked.blockers.slice(0, 8).map((b) => b.message) });
+    },
+  };
+
   const makePlace: PiToolShape = {
     name: "make_place", label: "장소 짓기", concurrency: "exclusive",
     description: "장소(실내·마을·던전·동굴·거리·집)를 명세 하나로 짓는다. 칸·좌표·타일 번호는 쓰지 않는다 — 함수가 짓고, 1배 그림·기계 검사·독립 비평 결과를 돌려준다.",
     parameters: { type: "object", properties: { spec: PLACE_SPEC_SCHEMA }, required: ["spec"] },
     async execute(id, params) {
+      const gate = blueprintGate();
+      if (gate) return text(gate);
       // 같은 요청 → 같은 맵을 막는다(2026-10-23 다양성: 역전 상점가가 v1·v2·4차·5차 모두 화소까지 같았다). 고치기는 기록된 명세의 salt 를 물려받는다.
       const raw = (params as { spec: PlaceSpec }).spec;
       let spec: PlaceSpec = localizePlaceSpec({ ...raw, salt: Math.floor(Math.random() * 1_000_000) }, String(task ?? ""));
@@ -765,6 +786,8 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
       events: { type: "array", items: { ...eventItem, properties: { ...eventItem.properties, place: { type: "string", description: "장소 key" } }, required: [...eventItem.required, "place"] } },
     }, required: ["places"] } }, required: ["game"] },
     async execute(id, params) {
+      const gate = blueprintGate();
+      if (gate) return text(gate);
       const game = (params as { game: GameSpec }).game;
       const { order, warnings } = orderPlaces(game);
       if (order.length < 2) return text({ ok: false, summary: "장소가 둘 이상이어야 한다 — 하나면 make_place 를 쓴다." });
@@ -963,7 +986,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     }
     return result;
   } });
-  const verbs = [makePlace, ...(makeGameOn() && wantsMakeGame(String(task ?? "")) ? [makeGame] : []), editPlace, moveObject, dressRoomVerb, addPeople, addEvent, addScene, ...(wantsPuzzle(String(task ?? "")) ? [authorPuzzleChain] : []), sealLockedRoomVerb, setObjectiveVerb, drawObjectVerb, placeObject, inspect, restoreEvent, ...(helpersOn() ? [askHelpers] : []), askUser].map((tool) => guard(flattenWrapperTool(tool)));
+  const verbs = [writeBlueprint, makePlace, ...(makeGameOn() && wantsMakeGame(String(task ?? "")) ? [makeGame] : []), editPlace, moveObject, dressRoomVerb, addPeople, addEvent, addScene, ...(wantsPuzzle(String(task ?? "")) ? [authorPuzzleChain] : []), sealLockedRoomVerb, setObjectiveVerb, drawObjectVerb, placeObject, inspect, restoreEvent, ...(helpersOn() ? [askHelpers] : []), askUser].map((tool) => guard(flattenWrapperTool(tool)));
   // 게임 요소(퀘스트·아이템·전투·파티) 요청이면 v1 게임 도구를 덧붙인다 — 기록은 도구 묶음이 env.record 로 직접 남긴다.
   const t = String(task ?? "");
   // 스토어 음악 카드(사용자가 듣고 고른다)를 띄웠으면 사용자 질문과 같다 — 끝맺음 관문이 «음악을 안 걸었다»며 넣기를 재촉하지 않게 한다.

@@ -12,6 +12,8 @@ import { MONSTER_TOWN_CARD } from "./builders/monsterTown";
 import { SCENE_CARD } from "./scene";
 import { GAME_CARD, TERRAIN_CARD, fallenTierCard, storeTierCard, wantsGameTools, wantsStoreTools, wantsTerrainTools } from "./game";
 import { MAKE_GAME_CARD, makeGameOn, wantsMakeGame } from "./makeGame";
+import { BLUEPRINT_CARD, blueprintPin } from "./blueprint";
+import { wantsWholeGame } from "./shipChecks";
 
 export const V2_CORE_PROMPT = [
   "너는 OPRN RPG 편집기의 조수(v2)다. 역할 분담: 너는 «무엇을» 정한다(명세), 함수가 «어떻게» 짓는다(결정론 빌더), 다른 눈(독립 비평가)이 1배 그림을 본다.",
@@ -49,5 +51,7 @@ export function conditionalCards(project: Project, currentMapId?: string, task =
 }
 
 export function buildV2SystemPrompt(project: Project, currentMapId?: string, task?: string): string[] {
-  return [V2_CORE_PROMPT, "[지식 카드]", ...V2_CARDS, ...conditionalCards(project, currentMapId, task), projectBrief(project, currentMapId)];
+  // 청사진은 핵심 지시 바로 뒤에 박아 매 모델 차례가 대조하게 한다(2026-10-28). 게임 하나를 만드는 요청이면 청사진 카드도 싣는다.
+  const whole = wantsWholeGame(task ?? "");
+  return [V2_CORE_PROMPT, ...blueprintPin(project), "[지식 카드]", ...(whole || project.gameBlueprint ? [BLUEPRINT_CARD] : []), ...V2_CARDS, ...conditionalCards(project, currentMapId, task), projectBrief(project, currentMapId)];
 }
