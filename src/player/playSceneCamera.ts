@@ -61,6 +61,13 @@ export function restoreCameraAfterCutsceneSkip(scene: PlaySceneContext): void {
     screen.letterbox = 0;
     screen.letterboxDurationMs = 0;
   }
+  // 페이드아웃(검정)·화면 숨김 뒤의 페이드인이 건너뛴 구간에 있으면 화면이 검은 채로 남았다
+  // (독립 판정 2026-10-28: 여는 장면을 건너뛰자 감방이 끝까지 캄캄했다). 플레이 화면으로 걷는다.
+  if (screen && (screen.hidden || screen.tint === "0,0,0,1")) {
+    screen.hidden = false;
+    screen.tint = "none";
+    screen.tintDurationMs = 0;
+  }
   applyStoredCameraState(scene);
   scene.syncRuntimeState();
 }

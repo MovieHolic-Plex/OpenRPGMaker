@@ -117,7 +117,11 @@ export function createInterpreter(
     jumpToLabel(name: string): StepResult {
       if (done) return { kind: "done" };
       state.waitUntil = undefined;
+      const kept = skippedStateCommands(state.stack, name);
       if (!gotoLabel(state.stack, name)) return { kind: "done" };
+      // 건너뛴 구간의 상태 명령(스위치·변수·아이템·금화·파티…)은 그대로 반영한다 — 연출만 건너뛴다.
+      // 독립 판정(2026-10-28): 여는 장면을 Esc Esc 로 건너뛰자 빵·스위치가 안 들어와 감방에서 700걸음을 갇혔다.
+      for (const command of kept) executeCommand(state, { commands: [command], pc: 0 }, command);
       pending = "none";
       return run();
     },
@@ -125,4 +129,31 @@ export function createInterpreter(
       return done;
     },
   };
+}
+
+/** 컷신 「전체 건너뛰기」가 지나쳐도 결과는 남아야 하는 명령 — 게임 상태만 바꾸고 화면·시간을 쓰지 않는다. */
+const SKIP_KEEPS_STATE: ReadonlySet<string> = new Set([
+  "setSwitch", "setSelfSwitch", "setVariable", "setFlag", "changeItem", "changeGold", "changeParty", "changeEquipment", "changeExp", "changeLevel",
+]);
+
+/**
+ * `jumpToLabel(name)` 이 건너뛸 명령 가운데 상태 명령만 실행 순서대로 모은다(같은 줄 — 분기 안쪽은 안 들어간다).
+ * 맨 위 프레임은 멈춘 명령(pc)부터, 바깥 프레임은 자식을 연 명령 다음(pc+1)부터 그 라벨 앞까지.
+ */
+function skippedStateCommands(stack: readonly { commands: Command[]; pc: number }[], name: string): Command[] {
+  for (let i = stack.length - 1; i >= 0; i -= 1) {
+    const frame = stack[i];
+    if (!frame) continue;
+    const labelAt = frame.commands.findIndex((c) => c.kind === "label" && (c as { name?: string }).name === name);
+    if (labelAt < 0) continue;
+    const out: Command[] = [];
+    for (let j = stack.length - 1; j > i; j -= 1) {
+      const inner = stack[j];
+      if (inner) out.push(...inner.commands.slice(inner.pc + (j === stack.length - 1 ? 0 : 1)));
+    }
+    const from = frame.pc + (i === stack.length - 1 ? 0 : 1);
+    if (from < labelAt) out.push(...frame.commands.slice(from, labelAt));
+    return out.filter((c) => SKIP_KEEPS_STATE.has(c.kind));
+  }
+  return [];
 }

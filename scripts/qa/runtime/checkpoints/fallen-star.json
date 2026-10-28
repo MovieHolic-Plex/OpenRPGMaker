@@ -7077,6 +7077,140 @@
    ]
   },
   {
+   "id": "act2-skip-opening",
+   "label": "제2막 여는 장면을 Esc Esc 로 건너뛰어도 빵·스위치가 남는다(감방 문 → 엘레나의 빵 힌트)",
+   "note": "interpreter.ts jumpToLabel — 건너뛴 구간의 상태 명령을 반영한다",
+   "mapId": "fs2_cell",
+   "x": 6,
+   "y": 4,
+   "facing": "down",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_done": true,
+    "sw_fs_iris_joined": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 8
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 8
+    }
+   ],
+   "beats": [
+    {
+     "id": "skip",
+     "ops": [
+      {
+       "kind": "waitForBodyText",
+       "text": "빌린 불",
+       "timeoutMs": 20000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 3500
+      },
+      {
+       "kind": "key",
+       "key": "Escape"
+      },
+      {
+       "kind": "key",
+       "key": "Escape"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 2500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "gate-hint",
+     "ops": [
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 16,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 900
+        }
+       ]
+      },
+      {
+       "kind": "move",
+       "dir": "right",
+       "steps": 1
+      },
+      {
+       "kind": "move",
+       "dir": "down",
+       "steps": 1
+      },
+      {
+       "kind": "face",
+       "dir": "down"
+      },
+      {
+       "kind": "action"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1400
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1400
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 600
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "elena-bread",
+     "ops": [
+      {
+       "kind": "waitForBodyText",
+       "text": "침대 모서리에 대고",
+       "timeoutMs": 15000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 600
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
    "id": "act2-play-hub",
    "label": "제2막 막사를 빠져나온 뒤부터 대화형 플레이(독립 판정용) — 짐을 찾고 사다리 앞",
    "note": "runtimeQaInteractive.mjs — QA_INTERACTIVE_DIR 폴더에 scripts/qa/play-step.mjs 로 조작을 보낸다",

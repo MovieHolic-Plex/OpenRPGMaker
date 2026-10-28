@@ -10782,6 +10782,20 @@
    ],
    "verify": "길의 어느 칸으로 맵 끝을 밟아도 다음 맵으로 넘어간다(출하 플레이어 checkpoint act2-b5-north)",
    "suiteCategory": "fs2-wide-edge-exit"
+  },
+  {
+   "category": "game",
+   "kind": "logic",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "id": "fs2-skip-keeps-state",
+   "prompt": "여는 컷신을 Esc 두 번으로 건너뛰면 그 장면에서 주던 아이템과 스위치가 안 들어오고 화면도 검은 채로 남아. 건너뛰어도 결과는 남고 화면은 돌아오게 해 줘.",
+   "requires": [
+    "엔진: 컷신 건너뛰기(jumpToLabel cutscene_end)가 건너뛴 구간의 상태 명령(스위치·변수·아이템·금화·파티)을 반영",
+    "엔진: 건너뛴 뒤 검은 페이드·화면 숨김을 걷는다"
+   ],
+   "verify": "제2막 여는 장면을 Esc Esc 로 건너뛰고 감방 문을 조사하면 엘레나의 빵 힌트가 나오고 감방이 보인다(출하 플레이어 checkpoint act2-skip-opening)",
+   "suiteCategory": "fs2-skip-keeps-state"
   }
  ],
  "gates": {
