@@ -33,7 +33,9 @@ const KIND_WORDS: readonly [RegExp, string[]][] = [
   [/부엌|주방|kitchen|조리/iu, ["kitchen", "prep"]],
   [/창고|저장|store ?room|pantry|식료/iu, ["storeroom", "pantry"]],
   [/지하|cellar|술 ?창고/iu, ["cellar", "storeroom"]],
-  [/침실|bed ?room|잠|객실|여관 ?방|guest/iu, ["bedroom", "inn_room"]],
+  // 여관 객실은 inn_room 견본(침대·협탁·옷장·작은 탁자, 손으로 짠 5×6~7×7)이 먼저 — 침실 견본은 귀족 방 깔개로 2층 객실 아래 절반이 휑했다(2026-10-29 vm1 flash mystery).
+  [/객실|여관 ?방|손님 ?방|guest/iu, ["inn_room", "bedroom"]],
+  [/침실|bed ?room|잠/iu, ["bedroom", "inn_room"]],
   // 「여관」만 오면 1층 홀(술집 겸 접수) — 장소 견본(tavern)을 쓰지 않는 묶음 길에서 거실 견본이 됐다(2026-10-29).
   [/여관|inn\b|객잔|주막/iu, ["tavern", "inn_room"]],
   // 손으로 짠 견본(interiorAuthoredRoomTemplates.json): 연구실·실험실 → laboratory(「연구」가 서재로 가기 전에), 교실, 잡화점, 감옥.
@@ -41,6 +43,8 @@ const KIND_WORDS: readonly [RegExp, string[]][] = [
   [/교실|강의실|classroom|학교/iu, ["classroom"]],
   [/잡화|만물|도구점|item ?shop|general ?store/iu, ["general_store"]],
   [/감옥|감방|지하 ?뇌옥|jail|prison|dungeon cell/iu, ["jail", "cell", "guard_room"]],
+  [/무기점|무기 ?상점|무기 ?가게|weapon ?shop|armou?ry ?shop/iu, ["weapon_shop", "armory"]],
+  [/민가|오두막|농가|살림집|cottage|farmhouse/iu, ["living", "bedroom"]],
   [/서재|study|공부|연구/iu, ["study", "library"]],
   [/도서|서고|library|책/iu, ["library", "study"]],
   [/천문|관측|observ|별/iu, ["study", "library"]],
@@ -59,7 +63,7 @@ const KIND_WORDS: readonly [RegExp, string[]][] = [
   [/욕실|화장실|bath/iu, ["bathroom"]],
   [/감방|cell/iu, ["cell", "guard_room"]],
   [/경비|guard/iu, ["guard_room"]],
-  [/가게|상점|shop/iu, ["bakery_shop", "tailor_shop", "weapon_shop"]],
+  [/가게|상점|shop/iu, ["general_store", "weapon_shop", "bakery_shop", "tailor_shop"]],
   [/빵/iu, ["bakery_shop", "bakery_oven"]],
 ];
 

@@ -477,6 +477,11 @@ v5 의 작은 삼각대 망원경·천체 모형·지구본·1칸 별자리표·
 
 ## 손으로 짠 방 견본 (2026-10-29)
 
+**2판(같은 날, 실제 게임 판 기준 18장 추가 — 모두 33장):** `survey.mts` 로 게임 판(`suite/runs/vm1-1029`·`vm2-1029` 의 project.sqlite) 실내 맵을 렌더하고 판정·VQA 결함을 모아 본 결과 — 추리 여관은 같은 16×14 통나무 홀만 되풀이되고 객실은 3×4 견본뿐(2층 객실은 침실 견본으로 아래 절반이 휑), 방탈출 서재는 5×6 으로 빽빽하거나 10×9 로 휑했다. JRPG 판은 마을 집·가게에 실내가 없었다. 그래서 견본이 없거나 하나뿐인 용도에 크기·배치 변형을 더했다: 여관 홀 11×8(`tavern-m`), 객실 5×6·6×7·7×7(`inn_room`), 여관 주방 7×7·9×7, 서재 5×6·7×7·9×8, 창고 7×6·8×7, 침실 6×6·7×8, 민가 7×7·9×7(`living`), 무기점 8×8·10×8(`weapon_shop`), 몬스터 연구소 7×7(`laboratory`). 묶음별 파일 `rooms-inn.mts`·`rooms-escape.mts`·`rooms-village.mts`(build 가 `rooms*.mts` 를 모두 모은다, 동시 작업 중엔 `--skip-bad`).
+- 검수자는 Sonnet 5.5 high(`review.sh <check 출력 폴더> <id> "<용도>"`, `omp -p --model teamclaude/claude-sonnet-5-5 --thinking high`, 마지막 줄 VERDICT). 프롬프트에 칩셋 그림 약속(북향 의자 등받이가 아래, 발깔개 두 칸 폭, 단서 물건은 나중 이벤트)을 넣었다 — 그래도 검수자가 chair N 을 「책상을 등짐」으로 잡는 일이 있어 그 자리는 옆향 의자·걸상으로 피했다. 방마다 4판 한도: 여관 홀 9×7·13×9, 민가 11×9, 연구소 12×9 는 휑한 바닥·반복으로 떨어져 뺐다.
+- `lab bench` 그림에 빨강·흰 공이 그려져 있어 검수자가 몬스터 공(상용 IP)을 닮았다고 짚었다 — 연구소 견본에는 쓰지 않았다.
+- 이름: 객실·여관 방·손님 방 → inn_room 먼저(침실은 bedroom 먼저), 무기점 → weapon_shop, 민가·오두막 → living, 가게·상점 → general_store 먼저.
+
 예제 맵에 없거나 약한 용도를 칩셋에 이미 있는 기물만으로 짠 방 견본 15장(새 그림 없음): 교실 8×7·10×9·13×10(`classroom`), 잡화점 7×8·9×8(`general_store`), 연구실 9×7·10×8(`laboratory`), 감옥 7×8·11×9(`jail` — 같은 폭 감방 + 간수 자리), 예배당 13×9(`chapel`, 원본 성당처럼 동쪽 독립 제단을 보는 옆모습 회중석), 방탈출 작은 방 서재 6×7·8×8 / 침실 6×7·8×8 / 창고 6×7. 잡화점 11×9·예배당 10×9 는 5판 검수까지 휑한 바닥으로 떨어져 뺐다.
 
 - 원본 `scripts/content/interior-authored/rooms.mts`(글자 그림: hang 줄 + 바닥 줄, 기물 글자는 왼쪽 위 칸에만) → `bun scripts/content/interior-authored/build.mts` → `src/assets/interiorAuthoredRoomTemplates.json`(templates.ts 가 v5·plus 견본에 이어 붙인다). 지도 이름 `authored-<화풍>-<id>` — 화풍(town/noble/fantasy)은 그 종류 견본의 다수 화풍과 맞춰야 짓기가 고른다(침실은 town, 서재는 noble).
