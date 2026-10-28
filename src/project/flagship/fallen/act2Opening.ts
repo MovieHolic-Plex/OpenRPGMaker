@@ -813,7 +813,9 @@ const BRAM = "숲지기 브람";
 /** 광장 → 대장간 문(1막 문 칸) · 대장간 안 문 칸·로한 자리. */
 const SMITHY = { hubDoor: { x: 29, y: 42 } as Cell, hubFront: { x: 29, y: 43 } as Cell, door: { x: 7, y: 10 } as Cell, arrive: { x: 7, y: 9 } as Cell, rohan: { x: 10, y: 6 } as Cell };
 /** 북쪽 성벽 개구멍 — 광장 북쪽 돌바닥(38,16)에서 위를 보고 조사. 브람이 그 곁(39,16)에 숨어 있다. */
-const HOLE = { wall: { x: 38, y: 15 } as Cell, front: { x: 38, y: 16 } as Cell, bram: { x: 39, y: 16 } as Cell };
+// 독립 판정(judge12): 브람(39,16)·개구멍 앞(38,16)이 울타리 친 화단 주머니 안이라 광장에서 걸어 닿을 수 없었다
+// (통행 BFS: 성벽 밑 줄은 x42~50 만 이어진다). 북문 서쪽, 이어진 성벽 밑으로 옮긴다.
+const HOLE = { wall: { x: 42, y: 15 } as Cell, front: { x: 42, y: 16 } as Cell, bram: { x: 43, y: 16 } as Cell };
 
 /** 북쪽 숲 어귀·재의 들판(B5 가 이어 짓는다). 만든 맵 id 는 결과에서 받는다. */
 export const FS2_NORTH_ROUTE: { mapIds: string[]; entry: Cell; entries: Cell[] } = { mapIds: [], entry: { x: 0, y: 0 }, entries: [] };
@@ -870,7 +872,7 @@ function northGateEvents(project: Project, exec: Exec, hubId: string): void {
       say(KAEL, "아저씨, 이거… 손잡이 무늬가 특이해요."),
       say(ROHAN, "딸년 창이랑 같은 무늬다.\n새라는 심문회 견습 창기사로 북방 관문 요새에 있어."),
       say(ROHAN, "…그리고 새라를 보거든, 고개 들라고 해라."),
-      say(ROHAN, "북문은 막혔다. 광장 북쪽 성벽 밑에\n브람 영감이 기다린다더군."),
+      say(ROHAN, "북문은 막혔다. 북문 서쪽, 성벽 밑 나무 그늘에\n브람 영감이 등을 들고 기다린다더군."),
       setSw(SW_ROHAN),
       cutLabel(),
       cutEnd(),
@@ -886,7 +888,8 @@ function northGateEvents(project: Project, exec: Exec, hubId: string): void {
       say(BRAM, "이 돌 하나가 빠진다. 서른 해 전에\n내가 빼 둔 거지. 그때도 밤이었다."),
       say(BRAM, "순찰 등불이 이쪽으로 돈다. 빠지면 뒤돌아보지 말고\n숲 그늘까지 뛰어라. 거기서 기다리마."),
       setSw(SW_BRAM),
-    ], { graphic: chip(bramChip.textureKey, bramChip.characterIndex, "left") }),
+    // 독립 판정(judge12): 「광장 북쪽 성벽 밑」만 듣고 북쪽 벽을 따라 헤맸다 — 브람이 등을 든다(불빛).
+    ], { graphic: chip(bramChip.textureKey, bramChip.characterIndex, "left"), glow: { radius: 2, color: "#ffc070" }, nearSparkle: { radius: 2 } }),
     page("ev_fs2_hub_bram_after", "브람(뒤)", [sw(SW_BRAM)], [say(BRAM, "숲 그늘까지. 뒤돌아보지 마라.")], { graphic: chip(bramChip.textureKey, bramChip.characterIndex, "left") }),
     page("ev_fs2_hub_bram_gone", "브람(숲으로)", [sw(SW_B4_ALARM)], [], { priority: "below", graphic: { transparent: true } }),
   ]);
@@ -2253,7 +2256,7 @@ function act2Quest(project: Project, exec: Exec): void {
     [SW_MIRE, "서쪽 수로 다리를 건너 북서쪽 끝, 빵집 문틈의 미레 아주머니를 찾는다(쉬어 갈 수 있다)"],
     [SW_HANEL, "광장 우물 사다리로 천문대에 숨어 들어가 하넬 선생을 만난다"],
     [SW_ROHAN, "광장 남쪽 끝 대장간 뒷문으로 들어가 로한을 만난다"],
-    [SW_BRAM, "광장 북쪽 성벽 밑의 브람 영감을 찾는다"],
+    [SW_BRAM, "북문 서쪽 성벽 밑, 나무 그늘에서 등을 든 브람 영감을 찾는다"],
     [SW_B4_EDGE, "개구멍을 빠져 북쪽 숲 가장자리까지 달아난다"],
     [SW_CERT, "재의 들판을 지나 북쪽 새벽샘 터에서 세린의 흔적을 찾는다"],
     [SW_SARAH, "북방 관문 요새에 들어가 북문의 창, 새라를 만난다"],
