@@ -7301,7 +7301,8 @@
    "items": {
     "item_potion": 6,
     "item_ether": 2,
-    "item_panacea": 1
+    "item_panacea": 1,
+    "item_phoenix_down": 2
    },
    "gold": 150
   },
@@ -7367,7 +7368,8 @@
     "item_potion": 6,
     "item_hi_potion": 2,
     "item_ether": 3,
-    "item_panacea": 1
+    "item_panacea": 1,
+    "item_phoenix_down": 2
    },
    "gold": 400
   },

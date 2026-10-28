@@ -1141,6 +1141,9 @@ function dawnwellEvents(project: Project): void {
       setSw(SW_CERT),
       cutLabel(),
       cutEnd(),
+      // 독립 판정(재판정): 새벽샘에서 북쪽 출구(울타리 틈 하나)를 40걸음 동안 더듬어 찾았다 — 다음 갈 곳을 짚는다.
+      say(KAEL, "발렌이 간 길은 북쪽이야. 북방 관문 요새."),
+      say(ELENA, "마을 울타리 동쪽 길로 북쪽 끝까지 올라가면 돼."),
     ]),
     page("ev_fs2_dawn_door_after", "빈 집", [sw(SW_CERT)], [narrate("빈 집이다. 재 냄새만 남았다.")]),
   ]);

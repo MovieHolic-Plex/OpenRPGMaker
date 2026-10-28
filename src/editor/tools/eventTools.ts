@@ -3852,6 +3852,20 @@ const placeSavepoint: ToolDefinition = {
     };
     assertEventShape(event);
     upsertEventIntoMap(map, event);
+    // 그림의 다른 칸에서도 조사된다 — 이벤트가 맨 아래 줄 가운데 한 칸뿐이면 그 칸을 그 방향에서 보고 눌러야만 열렸다
+    // (독립 판정 2026-10-28: 새벽샘 터 별빛 결정을 둘레 네 칸에서 눌러도 아무 일이 없어 두 시간 동안 저장을 못 했다).
+    if (objectFootprint) {
+      const page = event.pages![0]!;
+      let k = 0;
+      for (let fy = objectFootprint.y; fy < objectFootprint.y + objectFootprint.h; fy += 1) {
+        for (let fx = objectFootprint.x; fx < objectFootprint.x + objectFootprint.w; fx += 1) {
+          if (fx === x && fy === y) continue;
+          const twinId = `${id}_fp${k++}`;
+          const { glow: _glow, nearSparkle: _sparkle, ...rest } = page;
+          upsertEventIntoMap(map, { id: twinId, x: fx, y: fy, trigger, commands: [], pages: [{ ...rest, id: `${twinId}_page` }] });
+        }
+      }
+    }
     const saveWarnings = [
       ...(adjusted ? [placementAdjustedWarning("세이브 포인트", { x: requestedX, y: requestedY }, placement)] : []),
       ...(map.disableSave && saveMode !== "checkpoint" ? [`${map.name} 은(는) 저장 금지 맵이라 저장 칸 메뉴에서 저장할 수 없습니다 — 저장 장소라면 set_map_properties 로 이 맵의 저장 금지를 끄세요.`] : []),
