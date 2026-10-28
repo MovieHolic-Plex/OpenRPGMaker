@@ -486,3 +486,4 @@ v5 의 작은 삼각대 망원경·천체 모형·지구본·1칸 별자리표·
 - build 는 **닿음 검사**(`lintReach`)도 건다 — 문 칸(남벽 x = floor((w-1)/2))에서 모든 바닥과 모든 바닥 기물 옆 칸에 걸어서 닿는가, 문 위 두 줄·발깔개 오른쪽 칸이 비었는가(짓기가 그 칸의 가구를 빼거나 옮긴다 — 예배당 회중석이 옆 열로 밀려 붙었다).
 - 채택: 견본마다 Opus 적대 검수 PASS(major 이상 0, 2026-10-29 5판까지) + 두 검사 + check.mts 짓기(빠진 가구 0·닿지 못한 바닥 0). 증거 `~/z-project/assistant-whole-game/suite/ledger/evidence/interior/authored/`.
 - 이름: `KIND_WORDS` 에 실험·연구실 → laboratory(「연구」 서재 규칙보다 먼저), 교실·학교 → classroom, 잡화·만물 → general_store, 감옥·jail → jail. `roomPurpose` 의 교실·학교 쓰임(atlas)은 classroom, 가게 쓰임은 general_store 먼저.
+- 조수 v2 실내 빌더에서 지은 방이 전부 손으로 짠 견본이면(`layout.rooms[].template` 가 `authored-…`) 줄이기·빈 바닥 메우기·빈 방 꾸미기·한 단계 줄이기를 건너뛴다 — 견본 크기에서 검수·닿음 검사를 통과한 구성이라서다(room-vig3: 잡화점 7×8 견본을 「빈 바닥이 넓다」며 줄여 계산대가 빠졌다). 주인공 물건은 같은 종류(이름 첫 낱말: counter 1x1 ↔ counter 3x1)가 그 방에 이미 있으면 놓은 것으로 친다. `pickTemplate` 은 손으로 짠 견본을 그 종류의 제 견본으로 쳐서, 작은 교회가 원래 예배당 31×13 대신 13×9 를 고른다.

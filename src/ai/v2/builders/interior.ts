@@ -415,7 +415,8 @@ const EXOTIC_MAPS = new Set(["zozo", "narshe", "casino", "magitek", "opera", "mi
 /** 방 종류의 견본 하나: 같은 이름의 예제 건물(선술집 → tavern 예제) → 평범한 예제 → 아무거나. 크기 낱말로 작은·가운데·큰 것. */
 function pickTemplate(tilesetId: string, kind: string, size: string | undefined) {
   const ts = roomTemplates(tilesetId).filter((t) => t.kind === kind);
-  const own = ts.filter((t) => t.map === kind);
+  // 손으로 짠 견본(authored-…)은 그 종류의 제 견본으로 친다 — 아니면 작은 교회가 원래 예배당 31×13 만 골랐다(2026-10-29 room-vig3 church).
+  const own = ts.filter((t) => t.map === kind || t.map.startsWith("authored-"));
   const plain = ts.filter((t) => !EXOTIC_MAPS.has(t.map));
   const base = own.length ? own : plain.length ? plain : ts;
   // 가구 한 점당 바닥 12칸을 넘는 성긴 견본은 빼고 고른다(있으면) — 큰 학교의 입학 홀이 manor_1f 23×19(가구 16점, 점당 27칸)를 골라
@@ -921,7 +922,11 @@ export const interiorBuilder: PlaceBuilder = {
         notes.push(`방 넓이를 기물 묶음 막힘 목표(36%)·맨바닥에 맞춰 ${before} → ${resized.map((r) => `${r.w}×${r.h}`).join(",")} 로 고쳐 지었다`);
       }
     }
-    if (!vignette && !rooms.some((r) => r.zone.keep)) {
+    // 손으로 짠 견본(authored-…)은 그 크기에서 검수·도달 검사를 통과한 구성이다 — 줄이기·빈 바닥 메우기·빈 방 꾸미기·한 단계 줄이기를 하지 않는다
+    // (2026-10-29 room-vig3: 잡화점 7×8 견본을 「빈 바닥이 넓다」며 줄여 계산대가 빠졌다).
+    const settled = ((first.data?.layout as { rooms?: { template?: string }[] } | undefined)?.rooms ?? []).every((r) => String(r.template ?? "").startsWith("authored-"));
+    if (settled) notes.push(`손으로 짠 방 견본(${((first.data?.layout as { rooms?: { template?: string }[] }).rooms ?? []).map((r) => r.template).join(", ")})을 크기 그대로 썼다`);
+    if (!vignette && !settled && !rooms.some((r) => r.zone.keep)) {
       const builtId = String(first.data?.mapId ?? mapId);
       const bareOf = () => { const m = run.ctx.project.maps[builtId]; return m ? measureInteriorBareFloor(run.ctx.project, m)?.pct ?? 0 : 0; };
       let pct = bareOf();
@@ -1038,6 +1043,9 @@ export const interiorBuilder: PlaceBuilder = {
       // 이미 «그 방에» 있으면 놓은 것으로 친다 — 다른 방(견본)에 같은 가구가 있다고 넘기면 입학 홀의 「큰 벽난로」가 복도 견본 벽난로로 셈되어 홀이 비었다.
       const inZone = (o: Obj) => { const r = rb.rooms.find((q) => q.id === room.id); return !r || (o.x >= r.x0 && o.x <= r.x1 && o.y >= r.y0 && o.y <= r.y1 + 1); };
       if (rb.objects.some((o) => o.id === part.id && inZone(o)) && !/계단|stair/iu.test(what)) { placed.push({ zone: room.id, what, id: part.id }); continue; }
+      // 손으로 짠 견본은 같은 종류(이름 첫 낱말이 같은 가구: counter 1x1 ↔ counter 3x1)가 이미 있으면 놓은 것으로 친다 — 덧놓으면 검수된 통로를 막는다.
+      const head = part.id.split(" ")[0]!;
+      if (settled && !/계단|stair/iu.test(what) && rb.objects.some((o) => o.id.split(" ")[0] === head && inZone(o))) { placed.push({ zone: room.id, what, id: part.id }); continue; }
       // 올라가는 계단: 이 방이 맨 북쪽 바깥 벽에 닿지 않으면(위에 다른 방) 맨 북쪽 방 벽에 단다 — 칸막이 속으로 오르는 계단은 틀린 그림이다.
       const isUp = part.stairs === "up" || /stairs up/u.test(part.id);
       const top = Math.min(...rb.rooms.map((r) => r.y0));
@@ -1064,7 +1072,7 @@ export const interiorBuilder: PlaceBuilder = {
     // 빈 바닥 덩이 메우기(쓰임 한 벌) — 1배에서 「휑한 홀」이 v1 의 가장 흔한 major 였다.
     const kinds = new Map(rooms.map((r) => [r.id, r.kind] as const));
     build(run, args);
-    if (!vignette) {
+    if (!vignette && !settled) {
       const filled = fillBare(run, roomSpec, args, rb, kinds, FILL_BARE_PCT, `${spec.name} ${spec.theme ?? ""}`);
       args = filled.args; rb = filled.rb;
       if (filled.filled) notes.push(`빈 바닥 덩이 ${filled.filled}곳을 방 쓰임에 맞는 가구 한 벌로 채웠다`);
@@ -1091,13 +1099,13 @@ export const interiorBuilder: PlaceBuilder = {
     // 요청한 주인공 물건이 끝까지 남았는지 — 크기 줄이기·다시 짓기에서 「큰 망원경」이 빠진 채 끝났다(2026-10-23 비교).
     const finalIds = new Set(((args.objects as Obj[]) ?? []).map((o) => o.id));
     for (const p of placed) if (!/계단|stair/iu.test(p.what) && !finalIds.has(p.id) && !p.zone.startsWith("2층")) missing.push(`${p.what}(${p.zone}) — 최종 맵에 없다(놓은 뒤 밀려났다)`);
-    if (!vignette) {
+    if (!vignette && !settled) {
       dressEmptyRooms(run, builtMapId, rooms.map((r) => ({ kind: r.kind, id: r.id, purpose: r.zone.purpose })), notes);
       if (upperMapId && mapIds.includes(upperMapId)) dressEmptyRooms(run, upperMapId, [], notes);
     }
     // 한 방짜리가 채운 뒤에도 맨바닥 30% 를 넘으면 한 단계 작은 크기로 다시 지어 본다 — 벽 쪽 자리가 없어 못 채우는 방은 방이 큰 것이다
     // (2026-10-28 연금술 공방 13×11 맨바닥 42%). 더 나아지면 그것을 쓰고, 아니면 되돌린다.
-    if (!vignette && rooms.length === 1 && spec.size !== "small" && spec.hints?.downsized !== true) {
+    if (!vignette && !settled && rooms.length === 1 && spec.size !== "small" && spec.hints?.downsized !== true) {
       const barePctOf = (id: string) => {
         const mm = run.ctx.project.maps[id];
         const l = (mm?.locations ?? []).find((q) => (q.tags ?? []).includes("hand-layout-room"));
