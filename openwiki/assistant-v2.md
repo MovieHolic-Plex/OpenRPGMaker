@@ -85,6 +85,21 @@ v1 의 `script_cutscene` 비트로 옮긴다(`events.ts`).
 - **출하 기본값 채우기(2026-10-29 vm1)**: 싼 모델이 끝내 못 고친 출하 검사 여섯(`battle-bgm`·`battle-background`·`party-faces`·`hero-look`·`ending-closure`·`default-place-leak`)을 끝맺음 조립이 `src/ai/v2/shipDefaults.ts applyShipDefaults` 로 결정적으로 채운다(`applyBlueprintAssembly`·기본 오프닝 뒤, 같은 체크포인트 `blueprint_assembly`). 무엇이 남았는지는 출하 검사 함수(`editorDefaultsLeft`·`endingClosureProblems`·`defaultPlaceLeaks`) 자체로 판단한다 — 검사가 짚지 않으면 아무것도 안 바꾼다(모델이 고른 값은 그대로). **전투 곡**: 이 프로젝트에서 재생되는 음악 목록(`listAudioResources`)의 전투 곡 중 편집기 기본이 아닌 것, 마왕·공포 이야기는 어둡고 묵직한 곡 먼저, EasyRPG 곡은 마지막. **전투 배경**: 배경 없는 전투 맵에 런타임 `resolveBattleBackdrop` 의 맵 단계 순서(기후 → 던전·동굴 → 장소 이름 → 실내 칩셋)로 고른 값을 맵 `battleBackground` 로 적는다. 아무것도 못 고르면 그 맵으로 들어오는 맵의 배경(동굴 먼저), 그것도 없으면 숲. **파티**: 편집기 기본 칩이면 이름·청사진 이야기 낱말(마법·기사·마왕·소녀…, 여성 낱말이면 여성 칩)로 공용 칩을 고른다 — 짝 얼굴이 검토된 칩만, 그 짝 얼굴도 같이. 칩은 모델이 골랐고 얼굴만 기본이면 그 칩의 짝 얼굴, 짝이 없으면 얼굴을 비운다. **엔딩 맺음**: 부족한 것만 — 줄이 모자라면 청사진 `ending.how`·`feeling`·마지막 단계 행동, 인물 매듭이 없으면 「<주인공>은 <첫 장소>에서 시작한 이 여정을 끝까지 걸어냈다」, 그림이 없으면 이야기 종류별 맺음 스틸(강하게 맞는 번들 그림 → 설원·사막·공포·판타지·추리·학교/탈출·농장 → 농장). 엔딩 화면은 `map-view:` 를 못 그리므로 스틸만 쓴다. **기본 지명**: 제목·엔딩 이름·맺음 글의 「버들항」을 첫 장소에서 지명을 뺀 보통 이름(「마을」)으로 바꾼다. 제목이 보통 이름 하나만 남으면 고친 엔딩 이름으로. 맵 이름은 그대로 둔다. 장소 이름이 칩셋 id 같은 영문 슬러그(`beodeul_city`)면 `blueprintPlaceName` 이 장소로 치지 않는다(타이틀 「beodeul_city 탈출」).
 - **도구 인자 관대화**: `set_opening` 은 `scenes` 가 필수가 아니다 — `{enabled:false}` 는 지금 장면을 둔 채 끄고, 장면 하나를 객체로 보내도 받으며, 장면 없이 꺼져 있던 오프닝에 새 장면을 주면 켠다. `"false"` 글자도 받는다(argon 「같은 인자 모양 오류 7번」). `set_title_screen` 은 `bgm:`·`picture:` 머리를 떼고 대소문자를 맞추며, `backgroundResourceId:""` 는 청사진 그림으로 바꾼다(지우기만 하면 시스템 기본 눈 마을이 다시 나왔다). 없는 id·못 쓰는 그림 오류는 청사진 그림 id 를 한 줄로 알려 준다.
 
+## 모델 호출 무응답 한도·고치기 차례 상한 (2026-10-29 vm1 argon)
+
+- **호출 단위 무응답 한도**(`src/ai/piAgent/providerRetry.ts` `modelStallLimits`·`withModelStallLimits`, 적용은 `scripts/lib/piAgentRuntime.ts` 의 streamFn):
+  첫 이벤트 `OPRN_MODEL_FIRST_EVENT_TIMEOUT_MS`(기본 180000) · 이벤트 사이 `OPRN_MODEL_IDLE_TIMEOUT_MS`(기본 90000) 를 호출 옵션으로 넘긴다(pi-ai 는 호출 옵션을 환경 변수·모델 compat 보다 먼저 본다).
+  이미 정해진 값보다 짧을 때만 줄이고, 0 이면 우리 상한 없음. 사용자 지정(openai-compat:*) 엔드포인트는 늘 씌운다 — 엔드포인트 「첫 토큰 대기」 600초가 토큰 사이 감시까지 10분으로 늘려 호출 하나가 10분씩 잡혔다.
+  다른 제공자는 OPRN_MODEL_* 를 명시했을 때만. 감시가 끊은 호출(「timed out while waiting for the first event」·「stalled while waiting for the next event」)은 같은 기록으로
+  `OPRN_MODEL_STALL_RETRIES`(기본 2)번 다시 요청(`provider_stall_retry`)하고, 그래도 조용하면 차례를 실패 문장으로 끝낸다(`provider_stall_giveup` + error — 적용한 변경은 남는다). 확인: `bun scripts/qa/model-stall-probe.mts`(헤더만 보내고 침묵하는 가짜 끝점).
+- **화면 검수 고치기 차례 상한**(`src/ai/v2/vqaFixBudget.ts`, 실행기가 v2 도구 실행 앞에 낀다): 고치기 지시를 낸 차례마다 쓰기 도구 `OPRN_V2_VQA_FIX_MAX_CALLS`(12)회 · `OPRN_V2_VQA_FIX_MAX_MS`(600000) ·
+  같은 도구+같은 인자 실패 `OPRN_V2_VQA_FIX_SAME_FAILS`(2) · 같은 도구 실패 `OPRN_V2_VQA_FIX_TOOL_FAILS`(4). 넘으면 실행하지 않고 «남은 결함으로 보고하라» 거절을 돌려주며 `v2.vqa.fix_cap` 을 한 번 남긴다.
+  읽기 도구(inspect·list_·find_·get_·read_)는 세지 않는다. 판 사이 반복은 기존 `vqaActionable`(두 판 연속 그대로 = stuck)·`VQA_MAX_ROUNDS` 가 막는다 — 이 상한은 **한 차례 안**의 반복이다
+  (vm1 escape 001: 1판 결함 6건 뒤 고치기 차례 하나가 move_object 를 20번 넘게, 반은 같은 「길이 막혀 되돌림」 거절로 부르며 45분 상한까지 갔다).
+- **결정 카드와 글 답**(`src/harnesses/assistant-capability/node/wholeGameSession.mjs`): 맵 소실 확인 같은 결정 카드는 글로 답할 수 없다. 카드가 열린 채 `.txt` 가 오면
+  하네스가 먼저 「그만두기」(내용을 지우지 않는 쪽)를 누르고 보낸다. 그전에는 실행이 카드 단추를 기다리며 체크포인트 적용을 30분 잡고(`piCheckpointBroker`),
+  보낸 글은 그 뒤에 갇혀 다음 턴이 0블록으로 45분 멈췄다(vm1 argon escape 003→004·jrpg 003→004 — 「모델 무응답」으로 보였던 턴의 실제 원인).
+
 ## 켜는 법
 
 - 편집기 주소 `?assistant=v2`, 또는 `localStorage['oprn:assistant-v2'] = '1'`(`src/ai/v2/switch.ts`). `?assistant=v1` 이나 `'0'` 이면 끈다. **기본은 v1** — 기본을 바꾸는 것은 사용자 결정이다.

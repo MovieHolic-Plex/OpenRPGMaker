@@ -72,7 +72,7 @@ import { createDeltaRelay } from "../../src/ai/piAgent/deltaRelay.ts";
 import { applyMapDeltas, diffMapsForDelta } from "../../src/ai/piAgent/mapDelta.ts";
 import { buildPiAgentSystemPrompt } from "../../src/ai/piAgent/systemPrompt.ts";
 import { gameDesignBriefContext } from "../../src/project/gameDesignBrief.ts";
-import { isTransientProviderStreamError, PI_PROVIDER_STREAM_RETRY_LIMIT, providerStreamResumePrompt } from "../../src/ai/piAgent/providerRetry.ts";
+import { isModelStallError, isTransientProviderStreamError, modelStallFailure, modelStallLimits, PI_PROVIDER_STREAM_RETRY_LIMIT, providerStreamResumePrompt, withModelStallLimits } from "../../src/ai/piAgent/providerRetry.ts";
 import { explainOpenAiCompatRunError, guardedOpenAiCompatFetch, shapeOpenAiCompatCall } from "./openAiCompatModel.ts";
 import { isOpenAiCompatProviderId } from "../../src/ai/openAiCompat.ts";
 import { PLAN_EXECUTION_REKICK, ULTRABRAIN_PLAN_HEADING } from "../../src/ai/piAgent/planExecution.ts";
@@ -1099,6 +1099,15 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   let imagesStripped = false;
   let lastRequestHadImages = false;
   let emptyRetries = 0;
+  // 모델 호출 무응답 한도(src/ai/piAgent/providerRetry.ts). 감시가 끊은 호출은 같은 기록으로 stallLimits.retries 번만 다시 요청한다.
+  const stallLimits = modelStallLimits();
+  const stallEnvSet = process.env.OPRN_MODEL_FIRST_EVENT_TIMEOUT_MS !== undefined || process.env.OPRN_MODEL_IDLE_TIMEOUT_MS !== undefined;
+  const compatStall = (m: unknown) => {
+    const compat = (m as { compat?: { streamFirstEventTimeoutMs?: number; streamIdleTimeoutMs?: number } } | undefined)?.compat;
+    return { firstEventMs: compat?.streamFirstEventTimeoutMs, idleMs: compat?.streamIdleTimeoutMs };
+  };
+  const stallOptions = (m: unknown, o?: Record<string, unknown>) => stallEnvSet ? withModelStallLimits({ ...o }, compatStall(m), stallLimits) : { ...o };
+  let stallRetries = 0;
   // 이 실행이 사용자에게 글로 된 답을 한 번이라도 냈나 — 없이 «정상» 끝나면 빈 보고로 정착시키지 않는다.
   let answered = false;
   const agent: PiLoopDriver = localLoop ?? new Agent({
@@ -1122,14 +1131,18 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     ...(options.streamFn ? { streamFn: options.streamFn }
       : request.provider === "openai-codex"
         ? { streamFn: ((m: unknown, c: unknown, o?: Record<string, unknown>) =>
-          streamSimple(m as never, c as never, { ...o, fetch: codexVersionFetch((o?.fetch as typeof fetch | undefined) ?? fetch) } as never)) as never }
+          streamSimple(m as never, c as never, { ...stallOptions(m, o), fetch: codexVersionFetch((o?.fetch as typeof fetch | undefined) ?? fetch) } as never)) as never }
         // 사용자 지정(OpenAI 호환): 리다이렉트를 따라가지 않고 사용자가 고른 호스트로만 보내는 fetch 를 끼운다.
+        // 무응답 한도(providerRetry.ts modelStallLimits)는 여기서 늘 씌운다 — 엔드포인트 「첫 토큰 대기」 600초가 토큰 사이 감시까지 10분으로 늘려 놓았다.
         : isOpenAiCompatProviderId(request.provider)
           ? { streamFn: ((m: unknown, c: unknown, o?: Record<string, unknown>) => {
             const shaped = shapeOpenAiCompatCall(request.provider, m as { id: string; name?: string }, { ...o });
-            return streamSimple(shaped.model as never, c as never, { ...shaped.options, fetch: guardedOpenAiCompatFetch((o?.fetch as typeof fetch | undefined) ?? fetch) } as never);
+            return streamSimple(shaped.model as never, c as never, { ...withModelStallLimits(shaped.options, compatStall(shaped.model), stallLimits), fetch: guardedOpenAiCompatFetch((o?.fetch as typeof fetch | undefined) ?? fetch) } as never);
           }) as never }
-          : {}),
+          // 다른 제공자는 제공자 기본 감시(pi-ai 100초/120초, Argon 300초)를 쓴다. OPRN_MODEL_* 를 명시했을 때만 씌운다.
+          : stallEnvSet
+            ? { streamFn: ((m: unknown, c: unknown, o?: Record<string, unknown>) => streamSimple(m as never, c as never, stallOptions(m, o) as never)) as never }
+            : {}),
     // 실행 하나 = 캐시 세션 하나. 제공자 프롬프트 캐시(prompt_cache_key 등)가 이 id 로 같은 접두부를 묶는다 —
     // 없으면 매 호출 도구 스키마·시스템 프롬프트 전체가 새로 과금됐다.
     sessionId: `oprn-${randomUUID()}`,
@@ -1281,6 +1294,19 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
           cliContextResetPending = true;
           resumeAfter = message.errorMessage;
           emit({ type: "execution_status", name: "local-cli.context_reset", ok: false, summary: "CLI 문맥이 한도에 차서 멈췄습니다 — 대화 기록을 비우고 요청과 지금 프로젝트에서 한 번 이어 합니다." });
+          return;
+        }
+        // 무응답 감시가 끊은 호출: 같은 기록으로 stallLimits.retries 번 다시 요청, 그다음은 이 차례를 깔끔히 끝낸다(다음 차례로 넘어간다).
+        if (!fatal && !options.signal?.aborted && isModelStallError(message.errorMessage)) {
+          if (stallRetries < stallLimits.retries) {
+            stallRetries += 1;
+            resumeAfter = message.errorMessage;
+            emit({ type: "execution_status", name: "provider_stall_retry", ok: false, summary: `AI 모델이 응답하지 않아 같은 요청을 다시 보냅니다 (${stallRetries}/${stallLimits.retries}): ${message.errorMessage}` });
+            return;
+          }
+          fatal = modelStallFailure(stallRetries, stallLimits);
+          emit({ type: "execution_status", name: "provider_stall_giveup", ok: false, summary: fatal });
+          emit({ type: "error", message: fatal });
           return;
         }
         // 우리가 먼저 정한 사유(턴·시간 상한, 클라이언트 끊김)가 있으면 그것이 이긴다 — 코어가 합성한

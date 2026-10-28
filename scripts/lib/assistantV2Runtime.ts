@@ -18,6 +18,8 @@ import { assembledReport, isProviderErrorReply } from "../../src/ai/v2/finalRepo
 import { applyBlueprintOpening } from "../../src/editor/tools/blueprintOpening.ts";
 import { reviewVqaRound, vqaReviewerCandidates, vqaClean, vqaFixBrief, vqaFixRetry, vqaFollowUp, vqaLeftoverInstruction, vqaShotPlan, vqaReviewerLabel, vqaShouldContinue, vqaSummary, wantsWholeGame, VQA_MAX_ROUNDS, VQA_ROUND_CAP, vqaBlockers, vqaActionable, vqaLedgerLine, type VqaReviewerPick, type VqaRound, type VqaShot } from "../../src/ai/v2/vqa.ts";
 import { familyOfProviderId } from "../../src/ai/assistantRoles.ts";
+import { VqaFixBudget, vqaFixCapRefusal } from "../../src/ai/v2/vqaFixBudget.ts";
+import type { PiToolShape } from "../../src/ai/piAgent/toolAdapter.ts";
 import type { PiAssistantV2Env } from "../../src/ai/v2/env.ts";
 import { adviseTurn, advisorFollowUp, withShipBlockers, advisorSummary, compactToolLog, summarizeProjectDiff, type AdvisorToolCall, type AdvisorVerdict } from "../../src/ai/v2/advisor.ts";
 
@@ -86,10 +88,13 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
   // 검토자의 재료: 이 실행의 도구 기록과 마지막 보고 초안. 사용자 화면으로 가는 이벤트를 그대로 흘려보내며 옆에서 모은다.
   const calls: AdvisorToolCall[] = [];
   const argsById = new Map<string, unknown>();
+  // 화면 검수 고치기 차례의 상한(src/ai/v2/vqaFixBudget.ts) — 고치기 지시를 낼 때 켜고, 다음 afterMain 에서 끈다.
+  const fixBudget = new VqaFixBudget();
+  let fixCapReported = false;
   let draft = "";
   const onEvent = (event: PiAgentEvent) => {
     if (event.type === "tool_start") argsById.set(event.id, event.args);
-    else if (event.type === "tool_end") { calls.push({ name: event.name, ok: event.ok, args: argsById.get(event.id), summary: event.summary }); argsById.delete(event.id); }
+    else if (event.type === "tool_end") { fixBudget.record(event.name, argsById.get(event.id), event.ok); calls.push({ name: event.name, ok: event.ok, args: argsById.get(event.id), summary: event.summary }); argsById.delete(event.id); }
     else if (event.type === "assistant") {
       // 제공자 일반 오류 문장(«Sorry, something went wrong» 등)은 보고가 아니다 — 대화창에 보내지 않는다. 그러면 앞의 정직한 보고가 마지막 답으로 남는다.
       // 앞에 보고가 하나도 없으면 실제 프로젝트 상태로 조립한 보고를 대신 보낸다(2026-10-28 mt3 flash·mt2 argon escape).
@@ -165,6 +170,19 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
       data: { ...withFailed, failed } });
     return withFailed;
   };
+  const startFixBudget = () => { fixBudget.start(); fixCapReported = false; };
+  /** 고치기 차례에는 도구 실행 앞에서 상한을 본다 — 넘으면 실행하지 않고 «남은 결함을 보고하라» 거절을 돌려준다. */
+  const withFixBudget = (env: PiAssistantV2Env, tools: PiToolShape[]): PiToolShape[] => tools.map((tool) => Object.assign(Object.create(Object.getPrototypeOf(tool)) as PiToolShape, tool, {
+    execute: async (id: string, params: unknown, signal?: AbortSignal) => {
+      const why = fixBudget.check(tool.name, params);
+      if (!why) return tool.execute(id, params, signal);
+      if (!fixCapReported) {
+        fixCapReported = true;
+        env.emit({ type: "execution_status", name: "v2.vqa.fix_cap", ok: false, summary: `화면 검수 고치기 상한 — ${why}(도구 ${fixBudget.calls}회 실행). 남은 호출은 실행하지 않고 남은 결함으로 보고하게 한다`, data: { why, calls: fixBudget.calls, limits: fixBudget.limits } });
+      }
+      return { content: [{ type: "text" as const, text: vqaFixCapRefusal(why) }] };
+    },
+  }));
   /** 화면 검수 한 걸음: 판 하나를 돌고, 결함이 있으면 고치기 지시, 끝났으면 (남은 결함이 있을 때) 정직한 최종 보고 지시. */
   const vqaStep = async (env: PiAssistantV2Env): Promise<string | undefined> => {
     if (!vqaEnabled(env.request) || (vqaRounds.length && !vqaShouldContinue(vqaRounds))) { vqaPhase = "done"; return undefined; }
@@ -177,6 +195,7 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
         env.emit({ type: "execution_status", name: "v2.vqa.fix_retry", ok: false, summary: `화면 검수 ${previous.round}/${VQA_MAX_ROUNDS} 고치기 차례에 도구 0회 — 판으로 세지 않고 결함 ${previous.defects.length}건을 다시 주며 도구 호출을 강제`, data: { round: previous.round, defects: previous.defects.length } });
         env.requireToolNextTurn?.();
         env.freshContextNextTurn?.();
+        startFixBudget();
         return vqaFixRetry(previous, vqaFixBrief(env.request.task, env.ctx.project, vqaActionable(previous).fix, draft));
       }
       fixFromCalls = undefined;
@@ -215,6 +234,7 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
       fixFromCalls = calls.length;
       env.requireToolNextTurn?.();
       env.freshContextNextTurn?.();
+      startFixBudget();
       return vqaFollowUp(round, vqaFixBrief(env.request.task, env.ctx.project, act.fix, draft), vqaRounds.at(-2));
     }
     // 결함이 남은 채 끝나면 조수가 최종 보고에 남은 목록을 쓰게 한 번 더 돌린다(고치지 말고 정직하게). 그 보고는 검토자가 실제 변경에 대어 본다.
@@ -287,12 +307,14 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
     // 존재하지 않는 이름 하나 — 레지스트리 도구를 하나도 고르지 않고, 이름 지정 실행이라 v1 확인표·작가 도구도 꺼진다.
     toolNames: ["__assistant_v2__"],
     v2: {
-      tools: (env) => createV2Tools(env, session),
+      tools: (env) => withFixBudget(env, createV2Tools(env, session)),
       // 차례 순서: ① 끝맺음 관문 + 검토자 → (막음이면) ② 재검토(기록만) → ③ 화면 검수 1~3판(게임 전체 요청만). 판마다 결함이 있으면 고치는 한 바퀴.
       // 화면 검수: 판마다 한 차례 + 고치기 다시 한 번 + 남은 결함 보고 + 그 보고의 최종 검토 후속.
       maxRounds: 2 + VQA_ROUND_CAP + 3,
       afterMain: async (env) => {
         liveEnv = env;
+        // 고치기 차례가 끝났다 — 다음 지시(고치기 다시·다음 판·최종 보고)에서 새로 켠다.
+        fixBudget.stop();
         // 끝맺음 ① 뒤에 청사진이 처음 생겼거나 다시 끊겼으면 지금 짓는다 — 화면 검수는 지은 뒤의 그림으로 다시 한 판.
         if (vqaPhase !== "advisor" && lateBuildPending(env)) {
           const late = await autoBuild(env);
