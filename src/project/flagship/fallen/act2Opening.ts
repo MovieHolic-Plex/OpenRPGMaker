@@ -1222,7 +1222,7 @@ function scorchAshFields(project: Project, exec: Exec): void {
   const tags = (t: number | undefined): readonly string[] => (t === undefined || t < 0 ? [] : meta[t]?.tags ?? []);
   const isTreeish = (t: number | undefined): boolean => t !== undefined && t >= 0 && (tags(t).includes("tree") || grafts.get(t) === "tex_beodeul_forest_trunks" || grafts.get(t) === "tex_beodeul_nature");
   const base = kitCenterTile(project, field ? M(project, field).tilesetId : "beodeul_city", "bd-pick-temple-ruins-floor-dirt");
-  const patch = kitCenterTile(project, M(project, field!).tilesetId, "bd-pick-mining-valley-ground-yard");
+  const gravel = kitCenterTile(project, M(project, field!).tilesetId, "bd-pick-mining-valley-ground-rock");
   const kitUpper = (id: string): number => {
     const kit = tileset?.structureKits?.find((k) => k.id === id) as { rows: { upperTiles?: number[] }[] } | undefined;
     return kit?.rows[0]?.upperTiles?.find((t) => t >= 0) ?? -1;
@@ -1234,17 +1234,20 @@ function scorchAshFields(project: Project, exec: Exec): void {
     const W = map.width;
     const yMax = mapId === north1 ? Math.max(0, edgeY - 4) : map.height;
     const layers = [map.lowerTiles, map.lowerOverlayTiles, map.upperTiles, map.upperOverlayTiles];
-    const open = (x: number, y: number): boolean => {
-      const i = y * W + x;
-      if (layers.some((l) => isTreeish(l?.[i]))) return false;
+    // 바꾸기 전에 빈터 칸을 정해 둔다(바꾼 뒤엔 풀 칸이 아니라 고목 자리를 못 찾았다).
+    const openMask = new Uint8Array(W * map.height);
+    for (let i = 0; i < W * map.height; i += 1) {
       const lo = map.lowerTiles[i];
-      return lo !== undefined && lo >= 0 && (tags(lo).includes("grass") || grafts.get(lo) === "tex_beodeul_ground");
-    };
+      if (!layers.some((l) => isTreeish(l?.[i])) && lo !== undefined && lo >= 0 && (tags(lo).includes("grass") || grafts.get(lo) === "tex_beodeul_ground")) openMask[i] = 1;
+    }
+    const open = (x: number, y: number): boolean => x >= 0 && y >= 0 && x < W && y < map.height && openMask[y * W + x] === 1;
     for (let y = 0; y < yMax; y += 1) for (let x = 0; x < W; x += 1) {
       const i = y * W + x;
+      // 모랫길 오토타일은 풀 테두리가 그려져 있다 — 잿빛 땅 위 연두 줄이 되므로 자갈 흙길로 바꾼다.
+      if (tags(map.lowerTiles[i]).includes("sand")) map.lowerTiles[i] = gravel;
       if (open(x, y)) {
-        const blob = hash(Math.floor((x + (y % 2)) / 4) + seed, Math.floor(y / 3), seed);
-        map.lowerTiles[i] = blob < 28 ? patch : base;
+        // 마당 흙 얼룩은 경계 오토타일이 없어 네모 판으로 보였다 — 탄 흙 한 가지로 깐다.
+        map.lowerTiles[i] = base;
         if (map.lowerOverlayTiles) map.lowerOverlayTiles[i] = -1;
       }
       // 풀꽃·고사리·버섯 장식 — 6×6 묶음 셋 중 하나쯤에만 불씨·자갈로 남긴다.
@@ -1255,8 +1258,11 @@ function scorchAshFields(project: Project, exec: Exec): void {
     }
     // 마른 고목 덩이 — 빈터 가장자리(숲에서 한두 칸) 세 곳, 서로 8칸 넘게 떨어뜨린다.
     const anchors: Cell[] = [];
-    for (let y = 2; y < yMax - 5 && anchors.length < 3; y += 1) for (let x = 2; x < W - 4 && anchors.length < 3; x += 1) {
-      if (hash(x, y, seed + 3) > 6) continue;
+    const spots: Cell[] = [];
+    for (let y = 2; y < yMax - 5; y += 1) for (let x = 2; x < W - 4; x += 1) spots.push({ x, y });
+    spots.sort((a, b) => hash(a.x, a.y, seed + 3) - hash(b.x, b.y, seed + 3) || a.y - b.y || a.x - b.x);
+    for (const { x, y } of spots) {
+      if (anchors.length >= 3) break;
       if (anchors.some((a) => Math.abs(a.x - x) + Math.abs(a.y - y) < 9)) continue;
       let ok = true;
       for (let dy = 0; dy < 4 && ok; dy += 1) for (let dx = 0; dx < 3 && ok; dx += 1) ok = open(x + dx, y + dy) && isPassable(project, map, x + dx, y + dy) && (map.upperTiles[(y + dy) * W + x + dx] ?? -1) < 0;
@@ -1906,8 +1912,11 @@ function snowPass(project: Project, exec: Exec): void {
     ],
     campfires: [{ mapId: FS2_SNOW.mapIds[1]!, x: fire.x, y: fire.y + 1, id: "ev_fs2_snow_fire", name: "모닥불" }],
   });
-  frostFoes(project, exec, maps.map((m) => ({ mapId: m.mapId, entry: m.entry, exit: m.exit, gaps: m.gaps.map((g) => g.cells) })), fire);
+  // 적은 요새 → 설원 이동(새라 합류 뒤 transfer)이 생긴 뒤에 세운다 — 그 전엔 서리 가도 입구가 「걸어 닿지 못하는 칸」이라 도구가 거절했다.
+  FS2_SNOW_PLAN.maps = maps.map((m) => ({ mapId: m.mapId, entry: m.entry, exit: m.exit, gaps: m.gaps.map((g) => g.cells) }));
+  FS2_SNOW_PLAN.fire = fire;
 }
+const FS2_SNOW_PLAN: { maps: { mapId: string; entry: Cell; exit: Cell | null; gaps: Cell[][] }[]; fire: Cell } = { maps: [], fire: { x: 0, y: 0 } };
 
 /**
  * B7 서리 가도의 적·갈림길 보물·얼음 틈 그늘(v1.25 VQA: 두 장이 같은 길로 보였고 적이 없었으며 틈이 얼음판으로 읽혔다).
@@ -1983,7 +1992,10 @@ function frostFoes(project: Project, exec: Exec, maps: { mapId: string; entry: C
       exec(project, "place_field_enemy", { mapId, x: at.x, y: at.y, troopId, behavior: "chase", patrol: { length: 2, axis: at.x % 2 ? "horizontal" : "vertical" },
         sightRange: 7, vision: "cone", pace: "normal", approachStyle: style, respawnSec: 120, checkpointOnEntry: true });
       return true;
-    } catch { return false; }
+    } catch (e) {
+      if (typeof process !== "undefined" && process.env?.FS_DEBUG) console.error(`[fs2-frost] ${mapId} ${troopId} (${at.x},${at.y}) 거절: ${String((e as Error).message).slice(0, 160)}`);
+      return false;
+    }
   };
   /** 입구→출구 걸음 비율 t 근처(본길 위)에서 무리를 세운다 — 거절되면 이웃 걸음으로. */
   const onRoute = (mapId: string, dist: Map<string, number>, route: Set<string>, t: number, troopId: string, style: string, avoid: Cell[]): Cell | null => {
@@ -1992,6 +2004,7 @@ function frostFoes(project: Project, exec: Exec, maps: { mapId: string; entry: C
     const cands = [...route].map(cellOf).filter((c) => avoid.every((a) => Math.abs(a.x - c.x) + Math.abs(a.y - c.y) > 5))
       .sort((a, b) => Math.abs((dist.get(`${a.x},${a.y}`) ?? 0) - want) - Math.abs((dist.get(`${b.x},${b.y}`) ?? 0) - want));
     // 입구 시야(매복 금지)·이벤트 곁은 도구가 거절한다 — 가까운 걸음부터 넉넉히 시도한다.
+    if (typeof process !== "undefined" && process.env?.FS_DEBUG) console.error(`[fs2-frost] ${mapId} ${troopId} route=${route.size} total=${total} want=${want} first=${JSON.stringify(cands.slice(0, 4))}`);
     for (const c of cands.slice(0, 80)) if (foe(mapId, troopId, c, style)) return c;
     return null;
   };
@@ -2665,6 +2678,7 @@ export function applyFallenAct2Opening(project: Project, exec: Exec, ids: Fallen
   skyTower(project, exec);
   lanternNightEvents(project);
   fortressEvents(project);
+  frostFoes(project, exec, FS2_SNOW_PLAN.maps, FS2_SNOW_PLAN.fire);
   detection(project, exec);
   widenEdgeGates(project);
   act2Quest(project, exec);

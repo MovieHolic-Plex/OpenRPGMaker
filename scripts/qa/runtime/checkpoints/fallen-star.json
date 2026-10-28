@@ -4375,7 +4375,7 @@
   },
   {
    "id": "act2-b6-sarah",
-   "label": "제2막 B6 — 요새 꼭대기 새라 + 경비견 둘, 이기면 선택 1·합류",
+   "label": "제2막 B6 — 성벽 위 결투장, 새라 + 경비견 하나(파티 Lv8), 이기면 선택 1·합류",
    "note": "act2Opening.ts fortressEvents ev_fs2_fort_sarah — 2층 성벽 위(fs2_fortress_f2)",
    "mapId": "fs2_fortress_f2",
    "x": 21,
@@ -4477,7 +4477,29 @@
        "kind": "battle",
        "fallback": "attack",
        "untilEnd": true,
-       "timeoutMs": 180000
+       "timeoutMs": 180000,
+       "plan": {
+        "actor_hero": [
+         "skill_hero_rush_pierce",
+         "skill_hero_rush_pierce",
+         "attack",
+         "skill_hero_rush_pierce",
+         "attack",
+         "skill_hero_rush_pierce",
+         "attack",
+         "attack"
+        ],
+        "actor_fs_elena": [
+         "skill_mage_fireball",
+         "skill_mage_fireball",
+         "skill_heal@0",
+         "skill_mage_fireball",
+         "skill_heal@0",
+         "skill_mage_fireball",
+         "skill_heal@0",
+         "attack"
+        ]
+       }
       },
       {
        "kind": "waitFor",
@@ -4593,6 +4615,9 @@
       "weapon": "equip_fs2_rohan_spear"
      }
     }
+   },
+   "items": {
+    "item_potion": 4
    }
   },
   {
