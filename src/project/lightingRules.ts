@@ -192,3 +192,41 @@ function clamp01(value: number): number {
 function clamp(min: number, max: number, value: number): number {
   return Math.max(min, Math.min(max, value));
 }
+
+/**
+ * 어둠 막의 색이 이보다 밝으면(상대 밝기 0~1) 「어둠」이 아니라 「색조」로 읽는다(2026-10-28).
+ *
+ * 왜: 조명 마스크는 ambient 만큼 color 를 화면 위에 덮는다(어둠 막). 조수가 아늑한 서재를 원해 color '#f6dfbd'(밝은 베이지)·
+ * ambient 0.75 를 주면 방 전체에 75% 베이지 막이 끼어 책장·소품 대비가 뭉개졌다(mt2-1028 terra escape, 적대 VQA 6건).
+ * 밝은 색은 같은 색상(hue)의 어두운 색으로 낮추고, 진하기는 LIGHT_TINT_MAX_ALPHA 로 묶어 은은한 색조만 남긴다.
+ */
+export const LIGHT_MASK_MAX_LUMA = 0.3;
+/** 밝은 색을 준 어둠 막의 최대 진하기 — 색조로만 쓴다. */
+export const LIGHT_TINT_MAX_ALPHA = 0.35;
+
+/** 화면에 실제로 칠할 어둠 막 색·진하기. 어두운 색(기본 검정 포함)·#hex 가 아닌 색은 그대로다. */
+export function effectiveDarkness(color: string | undefined, ambient: number): { readonly color: string; readonly ambient: number } {
+  const base = color ?? "#000000";
+  const rgb = parseHexColor(base);
+  if (!rgb) return { color: base, ambient };
+  const luma = (0.299 * rgb[0] + 0.587 * rgb[1] + 0.114 * rgb[2]) / 255;
+  if (luma <= LIGHT_MASK_MAX_LUMA) return { color: base, ambient };
+  const k = LIGHT_MASK_MAX_LUMA / luma;
+  const hex = rgb.map((channel) => Math.round(channel * k).toString(16).padStart(2, "0")).join("");
+  return { color: `#${hex}`, ambient: Math.min(ambient, LIGHT_TINT_MAX_ALPHA) };
+}
+
+function parseHexColor(color: string): [number, number, number] | null {
+  const short = /^#([0-9a-f])([0-9a-f])([0-9a-f])$/iu.exec(color.trim());
+  if (short) return [short[1]!, short[2]!, short[3]!].map((d) => Number.parseInt(d + d, 16)) as [number, number, number];
+  const long = /^#([0-9a-f]{6})$/iu.exec(color.trim());
+  if (!long) return null;
+  const n = Number.parseInt(long[1]!, 16);
+  return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+}
+
+/**
+ * 어둠이 짙은데(ambient ≥ minAmbient) 플레이어를 따라가는 빛이 하나도 없으면 플레이어 둘레를 이만큼 걷어 낸다(2026-10-28).
+ * 시작 맵에서 주인공이 어둠에 묻혀 「플레이어가 안 보인다」가 여러 판 반복됐다. 손전등을 준 맵은 그 빛이 이긴다.
+ */
+export const PLAYER_PRESENCE_LIGHT = { id: "__player_presence", radius: 1.6, intensity: 0.6, minAmbient: 0.6 } as const;
