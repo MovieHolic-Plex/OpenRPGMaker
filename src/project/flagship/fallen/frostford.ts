@@ -616,9 +616,10 @@ function lanternNight(project: Project, exec: Exec): void {
       panTo(L.gateDoor[0]!.x, 5, 1600),
       se("easyrpg-sound-holy3"),
       ...pillarLights,
-      flash("#eef8ff", 200),
       // 입자 띠 — 탑 문에서 화면 맨 위까지 두 줄로 반짝임이 솟는다(아래 줄부터 차례로).
       ...PILLAR.slice().reverse().map((c, i) => sparkle(c.x, c.y, 3600 - i * 60)),
+      // 섬광은 반투명 색조로 — 런타임 섬광은 최소 400ms 이고 불투명 색이면 화면 전체가 하얗게 날아갔다(r11 녹화 1.1초).
+      flash("220,240,255,0.45", 200),
       wait(1500),
       // 자막은 화면 아래 — 주인공이 화면 밖이면 창이 위로 뛰어 탑을 가렸다(감독 r3).
       narrate("절벽 위 탑 문 너머로 빛기둥이 솟는다!", { position: "bottom" }),

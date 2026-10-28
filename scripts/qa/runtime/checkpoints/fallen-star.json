@@ -5161,7 +5161,7 @@
   {
    "id": "act2-b8-arrive",
    "label": "제2막 B8 — 눈보라 고개 끝 → 서리나루 도착",
-   "note": "frostford.ts — 설원 길 출구 ↔ 마을 남쪽 어귀(21,63), 광장 서쪽으로 지나 큰 부두 끝 하르마 앞(20,31)까지 걷기",
+   "note": "frostford.ts — 설원 길 출구 ↔ 마을 남쪽 어귀, 광장·징발 창고·기슭 길·동쪽 집을 돌아 큰 부두 끝 하르마 앞까지(마을 한 바퀴)",
    "mapId": "map_snow_north_2",
    "x": 10,
    "y": 2,
@@ -5259,19 +5259,332 @@
        "ms": 800
       },
       {
-       "kind": "move",
-       "dir": "up",
-       "steps": 14
+       "kind": "playerRoute",
+       "moves": [
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "down"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "down"
+        },
+        {
+         "kind": "move",
+         "dir": "down"
+        },
+        {
+         "kind": "move",
+         "dir": "down"
+        },
+        {
+         "kind": "move",
+         "dir": "down"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        }
+       ]
       },
       {
-       "kind": "move",
-       "dir": "left",
-       "steps": 1
-      },
-      {
-       "kind": "move",
-       "dir": "up",
-       "steps": 18
+       "kind": "waitForPosition",
+       "mapId": "fs2_frostford",
+       "x": 18,
+       "y": 31,
+       "timeoutMs": 60000
       },
       {
        "kind": "hold",
@@ -5286,9 +5599,9 @@
   {
    "id": "act2-b8-harma",
    "label": "제2막 B8 — 하르마: 세린 이야기, 은빛 송어 부탁",
-   "note": "frostford.ts — 하르마(큰 부두 끝 20,30)",
+   "note": "frostford.ts — 하르마(큰 부두 끝 18,30)",
    "mapId": "fs2_frostford",
-   "x": 20,
+   "x": 18,
    "y": 31,
    "facing": "up",
    "switches": {
@@ -5385,9 +5698,9 @@
   {
    "id": "act2-b8-fish",
    "label": "제2막 B8 Q5 — 얼음 구멍에서 은빛 송어 → 하르마의 은빛 노",
-   "note": "frostford.ts — 동쪽 낚시 만 얼음 구멍(30,29) → 부두 끝 하르마(20,30)",
+   "note": "frostford.ts — 동쪽 낚시 만 얼음 구멍(27,29) → 부두 끝 하르마",
    "mapId": "fs2_frostford",
-   "x": 30,
+   "x": 27,
    "y": 30,
    "facing": "up",
    "switches": {
@@ -5479,9 +5792,48 @@
      "id": "give",
      "ops": [
       {
-       "kind": "move",
-       "dir": "left",
-       "steps": 9
+       "kind": "playerRoute",
+       "moves": [
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        }
+       ]
+      },
+      {
+       "kind": "waitForPosition",
+       "mapId": "fs2_frostford",
+       "x": 19,
+       "y": 30,
+       "timeoutMs": 20000
       },
       {
        "kind": "face",
@@ -5536,10 +5888,10 @@
   {
    "id": "act2-b8-sled",
    "label": "제2막 B8 Q6 — 징발대 병사와 새라: 장작 썰매를 마을로",
-   "note": "frostford.ts — 징발 창고 앞 썰매 곁 병사(12,51)",
+   "note": "frostford.ts — 징발 창고 앞 썰매 곁 병사(8,43)",
    "mapId": "fs2_frostford",
-   "x": 12,
-   "y": 52,
+   "x": 8,
+   "y": 44,
    "facing": "up",
    "switches": {
     "sw_fs_main_started": true,
@@ -5635,10 +5987,10 @@
   {
    "id": "act2-b8-inn",
    "label": "제2막 B8 — 서리나루 여관(별빛 결정)",
-   "note": "frostford.ts — 광장 동쪽 여관(문 31,49)",
+   "note": "frostford.ts — 광장 동쪽 여관",
    "mapId": "fs2_frostford",
-   "x": 31,
-   "y": 50,
+   "x": 29,
+   "y": 47,
    "facing": "up",
    "switches": {
     "sw_fs_main_started": true,
@@ -5851,9 +6203,9 @@
   {
    "id": "act2-b9-valen",
    "label": "제2막 B9 — 섬 사당의 발렌: 등을 같이 띄운다 → 탑 빛기둥(카메라) → 갈라지는 얼음 탈출 → 하늘탑",
-   "note": "frostford.ts lanternNight — 섬 사당 앞 발렌(21,26), iceEscape make_timed_escape(지그재그 3번 꺾기)",
+   "note": "frostford.ts lanternNight — 섬 사당 앞 발렌(19,26), iceEscape make_timed_escape(지그재그 3번 꺾기)",
    "mapId": "fs2_frostford_night",
-   "x": 21,
+   "x": 19,
    "y": 27,
    "facing": "up",
    "switches": {
@@ -6048,6 +6400,14 @@
         },
         {
          "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
          "dir": "left"
         },
         {
@@ -6088,10 +6448,6 @@
         },
         {
          "kind": "move",
-         "dir": "left"
-        },
-        {
-         "kind": "move",
          "dir": "up"
         },
         {
@@ -6164,22 +6520,6 @@
         },
         {
          "kind": "move",
-         "dir": "up"
-        },
-        {
-         "kind": "move",
-         "dir": "right"
-        },
-        {
-         "kind": "move",
-         "dir": "right"
-        },
-        {
-         "kind": "move",
-         "dir": "right"
-        },
-        {
-         "kind": "move",
          "dir": "right"
         },
         {
@@ -6201,6 +6541,14 @@
         {
          "kind": "move",
          "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
         },
         {
          "kind": "move",
@@ -6220,27 +6568,23 @@
         },
         {
          "kind": "move",
-         "dir": "left"
-        },
-        {
-         "kind": "move",
-         "dir": "left"
-        },
-        {
-         "kind": "move",
-         "dir": "left"
-        },
-        {
-         "kind": "move",
-         "dir": "left"
-        },
-        {
-         "kind": "move",
-         "dir": "left"
-        },
-        {
-         "kind": "move",
          "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
         },
         {
          "kind": "move",
@@ -6263,7 +6607,7 @@
       {
        "kind": "waitForPosition",
        "mapId": "fs2_frostford_night",
-       "x": 22,
+       "x": 20,
        "y": 9,
        "timeoutMs": 40000
       }
@@ -6277,7 +6621,18 @@
       {
        "kind": "hold",
        "dir": null,
-       "ms": 2500
+       "ms": 1500
+      },
+      {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 30000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 800
       },
       {
        "kind": "repeatUntil",
@@ -6295,6 +6650,11 @@
          "ms": 1300
         }
        ]
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 800
       },
       {
        "kind": "move",
@@ -6321,7 +6681,7 @@
    "label": "제2막 B9 — 탈출 실패: 붕괴 파도에 빠지면 사당 앞에서 다시(대화 없이), 섬 위 줄을 밟으면 다시 시작",
    "note": "frostford.ts lanternNight — 섬 사당 앞 발렌(21,26), iceEscape make_timed_escape(지그재그 3번 꺾기)",
    "mapId": "fs2_frostford_night",
-   "x": 21,
+   "x": 19,
    "y": 27,
    "facing": "up",
    "switches": {
@@ -6480,50 +6840,95 @@
      "id": "fall",
      "ops": [
       {
-       "kind": "hold",
-       "dir": "left",
-       "ms": 168
-      },
-      {
-       "kind": "hold",
-       "dir": "up",
-       "ms": 168
-      },
-      {
-       "kind": "hold",
-       "dir": "left",
-       "ms": 168
-      },
-      {
-       "kind": "hold",
-       "dir": "up",
-       "ms": 840
-      },
-      {
-       "kind": "hold",
-       "dir": "left",
-       "ms": 1176
-      },
-      {
-       "kind": "hold",
-       "dir": "up",
-       "ms": 168
-      },
-      {
-       "kind": "hold",
-       "dir": "left",
-       "ms": 504
-      },
-      {
-       "kind": "hold",
-       "dir": "up",
-       "ms": 672
+       "kind": "playerRoute",
+       "moves": [
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        }
+       ]
       },
       {
        "kind": "waitFor",
        "testid": "dialogue-box",
        "state": "present",
-       "timeoutMs": 20000
+       "timeoutMs": 25000
       },
       {
        "kind": "hold",
@@ -6559,24 +6964,25 @@
      "id": "retry",
      "ops": [
       {
-       "kind": "hold",
-       "dir": "left",
-       "ms": 168
-      },
-      {
-       "kind": "hold",
-       "dir": "up",
-       "ms": 168
-      },
-      {
-       "kind": "hold",
-       "dir": "left",
-       "ms": 168
-      },
-      {
-       "kind": "hold",
-       "dir": "up",
-       "ms": 840
+       "kind": "playerRoute",
+       "moves": [
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        }
+       ]
       },
       {
        "kind": "hold",
@@ -7004,9 +7410,9 @@
   {
    "id": "act2-b8-festival",
    "label": "제2막 B8 — 해 질 녘 못가, 「대답의 등」 하나를 띄운다",
-   "note": "frostford.ts frostFestival — 기슭 첫 등불 기둥(18,35)",
+   "note": "frostford.ts frostFestival — 기슭 첫 대답의 등(16,35)",
    "mapId": "fs2_frostford",
-   "x": 18,
+   "x": 16,
    "y": 36,
    "facing": "up",
    "switches": {
@@ -7131,8 +7537,8 @@
    "label": "제2막 B8 — 서리나루 등 만드는 집 — 소이",
    "note": "frostford.ts — 집 문 앞",
    "mapId": "fs2_frostford",
-   "x": 11,
-   "y": 58,
+   "x": 10,
+   "y": 52,
    "facing": "up",
    "switches": {
     "sw_fs_main_started": true,
@@ -7247,8 +7653,8 @@
    "label": "제2막 B8 — 서리나루 어부 도윤의 집",
    "note": "frostford.ts — 집 문 앞",
    "mapId": "fs2_frostford",
-   "x": 31,
-   "y": 58,
+   "x": 27,
+   "y": 53,
    "facing": "up",
    "switches": {
     "sw_fs_main_started": true,
@@ -7373,7 +7779,7 @@
    "label": "제2막 B8 — 서리나루 하르마의 집 — 손주 나래",
    "note": "frostford.ts — 집 문 앞",
    "mapId": "fs2_frostford",
-   "x": 16,
+   "x": 13,
    "y": 43,
    "facing": "up",
    "switches": {
