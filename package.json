@@ -94,6 +94,7 @@
     "shots:css": "playwright test -c playwright.css-shots.config.ts",
     "shots:css:update": "playwright test -c playwright.css-shots.config.ts --update-snapshots",
     "qa:runtime": "node scripts/runtime-qa.mjs",
+    "qa:hig-ux": "node scripts/qa/hig-ux/run.mjs",
     "qa:export": "vite-node --script scripts/qa-export-playability.mts --",
     "qa:runtime:gate": "playwright test --config playwright.runtime.config.ts",
     "construction:harness": "node scripts/run-construction-harness.mjs",

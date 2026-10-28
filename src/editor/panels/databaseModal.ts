@@ -380,6 +380,7 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: { readonly
       flushPendingRefresh();
     }, INTERACTION_GRACE_MS + 50);
   };
+  installRecordSwitchGuard(body);
   body.addEventListener("focusout", () => {
     // focusout 시점엔 activeElement 가 아직 이전 값일 수 있어 rAF 뒤에 재판정한다.
     if (typeof requestAnimationFrame === "function") requestAnimationFrame(() => { if (!isEditingInsideModalBody()) flushPendingRefresh(); });
@@ -468,8 +469,10 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: { readonly
   const handleDirtyDecision = (decision: EditorModalDirtyDecision): void => {
     switch (decision) {
       case EDITOR_MODAL_DIRTY_DECISION.Save:
+        // 설정집 초안이 커밋되면 닫는다. 임시 세션처럼 파일에 쓰지 못해도 편집은 세션에 남았고, 그 사실은
+        // 상태 줄 한 곳이 말한다 — 창을 붙잡아 두면 「저장하고 닫기」가 아무 일도 안 한 것처럼 보였다.
         void saveAndMarkClean().then((saved) => {
-          if (saved) close();
+          if (saved || !codexSession.isDirty()) close();
         });
         return;
       case EDITOR_MODAL_DIRTY_DECISION.Discard:
@@ -482,18 +485,33 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: { readonly
         void store.flush().catch(() => undefined);
         close();
         return;
-      case EDITOR_MODAL_DIRTY_DECISION.KeepEditing:
+      case EDITOR_MODAL_DIRTY_DECISION.KeepEditing: {
+        // 「계속 편집」은 편집하던 칸으로 돌아간다. 예전에는 닫기(×)로 가서, 한 번 더 Enter 를 누르면
+        // 방금 계속하겠다고 한 창이 닫혔다(J-p6-keyboard-17).
         hideDirtyPrompt();
-        closeButton.focus();
+        const back = promptReturnFocus;
+        promptReturnFocus = null;
+        if (back?.isConnected && windowEl?.contains(back)) back.focus();
+        else closeButton.focus();
         return;
+      }
     }
   };
+  let promptReturnFocus: HTMLElement | null = null;
   const showDirtyPrompt = (attempt: EditorModalCloseAttempt): EditorModalDirtyDecision => {
+    const active = document.activeElement;
+    if (!promptReturnFocus && active instanceof HTMLElement && windowEl?.contains(active)) promptReturnFocus = active;
     dirtyPrompt.replaceChildren(renderDirtyPrompt(attempt, handleDirtyDecision));
+    // 띠가 뜨면 포커스는 띠의 첫 단추(안전한 「계속 편집」)로 간다 — 그대로 두면 키보드 사용자는 Tab 으로
+    // 띠를 찾아가야 했다(J-p6-keyboard-04).
+    dirtyPrompt.querySelector<HTMLElement>("button")?.focus();
     return EDITOR_MODAL_DIRTY_DECISION.KeepEditing;
   };
   const controller = createEditorModalDirtyCloseController({
-    isDirty: () => codexSession.isDirty() || dirtySession.isDirty(),
+    // 레코드 편집은 키 입력 순간 스토어에 반영되고 자동 저장이 이어받는다. 닫기를 붙잡는 것은 스토어
+    // 밖에 있는 설정집 카드 초안뿐이다 — Escape·바깥 클릭·X·「닫기」가 모두 같은 규칙으로 닫는다
+    // (J-p2-power-user-02·07: Escape 만 결정 띠를 강요하고 X 는 바로 닫았다).
+    isDirty: () => codexSession.isDirty(),
     promptUnsavedChanges: showDirtyPrompt,
     save: () => {
       void saveAndMarkClean();
@@ -522,6 +540,16 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: { readonly
   // hasOpenModalLayer() 로 스스로 물러나고, 실제 Esc 는 스택의 최상층 라우팅이 가져간다.
   const handleModalKeyDown = (event: KeyboardEvent): void => {
     if (dockMode) return;
+    // Ctrl/Cmd+K 는 어디서나 명령 팔레트다(툴팁·도움말이 전역 단축키로 안내한다). 전역 리스너는 모달 층이 있으면
+    // 키를 먹기만 하고 열지 않아, 자료집 안에서는 아무 일도 일어나지 않았다(J-p6-keyboard-03). 자료집이 최상층일 때만
+    // 팔레트를 자료집 위에 연다 — 그 위에 다른 대화상자가 있으면 그쪽 몸이다.
+    if ((event.ctrlKey || event.metaKey) && !event.altKey && !event.shiftKey && event.key.toLowerCase() === "k") {
+      if (!isTopModal(backdrop) || document.querySelector("[data-testid='command-palette']")) return;
+      event.preventDefault();
+      // 정적 import 는 명령 레지스트리 전체를 자료집 묶음에 끌어온다(초기화 순환 위험) — 열 때 읽는다.
+      void import("@/editor/panels/commandPalette").then((module) => module.requestCommandPalette());
+      return;
+    }
     // 스택이 어떤 이유로든 이 층을 놓쳤을 때를 위한 대비책. 전체 화면 복원이 먼저다.
     if (event.key === "Escape" && !event.defaultPrevented && !hasOpenModalLayer()) {
       if (exitMaximizedDatabaseModal(maximizeButton)) {
@@ -556,9 +584,12 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: { readonly
     footerStatus.dataset.statusKind = status.kind;
     // 저장하지 않는 세션에서 파란 「지금 저장」 은 옆의 「저장되지 않습니다」 와 모순이다(2026-09-24 visual QA).
     // 버튼은 남기되(편집 확정은 여전히 한다) 주 버튼 무게를 내린다.
+    // 주 버튼은 언제나 하나다 — 저장하지 않는 세션에서는 「닫기」가 그 자리를 받는다.
     applyButton?.classList.toggle("primary", status.kind !== "info");
+    closeFooterButton?.classList.toggle("primary", status.kind === "info");
   };
   let applyButton: HTMLElement | null = null;
+  let closeFooterButton: HTMLElement | null = null;
   paintFooterStatus();
   // 설정집 초안이 움직이면 사용자가 이미 다음 작업으로 넘어간 것 — 붙잡아 둔 문구를 놓는다.
   const unsubscribeCodex = codexSession.subscribe(() => {
@@ -614,18 +645,32 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: { readonly
     controller.requestClose(attempt);
   };
   closeButton.addEventListener("click", () => dismissKeepingEdits("x"));
+  // 바닥 막대: 도움말은 왼쪽 끝의 보조 링크, 오른쪽은 되돌리기 · 닫기 · 주 버튼 하나 순서다. 예전에는 네
+  // 단추가 같은 변형이라 주 버튼이 없고 도움말이 주 버튼 자리(오른쪽 끝)에 굵게 있었다(V-database-14).
+  closeFooterButton = el("button", {
+    class: "database-footer-button",
+    text: "닫기",
+    attrs: { type: "button" },
+    dataset: { testid: DATABASE_FOOTER_ACTION_TEST_IDS.ok },
+    on: { click: () => dismissKeepingEdits("cancel") },
+  });
   const footer = el("footer", {
     class: "database-modal-footer",
     children: [
+      el("button", {
+        class: "database-footer-button tertiary database-footer-help",
+        text: "도움말",
+        attrs: { type: "button" },
+        dataset: { testid: "database-footer-help" },
+        // 예전에는 동어반복 토스트가 전부였다. 실제 DB 도움말 문서가 이미 있다.
+        on: { click: () => openHelpModal("database") },
+      }),
       footerStatus,
       dirtyPrompt,
-      el("button", {
-        class: "database-footer-button",
-        text: "닫기",
-        attrs: { type: "button" },
-        dataset: { testid: DATABASE_FOOTER_ACTION_TEST_IDS.ok },
-        on: { click: () => dismissKeepingEdits("cancel") },
-      }),
+      // Ctrl+Z 는 예전부터 동작했지만 모달 어디에도 노출이 없어 아무도 몰랐다.
+      // 같은 DB 안 전투 명령 스튜디오가 이미 가시 되돌리기를 갖고 있다 — 그 규약을 셸로 올린다.
+      undoButton,
+      closeFooterButton,
       applyButton = el("button", {
         class: "database-footer-button primary",
         text: "지금 저장",
@@ -637,17 +682,6 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: { readonly
             void saveAndMarkClean();
           },
         },
-      }),
-      // Ctrl+Z 는 예전부터 동작했지만 모달 어디에도 노출이 없어 아무도 몰랐다.
-      // 같은 DB 안 전투 명령 스튜디오가 이미 가시 되돌리기를 갖고 있다 — 그 규약을 셸로 올린다.
-      undoButton,
-      el("button", {
-        class: "database-footer-button tertiary",
-        text: "도움말",
-        attrs: { type: "button" },
-        dataset: { testid: "database-footer-help" },
-        // 예전에는 동어반복 토스트가 전부였다. 실제 DB 도움말 문서가 이미 있다.
-        on: { click: () => openHelpModal("database") },
       }),
     ],
   });
@@ -705,6 +739,11 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: { readonly
     // modalStack 은 닫기가 거절돼도(계속 편집) 자기 엔트리를 먼저 지운다 — 되살려 둔다.
     unregisterModal(backdrop);
     registerModal(backdrop, requestModalEscape);
+    // 결정 띠가 떠 있으면 Escape 는 띠를 접고 편집으로 돌아간다(「계속 편집」과 같다).
+    if (dirtyPrompt.childElementCount > 0) {
+      handleDirtyDecision(EDITOR_MODAL_DIRTY_DECISION.KeepEditing);
+      return;
+    }
     // 전체 화면은 전면 fixed 라 "Esc 한 번 = DB 통째로 닫힘"이 된다. 첫 Esc 는 복원만.
     if (exitMaximizedDatabaseModal(maximizeButton)) return;
     controller.requestClose("escape");
@@ -785,6 +824,113 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: { readonly
   // 지난 세션의 도크 상태 복원 — 렌더 후 적용해도 클래스/aria 만 바꾸므로 안전하다.
   if (readStoredDockMode()) applyDockMode(true);
   closeButton.focus();
+}
+
+type PendingDetailEdit = {
+  readonly field: HTMLInputElement | HTMLTextAreaElement;
+  readonly original: string;
+  readonly recordName: string;
+};
+
+const TEXT_LIKE_INPUT = /^(text|search|number|email|url|tel|)$/;
+
+/**
+ * 상세 칸을 고치던 중에 목록에서 다른 레코드를 고르면, 고친 값을 어느 레코드에 둘지 이름을 밝혀 묻는다
+ * (IDEAL-STATE IS-075). 값은 키 입력마다 이미 이전 레코드에 들어가 있다 — 「적용하고 이동」은 그대로 두고, 「되돌리고
+ * 이동」은 칸을 포커스했을 때의 값으로 돌려 쓴 뒤 이동한다. 칸을 떠난 뒤(다른 칸·Tab)의 이동은 이미 확정한 것이라 묻지 않는다.
+ */
+function installRecordSwitchGuard(body: HTMLElement): void {
+  let pending: PendingDetailEdit | null = null;
+  let swallowNextClick = false;
+  const isEditable = (target: EventTarget | null): target is HTMLInputElement | HTMLTextAreaElement =>
+    target instanceof HTMLTextAreaElement
+    || (target instanceof HTMLInputElement && TEXT_LIKE_INPUT.test(target.type) && !target.readOnly);
+  body.addEventListener("focusin", (event) => {
+    const target = event.target;
+    if (!isEditable(target) || !target.closest(".db-detail-pane")) return;
+    const row = body.querySelector<HTMLElement>(".db-list-row.active, .db-gallery-card.active");
+    const recordName = row?.dataset.recordName
+      ?? row?.querySelector(".db-list-name, .db-gallery-name")?.textContent?.trim()
+      ?? "";
+    pending = recordName ? { field: target, original: target.value, recordName } : null;
+  }, true);
+  body.addEventListener("pointerdown", (event) => {
+    swallowNextClick = false;
+    const target = event.target instanceof Element ? event.target : null;
+    const row = target?.closest<HTMLElement>(".db-list-row, .db-gallery-card");
+    if (!row || row.classList.contains("active") || !pending) return;
+    const edit = pending;
+    if (document.activeElement !== edit.field || edit.field.value === edit.original) return;
+    // 포커스를 칸에 둔 채(blur 커밋 없이) 묻는다. 뒤따르는 click 은 선택으로 이어지지 않게 삼킨다.
+    event.preventDefault();
+    event.stopPropagation();
+    swallowNextClick = true;
+    showRecordSwitchPrompt(body, edit, (decision) => {
+      if (decision === "keep") {
+        edit.field.focus();
+        return;
+      }
+      pending = null;
+      if (decision === "discard") {
+        edit.field.value = edit.original;
+        edit.field.dispatchEvent(new Event("input", { bubbles: true }));
+        edit.field.dispatchEvent(new Event("change", { bubbles: true }));
+      }
+      edit.field.blur();
+      if (row.isConnected) row.click();
+    });
+  }, true);
+  body.addEventListener("click", (event) => {
+    if (!swallowNextClick) return;
+    swallowNextClick = false;
+    event.preventDefault();
+    event.stopPropagation();
+  }, true);
+}
+
+function showRecordSwitchPrompt(
+  body: HTMLElement,
+  edit: PendingDetailEdit,
+  onDecision: (decision: "apply" | "discard" | "keep") => void,
+): void {
+  const windowEl = body.closest(".database-modal-window");
+  if (!(windowEl instanceof HTMLElement)) return;
+  windowEl.querySelector("[data-testid='database-record-switch-prompt']")?.remove();
+  const titleId = `database-record-switch-title-${Date.now()}`;
+  let settled = false;
+  const finish = (decision: "apply" | "discard" | "keep"): void => {
+    if (settled) return;
+    settled = true;
+    unregisterModal(prompt);
+    prompt.remove();
+    onDecision(decision);
+  };
+  const button = (text: string, testid: string, decision: "apply" | "discard" | "keep", variant = ""): HTMLElement => el("button", {
+    class: `database-footer-button ${variant}`.trim(),
+    text,
+    attrs: { type: "button" },
+    dataset: { testid },
+    on: { click: () => finish(decision) },
+  });
+  const prompt = el("div", {
+    class: "database-record-switch-prompt",
+    attrs: { role: "alertdialog", "aria-modal": "true", "aria-labelledby": titleId },
+    dataset: { testid: "database-record-switch-prompt" },
+    children: [
+      el("p", { class: "database-record-switch-title", text: `「${edit.recordName}」에서 고친 값을 어떻게 할까요?`, attrs: { id: titleId } }),
+      el("div", {
+        class: "database-record-switch-actions",
+        children: [
+          button("계속 편집", "database-record-switch-keep", "keep"),
+          button("되돌리고 이동", "database-record-switch-discard", "discard"),
+          button("적용하고 이동", "database-record-switch-apply", "apply", "primary"),
+        ],
+      }),
+    ],
+  });
+  windowEl.append(prompt);
+  registerModal(prompt, () => finish("keep"));
+  prompt.querySelector<HTMLElement>("button")?.focus();
 }
 
 /**
@@ -877,10 +1023,11 @@ function renderDirtyPrompt(
     children: [
       el("strong", { text: "이 세션에서 바뀐 내용이 있습니다. 어떻게 할까요?" }),
       el("span", { text: closeAttemptMessage(attempt) }),
-      dirtyPromptButton("저장하고 닫기", "database-dirty-save", EDITOR_MODAL_DIRTY_DECISION.Save, onDecision, "primary"),
+      // 안전한 「계속 편집」이 첫 단추(포커스가 가는 곳), 주 동작 「저장하고 닫기」가 끝이다.
+      dirtyPromptButton("계속 편집", "database-dirty-keep-editing", EDITOR_MODAL_DIRTY_DECISION.KeepEditing, onDecision),
       // 「되돌리기」는 Ctrl+Z 한 단계의 이름으로 쓴다 — 세션 전체 복구는 「복구」로 분리.
       dirtyPromptButton("열 때 상태로 복구하고 닫기", "database-dirty-discard", EDITOR_MODAL_DIRTY_DECISION.Discard, onDecision),
-      dirtyPromptButton("계속 편집", "database-dirty-keep-editing", EDITOR_MODAL_DIRTY_DECISION.KeepEditing, onDecision),
+      dirtyPromptButton("저장하고 닫기", "database-dirty-save", EDITOR_MODAL_DIRTY_DECISION.Save, onDecision, "primary"),
     ],
   });
 }

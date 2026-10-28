@@ -332,6 +332,8 @@ export function playCinematicSequence(options: {
       // The storybook page owns its paper/background on the root.
       frame.style.backgroundColor = isBook ? 'transparent' : presentation?.backgroundColor ?? '#000';
       frame.style.setProperty('--cinematic-letterbox', `${presentation?.letterbox ?? 0}%`);
+      // 건너뛰기 칩은 장면 틀 밖(root)에 산다 — 레터박스 높이를 root 에도 알려 칩이 검은 띠와 그림 경계에 걸치지 않게 한다(HIG C-94).
+      root.style.setProperty('--cinematic-letterbox', `${presentation?.letterbox ?? 0}%`);
       if (presentation?.letterbox) frame.append(el('div', { class: 'cinematic-letterbox', attrs: { 'aria-hidden': 'true' } }));
       root.replaceChildren(frame, status);
       // Book overlays live on the root so they survive page changes.
@@ -491,8 +493,10 @@ export function playCinematicSequence(options: {
         root.querySelector('.cinematic-status')?.remove();
         root.append(status);
         root.dataset.mediaState = 'loading';
-        // A short wait stays silent. A prolonged wait has a usable retry/skip boundary.
-        loadTimer = setTimeout(() => { if (alive) status.textContent = '장면을 준비하고 있습니다…'; }, 800);
+        // 첫 장면은 아직 아무것도 그려지지 않은 검은 화면이다 — 바로 무엇을 하는 중인지 적는다(테스트 실행 직후 글자 없는 검은 창, HIG C-92).
+        // 다음 장면부터는 앞 장면이 남아 있으니 짧은 기다림은 조용히 두고, 길어질 때만 적는다.
+        if (index === 0 && !root.querySelector('.cinematic-shot')) status.textContent = '장면 불러오는 중…';
+        else loadTimer = setTimeout(() => { if (alive) status.textContent = '장면을 준비하고 있습니다…'; }, 800);
         void (url ? assets.prepare(url) : Promise.reject(new Error('Missing image'))).then(async prepared => {
           image.src = prepared.url;
           await image.decode();

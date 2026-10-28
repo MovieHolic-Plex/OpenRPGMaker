@@ -52,7 +52,7 @@
 /* 주인 초안(D2): 확인 대기 중인 내 상품. 나만 보이고 공유되지 않는다. */
 .store-badge.draft { background: var(--s-gold-soft); color: var(--s-gold); }
 /* 「에디터에서 열기」 링크 확인 카드. */
-.store-link-confirm { display: grid; gap: 8px; padding: 12px; border-radius: var(--s-r-sm); background: var(--s-gold-soft); border-left: 3px solid var(--s-gold); font-size: 13px; }
+.store-link-confirm { display: grid; gap: 8px; padding: 12px; border-radius: var(--s-r-sm); background: var(--s-gold-soft); border: 1px solid var(--s-gold); font-size: 13px; }
 .store-price { font-weight: 800; color: var(--s-gold); font-size: 13px; }
 
 .store-error { display: grid; gap: 4px; padding: 10px 20px; background: #3a1d1a; color: #ffd9d2; font-size: 13px; border-bottom: 1px solid var(--s-red); }
@@ -72,7 +72,7 @@
 .store-tabs { display: grid; gap: 2px; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid var(--s-line); }
 .store-tab { display: grid; grid-template-columns: 18px 1fr auto; align-items: center; gap: 10px; height: 38px; padding: 0 10px; border: 0; border-radius: var(--s-r-sm); background: none; color: var(--s-text-2); font-weight: 600; text-align: left; cursor: pointer; }
 .store-tab:hover { background: var(--s-bg-2); color: var(--s-text); }
-.store-tab.is-active { background: var(--s-bg-3); color: var(--s-text); box-shadow: inset 3px 0 0 var(--s-gold); }
+.store-tab.is-active { background: var(--s-bg-3); color: var(--s-text); font-weight: 600; }
 .store-tab-count { font-size: 12px; color: var(--s-muted); font-weight: 500; }
 .store-tab-icon { width: 16px; height: 16px; background: currentColor; opacity: .85; }
 .store-tab-icon.is-browse { clip-path: path("M2 2h5v5h-5zM9 2h5v5h-5zM2 9h5v5h-5zM9 9h5v5h-5z"); }
@@ -161,7 +161,7 @@
 .store-row-body { display: grid; gap: 3px; flex: 1; min-width: 0; }
 .store-row-body strong { font-size: 14px; }
 .store-row .store-actions { margin: 0; }
-.store-credits { white-space: pre-wrap; font-size: 12px; padding: 12px 14px; border-radius: var(--s-r-sm); background: var(--s-bg-2); border-left: 3px solid var(--s-gold); color: var(--s-text-2); }
+.store-credits { white-space: pre-wrap; font-size: 12px; padding: 12px 14px; border-radius: var(--s-r-sm); background: var(--s-bg-2); border: 1px solid var(--s-line, var(--border-subtle)); color: var(--s-text-2); }
 
 /* 올리기 */
 .store-pick { display: grid; gap: 2px; max-height: 460px; overflow: auto; }
@@ -194,17 +194,18 @@
 .store-user-code { margin: 6px 0 !important; padding: 14px 22px; border-radius: var(--s-r); border: 1px dashed var(--s-gold); font: 700 28px/1 var(--font-mono); letter-spacing: .14em; color: var(--s-gold) !important; background: var(--s-bg); }
 
 /* 왼쪽 활동 막대 「스토어」 */
-.left-store-pane { display: grid; gap: 8px; padding: 10px; flex: 1 1 auto; min-width: 0; min-height: 0; overflow-y: auto; align-content: start; }
+.left-store-pane { display: grid; gap: 10px; padding: 14px; flex: 1 1 auto; min-width: 0; min-height: 0; overflow-y: auto; align-content: start; }
 .left-store-pane[hidden] { display: none; }
-.left-store-title { margin: 0; font-size: 14px; }
-.left-store-lead { margin: 0; font-size: 12px; opacity: 0.8; }
-.left-store-guide { list-style: none; margin: 0; padding: 8px 10px; display: grid; gap: 5px; border: 1px solid var(--border-subtle); border-radius: 8px; background: var(--bg-inset); color: var(--text-2); font-size: 11.5px; line-height: 1.45; }
+.left-store-title { margin: 0; font: 600 15px/1.4 var(--font-ui); }
+.left-store-lead { margin: 0; font-size: 12px; color: var(--text-2); }
+.left-store-guide { list-style: none; margin: 0; padding: 8px 10px; display: grid; gap: 5px; border: 1px solid var(--border-subtle); border-radius: 8px; background: var(--bg-inset); color: var(--text-2); font-size: 12px; line-height: 1.45; }
 .left-store-guide li { display: flex; gap: 4px; }
 .left-store-guide strong { flex: none; color: var(--text-1); }
 .left-store-open { height: 36px; border: 0; border-radius: 6px; background: #f0b54a; color: #1b1406; font-weight: 700; font-size: 13px; cursor: pointer; }
 .left-store-open:hover { background: #f6c568; }
 .left-store-share { height: 32px; border: 1px solid var(--border-subtle); border-radius: 6px; background: transparent; color: var(--text-1); font-weight: 600; font-size: 12.5px; cursor: pointer; }
 .left-store-share:hover { background: var(--bg-inset); }
+.left-store-open, .left-store-share { display: inline-flex; align-items: center; justify-content: center; text-decoration: none; }
 
 /* 쉬운 스토어(2026-10-20): 찾기 추천·첫 안내·사람 오류·종류 칸·진행 막대·넣은 곳·나누기 마법사 */
 .store-search-wrap .store-search { padding-right: 40px; }
@@ -249,8 +250,8 @@
 .store-in-project { font-weight: 700; color: var(--s-teal); }
 .store-contents { margin: 0; font-size: 13px; color: var(--s-text); }
 .store-provenance { color: var(--s-text-2); }
-.store-added { display: grid; gap: 8px; padding: 12px; border-radius: var(--s-r-sm); background: var(--s-teal-soft); border-left: 3px solid var(--s-teal); font-size: 13px; }
-.store-added.is-undone { background: var(--s-bg-3); border-left-color: var(--s-muted); }
+.store-added { display: grid; gap: 8px; padding: 12px; border-radius: var(--s-r-sm); background: var(--s-teal-soft); border: 1px solid var(--s-teal); font-size: 13px; }
+.store-added.is-undone { background: var(--s-bg-3); border-color: var(--s-muted); }
 .store-landed { margin: 0; padding-left: 18px; color: var(--s-text-2); }
 .store-facts dd small { display: block; margin-top: 4px; color: var(--s-muted); }
 .store-facts .store-license-pill { display: inline-block; }

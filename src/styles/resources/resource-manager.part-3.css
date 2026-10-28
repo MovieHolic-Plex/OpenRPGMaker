@@ -114,9 +114,22 @@
   color: var(--text-1);
 }
 
+/* 보기 전환의 켜짐은 중립 선택 표시 — 채운 강조색은 「가져오기…」 하나만 쓴다. */
+.rm-view-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rm-view-btn svg {
+  width: 15px;
+  height: 15px;
+}
+
 .rm-view-btn.active {
-  background: var(--accent);
-  color: var(--on-accent);
+  background: var(--bg-raised);
+  box-shadow: 0 0 0 1px var(--border-default);
+  color: var(--text-1);
 }
 
 .rm-modern-entry-list {

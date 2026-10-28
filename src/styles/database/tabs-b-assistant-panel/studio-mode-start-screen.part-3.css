@@ -3,27 +3,29 @@
   display: grid;
   grid-column: 3;
   grid-row: 2;
-  grid-template-rows: 40px var(--studio-deck-h);
+  /* 머리 줄은 내용만큼(최소 40px) — 좁은 폭·영문에서 행동 묶음이 둘째 줄로 내려가도 겹치지 않는다(C-63). */
+  grid-template-rows: minmax(40px, auto) var(--studio-deck-h);
   position: relative;
 }
 
 /* 접으면 머리 한 줄(탭 + 캡션)만. 레인 0 이면 한 줄 안내만큼만. */
 .ai-studio-deck.is-collapsed {
-  grid-template-rows: 40px;
+  grid-template-rows: minmax(40px, auto);
 }
 
 .ai-studio-deck.is-empty:not(.is-collapsed) {
-  grid-template-rows: 40px auto;
+  grid-template-rows: minmax(40px, auto) auto;
 }
 
 .ai-studio-deck-head {
   align-items: center;
   border-bottom: 1px solid var(--border-subtle);
   display: flex;
-  gap: 8px;
+  flex-wrap: wrap;
+  gap: 4px 8px;
   justify-content: space-between;
   min-width: 0;
-  padding: 0 8px 0 6px;
+  padding: 4px 8px 4px 6px;
 }
 
 .ai-studio-deck-lead {
@@ -138,8 +140,13 @@
 .ai-studio-deck-actions {
   align-items: center;
   display: flex;
+  flex-wrap: wrap;
   gap: 6px;
+  margin-left: auto;
 }
+
+/* 라벨은 한 줄 — 줄바꿈된 두 줄 라벨이 막대 높이 안에서 겹쳐 보였다(C-63, en). */
+.ai-studio-deck-head :is(.ai-studio-tab, .ai-studio-ghost-btn) { white-space: nowrap; }
 
 .ai-studio-ghost-btn {
   background: transparent;

@@ -1336,6 +1336,8 @@ function enemyButton(
   const name = document.createElement("span");
   name.className = "battle-enemy-name";
   name.textContent = disambiguatedBattlerName(enemy, snapshot.enemies);
+  // 이름표는 스킨에 따라 숨는다 — 버튼 이름은 그와 무관하게 적 이름이다(이름 없는 대상 단추, HIG C-96).
+  enemyNode.setAttribute("aria-label", name.textContent);
   // 이름·순번·상태·HP 는 스프라이트 **아래에 겹쳐** 놓는다(.battle-enemy-chrome 이 절대 배치).
   // 흐름에 두면 HUD 를 펼칠 때 노드 높이가 변하고, 그 높이로 스프라이트 top 을 보정하던
   // 옛 코드(alignEnemyFeetToAuthoredY) 때문에 몬스터가 눈에 보이게 튀었다.
@@ -2154,6 +2156,8 @@ function statusIconCluster(battler: BattleBattlerSnapshot): HTMLElement {
     node.setAttribute("aria-label", entry.name);
     cluster.append(node);
   }
+  // 문서 언어가 한국어면 우리말 이름 — 상태 아이콘(03-vxace-status-nodes.css 의 :lang(ko))과 같은 규칙이다.
+  const stageLocale = document.documentElement.lang.toLowerCase().startsWith("ko") ? "ko" : "other";
   for (const { stat, stage } of stagePills) {
     const node = document.createElement("span");
     node.className = `battle-stage-pill battle-stage-pill-${stage > 0 ? "up" : "down"}`;
@@ -2161,7 +2165,8 @@ function statusIconCluster(battler: BattleBattlerSnapshot): HTMLElement {
     node.dataset.stageStat = stat;
     node.dataset.stage = String(stage);
     const arrows = Math.abs(stage);
-    node.textContent = `${STAT_STAGE_ABBREVIATIONS[stat]}${stage > 0 ? "↑" : "↓"}${arrows}`;
+    // 한국어 게임에서는 「방어↑1」처럼 우리말 이름을 쓴다 — 팝업은 「공격 하락」인데 배지만 「ATK↓」였다(HIG C-95).
+    node.textContent = `${stageLocale === "ko" ? STAT_STAGE_LABELS[stat] : STAT_STAGE_ABBREVIATIONS[stat]}${stage > 0 ? "↑" : "↓"}${arrows}`;
     node.setAttribute("role", "img");
     node.setAttribute("aria-label", `${STAT_STAGE_LABELS[stat]} ${stage > 0 ? "+" : ""}${stage}단계`);
     cluster.append(node);

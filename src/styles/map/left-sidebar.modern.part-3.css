@@ -43,16 +43,30 @@
   background: var(--control-bg-hover);
 }
 
+/* 타일 이름이 첫 줄 전체를 갖고, 타일셋 이름은 둘째 줄 보조 글자다 — 한 줄에 나란히 두면 둘 다 잘렸다
+   (「360 물(바…」·「버…」, 2026-10-28 HIG C-38). 전체 이름은 title. */
+.editor-layout .left-panel-stack .selected-tile-status .selected-tile-names {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 0;
+}
+
+.editor-layout .left-panel-stack .selected-tile-status .selected-tile-names > button {
+  max-width: 100%;
+  min-height: 0;
+  padding: 1px var(--space-1);
+}
+
 .editor-layout .left-panel-stack .selected-tile-status .selected-tile-tileset {
   color: var(--text-2);
-  /* 타일 이름이 폭을 먼저 갖는다 — 타일셋 이름은 남는 폭만 쓴다(기준 폭 0). 둘이 같은 비율로
-     줄어 「360 물(바…」·「에메랄드 몬스터 …」 둘 다 잘렸다(2026-10-21 UI 감사 02-leftdock-06). 전체 이름은 title. */
-  flex: 1 1 0;
-  font: 500 11px/1.2 var(--font-ui);
-  margin-left: auto;
-  max-width: 40%;
-  min-width: 32px;
-  text-align: right;
+  flex: 0 0 auto;
+  font: 500 12px/1.2 var(--font-ui);
+  margin-left: 0;
+  max-width: 100%;
+  min-width: 0;
+  text-align: left;
   text-decoration: underline dotted;
   text-decoration-color: var(--border-strong);
   text-underline-offset: 2px;

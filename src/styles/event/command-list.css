@@ -302,19 +302,19 @@
   background-color: var(--bg-active);
 }
 
-/* 선택 행 — 토큰 규약(--accent-muted 배경 + 좌측 액센트 바). 토큰 고유색을 유지한다. */
+/* 선택 행 — 토큰 규약(--accent-muted 배경 틴트). 한쪽 액센트 줄무늬는 쓰지 않는다. */
 .event-contents-fieldset .cmd-item.selected .cmd-head,
 .event-contents-fieldset .cmd-empty-line:focus {
   background-color: var(--oprn-command-selected, var(--accent-muted));
-  box-shadow: inset 2px 0 0 var(--accent);
+  box-shadow: none;
   color: var(--text-1);
   outline: 0;
 }
 
-/* 인라인 편집 중인 행 — 선택보다 뚜렷한 상태 표시. */
+/* 인라인 편집 중인 행 — 선택보다 진한 틴트로 구분한다. */
 .event-contents-fieldset .cmd-item.editing > .cmd-head {
-  background-color: var(--accent-muted);
-  box-shadow: inset 2px 0 0 var(--accent-hover);
+  background-color: color-mix(in srgb, var(--accent) 22%, var(--bg-raised));
+  box-shadow: none;
 }
 
 .event-contents-fieldset .cmd-prefix,
@@ -844,7 +844,7 @@
 .event-contents-fieldset .cmd-list > .cmd-item.selected > .cmd-head,
 .event-contents-fieldset .cmd-list > .cmd-item.editing > .cmd-head {
   background-color: var(--accent-muted);
-  box-shadow: inset 2px 0 0 var(--accent);
+  box-shadow: none;
   color: var(--text-1);
 }
 

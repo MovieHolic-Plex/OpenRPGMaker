@@ -274,6 +274,10 @@ body.ai-studio-open .authoring-journey-host {
   flex: 1 1 auto;
   font: inherit;
   font-size: 13px;
+  /* 상자 전체가 입력 히트 영역이다(C-64) — 예전 입력은 15px 높이라 위아래 여백을 누르면 포커스가 가지 않았다. */
+  align-self: stretch;
+  height: auto;
+  min-height: 28px;
   min-width: 0;
   outline: none;
   padding: 0;
@@ -542,6 +546,10 @@ body.ai-studio-open .authoring-journey-host {
 /* 입양한 줌 툴바 — 캔버스 위 유리 알약이 아니라 머리띠의 평범한 컨트롤이 된다. */
 .ai-studio-monitor-chrome {
   display: flex;
+}
+
+.ai-studio-monitor-chrome[hidden] {
+  display: none;
 }
 
 .ai-studio-exit {

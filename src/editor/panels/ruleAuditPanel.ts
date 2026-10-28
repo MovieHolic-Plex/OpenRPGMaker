@@ -48,7 +48,7 @@ export function renderRuleAuditPanel(): HTMLElement {
     if (disposed) return;
     const groups = groupedClusterIssues(clusterRuleIssues());
     root.replaceChildren(
-      el("summary", { text: "🔎 규칙 감사" }),
+      el("summary", { text: groups.length ? `위반 ${groups.length}종` : "위반 목록" }),
       groups.length === 0
         ? el("div", { class: "rule-audit-empty", text: "규칙 위반 없음" })
         : el("ol", { class: "rule-audit-list", children: groups.map(renderRuleAuditItem) })

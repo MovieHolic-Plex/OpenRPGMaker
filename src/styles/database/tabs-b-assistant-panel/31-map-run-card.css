@@ -1,5 +1,5 @@
 /* 맵별 실행 카드(aiMapRunCard.ts) — 다른 맵에서 같이 도는 조수 실행 하나. 모양은 30-tileset-change-card 를 따른다. */
-.ai-map-run-card { --map-run-accent: #3f7fd1; margin: 8px 0; padding: 10px 12px; border: 1px solid var(--border-default); border-left: 3px solid var(--map-run-accent); border-radius: 10px; background: var(--bg-raised); color: var(--text-1); font: 12px/1.55 var(--font-ui); }
+.ai-map-run-card { --map-run-accent: #3f7fd1; margin: 8px 0; padding: 10px 12px; border: 1px solid var(--border-default); border-radius: 10px; background: color-mix(in srgb, var(--map-run-accent) 7%, var(--bg-raised)); color: var(--text-1); font: 12px/1.55 var(--font-ui); }
 .ai-map-run-card[data-state="waiting"] { --map-run-accent: #a08a52; }
 .ai-map-run-card[data-state="done"] { --map-run-accent: #3d9a62; }
 .ai-map-run-card[data-state="failed"], .ai-map-run-card[data-state="cancelled"] { --map-run-accent: #b4523e; }
@@ -21,7 +21,7 @@
 .ai-map-run-note { margin: 4px 0 0; }
 
 /* 요청 특징 확인표(aiFeatureChecklist.ts) — 짓기 턴의 1배 확인 바퀴. 메인 대화와 맵별 실행 카드 둘 다 쓴다. */
-.ai-feature-checklist { --feature-accent: #6b7fa8; border-left: 3px solid var(--feature-accent); font: 12px/1.5 var(--font-ui); }
+.ai-feature-checklist { --feature-accent: #6b7fa8; padding: 4px 8px; border-radius: 8px; background: color-mix(in srgb, var(--feature-accent) 8%, transparent); font: 12px/1.5 var(--font-ui); }
 .ai-feature-checklist[data-state="pass"] { --feature-accent: #3d9a62; }
 .ai-feature-checklist[data-state="fail"] { --feature-accent: #b4523e; }
 .ai-feature-checklist summary { cursor: pointer; font-weight: 600; }

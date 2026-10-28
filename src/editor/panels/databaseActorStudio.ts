@@ -49,7 +49,7 @@ export function renderActorStudioList(options: ActorStudioListOptions): ActorStu
     class: "db-list db-actor-studio-table",
     // 행을 고를 수 있는 표라서 role=grid 다 — role=table 의 행은 aria-selected 를 갖지 못한다.
     attrs: { role: "grid", "aria-label": "주인공 데이터 표" },
-    dataset: { columnCount: String(2 + columns.size) },
+    dataset: { columnCount: String(1 + columns.size) },
     children: [
       el("div", {
         class: "db-actor-table-row db-actor-table-header",
@@ -57,7 +57,6 @@ export function renderActorStudioList(options: ActorStudioListOptions): ActorStu
         dataset: { testid: "db-actor-table-header" },
         children: [
           tableCell("캐릭터", "columnheader"),
-          tableCell("직업", "columnheader"),
           ...(columns.has("level") ? [tableCell("레벨", "columnheader")] : []),
           ...(columns.has("hp") ? [tableCell("HP", "columnheader")] : []),
           ...(columns.has("map") ? [tableCell("맵 표시", "columnheader")] : []),
@@ -107,21 +106,12 @@ export function renderActorStudioList(options: ActorStudioListOptions): ActorStu
     pane: el("section", {
       class: "oprn-record-list-pane db-studio-table-pane",
       dataset: { testid: "db-actor-studio" },
+      // 목록 제목(「주인공」)은 두지 않는다 — 레일·크럼·보기 줄이 이미 같은 낱말을 말한다(V-database-25).
+      // 개수와 검색을 한 줄에 둬 좁은 창에서도 목록이 높이를 쓴다(J-p7-small-window-01).
       children: [
-        el("header", {
-          class: "db-actor-studio-heading",
-          children: [
-            el("div", {
-              children: [
-                el("h3", { text: "주인공" }),
-              ],
-            }),
-            el("span", { class: "db-actor-studio-count", text: `${options.actors.length}명` }),
-          ],
-        }),
         el("div", {
           class: "db-actor-studio-tools",
-          children: [options.search],
+          children: [options.search, el("span", { class: "db-actor-studio-count", text: `${options.actors.length}명` })],
         }),
         table,
         options.footer,
@@ -148,7 +138,7 @@ function actorRow(
     // 선택 상태를 CSS 클래스로만 알리면 보조기술이 못 읽는다. 다른 레코드 목록은
     // databaseRecordViews.ts 에서 aria-pressed 를 세우지만, 여기는 role=row 이므로
     // 유효한 상태 속성은 aria-selected 다.
-    attrs: { role: "row", type: "button", "aria-selected": String(selected), title: `ID: ${actor.id}` },
+    attrs: { role: "row", type: "button", "aria-selected": String(selected), title: `${className} · ID: ${actor.id}` },
     dataset: { recordId: actor.id, testid: `db-record-row-${actor.id}` },
     children: [
       el("span", {
@@ -162,7 +152,7 @@ function actorRow(
               el("strong", { class: "db-list-name", text: actor.name }),
               el("small", {
                 children: [
-                  actorSubLabel(actor),
+                  actorSubLabel(actor, className),
                   ...(inStartParty
                     ? [el("span", { class: "db-actor-party-mark", text: "시작 파티", dataset: { testid: `db-actor-party-mark-${actor.id}` } })]
                     : []),
@@ -172,7 +162,6 @@ function actorRow(
           }),
         ],
       }),
-      tableCell(className, "gridcell"),
       ...(columns.has("level") ? [tableCell(String(actor.initialLevel), "gridcell", "numeric")] : []),
       ...(columns.has("hp") ? [tableCell(NUMBER_FORMAT.format(initialHp), "gridcell", "numeric")] : []),
       // 맵 표시: 기본값(보임)까지 초록 알약으로 그리면 모든 행에 같은 뱃지가 도배돼
@@ -200,8 +189,10 @@ function tableCell(text: string, role: "gridcell" | "columnheader", className = 
 // 그대로 쓰면 목록에 "없음"이 칭호처럼 박힌다 — 자리표시 값은 칭호 없음으로 취급한다.
 const NICKNAME_PLACEHOLDERS: ReadonlySet<string> = new Set(["없음", "-", "—", "미정", "무"]);
 
-function actorSubLabel(actor: ActorRecord): string {
+// 직업은 따로 열을 두지 않는다 — 기본 예제는 거의 모두 이름과 직업이 같아(「수호자 / 수호자」) 행마다 같은 사실이
+// 두 번 보였다(V-database-23). 이름과 다를 때만 둘째 줄 앞에 붙인다. 전체 직업은 상세 「시작 직업」에 있다.
+function actorSubLabel(actor: ActorRecord, className: string): string {
   const nickname = (actor.nickname ?? "").trim();
-  if (nickname.length > 0 && !NICKNAME_PLACEHOLDERS.has(nickname)) return nickname;
-  return `Lv ${actor.initialLevel}`;
+  const base = nickname.length > 0 && !NICKNAME_PLACEHOLDERS.has(nickname) ? nickname : `Lv ${actor.initialLevel}`;
+  return className && className !== actor.name && className !== "미지정" ? `${className} · ${base}` : base;
 }

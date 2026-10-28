@@ -859,10 +859,14 @@ export function renderAiSettingsForm(options: {
     ],
   });
   const connectionSummaryCopy = connectionSummary.querySelector(".ai-settings-status-copy") as HTMLElement;
+  let checkRequestedAt: Date | null = null;
+  // 바꾼 값은 자동 저장된다 — 바닥 버튼은 확정이 아니라 창을 닫는 「완료」다(C-70).
+  // 예전 「연결하고 계속」은 연결 전이면 이유 없이 회색으로 막혀 본문의 「로그인」과 주 행동을 다퉜다.
+  // 연결돼 사용할 수 있을 때만 주 버튼 무게를 갖는다. 그 전에는 본문의 로그인이 주 행동이다.
   const continueButton = el("button", {
-    class: "ai-assistant-action is-primary",
-    text: "연결하고 계속",
-    attrs: { type: "button", disabled: "" },
+    class: "ai-assistant-action",
+    text: "완료",
+    attrs: { type: "button" },
     dataset: { testid: "ai-settings-continue" },
   }) as HTMLButtonElement;
   const modelConnectionHint = el("p", {
@@ -888,18 +892,22 @@ export function renderAiSettingsForm(options: {
     const status = getAiConnectionStatus(current);
     const valid = specialistControls.map(c => c.field.validate(authMode, c.provider.value)).every(Boolean)
       && brainModel.validate(authMode, brainProvider.value);
-    continueButton.disabled = next.tone !== "connected" || status.kind !== "ready" || !valid;
+    const usable = next.tone === "connected" && status.kind === "ready" && !status.limited && valid;
+    continueButton.classList.toggle("is-primary", usable);
     connectionSummary.dataset.tone = SUMMARY_TONE[next.tone];
     connectionSummaryCopy.textContent = `${next.providerLabel} · ${next.text}`;
     if (next.tone === "connected") {
-      connectionSummary.dataset.tone = continueButton.disabled ? "warning" : "ready";
+      connectionSummary.dataset.tone = usable ? "ready" : "warning";
       connectionSummaryCopy.textContent = !valid ? "작업 모델을 확인하세요. 모델 탭에서 지원되는 모델을 선택하세요."
-        : status.kind === "ready" ? `${next.providerLabel} · 사용 준비됨` : status.label;
+        : status.kind === "ready" && !status.limited ? `${next.providerLabel} · 사용 준비됨` : status.label;
+    }
+    // 「연결 확인」을 누른 뒤에는 결과를 같은 상태 줄(aria-live)에 시각과 함께 말한다(C-67).
+    if (checkRequestedAt !== null) {
+      connectionSummaryCopy.textContent = `${connectionSummaryCopy.textContent} · ${formatEditorDate(checkRequestedAt, { hour: "2-digit", minute: "2-digit" })} 확인함`;
     }
   };
   continueButton.addEventListener("click", () => {
-    updateReadiness();
-    if (!continueButton.disabled) options.onContinue?.();
+    options.onContinue?.();
   });
   alignAccountButton.addEventListener("click", () => {
     applyAccountSelection(true);
@@ -963,7 +971,15 @@ export function renderAiSettingsForm(options: {
     text: "연결 확인",
     attrs: { type: "button" },
     dataset: { testid: "ai-settings-connection-check" },
-    on: { click: () => authSettings.recheck() },
+    on: {
+      click: () => {
+        checkRequestedAt = new Date();
+        connectionSummary.dataset.tone = "checking";
+        connectionSummaryCopy.textContent = "연결을 확인하는 중…";
+        authSettings.recheck();
+        void refreshAiConnectionStatus(updateReadiness).finally(updateReadiness);
+      },
+    },
   });
 
   // 「지금 저장」버튼은 없다 — 모든 변경 경로가 persist 를 태우고 푸터는 자동 저장 상태만
@@ -1180,7 +1196,7 @@ export function renderAiSettingsForm(options: {
     children: [
       pane("connection", [
         settingsSection("connection", "연결", "AI 제공자와 로그인 상태를 관리합니다.", [authSettings.element, modelConnectionHint, alignAccountButton]),
-        settingsSection("compat", "사용자 지정 연결", "OpenAI 호환 서버(CLIProxyAPI·LiteLLM·Ollama 등)를 직접 연결합니다. 기본 연결은 바꾸지 않아요.", [compatSettings.element]),
+        settingsSection("compat", "사용자 지정 연결", "OpenAI 호환 서버(예: Ollama, LiteLLM)를 직접 연결합니다. 기본 연결은 바꾸지 않아요.", [compatSettings.element]),
       ]),
       pane("models", [
         settingsSection("presets", "품질 프리셋", "역할별 모델과 추론 강도를 한 번에 맞춥니다.", [presetGroup]),
