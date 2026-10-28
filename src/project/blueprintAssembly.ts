@@ -327,7 +327,8 @@ export function assemblyTimeMismatches(project: Project): AssemblyTimeMismatch[]
   const subtitle = project.system.titleScreen?.logoSubtitle?.trim() ?? "";
   const opening = project.system.opening;
   const scenes = opening && opening.enabled !== false ? opening.scenes : [];
-  const present = scenes.map((scene) => String(scene.narration ?? "").trim()).filter((text) => text && !PAST.test(text) && timeOf(text) !== undefined);
+  const firstScene = scenes.find((scene) => { const text = String(scene.narration ?? "").trim(); return text && !PAST.test(text) && timeOf(text) !== undefined; });
+  const present = firstScene ? [String(firstScene.narration ?? "").trim()] : [];
   const sources: { label: string; text: string; time: TimeOfDay }[] = [];
   const add = (label: string, text: string) => { const time = timeOf(text); if (time !== undefined) sources.push({ label, text, time }); };
   if (blueprint) add("청사진", [blueprint.title, blueprint.playerGoal, blueprint.steps[0]?.action ?? ""].join(" "));
@@ -337,7 +338,11 @@ export function assemblyTimeMismatches(project: Project): AssemblyTimeMismatch[]
   if (!reference) return [];
   return sources.slice(1).filter((source) => Math.abs(source.time - reference.time) >= 2).map((source) => ({
     message: `${source.label} 「${source.text.slice(0, 40)}」는 ${TIME_LABEL[source.time]}인데 ${reference.label} 「${reference.text.slice(0, 40)}」는 ${TIME_LABEL[reference.time]}이다 — `
-      + (source.label === "타이틀 부제" ? `set_title_screen{logoSubtitle} 을 ${TIME_LABEL[reference.time]}에 맞춰 다시 쓴다.` : `edit_opening 으로 그 장면 글을 ${TIME_LABEL[reference.time]}에 맞추거나 회상이면 「…전」을 밝힌다.`),
+      + (source.label === "타이틀 부제" ? `set_title_screen{logoSubtitle} 을 ${TIME_LABEL[reference.time]}에 맞춰 다시 쓴다.`
+        // 오프닝 장면 글: edit_opening update 는 장면을 통째로 바꾼다 — 애니메틱 장면은 composition 까지 다시 줘야 해서 글만 주면 그림이 사라진다.
+        : `오프닝 장면 ${firstScene?.id ?? ""}${firstScene?.kind === "animatic" ? "(애니메틱)" : ""}의 글을 ${TIME_LABEL[reference.time]}에 맞추거나(회상이면 「…전」을 밝힌다) `
+          + (firstScene?.kind === "animatic" ? `edit_opening{op:'update', sceneId:'${firstScene.id}', scene:<그 장면 전체 — composition 그대로, narration 만 고침>} 로 바꾼다(scene 에 narration 만 주면 그림 층이 사라진다).` : `edit_opening{op:'update', sceneId:'${firstScene?.id ?? ""}', scene:{kind, narration}} 로 바꾼다.`)
+          + (reference.label === "타이틀 부제" ? ` 오프닝이 맞으면 대신 set_title_screen{logoSubtitle} 을 ${TIME_LABEL[source.time]}에 맞춘다.` : "")),
     evidence: `${reference.label}=${TIME_LABEL[reference.time]} ${source.label}=${TIME_LABEL[source.time]}`,
   }));
 }

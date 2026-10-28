@@ -54,20 +54,50 @@ function texts(commands: unknown): string[] {
 const LOCKED_WORDS = /잠겨|잠긴|잠겼|열리지\s*않|열쇠(가|를)?\s*(없|필요)|열쇠\s*구멍|locked/iu;
 
 /** 맵 하나의 걸어 닿는 칸 — 막는 칸(blocked)은 지나가지 않는다. 앵커가 없으면 null. */
-function reachWithout(project: Project, map: GameMap, blocked: ReadonlySet<string>): Set<string> | null {
+function reachWithout(project: Project, map: GameMap, blocked: ReadonlySet<string>, followHops = false): Set<string> | null {
   const anchors = playerAnchors(project, map).filter((a) => !blocked.has(`${a.x},${a.y}`));
   if (!anchors.length) return null;
   const seen = new Set<string>(anchors.map((a) => `${a.x},${a.y}`));
   const queue = [...anchors];
-  for (let i = 0; i < queue.length; i += 1) {
-    const c = queue[i]!;
-    for (const [dx, dy] of STEPS) {
-      const x = c.x + dx, y = c.y + dy, key = `${x},${y}`;
-      if (x < 0 || y < 0 || x >= map.width || y >= map.height || seen.has(key) || blocked.has(key)) continue;
-      if (!canMove(project, map, c.x, c.y, x, y)) continue;
-      seen.add(key);
-      queue.push({ x, y });
+  // 같은 맵 안의 이동(체육관 덩굴 문·덤불 틈: 조사하면 문 건너 칸으로 옮긴다)도 길이다 — playerAnchors 는 다른 맵에서 들어오는 이동만 본다.
+  // 닿는 칸(또는 그 이웃)에 선 이벤트의 같은 맵 이동 착지를 새 출발점으로 더한다(잠긴 문을 열린다고 보는 것과 같다). 2026-10-29 standin monster 새순 체육관.
+  // 우회 검사(lockBypasses·장치 무용)는 따르지 않는다 — 문 자신의 이동이 「이미 건너편에 닿는다」로 보이게 된다.
+  const hops = !followHops ? [] : (map.events ?? []).flatMap((ev) => {
+    const out: { from: { x: number; y: number }; to: { x: number; y: number } }[] = [];
+    const scan = (node: unknown): void => {
+      if (Array.isArray(node)) { node.forEach(scan); return; }
+      const o = obj(node);
+      if (!o) return;
+      if (o.kind === "transfer" && o.mapId === map.id && typeof o.x === "number" && typeof o.y === "number") out.push({ from: { x: ev.x, y: ev.y }, to: { x: o.x, y: o.y } });
+      for (const v of Object.values(o)) if (v && typeof v === "object") scan(v);
+    };
+    scan(ev.pages);
+    return out;
+  });
+  const used = new Set<number>();
+  for (let i = 0; ; ) {
+    for (; i < queue.length; i += 1) {
+      const c = queue[i]!;
+      for (const [dx, dy] of STEPS) {
+        const x = c.x + dx, y = c.y + dy, key = `${x},${y}`;
+        if (x < 0 || y < 0 || x >= map.width || y >= map.height || seen.has(key) || blocked.has(key)) continue;
+        if (!canMove(project, map, c.x, c.y, x, y)) continue;
+        seen.add(key);
+        queue.push({ x, y });
+      }
     }
+    const before = queue.length;
+    hops.forEach((hop, k) => {
+      if (used.has(k)) return;
+      const near = seen.has(`${hop.from.x},${hop.from.y}`) || STEPS.some(([dx, dy]) => seen.has(`${hop.from.x + dx},${hop.from.y + dy}`));
+      if (!near) return;
+      used.add(k);
+      const key = `${hop.to.x},${hop.to.y}`;
+      if (hop.to.x < 0 || hop.to.y < 0 || hop.to.x >= map.width || hop.to.y >= map.height || seen.has(key) || blocked.has(key)) return;
+      seen.add(key);
+      queue.push({ ...hop.to });
+    });
+    if (queue.length === before) break;
   }
   return seen;
 }
@@ -302,7 +332,7 @@ export function unreachableCriticalEvents(project: Project): string[] {
     if (!critical.length) continue;
     // 늘 막는 이벤트(모든 페이지가 보통 우선순위 — 한 칸 복도의 일기장·가구 이벤트)는 벽처럼 친다. 잠긴 문은 열린다고 본다.
     const blocked = new Set((map.events ?? []).filter((ev) => eventAlwaysBlocks(ev) && !lockOf(ev)).map((ev) => `${ev.x},${ev.y}`));
-    const reach = reachWithout(project, map, blocked);
+    const reach = reachWithout(project, map, blocked, true);
     if (!reach) continue;
     const at = (x: number, y: number) => reach.has(`${x},${y}`);
     for (const { ev, why } of critical) {

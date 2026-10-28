@@ -21,6 +21,9 @@ import type { Project } from "@/project/types";
 import { defaultPlaceLeaks, editorDefaultsLeft, endingClosureProblems, endingConditionsUnset, writtenStateIds } from "./shipChecks";
 import { doorCellBlocked, offArtEntrances, planObjective, repeatingStartObjectives, staleMilestoneTargets } from "./discoverability";
 import { normalizeGameOverSettings } from "@/project/cinematicSettings";
+import { fieldMenu, storyFieldMenu } from "@/project/fieldMenu";
+import { syncMenuFeatures, syncMenuUiStyle } from "@/project/menuSystem";
+import { FACTORY_HERO_ARMS } from "./genreDefaults";
 
 type Obj = Record<string, unknown>;
 
@@ -38,10 +41,12 @@ export function applyShipDefaults(project: Project, task = project.gameBlueprint
   if (left.has("party-names")) applied.push(...fillPartyNames(project));
   if (left.has("window-look")) applied.push(...fillWindowLook(project));
   if (left.has("game-over")) applied.push(...fillGameOver(project));
+  if (left.has("combat-leftovers")) applied.push(...clearCombatLeftovers(project));
   if (offArtEntrances(project).length) applied.push(...moveEntrancesOntoArt(project));
   if (repeatingStartObjectives(project).length) applied.push(...moveRepeatingStartObjective(project));
   if (staleMilestoneTargets(project).length) applied.push(...fillStaleObjectives(project));
   if (endingConditionsUnset(project).length) applied.push(...dropDeadEndingConditions(project));
+  applied.push(...forkStackedEndingCalls(project));
   if (endingClosureProblems(project).length) applied.push(...fillEndingClosure(project));
   // 기본 지명 걷어내기는 엔딩 글을 채운 뒤에 — 채운 글(청사진 느낌 칸)에도 그 지명이 들 수 있다.
   applied.push(...removeDefaultPlaceWords(project, task));
@@ -277,6 +282,83 @@ function fillWindowLook(project: Project): string[] {
   return [`메뉴 모양 → ${style}`];
 }
 const battleSitesExist = (project: Project): boolean => Object.values(project.maps).some((m) => JSON.stringify(m.events ?? []).includes('"battleProcessing"'));
+
+/**
+ * 이름 붙은 triggerEnding 이 줄줄이 붙어 있으면(「평범」 엔딩 → 「혼자」 엔딩) 첫 호출만 돈다 — 이름 붙은 호출은 엔딩 조건을 보지 않고 그 엔딩으로 끝낸다
+ * (selectEnding). 모델은 「호감이 되면 평범, 아니면 혼자」를 뜻했다. 앞 엔딩에 조건이 있으면 그 조건으로 가르는 fork 사슬로 바꾼다
+ * (조건 없는 엔딩에서 사슬이 끝난다). 2026-10-29 standin romance 「다음 주에도, 단골손님」 뒤 「커피 한 잔의 거리」가 영영 안 열렸다.
+ */
+function forkStackedEndingCalls(project: Project): string[] {
+  const endings = new Map((project.endings ?? []).map((e) => [e.id, e]));
+  const out: string[] = [];
+  const named = (c: unknown): string | undefined => {
+    const o = c as Obj | undefined;
+    return o && o.kind === "triggerEnding" && typeof o.endingId === "string" && endings.has(o.endingId) ? o.endingId : undefined;
+  };
+  const fixList = (list: unknown[], where: string): void => {
+    for (let i = 0; i < list.length; i++) {
+      const first = named(list[i]);
+      if (!first) continue;
+      let j = i + 1;
+      while (j < list.length && named(list[j])) j++;
+      const run = list.slice(i, j).map((c) => named(c)!);
+      if (run.length < 2 || !(endings.get(first)!.conditions ?? []).length) continue;
+      let chain: unknown[] = [{ kind: "triggerEnding", endingId: run[run.length - 1] }];
+      for (const id of run.slice(0, -1).reverse()) {
+        const conds = structuredClone(endings.get(id)!.conditions ?? []);
+        chain = conds.length ? [{ kind: "fork", condition: conds.length === 1 ? conds[0] : { kind: "all", conditions: conds }, then: [{ kind: "triggerEnding", endingId: id }], else: chain }] : [{ kind: "triggerEnding", endingId: id }];
+      }
+      list.splice(i, run.length, ...chain);
+      out.push(`${where}: 엔딩 ${run.map((id) => endings.get(id)!.name).join(" → ")} 를 조건으로 가름`);
+    }
+    for (const c of list) visit(c, where);
+  };
+  const visit = (node: unknown, where: string): void => {
+    if (!node || typeof node !== "object") return;
+    for (const v of Object.values(node as Obj)) {
+      if (Array.isArray(v)) { if (v.some((x) => x && typeof x === "object" && "kind" in (x as Obj))) fixList(v, where); else for (const x of v) visit(x, where); }
+      else if (v && typeof v === "object") visit(v, where);
+    }
+  };
+  for (const map of Object.values(project.maps)) for (const event of map.events ?? []) for (const page of event.pages ?? []) {
+    const commands = page.commands as unknown[] | undefined;
+    if (Array.isArray(commands)) fixList(commands, `${map.name ?? map.id} ${event.name ?? event.id}`);
+  }
+  for (const common of (project.commonEvents ?? []) as unknown as Obj[]) {
+    if (Array.isArray(common.commands)) fixList(common.commands as unknown[], `공통 ${String(common.name ?? common.id)}`);
+  }
+  return out;
+}
+
+/**
+ * 전투 없는 게임의 전투 기본값(출하 검사 combat-leftovers 와 같은 판정): ESC 메뉴를 이야기용(configure_field_menu{preset:'story'} 와 같은 항목)으로 —
+ * 저작한 메뉴가 있으면 스킬·장비·상태·진형·전투 기록 칸만 뺀다 — 하고, 파티의 공장 기본 무기·방어구(검·방패…)만 뺀다(고른 장비는 그대로).
+ * 2026-10-29 standin magic·vm2 flash 추리: 전투 없는 게임 ESC 메뉴에 스킬·장비가, 주인공 손에 검·방패가 남았다.
+ */
+const COMBAT_MENU = new Set(["skills", "equipment", "status", "row", "formation", "battle-reports"]);
+function clearCombatLeftovers(project: Project): string[] {
+  const out: string[] = [];
+  const authored = project.meta.oprnFieldMenu;
+  const current = fieldMenu(project);
+  const kept = current?.entries.filter((row) => !COMBAT_MENU.has(row.command)) ?? [];
+  if (!current || kept.length !== current.entries.length) {
+    const next = current && kept.length ? { version: 1 as const, entries: kept } : storyFieldMenu();
+    project.meta.oprnFieldMenu = next;
+    // 메뉴를 처음 저작하면 창 모양도 맞춘다 — 이미 고른 모양(메뉴 모양 기본값 journal·classic)은 그대로.
+    if (!authored) syncMenuUiStyle(project, true, project.system.menuUiStyle && project.system.menuUiStyle !== "pixel" ? project.system.menuUiStyle : undefined);
+    syncMenuFeatures(project, next);
+    out.push(`ESC 메뉴 → ${next.entries.map((row) => row.label).join("·")}`);
+  }
+  for (const id of project.system.startActorIds ?? []) {
+    const actor = project.database.actors.find((a) => a.id === id);
+    const equipment = actor?.initialEquipment as Record<string, unknown> | undefined;
+    if (!actor || !equipment) continue;
+    const gone = Object.entries(FACTORY_HERO_ARMS).filter(([slot, item]) => equipment[slot] === item).map(([slot]) => slot);
+    for (const slot of gone) delete equipment[slot];
+    if (gone.length) out.push(`${actor.name} 기본 장비 ${gone.join("·")} 뺌`);
+  }
+  return out;
+}
 
 /**
  * 죽거나 질 수 있는데 게임 오버 화면이 기본이다 — 공포는 공포 연출(잡혔다), 그 밖은 고전(쓰러졌다). 글은 주인공 이름으로 짧게, 다시 하기·타이틀 단추는 기본.
