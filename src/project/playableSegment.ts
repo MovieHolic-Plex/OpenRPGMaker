@@ -18,6 +18,7 @@ import { resolveGraphic } from "@/editor/tools/eventCompile";
 import { withNpcGraphicCatalogFilter } from "@/assets/charsetQuery";
 import { genreLockCharsetCatalogFilter } from "@/project/genreLockCharsets";
 import { canPaintStoryWalk, paintBeodeulStoryWalk } from "@/editor/tools/storyWalkBeodeul";
+import { canPaintBeodeulWildRoute } from "@/editor/tools/wildRouteBeodeul";
 import { runGameCheck } from "@/qa/gameCheck";
 import { canMove, isPassable, isPassableLanding } from "@/project/collision";
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
@@ -185,6 +186,38 @@ function openBlankStartOnConceptKit(ctx: { project: Project }, startId: string, 
   }
 }
 
+/**
+ * 버들항이 아닌 칩셋(몬스터 키트)의 몬스터 도로 — 칩셋의 「풀밭」으로 바닥을 덮고(시작 맵과 같은 바닥, 빈 칸이 검게 남지 않게),
+ * 「모래길」 오토타일로 입구→끝 마당 길을 깔고(이웃에 맞춰 자동 재성형),
+ * 길을 가로지르는 키 큰 풀(지형 태그 5) 두 덩이를 얹고, 조우표를 키 큰 풀 지형(terrain_grass)으로 묶는다.
+ * 칩셋에 길 오토타일이나 조우 풀이 없으면 실패를 그대로 던진다(다른 칩셋으로 바꿔 칠하지 않는다).
+ */
+const MONSTER_ROUTE_GRASS_TAG = 5;
+function paveMonsterKitRoute(ctx: { project: Project }, tilesetId: string, route: RouteGeometry, plan: StartPlan | null): void {
+  const tileset = ctx.project.tilesets[tilesetId];
+  const pathGroup = tileset?.autotileGroups?.find((group) => group.name === "모래길");
+  const pathTile = pathGroup?.variantMap["255"];
+  const grassTile = tileset?.tileMeta?.findIndex((meta) => meta?.terrainTag === MONSTER_ROUTE_GRASS_TAG && /키 큰 풀/u.test(meta.label ?? ""));
+  const groundTile = tileset?.tileMeta?.findIndex((meta) => meta?.label === "풀밭" && !meta.terrainTag && meta.passage === "passable");
+  if (pathTile === undefined || grassTile === undefined || grassTile < 0 || groundTile === undefined || groundTile < 0) {
+    throw new Error(`첫 구간 뼈대: ${tilesetId} 칩셋에는 몬스터 도로 재료(풀밭·모래길 오토타일·키 큰 풀)가 없습니다.`);
+  }
+  const tiles: Record<string, number> = { ground: groundTile, road: pathTile, yard: pathTile, grass: grassTile };
+  const paint = (rect: { x: number; y: number; w: number; h: number }, material: string): void => {
+    tool(ctx, "paint_tiles", { mapId: SEGMENT_ROUTE_MAP_ID, layer: "1", mode: "rect", tile: tiles[material], from: { x: rect.x, y: rect.y }, to: { x: rect.x + rect.w - 1, y: rect.y + rect.h - 1 } });
+  };
+  const roadWidth = 2;
+  paintStartRoute(paint, { roadWidth, ground: "ground", road: "road", yard: "yard" }, plan ?? { seed: 1 }, route);
+  // 길을 가로지르는 풀숲: 입구 쪽 직선과 끝 줄 직선 위에 하나씩.
+  const patch = (x: number, roadY: number) => {
+    const y = Math.max(1, roadY - 1);
+    return { x, y, w: 3, h: Math.min(route.height - 1, roadY + roadWidth + 1) - y };
+  };
+  paint(patch(2, route.entryY), "grass");
+  paint(patch(Math.max(6, route.width - 12), route.endY), "grass");
+  tool(ctx, "set_encounter_table", { mapId: SEGMENT_ROUTE_MAP_ID, entries: [{ troopId: SEGMENT_WILD_TROOP_ID, weight: 1, conditions: { terrainId: "terrain_grass" } }] });
+}
+
 interface GenreSkeleton {
   readonly routeName: string;
   /** 길 맵을 채운다(도로 시공·조우). 문을 달기 전에 부른다. */
@@ -207,11 +240,18 @@ interface GenreSkeleton {
 const SKELETONS: Record<PlayableSegmentGenre, GenreSkeleton> = {
   "monster-collect": {
     routeName: "1번 길",
-    paveRoute(ctx, _tilesetId, route, _plan) {
+    paveRoute(ctx, tilesetId, route, plan) {
       // 도로 야생은 Lv5 스타터가 이기고 잡을 수 있는 세기(종족 공식 Lv3). 기본 DB 의 troop_slime 은 액터 파티 척도라 스타터가 진다.
       tool(ctx, "upsert_enemy", { enemy: { id: SEGMENT_WILD_ENEMY_ID, name: "야생 슬라임", speciesId: "species_wild_slime", level: 3, monsterResourceId: "generated-enemy-slime-01" } });
       tool(ctx, "upsert_troop", { troop: { id: SEGMENT_WILD_TROOP_ID, name: "풀숲 슬라임", enemyIds: [SEGMENT_WILD_ENEMY_ID] } });
-      tool(ctx, "author_wild_route", { mapId: SEGMENT_ROUTE_MAP_ID, exits: [{ x: 0, y: route.entryY }, { x: route.width - 1, y: route.endY }], grassPatches: 2, encounters: [{ troopId: SEGMENT_WILD_TROOP_ID, weight: 1 }] });
+      const tileset = ctx.project.tilesets[tilesetId];
+      if (tileset && canPaintBeodeulWildRoute(tileset)) {
+        tool(ctx, "author_wild_route", { mapId: SEGMENT_ROUTE_MAP_ID, exits: [{ x: 0, y: route.entryY }, { x: route.width - 1, y: route.endY }], grassPatches: 2, encounters: [{ troopId: SEGMENT_WILD_TROOP_ID, weight: 1 }] });
+        return;
+      }
+      // 몬스터 수집 새 프로젝트의 시작 맵은 몬스터 키트(monster_overworld)다(#2675). author_wild_route 는 버들항 전용이라
+      // 그대로 부르면 뼈대가 통째로 실패했다 — 같은 칩셋의 길·키 큰 풀 재료로 길을 깔고, 조우는 키 큰 풀 칸(terrain_grass)에서만 난다.
+      paveMonsterKitRoute(ctx, tilesetId, route, plan);
     },
     placeStarter(ctx, at) {
       tool(ctx, "give_starter_monsters", { speciesIds: [...STARTER_SPECIES], actorEvent: { mapId: at.mapId, eventId: SEGMENT_STARTER_EVENT_ID, x: at.x, y: at.y, name: "박사" } });
