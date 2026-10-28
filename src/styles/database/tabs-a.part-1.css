@@ -127,7 +127,7 @@
 }
 
 .tileset-ai-result-tile-row.locked {
-  box-shadow: inset 3px 0 0 var(--accent-secondary);
+  background: var(--accent-muted);
 }
 
 .tileset-ai-result-tile-preview {

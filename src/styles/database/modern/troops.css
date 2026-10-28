@@ -653,7 +653,7 @@
 .database-modal-backdrop .database-modal-window .database-modal-body .db-troop-member-row.active {
   background: var(--db-studio-accent-soft, rgba(74, 87, 214, 0.08));
   border-color: var(--db-studio-accent-border, rgba(74, 87, 214, 0.16));
-  box-shadow: inset 2px 0 0 var(--db-studio-accent, var(--db-studio-accent));
+  box-shadow: none;
   color: var(--db-studio-text-1, var(--db-studio-text-1));
 }
 

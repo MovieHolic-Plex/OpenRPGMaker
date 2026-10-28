@@ -431,7 +431,7 @@
 
 .database-modal-backdrop .database-modal-window .database-modal-body :is(.oprn-record-actors, .oprn-record-classes, .oprn-record-skills, .oprn-record-items, .oprn-record-equipment) :is(.db-list-row.active, .db-gallery-card.active) {
   background: color-mix(in srgb, var(--db-studio-accent) 12%, var(--db-studio-surface));
-  box-shadow: inset 3px 0 0 var(--db-studio-accent);
+  box-shadow: none;
   color: var(--db-studio-text-1);
 }
 
