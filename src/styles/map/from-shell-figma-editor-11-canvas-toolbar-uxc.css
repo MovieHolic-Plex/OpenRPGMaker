@@ -21,7 +21,8 @@
    같은 레이어 문서 순서상 :has 규칙이 top:0 을 이겨 도크 바가 밀리는 회귀
    확인(2026-09-18 beginner 실측 overlap:true). */
 .canvas-area:has(.persistence-mode-banner) .canvas-toolbar {
-  top: 50px;
+  /* 배너가 두 줄로 접히면(조수 패널 도킹으로 좁아진 캠버스 열) 실측 높이를 editor.ts 의 ResizeObserver 가 넣는다. */
+  top: calc(var(--persistence-banner-height, 42px) + 8px);
 }
 /* shell/figma-editor/11-canvas-toolbar-uxc.css:14-19 */
 .canvas-toolbar-zoom-group,
