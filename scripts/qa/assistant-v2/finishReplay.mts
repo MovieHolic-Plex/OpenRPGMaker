@@ -32,10 +32,27 @@ const brief = (project: Project, task: string) => {
   return { blockers, auto: run ? `${run.ok ? "성공" : "실패"} 엔딩=${run.endingReached ?? "-"}${run.failure ? ` · ${run.failure.goal}: ${run.failure.detail.slice(0, 220)}` : ""}` : (r.autoPlay?.skipped ?? "자동 플레이 없음"), bp: walkBlueprint(project).blockers.map((b) => b.id), ship: shipBlockers(project, task).map((b) => b.id) };
 };
 
+/**
+ * 판의 첫 요청 원문 — 스위트 판(runs/<묶음>/<모델>/<프롬프트 id>)이면 suite/prompts.json 의 그 id 문구, 아니면 세션 done/001.txt, 마지막으로 steps.log.
+ * steps.log 의 「sent 001.txt: …」 줄은 잘린다(「…판타지 RPG 만들어 」) — 그걸 쓰면 게임 전체 요청 판정이 달라져 끝맺음 조립이 안 돈다(2026-10-29).
+ */
+function firstRequest(dir: string): string {
+  const abs = path.resolve(dir);
+  const promptsFile = path.join(abs, "..", "..", "..", "..", "prompts.json");
+  if (fs.existsSync(promptsFile)) {
+    const raw = JSON.parse(fs.readFileSync(promptsFile, "utf8")) as { prompts?: { id: string; text: string }[] } | { id: string; text: string }[];
+    const hit = (Array.isArray(raw) ? raw : raw.prompts ?? []).find((p) => p.id === path.basename(abs));
+    if (hit?.text) return hit.text;
+  }
+  const done = path.join(abs, "session", "done", "001.txt");
+  if (fs.existsSync(done)) return fs.readFileSync(done, "utf8").trim();
+  return fs.existsSync(path.join(abs, "steps.log")) ? (fs.readFileSync(path.join(abs, "steps.log"), "utf8").match(/sent 001\.txt: (.*)/u)?.[1] ?? "게임 만들어 줘") : "게임 만들어 줘";
+}
+
 for (const dir of dirs) {
   const name = `${path.basename(path.dirname(path.resolve(dir)))}-${path.basename(dir)}`;
   const project = readProjectSqlite(path.join(dir, "project"));
-  const first = fs.existsSync(path.join(dir, "steps.log")) ? (fs.readFileSync(path.join(dir, "steps.log"), "utf8").match(/sent 001\.txt: (.*)/u)?.[1] ?? "게임 만들어 줘") : "게임 만들어 줘";
+  const first = firstRequest(dir);
   const task = followup ? composePiTask(followup, priorRequestsNote([{ kind: "user", text: first } as never], followup)) : first;
   const before = brief(project, task);
   const ctx = { project: structuredClone(project), currentMapId: project.startMapId, assistantRun: true };

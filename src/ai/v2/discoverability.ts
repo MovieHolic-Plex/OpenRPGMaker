@@ -167,13 +167,18 @@ export function objectiveGaps(project: Project): string[] {
   if (startGap) gaps.push(startGap);
   // 「어디」 — 다른 장소 이름만 대고 그 입구가 어디인지 말하지 않는 목표(J105: 「지하철역의 지훈」 만 보고 역 입구를 못 찾았다).
   let vague = 0;
+  const landings = objectiveLandings(project);
   for (const page of allPages(project)) {
-    const fromMapId = page.map?.id ?? project.startMapId;
+    const pageMapId = page.map?.id ?? project.startMapId;
     visitPageCommands(page, ({ command }) => {
       if (vague >= 3 || !isObjectiveCommand(command)) return;
       const message = String((command.fields as Record<string, unknown>).message);
       // 이미 방위가 붙은 목표(「(… 입구: … 남동쪽)」·「(지하철역 북쪽)」)는 통과 — where 로 붙인 힌트는 글 속 장소 이름 힌트와 다를 수 있다.
       if (/입구:|\([^()]*(북|남|동|서|가운데)[^()]*\)\s*$/u.test(message)) return;
+      const fromMapId = landings.get(command)?.mapId ?? pageMapId;
+      // 같은 맵 이벤트 이름 꼬리 「(마을 시작)」 도 「어디」다 — whereHint 가 같은 맵 대상에 붙이는 꼴이고 런타임 표시가 그 이벤트를 짚는다.
+      const labelTail = /\(([^():]+)\)\s*$/u.exec(message)?.[1];
+      if (labelTail && (project.maps[fromMapId]?.events ?? []).some((event) => bare(String(event.name ?? "")).length >= 2 && bare(String(event.name)) === bare(labelTail))) return;
       if (withWhere(project, fromMapId, message) === message) return;
       vague += 1;
       gaps.push(`목표 「${message.slice(0, 40)}」 가 다른 장소 이름만 대고 그 입구가 어디인지 말하지 않는다 — 새 플레이어가 길을 못 찾는다. 같은 글로 set_objective 를 다시 부르면 「(지하철역 입구: 남동쪽)」 처럼 방위가 붙는다(where 로 대상 이벤트·장소를 줄 수도 있다).`);
@@ -281,6 +286,7 @@ function battleGateHolders(project: Project): Map<string, { switchId: string; ho
  */
 export function refreshObjectiveRoutes(project: Project): number {
   const holders = battleGateHolders(project);
+  const landings = objectiveLandings(project);
   const steps = project.gameBlueprint?.steps ?? [];
   const find = (ref: string | undefined) => {
     if (!ref) return undefined;
@@ -295,7 +301,7 @@ export function refreshObjectiveRoutes(project: Project): number {
     const k = steps.findIndex((step) => step.event === event.id || step.event === event.name);
     for (const page of event.pages ?? []) {
       const opening = map.id === project.startMapId && ["auto", "parallel"].includes(String((page.trigger as { kind?: string } | undefined)?.kind));
-      const origin: Cell = opening && project.startPos ? project.startPos as Cell : { x: event.x, y: event.y };
+      const pageOrigin: Cell = opening && project.startPos ? project.startPos as Cell : { x: event.x, y: event.y };
       const stepNext = k >= 0 ? find(steps[k + 1]?.event) : opening ? find(steps[0]?.event) : undefined;
       // 이 페이지가 이미 그 승리 뒤에만 도는 페이지면(보스 자신·승리 조건 페이지) 잠금 대상을 그대로 가리킨다.
       const pageSwitches = new Set((page.conditions ?? []).map((c) => String((c as { switchId?: string }).switchId ?? "")));
@@ -310,6 +316,9 @@ export function refreshObjectiveRoutes(project: Project): number {
           if (!isObjectiveCommand(command)) continue;
           const fields = command.fields as Record<string, unknown>;
           const message = String(fields.message ?? "");
+          const landing = landings.get(command);
+          const from = landing?.mapId ?? map.id;
+          const origin = landing ? { x: landing.x, y: landing.y } : pageOrigin;
           const tail = /\s*\(([^()]*?)\s*입구:[^()]*\)\s*$/u.exec(message);
           if (!tail) {
             // 같은 맵 꼬리 「(마왕과의 결전)」 또는 글에 잠긴 이벤트 이름이 나오면 그 잠금을 여는 전투로 돌린다.
@@ -323,14 +332,14 @@ export function refreshObjectiveRoutes(project: Project): number {
               // 2026-10-29 vm1 argon jrpg: 보스에 「마왕」 이름이 붙은 뒤 「마왕과 최후의 결전을 벌여 승리한다」(동굴의 문 이벤트) 가
               // 「(시작 마을 입구: 남쪽 → 마왕의 방 · 마왕)」 을 붙일 수 있게 됐는데, 위 가지는 잠긴 이벤트 이름을 담은 글만 고쳐 출하 검사가 남았다.
               if (plainTail) continue;
-              const updated = withWhere(project, map.id, message, undefined, origin);
+              const updated = withWhere(project, from, message, undefined, origin);
               if (updated !== message) { fields.message = updated; changed += 1; }
               continue;
             }
             const holderName = String(holder.event.name ?? "");
             // 글이 잠긴 이벤트 이름을 담으면(런타임은 글에 나온 더 긴 이름을 고른다) 전투를 부르는 글로 바꾼다.
             const text = bare(base).includes(bare(String(gated.event.name))) ? `${holderName}${josa(holderName, "을/를")} 쓰러뜨리자` : base;
-            const updated = withWhere(project, map.id, text, holder.event.id, origin);
+            const updated = withWhere(project, from, text, holder.event.id, origin);
             if (updated !== message) { fields.message = updated; changed += 1; }
             continue;
           }
@@ -338,16 +347,35 @@ export function refreshObjectiveRoutes(project: Project): number {
           if (!named) continue;
           const base = message.slice(0, tail.index).trimEnd();
           // 다음 단계 이벤트가 그 입구 맵(또는 그 맵을 거쳐 가는 곳)에 있으면 그 이벤트를, 아니면 입구 맵을 가리킨다.
-          const route = next && next.map.id !== map.id ? mapRoute(project, map.id, next.map.id) : undefined;
-          const where = next && (next.map.id === map.id || route?.includes(named.id)) ? next.event.id : named.id;
-          const updated = withWhere(project, map.id, base, where, origin);
-          if (updated !== message && updated !== base) { fields.message = updated; changed += 1; }
+          const route = next && next.map.id !== from ? mapRoute(project, from, next.map.id) : undefined;
+          const where = next && (next.map.id === from || route?.includes(named.id)) ? next.event.id : named.id;
+          const updated = withWhere(project, from, base, where, origin);
+          // 옮긴 뒤 맵이 바로 그 입구 맵이면 「입구」 꼬리는 틀린 말이다 — 꼬리 없는 글(이름이 이미 글에 있으면)도 쓴다.
+          if (updated !== message && (updated !== base || from === named.id)) { fields.message = updated; changed += 1; }
         }
       };
       visit((page.commands as RawCommand[] | undefined) ?? []);
     }
   }
   return changed;
+}
+
+/**
+ * 목표 명령 뒤 같은 목록에 옮기기(transfer)가 오면 그 목표는 옮긴 뒤 맵에서 읽힌다 — 「어디」는 그 맵·도착 칸에서 본다.
+ * 2026-10-29 vm1 argon jrpg: 동굴 「마왕의 문 열기」 가 목표를 건 뒤 마왕의 방으로 옮기는데, 동굴에서 본 「(마왕의 방 입구: 바로 옆)」 이 붙었다.
+ */
+export function objectiveLandings(project: Project): WeakMap<object, { mapId: string; x: number; y: number }> {
+  const out = new WeakMap<object, { mapId: string; x: number; y: number }>();
+  const walk = (list: readonly RawCommand[]): void => {
+    list.forEach((command, i) => {
+      for (const child of childLists(command)) walk(child.list);
+      if (!isObjectiveCommand(command)) return;
+      const t = list.slice(i + 1).find((c) => c.kind === "transfer" && typeof c.mapId === "string" && project.maps[c.mapId as string]);
+      if (t) out.set(command, { mapId: String(t.mapId), x: Number(t.x ?? 0), y: Number(t.y ?? 0) });
+    });
+  };
+  for (const map of Object.values(project.maps)) for (const event of map.events ?? []) for (const page of event.pages ?? []) walk(Array.isArray(page.commands) ? page.commands as unknown as RawCommand[] : []);
+  return out;
 }
 
 const isMilestoneWrite = (command: RawCommand): boolean =>

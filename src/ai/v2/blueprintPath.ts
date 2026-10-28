@@ -175,6 +175,7 @@ export function buildBlueprintPath(run: BuildRun, text: readonly PathStepText[] 
   const result = buildBlueprintPathCore(run, text);
   const extra: string[] = [];
   try { extra.push(...gateKeyedEntrances(run)); } catch { /* 잠금 실패는 경로를 깨지 않는다 */ }
+  try { extra.push(...gateEntrySteps(run)); } catch { /* 들어가기 단계 잠금 실패는 경로를 깨지 않는다 */ }
   try { extra.push(...gateBattleSteps(run)); } catch { /* 전투 잠금 실패는 경로를 깨지 않는다 */ }
   try { extra.push(...fitUnwinnableStepBattles(run)); } catch { /* 맞추기 실패는 경로를 깨지 않는다 */ }
   try { const heal = ensureHealingAccess(run); if (heal.length) extra.push(`회복 길을 넣었다: ${heal.join(", ")}`); } catch { /* 회복 넣기 실패는 경로를 깨지 않는다 */ }
@@ -218,6 +219,99 @@ export function gateKeyedEntrances(run: BuildRun): string[] {
       const open = pages.map((p) => ({ ...structuredClone(p), conditions: [...(p.conditions ?? []), { kind: "item", itemId: item.id, present: true }] }));
       const event = { ...structuredClone(gate), pages: [locked, ...open] };
       if (run.call("upsert_event", { mapId: prev.id, event: event as unknown as Record<string, unknown>, replacePages: true }).ok) notes.push(`${prev.name ?? prev.id} → ${here.name ?? here.id} 문(${gate.x},${gate.y})을 「${need}」로 잠갔다`);
+    }
+  });
+  return notes;
+}
+
+/** 명령 나무에서 그 맵으로 옮기는 첫 칸. */
+function transferArrival(value: unknown, mapId: string): { x: number; y: number } | undefined {
+  if (Array.isArray(value)) { for (const v of value) { const hit = transferArrival(v, mapId); if (hit) return hit; } return undefined; }
+  if (!value || typeof value !== "object") return undefined;
+  const record = value as Record<string, unknown>;
+  if (record.kind === "transfer" && record.mapId === mapId && typeof record.x === "number" && typeof record.y === "number") return { x: record.x, y: record.y };
+  for (const child of Object.values(record)) if (child && typeof child === "object") { const hit = transferArrival(child, mapId); if (hit) return hit; }
+  return undefined;
+}
+
+/** 「문을 열고 <다음 장소>로 들어간다」 — 다음 장소에 들어가는 것이 이 단계의 일인 말. */
+const ENTRY_WORD = /들어가|들어간|들어서|진입|입장|안으로/u;
+
+/**
+ * 「<다음 장소>로 들어간다」 단계(열쇠 관문 gateKeyedEntrances 와 같은 틀, 2026-10-29 vm1 argon jrpg): 청사진 s2 「마왕의 문 열기」(동굴)
+ * 가 「열쇠로 굳게 닫힌 문을 열고 마왕의 방으로 들어간다」 인데 그 이벤트는 스위치만 켜고 아무 데로도 옮기지 않았고, 마왕의 방은 마을 문
+ * (24,0)으로 잠금 없이 들어가졌다 — 동굴의 문은 장식이 됐고 목표는 「마을로 돌아가 마왕의 방으로」를 가리켰다.
+ * 단계 글(action·gives)이 다음 단계 장소 이름과 들어가는 말을 함께 담고, 다음 단계가 다른 맵이면:
+ *  - 그 단계 이벤트가 켜는 스위치(다음 단계 이벤트가 조건으로 읽는 것 우선)로 다음 맵으로 들어가는 다른 문들을 잠그고,
+ *  - 이 맵에 다음 맵으로 가는 문이 없으면 그 이벤트가 스위치를 켠 페이지 끝에서 다음 맵의 들어오는 자리로 옮긴다.
+ * 결정적·되풀이 안전(이미 잠긴 문·이미 옮기는 페이지는 건드리지 않는다).
+ */
+export function gateEntrySteps(run: BuildRun): string[] {
+  const bp = run.ctx.project.gameBlueprint;
+  if (!bp) return [];
+  const notes: string[] = [];
+  const findEvent = (ref: string) => {
+    for (const map of Object.values(run.ctx.project.maps)) {
+      const ev = (map.events ?? []).find((e) => e.id === ref) ?? (map.events ?? []).find((e) => !e.id.startsWith("ev_objective") && sameName(String((e as { name?: string }).name ?? ""), ref));
+      if (ev) return { map, ev };
+    }
+    return undefined;
+  };
+  bp.steps.forEach((step, k) => {
+    const nextStep = bp.steps[k + 1];
+    if (!nextStep) return;
+    const cur = findEvent(step.event);
+    const nxt = findEvent(nextStep.event);
+    if (!cur || !nxt || cur.map.id === nxt.map.id) return;
+    const target = nxt.map;
+    const words = `${step.action ?? ""} ${step.gives ?? ""}`;
+    if (!ENTRY_WORD.test(words) || !norm(words).includes(norm(String(target.name ?? nextStep.place)))) return;
+    const pages = (cur.ev.pages ?? []) as unknown as RawPage[];
+    const setsOf = (page: RawPage): string[] => {
+      const out: string[] = [];
+      const walk = (value: unknown): void => {
+        if (Array.isArray(value)) { value.forEach(walk); return; }
+        if (!value || typeof value !== "object") return;
+        const r = value as Record<string, unknown>;
+        if (r.kind === "setSwitch" && r.value === true && typeof r.switchId === "string") out.push(r.switchId);
+        Object.values(r).forEach((child) => { if (child && typeof child === "object") walk(child); });
+      };
+      walk(page.commands ?? []);
+      return out;
+    };
+    const readByNext = new Set([...JSON.stringify(nxt.ev.pages ?? []).matchAll(/"switchId":"([^"]+)"/gu)].map((m) => m[1]!));
+    const milestone = pages.find((page) => setsOf(page).some((id) => readByNext.has(id))) ?? pages.find((page) => setsOf(page).length > 0);
+    if (!milestone) return;
+    const sw = setsOf(milestone).find((id) => readByNext.has(id)) ?? setsOf(milestone)[0]!;
+    // 다음 맵으로 들어가는 문들(다음 맵 자신의 이벤트는 빼고) — 들어오는 자리는 첫 문의 옮기기 칸.
+    const doors: { map: GameMap; ev: GameMap["events"][number] }[] = [];
+    let arrival: { x: number; y: number } | undefined;
+    for (const map of Object.values(run.ctx.project.maps)) {
+      if (map.id === target.id) continue;
+      for (const ev of map.events ?? []) {
+        if (ev.id === cur.ev.id || !transfersTo(ev.pages ?? [], new Set()).has(target.id)) continue;
+        doors.push({ map, ev });
+        if (!arrival) {
+          arrival = transferArrival(ev.pages ?? [], target.id);
+        }
+      }
+    }
+    for (const door of doors) {
+      const dpages = (door.ev.pages ?? []) as unknown as RawPage[];
+      if (!dpages.length || dpages.some((p) => (p.conditions ?? []).some((c) => (c as { switchId?: string }).switchId === sw))) continue;
+      const first = dpages[0]!;
+      const body = door.map.id === cur.map.id ? "문이 굳게 닫혀 있다." : `아직 이 길은 닫혀 있다. ${cur.map.name ?? ""}에서 길을 열어야 할 것 같다.`.replace("  ", " ");
+      const locked = { ...structuredClone(first), id: `${String(first.id ?? "p")}_shut`, name: "닫힘", conditions: [], commands: [{ kind: "text", body }] };
+      const open = dpages.map((p) => ({ ...structuredClone(p), conditions: [...(p.conditions ?? []), { kind: "switch", switchId: sw, value: true }] }));
+      if (run.call("upsert_event", { mapId: door.map.id, event: { ...structuredClone(door.ev), pages: [locked, ...open] } as unknown as Record<string, unknown>, replacePages: true }).ok)
+        notes.push(`${door.map.name ?? door.map.id} → ${target.name ?? target.id} 문(${door.ev.x},${door.ev.y})을 「${step.event}」 뒤에만 열리게 했다`);
+    }
+    const hereHasDoor = doors.some((d) => d.map.id === cur.map.id);
+    if (!hereHasDoor && arrival && !transfersTo(milestone.commands ?? [], new Set()).has(target.id)) {
+      const index = pages.indexOf(milestone);
+      const moved = pages.map((page, i) => i === index ? { ...structuredClone(page), commands: [...(page.commands ?? []), { kind: "transfer", mapId: target.id, x: arrival!.x, y: arrival!.y, fade: "black" }] } : structuredClone(page));
+      if (run.call("upsert_event", { mapId: cur.map.id, event: { ...structuredClone(cur.ev), pages: moved } as unknown as Record<string, unknown>, replacePages: true }).ok)
+        notes.push(`「${String((cur.ev as { name?: string }).name ?? cur.ev.id)}」 이 문을 연 뒤 ${target.name ?? target.id}(${arrival.x},${arrival.y})로 옮긴다`);
     }
   });
   return notes;
