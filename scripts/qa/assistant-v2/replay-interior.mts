@@ -12,6 +12,7 @@ import type { ToolContext } from "../../../src/editor/tools/types.ts";
 import { measureInteriorBareFloor } from "../../../src/editor/handInterior/bareFloor.ts";
 import { isPassable } from "../../../src/project/collision.ts";
 import { roomBarePct } from "../../../src/ai/v2/builders/dressRoom.ts";
+import { isMonsterRequestTurn } from "../../../src/ai/piAgent/monsterGameRequest.ts";
 
 const argv = process.argv.slice(2);
 const opt = (name: string, d: string) => { const i = argv.indexOf(`--${name}`); return i >= 0 ? argv[i + 1]! : d; };
@@ -51,7 +52,8 @@ if (argv.includes("--find-salt")) {
   process.exit(0);
 }
 const project = loadHeadlessProject(snapshotText);
-const ctx: ToolContext = { project, currentMapId: project.startMapId, assistantRun: true };
+// 실제 세션처럼 이번 요청이 몬스터 수집 요청이면 그 턴만 몬스터 잠금을 푼다(assistantSession.ts monsterTurn).
+const ctx: ToolContext = { project, currentMapId: project.startMapId, assistantRun: true, monsterTurn: isMonsterRequestTurn(turnRec.input) };
 const session = new V2Session();
 const env: PiAssistantV2Env = {
   ctx, request: { task: turnRec.input, provider: "local-cli:claude", mapIds: [], project } as never,
