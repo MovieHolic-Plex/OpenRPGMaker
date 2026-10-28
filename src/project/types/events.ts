@@ -867,6 +867,8 @@ export interface EventPageMovement {
 export interface ChaseLunge {
   steps: number;
   speed: number;
+  /** 덮치기 한 칸 시간(ms, 60..400). 있으면 랭크(speed) 대신 이 값 — 랭크는 160 다음이 80 이라 그 사이(돌진 100~120)를 못 고른다. */
+  stepMs?: number;
 }
 
 export interface EventPage {
