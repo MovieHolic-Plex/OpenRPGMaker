@@ -196,15 +196,16 @@ function openGate(map: GameMap, at: Cell): Command[] {
 /** 밤 순찰 병사(1막 병사 판을 세게) — B1 막사 경비(들키면 싸움)와 B2 통금 순찰대가 같이 쓴다. */
 function nightSoldiers(project: Project, exec: Exec): void {
   // 통금 순찰대 — 1막 병사보다 한참 세다(들키면 아프다). 1막 레코드는 그대로 두고 밤 순찰 판을 따로 둔다.
-  // 시작 레벨(9) 모의전 60회: 승률 1.0 · 남은 HP 약 35% · 회복약 약 0.9개(2026-10-27).
+  // 시작 레벨(9) 모의전 60회: 승률 1.0 · 남은 HP 약 35% · 회복약 약 0.9개(2026-10-27, 셋짜리 무리).
+  // 독립 판정(judge10·12): 둘짜리로 줄여도 엘레나가 한 대 60~215 로 다섯 판 중 셋 쓰러지고 밤엔 약을 살 데가 없다 — 공격 92/98→84/88, 회복약 떨굼 15→30%.
   for (const [baseId, id, name, stats] of [
-    ["enemy_fs_valen_soldier", "enemy_fs2_night_soldier", "통금 순찰 병사", { maxHp: 260, maxMp: 0, attack: 92, defense: 40, mind: 10, agility: 50 }],
-    ["enemy_fs_valen_spearman", "enemy_fs2_night_spearman", "통금 순찰 창병", { maxHp: 220, maxMp: 0, attack: 98, defense: 32, mind: 10, agility: 60 }],
+    ["enemy_fs_valen_soldier", "enemy_fs2_night_soldier", "통금 순찰 병사", { maxHp: 260, maxMp: 0, attack: 84, defense: 40, mind: 10, agility: 50 }],
+    ["enemy_fs_valen_spearman", "enemy_fs2_night_spearman", "통금 순찰 창병", { maxHp: 220, maxMp: 0, attack: 88, defense: 32, mind: 10, agility: 60 }],
   ] as const) {
     const base = project.database.enemies.find((e) => e.id === baseId);
     if (!base) throw new Error(`[fallen-star act2] ${baseId} 가 없다`);
     // 보상 — 1막 병사 값(경험 24)이면 셋을 이겨도 레벨이 안 오른다(독립 판정: 「이겨도 EXP 가 그대로」). 이긴 값이 남게.
-    const rewards = { exp: 80, gold: 12, dropRatePercent: 0, drops: [{ itemId: "item_potion", ratePercent: 15, quantity: 1, condition: { kind: "always" } }] };
+    const rewards = { exp: 80, gold: 12, dropRatePercent: 0, drops: [{ itemId: "item_potion", ratePercent: 30, quantity: 1, condition: { kind: "always" } }] };
     const rec: Rec = { ...(JSON.parse(JSON.stringify(base)) as Rec), id, name, level: 9, stats, rewards };
     for (const key of Object.keys(rec)) if (!ENEMY_TOOL_FIELDS.has(key)) delete rec[key];
     exec(project, "upsert_enemy", { enemy: rec });
