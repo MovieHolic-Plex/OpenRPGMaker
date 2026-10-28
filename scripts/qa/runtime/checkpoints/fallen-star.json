@@ -7136,7 +7136,12 @@
     "sw_fs2_heard_carriage": true,
     "sw_fs2_hanel_told": true,
     "sw_fs2_rohan_spear": true,
-    "sw_fs2_bram_hole": true
+    "sw_fs2_bram_hole": true,
+    "sw_fs2_bread_given": true,
+    "sw_fs2_cell_open": true,
+    "sw_fs2_barracks_cleared": true,
+    "sw_fs2_gear_meds": true,
+    "sw_fs2_b4_forest_edge": true
    },
    "party": [
     {
@@ -7158,7 +7163,13 @@
      ],
      "shot": true
     }
-   ]
+   ],
+   "items": {
+    "item_potion": 6,
+    "item_ether": 2,
+    "item_panacea": 1
+   },
+   "gold": 150
   },
   {
    "id": "act2-play-b7",
@@ -7186,7 +7197,13 @@
     "sw_fs2_serin_form": true,
     "sw_fs2_sarah_joined": true,
     "sw_fs2_snow_arrived": true,
-    "sw_fs2_spear_returned": true
+    "sw_fs2_spear_returned": true,
+    "sw_fs2_bread_given": true,
+    "sw_fs2_cell_open": true,
+    "sw_fs2_barracks_cleared": true,
+    "sw_fs2_gear_meds": true,
+    "sw_fs2_b4_forest_edge": true,
+    "sw_fs2_fortress_f2_lever": true
    },
    "party": [
     {
@@ -7212,7 +7229,14 @@
      ],
      "shot": true
     }
-   ]
+   ],
+   "items": {
+    "item_potion": 6,
+    "item_hi_potion": 2,
+    "item_ether": 3,
+    "item_panacea": 1
+   },
+   "gold": 400
   },
   {
    "id": "act2-b1-bells",

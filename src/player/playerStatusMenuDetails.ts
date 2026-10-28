@@ -897,7 +897,11 @@ function monsterDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
 }
 
 function questsDetail(project: Project, session: PlaySession): StatusMenuDetail {
-  const quests = buildQuestLog(project, session);
+  // 진행 중 → 미시작 → 완료 순(같은 상태는 등록 순). 끝난 1막 임무가 맨 위에 서 있으면 지금 할 일이 묻힌다
+  // (독립 판정: 2막을 시작해도 「떨어진 별 완료 4/4」만 보여 할 일을 몰랐다).
+  const rank = { active: 0, "not-started": 1, done: 2 } as const;
+  const quests = buildQuestLog(project, session).map((quest, order) => ({ quest, order }))
+    .sort((a, b) => rank[a.quest.state] - rank[b.quest.state] || a.order - b.order).map(({ quest }) => quest);
   return {
     title: "임무",
     entries: quests.flatMap((quest) => [

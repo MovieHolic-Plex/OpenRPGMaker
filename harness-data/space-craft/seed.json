@@ -10755,6 +10755,33 @@
    ],
    "verify": "붙잡혀 감방 → 막사 재입장 직후 추격자가 순찰 출발 칸에 있다(출하 플레이어)",
    "suiteCategory": "fs2-pursuer-returns-home"
+  },
+  {
+   "category": "game",
+   "kind": "logic",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "id": "fs2-act-quest-log",
+   "prompt": "2막이 시작됐는데 기록 → 임무에는 끝난 1막 임무만 보여. 지금 줄기(감방 탈출 → 광장 → 북쪽 하늘탑)를 임무 일지에 단계별로 넣고, 진행 중인 임무가 맨 위에 오게 해 줘.",
+   "requires": [
+    "define_quest 그래프 — 이미 있는 줄기 스위치로 노드 완료",
+    "엔진: 임무 목록은 진행 중 → 미시작 → 완료 순"
+   ],
+   "verify": "2막 첫 장면 뒤 메뉴 → 기록 → 임무 맨 위가 「빌린 불 진행 중 (1/14)」(출하 플레이어)",
+   "suiteCategory": "fs2-act-quest-log"
+  },
+  {
+   "category": "game",
+   "kind": "logic",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "id": "fs2-wide-edge-exit",
+   "prompt": "재의 들판 북쪽 길은 두 칸 폭인데 맵 끝까지 걸어도 다음 맵으로 안 넘어가. 가장자리 출구를 길 폭 전체로 넓혀 줘.",
+   "requires": [
+    "가장자리 playerTouch transfer 이벤트를 이어진 가장자리 칸으로 복제"
+   ],
+   "verify": "길의 어느 칸으로 맵 끝을 밟아도 다음 맵으로 넘어간다(출하 플레이어 checkpoint act2-b5-north)",
+   "suiteCategory": "fs2-wide-edge-exit"
   }
  ],
  "gates": {
