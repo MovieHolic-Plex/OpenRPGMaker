@@ -17,6 +17,7 @@ export const BLUEPRINT_CARD = [
   "- playerGoal: 새 플레이어에게 줄 안내 한 줄(무엇을 하면 엔딩인가). 판정자는 이 한 줄만 받고 게임을 끝까지 해 본다.",
   "- steps: 시작부터 엔딩까지 반드시 지나는 핵심 경로 3~8단계. 단계마다 place(지을 맵 이름 그대로)·event(그 맵 위 이벤트 이름 그대로)·action(플레이어가 하는 일)·needs(이 단계를 여는 조건)·gives(다음 단계를 여는 것: 열쇠·스위치·호감, 마지막은 엔딩)·feeling(장면의 느낌).",
   "- ending: {name, how, feeling}. 여러 엔딩이면 핵심 경로는 가장 기본 엔딩 하나로 쓰고 나머지는 how 에 적는다.",
+  "- 장소를 지은 뒤 build_blueprint_path 를 한 번 부른다 — 단계마다 이벤트, 앞 단계 gives 를 조건으로, 마지막이 엔딩 호출까지 함수가 짓는다(upsert_event·define_ending 으로 하나씩 맞추지 않는다). 대사는 steps[{id,lines}] 로만 준다.",
   "- 짓는 동안 장소·이벤트 이름은 청사진과 똑같이 쓴다(이름 없는 이벤트는 event 에 그 id 를 써도 된다). 바뀌면 write_blueprint 를 다시 불러 실제 이름에 맞춘다. 출하 검사가 이 경로를 데이터로 걸어 본다(맵·이벤트가 있나, 시작에서 걸어 닿나, 조건을 켜는 이벤트가 앞 단계에 있나, 마지막 이벤트가 엔딩을 부르나).",
 ].join("\n");
 
@@ -37,7 +38,8 @@ export const WRITE_BLUEPRINT_SCHEMA = {
     }, required: ["place", "event", "action", "gives", "feeling"] } },
     ending: { type: "object", properties: { name: { type: "string" }, how: { type: "string" }, feeling: { type: "string" } }, required: ["name", "how", "feeling"] },
   },
-  required: ["title", "genre", "playerGoal", "steps", "ending"],
+  // title·genre 는 빠뜨려도 된다 — 다시 쓸 때 앞 청사진·프로젝트 제목으로 채운다(mt2 Flash: 매 턴 이 둘이 빠져 한 번씩 실패했다).
+  required: ["playerGoal", "steps", "ending"],
 } as const;
 
 /** 모델 입력 → 청사진. 틀리면 { error }. */
@@ -149,6 +151,10 @@ function pageNeeds(page: Obj): { kind: "switch" | "item" | "variable"; id: strin
 }
 const hasCommands = (page: Obj) => Array.isArray(page.commands) && page.commands.length > 0;
 
+/** 경로 막힘의 고칠 동사 한 줄 — 하위 도구(upsert_event·define_ending…)를 하나씩 맞추게 하지 않는다(2026-10-28 mt2 Flash: upsert_event 6번 인자 실패). */
+export const BLUEPRINT_PATH_FIX = "고치기: build_blueprint_path 를 한 번 부른다 — 청사진 단계대로 이벤트·조건·스위치·아이템·엔딩 호출을 함수가 짓는다(대사만 steps[{id,lines}] 로 준다).";
+export const BLUEPRINT_PATH_IDS: ReadonlySet<string> = new Set(["blueprint-event-missing", "blueprint-event-empty", "blueprint-condition-unset", "blueprint-condition-order", "blueprint-no-ending"]);
+
 export interface BlueprintWalk {
   readonly blockers: BlueprintBlocker[];
   readonly lines: string[];
@@ -226,6 +232,15 @@ export function walkBlueprint(project: Project): BlueprintWalk {
     }
     if (!ends) add("blueprint-no-ending", `청사진 마지막 단계 ${last.step.id} 「${last.step.event}」(${last.map.id} ${last.ev.id}) 가 엔딩을 부르지 않는다 — 이 이벤트(또는 이 이벤트가 켜는 스위치로 열리는 자동 실행 이벤트)에 엔딩 「${bp.ending.name}」을 연결한다.`, `${last.step.id} ${last.ev.id}`);
   }
+  // 5) 게임 어디에도 엔딩을 부르는 맵 이벤트가 없다 — 마지막 단계 이벤트가 없어 4)가 건너뛰어도 막는다(mt2 Flash·Argon: define_ending 만 하고 끝났다).
+  if (!blockers.some((b) => b.id === "blueprint-no-ending")) {
+    const anyEnding = Object.values(project.maps).some((map) => (map.events ?? []).some((ev) => eventSetter(project, ev).ends));
+    // 맨 앞에 둔다 — 출하 검사는 앞 6개만 싣는다.
+    if (!anyEnding) blockers.unshift({ id: "blueprint-no-ending", message: `게임 어디에도 엔딩 「${bp.ending.name}」을 부르는 맵 이벤트가 없다(define_ending 은 정의일 뿐이다) — 새 플레이어가 게임을 끝낼 수 없다.`, evidence: `triggerEnding 0 · endings ${(project.endings ?? []).length}` });
+  }
+  // 경로 막힘에는 고칠 동사 한 줄을 붙인다(한 번만 — 메시지마다 같은 줄을 반복하지 않는다).
+  const firstPath = blockers.findIndex((b) => BLUEPRINT_PATH_IDS.has(b.id));
+  if (firstPath >= 0) blockers[firstPath] = { ...blockers[firstPath]!, message: `${blockers[firstPath]!.message} ${BLUEPRINT_PATH_FIX}` };
   lines.push(`청사진 경로 ${bp.steps.length}단계: ${resolved.map((r) => `${r.step.id} ${r.map ? "맵✓" : "맵✗"}${r.ev ? "이벤트✓" : r.map ? "이벤트✗" : ""}`).join(" · ")} · 막힘 ${blockers.length}`);
   return { blockers, lines };
 }

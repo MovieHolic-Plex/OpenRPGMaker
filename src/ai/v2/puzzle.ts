@@ -15,7 +15,7 @@ const TOUCH = new Set(["playerTouch", "touch", "eventTouch"]);
 const slug = (s: string): string => (s.normalize("NFKD").replace(/[^A-Za-z0-9]+/gu, "_").replace(/^_|_$/gu, "").toLowerCase() || `k${Math.abs([...s].reduce((h, c) => (h * 31 + c.charCodeAt(0)) | 0, 7)).toString(36)}`).slice(0, 24);
 
 export interface ChainLink {
-  readonly role: "clue" | "code" | "door" | "pickup";
+  readonly role: "clue" | "code" | "door" | "pickup" | "ending";
   readonly eventId?: string;
   readonly name?: string;
   readonly at?: { readonly x: number; readonly y: number };
@@ -33,6 +33,8 @@ export interface ChainLink {
   readonly doneLines?: readonly string[];
   readonly reward?: { readonly item?: string; readonly flag?: string; readonly lines?: readonly string[] };
   readonly seal?: boolean;
+  /** ending: 부를 엔딩 id(조건이 차면 대사 뒤 triggerEnding). */
+  readonly endingId?: string;
 }
 export interface ChainArgs { readonly mapId: string; readonly name: string; readonly links: readonly ChainLink[] }
 
@@ -241,7 +243,9 @@ export function buildPuzzleChain(run: BuildRun, args: ChainArgs): ContentBuildRe
     if (!existing && !link.at) return fail(`${index + 1}번 고리(${link.role}): 이벤트 ${link.eventId ?? link.name ?? ""} 를 못 찾았다 — eventId 를 주거나 새로 둘 칸 at:{x,y} 를 준다`);
     const id = existing?.id ?? `ev_chain_${chainKey}_${index + 1}`;
     const look = existing ? structuredClone((existing.pages?.[0] as unknown as Obj | undefined) ?? {}) : {};
-    const basePage = (extra: Obj): Obj => ({ trigger: look.trigger ?? { kind: "action" }, priority: look.priority ?? "same", graphic: look.graphic ?? {}, ...(look.movement ? { movement: look.movement } : {}), ...(look.animationType ? { animationType: look.animationType } : {}), conditions: [], ...extra });
+    // 그림 없는(투명) 조사 칸은 다가가면 반짝인다 — 새 플레이어가 어디를 조사할지 보이게(2026-10-28 청사진 경로).
+    const invisible = !existing || !Object.values((look.graphic as Obj | undefined) ?? {}).some((v) => v !== undefined && v !== "" && v !== 0 && v !== null);
+    const basePage = (extra: Obj): Obj => ({ trigger: look.trigger ?? { kind: "action" }, priority: look.priority ?? "same", graphic: look.graphic ?? {}, ...(look.movement ? { movement: look.movement } : {}), ...(look.animationType ? { animationType: look.animationType } : {}), ...(invisible ? { nearSparkle: { radius: 2 } } : (look.nearSparkle ? { nearSparkle: look.nearSparkle } : {})), conditions: [], ...extra });
     const need = condFor(link.needs);
     if (typeof need === "string") return fail(`${index + 1}번 고리: ${need}`);
     const pages: Obj[] = [];
@@ -290,9 +294,13 @@ export function buildPuzzleChain(run: BuildRun, args: ChainArgs): ContentBuildRe
       const transfer = existing ? JSON.stringify(existing.pages ?? []).match(/\{[^{}]*"kind":"transfer"[^{}]*\}/u)?.[0] : undefined;
       const go = transfer ? [JSON.parse(transfer) as Obj] : [];
       pages.push(basePage({ priority: "same", commands: say(link.lockedLines ?? ["굳게 잠겨 있다."]) }));
-      pages.push(basePage({ priority: "same", conditions: need, commands: [...say(link.lines ?? ["열쇠를 넣고 돌리자 문이 열렸다."]), { kind: "setSwitch", switchId: opened, value: true }, ...go] }));
+      pages.push(basePage({ priority: "same", conditions: need, commands: [...say(link.lines ?? ["열쇠를 넣고 돌리자 문이 열렸다."]), ...rewardCmds(), { kind: "setSwitch", switchId: opened, value: true }, ...go] }));
       pages.push(basePage({ priority: go.length ? "below" : "below", trigger: go.length ? { kind: "playerTouch" } : (look.trigger ?? { kind: "action" }), graphic: go.length ? look.graphic ?? {} : {}, conditions: [{ kind: "switch", switchId: opened, value: true }], commands: go.length ? go : say(link.doneLines ?? []) }));
       doors.push({ mapId, eventId: id });
+    } else if (link.role === "ending") {
+      if (!link.endingId) return fail(`${index + 1}번 고리(ending): endingId 가 없다`);
+      if (need.length) pages.push(basePage({ commands: say(link.lockedLines ?? ["아직 할 수 없다."]) }));
+      pages.push(basePage({ conditions: need, commands: [...say(link.lines), { kind: "triggerEnding", endingId: link.endingId }] }));
     }
     const res = run.call("upsert_event", { mapId, replacePages: true, event: { id, ...(existing ? {} : { name: link.name ?? `${args.name} ${index + 1}`, x: link.at!.x, y: link.at!.y }), pages } });
     if (!res.ok) return fail(`${index + 1}번 고리 이벤트를 쓰지 못했다: ${String(res.summary).slice(0, 300)}`);

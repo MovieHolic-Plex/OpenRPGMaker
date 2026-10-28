@@ -570,6 +570,8 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   const shapeFailures = new Map<string, { count: number; same: number; sig: string }>();
   // 도구마다 연달아 같은 문장으로 거절된 횟수(J74) — 모양이 맞아도 도구가 같은 이유로 거절하면 같은 차단기를 쓴다.
   const refusalRepeats = new Map<string, { same: number; sig: string }>();
+  // 하위 도구가 되풀이해 실패하면 상위 동사로 보낸다(PiToolShape.escalateHint).
+  const escalation = (tool: PiToolShape): string => { try { const hint = tool.escalateHint?.(); return hint ? `\n\n${hint}` : ""; } catch { return ""; } };
   const executeCountingRefusals = async (tool: PiToolShape, id: string, args: unknown, signal: AbortSignal | undefined) => {
     try {
       const result = await tool.execute(id, args as never, signal);
@@ -584,9 +586,9 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       refusalRepeats.set(tool.name, { same, sig });
       if (same >= 3) {
         emit({ type: 'execution_status', name: 'tool.refusal.loop', ok: false, summary: `${tool.name}: 같은 거절 ${same}번째 — 방법을 바꾸라고 거절` });
-        throw new Error(refusalLoopRefusal(tool.name, sig, same, message));
+        throw new Error(`${refusalLoopRefusal(tool.name, sig, same, message)}${escalation(tool)}`);
       }
-      if (same === 2) throw new Error(`${message}${repeatedRefusalHint(tool.name, message, same)}`);
+      if (same === 2) throw new Error(`${message}${repeatedRefusalHint(tool.name, message, same)}${escalation(tool)}`);
       throw error;
     }
   };
@@ -610,13 +612,13 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
         // 같은 오류 세 번째 — 긴 오류를 또 돌려주면 모델이 같은 호출을 되풀이했다(set_lighting_volume 13번). 거절하고 방법을 바꾸라고 한다.
         if (same >= 3) {
           emit({ type: 'execution_status', name: 'tool.args.loop', ok: false, summary: `${tool.name}: 같은 인자 모양 오류 ${same}번째 — 거절` });
-          throw new Error(shapeLoopRefusal(tool.name, tool.parameters, sig, same));
+          throw new Error(`${shapeLoopRefusal(tool.name, tool.parameters, sig, same)}${escalation(tool)}`);
         }
         // 모양을 고친 뒤에도 틀리면 고친 쪽 오류가 더 가깝다(남은 빈칸만 말한다) — 무엇을 고쳤는지 함께 알린다.
         const message = repairedError
           ? `[인자 모양 고침: ${repaired.changes.join(" · ")} — 그래도 남은 오류]\n${repairedError instanceof Error ? repairedError.message : String(repairedError)}`
           : error instanceof Error ? error.message : String(error);
-        throw new Error(failures >= 2 ? `${message}${repeatedShapeHint(tool.name, tool.parameters, failures)}` : message);
+        throw new Error(failures >= 2 ? `${message}${repeatedShapeHint(tool.name, tool.parameters, failures)}${escalation(tool)}` : message);
       }
       valid = fixed;
       emit({ type: 'execution_status', name: 'tool.args.repaired', ok: true, summary: `${tool.name}: 인자 모양을 고쳐 실행 — ${repaired.changes.join(" · ")}`, data: { toolCallId: id, tool: tool.name, changes: repaired.changes } });

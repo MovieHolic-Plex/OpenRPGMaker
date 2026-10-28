@@ -3866,4 +3866,18 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
   5. 마지막 단계가 엔딩을 부르나(직접, 공통 이벤트, 또는 그 단계가 켠 조건으로 열리는 다른 이벤트)
 
   청사진이 없는 게임 요청은 `blueprint-missing` 으로 막는다.
+  6. 게임 어디에도 엔딩을 부르는 맵 이벤트가 없다(`blueprint-no-ending`, 맨 앞에 둔다) — 마지막 단계 이벤트가 없어 5번이 건너뛰어도 막는다(2026-10-28 mt2: Flash·Argon 이 `define_ending` 만 하고 엔딩 호출 없이 「완료」로 끝났다. 원인은 5번이 마지막 단계 이벤트가 있을 때만 걸어 본 것).
+  경로 막힘(이벤트 없음·빈 이벤트·조건·엔딩)의 첫 메시지 끝에는 고칠 동사 한 줄 `BLUEPRINT_PATH_FIX`(「build_blueprint_path 를 한 번 부른다」)가 붙는다.
+- `title`·`genre` 는 빠뜨려도 된다(앞 청사진·프로젝트 제목으로 채운다). 내용이 같은 다시 쓰기는 바꾸지 않고 「다시 쓰지 않았다 — build_blueprint_path 로」를 돌려준다(mt2 Flash: 한 턴에 열 번 가까이 다시 썼다).
+
+## `build_blueprint_path` — 청사진 경로를 함수가 짓는다 (2026-10-28, fix-gamepath)
+
+청사진의 단계(place·event·needs·gives)와 엔딩에서 맵 이벤트·조건·스위치·아이템·엔딩 호출을 결정적으로 짓는다(`src/ai/v2/blueprintPath.ts` → `puzzle.ts` `buildPuzzleChain`).
+- 단계마다 그 맵의 같은 이름 이벤트를 고쳐 쓰거나, 없으면 `resolveWhere("<이벤트> 앞")` 빈 칸에 새로 둔다. 장소 맵이 없으면 앞 단계 맵(없으면 시작 맵)에 두고 청사진 place 를 그 맵 이름으로 맞춘다.
+- 앞 단계의 gives 가 다음 단계의 조건: 열쇠·쪽지·카드 같은 낱말이면 아이템, 그 밖(단서·비밀번호·알게 된 것)은 스위치. 마지막 단계는 고리 종류 `ending`(조건이 차면 대사 뒤 `triggerEnding`). 엔딩은 청사진 ending 이름과 같은 엔딩 → 하나뿐인 엔딩 → 없으면 `define_ending` 으로 새로.
+- 그림 없는 새 이벤트 페이지에는 `nearSparkle{radius:2}` 를 단다. 모델은 대사만 `steps[{id, lines, lockedLines, doneLines}]`, 숫자 자물쇠는 `code`(+ 앞 단계 lines 에 답).
+- 다시 불러도 같은 이벤트를 고쳐 쓴다(이름으로 찾는다).
+- 자동: 끝맺음 단계(`scripts/lib/assistantV2Runtime.ts` afterMain ①)에서 청사진 경로 막힘이 남았고 장소 없음·닿지 않음 막힘은 없으면 한 번 함수가 대신 부르고(`session.buildPath`), 그 사실을 관문 글에 실어 최종 보고에 적게 한다.
+- 하위 도구로 보내기: `upsert_event`·`patch_event_page`·`define_ending`·`declare_story_flag`·`upsert_item`·`place_npc`·`upsert_common_event` 는 청사진이 있을 때 `PiToolShape.escalateHint` 를 단다 — 실행기(`piAgentRuntime.ts` `withArgRepair`)가 같은 도구의 인자 모양 오류 두 번째·같은 거절 두 번째부터 오류 끝에 「build_blueprint_path 로」 한 줄을 붙인다.
+- 검증(2026-10-28): mt2 flash·argon 방탈출 저장본 사본에 돌려 `scripts/qa-game/check.mts` 자동 플레이가 엔딩까지 갔다(증거 `~/z-project/assistant-whole-game/suite/ledger/evidence/gamepath/`).
 - 측정: 고정 프롬프트 스위트(저장소 밖 `~/z-project/assistant-whole-game/suite/`)의 판정자는 `playerGoal` 한 줄만 받는다. 엔딩 여부는 판정자의 말이 아니라 플레이어 클리어 기록(`:clear-record:v1`)으로 센다.

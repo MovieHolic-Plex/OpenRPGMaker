@@ -26,6 +26,7 @@ import { buildEvent } from "./events";
 import { drawObject } from "./drawObject";
 import { buildScene, SCENE_SCHEMA, type SceneSpec } from "./scene";
 import { buildPuzzleChain, sealLockedRoom, type ChainArgs } from "./puzzle";
+import { BUILD_BLUEPRINT_PATH_SCHEMA, buildBlueprintPath, type PathStepText } from "./blueprintPath";
 // 콘텐츠 동사(컷신 무대·연출 비평·물건 자리 계획) — finishContent·addEvent·drawObjectVerb·placeObject 가 쓴다.
 import { critiqueStaging } from "./critic";
 import { createGameTools, wantsPuzzle, wantsGameTools, wantsStoreTools, wantsTerrainTools } from "./game";
@@ -64,6 +65,12 @@ export class V2Session {
   readonly questions: string[] = [];
   /** ask_user 를 한 번 되돌려 보냈는가(아무것도 짓지 않고 물었을 때). */
   askBounced = false;
+  /** 같은 청사진을 다시 쓴 횟수(내용이 같으면 바꾸지 않고 다음 동사로 보낸다). */
+  blueprintRewrites = 0;
+  /** 끝맺음에서 청사진 경로를 함수가 대신 지었는가(한 번만). */
+  autoPathDone = false;
+  /** 청사진 경로를 결정적으로 짓는다(createV2Tools 가 건다) — 끝맺음 단계가 모델 대신 부른다. */
+  buildPath?: (why: string) => Promise<{ ok: boolean; summary: string }>;
   criticCalls = 0;
   criticMs = 0;
   /** 모델 입장에서 「아직 안 끝난 것」 — 끝맺음 관문이 읽는다. */
@@ -204,7 +211,9 @@ function withImages(payload: unknown, seen: Seen | undefined, maxImages = 2): Pi
 
 /** 쓰기 기록 하나: 시공 재생 단계를 실어 다음 체크포인트가 편집기에서 다시 튼다. */
 const recorded = new WeakMap<PiAssistantV2Env, Set<string>>();
-const BLUEPRINT_PROGRESS_VERBS = new Set(["make_place", "make_game", "edit_place", "add_people", "add_event", "add_scene", "author_puzzle_chain"]);
+/** 청사진 경로를 하나씩 맞추려 할 때 build_blueprint_path 로 보낼 하위 도구. */
+const PATH_LOW_LEVEL = new Set(["upsert_event", "patch_event_page", "define_ending", "declare_story_flag", "upsert_item", "place_npc", "upsert_common_event"]);
+const BLUEPRINT_PROGRESS_VERBS = new Set(["make_place", "make_game", "edit_place", "add_people", "add_event", "add_scene", "author_puzzle_chain", "build_blueprint_path"]);
 function recordWrite(env: PiAssistantV2Env, run: RecordingBuildRun, toolCallId: string, name: string, args: unknown, ok: boolean, summary: string, data?: unknown): void {
   if (!recorded.has(env)) recorded.set(env, new Set());
   recorded.get(env)!.add(toolCallId);
@@ -435,13 +444,47 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
         const gate = await blueprintGate();
         if (env.ctx.project.gameBlueprint) return text({ ok: true, summary: `설계자 청사진을 걸었다(네 초안 대신). ${gate?.summary ?? ""}` });
       }
-      const parsed = parseBlueprintArgs(params, String(task ?? ""));
+      // 제목·장르를 빠뜨린 다시 쓰기(mt2 Flash: 매 턴 «title·genre is required» 로 한 번 실패한 뒤 다시 썼다)는 앞 청사진·프로젝트 제목으로 채운다.
+      const prior = env.ctx.project.gameBlueprint;
+      const raw = (params ?? {}) as Record<string, unknown>;
+      const filled = { ...raw, title: raw.title || prior?.title || env.ctx.project.meta?.title || "제목 없는 게임", genre: raw.genre || prior?.genre || "게임" };
+      const parsed = parseBlueprintArgs(filled, String(task ?? ""));
       if ("error" in parsed) return text({ ok: false, summary: `청사진을 읽지 못했다: ${parsed.error}` });
+      // 같은 내용을 다시 쓰면 바꾸지 않는다 — 청사진을 되풀이해 쓰는 대신 경로를 짓게 한다.
+      const core = (b: typeof parsed.blueprint | undefined) => b ? JSON.stringify({ t: b.title, g: b.genre, p: b.playerGoal, s: b.steps, e: b.ending }) : "";
+      if (prior && core(prior) === core(parsed.blueprint)) {
+        session.blueprintRewrites += 1;
+        const walked = walkBlueprint(env.ctx.project);
+        return text({ ok: true, summary: `청사진이 이미 같은 내용이다 — 다시 쓰지 않았다(${session.blueprintRewrites}번째). write_blueprint 를 또 부르지 않는다. ${walked.blockers.length ? "다음: build_blueprint_path 를 불러 청사진 단계대로 이벤트·조건·엔딩 호출을 짓는다." : "경로가 이어져 있다 — 남은 일(장소 꾸미기·대사)을 한다."}`, path: walked.lines, open: walked.blockers.slice(0, 6).map((b) => b.message) });
+      }
       env.ctx.project.gameBlueprint = parsed.blueprint;
       const walked = walkBlueprint(env.ctx.project);
       await env.checkpoint("write_blueprint");
-      return text({ ok: true, summary: `청사진을 걸었다(${parsed.blueprint.steps.length}단계). 이제 단계마다 청사진의 장소·이벤트 이름 그대로 짓는다.`, path: walked.lines, open: walked.blockers.slice(0, 8).map((b) => b.message) });
+      return text({ ok: true, summary: `청사진을 걸었다(${parsed.blueprint.steps.length}단계). 장소를 make_place 로 지은 뒤 build_blueprint_path 한 번으로 단계별 이벤트·조건·엔딩 호출을 짓는다(이벤트를 upsert_event 로 하나씩 쓰지 않는다).`, path: walked.lines, open: walked.blockers.slice(0, 8).map((b) => b.message) });
     },
+  };
+
+  // 청사진 경로 짓기(2026-10-28 mt2): 단계(place·event·needs·gives)와 엔딩에서 이벤트·조건·스위치·아이템·엔딩 호출을 함수가 짓는다.
+  const runBlueprintPath = (steps: readonly PathStepText[]) => {
+    const result = buildBlueprintPath(run, steps);
+    return result;
+  };
+  const buildBlueprintPathVerb: PiToolShape = {
+    name: "build_blueprint_path", label: "청사진 경로 짓기", concurrency: "exclusive",
+    description: "청사진(write_blueprint)의 핵심 경로를 실제 플레이 길로 짓는다 — 단계마다 그 맵에 조사·대화 이벤트를 두고(같은 이름 이벤트가 있으면 고쳐 쓴다), 앞 단계의 gives(열쇠·쪽지는 아이템, 나머지는 스위치)를 다음 단계의 조건으로 걸고, 마지막 단계가 엔딩을 부르게 한다(엔딩이 없으면 청사진 ending 으로 정의). 장소를 지은 뒤 한 번 부른다 — 이벤트를 upsert_event·define_ending 으로 하나씩 맞추지 않는다. 대사만 steps[{id, lines, lockedLines}] 로 줄 수 있고(비우면 청사진 글로 채움), 숫자 자물쇠는 그 단계에 code 와 앞 단계 lines 에 답을 준다. 다시 불러도 같은 이벤트를 고쳐 쓴다.",
+    parameters: BUILD_BLUEPRINT_PATH_SCHEMA as unknown as PiToolShape["parameters"],
+    async execute(id, params) {
+      if (!env.ctx.project.gameBlueprint) return text({ ok: false, summary: "청사진이 없다 — write_blueprint 를 먼저 부른다." });
+      const steps = ((params as { steps?: PathStepText[] }).steps ?? []).filter((t) => t && typeof t.id === "string");
+      return finishContent(id, "build_blueprint_path", params, runBlueprintPath(steps));
+    },
+  };
+  session.buildPath = async (why: string) => {
+    const result = runBlueprintPath([]);
+    recordWrite(env, run, `auto-path-${Date.now()}`, "build_blueprint_path", { auto: why }, result.ok, result.summary, { eventIds: result.eventIds });
+    session.content.push({ verb: "build_blueprint_path", result });
+    if (result.ok) await env.checkpoint("build_blueprint_path");
+    return { ok: result.ok, summary: result.summary };
   };
 
   const makePlace: PiToolShape = {
@@ -1014,7 +1057,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     }
     return result;
   } });
-  const verbs = [writeBlueprint, makePlace, ...(makeGameOn() && wantsMakeGame(String(task ?? "")) ? [makeGame] : []), editPlace, moveObject, dressRoomVerb, addPeople, addEvent, addScene, ...(wantsPuzzle(String(task ?? "")) ? [authorPuzzleChain] : []), sealLockedRoomVerb, setObjectiveVerb, drawObjectVerb, placeObject, inspect, restoreEvent, ...(helpersOn() ? [askHelpers] : []), askUser].map((tool) => guard(flattenWrapperTool(tool)));
+  const verbs = [writeBlueprint, buildBlueprintPathVerb, makePlace, ...(makeGameOn() && wantsMakeGame(String(task ?? "")) ? [makeGame] : []), editPlace, moveObject, dressRoomVerb, addPeople, addEvent, addScene, ...(wantsPuzzle(String(task ?? "")) ? [authorPuzzleChain] : []), sealLockedRoomVerb, setObjectiveVerb, drawObjectVerb, placeObject, inspect, restoreEvent, ...(helpersOn() ? [askHelpers] : []), askUser].map((tool) => guard(flattenWrapperTool(tool)));
   // 게임 요소(퀘스트·아이템·전투·파티) 요청이면 v1 게임 도구를 덧붙인다 — 기록은 도구 묶음이 env.record 로 직접 남긴다.
   const t = String(task ?? "");
   // 스토어 음악 카드(사용자가 듣고 고른다)를 띄웠으면 사용자 질문과 같다 — 끝맺음 관문이 «음악을 안 걸었다»며 넣기를 재촉하지 않게 한다.
@@ -1023,7 +1066,11 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     env.record(r);
   } };
   // 같은 Command·페이지 스키마의 설명은 처음 한 번만 보낸다(schemaDedupe.ts — 매 턴 다시 가는 도구 목록이 21만 자였다).
-  return wantsGameTools(t) || wantsTerrainTools(t) || wantsStoreTools(t) ? dedupeToolSchemas([...verbs, ...createGameTools(gameEnv, t).map((tool) => flattenWrapperTool(tool, gameEnv.record))]) : verbs;
+  // 청사진이 있는 게임에서 이벤트·엔딩 하위 도구가 되풀이해 실패하면 build_blueprint_path 로 보낸다(mt2 Flash: upsert_event 6번 인자 실패).
+  const escalate = (tool: PiToolShape): PiToolShape => !PATH_LOW_LEVEL.has(tool.name) ? tool : { ...tool, escalateHint: () => env.ctx.project.gameBlueprint
+    ? `[상위 동사로] ${tool.name} 로 청사진 경로(단계 이벤트·조건·엔딩 호출)를 하나씩 맞추지 않는다 — build_blueprint_path 를 한 번 부르면 청사진 단계대로 함수가 짓는다(대사만 steps[{id,lines}]). 이 도구는 경로 밖의 작은 수정에만 쓴다.`
+    : undefined };
+  return wantsGameTools(t) || wantsTerrainTools(t) || wantsStoreTools(t) ? dedupeToolSchemas([...verbs, ...createGameTools(gameEnv, t).map((tool) => escalate(flattenWrapperTool(tool, gameEnv.record)))]) : verbs;
 }
 
 /** 끝맺음 관문 — 남은 문제가 있으면 한 번 더 돌게 하는 글. 다 통과면 undefined. */

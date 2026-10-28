@@ -9,6 +9,7 @@ import { runPiAgent, type RunPiAgentOptions } from "./piAgentRuntime.ts";
 import type { PiAgentDoneEvent, PiAgentEvent, PiAgentRequest } from "../../src/ai/piAgent/protocol.ts";
 import { buildV2SystemPrompt } from "../../src/ai/v2/prompt.ts";
 import { createV2Tools, V2Session, v2FinishGate } from "../../src/ai/v2/verbs.ts";
+import { BLUEPRINT_PATH_IDS, walkBlueprint } from "../../src/ai/v2/blueprint.ts";
 import { shipBlockers } from "../../src/ai/v2/shipChecks.ts";
 import { reviewVqaRound, vqaReviewerCandidates, vqaClean, vqaFixBrief, vqaFixRetry, vqaFollowUp, vqaLeftoverInstruction, vqaShotPlan, vqaReviewerLabel, vqaShouldContinue, vqaSummary, wantsWholeGame, VQA_MAX_ROUNDS, VQA_ROUND_CAP, vqaBlockers, type VqaReviewerPick, type VqaRound, type VqaShot } from "../../src/ai/v2/vqa.ts";
 import { familyOfProviderId } from "../../src/ai/assistantRoles.ts";
@@ -228,7 +229,23 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
         if (vqaPhase === "done") return undefined;
         // ① 끝맺음 관문 + 검토자. 보고 초안을 «실제로 바뀐 것»에 대어 본다. 막는 메모는 끝맺음 관문 글과 함께 한 차례 더 돌린다.
         // 우려·참고는 조수에게만(관문 글에 붙거나 실행 기록 v2.advisor) — 사용자 대화창에는 싣지 않는다.
-        const gate = v2FinishGate(session, env);
+        // 청사진 경로가 끊긴 채 끝내려 하면(엔딩을 부르는 이벤트 없음·단계 이벤트 없음·조건을 켜는 곳 없음) 함수가 청사진대로 짓는다
+        // — 모델이 무엇을 불렀든(2026-10-28 mt2: Flash·Argon 둘 다 define_ending 만 하고 엔딩 호출이 없었다). 장소가 없거나 닿지 않는
+        // 단계가 있으면 짓지 않는다(그 장소를 지을 일이 먼저다 — 시작 맵에 몰아 두면 나중에 지은 장소와 겹친다).
+        let autoPath: string | undefined;
+        if (session.buildPath && !session.autoPathDone && env.ctx.project.gameBlueprint) {
+          const walked = walkBlueprint(env.ctx.project).blockers;
+          if (walked.some((b) => BLUEPRINT_PATH_IDS.has(b.id)) && !walked.some((b) => b.id === "blueprint-place-missing" || b.id === "blueprint-place-unreachable")) {
+            session.autoPathDone = true;
+            const built = await session.buildPath(walked.map((b) => b.id).join(","));
+            env.emit({ type: "execution_status", name: "v2.blueprint.auto_path", ok: built.ok, summary: `청사진 경로 자동 짓기 — ${built.summary.slice(0, 300)}` });
+            autoPath = built.ok
+              ? `[청사진 경로 — 함수가 지었다] 청사진 경로가 엔딩까지 이어지지 않아 build_blueprint_path 를 대신 불렀다: ${built.summary.slice(0, 600)}\n대사를 다듬으려면 build_blueprint_path{steps:[{id,lines,lockedLines}]} 로 다시 부른다(같은 이벤트를 고쳐 쓴다). 최종 보고에 이 경로(단계 → 엔딩)를 적는다.`
+              : `[청사진 경로 — 자동 짓기 실패] ${built.summary.slice(0, 400)} — 이 이유를 고친 뒤 build_blueprint_path 를 부른다.`;
+          }
+        }
+        const gate0 = v2FinishGate(session, env);
+        const gate = autoPath ? (gate0 ? `${autoPath}\n\n${gate0}` : autoPath) : gate0;
         let text: string | undefined = gate;
         if (advisorEnabled(env.request)) {
           advice = withShipBlockers(await adviseTurn({ task: env.request.task, toolLog: compactToolLog(calls), diff: safeDiff(env), report: draft }, advisorChatOf(env), env.signal), safeShip(env));
