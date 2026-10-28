@@ -6953,7 +6953,7 @@
        "kind": "repeatUntil",
        "testid": "dialogue-box",
        "state": "absent",
-       "maxRounds": 12,
+       "maxRounds": 16,
        "ops": [
         {
          "kind": "key",
@@ -7208,6 +7208,149 @@
      "ops": [
       {
        "kind": "interactive"
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "act2-b1-bells",
+   "label": "제2막 B1 — 막사 종 줄 둘(푸른 종 → 붉은 종) → 등불이 꺼지고 금고 → 사다리",
+   "note": "act2Opening.ts barracks make_chase_scene caughtPenalty (3,10)↔(15,10)",
+   "mapId": "fs2_barracks",
+   "x": 11,
+   "y": 6,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_done": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs2_act2_started": true,
+    "sw_fs2_bread_given": true,
+    "sw_fs2_cell_key_found": true,
+    "sw_fs2_cell_open": true,
+    "sw_fs2_barracks_entered": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 8
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 8
+    }
+   ],
+   "beats": [
+    {
+     "id": "blue-bell",
+     "ops": [
+      {
+       "kind": "move",
+       "dir": "up",
+       "steps": 1
+      },
+      {
+       "kind": "face",
+       "dir": "up"
+      },
+      {
+       "kind": "action"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "blue-done",
+     "ops": [
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 10,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 600
+        }
+       ]
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 800
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "red-bell",
+     "ops": [
+      {
+       "kind": "move",
+       "dir": "left",
+       "steps": 4
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 300
+      },
+      {
+       "kind": "move",
+       "dir": "left",
+       "steps": 4
+      },
+      {
+       "kind": "face",
+       "dir": "up"
+      },
+      {
+       "kind": "action"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "red-done",
+     "ops": [
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 10,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 600
+        }
+       ]
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
       }
      ],
      "shot": true

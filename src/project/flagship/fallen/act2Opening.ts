@@ -373,7 +373,7 @@ function barracks(project: Project, exec: Exec): void {
     reward: { itemId: FS2_GEAR_ITEM, itemName: "압수품 꾸러미", itemDescription: "초소에 빼앗겼던 짐. 카엘의 검과 엘레나의 책이 그대로 있다." },
     // 들키면 경비 둘과 싸우고(도망 불가) 감방으로 다시 끌려간다 — 실수에 값을 치른다.
     // 들키면 감방으로 끌려간다. 경비와의 전투는 뺐다 — 쉬운 전투가 매번 금화를 줘서, 붙잡히는 게 벌이 아니라 벌이였다(독립 판정: 29번 붙잡혀 696G).
-    failPenalty: { sendTo: { mapId: FS2_CELL_ID, x: CELL.arrive.x, y: CELL.arrive.y }, text: "경비병: 「거기 누구냐! 탈옥수다!」 — 등불에 들켜 감방으로 끌려갔다." },
+    failPenalty: { sendTo: { mapId: FS2_CELL_ID, x: CELL.arrive.x, y: CELL.arrive.y }, text: "경비병: 「거기 누구냐! 탈옥수다!」 — 등불에 들켜 초소 지하로 끌려갔다." },
   });
   // 순찰 기사 — 두 상자 줄 사이 통로를 천천히 오간다(계획 B1 「순찰 기사 은신」). 등 뒤로, 그가 끝에서 돌아설 때 건넌다.
   // 붙잡히면 등불 시야와 같은 벌(경비 둘과 도망 불가 전투 → 감방).
@@ -382,7 +382,7 @@ function barracks(project: Project, exec: Exec): void {
     chaser: { at: BARRACKS.patrol[0], graphic: { selectionId: "charset:tex_easyrpg_charset_people3:7" }, speed: 5, sightRange: 2 },
     patrol: { waypoints: BARRACKS.patrol },
     pursuit: { scope: "map", doorDelayMs: 0, searchMs: 1500, onLost: "return" },
-    caughtPenalty: { sendTo: { mapId: FS2_CELL_ID, x: CELL.arrive.x, y: CELL.arrive.y }, text: "순찰 기사: 「멈춰! 탈옥수다!」 — 순찰에게 붙잡혀 감방으로 끌려갔다." },
+    caughtPenalty: { sendTo: { mapId: FS2_CELL_ID, x: CELL.arrive.x, y: CELL.arrive.y }, text: "순찰 기사: 「멈춰! 탈옥수다!」 — 순찰에게 붙잡혀 초소 지하로 끌려갔다." },
     checkpointOnEntry: false,
     mood: false,
   });
@@ -393,6 +393,8 @@ function barracks(project: Project, exec: Exec): void {
       setSw("sw_fs2_barracks_entered"),
       say(ELENA, "(속삭임) 카엘, 입구 옆에 근무표가 있어. 먼저 읽어 보자."),
       say(ELENA, "(속삭임) 등불 빛이 닿는 데는 밟지 마.\n저 순찰은 등을 돌렸을 때, 상자 줄 틈으로 건너."),
+      // 독립 판정(2회차): 근무표의 「깃발 종」이 벽 깃발 장식으로만 읽혀 끝내 못 찾았다 — 동사(줄을 당긴다)를 짚는다.
+      say(ELENA, "(속삭임) 벽에 걸린 깃발 밑에 종 줄이 있어.\n앞에 서서 당기면, 그 색 초소 경비가 소리 쪽으로 돌아설 거야."),
     ], { trigger: { kind: "auto" } }),
   ]);
   ensureSwitch(project, "sw_fs2_barracks_entered", "B1: 막사에 처음 들어섬(규칙 귀띔)");
