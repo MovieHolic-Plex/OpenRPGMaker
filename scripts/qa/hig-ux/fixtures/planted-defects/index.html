@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>hig-ux planted-defect fixture</title>
+<!--
+  Negative control for the hig-ux selftest lane. It mimics the editor top bar
+  (same accessible names the selftest devices resolve) but plants one defect per
+  device: overlapping controls, a tiny target, a missing focus ring, focus lost
+  after Escape, low-contrast text and horizontal document overflow.
+  Served by serve-baseline.mjs --fixture planted-defects; run.mjs --fixture starts it.
+-->
+<style>
+  html, body { margin: 0; font-family: sans-serif; background: #ffffff; }
+  .topbar { position: relative; height: 48px; border-bottom: 1px solid #ddd; }
+  .topbar button {
+    position: absolute; top: 8px; height: 32px; padding: 0 10px;
+    font-size: 13px; color: #222; background: #f2f2f2; border: 1px solid #ccc; border-radius: 6px;
+  }
+  /* Planted: no focus ring at all. */
+  .topbar button:focus, .topbar button:focus-visible { outline: none; box-shadow: none; }
+  /* Planted: "자료집" overlaps "소재" by 30 px horizontally and is a 14x14 target. */
+  #db { left: 200px; top: 16px; height: 14px; width: 14px; padding: 0; font-size: 9px; overflow: hidden; z-index: 1; }
+  #assets { left: 190px; width: 66px; }
+  /* Planted: low-contrast label (#c8c8c8 on #f4f4f4 is about 1.5:1). */
+  #help { left: 320px; color: #c8c8c8; background: #f4f4f4; }
+  #play { left: 420px; }
+  .menu { position: absolute; top: 44px; left: 320px; background: #fff; border: 1px solid #ccc; padding: 4px; }
+  .menu[hidden] { display: none; }
+  .menu button { position: static; display: block; }
+  /* Planted: the page is wider than the viewport. */
+  .wide { width: 2400px; height: 8px; background: #eee; }
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="topbar">
+    <button id="db" aria-label="자료집">자료집</button>
+    <button id="assets" aria-label="소재">소재</button>
+    <button id="help" aria-label="도움말" aria-haspopup="menu" aria-expanded="false">도움말</button>
+    <button id="play" aria-label="테스트 실행">▶</button>
+    <div class="menu" id="help-menu" role="menu" hidden>
+      <button role="menuitem">에디터 가이드</button>
+      <button role="menuitem">단축키</button>
+    </div>
+  </div>
+  <div class="wide"></div>
+</div>
+<script>
+  const help = document.getElementById('help');
+  const menu = document.getElementById('help-menu');
+  const open = () => { menu.hidden = false; help.setAttribute('aria-expanded', 'true'); menu.querySelector('button').focus(); };
+  const close = () => {
+    menu.hidden = true; help.setAttribute('aria-expanded', 'false');
+    // Planted: focus is dropped to <body> instead of returning to the trigger.
+    if (document.activeElement) document.activeElement.blur();
+  };
+  help.addEventListener('click', () => (menu.hidden ? open() : close()));
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !menu.hidden) close(); });
+</script>
+</body>
+</html>
