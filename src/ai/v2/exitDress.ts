@@ -15,6 +15,7 @@ import { layerTileAt, setLayerTileAt } from "@/project/mapLayers";
 import type { GameEvent, GameMap, Project } from "@/project/types";
 import { isDoorName, reachableCells, repairEventReach, unreachableEvents } from "./eventReach";
 import type { BuildRun } from "./types";
+import { CODE_STEP_WORDS, isEscapeBlueprint } from "./blueprint";
 
 type Cell = { x: number; y: number };
 type Layer = 1 | 2 | 3 | 4;
@@ -203,13 +204,34 @@ export function dressInteriorExits(run: BuildRun, mapId: string): ExitDressResul
   // 문 노릇을 할 이벤트: 이름이 문인 것, 없으면 이 맵에서 엔딩을 부르는 그림 없는 장치(방탈출의 «비밀번호 입력» — 잠긴 문 그림 위로 옮기면 그 문이 자물쇠가 된다).
   const visible = (e: GameEvent) => (e.pages ?? []).some((p) => { const g = p.graphic; return Boolean(g && !g.transparent && (g.sprite || g.appearanceId)); });
   const endsGame = (e: GameEvent) => JSON.stringify(e.pages ?? []).includes('"triggerEnding"');
+  // 엔딩 장치를 문으로 쓰는 것은 갇힌 방 게임(청사진이 방탈출·밀실류)이거나 이름이 자물쇠·번호 장치일 때만 — 아니면 그 장치는 문이 아니다
+  // (2026-10-29 standin memory: 할머니 집 «장롱 편지»(엔딩을 부르는 투명 조사 칸)를 잠긴 문 그림 위로 옮겼다).
+  const lockish = (e: GameEvent) => CODE_STEP_WORDS.test(String((e as { name?: string }).name ?? "")) || /자물쇠|잠금|lock/iu.test(String((e as { name?: string }).name ?? ""));
+  const escapeGame = project0.gameBlueprint ? isEscapeBlueprint(project0.gameBlueprint) : false;
   const door = events.find((e) => isDoorName(String((e as { name?: string }).name ?? "")) && !hasTransfer(e.pages ?? e.commands))
-    ?? events.find((e) => endsGame(e) && !visible(e) && !hasTransfer(e.pages ?? e.commands));
+    ?? events.find((e) => endsGame(e) && !visible(e) && !hasTransfer(e.pages ?? e.commands) && (escapeGame || lockish(e)));
+  const tileLabel = (t: number) => String(((project0.tilesets[map.tilesetId]?.tileMeta ?? []) as unknown as ({ label?: string } | undefined)[])[t]?.label ?? "");
+  /** 막다른 남쪽 틈을 메운다: 틈 칸과 그 바로 위 칸에 걸친 그림(모델이 틈에 세운 문 등)을 걷고, 틈을 공허로 바꾼 뒤 둘레 띠를 다시 칠한다. */
+  const closeGaps = () => {
+    // 틈을 메운다: 틈 칸과 그 바로 위 칸에 걸친 그림(모델이 틈에 세운 문 등)을 걷고, 틈을 공허로 바꾼 뒤 둘레 띠를 다시 칠한다.
+    for (const g of gaps) {
+      const i = g.y * w + g.x, up = i - w;
+      const below = layerTileAt(map0, 3, i);
+      for (const L of [2, 3, 4] as const) setLayerTileAt(map, L, i, -1);
+      const base = (t: number) => tileLabel(t).replace(/\s*\([^)]*\)\s*$/u, "");
+      if (below >= 0 && layerTileAt(map, 3, up) >= 0 && base(layerTileAt(map, 3, up)) === base(below)) setLayerTileAt(map, 3, up, -1);
+      map.lowerTiles[i] = k.S.void;
+    }
+    reband(k, map, (x, y) => gaps.some((g) => Math.abs(g.x - x) <= 1 && Math.abs(g.y - y) <= 1));
+    changed = true;
+    notes.push(`막다른 남쪽 출구 ${gaps.map((g) => `(${g.x},${g.y})`).join("")}를 벽으로 메움(이동 칸이 없는 틈)`);
+  };
+  const start = project0.startMapId === mapId ? project0.startPos : undefined;
+  const closable = gaps.every((g) => !events.some((e) => e.x === g.x && e.y === g.y) && !(start && start.x === g.x && start.y === g.y));
   if (dead && door) {
     const S = k.S;
     const locked = (door.pages ?? []).some((p) => (p.conditions ?? []).length > 0) || (door.pages ?? []).length > 1;
     const piece = doorPiece(S, locked);
-    const tileLabel = (t: number) => String(((project0.tilesets[map.tilesetId]?.tileMeta ?? []) as unknown as ({ label?: string } | undefined)[])[t]?.label ?? "");
     const onDoorArt = (() => { const t = layerTileAt(map, 3, door.y * w + door.x); return t >= 0 && /문/u.test(tileLabel(t)) && door.y < map.height - 2; })();
     // 문 자리를 먼저 정한다.
     let at: (Cell & { clear?: number[] }) | undefined;
@@ -245,24 +267,9 @@ export function dressInteriorExits(run: BuildRun, mapId: string): ExitDressResul
     }
     // 문 자리가 없어도, 아무 데로도 이어지지 않는 틈 위에 아무것도(이벤트·시작 칸) 없으면 벽으로 메운다 — 어둠으로 뻗은 막다른 통로보다 닫힌 벽이 낫다
     // (2026-10-28 mt3 flash: 빈 시작 맵을 치운 뒤 밀실 남쪽 틈이 막다른 길이 됐고, 북벽 발치는 가구와 «조사 시작»으로 가는 길뿐이었다).
-    const start = project0.startMapId === mapId ? project0.startPos : undefined;
-    const closable = gaps.every((g) => !events.some((e) => e.x === g.x && e.y === g.y) && !(start && start.x === g.x && start.y === g.y));
     if (!at && !onDoorArt) notes.push(!piece ? "이 칩셋에 벽에 세울 문 그림이 없다" : `문 「${door.name ?? door.id}」: 북벽 발치에 문 그림을 세울 자리가 없다(가구·다른 이벤트로 가는 길)`);
     if (!at && !onDoorArt && !closable) notes.push("남쪽 틈 위에 이벤트·시작 칸이 있어 틈은 그대로 둠");
-    if (at || onDoorArt || closable) {
-      // 틈을 메운다: 틈 칸과 그 바로 위 칸에 걸친 그림(모델이 틈에 세운 문 등)을 걷고, 틈을 공허로 바꾼 뒤 둘레 띠를 다시 칠한다.
-      for (const g of gaps) {
-        const i = g.y * w + g.x, up = i - w;
-        const below = layerTileAt(map0, 3, i);
-        for (const L of [2, 3, 4] as const) setLayerTileAt(map, L, i, -1);
-        const base = (t: number) => tileLabel(t).replace(/\s*\([^)]*\)\s*$/u, "");
-        if (below >= 0 && layerTileAt(map, 3, up) >= 0 && base(layerTileAt(map, 3, up)) === base(below)) setLayerTileAt(map, 3, up, -1);
-        map.lowerTiles[i] = S.void;
-      }
-      reband(k, map, (x, y) => gaps.some((g) => Math.abs(g.x - x) <= 1 && Math.abs(g.y - y) <= 1));
-      changed = true;
-      notes.push(`막다른 남쪽 출구 ${gaps.map((g) => `(${g.x},${g.y})`).join("")}를 벽으로 메움(이동 칸이 없는 틈)`);
-    }
+    if (at || onDoorArt || closable) closeGaps();
     if (at && piece) {
       // 걸이(창·액자)를 걷어 낸 자리에 문을 세운다.
       const cleared = at.clear ?? [];
@@ -302,6 +309,11 @@ export function dressInteriorExits(run: BuildRun, mapId: string): ExitDressResul
       return { notes };
     }
   }
+  // 문 노릇 이벤트가 없어도 아무 데로도 이어지지 않는 틈은 메운다(2026-10-29 standin memory 할머니 집: 엔딩 장치를 문으로 쓰지 않게 하자
+  // 남쪽 틈이 어둠으로 뻗은 막다른 통로로 남았다).
+  // 틈은 벽에 난 좁은 목(3칸 이하, 붙어 있음)만 — 남쪽 줄 전체가 바닥인 바깥 거리(standin errand «동네 거리»)는 틈이 아니다.
+  const narrow = gaps.length > 0 && gaps.length <= 3 && gaps.every((g, i) => i === 0 || g.x === gaps[i - 1]!.x + 1);
+  if (dead && !door && closable && narrow) closeGaps();
   if (changed) run.ctx.project = { ...run.ctx.project, maps: { ...run.ctx.project.maps, [mapId]: map } } as Project;
   return { notes };
 }

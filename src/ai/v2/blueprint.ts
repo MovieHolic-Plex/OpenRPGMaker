@@ -85,7 +85,9 @@ function walk(list: unknown, visit: (cmd: Obj) => void): void {
     const cmd = obj(raw);
     if (!cmd) continue;
     visit(cmd);
-    for (const key of ["then", "else", "branch", "cancelBranch", "commands", "body", "loop", "beats"]) if (Array.isArray(cmd[key])) walk(cmd[key], visit);
+    // 갈래 이름은 명령마다 다르다 — 전투 victoryBranch/defeatBranch/escapeBranch, 상점 transactionBranch… 「…Branch」 배열은 모두 걷는다
+    // (2026-10-29 standin monster: 챔피언 전투 victoryBranch 의 setSwitch mx_ending 을 못 봐 blueprint-condition-unset 거짓 막힘).
+    for (const [key, value] of Object.entries(cmd)) if (Array.isArray(value) && (/^(then|else|branch|commands|body|loop|beats)$/u.test(key) || /Branch$/u.test(key))) walk(value, visit);
     if (Array.isArray(cmd.options)) for (const o of cmd.options) walk(obj(o)?.branch, visit);
     if (Array.isArray(cmd.branches)) for (const b of cmd.branches) walk(obj(b)?.commands, visit);
   }

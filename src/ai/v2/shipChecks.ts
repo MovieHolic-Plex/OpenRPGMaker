@@ -53,7 +53,8 @@ function walk(list: unknown, visit: (cmd: Obj) => void): void {
     const cmd = raw && typeof raw === "object" ? raw as Obj : undefined;
     if (!cmd) continue;
     visit(cmd);
-    for (const key of ["then", "else", "branch", "commands", "cancelBranch", "beats"]) walk(cmd[key], visit);
+    // 전투 victoryBranch·상점 transactionBranch 같은 「…Branch」 갈래도 걷는다(blueprint.ts walk 와 같은 규칙).
+    for (const [key, value] of Object.entries(cmd)) if (Array.isArray(value) && (/^(then|else|branch|commands|body|loop|beats)$/u.test(key) || /Branch$/u.test(key))) walk(value, visit);
     if (Array.isArray(cmd.options)) for (const o of cmd.options as Obj[]) walk(o?.branch, visit);
   }
 }
