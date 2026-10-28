@@ -2175,7 +2175,8 @@ export function applyFallenAct2Opening(project: Project, exec: Exec, ids: Fallen
  */
 function detection(project: Project, exec: Exec): void {
   const routeMaps = [...FS2_NORTH_ROUTE.mapIds, ...FS2_SNOW.mapIds];
-  const act2Maps = Object.keys(project.maps).filter((id) => id.startsWith("fs2_") || routeMaps.includes(id));
+  // 막사는 시야 2칸의 잠입 퍼즐이다. 야외 적 설정으로 덮으면 순찰에서 떨어진 동쪽 통로까지 감지한다.
+  const act2Maps = Object.keys(project.maps).filter((id) => id !== FS2_BARRACKS_ID && (id.startsWith("fs2_") || routeMaps.includes(id)));
   const patrolIds: string[] = []; const beastIds: string[] = [];
   for (const id of act2Maps) for (const e of M(project, id).events) {
     const pages = e.pages ?? [];
