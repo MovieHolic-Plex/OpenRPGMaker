@@ -519,6 +519,13 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
   const counts: Record<string, number> = {};
   if (rings.length) counts["tower-ring"] = rings.length;
   const blocked = new Uint8Array(W * H);
+  // 바닥 그림(모자이크 의식 원·깔개처럼 1층에만 그린 키트) 칸 — 내려가는 계단이 의식 원 한가운데에 박혔다(2026-10-28 지하묘지 2층).
+  const decal = new Uint8Array(W * H);
+  /** 계단 자리 후보에서 바닥 그림을 건드리는 칸(세 칸 사방)을 뒤로 — 자리가 그것뿐이면 그래도 놓는다(층이 끊기지 않게). */
+  const decalLast = (cands: [number, number][]): [number, number][] => {
+    const touches = ([x, y]: [number, number]) => [-1, 0, 1].some((dy) => [-1, 0, 1].some((dx) => inb(x + dx, y + dy) && decal[idx(x + dx, y + dy)] === 1));
+    return [...cands.filter((c) => !touches(c)), ...cands.filter(touches)];
+  };
   const passTile = (tile: number) => { const pass = ts.passability[tile]; return !!pass && Object.values(pass).some(Boolean); };
   const stand = (x: number, y: number) => isFloor(x, y) && !blocked[idx(x, y)] && passTile(lower[idx(x, y)]!) && (upper[idx(x, y)]! < 0 || passTile(upper[idx(x, y)]!));
   // 입구 칸과 문 칸들 — 물건 하나를 놓을 때마다 여기서 모두 닿는지 본다(줄째 비워 두는 대신 길만 지킨다: 큰 홀 가운데가 비지 않게).
@@ -592,12 +599,14 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
       if (c.lo >= 0) lower[idx(c.x, c.y)] = c.lo;
       if (c.up >= 0) upper[idx(c.x, c.y)] = c.up;
     }
+    const decalCells = cells.filter((c) => c.lo >= 0 && c.up < 0 && isFloor(c.x, c.y));
     // 길을 막는 물건이면 되돌린다(바닥 위 걸을 수 없는 칸이 새로 생긴 경우만 검사).
     const blocks = cells.some((c) => isFloor(c.x, c.y) && !passTile(c.up >= 0 ? c.up : c.lo));
     if (blocks && !opts.free && !connected()) {
       cells.forEach((c, i) => { lower[idx(c.x, c.y)] = before[i]![0]; upper[idx(c.x, c.y)] = before[i]![1]; });
       return false;
     }
+    for (const c of decalCells) decal[idx(c.x, c.y)] = 1;
     const label = opts.label ?? kitId.replace(/^bd-pick-/, "");
     counts[label] = (counts[label] ?? 0) + 1;
     return true;
@@ -738,7 +747,7 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
     const inset = r.w >= 8 && r.h >= 7 ? 2 : 1;
     const cands = floorCells(r, inset).filter(([x, y]) => !blocked[idx(x, y)] && upper[idx(x, y)]! < 0 && !doorstep[idx(x, y)] && y > r.y + 1
       && [-1, 0, 1].every((dy) => [-1, 0, 1].every((dx) => isWalk(x + dx, y + dy) && !bridge[idx(x + dx, y + dy)] && upper[idx(x + dx, y + dy)]! < 0 && !blocked[idx(x + dx, y + dy)])));
-    for (const [x, y] of cands.sort((a, b) => score(a[0], a[1]) - score(b[0], b[1]))) {
+    for (const [x, y] of decalLast(cands.sort((a, b) => score(a[0], a[1]) - score(b[0], b[1])))) {
       const was = lower[idx(x, y)]!;
       lower[idx(x, y)] = def.rows[0]!.tiles[0]!;
       blocked[idx(x, y)] = 1;
@@ -997,7 +1006,7 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
     const cands = floorCells(deepRoom, inset).filter(([x, y]) => !blocked[idx(x, y)] && upper[idx(x, y)]! < 0 && !doorstep[idx(x, y)] && y > deepRoom.y + 1
       && [-1, 0, 1].every((dy) => [-1, 0, 1].every((dx) => isWalk(x + dx, y + dy) && !bridge[idx(x + dx, y + dy)] && upper[idx(x + dx, y + dy)]! < 0)));
     const doorDist = (x: number, y: number) => Math.min(...doors.map(([dx, dy]) => Math.abs(dx - x) + Math.abs(dy - y)), 99);
-    const far = cands.sort((a, b) => doorDist(b[0], b[1]) - doorDist(a[0], a[1]));
+    const far = decalLast(cands.sort((a, b) => doorDist(b[0], b[1]) - doorDist(a[0], a[1])));
     for (const [x, y] of far) {
       const was = lower[idx(x, y)]!;
       lower[idx(x, y)] = def.rows[0]!.tiles[0]!;
