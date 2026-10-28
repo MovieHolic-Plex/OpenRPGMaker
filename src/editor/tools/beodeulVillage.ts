@@ -2491,10 +2491,24 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   const bldRect = new Set<number>();
   for (const st of stamps) if (st.v === BLD) { const k = kitIndex.get(st.kit); if (k) for (let j = 0; j < k.h; j += 1) for (let i = 0; i < k.w; i += 1) if (inMap(st.x + i, st.y + j)) bldRect.add(idx(st.x + i, st.y + j)); }
   let opened = 0;
-  if (m.relief) for (let it = 0; it < 60; it += 1) {
+  // 평지 마을도 같다(2026-10-28 jrpg 버들마을: 밀밭 울타리·허수아비·나무가 북쪽 초원의 유일한 입구를 막아 초원 한 덩이가 통째로 갇혔다).
+  // 높은 단이 아니면 여섯 칸 이상 덩이만 연다 — 숲 가장자리 나무 틈 한두 칸 때문에 숲을 갉지 않게.
+  const lostOf = (seen: Uint8Array): Set<number> => {
+    const cand = new Set<number>();
+    for (let c = 0; c < W * H; c += 1) if (!seen[c] && !fenceInside.has(c) && !bldRect.has(c) && occ[c] !== WATERC && walk(c % W, Math.floor(c / W))) cand.add(c);
+    const out = new Set<number>(); const done = new Set<number>();
+    for (const c0 of cand) {
+      if (done.has(c0)) continue;
+      const comp = [c0]; done.add(c0);
+      for (let h = 0; h < comp.length; h += 1) { const c = comp[h]!, x = c % W, y = (c - x) / W;
+        for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) { const nx = x + dx, ny = y + dy; if (!inMap(nx, ny)) continue; const n = idx(nx, ny); if (cand.has(n) && !done.has(n)) { done.add(n); comp.push(n); } } }
+      if (comp.length >= 6 || comp.some((c) => lv[c]! > 0)) for (const c of comp) out.add(c);
+    }
+    return out;
+  };
+  for (let it = 0; it < 60; it += 1) {
     const seen = reachMap();
-    const lost = new Set<number>();
-    for (let c = 0; c < W * H; c += 1) if (!seen[c] && lv[c]! > 0 && !fenceInside.has(c) && !bldRect.has(c) && walk(c % W, Math.floor(c / W))) lost.add(c);
+    const lost = lostOf(seen);
     if (!lost.size) break;
     // 닿는 칸에서 갇힌 칸까지, 걷어 낼 찍기를 가장 적게 지나는 길(0-1 BFS: 빈 땅 0, 걷어 낼 찍기에 들어갈 때 1)
     const owner = new Map<number, Stamp>();

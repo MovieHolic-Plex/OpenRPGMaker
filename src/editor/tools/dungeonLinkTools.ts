@@ -274,8 +274,10 @@ export function caveMouthSpotClear(draft: Project, map: GameMap, gate: Pt): bool
   for (let y = gate.y - 4; y <= gate.y - 1; y += 1) for (let x = gate.x - 2; x <= gate.x; x += 1) {
     if (x < 0 || y < 0 || x >= map.width || y >= map.height) return false;
     const i = y * map.width + x;
-    // 걸을 수 있는 덧그림(풀포기·들꽃·그림자)은 덮어도 된다 — 막힌 칸(밀·울타리·나무·집)과 바탕 땅이 아닌 칸(길·광장·물)만 피한다.
+    // 걸을 수 있는 바닥 덧그림(2·4층 풀포기·들꽃·그림자)은 덮어도 된다 — 막힌 칸(밀·울타리·나무·집)과 바탕 땅이 아닌 칸(길·광장·물)은 피한다.
     if (!ground.has(map.lowerTiles[i]!) || !isPassable(draft, map, x, y)) return false;
+    // 위층(3층) 그림은 여러 칸짜리 소품의 윗부분일 수 있다(허수아비 머리 칸은 걸을 수 있다) — 반쪽만 덮이지 않게 빈 칸만.
+    if ((map.upperTiles[i] ?? -1) >= 0) return false;
     if (guarded.has(i) || map.events.some((e) => Math.abs(e.x - x) <= 1 && Math.abs(e.y - y) <= 1)) return false;
   }
   return true;
