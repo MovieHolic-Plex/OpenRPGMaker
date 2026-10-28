@@ -108,8 +108,8 @@ export function renderOverviewTab(host: HTMLElement, _rerender: () => void): voi
           // `db-overview-ai` 쪽이라 그 testid 를 여기로 옮긴다.
           el("button", {
             class: "db-overview-assistant-cta db-overview-ai",
-            text: "AI 어시스턴트에게 물어보기",
-            attrs: { type: "button", title: "에디터 AI 어시스턴트 열기" },
+            text: "AI 조수에게 물어보기",
+            attrs: { type: "button", title: "AI 조수 열기" },
             dataset: { testid: "db-overview-ai" },
             on: { click: openDatabaseAiBar },
           }),

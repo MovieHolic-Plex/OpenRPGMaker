@@ -85,7 +85,7 @@
   padding: 6px 12px; border-top: 1px solid var(--db-studio-border-subtle);
 }
 .database-modal-backdrop .db-dialogue-group-head + .db-dialogue-row { border-top: 0; }
-.database-modal-backdrop .db-dialogue-row.is-overflow { box-shadow: inset 3px 0 0 var(--db-studio-warning); }
+.database-modal-backdrop .db-dialogue-row.is-overflow { background: color-mix(in srgb, var(--db-studio-warning) 12%, transparent); }
 .database-modal-backdrop .db-dialogue-row.has-proposal { background: color-mix(in srgb, var(--db-studio-accent) 5%, transparent); }
 .database-modal-backdrop .db-dialogue-speaker {
   font-size: 12px; font-weight: 700; color: var(--db-studio-accent); padding-top: 3px;
@@ -219,7 +219,7 @@
 .database-modal-backdrop .db-script-line.is-option .db-script-speaker { color: var(--db-studio-text-3); font-weight: 600; }
 .database-modal-backdrop .db-script-text .db-dialogue-text { font: 14px/1.75 var(--font-ui); padding: 1px 6px; }
 .database-modal-backdrop .db-script-line.is-narration .db-script-text .db-dialogue-text { font-style: italic; color: var(--db-studio-text-2); }
-.database-modal-backdrop .db-script-line.is-overflow .db-script-text .db-dialogue-text { box-shadow: inset 2px 0 0 var(--db-studio-warning); }
+.database-modal-backdrop .db-script-line.is-overflow .db-script-text .db-dialogue-text { background: color-mix(in srgb, var(--db-studio-warning) 12%, transparent); }
 .database-modal-backdrop .db-script-line.has-proposal .db-script-text .db-dialogue-text { background: color-mix(in srgb, var(--db-studio-accent) 6%, transparent); }
 .database-modal-backdrop .db-script-fit-slot { width: 0; }
 .database-modal-backdrop .db-script-dir {

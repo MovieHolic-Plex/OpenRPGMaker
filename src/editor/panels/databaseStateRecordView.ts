@@ -281,14 +281,22 @@ function specialFlags(
   });
 }
 
+let rateRowSequence = 0;
+
 function rateRows(ontology: ReturnType<typeof stateOntologyFor>): HTMLElement[] {
-  return RATE_GRADES.map((grade) =>
-    el("div", {
+  return RATE_GRADES.map((grade) => {
+    // 등급 글자(b)를 읽기 전용 칸의 이름으로 잇는다 — 예전에는 칸 이름이 비어 화면 낭독기가 값(「90%」)만
+    // 읽었다(V-database-03).
+    const labelId = `db-state-rate-label-${++rateRowSequence}`;
+    return el("div", {
       class: `db-state-rate-row grade-${grade.toLowerCase()}`,
       dataset: { testid: `db-state-rate-${grade}` },
-      children: [el("b", { text: RATE_GRADE_LABEL[grade] }), el("input", { attrs: { readonly: "true", type: "text" }, value: `${ontology.rates[grade]}%` })],
-    })
-  );
+      children: [
+        el("b", { text: RATE_GRADE_LABEL[grade], attrs: { id: labelId } }),
+        el("input", { attrs: { readonly: "true", type: "text", "aria-labelledby": labelId }, value: `${ontology.rates[grade]}%` }),
+      ],
+    });
+  });
 }
 
 function animationPanel(

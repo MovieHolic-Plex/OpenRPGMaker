@@ -1,0 +1,486 @@
+{
+ "beforeUrl": "http://127.0.0.1:9881",
+ "afterUrl": "http://127.0.0.1:9991",
+ "surfaces": [
+  {
+   "surface": "L6-list-1024__1024x640__ko",
+   "png": "L6-list-1024__1024x640__ko.png",
+   "before": {
+    "probe": {
+     "interactive": 134,
+     "small24": 9,
+     "unnamed": 0,
+     "tinyText": 54,
+     "lowContrast": 0,
+     "minContrast": 4.61,
+     "overflowXPx": 0,
+     "scrollOwners": 4
+    },
+    "stepErrors": []
+   },
+   "after": {
+    "probe": {
+     "interactive": 137,
+     "small24": 9,
+     "unnamed": 0,
+     "tinyText": 52,
+     "lowContrast": 0,
+     "minContrast": 4.61,
+     "overflowXPx": 0,
+     "scrollOwners": 4
+    },
+    "stepErrors": []
+   }
+  },
+  {
+   "surface": "L6-list-900__900x600__ko",
+   "png": "L6-list-900__900x600__ko.png",
+   "before": {
+    "probe": {
+     "interactive": 135,
+     "small24": 11,
+     "unnamed": 0,
+     "tinyText": 50,
+     "lowContrast": 0,
+     "minContrast": 4.61,
+     "overflowXPx": 0,
+     "scrollOwners": 4
+    },
+    "stepErrors": []
+   },
+   "after": {
+    "probe": {
+     "interactive": 138,
+     "small24": 11,
+     "unnamed": 0,
+     "tinyText": 48,
+     "lowContrast": 0,
+     "minContrast": 4.61,
+     "overflowXPx": 0,
+     "scrollOwners": 4
+    },
+    "stepErrors": []
+   }
+  },
+  {
+   "surface": "L6-db-1440__1440x900__ko",
+   "png": "L6-db-1440__1440x900__ko.png",
+   "before": {
+    "probe": {
+     "interactive": 150,
+     "small24": 9,
+     "unnamed": 0,
+     "tinyText": 73,
+     "lowContrast": 0,
+     "minContrast": 4.61,
+     "overflowXPx": 0,
+     "scrollOwners": 3
+    },
+    "stepErrors": []
+   },
+   "after": {
+    "probe": {
+     "interactive": 154,
+     "small24": 9,
+     "unnamed": 0,
+     "tinyText": 71,
+     "lowContrast": 0,
+     "minContrast": 4.61,
+     "overflowXPx": 0,
+     "scrollOwners": 3
+    },
+    "stepErrors": []
+   }
+  },
+  {
+   "surface": "L6-db-en__1366x768__en",
+   "png": "L6-db-en__1366x768__en.png",
+   "before": {
+    "probe": {
+     "interactive": 140,
+     "small24": 9,
+     "unnamed": 0,
+     "tinyText": 66,
+     "lowContrast": 0,
+     "minContrast": 4.61,
+     "overflowXPx": 0,
+     "scrollOwners": 4
+    },
+    "stepErrors": []
+   },
+   "after": {
+    "probe": {
+     "interactive": 143,
+     "small24": 9,
+     "unnamed": 0,
+     "tinyText": 63,
+     "lowContrast": 0,
+     "minContrast": 4.61,
+     "overflowXPx": 0,
+     "scrollOwners": 4
+    },
+    "stepErrors": []
+   }
+  },
+  {
+   "surface": "L6-enemy-en__1366x768__en",
+   "png": "L6-enemy-en__1366x768__en.png",
+   "before": {
+    "probe": {
+     "interactive": 175,
+     "small24": 8,
+     "unnamed": 1,
+     "tinyText": 86,
+     "lowContrast": 0,
+     "minContrast": 4.61,
+     "overflowXPx": 0,
+     "scrollOwners": 5
+    },
+    "stepErrors": []
+   },
+   "after": {
+    "probe": {
+     "interactive": 174,
+     "small24": 8,
+     "unnamed": 1,
+     "tinyText": 89,
+     "lowContrast": 0,
+     "minContrast": 4.61,
+     "overflowXPx": 0,
+     "scrollOwners": 5
+    },
+    "stepErrors": []
+   }
+  },
+  {
+   "surface": "L6-world-1440__1440x900__ko",
+   "png": "L6-world-1440__1440x900__ko.png",
+   "before": {
+    "probe": {
+     "interactive": 132,
+     "small24": 12,
+     "unnamed": 0,
+     "tinyText": 54,
+     "lowContrast": 0,
+     "minContrast": 4.61,
+     "overflowXPx": 0,
+     "scrollOwners": 2
+    },
+    "stepErrors": []
+   },
+   "after": {
+    "probe": {
+     "interactive": 133,
+     "small24": 12,
+     "unnamed": 0,
+     "tinyText": 52,
+     "lowContrast": 0,
+     "minContrast": 4.61,
+     "overflowXPx": 0,
+     "scrollOwners": 2
+    },
+    "stepErrors": []
+   }
+  },
+  {
+   "surface": "L6-world-en__1366x768__en",
+   "png": "L6-world-en__1366x768__en.png",
+   "before": {
+    "probe": {
+     "interactive": 124,
+     "small24": 12,
+     "unnamed": 0,
+     "tinyText": 51,
+     "lowContrast": 0,
+     "minContrast": 4.61,
+     "overflowXPx": 0,
+     "scrollOwners": 3
+    },
+    "stepErrors": []
+   },
+   "after": {
+    "probe": {
+     "interactive": 125,
+     "small24": 12,
+     "unnamed": 0,
+     "tinyText": 49,
+     "lowContrast": 0,
+     "minContrast": 4.61,
+     "overflowXPx": 0,
+     "scrollOwners": 3
+    },
+    "stepErrors": []
+   }
+  },
+  {
+   "surface": "L6-life-rail__1440x900__ko",
+   "png": "L6-life-rail__1440x900__ko.png",
+   "before": {
+    "probe": {
+     "interactive": 146,
+     "small24": 9,
+     "unnamed": 0,
+     "tinyText": 75,
+     "lowContrast": 0,
+     "minContrast": 4.61,
+     "overflowXPx": 0,
+     "scrollOwners": 3
+    },
+    "stepErrors": []
+   },
+   "after": {
+    "probe": {
+     "interactive": 136,
+     "small24": 8,
+     "unnamed": 0,
+     "tinyText": 67,
+     "lowContrast": 0,
+     "minContrast": 4.61,
+     "overflowXPx": 0,
+     "scrollOwners": 2
+    },
+    "stepErrors": []
+   }
+  },
+  {
+   "surface": "L6-delete-ref__1440x900__ko",
+   "png": "L6-delete-ref__1440x900__ko.png",
+   "before": {
+    "probe": {
+     "interactive": 150,
+     "small24": 9,
+     "unnamed": 0,
+     "tinyText": 73,
+     "lowContrast": 0,
+     "minContrast": 4.61,
+     "overflowXPx": 0,
+     "scrollOwners": 3
+    },
+    "stepErrors": []
+   },
+   "after": {
+    "probe": {
+     "interactive": 154,
+     "small24": 9,
+     "unnamed": 0,
+     "tinyText": 71,
+     "lowContrast": 0,
+     "minContrast": 4.61,
+     "overflowXPx": 0,
+     "scrollOwners": 3
+    },
+    "stepErrors": []
+   }
+  },
+  {
+   "surface": "L6-escape-close__1440x900__ko",
+   "png": "L6-escape-close__1440x900__ko.png",
+   "before": {
+    "probe": {
+     "interactive": 153,
+     "small24": 9,
+     "unnamed": 0,
+     "tinyText": 75,
+     "lowContrast": 0,
+     "minContrast": 4.61,
+     "overflowXPx": 0,
+     "scrollOwners": 4
+    },
+    "stepErrors": []
+   },
+   "after": {
+    "probe": {
+     "interactive": 97,
+     "small24": 8,
+     "unnamed": 0,
+     "tinyText": 40,
+     "lowContrast": 0,
+     "minContrast": 4.61,
+     "overflowXPx": 0,
+     "scrollOwners": 2
+    },
+    "stepErrors": []
+   }
+  },
+  {
+   "surface": "L6-keep-editing__1440x900__ko",
+   "png": "L6-keep-editing__1440x900__ko.png",
+   "before": {
+    "probe": {
+     "interactive": 138,
+     "small24": 11,
+     "unnamed": 1,
+     "tinyText": 61,
+     "lowContrast": 1,
+     "minContrast": 4.38,
+     "overflowXPx": 0,
+     "scrollOwners": 2
+    },
+    "stepErrors": []
+   },
+   "after": {
+    "probe": {
+     "interactive": 140,
+     "small24": 11,
+     "unnamed": 1,
+     "tinyText": 61,
+     "lowContrast": 1,
+     "minContrast": 4.38,
+     "overflowXPx": 0,
+     "scrollOwners": 2
+    },
+    "stepErrors": []
+   }
+  },
+  {
+   "surface": "L6-ctrl-k__1440x900__ko",
+   "png": "L6-ctrl-k__1440x900__ko.png",
+   "before": {
+    "probe": {
+     "interactive": 150,
+     "small24": 9,
+     "unnamed": 0,
+     "tinyText": 73,
+     "lowContrast": 0,
+     "minContrast": 4.61,
+     "overflowXPx": 0,
+     "scrollOwners": 3
+    },
+    "stepErrors": []
+   },
+   "after": {
+    "probe": {
+     "interactive": 162,
+     "small24": 9,
+     "unnamed": 0,
+     "tinyText": 80,
+     "lowContrast": 0,
+     "minContrast": 4.51,
+     "overflowXPx": 0,
+     "scrollOwners": 3
+    },
+    "stepErrors": []
+   }
+  },
+  {
+   "surface": "L6-search-arrow__1440x900__ko",
+   "png": "L6-search-arrow__1440x900__ko.png",
+   "before": {
+    "probe": {
+     "interactive": 150,
+     "small24": 9,
+     "unnamed": 0,
+     "tinyText": 73,
+     "lowContrast": 0,
+     "minContrast": 4.61,
+     "overflowXPx": 0,
+     "scrollOwners": 3
+    },
+    "stepErrors": []
+   },
+   "after": {
+    "probe": {
+     "interactive": 154,
+     "small24": 9,
+     "unnamed": 0,
+     "tinyText": 71,
+     "lowContrast": 0,
+     "minContrast": 4.61,
+     "overflowXPx": 0,
+     "scrollOwners": 3
+    },
+    "stepErrors": []
+   }
+  },
+  {
+   "surface": "L6-record-switch__1024x640__ko",
+   "png": "L6-record-switch__1024x640__ko.png",
+   "before": {
+    "probe": {
+     "interactive": 134,
+     "small24": 9,
+     "unnamed": 0,
+     "tinyText": 54,
+     "lowContrast": 0,
+     "minContrast": 4.61,
+     "overflowXPx": 0,
+     "scrollOwners": 4
+    },
+    "stepErrors": []
+   },
+   "after": {
+    "probe": {
+     "interactive": 140,
+     "small24": 9,
+     "unnamed": 0,
+     "tinyText": 52,
+     "lowContrast": 0,
+     "minContrast": 4.61,
+     "overflowXPx": 0,
+     "scrollOwners": 4
+    },
+    "stepErrors": []
+   }
+  },
+  {
+   "surface": "L6-states-en__1366x768__en",
+   "png": "L6-states-en__1366x768__en.png",
+   "before": {
+    "probe": {
+     "interactive": 157,
+     "small24": 13,
+     "unnamed": 0,
+     "tinyText": 62,
+     "lowContrast": 0,
+     "minContrast": 4.61,
+     "overflowXPx": 0,
+     "scrollOwners": 4
+    },
+    "stepErrors": []
+   },
+   "after": {
+    "probe": {
+     "interactive": 157,
+     "small24": 13,
+     "unnamed": 0,
+     "tinyText": 64,
+     "lowContrast": 0,
+     "minContrast": 4.61,
+     "overflowXPx": 0,
+     "scrollOwners": 4
+    },
+    "stepErrors": []
+   }
+  },
+  {
+   "surface": "L6-delete-free__1440x900__ko",
+   "png": "L6-delete-free__1440x900__ko.png",
+   "before": {
+    "probe": {
+     "interactive": 153,
+     "small24": 9,
+     "unnamed": 0,
+     "tinyText": 75,
+     "lowContrast": 0,
+     "minContrast": 4.61,
+     "overflowXPx": 0,
+     "scrollOwners": 3
+    },
+    "stepErrors": []
+   },
+   "after": {
+    "probe": {
+     "interactive": 155,
+     "small24": 9,
+     "unnamed": 0,
+     "tinyText": 72,
+     "lowContrast": 0,
+     "minContrast": 4.61,
+     "overflowXPx": 0,
+     "scrollOwners": 3
+    },
+    "stepErrors": []
+   }
+  }
+ ]
+}

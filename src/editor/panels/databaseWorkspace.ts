@@ -295,8 +295,8 @@ export type DetailHeroOptions = {
   /** 제목 위 소형 대문자 라벨. */
   readonly eyebrow?: string;
   readonly subtitle?: string;
-  /** 제목 아래 배지들(직업 · Lv · 시작 파티 등). */
-  readonly tags?: readonly string[];
+  /** 제목 아래 배지들(직업 · Lv · 시작 파티 등). 저작 데이터가 섞인 배지는 노드로 넘긴다(라벨만 번역된다). */
+  readonly tags?: readonly (string | Node)[];
   /** 좌측 아바타/스프라이트. */
   readonly media?: HTMLElement;
   /** 우측 상단 액션. */
@@ -315,7 +315,9 @@ export function detailHero(options: DetailHeroOptions): HTMLElement {
       ...(options.tags && options.tags.length > 0
         ? [el("div", {
           class: "db-ws-hero-tags",
-          children: options.tags.map((tag) => el("span", { class: "db-ws-tag", text: tag })),
+          children: options.tags.map((tag) => typeof tag === "string"
+            ? el("span", { class: "db-ws-tag", text: tag })
+            : el("span", { class: "db-ws-tag", children: [tag] })),
         })]
         : []),
     ],
