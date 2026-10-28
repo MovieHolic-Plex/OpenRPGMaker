@@ -7606,24 +7606,42 @@
      "id": "talk",
      "ops": [
       {
-       "kind": "move",
-       "dir": "up",
-       "steps": 2
+       "kind": "playerRoute",
+       "moves": [
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        }
+       ]
       },
       {
-       "kind": "move",
-       "dir": "left",
-       "steps": 1
-      },
-      {
-       "kind": "move",
-       "dir": "up",
-       "steps": 3
-      },
-      {
-       "kind": "move",
-       "dir": "right",
-       "steps": 1
+       "kind": "hold",
+       "dir": null,
+       "ms": 800
       },
       {
        "kind": "face",
@@ -7722,34 +7740,26 @@
      "id": "talk",
      "ops": [
       {
-       "kind": "move",
-       "dir": "right",
-       "steps": 1
+       "kind": "playerRoute",
+       "moves": [
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        }
+       ]
       },
       {
        "kind": "hold",
        "dir": null,
-       "ms": 400
-      },
-      {
-       "kind": "move",
-       "dir": "right",
-       "steps": 1
-      },
-      {
-       "kind": "hold",
-       "dir": null,
-       "ms": 400
-      },
-      {
-       "kind": "move",
-       "dir": "up",
-       "steps": 1
-      },
-      {
-       "kind": "hold",
-       "dir": null,
-       "ms": 400
+       "ms": 800
       },
       {
        "kind": "face",
@@ -7848,24 +7858,22 @@
      "id": "talk",
      "ops": [
       {
-       "kind": "move",
-       "dir": "left",
-       "steps": 1
+       "kind": "playerRoute",
+       "moves": [
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        }
+       ]
       },
       {
        "kind": "hold",
        "dir": null,
-       "ms": 400
-      },
-      {
-       "kind": "move",
-       "dir": "up",
-       "steps": 1
-      },
-      {
-       "kind": "hold",
-       "dir": null,
-       "ms": 400
+       "ms": 800
       },
       {
        "kind": "face",
