@@ -401,6 +401,21 @@ function buildRoom(project: Project, _links: Links, konbiniArrive: Cell): Cell {
 
 // ── 2~3·5·7) 편의점 ──
 function buildKonbini(project: Project, links: Links): Cell {
+  // 가게는 화면보다 낮아서(16줄) 카메라가 가운데에 고정되고, 흉상 대화창이 계산대·손님 줄(11~14줄)을 덮었다(실플레이 2026-10-29).
+  // 아래에 빈 줄 넷을 덧대면 카메라가 점원을 따라가 계산대가 창 위로 올라온다. 덧댄 줄은 빈 칸(검은 바탕)이다.
+  {
+    const old = project.maps[M.konbini]!;
+    const oldH = old.height;
+    execTool(project, "resize_map", { mapId: M.konbini, width: old.width, height: oldH + 4 });
+    const m = project.maps[M.konbini]!;
+    for (let y = oldH; y < m.height; y++) for (let x = 0; x < m.width; x++) {
+      const i = y * m.width + x;
+      m.lowerTiles[i] = -1; m.upperTiles[i] = -1;
+      if (m.lowerOverlayTiles) m.lowerOverlayTiles[i] = -1;
+      if (m.upperOverlayTiles) m.upperOverlayTiles[i] = -1;
+    }
+    for (let x = 0; x < m.width; x++) mustBlock(project, m, { x, y: oldH }, "덧댄 빈 줄");
+  }
   const map = project.maps[M.konbini]!;
   const door = links.konbini.exit; // 자동문 칸
   const arrive = links.konbini.entry;
@@ -980,6 +995,8 @@ function buildStreet(project: Project, links: Links, parkArrive: Cell, shrineArr
     ...say("maou", "base", "…생각해 두지. 내일은 근무다."),
     ...say("lily", "surprised", "근무…? 마왕님이…?"),
     setSw(SW_LILY),
+    // 리리는 찻집 앞으로 돌아간다 — 다가온 자리에 서 있으면 고양이와 함께 편의점 앞 길을 막았다(실플레이 2026-10-29).
+    walkTo(LILY, lilyAt, false),
     ...caption("저녁의 상점가. 위쪽 큰길 끝은 언덕 위 신사, 아래쪽 끝은 공원. 원룸으로 돌아가 자면 하루가 끝난다."),
   ];
   map.events.push(event("ev_mk_st_meet", "리리와의 재회", { x: 0, y: 10 }, [
@@ -992,7 +1009,7 @@ function buildStreet(project: Project, links: Links, parkArrive: Cell, shrineArr
   ]));
   // 가르곤(고양이) — 첫째 날 저녁 편의점 앞 벤치.
   const CAT = "ev_mk_st_cat";
-  map.events.push(event(CAT, "길고양이", nearestFree(project, map, { x: 4, y: 10 }), [
+  map.events.push(event(CAT, "길고양이", mustWalk(project, map, { x: 7, y: 10 }, "고양이 자리(길 아래쪽)"), [
     gone(`${CAT}_off`, []),
     page(`${CAT}_p4`, [varIs(V_STAGE, 4)], [playSe(SE_CAT), ...voice("길고양이", "냐아."), ...think("(…이 오만한 눈빛. 어디서 본 듯한데.)"), playSe(SE_CAT), ...voice("길고양이", "…냥.")], { who: "cat", dir: "down" }),
   ]));

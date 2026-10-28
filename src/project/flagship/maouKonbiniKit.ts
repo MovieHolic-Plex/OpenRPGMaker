@@ -63,8 +63,10 @@ export function say(who: Who, expr: Expr, ...lines: string[]): Command[] {
   return [faceOf(who, expr), ...lines.map((body): Command => ({ kind: "text", speaker: c.name, body, position: "bottom" } as Command))];
 }
 /** 주인공 속마음 — 얼굴 없이 흐린 독백. name 은 그 시점의 이름(제르바스/마오). */
+/** 속마음 창이 이미 괄호를 씌우므로, 대사에 적은 바깥 괄호 한 쌍은 벗긴다. */
+const unwrap = (body: string): string => (/^\(.*\)$/s.test(body) && !body.slice(1, -1).includes(")") ? body.slice(1, -1) : body);
 export function thinkAs(name: string, ...lines: string[]): Command[] {
-  return [CLEAR_FACE, ...lines.map((body): Command => ({ kind: "text", speaker: name, body, position: "bottom", context: "thought" } as Command))];
+  return [CLEAR_FACE, ...lines.map((body): Command => ({ kind: "text", speaker: name, body: unwrap(body), position: "bottom", context: "thought" } as Command))];
 }
 export const think = (...lines: string[]): Command[] => thinkAs(CAST.maou.name, ...lines);
 export function caption(...lines: string[]): Command[] {

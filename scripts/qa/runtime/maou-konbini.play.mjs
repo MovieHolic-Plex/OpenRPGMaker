@@ -104,14 +104,19 @@ const idle = async (s) => {
 };
 const quietAnd = (cond) => async (s) => (await idle(s)) && (await cond(s));
 async function walkTo(page, x, y, timeout = 30_000) {
-  await page.evaluate(([x, y]) => window.__oprnDebug.playerRoute([{ kind: "approach", x, y, distance: 0 }]), [x, y]);
+  const from = await st(page);
+  const r = await page.evaluate(([x, y]) => window.__oprnDebug.playerRoute([{ kind: "approach", x, y, distance: 0 }]), [x, y]);
   const t0 = Date.now();
+  let ok = false;
   while (Date.now() - t0 < timeout) {
-    const s = await st(page); if (s && s.x === x && s.y === y) return true;
-    const u = await ui(page); if (u.box !== null || u.choices.length) return true;
+    const s = await st(page); if (s && s.x === x && s.y === y) { ok = true; break; }
+    const u = await ui(page); if (u.box !== null || u.choices.length) { ok = true; break; }
+    if (from && s && s.map !== from.map) { ok = true; break; }
     await page.waitForTimeout(200);
   }
-  return false;
+  const to = await st(page);
+  log("walk", `${from?.map}:${from?.x},${from?.y} → want ${x},${y} → ${to?.map}:${to?.x},${to?.y}`, ok ? "" : "TIMEOUT", JSON.stringify(r)?.slice(0, 80));
+  return ok;
 }
 async function faceAndAct(page, dir) {
   const key = { up: "ArrowUp", down: "ArrowDown", left: "ArrowLeft", right: "ArrowRight" }[dir];
@@ -243,14 +248,14 @@ try {
     await play(page, seg, [], quietAnd(() => page.evaluate(() => !!window.__oprnDebug.readState().switches.sw_mk_lily_met)), { shotOn: /리리스|블랙 기업|재결성/ }); mark("lily");
     const cat = ev("map_mk_street", "ev_mk_st_cat");
     await walkTo(page, cat.x + 1, cat.y); await faceAndAct(page, "left"); await play(page, seg, [], idle); mark("cat");
-    await walkTo(page, 31, 0); await page.waitForTimeout(1500); mark("shrine");
+    await walkTo(page, 12, 10); await walkTo(page, 14, 10); await walkTo(page, 31, 0); await page.waitForTimeout(1500); mark("shrine");
     shot(page, "shrine", 800);
     const leon = ev("map_mk_shrine", "ev_mk_sh_leon");
     await walkTo(page, leon.x + 1, leon.y); await faceAndAct(page, "left"); await play(page, seg, [], idle, { shotOn: /세계의 절반을 주마|고기만두/ }); mark("leon");
     await walkTo(page, 29, 8); await faceAndAct(page, "up"); await play(page, seg, [2], idle); mark("pray");
     await walkTo(page, 23, 14); await faceAndAct(page, "down"); await play(page, seg, [], idle, { shotOn: /대흉/ }); mark("kuji");
     await walkTo(page, 19, 27); await page.waitForTimeout(1500); mark("back-street");
-    await walkTo(page, roomDoorOnStreet.x, roomDoorOnStreet.y); await page.waitForTimeout(1500); mark("room");
+    await walkTo(page, roomDoorOnStreet.x + 1, roomDoorOnStreet.y + 1); await walkTo(page, roomDoorOnStreet.x, roomDoorOnStreet.y); await page.waitForTimeout(1500); mark("room");
     await walkTo(page, 2, 5); await faceAndAct(page, "up");
     await play(page, seg, [], async (s) => { const x = await st(page); return x?.v?.var_mk_stage === 5 && x.map === "map_mk_konbini"; }); mark("slept");
     await page.waitForTimeout(1500);
@@ -266,7 +271,7 @@ try {
   });
   if (only.has("meeting")) await segment(browser, server, "meeting", CP.meeting, async (page, seg, mark) => {
     await ready(page); await page.waitForTimeout(1500); mark("ready");
-    await walkTo(page, 31, 27); await page.waitForTimeout(1500); mark("park");
+    await walkTo(page, 12, 10); await walkTo(page, 14, 10); await walkTo(page, 31, 27); await page.waitForTimeout(1500); mark("park");
     await play(page, seg, [1], quietAnd(() => page.evaluate(() => !!window.__oprnDebug.readState().switches.sw_mk_meeting_done)), { shotOn: /가르곤|회비|보름달/ }); mark("meeting-done");
     shot(page, "park-after", 500);
   });
