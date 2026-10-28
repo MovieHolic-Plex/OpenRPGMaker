@@ -19,6 +19,12 @@
 - **상호작용 안내(「Z 조사」) 자리**(2026-10-29): `placePrompt` 가 목표 창보다 먼저 `choosePromptPlacement` 로 아래 가운데·왼쪽·오른쪽 중
   주인공·인물·HUD·방을 가장 덜 덮는 곳을 고른다(아래 가운데가 기본, 큰 맵은 그대로). 작은 방 아래로 난 출구 통로를 덮던 것(VQA argon 79·terra 185·212).
   높이는 실제로 잰다(`measure`). 자연 크기는 `left:0` 에서 잰다 — 지난 자리에 둔 채 재면 남은 폭만큼 줄어든 값을 읽는다.
+- **안내에 대상 이름**(2026-10-29): 「Z 조사 · 책상의 메모」「Z 대화 · 한스」「Z 이동 · 2층 객실」 — `playSceneZoneFeedback.namedPrompt` → `objectiveTarget.promptTargetName`
+  (이벤트 이름이 사람이 읽는 이름이면 그것, 문이면 가는 맵 이름, 아니면 그 칸 가구 이름표, 12자). 안내를 한 번만 보이는 규칙(`rememberPrompt` 키)은 그대로.
+  VM 측정 판 5개 판정자 공통 「메모·시계·금고가 어느 오브젝트인지 모른다」.
+- **현재 목표 대상 표시**(2026-10-29): `playSceneFieldStaging.syncObjectiveMarkers` 가 지금 목표 글(`currentObjectiveText`)의 대상
+  (`objectiveTarget.objectiveTargetViews`: 꼬리 「(이름: 자리)」 이름의 이벤트 → 「(<맵> 입구: …)」면 그 맵으로 가는 문 → 글에 나온 가장 긴 이벤트 이름 → 글에 나온 다른 맵의 문)에
+  금빛 빛무리·바닥 고리를 거리와 무관하게 둔다(page.glow 보다 옅게, 깊이는 그 칸 사물 줄). 목표가 바뀌면 400ms 안에 옮긴다. QA: `objectiveMarkerIds(scene)`.
 - **오프닝 애니메틱 내레이션 띠**: `openingAnimaticRenderer.animaticBandClearance` 가 장면 전체에서 한 번, 띠 밑에 들어가는 인물(role actor)을
   띠 위로 올리는 카메라 y 보정을 구한다(띠 높이·배경 아래 끝 여유 이내). 배경이 끝나 못 올리고 위쪽에 인물이 없으면 띠를 위로(`cinematic-narration--top`).
 - **고해상도 무대 글자 배율**: 320×240 기준 UI 를 높이/240 ≥ 1.5 무대(연애 1024×768 등)에서 `playSurface.hiresUiZoom` 배(반올림)로 키운다 —

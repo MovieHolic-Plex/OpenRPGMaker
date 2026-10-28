@@ -23,7 +23,9 @@ import {
 } from "@/project/eventCommands/cinematicStaging";
 import { mapTileSize } from "@/project/tileGeometry";
 import { store } from "@/project/store";
-import { runtimeEventViewById } from "@/project/runtimeEventState";
+import { runtimeEventViewById, runtimeEventViewsForMap } from "@/project/runtimeEventState";
+import { objectiveTargetViews } from "@/player/objectiveTarget";
+import { currentObjectiveText } from "@/player/zoneFeedback";
 
 /** Phaser.TintModes.FILL (Phaser 4). 값 import 없이 쓰려고 숫자로 둔다. */
 const TINT_MODE_FILL = 1;
@@ -459,6 +461,7 @@ export function updateFieldStaging(scene: PlaySceneContext): void {
   syncFreezeFrame(scene);
   syncNearSparkles(scene, now);
   syncEventGlows(scene, now);
+  syncObjectiveMarkers(scene, now);
   syncLiftRide(scene);
 }
 
@@ -572,6 +575,71 @@ function syncEventGlows(scene: PlaySceneContext, now: number): void {
     parts.twinkles.setPosition(parts.x, parts.y);
     parts.motes.setPosition(parts.x, parts.y);
   }
+}
+
+// ── 현재 목표의 다음 대상(목표 글이 가리키는 이벤트) — 거리와 무관하게 은은한 표시 ─────────────────
+// 2026-10-29 VM 측정 판 5개(deepseek·terra escape, terra·flash·deepseek mystery) 판정자가 모두 「조사 위치가 눈에 안 띈다」:
+// 조사 이벤트는 대개 투명이고 가까이 반짝임은 2칸 안에서 한 번뿐이다. 목표 글의 대상(objectiveTargetViews)에 숨 쉬는 금빛 빛무리와
+// 바닥 고리를 늘 둔다 — 늘 빛나는 표지(page.glow)보다 옅게. 깊이는 그 칸 사물 줄(앞 줄 사람이 가린다, 주인공 얼굴을 덮지 않는다).
+
+type ObjectiveMarkerParts = { readonly halo: Phaser.GameObjects.Image; readonly ring: Phaser.GameObjects.Image; readonly radiusPx: number; x: number; y: number };
+type ObjectiveMarkerState = { mapId: string; text: string | null; parts: Map<string, ObjectiveMarkerParts>; nextCheck: number };
+const objectiveMarkerStates = new WeakMap<PlaySceneContext, ObjectiveMarkerState>();
+const OBJECTIVE_MARKER_COLOR = 0xffe08a;
+
+function destroyObjectiveMarker(parts: ObjectiveMarkerParts): void {
+  parts.halo.destroy();
+  parts.ring.destroy();
+}
+
+function syncObjectiveMarkers(scene: PlaySceneContext, now: number): void {
+  const map = scene.map;
+  if (!map || !scene.session || !scene.add) return;
+  let state = objectiveMarkerStates.get(scene);
+  if (!state || state.mapId !== map.id) {
+    for (const parts of state?.parts.values() ?? []) destroyObjectiveMarker(parts);
+    state = { mapId: map.id, text: null, parts: new Map(), nextCheck: 0 };
+    objectiveMarkerStates.set(scene, state);
+  }
+  if (now >= state.nextCheck) {
+    state.nextCheck = now + 400;
+    const project = store.getCurrent();
+    const text = currentObjectiveText(scene.session.m2Runtime?.ui);
+    state.text = text;
+    const views = text ? runtimeEventViewsForMap(project, map, scene.session, scene.eventPositions) : [];
+    // 늘 빛나는 표지가 이미 있는 대상은 겹쳐 그리지 않는다.
+    const targets = objectiveTargetViews(project, map, views, text).filter((view) => !view.page?.glow);
+    const keep = new Set(targets.map((view) => view.event.id));
+    for (const [id, parts] of state.parts) if (!keep.has(id)) { destroyObjectiveMarker(parts); state.parts.delete(id); }
+    const size = mapTileSize(map);
+    for (const view of targets) {
+      const x = (view.x + 0.5) * size;
+      const y = (view.y + 0.55) * size;
+      const depth = characterDepth("same", characterSpriteY(view.y, size)) + 0.4;
+      const existing = state.parts.get(view.event.id);
+      if (existing) { existing.x = x; existing.y = y; existing.halo.setDepth(depth); existing.ring.setDepth(depth); continue; }
+      ensureGlowTextures(scene);
+      const radiusPx = size * 0.9;
+      const halo = scene.add.image(x, y, GLOW_TEX.halo).setBlendMode("ADD").setTint(OBJECTIVE_MARKER_COLOR).setDepth(depth);
+      const ring = scene.add.image(x, y, GLOW_TEX.ring).setBlendMode("ADD").setTint(OBJECTIVE_MARKER_COLOR).setDepth(depth);
+      state.parts.set(view.event.id, { halo, ring, radiusPx, x, y });
+    }
+  }
+  // 2.2초 숨: 빛무리(0.3~0.55)와 바닥 고리(칸 안에서 한 번 퍼졌다 사라짐). 밝은 나무 바닥에서도 읽히는 세기 — 첫 판(0.16~0.34)은
+  // 여관 바닥에서 거의 안 보였다(2026-10-29 terra mystery 1배 화면). 늘 빛나는 표지(page.glow: 알갱이·별 반짝임)보다는 조용하다.
+  for (const parts of state.parts.values()) {
+    const breath = 0.5 + 0.5 * Math.sin((now / 2200) * Math.PI * 2);
+    const haloSize = parts.radiusPx * 2 * (0.95 + 0.15 * breath);
+    parts.halo.setPosition(parts.x, parts.y - parts.radiusPx * 0.3).setDisplaySize(haloSize, haloSize * 0.9).setAlpha(0.3 + 0.25 * breath);
+    const ringT = (now / 2200) % 1;
+    const ringSize = parts.radiusPx * (0.5 + 1.2 * ringT);
+    parts.ring.setPosition(parts.x, parts.y).setDisplaySize(ringSize, ringSize * 0.5).setAlpha(0.9 * (1 - ringT));
+  }
+}
+
+/** QA: 지금 목표 표시가 붙은 이벤트 id. */
+export function objectiveMarkerIds(scene: PlaySceneContext): string[] {
+  return [...(objectiveMarkerStates.get(scene)?.parts.keys() ?? [])];
 }
 
 /** QA: 지금 빛나는 표지 수. */

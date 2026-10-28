@@ -4,6 +4,8 @@ import { stampEmeraldSurface } from "@/player/emeraldSurfaces";
 import type { RuntimeEventView } from "@/project/runtimeEventState"
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import { footprintBounds, footprintContains } from "@/project/footprint";
+import { objectClusterAt } from "@/project/objectFootprint";
+import { promptTargetName } from "@/player/objectiveTarget";
 import { mapTileSize } from "@/project/tileGeometry";
 import { runtimePixelDensity } from "@/player/runtimeViewScale";
 import type { GameMap } from "@/project/types";
@@ -429,7 +431,20 @@ function facingPrompt(scene: ZoneFeedbackScene): string | null {
   const target = promptForEvent(faced) ? faced
     : events.find((event) => event.page?.interaction?.kind === "hiding" && Math.abs(event.x - scene.tileX) + Math.abs(event.y - scene.tileY) === 1) ?? faced;
   const label = promptForEvent(target);
-  return rememberPrompt(scene.session, label && target ? `${(scene.session as { currentMapId?: string }).currentMapId ?? ""}:${target.event.id}:${target.pageId ?? ""}:${label}` : null) ? label : null;
+  return rememberPrompt(scene.session, label && target ? `${(scene.session as { currentMapId?: string }).currentMapId ?? ""}:${target.event.id}:${target.pageId ?? ""}:${label}` : null) ? namedPrompt(scene, target, label) : null;
+}
+
+/**
+ * 「Z 조사」 → 「Z 조사 · 책상의 메모」 — 무엇을 조사하는지(이벤트 이름, 문이면 가는 맵, 없으면 그 칸 가구 이름표)를 붙인다.
+ * 2026-10-29 VM 측정 판 5개 판정자: 「메모·시계·금고가 어느 오브젝트인지 화면에서 구분이 안 된다」 — 투명 조사 칸 앞에서 무엇인지 알려 준다.
+ */
+function namedPrompt(scene: ZoneFeedbackScene, target: RuntimeEventView | undefined, label: string | null): string | null {
+  if (!label || !target || label.includes(" · ")) return label;
+  const project = store.getCurrent();
+  const map = scene.map;
+  const tile = map ? objectClusterAt(project, map, target.x, target.y)?.label : undefined;
+  const name = promptTargetName(project, target, label, tile);
+  return name ? `${label} · ${name}` : label;
 }
 
 /**
