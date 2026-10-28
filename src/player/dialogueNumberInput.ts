@@ -40,6 +40,9 @@ function tabbable(root: HTMLElement): HTMLElement[] {
  */
 export const NUMBER_INPUT_CONFIRM_LABEL = "확인";
 
+/** 조작 안내 한 줄. 숫자 키를 몰라도 방향키와 결정 키만으로 넣을 수 있다. */
+export const NUMBER_INPUT_HINT = "↑↓ 숫자 · ←→ 자리 · 숫자 키 바로 입력 · Enter 확인";
+
 /**
  * RM2K3-style numeric entry: per-digit slots (not a free text field).
  * Free-text number inputs looked broken under the pixel window skin/font;
@@ -66,6 +69,11 @@ export function showNumberInput(
 
     const digits = clampNumberInputDigits(request.digits);
     const titleText = request.prompt?.trim() || "숫자 입력";
+    // 자리별 칸 + 커서. 숫자 키는 커서 자리에 쓰고 다음 자리로, ↑↓ 는 커서 자리 숫자를 바꾸고, ←→ 는 자리를 옮긴다.
+    // 예전에는 숫자 키만 받아 방향키·패드 사용자는 넣을 방법이 없었고, 네 칸이 다 빈칸이라 지금 값·자리를 몰랐다(장부 hud #35 막음).
+    // 값은 앞에서부터 채운 글자다(뒤 빈칸은 버린다, 사이 빈칸은 0) — 「12」를 치면 예전처럼 12.
+    const slotValues: string[] = Array.from({ length: digits }, () => "");
+    let cursor = 0;
     let value = "";
 
     // Hidden field keeps existing Playwright fill/type paths working.
@@ -90,13 +98,13 @@ export function showNumberInput(
     const syncSlots = (): void => {
       clearChildren(slots);
       for (let i = 0; i < digits; i += 1) {
-        const ch = value[i] ?? "";
-        const isCursor = i === value.length && value.length < digits;
+        const ch = slotValues[i] ?? "";
+        const isCursor = i === cursor;
         slots.append(
           el("div", {
             class: `number-input-slot${ch ? " filled" : " empty"}${isCursor ? " cursor" : ""}`,
-            // Empty slots stay blank (not "0") so unfilled PIN digits are unambiguous.
-            text: ch,
+            // 빈 칸은 「0」이 아니라 밑줄 자리표 — 아직 안 넣은 자리와 0 을 구별한다.
+            text: ch || "_",
             attrs: ch ? undefined : { "aria-hidden": "true" },
           })
         );
@@ -112,12 +120,51 @@ export function showNumberInput(
       dataset: { testid: "runtime-input-number-announcement" },
       attrs: { role: "status", "aria-live": "polite", "aria-atomic": "true" },
     });
+    const valueOfSlots = (): string => {
+      let last = -1;
+      for (let i = 0; i < digits; i += 1) if (slotValues[i]) last = i;
+      return slotValues.slice(0, last + 1).map((ch) => ch || "0").join("");
+    };
+    const commit = (): void => {
+      const next = valueOfSlots();
+      const changed = next !== value;
+      value = next;
+      syncSlots();
+      if (changed) announcement.textContent = spokenDigits(value);
+    };
+    /** 문자열 통째로 넣기(숨김 칸 fill·패드). 커서는 끝 다음 자리. */
     const setValue = (next: string): void => {
       const cleaned = next.replace(/\D/g, "").slice(0, digits);
-      if (cleaned === value) return;
-      value = cleaned;
+      for (let i = 0; i < digits; i += 1) slotValues[i] = cleaned[i] ?? "";
+      cursor = Math.min(cleaned.length, digits - 1);
+      commit();
+    };
+    /** 커서 자리에 숫자를 쓴다. 앞의 빈 자리는 0 으로 채워 보이는 칸과 값이 같게 한다. */
+    const writeDigit = (digit: string, advance: boolean): void => {
+      for (let i = 0; i < cursor; i += 1) if (!slotValues[i]) slotValues[i] = "0";
+      slotValues[cursor] = digit;
+      if (advance && cursor < digits - 1) cursor += 1;
+      commit();
+    };
+    const typeDigit = (digit: string): void => {
+      // 마지막 자리까지 다 찬 뒤의 숫자 키는 무시한다(예전과 같다) — ↑↓·←→ 로 고친다.
+      if (cursor === digits - 1 && slotValues[cursor] && value.length === digits) return;
+      writeDigit(digit, true);
+    };
+    const stepDigit = (delta: 1 | -1): void => {
+      const current = Number.parseInt(slotValues[cursor] || "0", 10);
+      writeDigit(String((current + delta + 10) % 10), false);
+    };
+    const moveCursor = (delta: 1 | -1): void => {
+      const next = Math.max(0, Math.min(digits - 1, cursor + delta));
+      if (next === cursor) return;
+      cursor = next;
       syncSlots();
-      announcement.textContent = spokenDigits(value);
+    };
+    const erase = (): void => {
+      if (slotValues[cursor]) slotValues[cursor] = "";
+      else if (cursor > 0) { cursor -= 1; slotValues[cursor] = ""; }
+      commit();
     };
 
     const finish = (): void => {
@@ -147,13 +194,22 @@ export function showNumberInput(
       if (/^[0-9]$/.test(event.key)) {
         event.preventDefault();
         event.stopPropagation();
-        setValue(`${value}${event.key}`);
+        typeDigit(event.key);
         return;
       }
-      if (event.key === "Backspace") {
+      if (event.key === "Backspace" || event.key === "Delete") {
         event.preventDefault();
         event.stopPropagation();
-        setValue(value.slice(0, -1));
+        erase();
+        return;
+      }
+      const arrow = event.key === "ArrowUp" ? "up" : event.key === "ArrowDown" ? "down" : event.key === "ArrowLeft" ? "left" : event.key === "ArrowRight" ? "right" : null;
+      if (arrow) {
+        event.preventDefault();
+        event.stopPropagation();
+        if (arrow === "up") stepDigit(1);
+        else if (arrow === "down") stepDigit(-1);
+        else moveCursor(arrow === "left" ? -1 : 1);
         return;
       }
       if (isConfirmKey(event.key)) {
@@ -179,6 +235,11 @@ export function showNumberInput(
         dataset: { testid: "runtime-input-number-title" },
       }),
       slots,
+      el("div", {
+        class: "number-input-hint",
+        text: NUMBER_INPUT_HINT,
+        dataset: { testid: "runtime-input-number-hint" },
+      }),
       hidden,
       announcement,
     ];
