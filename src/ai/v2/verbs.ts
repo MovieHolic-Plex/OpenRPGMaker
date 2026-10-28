@@ -4,7 +4,7 @@
 import { flattenWrapperTool } from "./flatWrapper";
 import type { PiToolShape, PiToolExecResult } from "@/ai/piAgent/toolAdapter";
 import { shipBlockers, wantsWholeGame } from "./shipChecks";
-import { applyBlueprintAssembly } from "@/project/blueprintAssembly";
+import { applyBlueprintAssembly, isPlaceholderTitle } from "@/project/blueprintAssembly";
 import { applyBlueprintOpening } from "@/editor/tools/blueprintOpening";
 import { WRITE_BLUEPRINT_SCHEMA, blueprintDesignerFromEnv, blueprintProgressNote, designBlueprint, parseBlueprintArgs, walkBlueprint } from "./blueprint";
 import { projectBrief } from "./prompt";
@@ -470,7 +470,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
       // 제목·장르를 빠뜨린 다시 쓰기(mt2 Flash: 매 턴 «title·genre is required» 로 한 번 실패한 뒤 다시 썼다)는 앞 청사진·프로젝트 제목으로 채운다.
       const prior = env.ctx.project.gameBlueprint;
       const raw = (params ?? {}) as Record<string, unknown>;
-      const filled = { ...raw, title: raw.title || prior?.title || env.ctx.project.meta?.title || "제목 없는 게임", genre: raw.genre || prior?.genre || "게임" };
+      const filled = { ...raw, title: raw.title || prior?.title || (isPlaceholderTitle(env.ctx.project.meta?.title) ? "" : env.ctx.project.meta?.title) || "제목 없는 게임", genre: raw.genre || prior?.genre || "게임" };
       const parsed = parseBlueprintArgs(filled, String(task ?? ""));
       if ("error" in parsed) return text({ ok: false, summary: `청사진을 읽지 못했다: ${parsed.error}` });
       // 같은 내용을 다시 쓰면 바꾸지 않는다 — 청사진을 되풀이해 쓰는 대신 경로를 짓게 한다.

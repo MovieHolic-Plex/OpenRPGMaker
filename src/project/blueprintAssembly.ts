@@ -19,7 +19,36 @@ import type { GameMap, Project } from "@/project/types";
 /** 편집기·씨앗이 깔아 둔(= 아무도 고르지 않은) 타이틀 배경. */
 const UNTOUCHED_TITLE_BACKGROUNDS: ReadonlySet<string> = new Set(["oprn-title-field", "rpg-zzu-title-field"]);
 /** 씨앗·빈 프로젝트가 남기는 기본 제목. */
-const PLACEHOLDER_TITLES: ReadonlySet<string> = new Set(["새 프로젝트", "새 게임", "New Project", "New Game", ""]);
+const PLACEHOLDER_TITLES: ReadonlySet<string> = new Set(["새 프로젝트", "새 게임", "New Project", "New Game", "", "제목 없는 게임"]);
+
+/**
+ * 아무도 짓지 않은 제목 — 씨앗 기본 문구, 또는 프로젝트 id 같은 영문 슬러그(「suite-mt3-1028-flash-escape」). 슬러그는 하네스·호스트가
+ * 프로젝트 이름으로 준 것이 meta.title → 청사진 title 로 흘러든 것이다(2026-10-29 VQA 트리아지 B: flash 타이틀이 id 그대로, blocker).
+ */
+export function isPlaceholderTitle(title: string | undefined): boolean {
+  const text = (title ?? "").trim();
+  return PLACEHOLDER_TITLES.has(text) || /^[a-z0-9]+(?:[-_.][a-z0-9]+)+$/iu.test(text);
+}
+
+/** 장르 칸이 비었거나 「게임」 뿐이면 장르가 아니다(make_game 이 비면 「게임」 으로 채운다). */
+const GENERIC_GENRES: ReadonlySet<string> = new Set(["", "게임", "game", "Game"]);
+const ESCAPE_WORDS = /방\s*탈출|탈출|밀실|escape/iu;
+
+/** 이 청사진의 장르 낱말 — 장르 칸이 비었으면 목표·엔딩 글에서 방탈출만 알아본다. 못 알아보면 빈 문자열. */
+export function blueprintGenreWord(blueprint: GameBlueprint): string {
+  const genre = blueprint.genre.trim();
+  if (!GENERIC_GENRES.has(genre)) return genre;
+  return ESCAPE_WORDS.test(`${blueprint.playerGoal ?? ""} ${blueprint.ending?.name ?? ""} ${blueprint.ending?.how ?? ""}`) ? "방탈출" : "";
+}
+
+/** 화면에 보일 제목 — 청사진 제목이 지어졌으면 그것, 아니면 첫 장소 이름(방탈출이면 「… 탈출」). */
+export function blueprintDisplayTitle(project: Project, blueprint: GameBlueprint): string {
+  if (!isPlaceholderTitle(blueprint.title)) return blueprint.title.trim();
+  const place = blueprintPlaceName(project, blueprint);
+  const genre = blueprintGenreWord(blueprint);
+  if (!place) return genre || blueprint.title.trim();
+  return genre === "방탈출" && !/탈출/u.test(place) ? `${place} 탈출` : place;
+}
 /** 하늘만 있는 배경 층(장소가 아니다). 도시 실루엣 층은 장소로 친다 — ai/v2/shipChecks isSkyOnlyImage 와 같은 규칙. */
 const SKY_ONLY = /^oprn-pano-(night|sky-day(?!-city)|sunset(?!-skyline)|clouds|sea)/u;
 
@@ -182,10 +211,21 @@ function replaceableTitleBackground(id: string | undefined, story: string): bool
 }
 
 /** 타이틀 부제: 「장르 · 장소」(장르가 이미 길거나 묶음이면 장소만). 기본 문구 「A NEW ADVENTURE / 이야기가 시작되는 곳」을 대신한다. */
-export function blueprintTitleSubtitle(project: Project, blueprint: GameBlueprint): string {
-  const genre = blueprint.genre.trim();
+/**
+ * 제목 아래 부제 — 「장르 · 장소」 에서 제목에 이미 든 낱말은 뺀다(2026-10-29 VQA 트리아지 B: 「방탈출 · 멈춘 시계의 방」 이 제목
+ * 「멈춘 시계의 방」 을 되풀이, 「게임 · 잠긴 서재」 는 장르 칸 기본값 「게임」). 남는 것이 없으면 방탈출은 정해진 한 줄, 그 밖은 빈 문자열
+ * (부제를 안 깐다).
+ */
+export function blueprintTitleSubtitle(project: Project, blueprint: GameBlueprint, shownTitle?: string): string {
+  const title = (shownTitle ?? blueprintDisplayTitle(project, blueprint)).replace(/\s+/gu, "");
+  const inTitle = (word: string) => !word || title.includes(word.replace(/\s+/gu, "")) || word.replace(/\s+/gu, "").includes(title);
+  const genre = blueprintGenreWord(blueprint);
+  // 「추리 · 미스터리」 처럼 이미 여럿이거나 긴 장르 글은 부제에 넣지 않는다(장소만).
+  const shortGenre = /[·,/]/u.test(genre) || genre.length > 10 ? "" : genre;
   const place = blueprintPlaceName(project, blueprint);
-  const text = !place ? genre : /[·,/]/u.test(genre) || genre.length > 10 || place.includes(genre) ? place : `${genre} · ${place}`;
+  const parts = [shortGenre, place].filter((word) => word && !inTitle(word));
+  if (parts.length === 2 && parts[1]!.includes(parts[0]!)) parts.shift();
+  const text = parts.join(" · ") || (genre === "방탈출" ? "단서를 모아 문을 열어라" : "");
   return text.slice(0, 60);
 }
 
@@ -206,9 +246,9 @@ export function isLeftoverDefaultOpening(project: Project): boolean {
 
 /**
  * 청사진이 있는 게임에 조립 기본값을 깐다. 저작자가 고른 값은 덮지 않는다. 바꾼 항목 설명을 돌려준다(없으면 빈 배열).
- *  1) 기본 제목 → 청사진 제목
+ *  1) 기본 제목·프로젝트 id 슬러그 → 청사진 제목(그것도 슬러그면 첫 장소 이름, 방탈출은 「… 탈출」)
  *  2) 기본·부적합 타이틀 배경 → 청사진 장르·장소에 맞는 번들 그림(맞는 그림이 없으면 그대로 — 출하 검사가 짚는다)
- *  3) 기본 문구(A NEW ADVENTURE) → 「장르 · 장소」 부제
+ *  3) 기본 문구(A NEW ADVENTURE) → 「장르 · 장소」 부제(제목에 든 낱말은 뺀다)
  *  4) 손대지 않은 기본 왕국 오프닝 → 끈다(게임이 시작 맵에서 바로 시작한다)
  */
 export function applyBlueprintAssembly(project: Project): string[] {
@@ -218,11 +258,14 @@ export function applyBlueprintAssembly(project: Project): string[] {
   const system = project.system;
   const title = system.titleScreen;
   if (title) {
-    if (PLACEHOLDER_TITLES.has(title.title.trim())) {
-      title.title = blueprint.title;
-      applied.push(`타이틀 제목 「${blueprint.title}」`);
+    if (isPlaceholderTitle(title.title)) {
+      const shown = blueprintDisplayTitle(project, blueprint);
+      if (shown && !isPlaceholderTitle(shown)) {
+        title.title = shown;
+        applied.push(`타이틀 제목 「${shown}」`);
+      }
     }
-    if (PLACEHOLDER_TITLES.has(project.meta.title.trim())) project.meta = { ...project.meta, title: title.title };
+    if (isPlaceholderTitle(project.meta.title) && !isPlaceholderTitle(title.title)) project.meta = { ...project.meta, title: title.title };
     const story = blueprintStoryText(project, blueprint);
     const current = title.backgroundResourceId ?? system.titleResourceId;
     if (replaceableTitleBackground(current, story)) {
@@ -234,7 +277,7 @@ export function applyBlueprintAssembly(project: Project): string[] {
       }
     }
     if (title.logoStyle === undefined && !title.logoSubtitle?.trim()) {
-      const subtitle = blueprintTitleSubtitle(project, blueprint);
+      const subtitle = blueprintTitleSubtitle(project, blueprint, title.title);
       if (subtitle) {
         title.logoSubtitle = subtitle;
         applied.push(`타이틀 부제 「${subtitle}」(기본 문구 대신)`);
