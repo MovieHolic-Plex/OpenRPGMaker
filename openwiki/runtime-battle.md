@@ -1,3 +1,8 @@
+## 기술 목록에 기본 공격(skill_attack)을 싣지 않는다 (2026-10-29)
+
+`battleCommandDom.ts` `listedSkillIds` 는 사람 배우의 기술 목록에서 `skill_attack`(이름 「공격」)을 뺀다 — 「공격」 명령과 같은 것이다.
+실어 두면 「스킬」을 열자마자 첫 줄이 「공격」이라 「카일의 공격!」 이 나갔다(잊힌 지하묘지·마왕의 동굴). 몬스터 파티(포켓몬 「싸운다」 4칸)는 그대로다.
+
 ## 레트로 파티 창 수치 칸은 글자만큼 늘어난다 (2026-10-29)
 
 `_retro2003.css` 파티 창 줄의 HP·MP 칸은 `minmax(92px, max-content)` · `minmax(56px, max-content)` 이다. 92px 고정이면
