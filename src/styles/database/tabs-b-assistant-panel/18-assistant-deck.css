@@ -779,7 +779,6 @@ html[data-ai-render="off"] {
 .ai-chat-panel.is-left-sidebar.is-collapsed:not(.is-studio) .ai-collapsed-restore-dot { margin: 0; flex: 0 0 auto; }
 .ai-chat-panel.is-left-sidebar.is-collapsed:not(.is-studio) > .ai-collapsed-undo:not([hidden]) {
   position: static; display: flex; align-items: center; justify-content: center; flex: 0 0 auto;
-.left-progress-mark svg { display: block; }
   width: 32px; height: 32px; margin-top: 8px; padding: 0; transform: none;
   border: 1px solid var(--border-default); border-radius: var(--radius-s); background: var(--bg-raised); color: var(--text-1);
 }
@@ -805,8 +804,9 @@ html[data-ai-render="off"] {
 .left-progress-step.is-next { background: var(--accent-muted); }
 .left-progress-mark {
   flex: none; display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%;
-  border: 1px solid var(--border-default); font: 600 11px var(--font-ui); color: var(--text-2);
+  border: 1px solid var(--border-default); font: 600 12px var(--font-ui); color: var(--text-2);
 }
+.left-progress-mark svg { display: block; }
 .left-progress-step.is-done .left-progress-mark { background: var(--success, var(--accent)); border-color: transparent; color: var(--on-accent); }
 .left-progress-step.is-claimed .left-progress-mark { background: transparent; border: 1px dashed var(--text-muted, currentColor); color: var(--text-muted, inherit); }
 .left-progress-step.is-next .left-progress-mark { border-color: var(--accent); color: var(--accent); }
@@ -815,8 +815,8 @@ html[data-ai-render="off"] {
 .left-progress-detail { color: var(--text-2); font-size: 12px; overflow-wrap: anywhere; }
 .left-progress-hint { color: var(--text-2); font-size: 12px; }
 .left-progress-go, .left-progress-ack {
-  flex: none; min-height: 24px; padding: 0 8px; border: 1px solid var(--border-default); border-radius: var(--radius-s);
-  background: var(--bg-raised); color: var(--text-1); font: 500 11.5px var(--font-ui); cursor: pointer;
+  flex: none; min-height: 28px; padding: 0 10px; border: 1px solid var(--border-default); border-radius: var(--radius-s);
+  background: var(--bg-raised); color: var(--text-1); font: 500 12px var(--font-ui); cursor: pointer;
 }
 .left-progress-step.is-next .left-progress-go { background: var(--accent); border-color: transparent; color: var(--on-accent); }
 .left-progress-ack[aria-pressed="true"] { color: var(--text-3); }
