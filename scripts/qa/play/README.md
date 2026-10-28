@@ -47,6 +47,9 @@ node scripts/qa/play/qp.mjs serve --game fallen-star  --player-url http://127.0.
 #    --games-dir DIR    build-games 를 다른 자리에 돌렸을 때 그 산출물에서 <DIR>/<id>/project.json 을 찾는다
 #    --viewport 1024x768 (기본) · --seed 1 · --headed (눈으로 보기) · --keep-opening (오프닝 유지)
 #    --game 은 게임 id 이거나 project.json 경로다. --port 는 자기 player 서버를 띄울 때만 쓴다.
+#    --checkpoint-set SET --checkpoint ID  타이틀 없이 그 체크포인트(실제 세이브)에서 시작한다
+#                       (scripts/qa/runtime/checkpoints/<SET>.json, runtime QA 와 같은 qaCheckpoint 경로)
+#    환경변수 QP_BUDGET_SEC=N  state 에 경과/남은 시간 줄을, 마지막 3분에는 모든 응답에 정리 지시를 붙인다
 ```
 
 # 2) 짧은 명령. 세션 디렉터리는 --out · QP_OUT · tmp/qp/last 순으로 찾는다.
@@ -76,7 +79,7 @@ menus=[]
 
 | 명령 | 뜻 |
 |---|---|
-| `serve --game <id\|path> [--port P] [--player-url URL] [--games-dir DIR] [--out DIR] [--viewport WxH] [--seed N] [--headed] [--keep-opening]` | 세션 시작. `DIR/qp.ready`(포트·게임·경로·공유 여부)를 쓰고 `DIR/actions.jsonl` 을 비운 뒤 기록 시작 |
+| `serve --game <id\|path> [--port P] [--player-url URL] [--games-dir DIR] [--out DIR] [--viewport WxH] [--seed N] [--headed] [--keep-opening] [--checkpoint-set SET --checkpoint ID]` | 세션 시작. `DIR/qp.ready`(포트·게임·경로·공유 여부)를 쓰고 `DIR/actions.jsonl` 을 비운 뒤 기록 시작 |
 | `key <k>` | 키 한 번(`Enter`, `ArrowUp`, `z`, …) |
 | `hold <k> <ms>` | 키를 그 시간만큼 누르고 있다 뗀다. 방향키는 런타임 `hold` op |
 | `move <up\|down\|left\|right> [n]` | n 걸음. **타일이 바뀔 때까지** 기다리며 센다(고정 sleep 아님). 막히면 `moved k/n, blocked` |
@@ -251,6 +254,17 @@ npm run qa:runtime -- --scenario saesol-enter-field
   오프닝 자체를 검증할 때만 `--keep-opening`/`systemPatch` 로 켠다.
 - **같은 맵 안의 `teleport` 는 좌표만 바꾼다**(스프라이트·카메라가 안 따라올 수 있다). 다른 맵으로 갈 때는 실제 문
   경로를 탄다. 이동 검증은 `move`(타일 변화 대기)로 해라.
+- **에이전트에게는 시계가 없다 — 시간 예산은 하네스가 강제한다.** 프롬프트에 「20분 안에 정리하라」만 쓰면
+  지켜지지 않는다(실측 2026-10-27 신기루 18세션: 28분 넘게 조작 300~800회를 하고도 18/18 이 findings 를
+  쓰지 않았다). `QP_BUDGET_SEC` 로 응답에 남은 시간을 실어 주고, 바깥에서 `timeout` 으로 끊어라.
+  적용 후 3/3·19/19 세션이 예산 안에 증거 붙은 findings 를 냈다.
+- **보고서는 플레이 세션을 이어받아 쓰게 하지 마라.** 같은 `--session-id` 로 「이제 정리해라」를 보내면
+  플레이 맥락에 젖은 에이전트가 계속 `move` 를 보낸다(실측: 600초 동안 findings 0). 새 세션에서
+  `actions.jsonl`·`shots/` 만 읽혀 쓰게 하고, 조작 기록이 길면(900줄+) 사건 요약을 먼저 주고 초안부터 쓰게 해라.
+- **체크포인트 세션의 `reset` 은 타이틀이 아니라 그 체크포인트로 돌아간다.** reload 는 타이틀과
+  `runtime-state-json` 중 먼저 뜨는 쪽을 기다린다.
+- **에이전트가 쓰는 키 이름은 정규화된다.** `down`·`Right`·`space`·`esc` 는 Playwright 이름으로 바뀐다.
+  한 글자 키는 대소문자가 다른 키라서 그대로 둔다.
 - **관측 전용 op 은 재생에서 건너뛴다.** `state`·`shot`·`errors` 는 로그에만 남는다. 그래서 로그 토막을 그대로
   재생해도 화면 조작 순서가 달라지지 않는다.
 
