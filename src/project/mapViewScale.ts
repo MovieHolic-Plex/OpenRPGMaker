@@ -70,6 +70,8 @@ export function playPixelDensity(
 
 /** 작은 맵으로 보는 맵 — 화면에 이 배수 이상 남는 여백이 있어야 확대를 시도한다. */
 export const SMALL_MAP_FILL_MIN_RATIO = 1.25;
+/** 작은 방 채우기로 올린 캔버스의 넓이 상한(화소). */
+const SMALL_MAP_FILL_MAX_CANVAS_AREA = 1920 * 1080;
 
 /**
  * 작은 맵(서재 8×9 같은 방)을 화면에 꽉 차게 키우기 위한 캔버스 밀도(2026-10-28).
@@ -93,13 +95,17 @@ export function smallMapFillDensity(
     if (mapTileSize(map) !== reference) return 1;
     const mapZoom = typeof map.cameraZoom === "number" && Number.isFinite(map.cameraZoom) && map.cameraZoom > 0 ? map.cameraZoom : zoom;
     const ratio = Math.min(
-      resolution.width / mapZoom / Math.max(1, map.width * reference),
-      resolution.height / mapZoom / Math.max(1, map.height * reference),
+      // 사방 반 칸 여백을 둔 크기(playSceneCamera.smallMapFillZoom 과 같은 기준).
+      resolution.width / mapZoom / ((Math.max(1, map.width) + 1) * reference),
+      resolution.height / mapZoom / ((Math.max(1, map.height) + 1) * reference),
     );
     if (ratio >= SMALL_MAP_FILL_MIN_RATIO) ratios.push(ratio);
   }
   if (ratios.length === 0) return 1;
-  const cap = Math.floor(Math.min(MAX_CANVAS.width / resolution.width, MAX_CANVAS.height / resolution.height));
+  // 작은 방 채우기용 밀도는 캔버스 넓이 1920×1080 까지만 — 출하 플레이어 실측(데스크톱 Firefox, 이동 10초, 2026-10-28)에서
+  // 320×240 의 밀도 1·2·3(320×240·640×480·960×720) 모두 59~57fps, p95 17.3~17.5ms 로 차이가 없었다. 더 큰 해상도는 재지 않았으므로 넓이로 묶는다.
+  const areaCap = Math.floor(Math.sqrt(SMALL_MAP_FILL_MAX_CANVAS_AREA / (resolution.width * resolution.height)));
+  const cap = Math.min(areaCap, Math.floor(Math.min(MAX_CANVAS.width / resolution.width, MAX_CANVAS.height / resolution.height)));
   let best = 1;
   let bestGain = 0;
   for (const density of [2, 3]) {

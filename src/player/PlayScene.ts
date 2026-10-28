@@ -88,6 +88,7 @@ import {
 import { installPlaySceneTestHooks } from "@/player/playSceneTestHooks";
 import { applyStoredCameraState, centerRuntimeCamera, panRuntimeCamera } from "@/player/playSceneCamera";
 import { runtimeMapViewZoom, runtimePixelDensity } from "@/player/runtimeViewScale";
+import { syncMapSkirt } from "@/player/playSceneMapSkirt";
 import { hasSessionCheckpoint, restoreSessionCheckpoint, setSessionCheckpoint, getSessionCheckpoint } from "@/player/checkpoints";
 import { syncFollowerSceneVisibility, syncFollowerSprites } from "@/player/playSceneFollowers";
 import { startChaseSpawnGrace } from "@/player/chaseSpawnGrace";
@@ -575,6 +576,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
   centerCamera(): void {
     centerRuntimeCamera(this.cameras.main, this.map, this.player, runtimeMapViewZoom(this));
     applyStoredCameraState(this);
+    syncMapSkirt(this);
     syncWeatherLayer(this);
     installTimeTintLayer(this);
     syncLightingLayer(this);

@@ -99,7 +99,7 @@ function snapCameraScrollToCanvasPixels(camera: Phaser.Cameras.Scene2D.Camera): 
 }
 
 /**
- * 작은 맵을 화면에 꽉 차게 보여 줄 **정수** 캔버스 배율(2026-10-28). 맵 전체(북쪽 돌출 포함)가 화면 안에 다
+ * 작은 맵을 화면에 꽉 차게 보여 줄 **정수** 캔버스 배율(2026-10-28). 맵 전체(북쪽 돌출 포함)와 사방 반 칸 여백이 화면 안에 다
  * 들어가는 가장 큰 정수라 잘리는 곳이 없고, 세계 1px 이 캔버스 정수 px 이라 도트가 고르게 남는다.
  * 화면보다 크거나 같은 맵은 1 이하가 나와 기존 배율(기본 시야)이 그대로 이긴다. 캔버스 밀도가 1 이면
  * 320×240 의 8×9 방은 1 그대로다 — 그래서 createPlayGame 이 작은 방이 있는 프로젝트의 밀도를 올린다(smallMapFillDensity).
@@ -108,8 +108,9 @@ export function smallMapFillZoom(camera: Pick<Phaser.Cameras.Scene2D.Camera, "wi
   if (!map || !(camera.width > 0) || !(camera.height > 0)) return 0;
   const tile = mapTileSize(map);
   const overhang = Math.max(reliefTopOverhangPx(map, tile), normalizeVisualTopOverhangPx(map.visualTopOverhangPx) ?? 0);
-  const mapWidth = Math.max(tile, map.width * tile);
-  const mapHeight = Math.max(tile, map.height * tile + overhang);
+  // 사방 최소 반 칸 여백 — 맨 끝 줄의 문·출구 통로가 화면 끝에 붙어 잘려 보이지 않게(가로·세로 각 한 칸 더).
+  const mapWidth = Math.max(tile, map.width * tile) + tile;
+  const mapHeight = Math.max(tile, map.height * tile + overhang) + tile;
   return Math.floor(Math.min(camera.width / mapWidth, camera.height / mapHeight) + 1e-6);
 }
 
