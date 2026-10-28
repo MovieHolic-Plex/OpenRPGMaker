@@ -126,6 +126,23 @@ function score(c: { distance: number; rank: number }): number {
   return band * 1000 + c.rank * 100 + c.distance;
 }
 
+/**
+ * 은신처는 들어가기 전에는 가구 타일뿐이라 어느 것이 숨을 곳인지 몰랐다(2026-10-29 코디네이터: 「들어가기 전엔 안 보인다」).
+ * 조사 이벤트처럼 가까이(2칸) 오면 반짝이고, 맞은편에 서면 「숨기」 안내가 뜬다(playSceneZoneFeedback).
+ */
+export const HIDING_SPARKLE = { radius: 2 } as const;
+
+/** 은신 페이지에 가까이 반짝임이 없으면 단다. 바꾼 페이지 수. */
+export function markHidingSpots(map: GameMap): number {
+  let changed = 0;
+  for (const ev of mapHidingEvents(map)) for (const page of ev.pages ?? []) {
+    if ((page.interaction as { kind?: string } | undefined)?.kind !== "hiding" || page.nearSparkle) continue;
+    page.nearSparkle = { ...HIDING_SPARKLE };
+    changed += 1;
+  }
+  return changed;
+}
+
 /** 은신 페이지(make_chase_scene hidingSpots·configure_object_behavior hiding 과 같은 모양). */
 function hidingEvent(id: string, x: number, y: number, label: string): GameEvent {
   const page: EventPage = {
@@ -133,6 +150,7 @@ function hidingEvent(id: string, x: number, y: number, label: string): GameEvent
     priority: "same", overlapForbidden: true, animationType: "fixedGraphic",
     movement: { type: "fixed", speed: 3, frequency: 3 }, commands: [],
     interaction: { kind: "hiding" },
+    nearSparkle: { ...HIDING_SPARKLE },
   } as EventPage;
   return { id, name: `숨을 곳: ${label}`, x, y, trigger: { kind: "action" }, commands: [], pages: [page] } as GameEvent;
 }

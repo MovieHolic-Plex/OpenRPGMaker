@@ -33,7 +33,7 @@ import { BUILD_BLUEPRINT_PATH_SCHEMA, blueprintMapFor, buildBlueprintPath, sealE
 import { clearTransferLanes } from "./eventReach";
 import { dressInteriorExits } from "./exitDress";
 import { isPlaceholderMap, retireBlankStart } from "./blankStart";
-import { chaserEvents, ensureChaserHidingSpots, mapHidingEvents } from "@/project/chaserHiding";
+import { chaserEvents, ensureChaserHidingSpots, mapHidingEvents, markHidingSpots } from "@/project/chaserHiding";
 import { relocateLeadingFace } from "@/editor/tools/eventCompile";
 import { dungeonGateSpot, pickTransferSpot } from "./transferSpot";
 import { guessPlaceSpec } from "./placeGuess";
@@ -525,7 +525,16 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     notes.push(...sealEscapeExits(run));
     // 추격자가 있는데 숨을 곳이 0곳인 맵(2026-10-29 standin horror 「폐병원」) — 맵에 있는 옷장·사물함·침대·커튼 1~2곳을 순찰 길 가까이에서 은신처로.
     for (const [mapId, map0] of Object.entries(env.ctx.project.maps)) {
-      if (!chaserEvents(map0).length || mapHidingEvents(map0).length) continue;
+      if (!chaserEvents(map0).length) continue;
+      if (mapHidingEvents(map0).some((ev) => (ev.pages ?? []).some((pg) => (pg.interaction as { kind?: string } | undefined)?.kind === "hiding" && !pg.nearSparkle))) {
+        // 이미 있는 은신처에 가까이 반짝임을 단다(들어가기 전엔 안 보였다).
+        const marked = { ...map0, events: (map0.events ?? []).map((ev) => structuredClone(ev)) };
+        const n = markHidingSpots(marked);
+        env.ctx.project = { ...env.ctx.project, maps: { ...env.ctx.project.maps, [mapId]: marked } } as Project;
+        notes.push(`${map0.name}: 은신처 ${n}곳에 가까이 반짝임`);
+        continue;
+      }
+      if (mapHidingEvents(map0).length) continue;
       const copy = { ...map0, events: [...(map0.events ?? [])] };
       const auto = ensureChaserHidingSpots(env.ctx.project, copy);
       if (auto.placed.length) {

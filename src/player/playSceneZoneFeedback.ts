@@ -423,8 +423,11 @@ function facingPrompt(scene: ZoneFeedbackScene): string | null {
   const targetX = scene.tileX + delta.x;
   const targetY = scene.tileY + delta.y;
   const events = scene.activeRuntimeEvents("action");
-  const target = events.find((event) => footprintContains(event.x, event.y, event.footprint, targetX, targetY))
+  const faced = events.find((event) => footprintContains(event.x, event.y, event.footprint, targetX, targetY))
     ?? events.find((event) => footprintContains(event.x, event.y, event.footprint, scene.tileX, scene.tileY));
+  // 은신처는 가구 타일 위의 투명 이벤트라 들어가기 전엔 안 보인다 — 바로 곁(상하좌우)에 서면 등을 대고 있어도 「숨기」 를 띄운다(2026-10-29).
+  const target = promptForEvent(faced) ? faced
+    : events.find((event) => event.page?.interaction?.kind === "hiding" && Math.abs(event.x - scene.tileX) + Math.abs(event.y - scene.tileY) === 1) ?? faced;
   const label = promptForEvent(target);
   return rememberPrompt(scene.session, label && target ? `${(scene.session as { currentMapId?: string }).currentMapId ?? ""}:${target.event.id}:${target.pageId ?? ""}:${label}` : null) ? label : null;
 }

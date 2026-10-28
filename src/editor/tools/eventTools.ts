@@ -18,7 +18,7 @@ import { ACTION_CONTROLS_GUIDE } from "@/player/keyBindings";
 import { EventPlacementAnalysis, eventRequiresPassableTile } from "@/project/eventPlacementRecovery";
 import { canMove, isPassable, tileAt } from "@/project/collision";
 import { unsafeSpawnLines } from "@/project/chaserSpawnSafety";
-import { ensureChaserHidingSpots } from "@/project/chaserHiding";
+import { ensureChaserHidingSpots, HIDING_SPARKLE } from "@/project/chaserHiding";
 import { isDoorArtCell } from "@/project/lint/scenePolishLint";
 import { normalizeLightingState } from "@/project/lightingRules";
 import { isWaterChipsetTile } from "@/project/defaults/chipsetMapping";
@@ -3134,6 +3134,7 @@ function placeHidingSpots(draft: Project, chaserMap: GameMap, raw: unknown, chas
     if (!inMapBounds(map, x, y)) { warnings.push(`은신처 (${x}, ${y}) 가 맵 밖이라 건너뛰었습니다.`); continue; }
     const hideIn = (page: EventPage): void => {
       page.interaction = { kind: "hiding" };
+      page.nearSparkle ??= { ...HIDING_SPARKLE };
       page.movement = { ...page.movement, type: "fixed" };
       page.trigger = { kind: "action" };
       page.priority = "same";

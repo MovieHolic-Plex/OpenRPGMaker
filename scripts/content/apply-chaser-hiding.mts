@@ -2,11 +2,11 @@
 //
 //   npx tsx scripts/content/apply-chaser-hiding.mts <project 폴더> [--dry]
 //
-// 추격자가 있는데 은신처가 0곳인 맵마다 맵에 있는 옷장·사물함·침대·커튼 1~2곳(순찰 길에서 2~8칸)에 interaction hiding 이벤트를 건다.
+// 이미 있는 은신처에는 가까이 반짝임(nearSparkle 2칸)을 달고, 추격자가 있는데 은신처가 0곳인 맵마다 맵에 있는 옷장·사물함·침대·커튼 1~2곳(순찰 길에서 2~8칸)에 interaction hiding 이벤트를 건다.
 // 저장(saveProject) 뒤 같은 폴더를 다시 열어 은신 이벤트가 있는지 확인하고 출력한다. --dry 면 고르기만 하고 쓰지 않는다.
 import { resolve } from "node:path";
 import { openLocalProjectStore } from "../../electron/local-store/store";
-import { chaserEvents, ensureChaserHidingSpots, mapHidingEvents } from "../../src/project/chaserHiding";
+import { chaserEvents, ensureChaserHidingSpots, mapHidingEvents, markHidingSpots } from "../../src/project/chaserHiding";
 
 const dir = process.argv[2];
 if (!dir) throw new Error("usage: apply-chaser-hiding.mts <project 폴더> [--dry]");
@@ -21,9 +21,10 @@ try {
   let changed = false;
   for (const map of Object.values(project.maps)) {
     if (!chaserEvents(map).length) continue;
+    const marked = markHidingSpots(map);
     const result = ensureChaserHidingSpots(project, map);
-    report.push({ mapId: map.id, map: map.name, placed: result.placed, note: result.note, alreadyHad: mapHidingEvents(map).length - result.placed.length });
-    if (result.placed.length) changed = true;
+    report.push({ mapId: map.id, map: map.name, placed: result.placed, note: result.note, alreadyHad: mapHidingEvents(map).length - result.placed.length, sparkleAdded: marked });
+    if (result.placed.length || marked) changed = true;
   }
   if (changed && !dry) {
     const saved = await store.saveProject(project);
