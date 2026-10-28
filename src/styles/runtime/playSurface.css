@@ -294,6 +294,8 @@
 .cinematic-shot > .cinematic-effects { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
 .cinematic-narration[hidden] { display: none; }
 .cinematic-narration {
+  /* 줄 길이를 고르게 — 「이십 / 년이 지났다」처럼 둘째 줄에 한두 낱말만 남지 않게(장부 assembly #24). */
+  text-wrap: balance;
   max-height: 65%;
   overflow-y: auto;
   white-space: pre-wrap;
@@ -553,4 +555,15 @@
 /* 미연시 bar 레이아웃은 화면 끝에 닿는 전폭 띠다 — 위 창 6px 내림(이름표 여백)을 받지 않는다(이름표는 vnLook 이 띠 아래로 내린다). */
 .player-layout .play-stage > .dialogue-overlay[data-vn-layout="bar"][data-vn-look].position-top {
   top: var(--play-crop-top);
+}
+
+/* 고해상도 무대(높이/240 ≥ 1.5, playSurface.ts hiresUiZoom): 320×240 기준으로 그린 글자 UI 를 무대 배율만큼 키운다.
+   zoom 은 퍼센트 위치(left:10% 등)는 그대로 두고 글자·px 여백만 키운다. 양쪽 전신 대화창(data-dialogue-stage)은
+   자기 --dialogue-ui-scale 로 이미 키우므로 빼고, 에메랄드 타이틀은 자기 격자 규칙이 있어 뺀다. */
+[data-hires-ui] .dialogue-overlay:not([data-dialogue-stage]) > .dialogue-box,
+[data-hires-ui] .rm-title-screen:not([data-monster-style]) > :is(.rm-title-screen-title, .rm-title-screen-logo, .rm-title-logo-subtitle, .rm-title-menu, .rm-title-kicker, .rm-title-subtitle, .rm-title-press-start, .rm-title-editorial-copy),
+[data-hires-ui] .cinematic-narration,
+[data-hires-ui] .cinematic-skip-hint,
+[data-hires-ui] .play-stage > .runtime-overlay[data-testid="cutscene-skip-hint"] {
+  zoom: var(--hires-ui-zoom, 1);
 }
