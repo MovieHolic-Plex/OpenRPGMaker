@@ -158,9 +158,74 @@ function pageNeeds(page: Obj): { kind: "switch" | "item" | "variable"; id: strin
 }
 const hasCommands = (page: Obj) => Array.isArray(page.commands) && page.commands.length > 0;
 
+// ── 번호·암호 단계 ─────────────────────────────────────────────────────────
+// 왜(2026-10-28 mt3 flash 방탈출): 청사진 s2 「비밀번호 입력 — 숫자 자물쇠를 풀고 탈출」인데 경로 빌더가 그 단계를 줍기·엔딩 고리로
+// 지어, 열쇠만 들고 조사하면 번호 입력 없이 엔딩이 나왔다(판정 「퍼즐을 풀었다는 느낌이 없다」). 조건 사슬은 이어져 있어 기존 걷기가 못 봤다.
+
+/** 번호·암호를 맞히는 행동 낱말. */
+export const CODE_STEP_WORDS = /비밀\s*번호|암호|패스\s*워드|숫자\s*자물쇠|번호\s*자물쇠|다이얼|키\s*패드|번호를?\s*(맞|입력|누르|돌리)|password|passcode|pin\s*code|combination|keypad/iu;
+/** 번호를 «주는» 단계(단서)의 gives 낱말 — 이런 단계는 맞히는 단계가 아니다. */
+const CODE_GIVES = /비밀\s*번호|암호|번호|단서|쪽지|힌트|password|code|clue|hint|note/iu;
+/** 청사진 단계가 번호·암호를 맞히는 단계인가(이벤트 이름·행동에 그 낱말이 있고, gives 가 번호·단서 자체가 아니다). */
+export function isCodeStep(step: { readonly event: string; readonly action: string; readonly gives: string }): boolean {
+  return CODE_STEP_WORDS.test(`${step.event} ${step.action}`) && !CODE_GIVES.test(step.gives);
+}
+const isInput = (cmd: Obj) => cmd.kind === "inputNumber" || (cmd.kind === "choices" && Array.isArray(cmd.options) && cmd.options.length > 1);
+const progresses = (cmd: Obj) => cmd.kind === "triggerEnding" || (cmd.kind === "setSwitch" && cmd.value !== false) || (cmd.kind === "changeItem" && cmd.op !== "-=") || cmd.kind === "transfer";
+/** 명령 목록(공통 이벤트 호출 포함)에 입력이 있나. */
+function hasInput(project: Project, commands: unknown, seen = new Set<string>()): boolean {
+  let found = false;
+  const ces = new Map(((project.commonEvents ?? []) as unknown as Obj[]).map((ce) => [String(ce.id), ce]));
+  walk(commands, (cmd) => {
+    if (found) return;
+    if (isInput(cmd)) found = true;
+    else if (cmd.kind === "callCommonEvent") { const id = String(cmd.commonEventId); if (!seen.has(id)) { seen.add(id); found = hasInput(project, ces.get(id)?.commands, seen); } }
+  });
+  return found;
+}
+/** 입력(번호·고르기) 뒤 갈래 안에서만 켜지는 스위치·변수 — 이것을 조건으로 건 페이지는 입력을 거친 뒤에만 열린다. */
+function inputGatedFlags(project: Project): Set<string> {
+  const out = new Set<string>();
+  const pages = Object.values(project.maps).flatMap((m) => (m.events ?? []).flatMap((ev) => pagesOf(ev)));
+  const lists = [...pages.map((p) => p.commands), ...((project.commonEvents ?? []) as unknown as Obj[]).map((ce) => ce.commands)];
+  for (const list of lists) {
+    if (!Array.isArray(list) || !hasInput(project, list)) continue;
+    // 맨 윗줄(갈래 밖)에서 켜는 것은 입력과 상관없이 켜진다 — 갈래 안에서 켜는 것만.
+    const top = new Set((list as unknown[]).map((c) => obj(c)).filter((c): c is Obj => !!c && c.kind === "setSwitch").map((c) => String(c.switchId)));
+    walk(list, (cmd) => {
+      if (cmd.kind === "setSwitch" && cmd.value !== false && !top.has(String(cmd.switchId))) out.add(`switch:${String(cmd.switchId)}`);
+      if (cmd.kind === "inputNumber" && cmd.variableId !== undefined) out.add(`variable:${String(cmd.variableId)}`);
+    });
+  }
+  return out;
+}
+/**
+ * 번호·암호 단계 이벤트가 정말 입력을 거쳐야 넘어가나. 넘어가게 하는(엔딩·스위치·아이템·이동) 페이지마다
+ * (a) 그 페이지에 입력이 있고 넘어가는 명령이 입력 뒤 갈래 안에만 있거나, (b) 입력 갈래에서만 켜지는 스위치·변수를 조건으로 건다.
+ * 아니면 그 페이지 설명을 돌려준다(통과면 undefined).
+ */
+export function codeStepBypass(project: Project, ev: GameEvent): string | undefined {
+  const gated = inputGatedFlags(project);
+  for (const [i, page] of pagesOf(ev).entries()) {
+    const cmds = Array.isArray(page.commands) ? (page.commands as unknown[]) : [];
+    let moves = false;
+    walk(cmds, (c) => { if (progresses(c)) moves = true; });
+    if (!moves) continue;
+    const conds = leafConds(page);
+    if (conds.some((c) => (c.kind === "switch" && c.value !== false && gated.has(`switch:${String(c.switchId)}`)) || (c.kind === "variable" && gated.has(`variable:${String(c.variableId)}`)))) continue;
+    if (hasInput(project, cmds)) {
+      const bare = cmds.map((c) => obj(c)).find((c) => !!c && progresses(c));
+      if (!bare) continue;
+      return `${i + 1}쪽이 번호를 받고도 맞든 틀리든 ${String(bare.kind)} 를 한다(정답 갈래 밖)`;
+    }
+    return `${i + 1}쪽이 번호 입력·고르기 없이 ${cmds.map((c) => obj(c)).filter((c) => !!c && progresses(c)).map((c) => String(c!.kind)).join("·") || "다음으로 넘기기"} 를 한다`;
+  }
+  return undefined;
+}
+
 /** 경로 막힘의 고칠 동사 한 줄 — 하위 도구(upsert_event·define_ending…)를 하나씩 맞추게 하지 않는다(2026-10-28 mt2 Flash: upsert_event 6번 인자 실패). */
 export const BLUEPRINT_PATH_FIX = "고치기: build_blueprint_path 를 한 번 부른다 — 청사진 단계대로 이벤트·조건·스위치·아이템·엔딩 호출을 함수가 짓는다(대사만 steps[{id,lines}] 로 준다).";
-export const BLUEPRINT_PATH_IDS: ReadonlySet<string> = new Set(["blueprint-event-unreachable", "blueprint-event-missing", "blueprint-event-empty", "blueprint-condition-unset", "blueprint-condition-order", "blueprint-no-ending"]);
+export const BLUEPRINT_PATH_IDS: ReadonlySet<string> = new Set(["blueprint-event-unreachable", "blueprint-event-missing", "blueprint-event-empty", "blueprint-condition-unset", "blueprint-condition-order", "blueprint-no-ending", "blueprint-code-bypass"]);
 
 export interface BlueprintWalk {
   readonly blockers: BlueprintBlocker[];
@@ -230,6 +295,12 @@ export function walkBlueprint(project: Project): BlueprintWalk {
     if (best.never.length) add("blueprint-condition-unset", `청사진 ${r.step.id} 「${r.step.event}」(${r.map.id} ${r.ev.id}) 의 페이지가 ${best.never.map((n) => `${n.kind === "switch" ? "스위치" : n.kind === "item" ? "아이템" : "변수"} ${nameOf(n.kind, n.id)}`).join("·")} 를 조건으로 거는데 그것을 켜는·주는 이벤트가 게임 어디에도 없다 — 앞 단계(${resolved[k - 1]?.step.event ?? "시작"})의 결과에서 켜게 한다.`, `${r.step.id} ${r.ev.id} needs ${best.never.map((n) => n.id).join(",")}`);
     else add("blueprint-condition-order", `청사진 ${r.step.id} 「${r.step.event}」 의 조건 ${best.late.map((n) => nameOf(n.kind, n.id)).join("·")} 은 뒤 단계에서만 켜진다 — 앞 단계에서 켜지게 순서를 바로잡는다.`, `${r.step.id} ${r.ev.id} late ${best.late.map((n) => n.id).join(",")}`);
   });
+  // 3b) 번호·암호를 맞히는 단계가 정말 입력을 거쳐야 넘어가나(조사만 하면 엔딩이 나오지 않나).
+  for (const r of resolved) {
+    if (!r.ev || !r.map || !isCodeStep(r.step)) continue;
+    const why = codeStepBypass(project, r.ev);
+    if (why) add("blueprint-code-bypass", `청사진 ${r.step.id} 「${r.step.event}」(${r.map.id} ${r.ev.id}) 은 번호·암호를 맞히는 단계(${r.step.action})인데 ${why} — 조사만 하면 ${r === resolved.at(-1) ? "엔딩" : "다음 단계"}로 넘어가 퍼즐이 없다.`, `${r.step.id} ${r.ev.id} ${why}`);
+  }
   // 4) 마지막 단계가 엔딩을 부르나 — 직접, 공통 이벤트로, 또는 켠 스위치가 여는 다른 이벤트(자동 실행 엔딩)로.
   const last = resolved.at(-1);
   if (last?.ev && last.map) {

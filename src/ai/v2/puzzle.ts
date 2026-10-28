@@ -239,6 +239,22 @@ export function buildPuzzleChain(run: BuildRun, args: ChainArgs): ContentBuildRe
     }
     return got.kind === "flag" ? [{ kind: "switch", switchId: got.switchId, value: true }] : [{ kind: "item", itemId: got.itemId, present: true }];
   };
+  /** 번호·고르기 시도 명령 — 맞으면 onSolve, 틀리면 wrongLines. 틀린 인자면 실패 문장. */
+  const codeAttempt = (link: ChainLink, index: number, onSolve: () => Obj[]): Obj[] | string => {
+    const code = link.code!;
+    const leaked = [...(link.lockedLines ?? []), ...(link.wrongLines ?? []), ...(link.doneLines ?? [])].find((l) => l.includes(code));
+    if (leaked) return `${index + 1}번 고리(${link.role}): 자물쇠 대사에 답 ${code} 이 들어 있다 — 답은 단서 고리의 lines 에만 둔다`;
+    if (link.options?.length) {
+      if (!link.options.includes(code)) return `${index + 1}번 고리(${link.role}): options 에 정답 ${code} 이 없다`;
+      return [{ kind: "choices", cancelBehavior: "branch", cancelBranch: [], options: shuffledOptions(link.options, code, `${chainKey}:${index}`).map((text) => ({ text, branch: text === code ? onSolve() : say(link.wrongLines ?? ["…아무 일도 일어나지 않는다."]) })) }];
+    }
+    if (!/^\d{1,8}$/u.test(code)) return `${index + 1}번 고리(${link.role}): 숫자 자물쇠의 code 는 1~8자리 숫자 — 글자 답이면 options 로 고르게 한다`;
+    if (trivialCode(code)) return `${index + 1}번 고리(${link.role}): 정답 ${code} 은 아무나 먼저 쳐 보는 번호다(같은 숫자·차례 숫자·1024 같은 흔한 번호) — 단서에서만 알 수 있는 번호(날짜·시계 바늘·책 쪽수를 이은 것)로 바꾼다`;
+    const variableId = `var_${chainKey}_${index + 1}`;
+    run.call("declare_story_flag", { action: "declare", id: `${chainKey}-code-${index + 1}`, kind: "variable", targetId: variableId, description: `${args.name}: 입력한 번호` });
+    return [{ kind: "inputNumber", variableId, digits: code.length },
+      { kind: "fork", condition: { kind: "variable", variableId, op: "==", value: Number(code) }, then: onSolve(), else: say(link.wrongLines ?? ["철컥… 맞지 않는다."]) }];
+  };
   const doors: { mapId: string; eventId: string }[] = [];
   const personNotes: string[] = [];
   for (const [index, link] of args.links.entries()) {
@@ -248,7 +264,12 @@ export function buildPuzzleChain(run: BuildRun, args: ChainArgs): ContentBuildRe
     const existing = map.events.find((ev) => ev.id === link.eventId) ?? (link.name ? map.events.find((ev) => ev.name === link.name) : undefined)
       ?? (link.at ? map.events.find((ev) => ev.x === link.at!.x && ev.y === link.at!.y) : undefined);
     if (!existing && !link.at) return fail(`${index + 1}번 고리(${link.role}): 이벤트 ${link.eventId ?? link.name ?? ""} 를 못 찾았다 — eventId 를 주거나 새로 둘 칸 at:{x,y} 를 준다`);
-    const id = existing?.id ?? `ev_chain_${chainKey}_${index + 1}`;
+    // 새 고리 id 는 게임 어디의 이벤트와도 겹치지 않게 — 다시 지을 때 «ev_chain_<이름>_1» 이 이미 있는 다른 고리(그대로 둔 단계)를 덮어썼다
+    // (2026-10-29 mt3 flash 방탈출 재빌드: 덧붙인 단서 고리가 「조사 시작」을 지웠다).
+    const usedIds = new Set(Object.values(run.ctx.project.maps).flatMap((m) => (m.events ?? []).map((ev) => ev.id)));
+    const claimed = new Set(eventIds.map((e) => e.eventId));
+    let id = existing?.id ?? `ev_chain_${chainKey}_${index + 1}`;
+    for (let n = index + 2; !existing && (usedIds.has(id) || claimed.has(id)); n += 1) id = `ev_chain_${chainKey}_${n}`;
     const look = existing ? structuredClone((existing.pages?.[0] as unknown as Obj | undefined) ?? {}) : {};
     // 그림 없는(투명) 조사 칸은 다가가면 반짝인다 — 새 플레이어가 어디를 조사할지 보이게(2026-10-28 청사진 경로).
     // 「transparent:true」만 있는 그림도 그림 없음이다(sprite·tileId 가 없으면).
@@ -278,23 +299,11 @@ export function buildPuzzleChain(run: BuildRun, args: ChainArgs): ContentBuildRe
       have.set(link.learn, { kind: "flag", switchId: sw });
     } else if (link.role === "code") {
       if (!link.code) return fail(`${index + 1}번 고리(code): code(정답)가 없다`);
-      if (!link.needs) warnings.push(`${index + 1}번 고리(code): needs 가 없어 단서 없이 답을 맞힐 수 있다 — 단서 고리의 learn 이름을 needs 로 준다`);
+      if (!link.needs && !link.needsCondition?.length) warnings.push(`${index + 1}번 고리(code): needs 가 없어 단서 없이 답을 맞힐 수 있다 — 단서 고리의 learn 이름을 needs 로 준다`);
       const solved = flag(`${slug(link.code)}_solved_${index + 1}`, `${args.name}: 자물쇠 풀림`);
-      const leaked = [...(link.lockedLines ?? []), ...(link.wrongLines ?? []), ...(link.doneLines ?? [])].find((l) => l.includes(link.code!));
-      if (leaked) return fail(`${index + 1}번 고리(code): 자물쇠 대사에 답 ${link.code} 이 들어 있다 — 답은 단서 고리의 lines 에만 둔다`);
+      const attempt = codeAttempt(link, index, () => [...rewardCmds(), { kind: "setSwitch", switchId: solved, value: true }]);
+      if (typeof attempt === "string") return fail(attempt);
       pages.push(basePage({ commands: say(link.lockedLines ?? ["자물쇠가 걸려 있다. 무엇을 맞춰야 하는지 아직 모르겠다."]) }));
-      let attempt: Obj[];
-      if (link.options?.length) {
-        if (!link.options.includes(link.code)) return fail(`${index + 1}번 고리(code): options 에 정답 ${link.code} 이 없다`);
-        attempt = [{ kind: "choices", cancelBehavior: "branch", cancelBranch: [], options: shuffledOptions(link.options, link.code, `${chainKey}:${index}`).map((text) => ({ text, branch: text === link.code ? [...rewardCmds(), { kind: "setSwitch", switchId: solved, value: true }] : say(link.wrongLines ?? ["…아무 일도 일어나지 않는다."]) })) }];
-      } else {
-        if (!/^\d{1,8}$/u.test(link.code)) return fail(`${index + 1}번 고리(code): 숫자 자물쇠의 code 는 1~8자리 숫자 — 글자 답이면 options 로 고르게 한다`);
-        if (trivialCode(link.code)) return fail(`${index + 1}번 고리(code): 정답 ${link.code} 은 아무나 먼저 쳐 보는 번호다(같은 숫자·차례 숫자·1024 같은 흔한 번호) — 단서에서만 알 수 있는 번호(날짜·시계 바늘·책 쪽수를 이은 것)로 바꾼다`);
-        const variableId = `var_${chainKey}_${index + 1}`;
-        run.call("declare_story_flag", { action: "declare", id: `${chainKey}-code-${index + 1}`, kind: "variable", targetId: variableId, description: `${args.name}: 입력한 번호` });
-        attempt = [{ kind: "inputNumber", variableId, digits: link.code.length },
-          { kind: "fork", condition: { kind: "variable", variableId, op: "==", value: Number(link.code) }, then: [...rewardCmds(), { kind: "setSwitch", switchId: solved, value: true }], else: say(link.wrongLines ?? ["철컥… 맞지 않는다."]) }];
-      }
       pages.push(basePage({ conditions: need, commands: [...say(link.lines), ...attempt] }));
       pages.push(basePage({ conditions: [{ kind: "switch", switchId: solved, value: true }], commands: say(link.doneLines ?? ["이미 열려 있다."]) }));
     } else if (link.role === "pickup") {
@@ -315,7 +324,10 @@ export function buildPuzzleChain(run: BuildRun, args: ChainArgs): ContentBuildRe
     } else if (link.role === "ending") {
       if (!link.endingId) return fail(`${index + 1}번 고리(ending): endingId 가 없다`);
       if (need.length) pages.push(basePage({ commands: say(link.lockedLines ?? ["아직 할 수 없다."]) }));
-      pages.push(basePage({ conditions: need, commands: [...say(link.lines), { kind: "triggerEnding", endingId: link.endingId }] }));
+      // code 가 있으면 번호를 맞혀야 엔딩(2026-10-28 mt3 flash 방탈출: 「비밀번호 입력」 단계가 조사만으로 엔딩을 불렀다).
+      const attempt = link.code ? codeAttempt(link, index, () => [...say(link.reward?.lines), { kind: "triggerEnding", endingId: link.endingId }]) : [{ kind: "triggerEnding", endingId: link.endingId }];
+      if (typeof attempt === "string") return fail(attempt);
+      pages.push(basePage({ conditions: need, commands: [...say(link.lines), ...attempt] }));
     }
     const res = run.call("upsert_event", { mapId, replacePages: true, event: { id, ...(existing ? {} : { name: link.name ?? `${args.name} ${index + 1}`, x: link.at!.x, y: link.at!.y }), pages } });
     if (!res.ok) return fail(`${index + 1}번 고리 이벤트를 쓰지 못했다: ${String(res.summary).slice(0, 300)}`);
@@ -340,7 +352,7 @@ export function buildPuzzleChain(run: BuildRun, args: ChainArgs): ContentBuildRe
     if (shown) warnings.push(shown);
   }
   // 답이 단서에 실제로 적혀 있는가.
-  for (const link of args.links) if (link.role === "code" && link.code && !args.links.some((l) => l.role === "clue" && (l.lines ?? []).some((line) => line.includes(link.code!)))) warnings.push(`정답 ${link.code} 이 어느 단서 lines 에도 없다 — 플레이어가 답을 알 길이 없다`);
+  for (const link of args.links) if ((link.role === "code" || link.role === "ending") && link.code && !args.links.some((l) => l !== link && (l.lines ?? []).some((line) => line.includes(link.code!)))) warnings.push(`정답 ${link.code} 이 어느 단서 lines 에도 없다 — 플레이어가 답을 알 길이 없다`);
   const seals = doors.filter((d) => args.links.find((l) => (l.eventId ?? "") === d.eventId)?.seal !== false).map((d) => sealLockedRoom(run, d.mapId, d.eventId));
   for (const s of seals) if (!s.ok) warnings.push(s.summary);
   const sealNote = `${reachNotes.length ? ` ${reachNotes.join(" / ")}.` : ""}${seals.length ? ` ${seals.map((s) => s.summary).join(" / ")}` : ""}`;
