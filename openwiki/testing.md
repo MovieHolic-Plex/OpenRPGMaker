@@ -2227,7 +2227,11 @@ dedicated exported player passed. Do not describe this as all browser checks gre
 
 재현 프로젝트(poke slice-3, 1번 도로 바위): 스킬을 아는 배우가 없을 때 막힘 1(걸어갈 길 없음), 주인공 `learnedSkills:[{level:1,skillId:"mx_skill_rocksmash"}]` 면 막힘 0. 가르칠 곳이 아예 없으면(분실된 스킬) 막힘 2(참조 누락 + 위 안내).
 - 퀘스트 납품(`author_quest` → `questCompiler`): 갈래 앞에서 `m2-217-data-query` 의 `itemCount` 로 채운 변수(`var_…_quantity0 >= n`)는 계획에서 「그 물건 가지기」 선행으로 푼다 — 개수 문턱은 세지 않고 러너가 런타임으로 돌려 본다(모자라면 그 목표가 실패로 남는다). 전에는 「세터 없는 선행」으로 엔딩 계획이 끊겨 2026-10-28 standin slice(들꽃마을 세 부탁)가 거짓 `autoplay-failed` 였다.
-알려진 한계: 날마다 다른 페이지가 호감을 올리는 연애물(standin romance 카페 하은: 1~7일째 페이지마다 +호감, 출입문이 날을 넘김)은 계획이 한 세터 페이지를 되풀이하려다 「한 번만 열리는 세터」로 문턱 미달이 된다 — 게임은 정상(판정자가 엔딩 도달), 검사기 한계.
+- 다일 반복(2026-10-29 standin romance 카페 하은: 1~7일째 페이지마다 +호감·「오늘 대화 끝」 ON, 출입문이 그 스위치 ON 페이지에서 날 +1·끄기)은 세 규칙으로 푼다(`autoPlay.ts`). 전에는 「한 번만 열리는 세터」로 문턱 미달 → 엔딩 셋 모두 거짓 `autoplay-failed`.
+  ① 되풀이 준비(`pageResetGoals`)의 끄는 이벤트가 그 스위치 ON 페이지에서만 열려도 받는다(세터가 방금 켰다). 세터 페이지가 스위치 ON 을 요구하고 스스로 끄면(출입문 날 +1) 되풀이 준비는 그 스위치를 다시 켜는 이벤트다.
+  ② 문턱 목표·되풀이 준비에 같은 이벤트 다른 페이지의 같은 쪽 세터를 형제(`Goal.siblings`)로 달고, 실행 때 지금 열린 페이지의 형제로 바꾼다. 지금 페이지에 세터가 없으면(7일째 고백 페이지) 부르지 않고 실패 — 엔딩을 «되풀이 준비» 로 터뜨리지 않는다.
+  ③ 목표 상한(`targetCaps`): 같은 이벤트 뒤 페이지가 목표 페이지 조건 전부 + 문턱 하나(호감 ≥·변수 ≥/>)를 더 가지면 그 문턱 미만, 목표 triggerEnding 앞에 같은 길로 도는 triggerEnding 의 엔딩 호감 문턱 미만. 길 밖 선택지는 0번 대신 그 값을 올리지 않는 보기를 고른다(평범 엔딩을 고백 페이지가 덮거나 혼자 엔딩 앞에서 평범 엔딩이 터지지 않게).
+  재생 `bun scripts/qa/assistant-v2/dayCycleReplay.mts <project.json>... --negatives --as-variable`: romance 엔딩 셋(regular·alone·together)이 각자 엔딩에 닿고, 반례(날 += 지움·호감 + 지움·스위치 끄기 지움)는 여전히 막힌다(호감을 지워도 혼자 엔딩은 정상 도달). `--as-variable` 은 호감을 변수 하나(일과 점수)로 바꾼 사본으로 변수형 다일 반복을 본다 — 엔딩 조건을 비우므로 혼자 엔딩 판은 조건 없는 평범 엔딩이 먼저 터진다(사본의 부산물). standin slice·errand 는 하루 안의 부탁·배달이라 다일 구조가 아니고, 바꾸기 전후 결과가 같다. 다른 장르 standin 9판·옛 연애 픽스처 15개도 결과 불변.
 알려진 한계: `storeParty`/`recallParty` 로 바뀐 파티 구성은 자동 플레이가 모델링하지 않는다(세트 안 배우를 선행 조건으로 보지 않음), 다단계 보스·`oncePerBattle` 은 기존 전투 해결기(첫 적을 계속 공격)에 맡긴다.
 - `ct-stage-performance`(`scripts/qa/runtime/ct-stage-performance*`) — `author_stage_performance` 로 저작한 공연 컷신을 출하 플레이어로 본다(가사·합창 코너 자막, 조명 어두움, 끝난 뒤 색조 복구). 크로미움은 `unshare -rn` 안에서.
 
