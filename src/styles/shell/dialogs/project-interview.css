@@ -58,7 +58,7 @@
   .project-interview-answers .is-answered dt { color: var(--accent); }
   .project-interview-receipt { padding: 23px; border: 1px solid var(--border-default); border-radius: var(--radius-m); background: var(--bg-surface); margin: 22px 0; min-height: 220px; }
   .project-interview-receipt-label { color: var(--text-2); font-size: 12px; }
-  .project-interview-receipt blockquote { white-space: pre-wrap; overflow-wrap: anywhere; margin: 13px 0 24px; padding: 15px; border-left: 3px solid var(--accent); background: var(--accent-muted); color: var(--text-1); font-size: 15px; line-height: 1.7; }
+  .project-interview-receipt blockquote { white-space: pre-wrap; overflow-wrap: anywhere; margin: 13px 0 24px; padding: 15px; border: 1px solid var(--accent-border); border-radius: var(--radius-m); background: var(--accent-muted); color: var(--text-1); font-size: 15px; line-height: 1.7; }
   .project-interview-receipt strong { font-size: 14px; color: var(--accent); }
   .project-interview-phases { display: grid; gap: 12px; list-style: none; padding: 0; margin: 19px 0 0; }
   .project-interview-phases li { font-size: 12px; color: var(--text-2); }
