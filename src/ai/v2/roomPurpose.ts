@@ -58,7 +58,7 @@ export const ROOM_PURPOSES: readonly RoomPurpose[] = [
   },
   {
     id: "shop", ko: "가게", words: /가게|상점|매장|잡화|가판|판매|진열|계산대|shop|store(?!\s*room)|boutique|market/iu,
-    kinds: { atlas_biome_interior: ["tailor_shop", "bakery_shop", "pharmacy_shop", "weapon_shop"], modern_city: ["st-floor", "hy-floor", "konbini"], jp_city: ["konbini", "bookstore"] },
+    kinds: { atlas_biome_interior: ["general_store", "tailor_shop", "bakery_shop", "pharmacy_shop", "weapon_shop"], modern_city: ["st-floor", "hy-floor", "konbini"], jp_city: ["konbini", "bookstore"] },
     sets: [
       [{ id: "display 2x1", x: 0, y: 0 }, { id: "crate", x: 3, y: 0 }],
       [{ id: "display 1x1", x: 0, y: 0 }, { id: "barrel", x: 2, y: 0 }, { id: "display 1x1", x: 3, y: 0 }],
@@ -83,7 +83,7 @@ export const ROOM_PURPOSES: readonly RoomPurpose[] = [
   },
   {
     id: "classroom", ko: "교실", words: /교실|강의실|수업|학급|자습|classroom|lecture|class ?room/iu,
-    kinds: { modern_city: ["school-class", "school-class-2", "hs-class-a", "ms-class-w", "el-class-a"], modern_campus: ["classroom", "lecture"], jp_city: ["classroom"], atlas_biome_interior: ["study", "library"] },
+    kinds: { modern_city: ["school-class", "school-class-2", "hs-class-a", "ms-class-w", "el-class-a"], modern_campus: ["classroom", "lecture"], jp_city: ["classroom"], atlas_biome_interior: ["classroom"] },
     sets: [[{ id: "desk 1x1", x: 0, y: 0 }, { id: "chair N", x: 0, y: 1 }, { id: "desk 1x1", x: 2, y: 0 }, { id: "chair N", x: 2, y: 1 }]],
     offProps: HOME_PROPS,
   },
@@ -92,6 +92,7 @@ export const ROOM_PURPOSES: readonly RoomPurpose[] = [
     kinds: {
       modern_city: ["school-corridor", "school-staffroom", "school-infirmary", "school-genkan", "school-class", "school-stairwell", "band-room", "sci-lab"],
       modern_campus: ["corridor", "staffroom", "infirmary", "classroom", "club"], jp_city: ["staffroom", "musicroom", "infirmary", "classroom", "corridor"],
+      atlas_biome_interior: ["classroom"],
     },
     offProps: HOME_PROPS,
   },

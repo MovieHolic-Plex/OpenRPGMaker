@@ -36,6 +36,11 @@ const KIND_WORDS: readonly [RegExp, string[]][] = [
   [/침실|bed ?room|잠|객실|여관 ?방|guest/iu, ["bedroom", "inn_room"]],
   // 「여관」만 오면 1층 홀(술집 겸 접수) — 장소 견본(tavern)을 쓰지 않는 묶음 길에서 거실 견본이 됐다(2026-10-29).
   [/여관|inn\b|객잔|주막/iu, ["tavern", "inn_room"]],
+  // 손으로 짠 견본(interiorAuthoredRoomTemplates.json): 연구실·실험실 → laboratory(「연구」가 서재로 가기 전에), 교실, 잡화점, 감옥.
+  [/실험|연구실|연금술|laborator|\blab\b/iu, ["laboratory", "alchemy"]],
+  [/교실|강의실|classroom|학교/iu, ["classroom"]],
+  [/잡화|만물|도구점|item ?shop|general ?store/iu, ["general_store"]],
+  [/감옥|감방|지하 ?뇌옥|jail|prison|dungeon cell/iu, ["jail", "cell", "guard_room"]],
   [/서재|study|공부|연구/iu, ["study", "library"]],
   [/도서|서고|library|책/iu, ["library", "study"]],
   [/천문|관측|observ|별/iu, ["study", "library"]],
@@ -52,7 +57,7 @@ const KIND_WORDS: readonly [RegExp, string[]][] = [
   [/현관|입구|entrance|로비|lobby/iu, ["entrance", "corridor"]],
   [/복도|corridor|hall ?way/iu, ["corridor"]],
   [/욕실|화장실|bath/iu, ["bathroom"]],
-  [/감옥|감방|cell|jail/iu, ["cell", "guard_room"]],
+  [/감방|cell/iu, ["cell", "guard_room"]],
   [/경비|guard/iu, ["guard_room"]],
   [/가게|상점|shop/iu, ["bakery_shop", "tailor_shop", "weapon_shop"]],
   [/빵/iu, ["bakery_shop", "bakery_oven"]],
@@ -70,7 +75,7 @@ const HOME_ROOM_WORDS = /침실|침대|잠자|부엌|주방|창고|광|지하실
 /** 집 방 종류 중 «어느 건물에나 있는» 것 — 구역 목적 낱말이 다른 쓰임(가게·교실·예배당)을 말하면 그 쓰임이 이긴다. 침실·부엌·창고는 그대로 둔다. */
 const GENERIC_KINDS = /^(entrance|living|hall|corridor|study|dining|great_hall|lobby|waiting_room|room|main|common)$/u;
 
-function resolveKind(tilesetId: string, zone: ZoneSpec, notes: string[], placeName = "", single = false): string {
+function resolveKind(tilesetId: string, zone: ZoneSpec, notes: string[], placeName = "", single = false, out?: { fallback?: boolean }): string {
   const kinds = new Set(roomTemplates(tilesetId).map((t) => t.kind));
   const raw = zone.kind.trim();
   // 쓰임 낱말이 집 방 종류보다 먼저다 — 장난감 가게 홀이 «entrance», 교실이 «study» 로 와서 그 방의 견본 가구와 거실 한 벌을 받았고,
@@ -103,6 +108,7 @@ function resolveKind(tilesetId: string, zone: ZoneSpec, notes: string[], placeNa
   const known = told ?? ctx;
   const neutral = known ? ["entrance", "corridor", "hall", "lobby", "waiting_room", "storeroom"].find((k) => kinds.has(k)) : undefined;
   const fallback = neutral ?? (kinds.has("living") ? "living" : [...kinds][0] ?? "living");
+  if (out) out.fallback = true;
   notes.push(`방 종류 「${raw}」의 견본이 없어 ${fallback} 견본으로 지었다${known ? ` — ${known.ko} 견본이 이 칩셋에 없다` : ""}`);
   return fallback;
 }
@@ -810,9 +816,10 @@ export const interiorBuilder: PlaceBuilder = {
     const mapId: string | undefined = prev?.mapId ?? spec.mapId ?? (spec.hints?.newMap === true ? undefined : run.ctx.currentMapId ?? run.ctx.project.startMapId);
     // 장소 견본(천문대 등) — 방 종류 견본으로는 주인공 물건이 방을 정하지 못한다(2026-10-23 비교: 천문대가 평범한 서재로 읽혀 v1 8 · v2 3.5).
     const venueText = `${spec.name} ${spec.theme ?? ""} ${(spec.zones ?? []).map((z) => `${z.kind} ${z.purpose ?? ""}`).join(" ")}`;
-    // 기물 묶음 길(기본)에서는 장소 견본(방 통째 예시)을 쓰지 않는다 — 2026-10-29 사용자 결정: 통째 예시 대신 묶음 + 결정적 배치기.
-    // hints.furnish:"template" 이거나 hints.venue:true 면 옛 장소 견본을 쓴다.
-    const venueAllowed = spec.hints?.furnish === "template" || spec.hints?.venue === true;
+    // 가구 길 고르기(2026-10-29 3단계, 벤치 room-base/vig/vig2-1029): 기본은 장소 견본·방 견본(제작자 구성이 있는 용도에선 이쪽이 강하다 — 예배당·여관).
+    // 기물 묶음 배치기는 그 용도의 견본이 없거나(resolveKind 가 다른 방 견본으로 떨어짐) 고정 크기(keep)에 맞는 견본이 없을 때만 쓴다(서재 6×7 같은 방탈출 방).
+    // hints.furnish:"vignette" 면 늘 묶음, "template" 이면 늘 견본.
+    const venueAllowed = spec.hints?.furnish !== "vignette" || spec.hints?.venue === true;
     const venue = venueAllowed && tilesetId === HAND_INTERIOR_TILESET_ID && (spec.zones ?? []).filter((z) => (z.floor ?? 1) === 1).length <= 1 && (!prev || prev.venue)
       ? interiorVenues(roomSpec).find((v) => v.words.test(venueText) && (!(spec.floors && spec.floors > 1) || (spec.floors === 2 && !!v.stairs))) : undefined;
     if (venue) {
@@ -825,12 +832,16 @@ export const interiorBuilder: PlaceBuilder = {
     const used = new Map<string, number>();
     const firstFloor = zones.filter((z) => !z.floor || z.floor === 1);
     const rooms = firstFloor.map((zone) => {
-      const kind = resolveKind(tilesetId, zone, notes, `${spec.name} ${spec.theme ?? ""}`, firstFloor.length === 1);
+      const kindOut: { fallback?: boolean } = {};
+      const kind = resolveKind(tilesetId, zone, notes, `${spec.name} ${spec.theme ?? ""}`, firstFloor.length === 1, kindOut);
       const n = (used.get(kind) ?? 0) + 1; used.set(kind, n);
       // 크기: small = 가장 작은 견본, medium = 가운데, large = 가장 큰 견본(한 방짜리면 × 1.3). 큰 주인공 물건이 들어갈 만큼은 넓힌다.
       // 묶음 길: 방 크기를 견본이 아니라 그 용도 레시피 묶음 발자국 ÷ 목표 막힘(36%)으로 정한다(작게 0.75·크게 1.3 배 넓이).
       const sizeWord = zone.size ?? spec.size;
-      const vsize = spec.hints?.furnish !== "template" && !zone.keep
+      const keepMiss = !!(zone.keep?.w && zone.keep.h) && !roomTemplates(tilesetId).some((t) => t.kind === kind && Math.abs(t.w - zone.keep!.w!) <= 2 && Math.abs(t.h - zone.keep!.h!) <= 2);
+      const vig = spec.hints?.furnish === "vignette" || (spec.hints?.furnish !== "template" && (!!kindOut.fallback || !pickTemplate(tilesetId, kind, sizeWord) || keepMiss));
+      if (vig && spec.hints?.furnish !== "vignette") notes.push(`구역 「${zone.id ?? zone.kind}」은 ${keepMiss ? `고정 크기 ${zone.keep!.w}×${zone.keep!.h} 에 맞는 ${kind} 견본이 없어` : `${zone.kind} 견본이 없어`} 기물 묶음 배치기로 꾸몄다`);
+      const vsize = vig && !zone.keep
         ? vignetteRoomSize(tilesetId, kind, roomSpec, { purpose: `${zone.kind} ${zone.purpose ?? ""} ${firstFloor.length === 1 ? spec.name : ""}`, ...(zone.vignettes?.length ? { picks: zone.vignettes } : {}), scale: sizeWord === "small" ? 0.75 : sizeWord === "large" ? 1.3 : 1 })
         : undefined;
       const t = zone.keep?.w && zone.keep.h ? { w: zone.keep.w, h: zone.keep.h } : vsize ?? pickTemplate(tilesetId, kind, sizeWord);
@@ -840,17 +851,17 @@ export const interiorBuilder: PlaceBuilder = {
       // 여러 방 건물에서 「크다」는 방 수로 낸다 — 방마다 견본 × 1.3 으로 키우면 방이 내용보다 커져 빈 홀이 된다(마법학교 홀 30×25). 한 방짜리만 키운다.
       const grow = spec.size === "large" && !zone.keep && firstFloor.length === 1 && !vsize ? scale : 1;
       const sized = t ? { w: Math.max(minW, Math.round(t.w * grow)), h: Math.max(minH, Math.round(t.h * grow)) } : minW ? { w: minW, h: minH } : {};
-      return { id: zone.id ?? (n > 1 ? `${kind}${n}` : kind), kind, ...sized, min: { w: Math.max(5, minW), h: Math.max(6, minH) }, ...(zone.keep?.floor ? { floor: zone.keep.floor } : {}), ...(zone.keep?.wall ? { wall: zone.keep.wall } : {}), zone };
+      return { id: zone.id ?? (n > 1 ? `${kind}${n}` : kind), kind, vig, ...sized, min: { w: Math.max(5, minW), h: Math.max(6, minH) }, ...(zone.keep?.floor ? { floor: zone.keep.floor } : {}), ...(zone.keep?.wall ? { wall: zone.keep.wall } : {}), zone };
     });
     const hints = spec.hints ?? {};
     // 묶음 길은 방 크기를 묶음 발자국으로 정했다 — 배치 변주 C·D 는 한 방을 가로 +4·사방 +2 칸 키워(서재 6×6 → 10×6·8×8) 그 크기를 버린다.
     // 묶음 길에서는 모델이 변주를 직접 고를 때만 쓰고, 소금(salt)으로는 고르지 않는다(견본·묶음 고르기는 seed 가 바꾼다).
-    const variant = typeof hints.variant === "number" ? hints.variant : hints.furnish === "template" ? (spec.salt ?? 0) % 4 : 0;
+    const vignette = rooms.some((r) => r.vig);
+    const variant = typeof hints.variant === "number" ? hints.variant : !vignette ? (spec.salt ?? 0) % 4 : 0;
     const seed = typeof hints.seed === "number" ? hints.seed : undefined;
     const layoutSeed = seed ?? (spec.salt ? 1 + (spec.salt % 99991) : undefined);
-    // 가구: 기본은 기물 묶음 배치기(vignettes.ts) — 방 용도에 맞는 묶음을 벽·앞 통로·밀도 규칙으로 놓고, 빈 바닥은 메우지 않고 방을 줄인다.
-    // hints.furnish:"template" 이면 옛 길(견본 한 벌 + 빈 바닥 메우기). 구역 vignettes(묶음 id·몸통 기물 id)는 모델이 고른 묶음.
-    const vignette = hints.furnish !== "template";
+    // 가구: 견본 길(견본 한 벌 + 빈 바닥 메우기)이 기본, 견본 없는 방이 하나라도 있으면 기물 묶음 배치기(vignettes.ts — 벽·앞 통로·밀도 규칙,
+    // 빈 바닥은 메우지 않고 방을 줄인다). 구역 vignettes(묶음 id·몸통 기물 id)는 모델이 고른 묶음.
     const picks = Object.fromEntries(rooms.filter((r) => r.zone.vignettes?.length).map((r) => [r.id, [...r.zone.vignettes!]]));
     const purposes = Object.fromEntries(rooms.map((r) => [r.id, `${r.zone.kind} ${r.zone.purpose ?? ""} ${rooms.length === 1 ? `${spec.name} ${spec.theme ?? ""}` : ""}`.trim()]));
     let base: Record<string, unknown> = { tileset: tilesetId, mapId, name: spec.name, replace: mapId ? true : undefined,
