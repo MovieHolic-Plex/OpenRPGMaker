@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **187쪽 / 7284KB / 약 2,135,788 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **187쪽 / 7284KB / 약 2,135,855 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -1714,7 +1714,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L133` 기록 위치
 - `L144` 아스트라 박사 이력
 
-### `openwiki/harnesses/charset-actor.md` — 38KB · 217줄 · ~11,554 토큰
+### `openwiki/harnesses/charset-actor.md` — 39KB · 217줄 · ~11,621 토큰
 
 - `L69` 검증된 걷기 인물의 행동 포즈 (2026-10-06)
 - `L91` CT·FF6풍 직업 인물 칩 Heroes1 — pick-6 채택 8종의 공용 번들 설치 (2026-10-16)
@@ -1723,7 +1723,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L149` 몬스터 세계 사람 칩 2차 — ScarloxyPeople5~10, Argon 부분 편집 확대 43종 (2026-10-16)
 - `L172` 몬스터 세계 사람 칩 3차 — 1차 스크립트 칩 12종 재제작 (2026-10-16)
 - `L190` 몬스터 세계 사람 칩 4차 — char-gen 갤러리 4 합성 22종, ScarloxyPeople11~13 (2026-10-17)
-- `L201` REFMAP 변형 인물 칩 RefmapDoll1~ — char-gen `refmap` 종이 인형 2,793종 (2026-10-28)
+- `L201` REFMAP 변형 인물 칩 RefmapDoll1~ — char-gen `refmap` 종이 인형 2,700종 (2026-10-28)
 
 ### `openwiki/harnesses/dungeon-chipset.md` — 46KB · 333줄 · ~13,850 토큰
 
