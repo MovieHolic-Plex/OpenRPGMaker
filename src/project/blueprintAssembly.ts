@@ -105,10 +105,12 @@ function requestText(request: string | undefined): string {
 /** 청사진의 장소 이름을 맵 이름으로 푼다(모델이 맵 id 를 장소로 적기도 한다 — flash 방탈출 「map_blank_start」). */
 export function blueprintPlaceName(project: Project, blueprint: GameBlueprint): string {
   const place = blueprint.steps[0]?.place?.trim() ?? "";
+  // 맵 이름이 칩셋 id 같은 영문 슬러그(「beodeul_city」)면 장소 이름이 아니다(2026-10-29 vm1 flash escape 타이틀 「beodeul_city 탈출」).
+  const named = (name: string | undefined) => { const text = name?.trim() ?? ""; return text && !/^[a-z0-9_\-]+$/iu.test(text) ? text : ""; };
   const map = project.maps[place];
-  if (map?.name?.trim()) return map.name.trim();
-  if (place && !/^[a-z0-9_\-]+$/iu.test(place)) return place;
-  return project.maps[project.startMapId]?.name?.trim() ?? "";
+  if (map) return named(map.name) || named(project.maps[project.startMapId]?.name);
+  if (named(place)) return place;
+  return named(project.maps[project.startMapId]?.name);
 }
 
 /** 풍토 검사에 쓰는 이야기 전체 글(제목·장르·목표·핵심 경로·엔딩·요청·장소 이름). 느낌 칸은 뺀다(「성취감」 같은 낱말이 섞인다). */

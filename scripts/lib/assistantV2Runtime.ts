@@ -13,6 +13,7 @@ import { BLUEPRINT_PATH_IDS, walkBlueprint } from "../../src/ai/v2/blueprint.ts"
 import { battleSites, healingSources } from "../../src/ai/v2/combatChecks.ts";
 import { shipBlockers } from "../../src/ai/v2/shipChecks.ts";
 import { applyBlueprintAssembly } from "../../src/project/blueprintAssembly.ts";
+import { applyShipDefaults } from "../../src/ai/v2/shipDefaults.ts";
 import { assembledReport, isProviderErrorReply } from "../../src/ai/v2/finalReport.ts";
 import { applyBlueprintOpening } from "../../src/editor/tools/blueprintOpening.ts";
 import { reviewVqaRound, vqaReviewerCandidates, vqaClean, vqaFixBrief, vqaFixRetry, vqaFollowUp, vqaLeftoverInstruction, vqaShotPlan, vqaReviewerLabel, vqaShouldContinue, vqaSummary, wantsWholeGame, VQA_MAX_ROUNDS, VQA_ROUND_CAP, vqaBlockers, vqaActionable, vqaLedgerLine, type VqaReviewerPick, type VqaRound, type VqaShot } from "../../src/ai/v2/vqa.ts";
@@ -262,6 +263,9 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
       // autoBuild 안이라 늦게 쓴 청사진(v2.blueprint.late)에서도 장소·경로·출구를 지은 뒤 돈다.
       try { assembled.push(...applyBlueprintOpening(env.ctx.project)); }
       catch (error) { env.emit({ type: "execution_status", name: "v2.assembly", ok: false, summary: `기본 오프닝을 깔지 못했다: ${error instanceof Error ? error.message : String(error)}` }); }
+      // 출하 기본값(2026-10-29 vm1): 전투 곡·전투 배경·파티 모습/얼굴·엔딩 맺음·기본 지명 — 출하 검사가 «기본값이 남았다»고 짚는 것만 채운다.
+      try { assembled.push(...applyShipDefaults(env.ctx.project, env.request.task)); }
+      catch (error) { env.emit({ type: "execution_status", name: "v2.assembly", ok: false, summary: `출하 기본값을 채우지 못했다: ${error instanceof Error ? error.message : String(error)}` }); }
       if (assembled.length) {
         env.emit({ type: "execution_status", name: "v2.assembly", ok: true, summary: `청사진 조립 기본값: ${assembled.join(" · ")}` });
         await env.checkpoint("blueprint_assembly");
