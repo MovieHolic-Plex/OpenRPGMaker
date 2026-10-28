@@ -101,6 +101,7 @@ RM2k3 투명 칸 자동 보정(`applyCustomChipsetMinimalHarness`)에서 이 시
     - `stamp_object` 는 손 도트 실내 깔개(flat 물건)를 이미 깔린 깔개·카펫 줄 위에 찍지 않는다(거부 글로 맨바닥을 고르라 한다).
     - 조사 이벤트(퍼즐 사슬)의 물건 낱말(일기장·편지·열쇠·두루마리…)은 `src/ai/v2/examineArt.ts` 가 책상 윗면 탁상 물건(4층)으로 그린다. Object 시트 칩 그림 이벤트는 `fixedGraphic` —
       조사할 때 돌아서 열린 문짝 줄을 보이지 않게.
+    - 큰 주인공 물건(`great …`)의 그림 넓이가 방 바닥의 15% 를 넘으면 같은 물건의 작은 그림(great 를 뗀 id)으로 바꾼다 — 13×12 연금술 공방의 큰 굴절 망원경 5×6.
     - 다시 돌리기: `bun scripts/qa/assistant-v2/replay-interior.mts <판 폴더> <출력> --seed N [--all] [--every]` (모델 없이 그 판의 장소 동사를 지금 코드로 다시 돌려 PNG).
   - 시험(같은 요청, 실제 조수): 일본 집·다다미 집·편의점·대장간·여관·올린 칩셋 여관 — 모두 layout 으로 방 크기에 맞는 집을 짓고 예제 방 가구가 들어갔다. 마법 학교는 견본이 없어(예제 맵 없음) layout 이 방만 짓는다 — 다음 할 일.
 - **방 목록 입력 `rooms`·`connect`·`exit` (2026-10-08, `src/editor/handInterior/rooms.ts`):** 방이 여럿이면 조수가 `#`·`.` 평면을 손으로 그리지 않고

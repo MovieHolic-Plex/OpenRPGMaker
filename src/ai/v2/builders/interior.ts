@@ -927,8 +927,20 @@ export const interiorBuilder: PlaceBuilder = {
     let stairsUp: { id: string; x: number; y: number; w: number } | undefined;
     // 주인공 물건.
     for (const room of rooms) for (const what of room.zone.anchors ?? []) {
-      const part = findPart(roomSpec, /계단|stair/iu.test(what) && /올라|위층|2층|up/iu.test(what) ? "stairs up wood" : what);
+      let part = findPart(roomSpec, /계단|stair/iu.test(what) && /올라|위층|2층|up/iu.test(what) ? "stairs up wood" : what);
       if (!part) { missing.push(`${what}(${room.id}) — 부품 사전에 없다`); continue; }
+      // 큰 주인공 물건(큰 굴절 망원경 5×6)은 그만한 방에만 — 13×12 연금술 공방에 큰 망원경을 세워 벽난로·선반을 가리고 다른 축척 그림처럼 보였다
+      // (2026-10-28 interior 장부 25·26·29·36). 그림 넓이가 방 바닥의 15% 를 넘으면 같은 물건의 작은 그림(great 를 뗀 id)으로 바꾼다.
+      {
+        const host = rb.rooms.find((r) => r.id === room.id);
+        const floorArea = host ? (host.x1 - host.x0 + 1) * Math.max(1, host.y1 - host.y0 - 1) : 0;
+        const drawn = part.w * (Math.max(1, part.h) + Math.ceil((roomSpec.objects[part.id]?.up ?? 0) / 16));
+        const small = /^great /u.test(part.id) ? roomSpec.objects[part.id.replace(/^great /u, "")] : undefined;
+        if (host && small && drawn > floorArea * 0.15) {
+          const smallPart = findPart(roomSpec, part.id.replace(/^great /u, ""));
+          if (smallPart) { notes.push(`${what}: 방(${room.id}, 바닥 ${floorArea}칸)에 비해 ${part.id}(${drawn}칸 그림)가 커서 ${smallPart.id} 로 바꿨다`); part = smallPart; }
+        }
+      }
       if (rb.objects.some((o) => o.id === part.id) && !/계단|stair/iu.test(what)) { placed.push({ zone: room.id, what, id: part.id }); continue; }
       // 올라가는 계단: 이 방이 맨 북쪽 바깥 벽에 닿지 않으면(위에 다른 방) 맨 북쪽 방 벽에 단다 — 칸막이 속으로 오르는 계단은 틀린 그림이다.
       const isUp = part.stairs === "up" || /stairs up/u.test(part.id);
