@@ -115,11 +115,13 @@ if (args.checkpoint || args.checkpointSet) {
   }
   const checkpoints = selectCheckpoints(set, args.checkpoint ?? "all");
   const outRoot = resolveOutRoot(args.out, scenario.id);
-  const server = await startPlayerQaServer();
+  // --whole-game: 체크포인트도 SQLite 실물 게임(출하 플레이어)으로 부팅한다 — 빠지면 기본 픽스처로 떨어져 «없는 맵» 으로 죽었다.
+  const server = args.wholeGame ? await startWholeGameServer(args.wholeGame) : await startPlayerQaServer();
+  if (args.wholeGame) effective = { ...effective, projectFixture: server.projectFixture };
   let results;
   try {
     console.log(JSON.stringify({ qaBrowser: args.browser, qaPort: server.port, checkpointSet: set.set, checkpoints: checkpoints.map((c) => c.id), parallel: args.parallel }));
-    results = await runCheckpoints({ scenario: effective, set, checkpoints, parallel: args.parallel, launchBrowser, serverUrl: server.url, outRoot });
+    results = await runCheckpoints({ scenario: effective, set, checkpoints, parallel: args.parallel, launchBrowser, serverUrl: server.url, ...(server.projectUrl ? { projectUrl: server.projectUrl } : {}), outRoot });
   } finally {
     await server.close();
     console.log(JSON.stringify({ qaCleanup: "browsers and server closed", qaPort: server.port }));

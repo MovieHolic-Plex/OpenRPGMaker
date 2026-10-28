@@ -2355,3 +2355,5 @@ node scripts/runtime-qa.mjs --scenario whole-game-battle-jrpg --browser firefox 
 필드 복귀 → 체력 1(`?e2eVitals=1`) 패배 → 게임 오버까지 1배로 찍는다. 몬스터 판은 박사에게 첫 동료를 받은 뒤 트레이너에게 말을 건다.
 함정: 전투 복귀 직후는 `battle-transition-overlay` 암전이라 필드 조건에서 빼야 하고, 결과 창·게임 오버는 미끄러지며 들어오므로
 `waitForVisible minAlpha 0.99` 뒤에 찍는다. 부하가 높으면 타이틀 첫 Enter 가 씹힌다 — 상태가 읽힐 때까지 누른다.
+
+체크포인트도 같은 실물 게임으로 부팅된다(2026-10-29 — 전에는 `--checkpoint-set` 경로가 `--whole-game` 을 무시하고 기본 픽스처로 떨어져 «없는 맵» 으로 죽었다). 판정자가 멈춘 자리 하나를 확인할 때: 세트 파일에 `{ mapId, x, y, facing, beats }` 만 적고 `--scenario checkpoints --checkpoint-set <세트> --whole-game <폴더> --netns`. 예: standin monster 1번길 (19,20) 오른쪽 누르기 — 대화창 없이 제자리, 아래는 움직임 → 오른쪽 칸은 숲 경계(대사 잠금 아님).
