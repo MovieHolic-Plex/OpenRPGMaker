@@ -263,7 +263,8 @@ function factionFields(record: EnemyRecord, rerender: () => void): HTMLElement[]
     const name = factionName(table, id);
     const option = el("option", {
       attrs: { value: id, title: id },
-      text: `${(nameCounts.get(name) ?? 0) > 1 ? `${name} [${id}]` : name}${isDefault ? " · 기본값" : ""}`,
+      // 기본 진영은 「기본: 적」 — 「적 · 기본값」은 번역기가 「{0} 기본값」 틀로 읽어 「적」을 원문으로 남겼다.
+      text: `${isDefault ? "기본: " : ""}${(nameCounts.get(name) ?? 0) > 1 ? `${name} [${id}]` : name}`,
     });
     if (!isBuiltInFaction(id)) option.setAttribute("translate", "no");
     select.append(option);
