@@ -345,6 +345,15 @@
 .battle-status-icon-mag-down::before {
   content: "MAG↓";
 }
+/* 한국어 화면에서는 능력 증감을 우리말로 쓴다 — 머리 위 팝업은 「공격 하락」인데 배지만 「ATK↓」였다(HIG C-95). */
+:lang(ko) .battle-status-icon-atk-up::before { content: "공격↑"; }
+:lang(ko) .battle-status-icon-atk-down::before { content: "공격↓"; }
+:lang(ko) .battle-status-icon-def-up::before { content: "방어↑"; }
+:lang(ko) .battle-status-icon-def-down::before { content: "방어↓"; }
+:lang(ko) .battle-status-icon-agi-up::before { content: "민첩↑"; }
+:lang(ko) .battle-status-icon-agi-down::before { content: "민첩↓"; }
+:lang(ko) .battle-status-icon-mag-up::before { content: "마력↑"; }
+:lang(ko) .battle-status-icon-mag-down::before { content: "마력↓"; }
 
 .battle-status-icon-regen {
   --battle-status-icon-bg: #2f8f5b;
