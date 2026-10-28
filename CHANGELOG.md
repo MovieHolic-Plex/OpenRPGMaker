@@ -5,6 +5,12 @@
 
 <!-- releases -->
 
+## 0.356.5 — 2026-10-28
+
+### 수정
+
+- **fallen** — act 2 judge round 2 — mission log, map-edge exits, entry checkpoints, frozen-time interactive QA (#3880) (`c4bd7ba`)
+
 ## 0.356.4 — 2026-10-28
 
 ### 수정
