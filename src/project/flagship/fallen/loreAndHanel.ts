@@ -111,7 +111,7 @@ function hanelTalk(obs: GameMap): void {
   const endIdx = endCmds.findIndex((c) => c.kind === "triggerEnding");
   const endWithText = endIdx < 0 ? [...endCmds, ...h9] : [...endCmds.slice(0, endIdx), ...h9, ...endCmds.slice(endIdx)];
 
-  const h4: Command[] = [say(H, "동문으로 나가거라. 숲길 끝 공터다.\n숲지기 브람에게 먼저 물어보는 게 좋겠다.")];
+  const h4: Command[] = [say(H, "북문으로 나가거라. 숲길 끝이 공터다.\n브람에게 먼저 들러 보거라.")];
   const h5: Command[] = [
     say(H, "브람이 쇠 긁는 소리를 들었다고?\n…그 소리, 나도 들은 적이 있다."),
     say(H, "서른 해 전에도 그랬지.\n우선 공터부터 살피고 와서 말해 다오."),
@@ -121,17 +121,17 @@ function hanelTalk(obs: GameMap): void {
     say(H, "아래 방은 내가 닫지 않았다.\n…닫은 것은 내 스승이다. 그것만 안다."),
     say(H, "그 아이가 말을 하는군.\n처음 들었을 때 나는 손이 떨렸다."),
   ];
-  const h7: Command[] = [say(H, "토마의 빵 얘기를 들었느냐?\n작은 일들이 먼저 대답을 하는구나.")];
+  const h7: Command[] = [say(H, "토마의 빵 얘기, 들었느냐?\n작은 일이 먼저 대답을 하는구나.")];
   const h8: Command[] = [
     say(H, "은수저가 돌아왔다고? 토비가 가져갔더냐?\n…별에게 줄 선물이었다니, 나쁘지 않구나."),
-    say(H, "아이 마음이란 게 참 그렇구나.\n누구도 네게 별을 주진 않았는데도 말이다."),
+    say(H, "아이들이란 참. 별 하나 받아 본 적 없으면서\n별한테 선물을 주겠다는구나."),
   ];
   // 여정 단계 (H4 < H5 < H6) 위에 잔 일 반응 H7 < H8 을 덮는다(여정 끝 분기는 가리지 않는다).
   const afterBram: Command = fork(swOn("sw_fs_main_step1"), [
     fork(swOn("sw_fs_main_step2"),
       [fork(swOff("sw_fs_main_done"), endWithText, [])],
       // 열쇠를 든 채 내려가기 전: H6(이리스 합류) 우선, 없으면 H8/H7, 없으면 열쇠 안내
-      [fork(swOn("sw_fs_iris_joined"), h6, [fork(swOn(SW_Q2), h8, [fork(swOn(SW_Q1), h7, [say(H, "그 별 무늬 열쇠는 서고 바닥 돌뚜껑에 맞을 게다.\n조심해 내려가거라.")])])])]),
+      [fork(swOn("sw_fs_iris_joined"), h6, [fork(swOn(SW_Q2), h8, [fork(swOn(SW_Q1), h7, [say(H, "그 별 무늬 열쇠면 서고 바닥\n돌뚜껑 홈에 맞을 게다. 조심해 내려가거라.")])])])]),
   ], [fork(swOn(SW_Q2), h8, [fork(swOn(SW_Q1), h7, h5)])]);
   const top: Command = fork(swOn("sw_fs_main_step0"), [afterBram], [fork(swOn(SW_Q2), h8, [fork(swOn(SW_Q1), h7, h4)])]);
   progressPage.commands[topIdx] = top;
@@ -139,9 +139,9 @@ function hanelTalk(obs: GameMap): void {
   // 끝난 뒤 페이지: H10.
   donePage.commands = [
     say(H, "카엘, 엘레나.\n이리스를 집까지 바래다주거라."),
-    say(H, "서른 해 전 일은 그때 마저 이야기하마.\n무사히 다녀오너라, 카엘."),
-    say(FS_NAMES.hero, "…다녀올게요, 스승님."),
-    say(H, "그래. 기다리고 있으마. 가거라."),
+    say(H, "서른 해 전 일은 그때 마저 얘기하마.\n무사히 다녀오너라, 카엘."),
+    say(FS_NAMES.hero, "…다녀올게요, 선생님."),
+    say(H, "그래. 기다리마. 가거라."),
   ];
 }
 
@@ -172,17 +172,17 @@ function scopeLines(obs: GameMap): void {
 // ── 읽을거리 (L1~L10) ──
 function observatoryReadables(obs: GameMap): void {
   readable(obs, "l3_irene", "이레네 명판", { x: 12, y: 19 }, readLines([
-    "(명판) 이레네. 사람들은 땅에 내려놓고\n자기는 하늘에 남았다.",
-    "(명판) 은빛 머리에 붉은 눈이었다고 전한다.\n그 이름을 기억하는 것이 별지기의 몫이다.",
+    "(명판) 이레네.\n사람들을 땅에 보내고 홀로 하늘에 남았다.",
+    "(명판) 은빛 머리에 붉은 눈이었다고 전한다.\n별지기는 이 이름을 잊지 않는다.",
   ], "석판"));
   readable(obs, "l4_journal", "하넬의 일지", { x: 1, y: 17 }, readLines([
     "(쪽지) 서른한 해째. 북쪽은 오늘도 조용하다.\n「조용해서 다행이다」라고 쓴다.",
-    "(쪽지) 그리고 지운다.\n「조용해서 서운하다」라고 고쳐 쓴다.",
+    "(쪽지) 지우고,\n「조용해서 서운하다」라고 고쳐 쓴다.",
     "(쪽지) 서른한 해. 나는 뭘 기다리는 걸까.\n그날이 오면, 나는 뭘 해야 할까.",
   ]));
   readable(obs, "l10_form", "정착 확인서 양식", { x: 5, y: 9 }, readLines([
-    "(양식) 정착 확인서. 이 땅에 사는 사람이\n하늘에서 온 이를 보증하는 문서.",
-    "(양식) 서명란: 기록자 ____\n(여백, 하넬의 필체) 꼭 이 땅 사람이어야 하는가?",
+    "(양식) 정착 확인서. 이 땅 사람이\n하늘에서 온 손님을 보증하는 문서.",
+    "(양식) 기록자 서명 ____\n(여백, 하넬의 글씨) 꼭 이 땅 사람이어야 하나?",
   ]));
 }
 
@@ -192,19 +192,19 @@ function vaultReadables(project: Project, ids: Ids): void {
     readable(gate, "l1_code", "별지기 규약", { x: 11, y: 9 }, readLines([
       "(책) 별지기 규약.\n하나, 하늘을 읽되 부르지 않는다.",
       "(책) 둘, 읽은 것은 적되 입에 올리지 않는다.\n셋, 답이 와도 대답하지 않는다.",
-      "(책) 넷, 아이가 와도 맞아들이지 않는다.\n다섯, 그 아이가 불을 지를 수 있음을 잊지 않는다.",
+      "(책) 넷, 아이가 와도 맞아들이지 않는다.\n다섯, 그 아이가 불을 지를 수도 있다.",
     ]));
     readable(gate, "l2_annals", "낙하 연표", { x: 10, y: 8 }, readLines([
-      "(책) 별비의 밤. 삼백 년 전.\n방주선이 하늘에서 내려와 사람을 내려놓았다.",
+      "(책) 별비의 밤. 삼백 년 전.\n하늘에서 방주선이 내려왔다.",
       "(책) 이레네. 은빛 머리, 붉은 눈이라 전한다.\n땅에 사람을 내려놓고 홀로 하늘에 남았다.",
-      "(책) 서른 해 전 겨울. 새벽샘에 하늘의 것이\n내려앉았다. 그 뒤 장은 가위로 잘려 나갔다.",
+      "(책) 서른 해 전 겨울, 새벽샘.\n하늘의 것이 내려앉았다. 뒷장은 가위로 잘렸다.",
     ]));
   }
   const vault = project.maps[ids.vault];
   if (vault) {
     readable(vault, "l8_tablet", "잠든 약속 석판", { x: 15, y: 6 }, readLines([
       "우리는 하늘이 다시 올 때까지\n이 방을 지킨다. 잠든 약속이다.",
-      "돌 아래쪽에 새로 파낸 자국이 있다.\n성등 교단 심문회의 인장이 깊게 찍혀 있다.",
+      "돌 아래쪽을 새로 파냈다.\n성등 교단 심문회 인장이 깊게 찍혀 있다.",
       "(석판) 위쪽 별지기 글자와 아래쪽 인장은\n새긴 손이 다르다.",
     ], "석판"));
     readable(vault, "l9_rune", "두 번 부르지 마라", { x: 12, y: 6 }, readLines([
@@ -219,9 +219,9 @@ function townReadables(project: Project, ids: Ids): void {
   const hub = project.maps[ids.hub];
   if (hub) {
     readable(hub, "l5_decree", "심문회 포고", { x: 26, y: 19 }, readLines([
-      "(포고) 하나, 하늘에서 떨어진 것은 심문회에 인도한다.\n둘, 숨기거나 손대는 자는 이단으로 다스린다.",
+      "(포고) 하나, 하늘에서 떨어진 것은\n심문회에 인도한다.\n둘, 숨기거나 손대는 자는 이단으로 다스린다.",
       "(포고) 셋, 발견 즉시 신고하라.\n(손글씨, 다른 필체) 아이들은 제외한다.",
-      "(포고) 인장: 성등 교단 심문회. 심문관 발렌.",
+      "(포고) 성등 교단 심문회 인장. 심문관 발렌.",
     ]));
   }
   const apothecary = project.maps["fs_apothecary"];
@@ -229,14 +229,14 @@ function townReadables(project: Project, ids: Ids): void {
     readable(apothecary, "l6_diary", "낡은 일기장", { x: 6, y: 11 }, readLines([
       "(일기) 발렌, 열 살. 새벽샘에서\n혼자 걸어왔다. 말이 없다. 밥은 먹는다.",
       "(일기) 밤마다 창가에서 북쪽만 본다.\n하넬이 별 이름을 서툴게 가르친다.",
-      "(일기) 오늘 아이가 처음 웃었다.\n…눈앞이 흐린 건 연기 탓이 아니다.",
+      "(일기) 오늘 아이가 처음 웃었다.\n…눈앞이 자꾸 흐리다. 연기 탓으로 해 둔다.",
     ]));
   }
   const forest = project.maps[ids.forest];
   if (forest) {
     readable(forest, "l7_marker", "두 번째 별 표지석", { x: 16, y: 20 }, readLines([
-      "(표지석) 두 번째 별, 여기 서다.\n하늘을 건너온 이를 위하여.",
-      "(표지석) 세운 이: 하넬 외 두 사람.\n지도에는 없는 돌이다.",
+      "(표지석) 두 번째 별, 여기 서다.\n하늘을 건너온 사람을 위하여.",
+      "(표지석) 하넬 외 두 사람이 세우다.\n지도에는 없는 돌이다.",
     ]));
   }
 }

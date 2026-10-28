@@ -256,9 +256,9 @@ function hiddenItem(project: Project, mapId: string, at: Cell, key: string, item
       { id: `${id}_p0`, name: "숨은 물건", conditions: [{ kind: "selfSwitch", key: "A", value: false }], graphic: { transparent: true }, trigger: { kind: "action" },
         priority: "below", overlapForbidden: false, movement: { type: "fixed", speed: 3, frequency: 3 },
         commands: [
-          { kind: "text", body: "나무뿌리 사이에 무언가 끼어 있다." } as Command,
+          { kind: "text", body: "나무뿌리 사이에 뭔가 끼어 있다." } as Command,
           ...lootGrantCommands({ itemId, gold }),
-          { kind: "text", body: `${name}${/[가-힣]$/.test(name) && ((name.charCodeAt(name.length - 1) - 0xac00) % 28) ? "을" : "를"} 주웠다. 금화 ${gold}닢도 함께.` } as Command,
+          { kind: "text", body: `${name}${/[가-힣]$/.test(name) && ((name.charCodeAt(name.length - 1) - 0xac00) % 28) ? "을" : "를"} 주웠다. 금화도 ${gold}닢 있었다.` } as Command,
           { kind: "setSelfSwitch", key: "A", value: true } as Command,
         ] },
       { id: `${id}_p1`, name: "빈 틈", conditions: [{ kind: "selfSwitch", key: "A", value: true }], graphic: { transparent: true }, trigger: { kind: "action" },
@@ -370,8 +370,8 @@ export function buildFallenForestMaps(project: Project, ids: { hub: string; fore
     placeKit(project, id, "bd-pick-mountain-pass-wayside-cross", { x: 18, y: 30 }, guard, 2);
     const post = placeKit(project, id, "bd-pick-mountain-pass-trail-post", { x: 19, y: 21 }, guard, 2);
     if (post) readable(project.maps[id]!, "signpost", "이정표", { x: post.x, y: post.y + 1 }, [
-      narrate("(이정표) 북서 — 가시덤불 샛길. 짐승 잦음.\n북동 — 옛 수로 돌다리."),
-      narrate("(이정표) 두 길은 북쪽 별지기 사당 터에서 다시 만난다.\n떨어진 별은 그 너머 깊은 숲. — 숲지기 브람"),
+      narrate("(이정표) 북서쪽 가시덤불 샛길, 짐승 잦음.\n북동쪽 옛 수로 돌다리."),
+      narrate("(이정표) 두 길은 별지기 사당 터에서 만난다.\n별 떨어진 곳은 그 너머 깊은 숲. 브람 씀."),
     ]);
   }
   // ② 옛 수로: 다리 서쪽 빈터의 이끼 낀 비석.
@@ -402,11 +402,11 @@ export function buildFallenForestMaps(project: Project, ids: { hub: string; fore
     const lights: Array<Record<string, unknown>> = [{ id: `light_${id}_gap`, at: { x: 20, y: 13 }, radius: 6, intensity: 0.45, color: "#fff1c4", flicker: false }];
     if (shrineAt) {
       readable(project.maps[id]!, "shrine", "별지기 사당", { x: shrineAt.x, y: shrineAt.y + 2 }, [
-        narrate("(사당) 이끼 낀 돌 사당이다.\n지붕 밑에 옛 별지기들의 별 무늬가 새겨져 있다."),
+        narrate("(사당) 이끼 낀 돌 사당이다.\n지붕 밑에 옛 별지기 별 무늬가 새겨져 있다."),
         narrate("(새긴 글) 빌린 불을 꺼뜨리지 말 것.\n달의 아이가 오거든 답할 것──「잘 지내나요?」"),
-        narrate("(새긴 글) 그 아래 몇 줄은 정으로 쪼아 지웠다.\n남은 획은 둘. 「문」, 그리고 「비늘」."),
-        say("엘레나", "이 별 무늬, 천문대 서고 바닥에서 본 것 같아.\n밑의 글은 누가 일부러 지웠고."),
-        narrate("(사당) 향 주머니가 놓여 있다. 누가 아직 여길 돌보나 보다."),
+        narrate("(새긴 글) 아래 몇 줄은 정으로 쪼아 냈다.\n남은 글자는 「문」과 「비늘」 둘뿐이다."),
+        say("엘레나", "이 별 무늬, 서고 바닥에서 본 것 같아.\n아래 글은 누가 일부러 지웠고."),
+        narrate("(사당) 향 주머니가 놓여 있다.\n누가 아직 여길 돌보나 보다."),
       ]);
       chest(id, { x: shrineAt.x + 2, y: shrineAt.y + 2 }, { itemId: FS_STAR_SCENT }, "사당 공물 상자");
       lights.push({ id: `light_${id}_shrine`, at: { x: shrineAt.x, y: shrineAt.y + 1 }, radius: 3, intensity: 0.8, color: "#a0c8ff", flicker: true });
@@ -430,7 +430,7 @@ export function buildFallenForestMaps(project: Project, ids: { hub: string; fore
         { kind: "playAudio", resourceId: "easyrpg-sound-recovery7", loop: false, channel: "se" } as unknown as Command,
         m2("m2-224-particle-effect", { preset: "sparkle", target: "tile", x: crystal.x, y: crystal.y, durationMs: 1000, wait: false }),
         m2("m2-224-particle-effect", { preset: "heal", target: "player", durationMs: 800, wait: false }),
-        narrate("제단 위 별 조각이 푸르게 맥박친다.\n손을 얹자 지친 몸에 온기가 퍼진다."),
+        narrate("제단 위 별 조각이 푸르게 깜빡인다.\n손을 얹자 지친 몸이 따뜻해진다."),
         { kind: "recoverAll" } as unknown as Command,
         { kind: "checkpointSave", label: "savepoint" } as unknown as Command,
         { kind: "choices", prompt: "기록하시겠습니까?", cancelBehavior: "branch", options: [
@@ -454,7 +454,7 @@ export function buildFallenForestMaps(project: Project, ids: { hub: string; fore
     placeKit(project, id, "bd-pick-deep-forest-path-log-fallen", { x: 19, y: 10 }, guard, 2);
     placeKit(project, id, "bd-pick-deep-forest-path-hide-rack", { x: 18, y: 15 }, guard, 2);
     if (post) readable(project.maps[id]!, "hunter_note", "사냥꾼의 쪽지", { x: post.x, y: post.y + 1 }, [
-      narrate("(쪽지) 별 떨어진 밤부터 늑대가 북쪽으로 몰린다.\n당분간 쉼터는 비운다. 필요한 건 챙겨 가라. — 브람"),
+      narrate("(쪽지) 별 떨어진 뒤로 늑대가 북에 몰린다.\n쉼터는 비운다. 필요한 건 챙겨 가라. 브람"),
     ]);
   }
   // ⑤ 깊은 숲: 브람 곁 모닥불, 두 번째 별 표지석(돌무덤), 숨은 물건.

@@ -172,7 +172,7 @@ function setupFoes(project: Project): { field: string[]; boss: string } {
   };
   const noMp = { flat: 0, percentMax: 0 };
   cloneSkill("skill_focus", "skill_fs_prayer", { name: "심판의 기도", mpCost: noMp, description: "빛을 모은다. 다음 차례에 큰 빛이 쏟아진다." });
-  cloneSkill("skill_mage_blizzard", "skill_fs_judgment", { name: "심판의 빛", power: 150, mpCost: noMp, description: "모은 빛을 파티 전체에 쏟아붓는다." });
+  cloneSkill("skill_mage_blizzard", "skill_fs_judgment", { name: "심판의 빛", power: 150, mpCost: noMp, description: "모아 둔 빛을 일행 모두에게 쏟아붓는다." });
   cloneSkill("skill_sword_slash", "skill_fs_maul", { name: "수호의 철퇴", power: 120, description: "돌 팔을 크게 내리친다." });
   const act = (skillId: string, priority: number, condition: Enemy["actions"][number]["condition"] = { kind: "always" }) =>
     ({ skillId, priority, condition, switchOnAfterAction: { enabled: false }, switchOffAfterAction: { enabled: false } });
@@ -347,9 +347,9 @@ function polishLines(observatory: GameMap, forest: GameMap, vault: GameMap): voi
 
   // 진행 중: 어디까지 왔는지에 따라 다음 갈 곳을 알려 준다(브람 → 공터 → 지하 철문).
   const hints = [
-    "동문 밖이 숲이다. 숲에 들면 숲지기 브람부터 찾거라.",
+    "북문 밖이 바로 숲이다.\n숲에 들거든 브람부터 찾거라.",
     "브람이 말한 북쪽 끝 공터로 가 보거라.",
-    "그 별 무늬 열쇠라면 서고 바닥 돌뚜껑 홈에 맞을 게다. 조심해 내려가거라.",
+    "그 별 무늬 열쇠면 서고 바닥\n돌뚜껑 홈에 맞을 게다. 조심해 내려가거라.",
   ];
   let fork = progressPage.commands.find((c) => c.kind === "fork") as ForkCommand | undefined;
   for (const hint of hints) {
@@ -360,7 +360,7 @@ function polishLines(observatory: GameMap, forest: GameMap, vault: GameMap): voi
   replaceLine(observatory, hanel!.id, "자네 덕분에 살았어. 정말 고맙네.", [say(H, "북쪽 하늘탑으로 가거라. 이리스를 부탁한다.")]);
 
   replaceLine(forest, `ev_${FS_PREFIX}_bram`, "고맙네.", [say("숲지기 브람", "북쪽 끝 공터다. 길만 따라가라.\n풀숲에선 늑대를 조심하고.")]);
-  replaceLine(forest, `ev_${FS_PREFIX}_main_inspect1`, "확인을 마쳤다.", [narrate("은빛 알은 텅 비었다.\n안쪽에 아직 온기가 남아 있다.")]);
+  replaceLine(forest, `ev_${FS_PREFIX}_main_inspect1`, "확인을 마쳤다.", [narrate("은빛 알이 텅 비어 있다.\n안쪽은 아직 따뜻하다.")]);
 
   // 지하 상자 — 기본 표의 「기본 새우」 대신 상급 회복약.
   const chest = vault.events.find((e) => e.id === `ev_${FS_PREFIX}_vault_chest1`);
@@ -368,7 +368,7 @@ function polishLines(observatory: GameMap, forest: GameMap, vault: GameMap): voi
     const rec = c as unknown as Record<string, unknown>;
     if (rec.kind === "changeItem" && rec.itemId === "item_shared_fishing_shrimp-1") rec.itemId = "item_hi_potion";
   }
-  replaceLine(vault, `ev_${FS_PREFIX}_vault_chest1`, "보물상자를 열었다! 기본 새우를 손에 넣었다.", [narrate("보물상자를 열었다!\n상급 회복약을 손에 넣었다.")]);
+  replaceLine(vault, `ev_${FS_PREFIX}_vault_chest1`, "보물상자를 열었다! 기본 새우를 손에 넣었다.", [narrate("상자를 열었다.\n「상급 회복약」을 찾았다.")]);
 
   // 보기 셋 선택지는 질문과 함께 띄운다 — 480×270 에서 셋째 보기가 잘리던 것은 엔진이 고쳤다(#3128, 선택 창이 보기 수만큼 자란다).
 
@@ -455,14 +455,14 @@ function addBridgeValenAndScopeScene(project: Project, ids: { hub: string; obser
     const Q1 = "sw_fs_q_bread_done";
     const nine_a: Command[] = [
       say("이리스", "…이게 하늘이에요?\n이렇게 작은 점들이?"),
-      say(FS_NAMES.hero, "작은 게 아니라, 먼 거야."),
-      say("이리스", "저렇게 먼 데서 저렇게 많이 반짝이는데…\n아무 소리도 안 들리네요."),
+      say(FS_NAMES.hero, "멀어서 작아 보이는 거야."),
+      say("이리스", "저렇게 많이 반짝이는데…\n소리는 하나도 안 들려요."),
     ];
     const nine_b: Command[] = [
-      narrate("(이리스가 접안경에서 눈을 뗀다.\n손에는 토마가 건넨 별 모양 빵이 한 조각 남아 있다.)"),
+      narrate("(이리스가 접안경에서 눈을 뗀다.\n손에 별 모양 빵이 한 조각 남았다.)"),
       say("이리스", "카엘, 이 빵… 손에 쥐어도 따뜻하고\n입에 넣어도 따뜻해요."),
       say(FS_NAMES.hero, "토마 아저씨가 열일곱 해 동안\n천문대 계단에 두고 가던 빵이야."),
-      say("이리스", "열일곱 해요. 저는 어제 깨어났는데…\n카엘은 그동안 계속 기다린 거네요."),
+      say("이리스", "열일곱 해요? 전 어제 깨어났는데…\n카엘은 그동안 쭉 기다렸어요?"),
       say(FS_NAMES.hero, "기다린 줄도 몰랐어.\n빵이 있는 줄만 알았지."),
       wait(600),
       narrate("(이리스가 가슴께에서 작은 일지를 꺼낸다.\n안은 아직 하얗게 비어 있다.)"),
@@ -470,7 +470,7 @@ function addBridgeValenAndScopeScene(project: Project, ids: { hub: string; obser
       say(FS_NAMES.hero, "내가? 난 당번 일지밖에 안 써 봤는데."),
       say("엘레나", "당번 일지가 제일 정직해. 써."),
       wait(500),
-      narrate("(카엘이 쓴다. 화면에 한 줄이 떠오른다.)"),
+      narrate("(카엘이 일지에 한 줄을 적는다.)"),
       narrate("「오늘, 이리스가 빵을 먹었다.\n따뜻했다고 했다.」"),
       say("이리스", "…이게 「기록」이에요?\n이 줄도 언젠가는 지워지겠죠?"),
       say("엘레나", "지워지면 우리가 다시 써 줄게. 몇 번이고."),
@@ -761,7 +761,7 @@ function marchOffAfterProclamation(project: Project, hub: GameMap): void {
     ["c", "tex_easyrpg_charset_people4", 2, "광장의 상인", "포고 때문에 북문 길까지 막히면\n오늘 장사는 공쳤네."],
     ["d", "tex_easyrpg_charset_people1", 6, "광장의 노인", "하늘에서 온 걸 함부로 부르면\n화를 입는 법이야."],
     // 오프닝 아침 그림은 길가에 백성이 늘어서 있다 — 넷은 적었다(VQA r17).
-    ["e", "tex_easyrpg_charset_people5", 3, "광장의 처녀", "기사님들 갑옷 좀 봐… 숲에 진짜 뭐가 떨어졌나 봐."],
+    ["e", "tex_easyrpg_charset_people5", 3, "광장의 처녀", "기사님들 갑옷 좀 봐…\n숲에 진짜 뭐가 떨어졌나 봐."],
     ["f", "tex_easyrpg_charset_people1", 1, "광장의 청년", "이단이라니…\n별 보고 소원 빈 것도 죄가 되나?"],
   ];
   const hubMeta = (project.tilesets[hub.tilesetId] as unknown as { tileMeta?: ({ label?: string } | null)[] }).tileMeta ?? [];
@@ -1032,7 +1032,7 @@ function marchOffAfterProclamation(project: Project, hub: GameMap): void {
     { kind: "m2Command", commandId: "m2-040-set-event-location", fields: { target: tobi.id, mapId: hub.id, x: wishSpot.x, y: wishSpot.y } } as unknown as Command,
     tobiTurn("up"),
     { kind: "showEmote", target: { eventId: tobi.id }, emote: "exclamation", durationMs: 600 } as unknown as Command,
-    say("꼬마 토비", "저, 저기요! 저도 별똥별 봤어요!\n소원도 빌었어요!"),
+    say("꼬마 토비", "저, 저기요! 저도 별똥별 봤어요.\n소원도 빌었어요."),
     { kind: "wait", ms: 400 } as Command,
     say("심문관 발렌", "소원을 빌었다고? 뭘 빌었느냐."),
     { kind: "showEmote", target: { eventId: tobi.id }, emote: "sweat", durationMs: 600 } as unknown as Command,
@@ -1329,7 +1329,7 @@ function valenWalksIn(project: Project, vault: GameMap, bossId: string, from?: {
     ({ kind: "m2Command", commandId: "m2-040-set-event-location", fields: { target: bossId, mapId: vault.id, x: at.x, y: at.y } } as unknown as Command);
   const cue: Command[] = [
     { kind: "cutsceneControl", mode: "begin", skippable: true },
-    narrate("어둠 저편에서 발소리가 내려온다."),
+    narrate("위쪽 어둠에서 발소리가 다가온다."),
     { kind: "showEmote", target: "player", emote: "exclamation", durationMs: 700 },
     // 화면이 북쪽 통로를 비추게 들어 올린다 — 일행 자리에서는 통로가 화면 밖이라 걸어 내려오는 모습이 안 보였다.
     { kind: "m2Command", commandId: "m2-049-scroll-map", fields: { direction: "up", distance: "4", durationMs: "700", wait: "true" } },
@@ -1573,7 +1573,7 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
     event.name = "푸른 별빛 결정";
     for (const page of event.pages ?? []) page.name = "푸른 별빛 결정";
   }
-  replaceLineAnywhere(M(ids.vault), "푸른 기억의 결정이 은은하게 공명하며 파티 전원의 체력과 마력을 완전히 회복시켰다!", [narrate("푸른 결정에 손을 대자, 지친 몸에 힘이 차올랐다.")]);
+  replaceLineAnywhere(M(ids.vault), "푸른 기억의 결정이 은은하게 공명하며 파티 전원의 체력과 마력을 완전히 회복시켰다!", [narrate("푸른 결정에 손을 댄다.\n지친 몸에 다시 힘이 돈다.")]);
   const bossEvent = M(ids.vault).events.find((e) => (e.pages ?? []).some((p) => JSON.stringify(p.commands).includes("battleProcessing")) && e.id.includes("kill"));
   if (bossEvent) {
     setEventChip(M(ids.vault), bossEvent.id, "tex_easyrpg_charset_actor1", 4);
@@ -1655,7 +1655,7 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
       stageLabels.push(label);
       list.splice(at, 0, { kind: "label", name: label } as Command);
       ask.cancelBehavior = "branch";
-      ask.cancelBranch = [narrate("관에서 한 걸음 물러섰다."), { kind: "gotoLabel", name: "fs_pod_leave" } as Command];
+      ask.cancelBranch = [narrate("관에서 한 걸음 물러선다."), { kind: "gotoLabel", name: "fs_pod_leave" } as Command];
       for (const option of ask.options) {
         if (isWrong(option.branch)) option.branch.push({ kind: "gotoLabel", name: label } as Command);
         else wire(option.branch);
@@ -1709,10 +1709,10 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
       say("엘레나", "아, 이것도 챙겨. 숲에 짐승이 많대."),
       { kind: "changeItem", itemId: "item_potion", op: "+=", amount: 3 } as Command,
       narrate("「회복약」 3개를 받았다."),
-      say("엘레나", "그리고 이거, 천문대 창고에서 나온 거야. 검이 편하면 검을, 창이 편하면 창을 써 봐."),
+      say("엘레나", "이것도. 천문대 창고에 있던 거야.\n검이든 창이든 손에 맞는 걸로 써."),
       { kind: "changeItem", itemId: FS_SWORD_GALE, op: "+=", amount: 1 } as Command,
       { kind: "changeItem", itemId: FS_SPEAR_PIKE, op: "+=", amount: 1 } as Command,
-      narrate("「바람결 검」과 「철심 창」을 받았다. 메뉴 「장비」에서 바꿔 들 수 있다."),
+      narrate("「바람결 검」과 「철심 창」을 받았다.\n「장비」 메뉴에서 바꿔 들면 된다."),
     );
   }
   // 관 옆 두 칸 — 한 칸 옆이면 관 앞에 선 카엘과 대각선으로 붙어 24×32 몸이 겹쳐 보였다(가혹 검수 r9 장면 배치).
@@ -1789,21 +1789,21 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   // 13-2·13-3 — 제1막 끝: 이리스가 숨겼던 한 줄, 그리고 붉은 못.
   // 하넬 1페이지는 applyFallenLoreAndHanel 이 다시 짜므로, 줄은 거기서 triggerEnding 앞에 끼운다(아래).
   const endingBeats: Command[] = [
-    narrate("(천문대 위층. 렌즈 가운데에서 하늘탑 방향 신호가 깜빡인다.)"),
+    narrate("(천문대 위층. 렌즈 한가운데에\n하늘탑 쪽 불빛이 깜빡인다.)"),
     say("카엘", "그럼 거기까지 가 보자. 같이."),
-    narrate("(이리스는 대답하지 않고 일지를 가슴에 안는다.)"),
+    narrate("(이리스는 대답 없이 일지를 가슴에 안는다.)"),
     wait(600),
     say("이리스", "…카엘. 아까는 말 못 했어요.\n받은 신호에 한 줄이 더 있었어요."),
     say("이리스", "「중계기 이리스 수신 확인.\n귀환 시 현지 기록을 소거합니다.」"),
     say("카엘", "기록을 지운다고? …네 기억을?"),
     say("이리스", "집에 돌아가면 오늘 일도 지워져요.\n카엘이 부른 별 이름도. 빵 맛도요."),
     say("카엘", "…그래도 갈 거야?"),
-    say("이리스", "네. 직접 가 봐야 해요.\n지워지는 게 정말 『저』인지요."),
+    say("이리스", "네. 직접 가 봐야 해요.\n지워지는 게 정말 「저」인지요."),
     say("카엘", "그럼 가기 전에 일지에 한 줄 더 쓰자.\n네가 잊으면, 내가 읽어 줄게."),
     ...fadeOut(1500),
-    narrate("(북쪽 하늘에서 별 하나가 천천히 붉게 깜빡인다.)"),
-    narrate("(……탁.)"),
-    narrate("같은 시각, 심문관은 지도 북쪽 끝에 못을 박았다."),
+    narrate("(북쪽 하늘에서 별 하나가 붉게 깜빡인다.)"),
+    narrate("(…탁.)"),
+    narrate("같은 시각, 심문관은 지도 북쪽 끝에\n못 하나를 박는다."),
   ];
 
   // 숲길 — 보이는 적 셋(부딪히면 전투). 입구에서 공터까지 고르게 둔다.
@@ -1822,7 +1822,7 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   const PUZZLE_ROOM = "fs_vault_gate";
   execTool(project, "create_map", { id: PUZZLE_ROOM, name: "천문대 지하 · 네 화로의 방", width: 20, height: 15, tilesetId: "atlas_biome_interior" });
   execTool(project, "author_map_puzzle", { mapId: PUZZLE_ROOM, presetId: "brazier_ignition_order", puzzleId: "fs_braziers", title: "네 화로의 방" });
-  replaceLineAnywhere(M(PUZZLE_ROOM), "퍼즐 해독 보상! 「태양의 불씨 보관함」과(와) 250G를 획득했다!", [narrate("철컥— 북쪽 쇠창살이 끌려 올라갔다."), narrate("화로 사이 바닥 홈에서\n「태양의 불씨 보관함」과 250G가 나왔다.")]);
+  replaceLineAnywhere(M(PUZZLE_ROOM), "퍼즐 해독 보상! 「태양의 불씨 보관함」과(와) 250G를 획득했다!", [narrate("철컥. 북쪽 쇠창살이 끌려 올라간다."), narrate("화로 사이 바닥 홈에서\n「태양의 불씨 보관함」과 250G가 나왔다.")]);
   // 석판의 「동쪽 화로」는 동쪽에 화로가 둘(북동·남동)이라 어느 쪽인지 헷갈렸다 — 둘 중 하나임을 밝혀 추론 문제로 남긴다.
   // 가혹 검수 r3: 석판 글이 「석판: 「…」」 한 상자에 몰려 이름표가 없고 길었다 — 이름표 「석판」으로 세 줄에 나눈다.
   // 틀렸을 때도 한 줄로 끝나 무엇을 다시 볼지 몰랐다 — 석판을 떠올리게 하는 둘째 줄을 붙인다.
@@ -1833,11 +1833,11 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
       if (rec.body.startsWith("석판: 「")) {
         list.splice(i, 1,
           say("석판", "네 화로에 차례로 불을 옮겨라.\n틀리면 불은 모두 꺼진다."),
-          say("석판", "첫 불은 동쪽의 두 화로 가운데 하나에 붙인다."),
+          say("석판", "첫 불은 동쪽 두 화로 가운데 하나에 붙인다."),
           say("석판", "북서는 남서와 북동보다 먼저 탄다.\n남서는 셋째가 아니다."),
         );
       } else if (rec.body.startsWith("불길이 역류해 모든 화로가 꺼졌다")) {
-        list.splice(i + 1, 0, say("엘레나", "석판을 다시 읽어 보자.\n첫 불은 동쪽, 북서는 남서·북동보다 먼저야."));
+        list.splice(i + 1, 0, say("엘레나", "석판을 다시 읽어 보자.\n첫 불은 동쪽, 북서는 남서랑 북동보다 먼저야."));
       }
     }
   }

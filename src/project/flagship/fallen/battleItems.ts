@@ -85,11 +85,11 @@ export function applyFallenBattleItems(project: Project): void {
   const potion = byId<ItemRecord>(db.items, FS_POTION);
   potion.hpRecovery = { flat: 40, percentMax: 25 };
   potion.price = 60;
-  potion.description = "아군 하나의 HP를 40 + 최대 HP의 25%만큼 회복한다. (카엘 기준 약 170)";
+  potion.description = "아군 하나의 HP를 40 + 최대 HP 25%만큼 채운다.\n카엘이 마시면 170쯤 찬다.";
   const hiPotion = byId<ItemRecord>(db.items, FS_HI_POTION);
   hiPotion.hpRecovery = { flat: 100, percentMax: 50 };
   hiPotion.price = 180;
-  hiPotion.description = "아군 하나의 HP를 100 + 최대 HP의 50%만큼 회복한다. (카엘 기준 약 360)";
+  hiPotion.description = "아군 하나의 HP를 100 + 최대 HP 50%만큼 채운다.\n카엘이 마시면 360쯤 찬다.";
 
   // ── 스킬 복제 도구 ───────────────────────────────────────────────────────
   const cloneSkill = (fromId: string, id: string, patch: Partial<SkillRecord>): void => {
@@ -104,25 +104,25 @@ export function applyFallenBattleItems(project: Project): void {
   cloneSkill("skill_item_thunder_stone", "skill_fs_water_flask", { name: "물 주머니 효과", power: 76, elementId: "water", description: "물을 끼얹어 물 속성 피해를 준다." });
   cloneItem("item_gen2_frost_vial", FS_FIRE_FLASK, {
     name: "불씨 병", price: 90, skillId: "skill_fs_fire_flask", activateSkillId: "skill_fs_fire_flask",
-    description: "던지면 불 속성 피해.",
+    description: "던지면 불 속성 피해를 준다.\n늑대에게 잘 듣는다.",
     iconResourceId: "cc0-jetrel-fire-bomb", imageResourceId: "cc0-jetrel-fire-bomb",
   });
   cloneItem("item_gen2_frost_vial", FS_WATER_FLASK, {
     name: "물 주머니", price: 70, skillId: "skill_fs_water_flask", activateSkillId: "skill_fs_water_flask",
-    description: "던지면 물 속성 피해. 도깨비불의 불꽃을 단번에 꺼 버린다.",
+    description: "던지면 물 속성 피해를 준다.\n도깨비불을 단번에 꺼 버린다.",
   });
   // 뇌전석·서리 유리병은 기존 것을 그대로 쓰되 설명에 상성을 밝힌다.
-  byId<ItemRecord>(db.items, FS_THUNDER_STONE).description = "던지면 번개 속성 피해. 돌 수호상의 틈을 파고든다. 거미줄에는 번개가 흘러 버린다.";
-  byId<ItemRecord>(db.items, FS_FROST_VIAL).description = "던지면 얼음 속성 피해. 도깨비불의 불꽃을 식힌다.";
+  byId<ItemRecord>(db.items, FS_THUNDER_STONE).description = "던지면 번개 속성 피해를 준다.\n돌 수호상에게 잘 듣고, 거미에게는 덜 듣는다.";
+  byId<ItemRecord>(db.items, FS_FROST_VIAL).description = "던지면 얼음 속성 피해를 준다.\n도깨비불에게 잘 듣는다.";
 
   // ── 연막: 전투에서 확정으로 빠져나간다(엔진: skill.type "escape") ─────────────
   upsert(db.skills, normalizeSkillRecord({
     id: "skill_fs_smoke_pellet", name: "연막 효과", scope: "self", type: "escape", power: 0,
-    animationId: "anim_magic", description: "연기로 몸을 숨기고 전투에서 빠져나간다. 도망칠 수 없는 싸움에서는 쓸 수 없다.",
+    animationId: "anim_magic", description: "연기로 몸을 숨기고 전투에서 빠져나간다.\n도망칠 수 없는 싸움에서는 못 쓴다.",
   }));
   upsert(db.items, normalizeItemRecord({
     id: FS_SMOKE_PELLET, name: "연막 구슬", type: "special", scope: "ally", price: 80,
-    description: "전투 중에 쓰면 반드시 도망친다(보스전 제외). 도망이 불안할 때 쓰는 구슬.",
+    description: "전투 중에 쓰면 반드시 도망친다.\n보스와 싸울 때는 듣지 않는다.",
     iconResourceId: "cc0-jetrel-gen-smoke-ball", imageResourceId: "cc0-jetrel-gen-smoke-ball",
     skillId: "skill_fs_smoke_pellet", activateSkillId: "skill_fs_smoke_pellet", animationId: "anim_magic",
     occasion: "battle", occasionField: false, occasionBattle: true, consumable: true,
@@ -130,16 +130,16 @@ export function applyFallenBattleItems(project: Project): void {
 
   // ── 강장제: 전투 동안 공격 상승 ─────────────────────────────────────────────
   cloneSkill("skill_item_guard", "skill_fs_tonic", {
-    name: "투지 강장제 효과", description: "강장제 기운으로 공격이 올랐다.",
+    name: "투지 강장제 효과", description: "강장제를 마셔 공격이 올랐다.",
     stateEffects: [{ stateId: "state_attack_up", chance: 100, operation: "add" }],
   });
   cloneItem("item_guard_talisman", FS_TONIC, {
     name: "투지 강장제", price: 120, skillId: "skill_fs_tonic", activateSkillId: "skill_fs_tonic",
-    description: "전투 중에 마시면 아군 하나의 공격이 오른다(전투 끝까지). 수호상처럼 단단한 적에게 좋다.",
+    description: "아군 하나의 공격이 전투 끝까지 오른다.\n수호상처럼 단단한 적과 싸울 때 좋다.",
     iconResourceId: "cc0-jetrel-elixir", imageResourceId: "cc0-jetrel-elixir",
   });
   // 독 — 거미가 독침을 쏜다(전투가 끝나도 독이 남는다). 해독초가 그 답이다.
-  cloneSkill("skill_item_poison_vial", "skill_fs_venom", { name: "독침", power: 24, description: "독침을 찌른다. 독에 걸리면 걷기만 해도 체력이 깎인다." });
+  cloneSkill("skill_item_poison_vial", "skill_fs_venom", { name: "독침", power: 24, description: "독침으로 찌른다.\n독이 오르면 걷기만 해도 체력이 깎인다." });
   const spider = byId<EnemyRecord>(db.enemies, "enemy_fs_spider");
   if (!spider.actions.some((a) => a.skillId === "skill_fs_venom")) {
     spider.actions = [
@@ -154,7 +154,7 @@ export function applyFallenBattleItems(project: Project): void {
   // ── 필드 사용 잡화: 별빛 향 주머니 — 쓰면 한동안 숲의 짐승이 다가오지 않는다 ─────
   upsert(db.items, normalizeItemRecord({
     id: FS_STAR_SCENT, name: "별빛 향 주머니", type: "medicine", scope: "none", price: 150,
-    description: "필드에서 쓰면 60걸음 동안 야생 짐승이 다가오지 않는다. 별빛 향이 짐승의 코를 흐린다고 한다.",
+    description: "필드에서 쓰면 60걸음 동안 짐승이 다가오지 않는다.\n별빛 향을 맡으면 짐승 코가 무뎌진다고 한다.",
     iconResourceId: "cc0-jetrel-focus-charm", imageResourceId: "cc0-jetrel-focus-charm",
     occasion: "field", occasionField: true, occasionBattle: false, consumable: true, repelSteps: 60,
   }));
@@ -167,15 +167,15 @@ export function applyFallenBattleItems(project: Project): void {
     }));
   };
   // 이름·문장은 act1-script.md 19절이 정본이다(설명 + 한 줄 여운).
-  goods(FS_WOLF_FANG, "늑대 송곳니", 35, "늑대의 날카로운 송곳니. 창 재료로 쓴다.\n아직 따뜻하다. 방금까지 숲을 누비던 짐승의 것이다.", "cc0-jetrel-gen-fang-beast");
-  goods(FS_WOLF_HIDE, "늑대 가죽", 40, "두껍고 거친 늑대 가죽.\n숲지기 브람이 겨울마다 한 장씩 모아 둔다.", "cc0-jetrel-gen-pelt-wolf");
-  goods(FS_SPIDER_SILK, "거미 비단", 30, "투명한 거미줄 뭉치. 가볍고 질기다.\n햇빛에 비추면 무지갯빛이 돈다.", "cc0-jetrel-gen-thread-silk");
-  goods(FS_VENOM_SAC, "독 주머니", 50, "거미의 독이 든 주머니. 조심해서 다뤄야 한다.\n약방 오든이 비싼 값에 사 간다.", "cc0-jetrel-gen-poison-flask");
-  goods(FS_WISP_EMBER, "푸른 불씨", 45, "도깨비불에서 떨어진 불씨. 차갑게 탄다.\n쥐어도 뜨겁지 않은데, 주머니는 탄다.", "cc0-jetrel-gen-phoenix-ash");
-  goods(FS_STARIRON_SHARD, "별쇠 조각", 220, "별에서 떨어진 쇳조각. 차갑고 밝다.\n만지면 아주 먼 데서 종소리가 들린다.", "cc0-jetrel-gen-ore-iron");
-  goods(FS_KEEPER_SEAL, "별지기 인장", 300, "수호상이 쥐고 있던 인장. 옛 별지기의 표식.\n뒷면에 이름 한 줄을 새겼다 지운 자국이 있다.", "cc0-jetrel-gen-badge-guard");
-  goods(FS_SCORCHED_GLOVE, "그을린 장갑", 150, "왼손 장갑. 빛 속성 저항이 조금 오른다.\n안쪽에 수놓은 이름이 지워져 있다. 카엘이 한참 들여다본다.", "cc0-jetrel-gloves");
-  goods(FS_STAR_SHARD, "별조각", 400, "떨어진 별의 파편. 아주 드물게 나온다. 값을 잘 쳐 준다.", "cc0-jetrel-crystal");
+  goods(FS_WOLF_FANG, "늑대 송곳니", 35, "창 재료로 쓰는 날카로운 늑대 송곳니다.\n아직 따뜻하다.", "cc0-jetrel-gen-fang-beast");
+  goods(FS_WOLF_HIDE, "늑대 가죽", 40, "두껍고 거친 늑대 가죽이다.\n숲지기 브람은 겨울마다 한 장씩 모아 둔다.", "cc0-jetrel-gen-pelt-wolf");
+  goods(FS_SPIDER_SILK, "거미 비단", 30, "가볍고 질긴 거미줄 뭉치다.\n햇빛에 비추면 무지갯빛이 돈다.", "cc0-jetrel-gen-thread-silk");
+  goods(FS_VENOM_SAC, "독 주머니", 50, "거미 독이 든 주머니다. 다룰 때 조심해야 한다.\n약방 오든이 비싸게 사 간다.", "cc0-jetrel-gen-poison-flask");
+  goods(FS_WISP_EMBER, "푸른 불씨", 45, "도깨비불에서 떨어진 불씨다. 차갑게 탄다.\n손은 안 데는데, 주머니는 탄다.", "cc0-jetrel-gen-phoenix-ash");
+  goods(FS_STARIRON_SHARD, "별쇠 조각", 220, "별에서 떨어진 쇳조각이다. 차고 환하다.\n만지면 아주 먼 데서 종소리가 들린다.", "cc0-jetrel-gen-ore-iron");
+  goods(FS_KEEPER_SEAL, "별지기 인장", 300, "수호상이 쥐고 있던 옛 별지기 인장이다.\n뒷면에 이름 한 줄을 새겼다 지운 자국이 있다.", "cc0-jetrel-gen-badge-guard");
+  goods(FS_SCORCHED_GLOVE, "그을린 장갑", 150, "빛 속성 저항이 조금 오르는 왼손 장갑이다.\n수놓은 이름이 지워져 있다. 카엘이 한참 들여다본다.", "cc0-jetrel-gloves");
+  goods(FS_STAR_SHARD, "별조각", 400, "떨어진 별에서 나온 조각이다. 아주 드물다.\n상점에서 값을 잘 쳐 준다.", "cc0-jetrel-crystal");
 
   // ── 드롭 표 ────────────────────────────────────────────────────────────────
   const drops = (id: string, list: Array<{ itemId: string; ratePercent: number }>): void => {
@@ -218,23 +218,23 @@ export function applyFallenBattleItems(project: Project): void {
   };
   weapon(FS_SWORD_GALE, {
     name: "바람결 검", price: 220,
-    description: "가볍고 빠른 검. 공격 14 · 민첩 +6 · 급소 확률 +14%. 행동이 빨라지고 급소가 잘 난다.",
+    description: "공격 14, 민첩 +6, 급소 확률 +14%.\n가볍고 빨라서 먼저 움직이고 급소도 잘 낸다.",
     statBonuses: { attack: 14, defense: 0, mind: 0, agility: 6 }, attackElementIds: ["sword"], criticalRate: 14, accuracy: 100,
   });
   weapon(FS_SWORD_STAR, {
     name: "별쇠 장검", price: 640,
-    description: "한 대상에게 가장 센 한 방. 공격 22 · 민첩 +10 · 급소 확률 +22%. 바람결 검의 상위판. 빠르고 급소가 잘 난다.\n칼날에 별자리처럼 점이 박혀 있다.",
+    description: "공격 22, 민첩 +10, 급소 확률 +22%. 바람결 검의 윗급이다.\n칼날에 별자리처럼 점이 박혀 있다.",
     statBonuses: { attack: 22, defense: 0, mind: 0, agility: 10 }, attackElementIds: ["sword"], criticalRate: 22, accuracy: 100,
   });
   weapon(FS_SPEAR_PIKE, {
     name: "푸른 불꽃 창", price: 220,
-    description: "무겁고 긴 창. 공격 22 · 민첩 -3 · 회피 무시. 날랜 적도 꿰뚫는다.\n푸른 불씨를 먹은 쇠는 식어도 푸르다.",
+    description: "공격 22, 민첩 -3. 회피를 무시해 날랜 적도 꿰뚫는다.\n푸른 불씨를 먹은 쇠라 식어도 푸르다.",
     statBonuses: { attack: 22, defense: 0, mind: 0, agility: -3 }, attackElementIds: ["spear"], criticalRate: 2, accuracy: 100,
     effectFlags: { ...ZERO_FLAGS, ignoreDodge: true },
   });
   weapon(FS_SPEAR_STAR, {
     name: "별꿰기 창", price: 640,
-    description: "별빛 창끝. 공격 34 · 민첩 -2 · 회피 무시. 철심 창의 상위판. 수호상의 돌 몸도 꿰뚫는다.",
+    description: "공격 34, 민첩 -2. 회피를 무시한다. 푸른 불꽃 창의 윗급이다.\n별빛 맺힌 창끝은 수호상의 돌 몸도 꿰뚫는다.",
     statBonuses: { attack: 34, defense: 0, mind: 0, agility: -2 }, attackElementIds: ["spear"], criticalRate: 3, accuracy: 100,
     effectFlags: { ...ZERO_FLAGS, ignoreDodge: true },
   });

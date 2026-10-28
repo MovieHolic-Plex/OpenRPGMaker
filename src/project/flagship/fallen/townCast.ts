@@ -157,7 +157,7 @@ const EMOTIONS: readonly [RegExp, RegExp, string][] = [
   [/^대장장이 로한$/, /도둑 잡는 척/, "angry"],
   [/^대장장이 로한$/, /좀 더 다정하게/, "sad"],
   [/^엘레나$/, /이 별 무늬/, "surprised"],
-  [/^이리스$/, /답이 왔어요/, "surprised"],
+  [/^이리스$/, /답이 (왔|떴)어요/, "surprised"],
   [/^이리스$/, /고마워요/, "happy"],
   [/^이리스$/, /혼자 남는 건 싫어요|오늘 일도 지워져요/, "sad"],
   [/^꼬마 토비$/, /소원 빌었다|기계여도 돼|소원 들어준/, "happy"],
@@ -219,9 +219,9 @@ function addRunningKids(project: Project, hub: GameMap): Cell[] | null {
   const step = (a: Cell, b: Cell): string => Object.entries(DIR).find(([, [dx, dy]]) => a.x + dx === b.x && a.y + dy === b.y)![0];
   const moves = ring.map((c, i) => step(c, ring[(i + 1) % ring.length]!));
   const kids: [string, string, number, string, string][] = [
-    ["kid_run_a", "tex_easyrpg_charset_people1", 1, "술래 아이", "잡았다…! 아니, 놓쳤다! 거기 서!"],
+    ["kid_run_a", "tex_easyrpg_charset_people1", 1, "술래 아이", "잡았다! …아, 놓쳤다. 거기 서!"],
     ["kid_run_b", "tex_easyrpg_charset_people4", 0, "도망치는 아이", "못 잡겠지~ 별지기 형도 같이 뛸래?"],
-    ["kid_run_c", "tex_easyrpg_charset_people5", 1, "도망치는 아이", "심문관님들 다 갔다! 이제 뛰어도 돼!"],
+    ["kid_run_c", "tex_easyrpg_charset_people5", 1, "도망치는 아이", "심문관님들 다 갔다! 맘껏 뛰어도 돼."],
   ];
   kids.forEach(([key, tex, index, name, line], k) => {
     const id = `ev_${FS_PREFIX}_${key}`;
@@ -255,7 +255,7 @@ function ensureNecklace(project: Project): void {
     name: "새벽샘 별조각 목걸이",
     slot: "accessory",
     price: 0,
-    description: "서른 해 전 새벽샘에 떨어진 별 조각을 꿴 목걸이. 쥔 손에 별의 무게가 실린다. 주는 피해 +30% · 치명타율 +10%.",
+    description: "주는 피해 +30%, 급소 +10%.\n새벽샘에 떨어진 별 조각을 꿴 목걸이.",
     statBonuses: { attack: 0, defense: 0, mind: 0, agility: 0 },
     criticalRate: 10,
     damageDealtPercent: 30,
@@ -341,10 +341,10 @@ function hiddenNecklace(project: Project, hub: GameMap): Cell | null {
     pages: [
       pg(`${id}_p0`, "뒤지기", [], [
         { kind: "text", body: "골목 끝에 이끼 낀 상자가 있다.\n못이 녹슬어 뚜껑이 쉽게 들린다." },
-        { kind: "text", body: "기름 먹인 천에 싸인 목걸이 하나.\n작은 돌이 별빛처럼 희미하게 빛난다." },
+        { kind: "text", body: "기름 먹인 천에 목걸이가 싸여 있다.\n작은 돌이 별빛처럼 희미하게 빛난다." },
         { kind: "text", body: "천에 「새벽샘」이라고 수놓여 있다.\n서른 해 전 별이 떨어진 마을 이름이다." },
         { kind: "changeItem", itemId: FS_DAWNWELL_NECKLACE, op: "+=", amount: 1 },
-        { kind: "text", body: "「새벽샘 별조각 목걸이」를 손에 넣었다." },
+        { kind: "text", body: "「새벽샘 별조각 목걸이」를 찾았다." },
         { kind: "setSelfSwitch", key: "A", value: true },
       ] as unknown as Command[]),
       pg(`${id}_p1`, "빈 상자", [{ kind: "selfSwitch", key: "A", value: true } as unknown as Condition], [
@@ -390,7 +390,7 @@ const NORTH: readonly [RegExp, string][] = [
   [/동문/g, "북문"],
   [/동쪽은 이틀 안에/g, "북쪽은 이틀 안에"],
   // 렌즈가 가리키는 하늘탑도 북쪽이다 — 숲과 섞이지 않게 「숲 너머」로 못 박는다.
-  [/북쪽이라… 옛 별지기들이 마지막으로 세운\n하늘탑이 그쪽에 있다\./g, "북쪽이라… 숲 너머 산맥 끝에, 옛 별지기들이\n마지막으로 세운 하늘탑이 있다."],
+  [/북쪽이라… 옛 별지기들이 마지막으로 세운\n하늘탑이 그쪽에 있다\./g, "북쪽이라… 숲 너머 산맥 끝에\n옛 별지기들이 마지막으로 세운 하늘탑이 있다."],
 ];
 export function applyNorthForest(project: Project): number {
   let n = 0;
