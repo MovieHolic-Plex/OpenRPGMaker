@@ -8,6 +8,7 @@ import { layerTileAt, setLayerTileAt, shadowAt, setShadowAt } from "@/project/ma
 import type { GameMap, Project } from "@/project/types";
 import { playerAnchors } from "@/editor/tools/transferReachability";
 import type { BuildRun, ContentBuildResult } from "./types";
+import { repairEventReach } from "./eventReach";
 
 type Obj = Record<string, unknown>;
 const STEPS = [[1, 0], [-1, 0], [0, 1], [0, -1]] as const;
@@ -306,10 +307,18 @@ export function buildPuzzleChain(run: BuildRun, args: ChainArgs): ContentBuildRe
     if (!res.ok) return fail(`${index + 1}번 고리 이벤트를 쓰지 못했다: ${String(res.summary).slice(0, 300)}`);
     eventIds.push({ mapId, eventId: id });
   }
+  // 걸어 가서 말을 걸 수 있는 자리인가(2026-10-28 mt2 deepseek: 모델이 준 칸의 쪽지가 한 칸 통로를 막아 자물쇠에 못 갔다).
+  // 막힌 고리·길목을 막는 고리는 가까운 닿는 칸으로 옮기고, 문 이름 고리는 그림 문 칸에 붙인다. 문 막기(seal) 전에 한다.
+  const reachNotes: string[] = [];
+  for (const mapId of [...new Set(eventIds.map((e) => e.mapId))]) {
+    const fixed = repairEventReach(run, mapId, eventIds.filter((e) => e.mapId === mapId).map((e) => e.eventId));
+    if (fixed.moved.length) reachNotes.push(`닿게 옮김: ${fixed.moved.join(", ")}`);
+    for (const s of fixed.stuck) warnings.push(`걸어 가서 조사할 자리를 못 찾았다: ${s}`);
+  }
   // 답이 단서에 실제로 적혀 있는가.
   for (const link of args.links) if (link.role === "code" && link.code && !args.links.some((l) => l.role === "clue" && (l.lines ?? []).some((line) => line.includes(link.code!)))) warnings.push(`정답 ${link.code} 이 어느 단서 lines 에도 없다 — 플레이어가 답을 알 길이 없다`);
   const seals = doors.filter((d) => args.links.find((l) => (l.eventId ?? "") === d.eventId)?.seal !== false).map((d) => sealLockedRoom(run, d.mapId, d.eventId));
   for (const s of seals) if (!s.ok) warnings.push(s.summary);
-  const sealNote = seals.length ? ` ${seals.map((s) => s.summary).join(" / ")}` : "";
+  const sealNote = `${reachNotes.length ? ` ${reachNotes.join(" / ")}.` : ""}${seals.length ? ` ${seals.map((s) => s.summary).join(" / ")}` : ""}`;
   return { ok: true, mapIds: [...new Set(eventIds.map((e) => e.mapId))], eventIds, summary: `퍼즐 사슬 「${args.name}」 ${args.links.length}고리를 지었다(${args.links.map((l) => l.role).join(" → ")}).${sealNote}`, warnings, missingArt: [], calls: [] };
 }

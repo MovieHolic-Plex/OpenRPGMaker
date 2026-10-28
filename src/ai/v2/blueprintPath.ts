@@ -15,6 +15,28 @@ import { normalizeGameBlueprint, type GameBlueprint } from "@/project/gameBluepr
 import { buildPuzzleChain, type ChainLink } from "./puzzle";
 import { resolveWhere } from "./people";
 import type { BuildRun, ContentBuildResult } from "./types";
+import { BLUEPRINT_PATH_IDS, walkBlueprint } from "./blueprint";
+import { repairEventReach } from "./eventReach";
+
+/**
+ * 이미 지은 청사진 단계 이벤트·퍼즐 고리 이벤트를 걸어 가 조사할 수 있는 자리로 옮긴다(내용은 그대로). 옮긴 것 목록.
+ * 모델이 지은 고리(숫자 자물쇠 등)를 다시 짓지 않고 자리만 고칠 때 — 끝맺음 단계와 build_blueprint_path 가 먼저 부른다.
+ */
+export function repairBlueprintReach(run: BuildRun): { moved: string[]; stuck: string[] } {
+  const project = run.ctx.project;
+  const bp = project.gameBlueprint;
+  const byMap = new Map<string, string[]>();
+  const push = (mapId: string, id: string) => { const list = byMap.get(mapId) ?? []; if (!list.includes(id)) list.push(id); byMap.set(mapId, list); };
+  for (const step of bp?.steps ?? []) {
+    const map = mapFor(project, step.place);
+    const ev = map?.events.find((e) => e.id === step.event || norm(String((e as { name?: string }).name ?? "")) === norm(step.event)) ?? map?.events.find((e) => sameName(String((e as { name?: string }).name ?? ""), step.event));
+    if (map && ev) push(map.id, ev.id);
+  }
+  for (const map of Object.values(project.maps)) for (const ev of map.events ?? []) if (ev.id.startsWith("ev_chain_") && !ev.id.startsWith("ev_chain_seal_")) push(map.id, ev.id);
+  const moved: string[] = [], stuck: string[] = [];
+  for (const [mapId, ids] of byMap) { const r = repairEventReach(run, mapId, ids); moved.push(...r.moved); stuck.push(...r.stuck); }
+  return { moved, stuck };
+}
 
 /** 모델이 단계별로 덧붙일 수 있는 글(전부 선택). 숫자 자물쇠를 원하면 code 와 앞 단계 lines 에 그 답을. */
 export interface PathStepText {
@@ -79,6 +101,13 @@ export function buildBlueprintPath(run: BuildRun, text: readonly PathStepText[] 
   if (!bp) return fail("청사진이 없다 — write_blueprint 로 먼저 쓴다.");
   const byId = new Map(text.map((t) => [t.id, t]));
   const warnings: string[] = [];
+  // 이미 지은 경로가 자리만 틀렸으면(닿지 않음·길목 막음) 옮기기만 한다 — 모델이 지은 숫자 자물쇠를 줍기로 덮어쓰지 않는다.
+  if (!text.length) {
+    const fixed = repairBlueprintReach(run);
+    if (!walkBlueprint(run.ctx.project).blockers.some((b) => BLUEPRINT_PATH_IDS.has(b.id))) {
+      return { ok: true, mapIds: [], summary: fixed.moved.length ? `청사진 경로는 이미 엔딩까지 이어져 있어 다시 짓지 않고 자리만 고쳤다 — 걸어 가서 조사할 수 있게 옮김: ${fixed.moved.join(", ")}` : "청사진 경로가 이미 엔딩까지 이어져 있다 — 다시 짓지 않았다(대사를 바꾸려면 steps[{id,lines}] 를 준다).", warnings: fixed.stuck.map((s) => `조사할 자리를 못 찾았다: ${s}`), missingArt: [], calls: [] };
+    }
+  }
 
   // 1) 엔딩 — 청사진 ending 이름과 같은 엔딩이 있으면 그것, 없으면 하나뿐인 엔딩, 그래도 없으면 새로 정의한다.
   const endings = (project0.endings ?? []) as { id: string; name?: string }[];

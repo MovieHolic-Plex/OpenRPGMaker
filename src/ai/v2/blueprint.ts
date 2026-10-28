@@ -7,6 +7,7 @@
 import type { GameEvent, GameMap, Project } from "@/project/types";
 import { gameBlueprintText, normalizeGameBlueprint, type GameBlueprint } from "@/project/gameBlueprint";
 import { walkGame } from "./makeGame";
+import { unreachableEvents } from "./eventReach";
 
 type Obj = Record<string, unknown>;
 const obj = (v: unknown): Obj | undefined => (v && typeof v === "object" && !Array.isArray(v) ? (v as Obj) : undefined);
@@ -153,7 +154,7 @@ const hasCommands = (page: Obj) => Array.isArray(page.commands) && page.commands
 
 /** 경로 막힘의 고칠 동사 한 줄 — 하위 도구(upsert_event·define_ending…)를 하나씩 맞추게 하지 않는다(2026-10-28 mt2 Flash: upsert_event 6번 인자 실패). */
 export const BLUEPRINT_PATH_FIX = "고치기: build_blueprint_path 를 한 번 부른다 — 청사진 단계대로 이벤트·조건·스위치·아이템·엔딩 호출을 함수가 짓는다(대사만 steps[{id,lines}] 로 준다).";
-export const BLUEPRINT_PATH_IDS: ReadonlySet<string> = new Set(["blueprint-event-missing", "blueprint-event-empty", "blueprint-condition-unset", "blueprint-condition-order", "blueprint-no-ending"]);
+export const BLUEPRINT_PATH_IDS: ReadonlySet<string> = new Set(["blueprint-event-unreachable", "blueprint-event-missing", "blueprint-event-empty", "blueprint-condition-unset", "blueprint-condition-order", "blueprint-no-ending"]);
 
 export interface BlueprintWalk {
   readonly blockers: BlueprintBlocker[];
@@ -185,6 +186,11 @@ export function walkBlueprint(project: Project): BlueprintWalk {
       const step = resolved.find((r) => r.map?.id === id)!.step;
       add("blueprint-place-unreachable", `청사진 ${step.id} 의 「${project.maps[id]?.name ?? id}」(${id}) 에 시작 맵에서 문·길을 따라 걸어 닿지 못한다 — create_transfer_pair 로 앞 단계 장소와 잇는다.`, `${step.id} ${id}`);
     }
+  }
+  // 2b) 단계 이벤트 옆에 걸어 가 설 칸이 있나(시작점·착지점에서, 같은 높이 이벤트는 못 지난다) — mt2 deepseek: 쪽지가 통로를 막아 자물쇠에 못 갔다.
+  for (const r of resolved) {
+    if (!r.map || !r.ev) continue;
+    if (unreachableEvents(project, r.map.id, [r.ev.id]).length) add("blueprint-event-unreachable", `청사진 ${r.step.id} 「${r.step.event}」(${r.map.id} ${r.ev.id}, (${r.ev.x},${r.ev.y})) 옆에 걸어 가서 설 칸이 없다(벽이나 다른 이벤트가 길목을 막았다) — 플레이어가 조사할 수 없다.`, `${r.step.id} ${r.ev.id} (${r.ev.x},${r.ev.y})`);
   }
   // 3) 조건을 켜는 곳이 그 단계 전에 있나(또는 경로 밖 아무 이벤트가 켜나)
   const stepSetters = resolved.map((r) => r.ev ? eventSetter(project, r.ev) : undefined);
