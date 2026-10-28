@@ -108,8 +108,8 @@
    막은 불투명한 패널 바탕 위에 안내와 「AI 연결하기」만 둔다. 모달이 아니므로 장식 블러도 쓰지 않는다. */
 .ai-chat-panel .ai-deck > .ai-lock-scrim,
 .ai-chat-panel .ai-chat-body > .ai-lock-scrim {
+  /* 접두사 짝을 같이 쓰지 않는다 — 빌드 압축기가 둘을 합치며 표준 속성을 버려 블러가 남았다(실측: dist 에 -webkit- 만 남음). */
   backdrop-filter: none;
-  -webkit-backdrop-filter: none;
   background: var(--bg-raised);
 }
 .ai-chat-panel.is-ai-locked .ai-workspace-starter { display: none; }

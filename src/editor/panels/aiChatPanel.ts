@@ -211,7 +211,7 @@ import { openLocalDiagnosticsDialog } from "./localDiagnosticsDialog";
 import type { AiRunSurface, ConversationPersistTarget as ConversationPersistTargetContract } from "./aiRunSurface";
 import { getAiConnectionStatus } from "./aiConnectionStatus";
 import { runWhenPointerReleased } from "@/editor/pointerStrokeGate";
-import { AI_LOCK_REASON_ID, createAiLockScrim } from "./aiLockScrim";
+import { AI_LOCK_DESCRIBEDBY, createAiLockScrim } from "./aiLockScrim";
 import {
   backupProjectSnapshot,
   dropSession,
@@ -3621,10 +3621,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       // 입력은 계속 쓸 수 있게 두되(이어 쓰기), 보조기술에는 잠겼다는 사실과 이유를 같은 문장으로 알린다(C-60).
       if (locked) {
         input.setAttribute("aria-disabled", "true");
-        input.setAttribute("aria-describedby", AI_LOCK_REASON_ID);
+        input.setAttribute("aria-describedby", AI_LOCK_DESCRIBEDBY);
       } else {
         input.removeAttribute("aria-disabled");
-        if (input.getAttribute("aria-describedby") === AI_LOCK_REASON_ID) input.removeAttribute("aria-describedby");
+        if (input.getAttribute("aria-describedby") === AI_LOCK_DESCRIBEDBY) input.removeAttribute("aria-describedby");
       }
       // 막이 덮은 본문(스타터·대화 기록)은 키보드·낭독기로도 닿지 않게 한다. 막 자신과
       // 컴포저(commandBar, body 밖)는 살려 둔다 — 쓰다가 로그인하면 이어 쓸 수 있어야 한다.

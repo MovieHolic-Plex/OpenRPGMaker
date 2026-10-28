@@ -21,6 +21,9 @@ export const AI_LOCK_SCRIM_TESTIDS = {
 
 /** 막의 설명 문장 id. 패널·스튜디오 입력이 잠겨 있을 때 aria-describedby 로 가리킨다. */
 export const AI_LOCK_REASON_ID = "ai-lock-reason";
+export const AI_LOCK_TITLE_ID = "ai-lock-title";
+/** 잠긴 입력의 aria-describedby — 막의 제목(무엇이 필요한지)과 설명(왜)을 함께 읽는다. */
+export const AI_LOCK_DESCRIBEDBY = `${AI_LOCK_TITLE_ID} ${AI_LOCK_REASON_ID}`;
 
 export type AiLockScrim = {
   readonly element: HTMLElement;
@@ -40,7 +43,7 @@ export function createAiLockScrim(options: {
   readonly onOpenSettings: () => void;
   readonly onLockChange?: (locked: boolean) => void;
 }): AiLockScrim {
-  const titleEl = el("p", { class: "ai-lock-title", text: "AI 연결이 필요합니다" });
+  const titleEl = el("p", { class: "ai-lock-title", attrs: { id: AI_LOCK_TITLE_ID }, text: "AI 연결이 필요합니다" });
   // 입력창들이 aria-describedby 로 이 문장을 가리킨다 — 「왜 못 쓰는지」를 막과 입력이 같은 말로 한다(C-60).
   const bodyEl = el("p", {
     class: "ai-lock-body",
