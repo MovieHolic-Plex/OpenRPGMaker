@@ -19,6 +19,7 @@ import {
 } from "@/project/cinematicSettings";
 import { listDatabaseResourceOptions, type DatabaseResourcePickerKind } from "@/editor/resourceOptions";
 import { findOpeningStillMood, unsuitableOpeningStillMessage } from "@/assets/openingStillMoods";
+import { findCharsetAsset } from "@/assets/charsetCatalog";
 import type { Project } from "@/project/types";
 import { openingAuthoringStatus } from "@/project/openingAuthoringStatus";
 import { reviewOpeningAuthoring } from "@/project/openingAuthoringReview";
@@ -216,6 +217,7 @@ function normalizeScene(project: Project, raw: unknown, index: number, isKnown: 
     for (const layer of composition.layers) {
       if (layer.kind !== 'image') continue;
       if (!hasOpeningImage(project, layer.resourceId!)) throw new ToolError("그림 리소스 없음: " + layer.resourceId, { code: "resource-not-found" });
+      if (layer.role === 'background') rejectCharacterSheet(project, layer.resourceId, `레이어 ${layer.id}`);
       const banned = layer.role === 'background' ? unsuitableOpeningStillMessage(layer.resourceId!, `레이어 ${layer.id}`) : null;
       if (banned) throw new ToolError(banned, { code: "invalid-args" });
     }
@@ -247,6 +249,7 @@ function normalizeScene(project: Project, raw: unknown, index: number, isKnown: 
       { code: "invalid-args" },
     );
   }
+  if (kind === "image") rejectCharacterSheet(project, typeof scene.resourceId === "string" ? scene.resourceId.trim() : undefined, `scenes[${index}].resourceId`);
   const resourceId = resolveResourceId(project, kind === "video" ? "movie" : "image", scene.resourceId, index, "resourceId", isKnown);
   if (kind === "video") {
     if (scene.motion !== undefined || scene.direction !== undefined) {
@@ -839,6 +842,26 @@ export type OpeningImageBrief = {
   readonly focus?: string; readonly angle?: string; readonly light?: string; readonly palette?: string; readonly cast?: string; readonly captionSide?: "bottom" | "top" | "left" | "right";
 };
 const OPENING_DIRECTION_FIELDS = ["focus", "angle", "light", "palette", "cast"] as const;
+
+/**
+ * 캐릭터 칩·얼굴·전투 시트(여러 포즈를 칸으로 나눈 그림)는 오프닝 그림이 아니다 — 통째로 깔면 걷기 칸 열두 개가 화면을 덮는다
+ * (2026-10-28 standin magic: 첫 장면 그림이 easyrpg-charset-actor1). 시트 종류 이름을 돌려준다, 아니면 undefined.
+ */
+export function characterSheetKind(project: Project, id: string): string | undefined {
+  const kind = project.assets.uploaded[id]?.kind;
+  if (kind === "charset" || kind === "battleCharset") return "캐릭터 칩 시트";
+  if (kind === "faceset") return "얼굴 시트";
+  if (kind === "battle" || kind === "battleWeapon") return "전투 포즈 시트";
+  if (findCharsetAsset(id)) return "캐릭터 칩 시트";
+  if (/(?:^|[-_])(?:charset|faceset|battlecharset)(?:[-_]|$)/iu.test(id)) return /faceset/iu.test(id) ? "얼굴 시트" : "캐릭터 칩 시트";
+  return undefined;
+}
+
+function rejectCharacterSheet(project: Project, id: string | undefined, label: string): void {
+  if (!id) return;
+  const sheet = characterSheetKind(project, id);
+  if (sheet) throw new ToolError(`${label} '${id}' 는 ${sheet}라 오프닝 그림으로 쓸 수 없다 — 배경은 list_opening_media{kind:'image'} 의 배경화나 place_opening_background{mapId} 로, 인물은 place_opening_charset_actor 로 얹는다.`, { code: "invalid-args" });
+}
 
 /** SQLite media references are valid even when the worker has no browser URL bridge. */
 export function hasOpeningImage(project: Project, id: string): boolean {
