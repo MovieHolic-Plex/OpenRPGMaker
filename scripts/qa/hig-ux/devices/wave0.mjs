@@ -811,17 +811,26 @@ export const devices = [
     surface: 'guide',
     title: 'Closing the editor guide with Escape returns focus to a control (not <body>)',
     async run({ page }) {
-      await page.keyboard.press('Control+K');
-      await page.waitForTimeout(800);
+      // Layers already on screen (an inline listbox such as the tile cards) are not popups this device opens or closes.
+      const persistentLayers = await pe(page, `const els = [...document.querySelectorAll(LAYERS)].filter(vis); for (const e of els) e.setAttribute('data-c114-pre', ''); return els.length;`);
+      const NEW_LAYERS = `return [...document.querySelectorAll(LAYERS)].filter(vis).filter((e) => !e.hasAttribute('data-c114-pre'))`;
+      const waitNew = (body, ms) => page.waitForFunction(new Function('arg', `${VIS}\n${body}`), null, { timeout: ms, polling: 100 }).then(() => true, () => false);
+      // The Ctrl+K hotkey is registered when the assistant panel renders (seconds after load): re-press until the palette opens.
+      let paletteOpen = false;
+      for (const deadline = Date.now() + 20_000; !paletteOpen && Date.now() < deadline; ) {
+        await page.keyboard.press('Control+K');
+        paletteOpen = await waitNew(`${NEW_LAYERS}.length > 0;`, 1500);
+      }
+      await pe(page, `${NEW_LAYERS}.forEach((e) => e.setAttribute('data-c114-palette', ''));`);
       await page.keyboard.type('단축');
-      await page.waitForTimeout(800);
+      await waitNew(`return [...document.querySelectorAll('[data-c114-palette] [role=option]')].filter(vis).some((o) => /단축/.test(o.textContent || ''));`, 5000);
       await page.keyboard.press('Enter');
-      await page.waitForTimeout(1500);
-      const opened = await layerCount(page);
+      await waitNew(`const n = ${NEW_LAYERS.replace('return ', '')}; return n.length > 0 && !n.some((e) => e.hasAttribute('data-c114-palette'));`, 6000);
+      const opened = await pe(page, `${NEW_LAYERS}.filter((e) => !e.hasAttribute('data-c114-palette')).length;`);
       await page.keyboard.press('Escape');
-      await page.waitForTimeout(900);
-      const r = await pe(page, `const a = document.activeElement; return { layersAfter: [...document.querySelectorAll(LAYERS)].filter(vis).length, focusOnBody: !a || a === document.body ? 1 : 0, focusedTag: a ? a.tagName.toLowerCase() : '', focusedName: a && a !== document.body ? nameOf(a).slice(0, 30) : '' };`);
-      const m = { guideLayersOpen: opened, ...r };
+      await waitNew(`${NEW_LAYERS}.length === 0;`, 3000);
+      const r = await pe(page, `const a = document.activeElement; return { layersAfter: [...document.querySelectorAll(LAYERS)].filter(vis).filter((e) => !e.hasAttribute('data-c114-pre')).length, focusOnBody: !a || a === document.body ? 1 : 0, focusedTag: a ? a.tagName.toLowerCase() : '', focusedName: a && a !== document.body ? nameOf(a).slice(0, 30) : '' };`);
+      const m = { persistentLayers, paletteOpened: paletteOpen ? 1 : 0, guideLayersOpen: opened, ...r };
       return { pass: opened >= 1 && r.layersAfter === 0 && r.focusOnBody === 0, measured: m };
     },
   },
