@@ -20,7 +20,7 @@ import { sharedFaceForCharset } from "@/project/sharedCharacterFaceResolver";
 import type { Project } from "@/project/types";
 import { defaultPlaceLeaks, editorDefaultsLeft, endingClosureProblems, endingConditionsUnset, emptySparkles, selfLoopTransfers, silentLockedExits, writtenStateIds } from "./shipChecks";
 import { strayStepCopies } from "./blueprint";
-import { doorCellBlocked, offArtEntrances, planObjective, repeatingStartObjectives, staleMilestoneTargets } from "./discoverability";
+import { doorCellBlocked, objectiveCommand, offArtEntrances, planObjective, repeatingStartObjectives, staleMilestoneTargets, withWhere } from "./discoverability";
 import { normalizeGameOverSettings } from "@/project/cinematicSettings";
 import { fieldMenu, storyFieldMenu } from "@/project/fieldMenu";
 import { syncMenuFeatures, syncMenuUiStyle } from "@/project/menuSystem";
@@ -46,6 +46,7 @@ export function applyShipDefaults(project: Project, task = project.gameBlueprint
   if (offArtEntrances(project).length) applied.push(...moveEntrancesOntoArt(project));
   if (repeatingStartObjectives(project).length) applied.push(...moveRepeatingStartObjective(project));
   if (staleMilestoneTargets(project).length) applied.push(...fillStaleObjectives(project));
+  applied.push(...fillGymArrivalObjectives(project));
   if (endingConditionsUnset(project).length) applied.push(...dropDeadEndingConditions(project));
   if (selfLoopTransfers(project).length) applied.push(...dropSelfLoopTransfers(project));
   if (emptySparkles(project).length) applied.push(...dropEmptySparkles(project));
@@ -454,6 +455,52 @@ function moveRepeatingStartObjective(project: Project): string[] {
     map.events = has ? map.events.map((e) => e.id === next.id ? next as unknown as typeof e : e) : [...map.events, next as unknown as (typeof map.events)[number]];
   }
   return [`시작 목표를 매번 도는 「${first.eventId}」에서 옮김: ${plan.summary}`];
+}
+
+/**
+ * 몬스터 원정의 체육관 마을에 들어서면 「현재 목표」가 그 체육관을 가리킨다 — 배지마다(monsterCampaign.badges) 그 마을(cityMapId)로 들어오는
+ * 다른 원정 장소(locations: 길·마을·던전·리그)의 이동 명령 앞에, 배지 목표(objectives 의 switchId = 배지 스위치)의 앞 조건이 켜지고 배지는 아직일 때 목표 글(방위 붙임)을 건다.
+ * 왜(2026-10-29 standin monster 「새싹 몬스터 모험」): 박사가 건 「1번길 풀숲에서 몬스터를 잡고 새순 마을로 가자」가 마을에 와서도 그대로였고,
+ * 체육관을 가리키는 목표는 길가 라이벌(말을 걸지 않아도 되는 이벤트)만 걸었다. 같은 프로젝트에 두 번 불러도 결과가 같다.
+ */
+function fillGymArrivalObjectives(project: Project): string[] {
+  const campaign = project.system.monsterCampaign;
+  if (!campaign?.badges?.length) return [];
+  const out: string[] = [];
+  for (const badge of campaign.badges) {
+    const objective = campaign.objectives?.find((o) => o.switchId === badge.switchId);
+    const city = project.maps[badge.cityMapId];
+    if (!objective || !city) continue;
+    const message = withWhere(project, city.id, objective.title.trim().replace(/[.。]$/u, ""));
+    const conditions: Obj[] = [{ kind: "switch", switchId: badge.switchId, value: false }];
+    if (objective.requiresSwitchId) conditions.unshift({ kind: "switch", switchId: objective.requiresSwitchId, value: true });
+    const guard = (): Obj => ({ kind: "fork", condition: conditions.length > 1 ? { kind: "all", conditions } : conditions[0], then: [objectiveCommand(message)] });
+    const already = (cmd: unknown): boolean => !!cmd && typeof cmd === "object" && (cmd as Obj).kind === "fork" && JSON.stringify((cmd as Obj).then ?? []).includes(JSON.stringify(message));
+    let placed = 0;
+    const visit = (list: unknown[]): void => {
+      for (let i = 0; i < list.length; i += 1) {
+        const cmd = list[i] as Obj | undefined;
+        if (!cmd || typeof cmd !== "object") continue;
+        for (const value of Object.values(cmd)) {
+          if (Array.isArray(value)) visit(value);
+          else if (value && typeof value === "object") for (const inner of Object.values(value as Obj)) if (Array.isArray(inner)) visit(inner);
+        }
+        if (cmd.kind === "transfer" && cmd.mapId === city.id && !already(list[i - 1])) {
+          list.splice(i, 0, guard());
+          i += 1;
+          placed += 1;
+        }
+      }
+    };
+    // 원정 장소(길·다른 마을·던전)에서 들어올 때만 — 마을 안 건물(센터·상점·체육관)에서 나올 때 덮으면 라이벌·체육관 장치가 건 더 자세한 목표가 지워진다.
+    const from = new Set(campaign.locations.map((location) => location.mapId).filter((id) => id !== city.id));
+    for (const map of Object.values(project.maps)) {
+      if (!from.has(map.id)) continue;
+      for (const event of map.events ?? []) for (const page of event.pages ?? []) if (Array.isArray(page.commands)) visit(page.commands as unknown[]);
+    }
+    if (placed) out.push(`체육관 마을 「${city.name ?? city.id}」에 들어서면 목표 「${message}」(이동 ${placed}곳)`);
+  }
+  return out;
 }
 
 /**

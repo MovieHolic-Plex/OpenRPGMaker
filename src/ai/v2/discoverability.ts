@@ -43,7 +43,10 @@ function readers(project: Project): Map<Key, Set<string>> {
   const leafKeys = (leaf: Record<string, unknown>): Key[] => {
     if (leaf.kind === "switch" && typeof leaf.switchId === "string") return [`sw:${leaf.switchId}`];
     if (leaf.kind === "variable" && typeof leaf.variableId === "string") return [`var:${leaf.variableId}`];
-    if (leaf.kind === "item" && typeof leaf.itemId === "string") return [`item:${leaf.itemId}`];
+    // 「이 아이템이 없으면」(present:false)은 다 쓴 소모품을 다시 채우는 분기다 — 진행을 읽는 것이 아니다. 2026-10-29 standin monster:
+    // 집 엄마·보물 상자가 포획구슬을 주자 «구슬이 없으면 세 개» 주민을 다음 이정표로 보고 「「mx_map_grove_house_resident」를 찾아가자」가
+    // 본 목표(체육관·관측탑)를 덮었다.
+    if (leaf.kind === "item" && typeof leaf.itemId === "string") return leaf.present === false ? [] : [`item:${leaf.itemId}`];
     return [];
   };
   for (const page of allPages(project)) {
@@ -198,7 +201,8 @@ export function objectiveGaps(project: Project): string[] {
 export function staleMilestoneTargets(project: Project): { readonly event: StoryEvent; readonly readers: readonly { readonly mapId: string; readonly eventId: string; readonly name: string }[] }[] {
   const read = readers(project);
   const where = new Map<string, { mapId: string; name: string }>();
-  for (const map of Object.values(project.maps)) for (const event of map.events ?? []) where.set(event.id, { mapId: map.id, name: String(event.name ?? event.id) });
+  // 이름 없는 이벤트는 이름을 비운다 — id(mx_map_grove_house_resident)를 목표 글에 그대로 실으면 안 된다.
+  for (const map of Object.values(project.maps)) for (const event of map.events ?? []) where.set(event.id, { mapId: map.id, name: String(event.name ?? "") });
   const stale = storyEvents(project).filter((event) => event.milestone && !event.ends && !event.setsObjective);
   return stale.map((event) => {
     const keys = new Set<Key>();
