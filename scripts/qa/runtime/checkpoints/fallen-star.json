@@ -3912,11 +3912,9 @@
        "ms": 600
       },
       {
-       "kind": "face",
-       "dir": "up"
-      },
-      {
-       "kind": "action"
+       "kind": "move",
+       "dir": "up",
+       "steps": 1
       },
       {
        "kind": "waitFor",
