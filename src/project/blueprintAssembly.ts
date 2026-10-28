@@ -36,7 +36,7 @@ const EXTRA_TITLE_ARTS: readonly { readonly id: string; readonly name: string; r
 const THEMES: readonly { readonly story: RegExp; readonly art: RegExp; readonly weight: number }[] = [
   { story: /방탈출|탈출|밀실|잠긴|갇힌|금고|자물쇠|암호|서재|공방|저택|추리|미스터리|탐정|사건|도난|범인|escape|mystery/iu, art: /밀실|빈 방|실내|저택|회랑|복도|미스터리|적막|초상화/gu, weight: 3 },
   { story: /공포|호러|귀신|유령|저주|괴담|폐병원|폐교|좀비|괴물|비명|horror/iu, art: /공포|불안|긴장|폐병원|기괴|위협/gu, weight: 3 },
-  { story: /병원|의사|간호/u, art: /병원/gu, weight: 2 },
+  { story: /병원|의사|간호/u, art: /병원/gu, weight: 4 }, // 장소가 딱 맞는 그림(폐병원)이 분위기만 맞는 그림(초상화 복도)을 이긴다
   { story: /사막|모래|피라미드|오아시스|desert/iu, art: /사막|모래|피라미드|오아시스/gu, weight: 3 },
   { story: /바다|해저|항구|해변|등대|어촌|ocean|harbor/iu, art: /해저|바다|항구|등대|해안/gu, weight: 3 },
   { story: /하늘섬|공중|비행선|부유/u, art: /공중|하늘섬|비행선|구름 위/gu, weight: 3 },
