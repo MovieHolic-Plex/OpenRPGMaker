@@ -50,6 +50,12 @@ Teleporting, switch editing and other debug tools are refused. Play only through
 
 You may batch a few ops in one call, for example `[{"kind":"move","dir":"up","steps":3},{"kind":"action"}]`. Keep batches short so you can see what happened.
 
+### Battles
+
+Plain attacks alone usually lose: enemies come in groups of two or three. In battle, open 스킬 (skills) and use them, use items when HP is low, and use 방어 (defend) when it helps. You can drive the battle menu with `ArrowUp`/`ArrowDown`/`Enter`/`Escape`, reading `battleText` and the screenshot. The `battle` op with `fallback:"attack"` only attacks, so it is a weak choice for hard fights.
+
+If you lose, the game-over screen may offer **체크포인트에서 다시 시작** (retry from the checkpoint). Choose it with the arrow keys and `Enter`, and count it as a death.
+
 ### Rules
 
 - Do **not** read the game's source or data. That includes `src/`, the `scripts/qa/runtime/checkpoints/` files, `docs/fallen-star/`, and `.project.json` files. A real player can't. Only use the screen.
