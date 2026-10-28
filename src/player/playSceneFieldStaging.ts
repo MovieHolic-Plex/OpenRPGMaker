@@ -6,7 +6,7 @@ import { characterBaseOrigin } from "./characterOrigin";
 import type Phaser from "phaser";
 import { ensureM2Runtime } from "@/player/interpreter/m2RuntimeState";
 import type { StepResult } from "@/player/interpreter/types";
-import { characterDepth, characterSpriteY } from "@/player/characterDepth";
+import { characterDepth, characterSpriteY, MAP_UPPER_LAYER_DEPTH } from "@/player/characterDepth";
 import { runtimeMapWorldScale } from "@/player/runtimeViewScale";
 import { screenOverlayHost } from "@/player/playSceneScreenEffects";
 import { syncDoors } from "@/player/playSceneDoors";
@@ -583,7 +583,12 @@ function syncEventGlows(scene: PlaySceneContext, now: number): void {
 // 바닥 고리를 늘 둔다 — 늘 빛나는 표지(page.glow)보다 옅게. 깊이는 그 칸 사물 줄(앞 줄 사람이 가린다, 주인공 얼굴을 덮지 않는다).
 
 type ObjectiveMarkerParts = { readonly halo: Phaser.GameObjects.Image; readonly ring: Phaser.GameObjects.Image; readonly radiusPx: number; x: number; y: number };
-type ObjectiveMarkerState = { mapId: string; text: string | null; parts: Map<string, ObjectiveMarkerParts>; nextCheck: number };
+type ObjectiveMarkerState = {
+  mapId: string; text: string | null; parts: Map<string, ObjectiveMarkerParts>; nextCheck: number;
+  /** 대상 칸 중심(월드 좌표) — 화면 밖이면 가장자리 화살표가 가리킨다. 늘 빛나는 표지가 붙은 대상도 포함. */
+  points: { x: number; y: number }[];
+  arrow: Phaser.GameObjects.Image | null;
+};
 const objectiveMarkerStates = new WeakMap<PlaySceneContext, ObjectiveMarkerState>();
 const OBJECTIVE_MARKER_COLOR = 0xffe08a;
 
@@ -598,7 +603,8 @@ function syncObjectiveMarkers(scene: PlaySceneContext, now: number): void {
   let state = objectiveMarkerStates.get(scene);
   if (!state || state.mapId !== map.id) {
     for (const parts of state?.parts.values() ?? []) destroyObjectiveMarker(parts);
-    state = { mapId: map.id, text: null, parts: new Map(), nextCheck: 0 };
+    state?.arrow?.destroy();
+    state = { mapId: map.id, text: null, parts: new Map(), nextCheck: 0, points: [], arrow: null };
     objectiveMarkerStates.set(scene, state);
   }
   if (now >= state.nextCheck) {
@@ -607,8 +613,11 @@ function syncObjectiveMarkers(scene: PlaySceneContext, now: number): void {
     const text = currentObjectiveText(scene.session.m2Runtime?.ui);
     state.text = text;
     const views = text ? runtimeEventViewsForMap(project, map, scene.session, scene.eventPositions) : [];
+    const all = objectiveTargetViews(project, map, views, text);
+    const size0 = mapTileSize(map);
+    state.points = all.map((view) => ({ x: (view.x + 0.5) * size0, y: (view.y + 0.5) * size0 }));
     // 늘 빛나는 표지가 이미 있는 대상은 겹쳐 그리지 않는다.
-    const targets = objectiveTargetViews(project, map, views, text).filter((view) => !view.page?.glow);
+    const targets = all.filter((view) => !view.page?.glow);
     const keep = new Set(targets.map((view) => view.event.id));
     for (const [id, parts] of state.parts) if (!keep.has(id)) { destroyObjectiveMarker(parts); state.parts.delete(id); }
     const size = mapTileSize(map);
@@ -635,6 +644,62 @@ function syncObjectiveMarkers(scene: PlaySceneContext, now: number): void {
     const ringSize = parts.radiusPx * (0.5 + 1.2 * ringT);
     parts.ring.setPosition(parts.x, parts.y).setDisplaySize(ringSize, ringSize * 0.5).setAlpha(0.9 * (1 - ringT));
   }
+  syncObjectiveArrow(scene, state, now);
+}
+
+// 대상이 화면 밖이면 주인공 곁에 그쪽을 가리키는 작은 금빛 화살표 하나(가장 가까운 대상).
+// 왜(2026-10-29 vm2 terra jrpg): 동굴 문은 시작 자리에서 26칸 남쪽이라 첫 화면에 없었고, 목표 꼬리 방위만으로는 맵 끝에서 헤맸다.
+// 표시는 화면 안 대상의 빛무리와 같은 색이고, 대상이 화면에 들어오면 사라진다.
+const OBJECTIVE_ARROW_TEX = "oprn-fx-objective-arrow";
+function syncObjectiveArrow(scene: PlaySceneContext, state: ObjectiveMarkerState, now: number): void {
+  const camera = scene.cameras?.main;
+  const map = scene.map;
+  if (!camera || !map) return;
+  const view = camera.worldView;
+  const size = mapTileSize(map);
+  const margin = size * 0.9;
+  const px = scene.player?.x ?? view.centerX, py = scene.player?.y ?? view.centerY;
+  const inside = (p: { x: number; y: number }) => p.x >= view.x && p.x <= view.right && p.y >= view.y && p.y <= view.bottom;
+  const target = state.points.some(inside) ? undefined
+    : [...state.points].sort((a, b) => Math.hypot(a.x - px, a.y - py) - Math.hypot(b.x - px, b.y - py))[0];
+  if (!target || view.width <= margin * 2 || view.height <= margin * 2) { state.arrow?.setVisible(false); return; }
+  if (!state.arrow) {
+    canvasTexture(scene, OBJECTIVE_ARROW_TEX, 32, (ctx, s) => {
+      ctx.fillStyle = "#fff";
+      ctx.strokeStyle = "rgba(40,28,0,0.85)";
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(s - 3, s / 2);
+      ctx.lineTo(5, 4);
+      ctx.lineTo(11, s / 2);
+      ctx.lineTo(5, s - 4);
+      ctx.closePath();
+      ctx.stroke();
+      ctx.fill();
+    });
+    state.arrow = scene.add.image(0, 0, OBJECTIVE_ARROW_TEX).setTint(OBJECTIVE_MARKER_COLOR)
+      // 높이 지형(relief, ~200k)·상층 ★(250k) 위 — 안내 표시라 수관·들린 땅에 가리면 안 된다(flash jrpg: relief 맵에서 화살표가 땅 밑에 묻혔다).
+      .setDepth(MAP_UPPER_LAYER_DEPTH + 1000);
+  }
+  // 주인공 둘레 1.7칸에 대상 쪽을 가리켜 둔다 — 화면 가장자리에 두면 오른쪽 위 「현재 목표」 칩이 위쪽 화살표를 덮었다
+  // (2026-10-29 flash jrpg: 숲 문은 북북동, 가장자리 자리가 칩 밑). 주인공 곁이면 HUD 와 겹치지 않고 눈이 가는 자리다.
+  const dx = target.x - px, dy = target.y - py;
+  const breath = 0.5 + 0.5 * Math.sin((now / 1100) * Math.PI * 2);
+  const angle = Math.atan2(dy, dx);
+  const reach = size * (1.7 + 0.2 * breath);
+  const ax = Math.min(view.right - margin / 2, Math.max(view.x + margin / 2, px + Math.cos(angle) * reach));
+  const ay = Math.min(view.bottom - margin / 2, Math.max(view.y + margin / 2, py - size * 0.4 + Math.sin(angle) * reach));
+  state.arrow
+    .setVisible(true)
+    .setPosition(ax, ay)
+    .setRotation(angle)
+    .setDisplaySize(size * 0.75, size * 0.75)
+    .setAlpha(0.75 + 0.25 * breath);
+}
+
+/** QA: 목표 화살표가 떠 있나(대상이 화면 밖). */
+export function objectiveArrowVisible(scene: PlaySceneContext): boolean {
+  return objectiveMarkerStates.get(scene)?.arrow?.visible === true;
 }
 
 /** QA: 지금 목표 표시가 붙은 이벤트 id. */

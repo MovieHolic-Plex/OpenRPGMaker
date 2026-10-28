@@ -36,6 +36,57 @@ function doorsTo(views: readonly RuntimeEventView[], mapIds: ReadonlySet<string>
   });
 }
 
+/** 맵에서 옮기기로 바로 갈 수 있는 맵들(모든 이벤트·페이지). */
+function mapExits(map: GameMap): Set<string> {
+  const out = new Set<string>();
+  for (const event of map.events ?? []) {
+    for (const page of event.pages ?? []) transferMapIds(page.commands, out);
+    transferMapIds((event as { commands?: Command[] }).commands, out);
+  }
+  out.delete(map.id);
+  return out;
+}
+
+/**
+ * from → to 의 가장 짧은 맵 경로(양 끝 포함, 옮기기 이벤트로 잇는다). 길이 없으면 undefined.
+ * 목표 꼬리(ai/v2/discoverability whereHint)와 런타임 목표 표시가 같은 경로를 본다 — 다음 맵이 둘 이상 건너면 첫 출구를 가리킨다.
+ */
+export function mapRoute(project: Pick<Project, "maps">, fromId: string, toId: string): string[] | undefined {
+  if (fromId === toId) return [fromId];
+  const prev = new Map<string, string>([[fromId, fromId]]);
+  const queue = [fromId];
+  for (let i = 0; i < queue.length; i += 1) {
+    const map = project.maps[queue[i]!];
+    if (!map) continue;
+    for (const next of mapExits(map)) {
+      if (prev.has(next) || !project.maps[next]) continue;
+      prev.set(next, map.id);
+      if (next === toId) {
+        const route = [next];
+        while (route[0] !== fromId) route.unshift(prev.get(route[0]!)!);
+        return route;
+      }
+      queue.push(next);
+    }
+  }
+  return undefined;
+}
+
+/** 지금 맵에서 targets 맵들로 가는 첫 출구 — 바로 가는 문이 있으면 그것, 없으면 가장 짧은 경로의 첫 맵으로 가는 문. */
+function firstExitsTo(project: Pick<Project, "maps">, map: GameMap, views: readonly RuntimeEventView[], targets: ReadonlySet<string>): RuntimeEventView[] {
+  const direct = doorsTo(views, targets);
+  if (direct.length) return direct;
+  const hops = new Set<string>();
+  let best = Infinity;
+  for (const id of targets) {
+    const route = mapRoute(project, map.id, id);
+    if (!route || route.length < 2 || route.length > best) continue;
+    if (route.length < best) { hops.clear(); best = route.length; }
+    hops.add(route[1]!);
+  }
+  return hops.size ? doorsTo(views, hops) : [];
+}
+
 /**
  * 목표 글의 대상 이벤트들(지금 맵).
  * 1) 꼬리 「(이름: 자리)」의 이름과 같은 이벤트 — 「(<맵> 입구: …)」 면 그 맵으로 가는 문.
@@ -47,17 +98,36 @@ export function objectiveTargetViews(project: Pick<Project, "maps">, map: GameMa
   if (!objective) return [];
   const candidates = views.filter((view) => pickable(view));
   const doorCandidates = views.filter((view) => pickable(view, true));
-  const tail = /\(([^():]+):[^()]*\)\s*$/u.exec(objective)?.[1]?.trim();
+  const tailMatch = /\(([^():]+):([^()]*)\)\s*$/u.exec(objective);
+  const tail = tailMatch?.[1]?.trim();
+  const others = Object.values(project.maps).filter((other) => other.id !== map.id);
+  /** 이름으로 다른 맵 찾기 — 「객실 입구」→ 「2층 객실」처럼 맵 이름이 목표 글보다 길 때도 잇는다(같은 이름이 먼저). */
+  const mapsNamed = (name: string): Set<string> => {
+    const key = bare(name);
+    const exactMaps = others.filter((other) => bare(other.name ?? "") === key);
+    return new Set((exactMaps.length || key.length < 2 ? exactMaps : others.filter((other) => bare(other.name ?? "").includes(key))).map((other) => other.id));
+  };
   if (tail) {
     const entrance = /^(.+?)\s*입구$/u.exec(tail)?.[1];
     if (entrance) {
-      const others = Object.values(project.maps).filter((other) => other.id !== map.id);
-      const key = bare(entrance);
-      // 「객실 입구」→ 「2층 객실」처럼 맵 이름이 목표 글보다 길 때도 잇는다(같은 이름이 먼저).
-      const exactMaps = others.filter((other) => bare(other.name ?? "") === key);
-      const ids = new Set((exactMaps.length || key.length < 2 ? exactMaps : others.filter((other) => bare(other.name ?? "").includes(key))).map((other) => other.id));
-      const doors = doorsTo(doorCandidates, ids);
+      const doors = firstExitsTo(project, map, doorCandidates, mapsNamed(entrance));
       if (doors.length) return doors;
+    }
+    // 「(숲 입구: 북동쪽 → 숲 통과)」·「(마을 입구: 남쪽 → 마왕의 동굴 · 마왕 처치)」 — 「→」 뒤는 그 뒤에 찾을 대상이다.
+    // 그 맵에 들어선 뒤(입구 맵 = 지금 맵)에는 이 맵의 그 이벤트를, 아직 가는 길이면 목적지 맵으로 가는 첫 출구를 가리킨다.
+    const after = tailMatch?.[2]?.split("→")[1];
+    if (after) {
+      const parts = after.split("·").map((part) => part.trim()).filter(Boolean);
+      for (const part of [...parts].reverse()) {
+        const named = candidates.filter((view) => bare(view.event.name ?? "") === bare(part));
+        if (named.length) return named;
+      }
+      for (const part of [...parts].reverse()) {
+        const ids = mapsNamed(part);
+        if (!ids.size) continue;
+        const doors = firstExitsTo(project, map, doorCandidates, ids);
+        if (doors.length) return doors;
+      }
     }
     const exact = candidates.filter((view) => bare(view.event.name ?? "") === bare(tail));
     if (exact.length) return exact;
@@ -68,7 +138,7 @@ export function objectiveTargetViews(project: Pick<Project, "maps">, map: GameMa
   const best = named0.filter((view) => { const name = bare(view.event.name ?? ""); return !named0.some((other) => { const o = bare(other.event.name ?? ""); return o.length > name.length && o.includes(name); }); });
   if (best.length) return best;
   const named = new Set(Object.values(project.maps).filter((other) => other.id !== map.id && bare(other.name ?? "").length >= 2 && plain.includes(bare(other.name ?? ""))).map((other) => other.id));
-  return named.size ? doorsTo(doorCandidates, named) : [];
+  return named.size ? firstExitsTo(project, map, doorCandidates, named) : [];
 }
 
 const GENERIC_NAME = /^(?:ev[_-]|event|이벤트|npc\b|조사\s*지점$|조사$|단서$|지점$)/iu;

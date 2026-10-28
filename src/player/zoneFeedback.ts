@@ -122,6 +122,9 @@ export function updateZoneFeedback(model: ZoneFeedbackModel, input: ZoneFeedback
 
 export function interactionPromptLabel(page: EventPage | undefined): string | null {
   if (!page || page.trigger.kind !== "action") return null;
+  // 명령이 하나도 없는 페이지는 눌러도 아무 일이 없다 — 「Z 조사」로 부르지 않는다(2026-10-29 vm2 terra jrpg: 시작 칸의 시작 목표
+  // 이벤트 「끝」 페이지가 「Z 조사 · 시작 목표」 안내를 띄워 판정자가 시작 자리를 조사 대상으로 읽었다).
+  if (page.commands.length === 0) return null;
   if (page.commands.some((command) => command.kind === "checkpointSave")) return "Z 휴식";
   if (page.commands.some((command) => command.kind === "battleProcessing")) return "Z 전투";
   // 보이는 인물이 이름 붙은 대사로 말하면 사람이다 — 「조사」가 아니라 「대화」(첫사랑 VQA 1차: 사람 앞에 「Z 조사」).

@@ -1,4 +1,5 @@
 import { characterBaseOrigin } from "./characterOrigin";
+import { objectiveArrowVisible, objectiveMarkerIds } from "@/player/playSceneFieldStaging";
 import { transitDebugState } from "@/player/playSceneTransit";
 import { mapTileSize } from "@/project/tileGeometry";
 import type Phaser from "phaser";
@@ -50,6 +51,9 @@ export type RuntimeDebugHook = {
   readLive?: (switchId?: string) => { readonly currentMapId: string; readonly x: number; readonly y: number; readonly switchValue?: boolean };
   readState: () => LifeRuntimeSnapshot & {
     readonly actionReceipt?: RuntimeActionReceipt;
+    /** 「현재 목표」 표시가 붙은 이벤트 id 와 화면 밖 대상 화살표(playSceneFieldStaging). */
+    objectiveMarkers: string[];
+    objectiveArrow: boolean;
     horror: PlaySession["horror"];
     eventLocations: PlaySession["eventLocations"];
     currentMapId: string;
@@ -369,6 +373,8 @@ export function installPlaySceneTestHooks(
       return {
         ...buildLifeRuntimeSnapshot(session),
         ...(scene.runtimeDom?.actionReceipt ? { actionReceipt: scene.runtimeDom.actionReceipt } : {}),
+        objectiveMarkers: objectiveMarkerIds(scene as unknown as PlaySceneContext),
+        objectiveArrow: objectiveArrowVisible(scene as unknown as PlaySceneContext),
         horror: session.horror ? structuredClone(session.horror) : undefined,
         eventLocations: structuredClone(session.eventLocations),
         currentMapId: session.currentMapId,
