@@ -7356,6 +7356,61 @@
      "shot": true
     }
    ]
+  },
+  {
+   "id": "act2-b5-north",
+   "label": "제2막 B5 — 재의 들판 북쪽 길 끝(두 칸 폭 어디로 나가도) → 새벽샘 터",
+   "note": "act2Opening.ts dawnwell foes map_field_north_2",
+   "mapId": "map_field_north_2",
+   "x": 17,
+   "y": 2,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_done": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs2_act2_started": true,
+    "sw_fs2_out_of_cells": true,
+    "sw_fs2_hub_arrived": true,
+    "sw_fs2_mire_well": true,
+    "sw_fs2_heard_carriage": true,
+    "sw_fs2_hanel_told": true,
+    "sw_fs2_rohan_spear": true,
+    "sw_fs2_bram_hole": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 10
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 10
+    }
+   ],
+   "beats": [
+    {
+     "id": "exit",
+     "ops": [
+      {
+       "kind": "move",
+       "dir": "up",
+       "steps": 3
+      },
+      {
+       "kind": "waitForMap",
+       "mapId": "fs2_dawnwell",
+       "timeoutMs": 20000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 2000
+      }
+     ],
+     "shot": true
+    }
+   ]
   }
  ]
 }

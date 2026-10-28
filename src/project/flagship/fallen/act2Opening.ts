@@ -2188,6 +2188,44 @@ export function applyFallenAct2Opening(project: Project, exec: Exec, ids: Fallen
   lanternNightEvents(project);
   fortressEvents(project);
   detection(project, exec);
+  widenEdgeGates(project);
+}
+
+/**
+ * 맵 가장자리 출구가 한 칸뿐이면 길 폭 전체로 넓힌다 — 같은 가장자리에서 출구와 이어진(안쪽 칸에서 걸어 들어갈 수 있는) 칸마다
+ * 출구 이벤트의 쌍둥이를 둔다. 독립 판정(2026-10-28): 재의 들판 북쪽 길은 x16~17 두 칸인데 출구 이벤트는 (15,0) 한 칸이라
+ * 길 끝까지 걸어도 아무 일이 없었다(「북쪽 길이 막혔다」로 60걸음을 헤맸다).
+ */
+function widenEdgeGates(project: Project): void {
+  const maps = Object.keys(project.maps).filter((id) => id.startsWith("fs2_") || FS2_NORTH_ROUTE.mapIds.includes(id) || FS2_SNOW.mapIds.includes(id));
+  for (const mapId of maps) {
+    const map = M(project, mapId);
+    const gates = map.events.filter((e) => {
+      const pg = e.pages?.[0];
+      return pg?.trigger?.kind === "playerTouch" && (e.pages ?? []).length === 1 && pg.commands.some((c) => c.kind === "transfer")
+        && (e.y === 0 || e.y === map.height - 1 || e.x === 0 || e.x === map.width - 1);
+    });
+    const taken = new Set(map.events.map((e) => `${e.x},${e.y}`));
+    for (const gate of gates) {
+      const horizontal = gate.y === 0 || gate.y === map.height - 1;
+      const inward = horizontal ? { x: 0, y: gate.y === 0 ? 1 : -1 } : { x: gate.x === 0 ? 1 : -1, y: 0 };
+      const enterable = (x: number, y: number) => x >= 0 && y >= 0 && x < map.width && y < map.height
+        && canMove(project, map, x + inward.x, y + inward.y, x, y);
+      let n = 0;
+      for (const sign of [1, -1]) {
+        for (let k = 1; k < 6; k += 1) {
+          const x = horizontal ? gate.x + sign * k : gate.x, y = horizontal ? gate.y : gate.y + sign * k;
+          const prevX = horizontal ? x - sign : x, prevY = horizontal ? y : y - sign;
+          if (!enterable(x, y) || !canMove(project, map, prevX, prevY, x, y)) break;
+          if (taken.has(`${x},${y}`)) continue;
+          map.events.push({ ...structuredClone(gate), id: `${gate.id}_w${sign > 0 ? "p" : "m"}${k}`, x, y });
+          taken.add(`${x},${y}`);
+          n += 1;
+        }
+      }
+      void n;
+    }
+  }
 }
 
 /**
