@@ -120,6 +120,7 @@ const ZONE_SCHEMA = {
     kind: { type: "string", description: "구역 종류 낱말(카드의 낱말)" },
     purpose: { type: "string", description: "무엇을 위한 곳인지 한 줄" },
     anchors: { type: "array", items: { type: "string" }, description: "이 구역의 주인공 물건 낱말" },
+    vignettes: { type: "array", items: { type: "string" }, description: "(실내, 선택) 이 방에 놓을 기물 묶음 — 몸통 기물 id(bookshelf 2w·forge·counter 3x1). 자리는 함수가 잡는다. 생략하면 방 종류로 고른다" },
     size: SIZE,
     floor: { type: "number", description: "몇 층(기본 1)" },
     id: { type: "string" },

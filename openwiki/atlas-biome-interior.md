@@ -177,6 +177,16 @@ RM2k3 투명 칸 자동 보정(`applyCustomChipsetMinimalHarness`)에서 이 시
 `scripts/content/atlas-dungeon/split-dungeon.mjs` 가 8e02e8e4e 시트의 2160~3299 를 떼어 `public/assets/atlas-interior/dungeon-chipset.png`(30열, 1140칸) + `src/assets/atlasBiomeDungeonTileset.json` 을 만든다.
 0~509 배(480~509 옛 Tibo 짐 이식 자리는 비움) · 510~1019 던전(510+480~482 Tibo 이식 비움, 483~488 합친 마을 이식 유지, 지형 오토타일 13) · 1020~1079 지하 입구 조각(뚜껑·벽 틈·돌) · 1080~ 물길·공허 테두리 합성 칸. 예제 맵은 없다.
 
+## 기물 묶음 배치 — vignette (2026-10-29, 사용자 결정)
+
+「방 통째 예시」(장소 견본·방 견본 한 벌 옮겨 심기 + 빈 바닥 메우기) 대신 **기물 묶음 라이브러리 + 결정적 배치기**. 모델은 방 용도(구역 kind)와 원하면 묶음(`zones[].vignettes`: 몸통 기물 id)만 고르고, 자리는 함수가 잡는다.
+
+- 라이브러리 `src/assets/interiorVignettes.json` — `bun scripts/content/interior-vignettes/extract.mts` 가 방 견본 JSON(제작자 예제 방)에서 굽는다. 묶음 = **맞닿은**(틈 0칸) 기물 무리(탁상 물건은 받친 가구와, 걸이는 바로 아래 가구와, 깔개는 깔개끼리). 방 견본 옮겨 심기(`templateClusters`)는 1칸 띄운 것까지 묶어 여관 홀이 통째로 한 덩이(14×10)가 됐다. 필드: 붙는 벽(N/S/W/E, C=가운데)·상자 크기·앞 비울 줄(예제에서 잼, 1~2)·막는 칸·몸통 기물·나온 횟수·한 방 되풀이 수·화풍 묶음. 실측: v5 122방 → 582묶음, jp_city 710, modern_city 948.
+- 배치기 `src/editor/handInterior/vignettes.ts` `furnishWithVignettes` — 방마다: 벽에 붙는 가장 큰 묶음(앵커, 가운데 자리부터) → 점수순(나온 횟수·이 방 종류에만 나옴·크기·읽기/계산대/잠 쓰임) 벽 묶음, 가운데 묶음은 바닥 30칸 이상에서만 → 작은 벽 소품(막는 칸 ≤2) 되풀이 → 걸이(북벽 4칸에 하나, 같은 걸이 둘까지). 문 앞 칸·묶음마다 열린 쪽 앞 줄은 비워 두고, 막힌 바닥이 방 바닥의 34% 를 넘으면 멈춘다(빈 바닥은 메우지 않는다 — 방을 줄이는 것은 짓기 쪽). 놓을 때마다 조립기 도달 검사(닿지 못한 바닥이 늘면 뺀다). 북·남 벽 묶음은 좌우 맞은편, 서·동 벽 묶음은 맞은편 벽에 짝(동·서를 보는 기물이 있으면 뒤집지 않는다).
+- 연결: `build_hand_interior_room` 의 `layout.furnish:"vignette"`(+ `layout.vignettes:{방 id:[묶음]}`). 조수 v2 실내 빌더(`src/ai/v2/builders/interior.ts`)는 기본이 이 길이다 — 장소 견본(venue)·`fillBare`·`dressEmptyRooms` 를 쓰지 않는다. `hints.furnish:"template"` 이면 옛 길(장소 견본 포함), `hints.venue:true` 면 장소 견본만 허용. 「여관·inn·객잔·주막」은 tavern 방(장소 견본 없이 거실 견본이 되던 것).
+- 비교: `bun scripts/content/interior-vignettes/compare.mts --out <dir> [--salt N] [--names 서재,여관,…]` — 조수 자동 짓기와 같은 길(guessPlaceSpec → builder)로 옛/새 길 1배 PNG·맨바닥·닿는 칸. 증거 `~/z-project/assistant-whole-game/suite/ledger/evidence/interior/vignette/`.
+- 남은 것: 묶음이 적은 방 종류(재봉 가게 등)는 맨바닥이 30% 를 넘어도 방이 안 줄 때가 있다(짓기 쪽 줄이기 규칙이 5%p 개선만 받는다). 교실 견본이 v5 에 없어 서재로 짓는다. 다중 방 건물의 방별 묶음 고르기 시험 전.
+
 ## 남은 것
 
 - `author_house(interior:"linked-interior")`·`author_village` 의 연결 실내는 아직 옛 EasyRPG 실내 파이프라인으로 짓는다(코드 내부 경로라 이번 폐기 범위 밖) — v5 조립기로 옮기거나 관문이 막아야 한다.

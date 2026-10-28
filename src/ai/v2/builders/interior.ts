@@ -33,6 +33,8 @@ const KIND_WORDS: readonly [RegExp, string[]][] = [
   [/창고|저장|store ?room|pantry|식료/iu, ["storeroom", "pantry"]],
   [/지하|cellar|술 ?창고/iu, ["cellar", "storeroom"]],
   [/침실|bed ?room|잠|객실|여관 ?방|guest/iu, ["bedroom", "inn_room"]],
+  // 「여관」만 오면 1층 홀(술집 겸 접수) — 장소 견본(tavern)을 쓰지 않는 묶음 길에서 거실 견본이 됐다(2026-10-29).
+  [/여관|inn\b|객잔|주막/iu, ["tavern", "inn_room"]],
   [/서재|study|공부|연구/iu, ["study", "library"]],
   [/도서|서고|library|책/iu, ["library", "study"]],
   [/천문|관측|observ|별/iu, ["study", "library"]],
@@ -807,7 +809,10 @@ export const interiorBuilder: PlaceBuilder = {
     const mapId: string | undefined = prev?.mapId ?? spec.mapId ?? (spec.hints?.newMap === true ? undefined : run.ctx.currentMapId ?? run.ctx.project.startMapId);
     // 장소 견본(천문대 등) — 방 종류 견본으로는 주인공 물건이 방을 정하지 못한다(2026-10-23 비교: 천문대가 평범한 서재로 읽혀 v1 8 · v2 3.5).
     const venueText = `${spec.name} ${spec.theme ?? ""} ${(spec.zones ?? []).map((z) => `${z.kind} ${z.purpose ?? ""}`).join(" ")}`;
-    const venue = tilesetId === HAND_INTERIOR_TILESET_ID && (spec.zones ?? []).filter((z) => (z.floor ?? 1) === 1).length <= 1 && (!prev || prev.venue)
+    // 기물 묶음 길(기본)에서는 장소 견본(방 통째 예시)을 쓰지 않는다 — 2026-10-29 사용자 결정: 통째 예시 대신 묶음 + 결정적 배치기.
+    // hints.furnish:"template" 이거나 hints.venue:true 면 옛 장소 견본을 쓴다.
+    const venueAllowed = spec.hints?.furnish === "template" || spec.hints?.venue === true;
+    const venue = venueAllowed && tilesetId === HAND_INTERIOR_TILESET_ID && (spec.zones ?? []).filter((z) => (z.floor ?? 1) === 1).length <= 1 && (!prev || prev.venue)
       ? interiorVenues(roomSpec).find((v) => v.words.test(venueText) && (!(spec.floors && spec.floors > 1) || (spec.floors === 2 && !!v.stairs))) : undefined;
     if (venue) {
       const done = buildVenue(run, spec, venue, roomSpec, tilesetId, mapId, prev);
@@ -835,8 +840,12 @@ export const interiorBuilder: PlaceBuilder = {
     const variant = typeof hints.variant === "number" ? hints.variant : (spec.salt ?? 0) % 4;
     const seed = typeof hints.seed === "number" ? hints.seed : undefined;
     const layoutSeed = seed ?? (spec.salt ? 1 + (spec.salt % 99991) : undefined);
+    // 가구: 기본은 기물 묶음 배치기(vignettes.ts) — 방 용도에 맞는 묶음을 벽·앞 통로·밀도 규칙으로 놓고, 빈 바닥은 메우지 않고 방을 줄인다.
+    // hints.furnish:"template" 이면 옛 길(견본 한 벌 + 빈 바닥 메우기). 구역 vignettes(묶음 id·몸통 기물 id)는 모델이 고른 묶음.
+    const vignette = hints.furnish !== "template";
+    const picks = Object.fromEntries(rooms.filter((r) => r.zone.vignettes?.length).map((r) => [r.id, [...r.zone.vignettes!]]));
     let base: Record<string, unknown> = { tileset: tilesetId, mapId, name: spec.name, replace: mapId ? true : undefined,
-      layout: { rooms: rooms.map((r) => clean({ id: r.id, kind: r.kind, w: r.w, h: r.h, floor: (r as { floor?: string }).floor, wall: (r as { wall?: string }).wall })), ...(variant ? { variant } : {}), ...(layoutSeed ? { seed: layoutSeed } : {}) } };
+      layout: { rooms: rooms.map((r) => clean({ id: r.id, kind: r.kind, w: r.w, h: r.h, floor: (r as { floor?: string }).floor, wall: (r as { wall?: string }).wall })), ...(variant ? { variant } : {}), ...(layoutSeed ? { seed: layoutSeed } : {}), ...(vignette ? { furnish: "vignette", ...(Object.keys(picks).length ? { vignettes: picks } : {}) } : {}) } };
     let first = build(run, base);
     if (!first.ok) {
       // 맵이 다른 칩셋의 살아 있는 맵이면 새 맵으로 짓는다(덮어쓰지 않는다).
@@ -991,9 +1000,11 @@ export const interiorBuilder: PlaceBuilder = {
     // 빈 바닥 덩이 메우기(쓰임 한 벌) — 1배에서 「휑한 홀」이 v1 의 가장 흔한 major 였다.
     const kinds = new Map(rooms.map((r) => [r.id, r.kind] as const));
     build(run, args);
-    const filled = fillBare(run, roomSpec, args, rb, kinds, FILL_BARE_PCT, `${spec.name} ${spec.theme ?? ""}`);
-    args = filled.args; rb = filled.rb;
-    if (filled.filled) notes.push(`빈 바닥 덩이 ${filled.filled}곳을 방 쓰임에 맞는 가구 한 벌로 채웠다`);
+    if (!vignette) {
+      const filled = fillBare(run, roomSpec, args, rb, kinds, FILL_BARE_PCT, `${spec.name} ${spec.theme ?? ""}`);
+      args = filled.args; rb = filled.rb;
+      if (filled.filled) notes.push(`빈 바닥 덩이 ${filled.filled}곳을 방 쓰임에 맞는 가구 한 벌로 채웠다`);
+    }
     // 위층과 계단.
     const mapIds = [builtMapId];
     let upperMapId = prev?.upperMapId;
@@ -1016,8 +1027,10 @@ export const interiorBuilder: PlaceBuilder = {
     // 요청한 주인공 물건이 끝까지 남았는지 — 크기 줄이기·다시 짓기에서 「큰 망원경」이 빠진 채 끝났다(2026-10-23 비교).
     const finalIds = new Set(((args.objects as Obj[]) ?? []).map((o) => o.id));
     for (const p of placed) if (!/계단|stair/iu.test(p.what) && !finalIds.has(p.id) && !p.zone.startsWith("2층")) missing.push(`${p.what}(${p.zone}) — 최종 맵에 없다(놓은 뒤 밀려났다)`);
-    dressEmptyRooms(run, builtMapId, rooms.map((r) => ({ kind: r.kind, id: r.id, purpose: r.zone.purpose })), notes);
-    if (upperMapId && mapIds.includes(upperMapId)) dressEmptyRooms(run, upperMapId, [], notes);
+    if (!vignette) {
+      dressEmptyRooms(run, builtMapId, rooms.map((r) => ({ kind: r.kind, id: r.id, purpose: r.zone.purpose })), notes);
+      if (upperMapId && mapIds.includes(upperMapId)) dressEmptyRooms(run, upperMapId, [], notes);
+    }
     // 한 방짜리가 채운 뒤에도 맨바닥 30% 를 넘으면 한 단계 작은 크기로 다시 지어 본다 — 벽 쪽 자리가 없어 못 채우는 방은 방이 큰 것이다
     // (2026-10-28 연금술 공방 13×11 맨바닥 42%). 더 나아지면 그것을 쓰고, 아니면 되돌린다.
     if (rooms.length === 1 && spec.size !== "small" && spec.hints?.downsized !== true) {
