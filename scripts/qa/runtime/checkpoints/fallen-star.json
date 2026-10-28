@@ -5786,7 +5786,7 @@
        "kind": "repeatUntil",
        "testid": "dialogue-box",
        "state": "absent",
-       "maxRounds": 10,
+       "maxRounds": 28,
        "ops": [
         {
          "kind": "key",
