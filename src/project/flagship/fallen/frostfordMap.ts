@@ -495,6 +495,10 @@ export function paintFrostford(project: Project, exec: Exec, mapId: string, name
   for (const c of order) {
     const { x, y } = cellOf(c);
     if (!emptyAt(c) || nearBusy(x, y, 1)) continue;
+    // 기슭 띠(물가 두 칸)는 비운다 — 좁은 띠에 채우면 바위가 한 줄로 늘어선다(r1).
+    let nearLake = false;
+    for (let dy = -2; dy <= 2 && !nearLake; dy += 1) for (let dx = -1; dx <= 1; dx += 1) if (lake.has(idx(x + dx, y + dy))) { nearLake = true; break; }
+    if (nearLake && y > 28) continue;
     // 빈 눈밭 비율을 보고 채운다 — 주변 5×5 에 빈칸이 많을 때만.
     let empty = 0;
     for (let dy = -2; dy <= 2; dy += 1) for (let dx = -2; dx <= 2; dx += 1) if (inMap(x + dx, y + dy) && emptyAt(idx(x + dx, y + dy))) empty += 1;
