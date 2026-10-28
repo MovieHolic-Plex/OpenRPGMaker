@@ -15,11 +15,10 @@ import type { GameMap, Project } from "@/project/types";
 
 export const SEED_START_MAP_ID = "map_blank_start";
 
-/** 지은 맵에서 시작 칸 하나 — 가장 넓게 걸어 닿는 영역 안, 아래 가운데(출입구 쪽)에 가까운 빈 칸. 이벤트 칸은 피한다. */
-export function builtMapStartCell(project: Project, map: GameMap): { x: number; y: number } | null {
-  const occupied = new Set((map.events ?? []).map((event) => `${event.x},${event.y}`));
+/** 맵에서 가장 넓게 걸어 닿는 영역의 칸들(없거나 4칸 미만이면 빈 배열). */
+function largestWalkArea(project: Project, map: GameMap): number[] {
   const seen = new Uint8Array(map.width * map.height);
-  let best: { cells: number[] } | null = null;
+  let best: number[] = [];
   for (let i = 0; i < seen.length; i++) {
     if (seen[i]) continue;
     const x = i % map.width, y = Math.floor(i / map.width);
@@ -27,12 +26,54 @@ export function builtMapStartCell(project: Project, map: GameMap): { x: number; 
     const reach = terrainReachability(project, map, { x, y });
     const cells: number[] = [];
     for (let j = 0; j < reach.length; j++) if (reach[j]) { seen[j] = 1; cells.push(j); }
-    if (!best || cells.length > best.cells.length) best = { cells };
+    seen[i] = 1;
+    if (cells.length > best.length) best = cells;
+    if (best.length > seen.length / 2) break;
   }
-  if (!best || best.cells.length < 4) return null;
+  return best.length < 4 ? [] : best;
+}
+
+/**
+ * 시작 칸 고르기 — 가장 넓게 걸어 닿는 영역 안에서 `near` 에 가까운 칸. 다만 주인공이 화면 끝·물가·물건 틈에 끼어 서지 않게
+ * 맵 가장자리 두 줄은 피하고(카메라가 맵 끝에 붙어 주인공이 화면 맨 아래·옆에 선다), 사방이 다 걸을 수 있는 트인 칸을 먼저 고른다.
+ * 이벤트 칸과 그 바로 위·아래 칸(3/4 시점에서 몸이 겹친다)도 피한다.
+ * 2026-10-29 야외 VQA: 시작 칸을 「아래 가운데」 로 끌어 맵 맨 아랫줄(22,39)·(19,39)에 세웠고(화면 아래 끝에 발이 잘림 4건),
+ * 강물 속 시작 칸이 풀밭 한 칸으로 남아 물레방아 옆 물 위에 선 것처럼 보였다.
+ */
+export function openStartCell(project: Project, map: GameMap, near: { x: number; y: number }, area?: readonly number[]): { x: number; y: number } | null {
+  const cells = area ?? largestWalkArea(project, map);
+  if (!cells.length) return null;
+  const inArea = new Uint8Array(map.width * map.height);
+  for (const j of cells) inArea[j] = 1;
+  const ev = new Set((map.events ?? []).map((event) => event.y * map.width + event.x));
+  const W = map.width, H = map.height;
+  let pick: { x: number; y: number; score: number } | null = null;
+  for (const j of cells) {
+    const x = j % W, y = Math.floor(j / W);
+    if (ev.has(j) || !isPassableLanding(project, map, x, y)) continue;
+    const edge = Math.min(x, y, W - 1 - x, H - 1 - y);
+    // 트인 정도: 사방 막힘은 칸당 8, 대각선 막힘은 칸당 2 — 집 모서리·물레방아 곁처럼 그림에 몸이 겹치는 틈을 피한다.
+    let shut = 0;
+    for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+      if (!dx && !dy) continue;
+      const nx = x + dx, ny = y + dy;
+      if (nx >= 0 && ny >= 0 && nx < W && ny < H && inArea[ny * W + nx]) continue;
+      shut += dx && dy ? 2 : 8;
+    }
+    const stacked = ev.has(j - W) || ev.has(j + W);
+    const score = Math.abs(x - near.x) + Math.abs(y - near.y) + (edge < 1 ? 1000 : edge < 2 ? 40 : edge < 3 ? 8 : 0) + shut + (stacked ? 20 : 0);
+    if (!pick || score < pick.score) pick = { x, y, score };
+  }
+  return pick ? { x: pick.x, y: pick.y } : null;
+}
+
+/** 지은 맵에서 시작 칸 하나 — 가장 넓게 걸어 닿는 영역 안, 아래 가운데(출입구 쪽)에 가까운 빈 칸. 이벤트 칸은 피한다. */
+export function builtMapStartCell(project: Project, map: GameMap): { x: number; y: number } | null {
+  const occupied = new Set((map.events ?? []).map((event) => `${event.x},${event.y}`));
+  const cells = largestWalkArea(project, map);
   const cx = (map.width - 1) / 2;
   let pick: { x: number; y: number; score: number } | null = null;
-  for (const j of best.cells) {
+  for (const j of cells) {
     const x = j % map.width, y = Math.floor(j / map.width);
     if (occupied.has(`${x},${y}`) || !isPassableLanding(project, map, x, y)) continue;
     // 아래쪽일수록, 가운데일수록 좋다. 가장자리 한 칸(맵 끝 출구 칸)은 피한다.

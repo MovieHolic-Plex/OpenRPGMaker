@@ -8,6 +8,7 @@ import { harmonizeBeodeulDaylight } from './beodeulLightTools';
 import { MAX_TOOL_MAP_DIMENSION } from "@/project/mapSizeLimits";
 import type { GameMap, Project } from "@/project/types";
 import { isPassable } from "@/project/collision";
+import { openStartCell } from "./startOnBuiltMap";
 import { CONSTRUCTION_TOOLS_V3 } from "./v3/constructionTools";
 import { assertMapIdAvailable } from "./mapHelpers";
 import { MAP_TOOLS, assignCreatedMapBgm } from "./mapTools";
@@ -99,7 +100,15 @@ export const AUTHOR_BEODEUL_TOWN_TOOL: ToolDefinition = {
     if(typeof args.mapId==='string') clearBeodeulGroundDressing(draft,args.mapId);
     // 옛 고정 배치 작은 마을(늘 같은 세 집·같은 길·같은 우물)은 교회 예제(church:true)에만 남긴다 — houseCount 는 이제 theme 마을의 집 수 상한이다
     const legacySmall=args.houseCount!==undefined&&args.church===true&&(!args.theme||args.theme==='river')&&!args.form&&!args.terrain&&!args.roofs;
-    const result=legacySmall?buildSmallBeodeulVillage(draft,args):buildTown(draft,args);
+    // 시작 맵 위에 지을 때는 시작 칸을 「통행 보장 칸」으로 두지 않는다 — 칠하기 도구가 그 한 칸만 물·벽을 건너뛰어
+    // 강 한가운데 풀밭 네모가 남았다(2026-10-29 야외 VQA vm1 terra jrpg: 물레방아 옆 강물 속 (10,8) 풀밭에서 시작).
+    // 다 지은 뒤 keepStartWalkable 이 걸을 수 있는 트인 칸으로 옮긴다.
+    const startMap=draft.startMapId;
+    const onStart=typeof args.mapId==='string'&&args.mapId===startMap;
+    if(onStart) draft.startMapId='';
+    let result:ToolExecResult;
+    try{ result=legacySmall?buildSmallBeodeulVillage(draft,args):buildTown(draft,args); }
+    finally{ if(onStart) draft.startMapId=startMap; }
     const builtMapId = (result.data as { mapId?: string } | undefined)?.mapId;
     if (builtMapId && draft.startMapId === builtMapId) {
       const moved = keepStartWalkable(draft, builtMapId);
@@ -167,22 +176,17 @@ function normalizeTownArgs(draft: Project, raw: Record<string, unknown>): { args
 }
 
 
-/** 시작 맵 위에 지었으면 시작 위치가 집·물에 묻힐 수 있다 — 가장 가까운 통행 칸으로 옮긴다(커밋 무결성 검사가 거부한다). */
+/** 시작 맵 위에 지었으면 시작 위치가 집·물에 묻힐 수 있다 — 걸어 닿는 넓은 땅의 가까운 트인 칸으로 옮긴다(커밋 무결성 검사가 거부한다).
+ * 가장 가까운 아무 통행 칸이면 물가·물레방아 틈·맵 끝 줄에 섰다(2026-10-29 야외 VQA) — openStartCell 이 맵 끝 두 줄과 좁은 틈을 피한다. */
 function keepStartWalkable(draft: Project, mapId: string): string | null {
   const map = draft.maps[mapId];
   const start = draft.startPos;
   if (!map || !start) return null;
   if (start.x < map.width && start.y < map.height && isPassable(draft, map, start.x, start.y)) return null;
-  for (let r = 1; r < Math.max(map.width, map.height); r++) {
-    for (let dy = -r; dy <= r; dy++) for (let dx = -r; dx <= r; dx++) {
-      if (Math.max(Math.abs(dx), Math.abs(dy)) !== r) continue;
-      const x = start.x + dx, y = start.y + dy;
-      if (x < 0 || y < 0 || x >= map.width || y >= map.height || !isPassable(draft, map, x, y)) continue;
-      draft.startPos = { ...start, x, y };
-      return `시작 위치 (${start.x},${start.y}) 가 시공으로 막혀 가장 가까운 통행 칸 (${x},${y}) 로 옮겼다.`;
-    }
-  }
-  return null;
+  const cell = openStartCell(draft, map, start);
+  if (!cell) return null;
+  draft.startPos = { ...start, x: cell.x, y: cell.y };
+  return `시작 위치 (${start.x},${start.y}) 가 시공으로 막혀 가까운 트인 통행 칸 (${cell.x},${cell.y}) 로 옮겼다.`;
 }
 
 /** 바닥 한 가지만 깔리고 위층·이벤트·구조물이 없는 맵. */

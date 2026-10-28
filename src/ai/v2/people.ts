@@ -436,6 +436,8 @@ export function resolveWhere(
     const i = c.y * w + c.x;
     if (!reach[i] || blockers.has(i) || transfers.has(i) || avoid.has(i) || lanes.has(i) || throats.has(i)) return false;
     if (playerStart && c.x === playerStart.x && c.y === playerStart.y) return false;
+    // 사람은 시작 칸 바로 위·아래에 세우지 않는다 — 3/4 시점에서 주인공 머리 위에 다른 사람이 올라탄 것처럼 겹쳤다(2026-10-29 야외 VQA vm2 terra jrpg 319·350).
+    if (!fp && playerStart && c.x === playerStart.x && Math.abs(c.y - playerStart.y) === 1) return false;
     if ((isObject || indoor) && objectAt(map, c)) return false; // 가구·소품 칸 위에 서거나 놓지 않는다
     return true;
   };

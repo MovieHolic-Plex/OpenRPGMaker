@@ -139,7 +139,10 @@ v1 의 `script_cutscene` 비트로 옮긴다(`events.ts`).
   요청한 주인공 물건이 최종 맵에 없으면 `anchor-missing` 실패 검사로 센다(되돌리기·완료 관문에 걸린다).
 - 마을(`village.ts` → `author_beodeul_town`), 던전·동굴(`dungeon.ts` → `author_dungeon`), 일본 도시 거리·집(`jpCity.ts` → `compose_jp_city_street`·`compose_jp_region`·jp 실내).
   주택가·골목 요청(상가 낱말 없음)은 소품이 다 안 들어가도 상가 짜임으로 넘어가지 않는다. 씨앗 고르기에서 공원은 소품 셋 무게.
-  마을 도구가 시작 칸을 옮기지 않아 `fixPlayerStart` 가 큰 땅으로 옮긴다.
+  시작 맵 위에 마을을 지을 때 `author_beodeul_town` 은 시작 칸을 통행 보장 칸으로 두지 않고 짓는다(칠하기 도구가 그 칸만 물을 건너뛰어 강 속 풀밭 네모가 남았다),
+  다 지은 뒤 시작 칸이 막혔으면 `openStartCell`(`startOnBuiltMap.ts`)로 옮긴다. 시작 칸이 큰 땅 밖이면 `fixPlayerStart` 도 같은 함수로 옮긴다 —
+  옛 시작 칸에 가까운, 맵 끝 두 줄 밖의 사방 트인 칸(이벤트 바로 위·아래 칸 피함). 예전 「아래 가운데」 끌기는 맵 맨 아랫줄에 세워 주인공 발이 화면 끝에 걸렸다(2026-10-29 야외 VQA).
+  사람 자리(`resolveWhere`)는 시작 칸 바로 위·아래 칸을 쓰지 않는다(3/4 에서 몸이 겹친다).
   마을은 집이 서면 「완성된 집 보호」로 AI 가 다시 지을 수 없다 — 그래서 집 수(houseCount)는 짓기 전에 사본 위에서 씨앗 다섯 개를 시험해 고른다.
   던전 다시 짓기는 사본 위에서 통째로(위층 지우기 → 1층 `rebuild:true` → 성공할 때만 반영). `variant` 는 씨앗을 민다. 요청한 적 낱말은 적 그룹 이름과 맞춰 `troops.field` 로,
   도구가 보이는 적을 0 마리 놓았으면(작은 동굴) 입구에서 먼 칸에 `place_field_enemy` 로 서너 마리를 세운다.

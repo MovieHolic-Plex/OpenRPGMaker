@@ -5,6 +5,7 @@
 //  · 사람: NPC 가 걸을 수 있는 칸에 서 있고 걸어서 말 걸 수 있는가.
 import { isPassable } from "@/project/collision";
 import { terrainReachability } from "@/project/terrainReachability";
+import { openStartCell } from "@/editor/tools/startOnBuiltMap";
 import { INTERIOR_BARE_FLOOR_LIMIT, measureInteriorBareFloor } from "@/editor/handInterior/bareFloor";
 import { roomSpecOf } from "@/editor/handInterior/builder";
 import type { GameMap, Project } from "@/project/types";
@@ -96,7 +97,7 @@ export function summarizeChecks(checks: readonly MachineCheck[]): string {
   return bad.length ? `기계 검사 ${checks.length - bad.length}/${checks.length} 통과 — 문제: ${bad.map((c) => `[${c.id}] ${c.detail}`).join(" / ").slice(0, 900)}` : `기계 검사 ${checks.length}개 모두 통과`;
 }
 
-/** 플레이어 시작 칸이 이 맵의 큰 덩이(걸어서 이어진 가장 넓은 땅)에 있지 않으면 그 덩이의 아래 가운데에 가까운 칸으로 옮긴다.
+/** 플레이어 시작 칸이 이 맵의 큰 덩이(걸어서 이어진 가장 넓은 땅)에 있지 않으면 그 덩이에서 옛 시작 칸에 가까운 트인 칸(맵 끝 두 줄 밖)으로 옮긴다.
  * 마을 도구는 시작 칸을 옮기지 않는다 — 빈 프로젝트의 기본 시작 칸이 지붕 옆 막힌 틈에 남았다(2026-10-23 v2 연기 시험: 닿는 칸 5%). */
 export function fixPlayerStart(project: Project, mapIds: readonly string[]): { project: Project; note?: string } {
   const map = project.maps[project.startMapId];
@@ -114,8 +115,10 @@ export function fixPlayerStart(project: Project, mapIds: readonly string[]): { p
   }
   const s = project.startPos;
   if (!best.length || best.includes(s.y * map.width + s.x)) return { project };
-  const tx = map.width / 2, ty = map.height - 1;
-  const pick = best.reduce((a, b) => (Math.hypot(b % map.width - tx, Math.floor(b / map.width) - ty) < Math.hypot(a % map.width - tx, Math.floor(a / map.width) - ty) ? b : a));
+  // 옛 시작 칸 가까이의 트인 칸으로(맵 끝 두 줄·이벤트 위아래는 피함). 예전에는 「아래 가운데」(W/2, H−1)에 가장 가까운 칸이라
+  // 맵 맨 아랫줄에 세워 주인공 발이 화면 아래 끝에 걸렸다(2026-10-29 야외 VQA vm1·vm2 flash jrpg: (22,39)·(19,39)).
+  const cell = openStartCell(project, map, s, best);
+  const pick = cell ? cell.y * map.width + cell.x : best[0]!;
   const startPos = { ...s, x: pick % map.width, y: Math.floor(pick / map.width) };
   return { project: { ...project, startPos }, note: `시작 칸 (${s.x},${s.y})이 막힌 틈이라 큰 땅의 (${startPos.x},${startPos.y})로 옮겼다` };
 }
