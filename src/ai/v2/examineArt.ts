@@ -6,7 +6,7 @@
 // 이벤트가 책상 바로 앞 바닥에 있으면 옆 책상 윗면에 얹는다(이벤트 자리는 eventReach 가 정하므로 옮기지 않는다). 둘 다 아니면 바닥 소품(일기장 받침·책 더미)을
 // 이벤트 칸에 세우되, 걸어 닿는 칸이 줄면 되돌린다. 이미 그 물건 그림 위에 선 이벤트(금고·책장)는 건드리지 않는다.
 // 문·상자 같은 칩 그림 사물은 조사하면 플레이어 쪽으로 «돌아서» 다른 방향 줄(열린 문짝)을 보였다 — 그림을 고정한다(fixedGraphic).
-import { roomSpecOf, type HandInteriorSpec } from "@/editor/handInterior/builder";
+import { roomSpecOf, surfaceRowOf, type HandInteriorSpec } from "@/editor/handInterior/builder";
 import { isPassable } from "@/project/collision";
 import type { GameMap } from "@/project/types";
 import { objectEventFit } from "./placementRules";
@@ -39,7 +39,8 @@ function surfaceTiles(spec: HandInteriorSpec): Set<number> {
   const out = new Set<number>();
   for (const [id, o] of Object.entries(spec.objects)) {
     if (!(o.surface || /counter|table|desk|booth|zashiki|kotatsu|chabudai|reception|teller/iu.test(id))) continue;
-    for (const [, dy, tile] of o.cells) if (dy >= 0 && dy < Math.max(1, o.h)) out.add(tile);
+    const row = surfaceRowOf(id, o as { surfaceRow?: number });
+    for (const [, dy, tile] of o.cells) if (row !== undefined ? dy === row : dy >= 0 && dy < Math.max(1, o.h)) out.add(tile);
   }
   for (const t of Object.values(spec.tables ?? {})) for (const cells of Object.values(t.pieces)) for (const c of cells) out.add(c[2]);
   surfaceCache.set(spec, out);

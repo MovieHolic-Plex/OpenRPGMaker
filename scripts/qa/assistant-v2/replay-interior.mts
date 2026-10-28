@@ -10,6 +10,7 @@ import { createV2Tools, V2Session } from "../../../src/ai/v2/verbs.ts";
 import type { PiAssistantV2Env } from "../../../src/ai/v2/env.ts";
 import type { ToolContext } from "../../../src/editor/tools/types.ts";
 import { measureInteriorBareFloor } from "../../../src/editor/handInterior/bareFloor.ts";
+import { isPassable } from "../../../src/project/collision.ts";
 
 const argv = process.argv.slice(2);
 const opt = (name: string, d: string) => { const i = argv.indexOf(`--${name}`); return i >= 0 ? argv[i + 1]! : d; };
@@ -65,6 +66,11 @@ for (const call of turnRec.toolArgs ?? []) {
   if (SKIP.has(call.name) || (!all && !PLACE_VERBS.has(call.name) && call.name !== "write_blueprint")) continue;
   const tool = tools.find((t) => t.name === call.name);
   if (!tool) { log.push(`-- ${call.name} (이 실행에 없는 도구 — 건너뜀)`); continue; }
+  // --place-seed N: 한국 도시 실내처럼 요약에 견본 seed 가 찍힌 판은 그 seed 를 make_place hints 로 넣어 같은 견본에서 다시 짓는다.
+  if (call.name === "make_place" && argv.includes("--place-seed")) {
+    const a = call.args as { hints?: Record<string, unknown> };
+    call.args = { ...a, hints: { ...(a.hints ?? {}), seed: Number(opt("place-seed", "1")) } };
+  }
   let res: Awaited<ReturnType<typeof tool.execute>>;
   try { res = await tool.execute(`r${++i}`, call.args); } catch (e) { log.push(`-- ${call.name} 실패: ${String((e as Error).message).slice(0, 200)}`); continue; }
   const textPart = res.content.find((c) => c.type === "text") as { text: string } | undefined;
@@ -87,6 +93,10 @@ for (const mapId of touched) {
   fs.writeFileSync(path.join(out, `${tag}-${mapId}.png`), renderMapPng(ctx.project, map, scale).png);
   const bare = measureInteriorBareFloor(ctx.project, map);
   log.push(`== ${mapId} ${map.name} ${map.width}x${map.height} bare=${bare?.pct ?? "-"}%`);
+}
+{
+  const p = ctx.project, sm = p.maps[p.startMapId];
+  log.push(`== start ${p.startMapId} (${p.startPos.x},${p.startPos.y}) passable=${sm ? isPassable(p, sm, p.startPos.x, p.startPos.y) : "no map"}`);
 }
 fs.writeFileSync(path.join(out, `${tag}-log.txt`), log.join("\n"));
 fs.writeFileSync(path.join(out, `${tag}-project.json`), JSON.stringify({ maps: Object.fromEntries([...touched].map((m) => [m, ctx.project.maps[m]])) }));

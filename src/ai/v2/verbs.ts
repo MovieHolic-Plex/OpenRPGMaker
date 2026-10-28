@@ -310,7 +310,9 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
         }
       }
     }
-    if (spec.type !== "interior" && spec.type !== "house") {
+    // 실내·집도 시작 칸을 본다(2026-10-28 interior 장부 5): 방을 줄여 다시 짓거나 dress_room·stamp 뒤에 시작 칸이 가구·벽면 밑에 남을 수 있다.
+    // 시작 맵이 이번에 지은 맵이고 시작 칸이 큰 땅(걸어 닿는 가장 큰 덩이) 밖일 때만 옮긴다 — 문 안쪽 시작 칸은 그대로다.
+    {
       const fixed = fixPlayerStart(env.ctx.project, result.mapIds);
       if (fixed.note) { env.ctx.project = fixed.project; result = { ...result, warnings: [...result.warnings, fixed.note], ...(result.entrance && result.entrance.mapId === fixed.project.startMapId ? { entrance: { mapId: fixed.project.startMapId, x: fixed.project.startPos.x, y: fixed.project.startPos.y } } : {}) }; }
     }
