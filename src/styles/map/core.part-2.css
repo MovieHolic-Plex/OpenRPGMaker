@@ -402,24 +402,24 @@ body.palette-select-keeps-scroll .chipset-sheet.tile-palette {
   opacity: 1;
 }
 
-@media (min-width: 1024px) {
-  .persistence-mode-banner-action,
-  .persistence-mode-banner-close {
-    align-items: center;
-    box-sizing: border-box;
-    justify-content: center;
-    min-height: 32px;
-    min-width: 32px;
-  }
+/* 작업을 보존하는 유일한 단추라 창 폭과 무관하게 32px 표적이다(900px 에서 19px 로 납작해졌다). */
+.persistence-mode-banner-action,
+.persistence-mode-banner-close {
+  align-items: center;
+  box-sizing: border-box;
+  display: inline-flex;
+  flex: 0 0 auto;
+  justify-content: center;
+  min-height: 32px;
+  min-width: 32px;
+}
 
-  .persistence-mode-banner-action {
-    display: inline-flex;
-  }
+.persistence-mode-banner-action {
+  font-size: 12px;
+}
 
-  .persistence-mode-banner-close {
-    display: inline-flex;
-    line-height: 1;
-  }
+.persistence-mode-banner-close {
+  line-height: 1;
 }
 
 .persistence-mode-banner.is-local-only {
