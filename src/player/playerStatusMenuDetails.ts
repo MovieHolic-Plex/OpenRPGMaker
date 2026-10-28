@@ -171,18 +171,21 @@ const GROUP_COMMAND_DESCRIPTIONS: Partial<Record<StatusMenuCommandId, string>> =
 };
 
 function toTitleDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
+  // 레일에서 「타이틀로」에 커서만 올려도 이 상세가 그려진다. 예전에는 확인 대기 전이면 항목이 비어
+  // 「타이틀 복귀 확인을 준비하지 못했습니다」+「한 번 더 선택해야…」가 함께 보이고, 그 상태의 결정은
+  // 「선택할 수 없습니다」로 거부됐다(장부 hud #114 막음). 항목은 늘 있고, 첫 선택은 확인을 묻고 둘째가 돌아간다.
+  const pending = options.confirmToTitle === true;
   return {
     title: "타이틀로 돌아가기",
-    entries: options.confirmToTitle ? [{
-      label: "진행을 버리고 타이틀로",
-      value: "확인",
+    entries: [{
+      label: pending ? "진행을 버리고 타이틀로" : "타이틀로 돌아가기",
+      value: pending ? "확인" : "선택",
       description: "저장하지 않은 진행은 사라집니다.",
-      testId: "status-menu-confirm-to-title",
+      testId: pending ? "status-menu-confirm-to-title" : "status-menu-to-title-entry",
       onActivate: options.onCommand ? () => options.onCommand?.("to-title") : undefined,
-      destructive: true,
-    }] : [],
-    emptyLabel: "타이틀 복귀 확인을 준비하지 못했습니다.",
-    hint: "한 번 더 선택해야 타이틀 화면으로 돌아갑니다.",
+      destructive: pending,
+    }],
+    hint: pending ? "한 번 더 결정하면 타이틀 화면으로 돌아갑니다." : "결정하면 한 번 더 확인합니다.",
   };
 }
 
