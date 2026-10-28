@@ -324,3 +324,9 @@ It requires an existing catalog; full generation without the option remains supp
 - `make()` 가 field 맵마다 `roughenTallGrass`(`monsterExpedition/tallGrassShape.ts`)를 부른다. 덩이 모서리는 자주, 곧은 변은 드물게 들풀로 깎고, 맞닿은 들풀 칸으로 몇 칸 내민다. 한 칸 섬·구멍은 정리한다.
 - 칸 해시(맵 id 씨앗)라 같은 맵은 늘 같은 모양이다. 새 그림은 없다 — 템플릿의 `tall0/tall1`·모서리 둥근 변형 `tall{0,1}rg{1..15}`(비트 1 왼위·2 오른위·4 왼아래·8 오른아래)·`grass0~3` 만 쓴다. 모서리 비트는 그 모서리의 두 곧은 이웃이 모두 풀숲이 아닐 때 켠다.
 - 이름이 모자란 템플릿은 손대지 않는다. 길·턱·나무·물 칸은 들풀이 아니라 자연히 빠진다(통행·출구 그대로).
+
+## 시작 마을 빈 초원에 용도 (2026-10-28, 장부)
+
+- `homeTownAttempt`(townLayouts.ts): 연못·첫 나무는 가장 트인 자리(둘레 3칸 빈 땅이 가장 많은 곳)에, 다음 나무는 앞 나무 곁(덩이), 꽃밭은 연못·나무 곁, 낱 꽃·덤불·바위는 무언가 곁 두 칸 안에만 둔다. 상자 안 아무 데나 흩던 때는 집 넷이 몰린 반대편이 낱 나무만 흩어진 빈 초원이었다(큰 마을 동쪽 61%).
+- 큰 마을(large)은 `pond` 를 고르지 않았으면 연못을 둔다. 모델이 `pond:false` 를 주면 그대로.
+- 그 뒤 `fillAreaByUse`(kitAreaFurnish) 가 남은 빈터를 쓰임으로 채우는 것은 그대로다.

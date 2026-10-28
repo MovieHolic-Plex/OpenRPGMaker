@@ -221,7 +221,7 @@ function layoutBlobOnce(spec: DungeonSpec, profile: GrammarInfo, salt: number): 
   // 씨앗으로 고른다 — 같은 테마를 세 번 지으면 «풀밭 둘레에 나무 테두리» 한 모양만 나왔다.
   const spread = Math.abs(Math.imul(seed, 2246822519) >>> 9) % 3;
   for (let round = 0; round < 40 && chambers.length < wantN; round += 1) {
-    const rx = 5 + Math.floor(random() * 4);
+    const rx = 4 + Math.floor(random() * 3); // 5~8 → 4~6(2026-10-28 동굴 67% 빈 바닥 — 방 하나에 놓는 기물 수는 고정이라 큰 굴은 맨바닥만 늘었다)
     const ry = Math.max(4, Math.round(rx * (0.62 + random() * 0.22)));
     let best: { cx: number; cy: number; score: number } | null = null;
     for (let attempt = 0; attempt < 160; attempt += 1) {
@@ -286,7 +286,7 @@ function layoutBlobOnce(spec: DungeonSpec, profile: GrammarInfo, salt: number): 
   const bySize = [...rest].sort((a, b) => b.rx * b.ry - a.rx * a.ry);
   const lakeCands = bySize.filter((c) => c.rx >= 6).length ? bySize.filter((c) => c.rx >= 6) : bySize;
   // 화산 용암 못은 한 단 작게(10×7 둘이 붙어 맵 가운데가 용암 한 덩이가 됐다 — 2026-10-23), 그 사이를 흐르는 줄기가 잇는다.
-  const lakeR = profile.id === "volcano" ? [8, 6] : [10, 7];
+  const lakeR = profile.id === "volcano" ? [8, 6] : [9, 6];
   for (const c of lakeCands.slice(0, lakeWant)) { c.kind = "lake"; c.rx = Math.max(c.rx, lakeR[0]!); c.ry = Math.max(c.ry, lakeR[1]!); }
   const others = rest.filter((c) => c.kind === "cavern");
   if (profile.id === "volcano" && others[0]) others[0].kind = "forge";
