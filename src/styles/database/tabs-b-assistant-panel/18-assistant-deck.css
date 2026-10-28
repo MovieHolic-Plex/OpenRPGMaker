@@ -821,7 +821,7 @@ html[data-ai-render="off"] {
 .left-progress-step.is-next .left-progress-go { background: var(--accent); border-color: transparent; color: var(--on-accent); }
 .left-progress-ack[aria-pressed="true"] { color: var(--text-3); }
 
-.left-links-summary { font: 500 11.5px var(--font-ui); color: var(--text-3); }
+.left-links-summary { font: 500 12px var(--font-ui); color: var(--text-2); }
 .left-links-summary.has-problems { color: var(--danger); }
 .left-links-list { display: flex; flex-direction: column; gap: 6px; }
 .left-links-card { border: 1px solid var(--border-subtle); border-radius: var(--radius-m); overflow: hidden; }
@@ -833,10 +833,16 @@ html[data-ai-render="off"] {
 }
 .left-links-name:hover { background: var(--bg-hover); }
 .left-links-name strong { font: 600 12.5px var(--font-ui); }
-.left-links-counts { margin-left: auto; color: var(--text-3); font-size: 11px; }
-.left-links-flag { padding: 1px 6px; border-radius: 8px; font: 600 11px var(--font-ui); }
-.left-links-flag.is-start { background: var(--accent-muted); color: var(--accent); }
-.left-links-flag.is-warn { background: var(--danger-muted); color: var(--danger); }
+.left-links-counts { margin-left: auto; color: var(--text-2); font-size: 12px; }
+.left-links-flag { padding: 1px 6px; border-radius: 8px; font: 600 12px var(--font-ui); }
+.left-links-flag.is-start { background: var(--accent-muted); color: var(--accent-active, var(--accent)); }
+/* 경고 칩 글자는 경고색보다 한 단계 어둡게 — 옅은 경고 바탕 위에서 4.5:1 을 넘긴다. */
+.left-links-flag.is-warn { background: var(--danger-muted); color: #9A2E2B; }
+.left-links-fix {
+  align-self: flex-start; min-height: 28px; margin: 2px 6px 0; padding: 0 10px; border: 1px solid var(--border-default); border-radius: var(--radius-s);
+  background: var(--bg-raised); color: var(--text-1); font: 500 12px var(--font-ui); cursor: pointer;
+}
+.left-links-fix:hover { background: var(--bg-hover); }
 .left-links-edges { display: flex; flex-direction: column; gap: 2px; padding: 4px 6px 8px; border-top: 1px solid var(--border-subtle); background: var(--bg-inset); }
 .left-links-edges .left-links-hint { padding: 4px 6px; }
 .left-links-edge {
@@ -846,4 +852,10 @@ html[data-ai-render="off"] {
 .left-links-edge:hover { background: var(--bg-hover); }
 .left-links-arrow { flex: none; color: var(--text-3); }
 .left-links-target { font-weight: 500; }
-.left-links-via { margin-left: auto; color: var(--text-3); font-size: 11px; }
+.left-links-via { margin-left: auto; color: var(--text-2); font-size: 12px; }
+
+/* 지금 초점이 있는 영역을 구분한다(IS-012) — 왼쪽 패널과 캔버스 중 키 입력을 받는 쪽만 테두리가 진해진다. */
+.ai-chat-sidebar:focus-within {
+  outline: 1px solid var(--accent-border, var(--accent));
+  outline-offset: -1px;
+}
