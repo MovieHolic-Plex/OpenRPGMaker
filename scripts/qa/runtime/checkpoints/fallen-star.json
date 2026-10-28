@@ -5359,7 +5359,7 @@
        "kind": "repeatUntil",
        "testid": "dialogue-box",
        "state": "absent",
-       "maxRounds": 16,
+       "maxRounds": 32,
        "ops": [
         {
          "kind": "key",
@@ -6012,100 +6012,100 @@
      "id": "run",
      "ops": [
       {
-       "kind": "move",
+       "kind": "hold",
        "dir": "left",
-       "steps": 1
+       "ms": 168
       },
       {
-       "kind": "move",
+       "kind": "hold",
        "dir": "up",
-       "steps": 1
+       "ms": 168
       },
       {
-       "kind": "move",
+       "kind": "hold",
        "dir": "left",
-       "steps": 1
+       "ms": 168
       },
       {
-       "kind": "move",
+       "kind": "hold",
        "dir": "up",
-       "steps": 5
+       "ms": 840
       },
       {
-       "kind": "move",
+       "kind": "hold",
        "dir": "left",
-       "steps": 7
+       "ms": 1176
       },
       {
-       "kind": "move",
+       "kind": "hold",
        "dir": "up",
-       "steps": 1
+       "ms": 168
       },
       {
-       "kind": "move",
+       "kind": "hold",
        "dir": "left",
-       "steps": 3
+       "ms": 504
       },
       {
-       "kind": "move",
+       "kind": "hold",
        "dir": "up",
-       "steps": 4
+       "ms": 672
       },
       {
-       "kind": "move",
+       "kind": "hold",
        "dir": "right",
-       "steps": 14
+       "ms": 2352
       },
       {
-       "kind": "move",
+       "kind": "hold",
        "dir": "up",
-       "steps": 1
+       "ms": 168
       },
       {
-       "kind": "move",
+       "kind": "hold",
        "dir": "right",
-       "steps": 8
+       "ms": 1344
       },
       {
-       "kind": "move",
+       "kind": "hold",
        "dir": "up",
-       "steps": 4
+       "ms": 672
       },
       {
-       "kind": "move",
+       "kind": "hold",
        "dir": "left",
-       "steps": 6
+       "ms": 1008
       },
       {
-       "kind": "move",
+       "kind": "hold",
        "dir": "up",
-       "steps": 1
+       "ms": 168
       },
       {
-       "kind": "move",
+       "kind": "hold",
        "dir": "left",
-       "steps": 3
+       "ms": 504
       },
       {
-       "kind": "move",
+       "kind": "hold",
        "dir": "up",
-       "steps": 1
+       "ms": 168
       },
       {
-       "kind": "move",
+       "kind": "hold",
        "dir": "left",
-       "steps": 1
+       "ms": 168
       },
       {
        "kind": "hold",
        "dir": null,
-       "ms": 1200
+       "ms": 1500
       },
       {
        "kind": "repeatUntil",
        "testid": "dialogue-box",
        "state": "absent",
-       "maxRounds": 6,
+       "maxRounds": 8,
        "ops": [
         {
          "kind": "key",
@@ -6309,14 +6309,49 @@
      "ops": [
       {
        "kind": "hold",
-       "dir": null,
-       "ms": 9000
+       "dir": "left",
+       "ms": 168
+      },
+      {
+       "kind": "hold",
+       "dir": "up",
+       "ms": 168
+      },
+      {
+       "kind": "hold",
+       "dir": "left",
+       "ms": 168
+      },
+      {
+       "kind": "hold",
+       "dir": "up",
+       "ms": 840
+      },
+      {
+       "kind": "hold",
+       "dir": "left",
+       "ms": 1176
+      },
+      {
+       "kind": "hold",
+       "dir": "up",
+       "ms": 168
+      },
+      {
+       "kind": "hold",
+       "dir": "left",
+       "ms": 504
+      },
+      {
+       "kind": "hold",
+       "dir": "up",
+       "ms": 672
       },
       {
        "kind": "waitFor",
        "testid": "dialogue-box",
        "state": "present",
-       "timeoutMs": 15000
+       "timeoutMs": 20000
       },
       {
        "kind": "hold",
@@ -6327,7 +6362,7 @@
        "kind": "repeatUntil",
        "testid": "dialogue-box",
        "state": "absent",
-       "maxRounds": 6,
+       "maxRounds": 8,
        "ops": [
         {
          "kind": "key",
@@ -6352,24 +6387,24 @@
      "id": "retry",
      "ops": [
       {
-       "kind": "move",
+       "kind": "hold",
        "dir": "left",
-       "steps": 1
+       "ms": 168
       },
       {
-       "kind": "move",
+       "kind": "hold",
        "dir": "up",
-       "steps": 1
+       "ms": 168
       },
       {
-       "kind": "move",
+       "kind": "hold",
        "dir": "left",
-       "steps": 1
+       "ms": 168
       },
       {
-       "kind": "move",
+       "kind": "hold",
        "dir": "up",
-       "steps": 5
+       "ms": 840
       },
       {
        "kind": "hold",
