@@ -7,6 +7,8 @@ import "@/styles/database/assetStore/index.css";
 import { storeBridge } from "@/editor/assetStore/storeBridge";
 import { clearChildren, el } from "@/util/dom";
 
+const STORE_WEB_URL = "https://store.openrpgmaker.com";
+
 export function createLeftStorePane(): { root: HTMLElement; show(): void; dispose(): void } {
   const root = el("section", { class: "left-store-pane", attrs: { "aria-label": "에셋 스토어" }, dataset: { testid: "left-store-pane" } });
   const open = (tab: "browse" | "upload"): void => {
@@ -29,7 +31,16 @@ export function createLeftStorePane(): { root: HTMLElement; show(): void; dispos
     );
     const bridge = storeBridge();
     if (!bridge) {
-      root.append(el("p", { class: "left-store-lead", text: "스토어는 OPRN 데스크톱 앱에서 열 수 있습니다." }));
+      // 웹 편집기에는 스토어 중계가 없다 — 소개만 두지 않고 웹 스토어로 가는 길을 준다.
+      root.append(
+        el("a", {
+          class: "left-store-open",
+          text: "웹에서 스토어 둘러보기",
+          attrs: { href: STORE_WEB_URL, target: "_blank", rel: "noopener" },
+          dataset: { testid: "left-store-web" },
+        }),
+        el("p", { class: "left-store-lead", text: "받은 에셋을 프로젝트에 바로 넣기는 OPRN 데스크톱 앱에서 할 수 있어요." }),
+      );
       return;
     }
     root.append(

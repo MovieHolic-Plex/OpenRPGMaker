@@ -1,7 +1,9 @@
 import { focusEditorRegion } from "@/editor/editorReferenceNavigation";
 import { editorState } from "@/editor/editorState";
 import { selectEditorMap } from "@/editor/mapSelection";
+import { addParentChildTransfers } from "@/editor/mapParentLink";
 import { collectMapLinkGraph, type MapLinkEdge, type MapLinkNode } from "@/project/mapLinkStats";
+import { findParentMapId, findTreeNode, isMapTreeFolder } from "@/project/mapTree";
 import { store } from "@/project/store";
 import type { Project } from "@/project/types";
 import { el } from "@/util/dom";
@@ -63,8 +65,31 @@ export function createLeftLinksPane(): { root: HTMLElement; show(): void; dispos
     return rows;
   };
 
-  const card = (project: Project, node: MapLinkNode, current: string | null): HTMLElement => {
-    const isolated = node.outgoing.length === 0 && node.incoming.length === 0;
+  /** 고립 카드의 해결 동작: 트리 부모가 실제 맵이면 왕복 이동을 넣고, 아니면 그 맵의 이벤트 층을 연다. */
+  const fixAction = (project: Project, node: MapLinkNode): HTMLElement => {
+    const parentId = findParentMapId(project.mapTree, node.mapId);
+    const parentNode = parentId ? findTreeNode(project.mapTree, parentId) : null;
+    if (parentId && parentNode && !isMapTreeFolder(parentNode)) {
+      return el("button", {
+        class: "left-links-fix",
+        attrs: { type: "button", title: `${name(project, parentId)}와(과) 이 맵 사이에 오가는 문 이벤트를 하나씩 넣습니다.` },
+        dataset: { testid: `left-links-fix-${node.mapId}` },
+        text: "부모 맵과 왕복 문 넣기",
+        on: { click: () => { if (addParentChildTransfers(parentId, node.mapId)) render(true); } },
+      });
+    }
+    return el("button", {
+      class: "left-links-fix",
+      attrs: { type: "button", title: "이 맵을 열고 이벤트 층으로 바꿉니다. 문을 놓을 칸을 두 번 눌러 「장소 이동」을 넣으세요." },
+      dataset: { testid: `left-links-fix-${node.mapId}` },
+      text: "문 이벤트 놓으러 가기",
+      on: { click: () => { if (selectEditorMap(node.mapId)) editorState.set({ layer: "event" }); } },
+    });
+  };
+
+  const card = (project: Project, node: MapLinkNode, current: string | null, solo: boolean): HTMLElement => {
+    // 맵이 하나뿐이면 이을 상대가 없다 — 오류가 아니라 중립 상태다.
+    const isolated = !solo && node.outgoing.length === 0 && node.incoming.length === 0;
     const unreachable = !node.reachableFromStart;
     const flags = [
       node.isStart ? "시작" : null,
@@ -85,12 +110,13 @@ export function createLeftLinksPane(): { root: HTMLElement; show(): void; dispos
             el("span", { class: "left-links-counts", text: `나감 ${node.outgoing.length} · 들어옴 ${node.incoming.length}` }),
           ],
         }),
-        ...(node.mapId === current || isolated || unreachable
+        ...(node.mapId === current || isolated || unreachable || solo
           ? [el("div", {
             class: "left-links-edges",
             children: [
               ...edgeRows(project, node),
-              ...(isolated ? [el("p", { class: "left-links-hint", text: "이 맵으로 들어오거나 나가는 이동이 없습니다. 문 이벤트에 「장소 이동」을 넣으면 연결됩니다." })] : []),
+              ...(isolated ? [el("p", { class: "left-links-hint", text: "이 맵으로 들어오거나 나가는 이동이 없습니다." }), fixAction(project, node)] : []),
+              ...(solo ? [el("p", { class: "left-links-hint", text: "맵을 하나 더 만들면 문으로 이을 수 있어요." })] : []),
               ...(!isolated && unreachable ? [el("p", { class: "left-links-hint", text: "시작 맵에서 이동을 따라가도 닿지 않습니다." })] : []),
             ],
           })]
@@ -113,7 +139,9 @@ export function createLeftLinksPane(): { root: HTMLElement; show(): void; dispos
     lastNodes = nodes;
     lastNames = names;
     if (!force && unchanged && !mapChanged) return;
-    const problem = (node: MapLinkNode) => !node.reachableFromStart;
+    // 카드와 같은 판정 — 요약이 「모두 연결됨」인데 카드가 「고립」인 모순을 막는다.
+    const solo = nodes.length <= 1;
+    const problem = (node: MapLinkNode) => !node.reachableFromStart || (!solo && node.outgoing.length === 0 && node.incoming.length === 0);
     const problems = nodes.filter(problem);
     const ordered = [...nodes].sort((a, b) => Number(problem(b)) - Number(problem(a)) || Number(b.isStart) - Number(a.isStart));
     root.replaceChildren(
@@ -124,11 +152,11 @@ export function createLeftLinksPane(): { root: HTMLElement; show(): void; dispos
           el("span", {
             class: "left-links-summary" + (problems.length ? " has-problems" : ""),
             dataset: { testid: "left-links-summary" },
-            text: problems.length ? `닿지 않는 맵 ${problems.length}개` : `맵 ${nodes.length}개 모두 연결됨`,
+            text: problems.length ? `연결이 필요한 맵 ${problems.length}개` : solo ? "연결할 다른 맵 없음" : `맵 ${nodes.length}개 모두 연결됨`,
           }),
         ],
       }),
-      el("div", { class: "left-links-list", children: ordered.map((node) => card(project, node, current)) }),
+      el("div", { class: "left-links-list", children: ordered.map((node) => card(project, node, current, solo)) }),
     );
   };
 

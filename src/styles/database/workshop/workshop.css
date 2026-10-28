@@ -45,7 +45,7 @@
 .workshop .workshop-new { flex: none; width: 100%; border-style: dashed; color: var(--accent); font-weight: var(--font-weight-medium, 500); }
 .workshop-items { flex: 1 1 auto; list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; align-content: start; overflow: auto; min-height: 0; }
 .workshop .workshop-item { display: grid; width: 100%; min-height: 0; text-align: left; padding: 7px 10px; border: 1px solid transparent; border-radius: var(--radius-s); background: none; gap: 2px; }
-.workshop .workshop-item.is-selected { background: var(--bg-raised); border-color: var(--border-default); box-shadow: inset 3px 0 0 var(--accent); }
+.workshop .workshop-item.is-selected { background: var(--accent-muted); border-color: var(--accent-border, var(--border-default)); box-shadow: none; }
 .workshop-item-title { font-size: 13px; font-weight: var(--font-weight-medium, 500); }
 .workshop-item-meta { font-size: 11.5px; line-height: 1.45; color: var(--text-2); }
 .workshop-main { display: grid; align-content: start; gap: var(--space-4); overflow: auto; padding: var(--space-4) var(--space-5) 48px; min-height: 0; }
@@ -170,19 +170,19 @@
 .left-workshop-card-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-1) var(--space-2); min-width: 0; }
 .left-workshop-card-head strong { flex: 1 1 6em; min-width: 0; font-size: 14px; font-weight: var(--font-weight-semibold, 600); color: var(--text-1); }
 .is-upcoming .left-workshop-card-head strong { font-size: 13px; color: var(--text-2); }
-.left-workshop-status { flex: none; padding: 2px 8px; border-radius: var(--radius-pill, 999px); font-size: 11px; font-weight: var(--font-weight-medium, 500); white-space: nowrap; background: var(--bg-active); color: var(--text-2); }
+.left-workshop-status { flex: none; padding: 2px 8px; border-radius: var(--radius-pill, 999px); font-size: 12px; font-weight: var(--font-weight-medium, 500); white-space: nowrap; background: var(--bg-active); color: var(--text-2); }
 .left-workshop-status.is-ready { background: var(--success-muted); color: var(--success); }
 .left-workshop-status.is-local { background: var(--accent-muted); color: var(--accent-active, var(--accent)); }
 .left-workshop-status.is-next { background: var(--warning-muted); color: var(--warning); }
 .left-workshop-description { margin: 0; color: var(--text-2); font-size: var(--font-size-sm, 12px); line-height: 1.5; }
-.is-upcoming .left-workshop-description { font-size: 11.5px; color: var(--text-3); }
-.left-workshop-note { margin: 0; padding: var(--space-2) 10px; border-radius: var(--radius-s, 6px); background: var(--bg-inset); color: var(--text-2); font-size: 11.5px; line-height: 1.45; }
+.is-upcoming .left-workshop-description { font-size: 12px; color: var(--text-2); }
+.left-workshop-note { margin: 0; padding: var(--space-2) 10px; border-radius: var(--radius-s, 6px); background: var(--bg-inset); color: var(--text-2); font-size: 12px; line-height: 1.45; }
 .left-workshop-meta { font-size: 11.5px; color: var(--text-2); }
 .left-workshop-actions { display: grid; gap: var(--space-1); justify-items: stretch; margin-top: var(--space-1); }
 .left-workshop-primary { width: 100%; min-height: 34px; padding: 7px var(--space-3); border: 0; border-radius: var(--radius-s, 6px); background: var(--accent); color: #fff; font: inherit; font-size: 13px; font-weight: var(--font-weight-semibold, 600); cursor: pointer; }
 .left-workshop-primary:hover { background: var(--accent-hover); }
 .left-workshop-primary:active { background: var(--accent-active); }
-.left-workshop-link { justify-self: center; padding: 6px var(--space-2); border: 0; border-radius: var(--radius-s, 6px); background: none; color: var(--accent); font: inherit; font-size: 12.5px; font-weight: var(--font-weight-medium, 500); cursor: pointer; }
+.left-workshop-link { justify-self: start; min-height: 32px; padding: 6px var(--space-2); border: 0; border-radius: var(--radius-s, 6px); background: none; color: var(--accent); font: inherit; font-size: 12.5px; font-weight: var(--font-weight-medium, 500); cursor: pointer; }
 .left-workshop-link:hover { background: var(--accent-muted); }
 .left-workshop-primary:focus-visible, .left-workshop-link:focus-visible { outline: var(--focus-outline); outline-offset: 2px; }
 .workshop-gen-ref input { width: 96px; }
@@ -237,7 +237,7 @@
 .workshop-oneclick-chip:hover { border-color: var(--accent); color: var(--accent-active, var(--accent)); background: var(--accent-muted); }
 .left-workshop-card-body .left-workshop-primary:disabled { opacity: 0.6; cursor: progress; }
 .workshop-oneclick-more { font-size: 12px; color: var(--text-2); }
-.workshop-oneclick-more > summary { cursor: pointer; width: max-content; padding: 2px 4px; border-radius: var(--radius-s, 6px); color: var(--text-3); }
+.workshop-oneclick-more > summary { cursor: pointer; width: max-content; display: list-item; box-sizing: border-box; min-height: 32px; padding: 7px 8px; line-height: 18px; border-radius: var(--radius-s, 6px); color: var(--text-2); }
 .workshop-oneclick-more > summary:hover { color: var(--text-1); }
 .workshop-oneclick-fields { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 6px; margin-top: 6px; }
 .workshop-oneclick-field { display: grid; gap: 2px; font-size: 11.5px; color: var(--text-3); }
