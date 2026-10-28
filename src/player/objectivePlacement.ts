@@ -139,6 +139,35 @@ function bandCandidates(input: ObjectivePlacementInput, map: PlacementRect, add:
   });
 }
 
+/**
+ * 「Z 조사」 같은 상호작용 안내 자리 — 아래 가운데가 기본이고, 그 자리가 주인공·인물·다른 HUD·방을 덮으면
+ * 아래 왼쪽·오른쪽(작은 방이면 둘레 여백)으로 비킨다. 아래 가운데에 고정했을 때 방 아래로 난 유일한 출구 통로를 덮었다
+ * (2026-10-29 적대 VQA mt3 argon 79·terra 185·212). 지금 자리가 거의 같은 값이면 옮기지 않는다.
+ */
+export function choosePromptPlacement(input: Pick<ObjectivePlacementInput, "stage" | "margin" | "player" | "actors" | "hud" | "map"> & {
+  readonly box: { readonly width: number; readonly height: number };
+  readonly current: { readonly x: number; readonly y: number } | null;
+}): { readonly x: number; readonly y: number } {
+  const { stage, box, margin: m } = input;
+  const bottom = stage.height - box.height - m * 2;
+  const candidates: Candidate[] = [
+    { x: (stage.width - box.width) / 2, y: bottom, width: box.width, height: box.height, bias: 0 },
+    { x: m, y: bottom, width: box.width, height: box.height, bias: 0.2 },
+    { x: stage.width - box.width - m, y: bottom, width: box.width, height: box.height, bias: 0.25 },
+  ];
+  const cost = (rect: PlacementRect): number => placementCost(rect, input as ObjectivePlacementInput);
+  let best = candidates[0]!, bestCost = Number.POSITIVE_INFINITY;
+  for (const candidate of candidates) {
+    const value = cost(candidate) + candidate.bias;
+    if (value < bestCost) { best = candidate; bestCost = value; }
+  }
+  if (input.current) {
+    const kept = { ...input.current, width: box.width, height: box.height };
+    if (kept.x >= 0 && kept.x + box.width <= stage.width + 0.5 && cost(kept) <= bestCost + 0.3) return input.current;
+  }
+  return { x: Math.round(best.x), y: Math.round(best.y) };
+}
+
 function estimatedHeight(input: ObjectivePlacementInput, width: number): number {
   const box = input.box;
   if (input.measure && Math.round(width) !== Math.round(box.width)) return input.measure(Math.round(width));

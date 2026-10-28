@@ -7,7 +7,7 @@ import { footprintBounds, footprintContains } from "@/project/footprint";
 import { mapTileSize } from "@/project/tileGeometry";
 import { runtimePixelDensity } from "@/player/runtimeViewScale";
 import type { GameMap } from "@/project/types";
-import { chooseObjectivePlacement, type ObjectivePlacement, type PlacementRect } from "@/player/objectivePlacement";
+import { chooseObjectivePlacement, choosePromptPlacement, type ObjectivePlacement, type PlacementRect } from "@/player/objectivePlacement";
 import {
   createZoneFeedbackModel,
   interactionPromptLabel,
@@ -93,6 +93,8 @@ export type PlaySceneZoneFeedback = {
   prompt?: { readonly x: number; readonly y: number; readonly facing: string; readonly session: PlaySession; readonly atMs: number; readonly value: string | null };
   /** 목표 안내창 자리. OBJECTIVE_PLACE_MS 마다 다시 고른다. */
   objectivePlace?: { atMs: number; text: string; placement: ObjectivePlacement | null };
+  /** 상호작용 안내 자리. 같은 주기로 다시 고른다. */
+  promptPlace?: { atMs: number; text: string; x: number; y: number };
 };
 
 const OBJECTIVE_PLACE_MS = 300;
@@ -148,7 +150,31 @@ export function syncPlaySceneZoneFeedback(
   });
   feedback.model = update.model;
   feedback.dom?.render(update.view, update.effects);
+  // 안내를 먼저 놓는다 — 목표 창은 안내(다른 HUD)를 피해 자리를 고른다.
+  if (host && feedback.dom && update.view.prompt && !update.view.suppressed) placePrompt(scene, feedback, host, update.view.prompt);
   if (host && feedback.dom && update.view.objective && !update.view.suppressed) placeObjective(scene, feedback, host, update.view.objective);
+}
+
+function placePrompt(scene: ZoneFeedbackScene, feedback: PlaySceneZoneFeedback, host: HTMLElement, text: string): void {
+  const element = host.querySelector<HTMLElement>(":scope > .zone-feedback > .zone-feedback-prompt");
+  if (!element || element.hidden) return;
+  const memo = feedback.promptPlace;
+  if (memo && memo.text === text && feedback.elapsedMs - memo.atMs < OBJECTIVE_PLACE_MS) return;
+  const geometry = sceneGeometry(scene, host);
+  if (!geometry) return;
+  const box = { width: element.offsetWidth, height: element.offsetHeight };
+  if (box.width <= 0 || box.height <= 0) return;
+  const stage = { width: host.clientWidth, height: host.clientHeight };
+  const uiScale = Number.parseFloat(getComputedStyle(host).getPropertyValue("--play-ui-scale")) || 1;
+  const placement = choosePromptPlacement({
+    stage, box, margin: Math.round(4 * uiScale),
+    player: geometry.player, actors: geometry.actors, map: geometry.map,
+    // 자기 자신은 뺀다(목표 창은 선택자에서 이미 빠진다 — 목표 창이 안내를 피한다).
+    hud: hudRects(host, element, stage),
+    current: memo?.text === text ? { x: memo.x, y: memo.y } : null,
+  });
+  feedback.promptPlace = { atMs: feedback.elapsedMs, text, x: placement.x, y: placement.y };
+  Object.assign(element.style, { left: `${placement.x}px`, top: `${placement.y}px`, bottom: "auto", right: "auto", transform: "none" });
 }
 
 /**
@@ -188,9 +214,10 @@ function placeObjective(scene: ZoneFeedbackScene, feedback: PlaySceneZoneFeedbac
     stage,
     box,
     maxWidth: stage.width - 2 * margin,
-    minWidth: Math.min(box.width, Math.round(stage.width * 0.22)),
-    // 여백 띠에는 한 줄에 4글자 남짓까지 좁힌다(320×240 무대의 작은 방 옆 여백은 50~60px).
-    minBandWidth: Math.min(box.width, Math.round(fontPx * 4 + padX)),
+    minWidth: Math.min(box.width, Math.max(Math.round(stage.width * 0.22), objectiveMinWidth(box.width, fontPx, padX))),
+    // 여백 띠도 같은 최소 폭 — 한 줄 4글자까지 좁히던 때는 방 옆 여백에 4~5줄로 접혀 「한 어절씩 끊긴 안내」가 됐다
+    // (2026-10-29 VQA vm 9·17, terra 178, 감독 지적: 여백 무늬를 이은 뒤에도 2줄 → 4줄). 들어가지 않는 띠는 후보가 안 되고, 창은 방 가장자리를 조금 덮는다.
+    minBandWidth: objectiveMinWidth(box.width, fontPx, padX),
     measure,
     margin,
     player: geometry.player,
@@ -210,6 +237,11 @@ function placeObjective(scene: ZoneFeedbackScene, feedback: PlaySceneZoneFeedbac
     width: placement.width !== box.width ? `${placement.width}px` : "",
     maxWidth: placement.width !== box.width ? "none" : "",
   });
+}
+
+/** 목표 창 최소 폭: 한 줄 10글자 또는 자연 폭의 70% 중 큰 쪽(자연 폭보다 넓히지는 않는다). 두 줄 문장이 세 줄 넘게 접히지 않는다. */
+function objectiveMinWidth(naturalWidth: number, fontPx: number, padX: number): number {
+  return Math.min(naturalWidth, Math.max(Math.round(fontPx * 10 + padX), Math.round(naturalWidth * 0.7)));
 }
 
 type SceneGeometry = { readonly player: PlacementRect | null; readonly actors: PlacementRect[]; readonly map: PlacementRect | null };
