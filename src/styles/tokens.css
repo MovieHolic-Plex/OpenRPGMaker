@@ -81,9 +81,30 @@
   --radius-m: 10px;
   --radius-l: 14px;
   --radius-pill: 999px;
+  /* 반경 척도(HIG C-06) — 새 규칙은 이 네 단계와 --radius-pill 만 쓴다. -s/-m/-l 은 같은 값의 옛 이름이다. */
+  --radius-1: 4px;
+  --radius-2: 6px;
+  --radius-3: 10px;
+  --radius-4: 14px;
 
-  --font-size-xs: 10px;
-  --font-size-sm: 12px;
+  /* 글자 척도(HIG C-02) — 편집기 크롬 글자는 --font-floor(12px) 아래로 내려가지 않는다.
+     새 규칙은 px 리터럴 대신 이 일곱 단계를 쓴다. 쓰임은 TOKENS.md 「글자 척도」. */
+  --font-floor: 12px;
+  --font-12: 12px;
+  --font-13: 13px;
+  --font-14: 14px;
+  --font-16: 16px;
+  --font-18: 18px;
+  --font-22: 22px;
+  --font-28: 28px;
+  /* 옛 이름. 10px 였고 찾기·구역·작업 띠 글자 40곳이 이 값으로 바닥 아래였다 — 바닥으로 올린다. */
+  --font-size-xs: var(--font-floor);
+  --font-size-sm: var(--font-12);
+
+  /* 표적 크기(HIG C-03) — 포인터 표적 하한. 글리프는 키우지 않고 패딩/최소 크기로 맞춘다.
+     dense 는 표·목록 안처럼 촘촘한 줄에서만 쓴다. */
+  --hit-min: 32px;
+  --hit-min-dense: 28px;
   --line-height-solid: 1;
   --line-height-tight: 1.2;
   --font-weight-medium: 500;
@@ -189,6 +210,10 @@
      보다도 위여야 하고, 토스트보다는 아래다 — 알림이 툴팁에 가리면 안 된다.
      이 순서는 test/editorZLayerOrder.test.ts 가 고정한다. */
   --z-tooltip: 2650;
+  /* 층 척도의 의미 이름(HIG C-06) — 새 규칙은 이 다섯 이름만 쓴다. 값은 위 층과 같다. */
+  --z-dropdown: var(--z-popover-high);
+  --z-overlay: var(--z-modal-overlay);
+  --z-dialog: var(--z-app-modal);
 
   --brand-blue: #4A57D6;
   --mix-base: #F7F8F8;
