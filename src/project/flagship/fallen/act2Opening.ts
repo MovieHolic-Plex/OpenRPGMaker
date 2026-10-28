@@ -1822,13 +1822,16 @@ function frostford(project: Project, exec: Exec, hubId: string): void {
         say(KAEL, "…세린이라는 분을 아세요?"),
         say(HARMA, "세린이? 알지. 등을 제일 멀리 띄우던 애.\n…그 애 아들이 이번에 탑으로 올라갔어."),
         say(KAEL, "그 사람, 등을 띄우는 법은 안 잊었어요."),
-        say(HARMA, "그럼 됐다. 밤에 얼음 위로 나가 봐. 등이 하나 떠 있을 게다."),
+        say(HARMA, "그럼 됐다. 밤에 얼음 위로 나가 봐. 등이 하나 떠 있을 게다.\n못 동남쪽 붉은 지붕 여관에서 주인 오사에게 말을 걸어 밤을 기다리렴."),
         setSw(SW_HARMA),
         say(HARMA, "그 전에 부탁 하나. 심문회가 썰매를 다 끌어가서\n고기 잡을 사람이 없어. 저 구멍에서 은빛 송어 한 마리만."),
         setSw(SW_Q5_TAKEN),
         narrate("잔 일 「첫째 아이의 고기」 — 얼음 구멍에서 은빛 송어를 낚아 하르마에게.", { context: "system" }),
       ] },
-      { name: "송어 기다림", conditions: [sw(SW_Q5_TAKEN)], commands: [say(HARMA, "구멍 앞에 서서 줄을 내리면 돼.\n첫째 아이처럼 기다리는 게 요령이지.")] },
+      { name: "송어 기다림", conditions: [sw(SW_Q5_TAKEN)], commands: [
+        say(HARMA, "구멍 앞에 서서 줄을 내리면 돼.\n첫째 아이처럼 기다리는 게 요령이지."),
+        say(HARMA, "밤을 기다리려면 못 동남쪽 붉은 지붕 여관으로 가렴.\n주인 오사에게 말을 걸면 돼. 송어는 나중에 가져와도 괜찮아."),
+      ] },
       { name: "송어", conditions: [sw(SW_Q5_FISH)], commands: [
         say(HARMA, "오, 은빛이구먼. 첫째 아이의 고기야.\n대답을 받은 아이는 물고기 한 마리를 받았거든."),
         item(FS2_TROUT, -1),
@@ -1838,7 +1841,10 @@ function frostford(project: Project, exec: Exec, hubId: string): void {
         say(HARMA, "우리 집 노야. 얼음 위에서 미끄러지지 말라고."),
         setSw(SW_Q5_DONE),
       ] },
-      { name: "끝", conditions: [sw(SW_Q5_DONE)], commands: [say(HARMA, "밤에 얼음 위로 나가 봐.\n…그 애 아들, 등 띄우는 손은 엄마랑 똑같아.")] },
+      { name: "끝", conditions: [sw(SW_Q5_DONE)], commands: [
+        say(HARMA, "밤에 얼음 위로 나가 봐.\n…그 애 아들, 등 띄우는 손은 엄마랑 똑같아."),
+        say(HARMA, "못 동남쪽 붉은 지붕 여관에서 주인 오사에게 말을 걸어 밤을 기다리렴."),
+      ] },
     ],
   });
   FS2_FROST.harma = (() => { const e = M(project, FS2_FROST_ID).events.find((v) => v.id === "ev_fs2_harma"); return e ? { x: e.x, y: e.y } : { x: work.x, y: work.y + 1 }; })();
@@ -1902,7 +1908,7 @@ function frostford(project: Project, exec: Exec, hubId: string): void {
       narrate("얼어붙은 못가의 나루 마을. 해가 진다. 굴뚝마다 연기가 가늘다."),
       say(SARAH, "서리나루다. 장작을 다 뺏겨서 연기가 저것뿐이야."),
       say(ELENA, "못가에 등이 줄지어 있어. …오늘 무슨 날인가?"),
-      say(ELENA, "저기 못 위… 구멍 앞에 할머니가 서 있어."),
+      say(ELENA, "저기 못 위… 구멍 앞에 할머니가 서 있어.\n먼저 저 할머니께 탑으로 가는 길을 물어보자."),
       setSw(SW_FROST_ARRIVE),
     ], { trigger: { kind: "auto" }, priority: "below" }),
     page("ev_fs2_frost_arrive_done", "끝", [sw(SW_FROST_ARRIVE)], [], { priority: "below" }),
