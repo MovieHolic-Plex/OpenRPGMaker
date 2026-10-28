@@ -2,7 +2,7 @@
 // 실제 헤드리스 런타임(`testing/sceneTestRunner.runSceneTest`, run_scene_test 도구와 같은 엔진)으로 걸어서 실행한다.
 //
 // 걷기는 런타임의 충돌 판정으로 BFS 하고, 전투는 러너가 결정적으로 푼다(seed 1, 첫 적을 계속 공격),
-// 선택지는 목표 명령이 든 보기를 고른다. 처음 실패한 목표를 맵·이벤트·명령 자리와 함께 보고한다.
+// 선택지는 목표 명령이 든 보기를 고르고, 증거 제시(presentItem)는 목표가 든 보기의 아이템을 낸다. 처음 실패한 목표를 맵·이벤트·명령 자리와 함께 보고한다.
 //
 // 러너는 매번 새 세션으로 처음부터 돈다 — 목표 하나를 붙일 때마다 누적 단계 전체를 다시 돌린다(작은 게임이면 수 초).
 
@@ -669,9 +669,12 @@ export function planCriticalPath(project: Project, target: CommandVisit, targetG
   return { goals, unresolved };
 }
 
-/** 페이지를 처음부터 목표 명령까지 실행할 때 고를 선택지 번호(길 밖 선택지는 0번). */
-function choiceSequence(visit: CommandVisit, caps?: ReadonlyMap<string, number>): number[] {
-  const seq: number[] = [];
+/** 선택지 번호, 또는 증거 제시(presentItem)에 낼 아이템(undefined 면 닫기). */
+type Answer = number | { readonly present: string | undefined };
+
+/** 페이지를 처음부터 목표 명령까지 실행할 때 고를 선택지 번호·낼 아이템(길 밖 선택지는 0번, 길 밖 증거 제시는 닫기). */
+function choiceSequence(visit: CommandVisit, caps?: ReadonlyMap<string, number>): Answer[] {
+  const seq: Answer[] = [];
   // 길 밖 선택지는 0번 — 단 목표가 호감 상한을 지녀야 하면(평범·혼자 엔딩, 호감 문턱 페이지에 덮이는 7일째 페이지) 그 호감을 올리지 않는 보기를 고른다.
   const fallbackKey = visit.page.event?.characterId?.trim() ?? "";
   const raises = (list: readonly RawCommand[]): boolean => list.some((command) =>
@@ -688,6 +691,9 @@ function choiceSequence(visit: CommandVisit, caps?: ReadonlyMap<string, number>)
         const index = pick && pick.segment.kind === "option" ? pick.segment.index : 0;
         seq.push(index);
         if (pick) zeroes(pick.list);
+      } else if (command.kind === "presentItem") {
+        seq.push({ present: undefined });
+        zeroes(childLists(command).find((child) => child.key === "cancelBranch")?.list ?? []);
       }
     }
   };
@@ -698,6 +704,12 @@ function choiceSequence(visit: CommandVisit, caps?: ReadonlyMap<string, number>)
     const segment = visit.segments[level];
     if (!command || !segment) return;
     if (segment.kind === "option" && command.kind === "choices") seq.push(segment.index);
+    if (command.kind === "presentItem") {
+      // 증거 제시 갈래 — 그 보기의 아이템을 낸다(추리 범인 대면·지목). 닫기·그 밖 갈래는 닫는다.
+      const options = Array.isArray(command.options) ? command.options as { itemId?: unknown }[] : [];
+      const itemId = segment.kind === "option" ? options[segment.index]?.itemId : undefined;
+      seq.push({ present: typeof itemId === "string" ? itemId : undefined });
+    }
     list = childLists(command).find((entry) => entry.key === childKey(segment))?.list ?? [];
   });
   return seq;
@@ -909,15 +921,28 @@ function tryCommit(driver: Driver, extra: SceneStep[]): { ok: true } | { ok: fal
 }
 
 const NO_PENDING = "대기 중 선택지가 없습니다";
+const NO_PENDING_PRESENT = "대기 중 아이템 제시가 없습니다";
 
 /** 조사·접촉 뒤 대기 중인 선택지를 고른다. 선택지가 더 없으면 멈춘다. */
-function resolveChoices(driver: Driver, sequence: readonly number[]): string | null {
+function resolveChoices(driver: Driver, sequence: readonly Answer[]): string | null {
   const pending = [...sequence];
   for (let guard = 0; guard < 12; guard += 1) {
-    const index = pending.shift() ?? 0;
+    const next = pending.shift() ?? 0;
+    if (typeof next === "object") {
+      const shown = tryCommit(driver, [{ kind: "present", ...(next.present ? { itemId: next.present } : {}) }]);
+      if (shown.ok) continue;
+      if (shown.reason.includes(NO_PENDING_PRESENT)) return null;
+      return shown.reason;
+    }
+    const index = next;
     const attempt = tryCommit(driver, [{ kind: "choose", index }]);
     if (attempt.ok) continue;
-    if (attempt.reason.includes(NO_PENDING)) return null;
+    if (attempt.reason.includes(NO_PENDING)) {
+      // 선택지가 아니라 증거 제시가 떠 있으면(계획에 없던 presentItem) 닫고 이어 간다.
+      const closed = tryCommit(driver, [{ kind: "present" }]);
+      if (closed.ok) continue;
+      return null;
+    }
     if (/out of range/u.test(attempt.reason) && index !== 0) {
       const fallback = tryCommit(driver, [{ kind: "choose", index: 0 }]);
       if (fallback.ok) continue;

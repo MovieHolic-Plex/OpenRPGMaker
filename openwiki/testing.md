@@ -2233,6 +2233,7 @@ dedicated exported player passed. Do not describe this as all browser checks gre
   ② 문턱 목표·되풀이 준비에 같은 이벤트 다른 페이지의 같은 쪽 세터를 형제(`Goal.siblings`)로 달고, 실행 때 지금 열린 페이지의 형제로 바꾼다. 지금 페이지에 세터가 없으면(7일째 고백 페이지) 부르지 않고 실패 — 엔딩을 «되풀이 준비» 로 터뜨리지 않는다.
   ③ 목표 상한(`targetCaps`): 같은 이벤트 뒤 페이지가 목표 페이지 조건 전부 + 문턱 하나(호감 ≥·변수 ≥/>)를 더 가지면 그 문턱 미만, 목표 triggerEnding 앞에 같은 길로 도는 triggerEnding 의 엔딩 호감 문턱 미만. 길 밖 선택지는 0번 대신 그 값을 올리지 않는 보기를 고른다(평범 엔딩을 고백 페이지가 덮거나 혼자 엔딩 앞에서 평범 엔딩이 터지지 않게).
   재생 `bun scripts/qa/assistant-v2/dayCycleReplay.mts <project.json>... --negatives --as-variable`: romance 엔딩 셋(regular·alone·together)이 각자 엔딩에 닿고, 반례(날 += 지움·호감 + 지움·스위치 끄기 지움)는 여전히 막힌다(호감을 지워도 혼자 엔딩은 정상 도달). `--as-variable` 은 호감을 변수 하나(일과 점수)로 바꾼 사본으로 변수형 다일 반복을 본다 — 엔딩 조건을 비우므로 혼자 엔딩 판은 조건 없는 평범 엔딩이 먼저 터진다(사본의 부산물). standin slice·errand 는 하루 안의 부탁·배달이라 다일 구조가 아니고, 바꾸기 전후 결과가 같다. 다른 장르 standin 9판·옛 연애 픽스처 15개도 결과 불변.
+- 증거 제시(`presentItem`, 2026-10-29 추리 사건): 목표가 증거 제시 보기 안에 있으면 그 보기의 아이템을 낸다(`choiceSequence` 의 `{present:itemId}`), 길 밖 증거 제시는 닫는다. 선택지 대신 증거 제시 창이 떠 있으면 닫고 이어 간다. 전에는 `choose` 가 「대기 중 선택지가 없습니다」로 끝나 증거 제시 갈래 속 목표를 못 채웠다.
 알려진 한계: `storeParty`/`recallParty` 로 바뀐 파티 구성은 자동 플레이가 모델링하지 않는다(세트 안 배우를 선행 조건으로 보지 않음), 다단계 보스·`oncePerBattle` 은 기존 전투 해결기(첫 적을 계속 공격)에 맡긴다.
 - `ct-stage-performance`(`scripts/qa/runtime/ct-stage-performance*`) — `author_stage_performance` 로 저작한 공연 컷신을 출하 플레이어로 본다(가사·합창 코너 자막, 조명 어두움, 끝난 뒤 색조 복구). 크로미움은 `unshare -rn` 안에서.
 
@@ -2374,6 +2375,9 @@ node scripts/runtime-qa.mjs --scenario whole-game-battle-jrpg --browser firefox 
 (magic) 첫 대사(흉상·이름표) → Esc 두 번으로 오프닝 컷신 건너뛰기 → 교장·사서 대화 → 기숙사 들어가기·나오기 → `setSwitch sw_0003` 뒤 천문탑 → 엘라 교수 대화 → 엔딩.
 (joseon) 첫 필드 → 감옥 들어가기·나오기 → 주막 안(거리에서 들어가는 문이 없어 순간이동) → 나오기. 문 이동은 `transferBeat`(문 앞 순간이동 → 화살표를 `currentMapId` 가 바뀔 때까지).
 magic 첫 필드 비트가 「Esc 두 번」 회귀를 잡는다 — 대사 창이 떠 있는 컷신에서 건너뛰기가 안 되면 6회 뒤에도 「건너뛰기」 가 남아 실패한다.
+
+추리판 `whole-game-mystery`(2026-10-29, `ai/v2/mysteryCase.ts` 로 세운 판): `MYS='<json>'`(무대·무죄·범인·지목 칸, 증거 아이템, 그 페이지 조건 스위치, 고르기 번호)는 `scripts/qa/assistant-v2` 의 임시 도우미처럼 고친 프로젝트에서 뽑는다.
+무대(용의자 셋) → 무죄 탐문(흉상·이름표·알리바이 증인) → 범인에게 증거 제시 창 → 맞는 증거 반응 → 지목 칸 범인 고르기 → 틀린 사람(엔딩 없음) → 범인 → 증거 제시 → 엔딩. `MYS_MODE=before` 는 고치기 전 판: 무대 → 지목 칸 → Enter 만으로 엔딩.
 
 목표 대상판 `whole-game-objective-target`(VM 측정 판 아무거나, 2026-10-29): `OBJ_APPROACH='{"x","y","face"}'`(시작 맵의 시작 목표 대상 곁 칸) 를 주면
 첫 필드(목표 대상 칸의 금빛 표시) → 대상 곁에서 바라봄(안내 「Z 조사 · 이름」) → 조사·대사 넘김 → 다음 목표 대상 표시를 찍는다.
