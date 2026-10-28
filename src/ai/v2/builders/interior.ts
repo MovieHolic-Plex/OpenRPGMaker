@@ -786,6 +786,31 @@ function cosyFor(kind: string, context: string): readonly string[] {
   return purpose ? COSY_BY_PURPOSE[purpose.id] ?? [] : COSY;
 }
 
+/**
+ * 구역 묶음 하나를 통째로 덮는 한 용도의 견본(2026-10-29): 모델이 감옥을 「감방 셋 + 복도(간수 자리)」 구역으로 쪼개면
+ * 방마다 방 종류 견본(cell 4×8·corridor)을 골라, 감방 줄과 간수 자리가 한 방에 짜인 감옥 견본(jail 7×8·11×9)을 쓰지 못했다(room-vig4 jail).
+ * 결정적 규칙: 장소 이름·테마가 그 용도를 말하고, 1층 구역이 2개 이상이며 모두 그 용도의 부분(종류 또는 목적 문장)이고, 고정 크기(keep)가 없고,
+ * 그 칩셋에 그 용도 견본이 있으면 — 1층 구역을 그 용도 방 하나로 합친다(주인공 물건은 합집합, 구역 셋 이상이면 큰 판). 위층 구역은 그대로.
+ */
+const COVERING_USES: readonly { readonly kind: string; readonly name: RegExp; readonly part: RegExp }[] = [
+  { kind: "jail", name: /감옥|뇌옥|감방|jail|prison|dungeon cell/iu, part: /^(jail|cell|corridor|guard_room|armory)$|감방|감옥|간수|경비|복도|철창|죄수|\bcell|guard|corridor|prison/iu },
+];
+export function coverZones(tilesetId: string, spec: PlaceSpec, zones: readonly ZoneSpec[], notes: string[]): readonly ZoneSpec[] {
+  const first = zones.filter((z) => (z.floor ?? 1) === 1);
+  if (first.length < 2 || first.some((z) => z.keep)) return zones;
+  const text = `${spec.name} ${spec.theme ?? ""}`;
+  for (const use of COVERING_USES) {
+    if (!use.name.test(text)) continue;
+    if (!first.every((z) => use.part.test(String(z.kind)) || use.part.test(z.purpose ?? ""))) continue;
+    if (!roomTemplates(tilesetId).some((t) => t.kind === use.kind)) continue;
+    const anchors = [...new Set(first.flatMap((z) => z.anchors ?? []))];
+    const merged: ZoneSpec = { id: first[0]!.id ?? use.kind, kind: use.kind, purpose: first.map((z) => z.purpose).filter(Boolean).join(" / ") || spec.name, ...(anchors.length ? { anchors } : {}), size: first.length >= 3 ? "large" : (spec.size ?? "medium"), floor: 1 };
+    notes.push(`구역 ${first.map((z) => z.id ?? z.kind).join("·")} 은 모두 ${use.kind} 의 부분이라 ${use.kind} 견본 한 방으로 지었다(감방 줄·간수 자리가 한 견본에 짜여 있다)`);
+    return [merged, ...zones.filter((z) => (z.floor ?? 1) !== 1)];
+  }
+  return zones;
+}
+
 export const INTERIOR_CARD = `[실내 interior] make_place({type:"interior", name, style?, size?, zones:[{kind, purpose, anchors?}], floors?}).
 - zones = 방 하나하나(칸막이로 나뉜 방). kind 낱말: tavern(선술집 홀)·kitchen·storeroom·cellar·bedroom·inn_room(객실)·study(서재)·library(서고)·living·dining·forge(대장간)·workshop·alchemy·chapel·treasury·armory·throne_room·great_hall·entrance·corridor·bathroom·cell. 한국어 낱말도 된다.
 - anchors = 그 방의 주인공 물건(낱말): 「큰 망원경」「벽난로」「바 카운터」「책장」「별자리표」「올라가는 계단」. 크면 「큰」을 붙인다. 함수가 부품 사전에서 찾아 빈 자리에 놓고, 못 찾으면 없다고 알려 준다.
@@ -828,7 +853,7 @@ export const interiorBuilder: PlaceBuilder = {
       if (done) return done;
       notes.push(`장소 견본 「${venue.id}」으로 짓지 못해 방 종류 견본으로 지었다`);
     }
-    const zones = spec.zones?.length ? spec.zones : [{ kind: spec.name, purpose: spec.name }];
+    const zones = spec.zones?.length ? coverZones(tilesetId, spec, spec.zones, notes) : [{ kind: spec.name, purpose: spec.name }];
     const scale = SCALE[spec.size ?? "medium"] ?? 1;
     const used = new Map<string, number>();
     const firstFloor = zones.filter((z) => !z.floor || z.floor === 1);
@@ -1044,8 +1069,11 @@ export const interiorBuilder: PlaceBuilder = {
       const inZone = (o: Obj) => { const r = rb.rooms.find((q) => q.id === room.id); return !r || (o.x >= r.x0 && o.x <= r.x1 && o.y >= r.y0 && o.y <= r.y1 + 1); };
       if (rb.objects.some((o) => o.id === part.id && inZone(o)) && !/계단|stair/iu.test(what)) { placed.push({ zone: room.id, what, id: part.id }); continue; }
       // 손으로 짠 견본은 같은 종류(이름 첫 낱말이 같은 가구: counter 1x1 ↔ counter 3x1)가 이미 있으면 놓은 것으로 친다 — 덧놓으면 검수된 통로를 막는다.
+      // 탁자·의자는 종류 묶음으로 본다(감옥 견본의 식탁 dining 3x1 이 있는데 「탁자」를 진열대 display 1x1 로 덧놓았다).
       const head = part.id.split(" ")[0]!;
-      if (settled && !/계단|stair/iu.test(what) && rb.objects.some((o) => o.id.split(" ")[0] === head && inZone(o))) { placed.push({ zone: room.id, what, id: part.id }); continue; }
+      const KIN = [/^(dining|desk|display|table|counter|work|lab)$/u, /^(chair|stool|bench|armchair|pew|sofa)$/u];
+      const same = (o: Obj) => { const h = o.id.split(/[ :]/u)[0]!; return h === head || KIN.some((k) => k.test(h) && k.test(head)); };
+      if (settled && !/계단|stair/iu.test(what) && rb.objects.some((o) => same(o) && inZone(o))) { placed.push({ zone: room.id, what, id: part.id }); continue; }
       // 올라가는 계단: 이 방이 맨 북쪽 바깥 벽에 닿지 않으면(위에 다른 방) 맨 북쪽 방 벽에 단다 — 칸막이 속으로 오르는 계단은 틀린 그림이다.
       const isUp = part.stairs === "up" || /stairs up/u.test(part.id);
       const top = Math.min(...rb.rooms.map((r) => r.y0));
