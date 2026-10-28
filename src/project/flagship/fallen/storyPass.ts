@@ -120,7 +120,7 @@ function hanelAsk(obs: GameMap): void {
 /** 브람 — 「누굴 부르는 목소리」를 듣고 카엘이 하넬의 말을 떠올린다. */
 function bramLines(forest: GameMap): void {
   const bramId = `ev_${FS_PREFIX}_bram`;
-  const at = findLine(forest, "사람 목소리도 들렸다", bramId);
+  const at = findLine(forest, "사람 목소리도 들리더군", bramId);
   at.list.splice(at.index + 1, 0,
     say(KAEL, "…안에 정말 누가 있나 봐."),
     say(BRAM, "갈 거면 서둘러라.\n그 목소리, 밤새 점점 잦아들더군."),

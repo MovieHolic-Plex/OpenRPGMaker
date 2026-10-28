@@ -1583,14 +1583,14 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
 
   // 떨어진 별을 열면 이리스가 깨어나 동료가 된다. 별빛 열쇠는 알 안에 있다 — 뚜껑이 열린 뒤 이리스가 건넨다.
   // 장 구성기 기본값인 「풀이 칸 바닥을 풀숲으로 바꾸기」(changeTile)는 그을린 흙 위에 풀 한 칸을 남겨 뺀다.
-  const podOpened = findTextList(M(ids.forest), "치익— 관이 열리고");
+  const podOpened = findTextList(M(ids.forest), "치익. 관이 열린다.");
   if (!podOpened) throw new Error("[fallen-star] 떨어진 별 조사 대사를 찾지 못했다");
   const podList = podOpened.list;
   let irisFacingBack: Command | undefined;
   const keyAt = podList.findIndex((c) => c.kind === "changeItem" && (c as { itemId?: string }).itemId === FS_STAR_KEY_ITEM);
   const keyGain = keyAt >= 0 ? podList.splice(keyAt, 2)[0]! : ({ kind: "changeItem", itemId: FS_STAR_KEY_ITEM, op: "+=", amount: 1 } as Command);
   for (let i = podList.length - 1; i >= 0; i -= 1) if (podList[i]!.kind === "changeTile") podList.splice(i, 1);
-  const opened = podList.findIndex((c) => c.kind === "text" && String((c as { body?: string }).body).includes("치익— 관이 열리고"));
+  const opened = podList.findIndex((c) => c.kind === "text" && String((c as { body?: string }).body).includes("치익. 관이 열린다."));
   // 8-5 이리스 깨어남 — 한 박스 한 감정. 가까이 오면 움츠리고(몸을 돌렸다 돌아본다), 손을 내밀고, 처음 땅을 밟는다.
   const irisRoute = (moves: Array<{ kind: "turn"; dir: string }>): Command =>
     ({ kind: "moveEvent", eventId: `ev_${FS_PREFIX}_iris_field`, route: { moves, repeat: false, wait: true, skippable: true } } as unknown as Command);
