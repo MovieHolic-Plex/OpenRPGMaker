@@ -97,8 +97,13 @@
   --shadow-pop: 0 4px 12px rgba(15, 23, 42, 0.08), 0 12px 32px rgba(15, 23, 42, 0.10);
   --shadow-modal: 0 8px 24px rgba(15, 23, 42, 0.10), 0 24px 64px rgba(15, 23, 42, 0.14);
 
-  --focus-ring: 0 0 0 2px rgba(74, 87, 214, 0.45);
-  --focus-outline: 2px solid var(--accent);
+  /* 포커스 표시(HIG C-01·C-108) — 불투명 accent 2px. 45% 알파였을 때 툴바 바탕 위 대비가 1.97:1 이라
+     호버와 구별되지 않았다. accent 는 --bg-base 위 5.44:1 이다. 링(box-shadow)을 쓰는 규칙과
+     outline 을 쓰는 규칙이 같은 색·굵기를 낸다. */
+  --focus-color: var(--accent);
+  --focus-ring: 0 0 0 2px var(--focus-color);
+  --focus-outline: 2px solid var(--focus-color);
+  --focus-offset: 2px;
 
   --transition-fast: 120ms ease;
   --transition-med: 160ms ease;

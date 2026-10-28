@@ -8,6 +8,13 @@
     color-scheme: light;
   }
 
+  /* 공용 포커스 표시(HIG C-01·C-108) — 브라우저 기본 1px 링 대신 앱 전체가 같은 2px accent 링을 쓴다.
+     표면이 자기 링(box-shadow: var(--focus-ring))을 그리는 곳은 그 규칙이 이긴다 — 같은 토큰이라 색·굵기가 같다. */
+  :focus-visible {
+    outline: var(--focus-outline);
+    outline-offset: var(--focus-offset);
+  }
+
   body {
     font-family: var(--font-ui);
     -webkit-font-smoothing: antialiased;
