@@ -62,6 +62,18 @@ v1 의 `script_cutscene` 비트로 옮긴다(`events.ts`).
 - **오프닝 「없음」은 오진이었다**: 저장본은 애니메틱을 `meta.oprnCinematicTimelines` 캡슐에 넣고 `system.opening` 에는 정지 그림 대체본을 둔다. 내보낸 JSON 을 `decodeCinematicWire` 없이 읽으면 오프닝이 한 장뿐으로 보인다.
 - **자동 플레이 부딪힘 문(J97, #3740)**: 장면 실행기가 막힌 문 그림 칸의 same 층 접촉 이벤트를 부딪힘으로 연다(런타임과 같다).
 
+## 게임 조립 기본값 — 타이틀·오프닝을 청사진에 맞춘다 (2026-10-28 스위트 조립 장부)
+
+방탈출 세 판(flash·argon·terra)의 타이틀이 편집기 기본 눈 덮인 산촌 + 「A NEW ADVENTURE / 이야기가 시작되는 곳」, 오프닝은 기본 「강을 낀 왕국」이었다.
+고르기를 모델에 맡기지 않는다 — `src/project/blueprintAssembly.ts` 의 `applyBlueprintAssembly` 가 청사진(`project.gameBlueprint`)으로 결정적으로 깐다.
+
+- **부르는 곳**: `write_blueprint`(모델·설계자 청사진 둘 다) 직후, 그리고 게임 전체 요청의 끝맺음 관문 직전(`scripts/lib/assistantV2Runtime.ts` afterMain, 체크포인트 `blueprint_assembly`). 두 번 불러도 같다.
+- **바꾸는 것(아무도 고르지 않은 값만)**: 기본 제목 → 청사진 제목 · 타이틀 배경이 편집기 기본(`oprn-title-field`)·부적합 스틸·하늘만 있는 배경 층(`oprn-pano-night` 등)·이야기에 없는 풍토(눈·사막·바다)면 청사진 장르·목표·요청·장소 낱말로 고른 번들 그림(`pickTitleArtForStory` — 방탈출·추리 → `horror-mystery-blue-gallery` 빈 방, 공포 → 초상화 복도 등) · 로고 질감·부제가 없으면 부제 「장르 · 장소」(기본 문구를 숨긴다) · 그림 장면이 기본 왕국 오프닝뿐이면 오프닝을 끈다.
+- **안 바꾸는 것**: 생성·업로드 그림, 연애 키아트, 저작자가 쓴 부제·로고 질감. 맞는 번들 그림이 없는 시대·장르(조선·무협·몬스터 수집, 마법 학교처럼 낱말이 안 맞는 것)는 그림을 고르지 않는다 — 출하 검사 `title-image`·`title-off-premise` 가 그대로 짚는다.
+- **격자선 스틸**: `oprn-still-manor-night`(저택 회랑) 그림에 약 78px 간격 격자선이 박혀 있어 `suitableForOpening:false` 로 뺐다(오프닝 프리셋 두 곳도 다른 스틸로). 고친 그림이 오면 되돌린다.
+- **시간대 어긋남**: 출하 막힘 `assembly-time-mismatch` — 청사진(제목·목표·첫 단계), 타이틀 부제, 오프닝 첫 «지금» 장면(「…전」「그날」 같은 회상 장면은 뺀다)의 시간(아침·낮·저녁·밤)이 두 칸 이상 어긋나면 막는다(부제 「첫날 밤」 vs 오프닝 「입학식 날 아침」).
+- **도구 인자 관대화**: `set_opening` 은 `scenes` 가 필수가 아니다 — `{enabled:false}` 는 지금 장면을 둔 채 끄고, 장면 하나를 객체로 보내도 받으며, 장면 없이 꺼져 있던 오프닝에 새 장면을 주면 켠다. `"false"` 글자도 받는다(argon 「같은 인자 모양 오류 7번」). `set_title_screen` 은 `bgm:`·`picture:` 머리를 떼고 대소문자를 맞추며, `backgroundResourceId:""` 는 청사진 그림으로 바꾼다(지우기만 하면 시스템 기본 눈 마을이 다시 나왔다). 없는 id·못 쓰는 그림 오류는 청사진 그림 id 를 한 줄로 알려 준다.
+
 ## 켜는 법
 
 - 편집기 주소 `?assistant=v2`, 또는 `localStorage['oprn:assistant-v2'] = '1'`(`src/ai/v2/switch.ts`). `?assistant=v1` 이나 `'0'` 이면 끈다. **기본은 v1** — 기본을 바꾸는 것은 사용자 결정이다.

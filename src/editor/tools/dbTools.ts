@@ -95,6 +95,7 @@ import { assertPartyActorReferences } from "./partyActorReferences";
 import { resolveEventPlacement } from "./eventTools";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
 import { unsuitableOpeningStillMessage } from "@/assets/openingStillMoods";
+import { pickBlueprintTitleArt } from "@/project/blueprintAssembly";
 import { troopBalanceWarnings } from "./troopBalanceCheck";
 import { expandShortParameterCurves } from "./parameterCurveInput";
 import { BATTLE_BACKDROP_ID_HINT } from "@/assets/battleSceneryCatalog";
@@ -2689,13 +2690,21 @@ function parseTitleIntro(value: unknown): TitleIntroSettings {
  * 「참조 검증 실패 … backgroundResourceId 가 존재하지 않습니다」 로 **변경 전체**를 되돌려 제목·음악까지 날아갔다
  * (추리 도그푸딩 gen: 지어낸 easyrpg-backdrop-room-1).
  */
-function requireTitleResource(draft: Project, field: string, id: string, kind: "picture" | "bgm" | "charset"): string {
+/** 「bgm:easyrpg-music-…」「picture:…」처럼 종류 머리를 붙여 보낸 id 에서 머리를 뗀다(2026-10-28 deepseek 방탈출). */
+function stripResourceKindPrefix(raw: string): string {
+  return raw.trim().replace(/^(?:bgm|music|se|sound|picture|pictures|image|backdrop|title|resource|charset)\s*[:/]\s*/iu, "");
+}
+
+function requireTitleResource(draft: Project, field: string, id: string, kind: "picture" | "bgm" | "charset", hint = ""): string {
   const known = collectResourceIds(draft);
   if (known.has(id)) return id;
+  const lower = id.toLowerCase();
+  const sameIgnoringCase = [...known].find((candidate) => candidate.toLowerCase() === lower);
+  if (sameIgnoringCase) return sameIgnoringCase;
   const stem = id.split(/[-_]/u).slice(0, 2).join("-");
   const near = [...known].filter((candidate) => stem && candidate.startsWith(stem)).slice(0, 6);
   throw new ToolError(
-    `${field} '${id}' 는 없는 리소스입니다.${near.length > 0 ? ` 비슷한 실제 id: ${near.join(", ")}.` : ""} list_resources(kind:"${kind}") 로 실제 id 를 찾아 넣거나 이 필드를 빼세요.`,
+    `${field} '${id}' 는 없는 리소스입니다.${hint}${near.length > 0 ? ` 비슷한 실제 id: ${near.join(", ")}.` : ""} list_resources(kind:"${kind}") 로 실제 id 를 찾아 넣거나 이 필드를 빼세요.`,
     { code: "invalid-args" },
   );
 }
@@ -2926,18 +2935,28 @@ const setTitleScreen: ToolDefinition = {
       };
     }
 
+    // 청사진(게임 장르·장소)에 맞는 번들 그림 — 빈 배경·못 쓰는 그림·없는 id 를 받았을 때 고칠 방법 한 줄로 쓴다.
+    const blueprintArt = pickBlueprintTitleArt(draft);
+    const artHint = blueprintArt ? ` 이 게임(청사진)에는 backgroundResourceId:'${blueprintArt.id}'(${blueprintArt.name})가 맞다.` : "";
     if (typeof args.backgroundResourceId === "string") {
-      const background = args.backgroundResourceId.trim();
+      const background = stripResourceKindPrefix(args.backgroundResourceId);
       if (background) {
         const banned = unsuitableOpeningStillMessage(background, "backgroundResourceId");
-        if (banned) throw new ToolError(banned, { code: "invalid-args" });
-        current.backgroundResourceId = requireTitleResource(draft, "backgroundResourceId", background, "picture");
+        if (banned) throw new ToolError(blueprintArt ? `backgroundResourceId '${background}' 는 타이틀에 못 쓰는 그림이다 —${artHint}` : banned, { code: "invalid-args" });
+        current.backgroundResourceId = requireTitleResource(draft, "backgroundResourceId", background, "picture", artHint);
+      } else if (blueprintArt) {
+        // 빈 값 = «지금 그림을 치워 달라». 지우기만 하면 시스템 기본 그림(눈 덮인 산촌)이 다시 나온다(2026-10-28 argon 방탈출) — 청사진 그림으로 바꾼다.
+        current.backgroundResourceId = blueprintArt.id;
+        current.backgroundFit ??= "cover";
+        labelNotes.push(`배경을 비우면 기본 눈 마을 그림이 나와 청사진에 맞는 「${blueprintArt.name}」(${blueprintArt.id})로 바꿨다`);
+      } else {
+        delete current.backgroundResourceId;
+        if (draft.system.titleResourceId) labelNotes.push(`배경을 비워 시스템 기본 그림(${draft.system.titleResourceId})이 나온다 — 다른 그림은 list_resources{kind:'backdrop'} 에서 골라 backgroundResourceId 로 준다`);
       }
-      else delete current.backgroundResourceId;
     }
 
     if (typeof args.musicResourceId === "string") {
-      const music = args.musicResourceId.trim();
+      const music = stripResourceKindPrefix(args.musicResourceId);
       if (music) current.musicResourceId = requireTitleResource(draft, "musicResourceId", music, "bgm");
       else delete current.musicResourceId;
     }

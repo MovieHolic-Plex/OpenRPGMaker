@@ -1223,6 +1223,8 @@ Animal1 #0 은 주황 코기 **강아지**다(2026-10-20 정정 — 「주황 �
     `resourceId`(image/video 필수)·`motion`(image 전용 `none/fade/pan/zoom`)·`narrationAudioResourceId`.
     장면 100개 상한, 빈 id·중복 id·없는 리소스 id·종류에 맞지 않는 필드(`text`의 `resourceId`, `video`의 `motion`)를 거부한다.
     `enabled` 생략 시 기존 값 유지(없던 시퀀스면 true) — 꺼진 채 장면만 쌓이면 warning 으로 알린다.
+    2026-10-28: `scenes` 는 필수가 아니다 — 생략하면 지금 장면을 두고 켜고 끄기·음악만 바꾼다(`{enabled:false}` = 끄기).
+    장면이 없던(또는 비어 있던) 오프닝에 새 장면을 주며 `enabled` 를 빼면 켠다. `"true"/"false"` 글자도 받는다(`openwiki/assistant-v2.md` 「게임 조립 기본값」).
   - `remove_opening`(write) — 시퀀스 자체를 제거(장면 일부 삭제는 2026-09-14 이후 `edit_opening(op:"remove")`).
   - `list_opening_media`(read) — `kind:"image"|"movie"|"sound"` 후보. 이미지 장면은 DB 이미지 슬롯과 같은 목록을 쓴다
     (2026-09-14부터 그림은 `still` 카탈로그, `kind:"music"` 추가 — 위 절 참조).

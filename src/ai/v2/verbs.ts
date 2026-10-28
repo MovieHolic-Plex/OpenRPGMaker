@@ -4,6 +4,7 @@
 import { flattenWrapperTool } from "./flatWrapper";
 import type { PiToolShape, PiToolExecResult } from "@/ai/piAgent/toolAdapter";
 import { shipBlockers, wantsWholeGame } from "./shipChecks";
+import { applyBlueprintAssembly } from "@/project/blueprintAssembly";
 import { WRITE_BLUEPRINT_SCHEMA, blueprintDesignerFromEnv, blueprintProgressNote, designBlueprint, parseBlueprintArgs, walkBlueprint } from "./blueprint";
 import { projectBrief } from "./prompt";
 import type { PiAssistantV2Env } from "./env";
@@ -425,12 +426,16 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     return designBlueprint((messages, signal) => env.roleChat!(designer, messages, signal), String(task ?? ""), projectBrief(env.ctx.project, env.ctx.currentMapId), env.signal);
   })() : undefined;
   let designerNoted = false;
+  const noteAssembly = (applied: string[]): void => {
+    if (applied.length) env.emit({ type: "execution_status", name: "v2.assembly", ok: true, summary: `청사진 조립 기본값: ${applied.join(" · ")}` });
+  };
   const blueprintGate = async (): Promise<{ ok: false; summary: string } | undefined> => {
     if (env.ctx.project.gameBlueprint || !wantsWholeGame(String(task ?? ""))) return undefined;
     if (designed) {
       const result = await designed;
       if ("blueprint" in result) {
         env.ctx.project.gameBlueprint = result.blueprint;
+        noteAssembly(applyBlueprintAssembly(env.ctx.project));
         await env.checkpoint("write_blueprint");
         env.emit({ type: "execution_status", name: "v2.blueprint", ok: true, summary: `설계자 청사진 ${result.blueprint.steps.length}단계` });
         return { ok: false, summary: `설계자가 이 게임의 청사진을 썼다 — 이 명세는 짓지 않았다. 청사진의 장소·이벤트 이름 그대로 다시 부른다.\n${walkBlueprint(env.ctx.project).lines.join("\n")}\n${result.blueprint.steps.map((st) => `${st.id} 「${st.place}」 「${st.event}」: ${st.action} → ${st.gives}`).join("\n")}` };
@@ -463,9 +468,11 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
         return text({ ok: true, summary: `청사진이 이미 같은 내용이다 — 다시 쓰지 않았다(${session.blueprintRewrites}번째). write_blueprint 를 또 부르지 않는다. ${walked.blockers.length ? "다음: build_blueprint_path 를 불러 청사진 단계대로 이벤트·조건·엔딩 호출을 짓는다." : "경로가 이어져 있다 — 남은 일(장소 꾸미기·대사)을 한다."}`, path: walked.lines, open: walked.blockers.slice(0, 6).map((b) => b.message) });
       }
       env.ctx.project.gameBlueprint = parsed.blueprint;
+      const assembled = applyBlueprintAssembly(env.ctx.project);
+      noteAssembly(assembled);
       const walked = walkBlueprint(env.ctx.project);
       await env.checkpoint("write_blueprint");
-      return text({ ok: true, summary: `청사진을 걸었다(${parsed.blueprint.steps.length}단계). 장소를 make_place 로 지은 뒤 build_blueprint_path 한 번으로 단계별 이벤트·조건·엔딩 호출을 짓는다(이벤트를 upsert_event 로 하나씩 쓰지 않는다).`, path: walked.lines, open: walked.blockers.slice(0, 8).map((b) => b.message) });
+      return text({ ok: true, summary: `청사진을 걸었다(${parsed.blueprint.steps.length}단계). 장소를 make_place 로 지은 뒤 build_blueprint_path 한 번으로 단계별 이벤트·조건·엔딩 호출을 짓는다(이벤트를 upsert_event 로 하나씩 쓰지 않는다).${assembled.length ? ` 청사진에 맞춰 타이틀 기본값을 바꿨다: ${assembled.join(" · ")}.` : ""}`, path: walked.lines, open: walked.blockers.slice(0, 8).map((b) => b.message) });
     },
   };
 
