@@ -102,6 +102,7 @@ import { isGenrePresetBriefRequest } from "@/ai/genrePresetBrief";
 import { genId } from "@/util/id";
 import { createPendingWorkTracker } from "@/util/pendingWork";
 import { toast } from "@/util/toast";
+import { modelDisplayName } from "@/ai/modelDisplayName";
 import {
   AssistantSession,
   AGENT_RUN_MAX_TOTAL_STEPS,
@@ -3313,7 +3314,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     const model = config.model.trim();
     if (model.length === 0) return null;
     const level = AUTONOMY_LEVELS.find((entry) => entry.id === config.autonomyLevel);
-    return level ? `${model} · ${level.label}` : model;
+    const name = modelDisplayName(model);
+    return level ? `${name} · ${level.label}` : name;
   };
   // 지시줄 effort 셀렉트(자율성·추론 강도) — 설정 모달을 열지 않고 바로 고른다.
   // 자율성은 resolveAutonomy 프리셋으로 추론·작업모드까지 함께 저장한다(설정 모달 다이얼과 같은 동작).
@@ -3970,7 +3972,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   };
   const composerMenu = createAiActionMenuItems({
     meta: {
-      compact: () => contextMeter.button.textContent?.trim() || null,
+      // 값(%)이 있을 때만 메타를 붙인다 — 세션 전의 빈 자리표시를 메뉴에 올리지 않는다(C-71).
+      compact: () => { const text = contextMeter.button.textContent?.trim() ?? ""; return /\d/u.test(text) ? text : null; },
       tools: () => String(filterToolCategories("").reduce((count, category) => count + category.tools.length, 0)),
       settings: () => modelChipLabel(),
     },

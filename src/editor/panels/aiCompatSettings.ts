@@ -126,11 +126,11 @@ export function renderAiCompatSettings(options: AiCompatSettingsOptions): AiComp
     dataset: { testid: "ai-compat" },
     children: [
       el("div", { class: "ai-compat-head", children: [
+        // 절 제목·서버 목록은 위 「사용자 지정 연결」 절이 한 번 말한다 — 여기서 되풀이하지 않는다(C-71).
         el("div", { class: "ai-compat-head-copy", children: [
-          el("strong", { text: "사용자 지정 (OpenAI 호환)" }),
           el("span", {
             class: "ai-config-help",
-            text: "CLIProxyAPI·LiteLLM·Ollama·LM Studio·vLLM·OpenRouter·OpenAI 같은 Chat Completions 서버. 키는 이 PC의 연결 서비스에만 저장되고 브라우저에는 남지 않아요.",
+            text: "키는 이 PC의 연결 서비스에만 저장되고 브라우저에는 남지 않아요.",
           }),
         ] }),
         addButton,
