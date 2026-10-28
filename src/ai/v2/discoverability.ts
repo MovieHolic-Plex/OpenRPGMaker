@@ -318,7 +318,15 @@ export function refreshObjectiveRoutes(project: Project): number {
             const gated = [...holders.keys()].map((id) => find(id)).find((ref) => ref && bare(String(ref.event.name ?? "")).length >= 2
               && (plainTail ? bare(plainTail[1]!) === bare(String(ref.event.name)) : bare(base).includes(bare(String(ref.event.name)))));
             const holder = holderFor(gated);
-            if (!gated || !holder) continue;
+            if (!gated || !holder) {
+              // 꼬리 없는 목표가 글에 나온 이벤트·장소로 「어디」를 붙일 수 있으면 붙인다 — 출하 검사 objective-missing 과 같은 판정(withWhere).
+              // 2026-10-29 vm1 argon jrpg: 보스에 「마왕」 이름이 붙은 뒤 「마왕과 최후의 결전을 벌여 승리한다」(동굴의 문 이벤트) 가
+              // 「(시작 마을 입구: 남쪽 → 마왕의 방 · 마왕)」 을 붙일 수 있게 됐는데, 위 가지는 잠긴 이벤트 이름을 담은 글만 고쳐 출하 검사가 남았다.
+              if (plainTail) continue;
+              const updated = withWhere(project, map.id, message, undefined, origin);
+              if (updated !== message) { fields.message = updated; changed += 1; }
+              continue;
+            }
             const holderName = String(holder.event.name ?? "");
             // 글이 잠긴 이벤트 이름을 담으면(런타임은 글에 나온 더 긴 이름을 고른다) 전투를 부르는 글로 바꾼다.
             const text = bare(base).includes(bare(String(gated.event.name))) ? `${holderName}${josa(holderName, "을/를")} 쓰러뜨리자` : base;
