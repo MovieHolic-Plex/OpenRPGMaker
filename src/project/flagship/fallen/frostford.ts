@@ -659,7 +659,8 @@ function iceEscape(project: Project, exec: Exec): void {
   }));
   if (!Number.isFinite(stairsD)) throw new Error("[fallen-star frostford] 섬에서 북쪽 계단까지 얼음길이 없다");
   FS2_LAKE.pathCells = stairsD;
-  const SPEED = 5.4, LEAD = 2;
+  // 첫 붕괴까지 3초 — 2초면 마지막 대사를 닫고 첫 걸음을 떼기 전에 발밑이 꺼졌다(r2 녹화).
+  const SPEED = 5.4, LEAD = 3;
   const atOf = (d: number) => LEAD + Math.floor(d / SPEED);
   const seconds = atOf(stairsD) + 3;
   FS2_LAKE.seconds = seconds;

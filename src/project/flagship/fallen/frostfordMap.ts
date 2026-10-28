@@ -510,13 +510,13 @@ export function paintFrostford(project: Project, exec: Exec, mapId: string, name
   // 앞쪽에 금으로 예고된 갈라짐 셋 — 주인공이 닿기 조금 전에 꺼져 비켜 가게 한다(그 갈래가 통째로 막히지 않게 두 줄은 남긴다).
   const iceAt = (x: number, y: number) => ice.has(idx(x, y));
   const preCracks: { cells: Cell[]; atSecond: number }[] = [];
-  if (iceAt(13, 20) && iceAt(14, 20) && iceAt(13, 21) && iceAt(14, 21)) preCracks.push({ cells: [{ x: 13, y: 20 }, { x: 14, y: 20 }], atSecond: 2 });
+  if (iceAt(13, 20) && iceAt(14, 20) && iceAt(13, 21) && iceAt(14, 21)) preCracks.push({ cells: [{ x: 13, y: 20 }, { x: 14, y: 20 }], atSecond: 3 });
   for (let x = 17; x <= 25; x += 1) {
     const rows = [14, 15, 16, 17].filter((y) => iceAt(x, y) && iceAt(x + 1, y));
-    if (rows.length === 4) { preCracks.push({ cells: [{ x, y: 14 }, { x: x + 1, y: 14 }, { x, y: 15 }, { x: x + 1, y: 15 }], atSecond: 4 }); break; }
+    if (rows.length === 4) { preCracks.push({ cells: [{ x, y: 14 }, { x: x + 1, y: 14 }, { x, y: 15 }, { x: x + 1, y: 15 }], atSecond: 5 }); break; }
   }
   for (let x = 26; x <= 29; x += 1) {
-    if ([x, x + 1].every((c) => iceAt(c, 10) && iceAt(c, 11))) { preCracks.push({ cells: [{ x, y: 10 }, { x: x + 1, y: 10 }], atSecond: 7 }); break; }
+    if ([x, x + 1].every((c) => iceAt(c, 10) && iceAt(c, 11))) { preCracks.push({ cells: [{ x, y: 10 }, { x: x + 1, y: 10 }], atSecond: 8 }); break; }
   }
   return {
     width: W, height: H, entry, gateDoor, gateFront, stairsTop, stairsBottom, ice, cracks, island, shrine, valen, shrineFront,
