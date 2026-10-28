@@ -4,7 +4,8 @@
 import { flattenWrapperTool } from "./flatWrapper";
 import type { PiToolShape, PiToolExecResult } from "@/ai/piAgent/toolAdapter";
 import { shipBlockers, wantsWholeGame } from "./shipChecks";
-import { WRITE_BLUEPRINT_SCHEMA, parseBlueprintArgs, walkBlueprint } from "./blueprint";
+import { WRITE_BLUEPRINT_SCHEMA, blueprintDesignerFromEnv, blueprintProgressNote, designBlueprint, parseBlueprintArgs, walkBlueprint } from "./blueprint";
+import { projectBrief } from "./prompt";
 import type { PiAssistantV2Env } from "./env";
 import { roomSpecOf } from "@/editor/handInterior/builder";
 import { createBuildRun, type RecordingBuildRun } from "./buildRun";
@@ -203,6 +204,7 @@ function withImages(payload: unknown, seen: Seen | undefined, maxImages = 2): Pi
 
 /** 쓰기 기록 하나: 시공 재생 단계를 실어 다음 체크포인트가 편집기에서 다시 튼다. */
 const recorded = new WeakMap<PiAssistantV2Env, Set<string>>();
+const BLUEPRINT_PROGRESS_VERBS = new Set(["make_place", "make_game", "edit_place", "add_people", "add_event", "add_scene", "author_puzzle_chain"]);
 function recordWrite(env: PiAssistantV2Env, run: RecordingBuildRun, toolCallId: string, name: string, args: unknown, ok: boolean, summary: string, data?: unknown): void {
   if (!recorded.has(env)) recorded.set(env, new Set());
   recorded.get(env)!.add(toolCallId);
@@ -401,14 +403,38 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
   };
 
   // 청사진 먼저(2026-10-28): 게임 하나를 만드는 요청이면 짓기 전에 write_blueprint 로 목표·핵심 경로·엔딩을 쓴다.
-  const blueprintGate = (): { ok: false; summary: string } | undefined => wantsWholeGame(String(task ?? "")) && !env.ctx.project.gameBlueprint
-    ? { ok: false, summary: "게임 하나를 만드는 요청이다 — 짓기 전에 write_blueprint 로 이 게임의 청사진(playerGoal·핵심 경로 steps·ending)을 먼저 쓴다. 그다음 청사진의 장소 이름 그대로 짓는다." }
-    : undefined;
+  // 설계자가 따로 정해진 실행(비교 C: Argon 설계 + Flash 실행)은 설계자가 처음에 한 번 쓰고, 실행 모델은 그 청사진대로 짓는다.
+  const needsBlueprint = wantsWholeGame(String(task ?? "")) && !env.ctx.project.gameBlueprint;
+  const designer = needsBlueprint ? blueprintDesignerFromEnv() : undefined;
+  const designed = designer && env.roleChat ? (() => {
+    env.emit({ type: "execution_status", name: "v2.blueprint", ok: true, summary: `설계자(${designer.model})가 청사진을 쓰는 중` });
+    return designBlueprint((messages, signal) => env.roleChat!(designer, messages, signal), String(task ?? ""), projectBrief(env.ctx.project, env.ctx.currentMapId), env.signal);
+  })() : undefined;
+  let designerNoted = false;
+  const blueprintGate = async (): Promise<{ ok: false; summary: string } | undefined> => {
+    if (env.ctx.project.gameBlueprint || !wantsWholeGame(String(task ?? ""))) return undefined;
+    if (designed) {
+      const result = await designed;
+      if ("blueprint" in result) {
+        env.ctx.project.gameBlueprint = result.blueprint;
+        await env.checkpoint("write_blueprint");
+        env.emit({ type: "execution_status", name: "v2.blueprint", ok: true, summary: `설계자 청사진 ${result.blueprint.steps.length}단계` });
+        return { ok: false, summary: `설계자가 이 게임의 청사진을 썼다 — 이 명세는 짓지 않았다. 청사진의 장소·이벤트 이름 그대로 다시 부른다.\n${walkBlueprint(env.ctx.project).lines.join("\n")}\n${result.blueprint.steps.map((st) => `${st.id} 「${st.place}」 「${st.event}」: ${st.action} → ${st.gives}`).join("\n")}` };
+      }
+      if (!designerNoted) { designerNoted = true; env.emit({ type: "execution_status", name: "v2.blueprint", ok: false, summary: result.error }); }
+    }
+    return { ok: false, summary: "게임 하나를 만드는 요청이다 — 짓기 전에 write_blueprint 로 이 게임의 청사진(playerGoal·핵심 경로 steps·ending)을 먼저 쓴다. 그다음 청사진의 장소 이름 그대로 짓는다." };
+  };
   const writeBlueprint: PiToolShape = {
     name: "write_blueprint", label: "게임 청사진", concurrency: "exclusive",
     description: "게임 하나를 짓기 전에 이 게임의 청사진(새 플레이어 목표 한 줄·시작부터 엔딩까지 핵심 경로·엔딩·장면마다 느낌)을 쓴다. 이미 있으면 통째로 바꾼다(실제 지은 이름에 맞출 때도). 결과로 지금 프로젝트에서 이 경로가 어디까지 이어지는지 돌려준다.",
     parameters: WRITE_BLUEPRINT_SCHEMA as unknown as PiToolShape["parameters"],
     async execute(_id, params) {
+      // 설계자 실행에서는 첫 청사진을 설계자가 쓴다 — 실행 모델의 초안은 설계자 청사진이 없을 때만 쓴다(이름 맞추기 다시 쓰기는 그 뒤에 허용).
+      if (designed && !env.ctx.project.gameBlueprint) {
+        const gate = await blueprintGate();
+        if (env.ctx.project.gameBlueprint) return text({ ok: true, summary: `설계자 청사진을 걸었다(네 초안 대신). ${gate?.summary ?? ""}` });
+      }
       const parsed = parseBlueprintArgs(params, String(task ?? ""));
       if ("error" in parsed) return text({ ok: false, summary: `청사진을 읽지 못했다: ${parsed.error}` });
       env.ctx.project.gameBlueprint = parsed.blueprint;
@@ -423,7 +449,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     description: "장소(실내·마을·던전·동굴·거리·집)를 명세 하나로 짓는다. 칸·좌표·타일 번호는 쓰지 않는다 — 함수가 짓고, 1배 그림·기계 검사·독립 비평 결과를 돌려준다.",
     parameters: { type: "object", properties: { spec: PLACE_SPEC_SCHEMA }, required: ["spec"] },
     async execute(id, params) {
-      const gate = blueprintGate();
+      const gate = await blueprintGate();
       if (gate) return text(gate);
       // 같은 요청 → 같은 맵을 막는다(2026-10-23 다양성: 역전 상점가가 v1·v2·4차·5차 모두 화소까지 같았다). 고치기는 기록된 명세의 salt 를 물려받는다.
       const raw = (params as { spec: PlaceSpec }).spec;
@@ -786,7 +812,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
       events: { type: "array", items: { ...eventItem, properties: { ...eventItem.properties, place: { type: "string", description: "장소 key" } }, required: [...eventItem.required, "place"] } },
     }, required: ["places"] } }, required: ["game"] },
     async execute(id, params) {
-      const gate = blueprintGate();
+      const gate = await blueprintGate();
       if (gate) return text(gate);
       const game = (params as { game: GameSpec }).game;
       const { order, warnings } = orderPlaces(game);
@@ -978,6 +1004,8 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     let result: PiToolExecResult;
     try { result = await tool.execute(id, params, signal); }
     catch (error) { result = text({ ok: false, summary: `${tool.name} 실패: ${error instanceof Error ? error.message : String(error)}` }); }
+    // 짓는 단계마다 청사진과 대조한 진행을 덧붙인다(2026-10-28) — 모델이 어느 항목을 구현했고 무엇이 남았는지 매번 본다.
+    if (BLUEPRINT_PROGRESS_VERBS.has(tool.name)) { const note = blueprintProgressNote(env.ctx.project); if (note) result = { ...result, content: [...result.content, { type: "text", text: note }] }; }
     if (!recorded.get(env)?.has(id)) {
       const first = result.content.find((c) => c.type === "text") as { text: string } | undefined;
       let parsed: { ok?: boolean; summary?: string } = {};

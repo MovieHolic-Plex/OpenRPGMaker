@@ -229,3 +229,46 @@ export function walkBlueprint(project: Project): BlueprintWalk {
   lines.push(`청사진 경로 ${bp.steps.length}단계: ${resolved.map((r) => `${r.step.id} ${r.map ? "맵✓" : "맵✗"}${r.ev ? "이벤트✓" : r.map ? "이벤트✗" : ""}`).join(" · ")} · 막힘 ${blockers.length}`);
   return { blockers, lines };
 }
+
+// ── 설계자(다른 모델)가 청사진을 쓰는 길 — 비교 C(Argon 설계 + Flash 실행) ──────────────────────
+
+export interface BlueprintDesigner { readonly provider: string; readonly model: string; readonly effort?: "low" | "medium" | "high" }
+/** OPRN_V2_BLUEPRINT_DESIGNER="provider|model|effort" — 시험 묶음에서만 켠다(제품 설정 칸이 아니다). */
+export function blueprintDesignerFromEnv(): BlueprintDesigner | undefined {
+  const raw = (globalThis as { process?: { env?: Record<string, string | undefined> } }).process?.env?.OPRN_V2_BLUEPRINT_DESIGNER;
+  if (!raw) return undefined;
+  const [provider, model, effort] = raw.split("|");
+  if (!provider || !model) return undefined;
+  return { provider, model, ...(effort === "low" || effort === "medium" || effort === "high" ? { effort } : {}) };
+}
+
+/** 설계자에게 청사진 JSON 하나를 받아 온다. 한 번 틀리면 틀린 이유를 그대로 붙여 한 번 더. */
+export async function designBlueprint(chat: (messages: readonly unknown[], signal?: AbortSignal) => Promise<string>, task: string, brief: string, signal?: AbortSignal): Promise<{ blueprint: GameBlueprint } | { error: string }> {
+  const system = [
+    "너는 RPG 편집기 조수의 설계자다. 사용자 요청으로 게임 하나의 청사진을 JSON 한 덩어리로만 쓴다(설명·코드 울타리 없이).",
+    BLUEPRINT_CARD,
+    `JSON 모양: ${JSON.stringify(WRITE_BLUEPRINT_SCHEMA)}`,
+    "장소는 이 편집기가 지을 수 있는 것(마을·거리·집·실내 방·던전·동굴)으로, 3~6곳 안에서. 핵심 경로는 3~8단계, 새 플레이어가 20분 안에 엔딩을 볼 크기로.",
+  ].join("\n");
+  let last = "";
+  for (let attempt = 0; attempt < 2; attempt++) {
+    const user = attempt === 0 ? `요청: ${task}\n\n${brief}` : `앞 답을 읽지 못했다: ${last}\n같은 요청으로 JSON 한 덩어리만 다시 쓴다.\n요청: ${task}`;
+    let reply = "";
+    try { reply = await chat([{ role: "system", content: system }, { role: "user", content: user }], signal); }
+    catch (error) { return { error: `설계자 호출 실패: ${error instanceof Error ? error.message : String(error)}` }; }
+    const body = reply.slice(reply.indexOf("{"), reply.lastIndexOf("}") + 1);
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch (error) { last = `JSON 이 아니다(${error instanceof Error ? error.message : String(error)})`; continue; }
+    const result = parseBlueprintArgs(parsed, task);
+    if ("blueprint" in result) return result;
+    last = result.error;
+  }
+  return { error: `설계자 청사진을 읽지 못했다: ${last}` };
+}
+
+/** 짓는 동사 결과 뒤에 붙이는 청사진 진행(매 단계가 청사진과 대조되게). */
+export function blueprintProgressNote(project: Project): string | undefined {
+  if (!project.gameBlueprint) return undefined;
+  const walked = walkBlueprint(project);
+  return ["[청사진 진행]", ...walked.lines, ...walked.blockers.slice(0, 4).map((b) => `- ${b.message}`)].join("\n");
+}
