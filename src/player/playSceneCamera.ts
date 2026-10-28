@@ -99,6 +99,21 @@ function snapCameraScrollToCanvasPixels(camera: Phaser.Cameras.Scene2D.Camera): 
 }
 
 /**
+ * 작은 맵을 화면에 꽉 차게 보여 줄 **정수** 캔버스 배율(2026-10-28). 맵 전체(북쪽 돌출 포함)가 화면 안에 다
+ * 들어가는 가장 큰 정수라 잘리는 곳이 없고, 세계 1px 이 캔버스 정수 px 이라 도트가 고르게 남는다.
+ * 화면보다 크거나 같은 맵은 1 이하가 나와 기존 배율(기본 시야)이 그대로 이긴다. 캔버스 밀도가 1 이면
+ * 320×240 의 8×9 방은 1 그대로다 — 그래서 createPlayGame 이 작은 방이 있는 프로젝트의 밀도를 올린다(smallMapFillDensity).
+ */
+export function smallMapFillZoom(camera: Pick<Phaser.Cameras.Scene2D.Camera, "width" | "height">, map: GameMap | undefined): number {
+  if (!map || !(camera.width > 0) || !(camera.height > 0)) return 0;
+  const tile = mapTileSize(map);
+  const overhang = Math.max(reliefTopOverhangPx(map, tile), normalizeVisualTopOverhangPx(map.visualTopOverhangPx) ?? 0);
+  const mapWidth = Math.max(tile, map.width * tile);
+  const mapHeight = Math.max(tile, map.height * tile + overhang);
+  return Math.floor(Math.min(camera.width / mapWidth, camera.height / mapHeight) + 1e-6);
+}
+
+/**
  * 카메라 경계는 **보이는 세계 크기**(canvas / zoom) 기준이다. 맵이 화면보다 작으면 가운데
  * 놓이게 여백을 두고, 크면 맵 가장자리에서 멈춘다. canvas 폭 그대로 쓰면 배율 ≠ 1 에서 여백이
  * 틀려 작은 맵이 한쪽으로 쏠리거나 큰 맵 밖의 검은 곳까지 스크롤된다.
@@ -326,7 +341,10 @@ function applyCameraZoom(scene: PlaySceneContext, zoom: number | undefined): voi
   if (zoom !== undefined && Number.isFinite(zoom) && zoom > 0) {
     authoredZooms.set(camera, Math.min(CAMERA_ZOOM_LIMITS.max, Math.max(CAMERA_ZOOM_LIMITS.min, zoom)));
   }
-  const next = (authoredZooms.get(camera) ?? 1) * runtimeMapViewZoom(scene);
+  const authored = authoredZooms.get(camera) ?? 1;
+  const base = authored * runtimeMapViewZoom(scene);
+  // 작은 방은 화면을 채우도록 정수 캔버스 배율까지 키운다. 연출이 멀리 보기(<1)를 걸었으면 그 뜻을 따른다.
+  const next = authored >= 1 ? Math.max(base, smallMapFillZoom(camera, scene.map)) : base;
   if (camera.zoom !== next) camera.setZoom(next);
   syncRuntimeCameraBounds(camera, scene.map);
 }

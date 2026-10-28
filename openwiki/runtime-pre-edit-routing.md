@@ -20,6 +20,21 @@ Phaser `preRender` 는 경계가 있으면 따라가기·패닝 뒤 clamp 를 �
 캐릭터 아래의 줄별 마스크·카메라 창 캐시·타일 제자리 수정 무효화·shutdown 정리는
 [sunlight-shadows.md](sunlight-shadows.md)를 읽는다. 통행/시야 계산과 독립이다.
 
+## 작은 방은 화면을 채운다 · 어둠 막은 맵 안에만 (2026-10-28)
+
+- **작은 맵 맞춤 배율.** `playSceneCamera.smallMapFillZoom` = 맵 전체(북쪽 돌출 포함)가 화면에 다 들어가는 가장 큰 **정수 캔버스 배율**.
+  `applyCameraZoom` 은 저작 배율 ≥ 1 이면 `max(기존 배율, 맞춤 배율)` 을 쓴다 — 화면보다 크거나 같은 맵은 맞춤이 1 이하라 시야가 그대로다.
+  연출이 멀리 보기(<1)를 걸면 그 뜻을 따른다. 320×240 의 8×9 방은 캔버스 밀도 1 에서 정수 확대가 안 되므로(1.67배) `createPlayGame` 이
+  타일 크기가 하나뿐인 프로젝트에 작은 맵이 있으면 밀도를 2·3 중 확대 합이 큰 쪽으로 올린다(`mapViewScale.smallMapFillDensity`,
+  섞인 프로젝트는 `playPixelDensity` 그대로). 밀도 3 이면 8×9 방이 캔버스 5px/세계 px(5/3 배)로 화면 높이를 채운다. 논리 해상도·DOM 은 그대로다.
+- **어둠 막.** `player/lighting.ts` 는 ambient 를 맵 사각 안에만 칠한다(`mapBounds` → `clip`) — 작은 방 바깥 여백이 베이지·회색 판이 되던 것.
+  밝은 막 색(상대 밝기 > 0.3)은 같은 색상의 어두운 색으로 낮추고 진하기를 0.35 로 묶는다(`lightingRules.effectiveDarkness`, 조수 VQA 그림
+  `ai/v2/vqaLighting.ts` 도 같은 식). ambient ≥ 0.6 인데 플레이어를 따라가는 빛이 없으면 플레이어 둘레 1.6칸을 0.6 만큼 걷어 낸다(`PLAYER_PRESENCE_LIGHT`).
+- 세이브 표지 빛무리(page.glow, ADD)는 밝은 바닥에서 흰 덩이가 되어 알파를 절반 남짓으로 낮췄다. 목표 줄(`zone-feedback-objective`)은
+  바뀐 직후 또렷하고 4초 뒤 0.4 로 가라앉는다(`zone-objective-settle`, 글이 바뀌면 다시 튼다) — 맞춤 확대로 방이 화면을 채우면 늘 책장을 덮었다.
+- 시작 칸에 늘 막는 보이는 물체(모든 쪽이 같은 층·겹침 금지·그림 있음)가 있으면 `playPreflight` 가 가장 가까운 빈 칸으로 옮긴다.
+- 증거: `~/z-project/assistant-whole-game/suite/ledger/evidence/camera/` (출하 player.html, 같은 게임 전/후).
+
 ## 내보낸 게임의 화면 배율 (2026-10-04 → 2026-10-20 개정)
 
 **2026-10-20 개정:** 배율은 프로젝트가 정한다 — `resolvePlaySurfaceScaleMode`(`src/project/playSurfaceScaleMode.ts`). 해상도를 저장한 프로젝트(새 기본 480×270)는

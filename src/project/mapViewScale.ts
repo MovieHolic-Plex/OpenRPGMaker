@@ -67,3 +67,51 @@ export function playPixelDensity(
   const cap = Math.floor(Math.min(MAX_CANVAS.width / resolution.width, MAX_CANVAS.height / resolution.height));
   return Math.max(1, Math.min(wanted, cap));
 }
+
+/** 작은 맵으로 보는 맵 — 화면에 이 배수 이상 남는 여백이 있어야 확대를 시도한다. */
+export const SMALL_MAP_FILL_MIN_RATIO = 1.25;
+
+/**
+ * 작은 맵(서재 8×9 같은 방)을 화면에 꽉 차게 키우기 위한 캔버스 밀도(2026-10-28).
+ *
+ * 왜: 320×240 화면에 16px 8×9 방은 가로 40%·세로 60% 만 차지하고 나머지는 검은 여백이었다(방탈출 단서가 너무 작다).
+ * 카메라를 1.67배로 당기면 세계 1px 이 캔버스 1~2px 로 들쭉날쭉해 도트가 뭉개진다. 그래서 캔버스 밀도 d 를 올려
+ * 「캔버스 배율 = 정수」로 키운다(밀도 3 이면 5/3 배 = 캔버스 5px). 화면 크기·논리 해상도·DOM 은 그대로다.
+ *
+ * 타일 크기가 하나뿐인 프로젝트에만 쓴다 — 섞인 프로젝트는 playPixelDensity 가 정한 밀도가 큰 칸 맵의 정수 배율을 지킨다.
+ * 작은 맵이 없으면 1(예전과 같다). 후보 2·3 중 작은 맵들이 얻는 확대 합이 큰 쪽, 같으면 작은 밀도.
+ */
+export function smallMapFillDensity(
+  project: ProjectMaps,
+  resolution: Readonly<PlayResolution>,
+  cameraZoom = 1,
+): number {
+  const reference = projectReferenceTileSize(project);
+  const zoom = Number.isFinite(cameraZoom) && cameraZoom > 0 ? cameraZoom : 1;
+  const ratios: number[] = [];
+  for (const map of Object.values(project.maps)) {
+    if (mapTileSize(map) !== reference) return 1;
+    const mapZoom = typeof map.cameraZoom === "number" && Number.isFinite(map.cameraZoom) && map.cameraZoom > 0 ? map.cameraZoom : zoom;
+    const ratio = Math.min(
+      resolution.width / mapZoom / Math.max(1, map.width * reference),
+      resolution.height / mapZoom / Math.max(1, map.height * reference),
+    );
+    if (ratio >= SMALL_MAP_FILL_MIN_RATIO) ratios.push(ratio);
+  }
+  if (ratios.length === 0) return 1;
+  const cap = Math.floor(Math.min(MAX_CANVAS.width / resolution.width, MAX_CANVAS.height / resolution.height));
+  let best = 1;
+  let bestGain = 0;
+  for (const density of [2, 3]) {
+    if (density > cap) break;
+    let gain = 0;
+    for (const ratio of ratios) gain += Math.floor(density * ratio + 1e-6) / density - 1;
+    if (gain > bestGain + 1e-6) {
+      best = density;
+      bestGain = gain;
+    }
+  }
+  // 밀도 1 로도 정수 확대가 되는 화면(480×270 의 6×5 방 등)은 그대로 둔다.
+  const plainGain = ratios.reduce((sum, ratio) => sum + Math.floor(ratio + 1e-6) - 1, 0);
+  return plainGain + 1e-6 >= bestGain ? 1 : best;
+}
