@@ -170,7 +170,7 @@ export function paintFrostford(project: Project, exec: Exec, mapId: string, name
   for (const c of island) lake.delete(c);
   // 미리 난 큰 균열(검은 물) 둘 — 굽이치는 한 칸(군데군데 두 칸) 금. 네 방향으로 이어져 있어 대각선으로 빠져나갈 틈이 없다.
   //   C1(17~19줄): x8 → 동쪽 기슭. 서쪽 끝만 지나갈 수 있다.
-  //   C2(12~14줄): 서쪽 기슭 → x25. 동쪽 끝만 지나갈 수 있다.
+  //   C2(12~14줄): 서쪽 기슭 → x27. 동쪽 끝만 지나갈 수 있다.
   // r3 까지는 두 줄 폭 띠가 세 칸마다 한 줄씩 어긋나 운하처럼 읽혔다(감독 r3).
   const cracks = new Set<number>();
   const nearIsland = (x: number, y: number) => island.has(idx(x, y + 1)) || island.has(idx(x, y - 1)) || island.has(idx(x + 1, y)) || island.has(idx(x - 1, y));
@@ -195,7 +195,7 @@ export function paintFrostford(project: Project, exec: Exec, mapId: string, name
     }
   };
   crackLine(8, W - 1, 17, 19, 3);
-  crackLine(25, 0, 12, 14, 7);
+  crackLine(27, 0, 12, 14, 7);
   const ice = new Set([...lake].filter((c) => !cracks.has(c)));
 
   // ── 2. 길·광장·부두 ───────────────────────────────────────────────────
