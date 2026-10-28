@@ -4,6 +4,8 @@ import { system2GaugeCssVars } from "@/assets/system2Sheet";
 import { transparentColorKeyDataUrl } from "@/assets/transparentColorKeyBackground";
 import { DEFAULT_RUNTIME_WINDOW_SKIN_ID, normalizeSystemWindowSkinId } from "@/project/databaseRecordModel";
 import type { Project, TitleBackgroundFit, TitleBackgroundRendering } from "@/project/types";
+import { openingMapViewMapId } from "@/project/openingMapView";
+import { renderMapViewCanvas } from "./mapBackgroundMapView";
 
 function resourceUrl(resourceId: string | undefined, project?: Project): string | undefined {
   return resolveAssetResourceUrl(resourceId, { project: project ?? store.getCurrent() }) ?? undefined;
@@ -38,6 +40,10 @@ export function applyTitleScreenBackground(
   if (resourceId) {
     node.dataset.titleResource = resourceId;
   }
+  const mapId = openingMapViewMapId(resourceId);
+  if (mapId && applyTitleMapView(node, resourceId!, mapId, project ?? store.getCurrent())) return;
+  delete node.dataset.titleMapView;
+  delete node.dataset.titleMapViewState;
   const url = resourceUrl(resourceId, project);
   if (url) {
     const fit = options?.fit ?? "stretch";
@@ -50,6 +56,41 @@ export function applyTitleScreenBackground(
   } else {
     node.style.backgroundImage = "";
   }
+}
+
+/**
+ * 타이틀 배경 「게임 속 맵 그대로」(map-view:<mapId>) — 그 맵의 타일 층을 원 크기로 그려 도트 그대로 화면을 덮는다(2026-10-28).
+ * 맞는 번들 그림이 없는 게임(방탈출·조선·마법 학교…)의 타이틀이 그 게임의 첫 장소가 된다 — 화풍이 게임과 같고 게임마다 다르다.
+ * 그리기는 비동기라 처음엔 검은 바탕이고, 다 그리면 그림을 깐다. 타이틀은 방향키마다 다시 그려지므로 맵 객체마다 결과를 담아 둔다.
+ */
+const titleMapViewUrls = new WeakMap<object, string | Promise<string | null>>();
+function applyTitleMapView(node: HTMLElement, resourceId: string, mapId: string, project: Project): boolean {
+  const map = project.maps[mapId];
+  if (!map) return false;
+  node.dataset.titleMapView = mapId;
+  node.style.backgroundColor = "#000";
+  node.style.backgroundSize = "cover";
+  node.style.backgroundRepeat = "no-repeat";
+  node.style.backgroundPosition = "center";
+  node.style.imageRendering = "pixelated";
+  const cached = titleMapViewUrls.get(map);
+  if (typeof cached === "string") { node.style.backgroundImage = `url("${cached}")`; node.dataset.titleMapViewState = "ready"; return true; }
+  node.style.backgroundImage = "";
+  node.dataset.titleMapViewState = "pending";
+  const pending = cached ?? renderMapViewCanvas(project, { mapId, scale: 1, haze: 0, desaturate: 0, hazeColor: "#000000" })
+    .then((canvas) => {
+      const url = canvas?.toDataURL("image/png") ?? null;
+      if (url) titleMapViewUrls.set(map, url); else titleMapViewUrls.delete(map);
+      return url;
+    })
+    .catch(() => { titleMapViewUrls.delete(map); return null; });
+  if (!cached) titleMapViewUrls.set(map, pending);
+  void pending.then((url) => {
+    if (node.dataset.titleResource !== resourceId) return;
+    if (url) node.style.backgroundImage = `url("${url}")`;
+    node.dataset.titleMapViewState = url ? "ready" : "failed";
+  });
+  return true;
 }
 
 /**
