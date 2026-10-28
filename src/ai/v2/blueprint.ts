@@ -339,6 +339,31 @@ export interface BlueprintWalk {
 }
 
 /** 청사진 경로를 데이터로 걷는다. 청사진이 없으면 빈 결과. */
+/**
+ * 청사진 단계 이벤트와 이름이 같은데 다른 맵에 남은 사본 — 그 사본이 전투를 하거나 엔딩을 부르면 단계를 건너뛰는 지름길이다.
+ * 2026-10-29 vm3 flash jrpg: 「마왕과의 결전」이 동굴(청사진 장소)과 시작 마을 둘에 있었고, 마을 쪽이 열쇠만 있으면 바로 싸우고 엔딩 — 자동 플레이가 동굴을 건너뛰었다.
+ */
+export function strayStepCopies(project: Project): { mapId: string; eventId: string; x: number; y: number; step: string; canonicalMapId: string }[] {
+  const bp = project.gameBlueprint;
+  if (!bp) return [];
+  const out: { mapId: string; eventId: string; x: number; y: number; step: string; canonicalMapId: string }[] = [];
+  for (const step of bp.steps) {
+    const home = findMap(project, step.place);
+    const canonical = home ? findEvent(home, step.event) : undefined;
+    if (!home || !canonical || !pagesOf(canonical).some(hasCommands)) continue;
+    for (const map of Object.values(project.maps)) {
+      if (map.id === home.id) continue;
+      for (const ev of map.events ?? []) {
+        if (norm(String((ev as unknown as Obj).name ?? "")) !== norm(step.event)) continue;
+        const text = JSON.stringify(pagesOf(ev));
+        if (!eventSetter(project, ev).ends && !text.includes('"battleProcessing"')) continue;
+        out.push({ mapId: map.id, eventId: ev.id, x: ev.x, y: ev.y, step: step.id, canonicalMapId: home.id });
+      }
+    }
+  }
+  return out;
+}
+
 export function walkBlueprint(project: Project): BlueprintWalk {
   const bp = project.gameBlueprint;
   if (!bp) return { blockers: [], lines: [] };

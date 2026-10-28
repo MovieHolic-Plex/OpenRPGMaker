@@ -18,7 +18,7 @@ import { romanceCompletionGaps } from "@/qa/gameCheck/romance";
 import { invisibleStoryEvents, objectiveGaps, offArtEntrances, doorCellBlocked, repeatedDayDialogue, lingeringHeavyTints } from "./discoverability";
 import { fieldMenu } from "@/project/fieldMenu";
 import { FACTORY_HERO_ARMS } from "./genreDefaults";
-import { walkBlueprint } from "./blueprint";
+import { strayStepCopies, walkBlueprint } from "./blueprint";
 import { assemblyTimeMismatches, blueprintStoryText } from "@/project/blueprintAssembly";
 import { battleSites, healingSources } from "./combatChecks";
 
@@ -511,6 +511,7 @@ export function shipBlockers(project: Project, task: string): ShipBlocker[] {
   const spoilers = titleSpoilers(project);
   if (!wantsWholeGame(task)) return spoilers;
   // 엔딩 길의 열쇠·금고·문·엔딩 이벤트에 걸어 닿지 못하면 게임을 끝낼 수 없다(J75) — 출하 차단.
+  const strays = strayStepCopies(project).slice(0, 3).map((hit): ShipBlocker => ({ id: "blueprint-stray-copy", message: `청사진 ${hit.step} 이벤트의 사본이 「${project.maps[hit.mapId]?.name ?? hit.mapId}」 (${hit.x},${hit.y}) 에도 있어 싸우거나 엔딩을 부른다 — 「${project.maps[hit.canonicalMapId]?.name ?? hit.canonicalMapId}」 를 건너뛰는 지름길이다.`, evidence: `${hit.mapId} ${hit.eventId}` }));
   const sparkles = emptySparkles(project).slice(0, 4).map((hit): ShipBlocker => ({ id: "empty-sparkle", message: `「${project.maps[hit.mapId]?.name ?? hit.mapId}」 ${hit.eventId}(${hit.x},${hit.y}) 페이지 ${hit.page + 1} 이 반짝이는데 조사해도 아무 일도 없다 — 반짝임을 떼거나 대사 한 줄을 넣는다.`, evidence: `${hit.mapId} ${hit.eventId} p${hit.page}` }));
   const selfLoops = selfLoopTransfers(project).slice(0, 4).map((loop): ShipBlocker => ({ id: "transfer-self-loop", message: `「${project.maps[loop.mapId]?.name ?? loop.mapId}」 ${loop.eventId}(${loop.x},${loop.y}) 이 같은 맵 바로 옆 칸 (${loop.to.x},${loop.to.y}) 으로 옮긴다 — 제자리로 돌아올 뿐이라 고장 난 문처럼 보인다. 옮기기를 지우거나 다른 맵·먼 칸으로 잇는다.`, evidence: `${loop.mapId} ${loop.eventId} → (${loop.to.x},${loop.to.y})` }));
   const unreachable = unreachableCriticalEvents(project).map((message): ShipBlocker => ({ id: "critical-unreachable", message: `${message}. 이벤트를 걸어 닿는 칸 옆으로 move_event 하거나 막는 가구를 치운다.`, evidence: message.slice(0, 120) }));
@@ -561,7 +562,7 @@ export function shipBlockers(project: Project, task: string): ShipBlocker[] {
     message: `전투가 있는데(${sites.slice(0, 3).join(", ")}${sites.length > 3 ? ` 외 ${sites.length - 3}곳` : ""}) 여관·회복약·회복 기술·상점 회복약이 하나도 없어 깎인 HP 가 돌아오지 않는다 — build_blueprint_path 를 다시 부르면 시작 맵에 회복의 샘(전원 회복·저장)과 시작 회복약 3개를 넣고 목표 줄이 샘 자리를 가리킨다. 직접 고치려면 place_savepoint{mapId:시작 맵, heal:true} 와 set_session_start{inventory:{item_potion:3}}.`,
     evidence: `battleSites=${sites.length} healingSources=0`,
   }] : [];
-  return [...blueprint, ...noHealing, ...hidden, ...unlit, ...invisible, ...offArt, ...repeats, ...tints, ...objectives, ...romance, ...editorDefaultsLeft(project), ...endingClosureProblems(project), ...endingConditionsUnset(project), ...openingWithoutPlace(project), ...offPremiseArt(project, task), ...defaultPlaceLeaks(project, task), ...titleMismatch(project, task), ...assemblyTimeMismatches(project).map((m): ShipBlocker => ({ id: "assembly-time-mismatch", message: m.message, evidence: m.evidence })), ...requestedFeatureGaps(project, task), ...chaserWithoutHiding(project), ...selfLoops, ...sparkles, ...unreachable, ...spoilers];
+  return [...blueprint, ...noHealing, ...hidden, ...unlit, ...invisible, ...offArt, ...repeats, ...tints, ...objectives, ...romance, ...editorDefaultsLeft(project), ...endingClosureProblems(project), ...endingConditionsUnset(project), ...openingWithoutPlace(project), ...offPremiseArt(project, task), ...defaultPlaceLeaks(project, task), ...titleMismatch(project, task), ...assemblyTimeMismatches(project).map((m): ShipBlocker => ({ id: "assembly-time-mismatch", message: m.message, evidence: m.evidence })), ...requestedFeatureGaps(project, task), ...chaserWithoutHiding(project), ...selfLoops, ...strays, ...sparkles, ...unreachable, ...spoilers];
 }
 
 /** 게임이 «아직 안 지어졌다»는 신호 — 뼈대 자리표시만 남았거나 엔딩이 없다(편집기 기본 HUD·창 같은 마감 항목은 여기서 보지 않는다). */

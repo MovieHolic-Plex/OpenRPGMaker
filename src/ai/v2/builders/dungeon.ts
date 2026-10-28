@@ -5,7 +5,7 @@
 import { isBlankMap } from "@/editor/tools/mapEmptiness";
 import { dungeonTheme } from "@/editor/tools/dungeonThemeTroops";
 import { fitEnemyToStartParty } from "@/editor/tools/bossThreatScaling";
-import { ensureHealingAccess } from "../healingAccess";
+import { ensureBossRest, ensureHealingAccess } from "../healingAccess";
 import { pickTroops } from "@/editor/tools/jrpgVolumeTools";
 import { DUNGEON_TYPES, type DungeonType } from "@/editor/dungeonKit/types";
 import { isPassable } from "@/project/collision";
@@ -610,6 +610,7 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
   // 적을 둔 던전인데 이 게임에 회복할 길이 하나도 없으면 시작 맵에 회복의 샘·시작 회복약(2026-10-29 vm1 flash jrpg 「전투 못 이김」).
   let healNote = "";
   try { const heal = ensureHealingAccess(run); if (heal.length) healNote = ` · 회복 길을 넣었다: ${heal.join(", ")}`; } catch { /* 회복 넣기 실패는 던전을 깨지 않는다 */ }
+  try { const rest = ensureBossRest(run); if (rest.length) healNote += ` · ${rest.join(", ")}`; } catch { /* 쉼터 넣기 실패는 던전을 깨지 않는다 */ }
   const calls: BuilderCall[] = run.calls.slice(firstCall);
   const first = floors[0]!;
   const ent = data.entrance as { x?: number; y?: number } | undefined;

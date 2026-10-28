@@ -19,6 +19,7 @@ import { blueprintPlaceName, pickTitleArtForStory, blueprintPremiseText, bluepri
 import { sharedFaceForCharset } from "@/project/sharedCharacterFaceResolver";
 import type { Project } from "@/project/types";
 import { defaultPlaceLeaks, editorDefaultsLeft, endingClosureProblems, endingConditionsUnset, emptySparkles, selfLoopTransfers, writtenStateIds } from "./shipChecks";
+import { strayStepCopies } from "./blueprint";
 import { doorCellBlocked, offArtEntrances, planObjective, repeatingStartObjectives, staleMilestoneTargets } from "./discoverability";
 import { normalizeGameOverSettings } from "@/project/cinematicSettings";
 import { fieldMenu, storyFieldMenu } from "@/project/fieldMenu";
@@ -48,6 +49,7 @@ export function applyShipDefaults(project: Project, task = project.gameBlueprint
   if (endingConditionsUnset(project).length) applied.push(...dropDeadEndingConditions(project));
   if (selfLoopTransfers(project).length) applied.push(...dropSelfLoopTransfers(project));
   if (emptySparkles(project).length) applied.push(...dropEmptySparkles(project));
+  if (strayStepCopies(project).length) applied.push(...dropStrayStepCopies(project));
   applied.push(...forkStackedEndingCalls(project));
   if (endingClosureProblems(project).length) applied.push(...fillEndingClosure(project));
   // 기본 지명 걷어내기는 엔딩 글을 채운 뒤에 — 채운 글(청사진 느낌 칸)에도 그 지명이 들 수 있다.
@@ -618,6 +620,19 @@ function dropEmptySparkles(project: Project): string[] {
     if (!page) continue;
     delete page.nearSparkle;
     notes.push(`빈 반짝임 뗌: ${map!.name ?? map!.id} ${hit.eventId}(${hit.x},${hit.y})`);
+  }
+  return notes;
+}
+
+/** 다른 맵에 남은 단계 이벤트 사본(싸움·엔딩)을 지운다 — 청사진 장소의 정본만 남긴다(strayStepCopies). */
+function dropStrayStepCopies(project: Project): string[] {
+  const notes: string[] = [];
+  for (const hit of strayStepCopies(project)) {
+    const map = project.maps[hit.mapId];
+    if (!map) continue;
+    const ev = map.events.find((e) => e.id === hit.eventId);
+    map.events = map.events.filter((e) => e.id !== hit.eventId);
+    notes.push(`단계 사본 지움: ${map.name ?? map.id} 「${ev?.name ?? hit.eventId}」(${hit.x},${hit.y}) — 정본은 ${project.maps[hit.canonicalMapId]?.name ?? hit.canonicalMapId}`);
   }
   return notes;
 }

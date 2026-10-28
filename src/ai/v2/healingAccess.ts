@@ -10,6 +10,7 @@ import type { GameMap, Project } from "@/project/types";
 import { battleSites, healingItemIds, healingSources } from "./combatChecks";
 import { isObjectiveCommand, mapRegion } from "./discoverability";
 import type { BuildRun } from "./types";
+import { victoryGatedSwitches } from "./blueprint";
 
 export const HEALING_SPRING_ID = "ev_heal_spring";
 export const HEALING_SPRING_NAME = "회복의 샘";
@@ -142,6 +143,80 @@ export function ensureHealingAccess(run: BuildRun): string[] {
   if (live && spring) {
     const hinted = hintObjectives(run, live, `${HEALING_SPRING_NAME}: ${live.name ?? live.id} ${mapRegion(live, spring.x, spring.y)}`);
     if (hinted) notes.push(`목표 줄 ${hinted}곳에 샘 자리`);
+  }
+  return notes;
+}
+
+/** 보스(승리로 길을 여는 전투) 이벤트 — 이름 끝 _boss 이거나 승리 갈래에서만 켜는 스위치를 켠다. */
+function bossEvents(project: Project): { map: GameMap; x: number; y: number; id: string }[] {
+  const gated = victoryGatedSwitches(project);
+  // 다른 이벤트의 페이지 조건으로 쓰이는 스위치만 「길을 연다」 — 잡몹이 자기 자신을 숨기는 _clear 스위치는 빼야 한다.
+  const conditionUsers = new Map<string, Set<string>>();
+  for (const map of Object.values(project.maps)) for (const ev of map.events ?? []) for (const page of ev.pages ?? []) {
+    for (const m of JSON.stringify((page as unknown as { conditions?: unknown }).conditions ?? []).matchAll(/"switchId":"([^"]+)"/gu)) {
+      const set = conditionUsers.get(m[1]!) ?? new Set<string>();
+      set.add(`${map.id}/${ev.id}`);
+      conditionUsers.set(m[1]!, set);
+    }
+  }
+  const out: { map: GameMap; x: number; y: number; id: string }[] = [];
+  for (const map of Object.values(project.maps)) for (const ev of map.events ?? []) {
+    const text = JSON.stringify(ev.pages ?? []);
+    if (!text.includes('"battleProcessing"')) continue;
+    const opensOther = [...text.matchAll(/"kind":"setSwitch"[^}]*?"switchId":"([^"]+)"/gu)].some((m) => gated.has(m[1]!) && [...(conditionUsers.get(m[1]!) ?? [])].some((u) => u !== `${map.id}/${ev.id}`));
+    if (/_boss$/u.test(ev.id) || opensOther) out.push({ map, x: ev.x, y: ev.y, id: ev.id });
+  }
+  return out.sort((a, b) => Number(!/_boss$/u.test(a.id)) - Number(!/_boss$/u.test(b.id)));
+}
+
+/** 그 맵 안에 전원 회복(여관·recoverAll)이 있나. */
+function mapHasFullRecovery(map: GameMap): boolean {
+  return (map.events ?? []).some((ev) => /"kind":"(?:recoverAll|inn)"/u.test(JSON.stringify(ev.pages ?? [])));
+}
+
+/** 보스 둘레에서 걸어 4~10칸, 둘레 한 칸에 이벤트가 없고 이웃 셋 이상이 트인 칸(보스에 가까운 순·결정적). */
+function restCell(project: Project, map: GameMap, boss: { x: number; y: number }): { x: number; y: number } | undefined {
+  const near = (x: number, y: number) => (map.events ?? []).some((e) => Math.abs(e.x - x) <= 1 && Math.abs(e.y - y) <= 1);
+  const open = (x: number, y: number) => [[0, -1], [1, 0], [0, 1], [-1, 0]].filter(([dx, dy]) => isPassableLanding(project, map, x + dx!, y + dy!)).length;
+  const seen = new Set<string>([`${boss.x},${boss.y}`]);
+  let frontier = [boss];
+  for (let dist = 1; dist <= 10 && frontier.length; dist += 1) {
+    const next: { x: number; y: number }[] = [];
+    for (const cell of frontier) for (const [dx, dy] of [[0, -1], [1, 0], [0, 1], [-1, 0]] as const) {
+      const x = cell.x + dx, y = cell.y + dy, key = `${x},${y}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      if (!isPassableLanding(project, map, x, y)) continue;
+      next.push({ x, y });
+    }
+    if (dist >= 4) {
+      const hit = [...next].sort((a, b) => a.y - b.y || a.x - b.x).find((c) => !near(c.x, c.y) && open(c.x, c.y) >= 3);
+      if (hit) return hit;
+    }
+    frontier = next;
+  }
+  return undefined;
+}
+
+/**
+ * 보스가 있는 맵에 전원 회복이 없으면 보스 몇 걸음 앞에 「쉼터 결정」(전원 회복·저장)을 둔다. 결정적·되풀이 안전.
+ * 왜(2026-10-29 vm3 flash jrpg 판정 「전투 못 이김」): 회복의 샘은 시작 마을 구석에만 있었고, 판정자는 동굴 잡몹 두 번에
+ * 깎이고 독에 걸린 채(301/514) 리치 앞에 섰다. 모의 전투(만피로 시작)는 이긴다고 했지만, 실제로는 깎인 HP 로 시작한다.
+ */
+export function ensureBossRest(run: BuildRun): string[] {
+  const notes: string[] = [];
+  const project = run.ctx.project;
+  const done = new Set<string>();
+  for (const boss of bossEvents(project)) {
+    const map = run.ctx.project.maps[boss.map.id];
+    if (!map || done.has(map.id) || map.id === project.startMapId || mapHasFullRecovery(map)) continue;
+    done.add(map.id);
+    const id = `ev_${map.id}_rest`;
+    if (map.events.some((e) => e.id === id)) continue;
+    const cell = restCell(run.ctx.project, map, boss);
+    if (!cell) continue;
+    const res = run.call("place_savepoint", { mapId: map.id, x: cell.x, y: cell.y, id, name: "쉼터 결정", heal: true, mode: "both", sparkleRadius: 2 });
+    if (res.ok) notes.push(`${map.name ?? map.id} (${cell.x},${cell.y}) 보스 앞 쉼터 결정(전원 회복·저장)`);
   }
   return notes;
 }

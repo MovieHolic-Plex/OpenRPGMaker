@@ -476,9 +476,19 @@ const STEP_BATTLE_MIN_WIN = 0.5;
  * 왜(2026-10-29 vm1 argon·flash jrpg): 승리 관문을 건 뒤 옛 빌더의 마왕(Lv3, 승률 0)이 길을 막아 자동 플레이가 보스전 패배로 끝났다.
  */
 export function fitUnwinnableStepBattles(run: BuildRun): string[] {
-  const bp = run.ctx.project.gameBlueprint;
+  return fitUnwinnableStepBattlesIn(run.ctx.project, (mapId, ev, pages) => run.call("upsert_event", { mapId, event: { ...structuredClone(ev), pages } as unknown as Record<string, unknown>, replacePages: true }));
+}
+/**
+ * 끝맺음에서도 같은 맞추기를 한다 — 청사진 경로에 막힘이 없으면 buildBlueprintPath 가 돌지 않아,
+ * 시작 파티로 못 이기는 보스가 그대로 나갔다(2026-10-29 vm3 flash jrpg: Lv1 로 Lv3 리치를 못 이겨 판정 「전투 못 이김」).
+ */
+export function fitUnwinnableStepBattlesIn(project: Project, write?: (mapId: string, ev: GameMap["events"][number], pages: RawPage[]) => void): string[] {
+  const bp = project.gameBlueprint;
   if (!bp) return [];
-  const project = run.ctx.project;
+  const put = write ?? ((mapId: string, ev: GameMap["events"][number], pages: RawPage[]) => {
+    const live = project.maps[mapId]?.events.find((e) => e.id === ev.id);
+    if (live) (live as { pages: unknown }).pages = pages;
+  });
   if (project.system.battleParty === "monsters" || project.system.monsterBattleParty === true) return [];
   const party = (project.system.startActorIds ?? []).filter((id) => project.database.actors.some((a) => a.id === id));
   if (!party.length) return [];
@@ -487,7 +497,7 @@ export function fitUnwinnableStepBattles(run: BuildRun): string[] {
   const verdict = new Map<string, string | undefined>();
   const notes: string[] = [];
   for (const mapId of mapIds) {
-    const map = run.ctx.project.maps[mapId];
+    const map = project.maps[mapId];
     if (!map) continue;
     for (const ev of map.events ?? []) {
       const text = JSON.stringify(ev.pages ?? []);
@@ -500,14 +510,14 @@ export function fitUnwinnableStepBattles(run: BuildRun): string[] {
         const cmd = node as Record<string, unknown>;
         if (cmd.kind === "battleProcessing" && typeof cmd.troopId === "string") {
           const troopId = cmd.troopId;
-          const gating = cmd.canEscape === false || /boss|보스|마왕/iu.test(`${ev.id} ${troopId} ${run.ctx.project.database.troops.find((t) => t.id === troopId)?.name ?? ""}`);
+          const gating = cmd.canEscape === false || /boss|보스|마왕/iu.test(`${ev.id} ${troopId} ${project.database.troops.find((t) => t.id === troopId)?.name ?? ""}`);
           if (gating) {
             if (!verdict.has(troopId)) {
               let replace: string | undefined;
               try {
-                const sim = simulateBattle({ project: run.ctx.project, troopId, heroLevel: level, partyActorIds: party, n: 12, seed: 7, useSkills: true });
+                const sim = simulateBattle({ project, troopId, heroLevel: level, partyActorIds: party, n: 12, seed: 7, useSkills: true });
                 if (sim.winRate < STEP_BATTLE_MIN_WIN) {
-                  const fitted = fitTroopCopy(run.ctx.project, troopId, "boss");
+                  const fitted = fitTroopCopy(project, troopId, "boss");
                   if (fitted && fitted !== troopId) { replace = fitted; notes.push(`「${ev.name ?? ev.id}」 전투 ${troopId}(승률 ${Math.round(sim.winRate * 100)}%)를 시작 파티에 맞춘 ${fitted} 로`); }
                 }
               } catch { /* 모의 실패는 그대로 둔다 */ }
@@ -520,7 +530,7 @@ export function fitUnwinnableStepBattles(run: BuildRun): string[] {
         for (const value of Object.values(cmd)) if (value && typeof value === "object") visit(value);
       };
       visit(pages);
-      if (changed) run.call("upsert_event", { mapId, event: { ...structuredClone(ev), pages } as unknown as Record<string, unknown>, replacePages: true });
+      if (changed) put(mapId, ev, pages);
     }
   }
   return notes;

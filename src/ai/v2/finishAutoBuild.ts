@@ -8,7 +8,9 @@ import { battleSites, healingSources } from "./combatChecks";
 import { wantsWholeGame } from "./shipChecks";
 import { applyShipDefaults } from "./shipDefaults";
 import { refreshObjectiveRoutes } from "./discoverability";
-import { orderStepBattlesIn } from "./blueprintPath";
+import { fitUnwinnableStepBattlesIn, orderStepBattlesIn } from "./blueprintPath";
+import { ensureBossRest } from "./healingAccess";
+import { createBuildRun } from "./buildRun";
 import { applyBlueprintAssembly } from "@/project/blueprintAssembly";
 import { applyBlueprintOpening } from "@/editor/tools/blueprintOpening";
 import { renameBareBlueprintPlaces } from "./blankStart";
@@ -82,6 +84,12 @@ export async function runFinishAutoBuild(env: PiAssistantV2Env, session: V2Sessi
     try { assembled.push(...applyShipDefaults(env.ctx.project, env.request.task)); }
     catch (error) { env.emit({ type: "execution_status", name: "v2.assembly", ok: false, summary: `출하 기본값을 채우지 못했다: ${error instanceof Error ? error.message : String(error)}` }); }
     // 단계 순서 보호 — 앞 단계 전엔 길을 막는 보스가 안 나타나고, 잠김 대사가 앞 단계 이벤트를 가리킨다(2026-10-29 vm3 terra jrpg). 경로를 다시 짓지 않는 판에도.
+    // 시작 파티로 못 이기는 길목 보스를 맞춘 사본으로 — 경로를 다시 짓지 않는 판에도(2026-10-29 vm3 flash jrpg 리치).
+    try { assembled.push(...fitUnwinnableStepBattlesIn(env.ctx.project)); }
+    catch { /* 맞추기 실패는 끝맺음을 깨지 않는다 */ }
+    // 보스 앞 쉼터 — 깎인 HP·독으로 보스 앞에 서지 않게(2026-10-29 vm3 flash jrpg 리치). 던전 빌더도 같은 함수를 부른다.
+    try { assembled.push(...ensureBossRest(createBuildRun(env.ctx))); }
+    catch { /* 쉼터 넣기 실패는 끝맺음을 깨지 않는다 */ }
     try { assembled.push(...orderStepBattlesIn(env.ctx.project)); }
     catch (error) { env.emit({ type: "execution_status", name: "v2.assembly", ok: false, summary: `단계 순서 보호를 하지 못했다: ${error instanceof Error ? error.message : String(error)}` }); }
     // 목표 꼬리 「(<맵> 입구: 방위)」를 마지막 연결로 다시 쓴다 — 목표가 걸리는 자리에서 본 첫 출구 방위·그 뒤 대상(2026-10-29 vm2 jrpg 길 못 찾음).
