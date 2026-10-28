@@ -814,8 +814,8 @@ const BRAM = "숲지기 브람";
 const SMITHY = { hubDoor: { x: 29, y: 42 } as Cell, hubFront: { x: 29, y: 43 } as Cell, door: { x: 7, y: 10 } as Cell, arrive: { x: 7, y: 9 } as Cell, rohan: { x: 10, y: 6 } as Cell };
 /** 북쪽 성벽 개구멍 — 광장 북쪽 돌바닥(38,16)에서 위를 보고 조사. 브람이 그 곁(39,16)에 숨어 있다. */
 // 독립 판정(judge12): 브람(39,16)·개구멍 앞(38,16)이 울타리 친 화단 주머니 안이라 광장에서 걸어 닿을 수 없었다
-// (통행 BFS: 성벽 밑 줄은 x42~50 만 이어진다). 북문 서쪽, 이어진 성벽 밑으로 옮긴다.
-const HOLE = { wall: { x: 42, y: 15 } as Cell, front: { x: 42, y: 16 } as Cell, bram: { x: 43, y: 16 } as Cell };
+// (통행 BFS: 성벽 밑 줄은 x42~50 만 이어지고 x45~50 으로 들어온다). 브람은 막다른 서쪽 끝(42) — 개구멍 앞(43)으로 가는 길을 막지 않는다.
+const HOLE = { wall: { x: 43, y: 15 } as Cell, front: { x: 43, y: 16 } as Cell, bram: { x: 42, y: 16 } as Cell };
 
 /** 북쪽 숲 어귀·재의 들판(B5 가 이어 짓는다). 만든 맵 id 는 결과에서 받는다. */
 export const FS2_NORTH_ROUTE: { mapIds: string[]; entry: Cell; entries: Cell[] } = { mapIds: [], entry: { x: 0, y: 0 }, entries: [] };
@@ -889,8 +889,8 @@ function northGateEvents(project: Project, exec: Exec, hubId: string): void {
       say(BRAM, "순찰 등불이 이쪽으로 돈다. 빠지면 뒤돌아보지 말고\n숲 그늘까지 뛰어라. 거기서 기다리마."),
       setSw(SW_BRAM),
     // 독립 판정(judge12): 「광장 북쪽 성벽 밑」만 듣고 북쪽 벽을 따라 헤맸다 — 브람이 등을 든다(불빛).
-    ], { graphic: chip(bramChip.textureKey, bramChip.characterIndex, "left"), glow: { radius: 2, color: "#ffc070" }, nearSparkle: { radius: 2 } }),
-    page("ev_fs2_hub_bram_after", "브람(뒤)", [sw(SW_BRAM)], [say(BRAM, "숲 그늘까지. 뒤돌아보지 마라.")], { graphic: chip(bramChip.textureKey, bramChip.characterIndex, "left") }),
+    ], { graphic: chip(bramChip.textureKey, bramChip.characterIndex, "right"), glow: { radius: 2, color: "#ffc070" }, nearSparkle: { radius: 2 } }),
+    page("ev_fs2_hub_bram_after", "브람(뒤)", [sw(SW_BRAM)], [say(BRAM, "숲 그늘까지. 뒤돌아보지 마라.")], { graphic: chip(bramChip.textureKey, bramChip.characterIndex, "right") }),
     page("ev_fs2_hub_bram_gone", "브람(숲으로)", [sw(SW_B4_ALARM)], [], { priority: "below", graphic: { transparent: true } }),
   ]);
   const [first] = FS2_NORTH_ROUTE.mapIds;

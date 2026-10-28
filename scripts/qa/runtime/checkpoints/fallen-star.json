@@ -4198,11 +4198,11 @@
   {
    "id": "act2-b4-hole",
    "label": "제2막 B4 — 성벽 밑 브람, 개구멍에서 들킨다 → 숲 어귀 추격 → 숲 그늘 고백",
-   "note": "act2Opening.ts bram (43,16) · hole (42,15) → map_field_north_1 forestEdgeChase(경보 기사 appearSwitchId)",
+   "note": "act2Opening.ts bram (42,16) · hole (43,15) — 성벽 밑 줄 입구(46,17)에서 걸어 간다 · → map_field_north_1 forestEdgeChase(경보 기사 appearSwitchId)",
    "mapId": "fs2_hub_night",
-   "x": 42,
-   "y": 16,
-   "facing": "right",
+   "x": 46,
+   "y": 17,
+   "facing": "up",
    "switches": {
     "sw_fs_main_started": true,
     "sw_fs_main_done": true,
@@ -4237,6 +4237,25 @@
        "kind": "hold",
        "dir": null,
        "ms": 800
+      },
+      {
+       "kind": "move",
+       "dir": "up",
+       "steps": 1
+      },
+      {
+       "kind": "move",
+       "dir": "left",
+       "steps": 3
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 300
+      },
+      {
+       "kind": "face",
+       "dir": "left"
       },
       {
        "kind": "action"
