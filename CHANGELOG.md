@@ -5,6 +5,12 @@
 
 <!-- releases -->
 
+## 0.356.2 — 2026-10-28
+
+### 수정
+
+- **playable-segment** — monster-collect first segment paves its route on the monster kit (#3871) (`6f1c2e0`)
+
 ## 0.356.1 — 2026-10-28
 
 ### 수정
