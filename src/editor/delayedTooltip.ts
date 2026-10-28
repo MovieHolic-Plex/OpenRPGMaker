@@ -9,10 +9,14 @@
 // 접근성 계약: 짧은 한국어 시각 라벨(여섯 자 이하 권장)은 **표시용**이고, 컨트롤의
 // 접근 가능한 이름(`aria-label`)은 완전한 문장을 유지한다. 즉 시각 라벨을 줄여도
 // 스크린 리더가 듣는 이름은 잘리지 않는다.
+//
+// 아이콘만 있는 컨트롤(HIG C-08): 툴팁은 접근 이름과 같은 문장이고, `aria-keyshortcuts` 가
+// 있으면 단축키를 덧붙인다 — 「음악」 툴팁과 「음악·효과음」 이름이 갈라지지 않게.
+// `iconOnly` 로 붙인 툴팁은 보이는 글자가 없을 때(좁은 창에서 이름표가 접혔을 때)만 뜬다.
 import { t } from "@/i18n";
 import { el } from "@/util/dom";
 
-export const TOOLTIP_DELAY_MS = 1200;
+export const TOOLTIP_DELAY_MS = 500;
 const VIEWPORT_MARGIN = 8;
 const TARGET_GAP = 6;
 const FALLBACK_TOOLTIP_SIZE = { height: 24, width: 96 } as const;
@@ -64,9 +68,36 @@ export function computeTooltipPlacement(input: {
 }
 
 export type DelayedTooltipSpec = {
+  /** 화면에 뜨는 글자. 비우면 띄울 때의 `aria-label` 을 쓴다. */
   readonly label: string;
   readonly accessibleName?: string;
+  /** 대상에 보이는 글자가 없을 때만 띄운다. */
+  readonly iconOnly?: boolean;
 };
+
+const KEY_NAMES: Readonly<Record<string, string>> = { Control: "Ctrl", Meta: "Cmd", Escape: "Esc", Delete: "Del" };
+
+/** `aria-keyshortcuts` 의 첫 조합을 화면 표기로 바꾼다 — 「Control+K」 → 「Ctrl+K」. */
+export function formatKeyShortcut(value: string | null): string {
+  const first = (value ?? "").trim().split(/\s+/)[0] ?? "";
+  return first
+    .split("+")
+    .filter(Boolean)
+    .map((key) => KEY_NAMES[key] ?? (key.length === 1 ? key.toUpperCase() : key))
+    .join("+");
+}
+
+/** 툴팁 글자: 라벨(없으면 접근 이름)에 단축키가 빠져 있으면 「(Ctrl+K)」 를 덧붙인다. */
+export function tooltipText(target: HTMLElement, label: string): string {
+  const base = t(label || target.getAttribute("aria-label") || "").trim();
+  const shortcut = formatKeyShortcut(target.getAttribute("aria-keyshortcuts"));
+  if (!shortcut || base.toLowerCase().includes(shortcut.toLowerCase())) return base;
+  return `${base} (${shortcut})`;
+}
+
+function hasVisibleText(target: HTMLElement): boolean {
+  return (target.innerText ?? target.textContent ?? "").trim().length > 0;
+}
 
 type ActiveTooltip = {
   readonly element: HTMLElement;
@@ -104,6 +135,7 @@ export function attachDelayedTooltip(target: HTMLElement, spec: DelayedTooltipSp
   };
 
   const schedule = (): void => {
+    if (spec.iconOnly && hasVisibleText(target)) return;
     cancelPending();
     suppressNativeTitle();
     pendingTarget = target;
@@ -122,6 +154,7 @@ export function attachDelayedTooltip(target: HTMLElement, spec: DelayedTooltipSp
     // 마우스 클릭으로 생긴 포커스(:focus-visible 아님)나 이 단추가 연 메뉴 위에는 띄우지 않는다 —
     // 방금 연 팝업의 첫 항목을 덮었다.
     if (target.getAttribute("aria-expanded") === "true" || !target.matches(":focus-visible")) return;
+    if (spec.iconOnly && hasVisibleText(target)) return;
     cancelPending();
     suppressNativeTitle();
     showDelayedTooltip(target, spec);
@@ -182,7 +215,7 @@ function showDelayedTooltip(target: HTMLElement, spec: DelayedTooltipSpec): void
     attrs: { role: "tooltip" },
     // 번역된 글자로 넣는다 — DOM 번역 계층은 배치 뒤에 글자를 바꿔 재 폭과 그린 폭이 달랐고,
     // 오른쪽 끝 대상(전체화면)에서 가로 클램프가 모자라 화면 밖으로 나갔다(2026-10-21 UI 감사).
-    text: t(spec.label),
+    text: tooltipText(target, spec.label),
   });
   document.body.append(tip);
   active = { element: tip, target };
