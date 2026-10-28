@@ -12,6 +12,7 @@ import { findOpeningStillMood, listOpeningStillMoods } from "@/assets/openingSti
 import { findOpeningPreset } from "@/editor/openingPresets";
 import { romanceTitleArtForText, ROMANCE_TITLE_RESOURCE_ID, isRomanceTitleArtId } from "@/project/romanceTitleArt";
 import type { GameBlueprint } from "@/project/gameBlueprint";
+import { openingMapViewMapId, openingMapViewResourceId } from "@/project/openingMapView";
 import type { Project } from "@/project/types";
 
 /** 편집기·씨앗이 깔아 둔(= 아무도 고르지 않은) 타이틀 배경. */
@@ -23,32 +24,33 @@ const SKY_ONLY = /^oprn-pano-(night|sky-day(?!-city)|sunset(?!-skyline)|clouds|s
 
 /**
  * 스틸 카탈로그 밖의 번들 타이틀 그림 중 장르 타이틀로 쓸 수 있는 것. text 는 그림을 실제로 보고 쓴 설명이다.
- * horror-mystery-blue-gallery: 달빛이 드는 어두운 빈 방, 벽에 걸린 커다란 빈 액자, 오른쪽 열린 문 — 사람이 없다.
+ * horror-mystery-blue-gallery: 달빛이 드는 어두운 빈 방, 벽의 빈 액자, 바닥의 핏자국 발자국 — 그린(비도트) 공포 그림이라 공포 장르에만 쓴다.
  */
 const EXTRA_TITLE_ARTS: readonly { readonly id: string; readonly name: string; readonly text: string }[] = [
-  { id: "horror-mystery-blue-gallery", name: "달빛 드는 빈 방", text: "달빛 드는 어두운 빈 방 벽의 빈 액자 낡은 저택 실내 밀실 미스터리 적막 공포 불안" },
+  { id: "horror-mystery-blue-gallery", name: "달빛 드는 빈 방(핏자국)", text: "달빛 드는 어두운 빈 방 벽의 빈 액자 핏자국 낡은 저택 공포 불안" },
 ];
 
 /**
- * 이야기 낱말 → 그림 낱말. 이야기가 story 에 걸리면 그림 설명이 art 에 걸리는 만큼 점수를 준다.
+ * 이야기 낱말 → 그림 낱말. 이야기(premise)가 story 에 걸리면 그림 설명이 art 에 걸리는 만큼 점수를 준다.
+ * «강하게» 맞는 것만 둔다 — 장소·풍토가 그림과 같은 것(사막·바다·설원·농장·폐병원)과 공포 장르의 공포 그림. 분위기만 비슷한 그림
+ * (방탈출 → 저택 복도, 가족 이야기 → 벽난로 거실)은 게임마다 같은 그림이 되고 화풍도 게임과 달라(2026-10-28 감독 반려: 방탈출 셋이 모두
+ * 같은 핏자국 빈 방) 고르지 않는다 — 그때는 그 게임의 시작 맵 화면을 쓴다(titleMapView).
  * 한 글자 낱말(성·눈·별)은 「성취감」「눈물」 같은 데 걸려 쓰지 않는다.
  */
 const THEMES: readonly { readonly story: RegExp; readonly art: RegExp; readonly weight: number }[] = [
-  { story: /방탈출|탈출|밀실|잠긴|갇힌|금고|자물쇠|암호|서재|공방|저택|추리|미스터리|탐정|사건|도난|범인|escape|mystery/iu, art: /밀실|빈 방|실내|저택|회랑|복도|미스터리|적막|초상화/gu, weight: 3 },
   { story: /공포|호러|귀신|유령|저주|괴담|폐병원|폐교|좀비|괴물|비명|horror/iu, art: /공포|불안|긴장|폐병원|기괴|위협/gu, weight: 3 },
   { story: /병원|의사|간호/u, art: /병원/gu, weight: 4 }, // 장소가 딱 맞는 그림(폐병원)이 분위기만 맞는 그림(초상화 복도)을 이긴다
   { story: /사막|모래|피라미드|오아시스|desert/iu, art: /사막|모래|피라미드|오아시스/gu, weight: 3 },
   { story: /바다|해저|항구|해변|등대|어촌|ocean|harbor/iu, art: /해저|바다|항구|등대|해안/gu, weight: 3 },
   { story: /하늘섬|공중|비행선|부유/u, art: /공중|하늘섬|비행선|구름 위/gu, weight: 3 },
   { story: /눈 덮인|눈보라|눈이 |설원|겨울|얼음|크리스마스|winter|snow/iu, art: /설원|눈 덮인|겨울/gu, weight: 3 },
-  { story: /농장|농사|시골|귀향|목장|밭|농가/u, art: /농장|농가|시골|밭/gu, weight: 3 },
-  { story: /왕국|성벽|성채|왕성|기사|용사|공주|왕자|모험/u, art: /왕국|성벽|성왕국|세계 소개/gu, weight: 1 },
-  { story: /마왕|암흑|악마|어둠의/u, art: /검은 성채|암흑|위협/gu, weight: 2 },
-  { story: /꿈|몽환|악몽/u, art: /꿈|몽환/gu, weight: 3 },
-  { story: /현대|도시|회사|기차|열차|역 앞|아파트|편의점/u, art: /현대|시골역|옥상|도시/gu, weight: 2 },
-  { story: /동굴|야영|캠프/u, art: /동굴|야영/gu, weight: 2 },
-  { story: /가족|할머니|할아버지|회상|추억|유품|그리움|벽난로/u, art: /벽난로|가족의 회상|그리움|온기/gu, weight: 2 },
+  { story: /농장|농사|귀농|목장|농가/u, art: /농장|농가|밭/gu, weight: 3 },
 ];
+/** 이 점수 이상이어야 «강하게 맞는» 그림이다(한 주제의 낱말이 그림 설명에 두 번 이상). */
+const STRONG_SCORE = 6;
+/** 공포 그림(초상화 복도·폐병원·핏자국 빈 방)은 공포 장르에만. */
+const HORROR_PREMISE = /공포|호러|귀신|유령|괴담|좀비|horror/iu;
+const HORROR_ART = /공포|기괴|핏자국|괴물/u;
 
 /** 그림 설명의 풍토 낱말 — 이야기에 같은 계열 낱말이 없으면 «다른 이야기 그림»이라 타이틀에서 뺀다(shipChecks offPremiseArt 와 같은 표). */
 const SETTING_CLASH: readonly { readonly art: RegExp; readonly premise: RegExp }[] = [
@@ -99,21 +101,22 @@ export function blueprintPremiseText(project: Project, blueprint: GameBlueprint)
 
 export interface TitleArtPick { readonly id: string; readonly name: string; readonly score: number }
 
-/** 번들 스틸이 하나도 맞지 않는 시대·문화권·장르(서양 저택·판타지 스틸뿐이다, 몬스터 수집은 전용 키아트가 따로 있다) — 엉뚱한 그림 대신 고르지 않는다. */
+/** 번들 스틸이 하나도 맞지 않는 시대·문화권·장르(서양 저택·판타지 스틸뿐이다, 몬스터 수집은 전용 키아트가 따로 있다) — 시작 맵 화면을 쓴다. */
 const NO_BUNDLED_ART_ERA = /조선|한양|사극|궁궐|무림|무협|중원|강호|에도|사무라이|몬스터 수집|포켓몬|monster collect/iu;
 
 /**
  * 이야기 글로 번들 타이틀 그림을 고른다. premise = 이 게임이 무엇인가(장르·제목·목표·요청·장소), story = 풍토 검사용 전체 글.
- * 낱말이 하나도 맞지 않으면 undefined(엉뚱한 그림을 지어 고르지 않는다). 같은 글 → 같은 그림.
+ * 장소·풍토가 강하게 맞는 그림(점수 STRONG_SCORE 이상)만 돌려준다. 공포 그림은 공포 장르에만. 같은 글 → 같은 그림.
  */
 export function pickTitleArtForStory(premise: string, story = premise): TitleArtPick | undefined {
   if (/연애|로맨스|데이트|고백|미연시|romance|dating/iu.test(premise)) {
     const id = romanceTitleArtForText(story, true)?.id ?? ROMANCE_TITLE_RESOURCE_ID;
-    return { id, name: id, score: 1 };
+    return { id, name: id, score: STRONG_SCORE };
   }
   if (NO_BUNDLED_ART_ERA.test(premise)) return undefined;
   const themes = THEMES.filter((theme) => theme.story.test(premise));
   if (!themes.length) return undefined;
+  const horror = HORROR_PREMISE.test(premise);
   const candidates = [
     ...EXTRA_TITLE_ARTS.map((art) => ({ id: art.id, name: art.name })),
     ...listOpeningStillMoods().filter((still) => still.suitableForOpening && !SKY_ONLY.test(still.id)).map((still) => ({ id: still.id, name: still.name })),
@@ -122,17 +125,35 @@ export function pickTitleArtForStory(premise: string, story = premise): TitleArt
   for (const candidate of candidates) {
     const text = stillText(candidate.id);
     if (SETTING_CLASH.some((s) => s.art.test(text) && !s.premise.test(story))) continue;
+    if (!horror && HORROR_ART.test(text)) continue;
     let score = 0;
     for (const theme of themes) score += theme.weight * Math.min(3, (text.match(theme.art) ?? []).length);
-    if (score > 0 && (!best || score > best.score)) best = { ...candidate, score };
+    if (score >= STRONG_SCORE && (!best || score > best.score)) best = { ...candidate, score };
   }
   return best;
 }
 
-/** 이 프로젝트의 청사진에 맞는 타이틀 그림(청사진이 없거나 맞는 그림이 없으면 undefined). */
+/** 청사진 첫 장소의 맵 id — id 그대로, 맵 이름이 같거나 서로 품으면 그 맵. 못 찾으면 시작 맵. */
+export function blueprintPlaceMapId(project: Project, blueprint: GameBlueprint): string | undefined {
+  const place = blueprint.steps[0]?.place?.trim() ?? "";
+  const maps = Object.values(project.maps);
+  const found = project.maps[place] ?? maps.find((map) => map.name?.trim() === place)
+    ?? (place.length >= 2 ? maps.find((map) => !!map.name?.trim() && (map.name.includes(place) || place.includes(map.name.trim()))) : undefined);
+  return found?.id ?? (project.maps[project.startMapId] ? project.startMapId : undefined);
+}
+
+/**
+ * 이 프로젝트의 청사진에 맞는 타이틀 그림: 강하게 맞는 번들 그림, 없으면 그 게임의 첫 장소(시작 맵)를 도트 그대로 그린 화면
+ * (`map-view:<mapId>` — 오프닝의 「게임 속 맵 그대로」 배경과 같은 id, 플레이어가 타일 층을 그려 쓴다). 화풍이 게임과 같고 게임마다 다르다.
+ */
 export function pickBlueprintTitleArt(project: Project): TitleArtPick | undefined {
   const blueprint = project.gameBlueprint;
-  return blueprint ? pickTitleArtForStory(blueprintPremiseText(project, blueprint), blueprintStoryText(project, blueprint)) : undefined;
+  if (!blueprint) return undefined;
+  const art = pickTitleArtForStory(blueprintPremiseText(project, blueprint), blueprintStoryText(project, blueprint));
+  if (art) return art;
+  const mapId = blueprintPlaceMapId(project, blueprint);
+  const map = mapId ? project.maps[mapId] : undefined;
+  return map && project.tilesets[map.tilesetId] ? { id: openingMapViewResourceId(map.id), name: `${map.name || map.id} 맵 화면`, score: 0 } : undefined;
 }
 
 /**
@@ -142,6 +163,9 @@ export function pickBlueprintTitleArt(project: Project): TitleArtPick | undefine
 function replaceableTitleBackground(id: string | undefined, story: string): boolean {
   if (!id || UNTOUCHED_TITLE_BACKGROUNDS.has(id)) return true;
   if (isRomanceTitleArtId(id)) return false;
+  // 시작 맵 화면은 함수가 고른 값이다 — 장소가 지어진 뒤 다시 고른다. 핏자국 빈 방은 공포가 아닌 이야기에 앞 판이 깔았다.
+  if (openingMapViewMapId(id)) return true;
+  if (id === "horror-mystery-blue-gallery" && !HORROR_PREMISE.test(story)) return true;
   if (findOpeningStillMood(id)?.suitableForOpening === false) return true;
   if (SKY_ONLY.test(id)) return true;
   const text = stillText(id);
@@ -193,7 +217,7 @@ export function applyBlueprintAssembly(project: Project): string[] {
     const story = blueprintStoryText(project, blueprint);
     const current = title.backgroundResourceId ?? system.titleResourceId;
     if (replaceableTitleBackground(current, story)) {
-      const pick = pickTitleArtForStory(blueprintPremiseText(project, blueprint), story);
+      const pick = pickBlueprintTitleArt(project);
       if (pick && pick.id !== current) {
         title.backgroundResourceId = pick.id;
         title.backgroundFit ??= "cover";
