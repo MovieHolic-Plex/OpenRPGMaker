@@ -1635,6 +1635,10 @@ node scripts/qa/runtime/facing-audit.mjs verify-shots/runtime-qa/fl-facing-after
 npm run qa:runtime -- --scenario checkpoints --checkpoint-set fallen-star --checkpoint all --parallel 2
 npm run qa:runtime -- --scenario checkpoints --checkpoint-set first-love --checkpoint ending-a,ending-b
 npm run qa:runtime -- --scenario checkpoints --checkpoint-set astra-horizon --checkpoint 'gym*'
+npm run qa:runtime -- --scenario checkpoints --checkpoint-set maou-konbini --checkpoint mk-crisis
+# 『전생한 마왕, 편의점 알바』 통짜 구간 녹화(1배속 대사·실제 걷기·전투, 구간마다 체크포인트): 굽기 뒤
+#   MK_FIXTURE=dist/demos/maou-konbini.play.json node scripts/qa/runtime/maou-konbini.play.mjs opening,interview,day1,evening1,day2,meeting,night,power
+#   함정: 그림 없는 이벤트는 「같은 층」이어도 막지 않는다(빈 칸 계산대 → 카운터 너머 손님이 조사됨), QA 길 찾기는 문 칸을 지나가면 그 문으로 들어간다.
 # 사람이 눈으로: vite dev 서버(qa:runtime 이 띄우는 것과 같은 player.html)에서만 받는 URL 인자
 #   /player.html?demo=fallen-star&qaCheckpoint=fallen-star:boss
 ```

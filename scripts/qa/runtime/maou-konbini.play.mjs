@@ -285,7 +285,7 @@ try {
     await play(page, seg, [1], async (s) => s.choices.length >= 2 && s.choices.some((c) => /매뉴얼/.test(c)), { shotOn: /CCTV|찾았다|보름달|줄무늬/ }); mark("crisis");
     await play(page, seg, [1], async (s) => s.battle); mark("battle");
     shot(page, "manual-battle", 2500);
-    await battle(page, seg, ["skill_mk_irasshai", "skill_mk_nikuman", "skill_mk_point_card", "skill_mk_nikuman", "skill_mk_smile", "skill_mk_nikuman"]); mark("battle-end");
+    await battle(page, seg, ["skill_mk_irasshai", "skill_mk_nikuman", "attack", "skill_mk_nikuman", "attack", "skill_mk_point_card", "attack", "skill_mk_nikuman", "attack", "skill_mk_smile", "attack"]); mark("battle-end");
     await play(page, seg, [], async (s) => s.ending, { shotOn: /따뜻하다|일하면 된다|매출 1위/ }); mark("ending");
     shot(page, "ending", 2500);
     await page.waitForTimeout(4000);

@@ -181,7 +181,7 @@ function setupDatabase(project: Project): void {
     [act("skill_mk_holy_blade", 8), act("skill_attack", 6), act("skill_mk_brave_shout", 9, { kind: "turn", start: 2, interval: 3 })], 38);
   makeEnemy("enemy_mk_leon_awake", "각성한 용사 레온", { maxHp: 1100, maxMp: 60, attack: 125, defense: 70, mind: 85, agility: 62 },
     [act("skill_mk_holy_blade", 8), act("skill_attack", 6), act("skill_mk_brave_shout", 9, { kind: "turn", start: 2, interval: 2 })], 39);
-  makeEnemy("enemy_mk_leon_angry", "분노한 고교생 레온", { maxHp: 520, maxMp: 0, attack: 62, defense: 30, mind: 30, agility: 40 },
+  makeEnemy("enemy_mk_leon_angry", "분노한 고교생 레온", { maxHp: 400, maxMp: 0, attack: 56, defense: 26, mind: 28, agility: 40 },
     [act("skill_mk_umbrella", 8), act("skill_attack", 6), act("skill_mk_brave_shout", 9, { kind: "turn", start: 3, interval: 3 })], 12);
 
   const makeTroop = (id: string, name: string, enemyId: string, background: string, layers: Troop["backdropLayers"]): void => {
