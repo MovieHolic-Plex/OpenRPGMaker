@@ -10,6 +10,7 @@
 // 한 번의 호출로 2상태 기물 이벤트 + 스위치/변수 + changeTile 타일 변화 + 연출 + 보상 + 통행 무결성 검증까지
 // 원자적으로 시공하는 author_map_puzzle 도구를 제공한다.
 
+import { josa } from "@/util/josa";
 import {
   allSwitchesFork,
   makePage,
@@ -912,7 +913,8 @@ function preparePuzzleReward(
 
   const grantCommands: Command[] = [
     ...lootGrantCommands({ itemId, gold }),
-    textCmd(`퍼즐 해독 보상! 「${existing?.name ?? itemName}」${gold > 0 ? `과(와) ${gold}G` : ""}를 획득했다!`),
+    // 조사는 이름에 맞춘다(독립 판정: 「압수품 꾸러미」과(와) 가 그대로 찍혔다).
+    textCmd(`퍼즐 해독 보상! 「${existing?.name ?? itemName}」${gold > 0 ? `${josa(existing?.name ?? itemName, "와/과")} ${gold}G를` : josa(existing?.name ?? itemName, "을/를")} 획득했다!`),
   ];
 
   return {

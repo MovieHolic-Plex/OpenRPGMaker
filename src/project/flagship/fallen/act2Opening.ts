@@ -99,7 +99,8 @@ const BARRACKS = {
   patrol: [{ x: 3, y: 10 }, { x: 15, y: 10 }] as Cell[],
 };
 /** 광장(통금의 밤) — 사다리를 오르면 서는 칸: 광장 동쪽 초소 뒤 골목. */
-const HUB_ARRIVE: Cell = { x: 52, y: 25 };
+/** 뚜껑 문으로 나와 서는 칸 — 골목 출구 틈 바로 아래(독립 판정: (52,25)에서 나오면 틈이 세 칸 옆이라 위로만 눌러 보다 「막혔다」고 읽었다). */
+const HUB_ARRIVE: Cell = { x: 49, y: 25 };
 /** 뚜껑 문 골목(47..54, 25)에서 광장으로 나가는 유일한 틈 — (49,24)→(49,23). */
 const HUB_ALLEY_GAP: Cell = { x: 49, y: 24 };
 
@@ -424,13 +425,13 @@ function barracks(project: Project, exec: Exec): void {
       se("cc0-se-osx-wooded-box-open"),
       narrate("사다리를 올라 뚜껑 문을 밀었다."),
       setSw(SW_OUT),
-      transfer(FS2_HUB_NIGHT_ID, HUB_ARRIVE, "down"),
+      transfer(FS2_HUB_NIGHT_ID, HUB_ARRIVE, "up"),
     ]),
     page(`${ladderId}_go2`, "오른다(다시)", [sw(SW_BARRACKS), sw(SW_MEDS)], [
       se("cc0-se-osx-wooded-box-open"),
       narrate("사다리를 올라 뚜껑 문을 밀었다."),
       setSw(SW_OUT),
-      transfer(FS2_HUB_NIGHT_ID, HUB_ARRIVE, "down"),
+      transfer(FS2_HUB_NIGHT_ID, HUB_ARRIVE, "up"),
     ]),
   ]);
   // 막사 아래 계단(남쪽 입구) — 감방으로 돌아가는 길(도착 칸 바로 아래 줄).
@@ -465,7 +466,7 @@ function hubNight(project: Project, exec: Exec, hubId: string): void {
       say(KAEL, "통금이야. 기사들이 돌고 있어."),
       say(ELENA, "들키면 끝이야. 그늘로만 가자."),
       // 독립 판정: 뚜껑 문 골목이 캄캄하고 출구가 한 칸이라 40분을 헤맸다 — 나갈 틈과 첫 목적지를 짚는다.
-      say(ELENA, "저기, 골목 왼쪽 위 불빛 새는 틈.\n거기로 빠져서 서쪽 수로 건너, 북서쪽 끝 빵집 — 미레 아주머니한테 가자."),
+      say(ELENA, "바로 위, 울타리가 끊긴 틈 — 불빛 새는 데.\n거기로 올라가서 서쪽 수로 건너, 북서쪽 끝 빵집 미레 아주머니한테 가자."),
     ], { trigger: { kind: "auto" } }),
   ]);
   ensureSwitch(project, "sw_fs2_hub_arrived", "B1: 통금의 밤 광장에 나옴");
@@ -482,7 +483,8 @@ const SW_CARRIAGE = "sw_fs2_heard_carriage";
 const SW_MIRE = "sw_fs2_mire_well";
 /** 순찰 기사 넷 — 광장 길목마다 하나. 앞쪽 부채꼴 시야라 등 뒤·그늘로 돌면 지나갈 수 있다. */
 const PATROLS: { at: Cell; axis: "horizontal" | "vertical"; length: number }[] = [
-  { at: { x: 44, y: 21 }, axis: "horizontal", length: 4 },
+  // 골목 틈(49,24) 바로 앞을 돌던 순찰을 서쪽으로 — 틈을 나서자마자 붙잡혔다(독립 판정 두 번).
+  { at: { x: 40, y: 21 }, axis: "horizontal", length: 4 },
   { at: { x: 36, y: 33 }, axis: "horizontal", length: 4 },
   { at: { x: 27, y: 25 }, axis: "vertical", length: 3 },
   { at: { x: 14, y: 21 }, axis: "horizontal", length: 4 },

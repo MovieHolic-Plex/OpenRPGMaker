@@ -3241,7 +3241,7 @@
   {
    "id": "act2-b1-ladder",
    "label": "제2막 B1 — 막사 사다리 → 통금의 밤 광장",
-   "note": "act2Opening.ts barracks ladder (18,5) → fs2_hub_night (52,25)",
+   "note": "act2Opening.ts barracks ladder (18,5) → fs2_hub_night (49,25) 골목 틈 아래",
    "mapId": "fs2_barracks",
    "x": 18,
    "y": 6,
@@ -3514,10 +3514,10 @@
   {
    "id": "act2-b2-patrol",
    "label": "제2막 B2 — 순찰 기사에게 들킨다 → 전투",
-   "note": "place_field_enemy chase cone (44,21)",
+   "note": "place_field_enemy chase cone (40,21) 가로 4",
    "mapId": "fs2_hub_night",
-   "x": 45,
-   "y": 25,
+   "x": 42,
+   "y": 24,
    "facing": "up",
    "switches": {
     "sw_fs_main_started": true,
