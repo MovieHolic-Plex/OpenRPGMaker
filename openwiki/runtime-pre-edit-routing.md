@@ -11,6 +11,13 @@
 - **타이틀 복귀 상세**: 항목은 늘 있다. 첫 결정은 확인 대기(「진행을 버리고 타이틀로 · 확인」), 둘째가 돌아간다. 빈 상세 문구(「준비하지 못했습니다」)는 없앴다.
 - **메뉴 첫 화면 현재 목표**: `playerStatusMenu.withObjectiveCard` 가 개요 밑에 `zoneFeedback.currentObjectiveText` 를 붙인다(목표가 없으면 없음).
 - 컷신 건너뛰기 안내는 「Esc 두 번: 컷신 건너뛰기」(터치는 「B 두 번」).
+- 목표창은 `activeRuntimeEvents("action")` 발자국(보이지 않는 조사 지점 포함)도 피한다.
+- **고해상도 무대 글자 배율**: 320×240 기준 UI 를 높이/240 ≥ 1.5 무대(연애 1024×768 등)에서 `playSurface.hiresUiZoom` 배(반올림)로 키운다 —
+  뷰포트 `data-hires-ui` + `--hires-ui-zoom`, `playSurface.css` 끝 규칙이 일반 대사창·타이틀 글/메뉴·컷신 자막·건너뛰기 안내에 `zoom` 을 건다.
+  zoom 은 px 글자·여백만 키우고 퍼센트 위치는 그대로다. 양쪽 전신 대사창(`data-dialogue-stage`)은 자기 `--dialogue-ui-scale` 을 쓰므로 빠지며,
+  저작 VN 룩(`vnLook.css` `[data-vn-look]`)의 글자 크기도 이 변수를 곱해야 한다(빠뜨리면 넓은 창에 9px 한 줄).
+- **타이틀 글 가독성**: 부제·평문 메뉴는 1px 네 방향 어두운 테두리+넓은 그림자. 타이틀 입자(비·눈)는 `.rm-title-fx`(z 1) 안이라 글(z 3) 아래다 — 「비가 글 위」 신고는 층이 아니라 대비 문제였다.
+  컷신 자막은 `text-wrap: balance`(「이십 / 년」 방지), 엔딩·크레딧(`.terminal-scene`)도 `keep-all`.
 - 증거: `~/z-project/assistant-whole-game/suite/ledger/evidence/hud/`(전/후, 재현 `replay.mjs` — 출하 player.html 로 판정자 손·체크포인트를 다시 돈다).
 
 ## 카메라 스크롤은 캔버스 픽셀 격자에 맞춘다 (2026-10-23)
