@@ -10,6 +10,7 @@ import { nextSessionRandom, startSession, type PlaySession } from "@/project/ses
 import { renderRuntimeDebugPanel } from "@/player/runtimeDebugPanel";
 import { projectWithoutEventDrafts } from "@/project/eventDrafts";
 import { store } from "@/project/store";
+import { openingAuthoringStatus } from "@/project/openingAuthoringStatus";
 import type { GameEvent, MapId, Project } from "@/project/types";
 import { el } from "@/util/dom";
 import { setImageWarmQueueSuspended } from "@/assets/imageWarmQueue";
@@ -42,6 +43,10 @@ let playRunControls: PlayerRunControls | null = null;
 let skipTitleCheckbox: HTMLInputElement | null = null;
 // 오프닝 건너뛰기 체크박스. 타이틀 건너뛰기와 같은 규칙으로 저장된 선호를 드러낸다.
 let skipOpeningCheckbox: HTMLInputElement | null = null;
+// 창이 열려 있는 동안 뒤 편집기를 inert 로 둔다(포커스·클릭이 창 밖으로 새지 않게). 닫을 때 원래 값으로 돌린다.
+let releaseBackgroundInert: (() => void) | null = null;
+// 게임 메뉴가 열려 있는 동안 제목 막대에 「일시 정지」 상태를 띄우는 관찰자.
+let stopPauseWatch: (() => void) | null = null;
 
 /** 작업자가 마지막으로 고른 자동 시작 여부. 기본값은 ON — 편집→테스트 왕복에서 타이틀 걷기를 없앤다. */
 const AUTO_START_STORAGE_KEY = `${STORAGE_PREFIX}test-play-auto-start`;
@@ -54,10 +59,14 @@ const SKIP_OPENING_STORAGE_KEY = `${STORAGE_PREFIX}test-play-skip-opening`;
 
 export function readTestPlaySkipOpening(): boolean {
   try {
-    return window.localStorage.getItem(SKIP_OPENING_STORAGE_KEY) === "1";
+    const stored = window.localStorage.getItem(SKIP_OPENING_STORAGE_KEY);
+    if (stored === "1" || stored === "0") return stored === "1";
   } catch {
-    return false;
+    /* 저장소를 못 읽으면 아래 기본값을 쓴다. */
   }
+  // 고른 적이 없으면: 새 프로젝트가 씨앗으로 받은 기본 오프닝은 건너뛴다 — 만든 맵을 걸어 보려는 첫 테스트가
+  // 남의 왕국 오프닝부터 보지 않게 한다(HIG C-93). 직접 만든 오프닝은 그대로 재생한다.
+  return openingAuthoringStatus(store.getCurrent()).defaultPlaceholder;
 }
 
 function writeTestPlaySkipOpening(skipOpening: boolean): void {
@@ -102,8 +111,10 @@ export async function openTestPlayModal(
   const projectTitle = store.getCurrent().meta.title?.trim();
   const title = startOverride
     ? `여기서 테스트 - (${startOverride.mapId} ${startOverride.x},${startOverride.y})`
-    : `시연 실행 - ${projectTitle || PRODUCT_BRAND}`;
-  const body = openTestPlayShell(title, { runControls: true });
+    : `테스트 실행 - ${projectTitle || PRODUCT_BRAND}`;
+  const startProject = store.getCurrent();
+  const startMapName = startProject.maps[startOverride?.mapId ?? startProject.startMapId]?.name;
+  const body = openTestPlayShell(title, { runControls: true, mapName: startMapName });
   const loading = mountPlayLoadingOverlay(body, "saving");
   try {
     await store.flush();
@@ -143,7 +154,7 @@ export async function openTestPlayModal(
     console.error("[test-play] failed to open test play:", error);
     releaseEventTestSnapshot?.();
     releaseEventTestSnapshot = null;
-    presentOpenFailure(loading, "시연 실행을 열지 못했습니다", error, {
+    presentOpenFailure(loading, "테스트 실행을 열지 못했습니다", error, {
       onRetry: () => void openTestPlayModal(startOverride, openOptions),
       onSafeMode: () => void openTestPlayModal(startOverride, { safeMode: true }),
     });
@@ -259,6 +270,8 @@ async function openTroopBattleTestModalAfterGate(troopId: string, project: Proje
       host: body,
       runtime,
       onResult: () => closeTestPlayModal(),
+      // 명령 첫 단계에서 Esc 는 전투 안에서 할 일이 없다 — 테스트 창에서는 편집기로 돌아가는 키로 쓴다.
+      onRootCancel: () => closeTestPlayModal(),
     });
   } catch (error) {
     console.error("[test-play] failed to open troop battle test:", error);
@@ -316,6 +329,10 @@ export function closeTestPlayModal(): void {
   if (modalRoot) unregisterModal(modalRoot);
   modalRoot?.remove();
   modalRoot = null;
+  releaseBackgroundInert?.();
+  releaseBackgroundInert = null;
+  stopPauseWatch?.();
+  stopPauseWatch = null;
   document.body.classList.remove("is-test-play-open");
   if (returnFocusAfterEnemyTest) {
     const target = returnFocusAfterEnemyTest.isConnected ? returnFocusAfterEnemyTest
@@ -332,7 +349,7 @@ export function closeTestPlayModal(): void {
 // 버튼을 달면 눌러도 아무 일이 없는 죽은 컨트롤이 된다.
 function openTestPlayShell(
   title: string,
-  shellOptions: { readonly runControls?: boolean; readonly nestedEnemyTest?: boolean } = {},
+  shellOptions: { readonly runControls?: boolean; readonly nestedEnemyTest?: boolean; readonly mapName?: string } = {},
 ): HTMLElement {
   closeTestPlayModal();
   // 편집기 색키 워밍이 이 창의 프리로드와 연결·메인 스레드를 나누지 않게 멈춘다.
@@ -362,21 +379,22 @@ function openTestPlayShell(
   const restartRunButton = el("button", {
     class: "test-play-close",
     text: "다시 시작",
-    attrs: { title: "현재 런을 처음부터 다시 시작 (F5)", "aria-label": "시연 실행 다시 시작" },
+    attrs: { title: "현재 런을 처음부터 다시 시작 (F5)", "aria-label": "테스트 실행 다시 시작" },
     dataset: { testid: "test-play-restart" },
     on: { click: () => restartPlayRun() },
   }) as HTMLButtonElement;
   const bootTitleButton = el("button", {
     class: "test-play-close",
     text: "타이틀부터",
-    attrs: { title: "타이틀 화면부터 실행", "aria-label": "시연 실행 타이틀부터" },
+    attrs: { title: "타이틀 화면부터 실행", "aria-label": "테스트 실행 타이틀부터" },
     dataset: { testid: "test-play-title" },
     on: { click: () => bootPlayTitle() },
   }) as HTMLButtonElement;
   // 타이틀 건너뛰기는 저장되는 선호다. 예전에는 다시 시작 / 타이틀부터를 눌러야만 바뀌어서
   // 작업자가 지금 어느 모드인지 볼 수도, 직접 고를 수도 없었다.
+  // 체크박스는 감싼 label 글자와 같은 접근 이름을 직접 갖는다(값 「on」 이 이름으로 읽히던 결함, HIG C-89).
   const skipTitleInput = el("input", {
-    attrs: { type: "checkbox" },
+    attrs: { type: "checkbox", "aria-label": "타이틀 건너뛰기" },
     dataset: { testid: "test-play-skip-title" },
   }) as HTMLInputElement;
   skipTitleInput.checked = readTestPlayAutoStart();
@@ -385,11 +403,11 @@ function openTestPlayShell(
     class: "test-play-close test-play-skip-title",
     attrs: { title: "체크하면 타이틀 화면을 거치지 않고 바로 플레이한다" },
     dataset: { testid: "test-play-skip-title-label" },
-    children: [skipTitleInput, " 타이틀 건너뛰기"],
+    children: [skipTitleInput, el("span", { text: "타이틀 건너뛰기" })],
   });
   // 오프닝도 같은 선택지다: 타이틀을 건너뛰어도 오프닝은 매 런마다 다시 나왔다.
   const skipOpeningInput = el("input", {
-    attrs: { type: "checkbox" },
+    attrs: { type: "checkbox", "aria-label": "오프닝 건너뛰기" },
     dataset: { testid: "test-play-skip-opening" },
   }) as HTMLInputElement;
   skipOpeningInput.checked = readTestPlaySkipOpening();
@@ -398,19 +416,34 @@ function openTestPlayShell(
     class: "test-play-close test-play-skip-title",
     attrs: { title: "체크하면 오프닝 시네마틱을 건너뛰고 바로 플레이한다" },
     dataset: { testid: "test-play-skip-opening-label" },
-    children: [skipOpeningInput, " 오프닝 건너뛰기"],
+    children: [skipOpeningInput, el("span", { text: "오프닝 건너뛰기" })],
   });
   const restoreButton = el("button", {
     class: "test-play-close window-control restore",
-    text: "창",
-    attrs: { title: "창 모드", "aria-label": "시연 실행 창 모드" },
+    text: "창으로 돌아가기",
+    attrs: { title: "전체 화면을 끝내고 창으로 돌아가기 (Alt+Enter)" },
     dataset: { testid: "test-play-window-restore" },
   }) as HTMLButtonElement;
   const maximizeButton = el("button", {
     class: "test-play-close window-control maximize",
     text: "전체 화면",
-    attrs: { title: "전체 화면", "aria-label": "시연 실행 전체 화면" },
+    attrs: { title: "전체 화면 (Alt+Enter)" },
     dataset: { testid: "test-play-window-maximize" },
+  }) as HTMLButtonElement;
+  // 게임 메뉴가 열려 있는 동안만 보이는 상태 칩. 메뉴가 열리면 플레이어 조작이 멈춘다는 것을 막대에서도 읽는다(IS-085).
+  const pauseChip = el("span", {
+    class: "test-play-pause",
+    text: "조작 일시 정지 · Esc로 계속",
+    attrs: { role: "status", hidden: "" },
+    dataset: { testid: "test-play-pause" },
+  });
+  // 창을 닫는 길은 하나다: 결과를 이름에 적은 「편집기로 돌아가기」. 예전엔 「편집으로」와 「×」가 같은 이름으로 두 번 있었다(HIG C-89).
+  const exitButton = el("button", {
+    class: "test-play-close test-play-exit",
+    text: "편집기로 돌아가기",
+    attrs: { title: "테스트 창을 닫고 편집기로 돌아가기" },
+    dataset: { testid: "mode-edit" },
+    on: { click: () => closeTestPlayModal() },
   }) as HTMLButtonElement;
   titlebar.append(
     el("span", {
@@ -418,23 +451,15 @@ function openTestPlayShell(
       text: store.getCurrent().meta.publication ? `${title} · 현재 편집기 엔진 미리보기` : title,
       dataset: { testid: "test-play-window-title" },
     }),
-    el("button", {
-      class: "test-play-close",
-      text: "편집으로",
-      attrs: { title: "시연 실행 닫기" },
-      dataset: { testid: "mode-edit" },
-      on: { click: () => closeTestPlayModal() },
-    }),
+    // 지금 무엇을 돌리는지(맵 이름)는 막대에 남긴다 — 편집과 플레이를 헷갈리지 않게(IS-084).
+    ...(shellOptions.mapName
+      ? [el("span", { class: "test-play-map", text: shellOptions.mapName, attrs: { title: "시작 맵" }, dataset: { testid: "test-play-map" } })]
+      : []),
+    pauseChip,
     ...(shellOptions.runControls ? [skipTitleLabel, skipOpeningLabel, restartRunButton, bootTitleButton] : []),
     restoreButton,
     maximizeButton,
-    el("button", {
-      class: "test-play-close icon",
-      text: "×",
-      attrs: { title: "닫기", "aria-label": "시연 실행 닫기" },
-      dataset: { testid: "test-play-window-close" },
-      on: { click: () => closeTestPlayModal() },
-    })
+    exitButton,
   );
   const body = el("div", {
     class: "test-play-modal-body",
@@ -447,24 +472,28 @@ function openTestPlayShell(
   // 코치마크 숨김 CSS 가 body:has() 로 문서 전체를 훑지 않게 상태를 body 에 직접 둔다.
   document.body.classList.add("is-test-play-open");
   modalRoot = backdrop;
-  if (shellOptions.nestedEnemyTest) {
-    registerModal(backdrop, closeTestPlayModal);
-    backdrop.addEventListener("keydown", (event) => {
-      if (event.key !== "Tab") return;
-      const controls = Array.from(backdrop.querySelectorAll<HTMLElement>('button, input, select, textarea, [tabindex="0"]'))
-        .filter((node) => !node.hasAttribute("disabled") && node.getClientRects().length > 0);
-      const first = controls[0];
-      const last = controls[controls.length - 1];
-      if (event.shiftKey && document.activeElement === first) {
-        event.preventDefault();
-        last?.focus();
-      } else if (!event.shiftKey && document.activeElement === last) {
-        event.preventDefault();
-        first?.focus();
-      }
-    });
-    restoreButton.focus();
-  }
+  releaseBackgroundInert = inertEverythingBut(backdrop);
+  stopPauseWatch = watchGameMenuPause(body, pauseChip);
+  if (shellOptions.nestedEnemyTest) registerModal(backdrop, closeTestPlayModal);
+  // 창은 모달이다: Tab 이 창 밖(편집기)으로 나가지 않고 창 안을 돈다(HIG C-90).
+  backdrop.addEventListener("keydown", (event) => {
+    if (event.key !== "Tab") return;
+    const controls = Array.from(backdrop.querySelectorAll<HTMLElement>('button, input, select, textarea, summary, [tabindex="0"]'))
+      .filter((node) => !node.hasAttribute("disabled") && node.getClientRects().length > 0);
+    const first = controls[0];
+    const last = controls[controls.length - 1];
+    if (!first || !last) return;
+    const active = document.activeElement;
+    const inside = active instanceof HTMLElement && controls.includes(active);
+    if (event.shiftKey && (active === first || !inside)) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && (active === last || !inside)) {
+      event.preventDefault();
+      first.focus();
+    }
+  });
+  if (shellOptions.nestedEnemyTest) restoreButton.focus();
   // 모달 뒤의 편집기 게임은 그릴 필요도, 키를 받을 이유도 없다 — 플레이 프레임에 양보한다.
   suspendEditorGame();
   windowNode.dataset.editorGameSuspended = String(isEditorGameSuspended());
@@ -507,6 +536,42 @@ function setSkipOpening(skipOpening: boolean): void {
     return;
   }
   playRunControls?.returnToTitle();
+}
+
+/** 창 밖 형제를 모두 inert 로 두고, 되돌리는 함수를 돌려준다. 원래 inert 였던 노드는 그대로 둔다. */
+function inertEverythingBut(keep: HTMLElement): () => void {
+  const changed: HTMLElement[] = [];
+  for (const node of Array.from(document.body.children)) {
+    if (!(node instanceof HTMLElement) || node === keep || node.inert) continue;
+    node.inert = true;
+    changed.push(node);
+  }
+  return () => {
+    for (const node of changed) node.inert = false;
+  };
+}
+
+/** 플레이 화면에 게임 메뉴가 열려 있는 동안 막대의 일시 정지 칩을 보인다. */
+function watchGameMenuPause(host: HTMLElement, chip: HTMLElement): () => void {
+  const sync = (): void => {
+    const open = Array.from(host.querySelectorAll<HTMLElement>(".oprn-status-menu")).some((menu) => menu.getClientRects().length > 0);
+    if (chip.hidden === !open) return;
+    chip.hidden = !open;
+  };
+  // 게임 DOM 은 프레임마다 바뀔 수 있다 — 변경은 한 프레임에 한 번만 읽는다.
+  let frame = 0;
+  const observer = new MutationObserver(() => {
+    if (frame) return;
+    frame = requestAnimationFrame(() => {
+      frame = 0;
+      sync();
+    });
+  });
+  observer.observe(host, { subtree: true, childList: true, attributes: true, attributeFilter: ["class", "hidden"] });
+  return () => {
+    observer.disconnect();
+    if (frame) cancelAnimationFrame(frame);
+  };
 }
 
 function setTestPlayWindowMode(windowNode: HTMLElement, mode: TestPlayWindowMode): void {

@@ -88,7 +88,11 @@ export function bindBattleStageScale(host: HTMLElement, scene: HTMLElement): Sca
     const width = host.clientWidth || host.offsetWidth;
     const height = host.clientHeight || host.offsetHeight;
     const logicalWidth = calculateBattleStageWidth(width, height, scene.dataset.battleMotion === "retro");
-    const scale = calculateBattleStageScale(width, height, logicalWidth);
+    const fit = calculateBattleStageScale(width, height, logicalWidth);
+    // 확대할 때는 1/4 단위로 내린다. 1.167·1.707 같은 배율에서는 도트 글꼴(12·16·20px)이 23.3·34.1px 처럼 소수 크기로
+    // 그려져 「할」「킬」의 획이 뭉개졌다(HIG C-98). 1/4 단위면 이 글자 크기들이 모두 정수 px 이다. 남는 여백은 아래 중앙 정렬과
+    // battle-stage 바탕이 덮는다. 축소(플레이 경로의 0.5 등)는 조상 배율이 맞추므로 그대로 둔다.
+    const scale = fit >= 1 ? Math.floor(fit * 4) / 4 : fit;
     // transform-origin 이 top left 라 스케일 후 남는 여백을 직접 반으로 나눠 중앙에 놓는다.
     const offsetX = Math.max(0, (width - logicalWidth * scale) / 2);
     const offsetY = Math.max(0, (height - BATTLE_LOGICAL_HEIGHT * scale) / 2);
