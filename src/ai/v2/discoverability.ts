@@ -18,6 +18,7 @@ import type { GameMap, Project } from "@/project/types";
 import { mapRoute, objectiveTargetViews } from "@/player/objectiveTarget";
 import type { RuntimeEventView } from "@/project/runtimeEventState";
 import { computeReachableCells } from "@/project/lint/reachability";
+import { josa } from "@/util/josa";
 
 export const OBJECTIVE_COMMAND_ID = "m2-214-ui-command";
 export const OBJECTIVE_SURFACE = "objectiveChip";
@@ -236,11 +237,50 @@ export function startObjectiveReachGap(project: Project): string | undefined {
 }
 
 /**
+ * 전투 승리 스위치로 잠긴 이벤트 → 그 스위치를 켜는 전투 이벤트(같은 맵·다른 맵). 잠김 = 그 스위치를 조건으로 단 페이지와 달지 않은
+ * 페이지가 함께 있다(gateBattleSteps 의 「아직 못 이김」). 켜는 쪽 = battleProcessing 과 그 스위치 켜기를 함께 가진 다른 이벤트.
+ * 켜는 쪽 이름이 비었으면 부대 이름으로 채운다(제자리 수정).
+ */
+function battleGateHolders(project: Project): Map<string, { switchId: string; holder: { map: GameMap; event: GameMap["events"][number] } }> {
+  const setters = new Map<string, { map: GameMap; event: GameMap["events"][number]; troopId?: string }>();
+  for (const ref of allPages(project)) {
+    let troopId: string | undefined;
+    const sets: string[] = [];
+    visitPageCommands(ref, ({ command }) => {
+      if (command.kind === "battleProcessing") troopId ??= String(command.troopId ?? "");
+      if (command.kind === "setSwitch" && command.value === true && typeof command.switchId === "string") sets.push(command.switchId);
+    });
+    if (troopId !== undefined && ref.map && ref.event) for (const id of sets) if (!setters.has(id)) setters.set(id, { map: ref.map!, event: ref.event!, troopId });
+  }
+  const out = new Map<string, { switchId: string; holder: { map: GameMap; event: GameMap["events"][number] } }>();
+  for (const map of Object.values(project.maps)) for (const event of map.events ?? []) {
+    const pages = event.pages ?? [];
+    for (const [switchId, setter] of setters) {
+      if (setter.event.id === event.id) continue;
+      const has = (page: (typeof pages)[number]) => (page.conditions ?? []).some((c) => (c as { switchId?: string }).switchId === switchId);
+      if (!pages.some(has) || pages.every(has)) continue;
+      if (!String(setter.event.name ?? "").trim()) {
+        const troop = project.database.troops.find((t) => t.id === setter.troopId);
+        if (troop?.name) (setter.event as { name?: string }).name = troop.name;
+      }
+      if (!String(setter.event.name ?? "").trim()) continue;
+      out.set(event.id, { switchId, holder: { map: setter.map, event: setter.event } });
+      break;
+    }
+  }
+  return out;
+}
+
+/**
  * 「(<맵> 입구: …)」 꼬리를 지금 맵 연결로 다시 쓴다(끝맺음 조립에서 한 번, 모델 없음).
  * 목표 글은 짓는 도중에 걸리고 문·맵은 그 뒤에도 바뀐다 — 마지막 상태에서 «목표가 걸리는 자리에서 본 첫 출구» 방위와
  * 그 뒤 대상(다음 청사진 단계 이벤트)을 다시 붙인다. 바꾼 목표 수를 돌려준다.
+ * 대상 이벤트가 전투 승리 스위치로 잠겨 있으면(gateBattleSteps: 「마왕과의 결전」은 보스를 이긴 뒤에만 넘어간다) 목표는 그 전투를 가리킨다 —
+ * 2026-10-29 vm2 terra jrpg: 「동굴의 흔적」 뒤 목표가 「(마왕과의 결전)」 이라 표시가 바로 옆(1칸) 결전 이벤트를 짚었고, 진짜 할 일인
+ * 마왕(27,9)은 이름이 없어 아무 표시도 받지 못했다. 이름 없는 보스 이벤트에는 부대 이름을 붙인다(런타임 표시는 이름으로 짚는다).
  */
 export function refreshObjectiveRoutes(project: Project): number {
+  const holders = battleGateHolders(project);
   const steps = project.gameBlueprint?.steps ?? [];
   const find = (ref: string | undefined) => {
     if (!ref) return undefined;
@@ -256,7 +296,14 @@ export function refreshObjectiveRoutes(project: Project): number {
     for (const page of event.pages ?? []) {
       const opening = map.id === project.startMapId && ["auto", "parallel"].includes(String((page.trigger as { kind?: string } | undefined)?.kind));
       const origin: Cell = opening && project.startPos ? project.startPos as Cell : { x: event.x, y: event.y };
-      const next = k >= 0 ? find(steps[k + 1]?.event) : opening ? find(steps[0]?.event) : undefined;
+      const stepNext = k >= 0 ? find(steps[k + 1]?.event) : opening ? find(steps[0]?.event) : undefined;
+      // 이 페이지가 이미 그 승리 뒤에만 도는 페이지면(보스 자신·승리 조건 페이지) 잠금 대상을 그대로 가리킨다.
+      const pageSwitches = new Set((page.conditions ?? []).map((c) => String((c as { switchId?: string }).switchId ?? "")));
+      const holderFor = (target: { map: GameMap; event: GameMap["events"][number] } | undefined) => {
+        const gate = target ? holders.get(target.event.id) : undefined;
+        return gate && gate.holder.event.id !== event.id && !pageSwitches.has(gate.switchId) ? gate.holder : undefined;
+      };
+      const next = holderFor(stepNext) ?? stepNext;
       const visit = (list: RawCommand[]): void => {
         for (const command of list) {
           for (const child of childLists(command)) { const raw = rawChild(command, child.key); if (raw) visit(raw); }
@@ -264,7 +311,21 @@ export function refreshObjectiveRoutes(project: Project): number {
           const fields = command.fields as Record<string, unknown>;
           const message = String(fields.message ?? "");
           const tail = /\s*\(([^()]*?)\s*입구:[^()]*\)\s*$/u.exec(message);
-          if (!tail) continue;
+          if (!tail) {
+            // 같은 맵 꼬리 「(마왕과의 결전)」 또는 글에 잠긴 이벤트 이름이 나오면 그 잠금을 여는 전투로 돌린다.
+            const plainTail = /\s*\(([^()]*)\)\s*$/u.exec(message);
+            const base = plainTail ? message.slice(0, plainTail.index).trimEnd() : message;
+            const gated = [...holders.keys()].map((id) => find(id)).find((ref) => ref && bare(String(ref.event.name ?? "")).length >= 2
+              && (plainTail ? bare(plainTail[1]!) === bare(String(ref.event.name)) : bare(base).includes(bare(String(ref.event.name)))));
+            const holder = holderFor(gated);
+            if (!gated || !holder) continue;
+            const holderName = String(holder.event.name ?? "");
+            // 글이 잠긴 이벤트 이름을 담으면(런타임은 글에 나온 더 긴 이름을 고른다) 전투를 부르는 글로 바꾼다.
+            const text = bare(base).includes(bare(String(gated.event.name))) ? `${holderName}${josa(holderName, "을/를")} 쓰러뜨리자` : base;
+            const updated = withWhere(project, map.id, text, holder.event.id, origin);
+            if (updated !== message) { fields.message = updated; changed += 1; }
+            continue;
+          }
           const named = Object.values(project.maps).find((m) => bare(m.name ?? "") === bare(tail[1]!));
           if (!named) continue;
           const base = message.slice(0, tail.index).trimEnd();
