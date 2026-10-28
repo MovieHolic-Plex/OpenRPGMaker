@@ -10,6 +10,7 @@ import type { PiAgentDoneEvent, PiAgentEvent, PiAgentRequest } from "../../src/a
 import { buildV2SystemPrompt } from "../../src/ai/v2/prompt.ts";
 import { createV2Tools, V2Session, v2FinishGate } from "../../src/ai/v2/verbs.ts";
 import { BLUEPRINT_PATH_IDS, walkBlueprint } from "../../src/ai/v2/blueprint.ts";
+import { battleSites, healingSources } from "../../src/ai/v2/combatChecks.ts";
 import { shipBlockers } from "../../src/ai/v2/shipChecks.ts";
 import { applyBlueprintAssembly } from "../../src/project/blueprintAssembly.ts";
 import { assembledReport, isProviderErrorReply } from "../../src/ai/v2/finalReport.ts";
@@ -235,9 +236,11 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
         if (notes.length) done.push(`장소: ${notes.join(" / ").slice(0, 700)}`);
         walked = walkBlueprint(env.ctx.project).blockers;
       }
-      if (session.buildPath && !session.autoPathDone && walked.some((b) => BLUEPRINT_PATH_IDS.has(b.id))) {
+      // 전투가 있는데 회복할 길이 0(출하 검사 combat-no-healing)도 경로 짓기가 고친다(build_blueprint_path 끝의 ensureHealingAccess) — 경로 막힘이 없어도 부른다.
+      const noHealing = battleSites(env.ctx.project).length > 0 && healingSources(env.ctx.project).length === 0;
+      if (session.buildPath && !session.autoPathDone && (noHealing || walked.some((b) => BLUEPRINT_PATH_IDS.has(b.id)))) {
         session.autoPathDone = true;
-        const built = await session.buildPath(walked.map((b) => b.id).join(","));
+        const built = await session.buildPath([...walked.map((b) => b.id), ...(noHealing ? ["combat-no-healing"] : [])].join(","));
         env.emit({ type: "execution_status", name: "v2.blueprint.auto_path", ok: built.ok, summary: `청사진 경로 자동 짓기 — ${built.summary.slice(0, 300)}` });
         done.push(built.ok ? `경로: ${built.summary.slice(0, 600)}` : `경로 짓기 실패: ${built.summary.slice(0, 400)} — 이 이유를 고친 뒤 build_blueprint_path 를 부른다.`);
       }
@@ -267,7 +270,8 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
     return autoPath;
   };
   const lateBuildPending = (env: PiAssistantV2Env) => Boolean(env.ctx.project.gameBlueprint) && (!session.autoPlacesDone || !session.autoPathDone || !session.autoLanesDone)
-    && (!session.autoLanesDone || walkBlueprint(env.ctx.project).blockers.some((b) => b.id === "blueprint-place-missing" || b.id === "blueprint-place-unreachable" || BLUEPRINT_PATH_IDS.has(b.id)));
+    && (!session.autoLanesDone || (!session.autoPathDone && battleSites(env.ctx.project).length > 0 && healingSources(env.ctx.project).length === 0)
+      || walkBlueprint(env.ctx.project).blockers.some((b) => b.id === "blueprint-place-missing" || b.id === "blueprint-place-unreachable" || BLUEPRINT_PATH_IDS.has(b.id)));
   const done = await runPiAgent({
     ...request,
     systemPrompt: buildV2SystemPrompt(request.project, request.currentMapId, request.task),

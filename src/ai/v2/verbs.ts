@@ -508,10 +508,12 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     },
   };
   session.buildPath = async (why: string) => {
+    const before = env.ctx.project;
     const result = runBlueprintPath([]);
     recordWrite(env, run, `auto-path-${Date.now()}`, "build_blueprint_path", { auto: why }, result.ok, result.summary, { eventIds: result.eventIds });
     session.content.push({ verb: "build_blueprint_path", result });
-    if (result.ok) await env.checkpoint("build_blueprint_path");
+    // 경로를 다시 짓지 않고 거절해도(전투 단계 이벤트) 끝의 맞춤(열쇠 문·승리 관문·회복 길)은 했을 수 있다 — 바뀌었으면 저장한다.
+    if (result.ok || env.ctx.project !== before) await env.checkpoint("build_blueprint_path");
     return { ok: result.ok, summary: result.summary };
   };
   // 끝맺음(2026-10-28 standin jrpg): 컷신에서 주인공에게 다가온 소녀가 동굴 입구 착지 칸 앞에 서서 자동 플레이가 막혔다.

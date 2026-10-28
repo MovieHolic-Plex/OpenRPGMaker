@@ -325,7 +325,7 @@ export function escapeLeaks(project: Project): EscapeLeak[] {
 
 /** 경로 막힘의 고칠 동사 한 줄 — 하위 도구(upsert_event·define_ending…)를 하나씩 맞추게 하지 않는다(2026-10-28 mt2 Flash: upsert_event 6번 인자 실패). */
 export const BLUEPRINT_PATH_FIX = "고치기: build_blueprint_path 를 한 번 부른다 — 청사진 단계대로 이벤트·조건·스위치·아이템·엔딩 호출을 함수가 짓는다(대사만 steps[{id,lines}] 로 준다).";
-export const BLUEPRINT_PATH_IDS: ReadonlySet<string> = new Set(["blueprint-event-unreachable", "blueprint-event-missing", "blueprint-event-empty", "blueprint-condition-unset", "blueprint-condition-order", "blueprint-no-ending", "blueprint-code-bypass", "blueprint-escape-leak"]);
+export const BLUEPRINT_PATH_IDS: ReadonlySet<string> = new Set(["blueprint-event-unreachable", "blueprint-event-missing", "blueprint-event-empty", "blueprint-condition-unset", "blueprint-condition-order", "blueprint-no-ending", "blueprint-code-bypass", "blueprint-battle-bypass", "blueprint-escape-leak"]);
 
 export interface BlueprintWalk {
   readonly blockers: BlueprintBlocker[];
