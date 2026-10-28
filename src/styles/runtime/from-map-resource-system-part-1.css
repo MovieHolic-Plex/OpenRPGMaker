@@ -17,6 +17,8 @@
 /* map/resource-system.part-1.css:390-395 — [레이어 보존] 테스트 플레이 모달이 런타임 레이아웃을 덮어쓰는 규칙 — runtime 레이어의 .play-viewport/.player-layout 을 오늘처럼 이기려면 같은 레이어여야 한다 */
 .test-play-modal-body > .player-layout.system-shell {
   align-items: stretch;
+  /* 게임 그림 옆 여백은 검정 한 가지다 — .system-shell 의 편집기 바탕(--bg-canvas)이 회색 기둥을 칠해 그림이 두 격 레터박스에 갇혀 보였다(HIG C-94). */
+  background: #000;
   grid-template-columns: minmax(0, 1fr);
   grid-template-rows: minmax(0, 1fr);
   justify-items: stretch;
