@@ -250,3 +250,48 @@ function swapOverpoweredSkills(
   const skillIds = [...new Set(((enemy as unknown as { skillIds?: string[] }).skillIds ?? []).map(pick).filter((id): id is string => !!id))];
   return changed ? { actions, skillIds } : undefined;
 }
+
+/** 맞춘 사본 적 그룹 id 접두 — pickTroops 가 다시 고르지 않는다. */
+export const FITTED_TROOP_PREFIX = "troop_fit_";
+
+/**
+ * DB 적 그룹 하나를 시작 파티에 맞춘 사본으로 — 원본 적·그룹은 그대로 두고(다른 이벤트가 부를 수 있다)
+ * `troop_fit_<role>_<원본>` / `enemy_fit_<role>_<원본>` 을 만들어 그 id 를 돌려준다. 이미 있으면 그대로 쓴다(결정적).
+ * 파티가 없으면 원본 id.
+ * 왜(2026-10-29 vm1 flash jrpg): 일반 JRPG 경로(pickTroops)도 DB 적 그룹을 세기 순으로 고르기만 해, 가장 센 그룹(드래곤)이
+ * Lv1 혼자인 파티의 보스로 그대로 나왔다.
+ */
+export function fitTroopCopy(project: Project, troopId: string | undefined, role: EnemyFitRole): string | undefined {
+  if (!troopId || troopId.startsWith(FITTED_TROOP_PREFIX)) return troopId;
+  const source = project.database.troops.find(troop => troop.id === troopId);
+  if (!source) return troopId;
+  const id = `${FITTED_TROOP_PREFIX}${role}_${troopId.replace(/^troop_/u, "")}`;
+  if (project.database.troops.some(troop => troop.id === id)) return id;
+  const memberIds = (source.members?.length ? source.members.map(member => member.enemyId) : source.enemyIds) ?? [];
+  if (!memberIds.length) return troopId;
+  const count = memberIds.length;
+  const copies = new Map<string, string>();
+  for (const enemyId of new Set(memberIds)) {
+    const enemy = project.database.enemies.find(e => e.id === enemyId);
+    if (!enemy) return troopId;
+    const copyId = `enemy_fit_${role}_${enemyId.replace(/^enemy_/u, "")}`;
+    if (!project.database.enemies.some(e => e.id === copyId)) {
+      const fit = fitEnemyToStartParty(project, enemy, role, count);
+      if (!fit) return troopId;
+      const copy = structuredClone(enemy) as EnemyRecord;
+      (copy as { id: string }).id = copyId;
+      copy.stats = fit.stats;
+      (copy as { level?: number }).level = fit.level;
+      if (fit.actions) copy.actions = fit.actions;
+      if (fit.skillIds) (copy as { skillIds?: readonly string[] }).skillIds = fit.skillIds;
+      project.database.enemies.push(copy);
+    }
+    copies.set(enemyId, copyId);
+  }
+  const clone = structuredClone(source) as typeof source;
+  (clone as { id: string }).id = id;
+  (clone as { enemyIds: string[] }).enemyIds = (source.enemyIds ?? memberIds).map(e => copies.get(e) ?? e);
+  if (source.members?.length) (clone as { members: unknown[] }).members = source.members.map(member => ({ ...member, enemyId: copies.get(member.enemyId) ?? member.enemyId }));
+  project.database.troops.push(clone);
+  return id;
+}
