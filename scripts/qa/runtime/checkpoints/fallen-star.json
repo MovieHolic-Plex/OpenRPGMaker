@@ -2826,11 +2826,11 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 8
+     "level": 6
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 8
+     "level": 6
     }
    ],
    "beats": [
@@ -2932,11 +2932,11 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 8
+     "level": 6
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 8
+     "level": 6
     }
    ],
    "items": {
@@ -3260,11 +3260,11 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 8
+     "level": 6
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 8
+     "level": 6
     }
    ],
    "beats": [
@@ -3356,11 +3356,11 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 8
+     "level": 6
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 8
+     "level": 6
     }
    ],
    "beats": [
@@ -3448,11 +3448,11 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 8
+     "level": 6
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 8
+     "level": 6
     }
    ],
    "beats": [
@@ -3513,12 +3513,12 @@
   },
   {
    "id": "act2-b2-patrol",
-   "label": "제2막 B2 — 순찰 기사에게 들킨다 → 전투",
-   "note": "place_field_enemy chase cone (44,21)",
+   "label": "제2막 B2 — 야경꾼 2인조에게 들킨다 → 쉬운 전투(이기면 그 순찰은 사라진다)",
+   "note": "act2Opening.ts curfewHub 순찰 (44,21) 가로 4칸 — 광장 서쪽 (39,21)에서 기다리면 돌아서며 본다",
    "mapId": "fs2_hub_night",
-   "x": 45,
-   "y": 25,
-   "facing": "up",
+   "x": 39,
+   "y": 21,
+   "facing": "right",
    "switches": {
     "sw_fs_main_started": true,
     "sw_fs_main_done": true,
@@ -3534,11 +3534,11 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 8
+     "level": 6
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 8
+     "level": 6
     }
    ],
    "beats": [
@@ -3548,7 +3548,7 @@
       {
        "kind": "hold",
        "dir": null,
-       "ms": 6000
+       "ms": 9000
       }
      ],
      "shot": true
@@ -3591,11 +3591,11 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 8
+     "level": 6
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 8
+     "level": 6
     }
    ],
    "beats": [
@@ -3801,11 +3801,11 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 8
+     "level": 6
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 8
+     "level": 6
     }
    ],
    "beats": [
@@ -3867,7 +3867,7 @@
   {
    "id": "act2-b4-hole",
    "label": "제2막 B4 — 성벽 밑 브람, 개구멍에서 들킨다 → 숲 어귀 추격 → 숲 그늘 고백",
-   "note": "act2Opening.ts bram (39,16) · hole (38,15) → map_field_north_1 forestEdgeChase(경보 기사 appearSwitchId)",
+   "note": "act2Opening.ts bram (39,16) · hole (38,15) → map_field_north_1 forestEdgeChase(make_chase_scene 기사 둘, 경보 스위치, 놀람 1.4초·돌진 4칸@100ms) — 숲 그늘 줄 y=28(입구 위 10칸)",
    "mapId": "fs2_hub_night",
    "x": 38,
    "y": 16,
@@ -3891,11 +3891,11 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 8
+     "level": 6
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 8
+     "level": 6
     }
    ],
    "beats": [
@@ -3993,7 +3993,7 @@
       {
        "kind": "hold",
        "dir": null,
-       "ms": 1600
+       "ms": 300
       }
      ],
      "shot": true
@@ -4004,7 +4004,7 @@
       {
        "kind": "move",
        "dir": "up",
-       "steps": 13
+       "steps": 10
       },
       {
        "kind": "waitFor",
@@ -4051,6 +4051,71 @@
    ]
   },
   {
+   "id": "act2-b5-dogs",
+   "label": "제2막 B5 — 숲 어귀 북쪽 잿빛 빈터: 굶은 들개가 보자마자 달려와 전투",
+   "note": "act2Opening.ts dawnwell foes map_field_north_1 들개 (16,20) — detection 짐승 프로필(놀람 150ms·돌진 4칸@100ms)",
+   "mapId": "map_field_north_1",
+   "x": 16,
+   "y": 27,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_done": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs2_act2_started": true,
+    "sw_fs2_out_of_cells": true,
+    "sw_fs2_hub_arrived": true,
+    "sw_fs2_mire_well": true,
+    "sw_fs2_heard_carriage": true,
+    "sw_fs2_hanel_told": true,
+    "sw_fs2_rohan_spear": true,
+    "sw_fs2_bram_hole": true,
+    "sw_fs2_b4_alarm": true,
+    "sw_fs2_b4_forest_edge": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 7
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 7
+    }
+   ],
+   "beats": [
+    {
+     "id": "approach",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 8000
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "battle",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 4000
+      }
+     ],
+     "shot": true
+    }
+   ],
+   "sessionPatch": {
+    "actorEquipment": {
+     "actor_hero": {
+      "weapon": "equip_fs2_rohan_spear"
+     }
+    }
+   }
+  },
+  {
    "id": "act2-b5-field",
    "label": "제2막 B5 — 재의 들판: 잿불 도깨비가 둥실 다가온다",
    "note": "act2Opening.ts dawnwell foes map_field_north_2",
@@ -4074,11 +4139,11 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 10
+     "level": 7
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 10
+     "level": 7
     }
    ],
    "beats": [
@@ -4104,7 +4169,14 @@
      ],
      "shot": true
     }
-   ]
+   ],
+   "sessionPatch": {
+    "actorEquipment": {
+     "actor_hero": {
+      "weapon": "equip_fs2_rohan_spear"
+     }
+    }
+   }
   },
   {
    "id": "act2-b5-door",
@@ -4133,11 +4205,11 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 10
+     "level": 8
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 10
+     "level": 8
     }
    ],
    "beats": [
@@ -4200,7 +4272,14 @@
      ],
      "shot": true
     }
-   ]
+   ],
+   "sessionPatch": {
+    "actorEquipment": {
+     "actor_hero": {
+      "weapon": "equip_fs2_rohan_spear"
+     }
+    }
+   }
   },
   {
    "id": "act2-b6-enter",
@@ -4230,11 +4309,11 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 12
+     "level": 8
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 12
+     "level": 8
     }
    ],
    "beats": [
@@ -4285,11 +4364,18 @@
      ],
      "shot": true
     }
-   ]
+   ],
+   "sessionPatch": {
+    "actorEquipment": {
+     "actor_hero": {
+      "weapon": "equip_fs2_rohan_spear"
+     }
+    }
+   }
   },
   {
    "id": "act2-b6-sarah",
-   "label": "제2막 B6 — 요새 꼭대기 새라 + 경비견 둘, 이기면 선택 1·합류",
+   "label": "제2막 B6 — 성벽 위 결투장, 새라 + 경비견 하나(파티 Lv8), 이기면 선택 1·합류",
    "note": "act2Opening.ts fortressEvents ev_fs2_fort_sarah — 2층 성벽 위(fs2_fortress_f2)",
    "mapId": "fs2_fortress_f2",
    "x": 21,
@@ -4315,11 +4401,11 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 40
+     "level": 8
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 40
+     "level": 8
     }
    ],
    "beats": [
@@ -4391,7 +4477,30 @@
        "kind": "battle",
        "fallback": "attack",
        "untilEnd": true,
-       "timeoutMs": 180000
+       "timeoutMs": 180000,
+       "plan": {
+        "actor_hero": [
+         "skill_hero_rush_pierce@last",
+         "skill_hero_rush_pierce",
+         "skill_hero_rush_pierce",
+         "attack",
+         "skill_hero_rush_pierce",
+         "attack",
+         "skill_hero_rush_pierce",
+         "attack"
+        ],
+        "actor_fs_elena": [
+         "skill_mage_fireball",
+         "skill_heal@1",
+         "skill_mage_fireball",
+         "skill_heal@0",
+         "skill_mage_fireball",
+         "item:item_potion@1",
+         "skill_mage_fireball",
+         "skill_heal@0",
+         "attack"
+        ]
+       }
       },
       {
        "kind": "waitFor",
@@ -4500,7 +4609,17 @@
      ],
      "shot": true
     }
-   ]
+   ],
+   "sessionPatch": {
+    "actorEquipment": {
+     "actor_hero": {
+      "weapon": "equip_fs2_rohan_spear"
+     }
+    }
+   },
+   "items": {
+    "item_potion": 4
+   }
   },
   {
    "id": "act2-b6-lose",
@@ -4664,11 +4783,11 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 12
+     "level": 8
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 12
+     "level": 8
     }
    ],
    "beats": [
@@ -4754,7 +4873,14 @@
      ],
      "shot": true
     }
-   ]
+   ],
+   "sessionPatch": {
+    "actorEquipment": {
+     "actor_hero": {
+      "weapon": "equip_fs2_rohan_spear"
+     }
+    }
+   }
   },
   {
    "id": "act2-b7-gap",
@@ -4787,15 +4913,15 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 14
+     "level": 9
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 14
+     "level": 9
     },
     {
      "actorId": "actor_fs2_sarah",
-     "level": 14
+     "level": 9
     }
    ],
    "beats": [
@@ -4921,15 +5047,15 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 14
+     "level": 9
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 14
+     "level": 9
     },
     {
      "actorId": "actor_fs2_sarah",
-     "level": 14
+     "level": 9
     }
    ],
    "beats": [
@@ -5062,15 +5188,15 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 14
+     "level": 9
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 14
+     "level": 9
     },
     {
      "actorId": "actor_fs2_sarah",
-     "level": 14
+     "level": 9
     }
    ],
    "beats": [
@@ -6200,11 +6326,11 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 8
+     "level": 6
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 8
+     "level": 6
     }
    ],
    "beats": [
@@ -6314,11 +6440,11 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 8
+     "level": 6
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 8
+     "level": 6
     }
    ],
    "beats": [
@@ -6410,11 +6536,11 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 8
+     "level": 6
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 8
+     "level": 6
     }
    ],
    "beats": [
@@ -6921,11 +7047,11 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 8
+     "level": 6
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 8
+     "level": 6
     }
    ],
    "beats": [
@@ -7057,11 +7183,11 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 8
+     "level": 6
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 8
+     "level": 6
     }
    ],
    "beats": [
@@ -7098,11 +7224,11 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 8
+     "level": 6
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 8
+     "level": 6
     }
    ],
    "beats": [
@@ -7146,11 +7272,11 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 10
+     "level": 7
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 10
+     "level": 7
     }
    ],
    "beats": [
@@ -7169,7 +7295,14 @@
     "item_ether": 2,
     "item_panacea": 1
    },
-   "gold": 150
+   "gold": 150,
+   "sessionPatch": {
+    "actorEquipment": {
+     "actor_hero": {
+      "weapon": "equip_fs2_rohan_spear"
+     }
+    }
+   }
   },
   {
    "id": "act2-play-b7",
@@ -7208,15 +7341,15 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 14
+     "level": 9
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 14
+     "level": 9
     },
     {
      "actorId": "actor_fs2_sarah",
-     "level": 14
+     "level": 9
     }
    ],
    "beats": [
@@ -7259,11 +7392,11 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 8
+     "level": 6
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 8
+     "level": 6
     }
    ],
    "beats": [
@@ -7405,11 +7538,11 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 10
+     "level": 8
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 10
+     "level": 8
     }
    ],
    "beats": [
@@ -7434,7 +7567,14 @@
      ],
      "shot": true
     }
-   ]
+   ],
+   "sessionPatch": {
+    "actorEquipment": {
+     "actor_hero": {
+      "weapon": "equip_fs2_rohan_spear"
+     }
+    }
+   }
   }
  ]
 }
