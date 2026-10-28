@@ -258,7 +258,9 @@ export const devices = [
         const hp = [...root.querySelectorAll('.battle-party .battle-actor-hp .battle-vital-label')].filter(vis).filter((e) => /^HP$/.test(textOf(e))).length;
         const inert = [...root.querySelectorAll('.battle-command[aria-disabled=true], .battle-command[data-battle-command-inert=true]')].filter(vis);
         const reasons = inert.filter((b) => [...b.querySelectorAll('.battle-command-reason, small')].some((s) => vis(s) && textOf(s)) || (b.getAttribute('aria-describedby') && document.getElementById(b.getAttribute('aria-describedby'))));
-        return { hpLabelsVisible: hp, inertCommands: inert.length, inertWithVisibleReason: reasons.length };`);
+        // The labelled HP value must still fit its cell (no clipped digits).
+        const hpClipped = [...root.querySelectorAll('.battle-party .battle-actor-hp')].filter(vis).filter((e) => e.scrollWidth > e.clientWidth + 1).length;
+        return { hpLabelsVisible: hp, hpValuesClipped: hpClipped, inertCommands: inert.length, inertWithVisibleReason: reasons.length };`);
       // Attack the first enemy with the keyboard (Enter on 공격, Enter on the first target) and watch for damage numbers.
       await page.evaluate(() => {
         window.__l7Damage = { seen: 0, text: '' };
@@ -283,7 +285,7 @@ export const devices = [
         return { englishStatAbbrev: n, abbrevSamples: samples.slice(0, 4) };`);
       await page.evaluate(() => window.__l7DamageObs?.disconnect());
       const m = { ...before, damageNumbersSeen: dmg ? dmg.seen : 0, damageText: dmg ? dmg.text : '', ...abbr };
-      return { pass: m.hpLabelsVisible >= 1 && m.damageNumbersSeen >= 1 && m.englishStatAbbrev === 0 && m.inertCommands >= 1 && m.inertWithVisibleReason === m.inertCommands, measured: m };
+      return { pass: m.hpLabelsVisible >= 1 && m.hpValuesClipped === 0 && m.damageNumbersSeen >= 1 && m.englishStatAbbrev === 0 && m.inertCommands >= 1 && m.inertWithVisibleReason === m.inertCommands, measured: m };
     },
   },
 
@@ -486,9 +488,19 @@ export const devices = [
         const vpBg = vp ? getComputedStyle(vp).backgroundColor : ''; const body = tpModal().querySelector('.test-play-modal-body'); const bodyBg = body ? getComputedStyle(body).backgroundColor : '';
         const ps = [...document.querySelectorAll('.test-play-modal-backdrop .play-stage')].filter(vis)[0]; const psr = ps.getBoundingClientRect(); const vr = (vp || body).getBoundingClientRect();
         const gutterPx = Math.round(Math.max(0, psr.left - vr.left) + Math.max(0, vr.right - psr.right));
-        const isBlack = (c) => /rgba?\\(0, 0, 0(, 1)?\\)/.test(c);
-        const greyGutterPx = gutterPx > 0 && !(isBlack(vpBg) || (isBlack(bodyBg) && /rgba\\(0, 0, 0, 0\\)|transparent/.test(vpBg))) ? gutterPx : 0;
-        return { opening: 1, letterboxPx: Math.round(lb), chip: chip ? 1 : 0, chipStraddlesPictureEdge: chipStraddles, bandBottomGapPx, greyGutterPx, viewportBg: vpBg, bodyBg };`);
+        // Painted colour of the side gutters is sampled from a screenshot below (computed backgrounds of intermediate layers can hide it).
+        const gutters = [{ x: vr.left, w: psr.left - vr.left }, { x: psr.right, w: vr.right - psr.right }].filter((g) => g.w >= 4)
+          .map((g) => ({ x: Math.round(g.x + 1), y: Math.round(psr.top + 4), width: Math.max(1, Math.round(g.w - 2)), height: Math.max(1, Math.round(psr.height - 8)) }));
+        return { opening: 1, letterboxPx: Math.round(lb), chip: chip ? 1 : 0, chipStraddlesPictureEdge: chipStraddles, bandBottomGapPx, gutterPx, gutters, viewportBg: vpBg, bodyBg };`);
+      // A gutter counts as a second (grey) letterbox colour when its painted mean channel value is above near-black.
+      const { PNG } = await import('pngjs');
+      let greyGutterPx = 0; const gutterMeans = [];
+      for (const g of m.gutters ?? []) {
+        const png = PNG.sync.read(await page.screenshot({ clip: g, animations: 'disabled' }));
+        let sum = 0, n = 0; for (let i = 0; i < png.data.length; i += 4) { sum += (png.data[i] + png.data[i + 1] + png.data[i + 2]) / 3; n++; }
+        const mean = Math.round(sum / Math.max(1, n)); gutterMeans.push(mean); if (mean > 24) greyGutterPx += g.width + 2;
+      }
+      delete m.gutters; m.gutterMeans = gutterMeans; m.greyGutterPx = greyGutterPx;
       return { pass: m.opening === 1 && m.chip === 1 && m.chipStraddlesPictureEdge === 0 && m.bandBottomGapPx >= 0 && m.bandBottomGapPx <= 2 && m.greyGutterPx === 0, measured: m };
     },
   })),
