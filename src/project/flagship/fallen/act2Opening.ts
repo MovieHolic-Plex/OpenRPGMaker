@@ -12,6 +12,7 @@
 import { charsetFrameIndex, decodeCharsetFrameIndex } from "@/assets/easyrpgRtp";
 import type { Command, Condition, EventPage, GameEvent, GameMap, Project } from "@/project/types";
 import { FS_NAMES } from "../fallenStarStory";
+import { applyFallenAct2Tower } from "./act2Tower";
 import { FS_SILVER_SPOON } from "./townLife";
 import { FS_KEEPER_SEAL } from "./battleItems";
 import { originEdge } from "@/editor/tools/forestRouteTool";
@@ -2429,7 +2430,7 @@ function frostford(project: Project, exec: Exec, hubId: string): void {
  * "B9"(1.24) 면 얼음 위의 밤·탈출까지 열고, 하늘탑 1층에 닿으면 같은 카드와 저장 화면, 위층 계단은 「다음 업데이트」.
  * B10 을 실제로 내보낼 때 null 로 바꾼다.
  */
-export const FS2_RELEASE_STOP: "B8" | "B9" | null = "B9";
+export const FS2_RELEASE_STOP: "B8" | "B9" | null = null; // 판본 끝은 B11 뒤(act2Tower.ts 하늘탑 4층 계단)
 const SW_STOP_B9 = "sw_fs2_release_stop_b9";
 export const FS2_FROST_NIGHT_ID = "fs2_frostford_night";
 export const FS2_TOWER_ID = "fs2_sky_tower";
@@ -2682,6 +2683,7 @@ export function applyFallenAct2Opening(project: Project, exec: Exec, ids: Fallen
   detection(project, exec);
   widenEdgeGates(project);
   act2Quest(project, exec);
+  applyFallenAct2Tower(project, exec);
 }
 
 /**
