@@ -185,7 +185,8 @@ RM2k3 투명 칸 자동 보정(`applyCustomChipsetMinimalHarness`)에서 이 시
 - 배치기 `src/editor/handInterior/vignettes.ts` `furnishWithVignettes` — 방마다: 벽에 붙는 가장 큰 묶음(앵커, 가운데 자리부터) → 점수순(나온 횟수·이 방 종류에만 나옴·크기·읽기/계산대/잠 쓰임) 벽 묶음, 가운데 묶음은 바닥 30칸 이상에서만 → 작은 벽 소품(막는 칸 ≤2) 되풀이 → 걸이(북벽 4칸에 하나, 같은 걸이 둘까지). 문 앞 칸·묶음마다 열린 쪽 앞 줄은 비워 두고, 막힌 바닥이 방 바닥의 34% 를 넘으면 멈춘다(빈 바닥은 메우지 않는다 — 방을 줄이는 것은 짓기 쪽). 놓을 때마다 조립기 도달 검사(닿지 못한 바닥이 늘면 뺀다). 북·남 벽 묶음은 좌우 맞은편, 서·동 벽 묶음은 맞은편 벽에 짝(동·서를 보는 기물이 있으면 뒤집지 않는다).
 - 연결: `build_hand_interior_room` 의 `layout.furnish:"vignette"`(+ `layout.vignettes:{방 id:[묶음]}`). 조수 v2 실내 빌더(`src/ai/v2/builders/interior.ts`)는 기본이 이 길이다 — 장소 견본(venue)·`fillBare`·`dressEmptyRooms` 를 쓰지 않는다. `hints.furnish:"template"` 이면 옛 길(장소 견본 포함), `hints.venue:true` 면 장소 견본만 허용. 「여관·inn·객잔·주막」은 tavern 방(장소 견본 없이 거실 견본이 되던 것).
 - 비교: `bun scripts/content/interior-vignettes/compare.mts --out <dir> [--salt N] [--names 서재,여관,…]` — 조수 자동 짓기와 같은 길(guessPlaceSpec → builder)로 옛/새 길 1배 PNG·맨바닥·닿는 칸. 증거 `~/z-project/assistant-whole-game/suite/ledger/evidence/interior/vignette/`.
-- 남은 것: 묶음이 적은 방 종류(재봉 가게 등)는 맨바닥이 30% 를 넘어도 방이 안 줄 때가 있다(짓기 쪽 줄이기 규칙이 5%p 개선만 받는다). 교실 견본이 v5 에 없어 서재로 짓는다. 다중 방 건물의 방별 묶음 고르기 시험 전.
+- 2판(같은 날, 감독 판정 「성기고 밋밋하다」): **레시피** `vignetteRecipe` — 앵커 1~2(몸통 기물이 서로 다름)·가운데 묶음(탁자 세트·깔개+가구)·보조 2~4·작은 소품(막힘 25% 까지)·걸이. 홀로 선 단품(마네킹·의자)은 벽 줄이나 놓은 가구 옆에만, 같은 묶음은 대칭 짝까지. **밀도**는 예제 방 실측(v5 예제 방 막힘 중앙값 40%·사분위 33~50%) — 상한 45%, 목표 36%. 묶음이 적은 용도는 같은 묶음을 함께 쓰는 가까운 용도(`relatedKinds`)로 마저 채운다. **견본 없는 용도** `PURPOSE_CORES`: 교실·학교·강의 → 서재·서고 묶음 + 칠판·교사 책상·학생 책상 줄(바닥 20칸마다 한 줄). **방 크기**: 조수 v2 실내 빌더가 레시피 발자국 ÷ 36% 로 정하고(`vignetteRoomSize`), 지은 뒤 방마다 막힘(30~44% 밖)·맨바닥(35% 초과)에서 한 번 넓이를 고친다 — 옛 5%p 줄이기 규칙·한 방 downsize 는 견본 길에만.
+- 남은 것: layout 배치기가 요청보다 작은 방(5×6)을 키워 짓는 경우가 있다(그때는 묶음 보충으로 채운다). 다중 방 건물의 방별 묶음 고르기 시험 전.
 
 ## 남은 것
 
