@@ -27,7 +27,8 @@ export function prepareOpeningStill(project: Project, resourceId: string | undef
   const running = pending.get(key);
   if (running) return running;
   const promise = (async () => {
-    const a = scene.composition;
+    // 자막 층은 뺀다 — 타이틀 그림에 대사 한 줄이 박혀 남으면 안 된다(컷의 어느 순간을 골라도).
+    const a = { ...scene.composition, layers: scene.composition.layers.filter((layer) => layer.kind !== "caption") };
     const images = await loadAnimaticImages(project, a, new AbortController().signal);
     // 두 배로 그린다: 타이틀은 화면 크기(보통 2배 이상)로 늘려 쓰므로 자막·빛 가장자리가 덜 뭉개진다. 도트는 nearest 라 그대로다.
     const k = 2;
