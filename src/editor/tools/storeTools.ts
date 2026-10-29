@@ -132,7 +132,7 @@ async function prepareFromWorker(access: StoreReadAccess, slug: string, assetIds
 const storeInstall: ToolDefinition = {
   name: "store_install",
   description: "스토어 상품(slug)을 받아 지금 프로젝트에 넣는다. 사용자가 그 상품을 넣으라고 했을 때만 쓴다(질문 카드의 「넣기」는 사용자가 직접 누르므로 이 도구가 필요 없다). "
-    + "음악 팩은 assetIds 로 고른 곡만 넣는다(store_find_music 결과의 assetId) — 넣은 곡의 리소스 id 가 결과 resourceIds 에 오고, set_game_audio 로 맵·전투·보스·승리·타이틀에 연결한다. "
+    + "음악 팩은 assetIds 로 고른 곡만 넣는다(store_find_music 결과의 assetId) — 넣은 곡의 리소스 id 가 결과 resourceIds 에 오고, set_game_audio 로 맵·전투·보스·승리·타이틀·엔딩에 연결한다. "
     + "넣은 뒤 타일셋이면 list_tileset_references 로 참고문서를 먼저 읽고 깐다. 되돌리기로 뺄 수 있다.",
   mode: "write",
   domains: ["core"],
