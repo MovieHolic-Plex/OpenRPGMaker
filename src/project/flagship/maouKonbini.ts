@@ -87,7 +87,9 @@ const SE_BOOM = "easyrpg-sound-explosion1";
 const SE_PAPER = "cc0-se-osx-paper-04";
 const SE_CAT = "easyrpg-sound-cat";
 const SE_BELL = "cc0-se-osx-bell-01";
-const KONBINI_BATTLE_BG = "oprn-maou-konbini-battle-night";
+// battle-backdrop 하네스 판 maou-konbini-night-matte 후보 B · maou-throne 후보 A(감독 선택, 저장 화소 sha256 앞 8자리가 id 끝).
+const KONBINI_BATTLE_BG = "battle_backdrop_maou_konbini_night_matte_63290325";
+const THRONE_BATTLE_BG = "battle_backdrop_maou_throne_212b9127";
 const SFX_ROOM_TONE = "cc0-sound-mk-op-room"; // 냉장고 웅웅·먼 차 소리 12초 고리(opening-sfx.py room)
 
 // ── 배우 ──
@@ -195,8 +197,10 @@ function setupDatabase(project: Project): void {
   project.system.startActorIds = [MAOU_TRUE];
   project.session.partyActorIds = [MAOU_TRUE];
   project.system.battleLook = { ...project.system.battleLook, enemyHp: true, enemyNames: true };
-  // 전투 배경 = 지금 서 있는 맵(옥좌의 방·편의점). 「가게에서 싸우면 안 돼」가 화면으로 보인다.
-  project.system.battleBackdrop = "field";
+  // 전투 배경 = 장소에 맞춰 만든 옆모습 배경(battle-backdrop 하네스, 감독이 그림 해시에 묶어 고름 — 옥좌 A · 밤 편의점 B).
+  // 옛판은 필드 화면(battleBackdrop "field")을 깔았다 — 위에서 내려다본 맵 위에 옆모습 배틀러가 서서 어색했고,
+  // 사진을 못 찍으면 낮 풀밭으로 떨어졌다(처음 하는 사람 검수 4). 그래서 필드 모드를 끄고 트룹 배경만 쓴다.
+  delete project.system.battleBackdrop;
 
   // 적
   const enemies = db.enemies;
@@ -223,9 +227,9 @@ function setupDatabase(project: Project): void {
     const i = db.troops.findIndex((t) => t.id === id);
     if (i >= 0) db.troops[i] = troop; else db.troops.push(troop);
   };
-  makeTroop("troop_mk_castle", "옥좌의 결전", "enemy_mk_leon_castle", "battle-scenery-cave",
+  makeTroop("troop_mk_castle", "옥좌의 결전", "enemy_mk_leon_castle", THRONE_BATTLE_BG,
     [{ preset: "glow", opacity: 70 }, { preset: "embers", opacity: 60 }]);
-  // 편의점 전투 둘은 필드 사진(battleBackdrop field)을 쓰고, 사진을 못 찍으면 사람 없는 밤 편의점 그림으로 — 낮 풀밭이 나왔다(처음 하는 사람 검수 4).
+  // 편의점 전투 둘(마왕 재림 · 알바 매뉴얼, 패배 경로 포함)은 밤 편의점 배경.
   makeTroop("troop_mk_power", "편의점의 결전 · 마왕 재림", "enemy_mk_leon_awake", KONBINI_BATTLE_BG,
     [{ preset: "glow", opacity: 60 }, { preset: "lightRays", opacity: 40 }, { preset: "embers", opacity: 50 }]);
   makeTroop("troop_mk_manual", "편의점의 결전 · 알바 매뉴얼", "enemy_mk_leon_angry", KONBINI_BATTLE_BG,
