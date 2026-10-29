@@ -5,10 +5,11 @@
 // 이제 전투를 짓는 빌더(던전)와 청사진 경로 짓기가 끝에 이 함수를 부른다. 회복 길이 이미 하나라도 있으면 아무것도 하지 않는다.
 // 목표 줄도 샘 자리를 가리킨다(시작 맵에서 걸리는 목표 글 끝 괄호에 「회복의 샘: <맵> <방위>」).
 import { normalizeActorRecord, parameterValueAtLevel } from "@/project/actorModel";
-import { isPassableLanding } from "@/project/collision";
+import { canMove, isPassableLanding } from "@/project/collision";
 import type { GameMap, Project } from "@/project/types";
-import { battleSites, healingItemIds, healingSources } from "./combatChecks";
+import { allCommands, battleSites, healingItemIds, healingSources } from "./combatChecks";
 import { isObjectiveCommand, mapRegion } from "./discoverability";
+import { reachWithout } from "./puzzleChecks";
 import type { BuildRun } from "./types";
 import { victoryGatedSwitches } from "./blueprint";
 
@@ -39,7 +40,7 @@ function startHealingItem(project: Project): string | undefined {
 }
 
 /** 시작 자리에서 걸어 3~8칸, 둘레 한 칸에 이벤트가 없는 칸(가까운 순·결정적). */
-function springCell(project: Project, map: GameMap): { x: number; y: number } | undefined {
+function springCell(project: Project, map: GameMap, accept: (cell: { x: number; y: number }) => boolean = () => true): { x: number; y: number } | undefined {
   const start = project.startMapId === map.id && project.startPos ? project.startPos : { x: Math.floor(map.width / 2), y: Math.floor(map.height / 2) };
   const near = (x: number, y: number) => (map.events ?? []).some((e) => Math.abs(e.x - x) <= 1 && Math.abs(e.y - y) <= 1);
   const seen = new Set<string>([`${start.x},${start.y}`]);
@@ -56,7 +57,7 @@ function springCell(project: Project, map: GameMap): { x: number; y: number } | 
     if (dist >= 3) {
       // 샘 칸은 막히지 않는 칸이어야 한다 — 샘 둘레에 걸을 칸이 둘 이상 남아 길목을 막지 않는다.
       const open = (x: number, y: number) => [[0, -1], [1, 0], [0, 1], [-1, 0]].filter(([dx, dy]) => isPassableLanding(project, map, x + dx!, y + dy!)).length;
-      const hit = next.find((c) => !near(c.x, c.y) && open(c.x, c.y) >= 3);
+      const hit = next.find((c) => !near(c.x, c.y) && open(c.x, c.y) >= 3 && accept(c));
       if (hit) return hit;
     }
     frontier = next;
@@ -175,7 +176,7 @@ function mapHasFullRecovery(map: GameMap): boolean {
 }
 
 /** 보스 둘레에서 걸어 4~10칸, 둘레 한 칸에 이벤트가 없고 이웃 셋 이상이 트인 칸(보스에 가까운 순·결정적). */
-function restCell(project: Project, map: GameMap, boss: { x: number; y: number }): { x: number; y: number } | undefined {
+function restCell(project: Project, map: GameMap, boss: { x: number; y: number }, side?: ReadonlySet<string>): { x: number; y: number } | undefined {
   const near = (x: number, y: number) => (map.events ?? []).some((e) => Math.abs(e.x - x) <= 1 && Math.abs(e.y - y) <= 1);
   const open = (x: number, y: number) => [[0, -1], [1, 0], [0, 1], [-1, 0]].filter(([dx, dy]) => isPassableLanding(project, map, x + dx!, y + dy!)).length;
   const seen = new Set<string>([`${boss.x},${boss.y}`]);
@@ -190,7 +191,7 @@ function restCell(project: Project, map: GameMap, boss: { x: number; y: number }
       next.push({ x, y });
     }
     if (dist >= 4) {
-      const hit = [...next].sort((a, b) => a.y - b.y || a.x - b.x).find((c) => !near(c.x, c.y) && open(c.x, c.y) >= 3);
+      const hit = [...next].sort((a, b) => a.y - b.y || a.x - b.x).find((c) => !near(c.x, c.y) && open(c.x, c.y) >= 3 && (!side || side.has(`${c.x},${c.y}`)));
       if (hit) return hit;
     }
     frontier = next;
@@ -213,10 +214,101 @@ export function ensureBossRest(run: BuildRun): string[] {
     done.add(map.id);
     const id = `ev_${map.id}_rest`;
     if (map.events.some((e) => e.id === id)) continue;
-    const cell = restCell(run.ctx.project, map, boss);
+    // 들어오는 쪽(보스 둘레 3×3 을 지나지 않고 닿는 칸)에 먼저 둔다 — 보스 너머에 두면 회복하러 보스를 지나야 한다. 그런 칸이 없으면 둘레 어디든.
+    const blocked = new Set<string>();
+    for (let dx = -1; dx <= 1; dx += 1) for (let dy = -1; dy <= 1; dy += 1) blocked.add(`${boss.x + dx},${boss.y + dy}`);
+    const side = reachWithout(run.ctx.project, map, blocked, true) ?? undefined;
+    const cell = (side ? restCell(run.ctx.project, map, boss, side) : undefined) ?? restCell(run.ctx.project, map, boss);
     if (!cell) continue;
     const res = run.call("place_savepoint", { mapId: map.id, x: cell.x, y: cell.y, id, name: "쉼터 결정", heal: true, mode: "both", sparkleRadius: 2 });
     if (res.ok) notes.push(`${map.name ?? map.id} (${cell.x},${cell.y}) 보스 앞 쉼터 결정(전원 회복·저장)`);
   }
   return notes;
+}
+
+export const SUPPLY_SHOP_ID = "ev_supply_shop";
+export const SUPPLY_SHOP_NAME = "떠돌이 상인";
+
+/** 전투로 돈을 벌거나(적 보상·상자·이벤트 돈) 시작 돈이 있는가. */
+function goldObtainable(project: Project): boolean {
+  if ((project.session.gold ?? 0) > 0) return true;
+  const commands = allCommands(project);
+  if (commands.some((r) => r.cmd.kind === "changeGold" && r.cmd.op !== "-=")) return true;
+  const fought = new Set(commands.filter((r) => r.cmd.kind === "battleProcessing").map((r) => String(r.cmd.troopId)));
+  for (const m of Object.values(project.maps)) for (const e of m.encounterTable ?? []) fought.add(String((e as { troopId?: string }).troopId));
+  for (const m of Object.values(project.maps)) for (const id of m.troopIds ?? []) fought.add(String(id));
+  const enemies = new Set(project.database.troops.filter((t) => fought.has(t.id)).flatMap((t) => t.enemyIds ?? []));
+  return project.database.enemies.some((e) => enemies.has(e.id) && (e.rewards?.gold ?? 0) > 0);
+}
+
+/**
+ * 떠돌이 상인이 팔 물건 — 이름이 「…약」·potion 인 HP 회복약 가운데 싼 둘, 적 기술이 거는 전투 뒤에도 남는 상태(독 등)를 푸는 가장 싼 약 하나.
+ * 값이 있는(파는 물건인) 1000 이하 약만. 결정적(값·id 순).
+ */
+function supplyGoods(project: Project): string[] {
+  const heals = healingItemIds(project);
+  const priced = project.database.items.filter((i) => i.type === "medicine" && (i.price ?? 0) > 0 && (i.price ?? 0) <= 1000)
+    .sort((a, b) => (a.price ?? 0) - (b.price ?? 0) || a.id.localeCompare(b.id));
+  const lead = project.database.actors.find((a) => a.id === (project.system.startActorIds ?? [])[0]);
+  const actor = lead ? normalizeActorRecord(lead) : undefined;
+  const heroHp = actor ? parameterValueAtLevel(actor.parameterCurves.maxHp, actor.initialLevel) : 500;
+  const amount = (i: Project["database"]["items"][number]) => (i.hpRecovery?.flat ?? 0) + Math.floor(((i.hpRecovery?.percentMax ?? 0) / 100) * heroHp);
+  const named = priced.filter((i) => heals.has(i.id) && amount(i) > 0 && /약$|potion/iu.test(`${i.name ?? ""} ${i.id}`));
+  const pool = named.length ? named : priced.filter((i) => heals.has(i.id) && amount(i) > 0);
+  // 싼 약 하나(최대 HP 10분의 1 이상) + 보스전에 쓸 큰 약 하나(4분의 1 이상) — 「붉은 사과」 같은 HP 15 짜리는 팔지 않는다.
+  const small = pool.find((i) => amount(i) >= heroHp / 10) ?? pool[0];
+  const big = pool.find((i) => amount(i) >= heroHp / 4 && i.id !== small?.id);
+  const out = [small, big].filter((i): i is NonNullable<typeof i> => !!i).map((i) => i.id);
+  const inflicted = new Set<string>();
+  const skillIds = new Set(project.database.enemies.flatMap((e) => [...(e.skillIds ?? []), ...(e.actions ?? []).map((a) => a.skillId)]));
+  for (const s of project.database.skills) if (skillIds.has(s.id)) for (const fx of s.stateEffects ?? []) if (fx.operation !== "remove") inflicted.add(fx.stateId);
+  const lasting = [...inflicted].filter((id) => /전투 종료 후 유지/u.test(project.database.states.find((st) => st.id === id)?.removalCondition ?? ""));
+  for (const stateId of lasting) {
+    if (out.some((id) => (project.database.items.find((i) => i.id === id)?.healStateIds ?? []).includes(stateId))) continue;
+    const cure = priced.find((i) => (i.healStateIds ?? []).includes(stateId));
+    if (cure) out.push(cure.id);
+  }
+  return out.slice(0, 4);
+}
+
+/**
+ * 전투가 있고 돈을 벌 수 있는데 상점이 하나도 없으면 시작 맵 시작 자리 가까이에 약을 파는 떠돌이 상인을 세운다. 결정적·되풀이 안전.
+ * 왜(2026-10-29 vm3 flash jrpg 판정 major): 「소지금 206G 를 쓸 곳이 없다」 — 상자·적 보상으로 돈이 들어오는데 마을에 상점이 없었고,
+ * 동굴 독이 보스전까지 남았다(해독약을 살 데도 없었다).
+ */
+export function ensureSupplyShop(run: BuildRun): string[] {
+  const project = run.ctx.project;
+  if (!battleSites(project).length || !goldObtainable(project)) return [];
+  if (allCommands(project).some((r) => r.cmd.kind === "shop")) return [];
+  const map = project.maps[project.startMapId];
+  if (!map || map.events.some((e) => e.id === SUPPLY_SHOP_ID)) return [];
+  const goods = supplyGoods(project);
+  if (!goods.length) return [];
+  // 상인은 길을 막는 사람이다(회복의 샘과 달리 밟고 지나갈 수 없다) — 세웠을 때 걸어 닿는 칸이 그 칸 하나만 줄어드는 자리만 쓴다.
+  // 왜(2026-10-29 vm3 flash jrpg 재생): 이웃 셋이 트인 (5,3) 이 시작 주머니의 유일한 목이었다 — 세우자 닿는 칸 734 → 22, 동굴 문까지 자동 플레이가 끊겼다.
+  // 닿는 칸은 시작 자리 하나에서 센다 — 여러 입구에서 세면(reachWithout) 목 너머가 다른 입구로 닿아 보여 목을 못 잡는다.
+  const start = project.startPos ?? { x: Math.floor(map.width / 2), y: Math.floor(map.height / 2) };
+  const reachFrom = (blocked: string): number => {
+    const seen = new Set<string>([`${start.x},${start.y}`]);
+    const queue = [start];
+    for (let i = 0; i < queue.length; i += 1) {
+      const c = queue[i]!;
+      for (const [dx, dy] of [[0, -1], [1, 0], [0, 1], [-1, 0]] as const) {
+        const x = c.x + dx, y = c.y + dy, key = `${x},${y}`;
+        if (seen.has(key) || key === blocked || !canMove(project, map, c.x, c.y, x, y)) continue;
+        seen.add(key);
+        queue.push({ x, y });
+      }
+    }
+    return seen.size;
+  };
+  const base = reachFrom("");
+  const cell = springCell(project, map, (c) => reachFrom(`${c.x},${c.y}`) >= base - 1);
+  if (!cell) return [];
+  const res = run.call("place_npc", {
+    mapId: map.id, x: cell.x, y: cell.y, name: SUPPLY_SHOP_NAME, id: SUPPLY_SHOP_ID, movement: "fixed",
+    graphic: { query: "중년 남성 주민" },
+    pages: [{ name: `${SUPPLY_SHOP_NAME} · 기본`, lines: ["먼 길 떠나기 전에 약부터 챙기게. 동굴에서 다치면 돌아올 길도 멀다네."], commands: [{ kind: "shop", shopType: "normal", itemIds: goods, allowSell: true }] }],
+  });
+  return res.ok ? [`${map.name ?? map.id} (${cell.x},${cell.y}) ${SUPPLY_SHOP_NAME}(${goods.join("·")})`] : [];
 }

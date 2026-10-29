@@ -25,7 +25,7 @@ import { repairEventReach } from "./eventReach";
 import { dressInteriorExits } from "./exitDress";
 import { OBJECTIVE_SURFACE, planObjective } from "./discoverability";
 import { settleExamineSpots } from "./examineSpot";
-import { ensureHealingAccess } from "./healingAccess";
+import { ensureHealingAccess, ensureSupplyShop } from "./healingAccess";
 import { stageMysteryCase } from "./mysteryCase";
 
 /**
@@ -181,6 +181,7 @@ export function buildBlueprintPath(run: BuildRun, text: readonly PathStepText[] 
   try { extra.push(...orderStepBattles(run)); } catch { /* 순서 보호 실패는 경로를 깨지 않는다 */ }
   try { extra.push(...fitUnwinnableStepBattles(run)); } catch { /* 맞추기 실패는 경로를 깨지 않는다 */ }
   try { const heal = ensureHealingAccess(run); if (heal.length) extra.push(`회복 길을 넣었다: ${heal.join(", ")}`); } catch { /* 회복 넣기 실패는 경로를 깨지 않는다 */ }
+  try { const shop = ensureSupplyShop(run); if (shop.length) extra.push(`상점을 넣었다: ${shop.join(", ")}`); } catch { /* 상점 넣기 실패는 경로를 깨지 않는다 */ }
   try { extra.push(...stageMysteryCase(run)); } catch { /* 추리 사건 세우기 실패는 경로를 깨지 않는다 */ }
   return extra.length ? { ...result, summary: `${result.summary} ${extra.join(". ")}.` } : result;
 }

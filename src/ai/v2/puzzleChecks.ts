@@ -54,7 +54,7 @@ function texts(commands: unknown): string[] {
 const LOCKED_WORDS = /잠겨|잠긴|잠겼|열리지\s*않|열쇠(가|를)?\s*(없|필요)|열쇠\s*구멍|locked/iu;
 
 /** 맵 하나의 걸어 닿는 칸 — 막는 칸(blocked)은 지나가지 않는다. 앵커가 없으면 null. */
-function reachWithout(project: Project, map: GameMap, blocked: ReadonlySet<string>, followHops = false): Set<string> | null {
+export function reachWithout(project: Project, map: GameMap, blocked: ReadonlySet<string>, followHops = false): Set<string> | null {
   const anchors = playerAnchors(project, map).filter((a) => !blocked.has(`${a.x},${a.y}`));
   if (!anchors.length) return null;
   const seen = new Set<string>(anchors.map((a) => `${a.x},${a.y}`));

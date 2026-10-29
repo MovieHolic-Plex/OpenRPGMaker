@@ -37,7 +37,7 @@ function walk(list: unknown, visit: (cmd: Obj) => void): void {
 }
 
 /** 프로젝트의 모든 명령(맵 이벤트·공통 이벤트·적 무리 전투 페이지) — mapId 와 함께. */
-function allCommands(project: Project): { cmd: Obj; mapId: string; eventName: string }[] {
+export function allCommands(project: Project): { cmd: Obj; mapId: string; eventName: string }[] {
   const out: { cmd: Obj; mapId: string; eventName: string }[] = [];
   for (const map of Object.values(project.maps)) for (const ev of map.events ?? []) {
     const e = ev as unknown as Obj;

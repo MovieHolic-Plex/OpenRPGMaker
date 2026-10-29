@@ -18,7 +18,6 @@ import { applyBlueprintOpening } from "@/editor/tools/blueprintOpening";
 import { renameBareBlueprintPlaces } from "./blankStart";
 import { alignCodeClues, humanizeBlueprintTokens } from "./codeClues";
 import { settleFurnitureSpots } from "./examineSpot";
-import { createBuildRun } from "./buildRun";
 
 /** 청사진 자동 짓기(한 실행에 한 번씩 — 세션 깃발). 무엇을 지었는지 조수에게 줄 글(없으면 undefined). */
 export async function runFinishAutoBuild(env: PiAssistantV2Env, session: V2Session): Promise<string | undefined> {

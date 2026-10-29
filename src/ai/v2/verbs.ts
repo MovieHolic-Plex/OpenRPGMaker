@@ -32,6 +32,7 @@ import { buildPuzzleChain, sealLockedRoom, type ChainArgs } from "./puzzle";
 import { stageMysteryCase } from "./mysteryCase";
 import { BUILD_BLUEPRINT_PATH_SCHEMA, blueprintMapFor, buildBlueprintPath, sealEscapeExits, type PathStepText } from "./blueprintPath";
 import { clearTargetFronts, clearTransferLanes, repairEventReach, spreadCrowdedPeople } from "./eventReach";
+import { ensureSupplyShop } from "./healingAccess";
 import { dressInteriorExits } from "./exitDress";
 import { isPlaceholderMap, moveBareEvents, retireBlankStart, retireOrphanMaps } from "./blankStart";
 import { chaserEvents, ensureChaserHidingSpots, mapHidingEvents, markHidingSpots } from "@/project/chaserHiding";
@@ -529,6 +530,9 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     // 추리 청사진이 투명 칸 일직선이면(2026-10-29 vm mystery 판정 「NPC 없음·추리·선택 없음」) 용의자·증거 제시·범인 고르기를 세운다.
     // 모델이 사건을 이미 지었으면 단서 칸 소품만 본다(mysteryCase.ts). 경로를 다시 짓지 않은 판(막힘 없음)도 여기서 세운다.
     try { notes.push(...stageMysteryCase(run)); } catch { /* 추리 세우기 실패는 끝맺음을 깨지 않는다 */ }
+    // 전투 게임 보급(2026-10-29 vm3 jrpg 판정 「206G 를 쓸 곳이 없다」): 돈을 버는데 상점이 없으면 떠돌이 상인. 경로를 다시 짓지 않은 판도 여기서 건다.
+    // 보스 앞 회복(쉼터 결정)·단계 순서 보호는 finishAutoBuild 의 ensureBossRest·orderStepBattlesIn 이 한다.
+    try { notes.push(...ensureSupplyShop(run)); } catch { /* 상점 실패는 끝맺음을 깨지 않는다 */ }
     // 들어오는 길도 이벤트도 없는 빈 사본·끊긴 맵(봉인 뒤 「밀실 뒷방」)을 치운다.
     notes.push(...retireOrphanMaps(run));
     // 추격자가 있는데 숨을 곳이 0곳인 맵(2026-10-29 standin horror 「폐병원」) — 맵에 있는 옷장·사물함·침대·커튼 1~2곳을 순찰 길 가까이에서 은신처로.
