@@ -60,6 +60,11 @@ export interface ActorRecord {
   appearanceId?: string;
   characterTransparent: boolean;
   battleCharacterResourceId?: string;
+  /**
+   * 측면 전투에서 이 배우 그림의 표시 크기(50~300%, 정수). 생략 = 100%.
+   * 지금은 파티원 몬스터 도트 시트(party-pixel-*)에 적용된다 — 마왕·드래곤처럼 사람보다 커야 하는 파티원.
+   */
+  battleScalePercent?: number;
   critical: ActorCritical;
   parameterCurves: ActorParameterCurves;
   expCurve: ActorExperienceCurve;
