@@ -386,7 +386,20 @@ function sourceArg(value: unknown, label: string): LightSource {
     ...(record.intensity !== undefined ? { intensity: numberArg(record.intensity, `${label}.intensity`) } : {}),
     ...(typeof record.color === "string" && record.color.trim() ? { color: record.color.trim() } : {}),
     ...(record.flicker === true ? { flicker: true } : {}),
+    ...(record.cone !== undefined ? { cone: coneArg(record.cone, `${label}.cone`) } : {}),
   };
+}
+
+/** 부채꼴 빛 {degrees, facing?} — 이벤트 앵커면 그 이벤트가 보는 쪽으로 돈다(경비 등불 시야). */
+function coneArg(value: unknown, label: string): NonNullable<LightSource["cone"]> {
+  const record = typeof value === "number" ? { degrees: value } : value;
+  if (typeof record !== "object" || record === null || Array.isArray(record)) throw new ToolError(`${label}는 {degrees:20~180, facing?} 입니다.`, { code: "lighting-source" });
+  const r = record as Record<string, unknown>;
+  const degrees = Number(r.degrees);
+  if (!Number.isFinite(degrees) || degrees < 20 || degrees > 180) throw new ToolError(`${label}.degrees 는 20~180 입니다.`, { code: "lighting-source" });
+  const facing = r.facing;
+  if (facing !== undefined && facing !== "up" && facing !== "down" && facing !== "left" && facing !== "right") throw new ToolError(`${label}.facing 은 up/down/left/right 입니다.`, { code: "lighting-source" });
+  return { degrees, ...(facing ? { facing } : {}) };
 }
 
 function lightAnchorArg(value: unknown, label: string): LightSourceAnchor {
