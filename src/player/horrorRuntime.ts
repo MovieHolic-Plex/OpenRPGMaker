@@ -7,6 +7,7 @@ import { runtimeEventViewById, runtimeEventViewsForMap, findBlockingEventOverlap
 import type { Dir } from '@/project/types';
 import type { AutonomousMover } from './playSceneTypes';
 import { isInSafeZone } from './chaseAi';
+import { chaseSearchLimitMs } from '@/project/chaseTempo';
 import { pursuitState, searchTarget, type PursuitWorld as World } from './pursuitNavigation';
 export { carryPursuitThroughDoor, advancePursuitDoors } from './pursuitDoors';
 
@@ -121,7 +122,7 @@ function trackedPursuitTarget(world: World, view: RuntimeEventView, mover: Auton
     state.lastSeen = seen;
     return { ...seen, searching: false };
   }
-  if (state.searchMs <= (config?.searchMs ?? 3000) && state.lastSeen) {
+  if (state.searchMs <= chaseSearchLimitMs(view.movement, config?.searchMs ?? 3000) && state.lastSeen) {
     // Positions reserve tween destinations immediately. Do not rotate the search until landing.
     const target = mover.activeMove ? state.searchTarget ?? state.lastSeen : searchTarget(world, view, state);
     return target ? { ...target, searching: true } : null;

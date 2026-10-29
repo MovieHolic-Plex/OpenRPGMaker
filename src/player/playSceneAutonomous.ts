@@ -49,6 +49,8 @@ runtimeEventViewsForMap, } from "@/project/runtimeEventState"
 
 /** 이번 프레임의 주인공 진행(추격 전술용). updateAutonomousNPCsInPass 가 프레임마다 한 번 쓴다. */
 const frameMotion = new WeakMap<object, PlayerMotion>();
+/** 막힌 걸음 뒤 재탐색까지 남기는 시간: 재탐색 주기 500ms 중 이 값부터 센다(= 약 150ms 뒤). */
+const CHASE_BLOCKED_REPATH_AT_MS = 350;
 const FACING_STEP: Readonly<Record<Dir, ChasePoint>> = { up: { x: 0, y: -1 }, down: { x: 0, y: 1 }, left: { x: -1, y: 0 }, right: { x: 1, y: 0 } };
 
 function parseGoalKey(key: string): ChasePoint {
@@ -589,6 +591,13 @@ function updateChaseNpc(
       { x: decision.x - view.x, y: decision.y - view.y, face: frameDir }
     )
   ) {
+    // 막힌 걸음(다른 추격자·동료가 막 들어선 칸)은 경로에서 이미 빠졌다 — 남은 경로는 어긋나므로 버리고 곧 다시 찾는다.
+    // 예전에는 어긋난 경로를 한 칸씩 버리며 제자리에서 버벅였다.
+    if (engaged || searching) {
+      mover.chasePath = [];
+      mover.chasePathBlocked = true;
+      mover.chaseRepathTimerMs = Math.max(mover.chaseRepathTimerMs ?? 0, CHASE_BLOCKED_REPATH_AT_MS);
+    }
     setNpcIdleFrame(sprite, baseFrame, frameDir, view.animationType, mover.animationEnabled);
     return;
   }

@@ -48,7 +48,7 @@ const STUN_MS = 3000;
 /** 시야에 든 순간 머리 위 말풍선을 띄우고 이만큼 서 있다가 쫓는다(플레이어가 돌아설 틈). */
 const ALERT_HOLD_MS = CHASE_ALERT_HOLD_MS;
 /** 시야에서 놓친 뒤 마지막 목격 자리를 이만큼 뒤지다 원래 자리로 돌아간다. */
-const SEARCH_BEFORE_RETURN_MS = 1500;
+const SEARCH_BEFORE_RETURN_MS = 3500;
 const DEFAULT_SIGHT = 4;
 
 /** charset 그래픽의 시트·칸 키(textureKey#characterIndex). 필드 그림 비교용. */
@@ -247,7 +247,7 @@ export function makeFieldEnemyChase(project: Project, map: GameMap, event: GameE
   fight.movement = {
     type: 'chase', speed: pace.speed, frequency: pace.frequency, sightRange: range, giveUpRange: range + 4, pathfind: true,
     sight: { range, lineOfSight: true, facing: options.vision ?? 'cone' },
-    pursuit: { scope: 'map', doorDelayMs: 0, searchMs: options.searchMs ?? 2500, onLost: 'return' },
+    pursuit: { scope: 'map', doorDelayMs: 0, searchMs: options.searchMs ?? SEARCH_BEFORE_RETURN_MS, onLost: 'return' },
     ...(dirs.length ? { route: { repeat: true, skippable: false, moves: dirs.flatMap((dir) => [{ kind: 'move' as const, dir }, { kind: 'wait' as const }, { kind: 'wait' as const }]) } } : {}),
     sightAlert: { emote: options.alert ?? 'exclamation', holdMs: ALERT_HOLD_MS },
     ...(options.lungeSteps && options.lungeSteps > 0
@@ -287,7 +287,7 @@ export const FIELD_DETECTION_SCHEMA: Record<string, JsonSchema> = {
   coneDegrees: { type: 'integer', description: '시야 부채꼴 각(30..180°, 기본 90). 주면 앞쪽 부채꼴 시야가 된다 — 120~150 이면 곁눈으로도 본다(경계병)' },
   chaseStepMs: { type: 'integer', description: '쫓는 동안 한 칸에 드는 시간(90..3000ms). 주인공 걷기 = 160, 보통 추격(pace normal) ≈ 218, fast ≈ 127. 작을수록 빨리 다가온다(다가오는 방식의 몸짓은 남는다). 160 보다 작으면 주인공보다 빨라 12칸 달릴 때마다 숨을 고른다 — 맵에 시야를 끊는 벽·엄폐·숨는 곳을 둘 것' },
   alertMs: { type: 'integer', description: '알아챈 순간 느낌표를 띄우고 멈추는 시간(0..3000ms, 기본 300). 짧을수록 빨리 덤빈다' },
-  searchMs: { type: 'integer', description: '놓친 뒤 마지막으로 본 자리를 뒤지는 시간(0..20000ms, 기본 1500~2500) — 추격 기억' },
+  searchMs: { type: 'integer', description: '놓친 뒤 마지막으로 본 자리와 달아난 방향을 뒤지는 시간(0..20000ms, 기본 3500) — 추격 기억' },
   giveUpRange: { type: 'integer', description: '이만큼(칸) 멀어지면 포기하고 돌아간다(시야+1..30)' },
   rush: { type: 'boolean', description: 'true 면 알아챈 뒤 주인공(160ms/칸)보다 빠르게 쉬지 않고 달려와 바로 전투를 건다 — 경비병·사냥꾼 몬스터. 피하려면 시야에 들지 말아야 한다(엄폐·그늘 길을 맵에 둘 것). rushSteps 칸을 달린 뒤에는 지쳐 chaseStepMs 로 떨어진다' },
   rushStepMs: { type: 'integer', description: 'rush 돌진 한 칸 시간(60..150ms, 기본 110). 주인공 걷기 160' },

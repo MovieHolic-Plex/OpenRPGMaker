@@ -30,8 +30,13 @@ export const CHASE_LEGACY_ALERT_CAP_MS = 350;
 export const CHASE_STAMINA_STEPS = 12;
 /** 숨 고르는 시간(ms). */
 export const CHASE_BREATHER_MS = 650;
-/** 놓친 뒤 마지막 목격 자리·진행 방향을 뒤질 때는 쫓을 때보다 이만큼 느리다(두리번거림). */
-export const CHASE_SEARCH_SLOWDOWN = 1.35;
+/** 놓친 뒤 마지막 목격 자리·진행 방향을 뒤지고 돌아갈 때는 쫓을 때보다 이만큼 느리다(두리번거림). */
+export const CHASE_SEARCH_SLOWDOWN = 1.15;
+/**
+ * 박자를 적지 않은 옛 페이지의 수색 시간 하한(ms). 예전 도구 기본 1500ms 는 마지막 목격 자리에 닿기도 전에 끝나
+ * 모퉁이 하나 돌면 곧장 집으로 돌아갔다.
+ */
+export const CHASE_LEGACY_SEARCH_MIN_MS = 3500;
 
 type ChaseTempoMovement = {
   readonly speed: number;
@@ -63,6 +68,11 @@ export function chaseCellMs(movement: ChaseTempoMovement): number {
 export function chaseAlertHoldMs(movement: ChaseTempoMovement): number {
   const hold = Math.max(0, movement.sightAlert?.holdMs ?? 0);
   return chaseTempoAuthored(movement) ? hold : Math.min(hold, CHASE_LEGACY_ALERT_CAP_MS);
+}
+
+/** 놓친 뒤 뒤지는 시간(ms). 박자를 적지 않은 옛 페이지는 CHASE_LEGACY_SEARCH_MIN_MS 아래로 내려가지 않는다. */
+export function chaseSearchLimitMs(movement: Pick<ChaseTempoMovement, "chaseStepMs">, searchMs: number): number {
+  return chaseTempoAuthored(movement) ? searchMs : Math.max(searchMs, CHASE_LEGACY_SEARCH_MIN_MS);
 }
 
 /** 이 박자면 지친다(주인공 걷기보다 빠르다). 같거나 느리면 지치지 않는다. */
