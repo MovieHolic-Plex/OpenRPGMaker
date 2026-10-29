@@ -1188,6 +1188,16 @@ const authorMapPuzzleTool: ToolDefinition = {
       },
       title: { type: "string", description: "퍼즐·장치 표시 이름 (선택)" },
       hintText: { type: "string", description: "단서 비석·도입 안내 대사 커스텀 문구 (선택)" },
+      rewordLines: {
+        type: "array", maxItems: 40,
+        description: "프리셋 대사를 그 장소 말로 바꾼다(선택). 프리셋이 쓴 대사 한 줄(from, 통째로 같아야 함) → 새 줄(to). 맞는 줄이 없으면 거절하며 이 퍼즐의 실제 대사 목록을 돌려준다 — 먼저 없이 한 번 짓고 data·대사를 보고 고치면 된다",
+        items: { type: "object", additionalProperties: false, properties: { from: { type: "string" }, to: { type: "string" } }, required: ["from", "to"] },
+      },
+      renameObjects: {
+        type: "array", maxItems: 12,
+        description: "퍼즐 기물 이벤트 이름 바꾸기(선택) — [{eventId, name}]. eventId 는 이 퍼즐이 지은 이벤트(퍼즐 id 또는 ev_퍼즐 id 로 시작)",
+        items: { type: "object", additionalProperties: false, properties: { eventId: { type: "string" }, name: { type: "string" } }, required: ["eventId", "name"] },
+      },
       failPenalty: {
         type: "object", additionalProperties: false,
         description: "들켰을 때 벌(잠입 stealth_guard_patrol). 생략 = 입구로 쫓겨남. troopId = 먼저 그 적 그룹과 싸움(도망 불가, 져도 게임 오버 아님) · sendTo = 쫓겨나는 곳(다른 맵 가능, 예: 감방으로 다시) · text = 들킨 대사",
@@ -1219,6 +1229,13 @@ const authorMapPuzzleTool: ToolDefinition = {
     y: 10,
   },
   run(draft, args): ToolExecResult {
+    const result = authorMapPuzzleCore(draft, args);
+    applyPuzzleWording(draft, args, result);
+    return result;
+  },
+};
+
+function authorMapPuzzleCore(draft: Project, args: Record<string, unknown>): ToolExecResult {
     const map = requireMap(draft, String(args.mapId ?? ""));
     const presetId = resolvePuzzlePresetId(args.presetId);
     if (!presetId) {
@@ -3424,8 +3441,53 @@ const authorMapPuzzleTool: ToolDefinition = {
       },
       ...(warnings.length > 0 ? { warnings } : {}),
     };
-  },
-};
+}
+
+/**
+ * 프리셋 문구를 그 장소 말로 — rewordLines 는 프리셋이 쓴 대사 한 줄을 통째로 바꾸고(맞는 줄이 없으면 거절하며 있는 줄을 알려 준다),
+ * renameObjects 는 퍼즐 기물 이벤트 이름을 바꾼다. 퍼즐 이벤트(퍼즐 id 로 시작)와 gateEventId 이벤트만 본다.
+ */
+function applyPuzzleWording(draft: Project, args: Record<string, unknown>, result: ToolExecResult): void {
+  const reword = Array.isArray(args.rewordLines) ? (args.rewordLines as { from?: unknown; to?: unknown }[]) : [];
+  const rename = Array.isArray(args.renameObjects) ? (args.renameObjects as { eventId?: unknown; name?: unknown }[]) : [];
+  if (!reword.length && !rename.length) return;
+  const map = requireMap(draft, String(args.mapId ?? ""));
+  const presetId = resolvePuzzlePresetId(args.presetId) ?? "";
+  const baseId = sanitizeId(typeof args.puzzleId === "string" && args.puzzleId.trim() ? args.puzzleId.trim() : `${map.id}_${presetId}`);
+  const gate = typeof args.gateEventId === "string" ? args.gateEventId.trim() : "";
+  const own = map.events.filter((event) => event.id.startsWith(baseId) || event.id.startsWith(`ev_${baseId}`) || (gate && event.id === gate));
+  const table = new Map<string, string>();
+  for (const [index, entry] of reword.entries()) {
+    const from = typeof entry?.from === "string" ? entry.from.trim() : "", to = typeof entry?.to === "string" ? entry.to.trim() : "";
+    if (!from || !to) throw new ToolError(`rewordLines[${index}] 는 {from, to} 입니다.`, { code: "invalid-args" });
+    table.set(from, to);
+  }
+  const seen = new Set<string>(), all = new Set<string>();
+  const walk = (cmds: unknown[]): void => {
+    for (const raw of cmds) {
+      const cmd = raw as Record<string, unknown>;
+      if (cmd.kind === "text" && typeof cmd.body === "string") {
+        all.add(cmd.body);
+        const to = table.get(cmd.body.trim());
+        if (to) { seen.add(cmd.body.trim()); cmd.body = to; }
+      }
+      if (typeof cmd.prompt === "string") { all.add(cmd.prompt); const to = table.get(cmd.prompt.trim()); if (to) { seen.add(cmd.prompt.trim()); cmd.prompt = to; } }
+      for (const key of ["then", "else", "branch", "cancelBranch", "otherwiseBranch"]) if (Array.isArray(cmd[key])) walk(cmd[key] as unknown[]);
+      if (Array.isArray(cmd.options)) for (const option of cmd.options as Record<string, unknown>[]) if (Array.isArray(option?.branch)) walk(option.branch as unknown[]);
+    }
+  };
+  for (const event of own) for (const page of event.pages ?? []) walk(page.commands as unknown[]);
+  const missing = [...table.keys()].filter((from) => !seen.has(from));
+  if (missing.length) throw new ToolError(`rewordLines 의 줄 ${missing.length}개가 이 퍼즐 대사에 없습니다: 「${missing[0]!.slice(0, 40)}」. 있는 줄: ${[...all].map((line) => `「${line.slice(0, 50)}」`).join(" · ").slice(0, 1500)}`, { code: "puzzle-reword-unmatched", mapId: map.id });
+  for (const [index, entry] of rename.entries()) {
+    const id = typeof entry?.eventId === "string" ? entry.eventId.trim() : "", name = typeof entry?.name === "string" ? entry.name.trim() : "";
+    const event = own.find((candidate) => candidate.id === id);
+    if (!event || !name) throw new ToolError(`renameObjects[${index}] — 이 퍼즐의 이벤트 '${id}' 가 없습니다. 있는 이벤트: ${own.map((candidate) => candidate.id).join(", ")}`, { code: "puzzle-rename-unmatched", mapId: map.id });
+    event.name = name;
+  }
+  const data = result.data as Record<string, unknown> | undefined;
+  if (data) data.reworded = { lines: seen.size, renamed: rename.length };
+}
 
 export const PUZZLE_AUTHORING_TOOLS: readonly ToolDefinition[] = [
   listPuzzlePresetsTool,
