@@ -405,10 +405,26 @@ function populateFloor(draft: Project, mapId: string, data: Record<string, unkno
   else if (role.guardian) bosses = guard(troops.midBoss, `ev_${mapId}_guardian`, "층 수문장") ? 1 : 0;
   let saves = 0;
   if (restRoom) {
-    const at = restRoom.spots.find(free);
-    if (at && attempt(`세이브 포인트 (${at.x},${at.y})`, () => nested(draft, "place_savepoint", { mapId, x: at.x, y: at.y, heal: true, name: "쉼터 결정", id: `ev_${mapId}_rest` }))) { out.push(`쉼터(회복 세이브) ${restRoom.id} (${at.x},${at.y})`); saves = 1; }
+    // 맵 칩셋에 받침 위 수정(세이브 받침) 키트가 있으면 그 그림으로 세운다 — 없으면 옛 크리스탈 걷기 칩.
+    // 옛 칩(보라 바위 같은 수정이 맥동)은 버들항 던전에서 층마다 「움직이는 바위」로 읽혔다(2026-10-30 사용자).
+    const pedestal = saveCrystalKit(draft, map);
+    const fitsPedestal = (c: Pt): boolean => !!pedestal && c.y - (pedestal.height - 1) >= 0
+      && Array.from({ length: pedestal.height - 1 }, (_, k) => ({ x: c.x, y: c.y - 1 - k })).every((p) => isPassable(draft, map, p.x, p.y) && (map.upperTiles[p.y * map.width + p.x] ?? -1) < 0 && !map.events.some((e) => e.x === p.x && e.y === p.y));
+    const kitAt = pedestal && pedestal.width === 1 ? restRoom.spots.find((c) => free(c) && fitsPedestal(c)) : undefined;
+    const at = kitAt ?? restRoom.spots.find(free);
+    const args = kitAt && pedestal
+      ? { mapId, x: kitAt.x, y: kitAt.y - (pedestal.height - 1), objectId: `kit:${map.tilesetId}/${pedestal.id}`, heal: true, name: "쉼터 결정", id: `ev_${mapId}_rest` }
+      : at ? { mapId, x: at.x, y: at.y, heal: true, name: "쉼터 결정", id: `ev_${mapId}_rest` } : undefined;
+    if (at && args && attempt(`세이브 포인트 (${at.x},${at.y})`, () => nested(draft, "place_savepoint", args))) { out.push(`쉼터(회복 세이브) ${restRoom.id} (${at.x},${at.y})`); saves = 1; }
   }
   return { line: out.join(" · "), placed: { enemies: foes.length, chests: chests.length, boss: role.boss ? bosses : 0, guardian: role.boss ? 0 : bosses, save: saves } };
+}
+
+/** 맵 칩셋의 세이브 받침 키트(받침 위 수정·세이브 수정). 버들항 = bd-pick-dungeon-theme-crystal-pedestal. 없으면 undefined. */
+function saveCrystalKit(draft: Project, map: GameMap): { id: string; width: number; height: number } | undefined {
+  const kits = (draft.tilesets[map.tilesetId] as { structureKits?: readonly { id?: unknown; width?: unknown; height?: unknown }[] } | undefined)?.structureKits ?? [];
+  const hit = kits.find((k) => typeof k.id === "string" && /crystal-pedestal|save-(?:point|crystal|pedestal)/i.test(k.id));
+  return hit && Number.isInteger(hit.width) && Number.isInteger(hit.height) ? { id: hit.id as string, width: hit.width as number, height: hit.height as number } : undefined;
 }
 
 const FLOOR_NAME = (base: string, dir: "down" | "up", k: number, n: number): string => (n === 1 ? base : `${base} ${dir === "down" ? `지하 ${k}층` : `${k}층`}`);
