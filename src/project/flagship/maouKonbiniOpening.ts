@@ -284,7 +284,8 @@ function setupThroneBattle(project: Project): void {
   if (!leon) throw new Error("[maou-konbini] 옥좌 결전 적(enemy_mk_leon_castle)이 없다");
   // 슬라임을 본뜬 적이라 종(speciesId)이 남아 「야생의 용사 레온」이라고 나왔다 — clearFields 로 지운다.
   // 3합 안에 쓰러지지 않게(연출 전투는 3합째 봉인술로 끝난다).
-  execTool(project, "upsert_enemy", { enemy: { id: leon.id, stats: { ...leon.stats, maxHp: 4000, attack: 96 } }, ...(leon.speciesId ? { clearFields: ["speciesId"] } : {}) });
+  // 4000 이면 업화 한 방이 3.5% 라 마왕의 힘이 보이지 않았다 — 1200 이면 한 방에 체력 막대가 눈에 띄게 준다(3합 안에는 안 쓰러진다).
+  execTool(project, "upsert_enemy", { enemy: { id: leon.id, stats: { ...leon.stats, maxHp: 1200, attack: 96 } }, ...(leon.speciesId ? { clearFields: ["speciesId"] } : {}) });
   const T = "troop_mk_castle";
   const pageOf = (pid: string, name: string, round: number, commands: Command[]) =>
     execTool(project, "upsert_troop_battle_page", { troopId: T, page: { id: pid, name, span: "battle", runOnce: true, conditions: [{ kind: "onRound", round }], commands } });
@@ -330,16 +331,17 @@ export function buildMaouThrone(project: Project, roomWake: Cell): Cell {
     emote("player", "sweat", 900),
     ...say("maouF", "base", "자, 잠깐! 연금은? 연금은 어떻게 되는 거냐!"),
     // 하얗게 타 버린다 — 화면 효과 「색조」로 흰빛을 채웠다가(맵 조명은 건드리지 않는다), 장엄한 음악을 그 순간 끊는다.
+    // 흰빛 → 정적 → 원룸까지 v13 은 12초(흰 화면·검정)였다 — 5초 안으로 줄인다(2026-10-30 적대 VQA).
     playSe(SFX.vanish),
-    fieldTint("255,255,255,0.35", 700), shake(1800, "3"),
-    wait(900), flash("white", 300), wait(500),
-    fieldTint("255,255,255,1", 1000), shake(800, "10"),
-    wait(1000),
+    fieldTint("255,255,255,0.35", 500), shake(1400, "3"),
+    wait(600), flash("white", 250), wait(300),
+    fieldTint("255,255,255,1", 700), shake(700, "10"),
+    wait(500),
     stopBgm(),
-    wait(700),
+    wait(250),
     ...caption("빛이 모든 것을 삼켰다."),
-    ...fadeOut(900),
-    wait(700),
+    ...fadeOut(500),
+    wait(150),
     setVar(V_STAGE, "=", 1),
     // 전생 — 파티가 현대의 몸(마오)으로 바뀐다.
     { kind: "changeParty", actorId: DEFAULT_ACTOR_ID, action: "add" } as Command,
@@ -383,7 +385,7 @@ export function stageMaouRoomWake(project: Project): void {
   const zs = (expr: "base" | "happy" | "surprised" | "sad" | "embarrassed", ...l: string[]) => say("zervas", expr, ...l);
   const wakeScene: Command[] = [
     stopBgm(),
-    wait(1200),
+    wait(600),
     playSe(SFX.fluoro),
     wait(250), flash("white", 90), wait(330), flash("white", 70), wait(220),
     ...fadeIn(350),
