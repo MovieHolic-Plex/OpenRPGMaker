@@ -335,7 +335,8 @@ export function resultDirectorState(snapshot: BattleSnapshot, previous: BattleDi
   return {
     step: "result",
     // 에메랄드는 결과 문장 창 쪽들(emeraldResultRows)이 말한다 — 「승리 / 경험치 18 / 48 G」 요약 줄을 겹쳐 두지 않는다.
-    lines: emeraldNarrationActive() ? [] : [resultLine(snapshot.result), rewardsLine(snapshot)],
+    // 전투 이벤트가 「전투 중단」으로 끝낸 연출 전투는 결과 줄을 남기지 않는다(「후퇴」가 대사 장면 위에 뜨면 연출이 깨진다).
+    lines: emeraldNarrationActive() || (snapshot.result === "escape" && snapshot.endedByEvent === true) ? [] : [resultLine(snapshot.result), rewardsLine(snapshot)],
     activeActorRecordId: previous.activeActorRecordId,
     targetId: previous.targetId,
   };
