@@ -566,8 +566,18 @@ export function fillUnsetStepConditions(project: Project): string[] {
       else if (itemIds.has(id)) add.push({ kind: "changeItem", itemId: id, op: "+=", amount: 1 });
     }
     if (!add.length) continue;
-    const stop = commands.findIndex((c) => /^(transfer|gameOver|returnToTitle|ending|endGame|battleProcessing)$/u.test(String(c.kind ?? "")));
-    commands.splice(stop < 0 ? commands.length : stop, 0, ...add);
+    // 증거를 내밀어야 넘어가는 페이지(추리 용의자 「· 증거」)면 맞는 증거 갈래 안에 — 페이지 끝에 두면 말만 걸어도 켜진다
+    // (2026-10-29 vm5 argon 추리: 「모든 단서」가 상인 오언에게 말만 걸면 켜져 증거를 안 내밀어도 지목이 열렸다).
+    const presented = ((): Obj[] | undefined => {
+      const seen: Obj[] = [];
+      const walk = (list: unknown): void => { if (!Array.isArray(list)) return; for (const c of list as Obj[]) { if (!c || typeof c !== "object") continue; if (c.kind === "presentItem") seen.push(c); for (const v of Object.values(c)) if (Array.isArray(v)) { walk(v); for (const o of v as Obj[]) if (o && typeof o === "object" && Array.isArray(o.branch)) walk(o.branch); } } };
+      walk(commands);
+      const right = seen.map((c) => ((c.options ?? []) as Obj[])[0]).find((o) => Array.isArray(o?.branch));
+      return right ? right.branch as Obj[] : undefined;
+    })();
+    const into = presented ?? commands;
+    const stop = into.findIndex((c) => /^(transfer|gameOver|returnToTitle|ending|endGame|triggerEnding|battleProcessing)$/u.test(String(c.kind ?? "")));
+    into.splice(stop < 0 ? into.length : stop, 0, ...add);
     notes.push(`청사진 ${resolved[k]!.step.id} 「${resolved[k]!.step.event}」 의 조건 ${add.map((c) => String(c.switchId ?? c.itemId)).join("·")} 을 앞 단계 「${prev.step.event}」 가 켜게 했다.`);
   }
   return notes;

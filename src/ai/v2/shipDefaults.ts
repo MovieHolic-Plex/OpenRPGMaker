@@ -493,7 +493,7 @@ function moveEntrancesOntoArt(project: Project): string[] {
  * 없으면 이 이벤트가 켠 스위치·준 아이템을 읽는 첫 이벤트를 「찾아가자」로. 거는 자리·「어디」 힌트는 set_objective 와 같은 planObjective.
  * 다음 대상을 모르면(엔딩 정의만 읽는다) 건너뛴다.
  */
-function fillStaleObjectives(project: Project): string[] {
+export function fillStaleObjectives(project: Project): string[] {
   const out: string[] = [];
   const steps = project.gameBlueprint?.steps ?? [];
   const object = (word: string): string => `${word}${hasFinal(word.replace(/[」』"”')\]\s]+$/u, "")) ? "을" : "를"}`;

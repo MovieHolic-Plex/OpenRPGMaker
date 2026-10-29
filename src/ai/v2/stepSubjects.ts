@@ -54,18 +54,46 @@ const lookLines = (event: string): string[] => {
   return [`${event}${josa(event, "을/를")} 살펴보았다.`, `${noun}${josa(noun, "을/를")} 살펴보았다.`];
 };
 
-function rewriteTexts(pages: Obj[], swap: (body: string) => string | undefined): number {
+function rewriteTexts(pages: Obj[], swap: (body: string) => string | { body: string; speaker: string } | undefined): number {
   let n = 0;
   const visit = (list: unknown): void => {
     if (!Array.isArray(list)) return;
     for (const c of list as Obj[]) {
       if (!c || typeof c !== "object") continue;
-      if (c.kind === "text" && typeof c.body === "string") { const next = swap(c.body); if (next !== undefined && next !== c.body) { c.body = next; n += 1; } }
+      if (c.kind === "text" && typeof c.body === "string") {
+        const next = swap(c.body);
+        if (typeof next === "string" && next !== c.body) { c.body = next; n += 1; }
+        else if (next && typeof next === "object") { c.body = next.body; c.speaker = next.speaker; n += 1; }
+      }
       for (const v of Object.values(c)) if (Array.isArray(v)) visit(v);
     }
   };
   for (const p of pages) visit(p.commands);
   return n;
+}
+
+/** 대사 목록에서 자리표시 줄을 뺀다 — 같은 목록에 다른 글이 남을 때만(빈 페이지를 만들지 않는다). */
+function dropTexts(pages: Obj[], drop: (body: string) => boolean): number {
+  let n = 0;
+  const isDrop = (c: unknown) => Boolean(c && typeof c === "object" && (c as Obj).kind === "text" && typeof (c as Obj).body === "string" && drop((c as Obj).body as string));
+  const visit = (list: unknown[]): unknown[] => {
+    const others = list.some((c) => c && !isDrop(c));
+    const kept = others ? list.filter((c) => { if (!isDrop(c)) return true; n += 1; return false; }) : list;
+    return kept.map(recurse);
+  };
+  const recurse = (c: unknown): unknown => {
+    if (!c || typeof c !== "object" || Array.isArray(c)) return c;
+    return Object.fromEntries(Object.entries(c as Obj).map(([k, v]) => [k, !Array.isArray(v) ? v : v.every((x) => x && typeof x === "object" && "kind" in (x as Obj)) ? visit(v) : v.map(recurse)]));
+  };
+  for (const p of pages) if (Array.isArray(p.commands)) p.commands = visit(p.commands);
+  return n;
+}
+
+/** 사람에게 듣는 단계의 첫 말 — 행동이 살펴볼 대상을 말하면 그 부탁, 아니면 이야기를 나눴다는 서술. */
+function personLine(who: string, action: string): string | { body: string; speaker: string } {
+  const target = lookTarget(action);
+  if (target) return { speaker: who, body: `부탁하오. ${target}${josa(target, "을/를")} 좀 살펴봐 주시오.` };
+  return `${who}${josa(who, "와/과")} 이야기를 나누었다.`;
 }
 
 /** 사람 그림 하나를 고른다 — 같은 맵 빈 칸에 잠깐 세워 그림을 읽고 바로 걷는다(buildPeople 이 역할·외형으로 Actor 칩을 고른다). */
@@ -105,8 +133,8 @@ export function settleStepSubjects(run: BuildRun): string[] {
       const speaker = JSON.stringify(ev.pages ?? []).match(new RegExp(`"speaker":"([^"]*${person.replace(/\s+/gu, "\\s*")}[^"]*)"`, "u"))?.[1];
       // 이미 사람으로 선 NPC 는 제 이름 그대로(「여관 주인 덕수」를 「여관 주인」으로 줄이지 않는다).
       const who = isPerson(ev) && name && !ABSTRACT.test(name) ? name : speaker ?? person;
-      const action = r.step.action.trim().replace(/[.。!]+$/u, "");
-      let n = rewriteTexts(pages, (body) => looks.has(body) ? `${action}.` : undefined);
+      // 함수가 넣은 「사건 조사 시작을 살펴보았다」 자리는 그 사람의 말로(행동 문장을 그대로 읽히면 지시문처럼 보였다 — vm5 flash 추리 「여관 주인의 이야기를 듣고 사건 현장을 조사한다.」).
+      let n = rewriteTexts(pages, (body) => looks.has(body) ? personLine(who, r.step.action) : undefined);
       n += rewriteTexts(pages, (body) => {
         const m = /^『([^』]+)』(?:을|를|을\(를\))\s*(알아냈다|얻었다)\.$/u.exec(body);
         if (!m || KNOWLEDGE.test(m[1]!)) return undefined;
@@ -132,8 +160,20 @@ export function settleStepSubjects(run: BuildRun): string[] {
       notes.push(`「${name || ev.id}」 → 「${who}」${n ? ` · 자리표시 대사 ${n}줄` : ""}${graphicNote}`);
       continue;
     }
-    // 진행 낱말뿐인 투명 칸 — 결과 물건(gives)이나 살펴보는 대상으로 이름·대사를 짓는다. 마지막 단계(지목·엔딩)는 사건 세우기가 맡는다.
-    if (last || !transparent(ev) || !ABSTRACT.test(name || r.step.event)) continue;
+    // 마지막 단계(지목·엔딩)는 사건 세우기가 맡는다 — 다만 「진범 대치를 살펴보았다」 같은 자리표시 줄은 다른 글이 있으면 뺀다(vm5 flash 추리 엔딩 갈래).
+    if (last) {
+      if (ABSTRACT.test(name || r.step.event)) {
+        const dropped = dropTexts(pages, (body) => looks.has(body));
+        if (dropped) {
+          const cur = run.ctx.project.maps[map.id]!;
+          run.ctx.project = { ...run.ctx.project, maps: { ...run.ctx.project.maps, [map.id]: { ...cur, events: cur.events.map((e) => e.id === ev.id ? { ...e, pages: pages as unknown as typeof e.pages } : e) } } } as Project;
+          notes.push(`「${name || r.step.event}」 자리표시 줄 ${dropped}개 뺌`);
+        }
+      }
+      continue;
+    }
+    // 진행 낱말뿐인 투명 칸 — 결과 물건(gives)이나 살펴보는 대상으로 이름·대사를 짓는다.
+    if (!transparent(ev) || !ABSTRACT.test(name || r.step.event)) continue;
     const target = lookTarget(r.step.action);
     const thing = r.step.gives && !KNOWLEDGE.test(r.step.gives) && !/^(?:엔딩|ending)$/iu.test(r.step.gives) ? r.step.gives.trim() : target;
     if (!thing) continue;

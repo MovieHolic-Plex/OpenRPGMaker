@@ -307,7 +307,10 @@ export function dressInteriorExits(run: BuildRun, mapId: string): ExitDressResul
     ?? events.find((e) => endsGame(e) && !visible(e) && !hasTransfer(e.pages ?? e.commands) && (escapeGame || lockish(e)));
   const tileLabel = (t: number) => String(((project0.tilesets[map.tilesetId]?.tileMeta ?? []) as unknown as ({ label?: string } | undefined)[])[t]?.label ?? "");
   const start = project0.startMapId === mapId ? project0.startPos : undefined;
-  const closable = gaps.every((g) => !events.some((e) => e.x === g.x && e.y === g.y) && !(start && start.x === g.x && start.y === g.y));
+  // 틈 위의 조용한 이벤트(시작 목표 같은 자동 실행)와 시작 칸은 메울 때 가장 가까운 걷는 칸으로 옮긴다 — 막는 것은 말을 거는·옮기는 이벤트뿐.
+  // 왜(2026-10-29 vm5 argon·flash 추리): 빈 시작 맵 남쪽 틈 (8,13)·(7,13)에 시작 칸과 「시작 목표」가 있어 틈을 못 메웠고, 판정자는
+  // 아래로 이어진 통로를 출구로 보고 30분을 헤맸다(argon blocker 「남쪽 출구를 열 방법이 없다」).
+  const closable = gaps.every((g) => !events.some((e) => e.x === g.x && e.y === g.y && !silent(e)));
   let movedStart: Cell | undefined;
   const withStart = (project: Project): Project => movedStart ? { ...project, startPos: movedStart } as Project : project;
   /** 막다른 남쪽 틈을 메운다: 틈 칸과 그 바로 위 칸에 걸친 그림(모델이 틈에 세운 문 등)을 걷고, 틈을 공허로 바꾼 뒤 둘레 띠를 다시 칠한다. */
@@ -323,9 +326,15 @@ export function dressInteriorExits(run: BuildRun, mapId: string): ExitDressResul
     }
     reband(k, map, (x, y) => gaps.some((g) => Math.abs(g.x - x) <= 1 && Math.abs(g.y - y) <= 1));
     // 시작 칸이 틈 위였으면(2026-10-29 vm1 terra 방탈출: 문 자리를 찾아 틈을 메우자 시작 칸 (3,7)이 벽이 됐다) 틈에서 가장 가까운 걸을 수 있는 칸으로 옮긴다.
+    // 틈 위의 조용한 이벤트는 틈 바로 위(안쪽) 칸으로 — 자리를 차지하지 않으니 다른 이벤트와 겹쳐도 된다.
+    const sitters = events.filter((e) => silent(e) && gaps.some((g) => g.x === e.x && g.y === e.y));
+    if (sitters.length) {
+      map.events = (map.events ?? []).map((e) => sitters.some((s) => s.id === e.id) ? { ...e, y: e.y - 1 } : e);
+      notes.push(`틈 위 조용한 이벤트 ${sitters.map((e) => `「${e.name ?? e.id}」`).join("")}를 한 칸 안으로`);
+    }
     if (start && gaps.some((g) => g.x === start.x && g.y === start.y)) {
       const probe = { ...project0, maps: { ...project0.maps, [mapId]: map } } as Project;
-      const taken = new Set(events.map((e) => `${e.x},${e.y}`));
+      const taken = new Set(events.filter((e) => !silent(e)).map((e) => `${e.x},${e.y}`));
       let best: Cell | undefined;
       for (let y = 0; y < map.height; y += 1) for (let x = 0; x < w; x += 1) {
         if (taken.has(`${x},${y}`) || gaps.some((g) => g.x === x && g.y === y) || !isPassable(probe, map, x, y)) continue;

@@ -6,7 +6,7 @@ import type { V2Session } from "./verbs";
 import { BLUEPRINT_PATH_IDS, fillUnsetStepConditions, walkBlueprint } from "./blueprint";
 import { battleSites, healingSources } from "./combatChecks";
 import { wantsWholeGame } from "./shipChecks";
-import { applyShipDefaults } from "./shipDefaults";
+import { applyShipDefaults, fillStaleObjectives } from "./shipDefaults";
 import { refreshObjectiveRoutes } from "./discoverability";
 import { fitUnwinnableStepBattlesIn, lockStepOrderDoorsIn, orderStepBattlesIn, pointLockedPagesIn } from "./blueprintPath";
 import { fitPathBattlesIn } from "./pathBattleBudget";
@@ -135,6 +135,10 @@ export async function runFinishAutoBuild(env: PiAssistantV2Env, session: V2Sessi
     // 잠긴 조사 대사가 먼저 할 일(그 조건을 켜는 이벤트와 자리)을 말하게(2026-10-29 vm3 argon 추리 열린 창문·deepseek jrpg 계단). 맵 이름을 뜻 낱말로 바꾼 뒤.
     try { assembled.push(...pointLockedPagesIn(env.ctx.project)); }
     catch { /* 잠김 대사 보충 실패는 끝맺음을 깨지 않는다 */ }
+    // 위 단계(fillUnsetStepConditions·orderStepBattles)가 이정표를 새로 만들면(조건 스위치를 켜는 갈래) 다음 목표를 다시 건다
+    // (2026-10-29 vm5 argon 추리: 「모든 단서」를 켜게 된 상인 오언이 다음 목표를 안 바꿔 출하 검사 objective-missing).
+    try { assembled.push(...fillStaleObjectives(env.ctx.project)); }
+    catch { /* 목표 보충 실패는 끝맺음을 깨지 않는다 */ }
     // 목표 꼬리 「(<맵> 입구: 방위)」를 마지막 연결로 다시 쓴다 — 목표가 걸리는 자리에서 본 첫 출구 방위·그 뒤 대상(2026-10-29 vm2 jrpg 길 못 찾음).
     try { const n = refreshObjectiveRoutes(env.ctx.project); if (n) assembled.push(`목표 길 안내 ${n}곳`); }
     catch (error) { env.emit({ type: "execution_status", name: "v2.assembly", ok: false, summary: `목표 길 안내를 다시 쓰지 못했다: ${error instanceof Error ? error.message : String(error)}` }); }

@@ -121,8 +121,55 @@ export function evidenceName(gives: string): string {
   const inner = /«([^«»]+)»/u.exec(gives)?.[1] ?? /\(([^()]+)\)/u.exec(gives)?.[1];
   const base = (inner ?? gives).replace(/^(아이템|스위치)\s*[:：]\s*/u, "").replace(/\s*(아이템|스위치|확인|발견|획득|입수)$/u, "").trim();
   // 진행 낱말(「수사 시작」「모든 단서」)은 물건이 아니다 — 증거 이름으로 쓰면 「『수사 시작』… 내 것이 맞소」가 됐다(vm5 argon 추리).
-  if (!base || /(\s|^)(시작|수사|조사|진행|해결|엔딩|정보)$/u.test(base) || /^(모든\s*)?단서들?$/u.test(base) || /^(started|found_clue|clue|asked)$/iu.test(base)) return "결정적 단서";
+  // 범인이 「내 것이 맞소」라고 할 수 있는 작은 물건 하나를 gives 글로 골라 쓴다(되풀이해도 같은 이름).
+  if (isProgressWord(base)) return PHYSICAL_CLUES[hash(gives) % PHYSICAL_CLUES.length]!;
   return base;
+}
+
+/** 물건이 아닌 진행 낱말인가(「수사 시작」「모든 단서」「사건 해결」「found_clue」). */
+export function isProgressWord(word: string): boolean {
+  const w = word.trim();
+  return !w || /(\s|^)(시작|수사|조사|진행|해결|엔딩|정보|탐문|추리)$/u.test(w) || /^(모든\s*)?(단서|증거)들?$/u.test(w) || /^(started|found_clue|clue|asked|evidence)$/iu.test(w);
+}
+
+/** 진행 낱말 대신 쓰는 증거 물건 — 범인이 제 것이라 털어놓을 만한 작은 소지품. */
+const PHYSICAL_CLUES = ["떨어진 은단추", "찢어진 소매 조각", "진흙 묻은 손수건", "이름 새긴 담뱃대", "낯선 열쇠고리", "얼룩진 장갑 한 짝"] as const;
+
+/**
+ * 지목에 쓰는 증거 아이템 이름이 진행 낱말(「수사 시작」)이면 물건 이름으로 바꾸고, 대사 속 『옛 이름』도 고친다. 「『수사 시작』을 알아냈다.」 줄은 뺀다(주는 줄이 따로 있다).
+ * 왜(2026-10-29 vm5 argon 추리 판정): 유일한 증거가 『수사 시작』이라 상인 오언이 「『수사 시작』… 내 것이 맞소」라고 자백했다 — 앞 빌드가 만든 아이템이라
+ * evidenceName 을 고쳐도 이미 지어진 판은 그대로였다.
+ */
+function renameProgressEvidence(run: BuildRun): string[] {
+  const project = run.ctx.project;
+  const used = new Set<string>();
+  for (const map of Object.values(project.maps)) for (const ev of map.events ?? []) for (const pg of ev.pages ?? []) walkCommands(pg.commands, (c) => {
+    if (c.kind === "presentItem") for (const o of (c.options ?? []) as Obj[]) if (typeof o.itemId === "string") used.add(o.itemId);
+  });
+  const notes: string[] = [];
+  for (const id of used) {
+    const item = run.ctx.project.database.items.find((i) => i.id === id);
+    const old = String(item?.name ?? "");
+    if (!item || !isProgressWord(old)) continue;
+    const name = evidenceName(old);
+    if (name === old) continue;
+    run.call("upsert_item", { item: { ...structuredClone(item), name } });
+    const esc = old.replace(/[.*+?^${}()|[\]\\]/gu, "\\$&");
+    const known = new RegExp(`^『${esc}』(?:을|를|을\\(를\\))\\s*알아냈다\\.?$`, "u");
+    const maps = Object.fromEntries(Object.entries(run.ctx.project.maps).map(([mid, m]) => {
+      const json = JSON.stringify(m.events ?? []);
+      if (!json.includes(`『${old}』`)) return [mid, m];
+      const drop = (list: unknown): unknown => Array.isArray(list)
+        ? (list as Obj[]).filter((c) => !(c && c.kind === "text" && typeof c.body === "string" && known.test(c.body))).map(drop)
+        : list && typeof list === "object" ? Object.fromEntries(Object.entries(list as Obj).map(([k, v]) => [k, drop(v)])) : list;
+      const cleaned = JSON.stringify(drop(JSON.parse(json)))
+        .replace(new RegExp(`『${esc}』(?:(을|를|이|가|은|는|과|와)(?![가-힣])(?:\\(를\\))?)?`, "gu"), (_m, j?: string) => `『${name}』${j ? jo(name, /을|를/u.test(j) ? "을/를" : /이|가/u.test(j) ? "이/가" : /은|는/u.test(j) ? "은/는" : "와/과") : ""}`);
+      return [mid, { ...m, events: JSON.parse(cleaned) }];
+    }));
+    run.ctx.project = { ...run.ctx.project, maps } as Project;
+    notes.push(`증거 『${old}』(진행 낱말) → 『${name}』`);
+  }
+  return notes;
 }
 
 /** 범인 — 마지막·심문 단계 글에 나온 「부름 이름」(심부름꾼 준), 없으면 부름만(수상한 상인), 없으면 풀에서. */
@@ -167,7 +214,7 @@ export function stageMysteryCase(run: BuildRun): string[] {
   const named = repairPageNameLabels(run);
   const closed = closeEndingShortcuts(run);
   const notes = stageMysteryCaseInner(run);
-  return [...named, ...closed, ...notes, ...closeEndingShortcuts(run), ...ensureEvidenceGiven(run), ...nameLeakedEventIds(run)];
+  return [...named, ...closed, ...notes, ...closeEndingShortcuts(run), ...ensureEvidenceGiven(run), ...renameProgressEvidence(run), ...nameLeakedEventIds(run)];
 }
 
 /** 대사 속 「ev_npc_…」(청사진 step.event 가 id 라 그대로 적힌 이름)을 그 이벤트 이름으로. */
@@ -450,7 +497,13 @@ function explainRemainingClues(run: BuildRun): string[] {
   // 자리 = 맵 방위 + 이벤트가 실제로 놓인 물건 이름(「난로 옆 보관함」이 안락의자 위면 「가운데 안락의자」) — 이름 낱말만으로는 어느 가구를 눌러야 할지 모른다.
   // 이름은 이벤트 이름(청사진 step.event 가 이벤트 id 로 바뀐 판에 「ev_npc_…」가 샜다 — vm4 argon 추리).
   const label = (r: Resolved) => { const n = nameOf(r.ev); return n && !/^ev_/u.test(n) ? n : r.step.event; };
+  // 우리가 세운 용의자 단계는 범인 한 명 이름 대신 용의자 모두(이름만 대면 범인을 알려 주는 셈 — vm5 argon 「남은 단서 1개: 「상인 오언」」),
+  // 같은 맵에 선 사람은 방위를 붙이지 않는다(보이는 사람이다. 사람은 비켜 서며 옮겨 방위가 틀렸다 — 판정자는 「(남쪽)」을 남쪽 출구로 읽었다).
+  const ours = (m: GameMap) => (m.events ?? []).filter((e) => (e.pages ?? []).some((pg) => / · 탐문$/u.test(String((pg as { name?: string }).name ?? ""))));
   const where = (r: Resolved) => {
+    const suspects = ours(r.map);
+    if (suspects.some((e) => e.id === r.ev.id)) return `용의자 ${suspects.map((e) => `「${nameOf(e)}」`).join("·")}에게 증거 내밀기${r.map.id === last.map.id ? "" : `(${r.map.name ?? r.map.id})`}`;
+    if (r.map.id === last.map.id && visiblePerson(r.ev)) return `「${label(r)}」`;
     const thing = hostThing(project, r.map, r.ev);
     const place = r.map.id === last.map.id ? mapRegion(r.map, r.ev.x, r.ev.y) : r.map.name ?? r.map.id;
     return `「${label(r)}」(${thing && !label(r).includes(thing) ? `${place} ${thing}` : place})`;
