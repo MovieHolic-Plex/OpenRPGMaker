@@ -37,27 +37,32 @@ export function nearestSide(map: GameMap, c: { x: number; y: number }): Side {
   return d.sort((a, b) => a[1] - b[1])[0]![0];
 }
 
-/** side 쪽 가장자리의 걸어 닿는 칸 하나 — 길 칸 먼저, 없으면 길에서 가까운 칸, 같으면 가장자리 가운데에 가까운 칸. ignore 는 곧 걷을 문. */
-export function worldSideGateSpot(project: Project, map: GameMap, side: Side, ignore: ReadonlySet<string> = new Set()): { x: number; y: number; road: boolean } | undefined {
+const edgeDist = (map: GameMap, c: { x: number; y: number }, side: Side) =>
+  side === "north" ? c.y : side === "south" ? map.height - 1 - c.y : side === "west" ? c.x : map.width - 1 - c.x;
+
+/**
+ * side 쪽 가장자리의 걸어 닿는 칸 하나 — 가장자리에 가장 가까운 줄에서(그 줄이 맨 끝이 아니면 길이 끝까지 안 닿은 마을: terra 강가 마을 서쪽),
+ * 길 칸 먼저, 없으면 길에서 가까운 칸, 같으면 가장자리 가운데. ignore 는 곧 걷을 문.
+ */
+export function worldSideGateSpot(project: Project, map: GameMap, side: Side, ignore: ReadonlySet<string> = new Set()): { x: number; y: number; road: boolean; edge: number } | undefined {
   const reach = reachableCells(project, map);
   if (!reach) return undefined;
   const w = map.width, h = map.height;
   const roads = roadCellSet(project, map);
   const roadPts = [...roads].map((i) => ({ x: i % w, y: Math.floor(i / w) }));
   const busy = (x: number, y: number) => (map.events ?? []).some((e) => !ignore.has(e.id) && Math.abs(e.x - x) + Math.abs(e.y - y) <= 1);
-  let best: { x: number; y: number; road: boolean; score: number } | undefined;
-  const n = side === "north" || side === "south" ? w : h;
-  for (let i = 0; i < n; i++) {
-    const x = side === "north" || side === "south" ? i : side === "west" ? 0 : w - 1;
-    const y = side === "west" || side === "east" ? i : side === "north" ? 0 : h - 1;
+  let best: { x: number; y: number; road: boolean; edge: number; score: number } | undefined;
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    const edge = edgeDist(map, { x, y }, side);
+    if (best && edge > best.edge) continue;
     if (!reach[y * w + x] || !isPassable(project, map, x, y) || busy(x, y)) continue;
     const road = roads.has(y * w + x);
     const toRoad = road ? 0 : roadPts.reduce((m, r) => Math.min(m, Math.abs(r.x - x) + Math.abs(r.y - y)), 99);
-    const mid = Math.abs(i - n / 2);
-    const score = toRoad * 100 + mid;
-    if (!best || score < best.score) best = { x, y, road, score };
+    const mid = side === "north" || side === "south" ? Math.abs(x - w / 2) : Math.abs(y - h / 2);
+    const score = edge * 100000 + toRoad * 100 + mid;
+    if (!best || score < best.score) best = { x, y, road, edge, score };
   }
-  return best ? { x: best.x, y: best.y, road: best.road } : undefined;
+  return best ? { x: best.x, y: best.y, road: best.road, edge: best.edge } : undefined;
 }
 
 /**
@@ -80,9 +85,9 @@ export function settleDungeonGates(run: BuildRun, floors: readonly string[], isO
     const entry = backs[0];
     const want: Side | undefined = side ?? (entry ? OPP[nearestSide(D, entry)] : undefined);
     if (!want) continue;
-    if (outs.length === 1 && backs.length <= 1 && onEdge(M, outs[0]!, want)) continue;
     const ignore = new Set(outs.map((e) => e.id));
     const spot = worldSideGateSpot(p0, M, want, ignore);
+    if (outs.length === 1 && backs.length <= 1 && (onEdge(M, outs[0]!, want) || (spot && edgeDist(M, outs[0]!, want) <= spot.edge))) continue;
     if (!spot) { notes.push(`「${M.name}」→「${D.name}」: ${KO[want]}쪽 가장자리에 걸어 닿는 칸이 없어 문 ${outs.length}개를 그대로 두었다`); continue; }
     const backIds = new Set(backs.map((e) => e.id));
     const graph = (p0 as unknown as { worldGraph?: { edges?: { from?: { mapId?: string }; to?: { mapId?: string } }[] } }).worldGraph;
@@ -94,7 +99,7 @@ export function settleDungeonGates(run: BuildRun, floors: readonly string[], isO
     } as Project;
     const r = run.call("link_world_entrance", { worldMapId: M.id, links: [{ x: spot.x, y: spot.y, toMapId: first }] });
     if (!r.ok) { run.ctx.project = p0; notes.push(`「${M.name}」→「${D.name}」 문을 ${KO[want]}쪽 가장자리로 옮기지 못했다(${String(r.summary).slice(0, 100)}) — 그대로 두었다`); continue; }
-    notes.push(`고침: 「${M.name}」에서 「${D.name}」로 가는 문을 ${KO[want]}쪽 가장자리 ${spot.road ? "길 끝" : "길 가까운 칸"} (${spot.x},${spot.y}) 하나로 — 던전이 ${KO[want]}쪽에 있다(옛 문 ${outs.map((e) => `(${e.x},${e.y})`).join("·")} 걷음)`);
+    notes.push(`고침: 「${M.name}」에서 「${D.name}」로 가는 문을 ${KO[want]}쪽 가장자리${spot.edge ? `(끝에서 ${spot.edge}칸 — 길이 끝까지 닿지 않는다)` : ""} ${spot.road ? "길" : "길 가까운 칸"} (${spot.x},${spot.y}) 하나로 — 던전이 ${KO[want]}쪽에 있다(옛 문 ${outs.map((e) => `(${e.x},${e.y})`).join("·")} 걷음)`);
   }
   return notes;
 }
