@@ -401,6 +401,40 @@ export function gateBattleSteps(run: BuildRun): string[] {
 }
 
 /**
+ * 싸우는 단계가 아닌데 gateBattleSteps 가 «안에서 싸우기»로 감싼 페이지를 푼다 — `[보스 그룹 전투(도망·패배 불가), 승리 갈래 { 원래 명령 }]`
+ * 꼴이고 그룹이 경로 빌더 사본(`troop_path_*`)이면 원래 명령만 남긴다. 결정적·되풀이 안전.
+ * 2026-10-29 vm7 argon jrpg: 「촌장에게 마왕 토벌의 부탁과 동굴 열쇠를 받는다」를 전투 단계로 읽어(낱말 「토벌」) 촌장에게 말 걸자마자 용과 싸웠다.
+ * 낱말 판정은 고쳤지만(`isBattleStep` 의 맡는 일 구) 이미 감싼 저장본은 이 함수로 되돌린다.
+ */
+export function ungateTalkStepBattlesIn(project: Project): string[] {
+  const bp = project.gameBlueprint;
+  if (!bp) return [];
+  const notes: string[] = [];
+  for (const step of bp.steps) {
+    if (isCodeStep(step) || isBattleStep(step)) continue;
+    const map = mapFor(project, step.place);
+    const ev = map?.events.find((e) => e.id === step.event || norm(String((e as { name?: string }).name ?? "")) === norm(step.event));
+    if (!map || !ev) continue;
+    let touched = false;
+    const pages = ((ev.pages ?? []) as unknown as RawPage[]).map((page) => {
+      const cmds = (page.commands ?? []) as { kind?: string; troopId?: unknown; canEscape?: unknown; canLose?: unknown; condition?: { kind?: string; result?: string }; then?: unknown; else?: unknown }[];
+      const [fight, fork] = cmds;
+      const wrapped = cmds.length === 2 && fight?.kind === "battleProcessing" && typeof fight.troopId === "string" && fight.troopId.startsWith("troop_path_")
+        && fight.canEscape === false && fight.canLose === false
+        && fork?.kind === "fork" && fork.condition?.kind === "battleResult" && fork.condition.result === "victory" && Array.isArray(fork.then)
+        && !(Array.isArray(fork.else) && fork.else.length);
+      if (!wrapped) return page;
+      touched = true;
+      return { ...page, commands: structuredClone(fork!.then) as RawPage["commands"] };
+    });
+    if (!touched) continue;
+    map.events = map.events.map((e) => e.id === ev.id ? { ...e, pages: pages as unknown as typeof e.pages } : e);
+    notes.push(`「${String((ev as { name?: string }).name ?? ev.id)}」은 싸우는 단계가 아니라 붙어 있던 보스 전투를 뺐다`);
+  }
+  return notes;
+}
+
+/**
  * 단계 순서 보호(2026-10-29 vm3 terra jrpg): 「마왕과의 결전」 이 「은신처 발견」(앞 단계 스위치)과 마왕 승리 스위치를 둘 다 요구하는데,
  * 마왕 전투 이벤트는 조건 없이 서 있어 앞 단계 단서(2칸 옆 「동굴의 흔적」)를 보기 전에 부딪혀 싸웠고, 이긴 뒤 목표 「마왕과의 결전을 마무리하자」 가
  * 채울 길 없는 조건(은신처 발견)에 막혔다. 단계 이벤트의 넘어가는 페이지가 승리 스위치 W 와 함께 요구하는 다른 스위치(앞 단계가 켜는 것)를,

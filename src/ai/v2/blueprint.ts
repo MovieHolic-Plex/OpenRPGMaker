@@ -246,9 +246,15 @@ export function codeStepBypass(project: Project, ev: GameEvent): string | undefi
 export const BATTLE_STEP_WORDS = /결전|전투|처치|쓰러뜨|물리치|격파|무찌르|무찔|토벌|대결|보스전|battle|fight|defeat|slay|boss/iu;
 /** 듣기·묻기 단계(「마왕을 처치할 방법을 듣는다」)는 싸우는 단계가 아니다. */
 const TALK_ACTION = /대화|듣는|듣고|묻는|물어|이야기|말을\s*건|방법을|소문|정보/u;
+/**
+ * 전투 낱말이 «맡는 일»의 이름일 뿐인 구(「마왕 토벌의 부탁」·「토벌을 의뢰받는다」·「결전 준비」) — 이 구를 빼고 본다.
+ * 2026-10-29 vm7 argon jrpg: 「촌장에게 마왕 토벌의 부탁과 동굴 열쇠를 받는다」가 전투 단계로 읽혀 촌장이 말 걸자마자 용과 싸움을 걸었다.
+ */
+const BATTLE_ERRAND = /(결전|전투|처치|토벌|대결|보스전|격파)\s*(의|을|를)?\s*(부탁|의뢰|요청|명령|임무|준비|약속|소식)/gu;
 /** 청사진 단계가 싸워 이기는 단계인가(이벤트 이름에 전투 낱말, 또는 행동에 전투 낱말이 있고 듣기·묻기 단계가 아니다). */
 export function isBattleStep(step: { readonly event: string; readonly action: string }): boolean {
-  return BATTLE_STEP_WORDS.test(step.event) || (BATTLE_STEP_WORDS.test(step.action) && !TALK_ACTION.test(step.action));
+  const action = step.action.replace(BATTLE_ERRAND, " ");
+  return BATTLE_STEP_WORDS.test(step.event) || (BATTLE_STEP_WORDS.test(action) && !TALK_ACTION.test(action));
 }
 const isVictoryFork = (cmd: Obj) => cmd.kind === "fork" && obj(cmd.condition)?.kind === "battleResult" && obj(cmd.condition)?.result === "victory";
 /** 명령 목록에서 전투 승리 갈래 밖에 있는 넘어가는 명령(첫 것). */
