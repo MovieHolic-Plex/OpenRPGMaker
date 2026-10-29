@@ -291,6 +291,8 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   let form = resolveVillageForm(theme, seed, formArg);
   const codeT = options.codeTerrain ?? null;
   // 코드 지형: 마을 모양은 조수가 고른 자리가 정한다 — 모이는 곳에 판석 광장(plaza false 면 우물만)
+  // 흩어진 농가(scatter)를 청했으면 코드 지형에서도 길은 모두 흙 들길로 — 포장 큰길·골목이면 읍내로 읽혔다(ab14 들판 농가 두 판 모두 A)
+  const scatterWanted = !!codeT && form === "scatter";
   if (codeT) form = options.layout?.gather?.plaza === false ? "street" : "plaza";
   const roofs = resolveRoofPalette(theme, seed, options.roofs);
   const water = resolveVillageWater(theme, seed, form, options.water);
@@ -1077,7 +1079,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   const summit = new Set<number>();
   let lowered = 0; // 오를 길이 없어 아랫단으로 내린 칸 수
   const trackCells = new Set<number>(); // 풀밭 마을의 윗길·오르막(모랫길로 칠한다)
-  if (codePlan && "mat" in spec.road) for (const st of streets) if (st.name === "들길") for (const c of st.cells) trackCells.add(c);
+  if (codePlan && "mat" in spec.road) for (const st of streets) if (st.name === "들길" || scatterWanted) for (const c of st.cells) trackCells.add(c);
   // 내린 단이 다른 단과 합쳐지거나 그 위 단의 아랫단이 사라질 수 있으므로 바뀐 것이 없을 때까지 다시 센다(높이는 내려가기만 하므로 끝난다)
   for (let pass = 0; hasTerrain && !codeT && pass < 4; pass += 1) {
     let changed = false;
@@ -1561,6 +1563,33 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     if (wp) {
       workAt = { x: wp.x, y: wp.y, name: theme === "desert" ? "대상 마당" : theme === "snow" ? "얼음낚시터" : theme === "swamp" ? "고기 말림터" : theme === "coast" ? "그물 말림터" : built ? "헛간 마당" : "타작마당" };
       cluster(spec.work, wp.x, wp.y, 4, 4);
+    }
+    // 코드 지형 포구: 바다로 곧게 뻗는 잔교 하나(낚시 포구 잔교 몸통+머리 키트) — 일터·모이는 곳에 가까운 남향 물가에서, 뭍 끝을 길망에 잇는다.
+    // 없으면 포구로 읽히지 않았다(ab14 포구 어촌 두 판 「잔교·부두가 없다」).
+    if (theme === "coast") {
+      const stem = kitIndex.get("bd-pick-fishing-port-jetty-stem"), head = kitIndex.get("bd-pick-fishing-port-jetty-head");
+      const sea = (x: number, y: number) => inMap(x, y) && codeT!.water[idx(x, y)] === 3 && occ[idx(x, y)] === WATERC;
+      const near = workAt ?? codePlan.g;
+      let best: { x: number; y: number; len: number; d: number } | null = null;
+      if (stem && head) for (let x = 5; x < W - 6; x += 1) for (let y = 2; y < H - 6; y += 1) {
+        const top = occ[idx(x, y)], top2 = occ[idx(x + 1, y)];
+        if (!((top === FREE || top === ROAD) && (top2 === FREE || top2 === ROAD)) || !sea(x, y + 1) || !sea(x + 1, y + 1)) continue;
+        let len = 0; while (len < stem.h && sea(x, y + 1 + len) && sea(x + 1, y + 1 + len)) len += 1;
+        if (len < 5) continue;
+        const hy = y + len; let headOk = hy + head.h < H;
+        for (let j = 0; j < head.h && headOk; j += 1) for (let i = 0; i < head.w; i += 1) if (!sea(x - 4 + i, hy + j)) { headOk = false; break; }
+        if (!headOk) continue;
+        const d = Math.hypot(x - near.x, y - near.y); if (!best || d < best.d) best = { x, y, len, d };
+      }
+      if (best && stem && head && linkToRoad(best.x, best.y, false)) {
+        const { x: jx, y: jy, len } = best;
+        stamps.push({ kit: stem.id, x: jx, y: jy, record: false });
+        for (let j = 1; j <= Math.max(len, stem.h - 1); j += 1) { set(jx, jy + j, KEEP); set(jx + 1, jy + j, KEEP); }
+        const hy = jy + len; stamps.push({ kit: head.id, x: jx - 4, y: hy, record: false });
+        for (let j = 0; j < head.h; j += 1) for (let i = 0; i < head.w; i += 1) set(jx - 4 + i, hy + j, KEEP);
+        linkToRoad(jx, jy);
+        coastWork.push(`잔교(${jx},${jy})`);
+      }
     }
   } else if (riverX >= 0) {
     // 나루를 먼저 낸다 — 물가 띠 마을의 방앗간은 서쪽 둑에 서고 나루 건너편 들길로 문 앞 길을 잇는다
