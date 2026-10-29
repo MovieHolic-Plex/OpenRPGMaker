@@ -120,7 +120,7 @@ function review(day: string, serviceHi: number, serviceMid: number, maouHi: numb
     rows.reduceRight<Command[]>((rest, row, i) => (i === rows.length - 1 ? leaf(row) : [ifCond(varAtLeast(v, row.at), leaf(row), rest)]), []);
   return [
     playSe(SE_PAPER),
-    ...ladder(svc, V_SERVICE, (a) => ladder(mao, V_MAOU, (b) => note(`「${day} 근무 평가」  점장 사토미`, "", a.line, b.line))),
+    ...ladder(svc, V_SERVICE, (a) => ladder(mao, V_MAOU, (b) => note(`「${day} 근무 평가」  점장 사토미`, a.line, b.line))),
   ];
 }
 
@@ -377,10 +377,10 @@ function buildRoom(project: Project, _links: Links, konbiniArrive: Cell): Cell {
     ...caption("탁자 위에 통장 한 권과 봉투 하나가 놓여 있다."),
     walkTo("@player", { x: 11, y: 6 }), face("@player", "right"),
     playSe(SE_PAPER),
-    ...note("「이세계 전생 관리국 안내문」", "", "귀하는 『동귀어진』 처리에 따라 일본에 전생되었습니다.", "마력은 봉인되었습니다. 생활비는 스스로 버십시오.", "※ 이 안내문은 읽은 뒤 분리수거해 주십시오."),
+    ...note("「이세계 전생 관리국 안내문」", "귀하는 『동귀어진』 처리에 따라 일본에 전생되었습니다. 마력은 봉인되었습니다.", "생활비는 스스로 버십시오.  ※ 이 안내문은 읽은 뒤 분리수거해 주십시오."),
     ...zs("embarrassed", "…분리수거가 뭐냐."),
     playSe(SE_PAPER),
-    ...note("통장 잔고", "", "0엔"),
+    ...note("통장 잔고", "0엔"),
     shake(500, "3"),
     ...zs("sad", "0. 마계 금화로 환산하면… 역시 0이다."),
     ...zs("sad", "세계의 절반을 가졌던 이 몸이, 잔고 0."),
@@ -392,7 +392,7 @@ function buildRoom(project: Project, _links: Links, konbiniArrive: Cell): Cell {
   ];
   const flyer: Command[] = [
     playSe(SE_PAPER),
-    ...note("【아르바이트 급구】", "해피 마트 사쿠라자카점", "", "시급 1,150엔 · 초보 환영 · 유니폼 지급", "폐기 도시락 있음(?)", "이 건물 바로 왼쪽입니다!"),
+    ...note("【아르바이트 급구】  해피 마트 사쿠라자카점", "시급 1,150엔 · 초보 환영 · 유니폼 지급 · 폐기 도시락 있음(?)", "이 건물 바로 왼쪽입니다!"),
     ...zs("surprised", "폐기 도시락…? 무슨 뜻인지는 모르겠으나, 매혹적인 울림이다."),
     ...zs("happy", "좋다. 이 몸이 직접 가 주마. 감격하며 맞이하도록 해라."),
     setVar(V_STAGE, "=", 2),
@@ -431,7 +431,7 @@ function buildRoom(project: Project, _links: Links, konbiniArrive: Cell): Cell {
     page("ev_mk_fridge_p2", [varAtLeast(V_STAGE, 4)], [...caption("폐기 도시락이 하나 들어 있다. 히나 선배가 몰래 챙겨 주었다."), ...think("…선배. 이 은혜, 세계를 되찾으면 반드시 갚겠다.")], { priority: "same" }),
   ]));
   map.events.push(event("ev_mk_pc", "책상", mustBlock(project, map, { x: 1, y: 10 }, "책상"), [
-    page("ev_mk_pc_p", [], [...caption("낡은 노트북. 검색창에 「암흑 마왕 제르바스」를 쳐 본다."), ...note("검색 결과 0건", "", "혹시 「제르바스 고양이 사료」를 찾으셨나요?"), ...think("…이 세계에서 나는 무명이다.")], { priority: "same" }),
+    page("ev_mk_pc_p", [], [...caption("낡은 노트북. 검색창에 「암흑 마왕 제르바스」를 쳐 본다."), ...note("검색 결과 0건", "혹시 「제르바스 고양이 사료」를 찾으셨나요?"), ...think("…이 세계에서 나는 무명이다.")], { priority: "same" }),
   ]));
   map.defaultLighting = { ambient: 0.08, color: "#fff0d6", sources: [] };
   map.bgm = { mode: "custom", resourceId: BGM_ROOM } as GameMap["bgm"];
@@ -1115,7 +1115,7 @@ function buildStreet(project: Project, links: Links, parkArrive: Cell, shrineArr
   // 찻집 — 문은 닫혀 있다(실내 없음).
   const cafeDoor = { x: 26, y: 8 };
   map.events.push(event("ev_mk_st_cafe", "찻집 코스모스", cafeDoor, [
-    page("ev_mk_st_cafe_p", [], [...note("찻집 코스모스", "", "오늘 영업은 끝났습니다.", "내일 또 와 주세요. 리리 드림")], { priority: "same" }),
+    page("ev_mk_st_cafe_p", [], [...note("찻집 코스모스", "오늘 영업은 끝났습니다.", "내일 또 와 주세요. 리리 드림")], { priority: "same" }),
   ]));
   // 리리(첫째 날 저녁)
   const LILY = "ev_mk_st_lily";
@@ -1293,12 +1293,12 @@ function buildShrine(project: Project, backToStreet: Cell): Cell {
   map.events.push(event("ev_mk_sh_kuji", "오미쿠지", mustBlock(project, map, { x: 23, y: 15 }, "오미쿠지 상자"), [
     page("ev_mk_sh_kuji_p4", [], [
       ...caption("오미쿠지를 뽑았다."),
-      ...note("대흉", "", "직장  옛 원수와 다시 만난다", "금전  0에서 시작했으니 오를 일만 남았다", "연애  선배를 공경하라"),
+      ...note("대흉", "직장  옛 원수와 다시 만난다 · 금전  0에서 시작했으니 오를 일만 남았다", "연애  선배를 공경하라"),
       ...think("(…이 세계의 점술, 묘하게 정확하다.)"),
     ], { priority: "same" }),
     page("ev_mk_sh_kuji_p6", [varIs(V_STAGE, 6)], [
       ...caption("오미쿠지를 한 번 더 뽑았다."),
-      ...note("길", "", "내일 밤, 큰 선택을 하게 된다.", "웃는 얼굴을 잊지 말 것."),
+      ...note("길", "내일 밤, 큰 선택을 하게 된다.", "웃는 얼굴을 잊지 말 것."),
       ...think("(…웃는 얼굴. 매뉴얼 제3조와 같은 말이군.)"),
     ], { priority: "same" }),
   ]));

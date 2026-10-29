@@ -75,8 +75,9 @@ export function caption(...lines: string[]): Command[] {
 export function voice(speaker: string, ...lines: string[]): Command[] {
   return [CLEAR_FACE, ...lines.map((body): Command => ({ kind: "text", speaker, body, position: "bottom" } as Command))];
 }
-/** 종이 한 장 — 제목과 줄들을 한 화면에 함께 보인다(줄마다 넘기지 않는다). */
+/** 종이 한 장 — 제목과 줄들을 한 화면에 함께 보인다(줄마다 넘기지 않는다). 편지 창은 한 장에 3줄이므로 3줄 이하로 쓴다. */
 export function note(...lines: string[]): Command[] {
+  if (lines.length > 3) throw new Error(`[maou-konbini] 종이 한 장은 3줄까지다(넘으면 다음 장으로 갈린다): ${lines[0]}`);
   return [CLEAR_FACE, { kind: "text", body: lines.join("\n"), position: "center", context: "letter" } as Command];
 }
 /** 종이에 적힌 글(전단지·통장·편지) — 편지 맥락. */
