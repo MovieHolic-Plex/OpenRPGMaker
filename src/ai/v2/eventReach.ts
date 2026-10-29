@@ -566,7 +566,9 @@ export function clearTargetFronts(run: BuildRun, mapId: string): string[] {
 // 카운터 뒤 주인처럼 사람과 붙지 않은 채 한 면만 열린 자리는 일부러 놓은 것으로 보고 건드리지 않는다.
 // 옮긴 결과 못 닿는 이벤트가 늘거나 다른 사람의 열린 면이 둘 밑으로 줄면 그 자리는 고르지 않는다.
 
-const isPerson = (ev: GameEvent) => (ev.pages ?? []).some((p) => !!(p.graphic as { sprite?: unknown } | undefined)?.sprite && (typeof p.trigger === "string" ? p.trigger : p.trigger?.kind) === "action");
+// 사물 칩(상자·철창·문 — Object 시트)은 사람이 아니다 — 시계 속·책상 위 상자를 「가구 칸 위에 선 사람」으로 보고 바닥으로 끌어냈다(2026-10-29 vm5 escape 재생).
+const OBJECT_SHEET = /charset_object|_object\d|objects?$/iu;
+const isPerson = (ev: GameEvent) => (ev.pages ?? []).some((p) => { const sprite = (p.graphic as { sprite?: { id?: string } } | undefined)?.sprite; return !!sprite && !OBJECT_SHEET.test(String(sprite.id ?? "")) && (typeof p.trigger === "string" ? p.trigger : p.trigger?.kind) === "action"; });
 
 function openSides(map: GameMap, reach: Uint8Array, c: Cell): number {
   let n = 0;
