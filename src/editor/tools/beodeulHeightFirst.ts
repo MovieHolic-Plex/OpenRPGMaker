@@ -1,24 +1,30 @@
-// editor/tools/beodeulHeightFirst.ts — 버들항 마을 「높이 먼저」 시제품(2026-10-29, 옵션 landform).
+// editor/tools/beodeulHeightFirst.ts — 버들항 마을 「지형 먼저」(2026-10-29, 마을 짓기의 기본 순서).
 //
-// 왜: 사용자 「마을을 만드는 게 불만이 많다. 높이를 우선 만들고 그 뒤에 마을을 만드는 방식은 어떤가?」.
-// 지금 시공기(beodeulTerrain.planVillageTerrain)는 물·큰길 줄(mainBase)을 먼저 정하고 그 북쪽에 단을 깎는다 — 높이가 길에 끌려가는 장식이다.
-// 여기서는 땅 모양(landform)과 마을이 앉을 단(settle)을 먼저 정하고, 큰길·뒷길·물가 길이 그 단의 등고선을 따라간다.
-// 길은 단 안에서는 단을 건너지 않고, 이음길(남북)만 단을 건너며 경사로를 탄다(시공기 3b).
+// 왜: 사용자 「마을을 만드는 게 불만이 많다. 높이를 우선 만들고 그 뒤에 마을을 만드는 방식은 어떤가?」, 이어서
+// 「스타크래프트 맵처럼 지형을 먼저 적극적으로 쫙 깔고, 마을은 그 지형에 맞춰 자란다 — 인류사처럼 지형이 정착 모양을 정한다」.
+// 옛 시공기(beodeulTerrain.planVillageTerrain)는 물·큰길 줄(mainBase)을 먼저 정하고 그 북쪽에 단을 깎았다 — 높이가 길에 끌려가는 장식이었다.
+// 여기서는 지형 설계(모델이 고른 landform·settle·tiers·high, 강 유무)로 땅을 먼저 짓고, 큰길·뒷길·물가 길이 그 단의 등고선을 따라간다.
+// 길은 단 안에서는 단을 건너지 않고, 이음길(남북)만 단을 건너며 계단을 탄다(시공기 3b).
 //
-// 모양 규칙은 beodeulTerrain 과 같다(3/4 시점은 남쪽을 보는 절벽 면만 그린다): 등고선은 동서로 달리고 북쪽이 높다, 열쇠점 사이는 곧고
-// 한 줄만 꺾인다, 골·언덕 옆면은 남북 직선. 모델은 이름(landform·settle)만 고르고 모양·간격은 이 함수가 seed 로 정한다.
-//   terraces  계단식 단 — 남쪽 낮은 땅(밭·물가) · 마을 단 · 북쪽 높은 단 한두 개가 맵 폭 전체로.
-//   hill      언덕 — 마을 단 북쪽 가운데에만 두 층 언덕이 솟는다(옆면은 남북 직선), 동서는 마을 단과 같은 높이로 트인다.
-//   slope     산비탈 — 7칸 간격으로 단이 너덧 겹 오르는 산골(맨 윗단은 산 숲).
-// settle(마을이 앉는 단): middle = 가운데 단(남쪽에 한 단 낮은 땅이 남는다, 기본) · low = 맨 아래 단(북쪽으로만 오른다).
+// 3/4 시점은 남쪽을 보는 절벽 면만 그린다(1단 = 벽 1칸, relief/screen.ts). 그래서 등고선은 동서로 달리고 북쪽이 높다.
+// 남북으로 곧게 자른 단 끝은 가는 선으로만 보여 「잘린 판」이 되므로(ab6 판정) 언덕·고원의 옆은 두 칸(고원은 한 칸)마다 한 줄씩
+// 올라가 맵 위 끝에서 사라진다. 마을 단과 바로 위 단은 두 단 차이(벽 두 칸 — 한 단 차이 띠는 「얇아 높이감이 없다」, ab6).
+//   terraces  계단식 단 — 남쪽 낮은 땅 · 마을 단 · 북쪽 높은 단 tiers 겹이 맵 폭 전체로.
+//   hill      언덕 — 위 단 가운데(high)에 꼭대기가 남쪽으로 불룩 솟는다.
+//   slope     산비탈 — 6~7줄마다 단이 겹겹이 오르는 산골(위 단 위로는 산 숲).
+//   plateau   고원 — 위 단 위 high 자리에 두 단 더 높은 넓은 대지(벽 두 칸)가 솟는다. 오르막이 그 위로 난다.
+// settle(마을이 앉는 단): middle = 가운데 단(남쪽 낮은 단에 아랫길·강) · low = 맨 아래 단(북쪽으로만 오른다).
+// high(높은 곳 자리): north(맵 폭 전체) · center · west · east.
 import { contour, tidyLevels, type VillageTerrain, type VillageTerrainPlan } from "./beodeulTerrain";
 import type { BeodeulVillageTheme } from "./beodeulVillage";
 
-export const VILLAGE_LANDFORMS = ["terraces", "hill", "slope"] as const;
+export const VILLAGE_LANDFORMS = ["terraces", "hill", "slope", "plateau"] as const;
 export type VillageLandform = (typeof VILLAGE_LANDFORMS)[number];
 export const VILLAGE_SETTLES = ["middle", "low"] as const;
 export type VillageSettle = (typeof VILLAGE_SETTLES)[number];
-export const LANDFORM_LABEL: Record<VillageLandform, string> = { terraces: "계단식 단", hill: "언덕", slope: "산비탈" };
+export const VILLAGE_HIGHS = ["north", "center", "west", "east"] as const;
+export type VillageHigh = (typeof VILLAGE_HIGHS)[number];
+export const LANDFORM_LABEL: Record<VillageLandform, string> = { terraces: "계단식 단", hill: "언덕", slope: "산비탈", plateau: "고원" };
 
 function rng(seed: number): () => number {
   let s = (seed ^ 0x3a7f1c29) >>> 0;
@@ -39,11 +45,21 @@ export interface HeightFirstPlan {
   /** 지형 이름(시공기의 지형 분기용: slope = highland 처럼 맨 윗단을 산 숲으로). */
   terrainName: VillageTerrain;
   note: string;
+  /** 강 마을: 남쪽 낮은 단에서 동서로 흐르는 강의 윗줄(폭 3). */
+  riverY: ((x: number) => number) | null;
+  /** 마을 단 높이(middle 1 · low 0). */
+  villageLevel: number;
+  /** 이 높이 이상은 오를 길 없이 산 숲(산비탈 맨 윗단들). */
+  summitFrom: number;
+  /** 고원 꼭대기(열 범위·높이). */
+  plateauTop: { x0: number; x1: number; level: number } | null;
+  high: VillageHigh;
+  tiers: number;
 }
 
 /** 이 테마에서 기본 landform·settle — 모델이 비워 보내면. */
 export function defaultLandform(theme: BeodeulVillageTheme, seed: number): VillageLandform {
-  const xs: VillageLandform[] = theme === "snow" ? ["slope", "terraces"] : theme === "desert" || theme === "swamp" ? ["terraces", "hill"] : ["terraces", "hill", "slope"];
+  const xs: VillageLandform[] = theme === "snow" ? ["slope", "terraces"] : theme === "desert" ? ["plateau", "hill", "terraces"] : theme === "swamp" ? ["terraces", "hill"] : theme === "coast" ? ["terraces", "hill"] : ["terraces", "hill", "slope", "plateau"];
   return xs[Math.floor(rng(seed * 977 + 13)() * xs.length)]!;
 }
 
@@ -53,6 +69,18 @@ export function parseLandform(v: unknown): VillageLandform | undefined {
   if ((VILLAGE_LANDFORMS as readonly string[]).includes(s)) return s as VillageLandform;
   throw new Error(`landform 은 ${VILLAGE_LANDFORMS.join("|")} 중 하나다(받은 값: ${v}).`);
 }
+export function parseHigh(v: unknown): VillageHigh | undefined {
+  if (typeof v !== "string" || !v.trim()) return undefined;
+  const s = v.trim().toLowerCase();
+  if ((VILLAGE_HIGHS as readonly string[]).includes(s)) return s as VillageHigh;
+  throw new Error(`high 는 ${VILLAGE_HIGHS.join("|")} 중 하나다(받은 값: ${v}).`);
+}
+export function parseTiers(v: unknown): number | undefined {
+  if (v === undefined || v === null || v === "") return undefined;
+  const n = Math.round(Number(v));
+  if (!Number.isFinite(n) || n < 1 || n > 4) throw new Error(`tiers(마을 단 위 높은 단 수)는 1~4 다(받은 값: ${String(v)}).`);
+  return n;
+}
 export function parseSettle(v: unknown): VillageSettle | undefined {
   if (typeof v !== "string" || !v.trim()) return undefined;
   const s = v.trim().toLowerCase();
@@ -61,10 +89,14 @@ export function parseSettle(v: unknown): VillageSettle | undefined {
 }
 
 /**
- * 땅을 먼저 짓는다. 물(강·바다·못)은 아직 없다 — 시공기가 물을 놓은 뒤 carveHeightFirstWater 로 골을 깎는다.
+ * 땅을 먼저 짓는다. 물(강·바다·못)은 아직 없다 — 시공기가 물을 놓은 뒤 carveHeightFirstWater 로 물가를 낮춘다.
  * coastShore: 포구면 물가가 시작하는 대략의 줄(낮은 단이 물가와 물가 길을 품게 그 위 7칸에서 마을 단이 시작한다).
+ * river: 강 마을이면 강은 남쪽 낮은 단에서 동서로 흐른다(riverY). 남북으로 흐르는 강의 골이 동서 단을 세로로 갈라 가는 선이 남았다(ab6 판정 1·3·5·9번).
+ *
+ * 높이(ab6 블라인드 판정 「한 단 차이 절벽 띠가 얇아 높이감이 없다」): 마을 단과 바로 위 단은 두 단 차이(두꺼운 절벽 띠),
+ * 그 위는 한 단씩. 시공기 3b 는 높이 먼저일 때 두 단 차이도 계단(층계참 + 계단 세 칸)으로 건넌다.
  */
-export function planHeightFirst(W: number, H: number, seed: number, _theme: BeodeulVillageTheme, landform: VillageLandform, settle: VillageSettle, coastShore?: number): HeightFirstPlan {
+export function planHeightFirst(W: number, H: number, seed: number, _theme: BeodeulVillageTheme, landform: VillageLandform, settle: VillageSettle, coastShore?: number, river = false, tiersArg?: number, highArg?: VillageHigh): HeightFirstPlan {
   const rand = rng(seed * 6343 + landform.length * 29 + settle.length * 7);
   const ri = (a: number, b: number) => a + Math.floor(rand() * (b - a + 1));
   const lv = new Uint8Array(W * H);
@@ -74,24 +106,25 @@ export function planHeightFirst(W: number, H: number, seed: number, _theme: Beod
   };
   const minOf = (fn: (x: number) => number) => { let m = H; for (let x = 0; x < W; x += 1) m = Math.min(m, fn(x)); return m; };
   const maxOf = (fn: (x: number) => number) => { let m = 0; for (let x = 0; x < W; x += 1) m = Math.max(m, fn(x)); return m; };
-  // 띠 나누기(맵 높이에 맞춰): 북쪽 높은 단 ≥ 7줄(slope 는 더) · 마을 단 17~22줄(북쪽 집 띠 10 + 큰길 2 + 남쪽 띠) · 낮은 단 8~16줄.
-  // 작은 맵(34줄)에서 마을 단 20줄 고정이면 북쪽 단이 사라졌다(A/B 1판: 10판 중 8판 「북쪽에 단을 둘 자리 없음」).
+  // 띠 나누기(맵 높이에 맞춰): 북쪽 높은 단 ≥ 8줄(slope 는 더) · 마을 단 19~23줄(북쪽 집 띠 10 + 큰길 2 + 남쪽 띠 7~11) · 낮은 단 8~16줄(강이면 아랫길 + 강 4줄이 들어가게 ≥ 11).
   const NORTH_STRIP = 10;
   const northMin = landform === "slope" ? 14 : 8;
   let below: ((x: number) => number) | null = null;
   let yBand: number; // 마을 단 북쪽 등고선 기준 줄
   if (settle === "middle") {
-    let lowH = coastShore !== undefined ? Math.max(8, H - (coastShore - 7)) : Math.max(8, Math.min(16, Math.round(H * 0.24)));
+    const lowMin = river ? 11 : 8;
+    let lowH = coastShore !== undefined ? Math.max(lowMin, H - (coastShore - 7)) : Math.max(lowMin, Math.min(16, Math.round(H * (river ? 0.3 : 0.24))));
     let band = Math.max(19, Math.min(23, H - lowH - northMin));
-    if (H - lowH - band < northMin) { lowH = Math.max(8, H - band - northMin); band = Math.max(19, H - lowH - northMin); }
+    if (H - lowH - band < northMin) { lowH = Math.max(lowMin, H - band - northMin); band = Math.max(19, H - lowH - northMin); }
     const yB = H - lowH + ri(-1, 1);
     below = contour(W, yB, rand);
     raise(below, 1);
     yBand = yB - band;
   } else {
-    yBand = Math.max(northMin, Math.round(H * 0.5) + ri(-2, 2) - NORTH_STRIP);
+    yBand = Math.max(northMin, Math.round(H * 0.5) + ri(-2, 2) - NORTH_STRIP - (river ? 2 : 0));
   }
   const L0 = settle === "middle" ? 1 : 0; // 마을 단 높이
+  const UP = L0 + 2; // 마을 단 바로 위 단 — 두 단 차이(두꺼운 절벽 띠)
   let above: ((x: number) => number) | null = null;
   const notes: string[] = [];
   if (yBand >= 5) {
@@ -99,77 +132,102 @@ export function planHeightFirst(W: number, H: number, seed: number, _theme: Beod
     if (minOf(above) < 4) above = null;
   }
   let terrainName: VillageTerrain = "terraces";
+  const high: VillageHigh = highArg ?? (landform === "hill" || landform === "plateau" ? "center" : "north");
+  const tiers = tiersArg ?? (landform === "slope" ? 3 : landform === "terraces" ? 2 : landform === "plateau" ? 2 : 2);
+  // 높은 곳 자리: 언덕·고원 꼭대기의 가운데 열. north 는 맵 폭 전체(기울기 없음).
+  const hcx = high === "west" ? Math.round(W * 0.22) + ri(-2, 2) : high === "east" ? Math.round(W * 0.78) + ri(-2, 2) : Math.round(W / 2) + ri(-Math.round(W * 0.08), Math.round(W * 0.08));
+  // 계단식·산비탈에서 high west/east = 그쪽이 더 높다 — 등고선이 그쪽으로 갈수록 남쪽으로 내려온다(열쇠점 4칸마다 한 줄, 최대 4줄)
+  const tilt = (x: number) => high === "west" ? Math.min(4, Math.floor((W - 1 - x) / Math.max(4, Math.round(W / 5)))) : high === "east" ? Math.min(4, Math.floor(x / Math.max(4, Math.round(W / 5)))) : 0;
+  /** 꼭대기 등고선: 가운데 span 칸은 base 그대로, 바깥은 per 칸마다 한 줄씩 위로(맵 위 끝에서 사라진다 — 남북 직선 옆면 금지). */
+  const bulge = (base: (x: number) => number, cx: number, span: number, per: number) => {
+    const x0 = cx - Math.floor(span / 2), x1 = x0 + span - 1;
+    return (x: number) => { const d = x < x0 ? x0 - x : x > x1 ? x - x1 : 0; return base(x) - Math.ceil(d / per); };
+  };
+  let plateauTop: { x0: number; x1: number; level: number } | null = null;
   if (above) {
+    const ab = above;
+    above = (x: number) => ab(x) + tilt(x);
+    raise(above, UP);
     if (landform === "hill") {
-      // 언덕: 마을 단 북쪽 전체가 한 단, 그 위 가운데에 꼭대기 단이 남쪽으로 불룩 솟는다.
-      // 옆면을 남북 직선으로 자르면 3/4 시점에서 맵을 위아래로 가르는 가는 선(잘린 판)으로 보였다(A/B 4판 블라인드 판정 2·7·9번) —
-      // 꼭대기 등고선을 가운데서 가장 남쪽, 양옆으로 두 칸마다 한 줄씩 올라가 맵 위 끝에서 사라지게 한다(동서로 달리는 절벽 띠만 남는다).
-      raise(above, L0 + 1);
-      const span = Math.round(W * (0.3 + rand() * 0.15)), cx = Math.round(W / 2) + ri(-Math.round(W * 0.08), Math.round(W * 0.08));
-      const hx0 = cx - Math.floor(span / 2), hx1 = hx0 + span - 1;
-      const top = contour(W, yBand - 5 - ri(0, 1), rand);
-      const bulge = (x: number) => { const d = x < hx0 ? hx0 - x : x > hx1 ? x - hx1 : 0; return top(x) - Math.ceil(d / 2); };
-      if (top(cx) >= 3) { raise(bulge, L0 + 2); notes.push(`언덕(꼭대기 ${span}칸, 양옆으로 낮아짐)`); }
-      else notes.push("언덕 한 층");
+      // 언덕: 위 단 위에 high 자리를 꼭대기로 tiers−1 겹이 남쪽으로 불룩 — 겹마다 폭이 줄고 5줄씩 위
+      let span = Math.round(W * (0.36 + rand() * 0.12)), k = 1, base = contour(W, yBand - 5 - ri(0, 1), rand);
+      for (; k < tiers && span >= 8; k += 1) {
+        if (base(hcx) < 3) break;
+        raise(bulge(base, hcx, span, 2), UP + k);
+        span = Math.round(span * 0.6); base = contour(W, minOf(base) - 4, rand);
+      }
+      notes.push(k > 1 ? `언덕 ${k}겹(꼭대기 ${high})` : "언덕 한 층");
+    } else if (landform === "plateau") {
+      // 고원: 위 단 위 high 자리에 두 단 더 높은 넓은 대지(벽 두 칸) — 옆은 한 칸마다 한 줄씩(가파른 벼랑)
+      const span = Math.round(W * (0.34 + rand() * 0.1));
+      const top = contour(W, yBand - 6 - ri(0, 1), rand);
+      if (top(hcx) >= 4) {
+        raise(bulge(top, hcx, span, 1), UP + 2);
+        plateauTop = { x0: hcx - Math.floor(span / 2), x1: hcx - Math.floor(span / 2) + span - 1, level: UP + 2 };
+        notes.push(`고원(${span}칸, ${high}, 위 단보다 두 단 높음)`);
+      } else notes.push("고원 자리 부족 — 위 단 한 겹");
     } else if (landform === "slope") {
-      // 산비탈: 마을 단 위로 7칸마다 단 — 맨 윗단(마을 단 + 3 이상)은 시공기가 산 숲으로 덮는다
-      raise(above, L0 + 1);
+      // 산비탈: 위 단 위로 6~7줄마다 한 단 — 위 단 위의 단들(UP+1~)은 시공기가 산 숲으로 덮는다(summitFrom)
       let k = 1, prev = above;
-      for (; k < 4; k += 1) {
-        const next = contour(W, minOf(prev) - 7 - ri(0, 1), rand);
-        if (minOf(next) < 4) break;
-        raise(next, L0 + 1 + k); prev = next;
+      for (; k <= tiers; k += 1) {
+        const c = contour(W, minOf(prev) - 6 - ri(0, 1), rand);
+        const next = (x: number) => c(x) + tilt(x);
+        if (minOf(next) < 3) break;
+        raise(next, UP + k); prev = next;
       }
       notes.push(`산비탈 ${k}단`);
       terrainName = "highland";
     } else {
-      raise(above, L0 + 1);
-      const top = contour(W, yBand - 10 - ri(0, 1), rand);
-      if (minOf(top) >= 4) { raise(top, L0 + 2); notes.push("계단식 두 단"); } else notes.push("계단식 한 단");
+      let k = 1, prev = above;
+      for (; k < tiers; k += 1) {
+        const c = contour(W, minOf(prev) - 8 - ri(0, 1), rand);
+        const next = (x: number) => c(x) + tilt(x);
+        if (minOf(next) < 3) break;
+        raise(next, UP + k); prev = next;
+      }
+      notes.push(`계단식 ${k}단`);
     }
   } else notes.push("마을 단 북쪽에 단을 둘 자리 없음");
-  // slope 는 맨 윗단을 숲으로 덮는 분기(시공기 highland: L ≥ 3)를 탄다 — 마을 단이 1이면 3 이상이 마을 단 + 2 이상
-  if (landform === "slope" && L0 === 0) terrainName = "highland";
   const mainY = above ? (x: number) => above!(x) + NORTH_STRIP : () => yBand + NORTH_STRIP;
-  // 남쪽 등고선이 큰길과 너무 가까우면(남쪽 띠 6줄 미만) 낮은 단을 그 열만 아래로 민다 — 큰길 남쪽 집이 앉을 띠를 지킨다
   if (below && above) {
     const gap = Math.min(...Array.from({ length: W }, (_, x) => below!(x) - mainY(x)));
     if (gap < 8) notes.push(`마을 단 남쪽 띠가 좁다(${gap}줄)`);
   }
+  // 강(남쪽 낮은 단, 동서): 윗줄 = 아랫길(등고선 + 2, 폭 ≤ 2) 아래 한 줄 띄워 등고선 + 5 이상, 맵 아래 2줄 위까지. 폭 3, 열쇠점 9~12칸마다 한 줄씩 굽는다.
+  let riverY: ((x: number) => number) | null = null;
+  if (river) {
+    const lo = below ?? ((_: number) => H - 6);
+    const minTop = (x: number) => (below ? lo(x) + 5 : H - 6);
+    const maxTop = H - 4;
+    const keys: [number, number][] = [];
+    let x = 0, y = Math.min(maxTop, minTop(0) + ri(0, 1));
+    while (x < W) { keys.push([x, y]); x += ri(9, 12); y = Math.max(Math.min(maxTop, y + (rand() < 0.5 ? -1 : 1)), Math.min(maxTop, minTop(Math.min(W - 1, x)))); }
+    keys.push([W - 1, Math.max(Math.min(maxTop, y), Math.min(maxTop, minTop(W - 1)))]);
+    const f = (xx: number) => { let k = 0; while (k < keys.length - 2 && xx > keys[k + 1]![0]) k += 1; const [x0, y0] = keys[k]!, [x1, y1] = keys[k + 1]!; return Math.max(Math.min(maxTop, minTop(xx)), Math.round(y0 + (y1 - y0) * (x1 === x0 ? 0 : (xx - x0) / (x1 - x0)))); };
+    riverY = f;
+    notes.push(`강은 남쪽 낮은 단에서 동서로(y≈${minOf(f)}~${maxOf(f)})`);
+  }
   tidyLevels(lv, W, H);
   const counts = new Map<number, number>(); for (const v of lv) counts.set(v, (counts.get(v) ?? 0) + 1);
-  const note = `높이 먼저 · ${LANDFORM_LABEL[landform]} · 마을 단 ${settle === "middle" ? "가운데" : "맨 아래"}(${L0}) · ${notes.join(" · ")} · 단 ${[...counts.keys()].sort().join("/")}`
+  const note = `높이 먼저 · ${LANDFORM_LABEL[landform]} · 마을 단 ${settle === "middle" ? "가운데" : "맨 아래"}(${L0}) · 위 단 두 단 차이 · ${notes.join(" · ")} · 단 ${[...counts.keys()].sort().join("/")}`
     + (below ? ` · 낮은 단 y≈${minOf(below)}~${maxOf(below)}` : "");
-  return { landform, settle, levels: lv, seamAbove: above, seamBelow: below, mainY, terrainName, note };
+  return { landform, settle, levels: lv, seamAbove: above, seamBelow: below, mainY, terrainName, note, riverY, villageLevel: L0, summitFrom: landform === "slope" ? UP + 1 : 99, plateauTop, high, tiers };
 }
 
 /**
- * 물을 놓은 뒤 골을 깎는다(beodeulTerrain.planVillageTerrain 과 같은 규칙): 강은 물이 지난 열 범위 + 서쪽 8칸·동쪽 3칸을 맵 위아래로 곧게 0단,
- * 못은 둘레 3칸 상자, 바다는 해안선과 둑 2칸. 결과를 시공기가 쓰는 VillageTerrainPlan 으로 돌려준다.
+ * 물을 놓은 뒤 물가를 낮춘다. 강(남쪽 동서)·바다는 0단 낮은 땅에 있으므로 물과 둘레 2칸만 0단으로(둑) — 남북 골은 깎지 않는다
+ * (ab4~ab6 판정: 남북 골의 가장자리가 풀밭 한가운데 세로 선·잘린 판으로 보였다). 못은 시공기가 마을 단 북쪽 집 띠 안에 고르므로
+ * 그 단 높이에 그대로 둔다(못 자리 상자를 그 단으로 고르게만).
  */
-export function carveHeightFirstWater(plan: HeightFirstPlan, W: number, H: number, water: (x: number, y: number) => boolean, pond: { cx: number; rx: number } | null): VillageTerrainPlan {
+export function carveHeightFirstWater(plan: HeightFirstPlan, W: number, H: number, water: (x: number, y: number) => boolean, pond: { cx: number; cy: number; rx: number; ry: number } | null): VillageTerrainPlan {
   const lv = plan.levels;
   const idx = (x: number, y: number) => y * W + x;
-  const coves: { x0: number; x1: number }[] = [];
-  const cut = (x0: number, x1: number) => {
-    x0 = Math.max(0, x0); x1 = Math.min(W - 1, x1); if (x1 < x0) return;
-    if (x0 <= 3) x0 = 0; if (x1 >= W - 4) x1 = W - 1;
-    for (let y = 0; y < H; y += 1) for (let x = x0; x <= x1; x += 1) lv[idx(x, y)] = 0;
-    coves.push({ x0, x1 });
-  };
-  let note = plan.note;
-  // 강: 바다(해안선)는 아래 고리에서 — 여기서는 맵 위쪽 절반에도 물이 있는 세로 물줄기만 골로 본다
-  let a = W, b = -1;
-  for (let y = 0; y < Math.round(H * 0.6); y += 1) for (let x = 0; x < W; x += 1) if (water(x, y)) { a = Math.min(a, x); b = Math.max(b, x); }
-  // 골은 물 안쪽 둑 2칸만(현행 시공기의 서쪽 8칸 둑 골은 풀밭 한가운데 남북 선을 남겼다 — 블라인드 판정 1·3·5번 「잘린 사각 판」).
-  // 못은 맵 위아래로 곧게 깎지 않는다 — 아래 물 둘레 2칸이 못 자리만 낮춘다(오아시스 골이 마을 단을 세로로 갈랐다, 7번).
-  // 강은 가장자리 골짜기(시공기가 맵 가장자리에 놓는다) — 강 바깥쪽 둑까지 맵 끝으로 같이 낮춰, 남북 단 경계가 물가에만 남게 한다(풀밭 한가운데 세로 선 금지).
-  if (b >= 0) { if ((a + b) / 2 >= W / 2) cut(a - 2, W - 1); else cut(0, b + 2); note += " · 강은 가장자리 골"; }
-  if (pond) note += " · 못은 우묵";
+  const inPond = (x: number, y: number) => !!pond && Math.abs(x - pond.cx) <= pond.rx + 2 && Math.abs(y - pond.cy) <= pond.ry + 2;
+  if (pond) { const L = lv[idx(Math.max(0, Math.min(W - 1, pond.cx)), Math.max(0, Math.min(H - 1, pond.cy)))]!; for (let y = 0; y < H; y += 1) for (let x = 0; x < W; x += 1) if (inPond(x, y) && lv[idx(x, y)]! > L) lv[idx(x, y)] = L; }
   for (let y = 0; y < H; y += 1) for (let x = 0; x < W; x += 1) {
-    if (!water(x, y)) continue;
+    if (!water(x, y) || inPond(x, y)) continue;
     for (let dy = -2; dy <= 2; dy += 1) for (let dx = -2; dx <= 2; dx += 1) { const X = x + dx, Y = y + dy; if (X >= 0 && Y >= 0 && X < W && Y < H) lv[idx(X, Y)] = 0; }
   }
   tidyLevels(lv, W, H);
-  return { name: plan.terrainName, levels: lv, northSeam: plan.seamAbove, coves, note };
+  return { name: plan.terrainName, levels: lv, northSeam: plan.seamAbove, coves: [], note: plan.note + (pond ? " · 못은 마을 단 위" : "") };
 }

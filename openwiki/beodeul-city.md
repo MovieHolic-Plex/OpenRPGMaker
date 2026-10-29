@@ -748,20 +748,27 @@ r1 시험(`verify-shots/assistant-beodeul-village/r1/fresh`)은 「마을」에 
   PROBE_RESULT_PLACEHOLDER
 - 남은 것: 게임 화면 위쪽 검은 띠(`playSceneCamera.ts` `reliefTopOverhangPx`)·경사로 옆 1px 세로선·경사면 명암은 렌더러 쪽 일이다(다른 작업). 포구 길가의 등대는 큰길이 동쪽 곶까지 지나 자리가 없어 대개 빠진다. 윗길이 얇은 2단(4~5줄)에서는 맵 윗가장자리 바로 아래를 지나 단 위가 거의 길로만 보인다.
 
-### 「높이 먼저」 시제품 — landform·settle 옵션 (2026-10-29)
+### 지형 먼저 — 마을 짓기의 기본 순서 (2026-10-29)
 
-- **왜:** 사용자 「마을을 만드는 게 불만이 많다. 높이를 우선 만들고 그 뒤에 마을을 만드는 방식은 어떤가?」. 현행은 물·큰길(yMainBase) → `planVillageTerrain` 이 길에 맞춰 단을 깎는다(높이가 길에 끌려간다).
+- **왜:** 사용자 「마을을 만드는 게 불만이 많다. 높이를 우선 만들고 그 뒤에 마을을 만드는 방식은 어떤가?」 → 방향 지시 「높이 먼저를 옵션이 아니라 기본 순서로. 스타크래프트 맵처럼 지형을 먼저 깔고 마을은 그 지형에 맞춰 자란다(인류사처럼)」.
+  옛 순서는 물·큰길(yMainBase) → `planVillageTerrain` 이 길에 맞춰 단을 깎았다(높이가 길에 끌려간다).
   근거: runs/vm*-1029 판정자·VQA 결점 중 마을 화면 322건 — 길 모양 80 · 풀 워터마크 79 · 높이·절벽 39 · 빈 땅 31 · 반복 29 · 집 배치 25 · 물·다리 22 · 떠 있는 소품 15.
-- **옵션(기본 경로는 그대로):** `author_beodeul_town` 인자 `landform`(terraces·hill·slope)·`settle`(middle·low, 기본 middle). v2 마을 빌더는 hints 로 넘긴다(`KNOWN_HINTS`·`VILLAGE_CARD`). 성벽 마을은 무시(경고).
-  `beodeulHeightFirst.ts planHeightFirst` 가 물보다 먼저 동서 등고선(`beodeulTerrain.contour`)으로 단을 짓고 마을 단(17~23 → 19~23줄)·큰길 줄(`mainY` = 마을 단 북쪽 등고선 + 10)을 정한다.
-  시공기는 큰길을 그 등고선을 따라 `hStreetFn` 으로, 낮은 단에 아랫길을 등고선 2줄 아래로 깔고 이음길만 단을 건넌다(3b 경사로). `carveHeightFirstWater` 가 물 자리 골을 깎는다.
-  hill = 마을 단 북쪽 전체 한 단 + 가운데가 남쪽으로 불룩한 꼭대기(옆은 두 칸마다 한 줄 올라가 맵 위에서 사라짐 — 남북 직선 옆면 금지), slope = 7줄 간격 단 너덧(highland 숲 분기).
-- **손본 것(A/B 판마다):** 1판 띠 20줄 고정 → 작은 맵(34줄)에서 북쪽 단 소멸(10판 중 8). 3판 강 가운데 + 서쪽 8칸 골이 단을 조각내 2·3·5·7번 단 전부 내려앉음 → 높이 먼저일 때 강은 가장자리(x 4~5 또는 W−9), 골은 물 안쪽 둑 2칸~맵 끝, 못은 곧은 골 대신 둘레만 우묵.
-- **A/B(ab6, 모델 없이 villageArgs 같은 인자, Sonnet 5.5 블라인드 적대 판정 좌우 바꿔 20판):** A 현행 11 · B 9. B 가 두 판 다 이긴 것: 6 눈 산마을(slope)·10 강 없는 들판. A 가 두 판 다 이긴 것: 3 산촌·7 사막 오아시스·8 늪·9 장터.
-  B 결점 반복: 단 경계의 가는 남북 선(골·단 끝)·한 단 차이 절벽 띠가 얇아 높이가 약함·이음길이 경사로 없이 보임·집 수 적음(36→33)·강이 가장자리로 밀려 「강가」가 약함. 도달성은 둘 다 문 0, 경사로 실패 B 1.
-  실조수(argon, 입력창 v2) 3판 중 「언덕 위 산마을」만 모델이 `landform slope · settle middle` 을 골랐다(지어짐, 50×32). 페이지 http://mdc-server:18301/village-height-first-1029.html
-- **결론(기본 전환은 감독 결정):** 지금 판으로는 기본으로 바꿀 근거가 없다. 강이 없는 산·들 마을에서는 나았다. 남은 일: 두 단 차이 절벽(높이감)·강 골짜기를 동서로 낮은 단에 두는 지형·마을 단 폭에 맞춘 집 수.
-- 프로브: `bun scripts/qa/village-height-first-ab.mts --out <dir> [--only 1,3]` → `<n>-A|B.png`·`report.json`.
+- **기본:** `author_beodeul_town` 은 성벽 마을·`landform: "flat"`·`terrain: "flat"` 이 아니면 지형 먼저로 짓는다. landform 을 안 주면 terrain(terraces·hillside·highland)이나 테마(`defaultLandform`: 사막 plateau/hill/terraces, 강가 terraces/hill/slope/plateau, 바닷가·늪 terraces/hill, 설원 slope/terraces)로 seed 가 고른다. riverbank 형태는 street 로 바꾼다(경고).
+  인자: `landform`(terraces·hill·slope·plateau·flat)·`settle`(middle·low)·`tiers`(마을 단 위 겹 1~4)·`high`(north·center·west·east). 결과 data 에 그대로 남는다. 기본 맵 높이 +8줄(낮은 단·마을 단 19~23줄·높은 단이 세로로 쌓인다), 빈 시작 맵도 그만큼 넓힌다.
+- **지형 설계는 모델이 한다(방 설계와 같은 원칙):** v2 `make_place` 가 마을인데 `hints.landform` 이 없으면 한 번 「아직 짓지 않았다(실패 아님)」로 되돌려 보낸다(`V2Session.terrainBounced`, 장소 이름당 한 번). 마을 카드·`HINTS_SCHEMA` 에 landform·settle·tiers·high. 요청 낱말(고원·산골·언덕·계단식·평지)은 landform 으로 먼저 옮긴다. 모델이 `form` 에 땅 모양 낱말을 넣으면 terrain 으로 옮긴다.
+  함수는 단 경계·계단·도달성·물 흐름만 맞추고 정착지를 지형에 맞춰 앉힌다.
+- **높은 땅이 낮아 보였던 원인:** 렌더러는 문제 없다 — relief 는 한 단 = 절벽면 한 칸(`relief/screen.ts`)으로 여러 단을 그대로 쌓는다. 생성기가 3b 에서 이웃 높이 차 2 이상을 모두 1 로 깎았고 3a 오르막도 L−1 만 가정해, 어떤 지형이든 절벽은 한 칸 띠였다.
+  고친 것: 마을 단 위 단 = 마을 단 + 2(두 칸 절벽면). 3a `maxStep = 2`, 3b 는 높이 차만큼 계단 비행(`dl+1` 칸, 계단 코드 5~8 — 칩셋 스타일의 기존 그림: 잔디 = 통나무 계단 `carvedStairs`, 설원·황무지 = 매끈한 비탈 `smoothStairs`). 경사로 정리 DV 는 `((code−1)%4)+1` 로 계단 코드도 방향을 읽는다(전엔 계단 코드에서 런타임 오류).
+- **지형 모양(`beodeulHeightFirst.ts planHeightFirst`):** 물보다 먼저 동서 등고선(`beodeulTerrain.contour`)으로 낮은 단(강이면 0.3H 이상)·마을 단·위 단을 짓는다. high west/east 는 위 단이 4줄까지 기운다. hill = `bulge` 로 겹마다 좁아지는 언덕, plateau = 두 단 더 높은 고원(꼭대기에 외길 + 집 한 채, `topStreets`), slope = 6~7줄 간격 겹(highland 숲, `summitFrom`), terraces = 8줄 간격 겹. 옆면은 대각으로 휘어 맵 가장자리로 내려간다(단 끝 가는 남북 선 없음).
+  강은 남쪽 낮은 단에서 동서로(`riverY`, 9~12열마다 굽이, 폭 3). `carveHeightFirstWater` 는 못 상자를 못 가운데 높이로 고르고 물 둘레 2칸을 0 으로 둔다(골 없음 — 남북 골이 단을 160칸 미만 조각으로 잘라 내려앉혔다).
+  흩어진 마을 갈래는 마을 단 안에서만 뻗는다. 집 수는 그 단 폭에 맞춰 크기를 키워 다시 짓는다(성벽 마을과 같은 고리).
+- **A/B(모델 없이 villageArgs 같은 인자, Sonnet 5.5 블라인드 적대 판정 좌우 바꿔 20판):** ab6(첫 판) A 옛 순서 11 · B 9 → ab9(위 수리 뒤) **10 · 10**. 지형 먼저가 이기지 못했다.
+  B 가 꾸준히 낫다: 2 언덕 강마을. A 가 꾸준히 낫다: 3 산촌·7 사막 오아시스·8 늪. 판정자가 B 에 반복 지적: 맵 폭 전체를 곧게 가로지르는 절벽 띠·위아래 단이 빈 땅·맨 아래 강이 마을과 떨어짐(나루·다리 없음)·집 한 줄·가장자리 잘린 집·늪의 네모 물·네모 풀.
+  게임 화면(qa:runtime `relief-village`, 픽스처 `scripts/qa/runtime/village-terrain-first-fixture.mts`)에서 두 칸 절벽·통나무/돌 계단·고원 위 집이 보인다.
+  실조수(입력창 v2, /tmp/vh/live.sh): argon·gemini-3.8-flash·gpt-6.1-terra 모두 마을 카드를 읽고 첫 make_place 에 landform 을 넣었다(되돌려 보내기 0회). argon 언덕 → hill·tiers 2(50×40, 단 0·1·3), argon 눈 산골 → slope(56×52, 단 0·1·3·4), flash 언덕 → hill·tiers 2(38×48, 단 0·1·3). 실패 둘을 고쳤다: terra 가 스키마 칸을 ""·0 으로 다 채워 width·height 0 이 최소 36×30 으로 잘림(위 단 없음) → v2 가 ""·0 칸을 버린다(고친 뒤 같은 인자로 50×40, 단 0·1·3). flash 가 form 에 hillside → terrain 으로 옮긴다. 되돌려 보내기는 mapId(빈 시작 맵)가 있어도 건다. flash 강가 두 판은 제공자 오류로 도구 0회(지형과 무관).
+  페이지 http://mdc-server:18301/village-height-first-1029.html
+- **새 그림이 필요한 것(보고만, 그리지 않음):** 남북으로 강을 건너는 다리 키트(번들 다리는 동서 5×4 `bd-pick-mountain-pass-stone-bridge`·`bd-pick-riverside-mill-plank-footbridge` 뿐이라 남쪽 동서 강에 나루·다리를 못 놓는다), 고원 위 망루·작은 성채(`bd-capital-round-tower` 3×11 은 너무 크다 — 지금은 보통 집).
+- 프로브: `bun scripts/qa/village-height-first-ab.mts --out <dir> [--only 1,3] [--sides B]` → `<n>-A|B.png`·`report.json`(A 는 이제 이 체크아웃에서 옛 순서로 다시 못 짓는다 — ab6 A 를 재사용).
 
 ## 작은 마을 길·마당 구도 보정 (2026-10-04)
 

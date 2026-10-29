@@ -86,6 +86,8 @@ export class V2Session {
   askBounced = false;
   /** 설계 없이 온 손 도트 실내 make_place 를 한 번 되돌려 보낸 장소 이름(2026-10-29 「방을 짓는 건 조수여야만 한다」). */
   readonly designBounced = new Set<string>();
+  /** 지형 설계(hints.landform) 없이 온 마을 make_place 를 한 번 되돌려 보낸 장소 이름(2026-10-29 「지형을 먼저 깔고 마을은 지형에 맞춰 자란다」). */
+  readonly terrainBounced = new Set<string>();
   /** 같은 청사진을 다시 쓴 횟수(내용이 같으면 바꾸지 않고 다음 동사로 보낸다). */
   blueprintRewrites = 0;
   /** 끝맺음에서 청사진 경로를 함수가 대신 지었는가(한 번만). */
@@ -190,6 +192,10 @@ const HINTS_SCHEMA = {
     woods: { type: "string" },
     form: { type: "string" },
     terrain: { type: "string" },
+    landform: { type: "string", enum: ["terraces", "hill", "slope", "plateau", "flat"], description: "(마을) 지형 설계 — 땅 모양. 마을은 이 땅에 맞춰 자란다" },
+    settle: { type: "string", enum: ["middle", "low"], description: "(마을) 마을이 앉는 단 — middle 가운데 단(남쪽 낮은 단에 아랫길·강) · low 맨 아래" },
+    tiers: { type: "number", description: "(마을) 마을 단 위 높은 단 겹 수 1~4" },
+    high: { type: "string", enum: ["north", "center", "west", "east"], description: "(마을) 높은 곳 자리" },
     forestType: { type: "string" },
     walls: { type: "boolean" },
     wallGate: { type: "string" },
@@ -739,6 +745,14 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
       if (!builder) {
         session.missingArt.add(`${spec.name}(${spec.type}${spec.style ? `·${spec.style}` : ""}) — 이 종류를 짓는 빌더가 없다`);
         return text({ ok: false, summary: `${spec.type}${spec.style ? `(${spec.style})` : ""} 을 짓는 빌더가 없다. 다른 type 으로 바꾸거나 사용자에게 못 한다고 알린다.` });
+      }
+      // 마을은 지형을 조수가 먼저 설계한다(방 설계와 같은 원칙): hints.landform 없이 오면 마을마다 한 번 되돌려 보낸다. 다시 없이 오면 함수가 테마·씨앗으로 고른다.
+      if (builder.id === "village" && !spec.hints?.landform && !session.terrainBounced.has(spec.name)) {
+        session.terrainBounced.add(spec.name);
+        return text({ ok: false, notFailure: true, summary: `아직 짓지 않았다(실패 아님) — 「${spec.name}」의 지형은 네가 먼저 설계한다. 마을은 지형에 맞춰 자란다(강가면 강 쪽 낮은 단에 아랫길, 산이면 단마다 집, 고원이면 그 위에 집 한 채). hints 에 지형 설계를 넣어 make_place 를 바로 다시 부르면 지어진다: `
+          + `landform(terraces 계단식 단 · hill 위 단 위로 불룩 솟은 언덕 · slope 단이 겹겹이 오르는 산골, 위로는 산 숲 · plateau 두 단 더 높은 고원 · flat 평지) · `
+          + `settle(middle 가운데 단 — 남쪽 낮은 단에 아랫길·강 · low 맨 아래 단) · tiers(마을 단 위 높은 단 겹 수 1~4) · high(높은 곳 자리 north·center·west·east). `
+          + `강은 마을이 강가면 features 에 river — 남쪽 낮은 단에서 동서로 흐른다. 성벽 마을은 평지로 짓는다. 요청에 맞는 땅을 네가 고른다 — 함수는 단 경계·계단·도달성만 맞춘다.` });
       }
       env.emit({ type: "execution_status", name: "v2.build", ok: true, summary: `${spec.name} 짓는 중(${builder.id})` });
       await builder.prepare?.(spec);

@@ -15,6 +15,8 @@ import type { PlaceSpec } from "../../src/ai/v2/types.ts";
 const arg = (n: string, d: string) => { const i = process.argv.indexOf(`--${n}`); return i >= 0 ? process.argv[i + 1] ?? d : d; };
 const OUT = arg("out", "/tmp/vh/ab");
 const only = arg("only", "").split(",").filter(Boolean).map(Number);
+// --sides B: 현행(A)은 지형 먼저가 기본이 된 뒤로 이 체크아웃에서 다시 지을 수 없다 — 지형 먼저 이전 판(ab6)의 A 그림·지표를 그대로 쓴다
+const SIDES = arg("sides", "AB").split("") as ("A" | "B")[];
 fs.mkdirSync(OUT, { recursive: true });
 
 interface Case { n: number; ask: string; spec: Partial<PlaceSpec>; landform: string; settle?: string; seed: number }
@@ -37,7 +39,7 @@ const rows: Record<string, unknown>[] = [];
 for (const c of CASES) {
   if (only.length && !only.includes(c.n)) continue;
   const { args: a0 } = villageArgs({ type: "village", ...c.spec } as PlaceSpec);
-  for (const side of ["A", "B"] as const) {
+  for (const side of SIDES) {
     const args: Record<string, unknown> = { ...a0, seed: c.seed, id: `v${c.n}${side}`, name: c.spec.name };
     if (side === "B") { args.landform = c.landform; if (c.settle) args.settle = c.settle; }
     const ctx = { project: JSON.parse(baseJson) as Project };
