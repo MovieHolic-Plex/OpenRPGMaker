@@ -849,6 +849,7 @@ r1 시험(`verify-shots/assistant-beodeul-village/r1/fresh`)은 「마을」에 
 - **집 크기 고르기:** `layout.houses[].kind`(small 폭 ≤4 · medium 5~6 · large ≥7). 덜 쓴 크기 무리 → 덜 쓴 그림 순으로 고른다(예전엔 직전 두 채만 피해 같은 그림이 서너 번). 지은 뒤 「같은 집 그림 반복」·「N채 중 M채가 small」을 배치 검사 줄로 조수에게 돌려준다.
 - **과수원·길가 소품:** `layout.orchards`(둥근 나무 3×3 를 4칸 간격 3열×2줄 → 2열×1줄까지 줄이며 준 자리에서 8칸 안을 찾는다, 길까지 걸어갈 수 있으면 울타리), `layout.props`(가까운 길 옆 빈 칸에 수레·상자·건초·장작·이정표·벤치 2~3개). 코드가 빈 땅을 골라 채우지 않고 조수가 준 자리만 쓴다. v2 `make_place` 스키마의 layout 에 forests·pastures·orchards·props·houses[].kind 를 넣었다(전엔 forests·pastures 도 스키마에 없었다).
 - **집 보호와 다시 짓기:** 집이 선 마을 맵은 `edit_place`(같은 맵 다시 짓기)가 「완성된 집의 보호 영역」으로 거절된다. 같은 id 로 지우고 다시 지어도 적용 단계 보호 검사(`applyChangesetToStore` → `assertHouseProtection`)가 옛 집 칸을 비교해 거절하고, 시작 맵은 지울 수도 없었다(실조수 terra 「강가 장터」: 비평가가 고칠 곳을 짚었는데 edit_place 두 번 모두 거절). 이제 v2 마을 빌더는 그 맵에 이벤트가 없고 다른 맵의 문이 이어지지 않으면 새 id(`<id>_r2`)로 다시 짓고, 시작 맵이었으면 시작을 새 맵으로 옮긴 뒤 옛 맵을 지운다(맵째 지운 집은 보호 대상이 아니다). 이어진 맵·이벤트가 있는 맵은 그대로 두고 집 밖 칸을 고치는 도구를 알려 준다.
+- **요청의 방향 출구(`spec.exits`):** `villageArgs` 가 `spec.exits`(「서쪽 길 끝 동굴」)를 `layout.exits` 앞에 합친다(최대 3). 출구만 든 layout 은 「자리를 준 layout」이 아니어서 자동 배치에 그 출구만 더한다(`authorBeodeulTown` `layoutGiven`·`beodeulVillage` codePlan `given` 은 gather/houses/landmark/anchor 중 하나가 있어야 참). 큰길은 `routePath` 로 그 가장자리 줄/열까지 가고 강은 얕은 여울(물 비용 1)로 건너 널다리가 된다. 전에는 서쪽이 강인 마을에 서쪽 길이 없어 던전 문이 강 동쪽 풀밭에 그림 없이 섰다(dd1030g terra).
 - **검증:** __R3__
 
 ## 작은 마을 길·마당 구도 보정 (2026-10-04)

@@ -91,6 +91,14 @@ export function villageArgs(spec: PlaceSpec): { args: Record<string, unknown>; m
     if (key === "layout") { const lay = cleanLayoutHint(value); if (lay) args.layout = lay; continue; }
     if (key !== "variant") args[key] = value;
   }
+  // 요청의 방향 출구(spec.exits — 「마을 서쪽 길 끝에 동굴」)는 큰길이 그 가장자리까지 가야 한다(강이면 널다리로 건너서). 마을 빌더는 spec.exits 를 읽지 않아
+  // 서쪽이 강인 마을에 서쪽 길이 없었고 동굴 문이 강 동쪽 풀밭에 그림 없이 섰다(2026-10-30 dd1030g terra). layout.exits 앞에 합친다(최대 3).
+  const specExits = (spec.exits ?? []).filter((e): e is "west" | "east" | "north" | "south" => ["west", "east", "north", "south"].includes(String(e)));
+  if (specExits.length) {
+    const lay = (args.layout && typeof args.layout === "object" ? args.layout : {}) as Record<string, unknown>;
+    const had = Array.isArray(lay.exits) ? (lay.exits as unknown[]).map(String) : [];
+    args.layout = { ...lay, exits: [...new Set([...specExits, ...had])].slice(0, 3) };
+  }
   // 모델이 땅 모양 낱말(hillside·terraces·highland)을 form 에 넣으면 인자 검증에서 한 번 실패했다(2026-10-29 실조수 flash) — terrain 으로 옮긴다
   if (typeof args.form === "string" && ["hillside", "terraces", "highland"].includes(args.form)) { if (args.terrain === undefined) args.terrain = args.form; delete args.form; warnings.push("hints.form 의 땅 모양 낱말을 terrain 으로 옮겼다"); }
   // 땅 모양 낱말 없는 요청에 모델이 단을 얹는다(2026-10-30 실조수: 「강가 장터 마을」에 terra 가 landform terraces·tiers 2 → 강이 협곡이 되어 남북 절벽,
