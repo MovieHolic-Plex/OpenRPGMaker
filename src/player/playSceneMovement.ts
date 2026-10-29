@@ -48,6 +48,7 @@ import { runtimeEventViewById, type RuntimeEventView } from "@/project/runtimeEv
 import type { EventAnimationType, Trigger } from "@/project/types";
 import { nextSessionRandom } from "@/project/session";
 import { isCutsceneInputLocked } from "@/player/cutsceneControl";
+import { flushPendingAutosave } from "@/player/autosave";
 import { recordFollowerPlayerStep } from "@/project/followers";
 import { beginFollowerStep } from "@/player/playSceneFollowers";
 import { updateAmbientFlyers } from "@/player/playSceneAmbientFlyers";
@@ -120,6 +121,8 @@ export function updatePlayScene(scene: PlaySceneContext, deltaMs: number): void 
     scene.syncRuntimeState();
     return;
   }
+  // 전투 승리 자동 저장은 그 전투를 연 이벤트가 끝난 뒤 첫 필드 프레임에 굽는다(autosave.ts).
+  if (!scene.running && !isCutsceneInputLocked(scene.session)) flushPendingAutosave(store.getCurrent(), scene.session);
   updateDetectionEncounters(scene, deltaMs);
   const world = { project: store.getCurrent(), map: scene.map, session: scene.session, positions: scene.eventPositions };
   if (!scene.running && advancePursuitDoors(world, deltaMs)) refreshRuntimeEntities(scene);

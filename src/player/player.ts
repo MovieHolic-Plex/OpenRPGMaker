@@ -939,6 +939,10 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     }
     if (isMenuKey(key)) {
       event.preventDefault();
+      // 이벤트가 도는 동안에는 메뉴를 열지 않는다(RM 관례). 적의 느낌표·대기 사이에 열린 메뉴 아래에서 전투가
+      // 시작돼, 메뉴는 닫히지 않고 메뉴의 Enter 가 전투 명령(도주)으로 갔다(2026-10-29 vm5 argon jrpg).
+      // 대기 중 걷기를 허락한 이벤트(allowEventMovementDuringWait)는 필드 조작이 열려 있으므로 막지 않는다.
+      if (!menu && scene?.running === true && sceneSession?.messageWindowSettings?.allowEventMovementDuringWait !== true) return;
       statusMenu.toggleMenu();
     }
   };
