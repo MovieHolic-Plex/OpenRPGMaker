@@ -52,10 +52,13 @@ export function applyShipDefaults(project: Project, task = project.gameBlueprint
   applied.push(...fillGymArrivalObjectives(project));
   // 레벨 맞춤 전에: 경험치 나누기·체육관 회복 지점(깎기보다 먼저 쓰는 수단).
   applied.push(...equipMonsterCampaign(project));
-  applied.push(...fitGateLevelCurve(project));
-  applied.push(...fitRouteLevelsToGates(project));
-  // 곡선 뒤 마지막: 고를 수 있는 스타터 각각이 혼자 필수 전투를 이기게 상대 레벨을 내린다(모델 레벨 아래로도).
-  applied.push(...fitRequiredBattlesToStarters(project));
+  // 곡선 → 스타터 맞춤(선물 동료·기술·깎기)을 바뀌는 것이 없을 때까지(최대 3바퀴). 선물 동료가 생기면 다음 바퀴 곡선이 관문을 더 올릴 수 있다 —
+  // 한 바퀴만 돌면 두 번째 끝맺음이 관문을 또 올렸다(멱등 아님).
+  for (let round = 0; round < 3; round += 1) {
+    const changed = [...fitGateLevelCurve(project), ...fitRouteLevelsToGates(project), ...fitRequiredBattlesToStarters(project)];
+    applied.push(...changed);
+    if (!changed.length) break;
+  }
   if (endingConditionsUnset(project).length) applied.push(...dropDeadEndingConditions(project));
   if (selfLoopTransfers(project).length) applied.push(...dropSelfLoopTransfers(project));
   if (emptySparkles(project).length) applied.push(...dropEmptySparkles(project));

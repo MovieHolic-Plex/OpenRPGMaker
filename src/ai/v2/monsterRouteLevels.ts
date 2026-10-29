@@ -14,6 +14,9 @@
 // 다른 맵 트룹에도 쓰이는 적 레코드는 건드리지 않는다.
 import { speciesEnemyAtLevel } from "@/battle/battleBattlers";
 import { typeChartMultiplierForTypes } from "@/battle/typeChart";
+import { EVENT_TOOLS } from "@/editor/tools/eventTools";
+import { isPassableLanding } from "@/project/collision";
+import { withJosa } from "@/util/josa";
 import { simulateBattle } from "@/battle/simulate";
 import { monsterBalanceParty } from "@/editor/tools/troopBalanceCheck";
 import { totalExpForLevel } from "@/project/actorModel";
@@ -364,6 +367,23 @@ export function equipMonsterCampaign(project: Project): string[] {
     project.system.rewardPolicy = { ...(project.system.rewardPolicy ?? {}), expShare: true };
     out.push("경험치 나누기 켬(나서지 않은 동료도 절반)");
   }
+  // ③ 길 회복 샘: 필수 트레이너가 둘 이상인 길에 회복이 없으면 처음 들어오는 칸 가까이(풀숲·트레이너 앞)에 회복의 샘(전원 회복·기록)을 둔다.
+  //    실제 플레이어는 회복 지점이 없으면 회복하지 않는다 — 포획 싸움과 트레이너 셋을 깎인 HP 로 잇달아 치렀다(2026-10-29 런타임 물 판 1/26).
+  for (const location of campaign.locations.filter((entry) => entry.kind === "route")) {
+    const map = project.maps[location.mapId];
+    if (!map || mapHasHeal(map)) continue;
+    let trainers = 0;
+    const wild = new Set((map.encounterTable ?? []).map((entry) => entry.troopId));
+    for (const event of map.events ?? []) walkRequired(event.pages, (cmd) => { if (cmd.kind === "battleProcessing" && cmd.canEscape !== true && !wild.has(String(cmd.troopId))) trainers += 1; });
+    if (trainers < 2) continue;
+    const cell = routeSpringCell(project, map);
+    const tool = EVENT_TOOLS.find((item) => item.name === "place_savepoint");
+    if (!cell || !tool) continue;
+    try {
+      tool.run(project as never, { mapId: map.id, x: cell.x, y: cell.y, id: `${map.id}_heal_spring`, name: "회복의 샘", heal: true, mode: "checkpoint", sparkleRadius: 2 });
+      out.push(`길 회복 샘: 「${map.name ?? map.id}」 (${cell.x},${cell.y}) — 필수 트레이너 ${trainers}명 앞`);
+    } catch { /* 둘 칸이 없으면 둔다 */ }
+  }
   for (const gate of campaignGates(project)) for (const mapId of gate.mapIds) {
     const map = project.maps[mapId];
     if (!map || mapHasHeal(map)) continue;
@@ -387,6 +407,43 @@ export function equipMonsterCampaign(project: Project): string[] {
     out.push(`체육관 회복 지점: 「${map.name ?? map.id}」 안내원(${guide.x},${guide.y})이 동료를 회복한다`);
   }
   return out;
+}
+
+/**
+ * 길에 처음 들어오는 칸(시작 맵에서 오는 이동 도착 칸, 없으면 다른 맵에서 오는 첫 도착 칸)에서 걸어 3~10칸, 둘레 한 칸에 이벤트가 없고
+ * 이웃 셋 이상이 트인 칸(가까운 순·결정적).
+ */
+function routeSpringCell(project: Project, map: GameMap): { x: number; y: number } | undefined {
+  const landings: { from: string; x: number; y: number }[] = [];
+  for (const other of Object.values(project.maps)) {
+    if (other.id === map.id) continue;
+    for (const event of other.events ?? []) walk(event.pages, (cmd) => {
+      if (cmd.kind === "transfer" && cmd.mapId === map.id && typeof cmd.x === "number" && typeof cmd.y === "number") landings.push({ from: other.id, x: cmd.x, y: cmd.y });
+    });
+  }
+  landings.sort((a, b) => Number(b.from === project.startMapId) - Number(a.from === project.startMapId) || (a.from < b.from ? -1 : a.from > b.from ? 1 : 0) || a.y - b.y || a.x - b.x);
+  const start = landings[0];
+  if (!start) return undefined;
+  const near = (x: number, y: number) => (map.events ?? []).some((e) => Math.abs(e.x - x) <= 1 && Math.abs(e.y - y) <= 1);
+  const open = (x: number, y: number) => [[0, -1], [1, 0], [0, 1], [-1, 0]].filter(([dx, dy]) => isPassableLanding(project, map, x + dx!, y + dy!)).length;
+  const seen = new Set<string>([`${start.x},${start.y}`]);
+  let frontier = [{ x: start.x, y: start.y }];
+  for (let dist = 1; dist <= 10 && frontier.length; dist += 1) {
+    const next: { x: number; y: number }[] = [];
+    for (const cell of frontier) for (const [dx, dy] of [[0, -1], [1, 0], [0, 1], [-1, 0]] as const) {
+      const x = cell.x + dx, y = cell.y + dy, key = `${x},${y}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      if (!isPassableLanding(project, map, x, y)) continue;
+      next.push({ x, y });
+    }
+    if (dist >= 3) {
+      const hit = [...next].sort((a, b) => a.y - b.y || a.x - b.x).find((c) => !near(c.x, c.y) && open(c.x, c.y) >= 3);
+      if (hit) return hit;
+    }
+    frontier = next;
+  }
+  return undefined;
 }
 
 /** 고르기(choices) 가지 안은 건너뛰고 걷는다 — 「재대결할까?」처럼 플레이어가 고르는 전투는 필수가 아니다. */
@@ -448,38 +505,87 @@ function levelOnCurve(project: Project, speciesId: string, fromLevel: number, ga
 interface StarterOutcome { readonly speciesId: string; readonly rate: number; readonly level: number; readonly hpLeft: number; readonly partner?: string }
 
 /**
- * 스타터 하나가 이 트룹을 도착 레벨에서 이길 수 있는가(시드 고정 모의전 40판, 가장 좋은 기술). 먼저 혼자, 못 이기면(경험치 나누기 켜짐일 때)
- * 그 단계까지 풀숲에서 잡히는 동료 하나와 함께 — 동료 레벨 = 잡히는 레벨 + 그동안 받은 경험치 절반(스타터 레벨 넘지 않음), 상성 좋은 쪽이 앞.
- * 평균 남은 HP 가 min(최대의 1/4, 들어온 HP 의 절반) 미만이면 아슬아슬한 승리 — 승률을 80% 바로 아래로 친다.
+ * 이벤트로 받는 동료(선물 몬스터) — 원정 목표 스위치를 켜는 바로 그 명령 목록에서 setSwitch 뒤에 오는 giveMonster. 그 목표 다음 관문 단계부터 파티에 있다.
+ * 스타터 고르기의 giveMonster 는 setSwitch 앞이라 세지 않는다. 고르기 포획과 달리 반드시 받는다(포획은 실패할 수 있다).
  */
-export function starterOutcome(project: Project, troopId: string, speciesId: string, starter: number, gained: number, stage: number, carryHp?: number): StarterOutcome {
+export function campaignGifts(project: Project): { speciesId: string; level: number; stage: number }[] {
+  const campaign = project.system.monsterCampaign;
+  if (!campaign) return [];
+  const gates = campaignGates(project);
+  const objectives = campaign.objectives ?? [];
+  const stageAfter = new Map<string, number>();
+  for (const [index, objective] of objectives.entries()) {
+    const next = objectives.slice(index + 1).find((item) => gates.some((gate) => gate.switchId === item.switchId));
+    const stage = next ? gates.findIndex((gate) => gate.switchId === next.switchId) : gates.length;
+    stageAfter.set(objective.switchId, stage);
+  }
+  const out: { speciesId: string; level: number; stage: number }[] = [];
+  const scan = (list: unknown): void => {
+    if (!Array.isArray(list)) return;
+    let stage: number | undefined;
+    for (const raw of list) {
+      const cmd = raw as Obj;
+      if (!cmd || typeof cmd !== "object") continue;
+      if (cmd.kind === "setSwitch" && cmd.value !== false && typeof cmd.switchId === "string" && stageAfter.has(cmd.switchId)) stage = stageAfter.get(cmd.switchId);
+      if (cmd.kind === "giveMonster" && stage !== undefined && typeof cmd.speciesId === "string") out.push({ speciesId: cmd.speciesId, level: typeof cmd.level === "number" ? cmd.level : 5, stage });
+      for (const value of Object.values(cmd)) if (value && typeof value === "object") scan(Array.isArray(value) ? value : Object.values(value as Obj).filter(Array.isArray).flat());
+    }
+  };
+  for (const map of Object.values(project.maps)) for (const event of map.events ?? []) for (const page of event.pages ?? []) scan((page as { commands?: unknown[] }).commands);
+  const seen = new Set<string>();
+  return out.filter((gift) => { const key = `${gift.speciesId}@${gift.stage}`; if (seen.has(key)) return false; seen.add(key); return true; });
+}
+
+interface StarterOutcome { readonly speciesId: string; readonly rate: number; readonly level: number; readonly hpLeft: number }
+
+/**
+ * 스타터 하나가 이 트룹을 도착 레벨에서 이길 수 있는가(시드 고정 모의전 40판, 가장 좋은 기술). 파티 = 스타터(앞) + 그 단계까지 이벤트로 받은
+ * 동료(campaignGifts, 받은 레벨 그대로 — 자라는 몫은 세지 않는다). 잡을 수 있는 몬스터는 세지 않는다 — 포획은 실패할 수 있다.
+ * 평균 남은 HP 가 min(파티 최대의 1/4, 들어온 HP 의 절반) 미만이면 아슬아슬한 승리 — 승률을 80% 바로 아래로 친다.
+ * extraGift 를 주면 그 동료도 받은 것으로 친다(선물 고르기 시험).
+ */
+export function starterOutcome(project: Project, troopId: string, speciesId: string, starter: number, gained: number, stage: number, carryHp?: number, extraGift?: { speciesId: string; level: number }): StarterOutcome {
   const level = levelOnCurve(project, speciesId, starter, gained);
   const fresh = loneMonster(project, speciesId, level);
   if (!fresh) return { speciesId, rate: 1, level, hpLeft: 0 };
   const maxHp = monsterMaxHp(project, fresh);
   const lead = carryHp === undefined ? fresh : { ...fresh, currentHp: Math.max(1, Math.round(carryHp)) };
-  const startHp = lead.currentHp ?? maxHp;
-  const judge = (party: MonsterInstance[], fullHp: number, inHp: number) => {
-    const result = simulateBattle({ project, troopId, heroLevel: level, monsterParty: party, n: FIT_SAMPLES, seed: 1, useSkills: true });
-    const safe = result.avgHpRemaining >= Math.min(fullHp * HP_MARGIN, inHp * 0.5);
-    return { rate: safe ? result.winRate : Math.min(result.winRate, FIT_WIN_RATE - 0.01), hpLeft: result.avgHpRemaining };
-  };
-  const alone = judge([lead], maxHp, startHp);
-  let best: StarterOutcome = { speciesId, rate: alone.rate, level, hpLeft: Math.min(maxHp, alone.hpLeft) };
-  if (best.rate >= FIT_WIN_RATE || project.system.rewardPolicy?.expShare !== true) return best;
-  for (const [partnerId, caught] of [...catchableUpTo(project, stage)].sort((a, b) => (a[0] < b[0] ? -1 : 1))) {
-    if (partnerId === speciesId) continue;
-    const partnerLevel = Math.min(level, levelOnCurve(project, partnerId, caught, Math.floor(gained / 2)));
-    const partner = loneMonster(project, partnerId, partnerLevel);
-    if (!partner) continue;
-    const full = maxHp + monsterMaxHp(project, partner);
-    for (const party of [[partner, lead], [lead, partner]]) {
-      const trial = judge(party, full, startHp + monsterMaxHp(project, partner));
-      if (trial.rate > best.rate) best = { speciesId, rate: trial.rate, level, hpLeft: Math.min(maxHp, trial.hpLeft), partner: partnerId };
+  const gifts = [...campaignGifts(project).filter((gift) => gift.stage <= stage), ...(extraGift ? [extraGift] : [])]
+    .map((gift) => loneMonster(project, gift.speciesId, gift.level)).filter((item): item is MonsterInstance => !!item)
+    .map((item, index) => ({ ...item, instanceId: `${item.instanceId}_${index}` }));
+  const party = [lead, ...gifts];
+  const full = party.reduce((sum, item) => sum + monsterMaxHp(project, item), 0);
+  const inHp = (lead.currentHp ?? maxHp) + gifts.reduce((sum, item) => sum + monsterMaxHp(project, item), 0);
+  const result = simulateBattle({ project, troopId, heroLevel: level, monsterParty: party, n: FIT_SAMPLES, seed: 1, useSkills: true });
+  const safe = result.avgHpRemaining >= Math.min(full * HP_MARGIN, inHp * 0.5);
+  return { speciesId, rate: safe ? result.winRate : Math.min(result.winRate, FIT_WIN_RATE - 0.01), level, hpLeft: Math.min(maxHp, result.avgHpRemaining) };
+}
+
+/**
+ * 단계 stage 의 선물을 끼울 자리 — 그 단계 바로 앞 원정 목표 스위치를 켜는 setSwitch 전부(스타터 고르기처럼 갈래마다 켜면 갈래마다 준다).
+ */
+function giftAnchors(project: Project, stage: number): { list: unknown[]; index: number; switchId: string }[] {
+  const gates = campaignGates(project);
+  const objectives = project.system.monsterCampaign?.objectives ?? [];
+  const gate = gates[stage];
+  if (!gate) return [];
+  const at = objectives.findIndex((item) => item.switchId === gate.switchId);
+  const before = at > 0 ? objectives[at - 1]!.switchId : undefined;
+  if (!before) return [];
+  const found: { list: unknown[]; index: number; switchId: string }[] = [];
+  const scan = (list: unknown[]): void => {
+    for (const [index, raw] of list.entries()) {
+      const cmd = raw as Obj;
+      if (!cmd || typeof cmd !== "object") continue;
+      if (cmd.kind === "setSwitch" && cmd.switchId === before && cmd.value !== false) found.push({ list, index, switchId: before });
+      for (const value of Object.values(cmd)) {
+        if (Array.isArray(value)) scan(value);
+        else if (value && typeof value === "object") for (const inner of Object.values(value as Obj)) if (Array.isArray(inner)) scan(inner);
+      }
     }
-    if (best.rate >= FIT_WIN_RATE) break;
-  }
-  return best;
+  };
+  for (const map of Object.values(project.maps).sort((x, y) => (x.id < y.id ? -1 : 1))) for (const event of map.events ?? []) for (const page of event.pages ?? []) scan(((page as { commands?: unknown[] }).commands) ?? []);
+  return found;
 }
 
 /**
@@ -551,41 +657,29 @@ export function fitRequiredBattlesToStarters(project: Project): string[] {
         && defenders().some((types) => typeChartMultiplierForTypes(project, skill.elementId, [], types) >= 2)
         && defenders().every((types) => typeChartMultiplierForTypes(project, skill.elementId, [], types) > 0);
     };
-    // ① 관문 앞 길 풀숲에 상성을 메울 종.
-    if (low.rate < FIT_WIN_RATE && entry.rank === 2 && project.system.rewardPolicy?.expShare === true) {
-      const routes = routeIds.filter((id) => stageOfRoute(id) <= entry.stage && (project.maps[id]?.encounterTable ?? []).length > 0);
-      const wildMax = (id: string) => Math.max(0, ...(project.maps[id]?.encounterTable ?? []).map((item) => item.levelMax ?? 0));
-      const route = routes.sort((a, b) => stageOfRoute(b) - stageOfRoute(a) || wildMax(b) - wildMax(a) || (a < b ? -1 : 1))[0];
-      const table = route ? project.maps[route]!.encounterTable! : undefined;
-      if (route && table) {
-        const lo = Math.min(...table.map((item) => item.levelMin ?? 99));
-        const hi = Math.max(lo, ...table.map((item) => item.levelMax ?? lo));
-        const present = new Set(catchableUpTo(project, entry.stage).keys());
-        const donors = new Map<string, EnemyRecord>();
-        for (const enemy of project.database.enemies) {
-          if (!enemy.speciesId || present.has(enemy.speciesId) || donors.has(enemy.speciesId) || !(enemy as { monsterResourceId?: string }).monsterResourceId) continue;
-          const species = monsterSpeciesById(project, enemy.speciesId);
-          if (!species || (species.captureRate ?? 0) <= 0 || choices.includes(enemy.speciesId)) continue;
-          if (!monsterSkillIdsAtLevel(species, lo).some(hits)) continue;
-          donors.set(enemy.speciesId, enemy);
+    // ① 선물 동료: 혼자 못 이기는 스타터가 있으면 이 단계 앞 원정 목표를 켜는 순간 동료 하나를 이벤트로 준다(모두가 받는다).
+    //    후보 = 그림이 있는 적 레코드가 있는 잡을 수 있는 종(스타터 제외) 가운데 그 레벨에서 이 상대에게 ×2 피해 기술을 아는 종, id 순 앞 8개.
+    //    선물 레벨 = 가장 약한 스타터 도착 레벨 −2. 막힌 스타터들의 가장 낮은 승률이 가장 높은 종.
+    if (low.rate < FIT_WIN_RATE && !campaignGifts(project).some((gift) => gift.stage === entry.stage)) {
+      const anchors = giftAnchors(project, entry.stage);
+      const giftLevel = Math.max(2, Math.min(...outcomes.map((item) => item.level)) - 2);
+      if (anchors.length) {
+        const blocked = outcomes.filter((item) => item.rate < FIT_WIN_RATE);
+        const candidates = [...new Set(project.database.enemies.filter((enemy) => enemy.speciesId && (enemy as { monsterResourceId?: string }).monsterResourceId).map((enemy) => enemy.speciesId!))]
+          .filter((id) => !choices.includes(id) && (monsterSpeciesById(project, id)?.captureRate ?? 0) > 0)
+          .filter((id) => monsterSkillIdsAtLevel(monsterSpeciesById(project, id)!, giftLevel).some(hits)).sort().slice(0, 8);
+        let best: { speciesId: string; rate: number } | undefined;
+        for (const candidate of candidates) {
+          const rate = Math.min(...blocked.map((item) => starterOutcome(project, troop.id, item.speciesId, starter, gained, entry.stage, healHere ? undefined : carry.get(item.speciesId), { speciesId: candidate, level: giftLevel }).rate));
+          if (!best || rate > best.rate) best = { speciesId: candidate, rate };
         }
-        const pick = [...donors.keys()].sort()[0];
-        if (pick) {
-          const donor = donors.get(pick)!;
-          const enemyId = `${route}_cover_${pick}`;
-          const troopId = `${route}_cover_${pick}_troop`;
-          if (!enemyOf(enemyId)) {
-            const copy = { ...structuredClone(donor), id: enemyId } as EnemyRecord;
-            project.database.enemies.push(copy);
-            relevel(project, copy, lo);
-          }
-          if (!project.database.troops.some((item) => item.id === troopId)) {
-            const name = monsterSpeciesById(project, pick)?.name ?? pick;
-            const like = project.database.troops.find((item) => item.id === table[0]!.troopId);
-            project.database.troops.push({ ...(like ? structuredClone(like) : {}), id: troopId, name: `야생의 ${name}`, enemyIds: [enemyId], members: [{ enemyId, x: 84, y: 82, hidden: false }], battleEventPages: [] } as unknown as (typeof project.database.troops)[number]);
-            table.push({ ...structuredClone(table[0]!), troopId, levelMin: lo, levelMax: hi, weight: 3 });
-          }
-          notes.push(`「${project.maps[route]!.name ?? route}」 풀숲에 ${monsterSpeciesById(project, pick)?.name ?? pick} Lv${lo}~${hi}`);
+        if (best && best.rate > low.rate) {
+          const name = monsterSpeciesById(project, best.speciesId)?.name ?? best.speciesId;
+          // 같은 목록에 둘 이상이면 뒤에서부터 끼워 앞 자리 번호가 밀리지 않게.
+          for (const anchor of [...anchors].sort((x, y) => y.index - x.index)) anchor.list.splice(anchor.index + 1, 0,
+            { kind: "text", body: `${withJosa(name, "이/가")} 동료가 되었다!` },
+            { kind: "giveMonster", speciesId: best.speciesId, level: giftLevel, nickname: name });
+          notes.push(`선물 동료 ${name} Lv${giftLevel}(「${anchors[0]!.switchId}」 켤 때 ${anchors.length}곳)`);
           low = evaluate();
         }
       }
@@ -665,7 +759,7 @@ export function fitRequiredBattlesToStarters(project: Project): string[] {
     if (notes.length || swaps.length || after.join() !== before.join()) {
       const who = monsterSpeciesById(project, low.speciesId)?.name ?? low.speciesId;
       const levels = after.join() !== before.join() ? ` Lv${before.join("·")}→Lv${after.join("·")}` : "";
-      out.push(`필수 전투 「${troop.name || troop.id}」${levels}${notes.length ? ` · ${notes.join(", ")}` : ""}${swaps.length ? ` · 몬스터 ${swaps.join(", ")}` : ""} — 가장 약한 스타터 ${who} 도착 Lv${low.level}${low.partner ? `(+${monsterSpeciesById(project, low.partner)?.name ?? low.partner})` : ""} 승률 ${Math.round(low.rate * 100)}%${low.rate < FIT_WIN_RATE ? ", 미달" : ""}`);
+      out.push(`필수 전투 「${troop.name || troop.id}」${levels}${notes.length ? ` · ${notes.join(", ")}` : ""}${swaps.length ? ` · 몬스터 ${swaps.join(", ")}` : ""} — 가장 약한 스타터 ${who} 도착 Lv${low.level} 승률 ${Math.round(low.rate * 100)}%${low.rate < FIT_WIN_RATE ? ", 미달" : ""}`);
     }
     for (const outcome of outcomes) carry.set(outcome.speciesId, outcome.hpLeft);
     pending += troopExp(project, troop.id);
