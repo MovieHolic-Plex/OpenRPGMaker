@@ -91,6 +91,8 @@ const BUILTIN_GENERATED_RESOURCE_URLS: Record<string, string | null> = {
   "oprn-maou-konbini-end-best": "/assets/generated/title/maou-konbini-end-best.png",
   "oprn-maou-konbini-end-ok": "/assets/generated/title/maou-konbini-end-ok.png",
   "oprn-maou-konbini-end-power": "/assets/generated/title/maou-konbini-end-power.png",
+  // 같은 편의점 맵을 사람 없이 밤빛으로 — 편의점 전투가 필드 사진을 못 찍었을 때의 배경(같은 생성기).
+  "oprn-maou-konbini-battle-night": "/assets/generated/title/maou-konbini-battle-night.png",
   "oprn-shitamachi-yuna": "/assets/generated/title/shitamachi-yuna.jpg",
   "oprn-shitamachi-op-train": "/assets/generated/title/shitamachi-op-train.jpg",
   "oprn-shitamachi-op-arcade": "/assets/generated/title/shitamachi-op-arcade.jpg",

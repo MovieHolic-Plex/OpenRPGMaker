@@ -396,7 +396,6 @@ export function stageMaouRoomWake(project: Project): void {
     walkTo("@player", { x: 11, y: 6 }), face("@player", "right"),
     playSe(SE_PAPER),
     ...letter("「이세계 전생 관리국 안내문」\n귀하는 『동귀어진』 처리에 따라 일본으로 전생했습니다.\n마력은 봉인했습니다. 생활비는 직접 버십시오."),
-    ...zs("embarrassed", "…이 몸에게 일을 하라고?"),
     playSe(SE_PAPER),
     ...letter("통장 잔고\n0엔"),
     playSe(SFX.sadHorn), shake(500, "3"), wait(1100),

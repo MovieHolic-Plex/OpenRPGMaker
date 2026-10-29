@@ -125,8 +125,8 @@ export const faceToward = (eventId: string, target: string): Command => routeOf(
 export const emote = (target: "player" | string, kind: string, durationMs = 1000): Command =>
   ({ kind: "showEmote", target: target === "player" ? "player" : { eventId: target }, emote: kind, durationMs } as Command);
 /** 카메라를 칸으로 옮긴다(흉상 대화창이 화면 아래 ⅓을 덮으니, 보여야 할 인물을 화면 위쪽으로 올린다). */
-export const panTo = (x: number, y: number, ms = 600): Command => m2("Camera Control", { mode: "panTo", target: "screen", x, y, zoom: 1, durationMs: ms, wait: true, easing: "easeInOut" });
-export const panBack = (ms = 600): Command => m2("Camera Control", { mode: "return", target: "player", x: 0, y: 0, zoom: 1, durationMs: ms, wait: true, easing: "easeInOut" });
+export const panTo = (x: number, y: number, ms = 600): Command => m2("Camera Control", { mode: "panTo", target: "screen", x, y, durationMs: ms, wait: true, easing: "easeInOut" });
+export const panBack = (ms = 600): Command => m2("Camera Control", { mode: "return", target: "player", x: 0, y: 0, durationMs: ms, wait: true, easing: "easeInOut" });
 /** 제한시간 선택지 — 고른 번호(1부터, 시간 초과 0)를 변수에 쓴다. */
 export const timedChoice = (prompt: string, options: string[], timeLimitMs: number, resultVariableId: string): Command =>
   m2("Timed Choice", { prompt, options: options.join("\n"), timeLimitMs, resultVariableId });

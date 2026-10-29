@@ -5,7 +5,7 @@
 힘 엔딩은 같은 타일로 진열대 셋을 바닥으로 덮고 택배 상자 조각을 흩뜨린 뒤 그을음 빛을 곱한다.
 
     python3 scripts/content/maou-konbini/render_endings.py <demo.project.json> public/assets/generated/title
-→ maou-konbini-end-best.png · maou-konbini-end-ok.png · maou-konbini-end-power.png (960×540, 3배)
+→ maou-konbini-end-best.png · -end-ok.png · -end-power.png · -battle-night.png(사람 없는 밤 전투 배경) (960×540, 3배)
 """
 import os
 import sys
@@ -113,9 +113,14 @@ def main():
     power = grade(power, (120, 60, 140), (60, 30, 70), 0.85)
     power = glow(power, 172, 92, 90, (255, 90, 60), 0.35)
 
-    for name, img in (("best", best), ("ok", ok), ("power", power)):
+    # 밤 편의점 전투 배경(사람 없음) — 전투가 필드 사진을 못 찍었을 때의 적 그룹 배경. 낮 풀밭이 나오던 자리(처음 하는 사람 검수 4).
+    battle = scene(proj, [])
+    battle = grade(battle, (150, 160, 230), (110, 120, 200), 0.6)
+    battle = glow(battle, 190, 130, 110, (255, 246, 210), 0.18)
+
+    for name, img in (("end-best", best), ("end-ok", ok), ("end-power", power), ("battle-night", battle)):
         big = img.resize((img.width * 3, img.height * 3), Image.NEAREST).convert("RGB")
-        path = os.path.join(out, f"maou-konbini-end-{name}.png")
+        path = os.path.join(out, f"maou-konbini-{name}.png")
         big.save(path, optimize=True)
         print("wrote", path, big.size)
 

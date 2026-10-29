@@ -68,15 +68,15 @@ const M = {
 } as const;
 
 // ── 소리 ──
-const BGM_BOSS = "easyrpg-music-boss-3"; // 출하 번들에 든 곡만 쓴다(카탈로그 곡은 설치형이라 빠질 수 있다)
+const BGM_BOSS = "cc0-bgm-rtp-btl-002"; // EasyRPG 음악은 전부 .mid 라 브라우저에서 무음이다(legacyAudioRepair.ts) — mp3 카탈로그 곡만 쓴다
 const BGM_ROOM = "cc0-bgm-rtp-rad-002";
 const BGM_SHOP = "cc0-bgm-rtp-pon-001";
 const BGM_STREET = "cc0-bgm-town";
 const BGM_EVENING = "cc0-bgm-rtp-fld-003";
-const BGM_SHRINE = "easyrpg-music-mystery-1";
+const BGM_SHRINE = "cc0-bgm-rtp-mys-001";
 const BGM_NIGHT = "cc0-bgm-rtp-rst-001";
 const BGM_MANUAL = "cc0-bgm-rtp-btl-001";
-const BGM_END = "easyrpg-music-ending-2";
+const BGM_END = "cc0-bgm-rtp-res-002"; // 해 뜨는 귀환 — 귀환·에필로그·크레딧
 const SE_CHIME = "easyrpg-sound-song"; // 편의점 자동문 입점 차임
 const SE_OK = "cc0-se-orp-interface-interface3";
 const SE_BEEP = "cc0-se-osx-switch-01"; // 바코드 삑
@@ -87,6 +87,8 @@ const SE_BOOM = "easyrpg-sound-explosion1";
 const SE_PAPER = "cc0-se-osx-paper-04";
 const SE_CAT = "easyrpg-sound-cat";
 const SE_BELL = "cc0-se-osx-bell-01";
+const KONBINI_BATTLE_BG = "oprn-maou-konbini-battle-night";
+const SFX_ROOM_TONE = "cc0-sound-mk-op-room"; // 냉장고 웅웅·먼 차 소리 12초 고리(opening-sfx.py room)
 
 // ── 배우 ──
 const MAOU_TRUE = "actor_mk_maou_true";
@@ -223,9 +225,10 @@ function setupDatabase(project: Project): void {
   };
   makeTroop("troop_mk_castle", "옥좌의 결전", "enemy_mk_leon_castle", "battle-scenery-cave",
     [{ preset: "glow", opacity: 70 }, { preset: "embers", opacity: 60 }]);
-  makeTroop("troop_mk_power", "편의점의 결전 · 마왕 재림", "enemy_mk_leon_awake", "battle-scenery-cave",
+  // 편의점 전투 둘은 필드 사진(battleBackdrop field)을 쓰고, 사진을 못 찍으면 사람 없는 밤 편의점 그림으로 — 낮 풀밭이 나왔다(처음 하는 사람 검수 4).
+  makeTroop("troop_mk_power", "편의점의 결전 · 마왕 재림", "enemy_mk_leon_awake", KONBINI_BATTLE_BG,
     [{ preset: "glow", opacity: 60 }, { preset: "lightRays", opacity: 40 }, { preset: "embers", opacity: 50 }]);
-  makeTroop("troop_mk_manual", "편의점의 결전 · 알바 매뉴얼", "enemy_mk_leon_angry", "battle-scenery-plains",
+  makeTroop("troop_mk_manual", "편의점의 결전 · 알바 매뉴얼", "enemy_mk_leon_angry", KONBINI_BATTLE_BG,
     [{ preset: "glow", opacity: 25 }]);
 }
 
@@ -420,21 +423,14 @@ function buildKonbini(project: Project, links: Links): Cell {
   // ── 면접(stage 2) ──
   const MGR_F = "ev_mk_mgr_front", MGR_B = "ev_mk_mgr_back", HINA_ID = "ev_mk_hina";
   const zs = (expr: "base" | "happy" | "surprised" | "sad" | "embarrassed", ...l: string[]) => say("zervas", expr, ...l);
+  // 처음 하는 사람 검수(2026-10-29): 면접 118초에 선택지 둘 — 대사를 절반으로 줄이고 선택지 사이를 짧게 둔다.
   const interview: Command[] = [
     playSe(SE_CHIME),
-    ...say("manager", "happy", "어서 오세요… 해피 마트입니다. …아, 그 전단지. 면접 보러 오셨죠?"),
-    ...zs("base", "그렇소. 이 몸이 친히 왔소. 영광으로 아시오."),
-    ...say("manager", "surprised", "(자신감이 대단하네…) 네, 네. 이쪽으로 오세요."),
+    ...say("manager", "happy", "어서 오세요… 아, 그 전단지. 면접 보러 오셨죠? 이쪽으로요."),
     walkTo("@player", Q1), face("@player", "up"),
-    ...say("manager", "base", "이력서는 가져오셨어요?"),
-    ...zs("surprised", "…이력서?"),
-    ...caption("제르바스는 품에서 종이 한 장을 꺼냈다. 관리국 안내문 뒷면에 밤새 쓴 이력서다."),
+    ...caption("제르바스는 관리국 안내문 뒷면에 밤새 쓴 이력서를 내밀었다."),
     playSe(SE_PAPER),
-    ...say("manager", "base", "어디 보자. 이름, 암흑 마왕 제르바스. …외국 분이세요?"),
-    ...zs("base", "마계 출신이오."),
-    ...say("manager", "happy", "아, 마계. 시골이구나… 공기 좋겠다."),
-    ...say("manager", "base", "경력… 「마왕군 총사령관 999년, 세계의 절반 정복」."),
-    ...say("manager", "happy", "「관리직 경험 있음」이라고 적을게요."),
+    ...say("manager", "base", "이름, 암흑 마왕 제르바스. 경력, 마왕군 총사령관 999년… 「관리직 경험 있음」으로 적을게요."),
     ...say("manager", "surprised", "특기는… 「세계 정복(절반)」? 정복은 좀 곤란한데요. 다른 건요?"),
     choices([
       { text: "인간을 공포로 지배할 줄 아오", then: [...say("manager", "happy", "까다로운 손님 응대 가능… 그거 정말 귀해요."), ...mp()] },
@@ -447,23 +443,14 @@ function buildKonbini(project: Project, links: Links): Cell {
       { text: "통장 잔고가 0엔이오", then: [...say("manager", "sad", "…솔직해서 좋아요. 저도 월말엔 그래요."), ...good()] },
       { text: "여기 고기만두가 맛있어 보였소", then: [...say("manager", "happy", "안목 있으시네. 그거 제가 직접 발주해요.")] },
     ]),
-    ...say("manager", "happy", "네, 합격. 오늘부터 바로 일해 주세요."),
-    ...say("manager", "base", "그리고 이름. 제르바스는 명찰에 안 들어가서… 마오 군이라고 부를게요."),
+    ...say("manager", "happy", "합격. 오늘부터요. 제르바스는 명찰에 안 들어가서… 마오 군이에요. 명찰 벌써 뽑았어요."),
     ...zs("surprised", "마오…? 감히 이 몸의 존함을 멋대로 줄이다니…!"),
-    ...say("manager", "happy", "명찰 벌써 뽑았어요."),
-    ...caption("명찰에는 큼직하게 「마오」라고 적혀 있다."),
-    ...say("maou", "embarrassed", "……마오라 하오. 잘 부탁하오."),
     faceHero(HINA_ID),
-    ...say("hina", "happy", "점장님, 신입이에요? …말투 뭐야. 연극부?"),
-    ...say("maou", "base", "품격이라 하오."),
-    ...say("hina", "happy", "설정 세네. 나 히나. 대학생, 여기 2년 차. 모르는 거 있음 물어봐."),
-    ...say("maou", "base", "히나라 했나. 좋네. 자네를 이 몸의 첫 번째 부하로 임명하…"),
+    ...say("hina", "happy", "신입? 나 히나, 2년 차. …말투 뭐야. 연극부?"),
+    ...say("maou", "base", "품격이라 하오. 히나라 했나. 자네를 이 몸의 첫 번째 부하로 임명하…"),
     ...say("hina", "base", "선배라고 불러."),
     ...say("maou", "embarrassed", "…히나 선배."),
-    ...say("manager", "base", "자, 마오 군. 오늘 할 일은 계산대, 진열, 분리수거. 부탁해요."),
-    ...say("manager", "happy", "막히면 히나한테 물어보세요. 전 백룸에서 서류랑 싸울게요…"),
-    ...caption("편의점 매뉴얼 제1조. 「손님이 오시면 큰 소리로 인사한다.」"),
-    ...say("maou", "base", "…짧군. 마왕군 군율은 서른 장이었는데. 좋소, 외웠소."),
+    ...say("manager", "base", "오늘 할 일은 계산대, 진열, 분리수거. 막히면 히나한테 물어봐요."),
     // 맵 이벤트는 「장소 이동」에서 끝난다 — 이동은 맨 끝에 두고(이동 자체가 암전한다), 근무 시작 자막은 근무 시작 자동 장면이 잇는다.
     setVar(V_STAGE, "=", 3), setVar(V_TASKS, "=", 0), setSw(SW_SHIFT),
     transfer(M.konbini, CLERK, "down"),
@@ -881,6 +868,7 @@ function buildCrisis(project: Project, map: GameMap, at: { door: Cell; gate: Cel
   const PIC = "mk_end";
   const endingScene = (resourceId: string, endingId: string, body: Command[]): Command[] => [
     ...fadeOut(900),
+    { kind: "stopAudio", channel: "bgs" } as Command,
     { kind: "showPicture", pictureId: PIC, resourceId, x: 0, y: 0, scale: 50, opacity: 255, waitForPicture: false } as Command,
     stopBgm(), bgm(BGM_END, 600),
     ...fadeIn(1000),
@@ -981,6 +969,8 @@ function buildCrisis(project: Project, map: GameMap, at: { door: Cell; gate: Cel
     wait(400),
     setSw(SW_SHIFT, false),
     stopBgm(),
+    // 음악이 끊긴 새벽 — 냉장고 웅웅·지나가는 차 소리를 환경음(bgs)으로 깐다. 무음이면 녹화가 고장 난 것처럼 들렸다(처음 하는 사람 검수 3).
+    { kind: "playAudio", resourceId: SFX_ROOM_TONE, loop: true, channel: "bgs", fadeInMs: 1500 } as Command,
     ...caption("새벽 2시. 손님이 끊긴 시간."),
     ...say("hina", "happy", "일 다 끝났네. 아침까지 버티기만 하면 돼."),
     walkTo("@player", at.clerk), face("@player", "down"),
@@ -1134,20 +1124,29 @@ function buildPark(project: Project, backToStreet: Cell): Cell {
     ...say("lily", "base", "사천왕 제1좌, 용왕 가르곤 님이시옵니다."),
     ...say("maou", "surprised", "……가르곤!? 하늘을 뒤덮던 그 흑룡이!? 고양이가 되었단 말인가!"),
     ...voice("길고양이", "냐아. 냥, 냐앙."),
-    ...say("lily", "base", "「요즘은 생선 가게 할멈이 매일 전갱이를 바친다. 나쁘지 않다」 하시옵니다."),
-    ...say("maou", "sad", "…적응이 빠르군."),
-    ...say("lily", "base", "제3좌 바르크 님은 홋카이도에서 소를 키우시옵니다. 엽서가 왔사옵니다. 「우유가 맛있다」."),
-    ...say("lily", "base", "제4좌 노스 님은… 연락 두절이옵니다. 밤에만 일하는 직장인 듯하옵니다."),
-    ...say("maou", "embarrassed", "마왕군이 뿔뿔이 흩어졌군."),
-    ...say("lily", "base", "안건 1. 마왕군 재건. 안건 2. 용사 처단. 안건 3. 회비. 1인 500엔, 가르곤 님은 고양이라 면제."),
-    ...say("lily", "surprised", "그리고 급보이옵니다! 용사가 이 세계에 다시 태어났사옵니다. 근처 고등학교의… 매일 고기만두를 사는 남자애."),
+    ...say("lily", "base", "「생선 가게 할멈이 매일 전갱이를 바친다. 나쁘지 않다」 하시옵니다. 자, 오늘의 안건이옵니다. 마왕님, 고르시옵소서!"),
+    // 처음 하는 사람 검수(2026-10-29): 회의가 첫 선택지까지 83초 듣기만이었다 — 안건 셋을 플레이어가 고른다.
+    choices([
+      { text: "안건 1. 마왕군 재건", then: [
+        ...say("lily", "base", "제3좌 바르크 님은 홋카이도에서 소를 키우시옵니다. 「우유가 맛있다」는 엽서가 왔사옵니다. 제4좌 노스 님은 연락 두절이옵니다."),
+        ...say("maou", "embarrassed", "…마왕군이 뿔뿔이 흩어졌군."),
+      ] },
+      { text: "안건 2. 용사 처단", then: [
+        ...say("lily", "happy", "마침 그 안건이옵니다! 마왕님, 놀라지 마시옵소서…"),
+      ] },
+      { text: "안건 3. 회비", then: [
+        ...say("lily", "base", "1인 500엔이옵니다. 가르곤 님은 고양이라 면제."),
+        playSe(SE_CAT), ...voice("길고양이", "냐(당연하다)."),
+        ...say("maou", "sad", "…이 몸의 잔고로는 버겁군."),
+      ] },
+    ]),
+    ...say("lily", "surprised", "급보이옵니다! 용사가 이 세계에 다시 태어났사옵니다. 근처 고등학교의… 매일 고기만두를 사는 남자애."),
     ...say("maou", "surprised", "……레온."),
-    ...say("lily", "base", "내일 밤은 보름달. 봉인이 가장 약해지는 밤이옵니다. 용사의 기억도, 마왕님의 힘도 돌아오옵니다."),
-    ...say("lily", "happy", "그때 힘을 되찾으시면… 마왕군 재건이옵니다!"),
+    ...say("lily", "happy", "내일 밤은 보름달. 봉인이 가장 약해져 마왕님의 힘이 돌아오옵니다. 마왕군 재건이옵니다!"),
     choices([
       { text: "「…좋네. 마왕군을 다시 세우세」", then: [...say("lily", "happy", "와아! 마왕님 만세!"), playSe(SE_CAT), ...voice("길고양이", "냐!"), ...mp()] },
       { text: "「미안하네. 내일은 야간 근무일세」", then: [...say("lily", "surprised", "세계 정복을 두고… 근무를 고르시옵니까!?"), ...say("maou", "base", "…지각하면 히나 선배가 무섭네."), ...good()] },
-      { text: "「회비 500엔은… 월급날까지 기다려 주게」", then: [...say("lily", "sad", "…마왕님, 정말로 가난하시옵니다."), playSe(SE_CAT), ...voice("길고양이", "냥…(동정)")] },
+      { text: "「회비는… 월급날까지 기다려 주게」", then: [...say("lily", "sad", "…마왕님, 정말로 가난하시옵니다."), playSe(SE_CAT), ...voice("길고양이", "냥…(동정)")] },
     ]),
     ...say("lily", "base", "아무튼 내일 밤, 소녀도 편의점 근처에서 대기하겠사옵니다!"),
     setSw(SW_MEETING),
@@ -1282,6 +1281,8 @@ export function createMaouKonbiniFlagshipDemo(): FlagshipDemoBuildResult {
   const links = buildMaps(project);
   const roomWake = buildRoom(project, links, { x: 0, y: 0 });
   const konbiniArrive = buildKonbini(project, links);
+  // 22칸 폭 편의점은 배율 1 이면 화면(30칸) 양옆과 아래가 빈 띠로 남았다(처음 하는 사람 검수 2). 1.5배면 20칸 시야라 매장이 화면을 채운다.
+  execTool(project, "set_map_properties", { mapId: M.konbini, zoom: 1.5 });
   // 원룸 침대 → 편의점 출근 자리를 채운다.
   for (const e of project.maps[M.room]!.events) for (const p of e.pages ?? []) for (const c of p.commands as unknown as Record<string, unknown>[]) {
     if (c.kind === "transfer" && c.mapId === M.konbini) { c.x = konbiniArrive.x; c.y = konbiniArrive.y; }
