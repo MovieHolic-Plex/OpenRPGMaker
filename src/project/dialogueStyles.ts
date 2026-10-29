@@ -383,7 +383,7 @@ export function resolveDialogueFullPortraitLayout(
   return { heightRatio: (height / 100) * (scale / 100), dropRatio: drop / 100 };
 }
 /** 구두점 뒤 쉼(ms). 기본 글자 간격과 같이 화자 빠르기로 늘고 준다. */
-export const DIALOGUE_PUNCTUATION_PAUSE_MS = { comma: 120, stop: 300 } as const;
+export const DIALOGUE_PUNCTUATION_PAUSE_MS = { comma: 100, stop: 200 } as const;
 const COMMA_CHARS = new Set([",", "、", "，"]);
 const STOP_CHARS = new Set([".", "。", "!", "?", "！", "？", "…", "~", "～"]);
 /**

@@ -872,3 +872,14 @@ storage remain supervisor integration work.
 - 필드 메뉴(`playerItemUse.ts` `useItemFromMenu`): 회복약·상태약·PP 약은 기존 경로, 부활은 `onlyEffectiveOnDeadActors`, **이상한 사탕**(`careProfile.levelUp`)은 `applyCareItem` 이 필요한 경험치를 채워 레벨을 올리고 진화를 최대 5번 이어 간다(상한 레벨은 아이템을 쓰지 않고 `maxLevel` 거절). **진화의 돌**은 `evolveMonster({itemId, allowItemEvolution})` — 진화 못 하는 몬스터는 「효과가 없습니다」이고 돌은 남는다. 대상 줄 미리보기는 `previewCareItem`·`previewEvolutionStoneTarget` 이 사용 경로와 같은 판정이다(「Lv a → b」「→ 이름」「효과 없음」).
 - 진화가 일어나면 `MenuItemUseResult.evolutions` → 상태 메뉴 컨트롤러가 `playEmeraldEvolutions`(에메랄드 스타일일 때)를 메뉴 위에 재생하고 끝나면 메뉴를 다시 그린다(그동안 입력 차단).
 - 가방 화면: 몬스터 파티 게임은 분류 필터 대신 포켓 5개(도구·볼·기술머신·지닐 도구·중요한 물건)를 좌우 키(또는 ◀ ▶·점)로 넘긴다. 에메랄드 스킨은 포켓마다 가방 색이 다르다(CSS, `data-bag-pocket`). 시각 QA: `scripts/qa/runtime/monster-bag.scenario.mjs`(픽스처 `monster-bag-fixture.mts`).
+
+## 체감 속도 — 대사 흘림·엔딩 크레딧·엔딩 뒤 「이어하기」 (2026-10-29)
+
+vm3/vm4 판정 「대사 한 글자씩 느리게」「엔딩 뒤 크레딧 대기 김」「엔딩 뒤 새 게임이 초기화되지 않음」을 출하 플레이어로 계측해 고쳤다.
+계측 시나리오: `scripts/qa/runtime/pacing-dialogue.scenario.mjs`, `pacing-ending.scenario.mjs`, `ending-newgame.scenario.mjs` (`QA_OUT=<폴더>`).
+
+- **대사 흘림 따라잡기** (`src/player/dialogue.ts`): 글자마다 `setTimeout` 을 이어 붙이던 흘림은 기기가 바쁘면 늦은 만큼이 글자마다 쌓여
+  명목 24ms 글자가 60~110ms 로 흘렀다. 다음 글자 예정 시각 `typeDue`(Date.now 기준)를 들고 늦은 만큼 다음 기다림을 줄인다 —
+  명목 간격보다 오래 기다리지 않고, 긴 정지 뒤에는 `DIALOGUE_TYPE_CATCHUP_MAX_MS`(400ms)까지만 따라잡는다. 같은 부하에서 27자 창 1883 → 1242ms.
+- **구두점 쉼** (`DIALOGUE_PUNCTUATION_PAUSE_MS`, `src/project/dialogueStyles.ts`): 쉼표 120 → 100ms, 마침표·물음표 300 → 200ms.
+- 흘림 중 확인키 한 번은 이미 전문을 즉시 보인다(창은 닫지 않음) — 계측 `shownRatio 1`.
