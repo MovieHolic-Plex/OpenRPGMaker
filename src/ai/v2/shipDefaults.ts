@@ -25,7 +25,7 @@ import { normalizeGameOverSettings } from "@/project/cinematicSettings";
 import { fieldMenu, storyFieldMenu } from "@/project/fieldMenu";
 import { syncMenuFeatures, syncMenuUiStyle } from "@/project/menuSystem";
 import { FACTORY_HERO_ARMS } from "./genreDefaults";
-import { fitGateLevelCurve, fitRequiredBattlesToStarters, fitRouteLevelsToGates } from "./monsterRouteLevels";
+import { equipMonsterCampaign, fitGateLevelCurve, fitRequiredBattlesToStarters, fitRouteLevelsToGates } from "./monsterRouteLevels";
 
 type Obj = Record<string, unknown>;
 
@@ -50,6 +50,8 @@ export function applyShipDefaults(project: Project, task = project.gameBlueprint
   if (lateStartObjective(project)) applied.push(...pullBackStartObjective(project));
   if (staleMilestoneTargets(project).length) applied.push(...fillStaleObjectives(project));
   applied.push(...fillGymArrivalObjectives(project));
+  // 레벨 맞춤 전에: 경험치 나누기·체육관 회복 지점(깎기보다 먼저 쓰는 수단).
+  applied.push(...equipMonsterCampaign(project));
   applied.push(...fitGateLevelCurve(project));
   applied.push(...fitRouteLevelsToGates(project));
   // 곡선 뒤 마지막: 고를 수 있는 스타터 각각이 혼자 필수 전투를 이기게 상대 레벨을 내린다(모델 레벨 아래로도).
