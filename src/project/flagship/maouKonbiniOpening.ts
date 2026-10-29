@@ -187,7 +187,7 @@ function shotHeroes(project: Project): void {
   const leonEnd = chipAt(view, { x: 23, y: 10 });
   pop(project, id, "leon-shout", "exclaim", { x: leonEnd.x + 12, y: leonEnd.y - 16 }, 3450, ms);
   sfx(project, id, "doors", SFX.doors, 0, 2600, 0.95);
-  sfx(project, id, "unsheathe", SFX.sword, 3400, 900, 0.5);
+  sfx(project, id, "unsheathe", SFX.sword, 3400, 900, 1);
   captions(project, id, [{ atMs: 3700, text: "레온 「여기까지다, 마왕 제르바스!」", color: INK.hero }]);
 }
 
@@ -222,7 +222,9 @@ function shotDeal(project: Project): void {
     camZ.push({ atMs: b.at, value: camZ[camZ.length - 1]!.value }, { atMs: b.at + 260, value: z, ease: "ease-out" });
   }
   camY.push({ atMs: ms, value: hY - 20 }); camZ.push({ atMs: ms, value: 1.12, ease: "ease-in-out" });
-  execTool(project, "animate_opening_camera", { shotId: id, camera: { x: 240, y: 135, keys: { y: camY, zoom: camZ } } });
+  // 「거절한다!!」(6.3초) 두 번째 거절에 화면이 한 번 튄다 — 주석에만 있고 빠져 있던 박(2026-10-30 적대 VQA).
+  execTool(project, "animate_opening_camera", { shotId: id, camera: { x: 240, y: 135, keys: { y: camY, zoom: camZ },
+    shake: { atMs: 6300, durationMs: 420, amplitude: 4, frequency: 22, seed: 5 } } });
   // 배우는 카메라를 건 다음에 세운다(옥좌 위 마왕은 고정 무대로 치면 레터박스 위쪽이다). 층 순서는 빛 위·말풍선 아래.
   actor(project, id, "maou", MON2, 7, maouAt, "down", 2, "monster");
   actor(project, id, "leon", ACT1, 0, leonAt, "up", 2, "hero");
@@ -232,9 +234,10 @@ function shotDeal(project: Project): void {
   beats.forEach((b, i) => { if (b.pop) pop(project, id, `pop-${i}`, b.pop, above(at[b.who]), b.at, Math.min(ms, b.at + 1500)); });
   captions(project, id, beats.map((b) => ({ atMs: b.at + (b.pop ? 250 : 0), text: b.text, color: b.who === "maou" ? INK.maou : INK.hero })));
   // 개그 박 — 「4분의 1」에 레코드가 긁히고, 「거절한다!!」에 화면이 한 번 흔들린다.
-  sfx(project, id, "scratch", SFX.scratch, 4650, 550, 0.85);
-  sfx(project, id, "no-2", "cc0-se-orp-battle-sword-unsheathe", 6300, 700, 0.45);
-  sfx(project, id, "heart", "cc0-se-osx-bell-02", 10200, 900, 0.35);
+  // 개그 박 효과음은 애니메틱 음악 위로 들려야 한다 — 0.35~0.5 는 녹음에서 검출되지 않았다(2026-10-30 실녹음 상관 0.0~0.2).
+  sfx(project, id, "scratch", SFX.scratch, 4650, 550, 1);
+  sfx(project, id, "no-2", "cc0-se-orp-battle-sword-unsheathe", 6300, 700, 1);
+  sfx(project, id, "heart", "cc0-se-osx-bell-02", 10200, 900, 0.9);
 }
 
 /** 컷 4 — 「말로 안 되면 힘으로」. 마왕에게 바짝 다가서고 붉은 빛이 차오르다 하얗게 닫힌다(바로 전투로). */
@@ -284,7 +287,8 @@ function setupThroneBattle(project: Project): void {
   if (!leon) throw new Error("[maou-konbini] 옥좌 결전 적(enemy_mk_leon_castle)이 없다");
   // 슬라임을 본뜬 적이라 종(speciesId)이 남아 「야생의 용사 레온」이라고 나왔다 — clearFields 로 지운다.
   // 3합 안에 쓰러지지 않게(연출 전투는 3합째 봉인술로 끝난다).
-  execTool(project, "upsert_enemy", { enemy: { id: leon.id, stats: { ...leon.stats, maxHp: 4000, attack: 96 } }, ...(leon.speciesId ? { clearFields: ["speciesId"] } : {}) });
+  // 4000 이면 업화 한 방이 3.5% 라 마왕의 힘이 보이지 않았다 — 1200 이면 한 방에 체력 막대가 눈에 띄게 준다(3합 안에는 안 쓰러진다).
+  execTool(project, "upsert_enemy", { enemy: { id: leon.id, stats: { ...leon.stats, maxHp: 1200, attack: 96 } }, ...(leon.speciesId ? { clearFields: ["speciesId"] } : {}) });
   const T = "troop_mk_castle";
   const pageOf = (pid: string, name: string, round: number, commands: Command[]) =>
     execTool(project, "upsert_troop_battle_page", { troopId: T, page: { id: pid, name, span: "battle", runOnce: true, conditions: [{ kind: "onRound", round }], commands } });
@@ -330,16 +334,17 @@ export function buildMaouThrone(project: Project, roomWake: Cell): Cell {
     emote("player", "sweat", 900),
     ...say("maouF", "base", "자, 잠깐! 연금은? 연금은 어떻게 되는 거냐!"),
     // 하얗게 타 버린다 — 화면 효과 「색조」로 흰빛을 채웠다가(맵 조명은 건드리지 않는다), 장엄한 음악을 그 순간 끊는다.
+    // 흰빛 → 정적 → 원룸까지 v13 은 12초(흰 화면·검정)였다 — 5초 안으로 줄인다(2026-10-30 적대 VQA).
     playSe(SFX.vanish),
-    fieldTint("255,255,255,0.35", 700), shake(1800, "3"),
-    wait(900), flash("white", 300), wait(500),
-    fieldTint("255,255,255,1", 1000), shake(800, "10"),
-    wait(1000),
+    fieldTint("255,255,255,0.35", 500), shake(1400, "3"),
+    wait(600), flash("white", 250), wait(300),
+    fieldTint("255,255,255,1", 700), shake(700, "10"),
+    wait(500),
     stopBgm(),
-    wait(700),
+    wait(250),
     ...caption("빛이 모든 것을 삼켰다."),
-    ...fadeOut(900),
-    wait(700),
+    ...fadeOut(500),
+    wait(150),
     setVar(V_STAGE, "=", 1),
     // 전생 — 파티가 현대의 몸(마오)으로 바뀐다.
     { kind: "changeParty", actorId: DEFAULT_ACTOR_ID, action: "add" } as Command,
@@ -383,7 +388,7 @@ export function stageMaouRoomWake(project: Project): void {
   const zs = (expr: "base" | "happy" | "surprised" | "sad" | "embarrassed", ...l: string[]) => say("zervas", expr, ...l);
   const wakeScene: Command[] = [
     stopBgm(),
-    wait(1200),
+    wait(600),
     playSe(SFX.fluoro),
     wait(250), flash("white", 90), wait(330), flash("white", 70), wait(220),
     ...fadeIn(350),

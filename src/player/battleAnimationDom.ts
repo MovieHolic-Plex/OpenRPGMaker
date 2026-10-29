@@ -672,13 +672,16 @@ function setEffectVariables(
   for (const [name, value] of Object.entries(variables)) host.style.setProperty(name, value);
 }
 
+/** 스킬 이펙트 프레임 소리 크기(전투 BGM 위로 세우는 보정은 playBattleSample 의 animation 출처가 맡는다). */
+const ANIMATION_SE_VOLUME = 0.4;
+
 function playTimingSound(soundResourceId: string | undefined): void {
   // 디코딩 캐시에 있으면 즉시 — 새 요소의 로드 지연이 애니메이션 착탄음을 늦게 만든다.
-  if (soundResourceId && playBattleSample(soundResourceId, 0.4, 1, "animation")) return;
+  if (soundResourceId && playBattleSample(soundResourceId, ANIMATION_SE_VOLUME, 1, "animation")) return;
   const url = resolveAssetResourceUrl(soundResourceId, { project: store.getCurrent() });
   if (!url) return;
   const audio = new Audio(url);
-  audio.volume = 0.4;
+  audio.volume = ANIMATION_SE_VOLUME;
   void audio.play().catch((error: unknown) => {
     if (error instanceof DOMException && error.name === "NotAllowedError") return;
     throw error;
