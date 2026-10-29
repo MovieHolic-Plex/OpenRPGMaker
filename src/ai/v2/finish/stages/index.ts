@@ -29,6 +29,7 @@ export { stage as stairTransfers } from "./stair-transfers";
 export { stage as trimRoadStubs } from "./trim-road-stubs";
 export { stage as widenRoadExits } from "./widen-road-exits";
 export { stage as openDoorSteps } from "./open-door-steps";
+export { stage as entryStepsOnArrival } from "./entry-steps-on-arrival";
 export { stage as objectiveThings } from "./objective-things";
 export { stage as suspectObjectives } from "./suspect-objectives";
 export { stage as reloadCheck } from "./reload-check";

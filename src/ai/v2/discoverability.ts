@@ -137,10 +137,19 @@ export function storyEvents(project: Project): StoryEvent[] {
     out.push({
       mapId: page.map.id, mapName: page.map.name ?? page.map.id, eventId: page.event.id, name: page.event.name ?? page.event.id,
       x: page.event.x, y: page.event.y, pageIndex: page.pageIndex, ends, milestone, setsObjective,
-      visible: pageVisible(project, page, page.map, page.event.x, page.event.y),
+      // 다른 맵으로 옮기는 페이지는 출구다 — 런타임이 「→ 목적지」 글자를 띄운다(2026-10-29 vm8: 들어가면 끝나는 입구 단계를 문 이동에 실었다).
+      visible: pageVisible(project, page, page.map, page.event.x, page.event.y) || leavesMap(page.commands, page.map.id),
     });
   }
   return out;
+}
+
+function leavesMap(node: unknown, here: string): boolean {
+  if (Array.isArray(node)) return node.some((n) => leavesMap(n, here));
+  if (!node || typeof node !== "object") return false;
+  const r = node as Record<string, unknown>;
+  if (r.kind === "transfer" && typeof r.mapId === "string" && r.mapId !== here) return true;
+  return Object.values(r).some((v) => v && typeof v === "object" && leavesMap(v, here));
 }
 
 /** 이야기 이벤트인데 화면에 아무것도 안 보인다(투명·그림 없음·반짝임 없음·그려진 물건 없음). */
