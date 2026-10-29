@@ -25,5 +25,6 @@ export { stage as transferLanes } from "./transfer-lanes";
 export { stage as targetFronts } from "./target-fronts";
 export { stage as spreadPeople } from "./spread-people";
 export { stage as eventReach } from "./event-reach";
+export { stage as objectiveTargets } from "./objective-targets";
 export { stage as transferLaneNotes } from "./transfer-lane-notes";
 export { stage as widenRoadExits } from "./widen-road-exits";
