@@ -229,11 +229,15 @@ export function dressPickupSteps(run: BuildRun, mapId: string): string[] {
   if (!project0.gameBlueprint || !map0 || isMysteryBlueprint(project0)) return [];
   const notes: string[] = [];
   for (const r of resolveSteps(project0)) {
-    if (r.map.id !== mapId || !PICKUP_ACTION.test(r.step.action) || !r.step.gives || isProgressWord(r.step.gives) || /엔딩|ending/iu.test(r.step.gives)) continue;
+    // 행동이 줍기이거나, 이벤트 이름이 주는 물건 이름 그 자체(「동굴 열쇠」 이벤트가 『동굴 열쇠』를 준다 — 2026-10-29 vm8 flash jrpg, 행동은 「마을을 떠나 동굴로 향한다」).
+    const bare = (t: string) => t.replace(/[\s「」『』]/gu, "");
+    const namedAsGift = !!r.step.gives && bare(String(r.ev.name ?? "")) === bare(r.step.gives);
+    if (r.map.id !== mapId || !(PICKUP_ACTION.test(r.step.action) || namedAsGift) || !r.step.gives || isProgressWord(r.step.gives) || /엔딩|ending/iu.test(r.step.gives)) continue;
     const project = run.ctx.project;
     const map = project.maps[mapId]!;
     const ev = map.events.find((e) => e.id === r.ev.id);
-    if (!ev || NOT_PICKUP.test(`${ev.name ?? ""} ${r.step.event}`) || !allTransparent(ev) || upperAt(map, ev.x, ev.y)) continue;
+    if (!ev || (!namedAsGift && NOT_PICKUP.test(`${ev.name ?? ""} ${r.step.event}`)) || !allTransparent(ev)) continue;
+    // 윗층 그림(지붕·나무 머리) 아래 칸이면 그 자리는 못 쓰고 2칸 안 다른 칸을 찾는다(아래 자리 고르기가 칸마다 윗층을 본다 — vm8 flash 「동굴 열쇠」 (7,11)은 지붕 밑이었다).
     const text = JSON.stringify(ev.pages ?? []);
     if (/"kind":"(?:transfer|battleProcessing|showChoices|choices|presentItem|shop)"/u.test(text) || /"speaker"/u.test(text)) continue;
     const pages = ev.pages ?? [];

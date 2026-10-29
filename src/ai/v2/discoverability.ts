@@ -354,7 +354,20 @@ export function refreshObjectiveRoutes(project: Project): number {
               // 꼬리 없는 목표가 글에 나온 이벤트·장소로 「어디」를 붙일 수 있으면 붙인다 — 출하 검사 objective-missing 과 같은 판정(withWhere).
               // 2026-10-29 vm1 argon jrpg: 보스에 「마왕」 이름이 붙은 뒤 「마왕과 최후의 결전을 벌여 승리한다」(동굴의 문 이벤트) 가
               // 「(시작 마을 입구: 남쪽 → 마왕의 방 · 마왕)」 을 붙일 수 있게 됐는데, 위 가지는 잠긴 이벤트 이름을 담은 글만 고쳐 출하 검사가 남았다.
-              if (plainTail) continue;
+              if (plainTail) {
+                // 시작 목표 꼬리 첫 조각이 어느 이벤트·맵 이름도 아니면(「(동굴 입구 도착 / 회복의 샘: …)」 — 지운 옛 단계 이름) 첫 청사진 단계 대상과 그 자리로 바꾼다.
+                // 왜(2026-10-29 vm8 flash jrpg): 시작 목표가 없는 「동굴 입구 도착」을 가리켜, 판정자는 먼저 얻어야 할 「동굴 열쇠」를 모른 채 잠긴 동굴 문부터 갔다.
+                const parts = plainTail[1]!.split(/\s*\/\s*/u);
+                const head = parts[0]!.replace(/:.*$/u, "").trim();
+                const known = Object.values(project.maps).some((m) => bare(String(m.name ?? "")) === bare(head) || (m.events ?? []).some((e) => bare(String(e.name ?? "")) === bare(head)));
+                const first = opening ? find(steps[0]?.event) : undefined;
+                if (!known && first && head.length >= 2) {
+                  const spot = first.map.id === from ? landmarkWord(project, first.map, first.event.x, first.event.y, first.event.id) : `${first.map.name ?? first.map.id}`;
+                  const updated = `${base} (${String(first.event.name ?? steps[0]!.event)}: ${spot}${parts.length > 1 ? ` / ${parts.slice(1).join(" / ")}` : ""})`;
+                  if (updated !== message) { fields.message = updated; changed += 1; }
+                }
+                continue;
+              }
               let updated = withWhere(project, from, base, undefined, origin);
               // 글에서 어디를 못 찾으면 다음 청사진 단계가 다른 맵에 있을 때 그 맵 입구로 — 이 목표를 거는 단계 다음이 곧 갈 곳이다.
               if (updated === base && next && next.map.id !== from) updated = withWhere(project, from, base, next.event.id, origin);
@@ -482,6 +495,34 @@ export function placeWord(map: GameMap, x: number, y: number): string {
     return `${north ? "북쪽" : "남쪽"} 끝 ${along}`;
   }
   return mapRegion(map, x, y);
+}
+
+/**
+ * 맵 안 한 칸을 눈에 띄는 것에 기대어 부르는 말 — 「회복의 샘 서쪽」「「떠돌이 상인」 옆」「처음 선 자리 북쪽」, 없으면 placeWord.
+ * 기댈 것: 그림이 보이는 이름 있는 이벤트(사람·물건, 단계 대상 자신·막힌 길 표지·잠긴 집 문 제외), 회복의 샘·상인(이름 없는 기본 id), 시작 자리.
+ * 6칸 안 가장 가까운 것. 2칸 안이면 「옆」.
+ * 왜(2026-10-29 vm8 flash jrpg): 동굴 문은 「동굴 열쇠가 있어야 한다」만 말했고, 열쇠는 처음 선 자리 곁 회복의 샘 옆 (7,11)이었다 —
+ * 판정자는 마을을 30분 가까이 돌았다. 「서쪽」 같은 방위 한 낱말로는 못 찾는다.
+ */
+export function landmarkWord(project: Project, map: GameMap, x: number, y: number, exceptId?: string): string {
+  const KNOWN: Record<string, string> = { ev_heal_spring: "회복의 샘", ev_supply_shop: "떠돌이 상인" };
+  const cands: { name: string; x: number; y: number; quote: boolean }[] = [];
+  for (const ev of map.events ?? []) {
+    if (ev.id === exceptId || /^ev_(dead_end|locked_door|objective|world_gate)/u.test(ev.id) || ev.id.includes("__")) continue;
+    const known = KNOWN[ev.id];
+    const name = known ?? String((ev as { name?: string }).name ?? "").trim();
+    if (!name || /^ev_/u.test(name)) continue;
+    const g = ((ev.pages ?? [])[0]?.graphic ?? {}) as { transparent?: boolean; sprite?: unknown; appearanceId?: unknown };
+    if (!known && (g.transparent === true || !(g.sprite || g.appearanceId))) continue;
+    cands.push({ name, x: ev.x, y: ev.y, quote: !known });
+  }
+  const start = project as unknown as { startMapId?: string; startPos?: { x: number; y: number } };
+  if (start.startMapId === map.id && start.startPos) cands.push({ name: "처음 선 자리", x: start.startPos.x, y: start.startPos.y, quote: false });
+  const dist = (c: { x: number; y: number }) => Math.abs(c.x - x) + Math.abs(c.y - y);
+  const best = cands.filter((c) => dist(c) <= 6).sort((a, b) => dist(a) - dist(b))[0];
+  if (!best) return placeWord(map, x, y);
+  const label = best.quote ? `「${best.name}」` : best.name;
+  return dist(best) <= 2 ? `${label} 옆` : `${label} ${bearingWord(best, { x, y })}`;
 }
 
 /** 출구 자리 말 — 2칸 안이면 「바로 옆」, 아니면 맵에 붙박인 말(placeWord). */
