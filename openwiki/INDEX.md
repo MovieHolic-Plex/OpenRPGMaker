@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **188쪽 / 7577KB / 약 2,225,068 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **188쪽 / 7578KB / 약 2,225,306 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -38,7 +38,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/harnesses/object-gate.md` | 89KB | 12KB | 642 | ~26,964 |
 | `openwiki/harnesses/super-harness.md` | 102KB | 4KB | 1063 | ~32,225 |
 | `openwiki/jp-city.md` | 108KB | 14KB | 510 | ~31,925 |
-| `openwiki/runtime-battle.md` | 438KB | 32KB | 2415 | ~128,614 |
+| `openwiki/runtime-battle.md` | 438KB | 32KB | 2415 | ~128,852 |
 | `openwiki/runtime-m2-flow-controls.md` | 52KB | 23KB | 342 | ~14,200 |
 | `openwiki/runtime-pre-edit-routing.md` | 197KB | 99KB ⚠상한 초과 — 절을 더 쪼개라 | 1180 | ~58,444 |
 | `openwiki/runtime-project-schema.md` | 264KB | 83KB ⚠상한 초과 — 절을 더 쪼개라 | 1825 | ~74,678 |
@@ -2746,7 +2746,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L15` Quick routing
 - `L24` For AI agents
 
-### `openwiki/runtime-battle.md` — 438KB · 2415줄 · ~128,614 토큰 · 통째읽기 잘림
+### `openwiki/runtime-battle.md` — 438KB · 2415줄 · ~128,852 토큰 · 통째읽기 잘림
 
 - `L1` 기술 목록에 기본 공격(skill_attack)을 싣지 않는다 (2026-10-29)
 - `L6` 레트로 파티 창 수치 칸은 글자만큼 늘어난다 (2026-10-29)

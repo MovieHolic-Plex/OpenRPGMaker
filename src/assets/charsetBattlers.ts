@@ -124,3 +124,20 @@ export function resolvePartyBattleCharset(actor: {
   return charsetBattlerForCharacter(actor.characterResourceId, actor.characterIndex)
     ?? (retro && generatedHero ? undefined : authored);
 }
+
+/**
+ * 전투 시트도 칩 대응도 없는 배우가 측면 전투에 자기 걷기 칩으로 서는가(2026-10-30). 걷기 칩이 있으면 그 칩·자리를,
+ * 없으면 undefined(호출자가 기본 도트로 물러난다). 시트 전체를 그리지 않고 한 사람 칸만 자른다 — battleWalkChipBattler.ts.
+ * 저작 시트·charset-battler-*·party-pixel-* 로 풀리는 배우는 여기 오지 않는다(resolvePartyBattleCharset 가 먼저 이긴다).
+ */
+export function partyWalkChipBattler(actor: {
+  readonly battleCharacterResourceId?: string;
+  readonly characterResourceId?: string;
+  readonly characterIndex?: number;
+}, retro = false): { readonly characterResourceId: string; readonly characterIndex: number } | undefined {
+  if (resolvePartyBattleCharset(actor, retro)) return undefined;
+  const characterResourceId = actor.characterResourceId?.trim();
+  if (!characterResourceId) return undefined;
+  const index = actor.characterIndex ?? 0;
+  return { characterResourceId, characterIndex: Number.isInteger(index) && index >= 0 ? index : 0 };
+}
