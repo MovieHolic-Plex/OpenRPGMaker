@@ -9,6 +9,7 @@ export { stage as stepSubjects } from "./step-subjects";
 export { stage as furnitureSpots } from "./furniture-spots";
 export { stage as lanes } from "./lanes";
 export { stage as lanesStamp } from "./lanes-stamp";
+export { stage as stepPeopleRoadside } from "./step-people-roadside";
 export { stage as blueprintAssembly } from "./blueprint-assembly";
 export { stage as blueprintOpening } from "./blueprint-opening";
 export { stage as gateOpenSteps } from "./gate-open-steps";

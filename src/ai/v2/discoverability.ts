@@ -365,6 +365,11 @@ export function refreshObjectiveRoutes(project: Project): number {
                   const spot = first.map.id === from ? landmarkWord(project, first.map, first.event.x, first.event.y, first.event.id) : `${first.map.name ?? first.map.id}`;
                   const updated = `${base} (${String(first.event.name ?? steps[0]!.event)}: ${spot}${parts.length > 1 ? ` / ${parts.slice(1).join(" / ")}` : ""})`;
                   if (updated !== message) { fields.message = updated; changed += 1; }
+                } else if (known && first && first.map.id === from && !parts[0]!.includes(":") && bare(head) === bare(String(first.event.name ?? ""))) {
+                  // 첫 단계 대상 이름만 있고 어디인지 없으면(「(마을 주민)」) 그 자리를 눈에 띄는 것에 기대어 붙인다(2026-10-29 vm8 terra jrpg «경고 전할 사람을 못 찾음»).
+                  const spot = landmarkWord(project, first.map, first.event.x, first.event.y, first.event.id);
+                  const updated = `${base} (${head}: ${spot}${parts.length > 1 ? ` / ${parts.slice(1).join(" / ")}` : ""})`;
+                  if (updated !== message) { fields.message = updated; changed += 1; }
                 }
                 continue;
               }

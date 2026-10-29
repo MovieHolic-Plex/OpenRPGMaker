@@ -55,8 +55,15 @@ export function groupPerson(step: { event: string; action: string; gives?: strin
     const titled = new RegExp(`(?<![가-힣])${PERSON.source}`, "u").exec(`${step.gives ?? ""} ${step.action}`)?.[1];
     return titled && titled !== "주인" ? titled.replace(/\s+/gu, " ") : "마을 주민";
   }
+  // 「마을에서 동굴과 마왕에 관한 경고를 확인한다」 — 마을에서 듣는 경고·소문·소식은 그것을 전하는 사람이 있어야 한다.
+  // 왜(2026-10-29 vm8 terra jrpg): 「마을의 경고」가 회복의 샘 옆 맨바닥 투명 칸이라 판정자는 경고를 전할 사람을 끝내 못 찾았고 목표는 「(마을의 경고)」에 멈췄다.
+  if (NEWS.test(step.action) && SETTLED.test(`${step.place ?? ""} ${step.action} ${step.event}`)) return "마을 주민";
   return undefined;
 }
+/** 사람이 전하는 말(경고·소문·소식)을 확인하거나 듣는 행동. 단서·증거 확인(추리)은 사람이 아니다. */
+const NEWS = /(?:경고|소문|소식|전갈|당부|이야기)\S{0,2}\s*(?:을|를)?\s*(?:확인|듣|들|전해\s*듣|알아)/u;
+/** 사람이 사는 곳(마을·광장·거리·항구·시장). */
+const SETTLED = /마을|광장|거리|항구|시장|읍내|town|village/iu;
 
 /** 행동에서 살펴보는 대상(「사건 현장을 조사한다」 → 사건 현장, 「방을 뒤져」 → 방). */
 function lookTarget(action: string): string | undefined {

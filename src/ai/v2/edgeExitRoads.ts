@@ -118,6 +118,11 @@ function lowerLabels(project: Project, map: GameMap, x: number, y: number): stri
   return ["lowerTiles", "lowerOverlayTiles"].map((k) => m[k]?.[y * map.width + x]).map((t) => (typeof t === "number" && t >= 0 ? String(meta[t]?.label ?? "") : "")).filter(Boolean);
 }
 
+/** 길·포석 칸인가(바닥·덧바닥 이름표 기준, 물·벽·지붕 제외). */
+export function isRoadCell(project: Project, map: GameMap, x: number, y: number): boolean {
+  return lowerLabels(project, map, x, y).some((l) => ROAD_CELL.test(l) && !NOT_ROAD.test(l));
+}
+
 const isTouchTransfer = (ev: GameMap["events"][number], here: string): boolean => (ev.pages ?? []).length > 0
   && (ev.pages ?? []).every((p) => ((p.graphic ?? {}) as { transparent?: boolean; sprite?: unknown }).transparent === true || !((p.graphic ?? {}) as { sprite?: unknown }).sprite)
   && (ev.pages ?? []).some((p) => (p.trigger as { kind?: string } | undefined)?.kind === "playerTouch" && hasTransferOut(p.commands ?? [], here));
