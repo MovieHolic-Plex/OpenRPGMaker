@@ -21,6 +21,8 @@ export const TOOL_ARG_ALIASES: Readonly<Record<string, Readonly<Record<string, s
   set_start_position: { map: "mapId", mapID: "mapId" },
   place_vehicle: { vehicle: "vehicleId", kind: "vehicleId", type: "vehicleId" },
   upsert_troop_battle_page: { page: "pages" },
+  // 2026-10-30 실조수 e2e: 맵 배경음을 걸며 bgmResourceId 로 한 번 실패한 뒤 resourceId 로 고쳐 불렀다(맵의 bgm 칸 이름을 따라 씀).
+  set_game_audio: { bgmResourceId: "resourceId", musicResourceId: "resourceId", seResourceId: "resourceId", soundResourceId: "resourceId", musicId: "resourceId", bgmId: "resourceId", assetId: "resourceId", resource: "resourceId" },
 };
 
 function camel(key: string): string {

@@ -114,7 +114,7 @@ const BGM_SCENE_NEEDLES: Readonly<Record<BgmScene, readonly string[]>> = {
 // 스토어 음악 팩 곡은 이름이 아니라 실은 장면(storeMusicMeta.ts)으로 맞춘다.
 const BGM_SCENE_STORE: Readonly<Record<BgmScene, readonly StoreMusicScene[]>> = {
   title: ["title"], battle: ["battle", "boss"], night: [], dungeon: ["dungeon"], village: ["town"], forest: ["field"], field: ["field"],
-  town: ["town"], boss: ["boss"], victory: ["victory"], sad: ["sad"], tense: ["tense"], ending: ["ending"],
+  town: ["town"], boss: ["boss"], victory: ["victory"], sad: ["sad"], tense: ["tense", "chase"], ending: ["ending"],
 };
 
 function inScene(project: Project, resource: { id: string; name: string }, scene: BgmScene): boolean {
@@ -207,7 +207,7 @@ const recommendBgm: ToolDefinition = {
         candidates, total, ...(sceneFallback ? { sceneFallback: true } : {}), originalCompositionTool: "generate_original_bgm",
         guidance: "같은 분위기의 동점 후보는 미사용 곡 우선. music 칸이 있는 곡은 장르·장면·분위기를 대조해 고르고, loopable:false(징글)는 맵 BGM 말고 승리 음악(set_game_audio role victory)에 쓴다. "
           + "후보가 기본 내장곡(cc0-·rtp 계열, music 칸 없음)뿐이거나 원하는 장르(조선풍·무협 …)·장면에 꼭 맞는 곡이 없으면 store_find_music{scene, query, mood, need}로 스토어 음악 팩에서 곡 단위로 찾는다(기본은 묻지 않고 store_install 로 넣는다, 사용자가 「먼저 묻기」를 켰으면 카드가 묻는다). "
-          + "연결은 set_game_audio — 맵 배경음 role:maps+mapIds, 모든 전투 battle-default, 보스전만 boss(+troopIds), 승리 victory, 타이틀 title, 엔딩·크레딧 ending. 원곡 요청/장면 변화/부적합한 반복은 직접 작곡하고 맵에 연결하세요.",
+          + "연결은 set_game_audio — 맵 배경음 role:maps+mapIds, 모든 전투 battle-default, 보스전만 boss(+troopIds), 승리 victory, 타이틀 title, 엔딩·크레딧 ending, 추격자가 쫓아올 때 chase. 원곡 요청/장면 변화/부적합한 반복은 직접 작곡하고 맵에 연결하세요.",
       },
     };
   },
