@@ -4051,19 +4051,19 @@
      "id": "dash",
      "ops": [
       {
-       "kind": "move",
+       "kind": "hold",
        "dir": "up",
-       "steps": 12
+       "ms": 2000
       },
       {
-       "kind": "move",
+       "kind": "hold",
        "dir": "right",
-       "steps": 2
+       "ms": 330
       },
       {
-       "kind": "move",
+       "kind": "hold",
        "dir": "up",
-       "steps": 3
+       "ms": 1400
       }
      ],
      "shot": true
@@ -4272,19 +4272,19 @@
      "id": "dash",
      "ops": [
       {
-       "kind": "move",
+       "kind": "hold",
        "dir": "up",
-       "steps": 12
+       "ms": 2000
       },
       {
-       "kind": "move",
+       "kind": "hold",
        "dir": "right",
-       "steps": 2
+       "ms": 330
       },
       {
-       "kind": "move",
+       "kind": "hold",
        "dir": "up",
-       "steps": 3
+       "ms": 1400
       }
      ],
      "shot": true
