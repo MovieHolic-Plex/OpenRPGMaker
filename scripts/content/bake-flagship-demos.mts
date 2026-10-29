@@ -18,6 +18,7 @@ import { gzipSync } from "node:zlib";
 import { join } from "node:path";
 import { FLAGSHIP_DEMO_IDS, createFlagshipDemoProject } from "@/project/flagship";
 import { serialize } from "@/project/io";
+import { demoLoreCounts, demoLoreProblems } from "@/project/flagship/loreKit";
 import { prepareWebExport } from "@/project/webExport";
 
 function argOf(name: string): string | undefined {
@@ -46,6 +47,11 @@ for (const id of FLAGSHIP_DEMO_IDS) {
   writeFileSync(join(dir, `${id}.play.json`), player);
   writeFileSync(join(dir, `${id}.project.json`), editor);
   console.log(`${id}: build ${((built - started) / 1000).toFixed(1)}s · player ${mb(player.length)}MB (gzip ${mb(gzipSync(player).length)}MB) · editor ${mb(editor.length)}MB · total ${((performance.now() - started) / 1000).toFixed(1)}s`);
+  // 자료집 「이야기」(세계 개요·설정집·인물)가 비면 판매용 데모를 연 사람이 이 게임을 읽을 수 없다(2026-10-29 전 데모 0개였다).
+  // 데모마다 *Lore.ts 를 빌더 끝에서 부른다. 빠지거나 하한 아래로 줄면 여기서 크게 경고한다.
+  const loreProblems = demoLoreProblems(project);
+  if (loreProblems.length > 0) console.warn(`[demo-lore] ${id}: 「이야기」 탭이 비었다: ${loreProblems.join(" / ")}`);
+  else console.log(`  lore ${JSON.stringify(demoLoreCounts(project))}`);
 }
 
 // 데모가 쓰는 카탈로그 BGM 을 산출물에 함께 싣는다. 데스크톱 앱은 BGM 팩 없이 나가서 폴른 스타가 27곡 중 3곡만 울렸다(2026-10-27).
