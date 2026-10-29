@@ -1378,7 +1378,10 @@ export const interiorBuilder: PlaceBuilder = {
         /shelf|bookcase|^cabinet\b|apothecary drawers/u, /wardrobe/u, /^(crate|chest|barrel|sack|basket|box|chopping block|seed sacks|loot sacks)\b/u];
       const same = (o: Obj) => { const h = o.id.split(/[ :]/u)[0]!; return h === head || KIN.some((k) => k.test(o.id) && k.test(part.id)); };
       // 견본 한 벌로 꾸민 방(묶음 길이 아닌 방)도 같다 — 병동 견본(가로 침대 여섯)에 「병원 침대」를 세로 침대로 덧놓아 세면대·정수기 앞을 막았다(2026-10-29 horror-ward).
-      if ((settled || !vignette) && !/계단|stair/iu.test(what) && rb.objects.some((o) => same(o) && inZone(o))) { placed.push({ zone: room.id, what, id: part.id }); continue; }
+      // 놓은 것으로 칠 때는 그 방에 실제로 있는 가구 id 로 적는다 — 찾은 부품 id(desk 1x1)로 적으면 설계 방의 desk 3x1 이 있는데도
+      // 「최종 맵에 없다(놓은 뒤 밀려났다)」 anchor-missing 실패로 셌다(2026-10-29 vm8·fvL1 terra 방탈출: 책상·책장·금고 셋 다).
+      const kin = (settled || !vignette) && !/계단|stair/iu.test(what) ? rb.objects.find((o) => same(o) && inZone(o)) : undefined;
+      if (kin) { placed.push({ zone: room.id, what, id: kin.id }); continue; }
       // 올라가는 계단: 이 방이 맨 북쪽 바깥 벽에 닿지 않으면(위에 다른 방) 맨 북쪽 방 벽에 단다 — 칸막이 속으로 오르는 계단은 틀린 그림이다.
       const isUp = part.stairs === "up" || /stairs up/u.test(part.id);
       const top = Math.min(...rb.rooms.map((r) => r.y0));
