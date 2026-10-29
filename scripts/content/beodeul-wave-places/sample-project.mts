@@ -61,6 +61,10 @@ for (const a of Object.values(portable.assets.uploaded)) {
     a.dataUrl = `data:${a.ref.mime};base64,${bytes.toString("base64")}`; delete a.ref;
   }
 }
+// 플레이어 고정 자료는 맵이 쓰는 타일셋만 싣는다 — 새 프로젝트의 번들 타일셋 49개를 다 실으면 81MB 라 플레이어 탭이 부팅 중에 죽었다(r1).
+const usedTilesets = new Set(Object.values(portable.maps).map((m) => m.tilesetId as string));
+for (const tid of Object.keys(portable.tilesets)) if (!usedTilesets.has(tid)) delete portable.tilesets[tid as keyof typeof portable.tilesets];
+for (const t of Object.values(portable.tilesets)) delete (t as { referenceDocuments?: unknown }).referenceDocuments;
 mkdirSync(outDir, { recursive: true });
 for (const i of imported) {
   const one = structuredClone(portable);
