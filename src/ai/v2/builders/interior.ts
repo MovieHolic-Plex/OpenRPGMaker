@@ -805,7 +805,8 @@ function buildUpperFloor(run: BuildRun, roomSpec: HandInteriorSpec, tilesetId: s
         const n = (usedK.get(kind) ?? 0) + 1; usedK.set(kind, n);
         return z.design && typeof z.design === "object" ? designedRoom(z, kind, n, z.design, roomSpec, notes) : { id: z.id ?? (n > 1 ? `${kind}${n}` : kind), kind, design: undefined };
       });
-      const hub = droom.some((r) => /corridor|hall|landing/u.test(r.kind));
+      // 계단통(3칸 폭)은 설계 방 가운데 넓은 방에 선다 — 설계 방이 모두 좁을 때만(바닥 24칸 미만) 계단참 복도를 붙인다(빈 복도가 맨바닥 덩이가 됐다).
+      const hub = droom.some((r) => /corridor|hall|landing/u.test(r.kind) || ((r as { w?: number }).w ?? 0) * (((r as { h?: number }).h ?? 2) - 2) >= 24);
       const roomsUp = [...droom.map((r) => clean({ id: r.id, kind: r.kind, w: (r as { w?: number }).w, h: (r as { h?: number }).h, floor: (r as { floor?: string }).floor, wall: (r as { wall?: string }).wall, notches: (r as { notches?: unknown }).notches })),
         ...(hub || !known("corridor") ? [] : [{ id: "corridor", kind: "corridor", w: Math.max(9, 4 * droom.length + 1), h: 5 }])];
       const designsUp = Object.fromEntries(droom.filter((r) => r.design).map((r) => [r.id, r.design!] as const));

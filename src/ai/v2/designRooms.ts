@@ -58,6 +58,7 @@ function promptFor(project: Project, spec: PlaceSpec, zones: readonly ZoneSpec[]
     "design 꼴: {shape, corner?, w, h, door, floor, wall, groups:[{name, at, pos?, rug?, items:[{id, dx?, dy?, count?}]}]}",
     "- shape: rect 네모(작은 방) · L ㄱ자(corner 귀퉁이를 도려 냄) · U ㄷ자 · T ㅜ자 · bay 창가 돌출 · alcove 알코브(corner). 방 이야기에 맞는 모양을 네가 고른다.",
     ...(parts ? parts.shapes.map((s) => `  · ${s}`) : []),
+    ...(need.some((i) => (zones[i]!.floor ?? 1) > 1) ? ["- 위층 방: 아래층에서 올라오는 계단통(3×2)이 위층 방 하나의 빈 바닥에 선다 — 위층 방 중 하나는 바닥 6×4 이상으로 비워 둘 자리를 둔다(복도·계단참을 따로 설계해도 된다)."] : []),
     "- w×h = 바닥 칸(벽면 줄 빼고). 방 용도와 가구 양에 맞춘다 — 빈 바닥이 넓으면 방이 너무 큰 것이다. door = 남쪽 출구 left·center·right.",
     "- at = north·south·west·east·center·nw·ne·sw·se, pos 0~1 = 그 벽을 따라 자리. 책장·진열장 같은 벽 가구와 창·지도(걸이, dy -2)는 북벽(north·nw·ne)에만.",
     "- 의자는 chair N/S/E/W(그쪽을 봄) — 탁자·책상 쪽을 보게. 무엇을 몇 개 놓을지는 네 목록이 전부다(함수는 더하지 않고, 칩셋에 없는 이름·겹침·문 앞 통로만 고친다).",
