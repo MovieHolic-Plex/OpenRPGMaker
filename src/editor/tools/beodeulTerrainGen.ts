@@ -27,6 +27,8 @@ export interface TerrainGenInput {
   water: TerrainWater;
   /** 위로 쌓을 단 수 힌트(1~4). */
   tiers?: number;
+  /** 평지 요청(땅 모양 낱말 없음): 단은 북쪽의 동서 띠 하나뿐 — 남북 경계 토막·평지 한가운데 계단이 없다. 물이 띠를 가로지르면 단 없음. */
+  bands?: boolean;
 }
 
 export interface TerrainArea {
@@ -479,6 +481,26 @@ export function generateCodeTerrain(input: TerrainGenInput): CodeTerrain {
     for (let c = 0; c < W * H; c += 1) { const x = c % W, y = (c - x) / W;
       for (const [dx, dy] of N4) { const X = x + dx, Y = y + dy; if (X < 0 || Y < 0 || X >= W || Y >= H) continue; const n = Y * W + X; if (lv[c]! - lv[n]! > 1) { lv[c] -= 1; changed = true; break; } } }
     if (!changed) break;
+  }
+  // 평지 요청은 동서 띠 하나(2026-10-30 ab18·ab19: 강가 시골·들판이 「남북 절벽 토막·평지 한가운데 사다리 계단」으로 띠 지형에 졌다) —
+  // 잡음 덩이 단을 버리고 북쪽에 맵 폭 전체를 가로지르는 띠 하나만 둔다. 띠 아래 경계는 7~13열 토막마다 1~2줄 어긋날 뿐 남북으로 길게 서지 않는다.
+  // 물(강·못·바다)이 띠 자리에 들어오면 띠를 물 위 3칸까지 올리고, 그래도 3줄이 안 남는 열이 있으면 단을 아예 없앤다(평지).
+  if (input.bands && input.water !== "bog") {
+    const base = Math.round(H * 0.27) + Math.floor(r() * 3);
+    const b = new Int16Array(W);
+    { let x = 0, prev = base;
+      while (x < W) { const w = 7 + Math.floor(r() * 7); const want = base + Math.round(2.2 * jn(x / 14, seed % 97)); const v = Math.max(prev - 2, Math.min(prev + 2, want));
+        for (let k = 0; k < w && x + k < W; k += 1) b[x + k] = v; prev = v; x += w; } }
+    let ok = true;
+    for (let x = 0; x < W && ok; x += 1) { let top = H; for (let y = 0; y < H; y += 1) if (water[y * W + x]) { top = y; break; }
+      for (let dx = -2; dx <= 2; dx += 1) { const X = x + dx; if (X < 0 || X >= W) continue; for (let y = 0; y < top; y += 1) if (water[y * W + X]) { top = y; break; } }
+      if (b[x]! > top - 3) b[x] = top - 3; if (b[x]! < 3) ok = false; }
+    // 물에 깎인 열과 이웃 열이 2줄 넘게 어긋나면 이웃을 맞춘다(띠가 남북으로 긴 벽을 세우지 않게)
+    for (let pass = 0; pass < W && ok; pass += 1) { let ch2 = false;
+      for (let x = 1; x < W; x += 1) { if (b[x]! - b[x - 1]! > 2) { b[x] = b[x - 1]! + 2; ch2 = true; } if (b[x - 1]! - b[x]! > 2) { b[x - 1] = b[x]! + 2; ch2 = true; } }
+      if (!ch2) break; }
+    for (let c = 0; c < W * H; c += 1) { const x = c % W, y = (c - x) / W; lv[c] = ok && !water[c] && y < b[x]! ? 1 : 0; }
+    notes.push(ok ? "평지 요청: 북쪽 동서 띠 하나" : "평지 요청: 물이 띠를 가로질러 단 없음");
   }
   tidyLevels(lv, W, H);
   // 단 하나 = 두 칸 절벽(2026-10-30 ab13 판정 「절벽이 1px 갈색 선 — 높이가 안 읽힌다」): 띠 지형의 마을 위 단처럼 이웃 단 차를 2 로 —
