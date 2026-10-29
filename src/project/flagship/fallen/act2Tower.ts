@@ -9,13 +9,14 @@
  *   - 3층 「거울의 층」: author_map_puzzle mirror_beam_refraction 이 4층 계단을 막는다. 거미·회로뱀.
  *   - 4층 「렌즈 대기실」(B11): 어둠(place_field_obstacle dark) 속 관에서 이리스가 깨어난다. 일지(configure_story_journal)의
  *     지워진 줄을 카엘이 읽어 주면 기술이 돌아온다. 이리스 손끝 빛이 서쪽 골방의 일지 쪽 둘을 드러낸다.
- *     둥근 방 계단 = 판본 끝(막 카드·회복·저장·「다음 업데이트」).
+ *     둥근 방 계단 = 꼭대기(act2Summit.ts B12·B13)로.
  * 새 그림은 없다 — 버들항 던전 키트·RTP 칩·1막 칩만 쓴다.
  */
 import { charsetFrameIndex } from "@/assets/easyrpgRtp";
 import { isPassable } from "@/project/collision";
 import type { Command, Condition, EventPage, GameEvent, GameMap, Project } from "@/project/types";
 import { FS_NAMES } from "../fallenStarStory";
+import { applyFallenAct2Summit, buildSummitMap, FS2_SW_B12_DONE, FS2_SW_B13_WON, FS2_SW_STOP_B13, FS2_TOP, gateSummitStair } from "./act2Summit";
 
 type Exec = (project: Project, name: string, args: Record<string, unknown>) => unknown;
 type Cell = { x: number; y: number };
@@ -57,7 +58,6 @@ const SW_IRIS_BACK = "sw_fs2_iris_back";
 const SW_PAGE_NAME = "sw_fs2_page_star_read";
 const SW_PAGE_HAND = "sw_fs2_page_hand_read";
 const SW_BE_WELL = "sw_fs2_iris_be_well";
-export const FS2_SW_STOP_B11 = "sw_fs2_release_stop_b11";
 
 const SKILL_RAPID = "skill_gunner_rapid_fire";
 const SKILL_SHOT = "skill_gunner_shot";
@@ -557,9 +557,11 @@ function copyStair(project: Project): void {
 function floorFour(project: Project, exec: Exec): void {
   for (const [id, name] of [
     [SW_T4_ARRIVE, "B11: 4층 어둠"], [SW_T4_ROOM, "B11: 렌즈 대기실의 관"], [SW_IRIS_WAKE, "B11: 이리스가 깨어남"], [SW_IRIS_BACK, "B11: 이리스 합류"],
-    [SW_PAGE_NAME, "B11: 일지 쪽(별 이름)"], [SW_PAGE_HAND, "B11: 일지 쪽(엘레나 손)"], [SW_BE_WELL, "B11: 「잘 지내」"], [FS2_SW_STOP_B11, "판본 끝: 하늘탑 4층 계단"],
+    [SW_PAGE_NAME, "B11: 일지 쪽(별 이름)"], [SW_PAGE_HAND, "B11: 일지 쪽(엘레나 손)"], [SW_BE_WELL, "B11: 「잘 지내」"]
   ] as const) ensureSwitch(project, id, name);
   copyStair(project);
+  // 꼭대기(B12)를 먼저 잇는다 — 둥근 방 문 이벤트가 생기면 계단 쪽이 갈려 연결 도구가 「봉쇄」로 거절한다.
+  buildSummitMap(project, exec, T4.stair);
   for (const c of [T4.arrive, T4.coffinFront, T4.iris, ...T4.doorway, T4.dark, ...T4.alcovePlugs, T4.pageStar, T4.pageHand]) mustWalk(project, FS2_T4, c, "4층");
 
   // 렌즈 대기실 — 북쪽 벽 앞 큰 렌즈(등대 프레넬 렌즈), 그 앞 석관, 양옆 수정 받침·촛대, 벽에 별자리 지도. 모두 stamp_object.
@@ -775,23 +777,8 @@ function floorFour(project: Project, exec: Exec): void {
   }));
   if (!save) throw new Error("[fallen-star tower] 4층 별빛 결정 자리가 없다");
 
-  // 판본 끝 — 둥근 방 벽 계단. 이리스 전에는 한 줄, 뒤에는 막 카드·회복·저장.
-  addEv(project, FS2_T4, "ev_fs2_t4_stair_up", "꼭대기 계단", T4.stair, [
-    page("ev_fs2_t4_stair_wait", "아직", [], [narrate("위로 오르는 계단. 바람 소리가 내려온다.\n…이리스부터 찾자.")], { trigger: { kind: "playerTouch" }, priority: "below" }),
-    page("ev_fs2_t4_stair_stop", "판본 끝", [sw(SW_IRIS_BACK)], [
-      say(IRIS, "이 위가 두 번째 렌즈예요.\n…「집」으로 대답을 보내는 눈."),
-      say(KAEL, "발렌 아저씨도 거기 있겠지. 가자."),
-      fadeOut(1000),
-      { kind: "recoverAll" } as unknown as Command,
-      narrate("제2막 「빌린 불」 — 여기까지", { position: "center", context: "narration" }),
-      narrate("두 번째 렌즈, 그리고 재의 회수자는\n다음 업데이트에서 이어집니다.", { position: "center", context: "narration" }),
-      fadeIn(700),
-      setSw(FS2_SW_STOP_B11),
-      sys("지금 저장해 두면 다음 판본에서 하늘탑 4층부터 이어서 할 수 있다."),
-      { kind: "openSaveMenu" } as unknown as Command,
-    ], { trigger: { kind: "playerTouch" }, priority: "below" }),
-    page("ev_fs2_t4_stair_next", "다음 업데이트", [sw(FS2_SW_STOP_B11)], [sys("꼭대기로 오르는 계단.\n(다음 업데이트에서 이어집니다.)")], { trigger: { kind: "playerTouch" }, priority: "below" }),
-  ]);
+  // 꼭대기 계단 — 이리스 전에는 한 줄, 뒤에는 author_dungeon 이 이은 이동(B12 꼭대기).
+  gateSummitStair(project, exec, SW_IRIS_BACK);
 
   // 일지 — 이리스의 일지. 깨어날 때 지난 줄들이 펼쳐지고(쓰기), 탑이 셋을 지우고(지우기), 카엘이 읽어 주면 되살아난다.
   const P = (eventId: string, pageId: string, afterText: string) => ({ mapId: FS2_T4, eventId, pageId, afterText });
@@ -819,7 +806,7 @@ function floorFour(project: Project, exec: Exec): void {
 
 /** 탑 공통 — 전투 배경·같은 음악(층마다 곡이 바뀌던 것을 하나로)·알아채기·임무 줄기. */
 function towerCommon(project: Project, exec: Exec): void {
-  for (const mapId of [FS2_T1, FS2_T2, FS2_T3, FS2_T4]) {
+  for (const mapId of [FS2_T1, FS2_T2, FS2_T3, FS2_T4, FS2_TOP]) {
     exec(project, "set_map_properties", { mapId, battleBackground: "battle-scenery-cave" });
     (M(project, mapId) as unknown as Rec).bgm = { mode: "custom", resourceId: TOWER_BGM };
   }
@@ -842,7 +829,9 @@ function towerCommon(project: Project, exec: Exec): void {
     [SW_T2_DONE, "2층에서 갈린 두 쪽이 서로 쇠창살을 열어 다시 만난다"],
     [SW_T3_SOLVED, "3층 거울 두 개를 돌려 빛을 계단으로 보낸다"],
     [SW_IRIS_BACK, "4층 렌즈 대기실의 관에서 이리스를 찾는다"],
-    [FS2_SW_STOP_B11, "이리스와 함께 꼭대기 계단 앞에 선다"],
+    [FS2_SW_B12_DONE, "꼭대기 렌즈실에서 발렌을 막는다. 하넬이 서른 해 전 일을 말한다"],
+    [FS2_SW_B13_WON, "탑 깊은 곳에서 올라온 재의 회수자를 쓰러뜨린다"],
+    [FS2_SW_STOP_B13, "두 번째 렌즈에 손을 얹고 다시 대답한다"],
   ];
   const start = nodes.length;
   const all = [...nodes, ...more.map(([switchId, description], i) => ({ id: `fs2-${start + i + 1}`, description, completesWhen: { kind: "switch", switchId, value: true } }))];
@@ -859,5 +848,14 @@ export function applyFallenAct2Tower(project: Project, exec: Exec): void {
   floorTwo(project, exec);
   floorThree(project, exec);
   floorFour(project, exec);
+  applyFallenAct2Summit(project, exec);
   towerCommon(project, exec);
 }
+
+/** 꼭대기(act2Summit.ts)가 같은 손잡이로 짓는다. */
+export const towerKit = {
+  KAEL, ELENA, IRIS, SARAH, HERO, ELENA_ID, IRIS_ID, SARAH_ID, TOWER_BGM, IRIS_BGM, SAVE_CRYSTAL, TOWER_LAYERS,
+  say, narrate, sys, m2, wait, sw, setSw, se, bgm, stopBgm, emote, route, walk, shake, flash, fx, letterbox, clearLetterbox,
+  fadeOut, fadeIn, camTo, camBack, cutBegin, cutEnd, cutLabel, setSelf, selfSw, page, chip, addEv, ev, ensureSwitch, mustWalk,
+  walkable, firstOk, stamp, M, actRow, ENEMY_TOOL_FIELDS,
+};
