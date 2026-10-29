@@ -60,5 +60,11 @@ export default {
       ops: [{ kind: "move", dir, steps, stepTimeoutMs: 1500 }, { kind: "hold", dir: null, ms: 500 }],
       shot: true,
     })),
+    // dump: 끝 화면의 body 글과 글을 가진 요소(태그·class·글) — 화면 밖 DOM 글 새기 확인용.
+    ...(qa.dump ? [{
+      id: "dump",
+      note: `DOM 글 → ${qa.dump}`,
+      ops: [{ kind: "evalToFile", out: qa.dump, fn: `() => ({ body: document.body.innerText, nodes: [...document.querySelectorAll("body *")].filter((el) => el.children.length === 0 && el.textContent.trim()).map((el) => ({ tag: el.tagName, cls: String(el.className), id: el.id, text: el.textContent.trim().slice(0, 120), shown: el.getClientRects().length > 0 })) })` }],
+    }] : []),
   ],
 };

@@ -242,7 +242,9 @@ v1 의 `script_cutscene` 비트로 옮긴다(`events.ts`).
 - **추리: 용의자를 다 들어도 못 찾은 단서를 먼저**(`mysteryCase.pendingClueChain`, `gateSuspectObjectives` 의 맨 안쪽): 용의자 목표 갈래 끝이 바로 「「범인 지목」을 찾아가자」라 뒤뜰 덤불 (16,2)의 「현장 증거」를 아무도 가리키지 않았다. 이제 지목 앞에 단서 단계마다 «아직 못 찾았으면 「아직 못 찾은 단서가 있다. 「X」을 찾아보자. (여관 뒤뜰 입구: 남쪽 끝 가운데 → X)」» 갈래를 낀다(이미 감싼 페이지는 `PENDING_MARK` 로 알아보고 다시 감싼다). 마침 조건은 `clueDoneCond` — 앞 단계도 주는 아이템보다 이 단계만 주는 스위치·아이템을 먼저 고른다(현장 증거 단계가 앞 단계와 같은 아이템을 줘 갈래가 영영 안 서던 것).
 - **추리: 「남은 단서」 다시 쓰기가 갈래 든 옛 페이지도 알아본다**(`explainRemainingClues` 의 `firstOld`): 글 갈래가 들어 있으면 옛 페이지로 못 알아봐 다시 쓰지 않았고, 없는 용의자(마부 한스·악사 리노)를 남은 단서로 읊었다.
 - 확인: 재생 `finishReplay --snapshot <vm7 마지막 스냅숏>` 네 판 모두 자동 플레이 성공·지름길 0(terra jrpg 출하 막힘은 맵 BGM 1건, 이 변경과 무관). 런타임 걸음 `walkpath` 에 `items` 를 더했다(시작 전 가방에 넣기). 전/후 그림: `suite/ledger/evidence/vm7-wayfind/`.
-- 남은 것: flash jrpg 숲 보스(10,14) 큰 그림이 나무 구멍 앞 주인공을 덮는다. argon jrpg 촌장이 용 전투를 거는 것·「_unbeaten_unbeaten」 글 노출은 손대지 않았다.
+- **입구 앞을 덮는 큰 그림 비키기**(`stepArt.stepGuardsAside`, `seatEntranceSteps` 안 — 앉힐 때와 이미 앉은 때 모두): 입구 칸·앞 칸과 그 양옆을 다른 보이는 이벤트의 «그려지는 사각»(몸 사각을 그림 배율만큼 넓힌 어림 — 캐릭터 한 장 ≈ 가로 1.5칸·세로 2칸)이 덮으면, 덮지 않고 몸 사각이 걸을 수 있는 8걸음 안 칸으로 옮긴다(못 닿는 이벤트가 늘면 버림). vm7 flash jrpg 숲 보스 트롤(3×2, 2.5배)이 거목 구멍 바로 아래 (10,14)에 서서 구멍·▼·구멍 앞 주인공을 덮었다 → (13,14).
+- **맡는 일 이름의 전투 낱말은 전투가 아니다**(`blueprint.isBattleStep` 의 `BATTLE_ERRAND`; `blueprintPath.ungateTalkStepBattlesIn`, 끝맺음 조립 `orderStepBattlesIn` 앞): 「마왕 토벌의 부탁과 동굴 열쇠를 받는다」의 「토벌」로 전투 단계가 되어 `gateBattleSteps` 가 촌장 페이지를 «용 보스와 싸워 이겨야 말함»으로 감쌌다(vm7 argon jrpg, 말 걸자마자 용 전투). 「(결전·전투·처치·토벌·대결·보스전·격파)(의|을|를)? (부탁·의뢰·요청·명령·임무·준비·약속·소식)」 구를 빼고 본다. 이미 감싼 저장본은 싸우는 단계가 아닌 단계 이벤트에서 `[troop_path_* 전투(도망·패배 불가), 승리 갈래 {…}]` 꼴을 원래 명령으로 푼다.
+- **「_unbeaten_unbeaten」 글**: 플레이어 화면 글이 아니다. QA 계측 판에만 있는 이벤트 이름표(`runtimeDom` `.runtime-debug-marker`, 투명 1px 글 — 지금 페이지 id 「pages[1]_unbeaten」)를 판정자 도구(`assistant-whole-game/tools/hplay.mjs`)가 body 글로 읽고 `pages[n]` 만 지워 꼬리가 남았다. 도구가 이름표 글 줄을 통째로 빼게 고쳤다(저장소 밖). 확인: walkpath `dump`(끝 화면 DOM 글을 파일로).
 
 ## 켜는 법
 
