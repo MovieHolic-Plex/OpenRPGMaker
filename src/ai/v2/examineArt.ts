@@ -12,6 +12,7 @@ import type { GameMap } from "@/project/types";
 import { objectEventFit } from "./placementRules";
 import { access, handObjectKitId } from "./builders/dressRoom";
 import { unreachableEvents } from "./eventReach";
+import { PERSON_SPOT_BAD, personSpotContext, personSpotCost } from "./people";
 import type { BuildRun } from "./types";
 
 /** 물건 낱말 → 탁상 물건(goods) 후보, 바닥 소품(objects) 후보. 앞이 먼저. */
@@ -111,6 +112,34 @@ export function showExaminedThing(run: BuildRun, mapId: string, eventId: string,
   const map = run.ctx.project.maps[mapId]!;
   const cell = at(map, ev0.x, ev0.y);
   if (!cell || cell.l3 >= 0 || cell.l4 >= 0 || !isPassable(run.ctx.project, map, ev0.x, ev0.y)) return undefined;
+  // 큰 양탄자(통로 러너·홀 카펫)·문 곁·가구의 하나뿐인 접근 칸이면 소품을 세우기 전에 이벤트를 곁의 괜찮은 맨바닥으로 옮긴다 —
+  // 추리 단서 받침대·상자가 여관 홀 붉은 카펫 한가운데 서서 통로를 막고 사람과 겹쳤다(2026-10-29 vm4 argon·flash mystery).
+  // 옮길 칸이 없으면 소품을 세우지 않는다(반짝이로 남긴다).
+  const spot0 = personSpotContext(run.ctx.project, map, eventId);
+  let ev = ev0;
+  const rollback = run.ctx.project;
+  if (personSpotCost(run.ctx.project, map, ev0, spot0) >= PERSON_SPOT_BAD) {
+    const unreached0 = unreachableEvents(run.ctx.project, mapId).length;
+    const cands: { x: number; y: number; s: number }[] = [];
+    for (let y = ev0.y - 3; y <= ev0.y + 3; y++) for (let x = ev0.x - 3; x <= ev0.x + 3; x++) {
+      const d = Math.abs(x - ev0.x) + Math.abs(y - ev0.y);
+      if (!d || d > 3) continue;
+      const c = at(map, x, y);
+      if (!c || c.l3 >= 0 || c.l4 >= 0 || !isPassable(run.ctx.project, map, x, y) || !spot0.reach[y * map.width + x]) continue;
+      if (map.events.some((e) => e.x === x && e.y === y)) continue;
+      const sc = personSpotCost(run.ctx.project, map, { x, y }, spot0);
+      if (sc < PERSON_SPOT_BAD) cands.push({ x, y, s: d + sc });
+    }
+    cands.sort((a, b) => a.s - b.s);
+    let moved = false;
+    for (const c of cands.slice(0, 12)) {
+      const res = run.call("move_event", { mapId, eventId, x: c.x, y: c.y });
+      if (res.ok && unreachableEvents(run.ctx.project, mapId).length <= unreached0) { moved = true; break; }
+      run.ctx.project = rollback;
+    }
+    if (!moved) return undefined;
+    ev = run.ctx.project.maps[mapId]!.events.find((e) => e.id === eventId)!;
+  }
   const before = access(run.ctx.project, mapId);
   for (const id of thing[2]) {
     const o = spec.objects[id];
@@ -118,11 +147,12 @@ export function showExaminedThing(run: BuildRun, mapId: string, eventId: string,
     if (!o || !kitId) continue;
     const minDx = Math.min(...o.cells.map((c) => c[0])), minDy = Math.min(...o.cells.map((c) => c[1]));
     const snapshot = run.ctx.project;
-    const res = run.call("stamp_object", { objectId: `kit:${map.tilesetId}/${kitId}`, mapId, x: ev0.x + minDx, y: ev0.y + minDy });
+    const res = run.call("stamp_object", { objectId: `kit:${map.tilesetId}/${kitId}`, mapId, x: ev.x + minDx, y: ev.y + minDy });
     const now = res.ok ? access(run.ctx.project, mapId) : undefined;
     if (!res.ok || !now || now.stranded > before.stranded || now.cutOff > before.cutOff || unreachableEvents(run.ctx.project, mapId, [eventId]).length) { run.ctx.project = snapshot; continue; }
-    return `「${name}」 — 바닥 (${ev0.x},${ev0.y}) 에 ${o.ko} 그림을 세웠다`;
+    return `「${name}」 — 바닥 (${ev.x},${ev.y}) 에 ${o.ko} 그림을 세웠다${ev !== ev0 ? `(양탄자·문 곁 (${ev0.x},${ev0.y}) 에서 옮김)` : ""}`;
   }
+  if (ev !== ev0) run.ctx.project = rollback;
   return undefined;
 }
 

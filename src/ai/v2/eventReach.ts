@@ -40,7 +40,10 @@ function reachFrom(project: Project, map: GameMap, anchors: readonly Cell[], blo
   const w = map.width;
   const seen = new Uint8Array(w * map.height);
   const q: number[] = [];
-  for (const a of anchors) { const i = a.y * w + a.x; if (!seen[i] && !blocked.has(i)) { seen[i] = 1; q.push(i); } }
+  // 앵커 칸 자체는 막는 이벤트가 있어도 연다 — 플레이어가 그 칸에 서서 시작한다. 시작점이 층 이동 출입구(밟으면 옮기는 칸) 위면 막는 칸으로
+  // 셈되어 맵 전체가 「닿지 못함」이 되고, 사람 옮기기(spreadCrowdedPeople)가 후보 0 으로 아무도 못 옮겼다(2026-10-29 vm4 argon mystery:
+  // 여관 주인·악사가 양탄자 통로에 위아래로 붙어 섰다).
+  for (const a of anchors) { const i = a.y * w + a.x; if (!seen[i]) { seen[i] = 1; q.push(i); } }
   const passages = sameMapPassages(map);
   const used = new Set<number>();
   for (let k = 0; ; k++) {

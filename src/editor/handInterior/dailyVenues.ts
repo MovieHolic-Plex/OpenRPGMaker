@@ -479,7 +479,7 @@ const BASE_VENUES: readonly Venue[] = [
       o("mci-wall-clock", 4, 0),
       o("mci-kitchen", 0, 2), o("home-sink-counter", 3, 2), o("jumbo-bakery-deck-oven", 5, 2),
       // 3단 데크 오븐 앞 반죽·성형대 - 오븐 문 앞 한 줄(y=5 동쪽)은 빵 꺼내는 자리로 비운다.
-      o("mart-bakery-counter", 1, 5), o("mart-bakery-counter", 3, 5), o("mart-baguette-basket", 0, 6), o("mci-pallet", 8, 6),
+      o("mart-bakery-counter", 1, 5), o("mart-bakery-counter", 3, 5), o("mci-pallet", 8, 6),   // 바게트 바구니는 뺐다 — 줄인 제빵실에서 성형대 앞으로 밀려 겹쳤다(room-vig9b)
     ] },
     { kind: "espresso-bar", w: 10, h: 7, floor: "mci-wood-oak", wall: "mci-wall-brick", items: [
       o("mci-menu-board", 0, 0), o("mci-menu-board", 4, 0), o("mart-sale-banner", 7, 0),
@@ -497,7 +497,9 @@ const BASE_VENUES: readonly Venue[] = [
       ...seatedTable("mci-t-wood", "mci-chair-wood", 14, 2, 2, 2, { s: true, e: true, w: true }), g("mci-g-coffee", 14, 2),   // 북쪽 의자 없음 — 에스프레소 바에서 내려오는 틈 앞
       o("mci-cafe-chair-e", 5, 6), o("mci-cafe-table", 6, 6), o("mci-cafe-chair-w", 7, 6), g("mci-g-cake", 6, 6),
       o("mci-cafe-chair-e", 12, 6), o("mci-cafe-table", 13, 6), o("mci-cafe-chair-w", 14, 6), g("mci-g-coffee", 13, 6),
-      o("home-monstera", 21, 2), o("mci-coffee-table", 18, 6), o("mci-sofa-n", 18, 7), o("mci-plant-tall", 21, 7), o("mci-plant-tall", 0, 7),
+      // 동쪽: 동벽에 붙인 안락의자 라운지(가운데 떠 있던 3인 소파는 「벽에서 떨어져 바닥 한가운데 뜬 소파」로 읽혔다 — room-vig9b).
+      o("mci-armchair-e", 18, 4), o("mci-coffee-table", 19, 4), o("mci-armchair-w", 21, 4), g("mci-g-coffee", 19, 4), o("mci-plant-tall", 18, 7),
+      o("home-monstera", 21, 2), o("mci-plant-tall", 21, 7), o("mci-plant-tall", 0, 7),
     ] },
   ] },
 

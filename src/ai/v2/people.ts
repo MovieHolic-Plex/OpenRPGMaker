@@ -454,7 +454,7 @@ export function personSpotContext(project: Project, map: GameMap, exceptId?: str
   for (const e of eventsOf(map)) if (e.id !== exceptId && !hasTransfer(e)) others.add(e.y * map.width + e.x);
   return { reach, doors: [...transferCells(map), ...edgeExitCells(map, reach)], others, bigRug: bigRugCells(project, map) };
 }
-/** 실내에서 사람이 이 칸에 서면 드는 비용(0 = 괜찮다). 문 곁 2칸 안 6 · 가구의 하나뿐인 접근 칸 6 · 다른 사람 바로 위·아래 4(옆 1) · 큰 양탄자(통로 러너·홀 카펫) 위 4. */
+/** 실내에서 사람이 이 칸에 서면 드는 비용(0 = 괜찮다). 문 곁 2칸 안 6 · 가구의 하나뿐인 접근 칸 6 · 가구 그림 칸 위 4 · 벽 사이 한 칸 문틈 6 · 다른 사람 바로 위·아래 4(옆 1) · 큰 양탄자(통로 러너·홀 카펫) 위 4. */
 export function personSpotCost(project: Project, map: GameMap, c: Cell, ctx: PersonSpotContext): number {
   const w = map.width, h = map.height;
   const inside = (x: number, y: number) => x >= 0 && y >= 0 && x < w && y < h;
@@ -474,6 +474,14 @@ export function personSpotCost(project: Project, map: GameMap, c: Cell, ctx: Per
     }
     if (!open) { cost += 6; break; }
   }
+  // 가구 그림 칸(바 의자 줄·가구 윗칸) 위에 선 사람 — 의자에 파묻힌 것처럼 읽혔다(2026-10-29 vm4 terra mystery 「빨간 머리 NPC 가 의자와 장작에 파묻힘」).
+  if (objectAt(map, c)) cost += 4;
+  // 칸막이 벽 사이 한 칸 틈(방과 방을 잇는 문틈) — 양옆이 가구 아닌 벽이고 앞뒤가 열렸다. 그 자리에 선 사람은 벽에 박혀 보이고 길을 막는다
+  // (2026-10-29 vm4 deepseek mystery 「흰머리 NPC 가 두 방을 가르는 벽 틈에 끼어」 major 셋). 카운터 뒤 주인 줄(앞뒤가 벽·카운터)은 가구라 아니다.
+  const wallAt = (x: number, y: number) => !inside(x, y) || (!ctx.reach[y * w + x] && !objectAt(map, { x, y }));
+  const openAt = (x: number, y: number) => inside(x, y) && !!ctx.reach[y * w + x];
+  if ((wallAt(c.x - 1, c.y) && wallAt(c.x + 1, c.y) && openAt(c.x, c.y - 1) && openAt(c.x, c.y + 1))
+    || (wallAt(c.x, c.y - 1) && wallAt(c.x, c.y + 1) && openAt(c.x - 1, c.y) && openAt(c.x + 1, c.y))) cost += 6;
   const has = (x: number, y: number) => inside(x, y) && ctx.others.has(y * w + x);
   if (has(c.x, c.y - 1) || has(c.x, c.y + 1)) cost += 4;
   else if (has(c.x - 1, c.y) || has(c.x + 1, c.y)) cost += 1;

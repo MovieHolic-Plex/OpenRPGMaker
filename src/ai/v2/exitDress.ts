@@ -403,7 +403,10 @@ export function dressInteriorExits(run: BuildRun, mapId: string): ExitDressResul
   // (2026-10-29 VQA 트리아지 B: VM terra 「멈춘 시계의 방」 네 벽 어디에도 문이 없음, mt3 terra 잠긴 나무 문이 선반 아래 바닥에 서서 수납장처럼 읽힘).
   const onDoorArt = door ? (() => { const t = layerTileAt(map, 3, door.y * w + door.x); return t >= 0 && /문/u.test(tileLabel(t)) && door.y < map.height - 2; })() : false;
   const artAtWall = door ? onDoorArt && k.faces.has(map.lowerTiles[(door.y - 1) * w + door.x]!) : false;
-  const doorShown = door ? (onDoorArt ? artAtWall : visible(door)) : false;
+  // 칩 그림(철창·나무 문 칩) 문도 벽에 붙어야(위 칸이 벽면이거나 남쪽 틈 줄) 문으로 읽힌다 — 방 한가운데 양탄자 위에 선 철창 칩은
+  // 「떠 있는 물체·감옥 창살」로 읽혔다(2026-10-29 vm5 flash escape major 넷). 그런 문은 보이지 않는 문으로 보고 벽으로 옮긴다.
+  const floorSprite = door ? !onDoorArt && visible(door) && !k.faces.has(map.lowerTiles[(door.y - 1) * w + door.x]!) && door.y < map.height - 2 : false;
+  const doorShown = door ? (onDoorArt ? artAtWall : visible(door) && !floorSprite) : false;
   if (door && (dead || (escapeGame && !doorShown))) {
     const S = k.S;
     const locked = (door.pages ?? []).some((p) => (p.conditions ?? []).length > 0) || (door.pages ?? []).length > 1;
@@ -476,7 +479,7 @@ export function dressInteriorExits(run: BuildRun, mapId: string): ExitDressResul
     // 남쪽 띠 한 칸을 바닥으로 튼다. 문 이벤트를 틈 칸에 두고(그 앞에서 아래를 보고 조사), 칩셋에 발깔개가 있으면 틈 앞 바닥에 깐다.
     // 왜(2026-10-29 vm2 판정): terra 「멈춘 시계의 방」은 잠긴 출구가 그림 없는 서쪽 구석 칸이고 남쪽 틈은 시작 칸이라, 판정자가
     // 「출구처럼 보이는 아래 통로가 무반응·출구 위치가 어디에도 없다」고 했다. flash 「잠긴 방」은 문이 방 한가운데 보이지 않는 칸이었다.
-    if (!at && !keepArt && escapeGame && !visible(door) && door.y !== map.height - 1) {
+    if (!at && !keepArt && escapeGame && (!visible(door) || floorSprite) && door.y !== map.height - 1) {
       const south = southExitDoor(door);
       if (south) return { notes: [...notes, ...south] };
     }
@@ -523,7 +526,9 @@ export function dressInteriorExits(run: BuildRun, mapId: string): ExitDressResul
       // 문과 그 칸의 이벤트를 자리 바꿈한다(한 번에 — move_event 로 차례로 옮기면 찬 칸에서 옆 칸으로 밀려 문이 가구 칸에 섰다).
       const sitterIds = new Set(sitters.map((e) => e.id));
       const placed = run.ctx.project.maps[mapId]!;
-      const swapped = { ...placed, events: placed.events.map((e) => e.id === door.id ? { ...e, x: at!.x, y: at!.y } : sitterIds.has(e.id) ? { ...e, x: door.x, y: door.y } : e) } as GameMap;
+      // 바닥에 섰던 칩 그림 문은 투명으로 — 북벽에 세운 문 그림이 문이다(칩이 남으면 문 그림 위에 철창이 겹친다).
+      const asDoor = (e: GameEvent): GameEvent => !floorSprite ? e : { ...e, pages: (e.pages ?? []).map((p) => p.graphic && !p.graphic.transparent && (p.graphic.sprite || p.graphic.appearanceId) ? { ...p, graphic: { transparent: true } } : p) } as GameEvent;
+      const swapped = { ...placed, events: placed.events.map((e) => e.id === door.id ? asDoor({ ...e, x: at!.x, y: at!.y }) : sitterIds.has(e.id) ? { ...e, x: door.x, y: door.y } : e) } as GameMap;
       run.ctx.project = { ...run.ctx.project, maps: { ...run.ctx.project.maps, [mapId]: swapped } } as Project;
       notes.push(`문 「${door.name ?? door.id}」 (${door.x},${door.y})→(${at.x},${at.y}) 북벽 발치에 ${piece.id} 그림`);
       if (evicting) {
