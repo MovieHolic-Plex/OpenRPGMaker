@@ -54,7 +54,7 @@ export const TOP = {
   kael: { x: 16, y: 12 },            // 장면에서 카엘이 서는 칸
   hanelStart: { x: 15, y: 21 }, bramStart: { x: 17, y: 21 },
   hanel: { x: 15, y: 16 }, bram: { x: 17, y: 16 },
-  hanelLens: { x: 15, y: 10 }, bramLens: { x: 17, y: 10 },
+  hanelLens: { x: 14, y: 10 }, bramLens: { x: 18, y: 11 }, valenLens: { x: 17, y: 10 },
 };
 
 const ROOMS = [
@@ -209,7 +209,7 @@ function summitScenes(project: Project): void {
     [SW_TOP_ARRIVE, "B12: 꼭대기 렌즈실에 들어섬"], [SW_HANEL_COME, "B12: 하넬과 브람이 올라옴"], [FS2_SW_B12_DONE, "B12: 하넬의 고백 · 회수 기구 기동"],
     [SW_VALEN_GUEST, "B13: 발렌과 함께 싸운다"], [SW_BOSS_LOST, "B13: 회수자에게 한 번 졌다"], [FS2_SW_B13_WON, "B13: 재의 회수자를 쓰러뜨림"], [FS2_SW_STOP_B13, "판본 끝: 제2막 끝"],
   ] as const) ensureSwitch(project, id, name);
-  for (const c of [TOP.arrive, ...TOP.trigger, TOP.valen, TOP.kael, TOP.hanelStart, TOP.bramStart, TOP.hanel, TOP.bram, TOP.hanelLens, TOP.bramLens]) mustWalk(project, FS2_TOP, c, "꼭대기");
+  for (const c of [TOP.arrive, ...TOP.trigger, TOP.valen, TOP.kael, TOP.hanelStart, TOP.bramStart, TOP.hanel, TOP.bram, TOP.hanelLens, TOP.bramLens, TOP.valenLens]) mustWalk(project, FS2_TOP, c, "꼭대기");
   const at = (id: string, c: Cell): Command => ({ kind: "m2Command", commandId: "m2-040-set-event-location", fields: { target: id, mapId: FS2_TOP, x: c.x, y: c.y } } as unknown as Command);
   const player = (moves: Rec[]): Command => route("@player", moves);
   const face = (id: string, dir: string): Command => route(id, [{ kind: "turn", dir }]);
@@ -316,8 +316,10 @@ function summitScenes(project: Project): void {
     cutBegin(), letterbox(),
     bgm(IRIS_BGM, 2500),
     narrate("재가 가라앉는다.\n렌즈의 붉은 글자가 하나씩 꺼진다."),
-    at("ev_fs2_top_hanel", TOP.hanelLens), at("ev_fs2_top_bram", TOP.bramLens),
-    player([{ kind: "turn", dir: "up" }]),
+    // 렌즈 앞을 비운다 — 발렌은 동쪽으로 한 칸, 하넬·브람은 양옆. 카엘이 렌즈 바로 앞(발렌이 섰던 칸)까지 걸어간다.
+    at("ev_fs2_top_hanel", TOP.hanelLens), at("ev_fs2_top_bram", TOP.bramLens), at("ev_fs2_top_valen", TOP.valenLens),
+    face("ev_fs2_top_valen", "left"),
+    player(walk(["up", "up"])), player([{ kind: "turn", dir: "up" }]),
     camTo("ev_fs2_top_valen", 1400, 1.8),
     say(IRIS, "거부 신호, 아직 반이 남아 있어요.\n…지울 수는 없어요. 덮을 수만 있어요."),
     say(KAEL, "그럼 덮자. 대답 하나 더 하면 되잖아."),

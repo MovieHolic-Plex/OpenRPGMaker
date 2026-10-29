@@ -9580,7 +9580,7 @@
        "kind": "repeatUntil",
        "testid": "dialogue-box",
        "state": "absent",
-       "maxRounds": 8,
+       "maxRounds": 16,
        "ops": [
         {
          "kind": "key",

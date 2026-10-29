@@ -646,6 +646,8 @@ function floorFour(project: Project, exec: Exec): void {
   const reunion: Command[] = [
     cutBegin(), letterbox(),
     { kind: "stopAudio", channel: "bgm" } as unknown as Command,
+    // 카엘이 한 걸음 물러선다 — 바로 밑 칸에 서면 카엘·동료 그림이 석관을 반쯤 가렸다(QA 2026-10-29). 한 줄 띄워 관이 통째로 보이게.
+    route("@player", [{ kind: "move", dir: "down" }, { kind: "turn", dir: "up" }]),
     // 가까이 — 석관과 그 앞에 선 카엘만 화면에 차게.
     camTo("ev_fs2_t4_coffin", 1400, 2.2),
     say(KAEL, "이리스."),
