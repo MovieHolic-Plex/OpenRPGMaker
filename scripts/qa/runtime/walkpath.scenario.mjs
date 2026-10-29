@@ -28,6 +28,7 @@ export default {
       note: `${qa.mapId} (${qa.from.x},${qa.from.y}) 에서 출발`,
       ops: [
         ...(qa.switches ?? []).map((switchId) => ({ kind: "setSwitch", switchId, value: true })),
+        ...(qa.items ?? []).map((itemId) => ({ kind: "giveItem", itemId })),
         { kind: "teleport", mapId: qa.from.mapId ?? qa.mapId, x: qa.from.x, y: qa.from.y },
         { kind: "waitForPosition", mapId: qa.from.mapId ?? qa.mapId, x: qa.from.x, y: qa.from.y },
         { kind: "hold", dir: null, ms: 900 },
