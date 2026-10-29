@@ -31,6 +31,15 @@ function invisible(ev: GameEvent): boolean {
 const triggerOf = (p: { trigger?: unknown }) => String(typeof p.trigger === "string" ? p.trigger : (p.trigger as { kind?: string } | undefined)?.kind ?? "action");
 /** 조사(액션)만 하는 이벤트 — 접촉·자동 페이지가 있으면(문 이동·자동 컷신) 건드리지 않는다. */
 const examineOnly = (ev: GameEvent) => (ev.pages ?? []).length > 0 && (ev.pages ?? []).every((p) => triggerOf(p as { trigger?: unknown }) === "action");
+/**
+ * 이동 명령이 든 이벤트(퍼즐로 여는 덩굴 문·덤불 틈처럼 조사하면 건너편 칸으로 옮기는 같은 맵 통로 포함)는 문이다 — 가구 몸으로 넓히지 않는다.
+ * 왜(2026-10-29 standin monster 새순 체육관): 덩굴 문(8,14)이 「회전문」 3×1 몸이 되어 (9,14) 를 막고 자동 플레이가 덤불까지 못 갔다.
+ */
+const carriesTransfer = (ev: GameEvent): boolean => {
+  const scan = (node: unknown): boolean => Array.isArray(node) ? node.some(scan)
+    : Boolean(node) && typeof node === "object" && ((node as { kind?: unknown }).kind === "transfer" || Object.values(node as object).some((v) => v && typeof v === "object" && scan(v)));
+  return scan(ev.pages);
+};
 
 const labelsAt = (run: BuildRun, map: GameMap, c: Cell, upperOnly = false): string[] => {
   const m = map as unknown as Record<string, ArrayLike<number> | undefined>;
@@ -226,7 +235,7 @@ function furnitureRect(run: BuildRun, map: GameMap, c: Cell): { left: number; to
 
 export function settleFurnitureSpots(run: BuildRun, mapId: string): string[] {
   const notes: string[] = [];
-  const ids = (run.ctx.project.maps[mapId]?.events ?? []).filter((e) => invisible(e) && examineOnly(e) && !e.id.startsWith("ev_chain_seal_") && !isDoorName(String((e as { name?: string }).name ?? ""))).map((e) => e.id);
+  const ids = (run.ctx.project.maps[mapId]?.events ?? []).filter((e) => invisible(e) && examineOnly(e) && !carriesTransfer(e) && !e.id.startsWith("ev_chain_seal_") && !isDoorName(String((e as { name?: string }).name ?? ""))).map((e) => e.id);
   for (const id of ids) {
     const find = () => run.ctx.project.maps[mapId]?.events.find((e) => e.id === id);
     const ev0 = find(), map0 = run.ctx.project.maps[mapId];
