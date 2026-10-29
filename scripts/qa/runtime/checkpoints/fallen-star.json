@@ -6488,14 +6488,14 @@
         {
          "kind": "hold",
          "dir": null,
-         "ms": 1100
+         "ms": 1300
         }
        ]
       },
       {
        "kind": "hold",
        "dir": null,
-       "ms": 1500
+       "ms": 2500
       },
       {
        "kind": "waitFor",
@@ -6527,14 +6527,36 @@
         {
          "kind": "hold",
          "dir": null,
-         "ms": 1100
+         "ms": 1300
         }
        ]
       },
       {
        "kind": "hold",
        "dir": null,
-       "ms": 1000
+       "ms": 2500
+      },
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 6,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 1300
+        }
+       ]
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
       }
      ],
      "shot": true

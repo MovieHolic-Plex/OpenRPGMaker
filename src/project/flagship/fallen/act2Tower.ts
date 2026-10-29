@@ -292,16 +292,7 @@ function floorOne(project: Project, exec: Exec): void {
   if (!machineId) throw new Error("[fallen-star tower] 1층 파수 기계가 없다");
   const machineLook = (ev(project, FS2_T1, machineId).pages ?? []).map((p) => p.graphic as Rec | undefined).find((g) => g && (g as { sprite?: unknown }).sprite);
   if (!machineLook) throw new Error("[fallen-star tower] 파수 기계 그림이 없다");
-  // 장면 배우 — 기계(장면용, 장면 뒤엔 없음)·기사(장면 뒤엔 동쪽 날개에 기대앉은 다친 기사가 대신한다).
-  addEv(project, FS2_T1, "ev_fs2_t1_stage_machine", "파수 기계(장면)", { x: T1.machine.x, y: T1.machine.y + 1 }, [
-    page("ev_fs2_t1_stage_machine_p", "대치", [], [], { graphic: { ...structuredClone(machineLook), direction: "right" }, priority: "same", overlapForbidden: true }),
-    page("ev_fs2_t1_stage_machine_gone", "없음", [sw(SW_T1_ARRIVE)], [], { priority: "below" }),
-  ]);
-  addEv(project, FS2_T1, "ev_fs2_t1_stage_knight", KNIGHT, T1.knight, [
-    page("ev_fs2_t1_stage_knight_p", "싸움", [], [], { graphic: chip(KNIGHT_CHIP[0], KNIGHT_CHIP[1], "left") }),
-    page("ev_fs2_t1_stage_knight_gone", "없음", [sw(SW_T1_ARRIVE)], [], { priority: "below" }),
-  ]);
-  // 다친 기사 — 새라의 견습 동기. 발렌이 위로 갔다는 것, 회복약 둘.
+  // 다친 기사 — 새라의 견습 동기. 장면 기사가 물러난 칸(24,21)에 같이 서므로 목록에서 먼저 둔다(조사는 앞 이벤트가 받는다). 발렌이 위로 갔다는 것, 회복약 둘.
   addEv(project, FS2_T1, "ev_fs2_t1_knight", KNIGHT, T1.knightEnd, [
     page("ev_fs2_t1_knight_none", "없음", [], [], { priority: "below" }),
     page("ev_fs2_t1_knight_p", "다친 기사", [sw(SW_T1_ARRIVE)], [
@@ -318,6 +309,15 @@ function floorOne(project: Project, exec: Exec): void {
     ], { graphic: chip(KNIGHT_CHIP[0], KNIGHT_CHIP[1], "left") }),
   ]);
 
+  // 장면 배우 — 기계(장면용, 장면 뒤엔 없음)·기사(장면 뒤엔 동쪽 날개에 기대앉은 다친 기사가 대신한다).
+  addEv(project, FS2_T1, "ev_fs2_t1_stage_machine", "파수 기계(장면)", { x: T1.machine.x, y: T1.machine.y + 1 }, [
+    page("ev_fs2_t1_stage_machine_p", "대치", [], [], { graphic: { ...structuredClone(machineLook), direction: "right" }, priority: "same", overlapForbidden: true }),
+    page("ev_fs2_t1_stage_machine_gone", "없음", [sw(SW_T1_ARRIVE)], [], { priority: "below" }),
+  ]);
+  addEv(project, FS2_T1, "ev_fs2_t1_stage_knight", KNIGHT, T1.knight, [
+    page("ev_fs2_t1_stage_knight_p", "싸움", [], [], { graphic: chip(KNIGHT_CHIP[0], KNIGHT_CHIP[1], "left") }),
+    page("ev_fs2_t1_stage_knight_gone", "없음", [sw(SW_T1_ARRIVE)], [], { priority: "below" }),
+  ]);
   // 들어서면 한 번 — 홀에서 기계가 기사를 쳐 낸다.
   addEv(project, FS2_T1, "ev_fs2_t1_arrive", "하늘탑 1층", { x: 0, y: 1 }, [
     page("ev_fs2_t1_arrive_idle", "대기", [], [], { priority: "below" }),
@@ -495,17 +495,23 @@ function floorTwo(project: Project, exec: Exec): void {
   const sp1 = split.pages![0]!;
   sp1.trigger = { kind: "auto" } as EventPage["trigger"];
   sp1.conditions = [sw(SW_VALEN_MET)];
+  // 컷신 표시(건너뛰기)는 두지 않는다 — 파티 불러오기가 맵을 다시 읽어 컷신 끝 명령까지 가지 않는다.
   sp1.commands = [
-    cutBegin(), wait(500),
-    say(ELENA, "여긴 바닥이 나무 판이야.\n…밑이 텅 빈 소리가 나."),
+    wait(500),
+    say(ELENA, "바닥 돌판이 들썩여.\n…밑이 텅 빈 소리가 나."),
     se("cc0-se-osx-metal-03"), shake(6, 700), flash("white", 200),
-    ...(sp1.commands as Command[]),
-    cutLabel(), cutEnd(),
+    ...(sp1.commands as Command[]).flatMap((c) => {
+      const r = c as unknown as Rec;
+      if (r.kind === "storeParty" && (r.partySetId as string).endsWith("_a")) return [fadeOut(500), c];
+      return [c];
+    }),
   ];
   // 갈린 뒤 벽 너머 대화(한 번).
   addEv(project, FS2_T2, "ev_fs2_t2_talk", "벽 너머", { x: 0, y: 1 }, [
     page("ev_fs2_t2_talk_idle", "대기", [], [], { priority: "below" }),
     page("ev_fs2_t2_talk_run", "벽 너머", [sw(SW_T2_SPLIT)], [
+      // 갈라질 때 화면을 어둡게 했다 — 파티 불러오기(맵 다시 읽기) 뒤 명령은 이어지지 않으므로 여기서 밝힌다.
+      fadeIn(700),
       wait(400),
       say(SARAH, "…갈렸군. 엘레나는 반대쪽 날개야."),
       say(ELENA, "(벽 너머) 카엘, 들려? 내가 이쪽 거울을 돌릴게.\n빛이 그쪽 문에 닿으면 말해."),
