@@ -558,7 +558,7 @@ function composeShape(key: string, size: string | undefined, text: string, base:
   // 바닥 넓이는 크기 낱말로 — 손 서재 견본의 바닥(7×5 35칸 · 8×6 48칸 · 9×6 54칸)과 같은 띠, 씨앗으로 ±15%. 묶음 발자국 넓이(base)는
   // 큰 벽 묶음(책장+벽난로+책장) 하나로 방이 14×11 로 부풀어 맨바닥 40% 넘는 빈 방이 됐다(2026-10-29 study-variety 첫 판) — 그보다 크게 잡지 않는다.
   // 2판(감독 눈 검수 「맨바닥 30%」): 띠를 한 단 줄였다 — 남는 바닥은 메우지 않고 방을 줄인다(맨바닥 15% 한도).
-  const band = size === "small" ? [18, 24] : size === "large" ? [42, 54] : [28, 36];
+  const band = size === "small" ? [18, 26] : size === "large" ? [42, 60] : [28, 44];
   const floorArea = Math.min(base.w * Math.max(3, base.h - 2), Math.round(band[0]! + r() * (band[1]! - band[0]!)));
   const small = size === "small";
   const kinds: [string, number][] = [["rect", 2], ["wide", 1.5], ["deep", 1], ["L", 2.5], ...(small ? [] : [["bay", 1.5], ["T", 1.5], ...(single ? [["annex", 2] as [string, number]] : [])] as [string, number][])];
@@ -596,7 +596,7 @@ function composeShape(key: string, size: string | undefined, text: string, base:
       const d = dims(1.4, -6);
       return out(`곁방 딸린 2실`, { w: Math.max(6, d.w), h: Math.max(7, d.h) }, [], { annex: { id: `${kind}-annex`, kind, purpose, w: 5 + Math.floor(r() * 2), h: 7 } });
     }
-    default: return out("네모", dims(4 / 3), []);
+    default: return out("네모", dims(0.9 + r() * 0.9), []);
   }
 }
 

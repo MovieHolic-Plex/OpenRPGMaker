@@ -266,12 +266,15 @@ export function furnishWithVignettes(base: HandInteriorInput, rooms: readonly La
     const style = room.template ? templateStyle(byTemplate.get(room.template) ?? { map: "" }) : undefined;
     const composed = opts.seed !== undefined && !opts.picks?.[room.id]?.length ? composedPool(tilesetId, room.kind, opts.purposes?.[room.id] ?? room.kind, S) : undefined;
     // 조합: 독서 구석은 서·동 벽 중 씨앗이 고른 한쪽만(늘 서쪽 벽이 되지 않게).
-    const readingSide = opts.seed !== undefined ? (seeded((opts.seed >>> 0) ^ hashText(`${room.id}|side`))() < 0.5 ? "core:reading-w" : "core:reading-e") : "";
-    const cands = composed ? composed.cands.filter((v) => !(v.id.startsWith("core:reading-") && v.id !== readingSide)) : pool(tilesetId, room.kind, style, opts.picks?.[room.id], opts.purposes?.[room.id], S);
+    // 쉼 자리도 씨앗이 고른다: 서벽 독서 구석 · 동벽 독서 구석 · 독서 구석 없이 대화 탁자(마주 앉은 의자 둘).
+    const lounge = opts.seed !== undefined ? seeded((opts.seed >>> 0) ^ hashText(`${room.id}|side`))() : 0;
+    const readingSide = lounge < 0.38 ? "core:reading-w" : lounge < 0.76 ? "core:reading-e" : "none";
+    const cands = composed ? composed.cands.filter((v) => !(v.id.startsWith("core:reading-") && v.id !== readingSide) && (readingSide !== "none" || vignetteFunction(v) !== "reading")) : pool(tilesetId, room.kind, style, opts.picks?.[room.id], opts.purposes?.[room.id], S);
     const rnd = composed ? seeded((opts.seed! >>> 0) ^ hashText(room.id)) : undefined;
     const placed: string[] = [];
     const placedIds = new Map<string, number>();
     const placedFns = new Map<string, number>();
+    const noReading = composed && readingSide === "none";
     const uses = new Map<string, number>();
     let blockedCells = 0;
 
@@ -289,7 +292,7 @@ export function furnishWithVignettes(base: HandInteriorInput, rooms: readonly La
       if (rnd && v.items.some((it) => it.t === "o" && (placedIds.get(it.id) ?? 0) >= (ONE_PER_ROOM.get(it.id) ?? 99))) return false;
       // 조합: 기능 상한 — 같은 기능 묶음(책상 세트·독서 구석·탁자 자리)이 몸통 기물만 달라 여러 벌 서지 않게(2026-10-29 사용자 「소파·책상·의자가 왜 이리 많냐」).
       const fn = rnd ? vignetteFunction(v) : undefined;
-      if (fn && (placedFns.get(fn) ?? 0) >= functionCap(fn, floor)) return false;
+      if (fn && (placedFns.get(fn) ?? 0) >= (fn === "table" && noReading ? 1 : functionCap(fn, floor))) return false;
       const items = at(v, px, py, mirror);
       const dbg = (why: string) => { if (typeof process !== "undefined" && process.env?.OPRN_VIGNETTE_DEBUG && (v.id.startsWith("core:desk") || v.id.startsWith("core:shelf"))) console.log(`[vig] ${room.id} ${v.id} @${px},${py} ${why}`); return false; };
       const sCells: string[] = [], fCells: string[] = [], cols: string[] = [];
@@ -632,6 +635,8 @@ function composedCores(kind: string, S: HandInteriorSpec): Vignette[] {
   const rugs = ["rug red", "rug green", "rug brown", "rug purple", "rug blue"];
   const out: Vignette[] = [
     ...rugs.map((r) => coreVignette(`core:desk3-${r}`, "C", [rug(r, 0, 0, 5, 2), o("desk 3x1", 1, 0), g("openbook", 1, 0), g("inkwell", 2, 0), g("candlestick", 3, 0), o("chair N", 2, 1)], S, [kind])),
+    // 방을 향한 책상: 의자가 책상 북쪽에서 남쪽(방·문)을 보고 앉는다 — 같은 책상 자리라도 방향이 다르다.
+    ...rugs.slice(1, 4).map((r) => coreVignette(`core:desk3s-${r}`, "C", [rug(r, 0, 0, 5, 2), o("chair S", 2, 0), o("desk 3x1", 1, 1), g("openbook", 1, 1), g("inkwell", 2, 1), g("candlestick", 3, 1)], S, [kind])),
     ...rugs.slice(0, 3).map((r) => coreVignette(`core:desk2-${r}`, "C", [rug(r, 0, 0, 4, 2), o("desk 2x1", 1, 0), g("openbook", 1, 0), g("candlestick", 2, 0), o("chair N", 1, 1)], S, [kind])),
     ...rugs.slice(2).map((r) => coreVignette(`core:talk-${r}`, "C", [rug(r, 0, 0, 3, 2), o("chair E", 0, 0), o("roundtable", 1, 0), g("teapot", 1, 0), o("chair W", 2, 0)], S, [kind])),
     // 작은 방: 가운데에 책상 자리가 안 들어가면 벽에 붙인 책상(의자는 책상 앞에서 책상을 본다).
