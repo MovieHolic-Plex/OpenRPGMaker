@@ -201,7 +201,88 @@ export function stageMysteryCase(run: BuildRun): string[] {
   const named = repairPageNameLabels(run);
   const closed = closeEndingShortcuts(run);
   const notes = stageMysteryCaseInner(run);
-  return [...named, ...closed, ...notes, ...closeEndingShortcuts(run), ...ensureEvidenceGiven(run), ...renameProgressEvidence(run), ...alignEvidenceToText(run), ...evidenceOnThing(run), ...deepenCase(run), ...polishCaseNames(run), ...requireInterrogation(run), ...nameLeakedEventIds(run)];
+  return [...named, ...closed, ...notes, ...closeEndingShortcuts(run), ...ensureEvidenceGiven(run), ...renameProgressEvidence(run), ...alignEvidenceToText(run), ...evidenceOnThing(run), ...deepenCase(run), ...polishCaseNames(run), ...requireInterrogation(run), ...alignCulpritLines(run), ...nameLeakedEventIds(run)];
+}
+
+const ROLE_WORDS = ["투숙객", "손님", "하녀", "하인", "요리사", "악사", "마부", "상인", "여행자", "점원", "집사", "정원사", "경비", "하숙생", "직원", "노파", "청년", "사내", "여인"];
+const WITNESS_MARK = "저는 아니에요! 어젯밤";
+
+/**
+ * 사건을 다시 세워 범인이 바뀌면 모델이 쓴 옛 범인 지칭을 새 범인으로 맞춘다 — 되풀이 안전.
+ *  1) 「저 투숙객이 범인이었어요」「범인은 마부 한스」「한스가 훔쳤다」처럼 범인이 아닌 용의자 이름·역할 낱말(새 범인 이름에 없는 것)을 범인으로 부르는 줄 → 새 범인 이름.
+ *     부정(「…는 범인이 아니다」)·「범인을 잡아 주세요」처럼 누구를 지칭하지 않는 줄은 건드리지 않는다.
+ *  2) 범인이 아닌 사람이 자백하는 장면(「죄송합니다… 돌려드리겠습니다」, 범인 아닌 사람 이벤트의 페이지) → 그 사람이 새 범인을 본 목격 증언으로 다시 쓴다(스위치·아이템 명령은 그대로).
+ * 왜(2026-10-29 vm3 argon 추리): 범인 고르기를 다시 세워 범인이 악사 리노가 됐는데, 모델의 투숙객 자백 장면과 지목 성공 대사 「저 투숙객이 범인이었어요」가 남았다.
+ */
+function alignCulpritLines(run: BuildRun): string[] {
+  const project = run.ctx.project;
+  let culprit = "";
+  for (const map of Object.values(project.maps)) for (const ev of map.events ?? []) for (const pg of ev.pages ?? []) walkCommands(pg.commands, (c) => {
+    if (culprit || c.kind !== "choices" || c.prompt !== ACCUSE_PROMPT) return;
+    for (const o of (c.options ?? []) as Obj[]) if (JSON.stringify(o.branch ?? []).includes('"presentItem"')) culprit = String(o.text ?? "");
+  });
+  if (!culprit) return [];
+  const others = suspectNames(project).filter((n) => n !== culprit);
+  const wrongs = [...others, ...others.map((n) => n.split(/\s+/u).at(-1)!).filter((n) => n.length >= 2 && !culprit.includes(n)), ...ROLE_WORDS.filter((r) => !culprit.includes(r))]
+    .sort((a, b) => b.length - a.length).map((w) => w.replace(/[.*+?^${}()|[\]\\]/gu, "\\$&")).join("|");
+  if (!wrongs) return [];
+  const det = "(?:(?:저|그|이)\\s+)?";
+  const claims: [RegExp, (m: string) => string][] = [
+    [new RegExp(`${det}(?:${wrongs})(?:이|가)\\s*(범인|진범|훔쳤|훔친)`, "gu"), (m) => `${culprit}${jo(culprit, "이/가")} ${/(범인|진범|훔쳤|훔친)$/u.exec(m)![1]}`],
+    [new RegExp(`(범인|진범)(은|는)\\s+${det}(?:${wrongs})(?![가-힣])`, "gu"), (m) => `${/^(범인|진범)/u.exec(m)![1]}${/^(?:범인|진범)(은|는)/u.exec(m)![1]} ${culprit}`],
+    [new RegExp(`${det}(?:${wrongs})의\\s*(짓|소행)`, "gu"), (m) => `${culprit}의 ${/(짓|소행)$/u.exec(m)![1]}`],
+  ];
+  const NEG = /아니|아닌|않|없었/u;
+  const CONFESS = /죄송합니다|잘못했|돌려드리겠|제가\s*(?:훔|그랬)|용서해/u;
+  const evidenceMap = (() => {
+    for (const map of Object.values(project.maps)) for (const ev of map.events ?? []) for (const pg of ev.pages ?? []) {
+      let hit = false;
+      walkCommands(pg.commands, (c) => { if (c.kind === "changeItem" && c.op !== "-=" && /^item_case_/u.test(String(c.itemId ?? ""))) hit = true; });
+      if (hit) return map.name || "";
+    }
+    return "";
+  })();
+  const notes: string[] = [];
+  for (const map of Object.values(project.maps)) for (const ev of map.events ?? []) {
+    const name = nameOf(ev);
+    let changed = false;
+    const pages = structuredClone(ev.pages ?? []) as unknown as Obj[];
+    for (const pg of pages) {
+      // 2) 범인이 아닌 사람의 자백 장면 → 목격 증언.
+      const cmds = (pg.commands ?? []) as Obj[];
+      const texts = cmds.filter((c) => c.kind === "text");
+      const confessing = name && name !== culprit && visiblePerson(ev) && !JSON.stringify(cmds).includes(WITNESS_MARK)
+        && !JSON.stringify(cmds).includes(ACCUSE_PROMPT)
+        && texts.some((c) => CONFESS.test(String(c.body ?? "")) && (!c.speaker || c.speaker === name) && ![culprit, culprit.split(/\s+/u).at(-1)!].some((n) => String(c.body ?? "").startsWith(`${n}:`)));
+      if (confessing) {
+        const at = cmds.findIndex((c) => c.kind === "text");
+        const witness: Obj[] = [
+          { kind: "text", speaker: name, body: `${WITNESS_MARK} ${culprit}${jo(culprit, "이/가")} ${evidenceMap ? `${evidenceMap} 쪽으로` : "몰래"} 가는 걸 봤어요.` },
+          { kind: "text", body: `${name}의 증언으로 ${culprit}${jo(culprit, "을/를")} 의심할 까닭이 생겼다.` },
+        ];
+        pg.commands = [...cmds.slice(0, at).filter((c) => c.kind !== "text"), ...witness, ...cmds.slice(at).filter((c) => c.kind !== "text")];
+        changed = true;
+        notes.push(`범인이 아닌 「${name}」의 자백 장면을 ${culprit} 목격 증언으로`);
+        continue;
+      }
+      // 범인 갈래(증거 제시 맞는 보기) 안의 말하는 이 없는 자백 줄은 범인이 말한다(2026-10-29 vm3 flash: 「크윽... 제가 그랬습니다!」가 누구 말인지 없었다).
+      walkCommands(pg.commands, (c) => {
+        if (c.kind !== "choices" || c.prompt !== ACCUSE_PROMPT) return;
+        for (const o of (c.options ?? []) as Obj[]) if (o.text === culprit) walkCommands(o.branch, (t) => {
+          if (t.kind === "text" && !t.speaker && typeof t.body === "string" && CONFESS.test(t.body) && !/^[^:]{1,12}:/u.test(t.body)) { t.speaker = culprit; changed = true; notes.push(`범인 갈래 자백 줄 말하는 이 = ${culprit}`); }
+        });
+      });
+      // 1) 범인이 아닌 사람을 범인으로 부르는 줄.
+      walkCommands(pg.commands, (c) => {
+        if (c.kind !== "text" || typeof c.body !== "string" || NEG.test(c.body)) return;
+        let body = c.body;
+        for (const [re, to] of claims) body = body.replace(re, to);
+        if (body !== c.body) { notes.push(`「${c.body}」 → 「${body}」`); c.body = body; changed = true; }
+      });
+    }
+    if (changed) run.call("upsert_event", { mapId: map.id, replacePages: true, event: { id: ev.id, ...(name ? { name } : {}), pages } });
+  }
+  return notes.length ? [`범인 지칭 맞춤(범인 ${culprit}): ${notes.slice(0, 4).join(" · ")}`] : [];
 }
 
 /** 아이템 이름을 바꾸고 대사 속 『옛 이름』(조사 받침까지)을 새 이름으로 — 「『옛 이름』을 알아냈다」 줄은 뺀다. */
