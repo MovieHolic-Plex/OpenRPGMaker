@@ -25,7 +25,7 @@ export {
   type AudioQueueState,
   type AudioRequest,
 } from "./audioQueue";
-export { authoredTrackGain, authoredVolumePercent, computeFadeVolume, isFadeComplete, clampVolume } from "./fade";
+export { authoredTrackGain, authoredVolumePercent, computeFadeVolume, duckGainAt, isFadeComplete, clampVolume } from "./fade";
 
 let engine: AudioEngine | null = null;
 
@@ -41,6 +41,23 @@ export function getAudioEngine(options?: { readonly qaInstrumentation: boolean }
     engine.setQaInstrumentation(options.qaInstrumentation);
   }
   return engine;
+}
+
+/** 엔진 기본 SE 음량(audioEngine volumes.se) — Web Audio 전투 샘플은 이 값에서의 크기로 맞춰져 있다. */
+const DEFAULT_SE_MIX = 0.8;
+
+/**
+ * Web Audio 로 곧장 나가는 효과음(전투 샘플)이 곱할 사용자 SE 음량 배율. 기본 설정이면 1.
+ * 엔진을 새로 만들지 않는다(편집기 미리보기에서도 부른다).
+ */
+export function seMixScale(): number {
+  const se = engine ? engine.getVolume("se") : getPlayerPreferences().se;
+  return Number.isFinite(se) ? Math.max(0, se) / DEFAULT_SE_MIX : 1;
+}
+
+/** 효과음이 울리는 동안 BGM 을 잠깐 낮춘다. 엔진이 없으면(BGM 이 없으면) 아무것도 안 한다. */
+export function duckBgmForEffect(level: number, holdMs: number): void {
+  engine?.duckBgm(level, holdMs);
 }
 
 // playAudio 명령: 리소스 해석 후 재생. 해석 실패 시 조용히 no-op.

@@ -14,6 +14,7 @@ import { createBuildRun, type RecordingBuildRun } from "./buildRun";
 import { builderFor } from "./builders";
 import { localizePlaceSpec } from "./builders/modernCity";
 import { localizeCultureSpec } from "./builders/joseon";
+import { villageArgs } from "./builders/village";
 import { applyModernSetupDefaults, applyStorySetupDefaults, isFreshProject } from "./genreDefaults";
 import { dedupeToolSchemas } from "./schemaDedupe";
 import { adoptExactInterior, interiorAddAnchors, interiorBuilder, interiorEditFromArgs, interiorMoveObjects, roomMaterials, type ObjectEdit } from "./builders/interior";
@@ -29,20 +30,10 @@ import { buildEvent } from "./events";
 import { drawObject } from "./drawObject";
 import { buildScene, SCENE_SCHEMA, type SceneSpec } from "./scene";
 import { buildPuzzleChain, sealLockedRoom, type ChainArgs } from "./puzzle";
-import { stageMysteryCase } from "./mysteryCase";
-import { BUILD_BLUEPRINT_PATH_SCHEMA, blueprintMapFor, buildBlueprintPath, sealEscapeExits, type PathStepText } from "./blueprintPath";
-import { clearTargetFronts, clearTransferLanes, repairEventReach, spreadCrowdedPeople, unreachableEvents } from "./eventReach";
-import { ensureStartingGold, ensureSupplyShop } from "./healingAccess";
-import { lockBareHouseDoors } from "./lockedDoors";
-import { dressBareSealSteps, dressPickupSteps, seatEntranceSteps } from "./stepArt";
-import { markDeadEndRoads } from "./deadEndRoads";
-import { doorFloorTransfers, dressInteriorExits, dropBuriedTransfers } from "./exitDress";
-import { roadToEdgeExits } from "./edgeExitRoads";
-import { dressBareCaveGates } from "./caveGates";
-import { rampNearGoals } from "./reliefShortcut";
-import { dropShadowedStairLinks, isPlaceholderMap, moveBareEvents, retireBlankStart, retireOrphanMaps } from "./blankStart";
-import { chaserEvents, ensureChaserHidingSpots, mapHidingEvents, markHidingSpots } from "@/project/chaserHiding";
-import { relocateLeadingFace } from "@/editor/tools/eventCompile";
+import { BUILD_BLUEPRINT_PATH_SCHEMA, blueprintMapFor, buildBlueprintPath, type PathStepText } from "./blueprintPath";
+import { repairEventReach, spreadCrowdedPeople } from "./eventReach";
+import { runLaneStages } from "./lanes";
+import { isPlaceholderMap, moveBareEvents, retireBlankStart } from "./blankStart";
 import { dungeonGateSpot, pickTransferSpot } from "./transferSpot";
 import { guessPlaceSpec } from "./placeGuess";
 // 콘텐츠 동사(컷신 무대·연출 비평·물건 자리 계획) — finishContent·addEvent·drawObjectVerb·placeObject 가 쓴다.
@@ -86,6 +77,8 @@ export class V2Session {
   askBounced = false;
   /** 설계 없이 온 손 도트 실내 make_place 를 한 번 되돌려 보낸 장소 이름(2026-10-29 「방을 짓는 건 조수여야만 한다」). */
   readonly designBounced = new Set<string>();
+  /** 지형 설계(hints.landform) 없이 온 마을 make_place 를 한 번 되돌려 보낸 장소 이름(2026-10-29 「지형을 먼저 깔고 마을은 지형에 맞춰 자란다」). */
+  readonly terrainBounced = new Set<string>();
   /** 같은 청사진을 다시 쓴 횟수(내용이 같으면 바꾸지 않고 다음 동사로 보낸다). */
   blueprintRewrites = 0;
   /** 끝맺음에서 청사진 경로를 함수가 대신 지었는가(한 번만). */
@@ -182,14 +175,17 @@ const HINTS_SCHEMA = {
   description: "카드가 알려 준 빌더 손잡이만. 모르는 것은 넣지 않는다.",
   properties: {
     variant: { type: "number", description: "같은 명세의 다른 배치(0,1,2…)" },
-    seed: { type: "number" },
     dressing: { type: "number", description: "꾸밈 정도 0 보통 · 1 많이 · 2 가득(아늑하게)" },
     houseCount: { type: "number" },
     roofs: { type: "string" },
-    water: { type: "string" },
+    water: { type: "string", description: "(마을) 땅 설계의 물 — river 남쪽으로 동서로 흐르는 강(나루 널다리로 건넌다) · none 물 없음. 풀밭 마을은 꼭 정한다" },
     woods: { type: "string" },
     form: { type: "string" },
     terrain: { type: "string" },
+    landform: { type: "string", enum: ["terraces", "hill", "slope", "plateau", "flat"], description: "(마을) 지형 설계 — 땅 모양. 마을은 이 땅에 맞춰 자란다" },
+    settle: { type: "string", enum: ["middle", "low"], description: "(마을) 마을이 앉는 단 — low 물가 맨 아래 단(강가·늪 마을은 이쪽, 강이 마을 앞으로 흐른다) · middle 가운데 단(남쪽 낮은 단에 아랫길·헛간)" },
+    tiers: { type: "number", description: "(마을) 마을 단 위 높은 단 겹 수 1~4" },
+    high: { type: "string", enum: ["north", "center", "west", "east"], description: "(마을) 높은 곳 자리" },
     forestType: { type: "string" },
     walls: { type: "boolean" },
     wallGate: { type: "string" },
@@ -595,107 +591,8 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
   };
   // 끝맺음(2026-10-28 standin jrpg): 컷신에서 주인공에게 다가온 소녀가 동굴 입구 착지 칸 앞에 서서 자동 플레이가 막혔다.
   session.clearLanes = async () => {
-    // 쓰지 않는 빈 시작 맵(잔디 한 장)을 먼저 치운다 — 그쪽으로 가던 이동이 사라진 막다른 틈은 아래 출구 마감이 문 그림으로 닫는다.
-    const notes: string[] = retireBlankStart(run);
-    // 방탈출이면 청사진 장소 밖으로 조건 없이 나가는 이동을 치운다(빈 맵이 아닌 바깥 맵 — retireBlankStart 가 못 치운다). 틈은 아래 출구 마감이 메운다.
-    notes.push(...sealEscapeExits(run));
-    // 추리 청사진이 투명 칸 일직선이면(2026-10-29 vm mystery 판정 「NPC 없음·추리·선택 없음」) 용의자·증거 제시·범인 고르기를 세운다.
-    // 모델이 사건을 이미 지었으면 단서 칸 소품만 본다(mysteryCase.ts). 경로를 다시 짓지 않은 판(막힘 없음)도 여기서 세운다.
-    try { notes.push(...stageMysteryCase(run)); } catch { /* 추리 세우기 실패는 끝맺음을 깨지 않는다 */ }
-    // 전투 게임 보급(2026-10-29 vm3 jrpg 판정 「206G 를 쓸 곳이 없다」): 돈을 버는데 상점이 없으면 떠돌이 상인. 경로를 다시 짓지 않은 판도 여기서 건다.
-    // 보스 앞 회복(쉼터 결정)·단계 순서 보호는 finishAutoBuild 의 ensureBossRest·orderStepBattlesIn 이 한다.
-    try { notes.push(...ensureSupplyShop(run)); } catch { /* 상점 실패는 끝맺음을 깨지 않는다 */ }
-    try { notes.push(...ensureStartingGold(run)); } catch { /* 시작 돈 실패는 끝맺음을 깨지 않는다 */ }
-    // 들어오는 길도 이벤트도 없는 빈 사본·끊긴 맵(봉인 뒤 「밀실 뒷방」)을 치운다.
-    notes.push(...dropShadowedStairLinks(run));
-    notes.push(...retireOrphanMaps(run));
-    // 추격자가 있는데 숨을 곳이 0곳인 맵(2026-10-29 standin horror 「폐병원」) — 맵에 있는 옷장·사물함·침대·커튼 1~2곳을 순찰 길 가까이에서 은신처로.
-    for (const [mapId, map0] of Object.entries(env.ctx.project.maps)) {
-      if (!chaserEvents(map0).length) continue;
-      if (mapHidingEvents(map0).some((ev) => (ev.pages ?? []).some((pg) => (pg.interaction as { kind?: string } | undefined)?.kind === "hiding" && !pg.nearSparkle))) {
-        // 이미 있는 은신처에 가까이 반짝임을 단다(들어가기 전엔 안 보였다).
-        const marked = { ...map0, events: (map0.events ?? []).map((ev) => structuredClone(ev)) };
-        const n = markHidingSpots(marked);
-        env.ctx.project = { ...env.ctx.project, maps: { ...env.ctx.project.maps, [mapId]: marked } } as Project;
-        notes.push(`${map0.name}: 은신처 ${n}곳에 가까이 반짝임`);
-        continue;
-      }
-      if (mapHidingEvents(map0).length) continue;
-      const copy = { ...map0, events: [...(map0.events ?? [])] };
-      const auto = ensureChaserHidingSpots(env.ctx.project, copy);
-      if (auto.placed.length) {
-        env.ctx.project = { ...env.ctx.project, maps: { ...env.ctx.project.maps, [mapId]: copy } } as Project;
-        notes.push(`${map0.name}: 추격자 은신처 ${auto.placed.map((p) => `${p.label}(${p.x},${p.y})`).join(" · ")}`);
-      } else if (auto.note) notes.push(`${auto.note} — 은신처 0곳`);
-    }
-    // 내레이션 줄에 인물 얼굴이 남지 않게(2026-10-29 standin 마법학교 천문탑: 「망원경 곁에 파란 모자의 여인이…」에 교수 흉상) —
-    // 맨 앞 얼굴 하나를 그 인물이 화자로 말하는 줄 바로 앞에만 다시 둔다. 모델이 patch_event_page 로 옛 순서를 되써도 여기서 고친다.
-    for (const [mapId, map0] of Object.entries(env.ctx.project.maps)) {
-      let fixed = 0;
-      const events = (map0.events ?? []).map((ev) => {
-        let changed = false;
-        const pages = (ev.pages ?? []).map((page) => {
-          const next = relocateLeadingFace(page.commands ?? [], ev.name ?? "");
-          if (!next) return page;
-          changed = true;
-          return { ...page, commands: next };
-        });
-        if (changed) fixed += 1;
-        return changed ? { ...ev, pages } : ev;
-      });
-      if (fixed) {
-        env.ctx.project = { ...env.ctx.project, maps: { ...env.ctx.project.maps, [mapId]: { ...map0, events } } } as Project;
-        notes.push(`${map0.name}: 인물 ${fixed}명의 얼굴을 그 인물 대사 바로 앞으로(내레이션 줄에서 뺌)`);
-      }
-    }
-    for (const mapId of Object.keys(env.ctx.project.maps)) {
-      // 실내 출구·공허 마감(막다른 남쪽 틈 메우기·문 그림·남색 공허 칸) — 화면 검수 장부 builder-exit/builder-tiles.
-      for (const n of dressInteriorExits(run, mapId).notes) notes.push(`${env.ctx.project.maps[mapId]?.name ?? mapId}: ${n}`);
-      // 가구·벽 밑에 묻힌 이동 칸은 같은 곳으로 가는 문이 따로 있으면 지운다(2026-10-29 vm4 argon 추리).
-      for (const n of dropBuriedTransfers(run, mapId)) notes.push(`${env.ctx.project.maps[mapId]?.name ?? mapId}: ${n}`);
-      // 바닥 한가운데 투명 이동 칸 → 가장 가까운 외벽에 문(북벽 문 그림·남벽 틈)을 내고 그 앞으로(2026-10-29 vm3 deepseek 탈출 「희미한 빛 위를 걷는 방 이동」).
-      for (const n of doorFloorTransfers(run, mapId)) notes.push(`${env.ctx.project.maps[mapId]?.name ?? mapId}: ${n}`);
-      // 풀밭 한가운데 투명 동굴 출입구 → 그 위(또는 8걸음 안)에 갱구를 세운다(2026-10-29 vm3 argon jrpg 「마을 밖 동굴 길이 안 보임」).
-      for (const n of dressBareCaveGates(run, mapId)) notes.push(`${env.ctx.project.maps[mapId]?.name ?? mapId}: ${n}`);
-      // 목표 바로 곁 절벽(한 칸 위·아래인데 멀리 돌아가야 함)에 계단 경사로(2026-10-29 vm4 deepseek jrpg 「동굴 입구가 보이는데 못 닿음」).
-      for (const n of rampNearGoals(run, mapId)) notes.push(`${env.ctx.project.maps[mapId]?.name ?? mapId}: ${n}`);
-      // 가장자리 출구가 풀밭 한가운데면 맵의 길로 잇는다(2026-10-29 vm3 argon jrpg 「마을 밖으로 나가는 길이 안 보임」).
-      for (const n of roadToEdgeExits(run, mapId)) notes.push(`${env.ctx.project.maps[mapId]?.name ?? mapId}: ${n}`);
-      // 투명 칸 봉인·제단 단계에 돌 제단 그림(2026-10-29 vm6 terra jrpg «봉인이 어디인지 안 보임»).
-      for (const n of dressBareSealSteps(run, mapId)) notes.push(`${env.ctx.project.maps[mapId]?.name ?? mapId}: ${n}`);
-      // 출구 없이 가장자리에서 끊긴 길에 「막힌 길」 표지(2026-10-29 vm6 flash jrpg «동쪽 길은 (41,18)에서 막혔다»).
-      for (const n of markDeadEndRoads(run, mapId)) notes.push(`${env.ctx.project.maps[mapId]?.name ?? mapId}: ${n}`);
-      // 「동굴 입구」 같은 투명 단계 칸을 맵에 그려진 굴 입구(거목 밑동 굴 문·갱구)의 들어가는 칸으로(2026-10-29 vm7 flash jrpg «나무 구멍 무반응»).
-      for (const n of seatEntranceSteps(run, mapId)) notes.push(`${env.ctx.project.maps[mapId]?.name ?? mapId}: ${n}`);
-      // 물건을 얻는 투명 단계 칸은 보물상자로(2026-10-29 vm7 terra jrpg «용사의 검이 어느 건물에 있는지 모름» — 검은 촌장 옆 길 위 투명 칸이었다).
-      for (const n of dressPickupSteps(run, mapId)) notes.push(`${env.ctx.project.maps[mapId]?.name ?? mapId}: ${n}`);
-      // 들어갈 수 없는 집 문 그림에 「잠겨 있다」 한 줄(2026-10-29 vm6 flash·argon jrpg «집 문 무반응»).
-      for (const n of lockBareHouseDoors(run, mapId)) notes.push(`${env.ctx.project.maps[mapId]?.name ?? mapId}: ${n}`);
-      const r = clearTransferLanes(run, mapId);
-      const name = env.ctx.project.maps[mapId]?.name ?? mapId;
-      // 조사·대화 대상 앞(아래 칸)을 막는 의자 하나를 치운다(2026-10-29 VM deepseek mystery: 「의자 때문에 NPC 앞으로 못 간다」).
-      for (const n of clearTargetFronts(run, mapId)) notes.push(`${name}: ${n}`);
-      // 붙어 선 사람 사이에서 한 면만 열린 사람은 둘레가 열린 칸으로(2026-10-29 vm3 flash 추리: 갈색 머리 손님이 위에서만 말이 걸렸다).
-      // 실내에서 문 곁·가구의 하나뿐인 접근 칸·다른 사람 바로 위아래·큰 양탄자 위에 선 사람도(personSpotCost — room-vig6 tavern, 탈출·추리 인물 포함).
-      for (const n of spreadCrowdedPeople(run, mapId)) notes.push(`${name}: ${n}`);
-      // 걸어 닿지 못하는 진행 이벤트(전투·스위치·아이템·엔딩 — 출하 검사 critical-unreachable)는 닿는 빈 바닥으로(repairEventReach).
-      // 경로를 다시 짓지 않는 판(전투가 든 단계라 build_blueprint_path 가 건너뜀)에도 돈다 — 2026-10-29 vm4 argon jrpg: 동굴 잡몹 (6,9)가 바위 속에 갇혔다.
-      {
-        const live = env.ctx.project.maps[mapId];
-        const progress = (ev: NonNullable<typeof live>["events"][number]) => {
-          const text = JSON.stringify(ev.pages ?? []);
-          const acts = (ev.pages ?? []).some((p) => { const t = p.trigger as unknown; const k = typeof t === "string" ? t : (t as { kind?: string } | undefined)?.kind; return k !== "auto" && k !== "autorun" && k !== "parallel"; });
-          return acts && /"kind":"(?:battleProcessing|setSwitch|changeItem|triggerEnding)"/u.test(text) && !/"kind":"transfer"/u.test(text);
-        };
-        const lost = live ? unreachableEvents(env.ctx.project, mapId).filter((id) => { const ev = live.events.find((e) => e.id === id); return !!ev && progress(ev); }) : [];
-        if (lost.length) {
-          const fixed = repairEventReach(run, mapId, lost);
-          for (const m of fixed.moved) notes.push(`${name}: 닿지 못하던 ${m}`);
-        }
-      }
-      for (const m of r.moved) notes.push(`${name}: ${m}`);
-      for (const s of r.stuck) notes.push(`${name}: ${s} — 옮길 자리가 없어 그대로 둠`);
-    }
+    // 단계(빈 시작 맵 치우기 → 방탈출 봉인 → … → 맵마다 출구 마감·길·그림·사람 자리)는 src/ai/v2/lanes/stages/ — 한 단계에 파일 하나.
+    const notes = runLaneStages(env, session, run);
     if (notes.length) {
       recordWrite(env, run, `auto-lanes-${Date.now()}`, "move_event", { auto: "transfer-lanes" }, true, notes.join(" / ").slice(0, 400), {});
       await env.checkpoint("clear_transfer_lanes");
@@ -713,6 +610,8 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
       // 같은 요청 → 같은 맵을 막는다(2026-10-23 다양성: 역전 상점가가 v1·v2·4차·5차 모두 화소까지 같았다). 고치기는 기록된 명세의 salt 를 물려받는다.
       const raw = (params as { spec: PlaceSpec }).spec;
       let spec: PlaceSpec = localizeCultureSpec(localizePlaceSpec({ ...raw, salt: Math.floor(Math.random() * 1_000_000), variety: placeVariety(env, task) }, String(task ?? "")), String(task ?? ""));
+      // 없는 맵 id 는 버리고 새 맵에 짓는다 — flash 가 타일셋 id(beodeul_city)를 mapId 로 보내 「맵이 없습니다」로 한 채도 못 지었다(2026-10-29 b5 강가 마을).
+      if (spec.mapId && !run.ctx.project.maps[spec.mapId]) { const { mapId: _gone, ...rest } = spec; spec = rest; }
       // 이번 실행에서 이미 다른 장소를 지은 맵 위에 새 장소를 짓지 않는다 — 「지하 예배당」을 지은 맵에 「검은 장미 저택」을 다시 지어
       // 예배당이 1층 한 구석으로 사라졌다(2026-10-25 조수 단독 게임 G27). 같은 장소를 다시 짓는 것(이름이 같거나 한쪽이 다른 쪽을 품음)은 그대로 둔다.
       const target = spec.mapId ?? (spec.type === "interior" ? (run.ctx.currentMapId ?? run.ctx.project.startMapId) : undefined);
@@ -740,6 +639,17 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
         session.missingArt.add(`${spec.name}(${spec.type}${spec.style ? `·${spec.style}` : ""}) — 이 종류를 짓는 빌더가 없다`);
         return text({ ok: false, summary: `${spec.type}${spec.style ? `(${spec.style})` : ""} 을 짓는 빌더가 없다. 다른 type 으로 바꾸거나 사용자에게 못 한다고 알린다.` });
       }
+      // 마을은 지형을 조수가 먼저 설계한다(방 설계와 같은 원칙): hints.landform 없이 오면 마을마다 한 번 되돌려 보낸다. 다시 없이 오면 함수가 테마·씨앗으로 고른다.
+      // 물도 땅 설계다(2026-10-29 맵 반복 조사: 마을 24장 중 19장이 「세로 강+다리+가로 큰길」 — 카드가 river 를 기본처럼 적어 모델이 늘 강가 마을을 골랐다).
+      // 풀밭 마을(theme river·생략)은 water(river|none)도 모델이 정한다 — 빠지면 같은 되돌려 보내기에 함께 묻는다.
+      const villageWaterMissing = builder.id === "village" && (() => { const a = villageArgs(spec).args; return (a.theme === undefined || a.theme === "river") && a.water === undefined && a.walls !== true; })();
+      if (builder.id === "village" && (!spec.hints?.landform || villageWaterMissing) && !session.terrainBounced.has(spec.name)) {
+        session.terrainBounced.add(spec.name);
+        return text({ ok: false, notFailure: true, summary: `아직 짓지 않았다(실패 아님) — 「${spec.name}」의 땅(지형·물)은 네가 먼저 설계한다. 마을은 땅에 맞춰 자란다(강가면 마을이 물가 단에 앉고 나루 길목에 모이는 곳, 산이면 단마다 집, 맨 윗단에 망루·예배당). hints 에 땅 설계를 넣어 make_place 를 바로 다시 부르면 지어진다: `
+          + `landform(terraces 계단식 단 · hill 위 단 위로 불룩 솟은 언덕 · slope 단이 겹겹이 오르는 산골, 위로는 산 숲 · plateau 두 단 더 높은 고원 · flat 평지) · `
+          + `water(river 남쪽으로 동서로 흐르는 강 · none 물 없음 — 요청에 강이 없으면 none 도 좋다) · settle(low 마을이 물가 맨 아래 단 · middle 가운데 단) · tiers(마을 위 단 겹 수 1~4) · high(높은 곳 자리 north·center·west·east). `
+          + `성벽 마을은 평지로 짓는다. 요청에 맞는 땅을 네가 고른다 — 함수는 단 경계·계단·나루·도달성만 맞춘다.` });
+      }
       env.emit({ type: "execution_status", name: "v2.build", ok: true, summary: `${spec.name} 짓는 중(${builder.id})` });
       await builder.prepare?.(spec);
       let result = builder.build(run, spec);
@@ -760,7 +670,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
       addAnchors: { type: "array", items: { type: "object", properties: { zone: { type: "string" }, what: { type: "string" }, near: POINT }, required: ["what"] } },
       addFeatures: { type: "array", items: { type: "string" } },
       removeFeatures: { type: "array", items: { type: "string" } },
-      variant: { type: "number" }, seed: { type: "number" }, dressing: { type: "number" },
+      variant: { type: "number" }, dressing: { type: "number" },
       design: ROOM_DESIGN_SCHEMA, designZone: { type: "string", description: "(설계 방) design 을 바꿀 구역 id·kind — 생략하면 첫 설계 구역" },
     }, required: ["mapId"] } }, required: ["patch"] },
     async execute(id, params) {

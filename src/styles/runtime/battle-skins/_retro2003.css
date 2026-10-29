@@ -472,9 +472,11 @@
 .battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-actor > .battle-status-icons { display: none; }
 .battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-enemy > .battle-status-icons {
   position: absolute;
-  /* 머리 위가 아니라 이름판 옆 — 머리 위에 두면 키 큰 적(발렌)의 얼굴에 걸린다(가혹 검수 r13). */
-  top: calc(100% + 8px);
-  left: calc(50% + 38px);
+  /* 머리 위가 아니라 몸 오른쪽 어깨 옆 — 머리 위에 두면 키 큰 적(발렌)의 얼굴에 걸린다(가혹 검수 r13).
+     발밑 이름판 옆(가운데 + 38px)에 두면 긴 이름(「분노한 고교생 레온」)의 끝을 「SLP」가 덮었다(마왕 편의점 처음 하는 사람 검수 2026-10-29).
+     노드 폭 = 스프라이트 폭이므로 left: 100% 가 몸의 오른쪽 끝이다 — 이름판 길이와 상관없이 비켜 선다. */
+  top: 4px;
+  left: calc(100% + 2px);
   transform: none;
   /* 두 개씩 줄을 바꿔 위로 쌓는다 — 옆 적의 배지 줄과 이어 붙어 누구 것인지 흐려졌다. */
   flex-wrap: wrap;
@@ -485,8 +487,6 @@
   z-index: 5;
   pointer-events: none;
 }
-/* 대상 선택의 ▼ 커서와 겹치지 않게 한 칸 더 올린다. */
-.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-enemy.battle-target-selected > .battle-status-icons { top: calc(100% + 8px); }
 .battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-enemy.defeated > .battle-status-icons { display: none; }
 
 /* ---- 적 이름 창 (2026-10-01) ----------------------------------------------

@@ -3,7 +3,7 @@
 // (실제 HTMLAudioElement 재생은 브라우저 QA 로 검증 — node 환경에서는 순수 로직만)
 
 import { describe, it, expect } from "vitest";
-import { clampVolume, computeFadeVolume, isFadeComplete } from "@/player/audio/fade";
+import { clampVolume, computeFadeVolume, duckGainAt, isFadeComplete } from "@/player/audio/fade";
 import {
   createAudioQueueState,
   requestAudio,
@@ -60,6 +60,23 @@ describe("fade 상태머신", () => {
     expect(clampVolume(2)).toBe(1);
     expect(clampVolume(0.5)).toBe(0.5);
     expect(clampVolume(Number.NaN)).toBe(0);
+  });
+});
+
+describe("효과음 덕킹 배율", () => {
+  it("효과음이 울리는 동안은 낮춘 값", () => {
+    expect(duckGainAt(0.55, -200, 350)).toBe(0.55);
+    expect(duckGainAt(0.55, 0, 350)).toBe(0.55);
+  });
+  it("끝난 뒤 releaseMs 동안 1 로 돌아온다", () => {
+    expect(duckGainAt(0.5, 175, 350)).toBeCloseTo(0.75);
+    expect(duckGainAt(0.5, 350, 350)).toBe(1);
+    expect(duckGainAt(0.5, 10, 0)).toBe(1);
+  });
+  it("범위 밖 값은 0..1 로", () => {
+    expect(duckGainAt(2, -1, 350)).toBe(1);
+    expect(duckGainAt(-1, -1, 350)).toBe(0);
+    expect(duckGainAt(Number.NaN, -1, 350)).toBe(1);
   });
 });
 

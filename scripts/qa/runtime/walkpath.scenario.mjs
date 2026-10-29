@@ -47,6 +47,13 @@ export default {
       ops: [{ kind: "face", dir: qa.face }, { kind: "hold", dir: null, ms: 400 }, ...(qa.action ? [{ kind: "action" }, { kind: "hold", dir: null, ms: 1200 }] : [])],
       shot: true,
     }] : []),
+    // nextLines: 걸음·조사 뒤 대화를 한 줄씩 넘기며 n 장(잠긴 문의 두 번째 줄 안내 확인용).
+    ...Array.from({ length: Number(qa.nextLines ?? 0) }, (_, index) => ({
+      id: `line-${index + 2}`,
+      note: `대화 ${index + 2}번째 줄`,
+      ops: [{ kind: "key", key: "Enter" }, { kind: "hold", dir: null, ms: 900 }],
+      shot: true,
+    })),
     // closeDialogue: 조사 뒤 대화를 넘겨 필드로 돌아온 화면(바뀐 목표 줄·화살표)을 한 장 더. afterLegs 는 그 뒤 걸음.
     ...(qa.closeDialogue ? [{
       id: "after",
