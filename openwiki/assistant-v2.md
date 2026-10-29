@@ -255,7 +255,6 @@ v1 의 `script_cutscene` 비트로 옮긴다(`events.ts`).
 - **단계 사람은 길가에**(`stepPeopleRoadside.standStepPeopleByRoads`, 끝맺음 `finish/stages/step-people-roadside.ts`, 청사진 묶음 order 95): 마지막이 아닌 단계 이벤트가 사람인데 3칸 안에 길 칸도 눈에 띄는 것(그림 있는 이름 이벤트·처음 선 자리)도 없으면, 6칸 안 길과 맞닿은 걸어 닿는 빈 칸(길 칸 자신은 아님)으로 옮긴다. 못 닿는 이벤트가 늘거나 닿는 칸이 줄면 그 자리는 버린다.
 - 확인(vm8 세 판, 저장본 그대로 `finishReplay`): argon·flash·terra 모두 자동 플레이 엔딩까지·출하 0·다시 읽기 성공. 런타임 걸음 `walkpath` 에 `nextLines`(대화를 한 줄씩 넘기며 한 장씩)를 더했다.
 
-=======
 ## 던전·동굴은 조수가 설계한다 (2026-10-29 맵 똑같음 조사 «동굴 28장 중 26장이 한 공식»)
 
 벤치 68판의 동굴 26/28 이 「덩이 + 가운데 호수 + 아래 가운데 입구」 한 공식이었다(19장은 방 구성까지 입구·호수·보물·보스 4방). 모델은 type·theme·size 낱말만 넘기고 `layoutBlob` 이 방 수(small=3)·입구 자리(아래 가운데)·역할(가장 깊은 = 보스, 막다른 = 보물, small 이면 호수 1)을 정했고, terra 는 `hints.seed` 를 0·1·2 로 채워 씨앗 고르기까지 꺼졌다. 사용자 원칙: **맵·방은 모델이 설계하고 함수는 조화·검사만**(방 설계 `zones[].design` 과 같은 길).
@@ -265,9 +264,11 @@ v1 의 `script_cutscene` 비트로 옮긴다(`events.ts`).
 - 불규칙 문법(cave·volcano·ice·forest·swamp·otherworld)은 설계 자리 그대로 판다(`layouts.ts` `layoutBlob` 첫 줄에서 갈린다). 입구 방은 계단 걸 평평한 북벽 심(7×)을 지키고 다른 방으로 가는 길은 옆구리로 나간다. 숲·늪은 설계한 입구 쪽 맵 끝으로 출구 길(`compose.ts` trailExit, `layout.entranceSide`). 방+통로 문법(catacomb·castle·temple·mine·sewer·pyramid·tower)은 `designToRooms` 가 rooms(kind·크기·from = 입구 쪽 이웃·dir = 두 방 at 비교)로 옮기고, 나무 밖 길이 있으면 `layout:"loop"`. 미궁은 설계를 쓰지 않는다(알림).
 - 특징은 방 꾸미기 뒤 `dress.ts` `dressDesignFeatures` 가 덩이로만 더한다(낱개 흩기 없음 — 트인 바닥 외톨이 기물 규칙). 놓을 자리·그림이 없으면 「고침: 방 X 의 특징 … 빠졌다」.
 - 재료: v2 동사 `dungeon_parts({theme})`(`src/ai/v2/dungeonParts.ts`) — 모양·역할·물·특징·연결 어휘, 뼈대가 서로 다른 예시 넷(`DUNGEON_DESIGN_EXAMPLES`: 남쪽 입구 갈래·서쪽 입구 물줄기 사슬·동쪽 입구 호수 고리·북쪽 입구 허브)과 그 예시를 사본에서 `author_dungeon` 으로 실제 지은 1배 그림(테마별 캐시).
-- 설계 없이 온 던전·동굴 `make_place`(`mapId` 다시 짓기 제외)는 장소 이름마다 한 번 되돌려 보낸다(`session.dungeonBounced`, 「아직 짓지 않았다(실패 아님)」 + parts). 다시 없이 오면 예전 함수 배치. 설계한 층의 `next` 는 `edit_place({patch:{mapId, set:{dungeonDesign: 고친 설계 전체}}})` 를 이른다.
+- 설계 없이 온 던전·동굴 `make_place`(이번 실행에서 지은 맵 `mapId` 다시 짓기 제외)는 장소 이름마다 한 번 되돌려 보낸다(`session.dungeonBounced`, 「아직 짓지 않았다(실패 아님)」 + parts). 다시 없이 오면 예전 함수 배치. 설계한 층의 `next` 는 `edit_place({patch:{mapId, set:{dungeonDesign: 고친 설계 전체}}})` 를 이른다.
+- 되돌려 보내기 앞 손질 `screenDungeonSpec`(`dungeonParts.ts`): ① 프로젝트에 없는 `mapId` 는 버리고 새 맵(2026-10-29 실조수 첫 판: argon «map_cave_1»·flash «cave_dungeon» 을 지어내 `author_dungeon` 이 «맵이 없습니다»로 실패) ② 방 둘 미만 설계(`{rooms:[]}` 빈 껍데기)는 설계 없음 ③ 예시를 그대로 옮긴 설계(방 id 절반 이상, 또는 역할@자리 70% 이상 같음 — flash 가 branch-north 를 그대로 옮겼다)는 장소마다 한 번 되돌려 보내고, 두 번째는 그대로 짓고 「설계가 예시 … 와 거의 같다」를 알린다.
 - 씨앗: `hints.seed`·`edit_place` 의 `seed` 를 모델 스키마에서 뺐고, `make_place`·`applyPatch` 가 들어온 `hints.seed` 를 버린다. 던전 씨앗은 `spec.variety`(프로젝트 열쇠 + 요청문)와 이름의 해시 — 같은 게임·같은 요청이면 같은 층, 다른 게임이면 다르다.
-- 시험: `bun scripts/qa/assistant-v2/dungeonDesign.mts <out> [theme…]`(예시 넷 + 설계 없음, 모델 없음). 실조수 `suite/dungeon-live.sh <arm> <prompt> <batch>`(같은 요청 same1~3 + demon·crystal·goblin·volcano·forest), 지문은 `suite/mapvqa/render-all.mts` + 같은 지문 규칙. 결과 페이지 `~/claude-viz/dungeon-design-1029.html`.
+- 시험: `bun scripts/qa/assistant-v2/dungeonDesign.mts <out> [theme…]`(예시 넷 + 설계 없음, 모델 없음). 실조수 판 검사 `bun scripts/qa/assistant-v2/dungeonLiveCheck.mts <판>…`(막힘·자동 플레이·던전 맵 도달(시작/이동 칸에서 이벤트 모두 닿는가)·열린 바닥 한가운데 외톨이 막힌 칸 수, `DLC_NOPLAY=1` 이면 자동 플레이 생략). 실조수 `suite/dungeon-live.sh <arm> <prompt> <batch>`(같은 요청 same1~3 + demon·crystal·goblin·volcano·forest), 지문은 `suite/dungeon-design-fp.py <batch> <out>` — mapvqa 렌더·거의 같음 규칙 + 구조 사인(방 수·방 종류·입구 쪽, 방 이름과 무관해서 mapvqa 「방 구성」 표지가 모델이 지은 이름으로 다양해 보이는 착시를 막는다). 결과 페이지 `~/claude-viz/dungeon-design-1029.html`.
+
 ## 끝맺음 단계 더하기 (2026-10-29 단계 목록화)
 
 끝맺음 자동 단계와 출구·이동 칸 마감은 **단계 하나 = 파일 하나** 목록이다. 수리 작업자 여럿이 같은 파일(옛 `finishAutoBuild.ts`·`verbs.ts clearLanes`)을 고쳐 체리픽이 부딪히던 것을 없앤 구조 변경이며 동작은 같다(`finishReplay --trace` 로 vm5~vm7 판 대조).
