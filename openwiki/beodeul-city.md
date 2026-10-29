@@ -817,6 +817,8 @@ r1 시험(`verify-shots/assistant-beodeul-village/r1/fresh`)은 「마을」에 
 - **검증:** 같은 10요청, A = 띠 지형(ab11 B, a9a8cfeccf 계열), B = 코드 지형 + gpt-6.1-terra 가 미리보기를 보고 고른 layout(`scripts/qa/village-model-layout.mts` → `scripts/qa/village-code-terrain-probe.mts --layouts`). 블라인드 적대 판정 좌우 바꿔 20판:
   ab12(Sonnet, 첫 판) A 12 · B 8 → ab13(Sonnet, 비스듬한 옆·광장 자리) A 11 · B 9 → ab14(**Opus 5.5 medium**, 두 칸 절벽·들쭉날쭉 사선) A 9 · **B 11** → ab15(Opus, 포구 잔교·농가 흙 들길) A 9 · **B 11** — 두 판 모두 B: 언덕·산촌·눈 산마을·사막 오아시스·늪, 두 판 모두 A: 강가 시골·포구·장터, 갈림: 다랑이·들판 농가. 평균 A/B: 자연스러움 5.0/4.3, 길이 땅을 따름 5.2/5.0, 집터 6.0/5.7, 빈 땅 4.5/4.5, 반복 4.6/5.3, 요청 읽힘 5.5/5.7.
   같은 요청 ×3(terrainSeed salt 0·1000·2000) 지문: 그림 흑백 32×32 코사인 0.01~0.42(포구 0.42 가 가장 비슷), 단 격자 0.68~0.92 — 똑같은 판 0.
+  실조수(입력창 v2, `/tmp/vh/live.sh`, 판 c2 b3b6d7e6cc): opus-5.5-medium·gpt-6.1-terra × 강가·언덕·사막 오아시스 6판 모두 첫 make_place 에서 땅 그림을 받고 다음 호출에 layout 을 넣어 지었다(집 opus 6·6·8채, terra 4·4·4채, 4~7분). 앞 판 c1 terra 는 스키마를 0 으로 채운 layout 으로 미리보기를 건너뛰어 집 0채 → `cleanLayoutHint` 로 고쳤다.
+  게임 화면: `bun scripts/qa/runtime/village-terrain-first-fixture.mts --out .omo/runtime-qa/village-code-terrain.json`(이 픽스처는 이제 코드 지형·자동 배치로 짓는다) → netns 안에서 `RELIEF_VILLAGE_POINTS=… npm run qa:runtime -- --scenario relief-village …` — 계단 발치·낮은 단 10비트 통과(부팅 비트는 부하로 30초 초과), 칩셋 계단·두 칸 절벽이 실제 플레이어에 그려진다(`verify-shots/village-code-terrain/`).
   남은 지적: 긴 사선 절벽 띠가 아직 인공적, 늪이 수상 마을로 안 읽힘, 조수가 집 자리를 너무 붙여 고르면 못 놓은 집이 많다(보고는 된다).
 
 ## 작은 마을 길·마당 구도 보정 (2026-10-04)
