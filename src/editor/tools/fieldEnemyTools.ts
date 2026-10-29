@@ -293,7 +293,7 @@ export const FIELD_DETECTION_SCHEMA: Record<string, JsonSchema> = {
   searchMs: { type: 'integer', description: '놓친 뒤 마지막으로 본 자리와 달아난 방향을 뒤지는 시간(0..20000ms, 기본 3500) — 추격 기억' },
   giveUpRange: { type: 'integer', description: '이만큼(칸) 멀어지면 포기하고 돌아간다(시야+1..30)' },
   rush: { type: 'boolean', description: 'true 면 알아챈 뒤 주인공(160ms/칸)보다 빠르게 쉬지 않고 달려와 바로 전투를 건다 — 경비병·사냥꾼 몬스터. 피하려면 시야에 들지 말아야 한다(엄폐·그늘 길을 맵에 둘 것). rushSteps 칸을 달린 뒤에는 지쳐 chaseStepMs 로 떨어진다' },
-  rushStepMs: { type: 'integer', description: 'rush 돌진 한 칸 시간(40..150ms, 기본 110). 주인공 걷기 160. 40~60 은 「매복 — 보자마자 순식간에 덮친다」' },
+  rushStepMs: { type: 'integer', description: 'rush 돌진 한 칸 시간(30..150ms, 기본 110). 주인공 걷기 160. 30~60 은 「매복 — 보자마자 순식간에 덮친다」' },
   rushSteps: { type: 'integer', description: 'rush 로 달리는 칸 수(1..30, 기본 10). 그 뒤 지친다 — 놓쳤다 다시 보면 새로 센다' },
   allRound: { type: 'boolean', description: 'true 면 사방을 본다 — 부채꼴·앞만 보기를 끄고 뒤·옆도 알아챈다(트인 들판의 매복꾼·유령). false 면 앞쪽 부채꼴로 되돌린다' },
   lineOfSight: { type: 'boolean', description: 'false 면 벽·나무·바위가 시선을 가리지 않는다(시야 칸 안이면 무조건 본다 — 트인 들판·유령). 기본 true(가린다)' },
@@ -319,7 +319,7 @@ export function readFieldDetectionArgs(args: Record<string, unknown>): FieldDete
     if (typeof args.rush !== 'boolean') throw new ToolError('rush 는 true/false 입니다.', { code: 'invalid-args' });
     out.rush = args.rush;
   }
-  const rushMs = intIn(args.rushStepMs, 40, 150, 'rushStepMs'); if (rushMs !== undefined) out.rushStepMs = rushMs;
+  const rushMs = intIn(args.rushStepMs, 30, 150, 'rushStepMs'); if (rushMs !== undefined) out.rushStepMs = rushMs;
   const rushN = intIn(args.rushSteps, 1, 30, 'rushSteps'); if (rushN !== undefined) out.rushSteps = rushN;
   for (const key of ['allRound', 'lineOfSight'] as const) {
     if (args[key] === undefined || args[key] === null) continue;
