@@ -381,6 +381,7 @@ const setProjectSettings: ToolDefinition = {
         properties: {
           theme: { type: "string", enum: Object.keys(FIELD_HUD_THEMES) },
           menuStyle: { type: "string", enum: Object.keys(HUD_MENUS), description: "ESC 메뉴 모양. project = 프로젝트 메뉴 설정을 따른다." },
+          objective: { type: "boolean", description: "화면 오른쪽 위 「현재 목표」 줄. 이벤트의 목표 칩(UI 명령 surface objectiveChip)이 바꾸는 글이 여기에 뜬다 — 목표 칩을 쓰면 켠다. widgets 를 줘도 이 값은 따로 지킨다." },
           widgets: {
             type: "array", maxItems: HUD_WIDGET_LIMIT,
             items: {
@@ -468,7 +469,7 @@ const setProjectSettings: ToolDefinition = {
       changed.push(`강하게 다시 하기=${next?.enabled ? "켬" : "끔"}`);
     }
     if (args.fieldHud !== undefined) {
-      const hud = args.fieldHud as { theme?: string; menuStyle?: string; widgets?: unknown[] };
+      const hud = args.fieldHud as { theme?: string; menuStyle?: string; objective?: unknown; widgets?: unknown[] };
       const prev = draft.system.fieldHud;
       const next = { theme: "minimal", vitals: false, clock: false, tools: false, objective: false, hideEmpty: true, ...(prev ?? {}) } as NonNullable<typeof prev>;
       if (hud.theme !== undefined) { if (!Object.hasOwn(FIELD_HUD_THEMES, hud.theme)) throw new ToolError(`알 수 없는 HUD 테마: ${hud.theme}`, { code: "invalid-args" }); next.theme = hud.theme as typeof next.theme; }
@@ -483,8 +484,13 @@ const setProjectSettings: ToolDefinition = {
         // 위젯을 직접 정했으면 테마 기본 위젯(체력·시계·도구)은 끈다.
         next.vitals = false; next.clock = false; next.tools = false;
       }
+      if (hud.objective !== undefined) {
+        if (typeof hud.objective !== "boolean") throw new ToolError("fieldHud.objective 는 true/false 입니다.", { code: "invalid-args" });
+        next.objective = hud.objective;
+      }
       draft.system.fieldHud = next;
       changed.push(next.widgets?.length === 0 ? "HUD=끔" : `HUD 위젯 ${next.widgets?.length ?? "기본"}개`);
+      if (hud.objective !== undefined) changed.push(`현재 목표 줄 ${next.objective ? "켬" : "끔"}`);
     }
     if (args.chapter !== undefined) {
       if (typeof args.chapter !== "object" || args.chapter === null || Array.isArray(args.chapter)) {

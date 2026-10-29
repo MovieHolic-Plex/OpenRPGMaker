@@ -4,6 +4,7 @@
 // 길은 Catmull-Rom 곡선(폭 2~3.6칸 물결), 빈터·나무 섬·나무 사이 틈(숨은 물건 자리)까지 같은 마스크로 그린다.
 // 숲 맵마다 어둡기·안개를 고를 수 있고, 틈에 숨은 물건(조사하면 한 번)을 둘 수 있다.
 import { paintWoodland, type Cell, type WoodSpec } from "@/project/flagship/fallen/woodland";
+import { isPassable } from "@/project/collision";
 import { computeReachableCells } from "@/project/lint/reachability";
 import type { GameMap, Project } from "@/project/types";
 import { mulberry32 } from "@/util/rng";
@@ -97,11 +98,31 @@ export function centerBlob(side: Side, u: number, v: number, ru: number, rv: num
 }
 
 /** 시작 맵 그쪽 가장자리에서 걸어 닿는 칸 — 길·빈 칸을 가운데 가까운 것부터. 없으면 가까운 칸에서 가장자리까지 윗층을 걷어 길을 낸다. */
+/**
+ * 시작 칸에서 닿는 칸 — 단, 시작 칸(맵 가운데)이 집 안·나무 사이 같은 작은 섬이면 맵에서 가장 큰 걸을 수 있는 덩이를 쓴다.
+ * 가운데가 집 그림 위인 광장 마을에서는 닿는 칸이 몇 칸뿐이라 가장자리를 못 찾고, 곧은 길을 집을 뚫고 내다가
+ * 「완성된 집 보호」에 걸려 숲 전체가 실패했다(2026-10-30 isekai-godding: 광장 마을 60×44, 동·북 모두 protected-house-write).
+ */
+function mainWalkableArea(project: Project, map: GameMap, start: Cell): Set<string> {
+  const W = map.width, H = map.height;
+  const first = computeReachableCells(project, map, start.x, start.y);
+  if (first.size >= W * H * 0.15) return first;
+  let best = first;
+  const seen = new Set(first);
+  for (let y = 0; y < H; y += 2) for (let x = 0; x < W; x += 2) {
+    if (seen.has(`${x},${y}`) || !isPassable(project, map, x, y)) continue;
+    const area = computeReachableCells(project, map, x, y);
+    for (const k of area) seen.add(k);
+    if (area.size > best.size) best = area;
+  }
+  return best;
+}
+
 export function originEdge(project: Project, map: GameMap, side: Side, walkFrom?: Cell): Cell {
   const W = map.width, H = map.height;
   // 걸어 닿는 기준 칸 — 주면 그 칸(다른 맵에서 들어오는 입구), 아니면 시작 위치·맵 가운데.
   const start = walkFrom ?? (project.startMapId === map.id && project.startPos ? project.startPos : { x: Math.floor(W / 2), y: Math.floor(H / 2) });
-  const reach = computeReachableCells(project, map, start.x, start.y);
+  const reach = walkFrom ? computeReachableCells(project, map, start.x, start.y) : mainWalkableArea(project, map, start);
   const edge: Cell[] = [];
   if (side === "north" || side === "south") for (let x = 1; x < W - 1; x += 1) edge.push({ x, y: side === "north" ? 0 : H - 1 });
   else for (let y = 1; y < H - 1; y += 1) edge.push({ x: side === "west" ? 0 : W - 1, y });
