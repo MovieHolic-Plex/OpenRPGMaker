@@ -255,6 +255,19 @@ v1 의 `script_cutscene` 비트로 옮긴다(`events.ts`).
 - **단계 사람은 길가에**(`stepPeopleRoadside.standStepPeopleByRoads`, 끝맺음 `finish/stages/step-people-roadside.ts`, 청사진 묶음 order 95): 마지막이 아닌 단계 이벤트가 사람인데 3칸 안에 길 칸도 눈에 띄는 것(그림 있는 이름 이벤트·처음 선 자리)도 없으면, 6칸 안 길과 맞닿은 걸어 닿는 빈 칸(길 칸 자신은 아님)으로 옮긴다. 못 닿는 이벤트가 늘거나 닿는 칸이 줄면 그 자리는 버린다.
 - 확인(vm8 세 판, 저장본 그대로 `finishReplay`): argon·flash·terra 모두 자동 플레이 엔딩까지·출하 0·다시 읽기 성공. 런타임 걸음 `walkpath` 에 `nextLines`(대화를 한 줄씩 넘기며 한 장씩)를 더했다.
 
+=======
+## 던전·동굴은 조수가 설계한다 (2026-10-29 맵 똑같음 조사 «동굴 28장 중 26장이 한 공식»)
+
+벤치 68판의 동굴 26/28 이 「덩이 + 가운데 호수 + 아래 가운데 입구」 한 공식이었다(19장은 방 구성까지 입구·호수·보물·보스 4방). 모델은 type·theme·size 낱말만 넘기고 `layoutBlob` 이 방 수(small=3)·입구 자리(아래 가운데)·역할(가장 깊은 = 보스, 막다른 = 보물, small 이면 호수 1)을 정했고, terra 는 `hints.seed` 를 0·1·2 로 채워 씨앗 고르기까지 꺼졌다. 사용자 원칙: **맵·방은 모델이 설계하고 함수는 조화·검사만**(방 설계 `zones[].design` 과 같은 길).
+
+- 형식: `make_place` 의 `spec.dungeonDesign`(여러 층은 `spec.floorDesigns`) — `src/editor/dungeonKit/designLayout.ts` `DungeonDesign`. `entrance`(south·north·west·east), `rooms[{id, role(entrance·boss·treasure·lake·camp·shrine·forge·hall·grotto), size(small~huge 또는 w·h), shape(blob·cavern·long·shaft·ring·twin), dir, at(n·se·center… 또는 "x,y" 0~1), water(none·pool·lake·stream), features(stalagmites·crystals·mushrooms·bones·pillars·boulders·camp)}]`, `links[{from,to,kind(winding·straight·narrow·wide)}]` 또는 `connections`(linear·branch·loop·hub, 적은 순서로). 스키마에 enum·범위 없음, `normalize*` 가 한·영 낱말을 너그럽게 읽는다. `author_dungeon` 도 같은 `design`·`floorDesigns` 인자를 받는다(설계 하나 + 여러 층이면 마지막 층에만, 「고침:」으로 알림).
+- 누가 정하나: **모델** = 방 수·역할·크기·모양·자리·물·특징·길·입구 쪽. **함수**(`layoutDesignedBlob`) = 겹치는 방 밀기(4칸 넘게 민 방만 알림), 이은 방 사이가 8칸 넘게 비면 판을 당기기(자리 순서 유지), 이어지지 않은 방을 가장 가까운 방과 잇기, 입구·보스 없음·여럿 고치기, 보스 방·고리·입구 최소 크기, 작은 방 호수 → 웅덩이, 테마에 없는 액체(용암↔물·액체 없는 테마) 바꾸기, 모르는 모양·특징 빼기. 고친 것은 모두 warnings 「고침: …」 줄. 방을 더하거나 고르지 않는다. 벽 두께·다리·도달은 원래대로 마스크 `settle` 이 맞춘다.
+- 불규칙 문법(cave·volcano·ice·forest·swamp·otherworld)은 설계 자리 그대로 판다(`layouts.ts` `layoutBlob` 첫 줄에서 갈린다). 입구 방은 계단 걸 평평한 북벽 심(7×)을 지키고 다른 방으로 가는 길은 옆구리로 나간다. 숲·늪은 설계한 입구 쪽 맵 끝으로 출구 길(`compose.ts` trailExit, `layout.entranceSide`). 방+통로 문법(catacomb·castle·temple·mine·sewer·pyramid·tower)은 `designToRooms` 가 rooms(kind·크기·from = 입구 쪽 이웃·dir = 두 방 at 비교)로 옮기고, 나무 밖 길이 있으면 `layout:"loop"`. 미궁은 설계를 쓰지 않는다(알림).
+- 특징은 방 꾸미기 뒤 `dress.ts` `dressDesignFeatures` 가 덩이로만 더한다(낱개 흩기 없음 — 트인 바닥 외톨이 기물 규칙). 놓을 자리·그림이 없으면 「고침: 방 X 의 특징 … 빠졌다」.
+- 재료: v2 동사 `dungeon_parts({theme})`(`src/ai/v2/dungeonParts.ts`) — 모양·역할·물·특징·연결 어휘, 뼈대가 서로 다른 예시 넷(`DUNGEON_DESIGN_EXAMPLES`: 남쪽 입구 갈래·서쪽 입구 물줄기 사슬·동쪽 입구 호수 고리·북쪽 입구 허브)과 그 예시를 사본에서 `author_dungeon` 으로 실제 지은 1배 그림(테마별 캐시).
+- 설계 없이 온 던전·동굴 `make_place`(`mapId` 다시 짓기 제외)는 장소 이름마다 한 번 되돌려 보낸다(`session.dungeonBounced`, 「아직 짓지 않았다(실패 아님)」 + parts). 다시 없이 오면 예전 함수 배치. 설계한 층의 `next` 는 `edit_place({patch:{mapId, set:{dungeonDesign: 고친 설계 전체}}})` 를 이른다.
+- 씨앗: `hints.seed`·`edit_place` 의 `seed` 를 모델 스키마에서 뺐고, `make_place`·`applyPatch` 가 들어온 `hints.seed` 를 버린다. 던전 씨앗은 `spec.variety`(프로젝트 열쇠 + 요청문)와 이름의 해시 — 같은 게임·같은 요청이면 같은 층, 다른 게임이면 다르다.
+- 시험: `bun scripts/qa/assistant-v2/dungeonDesign.mts <out> [theme…]`(예시 넷 + 설계 없음, 모델 없음). 실조수 `suite/dungeon-live.sh <arm> <prompt> <batch>`(같은 요청 same1~3 + demon·crystal·goblin·volcano·forest), 지문은 `suite/mapvqa/render-all.mts` + 같은 지문 규칙. 결과 페이지 `~/claude-viz/dungeon-design-1029.html`.
 ## 끝맺음 단계 더하기 (2026-10-29 단계 목록화)
 
 끝맺음 자동 단계와 출구·이동 칸 마감은 **단계 하나 = 파일 하나** 목록이다. 수리 작업자 여럿이 같은 파일(옛 `finishAutoBuild.ts`·`verbs.ts clearLanes`)을 고쳐 체리픽이 부딪히던 것을 없앤 구조 변경이며 동작은 같다(`finishReplay --trace` 로 vm5~vm7 판 대조).
