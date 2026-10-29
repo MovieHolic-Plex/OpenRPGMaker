@@ -1849,7 +1849,9 @@ function pathOpenerGoals(project: Project, mapId: string | undefined): Goal[] {
     visitPageCommands(page, (visit) => {
       const command = visit.command;
       if (command.kind !== "setSwitch" || command.value !== true || typeof command.switchId !== "string" || !openers.has(command.switchId)) return;
-      if (requirementsOf(project, visit).some((req) => !satisfiedAtStart(project, req))) return;
+      // 이 맵에 이미 와 있다(목표가 막혀 다시 시도하는 자리) — 이 맵 진입 요구(문이 단계 뒤에만 열린다)는 채워진 것이다.
+      // 2026-10-29 vm4 terra jrpg: 단계 순서 잠금으로 동굴 문이 「촌장의 부탁」 뒤에만 열리자 레버의 맵 요구가 «처음엔 못 함» 이 되어 레버를 안 당겼다.
+      if (requirementsOf(project, visit).some((req) => !(req.kind === "map" && req.id === mapId) && !satisfiedAtStart(project, req))) return;
       const id = command.switchId;
       if (goals.some((goal) => goal.visit.command.switchId === id)) return;
       goals.push({ label: `${requirementLabel(project, { kind: "switch", id })} 켜기(길 막힘 풀기)`, visit, done: (session) => session.switches[id] === true });

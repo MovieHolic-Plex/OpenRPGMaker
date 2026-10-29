@@ -913,6 +913,9 @@ export function lockStepOrderDoorsIn(project: Project): string[] {
     const target = nxt.map;
     if (stepEvents.slice(0, k + 1).some((r) => r?.map.id === target.id)) return;
     if (!reachWithout(target.id).has(cur.map.id)) return;
+    // 시작 맵·앞 단계로 가는 길목(허브 홀)은 잠그지 않는다 — 모든 앞 단계 맵이 B 를 거치지 않고 닿아야 한다
+    // (vm3 deepseek 방탈출: 마지막 단계가 현관 홀이라 응접실→홀 문까지 잠그면 서재로 못 간다).
+    const others = target.id === project.startMapId || stepEvents.slice(0, k + 1).some((r) => r && !reachWithout(target.id).has(r.map.id)) ? new Set([cur.map.id]) : undefined;
     const gives = eventGives(project, cur.ev);
     const reads = ((nxt.ev.pages ?? []) as unknown as RawPage[]).flatMap((p) => (p.conditions ?? []) as Cond[]);
     const readSwitch = reads.find((c) => c.kind === "switch" && c.value !== false && c.switchId && gives.switches.includes(c.switchId));
@@ -924,12 +927,14 @@ export function lockStepOrderDoorsIn(project: Project): string[] {
     const speakers = JSON.stringify(cur.ev.pages ?? []).match(/"speaker":"([^"]+)"/gu)?.map((m) => m.slice(11, -1).trim()).filter(Boolean) ?? [];
     const speaker = speakers.sort((a, b) => speakers.filter((x) => x === b).length - speakers.filter((x) => x === a).length)[0];
     const itemName = cond.kind === "item" ? String(project.database.items.find((i) => i.id === cond.itemId)?.name ?? "").trim() : "";
-    for (const door of cur.map.events ?? []) {
-      if (door.id === cur.ev.id) continue;
+    // 단계 k 맵의 문뿐 아니라 B 로 가는 모든 맵의 문을 잠근다 — 2026-10-29 vm3 argon jrpg: 단계 1(결계 해제)은 동굴, 단계 2(최후의 결전)는 옥좌인데
+    // 마을 서쪽 가장자리 (0,20)이 조건 없이 옥좌로 옮겨 동굴·결계를 건너뛰었다(동굴 문만 잠갔다).
+    for (const doorMap of Object.values(project.maps)) for (const door of doorMap.events ?? []) {
+      if (doorMap.id === target.id || door.id === cur.ev.id || (others && !others.has(doorMap.id))) continue;
       const pages = (door.pages ?? []) as unknown as RawPage[];
       if (!pages.some((p) => transfersTo(p.commands ?? [], new Set()).has(target.id) && !condHas(p, cond))) continue;
-      const bearing = bearingWord({ x: door.x, y: door.y }, { x: cur.ev.x, y: cur.ev.y });
-      const where = bearing === "바로 옆" ? "바로 옆" : `${bearing}의`;
+      const bearing = doorMap.id === cur.map.id ? bearingWord({ x: door.x, y: door.y }, { x: cur.ev.x, y: cur.ev.y }) : "";
+      const where = doorMap.id !== cur.map.id ? `${cur.map.name ?? cur.map.id}의` : bearing === "바로 옆" ? "바로 옆" : `${bearing}의`;
       const place = String(target.name ?? "").trim();
       const first = itemName ? `${itemName}${josa(itemName, "이", "가")} 있어야 이 길로 갈 수 있을 것 같다.` : place ? `아직 ${place}${towardJosa(place)} 갈 때가 아니다.` : "아직 이 길로 갈 때가 아니다.";
       const body = `${first} ${speaker ? `먼저 ${where} 「${speaker}」에게 말을 걸어 보자.` : `먼저 ${where} 「${stepName}」${josa(stepName, "을", "를")} 찾아보자.`}`;
@@ -939,8 +944,8 @@ export function lockStepOrderDoorsIn(project: Project): string[] {
         next.push({ ...structuredClone(p), id: `${String(p.id ?? `p${i}`)}_order`, name: "닫힘", commands: [{ kind: "text", body }] });
         next.push({ ...structuredClone(p), conditions: [...(p.conditions ?? []), cond] });
       });
-      cur.map.events = cur.map.events.map((e) => e.id === door.id ? { ...e, pages: next as unknown as typeof e.pages } : e);
-      notes.push(`${cur.map.name ?? cur.map.id} → ${target.name ?? target.id} (${door.x},${door.y})를 「${stepName}」 뒤에만 열리게`);
+      doorMap.events = doorMap.events.map((e) => e.id === door.id ? { ...e, pages: next as unknown as typeof e.pages } : e);
+      notes.push(`${doorMap.name ?? doorMap.id} → ${target.name ?? target.id} (${door.x},${door.y})를 「${stepName}」 뒤에만 열리게`);
     }
   });
   return notes;
