@@ -27,8 +27,8 @@ export interface RoomDesignItem {
 export interface RoomDesignGroup {
   /** 묶음 이름(모델이 붙인다): 「책상 자리」「독서 구석」「책장 벽」. */
   readonly name?: string;
-  /** 놓는 곳. 기본 center. */
-  readonly at?: DesignAt;
+  /** 놓는 곳(north·south·west·east·center·nw·ne·sw·se — 「north wall」「southeast」「북서」 같은 말도 읽는다). 생략하고 x·y 도 없으면 items 의 dx·dy 를 바닥 좌표로 읽는다. */
+  readonly at?: string;
   /** 그 벽을 따라 0(서·북 끝)~1(동·남 끝). 기본 0.5. */
   readonly pos?: number;
   /** 바닥 칸 좌표(바닥 왼쪽 위 = 0,0 — 벽면 두 줄 아래 첫 바닥 줄). 주면 at·pos 보다 먼저. */
@@ -39,17 +39,51 @@ export interface RoomDesignGroup {
 }
 export interface RoomDesign {
   /** rect 네모 · L ㄱ자(corner 귀퉁이를 도려 냄) · T ㅗ자(남쪽 두 귀퉁이) · bay 창가 돌출(북쪽 두 귀퉁이). */
-  readonly shape?: "rect" | "L" | "T" | "bay";
+  readonly shape?: string;
   /** 바닥 가로·세로(벽면 줄 빼고). */
   readonly w?: number; readonly h?: number;
-  readonly corner?: "nw" | "ne" | "sw" | "se";
-  /** 남쪽 출구 자리. */
-  readonly door?: "left" | "center" | "right";
+  readonly corner?: string;
+  /** 남쪽 출구 자리 — left·center·right 또는 0~1 숫자(글자). */
+  readonly door?: string | number;
   readonly floor?: string; readonly wall?: string;
   readonly groups?: readonly RoomDesignGroup[];
 }
 export interface DesignRoomReport { placed: string[]; fixes: string[]; blockedShare: number; floor: number; items: number }
 export interface DesignFurnishResult { readonly input: HandInteriorInput; readonly perRoom: Record<string, DesignRoomReport> }
+
+/** 모델이 쓴 자리 낱말 → 자리(모르면 undefined). */
+export function normalizeAt(raw: unknown): DesignAt | undefined {
+  const w = String(raw ?? "").toLowerCase().replace(/\s*(wall|side|corner|쪽|벽|구석|모서리)\s*/gu, " ").trim();
+  if (!w) return undefined;
+  const n = /north|top|위|북|^n$|^n\b/u.test(w), s = /south|bottom|아래|남|^s$|^s\b/u.test(w), e = /east|right|오른|동|^e$/u.test(w), wst = /west|left|왼|서|^w$/u.test(w);
+  if (/^(nw|ne|sw|se)$/u.test(w)) return w as DesignAt;
+  if (n && wst) return "nw"; if (n && e) return "ne"; if (s && wst) return "sw"; if (s && e) return "se";
+  if (n) return "north"; if (s) return "south"; if (wst) return "west"; if (e) return "east";
+  if (/center|centre|middle|가운데|중앙|중간/u.test(w)) return "center";
+  return undefined;
+}
+export function normalizeShape(raw: unknown): "rect" | "L" | "T" | "bay" {
+  const w = String(raw ?? "").trim();
+  if (/^l$|l.?shape|ㄱ|ㄴ|꺾/iu.test(w)) return "L";
+  if (/^t$|t.?shape|ㅗ|ㅜ/iu.test(w)) return "T";
+  if (/bay|alcove|돌출|창가|알코브/iu.test(w)) return "bay";
+  return "rect";
+}
+export function normalizeCorner(raw: unknown): "nw" | "ne" | "sw" | "se" | undefined {
+  const a = normalizeAt(raw);
+  return a === "nw" || a === "ne" || a === "sw" || a === "se" ? a : undefined;
+}
+/** 남쪽 출구 자리 → 0~1(서→동). 모르면 undefined. */
+export function normalizeDoor(raw: unknown): number | undefined {
+  if (typeof raw === "number" && Number.isFinite(raw)) return Math.max(0.1, Math.min(0.9, raw > 1 ? raw / 100 : raw));
+  const w = String(raw ?? "").toLowerCase();
+  const num = Number(w);
+  if (w && Number.isFinite(num)) return normalizeDoor(num);
+  if (/left|west|왼|서/u.test(w)) return 0.2;
+  if (/right|east|오른|동/u.test(w)) return 0.8;
+  if (/center|middle|가운데|중앙|south|남/u.test(w)) return 0.5;
+  return undefined;
+}
 
 const RUG_WORDS: readonly [RegExp, string][] = [[/royal|진홍|왕/iu, "rug royal"], [/red|붉|빨/iu, "rug red"], [/blue|파랑|파란|푸른/iu, "rug blue"], [/green|초록|녹/iu, "rug green"], [/purple|보라/iu, "rug purple"], [/brown|갈색|밤색/iu, "rug brown"]];
 const SURFACE_RE = /desk|table|counter|roundtable|dining|bench|altar|stand|lectern/iu;
@@ -83,12 +117,16 @@ const rugId = (word: string | undefined, S: HandInteriorSpec): string | undefine
 interface LocalItem { it: InteriorTemplateItem; hang: boolean; wallKind: boolean }
 
 /** 묶음 하나를 상대 좌표 기물 목록으로(이름 맞춤·묶음 안 겹침 풀기·의자 방향은 여기서). */
-function localGroup(g: RoomDesignGroup, S: HandInteriorSpec, label: string, fixes: string[]): LocalItem[] {
-  const vertical = g.at === "west" || g.at === "east";
+function localGroup(g: RoomDesignGroup, S: HandInteriorSpec, label: string, fixes: string[]): { items: LocalItem[]; origin: [number, number] } {
+  const at0 = normalizeAt(g.at);
+  const vertical = at0 === "west" || at0 === "east";
   const out: LocalItem[] = [];
   const taken = new Set<string>();
   let cursor = 0;
-  for (const raw of (g.items ?? []).slice(0, 24)) {
+  for (const raw0 of (g.items ?? []).slice(0, 24)) {
+    // 기물 자리를 x·y 로 쓴 모델도 있다 — 묶음 안 상대 칸(dx·dy)으로 읽는다.
+    const loose = raw0 as RoomDesignItem & { x?: number; y?: number };
+    const raw: RoomDesignItem = { ...raw0, ...(typeof loose.dx !== "number" && typeof loose.x === "number" ? { dx: loose.x } : {}), ...(typeof loose.dy !== "number" && typeof loose.y === "number" ? { dy: loose.y } : {}) };
     const r = resolveDesignItem(raw.id, S);
     if (!r) { fixes.push(`${label}: 「${raw.id}」는 칩셋에 없어 뺐다`); continue; }
     if (r.id !== raw.id) fixes.push(`${label}: 「${raw.id}」를 칩셋 이름 「${r.id}」로 맞췄다`);
@@ -130,7 +168,7 @@ function localGroup(g: RoomDesignGroup, S: HandInteriorSpec, label: string, fixe
   // 바닥 상자 기준으로 0,0 에 맞춘다(걸이는 상대 y 그대로).
   const ground = out.filter((li) => !li.hang && li.it.t === "o");
   const mx = ground.length ? Math.min(...ground.map((li) => li.it.x)) : 0, my = ground.length ? Math.min(...ground.map((li) => li.it.y)) : 0;
-  return out.map((li) => ({ ...li, it: { ...li.it, x: li.it.x - mx, y: li.hang ? li.it.y : li.it.y - my } }));
+  return { items: out.map((li) => ({ ...li, it: { ...li.it, x: li.it.x - mx, y: li.hang ? li.it.y : li.it.y - my } })), origin: [mx, my] };
 }
 
 /** 설계가 있는 방마다 묶음을 놓는다. 다른 방은 건드리지 않는다. */
@@ -156,30 +194,39 @@ export function furnishFromDesign(base: HandInteriorInput, rooms: readonly Layou
     (design.groups ?? []).slice(0, 16).forEach((g, i) => {
       const label = `「${g.name ?? `묶음 ${i + 1}`}」`;
       // 벽 가구(책장·진열장)는 북벽 첫 바닥 줄에만 선다 — 다른 벽 묶음에 든 것은 북벽 묶음으로 떼어 낸다.
-      if (g.at !== "north" && !(g.at === "nw" || g.at === "ne") && typeof g.y !== "number") {
+      const ga = normalizeAt(g.at);
+      if (ga && ga !== "north" && ga !== "nw" && ga !== "ne" && typeof g.y !== "number") {
         const wallItems = (g.items ?? []).filter((it) => { const r = resolveDesignItem(it.id, S); return r?.t === "o" && (S.objects[r.id]?.kind === "wall" || S.objects[r.id]?.kind === "hang"); });
         if (wallItems.length) {
           fixes.push(`${label}: 벽 가구·걸이(${wallItems.map((it) => it.id).join("·")})는 북벽에만 서서 북벽 묶음으로 옮겼다`);
           groups.push({ g: { ...g, items: (g.items ?? []).filter((it) => !wallItems.includes(it)) }, label });
-          groups.push({ g: { name: `${g.name ?? `묶음 ${i + 1}`}(북벽)`, at: "north", pos: g.at === "west" || g.at === "sw" ? 0 : g.at === "east" || g.at === "se" ? 1 : g.pos ?? 0.5, items: wallItems.map((it) => ({ id: it.id, count: it.count })) }, label: `「${g.name ?? `묶음 ${i + 1}`}(북벽)」` });
+          groups.push({ g: { name: `${g.name ?? `묶음 ${i + 1}`}(북벽)`, at: "north", pos: ga === "west" || ga === "sw" ? 0 : ga === "east" || ga === "se" ? 1 : g.pos ?? 0.5, items: wallItems.map((it) => ({ id: it.id, count: it.count })) }, label: `「${g.name ?? `묶음 ${i + 1}`}(북벽)」` });
           return;
         }
       }
       groups.push({ g, label });
     });
-    for (const { g, label } of groups) {
+    for (const { g: g0, label } of groups) {
+      // 묶음 자리를 dx·dy 로 쓴 모델도 있다(flash) — x·y 로 읽는다.
+      const lg = g0 as RoomDesignGroup & { dx?: number; dy?: number };
+      const g: RoomDesignGroup = typeof g0.x !== "number" && typeof lg.dx === "number" && typeof lg.dy === "number" ? { ...g0, x: lg.dx, y: lg.dy } : g0;
       if (!(g.items ?? []).length) continue;
-      const local = localGroup(g, S, label, fixes);
+      const { items: local, origin } = localGroup(g, S, label, fixes);
       if (!local.length) continue;
       const ground = local.filter((li) => !li.hang && li.it.t === "o");
       const gw = ground.length ? Math.max(...ground.map((li) => box(li.it, S)[2])) : Math.max(1, ...local.map((li) => box(li.it, S)[2]));
       const gh = ground.length ? Math.max(...ground.map((li) => box(li.it, S)[3])) : 1;
       if (ground.some((li) => li.wallKind && li.it.y !== 0)) fixes.push(`${label}: 벽 가구는 묶음 맨 윗줄(북벽에 붙는 줄)에 둬야 한다 — 도달 검사가 막으면 빠진다`);
-      const at = typeof g.x === "number" && typeof g.y === "number" ? undefined : (g.at ?? "center");
+      // 자리: x·y 가 있으면 그 칸, at 이 있으면 그 벽·모서리, 둘 다 없으면 items 의 dx·dy 를 바닥 좌표로(2026-10-29 Argon: at 없이 dx·dy 에 방 좌표를 썼다).
+      const named = normalizeAt(g.at);
+      if (g.at !== undefined && !named) fixes.push(`${label}: 자리 「${g.at}」를 몰라 가운데로 읽었다`);
+      const absolute = !named && g.at === undefined && !(typeof g.x === "number" && typeof g.y === "number");
+      const at = typeof g.x === "number" && typeof g.y === "number" || absolute ? undefined : (named ?? "center");
       const pos = Math.max(0, Math.min(1, typeof g.pos === "number" ? g.pos : 0.5));
       const along = (span: number) => Math.round(pos * Math.max(0, span));
       let tx: number, ty: number;
-      if (!at) { tx = room.x0 + Math.round(g.x!); ty = fy0 + Math.round(g.y!); }
+      if (absolute) { tx = room.x0 + origin[0]; ty = fy0 + origin[1]; }
+      else if (!at) { tx = room.x0 + Math.round(g.x!); ty = fy0 + Math.round(g.y!); }
       else {
         const west = at === "west" || at === "nw" || at === "sw", east = at === "east" || at === "ne" || at === "se";
         const north = at === "north" || at === "nw" || at === "ne", south = at === "south" || at === "sw" || at === "se";

@@ -133,27 +133,27 @@ const ROOM_DESIGN_SCHEMA = {
   type: "object",
   description: "(실내, 이 방을 직접 설계할 때) 방 모양·크기·문과 가구 묶음. 주면 빌더는 견본을 깔지 않고 이 설계대로 짓고, 이름 맞춤·겹침·의자 방향·문 앞 통로·도달만 고쳐 고친 것을 돌려준다. 기물 id 는 room_parts 로 본다.",
   properties: {
-    shape: { type: "string", enum: ["rect", "L", "T", "bay"], description: "rect 네모 · L ㄱ자(corner 귀퉁이를 도려 냄) · T ㅗ자(남쪽 두 귀퉁이) · bay 창가 돌출(북쪽 두 귀퉁이 도려 냄)" },
-    w: { type: "integer", minimum: 5, maximum: 24, description: "바닥 가로 칸" },
-    h: { type: "integer", minimum: 4, maximum: 18, description: "바닥 세로 칸(벽면 줄 빼고)" },
-    corner: { type: "string", enum: ["nw", "ne", "sw", "se"], description: "L 이 도려 낼 귀퉁이" },
-    door: { type: "string", enum: ["left", "center", "right"], description: "남쪽 출구 자리" },
+    shape: { type: "string", description: "(rect·L·T·bay) rect 네모 · L ㄱ자(corner 귀퉁이를 도려 냄) · T ㅗ자(남쪽 두 귀퉁이) · bay 창가 돌출(북쪽 두 귀퉁이 도려 냄)" },
+    w: { type: "integer", description: "바닥 가로 칸(5~24)" },
+    h: { type: "integer", description: "바닥 세로 칸(벽면 줄 빼고, 4~18)" },
+    corner: { type: "string", description: "(nw·ne·sw·se) L 이 도려 낼 귀퉁이" },
+    door: { type: "string", description: "남쪽 출구 자리 — left·center·right" },
     floor: { type: "string", description: "바닥 재질 id(room_parts 의 floors)" },
     wall: { type: "string", description: "벽면 재질 id(room_parts 의 walls)" },
-    groups: { type: "array", maxItems: 16, description: "가구 묶음 — 함께 쓰이는 기물 무리(책상+의자, 안락의자 둘+원탁+등, 책장 줄). 무엇을 몇 개 놓을지는 이 목록이 전부다(함수는 더하지 않는다).", items: {
+    groups: { type: "array", description: "(16개까지) 가구 묶음 — 함께 쓰이는 기물 무리(책상+의자, 안락의자 둘+원탁+등, 책장 줄). 무엇을 몇 개 놓을지는 이 목록이 전부다(함수는 더하지 않는다).", items: {
       type: "object",
       properties: {
         name: { type: "string", description: "묶음 이름: 책상 자리·독서 구석·책장 벽" },
-        at: { type: "string", enum: ["north", "south", "west", "east", "center", "nw", "ne", "sw", "se"], description: "놓는 곳(벽·모서리·가운데). 책장·진열장(벽 가구)과 걸이(창·지도·액자)는 north 에만 선다." },
+        at: { type: "string", description: "(north·south·west·east·center·nw·ne·sw·se) 놓는 곳(벽·모서리·가운데). 책장·진열장(벽 가구)과 걸이(창·지도·액자)는 north 에만 선다." },
         pos: { type: "number", description: "그 벽을 따라 0(서·북 끝)~1(동·남 끝). 기본 0.5" },
         x: { type: "integer", description: "(선택) 바닥 칸 좌표 — 바닥 왼쪽 위가 0,0. 주면 at 보다 먼저" },
         y: { type: "integer" },
         rug: { type: "string", description: "(선택) 묶음 밑 깔개 색: red·royal·blue·green·purple·brown" },
-        items: { type: "array", minItems: 1, maxItems: 12, items: { type: "object", properties: {
+        items: { type: "array", items: { type: "object", properties: {
           id: { type: "string", description: "칩셋 기물 id(room_parts) — 예: bookshelf 3w · desk 3x1 · chair N(북쪽을 보는 의자) · armchair" },
           dx: { type: "integer", description: "묶음 안 상대 칸(왼쪽 위 0,0). 생략하면 앞 기물 옆(벽 서·동 묶음은 아래로)에 잇는다" },
           dy: { type: "integer", description: "걸이는 -2(벽면 윗줄)" },
-          count: { type: "integer", minimum: 1, maximum: 8, description: "같은 기물을 몇 개 잇대어" },
+          count: { type: "integer", description: "(1~8) 같은 기물을 몇 개 잇대어" },
         }, required: ["id"] } },
       },
       required: ["items"],

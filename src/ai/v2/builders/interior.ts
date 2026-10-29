@@ -13,7 +13,7 @@ import { kindServesPurpose, purposeOf, purposeSwap } from "../roomPurpose";
 import { DRESS_ROOM_TARGET, dressRoom, roomBarePct } from "./dressRoom";
 import { VIGNETTE_TARGET, hashText, itemCharacters, itemsFitWords, roomCharacters, seeded, vignetteRoomSize } from "@/editor/handInterior/vignettes";
 import type { HandInteriorNotch } from "@/editor/handInterior/rooms";
-import type { DesignRoomReport, RoomDesign } from "@/editor/handInterior/designRoom";
+import { normalizeCorner, normalizeDoor, normalizeShape, type DesignRoomReport, type RoomDesign } from "@/editor/handInterior/designRoom";
 
 type Obj = { id: string; x: number; y: number };
 type Room = { id: string; x0: number; y0: number; x1: number; y1: number; floor?: string; wall?: string };
@@ -1006,14 +1006,15 @@ export const INTERIOR_CARD = `[실내 interior] make_place({type:"interior", nam
 function designedRoom(zone: ZoneSpec, kind: string, n: number, design: RoomDesign, S: HandInteriorSpec, notes: string[]) {
   const w = Math.max(5, Math.min(24, Math.round(design.w ?? 8))), fh = Math.max(4, Math.min(18, Math.round(design.h ?? 6)));
   const notches: HandInteriorNotch[] = [];
-  if (design.shape === "L") { const c = design.corner ?? "nw"; notches.push({ corner: c, w: Math.max(2, Math.min(4, Math.floor(w / 3))), h: c[0] === "n" ? 2 : Math.max(2, Math.min(3, fh - 3)) }); }
-  else if (design.shape === "T") notches.push({ corner: "sw", w: 2, h: 2 }, { corner: "se", w: 2, h: 2 });
-  else if (design.shape === "bay") notches.push({ corner: "nw", w: 2, h: 2 }, { corner: "ne", w: 2, h: 2 });
+  const shape = normalizeShape(design.shape);
+  if (shape === "L") { const c = normalizeCorner(design.corner) ?? "nw"; notches.push({ corner: c, w: Math.max(2, Math.min(4, Math.floor(w / 3))), h: c[0] === "n" ? 2 : Math.max(2, Math.min(3, fh - 3)) }); }
+  else if (shape === "T") notches.push({ corner: "sw", w: 2, h: 2 }, { corner: "se", w: 2, h: 2 });
+  else if (shape === "bay") notches.push({ corner: "nw", w: 2, h: 2 }, { corner: "ne", w: 2, h: 2 });
   const floor = design.floor && S.floors[design.floor] ? design.floor : undefined;
   const wall = design.wall && S.walls[design.wall] ? design.wall : undefined;
   if (design.floor && !floor) notes.push(`설계 바닥 「${design.floor}」는 칩셋에 없어 기본 바닥으로 지었다(있는 것: ${Object.keys(S.floors).slice(0, 12).join("·")}…)`);
   if (design.wall && !wall) notes.push(`설계 벽면 「${design.wall}」는 칩셋에 없어 기본 벽면으로 지었다(있는 것: ${Object.keys(S.walls).slice(0, 12).join("·")}…)`);
-  const exitAt = design.door === "left" ? 0.2 : design.door === "right" ? 0.8 : design.door === "center" || design.shape === "T" ? 0.5 : undefined;
+  const exitAt = normalizeDoor(design.door) ?? (shape === "T" ? 0.5 : undefined);
   return { id: zone.id ?? (n > 1 ? `${kind}${n}` : kind), kind, vig: false, tplId: undefined as string | undefined, composed: false, designed: true, design,
     w, h: fh + 2, min: { w: 5, h: 6 }, ...(floor ? { floor } : {}), ...(wall ? { wall } : {}), ...(notches.length ? { notches } : {}), ...(exitAt !== undefined ? { exitAt } : {}), zone };
 }
