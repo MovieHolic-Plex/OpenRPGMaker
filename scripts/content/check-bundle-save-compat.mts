@@ -4,15 +4,18 @@
 // 옛 저장본(번들 차이 저장, src/project/bundledTilesetDiff.ts)이 전부 「tileset beodeul_city: passability 길이 불일치」로 열리지 않았다.
 // 번들 변경을 커밋하기 전에 실제 저장본 사본으로 이 스크립트를 돌린다. 원본에는 아무것도 쓰지 않는다(임시 폴더 사본에서 저장한다).
 //
-//   npx tsx scripts/content/check-bundle-save-compat.mts <project 폴더 | project.sqlite | 폴더를 품은 디렉터리>... [--limit N] [--keep]
+//   npx tsx scripts/content/check-bundle-save-compat.mts <project 폴더 | project.sqlite | 폴더를 품은 디렉터리>... [--limit N] [--keep] [--strict]
 //
 // 디렉터리를 주면 그 아래(깊이 4까지)의 project.sqlite 를 모두 찾는다. 한 저장본마다:
 //  1) 열기  — 앱과 같은 deserialize(번들 차이 되돌리기 + 검사). 실패하면 FAIL.
 //  2) 그림 지문 — 맵 네 층·겹침 스택의 칸마다 «시트 칸 n» 또는 «이식 칸(원본 칩셋, 원본 칸)». 열린 직후(저장 때 번호)에 뜬다.
 //  3) 로드 정규화(ensureBundledTilesets, 편집기 로드와 같다) → 지문이 같아야 한다(번호는 바뀌어도 그림은 같다).
 //  4) 저장 → 닫기 → 다시 열기 → 정규화 → 지문이 같고, 다시 정규화해도 칸 수가 그대로여야 한다.
-//  5) 모든 타일셋: 칸 표 길이 = count, 이식 칸 번호 중복 없음·count 안. 번들 타일셋: 번들 칸(0..번들 count) 위에 번들에 없는 이식 칸이 없다.
-// 종료 코드: 하나라도 FAIL 이면 1.
+//  5) 모든 타일셋: 칸 표 길이 = count, 이식 칸 번호 중복 없음·count 안.
+//  WARN(기존 사본 구조일 수 있다 — 바꾸기 전 판에서도 같은지 그 체크아웃에서 이 스크립트로 비교한다):
+//   - 번들 타일셋 번호(0..번들 count) 위에 번들과 다른 그림의 이식 칸이 있다(옛 사본의 이식 배치가 번들과 다르다).
+//   - 번들과 같은 내용의 킷이 이 사본에서 다른 그림을 가리킨다(위 배치 차이가 실제로 보이는 피해).
+// 종료 코드: FAIL 이 하나라도 있으면 1. --strict 면 WARN 도 1.
 import { copyFileSync, existsSync, mkdtempSync, readdirSync, rmSync, statSync } from "node:fs";
 import { mkdirSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -83,8 +86,18 @@ function diffPrints(before: Prints, after: Prints): string[] {
   return problems;
 }
 
-function shapeProblems(project: Project): string[] {
+type Found = { hard: string[]; warn: string[] };
+
+function tileNumbers(value: unknown, out: number[] = []): number[] {
+  if (typeof value === "number") out.push(value);
+  else if (Array.isArray(value)) for (const inner of value) tileNumbers(inner, out);
+  else if (value && typeof value === "object") for (const inner of Object.values(value)) tileNumbers(inner, out);
+  return out;
+}
+
+function shapeProblems(project: Project): Found {
   const problems: string[] = [];
+  const warn: string[] = [];
   for (const [id, tileset] of Object.entries(project.tilesets)) {
     for (const key of TABLES) {
       const table = (tileset as unknown as Record<string, unknown>)[key];
@@ -109,9 +122,21 @@ function shapeProblems(project: Project): string[] {
       // 번들 시트 칸(첫 번들 이식 칸 앞) 위의 이식, 또는 번들 이식 자리에 다른 그림 → 겹침
       if (graft.targetTile < firstBundleGraft ? own === undefined : own !== JSON.stringify(graft)) { overlaps += 1; if (!sample) sample = JSON.stringify(graft); }
     }
-    if (overlaps) problems.push(`${id} 번들 칸과 겹치는 이식 칸 ${overlaps} (${sample})`);
+    if (overlaps) warn.push(`${id} 번들 번호와 다른 그림의 이식 칸 ${overlaps} (${sample})`);
+    // 실제 피해: 번들과 같은 내용의 킷이 이 사본에서 다른 그림을 가리키는가(번들 칸 번호 = 사본 칸 번호여야 한다)
+    const bundleIdent = identOf(bundle);
+    const copyIdent = identOf(tileset);
+    const shippedKits = new Map((bundle.structureKits ?? []).map((kit) => [kit.id, JSON.stringify(kit.rows)]));
+    let wrongKits = 0;
+    let kitSample = "";
+    for (const kit of tileset.structureKits ?? []) {
+      if (shippedKits.get(kit.id) !== JSON.stringify(kit.rows)) continue;
+      const bad = tileNumbers(kit.rows).find((tile) => tile >= 0 && bundleIdent(tile) !== copyIdent(tile));
+      if (bad !== undefined) { wrongKits += 1; if (!kitSample) kitSample = `${kit.id} 칸 ${bad}: 번들 ${bundleIdent(bad)} · 사본 ${copyIdent(bad)}`; }
+    }
+    if (wrongKits) warn.push(`${id} 번들 킷이 이 사본에서 다른 그림을 가리킴 ${wrongKits}개 (${kitSample})`);
   }
-  return problems;
+  return { hard: problems, warn };
 }
 
 function counts(project: Project): string {
@@ -119,10 +144,16 @@ function counts(project: Project): string {
   return tileset ? `beodeul_city ${tileset.count}칸·이식 ${(tileset.tileGrafts ?? []).length}` : "beodeul_city 없음";
 }
 
-async function checkOne(source: string, keep: boolean): Promise<{ ok: boolean; line: string }> {
+async function checkOne(source: string, keep: boolean): Promise<{ ok: boolean; warned: boolean; line: string }> {
   const dir = copyProject(source);
   const problems: string[] = [];
+  const warnings: string[] = [];
   let line = "";
+  const shape = (label: string, project: Project): void => {
+    const found = shapeProblems(project);
+    problems.push(...found.hard.map((p) => `${label}: ${p}`));
+    warnings.push(...found.warn.map((p) => `${label}: ${p}`));
+  };
   try {
     let store = await openLocalProjectStore({ projectDir: dir });
     let snapshot = store.loadSnapshot();
@@ -131,7 +162,8 @@ async function checkOne(source: string, keep: boolean): Promise<{ ok: boolean; l
     const savedShape = counts(opened);
     const before = prints(opened);
     ensureBundledTilesets(opened);
-    problems.push(...diffPrints(before, prints(opened)).map((p) => `정규화: ${p}`), ...shapeProblems(opened).map((p) => `정규화: ${p}`));
+    problems.push(...diffPrints(before, prints(opened)).map((p) => `정규화: ${p}`));
+    shape("정규화", opened);
     const saved = await store.saveProject(opened);
     if (saved.kind !== "saved") problems.push(`저장 실패 ${saved.kind}`);
     store.close();
@@ -143,7 +175,8 @@ async function checkOne(source: string, keep: boolean): Promise<{ ok: boolean; l
     const countAfterSave = counts(reopened);
     ensureBundledTilesets(reopened);
     if (counts(reopened) !== countAfterSave) problems.push(`다시 연 뒤 정규화가 또 칸을 옮김: ${countAfterSave} → ${counts(reopened)}`);
-    problems.push(...diffPrints(before, prints(reopened)).map((p) => `다시 열기: ${p}`), ...shapeProblems(reopened).map((p) => `다시 열기: ${p}`));
+    problems.push(...diffPrints(before, prints(reopened)).map((p) => `다시 열기: ${p}`));
+    shape("다시 열기", reopened);
     let graftCells = 0;
     for (const cells of before.values()) for (const cell of cells) if (cell.includes("g:")) graftCells += 1;
     line = `저장 때 ${savedShape} → 지금 ${counts(reopened)}, 맵 ${before.size} · 이식 칸을 쓰는 맵 칸 ${graftCells}`;
@@ -153,7 +186,9 @@ async function checkOne(source: string, keep: boolean): Promise<{ ok: boolean; l
     if (!keep) rmSync(dir, { recursive: true, force: true });
   }
   const ok = problems.length === 0;
-  return { ok, line: `${ok ? "OK  " : "FAIL"} ${source}\n     ${line}${problems.length ? "\n     " + [...new Set(problems)].slice(0, 6).join("\n     ") : ""}` };
+  const warned = warnings.length > 0;
+  const notes = [...new Set(problems)].slice(0, 6).concat([...new Set(warnings)].slice(0, 4).map((w) => `WARN ${w}`));
+  return { ok, warned, line: `${ok ? (warned ? "WARN" : "OK  ") : "FAIL"} ${source}\n     ${line}${notes.length ? "\n     " + notes.join("\n     ") : ""}` };
 }
 
 const args = process.argv.slice(2);
@@ -166,11 +201,14 @@ if (inputs.length === 0) {
   process.exit(2);
 }
 const projects = [...new Set(inputs.flatMap((input) => findProjects(input)))].slice(0, limit);
+const strict = args.includes("--strict");
 let failed = 0;
+let warned = 0;
 for (const project of projects) {
   const result = await checkOne(project, keep);
   if (!result.ok) failed += 1;
+  else if (result.warned) warned += 1;
   console.log(result.line);
 }
-console.log(`\n저장본 ${projects.length}개 · 통과 ${projects.length - failed} · 실패 ${failed}`);
-process.exit(failed ? 1 : 0);
+console.log(`\n저장본 ${projects.length}개 · 통과 ${projects.length - failed - warned} · 경고 ${warned} · 실패 ${failed}`);
+process.exit(failed || (strict && warned) ? 1 : 0);
