@@ -3,38 +3,12 @@
 // 예시는 참고 — 카드가 「베끼지 않는다」고 적는다. 설계 형식은 src/editor/dungeonKit/designLayout.ts DungeonDesign.
 import type { PiToolExecResult, PiToolShape } from "@/ai/piAgent/toolAdapter";
 import { DESIGN_FEATURES, DESIGN_SHAPES, type DungeonDesign } from "@/editor/dungeonKit/designLayout";
+export { DUNGEON_DESIGN_SCHEMA } from "@/editor/dungeonKit/designLayout";
 import { GRAMMAR, inferDungeonType } from "@/editor/dungeonKit/grammar";
 import type { DungeonType } from "@/editor/dungeonKit/types";
 import { cloneProjectSharingSharedDictionaries } from "@/project/projectClone";
 import { createBuildRun } from "./buildRun";
 import type { PiAssistantV2Env } from "./env";
-
-const ROOM_SCHEMA = {
-  type: "object",
-  properties: {
-    id: { type: "string", description: "방 이름(links 가 가리킨다) — 예: 입구굴, 수정굴, 용의둥지" },
-    role: { type: "string", description: "entrance 입구 · boss 보스 · treasure 보물 · lake 호수 · camp 야영·둥지 · shrine 제단 · forge 대장간(화산) · hall 넓은 굴 · grotto 곁굴" },
-    size: { type: "string", description: "small · medium · large · huge (또는 w·h)" },
-    w: { type: "integer", description: "(선택) 바닥 가로 칸 6~24" },
-    h: { type: "integer", description: "(선택) 바닥 세로 칸 6~18" },
-    shape: { type: "string", description: "blob 둥근 덩이 · cavern 여러 잎 큰 굴 · long 길쭉한 굴(dir) · shaft 좁고 긴 세로 굴 · ring 가운데 바위·못을 도는 고리 · twin 목으로 이은 두 잎" },
-    dir: { type: "string", description: "(long·twin) ew 가로 · ns 세로" },
-    at: { type: "string", description: "맵 안 자리 — n·ne·e·se·s·sw·w·nw·center 또는 \"x,y\"(0~1, 왼쪽 위 0,0). 방마다 다른 자리를 준다" },
-    water: { type: "string", description: "none · pool 웅덩이 · lake 호수 · stream 다음 방으로 흐르는 물줄기(다리로 건넌다). 테마 액체로 칠한다(동굴·숲·늪 물, 화산 용암, 마계 허공)" },
-    features: { type: "array", items: { type: "string" }, description: "stalagmites 석순 · crystals 수정 · mushrooms 빛 버섯 · bones 뼈 더미 · pillars 부러진 돌기둥 · boulders 바위 · camp 모닥불 야영" },
-  },
-};
-/** make_place spec.dungeonDesign 스키마 — enum·범위 없이 너그럽게 읽는다(designLayout.ts normalize*). */
-export const DUNGEON_DESIGN_SCHEMA = {
-  type: "object",
-  description: "(던전·동굴, 이 층을 직접 설계할 때) 방(역할·크기·모양·자리·물·특징)과 잇는 길·입구 쪽. 주면 빌더는 함수 배치 대신 이 설계대로 짓고, 겹침 밀기·길 잇기·도달·크기 모순만 고쳐 「고침:」으로 돌려준다. 어휘·예시 그림은 dungeon_parts.",
-  properties: {
-    rooms: { type: "array", items: ROOM_SCHEMA, description: "방 2~12개(입구 하나·보스 하나 포함). 방 수·크기·자리는 네가 정한다" },
-    links: { type: "array", items: { type: "object", properties: { from: { type: "string" }, to: { type: "string" }, kind: { type: "string", description: "winding 굽은 길(기본) · straight 곧은 길 · narrow 좁은 틈 · wide 넓은 길" } } }, description: "잇는 길(방 id 끼리). 고리(지름길)를 원하면 닫히는 길을 하나 더" },
-    connections: { type: "string", description: "(links 를 안 줄 때) 방을 적은 순서로 잇는 모양: linear · branch · loop · hub" },
-    entrance: { type: "string", description: "입구가 맵의 어느 쪽: south · north · west · east" },
-  },
-};
 
 /** 서로 다른 뼈대의 예시 — 한 공식(덩이+호수+아래 입구)을 되풀이하지 않게 입구 쪽·연결 모양·모양·물이 모두 다르다. */
 export const DUNGEON_DESIGN_EXAMPLES: readonly { readonly name: string; readonly ko: string; readonly design: DungeonDesign }[] = [

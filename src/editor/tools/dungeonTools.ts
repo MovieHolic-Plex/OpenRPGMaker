@@ -2,6 +2,7 @@
 // 사용자 스크린샷(field-enemy fe1): 조수가 던전 층을 stamp_object 112번 + paint_tiles 67번(절대 좌표)으로 깔다 25분 시간 초과,
 // 횃불·화로·통·상자·기둥이 허공에 뜨고 벽 조각이 바닥에 서고 이벤트가 천장 칸에 놓였다. 좌표를 모델이 고르지 않게 한다.
 // 계산은 src/editor/dungeonKit/ — 중립 마스크(mask.ts) + 칩셋 어댑터(beodeul/·monster/) + 장르 프리셋(genres.ts) + 라우팅(route.ts).
+import { DUNGEON_DESIGN_SCHEMA } from "@/editor/dungeonKit/designLayout";
 import { isPassable } from "@/project/collision";
 import { groundSupportIssues } from "@/project/groundSupport";
 import { MAX_TOOL_MAP_DIMENSION } from "@/project/mapSizeLimits";
@@ -823,8 +824,8 @@ export const AUTHOR_DUNGEON_TOOL: ToolDefinition = {
       size: { type: "string", enum: [...DUNGEON_SIZES], description: "rooms 를 생략했을 때 층 크기: small 방 4 · medium 6(기본) · large 9" },
       width: { type: "integer", description: "바라는 맵 가로(칸, 선택). rooms 생략 시 방 수를 이 넓이에 맞추고, 배치가 이 비율로 자란다." },
       height: { type: "integer", description: "바라는 맵 세로(칸, 선택)." },
-      design: { type: "object", description: "(조수가 설계한 층) 방·길·입구 쪽 — v2 make_place 의 dungeonDesign 과 같은 형식(src/editor/dungeonKit/designLayout.ts DungeonDesign). 주면 방 수·자리·역할·모양·물·특징을 이 설계대로 짓고 함수는 겹침·길·도달만 고쳐 warnings 「고침:」으로 알린다. 여러 층이면 마지막 층에." },
-      floorDesigns: { type: "array", maxItems: 5, items: { type: "object" }, description: "층마다 설계(아래층부터, floors 2 이상) — 각 원소는 design 과 같은 형식." },
+      design: DUNGEON_DESIGN_SCHEMA,
+      floorDesigns: { type: "array", maxItems: 5, items: DUNGEON_DESIGN_SCHEMA, description: "층마다 설계(아래층부터, floors 2 이상) — 각 원소는 design 과 같은 형식." },
       rooms: {
         type: "array",
         minItems: 1,
