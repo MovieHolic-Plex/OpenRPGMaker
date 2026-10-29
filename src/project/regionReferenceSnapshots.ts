@@ -1,6 +1,7 @@
 import { sharedRegionSnapshot } from './sharedSpatialReferences';
 import { referenceOwnerManifest } from './tilesetReferences';
 import { JOSEON_PLACE_REFERENCES } from "./joseonPlaceReferences";
+import { BEODEUL_WAVE_PLACE_REFERENCES } from "./beodeulWavePlaceReferences";
 import type { GameMap, TilesetDef } from "./types";
 import { regionReference } from "./regionReferences";
 
@@ -68,6 +69,8 @@ const SNAPSHOT_FILES: Record<string, SnapshotFile> = {
   "jp-city-town-96x80": () => import("./regionReferences/jp-city-town.json"),
 };
 const JOSEON_FILE: SnapshotFile = () => import("./regionReferences/joseon-village.json");
+/** 버들항 웨이브 장소(원본 그림 칸, tiledata/beodeul-variants/_revive/bake.py) — 다섯 맵 한 파일. */
+const BEODEUL_WAVE_FILE: SnapshotFile = () => import("./regionReferences/beodeul-wave-places.json");
 
 type SnapshotSource = { file: SnapshotFile; pick(data: unknown): PlaceSnapshot | undefined };
 
@@ -82,7 +85,9 @@ const fromMaps = (file: SnapshotFile, mapId: string): SnapshotSource => ({ file,
 function snapshotSource(id: string): SnapshotSource | undefined {
   if (SNAPSHOT_FILES[id]) return whole(SNAPSHOT_FILES[id]);
   const joseon = JOSEON_PLACE_REFERENCES.find(entry => entry.id === id);
-  return joseon ? fromMaps(JOSEON_FILE, joseon.sourceMapId) : undefined;
+  if (joseon) return fromMaps(JOSEON_FILE, joseon.sourceMapId);
+  const wave = BEODEUL_WAVE_PLACE_REFERENCES.find(entry => entry.id === id);
+  return wave ? fromMaps(BEODEUL_WAVE_FILE, wave.sourceMapId) : undefined;
 }
 
 const loaded = new Map<SnapshotFile, unknown>();
@@ -112,7 +117,7 @@ export async function preloadRegionReference(id: string): Promise<void> {
 
 /** Every snapshot chunk — for sweeps over all references (tests, capture scripts). */
 export async function preloadAllRegionReferences(): Promise<void> {
-  await Promise.all([...Object.values(SNAPSHOT_FILES), JOSEON_FILE].map(load));
+  await Promise.all([...Object.values(SNAPSHOT_FILES), JOSEON_FILE, BEODEUL_WAVE_FILE].map(load));
 }
 
 function snapshotFor(id: string): PlaceSnapshot | undefined {
