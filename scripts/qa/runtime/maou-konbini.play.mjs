@@ -164,6 +164,8 @@ async function battle(page, seg, plan) {
   while (Date.now() - t0 < 600_000) {
     const s = await ui(page);
     if (!s.battle) return turns;
+    // 전투 중 대사(적 그룹 전투 페이지의 흥정·대꾸)는 사람처럼 읽고 넘긴다 — 안 넘기면 전투가 멈춘 채 10분을 기다렸다(rec7).
+    if (s.box !== null && !s.choices.length) { await page.waitForTimeout(PACE); await page.keyboard.press("Enter", { delay: 90 }); await page.waitForTimeout(300); continue; }
     const done = await page.evaluate((plan) => {
       const live = [...document.querySelectorAll("button")].filter((n) => !n.disabled && n.offsetParent !== null && n.dataset.previewOnly !== "true");
       const by = (t) => live.find((n) => n.dataset.testid === t);
