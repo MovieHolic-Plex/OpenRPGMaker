@@ -1,6 +1,7 @@
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { store } from "@/project/store";
 import { battleAudioContext } from "@/player/battleSfx";
+import { duckBgmForEffect, seMixScale } from "@/player/audio";
 
 /**
  * 전투 샘플 SE 디코드 캐시.
@@ -18,6 +19,9 @@ const buffers = new Map<string, AudioBuffer | null>();
 const pending = new Map<string, Promise<AudioBuffer | null>>();
 /** 같은 샘플이 이 간격 안에 **다른 출처**에서 다시 시작되면 한 번으로 친다(ms, AudioContext 시계). */
 const SAME_SAMPLE_MERGE_MS = 80;
+/** 전투 사건·이펙트 소리가 울리는 동안 BGM 배율과, 낮춰 두는 최대 길이(ms). 긴 샘플의 꼬리까지 낮추면 음악이 숨을 죽인 듯 들린다. */
+const BATTLE_DUCK_LEVEL = 0.55;
+const BATTLE_DUCK_MAX_MS = 700;
 /** 소리 출처. `cue` = 전투 사건 신호(battleJuice), `animation` = 이펙트 프레임의 타이밍 소리. 그 밖은 합치지 않는다. */
 export type BattleSampleSource = "cue" | "animation" | "other";
 const lastStarted = new Map<string, { at: number; origin: BattleSampleSource; node: { stop(): void } }>();
@@ -101,9 +105,12 @@ export function playBattleSample(resourceId: string, volume: number, rate = 1, o
   source.buffer = buffer;
   if (rate !== 1) source.playbackRate.value = rate;
   const gain = context.createGain();
-  gain.gain.value = volume;
+  // 사용자 SE 음량을 따른다(이 경로는 오디오 엔진의 SE 그룹을 거치지 않는다).
+  gain.gain.value = volume * seMixScale();
   source.connect(gain).connect(context.destination);
   source.start();
+  // 신호·이펙트 소리는 BGM 을 잠깐 낮춰 묻히지 않게 한다(몬스터 세트 등 그 밖의 출처는 그대로).
+  if (origin !== "other") duckBgmForEffect(BATTLE_DUCK_LEVEL, Math.min(BATTLE_DUCK_MAX_MS, buffer.duration * 1000));
   if (merging) lastStarted.set(resourceId, { at: now, origin, node: source });
   live.set(resourceId, { source, gain });
   source.onended = () => {

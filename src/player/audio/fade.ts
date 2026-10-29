@@ -15,6 +15,17 @@ export function isFadeComplete(elapsedMs: number, durationMs: number): boolean {
   return durationMs <= 0 || elapsedMs >= durationMs;
 }
 
+/**
+ * 효과음 덕킹의 BGM 배율. 낮춘 값(level)에서 releaseMs 동안 1 로 돌아온다.
+ * elapsedMs < 0 은 아직 효과음이 울리는 중(낮춘 값 유지).
+ */
+export function duckGainAt(level: number, elapsedMs: number, releaseMs: number): number {
+  const low = Math.min(1, Math.max(0, Number.isFinite(level) ? level : 1));
+  if (elapsedMs <= 0) return low;
+  if (releaseMs <= 0 || elapsedMs >= releaseMs) return 1;
+  return low + (1 - low) * (elapsedMs / releaseMs);
+}
+
 // 볼륨을 0~1 로 클램프(HTMLMediaElement.volume 유효 범위).
 export function clampVolume(volume: number): number {
   if (!Number.isFinite(volume)) return 0;
