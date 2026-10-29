@@ -54,6 +54,12 @@ const GAME_PATTERNS = GAME_FEELS.map((game) => ({
   }).sort((a, b) => b.length - a.length).join("|"), "giu"),
 }));
 
+/**
+ * 위 표의 모든 게임·시리즈 이름을 하나로 맞추는 정규식 본문(플래그 없음 — 쓰는 쪽이 iu 로 감싼다).
+ * 조수 v2 가 「테일즈런너처럼」「투더문 느낌」을 음악 요청으로 알아보는 데 쓴다(src/ai/v2/musicWords.ts) — 표에 줄을 더하면 함께 맞는다.
+ */
+export const STORE_MUSIC_GAME_NAME_SOURCE: string = GAME_PATTERNS.map((game) => game.re.source).join("|");
+
 export interface ExpandedStoreMusicQuery {
   /** 게임 이름을 지우고 결 낱말을 붙인 검색어. */
   readonly query: string;

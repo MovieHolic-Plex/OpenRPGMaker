@@ -128,6 +128,11 @@ faceset(48×48 얼굴)·picture(흉상·전신) 에셋을 가리킨다. 표정 �
   단위 `test/storeMusicFeel.test.ts`, 실조수 요청 `g-music-feel-*`(5건, 팩 게시 뒤 위 `--store-url` 로 돌린다).
 - **장면 여럿 = 카드 하나.** (먼저 묻기일 때) 「게임 음악 전부」처럼 `store_find_music` 을 장면마다 부르면 패널이 한 카드로 묶는다(장면마다 「고르기」, 맨 아래 「고른 곡 넣기」 한 번 → 후속 요청 하나). v2 는 카드를 띄운 실행을 사용자 질문으로 보고 끝맺음 관문이 넣기를 재촉하지 않는다.
 - **보스전만 다른 곡.** `set_game_audio role:"boss"`(+`troopIds`, 비우면 이름에 보스·마왕·드래곤·관장 등이 든 부대)는 그 `battleProcessing` 앞뒤에 `m2-027-change-system-bgm`(battle set / reset)을 넣는다. 다시 불러도 한 쌍만 남는다.
+- **엔딩곡.** `set_game_audio role:"ending"`(+`endingIds`, 비우면 모든 엔딩과 이벤트의 `kind:'ending'` 명령)은 `project.endings[].presentation.musicResourceId`(엔딩 화면 「ending-music」, `playSceneOverlays.ts`)에 건다. 걸 엔딩이 없으면 거절한다 — 엔딩을 새로 만들지 않는다.
+- **음악 요청 알아보기**(2026-10-30, 실조수 e2e 5/8 → 수정). v2 는 `src/ai/v2/musicWords.ts` 한 곳에서 음악 요청을 판정한다: 음악·브금·bgm·사운드·선율·노래(부르는 장면 제외), 장면 붙은 「~곡」(엔딩곡·전투곡·보스곡·타이틀곡…; 계곡·곡괭이는 안 걸린다), 그리고 `GAME_FEELS` 의 모든 게임 이름 + 느낌·처럼·풍·같은(`STORE_MUSIC_GAME_NAME_SOURCE` — **표에 줄을 더하면 여기서도 맞는다**).
+  게임 요소 낱말이 없으면 음악 묶음(`MUSIC_TIER`)만 맵 동사 위에 덧붙인다(맵 동사를 대신하지 않는다 — 「파판처럼 마을 만들어」도 make_place 를 그대로 쓴다). 끝맺음 음악 검사(`gameChecks.ts`)는 `musicAsked` — 짓는 요청의 게임 이름(화풍일 수 있다)에는 곡을 요구하지 않는다. 엔딩곡 연결도 「걸었다」로 센다.
+  음악 카드는 「음악만 바라는 요청은 맵을 다시 짓거나 이벤트·엔딩을 새로 만들지 않는다」고 시킨다(실패 판에서 도구가 없던 조수가 마을을 다시 짓고 엔딩 이벤트를 새로 만들었다). 단위 `test/assistantMusicRouting.test.ts`.
+  남은 것: 모델이 「I encountered an error…」 사과문을 내면 `scripts/lib/assistantV2Runtime.ts` 가 숨기기만 하고 그 차례를 다시 돌리지 않는다(재시도 장치가 이벤트 수신기 안에 없어 이번에는 손대지 않음).
 - 시험: 단위 `test/storeMusicInstall.test.ts`·`test/storeMusicFeel.test.ts`. 실조수: `bun src/harnesses/assistant-capability/node/musicStorePrepare.ts <dir> <fantasy|joseon|monster> <제목>`(마을·동굴·보스전 시드) →
   `node src/harnesses/assistant-capability/node/wholeGameSession.mjs --project-dir <dir>/project --out <dir>/session --v2 --store-url <스테이징> [--store-ask-first]`.
   브라우저 편집기에는 데스크톱 다리가 없어서 드라이버가 읽기 전용 스토어 다리를 붙인다(`storeBridgeShim.mjs`). 요청 목록은 `harness-data/space-craft/seed.json` 의 `g-music-*`.
