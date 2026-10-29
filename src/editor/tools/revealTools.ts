@@ -106,6 +106,7 @@ const stageMapReveal: ToolDefinition = {
       afterText: { type: "string", description: "이 글이 본문에 든 첫 대사 바로 뒤에 넣는다(예: 「드러났다」)" },
       theme: { type: "string", enum: ["stone", "machine", "magic", "fire"], description: "입자·색조 묶음. 기본 stone" },
       camera: { type: "boolean", description: "false 면 카메라를 옮기지 않는다(이미 화면 안일 때). 기본 true" },
+      zoom: { type: "number", description: "카메라가 그 자리로 갈 때 확대 배율(1~3, 예: 2 = 가까이). 돌아올 때 1 로 되돌린다. 작은 변화(돌 하나·자물쇠)를 가까이 보여 줄 때. 기본 1" },
       switchId: { type: "string", description: "드러난 뒤 켤 스위치(그 칸 이벤트의 조건으로 쓴다)" },
     },
     required: ["mapId", "eventId"],
@@ -140,12 +141,14 @@ const stageMapReveal: ToolDefinition = {
     const theme = THEMES[String(args.theme ?? "stone")] ?? THEMES.stone!;
     const changeTiles = changes.map((c) => ({ kind: "changeTile", mapId: map.id, layer: c.layer, x: c.x, y: c.y, tile: c.tile } as unknown as Command));
     const useCamera = args.camera !== false;
+    const zoom = Number.isFinite(Number(args.zoom)) ? Math.max(1, Math.min(3, Number(args.zoom))) : 1;
+    const zoomField: Record<string, string> = zoom !== 1 ? { zoom: String(zoom) } : {};
     const inserted: Command[] = [
-      ...(useCamera ? [m2("Camera Control", { mode: "panTo", x: cx, y: cy, durationMs: "900", wait: "true" }), { kind: "wait", ms: 300 } as Command] : []),
+      ...(useCamera ? [m2("Camera Control", { mode: "panTo", x: cx, y: cy, durationMs: "900", wait: "true", ...zoomField }), { kind: "wait", ms: 300 } as Command] : []),
       ...revealInWaves(changeTiles, theme),
       ...(typeof args.switchId === "string" && args.switchId ? [{ kind: "setSwitch", switchId: args.switchId, value: true } as unknown as Command] : []),
       { kind: "wait", ms: 600 } as Command,
-      ...(useCamera ? [m2("Camera Control", { mode: "return", durationMs: "600", wait: "true" })] : []),
+      ...(useCamera ? [m2("Camera Control", { mode: "return", durationMs: "600", wait: "true", ...(zoom !== 1 ? { zoom: "1" } : {}) })] : []),
     ];
 
     const anchor = typeof args.afterText === "string" && args.afterText ? args.afterText : undefined;
@@ -166,7 +169,7 @@ const stageMapReveal: ToolDefinition = {
       placedIn = page.id;
     }
     return {
-      summary: `${map.id} (${cx},${cy}) 둘레 ${changes.length}칸이 이벤트 ${event.id} 페이지 ${placedIn} 에서 드러난다(${placement}${useCamera ? ", 카메라 이동" : ""}).`,
+      summary: `${map.id} (${cx},${cy}) 둘레 ${changes.length}칸이 이벤트 ${event.id} 페이지 ${placedIn} 에서 드러난다(${placement}${useCamera ? `, 카메라 이동${zoom !== 1 ? ` ×${zoom}` : ""}` : ""}).`,
       data: { mapId: map.id, eventId: event.id, pageId: placedIn, cells: changes.length, center: { x: cx, y: cy }, commands: inserted.length },
     };
   },
