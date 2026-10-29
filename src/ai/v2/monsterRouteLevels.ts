@@ -7,14 +7,21 @@
 //
 // 규칙: 길마다 다음 관문 = 그 길과 이동 명령으로 바로 이어진 배지 마을 중 원정 순서가 가장 앞선 배지(없으면 첫 배지). 직전 레벨 P = 스타터 레벨
 // (첫 배지) 또는 앞 배지 관장 레벨, 관문 레벨 G = 배지를 켜는 이벤트가 싸우는 트룹의 가장 높은 적 레벨. 곡선 [lo, hi] = [max(1, min(P,G)-2),
-// max(lo, G-1)]. 길의 가장 높은 레벨(야생 levelMax·트레이너 적 레벨)이 lo 보다 낮을 때만 길 전체를 lo 로 올린다 — 각 항목은 길의 가장 낮은 레벨에서
-// 떨어진 만큼 lo 위에 두고 hi 에서 자른다. 이미 곡선 위·안이면 손대지 않는다(두 번 불러도 같다).
+// max(lo, G-1)]. 길의 가장 높은 레벨(야생 levelMax·트레이너 적 레벨)이 lo 보다 낮을 때만 길을 lo 쪽으로 올린다 — 각 항목은 길의 가장 낮은 레벨에서
+// 떨어진 만큼 lo 위에 두고 hi 에서 자른다. 단 트룹마다 스타터 혼자(직전 레벨 P)가 모의전(시드 고정) 80% 이상 이기는 데까지만 — 못 이기면 한 레벨씩
+// 덜 올린다(타입 상성이 나쁜 길 몬스터는 덜 오른다). 이미 곡선 위·안이면 손대지 않는다(두 번 불러도 같다).
 // 적 레코드(종 몬스터)는 그 레벨의 능력치·기술로 다시 계산하고(speciesEnemyAtLevel, 야생 굴림과 같은 계산) 경험치는 레벨 비로 맞춘다.
 // 다른 맵 트룹에도 쓰이는 적 레코드는 건드리지 않는다.
 import { speciesEnemyAtLevel } from "@/battle/battleBattlers";
+import { simulateBattle } from "@/battle/simulate";
+import { monsterBalanceParty } from "@/editor/tools/troopBalanceCheck";
 import type { EnemyRecord, GameMap, Project } from "@/project/types";
 
 type Obj = Record<string, unknown>;
+
+/** 곡선으로 올린 길 상대를 스타터 혼자 이겨야 하는 모의전 승률과 판 수(시드 고정 — 결정적). */
+const FIT_WIN_RATE = 0.8;
+const FIT_SAMPLES = 40;
 
 function walk(node: unknown, visit: (cmd: Obj) => void): void {
   if (Array.isArray(node)) { for (const item of node) walk(item, visit); return; }
@@ -140,20 +147,46 @@ export function fitRouteLevelsToGates(project: Project): string[] {
     const floor = Math.min(...all);
     const lift = (level: number) => Math.min(hi, lo + (level - floor));
     const own = (enemyId: string) => [...(homes.get(enemyId) ?? [])].every((mapId) => mapId === map.id);
+    const levelOf = (enemyId: string) => project.database.enemies.find((item) => item.id === enemyId)?.level ?? 0;
+    // 올린 레벨로 첫 길 상대를 스타터 혼자(풀 HP, 직전 레벨)가 모의전 80% 이상 이기는지 본다 — 못 이기면 한 레벨씩 내린다(원래 레벨까지).
+    // 왜: 레벨만 올리면 새로 배운 타입 기술(풀 스타터 상대 비행 노멀 자속 몸통박치기·벌레 기술)로 Lv6 한 마리가 Lv8 스타터를 94% 이겼다.
+    const fits = (troopId: string, shift: number, apply: (delta: number) => void): number => {
+      const saved = project.database.enemies.map((enemy) => enemy);
+      for (let delta = shift; delta > 0; delta -= 1) {
+        apply(delta);
+        const party = monsterBalanceParty(project, troopId, prev);
+        if (!party?.length) return delta;
+        if (simulateBattle({ project, troopId, heroLevel: prev, monsterParty: party, n: FIT_SAMPLES, seed: 1, useSkills: true }).winRate >= FIT_WIN_RATE) return delta;
+        project.database.enemies = [...saved];
+      }
+      return 0;
+    };
+    const moved: string[] = [];
     for (const entry of entries) {
       const troop = project.database.troops.find((item) => item.id === entry.troopId);
-      const levels = (troop?.enemyIds ?? []).map((id) => project.database.enemies.find((enemy) => enemy.id === id)?.level).filter((level): level is number => typeof level === "number" && level > 0);
-      const min = lift(entry.levelMin ?? (levels.length ? Math.min(...levels) : floor));
-      const max = Math.max(min, lift(entry.levelMax ?? (levels.length ? Math.max(...levels) : floor)));
-      entry.levelMin = min;
-      entry.levelMax = max;
-      for (const enemyId of troop?.enemyIds ?? []) {
-        const enemy = project.database.enemies.find((item) => item.id === enemyId);
-        if (enemy && own(enemyId)) relevel(project, enemy, min);
-      }
+      if (!troop) continue;
+      const levels = troop.enemyIds.map(levelOf).filter((level) => level > 0);
+      const min0 = entry.levelMin ?? (levels.length ? Math.min(...levels) : floor);
+      const max0 = Math.max(min0, entry.levelMax ?? (levels.length ? Math.max(...levels) : floor));
+      const shift = lift(min0) - min0;
+      // 시험은 범위 위쪽(가장 센 판) 레벨로 한다 — 레코드는 끝에 아래쪽 레벨로 둔다.
+      const delta = fits(troop.id, shift, (d) => { for (const enemyId of troop.enemyIds) { const enemy = project.database.enemies.find((item) => item.id === enemyId); if (enemy && own(enemyId)) relevel(project, enemy, Math.min(hi, max0 + d)); } });
+      if (delta <= 0) continue;
+      entry.levelMin = min0 + delta;
+      entry.levelMax = Math.max(entry.levelMin, Math.min(hi, max0 + delta));
+      for (const enemyId of troop.enemyIds) { const enemy = project.database.enemies.find((item) => item.id === enemyId); if (enemy && own(enemyId)) relevel(project, enemy, entry.levelMin); }
+      moved.push(`${troop.name || troop.id} ${min0}~${max0}→${entry.levelMin}~${entry.levelMax}`);
     }
-    for (const enemy of trainerEnemies) if (own(enemy.id)) relevel(project, enemy, lift(enemy.level!));
-    out.push(`길 「${map.name ?? map.id}」 몬스터 레벨 ${floor}~${Math.max(...all)} → ${lo}~${hi}(시작 Lv${prev} → 관문 Lv${gate})`);
+    for (const troopId of routeTrainerTroops(map)) {
+      const troop = project.database.troops.find((item) => item.id === troopId);
+      const mine = (troop?.enemyIds ?? []).filter((enemyId) => own(enemyId) && levelOf(enemyId) > 0 && !!project.database.enemies.find((item) => item.id === enemyId)?.speciesId);
+      if (!troop || !mine.length) continue;
+      const base = new Map(mine.map((enemyId) => [enemyId, levelOf(enemyId)]));
+      const shift = Math.max(...[...base.values()].map((level) => lift(level) - level));
+      const delta = fits(troop.id, shift, (d) => { for (const [enemyId, level] of base) { const enemy = project.database.enemies.find((item) => item.id === enemyId); if (enemy) relevel(project, enemy, Math.min(hi, level + d)); } });
+      if (delta > 0) moved.push(`${troop.name || troop.id} Lv${[...base.values()].join("·")}→${[...base.values()].map((level) => Math.min(hi, level + delta)).join("·")}`);
+    }
+    if (moved.length) out.push(`길 「${map.name ?? map.id}」 몬스터 레벨을 관문 곡선(Lv${lo}~${hi}, 시작 Lv${prev} → 관문 Lv${gate})으로: ${moved.join(", ")}`);
   }
   return out;
 }
