@@ -154,6 +154,15 @@ v1 의 `script_cutscene` 비트로 옮긴다(`events.ts`).
 - **조사 표식**(`src/player/playSceneFieldStaging.ts` `syncExamineMarkers`): 가까이 반짝임(page.nearSparkle) 대상이 반경 안일 때와 지금 목표 대상 위에
   진한 테두리 꺾쇠(▼)를 보통 섞기로 띄운다(몸 사각 맨 윗줄 안쪽, 가볍게 흔들림). 더하기 섞기 빛무리·반짝임은 밝은 바닥에서 흰 번짐으로 사라졌다.
   주인공이 바로 위 칸에 서면 숨긴다(발을 덮음). 확인: `EXAMINE_AT='{"mapId":…,"x":…,"y":…,"face":"up"}' node scripts/runtime-qa.mjs --scenario examine-marker --netns --browser firefox --project <project.json>`.
+- **누구에게 띄우나**(`src/player/examineTargets.ts`, vm3 flash 추리 «누가 조사 대상인지 표시 없음»): 다 본 페이지(조건 붙은 뒤쪽 페이지가 말만 하고
+  앞 페이지가 상태를 바꿨다 — 「더는 볼 것이 없다」)면 목표가 가리켜도 숨긴다. 런타임 뷰 페이지는 사본이라 id·명령 배열로 원본을 찾는다.
+  그림 있는 대화 이벤트 중 어느 페이지든 상태를 바꾸는(스위치·아이템·선택지·m2…) 사람은 반짝임이 없어도 반경 2 안이면 머리 위에 띄운다. 대사만 있는 행인은 안 띄운다.
+  걷는 NPC 표식은 걸음 보간을 따라간다.
+- **붙어 선 사람 떼기**(`eventReach.spreadCrowdedPeople`, 끝맺음 `clearLanes`): 사람(그림 있는 대화 이벤트)이 다른 막는 이벤트와 붙어 걸어 닿는 옆 칸이
+  둘 미만이면 6칸 안의 옆 칸 둘 이상 열린, 다른 사람과 4방향으로 붙지 않는 빈 바닥으로 옮긴다(못 닿는 이벤트가 늘거나 남의 열린 면이 둘 밑으로 줄면 그 칸 제외).
+  사람과 붙지 않고 한 면만 열린 자리(카운터 뒤 주인)는 그대로 둔다. 확인 시나리오 `npc-talk`(`NPC_QA` 환경 변수).
+- **걷는 NPC 말 걸기**(`playSceneMovement.findWalkerLeaving`): 걸음을 떼면 논리 칸이 도착 칸으로 먼저 넘어가므로, 정면 칸이 걸어 나가는 중인 출발 칸이거나
+  `VACATED_GRACE_MS`(300ms) 안에 떠난 칸이어도 그 NPC 에게 말을 건다.
 
 ## 켜는 법
 

@@ -31,7 +31,7 @@ import { buildScene, SCENE_SCHEMA, type SceneSpec } from "./scene";
 import { buildPuzzleChain, sealLockedRoom, type ChainArgs } from "./puzzle";
 import { stageMysteryCase } from "./mysteryCase";
 import { BUILD_BLUEPRINT_PATH_SCHEMA, blueprintMapFor, buildBlueprintPath, sealEscapeExits, type PathStepText } from "./blueprintPath";
-import { clearTargetFronts, clearTransferLanes, repairEventReach } from "./eventReach";
+import { clearTargetFronts, clearTransferLanes, repairEventReach, spreadCrowdedPeople } from "./eventReach";
 import { dressInteriorExits } from "./exitDress";
 import { isPlaceholderMap, moveBareEvents, retireBlankStart, retireOrphanMaps } from "./blankStart";
 import { chaserEvents, ensureChaserHidingSpots, mapHidingEvents, markHidingSpots } from "@/project/chaserHiding";
@@ -577,6 +577,8 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
       const name = env.ctx.project.maps[mapId]?.name ?? mapId;
       // 조사·대화 대상 앞(아래 칸)을 막는 의자 하나를 치운다(2026-10-29 VM deepseek mystery: 「의자 때문에 NPC 앞으로 못 간다」).
       for (const n of clearTargetFronts(run, mapId)) notes.push(`${name}: ${n}`);
+      // 붙어 선 사람 사이에서 한 면만 열린 사람은 둘레가 열린 칸으로(2026-10-29 vm3 flash 추리: 갈색 머리 손님이 위에서만 말이 걸렸다).
+      for (const n of spreadCrowdedPeople(run, mapId)) notes.push(`${name}: ${n}`);
       for (const m of r.moved) notes.push(`${name}: ${m}`);
       for (const s of r.stuck) notes.push(`${name}: ${s} — 옮길 자리가 없어 그대로 둠`);
     }

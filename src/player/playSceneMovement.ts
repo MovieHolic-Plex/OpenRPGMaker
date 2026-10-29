@@ -44,7 +44,7 @@ import { assertNever, type PlayerRouteState, type PlaySceneContext } from "@/pla
 import { findBlockingEventOverlappingRect,
 findRuntimeEventAtInMap,
 setRuntimeEventPositionDirection, } from "@/project/runtimeEventState"
-import type { RuntimeEventView } from "@/project/runtimeEventState"
+import { runtimeEventViewById, type RuntimeEventView } from "@/project/runtimeEventState"
 import type { EventAnimationType, Trigger } from "@/project/types";
 import { nextSessionRandom } from "@/project/session";
 import { isCutsceneInputLocked } from "@/player/cutsceneControl";
@@ -794,7 +794,7 @@ function performAction(
   const delta = directionDelta(scene.facing);
   const tx = scene.tileX + delta.x;
   const ty = scene.tileY + delta.y;
-  const event = findRuntimeEventInScene(scene, tx, ty, "action") ?? findEventAcrossCounter(scene, world.project, tx, ty, delta);
+  const event = findRuntimeEventInScene(scene, tx, ty, "action") ?? findEventAcrossCounter(scene, world.project, tx, ty, delta) ?? findWalkerLeaving(scene, world.project, tx, ty);
   if (event) {
     if (event.page?.interaction?.kind === 'hiding') return toggleHiding(world, event);
     if (event.page?.interaction?.kind === 'pushable') {
@@ -841,6 +841,29 @@ function performAction(
   const message = underfootFarm.message ?? facingFarm.message;
   if (message) showFarmFeedbackMessage(scene, message);
   return false;
+}
+
+/**
+ * 걷는 NPC 는 걸음을 떼는 순간 논리 칸이 도착 칸으로 넘어가고 그림만 미끄러진다. 그래서 그림이 아직 서 있는 칸(출발 칸)을 보고
+ * 눌러도 아무 일이 없었다(2026-10-29 vm3 flash 추리 판정 「얼굴 방향과 칸이 정확해야만 대화가 열린다」).
+ * 정면 칸이 «지금 걸어 나가는 중인 출발 칸» 이거나 «방금(VACATED_GRACE_MS 안) 떠난 칸» 이면 그 NPC 를 대상으로 본다.
+ */
+function findWalkerLeaving(
+  scene: ActionEventSceneContext,
+  project: ReturnType<typeof store.getCurrent>,
+  tx: number,
+  ty: number,
+): RuntimeEventView | undefined {
+  const now = typeof performance !== "undefined" ? performance.now() : Date.now();
+  for (const [id, mover] of scene.autonomousNPCs ?? []) {
+    const move = mover.activeMove;
+    const leaving = move && move.fromX === tx && move.fromY === ty && (move.toX !== tx || move.toY !== ty);
+    const left = mover.vacated && mover.vacated.x === tx && mover.vacated.y === ty && mover.vacated.until > now;
+    if (!leaving && !left) continue;
+    const view = runtimeEventViewById(project, scene.map, scene.session, scene.eventPositions, id);
+    if (view && view.trigger.kind === "action") return view;
+  }
+  return undefined;
 }
 
 /**

@@ -26,6 +26,7 @@ import { store } from "@/project/store";
 import { runtimeEventViewById, runtimeEventViewsForMap } from "@/project/runtimeEventState";
 import { objectiveTargetViews } from "@/player/objectiveTarget";
 import { currentObjectiveText } from "@/player/zoneFeedback";
+import { spentPage, storyPerson, STORY_PERSON_RADIUS } from "@/player/examineTargets";
 
 /** Phaser.TintModes.FILL (Phaser 4). 값 import 없이 쓰려고 숫자로 둔다. */
 const TINT_MODE_FILL = 1;
@@ -752,7 +753,7 @@ function syncNearSparkles(scene: PlaySceneContext, now: number): void {
 // 어느 바닥에서도 테두리가 대비를 만든다. 몸 사각(가구 전체) 가운데 위라 주인공 얼굴을 덮지 않는다. 조사가 끝나 표식 페이지가 없어지면 사라진다.
 
 const EXAMINE_MARKER_TEX = "oprn-fx-examine-marker";
-type ExamineMarkerState = { mapId: string; markers: Map<string, Phaser.GameObjects.Image>; nextCheck: number; want: Map<string, { x: number; y: number }> };
+type ExamineMarkerState = { mapId: string; markers: Map<string, Phaser.GameObjects.Image>; nextCheck: number; want: Map<string, { x: number; y: number; person: boolean }> };
 const examineMarkerStates = new WeakMap<PlaySceneContext, ExamineMarkerState>();
 
 function syncExamineMarkers(scene: PlaySceneContext, now: number): void {
@@ -769,19 +770,23 @@ function syncExamineMarkers(scene: PlaySceneContext, now: number): void {
     state.nextCheck = now + 200;
     const project = store.getCurrent();
     const objective = new Set(objectiveMarkerStates.get(scene)?.parts.keys() ?? []);
-    const want = new Map<string, { x: number; y: number }>();
+    const want = new Map<string, { x: number; y: number; person: boolean }>();
     for (const view of runtimeEventViewsForMap(project, map, scene.session, scene.eventPositions)) {
+      // 다 본 대상(「더는 볼 것이 없다」 페이지)은 띄우지 않는다 — 목표가 가리켜도.
+      if (spentPage(view.event, view.page)) continue;
       const near = view.page?.nearSparkle;
+      // 이야기에 필요한 사람(상태를 바꾸는 페이지가 있는 NPC)은 반짝임이 없어도 같은 규칙(가까이 가면)으로 띄운다.
+      const radius = near ? Math.max(1, near.radius) : storyPerson(view.event) ? STORY_PERSON_RADIUS : -1;
       const rect = view.bodyRect;
       const dx = Math.max(rect.left - scene.tileX, 0, scene.tileX - rect.right);
       const dy = Math.max(rect.top - scene.tileY, 0, scene.tileY - rect.bottom);
-      const inRadius = !!near && Math.max(dx, dy) <= Math.max(1, near.radius);
+      const inRadius = radius >= 0 && Math.max(dx, dy) <= radius;
       if (!inRadius && !objective.has(view.event.id)) continue;
       // 늘 빛나는 표지(세이브 포인트)는 따로 보인다.
       if (view.page?.glow) continue;
       // 주인공이 바로 위 칸에 서 있으면 표식이 발을 덮는다 — 그때는 화면 아래 「Z 조사 · 이름」 안내가 대신한다.
       if (scene.tileY === rect.top - 1 && scene.tileX >= rect.left && scene.tileX <= rect.right) continue;
-      want.set(view.event.id, { x: ((rect.left + rect.right + 1) / 2) * size, y: rect.top * size });
+      want.set(view.event.id, { x: ((rect.left + rect.right + 1) / 2) * size, y: rect.top * size, person: !!view.sprite });
     }
     state.want = want;
     for (const [id, m] of state.markers) if (!want.has(id)) { m.destroy(); state.markers.delete(id); }
@@ -808,8 +813,16 @@ function syncExamineMarkers(scene: PlaySceneContext, now: number): void {
   for (const [id, marker] of state.markers) {
     const at = state.want.get(id);
     if (!at) continue;
-    // 몸 사각 맨 윗줄 안쪽 — 위로 띄우면 북벽에 붙은 책장 표식이 방 밖 천장 위에 떴다.
-    marker.setPosition(at.x, at.y + size * 0.22 + bob * size * 0.08).setDisplaySize(size * 0.62, size * 0.62).setAlpha(0.92);
+    // 걷는 NPC 는 논리 칸이 걸음 시작에 도착 칸으로 넘어간다 — 표식은 그림을 따라 보간한다.
+    const move = scene.autonomousNPCs?.get(id)?.activeMove;
+    const mover = scene.autonomousNPCs?.get(id);
+    const t = move && mover ? Math.min(1, move.elapsedMs / Math.max(1, move.durationMs ?? mover.moveDurationMs)) : 1;
+    const ox = move ? (move.fromX - move.toX) * (1 - t) * size : 0;
+    const oy = move ? (move.fromY - move.toY) * (1 - t) * size : 0;
+    // 가구는 몸 사각 맨 윗줄 안쪽 — 위로 띄우면 북벽에 붙은 책장 표식이 방 밖 천장 위에 떴다.
+    // 사람은 머리 위 — 캐릭터 그림이 칸 위로 반 칸쯤 솟아 칸 안에 두면 얼굴을 덮는다.
+    const lift = at.person ? -size * 0.75 : size * 0.22;
+    marker.setPosition(at.x + ox, at.y + oy + lift + bob * size * 0.08).setDisplaySize(size * 0.62, size * 0.62).setAlpha(0.92);
   }
 }
 

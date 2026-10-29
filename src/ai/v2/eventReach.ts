@@ -517,3 +517,72 @@ export function clearTargetFronts(run: BuildRun, mapId: string): string[] {
   }
   return notes;
 }
+
+// ── 사람 둘레 비우기 ─────────────────────────────────────────────────────────────
+// 2026-10-29 vm3 flash 추리 「여관 도난 사건」 판정(major): 객실에 손님 넷이 (5,5)(6,5)(7,5)(5,6)에 붙어 서서 갈색 머리 손님 (5,5)는
+// 왼쪽 벽·오른쪽 손님·아래 손님에 막혀 위 칸 하나에서만 말을 걸 수 있었다 — 판정자는 여러 번 헛누르다 위로 돌아가서야 대화했다.
+// 규칙: 그림 있는 대화 이벤트(사람)가 다른 막는 이벤트와 붙어 서서 걸어 닿는 옆 칸이 둘 미만이면,
+// 가까운(6칸 안) 닿는 빈 바닥 중 옆 칸이 둘 이상 열리고 다른 사람과 붙지 않는 칸으로 옮긴다.
+// 카운터 뒤 주인처럼 사람과 붙지 않은 채 한 면만 열린 자리는 일부러 놓은 것으로 보고 건드리지 않는다.
+// 옮긴 결과 못 닿는 이벤트가 늘거나 다른 사람의 열린 면이 둘 밑으로 줄면 그 자리는 고르지 않는다.
+
+const isPerson = (ev: GameEvent) => (ev.pages ?? []).some((p) => !!(p.graphic as { sprite?: unknown } | undefined)?.sprite && (typeof p.trigger === "string" ? p.trigger : p.trigger?.kind) === "action");
+
+function openSides(map: GameMap, reach: Uint8Array, c: Cell): number {
+  let n = 0;
+  for (const [dx, dy] of DIRS) { const x = c.x + dx, y = c.y + dy; if (x >= 0 && y >= 0 && x < map.width && y < map.height && reach[y * map.width + x]) n++; }
+  return n;
+}
+
+export function spreadCrowdedPeople(run: BuildRun, mapId: string): string[] {
+  const notes: string[] = [];
+  const ids = (run.ctx.project.maps[mapId]?.events ?? []).filter(isPerson).map((e) => e.id);
+  for (const id of ids) {
+    const project = run.ctx.project;
+    const map = project.maps[mapId]!;
+    const ev = map.events.find((e) => e.id === id);
+    if (!ev || !eventBlocks(ev) || hasTransfer(ev.pages ?? ev.commands)) continue;
+    const anchors = anchorsOf(project, map);
+    if (!anchors.length) continue;
+    const w = map.width;
+    const reach = reachFrom(project, map, anchors, blockersOf(map));
+    if (openSides(map, reach, ev) >= 2) continue;
+    const blockerAt = new Map((map.events ?? []).filter((e) => e.id !== id && eventBlocks(e)).map((e) => [e.y * w + e.x, e] as const));
+    // 대각으로도 다른 사람과 붙은 칸은 덜 반긴다(줄 서 있는 듯 보이고, 다음 사람이 옮길 자리를 막는다).
+    const nearPerson = (c: Cell) => { for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) { const o = blockerAt.get((c.y + dy) * w + c.x + dx); if ((dx || dy) && o && isPerson(o)) return true; } return false; };
+    if (!DIRS.some(([dx, dy]) => blockerAt.has((ev.y + dy) * w + ev.x + dx))) continue; // 혼자 한 면만 열린 자리(카운터 뒤)
+    const people = (map.events ?? []).filter((e) => e.id !== id && isPerson(e) && eventBlocks(e));
+    const before = unreachableEvents(project, mapId).length;
+    const sidesBefore = new Map(people.map((p) => [p.id, openSides(map, reach, p)]));
+    const free = reachFrom(project, map, anchors, blockersOf(map, id));
+    const lanes = transferLaneCells(project, map);
+    const anchorSet = new Set(anchors.map((a) => a.y * w + a.x));
+    const cands: { c: Cell; s: number }[] = [];
+    for (let y = 0; y < map.height; y++) for (let x = 0; x < w; x++) {
+      const i = y * w + x;
+      const d = Math.abs(x - ev.x) + Math.abs(y - ev.y);
+      if (!free[i] || d === 0 || d > 6 || blockerAt.has(i) || anchorSet.has(i) || lanes.has(i)) continue;
+      if ((map.events ?? []).some((e) => e.id !== id && e.x === x && e.y === y)) continue;
+      if (DIRS.some(([dx, dy]) => blockerAt.has((y + dy) * w + x + dx))) continue;
+      cands.push({ c: { x, y }, s: d + (nearPerson({ x, y }) ? 2 : 0) });
+    }
+    cands.sort((a, b) => a.s - b.s);
+    let target: Cell | undefined;
+    for (const { c } of cands.slice(0, 60)) {
+      const copy = structuredClone(map);
+      const moved = copy.events.find((e) => e.id === id)!;
+      moved.x = c.x; moved.y = c.y;
+      const trial = { ...project, maps: { ...project.maps, [mapId]: copy } } as Project;
+      if (unreachableEvents(trial, mapId).length > before) continue;
+      const r2 = reachFrom(trial, copy, anchors, blockersOf(copy));
+      if (openSides(copy, r2, c) < 2) continue;
+      if (people.some((p) => openSides(copy, r2, p) < Math.min(2, sidesBefore.get(p.id) ?? 0))) continue;
+      target = c;
+      break;
+    }
+    if (!target) continue;
+    const res = run.call("move_event", { mapId, eventId: id, x: target.x, y: target.y });
+    if (res.ok) notes.push(`${String(ev.name ?? id)} (${ev.x},${ev.y})→(${target.x},${target.y}) 붙어 선 사람 사이에서 한 면만 열려 있었음`);
+  }
+  return notes;
+}
