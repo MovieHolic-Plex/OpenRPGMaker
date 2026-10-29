@@ -1,4 +1,4 @@
-"""(2026-10-29: no drawing has passed yet — candidates in tiledata/hand-interior/armchair/, verdicts.json.)
+"""(2026-10-29: the user picked object-gen r4 C2 — decisions/armchair-ecfd999f.json; earlier candidates and verdicts in this folder.)
 Paste the object-gen armchair redraw over the one tile the armchair already owns in the atlas_biome_interior sheet.
 
   OBJECT_GATE_DATA=<gate data dir> python3 scripts/content/hand-interior/armchair/rebake.py [--check]
