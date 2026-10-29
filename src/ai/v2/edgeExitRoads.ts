@@ -200,7 +200,12 @@ export function widenRoadExits(run: BuildRun, mapId: string): string[] {
     if (reach0) {
       const stops1 = new Set([...stops, ...added.map((a) => `${a.x},${a.y}`), ...copies.map((c) => `${c.x},${c.y}`)]);
       const reach1 = walkReach(project, map, starts, stops1);
-      const lost = [...reach0].filter((k) => !reach1.has(k) && !stops1.has(k));
+      const lost0 = [...reach0].filter((k) => !reach1.has(k) && !stops1.has(k));
+      // 잃는 칸이 길 너머 가장자리 줄의 빈 풀밭 몇 칸뿐이면(이벤트·착지 없음, 6칸 이하) 괜찮다 — 그 칸들로는 아무 데도 못 가고, 사본이 없으면
+      // 오른쪽 줄로 올라간 플레이어가 출구를 지나친다(2026-10-30 씬 벤치 opus river-village r1: 출구 (27,0) 곁 (28,0) 너머 (29..31,0) 세 칸 때문에 사본을 안 둬
+      // 판정자가 (28,0)에서 「맵 전환이 안 된다」). 맵 안쪽 통로(몬스터 새순 마을 남북 길)는 가장자리 줄이 아니라 여전히 막는다.
+      const onEdgeLine = (k: string) => { const [x, y] = k.split(",").map(Number) as [number, number]; return top ? y === 0 : bottom ? y === H - 1 : left ? x === 0 : x === W - 1; };
+      const lost = lost0.length <= 6 && lost0.every((k) => onEdgeLine(k) && !taken.has(k) && !landingKeys.has(k)) ? [] : lost0;
       if (lost.length) { notes.push(`가장자리 출구 (${ev.x},${ev.y}) 길 폭 사본은 다른 칸 ${lost.length}곳을 막아 두지 않음`); continue; }
     }
     for (const c of copies) {

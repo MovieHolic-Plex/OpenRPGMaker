@@ -893,6 +893,16 @@ function syncExitLabels(scene: PlaySceneContext, now: number): void {
     if (Math.max(dx, dy) > EXIT_LABEL_RADIUS || (dx === 0 && dy === 0)) continue;
     want.set(view.event.id, { text: `→ ${name}`, x: ((rect.left + rect.right + 1) / 2) * size, y: rect.top * size - 2 });
   }
+  // 같은 목적지로 옮기는 붙은 칸들(두 칸 폭 길 끝 출구와 그 길 폭 사본 — ai/v2 widenRoadExits)은 글자 하나를 가운데에 —
+  // 칸마다 띄우면 「→ 강가 어촌」 둘이 반 칸 어긋나 겹쳐 「→ →강가 어촌」으로 읽혔다(2026-10-30 씬 벤치 river-village 재현).
+  for (const [id, at] of [...want]) {
+    if (!want.has(id)) continue;
+    const near = [...want].filter(([other, b]) => other !== id && b.text === at.text && Math.abs(b.x - at.x) <= size * 3.01 && Math.abs(b.y - at.y) <= size * 1.01);
+    if (!near.length) continue;
+    const all = [at, ...near.map(([, b]) => b)];
+    want.set(id, { text: at.text, x: all.reduce((sum, b) => sum + b.x, 0) / all.length, y: Math.min(...all.map((b) => b.y)) });
+    for (const [other] of near) want.delete(other);
+  }
   for (const [id, t] of state.labels) if (!want.has(id)) { t.destroy(); state.labels.delete(id); }
   for (const [id, at] of want) {
     let label = state.labels.get(id);
