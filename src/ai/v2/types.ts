@@ -82,6 +82,9 @@ export interface PlacePatch {
   readonly seed?: number;
   /** 더 아늑하게·더 빽빽하게 같은 꾸밈 정도(0 보통 · 1 많이 · 2 가득). 빌더가 아는 만큼만. */
   readonly dressing?: number;
+  /** (설계 방) 고친 방 설계 전체 — designZone(구역 id·kind, 생략하면 첫 설계 구역)의 design 을 바꿔 다시 짓는다. */
+  readonly design?: RoomDesign;
+  readonly designZone?: string;
 }
 
 /** 빌더가 실제로 부른 v1 결정론 도구 하나. */

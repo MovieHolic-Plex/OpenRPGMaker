@@ -21,7 +21,7 @@ import { interiorStampEdit, type StampEditState } from "./builders/interiorEdit"
 import { fixPlayerStart, runMachineChecks, summarizeChecks, type MachineCheck } from "./checks";
 import { critique } from "./critic";
 import type { CriticVerdict } from "@/ai/piAgent/featureReview";
-import type { ContentBuildResult, EventSpec, ObjectSpec, PersonSpec, PlaceBuildResult, PlacePatch, PlaceRecord, PlaceSpec, PlaceType } from "./types";
+import type { ContentBuildResult, EventSpec, ObjectSpec, PersonSpec, PlaceBuildResult, PlacePatch, PlaceRecord, PlaceSpec, PlaceType, ZoneSpec } from "./types";
 import type { Project } from "@/project/types";
 import { buildPeople, findMap, resolveWhere } from "./people";
 import { mapBundleIds } from "@/ai/piAgent/mapBundle";
@@ -289,7 +289,7 @@ function nextStep(seen: Seen, rounds: number, designed = false): string {
   const bad = seen.checks.filter((c) => !c.ok).length + seen.critics.reduce((n, v) => n + v.majors.length, 0);
   if (!bad && !seen.critics.some((v) => v.problem)) return "통과 — 비평 major 0, 기계 검사 통과. 다른 요청 부분이 남았으면 이어서, 아니면 사용자에게 보고한다.";
   // 조수가 설계한 방: 고치기도 설계로 — 함수가 가구를 골라 채우는 dress_room 을 권하지 않는다.
-  if (designed) return `문제 ${bad}건 — 이 방은 네 design 대로 지었다. warnings 의 「고침:」·「맨바닥」 줄과 비평을 보고 design(크기 w·h, 모양, 묶음과 자리)을 고쳐 make_place({..., mapId}) 로 다시 짓는다. 가구 하나만 옮기거나 돌리려면 move_object. 못 고치는 것(그림이 없는 물건 등)은 보고에 남긴다.`;
+  if (designed) return `문제 ${bad}건 — 이 방은 네 design 대로 지었다. warnings 의 「고침:」·「맨바닥」 줄과 비평을 보고 design(크기 w·h, 모양, 묶음과 자리)을 고쳐 edit_place({patch:{mapId, design: 고친 설계 전체}}) 로 다시 짓는다. 가구 하나만 옮기거나 돌리려면 move_object. 못 고치는 것(그림이 없는 물건 등)은 보고에 남긴다.`;
   const furniture = "놓인 가구 하나가 문·길을 막거나 방향이 틀린 major 는 move_object(그 칸 at → to·face·remove)로 고친다. 방이 비었다·빈 바닥이 많다는 문제는 dress_room(mapId, at: 그 방 바닥 한 칸, purpose: 방 쓰임)으로 채운다 — 둘 다 바퀴를 쓰지 않는다.";
   if (rounds >= V2_MAX_REPAIR_ROUNDS) return `고치기 상한(${V2_MAX_REPAIR_ROUNDS}바퀴)에 닿았다 — 다시 짓는 고치기는 더 하지 않는다. ${furniture} 그 밖의 남은 문제는 사용자에게 그대로 보고한다.`;
   return `문제 ${bad}건 — 고칠 수 있으면 edit_place 패치(구역 더하기·주인공 물건 near 좌표·크기·variant·dressing)로 한 번에 고친다(남은 바퀴 ${V2_MAX_REPAIR_ROUNDS - rounds}). ${furniture} 패치로 못 고치는 것(그림이 없는 물건 등)은 보고에 적는다.`;
@@ -314,7 +314,20 @@ function adoptInterior(run: RecordingBuildRun, mapId: string): PlaceRecord | und
 export function applyPatch(spec: PlaceSpec, patch: PlacePatch, floor = 1): PlaceSpec {
   const removed = new Set(patch.removeZones ?? []);
   let zones = (spec.zones ?? []).filter((z) => !removed.has(z.id ?? z.kind) && !removed.has(z.kind));
-  zones = [...zones, ...(patch.addZones ?? []).map((z) => (floor > 1 && !z.floor ? { ...z, floor } : z))];
+  // 설계 방 고치기: 고친 설계 전체로 그 구역의 design 을 바꾼다. 같은 종류의 설계 구역을 addZones 로 다시 보낸 것도 «바꾸기»로 읽는다
+  // (2026-10-29 flash 실조수: 고친 서재 설계를 addZones 로 보내 서재가 둘인 2실이 됐다).
+  const designAt = (want?: string) => zones.findIndex((z) => (z.floor ?? 1) === floor && (want ? z.id === want || z.kind === want : !!z.design));
+  if (patch.design) {
+    const i = designAt(patch.designZone) >= 0 ? designAt(patch.designZone) : zones.findIndex((z) => (z.floor ?? 1) === floor);
+    if (i >= 0) zones[i] = { ...zones[i]!, design: patch.design };
+  }
+  const adds: ZoneSpec[] = [];
+  for (const z of patch.addZones ?? []) {
+    const i = z.design ? zones.findIndex((q) => !!q.design && q.kind === z.kind && (q.floor ?? 1) === (z.floor ?? floor)) : -1;
+    if (i >= 0) zones[i] = { ...zones[i]!, ...z, design: z.design };
+    else adds.push(floor > 1 && !z.floor ? { ...z, floor } : z);
+  }
+  zones = [...zones, ...adds];
   // 위층 맵을 고치는 패치: 물건은 그 층 구역으로(없으면 객실 구역을 만든다) — 1층 홀에 침대가 들어갔다(2026-10-23 v2 실조수).
   if (floor > 1 && patch.addAnchors?.length && !zones.some((z) => z.floor === floor)) zones = [...zones, { kind: "inn_room", floor }];
   const loose: string[] = [];
@@ -712,7 +725,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
 
   const editPlace: PiToolShape = {
     name: "edit_place", label: "장소 고치기", concurrency: "exclusive",
-    description: "지은(또는 이미 있는) 장소의 명세 일부만 바꿔 같은 빌더로 다시 짓는다. 비평 major 의 좌표는 addAnchors.near 로 넘긴다. 맵당 1바퀴까지.",
+    description: "지은(또는 이미 있는) 장소의 명세 일부만 바꿔 같은 빌더로 다시 짓는다. 비평 major 의 좌표는 addAnchors.near 로 넘긴다. 맵당 1바퀴까지. 네가 design 으로 설계한 방은 patch.design 에 고친 설계 전체를 넣는다(dressing 은 설계 방에 쓰지 않는다).",
     parameters: { type: "object", properties: { patch: { type: "object", properties: {
       mapId: { type: "string", description: "고칠 맵 id(patch 안에)" },
       set: { type: "object", properties: { name: { type: "string" }, style: { type: "string" }, theme: { type: "string" }, size: SIZE, floors: { type: "number" }, features: { type: "array", items: { type: "string" } }, exits: { type: "array", items: { type: "string", enum: ["south", "north", "east", "west"] } }, hints: HINTS_SCHEMA } },
@@ -722,6 +735,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
       addFeatures: { type: "array", items: { type: "string" } },
       removeFeatures: { type: "array", items: { type: "string" } },
       variant: { type: "number" }, seed: { type: "number" }, dressing: { type: "number" },
+      design: ROOM_DESIGN_SCHEMA, designZone: { type: "string", description: "(설계 방) design 을 바꿀 구역 id·kind — 생략하면 첫 설계 구역" },
     }, required: ["mapId"] } }, required: ["patch"] },
     async execute(id, params) {
       const raw = params as { patch: PlacePatch; mapId?: string };
@@ -968,7 +982,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
       // 조수가 design 으로 설계한 방은 함수가 가구를 골라 채우지 않는다(2026-10-29 사용자 결정 「방을 짓는 건 조수여야만 한다」 — 첫 실조수 시험에서
       // Argon 이 설계한 서재를 dress_room 이 망원경 둘·책상 둘을 더해 채웠다).
       if ((env.ctx.project.maps[p.mapId]!.locations ?? []).some((l) => (l.tags ?? []).includes("model-designed"))) {
-        return text({ ok: false, summary: "이 방은 네가 design 으로 설계한 방이라 함수가 가구를 골라 채우지 않는다. 빈 바닥이 넓으면 design 의 w·h 를 줄이거나 groups 에 묶음(무엇을·몇 개·어디)을 더해 make_place({..., mapId}) 로 다시 짓는다." });
+        return text({ ok: false, summary: "이 방은 네가 design 으로 설계한 방이라 함수가 가구를 골라 채우지 않는다. 빈 바닥이 넓으면 design 의 w·h 를 줄이거나 groups 에 묶음(무엇을·몇 개·어디)을 더해 edit_place({patch:{mapId, design: 고친 설계 전체}}) 로 다시 짓는다." });
       }
       const used = dressBudget.get(p.mapId) ?? 0;
       if (used >= DRESS_ROOM_LIMIT) return text({ ok: false, summary: `${p.mapId} 의 방 채우기 상한(${DRESS_ROOM_LIMIT}번)에 닿았다 — 남은 문제를 사용자에게 보고한다.` });

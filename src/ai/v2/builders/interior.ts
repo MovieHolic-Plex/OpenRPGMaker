@@ -994,7 +994,7 @@ export function coverZones(tilesetId: string, spec: PlaceSpec, zones: readonly Z
 }
 
 export const INTERIOR_CARD = `[실내 interior] make_place({type:"interior", name, style?, size?, zones:[{kind, purpose, anchors?}], floors?}).
-- ★ 방은 네가 설계한다(손 도트 실내): 먼저 room_parts({purpose}) 로 기물 이름표·견본 배치·그림을 보고, zones[].design 에 모양(shape rect·L·T·bay, L 은 corner)·바닥 크기(w×h, 벽면 줄 빼고)·문(door)·재질(floor·wall)·가구 묶음(groups: name·at 벽/모서리/center·pos 0~1·rug·items[{id, dx, dy, count}])을 쓴다. 무엇을 몇 개 놓을지는 네 목록이 전부다 — 함수는 더하지 않고 칩셋에 없는 이름 맞추기·묶음 겹침·의자 방향·문 앞 통로·도달만 고쳐 결과에 「고침:」 줄로 알린다. 그 줄과 「맨바닥」 줄을 보고 design 을 고쳐 make_place({..., mapId}) 로 다시 짓는다. 견본은 참고 — 같은 배치를 베끼지 않는다. 책장·진열장(벽 가구)과 창·지도(걸이)는 북벽에만 선다. design 을 안 주면 함수가 견본으로 짓는다(네가 설계한 방이 아니다).
+- ★ 방은 네가 설계한다(손 도트 실내): 먼저 room_parts({purpose}) 로 기물 이름표·견본 배치·그림을 보고, zones[].design 에 모양(shape rect·L·T·bay, L 은 corner)·바닥 크기(w×h, 벽면 줄 빼고)·문(door)·재질(floor·wall)·가구 묶음(groups: name·at 벽/모서리/center·pos 0~1·rug·items[{id, dx, dy, count}])을 쓴다. 무엇을 몇 개 놓을지는 네 목록이 전부다 — 함수는 더하지 않고 칩셋에 없는 이름 맞추기·묶음 겹침·의자 방향·문 앞 통로·도달만 고쳐 결과에 「고침:」 줄로 알린다. 그 줄과 「맨바닥」 줄을 보고 design 을 고쳐 edit_place({patch:{mapId, design: 고친 설계 전체}}) 로 다시 짓는다. 견본은 참고 — 같은 배치를 베끼지 않는다. 책장·진열장(벽 가구)과 창·지도(걸이)는 북벽에만 선다. design 을 안 주면 함수가 견본으로 짓는다(네가 설계한 방이 아니다).
 - zones = 방 하나하나(칸막이로 나뉜 방). kind 낱말: tavern(선술집 홀)·kitchen·storeroom·cellar·bedroom·inn_room(객실)·study(서재)·library(서고)·living·dining·forge(대장간)·workshop·alchemy·chapel·treasury·armory·throne_room·great_hall·entrance·corridor·bathroom·cell. 한국어 낱말도 된다.
 - anchors = 그 방의 주인공 물건(낱말): 「큰 망원경」「벽난로」「바 카운터」「책장」「별자리표」「올라가는 계단」. 크면 「큰」을 붙인다. 함수가 부품 사전에서 찾아 빈 자리에 놓고, 못 찾으면 없다고 알려 준다.
 - 「2층·위층 계단」이 필요하면 anchors 에 "올라가는 계단"을 넣고 floors:2 — 위층을 짓고 계단끼리 이어 준다.
@@ -1353,7 +1353,9 @@ export const interiorBuilder: PlaceBuilder = {
     }
     // 꾸밈 정도(아늑하게): 방마다 빈 자리에 아늑한 소품을 한두 점.
     const dressing = typeof hints.dressing === "number" ? hints.dressing : 0;
+    if (dressing > 0 && designed) notes.push("설계 방에는 꾸밈 정도(dressing)로 함수가 소품을 더하지 않는다 — 더할 것은 design 의 묶음에 넣는다");
     if (dressing > 0) for (const room of rooms) {
+      if ((room as { designed?: boolean }).designed) continue;
       let added = 0;
       for (const word of cosyFor(room.kind, rooms.length === 1 ? `${spec.name} ${spec.theme ?? ""}` : "")) {
         if (added >= dressing * 2) break;
