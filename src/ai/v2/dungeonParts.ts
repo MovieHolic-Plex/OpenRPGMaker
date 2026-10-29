@@ -135,3 +135,47 @@ export function createDungeonPartsVerb(env: PiAssistantV2Env): PiToolShape {
     },
   };
 }
+
+const roomKey = (r: { id?: unknown; role?: unknown; at?: unknown }) => `${String(r.role ?? "")}@${String(r.at ?? "").replace(/\s+/gu, "")}`;
+
+/** 설계가 예시 하나를 그대로 옮겨 적었는가(방 id 절반 이상 같음, 또는 역할@자리 70% 이상 같음). 그 예시 이름. */
+export function copiedExample(design: DungeonDesign | undefined): string | undefined {
+  const rooms = (design?.rooms ?? []) as readonly { id?: unknown; role?: unknown; at?: unknown }[];
+  if (rooms.length < 2) return undefined;
+  for (const ex of DUNGEON_DESIGN_EXAMPLES) {
+    const exRooms = (ex.design.rooms ?? []) as readonly { id?: unknown; role?: unknown; at?: unknown }[];
+    const ids = new Set(exRooms.map((r) => String(r.id)));
+    const keys = new Set(exRooms.map(roomKey));
+    const sameIds = rooms.filter((r) => ids.has(String(r.id ?? ""))).length;
+    const sameKeys = rooms.filter((r) => keys.has(roomKey(r))).length;
+    const n = Math.max(rooms.length, exRooms.length);
+    if (sameIds * 2 >= n || sameKeys >= 0.7 * n) return ex.name;
+  }
+  return undefined;
+}
+
+/**
+ * make_place 던전 명세 손질(함수는 설계를 고르지 않는다 — 모델이 쓴 것 중 짓지 못할 것만 덜고 알린다).
+ * - 없는 mapId: 새 층에 지을 맵 id 를 모델이 지어내면(2026-10-29 argon «map_cave_1», flash «cave_dungeon») author_dungeon 이 «맵이 없습니다»로 실패했다 → 버리고 새 맵.
+ * - 방이 둘 미만인 dungeonDesign(빈 껍데기 {rooms:[]})은 설계가 없는 것으로 본다(되돌려 보내기가 걸리게).
+ * - 예시를 그대로 옮긴 설계는 장소마다 한 번 되돌려 보낸다(flash 가 branch-north 를 id·자리까지 그대로 옮겼다). 두 번째는 그대로 짓고 알린다.
+ */
+export function screenDungeonSpec<T extends { name: string; mapId?: string; dungeonDesign?: DungeonDesign; floorDesigns?: readonly DungeonDesign[] }>(
+  spec: T, maps: Readonly<Record<string, unknown>>, bounced: Set<string>,
+): { spec: T; note?: string; bounce?: Record<string, unknown> } {
+  let out = spec; const notes: string[] = [];
+  if (out.mapId && !maps[out.mapId]) { notes.push(`없는 맵 id «${out.mapId}» 는 버리고 새 맵에 지었다(새 층의 id 는 함수가 정한다).`); const { mapId: _drop, ...rest } = out; out = rest as T; }
+  const real = (d?: DungeonDesign) => !!d && Array.isArray(d.rooms) && d.rooms.length >= 2;
+  if (out.dungeonDesign && !real(out.dungeonDesign)) { const { dungeonDesign: _d, ...rest } = out; out = rest as T; }
+  if (out.floorDesigns) { const fd = out.floorDesigns.filter(real); out = { ...out, floorDesigns: fd.length ? fd : undefined }; }
+  const copied = [out.dungeonDesign, ...(out.floorDesigns ?? [])].map(copiedExample).find(Boolean);
+  if (copied) {
+    const key = `copy:${out.name}`;
+    if (!bounced.has(key)) {
+      bounced.add(key);
+      return { spec: out, bounce: { ok: false, notFailure: true, summary: `아직 짓지 않았다(실패 아님) — 「${out.name}」 설계가 dungeon_parts 예시 «${copied}» 를 거의 그대로 옮겼다. 예시는 뼈대 참고일 뿐이다. 이 요청(무엇이 사는 굴인지·어디가 위험한지·무엇을 숨겼는지)에 맞게 방 수·입구 쪽·자리(at)·모양·물·잇는 모양을 새로 짜서 spec.dungeonDesign 을 다시 채워 make_place 를 바로 다시 부른다.` } };
+    }
+    notes.push(`설계가 예시 «${copied}» 와 거의 같다(한 번 되돌려 보낸 뒤에도) — 그대로 지었다.`);
+  }
+  return { spec: out, note: notes.join(" ") || undefined };
+}

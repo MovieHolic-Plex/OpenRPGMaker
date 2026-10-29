@@ -54,7 +54,7 @@ import { dressRoom } from "./builders/dressRoom";
 import { tileMoveObjects } from "./builders/tileMove";
 import { planObjective } from "./discoverability";
 import { roomParts, SHAPE_EXAMPLES } from "./roomParts";
-import { DUNGEON_DESIGN_SCHEMA, createDungeonPartsVerb, dungeonParts } from "./dungeonParts";
+import { DUNGEON_DESIGN_SCHEMA, createDungeonPartsVerb, dungeonParts, screenDungeonSpec } from "./dungeonParts";
 
 // 2026-10-23 5차: 고치기 3바퀴는 바퀴마다 다시 짓기+비평(20~35초)이라 던전 한 장에 200~250초가 들었다.
 // 속도 우선(6차)으로 1바퀴만 — 첫 비평의 major 를 한 번 고치고 남은 것은 보고한다.
@@ -665,7 +665,13 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
         return text({ ok: false, summary: `${spec.type}${spec.style ? `(${spec.style})` : ""} 을 짓는 빌더가 없다. 다른 type 으로 바꾸거나 사용자에게 못 한다고 알린다.` });
       }
       // 던전·동굴도 조수가 설계한다(방 설계와 같은 원칙): dungeonDesign 없이 오면 장소마다 한 번 되돌려 보낸다. 다시 없이 오면 함수 배치로 짓는다.
-      if (builder.id === "dungeon" && !spec.mapId && !spec.dungeonDesign && !spec.floorDesigns?.length && !session.dungeonBounced.has(spec.name)) {
+      if (builder.id === "dungeon") {
+        const sc = screenDungeonSpec(spec, run.ctx.project.maps, session.dungeonBounced);
+        spec = sc.spec;
+        if (sc.bounce) return text(sc.bounce);
+        if (sc.note) keptNote = [keptNote, sc.note].filter(Boolean).join(" ");
+      }
+      if (builder.id === "dungeon" && !(spec.mapId && session.places.has(spec.mapId)) && !spec.dungeonDesign && !spec.floorDesigns?.length && !session.dungeonBounced.has(spec.name)) {
         session.dungeonBounced.add(spec.name);
         const parts = dungeonParts(`${spec.theme ?? ""} ${spec.name} ${spec.type}`);
         return text({ ok: false, notFailure: true, summary: `아직 짓지 않았다(실패 아님) — 「${spec.name}」의 층은 네가 설계한다. 아래 parts(방 모양·역할·물·특징·잇는 모양, 뼈대가 다른 예시)를 보고 spec.dungeonDesign 을 채워 make_place 를 바로 다시 부르면 지어진다: `
