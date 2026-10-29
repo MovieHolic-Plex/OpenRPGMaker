@@ -9,7 +9,8 @@ import { el } from "@/util/dom";
 import { createCinematicAssets, type CinematicAssets } from "@/player/cinematicAssets";
 import { createTitleEffectsCanvas, freezeTitleEffects, stopTitleEffects } from "@/player/titleEffects/renderer";
 import { getPlayerPreferences } from './playerPreferences';
-import { animaticBandClearance, playOpeningAnimatic } from "./openingAnimaticRenderer";
+import { ANIMATIC_CUE_EVENT, animaticBandClearance, playOpeningAnimatic } from "./openingAnimaticRenderer";
+import { duckGainAt } from "./audio/fade";
 import { isEmeraldMonsterStyle } from '@/project/emeraldMonsterStyle';
 import { createEmeraldOpeningAtmosphere } from './emeraldOpeningAtmosphere';
 import { bindIntegerArtScale } from './monsterArtScale';
@@ -73,6 +74,11 @@ function ditherMasks(): string[] {
 }
 
 /** DOM-only playback: no session, Phaser, editor store or global audio ownership. */
+/** 애니메틱 효과음 큐가 울릴 때 오프닝 음악 배율·최대 유지·되돌림 시간. */
+export const OPENING_DUCK_LEVEL = 0.5;
+export const OPENING_DUCK_HOLD_MAX_MS = 900;
+export const OPENING_DUCK_RELEASE_MS = 350;
+
 export function playCinematicSequence(options: {
   readonly host: HTMLElement;
   readonly project: Project;
@@ -613,6 +619,14 @@ export function playCinematicSequence(options: {
       }
     }
   };
+  // 애니메틱의 짧은 효과음 큐가 울리는 동안 오프닝 음악을 반으로 낮췄다가(최대 0.9초) 0.35초에 걸쳐 되돌린다.
+  // 전투 효과음 덕킹(#3923)과 같은 방식이다 — 0.35~1.0 음량의 개그 효과음이 현대식으로 큰 음악 밑으로 -1~-6dB 에 묻혔다(2026-10-30 마왕 편의점 r4).
+  let duckHoldUntil = -Infinity;
+  const duckFactor = (now: number): number => duckGainAt(OPENING_DUCK_LEVEL, now - duckHoldUntil, OPENING_DUCK_RELEASE_MS);
+  root.addEventListener(ANIMATIC_CUE_EVENT, (event) => {
+    const ms = Number((event as CustomEvent<{ durationMs?: number }>).detail?.durationMs ?? 0);
+    duckHoldUntil = Math.max(duckHoldUntil, performance.now() + Math.min(OPENING_DUCK_HOLD_MAX_MS, Math.max(0, Number.isFinite(ms) ? ms : 0)));
+  });
   if (sequence.musicResourceId) {
     root.dataset.music = sequence.musicResourceId;
     const url = resolveAssetResourceUrl(sequence.musicResourceId, { project });
@@ -631,7 +645,8 @@ export function playCinematicSequence(options: {
           const start = performance.now();
           musicFadeTimer = setInterval(() => {
             if (music !== audio) { clearInterval(musicFadeTimer); return; }
-            audio.volume = Math.min(1, Math.max(0, options.musicVolume?.() ?? 0.7)) * Math.min(1, (performance.now() - start) / 600);
+            const now = performance.now();
+            audio.volume = Math.min(1, Math.max(0, options.musicVolume?.() ?? 0.7)) * Math.min(1, (now - start) / 600) * duckFactor(now);
           }, 40);
         }, () => { audio.volume = Math.min(1, Math.max(0, options.musicVolume?.() ?? 0.7)); audio.dataset.playback = 'blocked'; });
       }, () => { if (!settled) audio.dataset.playback = 'error'; });

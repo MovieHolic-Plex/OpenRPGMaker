@@ -5,6 +5,23 @@
 
 <!-- releases -->
 
+## 0.364.1 — 2026-10-30
+
+### 수정
+
+- **lint** — staging lint seeds the player at startPos for the start map's new-game autorun (#3936) (`e85a44d`)
+
+## 0.364.0 — 2026-10-30
+
+### 기능
+
+- **harness** — battle-backdrop build --emit (upsert_resource file for code builders) (#3934) (`7442621`)
+
+### 수정
+
+- **store** — publish-game drops unused third-party-named resources, refuses games that use one (#3933) (`112d69d`)
+- **battle** — stand party actors without a battle sheet on their own walk chip (#3932) (`0b72a7a`)
+
 ## 0.363.0 — 2026-10-30
 
 ### 기능

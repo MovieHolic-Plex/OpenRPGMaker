@@ -15,6 +15,7 @@
 | `sheet` | 캡처 옆에 후보 1배·3배·**전투 무대 미리보기**(640×480 cover + 배틀러 자리 상자 + 바닥 띠 점선)·검사표·팔레트(덧색 노란 테두리)·프롬프트·원본 | `~/claude-viz/battle-backdrop-<이름>.html` → `http://mdc-server:18301/…` |
 | `pick` | **사람이** 고른 후보를 현재 도트·저장본 화소 해시에 묶는다. `--by` 필수. 감독·에이전트는 고르지 않는다 | 원장 `pick` |
 | `build` | 고른 그림이 해시와 같을 때만 `kind:"backdrop"` 자원(`battle_backdrop_<판>_<해시8>`)으로 넣고 트룹 `previewBackgroundResourceId` 또는 맵 `battleBackground` 에 건다. SQLite 프로젝트 폴더는 `openLocalProjectStore` 로 저장 → 다시 열어 확인. JSON 은 `--out` 새 파일(또는 `--in-place`) | 원장 `builds[]` |
+| `build --emit <폴더>` | 프로젝트 없이 `<자원id>.json`(`{ resource, target, run, pixelSha256 }` — `resource` 는 그대로 `upsert_resource` 인자) + `<자원id>.png` 를 쓴다. 코드로 프로젝트를 짓는 빌더(플래그십 데모)가 커밋해 두고 `execTool("upsert_resource", { resource })` → 트룹 `previewBackgroundResourceId`/맵 `battleBackground` 에 id 를 건다. 필드 모드 끄기는 `set_project_settings { battle: { backdrop: "default" } }` | 원장 `builds[]`(into = json) |
 | `status` | 판별 후보·검사·선택·설치 | |
 
 ```bash
@@ -24,6 +25,7 @@ npm run harness -- battle-backdrop check <판> [--judge claude:sonnet|agy:gemini
 npm run harness -- battle-backdrop sheet <판> [<판>…] --name <이름>
 npm run harness -- battle-backdrop pick <판> <글자> --by <사람>
 npm run harness -- battle-backdrop build <판> --project <폴더|json> [--target troop:<id>|map:<id>] [--out new.json]
+npm run harness -- battle-backdrop build <판> --emit <폴더> [--target troop:<id>|map:<id>]   # 코드 빌더용 자원 파일
 ```
 
 - `--assets-root` — 번들 칩셋 그림(`public/assets/...`)을 읽을 체크아웃. 다른 브랜치 데모(예: `../rpg-zzu-maou`)는 그 브랜치 그림으로 그린다.

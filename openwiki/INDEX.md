@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **188쪽 / 7577KB / 약 2,225,127 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **188쪽 / 7580KB / 약 2,226,005 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -40,7 +40,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/jp-city.md` | 108KB | 14KB | 510 | ~31,925 |
 | `openwiki/runtime-battle.md` | 438KB | 32KB | 2415 | ~128,852 |
 | `openwiki/runtime-m2-flow-controls.md` | 52KB | 23KB | 342 | ~14,200 |
-| `openwiki/runtime-pre-edit-routing.md` | 197KB | 99KB ⚠상한 초과 — 절을 더 쪼개라 | 1180 | ~58,444 |
+| `openwiki/runtime-pre-edit-routing.md` | 198KB | 100KB ⚠상한 초과 — 절을 더 쪼개라 | 1180 | ~58,855 |
 | `openwiki/runtime-project-schema.md` | 264KB | 83KB ⚠상한 초과 — 절을 더 쪼개라 | 1825 | ~74,678 |
 | `openwiki/runtime-sessions.md` | 166KB | 64KB ⚠상한 초과 — 절을 더 쪼개라 | 922 | ~45,466 |
 | `openwiki/team-project-host.md` | 51KB | 5KB | 536 | ~15,628 |
@@ -298,7 +298,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 
 절 제목 없음 (평면 목록 페이지).
 
-### `openwiki/asset-store.md` — 47KB · 341줄 · ~14,022 토큰
+### `openwiki/asset-store.md` — 48KB · 344줄 · ~14,194 토큰
 
 - `L6` 어디에 무엇이 있나
 - `L25` 계약 동기화 절차
@@ -315,7 +315,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L214` 에디터에서 열기 링크 (2026-10-20)
 - `L231` 주인 초안 (D2, 2026-10-20)
 - `L239` 바로 플레이 게임 (2026-10-23)
-  - `L333` 조수와 평가 (2026-10-25)
+  - `L336` 조수와 평가 (2026-10-25)
 
 ### `openwiki/assistant-v2.md` — 135KB · 373줄 · ~41,460 토큰 · 통째읽기 잘림
 
@@ -1582,15 +1582,15 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L323` 첫 판 결과 (r2 기준선 → r3 수정 후)
   - `L370` 루프 1 숫자 (Sonnet 5.5 high 조수 대용, 2026-10-22)
 
-### `openwiki/harnesses/battle-backdrop.md` — 10KB · 79줄 · ~2,837 토큰
+### `openwiki/harnesses/battle-backdrop.md` — 10KB · 81줄 · ~3,016 토큰
 
 - `L7` 무엇을 하나
-- `L33` 규격 근거 (2026-10-29~30 실측)
-- `L43` 시간·빛
-- `L49` 조수 도구 `generate_battle_backdrop`
-- `L57` 판정자
-- `L62` 알려진 한계
-- `L68` 시범 판 (마왕 편의점, 2026-10-30)
+- `L35` 규격 근거 (2026-10-29~30 실측)
+- `L45` 시간·빛
+- `L51` 조수 도구 `generate_battle_backdrop`
+- `L59` 판정자
+- `L64` 알려진 한계
+- `L70` 시범 판 (마왕 편의점, 2026-10-30)
 
 ### `openwiki/harnesses/battle-trainer-sprites.md` — 7KB · 65줄 · ~2,108 토큰
 
@@ -2463,7 +2463,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L27` 공방 태그 이주
 - `L33` 시험
 
-### `openwiki/opening-animatic-authoring.md` — 43KB · 415줄 · ~11,004 토큰
+### `openwiki/opening-animatic-authoring.md` — 43KB · 415줄 · ~11,120 토큰
 
 - `L3` Ownership and format
 - `L9` Assistant surface
@@ -2883,7 +2883,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L325` 그림 컷 준비와 direction (2026-10-04)
 - `L333` 글자·장면 오프닝 연출 (2026-10-04)
 
-### `openwiki/runtime-pre-edit-routing.md` — 197KB · 1180줄 · ~58,444 토큰 · 통째읽기 잘림
+### `openwiki/runtime-pre-edit-routing.md` — 198KB · 1180줄 · ~58,855 토큰 · 통째읽기 잘림
 
 - `L1` 목표 안내창 자리·한국어 줄바꿈·숫자 입력 (2026-10-28, 장부 hud.json)
 - `L47` 카메라 스크롤은 캔버스 픽셀 격자에 맞춘다 (2026-10-23)

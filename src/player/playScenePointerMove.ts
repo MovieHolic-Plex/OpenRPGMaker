@@ -11,7 +11,7 @@ import { startPlayerRoute } from "@/player/playerRouteState";
 import { isCutsceneInputLocked } from "@/player/cutsceneControl";
 import { runtimeEventViewsForMap } from "@/project/runtimeEventState";
 import { currentTouchControls } from "@/player/touchControlSettings";
-import { isTouchUiHost } from "@/player/touchTap";
+import { inputTime, isTouchUiHost, TAP_MAX_MS as TOUCH_TAP_MAX_MS, TAP_MAX_MOVE as TOUCH_TAP_MAX_MOVE } from "@/player/touchTap";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import type { MoveCommand } from "@/project/types";
 import { playerAlwaysRun } from "@/player/playerPreferences";
@@ -78,7 +78,28 @@ function faceToward(from: { x: number; y: number }, to: { x: number; y: number }
 }
 
 /** 클릭 한 번을 처리한다. 결과는 호출측이 QA 영수증(data-pointer-move)으로 남긴다. */
-export function handlePointerMove(scene: PlaySceneContext, tile: { x: number; y: number }, options: { readonly touch?: boolean } = {}): PointerMoveOutcome {
+/** 마지막 탭이 고른 이벤트(QA 영수증용 — data-pointer-move 끝에 @id 로 붙는다). */
+let lastTappedEventId: string | null = null;
+
+/** 손가락 끝의 반지름(화면 px) — 누를 수 있는 것의 최소 크기 44px(애플 HIG·WCAG 2.5.5)의 절반. */
+export const TOUCH_REACH_PX = 22;
+
+export interface PointerMoveOptions {
+  readonly touch?: boolean;
+  /** 누른 점(월드 px). 있으면 칸 안에 이벤트가 없을 때 손가락 반지름 안의 사람을 고른다. */
+  readonly world?: { readonly x: number; readonly y: number };
+  /** 손가락 반지름(칸). 폰 세로는 한 칸이 10px 남짓이라 사람을 정확히 누르기 어렵다(2026-10-30). */
+  readonly reachTiles?: number;
+}
+
+/** 점(칸 단위)에서 사각형(칸 좌표, 양 끝 포함 — 머리 한 칸 위까지)까지 거리. 안이면 0. */
+function distanceToBody(point: { x: number; y: number }, rect: { left: number; right: number; top: number; bottom: number }, headRoom: number): number {
+  const dx = Math.max(rect.left - point.x, 0, point.x - (rect.right + 1));
+  const dy = Math.max(rect.top - headRoom - point.y, 0, point.y - (rect.bottom + 1));
+  return Math.hypot(dx, dy);
+}
+
+export function handlePointerMove(scene: PlaySceneContext, tile: { x: number; y: number }, options: PointerMoveOptions = {}): PointerMoveOutcome {
   const touch = options.touch === true;
   if (!pointerMovementEnabled(touch)) return "disabled";
   if (scene.running) return "busy-running";
@@ -99,8 +120,28 @@ export function handlePointerMove(scene: PlaySceneContext, tile: { x: number; y:
     x >= view.bodyRect.left && x <= view.bodyRect.right && y >= view.bodyRect.top && y <= view.bodyRect.bottom;
   const hasFigure = (view: (typeof views)[number]): boolean => Boolean(view.page?.graphic?.sprite || view.page?.graphic?.appearanceId) && !view.transparent;
   // 사람 그림은 한 칸보다 키가 커서(24×32) 머리가 윗칸에 걸친다 — 머리를 탭해도 그 사람이다.
-  const tappedEvent = views.find((view) => view.page && within(view, tile.x, tile.y))
+  const exactEvent = views.find((view) => view.page && within(view, tile.x, tile.y))
     ?? views.find((view) => view.page && hasFigure(view) && within(view, tile.x, tile.y + 1));
+  // 칸을 빗나갔어도 손가락 반지름 안에 사람이 있으면 그 사람이다 — 버튼처럼 44px 눌림 영역을 준다.
+  const nearEvent = (): (typeof views)[number] | undefined => {
+    if (!touch || !options.world || !(options.reachTiles && options.reachTiles > 0)) return undefined;
+    const size = mapTileSize(scene.map);
+    const point = { x: options.world.x / size, y: options.world.y / size };
+    let best: (typeof views)[number] | undefined;
+    let bestDistance = options.reachTiles;
+    for (const view of views) {
+      if (!view.page || !hasFigure(view)) continue;
+      const distance = distanceToBody(point, view.bodyRect, 1);
+      if (distance <= bestDistance) { best = view; bestDistance = distance; }
+    }
+    return best;
+  };
+  const tappedEvent = exactEvent ?? nearEvent();
+  lastTappedEventId = tappedEvent?.event.id ?? null;
+  if (tappedEvent && !exactEvent) {
+    // 고른 사람의 발밑 칸을 목표로 삼는다(곁 네 칸 중 가까운 곳까지 걸어가 말을 건다).
+    tile = { x: tappedEvent.bodyRect.left, y: tappedEvent.bodyRect.bottom };
+  }
   const plan = (x: number, y: number): MoveCommand[] | null => {
     if (x === from.x && y === from.y) return [];
     const result = planPathfindMove(scene, { kind: "pathfindMove", target: "player", x, y, speed: 4, wait: false }, undefined);
@@ -157,9 +198,6 @@ export function clientToWorld(
 // 터치패드 컨테이너(.touch-pad)는 무대 전체를 덮는 inset:0 통과막이라 고르면 안 된다 — 실제 컨트롤만 본다.
 const UI_TARGET_SELECTOR = "button, input, textarea, select, a, .dialogue-box, .choice-list, .touch-dpad, .touch-stick-zone, .touch-actions, [data-testid='main-menu'], [data-testid='battle-scene'], .runtime-shop-overlay";
 
-/** 터치의 「탭」: 짧고(400ms) 거의 안 움직인 누름만 걷기로 친다 — 끌기·길게 누르기는 아니다. */
-const TOUCH_TAP_MAX_MS = 400;
-const TOUCH_TAP_MAX_MOVE = 14;
 
 /**
  * PlayScene.create 에서 한 번. 출하 플레이어는 Phaser 마우스·터치 입력을 끄고(createPlayGame keyboardOnly)
@@ -188,27 +226,42 @@ export function installPointerMove(scene: PlaySceneContext & PointerInputHost): 
     if (!world) return receipt("outside");
     const tile = pointerTile(scene, world.x, world.y);
     if (tile && touch) showTapRipple(canvas, event.clientX, event.clientY);
-    receipt(tile ? `${handlePointerMove(scene, tile, { touch })}:${tile.x},${tile.y}` : "outside");
+    // 손가락 반지름을 칸으로: 캔버스 CSS 배율 × 카메라 줌 × 칸 크기.
+    const rect = canvas.getBoundingClientRect();
+    const tilePx = mapTileSize(scene.map) * (rect.width / Math.max(1, camera.width)) * camera.zoom;
+    const reachTiles = touch && tilePx > 0 ? Math.min(1.5, TOUCH_REACH_PX / tilePx) : 0;
+    lastTappedEventId = null;
+    const outcome = tile ? `${handlePointerMove(scene, tile, { touch, world, reachTiles })}:${tile.x},${tile.y}` : "outside";
+    receipt(lastTappedEventId ? `${outcome}@${lastTappedEventId}` : outcome);
   };
   let touchDown: { id: number; x: number; y: number; at: number } | null = null;
+  // 화면에 닿아 있는 손가락들. 두 손가락 이상이면(두 손가락 탭 = 취소, 핀치) 걷지 않는다.
+  const liveTouches = new Set<number>();
   const onPointerDown = (event: PointerEvent): void => {
     if (event.button !== 0) return;
     if (event.pointerType === "touch" || event.pointerType === "pen") {
+      // 첫 손가락(isPrimary)이면 화면에 다른 손가락이 없다 — 놓친 pointerup 으로 남은 기록을 비운다.
+      if (event.isPrimary) liveTouches.clear();
+      liveTouches.add(event.pointerId);
+      if (liveTouches.size > 1) { touchDown = null; return; }
       // 터치 UI 화면에서만, 그리고 뗄 때 판정한다(엄지로 끌던 손가락이 지나가며 걷기를 시작하지 않게).
-      touchDown = isTouchUiHost(scene.game?.canvas) ? { id: event.pointerId, x: event.clientX, y: event.clientY, at: performance.now() } : null;
+      // 누를 때 대사가 떠 있었으면 그 누름은 대사 넘기기다(touchTap 이 누르는 순간 넘긴다) — 대사가 닫힌 뒤 뗀 손이 걷지 않게 버린다.
+      const dialogueAtPress = document.querySelector(".dialogue-overlay:not(:empty) .dialogue-box, .choices-active") !== null;
+      touchDown = !dialogueAtPress && isTouchUiHost(scene.game?.canvas) ? { id: event.pointerId, x: event.clientX, y: event.clientY, at: inputTime(event) } : null;
       return;
     }
     resolve(event, false);
   };
   const onPointerUp = (event: PointerEvent): void => {
+    liveTouches.delete(event.pointerId);
     const start = touchDown;
     if (!start || start.id !== event.pointerId) return;
     touchDown = null;
-    if (performance.now() - start.at > TOUCH_TAP_MAX_MS) return;
-    if (Math.hypot(event.clientX - start.x, event.clientY - start.y) > TOUCH_TAP_MAX_MOVE) return;
+    if (inputTime(event) - start.at > TOUCH_TAP_MAX_MS) return receipt("long-press");
+    if (Math.hypot(event.clientX - start.x, event.clientY - start.y) > TOUCH_TAP_MAX_MOVE) return receipt("drag");
     resolve(event, true);
   };
-  const onPointerCancel = (): void => { touchDown = null; };
+  const onPointerCancel = (event: PointerEvent): void => { liveTouches.delete(event.pointerId); touchDown = null; };
   // 플레이 화면은 playInputBlocker 가 누름을 캡처 단계에서 삼킨다(root 리스너). window 캡처는 그보다 먼저 본다 —
   // 여기서는 읽기만 하고 전파를 막지 않으므로 차단기의 포커스·기본동작 규칙은 그대로다.
   window.addEventListener("pointerdown", onPointerDown, true);
