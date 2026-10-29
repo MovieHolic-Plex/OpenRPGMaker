@@ -250,9 +250,12 @@ const reachOk = (a: Attempt) => a.ok && Array.isArray(a.data?.unreachedFloor) &&
 // (×0.72 병동 15×17 → 13×15: 세면대·정수기 둘이 구석에 몰린 것뿐 — 맨바닥 44% → 31%).
 const OVERLAP_WARNING = /조각 \d+개|버림|겹/u;
 const UNUSABLE_WARNING = /닿는 칸이 없다|쓸 수 없는/u;
+// 줄인 방에 견본 가구가 덜 들어가는 것(furniture.dropped)도 부딪힘으로 친다 — 두 점까지 봐준다. 겹침 경고는 같은 칸 조각만 보아서,
+// 병동 견본을 ×0.62 로 줄이자 침대·커튼·모니터가 밀려 빠지고 남은 것끼리 붙었는데도 경고 0 이었다(2026-10-29 horror-ward).
+const droppedOf = (a: Attempt) => (((a.data?.layout as { rooms?: { furniture?: { dropped?: number } }[] } | undefined)?.rooms) ?? []).reduce((n, r) => n + (r.furniture?.dropped ?? 0), 0);
 const crashesOf = (a: Attempt) => {
   const ws = (a.data?.warnings as string[] | undefined) ?? [];
-  return ws.filter((w) => OVERLAP_WARNING.test(w)).length + ws.filter((w) => !OVERLAP_WARNING.test(w) && UNUSABLE_WARNING.test(w)).length / 3;
+  return ws.filter((w) => OVERLAP_WARNING.test(w)).length + ws.filter((w) => !OVERLAP_WARNING.test(w) && UNUSABLE_WARNING.test(w)).length / 3 + droppedOf(a) / 3;
 };
 
 /** 칸막이 문틈(위·아래 방 사이) 바로 아래·위 칸 — 벽 가구를 걸 벽면이 없다. */
@@ -1150,7 +1153,8 @@ export const interiorBuilder: PlaceBuilder = {
       const KIN = [/^(dining|desk|display|table|counter|work|lab)\b/u, /^(chair|stool|bench|armchair|pew|sofa)\b/u, /\bbed\b/u,
         /shelf|bookcase|^cabinet\b|apothecary drawers/u, /wardrobe/u, /^(crate|chest|barrel|sack|basket|box|chopping block|seed sacks|loot sacks)\b/u];
       const same = (o: Obj) => { const h = o.id.split(/[ :]/u)[0]!; return h === head || KIN.some((k) => k.test(o.id) && k.test(part.id)); };
-      if (settled && !/계단|stair/iu.test(what) && rb.objects.some((o) => same(o) && inZone(o))) { placed.push({ zone: room.id, what, id: part.id }); continue; }
+      // 견본 한 벌로 꾸민 방(묶음 길이 아닌 방)도 같다 — 병동 견본(가로 침대 여섯)에 「병원 침대」를 세로 침대로 덧놓아 세면대·정수기 앞을 막았다(2026-10-29 horror-ward).
+      if ((settled || !vignette) && !/계단|stair/iu.test(what) && rb.objects.some((o) => same(o) && inZone(o))) { placed.push({ zone: room.id, what, id: part.id }); continue; }
       // 올라가는 계단: 이 방이 맨 북쪽 바깥 벽에 닿지 않으면(위에 다른 방) 맨 북쪽 방 벽에 단다 — 칸막이 속으로 오르는 계단은 틀린 그림이다.
       const isUp = part.stairs === "up" || /stairs up/u.test(part.id);
       const top = Math.min(...rb.rooms.map((r) => r.y0));

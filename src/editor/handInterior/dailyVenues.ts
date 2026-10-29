@@ -488,10 +488,15 @@ const BASE_VENUES: readonly Venue[] = [
     ] },
     { kind: "cafe-hall", w: 22, h: 8, floor: "mci-wood-dark", wall: "mci-wall-brick", items: [
       o("mci-window-curtain", 1, 0), o("mci-art-frame", 5, 0), o("mci-window-curtain", 9, 0), o("mci-window-curtain", 13, 0), o("mci-art-frame", 16, 0), o("mci-window-curtain", 20, 0),
-      // 앞줄 2×2 카페 식탁(4방향 의자) + 뒷줄 창가 2인 식탁(북·동·서 의자) + 동쪽 소파 라운지.
-      ...[2, 8, 14].flatMap((x, i) => [...seatedTable("mci-t-wood", "mci-chair-wood", x, 2, 2, 2), g(i % 2 ? "mci-g-cake" : "mci-g-coffee", x, 2)]),
-      ...[2, 8, 14].flatMap((x) => [...seatedTable("mci-t-wood", "mci-chair-wood", x, 6, 2, 1, { n: true, e: true, w: true }), g("mci-g-coffee", x, 6)]),
-      o("home-monstera", 21, 2), o("mci-coffee-table", 18, 4), o("mci-sofa-n", 18, 5), o("mci-plant-tall", 21, 7), o("mci-plant-tall", 0, 7),
+      // 좌석은 무리마다 다른 꼴로 — 서쪽 창가 바 카운터(높은 의자 4), 그 아래 2×2 식탁(동·서 의자), 가운데 엇갈린 카페 원탁 둘,
+      // 동쪽 벽 2인 식탁(남·동·서 의자), 남동 구석 소파 라운지. 같은 식탁+의자 세트를 같은 간격으로 줄 세우거나 의자 줄을 앞뒤로 붙이면
+      // 「복붙한 탁자 세트·겹겹이 포갠 의자」로 읽혔다(2026-10-29 room-vig8 delivery-bakery major 둘). 남쪽 입구 앞(x9~10)은 비운다.
+      t("mci-t-counter", 0, 2, 4, 1), ...row("mci-bar-stool", 0, 1, 4, 3), g("mci-g-coffee", 1, 2), g("mci-g-cake", 2, 2),
+      ...seatedTable("mci-t-wood", "mci-chair-wood", 2, 5, 2, 2, { e: true, w: true }), g("mci-g-coffee", 2, 5), g("mci-g-cake", 3, 6),
+      o("mci-cafe-chair-e", 6, 3), o("mci-cafe-table", 7, 3), o("mci-cafe-chair-w", 8, 3), g("mci-g-coffee", 7, 3),
+      o("mci-cafe-chair-e", 11, 5), o("mci-cafe-table", 12, 5), o("mci-cafe-chair-w", 13, 5), g("mci-g-cake", 12, 5),
+      ...seatedTable("mci-t-wood", "mci-chair-wood", 15, 2, 2, 1, { s: true, e: true, w: true }), g("mci-g-coffee", 15, 2), g("mci-g-cake", 16, 2),
+      o("home-monstera", 21, 2), o("mci-coffee-table", 18, 6), o("mci-armchair-w", 20, 6), o("mci-sofa-n", 18, 7), o("mci-plant-tall", 21, 7), o("mci-plant-tall", 0, 7),
     ] },
   ] },
 
@@ -842,22 +847,21 @@ const BASE_VENUES: readonly Venue[] = [
       o("hospital-wheelchair", 0, 13), o("hospital-curtain-screen", 2, 12),
       o("hospital-doctor-desk", 5, 12), o("mci-chair-office-n", 8, 12),
     ] },
-    // ── 2F-1. 서병동 다인실 입원병동 (13×15) - 서쪽 가로 침대(mci-hosp-bed-e) 3상 + 동쪽 가로 침대(mci-hosp-bed-w) 3상 + 레일 커튼·수액 펌프·협탁·생체 모니터
-    { kind: "hosp-ward-west", w: 13, h: 15, floor: "mci-vinyl-hospital", wall: "mci-wall-hospital", items: [
-      o("mci-window-blind", 1, 0), o("mci-window-blind", 4, 0), o("mci-wall-clock", 11, 0),
-      o("mci-washbasin", 0, 2), o("hospital-water-dispenser", 1, 2), o("hospital-med-cabinet", 3, 2), o("hospital-med-cabinet", 11, 2),
-      o("mci-hosp-bed-e", 0, 4), o("mci-bedside", 0, 5), o("hosp-iv-pump", 2, 4),
-      o("hosp-curtain-track", 0, 6),
-      o("mci-hosp-bed-e", 0, 8), o("mci-bedside", 0, 9), o("hosp-iv-pump", 2, 8),
-      o("hosp-curtain-track", 0, 10),
-      o("mci-hosp-bed-e", 0, 12), o("mci-bedside", 0, 13), o("hosp-iv-pump", 2, 12),
-      o("hospital-bedside-monitor", 5, 4), o("mci-hosp-bed-w", 6, 4), o("mci-bedside", 7, 5),
-      o("hosp-curtain-track", 5, 6),
-      o("hospital-bedside-monitor", 5, 8), o("mci-hosp-bed-w", 6, 8), o("mci-bedside", 7, 9),
-      o("hosp-curtain-track", 5, 10),
-      o("hospital-bedside-monitor", 5, 12), o("mci-hosp-bed-w", 6, 12), o("mci-bedside", 7, 13),
-      o("mci-med-cart", 11, 4), o("hospital-wheelchair", 12, 4),
-      o("hosp-wheelchair-bay", 11, 11),
+    // ── 2F-1. 서병동 다인실 입원병동 (10×15) - 서쪽 가로 침대(mci-hosp-bed-e) 3상 + 동쪽 가로 침대(mci-hosp-bed-w) 3상, 병상 사이 레일 커튼.
+    //    협탁·모니터·수액 펌프는 침대 옆(같은 줄)에 둔다 — 침대 바로 아래 줄에 협탁, 그 아래에 커튼을 붙이면 키 큰 기물의 윗칸이 앞 기물
+    //    위로 그려져 침대·협탁·커튼이 한 덩이로 겹쳤고, 가운데 통로에 모니터 세로 줄이 서 통로를 막았다(2026-10-29 horror-ward major).
+    //    병상은 4줄 간격(y 4·8·12), 커튼은 침대 두 줄 아래(y 6·10)라 위아래가 닿지 않는다. 북벽 기물(세면대·정수기·약장)과 첫 침대 사이도 한 줄 띄워
+    //    덩이가 갈린다(붙이면 한 덩이로 옮겨져 침대가 세면대 앞에 얹혔다). 가운데 통로는 x3~5 세 칸 — 13×15 일 때는
+    //    맨바닥이 넓어 조수 짓기가 방을 줄였고, 줄이면서 덩이 사이 빈 줄이 빠져 커튼이 침대 위로 다시 붙었다. 처음부터 줄일 필요 없는 크기로 짠다.
+    { kind: "hosp-ward-west", w: 10, h: 15, floor: "mci-vinyl-hospital", wall: "mci-wall-hospital", items: [
+      o("mci-window-blind", 0, 0), o("mci-window-blind", 7, 0), o("mci-wall-clock", 4, 0),
+      o("mci-washbasin", 3, 2), o("hospital-water-dispenser", 4, 2), o("hospital-med-cabinet", 5, 2),
+      ...[4, 8, 12].flatMap((y, i) => [
+        o("mci-hosp-bed-e", 0, y), o(i === 1 ? "hosp-iv-pump" : "mci-bedside", 2, y),
+        o(i === 1 ? "mci-bedside" : "hosp-iv-pump", 6, y), o("mci-hosp-bed-w", 7, y), o("hospital-bedside-monitor", 9, y),
+      ]),
+      o("hosp-curtain-track", 0, 6), o("hosp-curtain-track", 0, 10), o("hosp-curtain-track", 6, 6), o("hosp-curtain-track", 6, 10),
+      o("mci-med-cart", 0, 14), o("hosp-wheelchair-bay", 8, 14),
     ] },
     // ── 2F-2. 중앙 간호사 스테이션 · 엘리베이터 홀 · 병동 휴게 라운지 (12×15)
     { kind: "hosp-nurse-core", w: 12, h: 15, floor: "mci-stone-lobby", wall: "mci-wall-lobby", items: [
