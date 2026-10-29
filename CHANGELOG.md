@@ -5,6 +5,12 @@
 
 <!-- releases -->
 
+## 0.362.0 — 2026-10-30
+
+### 기능
+
+- **assistant** — forest-edge terrain for author_forest_route, close-up zoom for stage_map_reveal; QA records blob-BGM sources for sound re-mix (#3927) (`3639d7d`)
+
 ## 0.361.0 — 2026-10-30
 
 ### 기능
