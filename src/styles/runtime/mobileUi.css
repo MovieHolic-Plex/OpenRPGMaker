@@ -461,3 +461,6 @@
   inset: -8px -6px;
   border-radius: 26px;
 }
+
+/* 대사가 떠 있는 동안 메뉴 단추는 아무 일도 하지 않는다(대사 중 Esc 는 메뉴를 열지 않는다) — 옅게 해 「눌렀는데 안 된다」를 막는다(2026-10-30). */
+.play-viewport[data-touch-layout]:has(.dialogue-overlay:not(:empty) .dialogue-box) > .touch-pad .touch-menu-btn { opacity: 0.35; }
