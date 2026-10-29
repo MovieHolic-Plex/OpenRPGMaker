@@ -488,15 +488,16 @@ const BASE_VENUES: readonly Venue[] = [
     ] },
     { kind: "cafe-hall", w: 22, h: 8, floor: "mci-wood-dark", wall: "mci-wall-brick", items: [
       o("mci-window-curtain", 1, 0), o("mci-art-frame", 5, 0), o("mci-window-curtain", 9, 0), o("mci-window-curtain", 13, 0), o("mci-art-frame", 16, 0), o("mci-window-curtain", 20, 0),
-      // 좌석은 무리마다 다른 꼴로 — 서쪽 창가 바 카운터(높은 의자 4), 그 아래 2×2 식탁(동·서 의자), 가운데 엇갈린 카페 원탁 둘,
-      // 동쪽 벽 2인 식탁(남·동·서 의자), 남동 구석 소파 라운지. 같은 식탁+의자 세트를 같은 간격으로 줄 세우거나 의자 줄을 앞뒤로 붙이면
-      // 「복붙한 탁자 세트·겹겹이 포갠 의자」로 읽혔다(2026-10-29 room-vig8 delivery-bakery major 둘). 남쪽 입구 앞(x9~10)은 비운다.
-      t("mci-t-counter", 0, 2, 4, 1), ...row("mci-bar-stool", 0, 1, 4, 3), g("mci-g-coffee", 1, 2), g("mci-g-cake", 2, 2),
-      ...seatedTable("mci-t-wood", "mci-chair-wood", 2, 5, 2, 2, { e: true, w: true }), g("mci-g-coffee", 2, 5), g("mci-g-cake", 3, 6),
-      o("mci-cafe-chair-e", 6, 3), o("mci-cafe-table", 7, 3), o("mci-cafe-chair-w", 8, 3), g("mci-g-coffee", 7, 3),
-      o("mci-cafe-chair-e", 11, 5), o("mci-cafe-table", 12, 5), o("mci-cafe-chair-w", 13, 5), g("mci-g-cake", 12, 5),
-      ...seatedTable("mci-t-wood", "mci-chair-wood", 15, 2, 2, 1, { s: true, e: true, w: true }), g("mci-g-coffee", 15, 2), g("mci-g-cake", 16, 2),
-      o("home-monstera", 21, 2), o("mci-coffee-table", 18, 6), o("mci-armchair-w", 20, 6), o("mci-sofa-n", 18, 7), o("mci-plant-tall", 21, 7), o("mci-plant-tall", 0, 7),
+      // 앞줄 2×2 카페 식탁 셋(가운데는 동·서 의자만, 동쪽은 북쪽 의자 없이) + 뒷줄 카페 원탁 둘(앞줄과 엇갈린 열, 2×1 나무 식탁은 벤치로 읽혔다) + 남동 소파 라운지(남벽에 붙임).
+      // 같은 세트를 같은 열에 앞뒤 두 줄로 세우고 뒷줄 북쪽 의자를 앞줄 남쪽 의자에 맞붙였더니 「복붙한 탁자 세트·겹겹이 포갠 의자」로
+      // 읽혔다(2026-10-29 room-vig8 delivery-bakery major 둘). 뒷줄은 북쪽 의자 없이 한 줄 띄우고, 남쪽 입구 앞 열(x9~10)은 비운다.
+      // (창가 바 카운터·원탁으로 통째 바꾼 판은 위 방에서 내려오는 틈 앞을 막아 77.8 로 떨어졌다 — room-vig9.)
+      ...seatedTable("mci-t-wood", "mci-chair-wood", 2, 2, 2, 2), g("mci-g-coffee", 2, 2),
+      ...seatedTable("mci-t-wood", "mci-chair-wood", 8, 2, 2, 2, { e: true, w: true }), g("mci-g-cake", 8, 2), g("mci-g-coffee", 9, 3),
+      ...seatedTable("mci-t-wood", "mci-chair-wood", 14, 2, 2, 2, { s: true, e: true, w: true }), g("mci-g-coffee", 14, 2),   // 북쪽 의자 없음 — 에스프레소 바에서 내려오는 틈 앞
+      o("mci-cafe-chair-e", 5, 6), o("mci-cafe-table", 6, 6), o("mci-cafe-chair-w", 7, 6), g("mci-g-cake", 6, 6),
+      o("mci-cafe-chair-e", 12, 6), o("mci-cafe-table", 13, 6), o("mci-cafe-chair-w", 14, 6), g("mci-g-coffee", 13, 6),
+      o("home-monstera", 21, 2), o("mci-coffee-table", 18, 6), o("mci-sofa-n", 18, 7), o("mci-plant-tall", 21, 7), o("mci-plant-tall", 0, 7),
     ] },
   ] },
 
