@@ -256,7 +256,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
   const cleanupRightClickCancel = pointerInput ? installRightClickCancel(layout) : () => {};
   // 목록 창: 첫 탭은 커서 이동, 커서가 있는 줄을 탭하면 결정.
   const cleanupListTap = touchUi ? installTouchListTap(layout) : () => {};
-  const cleanupTapConfirm = touchUi ? installTapConfirm(layout, { pointerMovement: () => store.getCurrent().system.pointerMovement === true || currentTouchControls().tapToMove }) : () => {};
+  const cleanupTapConfirm = touchUi ? installTapConfirm(layout, { pointerMovement: () => store.getCurrent().system.pointerMovement === true || currentTouchControls().tapToMove, haptics: () => currentTouchControls().haptics }) : () => {};
   main.append(layout);
 
   const stopGame = (): void => {
