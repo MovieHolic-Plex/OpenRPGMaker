@@ -17,7 +17,8 @@ import { FS_KEEPER_SEAL } from "./battleItems";
 import { originEdge } from "@/editor/tools/forestRouteTool";
 import { applyMapShift } from "@/editor/mapShiftActions";
 import { canMove, isPassable } from "@/project/collision";
-import { buildFrostford, SW_FROST_ARRIVE, SW_ICE_DONE, SW_STOP_B9, SW_VALEN_MET } from "./frostford";
+import { applyFallenAct2Tower } from "./act2Tower";
+import { buildFrostford, FS2_RELEASE_STOP, SW_FROST_ARRIVE, SW_ICE_DONE, SW_STOP_B9, SW_VALEN_MET } from "./frostford";
 import { paintPlace, paintFortApproach, ASH_FIELD_PLAN, ASH_FIELD_PROPS, DAWN_PLAN, DAWN_PROPS, DAWN_BURNT } from "./act2Places";
 
 /** 도구 실행 — 결과 data 를 돌려준다(author_forest_route 처럼 만든 맵 id 가 결과에만 있는 도구). */
@@ -2409,6 +2410,7 @@ export function applyFallenAct2Opening(project: Project, exec: Exec, ids: Fallen
   detection(project, exec);
   widenEdgeGates(project);
   act2Quest(project, exec);
+  applyFallenAct2Tower(project, exec);
 }
 
 /**
@@ -2430,7 +2432,7 @@ function act2Quest(project: Project, exec: Exec): void {
     [SW_FROST_ARRIVE, "요새 북문으로 나가 서리 가도를 넘어 서리나루에 닿는다"],
     [SW_VALEN_MET, "밤이 되면 얼어붙은 호수 섬 사당에서 발렌을 만난다"],
     [SW_ICE_DONE, "갈라지는 얼음을 건너 북쪽 돌계단에 오른다"],
-    [SW_STOP_B9, "하늘탑에 들어선다"],
+    ...(FS2_RELEASE_STOP === "B9" ? [[SW_STOP_B9, "하늘탑에 들어선다"] as [string, string]] : []),
   ];
   const nodes = steps.map(([switchId, description], i) => ({ id: `fs2-${i + 1}`, description, completesWhen: { kind: "switch", switchId, value: true } }));
   exec(project, "define_quest", {
