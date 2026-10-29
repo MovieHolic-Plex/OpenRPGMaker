@@ -29,6 +29,9 @@
 - **제3자 자료**는 `public/assets/ATTRIBUTION.md`에 적힌 것만 원 라이선스로 남는다. 새로 들이지 않는다(2026-10-07 정리 결정).
   예외(2026-10-28 사용자 결정 「금지 풀고 넣기」): REFMAP 인물을 변형한 걷기 칩 `RefmapDoll<n>`(char-gen `refmap`, ATTRIBUTION 「RefmapDoll」). 변형한 칩만 들이고 원본 시트는 넣지 않는다.
   OPRN 게임 사용 라이선스가 아니라 REFMAP 조건(게임에 무료·유료 모두 사용, 변형 재배포는 표기와 함께, 소재 자체 판매·원본 재배포 금지)을 따른다. 스토어 제외(아래 asset-store.md)는 그대로라 소재로 다시 팔리지 않는다.
+- **제3자 글·코드**는 루트 `ATTRIBUTION.md`에 적는다. 2026-10-29 사용자 결정으로 general-good-writing(코드 연규)의 윤문 규칙 문서와
+  polish-lint 린터 일부를 들였다(`assistant-skills/dialogue-polish/references/`, `src/vendor/general-good-writing/`). 원본에 라이선스 파일이 없어
+  저작자 허락을 받는 중이고, 허락 전에는 공개 origin 에 푸시·머지하지 않는다. 린터는 편집기 조수 도구가 동적 import 로만 부르며 플레이어 그래프에 넣지 않는다.
 - **이름:** 공개 저장소 이름은 `OpenRPGMaker`(사용자 결정, 2026-10-07). 제품 표시명은 그대로 `src/brand.ts`의 OPRN 계열이고,
   brand.ts 의 「RPG Maker 계열 표현 금지」는 제품 표시명 규칙이라 그대로 둔다. 무관 고지는 `TRADEMARKS.md` 「RPG Maker」 절.
 - 저작권자 표기는 「OPRN」(2026-10-08 사용자 결정, 법인 설립 전 임시). 법인명이 정해지면 `LICENSE.md`·`LICENSE-RUNTIME.md`·`TRADEMARKS.md`·`CLA.md`에서 함께 바꾼다.

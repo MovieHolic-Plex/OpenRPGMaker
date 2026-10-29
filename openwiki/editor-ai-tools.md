@@ -54,6 +54,23 @@
 - `set_scene_summaries` (write) `{items:[{scene:"S3", summary}]}`(≤60, 200자, 빈 글은 지움) → `project.dialogueDesk.sceneNotes`. 개요와 화면이 자동 요약 대신 이것을 보인다.
 - 장면 번호는 프로젝트가 바뀌면 다시 매겨진다 — 저장 키는 장면 id(`ev/<맵>/<이벤트>/<쪽>`)이고 번호는 읽을 때마다 새로 받는다.
 
+## 공식 윤문 스킬 `dialogue-polish` · 윤문 린터 `lint_dialogue` — general-good-writing(코드 연규) (2026-10-29)
+
+사용자 결정: 「general-good-writing 을 이 에디터의 공식 윤문 스킬로 쓰고, 크레딧에 코드 연규를 넣는다.」 원본 https://github.com/code-yeongyu/general-good-writing (커밋 `eeb868e`).
+**라이선스 대기:** 원본 저장소는 비공개이고 LICENSE 파일이 없다. origin(OpenRPGMaker)은 공개 저장소라 저작자 허락 전에는 이 작업 브랜치(`agent/ggw-skill`)를 푸시·머지하지 않는다.
+
+- **스킬** `assistant-skills/dialogue-polish/SKILL.md`: 게임 글(대사·자막·선택지·아이템 설명·퀘스트·엔딩)에 원본 규칙을 적용하는 지침. fiction 프로필, 블로그·리포트 전용 규칙(레지스터·마크업·문단 길이·뼈대·리듬 지표)은 빼고 어휘·번역투·모델 틱·추상명사 주어·「A가 아니라 B」·서사체 종결·em dash·가운뎃점·설명조만 적용한다. 인물 말투가 먼저(남긴 적중은 이유를 적는다), 대화창 줄 수·검색 키 문자열·제어 코드는 그대로. 「폴른 스타」 1막 개고에서 쓴 방식이다.
+- **원본 규칙 문서**는 `assistant-skills/dialogue-polish/references/{ko,en}/*.md` 에 바이트 그대로(ko: README·guide·lexical-tells·discourse-tells, en: README·lexical-tells·discourse-tells).
+- **스킬 부분 문서(part)**: 번들러(`scripts/content/bundle-assistant-skills.mjs`)가 스킬 폴더의 `references/**/*.md` 를 `src/assets/assistantSkillParts.json` 으로 따로 굽고, 첫 번들 JSON 에는 목록(id·글자 수)만 남긴다. `read_assistant_skill({id, part:"ko/README"})` 의 `prepare` 가 그 JSON 을 동적 import 한다(편집기 첫 번들 밖, 약 140KB). part 없이 읽으면 결과 `parts` 에 목록이 온다. pixel-dot-authoring·pixel-fx-animation 의 references 도 같은 길로 읽힌다. `--check` 는 두 파일을 함께 본다.
+- **린터** `src/vendor/general-good-writing/`: 원본 `scripts/src` 에서 로컬 규칙 경로가 import 하는 32개 파일(바이트 그대로) + 깎은 `jev/client.ts`(판정 서버 클라이언트·키·node:crypto 제거) + OPRN 진입점 `local.ts`(`lintLocal`, `scan(jev:null)`). 출처·수정 내역은 그 폴더 `README.md`. 판정 모델(Jev, TypeSafe API)은 쓰지 않는다: 키·네트워크 없음.
+- **도구** `lint_dialogue`(`src/editor/tools/dialogueLintTool.ts`, read): `texts`(새로 쓴 글) 또는 `lineIds`·`mapId`·`eventId`·`speaker`(대사 색인 `collectDialogueLines`, 설명 포함)를 받아 대사마다 적중(가족·심각도·걸린 말·처방)을 돌려준다. 대사 안 `\n` 은 공백으로 펴서 한 대사 한 줄로 이어 한 번에 검사하고, 적중 문장을 담은 대사에 되돌려 붙인다. 리듬·문단 지표는 돌려주지 않는다.
+  린터는 비동기라 `prepare` 가 동적 import + 검사를 해 두고 동기 `run` 이 같은 글의 결과(최근 8개 캐시)를 꺼낸다. `prepare` 없이 부르면 `lint-not-prepared`.
+- **번들 경계**: 린터는 `prepare` 의 동적 import 로만 들어온다 → 편집기 첫 청크 밖, 내보낸 플레이어 그래프 밖(`openwiki/licensing.md` 「코드 경계」). 확인: `npm run build:player` 결과 `dist-player` 에 린터 문자열 0건(아래 시험).
+- **읽게 하는 길**: Pi 시스템 프롬프트 「윤문」 한 줄(`systemPrompt.ts`), 작업 레시피 `dialogue-polish` 의 read·verify·policy(`toolCapabilityIndex.ts`), 대사 라우팅 카드(`ai/v2/game.ts`), find_tools 별칭 「윤문 검사·번역투·AI 티」(`toolAliases.ts`), 도구 라벨 「대사 윤문 검사」.
+- **코딩 에이전트**: `node scripts/content/lint-game-text.mts <파일> [fiction] [--lang ko|en]` — 같은 린터, 원본 CLI 보고서 형식.
+- **크레딧**: 루트 `ATTRIBUTION.md`, 「설정 → 정보」의 「크레딧」 절(이름은 `translate="no"`, 설명 문장은 en/ja/zh 카탈로그).
+- **헤드리스 시험(2026-10-29)**: `node scripts/oprn-tools.mjs --assistant --new --project /tmp/p.json lint_dialogue '{"texts":["마왕은 그것이 아니라 품격이라고 생각했다 — 결국."]}'` → 적중 3건(부정재정의 「것이 아니라」·한줄요약 「결국」·기호 「—」). 게임 안 줄(`lineIds`)도 같은 결과 형식(id·hash 포함)으로 나온다.
+
 ## 대사 관리·윤문 `list_dialogue` · `get_dialogue_context` · `rewrite_dialogue` · `set_speaker_voice` (2026-10-24)
 
 파일 `src/editor/tools/dialogueTools.ts`(도메인 event), 별칭 「대사 관리·윤문」, 레시피 `dialogue-polish`, Pi 시스템 프롬프트 한 줄.

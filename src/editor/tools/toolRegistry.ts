@@ -52,6 +52,7 @@ import { BEODEUL_ARCHITECTURE_TOOLS } from './beodeulArchitectureTools';
 import { DIRECTING_GUIDE_TOOLS } from "./directingGuideTools";
 import { ASSISTANT_SKILL_TOOLS } from "./assistantSkillTools";
 import { DIALOGUE_TOOLS } from "./dialogueTools";
+import { DIALOGUE_LINT_TOOLS } from "./dialogueLintTool";
 import { NPC_CAST_TOOLS } from "./npcCastTools";
 import { EXPORT_TOOLS } from "./exportTools";
 import { MAP_GEN_TOOLS } from "./generateMapTool";
@@ -375,6 +376,8 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(ASSISTANT_SKILL_TOOLS, "event"),
   // 대사 관리(윤문) — 대사 색인·문맥·제안/적용·화자 말투 메모. 자료집 「대사」 탭과 같은 색인을 쓴다.
   ...withDomain(DIALOGUE_TOOLS, "event"),
+  // 윤문 린터 lint_dialogue — general-good-writing(코드 연규) polish-lint 로컬 규칙. 린터는 prepare 에서 동적 import(첫 번들·플레이어 밖).
+  ...withDomain(DIALOGUE_LINT_TOOLS, "event"),
   ...withDomain(LIFE_FLOWER_TOOLS, "event"),
   ...withDomain(LIGHTING_TOOLS, "event"),
   ...withDomain(ENDING_TOOLS, "event"),

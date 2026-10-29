@@ -502,6 +502,7 @@ export const TOOL_LABELS: Readonly<Record<string, ToolLabelEntry>> = {
   list_dialogue: inspect("대사 목록 보기", "scroll"),
   get_dialogue_context: inspect("대사 앞뒤 읽기", "scroll"),
   rewrite_dialogue: people("대사 고치기", "scroll"),
+  lint_dialogue: inspect("대사 윤문 검사", "scroll"),
   set_speaker_voice: people("말투 정하기", "user"),
   set_scene_summaries: system("장면 요약 정하기", "book"),
   list_combo_techs: inspect("연계기 목록 보기", "spark"),
