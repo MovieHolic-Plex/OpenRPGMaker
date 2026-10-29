@@ -6,6 +6,8 @@ import { copyFile, mkdir, readFile, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { chromium } from "@playwright/test";
 import { startPlayerQaServer } from "../../lib/runtimeQaRun.mjs";
+import { installOpeningEvidence } from "../../lib/runtimeOpeningEvidence.mjs";
+import { execFileSync } from "node:child_process";
 
 const out = resolve(process.env.QA_OUT_DIR ?? "verify-shots/runtime-qa/maou-konbini");
 await mkdir(out, { recursive: true });
@@ -70,6 +72,9 @@ async function read(page, seg, until = async () => false, { maxMs = 300_000, sho
     } else {
       await page.waitForTimeout(250);
     }
+    // 질문 없는 선택지 앞 글은 다 나오면 스스로 닫히고 선택지가 바로 뜬다(main 의 beforeChoices) — 그때 Enter 를 누르면
+    // 첫 선택지를 골라 버린다(2026-10-29 lost 구간이 매뉴얼 대신 마왕의 힘으로 갔다). 누르기 직전에 다시 본다.
+    if ((await ui(page)).choices.length) return "choices";
     await page.keyboard.press("Enter", { delay: 90 });
     await page.waitForTimeout(220);
   }
@@ -187,6 +192,9 @@ async function battle(page, seg, plan) {
 async function segment(browser, server, key, checkpoint, run) {
   const context = await browser.newContext({ viewport: { width: 960, height: 540 }, recordVideo: { dir: out, size: { width: 960, height: 540 } } });
   const page = await context.newPage();
+  const videoStart = Date.now();
+  // MK_AUDIO=1 — 소리도 녹음해 영상에 입힌다(HTMLMediaElement 로 나는 BGM·효과음. Web Audio 직결 전투 샘플은 빠진다).
+  if (process.env.MK_AUDIO) await installOpeningEvidence(page, true);
   page.on("pageerror", (e) => facts.errors.push(`${key}: ${String(e).slice(0, 400)}`));
   page.on("console", (m) => { if (m.type() === "error") facts.errors.push(`${key} console: ${m.text().slice(0, 300)}`); });
   await page.addInitScript(([projectUrl, ns, qaCheckpoint]) => {
@@ -201,9 +209,18 @@ async function segment(browser, server, key, checkpoint, run) {
   try { await run(page, seg, mark); } catch (e) { seg.error = String(e); log(key, "ERR", e); }
   seg.final = await st(page).catch(() => null);
   await Promise.all(shots.splice(0));
+  const sound = process.env.MK_AUDIO ? await page.evaluate(() => window.__oprnStopOpeningRecording?.()).catch((e) => { log(key, "audio ERR", e); return null; }) : null;
   const video = await page.video().path();
   await context.close();
   await copyFile(video, resolve(out, `${key}.webm`));
+  if (sound?.dataUrl && sound.record?.startedAt) {
+    const audioPath = resolve(out, `${key}-audio.webm`);
+    await writeFile(audioPath, Buffer.from(sound.dataUrl.split(",")[1], "base64"));
+    const offset = Math.max(0, (sound.record.startedAt - videoStart) / 1000).toFixed(2);
+    execFileSync("ffmpeg", ["-v", "error", "-y", "-i", resolve(out, `${key}.webm`), "-itsoffset", offset, "-i", audioPath, "-map", "0:v", "-map", "1:a", "-c:v", "copy", "-c:a", "copy", resolve(out, `${key}-av.webm`)]);
+    seg.audio = { offset: Number(offset), media: sound.record.media.length, played: sound.record.media.filter((m) => m.played).length };
+    log(key, "audio muxed", offset, seg.audio);
+  }
   facts.segments[key] = seg;
   await writeFile(resolve(out, "facts.json"), JSON.stringify(facts, null, 1));
 }
