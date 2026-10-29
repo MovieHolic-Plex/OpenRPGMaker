@@ -176,6 +176,16 @@ const started = performance.now();
 const baked = join(root, "dist", "demos", `${demoId}.play.json`);
 // 빌드가 구워 둔 데모(bake-flagship-demos)가 있으면 그것을, 없으면 데모 빌더로 짓는다.
 const project = existsSync(baked) && !process.argv.includes("--rebuild") ? deserialize(readFileSync(baked, "utf8")) : createFlagshipDemoProject(demoId).project;
+// 스토어가 막는 제3자 팩 이름 자원(REFMAP·Rasak·PAW·RPG Maker 계열)은 판본에 싣지 않는다 — 쓰지 않으면 빼고, 쓰면 게시를 멈춘다.
+{
+  const { splitStoreGameThirdPartyProfiles } = await import("@/assetStore/storeGameThirdParty");
+  const split = splitStoreGameThirdPartyProfiles(project);
+  if (split.referenced.length > 0) {
+    out({ ok: false, error: `게임이 스토어가 막는 제3자 이름 자원을 씁니다 — 데모에서 바꾼 뒤 다시 게시하세요: ${split.referenced.map(({ profile, word }) => `${profile.assetId} (「${word}」)`).join(", ")}` }, 2);
+  }
+  if (split.dropped.length > 0) console.error(`[publish-game] 쓰지 않는 제3자 이름 자원 ${split.dropped.length}개를 판본에서 뺍니다(예: ${split.dropped[0]!.name}).`);
+  project.resourceProfiles = split.kept;
+}
 // 큰 WAV(루프 마스터 40MB 대)는 MP3 192kbps 로 바꿔 싣는다 — 같은 입력이면 같은 바이트(bitexact), 결과는 해시로 캐시.
 const transcodeCache = join(homedir(), ".cache", "oprn-store-transcode");
 const transcodeAudio = async (path: string, input: Uint8Array): Promise<{ path: string; bytes: Uint8Array } | null> => {
