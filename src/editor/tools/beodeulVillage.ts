@@ -1221,7 +1221,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     if (riverX >= 0) return { s: main, x: riverLeft ? riverX + 9 : riverX - 6, why: "다리 머리" };
     if (coastStreet) { const pier = coastSpots.find((sp) => sp.kind === "pier"); return { s: main, x: pier ? pier.x + 1 : Math.round(W * 0.5) + 2, why: "잔교 앞 물가 큰길" }; }
     if (theme === "coast") { const lane = connectors.find((c) => c.name === "포구 길"); const lx = lane ? Math.min(...[...lane.cells].map((c) => c % W)) : Math.round(W / 2); return { s: main, x: lx + 3, why: "포구 길이 큰길과 만나는 어귀" }; }
-    if (spec.feature === "pond") return { s: main, x: pondSide === "w" ? Math.round(W * 0.2) + 10 : Math.round(W * 0.8) - 10, why: "못(오아시스)으로 드는 어귀" };
+    if (spec.feature === "pond") return { s: main, x: pondSide === "w" ? Math.round(W * 0.2) + 10 : Math.round(W * 0.8) - 10, why: theme === "desert" ? "못(오아시스)으로 드는 어귀" : theme === "snow" ? "얼어붙은 못가로 드는 어귀" : "못가로 드는 어귀" };
     return { s: main, x: 7, why: "큰길이 마을로 드는 어귀" };
   })();
   // 모이는 곳은 길이 곧은 자리(앞뒤 4칸 같은 줄)에 — 길이 꺾이는 자리에 앵커·어귀·우물을 두면 폭 2 길의 아랫줄이 2~3칸 턱으로 남는다.
