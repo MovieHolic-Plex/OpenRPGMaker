@@ -1132,7 +1132,7 @@ function dawnwell(project: Project, exec: Exec): void {
   exec(project, "set_map_properties", { mapId: FS2_DAWNWELL_ID, mapRole: "field" });
   exec(project, "set_scene_mood", {
     mapId: FS2_DAWNWELL_ID, applyMode: "map",
-    lighting: { ambient: 0.55, color: "#4a4050" }, weather: { kind: "fog", intensity: 0.35 },
+    lighting: { ambient: 0.45, color: "#4a4050" }, weather: { kind: "fog", intensity: 0.22 },
   });
   // 재의 들판(두 번째 들판) — 숲길 맵을 참고 지도 「화산 지대 필드」 결(잿빛 땅·마른 고목·뼈 무더기·검푸른 바위 능선)로 통째로 다시 칠한다.
   const [north1, field] = FS2_NORTH_ROUTE.mapIds;

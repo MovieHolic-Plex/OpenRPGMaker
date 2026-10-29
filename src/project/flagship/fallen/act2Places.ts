@@ -61,7 +61,7 @@ export function paintPlace(project: Project, map: GameMap, spec: PlaceSpec): voi
     else {
       // 잿길 가장자리는 땅과 섞여 해진다(곧은 띠로 보이지 않게).
       const nearPath = [[1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => at(x + dx!, y + dy!) === ":");
-      lower[i] = c === "." && nearPath && h32(x, y, spec.seed + 9) % 100 < 35 ? pathTile(x, y) : ash[h32(x, y, spec.seed + 3) % ash.length]!;
+      lower[i] = c === "." && nearPath && h32(x, y, spec.seed + 9) % 100 < 18 ? pathTile(x, y) : ash[h32(x, y, spec.seed + 3) % ash.length]!;
     }
   }
   const planRock = (x: number, y: number) => x < 0 || y < 0 || x >= W || y >= H || spec.plan[y]![x] === "#";
