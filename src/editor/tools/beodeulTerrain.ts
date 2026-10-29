@@ -71,7 +71,7 @@ export interface VillageTerrainPlan {
  *  3/4 시점에서는 남쪽을 보는 절벽 면만 그려지므로 사선·완만한 굽이(smoothstep)는 1칸 계단이 이어진 가는 선으로 보였다(2026-10-11 사용자 「지형과 길이 이상하게 이어진다」). */
 // 꺾임은 한 방향으로 이어 가다 ±1 끝에서 돌아선다(b−1 → b → b+1 → b → …) — 폭 2 뒷길은 한 줄 꺾일 때마다 한 줄이 겹쳐 이어지므로
 // 왔다 갔다(b, b+1, b, b+1 …) 하면 그 줄이 맵 끝까지 곧게 남는다(88×56 포구에서 57칸 곧은 길). 이렇게 하면 겹친 줄은 세 토막(10~13칸씩) 안에서 끊긴다.
-function contour(len: number, base: number, rand: () => number): (t: number) => number {
+export function contour(len: number, base: number, rand: () => number): (t: number) => number {
   const ys = new Int16Array(len);
   let y = base, dir = rand() < 0.5 ? -1 : 1, next = 10 + Math.floor(rand() * 4);
   for (let t = 0; t < len; t += 1) {

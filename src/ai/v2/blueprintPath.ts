@@ -23,7 +23,7 @@ import { simulateBattle } from "@/battle/simulate";
 import { trivialCode } from "./puzzle";
 import { repairEventReach } from "./eventReach";
 import { dressInteriorExits } from "./exitDress";
-import { bearingWord, OBJECTIVE_SURFACE, planObjective } from "./discoverability";
+import { bearingWord, landmarkWord, OBJECTIVE_SURFACE, planObjective } from "./discoverability";
 import { settleExamineSpots } from "./examineSpot";
 import { ensureHealingAccess, ensureSupplyShop } from "./healingAccess";
 import { stageMysteryCase } from "./mysteryCase";
@@ -901,9 +901,18 @@ export function pointLockedPagesIn(project: Project): string[] {
     // 인물은 말하는 이름으로(이벤트 이름이 「촌장의 부탁」 같은 일 제목이면 「촌장 보른」).
     const speakers = cmdsOf(src.ev).flatMap((c) => typeof (c as { speaker?: unknown }).speaker === "string" && (c as { speaker: string }).speaker.trim() ? [(c as { speaker: string }).speaker.trim()] : []);
     const speaker = speakers.sort((a, b) => speakers.filter((x) => x === b).length - speakers.filter((x) => x === a).length)[0];
-    if (texts.some((c) => flat(String(c.body ?? "")).includes(flat(name)) || (speaker && flat(String(c.body ?? "")).includes(flat(speaker))))) continue;
-    const where = src.map.id === map.id ? `${bearingWord({ x: ev.x, y: ev.y }, { x: src.ev.x, y: src.ev.y })}의 ` : `${src.map.name ?? src.map.id}의 `;
-    const line = person(src.ev) ? `먼저 ${where}「${speaker ?? name}」에게 말을 걸어 보자.` : `먼저 ${where}「${name}」${josa(name, "을", "를")} 살펴보자.`;
+    const mentioned = texts.some((c) => flat(String(c.body ?? "")).includes(flat(name)) || (speaker && flat(String(c.body ?? "")).includes(flat(speaker))));
+    // 이미 이름을 대는데(「동굴 열쇠가 있어야 한다」 — 주는 것이 그 물건 자체) 어디인지 없으면 자리만 붙인다(2026-10-29 vm8 flash jrpg).
+    const located = texts.some((c) => /먼저|에 있다|근처|옆|쪽/u.test(String(c.body ?? "")));
+    if (mentioned && (located || person(src.ev))) continue;
+    // 물건은 눈에 띄는 것에 기대어(「회복의 샘 서쪽」), 사람은 방위로.
+    const spot = landmarkWord(project, src.map, src.ev.x, src.ev.y, src.ev.id);
+    const where = src.map.id === map.id
+      ? (person(src.ev) ? `${bearingWord({ x: ev.x, y: ev.y }, { x: src.ev.x, y: src.ev.y })}의 ` : `${spot}의 `)
+      : `${src.map.name ?? src.map.id}${person(src.ev) ? "" : ` ${spot}`}의 `;
+    const line = mentioned
+      ? `「${name}」${josa(name, "은", "는")} ${where.replace(/의 $/u, "")}에 있다.`
+      : person(src.ev) ? `먼저 ${where}「${speaker ?? name}」에게 말을 걸어 보자.` : `먼저 ${where}「${name}」${josa(name, "을", "를")} 살펴보자.`;
     const next = structuredClone(pages);
     (next[lockedAt]!.commands as Cmd[]).push({ kind: "text", body: line });
     map.events = map.events.map((e) => e.id === ev.id ? { ...e, pages: next as unknown as typeof e.pages } : e);

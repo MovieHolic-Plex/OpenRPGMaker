@@ -78,6 +78,26 @@ function starterChoices(project: Project): string[] {
   return [];
 }
 
+/**
+ * 맞춤 모의전(시드 1·40판·가장 좋은 기술) 결과 캐시 — 입력이 같으면 결과도 같다(결정적).
+ * 키 = 트룹 레코드 + 그 적 레코드 전부(종·레벨·능력치·기술) + 영웅 레벨 + 몬스터 파티(종·레벨·HP·기술). 프로젝트마다 따로 둔다.
+ * 끝맺음은 같은 판을 수없이 다시 잰다(바퀴 셋 · 후보 시험 뒤 되돌리기 · 단계마다 같은 관문) — 없을 때 맞춤만 416초, 끝맺음 전체 약 9분(2026-10-29).
+ * 그 밖에 모의전에 들어가는 것(기술·상태·타입 표·종 능력치)은 맞춤 중에 바뀌지 않는다 — 종의 배우는 기술 레벨(②)은 파티 기술에 드러난다.
+ */
+const fitSimCache = new WeakMap<Project, Map<string, ReturnType<typeof simulateBattle>>>();
+function fitSimulate(project: Project, troopId: string, heroLevel: number, monsterParty: MonsterInstance[]): ReturnType<typeof simulateBattle> {
+  const troop = project.database.troops.find((item) => item.id === troopId);
+  const enemies = (troop?.enemyIds ?? []).map((id) => project.database.enemies.find((item) => item.id === id) ?? null);
+  const key = JSON.stringify([troop ?? troopId, enemies, heroLevel, monsterParty]);
+  let cache = fitSimCache.get(project);
+  if (!cache) fitSimCache.set(project, (cache = new Map()));
+  const hit = cache.get(key);
+  if (hit) return hit;
+  const result = simulateBattle({ project, troopId, heroLevel, monsterParty, n: FIT_SAMPLES, seed: 1, useSkills: true });
+  cache.set(key, result);
+  return result;
+}
+
 function loneMonster(project: Project, speciesId: string, level: number): MonsterInstance | null {
   const species = monsterSpeciesById(project, speciesId);
   if (!species) return null;
@@ -156,6 +176,14 @@ function enemyHomeMaps(project: Project): Map<string, Set<string>> {
 function relevel(project: Project, enemy: EnemyRecord, level: number): void {
   const moved = speciesEnemyAtLevel(project, enemy, level);
   if (!moved) return;
+  // 가르친 기술(⑦ — 그 종이 어느 레벨에서도 배우지 않는 기술)은 레벨을 옮겨도 남긴다.
+  const learnset = new Set((monsterSpeciesById(project, enemy.speciesId ?? "")?.skillsByLevel ?? []).map((item) => item.skillId));
+  const tutored = (enemy.skillIds ?? []).filter((id) => !learnset.has(id) && !moved.skillIds.includes(id));
+  if (tutored.length) {
+    moved.skillIds = [...moved.skillIds.filter((id) => !tutored.includes(id)).slice(-(4 - tutored.length)), ...tutored];
+    const keep = new Set(moved.skillIds);
+    moved.actions = [...moved.actions.filter((action) => !action.skillId || keep.has(action.skillId)), ...(enemy.actions ?? []).filter((action) => action.skillId && tutored.includes(action.skillId))];
+  }
   const old = enemy.level && enemy.level > 0 ? enemy.level : level;
   const exp = enemy.rewards?.exp;
   const index = project.database.enemies.findIndex((entry) => entry.id === enemy.id);
@@ -255,7 +283,7 @@ export function fitGateLevelCurve(project: Project): string[] {
         for (const [enemyId, from] of base) { const enemy = project.database.enemies.find((item) => item.id === enemyId); if (enemy) relevel(project, enemy, from + delta); }
         const winsAll = gate.troopIds.every((troopId) => {
           const party = monsterBalanceParty(project, troopId, arrival);
-          if (party?.length && simulateBattle({ project, troopId, heroLevel: arrival, monsterParty: party, n: FIT_SAMPLES, seed: 1, useSkills: true }).winRate < FIT_WIN_RATE) return false;
+          if (party?.length && fitSimulate(project, troopId, arrival, party).winRate < FIT_WIN_RATE) return false;
           // 고를 수 있는 스타터마다 혼자서도 — 경험치는 싸운 몬스터만 받으니(경험치 나누기 없음) 잡은 동료는 관문 레벨까지 크지 않는다.
           // 왜(2026-10-29 standin monster, 런타임 풀 스타터): 동료 포함 기준 파티로만 재서 관측탑 보스를 Lv7→8, 챔피언을 7→9 로 올렸는데
           // 풀 스타터 혼자는 비행 보스 Lv8 을 도착 Lv10 에서 25%, 챔피언 Lv9 를 0% 이겼다 — 런타임에서 풀 판이 보스에서 졌다.
@@ -319,7 +347,7 @@ export function fitRouteLevelsToGates(project: Project): string[] {
         apply(delta);
         const party = monsterBalanceParty(project, troopId, prev);
         if (!party?.length) return delta;
-        if (simulateBattle({ project, troopId, heroLevel: prev, monsterParty: party, n: FIT_SAMPLES, seed: 1, useSkills: true }).winRate >= FIT_WIN_RATE) return delta;
+        if (fitSimulate(project, troopId, prev, party).winRate >= FIT_WIN_RATE) return delta;
         project.database.enemies = [...saved];
       }
       return 0;
@@ -563,7 +591,7 @@ export function starterOutcome(project: Project, troopId: string, speciesId: str
   const party = [lead, ...gifts];
   const full = party.reduce((sum, item) => sum + monsterMaxHp(project, item), 0);
   const inHp = (lead.currentHp ?? maxHp) + gifts.reduce((sum, item) => sum + monsterMaxHp(project, item), 0);
-  const result = simulateBattle({ project, troopId, heroLevel: level, monsterParty: party, n: FIT_SAMPLES, seed: 1, useSkills: true });
+  const result = fitSimulate(project, troopId, level, party);
   const safe = result.avgHpRemaining >= Math.min(full * HP_MARGIN, inHp * 0.5);
   return { speciesId, rate: safe ? result.winRate : Math.min(result.winRate, FIT_WIN_RATE - 0.01), level, hpLeft: Math.min(maxHp, result.avgHpRemaining), hpFrac: full > 0 ? result.avgHpRemaining / full : 1 };
 }
@@ -771,8 +799,9 @@ function runRequiredBattles(project: Project, adjust: boolean): { out: string[];
           });
           for (const speciesId of candidates) {
             const oldName = monsterSpeciesById(project, original.speciesId!)?.name;
-            const swapped = { ...structuredClone(original), speciesId, monsterResourceId: (donors.get(speciesId) as { monsterResourceId?: string }).monsterResourceId, name: original.name === oldName ? monsterSpeciesById(project, speciesId)?.name ?? original.name : original.name } as EnemyRecord;
+            const swapped = { ...structuredClone(original), speciesId, monsterResourceId: (donors.get(speciesId) as { monsterResourceId?: string }).monsterResourceId, level: undefined, skillIds: [], actions: [], name: original.name === oldName ? monsterSpeciesById(project, speciesId)?.name ?? original.name : original.name } as EnemyRecord;
             project.database.enemies[index] = swapped;
+            // level 을 비워 두고 옮긴다 — 같은 레벨이면 speciesEnemyAtLevel 이 아무것도 안 해 바꾼 종이 옛 종의 능력치·기술을 그대로 들고 있었다.
             relevel(project, swapped, original.level!);
             const trial = evaluate();
             if (!best || trial.rate > best.rate) best = { speciesId, rate: trial.rate, record: structuredClone(enemyOf(enemyId)!) };
@@ -842,6 +871,33 @@ function runRequiredBattles(project: Project, adjust: boolean): { out: string[];
         if (catchable.has(speciesId)) return 1;
         return (species?.captureRate ?? 0) >= 0.7 ? 2 : 3;
       };
+      // 상성 치우침(모의전 없이): 스타터마다 쉬움 = 「가장 좋은 내 기술의 상대 타입 배율 ÷ 상대 가장 좋은 기술의 내 타입 배율」,
+      // 치우침 = 가장 쉬운 스타터 ÷ 가장 어려운 스타터. 1 에 가까운(모든 스타터에게 고른) 종부터 모의전한다 — 띠는 양쪽 끝을 다 봐야 해서.
+      const bestMultiplier = (skillIds: readonly string[], types: readonly string[]): number => Math.max(0.5, ...skillIds.map((id) => project.database.skills.find((skill) => skill.id === id))
+        .filter((skill) => !!skill && skill.effect.kind === "damage" && skill.scope !== "ally" && (skill.power ?? 0) > 0)
+        .map((skill) => typeChartMultiplierForTypes(project, skill!.elementId, [], types)));
+      const matchupLean = (speciesId: string, level: number): number => {
+        const foe = monsterSpeciesById(project, speciesId);
+        if (!foe) return Infinity;
+        const foeMoves = monsterSkillIdsAtLevel(foe, level);
+        const ease = outcomes.map((outcome) => {
+          const mine = monsterSpeciesById(project, outcome.speciesId);
+          if (!mine) return 1;
+          return bestMultiplier(monsterSkillIdsAtLevel(mine, outcome.level), foe.types ?? []) / bestMultiplier(foeMoves, mine.types ?? []);
+        });
+        return Math.max(...ease) / Math.min(...ease);
+      };
+      // 후보 시험: 지금 가장 어려운 스타터부터 재고, 띠 아래쪽(80%·HP_MARGIN)을 못 지키는 스타터가 나오면 나머지는 재지 않는다.
+      const trialBand = (): { easy: number } | null => {
+        const order = [...outcomes].sort((a, b) => a.hpFrac - b.hpFrac || a.rate - b.rate).map((item) => item.speciesId);
+        let easy = 0;
+        for (const speciesId of order) {
+          const outcome = starterOutcome(project, troop.id, speciesId, starter, gained, entry.stage, healHere ? undefined : carry.get(speciesId));
+          if (outcome.rate < FIT_WIN_RATE) return null;
+          easy = Math.max(easy, outcome.hpFrac);
+        }
+        return { easy };
+      };
       ownEnemies();
       for (const [slot, enemyId] of [...troop.enemyIds].entries()) {
         const enemy = enemyOf(enemyId);
@@ -854,9 +910,12 @@ function runRequiredBattles(project: Project, adjust: boolean): { out: string[];
         const current = { rate: low.rate, easy: easiest() };
         const candidates = [...art.keys()].filter((id) => id !== original.speciesId && !choices.includes(id) && !gifts.has(id) && !usedBefore.has(id) && !inTroop.has(id)
           // 포획률 < 0.4 = 마지막 진화형·전설 — 관원 Lv8 에 벨데로드(최종형)가 나왔다. 중간형까지만.
-          && (monsterSpeciesById(project, id)?.captureRate ?? 0) >= 0.4 && tierOf(id) < 3).sort((a, b) => tierOf(a) - tierOf(b) || (a < b ? -1 : a > b ? 1 : 0))
-          // 칸마다 모의전 비용을 묶는다(앞 차례부터 10종) — 다 보면 끝맺음이 3분 → 12분이 됐다.
-          .slice(0, 10);
+          && (monsterSpeciesById(project, id)?.captureRate ?? 0) >= 0.4 && tierOf(id) < 3)
+          .map((id) => ({ id, tier: tierOf(id), lean: matchupLean(id, original.level!) }))
+          .sort((a, b) => a.tier - b.tier || a.lean - b.lean || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0))
+          // 칸마다 모의전 비용을 묶는다(차례마다 앞 2종, 모두 6종까지) — 다 보면 끝맺음이 3분 → 12분, 10종이면 9분이 됐다. 치우침 순이라 앞쪽이 띠에 가장 가깝다.
+          // 앞 5종만 보던 판은 체육관 차례(풀 종)만 보고 물 스타터에게 모두 띠 밖이라 관원 셋이 다시 관장과 같은 토리프로 남았다.
+          .filter((item, at, all) => all.slice(0, at).filter((other) => other.tier === item.tier).length < 2).slice(0, 6).map((item) => item.id);
         let best: { speciesId: string; tier: number; easy: number; record: EnemyRecord } | undefined;
         const better = (tier: number, easy: number): boolean => {
           if (!best) return true;
@@ -866,14 +925,15 @@ function runRequiredBattles(project: Project, adjust: boolean): { out: string[];
           return easy < best.easy;
         };
         for (const speciesId of candidates) {
-          // 앞 차례에서 띠 안 후보를 찾았으면 뒤 차례는 보지 않는다(차례가 우선, 모의전도 아낀다).
-          if (best && best.easy <= HP_EASY && tierOf(speciesId) > best.tier) break;
+          // 띠 안 후보를 찾으면 멈춘다 — 후보는 차례 → 상성 치우침(matchupLean) 순이라 처음 들어온 것이 그 차례에서 가장 고른 종에 가깝다.
+          // 차례 안을 모두 모의전하던 판은 ⑥ 하나에 약 110초를 썼다(2026-10-29).
+          if (best && best.easy <= HP_EASY) break;
           const oldName = monsterSpeciesById(project, original.speciesId!)?.name;
-          const swapped = { ...structuredClone(original), speciesId, monsterResourceId: art.get(speciesId), name: original.name === oldName ? monsterSpeciesById(project, speciesId)?.name ?? original.name : original.name } as EnemyRecord;
+          const swapped = { ...structuredClone(original), speciesId, monsterResourceId: art.get(speciesId), level: undefined, skillIds: [], actions: [], name: original.name === oldName ? monsterSpeciesById(project, speciesId)?.name ?? original.name : original.name } as EnemyRecord;
           project.database.enemies[index] = swapped;
           relevel(project, swapped, original.level!);
-          const trial = evaluate();
-          if (trial.rate >= FIT_WIN_RATE && better(tierOf(speciesId), easiest())) best = { speciesId, tier: tierOf(speciesId), easy: easiest(), record: structuredClone(enemyOf(enemyId)!) };
+          const trial = trialBand();
+          if (trial && better(tierOf(speciesId), trial.easy)) best = { speciesId, tier: tierOf(speciesId), easy: trial.easy, record: structuredClone(enemyOf(enemyId)!) };
           project.database.enemies[index] = original;
         }
         // 겹침은 띠 아래쪽만 지키면 바꾼다. 쉬움만 문제면 0.05 이상 나아질 때만.
@@ -884,6 +944,56 @@ function runRequiredBattles(project: Project, adjust: boolean): { out: string[];
         low = evaluate();
       }
       raiseWhileEasy();
+    }
+    // ⑦ 기술 가르치기 — 그래도 가장 쉬운 스타터가 HP_EASY 를 넘는 판(관원이 불꽃 스타터에 82~83%, 조련사가 물에 87%, 챔피언이 풀에 85%):
+    //    상대 몬스터 하나에 「가장 쉬운 스타터에게 ×2 이상이고, 남은 HP 가 0.5 아래인 스타터에게는 ×1 이하」인 피해 기술 하나를 가르친다
+    //    (어느 종이든 배우는 기술만, 위력 낮은 순 앞 4개). 레벨로는 약한 스타터까지 같이 세지고, 이 기술은 쉬운 스타터만 아프게 한다.
+    //    띠 안(모든 스타터 80%·HP_MARGIN, 가장 쉬운 ≤ HP_EASY)이 되는 첫 기술, 없으면 0.03 이상 나아지는 가장 좋은 기술. 기술이 넷이면 위력이 가장 낮은 것과 바꾼다.
+    if (adjust && low.rate >= FIT_WIN_RATE && easiest() > HP_EASY) {
+      ownEnemies();
+      const easyOne = outcomes.reduce((top, item) => (item.hpFrac > top.hpFrac ? item : top));
+      const typesOf = (speciesId: string) => monsterSpeciesById(project, speciesId)?.types ?? [];
+      const struggling = outcomes.filter((item) => item.hpFrac < 0.5);
+      const learnable = new Set((project.database.monsterSpecies ?? []).flatMap((species) => (species.skillsByLevel ?? []).map((item) => item.skillId)));
+      const pool = project.database.skills.filter((skill) => learnable.has(skill.id) && skill.effect.kind === "damage" && skill.scope !== "ally" && (skill.power ?? 0) > 0
+        && typeChartMultiplierForTypes(project, skill.elementId, [], typesOf(easyOne.speciesId)) >= 2
+        && struggling.every((item) => typeChartMultiplierForTypes(project, skill.elementId, [], typesOf(item.speciesId)) <= 1))
+        .sort((a, b) => (a.power ?? 0) - (b.power ?? 0) || (a.id < b.id ? -1 : 1)).slice(0, 4);
+      const power = (id: string) => project.database.skills.find((skill) => skill.id === id)?.power ?? 0;
+      const trial = (): number | null => {
+        const order = [...outcomes].sort((a, b) => a.hpFrac - b.hpFrac).map((item) => item.speciesId);
+        let easy = 0;
+        for (const speciesId of order) {
+          const outcome = starterOutcome(project, troop.id, speciesId, starter, gained, entry.stage, healHere ? undefined : carry.get(speciesId));
+          if (outcome.rate < FIT_WIN_RATE) return null;
+          easy = Math.max(easy, outcome.hpFrac);
+        }
+        return easy;
+      };
+      const current = easiest();
+      let best: { easy: number; enemyId: string; record: EnemyRecord; skillId: string } | undefined;
+      search: for (const enemyId of troop.enemyIds) {
+        const enemy = enemyOf(enemyId);
+        if (!enemy?.speciesId) continue;
+        const index = project.database.enemies.findIndex((item) => item.id === enemyId);
+        for (const skill of pool) {
+          if ((enemy.skillIds ?? []).includes(skill.id)) continue;
+          const skills = [...(enemy.skillIds ?? [])];
+          if (skills.length >= 4) skills.splice(skills.indexOf([...skills].sort((a, b) => power(a) - power(b))[0]!), 1);
+          const taught = { ...structuredClone(enemy), skillIds: [...skills, skill.id], actions: [...(enemy.actions ?? []).filter((action) => !action.skillId || skills.includes(action.skillId)),
+            { skillId: skill.id, priority: 6, condition: { kind: "always" }, switchOnAfterAction: { enabled: false }, switchOffAfterAction: { enabled: false } }] } as EnemyRecord;
+          project.database.enemies[index] = taught;
+          const easy = trial();
+          project.database.enemies[index] = enemy;
+          if (easy !== null && (!best || easy < best.easy)) best = { easy, enemyId, record: taught, skillId: skill.id };
+          if (best && best.easy <= HP_EASY) break search;
+        }
+      }
+      if (best && (best.easy <= HP_EASY || best.easy < current - 0.03)) {
+        project.database.enemies[project.database.enemies.findIndex((item) => item.id === best!.enemyId)] = best.record;
+        notes.push(`${enemyOf(best.enemyId)?.name ?? best.enemyId} 기술 「${project.database.skills.find((skill) => skill.id === best!.skillId)?.name ?? best.skillId}」 가르침`);
+      }
+      low = evaluate();
     }
     const after = troop.enemyIds.map((id) => enemyOf(id)?.level ?? 0);
     if (notes.length || swaps.length || after.join() !== before.join()) {

@@ -85,7 +85,7 @@ export function stepSkipSetters(project: Project): StepSetterSkip[] {
   steps.forEach((skippedStep, j) => {
     const skipped = refs[j];
     if (!skipped || j === steps.length - 1) return;
-    const ran = visitsRunnableWithout(project, skipped.ev.id);
+    const ran = visitsRunnableWithout(withoutCompletionsOf(project, skipped.ev), skipped.ev.id);
     for (let k = j + 1; k < steps.length; k += 1) {
       const ref = refs[k];
       if (!ref || ref.ev.id === skipped.ev.id) continue;
@@ -98,4 +98,38 @@ export function stepSkipSetters(project: Project): StepSetterSkip[] {
     }
   });
   return out;
+}
+
+/**
+ * 단계 j 를 «다른 이벤트가 대신 마치는» 갈래(「단계 스위치가 아직 꺼졌으면 → 단계 명령 + 원래 명령」)는 단계 j 를 한 것이다 —
+ * 건너뛰기 검사에서는 그 갈래를 아니면 쪽(원래 명령)으로 접는다.
+ * 왜(2026-10-29 vm7 flash jrpg 재생): 입구 단계는 같은 지도를 들고 동굴 문을 지나면 끝난다(finish/stages/entry-steps-on-arrival.ts) —
+ * 문이 「동굴 입구」의 열쇠를 주니 검사가 「단계1 없이 단계2「마왕의 방」」으로 셌다.
+ */
+function withoutCompletionsOf(project: Project, ev: { id: string; pages?: readonly { commands?: readonly unknown[] }[] }): Project {
+  const done = new Set<string>();
+  const collect = (node: unknown): void => {
+    if (Array.isArray(node)) { for (const n of node) collect(n); return; }
+    if (!node || typeof node !== "object") return;
+    const r = node as Record<string, unknown>;
+    if (r.kind === "setSwitch" && r.value === true && typeof r.switchId === "string") done.add(r.switchId);
+    for (const v of Object.values(r)) if (v && typeof v === "object") collect(v);
+  };
+  for (const page of ev.pages ?? []) collect(page.commands ?? []);
+  if (!done.size) return project;
+  let changed = false;
+  const fold = (list: unknown): unknown => {
+    if (!Array.isArray(list)) return list;
+    return list.flatMap((c) => {
+      const r = c as Record<string, unknown> | null;
+      const cond = r?.condition as Cond | undefined;
+      if (r?.kind === "fork" && cond?.kind === "switch" && cond.value === false && done.has(String(cond.switchId)) && Array.isArray(r.else)) { changed = true; return fold(r.else) as unknown[]; }
+      return [c];
+    });
+  };
+  const maps = Object.fromEntries(Object.entries(project.maps).map(([id, map]) => [id, {
+    ...map,
+    events: (map.events ?? []).map((e) => e.id === ev.id ? e : { ...e, pages: (e.pages ?? []).map((p) => ({ ...p, commands: fold(p.commands ?? []) as typeof p.commands })) }),
+  }]));
+  return changed ? { ...project, maps } as Project : project;
 }

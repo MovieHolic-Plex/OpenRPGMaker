@@ -1,0 +1,27 @@
+// 출구·이동 칸 마감 단계 목록 — 한 줄에 단계 하나(order 순으로 적어 둔다; 실행 순서는 scope → 각 단계의 order 가 정한다).
+// 단계를 더하려면: stages/<id>.ts 를 만들고(형 LaneStage) 여기에 한 줄을 더한다. 문서 openwiki/assistant-v2.md 「끝맺음 단계 더하기」.
+export { stage as retireBlankStart } from "./retire-blank-start";
+export { stage as sealEscapeExits } from "./seal-escape-exits";
+export { stage as mysteryCase } from "./mystery-case";
+export { stage as supplyShop } from "./supply-shop";
+export { stage as startingGold } from "./starting-gold";
+export { stage as shadowedStairLinks } from "./shadowed-stair-links";
+export { stage as orphanMaps } from "./orphan-maps";
+export { stage as chaserHiding } from "./chaser-hiding";
+export { stage as leadingFaces } from "./leading-faces";
+export { stage as interiorExits } from "./interior-exits";
+export { stage as buriedTransfers } from "./buried-transfers";
+export { stage as doorFloorTransfers } from "./door-floor-transfers";
+export { stage as caveGates } from "./cave-gates";
+export { stage as rampsNearGoals } from "./ramps-near-goals";
+export { stage as edgeExitRoads } from "./edge-exit-roads";
+export { stage as sealStepArt } from "./seal-step-art";
+export { stage as deadEndRoads } from "./dead-end-roads";
+export { stage as entranceSeating } from "./entrance-seating";
+export { stage as pickupChests } from "./pickup-chests";
+export { stage as lockedHouseDoors } from "./locked-house-doors";
+export { stage as transferLanes } from "./transfer-lanes";
+export { stage as targetFronts } from "./target-fronts";
+export { stage as spreadPeople } from "./spread-people";
+export { stage as eventReach } from "./event-reach";
+export { stage as transferLaneNotes } from "./transfer-lane-notes";
