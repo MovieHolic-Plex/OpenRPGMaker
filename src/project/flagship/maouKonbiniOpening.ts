@@ -181,9 +181,9 @@ function shotHeroes(project: Project): void {
     actor(project, id, layerId, ACT1, index, a, "up", 2, layerId === "leon" ? "hero" : layerId === "garet" ? "knight" : "mage");
     patchLayer(project, id, layerId, { keys: { y: [{ atMs: startMs, value: a.y }, { atMs: startMs + 3200, value: b.y }] } });
   };
-  walkUp("leon", 0, 23, 20, 10, 250);
-  walkUp("garet", 2, 22, 21, 11, 350);
-  walkUp("mira", 5, 24, 21, 11, 450);
+  walkUp("leon", 0, 23, 17, 10, 250);
+  walkUp("garet", 2, 22, 18, 11, 350);
+  walkUp("mira", 5, 24, 18, 11, 450);
   const leonEnd = chipAt(view, { x: 23, y: 10 });
   pop(project, id, "leon-shout", "exclaim", { x: leonEnd.x + 12, y: leonEnd.y - 26 }, 3700, ms);
   sfx(project, id, "doors", SFX.doors, 0, 2600, 0.95);
@@ -211,9 +211,6 @@ function shotDeal(project: Project): void {
     { at: 12200, who: "garet", pop: "question", text: "가렛 「휴가는 며칠이지?」" },
     { at: 13700, who: "leon", pop: "sweat", text: "레온 「둘 다 흔들리지 마! 마왕, 너도 흥정하지 마!」" },
   ];
-  const at = { maou: maouAt, leon: leonAt, garet: garetAt, mira: miraAt };
-  beats.forEach((b, i) => { if (b.pop) pop(project, id, `pop-${i}`, b.pop, above(at[b.who]), b.at, Math.min(ms, b.at + 1500)); });
-  captions(project, id, beats.map((b) => ({ atMs: b.at + (b.pop ? 250 : 0), text: b.text, color: b.who === "maou" ? INK.maou : INK.hero })));
   // 카메라: 박마다 말하는 쪽으로 짧게 밀었다 돌아온다(세계 좌표). 마왕은 위, 일행은 아래.
   const mY = cellCenter(view, { x: 23, y: 5 }).y + 10, hY = cellCenter(view, { x: 23, y: 9 }).y;
   const camY: { atMs: number; value: number; ease?: string }[] = [{ atMs: 0, value: 135 }];
@@ -225,11 +222,14 @@ function shotDeal(project: Project): void {
   }
   camY.push({ atMs: ms, value: hY - 20 }); camZ.push({ atMs: ms, value: 1.12, ease: "ease-in-out" });
   execTool(project, "animate_opening_camera", { shotId: id, camera: { x: 240, y: 135, keys: { y: camY, zoom: camZ } } });
-  // 배우는 카메라 다음에 세운다(옥좌 위 마왕은 고정 무대의 레터박스 위쪽이지만 카메라가 그쪽으로 민다).
+  // 배우는 카메라를 건 다음에 세운다(옥좌 위 마왕은 고정 무대로 치면 레터박스 위쪽이다). 층 순서는 빛 위·말풍선 아래.
   actor(project, id, "maou", MON2, 7, maouAt, "down", 2, "monster");
   actor(project, id, "leon", ACT1, 0, leonAt, "up", 2, "hero");
   actor(project, id, "garet", ACT1, 2, garetAt, "up", 2, "knight");
   actor(project, id, "mira", ACT1, 5, miraAt, "up", 2, "mage");
+  const at = { maou: maouAt, leon: leonAt, garet: garetAt, mira: miraAt };
+  beats.forEach((b, i) => { if (b.pop) pop(project, id, `pop-${i}`, b.pop, above(at[b.who]), b.at, Math.min(ms, b.at + 1500)); });
+  captions(project, id, beats.map((b) => ({ atMs: b.at + (b.pop ? 250 : 0), text: b.text, color: b.who === "maou" ? INK.maou : INK.hero })));
   // 개그 박 — 「4분의 1」에 레코드가 긁히고, 「거절한다!!」에 화면이 한 번 흔들린다.
   sfx(project, id, "scratch", SFX.scratch, 4650, 550, 0.85);
   sfx(project, id, "no-2", "cc0-se-orp-battle-sword-unsheathe", 6300, 700, 0.45);
@@ -241,19 +241,19 @@ function shotPower(project: Project): void {
   const id = "mk_op_power", ms = 3800;
   newShot(project, id, ms, { kind: "flash", durationMs: 220, color: "#ffd8ff" });
   const view = mapBackground(project, id, MAP_THRONE, { x: 23, y: 6 }, 3);
+  execTool(project, "animate_opening_camera", { shotId: id, camera: { x: 240, y: 135, keys: {
+    zoom: [{ atMs: 0, value: 1 }, { atMs: ms, value: 1.18, ease: "ease-in" }],
+  }, shake: { atMs: 1700, durationMs: 1900, amplitude: 3, frequency: 18, seed: 9 } } });
   screenTint(project, id, "tint", "#5a0a2a", 0.5);
   const center = cellCenter(view, { x: 23, y: 5 });
   glowAt(project, id, "aura", { x: center.x, y: center.y - 20 }, 260, "#c040ff", { hz: 3, amount: 0.4, inner: 0.15 });
+  actor(project, id, "maou", MON2, 7, chipAt(view, { x: 23, y: 5 }), "down", 3, "monster");
   execTool(project, "upsert_opening_layer", { shotId: id, layer: {
     id: "dark-sparks", kind: "particles", role: "effect", color: "#d070ff", blend: "lighter", opacity: 0.85,
     x: center.x - 200, y: center.y - 160, width: 400, height: 260, particles: { preset: "sparks", count: 70, seed: 41, speed: 16, size: 2 },
   } });
   screenTint(project, id, "red", "#ff2050", 1, "screen", [{ atMs: 0, value: 0 }, { atMs: 1800, value: 0.05 }, { atMs: 3000, value: 0.35, ease: "ease-in" }]);
   screenTint(project, id, "white", "#ffffff", 1, "source-over", [{ atMs: 0, value: 0 }, { atMs: 3200, value: 0 }, { atMs: 3600, value: 1, ease: "ease-in" }]);
-  execTool(project, "animate_opening_camera", { shotId: id, camera: { x: 240, y: 135, keys: {
-    zoom: [{ atMs: 0, value: 1 }, { atMs: ms, value: 1.18, ease: "ease-in" }],
-  }, shake: { atMs: 1700, durationMs: 1900, amplitude: 3, frequency: 18, seed: 9 } } });
-  actor(project, id, "maou", MON2, 7, chipAt(view, { x: 23, y: 5 }), "down", 3, "monster");
   sfx(project, id, "dark", SE_DARK, 1600, 1500, 0.8);
   sfx(project, id, "dread", SFX.dread, 1700, 2100, 0.9);
   captions(project, id, [{ atMs: 250, text: "제르바스 「흥. 말로 안 되면 힘으로 굴복시켜 주마!」", color: INK.maou }]);
@@ -301,6 +301,8 @@ function setupThroneBattle(project: Project): void {
 
 /** 옥좌의 방 — 새 게임의 시작 맵. 오프닝이 끝나면 곧바로 결전 전투, 이어서 『동귀어진』으로 원룸에 떨어진다. */
 export function buildMaouThrone(project: Project, roomWake: Cell): Cell {
+  // 도구(execTool)는 project.maps 를 새 객체로 바꿔 끼운다 — 맵을 잡기 전에 전투 설정 도구부터 부른다.
+  setupThroneBattle(project);
   const map = project.maps[MAP_THRONE]!;
   const start = mustWalk(project, map, { x: 23, y: 5 }, "옥좌 앞");
   mustBlock(project, map, { x: 23, y: 4 }, "옥좌");
@@ -308,7 +310,6 @@ export function buildMaouThrone(project: Project, roomWake: Cell): Cell {
   const garetAt = nearestFree(project, map, { x: 22, y: 9 }, [leonAt]);
   const miraAt = nearestFree(project, map, { x: 24, y: 9 }, [leonAt, garetAt]);
   const L = "ev_mk_t_leon", G = "ev_mk_t_garet", R = "ev_mk_t_mira";
-  setupThroneBattle(project);
   const scene: Command[] = [
     ...fadeIn(300),
     playSe(SFX.sword),
