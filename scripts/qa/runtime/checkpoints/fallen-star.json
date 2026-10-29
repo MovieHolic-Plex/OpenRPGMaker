@@ -9793,7 +9793,16 @@
      ],
      "shot": true
     }
-   ]
+   ],
+   "sessionPatch": {
+    "actorSkillIds": {
+     "actor_fs_iris": [
+      "skill_gunner_shot",
+      "skill_gunner_rapid_fire",
+      "skill_gunner_snipe"
+     ]
+    }
+   }
   },
   {
    "id": "act2-b13-answer",
