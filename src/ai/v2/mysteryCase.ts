@@ -194,16 +194,28 @@ function explainRemainingClues(run: BuildRun): string[] {
   const last = steps.at(-1);
   if (!last || last.k !== bp.steps.length - 1 || steps.length < 3) return [];
   const clues = steps.filter((r) => r.k < last.k);
-  // 단계 j 의 «열린» 페이지 조건 = 앞 단계를 마쳤다는 표시.
-  const openCond = (r: Resolved): Obj[] | undefined => ((r.ev.pages ?? []).find((pg) => (pg.conditions ?? []).length > 0)?.conditions as unknown as Obj[] | undefined);
+  // 단계 j 를 마쳤다는 표시 = 그 단계 이벤트가 켜는(주는) 전역 스위치·아이템 가운데 다음 단계(마지막이면 지목 단계)의 페이지 조건으로 쓰이는 것.
+  // 자기 스위치·「taken」 같은 그 이벤트 안 표식은 다른 이벤트 조건으로 옮기면 뜻이 없다(vm3 deepseek 추리 재생: 남의 selfSwitch 를 복사해 자동 플레이가 깨졌다).
+  const doneCond = (r: Resolved, next: Resolved): Obj[] | undefined => {
+    const gives = eventGives(project, r.ev);
+    for (const pg of next.ev.pages ?? []) for (const c of ((pg.conditions ?? []) as unknown as Obj[])) {
+      if (c.kind === "switch" && c.value !== false && gives.switches.includes(String(c.switchId))) return [{ kind: "switch", switchId: c.switchId, value: true }];
+      if (c.kind === "item" && c.present !== false && gives.items.includes(String(c.itemId))) return [{ kind: "item", itemId: c.itemId, present: true }];
+    }
+    return undefined;
+  };
+  const openCond = (j: number): Obj[] | undefined => doneCond(clues[j - 1]!, clues[j] ?? last);
   const pages0 = ((last.ev.pages ?? []) as unknown as Obj[]).filter((pg) => !/^남은 단서/u.test(String(pg.name ?? "")));
-  const lockedAt = pages0.findIndex((pg) => !(pg.conditions as unknown[] | undefined)?.length && JSON.stringify(pg.commands ?? []).includes('"kind":"text"') && !/"kind":"(?:triggerEnding|choices|presentItem)"/u.test(JSON.stringify(pg.commands ?? [])));
+  // 마지막 단계 이벤트가 앞 단계도 맡으면(standin 추리: 「여관 주인」이 첫 단계와 범인 지목을 함께) 그 잠김 페이지는 앞 단계의 일이다 — 건드리지 않는다.
+  if (clues.some((r) => r.ev.id === last.ev.id && r.map.id === last.map.id)) return [];
+  // 잠김 페이지 = 조건 없이 대사만 하는 페이지(스위치·아이템·이동 같은 다른 명령이 없다).
+  const lockedAt = pages0.findIndex((pg) => !(pg.conditions as unknown[] | undefined)?.length && Array.isArray(pg.commands) && pg.commands.length > 0 && (pg.commands as Obj[]).every((c) => c.kind === "text" || c.kind === "changeFace"));
   if (lockedAt < 0) return [];
   const locked = pages0[lockedAt]!;
   const where = (r: Resolved) => `「${r.step.event}」(${r.map.id === last.map.id ? mapRegion(r.map, r.ev.x, r.ev.y) : r.map.name ?? r.map.id})`;
   const progress: Obj[] = [];
   for (let j = 0; j < clues.length; j += 1) {
-    const cond = j === 0 ? [] : openCond(clues[j]!);
+    const cond = j === 0 ? [] : openCond(j);
     if (j > 0 && !cond?.length) return [];
     const left = clues.slice(j);
     const body = `아직 단서가 모자라다. 남은 단서 ${left.length}개: ${left.map(where).join("·")}`;

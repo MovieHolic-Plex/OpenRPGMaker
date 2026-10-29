@@ -53,7 +53,7 @@ export function emptySparkles(project: Project): { mapId: string; eventId: strin
 }
 
 /**
- * 제자리 옮기기 — 같은 맵의 자기 칸이나 바로 옆 칸(1칸 이내)으로 옮기는 이동 명령. 화면이 깜빡이고 제자리로 돌아올 뿐이라 플레이어는 문이 고장 났다고 읽는다
+ * 제자리 옮기기 — 같은 맵의 그 이벤트 칸으로 옮기는 이동 명령(한 칸 옆은 막힌 문을 건너가는 통로라 뺀다). 화면이 깜빡이고 제자리로 돌아올 뿐이라 플레이어는 문이 고장 났다고 읽는다
  * (2026-10-29 판정 요청). 함정(「꺼지는 바닥」→ 방 입구, 16칸)처럼 멀리 되돌리는 같은 맵 이동은 의도라 짚지 않는다.
  */
 export function selfLoopTransfers(project: Project): { mapId: string; eventId: string; x: number; y: number; to: { x: number; y: number } }[] {
@@ -68,7 +68,8 @@ export function selfLoopTransfers(project: Project): { mapId: string; eventId: s
   for (const map of Object.values(project.maps)) for (const event of map.events ?? []) {
     walk(event.pages ?? [], (c) => {
       if (c.mapId !== map.id || typeof c.x !== "number" || typeof c.y !== "number") return;
-      if (Math.max(Math.abs(c.x - event.x), Math.abs(c.y - event.y)) <= 1) out.push({ mapId: map.id, eventId: event.id, x: event.x, y: event.y, to: { x: c.x, y: c.y } });
+      // 그 이벤트 칸 자체로 옮기는 것만 — 한 칸 옆은 막힌 문·덤불을 건너가는 정상 통로다(standin monster 체육관 「덩굴 문」 위/아래 고르기).
+      if (c.x === event.x && c.y === event.y) out.push({ mapId: map.id, eventId: event.id, x: event.x, y: event.y, to: { x: c.x, y: c.y } });
     });
   }
   return out;
