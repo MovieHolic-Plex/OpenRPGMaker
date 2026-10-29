@@ -9271,6 +9271,371 @@
    ]
   },
   {
+   "id": "g-music-feel-chrono",
+   "category": "music",
+   "kind": "music",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "needsStore": true,
+   "prompt": "크로노트리거 느낌으로 필드 음악 넣어 줘",
+   "requires": [
+    "store_find_music query 에 게임 이름을 그대로 넘긴다(장르를 지어내지 않음)",
+    "map_blank_start.bgm 에 snes-jrpg 줄 곡(16비트 SNES 결)",
+    "답에서 그 게임 곡이라고 하지 않는다(「그런 느낌의 곡」)",
+    "곡 파일이 assets/ 에 있다, 출처·라이선스·AI 표시"
+   ],
+   "verify": "map_blank_start.bgm = store_* 이고 그 곡 meta.oprnMusic.genre(genreLine) = snes-jrpg, 재로드 뒤 유지",
+   "startBuild": [
+    {
+     "tool": "create_map",
+     "args": {
+      "id": "map_dungeon",
+      "name": "용의 동굴",
+      "width": 20,
+      "height": 15
+     }
+    },
+    {
+     "tool": "upsert_event",
+     "args": {
+      "mapId": "map_dungeon",
+      "event": {
+       "id": "ev_boss",
+       "name": "드래곤",
+       "x": 10,
+       "y": 3,
+       "commands": [
+        {
+         "kind": "text",
+         "body": "여기까지 온 것을 후회하게 해 주마!"
+        },
+        {
+         "kind": "battleProcessing",
+         "troopId": "troop_dragon",
+         "canEscape": false,
+         "canLose": false
+        },
+        {
+         "kind": "text",
+         "body": "...강하구나."
+        }
+       ]
+      }
+     }
+    },
+    {
+     "tool": "upsert_event",
+     "args": {
+      "mapId": "map_dungeon",
+      "event": {
+       "id": "ev_minor",
+       "name": "졸개",
+       "x": 5,
+       "y": 8,
+       "commands": [
+        {
+         "kind": "battleProcessing",
+         "troopId": "troop_bat_swarm"
+        }
+       ]
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": "g-music-feel-tothemoon",
+   "category": "music",
+   "kind": "music",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "needsStore": true,
+   "prompt": "투더문 같은 잔잔한 피아노로 마을 음악 바꿔 줘",
+   "requires": [
+    "store_find_music query 에 게임 이름을 그대로 넘긴다(장르를 지어내지 않음)",
+    "map_blank_start.bgm 에 piano-story 줄 곡(잔잔한 솔로 피아노)",
+    "답에서 그 게임 곡이라고 하지 않는다(「그런 느낌의 곡」)",
+    "곡 파일이 assets/ 에 있다, 출처·라이선스·AI 표시"
+   ],
+   "verify": "map_blank_start.bgm = store_* 이고 그 곡 meta.oprnMusic.genre(genreLine) = piano-story, 재로드 뒤 유지",
+   "startBuild": [
+    {
+     "tool": "create_map",
+     "args": {
+      "id": "map_dungeon",
+      "name": "용의 동굴",
+      "width": 20,
+      "height": 15
+     }
+    },
+    {
+     "tool": "upsert_event",
+     "args": {
+      "mapId": "map_dungeon",
+      "event": {
+       "id": "ev_boss",
+       "name": "드래곤",
+       "x": 10,
+       "y": 3,
+       "commands": [
+        {
+         "kind": "text",
+         "body": "여기까지 온 것을 후회하게 해 주마!"
+        },
+        {
+         "kind": "battleProcessing",
+         "troopId": "troop_dragon",
+         "canEscape": false,
+         "canLose": false
+        },
+        {
+         "kind": "text",
+         "body": "...강하구나."
+        }
+       ]
+      }
+     }
+    },
+    {
+     "tool": "upsert_event",
+     "args": {
+      "mapId": "map_dungeon",
+      "event": {
+       "id": "ev_minor",
+       "name": "졸개",
+       "x": 5,
+       "y": 8,
+       "commands": [
+        {
+         "kind": "battleProcessing",
+         "troopId": "troop_bat_swarm"
+        }
+       ]
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": "g-music-feel-talesrunner",
+   "category": "music",
+   "kind": "music",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "needsStore": true,
+   "prompt": "테일즈런너처럼 신나는 거 마을에 깔아 줘",
+   "requires": [
+    "store_find_music query 에 게임 이름을 그대로 넘긴다(장르를 지어내지 않음)",
+    "map_blank_start.bgm 에 casual-race 줄 곡(통통 튀는 캐주얼)",
+    "답에서 그 게임 곡이라고 하지 않는다(「그런 느낌의 곡」)",
+    "곡 파일이 assets/ 에 있다, 출처·라이선스·AI 표시"
+   ],
+   "verify": "map_blank_start.bgm = store_* 이고 그 곡 meta.oprnMusic.genre(genreLine) = casual-race, 재로드 뒤 유지",
+   "startBuild": [
+    {
+     "tool": "create_map",
+     "args": {
+      "id": "map_dungeon",
+      "name": "용의 동굴",
+      "width": 20,
+      "height": 15
+     }
+    },
+    {
+     "tool": "upsert_event",
+     "args": {
+      "mapId": "map_dungeon",
+      "event": {
+       "id": "ev_boss",
+       "name": "드래곤",
+       "x": 10,
+       "y": 3,
+       "commands": [
+        {
+         "kind": "text",
+         "body": "여기까지 온 것을 후회하게 해 주마!"
+        },
+        {
+         "kind": "battleProcessing",
+         "troopId": "troop_dragon",
+         "canEscape": false,
+         "canLose": false
+        },
+        {
+         "kind": "text",
+         "body": "...강하구나."
+        }
+       ]
+      }
+     }
+    },
+    {
+     "tool": "upsert_event",
+     "args": {
+      "mapId": "map_dungeon",
+      "event": {
+       "id": "ev_minor",
+       "name": "졸개",
+       "x": 5,
+       "y": 8,
+       "commands": [
+        {
+         "kind": "battleProcessing",
+         "troopId": "troop_bat_swarm"
+        }
+       ]
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": "g-music-feel-ff-battle",
+   "category": "music",
+   "kind": "music",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "needsStore": true,
+   "prompt": "파판 전투곡 느낌으로 일반 전투 음악 바꿔 줘",
+   "requires": [
+    "store_find_music query 에 게임 이름을 그대로 넘긴다(장르를 지어내지 않음)",
+    "system.battleBgmResourceId 에 symphonic-jrpg 줄 곡(심포닉·오케스트라(또는 16비트 SNES))",
+    "답에서 그 게임 곡이라고 하지 않는다(「그런 느낌의 곡」)",
+    "곡 파일이 assets/ 에 있다, 출처·라이선스·AI 표시"
+   ],
+   "verify": "system.battleBgmResourceId = store_* 이고 그 곡 meta.oprnMusic.genre(genreLine) = symphonic-jrpg, 재로드 뒤 유지",
+   "startBuild": [
+    {
+     "tool": "create_map",
+     "args": {
+      "id": "map_dungeon",
+      "name": "용의 동굴",
+      "width": 20,
+      "height": 15
+     }
+    },
+    {
+     "tool": "upsert_event",
+     "args": {
+      "mapId": "map_dungeon",
+      "event": {
+       "id": "ev_boss",
+       "name": "드래곤",
+       "x": 10,
+       "y": 3,
+       "commands": [
+        {
+         "kind": "text",
+         "body": "여기까지 온 것을 후회하게 해 주마!"
+        },
+        {
+         "kind": "battleProcessing",
+         "troopId": "troop_dragon",
+         "canEscape": false,
+         "canLose": false
+        },
+        {
+         "kind": "text",
+         "body": "...강하구나."
+        }
+       ]
+      }
+     }
+    },
+    {
+     "tool": "upsert_event",
+     "args": {
+      "mapId": "map_dungeon",
+      "event": {
+       "id": "ev_minor",
+       "name": "졸개",
+       "x": 5,
+       "y": 8,
+       "commands": [
+        {
+         "kind": "battleProcessing",
+         "troopId": "troop_bat_swarm"
+        }
+       ]
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": "g-music-feel-magnacarta",
+   "category": "music",
+   "kind": "music",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "needsStore": true,
+   "prompt": "마그나카르타풍 OST로 타이틀 음악 넣어 줘",
+   "requires": [
+    "store_find_music query 에 게임 이름을 그대로 넘긴다(장르를 지어내지 않음)",
+    "system.titleScreen 음악 에 orchestral-melodrama 줄 곡(애절한 현악·멜로드라마)",
+    "답에서 그 게임 곡이라고 하지 않는다(「그런 느낌의 곡」)",
+    "곡 파일이 assets/ 에 있다, 출처·라이선스·AI 표시"
+   ],
+   "verify": "system.titleScreen 음악 = store_* 이고 그 곡 meta.oprnMusic.genre(genreLine) = orchestral-melodrama, 재로드 뒤 유지",
+   "startBuild": [
+    {
+     "tool": "create_map",
+     "args": {
+      "id": "map_dungeon",
+      "name": "용의 동굴",
+      "width": 20,
+      "height": 15
+     }
+    },
+    {
+     "tool": "upsert_event",
+     "args": {
+      "mapId": "map_dungeon",
+      "event": {
+       "id": "ev_boss",
+       "name": "드래곤",
+       "x": 10,
+       "y": 3,
+       "commands": [
+        {
+         "kind": "text",
+         "body": "여기까지 온 것을 후회하게 해 주마!"
+        },
+        {
+         "kind": "battleProcessing",
+         "troopId": "troop_dragon",
+         "canEscape": false,
+         "canLose": false
+        },
+        {
+         "kind": "text",
+         "body": "...강하구나."
+        }
+       ]
+      }
+     }
+    },
+    {
+     "tool": "upsert_event",
+     "args": {
+      "mapId": "map_dungeon",
+      "event": {
+       "id": "ev_minor",
+       "name": "졸개",
+       "x": 5,
+       "y": 8,
+       "commands": [
+        {
+         "kind": "battleProcessing",
+         "troopId": "troop_bat_swarm"
+        }
+       ]
+      }
+     }
+    }
+   ]
+  },
+  {
    "category": "game",
    "kind": "logic",
    "mode": "balanced",

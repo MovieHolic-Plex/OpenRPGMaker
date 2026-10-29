@@ -20,7 +20,7 @@ import { storeGameProjectKey, type StoreGameChanges } from "@/project/storeGameR
 import type { StoreReviewsPage } from "@/assetStore/bridgeTypes";
 import { briefReview, complaintThemes, mergeReviews, tallyText } from "@/editor/assetStore/reviewDigest";
 import { workerStoreAccess, type StoreReadAccess } from "@/assetStore/storeAccess";
-import { briefStoreMusic, projectHintLines, projectMusicLines, rankStoreMusic, storeMusicTracks, subsetMusicManifest, type StoreMusicTrack } from "@/assetStore/storeMusicPick";
+import { briefStoreMusic, expandStoreMusicQuery, projectHintLines, projectMusicLines, rankStoreMusic, storeMusicTracks, subsetMusicManifest, type StoreMusicTrack } from "@/assetStore/storeMusicPick";
 import { STORE_MUSIC_SCENES, type StoreMusicScene } from "@/assets/storeMusicMeta";
 import { storeProjectId, type StoreItemDetail, type StorePackManifest } from "@/assetStore/format";
 
@@ -232,7 +232,8 @@ async function loadStoreMusic(access: StoreReadAccess, query: string): Promise<S
 const storeFindMusic: ToolDefinition = {
   name: "store_find_music",
   description: "에셋 스토어의 음악 팩에서 장면(scene)·장르(query)·분위기(mood)에 맞는 곡을 곡 단위로 찾는다. 곡마다 실제로 들어 보고 적은 장르·장면·분위기·빠르기·루프 여부가 있다. "
-    + "프로젝트에 있는 곡(recommend_bgm)으로 요청에 꼭 맞는 것이 없을 때, 특히 장르 곡(조선풍·무협·호러 …)이 필요할 때 쓴다. "
+    + "프로젝트에 있는 곡(recommend_bgm)으로 요청에 꼭 맞는 것이 없을 때, 특히 장르 곡(조선풍·무협·호러·16비트 레트로·피아노 …)이 필요할 때 쓴다. "
+    + "사용자가 「크로노트리거 느낌」「투더문 같은 피아노」처럼 게임 이름으로 말하면 그 이름을 query 에 그대로 넣는다 — 도구가 들리는 결(16비트 SNES·심포닉·잔잔한 피아노 …)로 바꿔 찾는다. 장르를 지어내 바꿔 넣지 않는다. 곡 메타에는 게임 이름이 없으니 사용자에게 「그 게임 곡」이라 하지 말고 「그런 느낌의 곡」이라 말한다. "
     + "결과 autoInstall:true(기본)면 묻지 말고 가장 맞는 곡을 store_install{slug, assetIds:[assetId]} 로 넣고 set_game_audio 로 연결한다 — 화면에 「넣었어요 (바꾸기)」 쪽지가 뜬다. "
     + "false 면 사용자가 「먼저 묻기」를 켠 것이다 — 미리듣기 카드가 뜨니 넣지 말고 이 턴을 끝내라(고르면 리소스 id 와 함께 후속 요청이 온다).",
   mode: "read",
@@ -241,7 +242,7 @@ const storeFindMusic: ToolDefinition = {
     type: "object",
     properties: {
       scene: { type: "string", enum: [...STORE_MUSIC_SCENES], description: "곡이 맡을 장면: town 마을·가게, field 필드·월드맵, dungeon 던전·동굴, battle 일반 전투, boss 보스전, victory 승리 팡파르(짧은 곡), sad 슬픈 장면, tense 긴장·잠입·공포, title 타이틀, ending 엔딩" },
-      query: { type: "string", description: "이 게임의 장르 낱말을 꼭 넣는다(예: 조선, 무협, 판타지, 호러, 몬스터, 현대, SF — 사용자가 말하지 않았으면 게임 제목·맵 이름·이미 쓰는 곡으로 짐작) + 사용자의 말 짧게" },
+      query: { type: "string", description: "사용자가 한 말을 그대로(게임·시리즈 이름 포함: 크로노트리거, 파판, 투더문, 테일즈런너 …) + 이 게임의 장르 낱말(예: 조선, 무협, 판타지, 호러, 몬스터, 현대, SF, 16비트, 피아노 — 사용자가 말하지 않았으면 게임 제목·맵 이름·이미 쓰는 곡으로 짐작)" },
       mood: { type: "string", description: "분위기(예: 평화로운, 긴장감, 웅장한, 쓸쓸한, 신나는)" },
       need: { type: "string", description: "카드에 보여 줄 한 줄(예: 「버들 마을에 깔 배경음악」, 「붉은 드래곤 보스전 음악」)" },
       limit: { type: "integer", minimum: 1, maximum: 6, description: "후보 수(기본 4)" },
@@ -266,6 +267,7 @@ const storeFindMusic: ToolDefinition = {
     const lines = Object.keys(stored).length ? stored : projectHintLines([
 project.meta?.title ?? "", ...Object.values(project.maps).map((map) => map.name ?? "")]);
     const want = { scene, query: String(args.query ?? ""), mood: String(args.mood ?? ""), projectLines: lines };
+    const feelFrom = expandStoreMusicQuery(want.query);
     let picked = rankStoreMusic(loadedMusic.tracks, want, limit);
     const sceneOnly = picked.length === 0;
     if (sceneOnly) picked = rankStoreMusic(loadedMusic.tracks, { query: want.query, mood: want.mood, projectLines: want.projectLines }, limit);
@@ -280,7 +282,7 @@ project.meta?.title ?? "", ...Object.values(project.maps).map((map) => map.name 
       summary: head + (choice.autoInstall
         ? `스토어 곡 ${picked.length}개를 찾았다. 묻지 말고 가장 맞는 곡을 store_install{slug, assetIds:[assetId]} 로 넣고 set_game_audio 로 연결하라.`
         : `사용자가 「먼저 묻기」를 켰다. 스토어 곡 ${picked.length}개를 미리듣기 카드로 보여 준다. 넣지 말고 이 턴을 끝내라 — 사용자가 고르면 후속 요청이 온다.`),
-      data: { ...choice, note: UNTRUSTED_NOTE },
+      data: { ...choice, ...(feelFrom.games.length ? { feelFrom: { games: feelFrom.games, heardAs: feelFrom.query, note: "게임 이름은 들리는 결로 바꿔 찾았다. 곡은 그 게임 곡이 아니다 — 「그런 느낌의 곡」이라고 말한다." } } : {}), note: UNTRUSTED_NOTE },
     };
   },
 };

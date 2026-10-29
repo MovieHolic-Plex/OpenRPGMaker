@@ -26,12 +26,14 @@ export interface StoreMusicMeta {
   readonly loopable: boolean;
   readonly lengthSec: number | null;
   readonly summaryKo: string;
+  /** 실제로 들리는 결(한·영, 예: 「16비트 SNES 음색」 「잔잔한 솔로 피아노」). 옛 팩에는 없다 — 빈 배열. 게임 이름은 싣지 않는다. */
+  readonly feelTags: readonly string[];
 }
 
 const isRecord = (value: unknown): value is Record<string, unknown> => typeof value === "object" && value !== null && !Array.isArray(value);
 const text = (value: unknown, max: number): string => (typeof value === "string" ? value.trim().slice(0, max) : "");
-const words = (value: unknown, max: number): string[] =>
-  Array.isArray(value) ? [...new Set(value.map((item) => text(item, 24)).filter(Boolean))].slice(0, max) : [];
+const words = (value: unknown, max: number, len = 24): string[] =>
+  Array.isArray(value) ? [...new Set(value.map((item) => text(item, len)).filter(Boolean))].slice(0, max) : [];
 const number = (value: unknown, min: number, max: number): number | null =>
   typeof value === "number" && Number.isFinite(value) && value >= min && value <= max ? value : null;
 
@@ -44,7 +46,8 @@ export function readStoreMusicMeta(meta: unknown): StoreMusicMeta | null {
   if (!scenes.length) return null;
   const tempo = raw.tempo === "slow" || raw.tempo === "medium" || raw.tempo === "fast" ? raw.tempo : null;
   return {
-    genre: text(raw.genreLine, 40),
+    // 옛 팩은 genreLine, 새 팩(snes-jrpg·piano-story …)은 genre 로 싣는다.
+    genre: text(raw.genreLine, 40) || text(raw.genre, 40),
     genreLabel: text(raw.genreLabel, 60),
     genreKo: text(raw.genreKo, 40),
     scenes,
@@ -55,6 +58,7 @@ export function readStoreMusicMeta(meta: unknown): StoreMusicMeta | null {
     loopable: raw.loopable === true,
     lengthSec: number(raw.lengthSec, 0, 3600),
     summaryKo: text(raw.summaryKo, 200),
+    feelTags: words(raw.feelTags, 12, 40),
   };
 }
 
@@ -64,6 +68,7 @@ export function storeMusicTags(music: StoreMusicMeta): string[] {
     music.genreKo, music.genreLabel, music.genre,
     ...music.scenes.flatMap((scene) => [scene, STORE_MUSIC_SCENE_LABELS[scene]]),
     ...music.mood,
+    ...music.feelTags,
     ...(music.tempo ? [music.tempo] : []),
     music.loopable ? "루프" : "징글",
   ].filter(Boolean))];
@@ -75,6 +80,7 @@ export function storeMusicDescription(music: StoreMusicMeta): string {
     (music.genreKo || music.genreLabel) && `장르 ${music.genreKo || music.genreLabel}`,
     `장면 ${music.scenes.map((scene) => STORE_MUSIC_SCENE_LABELS[scene]).join("·")}`,
     music.mood.length ? `분위기 ${music.mood.join("·")}` : "",
+    music.feelTags.length ? `느낌 ${music.feelTags.join("·")}` : "",
     music.bpm !== null ? `${Math.round(music.bpm)} BPM` : "",
     music.energy !== null ? `에너지 ${music.energy}/5` : "",
     music.loopable ? `루프${music.lengthSec !== null ? ` ${Math.round(music.lengthSec)}초` : ""}` : `한 번 재생${music.lengthSec !== null ? ` ${Math.round(music.lengthSec)}초` : ""}`,
