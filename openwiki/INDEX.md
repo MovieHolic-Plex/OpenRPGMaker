@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **188쪽 / 7576KB / 약 2,224,889 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **188쪽 / 7577KB / 약 2,225,068 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -1582,15 +1582,15 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L323` 첫 판 결과 (r2 기준선 → r3 수정 후)
   - `L370` 루프 1 숫자 (Sonnet 5.5 high 조수 대용, 2026-10-22)
 
-### `openwiki/harnesses/battle-backdrop.md` — 10KB · 79줄 · ~2,837 토큰
+### `openwiki/harnesses/battle-backdrop.md` — 10KB · 81줄 · ~3,016 토큰
 
 - `L7` 무엇을 하나
-- `L33` 규격 근거 (2026-10-29~30 실측)
-- `L43` 시간·빛
-- `L49` 조수 도구 `generate_battle_backdrop`
-- `L57` 판정자
-- `L62` 알려진 한계
-- `L68` 시범 판 (마왕 편의점, 2026-10-30)
+- `L35` 규격 근거 (2026-10-29~30 실측)
+- `L45` 시간·빛
+- `L51` 조수 도구 `generate_battle_backdrop`
+- `L59` 판정자
+- `L64` 알려진 한계
+- `L70` 시범 판 (마왕 편의점, 2026-10-30)
 
 ### `openwiki/harnesses/battle-trainer-sprites.md` — 7KB · 65줄 · ~2,108 토큰
 
