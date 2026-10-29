@@ -5,6 +5,135 @@
 
 <!-- releases -->
 
+## 0.361.0 — 2026-10-30
+
+### 기능
+
+- **harness** — battle-backdrop — map-matched side-view battle backgrounds (capture → generate → pixelize → human pick) (#3926) (`e71e87c`)
+- **village** — villages grow to the terrain — meandering fading cliffs, homes and landmarks per tier, river on the village bank with a plank ford (`8697342`)
+- **assistant** — people-chip lock - one family of people chips per game (#3919) (`5da5f47`)
+- **village** — terrain-first is the default village order; model designs landform; two-level cliffs and stairs (`d49de1d`)
+- **village** — height-first terrain option (landform/settle) for author_beodeul_town, A/B probe (`34095b5`)
+- **runtime,assistant** — from 마왕 편의점 opening — skill-specific troop reactions, upsert_enemy clearFields, opening-still title backgrounds, no black gap after new game, single boot clone (#3916) (`af2e5cb`)
+- **ai** — store music search reads heard traits (feelTags) and game-name requests (`01bea2b`)
+- **ai** — room shapes the model can pick — U/alcove/bay/T/L notches incl. mid-edge cuts, shape guide + built example pictures in room_parts, wall furniture under lowered north walls; over-long groups place what fits; designed-room bare/ㅁ자 warnings point to the design; turn.diag logs provider errors and tool result size (`b84901a`)
+- **ai** — the assistant designs the room — zones[].design (shape, size, door, materials, furniture groups) built as given; functions only harmonise and report fixes; room_parts verb shows chipset labels and reference rooms (`b5c772a`)
+- **object-gate** — beodeul_dungeon style reference set (shipped dungeon props, not village benches/trees); user-accepted broken pillar joins the calibration originals; column rule measured (`78da692`)
+- **content** — bake the broken pillar into the cave piece tail (33,920~) — user allow recorded as delegated on 18323 (`7d0fdbe`)
+- **content** — object-gen cave piece picks (Opus picker) — stalagmite, stalagmite cluster, crystal cluster, bone pile, glow mushrooms, broken pillar, cave stairs down/up (`669937c`)
+- **builder** — bake_cave.py — object-gen cave pieces as a new sheet tail (33,920~), gated per picture (`e90fcb5`)
+- **builder** — cave stairs can be 2x2 — wall stairs over the rock face, floor stairs as a hole with the move cell bottom-left (`60e3482`)
+
+### 수정
+
+- **runtime** — kit doors open with their own 1x2 art; dungeon save points use the pedestal kit (#3925) (`0099fe8`)
+- **runtime** — battle sound effects no longer drown under the battle BGM (#3923) (`6f7ae41`)
+- **ai** — the step-skip check counts a door that completes an entry step as doing that step (`2d257be`)
+- **ai** — a village warning/news step is told by a villager, step people stand by the road, the start objective names where the first step's person stands; wiki for the vm8 wayfinding fixes (`c5c5714`)
+- **ai** — locked doors say where the key lies (landmark words); an event named after the item it gives becomes a chest even under a roof; a stale start-objective tail points at the first step (`fae7615`)
+- **ai** — an entry step (cave entrance) completes when you pass the door already locked by the same key; exits that advance the story count as visible (`e88819f`)
+- **ai** — a road running past a non-edge exit (cave mouth) ends at the exit; the spare stub and far lane become ground, dead-end signs on it go (`990ad05`)
+- **builder** — monster required fights stay under 80% simulated HP for every starter — teach one move that only hurts the easiest starter, re-species swaps now take the new species' real stats and moves, candidates span every tier (`4b843e4`)
+- **runtime** — exit labels hide during events, enemy status badges off the nameplate, no zero EXP/G lines (#3922) (`046980e`)
+- **ai** — road-width exit copies only beside true map-edge exits, along the edge, and never when they cut off cells (monster grove regression) (`52b189f`)
+- **runtime** — line before prompt-less choices waits for its own confirm (#3920) (`b597703`)
+- **interior** — armchair (tile 3677) redrawn in place — user picked object-gen r4 C2; signed allow bound to its pixel hash, object-gate advisory FAIL recorded (`d6fbfa6`)
+- **ai** — a big sprite covering a seated cave/hollow entrance steps aside (`5f3ed31`)
+- **ai** — errand words (토벌의 부탁) are not battle steps; boss fights wrapped around talk steps are unwrapped (`2de6c4c`)
+- **ai** — mystery objectives point at the clue still missing; dangling evidence hints and stale suspect names removed (`72e1ec4`)
+- **ai** — entrance steps sit in the drawn cave/hollow doorway; bare pickup steps become a treasure chest (`60c8bee`)
+- **ai** — exits beside/on a two-lane road cover the road width; opened door steps vanish and let you pass (`c67eac8`)
+- **builder** — monster finish gives every trainer on a route or in a gym a different monster — re-species picks species not yet used there (gym theme, then route grass, then base forms), a gate identical to an earlier gate is re-speciesed too, HP band kept (`c033cc8`)
+- **ai** — objective exit tails use map-fixed words (west edge, middle) instead of a bearing from where the objective was set (`e0b80fa`)
+- **ai-v2** — save-and-reload gate at the end of the finish and in finishReplay (fill builder event shape holes, count the rest as project-reload-failed); dead-end edge roads get a blocked-road sign (`af59d9b`)
+- **ai** — group pos without at reads along the north wall (wall items) or the middle row instead of floor coordinates; the run appends unresolved check problems to a report that says passed/none (`4bfbfe6`)
+- **ai-v2** — wayfinding a person can follow — crowd-talk steps become a villager off the wall, bare house doors say locked, seal steps get a stone altar, levers stop pointing at the rocks they remove, start gold for the start-map shop (`85613b5`)
+- **builder** — monster finish keeps every starter's required fights inside a 35-80% simulated HP band — gift partner chosen against the stage gate, gifts no longer counted as starter choices, easy fights raised or re-speciesed toward neutral route monsters (`664f4f4`)
+- **builder** — monster finish gives a guaranteed gift partner instead of counting optional catches, places a heal spring on routes with back-to-back trainers, measures chained HP between heals, and iterates the fit until stable (`5fefb07`)
+- **project** — saved bundled-tileset diffs reopen after the bundle sheet grows — rebuild the saved-time bundle (inserted sheet-end cells removed, bundle grafts pulled back) before applying the diff; check-bundle-save-compat.mts opens/saves/reopens real save copies (`6ddcba2`)
+- **builder** — a group dx/dy next to at shifts the group from that spot instead of becoming floor coordinates (`a1503bc`)
+- **ai** — lenient room design — shape/door/corner/at accept free words (southeast, north wall, 0.5), no strict enums or ranges in the schema; a group without at or x/y reads item dx/dy as floor coordinates; item x/y and group dx/dy are read too (`3667e9e`)
+- **ai** — the design bounce says it is not a failure and carries the room parts, so the model designs and calls make_place again instead of giving up (`4ccf72e`)
+- **ai** — a hand interior make_place without a room design is sent back once per place to design it (room_parts → zones[].design); harmoniser turns chairs toward desks across groups (`7c49809`)
+- **ai** — designed rooms are revised with edit_place patch.design (a re-sent designed zone of the same kind replaces, not adds); dressing never adds function-picked props to designed rooms (`d5c5e74`)
+- **builder** — design harmoniser counts wall columns only for north-row tall pieces and hangs; studyLive bench collects live model designs, pictures and fix lists (`ef838b0`)
+- **builder** — designed rooms skip the salt layout variant (no flip/widen of the model's size) (`7621f66`)
+- **ai** — designed rooms are revised through the design — dress_room refuses model-designed maps and the next step points to make_place(mapId) with a fixed design (`f3ae54b`)
+- **builder** — composed study reads as a study — shelf wall, facing desk/reading sets on rugs, per-function caps, 15% bare target (`34aafe3`)
+- **builder** — restaged mystery case rewrites old culprit references — non-culprit named as culprit gets the new culprit, a non-culprit's confession becomes a witness line, speakerless confession in the culprit branch is spoken by the culprit (`dcf608a`)
+- **builder** — unset step condition no longer lands inside the accusation branch (vm3 argon mystery regression); stair exits widened after finish moves; objective thing names match the map; tile-label tails stripped from clue hints (`fa9bb16`)
+- **builder** — boss caves use the baked broken pillar even when the other new cave pieces are not baked (`0092d59`)
+- **ai-v2** — clear people standing in a one-cell choke (per-landing reach), re-run finish lanes when a late fix round rebuilds a place; finishReplay --snapshot (`29cd3bd`)
+- **builder** — monster finish turns on exp share and a gym heal point before fitting levels; starters may use a catchable partner; lowering is a last resort floored at arrival-1 (`c1db358`)
+- **builder** — cave dressing — no lone stalagmites or campfires in open floor, scenes keep a clear ring, crystals and broken pillars only where they belong (`3d3cbf9`)
+- **builder** — cave dressing stops lining props up — compact blobs for glow patches, spaced shore mushrooms, scenes 8 cells apart, rockfall as a triangle (`5762aab`)
+- **builder** — suspect talk sets 'talk to the unheard suspect' objective until every suspect is heard, accusation objective only after (`3478bc5`)
+- **builder** — mystery suspects must each be heard before the accusation; ghost suspects restaged; accusation spot named 범인 지목; evidence item matches the found-object line (`7a08954`)
+- **builder** — mystery depth — the culprit's statement is broken by where the evidence lay, wrong accusations are refuted by alibi and witness; token lines and role speaker heads cleaned (`9f9deeb`)
+- **builder** — starter fit pulls a type-cover move forward, carries HP through back-to-back fights, rejects near-dead wins, and swaps grunt species as a last resort (`83ead81`)
+- **builder** — monster finish lowers required trainers, grunts and gates until every starter choice wins them alone (`b5c3378`)
+- **ai-v2** — no duplicate upper floors, drop stair links shadowed by a model door, examine spot moves to the art its name names (`aaae422`)
+- **ai-v2** — same-map step-skip check + gate kept talk steps behind the previous step (`c6cae59`)
+- **builder** — mystery evidence a person hands over becomes a floor spot the player examines after hearing them (`ebf58f9`)
+- **builder** — mystery evidence is an object, clue hints name all suspects, dead south gap closed under the start cell (`4d82835`)
+- **builder** — step subjects become people/things, mystery shortcuts closed and evidence actually given (`84c1334`)
+- **builder** — step-order locks cover every door into the next step's map; add a step-skip shortcut check (`a113dae`)
+- **builder** — monster gate curve raises a gate only if every starter choice wins it alone at its arrival level (`11beb22`)
+- **builder** — a goal next to a one-level cliff that is 17 steps around gets a ramp down the cliff (`36a3530`)
+- **builder** — a bare mid-field cave gate gets a mine adit (moved up to 8 steps if needed) or yields to a visible twin gate (`9ebe1ea`)
+- **builder** — remaining-clue hints are rewritten after finish moves the clue events, and name the object each clue sits on (`f3b168a`)
+
+### 성능
+
+- **qa** — demo checkpoints boot from the baked play.json; web player preload list no longer rescans tilesets per map (#3921) (`358bb5a`)
+- **builder** — monster finish reuses identical fit simulations and screens re-species candidates by type lean (5 per slot, stop at the first in-band, weakest starter first) — finish 7m00s → 2m33s, same variety and HP band (`f227371`)
+
+### 정리
+
+- **ai** — finish auto-build and clearLanes as ordered one-file-per-stage registries (`04b01a8`)
+
+### 문서
+
+- **openwiki** — regenerate index for monster move tutoring (`f41bca2`)
+- **openwiki** — regenerate index for the monster finish speedup (`ae6c850`)
+- **ai** — guard-aside, errand battle words, debug-marker label note; walkpath dump option (`3671c96`)
+- **ai** — wayfinding round 2 notes; walkpath items option (`b0bdba3`)
+- **openwiki** — regenerate index for monster trainer variety (`93ce007`)
+- **openwiki** — regenerate index (`4762814`)
+- **openwiki** — bundle save-compat check results (224 saves; 34 pre-existing graft-layout warnings, 0 kit damage) (`3544e9a`)
+- **openwiki** — pos-only groups and unresolved checks appended to the report (`70ea145`)
+- **openwiki** — room shapes, partial groups, bare floor back to the model, turn diagnostics (`e8873f0`)
+- **openwiki** — regenerate index for the monster required-battle HP band (`c7bc9ba`)
+- **openwiki** — lenient design reading and the bounce payload (`e307df2`)
+- **openwiki** — design bounce and cross-group chair facing (`98caa4f`)
+- **openwiki** — model-designed interior rooms — who decides what, room_parts, fix lines (`e7ee4f8`)
+- **openwiki** — cave piece tail outcome — only the user-allowed broken pillar is baked; eight pieces kept their old art after three redraws each failed the independent adversarial VQA (`f6b2fd3`)
+- **openwiki** — regenerate index for the monster campaign support note (`8a2da94`)
+- **openwiki** — cave piece tail (object-gen picks, bake_cave, gate state, builder wiring, layout rules); existing copies follow theme2Blocked for bd-pick-dungeon-cave-* (`58c29bd`)
+- **openwiki** — regenerate index for the required-battle starter fit note (`f552e4c`)
+- **openwiki** — regenerate index for the starter-alone gate curve note (`06ad9ea`)
+
+### 테스트
+
+- **runtime-qa** — monster campaign heals only at real devices (route spring, gym guide, center), answers the move-learn prompt like a confirm-key player, and records live party HP before each fight and right after the battle commits (`1e564d6`)
+- **runtime-qa** — monster campaign heals at the gym guide between grunts and before the leader, and writes each fight's HP left to QA_MON_OUT (`25d36c3`)
+- **runtime-qa** — battle op skill:best picks the move with the highest expected damage; monster campaign fights with it (`70aafc6`)
+
+### 잡무
+
+- **qa** — finishReplay --trace records run-log/checkpoints and fixes random/clock for identity diffs (`6eadd07`)
+- **css** — #3916 타이틀 덮개 !important 를 CSS 래칫 기준선에 기록 (#3917) (`af7f8bf`)
+- **content** — check-bundle-save-compat separates hard failures from old-copy graft layout warnings (bundle-numbered grafts with other art; shipped kits pointing at other art); --strict fails on warnings too (`a5f14c3`)
+- **builder** — dungeon layout probe (rows of same-family props, lone props in open floor, room density spread) (`4bd2b5a`)
+- **builder** — bake_theme2 re-attaches the cave piece tail after rewriting the sheet (`7414a69`)
+
+### 기타
+
+- **interior** — armchair redraw attempts (object-gen r3-r5) and an in-place rebake script — none baked, all failed independent adversarial VQA (`df62b06`)
+- **builder** — composed study — desk facing the room variant, seeded lounge (west/east reading corner or a facing-chairs table), wider size band and rect aspect (`7fb075e`)
+- Revert "feat(content): bake the broken pillar into the cave piece tail (33,920~) — user allow recorded as delegated on 18323" (`21fcdff`)
+- Revert "fix(builder): boss caves use the baked broken pillar even when the other new cave pieces are not baked" (`308b267`)
+
 ## 0.360.1 — 2026-10-29
 
 ### 수정
