@@ -1057,7 +1057,8 @@ export type BattleEventCondition =
   | { kind: "actorHp"; actorId: ActorId; minPercent: number; maxPercent: number }
   | { kind: "enemyTurn"; enemyId: EnemyId; turn: number }
   | { kind: "actorTurn"; actorId: ActorId; turn: number }
-  | { kind: "actorCommand"; actorId: ActorId; commandId: string }
+  /** skillId: commandId 가 "skill" 일 때 그 기술을 쓴 행동만(생략 = 아무 기술). 기술마다 다른 반응(흥정 기술에만 대꾸 등)을 건다. */
+  | { kind: "actorCommand"; actorId: ActorId; commandId: string; skillId?: SkillId }
   /** 적(생략 = 아무 적)이 이 상태에 걸려 있다(present 생략 = true) / 걸려 있지 않다(false). 쓰러진 적은 세지 않는다. */
   | { kind: "enemyState"; enemyId?: EnemyId; stateId: string; present?: boolean }
   /**
