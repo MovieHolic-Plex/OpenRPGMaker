@@ -5,6 +5,40 @@
 
 <!-- releases -->
 
+## 0.364.1 — 2026-10-30
+
+### 수정
+
+- **lint** — staging lint seeds the player at startPos for the start map's new-game autorun (#3936) (`e85a44d`)
+
+## 0.364.0 — 2026-10-30
+
+### 기능
+
+- **harness** — battle-backdrop build --emit (upsert_resource file for code builders) (#3934) (`7442621`)
+
+### 수정
+
+- **store** — publish-game drops unused third-party-named resources, refuses games that use one (#3933) (`112d69d`)
+- **battle** — stand party actors without a battle sheet on their own walk chip (#3932) (`0b72a7a`)
+
+## 0.363.0 — 2026-10-30
+
+### 기능
+
+- **store-music** — eight upcoming genre lines with old-line fallback; guarded game names (이브·off·오프·위처); regen openwiki index (`6c8077e`)
+
+### 수정
+
+- **ai-tools** — forest route finds the town edge from plaza towns; set_project_settings can turn on the HUD objective line (#3930) (`9839a71`)
+- **assistant** — route game-feel / 엔딩곡 music requests to the music tools, add set_game_audio ending role (`7445367`)
+
+## 0.362.0 — 2026-10-30
+
+### 기능
+
+- **assistant** — forest-edge terrain for author_forest_route, close-up zoom for stage_map_reveal; QA records blob-BGM sources for sound re-mix (#3927) (`3639d7d`)
+
 ## 0.361.0 — 2026-10-30
 
 ### 기능
