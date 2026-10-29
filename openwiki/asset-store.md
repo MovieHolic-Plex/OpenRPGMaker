@@ -132,6 +132,9 @@ faceset(48×48 얼굴)·picture(흉상·전신) 에셋을 가리킨다. 표정 �
 - **음악 요청 알아보기**(2026-10-30, 실조수 e2e 5/8 → 수정). v2 는 `src/ai/v2/musicWords.ts` 한 곳에서 음악 요청을 판정한다: 음악·브금·bgm·사운드·선율·노래(부르는 장면 제외), 장면 붙은 「~곡」(엔딩곡·전투곡·보스곡·타이틀곡…; 계곡·곡괭이는 안 걸린다), 그리고 `GAME_FEELS` 의 모든 게임 이름 + 느낌·처럼·풍·같은(`STORE_MUSIC_GAME_NAME_SOURCE` — **표에 줄을 더하면 여기서도 맞는다**).
   게임 요소 낱말이 없으면 음악 묶음(`MUSIC_TIER`)만 맵 동사 위에 덧붙인다(맵 동사를 대신하지 않는다 — 「파판처럼 마을 만들어」도 make_place 를 그대로 쓴다). 끝맺음 음악 검사(`gameChecks.ts`)는 `musicAsked` — 짓는 요청의 게임 이름(화풍일 수 있다)에는 곡을 요구하지 않는다. 엔딩곡 연결도 「걸었다」로 센다.
   음악 카드는 「음악만 바라는 요청은 맵을 다시 짓거나 이벤트·엔딩을 새로 만들지 않는다」고 시킨다(실패 판에서 도구가 없던 조수가 마을을 다시 짓고 엔딩 이벤트를 새로 만들었다). 단위 `test/assistantMusicRouting.test.ts`.
+  새 줄(2026-10-30, 팩 게시 전): `dark-folk-fantasy`·`gallery-mystery`·`chase-horror`·`dark-fairytale`·`dream-ambient`·`eerie-minimal`·`school-horror`·`chiptune-indie-rpg`.
+  일반 낱말은 `LINE_WORDS`, 게임 이름은 `GAME_FEELS` 에만 넣고, 각 게임 줄의 lines 둘째 이후가 새 팩이 없을 때 물러설 옛 줄(fantasy·piano-story·horror·scifi·monster)이다.
+  흔한 낱말과 겹치는 이름(이브·イヴ·off·오프·위처)은 `guarded` — 바로 뒤에 느낌·처럼·풍·같은이 올 때만 그 게임이다(「이브닝」「불 꺼(off)」「위처럼」은 안 걸린다). 「Ib」「off rpg」는 낱말째 맞는다.
   남은 것: 모델이 「I encountered an error…」 사과문을 내면 `scripts/lib/assistantV2Runtime.ts` 가 숨기기만 하고 그 차례를 다시 돌리지 않는다(재시도 장치가 이벤트 수신기 안에 없어 이번에는 손대지 않음).
 - 시험: 단위 `test/storeMusicInstall.test.ts`·`test/storeMusicFeel.test.ts`. 실조수: `bun src/harnesses/assistant-capability/node/musicStorePrepare.ts <dir> <fantasy|joseon|monster> <제목>`(마을·동굴·보스전 시드) →
   `node src/harnesses/assistant-capability/node/wholeGameSession.mjs --project-dir <dir>/project --out <dir>/session --v2 --store-url <스테이징> [--store-ask-first]`.

@@ -20,6 +20,15 @@ const LINE_WORDS: Readonly<Record<string, readonly string[]>> = {
   "orchestral-melodrama": ["멜로드라마", "멜로", "melodrama"],
   "casual-race": ["캐주얼", "레이싱", "레이스", "달리기", "경주", "아케이드", "casual", "race", "racing", "arcade"],
   "piano-story": ["피아노", "인디", "piano", "indie"],
+  // 2026-10-30 새 줄(팩 게시 전 — 게임 이름 줄은 아래 GAME_FEELS 의 lines 둘째 이후로 옛 줄에 물러선다). 게임 이름은 여기 넣지 않는다.
+  "dark-folk-fantasy": ["다크 판타지", "다크 포크", "슬라브 민속", "허디거디", "주막", "dark folk", "slavic folk", "hurdy-gurdy", "tavern"],
+  "gallery-mystery": ["미술관", "갤러리", "오르골", "클래식 피아노", "gallery", "museum", "music box", "harpsichord"],
+  "chase-horror": ["추격 호러", "쫓기는", "저택 공포", "chase horror", "being chased", "mansion horror"],
+  "dark-fairytale": ["잔혹 동화", "오르골 왈츠", "기괴한 귀여움", "dark fairy tale", "creepy cute", "music-box waltz"],
+  "dream-ambient": ["꿈 세계", "몽환", "초현실", "로파이", "dream world", "surreal", "lo-fi ambient", "dreamlike"],
+  "eerie-minimal": ["기묘한", "인더스트리얼", "차가운 전자음", "eerie", "industrial ambient", "minimal electronic"],
+  "school-horror": ["학교 괴담", "학교 공포", "교실", "school horror", "haunted school", "classroom"],
+  "chiptune-indie-rpg": ["칩튠", "8비트", "아기자기 인디", "chiptune", "8-bit", "quirky indie rpg"],
 };
 
 /** 짧은 영문 낱말(sf·ost·ff …)은 같아야만 맞는다 — 「sfc」가 SF 줄에, 「ost」가 다른 낱말 속에 걸리지 않게. */
@@ -32,8 +41,10 @@ const wordHits = (line: string, word: string): boolean => {
  * 게임·시리즈 이름 → 장르 줄 + 들리는 결 낱말(조수 쪽에서만 쓴다). 스토어 곡 메타에는 게임 이름이 없다(원작과 거리 두기) —
  * 「크로노트리거 느낌」「투더문 같은 피아노」를 받으면 이름을 지우고 이 낱말로 바꿔 점수를 매긴다. 스토어·게시 자료에 이 이름을 쓰지 않는다.
  * lines 의 첫 줄이 가장 가깝다(+4, 나머지 +2 — 새 팩이 없을 때 옛 판타지 팩으로 물러선다).
+ * guarded: 흔한 낱말·이름과 겹치는 이름(「이브닝」의 이브, 「off」, 「위처럼」의 위처) — 바로 뒤에 느낌·처럼·풍·같은이 올 때만 그 게임으로 본다.
+ * 줄을 더할 때는 이 표에 한 줄만 쓰면 된다 — 조수 v2 음악 요청 판정(src/ai/v2/musicWords.ts)도 이 이름을 함께 쓴다.
  */
-const GAME_FEELS: readonly { readonly names: readonly string[]; readonly lines: readonly string[]; readonly words: string }[] = [
+const GAME_FEELS: readonly { readonly names: readonly string[]; readonly guarded?: readonly string[]; readonly lines: readonly string[]; readonly words: string }[] = [
   { names: ["크로노트리거", "크로노 트리거", "chrono trigger", "chronotrigger", "クロノトリガー", "크로노크로스", "chrono cross"], lines: ["snes-jrpg", "fantasy"], words: "16비트 snes 레트로 모험" },
   { names: ["파이널판타지", "파이널 판타지", "파판", "final fantasy", "ff", "ファイナルファンタジー", "ファイファン", "ff14", "ff7", "ff6"], lines: ["symphonic-jrpg", "snes-jrpg", "fantasy"], words: "심포닉 오케스트라 16비트" },
   { names: ["드래곤퀘스트", "드래곤 퀘스트", "드퀘", "dragon quest", "dq", "ドラゴンクエスト", "ドラクエ"], lines: ["symphonic-jrpg", "snes-jrpg", "fantasy"], words: "오케스트라 심포닉 16비트" },
@@ -42,16 +53,30 @@ const GAME_FEELS: readonly { readonly names: readonly string[]; readonly lines: 
   { names: ["테일즈런너", "테일즈 런너", "테런", "tales runner", "talesrunner", "テイルズランナー", "카트라이더", "카트 라이더", "kartrider", "kart rider"], lines: ["casual-race"], words: "캐주얼 레이싱 경쾌한 신나는" },
   { names: ["투더문", "투 더 문", "to the moon", "tothemoon", "トゥ・ザ・ムーン", "파인딩파라다이스", "finding paradise"], lines: ["piano-story"], words: "피아노 잔잔한 감성" },
   { names: ["포켓몬스터", "포켓몬", "pokemon", "pokémon", "ポケモン", "ポケットモンスター"], lines: ["monster"], words: "몬스터" },
+  // 2026-10-30 새 줄 — lines 둘째 이후는 새 팩이 아직 없을 때 물러설 옛 줄.
+  { names: ["위쳐", "witcher", "ウィッチャー"], guarded: ["위처"], lines: ["dark-folk-fantasy", "fantasy"], words: "다크 포크 판타지 슬라브 민속 허디거디" },
+  { names: ["ib"], guarded: ["이브", "イヴ"], lines: ["gallery-mystery", "piano-story", "horror"], words: "미술관 갤러리 오르골 클래식 피아노" },
+  { names: ["아오오니", "청귀", "ao oni", "aooni", "青鬼"], lines: ["chase-horror", "horror"], words: "추격 호러 쫓기는 저택 공포" },
+  { names: ["마녀의 집", "매드 파더", "witch's house", "witchs house", "mad father", "魔女の家"], lines: ["dark-fairytale", "horror"], words: "잔혹 동화 오르골 왈츠 기괴한 귀여움" },
+  { names: ["유메닛키", "유메 닛키", "yume nikki", "yumenikki", "ゆめにっき"], lines: ["dream-ambient", "horror"], words: "꿈 세계 몽환 초현실 로파이" },
+  { names: ["off rpg"], guarded: ["off", "오프"], lines: ["eerie-minimal", "scifi", "horror"], words: "기묘한 인더스트리얼 차가운 전자음 미니멀" },
+  { names: ["콥스 파티", "콥스파티", "미사오", "corpse party", "misao", "コープスパーティー"], lines: ["school-horror", "horror"], words: "학교 괴담 학교 공포 교실" },
+  { names: ["언더테일", "델타룬", "undertale", "deltarune", "アンダーテール"], lines: ["chiptune-indie-rpg", "monster", "fantasy"], words: "칩튠 8비트 아기자기 인디" },
 ];
 
+/** 이름 뒤에 결을 빌리는 말이 올 때만(guarded). musicWords.ts 의 GAME_FEEL 꼬리와 같은 말. */
+const FEEL_TAIL = String.raw`(?=\s*(?:의\s*)?(?:느낌|처럼|풍|같은|같이|같게|스타일|분위기|st\b|style))`;
+
 const escapeRe = (text: string): string => text.replace(/[.*+?^${}()|[\]\\]/gu, "\\$&");
+const namePattern = (name: string): string => {
+  const body = [...name.replace(/\s+/gu, "")].map(escapeRe).join("\\s*");
+  return /^[a-z]/u.test(name) ? `(?<![a-z0-9])${body}(?:\\s*(?:\\d+|[ivx]+))?(?![a-z])` : body;
+};
 const GAME_PATTERNS = GAME_FEELS.map((game) => ({
   ...game,
   // 띄어쓰기는 있어도 없어도 맞는다(「투 더 문」 = 「투더문」). 영문은 낱말 경계 + 뒤 번호(ff6·ff 7·ff vi).
-  re: new RegExp(game.names.map((name) => {
-    const body = [...name.replace(/\s+/gu, "")].map(escapeRe).join("\\s*");
-    return /^[a-z]/u.test(name) ? `(?<![a-z0-9])${body}(?:\\s*(?:\\d+|[ivx]+))?(?![a-z])` : body;
-  }).sort((a, b) => b.length - a.length).join("|"), "giu"),
+  re: new RegExp([...game.names.map((name) => namePattern(name)), ...(game.guarded ?? []).map((name) => namePattern(name) + FEEL_TAIL)]
+    .sort((a, b) => b.length - a.length).join("|"), "giu"),
 }));
 
 /**

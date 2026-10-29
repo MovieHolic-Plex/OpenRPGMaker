@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import { MUSIC_TIER, v2ExtraToolNames, wantsGameTools, wantsMusicTools } from "@/ai/v2/game";
 import { musicAsked } from "@/ai/v2/musicWords";
 import { gameContentProblems } from "@/ai/v2/gameChecks";
+import { expandStoreMusicQuery } from "@/assetStore/storeMusicPick";
 import { runTool } from "@/editor/tools/toolRunner";
 import { createEmptyToolProject } from "@/editor/tools/emptyProject";
 
@@ -43,6 +44,38 @@ describe("v2 music routing", () => {
   it("the music card says a music-only request must not rebuild maps or add events", () => {
     expect(MUSIC_TIER.card).toContain("'ending'");
     expect(MUSIC_TIER.card).toMatch(/맵을 다시 짓거나 이벤트·엔딩을 새로 만들지 않는다/u);
+  });
+});
+
+describe("new store music lines (game-name table only, old-line fallback)", () => {
+  it.each([
+    ["위쳐 느낌 주막 음악", "dark-folk-fantasy", "fantasy"],
+    ["이브 느낌으로 미술관 브금", "gallery-mystery", "piano-story"],
+    ["Ib 같은 오르골 곡 넣어 줘", "gallery-mystery", "piano-story"],
+    ["아오오니처럼 쫓기는 음악", "chase-horror", "horror"],
+    ["마녀의 집 같은 음악", "dark-fairytale", "horror"],
+    ["유메닛키풍 배경음", "dream-ambient", "horror"],
+    ["OFF 느낌 나는 차가운 곡 넣어 줘", "eerie-minimal", "scifi"],
+    ["오프처럼 기묘한 음악", "eerie-minimal", "scifi"],
+    ["콥스 파티 느낌 배경음", "school-horror", "horror"],
+    ["언더테일처럼 8비트 음악", "chiptune-indie-rpg", "monster"],
+  ] as const)("「%s」 → %s (falls back to %s)", (task, line, fallback) => {
+    const lines = expandStoreMusicQuery(task).lines;
+    expect(lines[0]).toBe(line);
+    expect(lines).toContain(fallback);
+    expect(wantsMusicTools(task)).toBe(true);
+  });
+
+  it.each(["이브닝 파티 장면 만들어 줘", "불 꺼(off) 스위치", "산 위처럼 높은 탑", "오프닝 연출", "오프라인 저장"])("guarded names do not hit in 「%s」", (task) => {
+    expect(expandStoreMusicQuery(task).games).toEqual([]);
+    expect(expandStoreMusicQuery(task).lines.filter((line) => line === "gallery-mystery" || line === "eerie-minimal" || line === "dark-folk-fantasy")).toEqual([]);
+  });
+
+  it("a bare guarded name is not a music request, the guarded name with a feel word is", () => {
+    expect(wantsMusicTools("이브닝 파티 장면 만들어 줘")).toBe(false);
+    expect(wantsMusicTools("불 꺼(off) 스위치")).toBe(false);
+    expect(wantsMusicTools("OFF처럼")).toBe(true);
+    expect(wantsMusicTools("이브처럼")).toBe(true);
   });
 });
 
