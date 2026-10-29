@@ -20,7 +20,7 @@ import { sharedFaceForCharset } from "@/project/sharedCharacterFaceResolver";
 import type { Project } from "@/project/types";
 import { defaultPlaceLeaks, editorDefaultsLeft, endingClosureProblems, endingConditionsUnset, emptySparkles, selfLoopTransfers, silentLockedExits, writtenStateIds } from "./shipChecks";
 import { strayStepCopies } from "./blueprint";
-import { doorCellBlocked, objectiveCommand, offArtEntrances, planObjective, repeatingStartObjectives, staleMilestoneTargets, withWhere } from "./discoverability";
+import { doorCellBlocked, lateStartObjective, objectiveCommand, offArtEntrances, planObjective, repeatingStartObjectives, staleMilestoneTargets, withWhere } from "./discoverability";
 import { normalizeGameOverSettings } from "@/project/cinematicSettings";
 import { fieldMenu, storyFieldMenu } from "@/project/fieldMenu";
 import { syncMenuFeatures, syncMenuUiStyle } from "@/project/menuSystem";
@@ -47,6 +47,7 @@ export function applyShipDefaults(project: Project, task = project.gameBlueprint
   if (left.has("combat-leftovers")) applied.push(...clearCombatLeftovers(project));
   if (offArtEntrances(project).length) applied.push(...moveEntrancesOntoArt(project));
   if (repeatingStartObjectives(project).length) applied.push(...moveRepeatingStartObjective(project));
+  if (lateStartObjective(project)) applied.push(...pullBackStartObjective(project));
   if (staleMilestoneTargets(project).length) applied.push(...fillStaleObjectives(project));
   applied.push(...fillGymArrivalObjectives(project));
   applied.push(...fitGateLevelCurve(project));
@@ -530,6 +531,21 @@ function moveRepeatingStartObjective(project: Project): string[] {
     map.events = has ? map.events.map((e) => e.id === next.id ? next as unknown as typeof e : e) : [...map.events, next as unknown as (typeof map.events)[number]];
   }
   return [`시작 목표를 매번 도는 「${first.eventId}」에서 옮김: ${plan.summary}`];
+}
+
+/** 뒤 단계를 말하는 시작 목표(lateStartObjective)를 첫 단계 할 일로 되돌린다 — 자리 힌트는 planObjective 가 첫 단계 이벤트로 붙인다. */
+function pullBackStartObjective(project: Project): string[] {
+  const late = lateStartObjective(project);
+  if (!late) return [];
+  const plan = planObjective(project, { at: "start", text: late.first });
+  if (!plan.ok) return [];
+  for (const { mapId, event: next } of plan.events) {
+    const map = project.maps[mapId];
+    if (!map) continue;
+    const has = map.events.some((e) => e.id === next.id);
+    map.events = has ? map.events.map((e) => e.id === next.id ? next as unknown as typeof e : e) : [...map.events, next as unknown as (typeof map.events)[number]];
+  }
+  return [`시작 목표 「${late.message}」 는 뒤 단계 일이라 첫 단계로: ${plan.summary}`];
 }
 
 /**

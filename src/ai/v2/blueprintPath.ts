@@ -23,7 +23,7 @@ import { simulateBattle } from "@/battle/simulate";
 import { trivialCode } from "./puzzle";
 import { repairEventReach } from "./eventReach";
 import { dressInteriorExits } from "./exitDress";
-import { OBJECTIVE_SURFACE, planObjective } from "./discoverability";
+import { bearingWord, OBJECTIVE_SURFACE, planObjective } from "./discoverability";
 import { settleExamineSpots } from "./examineSpot";
 import { ensureHealingAccess, ensureSupplyShop } from "./healingAccess";
 import { stageMysteryCase } from "./mysteryCase";
@@ -782,5 +782,66 @@ function stepObjectives(run: BuildRun, steps: readonly { event: string; action: 
     if (write(planObjective(run.ctx.project, { text, eventId: cur.eventId, mapId: cur.mapId, where: next.eventId }))) notes.push(`${String(ev.name ?? ev.id)} 뒤`);
   }
   if (notes.length && run.ctx.project.system.fieldHud?.objective === false) run.call("set_field_hud", { objective: true });
+  return notes;
+}
+
+/**
+ * 잠긴 조사 대사가 무엇을 먼저 해야 하는지 말하게 한다 — 대사만 있는 조건 없는 페이지(잠김)와 스위치·아이템 조건 페이지(열림)를 가진
+ * 이벤트에서, 그 조건을 켜는·주는 이벤트가 한 곳뿐이고 잠김 대사가 그 이름을 말하지 않으면 「먼저 <자리> 「그 이벤트」…」 한 줄을 덧붙인다.
+ * 왜(2026-10-29 vm3 판정): argon 추리 「열린 창문」은 「아직 조사할 필요가 없다」만 되풀이해 앞 단계(여관 주인)를 몰랐고,
+ * deepseek jrpg 계단은 「동굴 안쪽의 봉인을 먼저 풀어야」라 했지만 봉인은 계단 바로 옆 투명 칸이었다. 보스 잠김 대사(orderStepBattlesIn)와 같은 방식.
+ */
+export function pointLockedPagesIn(project: Project): string[] {
+  type Ev = GameMap["events"][number];
+  type Cmd = { kind?: string; body?: string; switchId?: string; itemId?: string; value?: unknown; op?: string; amount?: number };
+  const notes: string[] = [];
+  const all: { map: GameMap; ev: Ev }[] = Object.values(project.maps).flatMap((map) => (map.events ?? []).map((ev) => ({ map, ev })));
+  const cmdsOf = (ev: Ev): Cmd[] => {
+    const out: Cmd[] = [];
+    const visit = (node: unknown): void => {
+      if (Array.isArray(node)) { node.forEach(visit); return; }
+      if (!node || typeof node !== "object") return;
+      const c = node as Cmd & Record<string, unknown>;
+      if (typeof c.kind === "string") out.push(c);
+      for (const v of Object.values(c)) if (v && typeof v === "object") visit(v);
+    };
+    for (const page of ev.pages ?? []) visit(page.commands);
+    return out;
+  };
+  const setters = (kind: "switch" | "item", id: string) => all.filter((r) => cmdsOf(r.ev).some((c) => kind === "switch" ? c.kind === "setSwitch" && c.switchId === id && c.value !== false : c.kind === "changeItem" && c.itemId === id && (c.op === undefined || c.op === "+=") && (c.amount ?? 1) > 0));
+  const TEXT_ONLY = new Set(["text", "changeFace", "wait", "playSe", "showBalloon"]);
+  const named = (ev: Ev) => String((ev as { name?: string }).name ?? "").trim();
+  const stepIds = new Set((project.gameBlueprint?.steps ?? []).flatMap((step) => all.filter((r) => r.ev.id === step.event || norm(named(r.ev)) === norm(step.event)).map((r) => r.ev.id)));
+  const person = (ev: Ev) => (ev.pages ?? []).some((p) => { const g = (p.graphic ?? {}) as { sprite?: unknown; appearanceId?: unknown; transparent?: boolean }; return g.transparent !== true && Boolean(g.sprite || g.appearanceId); });
+  for (const { map, ev } of all) {
+    const pages = (ev.pages ?? []) as unknown as RawPage[];
+    if (pages.length < 2) continue;
+    const lockedAt = pages.findIndex((p) => !(p.conditions ?? []).length && (p.commands ?? []).length > 0 && ((p.commands ?? []) as Cmd[]).every((c) => TEXT_ONLY.has(String(c.kind))) && ((p.commands ?? []) as Cmd[]).some((c) => c.kind === "text"));
+    if (lockedAt < 0) continue;
+    const open = pages.find((p, i) => i > lockedAt && (p.conditions ?? []).length > 0);
+    const need: { kind: "switch" | "item"; id: string }[] = ((open?.conditions ?? []) as { kind?: string; switchId?: string; itemId?: string; value?: unknown; present?: unknown }[])
+      .flatMap((c): { kind: "switch" | "item"; id: string }[] => c.kind === "switch" && c.switchId && c.value !== false ? [{ kind: "switch", id: c.switchId }] : c.kind === "item" && c.itemId && c.present !== false ? [{ kind: "item", id: c.itemId }] : []);
+    if (need.length !== 1) continue;
+    // 열림 페이지가 실제로 길을 여는 것(옮기기·켜기·주기·싸움·엔딩)만 — 인물의 진행별 잡담(대사만 바뀌는 페이지)에는 덧붙이지 않는다.
+    if (!/"kind":"(?:transfer|setSwitch|changeItem|battleProcessing|triggerEnding)"/u.test(JSON.stringify(open?.commands ?? []))) continue;
+    if (person(ev) && !stepIds.has(ev.id)) continue;
+    const by = setters(need[0]!.kind, need[0]!.id).filter((r) => r.ev.id !== ev.id);
+    if (by.length !== 1) continue;
+    const src = by[0]!;
+    const name = named(src.ev);
+    if (!name || /^ev_/u.test(name)) continue;
+    const texts = ((pages[lockedAt]!.commands ?? []) as Cmd[]).filter((c) => c.kind === "text");
+    const flat = (s: string) => s.replace(/[\s「」『』]/gu, "");
+    if (texts.some((c) => flat(String(c.body ?? "")).includes(flat(name)))) continue;
+    const where = src.map.id === map.id ? `${bearingWord({ x: ev.x, y: ev.y }, { x: src.ev.x, y: src.ev.y })}의 ` : `${src.map.name ?? src.map.id}의 `;
+    // 인물은 말하는 이름으로(이벤트 이름이 「촌장의 부탁」 같은 일 제목이면 「촌장 보른」).
+    const speakers = cmdsOf(src.ev).flatMap((c) => typeof (c as { speaker?: unknown }).speaker === "string" && (c as { speaker: string }).speaker.trim() ? [(c as { speaker: string }).speaker.trim()] : []);
+    const speaker = speakers.sort((a, b) => speakers.filter((x) => x === b).length - speakers.filter((x) => x === a).length)[0];
+    const line = person(src.ev) ? `먼저 ${where}「${speaker ?? name}」에게 말을 걸어 보자.` : `먼저 ${where}「${name}」${josa(name, "을", "를")} 살펴보자.`;
+    const next = structuredClone(pages);
+    (next[lockedAt]!.commands as Cmd[]).push({ kind: "text", body: line });
+    map.events = map.events.map((e) => e.id === ev.id ? { ...e, pages: next as unknown as typeof e.pages } : e);
+    notes.push(`「${named(ev) || ev.id}」 잠김 대사가 「${name}」 을 가리킨다`);
+  }
   return notes;
 }
