@@ -428,6 +428,41 @@ function oreVeins(c: DressCtx, rs: () => number, slots: Slot[], n: number, gold 
 // ---------------------------------------------------------------- 자연 동굴
 
 const MUSH = CV("glow-mushroom");
+/** 동굴 기물 object-gen 판(2026-10-29, scripts/content/beodeul-dungeon/bake_cave.py) — 구워지기 전에는 hasKit 이 거짓이라 옛 조각으로 물러선다. */
+export const CK = (id: string) => `bd-pick-dungeon-cave-${id}`;
+const caveSpike = (c: DressCtx) => pickKit(c, [CK("stalagmite"), CV("stalagmite-1")]);
+const caveBig = (c: DressCtx, rs: () => number) => pickKit(c, rs() < 0.5 ? [CK("stalagmite-cluster"), CK("mossy-boulder"), CV("rock-pillar-2")] : [CK("mossy-boulder"), CK("stalagmite-cluster"), CV("rock-pillar-2")]);
+const caveGlow = (c: DressCtx) => pickKit(c, [CK("mushroom-patch"), MUSH]);
+const caveBones = (c: DressCtx) => pickKit(c, [CK("bone-pile"), SW("bone-heap")]);
+
+/**
+ * 둥근 덩이로 n 개 — 씨앗 칸에서 이미 놓은 칸 곁(8 이웃)으로만 자라고, 덩이 테두리 상자가 길쭉해지는 칸은 뒤로 미룬다.
+ * c.cluster(기준 칸 둘레 5×5 에서 가까운 칸)는 곧은 벽가에서 벽을 따라 한 줄 띠로 늘어섰다(2026-10-29 동굴 배치 검사: 빛 버섯·이끼 띠 6~7개 일렬).
+ */
+function blob(c: DressCtx, rs: () => number, x: number, y: number, n: number, pick: () => string): number {
+  const home = c.inb(x, y) ? c.roomAt[c.idx(x, y)] : -1;
+  const got: [number, number][] = [];
+  if (stand(c, pick(), x, y)) got.push([x, y]); else return 0;
+  for (let guard = 0; got.length < n && guard < 4; guard += 1) {
+    const cand: [number, number][] = [];
+    for (const [gx, gy] of got) for (let dy = -1; dy <= 1; dy += 1) for (let dx = -1; dx <= 1; dx += 1) {
+      const X = gx + dx, Y = gy + dy;
+      if (!c.inb(X, Y) || c.roomAt[c.idx(X, Y)] !== home || !free(c, X, Y) || cand.some(([a, b]) => a === X && b === Y)) continue;
+      cand.push([X, Y]);
+    }
+    const aspect = ([X, Y]: [number, number]) => {
+      const xs = [...got.map((g) => g[0]), X], ys = [...got.map((g) => g[1]), Y];
+      const w = Math.max(...xs) - Math.min(...xs) + 1, h = Math.max(...ys) - Math.min(...ys) + 1;
+      return Math.max(w, h) / Math.min(w, h) + rs() * 0.3;
+    };
+    for (const q of c.shuffle(rs, cand).sort((a, b) => aspect(a) - aspect(b))) {
+      if (got.length >= n) break;
+      if (aspect(q) > 2.4) break;   // 더 자라면 띠가 된다 — 작은 덩이로 그친다
+      if (stand(c, pick(), q[0], q[1])) got.push(q);
+    }
+  }
+  return got.length;
+}
 function vinesOnWalls(c: DressCtx, rs: () => number, slots: Slot[], n: number, kitId = CV("vines-2")) {
   let k = 0;
   for (const q of c.shuffle(rs, slots)) { if (k >= n) break; if (lonely(c, q.x, q.y, 1) && c.put(kitId, q.x, q.y)) k += 1; }
@@ -520,16 +555,24 @@ function stalactites(c: DressCtx, rs: () => number, slots: Slot[], n: number): v
 }
 
 function dressCave(c: DressCtx, r: PlacedRoom, rs: () => number, s: Slot | null, slots: Slot[]): boolean {
-  const SPIKES: readonly (readonly [string, number])[] = [[CV("stalagmite-1"), 4], [CV("rock-pillar-2"), 1], [CV("rubble-cave"), 1]];
+  // 새 동굴 기물(CK)이 구워져 있으면 그것 — 옛 회색 원뿔 석순·민둥 돌기둥은 「묘비·나무 그루터기」로 읽혔다(2026-10-29 사용자).
+  const neu = c.hasKit(CK("stalagmite"));
+  const SPIKES: readonly (readonly [string, number])[] = neu
+    ? [[CK("stalagmite"), 4], [CK("crystal-cluster"), 1], [CV("rubble-cave"), 1]].filter(([k]) => c.hasKit(k as string)) as [string, number][]
+    : [[CV("stalagmite-1"), 4], [CV("rock-pillar-2"), 1], [CV("rubble-cave"), 1]];
   const spikes = () => c.weighted(rs, SPIKES);
-  // 벽가 덩이는 석순·바위 기둥만 — 잔돌을 덩이마다 끼우면 흰 잔돌이 벽가마다 흩어졌다.
-  const CLUMP: readonly (readonly [string, number])[] = [[CV("stalagmite-1"), 3], [CV("rock-pillar-2"), 2]];   // 잔돌은 드물게 — 흰 잔돌이 길가 쓰레기로 읽혔다(2026-10-25 floor VQA r2)
-  const glow = () => c.weighted(rs, [[MUSH, 4], [CV("glow-moss-floor"), 2]]);
+  // 벽가 덩이: 큰 덩이 하나(석순 무리·이끼 바위) + 낱개 석순·수정 — 잔돌은 드물게(흰 잔돌이 길가 쓰레기로 읽혔다, 2026-10-25 floor VQA r2).
+  const CLUMP: readonly (readonly [string, number])[] = neu
+    ? ([[CK("stalagmite"), 3], [CK("stalagmite-cluster"), 2], [CK("mossy-boulder"), 2], [CK("crystal-cluster"), 1], [CK("broken-pillar"), 1]] as [string, number][]).filter(([k]) => c.hasKit(k))
+    : [[CV("stalagmite-1"), 3], [CV("rock-pillar-2"), 2]];
+  const glow = () => c.weighted(rs, [[caveGlow(c), 4], [CV("glow-moss-floor"), 2]]);
   const mossPatch = (cells: [number, number][], n: number) => {
     // 이끼 빛 한 덩이: 씨앗 칸 둘레 번짐
-    const seed = c.shuffle(rs, cells)[0];
+    const seed = c.shuffle(rs, cells).find(([x, y]) => free(c, x, y) && lonely(c, x, y, 1));
     if (!seed) return;
-    c.cluster(rs, seed[0], seed[1], n, [[CV("glow-moss-floor"), 4], [MUSH, 3]]);
+    const patch = c.hasKit(CK("mushroom-patch"));
+    // 새 버섯 군락(2×1 한 장)은 그 자체가 덩이라 둘까지, 옛 1칸 조각은 넷까지.
+    blob(c, rs, seed[0], seed[1], patch ? Math.min(n, 2) : Math.min(n, 4), () => patch ? c.weighted(rs, [[CK("mushroom-patch"), 3], [CV("glow-moss-floor"), 2]]) : c.weighted(rs, [[CV("glow-moss-floor"), 4], [MUSH, 3]]));
   };
   switch (r.kind) {
     case "entrance": {
@@ -547,7 +590,8 @@ function dressCave(c: DressCtx, r: PlacedRoom, rs: () => number, s: Slot | null,
       edgeClumps(c, rs, e, 3, CLUMP);
       sprinkle(c, rs, r, 0.03, spikes, { inset: 2, rad: 2, max: 3 });
       if (!c.lair) mossPatch(e, 3);   // 이끼 빛은 벽가 한 덩이만 — 방 한가운데 덩이가 걷는 길을 막아 보였다(2026-10-25 floor VQA r1)
-      if (rs() < 0.7) { for (const [x, y] of shoreCells(c, r).slice(0, 3)) stand(c, MUSH, x, y); }
+      // 물가 버섯: 물가 칸을 섞어 서로 떨어진 곳에만 — 앞에서부터 셋을 찍으면 물가를 따라 한 줄로 늘어섰다(2026-10-29 배치 검사).
+      if (rs() < 0.7) { let k = 0; for (const [x, y] of c.shuffle(rs, shoreCells(c, r))) { if (k >= 2) break; if (lonely(c, x, y, 2) && stand(c, caveGlow(c), x, y)) k += 1; } }
       stalactites(c, rs, slots, 3);   // 덩굴보다 먼저 — 덩굴이 벽 칸을 다 차지하면 종유석이 한 개도 못 걸렸다(2026-10-27)
       vinesOnWalls(c, rs, slots, 2);
       c.hangAlong(slots, rs, 7, () => TORCH, 1);
@@ -570,7 +614,7 @@ function dressCave(c: DressCtx, r: PlacedRoom, rs: () => number, s: Slot | null,
         }
         if (boat) break;
       }
-      let n = 0; for (const [x, y] of shore) { if (n >= 4) break; if (rs() < 0.45 && lonely(c, x, y, 1) && stand(c, c.weighted(rs, [[MUSH, 4], [CV("rubble-cave"), 1]]), x, y)) n += 1; }
+      let n = 0; for (const [x, y] of shore) { if (n >= 3) break; if (rs() < 0.45 && lonely(c, x, y, 2) && stand(c, c.weighted(rs, [[caveGlow(c), 4], [CV("rubble-cave"), 1]]), x, y)) n += 1; }
       const e = c.edgeCells(r, rs);
       edgeClumps(c, rs, e, 2, CLUMP);
       stalactites(c, rs, slots, 2);
@@ -581,7 +625,7 @@ function dressCave(c: DressCtx, r: PlacedRoom, rs: () => number, s: Slot | null,
       const e = c.edgeCells(r, rs);
       if (c.lair) { lairCamp(c, r, rs, e, false); return true; }
       mossPatch(e, 5);
-      for (const [x, y] of e.slice(0, 6)) if (rs() < 0.5 && lonely(c, x, y, 1)) stand(c, glow(), x, y);
+      { let k = 0; for (const [x, y] of e) { if (k >= 3) break; if (rs() < 0.5 && lonely(c, x, y, 2) && stand(c, glow(), x, y)) k += 1; } }   // 서로 두 칸 띄워 — 벽가 구석부터 붙여 찍으면 벽을 따라 한 줄이 됐다
       sprinkle(c, rs, r, 0.04, () => c.weighted(rs, [[SW("bones"), 2], [SW("skulls"), 1], [CV("rubble-cave"), 2]]), { max: 3 });
       stalactites(c, rs, slots, 2);
       vinesOnWalls(c, rs, slots, 2);
@@ -606,12 +650,12 @@ function dressCave(c: DressCtx, r: PlacedRoom, rs: () => number, s: Slot | null,
             c.seats[r.id] = { x, y: y + 2 };
             break;
           }
-          if (lonely(c, x, y, 1) && stand(c, SW("bone-heap"), x, y)) { stand(c, SW("skulls"), x - 2, y); stand(c, SW("skulls"), x + 2, y); c.seats[r.id] = { x, y: y + 2 }; break; }
+          if (lonely(c, x, y, 1) && stand(c, caveBones(c), x, y)) { stand(c, SW("skulls"), x - 2, y); stand(c, SW("skulls"), x + 2, y); c.seats[r.id] = { x, y: y + 2 }; break; }
         }
       }
       const e = c.edgeCells(r, rs);
       edgeClumps(c, rs, e, 3, CLUMP);
-      if (e[0]) stand(c, SW("bone-heap"), e[0][0], e[0][1]);
+      if (e[0]) stand(c, caveBones(c), e[0][0], e[0][1]);
       if (c.lair) lairCamp(c, r, rs, e.slice(1), true);
       sprinkle(c, rs, r, 0.04, () => c.weighted(rs, [[SW("bones"), 2], [SW("skulls"), 2]]), { inset: 2, max: 5 });
       stalactites(c, rs, slots, 3);
@@ -622,7 +666,7 @@ function dressCave(c: DressCtx, r: PlacedRoom, rs: () => number, s: Slot | null,
     case "vault": {
       mossPatch(c.floorCells(r, 1), 6);
       const e = c.edgeCells(r, rs);
-      edgeClumps(c, rs, e, 2, [[MUSH, 3], [CV("stalagmite-1"), 2]]);
+      edgeClumps(c, rs, e, 2, [[caveGlow(c), 3], [neu ? pickKit(c, [CK("crystal-cluster"), CK("stalagmite")]) : CV("stalagmite-1"), 2]]);
       return true;
     }
     default: return false;
@@ -646,6 +690,8 @@ function cavePurpose(c: DressCtx, r: PlacedRoom, rs: () => number): number {
   const want = r.w * r.h > 120 ? 2 : 1;
   const cx0 = r.x + r.w / 2, cy0 = r.y + r.h / 2;
   let n = 0;
+  // 장면끼리 8칸(맨해튼) 이상 — 이웃한 두 무너진 바위 더미가 돌기둥 네 개 한 줄 울타리로 읽혔다(2026-10-29 배치 검사: 동굴 70판 중 9판).
+  const prev = SCENES.get(c) ?? [];
   for (let k = 0; k < want; k += 1) {
     // 5×5 빈 창 중 방 가운데에서 가까운 것(같은 판 = 같은 자리)
     let best: [number, number] | null = null; let bd = Infinity;
@@ -655,6 +701,7 @@ function cavePurpose(c: DressCtx, r: PlacedRoom, rs: () => number): number {
       // 창은 이 방 칸과 통로 칸(방 번호 없음)에 걸쳐도 된다 — 넓은 빈 바닥은 방과 굽은 통로가 이어진 곳에 생겼다. 가운데 칸은 이 방.
       for (let dy = 0; dy < W6 && ok; dy += 1) for (let dx = 0; dx < W6; dx += 1) { const ra = c.roomAt[c.idx(x0 + dx, y0 + dy)]; if (!free(c, x0 + dx, y0 + dy) || (ra !== ri && ra !== -1)) { ok = false; break; } }
       if (!ok || c.roomAt[c.idx(x0 + 2, y0 + 2)] !== ri) continue;
+      if (prev.some((p) => Math.abs(p.x - (x0 + 1)) + Math.abs(p.y - (y0 + 3)) < 8)) continue;
       const d = Math.abs(x0 + W6 / 2 - cx0) + Math.abs(y0 + W6 / 2 - cy0);
       if (d < bd) { bd = d; best = [x0 + 1, y0 + 3]; }
     }
@@ -663,20 +710,20 @@ function cavePurpose(c: DressCtx, r: PlacedRoom, rs: () => number): number {
     // 같은 장면을 맵에 셋 이상 찍으면 복붙으로 읽힌다 — 종류마다 맵에 둘까지, 넘치면 무너진 바위 더미(바위 기둥·석순·잔돌)로.
     // 보스 굴은 우두머리 자리(뼈 제단·약탈품)가 이미 그 방의 장면이다 — 뼈 더미를 또 두면 같은 더미 반복이 된다.
     const kindNow = (nest && (r.kind === "boss" || (c.counts["monster-nest"] ?? 0) >= 2)) || (camp && (c.counts["explorer-camp"] ?? 0) >= 2) ? "rockfall" : nest ? "nest" : "camp";
+    // 장면끼리 7칸 이상 — 이웃한 두 무너진 바위 더미가 돌기둥 네 개 한 줄 울타리로 읽혔다(2026-10-29 배치 검사: 동굴 70판 중 9판).
     if (kindNow === "rockfall") {
       if ((c.counts["rockfall"] ?? 0) >= 2) break;
-      if (!stand(c, CV("rock-pillar-2"), x, y)) break;
-      stand(c, CV("stalagmite-1"), x + 1, y + 1);
-      stand(c, CV("rock-pillar-2"), x + 2, y - 1);
-      stand(c, CV("rubble-cave"), x - 1, y + 1);
+      // 한 덩이로 뭉친 삼각형: 큰 바위(2×2) 하나, 그 앞 비스듬히 석순, 반대쪽 뒤에 잔돌 — 같은 줄에 셋이 서지 않게.
+      if (!stand(c, caveBig(c, rs), x, y)) break;
+      stand(c, caveSpike(c), x + 2, y + 1);
+      stand(c, CV("rubble-cave"), x - 1, y - 1);
       c.counts["rockfall"] = (c.counts["rockfall"] ?? 0) + 1;
     } else if (kindNow === "nest") {
-      // 둥지 뒤 바위 기둥이 먼저(뼈 더미는 잡동사니라 혼자 트인 바닥에는 못 선다 — put 의 받침 규칙)
-      if (!stand(c, CV("rock-pillar-2"), x + 2, y - 1)) break;
-      if (!stand(c, SW("bone-heap"), x, y)) break;
+      // 둥지 뒤 큰 바위가 먼저(뼈 더미는 잡동사니라 혼자 트인 바닥에는 못 선다 — put 의 받침 규칙)
+      if (!stand(c, caveBig(c, rs), x + 2, y - 1)) break;
+      if (!stand(c, caveBones(c), x, y)) break;
       stand(c, SW("skulls"), x - 1, y + 1);
-      stand(c, c.weighted(rs, [[SW("bones"), 2], [CV("rubble-cave"), 1]]), x + 2, y + 1);
-      stand(c, SW("bones"), x + 1, y - 1);
+      stand(c, SW("bones"), x + 1, y + 2);
       c.counts["monster-nest"] = (c.counts["monster-nest"] ?? 0) + 1;
     } else {
       if (!stand(c, FIRE, x, y)) break;
@@ -685,10 +732,13 @@ function cavePurpose(c: DressCtx, r: PlacedRoom, rs: () => number): number {
       stand(c, SW("straw-bed"), x - 1, y + 2);
       c.counts["explorer-camp"] = (c.counts["explorer-camp"] ?? 0) + 1;
     }
+    prev.push({ x, y }); SCENES.set(c, prev);
     n += 1;
   }
   return n;
 }
+/** 맵(DressCtx)마다 놓은 장면 자리 — 장면끼리 간격을 본다. */
+const SCENES = new WeakMap<DressCtx, Slot[]>();
 
 /**
  * 벽가 덩이: 벽가 칸 몇 곳을 씨앗으로(씨앗끼리 5칸 이상) 골라 그 곁에 1~2개를 더 붙여 2~3개 덩이로 놓는다.

@@ -584,6 +584,7 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
     if (reachedBefore) for (let i = 0; i < W * H; i += 1) if (reachedBefore[i] && !seen[i] && stand(i % W, (i - (i % W)) / W)) return false;
     return rooms.every((r, ri) => { for (let y = r.y; y < r.y + r.h; y += 1) for (let x = r.x; x < r.x + r.w; x += 1) if (roomAt[idx(x, y)] === ri && seen[idx(x, y)]) return true; return false; });
   };
+  const placedLog: { id: string; x: number; y: number; cells: (readonly [number, number, number])[] }[] = [];
   const put = (kitId: string, x: number, y: number, opts: { label?: string; free?: boolean; liquidOk?: boolean } = {}): boolean => {
     if (!hasKit(kitId)) return false;
     const def = kit(kitId);
@@ -635,6 +636,7 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
     for (const c of decalCells) decal[idx(c.x, c.y)] = 1;
     const label = opts.label ?? kitId.replace(/^bd-pick-/, "");
     counts[label] = (counts[label] ?? 0) + 1;
+    placedLog.push({ id: kitId, x, y, cells: cells.map((c) => [idx(c.x, c.y), c.lo, c.up] as const) });
     return true;
   };
   const putAny = (kitId: string, cands: readonly (readonly [number, number])[], opts?: { label?: string }): [number, number] | null => {
@@ -1135,7 +1137,10 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
   void rimmed;
   void random;
   const picture = drawPicture(W, H, isFloor, isWall, upper, liquid, bridge);
+  // 되돌린 놓기(배 자리 시험 등)는 그림이 남지 않았다 — 칸이 지금도 그 그림인 것만.
+  const placed = placedLog.filter((p) => p.cells.every(([i, lo, up]) => (lo < 0 || lower[i] === lo) && (up < 0 || upper[i] === up))).map(({ id, x, y }) => ({ id, x, y }));
   return {
+    placed,
     type, liquid: { kind: profile.liquid ?? (liquidCells && spec.flooded ? "water" : null), cells: liquidCells, bridges: bridgeCount },
     width: W, height: H, lower, upper, rooms, corridors, entrance: { x: startCell[0], y: startCell[1] }, stairsUp: su, stairsDown: sd,
     entryStair, exitStair, sideDoor,
