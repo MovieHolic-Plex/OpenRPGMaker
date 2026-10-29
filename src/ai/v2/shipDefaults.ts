@@ -43,6 +43,7 @@ export function applyShipDefaults(project: Project, task = project.gameBlueprint
   if (left.has("party-names")) applied.push(...fillPartyNames(project));
   if (left.has("window-look")) applied.push(...fillWindowLook(project));
   if (left.has("game-over")) applied.push(...fillGameOver(project));
+  applied.push(...keepProgressOnDefeat(project));
   if (left.has("combat-leftovers")) applied.push(...clearCombatLeftovers(project));
   if (offArtEntrances(project).length) applied.push(...moveEntrancesOntoArt(project));
   if (repeatingStartObjectives(project).length) applied.push(...moveRepeatingStartObjective(project));
@@ -437,6 +438,21 @@ function fillGameOver(project: Project): string[] {
     : { presentation: "classic" as const, title: "쓰러졌다", message: hero ? `${topic(hero)} 힘이 다해 쓰러지고 말았다. 다시 일어나 도전하자.` : "힘이 다해 쓰러지고 말았다. 다시 일어나 도전하자." };
   project.system.gameOver = normalizeGameOverSettings(settings);
   return [`게임 오버 → ${settings.presentation} 「${settings.title}」`];
+}
+
+/**
+ * 패배하면 진행을 지킨 채 다시 일어나게 한다 — 게임 오버 결과를 정하지 않으면(outcome 생략 = 메뉴) 기록된 체크포인트가 없을 때
+ * 메뉴에는 「타이틀로 돌아가기」만 남아 새로 시작할 수밖에 없었다(2026-10-29 vm5 flash jrpg: 「패배하면 시작 지점·0G·첫 목표로 돌아가
+ * 상자 보상 등 진행이 사라짐, 복귀 지점 안내 없음」). 결과를 recover(귀환)로 — 런타임 createDefeatRecovery 가 진행·소지품을 그대로 두고
+ * 파티를 회복시켜 마지막 체크포인트, 없으면 recoveryFallback, 없으면 시작 지점으로 옮긴다. 화면 글(「다시 일어나 도전하자」)은 그대로 쓴다.
+ * 체크포인트 저장 이벤트가 있어도 그 앞에서 지면 메뉴는 「타이틀로」뿐이었다(vm5 terra: 동굴 세이브 지점 전에 박쥐에게 전멸). 공포 연출(잡히면 끝)·
+ * 작가가 결과를 정한 게임 오버는 둔다.
+ */
+function keepProgressOnDefeat(project: Project): string[] {
+  const settings = project.system.gameOver;
+  if (!settings || settings.outcome || settings.presentation === "horror" || settings.presentation === "blackout") return [];
+  project.system.gameOver = { ...settings, outcome: "recover" };
+  return [`게임 오버 → 귀환(진행·소지품 유지, 회복 뒤 마지막 체크포인트·${settings.recoveryFallback ? "지정한 자리" : "시작 지점"}으로) — 「타이틀로」만 남던 메뉴 대신`];
 }
 
 /**
