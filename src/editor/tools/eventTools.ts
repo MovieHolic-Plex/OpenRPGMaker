@@ -4638,6 +4638,72 @@ const patchEventPage: ToolDefinition = {
 };
 
 /**
+ * 이미 있는 이벤트에 조건 페이지 하나를 덧붙인다(퀘스트 진행에 따라 같은 문·사람이 다르게 반응). upsert_event 는 pages 배열을 통째로 받아
+ * 기존 페이지를 다시 써야 했고, 문 이벤트처럼 다른 도구가 만든 이벤트는 원래 페이지를 그대로 옮겨 적기 어려웠다(2026-10-29 폴른 스타 등불 퀘스트).
+ * 새 페이지는 copyFrom 페이지(기본 0)의 그림·발동·층·움직임을 물려받고, 준 칸만 바꾼다. 검증은 upsert_event 를 그대로 거친다.
+ */
+const addEventPage: ToolDefinition = {
+  name: "add_event_page",
+  description: "기존 이벤트에 페이지 하나를 덧붙인다 — 다른 페이지는 그대로 둔다. 새 페이지는 copyFrom 페이지(기본 첫 페이지)의 graphic·trigger·priority·movement 를 물려받고 page 에 준 칸(name·conditions·commands·graphic·trigger 등)만 바꾼다. " +
+    "런타임은 조건이 맞는 페이지 중 뒤쪽 것을 쓰므로, 퀘스트가 진행된 뒤의 반응(예: 스위치 sw_lamp 가 켜지면 「등이 걸린 문」)은 뒤에 붙인다(position 기본 end). 이벤트를 새로 만들 때는 upsert_event.",
+  mode: "write",
+  parameters: {
+    type: "object",
+    properties: {
+      mapId: { type: "string" },
+      eventId: { type: "string" },
+      page: {
+        type: "object",
+        description: "새 페이지 칸. 예: {name:'등 걸기', conditions:[{kind:'switch',switchId:'sw_q4_taken',value:true}], commands:[{kind:'text',body:'문고리에 등을 건다.'}]}. id 를 생략하면 <eventId>_p<번호>.",
+        additionalProperties: true,
+      },
+      copyFrom: { type: "integer", minimum: 0, description: "그림·발동·층·움직임을 물려받을 페이지 번호(0부터). 기본 0" },
+      position: { type: "integer", minimum: 0, description: "넣을 자리(0부터). 생략하면 맨 뒤" },
+    },
+    required: ["mapId", "eventId", "page"],
+  },
+  run(draft, args): ToolExecResult {
+    const map = requireMap(draft, args.mapId as string);
+    const eventId = String(args.eventId ?? "");
+    const event = map.events.find((entry) => entry.id === eventId);
+    if (!event) throw new ToolError(`${map.name}에 이벤트 '${eventId}' 가 없습니다. find_events 로 id 를 확인하세요.`, { code: "event-not-found" });
+    const pages = event.pages ?? [];
+    if (pages.length === 0) throw new ToolError(`이벤트 '${eventId}' 에 페이지가 없습니다. upsert_event 로 pages 를 만드세요.`, { code: "invalid-args" });
+    const raw = args.page;
+    if (!raw || typeof raw !== "object" || Array.isArray(raw)) throw new ToolError("page 는 페이지 칸 객체입니다.", { code: "invalid-args" });
+    const fields = raw as Record<string, unknown>;
+    const setMovementProblems = movementKeyProblems(fields.movement, "page.movement");
+    if (setMovementProblems.length) throw new ToolError(movementKeyRejectMessage(setMovementProblems), { code: "invalid-args" });
+    const keyFindings = pageKeyFindings(fields, "page");
+    if (keyFindings.reject.length > 0) throw new ToolError(pageKeyRejectMessage(keyFindings.reject), { code: "invalid-args" });
+    if (keyFindings.warn.length > 0) throw new ToolError(`page 에 알 수 없는 페이지 키가 있다: ${keyFindings.warn.join(", ")}. ${pageKeyWarning(keyFindings.warn.map((key) => key.replace(/^page\./u, "")))}`, { code: "invalid-args" });
+    const copyFrom = typeof args.copyFrom === "number" ? args.copyFrom : 0;
+    const base = pages[copyFrom];
+    if (!base) throw new ToolError(`copyFrom 페이지 ${copyFrom} 가 없습니다(페이지 ${pages.length}개).`, { code: "invalid-args" });
+    const usedIds = new Set(pages.map((page) => page.id));
+    let id = typeof fields.id === "string" && fields.id.trim() ? fields.id.trim() : "";
+    if (id && usedIds.has(id)) throw new ToolError(`페이지 id '${id}' 가 이미 있습니다. 바꾸려면 patch_event_page.`, { code: "invalid-args" });
+    for (let n = pages.length; !id; n += 1) if (!usedIds.has(`${eventId}_p${n}`)) id = `${eventId}_p${n}`;
+    const added = {
+      ...structuredClone(base),
+      name: "",
+      conditions: [],
+      commands: [],
+      ...structuredClone(fields),
+      id,
+    } as EventPage;
+    const position = typeof args.position === "number" ? Math.max(0, Math.min(pages.length, Math.trunc(args.position))) : pages.length;
+    const nextPages = [...pages.slice(0, position).map((page) => structuredClone(page)), added, ...pages.slice(position).map((page) => structuredClone(page))];
+    const result = upsertEvent.run(draft, { mapId: args.mapId, event: { id: event.id, pages: nextPages } });
+    return {
+      ...result,
+      summary: `이벤트 '${eventId}' 에 페이지 '${id}' 추가(${position}번째, 페이지 ${nextPages.length}개) — ${result.summary}`,
+      data: { ...(result.data as Record<string, unknown> | undefined), pageId: id, pageIndex: position },
+    };
+  },
+};
+
+/**
  * 한쪽 문의 착지 방향만 바꾸면 반대쪽 문과 어긋난다 — 「두 맵 사이 출입구 방향을 맞춰줘」에서 모델이 가는 문만 고치고
  * 끝냈다(실측 2026-10-13, 5회 중 4회). 방향이 바뀐 transfer 가 있으면, 그 목적지 맵에서 이 맵으로 돌아오는 문을 결과에 적는다.
  */
@@ -4688,6 +4754,7 @@ function withReturnDoorNote(base: ToolDefinition): ToolDefinition {
 export const EVENT_TOOLS: readonly ToolDefinition[] = [
   withReturnDoorNote(upsertEvent),
   withReturnDoorNote(patchEventPage),
+  addEventPage,
   placeNpc,
   setNpcSchedule,
   makeVillager,
