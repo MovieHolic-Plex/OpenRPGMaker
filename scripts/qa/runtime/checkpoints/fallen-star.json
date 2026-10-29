@@ -3658,7 +3658,22 @@
       {
        "kind": "move",
        "dir": "right",
-       "steps": 4
+       "steps": 3
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 500
+      },
+      {
+       "kind": "move",
+       "dir": "right",
+       "steps": 1
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 600
       },
       {
        "kind": "action"
