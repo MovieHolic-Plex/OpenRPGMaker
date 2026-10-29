@@ -1,0 +1,350 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fffc13a15608e298bb3478728721ae9a959b8b6b1904dc8bc0c66354da98e88e",
+ "width": 16,
+ "height": 32,
+ "kind": "debris",
+ "name": "steam wisp",
+ "label": "beodeul_city/wave-places/volcano-field/steam_wisp",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 종류 불일치",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 질감 없음 (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "종류 불일치"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "질감 없음 (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 4,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "2ad36264365ed8d5"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 203,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "steam puff stack (vertical chain of rounded blobs)",
+      "rows": "3-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "The object is a vertical column of white and pale-blue rounded puffs, about 6 px wide and 26 rows tall (rows 3-28). The width profile alternates 4, 6, 8, 6, 4 and so on, which is a stack of blobs. It has no front-edge line, eave shadow, ellipse lid, roof or contents. The darker pixels (#a2afcb) sit at the bottom of each puff as shading. There is no solid body and no front face, so it is not a pile of floor debris and does not match the debris kind. It is a vertical smoke or steam effect, so it fits none of the three_quarter, front_elevation or top_down_slab categories and is classed as other."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a small, thin wisp of stacked puffs in pale grey-white with only 8 distinct colours in total. It reads as about 3 lightness steps (a light highlight, a mid tone and a faint dark edge). The puffs have no outline, and there are no texture dots, grain or per-clump variation beyond a few pixel highlights. The tile facts are 0 because the piece is smaller than a tile, so I judged density by eye. Against the references, which carry 5-6 steps (hedge leaf clumps, well stones, stall cloth), the wisp looks thinner and flatter. Its dark edge pixels are 0% neutral, so it is not a black-line sticker, but it still has far less shading depth and detail than the same-kind references. A careful artist would not accept it next to them without it looking shallower, so I fail it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 9862
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "upper puff cloud",
+      "rows": "3-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "middle puff cloud",
+      "rows": "10-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower puffs",
+      "rows": "16-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "The object is a vertical stack of pale blue-white rounded blobs (steam puffs) with darker outline pixels on the bottom edges. It has no horizontal top surface, no front-edge line, no eave shadow and no ellipse lid. There is also no front face or floor-lying scatter of fragments: it is a floating, roughly symmetric column of puffs 4-8 px wide. It does not read as floor debris (bones, rubble, shards, papers), so the kind does not match. It is neither a 3/4 volume nor a flat top-down slab; classified as other."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a small, thin stack of pale puffs with only 8 distinct colours in total. It has roughly 3 lightness steps, so the shading is shallow next to the references, which have about 5-6 steps (hedge, well, stall). It has no real outline, only value separation between the puffs. This is acceptable for a wisp, but the puffs show almost no internal texture or grain, and the clusters are simple blobs. The per-tile facts are 0 because the piece is smaller than one tile, so I judged density by eye. The thin lamp and bench references are sparse too, but they still carry more shaded detail (grain, highlights, material variation). The wisp looks thinner and flatter than the hedge, well and stall, and a careful artist would not accept it next to them without more tonal steps and dithering. Sparseness alone is not the reason for the fail; the shallow shading and the lack of texture are.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 10536
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "upper puff cloud blob",
+      "rows": "3-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "middle puff cloud blob",
+      "rows": "10-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower puff cloud blobs",
+      "rows": "16-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "The drawing is a vertical stack of soft, rounded white-blue puffs (width profile 4-6-8-6-4-6-4-2) with no front-edge line, eave shadow, ellipse lid, or contents in a container. There are no scattered debris pieces lying on the floor, so the kind does not match. It has no distinct top surface and no front face, only a floating, cloud-like vapor shape. It is not a standing volume with a top, nor a flat floor slab of debris, so it reads as other."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a small, thin wisp of stacked puffs in pale grey-white with only 8 distinct colours in total. It reads as about 3 lightness steps (white highlight, light grey, mid grey-blue), where the Beodeul references use 5-6 steps per material. It has no outline at all, so there is no dark material-tone edge definition; the puffs are separated by value alone, which is acceptable in itself. The measured facts are 0 for per-tile tones and 0% flat coverage because the piece is smaller than a tile, so they do not count against it, and the 0% neutral share is just the absence of dark edge pixels. By eye, the puffs are small round blobs with almost no internal grain, clumping or per-puff shading variation. Next to the hedge, stall and well, which carry 9-20 visible tones with dense texture and clustered detail, it looks thinner and flatter, and the sparse-object allowance does not cover this level of simplicity. A careful artist would not accept it beside the references without it looking shallower.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 9457
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "stacked puffs of steam (blobs)",
+      "rows": "3-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The object is a vertical chain of pale blue-white rounded blobs (rows 3-28, width 2-8 px) with a darker outline on the bottom edge of each blob. It is a vapor wisp, not a pile of debris lying on the floor. There is no solid volume, no front-edge line, no eave shadow, no ellipse lid and no front face of 3 or more rows. Each puff is shaded as a small soft sphere. Nothing shows a horizontal top surface plus a vertical south face, so it reads as a flat sprite with no front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The steam wisp is a tiny stack of grey-white puffs with only 8 distinct colours in total. It reads as about 3 lightness steps (a light core, a mid grey and a darker edge), against roughly 5-6 steps in the references such as the well, stall and hedge. It has no outline and no visible grain, tile scallops or clumping. The puffs are smooth blobs with little internal variation, so they look thinner and more sticker-like than the references. The per-tile facts are 0 because the piece is smaller than one tile, so I judged by eye. The 0% near-neutral edge share only means there are few dark edge pixels, not that the outline is richly tinted. Next to the hedge, well and stall, the candidate carries clearly less shading and texture detail. Steam is naturally sparse and soft, but the puffs still lack the per-cluster highlights and dither-like variation that the references show.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 8064
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.206Z",
+ "cells": {
+  "16": [
+   "34c985d91d68425e",
+   "fe7b32f395cb7a2e"
+  ],
+  "24": [
+   "0c731368e1ddf478",
+   "0d93779edb56a4ad",
+   "1e588e3d64970c72",
+   "4794066e59988cd8",
+   "53ec56520705b759",
+   "70f935d6476610e7",
+   "a436845fa43dd724",
+   "d931434f661eef69",
+   "d9ff902905351f6d",
+   "da1f97a1bcea780e",
+   "e47982ca12051aa6",
+   "f0b383a31895140c"
+  ],
+  "32": [
+   "63229476964e18f9",
+   "89729bf9efe62e88",
+   "ad97cc685c8262eb"
+  ],
+  "48": [
+   "0f8e12fc8d292412",
+   "7943f8b592b0c2f3",
+   "ab446a7e883c7b70",
+   "d3ebd346ee466041",
+   "de7a9e976c1a15e9",
+   "efba4c8783c6782e"
+  ]
+ }
+}

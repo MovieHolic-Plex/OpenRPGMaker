@@ -1,0 +1,529 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c3d03d9e8a8e02228d1a2b1bc4d65f800745ee31a8c3d27a29518fbb7db2930c",
+ "width": 48,
+ "height": 112,
+ "kind": "structure",
+ "name": "gate tower b",
+ "label": "beodeul_city/wave-places/mountain-fortress/gate_tower_b",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (4/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+  "3/4: 윗면 2행 < 3 (3/4)",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (4/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+   "윗면 2행 < 3 (3/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 5,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "5f62fef078ef7661"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 17,
+  "tileColorsP90": 32,
+  "darkV5": 49,
+  "nearBlackEdge": 0.21,
+  "opaqueTiles": 21
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "borderline",
+   "wrong",
+   "wrong",
+   "wrong",
+   "borderline",
+   "borderline",
+   "wrong",
+   "borderline",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "flame brazier at top",
+      "rows": "0-28",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "top cornice/frieze band, front-facing brick strip",
+      "rows": "0-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "14-15"
+     },
+     {
+      "part": "stone ledge at row 40",
+      "rows": "40-42",
+      "evidence": "none",
+      "front_edge_line_row": 40,
+      "eave_shadow_rows": "41-42"
+     },
+     {
+      "part": "stone ledge at row 72",
+      "rows": "72-74",
+      "evidence": "none",
+      "front_edge_line_row": 72,
+      "eave_shadow_rows": "73-74"
+     },
+     {
+      "part": "brick wall face with arrow-slit window",
+      "rows": "16-111",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 110,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The tower is a tall flat brick wall seen face-on, 42 px wide, with a front face of about 110 rows. The top rows 0-13 are a front-facing cornice strip with brick courses. It has no sloped roof plane and no visible horizontal surface. The dark line at rows 14-15 sits under it like a shadow. The ledges at rows 40-42 and 72-74 are only 1-3 rows each, a light line with 1-2 dark rows below, so they read as rims, not top surfaces. The width profile widens by only 2 px at those ledges. The flame on top is decor. There is no roof or other receding top, so the object reads as front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The measured facts are fine: 13 visible tones per tile against 12 and 10 for the references, and 0% near-flat coverage. But 98% of the candidate's dark edge pixels are near-neutral, against 7% and 9% for the references. By eye, the grey stone tower has a uniform dark grey/black outline and dark joint lines around every block and band, which is the sticker look, not the dark brown or red-brown material-tone edges of Beodeul. The stone ramp has only about 4 grey steps (light, mid, dark, outline), where the references have 5-6 steps per material, with per-tile highlights and speckle. The stone blocks are fairly uniform and repetitive, with little per-stone shading, and the brazier flame is small. The tower is clean and readable, but its outline treatment is clearly shallower than the references and its texture is only moderate. Verdict: fail on the near-black outline.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 15187
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "brazier with flame",
+      "rows": "0-10",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "top cornice band (brownish brick strip)",
+      "rows": "0-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "string-course ledge",
+      "rows": "40-42",
+      "evidence": "none",
+      "front_edge_line_row": 40,
+      "eave_shadow_rows": "42"
+     },
+     {
+      "part": "string-course ledge",
+      "rows": "72-74",
+      "evidence": "none",
+      "front_edge_line_row": 72,
+      "eave_shadow_rows": "74"
+     },
+     {
+      "part": "stone brick wall face with slit window",
+      "rows": "9-111",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 112,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The tower is a straight, tall brick wall seen face-on, 42 px wide at nearly every row. The top rows 0-8 are a front-facing cornice strip with a dark outline at row 0 and no roof plane or ellipse. Row 8 has a light line, but the face below it continues as brick, and the dark band at rows 14-15 is a mortar or shadow course, not eave shadow under a top surface. The ledges at rows 40-42 and 72-74 are 1-row lips, with a light line and a dark line, and are only 2 px wider than the wall. They are string courses, not horizontal surfaces. The brazier and flame are decor. The slit window and the vertical bars are details on the front face. Nothing reads as a roof slope, top surface or lintel top, so it is a flat front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 5,
+    "evidence": "Density and texture are not the problem. The candidate has 13 visible tones per tile against 12 and 10 for the references, and 0% near-flat coverage. The stone blocks have per-block variation and speckle. The outline is the problem: 98% of dark edge pixels are near-neutral, against 7-9% for both references. The block joints, the tower silhouette and the window are drawn in a neutral black or dark-grey line. Beodeul instead uses tinted dark-material tones, such as dark red-brown beside tiles and dark brown beside timber. Grey stone cannot excuse this, because the reference stone house (h112) still has tinted edges. The main stone ramp has about 3-4 lightness steps, and the shading is mostly a lit side plus an outline. The references have 5-6 steps per material. The brazier and the banding of the tower read as a sticker-like, uniformly outlined shape, so the candidate sits below the Beodeul bar on outline craft and shading depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 18075
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "flame brazier on top",
+      "rows": "0-10",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "top parapet / cornice band of tan bricks",
+      "rows": "0-13",
+      "evidence": "none",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "14-15"
+     },
+     {
+      "part": "string-course ledge 1",
+      "rows": "40-42",
+      "evidence": "none",
+      "front_edge_line_row": 40,
+      "eave_shadow_rows": "41-42"
+     },
+     {
+      "part": "string-course ledge 2",
+      "rows": "72-74",
+      "evidence": "none",
+      "front_edge_line_row": 72,
+      "eave_shadow_rows": "73-74"
+     },
+     {
+      "part": "main brick wall face with arrow slit",
+      "rows": "16-111",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 110,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The tower is a flat, front-facing brick wall of constant width (42 px, with 44-px ledges). The top rows 0-13 are a brick parapet drawn as a vertical strip with no roof slope or ellipse, and the only contents are the flame brazier decor. The width profile never changes at the top, so it does not widen into a roof plane. Rows 14-15 are a dark band under the parapet, and the 1-3 row ledges at rows 40-42 and 72-74 are thin string-course rims. None of these is a horizontal top surface seen from above. The wall below is a tall front face of 100+ rows, so the whole object reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 5,
+    "evidence": "The candidate is a grey stone tower with a brazier on top and no roof. Its density is at the references' level: 13 visible tones per tile against 12 and 10, and 0% near-flat coverage. Texture comes from per-block stone shading and speckle, but the stone ramp has only about 4 steps against the references' 5-6 with per-tile highlights. The outline is the weak point. 98% of its dark edge pixels are near-neutral, against 7-9% for both references, and the picture shows a uniform dark grey-black line around every block, window slit, ledge and the base. That is the shallow 'sticker' outline, not the tinted dark-material tone Beodeul uses. The references separate forms by value and tinted dark brown or red-brown. The grey stone is neutral, but the measured tint test still classifies the outline as near_black. The tower also looks more regular and graphic, with evenly repeated blocks and little clumping or irregular grain. It fails on outline craft and slightly shallow shading.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 18043
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "brazier with flame on top",
+      "rows": "0-13",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "top cornice band (front-facing brick strip)",
+      "rows": "0-8",
+      "evidence": "none",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "mid string-course ledge",
+      "rows": "40-42",
+      "evidence": "none",
+      "front_edge_line_row": 40,
+      "eave_shadow_rows": "41-42"
+     },
+     {
+      "part": "lower string-course ledge",
+      "rows": "72-74",
+      "evidence": "none",
+      "front_edge_line_row": 72,
+      "eave_shadow_rows": "73-74"
+     },
+     {
+      "part": "main tower wall (brick front face with arrow slit)",
+      "rows": "9-111",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 103,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The tower is a flat, face-on stone wall of stacked bricks, with a narrow arrow slit and a flame brazier on top. The top rows 0-8 are a front-facing cornice strip of brick pattern. The light row 8 is below that strip and is not followed by eave shadow; the dark rows 14-15 are separated from it by face rows 9-13. The ledges at rows 40-42 and 72-74 are 1-3 row string courses that read as rims, not horizontal surfaces. There is no roof slope, ellipse or visible interior contents. The silhouette stays 42-48 px wide with no receding side face. The result is a front elevation with no real top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a gray stone tower with a brazier on top. Per-tile visible tones are 13 against 12 and 10 for the references, and near-flat coverage is 0% for all three, so the density numbers do not count against it. Its dark edge pixels are 98% near-neutral, against 7% and 9% for the references. That means a neutral black/grey outline around the windows, slits and block joints, not the dark material-tone lines Beodeul uses next to wood, roof and stone. The stone is a uniform grey with block outlines and lacks the per-stone shading and speckle seen on the reference stone wall. The shading ramps are shallow, about 4 steps on the stone, against 5-6 on the references. The structure reads more like an outlined sticker than the reference style. Verdict: fail on the neutral outline and shallower shading.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 16499
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.916Z",
+ "cells": {
+  "16": [
+   "04f36bd79408d9b6",
+   "109b0781cac678f9",
+   "1a459fd936df40dc",
+   "1a97be4bb4df1df0",
+   "2092712decb5aeff",
+   "2703ad861e68376a",
+   "28768d94eb02b118",
+   "455cad5d1896ccfe",
+   "4f78c2d051106575",
+   "63f5ee1439e993f4",
+   "64783c3da48792dc",
+   "6f5f2a2185059707",
+   "7216b51af7677140",
+   "73e318db1620c301",
+   "80d3582af3184b33",
+   "985ec86f1869bee4",
+   "adc69b50fbbf9f8e",
+   "b8c018dad99ff134",
+   "c1d43879cbc7b924",
+   "ec170bbd2fd58fc9",
+   "ee5a8fcb06a91b8d"
+  ],
+  "24": [
+   "0cd03bf6d49c5642",
+   "1492202b35f65cb1",
+   "1a89887311e9cdf0",
+   "23b05de8aa4e8168",
+   "3b2c50d416fe4859",
+   "453b00cc723e400c",
+   "4bc21042524c9f54",
+   "7ae566dc4e134838",
+   "89f5afa0acba2a73",
+   "975e978778ea5539",
+   "a97aaea21d58755e",
+   "aabacf3d3ffc33e5",
+   "aec778a3ff4ad9ca",
+   "b840f2cd1face1c7",
+   "b84fca31f6fbf068",
+   "bc88cbb13e563d54",
+   "c648df5b8b8d4785",
+   "db1e0ec2930cef32",
+   "e0e725193194a463",
+   "f90d3d0cf21f0754"
+  ],
+  "32": [
+   "066a72403a1352a9",
+   "0cc015448fa13fe4",
+   "12bf833f4770d303",
+   "14b25e9b22cc2b76",
+   "1ff1d037f8fc8a7c",
+   "26689f2059a371e4",
+   "31a7f74baba62afd",
+   "3d08e55b950da4ab",
+   "41a84a021de049a7",
+   "458359bef4669884",
+   "46d391ff79612007",
+   "4a703cdffeed9479",
+   "4b29d22c8245e9e7",
+   "4d1b442c1c962376",
+   "5d92835c8c366f94",
+   "60d879d683d39af8",
+   "6708f203357443ad",
+   "764b53073e356d84",
+   "85e904f7015170c2",
+   "863b69d1cf18b334",
+   "8b80af4246d9fbcd",
+   "90fd30b74848b0f9",
+   "92db543266a659b1",
+   "948b9437a12a7218",
+   "959ab4bf2c74b850",
+   "984a64f5d23f73a1",
+   "a6baa32a49db0706",
+   "a8a16c236ba3cbcc",
+   "b8029d0ecf63a1b5",
+   "b820a2066f3b6ef8",
+   "c4d52ab9690f79fa",
+   "c75aa867ce93fe4b",
+   "d2c49407f1c3c996",
+   "d8bfde6309a77a8c",
+   "da6854965216e089",
+   "da7177f97ae419f0",
+   "de1818e35ff6dcf1",
+   "dee9fa6de11d104b",
+   "df03a5b8e45a43e1",
+   "dfad0fe2040846b7",
+   "e5d8695f4836e0d2",
+   "e70c00f99fd8d93f",
+   "eb6ad2d091b84bef",
+   "f05f2c60d6b8ff29",
+   "f72a4985cc5b3db3",
+   "fad9b3667c803e40",
+   "fb015c8b649a050d",
+   "fda56898fc78b998"
+  ],
+  "48": [
+   "1609b1d56758675b",
+   "6df274f9ac349168",
+   "76b0bd6ddfb9fd0a",
+   "c27fac91f1c92d86",
+   "eb3cf26c20fae231",
+   "f4f1161fcd6785b6"
+  ]
+ }
+}

@@ -1,0 +1,426 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "75960e1c7210116b3e048dc35dff0a2493724ac4e0f62e877643539b70c132aa",
+ "width": 16,
+ "height": 32,
+ "kind": "structure",
+ "name": "temple brazier",
+ "label": "beodeul_city/wave-places/volcano-field/temple_brazier",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 종류 불일치",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 명암 3단 < 4 (1/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "종류 불일치"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "명암 3단 < 4 (1/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 5,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "5f62fef078ef7661"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 11,
+  "tileColorsP90": 11,
+  "darkV5": 23,
+  "nearBlackEdge": 0.24,
+  "opaqueTiles": 1
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "right",
+   "borderline",
+   "borderline",
+   "right",
+   "borderline",
+   "right",
+   "borderline",
+   "right",
+   "borderline",
+   "right",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "flame",
+      "rows": "0-8",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bowl mouth with dark contents",
+      "rows": "9-11",
+      "evidence": "d",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bowl front rim and wall",
+      "rows": "12-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pedestal shaft",
+      "rows": "14-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base plinth top band",
+      "rows": "25-26",
+      "evidence": "a",
+      "front_edge_line_row": 24,
+      "eave_shadow_rows": "27-28"
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 19,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The flame (rows 0-8) is decor. The bowl is 12 px wide for rows 9-13, so its width profile does not widen and narrow like an ellipse. Rows 9-11 are dark, holding the fire inside the open bowl, which counts as contents (d). Rows 12-13 are a lighter front rim, and the shaft (rows 14-23, 6 px wide) is the front face below it. The base has an edge line at row 24, a lighter top band at rows 25-26 and darker front rows 27-31, so it also shows a thin top. The top surface is shallow, about 3 rows, but there are 19 rows of front face below it. A brazier is a small prop rather than a large structure, so kind_matches is false."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a tiny single-tile brazier (a stone pedestal with a flame), not a building with roof, walls and door, so it only loosely matches the reference kind. It has about 8 visible tones against 10-12 in the references, 0% near-flat coverage, and no large flat fills. The pedestal is shaded in only about 3 steps (light top, mid body, dark base) and the flame has about 3-4 tones. Only 26% of its dark edge pixels are neutral, against 7-9% in the references, so its outline is partly dark grey/near-black rather than clearly tinted to the adjacent material. The pedestal looks like a sticker, with a dark outline and little grain or per-stone texture, where the references show per-tile highlights and stone shaded one by one. It is thinner and flatter than the references, so a careful artist would not accept it next to them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 23796
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "flame",
+      "rows": "0-8",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bowl mouth (dark opening)",
+      "rows": "9-11",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "14-14"
+     },
+     {
+      "part": "bowl front lip",
+      "rows": "12-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pedestal shaft",
+      "rows": "14-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base top strip",
+      "rows": "25-26",
+      "evidence": "a",
+      "front_edge_line_row": 24,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 18,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The bowl is a flat-sided block with constant width 12 over rows 9-13, so it is not an ellipse. Rows 9-11 are a dark band, likely the open mouth. Row 12 is a lighter edge line, row 13 is a lighter front lip, and row 14 is a very dark shadow row (L=7) above the 6-wide shaft (rows 14-23). The flame (rows 0-8) is decor. The base (rows 24-31, width 12) has a 1-row dark line at row 24, a lighter 2-row top strip at rows 25-26 and a front face at rows 27-30. The bowl's top reading is weak but it has an edge line and shadow, so I call it three_quarter. The object is a small brazier rather than a large gate or building, so the kind match is doubtful."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small single-tile prop (stone pedestal with a flame), while the references are whole buildings, so the kind does not quite match. Judged by eye against the stone wall and tile roof references, the pedestal has about 3-4 grey-blue steps with little per-stone shading or grain, and the flame has about 3-4 steps. The references have 5-6 steps with per-tile and per-stone highlights. Measured visible tones per tile are 8, against 10 and 12 for the references, so it is lower but not drastically. Near-flat coverage is 0%, so there are no large flat fills. The dark edge pixels are only 26% neutral, against 7-9% for the references. That is partly tinted, but the dark rim around the pedestal still reads as a fairly uniform dark sticker-like line. A careful artist would see it as thinner and simpler than the references, and with the doubt rule it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 19789
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "flame",
+      "rows": "0-8",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bowl mouth with dark coals/contents",
+      "rows": "9-11",
+      "evidence": "d",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bowl front rim",
+      "rows": "12-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shaft",
+      "rows": "14-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base plinth top band",
+      "rows": "24-26",
+      "evidence": "a",
+      "front_edge_line_row": 26,
+      "eave_shadow_rows": "27-28"
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 20,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": {
+     "cap_rows": 5,
+     "cap_width": 12,
+     "shaft_width": 6,
+     "rounded_at_both_edges": false
+    },
+    "reads_as": "three_quarter",
+    "evidence": "The flame (rows 0-8) is decor. The bowl is 12 px wide for rows 9-13, so it does not widen and narrow like an ellipse. Its top is a dark interior of coals at rows 9-11, which counts as contents visible in an open container (d). A lighter front rim follows at rows 12-13. The shaft (rows 14-23, width 6) is a vertical face. The base (rows 24-31, width 12) has a dark line at row 24 and a lighter band at rows 25-26 ending in an edge line, then a darker face at rows 27-31. That is a top band with an edge line above a front face. The main body has a short top (about 3 rows) and a front face of about 20 rows. This is a borderline three_quarter read."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small brazier prop on a stone pedestal, while the references are whole buildings, so the kind only loosely matches. I judged it by eye against the reference stone and roof material. Measured: 8 visible tones per tile against 10 and 12 for the references, and 0% near-flat coverage like both references, so it has no large flat fills. 26% of its dark edge pixels are neutral, against 7% and 9% for the references, so the outline leans toward a grey-black line rather than a consistent dark material tone. By eye, the pedestal has only about 3-4 value steps, with little stone-by-stone shading or grain, and the flame has about 3 tones. The references carry about 5-6 steps per material, with per-tile highlights and speckle. It is clean and readable but thinner and flatter than the references, and it is not equally rich, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 18721
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "flame",
+      "rows": "0-8",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bowl mouth and rim",
+      "rows": "9-13",
+      "evidence": "none",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shaft",
+      "rows": "14-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base plinth",
+      "rows": "24-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 18,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "This is a brazier on a shaft, not a gate, pavilion or building, so the kind only loosely fits. The flame at rows 0-8 is decor. The bowl at rows 9-13 has a constant width of 12 with no widen-then-narrow profile, so it is not an ellipse. Rows 9-11 are a dark band and rows 12-13 are a light grey front rim, which reads as a rim of 1-2 rows, not a foreshortened top. The shaft at rows 14-23 has width 6 and is a plain vertical face. The base at rows 24-31 has a 1-row dark line at row 24 and a lighter 2-row band at rows 25-26, then a face at rows 27-30. That band is only a rim, with no real top plane. Every part is drawn as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a tiny single-tile prop (flame, bowl, stone pedestal), while the references are whole buildings. It is judged by eye as a sparse object. The measured facts are mixed. Visible tones per tile are 8 against 10-12 for the references, which is somewhat lower. Near-flat coverage is 0%, the same as the references, so there are no large flat fills. Near-neutral dark edge pixels are 26% against 7-9% for the references, so part of the outline is a neutral dark grey. By eye, the pedestal reads as grey-blue stone with only about 3-4 steps (dark base, mid body, light cap) and little per-stone grain. The flame has 3 warm tones and the bowl is a dark silhouette. Next to the roof tile scallops and speckled plaster of the references, the pedestal and bowl look thinner and more sticker-like, with a dark outline that is only partly tinted. It is clean and readable but not at the references' craft level. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 20635
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.224Z",
+ "cells": {
+  "16": [
+   "47955ac6d6fd3127",
+   "49b468195165e676"
+  ],
+  "24": [
+   "10cfbbb9a85615d2",
+   "116abfaa83430a5b",
+   "1f1e199d539f940c",
+   "409a644b9eb8cde6",
+   "5613ef57440ae9df",
+   "5dbdd2fddb0e1061",
+   "81bd5946e9b13983",
+   "ad823448fbffeeab",
+   "bcba6822eac3d2f5",
+   "c143511dae51825b",
+   "d0e43c574502ce86",
+   "e7d5962ee6ad79a6"
+  ],
+  "32": [
+   "1ea1a11a35ae2f68",
+   "c0c539e7b30d5eef",
+   "f487e25121cdecef"
+  ],
+  "48": [
+   "1e0be040aa3571c6",
+   "1e9aa29304d65eb3",
+   "82ce24a6ffdf4504",
+   "c01ec38b56a56f8b",
+   "d4d5f2c0cd0ac610",
+   "d7ee1eb4b8037bd6"
+  ]
+ }
+}

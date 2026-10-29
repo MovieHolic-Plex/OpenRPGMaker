@@ -1,0 +1,469 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "73c06a55cf41450f7060c2eac488609e3234a28fbbf9052f24b274f8c7201bb0",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "torch post",
+ "label": "beodeul_city/wave-places/mountain-fortress/torch_post",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (4/4)",
+  "3/4: 윗면 2행 < 4 (4/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 평면 채움 (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (4/4)",
+   "윗면 2행 < 4 (4/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "평면 채움 (4/4)",
+   "명암 3단 < 4 (4/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "2ad36264365ed8d5"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 51,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 0
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "borderline",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "flame",
+      "rows": "0-7",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "brazier bowl / cup",
+      "rows": "8-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden pole shaft",
+      "rows": "10-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone base top strip",
+      "rows": "24-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone base front face",
+      "rows": "26-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 21,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": {
+     "cap_rows": 5,
+     "cap_width": 6,
+     "shaft_width": 2,
+     "rounded_at_both_edges": false
+    },
+    "reads_as": "front_elevation",
+    "evidence": "The width profile runs 1,1,2,4,4 then 6 for rows 5-9, then drops straight to 2 for the pole in rows 10-23. The top is a flame on a small brazier cup that ends flat on the thin shaft, like a hat. The cup is not an ellipse plate with narrower rows above and below. The pole (rows 10-23, width 2) is a plain vertical face. The stone base (rows 24-31, width 8) has only a 2-row light strip at rows 24-25 before its front face in rows 26-30. That strip reads as a rim, not a real top surface. Overall the post is a front elevation with no elliptical cap."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The torch post is a thin prop, so the per-tile tone count of 0 is not held against it; I judged density by eye. The post and the grey base block read as nearly flat fills with about 3 lightness steps. The measured near-flat coverage is 19%, while the thin references (bench, lamp, hedge, well) all sit at 0% and the stall at 13%. The bench and lamp-crook show per-piece grain and highlight/shadow banding that the candidate lacks. Only 19 distinct colours cover the flame, post and base, so the post looks flatter and more sticker-like than the lamp-crook or bench beside it. Dark edge pixels are 38% neutral, so the outline is partly tinted and partly neutral (mixed). The flame is small, with only a couple of tones. A careful artist would not accept it next to the references without more wood grain, base stone shading and highlights.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 20361
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "flame",
+      "rows": "0-7",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "brazier cup (metal bowl under flame)",
+      "rows": "8-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden pole",
+      "rows": "10-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone base block",
+      "rows": "24-25",
+      "evidence": "none",
+      "front_edge_line_row": 25,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": {
+     "cap_rows": 2,
+     "cap_width": 6,
+     "shaft_width": 2,
+     "rounded_at_both_edges": false
+    },
+    "reads_as": "front_elevation",
+    "evidence": "The post is a 2px-wide pole (rows 10-23) with a flame (decor) on a small cup at rows 3-9. The widths there run 4, 6, 6, then drop straight to 2. The cup is a flat-bottomed gray band (rows 8-9) with no elliptical plate overhanging the shaft. The stone base (rows 24-31, width 8) has only a 2-row lighter top strip (rows 24-25) and a 5-row flat front face (rows 26-30). That strip is a rim, not a real top surface. No part of the column shows a proper top ellipse, so it reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The torch post is a thin prop, so the per-tile tone count of 0 says nothing against it, and I judged it by eye against the lamp-crook and well references. The flame has a few warm steps, but the wooden post and the grey stone base look like about 3 flat steps each, with little grain, no per-stone shading and no wood grain. The measured near-flat coverage is 19%, against 0% for the bench, hedge, lamp and well and 13% for the stall. That matches the visibly flat base block and post body. Only 19 distinct colours in total, against 38-40 for the stall and well. Dark edge pixels are 38% neutral, so the outline is partly neutral and partly tinted. It reads somewhat more sticker-like than the references, whose materials are shaded one by one. Next to the lamp-crook and well it looks thinner and flatter, so it does not clear the Beodeul bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 21196
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "flame",
+      "rows": "0-4",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "torch cup / bracket head",
+      "rows": "5-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden pole",
+      "rows": "10-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone base block",
+      "rows": "24-25",
+      "evidence": "a",
+      "front_edge_line_row": 25,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": {
+     "cap_rows": 5,
+     "cap_width": 6,
+     "shaft_width": 2,
+     "rounded_at_both_edges": false
+    },
+    "reads_as": "front_elevation",
+    "evidence": "The top end (rows 3-9) widens from 4 to 6 px and then drops straight to the 2 px pole at row 10. It is a flat-bottomed cup or hat with no ellipse narrowing below, so it is not an elliptical cap plate. The cup is a vertical face, and the flame above it is decor. The pole (rows 10-23) is a plain 2 px vertical shaft. The base block has a width of 8 for rows 24-31, so no ellipse. Its top is a 1-2 row light strip (row 24 dark outline, row 25 light) over a 5 row front face (rows 26-30), which counts as a rim only. No part of the main body shows a real top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The torch post is a thin prop, so the per-tile tone count of 0 says nothing against it, and I judged density by eye against the lamp-crook and bench. It has 19 distinct colours against 14 for the lamp and bench, and the flame has a few warm steps. The stone base and the post shaft, however, look like near-flat blocks with only 2-3 tones and little grain or per-stone shading. Near-flat coverage is 19%, while the lamp, bench, hedge and well are all at 0% and only the stall reaches 13%. The dark edge pixels are 38% neutral, so the outline is mixed: partly tinted, partly neutral dark. Next to the lamp-crook and well it reads flatter and more sticker-like, with shallower ramps on the wood and stone than the 5-6 steps of the references. It is not poor, but it is below the Beodeul bar, so it fails when in doubt.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 19416
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "flame",
+      "rows": "0-7",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "torch head / cup with gray collar",
+      "rows": "5-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shaft",
+      "rows": "10-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base block",
+      "rows": "24-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": {
+     "cap_rows": 5,
+     "cap_width": 6,
+     "shaft_width": 2,
+     "rounded_at_both_edges": false
+    },
+    "reads_as": "front_elevation",
+    "evidence": "The top end (rows 3-9) widens from 4 to 6 and then drops straight to the 2-wide shaft at row 10. That is a flat-bottomed hat or cup, not an ellipse plate that narrows again below its widest rows. The orange flame rows (5-7) and the gray collar (8-9) read as vertical faces. The shaft (rows 10-23) is a plain 2-px pole. The base (rows 24-31) is a constant 8 wide. Only a 2-row light band (24-25) sits above a 5-row front face (26-30), so it is a rim at most, with no ellipse and no eave shadow. No part shows a real top surface, so the object reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The torch post is a thin prop, so the per-tile tone count of 0 is not held against it. It does have 19 distinct colours, more than the lamp-crook (14) and the bench (14). By eye, though, the pole and the stone base read as 2-3 value steps with little grain or per-stone shading. The references (lamp, bench, well) show about 5 steps plus texture dots. Near-flat coverage is 19%, while the thin references (lamp, bench) and the hedge and well sit at 0%. That points to flat-filled patches on the post or base. 38% of the dark edge pixels are near-neutral, so the outline is mixed: partly tinted and partly neutral dark, less consistently material-toned than the hedge or the stall. The flame at the top is small and gives some variation. Overall it looks thinner and flatter than the reference lamp, and the plain base feels sticker-like next to the well and stall. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 18422
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.984Z",
+ "cells": {
+  "16": [
+   "6757795ae5f6b8fa",
+   "e00f475e58ba0c97"
+  ],
+  "24": [
+   "126c218903b2e057",
+   "13d710a15f146f53",
+   "3af7c22af09157d8",
+   "4c0d6a194b6c238a",
+   "66ab6233254e97b5",
+   "69d0b9a3036093ed",
+   "7995e4a19ac918cb",
+   "7e8abccb5110457f",
+   "bf1d4a49a177b134",
+   "c50f977b8c0aa051",
+   "c96b28175590bd15",
+   "e5b8f7068f46bb84"
+  ],
+  "32": [
+   "bf7090f167c1fb0c",
+   "d0c686ff983c38fe",
+   "f9656497ef50ddcb"
+  ],
+  "48": [
+   "3fc07b8e06d6af99",
+   "7413edf9f41338ef",
+   "84d7b240e331f20a",
+   "a3ae66cb9f6aa56e",
+   "a7b4aa6917251850",
+   "d31cf54774c8dcf5"
+  ]
+ }
+}

@@ -1,0 +1,301 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e8bd045e2270c73ee221480758e60768340c4d3218704226aa6c478795e71a69",
+ "width": 32,
+ "height": 16,
+ "kind": "debris",
+ "name": "charred log",
+ "label": "beodeul_city/wave-places/volcano-field/charred_log",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "2ad36264365ed8d5"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 16,
+  "nearBlackEdge": 0.44,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "west",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "log body (cylinder shaded top to bottom)",
+      "rows": "5-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left cut end with glowing embers",
+      "rows": "6-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ember spots on the body",
+      "rows": "8-10",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "side_profile_no_top",
+    "evidence": "The log is a horizontal cylinder, 27 px wide and 8 rows tall (rows 5-12). The column scan shows a dark outline at row 5, a light highlight at row 6, mid-brown at rows 7-8, darker brown at rows 9-11, and a near-black outline at row 12. This is a vertical gradient across the curved side. There is no front-edge line, no eave shadow and no ellipse, so no horizontal top surface is drawn. Only the 1-row highlight at row 6 could pass as a rim. The left end shows a cut face with ember glow, which is a vertical end face. The whole piece reads as a side profile without a top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The log is smaller than one tile, so the per-tile tone count is 0 and I judged by eye against the bench and lamp, which are also sparse props. It has 16 distinct colours against 14 for both the bench and the lamp. Dark edge pixels are only 13% neutral, so the outline leans dark brown beside the bark rather than being a black sticker line. The bark shows a light top highlight, mid and dark brown bands, grain streaks, and a lighter end-cap ring with ember accents. That is about 5 steps against 6 for Beodeul, with no flat fills (0% near-flat). It would sit next to the bench without looking thinner or flatter. The small size limits how fine I can judge the texture, so the 'some' texture rating is a cautious read.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17803
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "west",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "log body",
+      "rows": "5-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left end cap with embers",
+      "rows": "6-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 6,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "side_profile_no_top",
+    "evidence": "The log is a horizontal cylinder drawn in side profile, 27 px wide and 8 rows tall (rows 5-12). Row 5 is the outline. Row 6 is a single lighter highlight row (L about 109-116) that could be the top. Below it the columns darken steadily (rows 7-8 L=85, rows 9-11 L=55, row 12 L=11-19). That is cylinder shading on a vertical face, with no front-edge line, no eave shadow, no ellipse and no visible contents. The left end is a dark end cap with orange embers, so the log faces west. The width profile is a constant rectangle (27 px), so there is no widening-then-narrowing ellipse. This reads as a side elevation with no top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The log is a thin, sparse prop, so the per-tile facts read 0 and cannot be used against it. Judged by eye next to prop-bench-wood, a similarly small wood prop, it holds up. It has a lit top edge, a mid body, a dark underside and a lighter end-grain ring, which gives about 5 steps. Bark grain and charred speckle break up the body, and I see no 5x5 flat fill (0% measured). Only 13% of its dark edge pixels are neutral, so the outline leans brown, in the material's own dark tone, rather than a black sticker line. It has 16 distinct colours against 14 for the bench and the lamp. It is a little simpler than the larger references (well, stall), but a careful artist would accept it beside the bench without it looking flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 24186
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "west",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "charred log body",
+      "rows": "5-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "glowing ember end face on left",
+      "rows": "6-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "side_profile_no_top",
+    "evidence": "The log is a horizontal cylinder seen from the side, 27px wide and 8 rows tall (rows 5-12). The column scan shows a plain vertical gradient. Row 5 is outline, row 6 is a 1-row highlight, rows 7-8 are mid brown, rows 9-11 are darker, and row 12 is nearly black. There is no front-edge line and no eave shadow, and no band, ellipse or visible contents that would show a horizontal top surface. The 1-row highlight at row 6 is only a rim. The left end has a darker cut face with ember pixels. The orange-red ember specks on the body are detail, not a top. This is a shaded side profile with no top plane."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small horizontal log, comparable in footprint to prop-bench-wood, so the per-tile tone count of 0 is not held against it. It has 16 distinct colours against the bench's 14. Only 13% of its dark edge pixels are near-neutral, so the outline is tinted brown, which reads as dark bark tone rather than a black sticker line. The body shows a charred dark top, mid browns, a lighter underside and an end-grain ring, about 5 steps. Bark streaks and char variation break up the surface, with no 5x5 flat areas (near-flat coverage 0%). By eye it is not thinner or flatter than the bench or lamp references. It is simple but acceptable beside them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16375
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "west",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "log body (horizontal cylinder)",
+      "rows": "5-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "log end cap (left, vertical face)",
+      "rows": "6-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 6,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "side_profile_no_top",
+    "evidence": "The object is a single horizontal log, 27px wide and 8 rows tall (rows 5-12). Every column scan shows the same pattern: a dark outline at row 5, a 1-row highlight at row 6 or 7, then a steady darkening through the brown body to near-black at row 12. That is shading on a cylinder's side, not a top surface. There is no front-edge line, no eave shadow, and no widening-then-narrowing ellipse. The left end is a darker vertical face, and the red spots are embers on the side. The only top evidence is a 1-2 row highlight, which counts as a rim. The log reads as a side profile with no horizontal top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small horizontal log about 32x8 source px, smaller than one 16x16 tile, so the per-tile tone count of 0 says nothing about it. I judged it by eye against the small references (bench, lamp), which are also sub-tile. It has 16 distinct colours, against 14 for the bench and lamp. Only 13% of its dark edge pixels are neutral, so the outline leans brown or charred-brown rather than a uniform black sticker line. The body shows about 5 steps, from a dark char body through mid browns to a lighter top highlight and a lighter end-grain ring. The bark and char grain and the ember-like flecks break up the surface, and there are no 5x5 flat fills (0% near-flat). It is not as rich as the well or the stall, but it is on par with the bench and lamp for a thin single-object prop and does not look flatter or more sticker-like than them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15198
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.088Z",
+ "cells": {
+  "16": [
+   "e186b9cbf81865ed",
+   "f5fcca41cb25bdef"
+  ],
+  "24": [
+   "11f81d6d0fa3710e",
+   "290da0d59c9ee9f3",
+   "322d38630aa37be8",
+   "33c4bb149ba28598",
+   "3d32e8b8578eef03",
+   "3f122249ab296227",
+   "6fe26571ca6802c1",
+   "9591746894a48de7",
+   "99a8d549944455ba",
+   "a535c53a99d192b9",
+   "bf0b35be6c94e229",
+   "c88c786ef5c97ca0"
+  ],
+  "32": [
+   "97635ad9e1a7b736",
+   "9797e58cb732a6b7"
+  ],
+  "48": [
+   "3825c825a19bab13",
+   "6ff4c47488f530f3",
+   "76023d0a7f62de48",
+   "9b177f62ebddde96",
+   "caa4fef105d7726a",
+   "ff269834d47821ff"
+  ]
+ }
+}

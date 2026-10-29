@@ -1,0 +1,303 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fc51abb02a90bf385c89c13125e432080b770561b25deab7ddfef5bfeb5c6bf8",
+ "width": 48,
+ "height": 32,
+ "kind": "flat",
+ "name": "fog bank",
+ "label": "beodeul_city/wave-places/ruined-village/fog_bank",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 평면 채움 (4/4)",
+  "화풍: 질감 없음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "평면 채움 (4/4)",
+   "질감 없음 (4/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 3,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 184,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "fog bank blob",
+      "rows": "10-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 15,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The fog bank is a soft irregular oval blob (rows 10-24, widest 22px at row 17) with a lighter upper half (rows 11-15, L=201) and a darker lower half (rows 16-22, L=173). There is no front-edge line, no eave shadow, and no vertical face. It is a flat plate seen from above with only a light-to-dark shading change, so there is no front face. This suits the flat kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a small, soft grey cloud blob on a flat slate background, not a 4x3 tile ground patch. The measured facts show only 2 distinct colours and 42% near-flat coverage. The references have 0% near-flat coverage and 3-7 visible tones per tile. By eye the blob has about 3 soft grey steps and no outline, with blurry gradients instead of crisp pixel clusters or grain. The background is a flat fill with no texture or tile variation, and the piece does not fill the 4x3 area. It is clearly thinner and flatter than the grass and paving references, which carry per-tile grain, tufts and stone shading.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 7823
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "fog bank blob",
+      "rows": "10-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The object is a soft, irregular oval cloud blob (rows 10-24, width rising to 22 and tapering). It has no front-edge line, no eave shadow and no vertical front face. It is seen purely from above as a flat plate, which fits the flat kind. The lighter upper rows 11-15 and darker lower rows 16-22 are only shading of a flat mist shape, not a separate top and front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a small, soft grey cloud blob floating on a flat slate background. It is not a 4x3-tile ground patch like the grass and paving references, which fill their tiles with texture. The measured facts show only 2 distinct colours in total, 42% near-flat coverage and no full tile with any visible tones, against 3-7 visible tones and 0% flat coverage for the references. By eye, the blob has about 3 soft lightness steps and no outline. The background is one flat fill with no grain, tufts or dots. The result is thinner and flatter than either reference, and it does not cover the area as a ground surface would.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 16072
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "fog bank blob (whole object, soft gradient cloud shape seen from above)",
+      "rows": "10-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 15,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The object is a soft-edged irregular oval blob spanning rows 10-24 with a lighter upper area (rows 11-15) and a slightly darker lower area (rows 16-22). The width profile grows and shrinks smoothly (5,14,...,22,...,13,9,7). There is no front-edge line, no eave shadow and no vertical face. The tonal change is a gradient, not a face. It is a flat plate seen from above, which fits the flat kind, so there is no front face (0 rows)."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a small, soft grey cloud blob on a flat dark slate background, not a 4x3-tile ground patch. The background is one flat colour, with 42% near-flat coverage against 0% for both references. The facts show 0 visible tones per full tile because the piece is smaller than a tile, and only 2 distinct colours in total, against 80 for the grass and 7 for the paving. The blob itself has about 3 soft grey steps, with no texture dots, grain or tile-scale detail. There is no outline, and the form is blurry rather than crisply shaded. A careful artist would not accept it next to the grass or paving, which carry a clear multi-tone texture in every tile. It looks thinner and flatter than the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 17823
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "fog bank blob",
+      "rows": "10-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 15,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The object is a soft, irregular elliptical blob (rows 10-24, width growing 5 to 22 and shrinking to 7). The lighter upper area (rows 11-15) and the darker lower area (rows 16-22) are gradual shading, not a front-edge line or an eave shadow. There is no vertical front face, no legs and no side face. It is a flat shape seen from above, which fits a flat-lying fog patch."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a small, soft grey cloud blob on a flat dark slate background, much smaller than a 4x3 tile ground patch and not a tiling surface. It has about 3 soft lightness steps inside the blob and 2 raw colours in total, so the measured per-tile tone count is 0. Near-flat coverage is 42%, while both references sit at 0%. The background is a large flat fill with no grain or dots. The fog has no outline, so it reads as a blurred sprite instead of the grain, tufts and per-stone shading of the grass and paving references (3 and 7 visible tones per tile). The measured facts and the picture agree: it is clearly flatter and thinner than both references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 8000
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.367Z",
+ "cells": {
+  "16": [
+   "0f61813b3bb5dd0c",
+   "27158fd11819d37b",
+   "7483627a395982cd",
+   "d559d1c89a2c67ef",
+   "e9714ffa065ad4c5",
+   "eb0d33f6aebdc792"
+  ],
+  "24": [
+   "06a78ed931a9ebe7",
+   "29725f22107f92a2",
+   "2ad13acb91a4cdb1",
+   "33d53fdeca9ab2a0",
+   "3df51c4f04cbfde0",
+   "7a9891c59a2957f8",
+   "a106ee20c08782f1",
+   "e377f94aea87e861"
+  ],
+  "32": [
+   "2744aa1c6eb35266",
+   "5d893cb817312789",
+   "8154525c29ecce5a",
+   "95cbcd6bc64c053e",
+   "9e255683abe523f9",
+   "be0788e82053b1ba"
+  ],
+  "48": [
+   "2678f40a8ba89290",
+   "51a0155789d51c82"
+  ]
+ }
+}

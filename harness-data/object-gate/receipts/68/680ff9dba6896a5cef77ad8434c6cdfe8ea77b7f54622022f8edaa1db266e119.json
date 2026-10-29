@@ -1,0 +1,383 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "680ff9dba6896a5cef77ad8434c6cdfe8ea77b7f54622022f8edaa1db266e119",
+ "width": 32,
+ "height": 16,
+ "kind": "debris",
+ "name": "bench broken",
+ "label": "beodeul_city/wave-places/ruined-village/bench_broken",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 질감 없음 (4/4)",
+  "화풍: 평면 채움 (3/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "질감 없음 (4/4)",
+   "평면 채움 (3/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 3,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "2ad36264365ed8d5"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 42,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "broken bench plank, left segment on leg",
+      "rows": "5-8",
+      "evidence": "none",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "plank, middle segments stepping down",
+      "rows": "7-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "plank, right end segment",
+      "rows": "9-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "standing leg stub and small fragments",
+      "rows": "8-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 1,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "The drawing is a thin plank that slopes down from upper left to lower right in stepped segments. Each segment has 2 lighter rows (L=90) over 1 dark row (L=40), as the column scans at x=9, 16 and 22 show. That is a 2-row rim over a 1-row edge, not a real top surface with a front face of 3 or more rows. The only vertical piece is a thin leg at the left (rows 8-13), plus a few stray pixels at the bottom right (rows 12-14). The silhouette widens to 17 at rows 8-9, then narrows to 2 by row 14. It reads as a flat, fallen plank with some scattered fragments, with no volume, which suits debris."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is a thin, sparse prop: a slanted plank with a short leg stub. Its tile facts read 0 because it is smaller than a tile, so I judged it by eye against prop-bench-wood, the closest reference. The candidate has only 7 distinct colours in total against 14 for the bench, and shows about 3 lightness steps on the wood against the bench's 5 or so. The bench has a lit top edge, a mid face, a dark underside and separate legs, and the candidate's wood reads as a mostly uniform brown plank with no visible grain, knots, splinters or broken-end detail. The outline is tinted brown (0% near-neutral dark edge pixels), so it avoids the black sticker look. Nothing is flat-filled at the 5x5 level (0% near-flat), but the form is simple and the wood texture is weak. A careful artist would find it thinner and flatter than the reference bench, and the broken state is conveyed only by the silhouette. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 19242
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "bench seat plank, left segment with leg",
+      "rows": "5-8",
+      "evidence": "none",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "plank segment, middle-left, stepped down",
+      "rows": "6-9",
+      "evidence": "none",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "plank segment, middle, stepped down",
+      "rows": "7-10",
+      "evidence": "none",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "plank segment, right end",
+      "rows": "8-12",
+      "evidence": "none",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bench leg",
+      "rows": "8-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "small rubble specks",
+      "rows": "13-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 1,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "The object is a broken bench drawn as a stair-stepped diagonal chain of thin plank segments. It has one standing leg at x=9-11, rows 8-13, and a few rubble specks at the bottom right. Each plank segment shows 2 light-brown rows (#71482c) and then 1 dark row (#3d220c), per the column scans at x=9, 16 and 22. That is rim-like rather than a real top surface, and it gives a 1-row front face under each plank. There is no ellipse, no roof and no visible contents, so no top surface qualifies. The silhouette widens to 17 px at rows 8-9 and then tapers to nothing by row 15, which matches a lying, tilted plank. The piece reads as a debris silhouette, not a standing 3/4 volume."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 2,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a thin, tilted plank with a short leg, drawn with only 7 distinct colours in total, against 14 for the reference bench. By eye it shows about 2-3 brown tones: a light top edge, a mid plank body and a darker underside. It has no visible grain, no per-plank highlights, no nail or knot dots and no wood texture. Its outline is barely present and does not read as a dark material-tone edge. The reference bench has a lit top slat, separate slats, dark leg shading and grain-like variation, so the candidate looks thinner, flatter and more sticker-like beside it. The per-tile facts are 0 for both, so the density comparison rests on the eye and the total colour count, and both point to much lower. The 0% near-neutral edge share suggests tinted edges, but it is too sparse to count in its favour. A careful artist would not accept this next to the bench reference.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 18134
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "broken bench plank (diagonal, stepped down to the right)",
+      "rows": "5-14",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "8-8"
+     },
+     {
+      "part": "single leg stub at left",
+      "rows": "8-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 1,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The object is a thin plank stepping down diagonally from upper left to lower right. In each column scan the plank is 2 rows of light brown (L=90) over 1 dark row (L=40), for example x=16 rows 7-8 then row 9. That is a 2-row rim with a 1-row dark underside, so no real top surface and no front face of 3 or more rows. The only taller element is a thin leg at x~9, rows 8-13, which is a support and not a volume. The silhouette width runs 5, 10, 15, 17, 13, 8, 3, 2, which is a diagonal strip rather than a box. Overall it reads as flat debris lying on the floor, not a standing three-quarter volume."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 2,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a small, thin broken bench lying slanted, drawn with only 7 distinct colours in total, against 14 for the intact bench reference. It looks like one brown plank shade with a slightly darker underside and no visible grain, wood knots, or per-plank highlights. The bench reference has a lit top slat, a darker front and visible leg shading, which gives about 4-5 steps. The candidate shows about 2-3 steps. No visible dark outline is drawn, and the form is separated only by flat value, so there is no material-tone outline craft to credit. The measured tile facts are 0 because the piece is smaller than one tile, so I judged by eye. By eye it looks thinner, flatter and more sticker-like than the bench reference, and it carries less texture than the references. Even allowing for a sparse prop, a careful artist would not accept it next to the bench reference.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 15094
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "broken bench plank, stepped diagonal",
+      "rows": "5-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "standing leg stub on left",
+      "rows": "7-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "small fragments at bottom right",
+      "rows": "13-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 1,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The bench is a stepped diagonal plank. At each column it is 2 light rows (x=16: rows 7-8) and 1 dark row below (row 9), a 3-row band with no widening-narrowing ellipse. The 2-row light strip is a rim-like plank face and the dark row is only an edge. No front face of 3 or more rows is drawn. The thin leg (rows 7-13) is a vertical stub with no top, and the small fragments at rows 13-14 are loose pieces. The silhouette (widths 5 to 17 and back to 2) is a diagonal slanted piece lying flat, which fits flat floor debris."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 2,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The broken bench candidate is a tiny, thin sprite, a tilted plank on a low support, with only 7 distinct colours in total against 14 for the reference bench and 38-40 for the larger props. The per-tile facts read 0 because the piece is smaller than one tile, so I judged by eye. It shows about 2-3 wood tones: a light top edge, a mid-brown plank and a dark underside. There is no visible grain, no plank-by-plank highlights, no knots, and no per-board shading like the reference bench has. The planks look like flat, thin strips. The dark edge share is 0%, so the outline is not neutral black, but the dark pixels are mostly the underside rather than a deliberate material-tone outline, so I call it mixed. Compared with the reference bench, which has a seat, back slats, legs and highlights, the candidate looks thinner, flatter and more sticker-like. It does not reach the Beodeul bar for shading depth or texture.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 13910
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.265Z",
+ "cells": {
+  "16": [
+   "99954f81eaf91d44",
+   "ee69d9e949e7f0c3"
+  ],
+  "24": [
+   "1fde17d8d23bb277",
+   "206542251e13664d",
+   "263d0b858119e6df",
+   "28e26783885e8882",
+   "3ebdeddc4b8cf4fb",
+   "6cd83f0bffdeacb2",
+   "8cd5db5a1d67572a",
+   "90f90171a3b16336",
+   "a4a9b6017daadb4d",
+   "a6d7951f14c8599d",
+   "c1b41e07b88a1ab7",
+   "f87fbeaf67df1b9a"
+  ],
+  "32": [
+   "9f0a5395156c76c8",
+   "a7fd99512fc0415a"
+  ],
+  "48": [
+   "2e8388dd1b3b70f7",
+   "67bf93b44a53435b",
+   "8d3160db877e81c1",
+   "9160529d2782f678",
+   "bfa2a3adf5f75f7c",
+   "dc757085ffe27732"
+  ]
+ }
+}

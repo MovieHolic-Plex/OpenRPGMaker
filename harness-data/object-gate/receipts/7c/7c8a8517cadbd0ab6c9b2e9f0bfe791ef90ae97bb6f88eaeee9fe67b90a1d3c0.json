@@ -1,0 +1,375 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7c8a8517cadbd0ab6c9b2e9f0bfe791ef90ae97bb6f88eaeee9fe67b90a1d3c0",
+ "width": 32,
+ "height": 16,
+ "kind": "container",
+ "name": "quench trough",
+ "label": "beodeul_city/wave-places/mountain-fortress/quench_trough",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 판정자 의견이 갈림(분명한 3/4 0/4, 분명한 위반 0/4)",
+  "3/4: 윗면 3행 < 4 (4/4)",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 평면 채움 (4/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "판정자 의견이 갈림(분명한 3/4 0/4, 분명한 위반 0/4)",
+   "윗면 3행 < 4 (4/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "평면 채움 (4/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 4,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "2ad36264365ed8d5"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 10,
+  "tileColorsP90": 10,
+  "darkV5": 41,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "right",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "trough opening with water",
+      "rows": "3-5",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "trough front face",
+      "rows": "6-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 3-4 are a dark back rim, and row 5 is a teal water strip seen inside the opening (evidence d). Rows 6-12 are a flat grey front face of 7 rows with a darker bottom edge on row 13. The visible water gives a thin top opening of about 3 rows above a front face of 8 rows. The opening is shallow, so this is a marginal three_quarter reading."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate trough is a small grey slab with a dark rim and a flat water strip. Its dark edge pixels are 100% near-neutral, so the outline is a neutral grey-black line rather than a tinted dark material tone. That matches the sticker look, not the dark-brown or dark-green edges of the hedge, cheese stall and well. It has about 3 lightness steps on the stone body and few texture dots, and 29% of its area is near-flat, against 0% for the hedge and well and 13% for the stall. Its 10 visible tones per tile sit near the hedge (9) but well below the well (20) and stall (17). The stones are not shaded one by one, so the surface reads as a flat fill. It is a clean, readable shape but shallower and flatter than the references, and it would look thinner beside the well.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+    "윗면 3행 < 4 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+     "윗면 3행 < 4 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 12389
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "trough opening with water",
+      "rows": "3-5",
+      "evidence": "d",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front face of trough body",
+      "rows": "6-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette is 28 px wide from row 3 to row 13. Rows 3-4 are a dark interior band, and row 5 is a teal water line (#1c4a44) between lighter rim pixels at the corners. This shows contents inside an open container, which is evidence (d). Rows 6-12 are a gray front face with darker specks, and row 13 is a dark bottom edge, giving about 8 front rows. The opening is shallow at only 3 rows, but it is more than a 1-2 row rim, so it reads as a three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a small grey stone trough with a dark rim and a flat grey-green water strip. It has about 3 lightness steps on the stone, against 5-6 on the references (well, stall). The dark edge pixels are 100% near-neutral, so the outline is a neutral dark line rather than a tinted dark material tone. That matches the lamp-crook reference's neutral outline, but the well, hedge and stall references have tinted outlines (0-33% neutral). 29% of the candidate is near-flat, where the hedge, well and bench references have 0% and the stall has 13%. The stone body and water read as flat fills with no per-stone shading, speckle or grain. At 10 visible tones per tile it is comparable to the hedge (9), but it is well below the well (20) and stall (17), the closest structured references. By eye the stone surface looks thinner and more sticker-like than the stone well base, which has individually shaded stones.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+    "윗면 3행 < 4 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+     "윗면 3행 < 4 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 13049
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "trough opening with water (dark back rim, teal water surface)",
+      "rows": "3-5",
+      "evidence": "d",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone front face of the trough",
+      "rows": "6-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 3-4 are a dark inner back rim. Row 5 is teal water, which shows contents inside an open container (evidence d). Rows 6-12 are a flat grey front face with darker stain pixels, and row 13 is the dark bottom outline. The opening is shallow, about 3 rows, but it is distinct from the face below. The face is 8 rows, so the trough reads as a basin seen from above and in front, not as a flat front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is a small grey stone trough with a dark rim and a flat greyish water surface. It reads as only about 3 lightness steps on the stone: a light top rim, a mid body and a dark edge. The measured dark edge pixels are 100% near-neutral, so the outline is a neutral dark line, not a tint of the adjacent stone. The references with tinted outlines (hedge 0%, stall 1%, well 33%) show the Beodeul approach of dark material tones. Only the lamp matches 100%, and it is a thin object. Near-flat coverage is 29%, against 0-13% for the references, so the body and water have large flat areas with little grain, speckle or per-stone shading. The 10 visible tones per tile is close to the hedge (9), but well below the well (20) and stall (17), which carry much more detail. The piece is clean but reads flatter and more sticker-like than the references, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+    "윗면 3행 < 4 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+     "윗면 3행 < 4 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 12007
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "water surface inside trough opening",
+      "rows": "3-5",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone front face of trough",
+      "rows": "6-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The trough is 28 px wide over rows 3-13. Rows 3-4 are a dark back rim, and row 5 is teal water (#1c4a44) with light corner pixels at the rim ends. This is dark-green water visible inside an open container (evidence d), about 3 rows tall. Rows 6-12 are a grey stone front face with darker speckles, and row 13 is a dark base line. That gives a front face of about 8 rows below the opening. The top band is thin, but it shows contents rather than only a rim, so it reads as a 3/4 view with the water opening seen from above."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate trough is a small grey slab with a dark rim and a flat grey-green water strip. I count about 3 lightness steps on the stone body, against 5-6 on the references (well stone and roof, stall wood and cloth). Its dark edge pixels are 100% near-neutral, so the outline is a neutral near-black line like a sticker, while the well, stall and hedge carry tinted dark tones (0-33% neutral). Near-flat coverage is 29%, against 0-13% on the references that have tile data, so large areas are single flat fills with no stone-by-stone shading, grain or speckle. The visible-tone count of 10 per tile is close to the hedge (9) but well below the well (20) and stall (17), and by eye the piece looks thinner and flatter than any of the references. Overall it is shallow next to the Beodeul standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+    "윗면 3행 < 4 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+     "윗면 3행 < 4 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 12591
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.935Z",
+ "cells": {
+  "16": [
+   "0155adfcb2d1c469",
+   "c642c29b8a443e95"
+  ],
+  "24": [
+   "248cf40d79fe5009",
+   "46b380d50157cc30",
+   "4b272fcba85c1914",
+   "505c53cfee4926a0",
+   "5458c22de8544723",
+   "73652f9d649184ce",
+   "957abcfd9069c26b",
+   "9a960ccd65471882",
+   "b4635c161360884b",
+   "b5cfeb8e98d9bec9",
+   "b9f1be7f93c02639",
+   "c315de9471c43866"
+  ],
+  "32": [
+   "13c2264b37e798a3",
+   "265ed495226070a7"
+  ],
+  "48": [
+   "19a03f11a8c78068",
+   "2a3b2574e3503c8f",
+   "2e69cf4ce50df53c",
+   "905f357f3e8196b3",
+   "a000a628b266933b",
+   "de4a8487aea6ee9b"
+  ]
+ }
+}

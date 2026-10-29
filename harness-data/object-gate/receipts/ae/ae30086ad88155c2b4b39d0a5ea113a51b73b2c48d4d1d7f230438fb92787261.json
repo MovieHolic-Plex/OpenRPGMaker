@@ -1,0 +1,381 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ae30086ad88155c2b4b39d0a5ea113a51b73b2c48d4d1d7f230438fb92787261",
+ "width": 16,
+ "height": 32,
+ "kind": "frame",
+ "name": "cook tripod",
+ "label": "beodeul_city/wave-places/ice-age-field/cook_tripod",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 판정자 의견이 갈림(분명한 3/4 2/4, 분명한 위반 2/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "판정자 의견이 갈림(분명한 3/4 2/4, 분명한 위반 2/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "2ad36264365ed8d5"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 26,
+  "nearBlackEdge": 0.22,
+  "opaqueTiles": 0
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "wrong",
+   "wrong",
+   "borderline",
+   "borderline",
+   "wrong",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "wrong",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "hanging cooking pot mouth with light grey contents/interior",
+      "rows": "16-19",
+      "evidence": "d",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pot body, dark front face",
+      "rows": "20-22",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "tripod legs and hanging chain/pole",
+      "rows": "3-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "small gold-gem hub/crossbar at base",
+      "rows": "25-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The largest volume is the pot. Its silhouette widens from 5 to 9 px at rows 16-17. Rows 17-19 are a light grey area (L≈147) that reads as the open mouth and contents, with a dark rim on row 16. Below it, rows 20-22 are a dark front body. The pot is therefore seen from slightly above, with a top of about 4 rows and a front of about 3 rows. The tripod legs are thin 1-px poles with no beams, so there are no horizontal faces to judge. The gold hub at rows 25-28 is a small ornament and carries no top-surface requirement. The mouth evidence is borderline because the front face is short."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The tripod is a thin, sparse prop, so the per-tile tone count of 0 says nothing for or against it and I judged by eye against the thin references (lamp-crook, bench). It has 22 distinct colours against 14 for both the lamp and the bench, so it is not thinner or flatter than them. Only 24% of its dark edge pixels are near-neutral, against 100% for the lamp-crook and 44% for the bench, so most of its outline carries a brown tint rather than a black sticker line. It has 0% near-flat coverage and no large flat fills. The pot, legs and flame show a few tone steps and some variation, though fewer than the richer well and stall references. At this size it would sit acceptably next to the lamp and bench, but I could not make out fine detail, so this is a borderline pass.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20897
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cooking pot mouth (light interior ellipse)",
+      "rows": "16-19",
+      "evidence": "b",
+      "front_edge_line_row": 20,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pot body front",
+      "rows": "20-22",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "tripod apex / hook",
+      "rows": "3-7",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "tripod legs and chain",
+      "rows": "8-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ember/fire ornament with crossbar at base",
+      "rows": "25-28",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main volume is the hanging pot (rows 16-22). Its width profile goes 5, 9, 8, 8, 10, 10, 8, so the silhouette widens and then narrows. The lighter grey mouth (L~147 at rows 17-19) is a visible open top, followed by a darker body of about 3 rows (rows 20-22) with an edge at row 20. The tripod legs are thin poles and the apex is a small hook. They have no horizontal beams. The base at rows 25-28 is a small crossbar with an ember. The frame itself is mostly line-like with no wide top faces, so the pot is the only part that reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The cook tripod is a thin, sparse prop (three wooden legs, a hanging pot and a small fire), so the per-tile tone count of 0 says nothing about it. By eye it reads as shaded wood legs with a dark pot and a few lighter accents, about 4 steps against the reference's 5-6. Only 24% of its dark edge pixels are near-neutral, so the outlines lean toward dark brown and the piece does not look like a sticker. It has 22 distinct colours, more than the thin bench and lamp references (14 each), and 0% near-flat coverage. It is somewhat plainer than the stall and well, but a careful artist would accept it beside the bench and lamp without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18477
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "hanging cooking pot, light mouth/contents area",
+      "rows": "17-19",
+      "evidence": "d",
+      "front_edge_line_row": 20,
+      "eave_shadow_rows": "21-22"
+     },
+     {
+      "part": "tripod legs and top knot",
+      "rows": "3-22",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "small base with ember",
+      "rows": "25-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The frame is three thin splayed legs (width 2-3 px) meeting at a small knot at rows 3-4. They are drawn only as vertical sticks with no horizontal beam or top face. The only volume is the hanging pot at rows 16-22. Its light gray mouth at rows 17-19 (L=147) reads as visible contents or an opening. A darker line at row 20 (L=90) marks its front edge, and a dark body follows at rows 20-22 (about 3 rows). Its silhouette (5, 9, 8, 8, 10, 10, 8) never narrows again, so it is not a true ellipse. The base at rows 25-28 is a tiny platform with an ember and has no clear top. The pot has a top, but the frame itself does not, so not all major parts show a top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a thin, sparse prop: a wooden tripod with a hanging pot and a small fire. Per-tile facts are 0, as with the bench and lamp references, so I judged density by eye. Its 22 distinct colours are more than the bench (14) and the thin lamp-crook (14), which suggests a real ramp on the wood, the iron pot and the flame. Only 24% of its dark edge pixels are neutral, so most of the outline leans toward the brown of the wood or the dark tone of the pot rather than being a uniform black sticker line. Near-flat coverage is 0%, and I saw no large flat fills. The pot and legs show about 4 tones each, slightly below the bench's 5. It is small and simple, but a careful artist would accept it next to the lamp and bench references without it looking noticeably thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21124
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "hanging pot mouth/lid (light grey)",
+      "rows": "17-19",
+      "evidence": "b",
+      "front_edge_line_row": 20,
+      "eave_shadow_rows": "20-21"
+     },
+     {
+      "part": "pot body (dark front face)",
+      "rows": "20-22",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "tripod legs and top hook",
+      "rows": "3-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "fire/ember plate at base",
+      "rows": "25-28",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is the hanging pot. Its mouth is a light grey band at rows 17-19. The width profile goes 5, 9, 8, 8, then 10, 10, 8, so the mouth widens and then closes into a bowl. A dark rim at row 20 and darker rows 20-22 form the front face. The tripod is only thin legs (rows 3-30) with no horizontal beams, so there are no beams that would need top faces. The base is a small fire plate with a yellow glow at rows 25-28. Top-surface evidence is weak (3 rows), but it reads as a bowl seen from above."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a thin, sparse prop: a wooden tripod with a hanging pot and a small fire, under one tile wide. The per-tile facts read 0 because it is smaller than a tile, so I judged density by eye against the bench and lamp references. The candidate has 22 distinct colours against 14 for the bench and 14 for the lamp, with 0% near-flat coverage and no 5x5 flat fills. Only 24% of its dark edge pixels are near-neutral, against 100% for the lamp and 44% for the bench, so most of its outline is tinted dark wood or iron rather than a black sticker line. The pot and legs show about 4 lightness steps plus a warm fire accent. That is a little below the roughly 5-6 steps in the richer references, but it is not shallow. It is thinner than the stall and the well, which are much larger pieces, but it sits at or above the other thin props of its kind. I could not see fine detail at this size, so the shading-step count and the outline tint rest mainly on the colour facts.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19339
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.586Z",
+ "cells": {
+  "16": [
+   "69963bb308ce7ec7",
+   "a3ff33745128afb5"
+  ],
+  "24": [
+   "09e77a31e55ceee7",
+   "300aba4012285c9c",
+   "4bdc4b73dd21b381",
+   "749712870ab2eabf",
+   "9b07911347b77927",
+   "9d34c330bc811178",
+   "b04b4fa94160edfc",
+   "b5a259ba8c13d80d",
+   "cbd0ff96051a7395",
+   "d295553cee559319",
+   "f1d4be69a2868704",
+   "f246da8ba3ae2ae4"
+  ],
+  "32": [
+   "8d764c0933320a58",
+   "a0ef6fbe92d71e67",
+   "b0d1904b1c71d04e"
+  ],
+  "48": [
+   "1069a461f4a9c9f7",
+   "a140f08b3ec405b1",
+   "bc22bc5feba1b7d3",
+   "e2573bf00b99663e",
+   "e892fa83e43d5740",
+   "f91af521b780e7c0"
+  ]
+ }
+}

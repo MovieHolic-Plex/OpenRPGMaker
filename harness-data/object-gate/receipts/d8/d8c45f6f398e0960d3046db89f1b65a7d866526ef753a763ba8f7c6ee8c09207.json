@@ -1,0 +1,464 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d8c45f6f398e0960d3046db89f1b65a7d866526ef753a763ba8f7c6ee8c09207",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "cave mouth",
+ "label": "beodeul_city/wave-places/volcano-field/cave_mouth",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+  "3/4: 투영이 3/4 아님(front_elevation) (3/4)",
+  "3/4: 윗면 2행 < 3 (3/4)",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 평면 채움 (4/4)",
+  "화풍: 질감 없음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+   "투영이 3/4 아님(front_elevation) (3/4)",
+   "윗면 2행 < 3 (3/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "평면 채움 (4/4)",
+   "질감 없음 (4/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 4,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "5f62fef078ef7661"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 9,
+  "tileColorsP90": 19,
+  "darkV5": 17,
+  "nearBlackEdge": 0.62,
+  "opaqueTiles": 5
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "rock arch / lintel ring around the opening",
+      "rows": "1-17",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark cave opening (vertical face)",
+      "rows": "9-43",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left and right corner boulders",
+      "rows": "35-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "red glowing floor strip at the base",
+      "rows": "44-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 40,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The cave mouth is a front-facing arch. The rock ring (rows 1-17) is a band of lit and dark stones seen face-on, thickest at the top (about rows 1-8 at x=24). Its only light row is a highlight at row 4, with a dark underside at rows 6-8. There is no front-edge line followed by eave shadow, and no ellipse or roof plane, so only a 1-2 row rim reads as a top. The opening (rows 9-43) is a vertical dark face with a red glow at the bottom, which is the ground and not a visible horizontal surface. The corner boulders are also drawn as vertical faces with no top plane. The overall silhouette is a front elevation with no receding side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a small cave mouth: a dark arch of grey-blue stones around a near-black interior with a dark red base and a few rubble pieces. The references are full houses with roofs, walls and doors, so the kind only loosely matches. The candidate has 8 visible tones per tile against 10-12 for the references, and 50% near-flat coverage against 0% for both references. Its dark interior and base are large flat fills. The arch stones have a little shading, but there is no per-stone grain or clumped texture. 58% of its dark edge pixels are near-neutral, against 7-9% for the references, so the outline leans toward a neutral near-black sticker line rather than a tinted material tone. The ramps are shallow, about 3 steps on the stone and 2 in the interior, against 5-6 in the references. Overall it is flatter and less detailed than the reference.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 15056
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "rock arch crown (top of cave mouth)",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5-8"
+     },
+     {
+      "part": "arch side boulders",
+      "rows": "6-17",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark cave interior (front opening)",
+      "rows": "9-43",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left and right foreground boulders",
+      "rows": "33-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "red glowing floor strip",
+      "rows": "44-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 38,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a boulder arch around a black opening. At centre column x=24, rows 1-5 form a lighter rock crown that widens from 4 to 29 px. Row 4 is a light line (L=114) and rows 5-8 below it are darker, like an eave shadow, before the black interior starts at row 9. That gives a weak top-surface band of about 5 rows. The front face is the opening and floor, rows 9-47. The arch sides (rows 9-17) and the foreground boulders at the bottom corners are drawn as front-facing blobs with no clear horizontal surface. The crown's edge line is irregular, because the right side is lit at rows 6-8 rather than shaded. The top-surface reading is therefore marginal."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a small dark arch with a gray stone rim and a dark red-black interior. The stone rim has only about 3 grey steps and little per-stone shading. The interior is a large flat dark fill. Measured facts agree: 8 visible tones per tile against 12 and 10 for the references, 50% near-flat coverage against 0% for both references, and 58% of dark edge pixels near-neutral against 7-9%. The outline and shadow areas lean neutral black, which gives the sticker look rather than the tinted material-tone edges of the references. The references have per-tile roof scallops, plaster speckle and individually shaded stones. The candidate has no comparable grain and is clearly shallower and flatter.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 19011
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "rock arch crown over the opening",
+      "rows": "1-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "arch side rock masses (left and right shoulders)",
+      "rows": "9-17",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark cave opening",
+      "rows": "9-43",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "boulders at the base, left and right",
+      "rows": "35-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "red floor strip at the bottom of the opening",
+      "rows": "44-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 35,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The object is a rock arch seen face-on around a black opening. The crown (rows 1-8) is a curved band of lumpy rock with highlights at rows 4 and 6-8. It has no clear front-edge line and no eave shadow separating a horizontal top from a vertical face, and it is only 1-2 rows deep at its crest. The rows below it (9-43) are the black cave interior, which is a vertical face and not contents seen from above. The red strip at rows 44-47 is a flat floor or lava edge. The side boulders are blobs with no readable top. Nothing in the drawing shows a horizontal surface seen from above, so it reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a small arched cave mouth with a grey stone rim, a large dark interior and a dark red band at the base. The references are full houses with 5-6 step tile roofs, per-tile highlights, plaster speckle and stones shaded one by one. The candidate's stone arch has only about 3 grey steps and little per-stone shading. The dark interior is a big flat fill, and near-flat coverage is 50% against 0% in both references. It has 8 visible tones per tile against 10-12 in the references, which is lower but not extreme on its own. 58% of its dark edge pixels are near-neutral, against 7-9% in the references, so the outline leans black and looks like a sticker. The piece is small and simple, but it is flatter and shallower than the references, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 14679
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "rock arch ring over the opening",
+      "rows": "1-17",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark cave opening",
+      "rows": "9-43",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "red glowing floor strip",
+      "rows": "44-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "boulders flanking the base",
+      "rows": "35-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 39,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The cave mouth is a face-on arch. The rock ring has highlights at the crown (x=24 row 4 L=114, x=35 rows 6-8 L=114), but it is a curved frame around the opening. It has no front-edge line, no eave shadow and no band that reads as a horizontal surface. The dark opening (rows 9-43) and the red floor (rows 44-47) are vertical face content. The side boulders are also drawn mostly face-on. The top reads as at most a 1-2 row rim, so this is a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a small dark arch with a blue-grey stone rim and a near-black interior, much smaller and simpler than the full houses on the reference side. It has 8 visible tones per tile against 10-12 for the references, and 50% near-flat coverage against 0% for both references. 58% of its dark edge pixels are near-neutral, against 7-9% for the references, which points to a neutral dark outline and the sticker look. The stone rim shows only about 3 lightness steps and little per-stone shading, while the references carry 5-6 steps with tile scallops, plaster speckle and individually shaded stones. The dark interior is a large flat fill. The base rubble and red strip are small and only partly textured. Overall it is flatter and thinner than the reference.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 14826
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.082Z",
+ "cells": {
+  "16": [
+   "0ffcd5f947efb2d5",
+   "2a9d6115ca90b127",
+   "2c96458999953f8b",
+   "35d4342ddcb1b379",
+   "42e229fd8fc60790",
+   "60dcdec7dea3c496",
+   "67870a19d3978781",
+   "c1c0258947988596",
+   "d7d770251957a8f4"
+  ],
+  "24": [
+   "19315d7545585ada",
+   "8d8cc457a6cd5e60",
+   "b757ab6f955a9f49",
+   "bd98b3be7510e6b9"
+  ],
+  "32": [
+   "0f791511221e9d0c",
+   "2a7d6bc4974f7038",
+   "2e0cd1d1c4ebf999",
+   "351891e4072952ed",
+   "3e3e6f89989b43a2",
+   "4da0472bd7158905",
+   "53ec9dbf91b8a7c8",
+   "576792fb383c30c7",
+   "5caece782a8ddda8",
+   "703e6862b6d66a70",
+   "726dcc7cd42afb45",
+   "742ca3947cd03e56",
+   "77e43037e0e11aa5",
+   "7dd584824a91c8a9",
+   "85ebdcc890631004",
+   "8ea322f23447f7d1",
+   "9f7787a1189ce61d",
+   "9fd907abb0c3d45c",
+   "aad3fd5f31466f24",
+   "c081cc54216f2559",
+   "d1e3bd81643e949c",
+   "e7369b0b9d66e7e0",
+   "e83ad75d391b8eb7",
+   "f133046aa8848ce4"
+  ],
+  "48": [
+   "f637d4abe3b90b12"
+  ]
+ }
+}

@@ -1,0 +1,379 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c653533456fdabc4e2eccbad5ee9e2a207a19ec848616705c05879bbb0ef6326",
+ "width": 32,
+ "height": 32,
+ "kind": "debris",
+ "name": "ice shards",
+ "label": "beodeul_city/wave-places/ice-age-field/ice_shards",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "2ad36264365ed8d5"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 80,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "central tall ice shard",
+      "rows": "6-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right ice shard",
+      "rows": "14-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left small ice shard",
+      "rows": "18-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "white base strip of frost/ice",
+      "rows": "28-30",
+      "evidence": "none",
+      "front_edge_line_row": 30,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 21,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The shards are upright spikes with pointed tops. The width profile grows steadily from 1 px at row 6 to 21 px at row 27, with no widen-then-narrow ellipse. The column scan at x=16 shows one continuous blue face from rows 8-26, with no front-edge line and no eave shadow. The only horizontal-looking element is the 2-3 row white base strip at rows 28-30 (25 px wide). That is a rim or plinth, not a top surface. No part of the drawing is a foreshortened top plane, so the whole object reads as a flat front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small crystal cluster, less than one tile, so the per-tile tone count is 0 and I judged density by eye. It has 28 distinct colours, more than the bench (14) and lamp (14), which are the nearest thin or sparse references. Each shard is faceted with a white highlight, light ice blue, mid blue and a deeper blue-slate shadow side, about 5 steps. The outline pixels are 0% near-neutral, so they lean blue, a darker tone of the ice itself rather than a black sticker line. Near-flat coverage is 0% and no area of about 5x5 pixels is a single flat colour. The facet splits and the highlight streaks give some texture, though less grain than the stall or well. Overall it would sit next to the references without looking flatter or thinner.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14998
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tall central ice spire",
+      "rows": "6-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right ice spire",
+      "rows": "14-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left ice spire",
+      "rows": "18-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "small front shard and dark gap between spires",
+      "rows": "22-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "white base strip",
+      "rows": "28-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The cluster is a set of pointed vertical spires. The silhouette narrows to a point at the top (rows 6-13 are 1-4 px wide) and widens steadily down to the 25 px base at rows 29-30. No spire has a back rim, an ellipse, or a front-edge line with eave shadow, so none shows a horizontal top surface. Each tip is just a tapering point. Light and dark vertical stripes (L about 238 against about 22-115) read as facets seen face-on. The white strip at rows 28-30 is a front-facing base band with no top plane. There is a front face of about 24 rows but no top surface, so the drawing is a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The ice shard cluster is a small, thin, sparse prop, smaller than one 16x16 tile, so the per-tile facts are 0 and I judged by eye. It has 28 distinct colours, more than the bench (14) and lamp (14), the thin references it most resembles. The shards show about 4 lightness steps (white highlight, pale ice, mid blue, dark blue) with facet shading and a dark blue-tinted edge on the shadow side, not a black outline. The measured 0% neutral dark edge pixels and 0% flat coverage agree. Against the richer references (stall, well, hedge), it is thinner: the facets are mostly 2-3 tone planes with little grain, no speckle or inner cracks, and the base shards are small and simple. A careful artist would likely accept it beside the bench and lamp, but it looks slightly less textured than the well and stall. It does not read as a flat sticker, but with so few steps and so little texture I cannot confidently match it to the 5-6 step Beodeul bar, and when in doubt I fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 13437
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tall central ice spike",
+      "rows": "6-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right ice spike",
+      "rows": "14-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left small ice spike",
+      "rows": "18-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "small far-right shard",
+      "rows": "22-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "white snow/ice base strip",
+      "rows": "28-30",
+      "evidence": "none",
+      "front_edge_line_row": 30,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 21,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main body is a cluster of upright pointed crystals (width profile grows from 1 at row 6 to 21 at rows 27-28). Each spike tapers to a point and shows only vertical faces, with light and dark facets running along its length. No spike has a flat band, front-edge line, eave shadow or ellipse at its top. Rows 28-30 form a flat white base strip only 3 rows tall, with a grey edge at row 30. That is a base outline, not a receding top surface. The scene reads as an elevation view of standing crystals, not a 3/4 top view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is smaller than one 16x16 tile, so the per-tile density fact is 0 and I judged density by eye. It is a thin, sparse crystal cluster, comparable to the bench and lamp references. It has 28 distinct colours, more than the bench (14) and the lamp (14). I read about 5 lightness steps from white highlight through pale and mid blue to deep blue facets. Several shards are separated by value, with bright facet edges and darker faces. The dark edge pixels are 0% near-neutral, so the outline is tinted deep blue rather than a black sticker line. Near-flat coverage is 0% and no large flat fills show. It is a little simpler than the stall and well, but a careful artist would accept it next to the bench and lamp without it looking flatter or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14959
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "central tall ice spike",
+      "rows": "6-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right ice spike",
+      "rows": "14-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left ice spike",
+      "rows": "18-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "white base slab / snow strip",
+      "rows": "28-30",
+      "evidence": "none",
+      "front_edge_line_row": 30,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main body is a cluster of vertical crystal spikes whose widths grow steadily from 1px at row 6 to 21px at row 27. The tips are pointed, with no ellipse, no band ending in an edge line, and no eave shadow. The spikes are drawn as vertical faces with light-to-dark vertical shading, e.g. column x=16 runs rows 8-20 in one tone. Rows 28-30 form a flat white base strip 25px wide that is only 3 rows tall, with a gray line at row 30. It reads as a front-facing plinth or ground strip, not a top surface. The dark arch at rows 22-27 is a gap between shards, not a horizontal surface. Overall this is a front elevation with no visible top plane."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small cluster of crystal spikes, smaller than one 16x16 tile, so the per-tile facts read 0 and I judged by eye. Its 28 distinct colours are more than the bench (14), lamp (14) and hedge (11), and fewer than the stall (40) and well (38), which are much larger pieces. The shards step from white highlight through pale and mid ice blue to a deep blue-slate shadow, about 5 steps, with facets split by value. The dark edge pixels are 0% near-neutral, so the outline is a tinted dark blue rather than a black sticker line, as with the hedge. There are no flat 5x5 blocks (0% near-flat). Texture is modest: facets and highlight streaks, but little grain, which suits glassy ice. Next to the thin bench and lamp references it does not look thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15076
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.727Z",
+ "cells": {
+  "16": [
+   "9fa961206c2bfa52",
+   "a1721c1904fe3872",
+   "bf44d21d7b9cbaa1",
+   "ce3da2f12e17ccff"
+  ],
+  "24": [
+   "08fe0fbe84fb36f1",
+   "0cb4a546732f8ae3",
+   "2fb96d78dfd52cd6",
+   "3729a9f0e1b3470e",
+   "3ce236a8e1ce94c7",
+   "400d5f669bc27cff",
+   "4514d0444a373017",
+   "587935610d796756",
+   "91dab28fb7e39fd0",
+   "948cb31814ab2957",
+   "a333590e14914798",
+   "a3f311b6efe2421b",
+   "aa6f76a65e52ea63",
+   "b6282402b6c7b1e5",
+   "b768f151e1f6721d",
+   "b8a10030721c52d6",
+   "db6d779139cf487c",
+   "e3659ffc977c8572",
+   "e672efd99d1263b1",
+   "e67521ef8129e12a",
+   "ec57536f0ec58426",
+   "f1b4ff9d5af6eec2"
+  ],
+  "32": [
+   "f6fbc08cf21a154f"
+  ],
+  "48": [
+   "0285ccdf5ab4285b",
+   "33d1948e0823269d",
+   "50b9bf4c495fa41a",
+   "bef19c556e5c0963",
+   "e9844e5bf0b5668f",
+   "ea89cef3d421e6fa"
+  ]
+ }
+}

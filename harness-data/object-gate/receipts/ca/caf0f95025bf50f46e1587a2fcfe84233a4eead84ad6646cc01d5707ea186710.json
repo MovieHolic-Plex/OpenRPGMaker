@@ -1,0 +1,387 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "caf0f95025bf50f46e1587a2fcfe84233a4eead84ad6646cc01d5707ea186710",
+ "width": 32,
+ "height": 16,
+ "kind": "organic",
+ "name": "crops dead",
+ "label": "beodeul_city/wave-places/ruined-village/crops_dead",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 질감 없음 (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "질감 없음 (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 3,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "bcc19e99327f94ce"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 69,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper row of dead crop sprigs",
+      "rows": "0-5",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper soil strip",
+      "rows": "6-7",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower row of dead crop sprigs",
+      "rows": "8-12",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower soil strip",
+      "rows": "13-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 2,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The sprigs are thin stalks drawn in flat elevation, with no horizontal surface. Each soil strip is only 2 rows: row 6 (or 13) is a lighter 1-row rim and row 7 (or 14) is a dark row. These have no ellipse, no band that ends in an edge line with eave shadow, and no visible heap or contents. The widths are constant at 32 for 2 rows each, so the strips read as thin front-facing ledges. The whole piece is a flat front view of plants on a thin base."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 2,
+    "reference_steps": 6,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a small, sparse row of dead crop stalks, about two rows of short brown sticks on soil, and only 6 distinct colours in total. The references are full trees with 5-6+ green steps, clustered leaf texture, and a shaded trunk. The candidate has about 2-3 tones and no canopy or clump shading, so it is much thinner than the references. It is sparse by nature, so I did not fail it on the per-tile measured counts, which read 0 because the piece is smaller than a tile. By eye, though, it looks flatter and thinner than either reference. The sticks are single-tone with little grain, and the soil strip has little variation. There are no tinted outlines or material-tone edges, and the 0% neutral edge share is just because there are almost no dark edge pixels. A careful artist would not accept this next to the references without it looking like a thin sticker-like sketch. Verdict: fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 16989
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper row dead stalks",
+      "rows": "0-5",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper soil strip",
+      "rows": "6-7",
+      "evidence": "none",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7"
+     },
+     {
+      "part": "lower row dead stalks",
+      "rows": "8-12",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower soil strip",
+      "rows": "13-14",
+      "evidence": "none",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": "14"
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 2,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The drawing is two identical bands. Each has thin dead stalks (decor, 1-8 px wide) standing on a full-width soil strip (32 px wide). The strip is 2 rows: a lighter brown row (6 and 13) over a dark row (7 and 14). That is a front-facing strip with a 1-row edge and 1-row shadow. It has no band of top-surface rows behind the edge line, no ellipse, and no visible contents. The front face is only 2 rows, so the soil shows no top surface and the piece reads as a flat front elevation of plants on a strip."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 2,
+    "reference_steps": 6,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny, sparse row of dead crop stalks, only about 6 colours in total and smaller than one 16x16 tile. It is not a tree with a canopy and trunk like the references, which show 7 and 29 visible tones per tile with 5-6 shading steps and clumped leaf texture. The stalks are thin brown strokes with only 2 or so tones, with no highlight/shadow ramp, grain or clump variation. There is no real outline, so it reads thin and flat next to the references. The measured facts are 0 for the candidate because it is under one tile, so I judged by eye. By eye it is much thinner and simpler than either reference. It is sparse by nature, but it does not reach the richness of the references, so this fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 13969
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "dead crop sprouts, upper row",
+      "rows": "0-5",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "soil strip, upper row",
+      "rows": "6-7",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dead crop sprouts, lower row",
+      "rows": "8-12",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "soil strip, lower row",
+      "rows": "13-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 2,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The object is two repeated strips. Each has small withered sprouts (rows 0-5 and 8-12) drawn side-on above a flat 32px-wide soil strip: a 1-row lighter brown line (rows 6 and 13) over a 1-row dark line (rows 7 and 14). The strips have no ellipse, no front-edge line with eave shadow, and no soil surface seen from above. The widths go 32 to 2-5 to 7-14 and back to 32, which is just sprout shapes on a flat strip. The soil strips are only 2 rows tall, so there is no real top surface and almost no front face. This is an elevation-style drawing rather than a 3/4 view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is two thin rows of dead crop stalks, only a few pixels tall and well under one tile (the tile-based facts read 0). It uses just 6 distinct colours: a brown stalk tone, a light tip and a dark base. There is no canopy, no trunk and no clump shading, and only about 2-3 lightness steps. The stalks are repeated identically with no grain or soil variation. The references have 5-6 steps of leaf and trunk shading, per-clump highlights and 7-29 visible tones per tile. The candidate looks thinner and flatter than either reference. There is no outline to judge, since the stalks are drawn directly on the background. Sparseness alone is not the reason for failing: even by eye, the stalks lack the soil, grain and tonal depth a careful artist would add next to the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 17086
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "dead crop sprigs, upper row",
+      "rows": "0-5",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "soil ridge, upper row",
+      "rows": "6-7",
+      "evidence": "none",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7-7"
+     },
+     {
+      "part": "dead crop sprigs, lower row",
+      "rows": "8-12",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "soil ridge, lower row",
+      "rows": "13-14",
+      "evidence": "none",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": "14-14"
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 2,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "Two 32px-wide soil strips (rows 6-7 and 13-14) each have a 1-row lighter brown edge line (#885a26) over a 1-row dark row (#452a17). Together that is only a 2-row rim and no real top plane or front face. The dead stalks (rows 0-5 and 8-12) are thin sprigs drawn in flat elevation, with no ellipse and no visible soil mass or top. The whole piece reads as a front elevation, not a 3/4 volume."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 2,
+    "reference_steps": 6,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny strip of dead crop rows, about 2 tiles wide and under 1 tile tall. Next to the full-canopy trees it is not the same kind: it has no canopy or trunk, only a few thin brown stalks on a dark soil line. It has only 6 distinct colours in total and roughly 2 visible shading steps, against 6 or more on the references' leaf and trunk ramps. Facts: visible tones per tile is 0 because the piece is smaller than a tile, so I judged by eye. By eye it is clearly thinner and flatter than either reference: the stalks are single-pixel marks, the soil has no grain, and there are no clumps or per-element shading. Outline is effectively absent, since the stalks are tinted brown and no dark line is drawn. Near-flat coverage is 0% only because the piece is so sparse. It is a sparse prop, so it is not failed for sparseness alone. However, it also looks sticker-like and under-shaded next to Beodeul's rich tree rendering, and the reference kind does not match a ground-crop prop. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 15244
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.320Z",
+ "cells": {
+  "16": [
+   "129f314ce74d831b",
+   "ff7b66633344bf3c"
+  ],
+  "24": [
+   "042b21d0d705027e",
+   "047a4447a2e6436b",
+   "25f8f8d5442375fb",
+   "3898084f781ac1c9",
+   "3ea6809dffefbe84",
+   "40bb09f800002669",
+   "58772f8035f039b8",
+   "6f99f801a7696435",
+   "7658dcff9d72b912",
+   "b0b76fddcf9fc05d",
+   "efb35fcea6d13ee1",
+   "f19af9dea7eb9a00"
+  ],
+  "32": [
+   "eb5a0a6e7e255568",
+   "fcd65ee5c58a1fe7"
+  ],
+  "48": [
+   "4b3afe8a32f845fa",
+   "835154f4caa0c63e",
+   "839744671b12afa2",
+   "a51ab4854987bbab",
+   "d1202bcc5e3c9f42",
+   "e4b82586de8f2a44"
+  ]
+ }
+}

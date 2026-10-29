@@ -996,3 +996,38 @@ revision 16 기와 변경은 사용자 지적을 오해한 것이며 철회했�
 - **견본 지도:** `scripts/content/beodeul-organic/sample-map.mts <out.project.json>` — 빈 프로젝트에 `paintWoodland(SHRINE_SPEC + 빈터 3곳)` 을 칠하고 37종을 한 번씩 + 바닥 꾸미기 40개를 길·출구·물을 피해 놓은 뒤 모든 출구가 서로 닿는지 BFS 로 확인한다. 화면은 `bun scripts/qa-game/render.mts --project … --out …`.
 - **검수(qa/protocol.md):** 판정자 둘(argon, klb-sonnet-5-5)에게 새 그림 37 + 버들항 원본 16 을 이름 없는 번호로 섞은 블라인드 시트(`qa/blind.py <dir> <seed>`, 열쇠는 저장소 밖)를 매 판 새 프로세스로 보인다. 원본도 판정자마다 4~10/16 만 통과한다(엄격함의 대조군). 판정은 같은 화소에도 판마다 흔들려서, 합격 = **지금 화소 해시 그대로 2장 이상 시트에 나와 한 번 이상 두 판정자 모두 통과, 판정자마다 2/3 이상 통과**. 기록 `qa/ledger.json`, 확인 `python3 qa/ledger.py status`. 판정자들이 되풀이 지적한 결함(바닥 빗살 1px 다리·홀로 찍힌 점·자로 그은 듯한 긴 변)은 `qa/edges.py` 로 미리 잰다(합격 판정이 아니다).
 - **함정:** 그림 함수가 `max(set(nb), key=nb.count)` 처럼 set 순서에 기대면 실행마다 화소가 바뀌어 검수가 무효가 된다(사당 돌에서 실측, 고침). 여러 그림이 공유하는 보조 함수를 고치면 이미 합격한 그림의 화소가 바뀔 수 있다 — 고목은 r7 화소를 행 문자열로 얼려 두었다. `qa/blind.py` 는 쪽 넘김에서 줄 하나를 잘라 먹던 결함이 있었고(r8 P38), 이제 모든 카드가 쪽 안에 있는지 단언한다.
+
+## 웨이브 장소 되살리기 beodeul_wave_places (2026-10-29) — 원본 그림 칸 15,770칸, 장소 다섯
+
+**왜:** 2026-10-08 장르 웨이브의 손 도트 장소(화산 지대 필드·폐허 마을·빙하기 설원·산악 요새 낭떠러지 보정판)는 Python 스크립트가 그린 데모 렌더뿐이었고 공용 칩셋에 구워진 적이 없다.
+2026-10-09 저장소 리셋으로 작업 폴더가 사라졌고, 고아 커밋 `0bfba316bc` 에 대화 기록 재생으로 복원한 스크립트만 남았다. 『폴른 스타』 2막 계획 그림(재의 들판·새벽샘 터·얼음 호수·관문 요새)이 이 넷이다.
+
+**스크립트 재실행 결과(원본 = viz 페이지에서 뽑은 무손실 PNG, `tiledata/beodeul-variants/_revive/orig/`):**
+
+| 장소 | 복구한 의존 | 다시 그린 그림 vs 원본 |
+|---|---|---|
+| volcano-field | `beodeul-kits/autotile_edge.py`(고아 커밋), 비교판의 없는 dark-fortress 그림은 건너뜀 | 화소 1.2% 다름(물체 배치 같음) |
+| ruined-village | `_lib-5/bd5.py` 의 옛 워크트리 절대 경로 → 저장소 상대 경로 | 물체 배치 같음, 땅(풀) 색이 달라 65% 다름 |
+| mountain-fortress | `mf_ground.py` 복원 손실 셋: `worley.second`(두 번째 판 id), `cliff_px` 인자, `_hash`·`vnoise` import | 2.8% 다름 |
+| ice-age-field | 산악 요새 `parts/`(전나무) 먼저 필요 → `make_mountain_fortress.py --parts` | 22% 다름 — 스크립트는 웨이브 5 보정 뒤 판이라 물체가 더 많고 숲 난수가 밀렸다 |
+
+그래서 **그림은 원본 PNG 를 그대로 칸으로 자르고**, 스크립트는 통행·단·계단·물체 위치만 준다(감독 우선순위 2번 경로).
+
+**파이프라인** `tiledata/beodeul-variants/_revive/`:
+1. `extract.py <장소>` — 스크립트를 `runpy` 로 돌려(렌더 없이) 장면 상태를 `state/<장소>.pkl` 로: 걷기 격자, 단(lev), 계단 칸, 물체 목록(위치·그림), 빙하기 설원은 물체를 뺀 땅 렌더(색 표).
+2. `layers.py <장소>` — 칸마다 위층 화소·4방향 통행. 키 큰 물체(24px 이상)는 원본과 허용 오차 150 으로 맞는 방향(좌우 뒤집기 포함)의 실루엣을 위층으로. 통행은 단이 다른 칸 사이를 계단 칸으로만(계단은 세로로만), 산악 요새는 다리·성문 통로를 한 단으로 잇는다(스크립트 `bfs2` 와 같은 규칙).
+   빙하기 설원은 물체 목록을 못 쓰므로 원본에서 「땅 색 표 + 그림자 곱 밖의 화소」 = 물체로 나눠 연결 덩이마다: 따로 선 것(폭 ≤3칸)은 밑동 칸 줄만 막고, 숲 덩이는 덩이 아랫변 화소가 칸 아래 반에 6개 이상인 칸·거의 덮인 칸을 막는다. 빙하·빙벽·물은 스크립트 지형, 눈길(path)은 늘 걷는다. `--diag` 그림 `diag/<장소>.png`(빨강 막힘·파랑 위층).
+3. `bake.py` — 아래층 = 원본 칸 그대로, 위층 = 위층 화소만. 걷는 칸의 위층 = ★, 막힌 칸의 위층 = 막힌 물체(버들항 도시와 같은 규칙). 같은 그림·층·통행 칸은 한 칸. 128열 시트, 칸 15,770.
+   맵 다섯: 재의 들판 `bd-wave-ash-plain`(화산 지대 필드 31~51줄 = 용암 강 남쪽만, 72×21, 북쪽 끝 출구로 열림) · `bd-wave-volcano-field` 72×52 · `bd-wave-ruined-village` 64×48 · `bd-wave-ice-age-field` 72×52 · `bd-wave-mountain-fortress` 72×56.
+   겹쳐 그린 그림과 원본의 화소 차이는 다섯 모두 **0**(`out/report.json`). 재의 들판 동쪽 작은 용암 웅덩이(3×2)는 원본 그대로 남겼다 — 칸 복사로 덮으면 불씨가 남아 깨져 보였다(r1).
+4. `routes.py` — 영상용 걷기 길(입구 → 볼거리, 최단 길).
+
+**공용 배선:** `src/assets/bundled.ts`(`tex_beodeul_wave_places`) · `bundledChipsetGeometry.ts` · `bundledJson*.ts`(`beodeulWavePlacesTileset`) · `defaults/beodeulWavePlaces.ts`(create/ensure, 참고문서 `bd-wave-places` 한 용도) · `defaultAssets.ts`(새·기존 프로젝트) ·
+장소 `src/project/beodeulWavePlaceReferences.ts`(생성 파일) → `PLACE_REFERENCES`, 스냅숏 `regionReferences/beodeul-wave-places.json`(여러 맵 한 파일, 조선과 같은 `fromMaps`). 미리보기 `public/assets/region-references/bd-wave-*.png`.
+조수는 `import_region_reference({id:'bd-wave-…'})` 로 통째로 가져온다. 낱칸 재료가 아니다(키트·오토타일 없음).
+
+**정본 저장·재로드:** `npx tsx --import ./tiledata/jp-city/refs/css-stub.mjs scripts/content/beodeul-wave-places/sample-project.mts <dir> <out>` — 새 프로젝트에서 다섯 장소를 `importReferenceScene` 로 가져와 project.sqlite 에 저장 → 다시 열어 네 층·타일셋 대조. 출하 플레이어 영상 `scripts/qa/runtime/beodeul-wave-places.capture.mjs`(netns 안).
+
+**3/4 관문:** 스크립트가 새로 찍은 조각 199장(`gate-items.jsonl`, `gate_items.py` 가 이름으로 종류를 정함)을 `object-gate review` 에 냈다. 프로필 4d8774b517f41638 은 rejected(미보정)라 영수증은 조언이다 — 이 그림은 **3/4 관문 미통과**로 다룬다. main 반영 전에 사람·감독 허용이 필요하다.
+
+**남은 것:** 문·출구·적 이벤트 없음(그림뿐). 빙하기 설원 물체 통행은 원본 분할이라 거칠다. 『폴른 스타』 2막 연결(act2Places.ts 의 평면도 맵을 이 장소로 바꾸기)은 하지 않았다.

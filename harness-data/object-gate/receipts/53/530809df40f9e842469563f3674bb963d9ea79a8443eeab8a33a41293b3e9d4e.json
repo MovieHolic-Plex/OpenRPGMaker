@@ -1,0 +1,346 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "530809df40f9e842469563f3674bb963d9ea79a8443eeab8a33a41293b3e9d4e",
+ "width": 32,
+ "height": 16,
+ "kind": "flat",
+ "name": "icicles",
+ "label": "beodeul_city/wave-places/mountain-fortress/icicles",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 종류 불일치",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 질감 없음 (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "종류 불일치"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "질감 없음 (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 3,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 238,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "white snow/ice band along the top",
+      "rows": "0-1",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "hanging icicles (vertical tapered spikes)",
+      "rows": "2-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The sprite is a front-facing fringe: a 2-row white band (rows 0-1, width 30) with tapered spikes hanging below it. Silhouette width falls steadily from 30 at row 0 to 3 at row 11, which is a pointed hanging shape and not a flat plate. Column scans show vertical streaks, 6 rows long at x=16 and about 2 rows at x=8 and x=23. There is no ellipse, no front-edge line with eave shadow, and no contents. The top band is at most a 1-2 row rim. The object is drawn as a vertical hanging element, not a plate lying on the ground, so it does not match the flat kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate is a small row of icicles hanging from a thin bar on a flat dark slate background. It is not a 4x3-tile ground patch like the grass and paving references, so the kind does not match. It is smaller than one 16x16 tile (0 visible tones per tile measured, so I judged by eye) and has only 4 distinct colours in total. The icicles show about 3 light blue-white steps, with no outline and no grain or tile texture. The background is a flat fill. The references carry 3 to 7 visible tones per tile with grass tufts and cobble shading, and the candidate is far thinner and flatter than either.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 11846
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "white snow/ice band along the top",
+      "rows": "0-1",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "hanging icicles (tapering vertical spikes)",
+      "rows": "2-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The drawing is a 30px-wide white strip in rows 0-1, with pale-cyan icicles hanging below it. The silhouette tapers from 25px at row 2 to 3px at row 11, and rows 12-15 are empty. The icicles are drawn as vertical faces seen face-on, with no ellipse, no front-edge line, no eave shadow and no contents. The white strip is a 2-row flat band at the silhouette edge, which counts as a rim, not a top surface. It is a wall- or eave-hung fringe, not a plate lying flat on the ground, so the kind 'flat' does not fit. It has no horizontal top plane and reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a small icicle fringe (a thin horizontal strip of pale blue-white shapes with hanging points) on a plain dark slate background. It is not a 4x3-tile ground surface patch, so it does not match the reference kind (grass, paving). It is smaller than one 16x16 tile, so the per-tile measures are 0 and I judged by eye. It has only 4 distinct colours in total, and about 3 lightness steps (white highlight, pale ice, blue shadow), against about 5-6 in the references. It has no outline and no texture: no grain, speckle or per-stone shading, and the body of the icicles is flat. The references show grass clumps in several greens and individually shaded paving stones with 7 visible tones. The candidate looks thinner and flatter than either reference, and it is not a ground patch at all.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 11296
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "snow/frost band along the top",
+      "rows": "0-1",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "hanging icicles (tapered vertical spikes)",
+      "rows": "2-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The silhouette is 30px wide at rows 0-1 (a white band, only a 2-row strip) and then tapers to 3px at row 11. Rows 12-15 are empty. The column scans show a white band at rows 0-1 over a pale-cyan body that ends in a darker tip (x=8: rows 2-3, x=16: rows 2-8, x=23: rows 2-3). This is a fringe of spikes hanging down, drawn face-on. It has no ellipse, no front-edge line with eave shadow, and no plane of a horizontal surface. It is not a flat plate seen from above, so it does not match the flat kind. It reads as a front elevation with only a rim-like 2-row band at the top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate is not a 4x3 ground patch. It is a single thin row of icicles hanging from a short bar, on a dark slate background, and it is smaller than one 16x16 tile. That is why the measured visible tones per tile (0) and raw colours per tile (0) cannot be used as evidence either way. By eye it has only 3-4 pale blue/white tones, with no outline, no grain and no texture variation. The grass reference shows about 3 visible tones with grass tufts and soil grain, and the paving reference shows about 7 tones with stones shaded one by one. Neither is a thin prop on empty background. The candidate offers no ground surface, no tile coverage and no clustered detail. It would look thinner and flatter than either reference, more like a sticker. Because the kind does not match and the piece is much sparser, it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 11812
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "white snow/ice band along the top",
+      "rows": "0-1",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "hanging icicles (vertical tapered spikes)",
+      "rows": "2-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The sprite is a 30px-wide white band on rows 0-1 with tapering icicles hanging from it down to row 11. The silhouette narrows steadily from 30 px to 3 px, which is the outline of a fringe of hanging spikes. It is not a plate lying on the ground, so the 'flat' kind does not match. The band on rows 0-1 is only a 2-row strip with no front-edge line and no eave shadow, so it counts as a rim, not a top surface. The icicles are drawn as vertical faces from row 2 to row 11, with a lighter column at x=16 and a darker tip at the bottom. No ellipse, roof or visible contents are drawn. It reads as a front elevation of a hanging object, not a top-down plate."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a small row of icicles hanging from a thin ice bar on a flat dark background, not a 4x3 ground patch of grass, soil, paving or floor, so it does not match the reference kind. It is smaller than one 16x16 tile (0 measured tones per tile, 4 distinct colours in total), so the density facts cannot be used and I judged by eye. By eye it has about 3 light-blue steps (white highlight, pale blue, mid blue) and no real grain or per-icicle variation, against the references' grass (3 visible tones plus clumps) and paving (7 tones, stones shaded one by one). The dark edge pixels are not neutral (0%), but there is hardly any outline at all, so the piece reads as a flat sprite with thin shading. It is much thinner and flatter than either reference and does not provide a tileable ground surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 10956
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.923Z",
+ "cells": {
+  "16": [
+   "7543116799647c84",
+   "fdb87633666a0393"
+  ],
+  "24": [
+   "284a1681b7df8563",
+   "4cab406b60c3bfe0",
+   "7fda8e9a4110678a",
+   "891aa8f766446629",
+   "a6189adffe9e76f3",
+   "af0bb8b8fac90f46",
+   "c60c3897bc40bc30",
+   "e79722bb77b01b47",
+   "ea24fcff90fae600",
+   "f2ad54b25d8f267c",
+   "f74ffba245f2e80e",
+   "facc81a8f9fecb34"
+  ],
+  "32": [
+   "60222010dab1202a",
+   "be9452b6b23aa0ce"
+  ],
+  "48": [
+   "3419b0f3be0a1ef1",
+   "34e602021fd13c8d",
+   "c0a1be3daa211464",
+   "db98f2a1942b8273",
+   "eb3bafd2194754c4",
+   "f018e7608d3dd492"
+  ]
+ }
+}

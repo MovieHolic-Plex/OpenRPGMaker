@@ -1,0 +1,409 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "304057eb30f50a8aacd28fbb5164760560fd7b14bb6966b4a399a96b16ff01ea",
+ "width": 32,
+ "height": 32,
+ "kind": "other",
+ "name": "grindstone",
+ "label": "beodeul_city/wave-places/mountain-fortress/grindstone",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (4/4)",
+  "3/4: 윗면 0행 < 3 (4/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+  "화풍: 판정자 fail (3/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (1/4)",
+  "화풍: 평면 채움 (1/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (4/4)",
+   "윗면 0행 < 3 (4/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (3/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (1/4)",
+   "평면 채움 (1/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 6,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "2ad36264365ed8d5"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 12,
+  "tileColorsP90": 12,
+  "darkV5": 45,
+  "nearBlackEdge": 0.02,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stone wheel (circular disc seen face-on)",
+      "rows": "5-22",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden trough base",
+      "rows": "22-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "crank handle",
+      "rows": "8-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 18,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main body is a round stone wheel drawn face-on as a vertical disc. Its width profile (8, 12, 14, 17, 19, 22, then 20, 18, 16) is that of a full circle spanning rows 5-22, not a foreshortened ellipse. The shading is diagonal across the disc face and there is no front-edge line or eave shadow. The wooden trough below (rows 22-28) is a front-facing brown block with only a 1-2 row lighter rim at its ends, so it has no real top surface either. The handle is a thin vertical stick. No part shows a horizontal top surface, so the object reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The grindstone is a small grey disc on a brown wooden frame with a crank. The measured facts are acceptable: 12 visible tones per tile sits between the hedge (9) and the well (20), and near-flat coverage of 14% matches the cheese stall (13%). The weaknesses are structural. The stone shows only about 4 grey steps, with a highlight and a dark rim but little per-stone grain or chips, where the well and stall carry 5-6 steps plus per-element texture. 65% of its dark edge pixels are near-neutral, against 0-33% for the tinted references (well 33%, hedge 0%, stall 1%). So the dark rim around the disc reads as a grey-black sticker line rather than a dark tone of the adjacent material, and the wood frame is only lightly shaded. The piece is clean but a little thinner and flatter than the references, and given the neutral outlines and shallower ramps it fails the bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 19703
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stone wheel (face-on disc)",
+      "rows": "5-21",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden trough base",
+      "rows": "22-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "crank handle",
+      "rows": "8-12",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The stone is drawn as a face-on disc, with its width profile growing steadily from 8 to 22 px and then shrinking, as a flat circular face does. It has no rim, edge line or eave shadow that would mark a horizontal top. The wooden trough (rows 22-28) is a uniform brown front block. Only the corner highlights at rows 23-24 hint at a top, and that is at most a 1-2 row rim. The wheel's top is not seen as a surface. The brown crank at the right is a small detail. Overall this is a front elevation with no top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The grindstone is a small grey disc on a brown frame. Visible tones per tile (12) fall within the reference range (hedge 9, stall 17, well 20), and near-flat coverage (14%) is close to the cheese stall's 13%, so density is not far off. The weaknesses are structural. The stone ramp shows only about 3-4 steps (a light rim, a mid grey face, a dark hub) against 5-6 on the well and stall. The outline is mostly neutral: 65% of dark edge pixels are near-neutral, against 0-1% on the hedge and cheese stall and 33% on the well. That gives a grey-black sticker-like rim around the disc instead of a dark tone of the adjacent material. The grey face has little grain, chips or per-area shading, and the wooden frame is thin and flat next to the wood on the well and stall. Next to the references it looks flatter and more outlined, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 16925
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stone wheel (disc seen face-on, round silhouette 5-21)",
+      "rows": "5-21",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden base/trough",
+      "rows": "22-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "crank handle at right",
+      "rows": "8-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main body is a circular stone wheel drawn face-on (rows 5-21). Its width grows from 8 to 22 and shrinks to 16, which is a disc outline, not a horizontal ellipse. Its shading is a diagonal highlight and an axle slot at rows 13-16, with no back-rim-to-front-rim top plane and no front-edge line plus eave shadow. The wooden base (rows 22-28) is a front-facing brown block with only tiny lighter corner pixels at rows 23-24, so it has no real top surface either. The whole object is a front elevation, not a three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The grindstone is a small prop of about one tile: a grey stone wheel with a darker rim and lighter face, on a brown wood frame with a crank. It shows 12 visible tones per tile, between the hedge (9) and the cheese stall (17) and well (20). Near-flat coverage is 14%, the same as the cheese stall (13%), so there are no large flat fills. The stone has about 4 lightness steps against roughly 5-6 on the references, which is a little shallower. 65% of its dark edge pixels are near-neutral, but that is mostly the dark grey of the stone itself, and the lamp reference is 100% neutral. The wood parts lean brown, so the outline reads as mixed rather than a uniform black sticker line. By eye it sits next to the references without looking thinner or flatter in structure. It is simple but acceptable.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20561
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stone wheel (disc seen face-on)",
+      "rows": "5-21",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden trough/base",
+      "rows": "22-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "crank handle at right",
+      "rows": "7-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main body is a grey stone wheel drawn as a flat circular face seen head-on (rows 5-21). Its width profile grows from 8 to 22 and shrinks back to 16, which is a disc outline, not an ellipse lid. No band ends in a front-edge line with eave shadow. The shading is a diagonal highlight across the face, and the dark/light slot at rows 14-16 is a face detail. The wooden base (rows 22-28) is a front-facing brown block with only small lighter corner highlights at rows 22-23 and a dark line at row 24. No horizontal top surface is visible on the wheel or the base, so the object reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The grindstone is a small grey disc on a brown wooden frame. It shows about 3 lightness steps on the stone and 2-3 on the wood, against roughly 5-6 steps on the references (well, stall). The measured 12 visible tones per tile is above the hedge (9) but below the stall (17) and well (20), so it is mid-range. Near-flat coverage is 14%, in line with the stall's 13%. The dark edge pixels are 65% near-neutral, which leans toward a neutral black or grey outline. The references that are tinted (hedge 0%, stall 1%) show the Beodeul material-tone outlining, so this candidate looks more like a sticker. The stone face has a flat grey fill with only a little hub and rim detail and no grain or chips. The wood frame is thin and simple. Overall it is thinner, flatter and more sticker-like than the well and stall references, so it should not be accepted next to them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 12984
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.920Z",
+ "cells": {
+  "16": [
+   "a9aa8d7ba2287589",
+   "cd8b688b3e09f263",
+   "d8438e2ff8b5f6e8",
+   "efc6a6599ed873ce"
+  ],
+  "24": [
+   "06dfa08c4eb1425c",
+   "17dfc8ae32aaae3f",
+   "44d19cf2900fa2ed",
+   "46d11c7fb7e857f3",
+   "49317d7b06eba7cb",
+   "4a614021b9072cc2",
+   "660a946a64dfd098",
+   "7a4027a63244ef9d",
+   "8610ae6305985f6c",
+   "8bbe0abefe088e05",
+   "8ebe6aed5c86a255",
+   "9c7340cb3b51041b",
+   "9ff27b2301e11fe7",
+   "ac4789f8336257af",
+   "be4eefc5785f1cce",
+   "c0cecc703b7ec553",
+   "cd3a46d584d80afc",
+   "cf266f27230ba03b",
+   "d9ae0b3c6858c6a2",
+   "dcda163159445587",
+   "ef0e3ee3bcbc99fb",
+   "fe44f1a7b1f390bc"
+  ],
+  "32": [
+   "a8545eedc7980732"
+  ],
+  "48": [
+   "181c7f72f03b2e69",
+   "24e570fa86413723",
+   "34351bc4191e437d",
+   "7ad2abeecd20d895",
+   "c011ecb94a509dac",
+   "e660a5e929d3e42e"
+  ]
+ }
+}

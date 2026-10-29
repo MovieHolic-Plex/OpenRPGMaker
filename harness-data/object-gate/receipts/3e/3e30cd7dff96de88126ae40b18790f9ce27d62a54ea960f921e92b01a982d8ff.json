@@ -1,0 +1,413 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3e30cd7dff96de88126ae40b18790f9ce27d62a54ea960f921e92b01a982d8ff",
+ "width": 48,
+ "height": 32,
+ "kind": "structure",
+ "name": "grave wall end",
+ "label": "beodeul_city/wave-places/ruined-village/grave_wall_end",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (4/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+  "3/4: 윗면 1행 < 3 (2/4)",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (1/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (4/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+   "윗면 1행 < 3 (2/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (1/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 5,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "5f62fef078ef7661"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 26,
+  "tileColorsP90": 28,
+  "darkV5": 62,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 3
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper wall block (stone courses with mortar lines)",
+      "rows": "0-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "middle step block",
+      "rows": "11-19",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower step block",
+      "rows": "20-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "step tops as thin grey-violet rims (rows 9-10, 17-18, 21-22 on the stepped right side)",
+      "rows": "9-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 29,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The wall end is a stack of three stepped masonry blocks. Each is drawn as a vertical face of light stone with dark mortar lines (rows 3, 11, 19, 27). Column x=12 alternates between light courses and dark mortar lines. Column x=24 starts at row 17, light from row 21, and shows no band that ends in a front-edge line followed by eave shadow. The steps change width at rows 9-10, 17-18 and 21-22. Each change is only a 1-2 row translucent grey rim (L≈131) that reads as an outline or lip, not a horizontal top plane. There is no ellipse, roof slope or visible contents. Since the structure is a gate/wall kind that should show top surfaces, it reads as a flat front elevation with no real top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 5,
+    "evidence": "The candidate is a small grey stone wall end with steps and grass tufts, set beside two full houses. It beats the references on the primary facts: 20 visible tones per tile against 12 and 10, and 0% near-flat coverage. Its weak point is the outline. 77% of its dark edge pixels are near-neutral, against 7% and 9% for the references, whose outlines lean visibly toward the material tone (dark red-brown beside tiles, purple-brown beside stone). By eye, the stones are separated by neutral grey lines and not by dark tinted tones. The stone ramp has about 4 steps (pale highlight, light grey, mid grey, dark grey), fewer than the 5-6 on the reference tiles and stone. Individual stones are shaded only lightly. Texture is moderate, with a few speckles and green grass tufts but little per-stone grain. Because the outline is mostly neutral and the shading is shallower than the references, a careful artist would likely call it a bit more sticker-like than the Beodeul stone. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 18971
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper wall block course",
+      "rows": "0-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "middle stepped course",
+      "rows": "11-19",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower stepped course",
+      "rows": "20-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grass tufts at base",
+      "rows": "26-31",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 29,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The wall end is drawn as stacked stone blocks seen face-on, with dark mortar lines at rows 3, 11, 19-20 and 27. The silhouette steps down to the right (width 16, then 24, 32, 40, 45), but each step has no horizontal top band. The step edges at rows 9-10, 17-18 and 21-22 are 1-2 row grey shadow or outline pixels (#898a96), not a top surface with a front-edge line. The top rows 0-2 are a single block face with an outline, not a top plane. The front face is tall, and no roof, cap or ellipse is visible, so this reads as a flat front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 5,
+    "evidence": "The candidate is a small stone wall end with steps and moss tufts. Density is not the problem: it shows 20 visible tones per tile against 12 and 10 for the references, and its near-flat coverage is 0%, the same as theirs. The weakness is shading and outline. The pale grey blocks look like only about 4 lightness steps (highlight, light, mid, dark grey edge), against the references' 5-6 per material, and the moss adds a separate green ramp rather than depth to the stone. 77% of its dark edge pixels are near-neutral, against 7% and 9% for the references. The blocks are outlined individually in a grey-black line, which reads as a sticker-like edge, not the dark tint of the adjacent material that Beodeul uses. The texture is moderate (moss tufts, some per-stone variation) but sparser than the references' per-tile highlights and grain. A careful artist would likely not accept this next to the references, mainly because of the neutral outlines and shallower stone ramps.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 1행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 1행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 18146
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top wall section (highest block course)",
+      "rows": "0-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "middle step block courses",
+      "rows": "9-19",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower step block courses",
+      "rows": "20-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The wall end is a stepped stack of face-on stone blocks separated by dark mortar lines at rows 3, 11, 19 and 27. The silhouette widens downward (16, 24, 32, 40 px), but the step tops at rows 9-10, 17-18 and 21-22 are only thin outlines or faded 1-2 row edges. None of them has a front-edge line followed by eave shadow, an ellipse, a roof slope, or visible contents. The top row (row 0, with a light row 1-2 beneath) is a 1-row rim, not a top surface. The whole object is a flat front elevation with no horizontal surfaces shown."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The references are whole buildings with roof, walls and door. The candidate is a small stone wall end with steps, so the kind only loosely matches and I judged style only. The measured facts favour it: 20 visible tones per tile against 12 and 10, and 0% near-flat coverage. Its dark edge pixels are 77% near-neutral against 7-9% for the references, which means a grey, colourless outline. That is partly explained by the grey stone, but it still reads as a uniform dark-grey line around each block rather than a tinted material tone, so I call it mixed. By eye, the blocks are pale grey with only about 4 lightness steps and little per-stone shading. The references carry about 6 steps with per-tile highlights and speckle. The moss tufts add some variation but are sparse. Overall it looks slightly thinner and more sticker-like than the stone reference, and with doubt on the outline and shading depth I fail it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 1행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 1행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 18590
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper stone tier (blocks)",
+      "rows": "0-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "middle stone tier (blocks)",
+      "rows": "11-19",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower stone tier (blocks)",
+      "rows": "20-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "moss and grass at base",
+      "rows": "28-31",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 29,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The wall end is a stack of stepped tiers whose widths go 16, 24, 32 and then 40 px, drawn as flat stone-block courses with dark mortar lines at rows 3, 11, 19 and 27. Each tier is a front-facing block face, with no horizontal top ledge, front-edge line or eave shadow where one tier steps down to the next. The silhouette width changes by whole steps and never forms an ellipse or a sloped roof plane. The semi-transparent grey region to the right is a faded shadow or ghost area, not a top surface. The whole piece reads as a flat front elevation with no visible top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 5,
+    "evidence": "The candidate is a small stone wall end with steps and grass tufts, not a whole building. The references are full houses, so the kind does not match and I judged craft only. On the measured facts it holds up: 20 visible tones per tile against 12 and 10 for the references, and 0% near-flat coverage. Density is therefore equal or richer, and there are no flat fills. The weak points are shading and outline. The stone ramp looks like about 4 steps (pale, light grey, mid grey, dark grey), while the references have 5-6 per material. 77% of the dark edge pixels are near-neutral, against 7% and 9% for the references. The outline reads as a grey-black line around each block rather than a dark tone of the neighbouring material, so it has the sticker look. Texture is only partial: the blocks have small speckle and the grass tufts add some variation, but the stones are not shaded one by one in several tones as in the reference stone wall. Given the near-black outline and shallower ramps, I fail it when in doubt.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 18623
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.407Z",
+ "cells": {
+  "16": [
+   "03ffc74b8f89966d",
+   "2dba3d0590661c4a",
+   "9b921d896e959280",
+   "c06e2c9724e3d7a7",
+   "d4d35821b4e1ab97"
+  ],
+  "24": [
+   "3151aa276dbcbc76",
+   "37e5f8acf49c1038",
+   "3ec8f4fe6bed74b7",
+   "5942999110b9a41e",
+   "88c66f9218a6b48a",
+   "959e286748c124fd",
+   "b0bed7d0bf8a20e2"
+  ],
+  "32": [
+   "3de652cdbdfe88fd",
+   "4ea04b6b84777089",
+   "7ddda72a7526571b",
+   "917d679159f7fc2c",
+   "939a7406aac6ad0b",
+   "93be1da8ae21fa9d"
+  ],
+  "48": [
+   "11165015221f8f92",
+   "5548c206c8bbb538"
+  ]
+ }
+}

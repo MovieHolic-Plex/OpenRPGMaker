@@ -1,0 +1,400 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d65469d53b4795c6b30c6a79597aca32d484c0df67ef29fe7a74872417ea498d",
+ "width": 96,
+ "height": 48,
+ "kind": "structure",
+ "name": "frozen beast",
+ "label": "beodeul_city/wave-places/ice-age-field/frozen_beast",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 종류 불일치",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 평면 채움 (4/4)",
+  "화풍: 질감 없음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "종류 불일치"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "평면 채움 (4/4)",
+   "질감 없음 (4/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 3,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "5f62fef078ef7661"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 4,
+  "tileColorsP90": 4,
+  "darkV5": 52,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 11
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "east",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "beast body (dark blue, speckled)",
+      "rows": "5-41",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "legs",
+      "rows": "34-43",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "light-blue ice/frost fringe and curved tusk/trunk arc",
+      "rows": "2-44",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 36,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "side_profile_no_top",
+    "evidence": "The object is a creature silhouette in side profile, facing east, with a dome-like back, four legs and a curved tusk or trunk arc on the right. The column scan at x=33 and x=54 shows a uniform dark blue body (L=43) with only dotted speckles and a 1-row darker outline. There is no front-edge line, eave shadow, ellipse, roof plane or visible contents. The light-blue ice fringe at the top (rows 2-9) is a jagged frost outline, not a horizontal surface. The width profile grows steadily from 10 to 76 over rows 2-27 as a rounded back outline would, with no plateau and no step to mark a top-to-face transition. It is not a gate, pavilion or building, and no roof or lintel surface is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a blue beast silhouette, not a building with roof, walls and door/windows, so it does not match the reference kind. It shows about 3 shading steps (dark blue body, a lighter blue rim, a few speckles) against the references' 5-6 on roof tiles and walls. The measured facts back this up: 4 visible tones per tile against 10-12 in the references, and only 5 distinct colours in total against 66-185. The outline is a light icy rim rather than a dark neighbouring-material tone, and the 0% near-neutral edge share only says it is tinted. The body is a large nearly flat navy fill with sparse speckle and no per-part grain or per-tile highlights. It reads as a thin, sticker-like silhouette beside the richly textured references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 11568
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "east",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "beast body (torso, legs, head) as one dark-blue silhouette",
+      "rows": "5-41",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ice frost fringe and curved tusk/trunk highlight",
+      "rows": "2-44",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 33,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "side_profile_no_top",
+    "evidence": "The object is a flat side-profile silhouette of an animal (a bull or mammoth shape) facing east. The column scan at x=33 and x=54 shows one uniform dark blue fill (L=43) with only scattered 1-row speckles. There is no front-edge line, no eave shadow, no ellipse and no roof or canopy plane. The 1-row dark outline at rows 5-9 and the pale ice fringe are outline and frost, not a horizontal surface. The width profile grows steadily from 10 to 76 and then narrows, which is the shape of a body outline and not a lid or ellipse. The legs at rows 34-44 are plain vertical profile shapes. It is not a gate, pavilion, door or building, and there are no roofs or lintels, so the structure kind fits poorly."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a blue beast silhouette, not a building: there is no roof, walls or door/windows, so it does not match the reference kind. It shows about 4 visible tones per tile against 10-12 for the references. Its body is a mostly flat navy fill with only faint speckle and a light icy rim. The outline is a tinted blue, not neutral black (0% near-neutral edge pixels), which is acceptable, but with only 5 distinct colours the shading is shallow at about 3 steps against roughly 6 on the references. It lacks the per-tile highlights, grain and material ramps that the Beodeul buildings carry, so it falls clearly below the reference quality bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 11368
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "west",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "beast body (dark blue mass with frost outline)",
+      "rows": "5-35",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "legs",
+      "rows": "34-44",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "curved light-blue frost arc / tail on right",
+      "rows": "21-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 37,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "side_profile_no_top",
+    "evidence": "The object is an animal silhouette, not a gate, pavilion or building. It is a side-on profile of a four-legged beast: a dark blue body (rows 5-35) with a light frost outline and four legs (rows 34-44). The column scans show only vertical runs of the same dark blue (L=43) with scattered speckle pixels. There is no front-edge line, eave shadow, ellipse, roof plane or visible contents that would mark a horizontal top surface. The silhouette widens steadily from 10 px at row 2 to 76 px at rows 25-27 and then narrows into the legs. It reads as a flat side profile with no top plane."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate is a blue beast silhouette, not a building with roof, walls, door and windows, so it does not match the reference kind. It has about 3 lightness steps (a pale icy rim, a mid blue body and a few darker flecks) against 5-6 in the references. Its outline is a light, tinted icy rim, not a black line, which matches the 0% neutral edge share. The body is one large mid-blue mass with only sparse speckle. The measured facts agree: 4 visible tones per tile against 10-12 in the references, and 5 distinct colours in total against 66-185. That is far below both references, so the density is much lower and the piece looks flat and sticker-like.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 13796
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "east",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "beast body (torso, flat dark blue mass with speckles)",
+      "rows": "5-35",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "legs",
+      "rows": "34-44",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ice frost rim and tail/trunk arc",
+      "rows": "2-44",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "side_profile_no_top",
+    "evidence": "The object is a side-profile silhouette of a quadruped, with a speckled dark-blue body that has uniform shading from row 5 to row 35. Column scans show no band ending in a front-edge line, no eave shadow, no ellipse, and no roof or canopy plane. The only light pixels are an irregular 1-3 row frost outline along the silhouette, and these are outline, not a top surface. The width profile grows steadily from 10 to 76 and then tapers, with no widen-then-narrow ellipse. Legs at rows 34-44 are part of the profile. It is not a gate, pavilion or building, so the kind match is weak, and it has no readable horizontal top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a blue beast silhouette, not a building with roof, walls and door/windows, so it does not match the reference kind. It has about 3 tones: a dark blue body, a light blue rim and a few speckles. The measured data agrees: 4 visible tones per tile against 10-12 in the references, and only 5 distinct colours in total against 66-185. The body is a large, mostly flat dark-blue mass with only sparse dots. The rim is tinted light blue, so the outline is not neutral black (0% near-neutral edge pixels), but it is a single thin highlight edge, not a shaded material ramp. The shading, texture and density are all far below the Beodeul references, which have multi-step tile scallops, plaster speckle and per-stone shading.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 10686
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.618Z",
+ "cells": {
+  "16": [
+   "0672024ecf59c52c",
+   "25b1166b26a2481d",
+   "3480540f64739933",
+   "3da67e3c544e5751",
+   "3ea97a43b74685bf",
+   "4aa37f9b85cc8629",
+   "4b6cf3c3a841d339",
+   "61760a8e50a162bd",
+   "7b352d6875ecb589",
+   "8072ca8fbab236bc",
+   "bb6e60882fa4242e",
+   "bd1b9f7bf25a752f",
+   "bf7b4839d9b48405",
+   "d820cc5de76fa95e",
+   "de205e3e2875fe26",
+   "f5f28a5b744bc6c9",
+   "fa293f4ae7382082"
+  ],
+  "24": [
+   "2a7d39ff9305f723",
+   "2ecbc7568ada54f2",
+   "95595264da8525b5",
+   "9b8c8a003ff0d900",
+   "9dc7ce1d6423a14d",
+   "dc39692c7c408eac",
+   "dd1b26a709479237",
+   "e956f72f39cbaada"
+  ],
+  "32": [
+   "05e9cd8dc4cc6b64",
+   "14d81097a78b2d91",
+   "30c98608e5b19d9e",
+   "56c554de5eb8f1cb",
+   "8ea4b76b5c5c5dc7",
+   "9903753c41c4d894",
+   "a4a0d2ea9271a60a",
+   "ac5e81ce362291c7",
+   "b1e617881f189911",
+   "b8eba893c6358dd4",
+   "c00fa651d9c9cb51",
+   "da4103c667ee364e"
+  ],
+  "48": [
+   "6c8c43f3714f7be3",
+   "c3da9edc3b20b9cf"
+  ]
+ }
+}

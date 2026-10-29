@@ -1,0 +1,304 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b48b6a03bcdca762cd16931c40656d4b5a018199d0560e3a1a3a5a9ef6853227",
+ "width": 16,
+ "height": 16,
+ "kind": "debris",
+ "name": "crows ground",
+ "label": "beodeul_city/wave-places/ruined-village/crows_ground",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 질감 없음 (2/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (2/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "질감 없음 (2/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (2/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "2ad36264365ed8d5"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 24,
+  "nearBlackEdge": 0.7,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "scattered debris pile (dark fragments, two small clusters)",
+      "rows": "5-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The sprite is a loose scatter of small dark fragments about 9 rows tall and 9 px wide. It has no standing volume, no front-edge line, no eave shadow, no ellipse and no roof plane. The silhouette widens from 6 to 9 px and then tapers to 1 px, so it reads as flat pieces lying on the floor. There is no vertical front face of 3 or more rows. For a debris kind this is the expected flat scatter, and as a drawing it counts as a flat top-down slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 2,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny dark crow-like sprite, smaller than one tile, so the per-tile facts read 0 and I judged by eye. It looks like a near-black silhouette with perhaps 2-3 tones, and about 52% of its dark edge pixels are near-neutral. That fits a black-on-dark sticker look with little tint. There is no visible material ramp, no feather grain and no highlight clusters. The references carry far more: the hedge has leaf clumps in several greens, and the well and stall have 5-6 steps with per-element highlights and tinted dark outlines. Even next to the small bench, which is also sparse, the candidate has no visible shading ramp. It is also much smaller and sparser than any reference prop, so it reads as thinner and flatter than the Beodeul standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 10763
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "scattered dark debris/bird-like clumps lying on the floor",
+      "rows": "5-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The drawing is a low, irregular scatter of dark blobs in rows 5-13, with a width profile of 6, 7, 9, 8, 6, 5, 3, 1 that tapers away. There is no front-edge line, eave shadow, ellipse, or roof plane, and no vertical south face of 3 or more rows. It is flat litter on the floor, so it reads as a flat top-down scatter with no front face. That is normal for floor debris."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a tiny dark crow silhouette, roughly 16x10 px, so the per-tile facts are 0 and I judged by eye. It uses about 13 colours, close to the bench and lamp references at 14. It has no flat 5x5 areas, but that comes from its size. The body reads as mostly one dark tone with a couple of lighter feather or wing pixels, so about 3 steps against the references' 5-6 on wood, hedge leaves, roof and stone. Its dark edge pixels are about 52% near-neutral, so the outline is mixed. The darkest pixels lean neutral rather than clearly tinted by a neighbouring material, and no part of the shape is separated by value alone. Next to the well, stall and hedge, which show 9-20 visible tones, it looks thinner and more like a flat sticker silhouette. It lacks per-feather highlights, a shaded body volume and any ground contact or shadow ramp. The references have more internal modelling, so this is not the equal of the reference quality.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 15537
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "scattered debris pieces (dark bird-like/rubble clumps lying on floor)",
+      "rows": "5-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The object is a flat scatter of small dark shapes (rows 5-13, width at most 9 px) lying on the floor. It has no standing body, no front-edge line, no eave shadow and no vertical south face of 3 or more rows. This is consistent with floor debris, which is meant to be flat. The silhouette widens from 6 px to 9 px at row 8 and then narrows to 1 px at row 13, an irregular blob outline with no ellipse lid or rim. With no front face, it reads as a top-down slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a tiny dark crow sprite, smaller than one 16x16 tile, so the per-tile facts read 0 and I judged by eye. It is mostly a dark purple-grey silhouette with only a few lighter wing and body highlights, roughly 3-4 readable lightness steps against 5-6 on the references (bench wood, well stones, stall). 52% of its dark edge pixels are near-neutral, which is similar to the bench (44%) but unlike the tinted outlines of the hedge and stall (0-1%). So the outline is mixed, leaning toward a neutral dark line around the shape. It has no 5x5 flat fills, but the body is a compact dark mass with little grain or feather texture, and it looks more like a sticker than the references' material-shaded pieces. Its 13 colours match the bench's 14 but give less visible shading. Sparseness alone does not fail it. The flat dark body, neutral-leaning outline and shallow ramp would still look thinner than the references, so it fails with doubt.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 15742
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper right dark clump with a light speck at the top",
+      "rows": "5-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower left dark clump with purple and teal highlights",
+      "rows": "8-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is two small irregular dark blobs spread diagonally over rows 5-13, with a width profile of 6, 7, 9, 8, 6, 5, 3, 1. The column scans show no front-edge line, no eave shadow and no ellipse. No part has a vertical south face of 3 or more rows. Everything reads as flat scatter lying on the floor, seen from above. That fits the debris kind, but it gives no top surface and no front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny dark sprite, roughly a spider- or crow-shaped silhouette under one tile in size. It is built from near-black and dark grey with perhaps one or two lighter accents, so I count about 3 lightness steps against 5-6 on the references (bench, hedge, well, stall). The tile-based facts are 0 because the piece is smaller than a tile, so I judged by eye. About 52% of its dark edge pixels are neutral, which is close to the bench (44%) and the lamp (100%) and far from the tinted outlines of the hedge, stall and well. The outline is therefore mixed, leaning sticker-like. It shows no feather clumps, ground grain or per-part highlights, and the body is basically a dark blob with thin legs. It has 13 distinct colours, similar to the thin bench and lamp, but those props still show wood grain and per-plank shading, which this piece lacks. Next to the hedge, well and stall it looks thinner, flatter and more silhouette-like, and a careful artist would not accept it beside them. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 13009
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.332Z",
+ "cells": {
+  "16": [
+   "8fac77ae9293607d"
+  ],
+  "24": [
+   "01217954e1b0ee12",
+   "0cbf9ef0013369d2",
+   "2cb2e5ccd628bb9d",
+   "418de0f955d6eaa6",
+   "6b74836b4422af7b",
+   "f981309d0355d2e1"
+  ],
+  "32": [
+   "0e261b612402f5e2",
+   "82bc833befdecdc7",
+   "a2530a55bf1203ed",
+   "b083dc566d17eaf5",
+   "c6d91b5fcf3c013e",
+   "ce2f3baebe82f187"
+  ],
+  "48": [
+   "0c15efaa704f26af",
+   "0ee618573df4a163",
+   "769cde43565b59ec",
+   "7fa8de004ab774a5",
+   "8bbb993f9eed2c3f",
+   "abec2f6a1ce677be"
+  ]
+ }
+}

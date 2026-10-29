@@ -1,0 +1,295 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3166293d6a3dbc5c3343e29b4c85794b355b175d23e5488de79905f896e1a83b",
+ "width": 16,
+ "height": 32,
+ "kind": "debris",
+ "name": "tusk single",
+ "label": "beodeul_city/wave-places/ice-age-field/tusk_single",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "2ad36264365ed8d5"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 63,
+  "nearBlackEdge": 0.02,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tusk body (curved tapering tusk)",
+      "rows": "4-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "white debris pile / bone dust at base",
+      "rows": "26-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "A single curved tusk lies diagonally (rows 4-25), narrowing to a tip at the upper right, with a small white mound at its base (rows 26-31, widths 8-12). It is scattered debris on the floor, not a standing volume. No front-edge line, eave shadow, or ellipse is present, and the tusk is a shaded elongated shape with no horizontal top surface and no 3+ row vertical front face. The kind (debris) matches. It fits neither three_quarter nor front_elevation, so I report it as other."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a thin, sparse single prop, so the per-tile tone count of 0 says nothing against it and I judged by eye. It uses 17 distinct colours, more than the similarly sparse bench (14) and lamp (14). Its near-flat coverage is 0%, so there are no flat fills. Only 5% of its dark edge pixels are neutral, so the outlines lean toward a tinted dark material tone instead of the black sticker look. The tusk curve shows roughly 4-5 lightness steps, from a pale highlight through mid greys to a dark tip, and the base has some grain and variation. It is simpler and softer than the stall and well, but it is as rich as the bench and lamp, so a careful artist would accept it next to them. The main risk is the very small size, which makes the shading hard to read.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 12472
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "curved tusk (main body, diagonal 3-5 px wide shaft)",
+      "rows": "4-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "white pile/mound at the base under the tusk",
+      "rows": "26-31",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "side_profile_no_top",
+    "evidence": "The main body is a thin curved tusk with a silhouette 2-5 px wide from rows 4-25. It is drawn as a profile with a light highlight edge and a dark shaded core, and it has no horizontal band, front-edge line, eave shadow or ellipse. Only the small white mound at rows 26-30 (widths 8, 12, 12, 12, 10) reads as a heap lying on the floor. The mound is a minor part, so it does not give the main body a top surface. The tusk is a single vertical-ish profile shape with no top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small, sparse single-tusk prop, so the per-tile tone count of 0 says nothing against it and I judged it by eye. It has 17 distinct colours, more than the bench (14) and lamp (14) references, which are also thin props. Near-flat coverage is 0%, and only 5% of its dark edge pixels are neutral, so the outline is tinted (a dark warm/grey-brown tone of the ivory) rather than a black sticker line. The tusk shows about 5 lightness steps from highlight to shadow along its curve, plus a darker base cluster with some grain. It is less dense than the stall and well, but those are large multi-material props. Next to the bench and lamp it does not look thinner or flatter, so a careful artist would accept it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16227
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "curved tusk lying diagonally",
+      "rows": "4-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "white debris/bone pile at base",
+      "rows": "26-31",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The object is a thin curved tusk drawn as a diagonal silhouette 2-5 px wide (rows 4-25) resting on a small white rubble/bone pile at rows 26-30 (width 8-12). The tusk shows no band ending in a front-edge line, no ellipse and no eave shadow, only a light-to-dark shading along its length. It has no vertical front face of 3+ rows, so it reads as a flat object lying on the floor. The white base is a low heap with a lighter top and a bluish underside, but it is only about 5 rows tall and is a small detail. This matches the flat top-down look expected of floor debris, with no three-quarter volume."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The tusk is a thin, sparse single prop, so the per-tile tone count of 0 says nothing for or against it. Judged by eye next to the thin references (bench, lamp), it shows about 5 steps on the curved ivory: highlight, light, mid, shadow and a dark base. It has 17 distinct colours, more than the bench (14) and lamp (14). Near-flat coverage is 0%. Only 5% of its dark edge pixels are neutral, so the outline leans toward the adjacent material's tone and does not read as a black sticker line. It has some grain and a tufted, mottled base. It is not as rich as the stall or well, but those are far larger objects. It would sit acceptably beside the bench and lamp without looking flatter or thinner. The call is close, given the small size and low visible detail at this scale.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 12548
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "curved tusk lying diagonally",
+      "rows": "4-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "white bone/rubble pile at base",
+      "rows": "26-31",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "The object is a curved tusk (rows 4-25, width 2-5 px) rising from a white pile of rubble or bones (rows 26-31, width 8-12). Scattered debris on the floor has no built volume. The tusk is a thin diagonal profile with no horizontal top band, no front-edge line and no eave shadow. The base pile is an irregular heap, with a lit upper edge at row 26 and a bluish shade at rows 30-31. It reads as a low floor heap and does not form a box with a top and a front face, so it reads as neither a clear three-quarter nor a front-elevation object."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small, thin single-tile prop, so the per-tile tone count of 0 says nothing against it. By eye the tusk has about 5 lightness steps along its curve, with a highlight edge, cream body, grey-brown shadow side and a darker base. It has 17 distinct colours, more than the similarly thin bench and lamp (14 each). Only 5% of its dark edge pixels are near-neutral, so the outlines lean brown or grey-tinted rather than black. This matches the hedge (0%) and cheese stall (1%) references, and the lamp's 100% is the neutral-black look it avoids. There are no flat 5x5 areas (0%). It is somewhat sparser and less textured than the hedge, stall and well, but about as rich as the bench and lamp, and it does not look like a sticker next to them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13139
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.810Z",
+ "cells": {
+  "16": [
+   "5d743a72fba618f9",
+   "616b4bde370820bb"
+  ],
+  "24": [
+   "13a2151a52e05310",
+   "5641dedbc273cf2a",
+   "6c1e89052b1dd327",
+   "6d40f52edd502283",
+   "6f09e72b13796327",
+   "71a8aba3931a45cf",
+   "8cf9fa247dbf469f",
+   "a96116914921d3e9",
+   "b44f4178bae6f261",
+   "c86047141fc04a27",
+   "dd44fdf7e275f785",
+   "f0d1845bfbe92d65"
+  ],
+  "32": [
+   "19981ae591e6a5fa",
+   "3b57f171ad9475ef",
+   "a96051a7d842895b"
+  ],
+  "48": [
+   "1b9c997a2c6e591c",
+   "2e79343a821d378f",
+   "599e6e589f0ae710",
+   "9a8a3617c99d2d3a",
+   "9f52da2b18dac81e",
+   "d2cb43c8afdbcd4a"
+  ]
+ }
+}

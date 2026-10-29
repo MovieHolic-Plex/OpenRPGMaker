@@ -1,0 +1,425 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "27ae24741e56cbdfacd0a62003d2434e9b7600963e22d5a867e272865d1f61a1",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "fur tent dome",
+ "label": "beodeul_city/wave-places/ice-age-field/fur_tent_dome",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (3/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (3/4)",
+  "3/4: 윗면 2행 < 3 (2/4)",
+  "화풍: 판정자 fail (4/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (3/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (3/4)",
+   "윗면 2행 < 3 (2/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 5,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "5f62fef078ef7661"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 21,
+  "tileColorsP90": 23,
+  "darkV5": 27,
+  "nearBlackEdge": 0.05,
+  "opaqueTiles": 6
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "snow cap arc along the dome outline",
+      "rows": "9-16",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "fur panels (upper gores and lower walls) with seams",
+      "rows": "14-43",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark door opening",
+      "rows": "30-43",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "snow ground strip",
+      "rows": "44-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The tent is a front-facing dome whose silhouette widens from 10 px at row 9 to 42 px at rows 25-34 and then narrows to the base. The light snow band follows the outline for about 4-5 rows. It has no front-edge line and no eave shadow, so it reads as an outline rim or hat, not a horizontal top surface. Below it the fur panels, seams and dark door are all vertical faces seen face-on. No horizontal roof plane with an edge line is drawn, so the body reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a tiny dome, about 40x25 source pixels, beside two large two-storey references. The measured facts look good: 20 visible tones per tile against 12 and 10, and 6% near-flat coverage against 0%. These numbers are inflated because the few full tiles it covers are packed with the dome's dark outline, frost highlights and door arch. By eye the dome body has only about 4 lightness steps on the brown fur/wood ramp, against the references' 5-6 on tiles, timber and stone. Texture is limited to a few frost dots and vertical band lines, with no per-tile highlights or grain like the references. Outline is the main problem: 55% of dark edge pixels are near-neutral, against 7-9% on both references. The dark rim and the arch interior read as a cold neutral near-black line, not a dark tone of the adjacent material. The white rail and base line at the bottom add a sticker-like edge. Overall it is clean but thinner and flatter than the references, and its outline is closer to the sticker look, so it should not pass.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 18800
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "snow cap along the dome arc",
+      "rows": "9-16",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "fur panels and straps (dome body)",
+      "rows": "17-43",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark doorway",
+      "rows": "30-43",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "snow ground strip at base",
+      "rows": "44-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 27,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The dome is drawn as a flat front elevation. The silhouette widens steadily from 10 px at row 9 to 42 px at rows 25-34, then narrows toward the base. This is a rounded outline, not an ellipse with a back rim and a front rim. The snow band (rows 9-16) follows the outer arc like a rim or outline. It has no front-edge line and no eave shadow beneath it. The gray and brown panels (rows 17-30) are split by vertical straps and read as vertical fur faces, not a receding roof plane. The doorway (rows 30-43) is a vertical dark opening. No horizontal surface is shown, so I count the top as a rim of about 2 rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a very small dome tent, roughly one tile in size. Its measured visible tones per tile (20) and near-flat coverage (6%) are at or above the references (12 and 10 tones, 0% flat), so density is not much lower by the numbers. By eye, though, the body reads as a few brown steps with some curved panel lines and a pale snow or fur rim. That is about 4 steps, against the 5-6 on the reference roof tiles and stone. Texture is limited to a few seams and highlights. It has no per-tile scallops or grain like the references. The near-neutral share of dark edge pixels is 55%, against 7-9% for the references. The dark outline and the dark doorway therefore lean toward neutral black rather than a tinted dark material tone. The white rim and the pale frame lines look slightly sticker-like next to the references. A careful artist would find it thinner and simpler than the Beodeul pieces, so it fails when in doubt.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 23294
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "snow cap along dome arc",
+      "rows": "9-17",
+      "evidence": "c",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "gray fur roof panels (upper dome)",
+      "rows": "14-22",
+      "evidence": "c",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": "22-23"
+     },
+     {
+      "part": "brown fur wall panels with dark doorway",
+      "rows": "23-43",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 9,
+    "front_face_rows": 21,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette widens steadily from 10px at row 9 to 42px at row 25, which makes a dome. Snow follows the arc at rows 9-17, and gray fur roof panels sit under it at rows 14-22. A dark seam and shadow (rows 18-23 at x=13 and x=35) separate that roof plane from the brown wall panels below. The front face runs rows 23-43 and includes a dark doorway at x=~21-35, rows 30-43. The roof is a sloped plane, so evidence (c) applies. This is borderline: the snow band alone would count only as a rim, and the tent could also be read as a front elevation of a dome."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The measured facts do not count against the candidate: 20 visible tones per tile against 12 and 10 for the references, 6% near-flat coverage, and no large flat fills. The picture is weaker than the numbers. The dome is tiny and its fur/hide surface has only about 3-4 brown steps, with no per-tile highlights, scallops or grain like the reference roofs and stone. The numbers are probably inflated by the pale rim and the dark doorway in a very small area. Outline is mixed: 55% of dark edge pixels are neutral, against 7-9% for the references. The dark doorway and dome edge read as near-black rather than a dark tone of the adjacent material, and the pale rim looks like a sticker outline. Overall it looks thinner and flatter than the references, and a careful artist would not accept it beside them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 27333
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "snow cap band following the dome arc",
+      "rows": "10-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper fur panels (grey)",
+      "rows": "14-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower fur panels (tan/brown) with rope seams",
+      "rows": "22-43",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark door opening",
+      "rows": "30-43",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "snow on ground strip",
+      "rows": "44-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 34,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The dome is a front-on silhouette with a rounded outline. The only 'top' is a 3-4 row snow band that follows the arc at the outline, like a rim (x=24: rows 10-13). It has no front-edge line and no eave shadow, and no ellipse or horizontal plane is visible. The fur panels (rows 14-43) are drawn face-on, with vertical rope seams and a dark door opening. The grey panels in rows 14-22 could be read as roof gores, but they sit directly against the snow band with no edge line, so they read as vertical panels. The ground snow strip at rows 44-46 is a base, not a roof surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small dome with fur panels, a pale snow-like cap, a dark arched door and a thin light ring at the base. Measured density is not the problem: 20 visible tones per tile against 12 and 10 in the references, and only 6% near-flat coverage. By eye the tones come mostly from a few ramps (about 4 steps on the brown fur, 2-3 on the white cap) plus the pale base lines. The references carry about 6 steps per material with per-tile highlights, such as roof scallops and individually shaded stones. The outline is mixed. 55% of the dark edge pixels are near-neutral, against 7-9% on the references, and the door arch and rim read as near-black and grey rather than a dark tint of the neighbouring fur or cloth. The pale rim lines and black door opening give a slight sticker look that the Beodeul references avoid. Texture is present (panel seams, fur flecks) but sparse and less varied than the references. With the shallower ramps, the partly neutral outline and the thinner clustered detail, a careful artist would likely not accept it beside the references, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 21221
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.671Z",
+ "cells": {
+  "16": [
+   "041088452b11e911",
+   "1bac931d60810cfd",
+   "289450bd0cf45649",
+   "2bc576db6b7c7db5",
+   "361d3a8f6f0785ba",
+   "42b72014304067e9",
+   "4349c1aa92f4e119",
+   "458d0c34bea8c8aa",
+   "fdcfe79e666ef180"
+  ],
+  "24": [
+   "0b8b44cd4f741249",
+   "14c6141b15a658dd",
+   "2805a12c9f75a378",
+   "8365af05bc76bf18"
+  ],
+  "32": [
+   "002c5d024acbd3f8",
+   "0e79a2921c57def9",
+   "0f049f76bda8f0da",
+   "15d06e68160c5838",
+   "250154c2fa5bf6d5",
+   "29e95b704b22e345",
+   "2d278c666d9c2a81",
+   "397590d9ce54bc7a",
+   "523ab49fdde60029",
+   "7e5efe38fcbb038e",
+   "80d2134593123449",
+   "87263e59bf2d7598",
+   "89748d8fe1bdce40",
+   "9848755ccae71671",
+   "a1f17b3081a5c19a",
+   "b0ac60cfc95b63b9",
+   "c25a2b7d3e32ce38",
+   "cd33e504c1c616ce",
+   "cd3e45f8e1b1e80e",
+   "cd5e89c90020efaa",
+   "cff0c87e92731c73",
+   "d09a92d15a9d5a5e",
+   "dd436040e93b2ac6",
+   "f372da951473a197"
+  ],
+  "48": [
+   "46cb506999aec2f5"
+  ]
+ }
+}

@@ -1,0 +1,303 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b2f19592650074d8905dbecd8e3d0cf311a8a2f85bb66ed9dff9167e5f6ba2ce",
+ "width": 32,
+ "height": 16,
+ "kind": "flat",
+ "name": "fog small",
+ "label": "beodeul_city/wave-places/ruined-village/fog_small",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 평면 채움 (4/4)",
+  "화풍: 질감 없음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "평면 채움 (4/4)",
+   "질감 없음 (4/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 2,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 210,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "fog patch (flat soft blob)",
+      "rows": "4-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 9,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The object is a soft, semi-transparent cloud-like blob spanning rows 4-12. Its width grows from 8 to 15 and then shrinks to 1, a rounded blob outline. It has no front-edge line, no eave shadow and no vertical face. It is a flat plate seen from above, which fits the flat kind. There is no front face of 3 or more rows, so it reads as a top-down slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 2,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a flat grey-blue background with a small pale cloud-like blob in the lower right. The measured facts show 1 distinct colour in total, 59% near-flat coverage, and 0 visible tones per full tile, because the piece is smaller than a tile. By eye there are only 2-3 tones, with no outline, grain or texture dots. The grass and paving references show 3 and 7 visible tones per tile, 0% near-flat coverage and dense texture. The candidate is far flatter and thinner than either reference, and a careful artist would not accept it next to them. The sparse-object leniency does not rescue it, since a ground patch should carry grain and tone variation across its 4x3 tiles.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 8372
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "fog patch (flat translucent blob)",
+      "rows": "4-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 9,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The object is a soft, uniformly light-grey cloud blob spanning rows 4-12. The width profile grows from 8 to 15 and tapers to 1, so it has an organic oval outline. There is no front edge line, eave shadow, or vertical south face, so it is a flat decal seen from above. That matches the flat kind. The 3/4 front-face rule does not apply to it."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 2,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate is a small grey-blue fog blob on a flat dark background. The facts show 1 distinct colour in total, 0 visible tones per full tile, and 59% near-flat coverage. The references show 3 visible tones (grass) and 7 (paving), with 0% flat coverage. The blob itself has only about 2-3 soft lightness steps and no grain, dots or clumps. It has no outline and no texture. It does not fill a 4x3 tile patch and looks far thinner and flatter than the references. Fog may be sparse by nature, but this is much less rich than the reference ground tiles.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 11959
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "fog patch (flat blob of mist seen from above)",
+      "rows": "4-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 9,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The object is a soft, irregular, cloud-shaped blob spanning rows 4-12. Its width grows from 8 to 15 and then tapers to 1, so it reads as a flat patch seen from above. It has no front-edge line, no eave shadow and no vertical south face. Its colour is a uniform pale grey-blue with only slight shading. That matches a flat ground decal with no front face, so it is a top-down slab, which suits the flat kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 2,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate is a small grey-blue fog blob on a flat dark background, smaller than one full 16x16 tile. Measured facts show 1 distinct colour overall and 59% near-flat coverage, against 0% for both references. The blob has only about 2-3 soft tones (a light grey core with a slightly darker edge) and no grain, dots or clumps. The grass reference shows about 3 visible tones with tufts and clumps, and the paving reference shows 7 tones with stone-by-stone shading. The candidate has no outline. Its large background areas are one flat colour with no texture. It is much flatter and thinner than either reference, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 8588
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "fog patch (flat cloud-shaped decal)",
+      "rows": "4-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 9,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The object is a soft, blobby, semi-transparent fog patch spanning rows 4-12. The width profile widens from 8 to 15 and narrows to 1, so it is an organic cloud shape, not a standing object. It has no front-edge line, no eave shadow and no vertical front face. It is a flat ground decal viewed from above, which suits the flat kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 2,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate is a small grey-blue blob (fog puff) on a flat dark grey-blue background. It is smaller than one tile, and the measured facts give 0 visible tones per tile, 1 distinct colour in total and 59% near-flat coverage. Both references have 0% near-flat coverage and carry grain, clumps and per-stone shading. The background is one flat colour with no grain. The blob shows only about 2-3 tones, with no tile-level texture, no per-wisp highlights and no tinted outline ramp. It is much flatter and sparser than the grass and paving references, and it does not look like a 4x3-tile ground patch.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 8917
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.372Z",
+ "cells": {
+  "16": [
+   "2d5ed1a1701255d5",
+   "e6e5a8ee8697ae64"
+  ],
+  "24": [
+   "0b33ef17aff4bd2e",
+   "0b9697728d3a1ae5",
+   "1535c200e6e96c80",
+   "262ee7784f138f90",
+   "3367fd87da5b5b23",
+   "6c2c4609a3865ad8",
+   "6cc1039503b96c88",
+   "9e72742dc020376a",
+   "b25c4b69c175c0c5",
+   "cc413a855bc842b1",
+   "d31dae60dfa17be4",
+   "e87526011a4323a4"
+  ],
+  "32": [
+   "2fb16c20fd44919b",
+   "cabe83915515919d"
+  ],
+  "48": [
+   "0b927471eaf79fa2",
+   "1bd3eb59ea4400c8",
+   "5df0e36524a09db2",
+   "7e62f0d32c0a1e21",
+   "7ed1b52276250569",
+   "aae667c45ffc9ef5"
+  ]
+ }
+}

@@ -1,0 +1,411 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6b1c70c6341aa29ccd2ed3be19082b40a0d1bd93a4e624a2e34690c030b0ed74",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "stairs basalt",
+ "label": "beodeul_city/wave-places/volcano-field/stairs_basalt",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 판정자 의견이 갈림(분명한 3/4 0/4, 분명한 위반 2/4)",
+  "3/4: 앞면 2행 < 3 (4/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 질감 없음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "판정자 의견이 갈림(분명한 3/4 0/4, 분명한 위반 2/4)",
+   "앞면 2행 < 3 (4/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "질감 없음 (4/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 3,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "5f62fef078ef7661"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 5,
+  "tileColorsP90": 5,
+  "darkV5": 36,
+  "nearBlackEdge": 0.76,
+  "opaqueTiles": 9
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "step treads (repeating light bands, 10 steps)",
+      "rows": "2-4",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "5-6"
+     },
+     {
+      "part": "step risers (repeating dark 2-row bands)",
+      "rows": "0-1",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "side rails/walls (vertical strips at left and right edges)",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 2,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The column scan shows a strict repeating pattern of 3 light rows (L=114) and 2 dark rows (L=27) with a period of 5 rows, for example light 2-4, dark 5-6, light 7-9. Each light band is a horizontal tread that ends in a dark line and shadow below it, which is evidence (a). Each 2-row dark band is a vertical riser. The side rails are plain vertical strips. The silhouette is a constant 48 px wide over rows 0-47. The treads are 3 rows each and the risers are 2 rows each. This is a borderline case, because no single riser reaches 3 rows. I judged it a stepped three-quarter staircase rather than a flat slab, because the alternating tread and riser bands form the stepped structure."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a small basalt staircase drawn as horizontal slats with a dark border, much simpler than the full houses beside it. It has only 5 visible tones per tile against 10-12 in the references. Its dark edge pixels are 99% near-neutral, so the outline is a neutral dark line, while the references are at 7-9% and carry a tint. Each step is a flat band with a thin highlight line, so there is no per-stone shading, grain or speckle. The shading ramp has about 3 steps, against 5-6 on the references' roofs and walls. The measured 0% near-flat coverage is only because the bands are thin, since the bands are uniform in colour with no texture. This reads as a sticker-like, shallow piece next to the Beodeul references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+    "앞면 2행 < 3 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+     "앞면 2행 < 3 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 17620
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stair treads (repeated 3-row light bands)",
+      "rows": "2-44",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "5-6"
+     },
+     {
+      "part": "stair risers (repeated 2-row dark bands)",
+      "rows": "0-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "side stringers (narrow columns left and right)",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 2,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The column scan at x=12, 24 and 35 shows the same pattern throughout: 3 light rows (L=114, treads) followed by 2 dark rows (L=27, risers or edge shadow), repeated 9 times from row 2 to row 46. Each light tread band ends in a dark edge line and riser, as in evidence (a). The risers are only 2 rows each, so the front face per step is thin. The ratio of 3 tread rows to 2 riser rows is plausible for a 45 degree stair, and the order of tread then riser is consistent with steps rising northward. The wide dark band at rows 45-46 closes the base. The treads show no side face, and the stringers are drawn as vertical strips."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a small grey-blue slatted stair block with horizontal bands and a dark outline. Only 5 visible tones per 16x16 tile against 12 and 10 for the references. Roughly 3 lightness steps on the main material, where the references have about 6. 99% of the dark edge pixels are neutral, so the outline is a near-black line around the whole shape (sticker look), while the references sit at 7-9%. The 0% near-flat coverage comes from the regular band pattern and not from real grain; there are no per-stone highlights, speckle or tile scallops. It is much shallower and flatter than both references, and its structure is not comparable to a roof, wall and door building.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+    "앞면 2행 < 3 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+     "앞면 2행 < 3 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 20731
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "step treads (repeated light bands, 10 steps)",
+      "rows": "2-4",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5-6"
+     },
+     {
+      "part": "step risers (dark bands between treads)",
+      "rows": "5-6",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left and right side rails",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 2,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The column scan at x=12, 24 and 35 shows the same repeating pattern: a light band of 3 rows (L=114) followed by a dark band of 2 rows (L=27), repeated ten times. Each 3-row light band reads as a horizontal tread, and the 2-row dark band below it reads as a riser or shadow. This repetition is the only depth cue. There is no distinct front face of 3 or more rows for any single step. The two side rails run the full height as vertical strips and show no top surface. There is no isometric side face. The result is a borderline reading: stripes that behave as treads with 2-row risers, so it is a weak three_quarter, close to a flat striped elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a small basalt staircase of horizontal slabs, not a whole building with roof, walls and door/windows, so it does not match the reference kind. It has 5 raw colours and 5 visible tones per tile, against 10-12 visible tones for the references. 99% of its dark edge pixels are near-neutral, which gives the uniform grey-black sticker outline, while the references sit at 7-9%. The steps are evenly spaced bands with only about 3 distinct lightness steps. There is no per-stone shading or grain, and no highlight or speckle variation within the slabs. Near-flat coverage is 0%, but only because the bands alternate, so this is not real texture. It is clearly shallower and flatter than the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "앞면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "앞면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 17971
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stair treads (repeated light bands)",
+      "rows": "2-4",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5-6"
+     },
+     {
+      "part": "side stringers/walls (left and right strips)",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 2,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The centre of the 48x48 drawing repeats a 5-row cycle: a 3-row light band (L=114, e.g. rows 2-4, 7-9, 12-14) followed by a 2-row dark band (L=27, e.g. rows 5-6, 10-11). Each light band reads as a stair tread, a horizontal surface ending at the edge line where the dark riser begins. Each dark band is the riser, the vertical front face, only 2 rows high per step. The first dark rows 0-1 are the riser of a step cut off at the top. Along the left and right edges there are narrow vertical strips (x about 4-8 and 40-44) that read as stringers or side walls with no top surface of their own, so all_major_parts_have_top is false. No isometric side face is drawn. Because each riser is only 2 rows, this is a borderline three_quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a small grey-blue slatted stair block, not a building with roof, walls and door/windows, so it does not match the reference kind. It uses 5 raw colours and 5 visible tones per tile against 10-12 in the references. 99% of its dark edge pixels are near-neutral, which gives the near-black sticker outline, while the references sit at 7-9%. The horizontal slats repeat one band pattern, with no per-stone shading, grain or speckle like the tile scallops and stone-by-stone shading in the references. About 3 lightness steps on the main material is shallow compared with the 5-6 steps in Beodeul. Near-flat coverage is 0%, but only because of the stripe pattern.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "앞면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "앞면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 18888
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.202Z",
+ "cells": {
+  "16": [
+   "127aaee5d5c00b68",
+   "311b1a4168e1f9a3",
+   "3e370240e56bbd46",
+   "3fbc96ef72f08668",
+   "5236d7fce7fed30b",
+   "80da1fe0a0d03171",
+   "c0019a274a02728d",
+   "d244aa7512f53ea6",
+   "f392fbf2ab0f0675"
+  ],
+  "24": [
+   "08ee7b13fcc8802c",
+   "21c5a27cab441b21",
+   "552a46dde536efe6",
+   "62bc72b4b8a5820a"
+  ],
+  "32": [
+   "002052ca3eacf0c0",
+   "18bc1c322a675d36",
+   "1a9e4b32f980d8dd",
+   "1cd5af203698aefe",
+   "1f0d8828b68b6a32",
+   "2b78683c4f9fc9ef",
+   "3d19c764faa88d77",
+   "412b317b7440452d",
+   "4bd3f8d73c496077",
+   "6a3539ba881fa523",
+   "6ff8d0f33bd44b5b",
+   "72402fc91bdde984",
+   "7b3703447caef3e5",
+   "87972e43170d341a",
+   "8f4b5a1793f02b6b",
+   "954bb8e36d798613",
+   "b5ea31e9e167c28d",
+   "b74310d3c865389a",
+   "b94562474d0681fd",
+   "bce0d36926a6f1c4",
+   "c1ddca90848c8365",
+   "cb68fb2c0a881994",
+   "ecf89fba8a7c6d3a",
+   "ff2c4067b10301f4"
+  ],
+  "48": [
+   "42065d34a8692975"
+  ]
+ }
+}

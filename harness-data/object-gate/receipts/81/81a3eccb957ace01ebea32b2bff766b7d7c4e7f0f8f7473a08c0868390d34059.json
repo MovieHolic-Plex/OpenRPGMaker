@@ -1,0 +1,335 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "81a3eccb957ace01ebea32b2bff766b7d7c4e7f0f8f7473a08c0868390d34059",
+ "width": 16,
+ "height": 32,
+ "kind": "organic",
+ "name": "dead sapling",
+ "label": "beodeul_city/wave-places/ruined-village/dead_sapling",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 명암 3단 < 4 (3/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (2/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "명암 3단 < 4 (3/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (2/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 5,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "bcc19e99327f94ce"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 28,
+  "nearBlackEdge": 0.1,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "trunk",
+      "rows": "5-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "branches",
+      "rows": "9-18",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base mound of sandy soil",
+      "rows": "29-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 27,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "A thin 2-px trunk (rows 19-28) with forked twig branches (rows 9-18) and a small sandy base at rows 29-31 (width 5 to 9). It is a leafless sapling, so there is no horizontal surface, band, ellipse or edge line. The base mound is 3 rows and has no clear top ellipse. The object is a vertical silhouette in front elevation, which is natural for a thin plant."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 2,
+    "reference_steps": 6,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny, thin dead sapling, smaller than one 16x16 tile, so the per-tile facts read 0 and I judged it by eye. It has about 14 raw colours in total. The trunk and two or three twig branches look like one or two brown tones with a light highlight, giving roughly 2-3 shading steps against 5-6 on the references. There is no visible bark grain, no clump or texture variation, and no tinted outline separating forms. Both references carry far more shaded structure: layered leaf clumps, shaded roots and a trunk with value steps. Placed next to them, the sapling looks thinner, flatter and more sticker-like than a careful artist would accept. Sparseness alone is not the reason for failing it. The failure is the shallow shading and the lack of bark detail on the trunk.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 9492
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "thin trunk with bare branches",
+      "rows": "5-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "root base / sand mound at foot",
+      "rows": "29-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 27,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The dead sapling is a thin 2-px trunk (rows 19-28) with forked bare branches above (rows 5-18) and a small flared base or mound at rows 29-31 (width 5 to 9). It is drawn as a front-facing silhouette. No band ends in a front-edge line, no ellipse widens and narrows again, and there is no roof or canopy plane. The base rows 29-31 show light sandy pixels, but they are only 3 rows high and have no clear edge line or eave shadow, so they do not make a horizontal top surface. Organic and plant-like, so the kind matches. Reads as a front elevation with no top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a thin, sparse dead sapling smaller than one 16x16 tile, so the per-tile facts read 0 and I judged by eye. It has 14 distinct colours in total. Its edge pixels are tinted (0% near-neutral), so the dark brown outline follows the wood tone rather than a black sticker line, and there are no flat 5x5 fills. However, the trunk and twigs look like a near single-tone dark brown stick with only about 3 lightness steps, against the references' 6 or more. I can see no bark grain, per-branch highlights or soil texture at the base. Next to the references, which have a lit side, dark side and clustered detail, it looks thinner and flatter. Sparseness alone would not fail a dead sapling, but the shading is shallow and I cannot say a careful artist would accept it beside the references. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 11983
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "trunk and branches",
+      "rows": "5-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "sandy dirt mound at base",
+      "rows": "29-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "A thin, 2px-wide dead trunk with forked twig branches (rows 5-28), drawn as a vertical silhouette with no horizontal top surface. The base (rows 29-31) is a small widening, 5 then 9 px wide, of pale sand or soil, only 3 rows tall and with no clear front-edge line or eave shadow. This is a slender organic form, so no top surface is expected, but the drawing is a flat front elevation with no top plane."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny, thin twig with a few forked branches. It is under one tile in size, so the per-tile facts read 0 and I judged by eye. Its 14 distinct colours resolve to roughly 3 visible brown tones: a single dark trunk line with a lighter edge and little else. The reference trees show 5-6 shaded steps on the canopy, trunk and roots, with leaf clumps, bark grain and root flare. The candidate has no bark texture, no per-branch value modelling, no trunk thickness to shade, and no ground contact or root detail. It would look thinner, flatter and more sticker-like next to the references, and no tinted outline is visible (the 0% neutral-edge fact is on too few pixels to count). Sparseness alone would not fail it, but it does not reach the references' craft, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 14732
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "trunk and branches (thin vertical stem with forked twigs)",
+      "rows": "5-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base mound of sand/dirt at the foot",
+      "rows": "29-31",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main body is a thin 2-px-wide trunk (rows 19-28) with forked branches at the top (rows 5-18, width 1-5). It is a plant, so it is drawn as a vertical stem with no horizontal top surface. Only a small light-coloured heap sits at the base (rows 29-31, widths 5 and 9), which reads as a small ground mound and does not make a top for the sapling. The object is a front-view silhouette with no top surface, so it reads as front elevation. For an organic plant this is expected, but the measurement is that no top surface is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a tiny, sparse twig about 8px wide and 15px tall at source scale. It is smaller than one 16x16 tile, so the per-tile facts read 0 and I judged by eye. It is thin by nature, so I did not fail it on sparseness alone. It has no flat fills, and the edge pixels are tinted rather than neutral (0% near-neutral). Beside the references it still looks thin and flat. The trunk is only 1-2px wide with roughly 3 tones: a brown body, a darker side and a few light pixels. The branches are single-pixel strokes with no clustered shading or grain, and the base has little soil or root detail. The references carry 5-6+ steps per material, with bark shaded in several steps and roots and grass at the base. The 14 total colours suggest some shading, but at this size it reads as a simple sticker-like silhouette. A careful artist would not accept it next to the references without more bark texture, a shaded trunk and a more developed base, so on a doubtful call I fail it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 12455
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.342Z",
+ "cells": {
+  "16": [
+   "2dda97d2f71c25a4",
+   "f45af4611bb6bfd0"
+  ],
+  "24": [
+   "1c05a8eef250a2f4",
+   "1e044f95469ab513",
+   "2646c49a679e07a3",
+   "2dccb8f98214d474",
+   "493ed571f475d3b4",
+   "65278f83829cca29",
+   "a58e5b98476cd748",
+   "c006291bd1b3c2c7",
+   "d13b8a09acd1985e",
+   "d5b12e4f0373e29e",
+   "e5eccc226609d5a8",
+   "f399e49469c2669b"
+  ],
+  "32": [
+   "667c69c6e2ab8165",
+   "7dcc402609c503bd",
+   "a0722f730104183b"
+  ],
+  "48": [
+   "0aac36ea08cf1002",
+   "1938aba19199487d",
+   "53ee0648b3367960",
+   "5a32504a77dd543e",
+   "90be9d750d186c36",
+   "97f80ee74079221a"
+  ]
+ }
+}

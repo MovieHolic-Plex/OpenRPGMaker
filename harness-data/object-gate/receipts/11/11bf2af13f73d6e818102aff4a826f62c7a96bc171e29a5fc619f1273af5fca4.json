@@ -1,0 +1,522 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "11bf2af13f73d6e818102aff4a826f62c7a96bc171e29a5fc619f1273af5fca4",
+ "width": 80,
+ "height": 48,
+ "kind": "structure",
+ "name": "gate post ruin",
+ "label": "beodeul_city/wave-places/ruined-village/gate_post_ruin",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (4/4)",
+  "3/4: 윗면 2행 < 3 (4/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 명암 3단 < 4 (3/4)",
+  "화풍: 평면 채움 (2/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (4/4)",
+   "윗면 2행 < 3 (4/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "명암 3단 < 4 (3/4)",
+   "평면 채움 (2/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 5,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "5f62fef078ef7661"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 41,
+  "tileColorsP90": 47,
+  "darkV5": 42,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 3
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "left stone pillar cap",
+      "rows": "8-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left stone pillar shaft (block courses)",
+      "rows": "14-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "fallen diagonal beam",
+      "rows": "8-44",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "hanging wooden sign",
+      "rows": "25-36",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right broken post",
+      "rows": "26-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 34,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main body is the left stone pillar, drawn as a flat front view of stacked blocks with horizontal mortar lines. Its cap (rows 8-13, width 14-19) is only a 1-2 row light lip over a gray face, with no ellipse, no front-edge line and no eave shadow, so no real top surface is shown. The right broken post (rows 26-46) is the same: a front face with a thin light lip. The diagonal beam is a 1-2 px wide brown line that reads as a stick in profile with no top plane. The hanging sign is a flat vertical panel. None of the major parts shows a horizontal surface, so the object reads as front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The references are full houses with roof, walls and door. The candidate is a sparse prop: two stone posts, a diagonal beam, a hanging sign and a strip of grass. The measured facts look favourable (28 visible tones per tile, 0% near-flat coverage), but these are probably inflated by the bright grass strip and edge pixels on a small, thin object. By eye the posts have only about 3-4 grey steps and sparse block shading. Next to the roof-tile scallops and per-stone shading of the references, they look thin and flat. The fallen beam and the sign read as nearly flat brown fills with little grain or highlight. The outlines are mixed: 39% of dark edge pixels are neutral, against 7-9% on the references, so some of the line is grey-black rather than a tinted material tone. Overall the piece looks flatter and more sticker-like than the Beodeul references, so it fails the bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 17679
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "left gate post cap (flat pale slab)",
+      "rows": "8-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left gate post stone block shaft",
+      "rows": "13-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "broken right post stub",
+      "rows": "27-45",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "fallen diagonal beam",
+      "rows": "9-43",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "hanging wooden sign",
+      "rows": "25-36",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 34,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": {
+     "cap_rows": 5,
+     "cap_width": 19,
+     "shaft_width": 16,
+     "rounded_at_both_edges": false
+    },
+    "reads_as": "front_elevation",
+    "evidence": "The main body is the left stone post. Its cap (rows 8-12) is a flat pale band with no clear front-edge line, no eave shadow and no ellipse. The width profile 14, 17, 19, 17 only suggests a small capital step, and the beam overlaps the right side of those rows. Below the cap the post is face-on stone blocks with mortar lines (rows 13-46). The broken right stub (rows 27-45) is also drawn face-on with no horizontal surface. The diagonal beam is a thin line and the sign is a flat panel, so neither shows a top plane. Nothing reads as a top surface of more than a rim, so this is a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The references are full buildings with five or six step tile roofs, plaster speckle and stones shaded one by one. The candidate is a sparse prop: a grey stone pillar, a broken stub, a thin diagonal beam with a hanging sign, and grass tufts. The pillar shows only about 3-4 grey steps, with block joints but little per-stone variation. The beam and sign are close to flat brown with about 2-3 steps and almost no grain. The measured 28 visible tones per tile are inflated by the grass tufts and the pillar's small area. They do not reflect the thin, flat main materials. Dark edge pixels are 39% near-neutral, against 7-9% for the references, so the outline is partly a neutral dark grey line on the stone rather than a dark tone of the adjacent material. The piece is cleanly drawn, but next to the references it looks thinner, flatter and more sticker-like in its shading craft, and the objects are too thin for the density number to count in its favour.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 19392
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "left post cap (flat band, lit top rows then face)",
+      "rows": "8-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left post shaft, stacked stone blocks",
+      "rows": "14-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "diagonal wooden beam",
+      "rows": "8-44",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "hanging wooden sign, vertical face",
+      "rows": "25-36",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right broken post",
+      "rows": "26-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 34,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": {
+     "cap_rows": 6,
+     "cap_width": 19,
+     "shaft_width": 16,
+     "rounded_at_both_edges": false
+    },
+    "reads_as": "front_elevation",
+    "evidence": "The main body is the left stone post, a vertical stack of blocks with a wider flat cap at rows 8-13. Only the lit top 1-2 rows of the cap could be read as a top, which is a rim, and there is no front-edge line with eave shadow and no ellipse. The cap widens and ends flat, so it is a hat or flat band and not an ellipse plate. The diagonal beam (rows 8-44) and the hanging sign (rows 25-36) are drawn as flat front-facing planks with no horizontal surface. The right post has only a thin lit strip at its top, also a rim. The whole object reads as a flat front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a sparse prop (two stone posts, a diagonal beam, a hanging sign, grass tufts), not a full building, so it can only be judged by eye against the house references. The measured facts favour it: 28 visible tones per tile against 12 and 10, and 0% near-flat coverage. Much of that tone count probably comes from the bright grass tufts and the pale stone, not from deep shading on the main materials. The stone posts show about 4 steps (light grey, mid, dark, plus a dark edge) and the stones are not shaded one by one like the cobbles on the h112 stone wall. The long brown beam and the sign board are close to flat 2-3 step fills with little grain. The dark edges are partly neutral (39% near-neutral, against 7-9% for the references), so the outline is a mix of tinted material tone and grey-black, which leans towards the sticker look on the posts. Overall it reads thinner and flatter than the Beodeul pieces, and with the neutral outlines I can't accept it as equal to them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 21041
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "left gate post cap (flat light-gray band)",
+      "rows": "8-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left gate post shaft (stone blocks, vertical front face)",
+      "rows": "13-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right broken post stub",
+      "rows": "28-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "diagonal wooden beam",
+      "rows": "9-43",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "hanging wooden sign",
+      "rows": "25-36",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 34,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": {
+     "cap_rows": 5,
+     "cap_width": 19,
+     "shaft_width": 16,
+     "rounded_at_both_edges": false
+    },
+    "reads_as": "front_elevation",
+    "evidence": "The main body is the left stone post. Its cap (rows 8-12) is a flat light band whose width grows from 14 to 19 and never narrows again, so it is not an ellipse. It has no clear front-edge line or eave shadow, so it reads as a 1-2 row rim or a front-facing cornice. Below it the stone-block face runs rows 13-46 at about 16 px wide with no visible top surface. The right broken post stub (rows 28-46) is likewise a flat-capped vertical face. The diagonal beam is a thin 1-2 px line and the sign is a flat panel, so neither adds a horizontal top plane. The whole drawing is a flat front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The references are whole houses with tiled roofs, plaster or stone walls and doors. The candidate is a sparse prop: two small stone posts, a leaning beam, a hanging sign and a strip of grass. It has no roof, wall or door, so it is not a like-for-like building. The measured facts favour it (28 visible tones per tile against 10-12, 0% near-flat coverage), but the small grass strip and many separate parts inflate that count. By eye, the posts have only about 3 grey steps and little stone-by-stone shading. The beam is a thin brown diagonal with almost no grain, and the sign is a nearly flat brown slab with a dark edge. Dark edge pixels are 39% near-neutral, against 7-9% for the references, so the outlines lean toward a neutral dark line and look somewhat sticker-like. Beodeul's outlines are tinted to the adjacent material, and the posts do not match that. A careful artist would not accept this next to the references, because it reads thinner and flatter than they do.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 19198
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.395Z",
+ "cells": {
+  "16": [
+   "02896ad068576963",
+   "56888c797d8fe486",
+   "67302f2c913c88e4",
+   "6920a1ca33fcbfaf",
+   "a660b84e8814f8a7",
+   "a739d1466869d12f",
+   "a7db0984dd8d8490",
+   "ab5539b7fd590068",
+   "ad9b61500fd2e395",
+   "b8f9737e2ba9450a",
+   "c823b2b50b0f6726",
+   "e216dc4d1bf903ed"
+  ],
+  "24": [
+   "04ff3d64c6035c66",
+   "1182df23200572ff",
+   "4c9f49c3f640f05f",
+   "4d57a49f8f395203",
+   "563a6f0752cf37da",
+   "6f1e6bd74d9a6841",
+   "726410fdbc0f9168",
+   "86010a0ed82e0c32",
+   "b526e3927995b97e",
+   "c268605c3585afd2",
+   "cd598f84fb0cf729",
+   "d0a58947e06ec82f",
+   "d3555a6cda0f5722",
+   "e36291349cbd115e",
+   "e47374302358d6f8",
+   "ed6320aa8ccc984a",
+   "edfa2df50435645c",
+   "f1eed707eff029bb",
+   "f5340712ac09044c"
+  ],
+  "32": [
+   "0704d5d3d7bc0ec7",
+   "1722cc782d1ae570",
+   "18748a6edcfa7793",
+   "18a0e722f65409ce",
+   "18b4bd6e378ad3ec",
+   "1bcf64662e998d20",
+   "23de860f55b7923d",
+   "26f6b17659ed953a",
+   "32ff99f4868a407e",
+   "34b034b8d3fcf89e",
+   "38ff0c03ef766c5e",
+   "3b60362034460dc4",
+   "47b93a70d4b969c5",
+   "48b48cdda625558b",
+   "4a79d8c8b10e4b11",
+   "656121cd9fe5091e",
+   "66df7e52d507b9ee",
+   "6b5677326c3dfc4f",
+   "6b6580c4b17dcabf",
+   "6f16f57307bf37ee",
+   "82ca8feb4cc548cb",
+   "9ad427dde82d3021",
+   "9c9b78fe377edcf2",
+   "a110661c4873391a",
+   "a1754b1497d97dce",
+   "be418f4e1213a777",
+   "c1c768c4b0c756ce",
+   "cab172ef7228f287",
+   "cd2488451ba60f03",
+   "dde1d92d5f0a11f8",
+   "fb08088eb4bb010d",
+   "fefb7aad13b483ac"
+  ],
+  "48": [
+   "1ec6c2cb046fc9b1",
+   "23a791afb445b7b3",
+   "3740d934f0b24963",
+   "59a6283f8fc94999",
+   "6e7aed0cb13b3404",
+   "a26f5036e6cf9b17"
+  ]
+ }
+}

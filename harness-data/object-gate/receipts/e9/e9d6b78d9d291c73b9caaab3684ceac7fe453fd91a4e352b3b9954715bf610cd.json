@@ -1,0 +1,321 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e9d6b78d9d291c73b9caaab3684ceac7fe453fd91a4e352b3b9954715bf610cd",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "stump burnt",
+ "label": "beodeul_city/wave-places/ruined-village/stump_burnt",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 질감 없음 (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "질감 없음 (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 4,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "bcc19e99327f94ce"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 17,
+  "nearBlackEdge": 0.21,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stump top (charred cap with dark hollow and ember pixel)",
+      "rows": "4-5",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stump trunk front face",
+      "rows": "6-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The silhouette is a near-rectangular block, 10 px wide on rows 4-12, with a slight flare on row 13 and a 3 px base on row 14. The width never widens and then narrows, so there is no ellipse top. Column x=5 is one uniform tone (L=79) over rows 5-12. There is no front-edge line and no eave shadow row separating a top band from the face. The only top cue is the lighter strip at rows 4-5 with a dark spot at row 6, which reads as charred texture or a hollow rather than a foreshortened horizontal surface. The right side is a darker shade (x=11, rows 8-13) that shades the same south face and is not a receding side face. This reads as a flat front view of a trunk with at most a 1-2 row rim."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny brown stump, less than one 16x16 tile (visible tones per tile = 0), with only 13 distinct colours overall. By eye it shows about 3 brown steps: a lighter top ring, a mid-brown body and a dark outline. It has almost no grain, bark texture or charred detail, so it looks like a small sticker beside the references. The references carry 7 and 29 visible tones per tile, with multi-step canopies, bark and root shading. The candidate's dark edge pixels are 32% neutral, so the outline is partly near-black and partly brown-tinted, which I call mixed. A stump is small and simple, but at this size it should still show bark grain, a ringed top, and burnt highlights, and it reads clearly flatter and thinner than the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 14899
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stump top (charred cut face with dark hollow and ember pixel)",
+      "rows": "4-8",
+      "evidence": "a",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stump front/side bark face",
+      "rows": "9-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette is a near-rectangular block, 10 px wide over rows 4-12. At the centre column (x=8) a lighter cut-face band runs over rows 4-8 with a dark hollow at row 6. It then steps to a darker bark face over rows 9-13, which ends in a dark base row at 13. At x=11 the light top is only rows 5-7, and the rows below it (8-13) are in deep shadow. At x=5 the left edge stays light for rows 5-12 and shows no step. The top is therefore marked mainly by the centre-column lightness change at row 8/9, not by a clear edge line or eave shadow. It is weak but present, and the front face is 5 rows tall, so I read it as three-quarter, with low confidence."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny stump, about 9x10 source pixels and smaller than one 16x16 tile. It reads as a brown block with a dark rim and a lighter top. I see about 3 lightness steps on the wood, against 6 or more on the reference foliage and trunks. The outline is dark and only partly tinted (32% of dark edge pixels are near-neutral, against 0% on both references), so it leans toward the 'sticker' look and I call it mixed. There is no visible bark grain, no charred cracks and no ember or ash dots. The exact flat-fill measure is 0%, but that is a side effect of the tiny size. The tile-density facts are 0 because the piece is smaller than a tile, so I judged by eye. Next to the richly textured references it looks thinner and flatter, and a careful artist would not accept it beside them. I did not fail it for being small or simple, only for the shallow shading and missing texture.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 19581
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stump body",
+      "rows": "4-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ember/charred knot on top",
+      "rows": "3-7",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The width profile is a plain rectangle (rows 4-12 all width 10, with a 4px bump at row 3 and a 12px base at row 13). It never widens and narrows again, so there is no ellipse. The columns show no front-edge line and no eave shadow. Column x=5 is one uniform brown run over rows 5-12. Column x=11 turns dark from row 8 down, which is a shaded side of the same vertical face. The only top-like detail is a small dark knot and ember near rows 3-7, which reads as charred detail on a flat front face and not as a foreshortened top plane. The drawing is a front-on block with a 1-2 row rim at most."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny stump, smaller than one 16x16 tile, so the per-tile facts read 0 and I judged by eye. It looks like a small dark brown block with a darker edge and little else. I can see about 3 brown steps, against 6 or more on the reference canopies and trunks. There is no visible ring pattern on top, no bark grain and no highlight clusters. The reference trunks and roots carry tinted, per-material shading and varied texture. Of the candidate's dark edge pixels, 32% are near-neutral, which gives a mixed outline that leans toward a sticker-like dark rim. The candidate has 13 distinct colours in total. That is acceptable for its size, but it still looks thinner and flatter than the references. A careful artist would not accept it next to the references without more bark detail and wood-ring texture.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 17223
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stump body with charred top",
+      "rows": "3-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The stump is a near-rectangular block, 10 px wide on rows 4-12, with a small flare at row 13. Column x=5 is one uniform brown (L=79) from rows 5 to 12, with no front-edge line and no eave shadow, so no top band shows. The top profile runs 4 px at row 3, then 10 px at row 4, and never narrows again below, so it is a rounded dome-like top and not an ellipse. The dark patch at row 6 and the orange ember pixel are surface detail on the face, not a horizontal plane. At x=11 the brown on rows 5-7 turns dark from row 8 down, which reads as side shading on the right part of the face and not as a top surface. The result is a flat front-facing silhouette with no top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny stump, roughly 8x10 source pixels and smaller than one tile, so the per-tile facts read 0 and I judged by eye. It looks like a squat brown block with a darker outline and only about 3 brown steps. The rim and the burnt top show no clear ring, bark grain, charcoal flecks or ember dots. Against the references (7 and 29 visible tones per tile, many shading steps, clumped texture), it looks like a flat sticker. 32% of its dark edge pixels are near-neutral, so the outline is mixed rather than clearly the dark tone of the neighbouring material, while both references are at 0%. It is small but not sparse. A stump of this size could carry more bark grain, burnt-wood variation and highlight steps, so a careful artist would not accept it next to these trees.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 17163
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.499Z",
+ "cells": {
+  "16": [
+   "867d924fddb92004"
+  ],
+  "24": [
+   "6abe2e687df75e33",
+   "a05951acae7f0256",
+   "bb53e58bca439dc1",
+   "d00577c4b0f5fc5e",
+   "ed267977baf3b1ee",
+   "f7ab893b72249851"
+  ],
+  "32": [
+   "41796afbd0de2508",
+   "48f91aac375aaf75",
+   "76a3c569cd162d83",
+   "7f99ed03f2da9a8e",
+   "ae7da7832197256d",
+   "e05f19b2f49eac22"
+  ],
+  "48": [
+   "011af24fe22fd1a3",
+   "103b1f8edc1707ab",
+   "b85874207bb4a706",
+   "bfe46a8fc345b414",
+   "d520a2cafecfb87a",
+   "f8ef1a84486106e0"
+  ]
+ }
+}

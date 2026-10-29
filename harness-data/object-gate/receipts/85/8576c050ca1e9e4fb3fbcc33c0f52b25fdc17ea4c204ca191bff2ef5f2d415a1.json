@@ -1,0 +1,478 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8576c050ca1e9e4fb3fbcc33c0f52b25fdc17ea4c204ca191bff2ef5f2d415a1",
+ "width": 64,
+ "height": 32,
+ "kind": "structure",
+ "name": "plank bridge",
+ "label": "beodeul_city/wave-places/mountain-fortress/plank_bridge",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (4/4)",
+  "3/4: 윗면 0행 < 3 (4/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 평면 채움 (2/4)",
+  "화풍: 명암 3단 < 4 (1/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (4/4)",
+   "윗면 0행 < 3 (4/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "평면 채움 (2/4)",
+   "명암 3단 < 4 (1/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 5,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "5f62fef078ef7661"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 12,
+  "tileColorsP90": 12,
+  "darkV5": 34,
+  "nearBlackEdge": 0.18,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "deck planks (main body)",
+      "rows": "12-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "rope rail sagging between posts, drawn as a thin front-facing strip",
+      "rows": "1-7",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "rope band across plank face",
+      "rows": "18-21",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden side posts",
+      "rows": "0-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone end blocks",
+      "rows": "14-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 18,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main body (rows 12-29) is a flat front view of vertical planks with dark seams. The top rows 12-13 are only slightly narrower (56 vs 64) and have no front-edge line or eave shadow. The one light line (row 18-21, #b89456) is a rope band that runs diagonally across the face, so it is not a top edge. The rope at rows 1-7 is a thin strip with no top surface. The posts and the gray stone end blocks are vertical faces with no visible horizontal surface. No ellipse, roof or visible contents show a top, so this is a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The references are whole houses (tiled roof, timber or stone walls, door), while the candidate is a small plank bridge with two grey end posts and a rope rail, so the kind does not match. Judged by eye against the references' material ramps: the planks show about 3-4 wood tones with a few grain lines, and the stone posts are nearly flat grey blocks with little per-stone shading. The references have 5-6 steps per material, per-tile roof highlights and speckled plaster. The measured visible tones per tile (12) equal reference h101 (12) and are close to h112 (10), but only 20 distinct colours in total, against 185 and 66, shows a much thinner palette. Near-flat coverage is 11% against 0% for both references, which fits the flat post faces. The dark edge pixels are 44% neutral, against 7-9% for the references, so the outline is part neutral black and part tinted, which reads as 'mixed' and leans towards the sticker look. The piece is clean and readable but shallower than the Beodeul standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 15725
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "plank deck body (vertical plank stripes)",
+      "rows": "12-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "sagging rope/rail across the top",
+      "rows": "1-7",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "light rope band across the planks",
+      "rows": "18-21",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "side posts",
+      "rows": "1-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grey stone end blocks",
+      "rows": "14-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 18,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main body (rows 12-29) is a flat face of vertical plank stripes with a dark base row at 29. The first row is a 1-row outline, and the rows after it run straight into the planks with no front-edge line and no eave shadow. The light horizontal band at rows 18-21 follows the sagging rope curve and is a drawn rope seen face-on, not a horizontal surface. The rope above (rows 3-7) and the posts are also drawn face-on. The stone end blocks are flat grey faces with a 1-2 row light cap at rows 14-15 and no real top. No ellipse, roof or contents are visible, so the object matches the red 'front elevation' references."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The references are full houses and the candidate is a small bridge prop, so the match is only approximate. Judged by eye against the same-scale tile roofs and timber walls, the bridge's plank deck has about 3-4 brown steps with simple plank seams and little grain. The rope rail is a thin two-tone line, and the grey stone end posts are close to flat blocks with only 2-3 tones. The measured facts are mixed. Visible tones per tile (12) match the references (12 and 10), and near-flat coverage is low (11%). However, only 20 distinct colours across the whole piece, against 185 and 66, shows a much shallower ramp. Dark edge pixels are 44% near-neutral, against 7% and 9% for the references, so the outline is partly a neutral dark line and not consistently tinted to the adjacent material. That leans toward the sticker look. A careful artist would see it as thinner and flatter than the per-tile roof and wall shading of the references, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 14072
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "plank deck (vertical plank face)",
+      "rows": "12-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "rope/handrail curve between posts",
+      "rows": "2-7",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden end posts",
+      "rows": "0-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone end blocks",
+      "rows": "14-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 18,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main body (rows 12-29, width 56-64) is a flat field of vertical planks. The column scan shows one 1-row light line at rows 18-20, which follows the rope curve's shape and reads as a rope or rail band, not a front-edge line with eave shadow. The silhouette jumps from width 4 (rows 8-11) to 56 (rows 12-13) with no ellipse or sloped band. The posts and rope above are thin vertical or linear elements. The stone end blocks have only a 1-2 row light cap. No horizontal top surface is visible anywhere, so this is a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small bridge, so I judged it by eye against the roof and wall material of the house references. The wood deck has only about 3-4 brown steps: plank lines and a darker underside, but little per-plank grain or highlight variation. The grey stone end posts are close to flat blocks with 2-3 greys, whereas the reference stonework is shaded stone by stone. The rope rail is one thin line with little shading. Dark edges are mixed: 44% are near-neutral, against 7-9% for the references, so part of the outline reads as a grey/black sticker line rather than a dark tone of the adjacent wood. On the measured facts, visible tones per tile (12) match the references (12 and 10), but only 20 distinct colours in total (references: 185 and 66) and 11% near-flat coverage (references: 0%) show less grain and variation. Overall it is clean but thinner and flatter than the Beodeul references, so it does not meet the bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 14979
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "rope railing (sagging)",
+      "rows": "1-7",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "side posts",
+      "rows": "0-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "plank deck, drawn as vertical planks",
+      "rows": "12-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone abutments at left and right",
+      "rows": "14-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 18,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The bridge is a flat face-on view. Rows 12-29 show vertical plank stripes with a sagging lighter rope or beam band (rows 15-21) that is a front-facing strip, not a surface with an edge line and eave shadow. The width jumps from 56 to 64 at rows 12-14 with no widening and narrowing, so there is no ellipse. There is no roof or awning plane and no visible deck surface receding from above. The posts and stone abutments are also vertical faces with at most a 1-2 row light cap. The bottom rows 27-29 are a dark base edge. The overall shape is a front elevation with no top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The references are whole buildings (tiled roof, plastered or stone walls, door), while the candidate is a small plank bridge with stone end posts and a rope rail, so the kind does not match and the comparison is only approximate. The candidate has 12 visible tones per tile, equal to h101 (12) and above h112 (10). Its near-flat coverage is 11% against 0% for both references, so it has some flat areas. 44% of its dark edge pixels are near-neutral, against 7-9% for the references, so part of the outline is grey/black rather than tinted. By eye, the planks show only about 3 brown steps: a light top edge, a mid tone and dark gaps. They lack the per-plank grain and per-tile highlights of the roof scallops. The grey stone posts are thin, with little stone-by-stone shading, and the rope is a simple curve. It reads thinner and more sticker-like than the references. Because the kind does not match, the verdict cannot be a clean pass.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 13379
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.933Z",
+ "cells": {
+  "16": [
+   "0662cc4c5c620aa4",
+   "3a6f57b36dfe5d8c",
+   "9865b0ec71b6e40f",
+   "a92f5a4466507bfd",
+   "d5b8291eb664af28",
+   "db35338dca7decbc",
+   "f907d0e13cc0f0a4",
+   "f97e59d4fe641700"
+  ],
+  "24": [
+   "05d48ec38612dc43",
+   "12f48f1867cd2d35",
+   "2217ea63bfbb1d0d",
+   "25675ba531fc0e32",
+   "3d1b1d8b1c34e1f8",
+   "423577b0b183c185",
+   "477d53d8e7fb5173",
+   "5482bcaa4ec7c1f3",
+   "5d8b1b82c32e07ff",
+   "62919a1fa56049ff",
+   "66b81cbd38712583",
+   "6c294878faba00bf",
+   "71405f9ec005ca88",
+   "7afc7c97aa263d74",
+   "7c2c595e485ae343",
+   "7fa3788c994ba38b",
+   "85b21d892916a5d1",
+   "8da18274e1585d63",
+   "98972cb3566657c8",
+   "a1dc7ae34c2f5ce2",
+   "a8162360a5390749",
+   "b5c4c250cdd5f9a3",
+   "ba542db58ec81387",
+   "ba964930e550a726",
+   "c3bd0d7ec0c52449",
+   "c45bb68235b61dba",
+   "c9ecf6d7a50bbcff",
+   "cb452307f948b3d4",
+   "d6adcb5f81d709e5",
+   "d73aed8d9528e3fb",
+   "d9ba638fe062fc40",
+   "dd8f74c75f6a69dd",
+   "f177e23f46e43555",
+   "f8ef52cf06e52b3b",
+   "f9bb21a561a5787f",
+   "fb4334cf1390c389"
+  ],
+  "32": [
+   "3f174de514f19017",
+   "da9c01d9fd11a62c"
+  ],
+  "48": [
+   "154ce4b8b4f865e5",
+   "3a8d1f902e3411d4",
+   "3e1f54fa26bee4c0",
+   "4d9bf2cfe7e5d6dd",
+   "522076a0463577fc",
+   "858b0211607ee35e",
+   "972a2bc3b9cc5c7c",
+   "a659f8126841b2a9",
+   "bbe72c8ff2552a93",
+   "c6fd8252b9636e05",
+   "dd2440993af61f8c",
+   "df3c8e48d762b873"
+  ]
+ }
+}

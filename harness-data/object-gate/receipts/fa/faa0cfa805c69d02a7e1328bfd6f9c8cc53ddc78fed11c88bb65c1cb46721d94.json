@@ -1,0 +1,376 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "faa0cfa805c69d02a7e1328bfd6f9c8cc53ddc78fed11c88bb65c1cb46721d94",
+ "width": 48,
+ "height": 32,
+ "kind": "debris",
+ "name": "woodpile tall",
+ "label": "beodeul_city/wave-places/mountain-fortress/woodpile_tall",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 종류 판정이 갈림(맞다 2/4) — 면제 종류는 과반이 아니라 3/4 이상이 맞다고 해야 통과"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "종류 판정이 갈림(맞다 2/4) — 면제 종류는 과반이 아니라 3/4 이상이 맞다고 해야 통과"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "2ad36264365ed8d5"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 11,
+  "tileColorsP90": 12,
+  "darkV5": 30,
+  "nearBlackEdge": 0.18,
+  "opaqueTiles": 4
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "top log row with snow patches",
+      "rows": "7-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "second log tier",
+      "rows": "12-17",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "third log tier",
+      "rows": "19-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bottom log tier",
+      "rows": "24-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "side posts",
+      "rows": "6-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The pile is stacked tiers of log segments. Each tier is a 4-row brown face (rows 13-16, 19-22, 25-28) bounded by 1-row dark lines, as the column scans show. No tier has an edge line followed by eave shadow, no ellipse, and no visible contents. The snow patches at rows 7-10 are small irregular white spots on the log tops, not a horizontal surface band. The whole drawing is vertical faces with outlines, so it is a front elevation. The kind (scattered floor debris) fits poorly, because this is an orderly stack framed by two posts."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a stacked log pile with snow tufts on top. It shows 11 visible tones per 16x16 tile, above prop-hedge (9) and below the stall (17) and well (20). Near-flat coverage is 0%, so there are no large flat fills. The log rows carry rounded ends and alternating warm and dark browns, and the snow caps are speckled rather than one flat white. Dark edge pixels are 0% neutral, so the outlines lean dark brown beside the wood, not black, which fits the Beodeul approach. The wood ramp reads as about 4-5 steps against about 5 on the references. The piece is slightly simpler than the stall and well, but it is at least as rich as the hedge reference and not sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17667
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "top row of log ends with snow",
+      "rows": "6-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "second row of log ends",
+      "rows": "12-17",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "third row of log ends",
+      "rows": "19-22",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bottom row of log ends",
+      "rows": "24-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left and right support posts",
+      "rows": "6-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The pile is drawn as four stacked rows of log ends seen face-on. Each log is a brown block (rows 13-16, 19-22, 25-28) with dark outline rows between, such as 12, 17, 24 and 29. No row band ends in a front-edge line with eave shadow, no ellipse is present, and no roof plane or contents are visible. The white snow patches at rows 7-10 sit on the log ends and are small and irregular, so they are not a top surface. The two thin posts at the left and right edges are vertical strips. The whole object is a flat front elevation with no top surface. It is a stacked woodpile rather than scattered debris, so the kind fits only loosely."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The measured facts support the picture. The candidate has 11 visible tones per tile, against 9 for the hedge and 17-20 for the stall and well. Near-flat coverage is 0%, and the neutral share of dark edge pixels is 0%. The outlines are therefore tinted, dark brown beside the wood, not a black sticker line. The log ends are stacked in rows with a brown ramp of about 5 steps and snow highlights on top, so no area is a flat fill. It uses only 13 colours in total, so the logs carry less grain and ring detail than the stall or well, which is why density is slightly lower. It sits at the hedge's level of craft and a careful artist would accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15869
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top log row with snow patches",
+      "rows": "6-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "second log row (log ends)",
+      "rows": "12-17",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "third log row (log ends)",
+      "rows": "18-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bottom log row (log ends)",
+      "rows": "24-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "side posts",
+      "rows": "6-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The pile is stacked log ends seen face-on in four tiers (rows 7-10, 13-16, 19-22, 25-28), each with a dark outline and no front-edge line or eave shadow. The white snow patches at rows 7-10, 13-16 and 19-20 are small irregular blobs on the log ends, not a horizontal surface. The width profile steps 28/40/28/40/28/40 with no ellipse or top band. The object has a front face of about 23 rows and no top surface, so it reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 11 visible tones per 16x16 tile, above prop-hedge (9) and below the stall (17) and well (20). Near-flat coverage is 0%, so there are no large flat fills. The dark edge pixels are 0% neutral, so the outlines lean brown rather than black, matching the dark-material-tone rule. By eye, the stacked log ends show ringed end-grain with several wood tones, and the snow caps add a light ramp and some speckle. The total palette is small (13 colours), like the hedge (11), but it still reads as shaded log by log, not as a sticker. It is a simple prop, and its richness is on par with the hedge reference.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14733
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "log stack (end-on log faces in 4 tiers)",
+      "rows": "7-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "snow patches on top logs",
+      "rows": "7-10",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "side posts",
+      "rows": "6-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The woodpile is drawn as four tiers of log ends seen straight on. Each tier is 4 rows of brown (rows 7-10, 13-16, 19-22, 25-28) separated by 1-row dark outlines. The silhouette steps from 28 to 40 px wide between tiers, but no horizontal surface is drawn: no band ends in a front-edge line, no eave shadow follows, and there is no ellipse. The only light pixels are small white snow patches on the top logs (rows 7-10), which are not a top plane. The whole stack is a flat front face with outlines, so it reads as front elevation. Stacked logs are also not really scattered debris, though they are a loose pile of wood on the floor."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a stack of round-ended logs with snow caps and side posts. It has 11 visible tones per full tile, above the hedge (9) and below the cheese stall (17) and well (20). Near-flat coverage is 0%, so there are no flat fills, and the log ends carry ring dots and the snow is broken up with speckle. The dark edge pixels are 0% neutral, so the outline is a tinted dark brown beside the wood rather than a black sticker line. The wood ramp looks like about 4 steps (highlight, mid, dark, deep), slightly shallower than Beodeul's 5-6. The total palette is only 13 colours, but the hedge reference is comparable at 11 and passes on the same facts. A careful artist would accept it beside the hedge and bench without it looking flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15409
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:20.031Z",
+ "cells": {
+  "16": [
+   "099679029fe15286",
+   "11f9d75f1c554122",
+   "130710210fec7c36",
+   "3d6ff88fabd178eb",
+   "e96f14f8be09c3fe",
+   "f77bcdbcf4cacece"
+  ],
+  "24": [
+   "241d6022b916f475",
+   "3faa5c168f74534e",
+   "565024c7ce45bedd",
+   "58e87d013a9b5053",
+   "d00ed2b5523f02a2",
+   "f777569e252d0d4d",
+   "f9f51d069dbde062",
+   "fd8b0c009004986f"
+  ],
+  "32": [
+   "100bdb46c63688f8",
+   "328eedfb1d0d0c4b",
+   "3f6fda224d6e04c0",
+   "4b5f53f3a8eaa251",
+   "65b1debde848938b",
+   "f4677da1912cebd2"
+  ],
+  "48": [
+   "e5849e288dbd5971",
+   "fe4e805c39f8c065"
+  ]
+ }
+}

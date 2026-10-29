@@ -1,0 +1,344 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0218483fe8b9fd24addcc0cdf2cd09ea129a90c0fdee556b7e4905e85e377863",
+ "width": 32,
+ "height": 32,
+ "kind": "organic",
+ "name": "sulfur vent big",
+ "label": "beodeul_city/wave-places/volcano-field/sulfur_vent_big",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "화풍: 화풍 판정이 갈림(걸린 판정 2/4)",
+  "화풍: 판정자 fail (2/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "refer",
+  "reasons": [
+   "화풍 판정이 갈림(걸린 판정 2/4)",
+   "판정자 fail (2/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "bcc19e99327f94ce"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 19,
+  "tileColorsP90": 19,
+  "darkV5": 27,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 2
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "steam plume",
+      "rows": "1-17",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "sulfur mound top with dark vent opening",
+      "rows": "17-22",
+      "evidence": "b",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "mound front/lower flank",
+      "rows": "23-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The steam rows 1-16 are decor and are not measured. The main body is the yellow mound in rows 17-29. Its width goes 14, 16, 20, 24, 26, then 28 at rows 22-25, then narrows to 26, 24, 20, 16 at rows 26-29, so it widens and narrows like an ellipse. At column x=16 the dark vent opening fills rows 18-21, and the lit yellow rim rows 17-22 form the top surface (contents visible inside an open container). Below it, rows 23-29 are a darker front flank of about 7 rows. This reads as a top surface with a front face, so three_quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a tiny sulfur vent: a yellow mound with a white smoke puff, about one tile in size. The references are full trees with canopy and trunk, so the kind does not match and the comparison is only partial. The measured facts are 19 visible tones per tile (references 7 and 29), 0% near-flat coverage, and 14% neutral dark edge pixels, so the outline is mostly tinted but includes some dark neutral pixels. By eye the mound has roughly 3-4 yellow/olive steps and the smoke has 3-4 grey-white steps. The smoke puff has some shading, but the mound is small and fairly smooth, with little grain or clumping. It reads thinner and simpler than the tree references, which have layered leaf clumps and shaded trunks. As a 'big' vent it is too small and sparse next to the references, so a careful artist would not accept it as equally rich. Fail, partly because the object is a different kind from the references and partly because it is shallower.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 11840
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "steam plume",
+      "rows": "1-17",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "sulfur mound top with dark vent opening",
+      "rows": "17-25",
+      "evidence": "b",
+      "front_edge_line_row": 25,
+      "eave_shadow_rows": "26-27"
+     },
+     {
+      "part": "mound front face",
+      "rows": "26-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 9,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The yellow mound's width profile widens from 14 at row 17 to 28 at rows 22-25, then narrows to 16 at row 29, so it is a rounded ellipse-like mass. Rows 17-25 form the top surface, with a dark elliptical vent mouth at rows 18-21 and the light yellow crust around it. Rows 26-29 are a darker, shaded front face of about 4 rows. The steam plume at rows 1-17 stands on top of the mound and is decor, so it does not count as the main body."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small sulfur mound with a white smoke puff, much smaller than the reference trees, so it is judged by eye against that scale. The mound has about 4-5 yellow/ochre steps, a dark vent hole and speckle on its rim. The smoke has about 3 steps from white to grey-blue. The dark edge pixels lean olive/brown rather than neutral (only 14% near-neutral, against 0% for both references), so this is a tinted material-tone outline and not a sticker line. Measured facts support it: 19 visible tones per tile, which is well above tree-1a786c (7) and below tree-d43edd (29), with 0% near-flat coverage. The overall look is a little thinner than a full canopy tree, but it is not flat or sticker-like and is acceptable next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16797
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "steam plume",
+      "rows": "1-16",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "sulfur crust mound with dark vent mouth",
+      "rows": "17-25",
+      "evidence": "b",
+      "front_edge_line_row": 25,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "mound front face",
+      "rows": "26-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 9,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a yellow sulfur mound in rows 17-29. Its width profile grows from 14 to 28 px over rows 17-22, stays at 28 through row 25, then narrows to 16 px by row 29, so the silhouette is an ellipse. The dark vent opening in rows 18-21 is an open mouth with a lighter crust rim around it, which is evidence (b)/(d). Rows 26-29 give a darker, shadowed front face of about 4 rows. The white steam plume in rows 1-16 stands above the mound like a water jet over a basin, so it is decor and not the main body."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small sulfur vent: a yellow mound with a white smoke puff. It is roughly one tile in size, much smaller than the reference trees, but it should not fail for size alone. Measured facts support it. It has 19 visible tones per tile, against 7 for tree-1a786c and 29 for tree-d43edd. Near-flat coverage is 0%, so there are no flat fills. Only 14% of the dark edge pixels are neutral, so the outline is mostly tinted, a dark olive-brown beside the yellow mound, not a uniform black line. The mound has about 4-5 lightness steps with speckled grain, and the smoke has about 3-4 grey-white steps with a shaded underside. This is richer than tree-1a786c and sits between the two references. The object is simple and has less texture variety than tree-d43edd, but it does not look thinner or more sticker-like than the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16653
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "steam plume",
+      "rows": "1-17",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "sulfur mound top with dark vent opening",
+      "rows": "17-21",
+      "evidence": "d",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": "22-22"
+     },
+     {
+      "part": "mound front face (yellow crust)",
+      "rows": "22-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a yellow sulfur mound at rows 17-29. Its top is rows 17-21, where the silhouette widens from 14 to 26 px and a dark vent hole (rows 18-21 at x=16, L=21) sits inside a lighter yellow rim. That is an open-mouth interior (evidence d), and it is bounded by the darker band at rows 22-24 below. The front face is rows 22-29, about 8 rows, with a darker underside at rows 28-29. The white steam plume at rows 1-16 stands above the mound and is counted as decor."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small yellow mound with a dark vent hole and a white smoke puff, about 15 source px wide. Next to the full-size Beodeul trees it reads as a thin sticker-like prop. The mound shows roughly 3-4 steps (light yellow, mid, dark olive rim, dark centre) and the smoke about 3, against the references' 5-6 per material. The outline looks tinted brown/olive and only 14% of dark edge pixels are neutral, so it is not a black sticker line. The measured facts are decent: 19 visible tones per tile (reference tree-1a786c has 7, tree-d43edd has 29) and 0% near-flat coverage. By eye, though, the mound has little grain or per-clump variation, and the smoke is a simple blob. It is sparser and flatter than the richer tree-d43edd reference, so a careful artist would not accept it as equal. The facts are favourable, but when in doubt I fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 17996
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.220Z",
+ "cells": {
+  "16": [
+   "1230ce06dfd46915",
+   "a9b5cbfb4a7fdda6",
+   "d36007456e69419a",
+   "dafb05f024ec13ed"
+  ],
+  "24": [
+   "0d0d91431de38c3b",
+   "165297865bedd87b",
+   "1abc31b83fca4f84",
+   "2b52f03de344a9a4",
+   "331fdece307b0c0a",
+   "439fcaa25d9d52dc",
+   "480078f3d777553f",
+   "5cf98618c8f1fb9b",
+   "62062b1c32abe4d0",
+   "6682b65298c3ce91",
+   "6aa6f9a91c033ac4",
+   "700f6a2648ea7639",
+   "8526845d237d03a5",
+   "9bd096fa07a39b2d",
+   "a0a8d05ed3b32d01",
+   "ac7c7e35e6f49cf1",
+   "afc278495a289d3c",
+   "c58a8570b83d91cf",
+   "cd9f09a06a25a789",
+   "e3e02e870e5552aa",
+   "fb554100989d323b",
+   "ff96129ecd66b8c0"
+  ],
+  "32": [
+   "b8255a92719a81e2"
+  ],
+  "48": [
+   "0c15867fe298d2ed",
+   "2fb4f2d6cd4493dc",
+   "4a59dc793403fcb6",
+   "6c1d24b33a5aff07",
+   "8592fec99874e677",
+   "edb03c3dbfd9685c"
+  ]
+ }
+}

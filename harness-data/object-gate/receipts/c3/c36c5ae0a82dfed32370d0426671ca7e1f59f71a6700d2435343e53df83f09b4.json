@@ -1,0 +1,294 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c36c5ae0a82dfed32370d0426671ca7e1f59f71a6700d2435343e53df83f09b4",
+ "width": 32,
+ "height": 48,
+ "kind": "organic",
+ "name": "fir dusted",
+ "label": "beodeul_city/wave-places/mountain-fortress/fir_dusted",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "bcc19e99327f94ce"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 11,
+  "tileColorsP90": 11,
+  "darkV5": 35,
+  "nearBlackEdge": 0.34,
+  "opaqueTiles": 2
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "foliage cone (stacked tiers with snow dusting)",
+      "rows": "1-41",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "trunk",
+      "rows": "42-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 46,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "This is a conifer: a stepped cone that widens from 2 px at row 1 to 29 px at row 40, with a 4 px trunk in rows 42-46. The tiers are marked by dark underside shadows (rows 17-18, 23, 32-33) and white snow patches. These read as foliage clumps, not as horizontal surfaces with front-edge lines. The right side is shaded darker, but that is light shading on the same face and not a receding side face. The shape is organic and symmetric, so it fits neither a 3/4 top-plus-front reading nor a flat slab. It is a free-form tree silhouette, so I report 'other'."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small snow-dusted fir with layered tiers, and it reads as a plant of the same kind as the references. Its greens run about 4-5 steps (dark, mid, light), plus pale snow tufts on the tier edges and a brown trunk. The tier edges are separated by value, with dark green next to foliage rather than a black line. This matches the measured 0% near-neutral dark edge pixels, so the outline is tinted. Near-flat coverage is 0%, so there are no flat fills. It has 10 visible tones per tile, above tree-1a786c (7) but well below the richer tree-d43edd (29). It is a smaller, simpler conifer than the broadleaf references, but it is not sticker-like or shallow next to tree-1a786c, so a careful artist would accept it beside the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15240
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "fir foliage tiers with snow dusting",
+      "rows": "1-41",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "trunk",
+      "rows": "42-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 41,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The fir is a conical, tiered evergreen shown as a front-facing silhouette. The width profile widens steadily from 2 px at row 1 to 29 px at row 40. It has small notches at rows 9, 14-15, 23-25 and 33. The notches mark branch tiers, not horizontal surfaces. There are no front-edge lines or eave shadows, and no ellipse. The scattered white snow pixels (rows 2-3, 9-10, 19-20, 24-26, 28-30, 33-39) are flecks on the foliage, not a top plane. The trunk at rows 42-46 is 4 px wide and has no top. The tree is an organic form drawn with a diagonal light-to-dark shading, light on the left and dark on the right, so it reads as a front elevation rather than a 3/4 view with a top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small snow-dusted fir, so it is a tree like the references, though a conifer rather than a broadleaf. Its tiered boughs show about 4-5 green steps plus white snow highlights on the tips, with a brown trunk. The edges lean dark green and brown rather than neutral black, which matches the measured 0% near-neutral dark edge pixels. Texture comes from the jagged bough edges and snow speckle, with no large flat fills (0% near-flat coverage). It has 10 visible tones per tile, above tree-1a786c (7) and below the very rich tree-d43edd (29). It is simpler than the best reference, but it is not thinner or more sticker-like than tree-1a786c, so it is acceptable next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 12329
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "fir tree foliage (tiered conical canopy with snow dusting)",
+      "rows": "1-41",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "trunk",
+      "rows": "42-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 47,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "This is an organic conifer drawn as a conical silhouette that widens from 2px at row 1 to 29px at row 40, with a narrow 4px trunk at rows 42-46. The tiers are staggered by width steps (for example 13 to 10 at row 14, 14 to 16 at row 26, and 21 to 16 at row 33). Snow dustings are small highlights, and the right side is shaded darker. There is no horizontal surface, lid or ellipse, and no building or box-like structure that needs a top plane. For an organic tree this conical foliage with trunk is the normal readable form, so I treat it as 'other' rather than a front elevation of a box-like object."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small snow-dusted fir, so it is naturally less dense than the large broadleaf references. It has stepped conifer tiers with about 4 greens plus white and pale-blue snow highlights on the bough tips, and a small trunk. Its dark edges lean green and brown instead of neutral black, which matches the measured 0% near-neutral edge share. Measured facts: 10 visible tones per tile, above tree-1a786c (7) and below tree-d43edd (29); 0% near-flat coverage, so there are no flat fills. Snow clumps and layered boughs give it grain, though the tier shading is simpler than the leaf clumps in the references. A careful artist would accept it next to tree-1a786c without it looking like a flat sticker.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 12098
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "fir tree conifer tiers (snow-dusted boughs)",
+      "rows": "1-40",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "trunk",
+      "rows": "41-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 46,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The fir is a triangular silhouette whose width grows steadily from 2px at row 1 to 29px at row 40, then a 4px trunk in rows 42-46. The tiers are drawn as vertical foliage faces with a light-left, dark-right split. No horizontal band ends in a front-edge line, there is no eave shadow and no ellipse width profile. The white snow patches are scattered highlights, not a flat top plane. There is no top surface, so it reads as a front elevation, though for an organic conifer this is the normal depiction."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small conifer with tiered boughs. It has about 4 greens plus snow highlights and a dark trunk, so roughly 5 steps against the references' 5-6. Dark edge pixels are 0% near-neutral, so the outline is a tinted dark green rather than a black sticker line. Near-flat coverage is 0%, with no 5x5 flat fills. The snow dabs and per-tier shading break up the surface, though it is less dense than the big oak (d43edd). It has 10 visible tones per tile, above tree-1a786c (7) but well below d43edd (29). At this small size and for a simple conifer shape, it would sit acceptably next to the references without looking flat or sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 12415
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.882Z",
+ "cells": {
+  "16": [
+   "0c28481fa0a0d41b",
+   "1f76a8dc6824a774",
+   "406772daf9c17c6a",
+   "4a0c5d0f57704eee",
+   "55d637a4dcf7a6ff",
+   "eaa198115c8930ff"
+  ],
+  "24": [
+   "1427389db0134fdc",
+   "4c31482db8385022",
+   "6b289e7ec98dd80c",
+   "6ebf1082e0c2f3c0",
+   "746c03278fd1fcf6",
+   "97595f41e1d2d3fe",
+   "a6f76134eb496d10",
+   "c160bd1c78dc91b3",
+   "c51c4ce7c39d65f7",
+   "c5c4d3ebf7309e71",
+   "d80720b0d6c794eb",
+   "eb5caa0c11f60de2"
+  ],
+  "32": [
+   "5f503d1b9d69d157",
+   "aeaee091e5eb8774",
+   "b556187e1c85fc87",
+   "deb2eb245d335df3"
+  ],
+  "48": [
+   "089dc02886908f85",
+   "131290e7f79b0193",
+   "6dd9f0c86b69a136"
+  ]
+ }
+}

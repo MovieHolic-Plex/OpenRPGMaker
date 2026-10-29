@@ -1,0 +1,331 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f19c65b8f9ad4efadf26eba34be15f2b97fb7be7b8b345ab2b0dc721af3cff84",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "frozen grass",
+ "label": "beodeul_city/wave-places/ice-age-field/frozen_grass",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 질감 없음 (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "질감 없음 (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 2,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 42,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "grass blades (thin vertical strokes, sparse, with a few pale ice-tip pixels)",
+      "rows": "6-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pale blue ice/frost strip at the base",
+      "rows": "15-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The silhouette widens from 1 px at row 6 to 6 px at rows 10-14, then to 13 px at row 15. The column scans show thin vertical blade strokes (x=5, 9, 12) at rows 9-14, with pale tips at rows 9 and 10. Row 15 is a single light bluish line across the base. No horizontal plate, ellipse or band is drawn, so the sprite shows no top surface. It is a side view of upright tufts standing on a 1-row ground line, not a flat decal seen from above."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate is a tiny sprite of a few frosty grass tufts, smaller than one 16x16 tile, on a flat dark grey backdrop. It is not a 4x3 ground patch, so it does not match the reference kind (grass and paving fields that fill the whole area). The facts show 5 distinct colours in total, against 80 for the grass reference. Tile-level tone counts are 0 because the piece is under one tile, so I judged by eye. By eye it has about 3 lightness steps, with no per-blade clumping, no soil grain and no tile-scale variation. The reference grass has about 3 visible tones per tile in mottled clumps, and the paving has stones shaded one by one. The 19% neutral share of dark edge pixels has little meaning here because there is almost no outline, only a few dark pixels at the base. The candidate is much thinner and sparser than either reference and would look like a sticker beside them, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 15435
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "grass blades with frost tips",
+      "rows": "6-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "icy ground strip at the bottom",
+      "rows": "15-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The drawing is a small tuft of upright grass blades (rows 6-14) with pale frost tips, standing on a 1-row pale strip at row 15. The silhouette grows from 1 px wide at row 6 to 6 px at row 14. It is an upright vertical object seen from the side, not a plate lying flat on the ground, so it does not match the flat kind. There is no horizontal top surface (no band, ellipse, roof or contents), and the single row 15 strip is only a ground line. It reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 2,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate is a tiny sprite, roughly 25x10 px, on a dark grey background. It is nowhere near a 4x3-tile ground patch (64x48 px), so it cannot be judged as a tiling ground surface. The measured facts show 0 visible tones per tile because the piece is smaller than one tile, and only 5 distinct colours in total, against 80 for the reference grass. By eye it is a small dark clump with a few pale spikes, with about 2-3 tonal steps and no grain, tufts or soil variation. The reference grass has about 5 steps, with clumps in several greens and speckled grain. The candidate does not cover the area, has no frozen-grass texture, and reads as a sticker-like sprite. It is far thinner and flatter than the reference, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 8783
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "grass blades",
+      "rows": "6-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "frozen ground strip",
+      "rows": "15-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The drawing is a set of thin vertical blades in side elevation, rising from row 6 to row 14 with widths of 1-6 px. A single 13 px light icy row sits at row 15. There is no band of rows with a front-edge line or eave shadow, no ellipse, and no visible contents, so no top surface is shown. The blades read as upright strokes seen face-on rather than a plate lying flat. The 1-row strip at the bottom is only a ground line or outline, not a top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 2,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate is a tiny sprite, smaller than one 16x16 tile, which is not a 4x3 tile ground patch. It looks like a small clump of frosty blades on a dark grey background with only 5 distinct colours, so the tile-density facts show 0 and I judged by eye. The references fill whole tiles: the grass has about 3 visible tones with clumped texture, and the paving has about 7 tones with stones shaded one by one. The candidate has roughly 2-3 lightness steps, no real ground coverage and no tile-wide texture. The dark edge pixels are only 19% neutral, but the shapes are too small to judge a tinted outline. It would look thinner and more sticker-like than either reference, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 10966
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "grass blades / tufts standing upright",
+      "rows": "6-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pale icy ground strip at the bottom",
+      "rows": "15-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The silhouette is a row of thin vertical blades, 1-2 px wide, in rows 6-14. They rise from a single 13px-wide pale strip at row 15. The width profile goes 1,2,3,4,6,5,5,5,6, then 13 at row 15, which is the shape of a few tufts seen from the side. No band, ellipse, roof or contents appears in any column scan. Columns x=5, 9 and 12 show only thin dark blade runs with 1px light tips and the 1-row light strip at row 15. The strip is only 1 row, so it counts as an outline or lip and not as a top surface. Nothing reads as a flat plate or decal seen from above. The drawing is a side view of upright grass, not a ground plane, so it has no top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate is a tiny spiky tuft of a few pixels in the bottom-left of a mostly empty grey panel. It is not a 4x3-tile ground patch, so it does not cover the area the way the grass and paving references do. It has only 5 distinct colours in total and covers no full 16x16 tile (visible tones 0), so I judged density by eye. By eye it is far sparser than the grass reference (about 3 visible tones per tile with clumps and tufts) and the paving reference (7 tones with stones shaded one by one). It has roughly 2-3 shading steps and no outline to speak of. The 19% neutral share of dark edge pixels is measured on a handful of pixels and says little. The piece shows no ground surface, no frost texture and no tiling structure, so it is far below the Beodeul standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 15849
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.635Z",
+ "cells": {
+  "16": [
+   "00990b65f73ca563"
+  ],
+  "24": [
+   "1a72a6704dd29898",
+   "5bab4c36834caa25",
+   "6531f0ec2496e160",
+   "87ca0ce065673eb2",
+   "e7c759603e7309cb",
+   "f3c830a894e5e9d3"
+  ],
+  "32": [
+   "40b1613e4cdbfa94",
+   "43ace85bb68d45d7",
+   "48fcccd4c3ce00e5",
+   "5bbd9fd054e22926",
+   "6b5a5e6f440271b7",
+   "77eedbbc4a49104c"
+  ],
+  "48": [
+   "114271ef82ef9ca6",
+   "52ae29e3b6a21c37",
+   "53b81fbf437a27ed",
+   "9ebc2ffb9b71e3af",
+   "bcef838fb8aeaa53",
+   "c408f0efc9e436a6"
+  ]
+ }
+}

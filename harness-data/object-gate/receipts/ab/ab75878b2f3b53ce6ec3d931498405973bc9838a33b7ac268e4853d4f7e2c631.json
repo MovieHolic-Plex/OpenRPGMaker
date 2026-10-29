@@ -1,0 +1,453 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ab75878b2f3b53ce6ec3d931498405973bc9838a33b7ac268e4853d4f7e2c631",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "lamppost bent",
+ "label": "beodeul_city/wave-places/ruined-village/lamppost_bent",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (4/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+  "3/4: 윗면 0행 < 4 (3/4)",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (2/4)",
+  "화풍: 명암 3단 < 4 (1/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (4/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+   "윗면 0행 < 4 (3/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (2/4)",
+   "명암 3단 < 4 (1/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 6,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "2ad36264365ed8d5"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 34,
+  "nearBlackEdge": 0.04,
+  "opaqueTiles": 0
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "thin pole shaft",
+      "rows": "12-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "curved arm at top",
+      "rows": "8-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "hanging lantern head",
+      "rows": "12-19",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base foot",
+      "rows": "45-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 35,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": {
+     "cap_rows": 0,
+     "cap_width": 2,
+     "shaft_width": 2,
+     "rounded_at_both_edges": false
+    },
+    "reads_as": "front_elevation",
+    "evidence": "The lamppost is a 2px-wide pole (rows 12-46) with a thin bent arm curving over at rows 8-11 and a lantern hanging at rows 12-19 (width 7). The pole is a single flat-colored vertical strip, the same width at the top as lower down (width 2 at rows 20-29 and 32-44). The top end has no elliptical cap plate overhanging the shaft; the widest top row is only the lantern (7 wide) and it is drawn as a face-on rectangle with no front-edge line and no eave shadow. The base at rows 45-46 is a tiny 4px foot with no ellipse. There is no top surface anywhere, so this is a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 4,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The closest reference is prop-lamp-crook. The candidate is a thin pole with a small green lantern at the bent top. Per-tile tone counts are 0 for both because the objects are thin, so I judged density by eye. The candidate has 10 distinct colours against the reference's 14. The pole reads as a nearly uniform dark line with little highlight or ramp, and the base is weak or missing. The reference has a visible base, a pole with a highlight edge, a curved hook and a glowing lantern with several tones. The candidate's dark edge pixels are 100% near-neutral, but so are the reference's, so that fact does not separate them. The candidate looks thinner, flatter and more sticker-like than the reference. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 12779
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "curved arm at top of pole",
+      "rows": "8-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "hanging lantern box",
+      "rows": "12-19",
+      "evidence": "none",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pole shaft",
+      "rows": "13-44",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base foot",
+      "rows": "45-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 33,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": {
+     "cap_rows": 0,
+     "cap_width": 7,
+     "shaft_width": 2,
+     "rounded_at_both_edges": false
+    },
+    "reads_as": "front_elevation",
+    "evidence": "The object is a thin 2px pole (rows 20-44) with a bent arm at the top (rows 8-11) and a small lantern hanging at the right (rows 12-19, width 7). The width profile has no cap plate that overhangs the shaft. The only top-like feature is a 1-row light line at row 12 on the lantern, which is a rim and not an ellipse. The pole shows no horizontal surface and the foot (rows 45-46, width 4) is a flat 2-row strip. The whole drawing is a flat front or side elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The closest reference is prop-lamp-crook, a thin metal pole, so the per-tile tone count of 0 says nothing against the candidate. Judged by eye, the candidate has 10 distinct colours against the reference's 14. Its pole reads as a thin, mostly dark single-tone line with little highlight/shadow banding. The lantern is a small green blob with little internal shading, and the base is less developed than the reference's plinth and pole highlights. The dark edge pixels are 100% near-neutral, but the reference scores the same, so outline alone is not the problem. The problem is that the shading steps and detail come out thinner and flatter than the reference, closer to a 'sticker' silhouette. A careful artist would not accept it next to the reference without adding more ramp steps and detail. With doubt, this fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 1행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 1행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 16425
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "curved arm at top",
+      "rows": "8-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pole shaft",
+      "rows": "12-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "hanging lantern box",
+      "rows": "12-19",
+      "evidence": "none",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base foot",
+      "rows": "45-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 35,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": {
+     "cap_rows": 0,
+     "cap_width": 7,
+     "shaft_width": 2,
+     "rounded_at_both_edges": false
+    },
+    "reads_as": "front_elevation",
+    "evidence": "The object is a 2px-wide pole (rows 12-46) with a thin curved arm at rows 8-11 and a small lantern box at rows 12-19 (width 7). The lantern has a 1-row lighter line at row 12 and a vertical face below it, which is a rim and not a top surface. The width profile never widens and narrows again into an ellipse at the top (0-7:0, 8:2, 9:4, 10:5, 11:2). The arm is a thin curve, not a cap plate overhanging the shaft. The base at rows 45-46 is a 4px-wide foot. Nothing shows a horizontal top surface, so the drawing is a front elevation with no elliptical cap."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The closest reference is prop-lamp-crook, which is also a thin prop, so the per-tile tone count of 0 says nothing here and I judged by eye. The candidate has 10 distinct colours against the reference's 14. Its pole and bracket read as a dark, almost uniform column with little highlight-to-shadow ramp, about 4 steps against roughly 6 on the reference, which has a lit side on the pole, a distinct lantern glow and a shaded base. The dark edge pixels are 100% near-neutral. The reference measures the same, but its lantern and base carry more tonal separation. The lantern and the bend have few internal tones and look more like a silhouette with a single accent than a shaded object. There are no large flat fills, but next to the reference it looks thinner and more sticker-like. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 16538
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "pole shaft",
+      "rows": "12-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bent hook arm at top",
+      "rows": "8-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "hanging lantern housing",
+      "rows": "12-19",
+      "evidence": "none",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base foot",
+      "rows": "45-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 39,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": {
+     "cap_rows": 1,
+     "cap_width": 7,
+     "shaft_width": 2,
+     "rounded_at_both_edges": false
+    },
+    "reads_as": "front_elevation",
+    "evidence": "The main body is a 2px-wide pole (rows 20-46, 2 wide except for a small bump at rows 30-31) with a bent hook arm at rows 8-11 and a lantern hanging at the right (rows 12-19, 7 wide). No ellipse cap overhangs the shaft. The nearest candidate is the lantern's top at row 12, a 1-row line (width 7) that works as a rim, and rows 13-19 are a vertical face. The hook arm is a thin curved line, not a plate. The base (rows 45-46, width 4 then 2) is a small foot with no top surface. The whole thing is a flat front-elevation silhouette with no horizontal top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "This is a thin prop, so the per-tile tone counts (0 for both the candidate and prop-lamp-crook) say nothing and I judged by eye. The candidate has 10 distinct colours against 14 for prop-lamp-crook. It reads as a slim bent pole with a small hanging lantern, drawn with about 4 tone steps and no 5x5 flat blocks. Its dark edge pixels are 100% near-neutral, which matches prop-lamp-crook's 100%, so the outline cannot count against it by that measure alone. It does look like a dark, near-neutral line, though, and I could not see a visible tint toward the pole or lantern material. Next to the reference it looks a little thinner and simpler. The reference has a lit lantern with a highlight, a more modelled pole and a detailed foot. The candidate's lantern and base carry fewer shading steps and less grain. A careful artist would likely ask for more modelling on the pole and lantern before placing it beside the reference. With that doubt, it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 18762
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.421Z",
+ "cells": {
+  "16": [
+   "21094c9fa4671d7b",
+   "4117bcc88084b6b4",
+   "584d1e75b52b658b"
+  ],
+  "24": [
+   "12c9c90cec4cc0e7",
+   "306bc20d618a7076",
+   "420baf0778853963",
+   "4218e9dfd7db7c81",
+   "470a2e8d60c9c858",
+   "9b584aa4ee21fce0"
+  ],
+  "32": [
+   "0758775c8cea2317",
+   "1db8cb3e96262e61",
+   "1e180646bf396c5e",
+   "24614e73f5215b19",
+   "2c90e63835b4e1d2",
+   "3266db8f990d2ca8",
+   "32c52d20400cd308",
+   "461c1d4b7361d5ee",
+   "5c1db00f4f178262",
+   "cd38b96393b31bc0",
+   "e7da17d3603fe585",
+   "fd896c560b7c1ca9"
+  ],
+  "48": [
+   "4c828cc24bb003e4",
+   "7e54319af2f0d1ed",
+   "cc767821bee3b982"
+  ]
+ }
+}
