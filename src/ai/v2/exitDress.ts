@@ -108,10 +108,14 @@ function southGaps(k: Kit, map: GameMap): Cell[] {
 /** 칩셋의 «벽에 난 문» 그림: 바닥에 서는 문(위로 한 칸 솟음) 또는 벽면 두 줄 + 문턱 칸(door). 잠긴 방이면 잠긴 문을 먼저. */
 function doorPiece(S: HandInteriorSpec, locked: boolean): { id: string; cells: readonly (readonly number[])[]; anchorDy: number } | undefined {
   const entries = Object.entries(S.objects);
-  const pref = locked ? [/locked door/u, /door-steel|vault-door/u, /door-wood|classroom-door|door-open-western|fusuma/u, /door/u] : [/door-wood|classroom-door|door-open-western|fusuma/u, /locked door/u, /door/u];
+  // 잠기지 않은 출구는 자물쇠 문을 맨 뒤로 — 그 앞에 열린 쇠창살 문(「iron gate open」, 같은 1×2 모양)을 쓴다. 손 도트 실내 칩셋에는 사람이 드나드는 1칸 나무 문이
+  // 없어 던전 보스 방 「→ 지하 던전」 출구가 큰 자물쇠 문으로 서서 잠긴 문으로 읽혔다(2026-10-30 씬 벤치 boss-room 재생).
+  // 「door」는 낱말로만(「indoor well」 우물·「trapdoor」·「doormat」 제외).
+  const OPEN_GATE = /^iron gate open$/u;
+  const pref = locked ? [/locked door/u, /door-steel|vault-door/u, /door-wood|classroom-door|door-open-western|fusuma/u, /door/u] : [/door-wood|classroom-door|door-open-western|fusuma/u, /^(?!.*locked)(?:.*[^a-z])?door(?![a-z])/u, OPEN_GATE, /locked door/u];
   for (const re of pref) {
     for (const [id, d] of entries) {
-      if (!re.test(id) || /side|train|elev|psd|gate|mat|round|toilet|security|ticket/u.test(id)) continue;
+      if (!re.test(id) || (!OPEN_GATE.test(id) && /side|train|elev|psd|gate|mat|round|toilet|security|ticket/u.test(id))) continue;
       const dys = d.cells.map((c) => c[1]!);
       if (d.kind === "door" && d.w === 1 && Math.min(...dys) === 0 && Math.max(...dys) === 2) return { id, cells: d.cells, anchorDy: -2 };
       if (d.kind === "floor" && d.w === 1 && Math.min(...dys) === -1 && Math.max(...dys) === 0) return { id, cells: d.cells, anchorDy: 0 };
