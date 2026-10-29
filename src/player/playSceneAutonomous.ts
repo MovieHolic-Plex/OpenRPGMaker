@@ -32,7 +32,10 @@ import { canNpcMove, isPlayerOccupyingTile } from "@/player/playSceneAutonomousM
 import { detourAroundPlayer, sidestepForPlayer } from "@/player/commandRouteDetour";
 import { startPlayerRoute } from "@/player/playerRouteState";
 import { animationStepsWhileStopped, applySpriteAlpha, setNpcIdleFrame, setNpcWalkFrame } from "@/player/playSceneAutonomousSprites";
-import { nextChaseDecision } from "@/player/chaseAi";
+import { isInSafeZone, nextChaseDecision, type ChasePoint } from "@/player/chaseAi";
+import { chooseChaseGoal, trackPlayerMotion, type PlayerMotion } from "@/player/chaseTactics";
+import { CHASE_BREATHER_MS, CHASE_SEARCH_SLOWDOWN, CHASE_STAMINA_STEPS, chaseAlertHoldMs, chaseCellMs, chaseTempoAuthored, chaseTires } from "@/project/chaseTempo";
+import { PLAYER_WALK_STEP_MS } from "@/project/characterMotion";
 import { tickChaseSpawnGrace } from "@/player/chaseSpawnGrace";
 import { strollChainPending, strollPauseScale, wanderCommand } from "@/player/npcStroll";
 import { followerOccupiesTile } from "@/player/playSceneFollowers";
@@ -43,6 +46,31 @@ runtimeEventView,
 type RuntimeEventView,
 runtimeEventViewById,
 runtimeEventViewsForMap, } from "@/project/runtimeEventState"
+
+/** 이번 프레임의 주인공 진행(추격 전술용). updateAutonomousNPCsInPass 가 프레임마다 한 번 쓴다. */
+const frameMotion = new WeakMap<object, PlayerMotion>();
+const FACING_STEP: Readonly<Record<Dir, ChasePoint>> = { up: { x: 0, y: -1 }, down: { x: 0, y: 1 }, left: { x: -1, y: 0 }, right: { x: 1, y: 0 } };
+
+function parseGoalKey(key: string): ChasePoint {
+  const [x, y] = key.split(":").map(Number);
+  return { x: x ?? 0, y: y ?? 0 };
+}
+
+/** 같은 주인공을 지금 쫓고 있는 다른 추격자들의 칸(협공 자리 고르기). */
+function engagedAllyCells(scene: AutonomousNpcSceneContext, self: string, motion: PlayerMotion): ChasePoint[] {
+  const project = store.getCurrent();
+  const cells: ChasePoint[] = [];
+  for (const [id, other] of scene.autonomousNPCs) {
+    if (id === self || other.strategy !== "chase" || other.chaseActive !== true || other.chaseTarget || other.kite) continue;
+    const view = runtimeEventViewById(project, scene.map, scene.session, scene.eventPositions, id);
+    if (!view) continue;
+    // 걸음 중이면 도착 칸이 곧 그 자리다(이미 예약됐다).
+    const at = other.activeMove ? { x: other.activeMove.toX, y: other.activeMove.toY } : { x: view.x, y: view.y };
+    if (Math.abs(at.x - motion.at.x) + Math.abs(at.y - motion.at.y) > 24) continue;
+    cells.push(at);
+  }
+  return cells;
+}
 
 /** 정지 애니메이션 시계. 씬이 사라지면 함께 버린다. */
 const stoppedStepElapsedMs = new WeakMap<object, Map<string, number>>();
@@ -116,9 +144,13 @@ function updateAutonomousNPCsInPass(scene: AutonomousNpcSceneContext, frameDelta
   const project = store.getCurrent();
   // 시작·복귀 직후 은총 시간에는 추격자가 제자리에서 기다린다(시야 판정·접촉 없음, J61).
   const spawnGrace = tickChaseSpawnGrace(scene, frameDeltaMs);
+  // 추격 전술이 쓰는 주인공 진행 방향 — 프레임마다 한 번만 갱신한다(@/player/chaseTactics).
+  const movingTo = (scene as { movingTo?: ChasePoint }).movingTo;
+  frameMotion.set(scene, trackPlayerMotion(scene, { x: scene.tileX, y: scene.tileY }, scene.moving === true, movingTo));
   const repathCandidates: LivingRepathCandidate[] = [];
   for (const [eventId, mover] of scene.autonomousNPCs) {
     const deltaMs = frameDeltaMs * (actionFieldSlow.get(mover) ?? 1);
+    let chaseDeltaMs = deltaMs;
     if (mover.livingRepathCooldownMs) mover.livingRepathCooldownMs = Math.max(0, mover.livingRepathCooldownMs - Math.max(0, deltaMs));
     if (isDetectionEmoting(scene, eventId)) continue;
     if (scene.running && scene.session.messageWindowSettings?.allowEventMovementDuringWait !== true
@@ -141,7 +173,11 @@ function updateAutonomousNPCsInPass(scene: AutonomousNpcSceneContext, frameDelta
         // 걷기 묶음이 끝났다 — 이번 멈춤 길이를 흔든다(여럿이 같은 박자로 서고 걷지 않게).
         mover.pauseScale = strollPauseScale(() => nextSessionRandom(scene.session, "movement"));
       }
-      if (!routeForced && !(strolling && strollChainPending(mover))) continue;
+      // 쫓는 추격자는 걸음이 끝난 그 프레임에 다음 칸을 뗀다(남은 시간을 이어받아 칸 경계에서 서지 않는다).
+      const chaseGlide = mover.strategy === "chase" && mover.chaseActive === true && !mover.chaseTarget && !mover.kite;
+      if (!routeForced && !(strolling && strollChainPending(mover)) && !chaseGlide) continue;
+      // 이번 프레임 시간은 걸음과 추격 판정(위)이 이미 썼다 — 이어지는 결정에서 두 번 세지 않는다.
+      if (chaseGlide) chaseDeltaMs = 0;
     } else {
       mover.carryMs = 0;
     }
@@ -149,9 +185,9 @@ function updateAutonomousNPCsInPass(scene: AutonomousNpcSceneContext, frameDelta
     if (mover.strategy === "chase") {
       // 순찰+추격: 경로가 있고 추격 중이 아니면 아래 순찰(sequence) 처리로 흘려보낸다.
       const patrol = mover.moves.length > 0 && !mover.chaseTarget && !mover.actionFrozen
-        ? patrolChaseState(scene, eventId, mover, deltaMs) : undefined;
+        ? patrolChaseState(scene, eventId, mover, chaseDeltaMs) : undefined;
       if (!patrol || patrol.engaged) {
-        updateChaseNpc(scene, eventId, mover, deltaMs, patrol ? { value: patrol.tracked } : undefined);
+        updateChaseNpc(scene, eventId, mover, chaseDeltaMs, patrol ? { value: patrol.tracked } : undefined);
         continue;
       }
     }
@@ -421,7 +457,7 @@ function updateChaseNpc(
   const lunge = view.movement.chaseLunge;
   const approach = fieldApproachRecipe(view.movement.approachStyle);
   const seenBefore = mover.alertSeen === true;
-  if (sightAlert && !mover.chaseTarget && holdForSightAlert(scene, eventId, mover, sightAlert, tracked, deltaMs)) {
+  if (sightAlert && !mover.chaseTarget && holdForSightAlert(scene, eventId, mover, { ...sightAlert, holdMs: chaseAlertHoldMs(view.movement) }, tracked, deltaMs)) {
     // 덮치기(movement.chaseLunge)는 놀람 멈춤이 끝나는 순간부터 센다.
     if (lunge && !seenBefore && mover.alertSeen) mover.lungeLeft = Math.max(0, Math.round(lunge.steps));
     setNpcIdleFrame(sprite, baseFrame, mover.facing, view.animationType, mover.animationEnabled);
@@ -436,19 +472,59 @@ function updateChaseNpc(
     setNpcIdleFrame(sprite, baseFrame, mover.facing, view.animationType, mover.animationEnabled);
     return;
   }
+  // 추격 박자(@/project/chaseTempo): 쫓는 동안(engaged)·뒤지는 동안(searching)은 칸 사이에 서지 않고 한 칸을
+  // 박자 시간 동안 미끄러진다. 예전에는 걸음 트윈 + 결정 대기로 칸마다 섰다 걸었다(보통 480ms/칸).
+  const engaged = !mover.chaseTarget && !mover.kite && (tracked ? !tracked.searching : mover.chaseActive === true);
+  const searching = !mover.chaseTarget && !mover.kite && tracked?.searching === true;
+  const authoredTempo = chaseTempoAuthored(view.movement);
+  const tempoMs = chaseCellMs(view.movement);
+  if (!engaged) mover.chaseFastSteps = 0;
+  if (!engaged) mover.chaseBreathMs = 0;
+  // 지치기: 주인공보다 빠른 추격자는 CHASE_STAMINA_STEPS 칸마다 숨을 고른다 — 빠른 추격자를 따돌릴 틈.
+  if (engaged && (mover.chaseBreathMs ?? 0) > 0) {
+    mover.chaseBreathMs = Math.max(0, (mover.chaseBreathMs ?? 0) - Math.max(0, deltaMs));
+    setNpcIdleFrame(sprite, baseFrame, mover.facing, view.animationType, mover.animationEnabled);
+    return;
+  }
   // 덮치는 동안은 걸음 사이 쉼 없이 바로 다음 칸으로.
   const lunging = (mover.lungeLeft ?? 0) > 0 && lunge !== undefined;
   if (lunging) mover.timer = Math.max(mover.timer, mover.moveIntervalMs);
   // 다가오는 방식: 추격 중 칸 사이 쉼은 방식이 정한다(질주·육중은 쉬지 않음, 도약은 두 칸 뒤 웅크림, 통통은 매 칸 짧게).
   const styled = approach !== undefined && !mover.chaseTarget && tracked !== undefined && tracked !== null && !tracked.searching;
-  // 저작한 추격 박자(chaseStepMs)가 있으면 방식이 쉼을 지우지 않는다 — 몸짓은 남고 빠르기는 그 값(speed·moveIntervalMs)이 정한다.
-  if (styled && !lunging && view.movement.chaseStepMs === undefined) mover.timer = Math.max(mover.timer, mover.moveIntervalMs - (mover.approachPauseMs ?? 0));
+  // 저작한 추격 박자(chaseStepMs)가 있으면 방식이 쉼을 지우지 않는다 — 몸짓은 남고 빠르기는 그 값이 정한다.
+  const styledPace = styled && !authoredTempo;
+  if (styledPace && !lunging) mover.timer = Math.max(mover.timer, mover.moveIntervalMs - (mover.approachPauseMs ?? 0));
+  const glideMs = (engaged || searching) && !styledPace ? Math.round(engaged ? tempoMs : tempoMs * CHASE_SEARCH_SLOWDOWN) : undefined;
+  if (glideMs !== undefined && !lunging) mover.timer = Math.max(mover.timer, mover.moveIntervalMs);
   if (!styled) { mover.approachStep = 0; mover.approachPauseMs = 0; }
-  const pursuit = mover.chaseTarget ?? tracked ?? { x: scene.tileX, y: scene.tileY };
+  const world = { project, map: scene.map, session: scene.session, positions: scene.eventPositions };
+  let pursuit: ChasePoint = mover.chaseTarget ?? tracked ?? { x: scene.tileX, y: scene.tileY };
   const targetEvent = mover.chaseTarget
     ? findBlockingEventOverlappingRect(project, scene.map, scene.session, scene.eventPositions,
       { left: pursuit.x, right: pursuit.x, top: pursuit.y, bottom: pursuit.y }, eventId)
     : undefined;
+  const pass = pursuitPass(world, view, targetEvent?.event.id);
+  // 추격 전술(@/player/chaseTactics): 진행 방향 앞질러 막기·여럿이면 갈라져 감싸기. 안전지대 안의 주인공은 건드리지 않는다.
+  const motion = frameMotion.get(scene);
+  if (engaged && motion && mover.pathfind !== false && !isInSafeZone(scene.map.safeZones, { x: scene.tileX, y: scene.tileY })
+    && mover.timer >= mover.moveIntervalMs) {
+    const goal = chooseChaseGoal({
+      project, map: scene.map, from: { x: view.x, y: view.y }, pass,
+      cellMs: styledPace ? approach!.stepMs + approach!.pauseMs / Math.max(1, approach!.burst) : tempoMs,
+      playerStepMs: (scene as { moveDurationMs?: number }).moveDurationMs ?? PLAYER_WALK_STEP_MS,
+      player: motion, allies: engagedAllyCells(scene, eventId, motion),
+      ...(mover.chaseGoalKey ? { previous: parseGoalKey(mover.chaseGoalKey) } : {}),
+    });
+    const key = `${goal.x}:${goal.y}`;
+    if (mover.chaseGoalKey !== key) {
+      mover.chaseGoalKey = key;
+      mover.chasePath = [];
+      mover.chasePathBlocked = false;
+    }
+    pursuit = goal;
+  } else if (!engaged) {
+    mover.chaseGoalKey = undefined;
+  }
   let decision = nextChaseDecision({
     project,
     map: scene.map,
@@ -461,7 +537,8 @@ function updateChaseNpc(
     pathfind: mover.pathfind,
     kite: mover.kite,
     requestRepath: () => requestChaseRepath(scene, mover),
-    pass: pursuitPass({ project, map: scene.map, session: scene.session, positions: scene.eventPositions }, view, targetEvent?.event.id),
+    pass,
+    ...(engaged || searching ? { straight: { heading: FACING_STEP[mover.facing] }, approachWhenBlocked: true } : {}),
   });
   if (tracked?.searching && decision.kind === "touch" && (pursuit.x !== scene.tileX || pursuit.y !== scene.tileY)) {
     decision = { kind: "move", x: pursuit.x, y: pursuit.y, dir: decision.dir };
@@ -517,10 +594,24 @@ function updateChaseNpc(
   }
   moveAutonomousRuntimePosition(scene, eventId, decision.x, decision.y, frameDir);
   const lungeMs = lunging ? Math.min(lunge!.stepMs ?? npcMoveDurationMs(lunge!.speed), styled && approach?.lungeStepMs ? approach.lungeStepMs : Infinity) : undefined;
-  const stepMs = lungeMs ?? (styled ? approach!.stepMs : undefined);
+  const stepMs = lungeMs ?? (styledPace ? approach!.stepMs : glideMs ?? (styled ? approach!.stepMs : undefined));
   const tile = mapTileSize(scene.map);
   const stepIndex = mover.approachStep ?? 0;
-  mover.activeMove = { fromX: view.x, fromY: view.y, toX: decision.x, toY: decision.y, dir: frameDir, baseFrame, elapsedMs: 0,
+  // 이어 걷기: 앞 칸에서 남은 시간을 이어받는다(뛰어오르는 몸짓은 자기 시간이 있어 이어받지 않는다).
+  const carried = glideMs !== undefined && !(styled && approach?.hop) ? Math.min(mover.carryMs ?? 0, (stepMs ?? glideMs) - 1) : 0;
+  mover.carryMs = 0;
+  if (engaged && !lunging) {
+    const cell = stepMs ?? tempoMs;
+    if (chaseTires(styledPace ? cell + (approach!.pauseMs / Math.max(1, approach!.burst)) : cell)) {
+      mover.chaseFastSteps = (mover.chaseFastSteps ?? 0) + 1;
+      if (mover.chaseFastSteps >= CHASE_STAMINA_STEPS) {
+        mover.chaseFastSteps = 0;
+        mover.chaseBreathMs = CHASE_BREATHER_MS;
+        if ((scene as { textures?: unknown }).textures) showSceneEmote(scene as unknown as PlaySceneContext, eventId, "sweat", CHASE_BREATHER_MS);
+      }
+    }
+  }
+  mover.activeMove = { fromX: view.x, fromY: view.y, toX: decision.x, toY: decision.y, dir: frameDir, baseFrame, elapsedMs: carried,
     ...(stepMs !== undefined ? { durationMs: stepMs } : {}),
     ...(styled && approach?.hop ? { hop: jumpHop({ heightPx: approach.hop * tile, durationMs: stepMs ?? approach.stepMs, impact: false }) } : {}),
     ...(styled && (approach?.sway || approach?.bob) ? { approach: {

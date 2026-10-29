@@ -59,6 +59,8 @@ export function seesPlayer(world: World, view: RuntimeEventView): boolean {
 }
 
 type PursuitTarget = { x: number; y: number; searching: boolean } | null | undefined;
+/** 시야가 끊긴 뒤 주인공이 간 쪽을 아직 아는 시간(ms). 이 뒤로는 마지막 목격 자리·진행 방향을 뒤진다. */
+export const LOS_GRACE_MS = 400;
 
 /** Invalidate cached paths when acquisition, search, return or the actual target changes. */
 export function pursuitTarget(world: World, view: RuntimeEventView, mover: AutonomousMover, deltaMs: number): PursuitTarget {
@@ -88,14 +90,37 @@ function trackedPursuitTarget(world: World, view: RuntimeEventView, mover: Auton
     if (config?.lostSwitchId && world.session.switches[config.lostSwitchId]) world.session.switches[config.lostSwitchId] = false;
     state.active = true;
     state.searchMs = 0;
-    state.lastSeen = { x: world.session.x, y: world.session.y };
-    delete state.searchTarget; delete state.searchCursor;
+    const seen = { x: world.session.x, y: world.session.y };
+    // 진행 방향 — 놓쳤을 때 마지막 목격 자리 다음으로 그 방향을 뒤진다(한 축만 바뀐 걸음만 센다).
+    if (state.lastSeen && (seen.x !== state.lastSeen.x) !== (seen.y !== state.lastSeen.y)) {
+      const heading = { x: Math.sign(seen.x - state.lastSeen.x), y: Math.sign(seen.y - state.lastSeen.y) };
+      const before = state.lastHeading;
+      const cross = before ? before.x * heading.y - before.y * heading.x : 0;
+      if (cross !== 0) state.lastTurn = cross > 0 ? 1 : -1;
+      state.lastHeading = heading;
+    }
+    state.lastSeen = seen;
+    delete state.searchTarget; delete state.searchCursor; delete state.searchCenter;
     mover.chaseActive = true;
     return { ...state.lastSeen, searching: false };
   }
   if (!state.active && mover.chaseActive) state.active = true;
   if (!state.active) return null;
   state.searchMs += Math.max(0, deltaMs);
+  // 시야가 막 끊긴 직후(LOS_GRACE_MS)에는 어느 쪽으로 꺾었는지 발소리로 안다 — 마지막 목격 자리를 그 짧은 동안만 따라 옮긴다.
+  // 예전에는 끊긴 그 칸에 멈춰 둘레만 뒤져 모퉁이 하나로 따돌려졌다(2026-10-29). 숨는 곳·안전지대 안이면 따라가지 않는다.
+  if (state.searchMs <= LOS_GRACE_MS && !hiding && !isInSafeZone(world.map.safeZones, world.session) && state.lastSeen) {
+    const seen = { x: world.session.x, y: world.session.y };
+    if ((seen.x !== state.lastSeen.x) !== (seen.y !== state.lastSeen.y)) {
+      const heading = { x: Math.sign(seen.x - state.lastSeen.x), y: Math.sign(seen.y - state.lastSeen.y) };
+      const before = state.lastHeading;
+      const cross = before ? before.x * heading.y - before.y * heading.x : 0;
+      if (cross !== 0) state.lastTurn = cross > 0 ? 1 : -1;
+      state.lastHeading = heading;
+    }
+    state.lastSeen = seen;
+    return { ...seen, searching: false };
+  }
   if (state.searchMs <= (config?.searchMs ?? 3000) && state.lastSeen) {
     // Positions reserve tween destinations immediately. Do not rotate the search until landing.
     const target = mover.activeMove ? state.searchTarget ?? state.lastSeen : searchTarget(world, view, state);
