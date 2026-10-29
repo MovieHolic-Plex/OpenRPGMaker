@@ -62,6 +62,11 @@ interface OpenRpgBootConfig {
   readonly actionCombatProbe?: { readonly runId: string; readonly mapId: string };
   /** Private runtime-QA checkpoint (scripts/qa/runtime/checkpoints). Ignored unless qaInstrumentation is true. */
   readonly qaCheckpoint?: unknown;
+  /**
+   * Private runtime-QA: on the dev server, read `?demo=` from this baked play.json instead of building the demo in the page.
+   * Ignored unless qaInstrumentation is true, and only read in dev (production always reads demos/<id>.play.json).
+   */
+  readonly qaDemoUrl?: string;
   // 호스트 주입값은 신뢰하지 않는다 — hostBridge.parseHostBridge 가 방어적으로 파싱한다.
   readonly returnUrl?: unknown;
   readonly hostFeatures?: unknown;
@@ -118,7 +123,7 @@ async function bootExportedPlayer(root: HTMLElement): Promise<void> {
   const demoParam = rawDemoParam === "fallen-star" ? "chrono-bell" : rawDemoParam === "astra-horizon" ? "emerald-crown" : rawDemoParam;
   if (demoParam === "chrono-bell" || demoParam === "emerald-crown" || demoParam === "shitamachi-fourth-season" || demoParam === "first-love" || demoParam === "maou-konbini") {
     const loader = mountBootLoader(root, { title: document.title });
-    const demo = await loadFlagshipDemo(demoParam, assetBase, (bytes) => loader.projectProgress(bytes));
+    const demo = await loadFlagshipDemo(demoParam, assetBase, (bytes) => loader.projectProgress(bytes), devQaDemoUrl(boot));
     if (!demo.ok) { loader.remove(); renderBootError(root, demo.message); return; }
     loader.setInfo({ title: demo.project.meta.title });
     await prepareFirstScreen(loader, demo.project, autoStartFor(boot));
@@ -268,18 +273,28 @@ async function loadBundledProject(projectUrl: URL, onBytes: (bytes: number) => v
  * dev 서버(QA 하네스)에는 구운 파일이 없으므로 그때만 예전처럼 짓는다. 출하 빌드에서는 import.meta.env.DEV 가
  * 거짓이라 빌더 import 가 통째로 빠지고, 내보낸 게임 zip 에도 데모 빌더 청크가 실리지 않는다.
  */
-async function loadFlagshipDemo(id: string, assetBase: URL, onBytes: (bytes: number) => void): Promise<BundledProjectLoad> {
-  if (import.meta.env.DEV) {
+async function loadFlagshipDemo(id: string, assetBase: URL, onBytes: (bytes: number) => void, devBakedUrl?: URL): Promise<BundledProjectLoad> {
+  if (import.meta.env.DEV && !devBakedUrl) {
     const { createFlagshipDemoProject } = await import("@/project/flagship");
     return { ok: true, project: createFlagshipDemoProject(id as Parameters<typeof createFlagshipDemoProject>[0]).project };
   }
   try {
-    const response = await fetchTextWithProgress(new URL(`demos/${encodeURIComponent(id)}.play.json`, assetBase), onBytes);
+    const response = await fetchTextWithProgress(devBakedUrl ?? new URL(`demos/${encodeURIComponent(id)}.play.json`, assetBase), onBytes);
     if (!response.ok) return { ok: false, message: `데모 ${id} 를 읽지 못했습니다 (${response.status})` };
     return { ok: true, project: deserialize(response.text) };
   } catch (error) {
     return { ok: false, message: error instanceof Error ? error.message : String(error) };
   }
+}
+
+/**
+ * 런타임 QA 하네스가 구운 데모(dist/demos/<id>.play.json)를 넘겼으면 그 주소. dev 서버에서만 본다 —
+ * 페이지 안에서 데모를 짓는 데 chrono-bell 이 수 분 걸려(체크포인트 하나 12~20분) 하네스가 미리 구운 파일을 준다.
+ * 하네스가 주지 않으면(구운 파일이 없거나 소스보다 낡았으면) 예전처럼 페이지에서 짓는다(scripts/lib/runtimeQaDemo.mjs).
+ */
+function devQaDemoUrl(boot: OpenRpgBootConfig): URL | undefined {
+  if (!import.meta.env.DEV || boot.qaInstrumentation !== true || typeof boot.qaDemoUrl !== "string") return undefined;
+  return new URL(boot.qaDemoUrl, window.location.href);
 }
 
 /**
