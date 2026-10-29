@@ -1,6 +1,6 @@
 import { jsonEqual } from "@/util/structuralJson";
 import { fitStairTransfers, stairPairMismatch } from "@/project/stairs/fit";
-import { PLAYER_WALK_STEP_MS } from "@/project/characterMotion";
+import { npcMoveIntervalMs, PLAYER_WALK_STEP_MS } from "@/project/characterMotion";
 import { chaseCellMs } from "@/project/chaseTempo";
 import { passageBlockWarning } from "../../project/eventPassageBlock";
 import { CONFIGURE_OBJECT_BEHAVIOR, PURSUIT_SCHEMA, parsePursuit } from "./horrorBehaviorTools";
