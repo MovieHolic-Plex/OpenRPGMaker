@@ -3522,6 +3522,7 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
 - `link_world_entrance {worldMapId, links:[{place|x,y, toMapId, toGate?}], autoMatch?, fade?}` — 월드맵 장소 입구 ↔ 던전·마을 양방향. 던전은 `던전 입구` 표식이 문 칸을 알려 준다.
   `autoMatch:true` 는 이름·id 가 같은 맵이 정확히 하나일 때만 잇는다. 결과 `data.unlinkedPlaces` = 입구 이벤트가 없는 장소. 라벨 「월드 입구 잇기」.
 - `author_dungeon` 2026-10-22 인자 추가: `floors`·`direction`(여러 층 + 계단 잇기) · `populate`(rpg 기본 켜짐: 적·상자·보스·쉼터) · `troops` · `flooded` · `puzzle:"lever"` · `lair` · 2026-10-23 `rebuild`(이 도구가 지은 던전 맵을 같은 자리에서 다시 짓기). 채운 뒤 결과의 `data.placed` 가 실제로 놓인 수다. 자세한 규칙은 `openwiki/beodeul-city.md` 「조수 던전 시험 후 고친 것」.
+  - 쉼터 세이브(2026-10-30): 맵 칩셋에 세이브 받침 키트(id 에 `crystal-pedestal`·`save-point` 등, 버들항 `bd-pick-dungeon-theme-crystal-pedestal`)가 있으면 `place_savepoint objectId:"kit:<칩셋>/<키트>"` 로 세운다(받침 윗칸이 빈 바닥인 자리만). 없으면 옛 크리스탈 걷기 칩 — 그 칩(보라 수정이 맥동)이 버들항 던전 층마다 「움직이는 바위」로 읽혔다. 층 계단·입구 문이 닫힘/열림 키트 문이면 문 열기 명령이 들어간다(`openwiki/editor-event-commands.md` 키트 문).
 - `author_dungeon.entrance:{fromMapId, place|x,y, fade?}` — 짓는 즉시 야외 입구와 양방향(고아 맵 방지). 모르는 키·없는 장소는 거절하며 `link_world_entrance` 로 우회하는 문장을 준다.
   `author_dungeon` 최상위도 이제 모르는 인자를 거절한다(`style` 추가). 의도 선언·capability index·contextBuilder 24번 줄에 같은 안내.
 - `set_encounter_table` 항목 조건: `terrainId`(지형 레코드 id)·`locationId`(구역 id·이름) 추가, 모르는 조건 키 거절. 세계 지도 `terrain_world_*` 레코드는 지도 빌드 때 생긴다.
