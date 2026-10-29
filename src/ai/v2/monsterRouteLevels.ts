@@ -16,7 +16,8 @@ import { speciesEnemyAtLevel } from "@/battle/battleBattlers";
 import { simulateBattle } from "@/battle/simulate";
 import { monsterBalanceParty } from "@/editor/tools/troopBalanceCheck";
 import { totalExpForLevel } from "@/project/actorModel";
-import { DEFAULT_MONSTER_EXP_CURVE, monsterSpeciesById } from "@/project/monsterCollection";
+import { DEFAULT_MONSTER_EXP_CURVE, monsterSkillIdsAtLevel, monsterSpeciesById } from "@/project/monsterCollection";
+import type { MonsterInstance } from "@/project/session";
 import type { EnemyRecord, GameMap, Project } from "@/project/types";
 
 type Obj = Record<string, unknown>;
@@ -47,6 +48,33 @@ function starterSpeciesId(project: Project): string | undefined {
     if (id === undefined && cmd.kind === "giveMonster" && typeof cmd.speciesId === "string") id = cmd.speciesId;
   });
   return id;
+}
+
+/**
+ * 고를 수 있는 스타터 종 전부 — 첫 giveMonster 가 든 이벤트의 giveMonster 들(박사의 세 선택지). 이벤트가 하나만 주면 그 하나.
+ * 왜(2026-10-29 standin monster): 관문 곡선을 첫 선택지(풀)로만 재서, 풀이 아닌 스타터를 고른 판을 못 봤다.
+ */
+function starterChoices(project: Project): string[] {
+  for (const map of Object.values(project.maps)) for (const event of map.events ?? []) {
+    const ids: string[] = [];
+    walk(event.pages, (cmd) => { if (cmd.kind === "giveMonster" && typeof cmd.speciesId === "string" && !ids.includes(cmd.speciesId)) ids.push(cmd.speciesId); });
+    if (ids.length) return ids;
+  }
+  return [];
+}
+
+function loneMonster(project: Project, speciesId: string, level: number): MonsterInstance | null {
+  const species = monsterSpeciesById(project, speciesId);
+  if (!species) return null;
+  return {
+    instanceId: `gate_fit_${speciesId}`,
+    speciesId,
+    level,
+    exp: 0,
+    skillIds: monsterSkillIdsAtLevel(species, level).filter((id) => project.database.skills.some((skill) => skill.id === id)),
+    friendship: 0,
+    caughtAt: { mapId: project.startMapId, x: project.startPos.x, y: project.startPos.y },
+  };
 }
 
 function troopExp(project: Project, troopId: string): number {
@@ -157,7 +185,8 @@ function campaignGates(project: Project): { switchId: string; mapIds: Set<string
  *   첫 관문 목표 = max(원래, 스타터+1), 다음 관문 목표 = max(원래, 앞 관문의 최종 레벨+1).
  * 관문 트룹과 같은 맵에서 관문 레벨 이하로 싸우는 다른 트레이너(체육관 관원)도 같은 폭만큼 올린다. 전설 조우처럼 관문보다 높은 전투는 두지 않는다.
  * 올린 관문은 기준 파티(troopBalanceCheck.monsterBalanceParty — 첫 관장은 스타터 혼자, 그 뒤는 잡은 동료 포함)가 **도착 레벨**에서
- * 모의전(시드 고정) 80% 이상 이겨야 한다 — 못 이기면 한 레벨씩 덜 올린다(원래 레벨 아래로는 내리지 않는다). 도착 레벨 = 스타터 경험치 +
+ * 모의전(시드 고정) 80% 이상 이겨야 하고, 경험치 나누기(rewardPolicy.expShare)가 꺼져 있으면 고를 수 있는 스타터 **각각 혼자서도** 그 종의
+ * 도착 레벨에서 80% 이상 이겨야 한다 — 못 이기면 한 레벨씩 덜 올린다(원래 레벨 아래로는 내리지 않는다). 도착 레벨 = 스타터 경험치 +
  * 길 트레이너 전부 + 앞 관문(관원 포함)의 경험치로 오르는 레벨(야생전은 세지 않는다). 같은 풀 종끼리의 관장전처럼 올리면 못 이기는
  * 첫 관문은 그대로 두고, 다음 관문부터 그 레벨 위로 잇는다. 다른 관문·맵 트룹과 함께 쓰는 적 레코드는 건드리지 않는다.
  */
@@ -178,6 +207,15 @@ export function fitGateLevelCurve(project: Project): string[] {
   // 도착 레벨 추정: 스타터 경험치 + 길(route) 트레이너 전부 + 앞 관문(관원 포함)의 경험치. 야생전은 세지 않는다(고르지 않아도 되는 싸움).
   const routeIds = new Set(project.system.monsterCampaign.locations.filter((entry) => entry.kind === "route").map((entry) => entry.mapId));
   let exp = totalExpForLevel(curve, starter);
+  const choices = project.system.rewardPolicy?.expShare === true ? [] : starterChoices(project);
+  // 스타터 종마다 경험치 곡선이 다를 수 있다 — 같은 경험치(첫 스타터 기준 누계 − 시작치)를 그 종의 곡선에 얹은 레벨.
+  const arrivalFor = (speciesId: string): number => {
+    const own = monsterSpeciesById(project, speciesId)?.expCurve ?? DEFAULT_MONSTER_EXP_CURVE;
+    const total = totalExpForLevel(own, starter) + exp - totalExpForLevel(curve, starter);
+    let level = starter;
+    while (level < 99 && totalExpForLevel(own, level + 1) <= total) level += 1;
+    return level;
+  };
   for (const mapId of routeIds) { const map = project.maps[mapId]; if (map) for (const troopId of routeTrainerTroops(map)) exp += troopExp(project, troopId); }
   const out: string[] = [];
   let prev = starter;
@@ -210,7 +248,15 @@ export function fitGateLevelCurve(project: Project): string[] {
         for (const [enemyId, from] of base) { const enemy = project.database.enemies.find((item) => item.id === enemyId); if (enemy) relevel(project, enemy, from + delta); }
         const winsAll = gate.troopIds.every((troopId) => {
           const party = monsterBalanceParty(project, troopId, arrival);
-          return !party?.length || simulateBattle({ project, troopId, heroLevel: arrival, monsterParty: party, n: FIT_SAMPLES, seed: 1, useSkills: true }).winRate >= FIT_WIN_RATE;
+          if (party?.length && simulateBattle({ project, troopId, heroLevel: arrival, monsterParty: party, n: FIT_SAMPLES, seed: 1, useSkills: true }).winRate < FIT_WIN_RATE) return false;
+          // 고를 수 있는 스타터마다 혼자서도 — 경험치는 싸운 몬스터만 받으니(경험치 나누기 없음) 잡은 동료는 관문 레벨까지 크지 않는다.
+          // 왜(2026-10-29 standin monster, 런타임 풀 스타터): 동료 포함 기준 파티로만 재서 관측탑 보스를 Lv7→8, 챔피언을 7→9 로 올렸는데
+          // 풀 스타터 혼자는 비행 보스 Lv8 을 도착 Lv10 에서 25%, 챔피언 Lv9 를 0% 이겼다 — 런타임에서 풀 판이 보스에서 졌다.
+          return choices.every((speciesId) => {
+            const level = arrivalFor(speciesId);
+            const lone = loneMonster(project, speciesId, level);
+            return !lone || simulateBattle({ project, troopId, heroLevel: level, monsterParty: [lone], n: FIT_SAMPLES, seed: 1, useSkills: true }).winRate >= FIT_WIN_RATE;
+          });
         });
         if (winsAll) break;
         project.database.enemies = [...saved];
