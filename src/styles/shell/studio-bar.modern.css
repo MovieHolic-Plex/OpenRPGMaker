@@ -506,7 +506,12 @@
 }
 
 .studio-run-group .topbar-test-play-glyph {
-  font-size: 10px;
+  display: inline-flex;
+}
+
+.studio-run-group .topbar-test-play-glyph svg {
+  height: 14px;
+  width: 14px;
 }
 
 .studio-run-group .quick-battle-test-button {
@@ -654,6 +659,28 @@
 
 .oprn-menu-command-label {
   flex: 1 1 auto;
+}
+
+/* 단축키는 항목 오른쪽 끝에 글자로 — 메뉴에서 키를 익히게 한다. */
+.oprn-menu-command-kbd {
+  color: var(--text-2);
+  font: 500 12px/1 var(--font-ui);
+  margin-left: 24px;
+}
+
+/* 하나만 고르는 항목(언어)의 고른 표시. */
+.oprn-menu-command[role="menuitemradio"]::before {
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1.5px var(--text-3);
+  content: "";
+  flex: 0 0 auto;
+  height: 10px;
+  width: 10px;
+}
+
+.oprn-menu-command[role="menuitemradio"][aria-checked="true"]::before {
+  background: var(--text-1);
+  box-shadow: inset 0 0 0 1.5px var(--text-1), inset 0 0 0 3px var(--bg-overlay, var(--bg-raised));
 }
 
 /* 하위 메뉴(예제 프로젝트 ▸) */
@@ -844,8 +871,11 @@
 
   .studio-bar .topbar-ai-studio-icon {
     display: inline-flex;
-    font-size: 15px;
-    line-height: 1;
+  }
+
+  .studio-bar .topbar-ai-studio-icon svg {
+    height: 18px;
+    width: 18px;
   }
 
   .studio-bar .workspace-panels-label {
@@ -941,9 +971,6 @@
     gap: 2px;
   }
 
-  .studio-bar .oprn-window-control {
-    display: none;
-  }
 }
 
 /* ── 14. 넘침 맞춤 — topbarFit.ts 가 실제 넘침을 재서 data-fit-level 을 올린다(누적) ───────────────────
@@ -953,35 +980,80 @@
   display: none;
 }
 
-.studio-bar:is([data-fit-level="1"], [data-fit-level="2"], [data-fit-level="3"]) .studio-tools-more {
+.studio-bar:not([data-fit-level="0"]):is([data-fit-level]) .studio-tools-more {
   display: inline-flex;
 }
 
-.studio-bar:is([data-fit-level="1"], [data-fit-level="2"], [data-fit-level="3"]) .studio-bar-lead > :is([data-testid="toolbar-world"], [data-testid="toolbar-sound-test"], [data-testid="toolbar-search"]) {
+/* 1단계: 세계관·음악·찾기·전체화면을 「도구 더 보기」 메뉴로 옮긴다(메뉴 항목이 같은 이름·단축키를 보인다).
+   전체화면은 예전에 960px 아래에서 그냥 사라졌다 — 이제는 메뉴에서 닿는다. */
+.studio-bar:not([data-fit-level="0"]):is([data-fit-level]) .studio-bar-lead > :is([data-testid="toolbar-world"], [data-testid="toolbar-sound-test"], [data-testid="toolbar-search"]),
+.studio-bar:not([data-fit-level="0"]):is([data-fit-level]) .oprn-window-control {
   display: none;
 }
 
-.studio-bar:is([data-fit-level="2"], [data-fit-level="3"]) .ai-connection-chip {
+.studio-bar:is([data-fit-level="2"], [data-fit-level="3"], [data-fit-level="4"], [data-fit-level="5"]) .ai-connection-chip {
   height: 32px;
   justify-content: center;
   padding: 0;
   width: 32px;
 }
 
-.studio-bar:is([data-fit-level="2"], [data-fit-level="3"]) .ai-connection-chip .ai-connection-label {
+.studio-bar:is([data-fit-level="2"], [data-fit-level="3"], [data-fit-level="4"], [data-fit-level="5"]) .ai-connection-chip .ai-connection-label {
   display: none;
 }
 
-.studio-bar[data-fit-level="3"] .header-layer-switcher {
+.studio-bar:is([data-fit-level="3"], [data-fit-level="4"], [data-fit-level="5"]) .header-layer-switcher {
   margin-inline: 2px;
 }
 
-.studio-bar[data-fit-level="3"] .header-layer-switcher .left-layer-btn {
+.studio-bar:is([data-fit-level="3"], [data-fit-level="4"], [data-fit-level="5"]) .left-layer-btn {
   padding-inline: 5px;
 }
 
-.studio-bar[data-fit-level="3"] .studio-project-button .oprn-menu-item-label {
+.studio-bar:is([data-fit-level="3"], [data-fit-level="4"], [data-fit-level="5"]) .studio-project-button .oprn-menu-item-label {
   max-width: 72px;
+}
+
+/* 4단계: 상품 이름표(장식)를 걷는다. */
+.studio-bar:is([data-fit-level="4"], [data-fit-level="5"]) .editor-product-brand {
+  display: none;
+}
+
+/* 5단계(200% 확대·아주 좁은 창): 그래도 넘치면 묶음을 겹치지 않고 상단 바를 가로로 민다.
+   예전에는 왼쪽 묶음이 가운데·오른쪽 묶음 밑으로 흘러들어 넘침 단추 위에 「랜덤 전투」가 그려지고
+   레이어 「이벤트」 자리를 「테스트 실행」이 가로챘다(C-19). 단추는 모두 제자리에서 눌리고, Tab 초점은 스스로 보이는 곳까지 민다. */
+.oprn-menu-bar.studio-bar[data-fit-level="5"] {
+  grid-template-columns: max-content 32px max-content;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: thin;
+}
+
+.studio-bar[data-fit-level="5"] .studio-bar-lead {
+  width: auto;
+}
+
+/* ── 15. 상태 줄 — 지금 도구와 저장 상태를 글자로(IS-009·IS-036) ─────────────────────────── */
+.studio-status-strip {
+  align-items: center;
+  border-left: 1px solid var(--border-subtle);
+  color: var(--text-2);
+  display: inline-flex;
+  flex: 0 0 auto;
+  font: 500 12px/1 var(--font-ui);
+  gap: 8px;
+  margin-left: 4px;
+  padding-left: 10px;
+  white-space: nowrap;
+}
+
+.studio-status-tool {
+  color: var(--text-1);
+  font-weight: 600;
+}
+
+.studio-status-save[data-autosave-kind="error"] {
+  color: var(--danger);
 }
 
 /* 키보드 포커스 링 — 01-shell-topbar-team.css 가 이 버튼들의 :focus-visible 에서 outline 을 지우고

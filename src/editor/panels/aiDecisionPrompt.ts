@@ -99,7 +99,7 @@ export function requestAssistantDecisionDetailed(surface: DecisionSurface, optio
       children: [
         el("p", { children: [el("strong", { text: `답변 필요${options.title ? ` · ${options.title}` : ""}` })] }),
         el("p", { text: options.message }),
-        el("p", { class: "ai-pending-review-hint", text: "입력창에 「예」·「그만」으로 답해도 돼요. 다른 요청을 보내면 이 카드는 그만두기로 닫혀요." }),
+        el("p", { class: "ai-chat-decision-hint", text: "입력창에 「예」·「그만」으로 답해도 돼요. 다른 요청을 보내면 이 카드는 그만두기로 닫혀요." }),
         el("div", { class: "ai-pending-review-actions", children: [
           el("button", { text: options.confirmLabel ?? "확인", attrs: { type: "button" },
             dataset: { testid: "ai-decision-confirm" }, on: { click: () => finish(true, "button") } }),

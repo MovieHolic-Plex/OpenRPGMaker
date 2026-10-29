@@ -17,6 +17,11 @@ export function validateLightSource(label: string, value: unknown): void {
   if (source.intensity !== undefined) requireNumber(`${label}.intensity`, source.intensity);
   if (source.color !== undefined) requireString(`${label}.color`, source.color);
   if (source.flicker !== undefined) requireBoolean(`${label}.flicker`, source.flicker);
+  if (source.cone !== undefined) {
+    const cone = requireRecord(`${label}.cone`, source.cone);
+    requireNumber(`${label}.cone.degrees`, cone.degrees);
+    if (cone.facing !== undefined) requireString(`${label}.cone.facing`, cone.facing);
+  }
 }
 
 function validateLightAnchor(label: string, value: unknown): void {

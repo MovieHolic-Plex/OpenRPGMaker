@@ -52,7 +52,7 @@ export function publishProblems(manifest: StorePackManifest): string[] {
     for (const graft of tileset.tileGrafts ?? []) named.push([`타일셋 ${tileset.id} 이식`, graft.sourceChipset]);
   }
   for (const [where, text] of named) {
-    const word = storeThirdPartyName(text);
+    const word = storeThirdPartyName(text, manifest.license);
     if (word) problems.push(`${where}: 제3자 팩 이름 「${word}」`);
   }
   return problems;

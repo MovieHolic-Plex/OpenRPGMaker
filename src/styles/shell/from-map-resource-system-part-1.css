@@ -184,14 +184,17 @@
   background: var(--bg-glass);
   color: var(--text-1);
   display: flex;
-  flex: 0 0 30px;
-  gap: 5px;
+  flex: 0 0 36px;
+  gap: 6px;
   font: 700 13px/1 var(--font-ui);
-  height: 30px;
+  height: 36px;
   inset: 0 0 auto 0;
-  min-height: 30px;
-  overflow: hidden;
+  min-height: 36px;
+  /* 단추 글자는 줄바꿈하지 않는다. 창이 좁으면 막대가 옆으로 넘겨진다(잘리거나 음절 중간에서 꺾이지 않게, HIG C-89). */
+  overflow-x: auto;
+  overflow-y: hidden;
   padding: 4px 6px;
+  scrollbar-width: none;
   pointer-events: none;
   position: absolute;
   z-index: 30;
@@ -210,7 +213,7 @@
 }
 
 .test-play-window[data-window-mode="fullscreen"] .test-play-modal-body {
-  height: calc(100% - 30px);
+  height: calc(100% - 36px);
 }
 
 /* map/resource-system.part-1.css:300-306 */
@@ -267,8 +270,9 @@
 }
 
 /* map/resource-system.part-1.css:348-356 */
+/* 게임 그림 밖 여백은 검정 한 가지다 — 회색 기둥 + 검은 띠로 그림이 두 겹 레터박스에 갇혀 보였다(HIG C-94). */
 .test-play-modal-body {
-  background: var(--bg-inset);
+  background: #000;
   border: 0;
   flex: 1 1 auto;
   height: auto;
@@ -279,7 +283,7 @@
 
 /* map/resource-system.part-1.css:358-360 */
 .test-play-window[data-window-mode="windowed"] .test-play-modal-body {
-  height: calc(100% - 30px);
+  height: calc(100% - 36px);
 }
 
 /* map/resource-system.part-1.css:363-368 */
@@ -302,8 +306,7 @@
 
 /* map/resource-system.part-1.css:375-381 */
 @media (max-width: 480px) {
-  .test-play-window[data-window-mode="windowed"] [data-testid="mode-edit"],
-    .test-play-window[data-window-mode="windowed"] [data-testid="test-play-restart"],
+  .test-play-window[data-window-mode="windowed"] [data-testid="test-play-restart"],
     .test-play-window[data-window-mode="windowed"] [data-testid="test-play-title"],
     .test-play-window[data-window-mode="windowed"] [data-testid="test-play-window-maximize"] {
       display: none;
@@ -355,10 +358,13 @@
   border-color: transparent;
   color: var(--text-2);
   display: inline-flex;
+  flex: 0 0 auto;
   font: 600 12px/1 var(--font-ui);
   gap: 6px;
-  min-height: 22px;
+  min-height: 28px;
+  padding: 0 10px;
   transition: background var(--transition-fast), color var(--transition-fast);
+  white-space: nowrap;
 }
 
 .test-play-close:hover,
@@ -375,6 +381,33 @@
 .test-play-close[data-testid="mode-edit"] {
   border-color: var(--border-default);
   color: var(--text-1);
+}
+
+/* 막대에 남기는 상태: 지금 도는 맵 이름과(IS-084) 게임 메뉴가 열린 동안의 일시 정지 칩(IS-085). */
+.test-play-map,
+.test-play-pause {
+  align-items: center;
+  border-radius: var(--radius-s);
+  color: var(--text-2);
+  display: inline-flex;
+  flex: 0 1 auto;
+  font: 600 12px/1 var(--font-ui);
+  min-height: 28px;
+  min-width: 0;
+  overflow: hidden;
+  padding: 0 8px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.test-play-pause {
+  background: var(--bg-hover);
+  color: var(--text-1);
+  flex: 0 0 auto;
+}
+
+.test-play-pause[hidden] {
+  display: none;
 }
 
 .test-play-skip-title input[type="checkbox"] {

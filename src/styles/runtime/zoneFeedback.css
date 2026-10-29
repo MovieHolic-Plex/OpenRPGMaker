@@ -107,7 +107,7 @@
 .objective-card[hidden] { display: none; }
 
 .objective-card-label {
-  color: var(--runtime-accent, #f4d27a);
+  color: #f4d27a; /* 금빛 이름표 — 런타임에 같은 색 토큰이 없다(전에는 정의 없는 --runtime-accent 의 대체값으로 같은 색이 그려졌다). */
   font-size: calc(var(--runtime-font-size-9) * var(--play-ui-scale, 1));
   letter-spacing: 0.08em;
 }

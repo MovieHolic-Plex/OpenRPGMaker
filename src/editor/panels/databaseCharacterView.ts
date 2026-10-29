@@ -85,7 +85,8 @@ export function renderCharactersTab(host: HTMLElement, rerender: () => void): vo
     if (entry.usageCount > 0) badges.push(`이벤트 ${entry.usageCount}`);
     rows.push(listRow({
       name: label,
-      sub: badges.length > 0 ? badges.join(" · ") : undefined,
+      // 한 줄 소개가 있으면 그것이 목록에서 누구인지 가장 잘 말해 준다. 배지는 툴팁으로.
+      sub: entry.profile?.note?.trim() || (badges.length > 0 ? badges.join(" · ") : undefined),
       thumb: characterListThumbnail(project, entry),
       active: entry.characterId === selectedCharacterId,
       title: `${label} #${index + 1} — ${entry.characterId}`,
@@ -371,7 +372,7 @@ function characterDetail(entry: CharacterIdIndexEntry, index: number, project: P
     eyebrow: "주민",
     title: displayName,
     subtitle: entry.hasProfile
-      ? "이 프로필의 호감도·선물 기록은 등장 맵과 무관하게 공유됩니다."
+      ? entry.profile?.note?.trim() || "이 프로필의 호감도·선물 기록은 등장 맵과 무관하게 공유됩니다."
       : "맵 이벤트가 이 characterId를 쓰고 있지만 프로필이 없습니다.",
     media: heroThumbnail(project, entry),
     testid: "db-character-hero",
@@ -552,7 +553,7 @@ function profileCards(
     children: [
       sectionCard({
         title: "기본",
-        hint: "이벤트 메시지의 이름 표시에 쓰입니다.",
+        hint: "표시 이름은 대사 화자 이름과 같아야 이름 색·목소리가 붙습니다. 한 줄 소개는 관계 메뉴에도 보입니다.",
         testid: "db-character-basics-card",
         children: [
           textControl(
@@ -563,6 +564,15 @@ function profileCards(
               patchProfile(characterId, { displayName: next }, { clearDisplayName: !next });
             },
             "db-character-display-name",
+          ),
+          textControl(
+            "한 줄 소개",
+            profile.note ?? "",
+            (value) => {
+              const next = emptyToUndefined(value);
+              patchProfile(characterId, { note: next }, { clearNote: !next });
+            },
+            "db-character-note",
           ),
         ],
       }),
@@ -854,6 +864,7 @@ function patchProfile(
   patch: Partial<CharacterProfile>,
   options: {
     readonly clearDisplayName?: boolean;
+    readonly clearNote?: boolean;
     readonly clearBirthday?: boolean;
     readonly clearGiftPrefs?: boolean;
     readonly clearGiftResponses?: boolean;
@@ -871,6 +882,7 @@ function patchProfile(
     // Rebuild without cleared optional keys (readonly fields cannot be deleted in place).
     const rebuilt: {
       displayName?: string;
+      note?: string;
       birthday?: CharacterProfile["birthday"];
       giftPrefs?: GiftPrefs;
       giftResponses?: GiftResponses;
@@ -881,6 +893,9 @@ function patchProfile(
     const giftPrefs = options.clearGiftPrefs ? undefined : nextProfile.giftPrefs;
     const giftResponses = options.clearGiftResponses ? undefined : nextProfile.giftResponses;
     if (displayName !== undefined) rebuilt.displayName = displayName;
+    // 한 줄 소개 — 전에는 다시 짓는 목록에 없어서 다른 칸을 고치면 조용히 지워졌다.
+    const note = options.clearNote ? undefined : nextProfile.note;
+    if (note !== undefined) rebuilt.note = note;
     if (birthday !== undefined) rebuilt.birthday = birthday;
     if (giftPrefs !== undefined) rebuilt.giftPrefs = giftPrefs;
     if (giftResponses !== undefined) rebuilt.giftResponses = giftResponses;

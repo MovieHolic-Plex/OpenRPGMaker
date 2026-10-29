@@ -5,6 +5,7 @@ import type { PursuitState } from '@/project/horrorState';
 import type { PlaySession } from '@/project/session';
 import type { Project, GameMap } from '@/project/types';
 import { findChasePath, isInSafeZone, type ChasePassSize, type ChasePoint } from './chaseAi';
+import { projectAhead } from './chaseTactics';
 
 export type PursuitWorld = { project: Project; map: GameMap; session: PlaySession; positions: RuntimeEventPositions };
 
@@ -14,6 +15,20 @@ export function pursuitState(world: PursuitWorld, view: RuntimeEventView): Pursu
   // 쫓는 상태로 시작한다. 안 그러면 벽 너머에서 깨운 추격자는 주인공을 한 번 볼 때까지 서 있었다(2026-09-24).
   const awake = view.movement.pursuit?.tracking === 'persistent' && (view.page?.conditions ?? []).some(c => c.kind === 'switch');
   return states[view.event.id] ??= { home: { mapId: world.map.id, x: view.x, y: view.y }, active: awake, searchMs: 0, doors: [] };
+}
+
+/**
+ * 추격자가 붙잡은 주인공을 다른 맵으로 끌고 가면(잠입 순찰의 「붙잡히면 감방」) 그 추격자는 제 자리(home)로 돌아가 쫓기를 멈춘다.
+ * 추격자 위치는 맵을 떠나도 남으므로(eventLocations), 그대로 두면 다시 들어서자마자 같은 자리에서 또 붙잡혔다
+ * (2026-10-27 폴른 막사 독립 플레이 판정: 감방 → 막사 입구 → 즉시 재포획을 여섯 번). 게임 오버 재시작의 resetPursuersForRetry 와 같은 규칙.
+ */
+export function sendPursuerHome(session: PlaySession, eventId: string): boolean {
+  const state = session.horror?.pursuits[eventId];
+  if (!state) return false;
+  const location = session.eventLocations[eventId];
+  session.eventLocations[eventId] = { ...(location ?? {}), mapId: state.home.mapId, x: state.home.x, y: state.home.y, direction: location?.direction ?? "down" };
+  delete session.horror!.pursuits[eventId];
+  return true;
 }
 
 /** All pursuit paths use the same feet/body policy as autonomous movement. */
@@ -45,6 +60,8 @@ const SEARCH_OFFSETS: readonly ChasePoint[] = [
  * 같은 결을 맞췄다. 세이브에 들어가지 않는 런타임 기억이라 WeakMap 에 둔다.
  */
 export const SEARCH_RETRY_MS = 500;
+/** 놓친 뒤 진행 방향으로 내다보는 칸 수. */
+const SEARCH_AHEAD_CELLS = 6;
 type SearchMiss = { readonly at: number; readonly x: number; readonly y: number };
 const searchMisses = new WeakMap<PursuitState, SearchMiss>();
 
@@ -63,12 +80,25 @@ export function searchTarget(world: PursuitWorld, view: RuntimeEventView, state:
     && findChasePath(world.project, world.map, view, point, pass).length > 0;
   if (state.searchTarget && reachable(state.searchTarget)) return state.searchTarget;
   // First reach the last sighting; only then sweep nearby reachable tiles.
-  if (state.searchCursor === undefined && reachable(origin, true)) return origin;
+  if (state.searchCursor === undefined && state.searchCenter === undefined && reachable(origin, true)) return origin;
+  // 그다음 주인공이 달아나던 방향으로 내다본 칸(꺾인 복도는 따라 꺾는다)을 먼저 뒤진다 — 예전에는 마지막 목격 자리
+  // 둘레 두 칸만 훑어, 벽 뒤로 꺾어 계속 달아난 주인공을 그 자리에서 맴돌며 놓쳤다(2026-10-29).
+  if (state.searchCursor === undefined && state.searchCenter === undefined && state.lastHeading) {
+    const ahead = projectAhead(world.project, world.map, origin, state.lastHeading, SEARCH_AHEAD_CELLS, state.lastTurn);
+    for (let index = ahead.length - 1; index >= 0; index -= 1) {
+      const candidate = ahead[index]!;
+      if (!reachable(candidate)) continue;
+      state.searchCenter = candidate;
+      state.searchTarget = candidate;
+      return candidate;
+    }
+  }
+  const center = state.searchCenter ?? origin;
   const cursor = state.searchCursor ?? 0;
   for (let step = 0; step < SEARCH_OFFSETS.length; step++) {
     const index = (cursor + step) % SEARCH_OFFSETS.length;
     const offset = SEARCH_OFFSETS[index];
-    const candidate = { x: origin.x + offset.x, y: origin.y + offset.y };
+    const candidate = { x: center.x + offset.x, y: center.y + offset.y };
     if (!reachable(candidate)) continue;
     state.searchCursor = (index + 1) % SEARCH_OFFSETS.length;
     state.searchTarget = candidate;

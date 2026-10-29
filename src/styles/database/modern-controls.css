@@ -375,6 +375,7 @@
   display: inline-flex;
   gap: 6px;
   margin: 0;
+  min-height: 28px;
   padding: 3px 12px;
 }
 
@@ -383,14 +384,14 @@
   border-color: var(--db-light-accent-border);
 }
 
+/* 선택은 라디오 점과 굵기로 보인다 — 선택한 필만 accent 로 채우면 선택/비선택이 서로 다른 컨트롤처럼
+   보였고, 채운 필 두 개가 화면에서 가장 강한 요소가 됐다(V-overlays-modals-39). 모양은 모두 같다. */
 .database-modal-backdrop .database-modal-window .db-segmented-pill:has(input[type="radio"]:checked) {
-  background: var(--db-light-accent);
   border-color: var(--db-light-accent-border);
-  color: var(--db-light-on-accent);
 }
 
 .database-modal-backdrop .database-modal-window .db-segmented-pill:has(input[type="radio"]:checked) > span {
-  color: var(--db-light-on-accent);
+  font-weight: 600;
 }
 
 .database-modal-backdrop .database-modal-window .db-segmented-pill > span {
@@ -399,12 +400,12 @@
   line-height: 18px;
 }
 
-/* radio input 자체는 시각 필(pill)이 선택 상태를 대신 전달한다. */
+/* 선택 상태는 이 라디오 점이 전달한다. 필 전체(글자 포함)가 누르는 영역이다(최소 28px 높이). */
 .database-modal-backdrop .database-modal-window .db-segmented-pill > input[type="radio"] {
-  accent-color: var(--db-light-on-accent);
-  height: 12px;
+  accent-color: var(--db-light-accent);
+  height: 14px;
   margin: 0;
-  width: 12px;
+  width: 14px;
 }
 
 /* ── 토글 스위치 (checkbox) ─────────────────────────────────────────────── */

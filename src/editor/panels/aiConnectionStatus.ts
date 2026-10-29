@@ -42,6 +42,12 @@ export interface AiConnectionStatus {
   readonly title: string;
   /** 공유 호스트가 AI 를 꺼 둔 경우 — 이 PC 에서 로그인해도 풀리지 않는다. 패널 안내가 칩과 같은 말을 하도록 노출한다. */
   readonly hostAiDisabled?: boolean;
+  /**
+   * 로그인은 살아 있지만 마지막 요청이 사용 한도(429)로 막혔다. 연결(로그인)과 사용 가능 여부를 가른다(C-67) —
+   * 예전에는 한도 초과 뒤에도 칩·설정 머리가 「연결됨」「사용 준비됨」이었다. kind 는 ready 로 둔다:
+   * 입력을 막으면 한도가 풀렸는지 확인할 방법이 없어진다.
+   */
+  readonly limited?: boolean;
 }
 
 interface CachedOAuthStatus {
@@ -116,6 +122,16 @@ function transportFailureStatus(config: AiConfig): AiConnectionStatus | null {
   const health = getAiTransportHealth();
   if (!health || health.ok) return null;
   const s = health.status;
+  if (s === 429) {
+    const provider = providerIdentity(config);
+    return statusFor(config, {
+      kind: "ready",
+      limited: true,
+      authMode: config.authMode,
+      label: `${provider.providerLabel} 사용 한도 초과`,
+      title: `${provider.providerLabel} 계정의 사용 한도에 닿아 마지막 요청이 거절됐습니다. 한도가 풀리면 다시 쓸 수 있고, 지금 쓰려면 AI 설정에서 다른 연결을 고르세요. 요청이 다시 성공하면 자동으로 연결됨 상태로 돌아옵니다.`,
+    });
+  }
   const connectivity = s === undefined || s === 401 || s === 403 || s === 404 || s >= 500;
   if (!connectivity) return null;
   const provider = providerIdentity(config);

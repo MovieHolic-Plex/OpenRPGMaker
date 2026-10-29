@@ -14,7 +14,72 @@ const LINE_WORDS: Readonly<Record<string, readonly string[]>> = {
   monster: ["몬스터", "포켓몬", "monster"],
   romance: ["연애", "일상", "romance"],
   scifi: ["sf", "우주", "공상", "scifi", "sci-fi"],
+  "snes-jrpg": ["16비트", "슈퍼패미컴", "슈패", "슈퍼컴보이", "sfc", "snes", "레트로", "칩튠", "16bit", "16-bit", "retro"],
+  "symphonic-jrpg": ["심포닉", "교향악", "오케스트라", "관현악", "symphonic", "orchestra", "orchestral"],
+  // 분위기 낱말(애절·서사·감성·드라마틱)은 넣지 않는다 — 줄 낱말을 말하면 다른 줄 곡이 모두 −6 이 된다.
+  "orchestral-melodrama": ["멜로드라마", "멜로", "melodrama"],
+  "casual-race": ["캐주얼", "레이싱", "레이스", "달리기", "경주", "아케이드", "casual", "race", "racing", "arcade"],
+  "piano-story": ["피아노", "인디", "piano", "indie"],
 };
+
+/** 짧은 영문 낱말(sf·ost·ff …)은 같아야만 맞는다 — 「sfc」가 SF 줄에, 「ost」가 다른 낱말 속에 걸리지 않게. */
+const wordHits = (line: string, word: string): boolean => {
+  if (/^[a-z0-9-]{1,3}$/u.test(line) || /^[a-z0-9-]{1,3}$/u.test(word)) return line === word;
+  return line.includes(word) || word.includes(line);
+};
+
+/**
+ * 게임·시리즈 이름 → 장르 줄 + 들리는 결 낱말(조수 쪽에서만 쓴다). 스토어 곡 메타에는 게임 이름이 없다(원작과 거리 두기) —
+ * 「크로노트리거 느낌」「투더문 같은 피아노」를 받으면 이름을 지우고 이 낱말로 바꿔 점수를 매긴다. 스토어·게시 자료에 이 이름을 쓰지 않는다.
+ * lines 의 첫 줄이 가장 가깝다(+4, 나머지 +2 — 새 팩이 없을 때 옛 판타지 팩으로 물러선다).
+ */
+const GAME_FEELS: readonly { readonly names: readonly string[]; readonly lines: readonly string[]; readonly words: string }[] = [
+  { names: ["크로노트리거", "크로노 트리거", "chrono trigger", "chronotrigger", "クロノトリガー", "크로노크로스", "chrono cross"], lines: ["snes-jrpg", "fantasy"], words: "16비트 snes 레트로 모험" },
+  { names: ["파이널판타지", "파이널 판타지", "파판", "final fantasy", "ff", "ファイナルファンタジー", "ファイファン", "ff14", "ff7", "ff6"], lines: ["symphonic-jrpg", "snes-jrpg", "fantasy"], words: "심포닉 오케스트라 16비트" },
+  { names: ["드래곤퀘스트", "드래곤 퀘스트", "드퀘", "dragon quest", "dq", "ドラゴンクエスト", "ドラクエ"], lines: ["symphonic-jrpg", "snes-jrpg", "fantasy"], words: "오케스트라 심포닉 16비트" },
+  { names: ["성검전설", "성검 전설", "secret of mana", "seiken densetsu", "聖剣伝説", "로맨싱사가", "romancing saga"], lines: ["snes-jrpg", "fantasy"], words: "16비트 snes 레트로" },
+  { names: ["마그나카르타", "마그나 카르타", "magna carta", "magnacarta", "マグナカルタ", "창세기전", "어스토니시아"], lines: ["orchestral-melodrama", "symphonic-jrpg"], words: "멜로드라마 드라마틱 서사 애절 오케스트라" },
+  { names: ["테일즈런너", "테일즈 런너", "테런", "tales runner", "talesrunner", "テイルズランナー", "카트라이더", "카트 라이더", "kartrider", "kart rider"], lines: ["casual-race"], words: "캐주얼 레이싱 경쾌한 신나는" },
+  { names: ["투더문", "투 더 문", "to the moon", "tothemoon", "トゥ・ザ・ムーン", "파인딩파라다이스", "finding paradise"], lines: ["piano-story"], words: "피아노 잔잔한 감성" },
+  { names: ["포켓몬스터", "포켓몬", "pokemon", "pokémon", "ポケモン", "ポケットモンスター"], lines: ["monster"], words: "몬스터" },
+];
+
+const escapeRe = (text: string): string => text.replace(/[.*+?^${}()|[\]\\]/gu, "\\$&");
+const GAME_PATTERNS = GAME_FEELS.map((game) => ({
+  ...game,
+  // 띄어쓰기는 있어도 없어도 맞는다(「투 더 문」 = 「투더문」). 영문은 낱말 경계 + 뒤 번호(ff6·ff 7·ff vi).
+  re: new RegExp(game.names.map((name) => {
+    const body = [...name.replace(/\s+/gu, "")].map(escapeRe).join("\\s*");
+    return /^[a-z]/u.test(name) ? `(?<![a-z0-9])${body}(?:\\s*(?:\\d+|[ivx]+))?(?![a-z])` : body;
+  }).sort((a, b) => b.length - a.length).join("|"), "giu"),
+}));
+
+export interface ExpandedStoreMusicQuery {
+  /** 게임 이름을 지우고 결 낱말을 붙인 검색어. */
+  readonly query: string;
+  /** 게임 이름이 가리키는 장르 줄(가까운 순). */
+  readonly lines: readonly string[];
+  /** 알아본 게임 이름(조수 결과 설명용). */
+  readonly games: readonly string[];
+}
+
+/** 「크로노트리거 느낌으로」 → 「16비트 snes 레트로 모험 느낌으로」 + 줄 snes-jrpg. 게임 이름이 없으면 그대로. */
+export function expandStoreMusicQuery(query: string): ExpandedStoreMusicQuery {
+  let text = query.toLowerCase();
+  const lines: string[] = [];
+  const games: string[] = [];
+  const add: string[] = [];
+  for (const game of GAME_PATTERNS) {
+    game.re.lastIndex = 0;
+    const found = text.match(game.re);
+    if (!found) continue;
+    games.push(found[0].trim());
+    text = text.replace(game.re, " ");
+    for (const line of game.lines) if (!lines.includes(line)) lines.push(line);
+    add.push(game.words);
+  }
+  return { query: [text.trim(), ...add].filter(Boolean).join(" "), lines, games };
+}
 
 export interface StoreMusicTrack {
   readonly slug: string;
@@ -87,8 +152,12 @@ const HINT_WORDS: Readonly<Record<string, readonly string[]>> = {
  * 「장르를 안 말한 요청」에서 다른 줄 곡이 깎인다(몬스터 게임의 「웅장한 타이틀」에 판타지 타이틀이 붙던 것, 2026-10-25 실조수).
  */
 export function projectHintLines(texts: readonly string[]): Record<string, number> {
-  const text = texts.join(" ").toLowerCase();
-  const hits = Object.entries(HINT_WORDS).filter(([, words]) => words.some((word) => text.includes(word))).map(([line]) => line);
+  const raw = texts.join(" ");
+  const expanded = expandStoreMusicQuery(raw);
+  const text = raw.toLowerCase();
+  // 영문 낱말은 낱말 경계로(「grace」에 race, 「Forest」에 sf 가 걸리지 않게). 게임 이름(「파판풍 RPG」)은 그 게임의 첫 줄.
+  const has = (word: string): boolean => /^[a-z0-9-]+$/u.test(word) ? new RegExp(`(?<![a-z0-9])${word}(?![a-z0-9])`, "u").test(text) : text.includes(word);
+  const hits = [...new Set([...Object.entries(HINT_WORDS).filter(([, words]) => words.some(has)).map(([line]) => line), ...expanded.lines.slice(0, 1)])];
   return Object.fromEntries(hits.map((line) => [line, 0.5 / hits.length]));
 }
 
@@ -104,18 +173,28 @@ export function scoreStoreMusic(track: StoreMusicTrack, want: StoreMusicQuery): 
   const genreText = `${m.genreKo} ${m.genreLabel}`.toLowerCase();
   const lineWords = LINE_WORDS[m.genre] ?? [m.genre];
   const moods = m.mood.map((word) => word.toLowerCase());
-  let named = false;
-  for (const word of tokens(want.query ?? "")) {
+  const feels = m.feelTags.map((word) => word.toLowerCase());
+  const feelHit = (word: string): boolean => feels.some((feel) => feel.split(/[\s,·/]+/u).some((part) => wordHits(part, word)));
+  // 게임 이름은 결 낱말로 바꾸고, 그 게임이 가리키는 줄은 덤(+4, 다음 줄 +2)을 받는다.
+  const expanded = expandStoreMusicQuery(want.query ?? "");
+  const gameAt = expanded.lines.indexOf(m.genre);
+  let named = gameAt >= 0;
+  if (gameAt >= 0) score += gameAt === 0 ? 4 : 2;
+  const queryWords = tokens(expanded.query);
+  for (const word of queryWords) {
     if (word.length < 1) continue;
     if (genreText.includes(word)) { score += 6; named = true; }
     // 팩 줄 낱말(따로 더한다 — 「판타지」가 「중국풍 판타지」에도 들어 있어 장르 이름만으로는 판타지 팩을 못 가린다).
     // 문화색을 따로 들어 본 곡(조선 팩)은 실제로 들리는 만큼만 친다.
-    if (lineWords.some((line) => line.includes(word) || word.includes(line))) { score += track.cultureHeard === "no" ? 1.5 : track.cultureHeard === "partly" ? 3 : 6; named = true; }
+    if (lineWords.some((line) => wordHits(line, word))) { score += track.cultureHeard === "no" ? 1.5 : track.cultureHeard === "partly" ? 3 : 6; named = true; }
+    // 실제로 들리는 결(feelTags) — 장르 이름만큼은 아니어도 「16비트」「솔로 피아노」를 들은 곡이 앞에 선다.
+    if (feelHit(word)) { score += 5; named = true; }
     if (moods.some((mood) => mood.includes(word))) score += 3;
     if (m.summaryKo.toLowerCase().includes(word)) score += 1;
   }
   for (const word of tokens(want.mood ?? "")) {
     if (moods.some((mood) => mood.includes(word) || word.includes(mood))) score += 4;
+    else if (feelHit(word)) score += 2;
     else if (m.summaryKo.toLowerCase().includes(word)) score += 1.5;
   }
   // 게임의 곡 결: 이미 든 스토어 곡과 같은 줄이면 앞으로, 한 줄이 절반 넘게 차지하는데 다른 줄이면(그 장르를 말하지 않았으면) 뒤로.
@@ -123,7 +202,7 @@ export function scoreStoreMusic(track: StoreMusicTrack, want: StoreMusicQuery): 
   const lines = want.projectLines ?? {};
   const share = lines[m.genre] ?? 0;
   // 사용자가 장르를 말했는데(어느 팩 줄 낱말과 맞음) 이 곡은 그 장르가 아니면 분위기가 맞아도 뒤로.
-  const asked = tokens(want.query ?? "").some((word) => Object.values(LINE_WORDS).some((words) => words.some((line) => line.includes(word) || word.includes(line))));
+  const asked = expanded.lines.length > 0 || queryWords.some((word) => Object.values(LINE_WORDS).some((words) => words.some((line) => wordHits(line, word))));
   if (asked && !named) score -= 6;
   score += 4 * share;
   // 분위기 낱말 몇 개(최대 약 9점)보다 장르가 어긋나는 것이 더 크게 틀린다 — 그래서 감점이 분위기 점수만큼 크다.
@@ -149,6 +228,7 @@ export function briefStoreMusic(track: StoreMusicTrack) {
     slug: track.slug, assetId: track.assetId, title: track.titleKo || track.name, pack: track.packTitle,
     genre: m.genreKo || m.genreLabel, scenes: m.scenes.map((scene) => STORE_MUSIC_SCENE_LABELS[scene]), mood: m.mood,
     tempo: m.tempo, bpm: m.bpm, loopable: m.loopable, lengthSec: m.lengthSec, summary: m.summaryKo,
+    ...(m.feelTags.length ? { feel: m.feelTags } : {}),
     license: track.license, aiGenerated: track.aiGenerated,
   };
 }

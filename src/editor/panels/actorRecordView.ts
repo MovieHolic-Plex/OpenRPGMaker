@@ -463,7 +463,6 @@ function startPartySwitch(actor: ActorRecord, summary: HTMLElement): HTMLElement
 
 function actorHeroHeader(actor: ActorRecord, onRename?: (name: string) => void): HTMLElement {
   const effective = resolveActorAppearance(store.getCurrent(), actor);
-  const className = store.getCurrent().database.classes.find((entry) => entry.id === actor.classId)?.name;
   const summary = el("p", {
     class: "db-record-hero-summary",
     text: actorSummarySentence(store.getCurrent(), actor),
@@ -489,13 +488,11 @@ function actorHeroHeader(actor: ActorRecord, onRename?: (name: string) => void):
             updateDatabaseRecord("actors", actor.id, { name });
             onRename?.(name);
           }),
+          // 직업·레벨 범위 칩은 두지 않는다 — 아래 요약 문장과 「시작 직업」·「초기/최대 레벨」 칸이 같은 사실을
+          // 이미 말한다(V-database-24: 직업이 네 번, 레벨 범위가 두 번 보였다).
           el("div", {
             class: "db-record-hero-tags",
-            children: [
-              ...(className ? [el("span", { class: "db-record-hero-tag", text: className })] : []),
-              el("span", { class: "db-record-hero-tag muted", text: `Lv ${actor.initialLevel}–${actor.maxLevel}` }),
-              startPartySwitch(actor, summary),
-            ],
+            children: [startPartySwitch(actor, summary)],
           }),
           summary,
         ],

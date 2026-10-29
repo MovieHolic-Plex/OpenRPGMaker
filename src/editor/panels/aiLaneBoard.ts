@@ -250,7 +250,7 @@ export function laneBoardSummary(lanes: readonly LaneState[], teamAgents: readon
 }
 
 /** 레인 0 — 덱은 한 줄 미니 상태다. 접어도 같은 한 줄. */
-export const LANE_BOARD_EMPTY_TEXT = "레인 0 — 지시를 보내면 감독이 에이전트를 배정하고, 레인이 여기 한 줄씩 쌓입니다.";
+export const LANE_BOARD_EMPTY_TEXT = "아직 레인이 없습니다. 지시를 보내면 감독이 에이전트를 배정하고, 레인이 여기 한 줄씩 쌓입니다.";
 
 export function renderLaneBoardEmpty(notice: string | null): HTMLElement {
   return el("div", {

@@ -7,22 +7,23 @@ import { dismissLocationDrawModeForLayer } from "@/editor/locationDrawMode";
 import { applyRovingTabindex } from "./sidebarFocus";
 import { el } from "@/util/dom";
 
-/** 레이어 셋 + 맨 왼쪽 「지형」. 지형은 레이어가 아니라 편집 도구지만 같은 줄에서 고른다. */
+/** 「지형」은 레이어가 아니라 편집 도구다 — 레이어 고르기 묶음 밖의 단추로 둔다. */
 export type LayerSwitcherKey = Layer | "relief";
 
 type LayerRow = {
-  readonly id: LayerSwitcherKey;
+  readonly id: Layer;
   readonly copyKey: UiCopyKey;
   readonly testId: string;
   readonly hint: string;
+  /** 보이는 표기 · aria-keyshortcuts. F5(새로고침)·F6(창 영역 이동)은 브라우저 키라 쓰지 않는다. */
   readonly hotkey: string;
+  readonly keys: string;
 };
 
 const LAYER_ROWS: readonly LayerRow[] = [
-  { id: "relief", copyKey: "layerRelief", testId: "layer-relief", hint: "언덕·절벽 지형 편집", hotkey: "" },
-  { id: "lower", copyKey: "layerLower", testId: "layer-lower", hint: "잔디·길 등 지면", hotkey: "F5" },
-  { id: "upper", copyKey: "layerUpper", testId: "layer-upper", hint: "나무·가구 등 바닥 위에 얹는 것", hotkey: "F6" },
-  { id: "event", copyKey: "layerEvent", testId: "layer-event", hint: "NPC·문·보물상자 등 상호작용", hotkey: "F7" },
+  { id: "lower", copyKey: "layerLower", testId: "layer-lower", hint: "잔디·길 등 지면", hotkey: "Shift+1", keys: "Shift+1" },
+  { id: "upper", copyKey: "layerUpper", testId: "layer-upper", hint: "나무·가구 등 바닥 위에 얹는 것", hotkey: "Shift+2", keys: "Shift+2" },
+  { id: "event", copyKey: "layerEvent", testId: "layer-event", hint: "NPC·문·보물상자 등 상호작용", hotkey: "Shift+3 · F7", keys: "Shift+3 F7" },
 ] as const;
 
 export function selectSidebarLayer(layer: Layer): void {
@@ -41,6 +42,75 @@ export function layerSwitcherKey(state: Pick<EditorState, "layer" | "tool">): La
   return state.tool === "relief" ? "relief" : state.layer;
 }
 
+/**
+ * 「지형 붓」 단추와 레이어 고르기(radiogroup) 둘을 돌려준다.
+ * 예전에는 붓 모드와 레이어 셋을 한 세그먼트에 섞어, 바닥 레이어인지 지형 붓인지 한 컨트롤이 두 개념을 말했다.
+ * 레이어 단추의 접근 이름은 보이는 글자 + 「레이어」(숨김 글자)라 음성 제어로 보이는 말을 그대로 부를 수 있다.
+ */
+export function makeLeftLayerSwitcher(state: Pick<EditorState, "layer" | "tool">): readonly [HTMLButtonElement, HTMLElement] {
+  const reliefLabel = uiLabel("layerRelief");
+  const relief = el("button", {
+    class: "left-layer-btn header-relief-brush",
+    attrs: { type: "button", title: `${reliefLabel} 붓 — 언덕·절벽 지형 편집`, "aria-pressed": "false" },
+    dataset: { testid: "layer-relief", sidebarLayer: "relief" },
+    children: [
+      el("span", { class: "left-layer-btn-label", text: reliefLabel }),
+      el("span", { class: "visually-hidden", text: " 붓" }),
+    ],
+    on: { click: () => {
+      selectSwitcherKey(editorState.get().tool === "relief" ? editorState.get().layer : "relief");
+      window.dispatchEvent(new Event("oprn:ai-sidebar-tools"));
+    } },
+  }) as HTMLButtonElement;
+  const row = el("div", {
+    class: "left-layer-switcher",
+    attrs: { role: "radiogroup", "aria-label": "레이어" },
+    dataset: { testid: "left-layer-switcher", roving: "true" },
+  });
+  for (const layer of LAYER_ROWS) {
+    const label = uiLabel(layer.copyKey);
+    row.append(
+      el("button", {
+        class: "left-layer-btn",
+        attrs: {
+          type: "button",
+          role: "radio",
+          "aria-checked": "false",
+          "aria-keyshortcuts": layer.keys,
+          title: `${label} 레이어 (${layer.hotkey}) — ${layer.hint}`,
+        },
+        dataset: { testid: layer.testId, sidebarLayer: layer.id },
+        // 글리프는 달지 않는다 — 세 단추가 전부 같은 layers 아이콘이라 구분력 없이 폭만 먹었다.
+        children: [
+          el("span", { class: "left-layer-btn-label", text: label }),
+          el("span", { class: "visually-hidden", text: " 레이어" }),
+        ],
+        on: { click: () => {
+          selectSidebarLayer(layer.id);
+          window.dispatchEvent(new Event("oprn:ai-sidebar-tools"));
+        } },
+      }),
+    );
+  }
+  applyRovingTabindex(row);
+  paintLayerSwitcher(relief, row, state);
+  return [relief, row];
+}
+
+/** 켜진 레이어(radio)와 지형 붓(토글)을 상태에 맞춘다. 레이어 묶음에 초점이 있으면 tabindex 는 건드리지 않는다. */
+export function paintLayerSwitcher(relief: HTMLElement, row: HTMLElement, state: Pick<EditorState, "layer" | "tool">): void {
+  const reliefOn = state.tool === "relief";
+  relief.classList.toggle("is-active", reliefOn);
+  relief.setAttribute("aria-pressed", String(reliefOn));
+  const keepFocus = row.contains(document.activeElement);
+  for (const button of row.querySelectorAll<HTMLButtonElement>("button")) {
+    const active = button.dataset.sidebarLayer === state.layer;
+    button.classList.toggle("is-active", active);
+    button.setAttribute("aria-checked", String(active));
+    if (!keepFocus) button.tabIndex = active ? 0 : -1;
+  }
+}
+
 function selectSwitcherKey(key: LayerSwitcherKey): void {
   // 레이어 전환은 카메라를 건드리지 않는다(2026-09-27). 예전 revealLayer 는 누를 때마다 맵 전체
   // 맞춤으로 끌고 가 배율·위치가 튀었다 — 사용자가 보던 자리를 잃는 것이 전환 신호보다 비싸다.
@@ -50,39 +120,4 @@ function selectSwitcherKey(key: LayerSwitcherKey): void {
     return;
   }
   selectSidebarLayer(key);
-}
-
-export function makeLeftLayerSwitcher(activeKey: LayerSwitcherKey): HTMLElement {
-  const row = el("div", {
-    class: "left-layer-switcher",
-    attrs: { role: "group", "aria-label": "레이어" },
-    dataset: { testid: "left-layer-switcher", roving: "true" },
-  });
-  for (const layer of LAYER_ROWS) {
-    const label = uiLabel(layer.copyKey);
-    const active = activeKey === layer.id;
-    row.append(
-      el("button", {
-        class: "left-layer-btn" + (active ? " is-active" : ""),
-        attrs: {
-          type: "button",
-          title: layer.hotkey ? `${label} (${layer.hotkey}) — ${layer.hint}` : `${label} — ${layer.hint}`,
-          "aria-label": layer.id === "relief" ? `${label} 붓` : `${label} 레이어`,
-          ...(active ? { "aria-current": "true" } : {}),
-        },
-        dataset: { testid: layer.testId, sidebarLayer: layer.id },
-        // 글리프는 달지 않는다 — 세 단추가 전부 같은 layers 아이콘이라 구분력 없이 폭만 먹었다.
-        // 세그먼트 컨트롤은 라벨만으로 읽힌다.
-        children: [
-          el("span", { class: "left-layer-btn-label", text: label }),
-        ],
-        on: { click: () => {
-          selectSwitcherKey(layer.id);
-          window.dispatchEvent(new Event("oprn:ai-sidebar-tools"));
-        } },
-      }),
-    );
-  }
-  applyRovingTabindex(row);
-  return row;
 }

@@ -6,7 +6,18 @@
  */
 export const CHASE_SPAWN_GRACE_MS = 2000;
 
+/**
+ * 맵에 들어선 직후의 짧은 유예(ms) — 추격이 빨라진 뒤(2026-10-29, @/project/chaseTempo) 입구 가까운 추격자에게 들어서자마자
+ * 붙잡히지 않게. 화면이 밝아지는 동안(전환 페이드)에도 시간은 흐르므로 페이드보다 넉넉히 준다.
+ */
+export const CHASE_ENTRY_GRACE_MS = 1200;
+
 const graceLeft = new WeakMap<object, number>();
+
+/** 남은 유예가 ms 보다 짧으면 ms 로 늘린다(긴 은총 시간을 줄이지 않는다). */
+export function extendChaseSpawnGrace(scene: object, ms: number): void {
+  if ((graceLeft.get(scene) ?? 0) < ms) graceLeft.set(scene, Math.max(0, ms));
+}
 
 /** 장면이 주인공을 새로 세웠다(시작·불러오기·체크포인트·패배 복구). */
 export function startChaseSpawnGrace(scene: object, ms = CHASE_SPAWN_GRACE_MS): void {

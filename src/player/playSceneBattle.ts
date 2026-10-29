@@ -58,16 +58,20 @@ export function showBattleScene(scene: PlaySceneContext, troopId: string): void 
   scene.showRuntimeOverlay("battle-scene", troopId || "battle");
 }
 
+const FIELD_SNAPSHOT_TIMEOUT_MS = 1500;
+
 /**
  * 필드 캔버스의 다음 프레임을 dataURL 로 찍는다. WebGL 은 프레임이 끝나면 버퍼가 비므로(preserveDrawingBuffer 없음)
- * 캔버스를 직접 읽지 않고 Phaser renderer.snapshot 을 쓴다. 실패하거나 250ms 안에 오지 않으면 undefined(트룹 배경으로 폴백).
+ * 캔버스를 직접 읽지 않고 Phaser renderer.snapshot 을 쓴다. 실패하거나 제한 시간 안에 오지 않으면 undefined(트룹 배경으로 폴백).
+ * 제한은 1.5초 — 250ms 였을 때 부하가 걸린 기계에서 같은 전투가 한 번은 필드, 한 번은 트룹 들판 배경으로 갈렸다(마왕 편의점 실플레이 2026-10-29).
+ * 스냅숏은 보통 한두 프레임이면 오므로 평소 진입은 늦어지지 않는다.
  */
 function captureFieldSnapshot(game: unknown): Promise<string | undefined> {
   const renderer = game && typeof game === "object" ? Reflect.get(game, "renderer") : undefined;
   const snapshot = renderer && typeof renderer === "object" ? Reflect.get(renderer, "snapshot") : undefined;
   if (typeof snapshot !== "function") return Promise.resolve(undefined);
   return new Promise((resolve) => {
-    const timer = window.setTimeout(() => resolve(undefined), 250);
+    const timer = window.setTimeout(() => resolve(undefined), FIELD_SNAPSHOT_TIMEOUT_MS);
     try {
       snapshot.call(renderer, (image: unknown) => {
         window.clearTimeout(timer);
@@ -130,6 +134,7 @@ export async function playBattle(
         paramBonuses: scene.session.actorParamBonuses,
         equipment: scene.session.actorEquipment,
         skillIds: scene.session.actorSkillIds,
+        forgottenSkillIds: scene.session.actorForgottenSkillIds,
         skillPp: scene.session.actorSkillPp,
         classOverrides: scene.session.classOverrides,
         growthProgress: scene.session.growthProgress,

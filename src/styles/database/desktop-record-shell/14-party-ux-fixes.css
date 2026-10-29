@@ -231,6 +231,6 @@ body:has(.database-modal-backdrop:not(.is-parked)) .toast-stack {
 .database-modal-body .actor-field-help {
   color: var(--text-2);
   display: block;
-  font: 400 11px/15px var(--font-ui);
+  font: 400 12px/17px var(--font-ui);
   margin-top: 3px;
 }

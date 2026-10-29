@@ -71,7 +71,7 @@ export function renderIdentityTopbarControl(onIdentityChanged: () => void): HTML
   const button = el("button", {
     class: "team-identity-button is-icon-only",
     attrs: {
-      "aria-haspopup": "menu",
+      "aria-haspopup": "dialog",
       "aria-expanded": "false",
       "aria-label": title,
       title,
@@ -101,8 +101,8 @@ export function renderCommitHistoryButton(): HTMLElement {
   return el("button", {
     class: "team-history-button is-icon-only",
     attrs: {
-      title: "커밋 히스토리",
-      "aria-label": "커밋 히스토리",
+      title: "저장 기록",
+      "aria-label": "저장 기록",
       "aria-expanded": "false",
       "aria-haspopup": "dialog",
       type: "button",
@@ -172,7 +172,7 @@ function renderLoginModal(mode: LoginMode, onIdentityChanged?: () => void): void
             class: "team-login-head",
             children: [
               el("h2", { text: `${PRODUCT_BRAND} 로그인` }),
-              el("p", { text: "커밋 기록에 남길 이름을 정합니다." }),
+              el("p", { text: "저장 기록에 남길 이름을 정합니다." }),
             ],
           }),
           form,
@@ -236,35 +236,52 @@ function toggleIdentityMenu(anchor: HTMLElement, identity: EditorIdentity, onIde
   closeIdentityMenu();
   if (alreadyOpen) return;
   anchor.setAttribute("aria-expanded", "true");
+  // 자동으로 붙은 게스트 이름(「브라우저 0b5c」)의 꼬리는 기계 ID 다 — 입력칸에 채우지 않고 「게스트」를 자리표시로 보인다.
+  const guest = /^브라우저\s+\S+$/u.test(identity.label.trim());
+  const shown = guest ? "" : identity.label;
   const input = el("input", {
     class: "team-identity-input",
-    attrs: { "aria-label": "신원 라벨", type: "text" },
-    value: identity.label,
+    attrs: { "aria-label": "편집 이름", type: "text", placeholder: "게스트", id: "team-identity-input" },
+    value: shown,
     dataset: { testid: "identity-label-input" },
   }) as HTMLInputElement;
+  const save = el("button", {
+    class: "team-identity-menu-action primary",
+    text: "이름 저장",
+    attrs: { type: "button" },
+    dataset: { testid: "identity-save" },
+    on: {
+      click: () => {
+        setOwnerLabel(input.value);
+        closeIdentityMenu();
+        onIdentityChanged();
+      },
+    },
+  }) as HTMLButtonElement;
+  // 값이 바뀌기 전에는 저장할 것이 없다.
+  const syncSave = (): void => {
+    const next = input.value.trim();
+    save.disabled = next.length === 0 || next === shown.trim();
+  };
+  syncSave();
+  input.addEventListener("input", syncSave);
+  input.addEventListener("keydown", (event) => {
+    if (event.key !== "Enter" || event.isComposing || save.disabled) return;
+    event.preventDefault();
+    save.click();
+  });
   const menu = el("div", {
     class: "team-identity-menu",
-    attrs: { role: "menu" },
+    attrs: { role: "dialog", "aria-label": "편집 이름" },
     dataset: { testid: "identity-menu" },
     children: [
-      el("div", { class: "team-identity-menu-title", text: identity.kind === "agent" ? "에이전트 신원" : "사람 신원" }),
+      el("label", { class: "team-identity-menu-title", text: identity.kind === "agent" ? "에이전트 이름" : "편집 이름", attrs: { for: "team-identity-input" } }),
+      el("p", { class: "team-identity-menu-hint", text: "저장 기록에 이 이름이 남습니다." }),
       input,
-      el("button", {
-        class: "team-identity-menu-action primary",
-        text: "라벨 변경",
-        attrs: { type: "button" },
-        dataset: { testid: "identity-save" },
-        on: {
-          click: () => {
-            setOwnerLabel(input.value);
-            closeIdentityMenu();
-            onIdentityChanged();
-          },
-        },
-      }),
+      save,
       el("button", {
         class: "team-identity-menu-action",
-        text: "재로그인",
+        text: guest ? "로그인…" : "다시 로그인…",
         attrs: { type: "button" },
         dataset: { testid: "identity-relogin" },
         on: {
@@ -328,7 +345,7 @@ function toggleCommitHistoryPanel(anchor?: HTMLElement): void {
   }
   const panel = el("section", {
     class: "team-commit-panel",
-    attrs: { "aria-label": "커밋 히스토리", role: "dialog" },
+    attrs: { "aria-label": "저장 기록", role: "dialog" },
     dataset: { testid: "commit-history-panel" },
   });
   activeCommitPanel = panel;
@@ -367,7 +384,7 @@ function renderCommitPanelLoading(panel: HTMLElement): void {
     el("div", {
       class: "team-commit-head",
       children: [
-        el("h2", { text: "커밋 히스토리" }),
+        el("h2", { text: "저장 기록" }),
         el("button", {
           class: "team-commit-refresh",
           text: "새로고침",
@@ -377,7 +394,7 @@ function renderCommitPanelLoading(panel: HTMLElement): void {
         }),
       ],
     }),
-    el("div", { class: "team-commit-empty", text: "최근 커밋을 불러오는 중입니다.", dataset: { testid: "commit-history-loading" } }),
+    el("div", { class: "team-commit-empty", text: "최근 저장 기록을 불러오는 중입니다.", dataset: { testid: "commit-history-loading" } }),
   );
 }
 
@@ -394,7 +411,7 @@ async function refreshCommitPanel(panel: HTMLElement): Promise<void> {
 function renderCommitPanelRows(panel: HTMLElement, commits: readonly CommitListItem[]): void {
   const body = el("div", { class: "team-commit-list", dataset: { testid: "commit-history-list" } });
   if (commits.length === 0) {
-    body.append(el("div", { class: "team-commit-empty", text: "표시할 커밋이 없습니다.", dataset: { testid: "commit-history-empty" } }));
+    body.append(el("div", { class: "team-commit-empty", text: "아직 저장 기록이 없습니다.", dataset: { testid: "commit-history-empty" } }));
   } else {
     for (const commit of commits) body.append(commitRow(commit));
   }
@@ -405,11 +422,24 @@ function renderCommitPanelError(panel: HTMLElement, error: unknown): void {
   // 저장 대상이 없는 세션(임시·예제)은 기록이 원래 없다 — 빨간 오류 원문 대신 이유를 말한다.
   if (projectRepository().currentTarget() === null) {
     panel.replaceChildren(
-      el("div", { class: "team-commit-head", children: [el("h2", { text: "커밋 히스토리" })] }),
+      el("div", { class: "team-commit-head", children: [el("h2", { text: "저장 기록" })] }),
       el("div", {
         class: "team-commit-empty",
-        text: "이 세션은 저장하지 않아 기록이 쌓이지 않습니다. 프로젝트를 폴더에 저장해 열면 여기에 커밋이 보입니다.",
+        text: "이 세션은 폴더에 저장하지 않아 기록이 쌓이지 않습니다. 지금 작업은 프로젝트 파일로 내보내 보관하세요.",
         dataset: { testid: "commit-history-unavailable" },
+      }),
+      // 안내만 하고 끝내지 않는다 — 해결 행동을 바로 준다.
+      el("button", {
+        class: "team-identity-menu-action primary team-commit-export",
+        text: "프로젝트 파일 내보내기…",
+        attrs: { type: "button" },
+        dataset: { testid: "commit-history-export" },
+        on: {
+          click: () => {
+            closeCommitHistoryPanel();
+            void import("@/editor/panels/menu").then(({ exportProjectPackage }) => exportProjectPackage());
+          },
+        },
       }),
     );
     return;
@@ -418,7 +448,7 @@ function renderCommitPanelError(panel: HTMLElement, error: unknown): void {
     commitPanelHeader(panel),
     el("div", {
       class: "team-commit-empty error",
-      text: `커밋 히스토리를 불러오지 못했습니다: ${error instanceof Error ? error.message : "알 수 없는 오류"}`,
+      text: `저장 기록을 불러오지 못했습니다: ${error instanceof Error ? error.message : "알 수 없는 오류"}`,
       dataset: { testid: "commit-history-error" },
     }),
   );
@@ -428,7 +458,7 @@ function commitPanelHeader(panel: HTMLElement): HTMLElement {
   return el("div", {
     class: "team-commit-head",
     children: [
-      el("h2", { text: "커밋 히스토리" }),
+      el("h2", { text: "저장 기록" }),
       el("button", {
         class: "team-commit-refresh",
         text: "새로고침",

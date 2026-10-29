@@ -874,6 +874,52 @@
   animation: rm-title-transition-zoom var(--transition-ms, 1000ms) cubic-bezier(.5, 0, .9, .5) both;
 }
 
+/* 새 게임 뒤 오프닝이 이어질 때: 섬광·안개가 검게 끝나지 않고 타이틀 그림(메뉴는 숨김)으로 돌아와 머문다.
+   플레이어가 이 그림을 오프닝 첫 컷이 보일 때까지 덮개로 쓰고 걷는다(player.ts bootRun). */
+.rm-title-screen.rm-title-transition-hold .rm-title-transition {
+  animation-fill-mode: forwards;
+}
+/* 메뉴는 등장 애니메이션(타이틀 시퀀스가 인라인 style.animation 으로 거는 rm-title-seq-fade, fill both)이 opacity 를 쥐고 있어
+   위 transitioning 규칙만으로는 안 숨는다 — 인라인을 이기려면 !important 가 필요하다.
+   검게 끝나는 전환에서는 막이 가려 줬지만, 그림으로 돌아와 머물면 메뉴가 다시 보인다. */
+.rm-title-screen.rm-title-transition-hold .rm-title-menu,
+.rm-title-screen.rm-title-transition-hold .rm-title-logo-subtitle,
+.rm-title-screen.rm-title-transition-hold .title-preparing {
+  animation: none !important;
+  opacity: 0 !important;
+}
+.rm-title-screen.rm-title-transition-hold .rm-title-transition[data-kind="flash"] {
+  animation-name: rm-title-transition-flash-hold;
+}
+.rm-title-screen.rm-title-transition-hold .rm-title-transition[data-kind="mist"] {
+  animation-name: rm-title-transition-mist-hold;
+}
+
+/* 덮개로 옮긴 타이틀(player.ts bootRun): 노드를 옮기면 CSS 애니메이션이 처음부터 다시 돌아
+   등장 시퀀스의 검은 막(rm-title-seq-veil)이 화면을 덮고 제목 글자가 0 으로 돌아간다. 멈춘 그림으로 둔다. */
+.rm-title-screen.rm-title-hold-cover,
+.rm-title-screen.rm-title-hold-cover * {
+  animation: none !important;
+}
+.rm-title-screen.rm-title-hold-cover .rm-title-seq-veil,
+.rm-title-screen.rm-title-hold-cover .rm-title-seq-sweep,
+.rm-title-screen.rm-title-hold-cover .rm-title-press-start {
+  display: none !important;
+}
+
+@keyframes rm-title-transition-flash-hold {
+  0% { opacity: 0; background: #fff; }
+  12% { opacity: 1; background: #fff; }
+  45% { opacity: 0.85; background: #fff4dc; }
+  100% { opacity: 0; background: #fff4dc; }
+}
+
+@keyframes rm-title-transition-mist-hold {
+  0% { opacity: 0; background: rgb(230 236 244); }
+  60% { opacity: 0.92; background: rgb(230 236 244); }
+  100% { opacity: 0; background: rgb(230 236 244); }
+}
+
 @keyframes rm-title-transition-fade {
   from { opacity: 0; }
   to { opacity: 1; }

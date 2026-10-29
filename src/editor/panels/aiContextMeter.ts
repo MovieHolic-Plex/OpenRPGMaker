@@ -49,7 +49,8 @@ export function contextUsageTone(usage: ContextUsage): "idle" | "near" | "warn" 
 }
 
 export function formatContextMeterLabel(usage: ContextUsage | null): string {
-  if (!usage) return "맥락 —";
+  // 세션 전에는 값이 없다 — 줄표 자리표시 대신 무엇의 칸인지만 말한다(C-71).
+  if (!usage) return "맥락 사용량";
   return `맥락 ${contextUsagePercent(usage)}%`;
 }
 
@@ -76,7 +77,7 @@ export function createAiContextMeter(options: {
 }): AiContextMeterHandle {
   const button = el("button", {
     class: "ai-composer-menu-btn ai-context-meter",
-    text: "맥락 —",
+    text: "맥락 사용량",
     attrs: {
       type: "button",
       title: "대화 맥락 사용량 — 누르면 압축·사용량을 봅니다",

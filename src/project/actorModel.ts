@@ -95,6 +95,7 @@ type LegacyActorRecord = {
   readonly characterIndex?: number;
   readonly characterTransparent?: boolean;
   readonly battleCharacterResourceId?: string;
+  readonly battleScalePercent?: number;
   readonly critical?: Partial<ActorCritical>;
   readonly parameterCurves?: Partial<ActorParameterCurves>;
   readonly expCurve?: Partial<ActorExperienceCurve>;
@@ -164,6 +165,12 @@ export function normalizeActorRecord(actor: LegacyActorRecord): ActorRecord {
     characterIndex: normalizeOptionalSheetIndex(actor.characterIndex, 7),
     characterTransparent: actor.characterTransparent ?? false,
     battleCharacterResourceId: cleanOptionalId(actor.battleCharacterResourceId),
+    ...(() => {
+      const raw = actor.battleScalePercent;
+      if (typeof raw !== "number" || !Number.isFinite(raw)) return {};
+      const battleScalePercent = Math.round(Math.max(50, Math.min(300, raw)));
+      return battleScalePercent === 100 ? {} : { battleScalePercent };
+    })(),
     critical: normalizeCritical(actor.critical),
     parameterCurves: normalizeParameterCurves(actor.parameterCurves),
     expCurve: normalizeExpCurve(actor.expCurve),

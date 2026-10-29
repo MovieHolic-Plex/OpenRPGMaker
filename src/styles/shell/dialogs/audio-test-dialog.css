@@ -190,3 +190,18 @@
 .bgm-install-banner [data-testid="bgm-install-button"]:disabled { cursor: not-allowed; opacity: 0.6; }
 .bgm-install-banner .bgm-install-error { flex-basis: 100%; color: var(--danger); font-size: 12px; }
 .bgm-install-banner .bgm-install-error[hidden] { display: none; }
+
+/* 목록 행: 곡 이름(주) + 용도·라이선스(보조) 두 줄. 재생 불가 꼬리표는 이유를 말한다. */
+.audio-test-option-text { display: grid; min-width: 0; gap: 0; }
+.audio-test-option-meta { overflow: hidden; color: var(--text-2); font-size: 12px; line-height: 1.4; text-overflow: ellipsis; white-space: nowrap; }
+
+/* 고르기 전 오른쪽 칸 안내. */
+.audio-test-guide { display: grid; gap: var(--space-2); padding: var(--space-3); border: 1px dashed var(--border-default); border-radius: var(--radius-m); color: var(--text-2); font: 400 13px/1.6 var(--font-ui); }
+.audio-test-guide h3 { margin: 0; color: var(--text-1); font: 600 15px/1.4 var(--font-ui); }
+.audio-test-guide p { margin: 0; }
+
+/* 정지는 채운 사각형, 재생은 채운 삼각형 — 빈 사각형은 체크 상자로 읽혔다. */
+.audio-preview-actions svg :is(rect, path) { fill: currentColor; }
+
+/* 재생 위치 막대는 잡기 영역이 24px 이상이다. */
+.audio-preview-transport input[type="range"] { height: 24px; }

@@ -488,10 +488,8 @@
 }
 
 .event-contents-fieldset .cmd-list .cmd-item.selected > .cmd-head {
-  border-color: var(--accent);
-  border-width: 2px;
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent, var(--mk-accent, #d9a441)) 32%, transparent), 0 2px 10px rgba(42,37,33,.10);
-  background: color-mix(in srgb, var(--accent, var(--mk-accent, #d9a441)) 7%, var(--bg-raised, var(--mk-raised, #FFFDF8)));
+  box-shadow: none;
+  background: var(--accent-muted, color-mix(in srgb, var(--accent, var(--mk-accent, #d9a441)) 14%, var(--bg-raised, var(--mk-raised, #FFFDF8))));
 }
 
 /* ── 실행 순서 번호 ──────────────────────────────────────────────────
@@ -686,9 +684,8 @@
 }
 
 .event-editor .cmd-list .cmd-item.selected > .cmd-head {
-  border-color: var(--mk-accent);
-  box-shadow: 0 0 0 1px var(--mk-accent);
-  background: var(--mk-raised);
+  box-shadow: none;
+  background: var(--accent-muted, var(--mk-raised));
 }
 
 .event-editor .cmd-list .cmd-item > .cmd-head:focus-visible {

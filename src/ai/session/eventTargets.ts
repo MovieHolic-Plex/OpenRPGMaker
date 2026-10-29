@@ -49,7 +49,7 @@ export function eventBaseTarget(proposal: ProposedCall): EventTargetKey | null {
     return mapId === null || eventId === null ? null : { mapId, eventId };
   }
 
-  if (proposal.name === "patch_event_page") {
+  if (proposal.name === "patch_event_page" || proposal.name === "add_event_page") {
     const mapId = stringValue(proposal.args.mapId);
     const eventId = stringValue(proposal.args.eventId);
     return mapId === null || eventId === null ? null : { mapId, eventId };

@@ -307,6 +307,7 @@ export interface PlaySessionLike {
   systemAudioOverrides?: import("./systemAudioOverrides").SystemAudioOverrides;
   pictures?: Record<string, RuntimePictureState>;
   actorSkillIds?: Record<ActorId, SkillId[]>;
+  actorForgottenSkillIds?: Record<ActorId, SkillId[]>;
   actorBattleCommands?: Record<ActorId, string[]>;
   actorExperience?: Record<string, number>;
   actorLevels?: Record<string, number>;

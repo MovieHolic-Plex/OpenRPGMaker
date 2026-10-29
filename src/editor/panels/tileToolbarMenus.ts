@@ -38,6 +38,9 @@ let openMenu: ToolbarMenuId = null;
 // 열림 상태는 모듈에 남긴다(재렌더 생존). 닫는 길은 밖에서 들어오므로 재렌더 콜백과
 // 문서 리스너가 필요하고, 리스너는 렌더마다 쌓이지 않게 1회만 설치한다.
 let openAnchor: { readonly menu: HTMLElement; readonly trigger: HTMLElement } | null = null;
+/** 왼쪽 레일 「검사」가 연 패널은 레일 단추 옆에 뜬다 — 타일 도구 아래가 아니라 누른 자리 옆이다. */
+let railAnchorRequested = false;
+const RAIL_INSPECT_SELECTOR = '[data-testid="sidebar-inspect"]';
 let anchorKeepersInstalled = false;
 let latestRerender: (() => void) | null = null;
 let detachDocumentListeners: (() => void) | null = null;
@@ -57,6 +60,7 @@ function closeMenuFromOutside(restoreFocus: boolean): void {
   const previous = openAnchor;
   openMenu = null;
   openAnchor = null;
+  railAnchorRequested = false;
   previous?.menu.remove();
   previous?.trigger.setAttribute('aria-expanded', 'false');
   if (restoreFocus) previous?.trigger.focus();
@@ -245,7 +249,7 @@ export function makeOverflowDropdown(model: TileToolbarModel): HTMLElement {
         model.rerender();
       }));
     } else if (openMenu === "ruleAudit") {
-      menu.append(makeOverflowSectionLabel("규칙 감사"));
+      // 위 항목(눌린 「규칙 감사」)이 이미 제목이다 — 같은 제목을 섹션·패널에서 되풀이하지 않는다.
       menu.append(renderRuleAuditPanel());
     } else if (openMenu === "history") {
       menu.append(makeOverflowSectionLabel("작업 기록"));
@@ -281,6 +285,7 @@ export function makeInspectionControls(model: TileToolbarModel): HTMLElement {
 export function openSidebarInspection(id: InspectionCommand): void {
   document.dispatchEvent(new CustomEvent(SIDEBAR_SURFACE_OPEN, { detail: 'inspection' }));
   openMenu = id;
+  railAnchorRequested = typeof document !== "undefined" && document.querySelector(RAIL_INSPECT_SELECTOR) !== null;
   latestRerender?.();
   const panel = openAnchor?.menu;
   if (!panel) return;
@@ -295,8 +300,10 @@ export function openSidebarInspection(id: InspectionCommand): void {
  * (그 상태로는 anchorMenuToViewport 가 아무것도 못 하고 조용히 빠져나간다 — 실제로 그렇게
  * 한 번 놓쳤다). 프레임 하나 뒤에 재고, 창 크기가 바뀌면 다시 잡는다.
  */
-function scheduleMenuAnchor(menu: HTMLElement, trigger: HTMLElement): void {
+function scheduleMenuAnchor(menu: HTMLElement, toolbarTrigger: HTMLElement): void {
   if (typeof window === "undefined") return;
+  const rail = railAnchorRequested ? document.querySelector<HTMLElement>(RAIL_INSPECT_SELECTOR) : null;
+  const trigger = rail ?? toolbarTrigger;
   openAnchor = { menu, trigger };
   const apply = (): void => {
     if (!menu.isConnected || !trigger.isConnected) return;
@@ -383,6 +390,10 @@ export function anchorMenuToViewport(menu: HTMLElement, trigger: HTMLElement): v
   if (typeof window === "undefined" || typeof menu.getBoundingClientRect !== "function") return;
   const rect = trigger.getBoundingClientRect();
   if (!rect || (rect.width === 0 && rect.height === 0)) return;
+  if (trigger.matches(RAIL_INSPECT_SELECTOR)) {
+    anchorMenuBesideRail(menu, rect);
+    return;
+  }
 
   const gap = 4;
   const margin = 8;
@@ -427,6 +438,27 @@ export function anchorMenuToViewport(menu: HTMLElement, trigger: HTMLElement): v
   menu.dataset.anchorLeft = String(left);
   menu.style.left = `${left}px`;
   menu.dataset.placement = placeAbove ? "above" : "below";
+}
+
+/** 레일 단추 오른쪽(right-end)에 붙인다. 아래로 넘치면 위로 올리고, 높이는 창 안으로 줄인다. */
+function anchorMenuBesideRail(menu: HTMLElement, rect: DOMRect): void {
+  const gap = 8;
+  const margin = 8;
+  const viewportH = window.innerHeight || 900;
+  menu.style.position = "fixed";
+  menu.style.right = "auto";
+  menu.style.bottom = "auto";
+  menu.style.maxHeight = "none";
+  const needed = Math.max(menu.scrollHeight || 0, menu.getBoundingClientRect().height || 0);
+  const budget = Math.max(120, viewportH - 2 * margin);
+  const height = Math.min(needed, budget);
+  menu.style.maxHeight = `${budget}px`;
+  menu.style.overflowY = needed > budget ? "auto" : "visible";
+  menu.style.top = `${Math.max(margin, Math.min(rect.bottom - height, viewportH - margin - height))}px`;
+  menu.style.left = `${Math.round(rect.right + gap)}px`;
+  delete menu.dataset.anchorRight;
+  delete menu.dataset.anchorLeft;
+  menu.dataset.placement = "rail";
 }
 
 function makeOverflowSectionLabel(label: string): HTMLElement {
@@ -481,6 +513,7 @@ function makeMenuToggle(
     on: {
       click: () => {
         document.dispatchEvent(new CustomEvent(SIDEBAR_SURFACE_OPEN, { detail: 'inspection' }));
+        railAnchorRequested = false;
         // overflow 토글은 인스펙터/규칙/기록 패널이 열려 있어도 닫아 1줄 상태를 복구한다.
         const pinnedPanel = openMenu !== null && openMenu !== 'overflow' && inspectionPins().includes(openMenu);
         const currentlyExpanded = menu === 'overflow' ? openMenu !== null && !pinnedPanel : openMenu === menu;
@@ -539,6 +572,7 @@ function makeOptionItem(label: string, active: boolean, disabled: boolean, actio
 function closeToolbarMenus(): void {
   openMenu = null;
   openAnchor = null;
+  railAnchorRequested = false;
 }
 
 function tilePreviewStyle(selectedTile: number, tileset: TilesetDef): string {

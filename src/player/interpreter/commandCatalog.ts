@@ -634,7 +634,7 @@ export function executeCommand(
         ...(command.position ? { position: command.position } : {}),
         ...(command.voiceResourceId ? { voiceResourceId: command.voiceResourceId } : {}),
         ...(ENDING_EPILOGUE_TEXT.has(command) ? { endingEpilogue: true } : {}),
-        // 바로 뒤가 질문 없는 선택지면 이 글이 곧 질문이다 — 다 나오면 키 없이 선택지를 함께 띄운다(RPG 메이커와 같다).
+        // 바로 뒤가 질문 없는 선택지면 이 글이 곧 질문이다 — 끝 쪽 커서를 ▼ 로 그리고, 결정 키 한 번에 선택지가 이 글을 틀에 남긴 채 뜬다.
         ...(textLeadsIntoChoices(frame) ? { beforeChoices: true } : {}),
         ...(command.speakerActor ? { speakerActor: command.speakerActor } : {}),
         ...(command.addressee ? { addressee: command.addressee } : {}),
