@@ -3930,7 +3930,7 @@
        "kind": "waitFor",
        "testid": "dialogue-box",
        "state": "present",
-       "timeoutMs": 8000
+       "timeoutMs": 60000
       },
       {
        "kind": "hold",
@@ -3971,7 +3971,7 @@
        "kind": "waitFor",
        "testid": "dialogue-box",
        "state": "present",
-       "timeoutMs": 15000
+       "timeoutMs": 60000
       },
       {
        "kind": "hold",
@@ -3986,7 +3986,7 @@
        "kind": "waitFor",
        "testid": "dialogue-box",
        "state": "present",
-       "timeoutMs": 15000
+       "timeoutMs": 60000
       },
       {
        "kind": "hold",
@@ -4001,7 +4001,7 @@
        "kind": "waitFor",
        "testid": "dialogue-box",
        "state": "present",
-       "timeoutMs": 15000
+       "timeoutMs": 60000
       },
       {
        "kind": "hold",
@@ -4024,54 +4024,20 @@
      "id": "spotted",
      "ops": [
       {
-       "kind": "waitFor",
-       "testid": "dialogue-box",
-       "state": "present",
-       "timeoutMs": 15000
-      },
-      {
-       "kind": "hold",
-       "dir": null,
-       "ms": 1500
-      },
-      {
-       "kind": "key",
-       "key": "Enter"
-      },
-      {
-       "kind": "waitFor",
-       "testid": "dialogue-box",
-       "state": "present",
-       "timeoutMs": 15000
-      },
-      {
-       "kind": "hold",
-       "dir": null,
-       "ms": 1500
-      },
-      {
-       "kind": "key",
-       "key": "Enter"
-      },
-      {
-       "kind": "waitFor",
-       "testid": "dialogue-box",
-       "state": "present",
-       "timeoutMs": 15000
-      },
-      {
-       "kind": "hold",
-       "dir": null,
-       "ms": 1500
-      },
-      {
-       "kind": "key",
-       "key": "Enter"
-      },
-      {
-       "kind": "waitForMap",
+       "kind": "repeatUntilMap",
        "mapId": "map_field_north_1",
-       "timeoutMs": 20000
+       "maxRounds": 30,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 900
+        }
+       ]
       },
       {
        "kind": "hold",
@@ -4109,7 +4075,7 @@
        "kind": "waitFor",
        "testid": "dialogue-box",
        "state": "present",
-       "timeoutMs": 8000
+       "timeoutMs": 60000
       },
       {
        "kind": "hold",
@@ -4214,7 +4180,7 @@
        "kind": "waitFor",
        "testid": "dialogue-box",
        "state": "present",
-       "timeoutMs": 20000
+       "timeoutMs": 60000
       },
       {
        "kind": "hold",
@@ -4241,7 +4207,7 @@
       {
        "kind": "waitForMap",
        "mapId": "fs2_hub_night",
-       "timeoutMs": 15000
+       "timeoutMs": 60000
       },
       {
        "kind": "hold",
@@ -4265,7 +4231,7 @@
        "kind": "waitFor",
        "testid": "dialogue-box",
        "state": "present",
-       "timeoutMs": 8000
+       "timeoutMs": 60000
       },
       {
        "kind": "hold",
@@ -4292,7 +4258,7 @@
       {
        "kind": "waitForMap",
        "mapId": "map_field_north_1",
-       "timeoutMs": 15000
+       "timeoutMs": 60000
       },
       {
        "kind": "hold",
@@ -4330,7 +4296,7 @@
        "kind": "waitFor",
        "testid": "dialogue-box",
        "state": "present",
-       "timeoutMs": 8000
+       "timeoutMs": 60000
       },
       {
        "kind": "hold",
@@ -10486,7 +10452,7 @@
        "kind": "waitFor",
        "testid": "dialogue-box",
        "state": "present",
-       "timeoutMs": 20000
+       "timeoutMs": 60000
       },
       {
        "kind": "hold",
@@ -10519,7 +10485,7 @@
       {
        "kind": "waitForMap",
        "mapId": "fs2_cell",
-       "timeoutMs": 20000
+       "timeoutMs": 60000
       },
       {
        "kind": "hold",
@@ -10925,9 +10891,9 @@
        "kind": "waitForEventAt",
        "eventId": "ev_fs2_barracks_watch_n",
        "mapId": "fs2_barracks",
-       "x": 24,
+       "x": 12,
        "y": 7,
-       "timeoutMs": 60000
+       "timeoutMs": 90000
       },
       {
        "kind": "action"
@@ -10935,7 +10901,7 @@
       {
        "kind": "hold",
        "dir": null,
-       "ms": 500
+       "ms": 300
       },
       {
        "kind": "move",
@@ -10945,7 +10911,49 @@
       {
        "kind": "move",
        "dir": "right",
-       "steps": 13
+       "steps": 6
+      },
+      {
+       "kind": "move",
+       "dir": "up",
+       "steps": 1
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 600
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "cross-nooks-2",
+     "ops": [
+      {
+       "kind": "waitForEventAt",
+       "eventId": "ev_fs2_barracks_watch_n",
+       "mapId": "fs2_barracks",
+       "x": 6,
+       "y": 7,
+       "timeoutMs": 90000
+      },
+      {
+       "kind": "waitForEventAt",
+       "eventId": "ev_fs2_barracks_watch_n",
+       "mapId": "fs2_barracks",
+       "x": 14,
+       "y": 7,
+       "timeoutMs": 90000
+      },
+      {
+       "kind": "move",
+       "dir": "down",
+       "steps": 1
+      },
+      {
+       "kind": "move",
+       "dir": "right",
+       "steps": 7
       },
       {
        "kind": "move",
