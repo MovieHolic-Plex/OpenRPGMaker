@@ -8,6 +8,8 @@ export interface GrowthSession {
   growthProgress?: GrowthProgress;
   promotionLineage?: PromotionLineage;
   actorSkillIds?: Record<string, readonly string[]>;
+  /** 「잊기」로 지운 스킬 — 직업·레벨 습득으로 생겨도 모른다. */
+  actorForgottenSkillIds?: Record<string, readonly string[]>;
   actorLevels?: Record<string, number>;
   classOverrides?: Record<string, string>;
   variables: Record<string, number>;
@@ -60,7 +62,8 @@ export function permanentActorSkillIds(project: Project, session: GrowthSession,
   const actor = normalizeActorRecord(record);
   const level = session.actorLevels?.[actorId] ?? actor.initialLevel;
   const klass = project.database.classes.find(c => c.id === effectiveActorClassId(project, session, actorId));
-  return [...new Set([...(session.actorSkillIds?.[actorId] ?? []), ...actor.learnedSkills.filter(s => s.tp === undefined && s.level <= level).map(s => s.skillId), ...(klass?.learnedSkills ?? []).filter(s => s.level <= level).map(s => s.skillId)])];
+  const forgotten = new Set(session.actorForgottenSkillIds?.[actorId] ?? []);
+  return [...new Set([...(session.actorSkillIds?.[actorId] ?? []), ...actor.learnedSkills.filter(s => s.tp === undefined && s.level <= level).map(s => s.skillId), ...(klass?.learnedSkills ?? []).filter(s => s.level <= level).map(s => s.skillId)])].filter(id => !forgotten.has(id));
 }
 export function actorOwnedSkillIds(project: Project, session: GrowthSession, actorId: string): string[] {
   return [...new Set([...permanentActorSkillIds(project, session, actorId), ...growthEffects(project, session, actorId).skillIds])];

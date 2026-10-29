@@ -199,6 +199,7 @@ export type SaveSnapshot = {
     readonly monsterParty?: readonly string[];
     readonly monsterBox?: readonly string[];
     readonly actorSkillIds?: PlaySession["actorSkillIds"];
+    readonly actorForgottenSkillIds?: PlaySession["actorForgottenSkillIds"];
     readonly actorSkillPp?: PlaySession["actorSkillPp"];
     readonly actorBattleCommands?: PlaySession["actorBattleCommands"];
     readonly actorExperience?: Record<string, number>;
@@ -537,6 +538,7 @@ export function createSaveSnapshot(project: Project, input: PlaySession): SaveSn
       monsterParty: structuredClone(session.monsterParty),
       monsterBox: structuredClone(session.monsterBox),
       actorSkillIds: structuredClone(session.actorSkillIds),
+      ...(session.actorForgottenSkillIds && Object.keys(session.actorForgottenSkillIds).length > 0 ? { actorForgottenSkillIds: structuredClone(session.actorForgottenSkillIds) } : {}),
       actorSkillPp: structuredClone(session.actorSkillPp),
       actorBattleCommands: structuredClone(session.actorBattleCommands),
       actorExperience: structuredClone(session.actorExperience),
@@ -898,6 +900,7 @@ export function applySaveSnapshot(project: Project, input: SaveSnapshot): PlaySe
   if (snapshot.session.monsterParty) session.monsterParty = [...snapshot.session.monsterParty];
   if (snapshot.session.monsterBox) session.monsterBox = [...snapshot.session.monsterBox];
   if (snapshot.session.actorSkillIds) session.actorSkillIds = structuredClone(snapshot.session.actorSkillIds);
+  session.actorForgottenSkillIds = snapshot.session.actorForgottenSkillIds ? structuredClone(snapshot.session.actorForgottenSkillIds) : undefined;
   if (snapshot.session.actorSkillPp) session.actorSkillPp = structuredClone(snapshot.session.actorSkillPp);
   if (snapshot.session.actorBattleCommands) session.actorBattleCommands = structuredClone(snapshot.session.actorBattleCommands);
   if (snapshot.session.actorExperience) session.actorExperience = structuredClone(snapshot.session.actorExperience);
@@ -1430,6 +1433,7 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       monsterParty: isStringArray(session.monsterParty) ? session.monsterParty : undefined,
       monsterBox: isStringArray(session.monsterBox) ? session.monsterBox : undefined,
       actorSkillIds: isActorSkillIdsRecord(session.actorSkillIds) ? session.actorSkillIds : undefined,
+      actorForgottenSkillIds: isActorSkillIdsRecord(session.actorForgottenSkillIds) ? session.actorForgottenSkillIds : undefined,
       actorSkillPp: isActorSkillPpRecord(session.actorSkillPp) ? session.actorSkillPp : undefined,
       actorBattleCommands: isActorSkillIdsRecord(session.actorBattleCommands) ? session.actorBattleCommands : undefined,
       actorExperience: isNumberRecord(session.actorExperience) ? session.actorExperience : undefined,

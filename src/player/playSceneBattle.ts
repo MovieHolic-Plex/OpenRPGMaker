@@ -130,6 +130,7 @@ export async function playBattle(
         paramBonuses: scene.session.actorParamBonuses,
         equipment: scene.session.actorEquipment,
         skillIds: scene.session.actorSkillIds,
+        forgottenSkillIds: scene.session.actorForgottenSkillIds,
         skillPp: scene.session.actorSkillPp,
         classOverrides: scene.session.classOverrides,
         growthProgress: scene.session.growthProgress,
