@@ -7,6 +7,7 @@
  *   왕도 아스텔 → 별빛 천문대(의뢰) → 속삭이는 숲(숲지기 → 떨어진 별 퍼즐 → 이리스 합류)
  *   → 천문대 지하(별빛 열쇠로 열림, 화로 퍼즐, 발렌과 수호상 결전) → 천문대 보고 → 엔딩.
  */
+import { applyFallenStarLore } from "./fallen/lore";
 import { charsetFrameIndex } from "@/assets/easyrpgRtp";
 import { isPassable } from "@/project/collision";
 import { JRPG_CLASSIC_FIELD_HUD } from "@/project/fieldHud";
@@ -2483,6 +2484,7 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   // 랜덤 조우 끄기·보이는 적 채우기·덮치기·자동 전투 없음·전투 뒤 상태 해제·세이브 포인트 전용(fallen/act1Finale.ts, 조수 도구).
   applyFallenFieldRules(project, execTool);
 
+  applyFallenStarLore(project, (target, name, args) => execTool(target, name, args));
   const serialized = serialize(project);
   const reloaded = deserialize(serialized);
   const manifest = {
