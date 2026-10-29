@@ -133,7 +133,7 @@ function searchBgmMatches(project: Project, query: string): Array<{ resourceId: 
 function storeMusicFacts(project: Project, resourceId: string) {
   const music = readStoreMusicMeta(project.assets.uploaded[resourceId]?.meta);
   if (!music) return {};
-  return { music: { genre: music.genreKo || music.genreLabel || music.genre, scenes: music.scenes, mood: music.mood, energy: music.energy, bpm: music.bpm, tempo: music.tempo, loopable: music.loopable, lengthSec: music.lengthSec } };
+  return { music: { genre: music.genreKo || music.genreLabel || music.genre, scenes: music.scenes, mood: music.mood, energy: music.energy, bpm: music.bpm, tempo: music.tempo, loopable: music.loopable, lengthSec: music.lengthSec, ...(music.feelTags.length ? { feel: music.feelTags } : {}) } };
 }
 
 const recommendBgm: ToolDefinition = {
