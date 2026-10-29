@@ -24,6 +24,8 @@ import { alignObjectiveThings, gateSuspectObjectives, refreshRemainingClues } fr
 import { dropTokenLines, settleStepSubjects } from "./stepSubjects";
 import { humanizeMapNames } from "./mapNames";
 import { ensureReloadable } from "./reloadCheck";
+import { widenRoadExits } from "./edgeExitRoads";
+import { openDoorSteps } from "./stepArt";
 
 /**
  * 출구·이동 칸 마감이 본 맵들의 지문 — 맵 크기·타일 층·이벤트 자리. 마감은 한 실행에 한 번이라, 그 뒤 화면 검수 고치기 차례에서
@@ -187,6 +189,12 @@ export async function runFinishAutoBuild(env: PiAssistantV2Env, session: V2Sessi
       const ids = Object.values(env.ctx.project.maps).filter((m) => names.has(m.name ?? m.id)).map((m) => m.id);
       if (ids.length) assembled.push(...fitStairTransfers(env.ctx.project, ids));
     } catch { /* 계단 출구 넓히기 실패는 끝맺음을 깨지 않는다 */ }
+    // 두 줄 길 위·곁 출구는 길 폭 전체로(2026-10-29 vm7 flash jrpg: 오른쪽 줄로 걸어 출구를 지나쳐 길 끝 가장자리에서 막혔다). 출구를 그림 칸으로 옮기는 출하 기본값·문 잠금 뒤에.
+    try { const run = createBuildRun(env.ctx); for (const mapId of Object.keys(env.ctx.project.maps)) assembled.push(...widenRoadExits(run, mapId).map((n) => `${env.ctx.project.maps[mapId]?.name ?? mapId}: ${n}`)); }
+    catch { /* 출구 넓히기 실패는 끝맺음을 깨지 않는다 */ }
+    // 연 문은 열려 보이게(2026-10-29 vm7 argon jrpg: 열쇠로 연 쇠창살이 그대로라 문을 지났는지 몰랐다).
+    try { assembled.push(...openDoorSteps(env.ctx.project)); }
+    catch { /* 문 열기 그림 실패는 끝맺음을 깨지 않는다 */ }
     // 목표 글이 가리키는 물건이 맵(이벤트·그림)에 없으면 실제 대상 이벤트 이름으로(2026-10-29 vm6 terra 추리 「단서 정리 책상」).
     try { assembled.push(...alignObjectiveThings(env.ctx.project)); }
     catch { /* 목표 물건 이름 맞추기 실패는 끝맺음을 깨지 않는다 */ }

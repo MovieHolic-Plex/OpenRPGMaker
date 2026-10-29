@@ -7,7 +7,7 @@
 // 세운 뒤 못 닿는 이벤트가 늘면 되돌린다. 새 그림은 그리지 않는다.
 import { isPassable } from "@/project/collision";
 import type { GameMap, Project } from "@/project/types";
-import { unreachableEvents } from "./eventReach";
+import { isDoorName, unreachableEvents } from "./eventReach";
 import { resolveSteps } from "./mysteryCase";
 import type { BuildRun } from "./types";
 
@@ -56,6 +56,54 @@ export function dressBareSealSteps(run: BuildRun, mapId: string): string[] {
       notes.push(`「${ev.name ?? ev.id}」 투명 칸 (${ev.x},${ev.y}) → 돌 제단 (${c.tx},${c.ty}) 위 (${c.at.x},${c.at.y})`);
       break;
     }
+  }
+  return notes;
+}
+
+/**
+ * 연 문은 열려 보이게 — 이름이 문인 청사진 단계 이벤트(이동 없음)에서, 여는 페이지가 켜는 스위치를 조건으로 갖는 뒤 페이지(「더는 볼 것이 없다」)를
+ * 투명·아래층·명령 없음으로 바꾼다. 문 그림이 사라지고 그 칸을 지나갈 수 있다.
+ * 왜(2026-10-29 vm7 argon jrpg): 「동굴 열쇠로 문을 열었다」 뒤에도 쇠창살 그림이 그대로였고 다시 조사하면 「더는 볼 것이 없다」뿐이라
+ * 판정자가 문을 지났는지 끝내 몰랐다(퍼즐 빌더의 열쇠 문은 이미 연 뒤 투명·아래층이다 — puzzle.ts).
+ */
+export function openDoorSteps(project: Project): string[] {
+  if (!project.gameBlueprint) return [];
+  const notes: string[] = [];
+  type Page = NonNullable<GameMap["events"][number]["pages"]>[number];
+  const sets = (page: Page): string[] => {
+    const out: string[] = [];
+    const walk = (node: unknown): void => {
+      if (Array.isArray(node)) { node.forEach(walk); return; }
+      if (!node || typeof node !== "object") return;
+      const r = node as Record<string, unknown>;
+      if (r.kind === "setSwitch" && r.value !== false && typeof r.switchId === "string") out.push(r.switchId);
+      Object.values(r).forEach((v) => { if (v && typeof v === "object") walk(v); });
+    };
+    walk(page.commands ?? []);
+    return out;
+  };
+  const sprited = (page: Page) => { const g = (page.graphic ?? {}) as { transparent?: boolean; sprite?: unknown; tileId?: number }; return g.transparent !== true && (!!g.sprite || (typeof g.tileId === "number" && g.tileId > 0)); };
+  for (const r of resolveSteps(project)) {
+    const map = project.maps[r.map.id];
+    const ev = map?.events.find((e) => e.id === r.ev.id);
+    if (!map || !ev || !isDoorName(`${ev.name ?? ""} ${r.step.event}`) || JSON.stringify(ev.pages ?? []).includes('"transfer"')) continue;
+    const pages = ev.pages ?? [];
+    const opener = pages.findIndex((p) => sets(p).length > 0 && (p.conditions ?? []).length > 0);
+    if (opener < 0) continue;
+    const opened = new Set(sets(pages[opener]!));
+    let changed = 0;
+    const next = pages.map((p, i) => {
+      if (i <= opener || !sprited(p)) return p;
+      const after = (p.conditions ?? []).some((c) => (c as { kind?: string; switchId?: string; value?: unknown }).kind === "switch" && opened.has(String((c as { switchId?: string }).switchId)) && (c as { value?: unknown }).value !== false);
+      if (!after) return p;
+      const commands = (p.commands ?? []).filter((c) => !((c as { kind?: string }).kind === "text" && /^더는 볼 것이 없다\.?$/u.test(String((c as { body?: unknown }).body ?? ""))));
+      changed += 1;
+      const { nearSparkle: _s, ...rest } = p as Page & { nearSparkle?: unknown };
+      return { ...rest, graphic: { transparent: true }, priority: "below", overlapForbidden: false, commands } as Page;
+    });
+    if (!changed) continue;
+    map.events = map.events.map((e) => e.id === ev.id ? { ...e, pages: next } : e);
+    notes.push(`「${ev.name ?? ev.id}」 연 뒤 문 그림을 걷고 지나갈 수 있게(${changed}페이지)`);
   }
   return notes;
 }
