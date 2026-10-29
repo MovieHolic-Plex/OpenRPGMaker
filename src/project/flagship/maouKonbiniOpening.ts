@@ -368,6 +368,10 @@ export function buildMaouThrone(project: Project, roomWake: Cell): Cell {
  * 장엄한 음악이 끊긴 뒤 생활 소음으로 넘어가는 대비가 핵심이라 방 음악은 전단지를 읽은 다음에야 튼다.
  */
 export function stageMaouRoomWake(project: Project): void {
+  // 방 음악은 아주 느리게 들어오게 한다(8초). 옥좌에서 넘어오는 순간 눈뜨기 장면이 곧바로 음악을 끄는데, 그 사이 들어온 소리가
+  // 들리지 않아야 「정적 → 형광등」이 산다(v3 녹화: 기본 곡이 0.7초 울렸다). 나중에 현관으로 들어올 때도 같은 곡이 천천히 깔린다.
+  // 도구가 project.maps 를 바꿔 끼우므로 맵은 그다음에 잡는다.
+  execTool(project, "set_map_properties", { mapId: MAP_ROOM, bgm: { mode: "custom", resourceId: BGM_ROOM, fadeInMs: 8000 } });
   const map = project.maps[MAP_ROOM]!;
   const Z = (...l: string[]) => thinkAs(CAST.zervas.name, ...l);
   const zs = (expr: "base" | "happy" | "surprised" | "sad" | "embarrassed", ...l: string[]) => say("zervas", expr, ...l);
@@ -411,8 +415,6 @@ export function stageMaouRoomWake(project: Project): void {
   };
   replace("ev_mk_room_wake", "ev_mk_room_wake_p", wakeScene);
   replace("ev_mk_room_flyer", "ev_mk_room_flyer_p", flyer);
-  // 방에 들어오자마자 방 음악이 먼저 울리면 「정적 → 형광등」이 깨진다. 방 음악은 전단지 뒤에 튼다(이후 방문은 그대로 이어진다).
-  delete (map as { bgm?: unknown }).bgm;
 }
 
 // ── 타이틀 ──────────────────────────────────────────────────────────────
