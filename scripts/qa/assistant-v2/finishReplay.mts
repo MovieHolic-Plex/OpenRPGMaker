@@ -12,6 +12,7 @@ import { createV2Tools, V2Session } from "../../../src/ai/v2/verbs.ts";
 import { walkBlueprint } from "../../../src/ai/v2/blueprint.ts";
 import { runFinishAutoBuild } from "../../../src/ai/v2/finishAutoBuild.ts";
 import { shipBlockers } from "../../../src/ai/v2/shipChecks.ts";
+import { deserialize } from "../../../src/project/io/serialize.ts";
 import { runGameCheck } from "../../../src/qa/gameCheck/index.ts";
 import type { PiAssistantV2Env } from "../../../src/ai/v2/env.ts";
 import type { Project } from "../../../src/project/types.ts";
@@ -76,5 +77,10 @@ for (const dir of dirs) {
   const rec = { name, task, before, notes, after };
   fs.writeFileSync(path.join(out, `${name}.json`), JSON.stringify(rec, null, 1));
   fs.writeFileSync(path.join(out, `${name}.project.json`), JSON.stringify(ctx.project));
-  console.log(`\n### ${name}\n  전: 막힘 ${before.blockers.length} ${before.blockers.map((b) => b.slice(0, 120)).join(" | ")}\n      자동 ${before.auto}\n      청사진 ${before.bp.join(",") || "-"}\n      출하 ${before.ship.length} ${before.ship.join(",")}\n      지름길 ${before.skip.length} ${before.skip.join(",")}\n  끝맺음: ${notes.join("\n          ")}\n  후: 막힘 ${after.blockers.length} ${after.blockers.map((b) => b.slice(0, 160)).join(" | ")}\n      자동 ${after.auto}\n      청사진 ${after.bp.join(",") || "-"}\n      출하 ${after.ship.length} ${after.ship.join(",")}\n      지름길 ${after.skip.length} ${after.skip.join(",")}`);
+  // 저장 → 다시 읽기: 쓴 파일을 플레이어·편집기와 같은 deserialize 로 읽는다(2026-10-29 vm6: trigger 빠진 이벤트로 게임이 안 열리는데 출하·자동 플레이는 통과).
+  let reload = "성공";
+  try { deserialize(fs.readFileSync(path.join(out, `${name}.project.json`), "utf8")); } catch (e) { reload = `실패 ${(e as Error).message.slice(0, 300)}`; }
+  (rec as Record<string, unknown>).reload = reload;
+  fs.writeFileSync(path.join(out, `${name}.json`), JSON.stringify(rec, null, 1));
+  console.log(`\n### ${name}\n  전: 막힘 ${before.blockers.length} ${before.blockers.map((b) => b.slice(0, 120)).join(" | ")}\n      자동 ${before.auto}\n      청사진 ${before.bp.join(",") || "-"}\n      출하 ${before.ship.length} ${before.ship.join(",")}\n      지름길 ${before.skip.length} ${before.skip.join(",")}\n  끝맺음: ${notes.join("\n          ")}\n  후: 막힘 ${after.blockers.length} ${after.blockers.map((b) => b.slice(0, 160)).join(" | ")}\n      자동 ${after.auto}\n      청사진 ${after.bp.join(",") || "-"}\n      출하 ${after.ship.length} ${after.ship.join(",")}\n      지름길 ${after.skip.length} ${after.skip.join(",")}\n      다시 읽기 ${reload}`);
 }

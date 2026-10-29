@@ -23,6 +23,7 @@ import { settleFurnitureSpots } from "./examineSpot";
 import { alignObjectiveThings, gateSuspectObjectives, refreshRemainingClues } from "./mysteryCase";
 import { dropTokenLines, settleStepSubjects } from "./stepSubjects";
 import { humanizeMapNames } from "./mapNames";
+import { ensureReloadable } from "./reloadCheck";
 
 /**
  * 출구·이동 칸 마감이 본 맵들의 지문 — 맵 크기·타일 층·이벤트 자리. 마감은 한 실행에 한 번이라, 그 뒤 화면 검수 고치기 차례에서
@@ -195,6 +196,18 @@ export async function runFinishAutoBuild(env: PiAssistantV2Env, session: V2Sessi
       env.emit({ type: "execution_status", name: "v2.assembly", ok: true, summary: `청사진 조립 기본값: ${assembled.join(" · ")}` });
       await env.checkpoint("blueprint_assembly");
     }
+  }
+  // 저장 → 다시 읽기(reloadCheck): 빌더가 넣은 이벤트의 빠진 필드는 메우고, 그래도 안 열리면 그 필드를 조수에게 알린다(출하 검사도 project-reload-failed 로 막는다).
+  if (env.ctx.project.gameBlueprint || wantsWholeGame(env.request.task)) {
+    try {
+      const reload = ensureReloadable(env.ctx.project);
+      if (reload.project !== env.ctx.project) env.ctx.project = reload.project;
+      if (reload.fixed.length || reload.problem) {
+        const line = `${reload.fixed.length ? `저장본 다시 읽기: 이벤트 빠진 필드 ${reload.fixed.length}곳을 기본값으로 메움(${reload.fixed.slice(0, 4).join(", ")})` : ""}${reload.problem ? `${reload.fixed.length ? " — " : ""}저장본이 여전히 안 열린다: ${reload.problem.slice(0, 240)}` : ""}`;
+        env.emit({ type: "execution_status", name: "v2.reload", ok: !reload.problem, summary: line });
+        autoPath = autoPath ? `${autoPath}\n- ${line}` : `[자동으로 지음]\n- ${line}`;
+      }
+    } catch (error) { env.emit({ type: "execution_status", name: "v2.reload", ok: false, summary: `저장본 다시 읽기 검사 실패: ${error instanceof Error ? error.message : String(error)}` }); }
   }
   return autoPath;
 }

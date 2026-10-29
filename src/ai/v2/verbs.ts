@@ -35,6 +35,7 @@ import { clearTargetFronts, clearTransferLanes, repairEventReach, spreadCrowdedP
 import { ensureStartingGold, ensureSupplyShop } from "./healingAccess";
 import { lockBareHouseDoors } from "./lockedDoors";
 import { dressBareSealSteps } from "./stepArt";
+import { markDeadEndRoads } from "./deadEndRoads";
 import { doorFloorTransfers, dressInteriorExits, dropBuriedTransfers } from "./exitDress";
 import { roadToEdgeExits } from "./edgeExitRoads";
 import { dressBareCaveGates } from "./caveGates";
@@ -662,6 +663,8 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
       for (const n of roadToEdgeExits(run, mapId)) notes.push(`${env.ctx.project.maps[mapId]?.name ?? mapId}: ${n}`);
       // 투명 칸 봉인·제단 단계에 돌 제단 그림(2026-10-29 vm6 terra jrpg «봉인이 어디인지 안 보임»).
       for (const n of dressBareSealSteps(run, mapId)) notes.push(`${env.ctx.project.maps[mapId]?.name ?? mapId}: ${n}`);
+      // 출구 없이 가장자리에서 끊긴 길에 「막힌 길」 표지(2026-10-29 vm6 flash jrpg «동쪽 길은 (41,18)에서 막혔다»).
+      for (const n of markDeadEndRoads(run, mapId)) notes.push(`${env.ctx.project.maps[mapId]?.name ?? mapId}: ${n}`);
       // 들어갈 수 없는 집 문 그림에 「잠겨 있다」 한 줄(2026-10-29 vm6 flash·argon jrpg «집 문 무반응»).
       for (const n of lockBareHouseDoors(run, mapId)) notes.push(`${env.ctx.project.maps[mapId]?.name ?? mapId}: ${n}`);
       const r = clearTransferLanes(run, mapId);
