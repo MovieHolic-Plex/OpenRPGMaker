@@ -33,7 +33,7 @@ import { stageMysteryCase } from "./mysteryCase";
 import { BUILD_BLUEPRINT_PATH_SCHEMA, blueprintMapFor, buildBlueprintPath, sealEscapeExits, type PathStepText } from "./blueprintPath";
 import { clearTargetFronts, clearTransferLanes, repairEventReach, spreadCrowdedPeople } from "./eventReach";
 import { ensureSupplyShop } from "./healingAccess";
-import { dressInteriorExits } from "./exitDress";
+import { doorFloorTransfers, dressInteriorExits } from "./exitDress";
 import { isPlaceholderMap, moveBareEvents, retireBlankStart, retireOrphanMaps } from "./blankStart";
 import { chaserEvents, ensureChaserHidingSpots, mapHidingEvents, markHidingSpots } from "@/project/chaserHiding";
 import { relocateLeadingFace } from "@/editor/tools/eventCompile";
@@ -583,6 +583,8 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     for (const mapId of Object.keys(env.ctx.project.maps)) {
       // 실내 출구·공허 마감(막다른 남쪽 틈 메우기·문 그림·남색 공허 칸) — 화면 검수 장부 builder-exit/builder-tiles.
       for (const n of dressInteriorExits(run, mapId).notes) notes.push(`${env.ctx.project.maps[mapId]?.name ?? mapId}: ${n}`);
+      // 바닥 한가운데 투명 이동 칸 → 가장 가까운 외벽에 문(북벽 문 그림·남벽 틈)을 내고 그 앞으로(2026-10-29 vm3 deepseek 탈출 「희미한 빛 위를 걷는 방 이동」).
+      for (const n of doorFloorTransfers(run, mapId)) notes.push(`${env.ctx.project.maps[mapId]?.name ?? mapId}: ${n}`);
       const r = clearTransferLanes(run, mapId);
       const name = env.ctx.project.maps[mapId]?.name ?? mapId;
       // 조사·대화 대상 앞(아래 칸)을 막는 의자 하나를 치운다(2026-10-29 VM deepseek mystery: 「의자 때문에 NPC 앞으로 못 간다」).
