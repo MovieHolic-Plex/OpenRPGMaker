@@ -51,6 +51,8 @@ export interface SimulateBattleInput {
   readonly battleResult?: "victory" | "defeat" | "escape";
   /** 켜 둔 채 시작할 스위치 id(선택 결과에 걸린 페이지·손님 시험). 생략 = 모두 꺼짐. */
   readonly switchesOn?: readonly string[];
+  /** 영웅 파티 모두가 걸린 채 시작할 상태 id(앞 전투에서 남은 독처럼 전투 뒤에도 유지되는 상태). 생략 = 없음. */
+  readonly startStateIds?: readonly string[];
 }
 
 /**
@@ -150,7 +152,7 @@ function runSingleBattle(input: SimulateBattleInput, rng: Rng): SingleRunResult 
     activeSlots: input.activeSlots,
     party: monsterMode
       ? { levels: {}, experience: {}, monsterParty: input.monsterParty, partyActorIds: input.monsterParty!.map((m) => m.instanceId) }
-      : { levels, experience: {}, partyActorIds: [...partyActorIds] },
+      : { levels, experience: {}, partyActorIds: [...partyActorIds], ...(input.startStateIds?.length ? { stateIds: Object.fromEntries(partyActorIds.map((id) => [id, [...input.startStateIds!]])) } : {}) },
     partyMonsters: monsterMode ? input.monsterParty : undefined,
     ownerEventId: input.ownerEventId,
     sessionState: { switches: Object.fromEntries((input.switchesOn ?? []).map((id) => [id, true])), variables: {}, inventory, selfSwitches: input.selfSwitches, battleResult: input.battleResult },

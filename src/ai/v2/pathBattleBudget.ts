@@ -6,16 +6,21 @@
 // flash — 판정자가 30분 안에 동굴 거미 두 번째 판에서 시간이 다 됐다(길 전투 셋 + 보스 8.5턴). 길 위 전투 수·전투당 길이도 맞아야 한다.
 //
 // 규칙(시작 파티 Lv·startActorIds, 몬스터 파티 게임은 제외):
-//  - 길 = 청사진 단계 맵(단계 순서). 전투 = 그 맵 이벤트의 battleProcessing 과 조우표 무리.
 //    보스 = 마지막 단계 이벤트의 전투, 없으면 마지막 단계 맵의 도망 못 치는 전투. 길목 = 그 밖의 도망 못 치는 전투. 잡몹 = 나머지.
 //  - 필수 잡몹(닿으면 싸우는 상징 적 이벤트) 수 상한 MAX_FIELD_EVENTS — 넘는 상징 적은 뒤에서부터 지운다.
 //  - 보스 앞 전투(길목·잡몹)의 모의 HP 손실 합 ≤ PRE_BOSS_BUDGET(길목 무게 2·잡몹 1 로 나눔, 각 상한 있음), 승률 100%(모의 판 전부).
 //    보스는 쉼터(ensureBossRest) 뒤 풀 HP 로 — 승률 ≥ 95%·손실 ≤ 70%. 전투당 평균 턴 상한(잡몹 4 · 길목 6 · 보스 10).
-//  - 맞추기는 내리기만: 손실·승률이 넘치면 공격·마력 15%씩, 턴이 넘치면 HP 15%씩. 원본 DB 적은 두고 `troop_path_*`/`enemy_path_*` 사본을 쓴다.
+//  - 길 = 시작 맵 → 단계 맵, 단계 맵 사이를 잇는 통로 맵(mapRoute)까지. 전투 = 이벤트(공통 이벤트 호출 포함)·조우표·옛 조우 목록·필드 스폰.
+//  - 보스 앞 전투는 앞 길 전투에서 걸려 전투 뒤에도 남는 해로운 상태(독)를 지고 잰다(vm5 terra: 독이 다음 박쥐 전투로 이어져 전멸).
+//  - 맞추기는 내리기만: 손실·승률이 넘치면 공격·마력과 적 피해 기술 위력 15%씩, 턴이 넘치면 HP 15%씩. 원본 DB 적·기술은 두고
+//    `troop_path_*`/`enemy_path_*`/`skill_path_*` 사본을 쓴다.
 //  - 시작 소지 회복약이 보스 앞 전투 수보다 적으면 채운다.
 import { simulateBattle } from "@/battle/simulate";
 import { actorBattlers } from "@/battle/battleBattlers";
-import type { EnemyRecord, GameMap, Project } from "@/project/types";
+import { stateBehavior } from "@/battle/battleStates";
+import { stateClearsOnBattleEnd } from "@/project/battleEndStates";
+import { mapRoute } from "@/player/objectiveTarget";
+import type { EnemyRecord, GameMap, Project, SkillRecord } from "@/project/types";
 import { blueprintMapFor } from "./blueprintPath";
 import { healingItemIds } from "./combatChecks";
 import { startHealingItem } from "./healingAccess";
@@ -30,6 +35,7 @@ const MAX_FIELD_EVENTS = 4;
 const SAMPLES = 24;
 const ROUNDS = 16;
 export const PATH_TROOP_PREFIX = "troop_path_";
+export const PATH_SKILL_PREFIX = "skill_path_";
 
 type Battle = { mapId: string; eventId?: string; troopId: string; role: Role; touch: boolean };
 
@@ -40,18 +46,45 @@ function walk(node: unknown, visit: (cmd: Obj) => void): void {
   for (const value of Object.values(node as Obj)) if (value && typeof value === "object") walk(value, visit);
 }
 
-function eventBattles(event: GameMap["events"][number]): { troopId: string; canEscape: boolean }[] {
+/** 이벤트가 싸우는 무리(고정 troopId). 공통 이벤트 호출은 그 공통 이벤트의 전투까지 따라간다. */
+function eventBattles(project: Project, event: GameMap["events"][number]): { troopId: string; canEscape: boolean }[] {
   const out: { troopId: string; canEscape: boolean }[] = [];
-  walk(event.pages, (cmd) => { if (cmd.kind === "battleProcessing" && typeof cmd.troopId === "string" && !out.some((b) => b.troopId === cmd.troopId)) out.push({ troopId: cmd.troopId, canEscape: cmd.canEscape !== false }); });
+  const seen = new Set<string>();
+  const visit = (node: unknown) => walk(node, (cmd) => {
+    if (cmd.kind === "battleProcessing" && typeof cmd.troopId === "string" && cmd.troopSource !== "variable" && !out.some((b) => b.troopId === cmd.troopId)) out.push({ troopId: cmd.troopId, canEscape: cmd.canEscape !== false });
+    if (cmd.kind === "callCommonEvent" && typeof cmd.commonEventId === "string" && !seen.has(cmd.commonEventId)) {
+      seen.add(cmd.commonEventId);
+      visit(project.commonEvents?.find((common) => common.id === cmd.commonEventId)?.commands);
+    }
+  });
+  visit(event.pages);
   return out;
 }
 
 const touchFoe = (event: GameMap["events"][number]) => (event.pages ?? []).some((page) => ["eventTouch", "playerTouch"].includes(String((page.trigger as { kind?: string } | undefined)?.kind)));
 
-/** 청사진 길 위 전투 목록(단계 맵 순서·맵 안 이벤트 순서). */
+/**
+ * 청사진 길 위 맵 — 시작 맵에서 단계 맵까지, 단계 맵 사이를 잇는 맵(이동 명령 경로 mapRoute 의 가운데)까지 순서대로.
+ * 왜(2026-10-29 vm5): 단계 장소만 보면 단계 사이 통로 맵의 조우가 예산 밖이었다.
+ */
+function pathMapIds(project: Project): string[] {
+  const steps = project.gameBlueprint?.steps ?? [];
+  const stepMaps = steps.map((step) => blueprintMapFor(project, step.place)?.id).filter((id): id is string => !!id);
+  const out: string[] = [];
+  const add = (id: string) => { if (project.maps[id] && !out.includes(id)) out.push(id); };
+  let prev = project.maps[project.startMapId] ? project.startMapId : undefined;
+  for (const id of stepMaps) {
+    if (prev && prev !== id) for (const hop of mapRoute(project, prev, id) ?? [prev]) add(hop);
+    add(id);
+    prev = id;
+  }
+  return out;
+}
+
+/** 청사진 길 위 전투 목록(맵 순서·맵 안 이벤트 순서). 이벤트 전투(공통 이벤트 호출 포함)·조우표·옛 조우 목록(troopIds)·필드 스폰. */
 export function pathBattles(project: Project): Battle[] {
   const steps = project.gameBlueprint?.steps ?? [];
-  const mapIds = [...new Set(steps.map((step) => blueprintMapFor(project, step.place)?.id).filter((id): id is string => !!id))];
+  const mapIds = pathMapIds(project);
   if (!mapIds.length) return [];
   const last = steps[steps.length - 1];
   const lastMap = last ? blueprintMapFor(project, last.place)?.id : undefined;
@@ -59,11 +92,14 @@ export function pathBattles(project: Project): Battle[] {
   for (const mapId of mapIds) {
     const map = project.maps[mapId];
     if (!map) continue;
-    for (const event of map.events ?? []) for (const battle of eventBattles(event)) {
+    for (const event of map.events ?? []) for (const battle of eventBattles(project, event)) {
       const isLastStepEvent = !!last && (event.id === last.event || event.name === last.event);
       out.push({ mapId, eventId: event.id, troopId: battle.troopId, role: isLastStepEvent ? "boss" : battle.canEscape ? "field" : "gate", touch: touchFoe(event) });
     }
-    for (const entry of map.encounterTable ?? []) if (!out.some((b) => b.troopId === entry.troopId && b.mapId === mapId)) out.push({ mapId, troopId: entry.troopId, role: "field", touch: false });
+    const random = map.encounterTable?.length ? map.encounterTable.map((entry) => entry.troopId) : (map.encounterRate ?? 0) > 0 ? map.troopIds ?? [] : [];
+    for (const troopId of [...random, ...(map.fieldSpawns ?? []).map((spawn) => spawn.troopId)]) {
+      if (!out.some((b) => b.troopId === troopId && b.mapId === mapId)) out.push({ mapId, troopId, role: "field", touch: false });
+    }
   }
   if (!out.some((b) => b.role === "boss")) {
     // 마지막 단계 맵의 도망 못 치는 전투 중 가장 센(적 HP 합) 것.
@@ -73,6 +109,23 @@ export function pathBattles(project: Project): Battle[] {
     if (boss) for (const b of out) if (b.troopId === boss.troopId && b.mapId === boss.mapId) b.role = "boss";
   }
   return out;
+}
+
+/** 이 무리의 적이 거는, 전투가 끝나도 남는 해로운 상태(독처럼 다음 전투로 이어지는 것). */
+function lingeringStates(project: Project, troopId: string): string[] {
+  const out = new Set<string>();
+  for (const enemyId of project.database.troops.find((t) => t.id === troopId)?.enemyIds ?? []) {
+    const enemy = project.database.enemies.find((e) => e.id === enemyId);
+    const skillIds = new Set([...(enemy?.skillIds ?? []), ...(enemy?.actions ?? []).map((a) => a.skillId)]);
+    for (const skillId of skillIds) for (const effect of project.database.skills.find((k) => k.id === skillId)?.stateEffects ?? []) {
+      if (effect.operation !== "add" || !(effect.chance > 0)) continue;
+      const state = project.database.states.find((st) => st.id === effect.stateId);
+      if (!state || stateClearsOnBattleEnd(project, state, state.id)) continue;
+      const behavior = stateBehavior(state);
+      if (behavior.hpDamagePercentPerTurn > 0 || behavior.restrictsAction || behavior.blocksSkillUse || behavior.attackMultiplier < 1 || behavior.defenseMultiplier < 1) out.add(state.id);
+    }
+  }
+  return [...out];
 }
 
 function partyOf(project: Project): { ids: string[]; level: number; hp: number } | undefined {
@@ -106,6 +159,28 @@ function pathCopy(project: Project, troopId: string): string | undefined {
   if (source.members?.length) (clone as { members: unknown[] }).members = source.members.map((m) => ({ ...m, enemyId: copies.get(m.enemyId) ?? m.enemyId }));
   project.database.troops.push(clone);
   return id;
+}
+
+/**
+ * 길 사본 무리의 적이 쓰는 피해 기술을 무리마다 사본(`skill_path_*`)으로 바꾼다 — 능력치가 바닥(1)이면 기술 위력(독침 53)이 피해를 정해
+ * 공격·마력만 내려서는 피해가 줄지 않았다(vm5 terra). 이미 사본이면 그대로(되풀이 안전). 원본 기술은 두므로 다른 적·영웅에 번지지 않는다.
+ */
+function pathSkillCopies(project: Project, copyId: string): string {
+  const prefix = `${PATH_SKILL_PREFIX}${copyId.slice(PATH_TROOP_PREFIX.length)}_`;
+  const skillCopy = (skillId: string): string => {
+    const skill = project.database.skills.find((k) => k.id === skillId);
+    if (!skill || skill.effect.kind !== "damage" || !(skill.power > 0) || skillId.startsWith(PATH_SKILL_PREFIX)) return skillId;
+    const id = `${prefix}${skillId.replace(/^skill_/u, "")}`;
+    if (!project.database.skills.some((k) => k.id === id)) project.database.skills.push({ ...structuredClone(skill), id } as SkillRecord);
+    return id;
+  };
+  for (const enemyId of new Set(project.database.troops.find((t) => t.id === copyId)?.enemyIds ?? [])) {
+    const enemy = project.database.enemies.find((e) => e.id === enemyId);
+    if (!enemy || !enemy.id.startsWith("enemy_path_")) continue;
+    enemy.skillIds = (enemy.skillIds ?? []).map(skillCopy);
+    enemy.actions = (enemy.actions ?? []).map((action) => ({ ...action, skillId: skillCopy(action.skillId) }));
+  }
+  return prefix;
 }
 
 export function fitPathBattlesIn(project: Project): string[] {
@@ -144,21 +219,33 @@ export function fitPathBattlesIn(project: Project): string[] {
   }
 
   // 3) 맞추기 — 내리기만.
-  const measure = (troopId: string) => {
-    const r = simulateBattle({ project, troopId, heroLevel: party.level, partyActorIds: party.ids, n: SAMPLES, seed: 11, useSkills: true });
+  // 앞 길 전투에서 걸려 전투 뒤에도 남는 해로운 상태(독)를 지고 시작한다 — 보스는 쉼터 뒤라 맨몸. vm5 terra: 박쥐 독침의 독이 다음 박쥐 전투로
+  // 이어져(방어 하락까지 겹쳐) 따로 재면 손실 20% 인 전투에서 전멸했다.
+  const carried = new Map<string, string[]>();
+  {
+    const seenStates = new Set<string>();
+    for (const b of battles) {
+      if (b.role !== "boss") carried.set(b.troopId, [...new Set([...(carried.get(b.troopId) ?? []), ...seenStates])]);
+      for (const stateId of lingeringStates(project, b.troopId)) seenStates.add(stateId);
+    }
+  }
+  const measure = (troopId: string, startStateIds: readonly string[] = []) => {
+    const r = simulateBattle({ project, troopId, heroLevel: party.level, partyActorIds: party.ids, n: SAMPLES, seed: 11, useSkills: true, startStateIds });
     return { win: r.winRate, loss: Math.max(0, 1 - r.avgHpRemaining / party.hp), turns: r.avgTurns };
   };
   const rename = new Map<string, string>();
   for (const [troopId, { role, cap }] of plan) {
     const limit = ROLE_LIMIT[role];
+    const start = role === "boss" ? [] : carried.get(troopId) ?? [];
     let before: ReturnType<typeof measure>;
-    try { before = measure(troopId); } catch { continue; }
+    try { before = measure(troopId, start); } catch { continue; }
     const fits = (m: ReturnType<typeof measure>) => m.win >= limit.minWin && m.loss <= cap + 1e-9 && m.turns <= limit.turns;
     if (fits(before)) continue;
     const copyId = pathCopy(project, troopId);
     if (!copyId) continue;
     const enemyIds = new Set(project.database.troops.find((t) => t.id === copyId)?.enemyIds ?? []);
-    let now = measure(copyId);
+    const skillPrefix = pathSkillCopies(project, copyId);
+    let now = measure(copyId, start);
     for (let round = 0; round < ROUNDS && !fits(now); round += 1) {
       const strong = now.win < limit.minWin || now.loss > cap;
       const long = now.turns > limit.turns;
@@ -173,12 +260,17 @@ export function fitPathBattlesIn(project: Project): string[] {
         };
         if (next.attack !== s.attack || next.mind !== s.mind || next.maxHp !== s.maxHp) { enemy.stats = next; moved = true; }
       }
+      if (strong) for (const skill of project.database.skills) {
+        if (!skill.id.startsWith(skillPrefix) || !(skill.power > 1)) continue;
+        skill.power = Math.max(1, Math.floor(skill.power * 0.85));
+        moved = true;
+      }
       if (!moved) break;
-      now = measure(copyId);
+      now = measure(copyId, start);
     }
     if (copyId !== troopId) rename.set(troopId, copyId);
     const pct = (x: number) => `${Math.round(x * 100)}%`;
-    notes.push(`${troopId}(${role === "boss" ? "보스" : role === "gate" ? "길목" : "잡몹"}) 승률 ${pct(before.win)}·손실 ${pct(before.loss)}·${before.turns.toFixed(1)}턴 → 승률 ${pct(now.win)}·손실 ${pct(now.loss)}·${now.turns.toFixed(1)}턴(몫 ${pct(cap)})`);
+    notes.push(`${troopId}(${role === "boss" ? "보스" : role === "gate" ? "길목" : "잡몹"}${start.length ? `, 남은 상태 ${start.join("·")} 지고` : ""}) 승률 ${pct(before.win)}·손실 ${pct(before.loss)}·${before.turns.toFixed(1)}턴 → 승률 ${pct(now.win)}·손실 ${pct(now.loss)}·${now.turns.toFixed(1)}턴(몫 ${pct(cap)})`);
   }
   if (rename.size) {
     const mapIds = new Set(battles.map((b) => b.mapId));
