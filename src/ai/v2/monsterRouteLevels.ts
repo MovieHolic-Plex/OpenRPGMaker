@@ -13,10 +13,11 @@
 // 적 레코드(종 몬스터)는 그 레벨의 능력치·기술로 다시 계산하고(speciesEnemyAtLevel, 야생 굴림과 같은 계산) 경험치는 레벨 비로 맞춘다.
 // 다른 맵 트룹에도 쓰이는 적 레코드는 건드리지 않는다.
 import { speciesEnemyAtLevel } from "@/battle/battleBattlers";
+import { typeChartMultiplierForTypes } from "@/battle/typeChart";
 import { simulateBattle } from "@/battle/simulate";
 import { monsterBalanceParty } from "@/editor/tools/troopBalanceCheck";
 import { totalExpForLevel } from "@/project/actorModel";
-import { DEFAULT_MONSTER_EXP_CURVE, monsterSkillIdsAtLevel, monsterSpeciesById } from "@/project/monsterCollection";
+import { DEFAULT_MONSTER_EXP_CURVE, monsterMaxHp, monsterSkillIdsAtLevel, monsterSpeciesById } from "@/project/monsterCollection";
 import type { MonsterInstance } from "@/project/session";
 import type { EnemyRecord, GameMap, Project } from "@/project/types";
 
@@ -25,6 +26,8 @@ type Obj = Record<string, unknown>;
 /** 곡선으로 올린 길 상대를 스타터 혼자 이겨야 하는 모의전 승률과 판 수(시드 고정 — 결정적). */
 const FIT_WIN_RATE = 0.8;
 const FIT_SAMPLES = 40;
+/** 스타터 혼자 이긴 판의 평균 남은 HP 가 최대의 이 비율 미만이면 아슬아슬한 승리 — 못 이긴 것으로 친다(모의전과 런타임 운 차이). */
+const HP_MARGIN = 0.25;
 
 function walk(node: unknown, visit: (cmd: Obj) => void): void {
   if (Array.isArray(node)) { for (const item of node) walk(item, visit); return; }
@@ -255,7 +258,9 @@ export function fitGateLevelCurve(project: Project): string[] {
           return choices.every((speciesId) => {
             const level = arrivalFor(speciesId);
             const lone = loneMonster(project, speciesId, level);
-            return !lone || simulateBattle({ project, troopId, heroLevel: level, monsterParty: [lone], n: FIT_SAMPLES, seed: 1, useSkills: true }).winRate >= FIT_WIN_RATE;
+            if (!lone) return true;
+            const result = simulateBattle({ project, troopId, heroLevel: level, monsterParty: [lone], n: FIT_SAMPLES, seed: 1, useSkills: true });
+            return result.winRate >= FIT_WIN_RATE && result.avgHpRemaining >= monsterMaxHp(project, lone) * HP_MARGIN;
           });
         });
         if (winsAll) break;
@@ -370,8 +375,12 @@ function walkRequired(node: unknown, visit: (cmd: Obj) => void): void {
  * 필수 전투 = 원정 맵의 이벤트 전투 중 도망칠 수 없고(canEscape ≠ true) 고르기 가지 안이 아닌 것(재대결·전설 조우 제외).
  * 순서 = 단계(관문 i: 그 관문 앞 길 → 관문 맵 관원 → 관문). 길의 단계는 이동 명령으로 이어진 배지 마을의 관문, 그 밖의 맵은 0.
  * 도착 레벨 = 스타터 레벨 경험치 + 앞 단계 필수 전투 전부 + 같은 단계에서 앞선 것(길 트레이너 → 관원 → 관문)의 경험치를 그 종의 곡선에 얹은 레벨.
- * 스타터마다 혼자(풀 HP, 시드 고정 모의전 40판, 가장 좋은 기술) 80% 를 못 넘기면 그 트룹의 적을 모두 한 레벨씩 내린다(Lv2 까지).
+ * 스타터마다 혼자(시드 고정 모의전 40판, 가장 좋은 기술) 80% 를 못 넘기면 그 트룹의 적을 모두 한 레벨씩 내린다(Lv2 까지). 같은 (단계, 순번)
+ * 묶음은 회복 없이 잇달아 싸운다고 보고 앞 판 뒤 남은 평균 HP 로 시작한다(묶음이 바뀌면 센터에서 회복). 평균 남은 HP 가 최대의 1/4 미만인 승리는
+ * 못 이긴 것으로 친다(모의전과 런타임의 운 차이).
  * 다른 트룹과 함께 쓰는 적 레코드는 이 트룹 전용 사본으로 떼고 내린다. 경험치 보상은 relevel 이 레벨 비로 줄인다.
+ * 바닥까지 내려도 못 이기는 관문 아닌 트룹(관원·길 트레이너)은 몬스터를 길에서 잡히는 종으로 하나씩 바꾸고(가장 약한 스타터 승률이 가장 높은 종),
+ * 다시 원래 레벨 쪽으로 올린다. 관문 몬스터(관장·보스·챔피언)는 종을 바꾸지 않는다.
  */
 export function fitRequiredBattlesToStarters(project: Project): string[] {
   const campaign = project.system.monsterCampaign;
@@ -414,28 +423,86 @@ export function fitRequiredBattlesToStarters(project: Project): string[] {
     while (level < 99 && totalExpForLevel(own, level + 1) <= total) level += 1;
     return level;
   };
+  // 길에서 잡히는 종(원정 길 맵 조우표) — 관원 몬스터를 바꿀 후보.
+  const wildSpecies = new Set<string>();
+  for (const mapId of routeIds) for (const encounter of project.maps[mapId]?.encounterTable ?? []) {
+    for (const enemyId of project.database.troops.find((item) => item.id === encounter.troopId)?.enemyIds ?? []) {
+      const speciesId = project.database.enemies.find((item) => item.id === enemyId)?.speciesId;
+      if (speciesId) wildSpecies.add(speciesId);
+    }
+  }
   const out: string[] = [];
   let gained = 0;
   let pending = 0; // 같은 (단계, 순번) 묶음 안에서는 앞 트룹 경험치를 아직 안 얹는다(길 트레이너끼리 순서는 모른다).
   let group = "";
   const FLOOR = 2;
+  // 같은 묶음(한 길의 트레이너들·한 체육관의 관원들)은 회복 없이 잇달아 싸운다 — 스타터마다 앞 판 뒤 남은 평균 HP 로 다음 판을 시작한다.
+  // 왜(2026-10-29 standin monster 런타임 풀 판): 1번길 트레이너 셋을 각각 풀 HP 로 재면 모두 이겼지만, 실제로는 6/26 으로 셋째를 만나 졌다.
+  const carry = new Map<string, number>();
   for (const entry of required) {
     const key = `${entry.stage}:${entry.rank}`;
-    if (key !== group) { gained += pending; pending = 0; group = key; }
+    if (key !== group) { gained += pending; pending = 0; group = key; carry.clear(); }
     const troop = project.database.troops.find((item) => item.id === entry.troopId);
     if (!troop) continue;
+    const remaining = new Map<string, number>();
     const worst = (): { speciesId: string; rate: number; level: number } => {
       let low = { speciesId: "", rate: 1, level: starter };
       for (const speciesId of choices) {
         const level = arrivalFor(speciesId, gained);
-        const lone = loneMonster(project, speciesId, level);
-        if (!lone) continue;
-        const rate = simulateBattle({ project, troopId: troop.id, heroLevel: level, monsterParty: [lone], n: FIT_SAMPLES, seed: 1, useSkills: true }).winRate;
+        const fresh = loneMonster(project, speciesId, level);
+        if (!fresh) continue;
+        const left = carry.get(speciesId);
+        const lone = left === undefined ? fresh : { ...fresh, currentHp: Math.max(1, Math.round(left)) };
+        const result = simulateBattle({ project, troopId: troop.id, heroLevel: level, monsterParty: [lone], n: FIT_SAMPLES, seed: 1, useSkills: true });
+        remaining.set(speciesId, result.avgHpRemaining);
+        // 아슬아슬한 승리(평균 남은 HP 가 최대의 1/4 미만)는 못 이긴 것으로 친다 — 모의전이 2/26 HP 로 이긴다고 본 관원전을 런타임 물 스타터가 졌다.
+        // 앞 판에서 깎인 채 들어오면 기준은 들어온 HP 의 절반(1/4 최대보다 작으면 그쪽).
+        const startHp = lone.currentHp ?? monsterMaxHp(project, fresh);
+        const margin = result.avgHpRemaining >= Math.min(monsterMaxHp(project, fresh) * HP_MARGIN, startHp * 0.5);
+        const rate = margin ? result.winRate : Math.min(result.winRate, FIT_WIN_RATE - 0.01);
         if (rate < low.rate) low = { speciesId, rate, level };
       }
       return low;
     };
     let low = worst();
+    // 1) 상성이 막힌 스타터에게 이미 배울 기술 중 이 상대에게 효과가 굉장한 피해 기술을 스타터 레벨로 당겨 준다(종의 배울 기술표만 고친다).
+    // 왜(2026-10-29 standin monster): 물 스타터는 풀 관장 Lv7 을 Lv10 에서도 0% — 얼음 기술(서리발)은 Lv16 에야 배운다. 레벨만 내리면 관장이 Lv2 가 됐다.
+    const taught: string[] = [];
+    if (low.rate < FIT_WIN_RATE) {
+      const defenders = troop.enemyIds.map((id) => project.database.enemies.find((item) => item.id === id)?.speciesId).filter((id): id is string => !!id)
+        .map((id) => monsterSpeciesById(project, id)?.types ?? []);
+      for (const speciesId of choices) {
+        if (!defenders.length) break;
+        const record = project.database.monsterSpecies?.find((item) => item.id === speciesId);
+        if (!record?.skillsByLevel) continue;
+        const level = arrivalFor(speciesId, gained);
+        const known = new Set(monsterSkillIdsAtLevel(record, level));
+        // 이미 이 상대들에게 효과가 굉장한 피해 기술을 안다면 더 당기지 않는다(한 상성에 기술 하나).
+        const hasCover = [...known].some((id) => {
+          const skill = project.database.skills.find((item) => item.id === id);
+          return !!skill && skill.effect.kind === "damage" && (skill.power ?? 0) > 0 && defenders.some((types) => typeChartMultiplierForTypes(project, skill.elementId, [], types) >= 2);
+        });
+        if (hasCover) continue;
+        const pick = record.skillsByLevel
+          .filter((entry) => entry.level > level && !known.has(entry.skillId))
+          .map((entry) => ({ entry, skill: project.database.skills.find((item) => item.id === entry.skillId) }))
+          .filter(({ skill }) => !!skill && skill.effect.kind === "damage" && skill.scope !== "ally" && typeof skill.power === "number" && skill.power > 0)
+          .filter(({ skill }) => defenders.some((types) => typeChartMultiplierForTypes(project, skill!.elementId, [], types) >= 2) && defenders.every((types) => typeChartMultiplierForTypes(project, skill!.elementId, [], types) > 0))
+          .sort((a, b) => a.entry.level - b.entry.level || (a.skill!.power ?? 0) - (b.skill!.power ?? 0))[0];
+        if (!pick) continue;
+        const lone = loneMonster(project, speciesId, level);
+        if (!lone) continue;
+        const rate = simulateBattle({ project, troopId: troop.id, heroLevel: level, monsterParty: [lone], n: FIT_SAMPLES, seed: 1, useSkills: true }).winRate;
+        if (rate >= FIT_WIN_RATE) continue;
+        const from = pick.entry.level;
+        (pick.entry as { level: number }).level = Math.min(from, starter);
+        taught.push(`${record.name ?? speciesId} 「${pick.skill!.name}」 Lv${from}→Lv${pick.entry.level}`);
+      }
+      if (taught.length) {
+        low = worst();
+        out.push(`필수 전투 「${troop.name || troop.id}」 앞 상성 기술: ${taught.join(", ")} — 스타터 혼자 승률 ${Math.round(low.rate * 100)}%`);
+      }
+    }
     if (low.rate < FIT_WIN_RATE) {
       const species = (id: string) => project.database.enemies.find((item) => item.id === id);
       const before = troop.enemyIds.map((id) => species(id)?.level ?? 0);
@@ -455,10 +522,62 @@ export function fitRequiredBattlesToStarters(project: Project): string[] {
         for (const enemy of lowerable) relevel(project, enemy, enemy.level! - 1);
         low = worst();
       }
+      const swaps: string[] = [];
+      // 바닥에서도 못 이기면(상성이 정반대인 관원 셋을 회복 없이 잇달아) 관문이 아닌 트룹은 몬스터를 길에서 잡히는 종으로 바꾼다 —
+      // 모든 스타터 중 가장 약한 쪽의 승률이 가장 높은 종(같은 타입을 하나라도 가진 종 먼저, 그다음 id 순). 관장·보스 같은 관문 몬스터는 그대로 둔다.
+      if (low.rate < FIT_WIN_RATE && entry.rank !== 2) {
+        const donors = new Map<string, EnemyRecord>();
+        for (const enemy of project.database.enemies) if (enemy.speciesId && (enemy as { monsterResourceId?: string }).monsterResourceId && wildSpecies.has(enemy.speciesId) && !donors.has(enemy.speciesId)) donors.set(enemy.speciesId, enemy);
+        for (const enemyId of [...troop.enemyIds]) {
+          if (low.rate >= FIT_WIN_RATE) break;
+          const enemy = species(enemyId);
+          if (!enemy?.speciesId || typeof enemy.level !== "number") continue;
+          const own = monsterSpeciesById(project, enemy.speciesId)?.types ?? [];
+          const original = structuredClone(enemy);
+          let best: { speciesId: string; rate: number; record: EnemyRecord } | undefined;
+          const candidates = [...donors.keys()].filter((id) => id !== enemy.speciesId).sort((a, b) => {
+            const sa = (monsterSpeciesById(project, a)?.types ?? []).some((t) => own.includes(t)) ? 0 : 1;
+            const sb = (monsterSpeciesById(project, b)?.types ?? []).some((t) => own.includes(t)) ? 0 : 1;
+            return sa - sb || (a < b ? -1 : a > b ? 1 : 0);
+          });
+          for (const speciesId of candidates) {
+            const donor = donors.get(speciesId)!;
+            const index = project.database.enemies.findIndex((item) => item.id === enemyId);
+            const oldName = monsterSpeciesById(project, original.speciesId!)?.name;
+            const swapped = { ...structuredClone(original), speciesId, monsterResourceId: (donor as { monsterResourceId?: string }).monsterResourceId, name: original.name === oldName ? monsterSpeciesById(project, speciesId)?.name ?? original.name : original.name } as EnemyRecord;
+            project.database.enemies[index] = swapped;
+            relevel(project, swapped, original.level!);
+            const trial = worst();
+            if (!best || trial.rate > best.rate) best = { speciesId, rate: trial.rate, record: structuredClone(species(enemyId)!) };
+            project.database.enemies[index] = original;
+          }
+          if (best && best.rate > low.rate) {
+            const index = project.database.enemies.findIndex((item) => item.id === enemyId);
+            project.database.enemies[index] = best.record;
+            swaps.push(`${monsterSpeciesById(project, original.speciesId!)?.name ?? original.speciesId}→${monsterSpeciesById(project, best.speciesId)?.name ?? best.speciesId}`);
+            low = worst();
+          }
+        }
+        // 바꾼 뒤에는 원래 레벨 쪽으로 다시 올린다(여전히 모두 이기는 데까지).
+        if (swaps.length) {
+          for (;;) {
+            const raisable = troop.enemyIds.map(species).filter((enemy): enemy is EnemyRecord => !!enemy?.speciesId && typeof enemy.level === "number").filter((enemy) => enemy.level! < (before[troop.enemyIds.indexOf(enemy.id)] ?? 0));
+            if (!raisable.length) break;
+            const saved = project.database.enemies.map((enemy) => enemy);
+            for (const enemy of raisable) relevel(project, enemy, enemy.level! + 1);
+            const trial = worst();
+            if (trial.rate < FIT_WIN_RATE) { project.database.enemies = saved; low = worst(); break; }
+            low = trial;
+          }
+        }
+      }
       const after = troop.enemyIds.map((id) => species(id)?.level ?? 0);
-      const who = monsterSpeciesById(project, low.speciesId)?.name ?? low.speciesId;
-      out.push(`필수 전투 「${troop.name || troop.id}」 Lv${before.join("·")}→Lv${after.join("·")} — 스타터 혼자 이기게(${who ? `가장 약한 ${who} ` : ""}도착 Lv${low.level} 승률 ${Math.round(low.rate * 100)}%${low.rate < FIT_WIN_RATE ? ", 바닥 Lv2 에서도 미달" : ""})`);
+      if (after.join() !== before.join() || swaps.length) {
+        const who = monsterSpeciesById(project, low.speciesId)?.name ?? low.speciesId;
+        out.push(`필수 전투 「${troop.name || troop.id}」 Lv${before.join("·")}→Lv${after.join("·")}${swaps.length ? ` · 몬스터 ${swaps.join(", ")}` : ""} — 스타터 혼자 이기게(${who ? `가장 약한 ${who} ` : ""}도착 Lv${low.level} 승률 ${Math.round(low.rate * 100)}%${low.rate < FIT_WIN_RATE ? ", 미달" : ""})`);
+      }
     }
+    for (const [speciesId, hp] of remaining) carry.set(speciesId, hp);
     pending += troopExp(project, troop.id);
   }
   return out;
