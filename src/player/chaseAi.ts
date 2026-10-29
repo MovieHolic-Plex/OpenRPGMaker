@@ -75,6 +75,16 @@ export function nextChaseDecision(input: {
   readonly pass?: ChasePassSize;
   /** Periodic/failed searches share a frame budget; exhausted reachable paths stay immediate. */
   readonly requestRepath?: () => boolean;
+  /**
+   * 꺾임을 줄인 경로를 고른다(같은 길이면 덜 꺾는 쪽, 첫 걸음은 heading 쪽). 계단처럼 좌우·상하를 번갈아
+   * 밟아 떨려 보이던 대각 접근을 ㄱ자로 편다. 생략하면 예전과 같은 경로.
+   */
+  readonly straight?: { readonly heading?: ChasePoint };
+  /**
+   * 표적에 닿는 길이 없으면(닫힌 문·막힌 칸) 제자리에 서지 말고 표적에 가장 가까운 닿는 칸까지 간다.
+   * 막힘 표시는 그대로 두어 다시 찾기는 예산(500ms)에 묶인다.
+   */
+  readonly approachWhenBlocked?: boolean;
 }): ChaseDecision {
   const { mover } = input;
   mover.chaseHome ??= { ...input.from };
@@ -128,13 +138,17 @@ export function nextChaseDecision(input: {
       mover.chasePath = directStepPath(input.project, input.map, input.from, input.player, input.pass, mover);
     } else {
       const cap = mover.chaseExpansionCap ?? CHASE_MAX_EXPANSIONS;
-      const search = searchChasePath(input.project, input.map, input.from, input.player, input.pass, undefined, cap);
+      const search = searchChasePath(input.project, input.map, input.from, input.player, input.pass, undefined, cap, input.straight);
       mover.chasePath = search.path;
       mover.chaseWidenPending = search.capped;
       if (search.capped) mover.chaseExpansionCap = cap * 2;
     }
     mover.chaseRepathTimerMs = 0;
     mover.chasePathBlocked = mover.chasePath.length === 0;
+    if (mover.chasePathBlocked && input.approachWhenBlocked && input.pathfind !== false && mover.chaseWidenPending !== true
+      && (input.from.x !== input.player.x || input.from.y !== input.player.y)) {
+      mover.chasePath = approachPath(input.project, input.map, input.from, input.player, input.pass);
+    }
   }
 
   const path = mover.chasePath ?? [];
@@ -177,6 +191,54 @@ function passIsUnitRect(pass: ChasePassSize | undefined): boolean {
   if (!pass) return true;
   const rect = passageBounds(0, 0, pass.footprint, pass.passRows);
   return rect.left === rect.right && rect.top === rect.bottom;
+}
+
+/** 추격 전술(chaseTactics)이 거리 지도를 만들 때 쓰는 같은 통행 판정. */
+export function chasePassableStep(project: Project, map: GameMap, from: ChasePoint, to: ChasePoint, pass?: ChasePassSize): boolean {
+  return chasePassable(project, map, from, to, pass);
+}
+
+/**
+ * 표적에 닿는 길이 없을 때 표적에 가장 가까운(맨해튼) 닿는 칸까지의 경로. 이미 그 칸이면 빈 경로.
+ * 너비 우선이라 같은 가까움이면 덜 걷는 칸을 고른다.
+ */
+export function approachPath(
+  project: Project,
+  map: GameMap,
+  from: ChasePoint,
+  to: ChasePoint,
+  pass?: ChasePassSize,
+  maxCells: number = CHASE_MAX_EXPANSIONS
+): ChasePoint[] {
+  if (!inBounds(map, from.x, from.y)) return [];
+  const width = map.width;
+  const parent = new Map<number, number>([[from.y * width + from.x, -1]]);
+  let best = { key: from.y * width + from.x, score: manhattan(from, to) };
+  let frontier: ChasePoint[] = [from];
+  while (frontier.length > 0 && parent.size < maxCells) {
+    const next: ChasePoint[] = [];
+    for (const point of frontier) {
+      const key = point.y * width + point.x;
+      for (const direction of DIRECTIONS) {
+        const nx = point.x + direction.x, ny = point.y + direction.y;
+        if (nx < 0 || ny < 0 || nx >= width || ny >= map.height) continue;
+        const nkey = ny * width + nx;
+        if (parent.has(nkey)) continue;
+        if (nx === to.x && ny === to.y) continue;
+        if (!chasePassable(project, map, point, { x: nx, y: ny }, pass)) continue;
+        parent.set(nkey, key);
+        const score = Math.abs(nx - to.x) + Math.abs(ny - to.y);
+        if (score < best.score) best = { key: nkey, score };
+        next.push({ x: nx, y: ny });
+      }
+    }
+    frontier = next;
+  }
+  const path: ChasePoint[] = [];
+  for (let key = best.key; key !== from.y * width + from.x; key = parent.get(key)!) {
+    path.push({ x: key % width, y: Math.floor(key / width) });
+  }
+  return path.reverse();
 }
 
 /** 추격자의 통행 사각으로 한 칸 이동 가능한가. pass 생략 시 canMove 와 같다. */
@@ -227,7 +289,8 @@ function searchChasePath(
   to: ChasePoint,
   pass: ChasePassSize | undefined,
   canEnter: ((point: ChasePoint) => boolean) | undefined,
-  maxExpansions: number
+  maxExpansions: number,
+  straight?: { readonly heading?: ChasePoint }
 ): ChaseSearch {
   if (!inBounds(map, from.x, from.y) || !inBounds(map, to.x, to.y)) return { path: [], capped: false };
   if (from.x === to.x && from.y === to.y) return { path: [], capped: false };
@@ -243,6 +306,7 @@ function searchChasePath(
     g: 0,
     h: manhattan(from, to),
     order: 0,
+    ...(straight ? { turns: 0, dx: straight.heading?.x ?? 0, dy: straight.heading?.y ?? 0 } : {}),
   };
   const open = new NodeHeap();
   open.push(start);
@@ -277,7 +341,11 @@ function searchChasePath(
       if (!chasePassable(project, map, current.point, next, pass)) continue;
       const g = current.g + 1;
       const existing = nodes.get(key);
-      if (existing && existing.g <= g) continue;
+      // 꺾임 줄이기: 같은 걸음 수면 덜 꺾은 쪽으로 바꾼다(straight 를 안 주면 turns 가 늘 0 이라 예전과 같다).
+      const turns = straight
+        ? (current.turns ?? 0) + ((current.dx ?? 0) === 0 && (current.dy ?? 0) === 0 ? 0 : (current.dx === direction.x && current.dy === direction.y ? 0 : 1))
+        : undefined;
+      if (existing && (existing.g < g || (existing.g === g && (turns === undefined || (existing.turns ?? 0) <= turns)))) continue;
       const node: AStarNode = {
         point: next,
         key,
@@ -285,6 +353,7 @@ function searchChasePath(
         h: manhattan(next, to),
         order: existing?.order ?? order,
         prev: current,
+        ...(turns !== undefined ? { turns, dx: direction.x, dy: direction.y } : {}),
       };
       if (!existing) order += 1;
       nodes.set(key, node);
@@ -474,11 +543,17 @@ type AStarNode = {
   readonly h: number;
   readonly order: number;
   readonly prev?: AStarNode;
+  /** straight 탐색에서만 — 지금까지 꺾은 횟수와 들어온 방향. */
+  readonly turns?: number;
+  readonly dx?: number;
+  readonly dy?: number;
 };
 
 function compareNode(a: AStarNode, b: AStarNode): number {
   const f = (a.g + a.h) - (b.g + b.h);
   if (f !== 0) return f;
+  const turns = (a.turns ?? 0) - (b.turns ?? 0);
+  if (turns !== 0) return turns;
   const h = a.h - b.h;
   if (h !== 0) return h;
   return a.order - b.order;

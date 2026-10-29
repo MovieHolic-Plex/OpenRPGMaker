@@ -23,7 +23,8 @@ export { startPlayerRoute } from "@/player/playerRouteState";
 import { yieldPlayerRouteToEvents } from "@/player/playerRouteState";
 import { expandApproach, turnTowardDir } from "@/player/playSceneApproach";
 import { PLAYER_MOVE_TARGET } from "@/project/moveRouteTarget";
-import { footprintBounds, nearestCellInRect } from "@/project/footprint";
+import { footprintBounds, nearestCellInRect, passageBounds } from "@/project/footprint";
+import { moverVisualShift, playerVisualShift, rectsTouchVisually } from "@/player/chaseContact";
 import { playerPassageRect, resolvePlayerBody, type PlayerBody } from "@/project/playerFootprint";
 import { isSpatialPlacementBlocking } from "@/project/spatialOccupancy";
 import { isActionCombatMap, resolveActionCombatConfig } from "@/project/actionCombat";
@@ -1046,7 +1047,19 @@ export function findBlockingEventForPlayerBody(
 }
 
 function firePlayerTouchEvent(scene: PlaySceneContext, eventId: string, triggerKind: Trigger["kind"]): void {
-  if (firesOnPlayerCollision(triggerKind)) void scene.runEvent(eventId);
+  if (!firesOnPlayerCollision(triggerKind)) return;
+  // 걸어오는 이벤트는 걸음을 시작할 때 논리 칸을 먼저 옮긴다 — 그 칸에 부딪혀도 그림이 아직 떨어져 있으면 닿은 게 아니다(@/player/chaseContact).
+  const mover = scene.autonomousNPCs.get(eventId);
+  if (mover?.activeMove) {
+    const project = store.getCurrent();
+    const view = runtimeEventViewById(project, scene.map, scene.session, scene.eventPositions, eventId);
+    if (view) {
+      const own = passageBounds(view.x, view.y, view.footprint, view.passRows);
+      const player = playerPassageRect(resolvePlayerBody(project, scene.session), scene.tileX, scene.tileY);
+      if (!rectsTouchVisually(own, moverVisualShift(mover, view), player, playerVisualShift(scene))) return;
+    }
+  }
+  void scene.runEvent(eventId);
 }
 
 function directionDelta(dir: Dir): { x: number; y: number } {
