@@ -8,6 +8,7 @@
  * 지후 호감(var_fl_jihu)과 스위치 몇 개가 대사와 결말을 가른다. 맵은 firstLoveMaps.ts(시각 담당), 부품은 firstLoveKit.ts.
  * 등장인물·회사·앱·노래 이름은 모두 지어낸 것이다.
  */
+import { applyFirstLoveLore } from "./firstLoveLore";
 import { charsetFrameIndex } from "@/assets/easyrpgRtp";
 import { reviewedFaceIdForCharset } from "@/assets/reviewedCharsetFaces";
 import { runTool } from "@/editor/tools/toolRunner";
@@ -1780,6 +1781,7 @@ export function createFirstLoveFlagshipDemo(): FlagshipDemoBuildResult {
       .map((mapId) => ({ mapId, children: [] })),
   };
 
+  applyFirstLoveLore(project);
   const serialized = serialize(project);
   const reloaded = deserialize(serialized);
   return {
