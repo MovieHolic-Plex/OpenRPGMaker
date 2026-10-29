@@ -25,8 +25,19 @@ export const HAND_INTERIOR_TILESET_ID = "atlas_biome_interior";
 /** 상판이 dy -1 줄에 그려지고 dy 0 은 받침대·다리인 가구(생성 사양 JSON 을 다시 굽지 않고 여기서 준다 — 사양의 surfaceRow 가 있으면 그것이 먼저). */
 const PEDESTAL_SURFACE_ROW: Readonly<Record<string, number>> = { "mci-cafe-table": -1, "mci-bedside": -1, "mci-med-cart": -1 };
 /** 가구의 상판 줄 dy(없으면 undefined = 0..h-1 줄 전부). */
-export function surfaceRowOf(id: string, d: { readonly surfaceRow?: number }): number | undefined {
-  return d.surfaceRow ?? PEDESTAL_SURFACE_ROW[id.split(":")[0]!];
+/**
+ * 탁상 물건이 앉는 윗면 줄 dy. surfaceRow·받침대 표가 먼저, 없으면 윗면 그림 상자(surface = [x, y, w, h] px, 그림 맨 위 기준)의 가운데가
+ * 발밑 줄 위로 솟은 줄(dy < 0)에 있으면 그 줄 — 카운터(up 8, 윗면 y 2~7)는 윗면이 dy -1 줄에 그려지고 dy 0 은 서랍 앞면이다.
+ * 2026-10-29 방 견본 4판: 계산대 위 돈통·저울·종이 서랍 앞면에 그려져 「서랍장으로 읽힘」(잡화점·빵집·옷가게 major).
+ */
+export function surfaceRowOf(id: string, d: { readonly surfaceRow?: number; readonly surface?: readonly number[]; readonly up?: number }): number | undefined {
+  const fixed = d.surfaceRow ?? PEDESTAL_SURFACE_ROW[id.split(":")[0]!];
+  if (fixed !== undefined) return fixed;
+  if (d.surface && d.surface.length >= 4 && d.up) {
+    const row = Math.floor((d.surface[1]! + d.surface[3]! / 2 - d.up) / 16);
+    if (row < 0) return row;
+  }
+  return undefined;
 }
 
 type SpecCell = readonly [number, number, number, number];

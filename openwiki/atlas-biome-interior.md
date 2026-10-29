@@ -20,7 +20,7 @@
 | 벽면 | 19종 × (열×4) | 윗줄/아랫줄 × 열(기둥·지지목 간격의 배수: 벨벳 80·광산 96·리벳 96·룬 240…) × 서쪽 그림자. 사양 `walls[id].cols` |
 | 가구 | 527종(v5 381 + 함께 쓰기 변형 5 + 고른 새 기물, 2026-10-02 굽기 4판) | 발밑 칸 = 막힘 x, 솟은 칸·걸이 = ★, 바닥 무늬·계단 = o. 움직이는 칸은 12프레임 `animationStrips`(10fps) |
 | 자동 타일 | 탁자 9(dining·work·desk·display·counter·kcounter·sideboard·tea·felt), 줄 11(깔개 6·선로·울타리·창살·제단 난간·증기관), 단 5 | 줄은 안쪽 모서리가 여럿 겹친 조합까지 |
-| 탁상 물건 | 119 | 가구 윗면 4층, 막힘 x |
+| 탁상 물건 | 119 | 가구 윗면 4층, ★(2026-10-29 전엔 x — 받침 가구가 막는다) |
 | 예제 합성 | 352 | 탁상 물건을 윗면 안 위치까지 얹은 가구·창 빛 바닥(예제 맵만) |
 
 증명(build_tileset.py 가 스스로 검사, `tiledata/hand-interior/v5-maps/check.json`): 예제 26맵 전부 **원본 합성(room4.compose, 같은 접은 표면)과 12프레임 픽셀 차 0**,
@@ -39,6 +39,7 @@ RM2k3 투명 칸 자동 보정(`applyCustomChipsetMinimalHarness`)에서 이 시
 - 정의 `src/project/defaults/atlasBiomeInterior.ts`(JSON `src/assets/atlasBiomeInteriorTileset.json`, 기하 `atlasBiomeInteriorSheet.json`). `ensureAtlasBiomeInteriorCurrent`:
   옛 정의(칸 수·가로 칸 수·`hand-interior:` 킷이 아님)는 **통째로 교체**하고 그 칩셋 맵은 그대로 둔 채 `atlasBiomeInteriorReplacementWarnings` + 콘솔 경고. 같은 시트의 새 빌드면(통행·층·잠금 요약이 다르면) 번들 소유 필드만 갱신. 저자가 쓴 참고문서 분류는 옮긴다.
 - 조립기 `src/editor/handInterior/builder.ts` — room2.render 와 같은 구조 규칙(예제 1층 칸 번호 일치), 가구·탁자·줄·단·탁상 물건, 오류(겹침·바닥 밖(밟는 깔개 포함)·벽 가구 자리·걸이 줄·계단 자리·윗면 없는 탁상 물건) + BFS 경고(닿지 못한 바닥·쓸 수 없는 가구, 앉는 가구는 옆 가구의 사용 칸).
+- 탁상 물건이 앉는 줄(`surfaceRowOf`, 2026-10-29): `surfaceRow`·받침대 표가 없으면 그림의 윗면 상자(`surface`)와 `up` 으로 정한다 — 윗면 가운데가 발밑 줄 위로 솟은 줄(카운터 `up 8`, 윗면 y 2~7 → dy −1)이면 발밑 칸에 준 물건을 그 줄로 올린다. 전에는 카운터 앞면 서랍에 돈통·저울·잔이 그려져 「서랍장으로 읽힘」(방 견본 잡화점·빵집·옷가게 major)이었다. 올린 칸은 카운터 뒤 주인 통로라 탁상 물건 칸(119)을 ★ 로 바꿨다(`build_tileset.py` `pass_of goods` 와 시트 JSON 둘 다) — 탁자·책상 위에서는 받침 가구가 여전히 막는다.
 - 도구 `src/editor/tools/handInteriorTools.ts`: `list_hand_interior_parts`, `build_hand_interior_room`(error 면 맵을 만들지 않는다, `links` 로 층 이동). 사양 `src/assets/handInteriorSpec.json`.
 - 두 도구는 `tileset:"jp_city"` 로 **일본 집 실내**(사양 `src/assets/jpInteriorSpec.json`, 그림은 jp_city 번들)도 짓는다 — 조립기·규칙은 같고 사양만 다르다. `builder.ts` 의 `HAND_INTERIOR_SPECS`. 상세는 `openwiki/jp-city.md` 「일본 집 실내」.
   부품 찾기는 `src/editor/handInterior/parts.ts`(아래 「가구 메모·방 표」).
