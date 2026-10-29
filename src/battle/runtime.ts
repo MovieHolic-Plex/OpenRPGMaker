@@ -3057,7 +3057,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       paramBonuses: options.party?.paramBonuses?.[battler.recordId],
       equipment: equipmentAfterSlotLoss(battler),
       skills: refreshSkills
-        ? { sessionSkillIds: battleEventState.actorSkillIds?.[battler.recordId] }
+        ? { sessionSkillIds: battleEventState.actorSkillIds?.[battler.recordId], forgottenSkillIds: options.party?.forgottenSkillIds?.[battler.recordId] }
         : undefined,
     });
   }
