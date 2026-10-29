@@ -34,6 +34,14 @@ v2 는 같은 실행기 위에서 역할을 나눈다.
 - 위층: 설계가 있는 위층 구역은 설계대로 짓고(객실 견본 둘 + 복도 대신), 빈 바닥 메우기(fillBare)를 하지 않는다. 내려가는 계단통은 넓은 설계 방(바닥 24칸 이상)에 서고, 모두 좁을 때만 계단참 복도를 붙인다.
 - 끝맺음 단계 `adopt-model-places`(order 25, 자동 짓기 앞): 청사진 장소 이름이 모델이 지은 맵 이름과 어긋나면(모델이 맵 이름을 바꿨다) ① 이름이 겹치는 맵 ② 시작 맵 ③ 남은 장소·후보가 하나씩뿐일 때 그 맵을
   그 장소로 잇는다(실내/바깥이 이름 낱말과 맞을 때만). vm8 flash 방탈출 재구성 재생: 모델 방 「escape_room」을 장소로 이어 자동 짓기 없이 엔딩까지(자동 플레이 성공).
+- 예시 그림(2026-10-30 사용자 지시): 옛 서재 사람 견본 `authored-study-*` 는 반복의 원천이라 `room_parts` 참고에서 뺐고(`pickReferences`), 견본을 지어 찍던 그림 대신
+  사용자가 실내 기준으로 고른 assistant-rooms-2 방 10장(`public/assets/room-ideas/`, 목록·갈래·한 줄 설명 `src/ai/v2/roomIdeas.ts`)을 **구성 아이디어**(동선·초점·가구 묶음, 베끼지 않음)로 싣는다.
+  용도 낱말로 둘을 고른다(객실·위층 → bed, 여관·홀 → hall, 서재·도서 → study, 그 밖·방탈출 → other). 실행기가 `env.readPublicAsset` 으로 읽고, 못 읽으면 글만 간다.
+- 그림은 **한 장으로 합쳐** 싣는다(`env.combinePictures`, 기본 `roomPartsPictures:"one"`; `OPRN_ROOM_PARTS_PICTURES=one|each|none` 은 A/B 시험용). 모양 예시 6장 + 그림 2장을 따로 실은 결과(글 1.3만 자 + 그림 8장)
+  뒤 Gemini 계열이 짓지 못한 판이 늘었다(서재 3d, 인계 `suite/ledger/handoff-study.md`). 설계 따로 묻기(`designMissingRooms`)도 아이디어 그림을 한 장으로 싣는다.
+- 글도 가볍게(`roomPartsText` 기본 slim): 기물 40줄·모양 예 하나(나머지는 그림), 더 필요하면 `query` 로 다시 묻는다(약 6.8천 자, 예전 1.2~1.3만 자). `OPRN_ROOM_PARTS_TEXT=full` 은 A/B 용.
+  A/B(2026-10-30, 서재 요청 실제 입력창): gemini-3.8-flash 는 proxy8318 에서 그림을 못 보는 길이라(그림 자리가 글 한 줄로 바뀐다) 그림 수는 원인이 될 수 없었고,
+  1.2만 자 글에서 8판 중 2판이 «I'm having a hard time…»으로 멈췄다(slim 3/3 지음). Opus 5.5 medium 은 글·그림 크기와 상관없이 6/6 지었다. 이후 실조수 시험 모델은 Opus 5.5 medium·gpt-6.1-terra 둘(사용자 지시, Argon·flash 제외).
 - 씨앗은 모델에게 보이지 않는다: `hints.seed`·`edit_place.patch.seed` 를 스키마·카드에서 뺐고, 그래도 오면 `dropModelSeed`(`modelSeed.ts`)가 버린다. 처음 짓는 명세의 `hints.variant:0` 도 «안 정함»으로 읽는다
   (terra 가 스키마를 다 채워 seed 0/1 을 보내 빌더가 무작위 씨앗을 껐다). 씨앗은 salt·variety(프로젝트 열쇠 + 요청)에서 나온다.
 
