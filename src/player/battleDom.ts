@@ -1722,7 +1722,8 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       return;
     }
     // 에메랄드 도주는 「무사히 도망쳤다!」로 끝난다 — 「후퇴 [확인]」 상자를 띄우지 않고 필드로 돌아간다.
-    if (snapshot.result === "escape" && emeraldNarrationActive()) {
+    // 전투 이벤트의 「전투 중단」(연출 전투를 대사로 끊는 RM2K3 Abort Battle)도 상자 없이 바로 돌아간다 — 「후퇴」라고 띄우면 연출이 깨진다.
+    if (snapshot.result === "escape" && (emeraldNarrationActive() || snapshot.endedByEvent === true)) {
       if (!resultSent) {
         resultSent = true;
         const result = snapshot.result;
