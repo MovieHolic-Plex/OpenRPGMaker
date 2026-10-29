@@ -23,6 +23,7 @@ import { DEFAULT_ACTOR_ID } from "@/project/defaults/constants";
 import { blankFillTileFor, createStarterMap } from "@/project/defaults/defaultMaps";
 import { createJpCityTileset, JP_CITY_ID } from "@/project/defaults/jpCity";
 import { deserialize, serialize } from "@/project/io";
+import { applyMaouKonbiniLore } from "./maouKonbiniLore";
 import { openingMapViewCrop } from "@/project/openingMapView";
 import type { ActorRecord as Actor, Command, EnemyRecord as Enemy, GameMap, Project, TroopRecord as Troop } from "@/project/types";
 import { FLAGSHIP_BEAT_MANIFESTS } from "./beats";
@@ -1488,6 +1489,9 @@ export function createMaouKonbiniFlagshipDemo(): FlagshipDemoBuildResult {
   const keepTilesets = new Set(Object.values(project.maps).map((m) => m.tilesetId));
   for (const id of [...keepTilesets]) for (const graft of project.tilesets[id]?.tileGrafts ?? []) keepTilesets.add(graft.sourceChipset);
   for (const id of Object.keys(project.tilesets)) if (!keepTilesets.has(id)) delete project.tilesets[id];
+
+  // 이야기 탭(세계 개요·백과·인물) — 조수 도구 set_world_canon·upsert_world_codex 로 짓는다(maouKonbiniLore.ts).
+  applyMaouKonbiniLore(project, (target, name, args) => execTool(target, name, args));
 
   const serialized = serialize(project);
   const reloaded = deserialize(serialized);
