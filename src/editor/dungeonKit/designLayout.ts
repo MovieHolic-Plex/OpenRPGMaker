@@ -465,9 +465,19 @@ export function layoutDesignedBlob(spec: DungeonSpec, profile: GrammarInfo, desi
       carveDisc(g, x, y, r0 + vnoise(x, y, 5, seed + 3) * rv, -1);
     }
   };
+  // 입구 심 위 벽 띠(아래에서 다시 벽으로 지킨다): 북쪽으로 가는 길이 띠를 비스듬히 지나면 끊겼다(2026-10-29 terra «물길굴» 판 — 가운데 방이 입구 바로 위).
+  // 그런 길은 옆구리에서 띠 바깥 열로 곧게 올라간 뒤 굽이친다.
+  const bandClear = (p: { x: number; y: number }, to: { x: number; y: number }) => {
+    if (to.y >= entCore.y0) return undefined;
+    const sx = Math.sign(p.x - ec.x || to.x - ec.x || 1);
+    return { x: ec.x + sx * Math.max(ent.rx, 6), y: entCore.y0 - 6 };
+  };
   nd.links.forEach((l, k) => {
     const pa = l.a === 0 ? exitPoint(C[l.b]!) : C[l.a]!, pb = l.b === 0 ? exitPoint(C[l.a]!) : C[l.b]!;
-    passage(pa, pb, l.kind, k + 1);
+    const wp = l.a === 0 ? bandClear(pa, pb) : l.b === 0 ? bandClear(pb, pa) : undefined;
+    if (wp && l.a === 0) { passage(pa, wp, "straight", k + 1); passage(wp, pb, l.kind, k + 1); }
+    else if (wp) { passage(pa, wp, l.kind, k + 1); passage(wp, pb, "straight", k + 1); }
+    else passage(pa, pb, l.kind, k + 1);
   });
   // ---- 방 ----
   rooms.forEach((r, i) => {
@@ -527,6 +537,13 @@ export function layoutDesignedBlob(spec: DungeonSpec, profile: GrammarInfo, desi
   }
   const ed = edgeDistance(g, 7);
   const liquidOk = !!profile.liquid;
+  // 물줄기는 입구가 아닌 이웃 굴로 흐른다 — 입구에만 이어진 방이면 웅덩이로(아래 웅덩이 규칙이 판다).
+  const streamTo = (i: number) => nd.links.filter((l) => l.a === i || l.b === i).map((l) => (l.a === i ? l.b : l.a)).filter((j) => j !== 0);
+  rooms.forEach((r, i) => {
+    if (r.water !== "stream" || !liquidOk || streamTo(i).length) return;
+    r.water = "pool";
+    fixes.push(`고침: 방 ${r.id} 은 입구에만 이어져 물줄기가 흘러갈 굴이 없어 웅덩이로 지었다.`);
+  });
   rooms.forEach((r, i) => {
     if (r.water === "none" || r.water === "stream" || !liquidOk) return;
     const c = C[i]!;
@@ -566,12 +583,40 @@ export function layoutDesignedBlob(spec: DungeonSpec, profile: GrammarInfo, desi
   const depth = bfsDepth(rooms.length, nd.links);
   rooms.forEach((r, i) => {
     if (r.water !== "stream" || !liquidOk) return;
-    const nbs = nd.links.filter((l) => l.a === i || l.b === i).map((l) => (l.a === i ? l.b : l.a)).filter((j) => j !== 0 && rooms[j]!.role !== "boss" && rooms[j]!.role !== "treasure");
-    const to = nbs.sort((a, b) => depth[b]! - depth[a]!)[0];
-    if (to === undefined || !stream(g, C[i]!, C[to]!, ed, seed + i * 31)) fixes.push(`고침: 방 ${r.id} 물줄기가 흘러갈 이웃 굴(입구·보스·보물 방이 아닌)이 없어 웅덩이로 지었다.`);
+    // 보스·보물 방이 아닌 이웃을 먼저(깊은 쪽부터), 없으면 보스·보물 방까지 흐른다.
+    const side = (j: number) => rooms[j]!.role === "boss" || rooms[j]!.role === "treasure" ? 1 : 0;
+    const nbs = streamTo(i).sort((a, b) => side(a) - side(b) || depth[b]! - depth[a]!);
+    if (!nbs.some((to) => stream(g, C[i]!, C[to]!, ed, seed + i * 31))) fixes.push(`고침: 방 ${r.id} 물줄기를 이웃 굴까지 그을 길이 짧거나 막혀 마른 바닥으로 두었다.`);
   });
   // 늪: 8칸 미만 외톨이 물 조각은 마른 땅으로
   if (profile.id === "swamp") dropSmallLiquid(g, 8);
+  // 도달 고치기: 입구 심에서 마른 바닥(다리 포함)으로 닿지 않는 방은 가장 가까운 닿는 칸과 곧은 길로 잇는다(그 길의 액체는 걷어 낸다).
+  // 벽 띠·물이 길을 끊은 판이 compose 의 «입구에서 걸어 닿지 않는 방»으로 짓기 전체가 실패했다(2026-10-29).
+  for (let round = 0; round < rooms.length; round += 1) {
+    const walk = (i: number) => g.floor[i] === 1 && (!g.liquid[i] || g.bridge[i] === 1);
+    const seen = new Uint8Array(W * H); const q = [g.idx(ec.x, ec.y)]; seen[q[0]!] = 1;
+    for (let k = 0; k < q.length; k += 1) {
+      const c = q[k]!, x = c % W, y = (c - x) / W;
+      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) { if (!g.inb(x + dx, y + dy)) continue; const n = g.idx(x + dx, y + dy); if (!seen[n] && walk(n)) { seen[n] = 1; q.push(n); } }
+    }
+    const lost = rooms.map((_, i) => i).filter((i) => { for (let c = 0; c < W * H; c += 1) if (g.roomAt[c] === i && seen[c]) return false; return true; });
+    if (!lost.length) break;
+    const i = lost[0]!, c = C[i]!;
+    let best = -1, bd = Infinity;
+    for (let n = 0; n < W * H; n += 1) if (seen[n]) { const x = n % W, y = (n - x) / W; if (entLock(x, y) && g.roomAt[n] !== 0) continue; const d = (x - c.x) ** 2 + (y - c.y) ** 2; if (d < bd) { bd = d; best = n; } }
+    if (best < 0) break;
+    const bx = best % W, by = (best - bx) / W, len = Math.ceil(Math.hypot(bx - c.x, by - c.y) * 1.5) || 1;
+    for (let s2 = 0; s2 <= len; s2 += 1) {
+      const x = Math.round(c.x + (bx - c.x) * s2 / len), y = Math.round(c.y + (by - c.y) * s2 / len);
+      for (let dy = -1; dy <= 1; dy += 1) for (let dx = -1; dx <= 1; dx += 1) {
+        if (Math.abs(dx) + Math.abs(dy) > 1 || !g.inb(x + dx, y + dy) || x + dx < MARGIN || y + dy < MARGIN + 4 || x + dx >= W - MARGIN || y + dy >= H - MARGIN) continue;
+        const n = g.idx(x + dx, y + dy);
+        if (!g.floor[n]) { g.floor[n] = 1; g.roomAt[n] = -1; }
+        g.liquid[n] = 0;
+      }
+    }
+    fixes.push(`고침: 방 ${rooms[i]!.id} 이 입구에서 걸어 닿지 않아(벽·물이 길을 끊음) 가장 가까운 닿는 굴과 곧은 길로 이었다.`);
+  }
   // ---- 출력 ----
   const placed: PlacedRoom[] = rooms.map((r, i) => {
     const b = bounds(lobeSets[i]!);

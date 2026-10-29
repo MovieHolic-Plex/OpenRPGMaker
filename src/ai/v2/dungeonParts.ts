@@ -97,7 +97,7 @@ export function dungeonParts(theme: string): DungeonPartsOut {
     connections: "links 로 방 id 끼리 직접(고리 = 닫히는 길 하나 더), 또는 connections: linear 한 줄 · branch 갈래 · loop 고리 · hub 가운데 방에서 사방",
     entrance: "entrance: south·north·west·east — 입구 방(at 없으면 그 쪽 끝). 숲·늪은 그 쪽 맵 끝으로 나가는 길이 출구",
     examples: DUNGEON_DESIGN_EXAMPLES,
-    note: "예시는 뼈대가 서로 다른 참고일 뿐 — 베끼지 말고 요청(무엇이 사는 굴인지, 어디가 위험한지, 무엇을 숨겼는지)에 맞게 방 수·자리·모양·물·길을 새로 짠다. 같은 게임의 다른 던전과도 입구 쪽·연결 모양을 다르게.",
+    note: "방 수는 굴의 크기·요청에 맞게 네가 정한다(보통 작은 굴 3~4 · 보통 5~7 · 큰 굴 8~10 — 입구·보스 둘만 잇는 일자 굴은 걸을 거리가 없다). 예시는 뼈대가 서로 다른 참고일 뿐 — 베끼지 말고 요청(무엇이 사는 굴인지, 어디가 위험한지, 무엇을 숨겼는지)에 맞게 방 수·자리·모양·물·길을 새로 짠다. 같은 게임의 다른 던전과도 입구 쪽·연결 모양을 다르게.",
   };
 }
 
@@ -119,12 +119,16 @@ export function createDungeonPartsVerb(env: PiAssistantV2Env): PiToolShape {
   const pictures = new Map<string, string>();
   return {
     name: "dungeon_parts", label: "던전 재료 보기", concurrency: "shared",
-    description: "던전·동굴 층을 직접 설계(make_place spec.dungeonDesign)하기 전에 부른다. 그 테마의 방 모양·역할·물·특징·잇는 모양 어휘와, 뼈대가 서로 다른 설계 예시 넷, 그 예시를 지금 빌더로 실제로 지은 1배 그림을 돌려준다. 예시는 참고일 뿐 — 요청에 맞게 방 수·자리·모양·길을 새로 짠다.",
+    description: "던전·동굴 층을 직접 설계(make_place spec.dungeonDesign)하기 전에 부른다. 그 테마의 방 모양·역할·물·특징·잇는 모양 어휘와, 뼈대가 서로 다른 설계 예시 넷(그중 둘은 지금 빌더로 실제로 지은 그림과 함께)을 돌려준다. 예시는 참고일 뿐 — 요청에 맞게 방 수·자리·모양·길을 새로 짠다.",
     parameters: { type: "object", properties: { theme: { type: "string", description: "던전 테마 낱말 — 예: 동굴, 화산, 마계, 숲, 지하묘지" } }, required: ["theme"] },
     async execute(_id, params) {
       const out = dungeonParts(String((params as { theme?: string }).theme ?? "cave"));
       const result = text({ ok: true, ...out, how: "make_place({spec:{type:'cave'|'dungeon', name, theme, dungeonDesign:{entrance, rooms:[{id, role, size, shape, dir?, at, water?, features?}], links:[{from,to,kind?}]}}}). 방마다 at 을 서로 다르게, 입구 하나·보스 하나. 함수는 방을 더하거나 고르지 않고 겹침·길·도달·크기 모순만 고쳐 「고침:」으로 알린다." });
-      const pics = out.theme === "labyrinth" ? [] : DUNGEON_DESIGN_EXAMPLES;
+      // 그림은 넷 중 둘만(게임마다 다른 둘) — Gemini(argon·flash)는 큰 전맵 그림 넷을 받은 바로 다음 차례에 제공자 오류(«Sorry, something went wrong»)나
+      // 글로 적은 tool_call 을 자주 냈다(2026-10-29 실조수 6판 중 4판). 설계 넷은 글로 모두 준다.
+      const h = [...`${(env.ctx.project as { meta?: { id?: string } }).meta?.id ?? ""}|${out.theme}`].reduce((a, c) => (Math.imul(a, 31) + c.charCodeAt(0)) >>> 0, 7);
+      const n = DUNGEON_DESIGN_EXAMPLES.length;
+      const pics = out.theme === "labyrinth" ? [] : [DUNGEON_DESIGN_EXAMPLES[h % n]!, DUNGEON_DESIGN_EXAMPLES[(h + 2) % n]!];
       for (const ex of pics) {
         const key = `${out.theme}:${ex.name}`;
         let url = pictures.get(key);

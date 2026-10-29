@@ -1,6 +1,7 @@
 // 설계한 던전(dungeonDesign)을 지금 빌더로 지어 1배 그림·고친 것 목록을 뽑는다(모델 없음).
 //   bun scripts/qa/assistant-v2/dungeonDesign.mts <out dir> [theme...]
 // 예시 설계 넷 × 테마 + 설계 없는 판(옛 함수 배치) 하나. 결과 out/<theme>-<example>.png, out/report.json.
+// DD_DESIGN=<설계 json 파일> 이면 그 설계 하나를 DD_TRIES(기본 6)개 씨앗(variety)으로 짓는다 — 실조수 판에서 실패한 설계 재현용.
 import fs from "node:fs";
 import path from "node:path";
 import { createBlankProject } from "../../../src/project/defaults/blankProject.ts";
@@ -15,7 +16,9 @@ if (!out) throw Error("dungeonDesign <out dir> [theme...]");
 fs.mkdirSync(out, { recursive: true });
 const rows: Record<string, unknown>[] = [];
 for (const theme of themes.length ? themes : ["cave"]) {
-  for (const ex of [...DUNGEON_DESIGN_EXAMPLES, { name: "nodesign", ko: "설계 없음", design: undefined }]) {
+  const one = process.env.DD_DESIGN ? JSON.parse(fs.readFileSync(process.env.DD_DESIGN, "utf8")) : undefined;
+  const list = one ? Array.from({ length: Number(process.env.DD_TRIES ?? 6) }, (_, i) => ({ name: `given${i}`, ko: "주어진 설계", design: one })) : [...DUNGEON_DESIGN_EXAMPLES, { name: "nodesign", ko: "설계 없음", design: undefined }];
+  for (const ex of list) {
     const project = createBlankProject();
     const ctx = { project, currentMapId: project.startMapId, assistantRun: true } as never as { project: typeof project; currentMapId: string };
     const spec = { type: theme === "cave" ? "cave" : "dungeon", name: `${theme} ${ex.name}`, theme, variety: `qa|${theme}|${ex.name}`, ...(ex.design ? { dungeonDesign: ex.design } : {}) } as PlaceSpec;
