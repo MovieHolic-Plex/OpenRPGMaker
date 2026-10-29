@@ -5,7 +5,7 @@
  *   - 1층 「기사와 기계의 싸움터」: 들어서면 파수 기계가 심문회 기사를 쳐 내는 장면 → 그 기계가 필드 적으로 남는다.
  *     다친 기사(새라의 동료)·별빛 결정·남쪽 방 빛나방·서고 관측 일지.
  *   - 2층 「갈라진 회랑」: author_party_split — 발판이 꺼지며 카엘·새라(서쪽 나무 발판) / 엘레나(동쪽 서고)로 갈린다.
- *     카엘 쪽 톱니 레버가 엘레나 쪽 쇠창살을, 엘레나 쪽 거울 손잡이가 카엘 쪽 쇠창살을 연다. 둥근 방 박쥐.
+ *     카엘 쪽 벽 손잡이가 엘레나 쪽 쇠창살을, 엘레나 쪽 거울 손잡이가 카엘 쪽 쇠창살을 연다. 둥근 방 박쥐.
  *   - 3층 「거울의 층」: author_map_puzzle mirror_beam_refraction 이 4층 계단을 막는다. 거미·회로뱀.
  *   - 4층 「렌즈 대기실」(B11): 어둠(place_field_obstacle dark) 속 관에서 이리스가 깨어난다. 일지(configure_story_journal)의
  *     지워진 줄을 카엘이 읽어 주면 기술이 돌아온다. 이리스 손끝 빛이 서쪽 골방의 일지 쪽 둘을 드러낸다.
@@ -14,7 +14,6 @@
  */
 import { charsetFrameIndex } from "@/assets/easyrpgRtp";
 import { isPassable } from "@/project/collision";
-import { objGraphic } from "@/editor/tools/puzzleKit";
 import type { Command, Condition, EventPage, GameEvent, GameMap, Project } from "@/project/types";
 import { FS_NAMES } from "../fallenStarStory";
 
@@ -49,7 +48,6 @@ const SW_T1_LOG = "sw_fs2_t1_log_read";
 const SPLIT = "fs2t2";
 const SW_T2_SPLIT = `${SPLIT}_split`;
 const SW_T2_DONE = `${SPLIT}_done`;
-const SW_T2_TALK = "sw_fs2_t2_split_talk";
 const SW_T3_ARRIVE = "sw_fs2_t3_arrive";
 const SW_T3_SOLVED = "sw_fs2_t3_mirror_solved";
 const SW_T4_ARRIVE = "sw_fs2_t4_arrive";
@@ -62,7 +60,6 @@ const SW_BE_WELL = "sw_fs2_iris_be_well";
 export const FS2_SW_STOP_B11 = "sw_fs2_release_stop_b11";
 
 const SKILL_RAPID = "skill_gunner_rapid_fire";
-const IRIS_RELAY_CLASS = "class_fs2_iris_relay";
 const SKILL_SHOT = "skill_gunner_shot";
 const SKILL_SNIPE = "skill_gunner_snipe";
 export const FS2_SKILL_FINGERLIGHT = "skill_fs2_iris_fingerlight";
@@ -113,7 +110,7 @@ const fadeOut = (ms = 1200): Command => m2("m2-202-screen-effect", { effect: "fa
 const fadeIn = (ms = 900): Command => m2("m2-202-screen-effect", { effect: "fadeIn", value: "", durationMs: ms });
 const camTo = (eventId: string, durationMs = 1100, zoom?: number): Command =>
   m2("m2-201-camera-control", { mode: "panTo", targetEventId: eventId, durationMs: String(durationMs), wait: "true", ...(zoom ? { zoom: String(zoom) } : {}) });
-const camBack = (durationMs = 600): Command => m2("m2-201-camera-control", { mode: "return", durationMs: String(durationMs), wait: "true" });
+const camBack = (durationMs = 600, zoom?: number): Command => m2("m2-201-camera-control", { mode: "return", durationMs: String(durationMs), wait: "true", ...(zoom ? { zoom: String(zoom) } : {}) });
 const cutBegin = (): Command => ({ kind: "cutsceneControl", mode: "begin", skippable: true } as unknown as Command);
 const cutEnd = (): Command => ({ kind: "cutsceneControl", mode: "end" } as unknown as Command);
 const cutLabel = (): Command => ({ kind: "label", name: "cutscene_end" } as unknown as Command);
@@ -145,12 +142,27 @@ function M(project: Project, id: string): GameMap {
   return map;
 }
 /** 도구를 부를 때마다 맵 객체가 바뀐다 — 이벤트는 그때그때 맵을 다시 찾아 붙인다. */
+let EXEC: Exec | null = null;
+/** 이벤트는 조수 도구(upsert_event)로 짓는다 — 같은 id 면 페이지째 바꾼다. */
 function addEv(project: Project, mapId: string, id: string, name: string, at: Cell, pages: EventPage[]): GameEvent {
+  if (!EXEC) throw new Error("[fallen-star tower] exec 가 없다");
+  const exists = M(project, mapId).events.some((e) => e.id === id);
+  // (0,1) = 「자리 상관없는 자동·병렬 이벤트」 — 바닥 곁 빈 벽 칸에 둔다(구석 허공은 도구가 받지 않는다).
+  const spot = at.x === 0 && at.y === 1 && !exists ? autoSpot(project, mapId) : at;
+  EXEC(project, "upsert_event", { mapId, ...(exists ? { replacePages: true } : {}), event: { id, name, x: spot.x, y: spot.y, trigger: { kind: "action" }, commands: [], pages } });
+  const out = ev(project, mapId, id);
+  if (out.x !== spot.x || out.y !== spot.y) throw new Error(`[fallen-star tower] ${mapId} ${id} 를 (${spot.x},${spot.y}) 에 두려 했는데 도구가 (${out.x},${out.y}) 로 옮겼다`);
+  return out;
+}
+/** 자동 이벤트 자리 — 바닥과 맞닿은 빈 벽 칸(위에서부터). */
+function autoSpot(project: Project, mapId: string): Cell {
   const map = M(project, mapId);
-  map.events = map.events.filter((e) => e.id !== id);
-  const event = { id, name, x: at.x, y: at.y, trigger: { kind: "action" }, commands: [], pages } as unknown as GameEvent;
-  map.events.push(event);
-  return event;
+  for (let y = 0; y < map.height; y += 1) for (let x = 0; x < map.width; x += 1) {
+    const c = { x, y };
+    if (walkable(project, mapId, c) || !freeOfEvents(project, mapId, c)) continue;
+    if ([[1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => walkable(project, mapId, { x: x + dx!, y: y + dy! }))) return c;
+  }
+  throw new Error(`[fallen-star tower] ${mapId} 에 자동 이벤트 자리가 없다`);
 }
 function ev(project: Project, mapId: string, id: string): GameEvent {
   const e = M(project, mapId).events.find((x) => x.id === id);
@@ -177,16 +189,6 @@ function firstOk<T>(cands: Cell[], fn: (c: Cell) => T): { at: Cell; out: T } | n
 }
 function stamp(project: Project, exec: Exec, mapId: string, kitId: string, at: Cell): boolean {
   try { exec(project, "stamp_object", { objectId: `kit:beodeul_city/${kitId}`, mapId, x: at.x, y: at.y }); return true; } catch { return false; }
-}
-/** 버들항 키트 칸 — 바꿔 끼울 그림(레버 내림/올림 같은 1칸 키트). */
-function kitTile(project: Project, kitId: string): { tile: number; layer: "lower" | "upper" } {
-  const ts = project.tilesets.beodeul_city as unknown as { structureKits?: { id: string; rows: { tiles?: number[]; upperTiles?: number[] }[] }[] } | undefined;
-  const kit = ts?.structureKits?.find((k) => k.id === kitId);
-  const up = kit?.rows[0]?.upperTiles?.[0];
-  const lo = kit?.rows[0]?.tiles?.[0];
-  if (typeof up === "number" && up >= 0) return { tile: up, layer: "upper" };
-  if (typeof lo === "number" && lo >= 0) return { tile: lo, layer: "lower" };
-  throw new Error(`[fallen-star tower] 키트 칸이 없다: ${kitId}`);
 }
 
 // ════════════════════════════════════════════════════════════════════
@@ -248,14 +250,6 @@ function towerData(project: Project, exec: Exec): void {
   ] as const) {
     exec(project, "upsert_troop", { troop: { id, name, enemyIds: [...members], previewBackgroundResourceId: "battle-scenery-cave", backdropLayers: TOWER_LAYERS } });
   }
-  // 이리스 「회수 대기」 직업 — 성광 사수와 같되 광선 조준·광자 연사·충전 광선포를 직업이 주지 않는다(일지를 다시 읽어야 돌아온다).
-  // 전격탄은 이리스 몸에 붙은 기술(배우 습득)이라 남는다.
-  const gunner = project.database.classes.find((c) => c.id === "class_gunner");
-  if (!gunner) throw new Error("[fallen-star tower] class_gunner 가 없다");
-  const relay = { ...structuredClone(gunner), id: IRIS_RELAY_CLASS, learnedSkills: gunner.learnedSkills.filter((l) => ![SKILL_SHOT, SKILL_RAPID, SKILL_SNIPE].includes(l.skillId)) } as typeof gunner;
-  delete (relay as { promotions?: unknown }).promotions;
-  project.database.classes = [...project.database.classes.filter((c) => c.id !== IRIS_RELAY_CLASS), relay];
-  gunner.promotions = [...(gunner.promotions ?? []).filter((pr) => pr.toClassId !== IRIS_RELAY_CLASS), { toClassId: IRIS_RELAY_CLASS, requires: { switchId: SW_IRIS_WAKE } }];
   // 이리스 기술 — 손끝 빛(필드 기술, place_field_obstacle 이 공통 이벤트를 붙인다)과 「잘 지내」(일지 쪽 셋을 다 읽으면).
   exec(project, "upsert_skill", { skill: {
     id: FS2_SKILL_BE_WELL, name: "잘 지내", scope: "allAllies", type: "normal", power: 60, variance: 10, hitRate: 100,
@@ -337,7 +331,8 @@ function floorOne(project: Project, exec: Exec): void {
       route("ev_fs2_t1_stage_knight", [{ kind: "turn", dir: "right" }, ...walk(["right", "right", "down"])]),
       wait(300),
       emote("ev_fs2_t1_stage_machine", "exclamation", 800),
-      route("ev_fs2_t1_stage_machine", [{ kind: "turn", dir: "right" }]),
+      // 기계가 홀 가운데 자리(필드 적이 서는 칸)로 한 걸음 물러나 선다 — 장면이 끝나고 필드 적으로 바뀔 때 칸이 튀지 않게.
+      route("ev_fs2_t1_stage_machine", [{ kind: "move", dir: "up" }, { kind: "turn", dir: "down" }]),
       wait(400),
       camBack(700),
       say(SARAH, "기계가 기사를 쳤어.\n…저것들한텐 우리도 기사도 똑같나 봐."),
@@ -406,121 +401,41 @@ const T2 = {
 };
 
 function floorTwo(project: Project, exec: Exec): void {
-  ensureSwitch(project, SW_T2_TALK, "B10: 갈라진 뒤 벽 너머 대화");
   for (const c of [T2.arrive, T2.westPlug, T2.westDoor, T2.eastPlug, T2.eastDoor, T2.westStart, T2.eastStart, T2.rejoin, T2.rejoinPlug]) mustWalk(project, FS2_T2, c, "2층");
-  // 두 칸 틈의 윗칸을 기둥으로 막아 한 칸 길목으로(파티 분할 도구는 지형을 칠하지 않는다).
-  for (const c of [T2.westPlug, T2.eastPlug]) {
-    if (!stamp(project, exec, FS2_T2, "bd-pick-aqueduct-sewer-valve-wheel", { x: c.x, y: c.y - 1 }) || walkable(project, FS2_T2, c)) {
-      throw new Error(`[fallen-star tower] 2층 틈 (${c.x},${c.y}) 을 밸브 기둥으로 못 막았다`);
-    }
-  }
-  // 레버(벽 레버 키트) — 벽 앞면 칸. 그 아래 바닥에 서서 위를 보고 당긴다.
-  const leverDown = kitTile(project, "bd-dg-lever-down");
-  const leverUp = kitTile(project, "bd-dg-lever-up");
-  for (const c of [T2.westLever, T2.eastLever]) {
-    if (walkable(project, FS2_T2, c) || !walkable(project, FS2_T2, { x: c.x, y: c.y + 1 })) throw new Error(`[fallen-star tower] 2층 레버 자리 (${c.x},${c.y}) 가 벽 앞면이 아니다`);
-    // 벽 레버 키트는 벽 앞면 칸에 건다 — stamp_object 는 발이 바닥이어야 해서 칸을 직접 쓴다(키트 그림 그대로).
-    const map = M(project, FS2_T2);
-    const layer = (map as unknown as Record<string, number[]>)[leverDown.layer === "upper" ? "upperTiles" : "lowerTiles"];
-    if (!layer) throw new Error("[fallen-star tower] 2층 레버 층이 없다");
-    layer[c.y * map.width + c.x] = leverDown.tile;
-  }
-  // 전환 구슬 자리 — 받침 위 수정(1×2).
-  for (const c of [T2.westSwitch, T2.eastSwitch]) mustWalk(project, FS2_T2, c, "2층 전환 구슬");
-
+  // 두 칸 높이 옆 틈마다 쇠창살 하나(doorHeight 2) · 벽걸이 손잡이(leverLook wall) · 받침 위 수정(switchLook pedestal) — 모두 칩셋 키트 그림.
   exec(project, "author_party_split", {
     id: SPLIT, mapId: FS2_T2, splitAt: T2.arrive,
+    splitTrigger: "auto", splitWhenSwitchId: SW_VALEN_MET, splitQuake: true, fadeOnSplit: true,
+    gateLook: "portcullis", leverLook: "wall", switchLook: "pedestal",
     groups: [
       { name: "카엘·새라", actorIds: [HERO, SARAH_ID], x: T2.westStart.x, y: T2.westStart.y, switchAt: T2.westSwitch },
       { name: "엘레나", actorIds: [ELENA_ID], x: T2.eastStart.x, y: T2.eastStart.y, switchAt: T2.eastSwitch },
     ],
     levers: [
-      { lever: T2.westLever, door: T2.eastDoor, name: "동쪽 쇠창살" },
-      { lever: T2.eastLever, door: T2.westDoor, name: "서쪽 쇠창살" },
+      { lever: T2.westLever, door: T2.eastDoor, doorHeight: 2, name: "동쪽 쇠창살",
+        text: "벽에 쇠 손잡이가 박혀 있다.\n쇠줄이 동쪽 벽 속으로 이어진다.", prompt: "손잡이를 내릴까?", pullLabel: "내린다",
+        pullText: "끼긱— 손잡이가 내려가고 쇠줄이 감긴다.\n벽 너머 동쪽에서 쇠창살 올라가는 소리.",
+        pullLines: [{ speaker: ELENA, text: "(벽 너머) 열렸어! 카엘, 들려?\n이쪽 창살이 올라갔어." }, { speaker: KAEL, text: "들려! 거울은?" }],
+        doneText: "손잡이가 끝까지 내려가 있다.", doorText: "굵은 쇠창살이 길을 막고 있다.\n반대편 어딘가의 장치로 올라갈 것 같다." },
+      { lever: T2.eastLever, door: T2.westDoor, doorHeight: 2, name: "서쪽 쇠창살",
+        text: "벽에 박힌 손잡이다. 쇠줄이 천창 거울로 이어진다.\n내리면 빛이 꺾여 서쪽으로 갈 것 같다.", prompt: "손잡이를 내릴까?", pullLabel: "내린다",
+        pullText: "거울이 돌아간다. 꺾인 빛줄기가 벽 틈으로 빠져나간다.\n서쪽에서 쇠창살 자물쇠가 철컥 풀리는 소리.",
+        pullLines: [{ speaker: ELENA, text: "빛 갔어? 카엘, 그쪽 문에 닿았어?" }, { speaker: SARAH, text: "(벽 너머) 닿았다. 창살이 올라가." }],
+        doneText: "거울이 서쪽을 향해 있다.", doorText: "굵은 쇠창살이 길을 막고 있다.\n반대편 어딘가의 장치로 올라갈 것 같다." },
     ],
     rejoin: T2.rejoin,
+    splitLines: [{ speaker: ELENA, text: "바닥 돌판이 들썩여.\n…밑이 텅 빈 소리가 나." }],
     splitText: "발밑 판이 덜컹 꺼진다! 양쪽 날개로 쇠창살이 내려꽂힌다.",
+    afterSplitLines: [
+      { speaker: SARAH, text: "…갈렸군. 엘레나는 반대쪽 날개야." },
+      { speaker: ELENA, text: "(벽 너머) 카엘, 들려? 내가 이쪽 거울을 돌릴게.\n빛이 그쪽 문에 닿으면 말해." },
+      { speaker: KAEL, text: "들려! 우리도 이쪽 손잡이를 내려 볼게.\n북쪽 벽에 손잡이가 있어." },
+      { text: "수정 받침을 조사하면 엘레나 쪽으로 조작을 바꿀 수 있다." },
+    ],
+    switchIdleText: "수정 받침이 희미하게 울린다.\n벽 너머 동료의 숨소리가 들리는 것 같다.",
     rejoinText: "다시 모였다.",
+    rejoinLines: [{ speaker: ELENA, text: "거울이 진짜로 됐네. 빛이 그쪽까지 갔어." }, { speaker: SARAH, text: "기계보다 손발이 잘 맞는군.\n…올라가자." }],
   });
-
-  // 도구가 지은 이벤트를 탑에 맞게 다듬는다 ─────────────────────────
-  const [lever1, lever2] = [ev(project, FS2_T2, `${SPLIT}_lever_1`), ev(project, FS2_T2, `${SPLIT}_lever_2`)];
-  const tileSwap = (c: Cell, tile: number, layer: string): Command => ({ kind: "changeTile", mapId: FS2_T2, layer, x: c.x, y: c.y, tile } as unknown as Command);
-  const reword = (lever: GameEvent, at: Cell, look: string, ask: string, pulled: string, after: Command[], idle: string) => {
-    const [p1, p2] = lever.pages ?? [];
-    if (!p1 || !p2) throw new Error("[fallen-star tower] 레버 페이지가 없다");
-    p1.graphic = { transparent: true } as EventPage["graphic"];
-    p2.graphic = { transparent: true } as EventPage["graphic"];
-    const choice = (p1.commands as unknown as Rec[]).find((c) => c.kind === "choices") as { prompt: string; options: { text: string; branch: Command[] }[] } | undefined;
-    if (!choice) throw new Error("[fallen-star tower] 레버 선택지가 없다");
-    choice.prompt = ask;
-    choice.options[0]!.text = "돌린다";
-    const pull = choice.options[0]!.branch;
-    const i = pull.findIndex((c) => c.kind === "text");
-    pull.splice(i, 1, tileSwap(at, leverUp.tile, leverUp.layer), narrate(pulled), ...after);
-    p1.commands = [narrate(look), choice as unknown as Command];
-    p2.commands = [narrate(idle)];
-  };
-  reword(lever1, T2.westLever, "벽에 톱니바퀴 손잡이가 박혀 있다.\n쇠줄이 동쪽 벽 속으로 이어진다.", "손잡이를 돌릴까?",
-    "끼긱, 끼긱. 톱니가 맞물려 돈다.\n벽 너머 동쪽에서 쇠창살 올라가는 소리.",
-    [say(ELENA, "(벽 너머) 열렸어! 카엘, 들려?\n이쪽 창살이 올라갔어."), say(KAEL, "들려! 거울은?")],
-    "손잡이가 끝까지 돌아가 있다.");
-  reword(lever2, T2.eastLever, "벽에 박힌 거울 손잡이다.\n돌리면 천창 빛이 꺾여 서쪽으로 갈 것 같다.", "거울을 돌릴까?",
-    "거울이 돌아간다. 꺾인 빛줄기가 벽 틈으로 빠져나간다.\n서쪽에서 쇠창살 자물쇠가 철컥 풀리는 소리.",
-    [say(ELENA, "빛 갔어? 카엘, 그쪽 문에 닿았어?"), say(SARAH, "(벽 너머) 닿았다. 창살이 올라가.")],
-    "거울이 서쪽을 향해 있다.");
-  // 쇠창살 문 — RTP 철문 대신 같은 시트의 쇠창살(5번).
-  for (const id of [`${SPLIT}_door_1`, `${SPLIT}_door_2`]) {
-    const door = ev(project, FS2_T2, id);
-    for (const pg of door.pages ?? []) {
-      const g = pg.graphic as { sprite?: unknown; direction?: Dir } | undefined;
-      if (g?.sprite) pg.graphic = objGraphic("object1", 5, g.direction ?? "down");
-    }
-    door.pages![0]!.commands = [narrate("굵은 쇠창살이 길을 막고 있다.\n반대편 어딘가의 장치로 올라갈 것 같다.")];
-  }
-  // 전환 구슬 — 받침 위 수정을 찍고 이벤트는 투명하게.
-  for (const [key, c] of [["a", T2.westSwitch], ["b", T2.eastSwitch]] as const) {
-    const stamped = stamp(project, exec, FS2_T2, "bd-pick-dungeon-theme-crystal-pedestal", { x: c.x, y: c.y - 1 });
-    const orb = ev(project, FS2_T2, `${SPLIT}_switch_${key}`); // 도구 호출 뒤에 다시 찾는다(맵 객체가 바뀐다)
-    if (stamped) for (const pg of orb.pages ?? []) pg.graphic = { transparent: true } as EventPage["graphic"];
-    const p1 = orb.pages?.[1];
-    if (p1) {
-      const fk = (p1.commands as unknown as Rec[])[0] as { else?: Command[] } | undefined;
-      if (fk?.else) fk.else = [narrate("수정 받침이 희미하게 울린다.\n벽 너머 동료의 숨소리가 들리는 것 같다.")];
-      p1.commands = [narrate("수정에 손을 대면 벽 너머 동료와 말이 닿는다."), ...(p1.commands as Command[])];
-    }
-  }
-  // 갈라지는 칸 = 도착 칸 — 계단에서 내려서자마자 갈린다(우회로 없음). 첫 대사·진동을 앞에 붙인다.
-  const split = ev(project, FS2_T2, `${SPLIT}_split`);
-  const sp1 = split.pages![0]!;
-  sp1.trigger = { kind: "auto" } as EventPage["trigger"];
-  sp1.conditions = [sw(SW_VALEN_MET)];
-  // 컷신 표시(건너뛰기)는 두지 않는다 — 파티 불러오기가 맵을 다시 읽어 컷신 끝 명령까지 가지 않는다.
-  sp1.commands = [
-    wait(500),
-    say(ELENA, "바닥 돌판이 들썩여.\n…밑이 텅 빈 소리가 나."),
-    se("cc0-se-osx-metal-03"), shake(6, 700), flash("white", 200),
-    ...(sp1.commands as Command[]).flatMap((c) => {
-      const r = c as unknown as Rec;
-      if (r.kind === "storeParty" && (r.partySetId as string).endsWith("_a")) return [fadeOut(500), c];
-      return [c];
-    }),
-  ];
-  // 갈린 뒤 벽 너머 대화(한 번).
-  addEv(project, FS2_T2, "ev_fs2_t2_talk", "벽 너머", { x: 0, y: 1 }, [
-    page("ev_fs2_t2_talk_idle", "대기", [], [], { priority: "below" }),
-    page("ev_fs2_t2_talk_run", "벽 너머", [sw(SW_T2_SPLIT)], [
-      // 갈라질 때 화면을 어둡게 했다 — 파티 불러오기(맵 다시 읽기) 뒤 명령은 이어지지 않으므로 여기서 밝힌다.
-      fadeIn(700),
-      wait(400),
-      say(SARAH, "…갈렸군. 엘레나는 반대쪽 날개야."),
-      say(ELENA, "(벽 너머) 카엘, 들려? 내가 이쪽 거울을 돌릴게.\n빛이 그쪽 문에 닿으면 말해."),
-      say(KAEL, "들려! 우리도 이쪽 톱니를 돌려 볼게.\n북쪽 벽에 손잡이가 있어."),
-      sys("수정 받침을 조사하면 엘레나 쪽으로 조작을 바꿀 수 있다."),
-      setSw(SW_T2_TALK),
-    ], { trigger: { kind: "auto" }, priority: "below" }),
-    page("ev_fs2_t2_talk_done", "끝", [sw(SW_T2_TALK)], [], { priority: "below" }),
-  ]);
   // 합류 칸 곁 칸 — 갈린 동안만 막아 합류 칸을 반드시 밟게 한다.
   addEv(project, FS2_T2, "ev_fs2_t2_rejoin_plug", "합류 길목", T2.rejoinPlug, [
     page("ev_fs2_t2_rejoin_plug_open", "열림", [], [], { priority: "below" }),
@@ -535,22 +450,6 @@ function floorTwo(project: Project, exec: Exec): void {
     page("ev_fs2_t2_back_wait", "갈린 동안", [sw(SW_T2_SPLIT)], [say(KAEL, "엘레나를 두고 내려갈 순 없어.")], { trigger: { kind: "playerTouch" }, priority: "below" }),
     ...backPages.map((pg) => ({ ...structuredClone(pg), id: `${pg.id}_after`, conditions: [sw(SW_T2_DONE)] })),
   ];
-  // 합류 대사 — 도구 기본 한 줄 뒤에 짧게.
-  const rejoin = ev(project, FS2_T2, `${SPLIT}_rejoin`);
-  if (!JSON.stringify(rejoin.pages).includes("다시 모였다.")) throw new Error("[fallen-star tower] 합류 대사가 없다");
-  const walkPages = (cmds: Command[]): void => {
-    for (const c of cmds) {
-      const r = c as unknown as Rec;
-      if (r.kind === "text" && r.body === "다시 모였다.") {
-        const i = cmds.indexOf(c);
-        cmds.splice(i + 1, 0, say(ELENA, "거울이 진짜로 됐네. 빛이 그쪽까지 갔어."), say(SARAH, "기계보다 손발이 잘 맞는군.\n…올라가자."));
-        return;
-      }
-      for (const k of ["then", "else"] as const) if (Array.isArray(r[k])) walkPages(r[k] as Command[]);
-    }
-  };
-  for (const pg of rejoin.pages ?? []) walkPages(pg.commands as Command[]);
-
   // 둥근 방 — 서리박쥐 떼(비계로 들어온 박쥐들), 계단은 피해 둔다.
   const bats = firstOk([{ x: 17, y: 11 }, { x: 18, y: 12 }, { x: 15, y: 11 }, { x: 17, y: 9 }], (c) => exec(project, "place_field_enemy", {
     mapId: FS2_T2, x: c.x, y: c.y, troopId: T_BATS, behavior: "chase", patrol: { length: 2, axis: "horizontal" },
@@ -575,33 +474,22 @@ function floorThree(project: Project, exec: Exec): void {
     gateEventId: "ev_fs2_sky_tower_f3_stair_next", solveSwitchId: SW_T3_SOLVED, title: "렌즈 거울",
     hintText: "(바닥 글) 첫 거울은 천창의 빛을 받고, 둘째 거울은 그 빛을 계단으로 보낸다.",
     reward: { itemId: "item_ether", gold: 150 },
+    // 프리셋 문구는 「태양 성소」 말투다 — 탑의 렌즈 거울로(rewordLines·renameObjects).
+    rewordLines: [
+      { from: "스르륵— 쨍! 서쪽 프리즘 거울을 45도 회전시키자 천창의 황금 태양빛이 동쪽 굴절 거울로 뻗어 나갔다!", to: "거울이 스르륵 돌아간다.\n천창 빛이 꺾여 북쪽 거울로 뻗는다." },
+      { from: "제1 프리즘 거울이 천창의 태양 빛줄기를 동쪽으로 반사하고 있다.", to: "첫 거울이 천창 빛을 북쪽 거울로 보내고 있다." },
+      { from: "동쪽 굴절 거울을 북쪽 성소 제단 각도로 맞췄다! 황금 빛줄기가 굴절되어 북쪽 암흑 결계를 직격한다!", to: "둘째 거울을 계단 쪽으로 돌렸다.\n빛줄기가 꺾여 서쪽 벽 계단에 꽂힌다." },
+      { from: "찬란한 태양 빛줄기가 북쪽 암흑 봉인을 산산이 정화하며 대성소 돌계단이 열렸다!", to: "계단을 막던 빛 막이 걷힌다.\n위층으로 가는 길이 열렸다." },
+      { from: "퍼즐 해독 보상! 「마력약」과(와) 150G를 획득했다!", to: "거울 받침 밑에서 「마력약」과 150G를 찾았다." },
+      { from: "동쪽 굴절 거울 기둥이다. 먼저 서쪽 천창 아래의 『제1 태양 프리즘 거울』을 돌려 빛줄기를 보내야 한다.", to: "둘째 거울이다. 아직 빛이 닿지 않는다.\n천창 아래 첫 거울부터 돌려야 한다." },
+      { from: "제2 굴절 거울이 황금 빛줄기를 북쪽 성소로 집중시키고 있다.", to: "둘째 거울이 빛을 계단으로 모으고 있다." },
+      { from: "태양 빛줄기로 정화된 대성소 마법진이다.", to: "빛 막이 걷힌 자리. 바닥 글자가 아직 따뜻하다." },
+      { from: "이 통로는 '렌즈 거울' 장치를 먼저 풀어야 열립니다.", to: "계단 위에 희미한 빛 막이 쳐져 있다.\n거울로 빛을 보내야 걷힐 것 같다." },
+    ],
+    renameObjects: [{ eventId: "ev_fs2_t3_mirror_mirror_1", name: "천창 아래 첫 거울" }, { eventId: "ev_fs2_t3_mirror_mirror_2", name: "계단 쪽 둘째 거울" }, { eventId: "ev_fs2_t3_mirror_mirror_seal", name: "빛 막 바닥 글" }],
   }));
   if (!done) throw new Error("[fallen-star tower] 3층 거울 퍼즐을 못 지었다");
-  // 프리셋 문구는 「태양 성소」 말투다 — 탑의 렌즈 거울로 고쳐 쓴다.
-  const rewrite: Record<string, string> = {
-    "스르륵— 쨍! 서쪽 프리즘 거울을 45도 회전시키자 천창의 황금 태양빛이 동쪽 굴절 거울로 뻗어 나갔다!": "거울이 스르륵 돌아간다.\n천창 빛이 꺾여 북쪽 거울로 뻗는다.",
-    "제1 프리즘 거울이 천창의 태양 빛줄기를 동쪽으로 반사하고 있다.": "첫 거울이 천창 빛을 북쪽 거울로 보내고 있다.",
-    "동쪽 굴절 거울을 북쪽 성소 제단 각도로 맞췄다! 황금 빛줄기가 굴절되어 북쪽 암흑 결계를 직격한다!": "둘째 거울을 계단 쪽으로 돌렸다.\n빛줄기가 꺾여 서쪽 벽 계단에 꽂힌다.",
-    "찬란한 태양 빛줄기가 북쪽 암흑 봉인을 산산이 정화하며 대성소 돌계단이 열렸다!": "계단을 막던 빛 막이 걷힌다.\n위층으로 가는 길이 열렸다.",
-    "퍼즐 해독 보상! 「마력약」과(와) 150G를 획득했다!": "거울 받침 밑에서 「마력약」과 150G를 찾았다.",
-    "동쪽 굴절 거울 기둥이다. 먼저 서쪽 천창 아래의 『제1 태양 프리즘 거울』을 돌려 빛줄기를 보내야 한다.": "둘째 거울이다. 아직 빛이 닿지 않는다.\n천창 아래 첫 거울부터 돌려야 한다.",
-    "제2 굴절 거울이 황금 빛줄기를 북쪽 성소로 집중시키고 있다.": "둘째 거울이 빛을 계단으로 모으고 있다.",
-    "태양 빛줄기로 정화된 대성소 마법진이다.": "빛 막이 걷힌 자리. 바닥 글자가 아직 따뜻하다.",
-    "이 통로는 '렌즈 거울' 장치를 먼저 풀어야 열립니다.": "계단 위에 희미한 빛 막이 쳐져 있다.\n거울로 빛을 보내야 걷힐 것 같다.",
-  };
-  const fix = (cmds: Command[]): void => {
-    for (const c of cmds) {
-      const r = c as unknown as Rec;
-      if (r.kind === "text" && typeof r.body === "string" && rewrite[r.body]) r.body = rewrite[r.body];
-      for (const k of ["then", "else", "branch", "cancelBranch"] as const) if (Array.isArray(r[k])) fix(r[k] as Command[]);
-      if (Array.isArray(r.options)) for (const o of r.options as { branch?: Command[] }[]) if (o.branch) fix(o.branch);
-    }
-  };
-  for (const e of M(project, FS2_T3).events) {
-    if (e.id.startsWith("ev_fs2_t3_mirror") || e.id === "ev_fs2_sky_tower_f3_stair_next") for (const pg of e.pages ?? []) fix(pg.commands as Command[]);
-  }
-  const names: Record<string, string> = { ev_fs2_t3_mirror_mirror_1: "천창 아래 첫 거울", ev_fs2_t3_mirror_mirror_2: "계단 쪽 둘째 거울", ev_fs2_t3_mirror_mirror_seal: "빛 막 바닥 글" };
-  for (const e of M(project, FS2_T3).events) if (names[e.id]) e.name = names[e.id]!;
+
   const left = JSON.stringify(M(project, FS2_T3).events.filter((e) => e.id.startsWith("ev_fs2_t3_mirror")).map((e) => [e.name, (e.pages ?? []).map((pg) => pg.commands)]));
   const stale = /.{0,40}(태양|성소|결계).{0,20}/u.exec(left);
   if (stale) throw new Error(`[fallen-star tower] 3층 거울 문구에 태양 성소 말투가 남았다: ${stale[0]}`);
@@ -635,11 +523,14 @@ function floorThree(project: Project, exec: Exec): void {
 // 4. 4층 「렌즈 대기실」 — B11 이리스 재회
 // ════════════════════════════════════════════════════════════════════
 
+/** 이리스의 관 — 동서로 누운 석관(닫힘 → 뚜껑이 밀린 열림). */
+const COFFIN_KIT = { closed: "bd-pick-dungeon-theme-sarcophagus-ew", open: "bd-pick-dungeon-theme-sarcophagus-ew-open" } as const;
+
 const T4 = {
   arrive: { x: 15, y: 22 },
-  coffin: { x: 15, y: 8 },          // 관 2×2 왼쪽 위 — (15..16, 8..9)
-  coffinFront: { x: 15, y: 10 },    // 관을 조사하는 칸(관 바로 아래)
-  iris: { x: 16, y: 10 },           // 깨어난 이리스가 서는 칸
+  coffin: { x: 15, y: 11 },         // 석관(동서 2×1) 왼쪽 — (15..16, 11). 바로 뒤(북쪽)가 큰 렌즈
+  coffinFront: { x: 15, y: 12 },    // 관을 조사하는 칸(관 바로 아래)
+  iris: { x: 17, y: 11 },           // 깨어난 이리스가 서는 칸(관 동쪽 곁)
   doorway: [{ x: 15, y: 13 }, { x: 16, y: 13 }],
   dark: { x: 14, y: 19 },
   alcovePlugs: [{ x: 10, y: 19 }, { x: 10, y: 20 }],
@@ -671,41 +562,41 @@ function floorFour(project: Project, exec: Exec): void {
   copyStair(project);
   for (const c of [T4.arrive, T4.coffinFront, T4.iris, ...T4.doorway, T4.dark, ...T4.alcovePlugs, T4.pageStar, T4.pageHand]) mustWalk(project, FS2_T4, c, "4층");
 
-  // 관(2×2)과 렌즈·장치.
-  if (!stamp(project, exec, FS2_T4, "bd-pick-aqueduct-sewer-coffin", T4.coffin)) throw new Error("[fallen-star tower] 4층 관을 못 놓았다");
-  firstOk([{ x: 12, y: 9 }, { x: 13, y: 9 }, { x: 17, y: 10 }], (c) => { if (!stamp(project, exec, FS2_T4, "bd-pick-wizard-tower-armillary", c)) throw new Error("x"); return true; });
-  firstOk([{ x: 14, y: 8 }, { x: 17, y: 8 }, { x: 14, y: 9 }], (c) => { if (!stamp(project, exec, FS2_T4, "bd-pick-dungeon-theme-crystal-pedestal", c)) throw new Error("x"); return true; });
+  // 렌즈 대기실 — 북쪽 벽 앞 큰 렌즈(등대 프레넬 렌즈), 그 앞 석관, 양옆 수정 받침·촛대, 벽에 별자리 지도. 모두 stamp_object.
+  if (!stamp(project, exec, FS2_T4, COFFIN_KIT.closed, T4.coffin)) throw new Error("[fallen-star tower] 4층 석관을 못 놓았다");
+  const placed = (kit: string, cands: Cell[]): Cell | null => firstOk(cands, (c) => { if (!stamp(project, exec, FS2_T4, kit, c)) throw new Error("x"); return true; })?.at ?? null;
+  const lens = placed("bd-pick-headland-lighthouse-lamp-lens", [{ x: 14, y: 7 }, { x: 15, y: 7 }]);
+  if (!lens) throw new Error("[fallen-star tower] 4층 렌즈를 못 놓았다");
+  const pedW = placed("bd-pick-dungeon-theme-crystal-pedestal", [{ x: 13, y: 9 }, { x: 12, y: 10 }, { x: 13, y: 10 }]);
+  const pedE = placed("bd-pick-dungeon-theme-crystal-pedestal", [{ x: 18, y: 11 }, { x: 19, y: 11 }, { x: 18, y: 10 }]);
+  const candW = placed("bd-pick-dungeon-theme-iron-candelabra", [{ x: 14, y: 8 }, { x: 14, y: 9 }, { x: 13, y: 7 }, { x: 12, y: 11 }]);
+  const candE = placed("bd-pick-dungeon-theme-iron-candelabra", [{ x: 18, y: 7 }, { x: 18, y: 8 }, { x: 19, y: 7 }, { x: 20, y: 10 }]);
+  placed("bd-pick-wizard-tower-starmap", [{ x: 17, y: 5 }, { x: 13, y: 5 }, { x: 18, y: 6 }, { x: 12, y: 6 }]);
 
-  // 조명 — 어둠 속 초록 렌즈·관 불빛. 어둠(place_field_obstacle dark)이 바탕을 0.82 로 깎는다.
-  exec(project, "set_lighting_volume", {
-    mapId: FS2_T4, applyMode: "map", ambient: 0.5, color: "#06140f",
-    sources: [
-      { id: "coffin", at: { x: 16, y: 9 }, radius: 3, intensity: 0.85, color: "#7dffc0", flicker: true },
-      { id: "lens", at: { x: 18, y: 7 }, radius: 3, intensity: 0.6, color: "#b6ffd8", flicker: false },
-      { id: "player", at: { kind: "player" }, radius: 2, intensity: 0.45, color: "#ffc070", flicker: true },
-    ],
-  });
-  // 어둠 — 이리스 손끝 빛(필드 기술)을 아는 파티가 들어서면 밝다.
+  // 조명 — 빛 웅덩이: 렌즈(가장 밝다)·석관·수정 받침 둘·촛대 둘·주인공 등불. 어둠 세기는 아래 dark 장애물이 0.62 로 잡는다(윤곽은 보이게).
+  const centre = (c: Cell | null, dx: number, dy: number): Rec | null => (c ? { x: c.x + dx, y: c.y + dy } : null);
+  const sources = [
+    { id: "lens", at: centre(lens, 1, 2), radius: 4, intensity: 0.95, color: "#d8fff0", flicker: false },
+    { id: "coffin", at: { x: T4.coffin.x + 1, y: T4.coffin.y }, radius: 2, intensity: 0.8, color: "#7dffc0", flicker: true },
+    { id: "ped_w", at: centre(pedW, 0, 0), radius: 2, intensity: 0.7, color: "#9fe8ff", flicker: false },
+    { id: "ped_e", at: centre(pedE, 0, 0), radius: 2, intensity: 0.7, color: "#9fe8ff", flicker: false },
+    { id: "cand_w", at: centre(candW, 0, 0), radius: 2, intensity: 0.65, color: "#ffb860", flicker: true },
+    { id: "cand_e", at: centre(candE, 0, 0), radius: 2, intensity: 0.65, color: "#ffb860", flicker: true },
+    { id: "player", at: { kind: "player" }, radius: 3, intensity: 0.5, color: "#ffc070", flicker: true },
+  ].filter((src) => src.at);
+  exec(project, "set_lighting_volume", { mapId: FS2_T4, applyMode: "map", ambient: 0.62, color: "#06140f", sources });
+  // 어둠 — 서쪽 골방 길목 두 칸은 어두운 동안 막히고(blockCells), 이리스가 돌아오면(litSwitchId) 들어설 때마다 밝다.
   exec(project, "place_field_obstacle", {
     mapId: FS2_T4, x: T4.dark.x, y: T4.dark.y, kind: "dark", requiresSkillId: FS2_SKILL_FINGERLIGHT, skillName: "손끝 빛", machine: "none",
-    id: "ev_fs2_t4_dark", name: "렌즈 대기실의 어둠",
+    id: "ev_fs2_t4_dark", name: "렌즈 대기실의 어둠", darkness: 0.62, blockCells: T4.alcovePlugs, litSwitchId: SW_IRIS_BACK,
     hint: "이리스가 손끝을 들자 둘레가 환해진다.",
-    blockedText: "칠흑 같다. 한 걸음 앞도 안 보인다.",
+    blockedText: "발밑이 안 보인다.\n판석이 끊겼는지 이어졌는지조차 모르겠다.",
   });
-  // 이리스가 일행이면(손끝 빛을 안다) 들어설 때마다 밝다 — 기술 판정과 별개로 스위치로도 확실히.
-  const darkEv = ev(project, FS2_T4, "ev_fs2_t4_dark");
-  darkEv.pages = [...(darkEv.pages ?? []), page("ev_fs2_t4_dark_lit", "이리스와 함께", [sw(SW_IRIS_BACK)], [{ kind: "setLighting", ambient: 0, transitionMs: 0 } as unknown as Command], { trigger: { kind: "auto" }, priority: "below" })];
   const light = project.database.skills.find((s) => s.id === FS2_SKILL_FINGERLIGHT);
   if (!light) throw new Error("[fallen-star tower] 손끝 빛 기술이 없다");
   Object.assign(light, { name: "손끝 빛", description: "필드 기술 — 손끝에 빛을 맺어 어두운 곳을 밝힌다.\n이리스가 처음 배운 「아침」의 빛." });
   const ce = project.commonEvents.find((c) => c.id === (light as unknown as Rec).fieldCommonEventId);
   if (ce) ce.commands = [narrate("이리스가 손끝을 든다.\n작은 빛이 둘레로 번진다."), { kind: "setLighting", ambient: 0, transitionMs: 900 } as unknown as Command];
-  // 서쪽 골방 길목 — 어둠 속에선 발 디딜 데가 안 보인다(손끝 빛을 알면 지나간다).
-  T4.alcovePlugs.forEach((c, i) => addEv(project, FS2_T4, `ev_fs2_t4_gloom_${i}`, "어두운 길목", c, [
-    page(`ev_fs2_t4_gloom_${i}_shut`, "캄캄함", [], [narrate("발밑이 안 보인다.\n판석이 끊겼는지 이어졌는지조차 모르겠다.")], { priority: "same" }),
-    page(`ev_fs2_t4_gloom_${i}_lit`, "밝음", [{ kind: "partyKnowsSkill", skillId: FS2_SKILL_FINGERLIGHT } as unknown as Condition], [], { priority: "below" }),
-    page(`ev_fs2_t4_gloom_${i}_back`, "이리스와 함께", [sw(SW_IRIS_BACK)], [], { priority: "below" }),
-  ]));
 
   // 들어서면 한 번 — 어둠 속 초록 불빛.
   addEv(project, FS2_T4, "ev_fs2_t4_arrive", "하늘탑 4층", { x: 0, y: 1 }, [
@@ -725,8 +616,10 @@ function floorFour(project: Project, exec: Exec): void {
     page(`ev_fs2_t4_room_${i}_p`, "관", [], [
       cutBegin(),
       se("cc0-se-osx-metal-03"),
-      narrate("둥근 방 한가운데 관이 하나 놓여 있다.\n뚜껑 틈으로 초록 글자가 흐른다."),
+      camTo("ev_fs2_t4_coffin", 1200, 1.6),
+      narrate("커다란 렌즈 앞에 석관이 하나 놓여 있다.\n뚜껑 틈으로 초록 글자가 흐른다."),
       say(ELENA, "은빛 알 안쪽이랑 같은 글자야.\n…저 안에 있어."),
+      camBack(900, 1),
       setSw(SW_T4_ROOM),
       cutLabel(), cutEnd(), setSw(SW_T4_ROOM),
     ], { trigger: { kind: "playerTouch" }, priority: "below" }),
@@ -741,23 +634,32 @@ function floorFour(project: Project, exec: Exec): void {
   ]);
   const forgetThree = (): Command[] => [SKILL_SHOT, SKILL_RAPID, SKILL_SNIPE].map((id) => learn(IRIS_ID, id, "forget"));
   // 관 — 재회 장면.
+  // 뚜껑이 밀리는 그림 — 닫힘 석관 칸을 열림 석관 칸으로(키트 그림 그대로).
+  const lidOpen: Command[] = (() => {
+    const ts = project.tilesets.beodeul_city as unknown as { structureKits?: { id: string; rows: { upperTiles?: number[] }[] }[] } | undefined;
+    const row = ts?.structureKits?.find((k) => k.id === COFFIN_KIT.open)?.rows[0]?.upperTiles ?? [];
+    if (row.length !== 2) throw new Error("[fallen-star tower] 열린 석관 그림이 없다");
+    return row.map((tile, dx) => ({ kind: "changeTile", mapId: FS2_T4, layer: "upper", x: T4.coffin.x + dx, y: T4.coffin.y, tile } as unknown as Command));
+  })();
   const reunion: Command[] = [
     cutBegin(), letterbox(),
     { kind: "stopAudio", channel: "bgm" } as unknown as Command,
+    // 가까이 — 석관과 그 앞에 선 카엘만 화면에 차게.
+    camTo("ev_fs2_t4_coffin", 1400, 2.2),
     say(KAEL, "이리스."),
     wait(900),
     narrate("대답이 없다. 관 위 글자만 깜빡인다."),
     say(KAEL, "…열게."),
     se("cc0-se-osx-metal-03"), shake(1, 600),
+    ...lidOpen,
     narrate("무거운 뚜껑이 옆으로 밀려난다."),
-    fx("sparkle", T4.coffin.x + 1, T4.coffin.y + 1, 1400),
+    fx("sparkle", T4.coffin.x + 1, T4.coffin.y, 1400),
     flash("white", 500),
     setSw(SW_IRIS_WAKE),
-    // 직업이 주는 기술은 「잊기」로 안 지워진다 — 회수 대기 직업으로 옮겨(지금까지 배운 것을 세션으로 옮긴다) 셋을 잊게 한다.
-    { kind: "promoteActor", actorId: IRIS_ID, toClassId: IRIS_RELAY_CLASS } as unknown as Command,
+    // 탑이 걷어 간 기록 셋 — 직업이 주는 기술도 「잊기」로 빠진다(일지를 다시 읽으면 하나씩 돌아온다).
     ...forgetThree(),
     wait(700),
-    camTo("ev_fs2_t4_iris", 900, 1.25),
+    camTo("ev_fs2_t4_iris", 700, 2.4),
     say(IRIS, "…신호, 수신. 현지 시각 불명.\n귀환 준비 중입니다. 기록을 정리합니다."),
     say(KAEL, "이리스, 나야. 카엘."),
     emote("ev_fs2_t4_iris", "question", 900),
@@ -784,6 +686,7 @@ function floorFour(project: Project, exec: Exec): void {
     say(IRIS, "어둡네요. 잠깐만요."),
     se("easyrpg-sound-recovery7"),
     { kind: "setLighting", ambient: 0, transitionMs: 1800 } as unknown as Command,
+    camBack(1600, 1),
     narrate("이리스의 손끝에 작은 빛이 맺힌다.\n그 빛이 층 전체로 번져 나간다."),
     fx("sparkle", T4.pageStar.x, T4.pageStar.y, 1600), fx("sparkle", T4.pageHand.x, T4.pageHand.y, 1600),
     camTo("ev_fs2_t4_page_star", 1200, 1),
@@ -791,7 +694,6 @@ function floorFour(project: Project, exec: Exec): void {
     camBack(900),
     { kind: "changeParty", actorId: IRIS_ID, action: "add" } as unknown as Command,
     { kind: "changeLevel", actorId: IRIS_ID, op: "=", amount: 13 } as unknown as Command,
-    ...forgetThree(),
     learn(IRIS_ID, FS2_SKILL_FINGERLIGHT),
     { kind: "recoverAll", actorId: IRIS_ID } as unknown as Command,
     setSw(SW_IRIS_BACK),
@@ -799,15 +701,15 @@ function floorFour(project: Project, exec: Exec): void {
     clearLetterbox(),
     cutLabel(), cutEnd(),
     // 넘겨도 같은 끝 — 합류·조명은 다시 확실히.
-    setSw(SW_IRIS_WAKE), setSw(SW_IRIS_BACK),
+    setSw(SW_IRIS_WAKE), setSw(SW_IRIS_BACK), ...lidOpen,
     { kind: "setLighting", ambient: 0, transitionMs: 300 } as unknown as Command,
   ];
-  addEv(project, FS2_T4, "ev_fs2_t4_coffin", "이리스의 관", { x: T4.coffin.x, y: T4.coffin.y + 1 }, [
+  addEv(project, FS2_T4, "ev_fs2_t4_coffin", "이리스의 관", { x: T4.coffin.x, y: T4.coffin.y }, [
     page("ev_fs2_t4_coffin_p", "관", [], reunion, { priority: "same" }),
     page("ev_fs2_t4_coffin_open", "빈 관", [sw(SW_IRIS_BACK)], [narrate("빈 관. 안쪽에 초록 글자가 아직 흐른다.\n「귀환까지 기록 정리 중」.")], { priority: "same" }),
   ]);
-  // 관 오른쪽 칸(2×2 관의 오른쪽 아래)도 같은 조사.
-  addEv(project, FS2_T4, "ev_fs2_t4_coffin_r", "이리스의 관", { x: T4.coffin.x + 1, y: T4.coffin.y + 1 }, [
+  // 석관 오른쪽 칸도 같은 조사.
+  addEv(project, FS2_T4, "ev_fs2_t4_coffin_r", "이리스의 관", { x: T4.coffin.x + 1, y: T4.coffin.y }, [
     page("ev_fs2_t4_coffin_r_p", "관", [], [{ kind: "callMapEvent", eventId: "ev_fs2_t4_coffin" } as unknown as Command], { priority: "same" }),
     page("ev_fs2_t4_coffin_r_open", "빈 관", [sw(SW_IRIS_BACK)], [narrate("빈 관. 안쪽에 초록 글자가 아직 흐른다.\n「귀환까지 기록 정리 중」.")], { priority: "same" }),
   ]);
@@ -951,6 +853,7 @@ function towerCommon(project: Project, exec: Exec): void {
 }
 
 export function applyFallenAct2Tower(project: Project, exec: Exec): void {
+  EXEC = exec;
   towerData(project, exec);
   floorOne(project, exec);
   floorTwo(project, exec);
