@@ -26,6 +26,7 @@ export { stage as dropTokenLines } from "./drop-token-lines";
 export { stage as staleObjectives } from "./stale-objectives";
 export { stage as objectiveRoutes } from "./objective-routes";
 export { stage as stairTransfers } from "./stair-transfers";
+export { stage as trimRoadStubs } from "./trim-road-stubs";
 export { stage as widenRoadExits } from "./widen-road-exits";
 export { stage as openDoorSteps } from "./open-door-steps";
 export { stage as objectiveThings } from "./objective-things";

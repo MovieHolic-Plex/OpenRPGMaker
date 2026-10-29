@@ -219,3 +219,100 @@ function canMoveInto(project: Project, map: GameMap, x: number, y: number): bool
     return fx >= 0 && fy >= 0 && fx < map.width && fy < map.height && canMove(project, map, fx, fy, x, y);
   });
 }
+
+// ───────────── 가장자리 아닌 출구를 지나쳐 이어지는 남는 길 줄은 출구 앞에서 끝낸다 ─────────────
+// 왜(2026-10-29 vm7 flash jrpg): 두 칸 폭 포석 길(28·29열)이 굴 입구 출구 (27,5) 곁을 지나 북쪽 가장자리 (28..29,0)까지 이어졌다. 판정자는 오른쪽 줄로
+// 길을 따라 올라가 출구를 지나쳐 길 끝 가장자리에서 막혔다(「막다른 길」). 가장자리 출구가 아니라 길 폭 사본을 세울 수도 없다(세우면 북쪽 칸을 막는다).
+// 규칙: 맵 가장자리가 아닌 투명 접촉 이동 칸이 길 곁(출구 칸은 길 아님)이고, 옆 길 줄(출구 줄의 길 칸 1~3)이 출구 줄을 넘어 한쪽으로만 «남는 길»(출구 줄을 빼면
+// 나머지 길과 끊기는 작은 덩이, 60칸 이하, 이벤트는 「막힌 길」 표지뿐, 착지 칸 없음)으로 이어지면 그 남는 길을 둘레 바닥 재료로 다시 칠해 길이 출구 앞에서 끝나게 한다.
+// 남는 길 위·곁(3칸)의 「막힌 길」 표지(deadEndRoads)는 걷는다. 걷기 칸은 줄지 않는다(길 → 풀밭).
+export function trimRoadStubs(run: BuildRun, mapId: string): string[] {
+  const notes: string[] = [];
+  const project0 = run.ctx.project;
+  const map0 = project0.maps[mapId];
+  if (!map0) return notes;
+  const role = map0 as unknown as { mapRole?: string; climate?: { mode?: string } };
+  if (role.mapRole === "interior" || role.climate?.mode === "indoor") return notes;
+  const W = map0.width, H = map0.height;
+  const exits = (map0.events ?? []).filter((e) => !e.id.includes(ROAD_COPY) && e.x > 0 && e.y > 0 && e.x < W - 1 && e.y < H - 1 && isTouchTransfer(e, mapId));
+  for (const ev of exits) {
+    const project = run.ctx.project;
+    const map = project.maps[mapId]!;
+    const isRoad = (x: number, y: number) => lowerLabels(project, map, x, y).some((l) => ROAD_CELL.test(l) && !NOT_ROAD.test(l));
+    if (isRoad(ev.x, ev.y)) continue;
+    const landings = new Set<string>();
+    const findLandings = (node: unknown): void => {
+      if (Array.isArray(node)) { node.forEach(findLandings); return; }
+      if (!node || typeof node !== "object") return;
+      const r = node as Record<string, unknown>;
+      if (r.kind === "transfer" && r.mapId === mapId && typeof r.x === "number" && typeof r.y === "number") landings.add(`${r.x},${r.y}`);
+      Object.values(r).forEach((v) => { if (v && typeof v === "object") findLandings(v); });
+    };
+    for (const m of Object.values(project.maps)) for (const e of m.events ?? []) findLandings(e.pages ?? []);
+    let done = false;
+    for (const [ax, ay] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+      if (done) break;
+      // 출구 줄의 길 칸(출구 곁에서 같은 방향으로 이어진 1~3칸).
+      const lane: { x: number; y: number }[] = [];
+      for (let k = 1; k <= 3 && isRoad(ev.x + ax * k, ev.y + ay * k); k += 1) lane.push({ x: ev.x + ax * k, y: ev.y + ay * k });
+      if (!lane.length) continue;
+      const laneKeys = new Set(lane.map((c) => `${c.x},${c.y}`));
+      // 길 줄이 이어지는 방향(출구 줄에 수직) 양쪽 덩이.
+      const along: [number, number] = ax ? [0, 1] : [1, 0];
+      const blob = (sign: number): Set<string> | null => {
+        const seen = new Set<string>();
+        const queue = lane.map((c) => ({ x: c.x + along[0] * sign, y: c.y + along[1] * sign })).filter((c) => isRoad(c.x, c.y));
+        if (!queue.length) return null;
+        for (const c of queue) seen.add(`${c.x},${c.y}`);
+        for (let i = 0; i < queue.length; i += 1) {
+          if (seen.size > 60) return null;
+          const { x, y } = queue[i]!;
+          for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+            const nx = x + dx, ny = y + dy, key = `${nx},${ny}`;
+            if (!isRoad(nx, ny) || seen.has(key) || laneKeys.has(key)) continue;
+            seen.add(key); queue.push({ x: nx, y: ny });
+          }
+        }
+        return seen;
+      };
+      for (const sign of [-1, 1]) {
+        const stub = blob(sign);
+        const other = blob(-sign);
+        if (!stub || !stub.size || other === null && !lane.some((c) => isRoad(c.x - along[0] * sign, c.y - along[1] * sign))) continue;
+        // 반대쪽이 진짜 길(이 덩이와 따로, 더 큼)이어야 한다 — 반대쪽도 작은 덩이면 어느 쪽이 남는 길인지 모른다.
+        if (other && (other.size <= stub.size || [...other].some((k) => stub.has(k)))) continue;
+        if ([...stub].some((k) => landings.has(k))) continue;
+        const cells = [...stub].map((k) => { const [x, y] = k.split(",").map(Number); return { x: x!, y: y! }; });
+        const near = (e: { x: number; y: number }, r: number) => cells.some((c) => Math.abs(c.x - e.x) + Math.abs(c.y - e.y) <= r);
+        const deadEnd = (e: GameMap["events"][number]) => e.id.startsWith("ev_dead_end_");
+        if (map.events.some((e) => !deadEnd(e) && near(e, 0))) continue;
+        // 둘레 바닥 — 남는 길 곁의 길 아닌 바닥 칸에 가장 많이 쓴 바닥 타일(오토타일 아닌 맨 바닥일 때가 많아 칠하기 도구 대신 그 타일을 그대로 옮긴다).
+        const meta = (project.tilesets[map.tilesetId]?.tileMeta ?? []) as unknown as ({ label?: string } | undefined)[];
+        const counts = new Map<number, number>();
+        for (const c of cells) for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+          const nx = c.x + dx, ny = c.y + dy;
+          if (nx < 0 || ny < 0 || nx >= W || ny >= H || isRoad(nx, ny)) continue;
+          const t = map.lowerTiles[ny * W + nx];
+          const l = typeof t === "number" && t >= 0 ? String(meta[t]?.label ?? "") : "";
+          if (typeof t !== "number" || t < 0 || !l || NOT_ROAD.test(l) || /오토타일/u.test(l)) continue;
+          counts.set(t, (counts.get(t) ?? 0) + 1);
+        }
+        const ground = [...counts].sort((a, b) => b[1] - a[1])[0]?.[0];
+        if (ground === undefined) continue;
+        const lower = [...map.lowerTiles];
+        const overlay = (map as unknown as { lowerOverlayTiles?: number[] }).lowerOverlayTiles ? [...(map as unknown as { lowerOverlayTiles: number[] }).lowerOverlayTiles] : undefined;
+        // 출구 줄에서도 출구 바로 곁 칸만 길로 남긴다 — 두 줄이 출구 앞 한 칸으로 합쳐 끝난다(먼 줄로 걷던 사람도 꺾여 출구로 온다).
+        const paint = [...cells, ...lane.slice(1)];
+        for (const c of paint) { lower[c.y * W + c.x] = ground; if (overlay && ROAD_CELL.test(String(meta[overlay[c.y * W + c.x] ?? -1]?.label ?? ""))) overlay[c.y * W + c.x] = -1; }
+        run.ctx.project = { ...project, maps: { ...project.maps, [mapId]: { ...map, lowerTiles: lower, ...(overlay ? { lowerOverlayTiles: overlay } : {}) } } } as Project;
+        const after = run.ctx.project.maps[mapId]!;
+        const dropped = after.events.filter((e) => deadEnd(e) && near(e, 3));
+        if (dropped.length) run.ctx.project = { ...run.ctx.project, maps: { ...run.ctx.project.maps, [mapId]: { ...after, events: after.events.filter((e) => !dropped.includes(e)) } } } as Project;
+        notes.push(`출구 (${ev.x},${ev.y})를 지나 이어지던 남는 길 ${cells.length}칸과 출구 줄 먼 칸 ${lane.length - 1}칸을 「${meta[ground]?.label ?? ground}」(으)로 — 길이 출구 앞에서 끝난다${dropped.length ? ` · 「막힌 길」 표지 ${dropped.length}개 걷음` : ""}`);
+        done = true;
+        break;
+      }
+    }
+  }
+  return notes;
+}
