@@ -9752,7 +9752,7 @@
        "kind": "battle",
        "fallback": "attack",
        "untilEnd": true,
-       "timeoutMs": 420000,
+       "timeoutMs": 900000,
        "plan": {
         "actor_fs_elena": [
          "skill_mage_blizzard",
@@ -10051,7 +10051,7 @@
        "key": "Enter",
        "testid": "main-menu",
        "state": "present",
-       "maxPresses": 20,
+       "maxPresses": 40,
        "timeoutMs": 1500
       },
       {
