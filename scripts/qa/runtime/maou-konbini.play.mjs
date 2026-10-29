@@ -252,8 +252,8 @@ const B = {
     await ready(page); mark("runtime");
     await play(page, seg, [], async (s) => s.battle, { shotOn: /엉덩이|8분의 1|흔들리지/ }); mark("battle");
     shot(page, "battle-start", 2500);
-    await battle(page, seg, ["skill_mk_dark_wave", "skill_mk_half_world", "skill_mk_hellfire", "skill_mk_dark_wave", "skill_mk_hellfire"]); mark("battle-end");
-    await play(page, seg, [], quietAnd(async () => (await st(page))?.map === "map_mk_room"), { shotOn: /동귀어진|낯선 천장|0엔/ }); mark("woke");
+    await battle(page, seg, ["skill_mk_hellfire", "skill_mk_half_world", "skill_mk_dark_wave"]); mark("battle-end");
+    await play(page, seg, [], quietAnd(async () => (await st(page))?.map === "map_mk_room"), { shotOn: /칼퇴|동귀어진|낯선 천장|뿔이 없다/ }); mark("woke");
     await walkTo(page, roomExit.x, roomExit.y - 1);
     await play(page, seg, [], idle, { shotOn: /폐기 도시락/ }); mark("flyer");
     shot(page, "room-after-flyer", 400);

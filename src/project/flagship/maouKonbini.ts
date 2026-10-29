@@ -31,6 +31,8 @@ import {
   gone, ifCond, mustBlock, mustReach, mustWalk, nearestFree, note, page, panBack, panTo, playSe, say, setSw, setVar, shake, stopBgm, swOff, swOn, think, thinkAs,
   timedChoice, tint, transfer, varAtLeast, varIs, voice, wait, walk, walkTo, type Who,
 } from "./maouKonbiniKit";
+import throneBackdrop from "./maouKonbiniBackdrops/battle_backdrop_maou_throne_212b9127.json";
+import konbiniBackdrop from "./maouKonbiniBackdrops/battle_backdrop_maou_konbini_night_matte_63290325.json";
 import { buildMaouOpening, buildMaouThrone, setupMaouTitle, stageMaouRoomWake } from "./maouKonbiniOpening";
 import type { FlagshipDemoBuildResult } from "./types";
 
@@ -88,8 +90,9 @@ const SE_PAPER = "cc0-se-osx-paper-04";
 const SE_CAT = "easyrpg-sound-cat";
 const SE_BELL = "cc0-se-osx-bell-01";
 // battle-backdrop 하네스 판 maou-konbini-night-matte 후보 B · maou-throne 후보 A(감독 선택, 저장 화소 sha256 앞 8자리가 id 끝).
-const KONBINI_BATTLE_BG = "battle_backdrop_maou_konbini_night_matte_63290325";
-const THRONE_BATTLE_BG = "battle_backdrop_maou_throne_212b9127";
+// 전투 배경 자원 = battle-backdrop 하네스 `build <판> --emit` 이 낸 upsert_resource 인자(감독이 그림 해시에 묶어 고름 — 옥좌 A · 밤 편의점 B).
+const KONBINI_BATTLE_BG = konbiniBackdrop.resource.id;
+const THRONE_BATTLE_BG = throneBackdrop.resource.id;
 const SFX_ROOM_TONE = "cc0-sound-mk-op-room"; // 냉장고 웅웅·먼 차 소리 12초 고리(opening-sfx.py room)
 
 // ── 배우 ──
@@ -199,8 +202,8 @@ function setupDatabase(project: Project): void {
   project.system.battleLook = { ...project.system.battleLook, enemyHp: true, enemyNames: true };
   // 전투 배경 = 장소에 맞춰 만든 옆모습 배경(battle-backdrop 하네스, 감독이 그림 해시에 묶어 고름 — 옥좌 A · 밤 편의점 B).
   // 옛판은 필드 화면(battleBackdrop "field")을 깔았다 — 위에서 내려다본 맵 위에 옆모습 배틀러가 서서 어색했고,
-  // 사진을 못 찍으면 낮 풀밭으로 떨어졌다(처음 하는 사람 검수 4). 그래서 필드 모드를 끄고 트룹 배경만 쓴다.
-  delete project.system.battleBackdrop;
+  // 사진을 못 찍으면 낮 풀밭으로 떨어졌다(처음 하는 사람 검수 4). 그래서 필드 모드를 끄고 트룹 배경만 쓴다
+  // (set_project_settings battle.backdrop "default" — 아래 buildMaouKonbini 에서 도구로).
 
   // 적
   const enemies = db.enemies;
@@ -338,10 +341,19 @@ function buildRoom(project: Project, _links: Links, konbiniArrive: Cell): Cell {
     gone("ev_mk_room_flyer_off", []),
     page("ev_mk_room_flyer_p", [varIs(V_STAGE, 1)], flyer, { trigger: "playerTouch" }),
   ]));
+  // 탁자 위 안내문·통장(살펴보기) — 명령은 stageMaouRoomWake 가 단다. 들르지 않아도 진행된다.
+  map.events.push(event("ev_mk_room_desk", "탁자 위 안내문", mustBlock(project, map, { x: 12, y: 6 }, "탁자"), [
+    page("ev_mk_room_desk_p", [], [], { priority: "same" }),
+  ]));
+  // 조작을 받은 뒤 우편함 소리 한 번(병렬) — 명령은 stageMaouRoomWake.
+  map.events.push(event("ev_mk_room_slot", "우편함", { x: 2, y: 0 }, [
+    gone("ev_mk_room_slot_off", []),
+    page("ev_mk_room_slot_p", [varIs(V_STAGE, 1), swOn("sw_mk_woke"), swOff("sw_mk_slot")], [], { trigger: "parallel" }),
+  ]));
   // 전단지 그림이 칩셋에 없다 — 문틈의 전단지 자리 위에 「!」 말풍선을 되풀이해 띄워 줍는 곳을 보인다.
   map.events.push(event("ev_mk_room_flyer_cue", "전단지 표시", { x: 1, y: 0 }, [
     gone("ev_mk_room_flyer_cue_off", []),
-    page("ev_mk_room_flyer_cue_p", [varIs(V_STAGE, 1), swOn("sw_mk_woke")], [emote("ev_mk_room_flyer", "exclamation", 1100), wait(1500)], { trigger: "parallel" }),
+    page("ev_mk_room_flyer_cue_p", [varIs(V_STAGE, 1), swOn("sw_mk_slot")], [emote("ev_mk_room_flyer", "exclamation", 1100), wait(1500)], { trigger: "parallel" }),
   ]));
   // 침대 — 하루를 마치는 곳.
   const sleep = (next: number, day: string, extra: Command[]): Command[] => [
@@ -1281,6 +1293,8 @@ export function createMaouKonbiniFlagshipDemo(): FlagshipDemoBuildResult {
   for (const [id, name] of [[V_STAGE, "마왕 진행 단계"], [V_TASKS, "오늘 마친 업무"], [V_SERVICE, "근무 평가"], [V_MAOU, "마왕력"], [V_PICK, "고른 번호(잠깐)"]] as const) ensureVar(id, name);
   for (const [id, name] of [[SW_SHIFT, "근무 중"], [SW_TANAKA, "다나카 씨 주문을 외움"], [SW_LILY, "리리와 재회"], [SW_MEETING, "사천왕 재결성 회의"], [SW_LOST, "매뉴얼 결전에서 짐"]] as const) ensureSw(id, name);
 
+  for (const bd of [throneBackdrop, konbiniBackdrop]) execTool(project, "upsert_resource", { resource: bd.resource });
+  execTool(project, "set_project_settings", { battle: { backdrop: "default" } });
   setupDatabase(project);
   const links = buildMaps(project);
   const roomWake = buildRoom(project, links, { x: 0, y: 0 });

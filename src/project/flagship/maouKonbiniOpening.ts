@@ -21,7 +21,7 @@ import type { AnimaticLayer } from "@/project/openingAnimatic";
 import type { Command, GameMap, Project } from "@/project/types";
 import {
   CAST, caption, type Cell, emote, event, execTool, fadeIn, fadeOut, flash, gone, letter, m2, mustBlock, mustWalk, nearestFree, page,
-  playSe, say, setSw, setVar, shake, stopBgm, thinkAs, transfer, varAtLeast, varIs, wait, walk, walkTo, face, bgm,
+  playSe, say, setSw, setVar, shake, stopBgm, thinkAs, transfer, varAtLeast, varIs, wait, bgm,
 } from "./maouKonbiniKit";
 
 // maouKonbini.ts 와 같은 id(순환 import 를 피하려고 문자열을 다시 적는다).
@@ -279,7 +279,11 @@ const fieldTint = (value: string, ms: number): Command => m2("Screen Effect", { 
 
 // ── 옥좌의 방: 연출 전투 → 『동귀어진』 ────────────────────────────────────
 
-/** 옥좌 결전 전투 — 3합. 싸우는 중에도 흥정이 끼어들고, 3합째에 레온이 금단의 봉인술로 전투를 끝낸다(이기든 지든 같은 결말). */
+/**
+ * 옥좌 결전 전투 — 2합. 1합에 사천왕 농담, 마왕이 한 번 휘두르고(업화로 체력 막대가 눈에 띄게 준다),
+ * 2합 머리에 레온이 『동귀어진』으로 전투를 끝낸다(이기든 지든 같은 결말).
+ * 3합·전투 뒤 대사까지 있던 판은 새 게임 → 첫 자유 이동이 2분 39초였다(2026-10-30 감독 검수, 목표 75초 안).
+ */
 function setupThroneBattle(project: Project): void {
   // 마왕은 「마족 공작」 파티원 도트(Monster2 #7 걷기 칩과 같은 인물)로, 사람 배틀러의 두 배 크기로 선다.
   execTool(project, "upsert_actor", { actor: { id: MAOU_TRUE, battleCharacterResourceId: "party-pixel-monster2-7", battleScalePercent: 260 } });
@@ -292,23 +296,19 @@ function setupThroneBattle(project: Project): void {
   const T = "troop_mk_castle";
   const pageOf = (pid: string, name: string, round: number, commands: Command[]) =>
     execTool(project, "upsert_troop_battle_page", { troopId: T, page: { id: pid, name, span: "battle", runOnce: true, conditions: [{ kind: "onRound", round }], commands } });
-  pageOf("mk_castle_r1", "1합 싸우면서 흥정", 1, [
-    ...say("maouF", "base", "기다려라. 16분의 1에 연금, 휴가, 성 앞 주차장까지 얹으마."),
-    ...say("leonF", "base", "싸우는 중에 흥정하지 마!"),
+  pageOf("mk_castle_r1", "1합 사천왕", 1, [
+    ...say("leonF", "base", "네 사천왕은 어디 갔지!"),
+    ...say("maouF", "base", "사천왕? 걔들 오늘 칼퇴했다."),
   ]);
   // 「세계의 절반 제안」 기술을 쓴 직후에만 오는 대꾸(성공·실패 어느 쪽이어도 맞는 말).
   execTool(project, "upsert_troop_battle_page", { troopId: T, page: { id: "mk_castle_half_world", name: "절반 제안에 대꾸", span: "battle", runOnce: true,
     conditions: [{ kind: "actorCommand", actorId: MAOU_TRUE, commandId: "skill", skillId: "skill_mk_half_world" }], commands: [
       ...say("leonF", "base", "또 절반 타령이냐! 안 넘어간다!"),
-      ...say("mira", "base", "레온, 방금 고개 끄덕였잖아."),
     ] } });
-  pageOf("mk_castle_r2", "2합 미라가 흔들린다", 2, [
-    ...say("mira", "base", "레온, 주차장은 좀 탐나는데."),
-    ...say("leonF", "base", "미라!!"),
-    ...say("maouF", "base", "크하하! 네 동료는 현실을 아는구나!"),
-  ]);
-  pageOf("mk_castle_r3", "3합 금단의 봉인술", 3, [
-    ...say("leonF", "base", "이대로는 끝이 안 나…. 이 목숨을 걸겠다. 금단의 봉인술!"),
+  pageOf("mk_castle_r2", "2합 동귀어진", 2, [
+    ...say("mira", "base", "레온, 연금이랑 휴가는 좀 탐나는데."),
+    ...say("leonF", "base", "미라!! …이 목숨을 걸겠다. 『동귀어진』!"),
+    ...say("maouF", "base", "자, 잠깐! 연금은? 연금은 어떻게 되는 거냐!"),
     { kind: "m2Command", commandId: "m2-105-abort-battle", fields: {} } as Command,
   ]);
 }
@@ -328,11 +328,8 @@ export function buildMaouThrone(project: Project, roomWake: Cell): Cell {
     ...fadeIn(300),
     playSe(SFX.sword),
     { kind: "battleProcessing", troopId: "troop_mk_castle", canEscape: false, canLose: true, branchOnResult: false } as Command,
-    // 봉인술 — 레온이 빛나고, 마왕은 마지막까지 연금을 묻는다.
-    emote(L, "exclamation", 900), wait(300),
-    ...say("leonF", "base", "『동귀어진』! 너도 나도 이 세계에서 사라지는 거다!"),
-    emote("player", "sweat", 900),
-    ...say("maouF", "base", "자, 잠깐! 연금은? 연금은 어떻게 되는 거냐!"),
+    // 『동귀어진』 대사는 전투 2합 머리에서 이미 했다 — 전투가 끝나면 말 없이 곧장 하얗게 타 버린다.
+    emote(L, "exclamation", 600),
     // 하얗게 타 버린다 — 화면 효과 「색조」로 흰빛을 채웠다가(맵 조명은 건드리지 않는다), 장엄한 음악을 그 순간 끊는다.
     // 흰빛 → 정적 → 원룸까지 v13 은 12초(흰 화면·검정)였다 — 5초 안으로 줄인다(2026-10-30 적대 VQA).
     playSe(SFX.vanish),
@@ -386,36 +383,38 @@ export function stageMaouRoomWake(project: Project): void {
   execTool(project, "set_map_properties", { mapId: MAP_ROOM, zoom: 2, bgm: { mode: "custom", resourceId: BGM_ROOM, fadeInMs: 8000 } });
   const Z = (...l: string[]) => thinkAs(CAST.zervas.name, ...l);
   const zs = (expr: "base" | "happy" | "surprised" | "sad" | "embarrassed", ...l: string[]) => say("zervas", expr, ...l);
+  // 눈뜨자마자 조작을 넘긴다 — 안내문·잔고는 탁자에 놓인 물건(살펴보기), 우편함 소리와 전단지는 걷는 동안 병렬 이벤트가 낸다.
   const wakeScene: Command[] = [
     stopBgm(),
-    wait(600),
+    wait(500),
     playSe(SFX.fluoro),
     wait(250), flash("white", 90), wait(330), flash("white", 70), wait(220),
     ...fadeIn(350),
-    playSe(SFX.room),
+    // 냉장고 웅웅·먼 차 소리는 한 번 울리는 효과음이면 다음 효과음(우편함)이 끊어 15초가 무음이었다(2026-10-30 r3 녹화 -120dB).
+    // 환경음(bgs) 고리로 깔고, 전단지를 읽고 방 음악이 들어올 때 거둔다.
+    { kind: "playAudio", resourceId: SFX.room, loop: true, channel: "bgs", fadeInMs: 800 } as Command,
     ...Z("낯선 천장이다."),
-    emote("player", "question", 1100),
-    walk("@player", ["right", "right"]),
-    face("@player", "up"),
-    ...zs("surprised", "뿔이 없다. 망토도 없다. 이 올리브색 겉옷은 또 뭐냐!"),
-    walkTo("@player", { x: 11, y: 6 }), face("@player", "right"),
+    ...zs("surprised", "…뿔이 없다?! 망토도! 이 올리브색 겉옷은 또 뭐냐!"),
+    setSw("sw_mk_woke"),
+  ];
+  // 탁자 위 안내문·통장 — 들르지 않아도 진행된다.
+  const desk: Command[] = [
     playSe(SE_PAPER),
     ...letter("「이세계 전생 관리국 안내문」\n귀하는 『동귀어진』 처리에 따라 일본으로 전생했습니다.\n마력은 봉인했습니다. 생활비는 직접 버십시오."),
     playSe(SE_PAPER),
     ...letter("통장 잔고\n0엔"),
-    playSe(SFX.sadHorn), shake(500, "3"), wait(1100),
+    playSe(SFX.sadHorn), shake(500, "3"), wait(700),
     ...zs("sad", "세계의 절반을 가졌던 몸이 잔고 0엔이라니."),
-    playSe(SFX.mailslot),
-    emote("player", "exclamation", 900), face("@player", "down"),
-    ...caption("현관 우편함으로 종이 한 장이 미끄러져 들어왔다."),
-    setSw("sw_mk_woke"),
   ];
+  // 조작을 받은 뒤 2초 — 현관 우편함이 덜컥, 전단지 자리에 「!」.
+  const mailslot: Command[] = [wait(2000), playSe(SFX.mailslot), emote("ev_mk_room_flyer", "exclamation", 900), setSw("sw_mk_slot")];
   const flyer: Command[] = [
     playSe(SE_PAPER),
     ...letter("아르바이트 급구! 해피 마트 사쿠라자카점\n시급 1,150엔. 초보 환영. 유니폼 지급.\n폐기 도시락 있음(?) 이 건물 바로 왼쪽입니다!"),
     ...zs("base", "…이것이 이 세계의 마계 문서인가."),
     ...zs("happy", "좋다. 이 몸이 직접 가 주마. 엎드려 반기도록 해라."),
     bgm(BGM_ROOM, 1200),
+    { kind: "stopAudio", channel: "bgs" } as Command,
     setVar(V_STAGE, "=", 2),
   ];
   // 이벤트 칸·조건은 buildRoom 것 그대로, 그 페이지의 명령만 patch_event_page 로 바꾼다.
@@ -423,6 +422,8 @@ export function stageMaouRoomWake(project: Project): void {
     execTool(project, "patch_event_page", { mapId: MAP_ROOM, eventId, pageId, set: { commands } });
   replace("ev_mk_room_wake", "ev_mk_room_wake_p", wakeScene);
   replace("ev_mk_room_flyer", "ev_mk_room_flyer_p", flyer);
+  replace("ev_mk_room_desk", "ev_mk_room_desk_p", desk);
+  replace("ev_mk_room_slot", "ev_mk_room_slot_p", mailslot);
 }
 
 // ── 타이틀 ──────────────────────────────────────────────────────────────

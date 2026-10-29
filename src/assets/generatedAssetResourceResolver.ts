@@ -91,9 +91,6 @@ const BUILTIN_GENERATED_RESOURCE_URLS: Record<string, string | null> = {
   "oprn-maou-konbini-end-best": "/assets/generated/title/maou-konbini-end-best.png",
   "oprn-maou-konbini-end-ok": "/assets/generated/title/maou-konbini-end-ok.png",
   "oprn-maou-konbini-end-power": "/assets/generated/title/maou-konbini-end-power.png",
-  // battle-backdrop 하네스가 만든 장소 맞춤 옆모습 전투 배경(감독 선택) — id 는 하네스 build 가 짓는 이름 그대로(판 · 저장 화소 sha256 앞 8자리).
-  battle_backdrop_maou_konbini_night_matte_63290325: "/assets/generated/title/maou-konbini-bb-night-store-63290325.png",
-  battle_backdrop_maou_throne_212b9127: "/assets/generated/title/maou-konbini-bb-throne-212b9127.png",
   "oprn-shitamachi-yuna": "/assets/generated/title/shitamachi-yuna.jpg",
   "oprn-shitamachi-op-train": "/assets/generated/title/shitamachi-op-train.jpg",
   "oprn-shitamachi-op-arcade": "/assets/generated/title/shitamachi-op-arcade.jpg",
