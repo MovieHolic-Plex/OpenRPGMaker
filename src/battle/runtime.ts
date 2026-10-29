@@ -637,6 +637,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   const gaugeCycleActed = new Set<string>();
   let frozenGaugeElapsedMs = 0;
   let currentActorCommandKind: ActorCommand["kind"] | undefined;
+  /** currentActorCommandKind 가 "skill" 일 때만 뜻이 있다(둘은 같은 자리에서 함께 정해진다). */
+  let currentActorSkillId: string | undefined;
   let lastCaptureResult: BattleCaptureResultSnapshot | undefined;
   let targetSelection: BattleTargetSelectionSnapshot | undefined;
   let strictActorCommands: StrictQueuedActorCommand[] = [];
@@ -1803,6 +1805,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
 
   function applyActorCommandEffectCore(actor: MutableBattler, command: ActorCommand): void {
     currentActorCommandKind = command.kind;
+    currentActorSkillId = command.kind === "skill" ? command.skillId : undefined;
     lastCaptureResult = undefined;
     // 방어 자세는 "다음 행동까지"다 — 액터가 새 명령을 실행하면 해제된다.
     // (defend 명령이면 아래 switch 에서 곧바로 다시 true 가 된다.)
@@ -2078,6 +2081,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
 
     consumeSkillMp(actor, skill.id);
     currentActorCommandKind = "skill";
+    currentActorSkillId = skill.id;
     // 장비 사용도 액터의 행동 슬롯을 소비한다 — 방어 해제·사이클 계수를 명령 경로와 맞춘다.
     // 사이클 계수는 gauge 전용 — strict 는 라운드 완료 시점의 turn=round 가 정본이다.
     actor.defending = false;
@@ -4910,7 +4914,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
 
   function applyTroopEvents(continuation: () => void, eventTurn: number = turn): void {
     afterBattleEvents = continuation;
-    consumeBattleEventStep(battleEvents.applyTroopEvents({ turn: eventTurn, activeActorId, currentActorCommandKind }));
+    consumeBattleEventStep(battleEvents.applyTroopEvents({ turn: eventTurn, activeActorId, currentActorCommandKind, currentActorSkillId: currentActorCommandKind === "skill" ? currentActorSkillId : undefined }));
   }
 
   function consumeBattleEventStep(step: BattleEventRuntimeResult): void {
