@@ -71,7 +71,10 @@ def do_import(jobs: pathlib.Path):
     PICKS.mkdir(parents=True, exist_ok=True)
     rec = json.loads(PICKS_JSON.read_text()) if PICKS_JSON.exists() else {}
     for item in ITEMS:
-        jd = jobs / JOB_OF.get(item, item)
+        # 가장 늦은 판(…-r2, -r3)에 고름이 있으면 그것 — 관문(3/4·화풍) 이유를 규칙으로 넘겨 다시 그린 판이다.
+        base = JOB_OF.get(item, item)
+        cands = sorted([d for d in jobs.glob(f"{base}-r*") if d.name[len(base) + 2:].isdigit()], key=lambda d: int(d.name[len(base) + 2:]), reverse=True) + [jobs / base]
+        jd = next((d for d in cands if (d / "pick.json").exists()), jobs / base)
         pk = jd / "pick.json"
         if not pk.exists():
             print(f"  고름 없음  {item}")
