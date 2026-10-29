@@ -8,6 +8,11 @@ import { layerTileAt, setLayerTileAt, shadowAt, setShadowAt } from "@/project/ma
 import type { GameMap, Project } from "@/project/types";
 import { playerAnchors } from "@/editor/tools/transferReachability";
 import type { BuildRun, ContentBuildResult } from "./types";
+import { repairEventReach } from "./eventReach";
+import { dressInteriorExits } from "./exitDress";
+import { fixObjectSheetFacing, showExaminedThing } from "./examineArt";
+import { examineHint, settleExamineSpot } from "./examineSpot";
+import { isPersonName, personGraphicFor } from "./personName";
 
 type Obj = Record<string, unknown>;
 const STEPS = [[1, 0], [-1, 0], [0, 1], [0, -1]] as const;
@@ -15,7 +20,7 @@ const TOUCH = new Set(["playerTouch", "touch", "eventTouch"]);
 const slug = (s: string): string => (s.normalize("NFKD").replace(/[^A-Za-z0-9]+/gu, "_").replace(/^_|_$/gu, "").toLowerCase() || `k${Math.abs([...s].reduce((h, c) => (h * 31 + c.charCodeAt(0)) | 0, 7)).toString(36)}`).slice(0, 24);
 
 export interface ChainLink {
-  readonly role: "clue" | "code" | "door" | "pickup";
+  readonly role: "clue" | "code" | "door" | "pickup" | "ending";
   readonly eventId?: string;
   readonly name?: string;
   readonly at?: { readonly x: number; readonly y: number };
@@ -33,6 +38,10 @@ export interface ChainLink {
   readonly doneLines?: readonly string[];
   readonly reward?: { readonly item?: string; readonly flag?: string; readonly lines?: readonly string[] };
   readonly seal?: boolean;
+  /** needs 대신 쓰는 조건 그대로(사슬 밖 이벤트가 켜는 스위치·주는 아이템). */
+  readonly needsCondition?: readonly Record<string, unknown>[];
+  /** ending: 부를 엔딩 id(조건이 차면 대사 뒤 triggerEnding). */
+  readonly endingId?: string;
 }
 export interface ChainArgs { readonly mapId: string; readonly name: string; readonly links: readonly ChainLink[] }
 
@@ -231,7 +240,24 @@ export function buildPuzzleChain(run: BuildRun, args: ChainArgs): ContentBuildRe
     }
     return got.kind === "flag" ? [{ kind: "switch", switchId: got.switchId, value: true }] : [{ kind: "item", itemId: got.itemId, present: true }];
   };
+  /** 번호·고르기 시도 명령 — 맞으면 onSolve, 틀리면 wrongLines. 틀린 인자면 실패 문장. */
+  const codeAttempt = (link: ChainLink, index: number, onSolve: () => Obj[]): Obj[] | string => {
+    const code = link.code!;
+    const leaked = [...(link.lockedLines ?? []), ...(link.wrongLines ?? []), ...(link.doneLines ?? [])].find((l) => l.includes(code));
+    if (leaked) return `${index + 1}번 고리(${link.role}): 자물쇠 대사에 답 ${code} 이 들어 있다 — 답은 단서 고리의 lines 에만 둔다`;
+    if (link.options?.length) {
+      if (!link.options.includes(code)) return `${index + 1}번 고리(${link.role}): options 에 정답 ${code} 이 없다`;
+      return [{ kind: "choices", cancelBehavior: "branch", cancelBranch: [], options: shuffledOptions(link.options, code, `${chainKey}:${index}`).map((text) => ({ text, branch: text === code ? onSolve() : say(link.wrongLines ?? ["…아무 일도 일어나지 않는다."]) })) }];
+    }
+    if (!/^\d{1,8}$/u.test(code)) return `${index + 1}번 고리(${link.role}): 숫자 자물쇠의 code 는 1~8자리 숫자 — 글자 답이면 options 로 고르게 한다`;
+    if (trivialCode(code)) return `${index + 1}번 고리(${link.role}): 정답 ${code} 은 아무나 먼저 쳐 보는 번호다(같은 숫자·차례 숫자·1024 같은 흔한 번호) — 단서에서만 알 수 있는 번호(날짜·시계 바늘·책 쪽수를 이은 것)로 바꾼다`;
+    const variableId = `var_${chainKey}_${index + 1}`;
+    run.call("declare_story_flag", { action: "declare", id: `${chainKey}-code-${index + 1}`, kind: "variable", targetId: variableId, description: `${args.name}: 입력한 번호` });
+    return [{ kind: "inputNumber", variableId, digits: code.length },
+      { kind: "fork", condition: { kind: "variable", variableId, op: "==", value: Number(code) }, then: onSolve(), else: say(link.wrongLines ?? ["철컥… 맞지 않는다."]) }];
+  };
   const doors: { mapId: string; eventId: string }[] = [];
+  const personNotes: string[] = [];
   for (const [index, link] of args.links.entries()) {
     const mapId = link.mapId ?? args.mapId;
     const map = run.ctx.project.maps[mapId];
@@ -239,10 +265,25 @@ export function buildPuzzleChain(run: BuildRun, args: ChainArgs): ContentBuildRe
     const existing = map.events.find((ev) => ev.id === link.eventId) ?? (link.name ? map.events.find((ev) => ev.name === link.name) : undefined)
       ?? (link.at ? map.events.find((ev) => ev.x === link.at!.x && ev.y === link.at!.y) : undefined);
     if (!existing && !link.at) return fail(`${index + 1}번 고리(${link.role}): 이벤트 ${link.eventId ?? link.name ?? ""} 를 못 찾았다 — eventId 를 주거나 새로 둘 칸 at:{x,y} 를 준다`);
-    const id = existing?.id ?? `ev_chain_${chainKey}_${index + 1}`;
+    // 새 고리 id 는 게임 어디의 이벤트와도 겹치지 않게 — 다시 지을 때 «ev_chain_<이름>_1» 이 이미 있는 다른 고리(그대로 둔 단계)를 덮어썼다
+    // (2026-10-29 mt3 flash 방탈출 재빌드: 덧붙인 단서 고리가 「조사 시작」을 지웠다).
+    const usedIds = new Set(Object.values(run.ctx.project.maps).flatMap((m) => (m.events ?? []).map((ev) => ev.id)));
+    const claimed = new Set(eventIds.map((e) => e.eventId));
+    let id = existing?.id ?? `ev_chain_${chainKey}_${index + 1}`;
+    for (let n = index + 2; !existing && (usedIds.has(id) || claimed.has(id)); n += 1) id = `ev_chain_${chainKey}_${n}`;
     const look = existing ? structuredClone((existing.pages?.[0] as unknown as Obj | undefined) ?? {}) : {};
-    const basePage = (extra: Obj): Obj => ({ trigger: look.trigger ?? { kind: "action" }, priority: look.priority ?? "same", graphic: look.graphic ?? {}, ...(look.movement ? { movement: look.movement } : {}), ...(look.animationType ? { animationType: look.animationType } : {}), conditions: [], ...extra });
-    const need = condFor(link.needs);
+    // 그림 없는(투명) 조사 칸은 다가가면 반짝인다 — 새 플레이어가 어디를 조사할지 보이게(2026-10-28 청사진 경로).
+    // 「transparent:true」만 있는 그림도 그림 없음이다(sprite·tileId 가 없으면).
+    const lookGraphic = (look.graphic as Obj | undefined) ?? {};
+    let invisible = !existing || lookGraphic.transparent === true || (!lookGraphic.sprite && !lookGraphic.appearanceId && !(typeof lookGraphic.tileId === "number" && lookGraphic.tileId > 0));
+    // 이름이 사람(직함·호칭)이면 반짝이 칸 대신 공용 캐릭터 칩을 붙인다(2026-10-28 standin joseon 「주모」「포졸」「종사관」).
+    const personName = link.name ?? (existing as { name?: string } | undefined)?.name;
+    if (invisible && isPersonName(personName)) {
+      const person = personGraphicFor(run.ctx.project, map, personName!);
+      if (person) { look.graphic = person.graphic; invisible = false; personNotes.push(`${personName} → 「${person.label}」`); }
+    }
+    const basePage = (extra: Obj): Obj => ({ trigger: look.trigger ?? { kind: "action" }, priority: look.priority ?? "same", graphic: look.graphic ?? {}, ...(look.movement ? { movement: look.movement } : {}), ...(look.animationType ? { animationType: look.animationType } : {}), ...(invisible ? { nearSparkle: { radius: 2 } } : (look.nearSparkle ? { nearSparkle: look.nearSparkle } : {})), conditions: [], ...extra });
+    const need = link.needsCondition?.length ? link.needsCondition.map((c) => ({ ...c })) : condFor(link.needs);
     if (typeof need === "string") return fail(`${index + 1}번 고리: ${need}`);
     const pages: Obj[] = [];
     const rewardCmds = (): Obj[] => {
@@ -259,23 +300,11 @@ export function buildPuzzleChain(run: BuildRun, args: ChainArgs): ContentBuildRe
       have.set(link.learn, { kind: "flag", switchId: sw });
     } else if (link.role === "code") {
       if (!link.code) return fail(`${index + 1}번 고리(code): code(정답)가 없다`);
-      if (!link.needs) warnings.push(`${index + 1}번 고리(code): needs 가 없어 단서 없이 답을 맞힐 수 있다 — 단서 고리의 learn 이름을 needs 로 준다`);
+      if (!link.needs && !link.needsCondition?.length) warnings.push(`${index + 1}번 고리(code): needs 가 없어 단서 없이 답을 맞힐 수 있다 — 단서 고리의 learn 이름을 needs 로 준다`);
       const solved = flag(`${slug(link.code)}_solved_${index + 1}`, `${args.name}: 자물쇠 풀림`);
-      const leaked = [...(link.lockedLines ?? []), ...(link.wrongLines ?? []), ...(link.doneLines ?? [])].find((l) => l.includes(link.code!));
-      if (leaked) return fail(`${index + 1}번 고리(code): 자물쇠 대사에 답 ${link.code} 이 들어 있다 — 답은 단서 고리의 lines 에만 둔다`);
+      const attempt = codeAttempt(link, index, () => [...rewardCmds(), { kind: "setSwitch", switchId: solved, value: true }]);
+      if (typeof attempt === "string") return fail(attempt);
       pages.push(basePage({ commands: say(link.lockedLines ?? ["자물쇠가 걸려 있다. 무엇을 맞춰야 하는지 아직 모르겠다."]) }));
-      let attempt: Obj[];
-      if (link.options?.length) {
-        if (!link.options.includes(link.code)) return fail(`${index + 1}번 고리(code): options 에 정답 ${link.code} 이 없다`);
-        attempt = [{ kind: "choices", cancelBehavior: "branch", cancelBranch: [], options: shuffledOptions(link.options, link.code, `${chainKey}:${index}`).map((text) => ({ text, branch: text === link.code ? [...rewardCmds(), { kind: "setSwitch", switchId: solved, value: true }] : say(link.wrongLines ?? ["…아무 일도 일어나지 않는다."]) })) }];
-      } else {
-        if (!/^\d{1,8}$/u.test(link.code)) return fail(`${index + 1}번 고리(code): 숫자 자물쇠의 code 는 1~8자리 숫자 — 글자 답이면 options 로 고르게 한다`);
-        if (trivialCode(link.code)) return fail(`${index + 1}번 고리(code): 정답 ${link.code} 은 아무나 먼저 쳐 보는 번호다(같은 숫자·차례 숫자·1024 같은 흔한 번호) — 단서에서만 알 수 있는 번호(날짜·시계 바늘·책 쪽수를 이은 것)로 바꾼다`);
-        const variableId = `var_${chainKey}_${index + 1}`;
-        run.call("declare_story_flag", { action: "declare", id: `${chainKey}-code-${index + 1}`, kind: "variable", targetId: variableId, description: `${args.name}: 입력한 번호` });
-        attempt = [{ kind: "inputNumber", variableId, digits: link.code.length },
-          { kind: "fork", condition: { kind: "variable", variableId, op: "==", value: Number(link.code) }, then: [...rewardCmds(), { kind: "setSwitch", switchId: solved, value: true }], else: say(link.wrongLines ?? ["철컥… 맞지 않는다."]) }];
-      }
       pages.push(basePage({ conditions: need, commands: [...say(link.lines), ...attempt] }));
       pages.push(basePage({ conditions: [{ kind: "switch", switchId: solved, value: true }], commands: say(link.doneLines ?? ["이미 열려 있다."]) }));
     } else if (link.role === "pickup") {
@@ -290,18 +319,47 @@ export function buildPuzzleChain(run: BuildRun, args: ChainArgs): ContentBuildRe
       const transfer = existing ? JSON.stringify(existing.pages ?? []).match(/\{[^{}]*"kind":"transfer"[^{}]*\}/u)?.[0] : undefined;
       const go = transfer ? [JSON.parse(transfer) as Obj] : [];
       pages.push(basePage({ priority: "same", commands: say(link.lockedLines ?? ["굳게 잠겨 있다."]) }));
-      pages.push(basePage({ priority: "same", conditions: need, commands: [...say(link.lines ?? ["열쇠를 넣고 돌리자 문이 열렸다."]), { kind: "setSwitch", switchId: opened, value: true }, ...go] }));
+      pages.push(basePage({ priority: "same", conditions: need, commands: [...say(link.lines ?? ["열쇠를 넣고 돌리자 문이 열렸다."]), ...rewardCmds(), { kind: "setSwitch", switchId: opened, value: true }, ...go] }));
       pages.push(basePage({ priority: go.length ? "below" : "below", trigger: go.length ? { kind: "playerTouch" } : (look.trigger ?? { kind: "action" }), graphic: go.length ? look.graphic ?? {} : {}, conditions: [{ kind: "switch", switchId: opened, value: true }], commands: go.length ? go : say(link.doneLines ?? []) }));
       doors.push({ mapId, eventId: id });
+    } else if (link.role === "ending") {
+      if (!link.endingId) return fail(`${index + 1}번 고리(ending): endingId 가 없다`);
+      if (need.length) pages.push(basePage({ commands: say(link.lockedLines ?? ["아직 할 수 없다."]) }));
+      // code 가 있으면 번호를 맞혀야 엔딩(2026-10-28 mt3 flash 방탈출: 「비밀번호 입력」 단계가 조사만으로 엔딩을 불렀다).
+      const attempt = link.code ? codeAttempt(link, index, () => [...say(link.reward?.lines), { kind: "triggerEnding", endingId: link.endingId }]) : [{ kind: "triggerEnding", endingId: link.endingId }];
+      if (typeof attempt === "string") return fail(attempt);
+      pages.push(basePage({ conditions: need, commands: [...say(link.lines), ...attempt] }));
     }
     const res = run.call("upsert_event", { mapId, replacePages: true, event: { id, ...(existing ? {} : { name: link.name ?? `${args.name} ${index + 1}`, x: link.at!.x, y: link.at!.y }), pages } });
     if (!res.ok) return fail(`${index + 1}번 고리 이벤트를 쓰지 못했다: ${String(res.summary).slice(0, 300)}`);
     eventIds.push({ mapId, eventId: id });
   }
+  // 걸어 가서 말을 걸 수 있는 자리인가(2026-10-28 mt2 deepseek: 모델이 준 칸의 쪽지가 한 칸 통로를 막아 자물쇠에 못 갔다).
+  // 막힌 고리·길목을 막는 고리는 가까운 닿는 칸으로 옮기고, 문 이름 고리는 그림 문 칸에 붙인다. 문 막기(seal) 전에 한다.
+  const reachNotes: string[] = [];
+  for (const mapId of [...new Set(eventIds.map((e) => e.mapId))]) {
+    // 막다른 남쪽 출구는 메우고 문 고리를 북벽 문 그림으로(exitDress) — 자리 고치기 전에 해야 문이 그 그림 칸에 붙는다.
+    const exits = dressInteriorExits(run, mapId);
+    if (exits.notes.length) reachNotes.push(`출구 마감: ${exits.notes.join(" / ")}`);
+    const fixed = repairEventReach(run, mapId, eventIds.filter((e) => e.mapId === mapId).map((e) => e.eventId));
+    if (fixed.moved.length) reachNotes.push(`닿게 옮김: ${fixed.moved.join(", ")}`);
+    for (const s of fixed.stuck) warnings.push(`걸어 가서 조사할 자리를 못 찾았다: ${s}`);
+  }
+  // 자리는 위 repairEventReach 가 정한다(정본). 여기서는 그 자리에서 조사할 물건이 그림으로 보이게만 한다(일기장·편지 → 바로 옆 책상 윗면 탁상 물건)
+  // — 이벤트를 옮기지 않는다. 칩 그림 사물(문·상자)은 조사할 때 돌아서지 않게.
+  // 그림 없는 조사 칸이 빈 바닥에 서서 보이지 않는 벽이 되면 옆 가구로 붙이거나·소품을 세우거나·발밑으로 내린다(examineSpot, 2026-10-29 flash).
+  for (const [i, e] of eventIds.entries()) {
+    fixObjectSheetFacing(run, e.mapId, e.eventId);
+    const link = args.links[i];
+    const settled = link?.role === "door" ? [] : settleExamineSpot(run, e.mapId, e.eventId, examineHint(link?.role, [link?.reward?.item]));
+    if (settled.length) { reachNotes.push(`조사 칸: ${settled.join(", ")}`); continue; }
+    const shown = showExaminedThing(run, e.mapId, e.eventId);
+    if (shown) warnings.push(shown);
+  }
   // 답이 단서에 실제로 적혀 있는가.
-  for (const link of args.links) if (link.role === "code" && link.code && !args.links.some((l) => l.role === "clue" && (l.lines ?? []).some((line) => line.includes(link.code!)))) warnings.push(`정답 ${link.code} 이 어느 단서 lines 에도 없다 — 플레이어가 답을 알 길이 없다`);
+  for (const link of args.links) if ((link.role === "code" || link.role === "ending") && link.code && !args.links.some((l) => l !== link && (l.lines ?? []).some((line) => line.includes(link.code!)))) warnings.push(`정답 ${link.code} 이 어느 단서 lines 에도 없다 — 플레이어가 답을 알 길이 없다`);
   const seals = doors.filter((d) => args.links.find((l) => (l.eventId ?? "") === d.eventId)?.seal !== false).map((d) => sealLockedRoom(run, d.mapId, d.eventId));
   for (const s of seals) if (!s.ok) warnings.push(s.summary);
-  const sealNote = seals.length ? ` ${seals.map((s) => s.summary).join(" / ")}` : "";
-  return { ok: true, mapIds: [...new Set(eventIds.map((e) => e.mapId))], eventIds, summary: `퍼즐 사슬 「${args.name}」 ${args.links.length}고리를 지었다(${args.links.map((l) => l.role).join(" → ")}).${sealNote}`, warnings, missingArt: [], calls: [] };
+  const sealNote = `${reachNotes.length ? ` ${reachNotes.join(" / ")}.` : ""}${seals.length ? ` ${seals.map((s) => s.summary).join(" / ")}` : ""}`;
+  return { ok: true, mapIds: [...new Set(eventIds.map((e) => e.mapId))], eventIds, summary: `퍼즐 사슬 「${args.name}」 ${args.links.length}고리를 지었다(${args.links.map((l) => l.role).join(" → ")}).${personNotes.length ? ` 사람 그림: ${personNotes.join(", ")}.` : ""}${sealNote}`, warnings, missingArt: [], calls: [] };
 }

@@ -19,6 +19,8 @@ import type { PlaySceneContext } from "@/player/playSceneTypes";
 import type { LightSource, LightSourceAnchor } from "@/project/types";
 import { store } from "@/project/store";
 import { runtimeEventViewById } from "@/project/runtimeEventState"
+import { reliefTopOverhangPx } from "@/player/playSceneRelief";
+import { normalizeVisualTopOverhangPx } from "@/project/mapVisualBounds";
 
 const LIGHTING_MASK_TEXTURE_KEY = "__oprn_lighting_mask";
 
@@ -91,6 +93,7 @@ export function syncLightingLayer(scene: PlaySceneContext): void {
     zoom: camera.zoom,
     timeMs: scene.lightingClockMs ?? 0,
     resolveAnchor: (anchor, source) => resolveLightAnchor(scene, anchor, source),
+    mapBounds: mapWorldBounds(scene),
   });
   const signature = lightingMaskSignature(params);
   if (signature === scene.lightingMaskSignature) return;
@@ -133,6 +136,15 @@ export function applyLightingStep(
   });
 }
 
+/** 맵이 그려지는 세계 사각(북쪽 돌출 포함) — 어둠 막은 이 안에만 칠한다. */
+function mapWorldBounds(scene: PlaySceneContext): { x: number; y: number; width: number; height: number } | undefined {
+  const map = scene.map;
+  if (!map) return undefined;
+  const tile = mapTileSize(map);
+  const overhang = Math.max(reliefTopOverhangPx(map, tile), normalizeVisualTopOverhangPx(map.visualTopOverhangPx) ?? 0);
+  return { x: 0, y: -overhang, width: map.width * tile, height: map.height * tile + overhang };
+}
+
 function advanceFixedClock(scene: PlaySceneContext, deltaMs: number): number {
   scene.lightingFixedAccumulatorMs = (scene.lightingFixedAccumulatorMs ?? 0) + Math.max(0, deltaMs);
   let steps = 0;
@@ -152,12 +164,22 @@ function resolveLightingWaiters(scene: PlaySceneContext): void {
 function resolveLightAnchor(
   scene: PlaySceneContext,
   anchor: LightSourceAnchor,
-  _source: LightSource
+  source: LightSource
 ): LightTilePosition | undefined {
-  if (anchor === "player") return spriteToTilePosition(scene.player, mapTileSize(scene.map));
+  if (anchor === "player") {
+    const at = spriteToTilePosition(scene.player, mapTileSize(scene.map));
+    return source.cone ? { ...at, facing: scene.facing } : at;
+  }
   if ("eventId" in anchor) {
     const eventSprite = scene.eventSprites.get(anchor.eventId);
-    if (eventSprite) return spriteToTilePosition(eventSprite, mapTileSize(scene.map));
+    if (eventSprite) {
+      const at = spriteToTilePosition(eventSprite, mapTileSize(scene.map));
+      if (!source.cone) return at;
+      // 부채꼴 빛(경비 등불 시야)은 그 이벤트가 지금 보는 쪽으로 — 순찰하며 돌아서면 빛도 같이 돈다(시야 판정 npcSeesPoint 와 같은 방향).
+      const facing = scene.autonomousNPCs.get(anchor.eventId)?.facing
+        ?? runtimeEventViewById(store.getCurrent(), scene.map, scene.session, scene.eventPositions, anchor.eventId)?.direction;
+      return facing ? { ...at, facing } : at;
+    }
     const project = store.getCurrent();
     const follower = followerPositions(scene.session, project.system.companions, { project, map: scene.map }).find((entry) =>
       entry.follower.eventId === anchor.eventId || entry.follower.name === anchor.eventId
@@ -168,7 +190,7 @@ function resolveLightAnchor(
     // 스프라이트가 없으면 뷰에서 몸 중앙을 계산한다 — spriteToTilePosition 과 같은 좌표계다
     // (중앙 타일 인덱스). Y 는 발밑이 곧 앵커라 그대로다.
     return view
-      ? { x: view.bodyRect.left + view.footprint.width / 2 - 0.5, y: view.y }
+      ? { x: view.bodyRect.left + view.footprint.width / 2 - 0.5, y: view.y, ...(source.cone && view.direction ? { facing: view.direction } : {}) }
       : undefined;
   }
   return { x: anchor.x, y: anchor.y };

@@ -7,12 +7,13 @@
   .left-props-pane[hidden] { display: none; }
   .left-props-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
   .left-props-head h2 { margin: 0; font: 600 15px/1.4 var(--font-ui); }
-  .left-props-head > span { min-width: 0; overflow-wrap: anywhere; color: var(--text-3); text-align: right; }
+  .left-props-head > span { min-width: 0; overflow-wrap: anywhere; color: var(--text-2); text-align: right; }
+  .left-props-map-label { color: var(--text-2); }
   .left-props-context { display: flex; flex-direction: column; gap: 3px; padding: 10px 12px; border-radius: var(--radius-s); background: var(--bg-inset); }
-  .left-props-context > span { color: var(--text-3); font-size: 11px; }
+  .left-props-context > span { color: var(--text-2); font-size: 12px; }
   .left-props-context > strong { font-weight: 500; overflow-wrap: anywhere; }
   .left-props-browser { position: sticky; top: 0; z-index: 1; display: flex; flex-direction: column; gap: 8px; padding-bottom: 4px; background: var(--bg-raised); }
-  .left-props-browser label { display: flex; flex-direction: column; gap: 4px; color: var(--text-3); font-size: 11px; }
+  .left-props-browser label { display: flex; flex-direction: column; gap: 4px; color: var(--text-2); font-size: 12px; }
   .left-props-browser input, .left-props-browser select {
     box-sizing: border-box; width: 100%; min-width: 0; min-height: 32px; padding: 6px 8px;
     border: 1px solid var(--border-default); border-radius: var(--radius-s); background: var(--bg-raised);
@@ -21,7 +22,9 @@
   .left-props-browser .left-props-category-row { flex-direction: row; align-items: center; gap: 8px; }
   .left-props-category-row > span { flex: none; }
   .left-props-results-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-  .left-props-result-count { color: var(--text-3); font-size: 11px; }
+  .left-props-result-count { color: var(--text-2); font-size: 12px; }
+  .left-props-prefix { margin: -6px 0 0; color: var(--text-2); font-size: 12px; }
+  .left-props-prefix[hidden] { display: none; }
   .left-props-title { margin: 2px 0 0; font: 600 12px/1.5 var(--font-ui); }
   .left-props-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
   .left-props-card {
@@ -34,10 +37,10 @@
   .left-props-preview { display: flex; align-items: center; justify-content: center; width: 100%; height: 76px; }
   .left-props-preview canvas { display: block; max-width: 100%; max-height: 72px; object-fit: contain; image-rendering: pixelated; }
   .left-props-name { font-weight: 500; overflow-wrap: anywhere; }
-  .left-props-size, .left-props-reason { color: var(--text-3); font-size: 11px; }
+  .left-props-size, .left-props-reason { color: var(--text-2); font-size: 12px; }
   .left-props-selection { display: flex; flex-direction: column; gap: 4px; padding-top: 2px; }
   .left-props-selection strong { font-weight: 500; overflow-wrap: anywhere; }
-  .left-props-selection > span, .left-props-empty { color: var(--text-3); font-size: 11.5px; }
+  .left-props-selection > span, .left-props-empty { color: var(--text-2); font-size: 12px; }
   .left-props-empty { margin: 0; }
   .left-props-empty[hidden] { display: none; }
   .left-props-more[hidden] { display: none; }

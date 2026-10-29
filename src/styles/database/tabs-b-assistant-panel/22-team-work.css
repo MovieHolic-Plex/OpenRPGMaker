@@ -445,8 +445,8 @@
 }
 
 .ai-team-tx-review {
-  border-left: 2px solid var(--success);
-  border-radius: 0 8px 8px 0;
+  border: 1px solid var(--border-default);
+  border-radius: 8px;
   background: color-mix(in srgb, var(--success) 8%, transparent);
   margin: 4px 0;
   padding: 6px 10px;

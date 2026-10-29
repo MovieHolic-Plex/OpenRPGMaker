@@ -8,7 +8,7 @@ import { describeMergeConflicts } from "@/project/projectMerge";
 import { adoptSpatialToolProof } from "@/editor/tools/spatialToolState";
 import { isUntouchedMap } from "@/project/projectBlankness";
 import type { Project } from "@/project/types";
-import { requestAssistantDecision } from "./aiDecisionPrompt";
+import { registerAssistantDecision, requestAssistantDecisionDetailed } from "./aiDecisionPrompt";
 import { createPendingReviewPrompt } from "./aiPendingReview";
 import { openWideChangeViewer } from "./aiChangePreview";
 import type { PiCommandSurface } from "./aiPiAgentCommand";
@@ -31,10 +31,18 @@ export function createPiPublication(base: Project, mode: PiApplyMode, surface: P
   const declinedLoss = new Set<string>();
   const approveStage = (next: Project, title: string): Promise<void> => new Promise((resolve, reject) => {
     surface.signal?.throwIfAborted();
-    const finish = (accepted: boolean) => {
+    let unregister = () => {};
+    let settled = false;
+    const finish = (accepted: boolean, newMessage = false) => {
+      if (settled) return;
+      settled = true;
+      unregister();
       surface.signal?.removeEventListener("abort", abort);
       prompt.root.remove();
-      if (accepted) resolve(); else reject(new Error("단계 적용을 중단했습니다. 이전에 적용한 단계는 유지됩니다."));
+      if (accepted) resolve();
+      else reject(new Error(newMessage
+        ? "새 메시지가 와서 단계 적용 확인을 그만두기로 닫았습니다. 이전에 적용한 단계는 유지됩니다."
+        : "단계 적용을 중단했습니다. 이전에 적용한 단계는 유지됩니다."));
     };
     const abort = () => finish(false);
     const prompt = createPendingReviewPrompt({
@@ -45,6 +53,11 @@ export function createPiPublication(base: Project, mode: PiApplyMode, surface: P
     (surface.appendReviewPrompt ?? surface.appendCard)(prompt.root);
     surface.setStatus("답변 필요");
     surface.signal?.addEventListener("abort", abort, { once: true });
+    // 단계 확인도 사람 답을 기다리는 자리다 — 열린 카드 대장에 올려 새 메시지가 붙잡히지 않게 한다(aiDecisionPrompt).
+    unregister = registerAssistantDecision({
+      title, ...(surface.runKey !== undefined ? { runKey: surface.runKey } : {}), openedAt: Date.now(),
+      answer: (accepted, via) => finish(accepted, via === "new-message"),
+    });
   });
   const publish = async (checkpoint: PiProjectCheckpoint): Promise<Project> => {
     surface.signal?.throwIfAborted();
@@ -67,14 +80,20 @@ export function createPiPublication(base: Project, mode: PiApplyMode, surface: P
     if (loss && mode !== "yolo" && mode !== "auto") {
       const lostIds = "removedMapIds" in loss ? [...loss.removedMapIds, ...loss.emptiedMapIds] : [];
       const repeat = lostIds.length > 0 && lostIds.every(id => declinedLoss.has(id));
-      const accepted = !repeat && await (surface.decide
-        ? surface.decide({ title: loss.title, message: loss.message, lostMapIds: lostIds })
-        : requestAssistantDecision(surface, { title: loss.title, message: loss.message, confirmLabel: loss.confirmLabel, cancelLabel: "그만두기", danger: true }));
-      if (!accepted) {
+      const decision = repeat ? { accepted: false, via: "button" as const } : surface.decide
+        ? { accepted: await surface.decide({ title: loss.title, message: loss.message, lostMapIds: lostIds }), via: "button" as const }
+        : await requestAssistantDecisionDetailed(surface, { title: loss.title, message: loss.message, confirmLabel: loss.confirmLabel, cancelLabel: "그만두기", danger: true });
+      if (!decision.accepted) {
         lostIds.forEach(id => declinedLoss.add(id));
-        if (!repeat) surface.appendProcess?.(`${loss.cancelNotice} 나머지 작업은 계속합니다.`);
+        const byNewMessage = decision.via === "new-message";
+        if (!repeat) surface.appendProcess?.(byNewMessage
+          ? `새 메시지가 와서 「${loss.title}」 카드를 그만두기로 닫았어요 — 그 변경만 빼고 나머지 작업은 계속합니다.`
+          : `${loss.cancelNotice} 나머지 작업은 계속합니다.`);
         // 머리가 붙은 거절은 워커가 그 변경만 되돌리고 실행을 잇는다 — 작업 전체를 멈추는 건 중단 버튼이다.
-        throw new Error(`${PI_MAP_LOSS_DECLINED_PREFIX} ${loss.cancelNotice}`);
+        // 새 메시지로 닫힌 거절은 조수가 그 사실을 다음 차례에 읽는다(워커가 이 문장을 도구 실패로 돌려준다).
+        throw new Error(`${PI_MAP_LOSS_DECLINED_PREFIX} ${byNewMessage
+          ? `사용자가 확인 카드에 답하지 않고 새 메시지를 보내 카드가 「그만두기」로 닫혔습니다(${loss.cancelNotice}). 새 메시지는 이 실행이 끝난 뒤 처리됩니다.`
+          : loss.cancelNotice}`);
       }
     }
     surface.signal?.throwIfAborted();

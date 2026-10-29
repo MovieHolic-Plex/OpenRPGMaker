@@ -603,6 +603,15 @@
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"] .battle-command-menu:not(:has(> .battle-submenu-header)) .battle-command-text small {
   display: none;
 }
+/* 단, 못 쓰는 루트 명령은 이유 한 마디를 남긴다 — 흐린 「아이템」만 보이고 왜 못 쓰는지는 ARIA 에만 있었다(HIG C-95). */
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"] .battle-command-menu:not(:has(> .battle-submenu-header)) .battle-command[data-battle-command-inert="true"] .battle-command-text small:last-of-type {
+  display: inline-block;
+  font-size: 14px;
+  line-height: 1;
+  margin-left: 6px;
+  opacity: 0.9;
+  white-space: nowrap;
+}
 
 /* 서브메뉴 행은 이름 + 상세를 **한 줄에** 놓는다. 세로로 쌓으면 24px 내용 상자를 넘겨
    상세가 행 밖으로 밀려 사라진다(실측). 포기하는 쪽은 이름이다. 상세(MP n)는 알약 배지. */
@@ -615,6 +624,18 @@
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"] .battle-command-menu:has(> .battle-submenu-header) .battle-command-text strong {
   min-width: 0;
+}
+
+/* 무기 꼬리표(「검」)는 이름 바로 뒤에 붙고, 비용 배지만 오른쪽 끝으로 민다. space-between 이면
+   꼬리표가 행 가운데 떠서 어느 기술의 것인지 읽히지 않았다(2026-10-29 dungeon 십자베기 실측). */
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"] .battle-command-menu:has(> .battle-submenu-header) .battle-command-text {
+  justify-content: flex-start;
+}
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"] .battle-command-menu:has(> .battle-submenu-header) .battle-command-text .battle-command-tag {
+  align-self: center;
+}
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"] .battle-command-menu:has(> .battle-submenu-header) .battle-command-text small {
+  margin-left: auto;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"] .battle-command-menu:has(> .battle-submenu-header) .battle-command-text small {

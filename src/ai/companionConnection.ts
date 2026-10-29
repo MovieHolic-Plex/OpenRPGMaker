@@ -202,6 +202,14 @@ export async function fetchCompanion(input: string, init?: RequestInit, options:
       response = await doFetch(input, withCurrentToken(init));
     }
   }
+  // 사용 한도(429)는 연결 문제가 아니라 사용 가능 여부다 — 칩·설정 머리가 「연결됨」으로 남지 않게 전송 상태로 알린다(C-67).
+  // 한도에 걸려 있던 뒤의 첫 성공은 그 표시를 걷는다. llmClient 가 이 모듈을 가져오므로 늦게 부른다.
+  if (response.status === 429) {
+    void import("@/ai/llmClient").then((llm) => llm.reportTransportHealth(false, 429, "사용 한도 초과")).catch(() => undefined);
+  } else if (response.ok && routeOf(input).startsWith("/v1/")) {
+    // 로그인 확인(/auth/*) 성공은 한도가 풀렸다는 뜻이 아니다 — 실제 모델 호출(/v1/*)이 성공했을 때만 걷는다.
+    void import("@/ai/llmClient").then((llm) => { if (llm.getAiTransportHealth()?.status === 429) llm.reportTransportHealth(true, response.status); }).catch(() => undefined);
+  }
   if (response.ok) { clearProblem(); return response; }
   if (response.status === 404 && options.expect404) return response;
   const route = routeOf(input);

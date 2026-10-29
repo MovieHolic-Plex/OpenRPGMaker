@@ -709,7 +709,8 @@ export function homeTownSketch(layout: HomeTownLayout = {}): { sketch: TownSketc
   const pick = <T>(xs: readonly T[]): T => xs[Math.floor(r() * xs.length)]!;
   const size = layout.size && HOME_TOWN_SIZES.includes(layout.size) ? layout.size : pick(HOME_TOWN_SIZES);
   const streets = layout.streets && HOME_TOWN_STREETS.includes(layout.streets) ? layout.streets : pick(HOME_TOWN_STREETS);
-  const pond = typeof layout.pond === "boolean" ? layout.pond : r() < 0.5;
+  // 큰 마을(34×30)은 집 넷이 한쪽에 몰리면 반대편이 통째로 빈 초원이었다(2026-10-28 장부 61%) — 고르지 않았으면 연못을 둔다(가장 트인 자리에).
+  const pond = typeof layout.pond === "boolean" ? layout.pond : r() < 0.5 || size === "large";
   // 길 자리가 큰 연구소(7×7) 자리를 막으면 다른 길 자리로 다시 짠다. 그래도 안 되면 한 치수 큰 마을로.
   const sizes = [size, ...HOME_TOWN_SIZES.slice(HOME_TOWN_SIZES.indexOf(size) + 1)];
   for (const sz of sizes) for (let k = 0; k < 40; k++) {
@@ -814,29 +815,60 @@ function homeTownAttempt(size: HomeTownSize, streets: HomeTownStreets, pond: boo
   const home = kits.find(([n]) => n === houseKit)!;
   const mbx = home[1] - 1, mby = home[2] + houseH - 1;   // 집 왼쪽 벽 끝 — 문 앞 칸은 비워 둔다(문 자리는 킷마다 다르다)
   if (inside(mbx, mby) && g[mby]![mbx] === ".") g[mby]![mbx] = "M";
-  // 연못(물 오토타일): 빈 자리 한 곳.
+  // 빈 땅에 용도를(2026-10-28 장부 「몬스터 마을 61% — 동쪽 빈 초원」): 연못·나무·꽃밭을 상자 안 아무 데나 흩으면 집이 몰린 쪽 반대편이
+  // 낱 나무·낱 꽃만 흩어진 빈 초원으로 남았다. 연못과 첫 나무는 가장 트인 자리(둘레 3칸 안 빈 땅이 가장 많은 곳)에, 나머지 나무는
+  // 이미 선 나무 곁에 붙여 숲 덩이로, 꽃밭·꽃은 연못·나무 곁에 — 빈 초원이 「연못가 숲」이라는 한 구역이 된다.
+  const openness = (x: number, y: number, w: number, h: number) => {
+    let n = 0;
+    for (let yy = y - 3; yy < y + h + 3; yy++) for (let xx = x - 3; xx < x + w + 3; xx++) if (inside(xx, yy) && g[yy]![xx] === ".") n++;
+    return n;
+  };
+  /** 빈 자리 후보 중 가장 트인 곳(위 셋 가운데 하나). near 를 주면 그 둘레(가로 ±near.r·세로 ±near.r)만. */
+  const openSpot = (w: number, h: number, near?: { x: number; y: number; r: number }): [number, number] | null => {
+    const spots: [number, number, number][] = [];
+    for (let y = 3; y + h <= H - 3; y++) for (let x = 2; x + w <= W - 2; x++) {
+      if (near && (Math.abs(x - near.x) > near.r || Math.abs(y - near.y) > near.r)) continue;
+      if (free(x, y, w, h) && clearOfKeep(x, y, w, h)) spots.push([x, y, openness(x, y, w, h) + r() * 6]);
+    }
+    if (!spots.length) return null;
+    spots.sort((a, b) => b[2] - a[2]);
+    const [x, y] = spots[Math.floor(r() * Math.min(3, spots.length))]!;
+    return [x, y];
+  };
+  const anchors: { x: number; y: number }[] = [];
   if (pond) {
     const pw = 4 + Math.floor(r() * 3), ph = 3 + Math.floor(r() * 2);
-    const spots: [number, number][] = [];
-    for (let y = 3; y + ph <= H - 3; y++) for (let x = 2; x + pw <= W - 2; x++) if (free(x, y, pw, ph) && clearOfKeep(x, y, pw, ph)) spots.push([x, y]);
-    if (spots.length) { const [x, y] = pick(spots); for (let yy = y; yy < y + ph; yy++) for (let xx = x; xx < x + pw; xx++) g[yy]![xx] = "~"; }
+    const at = openSpot(pw, ph);
+    if (at) { const [x, y] = at; for (let yy = y; yy < y + ph; yy++) for (let xx = x; xx < x + pw; xx++) g[yy]![xx] = "~"; anchors.push({ x: x + (pw >> 1), y: y + (ph >> 1) }); }
   }
-  // 나무(2×4)·꽃밭·꽃·덤불: 남은 빈 자리에 씨앗으로.
+  // 나무(2×4): 첫 그루는 연못 곁이나 가장 트인 자리, 다음 그루는 앞 그루 곁(덩이).
   const trees = 2 + Math.floor(r() * 4);
-  for (let i = 0, tries = 0; i < trees && tries < 200; tries++) {
-    const x = 2 + Math.floor(r() * (W - 5)), y = 3 + Math.floor(r() * (H - 9));
-    if (!free(x, y, 2, 4) || !clearOfKeep(x, y, 2, 4)) continue;
-    g[y]![x] = r() < 0.6 ? "T" : "U"; for (let yy = y; yy < y + 4; yy++) for (let xx = x; xx < x + 2; xx++) if (!(yy === y && xx === x)) g[yy]![xx] = "_"; i++;
+  const planted: { x: number; y: number }[] = [];
+  for (let i = 0; i < trees; i++) {
+    const prev = planted.length ? planted[Math.floor(r() * planted.length)]! : anchors[0];
+    const at = (prev && openSpot(2, 4, { x: prev.x, y: prev.y, r: planted.length ? 3 : 6 })) ?? openSpot(2, 4);
+    if (!at) break;
+    const [x, y] = at;
+    g[y]![x] = r() < 0.6 ? "T" : "U"; for (let yy = y; yy < y + 4; yy++) for (let xx = x; xx < x + 2; xx++) if (!(yy === y && xx === x)) g[yy]![xx] = "_";
+    planted.push({ x, y: y + 2 });
   }
+  anchors.push(...planted);
   const beds = 1 + Math.floor(r() * 3);
-  for (let i = 0, tries = 0; i < beds && tries < 200; tries++) {
-    const x = 2 + Math.floor(r() * (W - 6)), y = 3 + Math.floor(r() * (H - 7));
-    if (!free(x, y, 3, 2) || !clearOfKeep(x, y, 3, 2)) continue;
-    for (let yy = y; yy < y + 2; yy++) for (let xx = x; xx < x + 3; xx++) g[yy]![xx] = "F"; i++;
+  for (let i = 0; i < beds; i++) {
+    const a = anchors.length ? anchors[Math.floor(r() * anchors.length)]! : undefined;
+    const at = (a && openSpot(3, 2, { x: a.x, y: a.y, r: 4 })) ?? openSpot(3, 2);
+    if (!at) break;
+    const [x, y] = at;
+    for (let yy = y; yy < y + 2; yy++) for (let xx = x; xx < x + 3; xx++) g[yy]![xx] = "F";
   }
+  // 낱 꽃·덤불·바위: 연못·나무·건물 곁 두 칸 안에만(빈 초원 한가운데 낱개 점박이 금지).
+  const nearSomething = (x: number, y: number) => {
+    for (let yy = y - 2; yy <= y + 2; yy++) for (let xx = x - 2; xx <= x + 2; xx++) { const c = g[yy]?.[xx]; if (c && c !== "." && c !== "=" && c !== "#") return true; }
+    return false;
+  };
   for (let i = 0, tries = 0; i < 8 + W / 4 && tries < 400; tries++) {
     const x = 2 + Math.floor(r() * (W - 4)), y = 3 + Math.floor(r() * (H - 6));
-    if (g[y]![x] !== "." || keep.has(`${x},${y}`) || !free(x, y, 1, 1)) continue;
+    if (g[y]![x] !== "." || keep.has(`${x},${y}`) || !free(x, y, 1, 1) || !nearSomething(x, y)) continue;
     g[y]![x] = pick(["f", "f", "f", "b", "o"]); i++;
   }
   for (const row of g) for (let x = 0; x < W; x++) if (row[x] === "K" || row[x] === "_") row[x] = ".";

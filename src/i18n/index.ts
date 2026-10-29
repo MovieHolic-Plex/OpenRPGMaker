@@ -43,7 +43,11 @@ async function loadTranslator(locale: SupportedLocale): Promise<Translator | nul
   if (locale === "ko") return null;
   try {
     const module = await CATALOG_LOADERS[locale]();
-    return createTranslator(module.default);
+    return createTranslator(module.default, {
+      locale: editorIntlLocale(locale),
+      // 영어 문구는 줄표를 구분자로 쓰지 않는다(카탈로그 값과 같은 규칙).
+      joinSeparators: locale === "en" ? { " — ": ": " } : {},
+    });
   } catch (error) {
     console.error(`[i18n] ${locale} 카탈로그를 불러오지 못해 한국어로 표시합니다.`, error);
     return null;

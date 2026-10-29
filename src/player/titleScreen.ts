@@ -536,7 +536,8 @@ function renderTitleLogoSubtitle(settings: TitleScreenSettings, titleFit: TitleF
   const titleHeightPx = titleFit ? Math.round(titleFit.fontPx * 1.1 * lines) : 27;
   node.style.top = `calc(${logicalY(settings.layout.titleY)} + ${titleHeightPx + 3}px)`;
   const fit = fitTitleSubtitle(settings.logoSubtitle ?? "", { left: settings.layout.titleX, basePx: 8, baseSpacingEm: 0.32 });
-  node.style.letterSpacing = `${fit.letterSpacingEm}em`;
+  // 한글 부제에 영문 대문자용 넓은 자간(0.32em)을 주면 가는 획이 흩어져 배경에 묻혔다(장부 assembly #11·#28) — 한글은 0.06em 까지.
+  node.style.letterSpacing = `${/[\uac00-\ud7a3]/u.test(settings.logoSubtitle ?? "") ? Math.min(fit.letterSpacingEm, 0.06) : fit.letterSpacingEm}em`;
   node.style.maxWidth = `${fit.availablePx}px`;
   if (fit.lines > 1) {
     node.style.whiteSpace = "normal";

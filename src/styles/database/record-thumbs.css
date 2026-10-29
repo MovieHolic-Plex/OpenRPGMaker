@@ -509,7 +509,6 @@
 .db-record-intro {
   background: var(--bg-panel-2);
   border: 1px solid var(--border-soft);
-  border-left: 3px solid var(--accent);
   border-radius: var(--radius-sm);
   color: var(--text-dim);
   font-size: 11px;

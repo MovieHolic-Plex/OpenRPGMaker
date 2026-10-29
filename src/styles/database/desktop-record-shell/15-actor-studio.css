@@ -98,13 +98,14 @@
     background: var(--bg-inset);
     border-block: 1px solid var(--border-subtle);
     color: var(--text-2);
-    font-size: 10px;
-    font-weight: 800;
-    letter-spacing: 0.08em;
+    /* 표 머리는 12px 문장형 — 10px 굵은 대문자형 회색은 1440 에서도 읽기 어려웠다(V-database-22). */
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0;
     min-height: 34px;
     padding: 0 18px;
     position: sticky;
-    text-transform: uppercase;
+    text-transform: none;
     top: 0;
     z-index: 2;
   }
@@ -129,7 +130,7 @@
 
   .database-modal-body .db-actor-studio-workspace .db-actor-studio-table button.db-actor-table-row.active {
     background: var(--accent-muted);
-    box-shadow: inset 3px 0 0 var(--accent);
+    box-shadow: none;
   }
 
   .db-actor-identity-cell {

@@ -816,7 +816,9 @@
 .oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="bag"] .status-menu-message[data-message-kind="description"] { visibility: hidden; }
 
 /* 원정 수첩(트레이너 카드)·진행 페이지 안내문: 8px 미만으로 줄지 않게 도트 글꼴 한 칸(16px)으로 둔다. */
-.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] .status-menu-detail-hint { font: 16px/18px var(--runtime-pixel-font); white-space: normal; overflow: visible; max-height: none; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] .status-menu-detail-hint { font: 16px/18px var(--runtime-pixel-font); white-space: normal; overflow: visible; max-height: none; color: #384840; opacity: 1; }  /* 안내 줄이 배경과 비슷한 회녹색으로 흐렸다(장부 hud #134) — 본문과 같은 진한 청록. */
 
 /* 지명 띠(에메랄드): 실내에서 가운데 위쪽은 안내 직원의 머리가 놓이는 자리다 — 띠를 왼쪽 위 모서리로 옮겨 가리지 않는다(2026-10-21 시각 QA). */
 .zone-feedback[data-monster-style="emerald"] .zone-feedback-banner { left: 6px; right: auto; top: 6px; transform: none; max-width: 60%; text-align: left; }
+/* 목표 안내창은 대사보다 한 단 작은 Galmuri9 원래 격자(10px)로 — 18px 로는 한 문장이 다섯 줄 판이 되어 마을 4분의 1을 덮었다(장부 hud #132·#133·#136). */
+.zone-feedback[data-monster-style="emerald"] .zone-feedback-objective { font: 10px/14px var(--font-pixel-small); padding: 3px 6px; max-width: 46%; }

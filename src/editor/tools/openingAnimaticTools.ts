@@ -1,7 +1,7 @@
 import { retimeOpeningAnimatic, validateOpeningAnimatic, animaticResourceIds, ANIMATIC_LIMITS, ANIMATIC_EMOTE_PRESETS, sampleAnimaticTrack, type AnimaticLayer, type AnimaticTracks, type OpeningAnimatic } from '@/project/openingAnimatic';
 import type { CinematicScene, CinematicSequence, Project } from '@/project/types';
 import { CINEMATIC_SCENE_LIMIT } from '@/project/cinematicSettings';
-import { catalogLookup, hasOpeningImage } from './cinematicTools';
+import { catalogLookup, characterSheetKind, hasOpeningImage } from './cinematicTools';
 import { ToolError, type ToolDefinition, type JsonSchema, type ToolExecResult } from './types';
 import { unsuitableOpeningStillMessage } from '@/assets/openingStillMoods';
 import references from '@/assets/openingReferences.json';
@@ -56,6 +56,8 @@ function check(project: Project, s: Shot, enforceBackdrop = false): void {
     if (l.kind === 'image' && l.role === 'background') {
       const banned = unsuitableOpeningStillMessage(l.resourceId!, `배경 ${l.id}`);
       if (banned) throw new ToolError(banned, { code: 'opening-composition-invalid' });
+      const sheet = characterSheetKind(project, l.resourceId!);
+      if (sheet) throw new ToolError(`배경 ${l.id} 의 '${l.resourceId}' 는 ${sheet}라 배경으로 쓸 수 없다 — 인물은 place_opening_charset_actor 로 얹고, 배경은 place_opening_background{mapId} 나 배경화를 깐다.`, { code: 'opening-composition-invalid' });
       if ((l.opacity ?? 1) < 0.9) throw new ToolError(`배경 ${l.id}의 opacity가 ${(l.opacity ?? 1).toFixed(2)}로 너무 낮습니다. 팔레트/오버레이로 어둡게 하세요.`, { code: 'opening-composition-invalid' });
       const hasIndependentSubjects = s.composition.layers.some(candidate => candidate.role === 'actor' || candidate.role === 'prop' || candidate.role === 'foreground');
       if (enforceBackdrop && hasIndependentSubjects && isBundledPaintedBackdrop(project, l.resourceId!)) throw new ToolError(`번들 스틸 ${l.resourceId}를 오프닝 배경으로 쓸 수 없습니다. 이미지 생성이 실패했다면 조용히 대체하지 말고 중단·보고하세요.`, { code: 'dedicated-backdrop-required' });
@@ -183,6 +185,14 @@ function resolveOpeningCharsetForGenre(project: Project, rawResourceId: string):
   return normalized;
 }
 
+/** 샷의 배경이 게임 맵 그대로(map-view)면 그 배경이 맵 화소를 몇 배로 그리는가(정수로 반올림, 1..8). 아니면 undefined. */
+function mapViewBackdropScale(s: Shot): number | undefined {
+  const backdrop = s.composition.layers.find((layer) => layer.kind === 'image' && layer.role === 'background' && typeof layer.resourceId === 'string' && openingMapViewMapId(layer.resourceId) !== undefined);
+  const crop = backdrop?.crop;
+  if (!backdrop || !crop || !(crop.width > 0)) return undefined;
+  return Math.max(1, Math.min(8, Math.round(backdrop.width / crop.width)));
+}
+
 function charsetActorLayer(project: Project, s: Shot, args: Record<string, unknown>): AnimaticLayer {
   const rawId = text(args.charsetResourceId ?? args.resourceId ?? args.characterResourceId, 'charsetResourceId');
   const colonMatch = /^(.+):([0-7])$/u.exec(rawId);
@@ -192,8 +202,12 @@ function charsetActorLayer(project: Project, s: Shot, args: Record<string, unkno
   if (!Number.isSafeInteger(characterIndex) || characterIndex < 0 || characterIndex >= CHARSET_CHARACTER_COUNT) throw new ToolError(`characterIndex 는 0..${CHARSET_CHARACTER_COUNT - 1} 입니다.`, { code: 'invalid-args' });
   const direction = String(args.direction ?? 'right') as CharsetDirection;
   if (!(CHARSET_DIRECTIONS_ALLOWED as readonly string[]).includes(direction)) throw new ToolError('direction 은 down/left/right/up 입니다.', { code: 'invalid-args' });
-  const scale = Number(args.scale ?? 1);
-  if (!Number.isSafeInteger(scale) || scale < 1 || scale > 8) throw new ToolError('scale 은 1..8 정수입니다(칩 24px의 정수배여야 배경과 도트 크기가 같습니다).', { code: 'invalid-args' });
+  const requestedScale = Number(args.scale ?? 1);
+  if (!Number.isSafeInteger(requestedScale) || requestedScale < 1 || requestedScale > 8) throw new ToolError('scale 은 1..8 정수입니다(칩 24px의 정수배여야 배경과 도트 크기가 같습니다).', { code: 'invalid-args' });
+  // 게임 맵 그대로(map-view) 배경 위의 배우는 그 배경의 도트 배율을 따른다(2026-10-28). 조수가 1280×720 무대에 맵 720×405 를
+  // 깔고(1.78배) scale 4 를 주면 주인공이 기둥·문보다 두 배 크게 «따로 확대해 붙인 그림»이 됐다(지하묘지 오프닝, 적대 VQA).
+  const mapBackdropScale = mapViewBackdropScale(s);
+  const scale = mapBackdropScale ?? requestedScale;
   const stride = Number(args.stride ?? 8 * scale);
   if (!Number.isSafeInteger(stride) || stride < 1) throw new ToolError('stride 는 1 이상 정수(한 걸음에 이동하는 격자 픽셀)입니다.', { code: 'invalid-args' });
   const walkFrames = [0, 1, 2, 1].map(pattern => charsetFrameIndex({ characterIndex, direction, pattern })).filter(frame => frame < CHARSET_FRAME_COUNT);

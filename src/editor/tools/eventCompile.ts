@@ -609,6 +609,7 @@ export function compileSimplePage(
     || (page.commands && page.commands.length > 0);
   // 명시 face 우선. 자동 얼굴은 공용 검토 자료만 사용하며 얼굴 없는 상태도 보존한다.
   const injectFace = options.injectFace !== false;
+  let faceCommand: Extract<Command, { kind: "changeFace" }> | undefined;
   if (injectFace && hasText) {
     const requested = options.face !== undefined ? options.face
       : page.face !== undefined ? faceFromSimplePage(page)
@@ -617,12 +618,12 @@ export function compileSimplePage(
       : requested === null ? null
       : explicitFaceForGraphic(requested, graphic, name, options.warnings);
     if (face) {
-      commands.push({
+      faceCommand = {
         kind: "changeFace",
         resourceId: face.resourceId,
         position: face.position ?? "left",
         flipHorizontally: face.flipHorizontally ?? false,
-      });
+      };
     } else if (requested === undefined) {
       options.warnings?.push(
         `NPC '${name}' 공용 얼굴 매핑 없음(미검토·얼굴 없음 포함) — 얼굴을 자동 추정하지 않습니다.`,
@@ -645,6 +646,9 @@ export function compileSimplePage(
     });
   }
   commands.push(...normalizeCommands(page.commands, `${path}.commands`, options.warnings));
+  // 얼굴은 맨 앞 한 번이 아니라 이 인물이 말하는 줄 바로 앞에만 — 내레이션·다른 화자 줄에 이 인물 얼굴이 남지 않게 한다
+  // (2026-10-29 마법학교 천문탑: 「망원경 곁에 파란 모자의 여인이…」 내레이션에 교수 흉상이 떴다). 저자가 직접 넣은 changeFace 가 있으면 그 자리를 따른다.
+  const placed = faceCommand && !containsCommandKind(commands, "changeFace") ? placeSpeakerFace(commands, name, faceCommand) : commands;
   const priority = options.priority ?? "same";
   const pageName = typeof page.name === "string" && page.name.trim() ? page.name.trim() : name;
   return {
@@ -656,8 +660,55 @@ export function compileSimplePage(
     priority,
     overlapForbidden: priority === "same",
     movement: options.movement ?? DEFAULT_NPC_MOVEMENT,
-    commands,
+    commands: placed,
   };
+}
+
+function containsCommandKind(commands: readonly Command[], kind: Command["kind"]): boolean {
+  return commands.some((command) => command.kind === kind
+    || (command.kind === "choices" && (command.options.some((option) => containsCommandKind(option.branch, kind)) || containsCommandKind(command.cancelBranch ?? [], kind))));
+}
+
+/**
+ * 얼굴을 `speaker` 가 말하는 줄 바로 앞에만 둔다. 내레이션(화자 없음)·다른 화자 줄 앞에서는 얼굴을 지운다(resourceId "").
+ * 바뀔 때만 넣는다. 선택지 갈래는 갈래마다 따로 따지고, 갈래 뒤 첫 줄은 다시 정한다.
+ */
+export function placeSpeakerFace(commands: readonly Command[], speaker: string, face: Extract<Command, { kind: "changeFace" }>, start = ""): Command[] {
+  const out: Command[] = [];
+  let current: string | undefined = start;
+  for (const command of commands) {
+    if (command.kind === "text") {
+      const want = speaker && command.speaker === speaker ? face.resourceId : "";
+      if (want !== current) { out.push({ ...face, resourceId: want }); current = want; }
+      out.push(command);
+    } else if (command.kind === "choices") {
+      const from = current ?? "";
+      out.push({
+        ...command,
+        options: command.options.map((option) => ({ ...option, branch: placeSpeakerFace(option.branch, speaker, face, from) })),
+        ...(command.cancelBranch ? { cancelBranch: placeSpeakerFace(command.cancelBranch, speaker, face, from) } : {}),
+      });
+      current = undefined;
+    } else out.push(command);
+  }
+  return out;
+}
+
+/**
+ * 이미 지은 NPC 쪽 하나를 고친다: 맨 앞 changeFace 하나뿐이고 이 인물(이름 = speaker)이 화자로 말하는 줄이 있으면,
+ * 그 얼굴을 그 인물 줄 바로 앞에만 다시 둔다(내레이션·주인공 줄 앞에서는 지운다). 바뀌지 않으면 undefined.
+ * 화자 이름 줄이 하나도 없으면 손대지 않는다 — 화자 없이 쓴 줄이 그 인물 말일 수 있다.
+ */
+export function relocateLeadingFace(commands: readonly Command[], speaker: string): Command[] | undefined {
+  const first = commands[0];
+  if (!speaker || first?.kind !== "changeFace" || !first.resourceId) return undefined;
+  const rest = commands.slice(1);
+  if (containsCommandKind(rest, "changeFace")) return undefined;
+  const speaks = (list: readonly Command[]): boolean => list.some((c) => (c.kind === "text" && c.speaker === speaker)
+    || (c.kind === "choices" && (c.options.some((o) => speaks(o.branch)) || speaks(c.cancelBranch ?? []))));
+  if (!speaks(rest)) return undefined;
+  const placed = placeSpeakerFace(rest, speaker, first);
+  return JSON.stringify(placed) === JSON.stringify(commands) ? undefined : placed;
 }
 
 /**

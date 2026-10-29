@@ -115,6 +115,11 @@ export type DialogueTextRequest = DialogueSurfaceSettings & {
   /** 엔딩 에필로그의 글. 스킵은 이 글을 절대 건너뛰지 않는다(interpreter text 단계의 endingEpilogue). */
   readonly endingEpilogue?: boolean;
   /**
+   * 바로 뒤에 질문 없는 선택지가 온다(interpreter text 단계). 마지막 쪽이 다 나오면 키를 기다리지 않고 닫아
+   * 선택지가 이 글을 틀에 남긴 채 함께 뜬다. ▼ 만 보이고 선택지가 안 보이던 막힘(VQA mt3 terra 197). 말풍선은 틀에 남지 않아 예외.
+   */
+  readonly beforeChoices?: boolean;
+  /**
    * 「문장 표시」 커맨드의 연출 선택자. 감정 이름이 그대로 연출 프로파일을 고른다
    * (src/player/dialoguePresentation.ts). 모르는 값과 빈 값은 neutral 로 떨어진다.
    */
@@ -175,6 +180,13 @@ export type DialogueChoicesRequest = DialogueSurfaceSettings & {
 };
 
 const DEFAULT_DIALOGUE_CHAR_DELAY_MS = 24;
+/**
+ * 흘림이 밀렸을 때 따라잡는 한도. 글자마다 setTimeout 을 이어 붙이면 기기가 바쁠 때 콜백이 늦은 만큼이 글자마다 쌓여
+ * 24ms 글자가 60~110ms 로 흘렀다(2026-10-29 vm3 flash 방탈출 「대사 한 글자씩 느리게」, 부하 중 계측 hud/pacing-dialogue).
+ * 다음 글자 시각을 예정표로 들고 늦은 만큼 다음 기다림을 줄인다 — 단 탭이 숨었다 돌아온 것 같은 긴 정지 뒤에 남은
+ * 글을 한꺼번에 쏟지 않게 이만큼까지만 따라잡는다.
+ */
+const DIALOGUE_TYPE_CATCHUP_MAX_MS = 400;
 
 /** 선택 질문 노드 id. 한 화면에 창은 하나지만, 연속 선택마다 새 노드가 생긴다. */
 let choicePromptSerial = 0;
@@ -1196,6 +1208,8 @@ export function createDialogueUI(
       let locked = false;
       let fastMode = false;
       let timer = 0;
+      // 다음 글자가 나올 예정 시각(Date.now 기준 — 가짜 타이머 시험에서도 setTimeout 과 같은 시계를 탄다).
+      let typeDue = 0;
       let goldWindow: HTMLElement | undefined;
       // 입 모양: 말하는 동안 평소 얼굴과 입 벌린 얼굴을 번갈아 보인다.
       let mouthTimer = 0;
@@ -1353,7 +1367,7 @@ export function createDialogueUI(
             if (token.control.kind === "lock" && token.control.on && !look.instant) {
               locked = true;
               pageRenderer?.reveal(visibleChars);
-              timer = window.setTimeout(typeStep, 0);
+              typeDue = Date.now(); timer = window.setTimeout(typeStep, 0);
               return;
             }
             executeControl(token.control, true);
@@ -1361,12 +1375,13 @@ export function createDialogueUI(
         }
         pageRenderer?.revealAll();
         markPageReady();
-        if (autoClosePage) timer = window.setTimeout(advance, 0);
+        if (autoClosePage || closesIntoChoices()) timer = window.setTimeout(advance, 0);
       };
+      const closesIntoChoices = (): boolean => request.beforeChoices === true && !useBalloon && pageIndex === pages.length - 1;
       const completeTypedPage = (): void => {
         pageRenderer?.revealAll();
         markPageReady();
-        if (autoClosePage) timer = window.setTimeout(advance, 0);
+        if (autoClosePage || closesIntoChoices()) timer = window.setTimeout(advance, 0);
       };
       const typeStep = (): void => {
         const tokens = currentTokens();
@@ -1382,6 +1397,7 @@ export function createDialogueUI(
               return;
             }
             if (effect > 0) {
+              typeDue = Date.now() + effect;
               timer = window.setTimeout(typeStep, effect);
               return;
             }
@@ -1396,7 +1412,11 @@ export function createDialogueUI(
             const pause = look.punctuationPause && !fastMode
               ? playerTextDelay(punctuationPauseMs(char, pageChars[visibleChars])) * look.delayScale
               : 0;
-            timer = window.setTimeout(typeStep, fastMode ? 0 : charDelayMs * rateFactor + pause);
+            const step = fastMode ? 0 : charDelayMs * rateFactor + pause;
+            const now = Date.now();
+            typeDue = Math.max(typeDue, now - DIALOGUE_TYPE_CATCHUP_MAX_MS) + step;
+            // 예정보다 늦었으면 그만큼 덜 기다린다. 명목 간격보다 오래 기다리는 일은 없다(시계가 멈춘 시험에서도 옛 동작 그대로).
+            timer = window.setTimeout(typeStep, Math.min(step, Math.max(0, typeDue - now)));
             return;
           }
         }
@@ -1422,6 +1442,7 @@ export function createDialogueUI(
           return;
         }
         startMouth();
+        typeDue = Date.now() + (fastMode ? 0 : charDelayMs);
         timer = window.setTimeout(typeStep, fastMode ? 0 : charDelayMs);
         // 스킵 중이면 이 쪽을 바로 채운다(안전 규칙에 걸리면 여기서 스킵이 꺼지고 평소처럼 흐른다).
         if (system && isSkipping()) reevaluate();
@@ -1434,7 +1455,7 @@ export function createDialogueUI(
           typing = true;
           box.classList.remove("page-ready");
           startMouth();
-          timer = window.setTimeout(typeStep, 0);
+          typeDue = Date.now(); timer = window.setTimeout(typeStep, 0);
           return;
         }
         if (typing) {

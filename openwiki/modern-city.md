@@ -61,6 +61,7 @@ modern-chipset 하네스가 합성한 도시(건물·도로·소품·차량)를 
 ## 실내 (2026-10-14, `scripts/content/modern-city-int/`)
 
 - 가구 64종·바닥 9·벽면 8·탁자 3·탁상 물건 7 — 코드 손 도트(`pieces.py`, `art_*.py`), object-gate 영수증(문 4종은 조립 방 `assembled.py`). 네 번 다시 그려도 못 넘은 14종은 `pieces.DROPPED`.
+- 상판 줄(2026-10-28): 카페 원탁·침대 옆 협탁·약품 카트는 상판이 dy -1 줄, dy 0 은 받침대다. 조립기(`builder.ts` `surfaceRowOf`)가 받침대 칸에 놓인 탁상 물건을 상판 칸으로 올린다 — 견본 그대로면 컵이 바닥에 놓인 듯 보였다(interior 장부 111). 다른 가구는 사양의 `surfaceRow` 로 준다.
 - 굽기 `bake_interior.py`(덧붙이기 전용, 시트 10179→10743칸, 칸 키 `tiledata/modern-city/pins.json`·소유 `interior/baked.json`) — `bake_tileset.py` 가 거리 굽기 끝에서 다시 부른다. 방 짓기 사양 `src/assets/modernCityRoomSpec.json`(`HAND_INTERIOR_SPECS.modern_city`), 방 구성 9개는 `extract.mts` 가 `interiorRoomTemplates.json` 에 넣는다(방 종류 14).
 - 예제 9장 `examples.py --render` → `tiledata/modern-city/interior/examples/*.json`. 실내 60칸 넘는 한 방은 기둥·알코브로 꺾었다(ㅁ자 경고 0). `layout.ts` 의 `DOOR_OF` 에 병동·대기 복도(병원 문)·뒷방(철문)·회의실(유리문) 한 줄.
 - 엔진 검사 `qa/check-rooms.mts`(평면·program 두 경로 18장, 엔진 BFS) · 변조 `qa/tamper.mts`(6종 코드+좌표) · 참고문서 `refs_interior.py` → 용도 `mc-interior`(문서 10·그림 20, `public/assets/modern-city-interior-references/`). `bake_refs.py` 가 끝에서 저장본(`tiledata/modern-city/interior/refs/category.json`)을 다시 붙인다.
@@ -94,6 +95,9 @@ modern-chipset 하네스가 합성한 도시(건물·도로·소품·차량)를 
 - `layout.ts` 는 규격이 있는 program(건물 id 또는 그 맵 key)의 배치 후보 중 규격 크기에 맞는 것을 고른다(작으면 칸당 3점, 크면 0.75점). 견본 방 크기는 위·아래 줄 너비 합 + 칸막이 + 바깥벽 = 규격이 되게 짰다. 백화점 청사진(`composeDepartmentStore`)도 48×38 바탕. 도구 설명(`build_hand_interior_room`)에 `venueScaleBrief()` 가 실린다.
 - 의자 방향: 탁자 둘레 의자는 탁자를 본다 — 북쪽 `-s`·남쪽 `-n`·서쪽 `-e`·동쪽 `-w`(`mci-chair-office-*`·`mci-chair-wood-*`·`mci-armchair-*`·`mci-sofa-*`). `builder.ts faceSeatsToTables` 가 견본·조수·청사진 어느 길로 온 남향 좌석이든 붙은 탁자 쪽 그림으로 바꾼다. 체육관 골대는 동서 양 끝 `gym-hoop-e`·`gym-hoop-w` 한 쌍.
 - 주차장 차는 새로 그리지 않고 거리 차량 `mc-veh-car-front-a-*`·`mc-veh-car-back-a-*` 칸을 그대로 쓴다(`park-car-*`). 통학 전동차는 modern_city 로 따로 짓지 않는다 — jp_city 손 도트 견본(`build_hand_interior_room({tileset:"jp_city", layout:{program:"train-car"}})`, 21×8 롱시트·우선석·출입문 둘·손잡이·봉)을 그대로 쓴다(2026-10-19 사용자 「전철은 기존에 만들던 게 있는데 그걸 그대로 쓰면 되는데」).
+
+- 베이커리 카페 홀(`mc_bakery_cafe` cafe-hall, 2026-10-29 room-vig8 delivery-bakery major 둘): 같은 2×2 식탁+사방 의자를 같은 간격으로 세 벌, 그 바로 아래 2×1 식탁 세 벌(북쪽 의자)을 줄 세웠더니 「복붙한 탁자 세트」, 앞줄 남쪽 의자와 뒷줄 북쪽 의자가 맞붙어 「겹겹이 포갠 의자」, 2×1 식탁은 벤치로 읽혔다. 앞줄 2×2 셋은 의자 꼴을 달리하고(가운데 동·서만, 동쪽은 에스프레소 바 틈 앞이라 북쪽 의자 없음), 뒷줄은 한 줄 띄워 엇갈린 열의 카페 원탁 둘로 바꿨다. 창가 바 카운터·원탁으로 통째 바꾼 판은 위 방에서 내려오는 틈 앞을 막아 room-vig9 에서 77.8 로 떨어졌다 — 틈 앞(방 위쪽 연결 열)은 비운다. 남은 major(room-vig9b 87.0)로 가운데 3인 소파 대신 동벽 안락의자 라운지, 제빵실 바게트 바구니(줄인 방에서 성형대 앞으로 밀려 겹침)를 뺐다.
+- 서병동 다인실(`hosp-ward-west`, 2026-10-29 horror-ward): 침대 바로 아래 줄에 협탁, 그 아래 커튼 레일을 붙여 키 큰 기물 윗칸이 앞 기물 위로 그려졌고(침대·협탁·커튼 한 덩이), 가운데 통로에 모니터 세로 줄이 섰다. 10×15 로 다시 짰다 — 협탁·수액 펌프·모니터는 침대 옆 같은 줄, 병상은 4줄 간격(y 4·8·12), 커튼은 침대 두 줄 아래, 북벽 기물과 첫 침대 사이 한 줄(붙으면 한 덩이로 옮겨져 침대가 세면대 앞에 얹힌다), 가운데 통로 세 칸. 조수 짓기(`interior.ts`)는 줄인 방에 견본 가구가 덜 들어가면(furniture.dropped) 그것도 부딪힘으로 쳐 줄이기를 받지 않고, 견본 한 벌로 꾸민 방에도 같은 종류 앵커(KIN)를 덧놓지 않는다.
 
 ## 막힌 이웃 `variation.sealed` · 남녀 센토 · 옥상 (2026-10-25, 시타마치 VQA)
 

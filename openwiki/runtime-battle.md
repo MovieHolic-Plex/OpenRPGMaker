@@ -1,3 +1,17 @@
+## 기술 목록에 기본 공격(skill_attack)을 싣지 않는다 (2026-10-29)
+
+`battleCommandDom.ts` `listedSkillIds` 는 사람 배우의 기술 목록에서 `skill_attack`(이름 「공격」)을 뺀다 — 「공격」 명령과 같은 것이다.
+실어 두면 「스킬」을 열자마자 첫 줄이 「공격」이라 「카일의 공격!」 이 나갔다(잊힌 지하묘지·마왕의 동굴). 몬스터 파티(포켓몬 「싸운다」 4칸)는 그대로다.
+
+## 레트로 파티 창 수치 칸은 글자만큼 늘어난다 (2026-10-29)
+
+`_retro2003.css` 파티 창 줄의 HP·MP 칸은 `minmax(92px, max-content)` · `minmax(56px, max-content)` 이다. 92px 고정이면
+네 자리 최대 HP(「1447/1447」, 마왕의 동굴 실측)가 「1447/14」 로 MP 칸 밑에 잘렸다. 늘어난 폭은 이름 칸(`minmax(0,1fr)`, 말줄임)이 내준다.
+실물 게임 전투 QA 는 `qa:runtime --whole-game` (`openwiki/testing.md`).
+
+게임 오버(`gameOver.css`): 배경 그림이 깔리면 본문·선택지에 글 폭만큼 어두운 판(`rgb(8 8 9 / .74)`)을 깐다 — 그림 속 인물 위로
+본문이 그대로 지나가 읽히지 않았다(잊힌 지하묘지). 「PgUp/PgDn 본문」 안내는 본문이 1px 넘게 넘칠 때만 붙는다(한 줄도 반올림으로 붙던 것). 선택지 판들은 가장 긴 글 폭 하나로 맞춰 한 덩어리로 놓는다(글 길이마다 폭이 달라 계단처럼 어긋났다 — 폐병원, 증거 `horror-gameover-{before,after}.png`).
+
 ## 피해 계열 받는 피해 %(물리·마법) · 상태가 바꿔 쓰는 값 · 「적이 상태에 걸렸다」 전투 조건 (2026-10-24)
 
 `EnemyRecord.damageTypeRates`(선택, `{ physical?, magic? }` 정수 %, 0~1000, 비면 저장 안 함)는 적이 **피해 계열별로** 받는 피해 배율이다.
@@ -408,6 +422,7 @@ SQLite 저장소를 자동 변경하는 이관은 수행하지 않는다.
 
 ## 전투 스킨은 둘뿐 — retro2003(RM2003식) / pokemon (2026-10-02, 사용자 결정 「RM2003 식만 남기고 정리」)
 - **스킬 목록은 폭을 넓힌다(jrpg-loop-1)**: retro2003 에서 스킬·아이템 하위 메뉴가 열려 있는 동안 명령 호스트를 파티 창 폭까지 넓힌다(`_retro2003.css`). 이름 잘림(「십자…」) 해소. 속성 배지는 `skillElementBadgeLabel`(battleCommandDom.ts)이 기본 영문 속성명(Sword·Fire…)을 한글로 바꾼다.
+- **스킬 목록 행 배치(2026-10-29)**: 무기 꼬리표(「검」)는 이름 바로 뒤에 붙고, 비용 배지(MP n)만 `margin-left:auto` 로 오른쪽 끝에 민다(`_rm2000.css` 하위 메뉴 `.battle-command-text` 가 space-between 이던 때는 꼬리표가 행 가운데 떴다). retro2003 측면 전투에서 「뒤로」 행은 머리줄(「스킬」) 오른쪽에 앉는다(`_retro2003.css`, grid-row 1) — 목록 끝 행이면 기술 3개만으로 4행 스크롤포트가 차서 「▾」 가 기술 행 위에 떴다. 기술이 4개 이상이면 「▾」 는 여전히 뜬다. 증거 `ledger/evidence/camera/battle-skilllist-{before,after}.png`.
 
 - 등록 스킨은 `retro2003`·`pokemon` 둘(`BattleSkinId`·`BattleUiStyle` 도 둘). 창 색만 다르던 측면 여섯
   `rm2003`(유리)·`octopath`(먹빛)·`chrono`(청람)·`bravely`(세피아)·`ff`(코발트)·`goldensun`(금갈색)을 **지웠다** —
@@ -1033,6 +1048,9 @@ SQLite 저장소를 자동 변경하는 이관은 수행하지 않는다.
   연출 빨리감기는 `넘기는 중`으로 구분한다. 버튼 바를 복원하지 않으며, 문구가 바뀔 때만
   `role=status` 내용을 갱신한다. 이벤트 대화/결과 표면에서는 숨긴다.
   스킵 중 Shift로 선택 배속을 바꿔도 효과 data 배속은 5.0을 유지하고 종료 때 선택값으로 복원한다.
+- **명령 겹침 막기·배속 이어받기**(2026-10-29 vm3 flash jrpg 「명령마다 4~8초 대기, 지연 중 Enter 누르면 명령이 겹쳐 들어감」): 연출 중 확인키는 쌓지 않고 빨리감기로만 쓴다(예전 그대로). 새로: 연출이 끝나 명령 카드가 뜬 뒤 350ms(`READY_CONFIRM_GUARD_MS`) 안의 확인키는, 카드가 뜨기 전 900ms 안에 연출 중 확인키가 있었으면 버린다 — 넘기려고 누르던 손이 카드가 뜬 순간 공격·대상 고르기로 새지 않는다. 플레이어가 Shift 로 고른 배속(1.8×·3×)은 같은 플레이 동안 다음 전투에 이어진다(`chosenBattleSpeed`, 자동 전투가 올린 배속은 제외). 저작 타이밍 상수는 바꾸지 않았다.
+- **연출 빨리감기 3배·히트스톱 유지**(2026-10-29): 연출 중 확인키(첫 번은 흘리던 문장을 끝내고 그다음부터)의 1회성 빨리감기 `SKIP_SPEED` 5 → 3배. 히트스톱 박자(`beat.hitStop`)는 `battleSequencer.playBeats` 가 배속과 무관하게 원래 길이(authored delay)로 기다린다 — 감소 모션일 때만 예전 상한을 탄다. 5배에서는 110~230ms 타격 정지가 41~64ms 로 줄어 손맛이 사라졌다. `pacing-battle` 3-press(연출 시작 250·500ms 에 Enter 두 번): 명령→다음 카드 1.47/0.88s(정지 41~64ms) → 2.29/1.39s(정지 126~229ms, 손 뗀 전투와 같은 길이). 손 뗀 대기 4.6~6.3s 는 그대로.
+  측정 `pacing-battle` 시나리오(flash jrpg 해골×2, `QA_MAP·QA_AT·QA_DIR`): 손 안 대면 명령→다음 카드 4.4~6.3초(적 행동 한 번 ≈ 예고 0.8초+결과 0.8초), 연출 중 Enter 연타면 0.7~2.5초. 카드가 뜬 120ms 뒤 Enter — 옛 코드는 명령이 열렸고(겹침) 지금은 버린다.
 - 게이지 충전 안내는 `BattleSnapshot.nextReadyBattlerId`를 읽는다. 런타임이 실제 tick과 같은
   `nextReadyBattler`에 양측 생존 배틀러·상태 민첩·스킨 가속을 넣어 계산한다.
   아군 raw gauge 정렬로 다음 차례를 추측하지 않는다. 예측이 없는 구버전 snapshot은 일반 문구를 쓴다.
@@ -1720,7 +1738,7 @@ For real-time action combat on action maps (`system.actionCombat` + `map.actionC
 - A normal actor `attack` must attach a `BattleAnimationSnapshot` to the same timeline entry as its damage/miss. `normalAttackAnimationId()` resolves the authored visual in this order: actor `unarmedAnimationId` when no weapon is equipped → effective class `animationId` → actor `unarmedAnimationId` fallback → `skill_attack.animationId`. This is separate from the skill execution path; do not assume the Attack command calls `applySkill`. Double/all attacks attach one animation per hit so the sequencer can play every impact.
 - Every generated effect owns one catalog `sound { frameIndex, resourceId }`. `defaultBattleAnimationRecords()` merges sound, flash, and shake that share a frame into one `BattleAnimationTiming`, because battle DOM and map `showAnimation` consume one timing per frame. Do not nest sound under flash: effects such as `earth-spike` require impact audio without a flash.
 - Battler display names are disambiguated in one place: `disambiguatedBattlerName(battler, peers)` in `src/player/battleCommandDom.ts` appends ` 1` / ` 2` only when two peers share a name, and returns the bare name otherwise. It is the single source for the HUD row, target button, target label, damage messages (`battleDirectorDom.ts` `impactLine`), and defeat lines (`battleSequencer.ts`); pass `snapshot.enemies` for an enemy target and `snapshot.actors` for an ally. Because it can produce digit-final names, `hasBatchim` in `src/util/josa.ts` reads a trailing arabic digit as its Korean pronunciation (1/3/6/7/8/0 have batchim, 2/4/5/9 do not) so a defeat line renders `슬라임 2를`, not `슬라임 2을`. Covered by `test/josa.test.ts`.
-- AUTO command choice belongs to `BattleRuntime.chooseAutoCommand()` / `src/battle/battleAuto.ts` and uses the session-injected RNG, never DOM `Math.random()`. Policy order is forced switch → useful recovery → affordable damaging skill → basic attack → defend; AUTO does not consume items. Enemy AI likewise filters illegal/ineffective skills, scores useful actions and targets (including HP utility), and calls RNG only when the best score is tied.
+- AUTO command choice belongs to `BattleRuntime.chooseAutoCommand()` / `src/battle/battleAuto.ts` and uses the session-injected RNG, never DOM `Math.random()`. Policy order is forced switch → useful recovery → affordable damaging skill → basic attack → defend; AUTO does not consume items. Enemy AI likewise filters illegal/ineffective skills, scores useful actions and targets (including HP utility), and calls RNG only when the best score is tied. In type-chart games the damaging-skill score also adds `power × type/STAB multiplier / 2000` (capped below 1) so a rounding tie at low levels (resisted grass move 4 vs neutral normal move 4) goes to the move the chart favours instead of a coin flip; integer damage differences still win (2026-10-29: the sim AI picked resisted moves ~10% of turns, making the 80% balance checks pessimistic).
 - Equipment `effectFlags.doubleAttack` repeats the authored attack pass and `effectFlags.attackAll` expands each pass to every living opponent; combining them yields one ordered timeline fact per hit. Multi-target items apply to every resolved target but consume one inventory unit per command.
 ### 커맨드/대상 메뉴 기하와 글자 가시성 계약
 
@@ -1814,6 +1832,8 @@ For real-time action combat on action maps (`system.actionCombat` + `map.actionC
 - Side-view battler presentation uses `BattleBattlerSnapshot.pose` (`idle`/`attack`/`hit`/`defend`/`dead`) from `src/battle/battlePose.ts`, driven by `lastActionResult` until the next command / tool phase. Hit-feel uses `hitFeel` on the snapshot plus sequencer hit-stop (`BATTLE_HITSTOP_MS`) and `battleJuice` SFX/shake.
 - Battle backdrop priority is owned by `resolveBattleBackdrop` in `src/battle/battleBackdrop.ts`: explicit override → troop `previewBackgroundResourceId` → terrain tag at the battle location (`tileset.terrain` / `tileMeta.terrainTag` → `database.terrains[tag-1].battleBackgroundResourceId`) → forest field fallback. Night-sky / dimension-rift panoramas are rewritten to the forest field.
   - 지명 단계(jrpg-loop-1): 맵 `battleBackground`·기후·던전 이름이 모두 없을 때 맵 이름 낱말이 고른다(`placeNameBattleBackground` — 숲 낱말은 그대로 숲, 사막 → 사막, 마을·도시·항구·폐허 → 평원). 시간여행 변형 맵이 전부 숲으로 나오던 문제 수정. 낱말이 없으면 기존대로 숲.
+  - 실내·던전 이름 단계(2026-10-29): 던전 이름 낱말에 무덤·고분·납골·감옥·미로·석굴·crypt·tomb·prison·labyrinth 를 더했다. 지명 단계도 못 정하면 실내 칩셋 맵(`interior`·`_rooms`·`manor`·`gym` 이름의 타일셋, 숲 이름 맵 제외)은 숲 대신 동굴 겹 배경(`interiorBattleBackground`) — 겹 배경 다섯(숲·평원·동굴·눈·사막) 중 막힌 공간에 가장 가깝다. 석조 던전·지하묘지·성 안 전용 겹 배경은 아직 그림이 없다.
+  - 승리 창 돈 단위: 도트 글꼴의 「G」가 「6」으로 읽혀(「+37 G」→「+37 6」) 단위 글자만 `.battle-currency-unit` 으로 감싸 도트 결과 창에서 굵은 UI 글꼴·같은 높이로 그린다(`battleDirectorDom.ts` `currencyUnitNode`, `pixelWindows.css`). textContent 는 그대로다.
 - Battle event conditions support switch/variable legacy conditions plus round cadence (`turn`, `onRound`, `everyRound`), `enemyHpBelow`, enemy/actor HP ranges, enemy/actor turn, and actor command. Round cadence pages are de-duplicated per page/round; `runOnce` keeps a page battle-wide single-shot even when its condition remains true.
 - `battleResult` 페이지 조건은 `src/project/io/pageResolution.ts`에서 `session.battleResult`(직전 전투 처리 결과: `victory`/`defeat`/`escape`)와 비교해 실제 평가합니다. 필드 몬스터 처치 후 페이지 전환, 보스전 분기 등 RM2K3 "직전 전투 결과" 시나리오가 작동합니다. `battleResult`는 `PlaySessionLike`·`PlaySession`·save slot에 포함되며 `fork(battleResult=...)` 명령 분기와 동일한 SSOT를 씁니다.
 - `simulate_battle` accepts `activeSlots` and strict-script `"switch"` commands, and returns first-sample `participatingActorIds`, `roundLogs`, and `eventLogs` for AI/tool assertions.

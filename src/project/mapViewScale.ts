@@ -67,3 +67,74 @@ export function playPixelDensity(
   const cap = Math.floor(Math.min(MAX_CANVAS.width / resolution.width, MAX_CANVAS.height / resolution.height));
   return Math.max(1, Math.min(wanted, cap));
 }
+
+/** 한 축만 넘치는 맵을 좁은 축에 맞춰 키울 때의 상한(기본 시야 대비). */
+export const PARTIAL_FILL_MAX_SCALE = 1.5;
+
+/**
+ * 기본 시야 대비 맵이 화면에 들어가는 비율(가로·세로)에서 확대 배수를 고른다.
+ * - 둘 다 들어가면(작은 방) 둘 중 작은 쪽 — 맵 전체가 보인다(2026-10-28).
+ * - 한 축만 넘치면(13×17 여관·24×10 서재처럼 길쭉한 맵) 좁은 축을 채우는 만큼, 기본 시야의 1.5배까지. 긴 축은 원래도 따라가며 스크롤한다.
+ *   2026-10-29 vm4 판정 E: 13×17 여관이 320×240 에서 가로 65% 만 쓰고 양옆이 비었다 — 둘 다 들어가야만 키우던 규칙이라 확대가 0이었다.
+ * - 둘 다 넘치면 1 미만(확대 없음).
+ */
+export function smallMapFitScale(widthRatio: number, heightRatio: number): number {
+  const fit = Math.min(widthRatio, heightRatio);
+  if (fit >= 1) return fit;
+  const narrow = Math.max(widthRatio, heightRatio);
+  return narrow > 1 ? Math.min(narrow, PARTIAL_FILL_MAX_SCALE) : fit;
+}
+
+/** 작은 맵으로 보는 맵 — 화면에 이 배수 이상 남는 여백이 있어야 확대를 시도한다. */
+export const SMALL_MAP_FILL_MIN_RATIO = 1.25;
+/** 작은 방 채우기로 올린 캔버스의 넓이 상한(화소). */
+const SMALL_MAP_FILL_MAX_CANVAS_AREA = 1920 * 1080;
+
+/**
+ * 작은 맵(서재 8×9 같은 방)을 화면에 꽉 차게 키우기 위한 캔버스 밀도(2026-10-28).
+ *
+ * 왜: 320×240 화면에 16px 8×9 방은 가로 40%·세로 60% 만 차지하고 나머지는 검은 여백이었다(방탈출 단서가 너무 작다).
+ * 카메라를 1.67배로 당기면 세계 1px 이 캔버스 1~2px 로 들쭉날쭉해 도트가 뭉개진다. 그래서 캔버스 밀도 d 를 올려
+ * 「캔버스 배율 = 정수」로 키운다(밀도 3 이면 5/3 배 = 캔버스 5px). 화면 크기·논리 해상도·DOM 은 그대로다.
+ *
+ * 타일 크기가 하나뿐인 프로젝트에만 쓴다 — 섞인 프로젝트는 playPixelDensity 가 정한 밀도가 큰 칸 맵의 정수 배율을 지킨다.
+ * 작은 맵이 없으면 1(예전과 같다). 후보 2·3 중 작은 맵들이 얻는 확대 합이 큰 쪽, 같으면 작은 밀도.
+ */
+export function smallMapFillDensity(
+  project: ProjectMaps,
+  resolution: Readonly<PlayResolution>,
+  cameraZoom = 1,
+): number {
+  const reference = projectReferenceTileSize(project);
+  const zoom = Number.isFinite(cameraZoom) && cameraZoom > 0 ? cameraZoom : 1;
+  const ratios: number[] = [];
+  for (const map of Object.values(project.maps)) {
+    if (mapTileSize(map) !== reference) return 1;
+    const mapZoom = typeof map.cameraZoom === "number" && Number.isFinite(map.cameraZoom) && map.cameraZoom > 0 ? map.cameraZoom : zoom;
+    const ratio = smallMapFitScale(
+      // 사방 반 칸 여백을 둔 크기(playSceneCamera.smallMapFillZoom 과 같은 기준).
+      resolution.width / mapZoom / ((Math.max(1, map.width) + 1) * reference),
+      resolution.height / mapZoom / ((Math.max(1, map.height) + 1) * reference),
+    );
+    if (ratio >= SMALL_MAP_FILL_MIN_RATIO) ratios.push(ratio);
+  }
+  if (ratios.length === 0) return 1;
+  // 작은 방 채우기용 밀도는 캔버스 넓이 1920×1080 까지만 — 출하 플레이어 실측(데스크톱 Firefox, 이동 10초, 2026-10-28)에서
+  // 320×240 의 밀도 1·2·3(320×240·640×480·960×720) 모두 59~57fps, p95 17.3~17.5ms 로 차이가 없었다. 더 큰 해상도는 재지 않았으므로 넓이로 묶는다.
+  const areaCap = Math.floor(Math.sqrt(SMALL_MAP_FILL_MAX_CANVAS_AREA / (resolution.width * resolution.height)));
+  const cap = Math.min(areaCap, Math.floor(Math.min(MAX_CANVAS.width / resolution.width, MAX_CANVAS.height / resolution.height)));
+  let best = 1;
+  let bestGain = 0;
+  for (const density of [2, 3]) {
+    if (density > cap) break;
+    let gain = 0;
+    for (const ratio of ratios) gain += Math.floor(density * ratio + 1e-6) / density - 1;
+    if (gain > bestGain + 1e-6) {
+      best = density;
+      bestGain = gain;
+    }
+  }
+  // 밀도 1 로도 정수 확대가 되는 화면(480×270 의 6×5 방 등)은 그대로 둔다.
+  const plainGain = ratios.reduce((sum, ratio) => sum + Math.floor(ratio + 1e-6) - 1, 0);
+  return plainGain + 1e-6 >= bestGain ? 1 : best;
+}

@@ -55,7 +55,7 @@ function slimEvent(event: PiAgentEvent): unknown {
     return rest;
   }
   if (event.type === "prompt_inspection") return { type: event.type, at: (event as { at?: number }).at };
-  if (event.type === "map_delta") return { type: event.type, maps: (event as { maps?: { mapId?: string }[] }).maps?.map((m) => m.mapId) };
+  if (event.type === "map_delta") return { type: event.type, maps: (event as unknown as { maps?: { mapId?: string }[] }).maps?.map((m) => m.mapId) };
   if (event.type === "checkpoint") {
     const { project: _project, spatialProof: _proof, ...rest } = event as PiAgentEvent & { project?: unknown; spatialProof?: unknown };
     return rest;

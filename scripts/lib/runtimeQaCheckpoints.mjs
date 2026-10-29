@@ -96,7 +96,7 @@ export function boundParallelByLoad(requested, load = loadavg()[0], cores = avai
 
 const isCrash = (result) => result.failures.some((f) => /Target crashed|Target page, context or browser has been closed|Page crashed|did not become ready|Timeout \d+ms exceeded/.test(f));
 
-export async function runCheckpoints({ scenario, set, checkpoints, parallel = 2, launchBrowser, serverUrl, outRoot }) {
+export async function runCheckpoints({ scenario, set, checkpoints, parallel = 2, launchBrowser, serverUrl, projectUrl, outRoot }) {
   await rm(outRoot, { recursive: true, force: true });
   await mkdir(outRoot, { recursive: true });
   const effectiveParallel = boundParallelByLoad(parallel);
@@ -136,6 +136,7 @@ export async function runCheckpoints({ scenario, set, checkpoints, parallel = 2,
           }
           const report = await runRuntimeQa(page, checkpointScenario, {
             serverUrl,
+            ...(projectUrl ? { projectUrl } : {}),
             outDir,
             checkpoint: checkpointBootState(checkpoint),
           });

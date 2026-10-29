@@ -20,7 +20,7 @@ import { upsertEventIntoMap } from "./eventTools";
 import { ensureNamedSwitch } from "./flagHelpers";
 import { asCell, asRoom, chestLoot, field, list, nested, pickTroops, placeRoamer, text, type Room } from "./jrpgVolumeTools";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
-import { DUNGEON_ENTRANCE_TAG, ENTRANCE_OPTION_SCHEMA, linkEntranceInDraft, parseEntranceOption } from "./dungeonLinkTools";
+import { DUNGEON_ENTRANCE_TAG, pickDungeonGateSpot, ENTRANCE_OPTION_SCHEMA, linkEntranceInDraft, parseEntranceOption } from "./dungeonLinkTools";
 import { dungeonTheme, ensureThemeTroop } from "./dungeonThemeTroops";
 import { beodeulNatureTileset, planBeodeulCanopy, writeBeodeulCanopy } from "./beodeulForest";
 import { BEODEUL_NATURE } from "@/project/defaults/beodeulNature";
@@ -233,7 +233,7 @@ function buildFloor(draft: Project, args: Record<string, unknown>, floor: FloorO
     liquid: composed.liquid, width: composed.width, height: composed.height,
     entrance: composed.entrance, stairsUp: composed.stairsUp, stairsDown: composed.stairsDown, anchors: composed.anchors,
     entryStair: composed.entryStair ?? null, exitStair: composed.exitStair ?? null, sideDoor: composed.sideDoor ?? null,
-    rooms: composed.rooms.map((room) => ({ id: room.id, kind: room.kind, x: room.x, y: room.y, w: room.w, h: room.h, from: room.from, spots: composed.spots[room.id] ?? [] })),
+    rooms: composed.rooms.map((room) => ({ id: room.id, kind: room.kind, x: room.x, y: room.y, w: room.w, h: room.h, from: room.from, spots: composed.spots[room.id] ?? [], ...(composed.chestSpots?.[room.id]?.length ? { chestSpots: composed.chestSpots[room.id] } : {}) })),
     corridors: composed.corridors.map((c) => ({ from: c.a, to: c.b, dir: c.dir, ...(c.loop ? { loop: true } : {}), ...c.rect })),
     bridges: composed.picture.flatMap((row, y) => [...row].flatMap((ch, x) => (ch === "=" ? [{ x, y }] : []))),
     population, counts: composed.counts, warnings: composed.warnings,
@@ -374,7 +374,7 @@ function populateFloor(draft: Project, mapId: string, data: Record<string, unkno
   for (let r = bossRoom ? byId.get(bossRoom.from ?? "") : undefined, guard = 0; r && guard < 40; r = byId.get(r.from ?? ""), guard += 1) onRoute.add(r.id);
   const behindBoss = (id: string | undefined): boolean => { for (let r = byId.get(id ?? ""), guard = 0; r && guard < 40; r = byId.get(r.from ?? ""), guard += 1) if (r.id === bossRoom?.id) return true; return false; };
   const routeExtra: Array<Pt & { room?: string }> = [...onRoute].map((id) => byId.get(id)!).filter((r) => r.kind !== "entrance" && r.id !== restRoom?.id)
-    .flatMap((r) => r.spots.slice(-2).map((c) => ({ ...c, room: r.id })));
+    .flatMap((r) => [...(r.chestSpots ?? []), ...r.spots.slice(-2)].slice(0, 2).map((c) => ({ ...c, room: r.id })));
   const chestRank = (c: { room?: string }): number => (c.room === vaultId ? 0 : onRoute.has(c.room ?? "") ? 1 : behindBoss(c.room) ? 3 : 2);
   const chestPlan = [...planned("chests"), ...routeExtra].sort((a, b) => chestRank(a) - chestRank(b));
   let routeChest = false;
@@ -500,12 +500,17 @@ function attachDefaultExit(draft: Project, mapId: string, data: Record<string, u
   if (sourceId) {
     const src = draft.maps[sourceId]!;
     const origin = draft.startMapId === sourceId ? draft.startPos : { x: Math.floor(src.width / 2), y: Math.floor(src.height / 2) };
-    // 시작 위치(또는 가운데)에서 가장 가까운, 이벤트 없고 아래 칸도 걸을 수 있는 칸을 바깥 쪽 문 칸으로 쓴다.
-    let best: Pt | null = null; let bd = Infinity;
-    for (let y = 1; y < src.height - 1; y += 1) for (let x = 1; x < src.width - 1; x += 1) {
-      if (!isPassable(draft, src, x, y) || !isPassable(draft, src, x, y + 1) || src.events.some((e) => Math.abs(e.x - x) + Math.abs(e.y - y) <= 1)) continue;
-      const d = Math.abs(x - origin.x) + Math.abs(y - origin.y);
-      if (d >= 2 && d < bd) { bd = d; best = { x, y }; }
+    // 문 자리는 정본 pickDungeonGateSpot(갱구가 맞는 칸 → 가장자리 길 끝)에서 시작점(또는 가운데)과 가까운 순으로.
+    // 못 찾으면 옛 규칙: 시작점에서 가장 가까운, 이벤트 없고 아래 칸도 걸을 수 있는 칸.
+    const near = (c: Pt) => { const d = Math.abs(c.x - origin.x) + Math.abs(c.y - origin.y); return d < 2 ? 999 : d; };
+    let best: Pt | null = pickDungeonGateSpot(draft, src, near) ?? null;
+    if (!best) {
+      let bd = Infinity;
+      for (let y = 1; y < src.height - 1; y += 1) for (let x = 1; x < src.width - 1; x += 1) {
+        if (!isPassable(draft, src, x, y) || !isPassable(draft, src, x, y + 1) || src.events.some((e) => Math.abs(e.x - x) + Math.abs(e.y - y) <= 1)) continue;
+        const d = Math.abs(x - origin.x) + Math.abs(y - origin.y);
+        if (d >= 2 && d < bd) { bd = d; best = { x, y }; }
+      }
     }
     if (best) {
       try {

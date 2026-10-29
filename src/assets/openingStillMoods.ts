@@ -120,8 +120,10 @@ export const OPENING_STILL_MOODS: readonly OpeningStillMood[] = [
     description: "등각 시점의 낡은 저택 회랑에 초상화와 벽 촛대, 샹들리에가 놓여 있다.",
     mood: ["적막", "미스터리"],
     useCases: ["저택 소개", "사건 전의 정적"],
-    cautions: ["등각 시점 픽셀아트"],
-    suitableForOpening: true,
+    // 그림 전체에 약 78px 간격의 검은 가로·세로 격자선이 박혀 있다(2026-10-28 스위트 VQA: terra·standin 방탈출 타이틀
+    // 「편집용 격자가 남은 화면」 4건). 고칠 그림이 오기 전까지 타이틀·오프닝 배경에서 뺀다.
+    cautions: ["등각 시점 픽셀아트", "그림 전체에 편집 격자선이 박혀 있음"],
+    suitableForOpening: false,
     series: "single-manor-night",
   },
   {

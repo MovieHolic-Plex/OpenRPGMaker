@@ -9,7 +9,7 @@ import { el } from "@/util/dom";
 import { createCinematicAssets, type CinematicAssets } from "@/player/cinematicAssets";
 import { createTitleEffectsCanvas, freezeTitleEffects, stopTitleEffects } from "@/player/titleEffects/renderer";
 import { getPlayerPreferences } from './playerPreferences';
-import { playOpeningAnimatic } from "./openingAnimaticRenderer";
+import { animaticBandClearance, playOpeningAnimatic } from "./openingAnimaticRenderer";
 import { isEmeraldMonsterStyle } from '@/project/emeraldMonsterStyle';
 import { createEmeraldOpeningAtmosphere } from './emeraldOpeningAtmosphere';
 import { bindIntegerArtScale } from './monsterArtScale';
@@ -82,6 +82,10 @@ export function playCinematicSequence(options: {
   readonly musicHost?: HTMLElement;
   readonly onFrame?: (url: string, fadeMs?: number) => void;
   readonly dismissOnAnyInput?: boolean;
+  /** 엔진 기동과 겹쳐 도는 새 게임 오프닝 — 메인 스레드가 멈춘 동안 애니메틱 시계를 붙잡는다(openingAnimaticRenderer). */
+  readonly holdClockThroughStalls?: boolean;
+  /** 컷 끝까지 울리던 애니메틱 효과음을 끊지 않고 짧게 줄이며 다음 컷과 겹친다. */
+  readonly softCutTails?: boolean;
 }): CinematicPlayback {
   const { host, project, sequence, signal } = options;
   if (signal.aborted || !sequence?.enabled || sequence.scenes.length === 0) {
@@ -332,6 +336,8 @@ export function playCinematicSequence(options: {
       // The storybook page owns its paper/background on the root.
       frame.style.backgroundColor = isBook ? 'transparent' : presentation?.backgroundColor ?? '#000';
       frame.style.setProperty('--cinematic-letterbox', `${presentation?.letterbox ?? 0}%`);
+      // 건너뛰기 칩은 장면 틀 밖(root)에 산다 — 레터박스 높이를 root 에도 알려 칩이 검은 띠와 그림 경계에 걸치지 않게 한다(HIG C-94).
+      root.style.setProperty('--cinematic-letterbox', `${presentation?.letterbox ?? 0}%`);
       if (presentation?.letterbox) frame.append(el('div', { class: 'cinematic-letterbox', attrs: { 'aria-hidden': 'true' } }));
       root.replaceChildren(frame, status);
       // Book overlays live on the root so they survive page changes.
@@ -491,8 +497,10 @@ export function playCinematicSequence(options: {
         root.querySelector('.cinematic-status')?.remove();
         root.append(status);
         root.dataset.mediaState = 'loading';
-        // A short wait stays silent. A prolonged wait has a usable retry/skip boundary.
-        loadTimer = setTimeout(() => { if (alive) status.textContent = '장면을 준비하고 있습니다…'; }, 800);
+        // 첫 장면은 아직 아무것도 그려지지 않은 검은 화면이다 — 바로 무엇을 하는 중인지 적는다(테스트 실행 직후 글자 없는 검은 창, HIG C-92).
+        // 다음 장면부터는 앞 장면이 남아 있으니 짧은 기다림은 조용히 두고, 길어질 때만 적는다.
+        if (index === 0 && !root.querySelector('.cinematic-shot')) status.textContent = '장면 불러오는 중…';
+        else loadTimer = setTimeout(() => { if (alive) status.textContent = '장면을 준비하고 있습니다…'; }, 800);
         void (url ? assets.prepare(url) : Promise.reject(new Error('Missing image'))).then(async prepared => {
           image.src = prepared.url;
           await image.decode();
@@ -546,7 +554,26 @@ export function playCinematicSequence(options: {
         canvas.setAttribute('aria-label', canvasCaptions && scene.narration.trim() ? scene.narration : '레이어와 카메라로 구성한 오프닝');
         canvas.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#000';
         ready(canvas); beginLoading();
-        playOpeningAnimatic({ project, canvas, composition: scene.composition, durationMs: scene.durationMs, signal: lifetime.signal, reducedMotion,
+        // 내레이션 띠가 캔버스 아래를 덮는 높이(구도 단위). 처음 잰 값을 장면 내내 쓴다(띠가 늦게 떠도 카메라가 튀지 않게 숨김을 잠깐 풀고 잰다).
+        let narrationInset: number | undefined;
+        const bottomInset = (): number => {
+          if (narrationInset !== undefined) return narrationInset;
+          if (canvasCaptions || !scene.narration.trim() || narration.classList.contains('cinematic-narration--captioned')) return (narrationInset = 0);
+          const box = canvas.getBoundingClientRect();
+          if (!canvas.isConnected || box.width <= 0 || box.height <= 0) return 0;
+          const wasHidden = narration.hidden; narration.hidden = false;
+          const band = narration.getBoundingClientRect();
+          narration.hidden = wasHidden;
+          if (band.height <= 0) return 0;
+          const comp = scene.composition, scale = Math.min(box.width / comp.width, box.height / comp.height);
+          const contentBottom = box.top + (box.height + comp.height * scale) / 2;
+          const inset = Math.max(0, contentBottom - band.top) / scale;
+          // 카메라를 올려도(배경이 끝나서) 인물 발이 띠 밑에 남고, 위쪽은 비어 있으면 띠를 화면 위로 옮긴다.
+          const clearance = animaticBandClearance(comp, inset, scene.durationMs);
+          if (clearance.residual > 2 && !clearance.topHit) { narration.classList.add('cinematic-narration--top'); return (narrationInset = 0); }
+          return (narrationInset = inset);
+        };
+        playOpeningAnimatic({ project, canvas, composition: scene.composition, durationMs: scene.durationMs, signal: lifetime.signal, reducedMotion, bottomInset, holdClockThroughStalls: options.holdClockThroughStalls, softCutTails: options.softCutTails,
           onReady: () => { if (!alive || !mediaActive) return; clearTimeout(loadTimer); root.dataset.mediaState = 'ready'; status.textContent = ''; },
           onError: message => { if (!alive || !mediaActive) return; console.warn('[opening animatic]', message); fail('error'); status.textContent = '장면을 그리지 못했어요. Enter로 넘어가세요.'; }, onDone: () => { if (alive) next(); } });
         break;

@@ -338,14 +338,15 @@
   white-space: normal !important;
 }
 
-.database-modal-backdrop .database-modal-window .database-footer-button[data-testid="database-footer-ok"] {
+/* 저장하지 않는 세션에서 「닫기」가 주 버튼(.primary)이 되면 이 중립 덮개를 받지 않는다(17-database-footer-final.css). */
+.database-modal-backdrop .database-modal-window .database-footer-button[data-testid="database-footer-ok"]:not(.primary) {
   background: transparent !important;
   border-color: var(--db-studio-border-default) !important;
   color: var(--db-studio-text-2) !important;
   font-weight: 500 !important;
 }
 
-.database-modal-backdrop .database-modal-window .database-footer-button[data-testid="database-footer-ok"]:hover {
+.database-modal-backdrop .database-modal-window .database-footer-button[data-testid="database-footer-ok"]:not(.primary):hover {
   background: var(--db-studio-inset) !important;
   color: var(--db-studio-text-1) !important;
 }

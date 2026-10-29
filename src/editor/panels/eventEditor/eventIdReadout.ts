@@ -96,28 +96,42 @@ export function renderEventIdReadout(eventId: string, options: EventIdReadoutOpt
     },
   });
 
-  return el("div", {
+  // 저작자에게 필요한 것은 이름·위치다. 정본 ID 는 조수·진단에 붙여넣을 때만 필요하므로
+  // 기본으로 접힌 「고급」 안에 둔다 — 펼치면 값·복사·도움말이 그대로 있다.
+  const summaryText = variant === "card" ? "고급 정보" : "고급";
+  return el("details", {
     class: "event-id-readout",
     dataset: { testid: `${scope}-event-id`, variant },
     children: [
-      el("span", {
-        class: "event-id-readout-label",
-        text: LABEL,
-        attrs: { id: labelId },
-        dataset: { testid: `${scope}-event-id-label` },
+      el("summary", {
+        class: "event-id-readout-summary",
+        text: summaryText,
+        attrs: { title: `${summaryText}: ${LABEL} 보기`, "aria-label": `${summaryText}: ${LABEL} 보기` },
+        dataset: { testid: `${scope}-event-id-toggle` },
       }),
-      value,
-      copy,
-      ...(variant === "card"
-        ? [
-            el("p", {
-              class: "event-id-readout-hint",
-              text: HELP,
-              attrs: { id: hintId },
-              dataset: { testid: `${scope}-event-id-hint` },
-            }),
-          ]
-        : []),
+      el("div", {
+        class: "event-id-readout-body",
+        children: [
+          el("span", {
+            class: "event-id-readout-label",
+            text: LABEL,
+            attrs: { id: labelId },
+            dataset: { testid: `${scope}-event-id-label` },
+          }),
+          value,
+          copy,
+          ...(variant === "card"
+            ? [
+                el("p", {
+                  class: "event-id-readout-hint",
+                  text: HELP,
+                  attrs: { id: hintId },
+                  dataset: { testid: `${scope}-event-id-hint` },
+                }),
+              ]
+            : []),
+        ],
+      }),
     ],
   });
 }

@@ -127,7 +127,6 @@ body.palette-select-keeps-scroll .chipset-sheet.tile-palette {
   z-index: 1;
   background: var(--bg);
   padding: 2px var(--space-1) var(--space-1);
-  text-transform: uppercase;
 }
 
 .event-list-empty {
@@ -402,24 +401,24 @@ body.palette-select-keeps-scroll .chipset-sheet.tile-palette {
   opacity: 1;
 }
 
-@media (min-width: 1024px) {
-  .persistence-mode-banner-action,
-  .persistence-mode-banner-close {
-    align-items: center;
-    box-sizing: border-box;
-    justify-content: center;
-    min-height: 32px;
-    min-width: 32px;
-  }
+/* 작업을 보존하는 유일한 단추라 창 폭과 무관하게 32px 표적이다(900px 에서 19px 로 납작해졌다). */
+.persistence-mode-banner-action,
+.persistence-mode-banner-close {
+  align-items: center;
+  box-sizing: border-box;
+  display: inline-flex;
+  flex: 0 0 auto;
+  justify-content: center;
+  min-height: 32px;
+  min-width: 32px;
+}
 
-  .persistence-mode-banner-action {
-    display: inline-flex;
-  }
+.persistence-mode-banner-action {
+  font-size: 12px;
+}
 
-  .persistence-mode-banner-close {
-    display: inline-flex;
-    line-height: 1;
-  }
+.persistence-mode-banner-close {
+  line-height: 1;
 }
 
 .persistence-mode-banner.is-local-only {
@@ -433,3 +432,20 @@ body.palette-select-keeps-scroll .chipset-sheet.tile-palette {
 }
 
 /* 배너가 있으면 캔버스 위 플로팅 줌 툴바를 아래로 밀어 겹침을 피한다. */
+
+/* 빈 이벤트 목록에는 「새 이벤트」 단추가 붙는다(tilePalette.ts). */
+.event-list-empty .event-list-new {
+  margin-top: var(--space-2);
+  min-height: 32px;
+}
+
+/* 캔버스가 키 입력을 받는 동안(Tab 으로 들어온 「맵 캔버스」) 테두리로 알린다(IS-012 · C-105). */
+.canvas-area:focus-within {
+  outline: 1px solid var(--accent-border, var(--accent));
+  outline-offset: -1px;
+}
+
+.canvas-area canvas:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}

@@ -115,6 +115,7 @@ import { placeableDropItemId, placeableKey, type PlaceableObjectState } from "@/
 import { parseVehicleSessionState } from "@/project/vehicles";
 import { normalizeSceneLine, resolveVnExtras, saveSceneLine } from "@/project/vnExtras";
 import { normalizeJournalLines } from "@/project/storyJournal";
+import { currentObjectiveText } from "@/player/zoneFeedback";
 import { decodeMapBackgroundFlow, encodeMapBackgroundFlow } from "@/project/mapBackground";
 export {
   createSystemShellState,
@@ -198,6 +199,7 @@ export type SaveSnapshot = {
     readonly monsterParty?: readonly string[];
     readonly monsterBox?: readonly string[];
     readonly actorSkillIds?: PlaySession["actorSkillIds"];
+    readonly actorForgottenSkillIds?: PlaySession["actorForgottenSkillIds"];
     readonly actorSkillPp?: PlaySession["actorSkillPp"];
     readonly actorBattleCommands?: PlaySession["actorBattleCommands"];
     readonly actorExperience?: Record<string, number>;
@@ -292,6 +294,11 @@ export type SaveSnapshot = {
     readonly mapBackground?: SaveMapBackground;
     // Change Save Access 등 접근 플래그(m2Runtime.access). 세이브 복원 대상.
     readonly access?: Partial<Record<"escape" | "menu" | "save" | "teleportation", boolean>>;
+    /**
+     * 저장할 때 떠 있던 「현재 목표」 글(m2Runtime.ui 의 마지막 objectiveChip). 불러오면 이 한 줄을 ui 에 다시 넣는다 —
+     * 없으면 목표 줄이 비거나, 맵에 들어올 때 도는 시작 목표가 저장 시점보다 앞선 목표로 되돌렸다(2026-10-29 vm2 deepseek 방탈출 A6).
+     */
+    readonly objective?: string;
     readonly systemAudio?: Record<string, string>;
     /**
      * 「현재 BGM 기억」이 적어 둔 곡 id. 지금 나오는 곡(`audio.bgm`)과는 별개다.
@@ -531,6 +538,7 @@ export function createSaveSnapshot(project: Project, input: PlaySession): SaveSn
       monsterParty: structuredClone(session.monsterParty),
       monsterBox: structuredClone(session.monsterBox),
       actorSkillIds: structuredClone(session.actorSkillIds),
+      ...(session.actorForgottenSkillIds && Object.keys(session.actorForgottenSkillIds).length > 0 ? { actorForgottenSkillIds: structuredClone(session.actorForgottenSkillIds) } : {}),
       actorSkillPp: structuredClone(session.actorSkillPp),
       actorBattleCommands: structuredClone(session.actorBattleCommands),
       actorExperience: structuredClone(session.actorExperience),
@@ -621,6 +629,7 @@ export function createSaveSnapshot(project: Project, input: PlaySession): SaveSn
       mapBackground: pickMapBackground(session),
       systemAudio: parseSystemAudioState(session.m2Runtime?.system),
       access: session.m2Runtime?.access && Object.keys(session.m2Runtime.access).length > 0 ? { ...session.m2Runtime.access } : undefined,
+      ...(() => { const objective = currentObjectiveText(session.m2Runtime?.ui); return objective ? { objective } : {}; })(),
       ...persistedMemorizedBgmFields(session.m2Runtime?.audio),
     },
   };
@@ -891,6 +900,7 @@ export function applySaveSnapshot(project: Project, input: SaveSnapshot): PlaySe
   if (snapshot.session.monsterParty) session.monsterParty = [...snapshot.session.monsterParty];
   if (snapshot.session.monsterBox) session.monsterBox = [...snapshot.session.monsterBox];
   if (snapshot.session.actorSkillIds) session.actorSkillIds = structuredClone(snapshot.session.actorSkillIds);
+  session.actorForgottenSkillIds = snapshot.session.actorForgottenSkillIds ? structuredClone(snapshot.session.actorForgottenSkillIds) : undefined;
   if (snapshot.session.actorSkillPp) session.actorSkillPp = structuredClone(snapshot.session.actorSkillPp);
   if (snapshot.session.actorBattleCommands) session.actorBattleCommands = structuredClone(snapshot.session.actorBattleCommands);
   if (snapshot.session.actorExperience) session.actorExperience = structuredClone(snapshot.session.actorExperience);
@@ -1038,6 +1048,7 @@ export function applySaveSnapshot(project: Project, input: SaveSnapshot): PlaySe
     const runtime = ensureM2Runtime(session);
     runtime.access = { ...snapshot.session.access };
   }
+  if (typeof snapshot.session.objective === "string" && snapshot.session.objective.trim()) ensureM2Runtime(session).ui.push({ surface: "objectiveChip", message: snapshot.session.objective.trim(), durationMs: 0 });
   if (project.system.dailyWeather?.enabled === true) {
     const weather = session.gameTime
       ? applyDailyWeatherForDate(project, session, session.gameTime)
@@ -1422,6 +1433,7 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       monsterParty: isStringArray(session.monsterParty) ? session.monsterParty : undefined,
       monsterBox: isStringArray(session.monsterBox) ? session.monsterBox : undefined,
       actorSkillIds: isActorSkillIdsRecord(session.actorSkillIds) ? session.actorSkillIds : undefined,
+      actorForgottenSkillIds: isActorSkillIdsRecord(session.actorForgottenSkillIds) ? session.actorForgottenSkillIds : undefined,
       actorSkillPp: isActorSkillPpRecord(session.actorSkillPp) ? session.actorSkillPp : undefined,
       actorBattleCommands: isActorSkillIdsRecord(session.actorBattleCommands) ? session.actorBattleCommands : undefined,
       actorExperience: isNumberRecord(session.actorExperience) ? session.actorExperience : undefined,
@@ -1517,6 +1529,7 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       mapBackground: parseMapBackground(session.mapBackground),
       systemAudio: parseSystemAudioState(session.systemAudio),
       access: parseAccessState(session.access),
+      objective: typeof session.objective === "string" && session.objective.trim() ? session.objective.trim().slice(0, 200) : undefined,
       ...memorizedBgm,
     },
   };

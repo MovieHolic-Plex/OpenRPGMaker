@@ -603,7 +603,61 @@ function quantizePixelGrid(canvas: HTMLCanvasElement, composition: OpeningAnimat
   ctx.putImageData(image, 0, 0);
 }
 
-type DrawOptions = { reducedMotion?: boolean; durationMs?: number };
+type DrawOptions = {
+  reducedMotion?: boolean; durationMs?: number;
+  /** 화면 아래를 덮는 내레이션 띠 높이(구도 단위). 인물이 띠 밑에 들어가면 장면 내내 같은 만큼 카메라를 내려(그림을 올려) 띠 위로 보이게 한다(장부 assembly #31).
+   *  0 이면 보정하지 않는다(띠를 위로 옮긴 장면). */
+  bottomInset?: () => number;
+};
+
+type BandClearance = { readonly shift: number; readonly residual: number; readonly topHit: boolean };
+const bandClearances = new WeakMap<OpeningAnimatic, Map<number, BandClearance>>();
+/**
+ * 내레이션 띠(화면 아래 inset 높이)와 인물(role actor, 장면 공간)의 관계를 장면 전체에서 한 번 잰다.
+ *  - shift: 인물이 띠 밑에 들어가지 않게 카메라 y 를 내리는(그림을 올리는) 값 — 띠 높이와 배경 아래 끝까지 남은 여유를 넘지 않는다.
+ *  - residual: shift 로도 못 비킨 만큼(배경이 끝나 더 올릴 수 없을 때). 0 보다 크면 띠를 위로 옮기는 것을 검토한다.
+ *  - topHit: 같은 높이의 띠를 화면 위에 두면 인물을 덮는지.
+ */
+export function animaticBandClearance(a: OpeningAnimatic, inset: number, durationMs: number): BandClearance {
+  const key = Math.round(inset);
+  if (key <= 0) return { shift: 0, residual: 0, topHit: false };
+  let byInset = bandClearances.get(a);
+  if (!byInset) { byInset = new Map(); bandClearances.set(a, byInset); }
+  const cached = byInset.get(key);
+  if (cached) return cached;
+  const c = a.camera, h = a.height, w = a.width, limit = h - key - 2;
+  const fallbackX = c?.x ?? w / 2, fallbackY = c?.y ?? h / 2;
+  let need = 0, room = Number.POSITIVE_INFINITY, topHit = false;
+  const end = Math.max(0, durationMs);
+  for (let t = 0; t <= end; t += 100) {
+    const cx = resolveAnimaticCameraAxis(sampleAnimaticTrack(c?.keys?.x, t, fallbackX), c?.keys?.x, fallbackX, w);
+    const cy = resolveAnimaticCameraAxis(sampleAnimaticTrack(c?.keys?.y, t, fallbackY), c?.keys?.y, fallbackY, h);
+    const zoom = sampleAnimaticTrack(c?.keys?.zoom, t, c?.zoom ?? 1);
+    for (const l of a.layers) {
+      if (l.space === 'screen' || t < (l.startMs ?? 0) || l.endMs !== undefined && t >= l.endMs) continue;
+      const p = l.parallax ?? 1, z = zoom ** p;
+      const camY = h / 2 + (cy - h / 2) * p, camX = w / 2 + (cx - w / 2) * p;
+      const y = sampleAnimaticTrack(l.keys?.y, t, l.y) - l.height * (l.anchorY ?? 0);
+      const x = sampleAnimaticTrack(l.keys?.x, t, l.x) - l.width * (l.anchorX ?? 0);
+      if (l.role === 'background' && l.kind === 'image' && p === 1) {
+        // 이만큼 더 내려도 배경 아래 끝이 화면 아래에 닿는다.
+        room = Math.min(room, (y + l.height - camY) - h / (2 * z));
+        continue;
+      }
+      if (l.role !== 'actor' || p !== 1) continue;
+      const top = h / 2 + (y - camY) * z, bottom = h / 2 + (y + l.height - camY) * z;
+      const left = w / 2 + (x - camX) * z, right = w / 2 + (x + l.width - camX) * z;
+      if (right <= 0 || left >= w || bottom <= 0 || top >= h) continue;
+      if (bottom > limit) need = Math.max(need, (bottom - limit) / z);
+      if (top < key + 2) topHit = true;
+    }
+  }
+  const shift = Math.max(0, Math.min(need, key, room));
+  const result = { shift, residual: Math.max(0, need - shift), topHit };
+  byInset.set(key, result);
+  return result;
+}
+
 /** The same absolute-time draw function is used for playback, scrubbing and model previews. */
 export function drawAnimaticFrame(canvas: HTMLCanvasElement, a: OpeningAnimatic, images: AnimaticImages, atMs: number, options: DrawOptions = {}): void {
   const ctx = canvas.getContext('2d'); if (!ctx) throw Error('2D 무대를 만들 수 없습니다.');
@@ -640,6 +694,7 @@ function drawStage(ctx: CanvasRenderingContext2D, sx: number, sy: number, snappi
     cx += Math.sin(s * (shake.frequency ?? 14) * 6.28 + phase) * shake.amplitude * decay;
     cy += Math.cos(s * (shake.frequency ?? 14) * 4.6 + phase) * shake.amplitude * decay;
   }
+  cy += animaticBandClearance(a, options.bottomInset?.() ?? 0, options.durationMs ?? 0).shift;
   cx = snap(cx); cy = snap(cy);
   ctx.save(); try { ctx.setTransform(sx, 0, 0, sy, 0, 0); ctx.clearRect(0, 0, a.width, a.height);
   ctx.fillStyle = a.background ?? '#000000'; ctx.fillRect(0, 0, a.width, a.height);
@@ -731,10 +786,35 @@ function drawStage(ctx: CanvasRenderingContext2D, sx: number, sy: number, snappi
 }
 
 export type AnimaticPlayback = { ready: Promise<void>; stop: () => void };
-export function playOpeningAnimatic(options: { project: Project; canvas: HTMLCanvasElement; composition: OpeningAnimatic; durationMs: number; signal: AbortSignal; reducedMotion?: boolean; onReady: () => void; onError: (message: string) => void; onDone: () => void }): AnimaticPlayback {
+/** 컷 경계에서 소리를 짧게 줄이고 치운다. */
+function fadeTail(view: Window, audio: HTMLAudioElement, ms: number): void {
+  const from = audio.volume, start = view.performance.now();
+  const step = (): void => {
+    const u = (view.performance.now() - start) / ms;
+    if (u >= 1) { audio.pause(); audio.removeAttribute('src'); audio.load(); audio.remove(); return; }
+    audio.volume = Math.max(0, from * (1 - u)); view.setTimeout(step, 20);
+  };
+  step();
+}
+/** 한 프레임 간격이 이보다 길면 «멈춤»으로 보고 시계를 그만큼만 나아가게 한다(holdClockThroughStalls). */
+const STALL_FRAME_MS = 250;
+/** 컷이 끝까지 돌았을 때 아직 울리던 소리를 끊지 않고 이만큼 줄여 다음 컷 소리와 겹친다(다음 컷 소리가 불러와지는 사이의 빈틈을 메운다). */
+const CUT_TAIL_MS = 180;
+/**
+ * holdClockThroughStalls: 새 게임 오프닝은 엔진이 뒤에서 맵을 짓는 동안 돈다. 그동안 메인 스레드가 몇 초씩 멈추면
+ * 벽시계로 도는 컷이 멈춘 만큼 건너뛰어 첫 몇 초를 통째로 잃었다(폴른 스타: 1.4초에서 3.2초 멈춤 → 시계가 1.5→4.6초로 튐).
+ * 이 옵션이 켜지면 한 프레임에 STALL_FRAME_MS 넘게 나아가지 않는다 — 멈춘 동안은 마지막 그림이 그대로 보이고, 풀리면 그 자리에서 잇는다.
+ * softCutTails: 컷 끝까지 울리던 효과음을 CUT_TAIL_MS 동안 줄이며 다음 컷과 겹친다(같은 소리를 offsetMs 로 이어 받는 다음 컷이 불러오는 사이 50ms 빈틈).
+ * 둘 다 기본은 꺼져 있다 — 새 게임 오프닝(player.ts bootRun)만 켠다. 타이틀 인트로·유휴 데모·편집기 미리보기는 그대로다.
+ */
+export function playOpeningAnimatic(options: { project: Project; canvas: HTMLCanvasElement; composition: OpeningAnimatic; durationMs: number; signal: AbortSignal; reducedMotion?: boolean; bottomInset?: () => number; holdClockThroughStalls?: boolean; softCutTails?: boolean; onReady: () => void; onError: (message: string) => void; onDone: () => void }): AnimaticPlayback {
   const { canvas, composition: a, signal } = options, view = canvas.ownerDocument.defaultView!;
-  const draw: DrawOptions = { reducedMotion: options.reducedMotion, durationMs: options.durationMs };
-  let frame = 0, stopped = false, started = 0;
+  const draw: DrawOptions = { reducedMotion: options.reducedMotion, durationMs: options.durationMs, bottomInset: options.bottomInset };
+  let frame = 0, stopped = false, started = 0, clock = 0, lastNow = 0;
+  const elapsed = (now: number): number => {
+    if (!options.holdClockThroughStalls) return now - started;
+    clock += Math.min(STALL_FRAME_MS, Math.max(0, now - lastNow)); lastNow = now; return clock;
+  };
   const cues = new Map<string, HTMLAudioElement>();
   // 브라우저 자동재생 막힘(첫 화면에 사용자 입력이 없을 때 정상)은 그림을 멈출 이유가 아니다 — 소리만 미뤘다가 첫 입력에 다시 튼다.
   // 예전에는 장면 전체를 멈추고 「오디오 큐 자동재생 차단: …」 개발자 글을 화면에 남겼다(2026-10-25 J26).
@@ -757,10 +837,11 @@ export function playOpeningAnimatic(options: { project: Project; canvas: HTMLCan
         ? Math.max(1, Math.min(8, Math.floor(Math.min(box.width * dpr / a.width, box.height * dpr / a.height)))) : 1;
       canvas.width = a.width * k; canvas.height = a.height * k; if (k > 1) canvas.style.imageRendering = 'pixelated';
       drawAnimaticFrame(canvas, a, images, 0, draw);
-      started = view.performance.now(); options.onReady();
+      started = lastNow = view.performance.now(); options.onReady();
       const tick = (now: number) => {
         if (stopped || signal.aborted) return;
-        const t = Math.min(options.durationMs, now - started); canvas.dataset.timeMs = String(Math.round(t));
+        const t = Math.min(options.durationMs, elapsed(now)); canvas.dataset.timeMs = String(Math.round(t));
+        const ending = t >= options.durationMs;
         try { drawAnimaticFrame(canvas, a, images, t, draw); }
         catch (error) { stop(); options.onError(String(error)); return; }
         for (const cue of a.audioCues ?? []) {
@@ -769,7 +850,7 @@ export function playOpeningAnimatic(options: { project: Project; canvas: HTMLCan
           if (active && !audio) {
             const url = resolveAssetResourceUrl(cue.resourceId, { project: options.project }); if (!url) { console.warn('[animatic] audio cue missing:', cue.resourceId); skipped.add(cue.id); continue; }
             audio = canvas.ownerDocument.createElement('audio'); audio.src = url; audio.loop = cue.loop ?? false; audio.dataset.testid = 'animatic-audio-cue'; audio.dataset.cueId = cue.id; audio.volume = animaticCueVolume(cue, t); canvas.parentElement?.append(audio); cues.set(cue.id, audio);
-            audio.addEventListener('loadedmetadata', () => { if (!stopped && audio!.duration > 0 && Number.isFinite(audio!.duration)) { const offset = (cue.offsetMs ?? 0) / 1000 + Math.max(0, view.performance.now() - started - cue.atMs) / 1000; audio!.currentTime = audio!.loop ? offset % audio!.duration : Math.min(offset, audio!.duration); } }, { once: true, signal });
+            audio.addEventListener('loadedmetadata', () => { if (!stopped && audio!.duration > 0 && Number.isFinite(audio!.duration)) { const now = options.holdClockThroughStalls ? Number(canvas.dataset.timeMs ?? 0) : view.performance.now() - started; const offset = (cue.offsetMs ?? 0) / 1000 + Math.max(0, now - cue.atMs) / 1000; audio!.currentTime = audio!.loop ? offset % audio!.duration : Math.min(offset, audio!.duration); } }, { once: true, signal });
             audio.addEventListener('error', () => { if (!stopped) console.warn('[animatic] audio cue failed to load:', cue.resourceId); }, { once: true, signal });
             void audio.play().catch((error: unknown) => {
               // 짧은 큐(0.5초 시계 소리)는 play() 가 끝나기 전에 pause() 되어 AbortError 로 거절된다 — 정상이다(판정자 J26 근본 원인). 무시한다.
@@ -777,9 +858,18 @@ export function playOpeningAnimatic(options: { project: Project; canvas: HTMLCan
               if (!stopped && (error as { name?: string } | null)?.name === 'NotAllowedError') { blocked.add(audio!); armRetry(); }
             });
           }
-          if (audio) { audio.volume = animaticCueVolume(cue, t); if (!active) audio.pause(); }
+          // 컷 끝까지 울리던 소리는 끊지 않고 꼬리를 남긴다(아래). 그 밖의 소리는 제 구간이 끝나면 멈춘다.
+          const runsToCut = ending && !!options.softCutTails && !audio?.paused && cue.atMs + cue.durationMs >= options.durationMs - 1;
+          if (audio) { if (!runsToCut) audio.volume = animaticCueVolume(cue, t); if (!active && !runsToCut) audio.pause(); }
         }
-        if (t >= options.durationMs) { stop(); options.onDone(); } else frame = view.requestAnimationFrame(tick);
+        if (ending && options.softCutTails) {
+          for (const cue of a.audioCues ?? []) {
+            const audio = cues.get(cue.id);
+            if (!audio || audio.paused || cue.atMs + cue.durationMs < options.durationMs - 1) continue;
+            cues.delete(cue.id); fadeTail(view, audio, CUT_TAIL_MS);
+          }
+        }
+        if (ending) { stop(); options.onDone(); } else frame = view.requestAnimationFrame(tick);
       };
       frame = view.requestAnimationFrame(tick);
     } catch (error) { if (!signal.aborted && !stopped) { stop(); options.onError(error instanceof Error ? error.message : String(error)); } }

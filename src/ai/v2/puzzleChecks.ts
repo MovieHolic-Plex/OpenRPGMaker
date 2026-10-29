@@ -4,8 +4,9 @@
 // 금고는 자기 대사에 비밀번호(1024)를 적어 일기장 없이 열렸고, 오프닝 이름표에 「@player」가 그대로 떴고, 구한 동생은 따라오지만
 // 파티에 없었다. 조각마다 따로 지으면 아무것도 사슬 전체를 보지 않는다 — 끝맺음 관문이 이 검사로 돌려보낸다. 순수 함수.
 import { canMove, isPassable } from "@/project/collision";
-import type { GameMap, Project } from "@/project/types";
-import { playerAnchors } from "@/editor/tools/transferReachability";
+import type { GameEvent, GameMap, Project } from "@/project/types";
+import { eventBodyRect, eventPassageRect } from "@/project/eventFootprintQuery";
+import { playerAnchors, sameMapPassages } from "@/editor/tools/transferReachability";
 import { eventAlwaysBlocks } from "@/project/eventPassageBlock";
 import { trivialCode } from "./puzzle";
 
@@ -37,7 +38,8 @@ function walk(commands: unknown, visit: (cmd: Obj) => void): void {
     const cmd = obj(raw);
     if (!cmd) continue;
     visit(cmd);
-    for (const key of ["then", "else", "branch", "cancelBranch", "commands", "body", "loop"]) if (Array.isArray(cmd[key])) walk(cmd[key], visit);
+    // 전투 victoryBranch·상점 transactionBranch 같은 「…Branch」 갈래도 걷는다(blueprint.ts walk 와 같은 규칙).
+    for (const [key, value] of Object.entries(cmd)) if (Array.isArray(value) && (/^(then|else|branch|commands|body|loop|beats)$/u.test(key) || /Branch$/u.test(key))) walk(value, visit);
     if (Array.isArray(cmd.options)) for (const o of cmd.options) walk(obj(o)?.branch, visit);
     if (Array.isArray(cmd.branches)) for (const b of cmd.branches) walk(obj(b)?.commands, visit);
   }
@@ -53,20 +55,40 @@ function texts(commands: unknown): string[] {
 const LOCKED_WORDS = /잠겨|잠긴|잠겼|열리지\s*않|열쇠(가|를)?\s*(없|필요)|열쇠\s*구멍|locked/iu;
 
 /** 맵 하나의 걸어 닿는 칸 — 막는 칸(blocked)은 지나가지 않는다. 앵커가 없으면 null. */
-function reachWithout(project: Project, map: GameMap, blocked: ReadonlySet<string>): Set<string> | null {
+export function reachWithout(project: Project, map: GameMap, blocked: ReadonlySet<string>, followHops = false): Set<string> | null {
   const anchors = playerAnchors(project, map).filter((a) => !blocked.has(`${a.x},${a.y}`));
   if (!anchors.length) return null;
   const seen = new Set<string>(anchors.map((a) => `${a.x},${a.y}`));
   const queue = [...anchors];
-  for (let i = 0; i < queue.length; i += 1) {
-    const c = queue[i]!;
-    for (const [dx, dy] of STEPS) {
-      const x = c.x + dx, y = c.y + dy, key = `${x},${y}`;
-      if (x < 0 || y < 0 || x >= map.width || y >= map.height || seen.has(key) || blocked.has(key)) continue;
-      if (!canMove(project, map, c.x, c.y, x, y)) continue;
-      seen.add(key);
-      queue.push({ x, y });
+  // 같은 맵 안의 이동(체육관 덩굴 문·덤불 틈: 조사하면 문 건너 칸으로 옮긴다)도 길이다 — playerAnchors 는 다른 맵에서 들어오는 이동만 본다.
+  // 닿는 칸(또는 그 이웃)에 선 이벤트의 같은 맵 이동 착지를 새 출발점으로 더한다(잠긴 문을 열린다고 보는 것과 같다). 2026-10-29 standin monster 새순 체육관.
+  // 우회 검사(lockBypasses·장치 무용)는 따르지 않는다 — 문 자신의 이동이 「이미 건너편에 닿는다」로 보이게 된다.
+  // 통로 목록은 eventReach(끝맺음 도달 수리)와 같은 sameMapPassages 한 벌이다.
+  const hops = !followHops ? [] : sameMapPassages(map).flatMap((p) => p.to.map((to) => ({ from: p.at, to })));
+  const used = new Set<number>();
+  for (let i = 0; ; ) {
+    for (; i < queue.length; i += 1) {
+      const c = queue[i]!;
+      for (const [dx, dy] of STEPS) {
+        const x = c.x + dx, y = c.y + dy, key = `${x},${y}`;
+        if (x < 0 || y < 0 || x >= map.width || y >= map.height || seen.has(key) || blocked.has(key)) continue;
+        if (!canMove(project, map, c.x, c.y, x, y)) continue;
+        seen.add(key);
+        queue.push({ x, y });
+      }
     }
+    const before = queue.length;
+    hops.forEach((hop, k) => {
+      if (used.has(k)) return;
+      const near = seen.has(`${hop.from.x},${hop.from.y}`) || STEPS.some(([dx, dy]) => seen.has(`${hop.from.x + dx},${hop.from.y + dy}`));
+      if (!near) return;
+      used.add(k);
+      const key = `${hop.to.x},${hop.to.y}`;
+      if (hop.to.x < 0 || hop.to.y < 0 || hop.to.x >= map.width || hop.to.y >= map.height || seen.has(key) || blocked.has(key)) return;
+      seen.add(key);
+      queue.push({ ...hop.to });
+    });
+    if (queue.length === before) break;
   }
   return seen;
 }
@@ -300,12 +322,20 @@ export function unreachableCriticalEvents(project: Project): string[] {
     });
     if (!critical.length) continue;
     // 늘 막는 이벤트(모든 페이지가 보통 우선순위 — 한 칸 복도의 일기장·가구 이벤트)는 벽처럼 친다. 잠긴 문은 열린다고 본다.
-    const blocked = new Set((map.events ?? []).filter((ev) => eventAlwaysBlocks(ev) && !lockOf(ev)).map((ev) => `${ev.x},${ev.y}`));
-    const reach = reachWithout(project, map, blocked);
+    // 몸 사각이 여러 칸인 가구 이벤트는 통행 줄 전부가 막고, 조사는 몸 사각 어느 칸 곁에서든 된다(런타임과 같다 —
+    // 2026-10-29 vm4 deepseek 탈출: 3×1 책상 서랍의 앵커 곁만 보아 「닿지 못한다」고 잘못 막았다).
+    const cellsOf = (ev: GameEvent, rect: { left: number; top: number; right: number; bottom: number }) => {
+      const out = [`${ev.x},${ev.y}`];
+      for (let y = rect.top; y <= rect.bottom; y++) for (let x = rect.left; x <= rect.right; x++) out.push(`${x},${y}`);
+      return out;
+    };
+    const blocked = new Set((map.events ?? []).filter((ev) => eventAlwaysBlocks(ev) && !lockOf(ev)).flatMap((ev) => cellsOf(ev, eventPassageRect(ev))));
+    const reach = reachWithout(project, map, blocked, true);
     if (!reach) continue;
     const at = (x: number, y: number) => reach.has(`${x},${y}`);
     for (const { ev, why } of critical) {
-      if (at(ev.x, ev.y) || STEPS.some(([dx, dy]) => at(ev.x + dx, ev.y + dy))) continue;
+      const body = cellsOf(ev, eventBodyRect(ev)).map((k) => k.split(",").map(Number) as [number, number]);
+      if (body.some(([x, y]) => at(x, y) || STEPS.some(([dx, dy]) => at(x + dx, y + dy)))) continue;
       out.push(`${map.name}의 「${ev.name || ev.id}」(${ev.id}, ${ev.x},${ev.y} · ${why.join("·")})에 걸어 닿지 못한다 — 그 칸도 네 이웃 칸도 시작·입구에서 이어지지 않는다(벽·가구나 한 칸 길을 막고 선 이벤트에 갇힘). 엔딩으로 가는 길이 끊긴다`);
     }
   }

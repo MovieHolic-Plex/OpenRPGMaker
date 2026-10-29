@@ -20,13 +20,13 @@
 .palette-smart-tab {
   flex: 1 1 auto;
   min-width: 0;
-  height: 24px;
+  height: 28px;
   padding: 0 4px;
   border: 1px solid transparent;
   border-radius: var(--radius-s);
   background: transparent;
   color: var(--text-2);
-  font: 600 11px/22px var(--font-ui, sans-serif);
+  font: 600 12px/26px var(--font-ui, sans-serif);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -109,13 +109,13 @@
 
 .palette-smart-chip {
   flex: 0 0 auto;
-  height: 22px;
-  padding: 0 7px;
+  height: 28px;
+  padding: 0 10px;
   border: 1px solid transparent;
   border-radius: var(--radius-pill, 999px);
   background: var(--control-bg);
   color: var(--text-2);
-  font: 600 11px/1 var(--font-ui, sans-serif);
+  font: 600 12px/1 var(--font-ui, sans-serif);
   white-space: nowrap;
   cursor: pointer;
 }
@@ -182,7 +182,7 @@
 }
 
 .palette-card.is-active,
-.palette-card[aria-pressed="true"] {
+.palette-card[aria-selected="true"] {
   background: var(--accent-muted);
   border-color: var(--accent);
   box-shadow: inset 0 0 0 1px var(--accent);
@@ -242,9 +242,11 @@
      길 때만 anywhere 가 자른다. 12px 줄높이는 글자 아래 1px 을 잘랐다(2026-10-21 UI 감사 02-leftdock-07). */
   display: -webkit-box;
   overflow: hidden;
-  max-height: 26px;
-  font: 600 10px/13px var(--font-ui, sans-serif);
+  max-height: 30px;
+  font: 600 12px/15px var(--font-ui, sans-serif);
   text-align: center;
+  /* 두 줄을 넘으면 말줄임표로 끝난다 — 잘린 줄 알 수 있게(전체 이름은 카드 title). */
+  text-overflow: ellipsis;
   word-break: keep-all;
   overflow-wrap: anywhere;
   -webkit-line-clamp: 2;
@@ -266,4 +268,42 @@
   margin-top: 6px;
   color: var(--text-1);
   font-weight: 700;
+}
+
+/* 프리팹 분류: 접힌 상태는 한 줄 가로 스크롤 + 「더 보기」, 펼치면 줄바꿈으로 모두 보인다(HIG C-42). */
+.palette-smart-chip-bar {
+  align-items: flex-start;
+  display: flex;
+  gap: 4px;
+  min-width: 0;
+}
+.palette-smart-chip-bar > .palette-smart-chips {
+  flex: 1 1 auto;
+}
+.palette-smart-chips.is-collapsed {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+.palette-smart-chip-more {
+  background: transparent;
+  border-color: var(--border-default);
+  flex: 0 0 auto;
+}
+.palette-card-prefix {
+  font-size: 12px;
+}
+
+/* 낮은 창(높이 720px 이하)에서는 카드 그림을 48px 정사각형으로 줄이고 이름을 한 줄로 두어 세 줄 이상이 보이게 한다.
+   칸 비율은 그대로라 여러 칸짜리 프리팹 그림도 찌그러지지 않는다. 전체 이름은 카드 title. */
+@media (max-height: 720px) {
+  .palette-card-thumb {
+    align-self: center;
+    width: 48px;
+  }
+
+  .palette-card-name {
+    -webkit-line-clamp: 1;
+    max-height: 15px;
+  }
 }

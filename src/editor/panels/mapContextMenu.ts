@@ -102,7 +102,7 @@ function renderMenuItem(item: MapContextMenuItem): HTMLButtonElement {
       type: "button",
     },
     children: [
-      el("span", { class: `rm-tool-icon oprn-icon-${item.icon}`, attrs: { "aria-hidden": "true" } }),
+      // 다른 메뉴처럼 글자 메뉴다 — 이 메뉴만 쓰던 다색 픽셀 아이콘(래스터)은 그리지 않는다.
       el("span", { class: "map-context-menu-label", text: item.label }),
       el("span", { class: "map-context-menu-shortcut", text: item.shortcut ?? "" }),
     ],

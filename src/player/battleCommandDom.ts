@@ -578,6 +578,8 @@ function syncEnemyListName(
 // 여기서 다시 내보내 기존 소비자(battleDirectorDom·battleSequencer)의 경로를 유지한다.
 export { disambiguatedBattlerName };
 
+const BASIC_ATTACK_SKILL_ID = "skill_attack";
+
 function listedSkillIds(actor: BattleBattlerSnapshot | undefined, command?: RuntimeBattleCommand, _snapshot?: BattleSnapshot): SkillId[] {
   if (!actor) return command?.skillId ? [command.skillId] : [];
   if (command?.skillId) return [command.skillId];
@@ -587,6 +589,10 @@ function listedSkillIds(actor: BattleBattlerSnapshot | undefined, command?: Runt
   const owned = battlerSkillIdsWithGrants(actor);
   return owned.filter((id) => {
     const skill = project.database.skills.find((record) => record.id === id);
+    // 기본 공격 기술(skill_attack, 이름 「공격」)은 「공격」 명령 그 자체다 — RPG 메이커처럼 기술 목록에 다시 싣지 않는다.
+    // 실은 채로 두면 기술이 그것뿐인 배우의 「스킬」이 공격 한 줄짜리 목록을 열었다(2026-10-29 잊힌 지하묘지·마왕의 동굴 실측).
+    // 몬스터 파티(포켓몬 「싸운다」 기술 4칸)는 기술이 곧 공격 수단이라 그대로 둔다.
+    if (id === BASIC_ATTACK_SKILL_ID && !actor.monsterInstanceId) return false;
     if (!skill) return true;
     if (comboActorIdsOf(skill)) return false;
     if (command?.skillSubsetName) return skill.type === skillTypeForSubsetName(command.skillSubsetName);

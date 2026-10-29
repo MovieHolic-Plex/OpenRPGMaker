@@ -83,12 +83,12 @@ export function preflightProjectForPlay(
   }
 
   const requested = requestedStartPos(draft, startOverride);
-  if (!isPassable(draft, startMap, requested.x, requested.y)) {
+  if (!isStartCell(draft, startMap, requested.x, requested.y)) {
     const relocated = findNearestPassable(draft, startMap, requested);
     if (relocated) {
       repairs.push({
         code: "start-position-unreachable",
-        detail: `시작 좌표 (${requested.x}, ${requested.y}) 가 맵 밖이거나 통행 불가라 (${relocated.x}, ${relocated.y}) 로 옮겼습니다.`,
+        detail: `시작 좌표 (${requested.x}, ${requested.y}) 가 맵 밖이거나 통행 불가(벽·막는 물체)라 (${relocated.x}, ${relocated.y}) 로 옮겼습니다.`,
       });
       draft.startPos = relocated;
     } else {
@@ -166,7 +166,7 @@ function findNearestPassable(
   from: { x: number; y: number },
 ): { x: number; y: number } | null {
   const base = clampToBounds(map, from);
-  if (inBounds(map, base.x, base.y) && isPassable(project, map, base.x, base.y)) return base;
+  if (inBounds(map, base.x, base.y) && isStartCell(project, map, base.x, base.y)) return base;
   const maxRadius = Math.min(MAX_SCAN_RADIUS, Math.max(map.width, map.height));
   for (let radius = 1; radius <= maxRadius; radius += 1) {
     for (let dy = -radius; dy <= radius; dy += 1) {
@@ -175,9 +175,32 @@ function findNearestPassable(
         const x = base.x + dx;
         const y = base.y + dy;
         if (!inBounds(map, x, y)) continue;
-        if (isPassable(project, map, x, y)) return { x, y };
+        if (isStartCell(project, map, x, y)) return { x, y };
+      }
+    }
+  }
+  // 막는 물체를 피할 칸이 없으면 타일만 보고 고른다(예전 규칙) — 물체 때문에 부팅을 막지는 않는다.
+  for (let radius = 0; radius <= maxRadius; radius += 1) {
+    for (let dy = -radius; dy <= radius; dy += 1) {
+      for (let dx = -radius; dx <= radius; dx += 1) {
+        if (Math.max(Math.abs(dx), Math.abs(dy)) !== radius) continue;
+        const x = base.x + dx;
+        const y = base.y + dy;
+        if (inBounds(map, x, y) && isPassable(project, map, x, y)) return { x, y };
       }
     }
   }
   return null;
+}
+
+/**
+ * 주인공이 시작할 수 있는 칸: 타일이 통행 가능하고, 그 칸에 늘 막는 보이는 물체(모든 쪽이 «같은 층 + 겹침 금지 + 그림 있음»인 이벤트)가 없다(2026-10-28).
+ * 조수가 시작 칸에 책장·상자 이벤트를 얹으면 주인공이 물체 속에 박혀 「시작 맵에 주인공이 안 보인다」가 됐다.
+ * 조건부 쪽이 하나라도 지나갈 수 있으면 막는다고 보지 않는다(세션 없이 판정하는 보수적 규칙).
+ */
+function isStartCell(project: Project, map: GameMap, x: number, y: number): boolean {
+  if (!isPassable(project, map, x, y)) return false;
+  return !(map.events ?? []).some((event) => event.x === x && event.y === y && Array.isArray(event.pages) && event.pages.length > 0
+    && event.pages.every((page) => (page.priority ?? "same") === "same" && (page.overlapForbidden ?? true)
+      && page.graphic?.transparent !== true && Boolean(page.graphic?.sprite ?? page.graphic?.appearanceId)));
 }

@@ -99,7 +99,8 @@
 }
 
 .player-layout.system-shell .rm-title-subtitle {
-  color: rgba(248, 250, 252, 0.86);
+  color: rgba(248, 250, 252, 0.94);
+  text-shadow: 1px 0 0 rgba(0, 0, 0, 0.85), -1px 0 0 rgba(0, 0, 0, 0.85), 0 1px 0 rgba(0, 0, 0, 0.85), 0 -1px 0 rgba(0, 0, 0, 0.85), 0 0 8px rgba(0, 0, 0, 0.7);
   display: block;
   font-family: var(--runtime-ui-font);
   font-size: 10px;
@@ -285,7 +286,8 @@
    단, 창은 **내용 크기**만 생긴다(min-width 96px). 전면 루트에 fill 을 걸지 않으므로
    DB 타이틀 그래픽은 메뉴 밖 전역에서 그대로 보이고, 레터박스 RM 타이틀로 돌아가지도 않는다. */
 .player-layout.system-shell .rm-title-screen-editorial .rm-title-menu {
-  background: var(--runtime-window-fill-fallback);
+  /* 창 칠 아래에 짙은 받침을 한 겹 깐다 — 유리판(0.82)만으로는 타이틀 뒤 맵의 촛대·탁자가 메뉴 글자 뒤로 비쳤다(VQA vm 6·16, F 115, T 170). 합친 불투명도 약 0.98. */
+  background: linear-gradient(var(--runtime-window-fill-fallback), var(--runtime-window-fill-fallback)), rgb(8 10 20 / 88%);
   border: 1px solid var(--runtime-glass-hairline);
   border-radius: var(--runtime-glass-radius-small);
   box-shadow: none;
@@ -613,8 +615,9 @@
   font-size: 8px;
   letter-spacing: 0.32em;
   text-transform: uppercase;
-  color: rgb(236 240 246 / 88%);
-  text-shadow: 0 1px 4px rgb(0 0 0 / 80%);
+  color: rgb(244 246 250);
+  /* 부제는 가는 8px 글씨라 흐린 그늘만으로는 밝은 벽난로·산비탈·빗줄기에 묻혔다(장부 assembly #11·#21·#25·#28) — 또렷한 1px 테두리 + 넓은 그늘. */
+  text-shadow: 1px 0 0 rgb(0 0 0 / 88%), -1px 0 0 rgb(0 0 0 / 88%), 0 1px 0 rgb(0 0 0 / 88%), 0 -1px 0 rgb(0 0 0 / 88%), 0 1px 4px rgb(0 0 0 / 85%), 0 0 10px rgb(0 0 0 / 70%);
   white-space: nowrap;
   pointer-events: none;
 }
@@ -650,7 +653,9 @@
   letter-spacing: 0.08em;
   padding: 1px 4px 1px 12px;
   position: relative;
-  text-shadow: 0 1px 3px rgb(0 0 0 / 90%), 0 0 8px rgb(0 0 0 / 60%);
+  /* 1px 검은 테두리 + 넓은 그늘 — 밝은 키아트·빗줄기 위에서도 글자 획이 떨어져 보인다(장부 assembly #19·#21·#25). */
+  text-shadow: 1px 0 0 rgb(0 0 0 / 85%), -1px 0 0 rgb(0 0 0 / 85%), 0 1px 0 rgb(0 0 0 / 85%), 0 -1px 0 rgb(0 0 0 / 85%), 0 1px 3px rgb(0 0 0 / 90%), 0 0 10px rgb(0 0 0 / 75%);
+  color: rgb(236 240 246 / 92%);
 }
 
 .player-layout.system-shell .rm-title-screen-editorial .rm-title-menu[data-menu-style="plain"] .rm-title-menu-button.selected,

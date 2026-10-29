@@ -35,6 +35,7 @@ export function licenseSentence(license: StoreLicense, author: string): string {
     case "CC-BY-4.0": return `게임에 자유롭게 쓸 수 있고, 크레딧에 「${author}」 이름이 자동으로 들어가요.`;
     case "CC-BY-SA-4.0": return `게임에 쓸 수 있고 크레딧에 「${author}」 이름이 자동으로 들어가요. 고쳐서 다시 나눌 때는 같은 조건으로 나눠야 해요.`;
     case "OPRN-GAME": return "내 게임 안에서는 자유롭게 쓸 수 있어요. 그림·소리 파일만 따로 떼어 나눠 주면 안 돼요.";
+    case "REFMAP-MODIFIED": return "REFMAP 그림을 고친 것이에요. 게임(무료·유료)에 자유롭게 쓸 수 있고, 크레딧에 「REFMAP」과 고쳤다는 표시가 자동으로 들어가요.";
   }
 }
 

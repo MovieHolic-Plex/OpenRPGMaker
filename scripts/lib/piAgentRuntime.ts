@@ -72,18 +72,17 @@ import { createDeltaRelay } from "../../src/ai/piAgent/deltaRelay.ts";
 import { applyMapDeltas, diffMapsForDelta } from "../../src/ai/piAgent/mapDelta.ts";
 import { buildPiAgentSystemPrompt } from "../../src/ai/piAgent/systemPrompt.ts";
 import { gameDesignBriefContext } from "../../src/project/gameDesignBrief.ts";
-import { isTransientProviderStreamError, PI_PROVIDER_STREAM_RETRY_LIMIT, providerStreamResumePrompt } from "../../src/ai/piAgent/providerRetry.ts";
+import { isModelStallError, isTransientProviderStreamError, modelStallFailure, modelStallLimits, PI_PROVIDER_STREAM_RETRY_LIMIT, providerStreamResumePrompt, withModelStallLimits } from "../../src/ai/piAgent/providerRetry.ts";
 import { explainOpenAiCompatRunError, guardedOpenAiCompatFetch, shapeOpenAiCompatCall } from "./openAiCompatModel.ts";
 import { isOpenAiCompatProviderId } from "../../src/ai/openAiCompat.ts";
 import { PLAN_EXECUTION_REKICK, ULTRABRAIN_PLAN_HEADING } from "../../src/ai/piAgent/planExecution.ts";
 import { WHOLE_GAME_REKICKS, unbuiltGameSigns, wantsWholeGame, wholeGameRekickPrompt } from "../../src/ai/v2/shipChecks.ts";
-import { addPiAgentUsage, changedProjectKeys, PI_AGENT_DEFAULT_TIMEOUT_MS, PI_MAP_LOSS_DECLINED_PREFIX, piMapScopeGuard, restoreCheckpointProject, slimCheckpointProject, slimProjectForWire, snapshotProjectKeepingHeavy, slimDoneEvent, unchangedHeavyKeys, type PiAgentDoneEvent, type PiAgentEvent, type PiAgentRequest, type PiAgentUsage, type PiCheckpointHeavyKey } from "../../src/ai/piAgent/protocol.ts";
+import { addPiAgentUsage, changedProjectKeys, PI_AGENT_DEFAULT_TIMEOUT_MS, PI_MAP_LOSS_DECLINED_PREFIX, piMapScopeGuard, restoreCheckpointProject, slimProjectForWire, snapshotProjectKeepingHeavy, slimDoneEvent, type PiAgentDoneEvent, type PiAgentEvent, type PiAgentRequest, type PiAgentUsage, type PiCheckpointHeavyKey } from "../../src/ai/piAgent/protocol.ts";
 import { normalizePiThinkingLevel } from "../../src/ai/piAgent/thinkingLevel.ts";
 import { antigravityToolEnumPayload } from "./ohMyPiToolEnums.ts";
 import { searchWebWithCodex } from "./codexWebSearchRuntime.ts";
 import { WEB_SEARCH_TOOL } from "../../src/editor/tools/webSearchTool.ts";
 import { mergeConstructionLogs } from "../../src/editor/tools/constructionLog.ts";
-import { CODEX_PROVIDER_ID } from "../../src/ai/oauth/credentials.ts";
 import { setWorldmapBuilder } from "../../src/editor/worldmap/worldmapBuild.ts";
 import { buildWorldmap } from "./worldmapBuild.mjs";
 import type { GameMap, Project } from "../../src/project/types.ts";
@@ -570,6 +569,8 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   const shapeFailures = new Map<string, { count: number; same: number; sig: string }>();
   // 도구마다 연달아 같은 문장으로 거절된 횟수(J74) — 모양이 맞아도 도구가 같은 이유로 거절하면 같은 차단기를 쓴다.
   const refusalRepeats = new Map<string, { same: number; sig: string }>();
+  // 하위 도구가 되풀이해 실패하면 상위 동사로 보낸다(PiToolShape.escalateHint).
+  const escalation = (tool: PiToolShape): string => { try { const hint = tool.escalateHint?.(); return hint ? `\n\n${hint}` : ""; } catch { return ""; } };
   const executeCountingRefusals = async (tool: PiToolShape, id: string, args: unknown, signal: AbortSignal | undefined) => {
     try {
       const result = await tool.execute(id, args as never, signal);
@@ -584,9 +585,9 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       refusalRepeats.set(tool.name, { same, sig });
       if (same >= 3) {
         emit({ type: 'execution_status', name: 'tool.refusal.loop', ok: false, summary: `${tool.name}: 같은 거절 ${same}번째 — 방법을 바꾸라고 거절` });
-        throw new Error(refusalLoopRefusal(tool.name, sig, same, message));
+        throw new Error(`${refusalLoopRefusal(tool.name, sig, same, message)}${escalation(tool)}`);
       }
-      if (same === 2) throw new Error(`${message}${repeatedRefusalHint(tool.name, message, same)}`);
+      if (same === 2) throw new Error(`${message}${repeatedRefusalHint(tool.name, message, same)}${escalation(tool)}`);
       throw error;
     }
   };
@@ -610,13 +611,13 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
         // 같은 오류 세 번째 — 긴 오류를 또 돌려주면 모델이 같은 호출을 되풀이했다(set_lighting_volume 13번). 거절하고 방법을 바꾸라고 한다.
         if (same >= 3) {
           emit({ type: 'execution_status', name: 'tool.args.loop', ok: false, summary: `${tool.name}: 같은 인자 모양 오류 ${same}번째 — 거절` });
-          throw new Error(shapeLoopRefusal(tool.name, tool.parameters, sig, same));
+          throw new Error(`${shapeLoopRefusal(tool.name, tool.parameters, sig, same)}${escalation(tool)}`);
         }
         // 모양을 고친 뒤에도 틀리면 고친 쪽 오류가 더 가깝다(남은 빈칸만 말한다) — 무엇을 고쳤는지 함께 알린다.
         const message = repairedError
           ? `[인자 모양 고침: ${repaired.changes.join(" · ")} — 그래도 남은 오류]\n${repairedError instanceof Error ? repairedError.message : String(repairedError)}`
           : error instanceof Error ? error.message : String(error);
-        throw new Error(failures >= 2 ? `${message}${repeatedShapeHint(tool.name, tool.parameters, failures)}` : message);
+        throw new Error(failures >= 2 ? `${message}${repeatedShapeHint(tool.name, tool.parameters, failures)}${escalation(tool)}` : message);
       }
       valid = fixed;
       emit({ type: 'execution_status', name: 'tool.args.repaired', ok: true, summary: `${tool.name}: 인자 모양을 고쳐 실행 — ${repaired.changes.join(" · ")}`, data: { toolCallId: id, tool: tool.name, changes: repaired.changes } });
@@ -1098,6 +1099,15 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   let imagesStripped = false;
   let lastRequestHadImages = false;
   let emptyRetries = 0;
+  // 모델 호출 무응답 한도(src/ai/piAgent/providerRetry.ts). 감시가 끊은 호출은 같은 기록으로 stallLimits.retries 번만 다시 요청한다.
+  const stallLimits = modelStallLimits();
+  const stallEnvSet = process.env.OPRN_MODEL_FIRST_EVENT_TIMEOUT_MS !== undefined || process.env.OPRN_MODEL_IDLE_TIMEOUT_MS !== undefined;
+  const compatStall = (m: unknown) => {
+    const compat = (m as { compat?: { streamFirstEventTimeoutMs?: number; streamIdleTimeoutMs?: number } } | undefined)?.compat;
+    return { firstEventMs: compat?.streamFirstEventTimeoutMs, idleMs: compat?.streamIdleTimeoutMs };
+  };
+  const stallOptions = (m: unknown, o?: Record<string, unknown>) => stallEnvSet ? withModelStallLimits({ ...o }, compatStall(m), stallLimits) : { ...o };
+  let stallRetries = 0;
   // 이 실행이 사용자에게 글로 된 답을 한 번이라도 냈나 — 없이 «정상» 끝나면 빈 보고로 정착시키지 않는다.
   let answered = false;
   const agent: PiLoopDriver = localLoop ?? new Agent({
@@ -1112,7 +1122,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     },
     initialState: {
       systemPrompt,
-      model,
+      model: model as never,
       ...(thinkingLevel ? { thinkingLevel: thinkingLevel as never } : {}),
       tools: tools as never,
     },
@@ -1121,14 +1131,18 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     ...(options.streamFn ? { streamFn: options.streamFn }
       : request.provider === "openai-codex"
         ? { streamFn: ((m: unknown, c: unknown, o?: Record<string, unknown>) =>
-          streamSimple(m as never, c as never, { ...o, fetch: codexVersionFetch((o?.fetch as typeof fetch | undefined) ?? fetch) } as never)) as never }
+          streamSimple(m as never, c as never, { ...stallOptions(m, o), fetch: codexVersionFetch((o?.fetch as typeof fetch | undefined) ?? fetch) } as never)) as never }
         // 사용자 지정(OpenAI 호환): 리다이렉트를 따라가지 않고 사용자가 고른 호스트로만 보내는 fetch 를 끼운다.
+        // 무응답 한도(providerRetry.ts modelStallLimits)는 여기서 늘 씌운다 — 엔드포인트 「첫 토큰 대기」 600초가 토큰 사이 감시까지 10분으로 늘려 놓았다.
         : isOpenAiCompatProviderId(request.provider)
           ? { streamFn: ((m: unknown, c: unknown, o?: Record<string, unknown>) => {
             const shaped = shapeOpenAiCompatCall(request.provider, m as { id: string; name?: string }, { ...o });
-            return streamSimple(shaped.model as never, c as never, { ...shaped.options, fetch: guardedOpenAiCompatFetch((o?.fetch as typeof fetch | undefined) ?? fetch) } as never);
+            return streamSimple(shaped.model as never, c as never, { ...withModelStallLimits(shaped.options, compatStall(shaped.model), stallLimits), fetch: guardedOpenAiCompatFetch((o?.fetch as typeof fetch | undefined) ?? fetch) } as never);
           }) as never }
-          : {}),
+          // 다른 제공자는 제공자 기본 감시(pi-ai 100초/120초, Argon 300초)를 쓴다. OPRN_MODEL_* 를 명시했을 때만 씌운다.
+          : stallEnvSet
+            ? { streamFn: ((m: unknown, c: unknown, o?: Record<string, unknown>) => streamSimple(m as never, c as never, stallOptions(m, o) as never)) as never }
+            : {}),
     // 실행 하나 = 캐시 세션 하나. 제공자 프롬프트 캐시(prompt_cache_key 등)가 이 id 로 같은 접두부를 묶는다 —
     // 없으면 매 호출 도구 스키마·시스템 프롬프트 전체가 새로 과금됐다.
     sessionId: `oprn-${randomUUID()}`,
@@ -1282,6 +1296,19 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
           emit({ type: "execution_status", name: "local-cli.context_reset", ok: false, summary: "CLI 문맥이 한도에 차서 멈췄습니다 — 대화 기록을 비우고 요청과 지금 프로젝트에서 한 번 이어 합니다." });
           return;
         }
+        // 무응답 감시가 끊은 호출: 같은 기록으로 stallLimits.retries 번 다시 요청, 그다음은 이 차례를 깔끔히 끝낸다(다음 차례로 넘어간다).
+        if (!fatal && !options.signal?.aborted && isModelStallError(message.errorMessage)) {
+          if (stallRetries < stallLimits.retries) {
+            stallRetries += 1;
+            resumeAfter = message.errorMessage;
+            emit({ type: "execution_status", name: "provider_stall_retry", ok: false, summary: `AI 모델이 응답하지 않아 같은 요청을 다시 보냅니다 (${stallRetries}/${stallLimits.retries}): ${message.errorMessage}` });
+            return;
+          }
+          fatal = modelStallFailure(stallRetries, stallLimits);
+          emit({ type: "execution_status", name: "provider_stall_giveup", ok: false, summary: fatal });
+          emit({ type: "error", message: fatal });
+          return;
+        }
         // 우리가 먼저 정한 사유(턴·시간 상한, 클라이언트 끊김)가 있으면 그것이 이긴다 — 코어가 합성한
         // aborted 메시지의 문구로 덮어쓰지 않는다.
         if (!fatal && !options.signal?.aborted && providerRetries < PI_PROVIDER_STREAM_RETRY_LIMIT
@@ -1379,7 +1406,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       const fingerprint = openingProduction.cutsceneFingerprint(ctx.project);
       if (openingProduction.hasCutsceneReview(fingerprint)) return;
       // 시작 맵의 자동 컷신은 전부 잰다 — 옛 컷신이 남은 채 새 이벤트가 따로 생기면(실측) 둘이 겹쳐 재생된다.
-      const probes = autoEvents.map(e => ({ event: e, page: e.pages.find(isCutscenePage)! }))
+      const probes = autoEvents.map(e => ({ event: e, page: e.pages!.find(isCutscenePage)! }))
         .map(({ event, page }) => ({ event, probe: probeCutscene(ctx.project, page.commands, ctx.project.system.playResolution ?? DEFAULT_PLAY_RESOLUTION) }));
       const merged = probes.flatMap(({ event, probe }) => probe.issues.map(issue => (probes.length > 1 ? `[이벤트 ${event.id}] ` : '') + issue));
       if (probes.length > 1) merged.push(`시작 맵에 자동 컷신 이벤트가 ${probes.length}개(${probes.map(p => p.event.id).join(', ')})라 겹쳐 재생됩니다. 하나만 남기세요 — script_cutscene_staged 에 eventId 를 주어 기존 것을 대체하거나, 쓸모없는 이벤트를 지우세요.`);

@@ -873,10 +873,84 @@ function readFailPenalty(draft: Project, raw: unknown): MechanicContext["failPen
   return { ...(troopId ? { troopId } : {}), ...(sendTo ? { sendTo } : {}), ...(text ? { text } : {}) };
 }
 
+/**
+ * messages 인자 — 프리셋이 깔아 둔 대사를 이 게임 말투로 바꾼다.
+ * reward = 보상 줄 틀({item}·{gold} 자리표시). replace = [{from, to}] 정확히 같은 대사 상자를 바꾼다(줄바꿈 \n 가능).
+ * from 이 시공된 대사에 하나도 없으면 거절한다 — 먼저 messages 없이 시공해 data.texts 로 실제 대사를 확인한다.
+ */
+interface PuzzleMessages {
+  readonly reward?: string;
+  readonly replace: ReadonlyArray<{ readonly from: string; readonly to: string }>;
+}
+
+function readPuzzleMessages(raw: unknown): PuzzleMessages | undefined {
+  if (raw === undefined || raw === null) return undefined;
+  if (typeof raw !== "object" || Array.isArray(raw)) throw new ToolError("messages 는 {reward?, replace?:[{from,to}]} 입니다.", { code: "invalid-args" });
+  const r = raw as Record<string, unknown>;
+  const reward = typeof r.reward === "string" && r.reward.trim() ? r.reward : undefined;
+  const replace: Array<{ from: string; to: string }> = [];
+  if (r.replace !== undefined) {
+    if (!Array.isArray(r.replace)) throw new ToolError("messages.replace 는 [{from, to}] 배열입니다.", { code: "invalid-args" });
+    for (const it of r.replace) {
+      const o = (it ?? {}) as Record<string, unknown>;
+      if (typeof o.from !== "string" || !o.from || typeof o.to !== "string" || !o.to.trim()) {
+        throw new ToolError("messages.replace 의 각 항목은 {from: 바꿀 대사, to: 새 대사} 입니다(빈 문자열 불가).", { code: "invalid-args" });
+      }
+      replace.push({ from: o.from, to: o.to });
+    }
+  }
+  if (!reward && replace.length === 0) return undefined;
+  return { ...(reward ? { reward } : {}), replace };
+}
+
+/** 대사 상자(kind text) 본문을 모두 모은다 — 선택지 가지·조건 가지 안까지. */
+function collectTextBodies(commands: readonly unknown[] | undefined, out: Set<string>): void {
+  for (const c of commands ?? []) {
+    if (!c || typeof c !== "object") continue;
+    const r = c as Record<string, unknown>;
+    if (r.kind === "text" && typeof r.body === "string") out.add(r.body);
+    for (const v of Object.values(r)) if (Array.isArray(v)) collectTextBodies(v, out);
+  }
+}
+
+function rewriteTextBodies(commands: readonly unknown[] | undefined, table: ReadonlyMap<string, string>, hit: Set<string>): void {
+  for (const c of commands ?? []) {
+    if (!c || typeof c !== "object") continue;
+    const r = c as Record<string, unknown>;
+    if (r.kind === "text" && typeof r.body === "string") {
+      const to = table.get(r.body);
+      if (to !== undefined) { hit.add(r.body); r.body = to; }
+    }
+    for (const v of Object.values(r)) if (Array.isArray(v)) rewriteTextBodies(v, table, hit);
+  }
+}
+
+/** 시공한 이벤트들의 대사를 messages.replace 로 바꾸고, 바뀐 뒤의 대사 목록을 돌려준다. */
+function applyPuzzleMessages(events: readonly GameEvent[], messages: PuzzleMessages | undefined): string[] {
+  if (messages && messages.replace.length > 0) {
+    const table = new Map(messages.replace.map((m) => [m.from, m.to]));
+    const hit = new Set<string>();
+    for (const e of events) for (const pg of e.pages ?? []) rewriteTextBodies(pg.commands as unknown[], table, hit);
+    const missing = messages.replace.filter((m) => !hit.has(m.from)).map((m) => m.from);
+    if (missing.length > 0) {
+      const now = new Set<string>();
+      for (const e of events) for (const pg of e.pages ?? []) collectTextBodies(pg.commands as unknown[], now);
+      throw new ToolError(
+        `messages.replace 의 from 대사를 시공 결과에서 찾지 못했습니다: ${missing.map((m) => JSON.stringify(m)).join(", ")}. 실제 대사: ${[...now].map((t) => JSON.stringify(t)).join(", ")}`,
+        { code: "puzzle-message-not-found" },
+      );
+    }
+  }
+  const out = new Set<string>();
+  for (const e of events) for (const pg of e.pages ?? []) collectTextBodies(pg.commands as unknown[], out);
+  return [...out];
+}
+
 function preparePuzzleReward(
   draft: Project,
   preset: PuzzlePresetEntry,
   rawReward: unknown,
+  rewardLine?: string,
 ): ResolvedPuzzleReward {
   const rec = rawReward && typeof rawReward === "object" ? (rawReward as Record<string, unknown>) : {};
   const itemId =
@@ -912,7 +986,11 @@ function preparePuzzleReward(
 
   const grantCommands: Command[] = [
     ...lootGrantCommands({ itemId, gold }),
-    textCmd(`퍼즐 해독 보상! 「${existing?.name ?? itemName}」${gold > 0 ? `과(와) ${gold}G` : ""}를 획득했다!`),
+    textCmd(
+      rewardLine
+        ? rewardLine.replaceAll("{item}", existing?.name ?? itemName).replaceAll("{gold}", String(gold))
+        : `퍼즐 해독 보상! 「${existing?.name ?? itemName}」${gold > 0 ? `과(와) ${gold}G` : ""}를 획득했다!`,
+    ),
   ];
 
   return {
@@ -988,7 +1066,8 @@ function runMechanicPreset(
       { code: "puzzle-room-needs-empty-window", mapId: map.id },
     );
   }
-  const reward = preparePuzzleReward(draft, preset, args.reward);
+  const messages = readPuzzleMessages(args.messages);
+  const reward = preparePuzzleReward(draft, preset, args.reward, messages?.reward);
   const title = typeof args.title === "string" && args.title.trim() ? args.title.trim() : undefined;
   const hint = typeof args.hintText === "string" && args.hintText.trim() ? args.hintText.trim() : undefined;
   const failPenalty = readFailPenalty(draft, args.failPenalty);
@@ -1026,6 +1105,7 @@ function runMechanicPreset(
       mapId: map.id,
     });
   }
+  const texts = applyPuzzleMessages(built.events.map(({ event }) => event), messages);
   for (const { event } of built.events) upsertPuzzleEvent(map, event);
   const shift = (c: Cell): Cell => ({ x: c.x + win.x, y: c.y + win.y });
   const origin = shift(built.origin);
@@ -1068,6 +1148,7 @@ function runMechanicPreset(
       origin,
       roomOrigin: win,
       events,
+      texts,
       changeTileCount: built.revealCommandCount,
       reward: { itemId: reward.itemId, itemName: reward.itemName, gold: reward.gold },
       wiredGateEventId: wiredGateEventId ?? null,
@@ -1144,7 +1225,7 @@ const listPuzzlePresetsTool: ToolDefinition = {
         total: PUZZLE_PRESET_CATALOG.length,
         count: filtered.length,
         presets: filtered,
-        usage: "author_map_puzzle({ mapId, presetId, x?, y?, title?, hintText?, gateEventId?, reward? })",
+        usage: "author_map_puzzle({ mapId, presetId, x?, y?, title?, hintText?, gateEventId?, reward?, messages? })",
       },
     };
   },
@@ -1154,7 +1235,7 @@ const authorMapPuzzleTool: ToolDefinition = {
   name: "author_map_puzzle",
   description:
     "20종 퍼즐 프리셋(list_puzzle_presets) 중 하나를 대상 맵에 원자적으로 시공한다. " +
-    "{mapId, presetId, puzzleId?, x?, y?, targetMapId?, gateEventId?, solveSwitchId?, title?, hintText?, reward?} — " +
+    "{mapId, presetId, puzzleId?, x?, y?, targetMapId?, gateEventId?, solveSwitchId?, title?, hintText?, reward?, messages?} — " +
     "x·y 를 생략하면 맵의 주 통행 영역에서 길·출입구·시작점을 막지 않는 안전한 바닥 클러스터를 자동으로 찾아 배치한다. " +
     "모든 프리셋은 ① 작동 전/후가 눈에 보이는 2상태 기물 그래픽(레버·화로·발판·비석·보물상자·낙석·경비병) " +
     "② 실제 타일을 바꾸는 changeTile 명령(비밀 통로·지하 계단·돌다리·광맥 바닥·결계 해제) " +
@@ -1188,6 +1269,16 @@ const authorMapPuzzleTool: ToolDefinition = {
       },
       title: { type: "string", description: "퍼즐·장치 표시 이름 (선택)" },
       hintText: { type: "string", description: "단서 비석·도입 안내 대사 커스텀 문구 (선택)" },
+      rewordLines: {
+        type: "array", maxItems: 40,
+        description: "프리셋 대사를 그 장소 말로 바꾼다(선택). 프리셋이 쓴 대사 한 줄(from, 통째로 같아야 함) → 새 줄(to). 맞는 줄이 없으면 거절하며 이 퍼즐의 실제 대사 목록을 돌려준다 — 먼저 없이 한 번 짓고 data·대사를 보고 고치면 된다",
+        items: { type: "object", additionalProperties: false, properties: { from: { type: "string" }, to: { type: "string" } }, required: ["from", "to"] },
+      },
+      renameObjects: {
+        type: "array", maxItems: 12,
+        description: "퍼즐 기물 이벤트 이름 바꾸기(선택) — [{eventId, name}]. eventId 는 이 퍼즐이 지은 이벤트(퍼즐 id 또는 ev_퍼즐 id 로 시작)",
+        items: { type: "object", additionalProperties: false, properties: { eventId: { type: "string" }, name: { type: "string" } }, required: ["eventId", "name"] },
+      },
       failPenalty: {
         type: "object", additionalProperties: false,
         description: "들켰을 때 벌(잠입 stealth_guard_patrol). 생략 = 입구로 쫓겨남. troopId = 먼저 그 적 그룹과 싸움(도망 불가, 져도 게임 오버 아님) · sendTo = 쫓겨나는 곳(다른 맵 가능, 예: 감방으로 다시) · text = 들킨 대사",
@@ -1195,6 +1286,20 @@ const authorMapPuzzleTool: ToolDefinition = {
           troopId: { type: "string" },
           sendTo: { type: "object", additionalProperties: false, properties: { mapId: { type: "string" }, x: { type: "integer" }, y: { type: "integer" } }, required: ["mapId", "x", "y"] },
           text: { type: "string" },
+        },
+      },
+      messages: {
+        type: "object", additionalProperties: false,
+        description:
+          "프리셋 기본 대사를 게임 말투로 바꾼다(선택). reward = 보상 줄 틀, {item}·{gold} 자리표시(예: \"「{item}」와 {gold}G를 되찾았다.\"). " +
+          "replace = [{from, to}] — 시공된 대사 상자 중 from 과 정확히 같은 것을 to 로 바꾼다(\\n 줄바꿈 가능). " +
+          "실제 대사는 결과 data.texts 에 있다. 처음엔 messages 없이 시공해 texts 를 보고, 같은 puzzleId 로 다시 부르면 덮어쓴다. 못 찾은 from 은 거절.",
+        properties: {
+          reward: { type: "string" },
+          replace: {
+            type: "array",
+            items: { type: "object", additionalProperties: false, properties: { from: { type: "string" }, to: { type: "string" } }, required: ["from", "to"] },
+          },
         },
       },
       reward: {
@@ -1219,6 +1324,13 @@ const authorMapPuzzleTool: ToolDefinition = {
     y: 10,
   },
   run(draft, args): ToolExecResult {
+    const result = authorMapPuzzleCore(draft, args);
+    applyPuzzleWording(draft, args, result);
+    return result;
+  },
+};
+
+function authorMapPuzzleCore(draft: Project, args: Record<string, unknown>): ToolExecResult {
     const map = requireMap(draft, String(args.mapId ?? ""));
     const presetId = resolvePuzzlePresetId(args.presetId);
     if (!presetId) {
@@ -1270,7 +1382,8 @@ const authorMapPuzzleTool: ToolDefinition = {
       stagePlan && stagePlan.changeTileCommands.length > 0
         ? [...stagePlan.changeTileCommands]
         : buildVerifiedChangeTileCommands(draft, map, fallbackCells);
-    const reward = preparePuzzleReward(draft, preset, args.reward);
+    const messages = readPuzzleMessages(args.messages);
+    const reward = preparePuzzleReward(draft, preset, args.reward, messages?.reward);
     const customTitle = typeof args.title === "string" && args.title.trim() ? args.title.trim() : undefined;
     const customHint = typeof args.hintText === "string" && args.hintText.trim() ? args.hintText.trim() : undefined;
     const warnings: string[] = [];
@@ -3385,6 +3498,11 @@ const authorMapPuzzleTool: ToolDefinition = {
       }
     }
 
+    const texts = applyPuzzleMessages(
+      createdEvents.flatMap((info) => draft.maps[info.mapId]?.events.filter((e) => e.id === info.id) ?? []),
+      messages,
+    );
+
     // 최종 통행·상호작용 도달성 검증(소프트락 0 보장)
     const analysis = new EventPlacementAnalysis(draft, map);
     for (const evInfo of createdEvents) {
@@ -3411,6 +3529,7 @@ const authorMapPuzzleTool: ToolDefinition = {
         variableIds,
         origin: cluster.origin,
         events: createdEvents,
+        texts,
         changeTileCount: changeTileCmds.length,
         changeTileCommands: changeTileCmds,
         reward: {
@@ -3424,8 +3543,53 @@ const authorMapPuzzleTool: ToolDefinition = {
       },
       ...(warnings.length > 0 ? { warnings } : {}),
     };
-  },
-};
+}
+
+/**
+ * 프리셋 문구를 그 장소 말로 — rewordLines 는 프리셋이 쓴 대사 한 줄을 통째로 바꾸고(맞는 줄이 없으면 거절하며 있는 줄을 알려 준다),
+ * renameObjects 는 퍼즐 기물 이벤트 이름을 바꾼다. 퍼즐 이벤트(퍼즐 id 로 시작)와 gateEventId 이벤트만 본다.
+ */
+function applyPuzzleWording(draft: Project, args: Record<string, unknown>, result: ToolExecResult): void {
+  const reword = Array.isArray(args.rewordLines) ? (args.rewordLines as { from?: unknown; to?: unknown }[]) : [];
+  const rename = Array.isArray(args.renameObjects) ? (args.renameObjects as { eventId?: unknown; name?: unknown }[]) : [];
+  if (!reword.length && !rename.length) return;
+  const map = requireMap(draft, String(args.mapId ?? ""));
+  const presetId = resolvePuzzlePresetId(args.presetId) ?? "";
+  const baseId = sanitizeId(typeof args.puzzleId === "string" && args.puzzleId.trim() ? args.puzzleId.trim() : `${map.id}_${presetId}`);
+  const gate = typeof args.gateEventId === "string" ? args.gateEventId.trim() : "";
+  const own = map.events.filter((event) => event.id.startsWith(baseId) || event.id.startsWith(`ev_${baseId}`) || (gate && event.id === gate));
+  const table = new Map<string, string>();
+  for (const [index, entry] of reword.entries()) {
+    const from = typeof entry?.from === "string" ? entry.from.trim() : "", to = typeof entry?.to === "string" ? entry.to.trim() : "";
+    if (!from || !to) throw new ToolError(`rewordLines[${index}] 는 {from, to} 입니다.`, { code: "invalid-args" });
+    table.set(from, to);
+  }
+  const seen = new Set<string>(), all = new Set<string>();
+  const walk = (cmds: unknown[]): void => {
+    for (const raw of cmds) {
+      const cmd = raw as Record<string, unknown>;
+      if (cmd.kind === "text" && typeof cmd.body === "string") {
+        all.add(cmd.body);
+        const to = table.get(cmd.body.trim());
+        if (to) { seen.add(cmd.body.trim()); cmd.body = to; }
+      }
+      if (typeof cmd.prompt === "string") { all.add(cmd.prompt); const to = table.get(cmd.prompt.trim()); if (to) { seen.add(cmd.prompt.trim()); cmd.prompt = to; } }
+      for (const key of ["then", "else", "branch", "cancelBranch", "otherwiseBranch"]) if (Array.isArray(cmd[key])) walk(cmd[key] as unknown[]);
+      if (Array.isArray(cmd.options)) for (const option of cmd.options as Record<string, unknown>[]) if (Array.isArray(option?.branch)) walk(option.branch as unknown[]);
+    }
+  };
+  for (const event of own) for (const page of event.pages ?? []) walk(page.commands as unknown[]);
+  const missing = [...table.keys()].filter((from) => !seen.has(from));
+  if (missing.length) throw new ToolError(`rewordLines 의 줄 ${missing.length}개가 이 퍼즐 대사에 없습니다: 「${missing[0]!.slice(0, 40)}」. 있는 줄: ${[...all].map((line) => `「${line.slice(0, 50)}」`).join(" · ").slice(0, 1500)}`, { code: "puzzle-reword-unmatched", mapId: map.id });
+  for (const [index, entry] of rename.entries()) {
+    const id = typeof entry?.eventId === "string" ? entry.eventId.trim() : "", name = typeof entry?.name === "string" ? entry.name.trim() : "";
+    const event = own.find((candidate) => candidate.id === id);
+    if (!event || !name) throw new ToolError(`renameObjects[${index}] — 이 퍼즐의 이벤트 '${id}' 가 없습니다. 있는 이벤트: ${own.map((candidate) => candidate.id).join(", ")}`, { code: "puzzle-rename-unmatched", mapId: map.id });
+    event.name = name;
+  }
+  const data = result.data as Record<string, unknown> | undefined;
+  if (data) data.reworded = { lines: seen.size, renamed: rename.length };
+}
 
 export const PUZZLE_AUTHORING_TOOLS: readonly ToolDefinition[] = [
   listPuzzlePresetsTool,

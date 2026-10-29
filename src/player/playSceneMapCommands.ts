@@ -27,6 +27,7 @@ import { maybeAutosave } from "@/player/autosave";
 import { fireLocationTransitionTriggersAfterTransfer } from "@/player/playSceneLocationTransitions";
 import { worldAtlasForMap, atlasNodeForMap, atlasCanTravel } from '@/project/worldAtlas';
 import { abortHop } from "@/player/characterHopRuntime";
+import { CHASE_ENTRY_GRACE_MS, extendChaseSpawnGrace } from "@/player/chaseSpawnGrace";
 import { holdForMapAssets } from "@/player/scenePreload";
 import { clearFurniturePush, furniturePushPosition } from "@/player/furniturePushAnimation";
 
@@ -120,6 +121,8 @@ export async function transferTo(scene: PlaySceneContext, request: TransferReque
   scene.tileY = landing.y;
   scene.session.x = landing.x;
   scene.session.y = landing.y;
+  // 다른 맵에 들어섰다 — 입구 가까운 추격자가 들어서자마자 붙잡지 않게 잠깐 기다리게 한다(@/player/chaseSpawnGrace).
+  if (request.mapId !== departureMapId) extendChaseSpawnGrace(scene, CHASE_ENTRY_GRACE_MS);
   if (diagnosticOwner && diagnosticOwner === diagnosticToken() && diagnosticObserved("transfer")) publishDiagnostic({ category: "transfer", phase: "completed", x: landing.x, y: landing.y });
   if (resolveCompanionRules(project.system.companions).clearOnTransfer) {
     removeFollowerFromSession(scene.session, { all: true });

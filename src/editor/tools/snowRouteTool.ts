@@ -4,7 +4,7 @@
 //
 // 그림은 전부 기존 버들항 원본(새 그림 없음):
 // - 바닥 = 설원 마을 키트 눈 바닥(bd-pick-snowfield-ground-snow) 칸을 해시로 섞는다(키트 무늬 그대로 깔면 3칸 주기가 격자로 드러난다).
-// - 길 = 다져진 눈길(bd-pick-snowfield-ground-road). Catmull-Rom 곡선, 폭이 굽이마다 2~3.4칸으로 숨 쉰다.
+// - 길 = 밟힌 다진 눈(던전 얼음굴 바닥 오토타일 beodeul_dungeon_ice_ground, 테두리가 부드럽다 — 없으면 bd-pick-snowfield-ground-road 키트). Catmull-Rom 곡선, 폭이 굽이마다 2~3.4칸으로 숨 쉰다.
 // - 길 양옆 벽 = 눈 덮인 침엽 수관 오토타일(beodeul_nature forestCanopy.snow — 설원 마을 숲과 같은 그림).
 // - 빙판 = 던전 얼음 바닥 오토타일(beodeul_dungeon_ice, 둥근 가장자리), 없으면 설원 얼음 키트.
 // - 눈더미 = bd-pick-snowfield-mound(1×1 막힘)·rock, 낱 눈 소나무 = bd-pick-snowfield-pine.
@@ -262,13 +262,32 @@ function paintSnowMap(project: Project, plan: SnowPlan, gapWidth: number, iceAmo
   if (map.upperOverlayTiles) map.upperOverlayTiles = Array.from({ length: W * H }, () => -1);
   // 다져진 눈길: 걷는 길 폭(2~3.4) 안의 가운데 줄(곡선에서 1칸 안)만 흙빛 눈길로 — 폭 전체를 칠하면 굽이마다 네모 계단이 굵게 드러났다.
   // 키트 윗줄·아랫줄은 눈이 덮인 가장자리 그림이라 북쪽·남쪽 이웃이 눈길이 아닌 칸에만 쓴다(가운데 줄은 속 칸).
+  // 밟힌 눈길은 테두리가 부드러운 다진 눈 오토타일(던전 얼음굴 바닥)로 — 길 키트는 줄 단위 그림이라 옆 테두리가 없어
+  // 굽이마다 베이지 계단 띠로 끊겼다(2026-10-29 폴른 스타 B7 감독 검수, 서리나루 마을 길과 같은 처리). 오토타일이 없는 칩셋은 키트로.
+  const packedGroup = (tileset.autotileGroups ?? []).find((g) => g.id === "beodeul_dungeon_ice_ground");
   const roadKit = (tileset.structureKits ?? []).find((k) => k.id === KIT("ground-road"));
   const rows = (roadKit?.rows ?? []).map((r) => (r.tiles ?? []).filter((t) => t >= 0));
   const trail = new Set<number>();
-  for (const s of spline(plan.pts)) for (let y = Math.floor(s.y) - 1; y <= Math.ceil(s.y) + 1; y += 1) for (let x = Math.floor(s.x) - 1; x <= Math.ceil(s.x) + 1; x += 1) {
-    if (inMap(x, y) && path.has(idx(x, y)) && Math.hypot(x - s.x, y - s.y) <= 0.95) trail.add(idx(x, y));
+  const trailRadius = packedGroup ? 1.3 : 0.95;
+  for (const s of spline(plan.pts)) for (let y = Math.floor(s.y) - 2; y <= Math.ceil(s.y) + 2; y += 1) for (let x = Math.floor(s.x) - 2; x <= Math.ceil(s.x) + 2; x += 1) {
+    if (inMap(x, y) && path.has(idx(x, y)) && Math.hypot(x - s.x, y - s.y) <= trailRadius) trail.add(idx(x, y));
   }
-  for (const c of trail) {
+  if (packedGroup) {
+    // 2×2 덩이에 들지 못한 외톨이 칸은 뺀다(테두리 그림이 칸마다 끊긴다).
+    for (const c of [...trail]) {
+      const x = c % W, y = (c - x) / W;
+      const ok = ([[0, 0], [-1, 0], [0, -1], [-1, -1]] as const).some(([ox, oy]) =>
+        ([[0, 0], [1, 0], [0, 1], [1, 1]] as const).every(([i, j]) => trail.has(idx(x + ox + i, y + oy + j))));
+      if (!ok) trail.delete(c);
+    }
+    const tb: [number, number, number][] = [[0, -1, 1], [1, 0, 2], [0, 1, 4], [-1, 0, 8], [1, -1, 16], [1, 1, 32], [-1, 1, 64], [-1, -1, 128]];
+    for (const c of trail) {
+      const x = c % W, y = (c - x) / W;
+      let m = 0;
+      for (const [dx, dy, bit] of tb) if (!inMap(x + dx, y + dy) || trail.has(idx(x + dx, y + dy))) m |= bit;
+      map.lowerTiles[c] = iceCell(packedGroup, m, x, y);
+    }
+  } else for (const c of trail) {
     const x = c % W, y = (c - x) / W;
     const n = trail.has(c - W) || y === 0, so = trail.has(c + W) || y === H - 1;
     const row = rows.length === 3 ? (!n ? rows[0]! : !so ? rows[2]! : rows[1]!) : road;
@@ -375,6 +394,32 @@ function paintSnowMap(project: Project, plan: SnowPlan, gapWidth: number, iceAmo
   // 막는 그림은 맵 사이 잇기가 끝난 뒤에 찍는다 — 먼저 막으면 연결 도구가 출구를 「닿지 않는 칸」으로 보고 거절한다.
   const paintGapArt = (): void => {
     if (!paintGaps) return;
+    // 갈라진 얼음 틈 — 띠 칸은 검은 물(던전 물 오토타일, 얼음 쪽으로 꽉 찬다), 곁 빙판은 틈 쪽으로 깨진 가장자리를 그린다
+    // (서리나루 호수 균열과 같은 처리). 얼음 구멍 키트(둥근 구멍 둘)는 「물웅덩이」로 읽혔다(2026-10-29 폴른 스타 B7 감독 검수).
+    const crackWater = (tileset.autotileGroups ?? []).find((g) => g.id === "beodeul_dungeon_water_C");
+    if (crackWater && iceGroup) {
+      const live = project.maps[plan.id] ?? map;
+      const crack = new Set(gaps.flatMap((g) => g.cells));
+      const iceLike = (c: number) => iceSet.has(c) && !crack.has(c);
+      for (const c of crack) {
+        const x = c % W, y = (c - x) / W;
+        let m = 0;
+        for (const [dx, dy, bit] of bits) { const n = idx(x + dx, y + dy); if (!inMap(x + dx, y + dy) || crack.has(n) || iceLike(n) || open.has(n)) m |= bit; }
+        live.lowerTiles[c] = iceCell(crackWater, m, x, y);
+        live.upperTiles[c] = -1;
+      }
+      for (const c of crack) {
+        const x0 = c % W, y0 = (c - x0) / W;
+        for (let dy = -1; dy <= 1; dy += 1) for (let dx = -1; dx <= 1; dx += 1) {
+          const x = x0 + dx, y = y0 + dy, n = idx(x, y);
+          if (!inMap(x, y) || !iceLike(n)) continue;
+          let m = 0;
+          for (const [ex, ey, bit] of bits) if (!inMap(x + ex, y + ey) || iceLike(idx(x + ex, y + ey))) m |= bit;
+          live.lowerTiles[n] = iceCell(iceGroup, m, x, y);
+        }
+      }
+      return;
+    }
     const hole = (kits.get(KIT("ice-hole"))?.rows?.[0]?.upperTiles ?? []).filter((t) => t >= 0);
     if (hole.length < 2) warnings.push(`${plan.name}: 얼음 구멍 키트(${KIT("ice-hole")})가 없어 틈을 칠하지 못했다.`);
     else for (const g of gaps) {

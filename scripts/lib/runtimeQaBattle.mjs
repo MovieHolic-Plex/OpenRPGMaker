@@ -2,10 +2,11 @@
 //
 //   { "kind": "battle",
 //     "plan": { "actor_fs_elena": ["skill_mage_blizzard"], "actor_hero": ["attack", "skill_hero_cross_slash"] },
-//     "fallback": "attack",          // 계획이 빈 배우의 명령(attack · defend · skill_<id> · item:<itemId>)
+//     "fallback": "attack",          // 계획이 빈 배우의 명령(attack · defend · escape · skill:first · skill_<id> · item:<itemId> · capture:<itemId>)
 //     "commands": 2,                 // 이만큼 명령을 내린 뒤, 연출이 끝나고 다음 명령 카드가 뜰 때까지 기다리고 돌아온다
 //     "untilEnd": false,             // true 면 결과 창까지 누르고 닫는다
 //     "target": 0 | "last" | "enemy-2",
+//     "stopAfter": "skill",          // 기술 명령을 낸 뒤 연출이 시작되면 바로 돌아온다(연출 도중 스크린샷용)
 //     "timeoutMs": 90000 }
 // 배우별 큐는 앞에서부터 하나씩 쓰고, 마지막 하나는 계속 되풀이한다.
 // 명령 뒤에 「@대상」을 붙이면 그 명령만 대상을 따로 고른다: "item:item_ether@1"(두 번째 아군), "skill_x@enemy-2", "attack@last".
@@ -22,6 +23,9 @@ async function dumpLog(page, op, issued) {
   await mkdir(dirname(path), { recursive: true });
   await appendFile(path, `${JSON.stringify({ label: op.label ?? null, issued, log: await readBattleLog(page) })}\n`);
 }
+
+/** 포켓몬 스킨(「싸운다」→ 기술 목록)에서 attack 은 쓸 수 있는 첫 기술이다. */
+const FIRST_MOVE = "\u0000first-move";
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -88,6 +92,7 @@ export async function battleQaOp(page, op) {
   let wanted = null;
   let pendingTarget;
   let forceFallback = false;
+  let skillIssued = false;
   await page.waitForSelector('[data-testid="battle-scene"]', { timeout: op.sceneTimeoutMs ?? 60_000 });
   await installBattleLog(page);
   const nextFor = (actor) => {
@@ -97,6 +102,11 @@ export async function battleQaOp(page, op) {
   };
   while (Date.now() < deadline) {
     const ui = await readBattleUi(page);
+    // stopAfter:"skill" — 기술 명령을 낸 뒤 연출이 시작되면(busy) 바로 돌아온다(연출 도중 한 장을 찍을 때).
+    if (op.stopAfter === "skill" && skillIssued && ui.busy) {
+      await dumpLog(page, op, issued);
+      return { issued, ended: false };
+    }
     if (!ui.scene) {
       await dumpLog(page, op, issued);
       return { issued, ended: true };
@@ -134,9 +144,28 @@ export async function battleQaOp(page, op) {
       await sleep(300);
       continue;
     }
-    const submenu = ui.menu.filter((id) => id.startsWith("actor-skill-") || id.startsWith("actor-item-"));
+    // 몬스터 파티의 리더가 쓰러지면 「다음은 누구를 내보낼까?」 교체 목록(actor-switch-*)만 뜬다 — 첫 후보를 내보낸다.
+    // 이것 없이는 관측탑 보스전(2026-10-29 standin monster)이 교체 화면에서 5분을 기다리다 끝났다.
+    const forcedSwitch = ui.menu.filter((id) => id.startsWith("actor-switch-"));
+    if (forcedSwitch.length > 0 && !ui.menu.some((id) => id.startsWith("actor-command-") && id !== "actor-command-back")) {
+      await press(page, forcedSwitch[0]);
+      await sleep(300);
+      continue;
+    }
+    const submenu = ui.menu.filter((id) => id.startsWith("actor-skill-") || id.startsWith("actor-item-") || id.startsWith("actor-capture-"));
+    if (submenu.length > 0 && wanted === FIRST_MOVE) {
+      // 포켓몬 스킨 「싸운다」: 기술 목록에서 쓸 수 있는 첫 기술(보이는 단추는 이미 disabled 를 걸러 냈다).
+      const move = submenu.find((id) => id.startsWith("actor-skill-"));
+      wanted = null;
+      if (move) await press(page, move);
+      else await page.keyboard.press("Escape");
+      await sleep(300);
+      continue;
+    }
     if (submenu.length > 0 && wanted) {
-      const id = wanted.startsWith("item:") ? `actor-item-${wanted.slice(5)}` : `actor-skill-${wanted}`;
+      const id = wanted.startsWith("item:") ? `actor-item-${wanted.slice(5)}`
+        : wanted.startsWith("capture:") ? `actor-capture-${wanted.slice(8)}`
+          : `actor-skill-${wanted}`;
       if (!(await press(page, id))) {
         if (!submenu.includes(id) && !(await page.$(`[data-testid="${id}"]`))) throw new Error(`battle op: ${id} 를 고를 수 없다 (보이는 것: ${submenu.join(", ")})`);
         // 막힌 칸(MP 부족 등) — 목록을 닫고 다음 바퀴에서 fallback 으로 다시 고른다.
@@ -172,7 +201,14 @@ export async function battleQaOp(page, op) {
       const choice = at > 0 ? raw.slice(0, at) : raw;
       if (at > 0) { const t = raw.slice(at + 1); pendingTarget = /^\d+$/.test(t) ? Number(t) : t; }
       let ok = false;
-      if (choice === "attack") ok = await press(page, "actor-command-attack");
+      if (choice === "attack" && !root.includes("actor-command-attack") && root.includes("actor-command-fight")) { wanted = FIRST_MOVE; ok = await press(page, "actor-command-fight"); }
+      // 도주: 레트로 「도주」(escape) · 포켓몬 「도망간다」(run).
+      else if (choice === "escape") ok = await press(page, root.includes("actor-command-run") ? "actor-command-run" : "actor-command-escape");
+      // 기술 목록의 첫 기술(어떤 기술이 있는지 모르는 실물 게임용).
+      else if (choice === "skill:first") { wanted = FIRST_MOVE; ok = await press(page, "actor-command-skill"); }
+      // 포획 구슬: 포획 명령이 있으면 그쪽, 없으면(포켓몬 스킨) 가방.
+      else if (choice.startsWith("capture:")) { wanted = choice; ok = await press(page, root.includes("actor-command-capture") ? "actor-command-capture" : "actor-command-item"); }
+      else if (choice === "attack") ok = await press(page, "actor-command-attack");
       else if (choice === "defend") ok = await press(page, "actor-command-defend");
       else if (choice.startsWith("item:")) { wanted = choice; ok = await press(page, "actor-command-item"); }
       // 연계기는 「연계」 명령의 목록에 있다(combo:<skillId>). 연계 명령이 없으면(옛 화면) 기술 목록에서 찾는다.
@@ -180,6 +216,7 @@ export async function battleQaOp(page, op) {
       else if (root.includes(`actor-command-skill-${choice}`)) ok = await press(page, `actor-command-skill-${choice}`);
       else { wanted = choice; ok = await press(page, "actor-command-skill"); }
       if (!ok) throw new Error(`battle op: ${ui.active} 의 명령 ${choice} 를 누를 수 없다 (보이는 것: ${root.join(", ")})`);
+      if (!["attack", "defend", "escape"].includes(choice) && !choice.startsWith("item:") && !choice.startsWith("capture:")) skillIssued = true;
       issued += 1;
       await sleep(300);
       continue;

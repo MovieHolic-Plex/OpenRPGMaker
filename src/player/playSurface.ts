@@ -77,6 +77,12 @@ function shopFitFor(resolution: Readonly<PlayResolution>): "tiny" | "compact" | 
   return resolution.width <= 360 ? "tiny" : resolution.width <= 640 || resolution.height <= 360 ? "compact" : "full";
 }
 
+/** 320×240 기준 UI 를 이 무대에서 몇 배로 키울지. 높이/240 이 1.5 미만이면 1(그대로). */
+export function hiresUiZoom(resolution: Readonly<PlayResolution>): number {
+  const ratio = resolution.height / 240;
+  return ratio >= 1.5 ? Math.round(ratio * 1000) / 1000 : 1;
+}
+
 function applyPlaySurfaceResolution(
   viewport: HTMLElement,
   stage: HTMLElement,
@@ -91,6 +97,17 @@ function applyPlaySurfaceResolution(
   viewport.style.setProperty("--play-logical-half-height", `${resolution.height / 2}px`);
   // 상점 창의 배치(넓은·압축·작은)는 화면 크기가 아니라 논리 해상도로 고른다 — 기기·방향이 달라도 같은 배치(shop.css).
   viewport.dataset.shopFit = shopFitFor(resolution);
+  // 고해상도 무대(1024×768 등)에서는 320×240 기준으로 만든 글자 UI(타이틀 글·대사창·오프닝 내레이션·건너뛰기 안내)가
+  // 3분의 1 크기로 보였다(장부 hud #98·#101·#106, assembly #19·#21·#22). 높이/240 이 1.5 이상이면 그 UI 를 CSS zoom 으로 키운다
+  // (playSurface.css [data-hires-ui]). 480×270·480×320 같은 보통 무대는 손대지 않는다 — 도트 글꼴 격자가 깨진다.
+  const hiresZoom = hiresUiZoom(resolution);
+  if (hiresZoom > 1) {
+    viewport.dataset.hiresUi = "true";
+    viewport.style.setProperty("--hires-ui-zoom", String(hiresZoom));
+  } else {
+    delete viewport.dataset.hiresUi;
+    viewport.style.removeProperty("--hires-ui-zoom");
+  }
   stage.style.width = width;
   stage.style.height = height;
   phaserContainer.style.width = width;

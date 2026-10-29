@@ -10,7 +10,7 @@ import { startStateOf } from "@/project/session";
 import type { MonsterInstance } from "@/project/session";
 import { monsterBattleStats, monsterBattleStatsForSpecies, monsterCurrentHp, monsterDisplayName, monsterSkillIds, monsterSkillIdsAtLevel, monsterSpeciesById, normalizeMonsterInstanceBattleState } from "@/project/monsterCollection";
 import { classLearnedSkillIdsUpToLevel, effectiveActorClassId } from "@/project/sessionClass";
-import type { ActorId, ActorInitialEquipment, ActorParameterKey, ClassBattleCommand, EnemyActionPattern, EnemyId, Project, SkillId } from "@/project/types";
+import type { ActorId, ActorInitialEquipment, ActorParameterKey, ClassBattleCommand, EnemyActionPattern, EnemyId, EnemyRecord, Project, SkillId } from "@/project/types";
 import { resolveBattlerPose } from "@/battle/battlePose";
 import type { BattleActionResultSnapshot, BattleBattlerSnapshot } from "@/battle/types";
 import { classicEnemyFormation } from "@/battle/battlerPlacements";
@@ -39,6 +39,8 @@ export interface ActorBattlerOverrides {
   readonly paramBonuses?: Readonly<Record<string, Partial<Record<ActorParameterKey, number>>>>;
   readonly equipment?: Readonly<Record<string, ActorInitialEquipment>>;
   readonly skillIds?: Readonly<Record<string, readonly SkillId[]>>;
+  /** 「잊기」로 지운 스킬 — 직업·레벨 습득분까지 빠진다. */
+  readonly forgottenSkillIds?: Readonly<Record<string, readonly SkillId[]>>;
   readonly skillPp?: Readonly<Record<string, Readonly<Record<SkillId, number>>>>;
   readonly classOverrides?: Readonly<Record<string, string>>;
   readonly growthProgress?: GrowthProgress;
@@ -180,7 +182,7 @@ export function actorBattlers(
       equipmentEffects: derived.equipmentEffects,
       stateTurns: {},
       defending: false,
-      skillIds: learnedSkillIds(project, normalizedActor, level, overrides?.skillIds?.[actorId], derived.effectiveClassId, derived.usesOverrideCurves, overrides?.growthProgress, { [actorId]: effectivePromotionLineage(project, overrides ?? {}, actorId) }),
+      skillIds: learnedSkillIds(project, normalizedActor, level, overrides?.skillIds?.[actorId], derived.effectiveClassId, derived.usesOverrideCurves, overrides?.growthProgress, { [actorId]: effectivePromotionLineage(project, overrides ?? {}, actorId) }, overrides?.forgottenSkillIds?.[actorId]),
       skillPp: overrides?.skillPp?.[actorId] ? { ...overrides.skillPp[actorId] } : undefined,
       hidden: false,
     };
@@ -253,7 +255,7 @@ export function refreshActorBattlerDerivedStats(
     // 세션형(raw) 장비 스냅샷. 유효 프로젝션은 이 함수가 생성 경로와 동일하게 계산한다.
     readonly equipment?: ActorInitialEquipment;
     // 전직처럼 클래스 스킬 셋이 바뀔 때만 지정: 생성 로직(learnedSkillIds)으로 skillIds 재계산.
-    readonly skills?: { readonly sessionSkillIds?: readonly SkillId[] };
+    readonly skills?: { readonly sessionSkillIds?: readonly SkillId[]; readonly forgottenSkillIds?: readonly SkillId[] };
   }
 ): void {
   const actor = project.database.actors.find((record) => record.id === battler.recordId);
@@ -292,7 +294,8 @@ export function refreshActorBattlerDerivedStats(
       derived.effectiveClassId,
       derived.usesOverrideCurves,
       input.growthProgress,
-      { [actor.id]: effectivePromotionLineage(project, input, actor.id) }
+      { [actor.id]: effectivePromotionLineage(project, input, actor.id) },
+      input.skills.forgottenSkillIds
     );
   }
 }
@@ -305,7 +308,8 @@ export function learnedSkillIds(
   effectiveClassId: string | undefined,
   overrideClassSkills: boolean,
   growthProgress?: GrowthProgress,
-  promotionLineage?: PromotionLineage
+  promotionLineage?: PromotionLineage,
+  forgottenSkillIds?: readonly SkillId[]
 ): SkillId[] {
   const growth = growthEffects(project, { variables: {}, classOverrides: effectiveClassId ? { [actor.id]: effectiveClassId } : undefined, growthProgress, promotionLineage }, actor.id);
   const ids = new Set<SkillId>([...(sessionSkillIds ?? []), ...growth.skillIds]);
@@ -313,6 +317,7 @@ export function learnedSkillIds(
   for (const entry of actor.learnedSkills) if (entry.tp === undefined && entry.level <= level) ids.add(entry.skillId);
   const classId = overrideClassSkills ? effectiveClassId : actor.classId;
   for (const skillId of classLearnedSkillIdsUpToLevel(project, classId ?? actor.classId, level)) ids.add(skillId);
+  for (const skillId of forgottenSkillIds ?? []) ids.delete(skillId);
   return [...ids];
 }
 
@@ -557,6 +562,15 @@ function wildLevelAdjusted(project: Project, enemy: ReturnType<typeof normalizeE
     } as EnemyActionPattern;
   });
   return { level, stats: { ...enemy.stats, ...stats }, skillIds, actions: [...kept, ...added] };
+}
+
+/**
+ * 종 몬스터 적 레코드를 다른 레벨로 옮긴 값(능력치·기술·행동) — 야생 레벨 굴림과 같은 계산이다. 끝맺음이 길 몬스터 레벨을 관문 곡선에
+ * 맞출 때 레코드 자체를 바꾸는 데 쓴다(ai/v2/monsterRouteLevels). 종이 없거나 레벨이 같으면 undefined.
+ */
+export function speciesEnemyAtLevel(project: Project, enemy: EnemyRecord, level: number): { level: number; stats: EnemyRecord["stats"]; skillIds: SkillId[]; actions: EnemyActionPattern[] } | undefined {
+  const adjusted = wildLevelAdjusted(project, normalizeEnemyRecord(enemy), level);
+  return adjusted ? { level: adjusted.level, stats: adjusted.stats, skillIds: adjusted.skillIds, actions: [...adjusted.actions] } : undefined;
 }
 
 export function enemyBattlers(project: Project, troop: TroopRecord, options?: { readonly wildLevel?: number }): MutableBattler[] {

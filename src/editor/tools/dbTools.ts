@@ -95,6 +95,7 @@ import { assertPartyActorReferences } from "./partyActorReferences";
 import { resolveEventPlacement } from "./eventTools";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
 import { unsuitableOpeningStillMessage } from "@/assets/openingStillMoods";
+import { pickBlueprintTitleArt } from "@/project/blueprintAssembly";
 import { troopBalanceWarnings } from "./troopBalanceCheck";
 import { expandShortParameterCurves } from "./parameterCurveInput";
 import { BATTLE_BACKDROP_ID_HINT } from "@/assets/battleSceneryCatalog";
@@ -671,7 +672,7 @@ const troopRecordSchema = objectSchema({
     paletteCycleSeconds: { type: "number", minimum: 0, maximum: 60, description: "색 순환 한 바퀴 초(0 = 끔)" },
   }, "움직이는 전투 배경(마더식) — 배경 그림 한 장을 움직인다. 0/생략 = 그 효과 끔. 도트 측면 전투(기본)에서는 겹 배경에 가려 보이지 않는다 — 몬스터 대치에서만 보인다. 도트 측면 분위기는 backdropLayers 를 쓴다"),
   backdropLayers: arrayOf(objectSchema({
-    preset: { type: "string", enum: ["fog", "clouds", "mist", "rain", "snow", "embers", "stars", "lightRays", "glow"], description: "그림 없이 그리는 겹. fog 안개 · clouds 흐르는 구름 · mist 땅안개 · rain 비 · snow 눈 · embers 불티(더하기) · stars 별 · lightRays 빛줄기 · glow 중앙 빛무리(정지·화면 가운데 청백색 빛, 수정·마법진 뒤)" },
+    preset: { type: "string", enum: ["fog", "clouds", "mist", "rain", "snow", "embers", "stars", "lightRays", "glow", "night", "smoke"], description: "그림 없이 그리는 겹. fog 안개 · clouds 흐르는 구름 · mist 땅안개 · rain 비 · snow 눈 · embers 불티(더하기) · stars 별 · lightRays 빛줄기 · glow 중앙 빛무리(정지·화면 가운데 청백색 빛, 수정·마법진 뒤) · night 밤(정지·곱하기로 남색, 밤 맵의 전투) · smoke 잿빛 연기(곱하기로 어둡게, 불탄 땅)" },
     resourceId: stringSchema("바둑판으로 깔 그림 리소스(투명 PNG). 주면 preset 보다 먼저"),
     front: booleanSchema("true = 배틀러·이펙트 앞(앞 덤불·안개 장막, 불투명도 50 이하 권장). 생략 = 배경 바로 위"),
     scrollX: { type: "number", minimum: -1200, maximum: 1200, description: "가로 흐름 px/초. 생략 = 프리셋 기본(구름 22·비 -180)" },
@@ -866,6 +867,7 @@ const skillRecordSchema = objectSchema({
       shake: { type: "string", enum: ["none", "light", "heavy"], description: "착탄 흔들림(생략 = 셋 이상 heavy · 듀얼 light)" },
       slowMo: booleanSchema("착탄 순간 느린 화면(생략 = 켜기)"),
       kicker: { type: "string", description: "제목 카드 위 작은 글(예: 「듀얼 테크」). 생략 = 인원수로" },
+      partners: { type: "string", enum: ["auto", "rush", "cast", "ranged"], description: "시전자 말고 다른 참가자 동작: rush 달려가 베기 · cast 반 걸음 나와 시전 · ranged 쏘기 · auto(기본) 요구 기술로" },
     },
     "연계기 연출(컷인 얼굴 교차 → 참가자별 빛 → 합쳐진 마무리 → 제목 카드). 전역 세기는 set_project_settings battle.staging. 해제 = null",
   ),
@@ -1871,6 +1873,17 @@ function withEnemyIdsFromMembers(troop: unknown): unknown {
   return enemyIds.length > 0 ? { ...record, enemyIds } : troop;
 }
 
+/**
+ * 트룹 쓰기 요약의 밸런스 한 줄. 「레벨을 올려도 전멸」은 올린 파티도 질 때만 쓴다 — 몬스터 게임 경고는 «스타터보다 Lv4 높으면 이긴다»여도
+ * 「전멸」 낱말을 담아, 요약이 «레벨을 올려도 전멸»이라 거짓말하자 모델이 관장·챔피언을 한 마리 Lv7 로 깎았다(2026-10-29 standin monster).
+ */
+function troopWarningSummary(warnings: readonly string[]): string {
+  if (!warnings.length) return "";
+  if (warnings.some(w => /올려도 (?:전멸|이길 수 없)|지나갈 수 없는 잡몹/u.test(w))) return " — 밸런스 경고: 파티가 레벨을 올려도 전멸함";
+  if (warnings.some(w => w.includes("전멸"))) return " — 밸런스 경고: 지금 기준 파티로는 지고, 레벨을 올리면 이김(경고 참고)";
+  return " — 밸런스 경고: 적이 시작 파티에게 거의 피해를 주지 못함";
+}
+
 const upsertTroop: ToolDefinition = {
   name: "upsert_troop",
   description: "적 그룹(트룹) 레코드를 등록/수정한다. 기존 id는 전달 필드만 병합하고 나머지를 보존한다.",
@@ -1904,7 +1917,7 @@ const upsertTroop: ToolDefinition = {
     const outcome = upsertById(draft.database.troops, record);
     const warnings = troopBalanceWarnings(draft, record.id);
     return {
-      summary: `트룹 '${record.name}'(${memberCount}마리) ${outcome === "added" ? "추가" : "수정"}${warnings.length ? (warnings.some(w => w.includes("전멸")) ? " — 밸런스 경고: 파티가 레벨을 올려도 전멸함" : " — 밸런스 경고: 적이 시작 파티에게 거의 피해를 주지 못함") : ""}`,
+      summary: `트룹 '${record.name}'(${memberCount}마리) ${outcome === "added" ? "추가" : "수정"}${troopWarningSummary(warnings)}`,
       data: record,
       ...(warnings.length ? { warnings } : {}),
     };
@@ -2689,13 +2702,21 @@ function parseTitleIntro(value: unknown): TitleIntroSettings {
  * 「참조 검증 실패 … backgroundResourceId 가 존재하지 않습니다」 로 **변경 전체**를 되돌려 제목·음악까지 날아갔다
  * (추리 도그푸딩 gen: 지어낸 easyrpg-backdrop-room-1).
  */
-function requireTitleResource(draft: Project, field: string, id: string, kind: "picture" | "bgm" | "charset"): string {
+/** 「bgm:easyrpg-music-…」「picture:…」처럼 종류 머리를 붙여 보낸 id 에서 머리를 뗀다(2026-10-28 deepseek 방탈출). */
+function stripResourceKindPrefix(raw: string): string {
+  return raw.trim().replace(/^(?:bgm|music|se|sound|picture|pictures|image|backdrop|title|resource|charset)\s*[:/]\s*/iu, "");
+}
+
+function requireTitleResource(draft: Project, field: string, id: string, kind: "picture" | "bgm" | "charset", hint = ""): string {
   const known = collectResourceIds(draft);
   if (known.has(id)) return id;
+  const lower = id.toLowerCase();
+  const sameIgnoringCase = [...known].find((candidate) => candidate.toLowerCase() === lower);
+  if (sameIgnoringCase) return sameIgnoringCase;
   const stem = id.split(/[-_]/u).slice(0, 2).join("-");
   const near = [...known].filter((candidate) => stem && candidate.startsWith(stem)).slice(0, 6);
   throw new ToolError(
-    `${field} '${id}' 는 없는 리소스입니다.${near.length > 0 ? ` 비슷한 실제 id: ${near.join(", ")}.` : ""} list_resources(kind:"${kind}") 로 실제 id 를 찾아 넣거나 이 필드를 빼세요.`,
+    `${field} '${id}' 는 없는 리소스입니다.${hint}${near.length > 0 ? ` 비슷한 실제 id: ${near.join(", ")}.` : ""} list_resources(kind:"${kind}") 로 실제 id 를 찾아 넣거나 이 필드를 빼세요.`,
     { code: "invalid-args" },
   );
 }
@@ -2926,18 +2947,28 @@ const setTitleScreen: ToolDefinition = {
       };
     }
 
+    // 청사진(게임 장르·장소)에 맞는 번들 그림 — 빈 배경·못 쓰는 그림·없는 id 를 받았을 때 고칠 방법 한 줄로 쓴다.
+    const blueprintArt = pickBlueprintTitleArt(draft);
+    const artHint = blueprintArt ? ` 이 게임(청사진)에는 backgroundResourceId:'${blueprintArt.id}'(${blueprintArt.name})가 맞다.` : "";
     if (typeof args.backgroundResourceId === "string") {
-      const background = args.backgroundResourceId.trim();
+      const background = stripResourceKindPrefix(args.backgroundResourceId);
       if (background) {
         const banned = unsuitableOpeningStillMessage(background, "backgroundResourceId");
-        if (banned) throw new ToolError(banned, { code: "invalid-args" });
-        current.backgroundResourceId = requireTitleResource(draft, "backgroundResourceId", background, "picture");
+        if (banned) throw new ToolError(blueprintArt ? `backgroundResourceId '${background}' 는 타이틀에 못 쓰는 그림이다 —${artHint}` : banned, { code: "invalid-args" });
+        current.backgroundResourceId = requireTitleResource(draft, "backgroundResourceId", background, "picture", artHint);
+      } else if (blueprintArt) {
+        // 빈 값 = «지금 그림을 치워 달라». 지우기만 하면 시스템 기본 그림(눈 덮인 산촌)이 다시 나온다(2026-10-28 argon 방탈출) — 청사진 그림으로 바꾼다.
+        current.backgroundResourceId = blueprintArt.id;
+        current.backgroundFit ??= "cover";
+        labelNotes.push(`배경을 비우면 기본 눈 마을 그림이 나와 청사진에 맞는 「${blueprintArt.name}」(${blueprintArt.id})로 바꿨다`);
+      } else {
+        delete current.backgroundResourceId;
+        if (draft.system.titleResourceId) labelNotes.push(`배경을 비워 시스템 기본 그림(${draft.system.titleResourceId})이 나온다 — 다른 그림은 list_resources{kind:'backdrop'} 에서 골라 backgroundResourceId 로 준다`);
       }
-      else delete current.backgroundResourceId;
     }
 
     if (typeof args.musicResourceId === "string") {
-      const music = args.musicResourceId.trim();
+      const music = stripResourceKindPrefix(args.musicResourceId);
       if (music) current.musicResourceId = requireTitleResource(draft, "musicResourceId", music, "bgm");
       else delete current.musicResourceId;
     }

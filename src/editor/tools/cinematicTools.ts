@@ -19,6 +19,7 @@ import {
 } from "@/project/cinematicSettings";
 import { listDatabaseResourceOptions, type DatabaseResourcePickerKind } from "@/editor/resourceOptions";
 import { findOpeningStillMood, unsuitableOpeningStillMessage } from "@/assets/openingStillMoods";
+import { findCharsetAsset } from "@/assets/charsetCatalog";
 import type { Project } from "@/project/types";
 import { openingAuthoringStatus } from "@/project/openingAuthoringStatus";
 import { reviewOpeningAuthoring } from "@/project/openingAuthoringReview";
@@ -216,6 +217,7 @@ function normalizeScene(project: Project, raw: unknown, index: number, isKnown: 
     for (const layer of composition.layers) {
       if (layer.kind !== 'image') continue;
       if (!hasOpeningImage(project, layer.resourceId!)) throw new ToolError("그림 리소스 없음: " + layer.resourceId, { code: "resource-not-found" });
+      if (layer.role === 'background') rejectCharacterSheet(project, layer.resourceId, `레이어 ${layer.id}`);
       const banned = layer.role === 'background' ? unsuitableOpeningStillMessage(layer.resourceId!, `레이어 ${layer.id}`) : null;
       if (banned) throw new ToolError(banned, { code: "invalid-args" });
     }
@@ -247,6 +249,7 @@ function normalizeScene(project: Project, raw: unknown, index: number, isKnown: 
       { code: "invalid-args" },
     );
   }
+  if (kind === "image") rejectCharacterSheet(project, typeof scene.resourceId === "string" ? scene.resourceId.trim() : undefined, `scenes[${index}].resourceId`);
   const resourceId = resolveResourceId(project, kind === "video" ? "movie" : "image", scene.resourceId, index, "resourceId", isKnown);
   if (kind === "video") {
     if (scene.motion !== undefined || scene.direction !== undefined) {
@@ -271,12 +274,26 @@ function normalizeScene(project: Project, raw: unknown, index: number, isKnown: 
   }
 }
 
+/** 「false」「true」 글자로 온 켜고 끄기를 참거짓으로(싼 모델이 자주 글자로 보낸다). */
+function looseBoolean(value: unknown): unknown {
+  if (typeof value !== "string") return value;
+  const text = value.trim().toLowerCase();
+  return text === "true" || text === "on" || text === "켜기" ? true : text === "false" || text === "off" || text === "끄기" ? false : value;
+}
+
 function buildSequence(project: Project, args: Record<string, unknown>): { sequence: CinematicSequence; warnings: string[] } {
-  const rawScenes = args.scenes;
-  if (!Array.isArray(rawScenes)) {
-    throw new ToolError("scenes는 장면 배열이어야 합니다.", { code: "invalid-args" });
+  const existing = project.system.opening;
+  // scenes 를 빼면 지금 장면을 그대로 두고 켜고 끄기·음악만 바꾼다 — {enabled:false} 한 줄로 오프닝을 끄는 것이 가장 흔한 호출인데
+  // scenes 가 필수라 거절됐다(2026-10-28 argon 방탈출: 같은 인자 모양 오류 7번, 기본 왕국 오프닝이 그대로 출하). 장면 하나를 객체로 보내도 받는다.
+  const scenesGiven = args.scenes !== undefined && args.scenes !== null;
+  const rawScenes: unknown = !scenesGiven ? undefined : Array.isArray(args.scenes) ? args.scenes : typeof args.scenes === "object" ? [args.scenes] : args.scenes;
+  if (scenesGiven && !Array.isArray(rawScenes)) {
+    throw new ToolError("scenes는 장면 배열이어야 합니다 — 끄기만 하려면 {enabled:false}, 장면은 scenes:[{kind:\"text\", narration:\"…\"}].", { code: "invalid-args" });
   }
-  if (rawScenes.length > CINEMATIC_SCENE_LIMIT) {
+  if (!Array.isArray(rawScenes) && !existing && looseBoolean(args.enabled) !== false) {
+    throw new ToolError("오프닝 장면이 아직 없습니다 — 끄려면 {enabled:false}, 만들려면 scenes:[{kind:\"text\", narration:\"…\", durationMs:4000}] 를 줍니다.", { code: "invalid-args" });
+  }
+  if (Array.isArray(rawScenes) && rawScenes.length > CINEMATIC_SCENE_LIMIT) {
     throw new ToolError(
       `장면은 최대 ${CINEMATIC_SCENE_LIMIT}개까지 저장할 수 있습니다(요청 ${rawScenes.length}개).`,
       { code: "too-many-scenes" },
@@ -291,10 +308,10 @@ function buildSequence(project: Project, args: Record<string, unknown>): { seque
   const warnings: string[] = [];
   const isKnown = catalogLookup(project);
   const musicResourceId = resolveMusicId(project, args.musicResourceId, isKnown);
-  const parsedScenes = rawScenes.map((raw, index) => normalizeScene(project, raw, index, isKnown));
-  const hasAnimatic = parsedScenes.some(scene => scene.kind === 'animatic');
-  const scenes = hasAnimatic ? parsedScenes.filter(scene => scene.kind === 'animatic') : parsedScenes;
-  if (hasAnimatic && scenes.length !== parsedScenes.length) {
+  const parsedScenes = Array.isArray(rawScenes) ? rawScenes.map((raw, index) => normalizeScene(project, raw, index, isKnown)) : undefined;
+  const hasAnimatic = parsedScenes?.some(scene => scene.kind === 'animatic') ?? false;
+  const scenes = !parsedScenes ? [...(existing?.scenes ?? [])] : hasAnimatic ? parsedScenes.filter(scene => scene.kind === 'animatic') : parsedScenes;
+  if (parsedScenes && hasAnimatic && scenes.length !== parsedScenes.length) {
     warnings.push(`애니메틱 오프닝을 저장하면서 이전 그림책/확인 입력 장면 ${parsedScenes.length - scenes.length}개를 제거했습니다.`);
   }
   const ids = new Set<string>();
@@ -305,12 +322,16 @@ function buildSequence(project: Project, args: Record<string, unknown>): { seque
     ids.add(scene.id);
   }
 
-  const existing = project.system.opening;
-  const enabled = args.enabled === undefined ? existing?.enabled ?? true : args.enabled;
+  // enabled 를 빼고 새 장면을 주면 켠다 — 앞서 끈(또는 장면이 없던) 오프닝에 장면을 새로 지었는데 꺼진 채 남지 않게.
+  const rawEnabled = looseBoolean(args.enabled);
+  const enabled = rawEnabled === undefined
+    ? (parsedScenes && parsedScenes.length > 0 && !(existing?.scenes.length) ? true : existing?.enabled ?? true)
+    : rawEnabled;
   if (typeof enabled !== "boolean") {
     throw new ToolError("enabled는 true/false여야 합니다.", { code: "invalid-args" });
   }
-  const skippable = args.skippable === undefined ? existing?.skippable ?? true : args.skippable;
+  const rawSkippable = looseBoolean(args.skippable);
+  const skippable = rawSkippable === undefined ? existing?.skippable ?? true : rawSkippable;
   if (typeof skippable !== "boolean") {
     throw new ToolError("skippable은 true/false여야 합니다.", { code: "invalid-args" });
   }
@@ -509,17 +530,16 @@ const reviewOpening: ToolDefinition = {
 
 const setOpening: ToolDefinition = {
   name: "set_opening",
-  description: "오프닝(system.opening) 장면 목록과 BGM을 저장한다. 단일 수정은 edit_opening.",
+  description: "오프닝(system.opening) 장면 목록과 BGM을 저장한다. 끄기만 하려면 {enabled:false}(장면은 그대로). scenes 를 빼면 지금 장면을 둔다. 단일 수정은 edit_opening.",
   mode: "write",
   parameters: {
     type: "object",
     additionalProperties: false,
-    required: ["scenes"],
     properties: {
-      enabled: { type: "boolean" },
+      enabled: { type: "boolean", description: "false = 오프닝을 끈다(게임이 바로 시작 맵에서 시작). 새 장면을 주면서 생략하면 켠다." },
       skippable: { type: "boolean" },
       musicResourceId: { type: "string", description: "전체 반복 음악. 빈 값: 제거." },
-      scenes: { type: "array", items: OPENING_SCENE_SCHEMA },
+      scenes: { type: "array", items: OPENING_SCENE_SCHEMA, description: "전체 장면 목록(통째로 바꾼다). 생략 = 지금 장면 유지." },
     },
   },
   invalidArgsExample: {
@@ -717,9 +737,11 @@ const editOpening: ToolDefinition = {
       );
     }
     const scenes: CinematicScene[] = existing ? [...existing.scenes] : [];
-    const enabled = args.enabled === undefined ? existing?.enabled ?? true : args.enabled;
+    const rawEnabled = looseBoolean(args.enabled);
+    const enabled = rawEnabled === undefined ? existing?.enabled ?? true : rawEnabled;
     if (typeof enabled !== "boolean") throw new ToolError("enabled는 true/false여야 합니다.", { code: "invalid-args" });
-    const skippable = args.skippable === undefined ? existing?.skippable ?? true : args.skippable;
+    const rawSkippable = looseBoolean(args.skippable);
+    const skippable = rawSkippable === undefined ? existing?.skippable ?? true : rawSkippable;
     if (typeof skippable !== "boolean") throw new ToolError("skippable은 true/false여야 합니다.", { code: "invalid-args" });
     const requestedMusic = resolveMusicId(draft, args.musicResourceId, isKnown);
     const music = requestedMusic === undefined ? existing?.musicResourceId : requestedMusic;
@@ -820,6 +842,26 @@ export type OpeningImageBrief = {
   readonly focus?: string; readonly angle?: string; readonly light?: string; readonly palette?: string; readonly cast?: string; readonly captionSide?: "bottom" | "top" | "left" | "right";
 };
 const OPENING_DIRECTION_FIELDS = ["focus", "angle", "light", "palette", "cast"] as const;
+
+/**
+ * 캐릭터 칩·얼굴·전투 시트(여러 포즈를 칸으로 나눈 그림)는 오프닝 그림이 아니다 — 통째로 깔면 걷기 칸 열두 개가 화면을 덮는다
+ * (2026-10-28 standin magic: 첫 장면 그림이 easyrpg-charset-actor1). 시트 종류 이름을 돌려준다, 아니면 undefined.
+ */
+export function characterSheetKind(project: Project, id: string): string | undefined {
+  const kind = project.assets.uploaded[id]?.kind;
+  if (kind === "charset" || kind === "battleCharset") return "캐릭터 칩 시트";
+  if (kind === "faceset") return "얼굴 시트";
+  if (kind === "battle" || kind === "battleWeapon") return "전투 포즈 시트";
+  if (findCharsetAsset(id)) return "캐릭터 칩 시트";
+  if (/(?:^|[-_])(?:charset|faceset|battlecharset)(?:[-_]|$)/iu.test(id)) return /faceset/iu.test(id) ? "얼굴 시트" : "캐릭터 칩 시트";
+  return undefined;
+}
+
+function rejectCharacterSheet(project: Project, id: string | undefined, label: string): void {
+  if (!id) return;
+  const sheet = characterSheetKind(project, id);
+  if (sheet) throw new ToolError(`${label} '${id}' 는 ${sheet}라 오프닝 그림으로 쓸 수 없다 — 배경은 list_opening_media{kind:'image'} 의 배경화나 place_opening_background{mapId} 로, 인물은 place_opening_charset_actor 로 얹는다.`, { code: "invalid-args" });
+}
 
 /** SQLite media references are valid even when the worker has no browser URL bridge. */
 export function hasOpeningImage(project: Project, id: string): boolean {

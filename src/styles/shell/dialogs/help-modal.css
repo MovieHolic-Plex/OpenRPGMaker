@@ -117,7 +117,7 @@
 
 .help-modal-nav-item {
   position: relative;
-  padding: 7px 10px 7px 14px;
+  padding: 7px 10px;
   border: 0;
   border-radius: var(--radius-s, 6px);
   background: transparent;
@@ -129,31 +129,15 @@
     transform var(--transition-fast, 120ms ease);
 }
 
-.help-modal-nav-item::before {
-  content: "";
-  position: absolute;
-  left: 4px;
-  top: 8px;
-  bottom: 8px;
-  width: 3px;
-  border-radius: 999px;
-  background: transparent;
-  transition: background var(--transition-fast, 120ms ease);
-}
-
 .help-modal-nav-item:hover {
   background: var(--bg-hover, rgba(42, 37, 33, 0.06));
   color: var(--text-1, #2A2521);
-  transform: translateX(2px);
 }
 
+/* 지금 절 표시는 배경 하나 — 옆 막대와 배경을 겹쳐 두 가지 표시가 동시에 보이지 않게 한다. */
 .help-modal-nav-item.active {
   background: var(--accent-muted, var(--accent-muted));
   color: var(--text-1, #2A2521);
-}
-
-.help-modal-nav-item.active::before {
-  background: var(--accent);
 }
 
 .help-modal-body {
@@ -172,23 +156,21 @@
   margin-bottom: 0;
 }
 
+/* 절 제목은 크기·굵기로만 나눈다(옆 강조 막대 없음). */
 .help-modal-section > h3 {
-  display: flex;
-  align-items: center;
-  gap: 9px;
   margin: 0 0 10px;
   color: var(--text-1, #2A2521);
-  font: 800 16px/1.25 var(--font-ui, system-ui, "Malgun Gothic", sans-serif);
+  font: 700 17px/1.3 var(--font-ui, system-ui, "Malgun Gothic", sans-serif);
   letter-spacing: -0.01em;
 }
 
-.help-modal-section > h3::before {
-  content: "";
-  flex: 0 0 auto;
-  width: 4px;
-  height: 16px;
-  border-radius: 999px;
-  background: var(--accent);
+.help-modal-section > h3:focus {
+  outline: none;
+}
+
+.help-modal-section > h3:focus-visible {
+  border-radius: var(--radius-s, 6px);
+  box-shadow: var(--focus-ring, 0 0 0 2px var(--accent-border));
 }
 
 .help-modal-paragraph {
@@ -230,7 +212,6 @@
   margin: 12px 0 4px;
   padding: 10px 13px;
   border: 1px solid var(--accent-border, var(--accent-border));
-  border-left-width: 3px;
   border-radius: var(--radius-s, 6px);
   background: var(--accent-muted, var(--accent-muted));
   color: var(--text-1, #2A2521);
@@ -268,7 +249,7 @@
 
 .help-modal-shortcut-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(215px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 10px;
 }
 
@@ -325,6 +306,12 @@
   white-space: nowrap;
 }
 
+.help-modal-gesture {
+  color: var(--text-2);
+  font: 600 12px/1.35 var(--font-ui, system-ui, "Malgun Gothic", sans-serif);
+  white-space: nowrap;
+}
+
 .help-modal-key-tilde {
   color: var(--text-3, #6B5F52);
   font: 600 11px/1.4 ui-monospace, Consolas, monospace;
@@ -376,8 +363,5 @@
     border-right: 0;
     border-bottom: 1px solid var(--border-subtle, rgba(42, 37, 33, 0.12));
     padding: 10px;
-  }
-  .help-modal-nav-item::before {
-    display: none;
   }
 }

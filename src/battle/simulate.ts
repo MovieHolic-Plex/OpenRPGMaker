@@ -51,6 +51,8 @@ export interface SimulateBattleInput {
   readonly battleResult?: "victory" | "defeat" | "escape";
   /** 켜 둔 채 시작할 스위치 id(선택 결과에 걸린 페이지·손님 시험). 생략 = 모두 꺼짐. */
   readonly switchesOn?: readonly string[];
+  /** 영웅 파티 모두가 걸린 채 시작할 상태 id(앞 전투에서 남은 독처럼 전투 뒤에도 유지되는 상태). 생략 = 없음. */
+  readonly startStateIds?: readonly string[];
 }
 
 /**
@@ -150,7 +152,7 @@ function runSingleBattle(input: SimulateBattleInput, rng: Rng): SingleRunResult 
     activeSlots: input.activeSlots,
     party: monsterMode
       ? { levels: {}, experience: {}, monsterParty: input.monsterParty, partyActorIds: input.monsterParty!.map((m) => m.instanceId) }
-      : { levels, experience: {}, partyActorIds: [...partyActorIds] },
+      : { levels, experience: {}, partyActorIds: [...partyActorIds], ...(input.startStateIds?.length ? { stateIds: Object.fromEntries(partyActorIds.map((id) => [id, [...input.startStateIds!]])) } : {}) },
     partyMonsters: monsterMode ? input.monsterParty : undefined,
     ownerEventId: input.ownerEventId,
     sessionState: { switches: Object.fromEntries((input.switchesOn ?? []).map((id) => [id, true])), variables: {}, inventory, selfSwitches: input.selfSwitches, battleResult: input.battleResult },
@@ -367,6 +369,17 @@ export interface EnemyTuningInput {
   readonly enemyDefense: number; // 목표 적 방어력(유지값)
   readonly targetHitsToKill: number; // 영웅 평타 몇 대에 죽나
   readonly targetDamageToHeroPerHit: number; // 적 평타가 영웅에게 주는 데미지
+  /**
+   * 기준 아군을 직접 준다(몬스터 파티 게임: 스타터 몬스터). 없으면 파티 첫 액터.
+   * move 를 주면 «평타» 대신 그 기술(위력·쓰는 능력치·적이 막는 능력치)로 한 대를 잰다 — 몬스터 전투는 평타가 아니라 기술로 싸운다.
+   */
+  readonly hero?: { readonly attack: number; readonly defense: number; readonly move?: { readonly power: number; readonly stat: number; readonly targetDefense: number; readonly multiplier?: number } };
+  /** 적이 아군을 칠 때 쓰는 공격(attack 능력치) 기술 위력. 없으면 평타(위력 = 공격력). */
+  readonly enemyMovePower?: number;
+  /** 그 적 기술의 타입 상성·자속 배율(기본 1). */
+  readonly enemyMoveMultiplier?: number;
+  /** 그 적 기술을 아군이 막는 능력치(특수 기술이면 아군 mind). 없으면 아군 방어. */
+  readonly enemyMoveTargetDefense?: number;
 }
 
 export interface EnemyTuningResult {
@@ -382,11 +395,12 @@ export interface EnemyTuningResult {
 
 // 영웅 능력치를 지정 레벨에서 도출하고, 데미지 공식을 역산해 maxHp/attack을 산출한다.
 export function computeEnemyTuning(input: EnemyTuningInput): EnemyTuningResult {
-  const partyActorIds = input.partyActorIds ?? input.project.session.partyActorIds;
-  const levels: Record<string, number> = {};
-  for (const actorId of partyActorIds) levels[actorId] = input.heroLevel;
-  const battlers = actorBattlers(input.project, { levels, partyActorIds: [...partyActorIds] });
-  const hero = battlers[0];
+  const hero = input.hero ? { attackPower: input.hero.attack, defense: input.hero.defense } : (() => {
+    const partyActorIds = input.partyActorIds ?? input.project.session.partyActorIds;
+    const levels: Record<string, number> = {};
+    for (const actorId of partyActorIds) levels[actorId] = input.heroLevel;
+    return actorBattlers(input.project, { levels, partyActorIds: [...partyActorIds] })[0];
+  })();
   const heroAttack = hero?.attackPower ?? 45;
   const heroDefense = hero?.defense ?? 59;
 
@@ -394,18 +408,32 @@ export function computeEnemyTuning(input: EnemyTuningInput): EnemyTuningResult {
   // gen1 프로젝트는 코어 공식(레벨 기반)으로 갈아탄다 — 두 산식이 갈리면 tune_enemy 근거가
   // 실제 전투와 어긋난 숫자를 뱉는다(런타임/예측과 같은 usesGen1Damage 게이트를 쓴다).
   const gen1 = usesGen1Damage(input.project);
-  const heroHitDamage = gen1
-    ? Math.max(1, computeGen1BaseDamage({ level: input.heroLevel, power: heroAttack, attack: heroAttack, defense: input.enemyDefense }))
-    : Math.max(1, heroAttack + Math.floor(heroAttack / 2) - Math.floor(input.enemyDefense / 2));
+  const move = input.hero?.move;
+  const hitPower = move?.power ?? heroAttack, hitStat = move?.stat ?? heroAttack, hitDefense = move?.targetDefense ?? input.enemyDefense;
+  const heroMultiplier = move?.multiplier ?? 1;
+  const heroHitDamage = Math.max(1, Math.floor(heroMultiplier * (gen1
+    ? computeGen1BaseDamage({ level: input.heroLevel, power: hitPower, attack: hitStat, defense: hitDefense })
+    : move
+      ? hitPower + Math.floor(hitStat / 2) - Math.floor(hitDefense / 2)
+      : heroAttack + Math.floor(heroAttack / 2) - Math.floor(input.enemyDefense / 2))));
   const maxHp = Math.max(1, Math.round(input.targetHitsToKill * heroHitDamage));
 
   // 적 평타가 영웅에게 targetDamageToHeroPerHit를 주려면:
   // A + floor(A/2) - floor(heroDefense/2) = target  →  1.5A ≈ target + heroDefense/2.
   // gen1 은 power=A 이자 attack=A 라 A 에 대해 2차식이다. 닫힌 해로 시작해 정방향 공식
   // (computeGen1BaseDamage)으로 단조 보정한다 — 역산과 실제 산식이 절대 갈라지지 않는다.
+  // 적 기술 위력(enemyMovePower)을 주면 위력은 고정하고 A 만 푼다.
+  const enemyPower = input.enemyMovePower;
+  // 상성 배율이 있으면 배율을 걷어낸 기본 피해를 목표로 푼다(배율 0 이면 그 기술로는 못 맞힌다 → 배율 1).
+  const enemyMultiplier = enemyPower !== undefined && (input.enemyMoveMultiplier ?? 1) > 0 ? input.enemyMoveMultiplier ?? 1 : 1;
+  const baseTarget = Math.max(1, Math.ceil(input.targetDamageToHeroPerHit / enemyMultiplier));
+  const guardStat = enemyPower !== undefined ? input.enemyMoveTargetDefense ?? heroDefense : heroDefense;
   const attack = gen1
-    ? solveGen1Attack(input.heroLevel, heroDefense, input.targetDamageToHeroPerHit)
-    : Math.max(1, Math.round((input.targetDamageToHeroPerHit + Math.floor(heroDefense / 2)) / 1.5));
+    ? solveGen1Attack(input.heroLevel, guardStat, baseTarget, enemyPower)
+    : enemyPower !== undefined
+      ? Math.max(1, 2 * (baseTarget + Math.floor(guardStat / 2) - enemyPower))
+      : Math.max(1, Math.round((input.targetDamageToHeroPerHit + Math.floor(heroDefense / 2)) / 1.5));
+  const powerText = enemyPower !== undefined ? String(enemyPower) : "A";
 
   return {
     maxHp,
@@ -415,18 +443,20 @@ export function computeEnemyTuning(input: EnemyTuningInput): EnemyTuningResult {
       heroDefense,
       heroHitDamage,
       formula: gen1
-        ? `gen1: maxHp = round(${input.targetHitsToKill} × ${heroHitDamage}); attack = solve(base(Lv${input.heroLevel}, A, A, ${heroDefense}) ≥ ${input.targetDamageToHeroPerHit})`
-        : `maxHp = round(${input.targetHitsToKill} × ${heroHitDamage}); attack = round((${input.targetDamageToHeroPerHit} + floor(${heroDefense}/2)) / 1.5)`,
+        ? `gen1: maxHp = round(${input.targetHitsToKill} × ${heroHitDamage}${move ? ` [기술 위력 ${hitPower}·능력 ${hitStat}·적 방어 ${hitDefense}·상성 ×${heroMultiplier}]` : ""}); attack = solve(base(Lv${input.heroLevel}, ${powerText}, A, ${guardStat}) ≥ ${baseTarget}${enemyMultiplier !== 1 ? ` = ${input.targetDamageToHeroPerHit} ÷ 상성 ${enemyMultiplier}` : ""})`
+        : `maxHp = round(${input.targetHitsToKill} × ${heroHitDamage}); attack = ${enemyPower !== undefined ? `2 × (${baseTarget} + floor(${guardStat}/2) - ${enemyPower})` : `round((${input.targetDamageToHeroPerHit} + floor(${heroDefense}/2)) / 1.5)`}`,
     },
   };
 }
 
-// gen1 코어 공식의 A 역산. 닫힌 해 → 단조 보정(최대 64스텝). power=attack=A 가정.
-function solveGen1Attack(level: number, defense: number, targetDamage: number): number {
+// gen1 코어 공식의 A 역산. 닫힌 해 → 단조 보정(최대 64스텝). power 를 주지 않으면 power=attack=A(평타).
+function solveGen1Attack(level: number, defense: number, targetDamage: number, power?: number): number {
   const levelTerm = Math.floor((2 * Math.max(1, level)) / 5) + 2;
-  const seed = Math.sqrt((Math.max(1, targetDamage - 2) * 50 * Math.max(1, defense)) / levelTerm);
+  const seed = power !== undefined
+    ? (Math.max(1, targetDamage - 2) * 50 * Math.max(1, defense)) / (levelTerm * Math.max(1, power))
+    : Math.sqrt((Math.max(1, targetDamage - 2) * 50 * Math.max(1, defense)) / levelTerm);
   let attack = Math.max(1, Math.round(seed));
-  const damageAt = (value: number): number => computeGen1BaseDamage({ level, power: value, attack: value, defense });
+  const damageAt = (value: number): number => computeGen1BaseDamage({ level, power: power ?? value, attack: value, defense });
   for (let step = 0; step < 64 && damageAt(attack) < targetDamage; step += 1) attack += 1;
   for (let step = 0; step < 64 && attack > 1 && damageAt(attack - 1) >= targetDamage; step += 1) attack -= 1;
   return attack;

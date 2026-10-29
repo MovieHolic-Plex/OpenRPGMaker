@@ -260,6 +260,11 @@ export interface PiCommandSurface {
   /** 화면 없이 도는 실행(qa-game gen 등)의 확인 답. 없으면 패널 카드로 사용자에게 묻는다. */
   readonly decide?: (request: { readonly title: string; readonly message: string; readonly lostMapIds: readonly string[] }) => Promise<boolean>;
   readonly getCurrentMapId: () => string | null;
+  /**
+   * 이 실행이 맵별 대기열(aiMapRunQueue)에서 잡은 맵 키. "*" = 프로젝트 전체. 확인 카드가 이 키로 열린 카드 대장에 올라,
+   * 같은 맵으로 새 요청이 오면 보내기가 카드를 먼저 닫는다(aiDecisionPrompt 「열린 카드 대장」). 없으면 앞 턴 카드로 본다.
+   */
+  readonly runKey?: string;
   /** 사용자가 이 대화에서 승인한 칩셋 계열(질문 카드 「이 타일로 바꿔도 좋아요」). 요청의 approvedTilesetFamilies 로 간다. */
   readonly getApprovedTilesetFamilies?: () => readonly string[];
   /** 조수가 ask_tileset_change 로 칩셋 계열 변경을 물었다. 패널은 턴이 끝난 뒤 질문 카드를 띄운다. */

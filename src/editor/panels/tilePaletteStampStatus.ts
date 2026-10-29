@@ -30,9 +30,10 @@ export function makeTileBrushControls(state: EditorState, rerender: () => void):
   const row = el("div", { class: "sidebar-brush-controls", dataset: { testid: "tile-brush-controls" } });
   // 크기는 같은 타일을 되풀이하는 붓(칠하기 · 자유선)과 지우기에서만 뜻이 있다 — 다른 도구에선 숨긴다.
   const applicable = state.layer !== "event" && (state.tool === "erase" || (state.tool === "paint" && state.paintShape === "pen" && !stamp));
-  if (applicable) {
+  // 쓸 수 없는 도구(사각형·채우기 등)에서도 자리는 지킨다 — 숨기면 도구를 바꿀 때마다 옵션 줄이 다시 흘러 팔레트가 들썩였다.
+  if (state.layer !== "event" && state.tool !== "relief") {
     const select = el("select", {
-      attrs: { "aria-label": "브러시 크기" }, dataset: { testid: "brush-size-select" },
+      attrs: { "aria-label": "브러시 크기", ...(applicable ? {} : { title: "이 도구에서는 크기를 쓰지 않습니다" }) }, dataset: { testid: "brush-size-select" },
       on: { change: (event) => {
         if (!(event.currentTarget instanceof HTMLSelectElement)) return;
         const value = event.currentTarget.value;
@@ -42,6 +43,7 @@ export function makeTileBrushControls(state: EditorState, rerender: () => void):
     });
     for (const size of EDITOR_BRUSH_SIZES) select.append(el("option", { value: String(size), text: `${size} × ${size}` }));
     select.value = String(state.brushSize);
+    select.disabled = !applicable;
     row.append(el("label", { class: "sidebar-brush-sizes", children: [el("span", { text: "크기" }), select] }));
   }
   row.append(el("span", { class: "sidebar-brush-state" + (composite ? " is-combo-brush" : ""), text: action,

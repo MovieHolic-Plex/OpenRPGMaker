@@ -105,6 +105,7 @@ export const TOOL_LABELS: Readonly<Record<string, ToolLabelEntry>> = {
   preview_cutscene: inspect("컷신 미리보기", "eye"),
   upsert_event: people("이벤트 쓰기", "flag"),
   patch_event_page: people("이벤트 페이지 고치기", "flag"),
+  add_event_page: people("이벤트 페이지 더하기", "flag"),
   event_command_assist: people("이벤트 명령 만들기", "flag"),
   move_event: people("이벤트 옮기기", "flag"),
   remove_event: people("이벤트 삭제", "flag"),
@@ -178,6 +179,7 @@ export const TOOL_LABELS: Readonly<Record<string, ToolLabelEntry>> = {
   // (「read tileset reference」)이 작업 과정에 그대로 보였다. ──
   read_project_wiki: inspect("설정집 읽기", "book"),
   set_world_canon: world("세계관 정하기", "book"),
+  upsert_world_codex: world("설정집 쓰기", "book"),
   set_party: system("파티 구성"),
   get_world_structure_rules: inspect("월드 지형 규칙 읽기", "map"),
   author_world_bridge: world("다리 놓기", "road"),
@@ -402,6 +404,7 @@ export const TOOL_LABELS: Readonly<Record<string, ToolLabelEntry>> = {
   stamp_tileset_object: build("타일셋 물체 찍기", "box"),
   stamp_layer_block: build("층 배열 찍기", "grid"),
   paint_shadow: build("그림자 칠하기", "brush"),
+  paint_beodeul_plan: build("평면도대로 맵 칠하기", "map"),
   read_relief: inspect("절벽 높이 읽기", "map"),
   sculpt_relief: build("절벽 높이 빚기", "map"),
   check_relief: inspect("절벽 높이 검사", "shield"),

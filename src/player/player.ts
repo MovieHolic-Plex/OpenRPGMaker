@@ -395,7 +395,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     openingController = controller;
     let lastFrame = '#000', handoffFadeMs = 500;
     const playback = playCinematicSequence({ host: surface.stage, project: bootProject, sequence: opening,
-      signal: controller.signal, assets: cinematicAssets, holdMusicOnComplete: true, musicHost: main,
+      signal: controller.signal, assets: cinematicAssets, holdMusicOnComplete: true, musicHost: main, holdClockThroughStalls: true, softCutTails: true,
       musicVolume: () => audioEngine.audioStateSnapshot().volume.bgm,
       onFrame: (url, fadeMs) => { lastFrame = url; if (fadeMs !== undefined) handoffFadeMs = fadeMs; } });
     openingMusicPlayback = playback;
@@ -731,7 +731,16 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
   };
 
   // 타이틀 메뉴에 "이어하기"를 노출할지 — 불러올 수 있는 저장이 하나라도 있을 때만.
-  const isAutosaveAvailable = (): boolean => resumableSave() !== undefined;
+  // 가장 새 저장이 마지막 엔딩보다 옛것이면 그 판은 이미 끝났다 — 「이어하기」를 새 게임 바로 밑에 두면
+  // 방향키 한 번에 엔딩 직전(열린 금고·열쇠)으로 돌아가 「새 게임이 초기화되지 않는다」로 읽혔다
+  // (2026-10-29 vm4 flash 방탈출 판정; 새 게임 자체는 비워진다 — QA ending-newgame). 옛 저장은 「불러오기」에 그대로 있다.
+  const isAutosaveAvailable = (): boolean => {
+    const latest = resumableSave();
+    if (!latest) return false;
+    const cleared = Date.parse(readClearRecord(window.localStorage)?.clearedAt ?? "");
+    const saved = Date.parse(latest.snapshot.savedAt ?? "");
+    return !(Number.isFinite(cleared) && Number.isFinite(saved) && saved < cleared);
+  };
 
   // 켜 두었고 클리어 기록이 있을 때만 타이틀 항목 이름을 돌려준다(없으면 항목이 숨는다).
   const newGamePlusTitleLabel = (): string | undefined => {
@@ -930,6 +939,10 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     }
     if (isMenuKey(key)) {
       event.preventDefault();
+      // 이벤트가 도는 동안에는 메뉴를 열지 않는다(RM 관례). 적의 느낌표·대기 사이에 열린 메뉴 아래에서 전투가
+      // 시작돼, 메뉴는 닫히지 않고 메뉴의 Enter 가 전투 명령(도주)으로 갔다(2026-10-29 vm5 argon jrpg).
+      // 대기 중 걷기를 허락한 이벤트(allowEventMovementDuringWait)는 필드 조작이 열려 있으므로 막지 않는다.
+      if (!menu && scene?.running === true && sceneSession?.messageWindowSettings?.allowEventMovementDuringWait !== true) return;
       statusMenu.toggleMenu();
     }
   };

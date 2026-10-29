@@ -151,7 +151,7 @@ describe("skippable cutscene skip hint", () => {
 
     // When: the player is waiting on the blocked camera move.
     // Then: the Korean skip hint is on screen, and it disappears once the cutscene finishes.
-    expect(fixture.visibleOverlays.get(SKIP_HINT_TESTID)).toBe("Esc Esc: \ucef7\uc2e0 \uac74\ub108\ub6f0\uae30");
+    expect(fixture.visibleOverlays.get(SKIP_HINT_TESTID)).toBe("Esc \ub450 \ubc88: \ucef7\uc2e0 \uac74\ub108\ub6f0\uae30");
 
     pressEscape();
     pressEscape();

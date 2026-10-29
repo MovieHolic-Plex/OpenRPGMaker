@@ -125,6 +125,8 @@ export interface DungeonCompose {
   /** 서사 앵커: 보스방(입구에서 가장 깊은 방 또는 kind boss)·보물 방·잠긴 문 자리(보스·보물 방으로 들어가는 통로 한가운데 칸). */
   readonly anchors: { boss: string | null; treasure: string | null; gate: { x: number; y: number; to: string } | null };
   readonly spots: Record<string, { x: number; y: number }[]>;
+  /** 상자 자리(방마다): 북쪽 벽을 등지고 물에서 떨어진 칸. 없는 방은 빈 목록(그땐 spots 를 쓴다). */
+  readonly chestSpots?: Record<string, { x: number; y: number }[]>;
   readonly picture: string[];
   readonly liquid: { readonly kind: "water" | "lava" | "void" | null; readonly cells: number; readonly bridges: number };
   /** 야외 던전(숲·늪): 벽 칸 = 수관 숲. 맵에 쓸 때 writeBeodeulCanopy 로 2·3층에 깐다(compose 는 바닥만 칠한다). */

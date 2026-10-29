@@ -7,7 +7,9 @@ import { DUNGEON_DIRS } from "./types";
 
 const DEFAULT_SIZE: Record<DungeonRoomKind, [number, number]> = {
   // 2026-10-23: 큰 방을 한 단 줄였다 — 홀·보스방이 맨바닥 넓은 방으로 읽혔다(VQA 「빈 바닥 15% 초과」). 빈 바닥은 메우지 않고 줄인다.
-  entrance: [10, 6], hall: [13, 8], crypt: [11, 7], cell: [10, 6], shrine: [11, 8], boss: [13, 9], storage: [9, 6], vault: [9, 6],
+  // 2026-10-28 장부(지하묘지 홀 63~68% 빈 바닥): 한 단 더 줄였다 — 방마다 놓는 기물 수는 거의 고정이라 방이 크면 맨바닥만 는다.
+  // 홀 11×7·보스 11×8 은 기둥 줄·제단 줄이 들어가는 최소(compose 의 r.w>=11·r.h>=7/8 분기).
+  entrance: [9, 5], hall: [11, 7], crypt: [9, 6], cell: [8, 5], shrine: [10, 7], boss: [11, 8], storage: [8, 5], vault: [8, 5],
   channel: [28, 11], cistern: [13, 10], pump: [10, 8], cavern: [14, 9], lake: [14, 9], grotto: [10, 8], forge: [11, 8], nave: [17, 19],
   junction: [9, 7], stope: [14, 8], depot: [11, 8], library: [11, 8],
 };
@@ -64,7 +66,7 @@ export function planDungeonRooms(spec: DungeonSpec): DungeonRoomInput[] {
   const middle = Math.max(0, n - (n >= 5 ? 3 : 2));
   if (fam === "hub") {
     // 바퀴살: 입구 → 큰 가운데 방 → 사방 갈래(보스방도 가운데 방에서). 가운데 방은 한 단 크게.
-    rooms.push({ id: "hub", kind: hubKind, w: 15 + Math.floor(random() * 3), h: 10 + Math.floor(random() * 2) });
+    rooms.push({ id: "hub", kind: hubKind, w: 12 + Math.floor(random() * 2), h: 8 + Math.floor(random() * 2) }); // 15~17×10~11 → 12~13×8~9(2026-10-28 빈 바닥)
     for (let i = 0; i < Math.max(0, middle - 1); i += 1) { const kind = pool[i % pool.length]!; rooms.push({ id: `${kind}${i + 1}`, kind, from: "hub" }); }
     rooms.push({ id: "boss", kind: "boss", from: "hub" });
   } else {

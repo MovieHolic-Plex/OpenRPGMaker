@@ -831,6 +831,8 @@ export interface Project {
   terrainStamps?: import("../terrainDesign").TerrainStamp[];
   /** Confirmed new-project interview; travels with SQLite, export, and later AI turns. */
   gameDesignBrief?: import("../gameDesignBrief").GameDesignBrief;
+  /** 조수가 게임 하나를 짓기 전에 쓰는 청사진(목표·핵심 경로·엔딩). 출하 검사가 이 경로를 걸어 본다. project/gameBlueprint.ts */
+  gameBlueprint?: import("../gameBlueprint").GameBlueprint;
   /** Prompt library and dialogue review preferences, saved with this project. */
   aiAuthoring?: import("../aiAuthoring").AiAuthoring;
   /** Optional spatial authoring authority, separate from lore, worldGraph and runtime saves. */
