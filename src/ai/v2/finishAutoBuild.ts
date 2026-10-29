@@ -8,7 +8,7 @@ import { battleSites, healingSources } from "./combatChecks";
 import { wantsWholeGame } from "./shipChecks";
 import { applyShipDefaults } from "./shipDefaults";
 import { refreshObjectiveRoutes } from "./discoverability";
-import { fitUnwinnableStepBattlesIn, orderStepBattlesIn, pointLockedPagesIn } from "./blueprintPath";
+import { fitUnwinnableStepBattlesIn, lockStepOrderDoorsIn, orderStepBattlesIn, pointLockedPagesIn } from "./blueprintPath";
 import { fitPathBattlesIn } from "./pathBattleBudget";
 import { ensureBossRest } from "./healingAccess";
 import { createBuildRun } from "./buildRun";
@@ -116,6 +116,9 @@ export async function runFinishAutoBuild(env: PiAssistantV2Env, session: V2Sessi
     // 영문 id 맵 이름(「dungeon_cave」)을 뜻 낱말로 — 아래 목표 꼬리·런타임 출구 라벨이 그 이름을 그대로 보여 준다(2026-10-29 vm4 flash jrpg).
     try { const renamed = humanizeMapNames(env.ctx.project); if (renamed.length) assembled.push(`맵 이름 ${renamed.join(" · ")}`); }
     catch { /* 이름 바꾸기 실패는 끝맺음을 깨지 않는다 */ }
+    // 단계 순서 문 잠금 — 다음 단계 맵으로 가는 문·계단은 이 맵의 단계를 마친 뒤에만 열린다(2026-10-29 vm5 deepseek jrpg: 검을 뽑기 전에 계단으로 내려가짐).
+    try { assembled.push(...lockStepOrderDoorsIn(env.ctx.project)); }
+    catch { /* 문 잠금 실패는 끝맺음을 깨지 않는다 */ }
     // 잠긴 조사 대사가 먼저 할 일(그 조건을 켜는 이벤트와 자리)을 말하게(2026-10-29 vm3 argon 추리 열린 창문·deepseek jrpg 계단). 맵 이름을 뜻 낱말로 바꾼 뒤.
     try { assembled.push(...pointLockedPagesIn(env.ctx.project)); }
     catch { /* 잠김 대사 보충 실패는 끝맺음을 깨지 않는다 */ }
