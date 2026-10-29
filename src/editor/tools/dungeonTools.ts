@@ -24,9 +24,11 @@ import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } 
 import { DUNGEON_ENTRANCE_TAG, pickDungeonGateSpot, ENTRANCE_OPTION_SCHEMA, linkEntranceInDraft, parseEntranceOption } from "./dungeonLinkTools";
 import { dungeonTheme, ensureThemeTroop } from "./dungeonThemeTroops";
 import { beodeulNatureTileset, planBeodeulCanopy, writeBeodeulCanopy } from "./beodeulForest";
+import { invalidateReliefSlopes } from "@/project/relief/walk";
 import { BEODEUL_NATURE } from "@/project/defaults/beodeulNature";
 import { translateTiles } from "@/project/objectStamp";
 import { setLayerTileAt } from "@/project/mapLayers";
+import type { TilesetDef } from "@/project/types";
 import { mapBackgroundFromPanoramaSet } from "@/assets/oprnPanoramas";
 
 const createMapTool = MAP_TOOLS.find((tool) => tool.name === "create_map")!;
@@ -128,6 +130,13 @@ function buildFloor(draft: Project, args: Record<string, unknown>, floor: FloorO
   map.upperTiles = composed.upper.slice();
   for (const layer of ["lowerOverlayTiles", "upperOverlayTiles"] as const) if (map[layer]) map[layer] = new Array<number>(map.width * map.height).fill(-1);
   map.mapRole = "dungeon";
+  // 설계한 높이 단(rooms[].level): 마을 지형과 같은 map.relief + 버들항 돌계단(*-steps). 다시 짓기는 옛 높이를 지운다.
+  if (composed.relief) {
+    map.relief = { width: map.width, height: map.height, levels: composed.relief.levels.slice(), ramps: composed.relief.ramps.slice(), style: composed.relief.style };
+    invalidateReliefSlopes(map.relief);
+    const painted = paintReliefStairTiles(map, tileset);
+    if (painted.ew) notes.push(`고침: 동서로 오르는 계단 ${painted.ew}칸은 칩셋에 옆 계단 조각이 없어 바닥 비탈로 그렸다(걷기는 계단과 같다).`);
+  } else delete map.relief;
   // 자연 물가(2026-10-23 dungeon-themes): 물·용암 칸 위 2층에 beodeul_nature 둑(풀·이끼 늪·흑요석)을 얹는다 — 가장자리 없는 네모 물·용암이 「물감 칸」으로 읽혔다.
   // 2층은 ★(통행 + 위) — 통행은 아래 물·용암 칸이 정한다(막힘). 이웃 = 같은 액체 또는 다리(다리 밑도 물이 이어진다) 또는 맵 밖.
   if (composed.banks) {
@@ -247,6 +256,39 @@ function buildFloor(draft: Project, args: Record<string, unknown>, floor: FloorO
     data,
     warnings: composed.warnings.length ? composed.warnings : undefined,
   };
+}
+
+/**
+ * 높이 단 계단 칸 그림(마을 12c 와 같은 규칙, beodeulVillage.ts): 남북으로 오르는 계단 칸의 1층을 버들항 칩셋 돌계단 조각 화소 그대로 —
+ * 폭 1·2 = bd-capital-quay-steps-w/-e 0줄, 폭 3 이상 = bd-mpart-stairs 가운데 세 열(아래부터 아랫줄·윗줄 번갈아). *-steps 양식은 그 칸 1층을 비탈 높이로 그린다.
+ * 동서로 오르는 계단 조각은 칩셋에 없다 — 그 칸은 바닥 그대로(비탈)이고 수만 센다.
+ */
+function paintReliefStairTiles(map: GameMap, tileset: TilesetDef): { ns: number; ew: number } {
+  const r = map.relief; if (!r?.ramps) return { ns: 0, ew: 0 };
+  const W = map.width, H = map.height;
+  const kit = (id: string) => (tileset.structureKits ?? []).find((k) => k.id === id);
+  const quay = kit("bd-capital-quay-steps-w"), quayE = kit("bd-capital-quay-steps-e") ?? quay, mp = kit("bd-mpart-stairs");
+  const tileAt = (k: typeof mp, col: number, row: number) => k?.rows[row]?.tiles?.[col] ?? -1;
+  const ns = (c: number) => { const v = r.ramps![c] ?? 0; return v >= 5 && v <= 6; };
+  let nsN = 0, ew = 0;
+  for (let c = 0; c < W * H; c += 1) { const v = r.ramps[c] ?? 0; if (v === 7 || v === 8) ew += 1; }
+  const seen = new Uint8Array(W * H);
+  for (let c0 = 0; c0 < W * H; c0 += 1) {
+    if (seen[c0] || !ns(c0)) continue;
+    const fl = [c0]; seen[c0] = 1;
+    for (let h = 0; h < fl.length; h += 1) { const c = fl[h]!, x = c % W, y = (c - x) / W;
+      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) { const X = x + dx, Y = y + dy; if (X < 0 || Y < 0 || X >= W || Y >= H) continue; const n = Y * W + X; if (!seen[n] && ns(n)) { seen[n] = 1; fl.push(n); } } }
+    const xs = fl.map((c) => c % W), ys = fl.map((c) => Math.floor(c / W));
+    const x0 = Math.min(...xs), x1 = Math.max(...xs), y1 = Math.max(...ys);
+    for (const c of fl) {
+      const x = c % W, y = Math.floor(c / W), row = (y1 - y) % 2 === 0 ? 1 : 0;
+      const t = x1 - x0 <= 1 ? tileAt(x === x0 ? quay : quayE, 0, 0) : tileAt(mp, x === x0 ? 1 : x === x1 ? 3 : 2, row);
+      if (t < 0) continue;
+      map.lowerTiles[c] = t; for (const L of [2, 3, 4] as const) setLayerTileAt(map, L, c, -1);
+      nsN += 1;
+    }
+  }
+  return { ns: nsN, ew };
 }
 
 type Pt = { x: number; y: number };

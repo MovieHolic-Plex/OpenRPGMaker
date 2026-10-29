@@ -9,6 +9,7 @@ import type { DungeonType } from "@/editor/dungeonKit/types";
 import { cloneProjectSharingSharedDictionaries } from "@/project/projectClone";
 import { createBuildRun } from "./buildRun";
 import type { PiAssistantV2Env } from "./env";
+import type { PlaceRecord } from "./types";
 
 /** 서로 다른 뼈대의 예시 — 한 공식(덩이+호수+아래 입구)을 되풀이하지 않게 입구 쪽·연결 모양·모양·물이 모두 다르다. */
 export const DUNGEON_DESIGN_EXAMPLES: readonly { readonly name: string; readonly ko: string; readonly design: DungeonDesign }[] = [
@@ -73,10 +74,10 @@ export const DUNGEON_DESIGN_EXAMPLES: readonly { readonly name: string; readonly
  * 그림 파일은 저장소에만 있다(출하본에는 없음) — 없으면 글만 준다.
  */
 export const DUNGEON_REFERENCE_PICTURES: readonly { readonly id: string; readonly themes: readonly DungeonType[]; readonly idea: string }[] = [
-  { id: "sea-cave", themes: ["cave", "ice"], idea: "바다 동굴 56×42 — 남동 해변으로 들어와 조간대 웅덩이 굴 → 기둥 홀 → 서북 밀수꾼 은닉처(끝). 가지로 바다와 이어진 밀수 부두·발광 이끼방." },
+  { id: "sea-cave", themes: ["cave", "ice"], idea: "바다 동굴 56×42 — 해변 쪽 입구로 들어와 조간대 웅덩이 굴 → 기둥 홀 → 가장 먼 구석 밀수꾼 은닉처(끝). 가지로 바다와 이어진 밀수 부두·발광 이끼방." },
   { id: "volcano-cave", themes: ["volcano"], idea: "화산 동굴 56×44 — 입구 → 옛 대장간 폐허 → 용암 폭포 굴 → 바위다리로 용암 강 건너 → 재 벌판·흑요석 제단(끝) → 입구로 도는 고리." },
-  { id: "castle-catacombs", themes: ["catacomb", "castle", "tower"], idea: "성 지하 감옥·카타콤 56×42 — 남쪽 입구 계단실 → 서쪽 감방동·간수실 → 고문실 → 동북 안쪽 뼈의 방 제단. 방은 복도로만 잇고 고립 방 없음." },
-  { id: "aqueduct-sewer", themes: ["sewer", "mine"], idea: "수도교 하수도 60×44 — 서남 입구 계단 홀 → 본수로 따라 걷기 → 다리로 건너기 → 밸브방(수위 장치) → 비밀문 뒤 교단 제단." },
+  { id: "castle-catacombs", themes: ["catacomb", "castle", "tower"], idea: "성 지하 감옥·카타콤 56×42 — 입구 계단실 → 한쪽 감방동·간수실 → 고문실 → 가장 안쪽 뼈의 방 제단. 방은 복도로만 잇고 고립 방 없음." },
+  { id: "aqueduct-sewer", themes: ["sewer", "mine"], idea: "수도교 하수도 60×44 — 입구 계단 홀 → 본수로 따라 걷기 → 다리로 건너기 → 밸브방(수위 장치) → 비밀문 뒤 교단 제단." },
   { id: "temple-ruins", themes: ["temple", "pyramid", "forest", "swamp", "otherworld"], idea: "신전 폐허 58×44 — 바깥 진입로·앞뜰·성림 → 무너진 열주 → 실내 대신랑·모자이크 홀 → 내전 제단 앞 내려가는 계단(끝)." },
 ];
 
@@ -110,6 +111,63 @@ export interface DungeonPartsOut {
   /** 참고 그림(버들항 던전 다섯)의 구성 한 줄씩 — 구성 아이디어, 베끼지 않는다. */
   readonly references: string;
   readonly note: string;
+  /** 이 게임에서 이미 지은 장소의 출구(들어오는 길)·이미 지은 굴의 설계 한 줄 — 입구 쪽과 「다르게」의 근거. */
+  readonly context?: string;
+}
+
+/** 입구 쪽 낱말 순서를 게임마다 돌린다 — 늘 south 가 먼저 적혀 있어 맨 요청의 입구가 남쪽으로 쏠렸다(2026-10-30 지문: 13/16). */
+export function sideOrder(gameKey: string): string[] {
+  const all = ["north", "east", "south", "west"];
+  const h = [...`side|${gameKey}`].reduce((a, c) => (Math.imul(a, 31) + c.charCodeAt(0)) >>> 0, 5) % all.length;
+  return [...all.slice(h), ...all.slice(0, h)];
+}
+
+const OPP: Record<string, "north" | "south" | "east" | "west"> = { north: "south", south: "north", east: "west", west: "east" };
+const KO_SIDE: Record<string, string> = { north: "북", south: "남", east: "동", west: "서" };
+
+/** 설계 한 줄(입구 쪽·방 수·역할@자리·높이) — 같은 게임의 다음 굴에 「이미 지은 굴」로 보여 준다. */
+export function designLine(d: DungeonDesign | undefined): string {
+  const rooms = (d?.rooms ?? []) as readonly { role?: unknown; at?: unknown; level?: unknown; shape?: unknown }[];
+  return `입구 ${String(d?.entrance ?? "-")} · ${rooms.length}방 ${rooms.map((r) => `${String(r.role ?? "?")}@${typeof r.at === "string" ? r.at : JSON.stringify(r.at ?? "-")}${r.shape ? `/${String(r.shape)}` : ""}${r.level ? `/단${String(r.level)}` : ""}`).join(" ")}`;
+}
+
+/** 이 게임에서 지은 장소들 → 던전 안내에 붙일 맥락: 바깥 장소의 출구 쪽(들어오는 길)과 이미 지은 굴 설계. */
+export function dungeonContext(places: Iterable<PlaceRecord>, name: string): string {
+  const seen = new Set<PlaceRecord>(); const exits: string[] = []; const caves: string[] = [];
+  for (const p of places) {
+    if (seen.has(p)) continue; seen.add(p);
+    if (p.spec.name === name) continue;
+    if (p.spec.dungeonDesign) caves.push(`「${p.spec.name}」 ${designLine(p.spec.dungeonDesign)}`);
+    else if (p.spec.exits?.length && p.spec.type !== "interior") exits.push(`「${p.spec.name}」 출구 ${p.spec.exits.join("·")} → 그 출구로 오는 굴이면 입구는 ${p.spec.exits.map((e) => OPP[e]).join("·")}`);
+  }
+  return [exits.length ? `이 게임의 바깥 장소: ${exits.join(" / ")}.` : "", caves.length ? `이미 지은 굴(같은 게임 — 방 수·입구 쪽·자리·모양을 다르게): ${caves.join(" / ")}.` : ""].filter(Boolean).join(" ");
+}
+
+/** 십자 공식: 방 넷 이상의 자리가 모두 나침반 낱말이고 가운데와 네 끝 중 셋 이상을 한 칸씩 채웠다(2026-10-30 terra 같은 요청 3판이 모두 s·center·e·w·n). */
+export function crossFormula(design: DungeonDesign | undefined): boolean {
+  const rooms = (design?.rooms ?? []) as readonly { at?: unknown }[];
+  if (rooms.length < 4) return false;
+  const word = (a: unknown) => (typeof a === "string" ? a.trim().toLowerCase() : "");
+  const norm: Record<string, string> = { n: "n", north: "n", s: "s", south: "s", e: "e", east: "e", w: "w", west: "w", c: "c", center: "c", centre: "c", middle: "c", 가운데: "c", 북: "n", 남: "s", 동: "e", 서: "w" };
+  const ws = rooms.map((r) => norm[word(r.at)] ?? (word(r.at) ? "other" : ""));
+  if (ws.some((w) => w === "" )) return false;
+  const card = new Set(ws.filter((w) => w === "n" || w === "s" || w === "e" || w === "w"));
+  return ws.includes("c") && card.size >= 3 && ws.filter((w) => w === "other").length <= 1;
+}
+
+/**
+ * 들어오는 길 → 입구 쪽(make_game 의 from·side, 또는 명세 exits). 설계가 다른 쪽을 적었으면 세계 배치가 이긴다(고치고 알린다).
+ * side = 부모에서 본 이 장소의 방향 → 입구는 그 반대 쪽.
+ */
+export function arrivalEntrance<T extends { name: string; exits?: readonly string[]; dungeonDesign?: DungeonDesign }>(spec: T, side?: string): { spec: T; note?: string } {
+  const want = side && OPP[side] ? OPP[side] : spec.exits?.length === 1 && OPP[spec.exits[0]!] ? spec.exits[0]! : undefined;
+  if (!want || !spec.dungeonDesign) return { spec };
+  const said = String(spec.dungeonDesign.entrance ?? "").toLowerCase();
+  if (said === want) return { spec };
+  const note = said ? `고침: 「${spec.name}」 입구를 ${said} 대신 ${want}(${KO_SIDE[want]}쪽)로 — ${side ? `부모 장소에서 ${side} 쪽으로 이어져 들어오는 길이 ${KO_SIDE[want]}쪽이다` : `명세 exits 가 ${want}`}.` : undefined;
+  // 입구 방 at 이 반대쪽 끝이면 입구 쪽과 맞지 않아 normalize 가 at 을 따른다 — at 을 지우고 쪽을 따르게 한다.
+  const rooms = (spec.dungeonDesign.rooms ?? []).map((r) => (/^entrance$|입구/u.test(String(r.role ?? "")) && said && said !== want ? { ...r, at: undefined } : r));
+  return { spec: { ...spec, dungeonDesign: { ...spec.dungeonDesign, entrance: want, rooms } }, ...(note ? { note } : {}) };
 }
 
 /** 게임마다 예시 순서를 돌린다 — 모두 첫 예시(남쪽 입구·북쪽 보스 갈래)에 기대어 비슷하게 짰다(2026-10-29 실조수 terra·argon). 설계는 여전히 모델이 한다. */
@@ -120,22 +178,27 @@ export function rotatedExamples(gameKey: string): typeof DUNGEON_DESIGN_EXAMPLES
 }
 
 /** 테마(낱말) → 재료(짧게). 방+통로 문법(지하묘지·성·신전…)은 모양·물을 크기·역할로만 옮긴다고 적는다. gameKey 로 예시 순서를 돌린다. */
-export function dungeonParts(theme: string, gameKey = ""): DungeonPartsOut {
+export function dungeonParts(theme: string, gameKey = "", context = ""): DungeonPartsOut {
   const type: DungeonType = inferDungeonType(theme).type ?? "cave";
   const g = GRAMMAR[type];
   const liquid = g.liquid === "lava" ? "용암" : g.liquid === "void" ? "허공(다리로 건넌다)" : g.liquid === "water" ? "물" : type === "ice" ? "얼어붙은 빙판(걷는다)" : "없음";
-  const grammar = g.grammar === "blob" ? "불규칙 굴 — 설계한 자리·모양 그대로 판다" : g.grammar === "rooms" ? "네모 방+통로 — 역할·크기·이웃·방향으로 옮긴다(ring 은 팔각 방)" : "미궁 격자 — 설계를 쓰지 않는다(type 을 바꿔라)";
+  const grammar = g.grammar === "blob" ? "불규칙 굴 — 설계한 자리·모양 그대로 판다" : g.grammar === "rooms" ? "네모 방+통로 — 역할·크기·이웃·방향으로 옮긴다(ring 은 팔각 방)" : "미궁 격자 — 설계한 방을 자리(at)·크기대로 격자 안 방으로 두고 그 사이를 갈림길 미로로 잇는다(보스·보물은 막다른 끝)";
   const ex = rotatedExamples(gameKey);
   const refs = referencePictures(type, gameKey);
+  const sides = sideOrder(gameKey);
   return {
     theme: type, label: g.label,
     vocab: `${grammar}. 모양 ${DESIGN_SHAPES.map((x) => `${x.id} ${x.ko}(${x.min})`).join(" · ")}. 역할 ${ROLES}. `
       + `물 none·pool·lake·stream(이 테마 액체 ${liquid}). 특징 ${Object.entries(DESIGN_FEATURES).map(([k, v]) => `${k} ${v}`).join(" · ")}. `
-      + `잇기 links[{from,to,kind winding·straight·narrow·wide}] 또는 connections linear·branch·loop·hub. 입구 south·north·west·east(숲·늪은 그 쪽 맵 끝이 출구). at 은 n·se·center 또는 "x,y"(0~1).`,
+      + `잇기 links[{from,to,kind winding·straight·narrow·wide}] 또는 connections linear·branch·loop·hub. `
+      + `입구 ${sides.join("·")} — 플레이어가 들어오는 길 쪽(이 굴로 오는 마을 출구·세계 배치에 맞춘다, 정해진 기본 쪽은 없다; 숲·늪은 그 쪽 맵 끝이 출구). `
+      + `높이 level 0 바닥 · 1 한 단 · 2 두 단 — 턱 위 제단·내려다보는 둥지·물 아래 낮은 굴처럼 방마다 준다. 높이가 다른 방 사이 길에 버들항 돌계단(마을 지형과 같은 조각)을 놓는다. `
+      + `at 은 "x,y"(0~1, 왼쪽 위 0,0)로 굴의 흐름에 맞게 — n·s·e·w·center 낱말만으로 한 칸씩 채우면 십자 공식이 된다.`,
     examples: ex.slice(0, 2),
     moreExamples: ex.slice(2).map((e) => e.ko).join(" / "),
     references: refs.map((r) => `${r.id}: ${r.idea}`).join(" / "),
-    note: "방 수는 굴의 크기·요청에 맞게 네가 정한다(작은 굴 3~4 · 보통 5~7 · 큰 굴 8~10 — 입구·보스 둘만 잇는 일자 굴은 걸을 거리가 없다). 예시·참고 그림은 구성 아이디어일 뿐 — 베끼지 말고 요청(무엇이 사는 굴인지·어디가 위험한지·무엇을 숨겼는지)에 맞게 방 수·자리·모양·물·길·입구 쪽을 새로 짠다. 검수는 예시·참고 그림과 거의 같은 맵을 반복으로 친다.",
+    ...(context ? { context } : {}),
+    note: "방 수는 굴의 크기·요청에 맞게 네가 정한다(작은 굴 3~4 · 보통 5~7 · 큰 굴 8~10 — 입구·보스 둘만 잇는 일자 굴은 걸을 거리가 없다). 예시·참고 그림은 구성 아이디어일 뿐 — 베끼지 말고 요청(무엇이 사는 굴인지·어디가 위험한지·무엇을 숨겼는지)에 맞게 방 수·자리·모양·물·길·입구 쪽을 새로 짠다. 검수는 예시·참고 그림과 거의 같은 맵, 그리고 흔한 십자 공식(입구 한쪽 끝 · 가운데 회랑 · 양옆 곁굴 · 반대쪽 끝 보스)을 반복으로 친다.",
   };
 }
 
@@ -153,7 +216,7 @@ async function examplePicture(env: PiAssistantV2Env, type: DungeonType, design: 
   try { env.ctx.project = scratch.project; return await env.render(mapId, 0, 0, m.width, m.height); } catch { return undefined; } finally { env.ctx.project = keep; }
 }
 
-export function createDungeonPartsVerb(env: PiAssistantV2Env): PiToolShape {
+export function createDungeonPartsVerb(env: PiAssistantV2Env, places?: () => Iterable<PlaceRecord>): PiToolShape {
   const pictures = new Map<string, string>();
   return {
     name: "dungeon_parts", label: "던전 재료 보기", concurrency: "shared",
@@ -161,7 +224,7 @@ export function createDungeonPartsVerb(env: PiAssistantV2Env): PiToolShape {
     parameters: { type: "object", properties: { theme: { type: "string", description: "던전 테마 낱말 — 예: 동굴, 화산, 마계, 숲, 지하묘지" } }, required: ["theme"] },
     async execute(_id, params) {
       const gameKey = String(env.request.projectKey ?? env.ctx.project.meta.title ?? "");
-      const out = dungeonParts(String((params as { theme?: string }).theme ?? "cave"), gameKey);
+      const out = dungeonParts(String((params as { theme?: string }).theme ?? "cave"), gameKey, places ? dungeonContext(places(), "") : "");
       const result = text({ ok: true, ...out, how: "make_place({spec:{type:'cave'|'dungeon', name, theme, dungeonDesign:{entrance, rooms:[{id, role, size, shape, dir?, at, water?, features?}], links:[{from,to,kind?}]}}}). 방마다 at 을 서로 다르게, 입구 하나·보스 하나. 함수는 겹침·길·도달·크기 모순만 고쳐 「고침:」으로 알린다." });
       // 그림은 한 장으로 합친다(참고 그림 둘 + 첫 예시를 지금 빌더로 지은 그림, 반 크기로 나란히).
       // Gemini(argon·flash)는 큰 그림 여러 장을 받은 바로 다음 차례에 제공자 오류·글로 적은 tool_call 을 자주 냈다(2026-10-29 던전 6판 중 4판, 2026-10-30 실내 안내 동사).
@@ -247,6 +310,14 @@ export function screenDungeonSpec<T extends { name: string; mapId?: string; dung
   if (out.dungeonDesign && !real(out.dungeonDesign)) { const { dungeonDesign: _d, ...rest } = out; out = rest as T; }
   if (out.floorDesigns) { const fd = out.floorDesigns.filter(real); out = { ...out, floorDesigns: fd.length ? fd : undefined }; }
   const copied = [out.dungeonDesign, ...(out.floorDesigns ?? [])].map(copiedExample).find(Boolean);
+  if (!copied && [out.dungeonDesign, ...(out.floorDesigns ?? [])].some(crossFormula)) {
+    const key = `cross:${out.name}`;
+    if (!bounced.has(key)) {
+      bounced.add(key);
+      return { spec: out, bounce: { ok: false, notFailure: true, summary: `아직 짓지 않았다(실패 아님) — 「${out.name}」 설계가 흔한 십자 공식(가운데 방 + 네 끝 낱말 자리 n·s·e·w 를 한 방씩)이다. 같은 요청마다 같은 굴이 나온다. 이 굴의 사연(무엇이 살고·어디로 흘러가고·무엇을 숨겼는지)에 맞게 방 수와 자리를 "x,y"(0~1) 좌표로 다시 짜라 — 한쪽으로 치우친 긴 굴, 둘로 갈라지는 갈래, 높이(level)가 다른 턱 위 방처럼. spec.dungeonDesign 을 다시 채워 make_place 를 바로 다시 부른다.` } };
+    }
+    notes.push("설계가 십자 공식이다(한 번 되돌려 보낸 뒤에도) — 그대로 지었다.");
+  }
   if (copied) {
     const key = `copy:${out.name}`;
     if (!bounced.has(key)) {

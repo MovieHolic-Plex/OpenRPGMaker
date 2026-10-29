@@ -588,7 +588,8 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
     if (refused) missing.push(`${type} 던전 그림이 이 칩셋에 없다 — 가장 가까운 대체: cave 동굴(type 을 cave 로 바꿔 다시 요청)`);
     return { ok: false, mapIds: [], summary: `던전 짓기 실패: ${result.summary}`, warnings: [...warnings, ...(result.issues ?? []).map((i) => i.message)], missingArt: missing, calls: run.calls.slice(firstCall), state: prev };
   }
-  warnings.push(...(result.warnings ?? []));
+  // 쓰기 도구의 경고(「고침:」 줄 포함)는 diff.warnings 로 온다 — result.warnings 만 읽어 설계 조화 보고가 조수에게 가지 않았다(2026-10-30).
+  warnings.push(...(result.warnings ?? []), ...((result as { diff?: { warnings?: string[] } }).diff?.warnings ?? []).filter((w) => !(result.warnings ?? []).includes(w)));
   // 도구가 손잡이로 못 하는 것: 층마다 보이는 적 수, 맨 안쪽 상자. 잡몹 그룹은 실제로 놓인 적에서 읽는다.
   const floorData = (Array.isArray(data.floorData) ? data.floorData : [data]) as Record<string, unknown>[];
   const project = into.ctx.project;
