@@ -9,6 +9,7 @@ import { npcMoveDurationMs, npcPageMoveIntervalMs } from '@/project/characterMot
 import { canMove, isPassable } from '@/project/collision';
 import { genId } from '@/util/id';
 import { buildMapPlacementContext } from '@/ai/mapPlacementContext';
+import { normalizeLightingState } from '@/project/lightingRules';
 import { ToolError, type ToolDefinition, type ToolExecResult, type JsonSchema } from './types';
 import { inMapBounds, requireMap } from './mapHelpers';
 import { resolveGraphic, type GraphicSpec } from './eventCompile';
@@ -648,16 +649,27 @@ export const FIELD_ENEMY_TOOLS: readonly ToolDefinition[] = [
       '추격하는 적(보면 쫓아오는 필드 적·순찰 경비병 — movement chase 페이지)의 「알아채기·다가오기」만 조율한다. 다른 것(그림·전투·순찰 길)은 그대로. ' +
       'sightRange 시야(칸) · coneDegrees 부채꼴 각(넓을수록 곁눈으로도 봄) · chaseStepMs 쫓는 동안 한 칸 시간(작을수록 빨리 다가옴, 주인공 걷기 160) · alertMs 알아챈 뒤 멈춤(짧을수록 빨리 덤빔) · searchMs 놓친 뒤 뒤지는 시간(추격 기억) · giveUpRange 포기 거리 · rush 알아채면 두 배 빠르기로 달려와 덮침. ' +
       '「몬스터가 보면 순식간에 달려와 전투를 걸게」「몬스터가 보면 훨씬 빨리 다가오게」「밤 순찰을 더 예민하게, 더 넓게 찾게」 요청의 정본. eventIds 를 주면 그 적만, 생략하면 mapIds(생략 = 모든 맵)의 추격 적 전부. ' +
-      '순찰 경로가 있으면 칸 사이 쉼을 늘려 시야 밖 순찰 걸음은 예전 빠르기를 지킨다. 시야를 넓힐 때 입구가 시야+1 칸 안이면 그 적만 시야를 줄인다(들어서자마자 덮치지 않게).',
+      '순찰 경로가 있으면 칸 사이 쉼을 늘려 시야 밖 순찰 걸음은 예전 빠르기를 지킨다. 시야를 넓힐 때 입구가 시야+1 칸 안이면 그 적만 시야를 줄인다(들어서자마자 덮치지 않게). ' +
+      '잠입 미니게임(경비 시야 피하기)이면 visionLight:{} 로 적마다 바라보는 쪽 바닥에 부채꼴 등불 빛을 깔아 시야를 눈에 보이게 한다 — 그 맵 조명(set_scene_mood)을 정한 다음에 부른다(조명을 나중에 다시 깔면 빛이 지워진다).',
     parameters: schema({
       mapIds: { type: 'array', items: { type: 'string' }, description: '고칠 맵(생략 = 모든 맵)' },
       eventIds: { type: 'array', items: { type: 'string' }, description: '고칠 적 이벤트 id(생략 = 맵의 추격 적 전부)' },
       ...FIELD_DETECTION_SCHEMA,
+      visionLight: {
+        type: 'object',
+        description: '잠입용 「보이는 시야」: 적마다 바라보는 쪽으로 부채꼴 등불 빛을 바닥에 깐다(반경 = 시야 칸, 각 = coneDegrees 또는 이미 정한 부채꼴, 기본 90°). 돌아서면 빛도 같이 돈다 — 플레이어가 어디가 위험한지 눈으로 본다. 맵이 밝으면 빛이 안 보이므로 조명이 없는 맵은 어둡게(ambient 0.55) 깐다. {} 만 줘도 된다.',
+        properties: { color: { type: 'string', description: '빛 색(기본 #ffcf7a 등불)' }, intensity: { type: 'number', description: '0..1(기본 0.85)' } },
+      },
     }, []),
-    invalidArgsExample: { mapIds: ['map_field_1'], sightRange: 7, coneDegrees: 140, alertMs: 300, searchMs: 6000, rush: true },
+    invalidArgsExample: { mapIds: ['map_field_1'], sightRange: 7, coneDegrees: 140, alertMs: 300, searchMs: 6000, rush: true, visionLight: {} },
     run(draft, args): ToolExecResult {
       const tuning = readFieldDetectionArgs(args);
-      if (Object.keys(tuning).length === 0) throw new ToolError('바꿀 값(sightRange·coneDegrees·chaseStepMs·alertMs·searchMs·giveUpRange·rush)을 하나 이상 주세요.', { code: 'invalid-args' });
+      const vision = args.visionLight === undefined || args.visionLight === false ? undefined : (typeof args.visionLight === 'object' && args.visionLight !== null ? args.visionLight as Record<string, unknown> : {});
+      if (Object.keys(tuning).length === 0 && !vision) throw new ToolError('바꿀 값(sightRange·coneDegrees·chaseStepMs·alertMs·searchMs·giveUpRange·rush·visionLight)을 하나 이상 주세요.', { code: 'invalid-args' });
+      const visionColor = typeof vision?.color === 'string' && /^#[0-9a-f]{6}$/iu.test(vision.color) ? vision.color : '#ffcf7a';
+      const visionIntensity = vision?.intensity === undefined ? 0.85 : Number(vision.intensity);
+      if (vision && (!Number.isFinite(visionIntensity) || visionIntensity < 0 || visionIntensity > 1)) throw new ToolError('visionLight.intensity 는 0..1 입니다.', { code: 'invalid-args' });
+      const lit: string[] = [];
       const wantedMaps = Array.isArray(args.mapIds) ? (args.mapIds as unknown[]).map(String) : undefined;
       for (const id of wantedMaps ?? []) if (!draft.maps[id]) throw new ToolError(`맵을 찾을 수 없습니다: ${id}`, { code: 'map-not-found' });
       const wantedEvents = Array.isArray(args.eventIds) ? new Set((args.eventIds as unknown[]).map(String)) : undefined;
@@ -681,10 +693,23 @@ export const FIELD_ENEMY_TOOLS: readonly ToolDefinition[] = [
             touched = true;
           }
           if (touched) changed.push(`${map.id}/${event.id}`);
+          if (touched && vision) {
+            const movement = (event.pages ?? []).find((page) => page.movement.type === 'chase')!.movement;
+            const range = movement.sight?.range ?? movement.sightRange ?? 5;
+            const degrees = movement.sight?.facing === 'cone' ? movement.sight.coneDegrees ?? 90 : tuning.coneDegrees ?? 90;
+            const base = normalizeLightingState(map.defaultLighting ?? { ambient: 0.55, color: '#0b0f1e', sources: [] });
+            const id = `vision_${event.id}`;
+            map.defaultLighting = normalizeLightingState({
+              ...base,
+              sources: [...base.sources.filter((source) => source.id !== id), { id, at: { eventId: event.id }, radius: range + 0.5, intensity: visionIntensity, color: visionColor, cone: { degrees } }],
+            });
+            lit.push(`${event.id}(${range}칸·${degrees}°)`);
+          }
         }
       }
       if (changed.length === 0) throw new ToolError('추격하는 적이 없습니다 — place_field_enemy behavior:chase 나 tune_field_enemies 로 먼저 추격형으로 만드세요.', { code: 'field-enemy-none' });
       const parts = [tuning.sightRange !== undefined ? `시야 ${tuning.sightRange}칸` : '', tuning.coneDegrees !== undefined ? `부채꼴 ${tuning.coneDegrees}°` : '', tuning.chaseStepMs !== undefined ? `추격 ${tuning.chaseStepMs}ms/칸` : '', tuning.alertMs !== undefined ? `알아챔 ${tuning.alertMs}ms` : '', tuning.searchMs !== undefined ? `수색 ${tuning.searchMs}ms` : '', tuning.giveUpRange !== undefined ? `포기 ${tuning.giveUpRange}칸` : '', tuning.rush !== undefined ? (tuning.rush ? `돌진 ${tuning.rushSteps ?? RUSH_STEPS}칸 ${tuning.rushStepMs ?? RUSH_STEP_MS}ms/칸` : '돌진 끔') : ''].filter(Boolean);
+      if (lit.length) parts.push(`시야 등불 ${lit.join(', ')}`);
       return {
         summary: `추격 적 ${changed.length}마리 조율 — ${parts.join(' · ')}`,
         data: { changed, tuning },

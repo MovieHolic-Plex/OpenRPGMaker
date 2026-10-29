@@ -93,14 +93,48 @@ const CELL_ROOM = {
   lines: [{ id: "bars", cells: Array.from({ length: 12 }, (_, i) => ({ x: i + 1, y: 6 })).filter((c) => c.x !== CELL.gate.x) }],
 };
 
-/** 막사(stealth_guard_patrol 20×15) — 입구는 남쪽 (10,13) 근처, 금고(16,5). 북동 벽에 광장으로 오르는 사다리. */
+// ── 막사 평면(28×15) ─────────────────────────────────────────────────────
+// 북벽에 알코브 넷(침상 셋 x1..4·8..11·15..18, 무기고 x22..26 — 알코브 바닥 y3·y4), 그 사이 벽 기둥(x5..7·12..14·19..21)의 앞면이 y3·y4.
+// 홀 y5..13. 야경꾼 둘: 북쪽 통로 y7(6↔24, 10·24·6 에서 멈춰 고개를 돌림) · 남쪽 통로 y10(17↔4). 남벽 x3 이 감방으로 내려가는 계단.
+const BARRACKS_PLAN = [
+  "############################",
+  "#....###....###....###.....#",
+  "#....###....###....###.....#",
+  "#..........................#",
+  "#..........................#",
+  "#..........................#",
+  "#..........................#",
+  "#..........................#",
+  "#..........................#",
+  "#..........................#",
+  "#..........................#",
+  "#..........................#",
+  "#..........................#",
+  "#..........................#",
+  "###.########################",
+];
 const BARRACKS = {
-  entry: { x: 10, y: 13 } as Cell,
-  ladder: { x: 18, y: 3 } as Cell,
-  ladderFoot: { x: 18, y: 5 } as Cell,
-  /** 순찰 기사가 오가는 통로(상자 두 줄 사이) 양 끝. */
-  patrol: [{ x: 3, y: 10 }, { x: 15, y: 10 }] as Cell[],
+  entry: { x: 3, y: 13 } as Cell,
+  exit: { x: 3, y: 14 } as Cell,
+  /** 첫 침상 알코브 — 중간 지점(여기 닿은 뒤 붙잡히면 이 칸으로). */
+  mid: { x: 2, y: 4 } as Cell,
+  nooks: [
+    { x0: 1, x1: 4, cells: [1, 2, 3, 4].map((x) => ({ x, y: 4 }) as Cell) },
+    { x0: 8, x1: 11, cells: [] as Cell[] },
+    { x0: 15, x1: 18, cells: [] as Cell[] },
+    { x0: 22, x1: 26, cells: [] as Cell[] },
+  ],
+  /** 압수품 큰 상자(2칸, 발밑 줄 y3). */
+  chest: { x: 23, y: 3 } as Cell,
+  /** 사다리(벽 가구, 발밑 y3) — 앞 칸 (26,4)에서 조사. */
+  ladder: { x: 26, y: 3 } as Cell,
+  pillars: [{ x: 9, y: 9 }, { x: 18, y: 9 }] as Cell[],
+  guards: [
+    { id: "ev_fs2_barracks_watch_n", name: "야경꾼(북쪽 통로)", at: { x: 6, y: 7 }, sight: 5, waypoints: [{ x: 10, y: 7 }, { x: 24, y: 7 }, { x: 10, y: 7 }], pauseBeats: 5, lookAround: true, hides: true },
+    { id: "ev_fs2_barracks_watch_s", name: "야경꾼(남쪽 통로)", at: { x: 17, y: 10 }, sight: 4, waypoints: [{ x: 4, y: 10 }], pauseBeats: 4, lookAround: false, hides: false },
+  ],
 };
+const SW_BARRACKS_MID = "sw_fs2_barracks_mid";
 /** 광장(통금의 밤) — 사다리를 오르면 서는 칸: 광장 동쪽 초소 뒤 골목. */
 const HUB_ARRIVE: Cell = { x: 52, y: 25 };
 /** 뚜껑 문 골목(47..54, 25)에서 광장으로 나가는 유일한 틈 — (49,24)→(49,23). */
@@ -395,64 +429,142 @@ function cellEvents(map: GameMap): void {
 // ════════════════════════════════════════════════════════════════════
 
 function barracks(project: Project, exec: Exec): void {
-  exec(project, "create_map", { id: FS2_BARRACKS_ID, name: "심문회 초소 · 막사", width: 20, height: 15, tilesetId: "atlas_biome_interior" });
-  exec(project, "author_map_puzzle", {
-    mapId: FS2_BARRACKS_ID, presetId: "stealth_guard_patrol", puzzleId: "fs2_barracks", title: "초소 막사",
-    solveSwitchId: SW_BARRACKS,
-    hintText: "(근무표) 「깃발 종이 울리면 같은 색 초소가 살필 것.\n붉은 종은 붉은 초소, 푸른 종은 푸른 초소.\n등불 비추는 곳으로는 아무도 지나가지 말 것.」",
-    reward: { itemId: FS2_GEAR_ITEM, itemName: "압수품 꾸러미", itemDescription: "초소에서 빼앗긴 짐. 카엘의 검도, 엘레나의 책도 그대로다." },
-    // 들키면 경비 둘과 싸우고(도망 불가) 감방으로 다시 끌려간다 — 실수에 값을 치른다.
-    // 들키면 감방으로 끌려간다. 경비와의 전투는 뺐다 — 쉬운 전투가 매번 금화를 줘서, 붙잡히는 게 벌이 아니라 벌이였다(독립 판정: 29번 붙잡혀 696G).
-    failPenalty: { sendTo: { mapId: FS2_CELL_ID, x: CELL.arrive.x, y: CELL.arrive.y }, text: "경비병: 「거기 누구냐! 탈옥이다!」\n등불에 들켜 지하 감방으로 도로 끌려갔다." },
-    // 프리셋 기본 대사(「땡그랑— …돌아섰다」「퍼즐 해독 보상! …과(와)」)를 이 장면 말투로 — 도구의 messages 로 바꾼다.
-    messages: {
-      reward: "「{item}」와 {gold}G를 되찾았다.",
-      replace: [
-        { from: "땡그랑— 붉은 깃발 아래 경비병이 종소리 쪽으로 돌아섰다.", to: "땡그랑. 붉은 깃발 밑 경비병이\n종소리 쪽으로 돌아선다." },
-        { from: "땡그랑— 푸른 깃발 아래 경비병이 종소리 쪽으로 돌아섰다.", to: "땡그랑. 푸른 깃발 밑 경비병이\n종소리 쪽으로 돌아선다." },
-        { from: "경비병들이 서로를 바라보는 사이 금고 상자를 열었다!", to: "경비병들이 서로 마주 보는 사이\n금고 상자를 연다." },
-        { from: "경비병: 「방금 종이 울렸지…?」", to: "경비병: 「방금 종 울렸지?」" },
-      ],
-    },
+  // 막사 안 — 북벽에 침상 알코브 넷(서쪽 셋 = 2층 침대, 동쪽 끝 = 무기고: 압수품 상자·사다리), 가운데 넓은 홀, 남쪽은 식탁·무기 걸이.
+  // 알코브 사이 벽 기둥이 시야를 끊는다 — 홀을 가로지를 때만 등불에 걸린다.
+  const built = exec(project, "build_hand_interior_room", {
+    mapId: FS2_BARRACKS_ID, name: "심문회 초소 · 막사", tileset: "atlas_biome_interior",
+    plan: BARRACKS_PLAN, floor: "flag", wall: "stone", ceiling: "dark",
+    zones: BARRACKS.nooks.map((n) => ({ x0: n.x0, y0: 3, x1: n.x1, y1: 4, floor: "dplank" })),
+    objects: [
+      ...BARRACKS.nooks.slice(0, 3).flatMap((n) => [{ id: "bunk bed", x: n.x0, y: 3 }, { id: "bunk bed", x: n.x0 + 2, y: 3 }]),
+      // 무기고 알코브: 칼 걸이 · 압수품 상자(불빛) · 창 걸이 · 사다리
+      { id: "sword rack", x: 22, y: 3 },
+      { id: "treasure chest big", x: BARRACKS.chest.x, y: BARRACKS.chest.y },
+      { id: "staff rack", x: 25, y: 3 },
+      { id: "ship ladder", x: BARRACKS.ladder.x, y: BARRACKS.ladder.y },
+      // 알코브 사이 벽 기둥 앞면 — 무기 걸이·횃불·방패, 마지막 기둥엔 근무표
+      ...[5, 12, 19].flatMap((x) => [{ id: "weapon rack", x, y: 3 }, { id: "wall torch", x: x + 1, y: 3 }, { id: x === 19 ? "notice board" : "shield", x: x + 2, y: 3 }]),
+      // 홀 가운데 돌기둥 — 기둥 그늘(등불을 가린다)
+      ...BARRACKS.pillars.map((c) => ({ id: "column stone", x: c.x, y: c.y })),
+      // 남쪽: 식탁 둘과 걸상, 동쪽 훈련 구석
+      { id: "stool", x: 6, y: 13 }, { id: "stool", x: 9, y: 13 }, { id: "stool", x: 14, y: 13 }, { id: "stool", x: 17, y: 13 },
+      { id: "spear rack", x: 26, y: 11 }, { id: "armor stand", x: 26, y: 12 }, { id: "training dummy", x: 23, y: 13 },
+      { id: "barrel stack", x: 20, y: 13 }, { id: "weapon crate", x: 26, y: 13 }, { id: "arrow barrel", x: 1, y: 13 },
+    ],
+    tables: [{ style: "dining", x: 6, y: 11, w: 4, h: 2 }, { style: "dining", x: 14, y: 11, w: 4, h: 2 }],
+    goods: [{ id: "mug", x: 7, y: 11 }, { id: "bottle", x: 15, y: 11 }],
+    start: [BARRACKS.entry],
+    links: [{ x: BARRACKS.exit.x, y: BARRACKS.exit.y, toMapId: FS2_CELL_ID, toX: CELL.arrive.x, toY: CELL.arrive.y, direction: "down" }],
+  }) as { mapId?: string } | undefined;
+  void built;
+  exec(project, "set_map_properties", { mapId: FS2_BARRACKS_ID, battleBackground: "battle-scenery-cave" });
+  (M(project, FS2_BARRACKS_ID) as unknown as Rec).bgm = { mode: "custom", resourceId: "cc0-bgm-rtp-mys-002" };
+  // 어둠 — 벽 횃불은 작게, 압수품 상자는 무기고에서 노랗게 빛난다(들어서자마자 목표가 보인다).
+  exec(project, "set_lighting_volume", {
+    mapId: FS2_BARRACKS_ID, ambient: 0.62, color: "#0a0e1c", applyMode: "map",
+    sources: [
+      ...[6, 13, 20].map((x, i) => ({ id: `torch${i}`, at: { x, y: 4 }, radius: 1.8, intensity: 0.55, color: "#ffb860", flicker: true })),
+      { id: "gear", at: { x: BARRACKS.chest.x + 1, y: BARRACKS.chest.y }, radius: 2.6, intensity: 0.95, color: "#ffd780", flicker: true },
+      { id: "ladder", at: { x: BARRACKS.ladder.x, y: 2 }, radius: 1.6, intensity: 0.5, color: "#9fb4ff" },
+    ],
   });
-  // 야경꾼 — 두 상자 줄 사이 통로를 천천히 오간다(난이도 곡선: 왕도에는 기사 대신 약한 야경꾼). 등 뒤로, 그가 끝에서 돌아설 때 건넌다.
-  // 보면 짧게 달려와 덮친다(돌진 4칸). 붙잡히면 전투 없이 감방으로 끌려간다.
-  const watch = exec(project, "make_chase_scene", {
-    mapId: FS2_BARRACKS_ID,
-    chaser: { at: BARRACKS.patrol[0], graphic: { selectionId: `charset:${WATCHMAN_CHIP.textureKey}:${WATCHMAN_CHIP.characterIndex}` }, speed: 5, sightRange: 3 },
-    patrol: { waypoints: BARRACKS.patrol },
-    pursuit: { scope: "map", doorDelayMs: 0, searchMs: 1500, onLost: "return" },
-    caughtPenalty: { sendTo: { mapId: FS2_CELL_ID, x: CELL.arrive.x, y: CELL.arrive.y }, text: "야경꾼: 「거기 서! 탈옥이다!」\n야경꾼에게 붙잡혀 지하 감방으로 끌려갔다." },
-    checkpointOnEntry: false,
-    mood: false,
-  }) as { eventId?: string } | undefined;
-  if (watch?.eventId) {
-    exec(project, "set_field_detection", { mapIds: [FS2_BARRACKS_ID], eventIds: [watch.eventId], alertMs: 200, rush: true, rushSteps: 4, rushStepMs: 100, searchMs: 1500 });
-    const ev = M(project, FS2_BARRACKS_ID).events.find((e) => e.id === watch.eventId);
-    if (ev) (ev as unknown as Rec).name = "야경꾼";
+  ensureItemRecord(project, exec);
+  ensureSwitch(project, SW_BARRACKS_MID, "B1: 막사 첫 침상 알코브(중간 지점)");
+  // 야경꾼 둘 — 정해진 길을 오가며 끝에서 멈춰 고개를 돌린다(규칙이 보이는 순찰). 들키면 「!」 뒤 곧장 덮친다.
+  // 붙잡히면: 첫 알코브 전엔 지하 감방으로, 그 뒤엔 첫 알코브 침상 앞으로.
+  const caught = {
+    text: "야경꾼: 「거기 서! 탈옥이다!」",
+    sendText: "붙잡혀 지하 감방으로 도로 끌려갔다.",
+    sendTo: { mapId: FS2_CELL_ID, x: CELL.arrive.x, y: CELL.arrive.y },
+    checkpoint: { switchId: SW_BARRACKS_MID, sendTo: { mapId: FS2_BARRACKS_ID, x: BARRACKS.mid.x, y: BARRACKS.mid.y }, text: "뻗어 오는 손을 뿌리치고 침상 밑으로 굴러 들어갔다.\n…발소리가 멀어진다." },
+  };
+  const guardChip = { selectionId: `charset:${WATCHMAN_CHIP.textureKey}:${WATCHMAN_CHIP.characterIndex}` };
+  const guardIds: string[] = [];
+  for (const g of BARRACKS.guards) {
+    const made = exec(project, "make_chase_scene", {
+      mapId: FS2_BARRACKS_ID, id: g.id,
+      chaser: { at: g.at, graphic: guardChip, speed: 5, sightRange: g.sight },
+      patrol: { waypoints: g.waypoints, pauseBeats: g.pauseBeats, lookAround: g.lookAround },
+      pursuit: { scope: "map", doorDelayMs: 0, searchMs: 1800, onLost: "return" },
+      caughtPenalty: caught,
+      // 침상(2층 침대) 앞에서 조사하면 밑으로 숨는다 — 숨는 걸 못 본 야경꾼은 지나간다.
+      ...(g.hides ? { hidingSpots: BARRACKS.nooks.slice(0, 3).flatMap((n) => [n.x0, n.x0 + 1, n.x0 + 2, n.x0 + 3].map((x) => ({ x, y: 3 }))) } : {}),
+      checkpointOnEntry: false,
+      mood: false,
+    }) as { eventId?: string } | undefined;
+    if (!made?.eventId) throw new Error("[fallen-star act2] 막사 야경꾼을 못 만듦");
+    guardIds.push(made.eventId);
+    const ev = M(project, FS2_BARRACKS_ID).events.find((e) => e.id === made.eventId);
+    if (ev) (ev as unknown as Rec).name = g.name;
   }
-  // 처음 들어서면 엘레나가 방의 규칙을 짚는다 — 근무표·등불 빛·순찰(독립 판정: 입구 두 칸 옆 근무표를 끝내 안 읽고 29번 붙잡혔다).
+  // 시야 = 앞쪽 90° 부채꼴. 바닥에 그 부채꼴 등불 빛이 깔려 어디가 위험한지 보인다(visionLight).
+  exec(project, "set_field_detection", {
+    mapIds: [FS2_BARRACKS_ID], eventIds: guardIds,
+    coneDegrees: 90, alertMs: 450, rush: true, rushSteps: 5, rushStepMs: 120, chaseStepMs: 240, searchMs: 1800,
+    visionLight: { color: "#ffd27a", intensity: 0.85 },
+  });
+  // 처음 들어서면 엘레나가 방의 규칙을 짚는다 — 등불 부채꼴·멈췄다 돌아서는 순찰·침상 밑·목표.
   const hintId = "ev_fs2_barracks_enter";
   addEv(project, FS2_BARRACKS_ID, hintId, "막사에 들어섬", { x: 0, y: 0 }, [
     page(`${hintId}_p`, "막사 규칙", [sw("sw_fs2_barracks_entered", false)], [
       setSw("sw_fs2_barracks_entered"),
-      say(ELENA, "(속삭임) 카엘, 입구 옆에 근무표가 붙어 있어.\n그것부터 읽어 보자."),
-      say(ELENA, "(속삭임) 등불 빛 닿는 데는 밟지 마.\n순찰이 등 돌렸을 때 상자 사이로 건너가."),
-      // 독립 판정(2회차): 근무표의 「깃발 종」이 벽 깃발 장식으로만 읽혀 끝내 못 찾았다 — 동사(줄을 당긴다)를 짚는다.
-      say(ELENA, "(속삭임) 벽 깃발 밑 종 줄을 당기면\n같은 색 초소 경비가 소리 쪽을 돌아봐."),
+      say(ELENA, "(속삭임) 저기, 오른쪽 위 무기고.\n불빛 새는 상자에 우리 짐이 있어. 사다리도 그 옆이야."),
+      say(ELENA, "(속삭임) 야경꾼 둘이 돌아. 손등불이 비추는\n바닥은 밟지 마. 끝까지 가면 멈췄다가 돌아서."),
+      say(ELENA, "(속삭임) 등 돌렸을 때 왼쪽 벽을 타고 올라가자.\n침상 앞에서 조사하면 밑으로 숨을 수 있어."),
     ], { trigger: { kind: "auto" } }),
   ]);
   ensureSwitch(project, "sw_fs2_barracks_entered", "B1: 막사에 처음 들어섬(규칙 귀띔)");
+  // 중간 지점 — 첫 침상 알코브에 닿으면(한 번) 엘레나가 숨을 고른다. 그 뒤로 붙잡히면 여기서 다시 한다.
+  BARRACKS.nooks[0]!.cells.forEach((c, i) => {
+    const id = `ev_fs2_barracks_mid_${i}`;
+    addEv(project, FS2_BARRACKS_ID, id, "첫 침상 알코브(중간 지점)", c, [
+      page(`${id}_p`, "숨 고르기", [sw(SW_BARRACKS_MID, false)], [
+        setSw(SW_BARRACKS_MID),
+        se("cc0-se-orp-inventory-cloth"),
+        say(ELENA, "(속삭임) …휴. 여기 침상 그늘이면 안 보여.\n이제 알코브에서 알코브로 건너가자."),
+      ], { priority: "below", trigger: { kind: "playerTouch" } }),
+    ]);
+  });
   ensureSwitch(project, SW_MEDS, "B1: 되찾은 짐에서 약을 챙김");
-  // 북동 벽 사다리 — 광장 초소 뒷골목으로. 압수품을 되찾기 전엔 「짐부터」.
-  exec(project, "stamp_object", { objectId: "kit:atlas_biome_interior/hand-interior:ship ladder", mapId: FS2_BARRACKS_ID, x: BARRACKS.ladder.x, y: BARRACKS.ladder.y });
-  exec(project, "set_map_properties", { mapId: FS2_BARRACKS_ID, battleBackground: "battle-scenery-cave" });
-  (M(project, FS2_BARRACKS_ID) as unknown as Rec).bgm = { mode: "custom", resourceId: "cc0-bgm-rtp-mys-002" };
+  // 압수품 상자 — 열면 뚜껑이 젖혀지고(stage_map_reveal) 짐을 되찾는다. 두 칸 다 조사로 열린다.
+  // 닫힌 큰 상자 그림 칸(6533..6536)을 열린 그림(6537..6540)으로 — 지은 맵에서 실제 자리·층을 찾아 stage_map_reveal tiles 로 넘긴다.
+  const LAYER_OF = { lowerTiles: "lower", lowerOverlayTiles: "lower2", upperTiles: "upper", upperOverlayTiles: "upper2" } as const;
+  const bm = M(project, FS2_BARRACKS_ID) as unknown as Record<string, number[] | undefined>;
+  const openTiles: Rec[] = [];
+  for (let y = BARRACKS.chest.y - 1; y <= BARRACKS.chest.y; y += 1) for (let x = BARRACKS.chest.x; x <= BARRACKS.chest.x + 1; x += 1) {
+    for (const [key, layer] of Object.entries(LAYER_OF)) {
+      const tile = bm[key]?.[y * M(project, FS2_BARRACKS_ID).width + x];
+      if (tile !== undefined && tile >= 6533 && tile <= 6536) openTiles.push({ x, y, layer, tile: tile + 4 });
+    }
+  }
+  if (openTiles.length !== 4) throw new Error(`[fallen-star act2] 막사 큰 상자 그림 칸을 못 찾음(${openTiles.length}/4)`);
+  [0, 1].forEach((dx) => {
+    const id = `ev_fs2_barracks_gear_${dx}`;
+    addEv(project, FS2_BARRACKS_ID, id, "압수품 상자", { x: BARRACKS.chest.x + dx, y: BARRACKS.chest.y }, [
+      page(`${id}_shut`, "닫힘", [sw(SW_BARRACKS, false)], [
+        se("cc0-se-osx-wooded-box-open"),
+        narrate("상자 뚜껑을 젖힌다."),
+        item(FS2_GEAR_ITEM, 1),
+        { kind: "changeGold", op: "+=", amount: 200 } as unknown as Command,
+        se("cc0-se-orp-battle-sword-unsheathe"),
+        narrate("「압수품 꾸러미」와 200G를 되찾았다.\n카엘의 검도, 엘레나의 책도 그대로다.", { context: "system" }),
+        setSw(SW_BARRACKS),
+        say(KAEL, "(속삭임) 찾았다. 손에 익은 게 제일이지."),
+        say(ELENA, "(속삭임) 됐어. 사다리로!"),
+      ]),
+      page(`${id}_open`, "열림", [sw(SW_BARRACKS)], [narrate("빈 상자다.")]),
+    ]);
+    exec(project, "stage_map_reveal", {
+      mapId: FS2_BARRACKS_ID, eventId: id, pageId: `${id}_shut`, tiles: openTiles,
+      afterText: "상자 뚜껑을 젖힌다.", theme: "magic", camera: false,
+    });
+  });
+  // 사다리 — 광장 초소 뒷골목으로. 압수품을 되찾기 전엔 「짐부터」.
   const ladderId = "ev_fs2_barracks_ladder";
-  addEv(project, FS2_BARRACKS_ID, ladderId, "광장으로 오르는 사다리", { x: BARRACKS.ladder.x, y: BARRACKS.ladder.y + 2 }, [
+  addEv(project, FS2_BARRACKS_ID, ladderId, "광장으로 오르는 사다리", BARRACKS.ladder, [
     page(`${ladderId}_wait`, "짐부터", [], [
       narrate("위로 난 사다리다. 바깥바람이 내려온다."),
-      say(ELENA, "잠깐, 우리 짐. 저 금고에 있을 거야.\n빈손으로는 못 나가."),
+      say(ELENA, "잠깐, 우리 짐. 옆 상자에 있을 거야.\n빈손으로는 못 나가."),
     ]),
     page(`${ladderId}_go`, "오른다", [sw(SW_BARRACKS)], [
       // 독립 판정: 2막 내내 회복약이 하나도 없어 쓰러진 동료를 못 일으켰다 — 되찾은 짐 속 약을 챙긴다(한 번).
@@ -472,11 +584,11 @@ function barracks(project: Project, exec: Exec): void {
       transfer(FS2_HUB_NIGHT_ID, HUB_ARRIVE, "down"),
     ]),
   ]);
-  // 막사 아래 계단(남쪽 입구) — 감방으로 돌아가는 길(도착 칸 바로 아래 줄).
-  const back = "ev_fs2_barracks_down";
-  addEv(project, FS2_BARRACKS_ID, back, "감방으로 내려가는 계단", { x: BARRACKS.entry.x, y: BARRACKS.entry.y + 1 }, [
-    page(`${back}_p`, "계단", [], [transfer(FS2_CELL_ID, CELL.arrive, "down")], { priority: "below", trigger: { kind: "playerTouch" } }),
-  ]);
+}
+
+/** 압수품 꾸러미 — 막사 상자에서 되찾는 짐(upsert_item). */
+function ensureItemRecord(project: Project, exec: Exec): void {
+  exec(project, "upsert_item", { item: { id: FS2_GEAR_ITEM, name: "압수품 꾸러미", description: "초소에서 빼앗긴 짐. 카엘의 검도, 엘레나의 책도 그대로다.", price: 0, type: "special", occasion: "never", consumable: false } });
 }
 
 // ════════════════════════════════════════════════════════════════════

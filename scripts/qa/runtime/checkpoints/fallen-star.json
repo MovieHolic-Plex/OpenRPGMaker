@@ -3241,10 +3241,10 @@
   {
    "id": "act2-b1-ladder",
    "label": "제2막 B1 — 막사 사다리 → 통금의 밤 광장",
-   "note": "act2Opening.ts barracks ladder (18,5) → fs2_hub_night (52,25)",
+   "note": "act2Opening.ts barracks ladder (26,3) — 앞 칸 (26,4)에서 조사 → fs2_hub_night (52,25)",
    "mapId": "fs2_barracks",
-   "x": 18,
-   "y": 6,
+   "x": 26,
+   "y": 4,
    "facing": "up",
    "switches": {
     "sw_fs_main_started": true,
@@ -3255,7 +3255,8 @@
     "sw_fs2_cell_key_found": true,
     "sw_fs2_cell_open": true,
     "sw_fs2_barracks_cleared": true,
-    "sw_fs2_barracks_entered": true
+    "sw_fs2_barracks_entered": true,
+    "sw_fs2_barracks_mid": true
    },
    "party": [
     {
@@ -8292,11 +8293,11 @@
    ]
   },
   {
-   "id": "act2-b1-patrol",
-   "label": "제2막 B1 — 막사 들어서면 엘레나의 귀띔 → 통로의 순찰 기사에게 붙잡히면 감방으로",
-   "note": "act2Opening.ts barracks make_chase_scene caughtPenalty (3,10)↔(15,10)",
+   "id": "act2-b1-caught",
+   "label": "제2막 B1 — 막사 잠입 실패 한 판: 남쪽 야경꾼 등불에 들어서면 「!」 → 덮침 → 감방으로",
+   "note": "act2Opening.ts barracks — caughtPenalty(중간 지점 전 = 감방)",
    "mapId": "fs2_barracks",
-   "x": 10,
+   "x": 3,
    "y": 13,
    "facing": "up",
    "switches": {
@@ -8306,7 +8307,8 @@
     "sw_fs2_act2_started": true,
     "sw_fs2_bread_given": true,
     "sw_fs2_cell_key_found": true,
-    "sw_fs2_cell_open": true
+    "sw_fs2_cell_open": true,
+    "sw_fs2_barracks_entered": true
    },
    "party": [
     {
@@ -8320,68 +8322,43 @@
    ],
    "beats": [
     {
-     "id": "look",
+     "id": "enter",
      "ops": [
-      {
-       "kind": "waitFor",
-       "testid": "dialogue-box",
-       "state": "present",
-       "timeoutMs": 20000
-      },
       {
        "kind": "hold",
        "dir": null,
-       "ms": 1500
+       "ms": 1200
       }
      ],
      "shot": true
     },
     {
-     "id": "hint-done",
+     "id": "step-in",
      "ops": [
       {
-       "kind": "repeatUntil",
-       "testid": "dialogue-box",
-       "state": "absent",
-       "maxRounds": 16,
-       "ops": [
-        {
-         "kind": "key",
-         "key": "Enter"
-        },
-        {
-         "kind": "hold",
-         "dir": null,
-         "ms": 700
-        }
-       ]
-      },
-      {
-       "kind": "hold",
-       "dir": null,
-       "ms": 1500
-      }
-     ],
-     "shot": true
-    },
-    {
-     "id": "caught",
-     "ops": [
-      {
-       "kind": "move",
-       "dir": "right",
-       "steps": 1
+       "kind": "waitForEventAt",
+       "eventId": "ev_fs2_barracks_watch_s",
+       "mapId": "fs2_barracks",
+       "x": 9,
+       "y": 10,
+       "timeoutMs": 30000
       },
       {
        "kind": "move",
        "dir": "up",
-       "steps": 3
+       "steps": 2
       },
       {
        "kind": "hold",
        "dir": null,
-       "ms": 500
-      },
+       "ms": 300
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "spotted",
+     "ops": [
       {
        "kind": "waitFor",
        "testid": "dialogue-box",
@@ -8391,7 +8368,7 @@
       {
        "kind": "hold",
        "dir": null,
-       "ms": 800
+       "ms": 900
       }
      ],
      "shot": true
@@ -8412,7 +8389,7 @@
         {
          "kind": "hold",
          "dir": null,
-         "ms": 700
+         "ms": 900
         }
        ]
       },
@@ -8643,12 +8620,12 @@
    }
   },
   {
-   "id": "act2-b1-bells",
-   "label": "제2막 B1 — 막사 종 줄 둘(푸른 종 → 붉은 종) → 등불이 꺼지고 금고 → 사다리",
-   "note": "act2Opening.ts barracks make_chase_scene caughtPenalty (3,10)↔(15,10)",
+   "id": "act2-b1-sneak",
+   "label": "제2막 B1 — 막사 잠입 성공 한 판: 귀띔 → 남쪽 야경꾼 등 뒤로 왼벽 → 첫 알코브(중간 지점) → 침상 밑에 숨기 → 알코브 건너기 → 압수품 상자 → 사다리",
+   "note": "act2Opening.ts barracks — 야경꾼 둘(make_chase_scene patrol pauseBeats·lookAround, set_field_detection visionLight)",
    "mapId": "fs2_barracks",
-   "x": 11,
-   "y": 6,
+   "x": 3,
+   "y": 13,
    "facing": "up",
    "switches": {
     "sw_fs_main_started": true,
@@ -8657,8 +8634,7 @@
     "sw_fs2_act2_started": true,
     "sw_fs2_bread_given": true,
     "sw_fs2_cell_key_found": true,
-    "sw_fs2_cell_open": true,
-    "sw_fs2_barracks_entered": true
+    "sw_fs2_cell_open": true
    },
    "party": [
     {
@@ -8672,19 +8648,13 @@
    ],
    "beats": [
     {
-     "id": "blue-bell",
+     "id": "enter",
      "ops": [
       {
-       "kind": "move",
-       "dir": "up",
-       "steps": 1
-      },
-      {
-       "kind": "face",
-       "dir": "up"
-      },
-      {
-       "kind": "action"
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 20000
       },
       {
        "kind": "hold",
@@ -8695,13 +8665,13 @@
      "shot": true
     },
     {
-     "id": "blue-done",
+     "id": "hints-done",
      "ops": [
       {
        "kind": "repeatUntil",
        "testid": "dialogue-box",
        "state": "absent",
-       "maxRounds": 10,
+       "maxRounds": 14,
        "ops": [
         {
          "kind": "key",
@@ -8710,7 +8680,7 @@
         {
          "kind": "hold",
          "dir": null,
-         "ms": 600
+         "ms": 900
         }
        ]
       },
@@ -8723,22 +8693,73 @@
      "shot": true
     },
     {
-     "id": "red-bell",
+     "id": "south-back",
+     "ops": [
+      {
+       "kind": "waitForEventAt",
+       "eventId": "ev_fs2_barracks_watch_s",
+       "mapId": "fs2_barracks",
+       "x": 4,
+       "y": 10,
+       "timeoutMs": 40000
+      },
+      {
+       "kind": "waitForEventAt",
+       "eventId": "ev_fs2_barracks_watch_s",
+       "mapId": "fs2_barracks",
+       "x": 8,
+       "y": 10,
+       "timeoutMs": 30000
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "west-wall",
      "ops": [
       {
        "kind": "move",
        "dir": "left",
-       "steps": 4
+       "steps": 1
+      },
+      {
+       "kind": "move",
+       "dir": "up",
+       "steps": 9
+      },
+      {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 8000
       },
       {
        "kind": "hold",
        "dir": null,
-       "ms": 300
-      },
+       "ms": 1200
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "hide",
+     "ops": [
       {
-       "kind": "move",
-       "dir": "left",
-       "steps": 4
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 6,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 800
+        }
+       ]
       },
       {
        "kind": "face",
@@ -8756,13 +8777,137 @@
      "shot": true
     },
     {
-     "id": "red-done",
+     "id": "guard-looks",
+     "ops": [
+      {
+       "kind": "waitForEventAt",
+       "eventId": "ev_fs2_barracks_watch_n",
+       "mapId": "fs2_barracks",
+       "x": 6,
+       "y": 7,
+       "timeoutMs": 60000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 2600
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "cross-nooks",
+     "ops": [
+      {
+       "kind": "waitForEventAt",
+       "eventId": "ev_fs2_barracks_watch_n",
+       "mapId": "fs2_barracks",
+       "x": 24,
+       "y": 7,
+       "timeoutMs": 60000
+      },
+      {
+       "kind": "action"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 500
+      },
+      {
+       "kind": "move",
+       "dir": "down",
+       "steps": 1
+      },
+      {
+       "kind": "move",
+       "dir": "right",
+       "steps": 13
+      },
+      {
+       "kind": "move",
+       "dir": "up",
+       "steps": 1
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 600
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "wait-a3",
+     "ops": [
+      {
+       "kind": "waitForEventAt",
+       "eventId": "ev_fs2_barracks_watch_n",
+       "mapId": "fs2_barracks",
+       "x": 10,
+       "y": 7,
+       "timeoutMs": 60000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 300
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "chest",
+     "ops": [
+      {
+       "kind": "move",
+       "dir": "down",
+       "steps": 1
+      },
+      {
+       "kind": "move",
+       "dir": "right",
+       "steps": 7
+      },
+      {
+       "kind": "move",
+       "dir": "up",
+       "steps": 1
+      },
+      {
+       "kind": "move",
+       "dir": "right",
+       "steps": 1
+      },
+      {
+       "kind": "face",
+       "dir": "up"
+      },
+      {
+       "kind": "action"
+      },
+      {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 8000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 2200
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "chest-done",
      "ops": [
       {
        "kind": "repeatUntil",
        "testid": "dialogue-box",
        "state": "absent",
-       "maxRounds": 10,
+       "maxRounds": 12,
        "ops": [
         {
          "kind": "key",
@@ -8771,9 +8916,65 @@
         {
          "kind": "hold",
          "dir": null,
-         "ms": 600
+         "ms": 1000
         }
        ]
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 800
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "ladder",
+     "ops": [
+      {
+       "kind": "move",
+       "dir": "right",
+       "steps": 3
+      },
+      {
+       "kind": "face",
+       "dir": "up"
+      },
+      {
+       "kind": "action"
+      },
+      {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 8000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 14,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 1000
+        }
+       ]
+      },
+      {
+       "kind": "waitForMap",
+       "mapId": "fs2_hub_night",
+       "timeoutMs": 20000
       },
       {
        "kind": "hold",
