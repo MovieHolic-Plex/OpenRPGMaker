@@ -59,7 +59,7 @@ const OSA = "여관 주인 오사";
  * "B9"(1.24~1.25) 면 얼음 위의 밤·탈출까지 열고, 하늘탑 1층에 닿으면 같은 카드와 저장 화면, 위층 계단은 「다음 업데이트」.
  * B10 을 실제로 내보낼 때 null 로 바꾼다.
  */
-export const FS2_RELEASE_STOP: "B8" | "B9" | null = "B9";
+export const FS2_RELEASE_STOP: "B8" | "B9" | null = null; // 판본 끝은 B11 뒤(act2Tower.ts 하늘탑 4층 계단)
 
 /** 체크포인트·탐침이 읽는 좌표(지은 뒤 채워진다). */
 export const FS2_FROST: { entry: Cell; harma: Cell; holes: Cell[]; innDoor: Cell; innExit: Cell; sled: Cell; locked: Cell[]; lamps: Cell[]; homes: Record<string, Cell>; gate: Cell[]; people: Record<string, Cell> } =
