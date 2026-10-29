@@ -68,6 +68,23 @@ export function playPixelDensity(
   return Math.max(1, Math.min(wanted, cap));
 }
 
+/** 한 축만 넘치는 맵을 좁은 축에 맞춰 키울 때의 상한(기본 시야 대비). */
+export const PARTIAL_FILL_MAX_SCALE = 1.5;
+
+/**
+ * 기본 시야 대비 맵이 화면에 들어가는 비율(가로·세로)에서 확대 배수를 고른다.
+ * - 둘 다 들어가면(작은 방) 둘 중 작은 쪽 — 맵 전체가 보인다(2026-10-28).
+ * - 한 축만 넘치면(13×17 여관·24×10 서재처럼 길쭉한 맵) 좁은 축을 채우는 만큼, 기본 시야의 1.5배까지. 긴 축은 원래도 따라가며 스크롤한다.
+ *   2026-10-29 vm4 판정 E: 13×17 여관이 320×240 에서 가로 65% 만 쓰고 양옆이 비었다 — 둘 다 들어가야만 키우던 규칙이라 확대가 0이었다.
+ * - 둘 다 넘치면 1 미만(확대 없음).
+ */
+export function smallMapFitScale(widthRatio: number, heightRatio: number): number {
+  const fit = Math.min(widthRatio, heightRatio);
+  if (fit >= 1) return fit;
+  const narrow = Math.max(widthRatio, heightRatio);
+  return narrow > 1 ? Math.min(narrow, PARTIAL_FILL_MAX_SCALE) : fit;
+}
+
 /** 작은 맵으로 보는 맵 — 화면에 이 배수 이상 남는 여백이 있어야 확대를 시도한다. */
 export const SMALL_MAP_FILL_MIN_RATIO = 1.25;
 /** 작은 방 채우기로 올린 캔버스의 넓이 상한(화소). */
@@ -94,7 +111,7 @@ export function smallMapFillDensity(
   for (const map of Object.values(project.maps)) {
     if (mapTileSize(map) !== reference) return 1;
     const mapZoom = typeof map.cameraZoom === "number" && Number.isFinite(map.cameraZoom) && map.cameraZoom > 0 ? map.cameraZoom : zoom;
-    const ratio = Math.min(
+    const ratio = smallMapFitScale(
       // 사방 반 칸 여백을 둔 크기(playSceneCamera.smallMapFillZoom 과 같은 기준).
       resolution.width / mapZoom / ((Math.max(1, map.width) + 1) * reference),
       resolution.height / mapZoom / ((Math.max(1, map.height) + 1) * reference),
