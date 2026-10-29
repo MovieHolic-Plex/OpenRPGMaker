@@ -22,7 +22,10 @@ export const REFMAP_DOLL_CHARSET_ASSETS = Array.from({ length: REFMAP_DOLL_SHEET
 
 export const REFMAP_DOLL_CHARSET_RESOURCE_IDS: readonly string[] = REFMAP_DOLL_CHARSET_ASSETS.flatMap((asset) => [asset.id, asset.textureKey]);
 
+// 프로젝트 글자 수만 번 불린다(웹 플레이어 미리 받기 목록) — 321장 배열을 매번 훑지 않는다.
+let refmapDollPathByKey: Map<string, string> | undefined;
 export function resolveRefmapDollCharsetUrl(resourceId: string): string | null {
-  const asset = REFMAP_DOLL_CHARSET_ASSETS.find((entry) => entry.id === resourceId || entry.textureKey === resourceId);
-  return asset ? `/${asset.path}` : null;
+  refmapDollPathByKey ??= new Map(REFMAP_DOLL_CHARSET_ASSETS.flatMap((entry): [string, string][] => [[entry.id, entry.path], [entry.textureKey, entry.path]]));
+  const path = refmapDollPathByKey.get(resourceId);
+  return path === undefined ? null : `/${path}`;
 }
