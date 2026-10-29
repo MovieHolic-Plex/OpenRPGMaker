@@ -1123,7 +1123,8 @@ export const interiorBuilder: PlaceBuilder = {
     const allAuthored = rooms.length > 0 && rooms.every((r) => !r.vig && String(r.tplId ?? "").startsWith("authored-"));
     // variety 열쇠가 있으면 무작위 salt 대신 그 해시 — 같은 게임·같은 요청이면 같은 배치(재현), 다른 게임이면 다른 배치.
     const salt = spec.variety !== undefined ? hashText(varietyKey) % 1_000_000 : spec.salt;
-    const variant = typeof hints.variant === "number" ? hints.variant : !vignette && !allAuthored ? (salt ?? 0) % 4 : 0;
+    // 설계 방은 배치 변주(B 좌우 뒤집기·C 넓히기·D)를 쓰지 않는다 — 모델이 정한 크기·자리를 함수가 바꾸지 않는다.
+    const variant = typeof hints.variant === "number" ? hints.variant : !vignette && !allAuthored && !designed ? (salt ?? 0) % 4 : 0;
     const seed = typeof hints.seed === "number" ? hints.seed : undefined;
     const layoutSeed = seed ?? (salt ? 1 + (salt % 99991) : undefined);
     // 가구: 견본 길(견본 한 벌 + 빈 바닥 메우기)이 기본, 견본 없는 방이 하나라도 있으면 기물 묶음 배치기(vignettes.ts — 벽·앞 통로·밀도 규칙,
