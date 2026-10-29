@@ -2266,6 +2266,21 @@ const WAVE_FLOOR_RECTS: Record<string, { x: number; y: number; w: number; h: num
   fs2_fort_court: [{ x: 34, y: 20, w: 3, h: 4 }, { x: 29, y: 12, w: 13, h: 1 }, { x: 29, y: 49, w: 4, h: 2 }],
   [FS2_ICE_LAKE_ID]: [{ x: 36, y: 21, w: 1, h: 5 }],
 };
+/**
+ * 웨이브 장소 BGM — import_region_reference 로 새로 만든 맵은 BGM 이 비어(create_map 과 달리 자동 선택이 없다) 소리 없이 걷는다.
+ * 되살리기 전 같은 자리 맵이 쓰던 곡을 그대로 돌려놓고, 새로 끼운 얼음 호수는 앞뒤 설원 길과 같은 곡으로 잇는다.
+ * 요새 두 층도 성 던전 시공기가 곡을 다시 고르므로 예전 곡으로 고정한다.
+ */
+const WAVE_BGM: Record<string, string> = {
+  map_field_north_2: "cc0-bgm-rtp-vlc-001", [FS2_DAWNWELL_ID]: "cc0-bgm-rtp-orc-001", [FS2_FORT_COURT_ID]: "cc0-bgm-rtp-fld-003",
+  [FS2_ICE_LAKE_ID]: "cc0-bgm-rtp-alg-005", [FS2_FORTRESS_ID]: "cc0-bgm-rtp-ftw-012", [FS2_FORT_TOP_ID]: "cc0-bgm-rtp-aut-001",
+};
+function waveBgm(project: Project, exec: Exec): void {
+  for (const [mapId, resourceId] of Object.entries(WAVE_BGM)) {
+    if (project.maps[mapId]) exec(project, "set_map_properties", { mapId, bgm: { mode: "custom", resourceId } });
+  }
+}
+
 function waveFloorUnderFeet(project: Project, exec: Exec): void {
   const tiles = new Set<number>();
   let tilesetId = "";
@@ -2413,6 +2428,7 @@ export function applyFallenAct2Opening(project: Project, exec: Exec, ids: Fallen
   detection(project, exec);
   fortressFixes(project, exec);
   waveFloorUnderFeet(project, exec);
+  waveBgm(project, exec);
   widenEdgeGates(project);
   act2Quest(project, exec);
   applyFallenAct2Tower(project, exec);
@@ -2501,7 +2517,7 @@ const DETECTION_PROFILES: { troops: string[]; args: Rec }[] = [
   { troops: ["troop_fs2_ash_wisps"], args: { sightRange: 12, allRound: true, lineOfSight: false, alertMs: 0, rush: true, rushSteps: 30, rushStepMs: 35, chaseStepMs: 90, searchMs: 3000, giveUpRange: 22 } },
   { troops: ["troop_fs2_frost_bats"], args: { sightRange: 7, coneDegrees: 120, alertMs: 200, rush: true, rushSteps: 3, rushStepMs: 110, chaseStepMs: 170 } },
   // 요새 바깥 순찰 기사(B6) — 도개교 앞 눈 턱에서 멀리 보고 곧장 달려든다(사용자: 「더 빨리 알아보고 멀리서 덤비게」).
-  { troops: [FS2_KNIGHT_TROOP_OUT], args: { sightRange: 12, coneDegrees: 170, alertMs: 100, rush: true, rushSteps: 16, rushStepMs: 70, chaseStepMs: 110, searchMs: 6000, giveUpRange: 22 } },
+  { troops: [FS2_KNIGHT_TROOP_OUT], args: { sightRange: 12, allRound: true, alertMs: 100, rush: true, rushSteps: 16, rushStepMs: 70, chaseStepMs: 110, searchMs: 6000, giveUpRange: 22 } },
   { troops: [FS2_KNIGHT_TROOP, FS2_GATE_CAPTAIN_TROOP], args: { sightRange: 7, coneDegrees: 120, alertMs: 200, rush: true, rushSteps: 5, rushStepMs: 100, chaseStepMs: 170, searchMs: 5000, giveUpRange: 14 } },
   { troops: ["troop_fs2_ash_snakes"], args: { sightRange: 6, coneDegrees: 100, alertMs: 350, rush: false, chaseStepMs: 300 } },
   { troops: ["troop_fs2_cinder_golem"], args: { sightRange: 6, coneDegrees: 90, alertMs: 600, rush: false, chaseStepMs: 400, giveUpRange: 8 } },
