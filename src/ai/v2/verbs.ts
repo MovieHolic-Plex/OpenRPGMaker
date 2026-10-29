@@ -56,6 +56,7 @@ import { rememberObjectPlan, takeObjectPlan, type DrawObjectResult } from "./dra
 import { dressRoom } from "./builders/dressRoom";
 import { tileMoveObjects } from "./builders/tileMove";
 import { planObjective } from "./discoverability";
+import { roomParts } from "./roomParts";
 
 // 2026-10-23 5차: 고치기 3바퀴는 바퀴마다 다시 짓기+비평(20~35초)이라 던전 한 장에 200~250초가 들었다.
 // 속도 우선(6차)으로 1바퀴만 — 첫 비평의 major 를 한 번 고치고 남은 것은 보고한다.
@@ -125,6 +126,38 @@ const text = (value: unknown): PiToolExecResult => ({ content: [{ type: "text", 
 
 const PLACE_TYPES: PlaceType[] = ["interior", "village", "dungeon", "cave", "street", "house"];
 const SIZE = { type: "string", enum: ["small", "medium", "large"] };
+// 모델이 쓰는 방 설계(손 도트 실내) — 2026-10-29 사용자 결정 「방을 짓는 건 조수여야만 한다」. 함수는 조화·검사만(designRoom.ts).
+const ROOM_DESIGN_SCHEMA = {
+  type: "object",
+  description: "(실내, 이 방을 직접 설계할 때) 방 모양·크기·문과 가구 묶음. 주면 빌더는 견본을 깔지 않고 이 설계대로 짓고, 이름 맞춤·겹침·의자 방향·문 앞 통로·도달만 고쳐 고친 것을 돌려준다. 기물 id 는 room_parts 로 본다.",
+  properties: {
+    shape: { type: "string", enum: ["rect", "L", "T", "bay"], description: "rect 네모 · L ㄱ자(corner 귀퉁이를 도려 냄) · T ㅗ자(남쪽 두 귀퉁이) · bay 창가 돌출(북쪽 두 귀퉁이 도려 냄)" },
+    w: { type: "integer", minimum: 5, maximum: 24, description: "바닥 가로 칸" },
+    h: { type: "integer", minimum: 4, maximum: 18, description: "바닥 세로 칸(벽면 줄 빼고)" },
+    corner: { type: "string", enum: ["nw", "ne", "sw", "se"], description: "L 이 도려 낼 귀퉁이" },
+    door: { type: "string", enum: ["left", "center", "right"], description: "남쪽 출구 자리" },
+    floor: { type: "string", description: "바닥 재질 id(room_parts 의 floors)" },
+    wall: { type: "string", description: "벽면 재질 id(room_parts 의 walls)" },
+    groups: { type: "array", maxItems: 16, description: "가구 묶음 — 함께 쓰이는 기물 무리(책상+의자, 안락의자 둘+원탁+등, 책장 줄). 무엇을 몇 개 놓을지는 이 목록이 전부다(함수는 더하지 않는다).", items: {
+      type: "object",
+      properties: {
+        name: { type: "string", description: "묶음 이름: 책상 자리·독서 구석·책장 벽" },
+        at: { type: "string", enum: ["north", "south", "west", "east", "center", "nw", "ne", "sw", "se"], description: "놓는 곳(벽·모서리·가운데). 책장·진열장(벽 가구)과 걸이(창·지도·액자)는 north 에만 선다." },
+        pos: { type: "number", description: "그 벽을 따라 0(서·북 끝)~1(동·남 끝). 기본 0.5" },
+        x: { type: "integer", description: "(선택) 바닥 칸 좌표 — 바닥 왼쪽 위가 0,0. 주면 at 보다 먼저" },
+        y: { type: "integer" },
+        rug: { type: "string", description: "(선택) 묶음 밑 깔개 색: red·royal·blue·green·purple·brown" },
+        items: { type: "array", minItems: 1, maxItems: 12, items: { type: "object", properties: {
+          id: { type: "string", description: "칩셋 기물 id(room_parts) — 예: bookshelf 3w · desk 3x1 · chair N(북쪽을 보는 의자) · armchair" },
+          dx: { type: "integer", description: "묶음 안 상대 칸(왼쪽 위 0,0). 생략하면 앞 기물 옆(벽 서·동 묶음은 아래로)에 잇는다" },
+          dy: { type: "integer", description: "걸이는 -2(벽면 윗줄)" },
+          count: { type: "integer", minimum: 1, maximum: 8, description: "같은 기물을 몇 개 잇대어" },
+        }, required: ["id"] } },
+      },
+      required: ["items"],
+    } },
+  },
+};
 const ZONE_SCHEMA = {
   type: "object",
   properties: {
@@ -133,6 +166,7 @@ const ZONE_SCHEMA = {
     anchors: { type: "array", items: { type: "string" }, description: "이 구역의 주인공 물건 낱말" },
     vignettes: { type: "array", items: { type: "string" }, description: "(실내, 선택) 이 방에 놓을 기물 묶음 — 몸통 기물 id(bookshelf 2w·forge·counter 3x1). 자리는 함수가 잡는다. 생략하면 방 종류로 고른다" },
     size: SIZE,
+    design: ROOM_DESIGN_SCHEMA,
     floor: { type: "number", description: "몇 층(기본 1)" },
     id: { type: "string" },
   },
@@ -1213,6 +1247,37 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     },
   };
 
+  // ───── room_parts: 방을 직접 설계하기 전에 보는 재료(기물 이름표 + 손 견본 배치 요약·그림). 읽기만 한다 ─────
+  const refPictures = new Map<string, string>();
+  const roomPartsVerb: PiToolShape = {
+    name: "room_parts", label: "방 재료 보기", concurrency: "shared",
+    description: "손 도트 실내 방을 직접 설계(make_place zones[].design)하기 전에 부른다. 그 용도에 쓰는 칩셋 기물 이름표(id·크기·놓는 곳), 바닥·벽면·깔개 id, 같은 용도 손 견본 몇 개의 배치 요약과 1배 그림을 돌려준다. 견본은 참고일 뿐 — 똑같이 베끼지 말고 요청에 맞게 모양·묶음·자리를 새로 짠다.",
+    parameters: { type: "object", properties: { purpose: { type: "string", description: "방 용도 — 예: 서재, 마법사의 서재, 침실" }, query: { type: "string", description: "(선택) 더 찾을 기물 낱말" } }, required: ["purpose"] },
+    async execute(_id, params) {
+      const p = params as { purpose: string; query?: string };
+      const out = roomParts(env.ctx.project, String(p.purpose ?? ""), p.query);
+      if (!out) return text({ ok: false, summary: "손 도트 실내 칩셋이 이 프로젝트에 없다" });
+      const result = text({ ok: true, ...out, how: "zones:[{kind, purpose, design:{shape, w, h, door, floor, wall, groups:[{name, at, pos?, rug?, items:[{id, dx?, dy?, count?}]}]}}]. 묶음마다 무엇을 몇 개 놓을지는 네가 정한다 — 함수는 더하지 않고 이름 맞춤·겹침·의자 방향·문 앞 통로·도달만 고쳐 알려 준다. 기물 줄의 좌표는 바닥 왼쪽 위 0,0, 걸이는 y -2." });
+      // 견본 그림(1배): 따로 지은 사본에서 찍는다 — 지금 프로젝트에는 남기지 않는다.
+      if (env.render) for (const tid of out.referenceIds.slice(0, 2)) {
+        let url = refPictures.get(tid);
+        if (!url) {
+          const scratch = { project: env.ctx.project, currentMapId: env.ctx.currentMapId, assistantRun: true } as typeof env.ctx;
+          const r = createBuildRun(scratch).call("build_hand_interior_room", { tileset: out.tileset, name: `견본 ${tid}`, layout: { rooms: [{ id: out.kind, kind: out.kind, template: tid }] } });
+          const mapId = String((r as { data?: { mapId?: string } }).data?.mapId ?? "");
+          const m = scratch.project.maps[mapId];
+          if (r.ok && m) {
+            const keep = env.ctx.project;
+            try { env.ctx.project = scratch.project; url = await env.render(mapId, 0, 0, m.width, m.height); } catch { url = undefined; } finally { env.ctx.project = keep; }
+            if (url) refPictures.set(tid, url);
+          }
+        }
+        if (url) { result.content.push({ type: "text", text: `견본 ${tid} 1배 그림:` }); result.content.push({ type: "image", mimeType: "image/png", data: url.slice(url.indexOf(",") + 1) }); }
+      }
+      return result;
+    },
+  };
+
   const inspect: PiToolShape = {
     name: "inspect", label: "맵 보기", concurrency: "shared",
     description: "맵 하나의 1배 그림·기계 검사·사람/이벤트 목록을 본다(비평가 없이). 고치기 전에 지금 상태를 확인할 때.",
@@ -1296,7 +1361,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     }
     return result;
   } });
-  const verbs = [writeBlueprint, buildBlueprintPathVerb, makePlace, ...(makeGameOn() && wantsMakeGame(String(task ?? "")) ? [makeGame] : []), editPlace, moveObject, dressRoomVerb, addPeople, addEvent, addScene, ...(wantsPuzzle(String(task ?? "")) ? [authorPuzzleChain] : []), sealLockedRoomVerb, setObjectiveVerb, drawObjectVerb, placeObject, inspect, restoreEvent, ...(helpersOn() ? [askHelpers] : []), askUser].map((tool) => guard(flattenWrapperTool(tool)));
+  const verbs = [writeBlueprint, buildBlueprintPathVerb, makePlace, ...(makeGameOn() && wantsMakeGame(String(task ?? "")) ? [makeGame] : []), editPlace, moveObject, dressRoomVerb, addPeople, addEvent, addScene, ...(wantsPuzzle(String(task ?? "")) ? [authorPuzzleChain] : []), sealLockedRoomVerb, setObjectiveVerb, drawObjectVerb, placeObject, inspect, roomPartsVerb, restoreEvent, ...(helpersOn() ? [askHelpers] : []), askUser].map((tool) => guard(flattenWrapperTool(tool)));
   // 게임 요소(퀘스트·아이템·전투·파티) 요청이면 v1 게임 도구를 덧붙인다 — 기록은 도구 묶음이 env.record 로 직접 남긴다.
   const t = String(task ?? "");
   // 스토어 음악 카드(사용자가 듣고 고른다)를 띄웠으면 사용자 질문과 같다 — 끝맺음 관문이 «음악을 안 걸었다»며 넣기를 재촉하지 않게 한다.

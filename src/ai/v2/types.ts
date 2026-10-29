@@ -4,6 +4,7 @@
 // 모델은 칸 번호·평면 문자열·좌표 목록을 쓰지 않는다. 빌더가 명세를 v1 의 결정론 도구 인자로 옮겨 부른다.
 // 이 파일은 순수 타입이다 — 워커(scripts/lib/assistantV2Runtime.ts)와 테스트가 같이 읽는다.
 import type { ToolContext, ToolResult } from "@/editor/tools/types";
+import type { RoomDesign } from "@/editor/handInterior/designRoom";
 
 export type PlaceType =
   | "interior" // 건물 안(방 하나 또는 여러 방) — 여관·선술집·천문대·가게·집 안
@@ -26,6 +27,11 @@ export interface ZoneSpec {
   /** (실내) 이 방에 놓을 기물 묶음 — 묶음 id 또는 몸통 기물 id(「bookshelf 2w」「forge」). 없으면 방 종류로 함수가 고른다. */
   readonly vignettes?: readonly string[];
   readonly size?: PlaceSize;
+  /**
+   * (손 도트 실내) 모델이 설계한 방 — 모양·바닥 크기·문 자리·재질과 가구 묶음(무엇을·몇 개·어느 벽/모서리/가운데·묶음 안 상대 칸·깔개).
+   * 주면 빌더는 견본·묶음 고르기를 하지 않고 이 설계대로 지은 뒤 조화·검사만 한다(이름 맞춤·겹침 풀기·의자 방향·문 앞 통로·도달) — 고친 것을 결과에 돌려준다.
+   */
+  readonly design?: RoomDesign;
   /** 몇 층의 구역인가(실내·집, 기본 1). 2 이면 위층에 짓는다. */
   readonly floor?: number;
   /** 고치기에서 가리킬 이름(생략하면 kind). */

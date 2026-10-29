@@ -48,19 +48,19 @@ const D = data as unknown as VignetteData;
 export function roomVignettes(tilesetId: string): readonly Vignette[] { return D.tilesets[tilesetId] ?? []; }
 
 const TOP_KINDS = new Set(["wall", "hang", "door", "sidedoor"]);
-const blocks = (it: InteriorTemplateItem, S: HandInteriorSpec): boolean => {
+export const blocks = (it: InteriorTemplateItem, S: HandInteriorSpec): boolean => {
   if (it.t === "g" || it.t === "l" || it.t === "d") return false;
   if (it.t === "t") return true;
   const k = S.objects[it.id]?.kind;
   return k !== undefined && k !== "hang" && k !== "flat" && k !== "door" && k !== "sidedoor";
 };
-function box(it: InteriorTemplateItem, S: HandInteriorSpec): [number, number, number, number] {
+export function box(it: InteriorTemplateItem, S: HandInteriorSpec): [number, number, number, number] {
   if (it.t === "l") { const xs = it.cells!.map((c) => c[0]), ys = it.cells!.map((c) => c[1]); return [Math.min(...xs), Math.min(...ys), Math.max(...xs) + 1, Math.max(...ys) + 1]; }
   if (it.t === "o") { const o = S.objects[it.id]; return [it.x, it.y, it.x + (o?.w ?? 1), it.y + Math.max(1, o?.h ?? 1)]; }
   if (it.t === "t" || it.t === "d") return [it.x, it.y, it.x + (it.w ?? 1), it.y + (it.h ?? 1)];
   return [it.x, it.y, it.x + 1, it.y + 1];
 }
-const cellsOfBox = (b: readonly number[]): string[] => { const out: string[] = []; for (let y = b[1]!; y < b[3]!; y++) for (let x = b[0]!; x < b[2]!; x++) out.push(`${x},${y}`); return out; };
+export const cellsOfBox = (b: readonly number[]): string[] => { const out: string[] = []; for (let y = b[1]!; y < b[3]!; y++) for (let x = b[0]!; x < b[2]!; x++) out.push(`${x},${y}`); return out; };
 
 /**
  * 묶음 = 맞닿은(틈 0칸) 기물 무리. 방 견본 옮겨 심기(templateClusters)는 1칸 띄운 것까지 한 덩이로 묶어, 여관 홀은 계산대부터 식탁 줄까지
@@ -181,7 +181,7 @@ export interface VignetteFurnishResult {
   readonly perRoom: Record<string, { placed: string[]; blockedShare: number; floor: number }>;
 }
 
-function withItems(base: HandInteriorInput, items: readonly InteriorTemplateItem[]): HandInteriorInput {
+export function withItems(base: HandInteriorInput, items: readonly InteriorTemplateItem[]): HandInteriorInput {
   return {
     ...base,
     objects: [...(base.objects ?? []), ...items.filter((i) => i.t === "o").map((i) => ({ id: i.id, x: i.x, y: i.y }))],
@@ -193,7 +193,7 @@ function withItems(base: HandInteriorInput, items: readonly InteriorTemplateItem
 }
 
 /** 북벽에 닿는 열(걸이·벽 가구·키 큰 가구가 벽면을 쓰는 열) — 같은 열을 둘이 쓰지 않는다. */
-function wallColumns(it: InteriorTemplateItem, S: HandInteriorSpec): string[] {
+export function wallColumns(it: InteriorTemplateItem, S: HandInteriorSpec): string[] {
   if (it.t !== "o") return [];
   const o = S.objects[it.id];
   if (!o) return [];
