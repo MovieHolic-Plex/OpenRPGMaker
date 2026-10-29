@@ -480,8 +480,8 @@ function floorTwo(project: Project, exec: Exec): void {
   }
   // 전환 구슬 — 받침 위 수정을 찍고 이벤트는 투명하게.
   for (const [key, c] of [["a", T2.westSwitch], ["b", T2.eastSwitch]] as const) {
-    const orb = ev(project, FS2_T2, `${SPLIT}_switch_${key}`);
     const stamped = stamp(project, exec, FS2_T2, "bd-pick-dungeon-theme-crystal-pedestal", { x: c.x, y: c.y - 1 });
+    const orb = ev(project, FS2_T2, `${SPLIT}_switch_${key}`); // 도구 호출 뒤에 다시 찾는다(맵 객체가 바뀐다)
     if (stamped) for (const pg of orb.pages ?? []) pg.graphic = { transparent: true } as EventPage["graphic"];
     const p1 = orb.pages?.[1];
     if (p1) {

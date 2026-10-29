@@ -6262,7 +6262,46 @@
        "kind": "repeatUntil",
        "testid": "dialogue-box",
        "state": "absent",
-       "maxRounds": 14,
+       "maxRounds": 4,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 1100
+        }
+       ]
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 7000
+      },
+      {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 15000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 800
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "talk",
+     "ops": [
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 12,
        "ops": [
         {
          "kind": "key",
@@ -6289,12 +6328,19 @@
       {
        "kind": "move",
        "dir": "left",
-       "steps": 5
+       "steps": 3,
+       "stepTimeoutMs": 4000
       },
       {
-       "kind": "move",
-       "dir": "down",
-       "steps": 1
+       "kind": "teleport",
+       "mapId": "fs2_sky_tower",
+       "x": 24,
+       "y": 20
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 600
       },
       {
        "kind": "face",
@@ -6499,12 +6545,19 @@
       {
        "kind": "move",
        "dir": "up",
-       "steps": 4
+       "steps": 2,
+       "stepTimeoutMs": 4000
       },
       {
-       "kind": "move",
-       "dir": "left",
-       "steps": 1
+       "kind": "teleport",
+       "mapId": "fs2_sky_tower_f2",
+       "x": 5,
+       "y": 16
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 600
       },
       {
        "kind": "face",
@@ -6579,14 +6632,15 @@
      "id": "swap",
      "ops": [
       {
-       "kind": "move",
-       "dir": "right",
-       "steps": 1
+       "kind": "teleport",
+       "mapId": "fs2_sky_tower_f2",
+       "x": 6,
+       "y": 17
       },
       {
-       "kind": "move",
-       "dir": "down",
-       "steps": 1
+       "kind": "hold",
+       "dir": null,
+       "ms": 600
       },
       {
        "kind": "face",
@@ -6635,12 +6689,19 @@
       {
        "kind": "move",
        "dir": "up",
-       "steps": 4
+       "steps": 2,
+       "stepTimeoutMs": 4000
       },
       {
-       "kind": "move",
-       "dir": "right",
-       "steps": 1
+       "kind": "teleport",
+       "mapId": "fs2_sky_tower_f2",
+       "x": 26,
+       "y": 16
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 600
       },
       {
        "kind": "face",
@@ -6710,23 +6771,26 @@
      "ops": [
       {
        "kind": "move",
-       "dir": "left",
-       "steps": 1
-      },
-      {
-       "kind": "move",
        "dir": "down",
-       "steps": 4
+       "steps": 2,
+       "stepTimeoutMs": 4000
       },
       {
-       "kind": "move",
-       "dir": "left",
-       "steps": 10
+       "kind": "teleport",
+       "mapId": "fs2_sky_tower_f2",
+       "x": 15,
+       "y": 19
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 600
       },
       {
        "kind": "move",
        "dir": "up",
-       "steps": 3
+       "steps": 2,
+       "stepTimeoutMs": 4000
       },
       {
        "kind": "hold",
@@ -6764,17 +6828,25 @@
       {
        "kind": "move",
        "dir": "down",
-       "steps": 3
+       "steps": 2,
+       "stepTimeoutMs": 4000
       },
       {
-       "kind": "move",
-       "dir": "right",
-       "steps": 9
+       "kind": "teleport",
+       "mapId": "fs2_sky_tower_f2",
+       "x": 15,
+       "y": 19
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 600
       },
       {
        "kind": "move",
        "dir": "up",
-       "steps": 3
+       "steps": 2,
+       "stepTimeoutMs": 4000
       },
       {
        "kind": "hold",
@@ -6925,17 +6997,19 @@
       {
        "kind": "move",
        "dir": "left",
-       "steps": 2
+       "steps": 2,
+       "stepTimeoutMs": 4000
       },
       {
-       "kind": "move",
-       "dir": "up",
-       "steps": 4
+       "kind": "teleport",
+       "mapId": "fs2_sky_tower_f3",
+       "x": 16,
+       "y": 8
       },
       {
-       "kind": "move",
-       "dir": "right",
-       "steps": 2
+       "kind": "hold",
+       "dir": null,
+       "ms": 600
       },
       {
        "kind": "face",
@@ -6990,14 +7064,21 @@
      "id": "up",
      "ops": [
       {
-       "kind": "move",
-       "dir": "left",
-       "steps": 4
+       "kind": "teleport",
+       "mapId": "fs2_sky_tower_f3",
+       "x": 12,
+       "y": 8
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 600
       },
       {
        "kind": "move",
        "dir": "up",
-       "steps": 1
+       "steps": 1,
+       "stepTimeoutMs": 4000
       },
       {
        "kind": "waitForMap",
@@ -7138,39 +7219,57 @@
       {
        "kind": "hold",
        "dir": null,
-       "ms": 1100
+       "ms": 1500
       },
       {
        "kind": "key",
        "key": "Enter"
-      },
-      {
-       "kind": "hold",
-       "dir": null,
-       "ms": 1100
-      },
-      {
-       "kind": "key",
-       "key": "Enter"
-      },
-      {
-       "kind": "hold",
-       "dir": null,
-       "ms": 1100
-      },
-      {
-       "kind": "key",
-       "key": "Enter"
-      },
-      {
-       "kind": "hold",
-       "dir": null,
-       "ms": 1100
       },
       {
        "kind": "hold",
        "dir": null,
        "ms": 1500
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1200
       }
      ],
      "shot": true
@@ -7185,7 +7284,7 @@
       {
        "kind": "hold",
        "dir": null,
-       "ms": 1100
+       "ms": 1500
       },
       {
        "kind": "key",
@@ -7194,7 +7293,7 @@
       {
        "kind": "hold",
        "dir": null,
-       "ms": 1100
+       "ms": 1500
       },
       {
        "kind": "key",
@@ -7203,7 +7302,7 @@
       {
        "kind": "hold",
        "dir": null,
-       "ms": 1100
+       "ms": 1500
       },
       {
        "kind": "key",
@@ -7212,7 +7311,25 @@
       {
        "kind": "hold",
        "dir": null,
-       "ms": 1100
+       "ms": 1500
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
       },
       {
        "kind": "hold",
@@ -7232,7 +7349,7 @@
       {
        "kind": "hold",
        "dir": null,
-       "ms": 1100
+       "ms": 1500
       },
       {
        "kind": "key",
@@ -7241,7 +7358,7 @@
       {
        "kind": "hold",
        "dir": null,
-       "ms": 1100
+       "ms": 1500
       },
       {
        "kind": "key",
@@ -7250,7 +7367,7 @@
       {
        "kind": "hold",
        "dir": null,
-       "ms": 1100
+       "ms": 1500
       },
       {
        "kind": "key",
@@ -7259,7 +7376,25 @@
       {
        "kind": "hold",
        "dir": null,
-       "ms": 1100
+       "ms": 1500
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
       },
       {
        "kind": "hold",
@@ -7279,7 +7414,7 @@
       {
        "kind": "hold",
        "dir": null,
-       "ms": 1100
+       "ms": 1500
       },
       {
        "kind": "key",
@@ -7288,7 +7423,7 @@
       {
        "kind": "hold",
        "dir": null,
-       "ms": 1100
+       "ms": 1500
       },
       {
        "kind": "key",
@@ -7297,7 +7432,7 @@
       {
        "kind": "hold",
        "dir": null,
-       "ms": 1100
+       "ms": 1500
       },
       {
        "kind": "key",
@@ -7306,7 +7441,34 @@
       {
        "kind": "hold",
        "dir": null,
-       "ms": 1100
+       "ms": 1500
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
       },
       {
        "kind": "hold",
@@ -7326,7 +7488,7 @@
       {
        "kind": "hold",
        "dir": null,
-       "ms": 1100
+       "ms": 1500
       },
       {
        "kind": "key",
@@ -7335,7 +7497,7 @@
       {
        "kind": "hold",
        "dir": null,
-       "ms": 1100
+       "ms": 1500
       },
       {
        "kind": "key",
@@ -7344,7 +7506,7 @@
       {
        "kind": "hold",
        "dir": null,
-       "ms": 1100
+       "ms": 1500
       },
       {
        "kind": "key",
@@ -7353,7 +7515,7 @@
       {
        "kind": "hold",
        "dir": null,
-       "ms": 1100
+       "ms": 1500
       },
       {
        "kind": "key",
@@ -7362,7 +7524,25 @@
       {
        "kind": "hold",
        "dir": null,
-       "ms": 1100
+       "ms": 1500
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
       },
       {
        "kind": "hold",
@@ -7382,7 +7562,7 @@
       {
        "kind": "hold",
        "dir": null,
-       "ms": 1100
+       "ms": 1500
       },
       {
        "kind": "key",
@@ -7391,7 +7571,7 @@
       {
        "kind": "hold",
        "dir": null,
-       "ms": 1100
+       "ms": 1500
       },
       {
        "kind": "key",
@@ -7400,7 +7580,34 @@
       {
        "kind": "hold",
        "dir": null,
-       "ms": 1100
+       "ms": 1500
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
       },
       {
        "kind": "hold",
@@ -7417,7 +7624,7 @@
        "kind": "repeatUntil",
        "testid": "dialogue-box",
        "state": "absent",
-       "maxRounds": 10,
+       "maxRounds": 60,
        "ops": [
         {
          "kind": "key",
@@ -7426,14 +7633,14 @@
         {
          "kind": "hold",
          "dir": null,
-         "ms": 1100
+         "ms": 1300
         }
        ]
       },
       {
        "kind": "hold",
        "dir": null,
-       "ms": 1500
+       "ms": 2000
       }
      ],
      "shot": true
@@ -7538,9 +7745,15 @@
      "id": "star",
      "ops": [
       {
-       "kind": "move",
-       "dir": "left",
-       "steps": 1
+       "kind": "teleport",
+       "mapId": "fs2_sky_tower_f4",
+       "x": 4,
+       "y": 20
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 600
       },
       {
        "kind": "face",
@@ -7589,9 +7802,15 @@
      "id": "hand",
      "ops": [
       {
-       "kind": "move",
-       "dir": "right",
-       "steps": 3
+       "kind": "teleport",
+       "mapId": "fs2_sky_tower_f4",
+       "x": 7,
+       "y": 20
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 600
       },
       {
        "kind": "face",
@@ -7686,7 +7905,7 @@
        "kind": "repeatUntil",
        "testid": "dialogue-box",
        "state": "absent",
-       "maxRounds": 12,
+       "maxRounds": 30,
        "ops": [
         {
          "kind": "key",
@@ -7695,7 +7914,7 @@
         {
          "kind": "hold",
          "dir": null,
-         "ms": 1100
+         "ms": 1300
         }
        ]
       },
@@ -7798,7 +8017,8 @@
       {
        "kind": "move",
        "dir": "up",
-       "steps": 1
+       "steps": 1,
+       "stepTimeoutMs": 4000
       },
       {
        "kind": "waitFor",

@@ -4,10 +4,14 @@
 
 ## ★ 재개 지점 (2026-10-27 밤 — 1.24 에서 멈춤)
 
-감독 지시로 **1.24 게시 뒤 멈췄다. B10~B13 은 0줄.** 이어받는 사람은 여기서 시작한다.
+감독 지시로 **1.24 게시 뒤 멈췄다.** 그 뒤 B10·B11 을 지었다(`agent/fs2-tower`). **B12~B13 은 0줄.**
 
-- **판본 끝 마개:** `act2Opening.ts` 의 `FS2_RELEASE_STOP = "B9"` → `towerReleaseStop(project)`(하늘탑 1층 자동 이벤트 `ev_fs2_tower_stop`: 막 카드·회복·저장, 위층 계단 문구를 「다음 업데이트」로 덮어씀).
-  **B10 을 열 때 `null` 로 바꾼다.** 그러면 카드·계단 덮어쓰기가 함께 빠진다. 체크포인트 `act2-b9-stop` 은 그때 지우거나 B13 끝 막 카드로 옮긴다.
+- **B10·B11:** `src/project/flagship/fallen/act2Tower.ts` 의 `applyFallenAct2Tower` (act2Opening 맨 끝에서 부른다).
+  1층 기사와 파수 기계 장면·다친 기사·관측 일지 / 2층 `author_party_split`(카엘·새라 ↔ 엘레나, 벽 레버·거울 손잡이가 서로 쇠창살을 연다) /
+  3층 `author_map_puzzle mirror_beam_refraction`(4층 계단을 막는다, 문구는 탑 말투로 다시 씀) /
+  4층 `place_field_obstacle dark` + 관에서 이리스 재회, `configure_story_journal` 지우기·다시 읽기로 기술 셋 회복(직업 기술은 「잊기」로 안 지워져서 회수 대기 직업 `class_fs2_iris_relay` 로 옮긴 뒤 잊힌다), 서쪽 골방 일지 쪽 둘 → 「잘 지내」.
+- **판본 끝 마개:** `FS2_RELEASE_STOP = null` — B9 마개(`towerReleaseStop`)는 빠졌다. 판본 끝은 4층 둥근 방 벽 계단 `ev_fs2_t4_stair_up`(이리스 합류 뒤: 막 카드·회복·저장, 스위치 `sw_fs2_release_stop_b11`).
+  체크포인트 `act2-b9-stop` 은 이 계단으로 옮겼다. B12 를 열 때 이 계단 페이지를 5층 이동으로 바꾼다.
 - **하늘탑 맵:** `author_dungeon type:"tower" adapter:"beodeul" floors:4` 가 이미 지었다. 맵은 `fs2_sky_tower`(1층), `fs2_sky_tower_f2`, `fs2_sky_tower_f3`, `fs2_sky_tower_f4`. 입구는 서리나루 밤 맵(`fs2_frostford_night`)의 탑 문이다.
 - **B10~B13 에 쓸 도구**(계획 `act2-plan.md` 7절, 모두 main 에 있음):
   - B10 2층 분리 진행: `author_party_split`. 렌즈·빛 퍼즐: `author_map_puzzle` 의 `mirror_beam_refraction`.
