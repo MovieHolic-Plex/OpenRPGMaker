@@ -203,6 +203,14 @@ RM2k3 투명 칸 자동 보정(`applyCustomChipsetMinimalHarness`)에서 이 시
   - 의자 방향은 묶음을 넘어서도 맞춘다: 방을 다 놓은 뒤 책상·탁자와 맞닿은 의자가 다른 쪽을 보면 그쪽 방향 그림으로 바꾼다(그림이 칩셋에 있을 때만).
   - 설계 읽기는 너그럽다(2026-10-29 Argon 이 `door:{edge:"south"}`·`at` 없는 묶음으로 엄격한 enum 검증에 15번 막혔다): 스키마에 enum·범위를 두지 않고 `normalizeShape/Door/Corner/At` 이 「southeast」「north wall」「북서」「0.5」 같은 말을 읽는다. `at`·`x/y` 가 없는 묶음은 items 의 `dx/dy` 를 바닥 좌표로, 기물 `x/y` 는 `dx/dy` 로, 묶음 `dx/dy` 는 `at` 이 있으면 그 자리에서 민 만큼·없으면 `x/y` 로 읽는다.
   - 되돌려 보내기 답은 「아직 짓지 않았다(실패 아님)」과 함께 room_parts 재료(이름표·견본 배치, 그림 없이)를 싣는다 — 되돌려 보내기를 실패로 읽고 그만둔 모델(flash)이 있었다.
+  - **모양 재료(2026-10-29 3d):** 3c 15판의 설계 14개가 rect(ㅁ자)였다 — 모양 이름 한 줄뿐이라 고를 재료가 없었다. 이제 모양 어휘는 rect·L(ㄱ자)·U(ㄷ자)·T(ㅜ자)·bay(창가 돌출)·alcove(알코브)이고(`designRoom.ts` `SHAPE_GUIDE`·`shapeNotches`), `room_parts` 가 모양별 최소 바닥 크기·쓰임(`shapes`), make_place 에 그대로 넣을 수 있는 설계 예시(`shapeExamples`, `roomParts.ts` `SHAPE_EXAMPLES` — 곁방 딸린 2실은 zones 둘)와 **그 예시를 지금 빌더로 실제로 지은 1배 그림**을 돌려준다. 되돌려 보내기 답에도 shapes·shapeExamples 가 실린다.
+    - ㄷ자는 북벽 가운데를 도려 낸다 — `HandInteriorNotch.at`(방 서쪽 끝에서 몇 칸, `rooms.ts` `notchRect`)으로 귀퉁이가 아닌 가운데 도려내기를 받는다. 배치 후보 좌우 뒤집기는 `at` 도 뒤집는다(`layout.ts`).
+    - 바닥이 그 모양 최소보다 작으면 함수는 크기를 키우지 않고 네모로 지은 뒤 「고침: 모양 U(ㄷ자)은 바닥 8×5 이상에서…」로 알린다.
+    - 벽 가구·걸이는 도려 내 내려온 북벽 밑에도 선다(`wallRowOf`) — 창가 돌출 양옆·ㄷ자 가운데·알코브 옆에 책장·벽난로·창.
+    - 설계 방의 ㅁ자 경고(`handInteriorTools` 「칸막이·알코브 없는 직사각형」)는 설계 말로 바꿔 돌려준다(shape 바꾸기·곁방 zone) — 3c Argon 귀족 서재는 「알코브·칸막이」만 듣고 같은 네모를 여덟 번 다시 지었다.
+  - **긴 묶음은 들어가는 만큼(3d):** 묶음이 벽·방보다 길면(책장 3w×3 을 8칸 북벽에) 묶음째 버리지 않고 뒤 기물부터 덜어 들어가는 만큼 놓고 「묶음 전체(3개)는 … 2개만 놓고 bookshelf 3w 를 뺐다」로 알린다. 묶음이 바닥보다 크면 그 이유를 쓴다.
+  - **맨바닥은 모델에게(3d):** 기계 검사 `bare-floor`(`checks.ts`)는 설계 방(`model-designed`)이면 바닥 20칸부터 재고, 고칠 말을 dress_room 이 아니라 「design.w·h 를 줄이거나 묶음을 더해 edit_place 로」로 준다 — 남은 문제가 끝맺음 관문에서 고치기 한 바퀴를 연다. 함수가 방을 줄이거나 채우지 않는다.
+  - **진단(3d):** 3c Argon 「마법사의 서재」는 room_parts 한 번 뒤 «도구 호출 횟수 초과»라며 짓지 않았다 — 실행 기록상 도구는 1회·오류 0, 앞 차례는 제공자 첫 응답 시간 초과였다(제한은 없다, 모델이 지어낸 사유). `OPRN_TURN_DIAG` 면 `turn.diag` 에 제공자 오류 글, `tool.size` 에 도구 결과 글자 수·그림 수를 남긴다(`scripts/lib/piAgentRuntime.ts`). 끝맺음 관문의 「아무것도 안 바뀌었다」 글은 «호출 횟수 초과»로 끝내지 말고 make_place 로 지으라고 이른다.
   - 도구 층: `build_hand_interior_room` 의 `layout.designs:{방 id: RoomDesign}`. 설계가 없는 방은 예전 가구 길(견본·묶음) 그대로.
 
 ## 남은 것
