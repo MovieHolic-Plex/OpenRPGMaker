@@ -14,7 +14,10 @@ import { createBuildRun, type RecordingBuildRun } from "./buildRun";
 import { builderFor } from "./builders";
 import { localizePlaceSpec } from "./builders/modernCity";
 import { localizeCultureSpec } from "./builders/joseon";
-import { villageArgs } from "./builders/village";
+import { villageArgs, villageMapSize } from "./builders/village";
+import { codeTerrainFor, usesCodeTerrain } from "@/editor/tools/authorBeodeulTown";
+import { describeCodeTerrain } from "@/editor/tools/beodeulTerrainGen";
+import { terrainPreviewPng } from "@/editor/tools/beodeulTerrainPreview";
 import { applyModernSetupDefaults, applyStorySetupDefaults, isFreshProject } from "./genreDefaults";
 import { dedupeToolSchemas } from "./schemaDedupe";
 import { adoptExactInterior, interiorAddAnchors, interiorBuilder, interiorEditFromArgs, interiorMoveObjects, roomMaterials, type ObjectEdit } from "./builders/interior";
@@ -79,6 +82,8 @@ export class V2Session {
   readonly designBounced = new Set<string>();
   /** 지형 설계(hints.landform) 없이 온 마을 make_place 를 한 번 되돌려 보낸 장소 이름(2026-10-29 「지형을 먼저 깔고 마을은 지형에 맞춰 자란다」). */
   readonly terrainBounced = new Set<string>();
+  /** 코드 지형 마을: 미리보기로 보여 준 땅(장소 이름 → 씨앗·크기·성격 힌트). 자리(hints.layout)를 받아 지을 때 같은 땅을 쓴다. */
+  readonly villageTerrain = new Map<string, { terrainSeed: number; width: number; height: number; shape: string; previews: number }>();
   /** 같은 청사진을 다시 쓴 횟수(내용이 같으면 바꾸지 않고 다음 동사로 보낸다). */
   blueprintRewrites = 0;
   /** 끝맺음에서 청사진 경로를 함수가 대신 지었는가(한 번만). */
@@ -201,6 +206,16 @@ const HINTS_SCHEMA = {
     townSize: { type: "string" },
     streets: { type: "string" },
     pond: { type: "boolean" },
+    terrainSeed: { type: "number", description: "(마을) 코드 지형 씨앗 — 미리보기 땅이 마음에 안 들 때만 바꾼다" },
+    layout: { type: "object", description: "(마을) 땅 그림 좌표로 고른 자리(x 오른쪽·y 아래 칸). 함수는 가까운 놓을 자리로 옮기고 길을 잇는다", properties: {
+      gather: { type: "object", properties: { x: { type: "number" }, y: { type: "number" }, plaza: { type: "boolean" } }, required: ["x", "y"], description: "모이는 곳(광장·우물)" },
+      landmark: { ...{ type: "object", properties: { x: { type: "number" }, y: { type: "number" } }, required: ["x", "y"] }, description: "높은 곳 건물(망루·예배당·사원) — 보통 높은 단" },
+      anchor: { ...{ type: "object", properties: { x: { type: "number" }, y: { type: "number" } }, required: ["x", "y"] }, description: "큰 건물(여관·회관) — 보통 모이는 곳 곁" },
+      work: { ...{ type: "object", properties: { x: { type: "number" }, y: { type: "number" } }, required: ["x", "y"] }, description: "일터(헛간·곳간)" },
+      houses: { type: "array", items: { type: "object", properties: { x: { type: "number" }, y: { type: "number" } }, required: ["x", "y"] }, description: "집 자리(집 가운데) 3~12" },
+      fields: { type: "array", items: { type: "object", properties: { x: { type: "number" }, y: { type: "number" } }, required: ["x", "y"] }, description: "밭 자리" },
+      exits: { type: "array", items: { type: "string", enum: ["west", "east", "north", "south"] }, description: "큰길이 마을 밖으로 나가는 맵 가장자리 1~2" },
+    } },
   },
 };
 const PLACE_SPEC_SCHEMA = {
@@ -639,16 +654,31 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
         session.missingArt.add(`${spec.name}(${spec.type}${spec.style ? `·${spec.style}` : ""}) — 이 종류를 짓는 빌더가 없다`);
         return text({ ok: false, summary: `${spec.type}${spec.style ? `(${spec.style})` : ""} 을 짓는 빌더가 없다. 다른 type 으로 바꾸거나 사용자에게 못 한다고 알린다.` });
       }
-      // 마을은 지형을 조수가 먼저 설계한다(방 설계와 같은 원칙): hints.landform 없이 오면 마을마다 한 번 되돌려 보낸다. 다시 없이 오면 함수가 테마·씨앗으로 고른다.
-      // 물도 땅 설계다(2026-10-29 맵 반복 조사: 마을 24장 중 19장이 「세로 강+다리+가로 큰길」 — 카드가 river 를 기본처럼 적어 모델이 늘 강가 마을을 골랐다).
-      // 풀밭 마을(theme river·생략)은 water(river|none)도 모델이 정한다 — 빠지면 같은 되돌려 보내기에 함께 묻는다.
-      const villageWaterMissing = builder.id === "village" && (() => { const a = villageArgs(spec).args; return (a.theme === undefined || a.theme === "river") && a.water === undefined && a.walls !== true; })();
-      if (builder.id === "village" && (!spec.hints?.landform || villageWaterMissing) && !session.terrainBounced.has(spec.name)) {
-        session.terrainBounced.add(spec.name);
-        return text({ ok: false, notFailure: true, summary: `아직 짓지 않았다(실패 아님) — 「${spec.name}」의 땅(지형·물)은 네가 먼저 설계한다. 마을은 땅에 맞춰 자란다(강가면 마을이 물가 단에 앉고 나루 길목에 모이는 곳, 산이면 단마다 집, 맨 윗단에 망루·예배당). hints 에 땅 설계를 넣어 make_place 를 바로 다시 부르면 지어진다: `
-          + `landform(terraces 계단식 단 · hill 위 단 위로 불룩 솟은 언덕 · slope 단이 겹겹이 오르는 산골, 위로는 산 숲 · plateau 두 단 더 높은 고원 · flat 평지) · `
-          + `water(river 남쪽으로 동서로 흐르는 강 · none 물 없음 — 요청에 강이 없으면 none 도 좋다) · settle(low 마을이 물가 맨 아래 단 · middle 가운데 단) · tiers(마을 위 단 겹 수 1~4) · high(높은 곳 자리 north·center·west·east). `
-          + `성벽 마을은 평지로 짓는다. 요청에 맞는 땅을 네가 고른다 — 함수는 단 경계·계단·나루·도달성만 맞춘다.` });
+      // 마을(2026-10-30 「지형은 코드가, 마을 배치는 조수가」): 땅은 코드가 만든다(높이맵·침식·강·단). 첫 호출은 짓지 않고 땅 그림(좌표 눈금)과
+      // 요약을 돌려준다 — 모델이 그 그림을 보고 hints.layout 에 자리를 골라 다시 부르면 같은 땅 위에 짓는다(함수는 놓을 수 있는지·길·도달만 검사).
+      if (builder.id === "village") {
+        const va = villageArgs(spec).args; const vt = String(va.theme ?? "river");
+        if (usesCodeTerrain(va, vt)) {
+          const shape = JSON.stringify([va.theme, va.landform, va.terrain, va.water, va.high, va.tiers, spec.hints?.terrainSeed]);
+          const kept = session.villageTerrain.get(spec.name);
+          const hasLayout = !!spec.hints?.layout && typeof spec.hints.layout === "object";
+          if (!hasLayout && (!kept || (kept.shape !== shape && kept.previews < 3))) {
+            const [width, height] = villageMapSize(spec, va);
+            const terrainSeed = typeof spec.hints?.terrainSeed === "number" ? Math.max(0, Math.floor(spec.hints.terrainSeed)) : (spec.salt ?? 0) % 100000;
+            const terrain = codeTerrainFor(vt, va, width, height, terrainSeed);
+            session.villageTerrain.set(spec.name, { terrainSeed, width, height, shape, previews: (kept?.previews ?? 0) + 1 });
+            const res = text({ ok: false, notFailure: true,
+              summary: `아직 짓지 않았다(실패 아님) — 「${spec.name}」의 땅을 코드가 만들었다(${width}×${height}, terrainSeed ${terrainSeed}). 아래 그림(좌표 눈금: 위 x·왼쪽 y, 칸 단위)과 요약을 보고 `
+                + `마을 자리를 네가 고른다 — hints.layout 에 gather{x,y,plaza}(모이는 곳), landmark(높은 곳 건물 — 높은 단 넓은 터), anchor(여관·회관 — 모이는 곳 곁), work(일터), houses[{x,y}] 3~12(집 가운데), fields[{x,y}](밭), exits(큰길이 나가는 맵 가장자리) 를 넣어 같은 make_place 를 다시 부르면 이 땅 위에 짓는다. `
+                + `집은 한 단 평지에(단 경계 검은 선을 걸치지 않게), 물(파랑) 위는 안 된다. 길·계단·널다리는 함수가 잇고, 못 놓은 자리·옮긴 거리·못 낸 길을 보고한다. 땅이 요청과 다르면 hints.landform·water·high 나 terrainSeed 를 바꿔 다시 부르면 새 땅을 보여 준다.`,
+              terrain: describeCodeTerrain(terrain) });
+            const png = terrainPreviewPng(terrain, 8);
+            let bin = ""; for (let k = 0; k < png.length; k += 1) bin += String.fromCharCode(png[k]!);
+            res.content.push({ type: "image", mimeType: "image/png", data: btoa(bin) });
+            return res;
+          }
+          if (kept) spec = { ...spec, hints: { ...(spec.hints ?? {}), terrainSeed: kept.terrainSeed, width: kept.width, height: kept.height } };
+        }
       }
       env.emit({ type: "execution_status", name: "v2.build", ok: true, summary: `${spec.name} 짓는 중(${builder.id})` });
       await builder.prepare?.(spec);

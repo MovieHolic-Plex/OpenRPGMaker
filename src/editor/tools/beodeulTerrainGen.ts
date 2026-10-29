@@ -228,7 +228,7 @@ export function generateCodeTerrain(input: TerrainGenInput): CodeTerrain {
   const r = rng(seed * 2654435761 + 97);
   const pick = <T,>(xs: readonly T[]): T => xs[Math.floor(r() * xs.length)]!;
   const character: TerrainCharacter = input.character ?? pick(["hill", "slope", "terraces", "plateau", "hill", "terraces"] as const);
-  const high: TerrainHigh = input.high ?? (character === "hill" || character === "plateau" ? pick(["center", "center", "north", "west", "east"] as const) : pick(["north", "north", "west", "east", "south"] as const));
+  const high: TerrainHigh = input.high ?? (character === "hill" || character === "plateau" ? pick(["center", "center", "north", "west", "east"] as const) : pick(["north", "north", "west", "east", "north"] as const));
   const n1 = gradientNoise(seed * 31 + 1), n2 = gradientNoise(seed * 31 + 2), n3 = gradientNoise(seed * 31 + 3), n4 = gradientNoise(seed * 31 + 4);
   const F = 16 + r() * 8; // 큰 모양 하나의 칸 수(맵 하나에 산·골이 두세 개)
   const ox = r() * 100, oy = r() * 100;
@@ -339,10 +339,11 @@ export function generateCodeTerrain(input: TerrainGenInput): CodeTerrain {
   const tiersHint = input.tiers && input.tiers > 0 ? Math.min(4, input.tiers) : undefined;
   // 단 문턱(땅 높이 분위수): 성격마다 단 수가 다르다. 맨 아래 단이 넓어야 마을·밭이 선다.
   const fr: number[] = character === "flat" ? [0.78]
-    : character === "slope" ? [0.3, 0.52, 0.7, 0.85].slice(0, (tiersHint ?? 3) + 1)
-    : character === "terraces" ? [0.34, 0.56, 0.76, 0.9].slice(0, (tiersHint ?? 2) + 1)
-    : character === "plateau" ? [0.38, 0.64]
-    : [0.4, 0.64, 0.84].slice(0, (tiersHint ?? 2) + 1);
+    // 단은 넓게(2026-10-30 첫 판: 문턱 넷이 좁은 띠를 여럿 만들어 맵이 등고선 지도처럼 선투성이였다) — 기본 두 단, 힌트로 더
+    : character === "slope" ? [0.36, 0.62, 0.84].slice(0, tiersHint ?? 2)
+    : character === "terraces" ? [0.4, 0.68, 0.88].slice(0, tiersHint ?? 2)
+    : character === "plateau" ? [0.42, 0.68]
+    : [0.48, 0.78, 0.92].slice(0, tiersHint ?? 2);
   const land = [...h].filter((_, c) => !water[c]).sort((a, b) => a - b);
   const thr = fr.map((q) => land[Math.min(land.length - 1, Math.floor(land.length * q))] ?? 1);
   // 자르기 전에 낮은 주파수 잡음으로 높이를 흔든다 — 단 가장자리가 높이맵 등고선을 자로 잰 듯 따라가지 않게
@@ -365,18 +366,18 @@ export function generateCodeTerrain(input: TerrainGenInput): CodeTerrain {
     }
   }
   // 다듬기: 다수결(8이웃) 두 번 → 1칸 목·구멍 정리 → 작은 조각 합치기 → 이웃 단 차 2 넘는 곳 깎기 → tidyLevels
-  for (let pass = 0; pass < 2; pass += 1) {
+  for (let pass = 0; pass < 4; pass += 1) {
     const out = Uint8Array.from(lv);
     for (let y = 1; y < H - 1; y += 1) for (let x = 1; x < W - 1; x += 1) {
       const c = y * W + x; if (water[c]) continue; const cnt = new Map<number, number>();
       for (const [dx, dy] of N8) { const n = (y + dy) * W + x + dx; if (!water[n]) cnt.set(lv[n]!, (cnt.get(lv[n]!) ?? 0) + 1); }
-      const own = cnt.get(lv[c]!) ?? 0; if (own >= 3) continue;
+      const own = cnt.get(lv[c]!) ?? 0; if (own >= 4) continue;
       let best = lv[c]!, bk = own; for (const [L, k] of cnt) if (k > bk) { best = L; bk = k; }
       out[c] = best;
     }
     lv.set(out);
   }
-  const minArea = Math.max(24, Math.round(W * H * 0.012));
+  const minArea = Math.max(60, Math.round(W * H * 0.03));
   for (let pass = 0; pass < 3; pass += 1) {
     const { comp, list } = components(W, H, (a, b) => lv[a] === lv[b], (c) => !water[c]);
     let changed = false;
