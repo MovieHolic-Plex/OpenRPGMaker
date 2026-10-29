@@ -12,6 +12,8 @@ import { applyBlueprintAssembly } from "@/project/blueprintAssembly";
 import { applyBlueprintOpening } from "@/editor/tools/blueprintOpening";
 import { renameBareBlueprintPlaces } from "./blankStart";
 import { alignCodeClues, humanizeBlueprintTokens } from "./codeClues";
+import { settleFurnitureSpots } from "./examineSpot";
+import { createBuildRun } from "./buildRun";
 
 /** 청사진 자동 짓기(한 실행에 한 번씩 — 세션 깃발). 무엇을 지었는지 조수에게 줄 글(없으면 undefined). */
 export async function runFinishAutoBuild(env: PiAssistantV2Env, session: V2Session): Promise<string | undefined> {
@@ -50,6 +52,12 @@ export async function runFinishAutoBuild(env: PiAssistantV2Env, session: V2Sessi
       env.ctx.project = human.project;
       const fixed = [...aligned.notes, ...(human.notes.length ? [`청사진 id 대사 ${human.notes.length}줄을 뜻 낱말로`] : [])];
       if (fixed.length) done.push(`번호·단서 대사: ${fixed.join(" / ").slice(0, 500)}`);
+    }
+    // 그림 없는 조사 칸은 가구에 앉히고, 가구 위 조사는 가구 전체에서 받는다(examineSpot.settleFurnitureSpots).
+    {
+      const run = createBuildRun(env.ctx);
+      const settled = Object.keys(env.ctx.project.maps).flatMap((mapId) => settleFurnitureSpots(run, mapId));
+      if (settled.length) done.push(`조사 자리: ${settled.join(" / ").slice(0, 500)}`);
     }
     if (session.clearLanes && !session.autoLanesDone) {
       session.autoLanesDone = true;

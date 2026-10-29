@@ -143,6 +143,17 @@ v1 의 `script_cutscene` 비트로 옮긴다(`events.ts`).
   옮긴 이벤트는 시작을 옮긴 뒤 `repairEventReach` 로 이름이 가리키는 물건(책상…)·문 그림 칸에 앉힌다. 오프닝·타이틀이 빈 맵 화면(`map-view:<id>`)을 쓰면
   지우기 전에 첫 장소 화면으로 바꾼다(무결성 검사가 지우기를 막았다).
 
+## 조사 자리·조사 표식 (2026-10-29 vm3 terra escape «책상 정면에서는 반응 없음·하이라이트가 흐림»)
+
+- **가구 전체에서 조사**(`examineSpot.settleFurnitureSpots`, 끝맺음): 가구 칸 위의 투명 조사 이벤트는 그 가구(윗층·겹층 이름표가 같은
+  이어진 직사각형, 4×4 까지 — 벽 걸이가 윗층을 차지한 칸도 겹층 이름으로 잇는다)를 몸 사각 `page.footprint` 로 삼는다. 런타임 조사 히트는 몸
+  사각이라 2칸 책상의 어느 칸 앞에서 눌러도 반응한다. 사각 안에 다른 이벤트가 있으면 두지 않는다.
+- **맨바닥 투명 조사 칸**: 높이(below 포함)와 상관없이 옆 가구로 붙이고, 그래도 맨바닥이면 칩셋의 맞는 소품을 세운다. 붙일 가구 판정은
+  윗층 이름표만 본다 — 바닥층 「나무 바닥」 이름표 때문에 실내 가구가 모두 «가구 아님»이 되던 것(`attachToNeighbor`).
+- **조사 표식**(`src/player/playSceneFieldStaging.ts` `syncExamineMarkers`): 가까이 반짝임(page.nearSparkle) 대상이 반경 안일 때와 지금 목표 대상 위에
+  진한 테두리 꺾쇠(▼)를 보통 섞기로 띄운다(몸 사각 맨 윗줄 안쪽, 가볍게 흔들림). 더하기 섞기 빛무리·반짝임은 밝은 바닥에서 흰 번짐으로 사라졌다.
+  주인공이 바로 위 칸에 서면 숨긴다(발을 덮음). 확인: `EXAMINE_AT='{"mapId":…,"x":…,"y":…,"face":"up"}' node scripts/runtime-qa.mjs --scenario examine-marker --netns --browser firefox --project <project.json>`.
+
 ## 켜는 법
 
 - 편집기 주소 `?assistant=v2`, 또는 `localStorage['oprn:assistant-v2'] = '1'`(`src/ai/v2/switch.ts`). `?assistant=v1` 이나 `'0'` 이면 끈다. **기본은 v1** — 기본을 바꾸는 것은 사용자 결정이다.

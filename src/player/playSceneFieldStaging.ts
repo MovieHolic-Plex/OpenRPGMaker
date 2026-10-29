@@ -462,6 +462,7 @@ export function updateFieldStaging(scene: PlaySceneContext): void {
   syncNearSparkles(scene, now);
   syncEventGlows(scene, now);
   syncObjectiveMarkers(scene, now);
+  syncExamineMarkers(scene, now);
   syncLiftRide(scene);
 }
 
@@ -742,6 +743,79 @@ function syncNearSparkles(scene: PlaySceneContext, now: number): void {
     const markerDepth = characterDepth("same", characterSpriteY(view.y, mapTileSize(map))) + 0.5;
     void playParticleEffect(scene, { kind: "particleEffect", preset: near.preset ?? "sparkle", target: { kind: "tile", x: view.x, y: view.y }, durationMs: 900, wait: false }, undefined, markerDepth);
   }
+}
+
+// ── 조사 표식(진한 테두리 금빛 꺾쇠) ─────────────────────────────────────────
+// 2026-10-29 vm3 terra escape 판정 «하이라이트가 흐려 어디를 조사할지 찾기 어렵다», terra jrpg «조사 가능한 물체와 아닌 물체가 구분 안 됨»:
+// 가까이 반짝임은 2칸 안에 들어설 때 한 번(0.9초)이고, 목표 빛무리·반짝임은 더하기(ADD) 섞기라 밝은 바닥·가구 위에서 흰 번짐으로 사라졌다.
+// 조사 대상(가까이 반짝임이 있는 이벤트가 반경 안일 때 + 지금 목표 대상)의 몸 사각 위쪽에 진한 테두리 금빛 꺾쇠를 보통 섞기로 띄운다 —
+// 어느 바닥에서도 테두리가 대비를 만든다. 몸 사각(가구 전체) 가운데 위라 주인공 얼굴을 덮지 않는다. 조사가 끝나 표식 페이지가 없어지면 사라진다.
+
+const EXAMINE_MARKER_TEX = "oprn-fx-examine-marker";
+type ExamineMarkerState = { mapId: string; markers: Map<string, Phaser.GameObjects.Image>; nextCheck: number; want: Map<string, { x: number; y: number }> };
+const examineMarkerStates = new WeakMap<PlaySceneContext, ExamineMarkerState>();
+
+function syncExamineMarkers(scene: PlaySceneContext, now: number): void {
+  const map = scene.map;
+  if (!map || !scene.session || !scene.add) return;
+  let state = examineMarkerStates.get(scene);
+  if (!state || state.mapId !== map.id) {
+    for (const m of state?.markers.values() ?? []) m.destroy();
+    state = { mapId: map.id, markers: new Map(), nextCheck: 0, want: new Map() };
+    examineMarkerStates.set(scene, state);
+  }
+  const size = mapTileSize(map);
+  if (now >= state.nextCheck) {
+    state.nextCheck = now + 200;
+    const project = store.getCurrent();
+    const objective = new Set(objectiveMarkerStates.get(scene)?.parts.keys() ?? []);
+    const want = new Map<string, { x: number; y: number }>();
+    for (const view of runtimeEventViewsForMap(project, map, scene.session, scene.eventPositions)) {
+      const near = view.page?.nearSparkle;
+      const rect = view.bodyRect;
+      const dx = Math.max(rect.left - scene.tileX, 0, scene.tileX - rect.right);
+      const dy = Math.max(rect.top - scene.tileY, 0, scene.tileY - rect.bottom);
+      const inRadius = !!near && Math.max(dx, dy) <= Math.max(1, near.radius);
+      if (!inRadius && !objective.has(view.event.id)) continue;
+      // 늘 빛나는 표지(세이브 포인트)는 따로 보인다.
+      if (view.page?.glow) continue;
+      // 주인공이 바로 위 칸에 서 있으면 표식이 발을 덮는다 — 그때는 화면 아래 「Z 조사 · 이름」 안내가 대신한다.
+      if (scene.tileY === rect.top - 1 && scene.tileX >= rect.left && scene.tileX <= rect.right) continue;
+      want.set(view.event.id, { x: ((rect.left + rect.right + 1) / 2) * size, y: rect.top * size });
+    }
+    state.want = want;
+    for (const [id, m] of state.markers) if (!want.has(id)) { m.destroy(); state.markers.delete(id); }
+    for (const id of want.keys()) {
+      if (state.markers.has(id)) continue;
+      canvasTexture(scene, EXAMINE_MARKER_TEX, 32, (ctx, s) => {
+        // 아래를 가리키는 꺾쇠(▼) — 흰 채움(틴트로 금빛) + 진한 갈색 테두리.
+        ctx.lineJoin = "round";
+        ctx.beginPath();
+        ctx.moveTo(4, 7);
+        ctx.lineTo(s - 4, 7);
+        ctx.lineTo(s / 2, s - 6);
+        ctx.closePath();
+        ctx.lineWidth = 6;
+        ctx.strokeStyle = "rgba(34,20,0,0.95)";
+        ctx.stroke();
+        ctx.fillStyle = "#fff";
+        ctx.fill();
+      });
+      state.markers.set(id, scene.add.image(0, 0, EXAMINE_MARKER_TEX).setTint(0xffd23a).setDepth(MAP_UPPER_LAYER_DEPTH + 900));
+    }
+  }
+  const bob = Math.sin((now / 520) * Math.PI);
+  for (const [id, marker] of state.markers) {
+    const at = state.want.get(id);
+    if (!at) continue;
+    // 몸 사각 맨 윗줄 안쪽 — 위로 띄우면 북벽에 붙은 책장 표식이 방 밖 천장 위에 떴다.
+    marker.setPosition(at.x, at.y + size * 0.22 + bob * size * 0.08).setDisplaySize(size * 0.62, size * 0.62).setAlpha(0.92);
+  }
+}
+
+/** QA: 지금 조사 표식이 붙은 이벤트 id. */
+export function examineMarkerIds(scene: PlaySceneContext): string[] {
+  return [...(examineMarkerStates.get(scene)?.markers.keys() ?? [])];
 }
 
 /** 테스트·QA 가 파티클 그림 없이 레시피를 대조할 수 있게 내보낸다. */
