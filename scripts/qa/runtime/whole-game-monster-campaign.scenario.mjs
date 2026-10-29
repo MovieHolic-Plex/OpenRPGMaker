@@ -66,7 +66,8 @@ function fightBeats(tag, note, mapId, x, y, dir) {
         { kind: "waitForPosition", mapId, x, y },
         // 트레이너 시야에 내려서면 순간이동 직후 전투가 먼저 열린다 — 그때 Enter 를 누르면 「싸운다」 기술 목록이 열린 채 전투 op 가 멈췄다
         // (grunt2). 기다릴 때는 Shift(아무것도 고르지 않음), 말 걸기는 전투가 아직 없을 때만 누르는 pressUntilJs 로.
-        { kind: "pressUntilJs", key: "Shift", fn: `() => (${inBattle})() || (${fieldIdle})()`, maxPresses: 20, settleMs: 500 },
+        // 시야 트레이너는 전투 전에 대사를 먼저 건다(대사창) — 그때도 기다림을 멈추고 아래 Enter 로 넘긴다.
+        { kind: "pressUntilJs", key: "Shift", fn: `() => (${inBattle})() || (${fieldIdle})() || Boolean(document.querySelector("[data-testid='dialogue-box']"))`, maxPresses: 20, settleMs: 500 },
         { kind: "face", dir },
         { kind: "pressUntilJs", key: "Enter", fn: inBattle, maxPresses: 30, settleMs: 500 },
         { kind: "waitFor", testid: "actor-command-fight", state: "present", timeoutMs: 40000 },
