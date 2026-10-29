@@ -6,6 +6,7 @@
 import { FIELD_APPROACH_STYLES, defaultFieldApproachStyle, isFieldApproachStyle, type FieldApproachStyle } from '@/project/fieldApproachStyle';
 import type { Command, Condition, Dir, EventPage, EventPageGraphic, EventPageMovement, GameEvent, GameMap, Project } from '@/project/types';
 import { npcMoveDurationMs, npcPageMoveIntervalMs } from '@/project/characterMotion';
+import { CHASE_ALERT_HOLD_MS, CHASE_STEP_MAX_MS, CHASE_STEP_MIN_MS } from '@/project/chaseTempo';
 import { canMove, isPassable } from '@/project/collision';
 import { genId } from '@/util/id';
 import { buildMapPlacementContext } from '@/ai/mapPlacementContext';
@@ -32,7 +33,11 @@ type Behavior = (typeof BEHAVIORS)[number];
 type Pace = (typeof PACES)[number];
 const ALERTS = ['exclamation', 'anger', 'question', 'none'] as const;
 
-/** 추격 한 칸 = 걸음 트윈(speed) + 결정 간격(frequency). 주인공 걷기는 160ms/칸이라 셋 다 주인공보다 느리다. */
+/**
+ * 추격 걸음 프리셋. 쫓는 동안 한 칸은 런타임이 chaseCellMs(@/project/chaseTempo)로 정한다 — 예전 한 칸(걸음 트윈 speed +
+ * 결정 간격 frequency)을 CHASE_SPEEDUP(2.2)로 나눠 칸 사이에 서지 않고 이어 걷는다: slow 327 · normal 218 · fast 127ms/칸
+ * (주인공 걷기 160). fast 는 주인공보다 빠르고 12칸마다 숨을 고른다. speed·frequency 는 시야 밖 순찰 걸음에도 쓰인다.
+ */
 const CHASE_PACE: Record<Pace, { speed: number; frequency: number }> = {
   slow: { speed: 3, frequency: 4 },
   normal: { speed: 4, frequency: 5 },
@@ -41,9 +46,9 @@ const CHASE_PACE: Record<Pace, { speed: number; frequency: number }> = {
 const PATROL_INTERVAL_MS: Record<Pace, number> = { slow: 1000, normal: 700, fast: 450 };
 const STUN_MS = 3000;
 /** 시야에 든 순간 머리 위 말풍선을 띄우고 이만큼 서 있다가 쫓는다(플레이어가 돌아설 틈). */
-const ALERT_HOLD_MS = 700;
+const ALERT_HOLD_MS = CHASE_ALERT_HOLD_MS;
 /** 시야에서 놓친 뒤 마지막 목격 자리를 이만큼 뒤지다 원래 자리로 돌아간다. */
-const SEARCH_BEFORE_RETURN_MS = 1500;
+const SEARCH_BEFORE_RETURN_MS = 3500;
 const DEFAULT_SIGHT = 4;
 
 /** charset 그래픽의 시트·칸 키(textureKey#characterIndex). 필드 그림 비교용. */
@@ -212,7 +217,7 @@ export interface FieldEnemyChaseOptions {
   readonly searchMs?: number;
   /** 발견 직후 덮치기 칸 수(0 = 없음, 기본 0). 그 칸들은 lungeSpeed 랭크로 쉬지 않고 달려든다. */
   readonly lungeSteps?: number;
-  /** 덮치기 걸음 랭크(1~6, 기본 6 = 주인공 걷기와 같은 160ms/칸 — 계속 걸으면 따라잡히지 않는다). */
+  /** 덮치기 걸음 랭크(1~7, 기본 6 = 주인공 걷기와 같은 160ms/칸, 7 = 80ms/칸). */
   readonly lungeSpeed?: number;
   /** 다가오는 방식. 'auto' = 종족으로. 생략하면 이미 있던 방식을 그대로 둔다. */
   readonly approachStyle?: FieldApproachStyle | 'auto';
@@ -242,11 +247,11 @@ export function makeFieldEnemyChase(project: Project, map: GameMap, event: GameE
   fight.movement = {
     type: 'chase', speed: pace.speed, frequency: pace.frequency, sightRange: range, giveUpRange: range + 4, pathfind: true,
     sight: { range, lineOfSight: true, facing: options.vision ?? 'cone' },
-    pursuit: { scope: 'map', doorDelayMs: 0, searchMs: options.searchMs ?? 2500, onLost: 'return' },
+    pursuit: { scope: 'map', doorDelayMs: 0, searchMs: options.searchMs ?? SEARCH_BEFORE_RETURN_MS, onLost: 'return' },
     ...(dirs.length ? { route: { repeat: true, skippable: false, moves: dirs.flatMap((dir) => [{ kind: 'move' as const, dir }, { kind: 'wait' as const }, { kind: 'wait' as const }]) } } : {}),
     sightAlert: { emote: options.alert ?? 'exclamation', holdMs: ALERT_HOLD_MS },
     ...(options.lungeSteps && options.lungeSteps > 0
-      ? { chaseLunge: { steps: Math.max(1, Math.min(8, Math.round(options.lungeSteps))), speed: Math.max(1, Math.min(6, Math.round(options.lungeSpeed ?? 6))) } }
+      ? { chaseLunge: { steps: Math.max(1, Math.min(8, Math.round(options.lungeSteps))), speed: Math.max(1, Math.min(7, Math.round(options.lungeSpeed ?? 6))) } }
       : {}),
     ...(approachStyle && approachStyle !== 'walk' ? { approachStyle } : {}),
   };
@@ -263,7 +268,7 @@ export interface FieldDetectionTuning {
   readonly sightRange?: number;
   /** 부채꼴 각(30..180°, 기본 90). 주면 시야 모양이 cone 이 된다. */
   readonly coneDegrees?: number;
-  /** 쫓는 동안 한 칸에 드는 시간(160..3000ms). 주인공 걷기 = 160. */
+  /** 쫓는 동안 한 칸에 드는 시간(90..3000ms). 주인공 걷기 = 160 — 그보다 작으면 주인공보다 빠르고 12칸마다 숨을 고른다. */
   readonly chaseStepMs?: number;
   /** 알아챈 순간 말풍선을 띄우고 멈추는 시간(0..3000ms). 짧을수록 빨리 덤빈다. */
   readonly alertMs?: number;
@@ -280,9 +285,9 @@ export interface FieldDetectionTuning {
 export const FIELD_DETECTION_SCHEMA: Record<string, JsonSchema> = {
   sightRange: { type: 'integer', description: '시야(칸, 2..12). 넓을수록 멀리서 알아본다' },
   coneDegrees: { type: 'integer', description: '시야 부채꼴 각(30..180°, 기본 90). 주면 앞쪽 부채꼴 시야가 된다 — 120~150 이면 곁눈으로도 본다(경계병)' },
-  chaseStepMs: { type: 'integer', description: '쫓는 동안 한 칸에 드는 시간(160..3000ms). 주인공 걷기 = 160, 보통 추격 ≈ 480. 작을수록 빨리 다가온다(다가오는 방식의 몸짓은 남는다)' },
-  alertMs: { type: 'integer', description: '알아챈 순간 느낌표를 띄우고 멈추는 시간(0..3000ms, 기본 700). 짧을수록 빨리 덤빈다' },
-  searchMs: { type: 'integer', description: '놓친 뒤 마지막으로 본 자리를 뒤지는 시간(0..20000ms, 기본 1500~2500) — 추격 기억' },
+  chaseStepMs: { type: 'integer', description: '쫓는 동안 한 칸에 드는 시간(90..3000ms). 주인공 걷기 = 160, 보통 추격(pace normal) ≈ 218, fast ≈ 127. 작을수록 빨리 다가온다(다가오는 방식의 몸짓은 남는다). 160 보다 작으면 주인공보다 빨라 12칸 달릴 때마다 숨을 고른다 — 맵에 시야를 끊는 벽·엄폐·숨는 곳을 둘 것' },
+  alertMs: { type: 'integer', description: '알아챈 순간 느낌표를 띄우고 멈추는 시간(0..3000ms, 기본 300). 짧을수록 빨리 덤빈다' },
+  searchMs: { type: 'integer', description: '놓친 뒤 마지막으로 본 자리와 달아난 방향을 뒤지는 시간(0..20000ms, 기본 3500) — 추격 기억' },
   giveUpRange: { type: 'integer', description: '이만큼(칸) 멀어지면 포기하고 돌아간다(시야+1..30)' },
   rush: { type: 'boolean', description: 'true 면 알아챈 뒤 주인공(160ms/칸)보다 빠르게 쉬지 않고 달려와 바로 전투를 건다 — 경비병·사냥꾼 몬스터. 피하려면 시야에 들지 말아야 한다(엄폐·그늘 길을 맵에 둘 것). rushSteps 칸을 달린 뒤에는 지쳐 chaseStepMs 로 떨어진다' },
   rushStepMs: { type: 'integer', description: 'rush 돌진 한 칸 시간(60..150ms, 기본 110). 주인공 걷기 160' },
@@ -301,7 +306,7 @@ export function readFieldDetectionArgs(args: Record<string, unknown>): FieldDete
   const out: { -readonly [K in keyof FieldDetectionTuning]: FieldDetectionTuning[K] } = {};
   const sight = intIn(args.sightRange, 2, 12, 'sightRange'); if (sight !== undefined) out.sightRange = sight;
   const cone = intIn(args.coneDegrees, 30, 180, 'coneDegrees'); if (cone !== undefined) out.coneDegrees = cone;
-  const step = intIn(args.chaseStepMs, 160, 3000, 'chaseStepMs'); if (step !== undefined) out.chaseStepMs = step;
+  const step = intIn(args.chaseStepMs, CHASE_STEP_MIN_MS, CHASE_STEP_MAX_MS, 'chaseStepMs'); if (step !== undefined) out.chaseStepMs = step;
   const alert = intIn(args.alertMs, 0, 3000, 'alertMs'); if (alert !== undefined) out.alertMs = alert;
   const search = intIn(args.searchMs, 0, 20000, 'searchMs'); if (search !== undefined) out.searchMs = search;
   const give = intIn(args.giveUpRange, 3, 30, 'giveUpRange'); if (give !== undefined) out.giveUpRange = give;
@@ -316,7 +321,7 @@ export function readFieldDetectionArgs(args: Record<string, unknown>): FieldDete
 
 /** 추격 박자(ms/칸) → 걸음 랭크(한 칸 미끄러지는 시간)와 칸 사이 쉼. 걸음은 박자에서 쉼 80ms 를 뺀 것 이하의 가장 느린 랭크. */
 export function chaseStepTiming(stepMs: number): { speed: number; moveIntervalMs: number } {
-  const ms = Math.max(160, Math.min(3000, Math.round(stepMs)));
+  const ms = Math.max(CHASE_STEP_MIN_MS, Math.min(CHASE_STEP_MAX_MS, Math.round(stepMs)));
   let speed = 7;
   for (let rank = 1; rank <= 7; rank += 1) if (npcMoveDurationMs(rank) <= ms - 80) { speed = rank; break; }
   return { speed, moveIntervalMs: Math.max(80, ms - npcMoveDurationMs(speed)) };
@@ -342,7 +347,7 @@ export function applyFieldDetection(movement: EventPageMovement, tuning: FieldDe
     const timing = chaseStepTiming(tuning.chaseStepMs);
     next.speed = timing.speed;
     next.moveIntervalMs = timing.moveIntervalMs;
-    next.chaseStepMs = Math.max(160, Math.min(3000, Math.round(tuning.chaseStepMs)));
+    next.chaseStepMs = Math.max(CHASE_STEP_MIN_MS, Math.min(CHASE_STEP_MAX_MS, Math.round(tuning.chaseStepMs)));
     const moves = next.route?.moves ?? [];
     const steps = moves.filter((m) => (m as { kind?: string }).kind === 'move').length;
     // 걸음 박자 = 걸음 바로 뒤의 쉼. 그 밖의 쉼(들를 칸에서 멈춰 서기·고개 돌리기 사이, make_chase_scene patrol.pauseBeats)은
@@ -394,7 +399,7 @@ export const FIELD_ENEMY_TOOLS: readonly ToolDefinition[] = [
     choosesOwnGraphic: (args) => args.graphic === undefined,
     description:
       '필드 맵에 「보이는 적」(심볼 인카운터, 크로노 트리거·FF 심볼식) 한 마리를 놓는다. 걸어 다니는 적에게 닿으면 그 자리에서 전투가 열리고, 이기면 사라지며 맵을 나갔다 들어와도 그대로 사라져 있다(승리 스위치). 패배는 기존 게임 오버 경로, 도망치면 몇 초 기절해 같은 전투가 바로 다시 열리지 않는다. 느낌표(alert)는 chase 는 시야에 든 순간, stationary·patrol 은 닿기 직전에 뜬다. ' +
-      'behavior: stationary=제자리 보초(주인공이 닿거나 부딪히면 전투) · patrol=닫힌 왕복 순찰(patrol.length 칸 직선 또는 patrol.directions 닫힌 경로) · chase=시야(sightRange 칸, 벽 가림) 안에 들면 머리 위 느낌표(alert)와 짧은 멈춤 뒤 쫓아오고, 놓치면 마지막 목격 자리를 잠깐 뒤진 뒤 원래 자리로 돌아간다. chase 에 patrol 을 같이 주면 시야 밖에서는 순찰하다 시야에 들면 쫓고 놓치면 돌아와 다시 순찰한다. pace 는 기본으로 주인공 걷기보다 느려 피할 수 있다(rush:true 면 알아챈 뒤 두 배 빠르기로 달려와 바로 덮친다 — 경비병·사냥꾼). ' +
+      'behavior: stationary=제자리 보초(주인공이 닿거나 부딪히면 전투) · patrol=닫힌 왕복 순찰(patrol.length 칸 직선 또는 patrol.directions 닫힌 경로) · chase=시야(sightRange 칸, 벽 가림) 안에 들면 머리 위 느낌표(alert)와 짧은 멈춤 뒤 쫓아오고, 놓치면 마지막 목격 자리를 잠깐 뒤진 뒤 원래 자리로 돌아간다. chase 에 patrol 을 같이 주면 시야 밖에서는 순찰하다 시야에 들면 쫓고 놓치면 돌아와 다시 순찰한다. 쫓는 동안은 쉬지 않고 길을 찾아 돌아오며, 주인공 진행 방향을 앞질러 막고 여럿이면 갈라져 감싼다. pace 기본 normal(≈218ms/칸, 주인공 걷기 160 보다 조금 느림), fast 는 주인공보다 빠르고 12칸마다 숨을 고른다 — 피하는 수단은 시야를 끊는 벽·엄폐·문·숨는 곳·숨 고를 때 달아나기다(rush:true 면 알아챈 뒤 더 빠르게 달려와 바로 덮친다 — 경비병·사냥꾼). ' +
       '던전 층·들판·길목에서 「몬스터가 돌아다닌다/눈에 보이는 적/피하거나 선제」 요청의 정본 — 한 마리씩 의도한 자리에 놓고 필요한 만큼 여러 번 호출한다(보통 한 맵 3~6마리, 서로 다른 troopId·behavior 로). ' +
       '필드 그림은 **전투 그림이 정본**: 적 그룹 선두 적의 monsterResourceId 와 같은 종류의 charset 을 자동으로 고른다(슬라임→슬라임 칩, 해골→해골 칩). 대응하는 걷기 칩이 없는 종(박쥐·늑대·거미 등)은 **전투에 서는 같은 도트 그림을 정지 심볼로 그대로** 쓴다(다른 그림으로 대체하지 않는다). 전투 그림(monsterResourceId)이 아예 없는 적만 거절한다. ' +
       '쓰지 말 것: 마을·실내 생활 공간(마을 맵은 거부됨), 보스방·이야기 전투(place_battle_blocker 로 조사 전투 + upsert_troop_battle_page), 걸을 때마다 무작위로 터지는 랜덤 인카운터(set_encounter_table), 구역 전체에 리스폰하는 사냥터(make_hunting_ground). 출입구·시작점 주변과 도달 불가 칸은 거부하며 chase 는 입구에서 시야 밖에 놓아야 한다. ' +
@@ -410,7 +415,7 @@ export const FIELD_ENEMY_TOOLS: readonly ToolDefinition[] = [
       coneDegrees: FIELD_DETECTION_SCHEMA.coneDegrees!, chaseStepMs: FIELD_DETECTION_SCHEMA.chaseStepMs!, alertMs: FIELD_DETECTION_SCHEMA.alertMs!, searchMs: FIELD_DETECTION_SCHEMA.searchMs!, rush: FIELD_DETECTION_SCHEMA.rush!, rushStepMs: FIELD_DETECTION_SCHEMA.rushStepMs!, rushSteps: FIELD_DETECTION_SCHEMA.rushSteps!,
       vision: { type: 'string', enum: ['any', 'cone'], description: "behavior:chase 시야 모양. any(기본)=사방, cone=바라보는 방향 앞 부채꼴만(등 뒤로 몰래 지나가면 못 본다)" },
       giveUpRange: { type: 'integer', description: 'behavior:chase 이만큼(칸) 멀어지면 포기하고 출발 칸으로 돌아간다(기본 시야+4, 시야+1..20)' },
-      pace: { type: 'string', enum: [...PACES], description: 'slow(기본)|normal|fast — 셋 다 주인공 걷기보다 느리다' },
+      pace: { type: 'string', enum: [...PACES], description: '쫓는 동안 한 칸: slow ≈327ms · normal(기본) ≈218ms · fast ≈127ms(주인공 걷기 160 보다 빠름, 12칸마다 숨 고름)' },
       approachStyle: { ...APPROACH_STYLE_SCHEMA, description: 'behavior:chase 일 때 ' + APPROACH_STYLE_SCHEMA.description + '. 생략 = auto' },
       graphic: { ...GRAPHIC_SPEC_SCHEMA, description: '생략 시 적 그룹 선두 몬스터 이름으로 검색한 기존 도트' },
       alert: { type: 'string', enum: [...ALERTS], description: '머리 위 말풍선(chase=시야에 든 순간, 그 외=닿기 직전). 기본 exclamation, none 이면 말풍선 없이 바로' },
@@ -423,7 +428,7 @@ export const FIELD_ENEMY_TOOLS: readonly ToolDefinition[] = [
       factionId: { type: 'string', description: '진영(set_factions 로 정의한 id). 적대(태도 -1 이하) 진영의 보이는 적과 2칸 안에서 마주치면 맵 위에서 짧게 부딪히고 전력이 약한 쪽이 사라진다(맵에 다시 들어오면 돌아온다). 플레이어는 두 진영 모두에게 덮쳐진다. 생략 = 선두 적 레코드의 factionId(있고 정의된 진영일 때), 그것도 없으면 진영 싸움 없음' },
       id: { type: 'string' },
     }, ['mapId', 'x', 'y']),
-    invalidArgsExample: { mapId: 'map_dungeon_1', x: 12, y: 8, troopId: 'troop_bat', behavior: 'chase', sightRange: 4, pace: 'slow' },
+    invalidArgsExample: { mapId: 'map_dungeon_1', x: 12, y: 8, troopId: 'troop_bat', behavior: 'chase', sightRange: 4, pace: 'normal' },
     run(draft: Project, args): ToolExecResult {
       const map = requireMap(draft, args.mapId as string);
       const x = Number(args.x), y = Number(args.y);
@@ -452,7 +457,7 @@ export const FIELD_ENEMY_TOOLS: readonly ToolDefinition[] = [
       const troop = draft.database.troops.find((entry) => entry.id === troopId);
       if (!troop) throw new ToolError(`존재하지 않는 troopId: ${troopId} — ${draft.database.troops.slice(0, 8).map((entry) => entry.id).join(', ') || '(적 그룹 없음 — upsert_troop 먼저)'}`, { code: 'troop-not-found', mapId: map.id });
       const behavior: Behavior = oneOf(args.behavior, BEHAVIORS, 'stationary', 'behavior');
-      const pace: Pace = oneOf(args.pace, PACES, 'slow', 'pace');
+      const pace: Pace = oneOf(args.pace, PACES, 'normal', 'pace');
       const alert = oneOf(args.alert, ALERTS, 'exclamation', 'alert');
       const canEscape = args.canEscape !== false;
       const respawnSec = args.respawnSec === undefined ? 0 : Number(args.respawnSec);
@@ -606,7 +611,7 @@ export const FIELD_ENEMY_TOOLS: readonly ToolDefinition[] = [
     description:
       '이미 놓인 「보이는 적」(place_field_enemy 의 필드 적 페이지)을 한꺼번에 「보면 달려드는」 적으로 맞춘다 — 시야(칸)·시야 모양·추격 걸음과 발견 직후 「덮치기」(lungeSteps 칸을 lungeSpeed 랭크로 쉬지 않고 달려듦). ' +
       '「적이 더 멀리서 알아보고 빠르게 덮치게」「추격을 세게」 요청의 정본. mapIds 를 주면 그 맵만, 생략하면 필드 적이 있는 모든 맵. 순찰 경로는 시야 밖 걸음으로 그대로 살리고, 입구에서 시야 안이면 그 맵의 시야를 줄인다(들어서자마자 덮치지 않게). ' +
-      '덮치기 걸음은 주인공 걷기(랭크 6)보다 빠르게 할 수 없다 — 계속 걸으면 피할 수 있어야 한다. 보스·이야기 전투(조사 전투)는 건드리지 않는다.',
+      '덮치기는 주인공보다 빠를 수 있다(랭크 7) — 대신 덮치기가 끝나면 평소 걸음으로 떨어지고, 주인공보다 빠른 추격자는 12칸마다 숨을 고른다. 피할 길(시야를 끊는 벽·엄폐·숨는 곳)을 맵에 둘 것. 보스·이야기 전투(조사 전투)는 건드리지 않는다.',
     parameters: schema({
       mapIds: { type: 'array', items: { type: 'string' }, description: '고칠 맵(생략 = 필드 적이 있는 모든 맵)' },
       sightRange: { type: 'integer', description: '시야(칸, 2..12, 기본 5)' },
@@ -614,7 +619,7 @@ export const FIELD_ENEMY_TOOLS: readonly ToolDefinition[] = [
       vision: { type: 'string', enum: ['any', 'cone'], description: 'cone(기본) = 앞쪽 부채꼴, any = 사방' },
       pace: { type: 'string', enum: [...PACES], description: '덮치기 뒤 평소 추격 걸음(기본 fast)' },
       lungeSteps: { type: 'integer', description: '발견 직후 덮치는 칸 수(0..8, 0 = 없음)' },
-      lungeSpeed: { type: 'integer', description: '덮치기 걸음 랭크(1..6, 기본 6 = 주인공 걷기와 같은 빠르기)' },
+      lungeSpeed: { type: 'integer', description: '덮치기 걸음 랭크(1..7, 기본 6 = 주인공 걷기와 같은 빠르기, 7 = 두 배)' },
       approachStyle: { ...APPROACH_STYLE_SCHEMA, description: APPROACH_STYLE_SCHEMA.description + '. 생략 = 지금 방식 그대로' },
     }, []),
     invalidArgsExample: { sightRange: 7, lungeSteps: 3, lungeSpeed: 6 },
@@ -625,7 +630,7 @@ export const FIELD_ENEMY_TOOLS: readonly ToolDefinition[] = [
       const steps = args.lungeSteps === undefined ? 0 : Number(args.lungeSteps);
       if (!Number.isInteger(steps) || steps < 0 || steps > 8) throw new ToolError('lungeSteps 는 0..8 입니다.', { code: 'invalid-args' });
       const speed = args.lungeSpeed === undefined ? 6 : Number(args.lungeSpeed);
-      if (!Number.isInteger(speed) || speed < 1 || speed > 6) throw new ToolError('lungeSpeed 는 1..6 입니다(주인공 걷기 6 보다 빠르면 피할 수 없다).', { code: 'invalid-args' });
+      if (!Number.isInteger(speed) || speed < 1 || speed > 7) throw new ToolError('lungeSpeed 는 1..7 입니다.', { code: 'invalid-args' });
       if (args.pace !== undefined && !(PACES as readonly string[]).includes(String(args.pace))) throw new ToolError(`pace 는 ${PACES.join('|')} 입니다.`, { code: 'invalid-args' });
       const wanted = Array.isArray(args.mapIds) ? (args.mapIds as unknown[]).map(String) : undefined;
       for (const id of wanted ?? []) if (!draft.maps[id]) throw new ToolError(`맵을 찾을 수 없습니다: ${id}`, { code: 'map-not-found' });
@@ -657,7 +662,7 @@ export const FIELD_ENEMY_TOOLS: readonly ToolDefinition[] = [
     domains: ['event'],
     description:
       '추격하는 적(보면 쫓아오는 필드 적·순찰 경비병 — movement chase 페이지)의 「알아채기·다가오기」만 조율한다. 다른 것(그림·전투·순찰 길)은 그대로. ' +
-      'sightRange 시야(칸) · coneDegrees 부채꼴 각(넓을수록 곁눈으로도 봄) · chaseStepMs 쫓는 동안 한 칸 시간(작을수록 빨리 다가옴, 주인공 걷기 160) · alertMs 알아챈 뒤 멈춤(짧을수록 빨리 덤빔) · searchMs 놓친 뒤 뒤지는 시간(추격 기억) · giveUpRange 포기 거리 · rush 알아채면 두 배 빠르기로 달려와 덮침. ' +
+      'sightRange 시야(칸) · coneDegrees 부채꼴 각(넓을수록 곁눈으로도 봄) · chaseStepMs 쫓는 동안 한 칸 시간(작을수록 빨리 다가옴, 주인공 걷기 160, 그보다 작으면 12칸마다 숨 고름) · alertMs 알아챈 뒤 멈춤(짧을수록 빨리 덤빔) · searchMs 놓친 뒤 뒤지는 시간(추격 기억) · giveUpRange 포기 거리 · rush 알아채면 두 배 빠르기로 달려와 덮침. ' +
       '「몬스터가 보면 순식간에 달려와 전투를 걸게」「몬스터가 보면 훨씬 빨리 다가오게」「밤 순찰을 더 예민하게, 더 넓게 찾게」 요청의 정본. eventIds 를 주면 그 적만, 생략하면 mapIds(생략 = 모든 맵)의 추격 적 전부. ' +
       '순찰 경로가 있으면 칸 사이 쉼을 늘려 시야 밖 순찰 걸음은 예전 빠르기를 지킨다. 시야를 넓힐 때 입구가 시야+1 칸 안이면 그 적만 시야를 줄인다(들어서자마자 덮치지 않게). ' +
       '잠입 미니게임(경비 시야 피하기)이면 visionLight:{} 로 적마다 바라보는 쪽 바닥에 부채꼴 등불 빛을 깔아 시야를 눈에 보이게 한다 — 그 맵 조명(set_scene_mood)을 정한 다음에 부른다(조명을 나중에 다시 깔면 빛이 지워진다).',

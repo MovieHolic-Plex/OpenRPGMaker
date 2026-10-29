@@ -12,7 +12,7 @@ export const FIELD_APPROACH_STYLE_LABELS: Readonly<Record<FieldApproachStyle, st
   pounce: "도약 — 웅크렸다 두 칸을 아치로 뛰어든다(거미·개구리)",
   hop: "통통 — 한 칸씩 튀어 오르며 착지에 찌그러진다(슬라임)",
   swoop: "급강하 — 좌우로 흔들리며 들쭉날쭉 날아든다(박쥐·새)",
-  lumber: "육중 — 느릿하지만 쉬지 않고 끝까지 쫓는다(골렘·거인)",
+  lumber: "육중 — 묵직한 몸짓으로 쉬지 않고 끝까지 쫓는다(골렘·거인)",
   float: "부유 — 둥실 떠서 미끄러지듯 온다(유령·정령)",
   slither: "기기 — 몸을 S자로 흔들며 다가온다(뱀·벌레)",
 };
@@ -38,14 +38,16 @@ export interface FieldApproachRecipe {
   readonly giveUpBonus?: number;
 }
 
+// 2026-10-29 「쫓아오는 속도를 2배 이상」: 한 칸(걸음 + 쉼 평균)을 예전의 절반 이하로 줄였다(괄호 안이 예전).
+// 주인공 걷기(160)보다 빠른 방식은 런타임이 12칸마다 숨을 고르게 한다(@/project/chaseTempo).
 const RECIPES: Readonly<Record<Exclude<FieldApproachStyle, "walk">, FieldApproachRecipe>> = {
-  dash: { stepMs: 130, lungeStepMs: 85, burst: 0, pauseMs: 0 },
-  pounce: { stepMs: 150, lungeStepMs: 120, burst: 2, pauseMs: 520, hop: 0.7 },
-  hop: { stepMs: 260, burst: 1, pauseMs: 200, hop: 0.38 },
-  swoop: { stepMs: 135, lungeStepMs: 110, burst: 0, pauseMs: 60, sway: 0.4, bob: 0.12, erratic: 0.3 },
-  lumber: { stepMs: 300, burst: 0, pauseMs: 0, bob: -0.06, giveUpBonus: 8 },
-  float: { stepMs: 230, burst: 0, pauseMs: 0, bob: 0.14 },
-  slither: { stepMs: 170, burst: 0, pauseMs: 90, sway: 0.22 },
+  dash: { stepMs: 100, lungeStepMs: 75, burst: 0, pauseMs: 0 }, // (130)
+  pounce: { stepMs: 110, lungeStepMs: 90, burst: 2, pauseMs: 200, hop: 0.7 }, // (150·150+520 → 칸당 410) → 210
+  hop: { stepMs: 120, burst: 1, pauseMs: 90, hop: 0.38 }, // (260+200 = 460) → 210
+  swoop: { stepMs: 100, lungeStepMs: 85, burst: 0, pauseMs: 30, sway: 0.4, bob: 0.12, erratic: 0.3 }, // (135+60 = 195) → 130
+  lumber: { stepMs: 150, burst: 0, pauseMs: 0, bob: -0.06, giveUpBonus: 8 }, // (300)
+  float: { stepMs: 110, burst: 0, pauseMs: 0, bob: 0.14 }, // (230)
+  slither: { stepMs: 85, burst: 0, pauseMs: 40, sway: 0.22 }, // (170+90 = 260) → 125
 };
 
 export function isFieldApproachStyle(value: unknown): value is FieldApproachStyle {
