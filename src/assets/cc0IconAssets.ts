@@ -324,7 +324,10 @@ export const CC0_ICON_ASSETS = [
   })),
 ] as const satisfies readonly Cc0IconAsset[];
 
+// 자원 id 해석은 프로젝트 글자 수만 번 불린다(웹 플레이어 미리 받기 목록) — 배열을 매번 훑지 않는다.
+let cc0IconPathById: Map<string, string> | undefined;
 export function resolveCc0IconAssetUrl(resourceId: string): string | null {
-  const asset = CC0_ICON_ASSETS.find((entry) => entry.id === resourceId);
-  return asset ? `/${asset.path}` : null;
+  cc0IconPathById ??= new Map(CC0_ICON_ASSETS.map((entry): [string, string] => [entry.id, entry.path]).reverse());
+  const path = cc0IconPathById.get(resourceId);
+  return path === undefined ? null : `/${path}`;
 }
