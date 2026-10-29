@@ -24,7 +24,6 @@ import { blankFillTileFor, createStarterMap } from "@/project/defaults/defaultMa
 import { createJpCityTileset, JP_CITY_ID } from "@/project/defaults/jpCity";
 import { deserialize, serialize } from "@/project/io";
 import { applyMaouKonbiniLore } from "./maouKonbiniLore";
-import { openingMapViewCrop } from "@/project/openingMapView";
 import type { ActorRecord as Actor, Command, EnemyRecord as Enemy, GameMap, Project, TroopRecord as Troop } from "@/project/types";
 import { FLAGSHIP_BEAT_MANIFESTS } from "./beats";
 import {
@@ -32,6 +31,7 @@ import {
   gone, ifCond, mustBlock, mustReach, mustWalk, nearestFree, note, page, panBack, panTo, playSe, say, setSw, setVar, shake, stopBgm, swOff, swOn, think, thinkAs,
   timedChoice, tint, transfer, varAtLeast, varIs, voice, wait, walk, walkTo, type Who,
 } from "./maouKonbiniKit";
+import { buildMaouOpening, buildMaouThrone, setupMaouTitle, stageMaouRoomWake } from "./maouKonbiniOpening";
 import type { FlagshipDemoBuildResult } from "./types";
 
 // ── 상태 ──
@@ -68,8 +68,6 @@ const M = {
 } as const;
 
 // ── 소리 ──
-const BGM_TITLE = "cc0-bgm-rtp-com-001"; // 장난꾼의 수레 — 타이틀
-const BGM_THRONE = "cc0-bgm-rtp-thr-001";
 const BGM_BOSS = "easyrpg-music-boss-3"; // 출하 번들에 든 곡만 쓴다(카탈로그 곡은 설치형이라 빠질 수 있다)
 const BGM_ROOM = "cc0-bgm-rtp-rad-002";
 const BGM_SHOP = "cc0-bgm-rtp-pon-001";
@@ -281,79 +279,7 @@ function buildMaps(project: Project): Links {
   return links;
 }
 
-// ── 0) 마왕성 옥좌의 방 ──
-function buildThrone(project: Project, roomWake: Cell): Cell {
-  const map = project.maps[M.throne]!;
-  const start = mustWalk(project, map, { x: 23, y: 5 }, "옥좌 앞");
-  mustBlock(project, map, { x: 23, y: 4 }, "옥좌");
-  const leonAt = mustWalk(project, map, { x: 23, y: 9 }, "용사 자리");
-  const garetAt = nearestFree(project, map, { x: 22, y: 10 }, [leonAt]);
-  const miraAt = nearestFree(project, map, { x: 24, y: 10 }, [leonAt, garetAt]);
-  const L = "ev_mk_t_leon", G = "ev_mk_t_garet", R = "ev_mk_t_mira";
-  const fight: Command[] = [
-    ...fadeIn(900),
-    ...caption("마계력 999년. 마왕성 최상층, 옥좌의 방."),
-    ...say("leonF", "base", "여기까지다, 마왕 제르바스! 사천왕은 모두 쓰러뜨렸다!"),
-    ...say("maouF", "base", "……사천왕? 아, 걔들 오늘 칼퇴했다."),
-    ...say("leonF", "base", "…뭐?"),
-    ...say("maouF", "base", "잘 왔다, 용사여. 너를 기다리다 옥좌에 엉덩이 자국이 났다."),
-    ...say("maouF", "base", "그래서 제안 하나 하지. 나와 손을 잡는다면 — 세계의 절반을 주마."),
-    ...say("leonF", "base", "거절한다!"),
-    ...say("maouF", "base", "그럼 4분의 1."),
-    ...say("leonF", "base", "거절한다!!"),
-    ...say("maouF", "base", "8분의 1. 연금과 휴가 포함."),
-    ...say("mira", "base", "…레온, 저거 은근히 조건 좋은데?"),
-    ...say("leonF", "base", "미라, 흔들리지 마! 그리고 마왕, 협상하지 마!"),
-    ...say("garet", "base", "(나도 휴가는 좀 끌리는데…)"),
-    emote(L, "anger"),
-    ...say("maouF", "base", "흥. 어리석은 것들. 그렇다면 힘으로 굴복시켜 주마!"),
-    shake(500, "3"), playSe(SE_DARK),
-    { kind: "battleProcessing", troopId: "troop_mk_castle", canEscape: false, canLose: true, branchOnResult: true,
-      victoryBranch: [
-        ...say("maouF", "base", "크하하하! 이것이 마왕의 힘이다!"),
-        ...say("leonF", "base", "아직이다…! 이 목숨을 걸고 — 금단의 봉인술!"),
-      ],
-      defeatBranch: [
-        ...say("leonF", "base", "끝이다, 마왕! …어? 왜 안 쓰러져?"),
-        ...say("maouF", "base", "마왕은 체력이 0이 되어도 2페이즈가 있다. 상식이다."),
-        ...say("leonF", "base", "치사하잖아!! 그렇다면 — 금단의 봉인술!"),
-      ] } as Command,
-    ...say("leonF", "base", "『동귀어진』! 너도 나도, 이 세계에서 사라지는 거다!"),
-    ...say("maouF", "base", "뭐, 뭐라고!? 잠깐, 연금은 어떻게 되는—"),
-    playSe(SE_FLASH), flash("white", 900), shake(900, "6"), wait(400),
-    { kind: "setLighting", ambient: 0, color: "#ffffff", transitionMs: 0 } as Command,
-    flash("white", 1400), playSe(SE_BOOM), wait(900),
-    ...caption("빛이 모든 것을 삼켰다."),
-    stopBgm(),
-    ...fadeOut(1200),
-    wait(800),
-    setVar(V_STAGE, "=", 1),
-    // 전생 — 파티가 현대의 몸(마오)으로 바뀐다.
-    { kind: "changeParty", actorId: DEFAULT_ACTOR_ID, action: "add" } as Command,
-    { kind: "changeParty", actorId: DEFAULT_ACTOR_ID, action: "lead" } as Command,
-    { kind: "changeParty", actorId: MAOU_TRUE, action: "remove" } as Command,
-    transfer(M.room, roomWake, "down"),
-  ];
-  map.events.push(event("ev_mk_throne_scene", "최후의 결전", { x: 1, y: 1 }, [
-    page("ev_mk_throne_scene_p", [varIs(V_STAGE, 0)], fight, { trigger: "auto" }),
-    gone("ev_mk_throne_scene_done", [varAtLeast(V_STAGE, 1)]),
-  ]));
-  map.events.push(event(L, "용사 레온", leonAt, [page(`${L}_p`, [], [...say("leonF", "base", "각오해라, 마왕!")], { who: "leonF", dir: "up" })]));
-  map.events.push(event(G, "성기사 가렛", garetAt, [page(`${G}_p`, [], [...say("garet", "base", "…")], { who: "garet", dir: "up" })]));
-  map.events.push(event(R, "마법사 미라", miraAt, [page(`${R}_p`, [], [...say("mira", "base", "…")], { who: "mira", dir: "up" })]));
-  map.defaultLighting = {
-    ambient: 0.5, color: "#2a0618",
-    sources: [
-      { id: "throne_glow", at: { x: 23, y: 4 }, radius: 4.5, intensity: 1, color: "#b03cff", flicker: true },
-      { id: "brazier_l", at: { x: 20, y: 4 }, radius: 2.4, intensity: 0.9, color: "#ff7a2a", flicker: true },
-      { id: "brazier_r", at: { x: 26, y: 4 }, radius: 2.4, intensity: 0.9, color: "#ff7a2a", flicker: true },
-      { id: "hall_l", at: { x: 18, y: 8 }, radius: 2.2, intensity: 0.7, color: "#ff7a2a", flicker: true },
-      { id: "hall_r", at: { x: 28, y: 8 }, radius: 2.2, intensity: 0.7, color: "#ff7a2a", flicker: true },
-    ],
-  };
-  map.bgm = { mode: "custom", resourceId: BGM_THRONE } as GameMap["bgm"];
-  return start;
-}
+// ── 0) 마왕성 옥좌의 방 · 오프닝 · 타이틀 → maouKonbiniOpening.ts ──
 
 // ── 1) 원룸 ──
 function buildRoom(project: Project, _links: Links, konbiniArrive: Cell): Cell {
@@ -1312,89 +1238,6 @@ function buildShrine(project: Project, backToStreet: Cell): Cell {
   return arrive;
 }
 
-// ── 오프닝(5컷, 게임 맵 그대로 + 칩 배우) ──
-function buildOpening(project: Project): void {
-  project.system.opening = { enabled: true, skippable: true, scenes: [] };
-  const STAGE = { width: 384, height: 216 };
-  const LB = 0.15;
-  const tile = 16;
-  type Actor = { id: string; res: string; idx: number; cell: Cell; dir?: "up" | "down" | "left" | "right"; to?: Cell; startMs?: number; durMs?: number };
-  const shot = (id: string, ms: number, mapId: string | null, focus: Cell, zoom: number, actors: Actor[], cues: { atMs: number; text: string; color?: string }[],
-    opts: { transition?: Record<string, unknown>; camera?: Record<string, unknown>; tintColor?: string; tintOpacity?: number; emotes?: { target: string; preset: string; startMs: number; endMs: number }[]; text?: { id: string; text: string; y: number; size: number; color: string; startMs: number }[] } = {}) => {
-    execTool(project, "create_opening_animatic_shot", { shotId: id, durationMs: ms, width: STAGE.width, height: STAGE.height, background: "#000000", replace: true, clearLayers: true });
-    execTool(project, "set_opening_pixel_grid", { shotId: id, width: STAGE.width, height: STAGE.height });
-    if (mapId) {
-      execTool(project, "place_opening_background", { shotId: id, layerId: "bg", mapId, focus, zoom });
-      const crop = openingMapViewCrop(project.maps[mapId]!, STAGE, focus, zoom);
-      const sc = STAGE.width / crop.width;
-      const scale = Math.max(1, Math.round(sc));
-      const pos = (c: Cell) => ({ x: Math.round(((c.x + 0.5) * tile - crop.x) * sc), y: Math.round(((c.y + 1) * tile - crop.y) * sc - 16 * scale) });
-      for (const a of actors) {
-        const p = pos(a.cell);
-        const args: Record<string, unknown> = { shotId: id, layerId: a.id, charsetResourceId: a.res, characterIndex: a.idx, direction: a.dir ?? "down", scale, x: p.x, y: p.y, stride: 8 * scale };
-        if (a.to) { const q = pos(a.to); Object.assign(args, { fromX: p.x, fromY: p.y, toX: q.x, toY: q.y, startMs: a.startMs ?? 0, durationMs: a.durMs ?? ms }); }
-        execTool(project, "place_opening_charset_actor", args);
-      }
-      if (opts.tintColor) {
-        execTool(project, "upsert_opening_layer", { shotId: id, layer: { id: "tint", kind: "shape", shape: "rect", color: opts.tintColor, x: 0, y: 0, width: STAGE.width, height: STAGE.height, anchorX: 0, anchorY: 0, opacity: opts.tintOpacity ?? 0.45, blend: "multiply" } });
-      }
-    }
-    for (const t of opts.text ?? []) {
-      execTool(project, "upsert_opening_layer", { shotId: id, layer: { id: t.id, kind: "text", text: t.text, x: STAGE.width / 2, y: t.y, width: 360, height: 30, color: t.color, startMs: t.startMs,
-        typography: { fontSize: t.size, align: "center", typewriterMs: 900 } } });
-    }
-    for (const [i, e] of (opts.emotes ?? []).entries()) {
-      execTool(project, "upsert_opening_emote", { shotId: id, layerId: `emote_${i}`, preset: e.preset, targetLayerId: e.target, startMs: e.startMs, endMs: e.endMs });
-    }
-    if (opts.camera) execTool(project, "animate_opening_camera", { shotId: id, camera: opts.camera });
-    execTool(project, "set_opening_transition", { shotId: id, transition: opts.transition ?? { kind: "fade", durationMs: 700 }, letterbox: LB });
-    if (cues.length) execTool(project, "set_opening_caption", { shotId: id, layerId: "caption", letterbox: LB, color: "#fff0dc", fontSize: 11, fadeOutMs: 400, cues: cues.map((c) => ({ ...c, typewriterMs: 700 })) });
-  };
-  const MON2 = "easyrpg-charset-monster2", ACT1 = "easyrpg-charset-actor1";
-  shot("mk_op_legend", 7600, M.throne, { x: 23, y: 7 }, 1, [
-    { id: "maou", res: MON2, idx: 7, cell: { x: 23, y: 5 } },
-    { id: "k_lily", res: MON2, idx: 0, cell: { x: 21, y: 7 } },
-    { id: "k_dragon", res: MON2, idx: 1, cell: { x: 25, y: 7 } },
-    { id: "k_bark", res: MON2, idx: 3, cell: { x: 19, y: 9 } },
-    { id: "k_nos", res: MON2, idx: 2, cell: { x: 27, y: 9 } },
-  ], [
-    { atMs: 400, text: "마계력 999년. 암흑 마왕 제르바스는 세계의 절반을 손에 넣었다." },
-    { atMs: 4200, text: "곁에는 충성스러운 사천왕. 나머지 절반도 시간문제였다." },
-  ], { tintColor: "#5a1a60", tintOpacity: 0.4, camera: { from: { x: 192, y: 118, zoom: 1.08 }, to: { x: 192, y: 104, zoom: 1 } }, transition: { kind: "dither", durationMs: 700 } });
-  shot("mk_op_heroes", 6800, M.throne, { x: 23, y: 22 }, 1, [
-    { id: "leon", res: ACT1, idx: 0, cell: { x: 23, y: 27 }, dir: "up", to: { x: 23, y: 20 }, durMs: 6000 },
-    { id: "garet", res: ACT1, idx: 2, cell: { x: 22, y: 28 }, dir: "up", to: { x: 22, y: 21 }, durMs: 6000 },
-    { id: "mira", res: ACT1, idx: 5, cell: { x: 24, y: 28 }, dir: "up", to: { x: 24, y: 21 }, durMs: 6000 },
-  ], [
-    { atMs: 400, text: "그리고 마침내, 용사 레온 일행이 옥좌의 방에 닿았다." },
-  ], { tintColor: "#5a1a60", tintOpacity: 0.35 });
-  shot("mk_op_clash", 6400, M.throne, { x: 23, y: 6 }, 2, [
-    { id: "maou", res: MON2, idx: 7, cell: { x: 23, y: 5 } },
-    { id: "leon", res: ACT1, idx: 0, cell: { x: 23, y: 8 }, dir: "up" },
-  ], [
-    { atMs: 500, text: "세계의 운명을 건, 최후의 결전 —", color: "#ff6878" },
-  ], { tintColor: "#6a1030", tintOpacity: 0.35, transition: { kind: "flash", durationMs: 260, color: "#fff6d8" },
-    emotes: [{ target: "maou", preset: "exclaim", startMs: 2600, endMs: 4400 }, { target: "leon", preset: "exclaim", startMs: 2900, endMs: 4600 }],
-    camera: { from: { x: 192, y: 108, zoom: 1 }, to: { x: 192, y: 108, zoom: 1.12 } } });
-  shot("mk_op_card", 6600, null, { x: 0, y: 0 }, 1, [], [], {
-    transition: { kind: "fade", durationMs: 900 },
-    text: [
-      { id: "line1", text: "이것은 세계를 멸망시키려던 마왕이", y: 92, size: 13, color: "#fff0dc", startMs: 500 },
-      { id: "line2", text: "편의점에서 일하게 되는 이야기다.", y: 120, size: 13, color: "#ffd479", startMs: 2600 },
-    ] });
-  shot("mk_op_konbini", 6200, M.konbini, { x: 12, y: 12 }, 2, [
-    { id: "maou", res: "oprn-charset-modern2", idx: 3, cell: { x: 12, y: 11 } },
-    { id: "hina", res: "oprn-charset-modern2", idx: 5, cell: { x: 14, y: 10 }, dir: "left" },
-    { id: "cust", res: "oprn-charset-modern3", idx: 1, cell: { x: 12, y: 13 }, dir: "up" },
-  ], [
-    { atMs: 600, text: "(…진짜로.)" },
-  ], { transition: { kind: "cut", durationMs: 0 }, emotes: [{ target: "maou", preset: "sweat", startMs: 1400, endMs: 4200 }],
-    camera: { from: { x: 192, y: 108, zoom: 1.1 }, to: { x: 192, y: 108, zoom: 1 } } });
-  const opening = project.system.opening!;
-  opening.musicResourceId = BGM_THRONE;
-  for (const scene of opening.scenes) if (scene.kind === "animatic") scene.narration = "";
-}
-
 // ── 엔딩 ──
 // 에필로그는 엔딩 장면(buildCrisis 의 endingScene)이 엔딩 그림 위에서 대사로 흘린다. 카드는 제목·크레딧만 — 같은 문장을 두 번 보이지 않는다.
 function defineEndings(project: Project): void {
@@ -1447,20 +1290,12 @@ export function createMaouKonbiniFlagshipDemo(): FlagshipDemoBuildResult {
   const { fromPark, fromShrine } = buildStreet(project, links, parkArrive, shrineArrive);
   buildPark(project, fromPark);
   buildShrine(project, fromShrine);
-  const throneStart = buildThrone(project, roomWake);
-  buildOpening(project);
+  const throneStart = buildMaouThrone(project, roomWake);
+  stageMaouRoomWake(project);
+  buildMaouOpening(project);
   defineEndings(project);
 
-  execTool(project, "set_title_screen", {
-    title: "전생한 마왕, 편의점 알바 시작하다", logoSubtitle: "이랏샤이마세, 용사여", backgroundResourceId: "oprn-maou-konbini-title",
-    logoStyle: "gold", menuStyle: "plain", musicResourceId: BGM_TITLE,
-    runners: [
-      { resourceId: "oprn-charset-modern2", characterIndex: 3, direction: "right", y: 214, speed: 70, delayMs: 0, everyMs: 9000 },
-      { resourceId: "easyrpg-charset-actor1", characterIndex: 0, direction: "right", y: 214, speed: 70, delayMs: 700, everyMs: 9000 },
-      { resourceId: "oprn-charset-modern2", characterIndex: 5, direction: "right", y: 214, speed: 70, delayMs: 1500, everyMs: 9000 },
-    ],
-  });
-  if (project.system.titleScreen) project.system.titleScreen.backgroundFit = "cover";
+  setupMaouTitle(project);
 
   for (const id of Object.values(M)) { const m = project.maps[id]!; if (!m.defaultLighting) m.defaultLighting = { ambient: 0, color: "#000000", sources: [] }; }
 

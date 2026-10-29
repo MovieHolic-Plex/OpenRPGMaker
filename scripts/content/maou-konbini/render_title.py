@@ -68,44 +68,114 @@ def chip(path, index, direction, pattern=1):
     if key[3] == 255:  # EasyRPG 시트는 왼쪽 위 색이 투명색이다.
         s.putdata([(r, g, b, 0) if (r, g, b, a) == key else (r, g, b, a) for (r, g, b, a) in s.getdata()])
     fw, fh = s.width // 12, s.height // 8
-    row = {"down": 0, "left": 1, "right": 2, "up": 3}[direction]
+    # OPRN 현대 칩은 아래·왼·오른·위, EasyRPG(RM2000) 칩은 위·오른·아래·왼 순서다.
+    order = ("up", "right", "down", "left") if "easyrpg" in path else ("down", "left", "right", "up")
+    row = order.index(direction)
     cx, cy = (index % 4) * 3 + pattern, (index // 4) * 4 + row
     return s.crop((cx * fw, cy * fh, cx * fw + fw, cy * fh + fh))
 
 
+def tinted(im, rgb, amount):
+    """불투명 화소를 rgb 쪽으로 amount 만큼 끌어당긴다(알파 유지)."""
+    over = Image.new("RGBA", im.size, rgb + (255,))
+    mixed = Image.blend(im, over, amount)
+    mixed.putalpha(im.getchannel("A"))
+    return mixed
+
+
+def glow(size, rgb, radius, strength):
+    """가운데가 밝은 둥근 빛(가산용)."""
+    import math
+    g = Image.new("RGBA", size, (0, 0, 0, 0))
+    cx, cy = size[0] / 2, size[1] / 2
+    px = g.load()
+    for y in range(size[1]):
+        for x in range(size[0]):
+            d = math.hypot((x - cx) / radius[0], (y - cy) / radius[1])
+            a = max(0.0, 1 - d) ** 2 * strength
+            if a > 0:
+                px[x, y] = rgb + (int(255 * min(1, a)),)
+    return g
+
+
 def main():
-    proj = json.load(open(sys.argv[1]))
-    out = sys.argv[2]
-    street, T = render_map(proj, "map_mk_street")
-    # 편의점(왼쪽)부터 찻집·큰길까지, 강물이 아래에 걸치게.
-    view = street.crop((0, 4 * T, 20 * T, 4 * T + 180))
-    modern2 = "assets/generated/charsets/Modern2.png"
-    actor1 = "assets/easyrpg/charset/Actor1.png"
-    y0 = 4 * T
-    feet = lambda cx, cy: (cx * T + 8, (cy + 1) * T - y0)
-    cast = [
-        (modern2, 3, "right", feet(4, 9)),    # 마오 — 편의점 앞
-        (modern2, 5, "right", feet(3, 9)),     # 히나
-        (actor1, 0, "left", feet(7, 9)),      # 용사 레온(이세계 모습)이 다가온다
-    ]
-    for path, idx, d, (fx, fy) in cast:
-        c = chip(path, idx, d)
-        view.alpha_composite(c, (fx - c.width // 2, fy - c.height))
-    # 노을빛 — 위는 주황, 아래는 보라.
-    grad = Image.new("RGBA", view.size)
-    for y in range(view.height):
-        t = y / view.height
-        r = int(255 * (1 - t) + 150 * t)
-        g = int(176 * (1 - t) + 110 * t)
-        b = int(120 * (1 - t) + 200 * t)
-        for x in range(view.width):
-            grad.putpixel((x, y), (r, g, b, 255))
+    """타이틀 그림(960×540 = 480×270 의 2배 도트).
+
+    왼쪽: 어둡게 가라앉은 마왕성 옥좌의 방과 4배로 선 마왕 제르바스(Monster2 #7). 글자·메뉴가 얹히는 쪽이라 인물을 두지 않는 빈 바닥이 아래 왼쪽에 남는다.
+    오른쪽: 노을 진 사쿠라자카 상점가, 해피 마트 앞에 선 지금의 마오와 히나(현대 걷기 칩 2배).
+    가운데: 비스듬히 갈라진 빛 이음매 — 「그때」와 「지금」. 새 도트는 없다(맵 타일·번들 칩만 합성).
+    """
     from PIL import ImageChops
-    lit = ImageChops.multiply(view, grad)
-    lit = Image.blend(view, lit, 0.7)
-    lit = lit.resize((lit.width * 3, lit.height * 3), Image.NEAREST)
-    lit.convert("RGB").save(out)
-    print("wrote", out, lit.size)
+    proj = json.load(open(sys.argv[1]))
+    proj = proj.get("project", proj)
+    out = sys.argv[2]
+    W, H = 480, 270
+    canvas = Image.new("RGBA", (W, H), (10, 6, 18, 255))
+
+    # 오른쪽 — 상점가(2배). 편의점 문이 이음매 오른쪽에 오게 자른다.
+    street, T = render_map(proj, "map_mk_street")
+    sx0, sy0 = 4, 26
+    right = street.crop((sx0, sy0, sx0 + 150, sy0 + 135)).resize((300, 270), Image.NEAREST)
+    modern2 = "assets/generated/charsets/Modern2.png"
+    feet = lambda mx, my: ((mx - sx0) * 2, (my - sy0) * 2)
+    for idx, d, (fx, fy) in [(3, "left", feet(52, 158)), (5, "left", feet(72, 156))]:
+        c = chip(modern2, idx, d).resize((48, 64), Image.NEAREST)
+        right.alpha_composite(c, (fx - 24, fy - 64))
+    grad = Image.new("RGBA", right.size)
+    gp = grad.load()
+    for y in range(right.height):
+        t = y / right.height
+        col = (int(255 * (1 - t) + 170 * t), int(178 * (1 - t) + 120 * t), int(130 * (1 - t) + 205 * t), 255)
+        for x in range(right.width):
+            gp[x, y] = col
+    right = Image.blend(right, ImageChops.multiply(right, grad), 0.72)
+    canvas.alpha_composite(right, (W - right.width, 0))
+
+    # 왼쪽 — 옥좌의 방(2배), 보랏빛으로 눌러 어둡게.
+    throne, _ = render_map(proj, "map_mk_throne")
+    tx0, ty0 = 23 * 16 + 8 - 70, 0
+    left = throne.crop((tx0, ty0, tx0 + 125, ty0 + 135)).resize((250, 270), Image.NEAREST)
+    dark = Image.new("RGBA", left.size, (70, 24, 96, 255))
+    left = Image.blend(left, ImageChops.multiply(left, dark), 0.85)
+    lg = glow((220, 220), (190, 70, 255), (110, 110), 0.55)
+    left.alpha_composite(lg, (left.width // 2 - 110 + 40, 30))
+    maou = chip("assets/easyrpg/charset/Monster2.png", 7, "down").resize((96, 128), Image.NEAREST)
+
+    # 비스듬한 이음매: 위 x=245 → 아래 x=195. 왼쪽 그림을 그 선까지만 덮는다.
+    mask = Image.new("L", left.size, 0)
+    mp = mask.load()
+    for y in range(left.height):
+        edge = 245 - 50 * y / (left.height - 1)
+        for x in range(left.width):
+            mp[x, y] = 255 if x < edge else 0
+    canvas.paste(left, (0, 0), mask)
+    seam = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    sp = seam.load()
+    for y in range(H):
+        edge = 245 - 50 * y / (H - 1)
+        for dx in range(-6, 7):
+            x = int(round(edge)) + dx
+            if 0 <= x < W:
+                a = max(0, 1 - abs(dx) / 6.5) ** 1.6
+                sp[x, y] = (255, 196, 120, int(230 * a))
+    canvas.alpha_composite(seam)
+    # 마왕은 이음매를 넘어 선다(그림틀을 깨는 쪽이 「전(前) 마왕」답다). 발밑 그림자 → 몸.
+    mx, my = 170 - 48, H - 128 - 14
+    shadow = tinted(maou, (16, 0, 26), 1.0)
+    shadow.putalpha(shadow.getchannel("A").point(lambda a: int(a * 0.55)))
+    canvas.alpha_composite(shadow, (mx + 6, my + 6))
+    canvas.alpha_composite(maou, (mx, my))
+
+    # 글자가 얹히는 왼쪽 위·메뉴가 얹히는 왼쪽 아래를 한 번 더 어둡게(가독성).
+    veil = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    vp = veil.load()
+    for y in range(H):
+        for x in range(W):
+            top = max(0.0, 1 - y / 120) * max(0.0, 1 - x / 420) * 0.55
+            vp[x, y] = (8, 2, 14, int(255 * min(0.7, top)))
+    canvas.alpha_composite(veil)
+    canvas.resize((W * 2, H * 2), Image.NEAREST).convert("RGB").save(out)
+    print("wrote", out, (W * 2, H * 2))
 
 
 if __name__ == "__main__":
