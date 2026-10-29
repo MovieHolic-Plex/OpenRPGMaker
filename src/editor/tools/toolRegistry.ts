@@ -82,6 +82,7 @@ import { ACTION_TOOLS } from "./actionTools";
 import { PROJECT_WIKI_TOOLS } from "./projectWikiTools";
 import { MAP_TOOLS } from "./mapTools";
 import { LAYER_TOOLS } from "./layerTools";
+import { paintBeodeulPlanTool } from "./beodeulPlanTool";
 import { RELIEF_TOOLS } from "./reliefTools";
 import { TERRAIN_TOOLS } from "./terrainTools";
 import { MAP_LOCATION_TOOLS } from "./mapLocationTools";
@@ -328,6 +329,8 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(MAP_BACKGROUND_GENERATION_TOOLS, "map"),
   // MZ 4층 쓰기(stamp_layer_block·paint_shadow) — 각 툴이 map·tile 두 도메인을 선언한다.
   ...withDomain(LAYER_TOOLS, "map"),
+  // 버들항 칩셋 글자 평면도 칠하기(바위 능선·땅·길·돌바닥 + 소품 + 불탄 집터) — 참고 지도 배치를 칸 단위로 옮긴다.
+  paintBeodeulPlanTool,
   ...withDomain(RELIEF_TOOLS, "map"),
   ...withDomain(TERRAIN_TOOLS, "map"),
   ...withDomain(MAP_LOCATION_TOOLS, "map"),
