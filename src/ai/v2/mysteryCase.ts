@@ -14,6 +14,7 @@ import { eventGives } from "./blueprint";
 import { showExaminedThing } from "./examineArt";
 import { settleExamineSpot } from "./examineSpot";
 import { unreachableEvents } from "./eventReach";
+import { mapRegion } from "./discoverability";
 import { isPassable } from "@/project/collision";
 import { buildPeople } from "./people";
 import type { BuildRun } from "./types";
@@ -132,6 +133,16 @@ function pickCulprit(project: Project, texts: readonly string[], taken: Readonly
     if (taken.has(name)) continue;
     return { role, name, looks: LOOKS[role] ?? "man", place: fromPool?.place ?? "방" };
   }
+  // 직함 없이 이름만 나온 사람(「도윤의 서명이 든 출납 기록」) — 풀의 이름과 맞으면 그 사람(2026-10-29 vm3 terra 추리: 장부가 도윤을 가리키는데 범인을 베티로 세웠다).
+  for (const t of texts) {
+    // 글에 먼저 나온 이름(「도윤의 서명… 베티의 진흙은 외양간에서」 — 앞이 범인, 뒤는 풀려나는 사람).
+    const hits = POOL.flatMap((p) => {
+      const given = p.name.split(" ")[1];
+      const at = given && !taken.has(p.name) ? new RegExp(`${given}(?=[\\s이가은는을를의에게께도과와,.!?]|$)`, "u").exec(t)?.index : undefined;
+      return at === undefined ? [] : [{ p, at }];
+    }).sort((a, b) => a.at - b.at);
+    if (hits[0]) return hits[0].p;
+  }
   void project;
   return undefined;
 }
@@ -150,13 +161,58 @@ const narrate = (lines: readonly string[]): Command[] => lines.map((body) => ({ 
 export function stageMysteryCase(run: BuildRun): string[] {
   const project0 = run.ctx.project;
   if (!project0.gameBlueprint || !isMysteryBlueprint(project0)) return [];
+  const pre: string[] = [];
   if (modelBuiltCase(project0)) {
-    const art = showClueThings(run, resolveSteps(project0));
-    return art.length ? [...art, "추리 사건은 이미 지어져 있어(증거 제시·범인 고르기) 그대로 두었다"] : [];
+    // 우리가 세운 용의자는 남았는데 경로를 다시 지어 마지막 단계의 범인 고르기가 사라졌으면(2026-10-29 vm3 terra 추리: 단서 셋 뒤 장부 보관함이 대사만 하고 엔딩)
+    // 우리 용의자를 걷고 사건을 다시 세운다. 모델이 지은 사건(우리 표식 없는 증거 제시·고르기)은 그대로 둔다.
+    const ours = Object.values(project0.maps).flatMap((map) => (map.events ?? []).filter((ev) => (ev.pages ?? []).some((pg) => / · 탐문$/u.test(String((pg as { name?: string }).name ?? "")))).map((ev) => ({ mapId: map.id, ev })));
+    const last = resolveSteps(project0).at(-1);
+    const lost = last && last.k === project0.gameBlueprint.steps.length - 1 && !(last.ev.pages ?? []).some((pg) => /"kind":"(?:choices|presentItem)"/u.test(JSON.stringify(pg.commands ?? [])));
+    if (!ours.length || !lost) {
+      const art = showClueThings(run, resolveSteps(project0));
+      return [...(art.length ? [...art, "추리 사건은 이미 지어져 있어(증거 제시·범인 고르기) 그대로 두었다"] : []), ...explainRemainingClues(run)];
+    }
+    for (const { mapId, ev } of ours) run.call("remove_event", { mapId, eventId: ev.id });
+    if (modelBuiltCase(run.ctx.project)) return [...showClueThings(run, resolveSteps(run.ctx.project)), ...explainRemainingClues(run)];
+    pre.push(`경로를 다시 지어 범인 고르기가 사라져 사건을 다시 세웠다(용의자 ${ours.length}명 걷음)`);
   }
   const notes = stageCase(run);
   // 단서 칸 소품은 사건을 세운 뒤에 — 범인 대면으로 바뀌어 지운 심문 칸에 소품이 남지 않게.
-  return [...showClueThings(run, resolveSteps(run.ctx.project)), ...notes];
+  return [...pre, ...showClueThings(run, resolveSteps(run.ctx.project)), ...notes, ...explainRemainingClues(run)];
+}
+
+/**
+ * 마지막(범인 지목) 단계가 잠겨 있을 때 남은 단서를 센다 — 「아직 단서가 모자라다. 남은 단서 2개: 「젖은 장화」(여관 동쪽)·「부엌 장부」」.
+ * 앞 단계를 하나씩 마칠 때마다 켜지는 조건으로 페이지를 나눠, 지금 남은 것만 말한다. 되풀이 안전(이름 「남은 단서」 페이지를 다시 쓴다).
+ * 왜(2026-10-29 vm3 terra 추리 판정): 단서 없이 장부 보관함을 조사하면 「먼저 금고를 살펴보자.」뿐 — 몇 개가 남았고 어디인지 몰라 맵을 뒤졌다.
+ */
+function explainRemainingClues(run: BuildRun): string[] {
+  const project = run.ctx.project;
+  const bp = project.gameBlueprint;
+  if (!bp) return [];
+  const steps = resolveSteps(project);
+  const last = steps.at(-1);
+  if (!last || last.k !== bp.steps.length - 1 || steps.length < 3) return [];
+  const clues = steps.filter((r) => r.k < last.k);
+  // 단계 j 의 «열린» 페이지 조건 = 앞 단계를 마쳤다는 표시.
+  const openCond = (r: Resolved): Obj[] | undefined => ((r.ev.pages ?? []).find((pg) => (pg.conditions ?? []).length > 0)?.conditions as unknown as Obj[] | undefined);
+  const pages0 = ((last.ev.pages ?? []) as unknown as Obj[]).filter((pg) => !/^남은 단서/u.test(String(pg.name ?? "")));
+  const lockedAt = pages0.findIndex((pg) => !(pg.conditions as unknown[] | undefined)?.length && JSON.stringify(pg.commands ?? []).includes('"kind":"text"') && !/"kind":"(?:triggerEnding|choices|presentItem)"/u.test(JSON.stringify(pg.commands ?? [])));
+  if (lockedAt < 0) return [];
+  const locked = pages0[lockedAt]!;
+  const where = (r: Resolved) => `「${r.step.event}」(${r.map.id === last.map.id ? mapRegion(r.map, r.ev.x, r.ev.y) : r.map.name ?? r.map.id})`;
+  const progress: Obj[] = [];
+  for (let j = 0; j < clues.length; j += 1) {
+    const cond = j === 0 ? [] : openCond(clues[j]!);
+    if (j > 0 && !cond?.length) return [];
+    const left = clues.slice(j);
+    const body = `아직 단서가 모자라다. 남은 단서 ${left.length}개: ${left.map(where).join("·")}`;
+    progress.push({ ...structuredClone(locked), id: `${String(locked.id ?? last.ev.id)}_left${j}`, name: `남은 단서 ${left.length}`, conditions: structuredClone(cond ?? []), commands: [{ kind: "text", body }] });
+  }
+  const pages = [...pages0.slice(0, lockedAt), ...progress, ...pages0.slice(lockedAt + 1)];
+  if (JSON.stringify(pages) === JSON.stringify(last.ev.pages ?? [])) return [];
+  run.call("upsert_event", { mapId: last.map.id, replacePages: true, event: { id: last.ev.id, pages } });
+  return [`「${last.step.event}」 잠김 대사에 남은 단서 수·자리(${clues.length}단계)`];
 }
 
 function stageCase(run: BuildRun): string[] {
