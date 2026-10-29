@@ -312,6 +312,8 @@ const B = {
     await page.waitForTimeout(4000);
     await play(page, seg, [], async () => false, { maxMs: 60_000 });
     shot(page, "ending-after", 300);
+    // 카드 다음 장(크레딧)까지 넘겨 본다.
+    for (let i = 0; i < 3; i++) { await page.keyboard.press("Enter"); await page.waitForTimeout(3500); shot(page, `${seg.key}-ending-next-${i}`, 200); }
   },
   async power(page, seg, mark) {
     await play(page, seg, [0], async (s) => s.battle, { shotOn: /뿔|용사의 힘/ }); mark("battle");
@@ -321,6 +323,7 @@ const B = {
     shot(page, "power-ending", 2500);
     await page.waitForTimeout(4000);
     await play(page, seg, [], async () => false, { maxMs: 60_000 });
+    for (let i = 0; i < 3; i++) { await page.keyboard.press("Enter"); await page.waitForTimeout(3500); shot(page, `${seg.key}-ending-next-${i}`, 200); }
   },
 };
 const fromCheckpoint = (fn, opts) => async (page, seg, mark) => { await ready(page); await page.waitForTimeout(1500); mark("ready"); await fn(page, seg, mark, opts); };

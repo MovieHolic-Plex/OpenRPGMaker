@@ -1410,15 +1410,16 @@ function defineEndings(project: Project): void {
     "",
     "이랏샤이마세. 또 오십시오.",
   ].join("\n");
-  const end = (id: string, name: string, priority: number, tone: "warm" | "dark", kicker: string, backgroundResourceId: string) =>
+  // 배지로 세 결말을 가른다 — 비우면 둘 다 「해피 엔딩」이 붙어 최고·보통 엔딩이 같은 카드로 보였다(VQA 2026-10-29).
+  const end = (id: string, name: string, priority: number, tone: "warm" | "dark", kicker: string, badge: string, backgroundResourceId: string) =>
     execTool(project, "define_ending", {
       id, name, priority, conditions: [],
-      presentation: { kicker, musicResourceId: BGM_END, tone, portraits: "none", credits, backgroundResourceId },
+      presentation: { kicker, badge, musicResourceId: BGM_END, tone, portraits: "none", credits, backgroundResourceId },
       epilogue: [],
     });
-  end(END_BEST, "이달의 우수 사원", 10, "warm", "해피 마트 사쿠라자카점", END_ART.best);
-  end(END_OK, "내일도 출근합니다", 5, "warm", "해피 마트 사쿠라자카점", END_ART.ok);
-  end(END_POWER, "마왕 재림… 그리고 변상", 5, "dark", "암흑 마왕 제르바스", END_ART.power);
+  end(END_BEST, "이달의 우수 사원", 10, "warm", "해피 마트 사쿠라자카점", "최고 엔딩", END_ART.best);
+  end(END_OK, "내일도 출근합니다", 5, "warm", "해피 마트 사쿠라자카점", "보통 엔딩", END_ART.ok);
+  end(END_POWER, "마왕 재림… 그리고 변상", 5, "dark", "암흑 마왕 제르바스", "마왕 엔딩", END_ART.power);
 }
 
 export function createMaouKonbiniFlagshipDemo(): FlagshipDemoBuildResult {
