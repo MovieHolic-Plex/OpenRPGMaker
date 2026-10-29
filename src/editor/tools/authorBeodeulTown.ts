@@ -685,7 +685,9 @@ function buildVillage(draft: Project, args: Record<string, unknown>, theme: Beod
   const housesOf = (x: typeof r) => Number((x.data as { houses?: number }).houses ?? 0);
   const grown: string[] = [];
   // 지형 먼저 마을도 단 띠에 집이 다 앉지 않으면 같은 방식으로 넓혀 다시 짓는다(줄어든 마을 단에 맞춘 집 수)
-  if ((walls || (terrainFirst && !walls)) && houseCount !== undefined && !rebuilt && housesOf(r) < houseCount) {
+  // 조수가 준 자리(layout)는 그 맵 크기의 땅 좌표다 — 넓혀 다시 지으면 땅이 바뀌어 자리가 어긋난다(못 놓은 자리는 보고로 돌려준다)
+  const layoutGiven = !!args.layout && typeof args.layout === "object" && Object.keys(args.layout as object).length > 0;
+  if ((walls || (terrainFirst && !walls)) && houseCount !== undefined && !rebuilt && !layoutGiven && housesOf(r) < houseCount) {
     const name = draft.maps[mapId]!.name;
     const rebuildAt = (w: number, h: number) => {
       requireTool(MAP_TOOLS, "remove_map").run(draft, { mapId });

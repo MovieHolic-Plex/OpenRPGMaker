@@ -624,7 +624,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   // ---------- 2'. 코드 지형 위 자리와 길(options.codeTerrain) ----------
   // 조수가 고른 자리(layout)를 놓을 수 있는 가장 가까운 자리로 옮겨 잡고(옮긴 거리를 보고), 모이는 곳에서 맵 가장자리로 큰길(폭 2),
   // 문 앞마다 길망까지 골목(폭 1)을 계단 계약을 지키는 최소 비용 길로 낸다. 길이 지나는 단 경계는 3b 가 계단으로 만든다.
-  const RESV = 13, RESV_DOOR = 14;
+  const RESV = 13, RESV_DOOR = 14, PLAZA_HOLD = 15;
   type CodeSpot = { role: "landmark" | "anchor" | "work" | "house"; k: Kit; x: number; y: number; front: { x: number; y: number }; want: LayoutPoint; moved: number };
   const codePlan = codeT ? (() => {
     const given = options.layout && Object.keys(options.layout).length ? options.layout : null;
@@ -661,6 +661,24 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       report.failed.push(`${role}(${want.x},${want.y}) — 9칸 안에 한 단 평지 자리가 없다`);
       return null;
     };
+    const snapFree = (p: LayoutPoint): number => {
+      let best = -1, bd = Infinity;
+      for (let y = 1; y < H - 1; y += 1) for (let x = 1; x < W - 1; x += 1) { const c = idx(x, y); if (occ[c] !== FREE) continue; const d = Math.hypot(x - p.x, y - p.y); if (d < bd) { bd = d; best = c; } }
+      return best;
+    };
+    // 모이는 곳을 먼저 잡고 광장 자리(판석 덩이)를 비워 둔다 — 집이 먼저 들어서면 광장이 0칸이 됐다(2026-10-30 ab12 장터 마을 「광장·우물·노점이 없다」)
+    const gWant = layout.gather ?? { x: Math.round(W / 2), y: Math.round(H / 2) };
+    const g0 = snapFree(gWant);
+    const gx = g0 % W, gy = Math.floor(g0 / W);
+    if (Math.hypot(gx - gWant.x, gy - gWant.y) >= 3) report.moved.push(`gather(${gWant.x},${gWant.y})→(${gx},${gy})`);
+    const plazaHold: number[] = [];
+    if ((layout.gather?.plaza ?? true) !== false) {
+      const gl = lv[g0]!;
+      for (let y = gy - 3; y <= gy + 3; y += 1) for (let x = gx - 5; x <= gx + 5; x += 1) {
+        if (!inMap(x, y) || ((x - gx) / 5.5) ** 2 + ((y - gy) / 3.5) ** 2 > 1) continue; const c = idx(x, y);
+        if (occ[c] === FREE && lv[c] === gl) { occ[c] = PLAZA_HOLD; plazaHold.push(c); }
+      }
+    }
     const shuffled = <T,>(xs: readonly T[]): T[] => xs.map((v) => ({ v, r: rand() })).sort((a, b) => a.r - b.r).map((o) => o.v);
     const doorKits = (ids: readonly string[]) => have(ids).filter(doorAtBottom).map(K);
     if (layout.landmark) { const ks = shuffled(doorKits(TIER_LANDMARKS[theme] ?? spec.anchors)); if (ks.length) place("landmark", ks, layout.landmark); }
@@ -691,16 +709,8 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       },
       wide,
     });
-    const opts = (wide: boolean) => ({ maxStep: 2, before: 3, after: 3, turnCost: wide ? 1.6 : 0.9, climbCost: 6, fordCost: 4, wide, climbNS: true });
-    const snapFree = (p: LayoutPoint): number => {
-      let best = -1, bd = Infinity;
-      for (let y = 1; y < H - 1; y += 1) for (let x = 1; x < W - 1; x += 1) { const c = idx(x, y); if (occ[c] !== FREE) continue; const d = Math.hypot(x - p.x, y - p.y); if (d < bd) { bd = d; best = c; } }
-      return best;
-    };
-    const gWant = layout.gather ?? (spots[0] ? { x: spots[0].front.x, y: spots[0].front.y + 3 } : { x: Math.round(W / 2), y: Math.round(H / 2) });
-    const g0 = snapFree(gWant);
-    const gx = g0 % W, gy = Math.floor(g0 / W);
-    if (Math.hypot(gx - gWant.x, gy - gWant.y) >= 3) report.moved.push(`gather(${gWant.x},${gWant.y})→(${gx},${gy})`);
+    const opts = (wide: boolean) => ({ maxStep: 2, before: 3, after: 3, turnCost: wide ? 2.2 : 1.4, climbCost: 6, fordCost: 4, wide, climbNS: true });
+    for (const c of plazaHold) if (occ[c] === PLAZA_HOLD) occ[c] = FREE;
     const paths: { name: string; cells: number[]; width: number }[] = [];
     const edgeOf = (e: string) => (c: number) => { const x = c % W, y = (c - x) / W; return e === "west" ? x === 0 : e === "east" ? x === W - 1 : e === "north" ? y === 0 : y === H - 1; };
     const exits = layout.exits?.length ? layout.exits : (W >= H ? ["west", "east"] as const : ["north", "south"] as const);

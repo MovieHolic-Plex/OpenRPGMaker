@@ -238,15 +238,17 @@ export function generateCodeTerrain(input: TerrainGenInput): CodeTerrain {
   const h = new Float32Array(W * H);
   const warpK = 0.9 + r() * 0.8;
   for (let y = 0; y < H; y += 1) for (let x = 0; x < W; x += 1) {
-    const px = x / F + ox, py = y / F + oy;
+    // 동서로 늘인 잡음(가로 1.8배) — 3/4 시점에서 높이는 남쪽을 보는 절벽으로만 읽힌다. 둥근 잡음은 남북 단 경계(가는 선)를 맵 곳곳에 그었다(ab12 판정자 「풀밭 위 다각형 윤곽선」)
+    const px = x / (F * 1.8) + ox, py = y / F + oy;
     // domain warping(Quilez): 좌표를 fBm 으로 한 번 비튼다 — 둥근 혹이 고르게 늘어선 fBm 이 골짜기·곶 모양으로 흐른다
     const qx = fbm(n2, px, py, 3), qy = fbm(n3, px + 5.2, py + 1.3, 3);
     const base = fbm(n1, px + warpK * qx, py + warpK * qy, 5) * 0.5 + 0.5;
     const rid = ridged(n4, px * 0.9 + qx, py * 0.9 + qy);
     // 큰 모양(요청 성격): 기울기·혹·고원
     const tx = (x - hx) / W, ty = (y - hy) / H;
-    const toward = high === "north" ? 1 - y / H : high === "south" ? y / H : high === "west" ? 1 - x / W : high === "east" ? x / W : 1 - Math.min(1, Math.hypot(tx, ty) * 2.2);
-    const dome = Math.max(0, 1 - Math.hypot(tx * 1.6, ty * 1.6) * 2.2);
+    // 서·동이 높아도 북쪽으로 함께 오른다 — 순수 동서 기울기는 단 경계가 남북으로 달려 가는 선만 남았다
+    const toward = high === "north" ? 1 - y / H : high === "south" ? y / H : high === "west" ? 0.5 * (1 - x / W) + 0.5 * (1 - y / H) : high === "east" ? 0.5 * (x / W) + 0.5 * (1 - y / H) : 1 - Math.min(1, Math.hypot(tx, ty) * 2.2);
+    const dome = Math.max(0, 1 - Math.hypot(tx * 1.1, ty * 1.9) * 2.2); // 동서로 긴 혹
     let v: number;
     if (character === "flat") v = 0.55 * base + 0.15 * toward;
     else if (character === "slope") v = 0.35 * base + 0.5 * toward + 0.3 * rid * toward;
@@ -377,7 +379,33 @@ export function generateCodeTerrain(input: TerrainGenInput): CodeTerrain {
     }
     lv.set(out);
   }
-  const minArea = Math.max(60, Math.round(W * H * 0.03));
+  // 옆 경계 비스듬히(2026-10-30 ab12 판정 8:12 「풀밭 위 다각형 윤곽선·떠 있는 대지」): 3/4 탑뷰에서 높이는 남쪽을 보는 절벽으로만 두껍게 그려지고
+  // 동·서를 보는 단 경계는 가는 세로선이 된다. 두 줄 넘게 곧게 내려가는 옆 경계는 아래 칸부터 한 칸씩 깎아 45° 계단(짧은 남향 절벽이 이어진 사선)으로 —
+  // 옛 띠 지형의 「사라지는 옆면」과 같은 읽힘. 물 칸은 건드리지 않는다.
+  for (let pass = 0; pass < 40; pass += 1) {
+    let changed = false;
+    for (let y = H - 2; y >= 0; y -= 1) for (let x = 0; x < W; x += 1) {
+      const c = y * W + x, b = c + W; if (water[c] || water[b]) continue; const L = lv[c]!; if (lv[b] !== L) continue;
+      for (const dx of [1, -1]) {
+        const X = x + dx; if (X < 0 || X >= W) continue; const n = c + dx, m = b + dx;
+        if (water[n] || water[m] || lv[n]! >= L || lv[m]! >= L) continue;
+        lv[b] = Math.max(lv[m]!, lv[n]!); changed = true; break;
+      }
+    }
+    if (!changed) break;
+  }
+  // 가로 다수결(7칸 창) 두 번 — 등고선의 한두 열짜리 톱니(판정자 「지그재그 절벽」)를 펴서 남쪽 절벽 띠가 길게 이어지게
+  for (let pass = 0; pass < 2; pass += 1) {
+    const out = Uint8Array.from(lv);
+    for (let y = 0; y < H; y += 1) for (let x = 3; x < W - 3; x += 1) {
+      const c = y * W + x; if (water[c]) continue; const cnt = new Map<number, number>();
+      for (let k = -3; k <= 3; k += 1) { const n = c + k; if (!water[n]) cnt.set(lv[n]!, (cnt.get(lv[n]!) ?? 0) + 1); }
+      let best = lv[c]!, bk = cnt.get(lv[c]!) ?? 0; for (const [L, k] of cnt) if (k > bk) { best = L; bk = k; }
+      if (bk >= 4) out[c] = best;
+    }
+    lv.set(out);
+  }
+  const minArea = Math.max(80, Math.round(W * H * 0.045));
   for (let pass = 0; pass < 3; pass += 1) {
     const { comp, list } = components(W, H, (a, b) => lv[a] === lv[b], (c) => !water[c]);
     let changed = false;
@@ -389,6 +417,16 @@ export function generateCodeTerrain(input: TerrainGenInput): CodeTerrain {
       if (best >= 0) { for (const c of cs) lv[c] = best; changed = true; }
     });
     if (!changed) break;
+  }
+  // 움푹 팬 단(둘레가 모두 더 높은 단이고 맵 가장자리·물에 안 닿는 덩이)은 메운다 — 3/4 에서 북쪽 절벽만 보이고 나머지는 가는 선으로 떠 보였다
+  {
+    const { comp, list } = components(W, H, (a, b) => lv[a] === lv[b], (c) => !water[c]);
+    list.forEach((cs, i) => {
+      let rim = 99, open = false;
+      for (const c of cs) { const x = c % W, y = (c - x) / W; if (x === 0 || y === 0 || x === W - 1 || y === H - 1) { open = true; break; }
+        for (const [dx, dy] of N4) { const n = (y + dy) * W + x + dx; if (comp[n] === i) continue; if (water[n] || lv[n]! < lv[c]!) { open = true; break; } rim = Math.min(rim, lv[n]!); } if (open) break; }
+      if (!open && rim < 99 && cs.length < W * H * 0.12) for (const c of cs) lv[c] = rim;
+    });
   }
   for (let pass = 0; pass < 6; pass += 1) {
     let changed = false;
