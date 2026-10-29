@@ -1498,11 +1498,15 @@ function actorNode(view: BattleBattlerSnapshot, index = 0, count = 4): HTMLEleme
   if (resourceId) {
     node.dataset.authoredBattler = "true";
     node.dataset.battleCharsetResourceId = resourceId;
-    const pixelParty = Object.hasOwn(store.getCurrent().assets.uploaded, resourceId) ? undefined : partyPixelSheet(resourceId);
+    let pixelParty = Object.hasOwn(store.getCurrent().assets.uploaded, resourceId) ? undefined : partyPixelSheet(resourceId);
     if (pixelParty) {
       // 사람형이 아닌 파티원(짐승·탈것·몬스터 칩): 24포즈 걷기 칩 시트 대신 몬스터 9칸 시트로 선다. battlerExtended 는 켜지 않는다.
       node.dataset.pixelParty = pixelParty.motion;
       node.dataset.pixelEnemyCell = String(pixelParty.cell);
+      // 배우 기록의 battleScalePercent 로 상자를 키운다(마왕처럼 사람보다 큰 파티원). 시트는 배경 백분율이라 함께 커진다.
+      const record = store.getCurrent().database.actors.find((entry) => entry.id === actor.recordId);
+      const box = Math.round(pixelParty.box * (record?.battleScalePercent ?? 100) / 100);
+      pixelParty = { ...pixelParty, box };
       node.style.setProperty("--party-pixel-box", `${pixelParty.box}px`);
       // 상자가 사람 도트(96px)보다 넓은 파티원(화면 128px)은 오른쪽 사선 열 끝(x 294)에서 무대 밖으로 잘렸다
       // (범선·비공정 녹화 실측). 넓어진 반폭만큼 왼쪽으로 당긴다(RM 논리 px = 화면 px / 2).

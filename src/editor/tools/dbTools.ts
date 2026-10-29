@@ -770,6 +770,7 @@ const actorRecordSchema = objectSchema({
   characterIndex: { type: "integer", minimum: 0, maximum: 7, description: "캐릭터셋 안의 칸(0~7). 0은 기본값" },
   characterTransparent: booleanSchema(),
   battleCharacterResourceId: stringSchema(),
+  battleScalePercent: integerSchema("측면 전투 표시 크기(%). 50~300, 기본 100. 파티원 몬스터 도트 시트(party-pixel-*)에 적용 — 마왕처럼 사람보다 큰 파티원."),
   critical: objectSchema({ enabled: booleanSchema(), chanceDenominator: integerSchema() }),
   parameterCurves: parameterCurvesSchema,
   expCurve: expCurveSchema,

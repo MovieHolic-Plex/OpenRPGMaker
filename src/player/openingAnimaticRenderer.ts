@@ -74,18 +74,25 @@ export function warmAnimaticImages(project: Project, a: OpeningAnimatic): void {
  * 같은 맵 객체면 다시 그리지 않는다(편집기에서 맵을 고치면 새 객체라 새로 그린다).
  */
 const mapViewImages = new WeakMap<object, Promise<HTMLImageElement>>();
+const mapViewBySignature = new Map<string, { signature: string; promise: Promise<HTMLImageElement> }>();
 function mapViewImage(project: Project, mapId: string): Promise<HTMLImageElement> {
   const map = project.maps[mapId];
   if (!map) return Promise.reject(Error(`애니메틱 맵 배경 없음: ${mapId}`));
   const cached = mapViewImages.get(map);
   if (cached) return cached;
+  // 새 게임은 structuredClone 한 프로젝트로 돈다(preflightProjectForPlay) — 타이틀에서 데워 둔 그림을 객체로만 찾으면
+  // 늘 놓쳐 첫 컷이 「미디어 불러오는 중」으로 2초 멈췄다. 내용이 같은 맵이면 같은 그림을 쓴다.
+  const tileset = project.tilesets[map.tilesetId];
+  const signature = JSON.stringify([mapId, tileset?.image, tileset?.transparentColor, map]);
+  const same = mapViewBySignature.get(mapId);
+  if (same && same.signature === signature) { mapViewImages.set(map, same.promise); return same.promise; }
   const promise = (async () => {
     const canvas = await renderMapViewCanvas(project, { mapId, scale: 1, haze: 0, desaturate: 0 });
     if (!canvas) throw Error(`애니메틱 맵 배경을 그릴 수 없음: ${mapId}`);
     const image = new Image(); image.src = canvas.toDataURL('image/png'); await image.decode(); return image;
   })();
-  promise.catch(() => { if (mapViewImages.get(map) === promise) mapViewImages.delete(map); });
-  mapViewImages.set(map, promise);
+  promise.catch(() => { if (mapViewImages.get(map) === promise) mapViewImages.delete(map); if (mapViewBySignature.get(mapId)?.promise === promise) mapViewBySignature.delete(mapId); });
+  mapViewImages.set(map, promise); mapViewBySignature.set(mapId, { signature, promise });
   return promise;
 }
 export async function loadAnimaticImages(project: Project, a: OpeningAnimatic, signal: AbortSignal): Promise<AnimaticImages> {
@@ -816,6 +823,21 @@ export function playOpeningAnimatic(options: { project: Project; canvas: HTMLCan
     clock += Math.min(STALL_FRAME_MS, Math.max(0, now - lastNow)); lastNow = now; return clock;
   };
   const cues = new Map<string, HTMLAudioElement>();
+  // 큐 소리는 그림과 함께 미리 받아 둔다. 예전에는 큐 시각에 처음 <audio> 를 만들어 받았다 — 받는 사이(수백 ms~2초)에
+  // 짧은 큐(0.5초 레코드 긁힘·칼 뽑기)는 창이 지나 pause 되어 아예 안 들렸고, 긴 큐는 늦은 만큼 앞이 잘렸다(2026-10-29 maou-konbini 녹화).
+  const preloaded = new Map<string, HTMLAudioElement>();
+  const preloadCues = async (): Promise<void> => {
+    const waits: Promise<void>[] = [];
+    for (const cue of a.audioCues ?? []) {
+      const url = resolveAssetResourceUrl(cue.resourceId, { project: options.project }); if (!url || preloaded.has(cue.id)) continue;
+      const el = canvas.ownerDocument.createElement('audio'); el.preload = 'auto'; el.src = url; preloaded.set(cue.id, el);
+      // 컷을 붙잡고 기다리는 것은 첫 1초 안에 울릴 큐뿐이다. 뒤의 큐는 컷이 도는 동안 받힌다.
+      if (cue.atMs < 1000) waits.push(new Promise<void>((resolve) => { for (const type of ['canplay', 'error'] as const) el.addEventListener(type, () => resolve(), { once: true, signal }); }));
+      el.load();
+    }
+    // 느린 망에서도 장면을 오래 붙잡지 않는다(0.8초) — 다 못 받으면 큐 시각에 받으며 튼다(예전 동작). 다음 컷 소리는 cinematicAssets.warm 이 미리 받는다.
+    if (waits.length) await Promise.race([Promise.all(waits), new Promise<void>((resolve) => view.setTimeout(resolve, 800))]);
+  };
   // 브라우저 자동재생 막힘(첫 화면에 사용자 입력이 없을 때 정상)은 그림을 멈출 이유가 아니다 — 소리만 미뤘다가 첫 입력에 다시 튼다.
   // 예전에는 장면 전체를 멈추고 「오디오 큐 자동재생 차단: …」 개발자 글을 화면에 남겼다(2026-10-25 J26).
   const skipped = new Set<string>();
@@ -827,11 +849,11 @@ export function playOpeningAnimatic(options: { project: Project; canvas: HTMLCan
     const retry = () => { retryArmed = false; for (const a of [...blocked]) { blocked.delete(a); if (!stopped && !a.paused) continue; if (!stopped) void a.play().catch(() => { blocked.add(a); armRetry(); }); } };
     for (const type of ['pointerdown', 'keydown', 'touchstart'] as const) doc.addEventListener(type, retry, { once: true, capture: true, signal });
   };
-  const stop = () => { if (stopped) return; stopped = true; view.cancelAnimationFrame(frame); signal.removeEventListener('abort', stop); for (const audio of cues.values()) { audio.pause(); audio.removeAttribute('src'); audio.load(); audio.remove(); } cues.clear(); };
+  const stop = () => { if (stopped) return; stopped = true; view.cancelAnimationFrame(frame); signal.removeEventListener('abort', stop); for (const audio of cues.values()) { audio.pause(); audio.removeAttribute('src'); audio.load(); audio.remove(); } cues.clear(); for (const audio of preloaded.values()) { audio.removeAttribute('src'); audio.load(); } preloaded.clear(); };
   signal.addEventListener('abort', stop, { once: true });
   const ready = (async () => {
     try {
-      const images = await loadAnimaticImages(options.project, a, signal); if (stopped || signal.aborted) return;
+      const [images] = await Promise.all([loadAnimaticImages(options.project, a, signal), preloadCues()]); if (stopped || signal.aborted) return;
       const box = canvas.getBoundingClientRect(), dpr = view.devicePixelRatio || 1;
       const k = a.upscale === 'nearest' && !a.pixelGrid && box.width > 0 && box.height > 0
         ? Math.max(1, Math.min(8, Math.floor(Math.min(box.width * dpr / a.width, box.height * dpr / a.height)))) : 1;
@@ -849,8 +871,10 @@ export function playOpeningAnimatic(options: { project: Project; canvas: HTMLCan
           let audio = cues.get(cue.id); const active = t >= cue.atMs && t < cue.atMs + cue.durationMs;
           if (active && !audio) {
             const url = resolveAssetResourceUrl(cue.resourceId, { project: options.project }); if (!url) { console.warn('[animatic] audio cue missing:', cue.resourceId); skipped.add(cue.id); continue; }
-            audio = canvas.ownerDocument.createElement('audio'); audio.src = url; audio.loop = cue.loop ?? false; audio.dataset.testid = 'animatic-audio-cue'; audio.dataset.cueId = cue.id; audio.volume = animaticCueVolume(cue, t); canvas.parentElement?.append(audio); cues.set(cue.id, audio);
-            audio.addEventListener('loadedmetadata', () => { if (!stopped && audio!.duration > 0 && Number.isFinite(audio!.duration)) { const now = options.holdClockThroughStalls ? Number(canvas.dataset.timeMs ?? 0) : view.performance.now() - started; const offset = (cue.offsetMs ?? 0) / 1000 + Math.max(0, now - cue.atMs) / 1000; audio!.currentTime = audio!.loop ? offset % audio!.duration : Math.min(offset, audio!.duration); } }, { once: true, signal });
+            const warm = preloaded.get(cue.id); preloaded.delete(cue.id);
+            audio = warm ?? canvas.ownerDocument.createElement('audio'); if (!warm) audio.src = url; audio.loop = cue.loop ?? false; audio.dataset.testid = 'animatic-audio-cue'; audio.dataset.cueId = cue.id; audio.volume = animaticCueVolume(cue, t); canvas.parentElement?.append(audio); cues.set(cue.id, audio);
+            const seek = () => { if (!stopped && audio!.duration > 0 && Number.isFinite(audio!.duration)) { const now = options.holdClockThroughStalls ? Number(canvas.dataset.timeMs ?? 0) : view.performance.now() - started; const offset = (cue.offsetMs ?? 0) / 1000 + Math.max(0, now - cue.atMs) / 1000; audio!.currentTime = audio!.loop ? offset % audio!.duration : Math.min(offset, audio!.duration); } };
+            if (audio.readyState >= 1) seek(); else audio.addEventListener('loadedmetadata', seek, { once: true, signal });
             audio.addEventListener('error', () => { if (!stopped) console.warn('[animatic] audio cue failed to load:', cue.resourceId); }, { once: true, signal });
             void audio.play().catch((error: unknown) => {
               // 짧은 큐(0.5초 시계 소리)는 play() 가 끝나기 전에 pause() 되어 AbortError 로 거절된다 — 정상이다(판정자 J26 근본 원인). 무시한다.
