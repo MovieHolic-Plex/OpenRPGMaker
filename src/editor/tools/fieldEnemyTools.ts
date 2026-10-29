@@ -350,15 +350,25 @@ export function applyFieldDetection(movement: EventPageMovement, tuning: FieldDe
     next.chaseStepMs = Math.max(CHASE_STEP_MIN_MS, Math.min(CHASE_STEP_MAX_MS, Math.round(tuning.chaseStepMs)));
     const moves = next.route?.moves ?? [];
     const steps = moves.filter((m) => (m as { kind?: string }).kind === 'move').length;
-    const waits = moves.filter((m) => (m as { kind?: string }).kind === 'wait').length;
+    // 걸음 박자 = 걸음 바로 뒤의 쉼. 그 밖의 쉼(들를 칸에서 멈춰 서기·고개 돌리기 사이, make_chase_scene patrol.pauseBeats)은
+    // 멈춤이라 같은 시간만큼 새 박자로 옮긴다 — 예전엔 쉼을 다 지워 순찰이 끝에서 멈추지 않고 곧장 돌아섰다(2026-10-29 막사 잠입).
+    const stepWaits = moves.filter((m, i) => (m as { kind?: string }).kind === 'wait' && (moves[i - 1] as { kind?: string } | undefined)?.kind === 'move').length;
     if (next.route && steps > 0) {
-      const patrolMs = before.duration + (waits / steps) * before.interval;
+      const patrolMs = before.duration + (stepWaits / steps) * before.interval;
       const perStep = Math.max(1, Math.ceil((patrolMs - npcMoveDurationMs(timing.speed)) / timing.moveIntervalMs));
+      const perPause = Math.max(1, Math.round(before.interval / timing.moveIntervalMs));
       const rebuilt: typeof moves = [];
+      let stepBeat = false;
       for (const m of moves) {
-        if ((m as { kind?: string }).kind === 'wait') continue;
+        const kind = (m as { kind?: string }).kind;
+        if (kind === 'wait') {
+          if (stepBeat) { stepBeat = false; continue; }
+          for (let i = 0; i < perPause; i += 1) rebuilt.push({ kind: 'wait' } as (typeof moves)[number]);
+          continue;
+        }
         rebuilt.push(m);
-        if ((m as { kind?: string }).kind === 'move') for (let i = 0; i < perStep; i += 1) rebuilt.push({ kind: 'wait' } as (typeof moves)[number]);
+        stepBeat = kind === 'move';
+        if (kind === 'move') for (let i = 0; i < perStep; i += 1) rebuilt.push({ kind: 'wait' } as (typeof moves)[number]);
       }
       next.route = { ...next.route, moves: rebuilt };
     }

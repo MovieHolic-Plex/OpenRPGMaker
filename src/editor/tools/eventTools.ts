@@ -3270,7 +3270,7 @@ function shortestWalk(project: Project, map: GameMap, from: Point, to: Point): D
  * 시야에 들면 쫓고, 놓치면 집 칸으로 돌아와 경로 처음부터 다시 돈다 — 이동 하나로(J54: 추격자가 제자리에 서 있었고,
  * 조수가 moveEvent 를 따로 돌려 두 이동이 서로 덮으며 덜덜 떨었다).
  */
-function chaserPatrolRoute(project: Project, map: GameMap, from: Point, raw: unknown, selfId: string): { route: MoveRoute; cells: Point[]; pauses: number } | undefined {
+function chaserPatrolRoute(project: Project, map: GameMap, from: Point, raw: unknown, selfId: string, stepMs = 0): { route: MoveRoute; cells: Point[]; pauses: number } | undefined {
   let dirs: Dir[] | null;
   let waypoints: Point[] = [];
   if (raw === "auto" || raw === true || (raw && typeof raw === "object" && (raw as { mode?: unknown }).mode === "auto" && !(raw as { waypoints?: unknown }).waypoints && !(raw as { directions?: unknown }).directions)) {
@@ -3309,14 +3309,17 @@ function chaserPatrolRoute(project: Project, map: GameMap, from: Point, raw: unk
       if (cell.x === marks[next]!.x && cell.y === marks[next]!.y) { stops.add(index - 1); next += 1; }
     });
   }
+  // 한 박자 = 순찰 한 걸음 시간. 쉼(wait) 하나는 걸음 사이 짧은 틈이라, 한 박자를 채우도록 여러 개로 늘린다.
+  const perBeat = Math.max(1, Math.round(stepMs / Math.max(1, npcMoveIntervalMs(CHASER_FREQUENCY))));
+  const beats = pauseBeats * perBeat;
   const pause = (dir: Dir): MoveCommand[] => {
-    if (spec.lookAround !== true) return Array.from({ length: pauseBeats }, () => ({ kind: "wait" as const }));
-    const third = Math.max(1, Math.floor(pauseBeats / 3));
+    if (spec.lookAround !== true) return Array.from({ length: beats }, () => ({ kind: "wait" as const }));
+    const third = Math.max(1, Math.floor(beats / 3));
     const side: [Dir, Dir] = dir === "left" || dir === "right" ? ["up", "down"] : ["left", "right"];
     return [
       ...Array.from({ length: third }, () => ({ kind: "wait" as const })),
       { kind: "turn" as const, dir: side[0] }, ...Array.from({ length: third }, () => ({ kind: "wait" as const })),
-      { kind: "turn" as const, dir: side[1] }, ...Array.from({ length: Math.max(1, pauseBeats - 2 * third) }, () => ({ kind: "wait" as const })),
+      { kind: "turn" as const, dir: side[1] }, ...Array.from({ length: Math.max(1, beats - 2 * third) }, () => ({ kind: "wait" as const })),
     ];
   };
   const moves: MoveCommand[] = dirs.flatMap((dir, index) => [{ kind: "move" as const, dir }, { kind: "wait" as const }, ...(stops.has(index) ? pause(dir) : [])]);
@@ -3509,7 +3512,7 @@ const makeChaseScene: ToolDefinition = {
           ] : []),
       ] : [];
     if (penalty?.checkpoint) ensureNamedSwitch(draft, penalty.checkpoint.switchId, `추격 중간 지점: ${id}`);
-    const patrolRoute = args.patrol === undefined ? undefined : chaserPatrolRoute(draft, map, { x: placement.x, y: placement.y }, args.patrol, id);
+    const patrolRoute = args.patrol === undefined ? undefined : chaserPatrolRoute(draft, map, { x: placement.x, y: placement.y }, args.patrol, id, paceMs);
     const event: GameEvent = {
       id,
       x: placement.x,
