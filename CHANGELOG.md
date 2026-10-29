@@ -5,6 +5,23 @@
 
 <!-- releases -->
 
+## 0.363.0 — 2026-10-30
+
+### 기능
+
+- **store-music** — eight upcoming genre lines with old-line fallback; guarded game names (이브·off·오프·위처); regen openwiki index (`6c8077e`)
+
+### 수정
+
+- **ai-tools** — forest route finds the town edge from plaza towns; set_project_settings can turn on the HUD objective line (#3930) (`9839a71`)
+- **assistant** — route game-feel / 엔딩곡 music requests to the music tools, add set_game_audio ending role (`7445367`)
+
+## 0.362.0 — 2026-10-30
+
+### 기능
+
+- **assistant** — forest-edge terrain for author_forest_route, close-up zoom for stage_map_reveal; QA records blob-BGM sources for sound re-mix (#3927) (`3639d7d`)
+
 ## 0.361.0 — 2026-10-30
 
 ### 기능

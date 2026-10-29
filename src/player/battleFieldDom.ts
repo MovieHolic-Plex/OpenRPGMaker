@@ -5,7 +5,8 @@ import { beginEnemyCollapse, markEnemyCollapsed } from "@/player/battleEnemyColl
 import { WEATHER_GLYPHS, WEATHER_LABELS } from "@/battle/weather";
 import type { SkillWeatherKind } from "@/project/types";
 import { opaqueBounds, snapshotSprite } from "@/player/battleSpriteSnapshot";
-import { charsetBattler, resolvePartyBattleCharset, retroFallbackPartyBattler } from "@/assets/charsetBattlers";
+import { charsetBattler, partyWalkChipBattler, resolvePartyBattleCharset, retroFallbackPartyBattler } from "@/assets/charsetBattlers";
+import { appendWalkChipBattler, paintWalkChipBattler } from "@/player/battleWalkChipBattler";
 import { resolveBattlerAuras } from "@/assets/battleStateAuras";
 import { retroCastFrameFor, retroMotionPose, retroPartyPixelCell, retroPixelEnemyCell } from "@/player/battleRetroMotion";
 import { pixelEnemyFrame, pixelEnemySheet, pixelEnemySheetUrl, projectPixelEnemySheet } from "@/assets/pixelEnemySheets";
@@ -882,6 +883,11 @@ function applyBattlerPose(node: HTMLElement, pose: ExtendedBattlerPose): void {
     }
     return;
   }
+  if (node.dataset.walkChipBattler && sprite?.classList.contains("battle-actor-sprite")) {
+    // 전투 시트 없는 파티원의 걷기 칩(battleWalkChipBattler.ts). 전투 시트 좌표(POSE_FRAME)를 쓰면 엉뚱한 칸이 나온다.
+    paintWalkChipBattler(node, sprite, pose);
+    return;
+  }
   if (node.dataset.pixelParty && sprite?.classList.contains("battle-actor-sprite")) {
     // 파티원 몬스터 9칸 시트(partyPixelSheets.ts). 적 도트와 같은 칸 배치, 대기 칸만 CSS 루프가 돈다.
     const cell = retroPartyPixelCell(node, pose);
@@ -1492,8 +1498,23 @@ function actorNode(view: BattleBattlerSnapshot, index = 0, count = 4): HTMLEleme
   // 정면 사이드뷰에서는 배우가 저작한 전투 시트를 최우선으로 쓴다. 스킨 공용 전사/마법사를
   // 먼저 쓰면 모든 짝수 배우와 홀수 배우가 각각 같은 사람으로 보이고 faceset과도 어긋난다.
   const retroParty = activeSkin().motionStyle === "retro";
+  const resolvedSheet = place.partyFacing === "front" ? resolvePartyBattleCharset(actor, retroParty) : undefined;
+  // 전투 시트도 칩 대응도 없으면 기본 도트(낯선 검사) 대신 그 배우의 걷기 칩을 그대로 세운다(battleWalkChipBattler.ts).
+  // 걷기 칩 주소를 못 풀면 예전처럼 자리 순서의 기본 도트로 물러난다.
+  const walkChip = place.partyFacing === "front" && retroParty && !resolvedSheet ? partyWalkChipBattler(actor, retroParty) : undefined;
+  const walkChipUrl = walkChip ? resolveAssetResourceUrl(walkChip.characterResourceId, { project: store.getCurrent() }) : null;
+  if (walkChip && walkChipUrl) {
+    appendWalkChipBattler(node, actor.name, walkChip.characterResourceId, walkChip.characterIndex, walkChipUrl);
+    applyBattlerPose(node, actor.pose);
+    node.append(statusIconCluster(actor));
+    if (actor.defeated) node.classList.add("defeated");
+    const walkChipPlatform = document.createElement("span");
+    walkChipPlatform.className = "battle-actor-platform";
+    node.append(walkChipPlatform);
+    return node;
+  }
   const resourceId = place.partyFacing === "front"
-    ? resolvePartyBattleCharset(actor, retroParty) ?? (retroParty ? retroFallbackPartyBattler(index) : undefined)
+    ? resolvedSheet ?? (retroParty ? retroFallbackPartyBattler(index) : undefined)
     : undefined;
   if (resourceId) {
     node.dataset.authoredBattler = "true";

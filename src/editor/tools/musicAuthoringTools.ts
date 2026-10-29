@@ -28,7 +28,7 @@ function playable(p:Project,id:string,kind:'music'|'sound'){
   }else if(/\.(mid|midi)(?:[?#]|$)/i.test(url))throw new ToolError('브라우저가 재생하지 못하는 MIDI입니다.',{code:'invalid-audio'});
   return url;
 }
-const ROLES=['title','opening','field-default','battle-default','victory','defeat','cursor','confirm','cancel','maps','boss'] as const;
+const ROLES=['title','opening','field-default','battle-default','victory','defeat','cursor','confirm','cancel','maps','boss','ending'] as const;
 
 /** 보스전 이름 낱말 — troopIds 를 주지 않았을 때 보스 부대를 고른다. */
 const BOSS_NAME=/보스|boss|마왕|魔王|드래곤|dragon|용왕|수문장|두목|우두머리|대장|관장|군주|lord|king|queen|ボス/i;
@@ -60,6 +60,25 @@ function setBossBattleMusic(p:Project,id:string,troopIds:readonly string[]){
     }
   }
   return touched;
+}
+/**
+ * 엔딩·크레딧 곡: 정의된 엔딩(project.endings[].presentation.musicResourceId — triggerEnding 이 엔딩 화면에 넘긴다)과,
+ * endingIds 를 비웠으면 이벤트에 직접 쓴 엔딩 명령(kind:'ending' 의 presentation)에도 건다. 런타임은 playSceneOverlays 의 「ending-music」.
+ * 새 엔딩·이벤트는 만들지 않는다 — 걸 자리가 없으면 거절한다(2026-10-30 실조수: 엔딩곡 자리가 없어 엔딩 이벤트를 새로 지었다).
+ */
+function setEndingMusic(p:Project,id:string,endingIds:readonly string[]){
+  const endings=p.endings??[];
+  const unknown=endingIds.filter(e=>!endings.some(ending=>ending.id===e));
+  if(unknown.length)throw new ToolError('없는 엔딩: '+unknown.join(', ')+' — list_endings 로 id 를 확인하라: '+endings.slice(0,12).map(e=>`${e.id}(${e.name})`).join(', '),{code:'ending-not-found'});
+  const picked=endingIds.length?endings.filter(e=>endingIds.includes(e.id)):endings;
+  for(const ending of picked)ending.presentation={...(ending.presentation??{}),musicResourceId:id};
+  const commands:{mapId:string;eventId:string}[]=[];
+  if(!endingIds.length){
+    for(const [mapId,map] of Object.entries(p.maps))for(const event of map.events??[])eachCommandList(event,list=>{for(const c of list)if(c.kind==='ending'){c.presentation={...((c.presentation as Record<string,unknown>|undefined)??{}),musicResourceId:id};commands.push({mapId,eventId:event.id});}});
+    for(const ce of p.commonEvents??[])eachCommandList(ce,list=>{for(const c of list)if(c.kind==='ending'){c.presentation={...((c.presentation as Record<string,unknown>|undefined)??{}),musicResourceId:id};commands.push({mapId:'(공통 이벤트)',eventId:String((ce as {id?:unknown}).id??'')});}});
+  }
+  if(!picked.length&&!commands.length)throw new ToolError('곡을 걸 엔딩이 없습니다(정의된 엔딩도, 이벤트의 엔딩 명령도 없음). 음악만 바라는 요청이면 엔딩을 새로 만들지 말고 곡을 넣어 둔 채 보고에 적으세요.',{code:'ending-not-found'});
+  return {endingIds:picked.map(e=>e.id),commands};
 }
 export const MUSIC_AUTHORING_TOOLS:readonly ToolDefinition[]=[
   tool('get_music_composer','새 음악을 실제 WAV로 만드는 악보·악기·루프 계약. 기존 BGM 선택과 구분.','read',schema({},[]),()=>({summary:'음표를 저작해 독립된 실제 스테레오 WAV를 만들 수 있습니다.',data:{
@@ -100,7 +119,7 @@ export const MUSIC_AUTHORING_TOOLS:readonly ToolDefinition[]=[
     if(!score.tracks.length)throw new ToolError('해당 파트가 없습니다.',{code:'track-not-found'});
     return {summary:'실제로 합성한 악보와 측정값입니다. 음악 청취를 대신하지 않습니다.',data:{resourceId:id,...stored,score}};
   }),
-  tool('set_game_audio','타이틀/오프닝/필드/전투/승리·패배/메뉴 효과음/지정 맵/보스전에 실제 리소스를 연결. 종류와 대상 검증 후 변경. 맵 배경음은 role:maps+mapIds, 모든 전투는 battle-default, 승리 팡파르는 victory(짧은 곡), 보스전만은 role:boss(+troopIds — 비우면 이름에 보스·마왕·드래곤 등이 든 부대) — 그 전투 직전에 곡을 바꾸고 끝나면 되돌리는 명령을 넣는다.','write',schema({role:{type:'string',enum:[...ROLES]},resourceId:str,mapIds:{type:'array',items:str},troopIds:{type:'array',items:str}},['role','resourceId']),(p,args)=>{
+  tool('set_game_audio','타이틀/오프닝/필드/전투/승리·패배/메뉴 효과음/지정 맵/보스전에 실제 리소스를 연결. 종류와 대상 검증 후 변경. 맵 배경음은 role:maps+mapIds, 모든 전투는 battle-default, 승리 팡파르는 victory(짧은 곡), 보스전만은 role:boss(+troopIds — 비우면 이름에 보스·마왕·드래곤 등이 든 부대) — 그 전투 직전에 곡을 바꾸고 끝나면 되돌리는 명령을 넣는다. 엔딩·크레딧 곡은 role:ending(+endingIds — 비우면 모든 엔딩과 이벤트의 엔딩 명령).','write',schema({role:{type:'string',enum:[...ROLES]},resourceId:str,mapIds:{type:'array',items:str},troopIds:{type:'array',items:str},endingIds:{type:'array',items:str}},['role','resourceId']),(p,args)=>{
     const role=String(args.role),id=text(args.resourceId);if(!(ROLES as readonly string[]).includes(role))throw new ToolError('오디오 역할 오류.',{code:'invalid-args'});
     const kind=['cursor','confirm','cancel','defeat'].includes(role)?'sound':'music';
     playable(p,id,kind);
@@ -108,6 +127,12 @@ export const MUSIC_AUTHORING_TOOLS:readonly ToolDefinition[]=[
     if(role==='maps'){if(!Array.isArray(args.mapIds)||!args.mapIds.length||args.mapIds.length>256||args.mapIds.some(id=>typeof id!=='string'||!p.maps[id]))throw new ToolError('실제 mapIds가 필요합니다.',{code:'map-not-found'});maps=[...new Set(args.mapIds as string[])];}
     else if(args.mapIds!==undefined&&!(Array.isArray(args.mapIds)&&args.mapIds.length===0))throw new ToolError('mapIds는 maps 역할에서만 사용합니다.',{code:'invalid-args'});
     if(args.troopIds!==undefined&&role!=='boss')throw new ToolError('troopIds는 boss 역할에서만 사용합니다.',{code:'invalid-args'});
+    const endingIds=Array.isArray(args.endingIds)?(args.endingIds as unknown[]).filter((e):e is string=>typeof e==='string'):[];
+    if(endingIds.length&&role!=='ending')throw new ToolError('endingIds는 ending 역할에서만 사용합니다.',{code:'invalid-args'});
+    if(role==='ending'){
+      const done=setEndingMusic(p,id,endingIds);
+      return {summary:`엔딩 ${done.endingIds.length}개${done.commands.length?`·엔딩 명령 ${done.commands.length}곳`:''}에 곡을 걸었습니다(엔딩 화면이 뜰 때 재생).`,data:{role,resourceId:id,kind,endingIds:done.endingIds,endingCommands:done.commands,verificationScope:'authored-binding'}};
+    }
     if(role==='boss'){
       const troops=p.database.troops??[];
       const given=Array.isArray(args.troopIds)?(args.troopIds as unknown[]).filter((t):t is string=>typeof t==='string'):[];

@@ -20,7 +20,9 @@ type Skin = "pokemon" | "rm2000" | "retro2003" | "classic";
 
 function renderField(options: {
   readonly skin?: Skin;
-  readonly battleCharacterResourceId?: string;
+  readonly battleCharacterResourceId?: string | null;
+  readonly characterResourceId?: string;
+  readonly characterIndex?: number;
 }): HTMLElement {
   const project = deserialize(JSON.stringify(battleFixture));
   // system.battleUiStyle 이 스킨을 정한다(resolveSkinId). 픽스처는 비어 있어 기본 스킨이다.
@@ -36,10 +38,16 @@ function renderField(options: {
   const snapshot: BattleSnapshot = runtime.snapshot();
   const actor = snapshot.actors[0];
   expect(actor, "픽스처에 아군 배틀러가 있다").toBeTruthy();
-  if (options.battleCharacterResourceId !== undefined) {
+  if (options.battleCharacterResourceId === null) {
+    delete (actor as { battleCharacterResourceId?: string }).battleCharacterResourceId;
+  } else if (options.battleCharacterResourceId !== undefined) {
     // 스냅샷은 타입만 readonly 인 순수 객체다. 시트 id 만 갈아 선택 경로를 태운다.
     (actor as { battleCharacterResourceId?: string }).battleCharacterResourceId =
       options.battleCharacterResourceId;
+  }
+  if (options.characterResourceId !== undefined) {
+    (actor as { characterResourceId?: string }).characterResourceId = options.characterResourceId;
+    (actor as { characterIndex?: number }).characterIndex = options.characterIndex ?? 0;
   }
   const field = battleField(snapshot);
   syncBattleField(field, snapshot);
@@ -163,5 +171,41 @@ describe("아군 배틀러 스프라이트 선택", () => {
     expect(first.dataset.authoredBattler).toBe("true");
     expect(first.dataset.battleCharsetResourceId).toBe("charset-battler-actor2-0");
     expect(first.querySelector(".battle-actor-sprite")).not.toBeNull();
+  });
+
+  // 전투 시트도 칩 대응도 없는 걷기 칩(현대 교복 Modern1#0)은 기본 검사(charset-battler-actor1-0)가 아니라
+  // 그 배우의 걷기 칩 한 칸으로 선다. 왼쪽 보기 가운데 칸: 0번 사람 = 칸 (1, 3) → 24×32 × 2배.
+  it.each([
+    ["전투 시트 미지정", null],
+    ["걷기 칩 시트를 전투 시트로 적음", "oprn-charset-modern1"],
+  ] as const)("측면 구도: 전투 시트 없는 걷기 칩 배우는 자기 걷기 칩으로 선다 (%s)", (_label, battleCharacterResourceId) => {
+    const field = renderField({
+      skin: "retro2003",
+      battleCharacterResourceId,
+      characterResourceId: "oprn-charset-modern1",
+      characterIndex: 0,
+    });
+    const first = field.querySelector<HTMLElement>(".battle-actor-group .battle-actor")!;
+    expect(first.dataset.walkChipBattler).toBe("true");
+    expect(first.dataset.battleCharsetResourceId).toBe("oprn-charset-modern1");
+    expect(first.dataset.battlerExtended).toBeUndefined();
+    const sprite = first.querySelector<HTMLElement>(".battle-actor-sprite")!;
+    expect(sprite.dataset.testid).toBe("battle-actor-walk-chip-oprn-charset-modern1-0");
+    expect(sprite.style.width).toBe("48px");
+    expect(sprite.style.height).toBe("64px");
+    expect(sprite.style.backgroundPosition).toBe("-48px -192px");
+    expect(first.dataset.battlePoseFrame).toBe("walk_chip_idle");
+  });
+
+  it("측면 구도: 걷기 칩 대응 전투 시트가 있으면 그대로 그것을 쓴다", () => {
+    const field = renderField({
+      skin: "retro2003",
+      battleCharacterResourceId: null,
+      characterResourceId: "easyrpg-charset-actor2",
+      characterIndex: 0,
+    });
+    const first = field.querySelector<HTMLElement>(".battle-actor-group .battle-actor")!;
+    expect(first.dataset.walkChipBattler).toBeUndefined();
+    expect(first.dataset.battleCharsetResourceId).toBe("charset-battler-actor2-0");
   });
 });
