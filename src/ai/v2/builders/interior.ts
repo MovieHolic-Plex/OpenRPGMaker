@@ -1145,7 +1145,10 @@ export const interiorBuilder: PlaceBuilder = {
       // 탁자·의자는 종류 묶음으로 본다(감옥 견본의 식탁 dining 3x1 이 있는데 「탁자」를 진열대 display 1x1 로 덧놓았다).
       const head = part.id.split(" ")[0]!;
       // 침대·책장도 묶음으로 본다 — 손으로 짠 침실(침대 있음)에 「큰 침대」를 canopy bed 로 덧놓아 침대가 둘이 됐다(room-vig6 bedroom).
-      const KIN = [/^(dining|desk|display|table|counter|work|lab)\b/u, /^(chair|stool|bench|armchair|pew|sofa)\b/u, /\bbed\b/u, /bookshelf|bookcase|^shelf\b/u, /wardrobe/u];
+      // 선반·진열장, 궤짝·자루·바구니도 묶음 — 손으로 짠 시골 잡화점(잡화 선반·단지·초 진열장, 궤짝·자루)에 「선반」을 shelf:potion 으로 벽 진열장 위에 겹쳐 걸고
+      // 「나무 상자」를 도마(chopping block)로 계산대 틈에 덧놓았다(2026-10-29 room-vig8 healing-store major 둘).
+      const KIN = [/^(dining|desk|display|table|counter|work|lab)\b/u, /^(chair|stool|bench|armchair|pew|sofa)\b/u, /\bbed\b/u,
+        /shelf|bookcase|^cabinet\b|apothecary drawers/u, /wardrobe/u, /^(crate|chest|barrel|sack|basket|box|chopping block|seed sacks|loot sacks)\b/u];
       const same = (o: Obj) => { const h = o.id.split(/[ :]/u)[0]!; return h === head || KIN.some((k) => k.test(o.id) && k.test(part.id)); };
       if (settled && !/계단|stair/iu.test(what) && rb.objects.some((o) => same(o) && inZone(o))) { placed.push({ zone: room.id, what, id: part.id }); continue; }
       // 올라가는 계단: 이 방이 맨 북쪽 바깥 벽에 닿지 않으면(위에 다른 방) 맨 북쪽 방 벽에 단다 — 칸막이 속으로 오르는 계단은 틀린 그림이다.
