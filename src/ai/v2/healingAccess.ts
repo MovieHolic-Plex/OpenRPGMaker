@@ -312,3 +312,24 @@ export function ensureSupplyShop(run: BuildRun): string[] {
   });
   return res.ok ? [`${map.name ?? map.id} (${cell.x},${cell.y}) ${SUPPLY_SHOP_NAME}(${goods.join("·")})`] : [];
 }
+
+/**
+ * 시작 맵에 상점이 있는데 시작 돈이 0 이면 그 상점의 가장 싼 회복약 둘 값을 시작 돈으로 준다(10 단위 올림, 100~300). 결정적·되풀이 안전(돈이 있으면 그대로).
+ * 왜(2026-10-29 vm6 argon jrpg 판정 major): 목표가 「장비를 갖춘 뒤 동굴로」인데 소지금 0G — 마을 상인의 약(105G·150G)을 아무것도 살 수 없었고
+ * 돈은 동굴 적을 잡아야 들어왔다. 판정자는 돈 벌 길을 찾다 시간을 썼다.
+ */
+export function ensureStartingGold(run: BuildRun): string[] {
+  const project = run.ctx.project;
+  if ((project.session.gold ?? 0) > 0) return [];
+  const map = project.maps[project.startMapId];
+  if (!map) return [];
+  const ids = new Set<string>();
+  for (const ev of map.events ?? []) for (const p of ev.pages ?? []) for (const c of (p.commands ?? []) as unknown as Record<string, unknown>[]) {
+    if (c.kind === "shop" && Array.isArray(c.itemIds)) for (const id of c.itemIds) ids.add(String(id));
+  }
+  const prices = project.database.items.filter((i) => ids.has(i.id) && (i.price ?? 0) > 0 && (healingItemIds(project).has(i.id) || i.type === "medicine")).map((i) => i.price ?? 0).sort((a, b) => a - b);
+  if (!prices.length) return [];
+  const want = Math.min(300, Math.max(100, Math.ceil(((prices[0] ?? 0) * 2) / 10) * 10));
+  run.ctx.project = { ...project, session: { ...project.session, gold: want } };
+  return [`시작 돈 0G → ${want}G (시작 맵 상점의 가장 싼 약 ${prices[0]}G 둘 값)`];
+}

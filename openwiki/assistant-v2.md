@@ -183,6 +183,14 @@ v1 의 `script_cutscene` 비트로 옮긴다(`events.ts`).
   (vm6 argon 탈출: 밀실을 7×8 로 다시 지어 자물쇠 상자 (3,6)이 육중한 철문 (3,7) 앞을 막은 채 출하, 판정자 «열쇠를 얻었는데 문이 계속 막힘»).
   마감 뒤 맵 지문(맵 크기·`*Tiles` 층·이벤트 자리)을 기록하고, 다음 차례 `finishBuildPending` 이 지문이 달라졌으면 참을 돌려 마감을 다시 돈다(최대 2번).
   재생(`finishReplay`)은 세션이 새라 마감을 늘 돈다 — 이 차이를 재현하려면 `--snapshot <session/snapshots/*-before.json>` 으로 그 차례 직전 상태에서 돌린다.
+- **사람이 길을 찾나 — 자동 플레이 성공은 근거가 아니다(2026-10-29 vm6 argon·flash·terra jrpg, 자동 플레이는 셋 다 성공했는데 판정자는 셋 다 길을 잃었다)**:
+  - 무리와 이야기하는 단계(「마을 사람들과 대화하며 동굴 위치를 알아낸다」)의 투명 칸은 대표 한 사람으로 세운다(`stepSubjects.groupPerson` — 결과·행동의 직함, 없으면 「마을 주민」; 앞 글자가 붙은 「마왕」의 「왕」은 직함이 아니다). 그 칸이 집 벽 위면 3걸음 안 걸어 닿는 바닥으로 내린다(`standOffWall`). vm6 argon 「동굴 가는 길 열기」(6,7)는 집 벽 위 투명 칸, flash 「마을 광장」(5,6)은 맨바닥 투명 칸이었다.
+  - 집 문 그림 칸(`doorArtCells`)에 이벤트가 없고 문 앞·곁에 출입 이벤트가 없으면 투명 접촉 이벤트 「굳게 닫힌 집 문」(`lockedDoors.lockBareHouseDoors`, id `ev_locked_door_x_y` — 청사진 단계 이름 「잠긴 문」과 겹치면 단계 찾기가 이 칸을 잡는다)을 세워 「문이 굳게 잠겨 있다」 한 줄을 보인다(바깥 맵만, 문 칸이 걸을 수 있으면 세우지 않음).
+  - 이름이 봉인·제단·결계인 청사진 단계가 모든 페이지 투명이고 그 칸에 그림이 없으면 3걸음 안에 번들 「돌 제단」 2×2(`bd-pick-castle-catacombs-altar-stone`)를 세우고 이벤트를 제단 아랫줄로(`stepArt.dressBareSealSteps`).
+  - 레버처럼 장애물을 치우는 이벤트의 다음 목표가 그 장애물(「「막힌 바위」를 찾아가자」 — 바위는 레버로 사라진다)이면 떼고(`shipDefaults.dropVanishedTargetObjectives`), 사라지는 대상은 찾아갈 대상에서 빼며, 청사진 밖 장치면 같은 맵의 청사진 단계 대상(「동굴의 봉인」)으로 건다. `fillStaleObjectives` 는 이제 출하 기본값에서 늘 돈다.
+  - 시작 맵 상점이 있는데 시작 돈이 0 이면 가장 싼 약 둘 값(100~300G)을 시작 돈으로(`healingAccess.ensureStartingGold`).
+  - 새 이벤트를 프로젝트에 직접 넣을 때는 이벤트 단의 `trigger`·`commands` 도 채운다 — 빠지면 플레이어가 「events[9].trigger가 객체가 아닙니다」로 열리지 않는데 출하 검사·자동 플레이는 통과한다. 재생 결과는 `deserialize` 로 한 번 읽어 본다.
+  - 확인은 실제 런타임 걸음으로: `WALKPATH='{…,"face":"up","action":true,"closeDialogue":true,"afterLegs":[["up",7]]}' node scripts/runtime-qa.mjs --scenario walkpath …` — `closeDialogue` 는 대화를 넘긴 뒤 바뀐 목표 줄·화살표 화면을 한 장 더, `afterLegs` 는 그 뒤 걸음(다음 맵 출구까지 따라가 보기). 전/후 그림: `suite/ledger/evidence/vm6-wayfind/`.
 - **출입 칸 목적지 이름**(`playSceneFieldStaging.syncExitLabels`, vm3 deepseek 탈출 «어느 빛이 어느 방으로 가는지 표시 없음»): 지금 페이지 맨 윗줄에
   다른 맵으로 가는 transfer 가 있는 이벤트 위에, 주인공이 3칸 안에 오면 「→ 목적지 맵 이름」 도트 글자(갈무리 12px, 정수 좌표)를 띄운다. 올라선 칸에서는 숨긴다.
   반짝이는 장식 타일(모닥불 등)과 조사 대상의 구분은 ▼ 표식으로 한다 — 장식 타일에는 ▼ 가 없다(terra jrpg 모닥불 (25,30) 확인).

@@ -9,7 +9,8 @@ import type { BuildRun } from "./types";
 import { josa } from "@/util/josa";
 import { buildPeople } from "./people";
 import { isProgressWord, resolveSteps } from "./mysteryCase";
-import { unreachableEvents } from "./eventReach";
+import { reachableCells, unreachableEvents } from "./eventReach";
+import { isPassable } from "@/project/collision";
 
 type Obj = Record<string, unknown>;
 const PERSON = /(여관\s*주인|가게\s*주인|촌장|이장|주인|할머니|할아버지|노인|노파|박사|교수|선생님|선생|기사단장|기사|대장장이|상인|경비병|경비|병사|여왕|왕비|국왕|왕자|공주|왕|신관|사제|수녀|마법사|현자|사냥꾼|어부|농부|의사|간호사|목격자|투숙객|손님|선장|대장|사장|점장|집사|하녀|요리사|정원사|순경|형사|탐정|경찰|장로|족장|스승|사부)/u;
@@ -35,6 +36,24 @@ export function talkPerson(step: { event: string; action: string; gives?: string
     // 「주인에게 안내를 받자」 — 어느 집 주인인지 장소 낱말로(여관 로비 → 여관 주인).
     const house = who === "주인" ? /(여관|가게|상점|식당|주점|술집|카페|빵집|대장간|약방|여인숙)/u.exec(`${(step as { place?: string }).place ?? ""} ${step.action}`)?.[1] : undefined;
     return house ? `${house} 주인` : who;
+  }
+  return undefined;
+}
+
+/**
+ * 「마을 사람들과 대화하며 동굴 위치를 알아낸다」처럼 사람 무리와 이야기하는 단계 — 그 단계를 맡은 투명 칸을 대표 한 사람으로 세운다.
+ * 결과(gives)·행동에 직함(촌장…)이 있으면 그 사람, 없으면 「마을 주민」.
+ * 왜(2026-10-29 vm6 argon·flash jrpg 판정 major «동굴 가는 길 못 찾음»): 「동굴 가는 길 열기」「마을 광장」이 집 벽·맨바닥의 투명 칸이라
+ * 판정자는 동굴 위치를 알려 줄 사람을 끝내 못 찾았다(목표는 그 칸 이름만 댔다). talkPerson 은 무리(「…들」)를 건너뛴다(추리의 투숙객들은 여럿이다).
+ */
+const GROUP = /(?<![가-힣])(?:마을\s*)?(?:사람|주민|이웃|동네\s*사람)들?\s*(?:과|와|에게서|에게|께|을|를)?\s*([^.,]{0,12})/u;
+export function groupPerson(step: { event: string; action: string; gives?: string; place?: string }): string | undefined {
+  for (const text of [step.action, step.event]) {
+    const m = GROUP.exec(text);
+    if (!m || !TALK.test(m[1] ?? "")) continue;
+    // 앞 글자가 붙은 직함은 사람이 아니다(「마왕의 동굴」의 「왕」 — vm6 argon jrpg 재생에서 「왕」을 세웠다).
+    const titled = new RegExp(`(?<![가-힣])${PERSON.source}`, "u").exec(`${step.gives ?? ""} ${step.action}`)?.[1];
+    return titled && titled !== "주인" ? titled.replace(/\s+/gu, " ") : "마을 주민";
   }
   return undefined;
 }
@@ -107,6 +126,36 @@ function personGraphic(run: BuildRun, mapId: string, role: string, at: { x: numb
   return graphic && !(graphic as { transparent?: boolean }).transparent ? graphic : undefined;
 }
 
+/**
+ * 사람으로 세운 칸이 건물 벽·지붕(못 걷는 칸) 위면 3걸음 안의 걸어 닿는 빈 바닥으로 내린다 — 벽에 사람 그림이 박힌다(vm6 argon jrpg (6,7) 집 벽).
+ * 못 닿는 이벤트가 늘면 그 자리는 쓰지 않는다. 옮긴 자리 글(「(x,y)」) 또는 undefined.
+ */
+function standOffWall(run: BuildRun, mapId: string, eventId: string): string | undefined {
+  const project = run.ctx.project;
+  const map = project.maps[mapId];
+  const ev = map?.events.find((e) => e.id === eventId);
+  if (!map || !ev || isPassable(project, map, ev.x, ev.y)) return undefined;
+  const reach = reachableCells(project, map);
+  if (!reach) return undefined;
+  const before = new Set(unreachableEvents(project, mapId));
+  const taken = new Set(map.events.map((e) => e.y * map.width + e.x));
+  const cands: { x: number; y: number; d: number }[] = [];
+  for (let y = Math.max(0, ev.y - 3); y <= Math.min(map.height - 1, ev.y + 3); y++) for (let x = Math.max(0, ev.x - 3); x <= Math.min(map.width - 1, ev.x + 3); x++) {
+    const d = Math.abs(x - ev.x) + Math.abs(y - ev.y);
+    const i = y * map.width + x;
+    if (d === 0 || d > 3 || !reach[i] || taken.has(i)) continue;
+    cands.push({ x, y, d: d + (y < ev.y ? 1 : 0) });
+  }
+  cands.sort((a, b) => a.d - b.d || a.y - b.y || a.x - b.x);
+  for (const c of cands) {
+    const snapshot = run.ctx.project;
+    const res = run.call("move_event", { mapId, eventId, x: c.x, y: c.y });
+    if (res.ok && !unreachableEvents(run.ctx.project, mapId).some((id) => !before.has(id))) return `(${c.x},${c.y})`;
+    run.ctx.project = snapshot;
+  }
+  return undefined;
+}
+
 export function settleStepSubjects(run: BuildRun): string[] {
   const project0 = run.ctx.project;
   const bp = project0.gameBlueprint;
@@ -123,7 +172,7 @@ export function settleStepSubjects(run: BuildRun): string[] {
     if (!map || !ev) continue;
     const name = nameOf(ev);
     if (name) olds.set(ev.id, name);
-    const person = talkPerson(r.step);
+    const person = talkPerson(r.step) ?? (transparent(ev) ? groupPerson(r.step) : undefined);
     const pages = structuredClone(ev.pages ?? []) as unknown as Obj[];
     const looks = new Set(lookLines(r.step.event).concat(name ? lookLines(name) : []));
     if (person && !last) {
@@ -149,7 +198,12 @@ export function settleStepSubjects(run: BuildRun): string[] {
           const was = new Set(unreachableEvents(snapshot, map.id));
           run.ctx.project = { ...snapshot, maps: { ...snapshot.maps, [map.id]: { ...map, events: map.events.map((e) => e.id === ev.id ? { ...e, name: who, pages: trial as unknown as typeof e.pages } : e) } } } as Project;
           if (unreachableEvents(run.ctx.project, map.id).some((id) => !was.has(id))) run.ctx.project = snapshot;
-          else { renamed.set(ev.id, who); personIds.add(ev.id); notes.push(`「${name || ev.id}」 → 사람 「${who}」(${ev.x},${ev.y})${n ? ` · 자리표시 대사 ${n}줄` : ""}`); continue; }
+          else {
+            renamed.set(ev.id, who); personIds.add(ev.id);
+            const off = standOffWall(run, map.id, ev.id);
+            notes.push(`「${name || ev.id}」 → 사람 「${who}」(${ev.x},${ev.y})${off ? ` · 벽에서 ${off} 로 내려 세움` : ""}${n ? ` · 자리표시 대사 ${n}줄` : ""}`);
+            continue;
+          }
           graphicNote = " (사람 그림은 길을 막아 못 세움)";
         }
       }
