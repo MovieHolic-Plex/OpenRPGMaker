@@ -1,4 +1,4 @@
-import { charsetBattler, RETRO_FALLBACK_PARTY_BATTLERS, resolvePartyBattleCharset } from "@/assets/charsetBattlers";
+import { charsetBattler, partyWalkChipBattler, RETRO_FALLBACK_PARTY_BATTLERS, resolvePartyBattleCharset } from "@/assets/charsetBattlers";
 import { BATTLE_SCENERY_CATALOG } from "@/assets/battleSceneryCatalog";
 import { findOpeningStillPackEntry } from "@/assets/openingStillPackRuntime";
 import { openingStillPackUrl } from "@/assets/openingStillPackCdn";
@@ -249,6 +249,9 @@ function collectProjectStrings(project: Project): Set<string> {
       const retro = getBattleSkin(skinId).motionStyle === "retro";
       const sheet = resolvePartyBattleCharset(actor, retro);
       if (sheet) { values.add(sheet); continue; }
+      // 칩 대응이 없으면 그 배우의 걷기 칩으로 선다(battleWalkChipBattler.ts). 칩을 못 풀 때를 위해 기본 도트도 싣는다.
+      const walkChip = retro ? partyWalkChipBattler(actor, retro) : undefined;
+      if (walkChip) values.add(walkChip.characterResourceId);
       // 칩 대응이 없으면 자리 순서에 따라 두 기본 도트 중 하나가 선다 — 파티 순서는 내보낸 뒤에도 바뀐다.
       if (retro) { for (const fallback of RETRO_FALLBACK_PARTY_BATTLERS) values.add(fallback); continue; }
     }

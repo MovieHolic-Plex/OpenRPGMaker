@@ -405,7 +405,7 @@ SQLite 저장소를 자동 변경하는 이관은 수행하지 않는다.
 - **배경**: 기본 배경 `DEFAULT_BATTLE_FIELD_BACKGROUND_ID` = `battle-scenery-forest`. `normalizeBattleFieldBackgroundId` 가 옛 숲 레퍼런스 → 숲, 은퇴 스킨 배경·EasyRPG 하늘 → 풀밭 겹 배경 id 로 바꾼다(적 그룹 불러오기·전투 배경 결정·`battleFieldDom` `effectiveBackdropId` 공통).
   retro2003 스킨 기본 배경도 `battle-scenery-plains`. 첫 프레임에 보이던 CSS 숲 그림(`07-640-scene-turn-ribbon.css`)과 겹 배경 실패 시 숲 그림(`battleScenery.ts` `paintFallback` → 같은 지형 `preview.png`)을 걷어냈다.
   포켓몬은 `pokemonBattleBackdropId`(`battleBackdrop.ts`)가 `battle-scenery-*` 를 `battle-skin-pokemon-backdrop`(CSS 가 숨기는 GBA 줄무늬 바닥 표지)로 돌린다. Scarloxy·업로드 그림은 그대로.
-- **파티**: 걷기 칩 대응이 없는 배우(업로드·생성 영웅 칩, 옛 프로젝트)는 은퇴 정면 스킨 일러스트 대신 `retroFallbackPartyBattler(index)`(도트 actor1-0 / actor1-5)로 선다. 내보내기도 같다. `skinPartySpriteUrl` 은 포켓몬만 쓴다.
+- **파티**: 걷기 칩 대응 전투 시트가 없는 배우(현대 교복 `oprn-charset-modern1~3`, 업로드·생성 영웅 칩, 옛 프로젝트)는 **자기 걷기 칩 한 칸**으로 선다(2026-10-30, `partyWalkChipBattler` + `src/player/battleWalkChipBattler.ts`). 왼쪽 보기 행의 기존 세 칸만 쓴다 — 대기 가운데 칸, 걸어 나가기·돌아오기 0→1→2→1 순환(WAAPI), 때리기·시전 내디딘 칸, 승리 정면 칸, 쓰러짐은 같은 칸을 눕히고 흐리게. 새 그림은 만들지 않는다. 24×32 칸 × `BATTLE_ASSET_PIXEL_SCALE`(사람 키가 전투 시트와 같다), 노드 상자 96px·발 여백 6px 는 인라인으로만 맞춰 스킨 CSS 를 건드리지 않는다. 노드 표식 `data-walk-chip-battler`. 걷기 칩 주소를 못 풀 때만 예전처럼 `retroFallbackPartyBattler(index)`(도트 actor1-0 / actor1-5)로 물러난다. 내보내기는 걷기 칩과 두 기본 도트를 함께 싣는다. `skinPartySpriteUrl` 은 포켓몬만 쓴다.
 - **효과**: retro2003 은 연출 계약 없는 DB 애니메이션(일반 공격·아이템·계약 없는 기술)을 `battleDom.ts` `retroPixelAnimation` 이 같은 계열의 도트 효과 `anim_px_<key>`(pixel-fx 17종, `src/assets/retroPixelAnimations.ts`)로 바꿔 그린다. 업로드 시트는 그대로.
   `anim_hit`·`anim_sword`·`anim_arrow` 는 번들 효과 시트(tackle-impact·slash-steel·projectile-shot)로 바꿨고, `ensureBundledBattleAnimations` 가 불러올 때 EasyRPG Blow·Sword1·Arrow 를 가리키는 기록을 고친다(기본 id 는 기본값으로, 저자 기록은 그림 칸만). 포켓몬 효과는 그대로.
 - **적**: EasyRPG Hornet·AI 고치/씨앗은 고르기·조수 목록에서 빠지고 id 는 도트 말벌·Scarloxy 뒷모습 별칭. 숲 말벌 종족·이슬마을 적 4종은 도트 몬스터로 옮겼다.
@@ -418,7 +418,7 @@ SQLite 저장소를 자동 변경하는 이관은 수행하지 않는다.
 [캐릭터 전투 동작](character-battle-motion.md)을 따른다. 공용 연출과 통상 공격이 같은 프로필을 읽으며
 기존 마법 영창과 직접 저작 경로를 보존한다.
 
-- **걷기 칩 시트를 전투 시트로 적으면 무시한다(jrpg-loop-1)**: `resolvePartyBattleCharset`(charsetBattlers.ts)은 `battleCharacterResourceId` 가 걷기 칩 시트(`characterResourceId` 와 같거나 `oprn-charset-*`·`easyrpg-charset-*`)이고 전투 전용 칩(`charset-battler-*`)이 아니면 저작 시트로 치지 않는다 — 그대로 그리면 288×256 시트가 작은 칸 수백 개로 깔려 전투 화면 오른쪽이 군중이 됐다(조수가 `oprn-charset-heroes1` 을 양쪽에 적은 ct2). easyrpg 칩이면 대응 전투 칩으로, 아니면 호출자의 기본 도트(`retroFallbackPartyBattler`)로 물러난다.
+- **걷기 칩 시트를 전투 시트로 적으면 무시한다(jrpg-loop-1)**: `resolvePartyBattleCharset`(charsetBattlers.ts)은 `battleCharacterResourceId` 가 걷기 칩 시트(`characterResourceId` 와 같거나 `oprn-charset-*`·`easyrpg-charset-*`)이고 전투 전용 칩(`charset-battler-*`)이 아니면 저작 시트로 치지 않는다 — 그대로 그리면 288×256 시트가 작은 칸 수백 개로 깔려 전투 화면 오른쪽이 군중이 됐다(조수가 `oprn-charset-heroes1` 을 양쪽에 적은 ct2). easyrpg 칩이면 대응 전투 칩으로, 아니면 그 배우의 걷기 칩 한 칸(위 「파티」)으로, 그것도 못 풀면 호출자의 기본 도트(`retroFallbackPartyBattler`)로 물러난다.
 
 ## 전투 스킨은 둘뿐 — retro2003(RM2003식) / pokemon (2026-10-02, 사용자 결정 「RM2003 식만 남기고 정리」)
 - **스킬 목록은 폭을 넓힌다(jrpg-loop-1)**: retro2003 에서 스킬·아이템 하위 메뉴가 열려 있는 동안 명령 호스트를 파티 창 폭까지 넓힌다(`_retro2003.css`). 이름 잘림(「십자…」) 해소. 속성 배지는 `skillElementBadgeLabel`(battleCommandDom.ts)이 기본 영문 속성명(Sword·Fire…)을 한글로 바꾼다.
