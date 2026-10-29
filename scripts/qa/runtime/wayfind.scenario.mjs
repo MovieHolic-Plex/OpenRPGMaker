@@ -23,10 +23,10 @@ export default {
     },
     ...toFieldBeats({ firstDialogue: false }),
     { id: "field", note: "첫 필드", ops: [{ kind: "pressUntilJs", key: "Enter", fn: fieldReady, maxPresses: 30, settleMs: 700 }] },
-    ...(qa.talks ?? [qa.talk]).map((talk, index) => ({
-      id: index ? `talk-${index + 1}` : "talk",
-      note: `${talk.mapId ?? qa.mapId} (${talk.x},${talk.y}) 에서 ${talk.face} 보고 조사 → 대화를 닫은 필드`,
-      ops: [
+    // talk.line: 대화 중 몇 번째 줄(Enter 를 line-1 번 누른 뒤)에서 한 장 더 — 대사 내용을 그림으로 남길 때.
+    ...(qa.talks ?? [qa.talk]).flatMap((talk, index) => {
+      const id = index ? `talk-${index + 1}` : "talk";
+      const approach = [
         ...(index ? [] : (qa.switches ?? []).map((switchId) => ({ kind: "setSwitch", switchId, value: true }))),
         { kind: "teleport", mapId: talk.mapId ?? qa.mapId, x: talk.x, y: talk.y },
         { kind: "waitForPosition", mapId: talk.mapId ?? qa.mapId, x: talk.x, y: talk.y },
@@ -34,11 +34,19 @@ export default {
         { kind: "hold", dir: null, ms: 600 },
         { kind: "action" },
         { kind: "hold", dir: null, ms: 900 },
+      ];
+      const close = [
         { kind: "pressUntilJs", key: "Enter", fn: fieldReady, maxPresses: 30, settleMs: 600 },
         { kind: "hold", dir: null, ms: 1500 },
-      ],
-      shot: true,
-    })),
+      ];
+      const note = `${talk.mapId ?? qa.mapId} (${talk.x},${talk.y}) 에서 ${talk.face} 보고 조사`;
+      if (!talk.line) return [{ id, note: `${note} → 대화를 닫은 필드`, ops: [...approach, ...close], shot: true }];
+      const presses = Array.from({ length: Math.max(0, talk.line - 1) }, () => [{ kind: "key", key: "Enter" }, { kind: "hold", dir: null, ms: 700 }]).flat();
+      return [
+        { id: `${id}-line`, note: `${note} → 대사 ${talk.line}번째 줄`, ops: [...approach, ...presses, { kind: "hold", dir: null, ms: 900 }], shot: true },
+        { id, note: `${note} → 대화를 닫은 필드`, ops: close, shot: true },
+      ];
+    }),
     ...(qa.stops ?? []).map((stop, index) => ({
       id: `stop-${index + 1}`,
       note: `${stop.mapId} (${stop.x},${stop.y})`,

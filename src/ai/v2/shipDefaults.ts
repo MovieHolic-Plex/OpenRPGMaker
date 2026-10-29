@@ -496,7 +496,7 @@ function moveEntrancesOntoArt(project: Project): string[] {
 function fillStaleObjectives(project: Project): string[] {
   const out: string[] = [];
   const steps = project.gameBlueprint?.steps ?? [];
-  const object = (word: string): string => `${word}${hasFinal(word) ? "을" : "를"}`;
+  const object = (word: string): string => `${word}${hasFinal(word.replace(/[」』"”')\]\s]+$/u, "")) ? "을" : "를"}`;
   for (const { event, readers } of staleMilestoneTargets(project)) {
     const k = steps.findIndex((step) => step.event === event.eventId || step.event === event.name);
     const nextStep = k >= 0 ? steps[k + 1] : undefined;

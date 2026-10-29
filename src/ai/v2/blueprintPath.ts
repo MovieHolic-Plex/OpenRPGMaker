@@ -10,7 +10,7 @@
 //  - 마지막 단계는 조건이 차면 엔딩을 부른다(엔딩이 없으면 청사진 ending 으로 정의한다).
 // 짓는 것은 puzzle.ts 의 buildPuzzleChain(검증된 사슬 빌더) — 이 파일은 청사진 → 사슬 인자 번역과 자리 고르기만 한다.
 // 지은 뒤 청사진의 place·event 를 실제 맵·이벤트 이름에 맞춰 둔다(출하 검사 walkBlueprint 가 같은 이름으로 걷는다).
-import { alignCodeClues, shownToken } from "./codeClues";
+import { alignCodeClues, digitWord, shownToken } from "./codeClues";
 import type { GameMap, Project } from "@/project/types";
 import { normalizeGameBlueprint, type GameBlueprint } from "@/project/gameBlueprint";
 import { buildPuzzleChain, type ChainLink } from "./puzzle";
@@ -588,6 +588,8 @@ function buildBlueprintPathCore(run: BuildRun, text: readonly PathStepText[] = [
   const kept: string[] = [];
   // 바로 앞 단계가 모델(또는 앞선 빌드)이 지은 이벤트 그대로면 — 번호 단계의 답을 그 이벤트 대사에 적는다(따로 쪽지를 세우지 않는다).
   let prevKept: { mapId: string; eventId: string; gives: string; event: string } | undefined;
+  // 그대로 둔 단계 이벤트를 gives 로 — 번호 단계 needs 가 단서 여럿(「일기장 단서, 그림 뒤 단서」)이면 번호를 나눠 적는다.
+  const keptByGives = new Map<string, { mapId: string; eventId: string; gives: string; event: string }>();
   steps.forEach((step, k) => {
     const keptBefore = prevKept;
     prevKept = undefined;
@@ -616,6 +618,7 @@ function buildBlueprintPathCore(run: BuildRun, text: readonly PathStepText[] = [
       kept.push(`${step.id} ${step.event}`);
       ids.push(existing.id);
       prevKept = { mapId: map.id, eventId: existing.id, gives: step.gives, event: step.event };
+      keptByGives.set(norm(step.gives), prevKept);
       fixLookLines(run, map.id, existing.id, step.event);
       return;
     }
@@ -637,6 +640,19 @@ function buildBlueprintPathCore(run: BuildRun, text: readonly PathStepText[] = [
       let told = prevLink && linkStep.at(-1) === k - 1 && (prevLink.lines ?? []).some((l) => l.includes(code));
       // 앞 단계가 그대로 둔 단서 이벤트(「비밀번호 단서」를 주는 책상)면 그 대사에 번호를 적는다 — 2026-10-29 vm2 flash: 「『비밀번호 단서』를
       // 알아냈다」 뿐이라 판정자가 단서 내용을 읽을 수 없었다.
+      // needs 가 단서 여럿이고 모두 그대로 둔 앞 단계면 번호를 그 순서로 나눠 적는다(2026-10-29 vm4 argon 방탈출: 「첫 번째 숫자 단서」 책상 +
+      // 「두 번째 숫자 단서」 그림 → 금고). 하나만 적으면 다른 단서는 «알아냈다»뿐인 빈 단서가 된다.
+      const parts = (step.needs ?? "").split(/\s*(?:[,，、·+]|\s와\s|\s과\s|\sand\s)\s*/u).map((x) => x.trim()).filter(Boolean);
+      const holders = parts.map((x) => keptByGives.get(norm(x)));
+      if (!told && parts.length >= 2 && parts.length <= code.length && holders.every((h) => !!h && /단서|번호|암호|쪽지|힌트|메모|숫자|clue|hint|note|code/iu.test(h.gives))) {
+        const size = Math.ceil(code.length / parts.length);
+        const ord = ["첫", "두", "세", "네", "다섯", "여섯"];
+        told = holders.every((h, i) => {
+          const piece = code.slice(i * size, (i + 1) * size);
+          if (!piece) return true;
+          return tellCode(run, h!, code, `${h!.gives}: 번호의 ${ord[i] ?? String(i + 1)} 번째 조각 「${piece}」가 적혀 있다.${i === parts.length - 1 || (i + 1) * size >= code.length ? ` 조각을 차례로 이으면 ${digitWord(code.length)} 번호다.` : ""}`);
+        });
+      }
       if (!told && keptBefore && /단서|번호|암호|쪽지|힌트|메모|clue|hint|note|code/iu.test(keptBefore.gives)) told = tellCode(run, keptBefore, code);
       if (!told) {
         const gated = Boolean(base.needs || base.needsCondition?.length);
@@ -646,7 +662,7 @@ function buildBlueprintPathCore(run: BuildRun, text: readonly PathStepText[] = [
         const where = resolveWhere(run.ctx.project, map, `${keyed ? keyed[1] : "쪽지"} 앞`, { avoid, role: "event" });
         taken.set(map.id, [...avoid, where.cell]);
         const learn = `${step.event} 번호`;
-        const note = `쪽지에는 네 자리 숫자 「${code}」. 어딘가의 번호인 것 같다.`;
+        const note = `쪽지에는 ${digitWord(code.length)} 숫자 「${code}」. 어딘가의 번호인 것 같다.`;
         links.push({ ...base, eventId: undefined, name: clueName, at: where.cell, role: "clue", learn,
           lines: keyed && needText ? [`${needText}${josa(needText, "으로", "로")} 열자 안에 쪽지가 있다.`, note] : [`${clueName}${josa(clueName, "을", "를")} 살펴보았다.`, note],
           ...(lockedDefault ? { lockedLines: lockedDefault } : {}) });
@@ -731,10 +747,10 @@ function fixLookLines(run: BuildRun, mapId: string, eventId: string, event: stri
  * 그대로 둔 단서 이벤트의 «얻는» 페이지(스위치를 켜거나 아이템을 주는 것) 대사에 번호를 적는다. 이미 적혀 있으면 그대로.
  * 「X 조사를 살펴보았다」 같은 이름 그대로의 대사도 「X를 살펴보았다」로 고친다. 성공하면 true.
  */
-function tellCode(run: BuildRun, kept: { mapId: string; eventId: string; gives: string; event: string }, code: string): boolean {
+function tellCode(run: BuildRun, kept: { mapId: string; eventId: string; gives: string; event: string }, code: string, body?: string): boolean {
   const ev = run.ctx.project.maps[kept.mapId]?.events.find((e) => e.id === kept.eventId);
   if (!ev) return false;
-  if (JSON.stringify(ev.pages ?? []).includes(code)) return true;
+  if (JSON.stringify(ev.pages ?? []).includes(body ?? code)) return true;
   const gives = (c: { kind?: string; value?: unknown; op?: unknown }) => (c.kind === "setSwitch" && c.value !== false) || (c.kind === "changeItem" && c.op !== "-=");
   const pageIndex = (ev.pages ?? []).findIndex((p) => (p.commands ?? []).some((c) => gives(c as { kind?: string })));
   if (pageIndex < 0) return false;
@@ -743,7 +759,7 @@ function tellCode(run: BuildRun, kept: { mapId: string; eventId: string; gives: 
   for (const c of cmds) if (c.kind === "text" && typeof c.body === "string" && c.body === `${kept.event}${josa(kept.event, "을", "를")} 살펴보았다.`) c.body = lookLine(kept.event);
   const at = cmds.findIndex((c) => gives(c));
   const learned = cmds.findIndex((c) => c.kind === "text" && typeof c.body === "string" && c.body.includes(`『${kept.gives}』`));
-  const note = { kind: "text", body: `${kept.gives}: 네 자리 숫자 「${code}」가 적혀 있다.` };
+  const note = { kind: "text", body: body ?? `${kept.gives}: ${digitWord(code.length)} 숫자 「${code}」가 적혀 있다.` };
   cmds.splice(learned >= 0 && learned < at ? learned + 1 : at, 0, note);
   return run.call("upsert_event", { mapId: kept.mapId, event: { ...ev, pages }, replacePages: true }).ok;
 }

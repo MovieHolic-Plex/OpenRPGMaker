@@ -193,6 +193,16 @@ function hostWords(name: string): string[][] {
   for (const [re, hosts] of ITEMS) if (re.test(name)) out.push(...hosts.map((h) => [h]));
   return out;
 }
+/** 글 속 물건 낱말(HOSTS) — 나온 자리 순. 대사가 가리키는 물건을 읽을 때 쓴다(clueObjects.ts). */
+export function hostMentions(text: string): { at: number; word: string; words: readonly string[] }[] {
+  const out: { at: number; word: string; words: readonly string[] }[] = [];
+  for (const [re, words] of HOSTS) {
+    const g = new RegExp(re.source, `${re.flags.replace("g", "")}g`);
+    for (const m of text.matchAll(g)) out.push({ at: m.index ?? 0, word: m[0], words });
+  }
+  return out.sort((a, b) => a.at - b.at);
+}
+export const objectBaseName = (label: string) => baseLabel(label);
 function itemTileWords(name: string): string[] {
   for (const [re, , tiles] of ITEMS) if (re.test(name)) return [...tiles];
   for (const [re, words] of HOSTS) if (re.test(name)) return [...words];
@@ -201,7 +211,7 @@ function itemTileWords(name: string): string[] {
 
 const LAYER_KEYS = ["upperOverlayTiles", "upperTiles", "lowerOverlayTiles", "lowerTiles"] as const;
 /** 이름표가 words 중 하나를 품은 물건 칸들(바닥·벽·천장 제외). */
-function objectCells(project: Project, map: GameMap, words: readonly string[]): Set<number> {
+export function objectCells(project: Project, map: GameMap, words: readonly string[]): Set<number> {
   const m = map as unknown as Record<string, ArrayLike<number> | undefined>;
   const lw = words.map((x) => x.toLowerCase());
   const cache = new Map<number, boolean>();
@@ -251,7 +261,7 @@ export interface ReachRepair { readonly moved: string[]; readonly stuck: string[
  *  4) 맞는 물건이 없고 그림 없는 이벤트면 그 명사의 1칸 물건 그림을 칩셋에서 골라 이벤트 칸에 깐다.
  * 다른 이벤트(목록 밖 포함)를 못 닿게 만드는 자리는 고르지 않는다.
  */
-export function repairEventReach(run: BuildRun, mapId: string, eventIds: readonly string[]): ReachRepair {
+export function repairEventReach(run: BuildRun, mapId: string, eventIds: readonly string[], hostsFor?: ReadonlyMap<string, readonly (readonly string[])[]>): ReachRepair {
   const moved: string[] = [];
   const stuck: string[] = [];
   // 두 바퀴 — 앞 이벤트가 옮겨 가야 뒤 이벤트의 물건 앞이 열리기도 한다(deepseek: 책장 앞 일기장이 벽난로 앞 구석을 막았다).
@@ -296,7 +306,7 @@ export function repairEventReach(run: BuildRun, mapId: string, eventIds: readonl
     // 2) 이름이 가리키는 물건
     let host = false;
     if (!target && !door) {
-      for (const words of hostWords(name)) {
+      for (const words of hostsFor?.get(id) ?? hostWords(name)) {
         const cells = objectCells(project, map, words);
         if (!cells.size) continue;
         host = true;
@@ -336,7 +346,7 @@ export function repairEventReach(run: BuildRun, mapId: string, eventIds: readonl
       else { stuck.push(`${name || id}: ${String(res.summary).slice(0, 120)}`); continue; }
     }
     // 4) 맞는 물건이 맵에 없고 그림도 없으면 — 그 명사의 1칸 물건 그림을 이벤트 칸(빈 바닥)에 깐다.
-    if (!host && !door) {
+    if (!host && !door && !hostsFor?.has(id)) {
       const now = run.ctx.project.maps[mapId]!.events.find((e) => e.id === id)!;
       const cellMap = run.ctx.project.maps[mapId]!;
       const words = itemTileWords(name);

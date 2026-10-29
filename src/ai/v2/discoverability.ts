@@ -10,6 +10,7 @@
  * 건물 한 채의 벽·문은 «보인다»로 치지 않는다 — 같은 문이 여럿인 거리에서 어느 문인지 모른다(반짝임을 단다).
  * 목표 = 「현재 목표」 줄(UI 명령 objectiveChip). 게임 시작에 하나, 이정표(스위치 켜기·아이템 얻기)마다 새로 — 엔딩이면 필요 없다.
  */
+import { eventBodyRect } from "@/project/eventFootprintQuery";
 import { allPages, childLists, conditionLeaves, visitPageCommands, type PageRef, type RawCommand } from "@/qa/gameCheck/walk";
 import { objectClusterAt } from "@/project/objectFootprint";
 import { isDoorArtCell } from "@/project/staging/doorCells";
@@ -240,7 +241,12 @@ export function startObjectiveReachGap(project: Project): string | undefined {
     return /입구:/u.test(message) ? `시작 목표 「${message.slice(0, 50)}」 가 입구를 가리키는데 시작 맵 「${map.name ?? map.id}」 에서 그리로 가는 출구(옮기기 이벤트)를 찾지 못한다 — 출구를 잇거나 목표를 다시 건다(set_objective at:'start').` : undefined;
   }
   const reach = computeReachableCells(project, map, sp.x, sp.y);
-  const near = (view: RuntimeEventView) => [[0, 0], [1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => reach.has(`${view.x + dx!},${view.y + dy!}`));
+  // 몸 사각(가구 전체 3×1 책상)의 어느 칸 옆이든 닿으면 된다 — 런타임 조사는 몸 사각으로 받는다(2026-10-29 vm5 flash: 책상 가운데 앵커 앞이 의자).
+  const near = (view: RuntimeEventView) => {
+    const r = eventBodyRect(view.event);
+    for (let y = r.top; y <= r.bottom; y++) for (let x = r.left; x <= r.right; x++) if ([[0, 0], [1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => reach.has(`${x + dx!},${y + dy!}`))) return true;
+    return false;
+  };
   if (targets.some(near)) return undefined;
   const t = targets[0]!;
   return `시작 자리(${sp.x},${sp.y})에서 시작 목표의 대상 「${String(t.event.name ?? t.event.id)}」(${t.x},${t.y}) 까지 걸어갈 수 없다 — 새 플레이어는 첫 목표에 닿지 못한다. 길을 트거나 대상·시작 자리를 옮긴다.`;

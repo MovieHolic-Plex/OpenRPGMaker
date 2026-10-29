@@ -216,6 +216,27 @@ function furnitureRect(run: BuildRun, map: GameMap, c: Cell): { left: number; to
   return { left, top, right, bottom };
 }
 
+/**
+ * 넓힌 몸 사각이 지금 자리의 가구와 다르면(앞선 마감이 넓힌 뒤 길목 비우기·물건 맞추기가 이벤트를 옮겼다) 몸 사각을 지운다 — 아래에서 새 자리 가구로 다시 넓힌다.
+ * 왜(2026-10-29 vm5 argon 방탈출): 「낡은 책상」 2×1 이 책상 1칸+책장 칸을, 「먼지 쌓인 책장」 2×3 이 창살 문 고패 칸을, 「벽의 장치」 1×3 이
+ * 오물통 칸을 덮고 있었다 — 판정자 「특정 칸·특정 방향에서만 반응」.
+ */
+export function staleBody(run: BuildRun, mapId: string, id: string, notes: string[]): void {
+  const map = run.ctx.project.maps[mapId];
+  const ev = map?.events.find((e) => e.id === id);
+  if (!map || !ev) return;
+  const wide = (ev.pages ?? []).find((p) => { const f = (p as { footprint?: { width?: number; height?: number } }).footprint; return (f?.width ?? 1) > 1 || (f?.height ?? 1) > 1; });
+  if (!wide) return;
+  const f = (wide as { footprint: { width?: number; height?: number } }).footprint;
+  const bw = f.width ?? 1, bh = f.height ?? 1;
+  const left = ev.x - Math.floor((bw - 1) / 2), top = ev.y - (bh - 1);
+  const rect = furnitureRect(run, map, ev);
+  if (rect && rect.left === left && rect.top === top && rect.right === left + bw - 1 && rect.bottom === top + bh - 1) return;
+  const events = map.events.map((e) => e.id !== id ? e : { ...e, pages: (e.pages ?? []).map((p) => { const { footprint: _f, ...rest } = p as typeof p & { footprint?: unknown }; return rest as typeof p; }) });
+  run.ctx.project = { ...run.ctx.project, maps: { ...run.ctx.project.maps, [mapId]: { ...map, events } } };
+  notes.push(`「${String((ev as { name?: string }).name ?? id)}」 ${bw}×${bh} 몸이 지금 자리(${ev.x},${ev.y})의 가구와 달라 지움`);
+}
+
 export function settleFurnitureSpots(run: BuildRun, mapId: string): string[] {
   const notes: string[] = [];
   // 싸움·이동을 하는 이벤트는 조사 칸이 아니다 — 투명 보스 「마왕과의 결전」이 옆 벽에 붙고 벽 몸이 되어 설 칸을 잃었다(vm2 deepseek jrpg 재생).
@@ -223,6 +244,7 @@ export function settleFurnitureSpots(run: BuildRun, mapId: string): string[] {
   const ids = (run.ctx.project.maps[mapId]?.events ?? []).filter((e) => invisible(e) && examineOnly(e) && !carriesTransfer(e) && !fights(e) && !e.id.startsWith("ev_chain_seal_") && !isDoorName(String((e as { name?: string }).name ?? ""))).map((e) => e.id);
   for (const id of ids) {
     const find = () => run.ctx.project.maps[mapId]?.events.find((e) => e.id === id);
+    staleBody(run, mapId, id, notes);
     const ev0 = find(), map0 = run.ctx.project.maps[mapId];
     if (!ev0 || !map0) continue;
     // a) 맨바닥 → 옆 가구, 그래도 맨바닥이면 소품. 쪽지·일기 같은 탁상 물건은 옆이 탁자·책상일 때만 붙이고, 아니면 칩셋의 맞는

@@ -16,6 +16,7 @@ import { conditionWaitScenes } from "@/player/runtimeConditionWait";
 import { canMoveFootprint, inBounds, isPassable, ledgeDirectionAt } from "@/project/collision";
 import { slideAfterStep, slideRuleAt } from "@/project/slideTiles";
 import { counterReachTarget } from "@/project/counterTiles";
+import { objectClusterAt } from "@/project/objectFootprint";
 import { loopStepTarget, wrapLoopPosition } from "@/project/mapLoop";
 // 경로 세팅은 잎 모듈에 있다(가벼운 소비자가 이 파일 전체를 끌어오지 않도록) — 기존
 // 임포트 경로를 깨지 않기 위해 여기서 다시 내보낸다.
@@ -797,7 +798,7 @@ function performAction(
   const delta = directionDelta(scene.facing);
   const tx = scene.tileX + delta.x;
   const ty = scene.tileY + delta.y;
-  const event = findRuntimeEventInScene(scene, tx, ty, "action") ?? findEventAcrossCounter(scene, world.project, tx, ty, delta) ?? findWalkerLeaving(scene, world.project, tx, ty);
+  const event = findRuntimeEventInScene(scene, tx, ty, "action") ?? findEventAcrossCounter(scene, world.project, tx, ty, delta) ?? findWalkerLeaving(scene, world.project, tx, ty) ?? findEventOnFacedObject(scene, world.project, tx, ty);
   if (event) {
     if (event.page?.interaction?.kind === 'hiding') return toggleHiding(world, event);
     if (event.page?.interaction?.kind === 'pushable') {
@@ -867,6 +868,34 @@ function findWalkerLeaving(
     if (view && view.trigger.kind === "action") return view;
   }
   return undefined;
+}
+
+/**
+ * 정면 칸이 이벤트 없는 가구·문·벽 장치 그림 칸이면, 같은 그림(같은 이름표가 이어진 위층 칸, 24칸까지)을 몸으로 덮는 조사 이벤트를 대상으로 본다.
+ * 왜(2026-10-29 vm5 argon 방탈출 판정): 「책장·상자·벽 장치·문이 모두 특정 칸·특정 방향에서만 반응」 — 조사 이벤트가 2칸 책장의 한 칸,
+ * 2칸 문의 아래 칸에만 있으면 그림의 다른 칸 앞에서 눌러도 아무 일이 없었다. 빌드의 몸 넓히기(settleFurnitureSpots)는 문 이름·사람 그림을
+ * 건너뛰고, 모델이 직접 놓은 이벤트에는 돌지 않는다. 정면 판정 자체를 «바라보는 칸의 그림이 이벤트 몸에 닿으면»으로 넓힌다.
+ * 지나갈 수 있는 칸(바닥 덧그림·양탄자)은 보지 않는다. 같은 그림에 이벤트가 둘이면 정면 칸에 가까운 것.
+ */
+function findEventOnFacedObject(
+  scene: ActionEventSceneContext,
+  project: ReturnType<typeof store.getCurrent>,
+  tx: number,
+  ty: number,
+): RuntimeEventView | undefined {
+  const map = scene.map;
+  if (!inBounds(map, tx, ty) || isPassable(project, map, tx, ty)) return undefined;
+  const cluster = objectClusterAt(project, map, tx, ty);
+  if (!cluster || cluster.cells.length > 24) return undefined;
+  let best: RuntimeEventView | undefined;
+  let bestD = Infinity;
+  for (const i of cluster.cells) {
+    const x = i % map.width, y = (i - x) / map.width;
+    const view = findRuntimeEventInScene(scene, x, y, "action");
+    const d = Math.abs(x - tx) + Math.abs(y - ty);
+    if (view && d < bestD) { best = view; bestD = d; }
+  }
+  return best;
 }
 
 /**

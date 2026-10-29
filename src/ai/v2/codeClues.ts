@@ -12,7 +12,7 @@ import type { GameEvent, Project } from "@/project/types";
 type Cmd = Record<string, unknown> & { kind?: string };
 
 /** 함수(build_blueprint_path)가 쓴 쪽지 대사 — 모델 단서로 세지 않는다. */
-const BUILDER_NOTE = /어딘가의 번호인 것 같다|쪽지에는 네 자리 숫자/u;
+const BUILDER_NOTE = /어딘가의 번호인 것 같다|쪽지에는 \S+ 자리 숫자/u;
 /** 번호를 말하는 대사(그냥 숫자가 아니라). */
 const CODE_TALK = /비밀번호|번호|암호|숫자|자물쇠|code|password|pin/iu;
 /** 입력 결과를 미리 말하는 대사. */
@@ -50,6 +50,29 @@ function locksOf(project: Project): Lock[] {
     });
   }
   return out;
+}
+
+const DIGIT_WORDS = ["", "한", "두", "세", "네", "다섯", "여섯", "일곱", "여덟", "아홉"] as const;
+/** 「네 자리」 — 번호 길이에 맞는 자릿수 말. */
+export function digitWord(n: number): string { return `${DIGIT_WORDS[n] ?? String(n)} 자리`; }
+const DIGIT_CLAIM = /(한|두|세|네|다섯|여섯|일곱|여덟|아홉|\d+)\s*자리(\s*(?:숫자|번호|비밀\s*번호|암호)?\s*(?:는|은|가|이)?\s*[「『'"“]?)(\d+)(?=[」』'"”]|\D|$)/gu;
+/**
+ * 「네 자리 숫자 「38」」처럼 자릿수 말과 실제 번호 길이가 다른 대사를 고친다(2026-10-29 vm4 argon 방탈출 판정 «네 자리 숫자인데 2자리»).
+ * 앞 판 빌드가 모델이 준 번호(38)를 «네 자리» 틀 문구에 넣었다. 번호는 그대로, 자릿수 말만 번호 길이에 맞춘다.
+ */
+export function fixDigitClaims(project0: Project): { project: Project; notes: string[] } {
+  if (!/자리/u.test(JSON.stringify(project0.maps))) return { project: project0, notes: [] };
+  const project = structuredClone(project0);
+  const notes: string[] = [];
+  for (const map of Object.values(project.maps)) for (const ev of map.events ?? []) for (const c of textCommands(ev.pages)) {
+    const body = String(c.body);
+    const next = body.replace(DIGIT_CLAIM, (all, word: string, mid: string, num: string) => {
+      const said = /^\d+$/u.test(word) ? Number(word) : DIGIT_WORDS.indexOf(word as (typeof DIGIT_WORDS)[number]);
+      return said === num.length ? all : `${DIGIT_WORDS[num.length] ?? String(num.length)} 자리${mid}${num}`;
+    });
+    if (next !== body) { notes.push(`「${String((ev as { name?: string }).name ?? ev.id)}」 ${body.slice(0, 30)} → ${next.slice(0, 30)}`); c.body = next; }
+  }
+  return notes.length ? { project, notes } : { project: project0, notes };
 }
 
 /** 이미 지은 번호 자물쇠를 단서 대사와 맞춘다. 바꿀 것이 있으면 사본을 고쳐 돌려준다. */
@@ -95,7 +118,7 @@ export function alignCodeClues(project0: Project): { project: Project; notes: st
       const adopt = others[0]!;
       (lock.fork.condition as { value: number }).value = Number(adopt);
       // 함수 쪽지는 «어딘가의 번호»가 아니라 모델 단서를 확인하는 글로 — 번호가 하나라는 것이 읽히게.
-      for (const c of builder) if (String(c.body).includes(code)) c.body = `쪽지에도 같은 네 자리 숫자 「${adopt}」가 적혀 있다. 이 번호가 맞는 것 같다.`.replace("네 자리", `${lock.digits}자리`).replace("4자리", "네 자리");
+      for (const c of builder) if (String(c.body).includes(code)) c.body = `쪽지에도 같은 ${digitWord(adopt.length)} 숫자 「${adopt}」가 적혀 있다. 이 번호가 맞는 것 같다.`;
       notes.push(`「${name}」 정답 ${code} → 모델 단서의 ${adopt}(함수 쪽지도 같은 번호로)`);
     } else if (mentioned && others.length) {
       for (const c of model) {

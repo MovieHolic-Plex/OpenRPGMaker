@@ -15,7 +15,8 @@ import { createBuildRun } from "./buildRun";
 import { applyBlueprintAssembly } from "@/project/blueprintAssembly";
 import { applyBlueprintOpening } from "@/editor/tools/blueprintOpening";
 import { renameBareBlueprintPlaces } from "./blankStart";
-import { alignCodeClues, humanizeBlueprintTokens } from "./codeClues";
+import { alignCodeClues, fixDigitClaims, humanizeBlueprintTokens } from "./codeClues";
+import { alignClueObjects, dropStaleChainClues } from "./clueObjects";
 import { settleFurnitureSpots } from "./examineSpot";
 import { humanizeMapNames } from "./mapNames";
 
@@ -51,15 +52,22 @@ export async function runFinishAutoBuild(env: PiAssistantV2Env, session: V2Sessi
     }
     // 번호 자물쇠 ↔ 단서 대사 맞추기 + 청사진 영문 id 대사 고치기(codeClues.ts) — 모델이 지은 경로에도 돈다.
     {
-      const aligned = alignCodeClues(env.ctx.project);
-      const human = humanizeBlueprintTokens(aligned.project);
+      // 앞 판 경로 빌드가 남긴 죽은 단서 고리(주는 것을 아무도 안 받는 ev_chain_*)를 먼저 걷는다 — 틀린 번호를 주는 단서가 남지 않게(clueObjects.ts).
+      const stale = dropStaleChainClues(env.ctx.project);
+      if (stale.notes.length) done.push(`앞 판 단서 고리 정리: ${stale.notes.join("·").slice(0, 300)}(지금 청사진에 없고 주는 것을 아무도 받지 않음)`);
+      const aligned = alignCodeClues(stale.project);
+      const digits = fixDigitClaims(aligned.project);
+      const human = humanizeBlueprintTokens(digits.project);
       env.ctx.project = human.project;
-      const fixed = [...aligned.notes, ...(human.notes.length ? [`청사진 id 대사 ${human.notes.length}줄을 뜻 낱말로`] : [])];
+      const fixed = [...aligned.notes, ...digits.notes, ...(human.notes.length ? [`청사진 id 대사 ${human.notes.length}줄을 뜻 낱말로`] : [])];
       if (fixed.length) done.push(`번호·단서 대사: ${fixed.join(" / ").slice(0, 500)}`);
     }
     // 그림 없는 조사 칸은 가구에 앉히고, 가구 위 조사는 가구 전체에서 받는다(examineSpot.settleFurnitureSpots).
     {
       const run = createBuildRun(env.ctx);
+      // 단서 대사가 가리키는 물건(«단서는 책장 속에 있다»)과 다음 단서 이벤트 자리를 맞춘다 — 가구에 앉히기 전에(clueObjects.ts).
+      const pointed = Object.keys(env.ctx.project.maps).flatMap((mapId) => alignClueObjects(run, mapId));
+      if (pointed.length) done.push(`단서 물건 자리: ${pointed.join(" / ").slice(0, 500)}`);
       const settled = Object.keys(env.ctx.project.maps).flatMap((mapId) => settleFurnitureSpots(run, mapId));
       if (settled.length) done.push(`조사 자리: ${settled.join(" / ").slice(0, 500)}`);
     }
@@ -70,6 +78,12 @@ export async function runFinishAutoBuild(env: PiAssistantV2Env, session: V2Sessi
         env.emit({ type: "execution_status", name: "v2.blueprint.auto_lanes", ok: true, summary: `출구·이동 칸 마감 — ${lanes.join(" / ").slice(0, 300)}` });
         done.push(`출구·이동 칸 마감: ${lanes.join(" / ").slice(0, 500)}`);
       }
+      // 길목 비우기가 옮긴 조사 이벤트는 넓힌 몸이 옛 가구에 맞춰져 있다 — 새 자리 가구로 다시 맞춘다(examineSpot.staleBody, vm5 argon 방탈출).
+      const run = createBuildRun(env.ctx);
+      const repointed = Object.keys(env.ctx.project.maps).flatMap((mapId) => alignClueObjects(run, mapId));
+      if (repointed.length) done.push(`단서 물건 자리(길목 뒤): ${repointed.join(" / ").slice(0, 400)}`);
+      const resettled = Object.keys(env.ctx.project.maps).flatMap((mapId) => settleFurnitureSpots(run, mapId));
+      if (resettled.length) done.push(`조사 자리(길목 뒤): ${resettled.join(" / ").slice(0, 400)}`);
     }
     if (done.length) autoPath = [`[자동으로 지음] 청사진이 엔딩까지 이어지지 않거나 길목·출구가 막혀 함수가 대신 지었다 — 최종 보고에 「자동으로 지음:」으로 이 목록을 그대로 적는다(네가 지었다고 쓰지 않는다):`, ...done.map((d) => `- ${d}`), "대사를 다듬으려면 build_blueprint_path{steps:[{id,lines,lockedLines}]} 로 다시 부른다(같은 이벤트를 고쳐 쓴다). 자동으로 지은 장소를 꾸미려면 edit_place·dress_room."].join("\n");
   }

@@ -175,8 +175,13 @@ export function isCodeStep(step: { readonly event: string; readonly action: stri
   if (CODE_STEP_WORDS.test(`${step.event} ${step.action}`)) return true;
   // 앞 단계가 준 번호·암호 단서로 무언가를 «여는» 단계도 번호를 맞히는 단계다(2026-10-29 vm2 flash 방탈출: s2 「금고 열기 — 단서를 조합해 얻은
   // 번호로 금고를 열고 열쇠를 얻는다」, needs 「비밀번호 단서」 — 낱말이 「비밀번호 입력」이 아니라 걸리지 않아 조사만으로 열쇠가 나왔다).
-  return CODE_NEEDS.test(step.needs ?? "") && /번호|암호|열|풀/u.test(step.action);
+  if (CODE_NEEDS.test(step.needs ?? "") && /번호|암호|열|풀/u.test(step.action)) return true;
+  // 단서들을 «조합해» 여는 단계도 번호 단계다(2026-10-29 vm4 argon 방탈출: s3 「금고 — 얻은 단서들을 조합해 금고를 열고 탈출용 열쇠를 얻는다」,
+  // needs 「일기장 단서, 그림 뒤 단서」 — 번호 낱말이 없어 줍기 고리로 남아 금고가 번호 입력 없이 열렸고, 앞 판의 「번호 쪽지(38)」만 떠 있었다).
+  return CLUE_NEEDS.test(step.needs ?? "") && /조합|합쳐|맞춰|짜 맞|모은|모아/u.test(step.action) && /열|풀/u.test(step.action);
 }
+/** 번호를 이루는 조각 단서(needs 낱말). */
+const CLUE_NEEDS = /단서|힌트|숫자|쪽지|clue|hint/iu;
 /** 번호·암호를 주는 단서(needs 낱말). */
 const CODE_NEEDS = /비밀\s*번호|암호|번호|password|passcode|code/iu;
 const isInput = (cmd: Obj) => cmd.kind === "inputNumber" || (cmd.kind === "choices" && Array.isArray(cmd.options) && cmd.options.length > 1);
