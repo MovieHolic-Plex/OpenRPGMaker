@@ -846,7 +846,14 @@
       "at": "2026-10-29T16:41:28Z"
      }
     }
-   ]
+   ],
+   "pick": {
+    "letter": "A",
+    "nativePixelSha256": "3f590a24beb181d73bd3df389cced86c3e98e5ba658666737c1f4cf5f309b159",
+    "storedPixelSha256": "212b912701cf9679b68e446a9ea993c5b49bf5a2c95abc6804f9c15e69a2bdc8",
+    "by": "supervisor",
+    "at": "2026-10-29T17:44:42Z"
+   }
   },
   "maou-konbini-night-matte": {
    "id": "maou-konbini-night-matte",
@@ -1267,7 +1274,14 @@
       "at": "2026-10-29T17:05:07Z"
      }
     }
-   ]
+   ],
+   "pick": {
+    "letter": "B",
+    "nativePixelSha256": "08a0d1ce739a61cfe80edbbeb1c3ce379c388acdb1e98afa68b9203a02068d73",
+    "storedPixelSha256": "632903254fa68822cf8281332679eec3ed4dc6a53d0cdc46b6909d4e11f4730c",
+    "by": "supervisor",
+    "at": "2026-10-29T17:43:44Z"
+   }
   }
  }
 }
