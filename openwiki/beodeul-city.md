@@ -748,6 +748,21 @@ r1 시험(`verify-shots/assistant-beodeul-village/r1/fresh`)은 「마을」에 
   PROBE_RESULT_PLACEHOLDER
 - 남은 것: 게임 화면 위쪽 검은 띠(`playSceneCamera.ts` `reliefTopOverhangPx`)·경사로 옆 1px 세로선·경사면 명암은 렌더러 쪽 일이다(다른 작업). 포구 길가의 등대는 큰길이 동쪽 곶까지 지나 자리가 없어 대개 빠진다. 윗길이 얇은 2단(4~5줄)에서는 맵 윗가장자리 바로 아래를 지나 단 위가 거의 길로만 보인다.
 
+### 「높이 먼저」 시제품 — landform·settle 옵션 (2026-10-29)
+
+- **왜:** 사용자 「마을을 만드는 게 불만이 많다. 높이를 우선 만들고 그 뒤에 마을을 만드는 방식은 어떤가?」. 현행은 물·큰길(yMainBase) → `planVillageTerrain` 이 길에 맞춰 단을 깎는다(높이가 길에 끌려간다).
+  근거: runs/vm*-1029 판정자·VQA 결점 중 마을 화면 322건 — 길 모양 80 · 풀 워터마크 79 · 높이·절벽 39 · 빈 땅 31 · 반복 29 · 집 배치 25 · 물·다리 22 · 떠 있는 소품 15.
+- **옵션(기본 경로는 그대로):** `author_beodeul_town` 인자 `landform`(terraces·hill·slope)·`settle`(middle·low, 기본 middle). v2 마을 빌더는 hints 로 넘긴다(`KNOWN_HINTS`·`VILLAGE_CARD`). 성벽 마을은 무시(경고).
+  `beodeulHeightFirst.ts planHeightFirst` 가 물보다 먼저 동서 등고선(`beodeulTerrain.contour`)으로 단을 짓고 마을 단(17~23 → 19~23줄)·큰길 줄(`mainY` = 마을 단 북쪽 등고선 + 10)을 정한다.
+  시공기는 큰길을 그 등고선을 따라 `hStreetFn` 으로, 낮은 단에 아랫길을 등고선 2줄 아래로 깔고 이음길만 단을 건넌다(3b 경사로). `carveHeightFirstWater` 가 물 자리 골을 깎는다.
+  hill = 마을 단 북쪽 전체 한 단 + 가운데가 남쪽으로 불룩한 꼭대기(옆은 두 칸마다 한 줄 올라가 맵 위에서 사라짐 — 남북 직선 옆면 금지), slope = 7줄 간격 단 너덧(highland 숲 분기).
+- **손본 것(A/B 판마다):** 1판 띠 20줄 고정 → 작은 맵(34줄)에서 북쪽 단 소멸(10판 중 8). 3판 강 가운데 + 서쪽 8칸 골이 단을 조각내 2·3·5·7번 단 전부 내려앉음 → 높이 먼저일 때 강은 가장자리(x 4~5 또는 W−9), 골은 물 안쪽 둑 2칸~맵 끝, 못은 곧은 골 대신 둘레만 우묵.
+- **A/B(ab6, 모델 없이 villageArgs 같은 인자, Sonnet 5.5 블라인드 적대 판정 좌우 바꿔 20판):** A 현행 11 · B 9. B 가 두 판 다 이긴 것: 6 눈 산마을(slope)·10 강 없는 들판. A 가 두 판 다 이긴 것: 3 산촌·7 사막 오아시스·8 늪·9 장터.
+  B 결점 반복: 단 경계의 가는 남북 선(골·단 끝)·한 단 차이 절벽 띠가 얇아 높이가 약함·이음길이 경사로 없이 보임·집 수 적음(36→33)·강이 가장자리로 밀려 「강가」가 약함. 도달성은 둘 다 문 0, 경사로 실패 B 1.
+  실조수(argon, 입력창 v2) 3판 중 「언덕 위 산마을」만 모델이 `landform slope · settle middle` 을 골랐다(지어짐, 50×32). 페이지 http://mdc-server:18301/village-height-first-1029.html
+- **결론(기본 전환은 감독 결정):** 지금 판으로는 기본으로 바꿀 근거가 없다. 강이 없는 산·들 마을에서는 나았다. 남은 일: 두 단 차이 절벽(높이감)·강 골짜기를 동서로 낮은 단에 두는 지형·마을 단 폭에 맞춘 집 수.
+- 프로브: `bun scripts/qa/village-height-first-ab.mts --out <dir> [--only 1,3]` → `<n>-A|B.png`·`report.json`.
+
 ## 작은 마을 길·마당 구도 보정 (2026-10-04)
 
 `naturalize_beodeul_hamlet({mapId})`는 공용 소규모 집 3~5채의 전체 배열/원점을 먼저 확인하고 원본 집·나무·출입을 보존한 채 큰길/광장과 흙 접근로/마당을 구분한다. 옛 순환 포석 샛길과 흩어진 작은 풀 장식은 정리한다. 텃밭·빨래 마당·식생 군락은 빈 칸과 문 앞 도달성을 확인하고 배치한다. 임의 배치 마을/높이 있는 맵에는 사용하지 않는다. 새 houseCount 시공은 이 구도 후 일광을 자동 적용한다. 공용 source beodeul_ground 368칸(기존304 불변), 문서 tiledata/beodeul-ground/HAMLET.md, 정상/오류 및 full 네 층 예제는 참고문서 beodeul-ground-dressing. SQLite와 플레이어 근거 verify-shots/beodeul-lived-village.

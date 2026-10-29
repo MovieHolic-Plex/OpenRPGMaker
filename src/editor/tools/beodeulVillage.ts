@@ -30,6 +30,7 @@ import { invalidateReliefSlopes, rampCode, reliefAllowsStep } from "@/project/re
 import type { ReliefData } from "@/project/relief/types";
 import { stampTownWall, townWallAvailable, townWallLayout, type TownWallPlan, type WallGap, type WallGate, type WallTower } from "./beodeulTownWall";
 import { allowedVillageTerrains, planVillageTerrain, resolveVillageTerrain, TERRAIN_LABEL, VILLAGE_TERRAINS } from "./beodeulTerrain";
+import { carveHeightFirstWater, parseLandform, parseSettle, planHeightFirst, type HeightFirstPlan } from "./beodeulHeightFirst";
 import type { Project, StructureKitDef, TilesetDef } from "@/project/types";
 import { appendStructurePlacement, captureStructureTiles } from "@/project/structurePlacements";
 import { CONSTRUCTION_TOOLS_V3 } from "./v3/constructionTools";
@@ -152,6 +153,13 @@ export interface BeodeulVillageOptions {
    * 2026-10-23 village-art r3: 다 지은 마을에서 마당을 내면 숲을 칸 선으로 베어 계단·반쪽 나무가 남았다 — 숲이 서기 전에 자리를 남긴다.
    */
   yard?: { w: number; h: number };
+  /**
+   * 「높이 먼저」 시제품(2026-10-29, beodeulHeightFirst.ts): 땅 모양을 먼저 짓고 큰길·뒷길·아랫길이 그 단의 등고선을 따라간다.
+   * terraces(계단식 단)·hill(언덕)·slope(산비탈). 생략하면 예전 시공(지형이 큰길에 맞춰 깎인다). 성벽 마을은 평지라 쓰지 않는다.
+   */
+  landform?: string;
+  /** landform 일 때 마을이 앉는 단: middle(가운데, 남쪽에 낮은 단이 남는다, 기본)·low(맨 아래). */
+  settle?: string;
 }
 const LEAF_TREES = ["bd-tree-03a8f7", "bd-tree-a80c85", "bd-tree-e9d9b3", "bd-tree-cc0fcb", "bd-tree-47e17a", "bd-tree-d43edd", "bd-tree-5844f6", "bd-tree-3e8732", "bd-tree-1a786c", "bd-tree-d61d7e", "bd-tree-7ecdb8", "bd-tree-1e09f0", "bd-tree-bdd36e", "bd-tree-b1d104"];
 // 침엽·혼효 마을(forestType, woodland r3): 낱 나무도 숲과 같은 계열로 — 둥근 활엽 덤불이 침엽 마을을 덮지 않게(독립 검수 D10).
@@ -340,13 +348,26 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   let riverLeft = false;
   const shoreY: number[] = new Array(W).fill(H);
   // highland(산골): 큰길을 맵 아래쪽으로 내려 그 위에 비탈 세 단이 설 자리를 둔다
-  const yMainBase = theme === "coast" ? Math.round(H * 0.4) : terrainName === "highland" ? Math.round(H * 0.66) + ri(-1, 1) : Math.round(H * 0.5) + ri(-2, 2);
+  // 높이 먼저(landform): 땅 모양과 마을 단을 물·길보다 먼저 정하고, 큰길 기준 줄을 그 단에서 꺼낸다
+  let hf: HeightFirstPlan | null = null;
+  {
+    let landform, settle;
+    try { landform = parseLandform(options.landform); settle = parseSettle(options.settle); } catch (e) { throw new ToolError((e as Error).message, { code: "invalid-args" }); }
+    if (landform && walls) warnings.push(`성벽 마을은 평지로 지어 landform ${landform} 을 쓰지 않았다.`);
+    else if (landform) {
+            hf = planHeightFirst(W, H, seed, theme, landform, settle ?? "middle", theme === "coast" ? Math.round(H * 0.72) - 3 : undefined);
+      terrainName = hf.terrainName;
+    }
+  }
+  const yMainBase = hf ? hf.mainY(Math.round(W / 2)) : theme === "coast" ? Math.round(H * 0.4) : terrainName === "highland" ? Math.round(H * 0.66) + ri(-1, 1) : Math.round(H * 0.5) + ri(-2, 2);
   if (spec.feature === "river") {
     // 강은 seed 에 따라 동쪽(0.6) 또는 서쪽(0.36) — 넓은 쪽 둑이 광장·뒷길을 갖는다
     riverLeft = rand() < 0.5;
     // 물가 띠 마을: 강은 늘 서쪽 — 둑길 마을이 넓은 동쪽 둑을 쓰고, 방앗간·물레방아는 좁은 서쪽 둑(바퀴 들보가 왼쪽 방앗간 벽에 닿는다)
     if (form === "riverbank") riverLeft = true;
     riverX = riverLeft ? Math.round(W * (form === "riverbank" ? 0.2 : 0.36)) + ri(-2, 2) : Math.round(W * 0.6) + ri(-3, 3);
+    // 높이 먼저: 강은 맵 가장자리 골짜기로 — 동서로 달리는 단을 남북 강 골이 가운데서 자르면 작은 맵에서 단이 조각나 다 내려앉았다(A/B 3판 2·3·5·7번 단 0)
+    if (hf && form !== "riverbank") riverX = riverLeft ? 4 + ri(0, 1) : W - 9 - ri(0, 1);
     // 굽이는 넓은 둑 쪽으로만(좁은 둑의 뒷길·방앗간 자리를 물이 먹지 않게)
     const sg = riverLeft ? -1 : 1;
     const keys: [number, number][] = [[0, riverX - sg * ri(2, 3)], [Math.round(yMainBase / 2), riverX + sg], [yMainBase - 3, riverX], [yMainBase + 6, riverX], [H - 1, riverX - sg * ri(3, 5)]];
@@ -454,7 +475,8 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   // 길은 단을 건너는 곳에서 매끈한 경사로로 오르고(3b), 집·밭·나무·소품은 한 단 위에만 앉고(fits), 문 앞 길은 경사로로만 단을 오른다(linkToRoad).
   const mainBase = theme === "coast"
     ? (form === "street" ? Math.min(...coastKeys.map((k) => k[1])) : Math.max(10, Math.min(yMainBase, Math.min(...shoreY) - 9))) : yMainBase;
-  const terrain = planVillageTerrain({ W, H, theme, form, seed, water: (x, y) => at(x, y) === WATERC, riverLeft, mainBase, pond: pondPlan }, terrainName);
+  const terrain = hf ? carveHeightFirstWater(hf, W, H, (x, y) => at(x, y) === WATERC, pondPlan)
+    : planVillageTerrain({ W, H, theme, form, seed, water: (x, y) => at(x, y) === WATERC, riverLeft, mainBase, pond: pondPlan }, terrainName);
   const lv = terrain.levels;
   const hasTerrain = lv.some((v) => v > 0);
   const rampCells = new Set<number>(); // 길 경사로 칸(코드 1~4) — 문 앞·소품 자리로 쓰지 않는다
@@ -555,7 +577,14 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   } else {
     mainKeys = wavy(0, W - 1, yMainBase, 3);
   }
-  const main = form === "riverbank" ? vStreet("둑길", mainKeys, 2) : hStreet(form === "scatter" ? "오솔길" : "큰길", mainKeys, lanesWidth);
+  // 높이 먼저: 큰길은 마을 단의 등고선을 따라간다(단을 건너지 않는다). 강 골 앞뒤 5칸은 곧게 — 골로 내려가는 경사로가 곧은 단면에 놓이게.
+  const hfMainY = hf ? (x: number): number => {
+    for (const cv of terrain.coves) if (x >= cv.x0 - 6 && x <= cv.x1 + 6) return hf!.mainY(Math.max(0, cv.x0 - 6));
+    return hf!.mainY(x);
+  } : null;
+  const main = form === "riverbank" ? vStreet("둑길", mainKeys, 2)
+    : hfMainY && !coastStreet ? hStreetFn(form === "scatter" ? "오솔길" : "큰길", 0, W - 1, hfMainY, lanesWidth)
+    : hStreet(form === "scatter" ? "오솔길" : "큰길", mainKeys, lanesWidth);
   // 다리 칸: 큰길이 물을 지나는 곳은 길 대신 다리 키트
   // 다리(2026-10-11): 옛 아치 다리(bd-bridge-arch)는 성 안 운하용 그림이라 아래 두 줄(아치 면)이 물결 위 반투명 아치로 1층에 깔려
   // 「투명한 뭔가」로 보였다(사용자 지적). 들판 강에는 산길 돌다리, 오솔길 마을에는 나무 널다리(5×4: 난간·바닥 두 줄·아래 난간).
@@ -722,6 +751,20 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     connect("포구 길", Math.round(W * 0.5) + ri(-4, 4), main, south);
     connect("포구 길", ri(4, 8), main, south);
     connect("포구 길", W - 10, main, south, "r"); // 물가 길 동쪽 끝이 막다른 길이 되지 않게
+  } else if (hf?.seamBelow) {
+    // 높이 먼저: 남쪽 길은 한 단 낮은 땅에서 마을 단 절벽 밑 두 줄 아래를 등고선 따라 — 이음길(남북)만 단을 건너 경사로로 오른다
+    const below = hf.seamBelow;
+    const spans: [number, number][] = riverX >= 0 ? [[0, riverX - 3], [eastStart, W - 1]] : [[0, W - 1]];
+    for (const [x0, x1] of spans) {
+      if (x1 - x0 < 12) continue;
+      const yOf = (x: number) => Math.min(H - 5, below(x) + 2);
+      const st = hStreetFn("아랫길", x0, x1, yOf, 1 + (rand() < 0.4 ? 1 : 0));
+      markStreet(st); souths.push(st);
+      const ends = [x0 > 0 ? x0 + 4 : -1, x1 < W - 1 ? x1 - 4 : -1].filter((x) => x >= 0);
+      if (!ends.length) ends.push(Math.round((x0 + x1) / 2) + ri(-3, 3));
+      for (const x of ends) connect("이음길", x, main, st);
+      if (x1 - x0 > 30 && ends.length < 2) connect("이음길", Math.round(x0 + (x1 - x0) * 0.25) + ri(-2, 2), main, st);
+    }
   } else if (H - yMainBase >= 15) {
     // 남쪽 뒷길 — 강이 있으면 양쪽 둑에 하나씩. 맵 가장자리에 닿지 않은 끝마다 이음길로 큰길과 잇는다(막다른 길 없음).
     const spans: [number, number][] = riverX >= 0 ? [[0, riverX - 3], [eastStart, W - 1]]
@@ -2696,7 +2739,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       doors: doorFronts.map((d) => ({ kit: d.kit, x: d.x, y: d.y, reached: !!seen[idx(d.x, d.y)] })),
       fenceGates: gateInfo, levelReach, ...(upperLost.length ? { upperLost } : {}), opened,
       ...(bridge ? { bridge } : {}), ...(millBridge ? { millBridge } : {}), fields, trees: treeCount, filler, stamped, stampFailed: failed, nature: natureStats,
-      terrain: terrain.name, ...(requestedTerrain !== null ? { requestedTerrain, terrainSwapped } : {}), ...(reliefInfo ? { relief: reliefInfo } : {}),
+      terrain: terrain.name, ...(hf ? { landform: hf.landform, settle: hf.settle } : {}), ...(requestedTerrain !== null ? { requestedTerrain, terrainSwapped } : {}), ...(reliefInfo ? { relief: reliefInfo } : {}),
       upper: climbs.map((cl) => ({ level: cl.level, lanes: cl.lanes, path: cl.path, to: cl.to, use: cl.use, ...(cl.lookout ? { lookout: cl.lookout } : {}),
         reach: levelReach[cl.level] ? Math.round((levelReach[cl.level]!.reached / Math.max(1, levelReach[cl.level]!.walk)) * 100) : 0 })),
       entrance, ...(wallInfo ? { walls: wallInfo } : {}),

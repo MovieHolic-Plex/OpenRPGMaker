@@ -83,6 +83,8 @@ export const AUTHOR_BEODEUL_TOWN_TOOL: ToolDefinition = {
       church: {type:'boolean',description:'houseCount 와 함께 true 이면 옛 예제 작은 마을(고정 배치 40×30 + 석조 교회와 마당, 폭 54칸)을 짓는다. 기본 false — 새 마을에는 쓰지 말 것.'},
       form: { type: "string", enum: [...BEODEUL_VILLAGE_FORMS], description: "마을 형태(theme 마을만, city 에는 없음): street 길가 · riverbank 물가 띠(river 만) · scatter 흩어진 · plaza 광장(장터일 때만). 생략하면 seed 로 고른다." },
       terrain: { type: "string", enum: [...VILLAGE_TERRAINS], description: "지형(theme 마을만) — 마을보다 먼저 정하는 땅 모양: terraces 계단식 비탈(river·coast, 큰길 북쪽 집 띠 뒤로 한두 단, 강은 곧은 골) · highland 높은 산비탈(river, 7칸 간격 세 단 — 산골, 요청할 때만) · hillside 눈 덮인 비탈(snow) · basin 오아시스 골(desert) · ridge 마른 둔덕(swamp, 북쪽 높은 마른 땅·늪물은 낮은 땅에만) · flat 평지. 생략하면 seed 로 고른다(결과 data.terrain)." },
+      landform: { type: "string", enum: ["terraces", "hill", "slope"], description: "높이 먼저(시제품, theme 마을만): 땅 모양을 먼저 짓고 큰길·뒷길이 그 단의 등고선을 따라간다 — terraces 계단식 단(남쪽 낮은 땅·마을 단·북쪽 높은 단) · hill 마을 북쪽 가운데 두 층 언덕 · slope 7칸마다 단이 오르는 산골. 주면 terrain 대신 이 모양으로 짓는다(성벽 마을은 무시)." },
+      settle: { type: "string", enum: ["middle", "low"], description: "landform 일 때 마을이 앉는 단: middle 가운데 단(남쪽에 한 단 낮은 밭·물가 땅이 남는다, 기본) · low 맨 아래 단." },
       theme: { type: "string", enum: [...BEODEUL_VILLAGE_THEMES, "city"], description: "마을 문법(기본 river): river 강가 · coast 포구(바다) · desert 사막 오아시스 · snow 설원 · swamp 늪 · city 로마풍 블록 도시(도시를 말할 때만)" },
       forestType: { type: "string", enum: [...BEODEUL_FOREST_TYPES], description: "숲 종류(theme river·coast 마을만). 숲 덩이는 늘 이어진 수관 오토타일(활엽 사이 전나무)이고, 이 값은 낱 나무·숲 둘레 나무를 고른다: broadleaf 활엽(기본) · conifer 전나무·측백(숲 둘레에도 선다) · mixed 혼효" },
       walls: { type: "boolean", description: "true 이면 마을 둘레에 성벽을 두른다(성벽·성곽·성문·요새 마을). theme river·desert·snow 마을만 — 평지로, 강가 마을은 강 없이 짓는다. 성문루·망루·계단도 함께. 결과 data.walls." },
@@ -626,7 +628,7 @@ function buildVillage(draft: Project, args: Record<string, unknown>, theme: Beod
     if (terrain && terrain !== "flat") { wallTerrain = "flat"; wallNotes.push(`성벽 마을이라 지형 ${terrain} 대신 평지로 지었다.`); }
     else wallTerrain = "flat";
   } else if (args.walls === true) wallNotes.push(`성벽은 강가·사막·설원 마을(theme river·desert·snow)만 두른다 — ${theme} 마을은 성벽 없이 지었다.`);
-  const build = () => buildBeodeulVillage(draft, mapId, theme, seed, wallForm, wallTerrain, forestType, { roofs, water: wallWater, woods, houseLimit: houseCount, walls, ...(typeof args.quarter === "string" && beodeulYardReserve(args.quarter) ? { yard: beodeulYardReserve(args.quarter) } : {}),
+  const build = () => buildBeodeulVillage(draft, mapId, theme, seed, wallForm, wallTerrain, forestType, { roofs, water: wallWater, woods, houseLimit: houseCount, walls, ...(typeof args.landform === "string" && args.landform ? { landform: args.landform } : {}), ...(typeof args.settle === "string" && args.settle ? { settle: args.settle } : {}), ...(typeof args.quarter === "string" && beodeulYardReserve(args.quarter) ? { yard: beodeulYardReserve(args.quarter) } : {}),
     ...(args.wallGate === "N" || args.wallGate === "NS" || args.wallGate === "S" ? { wallGate: args.wallGate } : {}), ...(args.wallSideGaps === true ? { wallSideGaps: true } : {}) });
   let r = build();
   // 성벽 띠가 가장자리를 먹어 요청한 집 수가 다 앉지 않는다(2026-10-22 조수 시험 r3: 5채 요청 → 44×32 에서 2채, 조수가 52×38 로 다시 지어 3채).

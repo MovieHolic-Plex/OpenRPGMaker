@@ -16,9 +16,9 @@ export const VILLAGE_CARD =
   "highland·hillside·basin·ridge·terraces·flat(땅 모양). 우물·밭·방앗간·여관(광장 북쪽 앵커)은 도구가 알아서 놓는다. " +
   "교회·시장 건물·특정 건물 지정은 못 한다(보고됨). hints 키: houseCount(3~5)·roofs(red|slate|moss|log)·" +
   "water(river|none)·woods(edge|dense)·form·terrain·theme·forestType(broadleaf|conifer|mixed)·walls·wallGate(S|N|NS)·" +
-  "width·height·seed·variant(씨앗 바꾸기). 집이 선 마을은 AI 가 다시 지을 수 없다(완성된 집 보호) — 처음 make_place 에 원하는 것을 다 넣는다. 모르는 키는 무시되고 경고된다. 모양 취향이 없으면 비워 두면 씨앗이 고른다.";
+  "width·height·seed·variant(씨앗 바꾸기)·landform(terraces|hill|slope, 높이 먼저 — 땅 모양을 먼저 짓고 길이 등고선을 따름)·settle(middle|low, 마을이 앉는 단). 집이 선 마을은 AI 가 다시 지을 수 없다(완성된 집 보호) — 처음 make_place 에 원하는 것을 다 넣는다. 모르는 키는 무시되고 경고된다. 모양 취향이 없으면 비워 두면 씨앗이 고른다.";
 
-const KNOWN_HINTS = new Set(["houseCount", "roofs", "water", "woods", "form", "terrain", "theme", "forestType", "walls", "wallGate", "wallSideGaps", "width", "height", "seed", "variant", "harbour"]);
+const KNOWN_HINTS = new Set(["landform", "settle", "houseCount", "roofs", "water", "woods", "form", "terrain", "theme", "forestType", "walls", "wallGate", "wallSideGaps", "width", "height", "seed", "variant", "harbour"]);
 const BEODEUL_TILESET = "beodeul_city";
 
 interface VillageState { readonly args: Record<string, unknown>; readonly seed?: number; readonly variant?: number; readonly doors?: readonly { x: number; y: number; kit?: string }[] }
