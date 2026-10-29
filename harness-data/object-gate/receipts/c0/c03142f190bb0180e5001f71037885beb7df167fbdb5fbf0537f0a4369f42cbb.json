@@ -1,0 +1,334 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c03142f190bb0180e5001f71037885beb7df167fbdb5fbf0537f0a4369f42cbb",
+ "width": 16,
+ "height": 48,
+ "kind": "organic",
+ "name": "ice pillar",
+ "label": "beodeul_city/wave-places/ice-age-field/ice_pillar",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "bcc19e99327f94ce"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 17,
+  "tileColorsP90": 17,
+  "darkV5": 137,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 2
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cap band of the pillar",
+      "rows": "3-6",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7-9"
+     },
+     {
+      "part": "ice shaft (main body, vertical faceted face)",
+      "rows": "7-39",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "snowy base mound",
+      "rows": "40-46",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 33,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": {
+     "cap_rows": 4,
+     "cap_width": 9,
+     "shaft_width": 7,
+     "rounded_at_both_edges": false
+    },
+    "reads_as": "front_elevation",
+    "evidence": "The main body is a tall shaft (rows 7-39) with blue shading on the right and horizontal dark crack lines, all drawn as a vertical face. The top cap (rows 3-6) is a flat band: row 3 is outline, rows 4-5 are white, row 6 is a lighter edge line, and rows 7-9 are a slightly darker shadow. Its width is 9 on all four rows, so it has no ellipse profile; it never narrows above, and it is a flat-band cap like the 'column: flat band cap' wrong reference. The bottom rows 40-46 widen and narrow again (11, 14, 16, 16, 14, 12) as a snowy base mound, but that is a pedestal, not the main body's top surface. The shaft shows no top surface beyond the thin cap band, so it reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a thin, small ice pillar with a capital and base, about one tile wide and two tiles tall. The reference trees are far larger leafy canopies, so I judged the candidate by eye as a sparse object. Measured facts: 15 visible tones per tile, above tree-1a786c (7) and below tree-d43edd (29). Near-flat coverage is 0%, so there are no large flat fills. Dark edge pixels are 0% neutral, so the outline is tinted: a darker blue-teal tone of the ice, not black. By eye, the shaft has about 5 lightness steps (white highlight, pale blue, mid blue, shadow blue, dark blue edge) with fluting and facet variation. It reads as shaded form and not a flat body with an outline. The capital and base have some chipped, grainy detail. It is less textured than the big canopy reference but is not thinner or more sticker-like than the simpler reference, so a careful artist would accept it beside the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 25092
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cap band",
+      "rows": "3-6",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pillar shaft",
+      "rows": "7-39",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base ice mound",
+      "rows": "40-46",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 33,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": {
+     "cap_rows": 4,
+     "cap_width": 9,
+     "shaft_width": 7,
+     "rounded_at_both_edges": false
+    },
+    "reads_as": "front_elevation",
+    "evidence": "The pillar is a tall shaft with light and dark vertical shading (rows 7-39). Its top is a flat band, rows 3-6, 9 px wide on a 7-8 px shaft. The width is constant at 9 over rows 3-6 and drops straight to 8 at row 7, so it never widens and then narrows. That makes it a flat-bottomed cap, not an ellipse. Row 3 is outline, rows 4-5 are white and row 6 is a thin lighter edge line. Rows 7-9 hold only a little darker blue at the right side, not a clear eave shadow, so the top reads as a 2-row rim. The wider base (rows 40-46, widths 14-16-12) is a puddle or mound at the bottom and is not the pillar's top. No side face is drawn. This matches the reference 'column: flat band cap' (wrong) rather than the ellipse cap (right)."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a thin, sparse object (a broken ice column), so I judged density by eye as well as by the numbers. The facts support it: 15 visible tones per tile is above tree-1a786c (7) and below tree-d43edd (29), near-flat coverage is 0%, and 0% of the dark edge pixels are neutral. That means the outline is a dark blue-tinted version of the ice, not a black sticker line. The column shows about 5 lightness steps: white highlight, pale ice, mid blue, shadow blue, and deep blue. It also has fluting lines and a chipped top and base. It carries less texture than the rich tree canopies, but no large areas are flat fills. A careful artist would accept it next to the references as an equally crafted prop that is simply smaller and simpler.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21432
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cap band",
+      "rows": "3-6",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7-9"
+     },
+     {
+      "part": "flared base mound",
+      "rows": "40-46",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 37,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": {
+     "cap_rows": 4,
+     "cap_width": 9,
+     "shaft_width": 7,
+     "rounded_at_both_edges": false
+    },
+    "reads_as": "front_elevation",
+    "evidence": "The main body is a tall tapering ice shaft in rows 7-39, drawn as a vertical face with light-to-dark vertical shading and no horizontal surface. The top cap in rows 3-6 is a flat band of constant width 9. Its top row is already full width, so it never narrows above, which means it is a flat cap rather than an ellipse. Only about 2 white rows (4-5) could pass as a top, followed by an edge row at 6 and a slight narrowing to width 8, so it reads as a rim, like the 'column: flat band cap' reference. The flared base in rows 40-46 widens from 14 to 16 and narrows to 12 and is a mound at the foot, not a top surface of the shaft. Overall this is a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a thin, upright ice column with a capital and a base. It is a sparse object, so I judged density by eye. The measured facts support it: 15 visible tones per tile sits between tree-1a786c (7) and tree-d43edd (29), near-flat coverage is 0%, and 0% of the dark edge pixels are neutral. The outline is a dark blue-teal that leans toward the adjacent ice rather than a neutral black line, and some edges are separated by value alone. The column shows about 5 lightness steps: bright highlight, pale ice, mid blue, shadow blue and a deep edge. It also has facet and crack variation and a lit left edge with a shaded right side. This reads as a rounded form, not a flat sticker. It is simpler than the rich canopy of tree-d43edd, but it is as rich as the weaker reference tree-1a786c and has no large flat fills. A careful artist would accept it next to the references, though the kind match is loose because the candidate is a pillar rather than foliage.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 22003
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "pillar top cap",
+      "rows": "3-6",
+      "evidence": "none",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ice shaft",
+      "rows": "7-39",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "flared base",
+      "rows": "40-46",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 33,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": {
+     "cap_rows": 4,
+     "cap_width": 9,
+     "shaft_width": 7,
+     "rounded_at_both_edges": false
+    },
+    "reads_as": "front_elevation",
+    "evidence": "The main body is the shaft, rows 7-39, drawn as a vertical face with a light-to-dark side gradient. Its top cap, rows 3-6, has a constant width of 9 in the silhouette profile. It is a flat band with no widening and narrowing, so it is not an ellipse. Only rows 4-5 are white, and row 3 is outline and row 6 a thin lighter line, so it reads as a rim of about 2 rows. The flared base, rows 40-46, widens from 14 to 16 and narrows again to 12, so it has an ellipse-like footing. It is a small plinth rather than the main body. The pillar's own top therefore shows no real top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a thin, small object (a broken ice column with a capital and base), so I judged it by eye as well as by the numbers. It shows about 5 ice steps from white highlight through pale and mid blue to a deeper blue-grey shadow side. The base and capital are shaded separately from the shaft, and the chipped top edge has facets. Its dark edge pixels are tinted blue rather than neutral (0% near-neutral), so the outline follows the material tone rather than a black sticker line. Near-flat coverage is 0%, with no 5x5 flat fills. It has 15 visible tones per tile, which is above tree-1a786c (7) and below tree-d43edd (29), so it is not thinner than the simpler reference. It is simpler than the big canopy tree, but a careful artist would accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19197
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.724Z",
+ "cells": {
+  "16": [
+   "32d759cea8f6fbdb",
+   "765e594317bc809a",
+   "e00e080c92369422"
+  ],
+  "24": [
+   "4494ce1247a96d6a",
+   "5d9a3b24d44d40f9",
+   "7744fa1a66ed693a",
+   "979f546ec36d349b",
+   "9ea4dc21ec3f3bd3",
+   "e0fe8008df9f9d8e"
+  ],
+  "32": [
+   "02e958fa36371690",
+   "30a24cc649015b43",
+   "3ea09c15504c4065",
+   "46c6f3e354d95ca5",
+   "60e6e248a8284b91",
+   "7d1a1c73f83487fe",
+   "82b9452b5c85ab3d",
+   "8700cea3a87d3e76",
+   "8ba3ab816db05fac",
+   "b328b5ba59ce9afa",
+   "ce9cb28e624ed23f",
+   "ed51fe79567eb8c5"
+  ],
+  "48": [
+   "21da1ae340957cb6",
+   "7f22eed8cb53d6a5",
+   "b205074b92140a92"
+  ]
+ }
+}

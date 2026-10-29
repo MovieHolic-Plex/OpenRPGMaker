@@ -1,0 +1,379 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7cc89463fdf9436a41fb6f65557b355872c2b01d55166eca272c6c5d3d962056",
+ "width": 32,
+ "height": 32,
+ "kind": "organic",
+ "name": "obsidian cluster",
+ "label": "beodeul_city/wave-places/volcano-field/obsidian_cluster",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "화풍: 화풍 판정이 갈림(걸린 판정 2/4)",
+  "화풍: 판정자 fail (2/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "refer",
+  "reasons": [
+   "화풍 판정이 갈림(걸린 판정 2/4)",
+   "판정자 fail (2/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "bcc19e99327f94ce"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 14,
+  "tileColorsP90": 14,
+  "darkV5": 14,
+  "nearBlackEdge": 0.43,
+  "opaqueTiles": 1
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "central tall obsidian spire",
+      "rows": "5-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right shard",
+      "rows": "12-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left small shard",
+      "rows": "18-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front small shard",
+      "rows": "22-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The cluster is made of faceted shards that taper to pointed tips (width grows steadily from 2 at rows 5-6 to 25 at row 27). No part has a band ending in a front-edge line, no ellipse, and no visible contents. The tips are pointed rather than flat, so there is no horizontal top surface. The light vertical highlight stripes on each shard (for example x=17, rows 23-24) are facet highlights on a vertical face, not a top. The whole silhouette is a vertical front elevation of about 26 rows, with the widest rows at the base (27-28)."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small cluster of dark purple crystal spikes, about one tile wide. The facets show roughly 4 lightness steps (deep, dark, mid, a few pale highlight pixels). The Beodeul trees show 5-6 steps and clumped, grainy foliage. The edge pixels are tinted purple (1% near-neutral), so this is not a black sticker outline. The measured facts are not weak: 11 visible tones per tile beats tree-1a786c (7) but is well below tree-d43edd (29), and near-flat coverage is 0%. By eye, though, the spikes are smooth, and each facet is only one or two tones with little grain, speckle or per-facet shading. Next to the references it looks thinner and simpler, closer to a stylised icon than a fully shaded Beodeul piece. A careful artist would want more facet gradation and surface texture, so this is a fail on the 'when in doubt' rule.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 16268
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "central tall spire",
+      "rows": "5-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right mid spire",
+      "rows": "12-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left small spire",
+      "rows": "17-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front small spire",
+      "rows": "22-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "far right small spire",
+      "rows": "22-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The cluster is a group of pointed crystal spires. The width profile grows steadily from 2 px at row 5 to 25 px at row 27, with no band, ellipse or other plateau. No spire shows a horizontal top surface, edge line or eave shadow. The light stripes in columns x=17 (rows 23-24) and x=10 are vertical facet highlights, not tops. Each spire ends in a point or a 2-4 px tip and is drawn only as a vertical front face. The result is a flat front-facing silhouette with no top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small cluster of dark violet obsidian spikes, about 20x20 source pixels, and it is not a plant. It was judged against the tree references because that is the assigned kind. It shows about 5 lightness steps: a deep base, mid purple faces, and lighter edge highlights on each spike. The spikes are separated by value, and the dark edge pixels lean purple (only 1% near-neutral), so the outline follows the material tone rather than a black sticker line. Measured facts support this: 11 visible tones per tile is above tree-1a786c (7) but well below the rich tree-d43edd (29). Near-flat coverage is 0%, so there are no large flat fills. It is simpler than the best reference, but it is a compact single-tile prop, and it is not thinner or flatter than the tree-1a786c reference. A careful artist would accept it next to that reference.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16171
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "central tall obsidian spire",
+      "rows": "5-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right medium spire",
+      "rows": "12-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left small spire",
+      "rows": "22-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front small spire",
+      "rows": "23-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The cluster is made of pointed crystal spires. Each one narrows steadily to a tip, as the width profile shows (rows 5-6 are 2 px wide, rows 7-11 are 4 px, and it widens gradually to 25 px by row 27). There is no band ending in a front-edge line, no eave shadow, no ellipse, no roof plane and no visible contents. The light streaks on the spires (for example the x=17 column at rows 23-24) are vertical facet highlights, not horizontal surfaces. The spires and the base cluster read as a flat front view with faceted shading, and none of them shows a horizontal top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small cluster of dark purple crystal spikes, about 1.5 tiles wide, set against two full trees. Measured facts: 11 visible tones per tile, above tree-1a786c (7) but well below tree-d43edd (29). Near-flat coverage is 0%, so there are no large flat fills. Only 1% of dark edge pixels are neutral, so the outlines lean purple and read as a dark material tone rather than a black sticker line. By eye, each spike has a lit facet, a mid facet and a dark facet, with a few highlight pixels at the tips, which makes about 4 distinct steps against the references' 5-6. Texture is limited to facet splits with no grain, speckle or per-crystal detail, so it is some but not rich. The cluster is small and simple, and a tree reference is a poor match for a rock-like crystal, so it is not penalised for size. Even so, a careful artist would find it somewhat thinner and flatter than the richer reference. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 13001
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "central tall obsidian spike",
+      "rows": "5-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right medium spike",
+      "rows": "13-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left small spike",
+      "rows": "18-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front small spike and right-edge spike",
+      "rows": "22-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The cluster is drawn as pointed crystal spikes. The silhouette widens steadily from a 2px tip at rows 5-6 to 25px at row 27, then narrows over rows 28-30. There is no band ending in a front-edge line, no eave shadow, no ellipse and no visible contents. Each spike tapers straight to a point with a lighter left facet and a darker right facet, which are vertical faces. The column scan shows no light top band: x=17 goes dark, then a light stripe at rows 23-24, then dark again. That stripe is a facet highlight, not a horizontal surface. No part of the cluster shows a top plane, so it reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small cluster of dark purple crystal spikes, about one tile or less, and its pixel facts are mostly on par with the references. It shows 11 visible tones per tile, against 7 for tree-1a786c and 29 for tree-d43edd. Near-flat coverage is 0%, the same as both references, so no 5x5 area is a flat fill. Only 1% of its dark edge pixels are near-neutral, so the edges lean purple-indigo like the material instead of forming a black sticker outline. By eye, each spike has a lit facet, a mid tone and a deep base tone, and a few lighter glints separate the overlapping shards by value. That is about 5 steps, close to the references. It is simpler and less textured than the large tree-d43edd, but about as rich as tree-1a786c. Because it is small, I did not fail it for sparseness. It is not a sticker: no black outline, no flat body, and the facets are shaded individually.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15962
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.175Z",
+ "cells": {
+  "16": [
+   "3fb866afd92913e4",
+   "61c46adbd18e6e49",
+   "6cf529febed734e0",
+   "96ecc2496cfd3233"
+  ],
+  "24": [
+   "050f898a6ba9e2b7",
+   "0ec6b3e1af7d2073",
+   "26ab5fe3694cdddb",
+   "2c9ef4373bd7acdc",
+   "4daf0d3155b8fe5a",
+   "5708bc3c80a39fe0",
+   "59dd1a951a8bc1b2",
+   "7628d693bff57d00",
+   "77daa6beb75cfc6e",
+   "7fc09f8a2cc7fedf",
+   "8a1221f9696c20e7",
+   "8d25bca16cc93f5d",
+   "9a55ad94f1b05a29",
+   "a34d59dd49653a02",
+   "a3781c3c850f1c09",
+   "b84ed19a1887526c",
+   "c6a3371585059ff6",
+   "cc52e89d4c63b476",
+   "d3258f7f3e8c2090",
+   "d7ca138c6e3b8814",
+   "e4dbf5299b5799a8",
+   "f1206840955ef3c8"
+  ],
+  "32": [
+   "2abc17ed89d1b967"
+  ],
+  "48": [
+   "20f240d2af7cfd72",
+   "97fc643d79b7def0",
+   "a9b9f4872b6c16bc",
+   "c47a78a6648a64e8",
+   "cdad78758b711b8d",
+   "f23fb75ecabcd425"
+  ]
+ }
+}

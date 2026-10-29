@@ -1,0 +1,445 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6541e8770f67743c6892f442777fe85937ae494a9f81f662b35a325de464bcce",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "tusk arch",
+ "label": "beodeul_city/wave-places/ice-age-field/tusk_arch",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (4/4)",
+  "3/4: 윗면 0행 < 3 (4/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+  "화풍: 판정자 fail (3/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (4/4)",
+   "윗면 0행 < 3 (4/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (3/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 6,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "5f62fef078ef7661"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 19,
+  "tileColorsP90": 19,
+  "darkV5": 39,
+  "nearBlackEdge": 0.05,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "borderline",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "left tusk",
+      "rows": "4-38",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right tusk",
+      "rows": "4-38",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left snow mound base",
+      "rows": "39-45",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right snow mound base",
+      "rows": "39-45",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "hanging cords at apex",
+      "rows": "5-15",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The arch is two curved tusks, each a 10-14 px wide vertical band that tapers up to a joint at the apex (rows 4-9). The tusks show only their front face, with light and dark shading along the length. There is no horizontal top surface, no front-edge line with eave shadow, and no ellipse. The width profile changes only slightly (10-12 px) down the shafts, so no cap or top plate appears. The snow mounds at the bases (rows 39-45, width 28) are lumpy white heaps of the kind in (d), but they are small base details rather than the main body. The main structure, the arch, is drawn as a flat front elevation with no visible top slope or lintel surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a thin, sparse prop (a curved bone arch with two snow mounds and hanging chains), while the references are whole houses with roofs, walls and doors. By the measured facts it is not shallow: 18 visible tones per tile against 10-12 for the references, 0% near-flat coverage, and only 4% neutral dark edge pixels. That last figure matches the warm brown outline I see beside the bone. By eye, though, the tusk body is a narrow band with about 4 lightness steps (highlight, light, mid, dark), against roughly 6 on the reference roof tiles. It has no per-segment grain or tile-like detail, and the snow bases are two or three tones of white-blue with little form. The chains and sparkles are only a few pixels. Placed beside the richly textured houses it reads thinner and flatter, closer to a clean sticker. The tone count for such a small piece is likely inflated by the few tiles it fills. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 15379
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "left tusk (curved pillar of the arch)",
+      "rows": "4-38",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right tusk (curved pillar of the arch)",
+      "rows": "4-38",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "top join of the tusks with brown lashing",
+      "rows": "4-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "snow mounds at the tusk bases",
+      "rows": "39-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 35,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The arch is two curved tusks seen face-on, 10-14 px wide, meeting at the apex at rows 4-9. The width profile stays at 10-14 px along the whole curve with no widening-then-narrowing band. The column scan shows no front-edge line and no eave shadow. The tusks use only shaded stripes of tan and brown for their curve. The snow mounds at rows 39-46 are blobs 24-28 px wide with no distinct top plane or edge line. Nothing reads as a horizontal top surface, so the whole drawing is a flat front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a thin, sparse prop (a bone arch on two snow mounds), not a roofed building, so the house references only loosely match its kind. Judging by eye and by the numbers: the tusk band has about 4 ivory/tan steps (highlight, mid, shadow, dark edge) and the snow mounds have about 3 cool tones. That is fewer than the 5-6 steps on the house roofs, but reasonable for an object this thin. The outline is a dark brown-tan that leans toward the neighbouring material, not neutral black, and only 4% of dark edge pixels are neutral. Measured facts are at or above the references: 18 visible tones per tile against 12 and 10, 0% near-flat coverage, and no 5x5 flat fills. Small sparkle dots and the snow shading add grain. A careful artist would accept it beside the references without it looking flatter or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18945
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "left tusk arm",
+      "rows": "4-38",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right tusk arm",
+      "rows": "4-38",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left snow base",
+      "rows": "39-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right snow base",
+      "rows": "39-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "hanging cords at apex",
+      "rows": "5-15",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The arch is two curved tusks meeting at the apex (rows 4-9), drawn as a flat front-facing silhouette of constant width (10-14 px) with no horizontal top surface, front-edge line or eave shadow. The tusk tips at rows 37-38 sit on dark base strips with no visible top. The snow mounds at rows 39-45 (width 28) are a lumpy white mass whose shading is bright and rows 40-43 are uniform, so they show no clear ellipse or edge line. Nothing in the drawing reads as a roof, lintel top or slab surface, so it is a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a thin curved tusk arch with two small snow mounds, not a whole building with roof, walls and door, so the references only loosely match its kind. Judged by eye as a sparse prop, the tusk is a narrow band with about 4 tones (highlight, light, mid, dark), and the references carry 5-6 steps per material. The outline is tinted brown-grey, and only 4% of its dark edge pixels are near-neutral, so it is not a black sticker line. The tusk shows little grain, segmentation or per-section shading beyond a few specks, and the snow mounds are small and simple. There are no flat fills (0% near-flat), and the measured 18 visible tones per tile is inflated by the tiny piece sitting on a transparent background and by the snow and hanging charms. By eye it looks thinner and flatter than the richly tiled and stone-shaded references. A careful artist would likely ask for more tone steps and surface texture on the tusk, so with doubt remaining it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 13561
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "left tusk (curved pillar of the arch)",
+      "rows": "4-38",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right tusk (curved pillar of the arch)",
+      "rows": "4-38",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "snow mounds at the tusk bases",
+      "rows": "39-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "hanging cords at the apex",
+      "rows": "5-15",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 35,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The arch is two curved tusks drawn as flat vertical strips of 10-14 px width, seen face-on and meeting at a point at rows 4-6. No band ends in a front-edge line, there is no eave shadow, and no ellipse or roof plane appears, so the tusks show no top surface. The snow mounds at rows 39-46 are blobs with no distinct top band and edge line. The only top-like rows are the tip at rows 4-6, which is a silhouette point and not a surface. The whole piece reads as a flat front elevation, like the red 'front elevation' and 'rim only' references."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a thin curved bone arch with small snow mounds at its bases. It is a freestanding prop, not a building with roof, walls and door, so the references are a different kind. The measured facts do not count against it: 18 visible tones per tile against 12 and 10, 0% near-flat coverage, and only 4% neutral dark edge pixels. The outline is a tinted dark brown-grey beside the ivory, not black. By eye, though, the tusk has only about 3-4 lightness steps (light ivory, mid, shadow side, dark edge) and little grain or crack texture along its length. The thin dangling strands and the snow bases are sparse and simple next to the tile scallops, plaster speckle and stone-by-stone shading of the references. A careful artist would see it as thinner and flatter than the Beodeul pieces, and the kind mismatch leaves it unproven, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 15067
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.802Z",
+ "cells": {
+  "16": [
+   "223e595c287af816",
+   "379b4a6a5cf62108",
+   "5213495bf945428e",
+   "62cfc13f45990c7d",
+   "76752fc9dbe23a59",
+   "7c3b10c9eb0290f1",
+   "85a8eb41dee24113",
+   "cac9686db7e0a68c",
+   "d7d5a122bec9c593"
+  ],
+  "24": [
+   "2b0fea45d4d1cd6a",
+   "2d1b308c97bd7d87",
+   "30cb139029749fe2",
+   "b13147d844fdad38"
+  ],
+  "32": [
+   "288c89cfec2533be",
+   "2adbbdb5e252db3d",
+   "2c30f7c6bb495a11",
+   "36670e8ac4c60883",
+   "36b12663638512a7",
+   "3970ada86d1df8dc",
+   "47dfe2d0f3b4e977",
+   "5c61e84ba58cbf89",
+   "67036888d28a3a6a",
+   "67701996a5dd2c03",
+   "677e2c905bb8ee21",
+   "6f8acdbb75ef7b1d",
+   "73c6c129de270a90",
+   "7e8e7d745bbbd4c5",
+   "80d2d326cf72beb4",
+   "920922da7d9a0d72",
+   "ab786faa86254d84",
+   "be58b965ecec54b9",
+   "be70e04d11ecfe09",
+   "c0a6110ce4835359",
+   "cd4ea0ca375853ae",
+   "d35b5dfb9cc52708",
+   "da85b57beb588467",
+   "dea89d2de009889a"
+  ],
+  "48": [
+   "58200dbd44dd9fb7"
+  ]
+ }
+}

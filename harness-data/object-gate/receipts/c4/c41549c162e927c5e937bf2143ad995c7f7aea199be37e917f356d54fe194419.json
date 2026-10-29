@@ -1,0 +1,333 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c41549c162e927c5e937bf2143ad995c7f7aea199be37e917f356d54fe194419",
+ "width": 32,
+ "height": 48,
+ "kind": "organic",
+ "name": "charred tree a",
+ "label": "beodeul_city/wave-places/volcano-field/charred_tree_a",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 질감 없음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "질감 없음 (4/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 3,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "bcc19e99327f94ce"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 6,
+  "nearBlackEdge": 0.64,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "trunk",
+      "rows": "28-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "branches and upper trunk",
+      "rows": "5-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 20,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The charred tree is a bare trunk with thin branches that taper to a point at the top (rows 5-8, width 3-4). The width profile has no ellipse and no band that ends in a front-edge line, so no top surface is visible. The trunk (rows 28-47, width 5-10) is a vertical face with a slight flare at the base. The branches are thin diagonal strokes. The orange ember spots at rows 22, 33 and 40-41 are details and not a top surface. The drawing is a front elevation with no horizontal surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a small bare charred trunk with a few thin branches. It is much sparser than either reference, which carry full leafy canopies with many green clumps. Its dark edge pixels are 77% near-neutral, so the outline reads as near-black rather than a dark tint of the neighbouring material. The trunk shows only about 3 tones (dark body, a lighter edge, a few ember dots) with no bark grain, no per-branch shading and no ramp comparable to the references' 5-6 steps. The tile facts are 0 because the piece is smaller than a tile, so I judged by eye. A charred bare tree can fairly be sparse, but even allowing for that it looks thinner, flatter and more sticker-like than the references, and a careful artist would not accept it next to them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 9196
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "trunk",
+      "rows": "15-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bare branches",
+      "rows": "5-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 33,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The charred tree is drawn as a vertical trunk (rows 28-47, width 6-10) with thin branches splitting off above (rows 5-27). The trunk's silhouette runs straight up into the branch fork, with no ellipse, no front-edge line and no eave shadow, and no horizontal surface at its top. The branches taper to points. Glowing ember spots at rows 22, 33 and 40 are small details on the vertical face. The tree is a plain front elevation with no top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a thin, bare charred trunk with a few branches, with only about 14 distinct colours in total. It reads as a dark near-black silhouette with a few small ember dots. The trunk has only 2-3 lightness steps, with no visible bark grain, no highlight or shadow ramp, and no clump texture. 77% of its dark edge pixels are near-neutral, so the outline is near-black, a sticker-like look, whereas both references have 0% neutral edges and tinted, material-toned darks. The references carry 7 to 29 visible tones per tile, many leaf clumps in several greens, and a shaded trunk with roots. The candidate is a sparse object, so the per-tile fact of 0 is not held against it. By eye it still looks much thinner, flatter and more sticker-like than either reference, with no bark texture and a single dark mass. A careful artist would not accept it next to the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 10206
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "trunk",
+      "rows": "28-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "branches",
+      "rows": "5-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 20,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "A charred dead tree drawn as a vertical trunk with thin branches, seen from the front. The trunk has a uniform width of 6 to 8 px from rows 33 to 47, with no ellipse, no edge line and no eave shadow. The broken trunk top at rows 5-12 narrows to a point with no horizontal surface, and the branches are thin diagonal strokes. The ember glows at rows 22, 33 and 40 are small details. The object is a front elevation with no visible top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The charred tree is a thin, bare dead trunk with a few forked branches, much smaller and sparser than the leafy references. It uses only about 14 distinct colours in total. Its dark edge pixels are 77% near-neutral, so the outline is mostly a neutral dark line. The references show 0% neutral edge pixels, with tinted dark-green and brown edges. The trunk has 2-3 tonal steps (dark body, a few ember or orange dots, a little lighter brown) against 5-6 steps in the references. It lacks bark grain, per-branch highlights and multi-tone clumps. The density facts are not held against it because the object is thin, but by eye it still looks flatter and more sticker-like than the references, with a uniform dark silhouette and few highlights. The reference canopy and trunk carry layered clusters and grain that the candidate does not match.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 9445
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "trunk",
+      "rows": "28-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "branches and upper trunk",
+      "rows": "5-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 20,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "A charred dead tree drawn as a vertical trunk (rows 28-47, width 6-10) with thin branches splaying out above (rows 5-27). The trunk is a vertical column of flat shading with ember glow spots at rows 22, 33-34 and 40-41. It has no cap ellipse, no front-edge line, no eave shadow and no visible interior. The trunk bottom is a flat base at rows 45-47 with a slight flare and no ellipse. The branches are narrow diagonal strokes seen in elevation. No horizontal surface is drawn, so it is a front elevation with no top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a small bare charred trunk with a few thin branches and some ember dots. It is much thinner and smaller than the references, which have full canopies in 5-6+ green steps and clumped leaf texture. The trunk shows only about 3 tones (near-black, dark brown-grey, a lighter edge) and only 14 distinct colours in total. 77% of its dark edge pixels are near-neutral, which points to a black sticker-like outline rather than dark tones tinted by the adjacent material, whereas both references measure 0%. The trunk has little bark grain or per-section shading compared with the references' shaded foliage and root detail. Even allowing for a sparse dead-tree subject, it looks thinner, flatter and more sticker-like than the references, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 9836
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.101Z",
+ "cells": {
+  "16": [
+   "41335b6c982b0f62",
+   "55f79a71bb4e5d94",
+   "7c23e05c528a3d4e",
+   "8d6dee9d9cf41ec3",
+   "cc4e631eebfea08f",
+   "fcbb64d383dccfae"
+  ],
+  "24": [
+   "13f3b2455c2dfdb9",
+   "438b98b5beb493d8",
+   "43d4ddffb218b69c",
+   "786f0aaa83ebe0ad",
+   "7cce9cac0c327a3a",
+   "9f8c30bb72f60628",
+   "a011afa019efa80c",
+   "ace1dd3a655889b8",
+   "b489f1a8a1c8e521",
+   "e58cd3e58de36e60",
+   "fdf8f51136bb69ce"
+  ],
+  "32": [
+   "5a4c000ea05805dc",
+   "bc148d4254afded1",
+   "d0f16e31f7cdedfa",
+   "f63c6c8cc41fcb59"
+  ],
+  "48": [
+   "296dd27a0c870d30",
+   "70263b80c5ca2c7c",
+   "84e838b9ebf0363e"
+  ]
+ }
+}

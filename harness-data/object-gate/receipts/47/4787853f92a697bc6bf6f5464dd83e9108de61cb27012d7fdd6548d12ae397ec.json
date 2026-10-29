@@ -1,0 +1,328 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4787853f92a697bc6bf6f5464dd83e9108de61cb27012d7fdd6548d12ae397ec",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "snowrock s",
+ "label": "beodeul_city/wave-places/mountain-fortress/snowrock_s",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 3,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "bcc19e99327f94ce"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 78,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "snow cap on top of rock",
+      "rows": "4-8",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "8-9"
+     },
+     {
+      "part": "grey rock body front face",
+      "rows": "8-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 6,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette is a rounded mound that widens from 3 px at row 3 to 13 px at rows 8-9, then narrows to 2 px at row 14. White snow covers the upper rows (about 4-8) as a lit top surface. It ends where the grey mid-tone rock begins (x=8 changes from white to L=125 grey at row 8, x=11 from white to grey at row 8). Below it, rows 9-14 hold a darker grey front face that gets darker toward the base (L=98, 126, 79). The edge between snow and rock is a loose, irregular organic transition, not a clean edge line, so this is a moderate-confidence call. Overall it reads as a snow-topped rock seen from above and in front, not a flat elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny snow rock, under one tile (about 10x10 source px), set against two full-size leafy trees. The kind match is loose because a rock is not a plant. Its 13 colours give only about 4 grey-white steps, against 6-7 or more on the trees. The measured facts show 100% near-neutral dark edge pixels, and the picture agrees: a grey-black outline wraps the whole blob with no tint, which is the sticker look. The references show 0% neutral, with dark green and brown tones next to the leaves and wood. A small dot or two of shading on the stone is not the per-stone facet shading and grain a careful artist would put beside the reference. Because the piece is under one tile, the per-tile density facts do not count against it. By eye it still looks flatter and thinner than the reference, and when in doubt the rule is to fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 17838
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "snow cap and upper rock mass",
+      "rows": "3-10",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11-12"
+     },
+     {
+      "part": "lower front rock face",
+      "rows": "11-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The rock is a lumpy blob that widens from 3 px at row 3 to 13 px at rows 8-9 and then narrows to 2 px at row 14. The snow and light grey top occupies rows 4-9, and at x=8 and x=11 it ends in a darker line at row 10 (#62635f). Below that line are mid-grey rows 11-12 and a dark base at rows 13-14, which form a front face of about 5 rows. The snow is also lit on the left side (white at x=5 for rows 5-12), so the top/front split is not crisp. Still, there is a top mass, an edge line, a shaded front and a rounded organic silhouette, so it reads as three_quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny snow-covered rock, about 10x10 source pixels, shown beside two full trees, so the kind match is loose. It is smaller than one 16x16 tile, so the per-tile tone count is 0 and I judged density by eye. It shows only about 3 lightness steps (white highlight, light grey, mid grey) inside a dark grey edge. The measured dark edge pixels are 100% near-neutral, which fits a neutral grey outline with no tint from the adjacent material. That is the sticker look, where both references have 0% neutral edge pixels and use tinted dark-green and brown tones. There is no visible per-stone shading, grain or speckle. A careful artist would find it thinner and flatter than the references, which have 7 visible tones per tile for tree-1a786c and 29 for tree-d43edd. Sparseness alone would not fail it, but the neutral outline and shallow ramp do.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 15148
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "snow cap on top of rock",
+      "rows": "4-8",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "rock body front face with snow patches",
+      "rows": "9-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 6,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette is a rounded blob that widens from 3 px at row 3 to 13 px at rows 8-9, then narrows to 2 px at row 14. Rows 4-8 are a white snow mass with grey-white shading, which reads as a heap on the upper surface. Below it, rows 9-14 are a darker grey face (#7e7d77, #62635f, #4e4e53 at the bottom) that gives a front face of about 6 rows. The columns are inconsistent: x=8 alternates snow and grey, and x=5 is white from row 5 to row 12. There is no crisp front-edge line, so the top is only loosely defined. Overall it reads as a lit, snow-covered boulder seen from above and the front, not a flat elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny grey rock about 10x10 px, smaller than one 16x16 tile. It is not a tree, bush or plant, so it does not match the reference kind (canopy and trunk). It has only about 3 light-to-dark steps: a white highlight, a grey body and a dark edge. The dark edge pixels are 100% near-neutral, which gives a neutral dark outline rather than a dark material tone. It has no leaf clumps, grain or per-stone texture detail. The tone-per-tile measure is 0 because the piece is smaller than a tile, so I judged by eye. Next to the references, which carry 7 to 29 visible tones per tile with tinted edges, it looks much thinner and more sticker-like. A careful artist would not accept it beside them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 13563
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "snow cap on boulder top",
+      "rows": "3-8",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "rock front face with dark base",
+      "rows": "8-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "13-14"
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The snow-covered boulder is a domed mound, 3 px wide at row 3, widening to 13 px at rows 8-9, then narrowing to 2 px at row 14. The pale snow patch at rows 3-7 on the upper left and top is the top surface. A darker line at row 8 (x=8, L=125) sits under it. Below that is a gray rock face, about rows 8-12, with a dark base at rows 13-14 (L=79) that gives it volume. The edge line is weak and the snow also runs down the left side, so the top reads only loosely as a top plane. Overall it is a rounded 3D rock, not a flat front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny grey rock about 10x10 px, smaller than one 16x16 tile, so it is not a tree, bush or plant with a canopy and trunk. That is why the kind does not match the references. Its tile measures are 0, so I judged by eye. It shows about 3 lightness steps (white highlight, light grey, mid grey) and a dark edge that is 100% near-neutral, a grey/black sticker-like outline rather than a tinted material tone. The references have 7 and 29 visible tones per tile with tinted edges and clustered leaf texture. Next to them the candidate looks much thinner, flatter and more sticker-like. The 13 distinct colours are few, and the small mass gives it little room for grain or per-stone shading.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 15235
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.966Z",
+ "cells": {
+  "16": [
+   "13789216b3a23eca"
+  ],
+  "24": [
+   "1522e8811a95b19e",
+   "187b8e21cf139309",
+   "ad26289cd0e056fa",
+   "b7cee7873b4d67a9",
+   "b9b17d7c144a53ef",
+   "f9b74bc774a82654"
+  ],
+  "32": [
+   "03861a9f2da9efcf",
+   "1f3113dd1a6545cd",
+   "41b8ccc2bea284cd",
+   "4feea8c8ff96d57e",
+   "61cbd2659d9ce08e",
+   "e2ec5024ebf26c52"
+  ],
+  "48": [
+   "0e1716c2f478a0fb",
+   "2690ef7f090ac5af",
+   "3e009afed629db6e",
+   "75ab4bd84785ae7b",
+   "90e8205e1e4ca68c",
+   "a6b620150cf4a14c"
+  ]
+ }
+}

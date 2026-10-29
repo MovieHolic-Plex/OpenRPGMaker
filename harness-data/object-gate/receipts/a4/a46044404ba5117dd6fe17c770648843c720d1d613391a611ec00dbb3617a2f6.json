@@ -1,0 +1,448 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a46044404ba5117dd6fe17c770648843c720d1d613391a611ec00dbb3617a2f6",
+ "width": 48,
+ "height": 64,
+ "kind": "container",
+ "name": "forge hearth",
+ "label": "beodeul_city/wave-places/mountain-fortress/forge_hearth",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 판정자 의견이 갈림(분명한 3/4 2/4, 분명한 위반 2/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)",
+  "화풍: 판정자 fail (3/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (3/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "판정자 의견이 갈림(분명한 3/4 2/4, 분명한 위반 2/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (3/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (3/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 6,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "2ad36264365ed8d5"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 22,
+  "tileColorsP90": 26,
+  "darkV5": 33,
+  "nearBlackEdge": 0.22,
+  "opaqueTiles": 7
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "hearth top: coal bed seen from above inside a stone rim",
+      "rows": "34-45",
+      "evidence": "d",
+      "front_edge_line_row": 46,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "chimney stack",
+      "rows": "16-33",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "chimney top flue cap (dark 2-row strip)",
+      "rows": "16-17",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "smoke wisp",
+      "rows": "0-15",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden stair/bellows lever at left",
+      "rows": "34-61",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 12,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is the stone hearth (rows 34-61, width 38-46). Rows 34-45 show a top: a stone rim around an open bed of glowing coals (rows 36-43, evidence d). The top ends in a dark front-edge line at row 46. Below it is a stone front face with a fire arch, rows 47-61 (15 rows). The chimney (rows 16-33) is a vertical stone face with only a 2-row dark cap at the top, so it has no real top surface. The wooden stair at the left is a side profile."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "Tile density is fine: 17 visible tones per tile matches the cheese stall (17) and sits just under the roofed well (20), and near-flat coverage is only 2%. The fire and coals have a decent orange gradient, and the chimney bricks are drawn individually. The weak point is the outline. 92% of the dark edge pixels are near-neutral, whereas the tinted-outline references measure 0-1% (hedge, cheese stall). The dark line around the chimney, hearth body and wood steps reads as a uniform neutral dark contour, which is the sticker look. It is not the dark brown, red-brown or green of the adjacent material that Beodeul uses. The grey stone ramp has about 4 steps, fewer than the 5-6 on the references' wood and tile. The steps and the smoke wisp are thin and simple. Because the outline is near-black and the shading is a little shallow, this fails the Beodeul bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 18514
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "hearth top with ember/coal bed in open stone rim",
+      "rows": "34-45",
+      "evidence": "d",
+      "front_edge_line_row": 46,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone chimney stack with dark flue opening",
+      "rows": "16-33",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "smoke wisp",
+      "rows": "0-15",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden stair/ladder at left",
+      "rows": "34-59",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 12,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main hearth body (rows 34-61) has an open top, rows 34-45, with glowing coals visible inside a stone rim (evidence d). A dark front-edge line at row 46 follows it. Below is a stone front face of rows 47-61 with an arched fire opening and a dark base. The chimney above is a vertical stack with a dark flue top at rows 16-18, and the smoke is decor. The wooden stair at the left is a small side detail."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate carries 17 visible tones per tile, level with the cheese stall (17) and close to the well (20). Near-flat coverage is only 2%, against 13% for the stall, so there are no flat fills. The chimney and hearth stones are shaded block by block with light, mid and dark steps, and the fire mouth has a graded ramp from white-yellow through orange to deep red. Embers and speckles add grain, and the stair and wood side has its own tones. The 92% near-neutral dark edge share is the main risk for a sticker look. But the outline mostly sits next to grey stone, where a dark grey edge is the material's own dark tone. The lamp-crook reference is 100% neutral for the same reason, and the fire opening and wood edges look more brown-black. I call the outline mixed, not a uniform black sticker line, and the piece sits at the reference level on density and shading.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16900
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "smoke wisp",
+      "rows": "0-15",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "chimney stack (stone, vertical face)",
+      "rows": "16-33",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "chimney flue cap (dark slab)",
+      "rows": "16-17",
+      "evidence": "none",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "hearth coal bed: open trough with glowing embers seen from above",
+      "rows": "34-45",
+      "evidence": "d",
+      "front_edge_line_row": 46,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "hearth front face with fire opening",
+      "rows": "47-58",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base plinth",
+      "rows": "59-61",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "side wooden steps/handle at left",
+      "rows": "34-58",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 12,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is the wide hearth (rows 34-61). Rows 34-45 show an open trough filled with glowing coal and ember pixels inside a grey rim, so contents are visible from above (evidence d). The top ends in a dark front-edge line at row 46. Below it is a stone front face of about 15 rows (rows 47-61) with a fire arch and a dark base. The chimney (rows 16-33) is drawn only as a vertical brick face with a thin 2-row dark flue cap, and the side steps are also vertical, so not every part has a top surface. The main body still reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 6,
+    "evidence": "The candidate has 17 visible tones per tile, matching the cheese stall (17) and close to the well (20). Near-flat coverage is 2%, so there are no big flat fills. The stone chimney has brick-by-brick shading, and the fire mouth and ember bed have a warm gradient. Structure and density are fine. The outline is the weak point: 92% of dark edge pixels are near-neutral. That is the same neutral-black line seen on the lamp, whereas the richer references (hedge 0%, stall 1%, well 33%) use tinted dark material tones. The dark outline around the chimney, hearth body and wood stack reads as a uniform near-black sticker line instead of dark stone, brown or red tones. This breaks the Beodeul outline rule, so the piece fails on outline despite adequate shading and density.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 17101
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "hearth coal bed (open firebox top with embers inside stone rim)",
+      "rows": "34-45",
+      "evidence": "d",
+      "front_edge_line_row": 46,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "chimney stack top (dark opening with light rim)",
+      "rows": "16-18",
+      "evidence": "b",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone front face with fire arch",
+      "rows": "47-61",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "small wooden stair/bellows attachment at left",
+      "rows": "36-58",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "smoke wisp",
+      "rows": "0-15",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 12,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Main body spans rows 34-61. Rows 34-45 form a wide top opening filled with glowing embers and coals (evidence d), bounded by a stone rim. Row 46 is a dark front-edge line, and below it the stone front face runs rows 47-61 (15 rows) with a fire arch and a dark base. The chimney on top has a dark opening at rows 16-18. The wooden stair at the left is a small side attachment. Silhouette widths (39 then 46) show the broad top with the face below it."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "Density is fine: 17 visible tones per tile matches the cheese stall (17) and is close to the roofed well (20), and near-flat coverage is only 2%. The fire mouth and ember bed show several orange and yellow steps, and the chimney stonework has some brick variation. The weaknesses are structural. About 92% of the dark edge pixels are near-neutral, so the dark line round the whole hearth reads as a near-black sticker outline. The references that carry colour (hedge 0%, cheese stall 1%) use tinted edges instead. The stone body is shaded in only about 4 steps, with little per-brick highlight or speckle compared with the 5-6 step ramps and per-tile detail on the well roof and stall awning. The wooden stair/rack on the left is thin and flat. Overall it is competent but shallower than the Beodeul standard on outline and stone shading.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 18576
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.906Z",
+ "cells": {
+  "16": [
+   "06091cf961f2af67",
+   "36e2e8112445a392",
+   "394fa8bee546ba12",
+   "86c18d1d78d400c7",
+   "8e871854e8b76cbf",
+   "996988ddbacb3602",
+   "bc0a26d0153a8fa2",
+   "e671b3664089511f",
+   "f37d8f82d5fe4e6a",
+   "fc8321267f370a54"
+  ],
+  "24": [
+   "031a6752df84684f",
+   "185d552013ac5370",
+   "335adf7a29958859",
+   "36ebcc16e63441ed",
+   "5e113adc288602d8",
+   "a4604a96b9666a6c",
+   "b7093bbccca113b0",
+   "e5101533aa045f9b",
+   "e530e807f1a82207",
+   "eba9c892fff386e0"
+  ],
+  "32": [
+   "1964bf4a0f8b415f",
+   "1c8e2f58ce0397c6",
+   "387d140ee282b460",
+   "4c629e594de54a41",
+   "50404f3bb35e638d",
+   "673ea34ac2a03080",
+   "99b64f63583d23cd",
+   "a6c9ddd95d8f8808",
+   "ce48ab82b363bb57",
+   "db64b0770e1270a4"
+  ],
+  "48": [
+   "43ad4649a1eb8017",
+   "ad7859937d6056ee",
+   "cc6877cc60fcc63f",
+   "d84d85523a8a4f50"
+  ]
+ }
+}

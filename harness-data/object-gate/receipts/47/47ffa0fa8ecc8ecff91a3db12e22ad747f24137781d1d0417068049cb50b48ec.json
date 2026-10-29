@@ -1,0 +1,328 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "47ffa0fa8ecc8ecff91a3db12e22ad747f24137781d1d0417068049cb50b48ec",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "charred stump",
+ "label": "beodeul_city/wave-places/volcano-field/charred_stump",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 질감 없음 (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "질감 없음 (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 3,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "bcc19e99327f94ce"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 24,
+  "nearBlackEdge": 0.25,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stump top with embers",
+      "rows": "5-9",
+      "evidence": "a",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stump front bark face",
+      "rows": "10-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette is a 10px-wide block from row 6 to row 13, with a narrow 2-8px peak at rows 4-5. The top area (rows 5-9) holds the glowing ember patch at rows 6-9. Column x=5 shows a lighter row 6 and a darker line at row 9, which I read as the front edge between top and face. Below that, rows 10-13 are a darker vertical bark face, with the right side darker still. The top is only weakly distinguished from the face, but it is about 5 rows and the front face is 4 rows, so it reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny stump, well under one 16x16 tile, so the per-tile facts read 0 and I judged by eye. It uses only 12 distinct colours in total, and the visible ramp looks like 2-3 brown steps plus a dark edge and a small orange/red ember accent. Compared with the references, which carry 6+ steps, leaf clumps, bark and root shading, it reads as a flat, sticker-like icon with almost no grain or per-pixel texture. 25% of its dark edge pixels are neutral, against 0% in both references, so the outline leans toward near-black in places. A stump is a simple object and should not fail for being small alone, but at this scale the shading, texture and density sit well below the Beodeul references, so it does not meet the bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 14216
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "charred stump top with glowing embers",
+      "rows": "5-9",
+      "evidence": "a",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stump front bark face",
+      "rows": "10-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette is 10 px wide from row 6 to row 13. Rows 4-5 narrow to a small bump. In column x=5, row 6 is lighter (the rim), rows 7-8 are brown, and row 9 is a darker line that works as the front edge. In column x=8, rows 6-9 are orange ember pixels, which read as the charred top surface with embers, about 5 rows (5-9). Rows 10-13 are a darker bark face with a dark outline on row 13. Column x=10 darkens from row 9 down, giving a shaded front. The top is shallow and the front face is only 4 rows, but it still reads as a top plus a front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny stump, roughly 16x16 or smaller, shown at 2x, with only 12 distinct colours in total. The references are full trees with a canopy and trunk at 5-6+ steps per material, so the kind only loosely matches. The per-tile facts are 0 because the piece is smaller than a tile, so I judged by eye. It looks like a dark brown block with a lighter top and a small reddish-orange patch. That is about 3 visible shading steps, with little grain or texture beyond a couple of dots. The edge pixels are 25% neutral, so the outline is partly near-black and partly tinted. It reads as a small flat-ish sticker next to the richly clustered, multi-tone references. A careful artist would not accept it beside them without it looking thinner and flatter. The shading depth and texture fall well below the Beodeul bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 13903
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stump top with glowing embers",
+      "rows": "5-9",
+      "evidence": "a",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "small charred nub on top",
+      "rows": "4-5",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The body is 10 px wide from row 6 to row 13. Rows 6-9 form a top band with orange and red ember pixels. In the x=5 column this band ends in a darker line at row 9, and the x=10 column darkens from row 9. Below it, rows 10-13 are a darker brown vertical front face ending in a dark outline at row 13. The top band is short, about 4 rows, but it has an edge line and a front face of 4 rows below it, so it reads as a top plus a front face. This is a borderline call."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny stump, smaller than one 16x16 tile, with only 12 distinct colours in total. The references are full trees with 7 to 29 visible tones per tile and about 5-6 shading steps per material. At this size I see about 3 tones on the stump: a dark body, a lighter top and a few ember or orange pixels. There is no visible grain, bark texture or per-ring detail, so it reads as a small sticker-like icon. 25% of its dark edge pixels are neutral, which points to a partly near-black outline instead of Beodeul's tinted dark material tones. It is not larger than 5x5 flat fill, so the flat-fill measure is 0%. It is simple but not rich. Next to the references it looks thinner and flatter, and with no clear case for passing, I fail it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 14184
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stump top (charred cut face with ember spots)",
+      "rows": "5-9",
+      "evidence": "a",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stump front/bark face",
+      "rows": "10-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette is 10 px wide for rows 6-13, with a small bump at rows 4-5. In column x=5, row 6 is lighter (L=109) and rows 7-8 are mid-tone. Row 9 is a darker line (L=63) that reads as the front edge of the top. Below it is a 4-row bark face (rows 10-12, plus the outline at row 13). In column x=8 the ember pixels (rows 6-9) sit inside the top surface and are not part of the front face. In column x=10 the lighter rows 6-8 are replaced by dark rows 9-13, which marks the shadowed front face. The top is about 5 rows and the front face is 4 rows. The top is small and irregular, but it is present."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny sprite, smaller than one 16x16 tile, so the per-tile facts read 0 and I judged by eye. It is only about 10x12 source pixels with 12 distinct colours. The body is a dark brown block with a small lighter top and a hint of an orange or red accent. I count about 3 lightness steps, against 5-6 on the references. There is no visible grain, bark texture, ring detail or per-pixel variation. The outline is a dark edge, and 25% of the dark edge pixels are near-neutral. That is partly tinted and partly neutral, so I call it mixed, and it leans toward the sticker look. Next to the reference trees, with their layered clumps, bark shading and root detail, it looks thinner, flatter and less crafted. The stump is a small simple object, so I did not fail it for size or simplicity alone. I failed it because the shading is shallow, the surface is untextured, and the density is clearly below the reference.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 13130
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.096Z",
+ "cells": {
+  "16": [
+   "e9b897bea5ca9e13"
+  ],
+  "24": [
+   "3529e56b75924c40",
+   "54c4d98954785716",
+   "719947d288edbb08",
+   "82e02b966aec149c",
+   "9d0c2ff4d5b78af9",
+   "b3d226ac54a52839"
+  ],
+  "32": [
+   "1ea600e786cef91b",
+   "61510511a5b37375",
+   "6cb1e520e95e5a77",
+   "b921bfe3f7cf1181",
+   "cc253a9e3b6f8eda",
+   "cd1ea046c1dbd751"
+  ],
+  "48": [
+   "09eba08f4507a969",
+   "2fd539a67fa9e2a0",
+   "5dd6e4631834a2dc",
+   "a13a4f54ba61aced",
+   "bbf34e6a0832ed9a",
+   "f323bc5ed2ccdfa0"
+  ]
+ }
+}

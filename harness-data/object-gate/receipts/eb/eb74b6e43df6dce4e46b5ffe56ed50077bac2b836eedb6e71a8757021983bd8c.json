@@ -1,0 +1,401 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "eb74b6e43df6dce4e46b5ffe56ed50077bac2b836eedb6e71a8757021983bd8c",
+ "width": 48,
+ "height": 32,
+ "kind": "structure",
+ "name": "hide windbreak",
+ "label": "beodeul_city/wave-places/ice-age-field/hide_windbreak",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (4/4)",
+  "3/4: 윗면 2행 < 3 (4/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+  "화풍: 판정자 fail (3/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (4/4)",
+   "윗면 2행 < 3 (4/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (3/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 5,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "5f62fef078ef7661"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 18,
+  "tileColorsP90": 20,
+  "darkV5": 27,
+  "nearBlackEdge": 0.03,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "hide panels (brown front face)",
+      "rows": "11-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "snow cap along panel tops",
+      "rows": "9-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden posts with snow tips",
+      "rows": "3-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "snow on ground",
+      "rows": "28-30",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 16,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The three hide panels are flat vertical brown faces (rows 11-26) with a thin, ragged snow line on top (rows 9-11, about 2 rows). That line is a rim and has no front-edge line or eave shadow. The posts are vertical strips with small snow tips. No horizontal top surface or ellipse is visible, so the main body reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small row of wooden planks with a snow cap, not a whole building with roof, walls and door. It is a sparse prop, so I judged it by eye against the references and not by the per-tile density fact. The measured facts are not a problem: 17 visible tones per tile against 12 and 10 for the references, 7% near-flat coverage, and 0% neutral dark edges, so the outline is a tinted dark brown beside the wood. By eye, though, each plank is a mostly flat brown with only 3-4 lightness steps (highlight, mid, dark, deep). The references use about 6 steps and carry per-tile scallops, plaster speckle and stone-by-stone shading. The planks show little grain or per-board variation, and the snow base is a thin white strip with almost no shading. Next to the references it looks thinner and flatter, so I fail it under the 'when in doubt' rule.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 19801
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "hide panels (three stretched hides) with snow cap",
+      "rows": "9-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden poles",
+      "rows": "3-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "snow on ground at base",
+      "rows": "28-30",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 16,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The three brown hide panels are flat vertical faces (rows 11-26) in a straight front view. The only top-side element is a jagged 2-3 row white snow strip along the upper edge (rows 9-11). It is a rim-like cap with no front-edge line, no eave shadow and no widening-then-narrowing ellipse, so it does not count as a top surface. The poles are vertical strips with no tops. The snow at rows 28-30 is a ground strip, not part of the structure. There is no roof, awning or slope plane, so the object reads as front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The references are whole houses with scalloped roof tiles, half-timber walls, plaster speckle and stonework. The candidate is a small row of planks with snow caps, so it is a fence-like prop, not a building, and the comparison is only partly like-for-like. The measured facts do not count against it: 17 visible tones per tile against 12 and 10 for the references, 7% near-flat coverage, and 0% neutral dark edge pixels, so the outlines carry a brown tint. By eye it is thinner. Each plank has about 3-4 brown steps with only a little vertical grain, no per-plank highlights or knots, and the snow is a flat white strip. It reads flatter and more simplified than the richly shaded reference roofs and walls. A careful artist would likely want more plank shading and grain before putting it next to the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 15548
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "hide panels (three stretched hides)",
+      "rows": "8-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "snow cap along the panel tops",
+      "rows": "10-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden poles",
+      "rows": "3-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "snow on the ground",
+      "rows": "28-30",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The three hide panels are flat brown vertical faces (rows 12-26, about 15 rows). At x=24 the only top treatment is a 2-row white snow strip at rows 10-11, which works as a rim. It has no front-edge line and no eave shadow, and the panels show no receding top plane. The poles are also vertical strips with no top surface. The result is a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small row of vertical wooden planks with a snow cap, not a building with roof, walls and door, so the house references are only a rough match. The measured facts look good: 17 visible tones per tile against 12 and 10 for the references, 7% near-flat coverage, and 0% neutral dark edges. The outlines are tinted dark brown beside the wood, so they are not a sticker-style near-black line. By eye, though, each plank is only about 3-4 brown steps with a few vertical grain lines. The planks read as flat vertical strips, and the snow is a simple white cap with one blue-grey shade. The references have 5-6 steps per material, with per-tile highlights and speckle on every surface. Much of the tile tone count seems to come from the snow and base rather than from shaded wood. Next to the references it looks thinner and flatter, so I fail it on the 'when in doubt' rule.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 18161
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "hide panels with snow cap",
+      "rows": "8-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden posts",
+      "rows": "3-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "snow on ground",
+      "rows": "28-30",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 16,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main body is three flat hide panels between posts. Each panel is a vertical brown face at rows 11-26. Its top is only a ragged 2-row white snow strip (x=12 rows 9-10, x=24 rows 10-11), which works as a rim. There is no front-edge line and no eave shadow below it, and the width profile has no widening and narrowing that would make an ellipse. The posts are plain vertical strips with no top surface. The result reads as a front elevation like the 'rim only: top 2' reference."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small, sparse object: a row of wooden hide planks with snow caps and a snow base. It is not a full roofed building, so I judged it by eye as a sparse prop next to the references. The planks show about 4 brown steps with vertical grain and uneven top edges, and the snow has a few light/shadow steps. Outlines lean dark brown beside the wood, not neutral black, and the measured 0% near-neutral dark edge share supports that. Visible tones per tile are 17, against 12 and 10 for the references. Near-flat coverage is only 7%, close to the references' 0%, so there are no large flat fills. It has slightly fewer shading steps than the roofs and walls of the references, but it is not thinner or more sticker-like than the references' wood door and plank details.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15693
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.695Z",
+ "cells": {
+  "16": [
+   "2bf3ce56681d338e",
+   "517a37113e4a98c4",
+   "ad6403e5a2341f23",
+   "d7a5d87be8d69e15",
+   "f3fb6fdb37996332",
+   "f927e216d64910ad"
+  ],
+  "24": [
+   "0325e5ae107b6055",
+   "0c4c4dc03f02e2b6",
+   "2448df7ba47fb6bc",
+   "488882109bb61364",
+   "787762e3005e9be0",
+   "bee005c75deab200",
+   "d37139010b153ed9",
+   "ee6ae300376fa332"
+  ],
+  "32": [
+   "2fea80049b459d7c",
+   "3f7dc0b27b34db81",
+   "b71cbe671cd71b7e",
+   "caab80d55d530378",
+   "cbccddabff35d272",
+   "cf137c92dd2a439d"
+  ],
+  "48": [
+   "a6738d65b5e66252",
+   "ecabbc1282c7eaa8"
+  ]
+ }
+}

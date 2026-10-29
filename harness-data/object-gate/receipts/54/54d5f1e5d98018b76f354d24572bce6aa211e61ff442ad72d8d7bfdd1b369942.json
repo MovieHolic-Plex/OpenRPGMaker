@@ -1,0 +1,339 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "54d5f1e5d98018b76f354d24572bce6aa211e61ff442ad72d8d7bfdd1b369942",
+ "width": 32,
+ "height": 96,
+ "kind": "organic",
+ "name": "icefall",
+ "label": "beodeul_city/wave-places/ice-age-field/icefall",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "bcc19e99327f94ce"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 9,
+  "tileColorsP90": 11,
+  "darkV5": 111,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 12
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ice wall column (main body)",
+      "rows": "1-80",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "top light band of the ice column",
+      "rows": "1-5",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pool/basin at the foot of the fall",
+      "rows": "81-95",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 76,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main body is a tall vertical sheet of ice, rows 1-80, made of vertical streaks. Its upper end (rows 1-5, width 25-31) is a flat light band with no front-edge line and no eave shadow. It reads as a rim or rounded end, not a top surface. The only real top-down surface is the elliptical pool at the base: widths go 30, 29, 30, then 32 at rows 85-90, then narrow to 22 and 16 at rows 94-95, so it spans about rows 81-95. That pool is a separate base part. The ice column above it is drawn purely as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The icefall has about 5 lightness steps: white highlight streaks, pale ice, mid blue, deeper blue shadow, and a darker rim on the base pool. Its outline is a dark blue that leans toward the ice, not a neutral black. This matches the measured 0% near-neutral dark edge pixels. Texture is vertical highlight streaks, banded shadows and a rim-lit pool. It has no large flat areas, with near-flat coverage at 1%. At 9 visible tones per tile it is above tree-1a786c (7) and well below the leafy tree-d43edd (29). That is expected for a smooth ice form that has no leaf clumps. Next to the references it looks a little smoother and simpler than the leafy tree, but not like a flat sticker. A careful artist would accept it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21252
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cap of ice wall (pale band, rounded corners)",
+      "rows": "1-4",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ice wall body with vertical streaks",
+      "rows": "5-81",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base pool (elliptical water surface)",
+      "rows": "82-95",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 77,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main body is a tall vertical ice wall (rows 5-81) with face-on vertical streaks. Its top (rows 1-4) is a pale band with no front-edge line and no eave shadow, so it counts only as a rim or cap at most (about 2 rows). The only clear horizontal surface is the elliptical pool at the base (rows 82-95, width 29-32 narrowing to 16), which is a basin at the foot of the wall and not the top of the main body. The wall itself reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 6,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The icefall is a blue column with vertical icicle streaks, highlight dashes and a shaded pool at the base. It reads as about 5-6 blue steps, from near-white highlight down to a dark blue shadow. Its outline is a dark blue tint with no black, and the measured 0% near-neutral dark edge pixels agrees. Measured density is 9 visible tones per tile, above tree-1a786c (7) but well below tree-d43edd (29). Near-flat coverage is 1%, so there are no large flat fills, and the streaks and pool rim give grain-like variation. It is a simpler subject than the lush canopy tree, but it matches the simpler reference tree-1a786c in step count, tint and texture, so a careful artist would accept it beside that reference.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18916
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ice cap at top of wall",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "frozen ice wall (vertical face with icicle streaks)",
+      "rows": "6-80",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ice pool / base ellipse at foot",
+      "rows": "81-95",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 14,
+    "front_face_rows": 75,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The tall ice wall (rows 6-80) is a vertical front face of about 75 rows. Its top rows 1-5 form a light, wide band (width 25-31) that is weak evidence of a top, with a white highlight line at row 6. The base is a clear ellipse (rows 81-95): width goes 29-30, then 32 at rows 85-90, then narrows 30, 28, 26, 22, 16, and it has shaded ice or water contents with a dark rim. That is a horizontal surface seen from above, so the object has a top surface and a front face. The top cap is weak, so this reading rests mostly on the base ellipse."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The icefall is a smooth tapered column with a pool at its base. Its blue-tinted dark edges are material-toned, not black (0% neutral dark edge pixels). It has about 5 ice steps from white highlight through pale blue to mid blue and a deep blue shadow. Vertical streak highlights and a shaded pool rim add some structure. Measured density is 9 visible tones per tile, with 1% near-flat coverage. That is above tree-1a786c (7) but far below tree-d43edd (29), the richer reference. By eye, the body is mostly one pale-blue ramp with regular vertical streaks. It has no per-clump or per-chunk shading, no irregular ice facets or icicle detail, and little grain, so it reads cleaner and flatter than the Beodeul references. It also lacks their layered clusters, and it looks closer to a gradient-filled sticker than to hand-shaded texture. This is borderline, and with that doubt I fail it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 21811
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ice wall top band",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base pool ellipse (water)",
+      "rows": "81-95",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 75,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The tall ice-wall front face runs about rows 6-80 and has vertical streaks. The top has a pale band at rows 1-5, where the silhouette widens from 25 to 31 px. A faint lighter line at row 6 (x=16 is 251) ends the band, so it reads as a shallow top surface. The base has a pool ellipse at rows 81-95: width goes 29, 30, 32 (rows 85-90), then narrows 30, 28, 26, 22, 16 down to row 95. It has a dark rim and a lit water surface, so it shows a clear top plane. The object reads as three-quarter view, though the top band is thin."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a vertical ice column on a pool ellipse. It shows about 5 lightness steps: white highlight streaks, pale cyan, mid blue, a darker blue edge shade and a deep blue outline. The outline is a tinted dark blue and not neutral black, which matches the measured 0% near-neutral dark edge pixels. Vertical streaks and drip lines break up the body, and the base pool is shaded separately, so there are no large flat fills (1% near-flat coverage). It has 9 visible tones per tile, above tree-1a786c (7) and well below tree-d43edd (29). By eye it is a little simpler than the richer tree reference, but it is not sticker-like and is comparable to the simpler reference. Its density is slightly lower than the reference set overall but acceptable.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19178
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.729Z",
+ "cells": {
+  "16": [
+   "0096ac28c6a8bab6",
+   "28189c2b26e706fa",
+   "2c6c135c54c2700a",
+   "45932d8599b390c2",
+   "4d20851c707ddbbd",
+   "6519c17a560a9495",
+   "894712ba2fba6cfd",
+   "98fb7e9c7340bf26",
+   "a551a1bbb8627307",
+   "cbd22183f63dfc51",
+   "eb0bb1193b6dd600",
+   "fbd16c8651c900b5"
+  ],
+  "24": [
+   "0d8d143cd70ec96f",
+   "14d38542d9c7f601",
+   "1b3cc30dd1e3e301",
+   "253f912448a902d9",
+   "2671be8591517d80",
+   "373f3fd29f52c34f",
+   "38aa380643cac72a",
+   "502a8a95affb5408",
+   "5bdcc5a1c2c8d276",
+   "5ef98a1ae4710a37",
+   "6e002a9527ba0fa0",
+   "7dd494bd9d4932b9",
+   "85ccb0865649f60f",
+   "8c8c5979576944da",
+   "a138f0d087828704",
+   "adede4835eb7a302",
+   "b06202963d7283d0",
+   "b0f511105f85b643",
+   "b8498db96cffa3df",
+   "b9abb0946a12f5ee",
+   "cbdc293b98fecb76",
+   "cbedd9502c6fef1a",
+   "dd94a7e5150b3bcf",
+   "f22cbdf443584851"
+  ],
+  "32": [
+   "87a71ffcea039f3e",
+   "a1fd866045531980",
+   "deca374af738f5e2"
+  ],
+  "48": [
+   "31774fd58317bb1a",
+   "4550d77a2506a9d0",
+   "5a0cf13849e6809e",
+   "613c5e81a336df10",
+   "6c726941539e41a1",
+   "bea198e335fa0316"
+  ]
+ }
+}

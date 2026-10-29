@@ -1,0 +1,284 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a90a1a3ca28da8c0acbd95941b8d0f2918ded6a899b765cce6a3cbedd0d476e9",
+ "width": 16,
+ "height": 16,
+ "kind": "debris",
+ "name": "lava bomb",
+ "label": "beodeul_city/wave-places/volcano-field/lava_bomb",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "2ad36264365ed8d5"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 34,
+  "nearBlackEdge": 0.5,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "lava bomb rock top (lit crust with glowing cracks)",
+      "rows": "4-9",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lava bomb underside (darker shaded lower belly)",
+      "rows": "10-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette is a single rounded lump: width goes 8,10,12,12,14,14 and then narrows 12,12,10,8 over rows 4-13, an ellipse profile. The upper rows 4-9 are lighter blue-grey (L about 114 at x=4) with orange crack glow at rows 6-9, and read as the top of the rock seen from above. Rows 10-13 are much darker (L about 27-39), a shaded underside or front of 4 rows. It is a bulging mound with a lit top and a dark front, not a flat top-down slab or a flat front elevation. The match is moderate because the top and front are separated only by shading, with no hard edge line."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small, single-tile prop about 12x10 source pixels, so the per-tile tone count is 0 and I judged density by eye against the bench and lamp references. It uses 13 distinct colours in that small area, close to the bench's 14. It has a dark rock body with orange glowing cracks and a hot rim highlight, which reads as about 5 lightness steps across the rock and lava ramps. Only 4% of its dark edge pixels are near-neutral, so the outline is tinted dark brown/red-brown rather than a black sticker line. Near-flat coverage is 0%, and there are no large single-colour fills. It is simpler than the stall and well, but it does not look thinner or flatter than the bench or lamp at the same scale. A careful artist would accept it next to them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15613
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "lava bomb rock body with glowing cracks",
+      "rows": "4-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The object is a small rounded blob 8-14 px wide over rows 4-13, with a gray rock body and orange cracks. Its width profile (8,10,12,12,14,14,12,12,10,8) is one convex oval with no widen-then-narrow ellipse cap above a separate front face. No front-edge line or eave shadow appears; the column scans show only shading and glow gradients. The bottom rows 12-13 are darker, which suggests shading rather than a vertical face. It reads as a flat, top-down lump of debris lying on the floor, so no distinct top surface or front face can be measured."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small, sub-tile prop (about 12x10 source px), so the per-tile tone count of 0 says nothing and I judged by eye. It has 13 distinct colours, close to the bench (14) and the lamp (14), which are also sparse props. Only 4% of its dark edge pixels are near-neutral, so the outline is tinted, a dark brown-red beside the rock, not a sticker line. It has no flat fills (0% near-flat coverage). The dark rock body shows about 4 steps, with glowing orange cracks and highlight dots giving grain, so it reads as shaded rather than a flat blob. It is a little thinner than the larger, richer props (stall, well), but it matches the sparse references like the bench and lamp. A careful artist would accept it next to them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 12842
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "lava bomb upper lit surface (rock top with glowing cracks)",
+      "rows": "4-9",
+      "evidence": "b",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": "10-11"
+     },
+     {
+      "part": "lava bomb lower darker front face",
+      "rows": "10-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The blob is a single rounded lump. Its width profile widens from 8 to 14 and narrows back to 8 across rows 4-13, so it forms an ellipse. The upper rows 4-9 are lighter gray, and the orange crack line at row 9 acts as an edge line. Below it, rows 10-13 are much darker (L about 39-85 vs 114 above), which reads as the shaded front face. The top is a modest 6 rows and the front is 4 rows. The three-quarter reading is borderline because the top/front split is soft and relies on the glowing crack line rather than a crisp edge line."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The lava bomb is a small, roughly half-tile prop, so the per-tile measures are 0 and I judged it by eye. It reads as a dark rock body with an orange glowing rim and crack, with about 5 lightness steps from highlight through mid tones to a deep shadow. The measured facts back this up: only 4% of dark edge pixels are neutral, so the outline leans warm brown-red rather than black. Flat coverage is 0%, with no 5x5 area of one colour. It uses 13 distinct colours, about the same as the sparse bench (14) and lamp (14) references. The texture is modest, with a few speckle and crack pixels and no per-pixel grain like the well or stall. It is slightly lower in density than the richest references, but not thinner or more sticker-like than the bench or lamp.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18695
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "lava bomb rock top (lighter grey dome with glowing cracks)",
+      "rows": "4-9",
+      "evidence": "b",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": "10-10"
+     },
+     {
+      "part": "lava bomb underside / front face (dark)",
+      "rows": "10-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette widens from 8 to 14 px (rows 4-9) and narrows again to 8 px (rows 10-13), which gives an ellipse-like lump. The upper rows 4-9 are lighter grey with glowing orange cracks and read as the top surface, with a bright crack line at about row 9. The rows below (10-13) are much darker (L about 27-85) and read as the shaded front/underside. This is a single rock blob, so it fits loosely as debris. It reads as a lump with a top and a front rather than a flat slab or an elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The lava bomb is a tiny single-object prop, about 12x10 source pixels, so it is smaller than one 16x16 tile and the per-tile tone count is 0. I judged it by eye against the bench and lamp, which are also thin or sparse. It has 13 distinct colours against 14 for the bench and lamp. The rock body has a dark base, mid tones and a lighter rim, plus orange and yellow glow cracks, which gives about 5 steps. Only 4% of its dark edge pixels are near-neutral, so the outline is tinted (dark brown or red-brown) rather than a black sticker line. Near-flat coverage is 0%, with no large flat fills, and the cracks and rim speckle give some texture. It is somewhat simpler than the roofed well or the cheese stall, but that comes from its size and subject. A careful artist would accept it next to the bench and lamp without it looking flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15245
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.158Z",
+ "cells": {
+  "16": [
+   "33c7a783ffe76c2a"
+  ],
+  "24": [
+   "3de3ca086251a399",
+   "5f61d47b1ff6c125",
+   "671ac8528429c5b9",
+   "9527fc05c4cc5e52",
+   "b068be16c83bc87d",
+   "fd769ba65ce7ebe8"
+  ],
+  "32": [
+   "17c749026290518c",
+   "1ee4f1c34d11f074",
+   "25c8af3ee742b818",
+   "56439863953b3e4b",
+   "5afd4bb66dddb9d7",
+   "f3377dfc398d08b9"
+  ],
+  "48": [
+   "187abafdfb88b7ad",
+   "37d84294471402af",
+   "51ab940adbb22592",
+   "714fd19a616b21a1",
+   "b8e0ea177d1f9678",
+   "d00251c25d966b31"
+  ]
+ }
+}

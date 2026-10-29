@@ -1,0 +1,336 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "21440b16a6b9ad608619acd5b2e6cb13359489e3af5d880049972ac4c07ef8fd",
+ "width": 48,
+ "height": 48,
+ "kind": "debris",
+ "name": "wall rubble end",
+ "label": "beodeul_city/wave-places/mountain-fortress/wall_rubble_end",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "2ad36264365ed8d5"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 30,
+  "tileColorsP90": 32,
+  "darkV5": 42,
+  "nearBlackEdge": 0.19,
+  "opaqueTiles": 4
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "wall stub top band (tan, dark-flecked)",
+      "rows": "0-9",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wall stub front face (grey stone blocks)",
+      "rows": "11-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "rubble slope and brick courses",
+      "rows": "16-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 38,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The largest volume is the stepped slope of grey brick courses, rows 16-47. It is drawn as a flat front elevation with mortar lines and a widening staircase silhouette, and none of its steps has a top plane or edge line. A tan band at rows 0-9 with a light line at row 10 could be a top, but it sits only on the narrow 14px wall stub, not on the main mass. At most 1-2 rows of lighter lip appear along the slope steps near rows 39-46. The object faces south and has no isometric side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 16 visible tones per 16x16 tile, close to the cheese stall (17) and well (20) and well above the hedge (9). Near-flat coverage is 0%, so there are no flat fills. The stone blocks are shaded one by one, with highlight, mid and shadow faces and chips on the stepped edge, which matches the reference's per-stone shading. The 100% near-neutral share of dark edge pixels follows from the stone being grey. The edges read as dark grey tones of the stone itself, not a uniform pure-black sticker line, and the forms are separated by value, so I call the outline mixed rather than near_black. The lamp reference also measures 100% neutral. The ramp is about 5 steps against the references' 5-6. It is slightly less varied than the best reference but does not look thinner or flatter beside it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21814
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "wall stub upper brick section (pink brick with dark mortar)",
+      "rows": "0-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wall stub stone block courses, front face",
+      "rows": "11-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "sloping rubble pile at lower right (stepped silhouette, broken slabs)",
+      "rows": "20-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 47,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main body is a masonry wall end seen face-on: stacked rectangular blocks with dark horizontal mortar lines at rows 15, 23, 31, 39, 42 and vertical joints. The top at rows 0-1 is only a dark outline above a pink brick band, which is a vertical face with brick joints and no front-edge line or eave shadow. The right side is a stepped diagonal silhouette (width 14 at row 0 growing to 46 at row 46). It is built from the same front-facing block courses and reads as a slope in profile, not a horizontal surface. No ellipse, contents or roof plane appears anywhere. The small loose slabs at rows 39-47 on the right are 1-3 row pieces with no real top plane. The object has a tall front face but no top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a stone rubble wall end with a stepped slope and a carved cap. Its stone blocks are shaded one by one in about 5 grey steps, from light faces to darker joints and shadow sides. That is comparable to the stone shading on the well reference. Measured density supports this: 16 visible tones per tile against 17 for the cheese stall and 20 for the well, with 0% near-flat coverage (no flat fills). The dark edge pixels are 100% near-neutral. The material is itself neutral grey stone, so a dark grey edge is close to the adjacent material's dark tone rather than a uniform black sticker line. The lamp reference has the same 100% neutral share. The outline is not clearly separated from the stone shading and mostly relies on value separation between blocks, so I call it mixed rather than fully material-toned. Overall the piece would sit next to the references without looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19191
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper wall stub (tan brick face)",
+      "rows": "0-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grey stone block courses on the wall stub",
+      "rows": "11-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stepped rubble slope of brick courses",
+      "rows": "16-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 48,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The drawing is a flat front view of stacked brick courses. Dark mortar lines run horizontally at rows 15, 23, 30-31, 39 and 46. The right side widens stepwise from 14 to 46 px, so the slope is only a silhouette. The tan band at rows 0-9 is a brick face with a dark outline at row 0. It has no front-edge line and no eave shadow below it. The small light blocks at rows 20-22 and 28-30 on the right edge are 2-3 px chips, not horizontal surfaces. No ellipse, roof or visible contents appear anywhere, so no top surface is shown."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate carries 16 visible tones per tile, close to the stall (17) and well (20) references. Near-flat coverage is 0%, so there are no flat fills. The stone blocks are shaded individually with light, mid and dark faces, and the stepped rubble slope has speckle and variation, so the surface texture matches the reference props. The edge pixels are 100% near-neutral, but the material is grey stone, so its dark tone is naturally neutral. The lamp-crook reference also measures 100% on this. The lines read as dark stone-grey joints between blocks rather than a uniform black sticker outline, and forms are also separated by value, so I call the outline mixed. It is not shallow. The piece looks as dense as the references and a careful artist would accept it beside them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18435
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tan brick-patterned upper section",
+      "rows": "0-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone block courses (main body)",
+      "rows": "10-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stepped rubble slope on right",
+      "rows": "26-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 48,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole piece is a front elevation of masonry: horizontal mortar lines at rows 15, 23, 31, 39 and 45 separate stone courses seen face-on. The width grows steadily from 14 px to 46 px, which is a sloping silhouette and not a top plane. The tan band at rows 0-9 has dark brick-dash texture like a vertical wall face. It has no front-edge line followed by eave shadow, and no ellipse or contents. The light line at row 10 is a block highlight. The stepped right-hand blocks show only 1-2 row light edges, which are rims. No horizontal surface of 3 or more rows appears anywhere, so it is front_elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a grey stone wall end with a stepped slope. It reads as stone blocks with some per-block variation and has no flat fills (0% near-flat, 16 visible tones per tile, close to stall at 17 and well at 20). But the measured dark edge pixels are 100% near-neutral, and the picture agrees: the outline is a grey-black line around the whole silhouette and the block seams, not a dark tone of the stone. The references (hedge 0%, stall 1%, well 33%) carry tinted outlines. That is the sticker look. The stone ramp shows about 4 steps (light, mid, dark seam, near-black edge) against 5-6 in the references. Individual stones are shaded less than the well's stones, and the top is a pale cap with little grain. Density is acceptable, but the neutral outline and shallower ramp fall short of the Beodeul standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 14911
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:20.017Z",
+ "cells": {
+  "16": [
+   "01abf9276a1a7928",
+   "2efc30943031467b",
+   "349c7bac0184f479",
+   "86faa28cb245edd4",
+   "a5d4c0bc9a9f0d5e",
+   "b3c57b5ff5a7e104"
+  ],
+  "24": [
+   "017144074022dce0",
+   "060de55fd543e693",
+   "e7b9d0416733e000"
+  ],
+  "32": [
+   "162804b6cf9310f6",
+   "1731f4538ad28168",
+   "19fd85602a74a049",
+   "1e6045638557373d",
+   "27729eeff54955ff",
+   "2fd6e797a3e5c86e",
+   "3a55343a81ca645d",
+   "411ad72122c5c2e0",
+   "45115f38b7bae247",
+   "46d19a388777ca5b",
+   "5057ff86bf01ce7a",
+   "7eb195520441046b",
+   "85850d63cb35cbda",
+   "9d8e6d750f295d98",
+   "a9e686ff9f1172f3",
+   "bc68e0e94d1259df",
+   "d3182f5c803140f8",
+   "efb260a16d3fca4e",
+   "fc38d9d8821c8d0c",
+   "ff064b2e7eb9b258"
+  ],
+  "48": [
+   "d93e39f29d4ae08d"
+  ]
+ }
+}

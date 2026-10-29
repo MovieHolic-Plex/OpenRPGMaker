@@ -1,0 +1,307 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9d11c629b671943cdc10d3b6c26b085868c4ee75dd2bfdc631571b78a1379863",
+ "width": 32,
+ "height": 32,
+ "kind": "organic",
+ "name": "basalt boulder",
+ "label": "beodeul_city/wave-places/volcano-field/basalt_boulder",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (3/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (3/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 6,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "bcc19e99327f94ce"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 9,
+  "tileColorsP90": 9,
+  "darkV5": 26,
+  "nearBlackEdge": 0.53,
+  "opaqueTiles": 2
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "boulder top plane (lit facet, upper left and centre)",
+      "rows": "9-15",
+      "evidence": "a",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": "16-18"
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 12,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette is a rounded boulder that widens from 13px at row 9 to 28px at rows 16-21, then narrows to 8px at row 28. At x=9 a lighter band (L~114) covers rows 10-14. It ends at a darker edge at row 15 (L=85), followed by shadow rows 16-18 (L 62 then 43). This reads as a lit top facet over a front face. At x=16 the top is dark (rows 12-17), so the top plane is clearest on the left. The darker, faceted front and lower body occupies rows 16-28 (about 12 rows). The top is organic and irregular rather than a flat plate, but it is distinct from the front face. The object does not read as a flat slab or a pure front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small dark basalt boulder, much smaller than the tree references, and it has about 6 visible tones per tile. That is close to tree-1a786c (7) and far below tree-d43edd (29). Near-flat coverage is 0%, so there are no flat fills. The rock shows roughly 4 lightness steps (highlight, light slate, mid, deep) plus a few speckle and crack dots. That is less than the 5-6 steps per material on the references. 28% of the dark edge pixels are neutral, so the outline is mixed: it leans blue-grey in places and near-black in others. The result is a rounded, fairly uniform dark silhouette that reads somewhat sticker-like, with little per-stone facet shading or grain compared with the leaf clumps and bark texture in the references. A careful artist would likely ask for more facet highlights and tinted edges before placing it next to the references, so it fails narrowly.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 13524
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "boulder top facet (lighter blue-grey plane, upper left to centre)",
+      "rows": "9-16",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "17-18"
+     },
+     {
+      "part": "boulder front/south face (darker mass with a mid-tone ridge)",
+      "rows": "17-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 12,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette widens from 13 px at row 9 to 28 px at rows 16-21, then narrows to 8 px at row 28, which gives a rounded lump. Rows 9-15 are lighter (L about 114 at x=9, rows 10-14) and form a top facet. Rows 16-18 darken (L 85 to 43 at x=9) and act as the front edge and shadow. Below that, rows 17-28 form a darker front face with a lighter ridge at rows 18-19 and a dark base. The top plane is not sharply bounded, but a top facet sits above a front face of more than 3 rows, so it reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The boulder has about 5 stone steps: a dark bluish-grey base, mid grey-blue planes, lighter top-edge highlights and a few crack and facet marks. Its dark edge pixels are mostly tinted (only 28% near-neutral), so the rim reads as a dark blue-grey version of the stone rather than a black sticker line. Measured facts: 6 visible tones per tile against 7 for tree-1a786c (the other reference has 29), and 0% near-flat coverage, so no large flat fills. It is a small, simple object with a little less grain than the references, but it is not noticeably thinner or flatter than tree-1a786c, so it is acceptable.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15284
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "boulder top facet (lit upper-left plane)",
+      "rows": "9-15",
+      "evidence": "a",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": "16-17"
+     },
+     {
+      "part": "boulder front/lower body (dark faces)",
+      "rows": "16-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 13,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette widens from 13px at row 9 to 28px at rows 16-21, then narrows to 8px at row 28, so it is a rounded mound. Rows 9-15 form a lighter top plane (x=9 is L~114 at rows 10-14, with highlights at x=16 and x=22). It steps down to dark mid-tones at row 15-16 and to near-black from row 16-17 onward (x=22 is L~34 from row 15), which acts as a shadow under the top edge. Rows 16-28 are a dark front face with a lighter ridge at rows 18-19. The edge line is weak and the top is lit mainly on the left, but the top-to-front split is readable, so it reads as three-quarter rather than a flat front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The references are leafy trees and the candidate is a small rock, so the kind only loosely matches. The boulder is a dark blue-grey mass with a few lighter facets on top and a couple of crack marks. I count about 4 lightness steps against 5-6 in the references. Measured facts: 6 visible tones per tile against 7 and 29 for the references, 0% near-flat coverage, and 16 distinct colours in total against 567 in the richer reference. There are no flat fills. 28% of the dark edge pixels are neutral, so the outline is mixed. It is partly a tinted dark tone and partly a near-black rim, and the low-contrast silhouette reads a little like a sticker. Compared with the foliage references it has fewer steps, less grain and no per-stone shading, so it looks thinner and simpler than a careful Beodeul rock would be.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 17223
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "boulder top plane (lit upper-left facet)",
+      "rows": "9-15",
+      "evidence": "a",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": "16-18"
+     },
+     {
+      "part": "boulder front/lower body",
+      "rows": "16-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 13,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette is a rounded mass 28px wide, with rows 9-28 opaque. At x=9 the lit blue-grey rows 10-14 (L=114) step down at row 15 (L=85) and then to dark rows 16-18 (L=62 then 43), which reads as a lit top facet ending in an edge and shadow. Below it, rows 16-28 are the darker front and lower body, about 13 rows. The top plane is partly broken up by dark patches near the centre and right (x=16 rows 12-17 and x=22 rows 12-27 are dark), so the top read is moderate rather than strong. There is no isometric side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small dark basalt boulder, roughly one tile in size. It has 6 visible tones per tile against 7 for tree-1a786c and 29 for tree-d43edd, and 0% near-flat coverage, so it has no large flat fills. I read about 4 lightness steps on the rock: a pale highlight on the upper left, a mid slate, a dark slate and a deep base. There are a few crack or facet marks, but the stones are not shaded individually the way Beodeul foliage clumps are. Only 28% of the dark edge pixels are near-neutral, so the outline is mostly tinted bluish-dark slate rather than black. The ramp is still shallow against the references' 5-6 steps, and the rock reads as smoother and more compact than the richly clumped canopies. The density measure comes close to tree-1a786c but is far below tree-d43edd. A careful artist would likely ask for more facets and grain before putting it next to these trees, so I fail it on shallow shading and slightly lower density.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 15583
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.016Z",
+ "cells": {
+  "16": [
+   "0e1062ebb3c2bb84",
+   "28652e47a8a02dbb",
+   "a49e4484bcdf3ca2",
+   "c8680b1496e45e39"
+  ],
+  "24": [
+   "0c4f070515a2d5c6",
+   "0d92bd62cdea01a6",
+   "122674ff1eeeb5b1",
+   "1d5c377fb05a5f71",
+   "3416efe5b8a4a75d",
+   "36088e20b128b99b",
+   "4b2bb67bdfc7ae16",
+   "4bf07c4a9d260423",
+   "4f49fba5c73ae866",
+   "540c137f3cda619c",
+   "6fda7f8ad0f9e77a",
+   "7299d1bbd21b1e51",
+   "75d8869367e6459e",
+   "82085eeaaed482c0",
+   "94bd1be27709c29e",
+   "b6078d64c232a6ab",
+   "bfc118480116a5a0",
+   "ea9b1b0cfe54fa69"
+  ],
+  "32": [
+   "c2e1d0106cd5e975"
+  ],
+  "48": [
+   "11fb9b2d7522ca6f",
+   "38027268e53ff135",
+   "3d0d43569570cf83",
+   "4f4aa903fdf0d791",
+   "5c7273b9a886ba4a",
+   "705aec72f3b3c282"
+  ]
+ }
+}

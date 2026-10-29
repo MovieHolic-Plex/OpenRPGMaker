@@ -1,0 +1,330 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "27bc13f624b52b7a956e77a121d92af21379b19374965cd6952b2619378c79ce",
+ "width": 48,
+ "height": 32,
+ "kind": "organic",
+ "name": "drift big",
+ "label": "beodeul_city/wave-places/ice-age-field/drift_big",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 평면 채움 (4/4)",
+  "화풍: 질감 없음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "평면 채움 (4/4)",
+   "질감 없음 (4/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 3,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "bcc19e99327f94ce"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 4,
+  "tileColorsP90": 5,
+  "darkV5": 214,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 3
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "boulder top (white/pale highlight plane)",
+      "rows": "6-19",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "boulder front face (darker blue-grey lower body)",
+      "rows": "20-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 13,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette widens from 8px at row 6 to 41px at rows 13-14, holds about 40px to row 23, then narrows to 16px at row 29. This is a rounded boulder. The pale top plane runs from about row 6 to row 19 (white at x=13, light #e6f0fa at x=23 and x=33), with darker blue edge pixels around rows 11-13 marking its far and front breaks. Below it, rows 20-28 are a darker blue front face (#cadaee and #a6bcdc), clearly more than 3 rows. The top is a tall, foreshortened plane, so it reads as a top seen from above plus a front face, not a flat slab or a pure front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a pale blue-white round slab or stump, not a tree with a canopy and trunk, so it does not match the reference kind. It shows only about 3 lightness steps (a light top, a mid side and a darker base) against 6 or more in the references. Measured facts agree: 4 visible tones per tile against 7 and 29 in the references, and 45% near-flat coverage against 0% for both. The top and side are broad smooth fills with almost no grain, speckle or clumps, whereas the references have leaf clumps in many greens. Its outline is a faint tinted blue-grey and not neutral black (0% neutral edge pixels), so that part is acceptable, but the shape is much shallower and flatter than the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 13699
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "snow mound top",
+      "rows": "6-13",
+      "evidence": "a",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": "14-15"
+     },
+     {
+      "part": "mound front face",
+      "rows": "14-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 16,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette widens from 8px at row 6 to 41px at rows 13-14, so the upper part is a rounded domed top. The white and light-blue region in rows 6-13 reads as the top surface. It ends in a darker front-edge line around rows 11-13 (#a6bcdc at x=23 row 11 and x=33 row 13), followed by a lighter band. Below it is a front face of about 15 rows (rows 14-29) that gets darker toward the bottom, with L=185 at x=33 in rows 20-28. The bottom narrows at rows 24-29 as the base curves under. This matches a 3/4 view mound with a top plane and a front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a pale, low, round stone or snow platform, not a tree, bush or plant. It has no canopy or trunk, so it does not match the reference kind. It shows about 3 lightness steps (highlight, mid, shadow) and 4 visible tones per tile, against 7 and 29 in the references. Near-flat coverage is 45% against 0% in both references, and the large smooth top surfaces are flat fills with no grain, leaf clumps or per-element shading. Dark edge pixels are 0% neutral, so there is no black sticker outline, but there is no distinct material-tone outline either. Overall it is shallower and flatter than both references, and it is the wrong kind of object.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 12638
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "snow/ice mound top",
+      "rows": "6-13",
+      "evidence": "a",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "mound front face",
+      "rows": "14-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 16,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette is a rounded mound, rows 6-29. Its upper part is a bright white band (rows 6-12 at x=13, rows 8-12 at x=23 and 9-12 at x=33). The band is closed by a 1-row darker blue line (#a6bcdc) that runs diagonally, at row 11 at x=23 and row 13 at x=33. This is a front-edge line, so rows 6-13 read as the top surface. Below it the face is a lighter blue band, then a darker blue-grey lower-right area, down to row 29. That gives about 16 rows of front face. There is no receding side face. The top is organic and irregular but still reads as a horizontal surface above a front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a pale, round snow or stone mound on a disc, not a tree, so it does not match the reference kind (canopy and trunk). It has no canopy clumps and no trunk. It shows only about 3-4 tones (white, light blue-grey, mid grey-blue) against 7 visible tones per tile in tree-1a786c and 29 in tree-d43edd. Near-flat coverage is 45% against 0% for both references, and the large smooth surfaces on top and side are flat fills with almost no grain or speckle. The edge pixels are tinted rather than neutral (0% near-neutral), so the outline is acceptable, but the shading, texture and density are far below the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 11868
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "snow/ice mound top (white highlight dome and pale upper plane)",
+      "rows": "6-19",
+      "evidence": "a",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": "20-21"
+     },
+     {
+      "part": "front face of the mound (darker blue shaded lower body)",
+      "rows": "20-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 12,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette is a single rounded mound, rows 6-29, widening to 41 px at rows 13-14 and narrowing to 16 px at row 29. The upper part (rows 6-19) is pale or white and reads as a top plane. In column x=33 it is light at rows 9-19, with a darker line at row 13. At row 20 the tone drops to the darker blue (#a6bcdc), which marks the transition into the front face. Column x=23 shows a similar step: L=238 at rows 12-20, then L=215 at rows 21-28. The darker front face spans about rows 20-29, about 10 rows, so the top is more than a rim and the front face is 3+ rows. There is no isometric side face. The object reads as a three-quarter organic mound."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a pale rounded stone or snow mound on a disc base, not a tree, bush or plant. It has no canopy or trunk, so it does not match the reference kind. It shows about 3 light blue-white steps and only 4 visible tones per tile, against 7 and 29 for the references. 45% of it is near-flat, against 0% for both references. Large areas of the top and side are one flat colour with only a few edge highlights, and there is no grain or clump texture. The edge pixels are tinted, 0% neutral, so it is not a black sticker outline, but it is not a clear dark material tone either. The references have many shaded leaf clumps, branches and roots. The candidate is much shallower and is the wrong kind of object.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 12819
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.590Z",
+ "cells": {
+  "16": [
+   "35705eac63d3b24b",
+   "5de0cad86b353c87",
+   "628c02c27db5210f",
+   "67f91522c5703752",
+   "80589c0ca93f90af",
+   "89c7300a44c22ec2"
+  ],
+  "24": [
+   "14b8ac1a5d4123da",
+   "1f449ac7868ffbb9",
+   "28db6a8d14aaddb5",
+   "95147c96d3e3da2b",
+   "9f774681625299fc",
+   "d1b33e45145fb864",
+   "f511e4e9230c7544"
+  ],
+  "32": [
+   "b29e86959f205207",
+   "b6e9b13a302be736",
+   "ba2eedd8324e19f7",
+   "d2e846ef64bd61dc",
+   "ed4e211d486e7edc",
+   "fe14a3f4a32902f8"
+  ],
+  "48": [
+   "6722d9fed2b902c9",
+   "e512660fb199b18c"
+  ]
+ }
+}

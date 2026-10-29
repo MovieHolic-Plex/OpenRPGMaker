@@ -1,0 +1,401 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9811d00397e4cf3ea70a63bc7b9fdb134fca3eb356813648fc60f46f08b106d9",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "fur tent cone",
+ "label": "beodeul_city/wave-places/ice-age-field/fur_tent_cone",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (4/4)",
+  "3/4: 윗면 0행 < 3 (4/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (4/4)",
+   "윗면 0행 < 3 (4/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "5f62fef078ef7661"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 13,
+  "tileColorsP90": 15,
+  "darkV5": 30,
+  "nearBlackEdge": 0.06,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "borderline",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "fur cone body with door opening",
+      "rows": "9-40",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "crossed tent poles at apex",
+      "rows": "0-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "snow drift at base",
+      "rows": "40-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 38,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The silhouette widens by a steady 2 px every 2 rows, from 10 px at row 7 to 45 px at row 46, which is a flat triangle seen face-on. The fur body (rows 9-40) is a continuous vertical face with a dark door opening at rows 28-40. There is no horizontal band, no front-edge line, no eave shadow and no ellipse anywhere. The apex (rows 7-13) is only a narrow tie and the poles above it are thin diagonal lines. The base at rows 40-46 is a snow and dirt strip along the ground, not a top surface. The tent shows no top, so it reads as a front elevation, not a three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The measured facts match the references: 12 visible tones per tile against 12 and 10, 2% near-flat coverage, and 9% neutral dark edge pixels, so the outlines lean brown rather than black. By eye, the fur body has only about 4 steps (light tan, mid brown, dark brown, deep shadow) with a few hide streaks, while the Beodeul roofs carry 5-6 steps with per-tile highlights and scallops. The candidate is also tiny and has a simple conical form with a small snow base, so it is sparse next to the full houses. It reads as a clean piece with tinted outlines and no big flat fills, but it is thinner and less textured than the references, with little grain on the hide surface. Sparse and small is acceptable, yet a careful artist would see it as slightly flatter than the references, so it falls short.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 21341
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "fur cone body (triangular silhouette, with shading split light left, dark right)",
+      "rows": "9-40",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "crossed tent poles and binding at apex",
+      "rows": "0-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark entrance opening",
+      "rows": "28-40",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "snow drift at base",
+      "rows": "42-46",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 32,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The width profile grows by a steady 2 px every 2 rows from row 9 (12 px) to row 40 (40 px). That is a plain triangle, with no band that widens then narrows and no ellipse. The fur surface has no horizontal top band, no front-edge line and no eave shadow. The only dark band is the base shadow at rows 39-41. The crossed poles at rows 0-8 are thin sticks with no top surface. The entrance (rows 28-40) is a vertical opening in the face. The whole object is a front-on cone silhouette with a dark entrance and no visible horizontal top plane."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The tent is small but carries the same visible information per tile as the references: 12 visible tones against 12 for h101 and 10 for the stone house. Near-flat coverage is only 2%, so there are no large flat fills. Only 9% of dark edge pixels are near-neutral, so the edges carry a brown tint of the hide rather than a black sticker line. The hide has about 5 lightness steps from lit side to shadow, with panel and seam variation. The dark door opening, the poles and the snowy base are each shaded separately instead of being one outlined shape. Texture is less rich than the roof-tile scallops on the references, and the hide is a little smoother than their tiles. On the numbers and by eye it sits at the reference level for its size, so it passes.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 28833
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "fur cone body (triangular hide covering with door opening)",
+      "rows": "7-41",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "crossed poles at apex",
+      "rows": "0-8",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "snow drift at base",
+      "rows": "40-46",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 34,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The silhouette widens linearly from 10px at row 7 to 43px at row 42, which is a plain triangle. The width profile shows no ellipse and no widen-then-narrow shape. The hide is one continuous face with a vertical door opening (rows 28-40, dark interior), seen face-on. There is no front-edge line with eave shadow, and no separate roof plane above an eave. The only dark band is the base hem at rows 39-41. The result is a flat front elevation of a cone with no visible top or roof surface. The crossed poles and the snow at the base are decor."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The tent is a small single-tile-scale object, but its fur cone has about 5 lightness steps. These include darker streaks and a lit side against a shaded side, with a dark doorway and a snow base in several tones. Only 2% of the area is near-flat, against 0% for both references. It has 12 visible tones per 16x16 tile, the same as house-h101_0 (12) and above house-h112_0-stone (10). Only 9% of its dark edge pixels are near-neutral, so its outlines are tinted dark brown beside the fur, the same as the references (7% and 9%). It has no uniform black sticker outline. Its total colour count (30) is lower than the references' (185 and 66), but that is inflated by invisible near-identical shades. By eye the tent is a little simpler than the tiled roofs because it lacks per-tile scallop highlights, yet it does not read as thinner or flatter than the references. A careful artist would accept it next to them.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 32054
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "crossed tent poles above the apex",
+      "rows": "0-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "fur cone body with door opening",
+      "rows": "9-41",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "snow drift and dark hem at the base",
+      "rows": "40-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 33,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The silhouette widens by 2 px every 2 rows from row 9 (width 12) to row 40 (width 40). This is a straight-edged triangle seen face-on. No band ends in a front-edge line with eave shadow. No ellipse or horizontal surface is visible at the apex, and the apex is only a small tie and poles. The fur cone is one continuous sloped face, with no separate roof plane above an eave line. The door opening (rows 28-40) and the snow strip at the base (rows 40-46) are vertical or ground details. So the object reads as a front elevation with no top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small fur tent cone, much smaller than the reference houses, but it is drawn at the same scale. Its measured facts match the references: 12 visible tones per tile against 12 and 10, 2% near-flat coverage against 0%, and only 9% neutral dark edge pixels. That last figure means the outline is tinted. By eye, the outline reads as dark brown next to the fur, with no black sticker line. The cone body shows about 5 lightness steps, from lit fur to dark streaks, with a deep shadowed door opening, and the snow base has its own separate tones. Texture is moderate: the fur streaks give grain, but it lacks the per-tile scallops of the roof references. The raw colour count of 30 is low, but that is expected with a locked palette and does not lower the visible tone count. I found no large flat fills. A careful artist would accept it next to the references without it looking flatter or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19805
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.660Z",
+ "cells": {
+  "16": [
+   "2fb076776e9acd16",
+   "76ffb663b543bbd1",
+   "8760ab8e3d4903e4",
+   "910d6027c3f9503c",
+   "a4d775c4ee3e92c9",
+   "d5c10011cb617cd7",
+   "d8b03f649f5578d6",
+   "db59b2d2fcd389d6",
+   "ea240e3ba8dc1e01"
+  ],
+  "24": [
+   "273a3bcffb06bc59",
+   "28003487ab72fd29",
+   "7b8b3dc1f5d28490",
+   "c7c961a1edcd811d"
+  ],
+  "32": [
+   "02b5ff4a8392031e",
+   "06eccf0c171b2d54",
+   "0941e29233d68960",
+   "0f4aaac46c2ac5fd",
+   "18fa1e94ee2bffda",
+   "1dde6d07bb7d239c",
+   "1df98b88357d0aa2",
+   "20d674178ebe0e6e",
+   "265660b69c6f6584",
+   "37df2e4f2c32c5d0",
+   "3e4ea158291ebf75",
+   "3e810a9cbdb63bf7",
+   "4eb41e50ec7e4ca6",
+   "5c62737891c6d5be",
+   "614147f96112dfba",
+   "80a35992388c5af1",
+   "a03f3bdfd19b400d",
+   "a1cc87cd8800c863",
+   "a7f965a611d6c961",
+   "acc5d5d0151598f4",
+   "c85956dc6c9231b4",
+   "d0e49f6479631587",
+   "f01d0cf6634c0471",
+   "ffee65a7fb9d08d3"
+  ],
+  "48": [
+   "2fb19fbe62a10680"
+  ]
+ }
+}

@@ -1,0 +1,388 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "643605515f7df3e528f04a2d8eb2aaf3e618b4c40635eb72d18aef5eeb14806b",
+ "width": 48,
+ "height": 96,
+ "kind": "structure",
+ "name": "basalt bridge",
+ "label": "beodeul_city/wave-places/volcano-field/basalt_bridge",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(top_down_slab) (4/4)",
+  "3/4: 앞면 2행 < 3 (3/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)",
+  "화풍: 판정자 fail (4/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(top_down_slab) (4/4)",
+   "앞면 2행 < 3 (3/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 5,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "5f62fef078ef7661"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 7,
+  "tileColorsP90": 9,
+  "darkV5": 36,
+  "nearBlackEdge": 0.63,
+  "opaqueTiles": 18
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "bridge deck (brick-pattern paving with side rails)",
+      "rows": "0-92",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "side rail pillars and lava-lit side ledges",
+      "rows": "26-64",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 93,
+    "front_face_rows": 2,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The whole 96-row sprite is a vertical run of stone-brick courses seen straight down. The silhouette is a constant 38 px wide, with 48 px wide ledges at rows 26-36 and 54-64. Mortar lines repeat every ~10 rows with no foreshortening. There is no front-edge line, no eave shadow and no ellipse. No south face is drawn, only a 2-3 row dark strip at rows 93-95, which is under the 3-row minimum. Judged as a bridge viewed from above, it is a flat top-down slab rather than a 3/4-view structure."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a narrow vertical basalt bridge built from stone blocks. Each block has a lighter top edge and speckle, which gives some texture, and the small orange fittings on the sides are a nice touch. But it has only about 4 lightness steps in the stone ramp, against 5-6 in the references. Its 7 visible tones per tile are below the references' 12 and 10. 68% of its dark edge pixels are near-neutral, against 7% and 9% for the references, so the dark gaps between blocks read as a near-black grid and look like sticker-style outlines rather than dark tones of the stone. Flat coverage is low at 4%, so there are no large flat fills, but the blocks are uniform and repeat the same pattern with little per-stone variation. The result is cleaner and flatter than the references and does not reach the Beodeul bar, which sets the outline as the main concern.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 14791
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "bridge deck (stone brick paving seen from above)",
+      "rows": "0-95",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "side railings/pillars (vertical strips along both edges)",
+      "rows": "0-95",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lava strips beside the bridge",
+      "rows": "26-36, 54-64",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 96,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a straight-down plan view of a bridge. Brick courses run in horizontal bands from row 0 to row 95, the side rails run as continuous vertical strips, and the lava strips sit at the edges. The silhouette is 38-48 px wide for the whole height. There is no front-edge line, no eave shadow, no roof or lintel, and no south face of 3 or more rows. Only the last 2-3 dark rows at the bottom could be an edge. The object has no front face, so it reads as a flat top-down slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a narrow vertical stone-slab bridge, not a building with roof, walls and door/windows, so it does not match the reference kind. Measured facts: 7 visible tones per tile against 12 and 10 for the references. Near-flat coverage is 4% against 0%. 68% of dark edge pixels are near-neutral against 7% and 9% for the references, which points to a neutral dark outline, though by eye the outline looks bluish-grey. Shading shows about 4 steps on the basalt blocks (highlight, mid, dark, deep) against 5-6 in the references. Texture consists of speckle dots on individual blocks, which is some grain but sparser than the roof tile scallops and per-stone shading in the references. The small orange bracket accents are sparse. Overall it is cleanly drawn but lower in density and shading depth than the references, and the neutral edge share suggests a sticker-like outline. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 12626
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "brick deck of bridge",
+      "rows": "0-92",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "side rails/parapet strips",
+      "rows": "0-92",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark bottom edge",
+      "rows": "93-95",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 93,
+    "front_face_rows": 2,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The bridge is drawn straight from above as a long vertical strip. Offset brick courses of mortar-separated blocks run from row 0 to about row 92, with rails along both sides. Lava peeks out at the sides at rows 36 and 64. There is no foreshortened front face. Only a 2-3 row dark edge at rows 93-95 could pass for one, and it looks like an outline or shadow. No front-edge line, eave shadow or ellipse marks a separate top surface above a south face. The width profile shows only small 38/48 px steps from the side parapet blocks, not a roof or lintel slope. It reads as a flat top-down slab, with no front face of 3 or more rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a vertical basalt bridge deck of dark stone blocks. It is not a building with roof, walls and door, but the stone masonry is comparable to the stone wall on h112. Each block has a lighter top edge, a mid body, speckle dots and a darker bottom, so there are about 4 lightness steps against roughly 6 on the reference stone and tile ramps. Visible tones per tile are 7 against 10-12 for the references, which is lower but not far below. Near-flat coverage is 4%, so there are no big flat fills. 68% of the dark edge pixels are near-neutral against 7-9% for the references. The block joints look like a cool dark grey with little tint, which leans toward the near-black sticker look. Orange rail or post accents on the sides are small and flat. The stones are not shaded one by one with the variety the references show, so the piece is thinner and more uniform. A careful artist would likely want more tonal variety and tinted outlines before placing it next to the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(top_down_slab) (1/1)",
+    "앞면 2행 < 3 (1/1)",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(top_down_slab) (1/1)",
+     "앞면 2행 < 3 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 15677
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "bridge deck (brick paving seen from above, with side rails)",
+      "rows": "0-95",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "side lava-channel ledges (small details at the left and right edges)",
+      "rows": "26-34 and 54-62",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 93,
+    "front_face_rows": 2,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The deck is a long, flat, vertical strip of rows 0-92. Its brick courses are laid out as if seen straight down, with horizontal mortar lines at rows 4, 14, 24, and so on, and no foreshortening. Rails run along both sides. The silhouette width stays at 38 px apart from the small ledge details at rows 26-36 and 54-64. There is no front-edge line, no eave shadow, and no south face. Only rows 93-95 form a dark bottom border of about 2-3 rows, and it reads as an outline, not a front face. The 1-row lava bands at rows 36 and 64 are flat floor details. With fewer than 3 front-face rows, the object reads as a flat top-down slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a narrow vertical basalt-brick bridge deck with small orange rail posts at the sides. Its stone blocks show about 4 lightness steps plus a few speckle dots. That is better than a flat fill, but shallower than the references' 5-6 steps per material and their per-tile shading of tiles, plaster speckle and stones shaded one by one. Measured facts: 7 visible tones per tile against 10-12 in the references, so density is clearly lower. Near-flat coverage is 4% against 0%, so only a little flat fill. 68% of dark edge pixels are near-neutral against 7-9% in the references, so the dark outline is mostly neutral near-black and not a tinted material tone. The blocks sit in dark grey-blue outlines, which gives a slight sticker look. There are no roof or wall details to compare, and the piece is sparse by nature. Even so, it looks flatter and less richly textured than the references, so on balance it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(top_down_slab) (1/1)",
+    "앞면 2행 < 3 (1/1)",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(top_down_slab) (1/1)",
+     "앞면 2행 < 3 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 17206
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.031Z",
+ "cells": {
+  "16": [
+   "03dd5cdbb71b3b46",
+   "11e3cd9a60927537",
+   "26d6554efe25aa3d",
+   "2a190e58e5a52df3",
+   "380d790318720949",
+   "48fdfd8a57329808",
+   "5dff833f3c348a59",
+   "692a92fb63cd9684",
+   "6c1a81d256dbde12",
+   "74e0f45e554753c8",
+   "85721f9461ee536f",
+   "8ad28b4f18b038c7",
+   "9c458239a9238dfe",
+   "c4284853058b6a38",
+   "ccccfb014886841f",
+   "debdc4fdf7240814",
+   "ee5a1c0f0e9a93b1",
+   "eeae707ced4a81ae"
+  ],
+  "24": [
+   "4594bc76830fd2d8",
+   "4a5d540f2dc7c1c1",
+   "79d8c310c61d836d",
+   "859854286a795a36",
+   "cc00455fc2ac6a9f",
+   "ed7793505087c857",
+   "f814930820641ca7",
+   "fb277c4814d18899"
+  ],
+  "32": [
+   "01af6e2f70fb4309",
+   "05cf350e2ed7c60f",
+   "232173d9d947af7b",
+   "24ae2b329ab6c78a",
+   "257b5e3bfa62e10f",
+   "26e910d6c1a26e72",
+   "3503ca67cba1ff5c",
+   "4346bf1616ccac5b",
+   "45fecbb68e0b7070",
+   "4b89a31407bd90a8",
+   "51c5282f4a55761d",
+   "7b6582a861bfba60",
+   "7bebc1c5bbf164eb",
+   "7c31767e81632900",
+   "93bb1c82a482b60d",
+   "c713a1e6078d70e1",
+   "c91d925a434ee731",
+   "e131a3daba9e01e2"
+  ],
+  "48": [
+   "2f14264f8a70b744",
+   "81427112321784f9"
+  ]
+ }
+}

@@ -1,0 +1,418 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "82bc93a9f559cc0b02f6c8c4bf20fe6051879b4691dd4eb94209dd3110d56f0d",
+ "width": 32,
+ "height": 32,
+ "kind": "organic",
+ "name": "basalt columns low",
+ "label": "beodeul_city/wave-places/volcano-field/basalt_columns_low",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "화풍: 화풍 판정이 갈림(걸린 판정 2/4)",
+  "화풍: 판정자 fail (2/4)",
+  "화풍: 명암 3단 < 4 (1/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "refer",
+  "reasons": [
+   "화풍 판정이 갈림(걸린 판정 2/4)",
+   "판정자 fail (2/4)",
+   "명암 3단 < 4 (1/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 6,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "bcc19e99327f94ce"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 14,
+  "tileColorsP90": 14,
+  "darkV5": 21,
+  "nearBlackEdge": 0.43,
+  "opaqueTiles": 2
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tall back-right column top (ellipse)",
+      "rows": "6-11",
+      "evidence": "b",
+      "front_edge_line_row": 11,
+      "eave_shadow_rows": "12-14"
+     },
+     {
+      "part": "back-left column top (ellipse)",
+      "rows": "10-14",
+      "evidence": "b",
+      "front_edge_line_row": 14,
+      "eave_shadow_rows": "15-16"
+     },
+     {
+      "part": "front-centre column top (ellipse)",
+      "rows": "18-22",
+      "evidence": "b",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": "23"
+     },
+     {
+      "part": "front-left and front-right short stubs, tops",
+      "rows": "22-26",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 11,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Each basalt column has a lighter elliptical top with a dark centre mark. The tall back-right column's top spans rows 6-11, and its width profile widens from 6 to 8 to 10 to 16 to 18 and then holds at 20. A front-edge line sits at row 11 (x=22 goes L=114 to 85), followed by darker shaft rows 12-22. The back-left column top is rows 10-14 and the front-centre column top is rows 18-22 (x=15 L=114 then 62). All major columns show a top ellipse above a vertical front face, so it reads as three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small cluster of basalt columns, so it is a rock prop judged against tree references, and I judged it by eye on structure. It measures 11 visible tones per tile, above tree-1a786c (7) and below tree-d43edd (29). Near-flat coverage is 0%, matching both references. Only 16% of its dark edge pixels are neutral, so the outlines lean visibly blue-grey and follow the stone tone rather than a black sticker line. Each column has a lighter top face, a mid side, a dark side and a few speckle dots, and the stones are shaded individually. That gives about 4 steps, a little under Beodeul's 5-6, and it lacks the rich clumped texture of the better tree. It is small and simple, with no large flat fills, and it would sit acceptably next to the simpler reference.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18696
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tall back-right column top (ellipse with center mark)",
+      "rows": "6-11",
+      "evidence": "b",
+      "front_edge_line_row": 11,
+      "eave_shadow_rows": "12"
+     },
+     {
+      "part": "tall back-right column front face",
+      "rows": "12-22",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left column top (ellipse)",
+      "rows": "10-14",
+      "evidence": "b",
+      "front_edge_line_row": 14,
+      "eave_shadow_rows": "15"
+     },
+     {
+      "part": "left column front face",
+      "rows": "15-22",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front-center column top (ellipse with center mark)",
+      "rows": "18-22",
+      "evidence": "b",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": "23"
+     },
+     {
+      "part": "front-center column front face",
+      "rows": "23-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "low stumps bottom-left and bottom-right (lighter angled tops over dark faces)",
+      "rows": "22-29",
+      "evidence": "a",
+      "front_edge_line_row": 23,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 11,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The cluster is made of hexagonal or round basalt columns. Each has a lighter elliptical top that widens and narrows again and has a dark center mark. The tall back column has its top at rows 6-11 (light rows 7-10 with an edge line at row 11), then a darker front face of about 11 rows (12-22). The left and front-center columns show the same structure (tops at rows 10-14 and 18-22, with front faces below), and the two low stumps at the bottom have lighter tops over dark faces. Every major part has a top surface and a front face of 3+ rows, so it reads as three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small cluster of dark basalt hexagonal columns. By eye, each column has a lighter top face, a mid-grey body and a dark side, which makes about 4 lightness steps. Beodeul uses 5-6 per material. The measured 11 visible tones per tile is above tree-1a786c (7) but well below tree-d43edd (29). Near-flat coverage is 0%, so there are no large flat fills, though several column faces look fairly smooth with little grain or per-stone speckle. Only 16% of dark edge pixels are neutral, so the outlines lean towards a tinted dark blue-grey and are not a uniform black line. Still, the dark separation between columns reads somewhat like a sticker silhouette. The piece is small and simple and is not a canopy tree, so it is not penalised for that. It is a little thinner and flatter than the richer reference, but it is not plainly shallow.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 15087
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tall back-right column top (ellipse with center mark)",
+      "rows": "6-11",
+      "evidence": "b",
+      "front_edge_line_row": 11,
+      "eave_shadow_rows": "12"
+     },
+     {
+      "part": "tall back-right column front face",
+      "rows": "12-22",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left-middle column top (ellipse)",
+      "rows": "10-14",
+      "evidence": "b",
+      "front_edge_line_row": 14,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left-middle column front face",
+      "rows": "15-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "center-front column top (ellipse)",
+      "rows": "18-22",
+      "evidence": "b",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "center-front column front face",
+      "rows": "23-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "two small low stumps (top and front)",
+      "rows": "22-29",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 11,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "This is a cluster of basalt columns. Each column has a lighter elliptical top with a center mark, and a darker vertical front face below it. For the tallest column, the width profile narrows toward the top (6, 8, 10 px at rows 6-9), and column x=22 is light (L=114) at rows 7-10. It then drops to darker face tones at rows 12-14, so the top is about 6 rows and the front face about 11 rows (12-22). The left-middle column's top is rows 10-14 and the front-center column's top is rows 18-22. Every column shows a top surface and a front face, so the cluster reads as three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small cluster of basalt columns, a rock prop checked against tree references. The columns show about 5 lightness steps: lit hexagonal tops, a mid side face, a dark side face and deep cracks and base shadows. Dark edges are tinted blue-slate rather than neutral black (only 16% near-neutral), so the outline follows the material tone and separates forms by value rather than a sticker line. Measured facts support this: 11 visible tones per tile is above tree-1a786c (7) and below tree-d43edd (29), near-flat coverage is 0%, and no 5x5 block is a flat fill. Texture is moderate: top-face highlights and a few crack and grain dots, but less per-stone grain than the richest reference. It is small and simple, but it would sit acceptably next to the references without looking flat or sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20914
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tall back-right basalt column top (ellipse with centre mark)",
+      "rows": "6-11",
+      "evidence": "b",
+      "front_edge_line_row": 11,
+      "eave_shadow_rows": "12"
+     },
+     {
+      "part": "left basalt column top (ellipse)",
+      "rows": "10-15",
+      "evidence": "b",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "centre front basalt column top (ellipse)",
+      "rows": "18-23",
+      "evidence": "b",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": "23"
+     },
+     {
+      "part": "small lower-left and lower-right stump tops",
+      "rows": "22-27",
+      "evidence": "a",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 11,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Several hexagonal basalt columns, each with a lighter elliptical top. The width profile of the tall column widens from 6 to 10 to 16-18 over rows 6-11, which is a rounded top plate. Its x=22 scan shows light top rows 7-10 (L=114), a transition at row 11, then a darker vertical face (L=62) in rows 12-21. The left and centre columns repeat this pattern: a light top with a centre mark and a darker front face below. The tall column's top is about 6 rows and its front face about 11 rows, so the main body is three_quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small cluster of dark grey hexagonal basalt columns, much smaller than the tree references. It measures 11 visible tones per tile, above tree-1a786c at 7 but well below tree-d43edd at 29. Near-flat coverage is 0%, so there are no large flat fills. Each column shows only about 3 lightness steps: a lighter top face, a mid side and a dark side, with a few speckle dots. The references use 5-6 steps with leaf clumps and per-cluster highlights. The outline is a dark blue-grey that leans slightly toward the stone. 16% of dark edge pixels are neutral, so it is not a pure black sticker line, but it is close to a uniform dark rim around each column. Surface grain and per-column highlights are sparse and the form reads as simple blobs, so it is shallower than the Beodeul standard. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 16536
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.052Z",
+ "cells": {
+  "16": [
+   "4c414b2602cd8684",
+   "8b084f0f69c6edf0",
+   "ab2f4881ae371438",
+   "cce4193169c25d3f"
+  ],
+  "24": [
+   "0731825b24be9835",
+   "0ddb8f2f741074d2",
+   "11078cab815a6bba",
+   "12bc8641436f08a0",
+   "22b8dd93d9850bf2",
+   "401403347fef2a7f",
+   "7c5e46ad19a9bc90",
+   "807bbb1062203e18",
+   "8deaa231449e3efa",
+   "ab420f2876698961",
+   "ac4d8d62581484e2",
+   "bbb6fa36c4a8651f",
+   "c65e204375125340",
+   "cdafbc645277d130",
+   "d12e631bc869651c",
+   "d22a321341bc5c54",
+   "dda68cf5d6e426ce",
+   "ddaf53c1654f777b",
+   "e3957188313c8819",
+   "e61be43cbc8800e0",
+   "ea665aebb8940436",
+   "f20fd2ae230ba0f6"
+  ],
+  "32": [
+   "146839fbc3c8106a"
+  ],
+  "48": [
+   "04c43a7193b04da7",
+   "38bc7407c56ee9e1",
+   "4207ed46a1806b67",
+   "63eb4de21ace261b",
+   "c7a828db17859307",
+   "e74c356d788b32e9"
+  ]
+ }
+}

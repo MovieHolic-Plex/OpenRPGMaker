@@ -1,0 +1,412 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "736036755c7b5b5617e4abf051e94c2253298c878ca833fc0ac9519d76d0854d",
+ "width": 16,
+ "height": 64,
+ "kind": "structure",
+ "name": "chasm face c",
+ "label": "beodeul_city/wave-places/mountain-fortress/chasm_face_c",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 종류 불일치",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "종류 불일치"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 5,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "5f62fef078ef7661"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 10,
+  "tileColorsP90": 12,
+  "darkV5": 24,
+  "nearBlackEdge": 0.08,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "upper stone cliff block",
+      "rows": "1-17",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "white ledge highlight line",
+      "rows": "18-21",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower stone cliff face",
+      "rows": "22-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grass and dark undergrowth at base",
+      "rows": "48-63",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 46,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The object is a 16px-wide, 64-row vertical cliff wall with a face-on stone texture, drawn as stacked blocks with dark crack lines. The only top-like feature is rows 1-3, a light band of L=160 that ends in a dark line at rows 3-4. That is a 2-3 row bevel or rim, not a horizontal surface with an eave. The white streak at rows 18-21 is a highlight on the vertical face and has no top plane above it. The silhouette is a constant 16 wide for all rows, so there is no ellipse, roof or canopy. Below row 47 the rock gives way to grass and dark foliage. It is a tall vertical face with no top surface and does not read as a large structure such as a gate, pavilion or building."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a narrow strip of grey rock face with a patch of dark vegetation at the bottom, not a building with roof, walls and door/windows, so it does not match the reference kind. It is also only about one tile wide. On the measured facts, it has 10 visible tones per tile against 12 and 10 for the references, and 0% near-flat coverage, so the density is comparable. The weak point is the outline: 83% of dark edge pixels are near-neutral, against 7% and 9% for the references, which means a neutral dark line instead of a dark tone of the adjacent material. The rock reads as only about 4 grey steps with a few speckles, where the references have 5-6 steps with per-tile highlights and grain. Because the kind does not match and the outline is neutral, it falls short of the Beodeul standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 14730
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "stone cliff face, upper block",
+      "rows": "0-17",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone cliff face, lower blocks with crack",
+      "rows": "18-44",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "foliage and dark undergrowth at the base",
+      "rows": "45-63",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 45,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The image is a flat vertical rock wall, 16 px wide and about 45 rows tall. It is made of grey stone blocks with dark outlines and a white highlight crack at rows 18-21. Row 0 is a dark outline at the silhouette. The columns show only vertical-face texture steps, with no front-edge line, no eave shadow, no ellipse and no roof or canopy plane. The foliage at the bottom, from about row 45, is ground cover. The object reads as a front elevation with no top surface, not a structure with roofs or lintels."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a narrow vertical chasm-face strip (grey rock with a dark green vegetation patch at the bottom), not a building with roof, walls and door/windows, so it does not match the reference kind. Measured facts: 10 visible tones per tile against 12 and 10 for the references, and 0% near-flat coverage, so density is roughly on par on the numbers. However, 83% of its dark edge pixels are near-neutral against 7% and 9% for the references, which confirms a neutral black/grey outline, the sticker look, rather than a dark tone of the adjacent material. By eye the rock shows only about 4 grey steps with a few highlight and crack dots, against roughly 6 steps per material on the references with per-tile scallops, plaster speckle and stones shaded one by one. The candidate is also very small and thin, and it looks flatter than the stone wall reference. Mismatched kind, neutral outline and shallower shading mean it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 11763
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "stone cliff wall, top highlight strip",
+      "rows": "1-3",
+      "evidence": "none",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone cliff wall, block courses and cracks",
+      "rows": "4-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark foliage and grass at the base",
+      "rows": "48-63",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 63,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The object is a 16x64 vertical cliff wall. The silhouette is a constant 16 px wide for all 64 rows, so there is no ellipse and no roof, awning or canopy plane. Rows 1-3 (L=160) are a light strip under the 1-row outline at row 0, closed by a dark line at rows 3-4 (L=70). This reads as a stone block highlight or rim of about 2 rows, not a foreshortened top surface. The rest of the wall (rows 4-47) is a flat face with block joints and cracks, including a white highlight crack around rows 18-21 and a dark crevice around rows 28-32. Rows 48-63 are dark foliage and grass at the base. No contents are visible and no side face is drawn. It reads as a front elevation, and it is a cliff tile rather than a gate, pavilion or building."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is a narrow chasm cliff-face strip of grey stone with a dark foliage base, not a building with roof, walls and door, so the references are not the same kind. Judged on craft alone, the measured facts are mixed. It has 10 visible tones per tile against 12 and 10 for the references, and 0% near-flat coverage like both of them. But 83% of its dark edge pixels are near-neutral, against 7% and 9% for the references, which fits the grey-black outline I see around the stone. The stone ramp shows only about 4 steps (light boulder, mid grey, dark grey, near-black), against 5-6 on the reference tiles and stone. The few distinct colours (19 in total, against 66 and 185) also show in the picture: the stones are not shaded one by one, and the cracks and grain are sparse. It reads as a more sticker-like, neutral-outlined piece than the references. Together with the kind mismatch, that is a fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 16548
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "upper rock face block",
+      "rows": "1-17",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "middle rock face block with white highlight band",
+      "rows": "18-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower rock face",
+      "rows": "29-45",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark foliage or water at base",
+      "rows": "46-63",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 63,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "This is a 16x64 tile of a vertical cliff or rock face seen straight on. Rows 0-45 are stacked stone blocks with dark outlines and cracks, and a white highlight band at rows 18-20. Rows 46-63 are dark vegetation or water. The column scans show no horizontal top band ending in a front-edge line with eave shadow, no ellipse, no roof or awning plane, and no visible contents. The row 1-3 light band is too thin and sits inside a block outline, so it reads as a bevel, not a top surface. The silhouette is a constant 16 wide, so nothing widens or narrows into a cap. The object is a terrain wall tile, not a gate, pavilion or building, so the kind match is weak."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is a narrow grey rock-face strip with a dark green bush at the bottom, not a building with roof, walls and door/windows, so it does not match the reference kind. Measured facts: 10 visible tones per tile (references 12 and 10), 0% near-flat coverage, so density is roughly comparable. However, 83% of its dark edge pixels are near-neutral against 7-9% for the references, so the outline is a neutral black/grey line rather than a tinted dark material tone. The grey stone reads as about 4 lightness steps against the references' 5-6 per material, and the rock shading is blocky next to the references' per-tile roof scallops and stone-by-stone shading. The piece is a narrow terrain-like strip and cannot be judged as a building. The neutral outline gives the sticker look, and the shading is shallower than the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 14436
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.837Z",
+ "cells": {
+  "16": [
+   "51231ccea32ddd2f",
+   "786e1e50bf68e2ad",
+   "8455bcb2791c1c87",
+   "b14622c807707dc3"
+  ],
+  "24": [
+   "089e6e0b0b6872be",
+   "0aa68f8de3539558",
+   "37bad2a2e0e6dd8c",
+   "48707884037bad8d",
+   "54609cd17bc9751e",
+   "5d1b57beb1bda06c",
+   "65dfe3ba70fc9aa2",
+   "96028d3299025722",
+   "9e2780f376c00f24",
+   "ad703a4037f749ae",
+   "b13650d65a330807",
+   "b40c7e777bbe179a",
+   "ba5b20c6729106aa",
+   "bbd53e5d51196fb7",
+   "c8b19d3de81de1d9",
+   "d1a3ef3d5e38ddba",
+   "dc05344d7168adb0",
+   "fa4f6113affa8267"
+  ],
+  "32": [
+   "5bacbe83d296e1ad",
+   "63e1913ed4248cb0",
+   "6bad6d77aade28d5",
+   "d1f310adea020db2",
+   "df226059ff0bbfc3",
+   "e158bacfb177ed19"
+  ],
+  "48": [
+   "09793c49cdec545a",
+   "1d37f6f0b22c3b6e",
+   "1fddf5f57fcca9c8",
+   "1ff8c621458e512b",
+   "2de196544752a4eb",
+   "5e5755ea599390fd",
+   "86df182cfd8d0900",
+   "9758507225749540",
+   "9eea23ad08d43ebc",
+   "b6f0842b77267dde",
+   "efb9ebe173b9d289",
+   "ff5c9f60ed3981ba"
+  ]
+ }
+}

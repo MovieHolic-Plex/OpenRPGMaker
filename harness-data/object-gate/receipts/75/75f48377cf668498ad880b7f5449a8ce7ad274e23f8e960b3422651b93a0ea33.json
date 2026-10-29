@@ -1,0 +1,382 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "75f48377cf668498ad880b7f5449a8ce7ad274e23f8e960b3422651b93a0ea33",
+ "width": 32,
+ "height": 48,
+ "kind": "organic",
+ "name": "dead snag",
+ "label": "beodeul_city/wave-places/mountain-fortress/dead_snag",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)",
+   "명암 3단 < 4 (4/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 4,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "bcc19e99327f94ce"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 32,
+  "nearBlackEdge": 0.08,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "trunk",
+      "rows": "6-45",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "broken top tip",
+      "rows": "4-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "side branches with snow",
+      "rows": "11-35",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base flare",
+      "rows": "44-45",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 40,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The trunk is a tall vertical 6-8 px wide column running from rows 6 to 45. Its top is a narrow broken tip (rows 4-8, width 1-4) with no ellipse and no front-edge line. The column scan at x=16 shows one continuous brown face from row 7 to row 44. A darker strip on the right is a shading band, not a receding side face. Thin branches stick out sideways, and the small light-grey snow pixels on them are only 1 px tall. The trunk has no visible horizontal top surface, so it reads as a flat front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a small, thin dead snag: a narrow brown trunk with a few short stub branches tipped with pale dots. It has only about 12 distinct colours in total and about 3 visible shading steps on the trunk (light edge, mid, dark side). The references use 5-6 steps on the canopy and trunk, and the larger one has many clumps and grain. The outline is a dark brown, tinted to the wood, not neutral black, which is good. Per-tile tone counts read 0 only because the piece is thin, so I judged density by eye. The trunk is a nearly uniform vertical column with little bark grain, no root flare, and no knots, so it looks flatter and more sticker-like than either reference trunk, which show roots, branch forks and per-clump shading. The pale dots on the stubs are the only extra detail. A careful artist would not accept it next to the references, as it looks thinner and flatter. Fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 10807
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "trunk",
+      "rows": "6-45",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "broken top tip",
+      "rows": "4-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "branches with snow",
+      "rows": "10-35",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 38,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The trunk is a vertical column about 6 px wide. It runs from row 6 to row 45 and narrows to a jagged point at rows 4-5. No band, front-edge line, ellipse or visible contents is drawn at the top, so the broken tip shows no top surface. A shaded right side and thin branch stubs with snow dabs are drawn as vertical profile detail. The flared base at rows 44-45 is a root foot, not a top surface. The object is a tall front-facing silhouette, and the top reads as a pointed end, not a horizontal plane."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a thin dead trunk with a few stubby branches and pale knots, about 12 distinct colours in total. It reads as only 3-4 lightness steps: a light left edge, a mid brown and a dark right side. The trunk is a narrow vertical shape with little bark grain, no root flare and no cracks or knot shading. The facts give 0 visible tones per tile because the piece is smaller than one tile, so I judged density by eye. Both references carry far more: tree-1a786c has about 6 steps and clustered foliage, and tree-d43edd has 20+ tones, leaf clumps, a shaded trunk and roots. Next to them the snag looks thinner, flatter and more sticker-like. Its edges lean brown rather than neutral black, consistent with the 0% near-neutral measure, but they are not clearly selective. It has no large flat fills, yet the bark texture is sparse and the shading shallow. A careful artist would not accept it beside the references without more bark texture, a root base and more tonal steps.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 10621
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "trunk",
+      "rows": "6-45",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "broken top tip",
+      "rows": "4-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "side branches with snow",
+      "rows": "11-35",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "root flare base",
+      "rows": "44-45",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 40,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The dead snag is a tall vertical trunk (rows 6-45, width 6-8) with a narrow broken tip at rows 4-8 and thin branches. There is no top surface, no ellipse, no front-edge line and no eave shadow. The trunk is shaded as a vertical face (lit left, dark right edge). The 1-px snow dabs on the branches are not a top surface. It reads as a flat front elevation of a trunk."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a small, thin dead snag, smaller than one 16x16 tile in width, so the per-tile facts read 0 and I judged by eye. It has about 12 distinct colours in total. The trunk shows roughly 3 brown steps (light left edge, mid, dark right side) with a few pale dots for stubs, and the branch stubs are short and thin. Next to the references it looks flatter and sparser. Both references carry 5-6+ steps per material, clumped leaf texture, root flare and varied bark. The candidate's trunk is mostly a smooth vertical band with little bark grain, no root flare and no knots or cracks. Its outline is a dark brown, tinted toward the wood, so it is not a black sticker line. But the shading is shallow and the trunk is uniform. A careful artist would not accept it next to the references without it looking thinner and flatter, so it fails on shading depth and density.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 9539
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "trunk",
+      "rows": "6-45",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "broken top tip",
+      "rows": "4-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "side branches with snow tips",
+      "rows": "11-35",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base flare",
+      "rows": "44-45",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 40,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The trunk is a tall vertical cylinder, 6 px wide, with a light face and a dark right-hand shading column. The top at rows 4-8 tapers to a broken tip 1 px wide, with no ellipse, no front-edge line and no eave shadow. The branches are thin diagonal sticks seen in elevation. The base at rows 44-45 flares slightly with a dark outline and has no visible top. No horizontal surface is visible anywhere, so it reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a thin bare trunk, about 12 distinct colours in total and smaller than one full tile, so the per-tile facts give no usable reading and I judged by eye. At the same scale it reads as a nearly flat brown pole with only about 3 lightness steps: a mid body, a darker side strip and a few pale branch-stub dots. The outline is a dark brown, tinted toward the wood, so it is not a black sticker line. There is almost no bark grain, no knots, no cracks and no per-section shading, and the trunk and stubs are mostly smooth fills. The branches are tiny, sparse stubs, so the form is much thinner and simpler than the references. Even the simpler reference tree-1a786c has a clustered, multi-tone trunk and root flare, and tree-d43edd has gnarled roots and branches with many tones. A careful artist would not accept this next to them, since it looks thinner, flatter and more sticker-like. A dead snag may be sparse, but it should still carry bark texture and 5-6 wood tones.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 10747
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.877Z",
+ "cells": {
+  "16": [
+   "1182e218c90721d1",
+   "34908301128370ac",
+   "3516391903408646",
+   "aa0e9d71a671b670",
+   "e048eb7aade42712",
+   "f7f3824bd729544a"
+  ],
+  "24": [
+   "0ee89b8a92f3aaf4",
+   "27a7b1ed4a551698",
+   "7e41cdff328cdcb0",
+   "936e57071774e7c7",
+   "a25db60911d5170e",
+   "b3b0720cd13eb0b5",
+   "b64a2cc767f84ed0",
+   "ce94dfcd2263b8d0",
+   "d4125abaa55099e7",
+   "d7a962658e6049eb",
+   "f38e0919ce44ef3a"
+  ],
+  "32": [
+   "021f686730e2c66c",
+   "7d8d16d7c7dd8330",
+   "acb9582e91a74851",
+   "c1d8e1aa38638941"
+  ],
+  "48": [
+   "7b2a346097eb2f9c",
+   "a3747305d64c291e",
+   "f2a6061688942059"
+  ]
+ }
+}

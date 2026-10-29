@@ -1,0 +1,322 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "cfe77e1d2115038cca991133d7f60a6a8ddba23d0037fb71da1029575213a8ee",
+ "width": 32,
+ "height": 16,
+ "kind": "debris",
+ "name": "beams charred",
+ "label": "beodeul_city/wave-places/ruined-village/beams_charred",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "2ad36264365ed8d5"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 9,
+  "nearBlackEdge": 0.46,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper charred beam (top plane)",
+      "rows": "4-6",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7-8"
+     },
+     {
+      "part": "lower charred beam (top plane)",
+      "rows": "8-9",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11-11"
+     },
+     {
+      "part": "glowing ember spots",
+      "rows": "7-10",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 2,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "This is a low pile of charred beams lying across the floor, 8 rows tall in total (rows 4-11). The upper beam has a mid-brown top band at rows 4-6 (x=16), followed by dark rows 7-8 that read as shadow or underside. The lower beam has a lighter top at rows 8-9 (#634a35 at x=9, 16 and 23), a mid-tone edge line at row 10 (#4a3526) and a dark row 11. The tops are only 2-3 rows, and the vertical front below them is only 1-2 rows, which is under the 3-row front face needed for three_quarter. The pile is a flat, low scatter, which is normal for debris, so it reads as a top-down slab with very little front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a low, sparse pile of charred beams, smaller than one 16x16 tile, so the per-tile facts read 0 and I judged by eye. It has 17 distinct colours, more than the bench (14) and lamp (14) references, which are also thin props. Only 21% of its dark edge pixels are near-neutral, so most of the outline leans brown or char-tinted and follows the material tone, unlike the lamp's 100% neutral line. Near-flat coverage is 0%. The beams show several steps from dark char to brown, plus grain and a few ember or highlight specks, which is about 5 steps against the references' 5-6. It is slightly simpler than the cheese stall or the roofed well, but it matches the bench-level craft for a thin ground prop and does not look like a flat sticker.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19068
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper charred beam",
+      "rows": "4-6",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "7-8"
+     },
+     {
+      "part": "lower beams (left and right)",
+      "rows": "8-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "11"
+     },
+     {
+      "part": "left beam end sticking out",
+      "rows": "6-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "glowing embers",
+      "rows": "7-10",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 2,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "side_profile_no_top",
+    "evidence": "The silhouette is 8 rows tall and 29 px wide. It is a pile of horizontal logs, each drawn in side profile: a 2-row light highlight (L~79, rows 5, 9 and 8-9), a 1-row mid-brown row (58, rows 6 and 10), then a dark underside (rows 7-8 and 11). No beam has a front-edge line followed by an eave shadow, and there is no ellipse or visible end-grain cap. The orange embers are small details. The pile reads as lying cylinders seen from the side with no horizontal top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a low, sparse debris pile about 20x6 source pixels, so it is smaller than one tile. The per-tile facts read 0 and cannot be used against it, and I judged by eye. It has 17 distinct colours in total, more than the bench (14) and the crook lamp (14) that are also thin. It shows about 5 lightness steps from deep char through brown to lighter wood grain, with a few ember accents. Only 21% of its dark edge pixels are neutral, so most of the outline leans brown and follows the adjacent wood instead of forming a black sticker line. Near-flat coverage is 0%, with no 5x5 flat fills, and the beams carry grain breaks and charred speckle. It is a little less rich than the stall or well, but about equal to the bench, the nearest simple reference. A careful artist would accept it next to the bench without it looking flatter or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17639
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "charred beam pile (upper beam)",
+      "rows": "4-7",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "charred beams (lower beams with lit end faces)",
+      "rows": "8-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "Scattered debris: a low pile of charred beams spanning rows 4-11 (about 29 px wide, 8 rows tall) with glowing ember spots. The beams are drawn as horizontal bars, with light end faces at rows 8-9 and dark shadow gaps between them. There is no ellipse, roof or front-edge-line plus eave shadow structure. The object reads as a loose heap of lying pieces, not a standing volume. Kind debris matches."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small, low pile of charred beams, under one tile in size, so the per-tile tone count is 0 and I judged density by eye against the bench, the nearest reference in size. It has 17 distinct colours against the bench's 14. Near-flat coverage is 0%, and only 21% of dark edge pixels are neutral, so the outlines lean brown rather than being a black sticker line. It shows several brown-black steps, lighter edge highlights on the beams, and small ember or grain specks. The beams are cleanly separated by value rather than by a uniform black outline. It is thinner and lower than the bench, but that suits a debris prop. It carries no large flat fills and would sit acceptably next to the bench, though it is slightly less detailed than the richer references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13126
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper charred beam",
+      "rows": "4-6",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark gap with ember glints between beams",
+      "rows": "7-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower charred beams",
+      "rows": "9-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The object is a low pile of beams about 8 rows tall (rows 4-11). At x=9, 16 and 23 each beam shows the same 3-row sequence: a 1-row lighter highlight (L=79, rows 5, 9, 8-9), a mid-brown row (L=58) and a dark row. That is a thin edge highlight on a side view of a log, not a top band with a front-edge line and eave shadow, and no ellipse is visible. The black rows 7-8 are gaps between beams, with small amber ember pixels. The beams have no horizontal top surface, so they read as side-on front elevations lying on the floor."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small, low, sparse pile of charred beams, under one tile tall, so the per-tile tone count of 0 says nothing against it. Judged by eye, it shows about 4 brown steps: a dark char body, lighter edge highlights on the beam tops, and a few lighter ember or grain flecks. Its 17 distinct colours are above the bench (14) and the lamp (14). The measured near-flat coverage is 0%, so no 5x5 areas are flat. Only 21% of its dark edge pixels are near-neutral, so most outlines lean brown and follow the neighbouring material rather than forming a uniform black sticker line. It is somewhat less shaded than the well and stall, but those are much larger props. Next to the bench it would be accepted as equally crafted, though a little dark and low in contrast. That is a palette matter, not a structural flaw.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18378
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.257Z",
+ "cells": {
+  "16": [
+   "2dc4d9252f53fc0b",
+   "36cb327e7c038f5a"
+  ],
+  "24": [
+   "14a4332681f408ed",
+   "3d5487306b3a3750",
+   "63505dc5b988354d",
+   "7ef794c29dce0bf8",
+   "83695766d0502fb3",
+   "93b7ccfb46daa545",
+   "96d19717e1b4fabd",
+   "9a40dde8cd7890d9",
+   "a0dc26591e235fde",
+   "b338162eefb816e5",
+   "b38d19f92f9f4492",
+   "f9e7f9994b5c8aaf"
+  ],
+  "32": [
+   "8390dbca9f03b4d2",
+   "84577d244055e082"
+  ],
+  "48": [
+   "09c3e11cd54d1ae5",
+   "20cf867831a2e78e",
+   "308169f5acb16168",
+   "522cb647ccb1e369",
+   "59062d79256b31d6",
+   "744cd4ee35e4274b"
+  ]
+ }
+}

@@ -1,0 +1,438 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "97f61fdb0bf38f16d1de98053415a6f9fce9e640bae8f46b019d2f19fb8ca083",
+ "width": 32,
+ "height": 32,
+ "kind": "frame",
+ "name": "weapon rack",
+ "label": "beodeul_city/wave-places/mountain-fortress/weapon_rack",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (4/4)",
+  "3/4: 윗면 2행 < 3 (4/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (4/4)",
+   "윗면 2행 < 3 (4/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "2ad36264365ed8d5"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 30,
+  "nearBlackEdge": 0.13,
+  "opaqueTiles": 0
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "borderline",
+   "wrong",
+   "borderline",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "base plinth",
+      "rows": "22-23",
+      "evidence": "none",
+      "front_edge_line_row": 23,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base front face",
+      "rows": "24-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "horizontal crossbeam",
+      "rows": "12-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "weapons (spear tips, axe head)",
+      "rows": "1-11",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The base is the main body. Row 22 is the outline and row 23 is a lighter edge line, giving a rim of about 2 rows. Rows 24-26 are a flat front face with row 27 as the bottom outline. The column scan shows no ellipse or wide top band, and no eave shadow beneath it. The crossbeam at rows 12-13 is a 2-row front-facing strip with an outline and a dark row, so it has no top face. The posts are vertical strips. The whole rack reads as a front elevation, not a 3/4 view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a thin, sparse prop (wooden base with upright poles and weapon tips), so the per-tile facts of 0 do not count against it. It has 17 distinct colours, more than the bench (14) and lamp (14) references, which are similarly simple. Only 7% of its dark edge pixels are near-neutral, so the outlines lean brown rather than black, matching the dark-material-tone style. Near-flat coverage is 0%. By eye, the base shows plank shading and grain, and the poles and blade tips are separated by value rather than a uniform black line. It is a little thinner than the richer references (stall, well), with about 4 wood steps against their 5-6, but it holds up next to the bench and lamp of the same simplicity.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13897
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "weapon heads / spear tips on posts",
+      "rows": "1-10",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper horizontal crossbeam",
+      "rows": "12-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "vertical posts",
+      "rows": "14-21",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base plinth top strip",
+      "rows": "22-23",
+      "evidence": "a",
+      "front_edge_line_row": 23,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base plinth front face",
+      "rows": "24-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The crossbeam at rows 12-13 is a 2-row front-facing strip (L=60 then 40) with no edge line and no eave shadow, so it has no top face. The base at rows 22-27 has only a 1-2 row lighter strip (row 22 outline, row 23 light at x=9 and x=16) above a 4-row front face (rows 24-27). That is a rim, not a real top surface. The posts are plain vertical faces. The silhouette widths (26 at rows 12-13, 28 at rows 22-27) show no widening-and-narrowing ellipse. The whole rack reads as a flat front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small, thin prop: a wooden base with upright poles and weapon heads. It measures 0 visible tones per tile, so the piece is under one tile and I judged by eye. Only 7% of its dark edge pixels are neutral, so the outline is tinted, a dark brown beside the wood. That fits the Beodeul approach and is not a black sticker line. Near-flat coverage is 0% and there are no large flat fills. Shading is shallow, though. The wooden base shows about 3 steps (light, mid, dark), where the references use 5-6 (the well and stall). The poles and weapon tips are mostly 1-2 tone strokes with little grain, and the base has little plank texture or per-element highlighting. Next to the well and stall references it looks thinner and flatter. It is roughly on par with the simpler bench and lamp references, which are also sparse. With only 17 colours in total, it is a little thin for a careful artist to accept beside the richer references. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 13427
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "weapons (spear tips and axe head) on the rack",
+      "rows": "1-11",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "horizontal crossbeam",
+      "rows": "12-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base plinth/trough",
+      "rows": "22-23",
+      "evidence": "none",
+      "front_edge_line_row": 23,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base front face",
+      "rows": "24-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The crossbeam at rows 12-13 is a 2-row front-facing strip with no edge line and no eave shadow below it, so it has no top face. The base spans rows 22-27. Row 22 is the outline and row 23 is a light 1-row highlight (L=98 at x=9 and x=16), which acts as a rim. Rows 24-26 are the front face and row 27 is the dark outline. That gives a top of 2 rows or less and a front face of 4 rows, comparable to the 'rim only: top 2' reference. The posts are vertical strips, and the weapon tips above them are decor. Nothing shows a horizontal surface seen from above, so the drawing is a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The rack is a thin prop: a wooden base with upright poles carrying weapon heads. Its per-tile tone count is 0, so the density fact is not usable and I judged by eye. The comparison image is very small, so this read is approximate. Only 7% of its dark edge pixels are near-neutral, so the outlines lean brown, as with the dark wood tones beside timber on the bench. Near-flat coverage is 0%, so there are no flat fills. It has 17 distinct colours, against 14 for the bench and the lamp, which are the closest references in sparseness. It carries about 4 wood steps with some grain on the base and light metal tips on the weapons. That is slightly fewer than the 5-6 steps of the richer references (stall, well), but it does not look thinner or flatter than the bench or the lamp. A careful artist would accept it beside the bench.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14381
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "base plinth",
+      "rows": "22-23",
+      "evidence": "none",
+      "front_edge_line_row": 23,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base front face",
+      "rows": "24-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "horizontal crossbar",
+      "rows": "12-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "vertical posts",
+      "rows": "14-21",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "spears and axe heads on top",
+      "rows": "1-11",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The base (rows 22-27, 28 wide) has only a 2-row light band at rows 22-23. Row 22 is an outline-like line and row 23 is a lighter line, so this is a rim, not a real top. The front face is rows 24-26 plus the outline at row 27. The crossbar (rows 12-13, 26 wide) is a flat front-facing strip of 2 rows. Row 12 is mid-brown and row 13 is darker, with no edge line and no shadow below it. The posts are 4px vertical strips. Nothing shows a foreshortened horizontal surface or an ellipse. The weapon heads on top are decor. Overall this is a flat front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The weapon rack is a thin, sparse prop, so the per-tile tone count of 0 says nothing against it. Judged by eye against the bench and lamp references, it holds up. The wooden base shows plank grain and several brown steps, and the upright poles carry metal tips and a few weapon heads in lighter tones. The measured facts agree: 17 distinct colours against 14 for the bench and the lamp, 0% near-flat coverage, and only 7% near-neutral dark edge pixels. The edges therefore carry a brown tint rather than a neutral black sticker line. It has about 4 steps on the wood where the references have 5-6, and it is a little less textured than the well and the stall, but it does not look thinner or flatter than the bench or lamp references. A careful artist would accept it beside them.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14554
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:20.022Z",
+ "cells": {
+  "16": [
+   "329bc391822c1841",
+   "40d9afa35c23d341",
+   "63683bf11ac431d6",
+   "faf43d4bcd225f37"
+  ],
+  "24": [
+   "048bac00c37a319d",
+   "0a654cf4a6adcd28",
+   "1825e7e10a876cae",
+   "1b15be90570281bb",
+   "28860335d75473a8",
+   "2924c4a6beba4cca",
+   "407bb53d3c5f3194",
+   "509e999658d3cc0c",
+   "5ce2c7daa52a9c3e",
+   "5ff5c2e9def5ae87",
+   "60ecacf23db6b407",
+   "62080601e5e110e9",
+   "70667973f6e383c0",
+   "76b943f24b788eab",
+   "83dbc37b27c561e1",
+   "869bb597c9a6ec0d",
+   "b1dcec9ffdb2f69e",
+   "b2ba2e766c087d31",
+   "b409b8a524c77a7f",
+   "b8ab5d0e3559cb92",
+   "c4f008140bf97c0a",
+   "c777c8e375c0788b",
+   "d93a635303999c84",
+   "ec4486055fa7dd71"
+  ],
+  "32": [
+   "f364be4f308a1a6c"
+  ],
+  "48": [
+   "02208148c43b13d0",
+   "1ab5fa84364d1bee",
+   "7b00e0e3af91a222",
+   "a7de029308fa543f",
+   "bf78182fb4614ebf",
+   "fa1066cb419c763d"
+  ]
+ }
+}

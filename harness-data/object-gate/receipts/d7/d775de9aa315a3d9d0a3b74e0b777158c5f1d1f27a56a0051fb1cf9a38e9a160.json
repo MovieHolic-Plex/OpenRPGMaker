@@ -1,0 +1,354 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d775de9aa315a3d9d0a3b74e0b777158c5f1d1f27a56a0051fb1cf9a38e9a160",
+ "width": 48,
+ "height": 32,
+ "kind": "structure",
+ "name": "snow den",
+ "label": "beodeul_city/wave-places/ice-age-field/snow_den",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 평면 채움 (4/4)",
+  "화풍: 질감 없음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "평면 채움 (4/4)",
+   "질감 없음 (4/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 4,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "5f62fef078ef7661"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 8,
+  "tileColorsP90": 9,
+  "darkV5": 52,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 6
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "snow dome roof (top surface)",
+      "rows": "2-16",
+      "evidence": "c",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front wall with dark entrance arch",
+      "rows": "17-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 14,
+    "front_face_rows": 13,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette widens from 10px at row 2 to 44px at row 9, holds that width through row 23, then narrows to 16px by row 30, so the whole shape reads as a rounded mound. Columns x=13 and x=34 show a bright snow top band (L≈238-249) down to about row 16. Below it, from row 17 to row 28, the wall is a darker blue-grey (L≈185-215). That change in tone acts as the front-edge line between the top and the front face. The front face is about 13 rows tall and holds a dark entrance arch at rows 16-28. The top is a large sloped snow surface and not just a rim. There is no clear eave shadow, but the top and front face are distinct."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The snow den is a small igloo-like dome with only about 3-4 lightness steps (white, pale blue-grey, mid blue-grey, dark doorway). The measured facts agree: 7 visible tones per tile against 10-12 for the references, and 47% near-flat coverage against 0% for both references. The big dome faces are smooth flat fills with no snow grain, speckle or block-by-block shading, and the stacked ice-block seams are barely hinted at. The references carry per-tile highlights, scalloped roof tiles, plaster and stone texture. The outline is a tinted dark blue-grey, not neutral black (0% near-neutral edge pixels), which is acceptable. Even so, the shading is shallow and the surfaces are flat, so the piece falls below the reference standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 19635
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "snow dome roof (top of den)",
+      "rows": "2-16",
+      "evidence": "c",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front wall with dark entrance tunnel",
+      "rows": "17-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 15,
+    "front_face_rows": 13,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette widens from 10px at row 2 to 44px by row 9, so the top reads as a rounded snow roof seen from above. In columns x=13 and x=34 the light roof (L=238-249) runs down to row 16. At row 17 the lightness drops to a darker front wall (L=215 and 185) that continues to row 28, giving a front face of about 13 rows. The entrance is a dark opening in the front wall, with a pale arch lip at rows 15-16 above it. The roof has no distinct eave shadow, but the lightness break at row 16/17 works as the front-edge line, and the roof plane has 15 rows, so a top surface plus a front face are both present."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The snow den is a small igloo-like dome with a dark doorway. It shows roughly 3 lightness steps on the snow (white, pale blue, mid blue-grey) against the references' 5-6 steps on tiles and plaster. Its measured 7 visible tones per tile is below the references' 10-12, and its near-flat coverage is 47% against 0% for both references. The snow blocks are broad smooth areas with no speckle, grain or per-block highlights, so these are flat fills. The outline is tinted blue-grey rather than neutral (0% near-neutral dark edge pixels), which is good, but the shading and texture are shallower than the references and the piece reads as a simple sticker-like blob. It is small, but it is still plainly flatter than the references, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 11931
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "snow dome roof (top surface of the den)",
+      "rows": "2-16",
+      "evidence": "c",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front wall with dark arched entrance",
+      "rows": "17-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 14,
+    "front_face_rows": 12,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette widens from 10px at row 2 to 44px by row 9, so the top reads as a foreshortened ellipse-like dome. The light snow roof fills rows 3-16 (L~238-249) and ends in a darker lip at rows 15-16. Below it, rows 17-28 form a darker, shaded front wall (L~185-215 at the sides) with a dark arched entrance (rows 16-28) and a snow base at rows 29-30. The roof plane is 14 rows and the front face about 12 rows, so it reads as a three-quarter view. There is no separate eave shadow strip."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The snow den is a small igloo-like dome with a dark doorway. Its snow ramp has about 3-4 blue-white steps (white top, light blue-grey sides, mid blue shadow), against about 6 steps on the reference roofs and walls. Measured facts: 7 visible tones per tile vs 10-12 for the references, and 47% near-flat coverage vs 0% for both. Raw colours total only 15 vs 66-185. The dome and wall surfaces are large smooth fills with no block-by-block shading, grain or speckle, so they read flat next to the tile scallops and stone-by-stone shading of the references. Edge pixels are tinted (0% neutral), so the outline is a bluish dark tone rather than a black sticker line, which is fine. Even so, the shallow shading, the flat fills and the much lower texture density mean it would look thinner than the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 13581
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "snow dome roof / top mound",
+      "rows": "2-16",
+      "evidence": "c",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front wall of den (snow blocks)",
+      "rows": "17-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark arched entrance",
+      "rows": "16-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 15,
+    "front_face_rows": 13,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette widens from 10px at row 2 to 44px by row 9, which gives a domed snow roof. In columns x=13 and x=34 the bright roof snow (L=238-249) runs down to row 16. At row 17 the lightness drops to a darker, shaded front wall (L=185-215) that runs to row 28. The dome top spans about rows 2-16 (about 15 rows) and the vertical south face spans rows 17-29 (about 13 rows). The arched entrance, dark in rows 16-28, sits in the front face and is a vertical opening. The roof-to-wall change at rows 16-17 reads as an eave edge, but there is no distinct 1-row edge line or eave shadow. The roof plane is evidence (c) and also reads as a top surface through its width profile. No isometric side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The snow den is a small igloo-like dome with about 3 visible shading steps (white, pale blue-grey, a darker blue underside) and a dark doorway. The references carry 5-6 steps per material, with per-tile roof scallops, plaster speckle and stone-by-stone shading. Measured facts back this up. The candidate has 7 visible tones per tile against 10-12 in the references. Its near-flat coverage is 47% against 0% for both references, so large areas are flat fills. The dome shows no block or snow grain and no per-block highlights. The outline is a tinted blue-grey rather than neutral black (0% near-neutral dark edge pixels), which is fine. The piece is small, but it still looks flatter and more sticker-like than the references, and the structure lacks windows, a roof and walls with material detail. A careful artist would not accept it next to the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 14304
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.785Z",
+ "cells": {
+  "16": [
+   "3f9692cffe97a72a",
+   "62fd356288b87db3",
+   "a244975ec6e83f67",
+   "afb8dfcab676bed5",
+   "cdb3a7a75f829d3f",
+   "e55b3e2f7ec14723"
+  ],
+  "24": [
+   "090303f7fca9164e",
+   "224607010321af10",
+   "295f9d8a92956aab",
+   "490a8ff5b112b280",
+   "aa34d3fd4085b10f",
+   "d218066631e723a5",
+   "da1b84605019aae7",
+   "e5d2ecb7097a5993"
+  ],
+  "32": [
+   "13383e6c8cc9e51f",
+   "13e704a28989250f",
+   "461376824b80b8b5",
+   "46ec06a588d0b13d",
+   "72aa255e0634996b",
+   "a5c73732925623d7"
+  ],
+  "48": [
+   "09e5158fe5be2fff",
+   "b38307dd750de368"
+  ]
+ }
+}

@@ -1,0 +1,322 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "25ad48891d41704717dedd30dede8d0822ff27cda34829706ce8b842e3d2955b",
+ "width": 16,
+ "height": 32,
+ "kind": "organic",
+ "name": "cairn mark",
+ "label": "beodeul_city/wave-places/mountain-fortress/cairn_mark",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 5,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "bcc19e99327f94ce"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 19,
+  "tileColorsP90": 19,
+  "darkV5": 51,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 1
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stacked stone pile (whole cairn body)",
+      "rows": "5-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "white highlight/snow flecks at the peak",
+      "rows": "5-7",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The cairn is a tapering stack of stones, 3 px wide at row 5 and 14 px wide at rows 25-26. The width profile steps outward by tier (7, 9, 7, 5, 7, 11, 9, 10, 13, 14). The column scans show vertical shading bands (x=4 L79 to 196, x=8 L160 to 196, x=11 L125) and 1-row darker seams at rows 15, 21 and 24 that only separate stones. None of the tiers has a lighter top band that ends in a front-edge line with eave shadow below it. There is no ellipse and no visible interior or contents. The pile reads as a face-on silhouette with shading, with no horizontal top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small grey stone cairn, while the references are full leafy trees, so the kind match is weak. At this scale it is far smaller than a 16x16 tile reference. It shows about 4 grey steps with a few speckles, and there are no flat 5x5 areas. The dark edge pixels are 100% near-neutral (grey/black), which means the outline is neutral and untinted rather than a dark tone of the adjacent stone. The references use tinted dark greens and browns. The stone has no moss, no warm or cool lean in the shadows, and no ground contact. It looks thinner and more sticker-like next to the reference trees, whose clumps and trunks are shaded in many steps. A careful artist would not accept it next to the reference as equal.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 21705
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top small stone with white highlight",
+      "rows": "5-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "middle stacked stone mass",
+      "rows": "9-21",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wide base stones",
+      "rows": "22-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The cairn is a lumpy stack of grey stones that widens from 3 px at row 5 to 14 px at rows 25-26. Its shading is mostly vertical in the column scans: x=8 runs 160, 196, 160 with thin dark lines at rows 15, 21 and 24, and x=11 is a dark right-hand side. Those lines separate stones on a front face. No stone has a back rim, a front-edge line followed by eave shadow, or a widen-then-narrow ellipse. The only light rows near the top are the 1-2 row white highlight at rows 6-7, which reads as a rim or highlight rather than a horizontal surface. The object therefore reads as a front elevation with no real top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small grey stack of stones, roughly 10x20 source px. The references are full leafy trees, so the kind match is loose and I judged it as a sparse single-tile prop. By eye it has about 3-4 grey steps: light top faces, a mid grey and a dark base. That is shallower than the 5-6 step ramps on the reference canopies. The stones have some facets but little per-stone grain, and there are no flat fills (0% near-flat). The 16 visible tones per tile is at or above reference tree-1a786c (7), but the piece is tiny, so I did not lean on that number. The dark edge pixels are 100% near-neutral, while both references measure 0% (tinted). The dark rim around the stones reads as a neutral grey-black line, not a darker tone of the stone, which gives the 'sticker' look. A careful artist would see the piece as thinner and more outline-driven than the reference trees, with fewer ramp steps and no tinted outline. In doubt, so fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 18313
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stacked stone pile (whole body)",
+      "rows": "5-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "snow or highlight dabs on the top stone",
+      "rows": "5-7",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The silhouette is a tapering pile of grey stones, 3 px wide at row 5 and 14 px wide at rows 25-26. The column scan at x=8 shows alternating light and mid-grey bands (rows 11-14, 17-20, 22-23, 25-27) separated by 1-row dark lines at rows 15, 21, 24 and 28. These read as stone faces separated by joint lines, not as horizontal top surfaces. No band has a front-edge line followed by eave shadow, and no stone's width profile widens and then narrows into an ellipse. The bright white pixels at rows 6-7 and 14-15 are highlight dabs, not a top plane. The pile is drawn as a mostly vertical, front-facing stack with at most a rim-like 1-2 row top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The references are full trees with leaf canopies and trunks. The candidate is a small grey stacked-stone cairn, so it is not the same kind of object as the references. It is a sparse single-tile prop, which means the per-tile tone count (16 visible tones, against 7 and 29 for the references) is not reliable evidence either way. By eye the stones show about 3-4 grey steps with a few highlight pixels, so the shading is shallow next to the references' 5-6 steps. The dark edge pixels are 100% near-neutral, so the outline reads as a neutral dark grey line rather than a material-tinted tone. That is the sticker-like look the references avoid. Stones are shaded one by one only partly, and there is little grain. The piece is thinner and flatter than the references, and the grey is a valid palette choice. Because the kind does not match and the neutral outline and shallow shading are visible, this fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 13368
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cairn stacked stones (whole body)",
+      "rows": "5-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The cairn is a lumpy, stepped silhouette (width 3 to 14 over rows 5-28) shaded as one vertical face. Rows 6-7 hold a white highlight at the apex, which is a rim of 1-2 rows and not a surface. The wider ledges at rows 15-16, 19-21 and 24-25 have no front-edge line and no eave shadow. No stone shows an ellipse or a flat horizontal band seen from above. The light and dark patches in the column scans (x=8 L=160 to 196 to 160; x=11 dark at rows 21-22) read as lighting on a front face, not as top planes. The drawing has a front face of about 22 rows but no top surface, so it is front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small stacked-stone cairn, about 10x20 source pixels, so it is much smaller than the reference trees. The measured 16 visible tones per tile and 0% near-flat coverage show it is not flat-filled, and the stones are shaded individually with a light top face. Several things still count against it. Its dark edge pixels are 100% near-neutral, while both references are 0% (tinted), so the outline reads as a neutral dark grey line, not a dark tone of the adjacent material. The ramp is about 4 steps (highlight, light, mid, dark), short of the references' 5-6. By eye it looks thinner and more sticker-like than the references, with little grain, speckle or moss variation inside the stones. It is the object's sparseness that keeps the density fact from counting against it, but the neutral outline and shallow ramp fail the bar. Verdict: fail, since the neutral outline and short ramp leave it plainly below the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 16193
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.826Z",
+ "cells": {
+  "16": [
+   "179485ea05bd56b1",
+   "49a0019d5c9b558d"
+  ],
+  "24": [
+   "41e9383959c20144",
+   "4e29ef2ebec9bfb6",
+   "53e1e52d64da8512",
+   "54cc21dccb6fce5a",
+   "8bc1d234f68323a8",
+   "9fb4bf29e5839dcb",
+   "b5b777646522de33",
+   "cb40039dad2ecd20",
+   "e341c5f2c86e536f",
+   "f96aaf728ca7131b",
+   "fa5e3ca99cf3c367",
+   "fdddb4836ecb3eb9"
+  ],
+  "32": [
+   "236e1416ccb02598",
+   "2c2b6dcfbaf26609",
+   "30c335b835e11fbd"
+  ],
+  "48": [
+   "31b56701b2027dfe",
+   "5da83e817fead79b",
+   "953a413991648d46",
+   "ac66ed2abe060822",
+   "b0254ff2e068f22a",
+   "bb13b7a8484794db"
+  ]
+ }
+}

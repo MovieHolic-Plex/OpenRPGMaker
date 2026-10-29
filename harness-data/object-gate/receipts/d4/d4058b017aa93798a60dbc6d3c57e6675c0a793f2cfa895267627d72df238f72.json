@@ -1,0 +1,435 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d4058b017aa93798a60dbc6d3c57e6675c0a793f2cfa895267627d72df238f72",
+ "width": 16,
+ "height": 32,
+ "kind": "frame",
+ "name": "scarecrow tattered",
+ "label": "beodeul_city/wave-places/ruined-village/scarecrow_tattered",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (4/4)",
+  "3/4: 윗면 0행 < 3 (4/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (4/4)",
+   "윗면 0행 < 3 (4/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "2ad36264365ed8d5"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 29,
+  "nearBlackEdge": 0.13,
+  "opaqueTiles": 0
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "hat (brim and crown)",
+      "rows": "2-7",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "head/face with hatband",
+      "rows": "8-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "horizontal crossbar (arms) with shoulder line",
+      "rows": "12-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "torso/tattered tunic",
+      "rows": "14-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "vertical post",
+      "rows": "25-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 17,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The scarecrow is drawn entirely as a flat front view. The crossbar (rows 12-13) is a 2-row strip with no edge line or eave shadow beyond a dark outline. The tunic (rows 14-24) is a vertical face split into two tones (orange left, red right), a vertical split rather than a top and front division. The post (rows 25-29) is a 2px-wide vertical strip. The hat is a decor-like crown with a brim; its silhouette widens from 4 to 8 at rows 4-6, but it is a hat shape rather than a top surface of the body. No horizontal top surface is visible on the beam, the body or the base, so the frame has no top faces."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The scarecrow is a thin, sparse prop, so the per-tile tone count of 0 says nothing against it. It uses 25 distinct colours in total, against 14 for the thin bench and lamp references. Only 4% of its dark edge pixels are neutral, so the outline leans brown or tinted next to the wood, straw and cloth, not a black sticker line. Near-flat coverage is 0%. By eye, the hat, face, patched tunic, straw tufts and pole each carry two to four tones with visible grain and ragged edges. That is on par with the bench and lamp references, though a little shallower than the hedge, stall and well. No large flat fills are visible. A careful artist would accept it beside the references without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13985
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "hat (crown and brim)",
+      "rows": "2-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "head/face",
+      "rows": "8-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "horizontal crossbeam/arms",
+      "rows": "12-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "torso tunic (split orange/red)",
+      "rows": "14-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "support post",
+      "rows": "25-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 11,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The scarecrow is a flat frontal drawing. The crossbeam arms (rows 12-14) are a front-facing strip with no front-edge line and no eave shadow, so no horizontal surface shows. The torso (rows 14-24, about 9-13 px wide) and the post (rows 25-29, 2 px wide) are vertical faces. The hat has a brim, but it is drawn face-on with no ellipse. The width profile has no widening-then-narrowing ellipse on any part. There is no top surface for the beam or the base, so it reads as front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The scarecrow is a small, sparse prop under one tile wide, so the per-tile tone count of 0 says nothing against it. It uses 25 distinct colours in total, more than the bench (14), lamp (14) and hedge (11). Near-flat coverage is 0%, so there are no big flat fills. Only 4% of its dark edge pixels are neutral, so the outline is tinted, with dark brown beside the wood and straw rather than a black sticker line. By eye, the straw hat, face, patched tattered shirt, straw tufts and pole each show two to four tones with grain and ragged edges. That is on par with the bench and lamp references, though a little shallower than the five or six steps on the larger stall and well. A careful artist would accept it next to them without it looking flatter or thinner.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13955
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "hat (cone with brim)",
+      "rows": "2-7",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "head/face",
+      "rows": "8-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "horizontal arm crossbeam",
+      "rows": "12-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "tattered tunic body",
+      "rows": "14-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "support pole",
+      "rows": "24-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 18,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The scarecrow is drawn as a flat front view. The arm crossbeam at rows 12-13 is a 2-row front-facing strip with no edge line or eave shadow below it, so it shows no top face. The tunic (rows 14-23) is a vertical face split into two flat colour halves (x=4 vs x=8), and the pole (rows 24-29) is a 2px vertical strip. The width profile has no ellipse or widening-then-narrowing band that would indicate a horizontal surface. The hat is a small cone on the head and counts as decor. The horizontal beam and the base have no top faces, so a frame kind fails here."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The scarecrow is a thin, sparse prop smaller than one full tile, so the per-tile tone count of 0 says nothing against it and I judged by eye against the thin references (bench, lamp). It has 25 distinct colours against 14 for the bench and the lamp, and it shows no 5x5 flat areas (0% near-flat). Only 4% of its dark edge pixels are neutral, so the outline leans brown or dark material, unlike the lamp's 100% neutral black line. The hat, face, patched shirt, straw tufts and wooden post each carry about 3-4 tones, and the straw and cloth have some grain dots. It is a little less rich than the well and the stall, which are large, multi-material props. A careful artist would still accept it next to the bench and lamp without it looking flatter or more sticker-like. The 4-step shading is a bit below the references' 5-6, which keeps the density at slightly lower rather than equal.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15216
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "hat (crown and brim)",
+      "rows": "2-7",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "head/face",
+      "rows": "8-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "horizontal arm crossbeam",
+      "rows": "12-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "tattered tunic torso (front face)",
+      "rows": "14-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "support pole",
+      "rows": "24-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 16,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The scarecrow is drawn face-on. The crossbeam (rows 12-13) is a 2-row dark strip with no edge line or eave shadow, so it shows no top face. The torso (rows 14-23) is a flat vertical tunic split into two colours, with no horizontal surface above it. The pole (rows 24-29) is a 2px-wide vertical shaft with no base top. The hat brim at rows 6-7 is a thin strip, not an ellipse. The width profile only grows and shrinks with the figure's shape. The object has a front face but no top surface anywhere."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The scarecrow is a thin, narrow prop, smaller than one tile, so the per-tile tone count is 0 and I judged density by eye. It uses 25 distinct colours in total, more than the bench (14) and the lamp (14), which are the nearest thin references. Near-flat coverage is 0%, so there are no flat fills. Only 4% of its dark edge pixels are near-neutral, so the outlines lean brown or dark material tone rather than the black sticker look. The hat straw, face, patched shirt, tattered edges and pole each show 3-4 tones and some grain. That is a touch shallower than the 5-6 steps on the richer references. Placed beside the bench and lamp, it does not look thinner, flatter or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13616
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.487Z",
+ "cells": {
+  "16": [
+   "0beaed4a6e57f9e5",
+   "60b21a1d15e3527a"
+  ],
+  "24": [
+   "18201468e5d2be5b",
+   "22c31c67c2efadf4",
+   "3db9a1a782da96bc",
+   "6271e691800adc40",
+   "71e2efa427a07529",
+   "a77044a79104b270",
+   "a93a08d62eaa686f",
+   "b3e94ea4bd31005b",
+   "e3afc94732c05df1",
+   "e3ceec5494118bda",
+   "e787b011beb5a8ea",
+   "ea5be8bc2da1f27e"
+  ],
+  "32": [
+   "3f51e01a2bb86a7c",
+   "b0fa897bb3fbbddc",
+   "e4cb30b6c14599f9"
+  ],
+  "48": [
+   "58f113352b10799d",
+   "5b8df6ec2d45eab4",
+   "620b5e7276ceafef",
+   "98cb848bed930bbd",
+   "9a28343a52ca3c8b",
+   "db47c07a02ba732a"
+  ]
+ }
+}

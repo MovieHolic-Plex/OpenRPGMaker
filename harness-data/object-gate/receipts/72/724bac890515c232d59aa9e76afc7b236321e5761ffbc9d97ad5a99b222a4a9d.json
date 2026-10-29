@@ -1,0 +1,337 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "724bac890515c232d59aa9e76afc7b236321e5761ffbc9d97ad5a99b222a4a9d",
+ "width": 32,
+ "height": 16,
+ "kind": "container",
+ "name": "sled loaded",
+ "label": "beodeul_city/wave-places/ice-age-field/sled_loaded",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 종류 불일치"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "종류 불일치"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "2ad36264365ed8d5"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 33,
+  "tileColorsP90": 33,
+  "darkV5": 29,
+  "nearBlackEdge": 0.07,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "wrong",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "wrong",
+   "borderline",
+   "borderline",
+   "borderline",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "cargo sacks/bundles with snow and vertical rope poles",
+      "rows": "3-9",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "sled bed/body with runner",
+      "rows": "10-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main body is a low sled bed in rows 10-14. Row 10 is a thin lighter edge (#885a26) under the dark row 9 (#312210), which is shadow beneath the cargo. That gives at most a 1-row rim. Rows 11-14 are a flat brown front face (#633712) over a purple runner. No ellipse or opening is visible, and no contents are seen inside a container. The sacks and rope poles in rows 3-9 are goods placed on the bed, so they count as decor. The object is a flat sled with cargo piled on top, not a container with an opening, so it reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a low, small prop, comparable in scale to the bench and hedge. The measured facts favour it: 27 visible tones per full tile against 9-20 for the references that have measurable tiles, and 0% near-flat coverage. Only 13% of its dark edge pixels are near-neutral, so its outlines lean brown, in the tone of the adjacent wood and load, rather than a uniform black sticker line. By eye, the runners, planks and load items are separated by value with several brown and cream steps and visible grain or bundle detail, not flat blocks. It is slightly small and busy, but a careful artist would accept it beside the references without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16057
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "cargo (sacks/barrels with white snow or highlight tops, plus rope and posts)",
+      "rows": "3-9",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "sled bed / deck",
+      "rows": "10-10",
+      "evidence": "none",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "sled front plank and runner",
+      "rows": "11-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main body is the sled bed, a low plank with a runner. Row 10 is a single lighter deck line (L=98 against 36 above it). Rows 11-13 are a uniform front face (L=61) and row 14 is the runner. No band of top rows or ellipse is visible on the bed, only a 1-row deck edge. The goods above it (rows 3-9) are drawn face-on as sacks and posts, so I treat them as decor and not as a container opening seen from above. The white rows 5-6 read as highlights on the sacks, not as an opening or contents seen from above. The object is a loaded sled and does not match the container-with-opening kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small, low prop with a load of snow-white and brown bundles on dark wood runners. Measured facts favour it. It has 27 visible tones per full tile, above the stall (17) and well (20) references and well above the hedge (9). Near-flat coverage is 0%, so there are no flat fills. Only 13% of its dark edge pixels are near-neutral, so the outlines lean brown rather than black, like the references' material-toned edges. By eye, the load and runners show several tone steps (highlight, light, mid, dark, deep) with grain and clumped variation rather than a flat body with a sticker outline. It is a little shallower than the best references and its detail is small and cluttered. Still, a careful artist would accept it next to the stall and well props without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20690
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "loaded goods (sacks/barrels with snow on top)",
+      "rows": "3-9",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "sled bed and runner base",
+      "rows": "10-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "This is a sled carrying a load, not a container with an opening. The base (rows 10-14, widths 25-27) is a face-on strip with a dark edge row at row 10 and a dark purple underside at rows 13-14. It shows no horizontal top band and no ellipse. The load (rows 3-9, widths 16-24) is drawn as rounded sacks with white snow highlights. Column x=7 shades from light at rows 3-4 down to dark at rows 8-10, which reads as a vertical rounded face, not a flat top. Only about 2 rows of highlight at the top of each sack could be a top surface. There is no receding top plane, no visible interior and no front-edge line followed by an eave shadow, so the object reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small, low sled with a load of logs or bundles. It is about the size of the bench reference and reads as a prop of the same kind. At this scale I can make out roughly 4-5 lightness steps on the wood runners and load, with highlights and shadow notches. The measured facts support this. It has 27 visible tones per 16x16 tile, against 17-20 for the stall and well and 9 for the hedge. Near-flat coverage is 0%, so there are no flat fills. Only 13% of its dark edge pixels are near-neutral, so the outline is mostly tinted and sits close to the dark brown of the adjacent material, not a uniform black line. The grain and variation across the load are comparable to the stall and well references. It is a little shallower than the best references, but a careful artist would accept it next to them without it looking thinner or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19735
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "cargo load (sacks/barrels with snow) on the sled bed",
+      "rows": "3-9",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "sled bed / front face with runner",
+      "rows": "10-14",
+      "evidence": "none",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main body is the low sled bed at rows 10-14. Row 10 is a 1-row dark line, and rows 11-13 are a uniform brown vertical face, with a runner or base strip at row 14. No horizontal top surface or ellipse is visible on the bed, because the cargo (rows 3-9) sits on it and counts as decor. It is not an open container with an opening seen from above. The bed shows only a rim-like line and a front face, so it reads as front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small, low sled with a bundled load. The measured facts are strong. It has 27 visible tones per tile, above the stall (17) and well (20) references. Near-flat coverage is 0%, so there are no flat fills. Only 13% of its dark edge pixels are near-neutral, so the outlines lean brown, in the dark tone of the wood, and are not a black sticker line. By eye, the load and runners show several wood and cargo tones with grain-like speckle and no large single-colour areas. It is small and a bit busy, but it is not thinner or flatter than the references of the same kind. A careful artist would accept it next to them.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14676
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.782Z",
+ "cells": {
+  "16": [
+   "1c716f4377a30d8f",
+   "b35455b3accee6e2"
+  ],
+  "24": [
+   "1251e4052973e7c1",
+   "3d6dd1b4a81fbdb3",
+   "4b84f0a59062a5fb",
+   "5bc886b43d777544",
+   "6148d44b49f6250b",
+   "67438ba12af06f2b",
+   "6773cd299fc1b9c5",
+   "69202c59f2f5123b",
+   "d878af18c0530670",
+   "e073a98316997f8d",
+   "f57d8a74201662e6",
+   "fc5e57910dbb97c2"
+  ],
+  "32": [
+   "42dc95fac3a4c59c",
+   "a9c9d4076c232173"
+  ],
+  "48": [
+   "6aae0793403c0562",
+   "740b4e83a1466cd0",
+   "7699dd0dff6f3c42",
+   "976b9c9bbf5f572b",
+   "ad0c8162897dd1f0",
+   "fb3b2352bf80b375"
+  ]
+ }
+}
