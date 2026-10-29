@@ -97,6 +97,8 @@ export const OP_KINDS = [
   "waitForClass",
   // 페이지 안에서 함수 본문을 실행하고 결과를 JSON 파일로 남긴다(레이아웃 측정용 탐침).
   "evalToFile",
+  "cpuProfileStart",
+  "cpuProfileStop",
   "captureCheckpoint",
   // 체공(jump/dropIn). 이동 경로를 주인공에게 직접 물리고 리프트를 조건으로 기다린다 —
   // Phaser 의 displayOrigin 계약은 jsdom 으로 재현되지 않아 브라우저에서만 증명된다.

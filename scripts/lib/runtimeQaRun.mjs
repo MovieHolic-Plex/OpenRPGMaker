@@ -806,6 +806,35 @@ export async function applyOp(page, op, runState) {
       runState.capturedCheckpoints.push({ id: op.id, ...(op.label ? { label: op.label } : {}), snapshot });
       return;
     }
+    case "cpuProfileStart": {
+      // CPU 표본 수집 시작 — 「무엇이 n초 걸리나」를 함수 단위로 보려고(2026-10-29 새 게임 로딩 8~10초 원인 계측).
+      runState.cpuProfiler = await page.context().newCDPSession(page);
+      await runState.cpuProfiler.send("Profiler.enable");
+      await runState.cpuProfiler.send("Profiler.setSamplingInterval", { interval: op.intervalUs ?? 1000 });
+      await runState.cpuProfiler.send("Profiler.start");
+      return;
+    }
+    case "cpuProfileStop": {
+      // 멈추고 자기 시간(self) 상위 함수 표를 op.out 에 쓴다(전체 .cpuprofile 은 op.raw 가 있을 때만).
+      const session = runState.cpuProfiler;
+      if (!session) throw new Error("cpuProfileStop: cpuProfileStart 가 먼저다");
+      const { profile } = await session.send("Profiler.stop");
+      runState.cpuProfiler = undefined;
+      if (op.raw) await writeFile(op.raw, JSON.stringify(profile));
+      const dt = profile.timeDeltas ?? [];
+      const self = new Map();
+      profile.samples.forEach((id, i) => self.set(id, (self.get(id) ?? 0) + (dt[i] ?? 0)));
+      const byFn = new Map();
+      for (const node of profile.nodes) {
+        const f = node.callFrame;
+        const key = `${f.functionName || "(anon)"} ${(f.url ?? "").split("/").slice(-2).join("/")}:${f.lineNumber + 1}`;
+        byFn.set(key, (byFn.get(key) ?? 0) + (self.get(node.id) ?? 0));
+      }
+      const totalMs = (profile.endTime - profile.startTime) / 1000;
+      const top = [...byFn.entries()].sort((a, b) => b[1] - a[1]).slice(0, op.top ?? 40).map(([fn, us]) => ({ fn, selfMs: Math.round(us / 1000) }));
+      await writeFile(op.out, JSON.stringify({ totalMs: Math.round(totalMs), top }, null, 1));
+      return;
+    }
     case "evalToFile": {
       const value = await page.evaluate(`(${op.fn})()`);
       await writeFile(op.out, JSON.stringify(value, null, 1));

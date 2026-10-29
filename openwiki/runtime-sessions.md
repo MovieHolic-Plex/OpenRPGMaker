@@ -894,3 +894,8 @@ vm3/vm4 판정 「대사 한 글자씩 느리게」「엔딩 뒤 크레딧 대�
   주의: 타이틀로 나간 뒤에도 옛 판의 `window.__oprnDebug` 가 남아 새 판이 훅을 갈아 끼우기 전까지 옛 상태를 읽는다(QA 는 훅 교체를 기다린다).
 - **저장 직후 Esc** (`src/player/playerStatusMenuController.ts` `justSaved`): 저장 칸에 저장한 바로 다음 Esc 는 저장 화면 한 단계가 아니라 메뉴 전체를 닫는다
   (menu-save-escape: 필드까지 Esc 2 → 1번). 다른 키·마우스를 쓰면 풀리고, 덮어쓰기 확인 중 Esc·최상위 Esc 한 번 닫기는 그대로다.
+- **새 게임 로딩 8~10초 (측정만, 미수정)** — `pacing-boot.scenario.mjs`(`QA_SKIP_OPENING=1` 판정자처럼 오프닝을 넘김, `QA_PROFILE=1` CPU 표본 → 새 QA op `cpuProfileStart`/`cpuProfileStop`).
+  vm3 flash jrpg(web json 11.7MB, 그중 `beodeul_city` 타일셋 정의 7.9MB·23,936칸), 머신 부하 50~60에서: Enter → 에셋 단계 시작 2.3~2.6s,
+  에셋(그림 받기·디코드·텍스처 올리기) 15→85% 5~6.7s, `PlayScene.create` 2.6~5s(프레임 등록 0.7~1.4s, 높이 지형 `reliefGroundFromImage` 시트 픽셀 읽기 ~1s,
+  `renderReliefLayer` ~0.8s; 칸 그리기는 60ms). 오프닝은 로딩 위를 덮어 돌고 넘겨도 총 시간은 같다(13.2 vs 13.3s) — 오프닝 렌더(`quantizePixelGrid`)는 병목이 아니다.
+  원인은 버들항 공용 칩셋 한 장의 크기다. 고치려면 쓰는 칸만 프레임 등록·시트 픽셀 읽기 캐시(세션 간)·relief 지면 사전 계산 중 하나가 필요하고, 모두 런타임 타일 경로 변경이다.
