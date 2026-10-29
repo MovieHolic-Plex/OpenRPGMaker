@@ -1162,7 +1162,8 @@ function buildStreet(project: Project, links: Links, parkArrive: Cell, shrineArr
     walkers: [
       { name: "장 보는 아주머니", graphic: { selectionId: "charset:oprn-charset-modern2:6" }, stops: [{ x: 4, y: 23 }, { x: 15, y: 23 }, { x: 15, y: 26 }, { x: 4, y: 26 }], lines: ["저 편의점 새 알바, 목소리가 엄청 우렁차더라."] },
       { name: "퇴근길 회사원", graphic: { selectionId: "charset:oprn-charset-modern3:0" }, stops: [{ x: 18, y: 23 }, { x: 27, y: 23, waitSec: 3 }], lines: ["역 앞 고로케집, 오늘도 줄이 길더라."] },
-      { name: "하굣길 학생", graphic: { selectionId: "charset:oprn-charset-modern1:6" }, stops: [{ x: 16, y: 10 }, { x: 28, y: 10 }], lines: ["해피 마트 가라아게 레드 먹어 봤어? 진짜 맛있어."] },
+      // 학생은 두 줄 인도(10~22열)만 오간다 — 24·25열은 한 줄 목이라 마주치면 주인공과 서로 막는다(실플레이 2026-10-29).
+      { name: "하굣길 학생", graphic: { selectionId: "charset:oprn-charset-modern1:6" }, stops: [{ x: 10, y: 10 }, { x: 22, y: 10 }], lines: ["해피 마트 가라아게 레드 먹어 봤어? 진짜 맛있어."] },
     ],
   });
   // 서 있는 인물(리리·고양이)이 인도를 끊지 않는다 — 편집기 문 칸에서 신사·공원·원룸까지.
