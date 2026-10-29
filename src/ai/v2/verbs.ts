@@ -37,7 +37,7 @@ import { doorFloorTransfers, dressInteriorExits, dropBuriedTransfers } from "./e
 import { roadToEdgeExits } from "./edgeExitRoads";
 import { dressBareCaveGates } from "./caveGates";
 import { rampNearGoals } from "./reliefShortcut";
-import { isPlaceholderMap, moveBareEvents, retireBlankStart, retireOrphanMaps } from "./blankStart";
+import { dropShadowedStairLinks, isPlaceholderMap, moveBareEvents, retireBlankStart, retireOrphanMaps } from "./blankStart";
 import { chaserEvents, ensureChaserHidingSpots, mapHidingEvents, markHidingSpots } from "@/project/chaserHiding";
 import { relocateLeadingFace } from "@/editor/tools/eventCompile";
 import { dungeonGateSpot, pickTransferSpot } from "./transferSpot";
@@ -548,6 +548,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     // 보스 앞 회복(쉼터 결정)·단계 순서 보호는 finishAutoBuild 의 ensureBossRest·orderStepBattlesIn 이 한다.
     try { notes.push(...ensureSupplyShop(run)); } catch { /* 상점 실패는 끝맺음을 깨지 않는다 */ }
     // 들어오는 길도 이벤트도 없는 빈 사본·끊긴 맵(봉인 뒤 「밀실 뒷방」)을 치운다.
+    notes.push(...dropShadowedStairLinks(run));
     notes.push(...retireOrphanMaps(run));
     // 추격자가 있는데 숨을 곳이 0곳인 맵(2026-10-29 standin horror 「폐병원」) — 맵에 있는 옷장·사물함·침대·커튼 1~2곳을 순찰 길 가까이에서 은신처로.
     for (const [mapId, map0] of Object.entries(env.ctx.project.maps)) {

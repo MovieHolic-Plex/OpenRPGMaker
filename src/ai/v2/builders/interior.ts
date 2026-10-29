@@ -755,7 +755,11 @@ function upperName(name: string): string {
 
 /** 위층: 올라가는 계단이 놓인 아래층(builtMapId)에 위층을 짓고 계단끼리 잇는다. 아래층에 붙일 이동(lowerLink)을 돌려준다. */
 function buildUpperFloor(run: BuildRun, roomSpec: HandInteriorSpec, tilesetId: string, spec: PlaceSpec, builtMapId: string, stairsUp: { id: string; x: number; y: number; w: number }, prevUpper: string | undefined, missing: string[], notes: string[], placed: { zone: string; what: string; id: string }[]): { upperMapId?: string; upperArgs?: Record<string, unknown>; lowerLink?: Record<string, unknown> } {
-  let upperMapId = prevUpper;
+  // 이전 차례 상태가 없어도 앞서 이 아래층에 지어 둔 위층(같은 이름, 이 아래층으로 내려가는 계단 링크가 있는 맵)을 다시 쓴다 — 2026-10-29 vm3 argon 추리:
+  // 「여관 1층」을 차례마다 다시 짓자 「여관 2층」 15×15 가 셋 생겨 둘이 고아(unreachable-map)로 남았다.
+  const sameName = (a: string | undefined, b: string) => (a ?? "").replace(/\s+/gu, "") === b.replace(/\s+/gu, "");
+  let upperMapId = prevUpper ?? Object.values(run.ctx.project.maps).find((m) => m.id !== builtMapId && sameName(m.name, upperName(spec.name))
+    && (m.events ?? []).some((e) => e.id.startsWith(`${m.id}-link-`) && JSON.stringify(e.pages ?? []).includes(`"mapId":"${builtMapId}"`)))?.id;
   let upperArgs: Record<string, unknown> | undefined;
   let lowerLink: Record<string, unknown> | undefined;
     const upperZones = (spec.zones ?? []).filter((z) => z.floor === 2);

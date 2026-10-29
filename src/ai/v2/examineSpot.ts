@@ -10,7 +10,7 @@
 // 어느 단계도 다른 이벤트를 못 닿게 만들지 않는다(eventReach.unreachableEvents 로 전/후 비교, 나빠지면 되돌린다).
 import { isPassable } from "@/project/collision";
 import type { GameEvent, GameMap } from "@/project/types";
-import { eventBlocks, isDoorName, unreachableEvents } from "./eventReach";
+import { eventBlocks, isDoorName, reachableCells, unreachableEvents } from "./eventReach";
 import { showExaminedThing } from "./examineArt";
 import { objectAt, tileLabel } from "./people";
 import type { BuildRun } from "./types";
@@ -237,6 +237,65 @@ export function staleBody(run: BuildRun, mapId: string, id: string, notes: strin
   notes.push(`「${String((ev as { name?: string }).name ?? id)}」 ${bw}×${bh} 몸이 지금 자리(${ev.x},${ev.y})의 가구와 달라 지움`);
 }
 
+/** 이름 낱말 → 그 그림 이름표. 벽에 거는 그림(창)은 THING_LABELS 에 없다. */
+const ART_LABELS: readonly [RegExp, RegExp][] = [
+  [/창문|창가|창틀|window/iu, /(^|[\s·])창(\s|$|\()|창문|window/iu],
+  // 쪽지·일기 같은 탁상 물건은 그림이 아니라 놓는 자리(탁자)를 가리킨다 — 그림 맞추기에서 뺀다(vm5 flash 방탈출 「번호 쪽지」가 다른 쪽지 고리 자리로 갔다).
+  ...THING_LABELS.filter(([word]) => !word.test("쪽지")),
+];
+/**
+ * 조사 이름이 가리키는 그림이 방 안 다른 자리에 있고 지금 칸은 다른 물건(상자 위 「열린 창문」)이면, 그 그림 바로 아래 앞 칸으로 옮긴다.
+ * 그림 앞 바닥 칸이 가구(협탁)로 막혀 있으면 그 가구 칸에 두고 몸을 그림까지 늘린다 — 협탁 아래 칸에서 위를 보고 누르면 창을 조사한다.
+ * 왜(2026-10-29 vm3 argon 추리 판정 「창문까지 가는 길이 가구·상자에 막힘」): 창은 북벽 (2,1)~(2,2)인데 조사 칸은 세 칸 아래 상자 (3,6)였다 —
+ * 판정자는 창 앞으로 가려다 침대·협탁에 막혔고 상자를 눌러 볼 생각은 못 했다.
+ */
+function moveToNamedArt(run: BuildRun, mapId: string, id: string): string | undefined {
+  const project = run.ctx.project, map = project.maps[mapId];
+  const ev = map?.events.find((e) => e.id === id);
+  if (!map || !ev) return undefined;
+  const name = String((ev as { name?: string }).name ?? "");
+  const want = ART_LABELS.find(([word]) => word.test(name))?.[1];
+  if (!want) return undefined;
+  const fp = (ev.pages?.[0] as { footprint?: { width?: number; height?: number } } | undefined)?.footprint;
+  const own: Cell[] = [];
+  for (let dy = 0; dy < Math.max(1, fp?.height ?? 1); dy += 1) for (let dx = 0; dx < Math.max(1, fp?.width ?? 1); dx += 1) own.push({ x: ev.x - Math.floor(((fp?.width ?? 1) - 1) / 2) + dx, y: ev.y - dy });
+  const hit = (c: Cell) => labelsAt(run, map, c, true).some((l) => want.test(l) && !NOT_FURNITURE.test(l));
+  if (own.some(hit)) return undefined;
+  const taken = new Set(map.events.filter((e) => e.id !== id).map((e) => `${e.x},${e.y}`));
+  const reach = reachableCells(project, map);
+  if (!reach) return undefined;
+  const cands: { anchor: Cell; height: number; art: Cell; d: number; what: string }[] = [];
+  for (let y = 0; y < map.height; y += 1) for (let x = 0; x < map.width; x += 1) {
+    const art = { x, y };
+    if (!hit(art) || hit({ x, y: y + 1 })) continue; // 그림의 맨 아래 칸만
+    // 그림 칸에서 아래로 최대 두 칸: 걸을 수 있는 칸이 나오면 그 바로 위 칸이 이벤트 자리(그 아래 칸에 서서 위를 본다).
+    for (let k = 0; k <= 2; k += 1) {
+      const anchor = { x, y: y + k }, stand = { x, y: y + k + 1 };
+      if (stand.y >= map.height) break;
+      if (k > 0 && isPassable(project, map, anchor.x, anchor.y)) break;
+      if (!reach[stand.y * map.width + stand.x] || !isPassable(project, map, stand.x, stand.y)) continue;
+      if (taken.has(`${anchor.x},${anchor.y}`)) break;
+      cands.push({ anchor, height: k + 1, art, d: Math.abs(anchor.x - ev.x) + Math.abs(anchor.y - ev.y), what: baseOf(labelsAt(run, map, art, true).find((l) => want.test(l)) ?? name) });
+      break;
+    }
+  }
+  // 네 걸음 안만 — 멀리 옮기면 「벽난로 옆 금고」가 방 반대편 상자로 가 이름의 자리 말이 틀어진다.
+  const near = cands.filter((c) => c.d <= 4).sort((a, b) => a.d - b.d);
+  const before = new Set(unreachableEvents(project, mapId));
+  for (const c of near) {
+    const snapshot = run.ctx.project;
+    const events = map.events.map((e) => e.id !== id ? e : { ...e, x: c.anchor.x, y: c.anchor.y, pages: (e.pages ?? []).map((p) => {
+      const { footprint: _f, ...rest } = p as typeof p & { footprint?: unknown };
+      return (c.height > 1 ? { ...rest, footprint: { width: 1, height: c.height } } : rest) as typeof p;
+    }) });
+    run.ctx.project = { ...run.ctx.project, maps: { ...run.ctx.project.maps, [mapId]: { ...map, events } } };
+    const after = unreachableEvents(run.ctx.project, mapId);
+    if (!after.includes(id) && after.every((x) => before.has(x))) return `「${name}」 (${ev.x},${ev.y}) → ${c.what} 앞 (${c.anchor.x},${c.anchor.y})${c.height > 1 ? `, 몸 1×${c.height}(그림까지)` : ""}`;
+    run.ctx.project = snapshot;
+  }
+  return undefined;
+}
+
 export function settleFurnitureSpots(run: BuildRun, mapId: string): string[] {
   const notes: string[] = [];
   // 싸움·이동을 하는 이벤트는 조사 칸이 아니다 — 투명 보스 「마왕과의 결전」이 옆 벽에 붙고 벽 몸이 되어 설 칸을 잃었다(vm2 deepseek jrpg 재생).
@@ -265,6 +324,8 @@ export function settleFurnitureSpots(run: BuildRun, mapId: string): string[] {
         else { const shown = showExaminedThing(run, mapId, id); if (shown) notes.push(shown); }
       }
     }
+    // a2) 이름이 가리키는 그림(창문·시계·책장…)이 방에 따로 있고 지금 칸은 다른 물건이면 그 그림으로 옮긴다.
+    { const moved = moveToNamedArt(run, mapId, id); if (moved) notes.push(moved); }
     // b) 가구 위 → 가구 전체가 몸.
     const ev = find(), map = run.ctx.project.maps[mapId];
     if (!ev || !map || !objectAt(map, ev) || isPassable(run.ctx.project, map, ev.x, ev.y)) continue;

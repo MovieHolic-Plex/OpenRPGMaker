@@ -166,7 +166,34 @@ export function retireBlankStart(run: BuildRun): string[] {
 }
 
 /**
- * 이벤트도 들어오는 이동도 없는 빈 껍데기 맵(게임 점검 orphan-empty-map)을 지운다 — 같은 이름의 쓰는 맵이 따로 있거나(장소를 두 번 지은 흔적),
+ * 같은 칸에 빌더 계단 링크(`<맵>-link-N`, 실내 빌더가 지은 위층으로)와 다른 맵으로 옮기는 모델 이동이 함께 있으면 빌더 링크를 뗀다 — 모델이 그 계단을
+ * 다른 곳(피해자의 방)으로 이었다는 뜻이다. 뗀 링크의 위층은 들어오는 길이 없어져 `retireOrphanMaps` 가 치운다.
+ * 왜(2026-10-29 vm3 argon 추리): 「여관 1층」 계단 (7,3)에 피해자의 방 문(사건 조사 시작 뒤 열림)과 빈 「여관 2층」 15×15 링크가 겹쳐,
+ * 주인에게 말하기 전에 계단을 밟으면 객실·상자만 있는 빈 위층으로 갔다 — 판정 「여관 2층 피해자의 방에서 창문까지 가는 길이 가구·상자에 막힘」.
+ */
+export function dropShadowedStairLinks(run: BuildRun): string[] {
+  const notes: string[] = [];
+  for (const map of Object.values(run.ctx.project.maps)) {
+    const links = (map.events ?? []).filter((e) => e.id.startsWith(`${map.id}-link-`));
+    for (const link of links) {
+      const to = transfersOf(link.pages)[0]?.mapId;
+      if (!to) continue;
+      const other = (map.events ?? []).find((e) => e.id !== link.id && !e.id.startsWith(`${map.id}-link-`) && e.x === link.x && e.y === link.y
+        && transfersOf(e.pages ?? (e as { commands?: unknown }).commands).some((t) => t.mapId !== map.id && t.mapId !== to));
+      if (!other) continue;
+      const removed = run.call("remove_event", { mapId: map.id, eventId: link.id });
+      if (!removed.ok) {
+        const own = run.ctx.project.maps[map.id];
+        if (own) run.ctx.project = { ...run.ctx.project, maps: { ...run.ctx.project.maps, [map.id]: { ...own, events: own.events.filter((e) => e.id !== link.id) } } };
+      }
+      notes.push(`「${map.name}」 (${link.x},${link.y}) 계단 링크(→${run.ctx.project.maps[to]?.name ?? to})가 「${String(other.name ?? other.id)}」 이동과 겹쳐 뗐다`);
+    }
+  }
+  return notes;
+}
+
+/**
+ * 이벤트(또는 이동만 든 계단 링크)도 들어오는 이동도 없는 빈 껍데기 맵(게임 점검 orphan-empty-map·unreachable-map)을 지운다 — 같은 이름의 쓰는 맵이 따로 있거나(장소를 두 번 지은 흔적),
  * 청사진 장소가 아닌 맵(방탈출 봉인으로 끊긴 「밀실 뒷방」)만. 청사진 장소인데 그 이름의 맵이 이것뿐이면 지우지 않는다(장소 짓기 몫).
  * 왜(2026-10-29 vm1 재생): argon/jrpg 「시작 마을」·「마왕의 방」, flash/mystery 「2층 객실」은 같은 이름 맵을 한 번 더 지은 빈 사본이었고,
  * argon/escape 「밀실 뒷방」은 탈출 봉인이 들어오는 이동을 지워 고아가 됐다 — 엔딩까지는 가지만 점검 막힘으로 남았다.
@@ -182,7 +209,10 @@ export function retireOrphanMaps(run: BuildRun): string[] {
   };
   const project0 = run.ctx.project;
   const into = inboundOf(project0);
-  const orphan = (m: GameMap) => m.id !== project0.startMapId && !(m.events ?? []).length && !into.has(m.id);
+  // 이동만 든 맵(계단 링크뿐인 위층 사본)도 들어오는 길이 없으면 빈 껍데기다 — 2026-10-29 vm3 argon 추리: 「여관 1층」을 「올라가는 계단」과 함께
+  // 세 번 다시 지어 「여관 2층」 15×15 가 셋, 모델 「여관 2층」의 계단이 「여관 2층 2층」을 또 지어, 1층으로 내려가는 계단만 든 고아 위층 셋이 막힘 3 으로 남았다.
+  const onlyTransfers = (m: GameMap) => (m.events ?? []).every((e) => { const kinds = commandKinds(e); return kinds.length > 0 && kinds.every((k) => k === "transfer"); });
+  const orphan = (m: GameMap) => m.id !== project0.startMapId && (!(m.events ?? []).length || onlyTransfers(m)) && !into.has(m.id);
   const places = new Set((project0.gameBlueprint?.steps ?? []).map((s) => norm(s.place)));
   for (const map of Object.values(project0.maps)) {
     if (!orphan(map)) continue;
