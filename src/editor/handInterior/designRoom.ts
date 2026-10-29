@@ -281,8 +281,15 @@ export function furnishFromDesign(base: HandInteriorInput, rooms: readonly Layou
       // 자리: x·y 가 있으면 그 칸, at 이 있으면 그 벽·모서리, 둘 다 없으면 items 의 dx·dy 를 바닥 좌표로(2026-10-29 Argon: at 없이 dx·dy 에 방 좌표를 썼다).
       const named = normalizeAt(g.at);
       if (g.at !== undefined && !named) fixes.push(`${label}: 자리 「${g.at}」를 몰라 가운데로 읽었다`);
-      const absolute = !named && g.at === undefined && !(typeof g.x === "number" && typeof g.y === "number");
-      const at = typeof g.x === "number" && typeof g.y === "number" || absolute ? undefined : (named ?? "center");
+      // at·x·y 가 없을 때: 기물에 dx·dy 를 줬으면 그것이 바닥 좌표, pos 만 줬으면 벽을 따라 그 자리(벽 가구가 든 묶음은 북벽, 아니면 가운데 줄)
+      // — 2026-10-29 3c flash 귀족 서재: pos 0·0.5·1 만 준 세 묶음을 바닥 좌표로 읽어 모두 (0,0) 에 몰고 벽난로 묶음을 버렸다.
+      const givenXY = (g.items ?? []).some((it) => { const l = it as RoomDesignItem & { x?: number; y?: number }; return typeof it.dx === "number" || typeof it.dy === "number" || typeof l.x === "number" || typeof l.y === "number"; });
+      const hasWall = local.some((li) => li.wallKind || li.hang);
+      const absolute = !named && g.at === undefined && !(typeof g.x === "number" && typeof g.y === "number") && givenXY && typeof g.pos !== "number";
+      const implied = !named && g.at === undefined && !(typeof g.x === "number" && typeof g.y === "number") && !absolute ? (hasWall ? "north" : "center") as DesignAt : undefined;
+      const impliedNote = `${label}: 자리(at)가 없어 pos ${g.pos} 를 ${implied === "north" ? "북벽" : "가운데 줄"}을 따라 읽었다`;
+      if (implied && typeof g.pos === "number" && !fixes.includes(impliedNote)) fixes.push(impliedNote);
+      const at = typeof g.x === "number" && typeof g.y === "number" || absolute ? undefined : (named ?? implied ?? "center");
       const pos = Math.max(0, Math.min(1, typeof g.pos === "number" ? g.pos : 0.5));
       const along = (span: number) => Math.round(pos * Math.max(0, span));
       let tx: number, ty: number;
