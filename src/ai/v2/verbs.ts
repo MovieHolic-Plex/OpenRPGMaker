@@ -58,7 +58,7 @@ import { rememberObjectPlan, takeObjectPlan, type DrawObjectResult } from "./dra
 import { dressRoom } from "./builders/dressRoom";
 import { tileMoveObjects } from "./builders/tileMove";
 import { planObjective } from "./discoverability";
-import { roomParts } from "./roomParts";
+import { roomParts, SHAPE_EXAMPLES } from "./roomParts";
 
 // 2026-10-23 5차: 고치기 3바퀴는 바퀴마다 다시 짓기+비평(20~35초)이라 던전 한 장에 200~250초가 들었다.
 // 속도 우선(6차)으로 1바퀴만 — 첫 비평의 major 를 한 번 고치고 남은 것은 보고한다.
@@ -135,7 +135,7 @@ const ROOM_DESIGN_SCHEMA = {
   type: "object",
   description: "(실내, 이 방을 직접 설계할 때) 방 모양·크기·문과 가구 묶음. 주면 빌더는 견본을 깔지 않고 이 설계대로 짓고, 이름 맞춤·겹침·의자 방향·문 앞 통로·도달만 고쳐 고친 것을 돌려준다. 기물 id 는 room_parts 로 본다.",
   properties: {
-    shape: { type: "string", description: "(rect·L·T·bay) rect 네모 · L ㄱ자(corner 귀퉁이를 도려 냄) · T ㅗ자(남쪽 두 귀퉁이) · bay 창가 돌출(북쪽 두 귀퉁이 도려 냄)" },
+    shape: { type: "string", description: "rect 네모 · L ㄱ자(corner 귀퉁이를 도려 냄) · U ㄷ자(북벽 가운데를 도려 냄) · T ㅜ자(남쪽 두 귀퉁이) · bay 창가 돌출(북쪽 두 귀퉁이) · alcove 알코브(corner 쪽 북벽 구석만 남기고 나머지 북벽을 내림). 모양별 최소 바닥·예시·그림은 room_parts. 곁방은 모양이 아니라 zones 를 하나 더(각자 design)" },
     w: { type: "integer", description: "바닥 가로 칸(5~24)" },
     h: { type: "integer", description: "바닥 세로 칸(벽면 줄 빼고, 4~18)" },
     corner: { type: "string", description: "(nw·ne·sw·se) L 이 도려 낼 귀퉁이" },
@@ -725,8 +725,8 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
         // 재료(기물 이름표·견본 배치)를 같이 돌려준다 — 되돌려 보내기를 «실패»로 읽고 짓기를 그만둔 모델이 있었다(2026-10-29 flash 「마법사의 서재」).
         const purpose = (spec.zones ?? []).map((z) => `${z.kind} ${z.purpose ?? ""}`).join(" ") || spec.name;
         const parts = roomParts(run.ctx.project, purpose);
-        return text({ ok: false, notFailure: true, summary: `아직 짓지 않았다(실패 아님) — 「${spec.name}」의 방은 네가 설계한다. 아래 parts(기물 이름표·바닥/벽면·깔개·견본 배치)를 보고 방마다 zones[].design 을 채워 make_place 를 바로 다시 부르면 지어진다: shape(rect·L·T·bay)·w×h(바닥 칸)·door·floor·wall·groups[{name, at(north·south·west·east·center·nw·ne·sw·se), pos, rug, items[{id, dx, dy, count}]}]. 무엇을 몇 개 어디에 놓을지는 네가 정하고 함수는 고친 것만 알린다. 견본은 참고 — 베끼지 않는다.`,
-          ...(parts ? { parts: { floors: parts.floors, walls: parts.walls, rugs: parts.rugs, items: parts.items, references: parts.references } } : {}) });
+        return text({ ok: false, notFailure: true, summary: `아직 짓지 않았다(실패 아님) — 「${spec.name}」의 방은 네가 설계한다. 아래 parts(기물 이름표·바닥/벽면·깔개·견본 배치)를 보고 방마다 zones[].design 을 채워 make_place 를 바로 다시 부르면 지어진다: shape(rect·L ㄱ자·U ㄷ자·T ㅜ자·bay 창가 돌출·alcove 알코브 — parts.shapes·shapeExamples 를 보고 고른다, 곁방은 zones 둘)·w×h(바닥 칸)·door·floor·wall·groups[{name, at(north·south·west·east·center·nw·ne·sw·se), pos, rug, items[{id, dx, dy, count}]}]. 무엇을 몇 개 어디에 놓을지는 네가 정하고 함수는 고친 것만 알린다. 견본은 참고 — 베끼지 않는다.`,
+          ...(parts ? { parts: { shapes: parts.shapes, shapeExamples: parts.shapeExamples, floors: parts.floors, walls: parts.walls, rugs: parts.rugs, items: parts.items, references: parts.references } } : {}) });
       }
       const builder = builderFor(spec);
       if (!builder) {
@@ -1297,7 +1297,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
       const p = params as { purpose: string; query?: string };
       const out = roomParts(env.ctx.project, String(p.purpose ?? ""), p.query);
       if (!out) return text({ ok: false, summary: "손 도트 실내 칩셋이 이 프로젝트에 없다" });
-      const result = text({ ok: true, ...out, how: "zones:[{kind, purpose, design:{shape, w, h, door, floor, wall, groups:[{name, at, pos?, rug?, items:[{id, dx?, dy?, count?}]}]}}]. 묶음마다 무엇을 몇 개 놓을지는 네가 정한다 — 함수는 더하지 않고 이름 맞춤·겹침·의자 방향·문 앞 통로·도달만 고쳐 알려 준다. 기물 줄의 좌표는 바닥 왼쪽 위 0,0, 걸이는 y -2." });
+      const result = text({ ok: true, ...out, how: "zones:[{kind, purpose, design:{shape, corner?, w, h, door, floor, wall, groups:[{name, at, pos?, rug?, items:[{id, dx?, dy?, count?}]}]}}]. 먼저 모양을 고른다(shapes·shapeExamples 와 아래 모양 그림 — 바닥 60칸 넘는 네모는 ㅁ자로 짚힌다, 곁방은 zones 둘). 묶음마다 무엇을 몇 개 놓을지는 네가 정한다 — 함수는 더하지 않고 이름 맞춤·겹침·의자 방향·문 앞 통로·도달만 고쳐 알려 준다. 기물 줄의 좌표는 바닥 왼쪽 위 0,0, 걸이는 y -2. 벽 가구·걸이는 북벽 밑에 서고, 도려 내 내려온 북벽(ㄷ자 가운데·창가 돌출 양옆·알코브 옆) 밑에도 선다." });
       // 견본 그림(1배): 따로 지은 사본에서 찍는다 — 지금 프로젝트에는 남기지 않는다.
       if (env.render) for (const tid of out.referenceIds.slice(0, 2)) {
         let url = refPictures.get(tid);
@@ -1313,6 +1313,24 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
           }
         }
         if (url) { result.content.push({ type: "text", text: `견본 ${tid} 1배 그림:` }); result.content.push({ type: "image", mimeType: "image/png", data: url.slice(url.indexOf(",") + 1) }); }
+      }
+      // 모양 예시 그림(1배): shapeExamples 의 설계를 지금 빌더로 실제로 지어 찍는다 — 모양을 고르면 정말 그렇게 지어진다는 증거이기도 하다.
+      if (env.render && out.tileset === HAND_INTERIOR_TILESET_ID) for (const ex of SHAPE_EXAMPLES) {
+        const key = `shape:${ex.shape}`;
+        let url = refPictures.get(key);
+        if (!url) {
+          const scratch = { project: env.ctx.project, currentMapId: env.ctx.currentMapId, assistantRun: true } as typeof env.ctx;
+          const sp = { name: `모양 예시 ${ex.ko}`, type: "interior", hints: { newMap: true }, zones: ex.zones.map((z) => ({ ...z })) } as unknown as PlaceSpec;
+          const built = builderFor(sp)?.build(createBuildRun(scratch), sp);
+          const mapId = built?.ok ? built.mapIds[0] : undefined;
+          const m = mapId ? scratch.project.maps[mapId] : undefined;
+          if (m && mapId) {
+            const keep = env.ctx.project;
+            try { env.ctx.project = scratch.project; url = await env.render(mapId, 0, 0, m.width, m.height); } catch { url = undefined; } finally { env.ctx.project = keep; }
+            if (url) refPictures.set(key, url);
+          }
+        }
+        if (url) { result.content.push({ type: "text", text: `모양 ${ex.shape}(${ex.ko}) 예시 1배 그림 — shapeExamples 의 설계로 지은 것:` }); result.content.push({ type: "image", mimeType: "image/png", data: url.slice(url.indexOf(",") + 1) }); }
       }
       return result;
     },
@@ -1439,7 +1457,7 @@ export function v2FinishGate(session: V2Session, env?: PiAssistantV2Env): string
   if (env && !settingOnly && !storeOnly && !/\?\s*$|알려\s*줘|뭐야|어디|있어\?|보여\s*줘|설명|정리해서|요약/u.test(env.request.task.trim())) {
     const pick = (p: typeof env.ctx.project) => JSON.stringify([p.maps, p.database, p.endings ?? null, p.commonEvents ?? null, p.switches, p.variables, p.startMapId, p.startPos ?? null, p.system ?? null, p.dialogueDesk ?? null]);
     try {
-      if (pick(env.request.project) === pick(env.ctx.project)) game.push("[게임 검사 실행] 이 요청으로 맵·데이터가 하나도 바뀌지 않았다. 묻거나 «도구가 없다»고 끝내지 말고 실행한다: 있는 NPC·물건은 move_event·upsert_event·patch_event_page 로 고치고, 새 것은 add_people·add_event·upsert_event 로 만든다. 꼭 맞는 그림이 없으면 가장 비슷한 기존 그림·물건으로 두고 보고에 적는다(아이템·이벤트·대사는 그림과 상관없이 만든다).");
+      if (pick(env.request.project) === pick(env.ctx.project)) game.push("[게임 검사 실행] 이 요청으로 맵·데이터가 하나도 바뀌지 않았다. 묻거나 «도구가 없다»·«도구 호출 횟수 초과»라고 끝내지 말고 실행한다(도구 호출 횟수 제한은 없다 — 2026-10-29 3c Argon 이 room_parts 한 번 뒤 «호출 횟수 초과»라며 짓지 않았다). 장소·방은 make_place(방은 zones[].design 을 채워서)로 짓는다. 있는 NPC·물건은 move_event·upsert_event·patch_event_page 로 고치고, 새 것은 add_people·add_event·upsert_event 로 만든다. 꼭 맞는 그림이 없으면 가장 비슷한 기존 그림·물건으로 두고 보고에 적는다(아이템·이벤트·대사는 그림과 상관없이 만든다).");
     } catch { /* 비교 실패는 무시 */ }
   }
   // 고칠 것이 없으면 한 바퀴를 더 쓰지 않는다 — 남은 문제·「그림 없음」은 동사 결과가 이미 보고하라고 일렀다.

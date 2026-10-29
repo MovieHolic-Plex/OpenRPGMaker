@@ -8,7 +8,7 @@
 // 함수는 가구를 더하지 않는다(빈 바닥은 알리기만 한다).
 import { buildHandInteriorLayers, type HandInteriorInput, type HandInteriorSpec } from "./builder";
 import type { ComposedRooms } from "./rooms";
-import { notchRect } from "./rooms";
+import { notchRect, type HandInteriorNotch } from "./rooms";
 import type { LayoutRoom } from "./layout";
 import type { InteriorTemplateItem } from "./templates";
 import { doorwayCells } from "./furnish";
@@ -38,7 +38,7 @@ export interface RoomDesignGroup {
   readonly items: readonly RoomDesignItem[];
 }
 export interface RoomDesign {
-  /** rect 네모 · L ㄱ자(corner 귀퉁이를 도려 냄) · T ㅗ자(남쪽 두 귀퉁이) · bay 창가 돌출(북쪽 두 귀퉁이). */
+  /** 방 모양 — SHAPE_GUIDE 참고: rect 네모 · L ㄱ자 · U ㄷ자 · T ㅜ자 · bay 창가 돌출 · alcove 알코브. */
   readonly shape?: string;
   /** 바닥 가로·세로(벽면 줄 빼고). */
   readonly w?: number; readonly h?: number;
@@ -62,12 +62,64 @@ export function normalizeAt(raw: unknown): DesignAt | undefined {
   if (/center|centre|middle|가운데|중앙|중간/u.test(w)) return "center";
   return undefined;
 }
-export function normalizeShape(raw: unknown): "rect" | "L" | "T" | "bay" {
+export type DesignShape = "rect" | "L" | "U" | "T" | "bay" | "alcove";
+export function normalizeShape(raw: unknown): DesignShape {
   const w = String(raw ?? "").trim();
   if (/^l$|l.?shape|ㄱ|ㄴ|꺾/iu.test(w)) return "L";
+  if (/^u$|u.?shape|ㄷ|ㄇ|말굽|horseshoe/iu.test(w)) return "U";
   if (/^t$|t.?shape|ㅗ|ㅜ/iu.test(w)) return "T";
-  if (/bay|alcove|돌출|창가|알코브/iu.test(w)) return "bay";
+  if (/alcove|알코브|벽감|nook|구석방/iu.test(w)) return "alcove";
+  if (/bay|돌출|창가|oriel/iu.test(w)) return "bay";
   return "rect";
+}
+
+/** 모델이 모양을 고를 재료(room_parts·되돌려 보내기에 그대로 싣는다). 최소 크기는 바닥 칸(벽면 줄 빼고). */
+export const SHAPE_GUIDE: readonly { shape: DesignShape; ko: string; min: string; what: string }[] = [
+  { shape: "rect", ko: "네모", min: "5×4", what: "작은 방(바닥 40칸 아래)에 맞다. 60칸이 넘는 네모 방은 ㅁ자로 읽혀 검사가 짚는다" },
+  { shape: "L", ko: "ㄱ자", min: "6×5", what: "corner(nw·ne·sw·se) 귀퉁이 하나를 막힌 덩이로 도려 낸다 — 꺾인 안쪽에 책상·독서 구석을 둔다" },
+  { shape: "U", ko: "ㄷ자", min: "8×5", what: "북벽 가운데를 도려 낸다 — 양쪽 날개(서·동 북쪽 끝)가 위로 뻗고, 가운데 들어간 벽 앞이 주인공 자리" },
+  { shape: "T", ko: "ㅜ자", min: "7×5", what: "남쪽 두 귀퉁이를 도려 낸다 — 문 쪽이 좁은 현관, 안쪽이 넓다" },
+  { shape: "bay", ko: "창가 돌출", min: "8×5", what: "북쪽 두 귀퉁이를 도려 북벽 가운데가 앞으로 튀어나온다 — 돌출부에 창·책상·망원경" },
+  { shape: "alcove", ko: "알코브", min: "7×5", what: "corner 쪽 북벽에 좁은(3~4칸) 들어간 구석을 남기고 나머지 북벽을 두 줄 내린다 — 구석에 침대·독서 의자·제단" },
+];
+
+/** 설계 모양 → 귀퉁이·가운데 도려내기. 바닥이 모양 최소 크기보다 작으면 네모로 짓고 이유를 돌려준다(함수가 크기를 바꾸지 않는다). */
+export function shapeNotches(design: Pick<RoomDesign, "shape" | "corner">, w: number, fh: number): { shape: DesignShape; notches: HandInteriorNotch[]; dropped?: string } {
+  const shape = normalizeShape(design.shape);
+  const corner = normalizeCorner(design.corner);
+  // 조립기 한도(rooms.ts·layout.ts): 도려 낸 너비 ≤ 바닥 너비-4, 높이 ≤ 바닥 높이-3.
+  const maxW = w - 4, maxH = fh - 3;
+  const guide = SHAPE_GUIDE.find((g) => g.shape === shape)!;
+  const tooSmall = (): { shape: DesignShape; notches: HandInteriorNotch[]; dropped: string } => ({ shape: "rect", notches: [], dropped: `모양 ${shape}(${guide.ko})은 바닥 ${guide.min} 이상에서 지어진다 — 설계 바닥 ${w}×${fh} 라 네모로 지었다(w·h 를 키우거나 다른 모양으로)` });
+  if (shape === "rect") return { shape, notches: [] };
+  if (shape === "L") {
+    const c = corner ?? "nw";
+    const nw = Math.min(maxW, Math.max(2, Math.floor(w / 3))), nh = Math.min(maxH, c[0] === "n" ? 2 : Math.max(2, Math.min(3, fh - 3)));
+    if (nw < 2 || nh < 2) return tooSmall();
+    return { shape, notches: [{ corner: c, w: nw, h: nh }] };
+  }
+  if (shape === "U") {
+    const nw = Math.min(maxW, w - 6), nh = Math.min(maxH, fh >= 7 ? 3 : 2);
+    if (w < 8 || nw < 2 || nh < 2) return tooSmall();
+    return { shape, notches: [{ corner: "nw", w: nw, h: nh, at: Math.floor((w - nw) / 2) }] };
+  }
+  if (shape === "T") {
+    const nw = Math.min(maxW, Math.max(2, Math.floor((w - 3) / 2))), nh = Math.min(maxH, 2);
+    if (w < 7 || nw < 2 || nh < 2) return tooSmall();
+    return { shape, notches: [{ corner: "sw", w: nw, h: nh }, { corner: "se", w: nw, h: nh }] };
+  }
+  if (shape === "bay") {
+    const bayW = Math.max(4, Math.ceil(w / 2));
+    const nwL = Math.floor((w - bayW) / 2), nwR = w - bayW - nwL;
+    if (w < 8 || Math.min(nwL, nwR) < 2 || maxH < 2) return tooSmall();
+    return { shape, notches: [{ corner: "nw", w: Math.min(maxW, nwL), h: 2 }, { corner: "ne", w: Math.min(maxW, nwR), h: 2 }] };
+  }
+  // alcove: 구석(corner 쪽, 기본 nw) 3~4칸만 북벽 그대로, 나머지 북벽을 두 줄 내린다.
+  const c = corner && corner[0] === "n" ? corner : "nw";
+  const nookW = w >= 10 ? 4 : 3;
+  const cutW = Math.min(maxW, w - nookW);
+  if (w < 7 || cutW < 2 || maxH < 2) return tooSmall();
+  return { shape, notches: [{ corner: c === "nw" ? "ne" : "nw", w: cutW, h: 2 }] };
 }
 export function normalizeCorner(raw: unknown): "nw" | "ne" | "sw" | "se" | undefined {
   const a = normalizeAt(raw);
@@ -187,6 +239,11 @@ export function furnishFromDesign(base: HandInteriorInput, rooms: readonly Layou
     const fw = room.x1 - room.x0 + 1, fh = room.y1 - fy0 + 1;
     const nrs = (room.notches ?? []).map((n) => notchRect(room, n));
     const inNotch = (x: number, y: number) => nrs.some((nr) => x >= nr.x0 && x <= nr.x1 && y >= nr.y0 && y <= nr.y1);
+    // 북벽 줄: 북쪽을 도려 낸 칸(ㄷ자 가운데·창가 돌출 양옆·알코브 옆)은 북벽이 내려와 있다 — 벽 가구·걸이는 그 내려온 벽 밑에도 선다.
+    const northCuts = (room.notches ?? []).filter((n) => n.corner[0] === "n").map((n) => notchRect(room, n));
+    const wallRowAt = (x: number) => { const nr = northCuts.find((r) => x >= r.x0 && x <= r.x1); return nr ? nr.y1 + 1 : fy0; };
+    /** x0..x1 이 같은 북벽 줄 밑이면 그 바닥 줄, 계단 진 곳에 걸치면 undefined. */
+    const wallRowOf = (x0: number, x1: number): number | undefined => { const r = wallRowAt(x0); for (let x = x0 + 1; x <= x1; x++) if (wallRowAt(x) !== r) return undefined; return r; };
     let floor = 0;
     for (let y = fy0; y <= room.y1; y++) for (let x = room.x0; x <= room.x1; x++) if (!inNotch(x, y)) floor++;
     let blocked = 0, itemCount = 0;
@@ -213,8 +270,10 @@ export function furnishFromDesign(base: HandInteriorInput, rooms: readonly Layou
       const g: RoomDesignGroup = shove && typeof g0.x !== "number" && g0.at === undefined ? { ...g0, x: shove[0], y: shove[1] } : g0;
       const offset = shove && g0.at !== undefined && typeof g0.x !== "number" ? shove : [0, 0] as const;
       if (!(g.items ?? []).length) continue;
-      const { items: local, origin } = localGroup(g, S, label, fixes);
-      if (!local.length) continue;
+      const { items: local0, origin } = localGroup(g, S, label, fixes);
+      if (!local0.length) continue;
+      // 묶음이 벽·방보다 길면 묶음째 버리지 않고 뒤에서부터 덜어 들어가는 만큼 놓는다(2026-10-29 3c flash: 책장 3w×3 을 8칸 북벽에 줘 책장이 하나도 안 섰다).
+      const attempt = (local: LocalItem[]) => {
       const ground = local.filter((li) => !li.hang && li.it.t === "o");
       const gw = ground.length ? Math.max(...ground.map((li) => box(li.it, S)[2])) : Math.max(1, ...local.map((li) => box(li.it, S)[2]));
       const gh = ground.length ? Math.max(...ground.map((li) => box(li.it, S)[3])) : 1;
@@ -233,12 +292,12 @@ export function furnishFromDesign(base: HandInteriorInput, rooms: readonly Layou
         const west = at === "west" || at === "nw" || at === "sw", east = at === "east" || at === "ne" || at === "se";
         const north = at === "north" || at === "nw" || at === "ne", south = at === "south" || at === "sw" || at === "se";
         tx = west ? room.x0 : east ? room.x1 - gw + 1 : room.x0 + along(fw - gw);
-        ty = north ? fy0 : south ? room.y1 - gh + 1 : at === "west" || at === "east" ? fy0 + along(fh - gh) : fy0 + Math.round((fh - gh) / 2);
+        ty = north ? wallRowOf(Math.max(room.x0, tx), Math.min(room.x1, tx + gw - 1)) ?? fy0 : south ? room.y1 - gh + 1 : at === "west" || at === "east" ? fy0 + along(fh - gh) : fy0 + Math.round((fh - gh) / 2);
         tx += offset[0]; ty += offset[1];
       }
       const onLine = (x: number, y: number) => {
         if (!at) return 0;
-        if (at === "north" || at === "nw" || at === "ne") return y === fy0 ? 0 : 4;
+        if (at === "north" || at === "nw" || at === "ne") return y === (wallRowOf(x, x + gw - 1) ?? fy0) ? 0 : 4;
         if (at === "south" || at === "sw" || at === "se") return y === room.y1 - gh + 1 ? 0 : 4;
         if (at === "west") return x === room.x0 ? 0 : 4;
         if (at === "east") return x === room.x1 - gw + 1 ? 0 : 4;
@@ -250,22 +309,22 @@ export function furnishFromDesign(base: HandInteriorInput, rooms: readonly Layou
         if (d <= 8) spots.push([x, y, d]);
       }
       spots.sort((a, b) => a[2] - b[2] || a[1] - b[1] || a[0] - b[0]);
-      let why = "";
+      let why = gw > fw || gh > fh ? `묶음 ${gw}×${gh}칸이 바닥 ${fw}×${fh}칸보다 크다` : spots.length ? "" : "8칸 안에 자리가 없다";
       const tryAt = (px: number, py: number): InteriorTemplateItem[] | undefined => {
-        const items: InteriorTemplateItem[] = local.map((li) => ({ ...li.it, x: px + li.it.x, y: li.hang ? fy0 + li.it.y : py + li.it.y }));
+        const items: InteriorTemplateItem[] = local.map((li) => { const x = px + li.it.x; return { ...li.it, x, y: li.hang ? (wallRowOf(x, x + (S.objects[li.it.id]?.w ?? 1) - 1) ?? fy0) + li.it.y : py + li.it.y }; });
         const sCells: string[] = [], fCells: string[] = [], cols: string[] = [];
         for (const it of items) {
           const b = box(it, S);
           const hang = it.t === "o" && S.objects[it.id]?.kind === "hang";
-          if (hang) { if (b[0] < room.x0 || b[2] - 1 > room.x1 || nrs.some((nr) => b[0] <= nr.x1 && b[2] - 1 >= nr.x0 && nr.y0 === room.y0)) { why = "걸이가 벽 밖"; return undefined; } }
+          if (hang) { if (b[0] < room.x0 || b[2] - 1 > room.x1 || wallRowOf(b[0], b[2] - 1) === undefined) { why = "걸이가 벽 밖·꺾인 벽에 걸침"; return undefined; } }
           else if (it.t !== "g") for (let y = b[1]; y < b[3]; y++) for (let x = b[0]; x < b[2]; x++) {
             if (x < room.x0 || x > room.x1 || y < fy0 || y > room.y1 || inNotch(x, y)) { why = "방 밖·도려 낸 귀퉁이"; return undefined; }
           }
-          if (it.t === "o" && S.objects[it.id]?.kind === "wall" && b[1] !== fy0) { why = "벽 가구가 북벽에서 떨어짐"; return undefined; }
+          if (it.t === "o" && S.objects[it.id]?.kind === "wall" && b[1] !== wallRowOf(b[0], b[2] - 1)) { why = "벽 가구가 북벽에서 떨어짐"; return undefined; }
           if (blocks(it, S)) sCells.push(...cellsOfBox(b));
           else if (!hang && it.t !== "g") fCells.push(...cellsOfBox(b));
           // 벽면 열은 북벽에 붙은 키 큰 가구·걸이만 쓴다(방 가운데·남쪽의 망원경이 북벽 책장 열과 다툰다며 빠졌다 — 2026-10-29 Argon 첫 시험).
-          if (hang || b[1] === fy0) cols.push(...wallColumns(it, S));
+          if (hang || b[1] === wallRowOf(b[0], b[2] - 1)) cols.push(...wallColumns(it, S));
         }
         if (sCells.some((c) => keep.has(c))) { why = "문 앞 통로"; return undefined; }
         if (sCells.some((c) => solid.has(c) || flat.has(c)) || fCells.some((c) => solid.has(c))) { why = "다른 묶음과 겹침"; return undefined; }
@@ -293,6 +352,23 @@ export function furnishFromDesign(base: HandInteriorInput, rooms: readonly Layou
         if (tryAt(x, y)) { done = [x, y]; break; }
         if (!firstWhy) firstWhy = why;
       }
+      return { done, firstWhy, why, tx, ty };
+      };
+      let local = local0;
+      let got = attempt(local);
+      const firstTry = got;
+      while (!got.done && local.filter((li) => li.it.t === "o").length > 1) {
+        // 맨 뒤 기물(걸이가 아닌 것)부터 하나씩 덜어 본다.
+        const idx = local.map((li, i) => [li, i] as const).filter(([li]) => li.it.t === "o" && !li.hang).map(([, i]) => i).pop() ?? local.length - 1;
+        local = local.filter((_, i) => i !== idx);
+        got = attempt(local);
+      }
+      if (got.done && local.length < local0.length) {
+        const cut = local0.filter((li) => !local.includes(li)).map((li) => li.it.id);
+        fixes.push(`${label}: 묶음 전체(${local0.length}개)는 바닥 (${firstTry.tx - room.x0},${firstTry.ty - fy0}) 근처에 들어가지 않아(${firstTry.firstWhy || firstTry.why || "자리 없음"}) ${local.length}개만 놓고 ${cut.join("·")} 를 뺐다 — 방을 넓히거나 묶음을 줄여라`);
+      }
+      const { done, tx, ty } = got;
+      const firstWhy = got.firstWhy || firstTry.firstWhy, why = got.why;
       if (!done) {
         fixes.push(`${label}: 바닥 (${tx - room.x0},${ty - fy0}) 근처에 놓을 자리가 없어 뺐다(${firstWhy || why || "자리 없음"})`);
         continue;

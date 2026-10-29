@@ -13,7 +13,7 @@ import { kindServesPurpose, purposeOf, purposeSwap } from "../roomPurpose";
 import { DRESS_ROOM_TARGET, dressRoom, roomBarePct } from "./dressRoom";
 import { VIGNETTE_TARGET, hashText, itemCharacters, itemsFitWords, roomCharacters, seeded, vignetteRoomSize } from "@/editor/handInterior/vignettes";
 import type { HandInteriorNotch } from "@/editor/handInterior/rooms";
-import { normalizeCorner, normalizeDoor, normalizeShape, type DesignRoomReport, type RoomDesign } from "@/editor/handInterior/designRoom";
+import { normalizeDoor, shapeNotches, type DesignRoomReport, type RoomDesign } from "@/editor/handInterior/designRoom";
 
 type Obj = { id: string; x: number; y: number };
 type Room = { id: string; x0: number; y0: number; x1: number; y1: number; floor?: string; wall?: string };
@@ -994,7 +994,7 @@ export function coverZones(tilesetId: string, spec: PlaceSpec, zones: readonly Z
 }
 
 export const INTERIOR_CARD = `[실내 interior] make_place({type:"interior", name, style?, size?, zones:[{kind, purpose, anchors?}], floors?}).
-- ★ 방은 네가 설계한다(손 도트 실내): 먼저 room_parts({purpose}) 로 기물 이름표·견본 배치·그림을 보고, zones[].design 에 모양(shape rect·L·T·bay, L 은 corner)·바닥 크기(w×h, 벽면 줄 빼고)·문(door)·재질(floor·wall)·가구 묶음(groups: name·at 벽/모서리/center·pos 0~1·rug·items[{id, dx, dy, count}])을 쓴다. 무엇을 몇 개 놓을지는 네 목록이 전부다 — 함수는 더하지 않고 칩셋에 없는 이름 맞추기·묶음 겹침·의자 방향·문 앞 통로·도달만 고쳐 결과에 「고침:」 줄로 알린다. 그 줄과 「맨바닥」 줄을 보고 design 을 고쳐 edit_place({patch:{mapId, design: 고친 설계 전체}}) 로 다시 짓는다. 견본은 참고 — 같은 배치를 베끼지 않는다. 책장·진열장(벽 가구)과 창·지도(걸이)는 북벽에만 선다. design 을 안 주면 함수가 견본으로 짓는다(네가 설계한 방이 아니다).
+- ★ 방은 네가 설계한다(손 도트 실내): 먼저 room_parts({purpose}) 로 기물 이름표·견본 배치·그림을 보고, zones[].design 에 모양(shape rect·L ㄱ자·U ㄷ자·T ㅜ자·bay 창가 돌출·alcove 알코브, L·alcove 는 corner — room_parts 의 shapes·모양 그림에서 고른다, 60칸 넘는 네모는 ㅁ자로 짚힌다; 곁방은 zones 하나 더)·바닥 크기(w×h, 벽면 줄 빼고)·문(door)·재질(floor·wall)·가구 묶음(groups: name·at 벽/모서리/center·pos 0~1·rug·items[{id, dx, dy, count}])을 쓴다. 무엇을 몇 개 놓을지는 네 목록이 전부다 — 함수는 더하지 않고 칩셋에 없는 이름 맞추기·묶음 겹침·의자 방향·문 앞 통로·도달만 고쳐 결과에 「고침:」 줄로 알린다. 그 줄과 「맨바닥」 줄을 보고 design 을 고쳐 edit_place({patch:{mapId, design: 고친 설계 전체}}) 로 다시 짓는다. 견본은 참고 — 같은 배치를 베끼지 않는다. 책장·진열장(벽 가구)과 창·지도(걸이)는 북벽에만 선다. design 을 안 주면 함수가 견본으로 짓는다(네가 설계한 방이 아니다).
 - zones = 방 하나하나(칸막이로 나뉜 방). kind 낱말: tavern(선술집 홀)·kitchen·storeroom·cellar·bedroom·inn_room(객실)·study(서재)·library(서고)·living·dining·forge(대장간)·workshop·alchemy·chapel·treasury·armory·throne_room·great_hall·entrance·corridor·bathroom·cell. 한국어 낱말도 된다.
 - anchors = 그 방의 주인공 물건(낱말): 「큰 망원경」「벽난로」「바 카운터」「책장」「별자리표」「올라가는 계단」. 크면 「큰」을 붙인다. 함수가 부품 사전에서 찾아 빈 자리에 놓고, 못 찾으면 없다고 알려 준다.
 - 「2층·위층 계단」이 필요하면 anchors 에 "올라가는 계단"을 넣고 floors:2 — 위층을 짓고 계단끼리 이어 준다.
@@ -1005,11 +1005,11 @@ export const INTERIOR_CARD = `[실내 interior] make_place({type:"interior", nam
 /** 모델 설계(zone.design)로 방 한 칸의 layout 요청을 만든다 — 모양 → 도려 낼 귀퉁이, 크기·재질·문 자리. 모르는 재질은 알리고 뺀다. */
 function designedRoom(zone: ZoneSpec, kind: string, n: number, design: RoomDesign, S: HandInteriorSpec, notes: string[]) {
   const w = Math.max(5, Math.min(24, Math.round(design.w ?? 8))), fh = Math.max(4, Math.min(18, Math.round(design.h ?? 6)));
-  const notches: HandInteriorNotch[] = [];
-  const shape = normalizeShape(design.shape);
-  if (shape === "L") { const c = normalizeCorner(design.corner) ?? "nw"; notches.push({ corner: c, w: Math.max(2, Math.min(4, Math.floor(w / 3))), h: c[0] === "n" ? 2 : Math.max(2, Math.min(3, fh - 3)) }); }
-  else if (shape === "T") notches.push({ corner: "sw", w: 2, h: 2 }, { corner: "se", w: 2, h: 2 });
-  else if (shape === "bay") notches.push({ corner: "nw", w: 2, h: 2 }, { corner: "ne", w: 2, h: 2 });
+  // 모양은 모델 몫 — 바닥이 그 모양 최소보다 작으면 함수가 크기를 키우지 않고 네모로 지은 뒤 알린다.
+  const sn = shapeNotches(design, w, fh);
+  const shape = sn.shape;
+  const notches: HandInteriorNotch[] = sn.notches;
+  if (sn.dropped) notes.push(`고침: 「${zone.purpose ?? zone.kind}」 ${sn.dropped}`);
   const floor = design.floor && S.floors[design.floor] ? design.floor : undefined;
   const wall = design.wall && S.walls[design.wall] ? design.wall : undefined;
   if (design.floor && !floor) notes.push(`설계 바닥 「${design.floor}」는 칩셋에 없어 기본 바닥으로 지었다(있는 것: ${Object.keys(S.floors).slice(0, 12).join("·")}…)`);
@@ -1430,7 +1430,10 @@ export const interiorBuilder: PlaceBuilder = {
       ok: true, mapIds,
       ...(entrance ? { entrance: { mapId: builtMapId, ...entrance } } : {}),
       summary: `${spec.name}: 방 ${rooms.length}개(${rooms.map((r) => r.kind).join("·")})${placed.length ? `, 주인공 물건 ${placed.map((p) => `${p.what}→${p.id}`).join(", ")}` : ""}${upperMapId && mapIds.includes(upperMapId) ? `, 위층 ${upperMapId} 계단으로 이음` : ""} — ${final.summary.slice(0, 200)}`,
-      warnings: [...notes, ...((final.data?.warnings as string[] | undefined) ?? []).slice(0, 6)],
+      // 설계 방의 ㅁ자 경고는 모델이 고칠 수 있는 말로(모양 어휘·곁방) — 「알코브·칸막이」만 듣고 같은 네모를 여덟 번 다시 지었다(2026-10-29 3c Argon 귀족 서재).
+      warnings: [...notes, ...((final.data?.warnings as string[] | undefined) ?? []).map((w) => designed && /ㅁ자/u.test(w)
+        ? `${w.replace(/ — .*$/u, "")} — 설계 방이면 design.shape 를 L(ㄱ자)·U(ㄷ자)·T(ㅜ자)·bay(창가 돌출)·alcove(알코브)로 바꾸거나, 곁방 zone 을 하나 더 두어(각자 design) 공간을 나눈다. 모양별 최소 크기·설계 예시·그림은 room_parts 의 shapes`
+        : w).slice(0, 6)],
       missingArt: missing, calls: run.calls, state,
     };
     return result;

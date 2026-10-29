@@ -421,7 +421,7 @@ export function furnishWithVignettes(base: HandInteriorInput, rooms: readonly La
     // 조합 서재: 북벽 하나에 책장이 벽 길이의 60% 넘게 줄지어 선다(2026-10-29 감독 눈 검수 「책장 한두 개라 서재로 안 읽힌다」).
     if (composed?.shelfWall && rnd) {
       // 북쪽 귀퉁이를 도려 낸 방(창가 돌출)은 남은 북벽 구간만 잰다.
-      const nn = (room.notches ?? []).filter((n) => n.corner[0] === "n");
+      const nn = (room.notches ?? []).filter((n) => n.corner[0] === "n" && n.at === undefined);
       // inNotch 는 도려 낸 자리 옆 한 칸까지 막는다 — 그만큼 더 뺀다.
       const sx0 = room.x0 + Math.max(0, ...nn.filter((n) => n.corner[1] === "w").map((n) => n.w + 1)), sx1 = room.x1 - Math.max(0, ...nn.filter((n) => n.corner[1] === "e").map((n) => n.w + 1));
       const sw = sx1 - sx0 + 1;
