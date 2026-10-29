@@ -3882,8 +3882,8 @@
   },
   {
    "id": "act2-b4-hole",
-   "label": "제2막 B4 — 성벽 밑 브람, 개구멍에서 들킨다 → 숲 어귀 추격 → 숲 그늘 고백",
-   "note": "act2Opening.ts bram (39,16) · hole (38,15) → map_field_north_1 forestEdgeChase(make_chase_scene 기사 둘, 경보 스위치, 놀람 1.4초·돌진 4칸@100ms) — 숲 그늘 줄 y=28(입구 위 10칸)",
+   "label": "제2막 B4 — 브람이 성벽 돌을 빼낸다(가까이·먼지) → 들켜 숲 어귀 풀밭을 가로질러 나무 벽 틈까지(등불 셋, 아슬아슬) → 숲지기 땅 고백",
+   "note": "act2Opening.ts bram (39,16) · hole (38,15) · stage_map_reveal zoom 2 → map_field_north_1(author_forest_route terrain edge) forestEdgeChase: 야경꾼 셋(뒤 왼쪽·앞 오른쪽·틈 어귀 가로 순찰 부채꼴), chaseStepMs 127 · 틈 y=23",
    "mapId": "fs2_hub_night",
    "x": 38,
    "y": 16,
@@ -3935,13 +3935,13 @@
       {
        "kind": "hold",
        "dir": null,
-       "ms": 1500
+       "ms": 1200
       }
      ],
      "shot": true
     },
     {
-     "id": "hole",
+     "id": "pull",
      "ops": [
       {
        "kind": "repeatUntil",
@@ -3971,40 +3971,46 @@
        "kind": "waitFor",
        "testid": "dialogue-box",
        "state": "present",
-       "timeoutMs": 8000
+       "timeoutMs": 10000
       },
       {
        "kind": "hold",
        "dir": null,
-       "ms": 1200
+       "ms": 800
+      },
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 8,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 1300
+        }
+       ]
       }
      ],
      "shot": true
     },
     {
-     "id": "field",
+     "id": "spotted",
      "ops": [
       {
-       "kind": "repeatUntil",
+       "kind": "waitFor",
        "testid": "dialogue-box",
-       "state": "absent",
-       "maxRounds": 8,
-       "ops": [
-        {
-         "kind": "key",
-         "key": "Enter"
-        },
-        {
-         "kind": "hold",
-         "dir": null,
-         "ms": 1100
-        }
-       ]
+       "state": "present",
+       "timeoutMs": 12000
       },
       {
        "kind": "hold",
        "dir": null,
-       "ms": 2500
+       "ms": 600
       },
       {
        "kind": "repeatUntil",
@@ -4019,36 +4025,14 @@
         {
          "kind": "hold",
          "dir": null,
-         "ms": 1100
-        }
-       ]
-      },
-      {
-       "kind": "hold",
-       "dir": null,
-       "ms": 2500
-      },
-      {
-       "kind": "repeatUntil",
-       "testid": "dialogue-box",
-       "state": "absent",
-       "maxRounds": 8,
-       "ops": [
-        {
-         "kind": "key",
-         "key": "Enter"
-        },
-        {
-         "kind": "hold",
-         "dir": null,
-         "ms": 1100
+         "ms": 1500
         }
        ]
       },
       {
        "kind": "waitForMap",
        "mapId": "map_field_north_1",
-       "timeoutMs": 12000
+       "timeoutMs": 15000
       },
       {
        "kind": "hold",
@@ -4059,12 +4043,184 @@
      "shot": true
     },
     {
-     "id": "run",
+     "id": "dash",
      "ops": [
       {
        "kind": "move",
        "dir": "up",
-       "steps": 10
+       "steps": 12
+      },
+      {
+       "kind": "move",
+       "dir": "right",
+       "steps": 2
+      },
+      {
+       "kind": "move",
+       "dir": "up",
+       "steps": 3
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "confess",
+     "ops": [
+      {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 8000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 900
+      },
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 14,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 1500
+        }
+       ]
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 800
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "act2-b4-caught",
+   "label": "제2막 B4 — 숲 어귀 추격 실패 한 판: 서쪽으로 돌아가다 틈 어귀 야경꾼 부채꼴에 걸려 「!」 → 덮침 → 개구멍 안쪽으로 → 다시 기어 나가 곧장 틈으로",
+   "note": "act2Opening.ts forestEdgeChase — 붙잡히면 광장 개구멍 앞(38,16), 개구멍 다시 조사 = ev_fs2_hub_hole_again",
+   "mapId": "map_field_north_1",
+   "x": 12,
+   "y": 38,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_done": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs2_act2_started": true,
+    "sw_fs2_bread_given": true,
+    "sw_fs2_cell_key_found": true,
+    "sw_fs2_cell_open": true,
+    "sw_fs2_barracks_cleared": true,
+    "sw_fs2_out_of_cells": true,
+    "sw_fs2_hub_arrived": true,
+    "sw_fs2_mire_well": true,
+    "sw_fs2_heard_carriage": true,
+    "sw_fs2_hanel_told": true,
+    "sw_fs2_rohan_spear": true,
+    "sw_fs2_bram_hole": true,
+    "sw_fs2_b4_alarm": true,
+    "sw_fs2_b4_bram_out": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 6
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 6
+    }
+   ],
+   "beats": [
+    {
+     "id": "detour",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 400
+      },
+      {
+       "kind": "move",
+       "dir": "up",
+       "steps": 4
+      },
+      {
+       "kind": "move",
+       "dir": "left",
+       "steps": 4
+      },
+      {
+       "kind": "move",
+       "dir": "up",
+       "steps": 4
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "caught",
+     "ops": [
+      {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 8000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 900
+      },
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 6,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 1300
+        }
+       ]
+      },
+      {
+       "kind": "waitForMap",
+       "mapId": "fs2_hub_night",
+       "timeoutMs": 15000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 800
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "retry",
+     "ops": [
+      {
+       "kind": "face",
+       "dir": "up"
+      },
+      {
+       "kind": "action"
       },
       {
        "kind": "waitFor",
@@ -4075,19 +4231,13 @@
       {
        "kind": "hold",
        "dir": null,
-       "ms": 1200
-      }
-     ],
-     "shot": true
-    },
-    {
-     "id": "confess",
-     "ops": [
+       "ms": 700
+      },
       {
        "kind": "repeatUntil",
        "testid": "dialogue-box",
        "state": "absent",
-       "maxRounds": 12,
+       "maxRounds": 4,
        "ops": [
         {
          "kind": "key",
@@ -4096,14 +4246,79 @@
         {
          "kind": "hold",
          "dir": null,
-         "ms": 1100
+         "ms": 1300
+        }
+       ]
+      },
+      {
+       "kind": "waitForMap",
+       "mapId": "map_field_north_1",
+       "timeoutMs": 15000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 300
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "dash",
+     "ops": [
+      {
+       "kind": "move",
+       "dir": "up",
+       "steps": 12
+      },
+      {
+       "kind": "move",
+       "dir": "right",
+       "steps": 2
+      },
+      {
+       "kind": "move",
+       "dir": "up",
+       "steps": 3
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "confess",
+     "ops": [
+      {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 8000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 900
+      },
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 14,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 1500
         }
        ]
       },
       {
        "kind": "hold",
        "dir": null,
-       "ms": 1000
+       "ms": 800
       }
      ],
      "shot": true

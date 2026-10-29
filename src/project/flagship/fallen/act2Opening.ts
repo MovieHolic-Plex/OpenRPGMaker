@@ -510,7 +510,7 @@ function barracks(project: Project, exec: Exec): void {
   // 시야 = 앞쪽 90° 부채꼴. 바닥에 그 부채꼴 등불 빛이 깔려 어디가 위험한지 보인다(visionLight).
   exec(project, "set_field_detection", {
     mapIds: [FS2_BARRACKS_ID], eventIds: guardIds,
-    coneDegrees: 90, alertMs: 450, rush: true, rushSteps: 5, rushStepMs: 120, chaseStepMs: 240, searchMs: 1800,
+    coneDegrees: 90, alertMs: 450, rush: true, rushSteps: 5, rushStepMs: 90, chaseStepMs: 130, searchMs: 1800,
     visionLight: { color: "#ffd27a", intensity: 0.85 },
   });
   // 처음 들어서면 엘레나가 방의 규칙을 짚는다 — 등불 부채꼴·멈췄다 돌아서는 순찰·침상 밑·목표.
@@ -1239,12 +1239,14 @@ function forestEdgeChase(project: Project, exec: Exec, mapId: string, bramChip: 
   const spots: { at: Cell; patrol?: Cell[] }[] = [];
   const behindL = pick({ x: arrive.x - 6, y: arrive.y - 1 });
   if (behindL) spots.push({ at: behindL });
-  const aheadR = pick({ x: arrive.x + 10, y: arrive.y - 5 }, spots.map((s) => s.at));
+  const aheadR = pick({ x: arrive.x + 10, y: arrive.y - 8 }, spots.map((s) => s.at));
   if (aheadR) spots.push({ at: aheadR });
-  // 풀밭 가운데를 가로로 도는 야경꾼 — 좌우 끝에서 멈춰 둘러본다.
-  const midRow = row(meadowMid);
-  const sweepL = midRow.find((c) => c.x >= 2), sweepR = [...midRow].reverse().find((c) => c.x <= map.width - 3);
-  if (sweepL && sweepR) spots.push({ at: { x: gapC, y: meadowMid }, patrol: [{ x: sweepL.x + 1, y: meadowMid }, { x: sweepR.x - 1, y: meadowMid }] });
+  // 나무 벽 틈 어귀 앞(도착선 네 줄 아래)을 가로로 도는 야경꾼 — 좌우 끝에서 멈춰 둘러본다. 서쪽 끝에서 출발해 동쪽으로.
+  // 곧장 틈으로 내달리면 등 뒤를 스치고 지나가지만, 서쪽으로 돌아가면 그 부채꼴에 걸린다(추격 시뮬레이션 /tmp/fs2front/sim, 2026-10-29).
+  const sweepY = edgeY + 4;
+  const sweepRow = row(sweepY);
+  const sweepL = sweepRow.find((c) => c.x >= 4), sweepR = [...sweepRow].reverse().find((c) => c.x <= map.width - 6);
+  if (sweepL && sweepR) spots.push({ at: { x: sweepL.x, y: sweepY }, patrol: [{ x: sweepR.x, y: sweepY }] });
   const knightIds: string[] = [];
   const sweeperIds: string[] = [];
   let why = "후보 없음";
@@ -1302,10 +1304,10 @@ function forestEdgeChase(project: Project, exec: Exec, mapId: string, bramChip: 
     ],
   });
   // 조명 뒤에 감지 — visionLight(부채꼴 손등불)는 지금 맵 조명에 덧붙는다(먼저 걸면 위 조명이 덮어쓴다).
-  // 몰아오는 둘 — 「거기 서라!」 0.45초 뒤 움직이고, 평소 칸당 0.16초(주인공과 같다 — 추격 엔진 개편(agent/chase-ai) 뒤 더 빠르게), 네 칸 안이면 0.09초로 덮친다.
-  if (knightIds.length) exec(project, "set_field_detection", { mapIds: [mapId], eventIds: knightIds, sightRange: 10, alertMs: 450, chaseStepMs: 160, rush: true, rushSteps: 4, rushStepMs: 90, searchMs: 3000, giveUpRange: 20 });
+  // 몰아오는 둘 — 「거기 서라!」 0.3초 뒤 움직이고, 칸당 0.127초(추격 엔진 개편 #3907 의 「빠름」 — 주인공 걷기 0.16초보다 빠르다, 12칸마다 숨 고름), 네 칸 안이면 0.09초로 덮친다.
+  if (knightIds.length) exec(project, "set_field_detection", { mapIds: [mapId], eventIds: knightIds, sightRange: 10, alertMs: 300, chaseStepMs: 127, rush: true, rushSteps: 4, rushStepMs: 90, searchMs: 3000, giveUpRange: 20 });
   // 가로로 도는 하나 — 앞쪽 90° 부채꼴만 본다. 그 부채꼴이 손등불 빛으로 바닥에 깔린다.
-  if (sweeperIds.length) exec(project, "set_field_detection", { mapIds: [mapId], eventIds: sweeperIds, sightRange: 6, coneDegrees: 90, alertMs: 300, chaseStepMs: 160, rush: true, rushSteps: 4, rushStepMs: 90, searchMs: 2500, visionLight: { color: "#ffc070", intensity: 0.9 } });
+  if (sweeperIds.length) exec(project, "set_field_detection", { mapIds: [mapId], eventIds: sweeperIds, sightRange: 6, coneDegrees: 90, alertMs: 300, chaseStepMs: 127, rush: true, rushSteps: 4, rushStepMs: 90, searchMs: 2500, visionLight: { color: "#ffc070", intensity: 0.9 } });
   // 붙잡히면 개구멍 앞(광장)으로 — 도구 검사 뒤에 직접 붙인다(위 caughtPenalty 주석).
   for (const id of allIds) {
     const chasePage = M(project, mapId).events.find((e) => e.id === id)?.pages?.[0];
