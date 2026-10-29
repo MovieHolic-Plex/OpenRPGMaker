@@ -23,7 +23,10 @@ const outAt = argv.indexOf("--out");
 const out = outAt >= 0 ? argv[outAt + 1]! : "qa-runs/v2scratch/finish-replay";
 const followAt = argv.indexOf("--followup");
 const followup = followAt >= 0 ? argv[followAt + 1] : undefined;
-const dirs = argv.filter((a, i) => a !== "--out" && i !== outAt + 1 && a !== "--followup" && (followAt < 0 || i !== followAt + 1));
+// --snapshot <json>: 저장본 대신 이 프로젝트 JSON(세션 snapshots/NNN-before.json 등)에서 끝맺음을 돈다 — 빌드 사이 회귀를 같은 입력으로 비교할 때.
+const snapAt = argv.indexOf("--snapshot");
+const snapshotFile = snapAt >= 0 ? argv[snapAt + 1] : undefined;
+const dirs = argv.filter((a, i) => a !== "--out" && i !== outAt + 1 && a !== "--followup" && (followAt < 0 || i !== followAt + 1) && a !== "--snapshot" && (snapAt < 0 || i !== snapAt + 1));
 fs.mkdirSync(out, { recursive: true });
 
 const brief = (project: Project, task: string) => {
@@ -52,7 +55,7 @@ function firstRequest(dir: string): string {
 
 for (const dir of dirs) {
   const name = `${path.basename(path.dirname(path.resolve(dir)))}-${path.basename(dir)}`;
-  const project = readProjectSqlite(path.join(dir, "project"));
+  const project = snapshotFile ? ((raw) => (raw.project ?? raw) as Project)(JSON.parse(fs.readFileSync(snapshotFile, "utf8"))) : readProjectSqlite(path.join(dir, "project"));
   const first = firstRequest(dir);
   const task = followup ? composePiTask(followup, priorRequestsNote([{ kind: "user", text: first } as never], followup)) : first;
   const before = brief(project, task);

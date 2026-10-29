@@ -3,6 +3,7 @@
 // 재생 스크립트(scripts/qa/assistant-v2/finishReplay.mts)도 이 함수를 불러, 실제 실행기와 같은 순서를 지나는지 따로 맞추지 않아도 된다.
 import type { PiAssistantV2Env } from "./env";
 import type { V2Session } from "./verbs";
+import type { Project } from "@/project/types";
 import { BLUEPRINT_PATH_IDS, fillUnsetStepConditions, gateOpenSteps, walkBlueprint } from "./blueprint";
 import { battleSites, healingSources } from "./combatChecks";
 import { wantsWholeGame } from "./shipChecks";
@@ -22,9 +23,36 @@ import { gateSuspectObjectives, refreshRemainingClues } from "./mysteryCase";
 import { dropTokenLines, settleStepSubjects } from "./stepSubjects";
 import { humanizeMapNames } from "./mapNames";
 
+/**
+ * 출구·이동 칸 마감이 본 맵들의 지문 — 맵 크기·타일 층·이벤트 자리. 마감은 한 실행에 한 번이라, 그 뒤 화면 검수 고치기 차례에서
+ * 모델이 make_place·edit_place 로 장소를 다시 지으면 새 방은 마감을 못 받는다(2026-10-29 vm6 argon 탈출: 고치기 차례에 밀실을 7×8 로 다시 지어
+ * 자물쇠 상자 (3,6)가 철문 (3,7) 앞을 막은 채 출하). 지문이 달라졌으면 마감을 다시 돈다.
+ */
+export function lanesStamp(project: Project): string {
+  let h = 0x811c9dc5;
+  const mix = (n: number) => { h = Math.imul(h ^ (n | 0), 0x01000193) >>> 0; };
+  const str = (t: string) => { for (let i = 0; i < t.length; i++) mix(t.charCodeAt(i)); };
+  for (const id of Object.keys(project.maps).sort()) {
+    const map = project.maps[id]!;
+    str(id); mix(map.width); mix(map.height);
+    for (const [key, value] of Object.entries(map).sort(([a], [b]) => a.localeCompare(b))) {
+      if (!/Tiles$/u.test(key) || !Array.isArray(value)) continue;
+      str(key);
+      for (const t of value as unknown[]) mix(typeof t === "number" ? t : -2);
+    }
+    for (const ev of map.events ?? []) { str(ev.id); mix(ev.x); mix(ev.y); }
+  }
+  return h.toString(16);
+}
+const LANES_RERUN_CAP = 2;
+/** 마감을 돈 뒤 맵이 바뀌었나(다시 돌 횟수가 남았을 때만). */
+const lanesStale = (env: PiAssistantV2Env, session: V2Session) =>
+  session.autoLanesDone && session.lanesStamp !== undefined && session.lanesReruns < LANES_RERUN_CAP && session.lanesStamp !== lanesStamp(env.ctx.project);
+
 /** 청사진 자동 짓기(한 실행에 한 번씩 — 세션 깃발). 무엇을 지었는지 조수에게 줄 글(없으면 undefined). */
 export async function runFinishAutoBuild(env: PiAssistantV2Env, session: V2Session): Promise<string | undefined> {
   let autoPath: string | undefined;
+  if (lanesStale(env, session)) { session.autoLanesDone = false; session.lanesReruns++; }
   if (env.ctx.project.gameBlueprint) {
     const done: string[] = [];
     // 청사진 장소가 잔디 한 장뿐인 빈 맵이면 장소 이름을 요청의 장소 낱말로 바꿔 아래 장소 짓기가 실제 방을 짓게 한다(blankStart.renameBareBlueprintPlaces).
@@ -98,6 +126,7 @@ export async function runFinishAutoBuild(env: PiAssistantV2Env, session: V2Sessi
       const left = refreshRemainingClues(run);
       if (left.length) done.push(`남은 단서 자리(길목 뒤): ${left.join(" / ")}`);
     }
+    if (session.autoLanesDone) session.lanesStamp = lanesStamp(env.ctx.project);
     if (done.length) autoPath = [`[자동으로 지음] 청사진이 엔딩까지 이어지지 않거나 길목·출구가 막혀 함수가 대신 지었다 — 최종 보고에 「자동으로 지음:」으로 이 목록을 그대로 적는다(네가 지었다고 쓰지 않는다):`, ...done.map((d) => `- ${d}`), "대사를 다듬으려면 build_blueprint_path{steps:[{id,lines,lockedLines}]} 로 다시 부른다(같은 이벤트를 고쳐 쓴다). 자동으로 지은 장소를 꾸미려면 edit_place·dress_room."].join("\n");
   }
   // 조립 기본값(2026-10-28): 청사진이 있는 게임 요청이면 아무도 고르지 않은 타이틀 그림·기본 문구·기본 왕국 오프닝을 청사진에 맞춘다 — 모델이 부르지 않아도.
@@ -161,6 +190,7 @@ export async function runFinishAutoBuild(env: PiAssistantV2Env, session: V2Sessi
 
 /** 끝맺음 뒤 차례에서 자동 단계를 다시 돌릴 일이 남았나(늦게 쓴 청사진·다시 끊긴 경로·회복 길). */
 export function finishBuildPending(env: PiAssistantV2Env, session: V2Session): boolean {
+  if (env.ctx.project.gameBlueprint && lanesStale(env, session)) return true;
   return Boolean(env.ctx.project.gameBlueprint) && (!session.autoPlacesDone || !session.autoPathDone || !session.autoLanesDone)
     && (!session.autoLanesDone || (!session.autoPathDone && battleSites(env.ctx.project).length > 0 && healingSources(env.ctx.project).length === 0)
       || walkBlueprint(env.ctx.project).blockers.some((b) => b.id === "blueprint-place-missing" || b.id === "blueprint-place-unreachable" || BLUEPRINT_PATH_IDS.has(b.id)));
