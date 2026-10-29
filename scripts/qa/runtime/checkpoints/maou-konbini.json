@@ -83,7 +83,8 @@
     "var_mk_service": 2
    },
    "switches": {
-    "sw_mk_on_shift": true
+    "sw_mk_on_shift": true,
+    "sw_mk_brief1": true
    },
    "party": [
     {

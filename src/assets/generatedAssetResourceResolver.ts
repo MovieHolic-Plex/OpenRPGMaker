@@ -86,6 +86,10 @@ const BUILTIN_GENERATED_RESOURCE_URLS: Record<string, string | null> = {
   "oprn-shitamachi-title": "/assets/generated/title/shitamachi-title.jpg",
   // 『전생한 마왕, 편의점 알바 시작하다』 타이틀 — 이 데모의 상점가 맵(jp_city)을 그대로 그린 그림(새 도트 아님). 생성기 scripts/content/maou-konbini/render_title.py.
   "oprn-maou-konbini-title": "/assets/generated/title/maou-konbini-title.png",
+  // 같은 데모의 엔딩 그림 셋 — 편의점 맵을 그대로 그리고 걷기 칩을 얹어 빛만 입혔다(새 도트 아님). 생성기 scripts/content/maou-konbini/render_endings.py.
+  "oprn-maou-konbini-end-best": "/assets/generated/title/maou-konbini-end-best.png",
+  "oprn-maou-konbini-end-ok": "/assets/generated/title/maou-konbini-end-ok.png",
+  "oprn-maou-konbini-end-power": "/assets/generated/title/maou-konbini-end-power.png",
   "oprn-shitamachi-yuna": "/assets/generated/title/shitamachi-yuna.jpg",
   "oprn-shitamachi-op-train": "/assets/generated/title/shitamachi-op-train.jpg",
   "oprn-shitamachi-op-arcade": "/assets/generated/title/shitamachi-op-arcade.jpg",

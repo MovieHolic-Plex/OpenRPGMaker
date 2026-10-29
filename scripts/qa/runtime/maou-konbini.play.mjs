@@ -1,5 +1,5 @@
 // 『전생한 마왕, 편의점 알바 시작하다』 통짜 실플레이 녹화 — 출하 플레이어(player.html, shim 경로), 구간마다 체크포인트에서 시작, 1배 영상.
-//   MK_FIXTURE=dist/demos/maou-konbini.play.json node scripts/qa/runtime/maou-konbini.play.mjs [opening,interview,day1,evening1,day2,meeting,night,power]
+//   MK_FIXTURE=dist/demos/maou-konbini.play.json node scripts/qa/runtime/maou-konbini.play.mjs [full,power,lost | opening,interview,day1,evening1,day2,meeting,night]
 // 결과: verify-shots/runtime-qa/maou-konbini/{facts.json, <구간>.webm, native-*.png}
 // 대사는 사람 속도로 넘기고(한 줄 ~1.4초), 선택지는 구간마다 정한 번호를 고른다. 걷기는 길 찾기(playerRoute)로 실제로 걷는다.
 import { copyFile, mkdir, readFile, writeFile } from "node:fs/promises";
@@ -11,7 +11,7 @@ const out = resolve(process.env.QA_OUT_DIR ?? "verify-shots/runtime-qa/maou-konb
 await mkdir(out, { recursive: true });
 const fixture = JSON.parse(await readFile(resolve(process.env.MK_FIXTURE ?? "dist/demos/maou-konbini.play.json"), "utf8"));
 const project = fixture.project ?? fixture;
-const only = new Set((process.argv[2] ?? "opening,interview,day1,evening1,day2,meeting,night,power").split(","));
+const only = new Set((process.argv[2] ?? "full,power,lost").split(","));
 const PACE = Number(process.env.MK_PACE ?? 1400);
 const facts = { segments: {}, errors: [] };
 const log = (...a) => console.error("[maou]", ...a);
@@ -30,7 +30,7 @@ log("doors", konDoorOnStreet && [konDoorOnStreet.x, konDoorOnStreet.y], roomDoor
 const HERO = [{ actorId: "actor_hero", level: 12 }];
 const CP = {
   interview: { id: "mk-interview", mapId: "map_mk_street", x: roomDoorOnStreet.x + 1, y: roomDoorOnStreet.y, facing: "left", variables: { var_mk_stage: 2 }, party: HERO },
-  day1: { id: "mk-day1", mapId: "map_mk_konbini", x: 12, y: 11, facing: "down", variables: { var_mk_stage: 3, var_mk_tasks: 0, var_mk_service: 2 }, switches: { sw_mk_on_shift: true }, party: HERO },
+  day1: { id: "mk-day1", mapId: "map_mk_konbini", x: 12, y: 11, facing: "down", variables: { var_mk_stage: 3, var_mk_tasks: 0, var_mk_service: 2 }, switches: { sw_mk_on_shift: true, sw_mk_brief1: true }, party: HERO },
   evening1: { id: "mk-evening1", mapId: "map_mk_street", x: konDoorOnStreet.x + 1, y: konDoorOnStreet.y, facing: "right", variables: { var_mk_stage: 4, var_mk_service: 5 }, party: HERO },
   day2: { id: "mk-day2", mapId: "map_mk_konbini", x: 8, y: 14, facing: "up", variables: { var_mk_stage: 5, var_mk_tasks: 0, var_mk_service: 5 }, switches: { sw_mk_lily_met: true }, party: HERO },
   meeting: { id: "mk-meeting", mapId: "map_mk_street", x: konDoorOnStreet.x + 1, y: konDoorOnStreet.y, facing: "right", variables: { var_mk_stage: 6, var_mk_service: 8 }, switches: { sw_mk_lily_met: true, sw_mk_tanaka_order: true }, party: HERO },
@@ -209,8 +209,9 @@ const startButton = async (page) => {
 
 const server = await startPlayerQaServer();
 const browser = await chromium.launch({ headless: true, args: ["--no-sandbox", "--use-gl=swiftshader", "--disable-gpu", "--autoplay-policy=no-user-gesture-required", "--disable-background-networking", "--disable-features=NetworkChangeNotifier"] });
-try {
-  if (only.has("opening")) await segment(browser, server, "opening", null, async (page, seg, mark) => {
+// 구간 몸통 — 체크포인트 구간은 ready 뒤에 이것을 부르고, 「full」은 타이틀부터 끊지 않고 이어 부른다(같은 맵 이동 뒤 암전 같은 결함은 이어 할 때만 보인다).
+const B = {
+  async opening(page, seg, mark) {
     await startButton(page);
     await page.waitForFunction(() => !!document.querySelector('[data-testid="title-screen"]'), null, { timeout: 600_000 });
     mark("title"); await page.waitForTimeout(3500); shot(page, "title");
@@ -229,27 +230,25 @@ try {
     await walkTo(page, roomExit.x, roomExit.y); await page.waitForTimeout(2500); mark("street");
     shot(page, "street-first");
     await play(page, seg, [], idle);
-  });
-  if (only.has("interview")) await segment(browser, server, "interview", CP.interview, async (page, seg, mark) => {
-    await ready(page); await page.waitForTimeout(1500); mark("ready");
+  },
+  async interview(page, seg, mark) {
     await play(page, seg, [], idle);
     await walkTo(page, roomDoorOnStreet.x + 1, roomDoorOnStreet.y + 1); await walkTo(page, roomDoorOnStreet.x - 3, roomDoorOnStreet.y + 1);
     await walkTo(page, konDoorOnStreet.x + 1, konDoorOnStreet.y); await walkTo(page, konDoorOnStreet.x, konDoorOnStreet.y); await page.waitForTimeout(2000); mark("enter");
     await play(page, seg, [2, 1], quietAnd(async () => (await st(page))?.v?.var_mk_stage === 3), { shotOn: /이력서|마계|명찰|선배라고|매뉴얼 제1조/ }); mark("hired");
     shot(page, "shift-start", 600);
-  });
-  if (only.has("day1")) await segment(browser, server, "day1", CP.day1, async (page, seg, mark) => {
-    await ready(page); await page.waitForTimeout(1500); mark("ready");
+  },
+  async day1(page, seg, mark) {
+    await play(page, seg, [], idle, { shotOn: /첫째 날 · 오전/ }); mark("brief");
     await faceAndAct(page, "down"); mark("register");
-    await play(page, seg, [0, 2, 1], idle, { shotOn: /업화|에코백|영혼의 나이|열일곱/ }); mark("register-done");
+    await play(page, seg, [0, 0, 1], idle, { shotOn: /업화|에코백|버스|영혼의 나이|열일곱/ }); mark("register-done");
     await walkTo(page, 8, 8); await faceAndAct(page, "up");
     await play(page, seg, [1], idle, { shotOn: /무너졌어|중력/ }); mark("box-done");
     shot(page, "box-cleared", 300);
     await walkTo(page, 6, 12); await faceAndAct(page, "down");
-    await play(page, seg, [0], quietAnd(async () => { const x = await st(page); return x?.v?.var_mk_stage === 4 && x.map === "map_mk_street"; }), { shotOn: /분리수거|시련/ }); mark("day-end");
-  });
-  if (only.has("evening1")) await segment(browser, server, "evening1", CP.evening1, async (page, seg, mark) => {
-    await ready(page); await page.waitForTimeout(1500); mark("ready");
+    await play(page, seg, [0], quietAnd(async () => { const x = await st(page); return x?.v?.var_mk_stage === 4 && x.map === "map_mk_street"; }), { shotOn: /분리수거|시련|근무 평가/ }); mark("day-end");
+  },
+  async evening1(page, seg, mark) {
     await play(page, seg, [], quietAnd(() => page.evaluate(() => !!window.__oprnDebug.readState().switches.sw_mk_lily_met)), { shotOn: /리리스|블랙 기업|재결성/ }); mark("lily");
     const cat = ev("map_mk_street", "ev_mk_st_cat");
     await walkTo(page, cat.x + 1, cat.y); await faceAndAct(page, "left"); await play(page, seg, [], idle); mark("cat");
@@ -264,48 +263,66 @@ try {
     await walkTo(page, 2, 5); await faceAndAct(page, "up");
     await play(page, seg, [], async (s) => { const x = await st(page); return x?.v?.var_mk_stage === 5 && x.map === "map_mk_konbini"; }); mark("slept");
     await page.waitForTimeout(1500);
-  });
-  if (only.has("day2")) await segment(browser, server, "day2", CP.day2, async (page, seg, mark) => {
-    await ready(page); await page.waitForTimeout(1500); mark("ready");
+  },
+  async day2(page, seg, mark) {
     await play(page, seg, [], idle); mark("brief");
     await faceAndAct(page, "down");
-    await play(page, seg, [1, 2], idle, { shotOn: /늘 먹던|피로|본 적 있지|주먹이/ }); mark("register");
+    await play(page, seg, [1, 0, 2, 1, 2], idle, { shotOn: /늘 먹던|피로|순서대로|본 적 있지|주먹이/ }); mark("register");
     await walkTo(page, 10, 8); await faceAndAct(page, "up"); await play(page, seg, [2], idle, { shotOn: /메이드/ }); mark("snack");
     await walkTo(page, 17, 8); await faceAndAct(page, "down");
-    await play(page, seg, [1], quietAnd(async () => { const x = await st(page); return x?.v?.var_mk_stage === 6 && x.map === "map_mk_street"; }), { shotOn: /999/ }); mark("order-end");
-  });
-  if (only.has("meeting")) await segment(browser, server, "meeting", CP.meeting, async (page, seg, mark) => {
-    await ready(page); await page.waitForTimeout(1500); mark("ready");
+    await play(page, seg, [1], quietAnd(async () => { const x = await st(page); return x?.v?.var_mk_stage === 6 && x.map === "map_mk_street"; }), { shotOn: /999|근무 평가/ }); mark("order-end");
+  },
+  async meeting(page, seg, mark) {
     await walkTo(page, 12, 10); await walkTo(page, 14, 10); await walkTo(page, 22, 10); await walkTo(page, 31, 10); await walkTo(page, 31, 27); await page.waitForTimeout(1500); mark("park");
     await play(page, seg, [1], quietAnd(() => page.evaluate(() => !!window.__oprnDebug.readState().switches.sw_mk_meeting_done)), { shotOn: /가르곤|회비|보름달/ }); mark("meeting-done");
     shot(page, "park-after", 500);
-  });
-  if (only.has("night")) await segment(browser, server, "night", CP.night, async (page, seg, mark) => {
-    await ready(page); await page.waitForTimeout(1500); mark("ready");
+    await walkTo(page, 20, 8); await page.waitForTimeout(1500);
+    await walkTo(page, 31, 10); await walkTo(page, 22, 10); await walkTo(page, roomDoorOnStreet.x + 1, roomDoorOnStreet.y + 1); await walkTo(page, roomDoorOnStreet.x, roomDoorOnStreet.y); await page.waitForTimeout(1500); mark("room");
+    await walkTo(page, 2, 5); await faceAndAct(page, "up");
+    await play(page, seg, [], async () => { const x = await st(page); return x?.v?.var_mk_stage === 7 && x.map === "map_mk_konbini"; }); mark("slept");
+    await page.waitForTimeout(1500);
+  },
+  async night(page, seg, mark, { lose = false } = {}) {
     await play(page, seg, [], idle); mark("brief");
-    await faceAndAct(page, "down"); await play(page, seg, [1], idle, { shotOn: /공물|처음이에요/ }); mark("register");
+    await faceAndAct(page, "down"); await play(page, seg, [1, 0], idle, { shotOn: /공물|간장|처음이에요/ }); mark("register");
     await walkTo(page, 8, 8); await faceAndAct(page, "up"); await play(page, seg, [0], idle); mark("box");
     await walkTo(page, 19, 7); await faceAndAct(page, "up");
-    await play(page, seg, [1], async (s) => s.choices.length >= 2 && s.choices.some((c) => /매뉴얼/.test(c)), { shotOn: /CCTV|찾았다|보름달|줄무늬/ }); mark("crisis");
+    await B.manual(page, seg, mark, { lose, waste: true });
+  },
+  async manual(page, seg, mark, { lose = false, waste = false } = {}) {
+    await play(page, seg, waste ? [1] : [], async (s) => s.choices.length >= 2 && s.choices.some((c) => /매뉴얼/.test(c)), { shotOn: /CCTV|찾았다|보름달|줄무늬/ }); mark("crisis");
     await play(page, seg, [1], async (s) => s.battle); mark("battle");
     shot(page, "manual-battle", 2500);
-    await battle(page, seg, ["skill_mk_irasshai", "skill_mk_nikuman", "attack", "skill_mk_nikuman", "attack", "skill_mk_point_card", "attack", "skill_mk_nikuman", "attack", "skill_mk_smile", "attack"]); mark("battle-end");
-    await play(page, seg, [], async (s) => s.ending, { shotOn: /따뜻하다|일하면 된다|매출 1위/ }); mark("ending");
+    await battle(page, seg, lose ? ["attack"] : ["skill_mk_irasshai", "skill_mk_nikuman", "skill_mk_point_card", "skill_mk_nikuman", "skill_mk_irasshai", "skill_mk_nikuman", "skill_mk_smile", "skill_mk_irasshai"]); mark("battle-end");
+    await play(page, seg, [], async (s) => s.ending, { shotOn: /따뜻하다|일하면 된다|근무 평가|액자|평생|얻어맞으라는/ }); mark("ending");
     shot(page, "ending", 2500);
     await page.waitForTimeout(4000);
     await play(page, seg, [], async () => false, { maxMs: 60_000 });
     shot(page, "ending-after", 300);
-  });
-  if (only.has("power")) await segment(browser, server, "power", CP.power, async (page, seg, mark) => {
-    await ready(page); await page.waitForTimeout(1500); mark("ready");
+  },
+  async power(page, seg, mark) {
     await play(page, seg, [0], async (s) => s.battle, { shotOn: /뿔|용사의 힘/ }); mark("battle");
     shot(page, "power-battle", 2500);
     await battle(page, seg, ["skill_mk_dark_wave", "skill_mk_hellfire", "skill_mk_dark_wave", "skill_mk_hellfire"]); mark("battle-end");
-    await play(page, seg, [], async (s) => s.ending, { shotOn: /전자레인지|CCTV/ }); mark("ending");
+    await play(page, seg, [], async (s) => s.ending, { shotOn: /전자레인지|CCTV|380만|빚의 절반/ }); mark("ending");
     shot(page, "power-ending", 2500);
     await page.waitForTimeout(4000);
     await play(page, seg, [], async () => false, { maxMs: 60_000 });
+  },
+};
+const fromCheckpoint = (fn, opts) => async (page, seg, mark) => { await ready(page); await page.waitForTimeout(1500); mark("ready"); await fn(page, seg, mark, opts); };
+
+try {
+  // full = 타이틀부터 매뉴얼 결말까지 한 판(체크포인트 없이).
+  if (only.has("full")) await segment(browser, server, "full", null, async (page, seg, mark) => {
+    for (const key of ["opening", "interview", "day1", "evening1", "day2", "meeting", "night"]) { mark(`>${key}`); await B[key](page, seg, mark); }
   });
+  for (const key of ["opening", "interview", "day1", "evening1", "day2", "meeting", "night", "power"]) {
+    if (!only.has(key)) continue;
+    await segment(browser, server, key, key === "opening" ? null : CP[key], key === "opening" ? B.opening : fromCheckpoint(B[key]));
+  }
+  // lost = 사흘째 결전에서 매뉴얼을 고르고 봉투(공격)만 휘두르다 진다 → 패배 분기 · 「내일도 출근」.
+  if (only.has("lost")) await segment(browser, server, "lost", CP.power, fromCheckpoint(B.manual, { lose: true }));
 } finally {
   await browser.close();
   await server.close();
