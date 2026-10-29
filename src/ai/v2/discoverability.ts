@@ -452,6 +452,35 @@ export function bearingWord(origin: Cell, to: Cell): string {
   return BEARINGS[(((Math.round(Math.atan2(dy, dx) / (Math.PI / 4))) % 8) + 8) % 8]!;
 }
 
+/**
+ * 출구 자리를 맵에 붙박인 말로 — 가장자리(두 칸 안)면 「서쪽 끝 가운데」「북쪽 끝 동쪽 편」「남서쪽 구석」, 아니면 맵 3×3 방위(「북쪽」).
+ * 걸어 다니는 동안에도 같은 뜻이고(목표 줄은 한 번 걸리면 플레이어가 움직여도 그대로다), 사람이 맵 전체를 놓고 읽는 말이다.
+ * 왜(2026-10-29 vm7 argon jrpg): 촌장 자리에서 본 8방 「남서쪽」은 마을 서쪽 끝 가운데 (0,21) 길 끝이었는데, 판정자는 맵의 남서쪽 구석 숲을
+ * 30분 가까이 헤맸다. flash jrpg: 촌장에서 본 「동쪽」은 마을 북쪽 한가운데 (28,5)였고 판정자는 동쪽 끝을 찾다 막혔다.
+ * vm2 terra(서쪽 끝에 선 플레이어에게 「서쪽」)는 가장자리 말 「서쪽 끝 남쪽 편」이 푼다.
+ */
+export function placeWord(map: GameMap, x: number, y: number): string {
+  const w = Math.max(1, map.width), h = Math.max(1, map.height);
+  const west = x <= 1, east = x >= w - 2, north = y <= 1, south = y >= h - 2;
+  if ((west || east) && (north || south)) return `${north ? "북" : "남"}${west ? "서" : "동"}쪽 구석`;
+  const third = (v: number, n: number) => Math.min(2, Math.floor((v * 3) / n));
+  if (west || east) {
+    const along = ["북쪽 편", "가운데", "남쪽 편"][third(y, h)]!;
+    return `${west ? "서쪽" : "동쪽"} 끝 ${along}`;
+  }
+  if (north || south) {
+    const along = ["서쪽 편", "가운데", "동쪽 편"][third(x, w)]!;
+    return `${north ? "북쪽" : "남쪽"} 끝 ${along}`;
+  }
+  return mapRegion(map, x, y);
+}
+
+/** 출구 자리 말 — 2칸 안이면 「바로 옆」, 아니면 맵에 붙박인 말(placeWord). */
+function exitWord(map: GameMap, origin: Cell | undefined, gate: Cell): string {
+  if (origin && Math.abs(gate.x - origin.x) + Math.abs(gate.y - origin.y) <= 2) return "바로 옆";
+  return placeWord(map, gate.x, gate.y);
+}
+
 /** from 맵에서 to 맵으로 바로 가는 문(옮기기 이벤트) 자리들. */
 function gatesTo(from: GameMap, toMapId: string): { x: number; y: number }[] {
   const out: { x: number; y: number }[] = [];
@@ -524,7 +553,7 @@ export function whereHint(project: Project, fromMapId: string, target: { mapId: 
   const gates = gatesTo(from, hop.id);
   if (gates.length === 0) return undefined;
   const near = origin ? [...gates].sort((a, b) => Math.abs(a.x - origin.x) + Math.abs(a.y - origin.y) - (Math.abs(b.x - origin.x) + Math.abs(b.y - origin.y)))[0]! : undefined;
-  const dir0 = near && origin ? bearingWord(origin, near) : [...new Set(gates.map((gate) => mapRegion(from, gate.x, gate.y)))].slice(0, 2).join("·");
+  const dir0 = near ? exitWord(from, origin, near) : [...new Set(gates.map((gate) => placeWord(from, gate.x, gate.y)))].slice(0, 2).join("·");
   const dir = `${dir0}${siblingOrdinal(project, from, near ?? gates[0]!, hop.id)}`;
   const label = target.label?.trim();
   if (hop.id === to.id) return `${to.name ?? to.id} 입구: ${dir}${label ? ` → ${label}` : ""}`;
@@ -549,7 +578,7 @@ function nextLeg(project: Project, from: GameMap, gate: Cell, hop: GameMap, then
   };
   find(event?.pages ?? []);
   const near = landing ? [...gates].sort((a, b) => Math.abs(a.x - landing!.x) + Math.abs(a.y - landing!.y) - (Math.abs(b.x - landing!.x) + Math.abs(b.y - landing!.y)))[0]! : gates[0]!;
-  const dir = landing ? bearingWord(landing, near) : mapRegion(hop, near.x, near.y);
+  const dir = exitWord(hop, landing, near);
   return `${dir}${siblingOrdinal(project, hop, near, then)}`;
 }
 
