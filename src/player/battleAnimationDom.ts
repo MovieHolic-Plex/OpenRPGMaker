@@ -672,8 +672,8 @@ function setEffectVariables(
   for (const [name, value] of Object.entries(variables)) host.style.setProperty(name, value);
 }
 
-/** 스킬 이펙트 프레임 소리 크기. 0.4 는 RTP 마법음(평균 -20dB)이 전투 BGM 아래로 11dB 묻혔다(2026-10-30 녹음 실측). */
-const ANIMATION_SE_VOLUME = 0.75;
+/** 스킬 이펙트 프레임 소리 크기(전투 BGM 위로 세우는 보정은 playBattleSample 의 animation 출처가 맡는다). */
+const ANIMATION_SE_VOLUME = 0.4;
 
 function playTimingSound(soundResourceId: string | undefined): void {
   // 디코딩 캐시에 있으면 즉시 — 새 요소의 로드 지연이 애니메이션 착탄음을 늦게 만든다.

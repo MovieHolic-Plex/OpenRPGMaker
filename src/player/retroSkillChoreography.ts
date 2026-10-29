@@ -230,7 +230,7 @@ export function animateRetroSkillFx(field: HTMLElement, user: HTMLElement, beat:
     const node = sprite(field, target, recipe);
     frame(node, reduced() ? 3 : recipe.fx === "slash" ? 5 : recipe.fx === "arcane" ? 3 : 0);
     activeFx.set(field, node);
-    node.dataset.fxSoundPlayed = String(playBattleSample(recipe.sound, 0.36));
+    node.dataset.fxSoundPlayed = String(playBattleSample(recipe.sound, 0.36, 1, "skill"));
     // QA can distinguish one release cue from inherited animation timing SE.
     node.dataset.fxSound = recipe.sound;
     return;
@@ -1304,7 +1304,7 @@ function startPlayer(field: HTMLElement, user: HTMLElement, plan: ClassPlan, pri
         case "hit": playHit(field, player, event); break;
         case "sound":
           // 한 사건 한 소리: 타임라인의 sound 사건만 울린다(기존 전투 애니메이션 층과 휘두름음은 battleDom 이 끈다).
-          playBattleSample(event.id, 0.34);
+          playBattleSample(event.id, 0.34, 1, "skill");
           field.dataset.retroClassSkillSound = event.id;
           field.dataset.retroClassSkillSounds = String(Number(field.dataset.retroClassSkillSounds ?? 0) + 1);
           break;
