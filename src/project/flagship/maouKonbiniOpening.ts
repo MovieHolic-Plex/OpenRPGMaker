@@ -159,7 +159,7 @@ function shotThrone(project: Project): void {
 
 /** 컷 2 — 성문이 열리고 용사 일행이 붉은 융단을 걸어 올라온다. 카메라가 그들을 따라 옥좌 쪽으로 기울어 올라간다. */
 function shotHeroes(project: Project): void {
-  const id = "mk_op_heroes", ms = 4800;
+  const id = "mk_op_heroes", ms = 5600;
   newShot(project, id, ms, { kind: "cut", durationMs: 1 });
   // 옥좌(4줄)부터 홀 아래(21줄)까지 세로로 긴 배경 — 카메라가 아래에서 위로 기운다.
   mapBackground(project, id, MAP_THRONE, { x: 23, y: 12 }, 2);
@@ -173,7 +173,7 @@ function shotHeroes(project: Project): void {
   // 아래(성문 쪽)에서 위로. 세계 좌표 — 무대 높이 540 의 아래 절반 가운데에서 시작한다.
   // 카메라를 배우보다 먼저 건다: 배우가 세로로 긴 배경의 아래쪽(무대 밖 세계 y)에 서기 때문이다.
   execTool(project, "animate_opening_camera", { shotId: id, camera: { x: 240, y: 405, keys: {
-    y: [{ atMs: 0, value: 405 }, { atMs: 600, value: 395 }, { atMs: 3700, value: 215, ease: "ease-in-out" }, { atMs: ms, value: 205 }],
+    y: [{ atMs: 0, value: 405 }, { atMs: 600, value: 395 }, { atMs: 3600, value: 215, ease: "ease-in-out" }, { atMs: ms, value: 200 }],
   }, shake: { atMs: 60, durationMs: 500, amplitude: 4, frequency: 16, seed: 3 } } });
   actor(project, id, "maou", MON2, 7, chipAt(view, { x: 23, y: 5 }), "down", 2, "monster");
   const walkUp = (layerId: string, index: number, col: number, from: number, to: number, startMs: number) => {
@@ -185,10 +185,10 @@ function shotHeroes(project: Project): void {
   walkUp("garet", 2, 22, 18, 11, 350);
   walkUp("mira", 5, 24, 18, 11, 450);
   const leonEnd = chipAt(view, { x: 23, y: 10 });
-  pop(project, id, "leon-shout", "exclaim", { x: leonEnd.x + 12, y: leonEnd.y - 26 }, 3700, ms);
+  pop(project, id, "leon-shout", "exclaim", { x: leonEnd.x + 12, y: leonEnd.y - 16 }, 3450, ms);
   sfx(project, id, "doors", SFX.doors, 0, 2600, 0.95);
-  sfx(project, id, "unsheathe", SFX.sword, 3550, 900, 0.5);
-  captions(project, id, [{ atMs: 3950, text: "레온 「여기까지다, 마왕 제르바스!」", color: INK.hero }]);
+  sfx(project, id, "unsheathe", SFX.sword, 3400, 900, 0.5);
+  captions(project, id, [{ atMs: 3700, text: "레온 「여기까지다, 마왕 제르바스!」", color: INK.hero }]);
 }
 
 /** 컷 3 — 흥정. 마왕이 말할 때는 옥좌로, 일행이 말할 때는 일행 쪽으로 박에 맞춰 짧게 민다. 자막은 반응(말풍선)보다 반 박자 뒤. */
@@ -279,7 +279,7 @@ const fieldTint = (value: string, ms: number): Command => m2("Screen Effect", { 
 /** 옥좌 결전 전투 — 3합. 싸우는 중에도 흥정이 끼어들고, 3합째에 레온이 금단의 봉인술로 전투를 끝낸다(이기든 지든 같은 결말). */
 function setupThroneBattle(project: Project): void {
   // 마왕은 「마족 공작」 파티원 도트(Monster2 #7 걷기 칩과 같은 인물)로, 사람 배틀러의 두 배 크기로 선다.
-  execTool(project, "upsert_actor", { actor: { id: MAOU_TRUE, battleCharacterResourceId: "party-pixel-monster2-7", battleScalePercent: 200 } });
+  execTool(project, "upsert_actor", { actor: { id: MAOU_TRUE, battleCharacterResourceId: "party-pixel-monster2-7", battleScalePercent: 260 } });
   const leon = project.database.enemies.find((e) => e.id === "enemy_mk_leon_castle");
   if (!leon) throw new Error("[maou-konbini] 옥좌 결전 적(enemy_mk_leon_castle)이 없다");
   // 직접 코드: 슬라임을 본뜬 적이라 종(speciesId)이 남아 「야생의 용사 레온」이라고 나왔다. upsert_enemy 는 필드를 지우지 못한다.
@@ -290,7 +290,6 @@ function setupThroneBattle(project: Project): void {
   const pageOf = (pid: string, name: string, round: number, commands: Command[]) =>
     execTool(project, "upsert_troop_battle_page", { troopId: T, page: { id: pid, name, span: "battle", runOnce: true, conditions: [{ kind: "onRound", round }], commands } });
   pageOf("mk_castle_r1", "1합 싸우면서 흥정", 1, [
-    ...say("leonF", "base", "간다, 마왕!"),
     ...say("maouF", "base", "기다려라. 16분의 1에 연금, 휴가, 성 앞 주차장까지 얹으마."),
     ...say("leonF", "base", "싸우는 중에 흥정하지 마!"),
   ]);
