@@ -464,6 +464,7 @@ export function updateFieldStaging(scene: PlaySceneContext): void {
   syncEventGlows(scene, now);
   syncObjectiveMarkers(scene, now);
   syncExamineMarkers(scene, now);
+  syncExitLabels(scene, now);
   syncLiftRide(scene);
 }
 
@@ -824,6 +825,73 @@ function syncExamineMarkers(scene: PlaySceneContext, now: number): void {
     const lift = at.person ? -size * 0.75 : size * 0.22;
     marker.setPosition(at.x + ox, at.y + oy + lift + bob * size * 0.08).setDisplaySize(size * 0.62, size * 0.62).setAlpha(0.92);
   }
+}
+
+// ── 출입 칸 목적지 이름 ───────────────────────────────────────────────────
+// 2026-10-29 vm3 deepseek 탈출 판정(major): 「방 이동은 바닥의 희미한 빛 위를 걷는 방식이라 출입구인지 알기 어렵다, 어느 빛이 어느 방으로
+// 가는지 표시 없음」 — 홀 남쪽 바닥에 응접실·서재·지하실로 가는 투명 접촉 칸 셋이 나란히 있었다.
+// 다른 맵으로 옮기는(transfer) 이벤트의 지금 페이지 위에, 주인공이 EXIT_LABEL_RADIUS 칸 안에 오면 「→ 목적지 이름」 도트 글자를 띄운다.
+const EXIT_LABEL_RADIUS = 3;
+const EXIT_LABEL_FONT = '"Galmuri11 Regular", "Galmuri9", monospace';
+const EXIT_LABEL_PX = 12;
+type ExitLabelState = { mapId: string; labels: Map<string, Phaser.GameObjects.Text>; nextCheck: number };
+const exitLabelStates = new WeakMap<PlaySceneContext, ExitLabelState>();
+
+/** 이 페이지가 맨 윗줄에서 다른 맵으로 옮기면 그 맵 id. */
+function exitTargetOf(page: { commands?: readonly unknown[] } | undefined, here: string): string | undefined {
+  for (const c of page?.commands ?? []) {
+    const r = c as { kind?: string; mapId?: unknown };
+    if (r.kind === "transfer" && typeof r.mapId === "string" && r.mapId !== here) return r.mapId;
+  }
+  return undefined;
+}
+
+function syncExitLabels(scene: PlaySceneContext, now: number): void {
+  const map = scene.map;
+  if (!map || !scene.session || !scene.add) return;
+  let state = exitLabelStates.get(scene);
+  if (!state || state.mapId !== map.id) {
+    for (const t of state?.labels.values() ?? []) t.destroy();
+    state = { mapId: map.id, labels: new Map(), nextCheck: 0 };
+    exitLabelStates.set(scene, state);
+  }
+  if (now < state.nextCheck) return;
+  state.nextCheck = now + 200;
+  const project = store.getCurrent();
+  const size = mapTileSize(map);
+  const zoom = Math.max(1, Math.round(scene.cameras?.main?.zoom || 1));
+  const want = new Map<string, { text: string; x: number; y: number }>();
+  for (const view of runtimeEventViewsForMap(project, map, scene.session, scene.eventPositions)) {
+    const target = exitTargetOf(view.page as { commands?: readonly unknown[] } | undefined, map.id);
+    const dest = target ? project.maps[target] : undefined;
+    const name = String((dest as { displayName?: string } | undefined)?.displayName || dest?.name || "").trim();
+    if (!name) continue;
+    const rect = view.bodyRect;
+    const dx = Math.max(rect.left - scene.tileX, 0, scene.tileX - rect.right);
+    const dy = Math.max(rect.top - scene.tileY, 0, scene.tileY - rect.bottom);
+    if (Math.max(dx, dy) > EXIT_LABEL_RADIUS || (dx === 0 && dy === 0)) continue;
+    want.set(view.event.id, { text: `→ ${name}`, x: ((rect.left + rect.right + 1) / 2) * size, y: rect.top * size - 2 });
+  }
+  for (const [id, t] of state.labels) if (!want.has(id)) { t.destroy(); state.labels.delete(id); }
+  for (const [id, at] of want) {
+    let label = state.labels.get(id);
+    if (!label) {
+      // 글자 텍스처는 카메라 배율과 같은 해상도, 정수 좌표 — 떠오르는 「+ 이름」 글자(playSceneFieldFx.playLootPopup)와 같은 규칙.
+      label = scene.add.text(0, 0, at.text, {
+        fontFamily: EXIT_LABEL_FONT, fontSize: `${EXIT_LABEL_PX}px`, color: "#fff4c8",
+        // 어두운 받침 — 홀의 의자·탁자 그림 위에서도 글자가 묻히지 않게(첫 캡처에서 「→ 서재」가 안락의자 무늬에 묻혔다).
+        backgroundColor: "rgba(26,16,6,0.82)", padding: { x: 3, y: 1 },
+      }).setResolution(zoom).setScale(1 / zoom).setOrigin(0, 1).setDepth(MAP_UPPER_LAYER_DEPTH + 901);
+      state.labels.set(id, label);
+    }
+    label.x = Math.round(at.x - label.displayWidth / 2);
+    label.y = Math.round(at.y);
+  }
+}
+
+/** QA: 지금 목적지 글자가 붙은 이동 이벤트 id. */
+export function exitLabelIds(scene: PlaySceneContext): string[] {
+  return [...(exitLabelStates.get(scene)?.labels.keys() ?? [])];
 }
 
 /** QA: 지금 조사 표식이 붙은 이벤트 id. */
