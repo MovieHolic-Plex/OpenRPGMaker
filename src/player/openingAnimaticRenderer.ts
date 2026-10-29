@@ -744,7 +744,8 @@ export function playOpeningAnimatic(options: { project: Project; canvas: HTMLCan
     for (const cue of a.audioCues ?? []) {
       const url = resolveAssetResourceUrl(cue.resourceId, { project: options.project }); if (!url || preloaded.has(cue.id)) continue;
       const el = canvas.ownerDocument.createElement('audio'); el.preload = 'auto'; el.src = url; preloaded.set(cue.id, el);
-      waits.push(new Promise<void>((resolve) => { for (const type of ['canplaythrough', 'error'] as const) el.addEventListener(type, () => resolve(), { once: true, signal }); }));
+      // 컷을 붙잡고 기다리는 것은 첫 1초 안에 울릴 큐뿐이다. 뒤의 큐는 컷이 도는 동안 받힌다.
+      if (cue.atMs < 1000) waits.push(new Promise<void>((resolve) => { for (const type of ['canplay', 'error'] as const) el.addEventListener(type, () => resolve(), { once: true, signal }); }));
       el.load();
     }
     // 느린 망에서도 장면을 오래 붙잡지 않는다(0.8초) — 다 못 받으면 큐 시각에 받으며 튼다(예전 동작). 다음 컷 소리는 cinematicAssets.warm 이 미리 받는다.
