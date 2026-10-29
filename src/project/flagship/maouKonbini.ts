@@ -430,7 +430,7 @@ function buildKonbini(project: Project, links: Links): Cell {
     walkTo("@player", Q1), face("@player", "up"),
     ...caption("제르바스는 관리국 안내문 뒷면에 밤새 쓴 이력서를 내밀었다."),
     playSe(SE_PAPER),
-    ...say("manager", "base", "이름, 암흑 마왕 제르바스. 경력, 마왕군 총사령관 999년… 「관리직 경험 있음」으로 적을게요."),
+    ...say("manager", "base", "경력, 마왕군 총사령관 999년… 「관리직 경험 있음」으로 적을게요."),
     ...say("manager", "surprised", "특기는… 「세계 정복(절반)」? 정복은 좀 곤란한데요. 다른 건요?"),
     choices([
       { text: "인간을 공포로 지배할 줄 아오", then: [...say("manager", "happy", "까다로운 손님 응대 가능… 그거 정말 귀해요."), ...mp()] },
@@ -443,14 +443,14 @@ function buildKonbini(project: Project, links: Links): Cell {
       { text: "통장 잔고가 0엔이오", then: [...say("manager", "sad", "…솔직해서 좋아요. 저도 월말엔 그래요."), ...good()] },
       { text: "여기 고기만두가 맛있어 보였소", then: [...say("manager", "happy", "안목 있으시네. 그거 제가 직접 발주해요.")] },
     ]),
-    ...say("manager", "happy", "합격. 오늘부터요. 제르바스는 명찰에 안 들어가서… 마오 군이에요. 명찰 벌써 뽑았어요."),
+    ...say("manager", "happy", "합격! 명찰은 「마오」로 뽑았어요. 제르바스는 안 들어가서."),
     ...zs("surprised", "마오…? 감히 이 몸의 존함을 멋대로 줄이다니…!"),
     faceHero(HINA_ID),
     ...say("hina", "happy", "신입? 나 히나, 2년 차. …말투 뭐야. 연극부?"),
     ...say("maou", "base", "품격이라 하오. 히나라 했나. 자네를 이 몸의 첫 번째 부하로 임명하…"),
     ...say("hina", "base", "선배라고 불러."),
     ...say("maou", "embarrassed", "…히나 선배."),
-    ...say("manager", "base", "오늘 할 일은 계산대, 진열, 분리수거. 막히면 히나한테 물어봐요."),
+    ...say("manager", "base", "오늘은 계산대, 진열, 분리수거. 막히면 히나한테요."),
     // 맵 이벤트는 「장소 이동」에서 끝난다 — 이동은 맨 끝에 두고(이동 자체가 암전한다), 근무 시작 자막은 근무 시작 자동 장면이 잇는다.
     setVar(V_STAGE, "=", 3), setVar(V_TASKS, "=", 0), setSw(SW_SHIFT),
     transfer(M.konbini, CLERK, "down"),
@@ -1124,7 +1124,7 @@ function buildPark(project: Project, backToStreet: Cell): Cell {
     ...say("lily", "base", "사천왕 제1좌, 용왕 가르곤 님이시옵니다."),
     ...say("maou", "surprised", "……가르곤!? 하늘을 뒤덮던 그 흑룡이!? 고양이가 되었단 말인가!"),
     ...voice("길고양이", "냐아. 냥, 냐앙."),
-    ...say("lily", "base", "「생선 가게 할멈이 매일 전갱이를 바친다. 나쁘지 않다」 하시옵니다. 자, 오늘의 안건이옵니다. 마왕님, 고르시옵소서!"),
+    ...say("lily", "base", "「생선 가게 할멈이 전갱이를 바친다」 하시옵니다. 자, 오늘의 안건을 고르시옵소서!"),
     // 처음 하는 사람 검수(2026-10-29): 회의가 첫 선택지까지 83초 듣기만이었다 — 안건 셋을 플레이어가 고른다.
     choices([
       { text: "안건 1. 마왕군 재건", then: [
