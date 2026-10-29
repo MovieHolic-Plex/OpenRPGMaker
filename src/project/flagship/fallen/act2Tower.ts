@@ -476,7 +476,7 @@ function floorTwo(project: Project, exec: Exec): void {
       const g = pg.graphic as { sprite?: unknown; direction?: Dir } | undefined;
       if (g?.sprite) pg.graphic = objGraphic("object1", 5, g.direction ?? "down");
     }
-    door.pages![0]!.commands = [narrate("굵은 쇠창살이 길을 막고 있다.\n반대편 어딘가의 장치로 올라갈 것 같다.")];
+    door.pages![0]!.commands = [narrate("굵은 쇠창살이 길을 막고 있다.\n반대편 어딘가에 있는 장치로 올리는 것 같다.")];
   }
   // 전환 구슬 — 받침 위 수정을 찍고 이벤트는 투명하게.
   for (const [key, c] of [["a", T2.westSwitch], ["b", T2.eastSwitch]] as const) {
@@ -697,7 +697,7 @@ function floorFour(project: Project, exec: Exec): void {
   darkEv.pages = [...(darkEv.pages ?? []), page("ev_fs2_t4_dark_lit", "이리스와 함께", [sw(SW_IRIS_BACK)], [{ kind: "setLighting", ambient: 0, transitionMs: 0 } as unknown as Command], { trigger: { kind: "auto" }, priority: "below" })];
   const light = project.database.skills.find((s) => s.id === FS2_SKILL_FINGERLIGHT);
   if (!light) throw new Error("[fallen-star tower] 손끝 빛 기술이 없다");
-  Object.assign(light, { name: "손끝 빛", description: "필드 기술 — 손끝에 빛을 맺어 어두운 곳을 밝힌다.\n이리스가 처음 배운 「아침」의 빛." });
+  Object.assign(light, { name: "손끝 빛", description: "필드 기술. 손끝에 빛을 맺어 어둠을 밝힌다.\n이리스가 처음 배운 「아침」의 빛." });
   const ce = project.commonEvents.find((c) => c.id === (light as unknown as Rec).fieldCommonEventId);
   if (ce) ce.commands = [narrate("이리스가 손끝을 든다.\n작은 빛이 둘레로 번진다."), { kind: "setLighting", ambient: 0, transitionMs: 900 } as unknown as Command];
   // 서쪽 골방 길목 — 어둠 속에선 발 디딜 데가 안 보인다(손끝 빛을 알면 지나간다).
@@ -770,7 +770,7 @@ function floorFour(project: Project, exec: Exec): void {
     say(SARAH, "발렌 님이 끊겠다던 줄이 이거였군."),
     say(KAEL, "…괜찮아. 내가 읽어 줄게.\n약속했잖아."),
     bgm(IRIS_BGM, 2500),
-    narrate("카엘이 바랜 쪽을 짚는다. 카엘의 글씨다."),
+    narrate("카엘이 바랜 쪽을 짚는다. 자기 글씨다."),
     say(KAEL, "「오늘, 이리스가 빵을 먹었다.\n따뜻했다고 했다.」 …기억나?"),
     fx("heal", T4.iris.x, T4.iris.y, 1200), se("easyrpg-sound-recovery7"),
     sys("이리스가 「광선 조준」을 다시 떠올렸다."),
@@ -881,11 +881,11 @@ function floorFour(project: Project, exec: Exec): void {
       say(KAEL, "발렌 아저씨도 거기 있겠지. 가자."),
       fadeOut(1000),
       { kind: "recoverAll" } as unknown as Command,
-      narrate("제2막 「빌린 불」 — 여기까지", { position: "center", context: "narration" }),
+      narrate("제2막 「빌린 불」은 여기까지", { position: "center", context: "narration" }),
       narrate("두 번째 렌즈, 그리고 재의 회수자는\n다음 업데이트에서 이어집니다.", { position: "center", context: "narration" }),
       fadeIn(700),
       setSw(FS2_SW_STOP_B11),
-      sys("지금 저장해 두면 다음 판본에서 하늘탑 4층부터 이어서 할 수 있다."),
+      sys("다음 판본에서 하늘탑 4층부터 이어 하려면\n지금 저장해 두자."),
       { kind: "openSaveMenu" } as unknown as Command,
     ], { trigger: { kind: "playerTouch" }, priority: "below" }),
     page("ev_fs2_t4_stair_next", "다음 업데이트", [sw(FS2_SW_STOP_B11)], [sys("꼭대기로 오르는 계단.\n(다음 업데이트에서 이어집니다.)")], { trigger: { kind: "playerTouch" }, priority: "below" }),

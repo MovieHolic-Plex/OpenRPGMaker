@@ -161,7 +161,7 @@ const LAMP_HOUSE: Room = {
   npc: { id: "ev_fs2_frost_lampmaker", name: "등 만드는 소이", chip: "ev_fs_crowd_b", at: { x: 6, y: 4 }, lines: [
     "오늘이 「대답의 등」 띄우는 밤이에요.\n기름이 모자라서 아껴야 하지만\n등은 띄워야죠.",
     "등마다 한 줄씩 적어요. 받을 사람이\n누군지 몰라도 돼요.\n「잘 지내」 한마디면 충분해요.",
-    "세린 언니가 그랬어요. 대답은 받는\n사람보다 하는 사람을 살린다고.",
+    "세린 언니가 그랬어요.\n대답은 받는 사람보다\n하는 사람을 살린다고.",
   ] },
 };
 const FISHER_HOUSE: Room = {
@@ -184,7 +184,7 @@ const FISHER_HOUSE: Room = {
     goods: [{ id: "fishplate", x: 5, y: 5 }, { id: "mug", x: 6, y: 5 }],
   },
   npc: { id: "ev_fs2_frost_fisher", name: "어부 도윤", chip: "ev_fs_crowd_f", at: { x: 7, y: 7 }, lines: [
-    "썰매를 다 끌어가니 얼음 위로 나갈 수가\n있나. 구멍 하나에 매달려 사는 거지.",
+    "썰매를 다 끌어가니 얼음 위로\n나갈 수가 있나. 구멍 하나에 매달려 사는 거지.",
     "밤에 섬 사당에 등 하나가 뜨면\n그건 세린네 아들이야. 해마다 몰래 와.",
     "심문회 옷을 입고서도\n등 띄우는 손은 안 떨더라.",
   ] },
@@ -209,7 +209,7 @@ const HARMA_HOUSE: Room = {
     goods: [{ id: "teapot", x: 8, y: 7 }, { id: "cup", x: 9, y: 7 }],
   },
   npc: { id: "ev_fs2_frost_child", name: "하르마네 손주 나래", chip: "ev_fs_crowd_a", at: { x: 5, y: 7 }, lines: [
-    "할머니는 부두에 나가 있어.\n난 등 접는 중이야. 이거 봐, 별 모양!",
+    "할머니는 부두에 나가 있어.\n난 등 접고 있어. 이거 봐, 별 모양!",
     "옛날에 우리 할머니의 할머니가\n달에서 온 아이한테 「잘 지내」 했대.",
     "오늘 밤엔 나도 등 띄울 거야.\n형도 같이 띄워!",
   ] },
@@ -433,7 +433,7 @@ function frostford(project: Project, exec: Exec, hubId: string): void {
         { kind: "setVariable", variableId: VAR_BOND_SARAH, op: "+=", value: 1 } as unknown as Command,
         { kind: "callCommonEvent", commonEventId: "ce_party_bond_check" } as unknown as Command,
         fadeIn(600),
-        narrate("잔 일 「징발된 장작」 완료.\n장작 썰매가 마을로 돌아갔다.\n(여관 무료 · 새라 유대 +1)", { context: "system" }),
+        narrate("잔 일 「징발된 장작」을 마쳤다.\n장작 썰매가 마을로 돌아갔다.\n(여관 무료, 새라 유대 +1)", { context: "system" }),
         say(SARAH, "어릴 때 아버지 손 잡고\n이 마을에 장작 사러 왔었지."),
       ] },
       { name: "물러남", conditions: [sw(SW_Q6_DONE)], commands: [] },
@@ -521,7 +521,7 @@ function frostFestival(project: Project, exec: Exec, L: FrostLayout): void {
         { text: "그냥 본다", branch: [] },
       ] } as unknown as Command,
     ], { priority: "same", trigger: { kind: "action" } }),
-    page("ev_fs2_frost_answer_lamp_done", "띄운 뒤", [sw(SW_FROST_LAMP)], [narrate("우리가 띄운 등이 호수 위를 천천히 건너간다.")], { priority: "same", trigger: { kind: "action" } }),
+    page("ev_fs2_frost_answer_lamp_done", "띄운 뒤", [sw(SW_FROST_LAMP)], [narrate("카엘이 띄운 등이 호수 위를 천천히 건너간다.")], { priority: "same", trigger: { kind: "action" } }),
   ]);
 }
 
@@ -588,7 +588,7 @@ function lanternNight(project: Project, exec: Exec): void {
       narrate("사당 앞에 등 하나. 발렌이 혼자\n그 등에 불을 붙이고 있다."),
       say(VALEN, "…기사들은 탑에 두고 왔다.\n싸우러 왔으면 칼을 뽑아라."),
       say(KAEL, "등 띄우는 법, 여기서 배우셨죠?"),
-      say(VALEN, "대답하면 또 시험이 온다.\n언젠가 또 문을 잠그는 마을이 생기지."),
+      say(VALEN, "대답하면 시험이 또 내려온다.\n언젠가 다시 문을 잠그는 마을이 생기지."),
       say(VALEN, "그러니 줄을 끊는다. 아이가 다시는\n떨어지지 않게. 그게 내 대답이다."),
       { kind: "choices", prompt: "어떻게 할까?", options: [
         { text: "칼을 뽑는다", branch: [
@@ -612,7 +612,7 @@ function lanternNight(project: Project, exec: Exec): void {
       // 쩌억 — 카메라가 북쪽 탑 문으로 올라가 빛기둥을 보여 주고 돌아온다.
       shake(6, 900),
       se("easyrpg-sound-ice2"),
-      narrate("쩌억— 발밑 깊은 데서 얼음 우는 소리.", { position: "bottom" }),
+      narrate("쩌억. 발밑 깊은 데서 얼음 우는 소리가 난다.", { position: "bottom" }),
       panTo(L.gateDoor[0]!.x, 5, 1600),
       se("easyrpg-sound-holy3"),
       ...pillarLights,
@@ -729,10 +729,10 @@ function lanternNightEvents(project: Project): void {
         say(OSA, "밤에 얼음 위로 나가시게요?\n오늘은 눈보라가 세요. 불 앞에서 쉬었다 가요."),
         fadeOut(900),
         { kind: "recoverAll" } as unknown as Command,
-        narrate("제2막 「빌린 불」 — 여기까지", { position: "center", context: "narration" }),
+        narrate("제2막 「빌린 불」은 여기까지", { position: "center", context: "narration" }),
         narrate("얼음 위의 등, 하늘탑, 그리고 이리스는\n다음 업데이트에서 이어집니다.", { position: "center", context: "narration" }),
         fadeIn(700),
-        narrate("지금 저장해 두면 다음 판본에서 이 여관부터 이어서 할 수 있다.", { context: "system" }),
+        narrate("다음 판본에서 이 여관부터 이어 하려면\n지금 저장해 두자.", { context: "system" }),
         { kind: "openSaveMenu" } as unknown as Command,
       ], { graphic: look })
       : page("ev_fs2_frost_innkeeper_night", "밤을 기다림", [sw(SW_HARMA)], [
@@ -797,11 +797,11 @@ function towerReleaseStop(project: Project): void {
       say(KAEL, "이리스가 이 위에 있어. 가자."),
       fadeOut(900),
       { kind: "recoverAll" } as unknown as Command,
-      narrate("제2막 「빌린 불」 — 여기까지", { position: "center", context: "narration" }),
+      narrate("제2막 「빌린 불」은 여기까지", { position: "center", context: "narration" }),
       narrate("하늘탑의 위층, 그리고 이리스는\n다음 업데이트에서 이어집니다.", { position: "center", context: "narration" }),
       fadeIn(700),
       setSw(SW_STOP_B9),
-      narrate("지금 저장해 두면 다음 판본에서 하늘탑 1층부터 이어서 할 수 있다.", { context: "system" }),
+      narrate("다음 판본에서 하늘탑 1층부터 이어 하려면\n지금 저장해 두자.", { context: "system" }),
       { kind: "openSaveMenu" } as unknown as Command,
     ], { trigger: { kind: "auto" }, priority: "below" }),
     page("ev_fs2_tower_stop_done", "끝", [sw(SW_STOP_B9)], [], { priority: "below" }),

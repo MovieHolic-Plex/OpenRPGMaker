@@ -404,7 +404,7 @@ function barracks(project: Project, exec: Exec): void {
     reward: { itemId: FS2_GEAR_ITEM, itemName: "압수품 꾸러미", itemDescription: "초소에서 빼앗긴 짐. 카엘의 검도, 엘레나의 책도 그대로다." },
     // 들키면 경비 둘과 싸우고(도망 불가) 감방으로 다시 끌려간다 — 실수에 값을 치른다.
     // 들키면 감방으로 끌려간다. 경비와의 전투는 뺐다 — 쉬운 전투가 매번 금화를 줘서, 붙잡히는 게 벌이 아니라 벌이였다(독립 판정: 29번 붙잡혀 696G).
-    failPenalty: { sendTo: { mapId: FS2_CELL_ID, x: CELL.arrive.x, y: CELL.arrive.y }, text: "경비병: 「거기 누구냐! 탈옥이다!」\n등불에 들켜 지하 감방으로 도로 끌려갔다." },
+    failPenalty: { sendTo: { mapId: FS2_CELL_ID, x: CELL.arrive.x, y: CELL.arrive.y }, text: "「거기 누구냐! 탈옥이다!」\n등불에 들켜 지하 감방으로 도로 끌려갔다." },
   });
   // 야경꾼 — 두 상자 줄 사이 통로를 천천히 오간다(난이도 곡선: 왕도에는 기사 대신 약한 야경꾼). 등 뒤로, 그가 끝에서 돌아설 때 건넌다.
   // 보면 짧게 달려와 덮친다(돌진 4칸). 붙잡히면 전투 없이 감방으로 끌려간다.
@@ -413,7 +413,7 @@ function barracks(project: Project, exec: Exec): void {
     chaser: { at: BARRACKS.patrol[0], graphic: { selectionId: `charset:${WATCHMAN_CHIP.textureKey}:${WATCHMAN_CHIP.characterIndex}` }, speed: 5, sightRange: 3 },
     patrol: { waypoints: BARRACKS.patrol },
     pursuit: { scope: "map", doorDelayMs: 0, searchMs: 1500, onLost: "return" },
-    caughtPenalty: { sendTo: { mapId: FS2_CELL_ID, x: CELL.arrive.x, y: CELL.arrive.y }, text: "야경꾼: 「거기 서! 탈옥이다!」\n야경꾼에게 붙잡혀 지하 감방으로 끌려갔다." },
+    caughtPenalty: { sendTo: { mapId: FS2_CELL_ID, x: CELL.arrive.x, y: CELL.arrive.y }, text: "「거기 서! 탈옥이다!」\n야경꾼에게 붙잡혀 지하 감방으로 끌려갔다." },
     checkpointOnEntry: false,
     mood: false,
   }) as { eventId?: string } | undefined;
@@ -469,7 +469,7 @@ function barracks(project: Project, exec: Exec): void {
     "땡그랑— 푸른 깃발 아래 경비병이 종소리 쪽으로 돌아섰다.": "땡그랑. 푸른 깃발 밑 경비병이\n종소리 쪽으로 돌아선다.",
     "경비병들이 서로를 바라보는 사이 금고 상자를 열었다!": "경비병들이 서로 마주 보는 사이\n금고 상자를 연다.",
     "퍼즐 해독 보상! 「압수품 꾸러미」과(와) 200G를 획득했다!": "「압수품 꾸러미」와 200G를 되찾았다.",
-    "경비병: 「방금 종이 울렸지…?」": "경비병: 「방금 종 울렸지?」",
+    "경비병: 「방금 종이 울렸지…?」": "경비병이 중얼거린다. 「방금 종 울렸지?」",
   };
   const rewrite = (cmds: unknown[] | undefined): void => {
     for (const c of cmds ?? []) {
@@ -678,7 +678,7 @@ function curfewHub(project: Project, exec: Exec, hubId: string): void {
         { kind: "choices", prompt: "등을 맡을까?", options: [
           { text: "맡는다", branch: [
             se("cc0-se-orp-inventory-cloth"), item(FS2_UNLIT_LAMP, 3),
-            narrate("「꺼진 등」 3개를 받았다.\n별지기 할아버지 댁·약방·리사네 집 문고리에 걸자.", { context: "system" }),
+            narrate("「꺼진 등」 3개를 받았다.\n별지기 할아버지 댁, 약방, 리사네 집\n문고리에 걸자.", { context: "system" }),
             setSw(SW_Q4_TAKEN),
           ] },
           { text: "지금은 못 한다", branch: [say(MIRE, "그래, 너희 몸이 먼저지.")] },
@@ -793,7 +793,7 @@ function observatoryNight(project: Project, exec: Exec, obsId: string): void {
   WELL.forEach((c, i) => {
     const id = `ev_fs2_well_${i}`;
     addEv(project, FS2_HUB_NIGHT_ID, id, "광장 우물", c, [
-      page(`${id}_p`, "우물", [], [narrate("깊은 우물이다. 바닥이 보이지 않는다.")]),
+      page(`${id}_p`, "우물", [], [narrate("깊은 우물이다. 바닥이 안 보인다.")]),
       page(`${id}_down`, "사다리", [sw(SW_MIRE)], [
         narrate("우물 안쪽 벽에 쇠 사다리가 박혀 있다.\n미레 아주머니 말대로다."),
         se("cc0-se-osx-wooded-box-open"),
@@ -835,10 +835,10 @@ function observatoryNight(project: Project, exec: Exec, obsId: string): void {
     cutBegin(),
     emote("ev_fs2_obs_hanel", "exclamation", 700),
     say(HANEL, "…밑으로 올 줄 알았다.\n정문으로 왔으면 혼쭐을 냈을 게다."),
-    say(ELENA, "선생님! 이리스가—"),
+    say(ELENA, "선생님! 이리스가──"),
     say(HANEL, "안다. 발렌이 쇠 마차에 태워 북쪽으로 데려갔지."),
     say(HANEL, "서른 해 전, 둘째 아이에게 대답한 건\n숲에 드나들던 젊은 것 셋이었다.\n나, 브람, 그리고 세린."),
-    say(HANEL, "세린은 나보다 별 이름을 잘 외웠다.\n그리고 나보다 먼저, 대답하자고 했지."),
+    say(HANEL, "세린은 나보다 별 이름을 잘 외웠다.\n대답하자고 먼저 말한 것도 세린이었지."),
     say(KAEL, "그다음은요?"),
     emote("ev_fs2_obs_hanel", "ellipsis", 900),
     { kind: "fork", condition: { kind: "item", itemId: FS_KEEPER_SEAL, present: true }, then: [
@@ -900,7 +900,7 @@ function northGate(project: Project, exec: Exec, smithyId: string): void {
   for (const [id, name] of [[SW_ROHAN, "B4: 로한의 창"], [SW_BRAM, "B4: 브람 — 개구멍"], [SW_B4_ALARM, "B4: 개구멍 — 들켰다"], [SW_B4_EDGE, "B4: 숲 가장자리 — 브람의 고백"]] as const) ensureSwitch(project, id, name);
   exec(project, "upsert_equipment", { equipment: {
     id: FS2_ROHAN_SPEAR, name: "로한의 별쇠 창", slot: "weapon", price: 0, iconResourceId: "cc0-jetrel-bronze-sword", imageResourceId: "cc0-jetrel-bronze-sword",
-    description: "공격 40 · 상대의 회피를 무시한다.\n로한이 「네가 쓸 몫」으로 벼려 둔 별쇠 창.\n손잡이 무늬가 새라의 창과 같다.",
+    description: "공격 40, 상대의 회피를 무시한다.\n로한이 「네가 쓸 몫」으로 벼려 둔 별쇠 창.\n손잡이 무늬가 새라의 창과 같다.",
     statBonuses: { attack: 40, defense: 0, mind: 0, agility: 2 }, equippableActorIds: ["actor_hero", "actor_fs2_sarah"], equippableClassIds: ["class_hero", "class_guardian", "class_fs2_lancer"],
     attackElementIds: ["spear"], effectFlags: { ignoreDodge: true },
   } });
@@ -984,7 +984,7 @@ function northGateEvents(project: Project, exec: Exec, hubId: string): void {
   ]);
   forestEdgeChase(project, exec, first!, hubId, bramChip);
   addEv(project, first!, "ev_fs2_north_back", "성벽 개구멍으로", FS2_NORTH_ROUTE.entry, [
-    page("ev_fs2_north_back_p", "돌아간다", [], [narrate("개구멍으로 기어 광장으로 돌아간다."), transfer(FS2_HUB_NIGHT_ID, HOLE.front, "down")], { priority: "below", trigger: { kind: "playerTouch" } }),
+    page("ev_fs2_north_back_p", "돌아간다", [], [narrate("개구멍을 기어 나가 광장으로 돌아간다."), transfer(FS2_HUB_NIGHT_ID, HOLE.front, "down")], { priority: "below", trigger: { kind: "playerTouch" } }),
   ]);
 }
 
@@ -1050,7 +1050,7 @@ function forestEdgeChase(project: Project, exec: Exec, mapId: string, hubId: str
         pursuit: { scope: "map", doorDelayMs: 0, searchMs: 4000, onLost: "wait" },
         // 끌려가는 곳(개구멍 앞)은 아래에서 직접 잇는다 — 도구의 통행 검사가 그 칸(광장 개구멍 앞, 돌아가는 이벤트도 같은 칸)을 막힌 칸으로 본다.
         caughtPenalty: {
-          text: "순찰 기사: 「잡았다, 이 쥐새끼들!」\n카엘은 손을 뿌리치고\n개구멍 안으로 도로 기어들었다.",
+          text: "「잡았다, 이 쥐새끼들!」\n카엘은 순찰 기사의 손을 뿌리치고\n개구멍 안으로 도로 기어들었다.",
         },
         activateSwitch: SW_B4_ALARM,
         checkpointOnEntry: false,
@@ -1190,7 +1190,7 @@ function dawnwell(project: Project, exec: Exec): void {
   SW_MEMS.forEach((id, i) => ensureSwitch(project, id, `B5: 새벽샘 기억 ${i + 1}`));
   exec(project, "upsert_item", { item: {
     id: FS2_CERT_ITEM, name: "반쯤 탄 정착 확인서", type: "special", occasion: "never", consumable: false, price: 0,
-    description: "천문대 서랍에 있던 것과 같은 양식. 서명란: 「기록자 세린」.\n그 밑에 삐뚤빼뚤한 아이 글씨. 「엄마 문 열어」.",
+    description: "천문대 서랍의 것과 같은 양식이다.\n서명란에 「기록자 세린」, 그 밑에\n삐뚤빼뚤한 아이 글씨로 「엄마 문 열어」.",
   } });
   ashFoes(project, exec);
   // 새벽샘 터 — 참고 지도 「폐허 마을」의 배치(위 가운데 무너진 예배당, 우물 광장, 빙 둘러 선 집)를 빌린 불탄 마을.
@@ -1435,13 +1435,13 @@ const PIERCED = "state_fs_pierced";
 function sarahKit(project: Project, exec: Exec): void {
   exec(project, "upsert_skill", { skill: {
     id: FS2_SKILL_PIERCE, name: "꿰뚫는 창", scope: "enemy", type: "normal", power: 72, variance: 12, hitRate: 98, criticalRate: 15,
-    description: "창끝에 온 체중을 싣는다. 단단한 적도 꿰뚫어 「관통상」을 남긴다.",
+    description: "창끝에 온 체중을 싣는다.\n단단한 적도 꿰뚫어 「관통상」을 남긴다.",
     mpCost: { flat: 4, percentMax: 0 }, effect: { kind: "damage", statistic: "attack", affects: "hp" }, elementId: "spear",
     stateEffects: [{ stateId: PIERCED, chance: 100, operation: "add" }], animationId: "anim_gen_slash_steel", retroChoreographyId: "skill_dragoon_lance_thrust",
   } });
   exec(project, "upsert_skill", { skill: {
     id: FS2_SKILL_HOLD, name: "막아서기", scope: "self", type: "normal", power: 0, variance: 0, hitRate: 100,
-    description: "창을 가로로 들고 앞을 막아선다. 3턴 동안 적의 공격을 새라가 받아 내고 방어가 오른다.",
+    description: "창을 가로로 들고 앞을 막아선다.\n3턴 동안 적의 공격을 새라가 받고\n방어가 오른다.",
     mpCost: { flat: 3, percentMax: 0 }, effect: { kind: "support" },
     stateEffects: [{ stateId: "state_taunt", chance: 100, operation: "add" }, { stateId: "state_defense_up", chance: 100, operation: "add" }],
     animationId: "anim_gen_power_aura", retroChoreographyId: "skill_guard_taunt",
@@ -1449,19 +1449,19 @@ function sarahKit(project: Project, exec: Exec): void {
   const cover = project.database.skills.find((s) => s.id === "skill_motion_cover");
   exec(project, "upsert_skill", { skill: {
     id: FS2_SKILL_COVER, name: "감싸기", scope: "self", type: "normal", power: 20, variance: 10, hitRate: 96,
-    description: "동료 앞으로 몸을 던진다. 2턴 동안 동료 하나를 노린 공격을 새라가 대신 맞는다.",
+    description: "동료 앞으로 몸을 던진다.\n2턴 동안 동료 하나에게 가는 공격을\n새라가 대신 맞는다.",
     mpCost: { flat: 6, percentMax: 0 }, effect: { kind: "support" }, stateEffects: [],
     ...(cover?.battleGimmick ? { battleGimmick: cover.battleGimmick } : {}), retroChoreographyId: "chor_builtin_cover",
   } });
   exec(project, "upsert_skill", { skill: {
     id: FS2_SKILL_HEADS_UP, name: "고개 들어라", scope: "ally", type: "normal", power: 0, variance: 0, hitRate: 100,
-    description: "새라의 말버릇. 동료 어깨를 툭 쳐 공격을 올린다. 익히면 카엘과의 「쌍창 돌파」가 열린다.",
+    description: "동료 어깨를 툭 쳐 공격을 올린다.\n새라의 말버릇이다.\n익히면 카엘과 「쌍창 돌파」를 쓴다.",
     mpCost: { flat: 4, percentMax: 0 }, effect: { kind: "support" }, stateEffects: [{ stateId: "state_attack_up", chance: 100, operation: "add" }],
     animationId: "anim_gen_power_aura",
   } });
   exec(project, "upsert_skill", { skill: {
     id: FS2_SKILL_EMBER_KEEP, name: "불씨 지키기", scope: "ally", type: "normal", power: 0, variance: 0, hitRate: 100,
-    description: "손바닥 불씨를 동료에게 건네 몇 턴 동안 조금씩 회복시킨다. 익히면 카엘과의 「불꽃 십자참·겹」이 열린다.",
+    description: "손바닥 불씨를 동료에게 건넨다.\n몇 턴 동안 HP가 조금씩 찬다.\n익히면 카엘과 「불꽃 십자참·겹」을 쓴다.",
     mpCost: { flat: 6, percentMax: 0 }, effect: { kind: "support" }, stateEffects: [{ stateId: "state_regen", chance: 100, operation: "add" }],
     animationId: "anim_gen_power_aura",
   } });
@@ -1485,7 +1485,7 @@ function sarahCombos(project: Project, exec: Exec): void {
   // 듀얼 — 카엘+새라. 새라 유대 3(고개 들어라)이 열쇠.
   exec(project, "upsert_combo_tech", {
     id: FS2_COMBO_TWIN_LANCE, name: "쌍창 돌파",
-    description: "카엘의 돌진 찌르기와 새라의 꿰뚫는 창이 한 점에 꽂힌다. 단일 2타, 「관통상」 확정.",
+    description: "카엘의 돌진 찌르기와 새라의 꿰뚫는 창이\n한 점에 꽂힌다. 적 하나를 두 번 찌르고\n「관통상」을 반드시 남긴다.",
     actorIds: [HERO, FS2_SARAH_ACTOR],
     requires: [{ actorId: HERO, skillId: "skill_hero_rush_pierce" }, { actorId: FS2_SARAH_ACTOR, skillId: FS2_SKILL_HEADS_UP }],
     mpCosts: [{ actorId: HERO, mp: 4 }, { actorId: FS2_SARAH_ACTOR, mp: 5 }],
@@ -1496,7 +1496,7 @@ function sarahCombos(project: Project, exec: Exec): void {
   // 듀얼 — 엘레나+새라. 새라가 앞을 막는 동안 엘레나의 불이 창날에 감긴다.
   exec(project, "upsert_combo_tech", {
     id: FS2_COMBO_EMBER_WALL, name: "불씨 창벽",
-    description: "새라가 창을 세우고 엘레나가 그 창날에 불을 감는다. 아군 전체에 「반격」. 맞으면 불로 되받아친다.",
+    description: "새라가 창을 세우고\n엘레나가 그 창날에 불을 감는다.\n아군 전체에 「반격」. 맞으면 불로 되받아친다.",
     actorIds: [MAGE, FS2_SARAH_ACTOR],
     requires: [{ actorId: MAGE, skillId: "skill_mage_fireball" }, { actorId: FS2_SARAH_ACTOR, skillId: FS2_SKILL_HOLD }],
     mpCosts: [{ actorId: MAGE, mp: 6 }, { actorId: FS2_SARAH_ACTOR, mp: 4 }],
@@ -1507,7 +1507,7 @@ function sarahCombos(project: Project, exec: Exec): void {
   // 듀얼 — 새라+이리스(이리스가 돌아온 뒤). 창에 전격을 실어 꽂는다.
   exec(project, "upsert_combo_tech", {
     id: FS2_COMBO_THUNDER_LANCE, name: "뇌창",
-    description: "이리스의 광선이 새라의 창끝에 번개를 싣는다. 적 하나에 번개 피해. 기계에게 특히 잘 듣는다.",
+    description: "이리스의 광선이 새라의 창끝에 번개를 싣는다.\n적 하나에 번개 피해. 기계에게 특히 잘 듣는다.",
     actorIds: [FS2_SARAH_ACTOR, GUNNER],
     requires: [{ actorId: FS2_SARAH_ACTOR, skillId: FS2_SKILL_PIERCE }, { actorId: GUNNER, skillId: "skill_gunner_shot" }],
     mpCosts: [{ actorId: FS2_SARAH_ACTOR, mp: 5 }, { actorId: GUNNER, mp: 5 }],
@@ -1518,7 +1518,7 @@ function sarahCombos(project: Project, exec: Exec): void {
   // 트리플 — 엘레나+새라+이리스. 회수자 3단계의 열쇠.
   exec(project, "upsert_combo_tech", {
     id: FS2_COMBO_FROST_STARS, name: "서리 별무리",
-    description: "엘레나의 눈보라에 새라의 창과 이리스의 광선이 별처럼 박힌다. 적 전체 얼음, 「관통상」 60%·둔화 확정.",
+    description: "엘레나의 눈보라에 창과 광선이 별처럼\n박힌다. 적 전체에 얼음 피해.\n「관통상」 60% 확률, 둔화는 반드시 건다.",
     actorIds: [MAGE, FS2_SARAH_ACTOR, GUNNER],
     requires: [{ actorId: MAGE, skillId: "skill_mage_blizzard" }, { actorId: FS2_SARAH_ACTOR, skillId: FS2_SKILL_PIERCE }, { actorId: GUNNER, skillId: "skill_gunner_snipe" }],
     mpCosts: [{ actorId: MAGE, mp: 9 }, { actorId: FS2_SARAH_ACTOR, mp: 6 }, { actorId: GUNNER, mp: 6 }],
@@ -1529,7 +1529,7 @@ function sarahCombos(project: Project, exec: Exec): void {
   // 듀얼 — 카엘+엘레나 강화판. 엘레나 유대 3(불씨 지키기)이 열쇠.
   exec(project, "upsert_combo_tech", {
     id: FS2_COMBO_FLAME_CROSS_TWIN, name: "불꽃 십자참·겹",
-    description: "엘레나가 지켜 온 불씨를 카엘의 검에 통째로 옮긴다. 불 속성 3타 + 화상 확정.",
+    description: "엘레나가 지켜 온 불씨를\n카엘의 검에 통째로 옮긴다.\n불로 세 번 베고 화상을 반드시 입힌다.",
     actorIds: [HERO, MAGE],
     requires: [{ actorId: HERO, skillId: "skill_hero_cross_slash" }, { actorId: MAGE, skillId: FS2_SKILL_EMBER_KEEP }],
     mpCosts: [{ actorId: HERO, mp: 4 }, { actorId: MAGE, mp: 7 }],
@@ -1667,7 +1667,7 @@ function northFortress(project: Project, exec: Exec, hubId: string): void {
   for (const [id, name] of [[SW_SARAH, "B6: 새라 합류"], [SW_SPEAR_BACK, "B6 선택1: 창을 돌려줬다"], [SW_SPEAR_KEPT, "B6 선택1: 창을 맡아 뒀다"], [SW_SARAH_LOST, "B6: 성벽 위에서 한 번 졌다"]] as const) ensureSwitch(project, id, name);
   exec(project, "upsert_item", { item: {
     id: FS2_STAR_IRON, name: "별쇠 조각", type: "special", occasion: "never", consumable: false, price: 0,
-    description: "새라의 창끝에서 떼어 낸 별쇠. 로한이라면 창을 한 번 더 벼릴 수 있다.",
+    description: "새라의 창끝에서 떼어 낸 별쇠.\n로한이라면 이걸로 창을 한 번 더 벼려 줄 거다.",
   } });
   sarahKit(project, exec);
   // 새라 — 창기사(꿰뚫는 창·막아서기는 합류 때, 감싸기는 합류 +4). 합류 Lv8 = 새라에게 닿는 파티(Lv8, 요새를 다 싸우면 9).
@@ -1933,12 +1933,12 @@ function fortressEvents(project: Project, exec: Exec): void {
     say(SARAH, "그 창, 아버지가 너한테 줬구나.\n…나한텐 편지 한 줄 없더니."),
     { kind: "choices", prompt: "창을 어떻게 할까?", options: [
       { text: "창을 돌려준다", branch: [
-        say(KAEL, "아저씨가 저한테 맡기신 건\n새라 씨한테 갖다주라는 뜻이었을 거예요."),
+        say(KAEL, "아마 처음부터 새라 씨 드리라고\n저한테 맡기셨을 거예요."),
         say(SARAH, "…고개 들어라. 아버지 말버릇이야."),
         // 돌려준다 = 정말 돌려준다. 카엘은 1막 검으로 돌아가고 새라가 아버지 창을 든다(공격 40 을 내주고 유대 +1).
         { kind: "changeEquipment", actorId: "actor_hero", slot: "weapon", equipmentId: "equip_sword" } as unknown as Command,
         { kind: "changeEquipment", actorId: FS2_SARAH_ACTOR, slot: "weapon", equipmentId: FS2_ROHAN_SPEAR } as unknown as Command,
-        narrate("카엘이 「로한의 별쇠 창」을 새라에게 건넸다.\n카엘은 손에 익은 검을 다시 들었다.", { context: "system" }),
+        narrate("카엘이 「로한의 별쇠 창」을 새라에게 건넸다.\n손에는 다시 쓰던 검을 쥐었다.", { context: "system" }),
         setSw(SW_SPEAR_BACK),
         { kind: "setVariable", variableId: VAR_BOND_SARAH, op: "+=", value: 1 } as unknown as Command,
         narrate("♥ 새라와의 유대가 깊어졌다.", { context: "system" }),
