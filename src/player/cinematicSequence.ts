@@ -21,6 +21,8 @@ export type CinematicPlayback = {
   readonly done: Promise<CinematicCompletion>;
   readonly teardown: () => void;
   readonly releaseMusic: (fadeMs?: number) => void;
+  /** 첫 장면이 실제로 보이기 시작했을 때(그림·소리 준비가 끝나 「불러오는 중」이 걷혔을 때) 풀린다. 끝나거나 실패해도 풀린다. */
+  readonly firstFrame: Promise<void>;
 };
 
 /** Preserve the visible multi-layer composition across the final map load. */
@@ -89,7 +91,7 @@ export function playCinematicSequence(options: {
 }): CinematicPlayback {
   const { host, project, sequence, signal } = options;
   if (signal.aborted || !sequence?.enabled || sequence.scenes.length === 0) {
-    return { done: Promise.resolve(signal.aborted ? "aborted" : "completed"), teardown: () => undefined, releaseMusic: () => undefined };
+    return { done: Promise.resolve(signal.aborted ? "aborted" : "completed"), teardown: () => undefined, releaseMusic: () => undefined, firstFrame: Promise.resolve() };
   }
   const root = el("div", { class: "cinematic-sequence", dataset: { testid: "cinematic-sequence" } });
   const assets = options.assets ?? createCinematicAssets();
@@ -209,6 +211,7 @@ export function playCinematicSequence(options: {
     const lifetime = new AbortController();
     const media: HTMLMediaElement[] = [];
     let loadTimer: ReturnType<typeof setTimeout> | undefined;
+    let statusTimer: ReturnType<typeof setTimeout> | undefined;
     let advanceTimer: ReturnType<typeof setTimeout> | undefined;
     const paintFrames: number[] = [];
     let exitTimer: ReturnType<typeof setTimeout> | undefined;
@@ -225,6 +228,7 @@ export function playCinematicSequence(options: {
       mediaActive = false;
       lifetime.abort();
       clearTimeout(loadTimer);
+      clearTimeout(statusTimer);
       for (const item of media) {
         item.pause();
         item.removeAttribute("src");
@@ -289,7 +293,10 @@ export function playCinematicSequence(options: {
     const beginLoading = (): void => {
       root.dataset.mediaState = "loading";
       canContinueVideo = true;
-      status.textContent = "미디어 불러오는 중";
+      // 짧은 준비(컷 전환 사이 수백 ms)마다 글자가 번쩍이면 화면이 고장 난 것처럼 보인다 — 0.7초 넘게 걸릴 때만 알린다.
+      status.textContent = "";
+      clearTimeout(statusTimer);
+      statusTimer = setTimeout(() => { if (alive && root.dataset.mediaState === "loading") status.textContent = "미디어 불러오는 중"; }, 700);
       clearTimeout(loadTimer);
       loadTimer = setTimeout(() => {
         if (root.dataset.mediaState === "loading" || root.dataset.mediaState === "waiting") fail("error");
@@ -637,5 +644,10 @@ export function playCinematicSequence(options: {
   root.focus({ preventScroll: true });
   renderScene();
   atmosphere?.cue('entry');
-  return { done, teardown: abort, releaseMusic: stopMusic };
+  let shown!: () => void;
+  const firstFrame = new Promise<void>((resolve) => { shown = resolve; });
+  const shownObserver = new MutationObserver(() => { if (root.dataset.mediaState !== 'loading') { shownObserver.disconnect(); shown(); } });
+  if (root.dataset.mediaState !== 'loading') shown(); else shownObserver.observe(root, { attributes: true, attributeFilter: ['data-media-state'] });
+  void done.finally(() => { shownObserver.disconnect(); shown(); });
+  return { done, teardown: abort, releaseMusic: stopMusic, firstFrame };
 }

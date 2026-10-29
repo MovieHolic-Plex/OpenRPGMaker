@@ -663,6 +663,8 @@ export interface BattleSnapshot {
   readonly lastCaptureResult?: BattleCaptureResultSnapshot;
   readonly capturedMonsters: readonly BattleCapturedMonsterSnapshot[];
   readonly result?: BattleResult;
+  /** 전투 이벤트(「전투 중단」 m2-105 등)가 끝낸 전투. RM2K3 처럼 결과 상자 없이 곧바로 필드로 돌아간다. */
+  readonly endedByEvent?: true;
   readonly rewards: BattleRewardsSnapshot;
   readonly canEscape: boolean;
   /** 이 전투의 개시 진형. 보통 개시는 "normal". */

@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **187쪽 / 7484KB / 약 2,196,730 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **187쪽 / 7485KB / 약 2,197,006 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -78,7 +78,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/autotiles.md` | 13 | `install-pixel-art-world-shared-host.mjs`, `pixelArtWorldAutotiles.ts`, `prepare-pixel-art-world-xp-library.mjs`, `publish-pixel-art-world-xp-library.mjs`, `reports/pr617-621-integration.md`, `src/assets/tiboRecoveredTileset.json`, `src/project/defaults/iceGrandPlain64.ts`, `src/project/defaults/tallGrassArrange.ts`, `test/iceGrandPlain64.test.ts`, `test/placeConceptRender.test.ts`, `test/villageBuilder.test.ts`, `tiboRecovery.test.ts`, `wildRouteForest.ts` |
 | `openwiki/battle-impact-contact.md` | 1 | `verify-shots/battle-impact/README.md` |
 | `openwiki/battle-motion-programs.md` | 7 | `verify-shots/battle-motion/SUMMARY.md`, `verify-shots/battle-motion/adversarial/trajectory-review.json`, `verify-shots/battle-motion/editor-audit.json`, `verify-shots/battle-motion/multihit/SUMMARY.md`, `verify-shots/battle-motion/player-final/SUMMARY.md`, `verify-shots/battle-motion/rules-audit.json`, `verify-shots/battle-motion/swap/SUMMARY.md` |
-| `openwiki/beodeul-city.md` | 27 | `behavior.mjs`, `bench.mjs`, `beodeulDungeonTools.ts`, `compare.json`, `drive.mjs`, `fallenAstel.ts`, `forestHarmony.ts`, `frozenTowns.ts`, `harness-data/object-gate/vqa/beodeul-town-wall-r1..r5/receipt.json`, `pdiff.py`, `pixel-diff.json`, `render.png`, `space.json`, `tampers.json`, `tiledata/city-refs/outskirts-wooden-houses.png`, `trace.json`, `verify-shots/assistant-house-entry/README.md`, `verify-shots/beodeul-assistant/reloaded-render.png`, `verify-shots/beodeul-building-refinement/README.md`, `verify-shots/beodeul-default/bd-existing-combined-town.png`, `verify-shots/beodeul-door/applied/README.md`, `verify-shots/beodeul-door/storage-proof.json`, `verify-shots/beodeul-ground/README.md`, `verify-shots/beodeul-native-restoration/README.md`, `verify-shots/beodeul-small-village/README.md`, `verify-shots/gabled-roof/SUMMARY.md`, `villageContract.ts` |
+| `openwiki/beodeul-city.md` | 26 | `behavior.mjs`, `bench.mjs`, `beodeulDungeonTools.ts`, `compare.json`, `drive.mjs`, `fallenAstel.ts`, `forestHarmony.ts`, `harness-data/object-gate/vqa/beodeul-town-wall-r1..r5/receipt.json`, `pdiff.py`, `pixel-diff.json`, `render.png`, `space.json`, `tampers.json`, `tiledata/city-refs/outskirts-wooden-houses.png`, `trace.json`, `verify-shots/assistant-house-entry/README.md`, `verify-shots/beodeul-assistant/reloaded-render.png`, `verify-shots/beodeul-building-refinement/README.md`, `verify-shots/beodeul-default/bd-existing-combined-town.png`, `verify-shots/beodeul-door/applied/README.md`, `verify-shots/beodeul-door/storage-proof.json`, `verify-shots/beodeul-ground/README.md`, `verify-shots/beodeul-native-restoration/README.md`, `verify-shots/beodeul-small-village/README.md`, `verify-shots/gabled-roof/SUMMARY.md`, `villageContract.ts` |
 | `openwiki/bgm-catalog.md` | 4 | `artifacts/bgm-release/bgm-release-v1.json`, `catalog.raw.json`, `output/evidence/agy-interface-smoke-transcript.json`, `output/evidence/audio-ai-final/ingestion-report.json` |
 | `openwiki/charset-actor-harness.md` | 43 | `SOURCE.md`, `alpha-render.json`, `alpha.png`, `alpha/SUMMARY.md`, `alpha_sheet.png`, `archive-readback.json`, `browser-proof.json`, `charset-eight-transparent.png`, `charset-eight.json`, `charset-eight.png`, `charset-normal.png`, `charset-strong.png`, `charset-weak.png`, `context.png`, `delivery-readback.json`, `delivery.json`, `desc.json`, `discarded.json`, `driver.json`, `evidence/20261004-continuation/harness-contracts-final.json`, `experiment.json`, `export-readback.json`, `gate.json`, `initial-images-readback.json`, `licenses/easyrpg/AUTHORS.md`, `live-reload.json`, `live-review.png`, `mixed100-002__gpt-r1/views/context.png`, `model-frames.json`, `novelty-transfers.json`, `novelty.json`, `pack/characters.json`, `pack/editor-assets.json`, `pack/index.html`, `pixel-edits.json`, `pixel-proof.png`, `production-errors.json`, `readback.json`, `shared-library-error.json`, `sheet_rgba.png`, `visual-inputs.json`, `walk-qa.json`, `walk-transfer.json` |
 | `openwiki/chipset-gap-inventory.md` | 5 | `20261007-gpt/fantasy-smithy-r1/judge.json`, `genre-20261007/gemini-harbor-romance/project.json`, `qa-runs/genre-20261007/gemini-harbor-romance/project.json`, `qa-runs/harnesses/space-craft/20261007-gpt/murim-dojo-r1/trace.json`, `romance-preset-first-build.md` |
@@ -297,24 +297,24 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 
 절 제목 없음 (평면 목록 페이지).
 
-### `openwiki/asset-store.md` — 42KB · 317줄 · ~12,464 토큰
+### `openwiki/asset-store.md` — 43KB · 324줄 · ~12,740 토큰
 
 - `L6` 어디에 무엇이 있나
 - `L25` 계약 동기화 절차
 - `L35` 올리기(내보내기) 경로
   - `L40` 제외(Rasak·REFMAP·RPG Maker MV/MZ·PAW) 집행 지점
-- `L57` 받기(가져오기) 경로
-  - `L66` 캐릭터 칸의 짝 초상 (char-gen 캐릭터 세트, 2026-10-20)
-  - `L81` 음악 팩의 곡별 고르기 설명 (2026-10-25)
-  - `L91` 조수가 스토어 음악을 찾아 넣는다 (2026-10-25)
-- `L124` 게시기
-- `L154` 상태 확인
-- `L158` 에디터 첫 진입 화면 (2026-10-12)
-- `L165` 스토어 창 UX (2026-10-20, 「사용자들이 매우 쉽게」)
-- `L190` 에디터에서 열기 링크 (2026-10-20)
-- `L207` 주인 초안 (D2, 2026-10-20)
-- `L215` 바로 플레이 게임 (2026-10-23)
-  - `L309` 조수와 평가 (2026-10-25)
+- `L64` 받기(가져오기) 경로
+  - `L73` 캐릭터 칸의 짝 초상 (char-gen 캐릭터 세트, 2026-10-20)
+  - `L88` 음악 팩의 곡별 고르기 설명 (2026-10-25)
+  - `L98` 조수가 스토어 음악을 찾아 넣는다 (2026-10-25)
+- `L131` 게시기
+- `L161` 상태 확인
+- `L165` 에디터 첫 진입 화면 (2026-10-12)
+- `L172` 스토어 창 UX (2026-10-20, 「사용자들이 매우 쉽게」)
+- `L197` 에디터에서 열기 링크 (2026-10-20)
+- `L214` 주인 초안 (D2, 2026-10-20)
+- `L222` 바로 플레이 게임 (2026-10-23)
+  - `L316` 조수와 평가 (2026-10-25)
 
 ### `openwiki/assistant-v2.md` — 93KB · 312줄 · ~28,356 토큰 · 통째읽기 잘림
 
