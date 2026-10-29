@@ -871,6 +871,8 @@ function northGateEvents(project: Project, exec: Exec, hubId: string): void {
       say(ROHAN, "…왔구나. 하넬이 보낼 줄 알았다."),
       say(ROHAN, "약속한 몫이다. 별쇠를 섞었다."),
       se("cc0-se-orp-inventory-cloth"),
+      // 독립 판정(judge14): 「창을 손에 쥐었다」 뒤에도 무기 칸이 그대로였다 — 장비 바꾸기는 가진 것만 낀다(가방에 먼저 넣는다).
+      item(FS2_ROHAN_SPEAR, 1),
       { kind: "changeEquipment", actorId: "actor_hero", slot: "weapon", equipmentId: FS2_ROHAN_SPEAR } as unknown as Command,
       narrate("카엘은 「로한의 별쇠 창」을 손에 쥐었다.", { context: "system" }),
       say(KAEL, "아저씨, 이거… 손잡이 무늬가 특이해요."),
@@ -1112,7 +1114,8 @@ function dawnwell(project: Project, exec: Exec): void {
   foe(FS2_DAWNWELL_ID, "troop_fs2_ash_wisps", 7, 22, "float");
   foe(FS2_DAWNWELL_ID, "troop_fs2_cinder_golem", 30, 22, "lumber");
   // 별빛 결정 — 마을 터 입구 곁.
-  exec(project, "place_savepoint", { mapId: FS2_DAWNWELL_ID, x: b.x + 2, y: b.y - 3, id: "ev_fs2_dawnwell_save", name: "별빛 결정", mode: "slot",
+  // 독립 판정(judge14): 밤 도시~재의 들판을 지나며 약이 바닥났고 회복은 「지는 것」뿐이었다 — 새벽샘 결정은 기운을 채운다.
+  exec(project, "place_savepoint", { mapId: FS2_DAWNWELL_ID, x: b.x + 2, y: b.y - 3, id: "ev_fs2_dawnwell_save", name: "별빛 결정", mode: "slot", heal: true,
     objectId: SAVE_CRYSTAL, prompt: "기록하시겠습니까?", sparkleRadius: 2 });
 }
 const DAWN: { kept: { x: number; y: number; w: number; h: number; kitId?: string }; entry: Cell; front: Cell } = { kept: { x: 0, y: 0, w: 0, h: 0 }, entry: { x: 0, y: 0 }, front: { x: 0, y: 0 } };
@@ -1133,7 +1136,9 @@ function dawnwellEvents(project: Project): void {
   mems.forEach((m, i) => {
     const id = `ev_fs2_dawn_mem_${i}`;
     addEvent(town, id, "새벽샘의 흔적", m.at, [
-      page(`${id}_p`, "흔적", [], [...m.lines.map(([who, body]) => who ? say(who, body) : narrate(body)), setSw(SW_MEMS[i]!)], { priority: "below" }),
+      // 독립 판정(judge14): 투명한 조사 칸이라 150걸음 동안 못 찾았다 — 밟으면 보이고(닿기), 다가가면 반짝인다. 본 뒤엔 조용하다.
+      page(`${id}_p`, "흔적", [sw(SW_MEMS[i]!, false)], [...m.lines.map(([who, body]) => who ? say(who, body) : narrate(body)), setSw(SW_MEMS[i]!)],
+        { priority: "below", trigger: { kind: "playerTouch" }, glow: { radius: 1, color: "#ffd890" }, nearSparkle: { radius: 3 } }),
     ]);
   });
   const allMems: Condition[] = SW_MEMS.map((id) => sw(id));
@@ -1142,7 +1147,7 @@ function dawnwellEvents(project: Project): void {
       narrate("무너지지 않은 단 한 채. 문에 빗장이 바깥에서 걸려 있다."),
       narrate("문 아래쪽, 아이 키 높이에 작은 주먹 자국 셋."),
       say(ELENA, "문이 바깥에서 잠겨 있었어.\n안에 있던 사람이 못 나오게."),
-      say(KAEL, "…이 마을을 먼저 둘러보자."),
+      say(KAEL, "…이 마을을 먼저 둘러보자.\n잿더미 속에 반짝이는 게 있어. 남은 흔적일지도."),
     ]),
     page("ev_fs2_dawn_door_open", "빗장을 연다", [...allMems, sw(SW_CERT, false)], [
       cutBegin(),
