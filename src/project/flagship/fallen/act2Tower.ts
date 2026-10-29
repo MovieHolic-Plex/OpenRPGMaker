@@ -534,6 +534,7 @@ const T4 = {
   coffin: { x: 15, y: 11 },         // 석관(동서 2×1) 왼쪽 — (15..16, 11). 바로 뒤(북쪽)가 큰 렌즈
   coffinFront: { x: 15, y: 12 },    // 관을 조사하는 칸(관 바로 아래)
   iris: { x: 17, y: 11 },           // 깨어난 이리스가 서는 칸(관 동쪽 곁)
+  irisNear: { x: 17, y: 12 },       // 「한 번 더 읽어 주세요」 — 카엘(16,12) 바로 옆으로 한 걸음
   doorway: [{ x: 15, y: 13 }, { x: 16, y: 13 }],
   dark: { x: 14, y: 19 },
   alcovePlugs: [{ x: 10, y: 19 }, { x: 10, y: 20 }],
@@ -567,6 +568,7 @@ function floorFour(project: Project, exec: Exec): void {
   // 꼭대기(B12)를 먼저 잇는다 — 둥근 방 문 이벤트가 생기면 계단 쪽이 갈려 연결 도구가 「봉쇄」로 거절한다.
   buildSummitMap(project, exec, T4.stair);
   for (const c of [T4.arrive, T4.coffinFront, T4.iris, ...T4.doorway, T4.dark, ...T4.alcovePlugs, T4.pageStar, T4.pageHand]) mustWalk(project, FS2_T4, c, "4층");
+  mustWalk(project, FS2_T4, T4.irisNear, "4층");
 
   // 렌즈 대기실 — 북쪽 벽 앞 큰 렌즈(등대 프레넬 렌즈), 그 앞 석관, 양옆 수정 받침·촛대, 벽에 별자리 지도. 모두 stamp_object.
   if (!stamp(project, exec, FS2_T4, COFFIN_KIT.closed, T4.coffin)) throw new Error("[fallen-star tower] 4층 석관을 못 놓았다");
@@ -661,9 +663,14 @@ function floorFour(project: Project, exec: Exec): void {
     se("cc0-se-osx-metal-03"), shake(1, 600),
     ...lidOpen,
     narrate("무거운 뚜껑이 옆으로 밀려난다."),
+    // 이리스는 관 속(오른쪽 칸)에서 일어나 관 밖으로 뛰어내린다 — 「원래 서 있던 사람」으로 읽혔다(적대 VQA 2026-10-30).
+    m2("m2-040-set-event-location", { target: "ev_fs2_t4_iris", mapId: FS2_T4, x: T4.coffin.x + 1, y: T4.coffin.y }),
     fx("sparkle", T4.coffin.x + 1, T4.coffin.y, 1400),
-    flash("white", 500),
+    flash("green", 600),
     setSw(SW_IRIS_WAKE),
+    wait(900),
+    route("ev_fs2_t4_iris", [{ kind: "setDirectionFix", enabled: true }, { kind: "jump", dx: 1, dy: 0, heightPx: 10, durationMs: 520 }, { kind: "setDirectionFix", enabled: false }]),
+    fx("dust", T4.iris.x, T4.iris.y, 600),
     // 탑이 걷어 간 기록 셋 — 직업이 주는 기술도 「잊기」로 빠진다(일지를 다시 읽으면 하나씩 돌아온다).
     ...forgetThree(),
     wait(700),
@@ -689,14 +696,19 @@ function floorFour(project: Project, exec: Exec): void {
     narrate("카엘이 바랜 쪽을 짚는다. 카엘의 글씨다."),
     say(KAEL, "「오늘, 이리스가 빵을 먹었다.\n따뜻했다고 했다.」 …기억나?"),
     // 읽은 줄이 돌아오는 순간 — 렌즈와 수정 받침이 함께 맥박친다.
-    fx("heal", T4.iris.x, T4.iris.y, 1200), se("easyrpg-sound-recovery7"),
-    fx("sparkle", (lens?.x ?? T4.coffin.x) + 1, (lens?.y ?? T4.coffin.y - 4) + 2, 1200),
-    ...(pedW ? [fx("sparkle", pedW.x, pedW.y, 1000)] : []),
+    // 빛이 약해 안 읽혔다(적대 VQA) — 렌즈·수정·이리스가 한 번에, 화면 전체가 초록빛으로 숨 쉰다.
+    flash("green", 900),
+    fx("heal", T4.iris.x, T4.iris.y, 1600), se("easyrpg-sound-recovery7"),
+    fx("magic", (lens?.x ?? T4.coffin.x) + 1, (lens?.y ?? T4.coffin.y - 4) + 2, 1800),
+    fx("sparkle", (lens?.x ?? T4.coffin.x) + 1, (lens?.y ?? T4.coffin.y - 4) + 2, 1800),
+    ...(pedW ? [fx("magic", pedW.x, pedW.y, 1600), fx("sparkle", pedW.x, pedW.y - 1, 1600)] : []),
     se("easyrpg-sound-chime2"),
     sys("이리스가 「광선 조준」을 다시 떠올렸다."),
     wait(500),
     say(IRIS, "맛은 안 나요.\n그런데 이 줄은 따뜻해요."),
     emote("ev_fs2_t4_iris", "heart", 1000),
+    // 이리스가 카엘 바로 곁으로 한 걸음 — 둘이 마주 본다.
+    route("ev_fs2_t4_iris", [{ kind: "move", dir: "down" }, { kind: "turn", dir: "left" }]),
     say(IRIS, "한 번 더 읽어 주세요. 몇 번이고."),
     say(KAEL, "응. 몇 번이고."),
     say(ELENA, "이리스, 손 줘. …차가워.\n그래도 안 떨리네."),
