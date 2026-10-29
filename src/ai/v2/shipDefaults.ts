@@ -25,7 +25,7 @@ import { normalizeGameOverSettings } from "@/project/cinematicSettings";
 import { fieldMenu, storyFieldMenu } from "@/project/fieldMenu";
 import { syncMenuFeatures, syncMenuUiStyle } from "@/project/menuSystem";
 import { FACTORY_HERO_ARMS } from "./genreDefaults";
-import { fitRouteLevelsToGates } from "./monsterRouteLevels";
+import { fitGateLevelCurve, fitRouteLevelsToGates } from "./monsterRouteLevels";
 
 type Obj = Record<string, unknown>;
 
@@ -48,6 +48,7 @@ export function applyShipDefaults(project: Project, task = project.gameBlueprint
   if (repeatingStartObjectives(project).length) applied.push(...moveRepeatingStartObjective(project));
   if (staleMilestoneTargets(project).length) applied.push(...fillStaleObjectives(project));
   applied.push(...fillGymArrivalObjectives(project));
+  applied.push(...fitGateLevelCurve(project));
   applied.push(...fitRouteLevelsToGates(project));
   if (endingConditionsUnset(project).length) applied.push(...dropDeadEndingConditions(project));
   if (selfLoopTransfers(project).length) applied.push(...dropSelfLoopTransfers(project));

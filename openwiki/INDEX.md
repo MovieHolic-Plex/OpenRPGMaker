@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **187쪽 / 7454KB / 약 2,187,598 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **187쪽 / 7455KB / 약 2,188,126 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -15,7 +15,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 
 | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
 |---|---|---|---|---|
-| `openwiki/assistant-v2.md` | 85KB | 26KB | 304 | ~26,083 |
+| `openwiki/assistant-v2.md` | 87KB | 28KB | 305 | ~26,513 |
 | `openwiki/atlas-biome-interior.md` | 98KB | 21KB | 511 | ~29,589 |
 | `openwiki/beodeul-city.md` | 191KB | 19KB | 1015 | ~57,960 |
 | `openwiki/charset-actor-harness.md` | 70KB | 7KB | 501 | ~22,135 |
@@ -38,7 +38,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/harnesses/object-gate.md` | 84KB | 12KB | 615 | ~25,505 |
 | `openwiki/harnesses/super-harness.md` | 102KB | 4KB | 1063 | ~32,225 |
 | `openwiki/jp-city.md` | 108KB | 14KB | 510 | ~31,925 |
-| `openwiki/runtime-battle.md` | 437KB | 32KB | 2415 | ~128,516 |
+| `openwiki/runtime-battle.md` | 438KB | 32KB | 2415 | ~128,614 |
 | `openwiki/runtime-m2-flow-controls.md` | 52KB | 23KB | 342 | ~14,200 |
 | `openwiki/runtime-pre-edit-routing.md` | 193KB | 99KB ⚠상한 초과 — 절을 더 쪼개라 | 1162 | ~57,395 |
 | `openwiki/runtime-project-schema.md` | 261KB | 80KB ⚠상한 초과 — 절을 더 쪼개라 | 1820 | ~73,723 |
@@ -315,22 +315,22 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L213` 바로 플레이 게임 (2026-10-23)
   - `L307` 조수와 평가 (2026-10-25)
 
-### `openwiki/assistant-v2.md` — 85KB · 304줄 · ~26,083 토큰 · 통째읽기 잘림
+### `openwiki/assistant-v2.md` — 87KB · 305줄 · ~26,513 토큰 · 통째읽기 잘림
 
 - `L16` 다양성 — 같은 요청이 같은 맵이 되지 않게 (2026-10-23)
 - `L24` 게임 요소 — 퀘스트·아이템·전투·파티·스위치 (2026-10-24)
 - `L38` 새 플레이어 길잡이 — 목표 줄·보이는 이야기 이벤트 (2026-10-26, J90~J96)
   - `L57` 2차 (2026-10-27, J98·J101~J106 — romance-j91·toy-j91 판정)
 - `L84` 게임 조립 기본값 — 타이틀·오프닝을 청사진에 맞춘다 (2026-10-28 스위트 조립 장부)
-- `L119` 모델 호출 무응답 한도·고치기 차례 상한 (2026-10-29 vm1 argon)
-- `L134` 이벤트 자리·시작 칸 (2026-10-29 야외 자동 플레이)
-- `L139` 번호 자물쇠·빈 맵 탈출 (2026-10-29 vm3 flash escape 판정 «가짜 단서·자동 입력»·«단일 빈 맵»)
-- `L153` 조사 자리·조사 표식 (2026-10-29 vm3 terra escape «책상 정면에서는 반응 없음·하이라이트가 흐림»)
-- `L198` 켜는 법
-- `L205` 구조 — v1 실행기를 그대로 쓴다
-- `L223` 빌더가 하는 것 / 못 하는 것
-- `L282` 시험
-- `L290` v1 비교 결과 (2026-10-23, 코드 e06766bd8d)
+- `L120` 모델 호출 무응답 한도·고치기 차례 상한 (2026-10-29 vm1 argon)
+- `L135` 이벤트 자리·시작 칸 (2026-10-29 야외 자동 플레이)
+- `L140` 번호 자물쇠·빈 맵 탈출 (2026-10-29 vm3 flash escape 판정 «가짜 단서·자동 입력»·«단일 빈 맵»)
+- `L154` 조사 자리·조사 표식 (2026-10-29 vm3 terra escape «책상 정면에서는 반응 없음·하이라이트가 흐림»)
+- `L199` 켜는 법
+- `L206` 구조 — v1 실행기를 그대로 쓴다
+- `L224` 빌더가 하는 것 / 못 하는 것
+- `L283` 시험
+- `L291` v1 비교 결과 (2026-10-23, 코드 e06766bd8d)
 
 ### `openwiki/atlas-biome-interior.md` — 98KB · 511줄 · ~29,589 토큰 · 통째읽기 잘림
 
@@ -2725,7 +2725,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L15` Quick routing
 - `L24` For AI agents
 
-### `openwiki/runtime-battle.md` — 437KB · 2415줄 · ~128,516 토큰 · 통째읽기 잘림
+### `openwiki/runtime-battle.md` — 438KB · 2415줄 · ~128,614 토큰 · 통째읽기 잘림
 
 - `L1` 기술 목록에 기본 공격(skill_attack)을 싣지 않는다 (2026-10-29)
 - `L6` 레트로 파티 창 수치 칸은 글자만큼 늘어난다 (2026-10-29)
