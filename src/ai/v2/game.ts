@@ -66,7 +66,7 @@ export const V2_GAME_TOOLS: readonly string[] = [
   "upsert_item", "upsert_equipment", "set_shop_stock", "set_sell_prices", "place_chest", "upsert_craft_recipe",
   "upsert_actor", "upsert_class", "upsert_skill", "set_party", "add_companion",
   "upsert_enemy", "upsert_troop", "upsert_troop_battle_page", "set_encounter_table",
-  "find_empty_ground", "place_npc", "upsert_event", "patch_event_page", "run_scene_test", "upsert_common_event", "set_npc_schedule", "configure_time_system", "place_savepoint", "set_start_position",
+  "find_empty_ground", "place_npc", "upsert_event", "patch_event_page", "add_event_page", "run_scene_test", "upsert_common_event", "set_npc_schedule", "configure_time_system", "place_savepoint", "set_start_position",
   // 2026-10-24 새 12 사례 비교: v1 이 쓰고 v2 에 없던 것 — 칩 고르기(없으면 그림 관문이 막는다)·이야기 깃발·엔딩·필드 적·이벤트 옮기기/지우기·문 잇기·날씨.
   "list_npc_graphics", "list_resources", "read_npc_layout", "declare_story_flag", "list_endings", "define_ending", "place_field_enemy",
   "move_event", "remove_event", "create_transfer_pair", "set_scene_mood",
