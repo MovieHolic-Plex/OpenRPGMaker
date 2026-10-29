@@ -7,7 +7,7 @@
 //  문: 출구 방에서 넓게 퍼지는 나무 — 복도·거실 같은 중심 방을 먼저 거친다. 현관↔복도·부엌↔거실처럼 트인 쌍은 칸막이를 걷는다.
 // 결과는 rooms.ts 의 rooms·connect·exit 그대로다.
 import type { HandInteriorSpec } from "./builder";
-import type { HandInteriorConnect, HandInteriorNotch, HandInteriorRoom } from "./rooms";
+import { notchRect, type HandInteriorConnect, type HandInteriorNotch, type HandInteriorRoom } from "./rooms";
 import { programKinds, roomPrograms, roomTemplates, templatesOfKind, templateStyle, type InteriorRoomTemplate, type InteriorStyleVariant } from "./templates";
 import { HALL_DRESS, HALL_H, HALL_KIND, type HallDress } from "./archHall";
 import { contrastPair } from "./wallContrast";
@@ -16,7 +16,11 @@ import { VENUE_SCALE_CONTRACT } from "./venueScale";
 
 type Pair = readonly [string, string] | { readonly a: string; readonly b: string };
 /** template: 이 방에 쓸 견본 id(빌더 내부) — 같은 게임에 같은 용도 방이 또 있으면 다른 견본 변형을 돌려 쓰게 조수 v2 빌더가 정한다. */
-export interface LayoutRoomRequest { readonly id?: string; readonly kind: string; readonly w?: number; readonly h?: number; readonly floor?: string; readonly wall?: string; readonly template?: string }
+export interface LayoutRoomRequest {
+  readonly id?: string; readonly kind: string; readonly w?: number; readonly h?: number; readonly floor?: string; readonly wall?: string; readonly template?: string;
+  /** (빌더 내부) 이 방의 도려 낼 귀퉁이 — ㄱ·ㄴ자·ㅗ자·창가 돌출 같은 방 모양을 빌더가 씨앗으로 고른다(2026-10-29 「서재가 늘 ㅁ자」). 동서 뒤집기 배치면 귀퉁이도 뒤집는다. */
+  readonly notches?: readonly HandInteriorNotch[];
+}
 export interface LayoutRequest {
   /** 예제 맵 key(house-1f·bakery…) 또는 건물 id(jp_house·tavern…) — 그 예제의 방 종류 목록을 쓴다. */
   readonly program?: string;
@@ -28,6 +32,8 @@ export interface LayoutRequest {
   /** 칸막이 없이 트고 싶은 방 쌍. */
   readonly open?: readonly Pair[];
   readonly seed?: number;
+  /** (빌더 내부) 출구 자리 — 출구 방 폭의 비율(0 서쪽 끝 ~ 1 동쪽 끝). 도려 낸 귀퉁이 열은 피한다. 생략하면 옛 자리. */
+  readonly exitAt?: number;
   readonly styleVariant?: InteriorStyleVariant;
   readonly maxWidth?: number; readonly maxHeight?: number;
 }
@@ -393,7 +399,7 @@ function programVariation(tilesetId: string, req: LayoutRequest): { v: ModernPro
 }
 
 /** bw·bh 는 seed 변주로 넓히기 전 견본 크기 - 줄 배치(rows)는 이 합으로 규모 규격 크기를 지키고, 넓힌 만큼은 칸막이 자리만 옮긴다. */
-interface Want { id: string; kind: string; tw: number; th: number; bw: number; bh: number; minW: number; minH: number; floor?: string; wall?: string; template?: InteriorRoomTemplate; dress?: HallDress }
+interface Want { id: string; kind: string; tw: number; th: number; bw: number; bh: number; minW: number; minH: number; floor?: string; wall?: string; template?: InteriorRoomTemplate; dress?: HallDress; notches?: readonly HandInteriorNotch[] }
 interface Rect { x: number; y: number; w: number; h: number }
 
 /** 바깥 출구 틈을 내지 않는 방 — 전철 차내는 남쪽 벽이 좌석·문 그림이라 틈이 좌석 사이에 났다(J45). 드나들기는 벽면의 차 문(st-car-door) 앞 칸이다. */
@@ -451,7 +457,7 @@ export function layoutWants(tilesetId: string, req: LayoutRequest): Want[] {
     // (2026-10-25 J45: 승강장이 15칸으로 잘려 16칸 선로·승강장 끝 줄·승차 표시가 모두 빠졌다) — 그 방의 최소 폭은 견본 폭이다.
     const spansWidth = Boolean(template?.items.some((it) => it.t === "t" && it.x === 0 && (it.w ?? 0) >= template.w));
     return { id, kind: q.kind, tw, th: Math.max(th, minH), bw: tw0, bh: Math.max(th0, minH), minW: spansWidth ? tw : Math.max(2, Math.min(tw, 3) - (tw <= 2 ? 1 : 0)), minH,
-      floor: q.floor ?? pal?.[0] ?? template?.floor, wall: q.wall ?? pal?.[1] ?? template?.wall, template };
+      floor: q.floor ?? pal?.[0] ?? template?.floor, wall: q.wall ?? pal?.[1] ?? template?.wall, template, ...(q.notches?.length ? { notches: q.notches } : {}) };
   });
 }
 
@@ -809,7 +815,9 @@ function buildCandidatesForVariant(
     const rooms: LayoutRoom[] = wants.map((w) => {
       const rc = rects.get(w.id)!;
       const x0 = mirrorHorizontal ? BW - rc.x - rc.w : rc.x;
-      return { id: w.id, kind: w.kind, x0, y0: rc.y, x1: x0 + rc.w - 1, y1: rc.y + rc.h - 1, ...(w.floor ? { floor: w.floor } : {}), ...(w.wall ? { wall: w.wall } : {}), ...(w.template ? { template: w.template.id } : {}), ...(w.dress ? { dress: w.dress } : {}) };
+      // 요청한 귀퉁이는 방 크기가 받을 때만(넓이 고치기로 방이 줄면 빠진다) — 동서 뒤집기면 서↔동.
+      const notches = (w.notches ?? []).filter((n) => n.w <= rc.w - 4 && n.h <= rc.h - 5).map((n) => mirrorHorizontal ? { ...n, corner: `${n.corner[0]}${n.corner[1] === "w" ? "e" : "w"}` as HandInteriorNotch["corner"] } : n);
+      return { id: w.id, kind: w.kind, x0, y0: rc.y, x1: x0 + rc.w - 1, y1: rc.y + rc.h - 1, ...(w.floor ? { floor: w.floor } : {}), ...(w.wall ? { wall: w.wall } : {}), ...(w.template ? { template: w.template.id } : {}), ...(w.dress ? { dress: w.dress } : {}), ...(notches.length ? { notches } : {}) };
     });
     // ㄱ·ㄴ자 방 - 바닥 줄 방(남쪽이 건물 밖 벽, 아래 이웃 없음) 중 큰 방의 한 귀퉁이를 구조 코어(설비 샤프트·벽장)로 도려 낸다. 이웃 방 쪽 귀퉁이와 출구 방은 피한다.
     if ((tilesetId === "modern_city" || tilesetId === "jp_city") && req.program && rooms.length >= 3) {
@@ -835,7 +843,12 @@ function buildCandidatesForVariant(
     }
     const exitRoom = rooms.find((rm) => rm.id === entrance) ?? rooms[0]!;
     const exitW = exitRoom.x1 - exitRoom.x0 + 1;
-    const exitX = styleVariant === "B" && exitW >= 8
+    // 요청한 출구 자리(빌더 씨앗) — 남쪽 귀퉁이를 도려 낸 열과 벽 모서리는 피한다.
+    const southCut = new Set((exitRoom.notches ?? []).filter((n) => n.corner[0] === "s").flatMap((n) => { const r = notchRect(exitRoom, n); return Array.from({ length: r.x1 - r.x0 + 3 }, (_, i) => r.x0 - 1 + i); }));
+    const asked = req.exitAt !== undefined && exitW >= 5
+      ? Array.from({ length: exitW - 2 }, (_, i) => exitRoom.x0 + 1 + i).filter((x) => !southCut.has(x)).sort((a, b) => Math.abs(a - (exitRoom.x0 + req.exitAt! * (exitW - 1))) - Math.abs(b - (exitRoom.x0 + req.exitAt! * (exitW - 1))) || a - b)[0]
+      : undefined;
+    const exitX = asked !== undefined ? asked : styleVariant === "B" && exitW >= 8
       ? exitRoom.x0 + Math.max(2, Math.floor(exitW * 0.28))
       : styleVariant === "C" && exitW >= 8
         ? exitRoom.x0 + Math.min(exitW - 3, Math.floor(exitW * 0.72))

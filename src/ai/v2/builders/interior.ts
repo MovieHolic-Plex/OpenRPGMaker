@@ -5,13 +5,14 @@
 // 3) 「계단」 앵커 → 위층을 따로 짓고 계단끼리 이동 이벤트로 잇는다(계단 입구 계약은 도구의 fitStairTransfers 가 맞춘다).
 // 모델은 칸 좌표를 쓰지 않는다 — 비평가가 짚은 칸(near)은 「그 근처의 빈 자리」를 고르는 힌트로만 쓴다.
 import { HAND_INTERIOR_TILESET_ID, MODERN_CITY_INTERIOR_TILESET_ID, SENGOKU_INTERIOR_TILESET_ID, WIZARDING_INTERIOR_TILESET_ID, roomSpecOf, type HandInteriorSpec } from "@/editor/handInterior/builder";
-import { roomTemplates, type InteriorRoomTemplate } from "@/editor/handInterior/templates";
+import { roomTemplates, templateStyle, type InteriorRoomTemplate } from "@/editor/handInterior/templates";
 import { INTERIOR_BARE_FLOOR_LIMIT, measureInteriorBareFloor } from "@/editor/handInterior/bareFloor";
 import type { BuildRun, PlaceBuilder, PlaceBuildResult, PlaceRecord, PlaceSpec, ZoneSpec } from "../types";
 import { interiorVenues, type InteriorVenue, type VenueStamp } from "./interiorVenues";
 import { kindServesPurpose, purposeOf, purposeSwap } from "../roomPurpose";
 import { DRESS_ROOM_TARGET, dressRoom, roomBarePct } from "./dressRoom";
-import { VIGNETTE_TARGET, vignetteRoomSize } from "@/editor/handInterior/vignettes";
+import { VIGNETTE_TARGET, hashText, itemCharacters, itemsFitWords, roomCharacters, seeded, vignetteRoomSize } from "@/editor/handInterior/vignettes";
+import type { HandInteriorNotch } from "@/editor/handInterior/rooms";
 
 type Obj = { id: string; x: number; y: number };
 type Room = { id: string; x0: number; y0: number; x1: number; y1: number; floor?: string; wall?: string };
@@ -459,30 +460,141 @@ function usedTemplates(project: { maps: Record<string, { locations?: readonly { 
  * 추리 여관 판에서 객실·홀이 모두 같은 견본이라 같은 방이 되풀이됐다. 결정적: 쓴 횟수가 적은 것, 같으면 크기 말(small/medium/large)이 고르는 견본에 넓이가 가까운 것.
  * 그 용도의 견본을 아직 하나도 안 썼으면 undefined(원래 고르기 그대로).
  */
-function rotateTemplate(tilesetId: string, kind: string, size: string | undefined, used: ReadonlyMap<string, number>): InteriorRoomTemplate | undefined {
-  const pool = templatePool(tilesetId, kind);
+function rotateTemplate(tilesetId: string, kind: string, size: string | undefined, used: ReadonlyMap<string, number>, pick: TemplatePick = {}): InteriorRoomTemplate | undefined {
+  const pool = templatePool(tilesetId, kind, pick.single);
   if (pool.length < 2 || !pool.some((t) => used.has(t.id))) return undefined;
-  const pref = pickTemplate(tilesetId, kind, size)!;
+  const pref = pickTemplate(tilesetId, kind, size, pick)!;
   const area = (t: InteriorRoomTemplate) => t.w * t.h;
-  return [...pool].sort((a, b) => (used.get(a.id) ?? 0) - (used.get(b.id) ?? 0) || Math.abs(area(a) - area(pref)) - Math.abs(area(b) - area(pref)) || a.id.localeCompare(b.id))[0];
+  // 같은 설계의 크기 변형은 같은 방으로 읽힌다 — 덜 쓴 «설계»를 먼저(2026-10-29 서재 다섯 견본이 모두 귀족 서재 한 설계의 크기 변형).
+  const designUse = new Map<string, number>();
+  for (const t of pool) if (used.has(t.id)) designUse.set(templateDesign(t), (designUse.get(templateDesign(t)) ?? 0) + used.get(t.id)!);
+  return [...pool].sort((a, b) => (designUse.get(templateDesign(a)) ?? 0) - (designUse.get(templateDesign(b)) ?? 0) || (used.get(a.id) ?? 0) - (used.get(b.id) ?? 0) || Math.abs(area(a) - area(pref)) - Math.abs(area(b) - area(pref)) || a.id.localeCompare(b.id))[0];
 }
 
-function templatePool(tilesetId: string, kind: string): InteriorRoomTemplate[] {
+/** 견본의 «설계» — 손 견본은 크기 변형(-xs·-s·-sq·-m·-l·-l2…)을 한 설계로 친다. */
+export function templateDesign(t: Pick<InteriorRoomTemplate, "map">): string { return t.map.startsWith("authored-") ? t.map.replace(/-(xs|s|sq|m|l|xl|t)\d?$/u, "") : t.map; }
+
+/**
+ * 방 종류의 견본 후보: 그 종류의 손 견본 + 같은 종류의 평범한(EXOTIC 아닌) 예제 견본(2026-10-29 「서재가 늘 같은 방」 — 손 견본이 있으면 그것만 써서
+ * 서재가 귀족 서재 한 설계(크기 변형 다섯)뿐이었다). 밀도 필터는 그대로. single(한 방짜리 장소)이면 4×5 같은 곁방 크기 견본은 뺀다(있으면).
+ */
+export function templatePool(tilesetId: string, kind: string, single = false): InteriorRoomTemplate[] {
   const ts = roomTemplates(tilesetId).filter((t) => t.kind === kind);
-  // 손으로 짠 견본(authored-…)은 그 종류의 제 견본으로 친다 — 아니면 작은 교회가 원래 예배당 31×13 만 골랐다(2026-10-29 room-vig3 church).
   const own = ts.filter((t) => t.map === kind || t.map.startsWith("authored-"));
   const plain = ts.filter((t) => !EXOTIC_MAPS.has(t.map));
-  const base = own.length ? own : plain.length ? plain : ts;
+  const merged = [...new Map([...own, ...plain].map((t) => [t.id, t] as const)).values()];
+  const base = merged.length ? merged : ts;
   // 가구 한 점당 바닥 12칸을 넘는 성긴 견본은 빼고 고른다(있으면) — 큰 학교의 입학 홀이 manor_1f 23×19(가구 16점, 점당 27칸)를 골라
   // 맨바닥 60% 의 빈 광장이 됐다(2026-10-28 interior 장부 56·57 후속). 빈 바닥은 메우지 말고 방을 줄인다.
   const dense = base.filter((t) => t.w * t.h <= 12 * Math.max(1, t.items?.length ?? 0));
-  return [...(dense.length ? dense : base)].sort((a, b) => a.w * a.h - b.w * b.h);
+  const list = dense.length ? dense : base;
+  const roomy = single ? list.filter((t) => Math.min(t.w, t.h) >= 5 && t.w * t.h >= 30) : list;
+  return [...(roomy.length ? roomy : list)].sort((a, b) => a.w * a.h - b.w * b.h || a.id.localeCompare(b.id));
 }
 
-function pickTemplate(tilesetId: string, kind: string, size: string | undefined) {
-  const pool = templatePool(tilesetId, kind);
+interface TemplatePick { readonly key?: string; readonly style?: string; readonly single?: boolean; readonly text?: string }
+/**
+ * 견본 고르기. key(게임 열쇠·장소·구역 글)가 있으면 크기 낱말에 맞는 띠 안에서 «설계»를 씨앗으로 고르고 그 설계의 크기 변형 중 목표 넓이에 가까운 것 —
+ * 같은 입력이면 같은 견본, 다른 게임이면 다른 설계. style 이 있으면(여러 방 건물의 앞 방 화풍) 그 화풍·두루 견본을 먼저.
+ * key 가 없으면 옛 동작(넓이순 작은·가운데·큰 것).
+ */
+function pickTemplate(tilesetId: string, kind: string, size: string | undefined, pick: TemplatePick = {}) {
+  const pool = templatePool(tilesetId, kind, pick.single);
   if (!pool.length) return undefined;
-  return size === "small" ? pool[0] : size === "large" ? pool[pool.length - 1] : pool[Math.floor((pool.length - 1) / 2)];
+  if (pick.key === undefined) return size === "small" ? pool[0] : size === "large" ? pool[pool.length - 1] : pool[Math.floor((pool.length - 1) / 2)];
+  const area = (t: InteriorRoomTemplate) => t.w * t.h;
+  const median = area(pool[Math.floor((pool.length - 1) / 2)]!);
+  const half = Math.ceil(pool.length / 2);
+  const band = size === "small" ? pool.slice(0, half) : size === "large" ? pool.slice(pool.length - half) : pool.filter((t) => area(t) >= median * 0.5 && area(t) <= median * 1.8);
+  // 성격이 다른 설계는 빼고(평범한 서재·귀족 서재에 엘프 잎 벽·마법진 견본이 오지 않게), 그다음 앞 방 화풍.
+  const ids = (t: InteriorRoomTemplate) => [...t.items.map((it) => it.id), t.floor, t.wall];
+  // 마법·엘프처럼 드문 성격 낱말이면 그 성격 견본을 크기 띠 밖에서라도 먼저(마법사의 서재 → 탑 서재).
+  const rare = roomCharacters(pick.text ?? "").filter((c) => c === "arcane" || c === "elf");
+  const themed = rare.length ? pool.filter((t) => rare.some((c) => itemCharacters(ids(t)).has(c)) && itemsFitWords(ids(t), pick.text ?? "")) : [];
+  const fits = themed.length ? themed : band.filter((t) => itemsFitWords(ids(t), pick.text ?? ""));
+  const fit = fits.length ? fits : band;
+  const styled = pick.style ? fit.filter((t) => templateStyle(t) === pick.style || templateStyle(t) === "any") : fit;
+  const cands = styled.length ? styled : fit.length ? fit : pool;
+  const designs = [...new Set(cands.map(templateDesign))].sort();
+  const design = designs[hashText(`${pick.key}|${kind}`) % designs.length]!;
+  const target = median * (size === "small" ? 0.75 : size === "large" ? 1.4 : 1);
+  return cands.filter((t) => templateDesign(t) === design).sort((a, b) => Math.abs(area(a) - target) - Math.abs(area(b) - target) || a.id.localeCompare(b.id))[0]!;
+}
+
+/** 조합 길로 짓는 방 종류(2026-10-29 서재부터 — 다른 종류는 서재 결과를 본 뒤). */
+const COMPOSED_KINDS: ReadonlySet<string> = new Set(["study"]);
+interface RoomShape {
+  readonly label: string; readonly w: number; readonly h: number; readonly notches: HandInteriorNotch[]; readonly exitAt: number;
+  readonly floor?: string; readonly wall?: string; readonly characters: string[];
+  readonly annex?: { readonly id: string; readonly kind: string; readonly purpose: string; readonly w: number; readonly h: number };
+}
+/** 성격 → 재질 후보(바닥, 벽면). 칩셋 v5 견본이 쓰는 재질만. */
+const SHAPE_MATERIALS: Readonly<Record<string, readonly (readonly [string, string])[]>> = {
+  noble: [["dplank", "plaster"], ["dplank", "marblewall"]],
+  arcane: [["dplank", "stone"], ["flag", "stone"]],
+  astro: [["dplank", "stone"], ["dplank", "plaster"]],
+  scholar: [["dplank", "plaster"], ["plank", "log"]],
+  elf: [["elfstone", "livewood"]],
+  plain: [["dplank", "plaster"], ["plank", "log"], ["plank", "plaster"]],
+};
+/** 성격 → 곁방(종류, 용도 글). */
+const SHAPE_ANNEX: Readonly<Record<string, readonly (readonly [string, string])[]>> = {
+  arcane: [["alchemy", "마법사의 연금 구석"], ["library", "마법서 서고"]],
+  astro: [["library", "별 지도 서고"]],
+  scholar: [["library", "학자의 서고"]],
+  noble: [["library", "저택 서고"]],
+  plain: [["library", "서고"]],
+};
+/**
+ * 조합 방 모양 — 씨앗(게임 열쇠·장소·구역)과 크기 낱말로 고른다. 묶음 발자국으로 정한 바닥 넓이(base)를 지키며 모양만 바꾼다:
+ * 네모(4:3·가로로 긴·세로로 깊은) · ㄱ/ㄴ자(한 귀퉁이 도려 냄) · 창가 돌출(북쪽 두 귀퉁이를 도려 가운데가 북으로 나온 방) ·
+ * ㅗ자(남쪽 두 귀퉁이, 출구는 가운데) · 곁방(서고·연금 구석이 딸린 2실). 작은 방은 네모·ㄱ자만.
+ */
+function composeShape(key: string, size: string | undefined, text: string, base: { w: number; h: number }, single: boolean): RoomShape {
+  const r = seeded(hashText(`${key}|shape`));
+  const said = roomCharacters(text);
+  const characters = said.length ? said : ["plain"];
+  const main = characters[0]!;
+  // 바닥 넓이는 크기 낱말로 — 손 서재 견본의 바닥(7×5 35칸 · 8×6 48칸 · 9×6 54칸)과 같은 띠, 씨앗으로 ±15%. 묶음 발자국 넓이(base)는
+  // 큰 벽 묶음(책장+벽난로+책장) 하나로 방이 14×11 로 부풀어 맨바닥 40% 넘는 빈 방이 됐다(2026-10-29 study-variety 첫 판) — 그보다 크게 잡지 않는다.
+  const band = size === "small" ? [24, 32] : size === "large" ? [56, 72] : [36, 50];
+  const floorArea = Math.min(base.w * Math.max(3, base.h - 2), Math.round(band[0]! + r() * (band[1]! - band[0]!)));
+  const small = size === "small";
+  const kinds: [string, number][] = [["rect", 2], ["wide", 1.5], ["deep", 1], ["L", 2.5], ...(small ? [] : [["bay", 1.5], ["T", 1.5], ...(single ? [["annex", 2] as [string, number]] : [])] as [string, number][])];
+  const total = kinds.reduce((n, [, w]) => n + w, 0);
+  let roll = r() * total, kindPick = "rect";
+  for (const [k, w] of kinds) { if ((roll -= w) < 0) { kindPick = k; break; } }
+  const dims = (ratio: number, extra = 0) => { const a = floorArea + extra; const w = Math.max(5, Math.round(Math.sqrt(a * ratio))); return { w, h: Math.max(5, Math.ceil(a / w)) + 2 }; };
+  const mats = SHAPE_MATERIALS[main] ?? SHAPE_MATERIALS.plain!;
+  const [floor, wall] = mats[Math.floor(r() * mats.length)]!;
+  const exitAt = 0.25 + r() * 0.5;
+  const out = (label: string, d: { w: number; h: number }, notches: HandInteriorNotch[], extra: Partial<RoomShape> = {}): RoomShape => ({ label, ...d, notches, exitAt, floor, wall, characters, ...extra });
+  switch (kindPick) {
+    case "wide": return out("가로로 긴 네모", dims(2.1), []);
+    case "deep": return out("깊은 네모", dims(0.85), []);
+    case "L": {
+      const north = r() < 0.4, west = r() < 0.5;
+      const n: HandInteriorNotch = { corner: `${north ? "n" : "s"}${west ? "w" : "e"}` as HandInteriorNotch["corner"], w: 3, h: north ? 2 : 3 };
+      const d = dims(1.5, n.w * n.h);
+      return out(north ? "ㄱ자(북쪽 귀퉁이 벽장)" : "ㄴ자(남쪽 귀퉁이 도려 냄)", { w: Math.max(d.w, 8), h: Math.max(d.h, north ? 7 : 8) }, [n]);
+    }
+    case "bay": {
+      const nw = 3;
+      const d = dims(1.7, 2 * nw * 2);
+      return out("창가 돌출(북쪽 가운데가 나온 방)", { w: Math.max(d.w, 2 * nw + 5), h: Math.max(d.h, 7) }, [{ corner: "nw", w: nw, h: 2 }, { corner: "ne", w: nw, h: 2 }]);
+    }
+    case "T": {
+      const d = dims(1.8, 2 * 2 * 2);
+      return { ...out("ㅗ자(남쪽 두 귀퉁이 도려 냄)", { w: Math.max(d.w, 10), h: Math.max(d.h, 8) }, [{ corner: "sw", w: 2, h: 2 }, { corner: "se", w: 2, h: 2 }]), exitAt: 0.5 };
+    }
+    case "annex": {
+      const list = SHAPE_ANNEX[main] ?? SHAPE_ANNEX.plain!;
+      const [kind, purpose] = list[Math.floor(r() * list.length)]!;
+      const d = dims(1.4, -6);
+      return out(`곁방 딸린 2실`, { w: Math.max(6, d.w), h: Math.max(7, d.h) }, [], { annex: { id: `${kind}-annex`, kind, purpose, w: 5 + Math.floor(r() * 2), h: 7 } });
+    }
+    default: return out("네모", dims(4 / 3), []);
+  }
 }
 
 /** 이미 지어진 맵의 바닥·벽면 재질 id(칩셋 사양의 타일 목록에서 찾는다) — 고치기가 원래 재질을 지키게. */
@@ -922,47 +1034,75 @@ export const interiorBuilder: PlaceBuilder = {
     const used = new Map<string, number>();
     const usedTpl = usedTemplates(run.ctx.project, mapId);
     const firstFloor = zones.filter((z) => !z.floor || z.floor === 1);
+    // 게임마다 다른, 같은 입력이면 같은 씨앗 — make_place 가 넣은 variety(프로젝트 열쇠 + 요청문), 없으면 게임 제목. 견본·조합 고르기가 이 열쇠를 쓴다.
+    const varietyKey = `${spec.variety ?? run.ctx.project.meta.title ?? ""}|${spec.name}|${spec.theme ?? ""}`;
+    const single = firstFloor.length === 1;
+    let buildingStyle: string | undefined;
+    let shapeOut: RoomShape | undefined;
     const rooms = firstFloor.map((zone) => {
       const kindOut: { fallback?: boolean } = {};
       const kind = resolveKind(tilesetId, zone, notes, `${spec.name} ${spec.theme ?? ""}`, firstFloor.length === 1, kindOut);
       const n = (used.get(kind) ?? 0) + 1; used.set(kind, n);
+      const zoneKey = `${varietyKey}|${zone.kind}|${zone.purpose ?? ""}|${n}`;
+      const pick: TemplatePick = { key: zoneKey, single, text: `${zone.kind} ${zone.purpose ?? ""} ${spec.name} ${spec.theme ?? ""} ${spec.style ?? ""}`, ...(buildingStyle ? { style: buildingStyle } : {}) };
+      // 조합 길(2026-10-29 「서재가 늘 같은 방·늘 ㅁ자」): 견본 한 벌을 옮겨 심지 않고 성격 낱말·씨앗으로 방 모양(ㄱ자·ㅗ자·창가 돌출·곁방)과
+      // 기물 묶음을 고른다. 견본 길은 hints.furnish:"template".
+      const compose = COMPOSED_KINDS.has(kind) && spec.hints?.furnish !== "template" && !zone.keep && !zone.vignettes?.length && tilesetId === HAND_INTERIOR_TILESET_ID;
+      const roomText = `${zone.kind} ${zone.purpose ?? ""} ${single ? `${spec.name} ${spec.theme ?? ""}` : ""}`;
       // 크기: small = 가장 작은 견본, medium = 가운데, large = 가장 큰 견본(한 방짜리면 × 1.3). 큰 주인공 물건이 들어갈 만큼은 넓힌다.
       // 묶음 길: 방 크기를 견본이 아니라 그 용도 레시피 묶음 발자국 ÷ 목표 막힘(36%)으로 정한다(작게 0.75·크게 1.3 배 넓이).
       const sizeWord = zone.size ?? spec.size;
       const keepMiss = !!(zone.keep?.w && zone.keep.h) && !roomTemplates(tilesetId).some((t) => t.kind === kind && Math.abs(t.w - zone.keep!.w!) <= 2 && Math.abs(t.h - zone.keep!.h!) <= 2);
-      const vig = spec.hints?.furnish === "vignette" || (spec.hints?.furnish !== "template" && (!!kindOut.fallback || !pickTemplate(tilesetId, kind, sizeWord) || keepMiss));
-      if (vig && spec.hints?.furnish !== "vignette") notes.push(`구역 「${zone.id ?? zone.kind}」은 ${keepMiss ? `고정 크기 ${zone.keep!.w}×${zone.keep!.h} 에 맞는 ${kind} 견본이 없어` : `${zone.kind} 견본이 없어`} 기물 묶음 배치기로 꾸몄다`);
-      const vsize = vig && !zone.keep
-        ? vignetteRoomSize(tilesetId, kind, roomSpec, { purpose: `${zone.kind} ${zone.purpose ?? ""} ${firstFloor.length === 1 ? spec.name : ""}`, ...(zone.vignettes?.length ? { picks: zone.vignettes } : {}), scale: sizeWord === "small" ? 0.75 : sizeWord === "large" ? 1.3 : 1 })
+      const vig = compose || spec.hints?.furnish === "vignette" || (spec.hints?.furnish !== "template" && (!!kindOut.fallback || !pickTemplate(tilesetId, kind, sizeWord, pick) || keepMiss));
+      if (vig && !compose && spec.hints?.furnish !== "vignette") notes.push(`구역 「${zone.id ?? zone.kind}」은 ${keepMiss ? `고정 크기 ${zone.keep!.w}×${zone.keep!.h} 에 맞는 ${kind} 견본이 없어` : `${zone.kind} 견본이 없어`} 기물 묶음 배치기로 꾸몄다`);
+      const vsize0 = vig && !zone.keep
+        ? vignetteRoomSize(tilesetId, kind, roomSpec, { purpose: compose ? roomText : `${zone.kind} ${zone.purpose ?? ""} ${firstFloor.length === 1 ? spec.name : ""}`, ...(zone.vignettes?.length ? { picks: zone.vignettes } : {}), scale: sizeWord === "small" ? 0.75 : sizeWord === "large" ? 1.3 : 1, composed: compose })
         : undefined;
-      const rot = !vig && !zone.keep ? rotateTemplate(tilesetId, kind, sizeWord, usedTpl) : undefined;
-      if (rot && rot.id !== pickTemplate(tilesetId, kind, sizeWord)?.id) notes.push(`${kind} 견본 ${pickTemplate(tilesetId, kind, sizeWord)?.id} 은 이 게임에서 이미 써서 ${rot.id}(${rot.w}×${rot.h})로 바꿨다`);
-      const t = zone.keep?.w && zone.keep.h ? { w: zone.keep.w, h: zone.keep.h } : vsize ?? rot ?? pickTemplate(tilesetId, kind, sizeWord);
-      const tplId = !vig && !zone.keep ? (rot ?? pickTemplate(tilesetId, kind, sizeWord))?.id : undefined;
+      const shape = compose && vsize0 ? composeShape(zoneKey, sizeWord, roomText, vsize0, single) : undefined;
+      if (shape) { shapeOut ??= shape; notes.push(`구역 「${zone.id ?? zone.kind}」은 조합 길로 지었다 — 모양 ${shape.label}${shape.annex ? ` + 곁방 ${shape.annex.kind}` : ""}, 성격 ${shape.characters.join("·")}`); }
+      const vsize = shape ? { w: shape.w, h: shape.h } : vsize0;
+      const picked = !vig && !zone.keep ? pickTemplate(tilesetId, kind, sizeWord, pick) : undefined;
+      const rot = !vig && !zone.keep ? rotateTemplate(tilesetId, kind, sizeWord, usedTpl, pick) : undefined;
+      if (rot && rot.id !== picked?.id) notes.push(`${kind} 견본 ${picked?.id} 은 이 게임에서 이미 써서 ${rot.id}(${rot.w}×${rot.h})로 바꿨다`);
+      const chosen = rot ?? picked;
+      const t = zone.keep?.w && zone.keep.h ? { w: zone.keep.w, h: zone.keep.h } : vsize ?? chosen;
+      const tplId = chosen?.id;
       if (tplId) usedTpl.set(tplId, (usedTpl.get(tplId) ?? 0) + 1);
+      if (chosen && !buildingStyle && templateStyle(chosen) !== "any") buildingStyle = templateStyle(chosen);
       const need = (zone.anchors ?? []).map((a) => findPart(roomSpec, a)).filter((p): p is NonNullable<typeof p> => !!p && p.kind !== "hang");
       // 벽면 두 줄 + 물건 + 앞 통로 두 줄. 벽에 붙는 물건(벽난로·창)은 벽면 줄에 박히니 한 줄 덜.
       const minW = Math.max(0, ...need.map((p) => p.w + 4)), minH = Math.max(0, ...need.map((p) => Math.max(1, p.h) + (p.kind === "wall" ? 4 : 5)));
       // 여러 방 건물에서 「크다」는 방 수로 낸다 — 방마다 견본 × 1.3 으로 키우면 방이 내용보다 커져 빈 홀이 된다(마법학교 홀 30×25). 한 방짜리만 키운다.
       const grow = spec.size === "large" && !zone.keep && firstFloor.length === 1 && !vsize ? scale : 1;
       const sized = t ? { w: Math.max(minW, Math.round(t.w * grow)), h: Math.max(minH, Math.round(t.h * grow)) } : minW ? { w: minW, h: minH } : {};
-      return { id: zone.id ?? (n > 1 ? `${kind}${n}` : kind), kind, vig, tplId, ...(rot ? { template: rot.id } : {}), ...sized, min: { w: Math.max(5, minW), h: Math.max(6, minH) }, ...(zone.keep?.floor ? { floor: zone.keep.floor } : {}), ...(zone.keep?.wall ? { wall: zone.keep.wall } : {}), zone };
+      // 고른 견본을 layout 에 못 박는다 — 크기만 넘기면 layout 이 같은 크기·화풍에서 늘 같은 견본(authored-study-sq)을 다시 골랐다.
+      return { id: zone.id ?? (n > 1 ? `${kind}${n}` : kind), kind, vig, tplId, ...(tplId ? { template: tplId } : {}), ...sized, min: { w: Math.max(5, minW), h: Math.max(6, minH) },
+        ...(zone.keep?.floor ? { floor: zone.keep.floor } : shape?.floor ? { floor: shape.floor } : {}), ...(zone.keep?.wall ? { wall: zone.keep.wall } : shape?.wall ? { wall: shape.wall } : {}), ...(shape?.notches.length ? { notches: shape.notches } : {}), zone };
     });
+    // 조합 곁방(서고·연금 구석) — 한 방짜리 서재에만. 같은 바닥·벽 재질, 묶음 배치기로 꾸민다.
+    if (single && shapeOut?.annex && rooms[0]) {
+      const a = shapeOut.annex;
+      rooms.push({ id: a.id, kind: a.kind, vig: true, tplId: undefined, w: a.w, h: a.h, min: { w: 5, h: 6 }, ...(shapeOut.floor ? { floor: shapeOut.floor } : {}), ...(shapeOut.wall ? { wall: shapeOut.wall } : {}), zone: { kind: a.kind, purpose: a.purpose } } as unknown as typeof rooms[number]);
+    }
     const hints = spec.hints ?? {};
     // 묶음 길은 방 크기를 묶음 발자국으로 정했다 — 배치 변주 C·D 는 한 방을 가로 +4·사방 +2 칸 키워(서재 6×6 → 10×6·8×8) 그 크기를 버린다.
     // 묶음 길에서는 모델이 변주를 직접 고를 때만 쓰고, 소금(salt)으로는 고르지 않는다(견본·묶음 고르기는 seed 가 바꾼다).
     const vignette = rooms.some((r) => r.vig);
     // 방이 모두 손으로 짠 견본이면 소금 변주도 쓰지 않는다 — 배치 후보 C·D 가 방을 넓혀 5×6 객실 견본이 7×8 방 왼쪽 위에 몰리고 나머지가 맨바닥이 됐다.
     const allAuthored = rooms.length > 0 && rooms.every((r) => !r.vig && String(r.tplId ?? "").startsWith("authored-"));
-    const variant = typeof hints.variant === "number" ? hints.variant : !vignette && !allAuthored ? (spec.salt ?? 0) % 4 : 0;
+    // variety 열쇠가 있으면 무작위 salt 대신 그 해시 — 같은 게임·같은 요청이면 같은 배치(재현), 다른 게임이면 다른 배치.
+    const salt = spec.variety !== undefined ? hashText(varietyKey) % 1_000_000 : spec.salt;
+    const variant = typeof hints.variant === "number" ? hints.variant : !vignette && !allAuthored ? (salt ?? 0) % 4 : 0;
     const seed = typeof hints.seed === "number" ? hints.seed : undefined;
-    const layoutSeed = seed ?? (spec.salt ? 1 + (spec.salt % 99991) : undefined);
+    const layoutSeed = seed ?? (salt ? 1 + (salt % 99991) : undefined);
     // 가구: 견본 길(견본 한 벌 + 빈 바닥 메우기)이 기본, 견본 없는 방이 하나라도 있으면 기물 묶음 배치기(vignettes.ts — 벽·앞 통로·밀도 규칙,
     // 빈 바닥은 메우지 않고 방을 줄인다). 구역 vignettes(묶음 id·몸통 기물 id)는 모델이 고른 묶음.
     const picks = Object.fromEntries(rooms.filter((r) => r.zone.vignettes?.length).map((r) => [r.id, [...r.zone.vignettes!]]));
     const purposes = Object.fromEntries(rooms.map((r) => [r.id, `${r.zone.kind} ${r.zone.purpose ?? ""} ${rooms.length === 1 ? `${spec.name} ${spec.theme ?? ""}` : ""}`.trim()]));
     let base: Record<string, unknown> = { tileset: tilesetId, mapId, name: spec.name, replace: mapId ? true : undefined,
-      layout: { rooms: rooms.map((r) => clean({ id: r.id, kind: r.kind, w: r.w, h: r.h, template: (r as { template?: string }).template, floor: (r as { floor?: string }).floor, wall: (r as { wall?: string }).wall })), ...(variant ? { variant } : {}), ...(layoutSeed ? { seed: layoutSeed } : {}), ...(vignette ? { furnish: "vignette", purposes, ...(Object.keys(picks).length ? { vignettes: picks } : {}) } : {}) } };
+      layout: { rooms: rooms.map((r) => clean({ id: r.id, kind: r.kind, w: r.w, h: r.h, template: (r as { template?: string }).template, floor: (r as { floor?: string }).floor, wall: (r as { wall?: string }).wall, notches: (r as { notches?: unknown }).notches })), ...(variant ? { variant } : {}), ...(layoutSeed ? { seed: layoutSeed } : {}),
+        ...(shapeOut ? { exitAt: shapeOut.exitAt, composeSeed: hashText(`${varietyKey}|furnish`) % 1_000_000 } : {}),
+        ...(vignette ? { furnish: "vignette", purposes, ...(Object.keys(picks).length ? { vignettes: picks } : {}) } : {}) } };
     let first = build(run, base);
     if (!first.ok) {
       // 맵이 다른 칩셋의 살아 있는 맵이면 새 맵으로 짓는다(덮어쓰지 않는다).

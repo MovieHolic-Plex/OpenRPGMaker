@@ -299,6 +299,11 @@ function withSetupDefaults(result: PlaceBuildResult, builderId: string, project:
   return set.length ? { ...result, warnings: [...result.warnings, `게임 기본값을 깔았다: ${set.join(" · ")} — 사용자가 다른 것을 원하면 바꾼다`] } : result;
 }
 
+/** 결정적 장소 열쇠 — 프로젝트 열쇠(없으면 게임 제목) + 요청문. 실내 빌더가 견본·조합 씨앗에 쓴다(같은 게임·같은 요청 → 같은 방, 다른 게임 → 다른 설계). */
+function placeVariety(env: PiAssistantV2Env, task: unknown): string {
+  return `${env.request.projectKey ?? env.ctx.project.meta.title ?? ""}|${String(task ?? "").slice(0, 400)}`;
+}
+
 export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiToolShape[] {
   const task = env.request.task;
   const run = createBuildRun(env.ctx);
@@ -631,7 +636,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
       if (gate) return text(gate);
       // 같은 요청 → 같은 맵을 막는다(2026-10-23 다양성: 역전 상점가가 v1·v2·4차·5차 모두 화소까지 같았다). 고치기는 기록된 명세의 salt 를 물려받는다.
       const raw = (params as { spec: PlaceSpec }).spec;
-      let spec: PlaceSpec = localizeCultureSpec(localizePlaceSpec({ ...raw, salt: Math.floor(Math.random() * 1_000_000) }, String(task ?? "")), String(task ?? ""));
+      let spec: PlaceSpec = localizeCultureSpec(localizePlaceSpec({ ...raw, salt: Math.floor(Math.random() * 1_000_000), variety: placeVariety(env, task) }, String(task ?? "")), String(task ?? ""));
       // 이번 실행에서 이미 다른 장소를 지은 맵 위에 새 장소를 짓지 않는다 — 「지하 예배당」을 지은 맵에 「검은 장미 저택」을 다시 지어
       // 예배당이 1층 한 구석으로 사라졌다(2026-10-25 조수 단독 게임 G27). 같은 장소를 다시 짓는 것(이름이 같거나 한쪽이 다른 쪽을 품음)은 그대로 둔다.
       const target = spec.mapId ?? (spec.type === "interior" ? (run.ctx.currentMapId ?? run.ctx.project.startMapId) : undefined);
@@ -1049,7 +1054,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
       let map = blueprintMapFor(env.ctx.project, step.place);
       if (!map) {
         const guess = guessPlaceSpec(step.place, env.ctx.project, bp.genre, String(task ?? ""));
-        const spec: PlaceSpec = { ...guess, salt: Math.floor(Math.random() * 1_000_000), ...(isInside(guess) ? { mapId: `map_auto_${Math.floor(Math.random() * 1e9).toString(36)}` } : {}) };
+        const spec: PlaceSpec = { ...guess, salt: Math.floor(Math.random() * 1_000_000), variety: placeVariety(env, task), ...(isInside(guess) ? { mapId: `map_auto_${Math.floor(Math.random() * 1e9).toString(36)}` } : {}) };
         const builder = builderFor(spec);
         if (!builder) { notes.push(`「${step.place}」(${spec.type}) — 짓는 빌더가 없다`); continue; }
         env.emit({ type: "execution_status", name: "v2.build", ok: true, summary: `청사진 장소 「${step.place}」 자동으로 짓는 중(${builder.id})` });
@@ -1117,7 +1122,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
       const lines: string[] = [];
       const linkNotes: string[] = [];
       for (const [i, place] of order.entries()) {
-        const spec0: PlaceSpec = localizeCultureSpec(localizePlaceSpec({ ...place.spec, salt: Math.floor(Math.random() * 1_000_000) }, String(task ?? "")), String(task ?? ""));
+        const spec0: PlaceSpec = localizeCultureSpec(localizePlaceSpec({ ...place.spec, salt: Math.floor(Math.random() * 1_000_000), variety: placeVariety(env, task) }, String(task ?? "")), String(task ?? ""));
         const parent = place.from ? built.get(place.from) : undefined;
         const parentMap = parent?.result.mapIds[0];
         // 실내는 새 맵 id 로(지금 맵을 덮어쓰지 않게), 나머지는 부모 맵을 「지금 맵」으로 — 빌더가 새 맵을 만들고 던전은 부모와 입구를 잇는다.
