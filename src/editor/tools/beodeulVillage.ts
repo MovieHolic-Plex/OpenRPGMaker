@@ -672,10 +672,12 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     const gx = g0 % W, gy = Math.floor(g0 / W);
     if (Math.hypot(gx - gWant.x, gy - gWant.y) >= 3) report.moved.push(`gather(${gWant.x},${gWant.y})→(${gx},${gy})`);
     const plazaHold: number[] = [];
-    if ((layout.gather?.plaza ?? true) !== false) {
+    {
+      // 광장이 없는 모이는 곳(우물·좌판)도 둘레 두 칸은 비워 둔다 — 집이 모이는 곳을 에워싸 큰길·골목이 모두 막혔다(ab r6 강가 마을)
+      const big = (layout.gather?.plaza ?? true) !== false, rx = big ? 5.5 : 2.5, ry = big ? 3.5 : 2.5;
       const gl = lv[g0]!;
       for (let y = gy - 3; y <= gy + 3; y += 1) for (let x = gx - 5; x <= gx + 5; x += 1) {
-        if (!inMap(x, y) || ((x - gx) / 5.5) ** 2 + ((y - gy) / 3.5) ** 2 > 1) continue; const c = idx(x, y);
+        if (!inMap(x, y) || ((x - gx) / rx) ** 2 + ((y - gy) / ry) ** 2 > 1) continue; const c = idx(x, y);
         if (occ[c] === FREE && lv[c] === gl) { occ[c] = PLAZA_HOLD; plazaHold.push(c); }
       }
     }
@@ -1213,9 +1215,11 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
           // 낮은 쪽 마지막 칸 = b, 경사로 b·…·b−dl·up(단 차 + 1칸), 아랫 층계참 b−(dl+1)up, 윗 층계참 b+up. 높은 쪽으로 k칸 밀며(그만큼 길을 깎아) 곧은 자리를 찾는다.
           const b0 = up > 0 ? p : q;
           let placed = false;
-          for (let k = 0; k <= 6 && !placed; k += 1) {
+          // 옆구리 길(옆에 붙은 다른 길)이 있으면 먼저 피하고, 코드 지형은 피할 자리가 없으면 옆구리를 허용한다(늪 골목이 단에서 끊겼다)
+          for (let k = 0, relax = false; !placed; k += 1) {
+            if (k > 6) { if (relax || !codeT) break; relax = true; k = 0; }
             const b = b0 + k * up, flight = Array.from({ length: dl + 1 }, (_, j) => b - j * up), ps = [b - (dl + 1) * up, ...flight, b + up];
-            if (!straight(ps) || flight.some((x) => !sideFree(x))) continue;
+            if (!straight(ps) || (!relax && flight.some((x) => !sideFree(x)))) continue;
             const between = new Set(Array.from({ length: k }, (_, j) => b0 + (j + 1) * up)); // 깎을 높은 쪽 칸들
             if ([...between].some((x) => !sec.has(x) || L(x) !== hi) || L(b + up) !== hi) continue;
             if (ps.slice(0, dl + 2).some((x) => !between.has(x) && L(x) !== lo)) continue;

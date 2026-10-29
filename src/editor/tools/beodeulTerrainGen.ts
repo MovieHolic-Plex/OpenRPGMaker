@@ -379,6 +379,7 @@ export function generateCodeTerrain(input: TerrainGenInput): CodeTerrain {
     }
     lv.set(out);
   }
+  const cellHash = (x: number, y: number) => { let k = Math.imul(x * 374761393 + y * 668265263 + seed * 1442695041, 1274126177) >>> 0; k ^= k >>> 13; k = Math.imul(k, 1103515245) >>> 0; return (k >>> 8) / 16777216; };
   // 옆 경계 비스듬히(2026-10-30 ab12 판정 8:12 「풀밭 위 다각형 윤곽선·떠 있는 대지」): 3/4 탑뷰에서 높이는 남쪽을 보는 절벽으로만 두껍게 그려지고
   // 동·서를 보는 단 경계는 가는 세로선이 된다. 두 줄 넘게 곧게 내려가는 옆 경계는 아래 칸부터 한 칸씩 깎아 45° 계단(짧은 남향 절벽이 이어진 사선)으로 —
   // 옛 띠 지형의 「사라지는 옆면」과 같은 읽힘. 물 칸은 건드리지 않는다.
@@ -389,6 +390,8 @@ export function generateCodeTerrain(input: TerrainGenInput): CodeTerrain {
       for (const dx of [1, -1]) {
         const X = x + dx; if (X < 0 || X >= W) continue; const n = c + dx, m = b + dx;
         if (water[n] || water[m] || lv[n]! >= L || lv[m]! >= L) continue;
+        // 칸마다 정해진 값으로 열에 셋 중 하나는 깎지 않는다 — 자로 그은 45° 사선이 아니라 가파르기가 들쭉날쭉한 사선(ab13 판정 「곧은 긴 대각선」)
+        if (cellHash(x, y + 1) < 0.3) continue;
         lv[b] = Math.max(lv[m]!, lv[n]!); changed = true; break;
       }
     }
@@ -431,10 +434,13 @@ export function generateCodeTerrain(input: TerrainGenInput): CodeTerrain {
   for (let pass = 0; pass < 6; pass += 1) {
     let changed = false;
     for (let c = 0; c < W * H; c += 1) { const x = c % W, y = (c - x) / W;
-      for (const [dx, dy] of N4) { const X = x + dx, Y = y + dy; if (X < 0 || Y < 0 || X >= W || Y >= H) continue; const n = Y * W + X; if (lv[c]! - lv[n]! > 2) { lv[c] -= 1; changed = true; break; } } }
+      for (const [dx, dy] of N4) { const X = x + dx, Y = y + dy; if (X < 0 || Y < 0 || X >= W || Y >= H) continue; const n = Y * W + X; if (lv[c]! - lv[n]! > 1) { lv[c] -= 1; changed = true; break; } } }
     if (!changed) break;
   }
   tidyLevels(lv, W, H);
+  // 단 하나 = 두 칸 절벽(2026-10-30 ab13 판정 「절벽이 1px 갈색 선 — 높이가 안 읽힌다」): 띠 지형의 마을 위 단처럼 이웃 단 차를 2 로 —
+  // 3/4 에서 남향 절벽면이 두 칸 높이로 그려지고, 길은 세 칸 계단으로 오른다.
+  if (character !== "flat") for (let c = 0; c < W * H; c += 1) lv[c] = lv[c]! * 2;
   for (let c = 0; c < W * H; c += 1) if (water[c]) { /* 물은 다듬기에서 둑과 같은 단으로 남아 있다 */ }
   let maxLevel = 0; for (const v of lv) maxLevel = Math.max(maxLevel, v);
 

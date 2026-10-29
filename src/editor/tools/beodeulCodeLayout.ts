@@ -167,6 +167,8 @@ export function routePath(g: RouteGrid, starts: number[], isGoal: (c: number) =>
         const need = step !== 0 ? Math.abs(step) - 1 : 0;
         if (nd !== d || run < o.before + need || lock > 0) continue;
         if (step !== 0 && o.climbNS && nd % 2 === 0) continue;
+        // 물(널다리) 칸으로 들어가거나 나오면서 단을 바꾸지 않는다 — 계단이 널다리 위에 놓일 수 없다(2026-10-30 산촌 강둑)
+        if (step !== 0 && (onFord || g.ford(c))) continue;
         nlock = Math.min(LOCK - 1, o.after + need);
         cost += step !== 0 ? o.climbCost * Math.abs(step) : 0;
       }
