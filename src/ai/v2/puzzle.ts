@@ -184,49 +184,6 @@ export function sealLockedRoom(run: BuildRun, mapId: string, eventId: string): C
 /** 사슬 한 번에 짓기. 앞 고리가 만든 것(learn·reward.flag·reward.item)만 뒤 고리의 needs 가 될 수 있다. */
 /** 누구나 먼저 쳐 보는 번호(2026-10-25 판정 J63: 1024·1234·0000 금고). 3자리 이상만 본다. */
 const COMMON_CODES = new Set(["1024", "2048", "1004", "2580", "1212", "1122", "6969", "1357", "2468", "0123", "9876"]);
-/** 맞혔을 때만 할 말(문이 열렸다·풀렸다) — 번호 입력 앞에 두면 틀린 번호에도 「열렸다」 뒤 「맞지 않는다」가 나온다. */
-const SOLVED_LINE = /열렸|열린다|풀렸|풀린다|열리며|열리고|탈출했|빠져나왔|unlock|opened|clicks open/iu;
-const NOT_SOLVED = /않|못|없|아직|안 열|n't|not/iu;
-/**
- * 한 명령 목록 안에서 번호 입력(inputNumber) 앞의 「열렸다」 대사를 맞힘 갈래(fork.then) 맨 앞으로 옮긴다.
- * 옮긴 대사 속 다른 번호(3자리 이상)는 정답으로 바꾼다 — 그 줄은 이제 정답을 친 뒤에만 나온다.
- * 왜(2026-10-29 vm3 flash 방탈출 판정): 「자물쇠에 '4862'를 입력하자 문이 열렸다!」가 입력 앞에 있어, 입력 뒤 「철컥… 맞지 않는다」와 모순됐다.
- */
-function settleSolvedLines(list: unknown): number {
-  if (!Array.isArray(list)) return 0;
-  let moved = 0;
-  for (let i = 0; i < list.length; i += 1) {
-    const input = list[i] as Obj | undefined;
-    if (input?.kind !== "inputNumber") continue;
-    const fork = list[i + 1] as Obj | undefined;
-    const cond = fork?.condition as Obj | undefined;
-    if (fork?.kind !== "fork" || cond?.kind !== "variable" || cond.variableId !== input.variableId || !Array.isArray(fork.then)) continue;
-    const code = String(cond.value);
-    for (let j = i - 1; j >= 0; j -= 1) {
-      const cmd = list[j] as Obj | undefined;
-      if (cmd?.kind !== "text") break;
-      const body = String(cmd.body ?? "");
-      if (!SOLVED_LINE.test(body) || NOT_SOLVED.test(body)) continue;
-      list.splice(j, 1);
-      i -= 1;
-      (fork.then as Obj[]).unshift({ ...cmd, body: body.replace(/\d{3,8}/gu, (n) => (n === code ? n : code)) });
-      moved += 1;
-    }
-  }
-  for (const value of list) if (value && typeof value === "object") for (const inner of Object.values(value as Obj)) if (Array.isArray(inner)) moved += settleSolvedLines(inner);
-  return moved;
-}
-/** 게임 전체에 settleSolvedLines — 끝맺음이 이미 지은 자물쇠를 고친다. 고친 이벤트 목록. */
-export function settleCodeSolvedLines(project: Project): string[] {
-  const notes: string[] = [];
-  for (const map of Object.values(project.maps)) for (const ev of map.events ?? []) {
-    let n = 0;
-    for (const page of ev.pages ?? []) n += settleSolvedLines((page as unknown as Obj).commands);
-    if (n) notes.push(`자물쇠 「열렸다」 대사를 맞힘 뒤로: ${map.name ?? map.id} ${ev.name ?? ev.id}`);
-  }
-  return notes;
-}
-
 export function trivialCode(code: string): boolean {
   if (!/^\d{3,}$/u.test(code)) return false;
   if (COMMON_CODES.has(code)) return true;
@@ -373,7 +330,6 @@ export function buildPuzzleChain(run: BuildRun, args: ChainArgs): ContentBuildRe
       if (typeof attempt === "string") return fail(attempt);
       pages.push(basePage({ conditions: need, commands: [...say(link.lines), ...attempt] }));
     }
-    for (const page of pages) settleSolvedLines(page.commands);
     const res = run.call("upsert_event", { mapId, replacePages: true, event: { id, ...(existing ? {} : { name: link.name ?? `${args.name} ${index + 1}`, x: link.at!.x, y: link.at!.y }), pages } });
     if (!res.ok) return fail(`${index + 1}번 고리 이벤트를 쓰지 못했다: ${String(res.summary).slice(0, 300)}`);
     eventIds.push({ mapId, eventId: id });

@@ -138,25 +138,6 @@ function attachNearby(run: BuildRun, mapId: string, ev: GameEvent, words: string
   return undefined;
 }
 
-/** 빈 바닥(가구 아닌 걸을 수 있는 칸)에 놓인 그림 없는 조사 칸 — 높이와 상관없이(발밑으로 내린 것도). 문 이름은 뺀다. */
-function blankFloorExamine(run: BuildRun, map: GameMap, ev: GameEvent): boolean {
-  if (ev.id.startsWith("ev_chain_seal_") || isDoorName(String((ev as { name?: string }).name ?? ""))) return false;
-  return invisible(ev) && examineOnly(ev) && !objectAt(map, ev) && isPassable(run.ctx.project, map, ev.x, ev.y);
-}
-
-/** 맵의 빈 바닥 조사 칸(발밑으로 내린 것 포함)을 이름에 맞는 가까운 가구로 옮긴다 — 끝맺음이 이미 지은 맵을 고친다. */
-export function attachFloorExaminesNearby(run: BuildRun, mapId: string): string[] {
-  const notes: string[] = [];
-  for (const id of (run.ctx.project.maps[mapId]?.events ?? []).map((e) => e.id)) {
-    const map = run.ctx.project.maps[mapId];
-    const ev = map?.events.find((e) => e.id === id);
-    if (!map || !ev || /^ev_objective|^ev_heal_spring|_rest$/u.test(ev.id) || !blankFloorExamine(run, map, ev)) continue;
-    const moved = attachNearby(run, mapId, ev, "");
-    if (moved) notes.push(moved);
-  }
-  return notes;
-}
-
 /** 3) 발밑으로 — 같은 높이 조사 페이지를 below 로 내린다. */
 function lowerToFloor(run: BuildRun, mapId: string, ev: GameEvent): string | undefined {
   let changed = false;
@@ -215,7 +196,9 @@ function furnitureRect(run: BuildRun, map: GameMap, c: Cell): { left: number; to
     : [m.upperTiles?.[y * w + x], m.upperOverlayTiles?.[y * w + x]].map((t) => baseOf(tileLabel(run.ctx.project, map, t))).filter(Boolean);
   const base = basesAt(c.x, c.y).find((b) => !NOT_FURNITURE.test(b) && !WALL_LABEL.test(b) && !/탁상 물건/u.test(b));
   if (!base) return undefined;
-  const baseAt = (x: number, y: number) => basesAt(x, y).includes(base) ? base : "";
+  // 걸을 수 있는 칸(금고 윗단처럼 머리 위로 그린 칸)은 몸에 넣지 않는다 — 넣으면 그 칸이 막혀 가구 앞에 설 자리가 사라진다
+  // (standin 방탈출 재생: 「벽 금고」 1×2 몸이 윗칸 (10,6)을 막아 자동 플레이가 금고에 못 갔다).
+  const baseAt = (x: number, y: number) => basesAt(x, y).includes(base) && !isPassable(run.ctx.project, map, x, y) ? base : "";
   const seen = new Set([c.y * w + c.x]);
   const q = [c];
   let left = c.x, right = c.x, top = c.y, bottom = c.y;
@@ -252,7 +235,8 @@ export function settleFurnitureSpots(run: BuildRun, mapId: string): string[] {
       const shownFirst = small && !surfaceNext ? showExaminedThing(run, mapId, id) : undefined;
       if (shownFirst) notes.push(shownFirst);
       else {
-        const attached = attachToNeighbor(run, mapId, ev0, "");
+        // 옆 가구 → 4걸음 안 이름 맞는 가구(보관함 → 상자, vm3 terra 방탈출) → 그래도 없으면 소품.
+        const attached = attachToNeighbor(run, mapId, ev0, "") ?? attachNearby(run, mapId, ev0, "");
         if (attached) notes.push(attached);
         else { const shown = showExaminedThing(run, mapId, id); if (shown) notes.push(shown); }
       }
