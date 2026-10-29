@@ -14,7 +14,7 @@ import { createBuildRun, type RecordingBuildRun } from "./buildRun";
 import { builderFor } from "./builders";
 import { localizePlaceSpec } from "./builders/modernCity";
 import { localizeCultureSpec } from "./builders/joseon";
-import { villageArgs, villageMapSize } from "./builders/village";
+import { cleanLayoutHint, villageArgs, villageMapSize } from "./builders/village";
 import { codeTerrainFor, usesCodeTerrain } from "@/editor/tools/authorBeodeulTown";
 import { describeCodeTerrain } from "@/editor/tools/beodeulTerrainGen";
 import { terrainPreviewPng } from "@/editor/tools/beodeulTerrainPreview";
@@ -657,6 +657,13 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
       // 마을(2026-10-30 「지형은 코드가, 마을 배치는 조수가」): 땅은 코드가 만든다(높이맵·침식·강·단). 첫 호출은 짓지 않고 땅 그림(좌표 눈금)과
       // 요약을 돌려준다 — 모델이 그 그림을 보고 hints.layout 에 자리를 골라 다시 부르면 같은 땅 위에 짓는다(함수는 놓을 수 있는지·길·도달만 검사).
       if (builder.id === "village") {
+        // 스키마 칸을 0·빈 값으로 다 채우는 모델(terra)이 있다 — {x:0,y:0} 자리·빈 배열·terrainSeed 0 은 「안 줬다」로 읽는다(2026-10-30 실조수: 빈 layout 으로 집 0채)
+        if (spec.hints) {
+          const h = { ...spec.hints } as Record<string, unknown>;
+          if (h.terrainSeed === 0) delete h.terrainSeed;
+          const lay = cleanLayoutHint(h.layout); if (lay) h.layout = lay; else delete h.layout;
+          spec = { ...spec, hints: h as typeof spec.hints };
+        }
         const va = villageArgs(spec).args; const vt = String(va.theme ?? "river");
         if (usesCodeTerrain(va, vt)) {
           const shape = JSON.stringify([va.theme, va.landform, va.terrain, va.water, va.high, va.tiers, spec.hints?.terrainSeed]);

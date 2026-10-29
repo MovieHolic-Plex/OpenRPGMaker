@@ -18,6 +18,17 @@ export const VILLAGE_CARD =
   "그 밖 hints: houseCount(3~5)·roofs(red|slate|moss|log)·woods(edge|dense)·forestType·wallGate(S|N|NS)·width·height·variant(같은 명세의 다른 배치). " +
   "교회·시장 건물 지정은 못 한다(보고됨). 집이 선 마을은 다시 지을 수 없다 — 처음 make_place 에 다 넣는다.";
 
+/** 스키마 칸을 0·빈 값으로 다 채우는 모델(terra)이 보낸 layout 에서 {x:0,y:0} 자리·빈 배열을 버린다. 모이는 곳도 집도 없으면 「안 줬다」(null). */
+export function cleanLayoutHint(value: unknown): Record<string, unknown> | null {
+  if (!value || typeof value !== "object") return null;
+  const lay = { ...(value as Record<string, unknown>) };
+  const real = (p: unknown) => !!p && typeof p === "object" && !(Number((p as { x?: unknown }).x) === 0 && Number((p as { y?: unknown }).y) === 0);
+  for (const k of ["gather", "landmark", "anchor", "work"]) if (!real(lay[k])) delete lay[k];
+  for (const k of ["houses", "fields"]) { const a = Array.isArray(lay[k]) ? (lay[k] as unknown[]).filter(real) : []; if (a.length) lay[k] = a; else delete lay[k]; }
+  if (!Array.isArray(lay.exits) || !(lay.exits as unknown[]).length) delete lay.exits;
+  return lay.gather || lay.houses ? lay : null;
+}
+
 const KNOWN_HINTS = new Set(["layout", "terrainSeed", "terrainGen", "landform", "settle", "tiers", "high", "houseCount", "roofs", "water", "woods", "form", "terrain", "theme", "forestType", "walls", "wallGate", "wallSideGaps", "width", "height", "variant", "harbour"]);
 const BEODEUL_TILESET = "beodeul_city";
 
@@ -72,7 +83,8 @@ export function villageArgs(spec: PlaceSpec): { args: Record<string, unknown>; m
     if (key === "seed") continue;
     if (!KNOWN_HINTS.has(key)) { warnings.push(`알 수 없는 hints.${key} 는 무시했다`); continue; }
     // 스키마 칸을 다 채워 보내는 모델(gpt-6.1-terra)은 안 정한 칸을 ""·0 으로 보낸다 — width·height 0 이 최소 크기(36×30)로 잘려 지형 먼저의 위 단이 설 자리가 없었다(2026-10-29 실조수)
-    if (value === "" || value === null || (["width", "height", "tiers", "houseCount"].includes(key) && typeof value === "number" && value <= 0)) continue;
+    if (value === "" || value === null || (["width", "height", "tiers", "houseCount", "terrainSeed"].includes(key) && typeof value === "number" && value <= 0)) continue;
+    if (key === "layout") { const lay = cleanLayoutHint(value); if (lay) args.layout = lay; continue; }
     if (key !== "variant") args[key] = value;
   }
   // 모델이 땅 모양 낱말(hillside·terraces·highland)을 form 에 넣으면 인자 검증에서 한 번 실패했다(2026-10-29 실조수 flash) — terrain 으로 옮긴다
