@@ -1,4 +1,4 @@
-// 손으로 짠 방 견본 — 회상 「할머니 집」(거실 living·장롱 방 bedroom). 같은 판에서 짠 힐링 「시골 마을」 잡화점·택배 「동네 가게」 빵집·꽃집·옷가게는 4판 FAIL 로 뺐다(아래).
+// 손으로 짠 방 견본 — 회상 「할머니 집」(거실 living·장롱 방 bedroom). 같은 판에서 짠 힐링 「시골 마을」 잡화점·택배 「동네 가게」 빵집·꽃집·옷가게는 4판 FAIL 로 뺐다(아래) — rooms-shop.mts 에서 다시 짰다.
 // 형식은 lib.mts 머리 주석, 관례는 rooms.mts. 화풍은 town(그 종류 견본의 다수 화풍).
 // 채택(Sonnet 적대 검수 PASS + build 겹침·닿음 + check 짓기 빠짐 0·닿지 못함 0): grandma-bedroom 1판, grandma-living-s 4판.
 // 뺌(4판 FAIL): grandma-living-m 9×8 — 북쪽 가운데 3×2 맨바닥·벽난로 깔개와 고양이 어긋남이 끝까지 남았다.

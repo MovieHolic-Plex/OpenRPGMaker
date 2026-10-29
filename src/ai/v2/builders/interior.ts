@@ -38,6 +38,7 @@ const KIND_WORDS: readonly [RegExp, string[]][] = [
   [/간호사실|간호|nurse/iu, ["nurse_station", "clinic_exam"]],
   [/다락|attic|loft/iu, ["attic", "storeroom"]],
   [/꽃집|꽃 ?가게|flower ?shop|florist/iu, ["flower_shop", "general_store"]],
+  [/옷가게|옷집|양장점|재단사의? ?가게|tailor ?shop|clothing ?store/iu, ["tailor_shop", "general_store"]],
   [/장롱/iu, ["bedroom"]],
   [/창고|저장|store ?room|pantry|식료/iu, ["storeroom", "pantry"]],
   [/지하|cellar|술 ?창고/iu, ["cellar", "storeroom"]],
