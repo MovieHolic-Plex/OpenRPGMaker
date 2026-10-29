@@ -519,6 +519,11 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
     args.seed = base0 + (variant ?? 0) * 7919;
   }
   const base: Record<string, unknown> = { name: spec.name, ...args };
+  // 바깥 문 자리를 make_place·make_game 이 정해 주면(세계 방향 가장자리 길 칸) 짓기가 그 칸과 바로 잇는다 — 기본 출구(시작점 곁 갱구 자리)를 쓰지 않는다.
+  if (spec.gate && run.ctx.project.maps[spec.gate.fromMapId]) base.entrance = { fromMapId: spec.gate.fromMapId, x: spec.gate.x, y: spec.gate.y };
+  // 다시 짓기: 옛 바깥 문 칸에 짓기가 바로 잇는다(entrance) — 기본 출구 + 나중 create_transfer_pair 로 문이 둘 생기던 것.
+  else if (relink) base.entrance = { fromMapId: relink.fromMapId, x: relink.x, y: relink.y };
+  const gateAt = base.entrance as { x: number; y: number } | undefined;
   const firstCall = run.calls.length;
   const wanted = words(spec);
   const wantsFoes = args.populate !== false;
@@ -568,8 +573,10 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
     dropOldGate(trial);
     if (mapId) { base.mapId = mapId; base.rebuild = true; }
     result = exec(trial);
+    if (!result.ok && base.entrance) { warnings.push(`바깥 문 자리 (${gateAt!.x},${gateAt!.y}) 와 잇지 못해 기본 출구로 지었다`); delete base.entrance; result = exec(trial); }
     // 지운 바깥 문을 다시 지은 1층 입구와 다시 잇는다 — 짓기(make_game)가 처음 이은 방식(create_transfer_pair, 던전 쪽은 입구 칸) 그대로.
-    if (result.ok && relink) {
+    // 바깥 문 자리(entrance)를 짓기에 넘겼으면 짓기가 이미 이었다 — 또 이으면 문이 둘이 된다(2026-10-30 dd1030 opus 마을+동굴: (19,0)·(30,19)).
+    if (result.ok && relink && !base.entrance) {
       const d = (result.data ?? {}) as { floors?: string[]; entrance?: { x: number; y: number } };
       const first = d.floors?.[0];
       const fm = first ? trial.ctx.project.maps[first] : undefined;
@@ -584,6 +591,7 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
   } else {
     if (mapId) base.mapId = mapId;
     result = exec(run);
+    if (!result.ok && base.entrance) { warnings.push(`바깥 문 자리 (${gateAt!.x},${gateAt!.y}) 와 잇지 못해 기본 출구로 지었다`); delete base.entrance; result = exec(run); }
   }
   const data = (result.data ?? {}) as Record<string, unknown>;
   const floors = Array.isArray(data.floors) ? (data.floors as unknown[]).filter((f): f is string => typeof f === "string") : [];

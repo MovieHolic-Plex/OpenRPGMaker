@@ -55,6 +55,7 @@ import { dressRoom } from "./builders/dressRoom";
 import { tileMoveObjects } from "./builders/tileMove";
 import { planObjective } from "./discoverability";
 import { roomParts, SHAPE_EXAMPLES } from "./roomParts";
+import { gateFor, settleDungeonGates } from "./dungeonGates";
 import { DUNGEON_DESIGN_SCHEMA, arrivalEntrance, createDungeonPartsVerb, dungeonContext, dungeonParts, screenDungeonSpec } from "./dungeonParts";
 import { ROOM_IDEA_RULE, roomIdeasFor } from "./roomIdeas";
 import { buildsHandInterior, designMissingRooms } from "./designRooms";
@@ -398,6 +399,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
 
   const problemCount = (seen: Seen | undefined, mapIds: readonly string[]) => !seen ? Infinity
     : seen.checks.filter((c) => !c.ok && mapIds.includes(c.mapId)).length + seen.critics.filter((v) => mapIds.includes(v.mapId)).reduce((n, v) => n + v.majors.length, 0);
+  const outsideBuilt = (mapId: string): boolean => { const r = session.places.get(mapId); return !!r && isOutdoor(r.spec); };
   const finishPlace = async (toolCallId: string, verb: string, args: unknown, spec: PlaceSpec, builderId: string, built: PlaceBuildResult, rounds: number,
     before?: { project: typeof env.ctx.project; record: PlaceRecord; seen: Map<string, Seen> }): Promise<PiToolExecResult> => {
     let result = built;
@@ -424,6 +426,11 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     {
       const fixed = fixPlayerStart(env.ctx.project, result.mapIds);
       if (fixed.note) { env.ctx.project = fixed.project; result = { ...result, warnings: [...result.warnings, fixed.note], ...(result.entrance && result.entrance.mapId === fixed.project.startMapId ? { entrance: { mapId: fixed.project.startMapId, x: fixed.project.startPos.x, y: fixed.project.startPos.y } } : {}) }; }
+    }
+    // 바깥 마을·거리 → 던전 문은 하나, 던전이 놓인 세계 방향 가장자리의 길 칸에(dungeonGates.ts — 짓기 기본 출구·다시 짓기 재연결이 문을 둘 남겼다).
+    if (builderId === "dungeon") {
+      const gates = settleDungeonGates(run, result.mapIds, outsideBuilt);
+      if (gates.length) result = { ...result, warnings: [...result.warnings, ...gates] };
     }
     // 다시 짓기(edit_place) 뒤 바닥이 바뀌어 앞서 둔 사람이 문 곁·가구 접근 칸·큰 양탄자 위에 남을 수 있다 — 방 하나만 짓는 판은 끝맺음(clearLanes)이
     // 돌지 않으므로 여기서도 spreadCrowdedPeople 을 부른다.
@@ -681,6 +688,9 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
         if (sc.note) keptNote = [keptNote, sc.note].filter(Boolean).join(" ");
         const ar = arrivalEntrance(spec); spec = ar.spec;
         if (ar.note) keptNote = [keptNote, ar.note].filter(Boolean).join(" ");
+        // 바깥 문: 지금 보는 맵이 이번에 지은 마을·거리면 던전이 놓인 쪽(설계 입구의 반대) 가장자리 길 칸과 짓기가 바로 잇는다(dungeonGates.ts).
+        const outside = env.ctx.currentMapId;
+        if (!spec.gate && outside && outsideBuilt(outside) && !(spec.mapId && session.places.has(spec.mapId))) { const g = gateFor(env.ctx.project, outside, spec.dungeonDesign); if (g) spec = { ...spec, gate: g }; }
       }
       if (builder.id === "dungeon" && !(spec.mapId && session.places.has(spec.mapId)) && !spec.dungeonDesign && !spec.floorDesigns?.length && !session.dungeonBounced.has(spec.name)) {
         session.dungeonBounced.add(spec.name);
@@ -1254,7 +1264,10 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
         let spec: PlaceSpec = (await designMissingRooms(env, spec1, "make_game 설계 빈 방")).spec;
         const builder = builderFor(spec);
         // 던전 입구는 세계 배치에서(부모에서 본 방향 side → 그 반대 쪽으로 들어온다). 설계가 다른 쪽을 적었으면 고치고 알린다(2026-10-30 맨 요청 남쪽 입구 13/16).
-        if (builder?.id === "dungeon" && parent) { const ar = arrivalEntrance(spec, place.side); spec = ar.spec; if (ar.note) linkNotes.push(ar.note); }
+        if (builder?.id === "dungeon" && parent) {
+          const ar = arrivalEntrance(spec, place.side); spec = ar.spec; if (ar.note) linkNotes.push(ar.note);
+          if (parentMap && outsideBuilt(parentMap)) { const g = gateFor(env.ctx.project, parentMap, spec.dungeonDesign, place.side); if (g) spec = { ...spec, gate: g }; }
+        }
         if (!builder) { session.missingArt.add(`${spec.name}(${spec.type}) — 이 종류를 짓는 빌더가 없다`); lines.push(`${place.key}: 짓는 빌더 없음`); continue; }
         env.emit({ type: "execution_status", name: "v2.build", ok: true, summary: `${spec.name} 짓는 중(${i + 1}/${order.length}, ${builder.id})` });
         await builder.prepare?.(spec);
@@ -1279,6 +1292,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
         // 잇기
         if (!parent || !parentMap) continue;
         linkNotes.push(linkChild(parentMap, parent.spec, parent.result, spec, result, place.side));
+        if (builder.id === "dungeon") linkNotes.push(...settleDungeonGates(run, result.mapIds, outsideBuilt, place.side));
       }
       recordWrite(env, run, `${id}:links`, "make_game", { links: true }, true, linkNotes.join(" / ").slice(0, 400));
       // 사람·사건

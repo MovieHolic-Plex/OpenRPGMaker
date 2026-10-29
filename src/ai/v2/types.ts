@@ -48,6 +48,8 @@ export interface PlaceSpec {
   readonly salt?: number;
   /** make_place 가 넣는 결정적 열쇠(프로젝트 열쇠 + 요청문) — 같은 게임·같은 요청이면 같은 방, 다른 게임이면 다른 설계를 고르게 실내 빌더가 견본·묶음 씨앗에 쓴다. 모델은 쓰지 않는다. */
   readonly variety?: string;
+  /** 던전 바깥 문(make_place·make_game 이 넣는다, 모델은 쓰지 않는다): 들어오는 바깥 맵과 그 맵의 세계 방향 가장자리 길 칸 — author_dungeon entrance 로 바로 잇는다(dungeonGates.ts). */
+  readonly gate?: { readonly fromMapId: string; readonly x: number; readonly y: number };
   /** 화풍·문화권 낱말: fantasy(기본) · jp-modern · wizarding · sengoku · modern-city … 카드가 고를 수 있는 값을 준다. */
   readonly style?: string;
   /** 던전·동굴 주제: cave · catacomb · castle · temple · volcano · ice · mine … */
