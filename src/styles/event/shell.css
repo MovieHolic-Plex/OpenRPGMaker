@@ -135,7 +135,7 @@
   --event-rm-light: var(--border-strong);
   --event-rm-mid: var(--border-default);
   --event-rm-shadow: var(--border-subtle);
-  border-color: rgba(42,37,33,.12) var(--accent-border) var(--accent-border) rgba(42,37,33,.12);
+  border-color: var(--border-default);
   border-style: solid;
   border-width: 2px;
   height: min(936px, calc(100vh - 12px));

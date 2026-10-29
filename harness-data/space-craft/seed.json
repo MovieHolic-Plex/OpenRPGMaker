@@ -10727,6 +10727,61 @@
    ],
    "verify": "변형 맵 lowerTiles 대부분이 잿빛 땅 · 남은 집 발자국만 풀 · 원본 맵 없음",
    "suiteCategory": "fs2-whole-burned-village"
+  },
+  {
+   "category": "game",
+   "kind": "logic",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "id": "fs2-retry-at-entry",
+   "prompt": "통금의 밤 광장 순찰 기사들이 세니까, 져서 게임 오버가 돼도 타이틀로 쫓겨나지 말고 광장에 처음 들어선 자리에서 다시 하게 해 줘.",
+   "requires": [
+    "place_field_enemy checkpointOnEntry:true (또는 이미 놓인 적 맵에 진입 체크포인트)",
+    "맵당 체크포인트 이벤트 하나"
+   ],
+   "verify": "맵에 <mapId>_checkpoint_auto 자동 이벤트(checkpointSave label map-entry) 하나, 필드 적 data.checkpointEventId",
+   "suiteCategory": "fs2-retry-at-entry"
+  },
+  {
+   "category": "game",
+   "kind": "logic",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "id": "fs2-pursuer-returns-home",
+   "prompt": "막사 순찰 기사에게 붙잡히면 감방으로 끌려가는데, 다시 막사로 올라오자마자 같은 자리에서 또 붙잡히지 않게 해 줘.",
+   "requires": [
+    "make_chase_scene caughtPenalty sendTo 로 다른 맵 이동",
+    "엔진: 추격자 접촉 페이지의 transfer 가 그 추격자를 제자리로(sendPursuerHome)"
+   ],
+   "verify": "붙잡혀 감방 → 막사 재입장 직후 추격자가 순찰 출발 칸에 있다(출하 플레이어)",
+   "suiteCategory": "fs2-pursuer-returns-home"
+  },
+  {
+   "category": "game",
+   "kind": "logic",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "id": "fs2-act-quest-log",
+   "prompt": "2막이 시작됐는데 기록 → 임무에는 끝난 1막 임무만 보여. 지금 줄기(감방 탈출 → 광장 → 북쪽 하늘탑)를 임무 일지에 단계별로 넣고, 진행 중인 임무가 맨 위에 오게 해 줘.",
+   "requires": [
+    "define_quest 그래프 — 이미 있는 줄기 스위치로 노드 완료",
+    "엔진: 임무 목록은 진행 중 → 미시작 → 완료 순"
+   ],
+   "verify": "2막 첫 장면 뒤 메뉴 → 기록 → 임무 맨 위가 「빌린 불 진행 중 (1/14)」(출하 플레이어)",
+   "suiteCategory": "fs2-act-quest-log"
+  },
+  {
+   "category": "game",
+   "kind": "logic",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "id": "fs2-wide-edge-exit",
+   "prompt": "재의 들판 북쪽 길은 두 칸 폭인데 맵 끝까지 걸어도 다음 맵으로 안 넘어가. 가장자리 출구를 길 폭 전체로 넓혀 줘.",
+   "requires": [
+    "가장자리 playerTouch transfer 이벤트를 이어진 가장자리 칸으로 복제"
+   ],
+   "verify": "길의 어느 칸으로 맵 끝을 밟아도 다음 맵으로 넘어간다(출하 플레이어 checkpoint act2-b5-north)",
+   "suiteCategory": "fs2-wide-edge-exit"
   }
  ],
  "gates": {

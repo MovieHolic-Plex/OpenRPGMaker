@@ -20,6 +20,7 @@ import { FARMING_RESOURCE_IDS } from "@/assets/farmingSprites";
 import { OPRN_MONSTER_CHARSET_RESOURCE_IDS } from "@/assets/oprnMonsterCharsets";
 import { HEROES_CHARSET_RESOURCE_IDS } from "@/assets/heroesCharsets";
 import { MODERN_CHARSET_RESOURCE_IDS } from "@/assets/modernCharsets";
+import { REFMAP_DOLL_CHARSET_RESOURCE_IDS } from "@/assets/refmapDollCharsets";
 import { SCARLOXY_PEOPLE_CHARSET_RESOURCE_IDS } from "@/assets/scarloxyPeopleCharsets";
 import { WIZARDING_CHARSET_RESOURCE_IDS } from "@/assets/wizardingCharsets";
 import { GENERATED_EFFECT_RESOURCE_IDS } from "@/assets/generatedEffectSheets";
@@ -77,6 +78,7 @@ export function collectResourceIds(project: Project): Set<string> {
   for (const id of WIZARDING_CHARSET_RESOURCE_IDS) ids.add(id);
   for (const id of HEROES_CHARSET_RESOURCE_IDS) ids.add(id);
   for (const id of MODERN_CHARSET_RESOURCE_IDS) ids.add(id);
+  for (const id of REFMAP_DOLL_CHARSET_RESOURCE_IDS) ids.add(id);
   for (const id of SCARLOXY_PEOPLE_CHARSET_RESOURCE_IDS) ids.add(id);
   // 절차 생성 전투 이펙트 시트. 기본 DB 가 이 id 를 참조하므로 빠지면 기본 프로젝트조차 역직렬화에서 던진다.
   for (const id of GENERATED_EFFECT_RESOURCE_IDS) ids.add(id);

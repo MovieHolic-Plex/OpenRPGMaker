@@ -262,8 +262,19 @@
   }
 
   .team-identity-menu-title {
+    color: var(--editor-text);
+    font: 700 13px/1.3 var(--font-ui);
+  }
+
+  .team-identity-menu-hint {
     color: var(--editor-text-muted);
-    font: 700 11px/1 var(--font-ui);
+    font: 400 12px/1.4 var(--font-ui);
+    margin: 0;
+  }
+
+  .team-identity-menu-action:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
   }
 
   .team-commit-panel {

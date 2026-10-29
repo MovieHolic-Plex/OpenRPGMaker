@@ -49,6 +49,21 @@ let prefabChip = "all";
 let catalogQuery = "";
 let activeTerrainId: string | null = null;
 let searchTimer: ReturnType<typeof setTimeout> | null = null;
+/** 키보드로 고른 카드. 고르면 팔레트를 다시 그리므로 새 카드에 초점을 돌려준다(초점이 문서 맨 앞으로 튀지 않게). */
+let restoreCardFocus: string | null = null;
+/** 지금 그리는 카드 목록 모두가 같은 앞 낱말(「버들항」)로 시작하면, 카드에서는 빼고 목록 위에 한 번만 적는다. */
+let cardNamePrefix = "";
+
+function commonNamePrefix(names: readonly string[]): string {
+  if (names.length < 2) return "";
+  const first = names[0]!.split(/\s+/u)[0] ?? "";
+  if (!first || first.length < 2) return "";
+  return names.every((name) => name.startsWith(`${first} `) && name.length > first.length + 1) ? first : "";
+}
+
+function shownCardName(name: string): string {
+  return cardNamePrefix && name.startsWith(`${cardNamePrefix} `) ? name.slice(cardNamePrefix.length + 1) : name;
+}
 
 export function resetSmartPaletteForTests(): void {
   viewByTileset.clear();
@@ -165,6 +180,7 @@ export function makePaletteSmartBody(
   shell.append(makeCatalogSearch(onRerender));
   const query = catalogQuery.trim();
   if (query.length > 0) {
+    cardNamePrefix = "";
     shell.append(makeSearchResults(tileset, query, onRerender, onSelectTile));
     return shell;
   }
@@ -175,6 +191,13 @@ export function makePaletteSmartBody(
     attrs: { id: PALETTE_SMART_PANEL_ID, role: "tabpanel" },
     dataset: { testid: "palette-smart-body" },
   });
+  const names = view === "terrain" ? catalog.terrain.map((card) => card.name)
+    : view === "prefab" ? catalog.prefabs.map((card) => card.name)
+    : recentCards(tileset).map((card) => card.label);
+  cardNamePrefix = commonNamePrefix(names);
+  if (cardNamePrefix) {
+    shell.append(el("p", { class: "palette-smart-note palette-card-prefix", attrs: { translate: "no" }, text: `모두 「${cardNamePrefix}」`, dataset: { testid: "palette-card-prefix" } }));
+  }
   if (view === "terrain") mountCardWindow(body, terrainCards(catalog), (card) => makeTerrainButton(tileset, card, onRerender), "이 분류에 해당하는 지형이 없습니다.");
   else if (view === "prefab") mountCardWindow(body, prefabList(catalog), (card) => makePrefabButton(tileset, card, onRerender), "이 분류에 해당하는 프리팹이 없습니다.");
   else mountCardWindow(body, recentCards(tileset), (card) => makeRecentButton(tileset, card, onSelectTile), "아직 고른 타일이 없습니다. 지도에 타일을 칠하면 여기에 쌓입니다.");
@@ -253,10 +276,13 @@ function makeTerrainChips(catalog: PaletteCatalog, onRerender: () => void): HTML
   return row;
 }
 
+let prefabChipsExpanded = false;
+
+/** 프리팹 분류 칩은 접힌 상태에서 한 줄(가로 스크롤)이고, 「더 보기」로 모두 펼친다 — 네 줄이 카드 자리를 먹던 문제. */
 function makePrefabChipRow(catalog: PaletteCatalog, onRerender: () => void): HTMLElement {
   const row = el("div", {
-    class: "palette-smart-chips",
-    attrs: { role: "toolbar", "aria-label": "프리팹 분류" },
+    class: "palette-smart-chips" + (prefabChipsExpanded ? "" : " is-collapsed"),
+    attrs: { role: "toolbar", "aria-label": "프리팹 분류", id: "palette-prefab-chip-list" },
     dataset: { testid: "palette-prefab-chips" },
   });
   const known = new Set(prefabChips(catalog.prefabs).map((chip) => chip.id));
@@ -276,7 +302,14 @@ function makePrefabChipRow(catalog: PaletteCatalog, onRerender: () => void): HTM
       },
     }));
   }
-  return row;
+  const toggle = el("button", {
+    class: "palette-smart-chip palette-smart-chip-more",
+    text: prefabChipsExpanded ? "접기" : "더 보기",
+    attrs: { type: "button", "aria-expanded": String(prefabChipsExpanded), "aria-controls": "palette-prefab-chip-list" },
+    dataset: { testid: "palette-prefab-chips-more" },
+    on: { click: () => { prefabChipsExpanded = !prefabChipsExpanded; onRerender(); } },
+  });
+  return el("div", { class: "palette-smart-chip-bar", children: [row, toggle] });
 }
 
 function terrainCards(catalog: PaletteCatalog): readonly TerrainCard[] {
@@ -347,8 +380,10 @@ function appendSearchSection(
   if (hits.length === 0) return;
   const extra = total > hits.length ? ` · ${total - hits.length}개 더 있음` : "";
   body.append(el("h4", { class: "palette-smart-section", text: `${title}${extra}` }));
-  const grid = el("div", { class: "palette-card-grid" });
+  const grid = el("div", { class: "palette-card-grid", attrs: { role: "listbox", "aria-label": title, "data-editor-navigation-owner": "true" } });
+  installCardRoving(grid);
   for (const hit of hits) grid.append(renderHit(hit as CatalogSearchResult["terrain"][number]));
+  syncCardTabStop(grid);
   body.append(grid);
 }
 
@@ -434,17 +469,24 @@ function makeCardButton(input: {
   readonly thumb: HTMLElement;
   readonly onClick: () => void;
 }): HTMLElement {
-  return el("button", {
+  const button = el("button", {
     class: "palette-card" + (input.active ? " is-active" : ""),
-    attrs: { type: "button", title: input.title, "aria-pressed": input.active ? "true" : "false" },
+    // 카드 묶음은 고르는 목록(listbox)이다 — 고른 카드 하나만 aria-selected, Tab 정지점은 묶음당 하나.
+    attrs: { type: "button", role: "option", title: input.title, "aria-selected": input.active ? "true" : "false", tabindex: "-1" },
     dataset: { testid: input.testId },
     children: [
       input.thumb,
-      el("span", { class: "palette-card-name", text: input.name }),
+      el("span", { class: "palette-card-name", text: shownCardName(input.name) }),
       el("span", { class: "palette-card-meta", text: input.meta }),
     ],
-    on: { click: input.onClick },
+    on: {
+      click: () => {
+        if (typeof document !== "undefined" && document.activeElement === button) restoreCardFocus = input.testId;
+        input.onClick();
+      },
+    },
   });
+  return button;
 }
 
 function singleThumb(tileset: TilesetDef, tile: number): HTMLElement {
@@ -493,7 +535,10 @@ function selectTerrainCard(card: TerrainCard): void {
   });
   // 수동으로 둔 이웃 연결이 지형 카드를 고르는 순간 말없이 자동으로 바뀌던 문제(F11) — 바꾸되 알린다.
   if (card.kind === "autotile" && !state.autoConnectMode) {
-    toast("지형 카드라 「이웃 연결」을 자동으로 켰어요. 끄려면 위의 「이웃 연결」을 누르세요.", "ok");
+    toast("오토타일이라 「이웃 연결」을 켰어요.", {
+      kind: "ok",
+      action: { label: "되돌리기", onClick: () => editorState.set({ autoConnectMode: false }) },
+    });
   }
   if (state.layer !== "event" && state.layer !== nextLayer) {
     toast(nextLayer === "upper" ? "상위 레이어 타일 — 상위 레이어 편집으로 전환" : "하위 레이어 타일 — 하위 레이어 편집으로 전환", "ok");
@@ -524,7 +569,8 @@ function mountCardWindow<T>(
   }
   const rowCount = Math.ceil(items.length / CARD_COLUMNS);
   const spacer = el("div", { class: "palette-card-spacer" });
-  const windowEl = el("div", { class: "palette-card-window" });
+  const windowEl = el("div", { class: "palette-card-window", attrs: { role: "listbox", "aria-label": "타일 카드", "data-editor-navigation-owner": "true" } });
+  installCardRoving(windowEl);
   spacer.append(windowEl);
   host.append(spacer);
   let stride = PALETTE_CARD_ROW_PX;
@@ -547,8 +593,57 @@ function mountCardWindow<T>(
       const item = items[index];
       if (item !== undefined) windowEl.append(renderItem(item));
     }
+    syncCardTabStop(windowEl);
   };
   paint();
   host.addEventListener("scroll", paint, { passive: true });
   if (typeof requestAnimationFrame === "function") requestAnimationFrame(paint);
+}
+
+function windowCards(windowEl: HTMLElement): HTMLElement[] {
+  return Array.from(windowEl.querySelectorAll<HTMLElement>(".palette-card"));
+}
+
+/**
+ * Tab 정지점은 고른 카드(없으면 첫 카드) 하나다. 키보드로 고른 직후 다시 그렸으면 그 카드에 초점을 돌려준다 —
+ * 붙기 전(분리된 노드)에는 focus 가 먹지 않으므로 붙은 뒤의 다음 그리기(rAF·스크롤)에서 마저 한다.
+ */
+function syncCardTabStop(windowEl: HTMLElement): void {
+  const cards = windowCards(windowEl);
+  if (cards.length === 0) return;
+  const focused = typeof document === "undefined" ? null : document.activeElement;
+  const restore = restoreCardFocus ? cards.find((card) => card.dataset.testid === restoreCardFocus) : undefined;
+  const stop = restore
+    ?? cards.find((card) => card === focused)
+    ?? cards.find((card) => card.getAttribute("aria-selected") === "true")
+    ?? cards[0]!;
+  for (const card of cards) card.tabIndex = card === stop ? 0 : -1;
+  if (restore && restore.isConnected) {
+    restore.focus({ preventScroll: true });
+    restoreCardFocus = null;
+  }
+}
+
+/** 화살표·Home·End 로 카드 사이 초점을 옮긴다. 고르기는 Enter·Space(click)다. 지도 화살표 이동으로 새지 않게 막는다. */
+function installCardRoving(windowEl: HTMLElement): void {
+  windowEl.addEventListener("keydown", (event: KeyboardEvent) => {
+    const cards = windowCards(windowEl);
+    const current = cards.findIndex((card) => card === event.target);
+    if (current < 0) return;
+    const last = cards.length - 1;
+    const next = event.key === "ArrowRight" ? current + 1
+      : event.key === "ArrowLeft" ? current - 1
+      : event.key === "ArrowDown" ? current + CARD_COLUMNS
+      : event.key === "ArrowUp" ? current - CARD_COLUMNS
+      : event.key === "Home" ? 0
+      : event.key === "End" ? last
+      : null;
+    if (next === null) return;
+    event.preventDefault();
+    event.stopPropagation();
+    const target = cards[Math.max(0, Math.min(last, next))];
+    if (!target) return;
+    for (const card of cards) card.tabIndex = card === target ? 0 : -1;
+    target.focus();
+  });
 }

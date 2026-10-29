@@ -37,7 +37,7 @@ export const AI_CONNECTION_CHIP_TESTIDS = {
 function actionHint(status: AiConnectionStatus): string | null {
   switch (status.kind) {
     case "ready":
-      return null;
+      return status.limited ? "AI 설정에서 다른 연결을 고르거나 한도가 풀릴 때까지 기다리세요." : null;
     case "checking":
       return "로그인 상태를 확인하는 중입니다.";
     case "disconnected":
@@ -73,8 +73,9 @@ export function renderAiConnectionChip(openSettings: () => void): {
     ],
     on: {
       click: () => {
-        // ready 일 때는 설정을 열 이유가 없다 — 열어도 할 게 없다.
-        if (paint(button, label, openSettings) !== "ready") openSettings();
+        // 버튼이면 언제나 무언가를 한다 — 연결됨일 때도 설정(연결 상태·계정)을 연다(C-67, 예전에는 화면 변화 없음).
+        paint(button, label, openSettings);
+        openSettings();
       },
     },
   }) as HTMLButtonElement;
@@ -105,11 +106,13 @@ export function renderAiConnectionChip(openSettings: () => void): {
 /** 칩을 현재 상태로 칠하고, 그 상태를 돌려준다(클릭 핸들러가 재판정에 쓴다). */
 function paint(button: HTMLButtonElement, label: HTMLElement, _openSettings: () => void): AiConnectionStatus["kind"] {
   const status = getAiConnectionStatus();
-  button.dataset.kind = status.kind;
+  button.dataset.kind = status.limited ? "error" : status.kind;
   label.textContent = status.label;
   const hint = actionHint(status);
   button.setAttribute("title", hint ? `${status.title} — ${hint}` : status.title);
-  button.setAttribute("aria-label", hint ? `${status.label}. ${hint}` : status.label);
+  // 「 — 」 로 잇는다: 화면 번역 계층(domTranslator)은 이 구분자에서 조각마다 카탈로그를 찾는다.
+  // 「. 」 로 이으면 한 덩어리가 카탈로그에 없어 영어 화면에서도 한국어 접근 이름이 남았다(C-68).
+  button.setAttribute("aria-label", hint ? `${status.label} — ${hint}` : status.label);
   button.classList.toggle("is-actionable", hint !== null);
   return status.kind;
 }

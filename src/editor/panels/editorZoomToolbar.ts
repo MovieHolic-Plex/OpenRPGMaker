@@ -13,6 +13,25 @@ import { mapBackgroundPreviewEnabled, toggleMapBackgroundPreview } from "@/edito
 
 let mapScreenshotRequestSeq = 0;
 
+const SVG_NS = "http://www.w3.org/2000/svg";
+/** 확대·축소 단추의 − / + 글자 대신 currentColor 선 아이콘(16px). */
+function strokeIcon(d: string): SVGSVGElement {
+  const svg = document.createElementNS(SVG_NS, "svg");
+  svg.setAttribute("viewBox", "0 0 16 16");
+  svg.setAttribute("width", "16");
+  svg.setAttribute("height", "16");
+  svg.setAttribute("aria-hidden", "true");
+  svg.setAttribute("focusable", "false");
+  const path = document.createElementNS(SVG_NS, "path");
+  path.setAttribute("d", d);
+  path.setAttribute("fill", "none");
+  path.setAttribute("stroke", "currentColor");
+  path.setAttribute("stroke-width", "1.6");
+  path.setAttribute("stroke-linecap", "round");
+  svg.append(path);
+  return svg;
+}
+
 export const CANVAS_TOOLBAR_EXPANDED_KEY = "oprn:canvas-toolbar-expanded";
 
 export function stepEditorZoom(delta: number, levels: readonly EditorZoom[], current: EditorZoom): EditorZoom {
@@ -53,7 +72,7 @@ export function renderCanvasToolbar(container: HTMLElement): void {
   zoomGroup.append(
     el("button", {
       class: "oprn-tool-button zoom-stepper-btn",
-      text: "−",
+      children: [strokeIcon("M3.5 8h9")],
       attrs: { type: "button", title: "축소", "aria-label": "축소" },
       dataset: { testid: "editor-zoom-prev" },
       on: { click: () => editorState.set({ zoom: stepEditorZoom(-1, levels, currentZoom) }) },
@@ -72,7 +91,7 @@ export function renderCanvasToolbar(container: HTMLElement): void {
     }),
     el("button", {
       class: "oprn-tool-button zoom-stepper-btn",
-      text: "+",
+      children: [strokeIcon("M3.5 8h9M8 3.5v9")],
       attrs: { type: "button", title: "확대", "aria-label": "확대" },
       dataset: { testid: "editor-zoom-next" },
       on: { click: () => editorState.set({ zoom: stepEditorZoom(1, levels, currentZoom) }) },
@@ -135,14 +154,15 @@ export function renderCanvasToolbar(container: HTMLElement): void {
   }));
   // 배율 · ⋯ 펼치기 · AI 빠른 작업 · 격자 · 맵 저장.
   // 격자는 잘 안 끄는 보기 옵션이라 ⋯ 펼침 안에 둔다. 상태는 editorState.showGrid(기본 켜짐) 하나다.
+  // 「더 보기」는 막대 안에 펼치지 않고 단추 아래 떠 있는 판으로 연다 — 막대 폭이 그대로라 같은 자리를 다시 눌러도 같은 단추다.
   const saveAction = el("div", {
     class: "canvas-toolbar-save-group",
-    attrs: { "aria-label": "맵 보기 · 이미지 저장", role: "group" },
+    attrs: { "aria-label": "맵 보기 · 이미지 저장", role: "group", id: "canvas-toolbar-more" },
     dataset: { testid: "editor-map-save-group", uiDensity: "expert" },
     children: [
       el("button", {
         class: "oprn-tool-button map-grid-toggle",
-        children: [makeSvgIcon("grid")],
+        children: [makeSvgIcon("grid"), el("span", { class: "canvas-toolbar-more-label", text: "격자" })],
         attrs: {
           type: "button",
           title: showGrid ? "격자 숨기기" : "격자 보이기",
@@ -154,33 +174,138 @@ export function renderCanvasToolbar(container: HTMLElement): void {
       }),
       el("button", {
         class: "oprn-tool-button map-save-button",
-        children: [makeSvgIcon("save")],
-        attrs: { title: "현재 맵만 PNG로 저장", "aria-label": "현재 맵만 PNG로 저장" },
+        children: [makeSvgIcon("image"), el("span", { class: "canvas-toolbar-more-label", text: "맵 저장 (PNG 그림)" })],
+        attrs: { type: "button", title: "현재 맵만 PNG로 저장", "aria-label": "현재 맵만 PNG로 저장" },
         dataset: { testid: "editor-map-screenshot-button" },
         on: { click: () => void downloadCurrentMapScreenshot() },
       }),
     ],
   });
   const aiWorkbench = renderCanvasAiWorkbench();
+  const setExpanded = (expanded: boolean, persist = true): void => {
+    container.classList.toggle("is-expanded", expanded);
+    expandButton.setAttribute("aria-expanded", String(expanded));
+    if (persist) writeCanvasToolbarExpanded(expanded);
+    if (expanded) attachMoreDismiss(container, () => { setExpanded(false); expandButton.focus(); }, () => setExpanded(false));
+    else detachMoreDismiss?.();
+  };
   const expandButton = el("button", {
       class: "canvas-toolbar-expand",
-      text: "⋯",
-      // hover 자동 노출을 없앴으므로 이 버튼이 확대/맵저장 컨트롤을 여닫는 유일한 토글이다.
-      attrs: { type: "button", title: "맵 저장 도구 펼치기/접기", "aria-label": "맵 저장 도구 펼치기/접기", "aria-expanded": String(container.classList.contains("is-expanded")) },
+      children: [makeSvgIcon("more")],
+      attrs: { type: "button", title: "더 보기 — 격자 · 맵 그림 저장", "aria-label": "더 보기", "aria-controls": "canvas-toolbar-more", "aria-expanded": String(container.classList.contains("is-expanded")) },
       dataset: { testid: "editor-canvas-toolbar-expand", uiDensity: "expert" },
-      on: {
-        click: () => {
-          const expanded = !container.classList.contains("is-expanded");
-          if (expanded) container.classList.add("is-expanded");
-          else container.classList.remove("is-expanded");
-          expandButton.setAttribute("aria-expanded", String(expanded));
-          writeCanvasToolbarExpanded(expanded);
-        },
-      },
+      on: { click: () => setExpanded(!container.classList.contains("is-expanded")) },
     });
+  if (container.classList.contains("is-expanded")) attachMoreDismiss(container, () => { setExpanded(false); expandButton.focus(); }, () => setExpanded(false));
   container.append(zoomGroup, aiWorkbench, expandButton, saveAction);
   installDelayedTooltips(container);
   toolbarRenderMemo.set(container, { key, first: container.firstElementChild });
+  // 처음 그릴 때는 막대가 아직 문서에 붙기 전일 수 있다 — 붙은 뒤 한 프레임에 맞춘다.
+  fitCanvasToolbar(container);
+  if (typeof requestAnimationFrame === "function") {
+    requestAnimationFrame(() => {
+      observeToolbarFit(container);
+      fitCanvasToolbar(container);
+    });
+  }
+}
+
+/** 막대에서 「더 보기」 판으로 옮길 수 있는 단추에 붙이는 짧은 이름(판 안에서는 아이콘 옆에 글자로 보인다). */
+const OVERFLOW_LABELS: Readonly<Record<string, string>> = {
+  "walk-encounter-list-open": "인카운터 범위",
+  "map-location-layer-toggle": "로케이션",
+  "map-background-preview-toggle": "배경 미리보기",
+};
+
+type OverflowMove = { readonly node: HTMLElement; readonly parent: HTMLElement; readonly next: Node | null };
+const toolbarOverflow = new WeakMap<HTMLElement, OverflowMove[]>();
+const toolbarFitObservers = new WeakMap<HTMLElement, ResizeObserver>();
+
+/**
+ * 막대가 캔버스 폭을 넘으면 두 줄로 접지 않고, 끝에서부터 단추를 「더 보기」 판으로 옮긴다(조수 AI 빠른 작업 → 보기 단추 순).
+ * 폭이 다시 넓어지면 제자리로 돌려놓는다. 옮긴 단추는 같은 노드라 동작·상태가 그대로다.
+ */
+function fitCanvasToolbar(container: HTMLElement): void {
+  const more = container.querySelector<HTMLElement>(".canvas-toolbar-save-group");
+  if (!more || !container.isConnected) return;
+  const moved = toolbarOverflow.get(container) ?? [];
+  for (const move of moved.reverse()) {
+    move.node.classList.remove("is-overflow-item");
+    move.node.querySelector(":scope > .canvas-toolbar-overflow-label")?.remove();
+    move.parent.insertBefore(move.node, move.next && move.next.parentNode === move.parent ? move.next : null);
+  }
+  const nextMoves: OverflowMove[] = [];
+  toolbarOverflow.set(container, nextMoves);
+  const workbench = container.querySelector<HTMLElement>(".canvas-ai-workbench");
+  const candidates: HTMLElement[] = [
+    ...(workbench ? Array.from(workbench.children).filter((child): child is HTMLElement => child instanceof HTMLElement).reverse() : []),
+    ...["map-background-preview-toggle", "map-location-layer-toggle", "walk-encounter-list-open"]
+      .map((testid) => container.querySelector<HTMLElement>(`:scope > [data-testid="${testid}"]`))
+      .filter((node): node is HTMLElement => node !== null),
+  ];
+  // 막대가 내용 폭으로 늘어나는 배치(max-content)도 있어, 자기 넘침과 캔버스 폭(좌우 여백 12px씩) 둘 다 본다.
+  const host = container.parentElement;
+  const overflowing = (): boolean => container.scrollWidth > container.clientWidth + 1
+    || (host !== null && container.getBoundingClientRect().width > host.getBoundingClientRect().width - 24);
+  let firstMoreItem: Node | null = more.firstChild;
+  while (overflowing() && candidates.length > 0) {
+    const node = candidates.shift()!;
+    nextMoves.push({ node, parent: node.parentElement as HTMLElement, next: node.nextSibling });
+    const shortLabel = OVERFLOW_LABELS[node.dataset.testid ?? ""];
+    if (shortLabel) node.append(el("span", { class: "canvas-toolbar-more-label canvas-toolbar-overflow-label", text: shortLabel }));
+    node.classList.add("is-overflow-item");
+    more.insertBefore(node, firstMoreItem);
+    firstMoreItem = node;
+  }
+  container.classList.toggle("has-overflow-items", nextMoves.length > 0);
+}
+
+function observeToolbarFit(container: HTMLElement): void {
+  if (toolbarFitObservers.has(container) || typeof ResizeObserver === "undefined") return;
+  const host = container.parentElement;
+  if (!host || !container.isConnected) return;
+  let frame = 0;
+  const schedule = (): void => {
+    if (frame) return;
+    frame = requestAnimationFrame(() => {
+      frame = 0;
+      fitCanvasToolbar(container);
+    });
+  };
+  const observer = new ResizeObserver(schedule);
+  observer.observe(host);
+  observer.observe(container);
+  toolbarFitObservers.set(container, observer);
+  // 좁은 창에서 조수 도크를 펴면 캔버스 크기는 그대로이고 막대의 최대 폭만 줄어든다(32-ai-workspace.css) — 도크 접힘 상태도 본다.
+  const dock = document.querySelector(".ai-right-dock");
+  if (dock && typeof MutationObserver !== "undefined") {
+    new MutationObserver(schedule).observe(dock, { attributes: true, attributeFilter: ["class"] });
+  }
+}
+
+/** 열린 「더 보기」 판을 닫는 문서 리스너(Escape · 막대 바깥 누름). */
+let detachMoreDismiss: (() => void) | null = null;
+
+function attachMoreDismiss(container: HTMLElement, onEscape: () => void, onOutside: () => void): void {
+  detachMoreDismiss?.();
+  const onPointerDown = (event: PointerEvent): void => {
+    if (!container.isConnected) { detachMoreDismiss?.(); return; }
+    if (event.target instanceof Node && container.contains(event.target)) return;
+    onOutside();
+  };
+  const onKeyDown = (event: KeyboardEvent): void => {
+    if (event.key !== "Escape" || !container.classList.contains("is-expanded")) return;
+    event.preventDefault();
+    event.stopPropagation();
+    onEscape();
+  };
+  window.addEventListener("pointerdown", onPointerDown, { capture: true });
+  window.addEventListener("keydown", onKeyDown, { capture: true });
+  detachMoreDismiss = () => {
+    window.removeEventListener("pointerdown", onPointerDown, { capture: true });
+    window.removeEventListener("keydown", onKeyDown, { capture: true });
+    detachMoreDismiss = null;
+  };
 }
 
 /** 열린 배율 목록을 닫는 문서 리스너. 목록은 한 번에 하나만 열린다. */

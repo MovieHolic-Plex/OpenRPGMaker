@@ -182,11 +182,13 @@
   cursor: pointer;
   display: inline-flex;
   font: inherit;
-  height: 14px;
+  /* 글리프는 그대로, 히트 영역만 24px(C-59). 칩 높이를 키우지 않게 음수 여백으로 상쇄한다. */
+  height: 24px;
   justify-content: center;
   line-height: 1;
+  margin: -5px -6px -5px -4px;
   padding: 0;
-  width: 14px;
+  width: 24px;
 }
 
 .ai-selection-chip-clear:hover {

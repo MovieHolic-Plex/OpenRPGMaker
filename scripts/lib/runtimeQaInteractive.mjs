@@ -9,6 +9,7 @@
 import { mkdir, readFile, rename, writeFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import { join } from "node:path";
+import { pauseRuntimeFrames, resumeRuntimeFrames } from "./runtimeQaFrames.mjs";
 
 /** 실제 플레이어가 할 수 있는 조작만. battle = 「공격」을 골라 끝까지(자동 전투 단축). */
 const PLAYER_OPS = new Set(["key", "hold", "move", "face", "action", "dir", "waitFor", "waitForVisible", "waitForText", "waitForMap", "repeatUntil", "pressUntil", "battle", "attack", "skill"]);
@@ -37,6 +38,17 @@ async function readState(page) {
   });
 }
 
+/**
+ * 명령 사이에는 게임 시간을 멈춘다(QA_INTERACTIVE_PAUSE=0 이면 끈다). 판정 모델은 한 걸음에 10~30초를 생각하는데
+ * 그동안 순찰이 계속 돌면, 화면을 보고 내린 판단이 이미 낡은 판이 된다 — 사람은 실시간으로 반응한다.
+ * (2026-10-27 폴른 막사: 멈춤 없이 DeepSeek 판정이 순찰에 열 번 넘게 붙잡혔다.) 조작을 실행하는 동안에는 실시간이다.
+ */
+const PAUSE_BETWEEN = process.env.QA_INTERACTIVE_PAUSE !== "0";
+async function freeze(page, on) {
+  if (!PAUSE_BETWEEN) return;
+  try { await (on ? pauseRuntimeFrames(page) : resumeRuntimeFrames(page)); } catch { /* 장면 전환 중·이미 그 상태 */ }
+}
+
 export async function interactiveQaOp(page, op, runState, applyOp) {
   const dir = op.dir ?? process.env.QA_INTERACTIVE_DIR;
   if (!dir) throw new Error("interactive op 에 dir 도 QA_INTERACTIVE_DIR 도 없다");
@@ -45,6 +57,7 @@ export async function interactiveQaOp(page, op, runState, applyOp) {
   const ready = await readState(page);
   await page.screenshot({ path: join(dir, "shot-0.png") });
   await writeFile(join(dir, "res-0.json"), JSON.stringify({ n: 0, ready: true, state: ready, shot: join(dir, "shot-0.png") }, null, 1));
+  await freeze(page, true);
   for (let n = 1; ; n += 1) {
     const cmdPath = join(dir, `cmd-${n}.json`);
     const deadline = Date.now() + idleMs;
@@ -56,6 +69,7 @@ export async function interactiveQaOp(page, op, runState, applyOp) {
     try { cmd = JSON.parse(await readFile(cmdPath, "utf8")); } catch (error) { cmd = { ops: [], parseError: String(error) }; }
     const errors = [];
     if (cmd.parseError) errors.push(cmd.parseError);
+    await freeze(page, false);
     if (!cmd.quit) {
       try { checkOps(cmd.ops); } catch (error) { errors.push(String(error?.message ?? error)); cmd.ops = []; }
       for (const step of cmd.ops ?? []) {
@@ -67,7 +81,8 @@ export async function interactiveQaOp(page, op, runState, applyOp) {
     const state = await readState(page).catch((error) => ({ error: String(error) }));
     const tmp = join(dir, `.res-${n}.tmp`);
     await writeFile(tmp, JSON.stringify({ n, errors, state, shot }, null, 1));
+    if (cmd.quit) { await rename(tmp, join(dir, `res-${n}.json`)); return; }
+    await freeze(page, true);
     await rename(tmp, join(dir, `res-${n}.json`));
-    if (cmd.quit) return;
   }
 }

@@ -9,6 +9,35 @@ import type { TilesetDef } from "@/project/types";
 import { el } from "@/util/dom";
 
 const PAGE_SIZE = 6;
+/** 카드 한 줄 높이(그림 76 + 이름·여백) 근사 — 첫 페이지를 패널 높이만큼 채우는 데만 쓴다. */
+const CARD_ROW_PX = 132;
+
+/** 첫 페이지 크기: 6장 고정 대신 패널이 보이는 높이를 채우는 만큼(두 줄 격자). */
+function pageSizeFor(pane: HTMLElement): number {
+  const height = pane.clientHeight || 0;
+  const rows = Math.ceil(height / CARD_ROW_PX) + 1;
+  return Math.max(PAGE_SIZE, rows * 2);
+}
+
+/** 이름 끝에 붙은 「1×1」 같은 크기와 모든 카드가 같은 앞말(「버들항 소품」)은 화면 이름에서 뺀다 — 전체 이름은 title 에 남는다. */
+function displayName(name: string, width: number, height: number, prefix: string): string {
+  let shown = name.replace(new RegExp(`\\s*${width}\\s*[×x]\\s*${height}$`), "");
+  if (prefix && shown.startsWith(prefix) && shown.length > prefix.length) shown = shown.slice(prefix.length).trim();
+  return shown || name;
+}
+
+/** 목록의 모든 이름이 공유하는 앞 낱말(공백 단위). 한 장뿐이면 빼지 않는다. */
+function commonWordPrefix(names: readonly string[]): string {
+  if (names.length < 2) return "";
+  const split = names.map((n) => n.split(/\s+/));
+  const out: string[] = [];
+  for (let i = 0; i < split[0]!.length - 1; i += 1) {
+    const word = split[0]![i]!;
+    if (split.every((words) => words.length > i + 1 && words[i] === word)) out.push(word);
+    else break;
+  }
+  return out.join(" ");
+}
 
 /** The activity bar's quick picker shares the existing object catalogs and stamp painter. */
 export function createLeftPropsPane(): { root: HTMLElement; show(): void; dispose(): void } {
@@ -22,6 +51,7 @@ export function createLeftPropsPane(): { root: HTMLElement; show(): void; dispos
   let categorySelect: HTMLSelectElement | null = null;
   let listTitle: HTMLElement | null = null;
   let resultCount: HTMLElement | null = null;
+  let prefixNote: HTMLElement | null = null;
   let noResults: HTMLElement | null = null;
   let grid: HTMLElement | null = null;
   let status: HTMLElement | null = null;
@@ -68,7 +98,7 @@ export function createLeftPropsPane(): { root: HTMLElement; show(): void; dispos
     );
   }
 
-  function card(entry: PropRecommendation): HTMLButtonElement {
+  function card(entry: PropRecommendation, prefix: string): HTMLButtonElement {
     const { choice } = entry;
     const stamp = choice.stamp;
     const sourceTileset = tileset!;
@@ -80,13 +110,14 @@ export function createLeftPropsPane(): { root: HTMLElement; show(): void; dispos
     preview.setAttribute("aria-hidden", "true");
     return el("button", {
       class: "left-props-card",
-      attrs: { type: "button", "aria-pressed": String(selected(choice)) },
+      attrs: { type: "button", "aria-pressed": String(selected(choice)), title: `${choice.name} · ${stamp.width}×${stamp.height}` },
       dataset: { testid: "left-props-card", propId: choice.id },
       children: [
         el("span", { class: "left-props-preview", children: [preview] }),
-        el("span", { class: "left-props-name", attrs: { translate: "no" }, text: choice.name }),
+        el("span", { class: "left-props-name", attrs: { translate: "no" }, text: displayName(choice.name, stamp.width, stamp.height, prefix) }),
         el("span", { class: "left-props-size", text: `${stamp.width}×${stamp.height}` }),
-        el("span", { class: "left-props-reason", text: entry.matchesPlace ? "맵의 장소에 어울림" : "이 칩셋에서 사용" }),
+        // 모든 카드가 같은 「이 칩셋에서 사용」을 달던 줄은 뺀다 — 장소에 맞는 것만 따로 알린다.
+        ...(entry.matchesPlace ? [el("span", { class: "left-props-reason", text: "장소에 어울림" })] : []),
       ],
       on: { click: () => {
         // A stale button must never select a stamp from a different map's chipset.
@@ -103,7 +134,13 @@ export function createLeftPropsPane(): { root: HTMLElement; show(): void; dispos
 
   function fillGrid(): void {
     const filtered = filterProps(choices, category === "recommended" || category === "all" ? undefined : category, query);
-    grid?.replaceChildren(...filtered.slice(0, visibleCount).map(card));
+    const shown = filtered.slice(0, visibleCount);
+    const prefix = commonWordPrefix(shown.map((entry) => entry.choice.name));
+    grid?.replaceChildren(...shown.map((entry) => card(entry, prefix)));
+    if (prefixNote) {
+      prefixNote.hidden = !prefix;
+      prefixNote.textContent = prefix ? `모두 「${prefix}」` : "";
+    }
     if (categorySelect) categorySelect.value = category;
     if (listTitle) listTitle.textContent = category === "recommended" ? "이 맵에 어울리는 기물"
       : PROP_CATEGORIES.find(kind => kind.id === category)?.label ?? "기물 목록";
@@ -122,7 +159,7 @@ export function createLeftPropsPane(): { root: HTMLElement; show(): void; dispos
     if (next.tileset === lastTileset && key === lastContext) { syncSelection(); return; }
     lastTileset = tileset = next.tileset;
     lastContext = key;
-    if (contextKey !== key) visibleCount = PAGE_SIZE;
+    if (contextKey !== key) visibleCount = pageSizeFor(root);
     contextKey = key;
     grid = status = null;
     if (!next.map || !tileset) {
@@ -138,7 +175,7 @@ export function createLeftPropsPane(): { root: HTMLElement; show(): void; dispos
         ...available.map(kind => el("option", { value: kind.id, text: kind.label }))],
       on: { change: () => {
         category = categorySelect!.value as typeof category;
-        visibleCount = PAGE_SIZE;
+        visibleCount = pageSizeFor(root);
         root.scrollTop = 0;
         fillGrid();
       } },
@@ -150,26 +187,27 @@ export function createLeftPropsPane(): { root: HTMLElement; show(): void; dispos
         query = search.value;
         // Starting a search reaches all objects, including those beyond the six recommendations.
         category = "all";
-        visibleCount = PAGE_SIZE;
+        visibleCount = pageSizeFor(root);
         fillGrid();
       } },
     });
     listTitle = el("h3", { class: "left-props-title" });
     resultCount = el("span", { class: "left-props-result-count", attrs: { translate: "no" } });
+    prefixNote = el("p", { class: "left-props-prefix", attrs: { translate: "no" }, dataset: { testid: "left-props-prefix" } });
     noResults = el("p", { class: "left-props-empty", text: "검색 결과가 없습니다.", dataset: { testid: "left-props-no-results" } });
     grid = el("div", { class: "left-props-grid", attrs: { role: "group", "aria-label": "기물 목록" } });
     status = el("div", { class: "left-props-selection", attrs: { "aria-live": "polite" }, dataset: { testid: "left-props-selection" } });
     root.replaceChildren(
-      el("header", { class: "left-props-head", children: [el("h2", { text: "기물" }), el("span", { attrs: { translate: "no" }, text: next.map.name })] }),
+      el("header", { class: "left-props-head", children: [el("h2", { text: "기물" }), el("span", { class: "left-props-map", children: [el("span", { class: "left-props-map-label", text: "맵:" }), " ", el("span", { attrs: { translate: "no" }, text: next.map.name })] })] }),
       el("div", { class: "left-props-context", children: [el("span", { text: "현재 맵의 칩셋" }), el("strong", { attrs: { translate: "no" }, text: tileset.name })] }),
       ...(choices.length ? [
         el("div", { class: "left-props-browser", children: [
           el("label", { children: [el("span", { text: "기물 검색" }), search] }),
           el("label", { class: "left-props-category-row", children: [el("span", { text: "종류별로 보기" }), categorySelect] }),
         ] }),
-        el("div", { class: "left-props-results-head", children: [listTitle, resultCount] }), noResults, grid, el("button", {
+        el("div", { class: "left-props-results-head", children: [listTitle, resultCount] }), prefixNote, noResults, grid, el("button", {
         class: "btn left-props-more", attrs: { type: "button" }, text: "다른 기물 더 보기", dataset: { testid: "left-props-more" },
-        on: { click: () => { visibleCount += PAGE_SIZE; fillGrid(); } },
+        on: { click: () => { visibleCount += pageSizeFor(root); fillGrid(); } },
       }), status] : [el("p", { class: "left-props-empty", text: "이 칩셋에는 등록된 기물이 없습니다. 자료집의 구조물에서 기물을 등록할 수 있습니다." })]),
     );
     fillGrid();

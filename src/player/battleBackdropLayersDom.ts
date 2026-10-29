@@ -88,6 +88,21 @@ const PRESET_PAINT: Record<BattleBackdropLayerPreset, { readonly image: string; 
     size: "420px 100%",
     repeat: "repeat-x",
   },
+  // 밤 — 위는 짙은 남색, 지평선 쪽은 조금 옅게. 곱하기라 낮 하늘·풀이 밤빛으로 가라앉는다.
+  night: {
+    image: "linear-gradient(rgb(28 36 84), rgb(52 62 112) 55%, rgb(70 76 118))",
+    size: "100% 100%",
+    repeat: "no-repeat",
+  },
+  // 잿빛 연기 — 회갈색으로 어둡게 + 옅은 연기 덩이. 불탄 들판·마을 터.
+  smoke: {
+    image: [
+      "radial-gradient(ellipse 40% 24% at 24% 34%, rgb(70 60 58 / 70%), transparent 72%)",
+      "radial-gradient(ellipse 36% 22% at 72% 58%, rgb(64 56 54 / 65%), transparent 72%)",
+      "linear-gradient(rgb(120 100 96), rgb(150 128 118) 60%, rgb(132 108 100))",
+    ].join(", "),
+    size: "100% 100%",
+  },
   // 화면 가운데 청백색 빛무리 — 정지한 한 장(스크롤 0). 수정·마법진 같은 광원 뒤 배경에 깐다.
   glow: {
     image: [

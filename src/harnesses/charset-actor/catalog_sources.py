@@ -16,7 +16,7 @@ import recipes as R
 CATALOG_FILES = ('charsetCatalog.ts', 'easyrpgRtp.ts', 'scarloxyPack.ts',
                  'farmingSprites.ts', 'oprnMonsterCharsets.ts', 'harnessMonsterArt.ts',
                  'harnessMonsterBundle.json', 'wizardingCharsets.ts',
-                 'wizardingCharsets.json', 'heroesCharsets.ts', 'heroesCharsets.json', 'modernCharsets.ts', 'modernCharsets.json', 'scarloxyPeopleCharsets.ts', 'scarloxyPeopleCharsets.json', 'sharedCharacterGraphics.json')
+                 'wizardingCharsets.json', 'heroesCharsets.ts', 'heroesCharsets.json', 'modernCharsets.ts', 'modernCharsets.json', 'scarloxyPeopleCharsets.ts', 'scarloxyPeopleCharsets.json', 'refmapDollCharsets.ts', 'refmapDollCharsets.json', 'sharedCharacterGraphics.json')
 WALKING_GROUPS = {'Actor', 'People', 'Monster', 'Animal', 'Scarloxy', 'Farm', 'Template'}
 
 
@@ -96,6 +96,28 @@ def scarloxy_people_catalog(directory):
                  group=group[1]) for number in range(1, count + 1)]
 
 
+def refmap_doll_catalog(directory):
+    """Baked REFMAP paper-doll chip sheets (refmap-doll family). Count is the REFMAP_DOLL_SHEETS constant (equal to the roster's sheets)."""
+    source = (directory / 'refmapDollCharsets.ts').read_text()
+    block = source.split('export const REFMAP_DOLL_CHARSET_ASSETS', 1)
+    count = re.search(r'export const REFMAP_DOLL_SHEETS = (\d+);', source)
+    if len(block) != 2 or not count:
+        raise ValueError('REFMAP 변형 인물 캐릭터 원본 목록을 찾을 수 없습니다')
+    body = block[1].split('satisfies', 1)[0]
+    fields = dict(re.findall(r'(\w+):\s*`([^`]*)`', body))
+    group = re.search(r'group:\s*"([^"]+)"', body)
+    count = int(count[1])
+    if count != json.loads((directory / 'refmapDollCharsets.json').read_text()).get('sheets'):
+        raise ValueError('REFMAP_DOLL_SHEETS 와 명단의 sheets 가 다릅니다(install_refmap_dolls.py 로 다시 굽기)')
+    if not group or not all(fields.get(key) and '${n}' in fields[key] for key in ('id', 'name', 'path', 'textureKey')):
+        raise ValueError('REFMAP 변형 인물 캐릭터 원본 목록 형식을 읽을 수 없습니다')
+    return [dict(id=fields['id'].replace('${n}', str(number)),
+                 name=fields['name'].replace('${n}', str(number)),
+                 path=fields['path'].replace('${n}', str(number)),
+                 textureKey=fields['textureKey'].replace('${n}', str(number)),
+                 group=group[1]) for number in range(1, count + 1)]
+
+
 def harness_monster_charsets(directory):
     """Walking chips baked from the species-harness bundle. Sheet count lives in the manifest."""
     count = json.loads((directory / 'harnessMonsterBundle.json').read_text()).get('fieldSheets') or 0
@@ -115,7 +137,7 @@ def editor_catalog():
     expected = {'EASYRPG_CHARSET_ASSETS', 'SCARLOXY_CHARSET_ASSETS',
                 'FARMING_ANIMAL_CHARSET_ASSETS', 'OPRN_MONSTER_CHARSET_ASSETS',
                 'HARNESS_MONSTER_CHARSET_ASSETS', 'WIZARDING_CHARSET_ASSETS', 'HEROES_CHARSET_ASSETS', 'MODERN_CHARSET_ASSETS',
-                'SCARLOXY_PEOPLE_CHARSET_ASSETS'}
+                'SCARLOXY_PEOPLE_CHARSET_ASSETS', 'REFMAP_DOLL_CHARSET_ASSETS'}
     if set(providers) != expected:
         raise ValueError('에디터 캐릭터 카탈로그 공급자가 바뀌었습니다. 원본 목록 연결을 갱신하세요.')
     result = []
@@ -143,6 +165,7 @@ def editor_catalog():
     result.extend(heroes_catalog(directory))
     result.extend(modern_catalog(directory))
     result.extend(scarloxy_people_catalog(directory))
+    result.extend(refmap_doll_catalog(directory))
     if len({r['id'] for r in result}) != len(result):
         raise ValueError('에디터 원본 ID가 중복됐습니다')
     return result
@@ -195,6 +218,9 @@ def create(name='에디터 전체 캐릭터 원본'):
                 continue
             if entry['group'] == 'Modern':
                 skipped.append(dict(assetId=entry['id'], reason='현대 연애 인물 칩은 이 공방의 산출물이다. 카탈로그에 연결돼 있고, 봉인된 20시트 걷기 원본에는 넣지 않는다'))
+                continue
+            if entry['group'] == 'RefmapDoll':
+                skipped.append(dict(assetId=entry['id'], reason='REFMAP 변형 인물 칩은 char-gen 산출물(제3자 소재 변형)이다. 카탈로그에 연결돼 있고, 봉인된 20시트 걷기 원본에는 넣지 않는다'))
                 continue
             if entry['group'] == 'ScarloxyPeople':
                 skipped.append(dict(assetId=entry['id'], reason='Scarloxy 변형 인물 칩은 이 공방의 산출물이다. 카탈로그에 연결돼 있고, 봉인된 20시트 걷기 원본에는 넣지 않는다'))

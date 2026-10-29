@@ -84,6 +84,10 @@ const ATTACHED_FLAG = "delayedTooltipAttached";
 /**
  * 목록에 있는 컨트롤에 툴팁을 붙인다. 같은 노드에 두 번 붙지 않으므로 렌더마다 불러도 된다.
  * 반환값은 이번 호출에서 새로 붙인 개수 — 롤아웃이 실제로 걸렸는지 테스트가 이 수를 본다.
+ *
+ * 툴팁 글자는 접근 이름(`name`)이다 — 짧은 `label` 은 이름과 갈라져 「음악」/「음악·효과음」처럼
+ * 같은 단추가 두 이름을 가졌다(HIG C-08). 목록 밖이라도 같은 뿌리 안에서 `aria-label` 만 있고
+ * 글자가 없는 단추(좁은 창에서 이름표가 접힌 단추 포함)는 그 이름으로 툴팁을 받는다.
  */
 export function installDelayedTooltips(root: ParentNode): number {
   let attached = 0;
@@ -92,9 +96,14 @@ export function installDelayedTooltips(root: ParentNode): number {
     for (const node of nodes) {
       if (node.dataset[ATTACHED_FLAG] === "1") continue;
       node.dataset[ATTACHED_FLAG] = "1";
-      attachDelayedTooltip(node, { accessibleName: target.name, label: target.label });
+      attachDelayedTooltip(node, { accessibleName: target.name, label: target.name });
       attached += 1;
     }
+  }
+  for (const node of root.querySelectorAll<HTMLElement>("button[aria-label]")) {
+    if (node.dataset[ATTACHED_FLAG] === "1") continue;
+    node.dataset[ATTACHED_FLAG] = "1";
+    attachDelayedTooltip(node, { label: "", iconOnly: true });
   }
   return attached;
 }

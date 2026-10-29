@@ -46,4 +46,36 @@
   .cream-command-form-head:has(+ .shop-processing-command-body) {
     display: none;
   }
+
+  /* [전 표면→사용자 설정] OS 의 「동작 줄이기」(prefers-reduced-motion) 를 편집기 크롬 전체가 따른다(HIG IS-061).
+     표면마다 제 전환·애니메이션을 갖고 각자 reduce 블록을 빠뜨렸다(호버 배경 전환만 3건 실측). 특이도·레이어가
+     제각각인 규칙을 한꺼번에 누르려면 !important 가 필요하다. 애니메이션은 0 이 아니라 0.01ms 로 두어 animationend 를
+     기다리는 코드가 멈추지 않게 한다(이름 없는 요소에는 애니메이션이 생기지 않는다). 전환은 0s 다 — 모든 요소에
+     0.01ms 를 주면 transition-property 기본값 all 때문에 전환이 없던 요소 수천 개가 전환을 새로 얻는다(자료집 1,713개 실측).
+     transitionend 를 기다리는 두 곳(bootLoader·commandPreview)은 시간 안전망이 있다.
+     테스트 플레이 창 안(저작된 게임 화면)은 게임의 것이라 제외한다.
+     만기: 표면마다 자기 reduce 블록을 갖추면 지운다. */
+  @media (prefers-reduced-motion: reduce) {
+    :not(.test-play-modal-backdrop, .test-play-modal-backdrop *),
+    :not(.test-play-modal-backdrop *)::before,
+    :not(.test-play-modal-backdrop *)::after {
+      animation-delay: 0ms !important;
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      scroll-behavior: auto !important;
+      transition-delay: 0s !important;
+      transition-duration: 0s !important;
+    }
+  }
+
+  /* [전 표면→사용자 설정] 강제 색(고대비 모드)에서는 반투명 유리면·흐림이 글자와 경계를 흐린다(HIG IS-029).
+     흐림은 표면마다 제각각 걸려 있어 한꺼번에 끈다. 반투명 바탕 토큰은 base/theme.css 의 forced-colors 블록이 불투명·투명으로 바꾼다.
+     만기: 흐림을 쓰는 표면이 자기 forced-colors 블록을 갖추면 지운다. */
+  @media (forced-colors: active) {
+    *,
+    *::before,
+    *::after {
+      backdrop-filter: none !important;
+    }
+  }
 }

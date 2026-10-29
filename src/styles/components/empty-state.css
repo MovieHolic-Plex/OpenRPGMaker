@@ -27,7 +27,7 @@
   .empty-state__icon {
     width: 40px;
     height: 40px;
-    border-radius: 10px;
+    border-radius: var(--radius-3);
     display: grid;
     place-items: center;
     background: var(--empty-icon-bg, rgba(74, 87, 214, 0.10));
@@ -56,7 +56,8 @@
   }
   .empty-state__action {
     appearance: none;
-    border-radius: 999px;
+    border-radius: var(--radius-pill);
+    min-height: var(--hit-min);
     padding: 7px 14px;
     font: 600 12px var(--font-ui);
     cursor: pointer;
@@ -76,7 +77,7 @@
     border-color: var(--border-default);
   }
   .empty-state__action--ghost:hover { background: var(--control-bg-hover); color: var(--text-1); border-color: var(--border-strong); }
-  .empty-state__action:focus-visible { outline: var(--focus-outline); outline-offset: 2px; }
+  .empty-state__action:focus-visible { outline: var(--focus-outline); outline-offset: var(--focus-offset); }
 
   .event-list-empty,
   .commerce-command-empty,

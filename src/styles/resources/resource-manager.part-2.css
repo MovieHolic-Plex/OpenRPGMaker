@@ -91,7 +91,7 @@
 }
 
 .rm-category-row.active .rm-category-badge {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: var(--on-accent);
+  background: var(--bg-raised);
+  border-color: var(--border-default);
+  color: var(--text-1);
 }

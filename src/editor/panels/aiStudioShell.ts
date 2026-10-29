@@ -30,6 +30,9 @@ import type { LaneManager } from "./aiLaneManager";
 import { laneSession } from "./aiLaneSession";
 import { AI_CONNECTION_STATUS_CHANGED_EVENT, getAiConnectionStatus } from "./aiConnectionStatus";
 import { loadAiConfig } from "@/ai/llmClient";
+import { isAssistantEndpointReady } from "@/ai/assistantEndpoint";
+import { openAiSettingsModal } from "./aiSettingsModal";
+import { countAssistantRequests } from "./aiToolUsagePanel";
 import {
   laneAvatarLetter,
   laneBoardSummary,
@@ -238,9 +241,11 @@ export function createStudioShell(options: StudioShellOptions): StudioShell {
     dataset: { testid: "ai-studio-monitor-stage" },
     attrs: { hidden: "" },
   });
+  // 감독 보드를 보는 동안에는 맵 확대·축소 도구가 가리킬 대상이 없다 — 캔버스 보기에서만 보인다(C-63).
   const monitorChrome = el("div", {
     class: "ai-studio-monitor-chrome",
     dataset: { testid: "ai-studio-monitor-chrome" },
+    attrs: { hidden: "" },
   });
   const monitorLabel = el("h2", {
     class: "ai-studio-monitor-label",
@@ -267,6 +272,41 @@ export function createStudioShell(options: StudioShellOptions): StudioShell {
     attrs: { "aria-label": "감독 지시 제안" },
     dataset: { testid: "ai-studio-director-chips" },
   });
+  // AI 미연결이면 조수 패널과 같은 상태를 말한다(C-60): 안내 한 줄 + 「AI 연결하기」, 지시 카드는 비활성(이유는 같은 문장).
+  const studioAiReady = (): boolean => { const config = loadAiConfig(); return isAssistantEndpointReady(config, getAiConnectionStatus(config)); };
+  const connectReasonId = "ai-studio-connect-reason";
+  const connectNotice = el("div", {
+    class: "ai-studio-connect",
+    dataset: { testid: "ai-studio-connect-notice" },
+    attrs: { hidden: "" },
+    children: [
+      el("p", { attrs: { id: connectReasonId }, text: "AI 연결이 필요합니다. 연결하면 감독 지시를 조수에게 보낼 수 있어요." }),
+      el("button", {
+        class: "ai-assistant-action is-primary",
+        attrs: { type: "button" },
+        dataset: { testid: "ai-studio-connect" },
+        text: "AI 연결하기",
+        on: { click: () => openAiSettingsModal() },
+      }),
+    ],
+  });
+  let lastDirectorContext: { title: string; chips: readonly { label: string; prompt: string; tone: string }[] } | null = null;
+  const renderDirectorChips = (): void => {
+    const ready = studioAiReady();
+    connectNotice.hidden = ready;
+    if (!lastDirectorContext) return;
+    const { title, chips } = lastDirectorContext;
+    directorChips.replaceChildren(
+      el("p", { class: "ai-studio-kicker", text: `감독 지시 · ${title}` }),
+      ...chips.map((chip) => el("button", {
+        class: `ai-studio-director-chip is-${chip.tone}`,
+        attrs: { type: "button", title: ready ? chip.prompt : "AI 연결 후 사용할 수 있어요", ...(ready ? {} : { "aria-disabled": "true", "aria-describedby": connectReasonId }) },
+        dataset: { testid: "ai-studio-director-chip" },
+        children: [el("strong", { text: chip.label }), el("span", { text: chip.prompt })],
+        on: { click: () => (studioAiReady() ? fillComposer(chip.prompt) : openAiSettingsModal()) },
+      })),
+    );
+  };
   const directorBoard = createStudioDirectorBoard({
     onSelectMap: () => {
       refreshScenes();
@@ -277,23 +317,15 @@ export function createStudioShell(options: StudioShellOptions): StudioShell {
     },
     onPromptPick: fillComposer,
     onContextChange: (title, chips) => {
-      directorChips.replaceChildren(
-        el("p", { class: "ai-studio-kicker", text: `감독 지시 · ${title}` }),
-        ...chips.map((chip) => el("button", {
-          class: `ai-studio-director-chip is-${chip.tone}`,
-          attrs: { type: "button", title: chip.prompt },
-          dataset: { testid: "ai-studio-director-chip" },
-          children: [el("strong", { text: chip.label }), el("span", { text: chip.prompt })],
-          on: { click: () => fillComposer(chip.prompt) },
-        })),
-      );
+      lastDirectorContext = { title, chips };
+      renderDirectorChips();
     },
   });
   const canvasToggleButton = el("button", {
     class: "ai-studio-ghost-btn",
     attrs: {
       type: "button",
-      title: "스토리보드 감독 보드와 라이브 맵 캔버스를 전환합니다",
+      title: "맵 캔버스 보기 — 감독 보드와 라이브 맵 캔버스를 전환합니다",
       "aria-pressed": "false",
     },
     dataset: { testid: "ai-studio-canvas-toggle" },
@@ -303,6 +335,8 @@ export function createStudioShell(options: StudioShellOptions): StudioShell {
         canvasViewActive = !canvasViewActive;
         canvasToggleButton.setAttribute("aria-pressed", String(canvasViewActive));
         canvasToggleButton.textContent = canvasViewActive ? "감독 보드 보기" : "맵 캔버스 보기";
+        monitorChrome.hidden = !canvasViewActive;
+        canvasToggleButton.title = `${canvasToggleButton.textContent} — 감독 보드와 라이브 맵 캔버스를 전환합니다`;
         if (canvasViewActive) {
           directorBoard.root.setAttribute("hidden", "");
           monitorStage.removeAttribute("hidden");
@@ -317,7 +351,7 @@ export function createStudioShell(options: StudioShellOptions): StudioShell {
   });
   const exitButton = el("button", {
     class: "ai-studio-exit",
-    attrs: { type: "button", title: "스튜디오를 닫고 타일 편집기로 돌아갑니다" },
+    attrs: { type: "button", title: "편집기로 — 스튜디오를 닫고 타일 편집기로 돌아갑니다" },
     dataset: { testid: "ai-studio-exit" },
     children: [renderEditorIcon("arrowLeft"), el("span", { text: "편집기로" })],
     on: { click: () => requestExit() },
@@ -353,10 +387,15 @@ export function createStudioShell(options: StudioShellOptions): StudioShell {
     text: "요청 없음",
   });
   // 유휴 문구는 「대기 중」 처럼 무언가를 기다리는 말을 쓰지 않는다 — 서버가 AI 를 꺼 두었으면 그 사실을 말한다(UI 감사 09-ai-12).
-  const idleStatusText = (): string =>
-    getAiConnectionStatus(loadAiConfig()).hostAiDisabled === true ? "AI 꺼짐" : "요청 없음";
+  // 유휴 문구는 실제 요청 수를 말한다 — 실패한 요청도 센다(C-69). 예전 「요청 없음」은 실패 2건이 아래 대화에 있어도 그대로였다.
+  const idleStatusText = (): string => {
+    if (getAiConnectionStatus(loadAiConfig()).hostAiDisabled === true) return "AI 꺼짐";
+    const { requests, failed } = countAssistantRequests();
+    return requests > 0 ? `요청 ${requests}건${failed > 0 ? ` · 실패 ${failed}건` : ""}` : "요청 없음";
+  };
   const onConnectionStatusChanged = (): void => {
     if (statusLine.dataset.state === "idle") statusLine.textContent = idleStatusText();
+    renderDirectorChips();
   };
   if (typeof window !== "undefined") window.addEventListener(AI_CONNECTION_STATUS_CHANGED_EVENT, onConnectionStatusChanged);
   const briefing = el("section", {
@@ -415,7 +454,7 @@ export function createStudioShell(options: StudioShellOptions): StudioShell {
           chatCollapseButton,
         ],
       }),
-      el("div", { class: "ai-studio-chat-body", children: [briefing, directorChips, workSlot, chatLogSlot, laneThreadSlot, teamSlot] }),
+      el("div", { class: "ai-studio-chat-body", children: [briefing, connectNotice, directorChips, workSlot, chatLogSlot, laneThreadSlot, teamSlot] }),
       composerSlot,
     ],
   });

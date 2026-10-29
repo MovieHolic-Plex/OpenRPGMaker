@@ -537,7 +537,11 @@ function validatePageShape(label: string, value: unknown): void {
     const lunge = requireRecord(`${label}.movement.chaseLunge`, movement.chaseLunge);
     const steps = requireNumber(`${label}.movement.chaseLunge.steps`, lunge.steps);
     const speed = requireNumber(`${label}.movement.chaseLunge.speed`, lunge.speed);
-    assert(Number.isInteger(steps) && steps >= 1 && steps <= 8 && Number.isInteger(speed) && speed >= 1 && speed <= 8, `${label}: 덮치기는 steps 1~8 · speed 1~8`);
+    assert(Number.isInteger(steps) && steps >= 1 && steps <= 30 && Number.isInteger(speed) && speed >= 1 && speed <= 8, `${label}: 덮치기는 steps 1~30 · speed 1~8`);
+    if (lunge.stepMs !== undefined) {
+      const stepMs = requireNumber(`${label}.movement.chaseLunge.stepMs`, lunge.stepMs);
+      assert(Number.isInteger(stepMs) && stepMs >= 60 && stepMs <= 400, `${label}: 덮치기 stepMs 는 60~400`);
+    }
   }
   if (movement.approachStyle !== undefined) {
     assert(isFieldApproachStyle(movement.approachStyle), `${label}: 다가오는 방식은 ${FIELD_APPROACH_STYLES.join("|")}`);

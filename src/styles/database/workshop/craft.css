@@ -75,7 +75,7 @@
   background: repeating-linear-gradient(90deg, rgb(15 23 42 / 0.08) 0 6px, transparent 6px 8px) content-box, var(--bg-inset);
   box-shadow: inset 0 0 0 1px var(--border-default); }
 .craft-bar > .craft-bar-fill { position: relative; display: block; height: 100%; min-width: 6px; overflow: hidden;
-  background: linear-gradient(180deg, var(--craft-ember-hot) 0 34%, var(--craft-ember) 34% 72%, var(--craft-ember-deep) 72%);
+  background: var(--craft-ember);
   -webkit-mask: repeating-linear-gradient(90deg, #000 0 6px, transparent 6px 8px); mask: repeating-linear-gradient(90deg, #000 0 6px, transparent 6px 8px);
   transition: width 0.45s steps(6, end); }
 /* 달군 쇠 위를 지나가는 빛 — 칸씩 건너뛴다 */

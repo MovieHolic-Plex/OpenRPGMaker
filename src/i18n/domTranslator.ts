@@ -17,6 +17,10 @@ import { containsHangul, type Translator } from "@/i18n/translator";
 const TRANSLATED_ATTRIBUTES = ["title", "aria-label", "placeholder", "alt"] as const;
 // 속성까지 통째로 건너뛰는 영역.
 const SKIP_SELECTOR = ["script", "style", "[translate='no']", ".notranslate", "[data-i18n-skip]", ".player-layout"].join(",");
+// 저자 글자로 표시한 자리. 번들 기본 데이터 이름(`@data` 카탈로그 키)과 원문 전체가 같을 때만 바꾼다.
+const AUTHORED_SELECTOR = ["[translate='no']", ".notranslate"].join(",");
+// 기본 데이터 이름도 바꾸지 않는 자리 — 게임 화면·스크립트·명시적 건너뛰기.
+const NEVER_SELECTOR = ["script", "style", "[data-i18n-skip]", ".player-layout"].join(",");
 // 안의 글자(사용자 입력)만 건너뛰고, placeholder·title 같은 자기 속성은 번역하는 요소.
 const TEXT_ONLY_SKIP_SELECTOR = ["textarea", "code", "pre", "[contenteditable='true']", "[contenteditable='']"].join(",");
 
@@ -71,6 +75,28 @@ export function installDomTranslator(root: Node, initial: Translator | null): Do
   const skipped = (element: Element | null): boolean => element !== null && element.closest(SKIP_SELECTOR) !== null;
   const textSkipped = (element: Element | null): boolean =>
     element !== null && (element.closest(SKIP_SELECTOR) !== null || element.closest(TEXT_ONLY_SKIP_SELECTOR) !== null);
+  const dataNameOnly = (element: Element | null): boolean =>
+    element !== null &&
+    element.closest(AUTHORED_SELECTOR) !== null &&
+    element.closest(NEVER_SELECTOR) === null &&
+    element.closest(TEXT_ONLY_SKIP_SELECTOR) === null;
+  const lookupDataName = (source: string): string | null => {
+    const core = source.trim();
+    const hit = translator?.dataName(core) ?? null;
+    if (hit === null) return null;
+    const at = source.indexOf(core);
+    return source.slice(0, at) + hit + source.slice(at + core.length);
+  };
+
+  // 자리마다 뜻이 다른 원문(`@scope(...)` 카탈로그 키)은 그 자리의 번역을 먼저 쓴다.
+  const lookupAt = (source: string, element: Element | null): string | null => {
+    const scoped = translator?.scoped(source.trim()) ?? [];
+    const hit = element ? scoped.find((entry) => element.closest(entry.selector) !== null) : undefined;
+    if (!hit) return lookup(source);
+    const core = source.trim();
+    const at = source.indexOf(core);
+    return source.slice(0, at) + hit.target + source.slice(at + core.length);
+  };
 
   const translateText = (node: Text): void => {
     const current = node.data;
@@ -80,8 +106,9 @@ export function installDomTranslator(root: Node, initial: Translator | null): Do
       if (state) textState.delete(node);
       return;
     }
-    if (textSkipped(node.parentElement)) return;
-    const next = lookup(source) ?? source;
+    const dataOnly = dataNameOnly(node.parentElement);
+    if (!dataOnly && textSkipped(node.parentElement)) return;
+    const next = (dataOnly ? lookupDataName(source) : lookupAt(source, node.parentElement)) ?? source;
     if (next !== current) node.data = next;
     textState.set(node, { source, shown: next });
   };
@@ -94,12 +121,23 @@ export function installDomTranslator(root: Node, initial: Translator | null): Do
       const state = states?.get(name);
       const source = state && state.shown === current ? state.source : current;
       if (!containsHangul(source)) continue;
-      if (skipped(element)) return;
-      const next = lookup(source) ?? source;
+      const dataOnly = dataNameOnly(element);
+      if (!dataOnly && skipped(element)) return;
+      const next = (dataOnly ? lookupDataName(source) : lookupAt(source, element)) ?? source;
       if (next !== current) element.setAttribute(name, next);
       const map = states ?? new Map<string, Shown>();
       map.set(name, { source, shown: next });
       if (!states) attrState.set(element, map);
+    }
+  };
+
+  // 저자 글자 자리 안: 노드마다 dataNameOnly 로 다시 걸러 기본 데이터 이름만 바꾼다.
+  const translateDataNames = (start: Element): void => {
+    translateAttributes(start);
+    const walker = document.createTreeWalker(start, NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT);
+    for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+      if (node.nodeType === Node.TEXT_NODE) translateText(node as Text);
+      else translateAttributes(node as Element);
     }
   };
 
@@ -110,7 +148,10 @@ export function installDomTranslator(root: Node, initial: Translator | null): Do
     }
     if (start.nodeType !== Node.ELEMENT_NODE && start.nodeType !== Node.DOCUMENT_NODE && start.nodeType !== Node.DOCUMENT_FRAGMENT_NODE) return;
     if (start.nodeType === Node.ELEMENT_NODE) {
-      if (skipped(start as Element)) return;
+      if (skipped(start as Element)) {
+        if (dataNameOnly(start as Element)) translateDataNames(start as Element);
+        return;
+      }
       translateAttributes(start as Element);
     }
     if (start.nodeType === Node.ELEMENT_NODE && (start as Element).closest(TEXT_ONLY_SKIP_SELECTOR)) return;
@@ -118,7 +159,10 @@ export function installDomTranslator(root: Node, initial: Translator | null): Do
       acceptNode: (node) => {
         if (node.nodeType !== Node.ELEMENT_NODE) return NodeFilter.FILTER_ACCEPT;
         const element = node as Element;
-        if (element.matches(SKIP_SELECTOR)) return NodeFilter.FILTER_REJECT;
+        if (element.matches(SKIP_SELECTOR)) {
+          if (dataNameOnly(element)) translateDataNames(element);
+          return NodeFilter.FILTER_REJECT;
+        }
         if (element.matches(TEXT_ONLY_SKIP_SELECTOR)) {
           translateAttributes(element);
           return NodeFilter.FILTER_REJECT;

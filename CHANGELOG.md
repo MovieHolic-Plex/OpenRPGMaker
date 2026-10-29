@@ -5,6 +5,152 @@
 
 <!-- releases -->
 
+## 0.358.0 — 2026-10-29
+
+### 기능
+
+- **i18n** — plural slots, place-scoped keys and bundled data names in the translator (`3bf0bf2`)
+- **ui** — follow the OS dark mode and forced colours in the editor (`440a990`)
+- **ui** — add the shared SVG icon set to components (`b2d2725`)
+- **ui** — add type, hit-target, radius and layer scales (`2254e46`)
+
+### 수정
+
+- **css** — re-ratchet CSS baselines for the intended HIG stack changes (`c8c9292`)
+- **css** — real defects behind the CSS ratchet on the HIG stack (`5938e6a`)
+- **assets** — farm dirt-path tile names say 서쪽으로, not 서으로 (C-17) (`81b4207`)
+- **i18n** — English catalog uses colons and periods instead of em/en dashes (C-18) (`84d4567`)
+- **i18n** — singular English counts, 1 map / 1 item (C-12) (`85752c4`)
+- **i18n** — sentence case for short English labels (C-14) (`a6650a9`)
+- **i18n** — English names for the bundled Beodeul tileset, terrain cards and the default map (C-16) (`7213924`)
+- **i18n** — translate the Workshop card, e.g. examples and strings the screen lanes added; ja log labels without a gap, zh AI Studio (C-15) (`48fafad`)
+- **i18n** — one-line English rail labels without soft hyphens, Check instead of Lint (C-11) (`3746dcd`)
+- **i18n** — one English term per thing: Up/Down/Left/Right passage, Music/Sound effects, Connection/Display, World overview, Enemy (C-13) (`2d7f5ad`)
+- **ui** — canvas toolbar clears a wrapped temporary-session banner (C-32) (`b8e5cf7`)
+- **ui** — keep an auto-fitted map centred when the docked assistant leaves less than 1x room (C-56) (`7f2a4be`)
+- **ui** — keep 조수 readable in the 280px overlay panel head (C-57, C-61) (`9b31d02`)
+- **ui** — map refits to the visible canvas and the canvas can be painted from the keyboard (C-33, C-105, IS-012) (`f78d9c6`)
+- **ui** — palette cards are one listbox Tab stop, keep focus after choosing, ellipsised 12 px names, readable prefab chips (C-40, C-37, C-42) (`882d974`)
+- **ui** — canvas toolbar stays one 40 px row, overflow goes to a floating More menu, SVG icons (C-32) (`4d2b9af`)
+- **ui** — map create dialog with pressed preset, one primary action, compact size fields (C-51) (`a4a9c20`)
+- **ui** — workshop disclosure keeps its marker at the 32 px target (C-49) (`a84ffb6`)
+- **ui** — map tree context menu keeps delete rows last (IS-103) (`856fe55`)
+- **ui** — undo and redo buttons name the step they reverse (IS-089) (`ef3d158`)
+- **ui** — drawing panel: even tool rows and 32 px targets, layer-aware head, tile name first, sheet zoom, labelled tile properties (C-34, C-35, C-38, C-41, C-43, C-53, IS-012) (`3a9d968`)
+- **ui** — brush toggles keep a fixed name with aria-pressed; autotile switch is announced with undo (C-36, C-107) (`61ae393`)
+- **ui** — inspect popover opens beside the rail button with one title and sentence-case labels (C-44) (`cb5ea30`)
+- **ui** — rail and dock tabs mark the active item with a fill, no accent stripes or sweeping hairline (C-31, C-55) (`2cdd975`)
+- **ui** — map links summary and cards share one verdict, readable flags, fix action (C-48, IS-012) (`4b4fb0d`)
+- **ui** — locked composer is described by the lock title and the scrim really drops its blur (C-60) (`d0c2fc8`)
+- **ui** — a 429 from the companion marks AI usage limited until a model call succeeds (C-67) (`9bcabb7`)
+- **ui** — open the guide at the requested section without smooth scrolling so the contents marks it (C-110) (`e1d010b`)
+- **ui** — keep the last guide section active when the guide is scrolled to its end (C-110) (`1ed48de`)
+- **ui** — temporary-session save offers export, banner records the export, 32 px banner buttons (C-54) (`4352ae7`)
+- **ui** — progress pane marks and buttons at the 12 px / 28 px floor (C-47) (`b4d8d89`)
+- **ui** — map list header tools always visible, 28 px row menu, text-only context menu (C-45) (`8ec6174`)
+- **ui** — workshop pane drops placeholder card, names its checkbox, no inset stripe (C-49) (`63e89c4`)
+- **ui** — store pane offers a web store link and shares the panel inset (C-50) (`2d0ab01`)
+- **ui** — object cards fill the pane without repeated size and source meta (C-46) (`f862f9e`)
+- **ui** — authoring progress judges tiled maps, drops git words and accent stripe (C-47) (`035e8e5`)
+- **ui** — assistant panel docks from 1000px and shows one not-connected state (C-56, C-57, C-58, C-59, C-60, C-61, C-62, C-73, C-74) (`e9d308b`)
+- **ui** — one AI connection state in the chip and settings (C-67, C-68, C-70, C-71, C-72) (`92a6aba`)
+- **ui** — AI studio board reads at 12px, one accent, one-line tabs, counted requests (C-63, C-64, C-65, C-66, C-69) (`505112b`)
+- **ui** — replace AI chrome edge stripes and accent outlines with tints (C-75) (`0864006`)
+- **ui** — top bar overflow, single accent, layer radiogroup, file/help/language menus and Shift+1..3 layer keys (C-19..C-23, C-113, IS-003, IS-009, IS-036, IS-051) (`bce1173`)
+- **ui** — command palette with map settings commands, find entry, key hint and result count (C-24, C-116, C-110) (`70b8883`)
+- **ui** — editor guide without retired captures or accent bars, shortcuts section entry and focus return (C-29, C-118, C-111, C-114) (`c6f410b`)
+- **ui** — map/event search without accent band, eyebrow or repeated guidance, default scope all (C-25) (`5aa58bf`)
+- **ui** — music dialog with named controls, unplayable reasons, split row labels and a guide pane (C-26) (`4491618`)
+- **ui** — resource manager with one primary action, svg placeholder, no empty pager or accent stripes (C-27) (`4166b89`)
+- **ui** — identity popover without machine ids and history as 저장 기록 with an export action (C-28) (`56a28cb`)
+- **ui** — replace accent side stripes in interview dialogs with tint and 1px border (C-30) (`04d8d16`)
+- **test-play** — make the black player layout win over the editor's database-layer system-shell background (C-94) (`b21a3d5`)
+- **battle** — widen the retro HP cell so the labelled value is not clipped (C-95) (`0c02dd5`)
+- **test-play** — paint the player layout black so the picture has one letterbox colour (C-94) (`0a7af75`)
+- **ui** — keep the actor toolbar on one line at 300px and drop the resolution warning stripe (C-76, C-88) (`e9f293c`)
+- **battle** — snap enlarged battle stage scale to quarter steps so pixel fonts render at whole pixels (C-98) (`6b90aca`)
+- **runtime** — field HUD numbers sit on a dark plate (C-101) (`1dc672b`)
+- **runtime** — debug toggle is a labelled 28px button and the open panel is a side drawer (C-99) (`7d13b63`)
+- **runtime** — status menu lead row no longer overprints name and location (C-97) (`5e8a2a5`)
+- **battle** — label HP, show the disabled command reason, Korean stat badges, named enemy buttons (`89968fe`)
+- **runtime** — opening skip chip and caption band follow the picture; first scene shows a loading label (`c34cd67`)
+- **test-play** — one exit, 28px one-line title bar, modal focus, map name, pause chip and pointer menu (`856a0cb`)
+- **ui** — label the default faction as 기본: <name> so the name translates (C-85) (`b8271df`)
+- **ui** — let 닫기 carry the primary weight in a session that does not save (C-81) (`cabcbdd`)
+- **ui** — stop the delete reason widening the list and reclaim list height (C-76) (`9190027`)
+- **ui** — honour reduced motion across the editor chrome (`9560444`)
+- **ui** — break Korean text between words, not inside them (`556b514`)
+- **ui** — show the full accessible name in icon-only tooltips (`c395189`)
+- **ui** — raise text and status tokens to AA on every tint (`8174503`)
+- **ui** — make the focus ring opaque and shared across the editor (`3561107`)
+- **ui** — Ctrl+Enter confirms the event editor and the event id moves behind 고급 (C-102) (`c5ed13b`)
+- **ui** — name the state rate fields and stop upper-casing field labels (C-77, C-86) (`6875b59`)
+- **ui** — keep the tab search placeholder clear of its magnifier icon (C-78) (`7ddbc50`)
+- **ui** — replace 자료집 edge and inset stripe markers with tints (C-88) (`f1d5032`)
+- **ui** — world overview radios share one shape and the copy says each thing once (C-87) (`cc3f56f`)
+- **ui** — rail group switch opens a tab of that group; hidden tabs are buttons (C-79, C-80, C-86) (`8684ab7`)
+- **ui** — delete names its record, locks referenced records with a reason, needs no second press (C-109, C-119, C-117, IS-091) (`69756ad`)
+- **ui** — make 자료집 closing, focus and footer consistent (C-81, C-82, C-83, C-115, IS-075) (`1255da5`)
+- **ui** — give the 자료집 list its height in small windows and drop repeated facts (C-76, C-84, IS-076) (`75f5319`)
+- **ui** — keep raw enums and Korean labels out of translated enemy chips (C-85) (`c9710e7`)
+- **ui** — drop one-side accent stripes from event editor selection and callouts (C-103) (`7dcee4f`)
+
+### 문서
+
+- **qa** — L2 before/after pairs for the i18n lane (`ce4aebf`)
+- **qa** — L5 before/after pairs for the AI surface lane (`6586815`)
+- **qa** — add lane L3 before/after pairs (`c54e3a6`)
+- **qa** — add L7 before/after pairs for the test-play and runtime clusters (`76ceca7`)
+- **qa** — L6 before/after pairs for the 자료집 lane (`768620d`)
+- **ui** — document the L1 scales, theme and icon set; add before/after pairs (`1b49937`)
+
+### 테스트
+
+- **qa** — add lane L2 i18n devices and before/after pair runner (`a4f1942`)
+- **qa** — L4 assistant devices open the panel by test id and require it open (`2f92ba1`)
+- **qa** — C-114 ignores inline listboxes and polls for the command palette (`d847d21`)
+- **qa** — C-10 links/objects devices force a wrap before sampling keep-all breaks (`c321085`)
+- **qa** — L5 devices open the rail by DOM click, read the command row, render the closed menu group, and add before/after setups (`c6086ff`)
+- **qa** — add lane L4 hig-ux devices (canvas, left dock, palette, map list) (`f463305`)
+- **qa** — add lane L5 AI surface devices (`a28fc49`)
+- **qa** — add lane L3 shell devices and before/after pair runner (`9aabf72`)
+- **qa** — L7 devices sample painted gutter colour (C-94) and require an unclipped HP value (C-95) (`6482ae1`)
+- **qa** — add lane L7 test-play and runtime devices (`922f469`)
+- **qa** — L6 devices read var() border shorthands and check plurals per text node (`033087a`)
+- **qa** — add L1 foundation devices for tokens, focus, scales, theme and tooltips (`c04ac4b`)
+- **qa** — add lane L6 자료집 devices (`0581378`)
+- **qa** — add wave-0 ideal-state classification devices (`c53a777`)
+- **qa** — add hig-ux before/after composer (`970f250`)
+- **qa** — add hig-ux device runner, selftest lane and planted-defect fixture (`d1ce610`)
+- **qa** — add hig-ux browser plumbing and measuring probes (`78deb72`)
+
+### 잡무
+
+- **qa** — shrink before/after images to palette PNG for the repo (`7d0a513`)
+- **qa** — add qa:hig-ux npm script (`fc07aa7`)
+
+## 0.357.1 — 2026-10-29
+
+### 수정
+
+- **charset** — RefmapDoll - drop 133 chips that were mostly one original; re-pack 2,567 chips into 321 sheets (#3894) (`e6b2cdb`)
+
+## 0.357.0 — 2026-10-28
+
+### 기능
+
+- **charset** — RefmapDoll - 2,793 modified REFMAP walking chips, bundled, with assistant search (#3882) (`5de42f9`)
+
+### 수정
+
+- **charset** — RefmapDoll - drop 93 chips that were an original REFMAP person recoloured (2,700 chips, 338 sheets) (#3883) (`16ad4e3`)
+
+## 0.356.5 — 2026-10-28
+
+### 수정
+
+- **fallen** — act 2 judge round 2 — mission log, map-edge exits, entry checkpoints, frozen-time interactive QA (#3880) (`c4bd7ba`)
+
 ## 0.356.4 — 2026-10-28
 
 ### 수정

@@ -6,10 +6,13 @@
 // 그려져 클릭을 가로챘다(영어 1440 에서 찾기 → 전투 테스트). 그래서 실제로 넘칠 때만 단계적으로 접는다.
 //
 // 단계(누적, CSS `studio-bar.modern.css` 「14. 넘침 맞춤」 이 모양을 소유한다):
-//  1 = 세계관·음악·찾기 아이콘을 「더 보기 ⋯」 메뉴 하나로 접는다.
+//  1 = 세계관·음악·찾기·전체화면을 「더 보기 ⋯」 메뉴 하나로 접는다(메뉴 항목은 같은 이름과 단축키).
 //  2 = AI 연결 칩은 점만 남긴다(이름은 title 이 말한다).
 //  3 = 레이어 전환·프로젝트 이름의 여백을 줄인다.
-const MAX_FIT_LEVEL = 3;
+//  4 = 상품 이름표(장식)를 걷는다.
+//  5 = 그래도 넘치면 묶음끼리 겹치지 않게 상단 바를 가로로 민다(200% 확대·아주 좁은 창). 예전에는 3단계에서
+//      멈춰 왼쪽 묶음이 오른쪽 단추 밑으로 흘러들었고, 넘침 단추를 누르면 위에 그려진 「랜덤 전투」가 눌렸다(C-19).
+const MAX_FIT_LEVEL = 5;
 
 export function installTopbarFit(bar: HTMLElement): () => void {
   if (typeof ResizeObserver === "undefined" || typeof requestAnimationFrame === "undefined") return () => {};

@@ -597,7 +597,7 @@ export const FIELD_OBSTACLE_TOOLS: readonly ToolDefinition[] = [
       if (k === 'dark') {
         pages.push({
           id: `${id}_dark`, name: '어둠 밝히기', conditions: [], graphic: { transparent: true }, ...PASS, trigger: { kind: 'auto' },
-          commands: [{ kind: 'fork', condition: knows, then: [{ kind: 'setLighting', ambient: 0, transitionMs: 600 }, text(knowsText)], else: [text(`${blocked} ${withJosa(skill.name, '을/를')} 쓸 수 있는 동료가 있다면 밝힐 수 있을 것이다.`)] }],
+          commands: [{ kind: 'fork', condition: knows, then: [{ kind: 'setLighting', ambient: 0, transitionMs: 600 }, text(knowsText)], else: [text(`${blocked} ${withJosa(skill.name, '을/를')} 쓸 줄 아는 동료가 있으면 밝힐 수 있겠다.`)] }],
         });
         const event: GameEvent = { id, name: eventName, x, y, trigger: { kind: 'auto' }, commands: [], pages };
         assertEventShape(event, warnings, event, draft);

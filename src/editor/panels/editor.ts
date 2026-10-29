@@ -1,4 +1,5 @@
 import { destroyGame, getGame, startEditGame } from "@/app/mode";
+import { exportTemporarySession, lastTemporarySessionExportAt, TEMPORARY_SESSION_EXPORTED_EVENT } from "@/editor/saveActions";
 import { clearTileGraftImageCache } from "@/assets/tileGraftImageCache";
 import { scheduleEditorAssetWarmup } from "@/assets/editorAssetWarmup";
 import { collectEditorProjectReferenceIssues } from "@/editor/projectReferenceIssues";
@@ -134,6 +135,7 @@ let authoringJourneyRoot: HTMLElement | null = null;
 // 저장 모드 배너 호스트는 항상 DOM에 두고 내용만 갈아 끼운다 — 공용 데모 → 사본 전환처럼
 // 부팅 뒤에 persistence 상태가 바뀌어도 배너가 붙고 떨어진다(emit(project) 가 repaint 를 탄다).
 let persistenceBannerHost: HTMLElement | null = null;
+let persistenceBannerObserver: ResizeObserver | null = null;
 let authoringJourneyOpen = false;
 let authoringJourneyReferenceIssues: readonly string[] | null = null;
 let unsubStore: (() => void) | null = null;
@@ -233,6 +235,14 @@ export function renderEditor(main: HTMLElement): void {
   const bannerHost = el("div", { class: "persistence-banner-host" });
   canvasArea.append(bannerHost);
   persistenceBannerHost = bannerHost;
+  // 조수 패널이 도킹해 캠버스 열이 좁아지면 배너가 두 줄로 접힌다 — 떠 있는 캠버스 도구 막대의 top 이 그 높이를 따라간다.
+  persistenceBannerObserver?.disconnect();
+  persistenceBannerObserver = typeof ResizeObserver === "function"
+    ? new ResizeObserver(() => {
+      canvasArea.style.setProperty("--persistence-banner-height", `${Math.round(bannerHost.getBoundingClientRect().height)}px`);
+    })
+    : null;
+  persistenceBannerObserver?.observe(bannerHost);
   paintPersistenceBanner();
   canvasArea.append(canvasScrollShell, mapLockBanner, canvasToolbar, authoringJourney, cursorDiagnostics);
   // 「지형」 막대·지형지물 팝업 — 지형 도구일 때만 보인다(reliefToolbar.ts).
@@ -287,6 +297,7 @@ export function renderEditor(main: HTMLElement): void {
   // 맵 트리 리사이저는 도크가 만들 때(mountLeftDock) 함께 묶인다 — 재마운트마다 새 노드다.
   // 레이아웃 ResizeObserver 는 side 도크 폭을 다시 재는 것만 하던 것이라 함께 걷었다.
   window.addEventListener("resize", onWindowResize);
+  window.addEventListener(TEMPORARY_SESSION_EXPORTED_EVENT, paintPersistenceBanner);
   window.addEventListener("oprn:test-play-window", onTestPlayWindowRequest);
   window.addEventListener(AUTHORING_TEST_BOOT_SUCCESS_EVENT, onAuthoringTestBootSuccess);
   bindMapSurfaceFocusHandoff(phaserContainer);
@@ -513,6 +524,7 @@ export function teardownEditor(): void {
   const ro2 = (window as unknown as Record<string, unknown>)["__oprnLayoutRO"] as ResizeObserver | undefined;
   ro2?.disconnect?.();
   window.removeEventListener("resize", onWindowResize);
+  window.removeEventListener(TEMPORARY_SESSION_EXPORTED_EVENT, paintPersistenceBanner);
   window.removeEventListener("oprn:test-play-window", onTestPlayWindowRequest);
   window.removeEventListener(AUTHORING_TEST_BOOT_SUCCESS_EVENT, onAuthoringTestBootSuccess);
   closeTestPlayModal();
@@ -531,6 +543,8 @@ export function teardownEditor(): void {
   mapLockBannerRoot = null;
   authoringJourneyRoot = null;
   persistenceBannerHost = null;
+  persistenceBannerObserver?.disconnect();
+  persistenceBannerObserver = null;
   authoringJourneyOpen = false;
   authoringJourneyReferenceIssues = null;
   authoringJourneyIssuesDocumentKey = null;
@@ -574,7 +588,7 @@ function paintPersistenceBanner(): void {
   if (!persistenceBannerHost) return;
   const status = store.getDbPersistenceStatus();
   const reason = "reason" in status ? String(status.reason) : "";
-  const key = `${status.kind}|${reason}|${status.kind === "disabled" && isSaveSkippedLocation() ? 1 : 0}|${persistenceBannerDismissed ? 1 : 0}`;
+  const key = `${status.kind}|${reason}|${status.kind === "disabled" && isSaveSkippedLocation() ? 1 : 0}|${persistenceBannerDismissed ? 1 : 0}|${lastTemporarySessionExportAt() ?? 0}`;
   if (
     key === lastBannerKey &&
     lastBannerHost === persistenceBannerHost &&
@@ -621,21 +635,25 @@ function renderPersistenceModeBanner(): HTMLElement | null {
       class: `persistence-mode-banner ${saveSkipped ? "is-save-skipped" : "is-local-only"}`,
       dataset: { testid: "save-skip-banner" },
     });
-    banner.append(el("span", { class: "persistence-mode-banner-text", text: persistenceModeBannerText(status.reason, saveSkipped) }));
+    const exportedAt = saveSkipped ? lastTemporarySessionExportAt() : null;
+    banner.append(el("span", {
+      class: "persistence-mode-banner-text",
+      text: exportedAt !== null ? temporarySessionExportedBannerText(exportedAt) : persistenceModeBannerText(status.reason, saveSkipped),
+    }));
     if (saveSkipped) {
       banner.append(
         el("button", {
           class: "persistence-mode-banner-action",
-          text: "내보내기",
+          text: exportedAt !== null ? "다시 내보내기" : "내보내기",
           attrs: { type: "button", title: "프로젝트를 파일로 내보내 보존합니다" },
           dataset: { testid: "save-skip-banner-export" },
           on: {
-            click: () => void import("@/editor/panels/menu").then((menu) => menu.exportProjectPackage()),
+            click: () => void exportTemporarySession(),
           },
         }),
         el("button", {
           class: "persistence-mode-banner-close",
-          text: "✕",
+          html: '<svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>',
           attrs: { type: "button", title: "이 세션 동안 배너 숨기기", "aria-label": "임시 세션 배너 닫기" },
           dataset: { testid: "save-skip-banner-close" },
           on: {
@@ -659,10 +677,16 @@ function renderPersistenceModeBanner(): HTMLElement | null {
 
 export function persistenceModeBannerText(reason: string, saveSkipped: boolean): string {
   if (reason === "dev-showcase" && saveSkipped) {
-    return "임시 세션 — 작업이 이 탭에만 있습니다. 보존하려면 내보내기를 누르세요.";
+    return "임시 세션입니다. 작업은 이 탭에만 있어요. 보존하려면 내보내세요.";
   }
   if (reason === "dev-showcase") return "개발 모드 — 이 브라우저에만 저장됩니다.";
   return "복구 모드 — 온라인 저장을 잠시 사용할 수 없습니다. 작업을 다시 열어 연결을 복구하거나 '내보내기'로 백업하세요.";
+}
+
+/** 내보낸 뒤의 배너 — 언제 내보냈는지와, 그 뒤 바뀐 것은 다시 내보내야 한다는 사실만 말한다. */
+function temporarySessionExportedBannerText(at: number): string {
+  const time = new Date(at).toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit" });
+  return `임시 세션입니다. ${time}에 파일로 내보냈어요. 그 뒤에 바꾼 내용은 다시 내보내세요.`;
 }
 
 function projectExportNodeElement(): HTMLElement {

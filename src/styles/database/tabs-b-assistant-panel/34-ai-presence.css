@@ -135,8 +135,8 @@
 .ai-inbox-head { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; color: var(--text-2); font: 600 12px var(--font-ui); }
 .ai-inbox-count { min-width: 18px; padding: 0 6px; border-radius: 999px; background: var(--warning, #d9840d); color: #fff; font-size: 11px; text-align: center; }
 .ai-inbox-list { display: flex; flex-direction: column; gap: 8px; }
-.ai-inbox-card { padding: 10px 12px; border: 2px solid var(--warning, #d9840d); border-radius: 12px; background: color-mix(in srgb, var(--warning, #d9840d) 9%, var(--bg-raised, #fff)); }
-.ai-inbox-card.is-failed { border-color: var(--danger, #d92d20); background: color-mix(in srgb, var(--danger, #d92d20) 8%, var(--bg-raised, #fff)); }
+.ai-inbox-card { padding: 10px 12px; border: 1px solid var(--border-default); border-radius: 12px; background: color-mix(in srgb, var(--warning, #d9840d) 9%, var(--bg-raised, #fff)); }
+.ai-inbox-card.is-failed { background: color-mix(in srgb, var(--danger, #d92d20) 8%, var(--bg-raised, #fff)); }
 .ai-inbox-card h4 { margin: 0 0 4px; font: 700 14px var(--font-ui); color: var(--text-1); }
 .ai-inbox-card p { margin: 0 0 8px; color: var(--text-2); font-size: 13px; line-height: 1.5; overflow-wrap: anywhere; }
 .ai-inbox-actions { display: flex; flex-wrap: wrap; gap: 6px; }

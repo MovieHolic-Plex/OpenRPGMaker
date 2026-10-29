@@ -27,6 +27,8 @@
   빌드를 멈춘다.
   그래프 확인: `node scripts/oss/runtime-graph.mjs` — 런타임 소스 수, 외부 패키지, 끌려 들어온 editor·harnesses·testing 파일을 보여 준다.
 - **제3자 자료**는 `public/assets/ATTRIBUTION.md`에 적힌 것만 원 라이선스로 남는다. 새로 들이지 않는다(2026-10-07 정리 결정).
+  예외(2026-10-28 사용자 결정 「금지 풀고 넣기」): REFMAP 인물을 변형한 걷기 칩 `RefmapDoll<n>`(char-gen `refmap`, ATTRIBUTION 「RefmapDoll」). 변형한 칩만 들이고 원본 시트는 넣지 않는다.
+  OPRN 게임 사용 라이선스가 아니라 REFMAP 조건(게임에 무료·유료 모두 사용, 변형 재배포는 표기와 함께, 소재 자체 판매·원본 재배포 금지)을 따른다. 스토어 제외(아래 asset-store.md)는 그대로라 소재로 다시 팔리지 않는다.
 - **이름:** 공개 저장소 이름은 `OpenRPGMaker`(사용자 결정, 2026-10-07). 제품 표시명은 그대로 `src/brand.ts`의 OPRN 계열이고,
   brand.ts 의 「RPG Maker 계열 표현 금지」는 제품 표시명 규칙이라 그대로 둔다. 무관 고지는 `TRADEMARKS.md` 「RPG Maker」 절.
 - 저작권자 표기는 「OPRN」(2026-10-08 사용자 결정, 법인 설립 전 임시). 법인명이 정해지면 `LICENSE.md`·`LICENSE-RUNTIME.md`·`TRADEMARKS.md`·`CLA.md`에서 함께 바꾼다.

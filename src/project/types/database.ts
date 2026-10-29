@@ -1150,7 +1150,7 @@ export interface BattleBackdropAnimation {
 
 export interface BattleBackdropLayer {
   /** 그림 없이 그리는 프리셋. resourceId 가 있으면 그림이 먼저다. */
-  preset?: "fog" | "clouds" | "mist" | "rain" | "snow" | "embers" | "stars" | "lightRays" | "glow";
+  preset?: "fog" | "clouds" | "mist" | "rain" | "snow" | "embers" | "stars" | "lightRays" | "glow" | "night" | "smoke";
   /** 바둑판으로 깔 그림(투명 PNG 권장). */
   resourceId?: string;
   /** true = 배틀러·이펙트 앞(덤불·안개 장막). 생략 = 배경 바로 위. */

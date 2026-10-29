@@ -458,9 +458,8 @@
 }
 
 .ai-deck .ai-proposal-card.ai-proposal-empty {
-  background: var(--bg-raised);
+  background: color-mix(in srgb, var(--warning) 8%, var(--bg-raised));
   border: 1px solid var(--border-default);
-  border-left: 3px solid var(--warning);
   border-radius: 14px;
   box-shadow: none;
   display: grid;

@@ -395,7 +395,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     openingController = controller;
     let lastFrame = '#000', handoffFadeMs = 500;
     const playback = playCinematicSequence({ host: surface.stage, project: bootProject, sequence: opening,
-      signal: controller.signal, assets: cinematicAssets, holdMusicOnComplete: true, musicHost: main,
+      signal: controller.signal, assets: cinematicAssets, holdMusicOnComplete: true, musicHost: main, holdClockThroughStalls: true, softCutTails: true,
       musicVolume: () => audioEngine.audioStateSnapshot().volume.bgm,
       onFrame: (url, fadeMs) => { lastFrame = url; if (fadeMs !== undefined) handoffFadeMs = fadeMs; } });
     openingMusicPlayback = playback;

@@ -723,26 +723,18 @@
   width: 20px;
 }
 
-/* 빈 탭 접기 줄 (2026-09-24 개선안 C).
-   레코드가 0 인 목록 탭은 그룹마다 이 한 줄로 모인다 — JRPG 프로젝트의 생활 7탭이 한 줄이 된다.
-   탭보다 낮은 목소리(작은 글자·흐린 색)로, 들여쓰기는 탭 라벨 시작점(아이콘 뒤)에 맞춘다. */
+/* 빈 탭 접기 줄 (2026-09-24 개선안 C → 2026-10-28 단추 목록).
+   레코드가 0 인 목록 탭은 그룹마다 이 묶음으로 모인다. 머리글 「빈 탭 N개」 아래에 탭마다 작은 단추가 있고,
+   누르면 그 탭이 열린다 — 가운뎃점으로 이은 회색 줄글은 무엇을 눌러야 켜지는지 말하지 않았다(V-database-09). */
 .database-modal-backdrop .database-modal-window .database-modal-body .db-tab-fold {
-  align-items: flex-start;
-  background: transparent;
-  border: 0;
-  border-radius: 6px;
+  align-items: stretch;
   box-sizing: border-box;
-  color: var(--db-studio-text-3);
-  cursor: pointer;
   display: flex;
   flex: 0 0 auto;
   flex-direction: column;
-  font: 400 11.5px/1.3 var(--font-ui);
-  gap: 3px;
-  margin: 0;
-  min-height: 26px;
-  padding: 6px 10px 6px 12px;
-  text-align: left;
+  gap: 1px;
+  margin: 6px 0 0;
+  padding: 0;
   width: 100%;
 }
 
@@ -750,83 +742,68 @@
   display: none;
 }
 
-.database-modal-backdrop .database-modal-window .database-modal-body .db-tab-fold:hover,
-.database-modal-backdrop .database-modal-window .database-modal-body .db-tab-fold:focus-visible {
-  background: var(--db-studio-inset);
-  color: var(--db-studio-text-2, var(--text-2));
-}
-
 .database-modal-backdrop .database-modal-window .database-modal-body .db-tab-fold-count {
-  flex: 0 0 auto;
-  font-weight: 600;
+  color: var(--db-studio-text-2, var(--text-2));
+  font: 600 12px/1.35 var(--font-ui);
+  padding: 6px 10px 2px;
 }
 
-.database-modal-backdrop .database-modal-window .database-modal-body .db-tab-fold-count::before {
+.database-modal-backdrop .database-modal-window .database-modal-body .db-tab-fold-tab {
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+  box-sizing: border-box;
+  color: var(--db-studio-text-2, var(--text-2));
+  cursor: pointer;
+  font: 400 12.5px/1.35 var(--font-ui);
+  min-height: 28px;
+  overflow: hidden;
+  padding: 4px 10px;
+  text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 100%;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-tab-fold-tab::before {
   content: "+ ";
 }
 
-/* 이름은 줄바꿈한다 — 한 줄 말줄임이면 「세계 개요·설정…」 처럼 두 개뿐인 이름도 잘려 무엇이
-   숨었는지 읽을 수 없었다(2026-09-24 visual QA). 생활 7탭처럼 길면 두 줄로 끊는다. */
-.database-modal-backdrop .database-modal-window .database-modal-body .db-tab-fold-names {
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 5;
-  display: -webkit-box;
-  flex: 1 1 auto;
-  line-height: 1.45;
-  min-width: 0;
-  overflow: hidden;
-  width: 100%;
-  word-break: keep-all;
+.database-modal-backdrop .database-modal-window .database-modal-body .db-tab-fold-tab:hover,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-tab-fold-tab:focus-visible,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-tab-fold-all:hover {
+  background: var(--db-studio-inset);
+  color: var(--db-studio-text-1, var(--text-1));
 }
 
-/* 좁은 창·도크의 56/48px 아이콘 레인에서도 접기 줄은 남긴다 — 숨기면 접힌 탭에 닿을 길이 없다.
-   글자 줄 대신 「+N」 한 칸만 보이고 뜻은 title·aria-label 이 말한다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-tab-fold-all {
+  display: none;
+}
+
+/* 좁은 창·도크의 56/48px 아이콘 레인에서는 이름 단추 대신 「+N」 한 단추가 그룹을 펼친다. */
 @container db-modal (max-width: 799px) {
-  .database-modal-backdrop .database-modal-window .database-modal-body .db-tab-fold {
-    align-items: center;
-    min-height: 28px;
-    padding: 4px 0;
-    width: 40px;
-  }
-  .database-modal-backdrop .database-modal-window .database-modal-body .db-tab-fold > span {
-    display: none;
-  }
-  .database-modal-backdrop .database-modal-window .database-modal-body .db-tab-fold::after {
-    content: "+" attr(data-count);
-    font-weight: 600;
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-tab-fold { align-items: center; width: 40px; }
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-tab-fold > :not(.db-tab-fold-all) { display: none; }
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-tab-fold-all {
+    background: transparent; border: 0; border-radius: 6px; color: var(--db-studio-text-2); cursor: pointer; display: block;
+    font: 600 12px/1 var(--font-ui); min-height: 28px; width: 40px;
   }
 }
 
 @media (max-width: 799px) {
-  .database-modal-backdrop .database-modal-window .database-modal-body .db-tab-fold {
-    align-items: center;
-    min-height: 28px;
-    padding: 4px 0;
-    width: 40px;
-  }
-  .database-modal-backdrop .database-modal-window .database-modal-body .db-tab-fold > span {
-    display: none;
-  }
-  .database-modal-backdrop .database-modal-window .database-modal-body .db-tab-fold::after {
-    content: "+" attr(data-count);
-    font-weight: 600;
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-tab-fold { align-items: center; width: 40px; }
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-tab-fold > :not(.db-tab-fold-all) { display: none; }
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-tab-fold-all {
+    background: transparent; border: 0; border-radius: 6px; color: var(--db-studio-text-2); cursor: pointer; display: block;
+    font: 600 12px/1 var(--font-ui); min-height: 28px; width: 40px;
   }
 }
 
-.database-modal-backdrop.is-docked .database-modal-window .database-modal-body .db-tab-fold {
-  align-items: center;
-  min-height: 28px;
-  padding: 4px 0;
-  width: 40px;
-}
-
-.database-modal-backdrop.is-docked .database-modal-window .database-modal-body .db-tab-fold > span {
-  display: none;
-}
-
-.database-modal-backdrop.is-docked .database-modal-window .database-modal-body .db-tab-fold::after {
-  content: "+" attr(data-count);
-  font-weight: 600;
+.database-modal-backdrop.is-docked .database-modal-window .database-modal-body .db-tab-fold { align-items: center; width: 40px; }
+.database-modal-backdrop.is-docked .database-modal-window .database-modal-body .db-tab-fold > :not(.db-tab-fold-all) { display: none; }
+.database-modal-backdrop.is-docked .database-modal-window .database-modal-body .db-tab-fold-all {
+  background: transparent; border: 0; border-radius: 6px; color: var(--db-studio-text-2); cursor: pointer; display: block;
+  font: 600 12px/1 var(--font-ui); min-height: 28px; width: 40px;
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-tab-group-label {
@@ -905,11 +882,10 @@
   .database-modal-backdrop:not(.is-docked) .database-modal-window .database-modal-body .db-tabs:not([data-searching]) > [data-in-view="0"] {
     display: none;
   }
-  /* 구획이 하나뿐이니 머리는 목록 제목처럼 읽힌다. */
+  /* 띠가 이미 그룹 이름을 강조한다 — 머리를 다시 쓰면 「전투」「적」 두 단계 제목이 붙어 보였다
+     (V-database-11). 띠가 보이는 동안 머리는 감춘다(소제목 「적·규칙」은 남는다). */
   .database-modal-backdrop:not(.is-docked) .database-modal-window .database-modal-body .db-tabs:not([data-searching]) > .db-tab-group[data-in-view="1"] {
-    color: var(--db-studio-text-1);
-    font: 600 12px/1.35 var(--font-ui);
-    padding: 10px 10px 6px;
+    display: none;
   }
 }
 
@@ -917,10 +893,10 @@
   .database-modal-backdrop:not(.is-docked) .database-modal-window .database-modal-body .db-tabs:not([data-searching]) > [data-in-view="0"] {
     display: none;
   }
+  /* 띠가 이미 그룹 이름을 강조한다 — 머리를 다시 쓰면 「전투」「적」 두 단계 제목이 붙어 보였다
+     (V-database-11). 띠가 보이는 동안 머리는 감춘다(소제목 「적·규칙」은 남는다). */
   .database-modal-backdrop:not(.is-docked) .database-modal-window .database-modal-body .db-tabs:not([data-searching]) > .db-tab-group[data-in-view="1"] {
-    color: var(--db-studio-text-1);
-    font: 600 12px/1.35 var(--font-ui);
-    padding: 10px 10px 6px;
+    display: none;
   }
 }
 
@@ -977,4 +953,35 @@
 .database-modal-backdrop .database-modal-window .database-modal-body .db-search-dest-sep {
   color: var(--db-studio-text-3);
   margin: 0 2px;
+}
+
+/* 탭 이름이 칸보다 길면 말줄임(…)으로 끝나고 전체 이름은 title 에 있다(V-database-17, J-p8-language-12). */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-tabs > .db-tab > .db-tab-label {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 창 둘레 틈으로 뒤 편집기 글자가 반쯤 잘려 비치지 않게 바탕을 균일한 스크림으로 덮는다(V-database-27).
+   도크(맵과 함께 쓰는 패널)와 미리 만들어 둔 숨은 창은 제외한다. */
+.database-modal-backdrop:not(.is-docked):not(.is-parked) {
+  background: rgba(15, 23, 42, 0.88);
+}
+
+/* 작은 창(가로 1100px·세로 720px 이하)에서는 창이 화면을 가득 채운다 — 둘레 24px 도 목록 한 줄이다
+   (J-p7-small-window-01). 끌어 옮긴 창·전체 화면은 각자의 기하를 유지한다. */
+@media (max-width: 1100px), (max-height: 720px) {
+  .database-modal-backdrop:not(.is-docked):not(.is-parked) {
+    padding: 0;
+  }
+
+  .database-modal-backdrop .database-modal-window:has(.db-shared-workspace):not(.floating):not(.maximized) {
+    border-radius: 0;
+    height: 100vh;
+    max-height: 100vh;
+    max-width: 100vw;
+    width: 100vw;
+  }
 }

@@ -2,6 +2,7 @@
 // 조수 스킬 섹션은 스킬 기능 제거와 함께 사라졌다. 셸 클래스는 command-palette-* 로 자립한다
 // (구 스킬 팔레트 클래스 ai-skill-palette-* 는 스타일 파일과 함께 삭제됨).
 import { listEditorCommands, listMapCommands, matchEditorCommands, type EditorCommand } from "@/editor/commandRegistry";
+import { openMapEventSearchModal } from "@/editor/panels/mapEventSearchModal";
 import { registerModal, unregisterModal } from "@/editor/ui/modalStack";
 import { isImeCompositionEvent } from "@/player/keyBindings";
 import { store } from "@/project/store";
@@ -20,7 +21,7 @@ export function requestCommandPalette(): void {
 }
 
 export interface PaletteEntry {
-  readonly kind: "command" | "map";
+  readonly kind: "command" | "map" | "find";
   readonly id: string;
   readonly label: string;
   readonly detail: string;
@@ -29,11 +30,13 @@ export interface PaletteEntry {
 }
 
 const KIND_CAPS = { command: 6, map: 4 } as const;
-const KIND_HEADERS: Record<PaletteEntry["kind"], string> = { command: "명령", map: "맵 이동" };
+const KIND_HEADERS: Record<PaletteEntry["kind"], string> = { command: "명령", map: "맵 이동", find: "프로젝트에서 찾기" };
 
 export interface PaletteEntryDeps {
   readonly commands: readonly EditorCommand[];
   readonly maps: readonly EditorCommand[];
+  /** 있으면 입력한 말로 맵·이벤트 찾기 창을 여는 항목을 덧붙인다. */
+  readonly find?: (query: string) => void;
 }
 
 export function buildPaletteEntries(query: string, deps: PaletteEntryDeps): readonly PaletteEntry[] {
@@ -46,6 +49,10 @@ export function buildPaletteEntries(query: string, deps: PaletteEntryDeps): read
     ...mapHits.map((command): PaletteEntry => ({
       kind: "map", id: command.id, label: command.label, detail: "이동", run: command.run,
     })),
+    // 맵·이벤트 찾기 창과 팔레트는 같은 낱말을 받는다 — 입력한 말로 찾기 창을 바로 연다(검색 입구 하나).
+    ...(query.trim() && deps.find ? [{
+      kind: "find" as const, id: "map-event-search", label: `「${query.trim()}」 맵·이벤트·스위치에서 찾기`, detail: "", run: () => deps.find?.(query.trim()),
+    }] : []),
   ];
 }
 
@@ -75,6 +82,8 @@ function paletteOptionId(index: number): string {
 
 export function openCommandPalette(): HTMLElement {
   document.querySelector("[data-testid='command-palette']")?.remove();
+  // 닫으면 연 자리로 초점을 돌려준다(본문 <body> 였으면 그대로 둔다).
+  const opener = document.activeElement instanceof HTMLElement && document.activeElement !== document.body ? document.activeElement : null;
   const listHost = el("div", {
     class: "command-palette-list",
     attrs: { id: "command-palette-list", role: "listbox", "aria-label": "명령과 맵" },
@@ -84,15 +93,29 @@ export function openCommandPalette(): HTMLElement {
     attrs: {
       type: "text",
       role: "combobox",
-      placeholder: "명령·맵 검색… (↑↓ 이동, Enter 실행, Esc 닫기)",
+      placeholder: "명령·맵 검색",
       autocomplete: "off",
       "aria-autocomplete": "list",
       "aria-expanded": "true",
       "aria-controls": "command-palette-list",
       "aria-label": "명령 또는 맵",
+      "aria-describedby": "command-palette-hint",
     },
     dataset: { testid: "command-palette-search" },
   }) as HTMLInputElement;
+  // 사용법은 자리표시에만 있으면 한 글자 치는 순간 사라진다 — 바닥 줄에 늘 두고, 결과 수는 상태로 알린다.
+  const resultCount = el("span", {
+    class: "command-palette-count",
+    attrs: { role: "status", "aria-live": "polite" },
+    dataset: { testid: "command-palette-count" },
+  });
+  const footer = el("div", {
+    class: "command-palette-footer",
+    children: [
+      el("span", { class: "command-palette-hint", text: "↑↓ 이동 · Enter 실행 · Esc 닫기", attrs: { id: "command-palette-hint" } }),
+      resultCount,
+    ],
+  });
 
   const backdrop = el("div", {
     class: "command-palette-backdrop",
@@ -102,7 +125,7 @@ export function openCommandPalette(): HTMLElement {
       el("section", {
         class: "command-palette-window",
         attrs: { role: "dialog", "aria-modal": "true", "aria-label": "명령 팔레트" },
-        children: [search, listHost],
+        children: [search, listHost, footer],
       }),
     ],
   });
@@ -112,6 +135,7 @@ export function openCommandPalette(): HTMLElement {
   const close = (): void => {
     unregisterModal(backdrop);
     backdrop.remove();
+    if (opener?.isConnected) opener.focus();
   };
   const runEntry = (entry: PaletteEntry): void => {
     close();
@@ -122,7 +146,10 @@ export function openCommandPalette(): HTMLElement {
     entries = buildPaletteEntries(search.value, {
       commands: listEditorCommands(),
       maps: listMapCommands(store.getCurrent()),
+      find: (query) => openMapEventSearchModal({ initialQuery: query }),
     });
+    const hits = entries.filter((entry) => entry.kind !== "find").length;
+    resultCount.textContent = search.value.trim() ? `결과 ${hits}개` : `명령 ${hits}개`;
     activeIndex = Math.min(activeIndex, Math.max(0, entries.length - 1));
     const nodes: HTMLElement[] = [];
     let lastKind: PaletteEntry["kind"] | null = null;
@@ -138,14 +165,13 @@ export function openCommandPalette(): HTMLElement {
             type: "button",
             id: paletteOptionId(index),
             role: "option",
-            title: entry.detail,
             "aria-selected": String(index === activeIndex),
           },
           dataset: { testid: `command-palette-item-${entry.kind}-${entry.id}` },
+          // 행마다 붙던 분류 꼬리(「화면」「이동」)는 그룹 제목과 같은 말이라 뺐다. 단축키만 오른쪽에 둔다.
           children: [
             el("span", { class: "command-palette-item-name", text: entry.label }),
-            el("span", { class: "command-palette-item-desc", text: entry.detail }),
-            ...(entry.hotkey ? [el("span", { class: "command-palette-hotkey", text: entry.hotkey })] : []),
+            ...(entry.hotkey ? [el("kbd", { class: "command-palette-hotkey", text: entry.hotkey, attrs: { translate: "no" } })] : []),
           ],
           on: {
             click: () => runEntry(entry),

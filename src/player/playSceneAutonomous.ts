@@ -516,7 +516,7 @@ function updateChaseNpc(
     return;
   }
   moveAutonomousRuntimePosition(scene, eventId, decision.x, decision.y, frameDir);
-  const lungeMs = lunging ? Math.min(npcMoveDurationMs(lunge!.speed), styled && approach?.lungeStepMs ? approach.lungeStepMs : Infinity) : undefined;
+  const lungeMs = lunging ? Math.min(lunge!.stepMs ?? npcMoveDurationMs(lunge!.speed), styled && approach?.lungeStepMs ? approach.lungeStepMs : Infinity) : undefined;
   const stepMs = lungeMs ?? (styled ? approach!.stepMs : undefined);
   const tile = mapTileSize(scene.map);
   const stepIndex = mover.approachStep ?? 0;

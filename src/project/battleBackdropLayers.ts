@@ -10,7 +10,7 @@ import type { BattleBackdropLayer } from "@/project/types";
  *
  * 프리셋은 그림 파일 없이 런타임이 CSS 그라디언트로 그린다(battleBackdropLayersDom.ts). 저장은 기본값을 뺀 값만.
  */
-export const BATTLE_BACKDROP_LAYER_PRESETS = ["fog", "clouds", "mist", "rain", "snow", "embers", "stars", "lightRays", "glow"] as const;
+export const BATTLE_BACKDROP_LAYER_PRESETS = ["fog", "clouds", "mist", "rain", "snow", "embers", "stars", "lightRays", "glow", "night", "smoke"] as const;
 export type BattleBackdropLayerPreset = (typeof BATTLE_BACKDROP_LAYER_PRESETS)[number];
 
 export const BATTLE_BACKDROP_LAYER_LABELS: Record<BattleBackdropLayerPreset, string> = {
@@ -23,6 +23,8 @@ export const BATTLE_BACKDROP_LAYER_LABELS: Record<BattleBackdropLayerPreset, str
   stars: "별",
   lightRays: "빛줄기",
   glow: "중앙 빛무리",
+  night: "밤(남색으로 어둡게)",
+  smoke: "잿빛 연기(어둡게)",
 };
 
 /** 프리셋 기본값 — 저자가 값을 주지 않으면 이것으로 그린다. */
@@ -39,6 +41,9 @@ export const BATTLE_BACKDROP_LAYER_DEFAULTS: Record<
   stars: { scrollX: 4, scrollY: 0, opacity: 90, blendMode: "screen" },
   lightRays: { scrollX: 6, scrollY: 0, opacity: 60, blendMode: "screen" },
   glow: { scrollX: 0, scrollY: 0, opacity: 70, blendMode: "screen" },
+  // 낮 그림 지형 배경을 밤·불탄 땅으로 읽히게 덮는 정지 겹 — 곱하기로 어둡게 물들인다(맵이 밤 조명인데 전투가 대낮이던 문제).
+  night: { scrollX: 0, scrollY: 0, opacity: 80, blendMode: "multiply" },
+  smoke: { scrollX: 6, scrollY: 0, opacity: 75, blendMode: "multiply" },
 };
 
 export const BATTLE_BACKDROP_LAYER_LIMIT = 4;
