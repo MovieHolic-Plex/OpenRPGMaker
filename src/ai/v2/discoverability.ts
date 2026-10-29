@@ -572,7 +572,12 @@ export function withWhere(project: Project, fromMapId: string, text: string, whe
       }
     }
   }
-  if (hints.length === 0) for (const map of namedMaps(project, text, fromMapId)) {
+  // 글에 나온 두 장소 중 하나가 다른 하나로 가는 길 위에 있으면 길 위의 곳만 — 「1번길 풀숲에서 잡고 새순 마을로 가자」 에
+  // 두 꼬리가 같은 첫 출구를 되풀이해 「(… → 새순 마을 / … → 1번길)」 여섯 줄 창이 됐다(2026-10-29 standin monster 연구소).
+  const mentioned = namedMaps(project, text, fromMapId);
+  const onTheWay = (map: GameMap) => mentioned.some((other) => other !== map && (mapRoute(project, fromMapId, map.id) ?? []).slice(1, -1).includes(other.id));
+  const places = mentioned.length > 1 ? mentioned.filter((map) => !onTheWay(map)) : mentioned;
+  if (hints.length === 0) for (const map of places.length ? places : mentioned) {
     const hint = whereHint(project, fromMapId, { mapId: map.id }, origin);
     if (hint) hints.push(hint);
     if (hints.length >= 2) break;
