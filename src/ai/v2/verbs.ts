@@ -14,6 +14,7 @@ import { createBuildRun, type RecordingBuildRun } from "./buildRun";
 import { builderFor } from "./builders";
 import { localizePlaceSpec } from "./builders/modernCity";
 import { localizeCultureSpec } from "./builders/joseon";
+import { villageArgs } from "./builders/village";
 import { applyModernSetupDefaults, applyStorySetupDefaults, isFreshProject } from "./genreDefaults";
 import { dedupeToolSchemas } from "./schemaDedupe";
 import { adoptExactInterior, interiorAddAnchors, interiorBuilder, interiorEditFromArgs, interiorMoveObjects, roomMaterials, type ObjectEdit } from "./builders/interior";
@@ -174,16 +175,15 @@ const HINTS_SCHEMA = {
   description: "카드가 알려 준 빌더 손잡이만. 모르는 것은 넣지 않는다.",
   properties: {
     variant: { type: "number", description: "같은 명세의 다른 배치(0,1,2…)" },
-    seed: { type: "number" },
     dressing: { type: "number", description: "꾸밈 정도 0 보통 · 1 많이 · 2 가득(아늑하게)" },
     houseCount: { type: "number" },
     roofs: { type: "string" },
-    water: { type: "string" },
+    water: { type: "string", description: "(마을) 땅 설계의 물 — river 남쪽으로 동서로 흐르는 강(나루 널다리로 건넌다) · none 물 없음. 풀밭 마을은 꼭 정한다" },
     woods: { type: "string" },
     form: { type: "string" },
     terrain: { type: "string" },
     landform: { type: "string", enum: ["terraces", "hill", "slope", "plateau", "flat"], description: "(마을) 지형 설계 — 땅 모양. 마을은 이 땅에 맞춰 자란다" },
-    settle: { type: "string", enum: ["middle", "low"], description: "(마을) 마을이 앉는 단 — middle 가운데 단(남쪽 낮은 단에 아랫길·강) · low 맨 아래" },
+    settle: { type: "string", enum: ["middle", "low"], description: "(마을) 마을이 앉는 단 — low 물가 맨 아래 단(강가·늪 마을은 이쪽, 강이 마을 앞으로 흐른다) · middle 가운데 단(남쪽 낮은 단에 아랫길·헛간)" },
     tiers: { type: "number", description: "(마을) 마을 단 위 높은 단 겹 수 1~4" },
     high: { type: "string", enum: ["north", "center", "west", "east"], description: "(마을) 높은 곳 자리" },
     forestType: { type: "string" },
@@ -610,6 +610,8 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
       // 같은 요청 → 같은 맵을 막는다(2026-10-23 다양성: 역전 상점가가 v1·v2·4차·5차 모두 화소까지 같았다). 고치기는 기록된 명세의 salt 를 물려받는다.
       const raw = (params as { spec: PlaceSpec }).spec;
       let spec: PlaceSpec = localizeCultureSpec(localizePlaceSpec({ ...raw, salt: Math.floor(Math.random() * 1_000_000), variety: placeVariety(env, task) }, String(task ?? "")), String(task ?? ""));
+      // 없는 맵 id 는 버리고 새 맵에 짓는다 — flash 가 타일셋 id(beodeul_city)를 mapId 로 보내 「맵이 없습니다」로 한 채도 못 지었다(2026-10-29 b5 강가 마을).
+      if (spec.mapId && !run.ctx.project.maps[spec.mapId]) { const { mapId: _gone, ...rest } = spec; spec = rest; }
       // 이번 실행에서 이미 다른 장소를 지은 맵 위에 새 장소를 짓지 않는다 — 「지하 예배당」을 지은 맵에 「검은 장미 저택」을 다시 지어
       // 예배당이 1층 한 구석으로 사라졌다(2026-10-25 조수 단독 게임 G27). 같은 장소를 다시 짓는 것(이름이 같거나 한쪽이 다른 쪽을 품음)은 그대로 둔다.
       const target = spec.mapId ?? (spec.type === "interior" ? (run.ctx.currentMapId ?? run.ctx.project.startMapId) : undefined);
@@ -638,12 +640,15 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
         return text({ ok: false, summary: `${spec.type}${spec.style ? `(${spec.style})` : ""} 을 짓는 빌더가 없다. 다른 type 으로 바꾸거나 사용자에게 못 한다고 알린다.` });
       }
       // 마을은 지형을 조수가 먼저 설계한다(방 설계와 같은 원칙): hints.landform 없이 오면 마을마다 한 번 되돌려 보낸다. 다시 없이 오면 함수가 테마·씨앗으로 고른다.
-      if (builder.id === "village" && !spec.hints?.landform && !session.terrainBounced.has(spec.name)) {
+      // 물도 땅 설계다(2026-10-29 맵 반복 조사: 마을 24장 중 19장이 「세로 강+다리+가로 큰길」 — 카드가 river 를 기본처럼 적어 모델이 늘 강가 마을을 골랐다).
+      // 풀밭 마을(theme river·생략)은 water(river|none)도 모델이 정한다 — 빠지면 같은 되돌려 보내기에 함께 묻는다.
+      const villageWaterMissing = builder.id === "village" && (() => { const a = villageArgs(spec).args; return (a.theme === undefined || a.theme === "river") && a.water === undefined && a.walls !== true; })();
+      if (builder.id === "village" && (!spec.hints?.landform || villageWaterMissing) && !session.terrainBounced.has(spec.name)) {
         session.terrainBounced.add(spec.name);
-        return text({ ok: false, notFailure: true, summary: `아직 짓지 않았다(실패 아님) — 「${spec.name}」의 지형은 네가 먼저 설계한다. 마을은 지형에 맞춰 자란다(강가면 강 쪽 낮은 단에 아랫길, 산이면 단마다 집, 고원이면 그 위에 집 한 채). hints 에 지형 설계를 넣어 make_place 를 바로 다시 부르면 지어진다: `
+        return text({ ok: false, notFailure: true, summary: `아직 짓지 않았다(실패 아님) — 「${spec.name}」의 땅(지형·물)은 네가 먼저 설계한다. 마을은 땅에 맞춰 자란다(강가면 마을이 물가 단에 앉고 나루 길목에 모이는 곳, 산이면 단마다 집, 맨 윗단에 망루·예배당). hints 에 땅 설계를 넣어 make_place 를 바로 다시 부르면 지어진다: `
           + `landform(terraces 계단식 단 · hill 위 단 위로 불룩 솟은 언덕 · slope 단이 겹겹이 오르는 산골, 위로는 산 숲 · plateau 두 단 더 높은 고원 · flat 평지) · `
-          + `settle(middle 가운데 단 — 남쪽 낮은 단에 아랫길·강 · low 맨 아래 단) · tiers(마을 단 위 높은 단 겹 수 1~4) · high(높은 곳 자리 north·center·west·east). `
-          + `강은 마을이 강가면 features 에 river — 남쪽 낮은 단에서 동서로 흐른다. 성벽 마을은 평지로 짓는다. 요청에 맞는 땅을 네가 고른다 — 함수는 단 경계·계단·도달성만 맞춘다.` });
+          + `water(river 남쪽으로 동서로 흐르는 강 · none 물 없음 — 요청에 강이 없으면 none 도 좋다) · settle(low 마을이 물가 맨 아래 단 · middle 가운데 단) · tiers(마을 위 단 겹 수 1~4) · high(높은 곳 자리 north·center·west·east). `
+          + `성벽 마을은 평지로 짓는다. 요청에 맞는 땅을 네가 고른다 — 함수는 단 경계·계단·나루·도달성만 맞춘다.` });
       }
       env.emit({ type: "execution_status", name: "v2.build", ok: true, summary: `${spec.name} 짓는 중(${builder.id})` });
       await builder.prepare?.(spec);
@@ -665,7 +670,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
       addAnchors: { type: "array", items: { type: "object", properties: { zone: { type: "string" }, what: { type: "string" }, near: POINT }, required: ["what"] } },
       addFeatures: { type: "array", items: { type: "string" } },
       removeFeatures: { type: "array", items: { type: "string" } },
-      variant: { type: "number" }, seed: { type: "number" }, dressing: { type: "number" },
+      variant: { type: "number" }, dressing: { type: "number" },
       design: ROOM_DESIGN_SCHEMA, designZone: { type: "string", description: "(설계 방) design 을 바꿀 구역 id·kind — 생략하면 첫 설계 구역" },
     }, required: ["mapId"] } }, required: ["patch"] },
     async execute(id, params) {

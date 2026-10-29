@@ -15,6 +15,7 @@ import type { Project } from "../../../src/project/types.ts";
 const arg = (n: string, d: string) => { const i = process.argv.indexOf(`--${n}`); return i >= 0 ? process.argv[i + 1] ?? d : d; };
 const OUT = arg("out", ".omo/runtime-qa/village-terrain-first.json");
 const VILLAGES: { key: string; spec: Partial<PlaceSpec>; extra: Record<string, unknown>; seed: number }[] = [
+  { key: "river", spec: { name: "버들 마을", theme: "river", size: "medium" }, extra: { landform: "terraces", water: "river" }, seed: 7 },
   { key: "hill", spec: { name: "언덕 마을", theme: "river", size: "medium" }, extra: { landform: "hill" }, seed: 11 },
   { key: "slope", spec: { name: "산골 마을", theme: "river", features: ["highland"], size: "small" }, extra: { landform: "slope" }, seed: 23 },
   { key: "snow", spec: { name: "설산 마을", theme: "snow", size: "medium" }, extra: { landform: "slope" }, seed: 13 },
@@ -38,6 +39,9 @@ for (const v of VILLAGES) {
     if (!best || d > best.d) best = { x, y: y + 1, d };
   }
   if (best && free(best.x, Math.min(H - 1, best.y + 1))) points[`${v.key}-stairs`] = { mapId: id, x: best.x, y: Math.min(H - 1, best.y + 1), note: `${id} 계단 발치 (${best.x},${best.y}) — ${best.d}단 오르막` };
+  // 강을 건너는 징검돌 나루: 북쪽 둑 두 칸 위에서 나루를 본다
+  const ford = (r.data as { ford?: { x: number; y: number } }).ford;
+  if (ford && free(ford.x, ford.y - 2)) points[`${v.key}-ford`] = { mapId: id, x: ford.x, y: ford.y - 2, note: `${id} 징검돌 나루 (${ford.x},${ford.y})` };
   // 낮은 단(0)에서 마을 단 절벽을 올려다보는 자리: 가운데 열에서 0단이고 바로 북쪽 3칸 안에 들린 칸이 있는 곳
   for (let y = H - 2; y > 0 && !points[`${v.key}-below`]; y--) { const x = Math.round(W / 2); if (lv(x, y) === 0 && free(x, y) && [1, 2, 3].some((k) => y - k >= 0 && lv(x, y - k) > 0)) points[`${v.key}-below`] = { mapId: id, x, y: Math.min(H - 1, y + 2), note: `${id} 낮은 단에서 마을 단 절벽을 본다` }; }
   console.log(id, `${W}x${H}`, (r.data as { relief?: { note?: string } }).relief?.note ?? "", Object.keys(points).filter((k) => k.startsWith(v.key)).join(" "));

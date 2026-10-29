@@ -10,15 +10,15 @@ import type { BuildRun, BuilderCall, PlaceBuildResult, PlaceBuilder, PlaceRecord
 /** v2 계획 모델에게 주는 유일한 마을 지식(≤900자). */
 export const VILLAGE_CARD =
   "[마을 type:village] 버들항 판타지 바깥 마을. size small(집3)·medium(4)·large(5). " +
-  "theme/style: river(강가·기본)·coast(포구)·desert(사막 오아시스)·snow(설원)·swamp(늪 수상 마을). " +
-  "features 낱말: river(강)·plaza/square(광장 마을)·riverbank(물가 띠)·scatter(흩어진 농가·산촌)·harbour(포구, 큰 맵)·" +
-  "walls/성벽(river·desert·snow 만)·forest(숲 둘레)·dense forest(숲속 빈터)·conifer(침엽수)·" +
-  "highland·hillside·basin·ridge·terraces·flat(땅 모양). 우물·밭·방앗간·여관(광장 북쪽 앵커)은 도구가 알아서 놓는다. " +
-  "교회·시장 건물·특정 건물 지정은 못 한다(보고됨). hints 키: houseCount(3~5)·roofs(red|slate|moss|log)·" +
-  "water(river|none)·woods(edge|dense)·form·terrain·theme·forestType(broadleaf|conifer|mixed)·walls·wallGate(S|N|NS)·" +
-  "width·height·seed·variant(씨앗 바꾸기). 지형은 네가 먼저 설계한다(없으면 한 번 되돌려 보낸다) — hints.landform(terraces 계단식 단|hill 언덕|slope 산골 비탈|plateau 고원|flat 평지)·settle(middle|low 마을이 앉는 단)·tiers(위 단 겹 1~4)·high(north|center|west|east 높은 곳). 마을은 그 땅에 맞춰 자란다. 집이 선 마을은 AI 가 다시 지을 수 없다(완성된 집 보호) — 처음 make_place 에 원하는 것을 다 넣는다. 모르는 키는 무시되고 경고된다. 모양 취향이 없으면 비워 두면 씨앗이 고른다.";
+  "theme/style: river(풀밭 들 마을 — 강이 있는지는 water 로 따로)·coast(포구)·desert(사막 오아시스)·snow(설원)·swamp(늪 수상 마을). " +
+  "땅은 네가 먼저 설계한다(빠지면 한 번 되돌려 보낸다): hints.landform(terraces 계단식 단|hill 언덕|slope 산골 비탈|plateau 고원|flat 평지)·" +
+  "water(river 남쪽으로 동서로 흐르는 강 — 나루 널다리로 건넌다|none 물 없음, 풀밭 마을은 꼭 정한다)·settle(low 마을이 물가 맨 아래 단 — 강가·늪은 이쪽|middle 가운데 단)·" +
+  "tiers(마을 위 단 겹 1~4)·high(north|center|west|east 높은 곳). 마을은 그 땅에 맞춰 자란다: 맨 윗단에 망루·예배당·사원, 단마다 집, 낮은 단에 헛간, 강가면 나루 길목에 모이는 곳. " +
+  "features: plaza(광장)·scatter(흩어진 농가)·harbour(포구, 큰 맵)·walls(성벽, river·desert·snow, 평지)·forest·dense forest·conifer. " +
+  "그 밖 hints: houseCount(3~5)·roofs(red|slate|moss|log)·woods(edge|dense)·forestType·wallGate(S|N|NS)·width·height·variant(같은 명세의 다른 배치). " +
+  "교회·시장 건물 지정은 못 한다(보고됨). 집이 선 마을은 다시 지을 수 없다 — 처음 make_place 에 다 넣는다.";
 
-const KNOWN_HINTS = new Set(["landform", "settle", "tiers", "high", "houseCount", "roofs", "water", "woods", "form", "terrain", "theme", "forestType", "walls", "wallGate", "wallSideGaps", "width", "height", "seed", "variant", "harbour"]);
+const KNOWN_HINTS = new Set(["landform", "settle", "tiers", "high", "houseCount", "roofs", "water", "woods", "form", "terrain", "theme", "forestType", "walls", "wallGate", "wallSideGaps", "width", "height", "variant", "harbour"]);
 const BEODEUL_TILESET = "beodeul_city";
 
 interface VillageState { readonly args: Record<string, unknown>; readonly seed?: number; readonly variant?: number; readonly doors?: readonly { x: number; y: number; kit?: string }[] }
@@ -68,6 +68,8 @@ export function villageArgs(spec: PlaceSpec): { args: Record<string, unknown>; m
   if (has(text, /church|교회|chapel|성당/)) missing.push("교회(새 마을은 교회를 짓지 못함 — 고정 예제 작은 마을에만 있음)");
   if (has(text, /inn\b|여관|tavern|주점/) && args.form !== "plaza") warnings.push("여관은 광장 마을의 북쪽 앵커로만 앉는다(form plaza 아님 — 앵커 건물이 따로 놓임)");
   for (const [key, value] of Object.entries(spec.hints ?? {})) {
+    // 씨앗은 모델이 정하지 않는다 — 스키마 칸을 다 채우는 모델(terra)이 seed 0·1 을 보내 무작위가 꺼졌다(같은 요청 = 같은 마을). make_place 의 salt(요청마다 새로)가 정한다
+    if (key === "seed") continue;
     if (!KNOWN_HINTS.has(key)) { warnings.push(`알 수 없는 hints.${key} 는 무시했다`); continue; }
     // 스키마 칸을 다 채워 보내는 모델(gpt-6.1-terra)은 안 정한 칸을 ""·0 으로 보낸다 — width·height 0 이 최소 크기(36×30)로 잘려 지형 먼저의 위 단이 설 자리가 없었다(2026-10-29 실조수)
     if (value === "" || value === null || (["width", "height", "tiers", "houseCount"].includes(key) && typeof value === "number" && value <= 0)) continue;
