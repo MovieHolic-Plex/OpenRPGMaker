@@ -64,6 +64,7 @@ function buildFloor(draft: Project, args: Record<string, unknown>, floor: FloorO
     size: (DUNGEON_SIZES as readonly string[]).includes(String(args.size)) ? (args.size as DungeonSpec["size"]) : undefined,
     width: int(args.width), height: int(args.height),
     ...((DUNGEON_LAYOUTS as readonly string[]).includes(String(args.layout)) ? { layout: args.layout as DungeonSpec["layout"] } : {}),
+    ...(args.design && typeof args.design === "object" && !Array.isArray(args.design) ? { design: args.design as DungeonSpec["design"] } : {}),
     entryStair: floor.entry, exitStair: floor.exit, ...(floor.sideDoor ? { sideDoor: true } : {}), ...(args.flooded === true ? { flooded: true } : {}), ...(args.lair === true ? { lair: true } : {}), ...(args.rockLine === "A" || args.rockLine === "B" || args.rockLine === "C" || args.rockLine === "none" ? { rockLine: args.rockLine } : {}),
   };
   const entranceOpt = args.entrance === undefined ? undefined : parseEntranceOption(args.entrance);
@@ -595,6 +596,11 @@ function authorDungeon(draft: Project, argsIn: Record<string, unknown>): ToolExe
   delete args.floorShapes;
   const floorGimmicks = Array.isArray(args.floorGimmicks) ? args.floorGimmicks : [];
   delete args.floorGimmicks;
+  // 조수가 설계한 층(design·floorDesigns, designLayout.ts). 여러 층에 design 하나만 오면 그 설계는 마지막(보스) 층에 쓴다.
+  const floorDesigns = Array.isArray(args.floorDesigns) ? (args.floorDesigns as unknown[]) : [];
+  delete args.floorDesigns;
+  const oneDesign = args.design && typeof args.design === "object" ? args.design : undefined;
+  if (oneDesign && floors > 1 && !floorDesigns.length) warnings.push(`고침: 설계(design)가 하나라 마지막 층에만 썼다 — 나머지 ${floors - 1}층은 함수 배치다. 층마다 설계하려면 floorDesigns(아래층부터).`);
   for (let k = 1; k <= floors; k += 1) {
     const first = k === 1, last = k === floors;
     // 들어오는 계단: 1층은 바깥과 이을 때만(안 이으면 죽은 계단이 된다). 다음 층부터는 아래층(지하)·위층(탑)에서 오는 계단.
@@ -604,7 +610,11 @@ function authorDungeon(draft: Project, argsIn: Record<string, unknown>): ToolExe
     const floorArgs: Record<string, unknown> = { ...args, name: FLOOR_NAME(baseName, direction, k, floors) };
     delete floorArgs.floors; delete floorArgs.direction; delete floorArgs.populate; delete floorArgs.troops; delete floorArgs.seed; delete floorArgs.sourceMapId;
     if (!first) { delete floorArgs.entrance; delete floorArgs.mapId; floorArgs.id = baseId ? `${baseId}_f${k}` : undefined; }
+    delete floorArgs.design;
+    const floorDesign = floorDesigns[k - 1] ?? (floors === 1 || last ? oneDesign : undefined);
+    if (floorDesign && typeof floorDesign === "object") floorArgs.design = floorDesign;
     if (Array.isArray(floorRooms[k - 1])) floorArgs.rooms = floorRooms[k - 1];
+    else if (floorArgs.design) { /* 설계한 층: 방은 설계에서 */ }
     else if (floors > 1 && direction === "up" && !args.rooms && !floorRooms.length) { floorArgs.rooms = towerRooms(last, k, baseSeed, shapes[k - 1]); floorArgs.type = args.type ?? "castle"; }
     else if (floors > 1 && !args.rooms && !args.size && !floorArgs.rooms) floorArgs.size = last ? "medium" : "small";
     results.push(buildFloor(draft, floorArgs, { seed: baseSeed + (k - 1) * 101, entry, exit }));
@@ -813,6 +823,8 @@ export const AUTHOR_DUNGEON_TOOL: ToolDefinition = {
       size: { type: "string", enum: [...DUNGEON_SIZES], description: "rooms 를 생략했을 때 층 크기: small 방 4 · medium 6(기본) · large 9" },
       width: { type: "integer", description: "바라는 맵 가로(칸, 선택). rooms 생략 시 방 수를 이 넓이에 맞추고, 배치가 이 비율로 자란다." },
       height: { type: "integer", description: "바라는 맵 세로(칸, 선택)." },
+      design: { type: "object", description: "(조수가 설계한 층) 방·길·입구 쪽 — v2 make_place 의 dungeonDesign 과 같은 형식(src/editor/dungeonKit/designLayout.ts DungeonDesign). 주면 방 수·자리·역할·모양·물·특징을 이 설계대로 짓고 함수는 겹침·길·도달만 고쳐 warnings 「고침:」으로 알린다. 여러 층이면 마지막 층에." },
+      floorDesigns: { type: "array", maxItems: 5, items: { type: "object" }, description: "층마다 설계(아래층부터, floors 2 이상) — 각 원소는 design 과 같은 형식." },
       rooms: {
         type: "array",
         minItems: 1,
