@@ -23,7 +23,7 @@ export const START_POTIONS = 3;
  * 그런 약이 없으면 가장 많이 채우는 약. 값이 없는(파는 물건이 아닌) 아이템은 고르지 않는다.
  * 왜: 가장 싼 약은 「붉은 사과」(HP 15 / 514)였다 — 세 개를 줘도 회복 길이 아니다.
  */
-function startHealingItem(project: Project): string | undefined {
+export function startHealingItem(project: Project): string | undefined {
   const heals = healingItemIds(project);
   const lead = project.database.actors.find((a) => a.id === (project.system.startActorIds ?? [])[0]);
   const actor = lead ? normalizeActorRecord(lead) : undefined;
