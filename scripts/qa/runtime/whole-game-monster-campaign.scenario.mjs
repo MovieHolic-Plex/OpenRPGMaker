@@ -2,7 +2,8 @@
 //
 //   node scripts/runtime-qa.mjs --scenario whole-game-monster-campaign --browser firefox --netns \
 //     --whole-game ~/z-project/assistant-whole-game/suite/runs/2026-10-28-standin/standin/monster/project --out /tmp/bq/mon/rt-before
-//   MONSTER_QA_STARTER=1 을 앞에 붙이면 두 번째 스타터(불꽃)를 고른다(기본 0 = 첫 선택지, 풀).
+//   MONSTER_QA_STARTER=1 을 앞에 붙이면 두 번째 스타터(불꽃)를 고른다(기본 0 = 첫 선택지, 풀, 2 = 물).
+//   전투는 「가장 좋은 기술」(skill:best — 기술 단추의 기대 피해가 가장 큰 것)로 싸운다. 첫 기술만 누르면 실제 플레이어보다 약했다.
 //
 // 스타터 받기 → 1번길 야생 조우·포획 → 1번길 트레이너 셋 → 새순 마을 도착(목표 줄이 체육관을 가리키나) → 몬스터 센터 위치·회복 →
 // 체육관 관원 셋 → 체육관 퍼즐(받침→덩굴 문→가시 덤불→관장) → 관장전 → 관측탑 보스 → 리그 챔피언 → 엔딩. 전투 화면 자체는 whole-game-battle-monster 가
@@ -77,14 +78,14 @@ function fightBeats(tag, note, mapId, x, y, dir) {
     {
       id: `${tag}-end`,
       note: `${note} — 결판(승리 결과 창 또는 패배)`,
-      ops: [{ kind: "battle", fallback: "attack", timeoutMs: 300000 }],
+      ops: [{ kind: "battle", fallback: "skill:best", timeoutMs: 300000 }],
       shot: true,
     },
     {
       id: `${tag}-back`,
       note: `${note} — 결과를 닫고 필드(또는 게임 오버·센터에서 깸)`,
       ops: [
-        { kind: "battle", untilEnd: true, resultHoldMs: 300, timeoutMs: 90000 },
+        { kind: "battle", untilEnd: true, fallback: "skill:best", resultHoldMs: 300, timeoutMs: 90000 },
         { kind: "pressUntilJs", key: "Enter", fn: fieldOrOver, maxPresses: 40, settleMs: 500 },
       ],
       shot: true,
@@ -147,7 +148,7 @@ export default {
       id: "capture-back",
       note: "포획 문장을 넘겨 필드로",
       ops: [
-        { kind: "battle", untilEnd: true, resultHoldMs: 300, timeoutMs: 90000 },
+        { kind: "battle", untilEnd: true, fallback: "skill:best", resultHoldMs: 300, timeoutMs: 90000 },
         { kind: "waitFor", testid: "battle-scene", state: "absent", timeoutMs: 30000 },
         { kind: "pressUntilJs", key: "Enter", fn: fieldIdle, maxPresses: 30 },
       ],
