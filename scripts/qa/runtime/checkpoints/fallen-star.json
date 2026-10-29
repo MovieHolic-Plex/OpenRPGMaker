@@ -7369,7 +7369,14 @@
     "item_ether": 3,
     "item_panacea": 1
    },
-   "gold": 400
+   "gold": 400,
+   "sessionPatch": {
+    "actorSkillIds": {
+     "actor_fs_elena": [
+      "skill_fs2_ember_melt"
+     ]
+    }
+   }
   },
   {
    "id": "act2-b1-bells",
