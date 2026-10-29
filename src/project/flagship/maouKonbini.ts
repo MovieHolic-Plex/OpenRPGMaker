@@ -252,14 +252,15 @@ function buildMaps(project: Project): Links {
   execTool(project, "build_hand_interior_room", { mapId: M.room, name: "마오의 원룸", tileset: "modern_city", replace: true, layout: { program: "mc_apartment", seed: 1, furnish: true } });
   execTool(project, "build_hand_interior_room", { mapId: M.throne, name: "마왕성 옥좌의 방", tileset: "atlas_biome_interior", replace: true, layout: { program: "throne", seed: 1, furnish: true } });
 
-  const street = project.maps[M.street]!;
   // 거리 지붕·남쪽 강둑 너머는 걸어 들어가면 안 된다 — 지붕 윗면은 위층 타일이라 땅 위로 걸어 다닐 수 있었다(탐침 2026-10-29).
   // jp_city 의 투명 통행 불가 칸(851)을 맨 위 겹층(4층)에 깔아 막는다 — 통행은 위층부터 정하므로 아래 겹층은 지붕의 O 에 졌다. 세로 큰길과 다리(29~33열)는 남긴다.
   const BLOCK = 851;
-  const W = street.width;
+  const W = project.maps[M.street]!.width;
   for (const [x1, y1, x2, y2] of [[0, 0, 28, 7], [34, 0, W - 1, 7], [0, 15, 28, 22], [34, 15, W - 1, 22]] as const) {
     execTool(project, "paint_tiles", { mapId: M.street, layer: "4", mode: "rect", tile: BLOCK, from: { x: x1, y: y1 }, to: { x: x2, y: y2 } });
   }
+  // 도구는 맵 객체를 새로 만든다 — 칠한 뒤에 다시 읽는다.
+  const street = project.maps[M.street]!;
   for (const c of [{ x: 2, y: 9 }, { x: 13, y: 9 }, { x: 26, y: 9 }, { x: 31, y: 1 }, { x: 31, y: 26 }, { x: 20, y: 26 }]) mustWalk(project, street, c, "거리 길");
   for (const c of [{ x: 5, y: 3 }, { x: 15, y: 5 }, { x: 10, y: 20 }]) mustBlock(project, street, c, "지붕·강둑");
 
