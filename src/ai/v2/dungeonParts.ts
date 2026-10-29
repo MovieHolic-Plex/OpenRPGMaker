@@ -67,6 +67,36 @@ export const DUNGEON_DESIGN_EXAMPLES: readonly { readonly name: string; readonly
   },
 ];
 
+/**
+ * 참고 그림(2026-10-30 사용자 지시): 사람이 조각을 고른 버들항 던전 변형 렌더 다섯(tiledata/beodeul-variants/<id>/render-1x.png).
+ * 맵 검수(suite/mapvqa refs/anchors.json)의 기준 그림과 같다 — 그래서 «구성 아이디어»로만 쓰고 베끼지 말라고 적는다(검수는 기준과 거의 같은 맵을 반복으로 친다).
+ * 그림 파일은 저장소에만 있다(출하본에는 없음) — 없으면 글만 준다.
+ */
+export const DUNGEON_REFERENCE_PICTURES: readonly { readonly id: string; readonly themes: readonly DungeonType[]; readonly idea: string }[] = [
+  { id: "sea-cave", themes: ["cave", "ice"], idea: "바다 동굴 56×42 — 남동 해변으로 들어와 조간대 웅덩이 굴 → 기둥 홀 → 서북 밀수꾼 은닉처(끝). 가지로 바다와 이어진 밀수 부두·발광 이끼방." },
+  { id: "volcano-cave", themes: ["volcano"], idea: "화산 동굴 56×44 — 입구 → 옛 대장간 폐허 → 용암 폭포 굴 → 바위다리로 용암 강 건너 → 재 벌판·흑요석 제단(끝) → 입구로 도는 고리." },
+  { id: "castle-catacombs", themes: ["catacomb", "castle", "tower"], idea: "성 지하 감옥·카타콤 56×42 — 남쪽 입구 계단실 → 서쪽 감방동·간수실 → 고문실 → 동북 안쪽 뼈의 방 제단. 방은 복도로만 잇고 고립 방 없음." },
+  { id: "aqueduct-sewer", themes: ["sewer", "mine"], idea: "수도교 하수도 60×44 — 서남 입구 계단 홀 → 본수로 따라 걷기 → 다리로 건너기 → 밸브방(수위 장치) → 비밀문 뒤 교단 제단." },
+  { id: "temple-ruins", themes: ["temple", "pyramid", "forest", "swamp", "otherworld"], idea: "신전 폐허 58×44 — 바깥 진입로·앞뜰·성림 → 무너진 열주 → 실내 대신랑·모자이크 홀 → 내전 제단 앞 내려가는 계단(끝)." },
+];
+
+/** 테마에 맞는 참고 그림을 앞에, 나머지는 게임마다 돌린 순서로. */
+export function referencePictures(theme: DungeonType, gameKey: string): typeof DUNGEON_REFERENCE_PICTURES {
+  const h = [...`ref|${gameKey}`].reduce((a, c) => (Math.imul(a, 31) + c.charCodeAt(0)) >>> 0, 7);
+  const fit = DUNGEON_REFERENCE_PICTURES.filter((r) => r.themes.includes(theme));
+  const rest = DUNGEON_REFERENCE_PICTURES.filter((r) => !r.themes.includes(theme));
+  const k = rest.length ? h % rest.length : 0;
+  return [...fit, ...rest.slice(k), ...rest.slice(0, k)];
+}
+
+async function referencePng(id: string): Promise<string | undefined> {
+  try {
+    const fs = await import("node:fs");
+    const url = new URL(`../../../tiledata/beodeul-variants/${id}/render-1x.png`, import.meta.url);
+    return fs.existsSync(url) ? fs.readFileSync(url).toString("base64") : undefined;
+  } catch { return undefined; }
+}
+
 const ROLES = "entrance 입구(하나) · boss 보스(하나, 3×2 몸이 설 large 이상) · treasure 보물(막다른 곳이 좋다) · lake 호수 · camp 야영·둥지 · shrine 제단 · forge 대장간(화산만) · hall 넓은 굴 · grotto 곁굴";
 
 export interface DungeonPartsOut {
@@ -126,7 +156,7 @@ export function createDungeonPartsVerb(env: PiAssistantV2Env): PiToolShape {
   const pictures = new Map<string, string>();
   return {
     name: "dungeon_parts", label: "던전 재료 보기", concurrency: "shared",
-    description: "던전·동굴 층을 직접 설계(make_place spec.dungeonDesign)하기 전에 부른다. 그 테마의 방 모양·역할·물·특징·잇는 모양 어휘와, 뼈대가 서로 다른 설계 예시 넷(그중 둘은 지금 빌더로 실제로 지은 그림과 함께)을 돌려준다. 예시는 참고일 뿐 — 요청에 맞게 방 수·자리·모양·길을 새로 짠다.",
+    description: "던전·동굴 층을 직접 설계(make_place spec.dungeonDesign)하기 전에 부른다. 그 테마의 방 모양·역할·물·특징·잇는 모양 어휘와, 뼈대가 서로 다른 설계 예시 넷(하나는 지금 빌더로 지은 그림과 함께), 사람이 고른 버들항 던전 참고 그림(구성 아이디어 — 베끼지 않는다)을 돌려준다. 예시는 참고일 뿐 — 요청에 맞게 방 수·자리·모양·길을 새로 짠다.",
     parameters: { type: "object", properties: { theme: { type: "string", description: "던전 테마 낱말 — 예: 동굴, 화산, 마계, 숲, 지하묘지" } }, required: ["theme"] },
     async execute(_id, params) {
       const gameKey = String(env.request.projectKey ?? env.ctx.project.meta.title ?? "");
@@ -134,7 +164,14 @@ export function createDungeonPartsVerb(env: PiAssistantV2Env): PiToolShape {
       const result = text({ ok: true, ...out, how: "make_place({spec:{type:'cave'|'dungeon', name, theme, dungeonDesign:{entrance, rooms:[{id, role, size, shape, dir?, at, water?, features?}], links:[{from,to,kind?}]}}}). 방마다 at 을 서로 다르게, 입구 하나·보스 하나. 함수는 방을 더하거나 고르지 않고 겹침·길·도달·크기 모순만 고쳐 「고침:」으로 알린다." });
       // 그림은 넷 중 둘만(게임마다 다른 둘) — Gemini(argon·flash)는 큰 전맵 그림 넷을 받은 바로 다음 차례에 제공자 오류(«Sorry, something went wrong»)나
       // 글로 적은 tool_call 을 자주 냈다(2026-10-29 실조수 6판 중 4판). 설계 넷은 글로 모두 준다.
-      const pics = out.theme === "labyrinth" ? [] : out.examples.slice(0, 2);
+      // 참고 그림 둘(테마에 맞는 것 먼저) + 지금 빌더로 지은 예시 하나 — 그림이 많으면 Gemini 가 다음 차례에 제공자 오류를 냈다.
+      const refs = referencePictures(out.theme, gameKey).slice(0, 2);
+      result.content.push({ type: "text", text: `참고 그림(사람이 조각을 고른 버들항 던전 — 그대로 베끼지 말고 구성 아이디어만: 구역 순서·볼거리·가지 길·고리. 맵 검수는 이 그림과 거의 같은 맵을 «반복»으로 친다): ${DUNGEON_REFERENCE_PICTURES.map((r) => `${r.id} — ${r.idea}`).join(" / ")}` });
+      for (const r of refs) {
+        const data = await referencePng(r.id);
+        if (data) { result.content.push({ type: "text", text: `참고 그림 ${r.id}(${r.idea}):` }); result.content.push({ type: "image", mimeType: "image/png", data }); }
+      }
+      const pics = out.theme === "labyrinth" ? [] : out.examples.slice(0, 1);
       for (const ex of pics) {
         const key = `${out.theme}:${ex.name}`;
         let url = pictures.get(key);
