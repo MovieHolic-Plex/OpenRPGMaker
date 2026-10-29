@@ -743,7 +743,7 @@ function endingHomeArrive(): Command[] {
     playSe(SE_CHAT), ...caption("[단톡] 에델: 용사님, 대본 8장은 제가 씁니다."),
     ...say("minjae", "happy", "…꿈 아니네."),
     ...say("teacher", "base", "그리고 오늘부터 같이 공부할 사람이다. 자기소개."),
-    ...say("maou", "embarrassed", "배재민이다. …열다섯 수생이다. 잘 부탁한다, 후배들."),
+    ...say("maou", "embarrassed", "배재민이다. …15수생이다. 잘 부탁한다, 후배들."),
     ...say("suah", "surprised", "민재야, 저 아저씨 뿔 달렸어."),
     ...say("minjae", "happy", "선배야. 기출 잘 풀어."),
     ...endingCommon(END_HOME),

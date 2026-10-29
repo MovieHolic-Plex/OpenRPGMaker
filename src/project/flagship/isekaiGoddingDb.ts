@@ -88,6 +88,8 @@ export function setupIsekaiDatabase(project: Project, backdrops: typeof BACKDROP
     kkur: curves([1.35, 0.5, 1.25, 1.05, 0.6, 0.8]),
   };
   exec("upsert_actor", { actor: { id: ACTOR.minjae, name: "강민재", nickname: "고2 · 자칭 용사", classId: CLASS.student, initialLevel: 5, parameterCurves: STATS.minjae,
+    // 기본 주인공이 물려준 전투 도트(Actor1 검사)를 지운다 — 비우면 전투에서 민재 자신의 걷기 칩(교복)이 선다.
+    battleCharacterResourceId: "",
     characterResourceId: CAST.minjae.resource, characterIndex: CAST.minjae.index, faceResourceId: "shared-modern-uni-boy-navy-expressions-bust-base" } });
   const fantasyActor = (id: string, name: string, nickname: string, classId: string, who: "edel" | "fio" | "kkur", level: number, battle?: string) =>
     exec("upsert_actor", { actor: {
@@ -133,7 +135,7 @@ export function setupIsekaiDatabase(project: Project, backdrops: typeof BACKDROP
     [act("skill_attack", 6), act("skill_ig_pop_quiz", 8)], 160, 90, 10);
   enemy("enemy_ig_dean", "마왕군 교무부장", "generated-enemy-lich-frost", { maxHp: 900, maxMp: 50, attack: 70, defense: 38, mind: 60, agility: 40 },
     [act("skill_ig_pop_quiz", 7), act("skill_ig_mock_exam", 8, { kind: "turn", start: 2, interval: 3 })], 260, 150, 12, { role: "boss" });
-  enemy("enemy_ig_maou", "재수생 마왕 벨제", "generated-enemy-demon-lord", { maxHp: 1600, maxMp: 80, attack: 80, defense: 45, mind: 70, agility: 45 },
+  enemy("enemy_ig_maou", "재수생 마왕 벨제", "generated-enemy-demon-lord", { maxHp: 1100, maxMp: 80, attack: 80, defense: 45, mind: 70, agility: 45 },
     [act("skill_attack", 5), act("skill_ig_retake", 8), act("skill_ig_mock_exam", 9, { kind: "turn", start: 2, interval: 3 })], 500, 300, 15, { role: "boss" });
 
   const troop = (id: string, name: string, enemyIds: string[], background: string) =>
