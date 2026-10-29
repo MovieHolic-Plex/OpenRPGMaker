@@ -17,6 +17,8 @@ type Cell = { x: number; y: number };
 type Rec = Record<string, unknown>;
 
 export const FS2_TOP = "fs2_sky_tower_top";
+/** 꼭대기 기본 카메라 배율 — 렌즈실이 화면을 채운다(배율 1 은 둘레 허공이 많았다). */
+const TOP_ZOOM = 1.4;
 const FS2_T4 = "fs2_sky_tower_f4";
 const VALEN = "발렌";
 const HANEL = "천문대장 하넬";
@@ -70,6 +72,7 @@ export function buildSummitMap(project: Project, exec: Exec, fromStair: Cell): v
     type: "tower", adapter: "beodeul", genre: "rpg", floors: 1, rooms: ROOMS, id: FS2_TOP, name: "하늘탑 꼭대기",
     populate: false, gimmick: "none", entrance: { fromMapId: FS2_T4, x: fromStair.x, y: fromStair.y }, seed: 91,
   });
+  exec(project, "set_map_properties", { mapId: FS2_TOP, zoom: TOP_ZOOM });
 }
 
 /** 4층 → 꼭대기 계단: 이리스 전에는 한 줄만, 뒤에는 도구가 만든 이동 그대로. */
@@ -250,7 +253,7 @@ function summitScenes(project: Project): void {
     // 하넬·브람 — 아래 계단에서 올라온다.
     setSw(SW_HANEL_COME),
     at("ev_fs2_top_hanel", TOP.hanelStart), at("ev_fs2_top_bram", TOP.bramStart),
-    camBack(700, 1),
+    camBack(700, TOP_ZOOM),
     say(HANEL, "발렌."),
     route("ev_fs2_top_hanel", walk(["up", "up", "up", "up", "up"]), false),
     route("ev_fs2_top_bram", walk(["up", "up", "up", "up", "up"])),
@@ -271,7 +274,7 @@ function summitScenes(project: Project): void {
     se("cc0-se-osx-machine-03"), flash("red", 400), shake(4, 900),
     fx("fire", TOP.lens.x + 1, TOP.lens.y + 3, 1600),
     say(TERMINAL, "[접수 4/4]\n[거부 신호 50% ── 충돌]"),
-    camBack(600, 1),
+    camBack(600, TOP_ZOOM),
     say(IRIS, "경고. 회수 기구 기동."),
     say(IRIS, "저 아래에서, 불을 거두러 와요."),
     shake(6, 1400), se("cc0-se-ors-creature-roar-03"),
@@ -337,7 +340,7 @@ function summitScenes(project: Project): void {
     fx("sparkle", TOP.lens.x + 1, TOP.lens.y + 1, 2400),
     say(TERMINAL, "[정착 확인 재접수]\n[귀환선 하강 개시]"),
     say(TERMINAL, "[중계기 이리스 회수 예정 ── 현지 시각 30일]"),
-    camBack(1200, 1),
+    camBack(1200, TOP_ZOOM),
     narrate("북쪽 하늘의 흰 배가 움직인다.\n사람들이 달이라 부르던 것이."),
     say(IRIS, "30일이에요. 카엘, 그동안\n일지를 아주 두껍게 써 주세요."),
     say(KAEL, "응. 매일 쓸게."),

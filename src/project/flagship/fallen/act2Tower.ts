@@ -526,6 +526,8 @@ function floorThree(project: Project, exec: Exec): void {
 /** 이리스의 관 — 동서로 누운 석관(닫힘 → 뚜껑이 밀린 열림). */
 const COFFIN_KIT = { closed: "bd-pick-dungeon-theme-sarcophagus-ew", open: "bd-pick-dungeon-theme-sarcophagus-ew-open" } as const;
 
+/** 4층 기본 카메라 배율 — 둥근 방이 화면을 채운다(배율 1 은 왼쪽·아래가 검은 허공이었다, 감독 2026-10-30). */
+const T4_ZOOM = 1.6;
 const T4 = {
   arrive: { x: 15, y: 22 },
   coffin: { x: 15, y: 11 },         // 석관(동서 2×1) 왼쪽 — (15..16, 11). 바로 뒤(북쪽)가 큰 렌즈
@@ -560,6 +562,7 @@ function floorFour(project: Project, exec: Exec): void {
     [SW_PAGE_NAME, "B11: 일지 쪽(별 이름)"], [SW_PAGE_HAND, "B11: 일지 쪽(엘레나 손)"], [SW_BE_WELL, "B11: 「잘 지내」"]
   ] as const) ensureSwitch(project, id, name);
   copyStair(project);
+  exec(project, "set_map_properties", { mapId: FS2_T4, zoom: T4_ZOOM });
   // 꼭대기(B12)를 먼저 잇는다 — 둥근 방 문 이벤트가 생기면 계단 쪽이 갈려 연결 도구가 「봉쇄」로 거절한다.
   buildSummitMap(project, exec, T4.stair);
   for (const c of [T4.arrive, T4.coffinFront, T4.iris, ...T4.doorway, T4.dark, ...T4.alcovePlugs, T4.pageStar, T4.pageHand]) mustWalk(project, FS2_T4, c, "4층");
@@ -621,7 +624,7 @@ function floorFour(project: Project, exec: Exec): void {
       camTo("ev_fs2_t4_coffin", 1200, 1.6),
       narrate("커다란 렌즈 앞에 석관이 하나 놓여 있다.\n뚜껑 틈으로 초록 글자가 흐른다."),
       say(ELENA, "은빛 알 안쪽이랑 같은 글자야.\n…저 안에 있어."),
-      camBack(900, 1),
+      camBack(900, T4_ZOOM),
       setSw(SW_T4_ROOM),
       cutLabel(), cutEnd(), setSw(SW_T4_ROOM),
     ], { trigger: { kind: "playerTouch" }, priority: "below" }),
@@ -664,38 +667,51 @@ function floorFour(project: Project, exec: Exec): void {
     ...forgetThree(),
     wait(700),
     camTo("ev_fs2_t4_iris", 700, 2.4),
+    // 깨어난 이리스가 카엘 쪽으로 고개를 돌린다.
+    route("ev_fs2_t4_iris", [{ kind: "turn", dir: "left" }]),
     say(IRIS, "…신호, 수신. 현지 시각 불명.\n귀환 준비 중입니다. 기록을 정리합니다."),
     say(KAEL, "이리스, 나야. 카엘."),
     emote("ev_fs2_t4_iris", "question", 900),
     wait(400),
     say(IRIS, "…누구세요? 아니, 알아요.\n모르는데 알아요."),
+    // 카엘이 관 곁으로 다가선다(이리스 바로 옆).
+    route("@player", [{ kind: "move", dir: "right" }, { kind: "move", dir: "up" }, { kind: "turn", dir: "right" }]),
     narrate("이리스가 품에 안고 있던 일지를 펼친다."),
     narrate("넘기는 쪽마다 글자가 하얗게 바래 간다."),
     say(IRIS, "일지에 당신 글씨가 있어요.\n그런데 읽으려니까 자꾸 지워져요."),
     say(ELENA, "탑이 이리스 기록을 걷어 가고 있어.\n…돌아가기 전에 싹 비우는 거야."),
     say(SARAH, "발렌 님이 끊겠다던 줄이 이거였군."),
     say(KAEL, "…괜찮아. 내가 읽어 줄게.\n약속했잖아."),
+    // 둘을 한 화면에 — 천천히 당긴다.
+    camTo("ev_fs2_t4_coffin", 2200, 2.6),
     bgm(IRIS_BGM, 2500),
     narrate("카엘이 바랜 쪽을 짚는다. 카엘의 글씨다."),
     say(KAEL, "「오늘, 이리스가 빵을 먹었다.\n따뜻했다고 했다.」 …기억나?"),
+    // 읽은 줄이 돌아오는 순간 — 렌즈와 수정 받침이 함께 맥박친다.
     fx("heal", T4.iris.x, T4.iris.y, 1200), se("easyrpg-sound-recovery7"),
+    fx("sparkle", (lens?.x ?? T4.coffin.x) + 1, (lens?.y ?? T4.coffin.y - 4) + 2, 1200),
+    ...(pedW ? [fx("sparkle", pedW.x, pedW.y, 1000)] : []),
+    se("easyrpg-sound-chime2"),
     sys("이리스가 「광선 조준」을 다시 떠올렸다."),
     wait(500),
     say(IRIS, "맛은 안 나요.\n그런데 이 줄은 따뜻해요."),
+    emote("ev_fs2_t4_iris", "heart", 1000),
     say(IRIS, "한 번 더 읽어 주세요. 몇 번이고."),
     say(KAEL, "응. 몇 번이고."),
     say(ELENA, "이리스, 손 줘. …차가워.\n그래도 안 떨리네."),
+    route("ev_fs2_t4_iris", [{ kind: "turn", dir: "down" }]),
     say(IRIS, "떨리는 건 흉내예요.\n…지금은 흉내 안 내는데도 떨려요."),
+    route("ev_fs2_t4_iris", [{ kind: "turn", dir: "left" }]),
     wait(700),
     say(IRIS, "어둡네요. 잠깐만요."),
     se("easyrpg-sound-recovery7"),
     { kind: "setLighting", ambient: 0, transitionMs: 1800 } as unknown as Command,
-    camBack(1600, 1),
+    camBack(1600, T4_ZOOM),
     narrate("이리스의 손끝에 작은 빛이 맺힌다.\n그 빛이 층 전체로 번져 나간다."),
     fx("sparkle", T4.pageStar.x, T4.pageStar.y, 1600), fx("sparkle", T4.pageHand.x, T4.pageHand.y, 1600),
-    camTo("ev_fs2_t4_page_star", 1200, 1),
+    camTo("ev_fs2_t4_page_star", 1200, T4_ZOOM),
     say(IRIS, "저기, 종이가 떨어져 있어요.\n…제 일지 쪽이에요."),
-    camBack(900),
+    camBack(900, T4_ZOOM),
     { kind: "changeParty", actorId: IRIS_ID, action: "add" } as unknown as Command,
     { kind: "changeLevel", actorId: IRIS_ID, op: "=", amount: 13 } as unknown as Command,
     learn(IRIS_ID, FS2_SKILL_FINGERLIGHT),
