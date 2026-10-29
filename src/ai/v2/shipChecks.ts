@@ -4,6 +4,7 @@
 // 기본 이름(주인공)·기본 얼굴·기본 음악이 그대로 남았고(공포 저택 1턴·시타마치), 엔딩은 대사 한 줄이었다.
 // 기준은 빈 프로젝트(createBlankProject) 자체다 — 그 값과 같으면 «아무도 고르지 않은» 기본값이다.
 // 순수 함수(프로젝트만 읽는다). v2FinishGate 가 출하 차단으로, 조언자가 막는 항목(shipBlockers)으로 같이 부른다.
+import { bossTalkWithoutBattle } from "./bossTalkBattles";
 import { reloadProblem } from "./reloadCheck";
 import { chaserMapsWithoutHiding } from "@/project/chaserHiding";
 import { createBlankProject } from "@/project/defaults";
@@ -536,6 +537,7 @@ export function shipBlockers(project: Project, task: string): ShipBlocker[] {
   const strays = strayStepCopies(project).slice(0, 3).map((hit): ShipBlocker => ({ id: "blueprint-stray-copy", message: `청사진 ${hit.step} 이벤트의 사본이 「${project.maps[hit.mapId]?.name ?? hit.mapId}」 (${hit.x},${hit.y}) 에도 있어 싸우거나 엔딩을 부른다 — 「${project.maps[hit.canonicalMapId]?.name ?? hit.canonicalMapId}」 를 건너뛰는 지름길이다.`, evidence: `${hit.mapId} ${hit.eventId}` }));
   const sparkles = emptySparkles(project).slice(0, 4).map((hit): ShipBlocker => ({ id: "empty-sparkle", message: `「${project.maps[hit.mapId]?.name ?? hit.mapId}」 ${hit.eventId}(${hit.x},${hit.y}) 페이지 ${hit.page + 1} 이 반짝이는데 조사해도 아무 일도 없다 — 반짝임을 떼거나 대사 한 줄을 넣는다.`, evidence: `${hit.mapId} ${hit.eventId} p${hit.page}` }));
   const selfLoops = selfLoopTransfers(project).slice(0, 4).map((loop): ShipBlocker => ({ id: "transfer-self-loop", message: `「${project.maps[loop.mapId]?.name ?? loop.mapId}」 ${loop.eventId}(${loop.x},${loop.y}) 이 같은 맵 바로 옆 칸 (${loop.to.x},${loop.to.y}) 으로 옮긴다 — 제자리로 돌아올 뿐이라 고장 난 문처럼 보인다. 옮기기를 지우거나 다른 맵·먼 칸으로 잇는다.`, evidence: `${loop.mapId} ${loop.eventId} → (${loop.to.x},${loop.to.y})` }));
+  const bossTalk = bossTalkWithoutBattle(project).slice(0, 3).map((hit): ShipBlocker => ({ id: "boss-talk-no-battle", message: `「${project.maps[hit.mapId]?.name ?? hit.mapId}」 「${hit.name}」(${hit.x},${hit.y}) 이 싸움을 거는 말을 하는데 전투가 열리지 않는다 — 말만 되풀이된다. 그 대사 페이지 끝에 battleProcessing{troopId:<${hit.name} 부대>} 을 붙이고 이긴 뒤 페이지를 둔다.`, evidence: `${hit.mapId} ${hit.eventId}` }));
   const unreachable = unreachableCriticalEvents(project).map((message): ShipBlocker => ({ id: "critical-unreachable", message: `${message}. 이벤트를 걸어 닿는 칸 옆으로 move_event 하거나 막는 가구를 치운다.`, evidence: message.slice(0, 120) }));
   // 계단 출구가 숨은 칸이다(J87) — 계단 앞에서 계단 쪽으로 걸어도 이동이 없다.
   const hiddenExits = hiddenStairExits(project).slice(0, 4);
@@ -584,7 +586,7 @@ export function shipBlockers(project: Project, task: string): ShipBlocker[] {
     message: `전투가 있는데(${sites.slice(0, 3).join(", ")}${sites.length > 3 ? ` 외 ${sites.length - 3}곳` : ""}) 여관·회복약·회복 기술·상점 회복약이 하나도 없어 깎인 HP 가 돌아오지 않는다 — build_blueprint_path 를 다시 부르면 시작 맵에 회복의 샘(전원 회복·저장)과 시작 회복약 3개를 넣고 목표 줄이 샘 자리를 가리킨다. 직접 고치려면 place_savepoint{mapId:시작 맵, heal:true} 와 set_session_start{inventory:{item_potion:3}}.`,
     evidence: `battleSites=${sites.length} healingSources=0`,
   }] : [];
-  return [...reloadBlock, ...blueprint, ...noHealing, ...hidden, ...unlit, ...invisible, ...offArt, ...repeats, ...tints, ...objectives, ...romance, ...editorDefaultsLeft(project), ...endingClosureProblems(project), ...endingConditionsUnset(project), ...openingWithoutPlace(project), ...offPremiseArt(project, task), ...defaultPlaceLeaks(project, task), ...titleMismatch(project, task), ...assemblyTimeMismatches(project).map((m): ShipBlocker => ({ id: "assembly-time-mismatch", message: m.message, evidence: m.evidence })), ...requestedFeatureGaps(project, task), ...chaserWithoutHiding(project), ...selfLoops, ...silentExits, ...strays, ...sparkles, ...unreachable, ...spoilers];
+  return [...reloadBlock, ...blueprint, ...noHealing, ...hidden, ...unlit, ...invisible, ...offArt, ...repeats, ...tints, ...objectives, ...romance, ...editorDefaultsLeft(project), ...endingClosureProblems(project), ...endingConditionsUnset(project), ...openingWithoutPlace(project), ...offPremiseArt(project, task), ...defaultPlaceLeaks(project, task), ...titleMismatch(project, task), ...assemblyTimeMismatches(project).map((m): ShipBlocker => ({ id: "assembly-time-mismatch", message: m.message, evidence: m.evidence })), ...requestedFeatureGaps(project, task), ...chaserWithoutHiding(project), ...selfLoops, ...silentExits, ...bossTalk, ...strays, ...sparkles, ...unreachable, ...spoilers];
 }
 
 /** 게임이 «아직 안 지어졌다»는 신호 — 뼈대 자리표시만 남았거나 엔딩이 없다(편집기 기본 HUD·창 같은 마감 항목은 여기서 보지 않는다). */

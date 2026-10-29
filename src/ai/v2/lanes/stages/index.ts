@@ -19,6 +19,7 @@ export { stage as sealStepArt } from "./seal-step-art";
 export { stage as deadEndRoads } from "./dead-end-roads";
 export { stage as entranceSeating } from "./entrance-seating";
 export { stage as pickupChests } from "./pickup-chests";
+export { stage as talkBossBattles } from "./talk-boss-battles";
 export { stage as lockedHouseDoors } from "./locked-house-doors";
 export { stage as transferLanes } from "./transfer-lanes";
 export { stage as targetFronts } from "./target-fronts";
