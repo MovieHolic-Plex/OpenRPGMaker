@@ -5,6 +5,13 @@
 
 <!-- releases -->
 
+## 0.360.1 — 2026-10-29
+
+### 수정
+
+- **fallen** — freeze Fallen Star towns to committed snapshots so generator changes cannot break the demo bake (#3912) (`147ffa2`)
+- **runtime** — field-backdrop battle snapshot wait, timed-choice bar position (#3911) (`8cbb079`)
+
 ## 0.360.0 — 2026-10-29
 
 ### 기능
