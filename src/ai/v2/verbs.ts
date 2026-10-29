@@ -36,6 +36,7 @@ import { ensureSupplyShop } from "./healingAccess";
 import { doorFloorTransfers, dressInteriorExits, dropBuriedTransfers } from "./exitDress";
 import { roadToEdgeExits } from "./edgeExitRoads";
 import { dressBareCaveGates } from "./caveGates";
+import { rampNearGoals } from "./reliefShortcut";
 import { isPlaceholderMap, moveBareEvents, retireBlankStart, retireOrphanMaps } from "./blankStart";
 import { chaserEvents, ensureChaserHidingSpots, mapHidingEvents, markHidingSpots } from "@/project/chaserHiding";
 import { relocateLeadingFace } from "@/editor/tools/eventCompile";
@@ -596,6 +597,8 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
       for (const n of doorFloorTransfers(run, mapId)) notes.push(`${env.ctx.project.maps[mapId]?.name ?? mapId}: ${n}`);
       // 풀밭 한가운데 투명 동굴 출입구 → 그 위(또는 8걸음 안)에 갱구를 세운다(2026-10-29 vm3 argon jrpg 「마을 밖 동굴 길이 안 보임」).
       for (const n of dressBareCaveGates(run, mapId)) notes.push(`${env.ctx.project.maps[mapId]?.name ?? mapId}: ${n}`);
+      // 목표 바로 곁 절벽(한 칸 위·아래인데 멀리 돌아가야 함)에 계단 경사로(2026-10-29 vm4 deepseek jrpg 「동굴 입구가 보이는데 못 닿음」).
+      for (const n of rampNearGoals(run, mapId)) notes.push(`${env.ctx.project.maps[mapId]?.name ?? mapId}: ${n}`);
       // 가장자리 출구가 풀밭 한가운데면 맵의 길로 잇는다(2026-10-29 vm3 argon jrpg 「마을 밖으로 나가는 길이 안 보임」).
       for (const n of roadToEdgeExits(run, mapId)) notes.push(`${env.ctx.project.maps[mapId]?.name ?? mapId}: ${n}`);
       const r = clearTransferLanes(run, mapId);
