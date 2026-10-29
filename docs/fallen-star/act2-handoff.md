@@ -97,6 +97,16 @@ omp -p --model cb/deepseek-v4.1-flash --thinking high --mode json --max-time 6h 
   - 함정: 체크포인트 부팅이 부하에서 400~570초 — 부팅 한도를 600초로(`QA_CHECKPOINT_BOOT_MS`).
   - 함정: checkpoints 시나리오는 부팅 때 **현재 소스로** 폴른 프로젝트를 다시 짓는다 — QA 도는 중에 소스를 고치면 그 판이 섞인다.
   - 탐침: `/tmp/fs2/act2probe.mts` 는 vite-node 로 돈다: `OPRN_ASSUME_ALL_BGM_INSTALLED=1 node --max-old-space-size=12000 node_modules/vite-node/dist/cli.mjs --script /tmp/fs2/act2probe.mts`(tsx 는 .css import 로 죽는다). 타입 검사는 `/tmp/fs2/tsconfig.json`(만진 파일 + src/vite-env.d.ts).
+  - **B5·B6 다시 짓기 (2026-10-29, 브랜치 agent/fs2-places)** — 계획 그림의 참고 지도를 실제로 따른다.
+    - 참고 지도(버들항 웨이브 2 「화산 지대 필드」·「폐허 마을」)는 생성 스크립트로만 남아 있고(고아 커밋 0bfba316bc) 공용 칩셋에 구운 적이 없다. 새 도트를 굽지 않고 같은 결을 이미 있는 조각으로 다시 짰다: `src/project/flagship/fallen/act2Places.ts` 의 칸 평면도(`#` 바위 능선 = 던전 바위 오토타일 + 앞면 2단, `.` 광재 땅, `:` 잿길, `f/W` 예배당 돌바닥) + 물건 목록 → `paintPlace`.
+    - B5 재의 들판(`map_field_north_2`, 32×40): 숲길 도구 맵을 평면도로 통째 다시 칠한다(잿빛 땅·마른 고목·뼈 무더기·뼈 기둥·검푸른 바위 C 줄). 안개 0.22 + 잿빛 빛, 전투 배경 바위(cave). 숲 어귀(north_1)만 옛 그을림(`scorchAshFields`).
+    - B5 새벽샘 터(36×30): 무너진 예배당(모자이크 메달리온)·우물 광장·지붕 내려앉은 집 둘(`BurntHouse` l/r)·통째 무너진 집 둘(`c` — 밑동 통나무+잔해)·멀쩡한 집 하나(북동쪽, 빗장 문). 이벤트 칸은 `DAWN_SPOTS`·`FS2_ASH`.
+    - B6 바깥 안뜰 `fs2_fort_court`(새 맵): `author_beodeul_town theme snow walls wallGate NS seed 65` → `resize_map` +8줄 → **`applyMapShift` 직접**(shift_map 도구는 완성된 집 보호 영역을 거절) + `structurePlacements.y` 도 밀기 → `paintFortApproach`(북문 밖 눈길·B 줄 바위 벼랑·눈 소나무). 얼음 연못·눈사람은 걷고(연못 물가 덧층까지) 훈련장·교단 깃발(성벽 앞면은 위층 그림이라 **겹 위층**에 건다)·봉화대. 마을 소품 도장은 필드 맵에서 막히므로 `mapRole field` 는 도장 뒤에.
+    - 흐름: 새벽샘 북쪽 ↔ 남문 밖 → 안뜰(경비견 무리·본채 앞 순찰 기사 돌진) → 본채(목욕집 키트) 문 = `author_dungeon entrance` → 성 던전 2층(레버 쇠창살 그대로) → 2층 마지막 방(옥좌·붉은 융단·붉은 깃발 「성주 홀」) 북벽 `bd-dg-door-closed` 문 → **바깥 북쪽 성벽 위**(망루 서쪽 칸 도착) → 새라. 이기면 서리 가도, 지면 1층 감방. 성벽 계단 밑·북문 터널은 쇠창살 이벤트로 막는다(북문은 합류 뒤 열림). 서리 가도 첫 맵 입구 ↔ 안뜰 북쪽 끝.
+    - 안뜰 무리는 `_out` 무리(같은 적, 눈밭 전투 배경)로 따로 — 요새 안 무리는 돌(cave) 배경. 순찰 기사 `_out` 도 돌진 탐지 프로필에 넣었다. 새라 결투 배경은 눈밭.
+    - 성 던전 도구가 깐 구름 바다 배경(`background`)은 요새 안 두 층에서 지운다(돌방 벽 너머 하늘이 공중 성처럼 보였다).
+    - 체크포인트: act2-b5-field·b5-north·b5-door·b6-enter 좌표 갱신, b6-sarah·b6-lose 는 `fs2_fort_court (22,10) left`, 새로 act2-b6-court(기사 돌진)·act2-b6-wall(홀 문 → 성벽 위).
+    - 함정: 체크포인트 부팅이 부하(load 60+)에서 600초를 넘었다 — `QA_CHECKPOINT_BOOT_MS=1500000` 와 `flock /tmp/fs2/heavy.lock`.
 
 ## 1. 머지됨 (main)
 

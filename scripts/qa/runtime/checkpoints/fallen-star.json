@@ -4118,10 +4118,10 @@
   {
    "id": "act2-b5-field",
    "label": "제2막 B5 — 재의 들판: 잿불 도깨비가 둥실 다가온다",
-   "note": "act2Opening.ts dawnwell foes map_field_north_2",
+   "note": "act2Opening.ts dawnwell foes map_field_north_2 — 재의 들판 평면도(act2Places ASH_FIELD_PLAN), 도깨비 (18,23)",
    "mapId": "map_field_north_2",
-   "x": 16,
-   "y": 24,
+   "x": 17,
+   "y": 28,
    "facing": "up",
    "switches": {
     "sw_fs_main_started": true,
@@ -4181,10 +4181,10 @@
   {
    "id": "act2-b5-door",
    "label": "제2막 B5 — 새벽샘 터: 바깥에서 잠긴 집, 정착 확인서 「엄마 문 열어」",
-   "note": "act2Opening.ts dawnwellEvents door (14,19)",
+   "note": "act2Opening.ts dawnwellEvents door (29,7) — 북동쪽 남은 통나무집(DAWN_SPOTS.kept)",
    "mapId": "fs2_dawnwell",
-   "x": 14,
-   "y": 20,
+   "x": 29,
+   "y": 8,
    "facing": "up",
    "switches": {
     "sw_fs_main_started": true,
@@ -4283,11 +4283,11 @@
   },
   {
    "id": "act2-b6-enter",
-   "label": "제2막 B6 — 새벽샘 북쪽 길 끝 → 북방 관문 요새",
-   "note": "act2Opening.ts northFortress — author_dungeon entrance (25,0) — 길은 성벽 사이 한 칸",
+   "label": "제2막 B6 — 새벽샘 북쪽 길 끝 → 북방 관문 요새 남문 밖",
+   "note": "act2Opening.ts fortCourt — 새벽샘 북쪽 ↔ 요새 안뜰 남문 create_transfer_pair",
    "mapId": "fs2_dawnwell",
-   "x": 25,
-   "y": 3,
+   "x": 17,
+   "y": 2,
    "facing": "up",
    "switches": {
     "sw_fs_main_started": true,
@@ -4328,11 +4328,11 @@
       {
        "kind": "move",
        "dir": "up",
-       "steps": 4
+       "steps": 3
       },
       {
        "kind": "waitForMap",
-       "mapId": "fs2_fortress",
+       "mapId": "fs2_fort_court",
        "timeoutMs": 8000
       },
       {
@@ -4376,11 +4376,11 @@
   {
    "id": "act2-b6-sarah",
    "label": "제2막 B6 — 성벽 위 결투장, 새라 + 경비견 하나(파티 Lv8), 이기면 선택 1·합류",
-   "note": "act2Opening.ts fortressEvents ev_fs2_fort_sarah — 2층 성벽 위(fs2_fortress_f2)",
-   "mapId": "fs2_fortress_f2",
-   "x": 21,
-   "y": 11,
-   "facing": "up",
+   "note": "act2Opening.ts fortressEvents ev_fs2_fort_sarah — 바깥 북쪽 성벽 위(fs2_fort_court)",
+   "mapId": "fs2_fort_court",
+   "x": 22,
+   "y": 10,
+   "facing": "left",
    "switches": {
     "sw_fs_main_started": true,
     "sw_fs_main_done": true,
@@ -4624,11 +4624,11 @@
   {
    "id": "act2-b6-lose",
    "label": "제2막 B6 — 새라에게 지면 요새 감방에서 깬다(게임 오버 아님)",
-   "note": "act2Opening.ts fortressEvents defeatBranch → ev_fs2_fort_cell_wake — 2층 성벽 위(fs2_fortress_f2)",
-   "mapId": "fs2_fortress_f2",
-   "x": 21,
-   "y": 11,
-   "facing": "up",
+   "note": "act2Opening.ts fortressEvents defeatBranch → ev_fs2_fort_cell_wake — 바깥 북쪽 성벽 위(fs2_fort_court)",
+   "mapId": "fs2_fort_court",
+   "x": 22,
+   "y": 10,
+   "facing": "left",
    "switches": {
     "sw_fs_main_started": true,
     "sw_fs_main_done": true,
@@ -4869,6 +4869,165 @@
        "kind": "hold",
        "dir": null,
        "ms": 1500
+      }
+     ],
+     "shot": true
+    }
+   ],
+   "sessionPatch": {
+    "actorEquipment": {
+     "actor_hero": {
+      "weapon": "equip_fs2_rohan_spear"
+     }
+    }
+   }
+  },
+  {
+   "id": "act2-b6-court",
+   "label": "제2막 B6 — 요새 안뜰: 남문으로 들어서면 순찰 기사가 보자마자 달려든다",
+   "note": "act2Opening.ts northFortress — 안뜰 순찰 기사(본채 앞, detection 돌진)",
+   "mapId": "fs2_fort_court",
+   "x": 18,
+   "y": 40,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_done": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs2_act2_started": true,
+    "sw_fs2_out_of_cells": true,
+    "sw_fs2_hub_arrived": true,
+    "sw_fs2_mire_well": true,
+    "sw_fs2_heard_carriage": true,
+    "sw_fs2_hanel_told": true,
+    "sw_fs2_rohan_spear": true,
+    "sw_fs2_bram_hole": true,
+    "sw_fs2_dawn_mem_0": true,
+    "sw_fs2_dawn_mem_1": true,
+    "sw_fs2_dawn_mem_2": true,
+    "sw_fs2_serin_form": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 8
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 8
+    }
+   ],
+   "beats": [
+    {
+     "id": "approach",
+     "ops": [
+      {
+       "kind": "move",
+       "dir": "up",
+       "steps": 6
+      },
+      {
+       "kind": "move",
+       "dir": "right",
+       "steps": 3
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 5000
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "battle",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 3000
+      }
+     ],
+     "shot": true
+    }
+   ],
+   "sessionPatch": {
+    "actorEquipment": {
+     "actor_hero": {
+      "weapon": "equip_fs2_rohan_spear"
+     }
+    }
+   }
+  },
+  {
+   "id": "act2-b6-wall",
+   "label": "제2막 B6 — 2층 성주 홀 북쪽 문 → 바깥 성벽 위(하늘·눈·벼랑)",
+   "note": "act2Opening.ts fortressEvents ev_fs2_fort_wall_door",
+   "mapId": "fs2_fortress_f2",
+   "x": 25,
+   "y": 7,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_done": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs2_act2_started": true,
+    "sw_fs2_out_of_cells": true,
+    "sw_fs2_hub_arrived": true,
+    "sw_fs2_mire_well": true,
+    "sw_fs2_heard_carriage": true,
+    "sw_fs2_hanel_told": true,
+    "sw_fs2_rohan_spear": true,
+    "sw_fs2_bram_hole": true,
+    "sw_fs2_dawn_mem_0": true,
+    "sw_fs2_dawn_mem_1": true,
+    "sw_fs2_dawn_mem_2": true,
+    "sw_fs2_serin_form": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 8
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 8
+    }
+   ],
+   "beats": [
+    {
+     "id": "out",
+     "ops": [
+      {
+       "kind": "move",
+       "dir": "up",
+       "steps": 1
+      },
+      {
+       "kind": "waitForMap",
+       "mapId": "fs2_fort_court",
+       "timeoutMs": 20000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 2500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "walk",
+     "ops": [
+      {
+       "kind": "move",
+       "dir": "left",
+       "steps": 2
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1200
       }
      ],
      "shot": true
@@ -8516,8 +8675,8 @@
    "label": "제2막 B5 — 재의 들판 북쪽 길 끝(두 칸 폭 어디로 나가도) → 새벽샘 터",
    "note": "act2Opening.ts dawnwell foes map_field_north_2",
    "mapId": "map_field_north_2",
-   "x": 17,
-   "y": 2,
+   "x": 15,
+   "y": 3,
    "facing": "up",
    "switches": {
     "sw_fs_main_started": true,
