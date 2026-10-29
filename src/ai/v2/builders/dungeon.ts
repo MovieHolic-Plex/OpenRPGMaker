@@ -155,6 +155,10 @@ export function dungeonArgs(spec: PlaceSpec, keepType?: DungeonType): DungeonPla
   }
   if (/torch|횃불|door|문\s*지정/.test(text)) warnings.push("조각(문·횃불) 지정은 못 한다 — 도구가 알아서 놓는다");
   for (const [key, value] of Object.entries(spec.hints ?? {})) {
+    // 스키마 칸을 0·빈 값으로 다 채우는 모델(terra)이 있다 — 빈 값은 「안 줬다」로 읽는다. 마을의 hints.layout(자리 객체)이 던전 layout(배치 가족 낱말)으로
+    // 넘어가 author_dungeon 인자 검증에 걸렸다(2026-10-30 dd1030 terra 같은 요청 3판 모두 실패).
+    if (value === "" || value === 0 || value === null || (typeof value === "object" && !Array.isArray(value))) continue;
+    if (value === false && !KNOWN_HINTS.has(key)) continue;
     if (!KNOWN_HINTS.has(key)) { warnings.push(`알 수 없는 hints.${key} 는 무시했다`); continue; }
     if (key === "variant" || key === "style") continue;
     if (key === "type" && !(TYPES as readonly string[]).includes(String(value))) { warnings.push(`알 수 없는 type ${String(value)} → ${type}`); continue; }

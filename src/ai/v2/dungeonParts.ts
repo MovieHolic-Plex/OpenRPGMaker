@@ -157,10 +157,13 @@ export function crossFormula(design: DungeonDesign | undefined): boolean {
 
 /**
  * 들어오는 길 → 입구 쪽(make_game 의 from·side, 또는 명세 exits). 설계가 다른 쪽을 적었으면 세계 배치가 이긴다(고치고 알린다).
- * side = 부모에서 본 이 장소의 방향 → 입구는 그 반대 쪽.
+ * side = 부모에서 본 이 장소의 방향 → 입구는 그 반대 쪽. exits 는 설계가 입구 쪽·입구 방 자리를 모두 비웠을 때만.
  */
 export function arrivalEntrance<T extends { name: string; exits?: readonly string[]; dungeonDesign?: DungeonDesign }>(spec: T, side?: string): { spec: T; note?: string } {
-  const want = side && OPP[side] ? OPP[side] : spec.exits?.length === 1 && OPP[spec.exits[0]!] ? spec.exits[0]! : undefined;
+  // exits 는 스키마 칸을 다 채우는 모델(terra)이 습관으로 ["south"] 를 넣는다 — 설계가 입구 쪽도 입구 방 자리도 말하지 않았을 때만 쓴다.
+  const entRoom = (spec.dungeonDesign?.rooms ?? []).find((r) => /^entrance$|입구/u.test(String(r.role ?? "")));
+  const silent = !spec.dungeonDesign?.entrance && !entRoom?.at;
+  const want = side && OPP[side] ? OPP[side] : silent && spec.exits?.length === 1 && OPP[spec.exits[0]!] ? spec.exits[0]! : undefined;
   if (!want || !spec.dungeonDesign) return { spec };
   const said = String(spec.dungeonDesign.entrance ?? "").toLowerCase();
   if (said === want) return { spec };
