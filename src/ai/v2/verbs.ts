@@ -715,7 +715,11 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
       if (spec.type === "interior" && !spec.mapId && !/wizard|마법\s*학교|hogwart|sengoku|edo|전국|에도|사무라이|modern|현대|city|도시/iu.test(spec.style ?? "")
         && !(spec.zones ?? []).some((z) => z.design) && run.ctx.project.tilesets[HAND_INTERIOR_TILESET_ID] && !session.designBounced.has(spec.name)) {
         session.designBounced.add(spec.name);
-        return text({ ok: false, summary: `「${spec.name}」의 방은 네가 설계한다 — room_parts({purpose}) 로 기물 이름표·견본 배치·그림을 보고, 방마다 zones[].design(모양 shape·바닥 w×h·문 door·재질 floor/wall·가구 묶음 groups: 무엇을·몇 개·어느 벽/모서리/가운데·깔개)을 채워 make_place 를 다시 부른다. 함수는 설계대로 짓고 고친 것만 알린다(가구를 더하지 않는다). 견본은 참고 — 베끼지 않는다.` });
+        // 재료(기물 이름표·견본 배치)를 같이 돌려준다 — 되돌려 보내기를 «실패»로 읽고 짓기를 그만둔 모델이 있었다(2026-10-29 flash 「마법사의 서재」).
+        const purpose = (spec.zones ?? []).map((z) => `${z.kind} ${z.purpose ?? ""}`).join(" ") || spec.name;
+        const parts = roomParts(run.ctx.project, purpose);
+        return text({ ok: false, notFailure: true, summary: `아직 짓지 않았다(실패 아님) — 「${spec.name}」의 방은 네가 설계한다. 아래 parts(기물 이름표·바닥/벽면·깔개·견본 배치)를 보고 방마다 zones[].design 을 채워 make_place 를 바로 다시 부르면 지어진다: shape(rect·L·T·bay)·w×h(바닥 칸)·door·floor·wall·groups[{name, at(north·south·west·east·center·nw·ne·sw·se), pos, rug, items[{id, dx, dy, count}]}]. 무엇을 몇 개 어디에 놓을지는 네가 정하고 함수는 고친 것만 알린다. 견본은 참고 — 베끼지 않는다.`,
+          ...(parts ? { parts: { floors: parts.floors, walls: parts.walls, rugs: parts.rugs, items: parts.items, references: parts.references } } : {}) });
       }
       const builder = builderFor(spec);
       if (!builder) {
