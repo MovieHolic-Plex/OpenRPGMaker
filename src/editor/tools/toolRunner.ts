@@ -21,6 +21,7 @@ import { enforceGenreLockVisuals, genreLockVisualCatalogFilter, GenreLockVisualE
 import { isMonsterOnlyTool, monsterAssetsAllowed, monsterToolArgViolation, monsterToolRejection, withMonsterTurn } from "@/project/genreLockMonsterAssets";
 import { assertMonsterAssetLock, monsterAssetCatalogFilters, MonsterAssetLockError } from "@/project/genreLockMonsterAssetsDiff";
 import { withNpcGraphicCatalogFilter } from "@/assets/charsetQuery";
+import { PeopleChipLockError, settlePeopleChipLock } from "@/project/peopleChipLock";
 import { isRetiredEasyRpgTileset, LIBRARY_IMPORT_TOOLS, retiredEasyRpgMessage } from "@/project/retiredEasyRpgTilesets";
 import { guardWholeRecordRewrite } from "./assistantRewriteGuard";
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
@@ -233,6 +234,23 @@ function rejectMonsterAssets(ctx: ToolContext, tool: ToolDefinition, before: Pro
     });
   } catch (cause) {
     if (cause instanceof MonsterAssetLockError) throw new ToolError(cause.message, { code: "genre-lock" });
+    throw cause;
+  }
+}
+
+/**
+ * 사람 칩 계열 잠금: 조수·도구가 새로 놓은 사람 칩이 이 프로젝트의 사람 칩 계열 밖이면 거부한다. 계열이 아직 없으면 이번에 놓인 사람 칩으로 잠근다 — 판정은 settlePeopleChipLock 하나.
+ * 통째로 들이는 도구(placesCuratedCast·allowsTilesetChange·라이브러리 가져오기)는 막지 않고 개수만 경고한다. 장르 잠금이 캐릭터 칩을 맡은 프로젝트·손 편집(ctx.assistantRun 아님)은 건드리지 않는다.
+ */
+function rejectPeopleChips(ctx: ToolContext, tool: ToolDefinition, before: Project, draft: Project): string[] {
+  if (!ctx.assistantRun) return [];
+  try {
+    return settlePeopleChipLock(before, draft, {
+      toolName: tool.name,
+      lenient: tool.placesCuratedCast === true || tool.allowsTilesetChange === true || LIBRARY_IMPORT_TOOLS.has(tool.name),
+    });
+  } catch (cause) {
+    if (cause instanceof PeopleChipLockError) throw new ToolError(cause.message, { code: "genre-lock" });
     throw cause;
   }
 }
@@ -571,6 +589,8 @@ export function runToolDefinition(
       if (ctx.assistantRun) rejectUnavailablePackStills(before, draft);
       const monsterWarnings = rejectMonsterAssets(ctx, tool, before, draft);
       if (monsterWarnings.length) exec = { ...exec, warnings: [...monsterWarnings, ...(exec.warnings ?? [])] };
+      const peopleWarnings = rejectPeopleChips(ctx, tool, before, draft);
+      if (peopleWarnings.length) exec = { ...exec, warnings: [...peopleWarnings, ...(exec.warnings ?? [])] };
     }
     if (!tool.allowsTilesetChange) {
       rejectUploadedTilesetSwap(before, draft, name, normalizedArgs);

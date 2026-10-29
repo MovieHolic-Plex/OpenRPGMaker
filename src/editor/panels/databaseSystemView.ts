@@ -58,6 +58,7 @@ import { disableGenreLock, genreLockAllowedCharsetLabels, genreLockReport } from
 import { enableGenreLockSettled } from "@/project/genreLockCharsets";
 import { genreLockVisualSummary } from "@/project/genreLockVisuals";
 import { monsterAssetStatus } from "@/project/genreLockMonsterAssets";
+import { PEOPLE_CHIP_FAMILIES, isPeopleChipFamily, peopleChipFamilyLabel, peopleChipLockStatus } from "@/project/peopleChipLock";
 import { DEFAULT_ROLLING_HP_PER_SECOND, normalizeRollingHpSpeed, ROLLING_HP_SPEED_LIMITS } from "@/player/rollingHp";
 import type {
   ActionCombatHudConfig,
@@ -495,6 +496,7 @@ function systemSectionNodes(
           });
         }),
         genreLockField(project, rerender),
+        peopleChipLockField(project, rerender),
         checkboxField("몬스터 파티 전투", "db-field-system-monster-battle-party", project.system.monsterBattleParty === true, (checked) => {
           updateSystem((draft) => {
             if (checked) draft.system.monsterBattleParty = true;
@@ -1926,6 +1928,34 @@ function genreLockField(project: ReturnType<typeof store.getCurrent>, rerender: 
       : "몬스터 자산: 몬스터 수집 게임이 아니라서 AI 조수가 포켓몬식 칩셋·캐릭터 칩·전투 그림을 새로 고르지 않습니다. 이미 있는 것과 손 편집은 막지 않습니다.",
   });
   return el("div", { class: "db-genre-lock-field", children: [checkbox, badge, monsterBadge] });
+}
+
+/**
+ * 사람 칩 계열 잠금(project/peopleChipLock.ts). 비우면 「자동」 — AI 조수가 처음 새로 놓는 사람 칩의 계열로 잠긴다.
+ * 조수만 막는다. 여기서 바꿔도 이미 놓인 칩은 그대로이고 다른 계열 칩 수만 알린다.
+ */
+function peopleChipLockField(project: Project, rerender: () => void): HTMLElement {
+  const status = peopleChipLockStatus(project);
+  const row = selectField("사람 칩 계열", "db-field-system-people-chip-lock", status.family ?? "",
+    PEOPLE_CHIP_FAMILIES.map((family) => ({ id: family, name: peopleChipFamilyLabel(family) })), (value) => {
+      updateSystem((draft) => {
+        if (isPeopleChipFamily(value)) draft.system.peopleChipLock = { family: value, by: "user" };
+        else delete draft.system.peopleChipLock;
+      }, "system:people-chip-lock");
+      rerender();
+    });
+  const auto = row.querySelector<HTMLOptionElement>("select option[value='']");
+  if (auto) auto.textContent = "자동 (첫 사람 칩이 정함)";
+  const counts = Object.entries(status.counts).map(([family, n]) => `${peopleChipFamilyLabel(family as Parameters<typeof peopleChipFamilyLabel>[0])} ${n}`).join(" · ");
+  const badge = el("p", {
+    class: "db-system-resolution-help",
+    dataset: { testid: "db-people-chip-lock-badge" },
+    text: status.genreLocked ? "장르 잠금이 캐릭터 칩을 정하고 있어 이 설정은 쉬고 있습니다."
+      : !status.family ? `아직 안 정해짐 — AI 조수가 처음 새로 놓는 사람 칩의 계열로 잠깁니다. 그림체가 다른 사람 칩이 한 게임에 섞이지 않게 합니다.${counts ? ` (지금 맵·시작 파티: ${counts})` : ""}`
+      : `${status.by === "user" ? "직접 고름" : "첫 사람 칩으로 정해짐"} — AI 조수는 주인공·NPC·동료에 ${peopleChipFamilyLabel(status.family)}만 씁니다. 몬스터·동물·기물 칩은 상관없고, 손 편집은 막지 않습니다.`
+        + (status.outside ? ` 다른 계열 사람 칩 ${status.outside}곳이 맵·시작 파티에 있습니다.` : ""),
+  });
+  return el("div", { class: "db-people-chip-lock-field", children: [row, badge] });
 }
 
 /** 원작식 복종 레벨 상한(몬스터 캠페인이 있을 때만). 켜면 기본 상한과 배지당 증가폭으로 일차 사다리를 만든다 — 세부 사다리는 조수 도구(configure_monster_campaign). */
