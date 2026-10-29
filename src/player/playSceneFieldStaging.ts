@@ -25,6 +25,7 @@ import { mapTileSize } from "@/project/tileGeometry";
 import { store } from "@/project/store";
 import { runtimeEventViewById, runtimeEventViewsForMap } from "@/project/runtimeEventState";
 import { objectiveTargetViews } from "@/player/objectiveTarget";
+import { routeDetours, routeField, routeWaypoint } from "@/player/objectiveRoute";
 import { currentObjectiveText } from "@/player/zoneFeedback";
 import { spentPage, storyPerson, STORY_PERSON_RADIUS } from "@/player/examineTargets";
 
@@ -590,6 +591,9 @@ type ObjectiveMarkerState = {
   mapId: string; text: string | null; parts: Map<string, ObjectiveMarkerParts>; nextCheck: number;
   /** 대상 칸 중심(월드 좌표) — 화면 밖이면 가장자리 화살표가 가리킨다. 늘 빛나는 표지가 붙은 대상도 포함. */
   points: { x: number; y: number }[];
+  /** 대상 칸(points 와 같은 순서)과 그 칸들까지의 걸음 수 지도(objectiveRoute) — 화살표가 걸어갈 길을 따라 가리킨다. */
+  tiles: { x: number; y: number }[];
+  route: { key: string; field: Int32Array } | null;
   arrow: Phaser.GameObjects.Image | null;
 };
 const objectiveMarkerStates = new WeakMap<PlaySceneContext, ObjectiveMarkerState>();
@@ -607,7 +611,7 @@ function syncObjectiveMarkers(scene: PlaySceneContext, now: number): void {
   if (!state || state.mapId !== map.id) {
     for (const parts of state?.parts.values() ?? []) destroyObjectiveMarker(parts);
     state?.arrow?.destroy();
-    state = { mapId: map.id, text: null, parts: new Map(), nextCheck: 0, points: [], arrow: null };
+    state = { mapId: map.id, text: null, parts: new Map(), nextCheck: 0, points: [], tiles: [], route: null, arrow: null };
     objectiveMarkerStates.set(scene, state);
   }
   if (now >= state.nextCheck) {
@@ -619,6 +623,12 @@ function syncObjectiveMarkers(scene: PlaySceneContext, now: number): void {
     const all = objectiveTargetViews(project, map, views, text);
     const size0 = mapTileSize(map);
     state.points = all.map((view) => ({ x: (view.x + 0.5) * size0, y: (view.y + 0.5) * size0 }));
+    state.tiles = all.map((view) => ({ x: view.x, y: view.y }));
+    const routeKey = state.tiles.map((t) => `${t.x},${t.y}`).join(";");
+    if (!routeKey) state.route = null;
+    else if (state.route?.key !== routeKey) {
+      try { state.route = { key: routeKey, field: routeField(project, map, state.tiles) }; } catch { state.route = null; }
+    }
     // 늘 빛나는 표지가 이미 있는 대상은 겹쳐 그리지 않는다.
     const targets = all.filter((view) => !view.page?.glow);
     const keep = new Set(targets.map((view) => view.event.id));
@@ -663,7 +673,15 @@ function syncObjectiveArrow(scene: PlaySceneContext, state: ObjectiveMarkerState
   const margin = size * 0.9;
   const px = scene.player?.x ?? view.centerX, py = scene.player?.y ?? view.centerY;
   const inside = (p: { x: number; y: number }) => p.x >= view.x && p.x <= view.right && p.y >= view.y && p.y <= view.bottom;
-  const target = state.points.some(inside) ? undefined
+  // 걸어갈 길(objectiveRoute): 주인공 칸에서 대상까지 걸음 수가 줄어드는 쪽 몇 칸 앞을 가리킨다. 길이 직선보다 크게 돌아가면
+  // 대상이 화면 안에 보여도 화살표를 띄운다 — 보이는 쪽으로 곧장 가면 막다른 벽이다(2026-10-29 vm4 terra jrpg 동굴).
+  const here = { x: scene.tileX ?? Math.floor(px / size), y: scene.tileY ?? Math.floor(py / size) };
+  const way = state.route ? routeWaypoint(state.route.field, map, here) : undefined;
+  const nearestTile = way ? state.tiles.reduce<{ x: number; y: number } | undefined>((best, t) =>
+    !best || Math.abs(t.x - here.x) + Math.abs(t.y - here.y) < Math.abs(best.x - here.x) + Math.abs(best.y - here.y) ? t : best, undefined) : undefined;
+  const detour = Boolean(way && nearestTile && way.steps > 1 && routeDetours(way.steps, here, nearestTile));
+  const target = state.points.some(inside) && !detour ? undefined
+    : way && way.steps > 0 ? { x: (way.cell.x + 0.5) * size, y: (way.cell.y + 0.5) * size }
     : [...state.points].sort((a, b) => Math.hypot(a.x - px, a.y - py) - Math.hypot(b.x - px, b.y - py))[0];
   if (!target || view.width <= margin * 2 || view.height <= margin * 2) { state.arrow?.setVisible(false); return; }
   if (!state.arrow) {

@@ -18,6 +18,7 @@ import { applyBlueprintOpening } from "@/editor/tools/blueprintOpening";
 import { renameBareBlueprintPlaces } from "./blankStart";
 import { alignCodeClues, humanizeBlueprintTokens } from "./codeClues";
 import { settleFurnitureSpots } from "./examineSpot";
+import { humanizeMapNames } from "./mapNames";
 
 /** 청사진 자동 짓기(한 실행에 한 번씩 — 세션 깃발). 무엇을 지었는지 조수에게 줄 글(없으면 undefined). */
 export async function runFinishAutoBuild(env: PiAssistantV2Env, session: V2Session): Promise<string | undefined> {
@@ -102,6 +103,9 @@ export async function runFinishAutoBuild(env: PiAssistantV2Env, session: V2Sessi
     } catch { /* 조사 칸 옮기기 실패는 끝맺음을 깨지 않는다 */ }
     try { assembled.push(...orderStepBattlesIn(env.ctx.project)); }
     catch (error) { env.emit({ type: "execution_status", name: "v2.assembly", ok: false, summary: `단계 순서 보호를 하지 못했다: ${error instanceof Error ? error.message : String(error)}` }); }
+    // 영문 id 맵 이름(「dungeon_cave」)을 뜻 낱말로 — 아래 목표 꼬리·런타임 출구 라벨이 그 이름을 그대로 보여 준다(2026-10-29 vm4 flash jrpg).
+    try { const renamed = humanizeMapNames(env.ctx.project); if (renamed.length) assembled.push(`맵 이름 ${renamed.join(" · ")}`); }
+    catch { /* 이름 바꾸기 실패는 끝맺음을 깨지 않는다 */ }
     // 목표 꼬리 「(<맵> 입구: 방위)」를 마지막 연결로 다시 쓴다 — 목표가 걸리는 자리에서 본 첫 출구 방위·그 뒤 대상(2026-10-29 vm2 jrpg 길 못 찾음).
     try { const n = refreshObjectiveRoutes(env.ctx.project); if (n) assembled.push(`목표 길 안내 ${n}곳`); }
     catch (error) { env.emit({ type: "execution_status", name: "v2.assembly", ok: false, summary: `목표 길 안내를 다시 쓰지 못했다: ${error instanceof Error ? error.message : String(error)}` }); }

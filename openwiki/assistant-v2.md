@@ -176,6 +176,12 @@ v1 의 `script_cutscene` 비트로 옮긴다(`events.ts`).
 - **가장자리 출구까지 길 잇기**(`edgeExitRoads.roadToEdgeExits`, 끝맺음 `clearLanes`, vm3 argon jrpg blocker «마을 밖으로 나가는 길이 안 보임»): 길 오토타일이
   6칸 넘게 깔린 맵에서 다른 맵으로 가는 이동 이벤트가 가장자리 칸에 있고 길이 아니면, 걸을 수 있는 칸으로 가장 가까운 길 칸까지(꺾임 덤 0.5) 24칸 안이면
   그 맵에서 가장 많이 쓴 길 재료로 폭 1 을 칠한다(`fill_region` path, `_exactCells`). 런타임 목적지 글자는 맵 안으로 밀어(가장자리에서 잘리지 않게) 맨 윗줄 출구는 칸 아래에 둔다.
+- **영문 id 맵 이름 → 뜻 낱말**(`mapNames.humanizeMapNames`, 끝맺음 조립 단계에서 `refreshObjectiveRoutes` 직전, vm4 flash jrpg «길 안내 없음·내부 식별자 노출»):
+  맵 이름이 `beodeul_city`·`dungeon_cave` 같은 소문자 영문 id 꼴이면 낱말 사전으로(뒤 낱말 우선: cave→동굴, city/town/village/beodeul→마을, castle→성 …) 바꾸고,
+  겹치면 「동굴 2」. 청사진 `steps[].place` 와 이벤트 명령 글(키가 `…id` 인 칸 제외)의 같은 낱말도 함께 바꾼다 — 목표 꼬리 「(동굴 입구: 북쪽 → …)」·메뉴 위치·출구 글자가 그 이름을 쓴다.
+- **목표 화살표는 걸어갈 길을 따라**(`src/player/objectiveRoute.ts`, `syncObjectiveArrow`, vm4 terra jrpg «동굴 안 (11,10) 위·오른쪽이 막혀 마왕 못 만남»):
+  목표 대상 칸에서 거꾸로 잰 걸음 수 지도(타일 통행 `canMove`, 대상 칸은 옆에 서면 닿음)를 대상이 바뀔 때 한 번 만들고, 화살표는 주인공 칸에서 걸음 수가 줄어드는 쪽 3걸음 앞 칸을 가리킨다(5걸음이면 첫 꺾임이 묻혀 거의 직선과 같았다).
+  걸음 수가 직선(맨해튼)×1.5+4 보다 크면 대상이 화면 안에 보여도 화살표를 띄운다. 지도에 없으면(이벤트로만 막힌 길 등) 예전처럼 직선. 확인 시나리오 `wayfind`(`WAYFIND` 환경 변수).
 - **걷는 NPC 말 걸기**(`playSceneMovement.findWalkerLeaving`): 걸음을 떼면 논리 칸이 도착 칸으로 먼저 넘어가므로, 정면 칸이 걸어 나가는 중인 출발 칸이거나
   `VACATED_GRACE_MS`(300ms) 안에 떠난 칸이어도 그 NPC 에게 말을 건다.
 
