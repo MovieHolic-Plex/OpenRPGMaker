@@ -25,6 +25,22 @@ import { battleSites, healingSources } from "./combatChecks";
 type Obj = Record<string, unknown>;
 export interface ShipBlocker { readonly id: string; readonly message: string; readonly evidence: string }
 
+/**
+ * 조건이 맞아야만 옮기는 출구인데, 조건이 안 맞을 때 켜지는 페이지(조건 없는 페이지)에 대사가 없다 — 걸어 들어가도 아무 말 없이 막힌다.
+ * 2026-10-29 감독 지시(vm3 flash 추리 BLOCKER 「출구에서 막혔는데 안내 문구가 전혀 없다」): 조건부 출구는 막힐 때 이유 한 줄이 필수다.
+ */
+export function silentLockedExits(project: Project): { mapId: string; eventId: string; x: number; y: number }[] {
+  const out: { mapId: string; eventId: string; x: number; y: number }[] = [];
+  for (const map of Object.values(project.maps)) for (const ev of map.events ?? []) {
+    const pages = (ev.pages ?? []) as unknown as Obj[];
+    const moving = pages.filter((p) => JSON.stringify(p.commands ?? []).includes('"kind":"transfer"'));
+    if (!moving.length || moving.some((p) => !(p.conditions as unknown[] | undefined)?.length)) continue;
+    const told = pages.some((p) => !(p.conditions as unknown[] | undefined)?.length && JSON.stringify(p.commands ?? []).includes('"kind":"text"'));
+    if (!told) out.push({ mapId: map.id, eventId: ev.id, x: ev.x, y: ev.y });
+  }
+  return out;
+}
+
 /** 반짝임만 있고 아무 일도 안 하는 페이지 — 조사해도 대사·아이템이 없어 판정자가 「반짝이는 곳을 눌러도 무반응」 이라 막혔다(2026-10-29 vm3 terra jrpg 판정). 숨을 곳(interaction)은 뺀다. */
 export function emptySparkles(project: Project): { mapId: string; eventId: string; x: number; y: number; page: number }[] {
   const out: { mapId: string; eventId: string; x: number; y: number; page: number }[] = [];
@@ -511,6 +527,7 @@ export function shipBlockers(project: Project, task: string): ShipBlocker[] {
   const spoilers = titleSpoilers(project);
   if (!wantsWholeGame(task)) return spoilers;
   // 엔딩 길의 열쇠·금고·문·엔딩 이벤트에 걸어 닿지 못하면 게임을 끝낼 수 없다(J75) — 출하 차단.
+  const silentExits = silentLockedExits(project).slice(0, 3).map((hit): ShipBlocker => ({ id: "locked-exit-silent", message: `「${project.maps[hit.mapId]?.name ?? hit.mapId}」 (${hit.x},${hit.y}) 출구는 조건이 맞아야 옮기는데 조건이 안 맞을 때 아무 말이 없다 — 막힐 때 이유 한 줄(무엇이 있어야·먼저 무엇을)을 둔다.`, evidence: `${hit.mapId} ${hit.eventId}` }));
   const strays = strayStepCopies(project).slice(0, 3).map((hit): ShipBlocker => ({ id: "blueprint-stray-copy", message: `청사진 ${hit.step} 이벤트의 사본이 「${project.maps[hit.mapId]?.name ?? hit.mapId}」 (${hit.x},${hit.y}) 에도 있어 싸우거나 엔딩을 부른다 — 「${project.maps[hit.canonicalMapId]?.name ?? hit.canonicalMapId}」 를 건너뛰는 지름길이다.`, evidence: `${hit.mapId} ${hit.eventId}` }));
   const sparkles = emptySparkles(project).slice(0, 4).map((hit): ShipBlocker => ({ id: "empty-sparkle", message: `「${project.maps[hit.mapId]?.name ?? hit.mapId}」 ${hit.eventId}(${hit.x},${hit.y}) 페이지 ${hit.page + 1} 이 반짝이는데 조사해도 아무 일도 없다 — 반짝임을 떼거나 대사 한 줄을 넣는다.`, evidence: `${hit.mapId} ${hit.eventId} p${hit.page}` }));
   const selfLoops = selfLoopTransfers(project).slice(0, 4).map((loop): ShipBlocker => ({ id: "transfer-self-loop", message: `「${project.maps[loop.mapId]?.name ?? loop.mapId}」 ${loop.eventId}(${loop.x},${loop.y}) 이 같은 맵 바로 옆 칸 (${loop.to.x},${loop.to.y}) 으로 옮긴다 — 제자리로 돌아올 뿐이라 고장 난 문처럼 보인다. 옮기기를 지우거나 다른 맵·먼 칸으로 잇는다.`, evidence: `${loop.mapId} ${loop.eventId} → (${loop.to.x},${loop.to.y})` }));
@@ -562,7 +579,7 @@ export function shipBlockers(project: Project, task: string): ShipBlocker[] {
     message: `전투가 있는데(${sites.slice(0, 3).join(", ")}${sites.length > 3 ? ` 외 ${sites.length - 3}곳` : ""}) 여관·회복약·회복 기술·상점 회복약이 하나도 없어 깎인 HP 가 돌아오지 않는다 — build_blueprint_path 를 다시 부르면 시작 맵에 회복의 샘(전원 회복·저장)과 시작 회복약 3개를 넣고 목표 줄이 샘 자리를 가리킨다. 직접 고치려면 place_savepoint{mapId:시작 맵, heal:true} 와 set_session_start{inventory:{item_potion:3}}.`,
     evidence: `battleSites=${sites.length} healingSources=0`,
   }] : [];
-  return [...blueprint, ...noHealing, ...hidden, ...unlit, ...invisible, ...offArt, ...repeats, ...tints, ...objectives, ...romance, ...editorDefaultsLeft(project), ...endingClosureProblems(project), ...endingConditionsUnset(project), ...openingWithoutPlace(project), ...offPremiseArt(project, task), ...defaultPlaceLeaks(project, task), ...titleMismatch(project, task), ...assemblyTimeMismatches(project).map((m): ShipBlocker => ({ id: "assembly-time-mismatch", message: m.message, evidence: m.evidence })), ...requestedFeatureGaps(project, task), ...chaserWithoutHiding(project), ...selfLoops, ...strays, ...sparkles, ...unreachable, ...spoilers];
+  return [...blueprint, ...noHealing, ...hidden, ...unlit, ...invisible, ...offArt, ...repeats, ...tints, ...objectives, ...romance, ...editorDefaultsLeft(project), ...endingClosureProblems(project), ...endingConditionsUnset(project), ...openingWithoutPlace(project), ...offPremiseArt(project, task), ...defaultPlaceLeaks(project, task), ...titleMismatch(project, task), ...assemblyTimeMismatches(project).map((m): ShipBlocker => ({ id: "assembly-time-mismatch", message: m.message, evidence: m.evidence })), ...requestedFeatureGaps(project, task), ...chaserWithoutHiding(project), ...selfLoops, ...silentExits, ...strays, ...sparkles, ...unreachable, ...spoilers];
 }
 
 /** 게임이 «아직 안 지어졌다»는 신호 — 뼈대 자리표시만 남았거나 엔딩이 없다(편집기 기본 HUD·창 같은 마감 항목은 여기서 보지 않는다). */

@@ -18,7 +18,7 @@ import { createBlankProject } from "@/project/defaults";
 import { blueprintPlaceName, pickTitleArtForStory, blueprintPremiseText, blueprintStoryText } from "@/project/blueprintAssembly";
 import { sharedFaceForCharset } from "@/project/sharedCharacterFaceResolver";
 import type { Project } from "@/project/types";
-import { defaultPlaceLeaks, editorDefaultsLeft, endingClosureProblems, endingConditionsUnset, emptySparkles, selfLoopTransfers, writtenStateIds } from "./shipChecks";
+import { defaultPlaceLeaks, editorDefaultsLeft, endingClosureProblems, endingConditionsUnset, emptySparkles, selfLoopTransfers, silentLockedExits, writtenStateIds } from "./shipChecks";
 import { strayStepCopies } from "./blueprint";
 import { doorCellBlocked, offArtEntrances, planObjective, repeatingStartObjectives, staleMilestoneTargets } from "./discoverability";
 import { normalizeGameOverSettings } from "@/project/cinematicSettings";
@@ -50,6 +50,7 @@ export function applyShipDefaults(project: Project, task = project.gameBlueprint
   if (selfLoopTransfers(project).length) applied.push(...dropSelfLoopTransfers(project));
   if (emptySparkles(project).length) applied.push(...dropEmptySparkles(project));
   if (strayStepCopies(project).length) applied.push(...dropStrayStepCopies(project));
+  if (silentLockedExits(project).length) applied.push(...explainLockedExits(project));
   applied.push(...forkStackedEndingCalls(project));
   if (endingClosureProblems(project).length) applied.push(...fillEndingClosure(project));
   // 기본 지명 걷어내기는 엔딩 글을 채운 뒤에 — 채운 글(청사진 느낌 칸)에도 그 지명이 들 수 있다.
@@ -633,6 +634,48 @@ function dropStrayStepCopies(project: Project): string[] {
     const ev = map.events.find((e) => e.id === hit.eventId);
     map.events = map.events.filter((e) => e.id !== hit.eventId);
     notes.push(`단계 사본 지움: ${map.name ?? map.id} 「${ev?.name ?? hit.eventId}」(${hit.x},${hit.y}) — 정본은 ${project.maps[hit.canonicalMapId]?.name ?? hit.canonicalMapId}`);
+  }
+  return notes;
+}
+
+const withJosa = (word: string, batchim: string, plain: string): string => {
+  const code = (word.trim().at(-1) ?? "").charCodeAt(0) - 0xac00;
+  return `${word}${code >= 0 && code <= 11171 ? (code % 28 ? batchim : plain) : `${batchim}(${plain})`}`;
+};
+/** 조건부 출구에 «막힐 때 이유 한 줄» 페이지를 맨 앞에 넣는다(silentLockedExits). 이유는 첫 조건에서 — 아이템이면 그 이름, 스위치면 켜는 이벤트 이름. */
+function explainLockedExits(project: Project): string[] {
+  const notes: string[] = [];
+  const sets = (value: unknown, switchId: string): boolean => {
+    if (Array.isArray(value)) return value.some((v) => sets(v, switchId));
+    if (!value || typeof value !== "object") return false;
+    const r = value as Record<string, unknown>;
+    if (r.kind === "setSwitch" && r.switchId === switchId && r.value !== false) return true;
+    return Object.values(r).some((v) => sets(v, switchId));
+  };
+  const setterName = (switchId: string): string | undefined => {
+    for (const map of Object.values(project.maps)) for (const ev of map.events ?? []) {
+      if (ev.name && !/^ev_objective/u.test(ev.id) && sets(ev.pages ?? [], switchId)) return ev.name;
+    }
+    return undefined;
+  };
+  for (const hit of silentLockedExits(project)) {
+    const map = project.maps[hit.mapId];
+    const ev = map?.events.find((e) => e.id === hit.eventId);
+    if (!map || !ev) continue;
+    const pages = ev.pages as unknown as Record<string, unknown>[];
+    const lockedPage = pages.find((p) => JSON.stringify(p.commands ?? []).includes('"kind":"transfer"'))!;
+    const cond = ((lockedPage.conditions as Record<string, unknown>[] | undefined) ?? [])[0] ?? {};
+    let line = "아직 이쪽으로는 갈 수 없다.";
+    if (cond.kind === "item" && typeof cond.itemId === "string") {
+      const item = project.database.items.find((i) => i.id === cond.itemId);
+      if (item?.name) line = `${withJosa(item.name, "이", "가")} 있어야 지나갈 수 있을 것 같다.`;
+    } else if (cond.kind === "switch" && typeof cond.switchId === "string") {
+      const name = setterName(cond.switchId);
+      if (name) line = `먼저 「${name}」${withJosa(name, "을", "를").slice(name.length)} 마쳐야 지나갈 수 있을 것 같다.`;
+    }
+    const page = { ...structuredClone(lockedPage), conditions: [], commands: [{ kind: "text", body: line }] };
+    (ev as { pages: unknown[] }).pages = [page, ...pages];
+    notes.push(`조건부 출구에 막힘 안내: ${map.name ?? map.id} (${ev.x},${ev.y}) 「${line}」`);
   }
   return notes;
 }

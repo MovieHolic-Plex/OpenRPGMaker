@@ -115,7 +115,8 @@ export function objectiveTargetViews(project: Pick<Project, "maps">, map: GameMa
     }
     // 「(숲 입구: 북동쪽 → 숲 통과)」·「(마을 입구: 남쪽 → 마왕의 동굴 · 마왕 처치)」 — 「→」 뒤는 그 뒤에 찾을 대상이다.
     // 그 맵에 들어선 뒤(입구 맵 = 지금 맵)에는 이 맵의 그 이벤트를, 아직 가는 길이면 목적지 맵으로 가는 첫 출구를 가리킨다.
-    const after = tailMatch?.[2]?.split("→")[1];
+    // 「(로비 입구: 남쪽 → 로비에서 서쪽 → 뒤뜰 · 단서 발견)」 — 거쳐 가는 맵의 방위 마디가 낄 수 있어 첫 「→」 뒤를 모두 본다(뒤 마디가 먼저).
+    const after = tailMatch?.[2]?.split("→").slice(1).join("·");
     if (after) {
       const parts = after.split("·").map((part) => part.trim()).filter(Boolean);
       for (const part of [...parts].reverse()) {

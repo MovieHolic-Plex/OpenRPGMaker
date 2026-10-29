@@ -511,7 +511,29 @@ export function whereHint(project: Project, fromMapId: string, target: { mapId: 
   const dir = `${dir0}${siblingOrdinal(project, from, near ?? gates[0]!, hop.id)}`;
   const label = target.label?.trim();
   if (hop.id === to.id) return `${to.name ?? to.id} 입구: ${dir}${label ? ` → ${label}` : ""}`;
-  return `${hop.name ?? hop.id} 입구: ${dir} → ${to.name ?? to.id}${label ? ` · ${label}` : ""}`;
+  // 거쳐 가는 맵 안에서 다음 문의 방위도 적는다 — 그 맵에 들어선 뒤에도 같은 꼬리가 보이므로, 앞 맵의 방위(「남쪽」)만 남으면 거기서도 남쪽으로 간다.
+  // 왜(2026-10-29 vm3 flash 추리 BLOCKER): 객실 목표 「여관 로비 입구: 남쪽 → 여관 뒤뜰」을 로비에서도 따라 로비 남쪽 끝(8,13)에서 막혔다 — 뒤뜰 문은 로비 서쪽(1,7)이었다.
+  const next = route?.[2] ? nextLeg(project, from, near ?? gates[0]!, hop, route[2]) : undefined;
+  return `${hop.name ?? hop.id} 입구: ${dir} → ${next ? `${hop.name ?? hop.id}에서 ${next} → ` : ""}${to.name ?? to.id}${label ? ` · ${label}` : ""}`;
+}
+
+/** from 의 gate 로 hop 에 들어선 자리(옮기기 착지)에서 본, hop 에서 then 으로 가는 문의 방위(+ 나란한 문 가운데 몇째). */
+function nextLeg(project: Project, from: GameMap, gate: Cell, hop: GameMap, then: string): string | undefined {
+  const gates = gatesTo(hop, then);
+  if (!gates.length) return undefined;
+  const event = (from.events ?? []).find((e) => e.x === gate.x && e.y === gate.y);
+  let landing: Cell | undefined;
+  const find = (value: unknown): void => {
+    if (landing || !value || typeof value !== "object") return;
+    if (Array.isArray(value)) { value.forEach(find); return; }
+    const r = value as Record<string, unknown>;
+    if (r.kind === "transfer" && r.mapId === hop.id && typeof r.x === "number" && typeof r.y === "number") { landing = { x: r.x, y: r.y }; return; }
+    Object.values(r).forEach(find);
+  };
+  find(event?.pages ?? []);
+  const near = landing ? [...gates].sort((a, b) => Math.abs(a.x - landing!.x) + Math.abs(a.y - landing!.y) - (Math.abs(b.x - landing!.x) + Math.abs(b.y - landing!.y)))[0]! : gates[0]!;
+  const dir = landing ? bearingWord(landing, near) : mapRegion(hop, near.x, near.y);
+  return `${dir}${siblingOrdinal(project, hop, near, then)}`;
 }
 
 /** 글에 이름이 나온 이벤트(두 글자 이상, 긴 이름 먼저, 목표 맵의 것 먼저). 출입구·자동 실행 목표 이벤트는 뺀다. */
