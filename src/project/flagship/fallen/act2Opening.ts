@@ -245,11 +245,11 @@ function database(project: Project, exec: Exec): void {
   ] as const) ensureSwitch(project, id, name);
   exec(project, "upsert_item", { item: {
     id: FS2_BREAD_ITEM, name: "무거운 납작빵", type: "normalGoods", occasion: "never", consumable: false, price: 0,
-    description: "토마 아저씨네 납작빵. 이것만 유난히 무겁다.\n손으로는 안 쪼개진다. 딱딱한 모서리에 내리쳐 볼까?",
+    description: "토마 아저씨네 납작빵. 이것만 유난히 무겁다.\n손으로는 안 쪼개진다. 침대 모서리에라도 내리쳐 볼까?",
   } });
   exec(project, "upsert_item", { item: {
     id: FS2_UNLIT_LAMP, name: "꺼진 등", type: "special", occasion: "never", consumable: false, price: 0,
-    description: "미레 아주머니가 맡긴 등. 불은 꺼져 있다. 잠긴 집 문고리에 걸어 두면 된다.",
+    description: "미레 아주머니가 맡긴 등. 불은 꺼져 있다.\n잠긴 집 문고리에 걸어 두면 된다.",
   } });
   exec(project, "upsert_item", { item: {
     id: FS2_CELL_KEY_ITEM, name: "빵 속 감방 열쇠", type: "special", occasion: "never", consumable: false, price: 0,
@@ -345,10 +345,10 @@ function cellEvents(map: GameMap): void {
     addEvent(map, id, "짚 침대", at, [
       page(`${id}_p`, "짚 침대", [], [narrate("짚이 눅눅하다. 오래 누울 곳은 아니다.")], { priority: "same" }),
       page(`${id}_bread`, "빵을 쪼갠다", [sw(SW_BREAD), sw(SW_KEY, false)], [
-        narrate("침대 모서리에 납작빵을 내리쳤다."),
+        narrate("침대 모서리에 납작빵을 내리친다."),
         se("cc0-se-osx-wooded-box-open"),
         shake(1, 200),
-        narrate("빠각! 속에서 쇠붙이가 튀어나왔다!"),
+        narrate("빠각! 빵 속에서 쇠붙이가 튀어나온다."),
         item(FS2_BREAD_ITEM, -1),
         item(FS2_CELL_KEY_ITEM, 1),
         setSw(SW_KEY),
@@ -373,11 +373,11 @@ function cellEvents(map: GameMap): void {
       say(ELENA, "…리노가 「꼭꼭 씹어라」 그랬지.\n그 무거운 빵, 침대 모서리에 내리쳐 볼까?"),
     ]),
     page(`${gateId}_key`, "열쇠로 연다", [sw(SW_KEY), sw(SW_CELL_OPEN, false)], [
-      narrate("빵에서 나온 열쇠를 꽂아 돌렸다. 딸깍."),
+      narrate("빵에서 나온 열쇠를 꽂아 돌린다. 딸깍."),
       ...openGate(map, CELL.gate),
       setSw(SW_CELL_OPEN),
       item(FS2_CELL_KEY_ITEM, -1),
-      say(ELENA, "열렸어. 조용히 가자.\n위층은 기사들 막사일 거야."),
+      say(ELENA, "열렸어. 발소리 죽이고 가자.\n위층은 초소 막사야. 야경꾼이 돌 거야."),
     ]),
     page(`${gateId}_open`, "열림", [sw(SW_CELL_OPEN)], [], { priority: "below" }),
   ]);
@@ -399,7 +399,7 @@ function barracks(project: Project, exec: Exec): void {
   exec(project, "author_map_puzzle", {
     mapId: FS2_BARRACKS_ID, presetId: "stealth_guard_patrol", puzzleId: "fs2_barracks", title: "초소 막사",
     solveSwitchId: SW_BARRACKS,
-    hintText: "근무표: 「깃발 종이 울리면 같은 색 초소가 살필 것.\n붉은 종은 붉은 초소, 푸른 종은 푸른 초소.\n등불 비추는 곳으로는 아무도 지나가지 말 것.」",
+    hintText: "(근무표) 「깃발 종이 울리면 같은 색 초소가 살필 것.\n붉은 종은 붉은 초소, 푸른 종은 푸른 초소.\n등불 비추는 곳으로는 아무도 지나가지 말 것.」",
     reward: { itemId: FS2_GEAR_ITEM, itemName: "압수품 꾸러미", itemDescription: "초소에서 빼앗긴 짐. 카엘의 검도, 엘레나의 책도 그대로다." },
     // 들키면 경비 둘과 싸우고(도망 불가) 감방으로 다시 끌려간다 — 실수에 값을 치른다.
     // 들키면 감방으로 끌려간다. 경비와의 전투는 뺐다 — 쉬운 전투가 매번 금화를 줘서, 붙잡히는 게 벌이 아니라 벌이였다(독립 판정: 29번 붙잡혀 696G).
@@ -429,7 +429,7 @@ function barracks(project: Project, exec: Exec): void {
       say(ELENA, "(속삭임) 카엘, 입구 옆에 근무표가 붙어 있어.\n그것부터 읽어 보자."),
       say(ELENA, "(속삭임) 등불 빛 닿는 데는 밟지 마.\n순찰이 등 돌렸을 때 상자 사이로 건너가."),
       // 독립 판정(2회차): 근무표의 「깃발 종」이 벽 깃발 장식으로만 읽혀 끝내 못 찾았다 — 동사(줄을 당긴다)를 짚는다.
-      say(ELENA, "(속삭임) 벽에 걸린 깃발 밑에 종 줄이 있어.\n그 앞에 서서 당기면, 같은 색 초소 경비가\n소리 나는 쪽으로 돌아볼 거야."),
+      say(ELENA, "(속삭임) 벽 깃발 밑 종 줄을 당기면\n같은 색 초소 경비가 소리 쪽을 돌아봐."),
     ], { trigger: { kind: "auto" } }),
   ]);
   ensureSwitch(project, "sw_fs2_barracks_entered", "B1: 막사에 처음 들어섬(규칙 귀띔)");
@@ -448,20 +448,37 @@ function barracks(project: Project, exec: Exec): void {
       // 독립 판정: 2막 내내 회복약이 하나도 없어 쓰러진 동료를 못 일으켰다 — 되찾은 짐 속 약을 챙긴다(한 번).
       say(ELENA, "꾸러미에 약 주머니도 그대로 있어.\n…다행이다. 챙겨 가자."),
       se("cc0-se-orp-inventory-cloth"), item("item_potion", 5), item("item_ether", 2), item("item_panacea", 1),
-      narrate("회복약 ×5 · 마력약 ×2 · 만병통치약 ×1 을 챙겼다.", { context: "system" }),
+      narrate("「회복약」 5개, 「마력약」 2개,\n「만병통치약」 1개를 챙겼다.", { context: "system" }),
       setSw(SW_MEDS),
       se("cc0-se-osx-wooded-box-open"),
-      narrate("사다리를 올라 뚜껑 문을 밀었다."),
+      narrate("사다리를 올라 뚜껑 문을 민다."),
       setSw(SW_OUT),
       transfer(FS2_HUB_NIGHT_ID, HUB_ARRIVE, "down"),
     ]),
     page(`${ladderId}_go2`, "오른다(다시)", [sw(SW_BARRACKS), sw(SW_MEDS)], [
       se("cc0-se-osx-wooded-box-open"),
-      narrate("사다리를 올라 뚜껑 문을 밀었다."),
+      narrate("사다리를 올라 뚜껑 문을 민다."),
       setSw(SW_OUT),
       transfer(FS2_HUB_NIGHT_ID, HUB_ARRIVE, "down"),
     ]),
   ]);
+  // 잠입 퍼즐 도구의 기본 문구를 2막 말투로(2026-10-29 대사 2차: 「과(와)」·「획득」·「퍼즐 해독 보상!」이 화면에 그대로 떴다).
+  const PUZZLE_LINES: Record<string, string> = {
+    "땡그랑— 붉은 깃발 아래 경비병이 종소리 쪽으로 돌아섰다.": "땡그랑. 붉은 깃발 밑 경비병이\n종소리 쪽으로 돌아선다.",
+    "땡그랑— 푸른 깃발 아래 경비병이 종소리 쪽으로 돌아섰다.": "땡그랑. 푸른 깃발 밑 경비병이\n종소리 쪽으로 돌아선다.",
+    "경비병들이 서로를 바라보는 사이 금고 상자를 열었다!": "경비병들이 서로 마주 보는 사이\n금고 상자를 연다.",
+    "퍼즐 해독 보상! 「압수품 꾸러미」과(와) 200G를 획득했다!": "「압수품 꾸러미」와 200G를 되찾았다.",
+    "경비병: 「방금 종이 울렸지…?」": "경비병: 「방금 종 울렸지?」",
+  };
+  const rewrite = (cmds: unknown[] | undefined): void => {
+    for (const c of cmds ?? []) {
+      if (!c || typeof c !== "object") continue;
+      const r = c as Rec;
+      if (r.kind === "text" && typeof r.body === "string" && PUZZLE_LINES[r.body]) r.body = PUZZLE_LINES[r.body];
+      for (const v of Object.values(r)) if (Array.isArray(v)) rewrite(v);
+    }
+  };
+  for (const e of M(project, FS2_BARRACKS_ID).events) for (const pg of e.pages ?? []) rewrite(pg.commands as unknown[]);
   // 막사 아래 계단(남쪽 입구) — 감방으로 돌아가는 길(도착 칸 바로 아래 줄).
   const back = "ev_fs2_barracks_down";
   addEv(project, FS2_BARRACKS_ID, back, "감방으로 내려가는 계단", { x: BARRACKS.entry.x, y: BARRACKS.entry.y + 1 }, [
@@ -490,9 +507,9 @@ function hubNight(project: Project, exec: Exec, hubId: string): void {
     page(`${arriveId}_p`, "광장의 밤", [sw(SW_OUT), sw("sw_fs2_hub_arrived", false)], [
       setSw("sw_fs2_hub_arrived"),
       bgm("cc0-bgm-rtp-mys-002"),
-      narrate("광장은 캄캄하다. 집집마다 등불이 꺼졌다.\n순찰 기사들이 든 손등불만 흔들린다."),
-      say(KAEL, "통금이야. 기사들이 돌고 있어."),
-      say(ELENA, "들키면 끝이야. 그늘로만 가자."),
+      narrate("광장은 캄캄하다. 집집마다 등불이 꺼졌다.\n야경꾼들 손등불만 흔들린다."),
+      say(KAEL, "통금이야. 야경꾼들이 돌고 있어."),
+      say(ELENA, "눈에 띄면 바로 덤벼들 거야.\n그늘로만 가자."),
       // 독립 판정: 뚜껑 문 골목이 캄캄하고 출구가 한 칸이라 40분을 헤맸다 — 나갈 틈과 첫 목적지를 짚는다.
       say(ELENA, "저기, 골목 왼쪽 위에 불빛 새는 틈 보여?\n그리로 빠져서 광장 서쪽 빵집,\n미레 아주머니한테 가자."),
     ], { trigger: { kind: "auto" } }),
@@ -531,47 +548,69 @@ const SW_Q4_DONE = "sw_fs2_q4_lamps_done";
 /** 문고리마다 하나 — 뒤에 0·1·2. */
 const SW_Q4_LAMP = "sw_fs2_q4_lamp_";
 
-/** Q4 — 잠긴 집 문 셋에 「등 걸기」 페이지를 단다. 미레에게서 먼 문부터 서로 멀리 떨어진 셋(순찰 길목을 지나게). */
-function lampQuestDoors(project: Project, hubId: string): void {
+/**
+ * Q4 — 기사들이 등을 떼 간 집 셋(늙은 별지기의 집·약방·리사네 집)에 「등 걸기」 페이지를 단다.
+ * 잠긴 집 문 가운데 주민이 문간에 선 집(빵집·여관)·천문대·대장간을 빼면 꼭 셋이다 — 미레가 집 이름으로 짚고(문 찾기 헤맴 방지, 2026-10-29 결함 목록),
+ * 그 셋은 창이 캄캄하다(다른 집 창엔 불빛이 샌다). 등을 걸면 그 집 창에 불이 든다(병렬 페이지가 맵에 들 때마다 광원을 붙인다).
+ */
+function lampQuestDoors(project: Project, hubId: string): GameEvent[] {
   for (const [id, name] of [[SW_Q4_TAKEN, "B2 Q4: 꺼진 등을 맡았다"], [SW_Q4_DONE, "B2 Q4: 꺼진 등 — 보상"],
     [`${SW_Q4_LAMP}0`, "B2 Q4: 등 1"], [`${SW_Q4_LAMP}1`, "B2 Q4: 등 2"], [`${SW_Q4_LAMP}2`, "B2 Q4: 등 3"]] as const) ensureSwitch(project, id, name);
   const hub = M(project, FS2_HUB_NIGHT_ID);
   const day = M(project, hubId);
-  const leadsIndoors = (e: GameEvent): boolean => {
-    const orig = day.events.find((o) => o.x === e.x && o.y === e.y);
+  const target = (e: GameEvent): GameMap | undefined => {
+    const orig = day.events.find((o) => o.x === e.x && o.y === e.y && JSON.stringify(o.pages ?? []).includes('"kind":"transfer"'));
     const to = JSON.stringify(orig?.pages ?? []).match(/"kind":"transfer","mapId":"([^"]+)"/)?.[1];
-    return !!to && project.maps[to]?.tilesetId === "atlas_biome_interior";
+    return to ? project.maps[to] : undefined;
   };
-  const locked = hub.events.filter((e) => {
+  const near = (e: GameEvent, c: Cell) => Math.abs(e.x - c.x) + Math.abs(e.y - c.y) <= 2;
+  const picked = hub.events.filter((e) => {
     const text = JSON.stringify(e.pages ?? []);
-    // 대장간 문은 B4 가 뒷문 페이지로 다시 쓴다 — 등 걸 문에서 뺀다. 집 문만: 낮 광장에서 그 문이 실내 맵으로 이어지던 것(성문·숲 출구 제외).
-    return text.includes("통금이다. 문이 안에서 굳게 잠겨 있다.") && !text.includes('"kind":"transfer"') && !(e.x === SMITHY.hubDoor.x && e.y === SMITHY.hubDoor.y) && leadsIndoors(e);
-  });
-  const picked: GameEvent[] = [];
-  const far = (e: GameEvent) => Math.min(Math.hypot(e.x - MIRE_AT.x, e.y - MIRE_AT.y) * 0.5, ...picked.map((p) => Math.hypot(e.x - p.x, e.y - p.y)));
-  // 한 집의 문 두세 칸(나란한 문 그림)은 하나로 친다 — 가까운 문(3칸 안)은 고르지 않는다.
-  while (picked.length < 3) {
-    const next = locked.filter((e) => !picked.includes(e) && picked.every((p) => Math.hypot(e.x - p.x, e.y - p.y) > 3))
-      .sort((a, b) => (picked.length ? far(b) - far(a) : Math.hypot(b.x - MIRE_AT.x, b.y - MIRE_AT.y) - Math.hypot(a.x - MIRE_AT.x, a.y - MIRE_AT.y)))[0];
-    if (!next) throw new Error("[fallen-star act2] Q4 등 걸 문이 셋이 안 된다");
-    picked.push(next);
-  }
+    const to = target(e);
+    return text.includes("통금이다. 문이 안에서 굳게 잠겨 있다.") && !text.includes('"kind":"transfer"') && !(e.x === SMITHY.hubDoor.x && e.y === SMITHY.hubDoor.y)
+      && to?.tilesetId === "atlas_biome_interior" && !to.name.includes("천문대") && !near(e, MIRE_AT) && !near(e, MARTA_AT);
+  }).sort((a, b) => a.x - b.x || a.y - b.y);
+  if (picked.length !== 3) throw new Error(`[fallen-star act2] Q4 등 걸 집이 셋이 아니다: ${picked.map((e) => `${e.x},${e.y}`).join(" ")}`);
   picked.forEach((door, i) => {
     const base = door.pages![0]!;
     const lamp = `${SW_Q4_LAMP}${i}`;
     door.pages = [
       ...door.pages!,
       { ...base, id: `${door.id}_q4_hang`, name: "등 걸기", conditions: [sw(SW_Q4_TAKEN)], commands: [
-        narrate("문고리에 꺼진 등을 걸었다."),
+        narrate("문고리에 꺼진 등을 건다."),
         item(FS2_UNLIT_LAMP, -1),
         setSw(lamp),
         se("cc0-se-ors-item-wood-01"),
-        narrate("안에서 누가 가만히 두드린다. 똑, 똑, 똑."),
+        narrate("안에서 누가 가만히 두드린다. 똑, 똑, 똑.\n잠시 뒤, 창 안쪽에 작은 불이 켜진다."),
       ] } as EventPage,
-      { ...base, id: `${door.id}_q4_hung`, name: "등이 걸린 문", conditions: [sw(lamp)], commands: [narrate("문고리에 꺼진 등이 걸려 있다.\n창 안쪽이 아까보다 조금 밝다.")] } as EventPage,
+      { ...base, id: `${door.id}_q4_hung`, name: "등이 걸린 문", conditions: [sw(lamp)], commands: [narrate("문고리에 꺼진 등이 걸려 있다.\n창 안쪽에 촛불 하나가 켜져 있다.")] } as EventPage,
     ];
+    // 등을 건 집 창에 불 — 맵에 들 때마다 광원을 다시 붙인다(맵 조명은 들 때마다 기본값으로 돌아간다).
+    addEv(project, FS2_HUB_NIGHT_ID, `ev_fs2_q4_glow_${i}`, "등 건 집 창불", { x: 1 + i, y: 0 }, [
+      page(`ev_fs2_q4_glow_${i}_off`, "꺼짐", [], [], { priority: "below" }),
+      page(`ev_fs2_q4_glow_${i}_on`, "켜짐", [sw(lamp)], [
+        // 그 집 창(없으면 문 위 틈)에만 작은 불 — 큰 원 하나는 벽 전체가 불난 것처럼 보였다(VQA 1·2차).
+        ...(Q4_WINDOWS[`${door.x},${door.y}`] ?? [{ x: door.x, y: door.y - 1 }]).map((c, k) =>
+          ({ kind: "addLight", source: { id: `q4_glow_${i}_${k}`, at: c, radius: 1, intensity: 0.85, color: "#ffb050", flicker: true } } as unknown as Command)),
+        wait(600000),
+      ], { priority: "below", trigger: { kind: "parallel" } }),
+    ]);
   });
+  return picked;
 }
+
+/** 창마다 새는 불빛(계획 그림 royal_rain) — 통금에도 사람 사는 집 창은 희미하게 샌다. 등을 뺏긴 Q4 세 집은 캄캄하다. */
+const HUB_WINDOWS: Cell[] = [
+  // 창 그림이 있는 칸만(2026-10-29 VQA 2차: 지붕·벽 한가운데 놓인 불빛이 「불난 집」처럼 보였다 — 칸마다 그림을 보고 다시 골랐다).
+  { x: 3, y: 8 }, { x: 13, y: 9 }, { x: 23, y: 11 }, { x: 24, y: 11 }, { x: 24, y: 14 },
+  { x: 3, y: 29 }, { x: 50, y: 29 }, { x: 36, y: 39 }, { x: 39, y: 40 }, { x: 45, y: 39 },
+];
+/** Q4 세 집의 창(없으면 문 위 틈). 문 칸 → 불이 들 칸. */
+const Q4_WINDOWS: Record<string, Cell[]> = {
+  "31,31": [{ x: 30, y: 28 }, { x: 32, y: 28 }],   // 약방 — 창 둘
+  "4,20": [{ x: 4, y: 19 }],                       // 별지기 할아버지 댁 — 창이 없는 벽, 문 위 틈
+  "32,20": [{ x: 32, y: 19 }],                     // 리사네 집 — 벽돌 벽, 문 위 틈
+};
 
 /** 제1막 광장 이벤트의 걷기 칩을 그대로 쓴다(새 사람 그림 금지). */
 function hubChip(project: Project, hubId: string, eventId: string): { textureKey: string; characterIndex: number } {
@@ -600,12 +639,18 @@ function curfewHub(project: Project, exec: Exec, hubId: string): void {
       checkpointOnEntry: true,
     });
   });
-  // 창틈 불빛 — 주민이 선 문간마다 작은 등잔(통금이라 다른 창은 다 어둡다).
+  // 남색 밤(계획 그림 royal_fall·royal_rain) — 검은 막이 아니라 푸른 막. 길은 어둡고, 창마다 불빛이 조금씩 샌다.
+  // 주민이 선 문간마다 작은 등잔. 등을 뺏긴 Q4 세 집 창만 캄캄하다(등을 걸면 켜진다 — lampQuestDoors).
+  // 야경꾼 손등불 — 순찰 2인조를 따라다니는 불빛. 「손등불만 흔들린다」는데 등불이 없었다(VQA 1차).
+  const patrolIds = M(project, FS2_HUB_NIGHT_ID).events.filter((e) => JSON.stringify(e.pages ?? []).includes(`"troopId":"${FS2_PATROL_TROOP}"`)).map((e) => e.id);
+  if (patrolIds.length < PATROLS.length) throw new Error(`[fallen-star act2] 야경꾼 이벤트를 못 찾았다(${patrolIds.length})`);
   exec(project, "set_lighting_volume", {
-    mapId: FS2_HUB_NIGHT_ID, applyMode: "map", ambient: 0.7, color: "#0a1024",
+    mapId: FS2_HUB_NIGHT_ID, applyMode: "map", ambient: 0.78, color: "#0f1a4c",
     sources: [
       { id: "lamp", at: { kind: "player" }, radius: 3, intensity: 0.45, color: "#9fb4ff" },
-      ...[MIRE_AT, TOBY_AT, MARTA_AT].map((c, i) => ({ id: `crack${i}`, at: { x: c.x, y: c.y - 1 }, radius: 2, intensity: 0.7, color: "#ffc070", flicker: true })),
+      ...[MIRE_AT, TOBY_AT, MARTA_AT].map((c, i) => ({ id: `crack${i}`, at: { x: c.x, y: c.y - 1 }, radius: 1.5, intensity: 0.7, color: "#ffc070", flicker: true })),
+      ...HUB_WINDOWS.map((c, i) => ({ id: `window${i}`, at: c, radius: 1, intensity: 0.75, color: "#ffb050" })),
+      ...patrolIds.map((eventId, i) => ({ id: `patrol_lamp${i}`, at: { eventId }, radius: 2.2, intensity: 0.75, color: "#ffc070", flicker: true })),
       // 뚜껑 문 골목의 출구 틈(한 칸) — 불빛이 새어 나와 보이게(엘레나가 도착 때 이 불빛을 짚는다).
       { id: "alley_gap", at: { x: HUB_ALLEY_GAP.x, y: HUB_ALLEY_GAP.y }, radius: 2, intensity: 0.75, color: "#ffc070", flicker: true },
     ],
@@ -616,37 +661,45 @@ function curfewHub(project: Project, exec: Exec, hubId: string): void {
     mapId: FS2_HUB_NIGHT_ID, id: "ev_fs2_night_mire", name: MIRE, x: MIRE_AT.x, y: MIRE_AT.y, movement: "fixed", graphic: mire,
     pages: [
       { name: "문틈", commands: [
-        say(MIRE, "(문틈으로) 쉿— 너희구나.\n리노가 빵은 잘 넣어 줬니?"),
-        say(KAEL, "꼭꼭 씹었어요. 덕분에요."),
-        say(MIRE, "천문대 정문엔 기사들이 지키고 섰어.\n광장 우물로 가렴.\n우물 사다리가 서고 밑까지 이어져."),
+        say(MIRE, "쉿, 너희구나.\n리노가 빵은 잘 넣어 줬니?"),
+        say(KAEL, "네. 이가 나갈 뻔했어요.\n덕분에 나왔어요."),
+        say(MIRE, "천문대 정문은 기사들이 지키고 있어.\n장터 한가운데 우물로 가렴."),
+        say(MIRE, "우물 안쪽 사다리가\n천문대 서고 밑까지 이어져 있단다."),
         setSw(SW_MIRE),
       ] },
       // 잔 일 Q4 「꺼진 등」 — 기사들이 거둬 간 집집 등을 몰래 문고리에 다시 건다(계획 4-6).
       { name: "문틈(다시)·꺼진 등", conditions: [sw(SW_MIRE)], commands: [
-        say(MIRE, "우물이야. 등불 든 기사 앞으론 가지 말고."),
-        say(MIRE, "…하나만 더. 기사들이 집집 등을 다 거둬 갔어.\n통금에 등 거는 집은 반역이래."),
-        say(MIRE, "이 등 셋, 잠긴 집 문고리에 몰래 걸어 줄래?\n불은 안 켜도 돼. 걸려만 있으면 다들 알아들어."),
+        say(MIRE, "우물로 가렴. 등불 든 야경꾼 앞으론 가지 말고."),
+        say(MIRE, "…하나만 더 부탁하자.\n기사들이 집집 등을 죄다 거둬 갔어."),
+        say(MIRE, "이 등 셋, 문고리에 몰래 걸어 줄래?\n불은 안 켜도 돼. 걸려만 있으면 다들 알아들어."),
+        say(MIRE, "서쪽 끝 별지기 할아버지 댁,\n장터 옆 약방, 천문대 곁 리사네 집."),
+        say(MIRE, "셋 다 창이 캄캄할 거야.\n등을 뺏긴 집이거든."),
         { kind: "choices", prompt: "등을 맡을까?", options: [
           { text: "맡는다", branch: [
             se("cc0-se-orp-inventory-cloth"), item(FS2_UNLIT_LAMP, 3),
-            narrate("「꺼진 등」 셋을 받았다.\n순찰 눈을 피해 잠긴 집 문고리에 걸자.", { context: "system" }),
+            narrate("「꺼진 등」 3개를 받았다.\n별지기 할아버지 댁·약방·리사네 집 문고리에 걸자.", { context: "system" }),
             setSw(SW_Q4_TAKEN),
           ] },
           { text: "지금은 못 한다", branch: [say(MIRE, "그래, 너희 몸이 먼저지.")] },
         ] } as unknown as Command,
       ] },
-      { name: "꺼진 등(진행)", conditions: [sw(SW_Q4_TAKEN)], commands: [say(MIRE, "셋 다 걸고 다시 오렴. 기사들 눈에 띄지 말고.")] },
+      { name: "꺼진 등(진행)", conditions: [sw(SW_Q4_TAKEN)], commands: [say(MIRE, "별지기 할아버지 댁, 약방, 리사네 집.\n셋 다 걸고 다시 오렴. 야경꾼 눈에 띄지 말고.")] },
       { name: "꺼진 등(다 걸었다)", conditions: [sw(`${SW_Q4_LAMP}0`), sw(`${SW_Q4_LAMP}1`), sw(`${SW_Q4_LAMP}2`)], commands: [
-        say(MIRE, "…봤어. 창마다 등이 걸렸더라.\n불은 꺼져 있어도, 다들 봤을 거야."),
+        say(MIRE, "…봤어. 캄캄하던 창에 불이 들었더라.\n이제 다들 알 거야."),
         say(MIRE, "이거 가져가. 우리 토마가\n숨겨 둔 반죽으로 구운 거야."),
         se("cc0-se-orp-inventory-cloth"), item("fs_bread_starlight", 2),
-        narrate("「별빛빵」 ×2 를 받았다.", { context: "system" }),
+        narrate("「별빛빵」 2개를 받았다.", { context: "system" }),
         setSw(SW_Q4_DONE),
       ] },
       { name: "꺼진 등(뒤)", conditions: [sw(SW_Q4_DONE)], commands: [say(MIRE, "아침 되면 저 등부터 켤 거야. 꼭 돌아오렴.")] },
     ],
   });
   lampQuestDoors(project, hubId);
+  // 천문대 정문 — 잠긴 집 문과 같은 「통금이다」 문구였다. 미레 말(기사가 지킨다)과 맞춘다.
+  const obsDoorAt = M(project, hubId).events.find((e) => /"kind":"transfer","mapId":"([^"]+)"/.test(JSON.stringify(e.pages ?? []))
+    && project.maps[JSON.stringify(e.pages ?? []).match(/"kind":"transfer","mapId":"([^"]+)"/)![1]!]?.name.includes("천문대"));
+  const obsDoor = obsDoorAt && M(project, FS2_HUB_NIGHT_ID).events.find((e) => e.x === obsDoorAt.x && e.y === obsDoorAt.y && JSON.stringify(e.pages ?? []).includes("통금이다."));
+  if (obsDoor?.pages?.[0]) obsDoor.pages = [{ ...obsDoor.pages[0], commands: [narrate("천문대 정문에 쇠사슬이 감겨 있다.\n문 너머에서 쇠 장화 소리가 오간다.")] } as EventPage];
   exec(project, "place_npc", {
     mapId: FS2_HUB_NIGHT_ID, id: "ev_fs2_night_toby", name: TOBY, x: TOBY_AT.x, y: TOBY_AT.y, movement: "fixed", graphic: toby,
     pages: [
@@ -716,7 +769,9 @@ function observatoryNight(project: Project, exec: Exec, obsId: string): void {
   exec(project, "stamp_object", { objectId: "kit:atlas_biome_interior/hand-interior:ship ladder", mapId: FS2_SHAFT_ID, x: SHAFT.ladder.x, y: SHAFT.ladder.y });
   exec(project, "set_lighting_volume", {
     mapId: FS2_SHAFT_ID, ambient: 0.55, color: "#0b0f1a", applyMode: "map",
-    sources: [{ id: "t1", at: { x: 5, y: 2 }, radius: 4, intensity: 0.85, color: "#ffb860", flicker: true }, { id: "t2", at: { x: 9, y: 2 }, radius: 4, intensity: 0.85, color: "#ffb860", flicker: true }],
+    sources: [{ id: "t1", at: { x: 5, y: 2 }, radius: 4, intensity: 0.85, color: "#ffb860", flicker: true }, { id: "t2", at: { x: 9, y: 2 }, radius: 4, intensity: 0.85, color: "#ffb860", flicker: true },
+      // 승강 발판 — 위(천문대)에서 새는 푸른 별빛. 발판이 어둠에 묻혀 안 보였다(2026-10-29 결함 목록).
+      { id: "lift", at: { x: SHAFT.lift.x + 1, y: SHAFT.lift.y + 1 }, radius: 2.5, intensity: 0.7, color: "#9fb8ff" }],
   });
   const shaft = M(project, FS2_SHAFT_ID);
   (shaft as unknown as Rec).bgm = { mode: "custom", resourceId: "cc0-bgm-rtp-mys-002" };
@@ -746,18 +801,25 @@ function observatoryNight(project: Project, exec: Exec, obsId: string): void {
     ]);
   });
   addEv(project, FS2_SHAFT_ID, "ev_fs2_shaft_ladder", "우물로 오르는 사다리", SHAFT.ladderUse, [
-    page("ev_fs2_shaft_ladder_p", "사다리", [], [narrate("사다리를 타고 우물 위로 올라갔다."), transfer(FS2_HUB_NIGHT_ID, WELL_FRONT, "down")]),
+    page("ev_fs2_shaft_ladder_p", "사다리", [], [narrate("사다리를 타고 우물 위로 올라간다."), transfer(FS2_HUB_NIGHT_ID, WELL_FRONT, "down")]),
   ]);
   // 1막 지하 4층에서 탔던 승강 장치를 이번엔 서고 밑에서 탄다 — 오르면 천문대 서고, 내려오면 다시 여기.
   // 양쪽 다 도착 칸이 발판 위라, 밟으면 타는 방식이면 걸어 나가다 도로 탄다(QA 2026-10-26) — 발판 위에서 조사해야 탄다.
   exec(project, "place_lift", {
-    mapId: FS2_SHAFT_ID, x: SHAFT.lift.x, y: SHAFT.lift.y, direction: "up", distance: 5, trigger: "action", text: "승강 장치에 올라탔다. 위는 천문대 서고다.",
+    mapId: FS2_SHAFT_ID, x: SHAFT.lift.x, y: SHAFT.lift.y, direction: "up", distance: 5, trigger: "action", text: "승강 장치에 올라탄다. 위는 천문대 서고다.",
     toMapId: FS2_OBS_NIGHT_ID, toX: OBS.lift.x, toY: OBS.lift.y, toDirection: "right",
   });
   exec(project, "place_lift", {
     mapId: FS2_OBS_NIGHT_ID, x: OBS.lift.x, y: OBS.lift.y, direction: "down", distance: 5, trigger: "action", text: "승강 장치로 서고 밑으로 내려간다.",
     toMapId: FS2_SHAFT_ID, toX: SHAFT.lift.x, toY: SHAFT.lift.y, toDirection: "down",
   });
+  // 승강구 쪽 발판 그림 — 천문대 쪽 승강 칸(2×2 발판 그림, 아래 겹층)을 그대로 옮겨 찍는다. 그림이 없어 「어디서 타는지」 몰랐다.
+  const obsMap = M(project, FS2_OBS_NIGHT_ID);
+  for (let dy = 0; dy < 2; dy += 1) for (let dx = 0; dx < 2; dx += 1) {
+    const tile = obsMap.lowerOverlayTiles?.[(OBS.lift.y + dy) * obsMap.width + OBS.lift.x + dx] ?? -1;
+    if (tile < 0) throw new Error("[fallen-star act2] 천문대 승강 발판 그림이 없다");
+    exec(project, "paint_tiles", { mapId: FS2_SHAFT_ID, layer: "2", mode: "cells", tile, cells: [{ x: SHAFT.lift.x + dx, y: SHAFT.lift.y + dy }] });
+  }
   // 정문 — 연금 중. 기사가 지킨다.
   addEv(project, FS2_OBS_NIGHT_ID, "ev_fs2_obs_door", "천문대 정문", OBS.door, [
     page("ev_fs2_obs_door_p", "정문", [], [narrate("문 밖에서 쇠 장화 소리가 오간다.\n정문으로는 못 나간다.")], { trigger: { kind: "playerTouch" } }),
@@ -837,7 +899,7 @@ function northGate(project: Project, exec: Exec, smithyId: string): void {
   for (const [id, name] of [[SW_ROHAN, "B4: 로한의 창"], [SW_BRAM, "B4: 브람 — 개구멍"], [SW_B4_ALARM, "B4: 개구멍 — 들켰다"], [SW_B4_EDGE, "B4: 숲 가장자리 — 브람의 고백"]] as const) ensureSwitch(project, id, name);
   exec(project, "upsert_equipment", { equipment: {
     id: FS2_ROHAN_SPEAR, name: "로한의 별쇠 창", slot: "weapon", price: 0, iconResourceId: "cc0-jetrel-bronze-sword", imageResourceId: "cc0-jetrel-bronze-sword",
-    description: "로한이 「네가 쓸 몫」이라며 벼려 둔 창. 공격 40 · 회피 무시.\n자루에 별쇠를 한 줄 박았다. 손잡이 무늬가 새라의 창과 같다.",
+    description: "공격 40 · 상대의 회피를 무시한다.\n로한이 「네가 쓸 몫」으로 벼려 둔 별쇠 창.\n손잡이 무늬가 새라의 창과 같다.",
     statBonuses: { attack: 40, defense: 0, mind: 0, agility: 2 }, equippableActorIds: ["actor_hero", "actor_fs2_sarah"], equippableClassIds: ["class_hero", "class_guardian", "class_fs2_lancer"],
     attackElementIds: ["spear"], effectFlags: { ignoreDodge: true },
   } });
@@ -879,15 +941,19 @@ function northGateEvents(project: Project, exec: Exec, hubId: string): void {
       { kind: "changeEquipment", actorId: "actor_hero", slot: "weapon", equipmentId: FS2_ROHAN_SPEAR } as unknown as Command,
       narrate("카엘이 「로한의 별쇠 창」을 받아 들었다.", { context: "system" }),
       say(KAEL, "아저씨, 이거… 손잡이 무늬가 특이해요."),
-      say(ROHAN, "딸년 창이랑 같은 무늬다.\n그 녀석, 심문회 견습 창기사가 돼서\n지금 북방 관문 요새에 있다."),
-      say(ROHAN, "…그리고 새라를 보거든, 고개 들라고 해라."),
-      say(ROHAN, "북문은 막혔다. 광장 북쪽 성벽 밑에\n브람 영감이 기다린다더군."),
+      say(ROHAN, "딸년 새라 창이랑 같은 무늬다.\n심문회 견습 창기사가 돼서\n지금 북방 관문 요새에 있지."),
+      say(ROHAN, "…그 애를 보거든, 고개 들라고 해라."),
+      say(ROHAN, "북문은 막혔다. 장터 북쪽 성벽 밑에서\n브람이 기다린다더군."),
       setSw(SW_ROHAN),
       cutLabel(),
       cutEnd(),
     ], { graphic: chip(rohanChip.textureKey, rohanChip.characterIndex, "down") }),
     page("ev_fs2_smithy_rohan_after", "로한(뒤)", [sw(SW_ROHAN)], [say(ROHAN, "창끝 내리지 마라. 사람 말고, 앞길을 겨눠.")], { graphic: chip(rohanChip.textureKey, rohanChip.characterIndex, "down") }),
   ]);
+  // 개구멍 앞(38,16)·브람 자리(39,16)를 3×3 덤불 그림(37~39, 16~18)이 통째로 막아 닿을 길이 없었다(2026-10-29 결함 목록, 진행 불가).
+  // 덤불 윗층만 걷어 성벽 밑 풀밭을 연다 — 남쪽(37~38,19)에서 걸어 들어간다. 좌우 사이프러스는 남겨 그늘진 틈으로 보이게.
+  exec(project, "paint_tiles", { mapId: FS2_HUB_NIGHT_ID, layer: "3", mode: "rect", tile: -1, from: { x: 37, y: 16 }, to: { x: 39, y: 18 } });
+  if (!walkSteps(project, M(project, FS2_HUB_NIGHT_ID), WELL_FRONT).has(`${HOLE.front.x},${HOLE.front.y}`)) throw new Error("[fallen-star act2] 개구멍 앞 칸에 닿을 수 없다");
   // 브람 — 성벽 밑 그늘. 로한을 만난 뒤에만 나타나 개구멍을 연다.
   const bramChip = hubChipAny(project, "ev_fs_bram");
   addEv(project, FS2_HUB_NIGHT_ID, "ev_fs2_hub_bram", BRAM, HOLE.bram, [
@@ -906,7 +972,7 @@ function northGateEvents(project: Project, exec: Exec, hubId: string): void {
     page("ev_fs2_hub_hole_p", "성벽", [], [narrate("두꺼운 성벽이다. 돌 하나가 조금 튀어나와 있다.")]),
     page("ev_fs2_hub_hole_open", "개구멍", [sw(SW_BRAM)], [
       se("cc0-se-osx-wooded-box-open"),
-      narrate("브람이 돌을 빼내자\n사람 하나 빠져나갈 구멍이 뚫렸다."),
+      narrate("브람이 돌을 빼낸다.\n사람 하나 빠져나갈 구멍이 뚫린다."),
       se("cc0-se-osx-metal-01"),
       shake(2, 300),
       say("순찰 기사", "거기, 성벽 밑! 누구냐!"),
@@ -917,7 +983,7 @@ function northGateEvents(project: Project, exec: Exec, hubId: string): void {
   ]);
   forestEdgeChase(project, exec, first!, hubId, bramChip);
   addEv(project, first!, "ev_fs2_north_back", "성벽 개구멍으로", FS2_NORTH_ROUTE.entry, [
-    page("ev_fs2_north_back_p", "돌아간다", [], [narrate("개구멍을 지나 광장으로 돌아갔다."), transfer(FS2_HUB_NIGHT_ID, HOLE.front, "down")], { priority: "below", trigger: { kind: "playerTouch" } }),
+    page("ev_fs2_north_back_p", "돌아간다", [], [narrate("개구멍으로 기어 광장으로 돌아간다."), transfer(FS2_HUB_NIGHT_ID, HOLE.front, "down")], { priority: "below", trigger: { kind: "playerTouch" } }),
   ]);
 }
 
@@ -968,13 +1034,6 @@ function forestEdgeChase(project: Project, exec: Exec, mapId: string, hubId: str
   exec(project, "paint_shadow", { mapId, cells: shade, mode: "add" });
   // 밤 숲 — 1막 낮 숲길과 다른 맵처럼 어둡게. 개구멍~숲 그늘 사이 빈터에만 달빛이 들어, 그늘 줄이 어둠의 경계로 읽힌다.
   const moonY = Math.round((arrive.y + edgeY) / 2) + 1;
-  exec(project, "set_lighting_volume", {
-    mapId, applyMode: "map", ambient: 0.7, color: "#0a1024",
-    sources: [
-      { id: "moon", at: { x: arrive.x, y: moonY }, radius: Math.max(4, arrive.y - edgeY - 3), intensity: 0.45, color: "#c4d2ff" },
-      { id: "player", at: { kind: "player" }, radius: 3, intensity: 0.35, color: "#9fb4ff" },
-    ],
-  });
   // 순찰 기사 둘 — 경보가 켜지면 개구멍 곁 다섯~여섯 걸음에서 깨어 쫓는다. 숲 그늘에 닿으면 사라진다(전투 없음).
   const knight = hubChip(project, hubId, "ev_fs_knight");
   const near = [...cells(5), ...cells(6)].filter((c) => c.y > edgeY + 2).sort((a, b) => Math.abs(b.x - arrive.x) - Math.abs(a.x - arrive.x));
@@ -1007,8 +1066,17 @@ function forestEdgeChase(project: Project, exec: Exec, mapId: string, hubId: str
     } catch (e) { why = String((e as Error).message).slice(0, 300); /* 그 칸은 도구가 거절 — 다음 자리 */ }
   }
   if (!knightIds.length) throw new Error(`[fallen-star act2] 숲 어귀에 추격 기사를 못 세웠다(후보 ${near.length}칸): ${why}`);
-  // 기사 추격 — 시야 9. 개구멍을 빠져나온 직후라 「거기 서라!」 1.4초 뒤에 움직인다(그동안 달려야 산다), 네 칸 돌진(칸당 0.1초), 평소 0.17초/칸(주인공 0.16초보다 조금 느림).
-  exec(project, "set_field_detection", { mapIds: [mapId], eventIds: knightIds, sightRange: 9, alertMs: 1400, chaseStepMs: 170, rush: true, rushSteps: 4, rushStepMs: 100, searchMs: 4000, giveUpRange: 20 });
+  // 밤 숲 조명 — 기사마다 손등불(이벤트를 따라다닌다). 등불이 없어 「등불들이 멈춘다」가 화면과 어긋났다(VQA 1차).
+  exec(project, "set_lighting_volume", {
+    mapId, applyMode: "map", ambient: 0.7, color: "#0a1024",
+    sources: [
+      { id: "moon", at: { x: arrive.x, y: moonY }, radius: Math.max(4, arrive.y - edgeY - 3), intensity: 0.45, color: "#c4d2ff" },
+      { id: "player", at: { kind: "player" }, radius: 3, intensity: 0.35, color: "#9fb4ff" },
+      ...knightIds.map((eventId, i) => ({ id: `knight_lamp${i}`, at: { eventId }, radius: 2.5, intensity: 0.8, color: "#ffb050", flicker: true })),
+    ],
+  });
+  // 기사 추격 — 시야 9. 「거기 서라!」 0.8초 뒤에 움직인다(예전 1.4초는 기사가 멀뚱히 선 채 추격이 3초 만에 끝났다 — VQA 1차), 네 칸 돌진(칸당 0.1초), 평소 0.17초/칸(주인공 0.16초보다 조금 느림).
+  exec(project, "set_field_detection", { mapIds: [mapId], eventIds: knightIds, sightRange: 9, alertMs: 800, chaseStepMs: 170, rush: true, rushSteps: 4, rushStepMs: 100, searchMs: 4000, giveUpRange: 20 });
   // 붙잡히면 개구멍 앞(광장)으로 — 도구 검사 뒤에 직접 붙인다(위 caughtPenalty 주석).
   for (const id of knightIds) {
     const chasePage = M(project, mapId).events.find((e) => e.id === id)?.pages?.[0];
@@ -1031,11 +1099,11 @@ function forestEdgeChase(project: Project, exec: Exec, mapId: string, hubId: str
     narrate("숲 그늘로 들어서자 뒤쫓던 등불들이 멈춘다.\n「…숲지기 땅이다. 돌아가자.」"),
     setSw(SW_B4_EDGE),
     wait(500),
-    say(BRAM, "기사 놈들은 숲에 못 들어온다.\n아직은 내 숲이니까."),
+    say(BRAM, "기사 놈들은 숲에 못 들어온다.\n여기까진 아직 내 숲이니까."),
     say(BRAM, "…그 가락 말이다. 쇠 긁는 소리.\n둘째 아이가 부르던 거다."),
     say(BRAM, "서른 해 전 그 밤에도 들었다.\n알았으면서 모른 척했다. 늙으면 겁이 많아져."),
     say(KAEL, "…이번엔 모른 척 안 하셨잖아요."),
-    say(BRAM, "그러느라 늙은이 숨이 턱에 찼다. 가거라.\n여기서부턴 내 숲이 아니다."),
+    say(BRAM, "그러느라 숨이 턱에 찼다. 가거라.\n여기서부턴 내 숲이 아니다."),
     cutLabel(),
     cutEnd(),
   ];
@@ -1940,7 +2008,7 @@ function snowPass(project: Project, exec: Exec): void {
   maps.forEach((m) => m.gaps.forEach((g, k) => {
     exec(project, "place_field_obstacle", {
       mapId: m.mapId, kind: "gap", x: g.from.x, y: g.from.y, requiresActorId: FS2_SARAH_ACTOR, id: `ev_fs2_snow_gap_${m.mapId}_${k}`, name: "얼음 틈",
-      hint: "새라가 창을 얼음에 꽂았다. 「잡아. 뛴다.」", blockedText: "얼음이 길을 가로질러 쩍 갈라졌다.\n맨몸으로 뛰기엔 너무 넓다.",
+      hint: "새라가 틈 앞에서 창을 고쳐 쥔다.\n「창을 짚고 넘으면 돼. 내 손 잡아.」", blockedText: "얼음이 길을 가로질러 쩍 갈라졌다.\n맨몸으로 뛰기엔 너무 넓다.",
     });
   }));
   // 얼음 덩이 — 첫 틈을 건넌 뒤 좁은 눈길을 막는다. 엘레나의 불씨로 녹인다(계획 4-3 불씨 녹이기, 필드 기술 게이트).
@@ -1957,8 +2025,8 @@ function snowPass(project: Project, exec: Exec): void {
         mapId: maps[0]!.mapId, kind: "rock", x: g0.to.x + fwd.x * step, y: g0.to.y + fwd.y * step, fullWidth: true, direction: fwd.y !== 0 ? "right" : "down",
         tile: ICE_BLOCK.foot, tileAbove: ICE_BLOCK.head, requiresSkillId: FS2_SKILL_EMBER_MELT, skillName: "불씨 녹이기", machine: "none",
         id: "ev_fs2_snow_ice", name: "얼음 덩이",
-        hint: "엘레나가 손바닥에 불씨를 피워 얼음에 댄다. 「조금만 기다려.」",
-        blockedText: "길 한가운데 얼음 덩이가 솟아 있다. 밀어도 꿈쩍 않는다.",
+        hint: "엘레나가 얼음에 손바닥을 대 본다.\n「불씨로 녹일 수 있겠어. 조금 걸려.」",
+        blockedText: "길 한가운데 얼음 덩이가 솟아 있다.\n밀어도 꿈쩍 않는다.",
       });
       iced = true;
       break;
@@ -2003,14 +2071,14 @@ function snowPass(project: Project, exec: Exec): void {
   exec(project, "configure_party_bonds", {
     members: [
       { actorId: "actor_fs_elena", variableId: VAR_BOND_ELENA, talk: ["불씨는 내가 지킬게. 넌 별이나 세.", "…이리스 몫까지 세 줘."] },
-      { actorId: FS2_SARAH_ACTOR, variableId: VAR_BOND_SARAH, talk: ["아버지는 망치를 쥐라고 했어. 난 창을 골랐고. …그 뒤로 말을 잘 안 했지.", "발렌 님이 날 북문에 세울 때 그러더라. 「고개 들어라」. …아버지 말이었는데."] },
+      { actorId: FS2_SARAH_ACTOR, variableId: VAR_BOND_SARAH, talk: ["아버지는 망치를 쥐라고 했어. 난 창을 골랐고.\n…그 뒤로 서로 말을 잘 안 했지.", "발렌 님이 날 북문에 세우면서 그러더라.\n「고개 들어라」. …아버지가 하던 말인데."] },
     ],
     // 모닥불과 여관 밤(B8 여관 주인)이 같은 장면을 쓴다 — 어느 불가에도 맞는 한 줄.
-    intro: ["불가에 둘러앉았다. 장작이 탁 튄다."],
+    intro: ["불가에 둘러앉는다. 장작이 탁 튄다."],
     // 유대 3 — 듀얼 연계기 해금(계획 4-4). 새라는 창을 돌려줬으면(B6 +1)·모닥불·장작(Q6)·여관 밤으로 닿는다.
     unlocks: [
-      { actorId: FS2_SARAH_ACTOR, atLeast: 3, comboTechId: FS2_COMBO_TWIN_LANCE, message: "새라가 「고개 들어라」를 익혔다! 카엘과의 연계기 『쌍창 돌파』가 열렸다." },
-      { actorId: "actor_fs_elena", atLeast: 3, comboTechId: FS2_COMBO_FLAME_CROSS_TWIN, message: "엘레나가 「불씨 지키기」를 익혔다! 카엘과의 연계기 『불꽃 십자참·겹』이 열렸다." },
+      { actorId: FS2_SARAH_ACTOR, atLeast: 3, comboTechId: FS2_COMBO_TWIN_LANCE, message: "새라가 「고개 들어라」를 익혔다!\n카엘과의 연계기 「쌍창 돌파」가 열렸다." },
+      { actorId: "actor_fs_elena", atLeast: 3, comboTechId: FS2_COMBO_FLAME_CROSS_TWIN, message: "엘레나가 「불씨 지키기」를 익혔다!\n카엘과의 연계기 「불꽃 십자참·겹」이 열렸다." },
     ],
     campfires: [{ mapId: FS2_SNOW.mapIds[1]!, x: fire.x, y: fire.y + 1, id: "ev_fs2_snow_fire", name: "모닥불" }],
   });
