@@ -4,7 +4,8 @@
 // 금고는 자기 대사에 비밀번호(1024)를 적어 일기장 없이 열렸고, 오프닝 이름표에 「@player」가 그대로 떴고, 구한 동생은 따라오지만
 // 파티에 없었다. 조각마다 따로 지으면 아무것도 사슬 전체를 보지 않는다 — 끝맺음 관문이 이 검사로 돌려보낸다. 순수 함수.
 import { canMove, isPassable } from "@/project/collision";
-import type { GameMap, Project } from "@/project/types";
+import type { GameEvent, GameMap, Project } from "@/project/types";
+import { eventBodyRect, eventPassageRect } from "@/project/eventFootprintQuery";
 import { playerAnchors, sameMapPassages } from "@/editor/tools/transferReachability";
 import { eventAlwaysBlocks } from "@/project/eventPassageBlock";
 import { trivialCode } from "./puzzle";
@@ -321,12 +322,20 @@ export function unreachableCriticalEvents(project: Project): string[] {
     });
     if (!critical.length) continue;
     // 늘 막는 이벤트(모든 페이지가 보통 우선순위 — 한 칸 복도의 일기장·가구 이벤트)는 벽처럼 친다. 잠긴 문은 열린다고 본다.
-    const blocked = new Set((map.events ?? []).filter((ev) => eventAlwaysBlocks(ev) && !lockOf(ev)).map((ev) => `${ev.x},${ev.y}`));
+    // 몸 사각이 여러 칸인 가구 이벤트는 통행 줄 전부가 막고, 조사는 몸 사각 어느 칸 곁에서든 된다(런타임과 같다 —
+    // 2026-10-29 vm4 deepseek 탈출: 3×1 책상 서랍의 앵커 곁만 보아 「닿지 못한다」고 잘못 막았다).
+    const cellsOf = (ev: GameEvent, rect: { left: number; top: number; right: number; bottom: number }) => {
+      const out = [`${ev.x},${ev.y}`];
+      for (let y = rect.top; y <= rect.bottom; y++) for (let x = rect.left; x <= rect.right; x++) out.push(`${x},${y}`);
+      return out;
+    };
+    const blocked = new Set((map.events ?? []).filter((ev) => eventAlwaysBlocks(ev) && !lockOf(ev)).flatMap((ev) => cellsOf(ev, eventPassageRect(ev))));
     const reach = reachWithout(project, map, blocked, true);
     if (!reach) continue;
     const at = (x: number, y: number) => reach.has(`${x},${y}`);
     for (const { ev, why } of critical) {
-      if (at(ev.x, ev.y) || STEPS.some(([dx, dy]) => at(ev.x + dx, ev.y + dy))) continue;
+      const body = cellsOf(ev, eventBodyRect(ev)).map((k) => k.split(",").map(Number) as [number, number]);
+      if (body.some(([x, y]) => at(x, y) || STEPS.some(([dx, dy]) => at(x + dx, y + dy)))) continue;
       out.push(`${map.name}의 「${ev.name || ev.id}」(${ev.id}, ${ev.x},${ev.y} · ${why.join("·")})에 걸어 닿지 못한다 — 그 칸도 네 이웃 칸도 시작·입구에서 이어지지 않는다(벽·가구나 한 칸 길을 막고 선 이벤트에 갇힘). 엔딩으로 가는 길이 끊긴다`);
     }
   }

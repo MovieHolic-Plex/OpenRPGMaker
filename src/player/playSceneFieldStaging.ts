@@ -663,7 +663,7 @@ function syncObjectiveMarkers(scene: PlaySceneContext, now: number): void {
 // 대상이 화면 밖이면 주인공 곁에 그쪽을 가리키는 작은 금빛 화살표 하나(가장 가까운 대상).
 // 왜(2026-10-29 vm2 terra jrpg): 동굴 문은 시작 자리에서 26칸 남쪽이라 첫 화면에 없었고, 목표 꼬리 방위만으로는 맵 끝에서 헤맸다.
 // 표시는 화면 안 대상의 빛무리와 같은 색이고, 대상이 화면에 들어오면 사라진다.
-const OBJECTIVE_ARROW_TEX = "oprn-fx-objective-arrow";
+const OBJECTIVE_ARROW_TEX = "oprn-fx-objective-arrow-v3";
 function syncObjectiveArrow(scene: PlaySceneContext, state: ObjectiveMarkerState, now: number): void {
   const camera = scene.cameras?.main;
   const map = scene.map;
@@ -685,20 +685,22 @@ function syncObjectiveArrow(scene: PlaySceneContext, state: ObjectiveMarkerState
     : [...state.points].sort((a, b) => Math.hypot(a.x - px, a.y - py) - Math.hypot(b.x - px, b.y - py))[0];
   if (!target || view.width <= margin * 2 || view.height <= margin * 2) { state.arrow?.setVisible(false); return; }
   if (!state.arrow) {
+    // ▼ 조사 표식과 같은 처리 — 굵은 진한 테두리 + 진한 금빛 속. 금빛은 텍스처에 직접 칠한다(캔버스 렌더러는 setTint 를 무시해 흰 화살표로 보였다). 가는 테두리·옅은 금빛은 석순·밝은 바닥에 묻혔다(2026-10-29 vm4 terra 동굴 확대).
     canvasTexture(scene, OBJECTIVE_ARROW_TEX, 32, (ctx, s) => {
-      ctx.fillStyle = "#fff";
-      ctx.strokeStyle = "rgba(40,28,0,0.85)";
-      ctx.lineWidth = 3;
+      ctx.lineJoin = "round";
       ctx.beginPath();
-      ctx.moveTo(s - 3, s / 2);
-      ctx.lineTo(5, 4);
-      ctx.lineTo(11, s / 2);
-      ctx.lineTo(5, s - 4);
+      ctx.moveTo(s - 4, s / 2);
+      ctx.lineTo(6, 5);
+      ctx.lineTo(12, s / 2);
+      ctx.lineTo(6, s - 5);
       ctx.closePath();
+      ctx.lineWidth = 6;
+      ctx.strokeStyle = "rgba(34,20,0,0.95)";
       ctx.stroke();
+      ctx.fillStyle = "#ffd23a";
       ctx.fill();
     });
-    state.arrow = scene.add.image(0, 0, OBJECTIVE_ARROW_TEX).setTint(OBJECTIVE_MARKER_COLOR)
+    state.arrow = scene.add.image(0, 0, OBJECTIVE_ARROW_TEX)
       // 높이 지형(relief, ~200k)·상층 ★(250k) 위 — 안내 표시라 수관·들린 땅에 가리면 안 된다(flash jrpg: relief 맵에서 화살표가 땅 밑에 묻혔다).
       .setDepth(MAP_UPPER_LAYER_DEPTH + 1000);
   }
@@ -714,8 +716,8 @@ function syncObjectiveArrow(scene: PlaySceneContext, state: ObjectiveMarkerState
     .setVisible(true)
     .setPosition(ax, ay)
     .setRotation(angle)
-    .setDisplaySize(size * 0.75, size * 0.75)
-    .setAlpha(0.75 + 0.25 * breath);
+    .setDisplaySize(size * 0.95, size * 0.95)
+    .setAlpha(0.92 + 0.08 * breath);
 }
 
 /** QA: 목표 화살표가 떠 있나(대상이 화면 밖). */
@@ -771,7 +773,8 @@ function syncNearSparkles(scene: PlaySceneContext, now: number): void {
 // 조사 대상(가까이 반짝임이 있는 이벤트가 반경 안일 때 + 지금 목표 대상)의 몸 사각 위쪽에 진한 테두리 금빛 꺾쇠를 보통 섞기로 띄운다 —
 // 어느 바닥에서도 테두리가 대비를 만든다. 몸 사각(가구 전체) 가운데 위라 주인공 얼굴을 덮지 않는다. 조사가 끝나 표식 페이지가 없어지면 사라진다.
 
-const EXAMINE_MARKER_TEX = "oprn-fx-examine-marker";
+// 금빛은 텍스처에 직접 칠한다 — 캔버스 렌더러는 setTint 를 무시해 흰 표식으로 보였다.
+const EXAMINE_MARKER_TEX = "oprn-fx-examine-marker-v2";
 type ExamineMarkerState = { mapId: string; markers: Map<string, Phaser.GameObjects.Image>; nextCheck: number; want: Map<string, { x: number; y: number; person: boolean }> };
 const examineMarkerStates = new WeakMap<PlaySceneContext, ExamineMarkerState>();
 
@@ -812,7 +815,7 @@ function syncExamineMarkers(scene: PlaySceneContext, now: number): void {
     for (const id of want.keys()) {
       if (state.markers.has(id)) continue;
       canvasTexture(scene, EXAMINE_MARKER_TEX, 32, (ctx, s) => {
-        // 아래를 가리키는 꺾쇠(▼) — 흰 채움(틴트로 금빛) + 진한 갈색 테두리.
+        // 아래를 가리키는 꺾쇠(▼) — 금빛 채움 + 진한 갈색 테두리.
         ctx.lineJoin = "round";
         ctx.beginPath();
         ctx.moveTo(4, 7);
@@ -822,10 +825,10 @@ function syncExamineMarkers(scene: PlaySceneContext, now: number): void {
         ctx.lineWidth = 6;
         ctx.strokeStyle = "rgba(34,20,0,0.95)";
         ctx.stroke();
-        ctx.fillStyle = "#fff";
+        ctx.fillStyle = "#ffd23a";
         ctx.fill();
       });
-      state.markers.set(id, scene.add.image(0, 0, EXAMINE_MARKER_TEX).setTint(0xffd23a).setDepth(MAP_UPPER_LAYER_DEPTH + 900));
+      state.markers.set(id, scene.add.image(0, 0, EXAMINE_MARKER_TEX).setDepth(MAP_UPPER_LAYER_DEPTH + 900));
     }
   }
   const bob = Math.sin((now / 520) * Math.PI);

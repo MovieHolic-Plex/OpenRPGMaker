@@ -3,7 +3,7 @@
 //   WAYFIND='{"mapId":"map_…","talk":{"x":7,"y":14,"face":"down"},"stops":[{"mapId":"map_…","x":6,"y":25}]}' \
 //     node scripts/runtime-qa.mjs --scenario wayfind --netns --browser firefox --project <project.json> --out <dir>
 //
-// switches: 조사 전에 켤 스위치 id 목록(앞 단계를 건너뛴다).
+// switches: 조사 전에 켤 스위치 id 목록(앞 단계를 건너뛴다). talks: talk 대신 차례로 조사할 칸 목록.
 // 비트: 첫 필드 → talk 칸에서 바라보고 조사 → 대화를 닫은 필드(목표 줄·출구 라벨) → stops 마다 그 칸에 서서 한 장.
 import { fieldReady } from "./wholeGameBattleCommon.mjs";
 import { openingBeats, toFieldBeats } from "./wholeGameStoryCommon.mjs";
@@ -23,14 +23,14 @@ export default {
     },
     ...toFieldBeats({ firstDialogue: false }),
     { id: "field", note: "첫 필드", ops: [{ kind: "pressUntilJs", key: "Enter", fn: fieldReady, maxPresses: 30, settleMs: 700 }] },
-    {
-      id: "talk",
-      note: `(${qa.talk.x},${qa.talk.y}) 에서 ${qa.talk.face} 보고 조사 → 대화를 닫은 필드`,
+    ...(qa.talks ?? [qa.talk]).map((talk, index) => ({
+      id: index ? `talk-${index + 1}` : "talk",
+      note: `${talk.mapId ?? qa.mapId} (${talk.x},${talk.y}) 에서 ${talk.face} 보고 조사 → 대화를 닫은 필드`,
       ops: [
-        ...(qa.switches ?? []).map((switchId) => ({ kind: "setSwitch", switchId, value: true })),
-        { kind: "teleport", mapId: qa.mapId, x: qa.talk.x, y: qa.talk.y },
-        { kind: "waitForPosition", mapId: qa.mapId, x: qa.talk.x, y: qa.talk.y },
-        { kind: "face", dir: qa.talk.face },
+        ...(index ? [] : (qa.switches ?? []).map((switchId) => ({ kind: "setSwitch", switchId, value: true }))),
+        { kind: "teleport", mapId: talk.mapId ?? qa.mapId, x: talk.x, y: talk.y },
+        { kind: "waitForPosition", mapId: talk.mapId ?? qa.mapId, x: talk.x, y: talk.y },
+        { kind: "face", dir: talk.face },
         { kind: "hold", dir: null, ms: 600 },
         { kind: "action" },
         { kind: "hold", dir: null, ms: 900 },
@@ -38,7 +38,7 @@ export default {
         { kind: "hold", dir: null, ms: 1500 },
       ],
       shot: true,
-    },
+    })),
     ...(qa.stops ?? []).map((stop, index) => ({
       id: `stop-${index + 1}`,
       note: `${stop.mapId} (${stop.x},${stop.y})`,

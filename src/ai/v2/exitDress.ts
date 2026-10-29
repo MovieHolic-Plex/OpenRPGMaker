@@ -10,7 +10,7 @@
 //    보였다(flash «밀실 탈출실» 오른쪽 위). → 방들이 차지한 범위(+1칸) 안의 공허 칸을 천장 띠로 이어 칠한다(handInteriorStructure 와 같은 이웃 규칙).
 // 방 크기·가구는 건드리지 않는다(실내 담당 영역).
 import { roomSpecOf, type HandInteriorSpec } from "@/editor/handInterior/builder";
-import { isPassable } from "@/project/collision";
+import { canMove, isPassable } from "@/project/collision";
 import { layerTileAt, setLayerTileAt } from "@/project/mapLayers";
 import type { GameEvent, GameMap, Project } from "@/project/types";
 import { isDoorName, reachableCells, repairEventReach, unreachableEvents } from "./eventReach";
@@ -575,6 +575,34 @@ function transferCmds(ev: GameEvent): { page: number; idx: number; cmd: Record<s
 
 const touchTrigger = (ev: GameEvent) => (ev.pages ?? []).every((p) => { const t = p.trigger as unknown; const kind = typeof t === "string" ? t : (t as { kind?: string } | undefined)?.kind; return kind === "playerTouch" || kind === "touch"; });
 const transparentEvent = (ev: GameEvent) => (ev.pages ?? []).every((p) => { const g = p.graphic; return !g || g.transparent === true || (!g.sprite && !g.appearanceId); });
+
+/**
+ * 들어설 수 없는 칸(가구·벽 밑)에 묻힌 접촉 이동 — 네 곁 어디서도 걸어 들어갈 수 없고 부딪혀 발동하지도 않는(우선순위 same 아님) 다른 맵 이동 칸.
+ * 같은 맵에 같은 목적지로 가는, 걸어 들어갈 수 있는 이동 칸이 따로 있으면 묻힌 칸을 지운다(남은 문이 그 길을 맡는다).
+ * 왜(2026-10-29 vm4 argon 추리): 「2층 객실」 (4,3) 서랍장 밑의 「→ 여관 홀」 이동을 자동 플레이가 골라 (4,4)→(4,3) 이동 불가로 멈췄다 — 남쪽 틈 (5,8)이 같은 홀로 갔다.
+ */
+export function dropBuriedTransfers(run: BuildRun, mapId: string): string[] {
+  const notes: string[] = [];
+  const map = run.ctx.project.maps[mapId];
+  if (!map) return notes;
+  const project = run.ctx.project;
+  const destOf = (e: GameEvent) => transferCmds(e).map((t) => t.cmd.mapId).find((m): m is string => typeof m === "string" && m !== mapId);
+  const sameLayer = (e: GameEvent) => (e.pages ?? []).some((p) => (p.priority ?? "same") === "same");
+  const enterable = (e: GameEvent) => sameLayer(e) || [[0, -1], [1, 0], [0, 1], [-1, 0]].some(([dx, dy]) => {
+    const x = e.x + dx!, y = e.y + dy!;
+    return x >= 0 && y >= 0 && x < map.width && y < map.height && canMove(project, map, x, y, e.x, e.y);
+  });
+  const gates = (map.events ?? []).filter((e) => touchTrigger(e) && destOf(e));
+  for (const ev of gates) {
+    if (enterable(ev)) continue;
+    const dest = destOf(ev)!;
+    const twin = gates.find((o) => o.id !== ev.id && destOf(o) === dest && enterable(o));
+    if (!twin) continue;
+    const r = run.call("remove_event", { mapId, eventId: ev.id });
+    if (r.ok) notes.push(`들어설 수 없는 칸 (${ev.x},${ev.y})의 → ${project.maps[dest]?.name ?? dest} 이동을 지움(같은 곳으로 가는 (${twin.x},${twin.y}) 가 맡음)`);
+  }
+  return notes;
+}
 
 export function doorFloorTransfers(run: BuildRun, mapId: string): string[] {
   const notes: string[] = [];

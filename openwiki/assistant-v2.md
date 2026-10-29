@@ -184,6 +184,14 @@ v1 의 `script_cutscene` 비트로 옮긴다(`events.ts`).
 - **목표 화살표는 걸어갈 길을 따라**(`src/player/objectiveRoute.ts`, `syncObjectiveArrow`, vm4 terra jrpg «동굴 안 (11,10) 위·오른쪽이 막혀 마왕 못 만남»):
   목표 대상 칸에서 거꾸로 잰 걸음 수 지도(타일 통행 `canMove`, 대상 칸은 옆에 서면 닿음)를 대상이 바뀔 때 한 번 만들고, 화살표는 주인공 칸에서 걸음 수가 줄어드는 쪽 3걸음 앞 칸을 가리킨다(5걸음이면 첫 꺾임이 묻혀 거의 직선과 같았다).
   걸음 수가 직선(맨해튼)×1.5+4 보다 크면 대상이 화면 안에 보여도 화살표를 띄운다. 지도에 없으면(이벤트로만 막힌 길 등) 예전처럼 직선. 확인 시나리오 `wayfind`(`WAYFIND` 환경 변수).
+- **vm4 막힘 셋·길 안내(2026-10-29)**:
+  - 엔딩이 정의만 있고 아무도 부르지 않으면(`no-ending-trigger`) 청사진 마지막 단계 이벤트의 승리 갈래 끝(전투가 없으면 첫 페이지 끝)에 조건 없는 엔딩을 붙인다(`shipDefaults.attachEndingToLastStep`, argon jrpg).
+  - 목표 글이 있는데 필드 HUD 가 목표 줄을 숨기면 켠다(shipDefaults, argon 탈출 `objective-missing`).
+  - 끝맺음 `clearLanes`: 걸어 닿지 못하는 진행 이벤트(전투·스위치·아이템·엔딩, 이동 아님)는 `repairEventReach` 로 닿는 바닥으로(argon jrpg 동굴 잡몹이 바위 속). 가구·벽 밑에 묻혀 들어설 수 없는 이동 칸은 같은 목적지로 가는 들어설 수 있는 이동 칸이 따로 있으면 지운다(`exitDress.dropBuriedTransfers`, argon 추리 객실 서랍장 밑 출구).
+  - 막는 이벤트 칸은 앵커뿐 아니라 통행 줄 전부(`eventPassageRect`)로 센다 — `eventReach.blockersOf`·`unreachableEvents`(몸 사각 곁)·`puzzleChecks.unreachableCriticalEvents`(deepseek 탈출: 1×2 선반 윗칸이 유일한 목을 막았고 사람 떼기가 남은 목에 하녀를 세웠다).
+  - 목표 꼬리가 「(북서쪽)」 처럼 방위 한 낱말뿐이면 꼬리가 없는 것으로 보고, 글에서 어디를 못 찾으면 다음 청사진 단계가 있는 맵 입구 꼬리로 다시 쓴다(`refreshObjectiveRoutes`, deepseek jrpg: 돌문은 동굴 맵 안, 판정자는 입구 옆 높은 언덕에서 막혔다 — 이제 ▼ 와 길 따라 화살표가 언덕 아래로).
+  - 자동 플레이(검사기)도 런타임과 맞췄다: 켜진 페이지의 몸·통행 사각으로 길을 짜고 몸 사각 곁에서 조사(`autoPlay.pathMoves`), 배우 파티도 HP 60% 밑이면 이벤트 전투 전 닿는 회복에 들른다(몬스터 게임과 같은 규칙), 장면 실행기가 `openSaveMenu` 를 닫고 이어 간다(쉼터 회복이 무한루프 가드로 버려지던 것).
+  - 목표 화살표·▼ 표식은 금빛을 텍스처에 직접 칠한다(캔버스 렌더러는 setTint 를 무시해 흰색이었다). 화살표는 ▼ 와 같은 굵은 진한 테두리, 칸의 0.95 크기.
 - **걷는 NPC 말 걸기**(`playSceneMovement.findWalkerLeaving`): 걸음을 떼면 논리 칸이 도착 칸으로 먼저 넘어가므로, 정면 칸이 걸어 나가는 중인 출발 칸이거나
   `VACATED_GRACE_MS`(300ms) 안에 떠난 칸이어도 그 NPC 에게 말을 건다.
 

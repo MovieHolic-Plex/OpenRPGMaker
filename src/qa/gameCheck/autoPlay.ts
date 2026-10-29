@@ -11,6 +11,7 @@ import { resolveEventPage as resolveEventPageRaw } from "@/project/io";
 import { actorKnownSkillIds, partyKnownSkillIds, partySkillContext, type PartySkillSession } from "@/project/partySkills";
 import { ANY_FRIENDSHIP_KEY, evalCondition, friendshipValueOf, type PlaySession } from "@/project/session";
 import type { Condition, GameEvent, Project } from "@/project/types";
+import { footprintBounds, normalizeCharacterFootprint, normalizePassRows, passageBounds } from "@/project/footprint";
 import { runSceneTest, type SceneStep, type SceneTestResult } from "@/testing/sceneTestRunner";
 import { numberInputAnswer } from "@/testing/numberInputAnswer";
 import { initiallyOn } from "./progression";
@@ -1118,10 +1119,27 @@ function pathMoves(project: Project, session: PlaySession, mapId: string, from: 
   }
   // 막는 이벤트는 지금 서 있는 자리로 잰다 — 컷신에서 주인공에게 다가온 NPC 를 저작 칸으로 보고 길을 짜면, 실행기는 실제 자리에서
   // 「막는 이벤트」로 멈췄다(2026-10-28 standin jrpg: 소녀가 시작 컷신에서 (11,8)로 와 동굴 입구 가는 길을 막은 것으로 실패).
-  const liveCell = (event: GameEvent) => { const at = mapId === session.currentMapId ? moved?.[event.id] : undefined; return at ? `${at.x},${at.y}` : `${event.x},${event.y}`; };
-  const occupied = new Set((map.events ?? []).filter((event) => event.id !== target.id && !harmless(event) && !ignoreIds?.has(event.id)).map(liveCell)
+  // 몸 사각이 여러 칸인 이벤트(가구 전체 조사 — settleFurnitureSpots)는 런타임처럼 통행 줄(passRect) 전부가 막힌다. 조사는 몸 사각 어느 칸이든
+  // 맞은편에 서서 한다(런타임 조사 히트가 몸 사각). 앵커 한 칸만 보던 때는 1×2 선반 윗칸으로 길을 짜 «막는 이벤트»로 멈추거나, 3×1 책상의
+  // 앵커 곁이 벽이라 «걸어갈 길이 없다»로 봤다(2026-10-29 vm4 deepseek 탈출).
+  const cellsOf = (event: GameEvent): string[] => {
+    const at = mapId === session.currentMapId ? moved?.[event.id] : undefined;
+    if (at) return [`${at.x},${at.y}`];
+    // 지금 켜진 페이지의 몸·통행 줄(런타임 뷰와 같다) — 페이지마다 발자국이 다를 수 있다(범인 지목: 앞 페이지 1×2, 마지막 1×1).
+    const page = event.pages?.length ? resolveEventPage(event, session) : undefined;
+    const fp = normalizeCharacterFootprint(page?.footprint);
+    const rect = passageBounds(event.x, event.y, fp, normalizePassRows(page?.passRows, fp.height));
+    const out = [`${event.x},${event.y}`];
+    for (let y = rect.top; y <= rect.bottom; y++) for (let x = rect.left; x <= rect.right; x++) out.push(`${x},${y}`);
+    return out;
+  };
+  const occupied = new Set((map.events ?? []).filter((event) => event.id !== target.id && !harmless(event) && !ignoreIds?.has(event.id)).flatMap(cellsOf)
     .filter((cell) => !relayCells.has(cell) && !warps.has(cell)));
-  const isGoal = (x: number, y: number) => adjacent ? Math.abs(x - target.x) + Math.abs(y - target.y) === 1 : (x === target.x && y === target.y) || relayCells.has(`${x},${y}`);
+  const targetPage = target.pages?.length ? resolveEventPage(target, session) : undefined;
+  const body = footprintBounds(target.x, target.y, normalizeCharacterFootprint(targetPage?.footprint));
+  const inBody = (x: number, y: number) => x >= body.left && x <= body.right && y >= body.top && y <= body.bottom;
+  const faceCell = (x: number, y: number) => DIRS.map((d) => ({ x: x + d.dx, y: y + d.dy })).find((c) => (c.x === target.x && c.y === target.y) || inBody(c.x, c.y));
+  const isGoal = (x: number, y: number) => adjacent ? !inBody(x, y) && !(x === target.x && y === target.y) && !!faceCell(x, y) : (x === target.x && y === target.y) || relayCells.has(`${x},${y}`);
   const key = (x: number, y: number) => `${x},${y}`;
   const previous = new Map<string, { from: string; dir: typeof DIRS[number]["dir"] }>();
   const queue = [from];
@@ -1135,7 +1153,7 @@ function pathMoves(project: Project, session: PlaySession, mapId: string, from: 
       const k = key(nx, ny);
       if (seen.has(k) || occupied.has(k)) continue;
       if (!(nx === target.x && ny === target.y && !adjacent) && !canMove(project, map, current.x, current.y, nx, ny)) continue;
-      if (nx === target.x && ny === target.y && adjacent) continue;
+      if (adjacent && ((nx === target.x && ny === target.y) || inBody(nx, ny))) continue;
       const warp = warps.get(k);
       if (warp) {
         const landing = key(warp.x, warp.y);
@@ -1164,8 +1182,10 @@ function pathMoves(project: Project, session: PlaySession, mapId: string, from: 
   }
   const steps: SceneStep[] = dirs.map((dir) => ({ kind: "move", dir }));
   if (adjacent) {
-    const dx = target.x - goal.x;
-    const dy = target.y - goal.y;
+    // 앵커 곁이면 앵커 쪽, 아니면 맞닿은 몸 사각 칸 쪽을 본다.
+    const near = Math.abs(target.x - goal.x) + Math.abs(target.y - goal.y) === 1 ? target : faceCell(goal.x, goal.y) ?? target;
+    const dx = near.x - goal.x;
+    const dy = near.y - goal.y;
     steps.push({ kind: "face", dir: dx === 1 ? "right" : dx === -1 ? "left" : dy === 1 ? "down" : "up" });
   }
   return steps;
@@ -1354,6 +1374,14 @@ function leadLevel(session: PlaySession): number {
 }
 
 /** 리더 몬스터가 지쳤는가 — 체력 90% 아래거나 반 넘게 쓴 기술이 있다. */
+/** 배우 파티 누군가의 HP 가 60% 밑. */
+function partyWornOut(session: PlaySession): boolean {
+  return (session.partyActorIds ?? []).some((id) => {
+    const vitals = session.actorVitals?.[id];
+    return Boolean(vitals && vitals.maxHp > 0 && vitals.hp < vitals.maxHp * 0.6);
+  });
+}
+
 function wornOut(project: Project, session: PlaySession): boolean {
   const lead = session.monsterInstances?.[session.monsterParty?.[0] ?? ""];
   if (!lead) return false;
@@ -1621,7 +1649,9 @@ function executeGoal(driver: Driver, goal: Goal, escaped = false, trained = 0, h
   // 관장·트레이너 앞에 닿았는데 지쳤으면 실제 플레이어처럼 그 맵에서 가장 가까운 센터에 들렀다 다시 온다 — 사천왕 넷을
   // 연달아 치르거나 수련터에서 야생 길을 거슬러 오느라 기술 횟수가 바닥난 채 챔피언에게 Lv97 로 졌다(2026-10-06).
   // 무작위 인카운터 전 회복(소모전 판정)과는 별개다. 한 목표에 한 번만(회복이 안 되는 게임에서 맴돌지 않게).
-  if (!healed && isMonsterPartyGame(project) && wornOut(project, driver.last.session)
+  // 배우 파티(측면 전투)도 같다 — 앞 전투로 HP 가 깎인 채 다음 이벤트 전투에 서지 않고 닿는 회복(샘·쉼터)에 들른다.
+  // 왜(2026-10-29 vm4 argon jrpg): 촌장 전투 뒤 HP 214/514 로 곧장 마왕에게 가 졌다 — 촌장 옆 샘·동굴 쉼터가 있었는데 들르지 않았다.
+  if (!healed && (isMonsterPartyGame(project) ? wornOut(project, driver.last.session) : partyWornOut(driver.last.session))
     && JSON.stringify(visit.page.commands ?? []).includes('"battleProcessing"')) {
     healAtCenter(driver, targetMap);
     checkpoint(driver);

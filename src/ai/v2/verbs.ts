@@ -31,9 +31,9 @@ import { buildScene, SCENE_SCHEMA, type SceneSpec } from "./scene";
 import { buildPuzzleChain, sealLockedRoom, type ChainArgs } from "./puzzle";
 import { stageMysteryCase } from "./mysteryCase";
 import { BUILD_BLUEPRINT_PATH_SCHEMA, blueprintMapFor, buildBlueprintPath, sealEscapeExits, type PathStepText } from "./blueprintPath";
-import { clearTargetFronts, clearTransferLanes, repairEventReach, spreadCrowdedPeople } from "./eventReach";
+import { clearTargetFronts, clearTransferLanes, repairEventReach, spreadCrowdedPeople, unreachableEvents } from "./eventReach";
 import { ensureSupplyShop } from "./healingAccess";
-import { doorFloorTransfers, dressInteriorExits } from "./exitDress";
+import { doorFloorTransfers, dressInteriorExits, dropBuriedTransfers } from "./exitDress";
 import { roadToEdgeExits } from "./edgeExitRoads";
 import { isPlaceholderMap, moveBareEvents, retireBlankStart, retireOrphanMaps } from "./blankStart";
 import { chaserEvents, ensureChaserHidingSpots, mapHidingEvents, markHidingSpots } from "@/project/chaserHiding";
@@ -584,6 +584,8 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     for (const mapId of Object.keys(env.ctx.project.maps)) {
       // 실내 출구·공허 마감(막다른 남쪽 틈 메우기·문 그림·남색 공허 칸) — 화면 검수 장부 builder-exit/builder-tiles.
       for (const n of dressInteriorExits(run, mapId).notes) notes.push(`${env.ctx.project.maps[mapId]?.name ?? mapId}: ${n}`);
+      // 가구·벽 밑에 묻힌 이동 칸은 같은 곳으로 가는 문이 따로 있으면 지운다(2026-10-29 vm4 argon 추리).
+      for (const n of dropBuriedTransfers(run, mapId)) notes.push(`${env.ctx.project.maps[mapId]?.name ?? mapId}: ${n}`);
       // 바닥 한가운데 투명 이동 칸 → 가장 가까운 외벽에 문(북벽 문 그림·남벽 틈)을 내고 그 앞으로(2026-10-29 vm3 deepseek 탈출 「희미한 빛 위를 걷는 방 이동」).
       for (const n of doorFloorTransfers(run, mapId)) notes.push(`${env.ctx.project.maps[mapId]?.name ?? mapId}: ${n}`);
       // 가장자리 출구가 풀밭 한가운데면 맵의 길로 잇는다(2026-10-29 vm3 argon jrpg 「마을 밖으로 나가는 길이 안 보임」).
@@ -595,6 +597,21 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
       // 붙어 선 사람 사이에서 한 면만 열린 사람은 둘레가 열린 칸으로(2026-10-29 vm3 flash 추리: 갈색 머리 손님이 위에서만 말이 걸렸다).
       // 실내에서 문 곁·가구의 하나뿐인 접근 칸·다른 사람 바로 위아래·큰 양탄자 위에 선 사람도(personSpotCost — room-vig6 tavern, 탈출·추리 인물 포함).
       for (const n of spreadCrowdedPeople(run, mapId)) notes.push(`${name}: ${n}`);
+      // 걸어 닿지 못하는 진행 이벤트(전투·스위치·아이템·엔딩 — 출하 검사 critical-unreachable)는 닿는 빈 바닥으로(repairEventReach).
+      // 경로를 다시 짓지 않는 판(전투가 든 단계라 build_blueprint_path 가 건너뜀)에도 돈다 — 2026-10-29 vm4 argon jrpg: 동굴 잡몹 (6,9)가 바위 속에 갇혔다.
+      {
+        const live = env.ctx.project.maps[mapId];
+        const progress = (ev: NonNullable<typeof live>["events"][number]) => {
+          const text = JSON.stringify(ev.pages ?? []);
+          const acts = (ev.pages ?? []).some((p) => { const t = p.trigger as unknown; const k = typeof t === "string" ? t : (t as { kind?: string } | undefined)?.kind; return k !== "auto" && k !== "autorun" && k !== "parallel"; });
+          return acts && /"kind":"(?:battleProcessing|setSwitch|changeItem|triggerEnding)"/u.test(text) && !/"kind":"transfer"/u.test(text);
+        };
+        const lost = live ? unreachableEvents(env.ctx.project, mapId).filter((id) => { const ev = live.events.find((e) => e.id === id); return !!ev && progress(ev); }) : [];
+        if (lost.length) {
+          const fixed = repairEventReach(run, mapId, lost);
+          for (const m of fixed.moved) notes.push(`${name}: 닿지 못하던 ${m}`);
+        }
+      }
       for (const m of r.moved) notes.push(`${name}: ${m}`);
       for (const s of r.stuck) notes.push(`${name}: ${s} — 옮길 자리가 없어 그대로 둠`);
     }

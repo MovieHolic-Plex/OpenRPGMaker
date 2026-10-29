@@ -54,6 +54,12 @@ export function applyShipDefaults(project: Project, task = project.gameBlueprint
   if (emptySparkles(project).length) applied.push(...dropEmptySparkles(project));
   if (strayStepCopies(project).length) applied.push(...dropStrayStepCopies(project));
   if (silentLockedExits(project).length) applied.push(...explainLockedExits(project));
+  applied.push(...attachEndingToLastStep(project));
+  // 목표 줄이 있는데 필드 HUD 가 「현재 목표」 줄을 숨기면 켠다(출하 검사 objective-missing — 2026-10-29 vm4 argon 탈출, 목표 글은 다 있었다).
+  {
+    const hud = project.system.fieldHud as { objective?: boolean } | undefined;
+    if (hud && hud.objective === false && JSON.stringify(project.maps).includes('"surface":"objectiveChip"')) { hud.objective = true; applied.push("필드 HUD 「현재 목표」 줄 켬"); }
+  }
   applied.push(...forkStackedEndingCalls(project));
   if (endingClosureProblems(project).length) applied.push(...fillEndingClosure(project));
   // 기본 지명 걷어내기는 엔딩 글을 채운 뒤에 — 채운 글(청사진 느낌 칸)에도 그 지명이 들 수 있다.
@@ -296,6 +302,56 @@ const battleSitesExist = (project: Project): boolean => Object.values(project.ma
  * (selectEnding). 모델은 「호감이 되면 평범, 아니면 혼자」를 뜻했다. 앞 엔딩에 조건이 있으면 그 조건으로 가르는 fork 사슬로 바꾼다
  * (조건 없는 엔딩에서 사슬이 끝난다). 2026-10-29 standin romance 「다음 주에도, 단골손님」 뒤 「커피 한 잔의 거리」가 영영 안 열렸다.
  */
+/**
+ * 엔딩이 정의됐는데 어떤 명령도 엔딩을 부르지 않으면(출하 검사 no-ending-trigger) 청사진 마지막 단계 이벤트에 붙인다 —
+ * 그 이벤트가 전투를 하면 승리 갈래 끝에, 아니면 첫 페이지 끝에. 조건 없는 엔딩을 먼저 고른다.
+ * 왜(2026-10-29 vm4 argon jrpg): 마지막 단계가 마왕 전투였고 경로 짓기는 «전투가 든 이벤트라 다시 짓지 않음»으로 건너뛰어, 엔딩이 정의만 있고 끝낼 수 없었다.
+ */
+function attachEndingToLastStep(project: Project): string[] {
+  const endings = project.endings ?? [];
+  const steps = project.gameBlueprint?.steps ?? [];
+  if (!endings.length || !steps.length) return [];
+  let calls = false;
+  const scan = (node: unknown): void => {
+    if (calls || !node || typeof node !== "object") return;
+    if (Array.isArray(node)) { node.forEach(scan); return; }
+    const o = node as Obj;
+    if (o.kind === "triggerEnding" || o.kind === "ending") { calls = true; return; }
+    Object.values(o).forEach(scan);
+  };
+  for (const map of Object.values(project.maps)) scan(map.events ?? []);
+  scan(project.commonEvents ?? []);
+  if (calls) return [];
+  const last = steps.at(-1)!;
+  const place = Object.values(project.maps).find((m) => m.id === last.place || m.name === last.place);
+  const maps = place ? [place, ...Object.values(project.maps).filter((m) => m !== place)] : Object.values(project.maps);
+  let hit: { map: (typeof maps)[number]; event: NonNullable<(typeof maps)[number]["events"]>[number] } | undefined;
+  for (const map of maps) {
+    const event = (map.events ?? []).find((e) => e.id === last.event || e.name === last.event);
+    if (event) { hit = { map, event }; break; }
+  }
+  if (!hit) return [];
+  const ending = endings.find((e) => !(e.conditions ?? []).length) ?? endings[0]!;
+  const call = { kind: "triggerEnding", endingId: ending.id };
+  const isVictoryFork = (c: Obj) => c.kind === "fork" && (c.condition as Obj | undefined)?.kind === "battleResult" && (c.condition as Obj).result === "victory" && Array.isArray(c.then);
+  for (const page of hit.event.pages ?? []) {
+    const commands = page.commands as unknown as Obj[] | undefined;
+    if (!Array.isArray(commands)) continue;
+    const fork = commands.find(isVictoryFork);
+    if (fork) { (fork.then as unknown[]).push(call); return [`엔딩 「${ending.name}」을 마지막 단계 「${hit.event.name ?? hit.event.id}」 승리 뒤에 붙임`]; }
+    const battle = commands.find((c) => c.kind === "battleProcessing");
+    if (battle) {
+      if (battle.branchOnResult === true && Array.isArray(battle.victoryBranch)) (battle.victoryBranch as unknown[]).push(call);
+      else commands.splice(commands.indexOf(battle) + 1, 0, { kind: "fork", condition: { kind: "battleResult", result: "victory" }, then: [call] });
+      return [`엔딩 「${ending.name}」을 마지막 단계 「${hit.event.name ?? hit.event.id}」 승리 뒤에 붙임`];
+    }
+  }
+  const first = hit.event.pages?.[0];
+  if (!first || !Array.isArray(first.commands)) return [];
+  (first.commands as unknown as Obj[]).push(call);
+  return [`엔딩 「${ending.name}」을 마지막 단계 「${hit.event.name ?? hit.event.id}」 끝에 붙임`];
+}
+
 function forkStackedEndingCalls(project: Project): string[] {
   const endings = new Map((project.endings ?? []).map((e) => [e.id, e]));
   const out: string[] = [];

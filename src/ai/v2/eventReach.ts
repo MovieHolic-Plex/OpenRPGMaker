@@ -12,6 +12,7 @@ import { playerAnchors, sameMapPassages } from "@/editor/tools/transferReachabil
 import type { GameEvent, GameMap, Project } from "@/project/types";
 import { objectAt, PERSON_SPOT_BAD, personSpotContext, personSpotCost, tileLabel } from "./people";
 import { objectBaseLabel, objectClusterAt } from "@/project/objectFootprint";
+import { eventBodyRect, eventPassageRect } from "@/project/eventFootprintQuery";
 import type { BuildRun } from "./types";
 
 type Cell = { x: number; y: number };
@@ -68,10 +69,32 @@ function reachFrom(project: Project, map: GameMap, anchors: readonly Cell[], blo
   return seen;
 }
 
+/**
+ * 막는 이벤트가 차지하는 칸 — 앵커 칸과 몸 사각의 통행 줄(런타임 passRect 와 같은 eventPassageRect) 전부.
+ * 왜(2026-10-29 vm4 deepseek 탈출): 가구 전체 조사(settleFurnitureSpots)로 1×2 몸이 된 「촛대 선반」 윗칸이 방 오른쪽으로 가는 유일한 목을
+ * 막았는데, 앵커 칸만 막힘으로 세어 사람 떼기가 하녀를 남은 목(13,6)에 세웠고 자동 플레이가 탈출문 쪽에 갇혔다.
+ */
 function blockersOf(map: GameMap, except?: string): Set<number> {
   const out = new Set<number>();
-  for (const ev of map.events ?? []) if (ev.id !== except && eventBlocks(ev)) out.add(ev.y * map.width + ev.x);
+  for (const ev of map.events ?? []) {
+    if (ev.id === except || !eventBlocks(ev)) continue;
+    out.add(ev.y * map.width + ev.x);
+    const rect = eventPassageRect(ev);
+    for (let y = Math.max(0, rect.top); y <= Math.min(map.height - 1, rect.bottom); y++) {
+      for (let x = Math.max(0, rect.left); x <= Math.min(map.width - 1, rect.right); x++) out.add(y * map.width + x);
+    }
+  }
   return out;
+}
+
+/** 이벤트 몸 사각의 어느 칸이든 걸어 닿는 칸 곁(또는 위)인가. 1×1 이면 앵커 곁과 같다. */
+function bodyReached(map: GameMap, reach: Uint8Array, ev: GameEvent): boolean {
+  const rect = eventBodyRect(ev);
+  for (let y = rect.top; y <= rect.bottom; y++) for (let x = rect.left; x <= rect.right; x++) {
+    if (x < 0 || y < 0 || x >= map.width || y >= map.height) continue;
+    if (reach[y * map.width + x] || nextTo(map, reach, { x, y })) return true;
+  }
+  return false;
 }
 
 const nextTo = (map: GameMap, reach: Uint8Array, c: Cell) => DIRS.some(([dx, dy]) => {
@@ -92,7 +115,7 @@ export function unreachableEvents(project: Project, mapId: string, eventIds?: re
   const anchors = anchorsOf(project, map);
   if (!anchors.length) return [];
   const reach = reachFrom(project, map, anchors, blockersOf(map));
-  return (map.events ?? []).filter((ev) => (!eventIds || eventIds.includes(ev.id)) && !nextTo(map, reach, ev) && !reach[ev.y * map.width + ev.x]).map((ev) => ev.id);
+  return (map.events ?? []).filter((ev) => (!eventIds || eventIds.includes(ev.id)) && !bodyReached(map, reach, ev)).map((ev) => ev.id);
 }
 
 const DOOR_NAME = /문|door|출구|현관|exit|gate/iu;

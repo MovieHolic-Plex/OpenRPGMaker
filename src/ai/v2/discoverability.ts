@@ -326,8 +326,11 @@ export function refreshObjectiveRoutes(project: Project): number {
           const tail = /\s*\(([^()]*?)\s*입구:[^()]*\)\s*$/u.exec(message);
           if (!tail) {
             // 같은 맵 꼬리 「(마왕과의 결전)」 또는 글에 잠긴 이벤트 이름이 나오면 그 잠금을 여는 전투로 돌린다.
-            const plainTail = /\s*\(([^()]*)\)\s*$/u.exec(message);
-            const base = plainTail ? message.slice(0, plainTail.index).trimEnd() : message;
+            // 「(북서쪽)」 처럼 방위 한 낱말만 있는 꼬리는 꼬리가 없는 것으로 본다 — 다른 맵 입구까지 이어 주는 꼬리로 다시 쓴다
+            // (2026-10-29 vm4 deepseek jrpg: 「…돌문에 동굴 열쇠를 쓰자 (북서쪽)」 — 돌문은 동굴 맵 안이고 마을 입구는 언덕 아래 길로만 닿았다).
+            const tail0 = /\s*\(([^()]*)\)\s*$/u.exec(message);
+            const plainTail = tail0 && !/^(?:북|남|동|서|북동|북서|남동|남서|가운데)쪽?$/u.test(tail0[1]!.trim()) ? tail0 : null;
+            const base = tail0 ? message.slice(0, tail0.index).trimEnd() : message;
             const gated = [...holders.keys()].map((id) => find(id)).find((ref) => ref && bare(String(ref.event.name ?? "")).length >= 2
               && (plainTail ? bare(plainTail[1]!) === bare(String(ref.event.name)) : bare(base).includes(bare(String(ref.event.name)))));
             const holder = holderFor(gated);
@@ -336,7 +339,10 @@ export function refreshObjectiveRoutes(project: Project): number {
               // 2026-10-29 vm1 argon jrpg: 보스에 「마왕」 이름이 붙은 뒤 「마왕과 최후의 결전을 벌여 승리한다」(동굴의 문 이벤트) 가
               // 「(시작 마을 입구: 남쪽 → 마왕의 방 · 마왕)」 을 붙일 수 있게 됐는데, 위 가지는 잠긴 이벤트 이름을 담은 글만 고쳐 출하 검사가 남았다.
               if (plainTail) continue;
-              const updated = withWhere(project, from, message, undefined, origin);
+              let updated = withWhere(project, from, base, undefined, origin);
+              // 글에서 어디를 못 찾으면 다음 청사진 단계가 다른 맵에 있을 때 그 맵 입구로 — 이 목표를 거는 단계 다음이 곧 갈 곳이다.
+              if (updated === base && next && next.map.id !== from) updated = withWhere(project, from, base, next.event.id, origin);
+              if (updated === base && tail0) updated = message;
               if (updated !== message) { fields.message = updated; changed += 1; }
               continue;
             }
