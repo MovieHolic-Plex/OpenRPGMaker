@@ -618,7 +618,7 @@ export function codeTerrainFor(theme: string, args: Record<string, unknown>, W: 
   const tiers0 = Number(args.tiers);
   const tiers = Number.isFinite(tiers0) && tiers0 > 0 ? tiers0 : plain && ch === "hill" ? 1 : undefined;
   // 땅 모양 낱말이 없는 강·평지 요청은 동서 띠 하나만(남북 단 경계 토막·평지 한가운데 계단 금지, 2026-10-30 ab19)
-  const bands = plain && !(Number.isFinite(tiers0) && tiers0 > 0) && (ch === "hill" || ch === "flat") && water !== "bog";
+  const bands = !(Number.isFinite(tiers0) && tiers0 > 0) && water !== "bog" && ((plain && ch === "hill") || ch === "flat"); // 평지(낱말·기본 모두)도 덩이 둔덕 대신 띠
   return generateCodeTerrain({ W, H, seed, ...(ch ? { character: ch } : {}), ...(high ? { high } : {}), water, ...(tiers ? { tiers } : {}), ...(bands ? { bands: true } : {}) });
 }
 

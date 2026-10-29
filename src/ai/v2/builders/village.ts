@@ -93,6 +93,14 @@ export function villageArgs(spec: PlaceSpec): { args: Record<string, unknown>; m
   }
   // 모델이 땅 모양 낱말(hillside·terraces·highland)을 form 에 넣으면 인자 검증에서 한 번 실패했다(2026-10-29 실조수 flash) — terrain 으로 옮긴다
   if (typeof args.form === "string" && ["hillside", "terraces", "highland"].includes(args.form)) { if (args.terrain === undefined) args.terrain = args.form; delete args.form; warnings.push("hints.form 의 땅 모양 낱말을 terrain 으로 옮겼다"); }
+  // 땅 모양 낱말 없는 요청에 모델이 단을 얹는다(2026-10-30 실조수: 「강가 장터 마을」에 terra 가 landform terraces·tiers 2 → 강이 협곡이 되어 남북 절벽,
+  // opus 는 「강가 시골」에 landform flat → 덩이 둔덕과 평지 한가운데 계단). 명세 이름·특징·구역에 땅 모양 낱말이 없으면 그 힌트를 버리고 평지(북쪽 동서 띠 하나)로 짓는다.
+  const terrainWord = /언덕|산골|산촌|산마을|산비탈|비탈|계단식|다랑|고원|절벽|능선|분지|고지|높은|hill|mountain|slope|terrace|plateau|mesa|cliff|ridge|highland|basin/;
+  if (!has(text, terrainWord) && (args.theme === undefined || args.theme === "river" || args.theme === "coast")) {
+    const dropped = (["landform", "terrain", "tiers", "high", "settle"] as const).filter((k) => args[k] !== undefined && args[k] !== "flat");
+    if (dropped.length) warnings.push(`요청에 땅 모양 낱말이 없어 hints.${dropped.join("·")} 를 버리고 평지(북쪽 동서 단 하나)로 지었다`);
+    for (const k of ["landform", "terrain", "tiers", "high", "settle"]) delete args[k];
+  }
   if (args.harbour === true) { args.width = Math.max(Number(args.width ?? 0), 84); args.height = Math.max(Number(args.height ?? 0), args.landform === "flat" || args.terrain === "flat" ? 30 : 38); } // 지형 먼저 포구는 마을 단 뒤 높은 단 자리까지 8줄 더
   return { args, missing, warnings };
 }
