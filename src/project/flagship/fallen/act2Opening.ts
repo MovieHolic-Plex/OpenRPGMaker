@@ -1136,9 +1136,10 @@ function dawnwellEvents(project: Project): void {
   mems.forEach((m, i) => {
     const id = `ev_fs2_dawn_mem_${i}`;
     addEvent(town, id, "새벽샘의 흔적", m.at, [
-      // 독립 판정(judge14): 투명한 조사 칸이라 150걸음 동안 못 찾았다 — 밟으면 보이고(닿기), 다가가면 반짝인다. 본 뒤엔 조용하다.
+      // 독립 판정(judge14): 투명한 조사 칸이라 150걸음 동안 못 찾았다 — 은은히 빛나고 다가가면 반짝인다. 본 뒤엔 조용하다.
+      // (우물 둘레 흔적은 못 밟는 칸이라 닿기가 아니라 조사 — 아래층 조사는 막힌 칸이면 옆에서 바라보고 누른다.)
       page(`${id}_p`, "흔적", [sw(SW_MEMS[i]!, false)], [...m.lines.map(([who, body]) => who ? say(who, body) : narrate(body)), setSw(SW_MEMS[i]!)],
-        { priority: "below", trigger: { kind: "playerTouch" }, glow: { radius: 1, color: "#ffd890" }, nearSparkle: { radius: 3 } }),
+        { priority: "below", glow: { radius: 1, color: "#ffd890" }, nearSparkle: { radius: 3 } }),
     ]);
   });
   const allMems: Condition[] = SW_MEMS.map((id) => sw(id));
