@@ -13,7 +13,7 @@ import { withJosa } from "@/util/josa";
 import { eventGives } from "./blueprint";
 import { showExaminedThing } from "./examineArt";
 import { settleExamineSpot } from "./examineSpot";
-import { unreachableEvents } from "./eventReach";
+import { reachableCells, unreachableEvents } from "./eventReach";
 import { mapRegion } from "./discoverability";
 import { isPassable } from "@/project/collision";
 import { buildPeople, tileLabel } from "./people";
@@ -214,7 +214,97 @@ export function stageMysteryCase(run: BuildRun): string[] {
   const named = repairPageNameLabels(run);
   const closed = closeEndingShortcuts(run);
   const notes = stageMysteryCaseInner(run);
-  return [...named, ...closed, ...notes, ...closeEndingShortcuts(run), ...ensureEvidenceGiven(run), ...renameProgressEvidence(run), ...nameLeakedEventIds(run)];
+  return [...named, ...closed, ...notes, ...closeEndingShortcuts(run), ...ensureEvidenceGiven(run), ...renameProgressEvidence(run), ...evidenceOnThing(run), ...nameLeakedEventIds(run)];
+}
+
+/**
+ * 지목 증거를 사람이 말 끝에 그냥 건네면(「…발소리를 들었어.」 → 「『떨어진 은단추』를 증거로 챙겼다.」) 그 물건을 바닥에 떨어진 조사 칸으로 옮긴다 —
+ * 사람은 어디를 보라고 말하고(그 사람 이야기를 들은 뒤에만 열림), 플레이어가 그 칸을 조사해 증거를 얻는다. 되풀이 안전(`<사람 id>_evidence`).
+ * 왜(2026-10-29 vm5 argon 추리, 감독 지적): 여관 주인이 발소리 얘기 뒤 아무 물건도 건네지 않았는데 증거가 손에 들어와 급전개였다.
+ */
+function evidenceOnThing(run: BuildRun): string[] {
+  const keys = new Set<string>();
+  for (const map of Object.values(run.ctx.project.maps)) for (const ev of map.events ?? []) for (const pg of ev.pages ?? []) walkCommands(pg.commands, (c) => {
+    if (c.kind === "presentItem") for (const o of (c.options ?? []) as Obj[]) if (typeof o.itemId === "string") keys.add(o.itemId);
+  });
+  const notes: string[] = [];
+  for (const itemId of keys) {
+    const item = run.ctx.project.database.items.find((i) => i.id === itemId);
+    if (!item || KEY_ITEM.test(item.name ?? "")) continue;
+    const name = String(item.name ?? "").trim();
+    for (const map0 of Object.values(run.ctx.project.maps)) for (const giver of map0.events ?? []) {
+      if (!visiblePerson(giver) || /^용의자|· 탐문$/u.test(nameOf(giver))) continue;
+      if ((giver.pages ?? []).some((pg) => / · (탐문|증거)$/u.test(String((pg as { name?: string }).name ?? "")))) continue;
+      const spotId = `${giver.id}_evidence`;
+      if ((map0.events ?? []).some((e) => e.id === spotId)) continue;
+      const pages = structuredClone(giver.pages ?? []) as unknown as Obj[];
+      const pi = pages.findIndex((pg) => ((pg.commands ?? []) as Obj[]).some((c) => c.kind === "changeItem" && c.itemId === itemId && c.op !== "-="));
+      if (pi < 0) continue;
+      const cmds = (pages[pi]!.commands ?? []) as Obj[];
+      const gate = cmds.find((c) => c.kind === "setSwitch" && c.value !== false && !String(c.switchId).includes("taken"))?.switchId
+        ?? cmds.find((c) => c.kind === "setSwitch" && c.value !== false)?.switchId;
+      if (typeof gate !== "string") continue;
+      const map = run.ctx.project.maps[map0.id]!;
+      const spot = evidenceCell(run, map, giver);
+      if (!spot) continue;
+      const who = nameOf(giver) || "그 사람";
+      // 의자·탁자는 방에 여럿이다 — 방위를 앞에 붙인다(「남서쪽 의자 옆」).
+      const near = spot.near ? `${mapRegion(map, spot.x, spot.y)} ${spot.near} 옆` : mapRegion(map, spot.x, spot.y);
+      const at = cmds.findIndex((c) => c.kind === "changeItem" && c.itemId === itemId);
+      const next = cmds[at + 1];
+      const drop = next && next.kind === "text" && typeof next.body === "string" && next.body.includes(`『${name}』`) ? 2 : 1;
+      cmds.splice(at, drop, { kind: "text", speaker: who, body: `그러고 보니 소동 뒤에 ${near} 바닥에서 뭔가 반짝이던데… 한번 살펴보게.` });
+      pages[pi]!.commands = cmds;
+      // 다시 말을 걸면 「더는 볼 것이 없다」(조사 칸 말투) 대신 그 사람이 자리를 다시 일러 준다.
+      for (const [k, pg] of pages.entries()) {
+        const list = (pg.commands ?? []) as Obj[];
+        if (k !== pi && list.length && list.every((c) => c.kind === "text" && /^더는 볼 것이 없다\.?$/u.test(String(c.body ?? "")))) pg.commands = [{ kind: "text", speaker: who, body: `${near} 바닥을 살펴보게. 범인이 흘린 게 있을지도 모르네.` }];
+      }
+      const before = new Set(unreachableEvents(run.ctx.project, map.id));
+      const snapshot = run.ctx.project;
+      const base = { trigger: { kind: "action" }, priority: "below", graphic: { transparent: true }, nearSparkle: { radius: 2 }, movement: { type: "fixed", speed: 3, frequency: 3 } };
+      const spotPages: Obj[] = [
+        { ...base, id: `${spotId}_p0`, name: "증거 물건 · 아직", conditions: [], commands: narrate([`바닥에 무언가 떨어져 있다. 먼저 「${who}」의 이야기를 들어 보자.`]) },
+        { ...base, id: `${spotId}_p1`, name: "증거 물건", conditions: [{ kind: "switch", switchId: gate, value: true }], commands: [...narrate([`${near} 바닥에 『${name}』${jo(name, "이/가")} 떨어져 있다. 누군가 서둘러 떨어뜨린 것 같다.`]), { kind: "changeItem", itemId, op: "+=", amount: 1 } as unknown as Command, ...narrate([`『${name}』${jo(name, "을/를")} 증거로 챙겼다.`]), { kind: "setSelfSwitch", key: "A", value: true } as unknown as Command] },
+        { ...base, id: `${spotId}_p2`, name: "증거 물건 · 끝", conditions: [{ kind: "selfSwitch", key: "A", value: true }], commands: narrate(["더는 볼 것이 없다."]) },
+      ];
+      run.call("upsert_event", { mapId: map.id, replacePages: true, event: { id: giver.id, ...(nameOf(giver) ? { name: nameOf(giver) } : {}), pages } });
+      run.call("upsert_event", { mapId: map.id, event: { id: spotId, name, x: spot.x, y: spot.y, pages: spotPages } });
+      if (unreachableEvents(run.ctx.project, map.id).some((id) => !before.has(id))) { run.ctx.project = snapshot; continue; }
+      notes.push(`증거 『${name}』${jo(name, "을/를")} 「${who}」${jo(who, "이/가")} 건네지 않고 (${spot.x},${spot.y}) ${near} 바닥 조사로(이야기를 들은 뒤 열림)`);
+    }
+  }
+  return notes;
+}
+
+/** 증거가 떨어진 바닥 칸 — 사람 둘레 2~7걸음, 걸어 닿는 빈 바닥(이벤트·이동 칸 없음), 가구 곁이면 먼저. 가구 이름을 같이 준다. */
+function evidenceCell(run: BuildRun, map: GameMap, giver: GameEvent): { x: number; y: number; near?: string } | undefined {
+  const project = run.ctx.project;
+  const reach = reachableCells(project, map);
+  if (!reach) return undefined;
+  const w = map.width;
+  const m = map as unknown as Record<string, ArrayLike<number> | undefined>;
+  const furniture = (x: number, y: number): string => {
+    if (x < 0 || y < 0 || x >= w || y >= map.height || isPassable(project, map, x, y)) return "";
+    for (const key of ["upperTiles", "upperOverlayTiles"]) {
+      const t = m[key]?.[y * w + x];
+      if (typeof t !== "number" || t < 0) continue;
+      const label = tileLabel(project, map, t).replace(/\s*\((?:-?\d+,\s*-?\d+)\)\s*$/u, "").replace(/^.*·\s*/u, "").replace(/\s*\d+[×x]\d+$/u, "").replace(/\s+[NSEW]$/u, "").trim();
+      if (label && !/바닥|벽|깔개|러그|그림자|공허|천장|창|문|floor|wall|rug|shadow|ceiling|void|door/iu.test(label)) return label;
+    }
+    return "";
+  };
+  const taken = new Set((map.events ?? []).map((e) => `${e.x},${e.y}`));
+  const start = project.startMapId === map.id ? project.startPos : undefined;
+  let best: { x: number; y: number; near?: string; score: number } | undefined;
+  for (let y = 1; y < map.height - 1; y += 1) for (let x = 1; x < w - 1; x += 1) {
+    const d = Math.abs(x - giver.x) + Math.abs(y - giver.y);
+    if (d < 2 || d > 7 || !reach[y * w + x] || taken.has(`${x},${y}`) || (start && start.x === x && start.y === y) || !isPassable(project, map, x, y)) continue;
+    const near = [[0, -1], [-1, 0], [1, 0], [0, 1]].map(([dx, dy]) => furniture(x + dx!, y + dy!)).find(Boolean);
+    const score = (near ? 0 : 20) + d;
+    if (!best || score < best.score || (score === best.score && (y < best.y || (y === best.y && x < best.x)))) best = { x, y, near, score };
+  }
+  return best ? { x: best.x, y: best.y, near: best.near } : undefined;
 }
 
 /** 대사 속 「ev_npc_…」(청사진 step.event 가 id 라 그대로 적힌 이름)을 그 이벤트 이름으로. */
@@ -469,8 +559,11 @@ function explainRemainingClues(run: BuildRun): string[] {
   const clues = steps.filter((r) => r.k < last.k);
   // 단계 j 를 마쳤다는 표시 = 그 단계 이벤트가 켜는(주는) 전역 스위치·아이템 가운데 다음 단계(마지막이면 지목 단계)의 페이지 조건으로 쓰이는 것.
   // 자기 스위치·「taken」 같은 그 이벤트 안 표식은 다른 이벤트 조건으로 옮기면 뜻이 없다(vm3 deepseek 추리 재생: 남의 selfSwitch 를 복사해 자동 플레이가 깨졌다).
+  // 단계 사람이 가리킨 증거 물건 칸(evidenceOnThing `<id>_evidence`)이 주는 것도 그 단계의 결과다.
+  const spotOf = (r: Resolved) => (r.map.events ?? []).find((e) => e.id === `${r.ev.id}_evidence`);
   const doneCond = (r: Resolved, next: Resolved): Obj[] | undefined => {
-    const gives = eventGives(project, r.ev);
+    const own = eventGives(project, r.ev), spot = spotOf(r) ? eventGives(project, spotOf(r)!) : undefined;
+    const gives = { switches: [...own.switches, ...(spot?.switches ?? [])], items: [...own.items, ...(spot?.items ?? [])] };
     for (const pg of next.ev.pages ?? []) for (const c of ((pg.conditions ?? []) as unknown as Obj[])) {
       if (c.kind === "switch" && c.value !== false && gives.switches.includes(String(c.switchId))) return [{ kind: "switch", switchId: c.switchId, value: true }];
       if (c.kind === "item" && c.present !== false && gives.items.includes(String(c.itemId))) return [{ kind: "item", itemId: c.itemId, present: true }];
@@ -503,6 +596,8 @@ function explainRemainingClues(run: BuildRun): string[] {
   const where = (r: Resolved) => {
     const suspects = ours(r.map);
     if (suspects.some((e) => e.id === r.ev.id)) return `용의자 ${suspects.map((e) => `「${nameOf(e)}」`).join("·")}에게 증거 내밀기${r.map.id === last.map.id ? "" : `(${r.map.name ?? r.map.id})`}`;
+    const spot = spotOf(r);
+    if (spot) return `「${label(r)}」${jo(label(r), "이/가")} 말한 「${nameOf(spot)}」${r.map.id === last.map.id ? "" : `(${r.map.name ?? r.map.id})`}`;
     if (r.map.id === last.map.id && visiblePerson(r.ev)) return `「${label(r)}」`;
     const thing = hostThing(project, r.map, r.ev);
     const place = r.map.id === last.map.id ? mapRegion(r.map, r.ev.x, r.ev.y) : r.map.name ?? r.map.id;
