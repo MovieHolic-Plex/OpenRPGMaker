@@ -143,7 +143,10 @@ const imageProbing = new Set<string>();
 
 /** 시험할 최종 모델 ID — 그림 모델 패턴에 맞는 것·기본 모델 먼저, suffix 방식이면 강도 접미사를 붙인 이름까지. */
 export function openAiCompatImageProbeCandidates(row: Pick<StoredOpenAiCompatEndpoint, "models" | "defaultModel" | "reasoningMode" | "allowModels" | "blockModels" | "imageModels">): string[] {
-  const listed = openAiCompatAllowedModels(row, [...(row.defaultModel ? [row.defaultModel] : []), ...row.models]);
+  // 허용 목록에 이름 그대로 적힌 모델도 시험한다(패턴 «*» 이 든 것 빼고) — 2026-10-30 실측: proxy8318 의 models 가 비어 기본 모델(gemini-3.8-flash)만
+  // 시험됐고, 같은 길로 그림에 빈 답을 주는 gemini-4-argon 은 «본다»로 남아 그림이 든 차례마다 빈 답(조수 «I seem to be encountering an error»)을 받았다.
+  const exactAllowed = row.allowModels.filter((id) => !/[*?]/u.test(id));
+  const listed = openAiCompatAllowedModels(row, [...(row.defaultModel ? [row.defaultModel] : []), ...row.models, ...exactAllowed]);
   const expanded = listed.flatMap((id) => row.reasoningMode === "suffix"
     ? [id, ...["high", "medium", "low"].map((level) => openAiCompatSuffixedModelId(id, level))]
     : [id]);
