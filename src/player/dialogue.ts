@@ -115,8 +115,9 @@ export type DialogueTextRequest = DialogueSurfaceSettings & {
   /** 엔딩 에필로그의 글. 스킵은 이 글을 절대 건너뛰지 않는다(interpreter text 단계의 endingEpilogue). */
   readonly endingEpilogue?: boolean;
   /**
-   * 바로 뒤에 질문 없는 선택지가 온다(interpreter text 단계). 마지막 쪽이 다 나오면 키를 기다리지 않고 닫아
-   * 선택지가 이 글을 틀에 남긴 채 함께 뜬다. ▼ 만 보이고 선택지가 안 보이던 막힘(VQA mt3 terra 197). 말풍선은 틀에 남지 않아 예외.
+   * 바로 뒤에 질문 없는 선택지가 온다(interpreter text 단계). 마지막 쪽 커서를 ■ 대신 ▼ 로 그려 결정 키 한 번이면
+   * 선택지가 이어진다는 것을 보인다. 글은 자기 결정 키를 기다린다 — 스스로 닫으면 「계속」 키가 선택지를 고른다.
+   * 선택지는 이 글을 틀에 남긴 채 뜬다(choiceFrame).
    */
   readonly beforeChoices?: boolean;
   /**
@@ -1349,9 +1350,13 @@ export function createDialogueUI(
         waitingForControl = false;
         stopMouth();
         const last = pageIndex >= pages.length - 1;
-        // ▼ 다음 쪽이 있다 / ■ 이 대사가 끝이다.
-        cursor.textContent = last ? "■" : "▼";
-        cursor.classList.toggle("is-end", last);
+        // ▼ 다음 쪽이 있다 / ■ 이 대사가 끝이다. 바로 뒤에 선택지가 오는 글은 끝 쪽도 ▼ — 결정 키 한 번이면 선택지가 이어진다.
+        // 이 글은 스스로 닫지 않고 자기 결정 키를 기다린다(RPG 메이커 2000 과 같다). 2026-10-29 에 다 나오자마자 닫히게 했더니
+        // 「계속」 하려고 누른 Enter/Z 가 이미 열린 선택지의 0번을 골라 엔딩 분기가 틀어졌다(마왕 편의점 데모 QA).
+        // 그 결정 키 자체·누른 채 반복은 showChoices 의 CHOICE_CONFIRM_GRACE_MS·repeat 거르기가 버린다.
+        const endsHere = last && request.beforeChoices !== true;
+        cursor.textContent = endsHere ? "■" : "▼";
+        cursor.classList.toggle("is-end", endsHere);
         box.classList.add("page-ready");
         scheduleReading();
       };
@@ -1375,13 +1380,12 @@ export function createDialogueUI(
         }
         pageRenderer?.revealAll();
         markPageReady();
-        if (autoClosePage || closesIntoChoices()) timer = window.setTimeout(advance, 0);
+        if (autoClosePage) timer = window.setTimeout(advance, 0);
       };
-      const closesIntoChoices = (): boolean => request.beforeChoices === true && !useBalloon && pageIndex === pages.length - 1;
       const completeTypedPage = (): void => {
         pageRenderer?.revealAll();
         markPageReady();
-        if (autoClosePage || closesIntoChoices()) timer = window.setTimeout(advance, 0);
+        if (autoClosePage) timer = window.setTimeout(advance, 0);
       };
       const typeStep = (): void => {
         const tokens = currentTokens();

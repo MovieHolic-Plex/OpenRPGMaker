@@ -1,0 +1,121 @@
+{
+"base": 33920,
+"cells": [
+{
+"key": "1b2c4187c254892b65beeec7",
+"origin": "cave/broken-pillar/broken-pillar-r2:B@67822819",
+"label": "버들항 동굴 · 부러진 돌기둥 1×2 (0,0)",
+"description": "부러진 홈 파인 돌기둥 밑동과 받침. 아래 칸 막힘, 위 칸 ★.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"기둥",
+"pillar",
+"폐허"
+],
+"passage": "star",
+"layer": "upper"
+},
+{
+"key": "5095cfbfc4aefe6619e4f5e9",
+"origin": "cave/broken-pillar/broken-pillar-r2:B@67822819",
+"label": "버들항 동굴 · 부러진 돌기둥 1×2 (0,1)",
+"description": "부러진 홈 파인 돌기둥 밑동과 받침. 아래 칸 막힘, 위 칸 ★.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"기둥",
+"pillar",
+"폐허"
+],
+"passage": "solid",
+"layer": "upper"
+}
+],
+"defs": {
+"autotileGroups": {},
+"tileGroups": {
+"beodeul:dungeon_cave_broken-pillar": {
+"id": "beodeul:dungeon_cave_broken-pillar",
+"name": "버들항 동굴 · 부러진 돌기둥 1×2",
+"role": "object",
+"source": "bundled-default",
+"defaultLayer": "upper",
+"confidence": "high",
+"tileIds": [
+33920,
+33921
+],
+"description": "부러진 홈 파인 돌기둥 밑동과 받침. 아래 칸 막힘, 위 칸 ★. 키트 bd-pick-dungeon-cave-broken-pillar.",
+"placementRules": "오래된 굴·폐허 방 벽가에."
+}
+},
+"structureKits": {
+"bd-pick-dungeon-cave-broken-pillar": {
+"id": "bd-pick-dungeon-cave-broken-pillar",
+"kind": "object",
+"name": "버들항 동굴 · 부러진 돌기둥 1×2",
+"width": 1,
+"height": 2,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+-1
+],
+"upperTiles": [
+33920
+]
+},
+{
+"tiles": [
+-1
+],
+"upperTiles": [
+33921
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "부러진 홈 파인 돌기둥 밑동과 받침. 아래 칸 막힘, 위 칸 ★.",
+"placementRules": "오래된 굴·폐허 방 벽가에.",
+"tags": [
+"버들항",
+"던전",
+"기둥",
+"pillar",
+"폐허"
+],
+"role": "prop",
+"repeatability": "fixed",
+"layerHome": "upper",
+"themes": [
+"dungeon",
+"던전",
+"cave",
+"동굴"
+],
+"provenance": "object-gen (Opus picker), tiledata/beodeul-dungeon/cave/picks.json"
+}
+}
+}
+},
+"baked": {
+"broken-pillar": {
+"sha256": "67822819d8a7777b830d6dc8967f550bd50703d7a085aff050e64e84439c5d34",
+"gate": "pass",
+"defs": {
+"autotileGroups": [],
+"tileGroups": [
+"beodeul:dungeon_cave_broken-pillar"
+],
+"structureKits": [
+"bd-pick-dungeon-cave-broken-pillar"
+]
+}
+}
+}
+}

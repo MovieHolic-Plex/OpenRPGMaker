@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **187쪽 / 7483KB / 약 2,196,626 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **187쪽 / 7540KB / 약 2,213,904 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -15,9 +15,9 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 
 | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
 |---|---|---|---|---|
-| `openwiki/assistant-v2.md` | 93KB | 31KB | 312 | ~28,356 |
-| `openwiki/atlas-biome-interior.md` | 101KB | 21KB | 515 | ~30,527 |
-| `openwiki/beodeul-city.md` | 191KB | 19KB | 1015 | ~57,960 |
+| `openwiki/assistant-v2.md` | 125KB | 45KB | 355 | ~38,404 |
+| `openwiki/atlas-biome-interior.md` | 109KB | 21KB | 534 | ~32,760 |
+| `openwiki/beodeul-city.md` | 197KB | 19KB | 1029 | ~59,878 |
 | `openwiki/charset-actor-harness.md` | 70KB | 7KB | 501 | ~22,135 |
 | `openwiki/editor-ai-panel.md` | 717KB | 100KB ⚠상한 초과 — 절을 더 쪼개라 | 4646 | ~210,745 |
 | `openwiki/editor-ai-tools.md` | 593KB | 90KB ⚠상한 초과 — 절을 더 쪼개라 | 3954 | ~174,039 |
@@ -35,13 +35,13 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/harnesses/building-kit.md` | 99KB | 4KB | 984 | ~29,868 |
 | `openwiki/harnesses/interview-scene-bank.md` | 56KB | 38KB | 197 | ~17,387 |
 | `openwiki/harnesses/monster-collect-species.md` | 63KB | 18KB | 353 | ~19,132 |
-| `openwiki/harnesses/object-gate.md` | 84KB | 12KB | 615 | ~25,505 |
+| `openwiki/harnesses/object-gate.md` | 89KB | 12KB | 642 | ~26,964 |
 | `openwiki/harnesses/super-harness.md` | 102KB | 4KB | 1063 | ~32,225 |
 | `openwiki/jp-city.md` | 108KB | 14KB | 510 | ~31,925 |
 | `openwiki/runtime-battle.md` | 438KB | 32KB | 2415 | ~128,614 |
 | `openwiki/runtime-m2-flow-controls.md` | 52KB | 23KB | 342 | ~14,200 |
-| `openwiki/runtime-pre-edit-routing.md` | 196KB | 99KB ⚠상한 초과 — 절을 더 쪼개라 | 1180 | ~58,347 |
-| `openwiki/runtime-project-schema.md` | 261KB | 80KB ⚠상한 초과 — 절을 더 쪼개라 | 1820 | ~73,723 |
+| `openwiki/runtime-pre-edit-routing.md` | 197KB | 99KB ⚠상한 초과 — 절을 더 쪼개라 | 1180 | ~58,444 |
+| `openwiki/runtime-project-schema.md` | 264KB | 83KB ⚠상한 초과 — 절을 더 쪼개라 | 1825 | ~74,678 |
 | `openwiki/runtime-sessions.md` | 166KB | 64KB ⚠상한 초과 — 절을 더 쪼개라 | 922 | ~45,466 |
 | `openwiki/team-project-host.md` | 51KB | 5KB | 536 | ~15,628 |
 | `openwiki/testing.md` | 264KB | 48KB | 2395 | ~74,321 |
@@ -72,7 +72,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/ai-workflow.md` | 10 | `.omo/evidence/ai-assistant-failure-modes.md`, `20260709000000_ai_activity_logs.sql`, `docs/2026-07-10-tool-calling-architecture-review.md`, `docs/tool-catalog.md`, `latest.json`, `src/ai/plannerSkip.ts`, `test/authorVillageScopeGate.test.ts`, `test/legacyDbRlsCoverage.node.test.mjs`, `test/tilesetAiClient.test.ts`, `test/volumeContractSession.test.ts` |
 | `openwiki/architecture.md` | 10 | `.lazy.ts`, `.mjs`, `app.cjs`, `bridge.js`, `dist-electron/main.cjs`, `dist-electron/project-core.cjs`, `dist/start-screen.html`, `editor-demo-load.mjs`, `player.js`, `project.json` |
 | `openwiki/asset-store.md` | 21 | `DATA/store-uploads.json`, `OpenRPGMaker-store/scripts/storeCli.ts`, `deploy/README.md`, `installed.json`, `loading.json`, `migrations/012_games.sql`, `migrations/016_game_saves.sql`, `migrations/017_creator_voice.sql`, `packs/pNNN.json`, `preload-files.json`, `preload-sw.js`, `public/cloudsave.js`, `scripts/check-contract.mjs`, `scripts/games-host.mjs`, `src/gameSaves.ts`, `src/games.ts`, `src/markdown.ts`, `src/posts.ts`, `src/web/changelog.ts`, `src/web/discoverPages.ts`, `test/changelog.test.ts` |
-| `openwiki/assistant-v2.md` | 1 | `suite/prompts.json` |
+| `openwiki/assistant-v2.md` | 2 | `assistant-whole-game/tools/hplay.mjs`, `suite/prompts.json` |
 | `openwiki/atlas-biome-interior.md` | 8 | `.loop.json`, `.loop.png`, `interior-merged-palette.html`, `public/assets/atlas-biomes/jungle-chipset.png`, `public/assets/atlas-interior/dungeon-chipset.png`, `scripts/content/atlas-dungeon/split-dungeon.mjs`, `src/assets/atlasBiomeDungeonTileset.json`, `verify-shots/interior-bake-4/new-objects.png` |
 | `openwiki/authoring-play-presets.md` | 1 | `catalog-96.json` |
 | `openwiki/autotiles.md` | 13 | `install-pixel-art-world-shared-host.mjs`, `pixelArtWorldAutotiles.ts`, `prepare-pixel-art-world-xp-library.mjs`, `publish-pixel-art-world-xp-library.mjs`, `reports/pr617-621-integration.md`, `src/assets/tiboRecoveredTileset.json`, `src/project/defaults/iceGrandPlain64.ts`, `src/project/defaults/tallGrassArrange.ts`, `test/iceGrandPlain64.test.ts`, `test/placeConceptRender.test.ts`, `test/villageBuilder.test.ts`, `tiboRecovery.test.ts`, `wildRouteForest.ts` |
@@ -297,7 +297,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 
 절 제목 없음 (평면 목록 페이지).
 
-### `openwiki/asset-store.md` — 43KB · 324줄 · ~12,740 토큰
+### `openwiki/asset-store.md` — 45KB · 333줄 · ~13,308 토큰
 
 - `L6` 어디에 무엇이 있나
 - `L25` 계약 동기화 절차
@@ -307,33 +307,34 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L73` 캐릭터 칸의 짝 초상 (char-gen 캐릭터 세트, 2026-10-20)
   - `L88` 음악 팩의 곡별 고르기 설명 (2026-10-25)
   - `L98` 조수가 스토어 음악을 찾아 넣는다 (2026-10-25)
-- `L131` 게시기
-- `L161` 상태 확인
-- `L165` 에디터 첫 진입 화면 (2026-10-12)
-- `L172` 스토어 창 UX (2026-10-20, 「사용자들이 매우 쉽게」)
-- `L197` 에디터에서 열기 링크 (2026-10-20)
-- `L214` 주인 초안 (D2, 2026-10-20)
-- `L222` 바로 플레이 게임 (2026-10-23)
-  - `L316` 조수와 평가 (2026-10-25)
+- `L140` 게시기
+- `L170` 상태 확인
+- `L174` 에디터 첫 진입 화면 (2026-10-12)
+- `L181` 스토어 창 UX (2026-10-20, 「사용자들이 매우 쉽게」)
+- `L206` 에디터에서 열기 링크 (2026-10-20)
+- `L223` 주인 초안 (D2, 2026-10-20)
+- `L231` 바로 플레이 게임 (2026-10-23)
+  - `L325` 조수와 평가 (2026-10-25)
 
-### `openwiki/assistant-v2.md` — 93KB · 312줄 · ~28,356 토큰 · 통째읽기 잘림
+### `openwiki/assistant-v2.md` — 125KB · 355줄 · ~38,404 토큰 · 통째읽기 잘림
 
 - `L16` 다양성 — 같은 요청이 같은 맵이 되지 않게 (2026-10-23)
 - `L24` 게임 요소 — 퀘스트·아이템·전투·파티·스위치 (2026-10-24)
 - `L38` 새 플레이어 길잡이 — 목표 줄·보이는 이야기 이벤트 (2026-10-26, J90~J96)
   - `L57` 2차 (2026-10-27, J98·J101~J106 — romance-j91·toy-j91 판정)
 - `L84` 게임 조립 기본값 — 타이틀·오프닝을 청사진에 맞춘다 (2026-10-28 스위트 조립 장부)
-- `L120` 모델 호출 무응답 한도·고치기 차례 상한 (2026-10-29 vm1 argon)
-- `L135` 이벤트 자리·시작 칸 (2026-10-29 야외 자동 플레이)
-- `L140` 번호 자물쇠·빈 맵 탈출 (2026-10-29 vm3 flash escape 판정 «가짜 단서·자동 입력»·«단일 빈 맵»)
-- `L154` 조사 자리·조사 표식 (2026-10-29 vm3 terra escape «책상 정면에서는 반응 없음·하이라이트가 흐림»)
-- `L206` 켜는 법
-- `L213` 구조 — v1 실행기를 그대로 쓴다
-- `L231` 빌더가 하는 것 / 못 하는 것
-- `L290` 시험
-- `L298` v1 비교 결과 (2026-10-23, 코드 e06766bd8d)
+- `L122` 모델 호출 무응답 한도·고치기 차례 상한 (2026-10-29 vm1 argon)
+- `L137` 이벤트 자리·시작 칸 (2026-10-29 야외 자동 플레이)
+- `L142` 번호 자물쇠·빈 맵 탈출 (2026-10-29 vm3 flash escape 판정 «가짜 단서·자동 입력»·«단일 빈 맵»)
+- `L156` 조사 자리·조사 표식 (2026-10-29 vm3 terra escape «책상 정면에서는 반응 없음·하이라이트가 흐림»)
+- `L234` 길 찾기 2차 (2026-10-29 vm7 판정 «동굴 가는 길·나무 구멍·용사의 검·안락의자 단서»)
+- `L249` 켜는 법
+- `L256` 구조 — v1 실행기를 그대로 쓴다
+- `L274` 빌더가 하는 것 / 못 하는 것
+- `L333` 시험
+- `L341` v1 비교 결과 (2026-10-23, 코드 e06766bd8d)
 
-### `openwiki/atlas-biome-interior.md` — 101KB · 515줄 · ~30,527 토큰 · 통째읽기 잘림
+### `openwiki/atlas-biome-interior.md` — 109KB · 534줄 · ~32,760 토큰 · 통째읽기 잘림
 
 - `L8` 원본과 칸
 - `L37` 코드
@@ -343,21 +344,21 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L170` 검증
 - `L176` 배·던전 — atlas_biome_dungeon
 - `L181` 기물 묶음 배치 — vignette (2026-10-29, 사용자 결정)
-- `L199` 남은 것
-- `L206` 편집기 「새 맵 → 실내」 기본 (2026-10-01)
-- `L214` 고른 후보 반영 (2026-10-01)
-- `L232` 새 기물 길 (2026-10-01)
-- `L245` 소품 하네스 — 여러 명이 찍고 사용자가 고른다 (2026-10-01)
-  - `L260` 서버 하네스의 자동 공용 등록 (2026-10-04)
-- `L270` 박물관·배 안·투기장 — interior-plus (2026-10-14)
-- `L299` 3/4·품질 재검 — 의자 밖 기물 (2026-10-20, props34)
-  - `L319` 2판 — 독립 적대 판정으로 다시 (2026-10-20)
-- `L339` 퍼즐 방 조각 — interior-plus `puzzle` (2026-10-20)
-- `L356` 천문대 조각 — interior-plus `observatory` (2026-10-21, 사람 허용 대기)
-- `L377` 폴른 스타 방 조각 — interior-plus `fallen` (2026-10-21~22, 위임 허용·굽기 완료)
-- `L432` 조수 실력 시험 — 폴른 스타 세 방 (2026-10-22)
-- `L452` 조수 실력 시험 2 — 1배 확인 루프·독립 비평 (2026-10-22)
-- `L483` 손으로 짠 방 견본 (2026-10-29)
+- `L218` 남은 것
+- `L225` 편집기 「새 맵 → 실내」 기본 (2026-10-01)
+- `L233` 고른 후보 반영 (2026-10-01)
+- `L251` 새 기물 길 (2026-10-01)
+- `L264` 소품 하네스 — 여러 명이 찍고 사용자가 고른다 (2026-10-01)
+  - `L279` 서버 하네스의 자동 공용 등록 (2026-10-04)
+- `L289` 박물관·배 안·투기장 — interior-plus (2026-10-14)
+- `L318` 3/4·품질 재검 — 의자 밖 기물 (2026-10-20, props34)
+  - `L338` 2판 — 독립 적대 판정으로 다시 (2026-10-20)
+- `L358` 퍼즐 방 조각 — interior-plus `puzzle` (2026-10-20)
+- `L375` 천문대 조각 — interior-plus `observatory` (2026-10-21, 사람 허용 대기)
+- `L396` 폴른 스타 방 조각 — interior-plus `fallen` (2026-10-21~22, 위임 허용·굽기 완료)
+- `L451` 조수 실력 시험 — 폴른 스타 세 방 (2026-10-22)
+- `L471` 조수 실력 시험 2 — 1배 확인 루프·독립 비평 (2026-10-22)
+- `L502` 손으로 짠 방 견본 (2026-10-29)
 
 ### `openwiki/authoring-play-presets.md` — 11KB · 88줄 · ~3,520 토큰
 
@@ -417,7 +418,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L131` 함정 목록
 - `L161` 실린 자산의 실측값
 
-### `openwiki/beodeul-city.md` — 191KB · 1015줄 · ~57,960 토큰 · 통째읽기 잘림
+### `openwiki/beodeul-city.md` — 197KB · 1029줄 · ~59,878 토큰 · 통째읽기 잘림
 
 - `L3` 출처 정정 (2026-10-22) — RTP 파생 칸은 크레딧, 나무는 다시 그렸다
 - `L46` 2026-10-05 건물 반려와 사람의 허용/거절 대기열
@@ -426,59 +427,60 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L117` 마을 성벽 bd-wall (2026-10-22, 3판) — 3/4 성벽 길·성문루·망루·계단·쪽문, 눈·사막 변형, 칸 28,544~29,567
 - `L183` 왕도 아스텔 조각 bd-capital (2026-10-27) — 칸 33,408~, 마당 꼬리 바로 뒤
 - `L199` 던전 주제 2 꼬리 bd-pick-dungeon-theme2 (2026-10-27) — 칸 33,664~, 왕도 꼬리 바로 뒤
-- `L205` 민가·성당 외장: 원본 보존 보정 (2026-10-04 사용자 정정)
-- `L231` 원본 유지 일광·길 경계·잔디 보정 (2026-10-04)
-- `L238` 기본 타일셋 (2026-09-30)
-  - `L259` 빠른 집·도로 도구 (2026-10-03)
-  - `L274` 팔레트 실측 (2026-09-30, 헤드리스 chromium, dev 서버, 1600×900)
-- `L300` 무엇이 어디에 있나
-- `L320` 칸 자르기 규칙
-- `L332` 정본 저장·재로드 (2026-09-28)
-- `L340` 조수 시험 — 「버들항 비슷한 로마풍 항구 도시를 깔아줘」
-  - `L351` 결과 (2026-09-28, 두 번)
-- `L371` 라운드 2 (2026-09-29, v7) — 원본이 아닌 도시를 가르치기
-  - `L375` 무엇을 더했나
-  - `L388` 예시 배치 둘과 배치 자
-  - `L399` 참고문서 (v7)
-  - `L405` 정본 (v7)
-  - `L409` 조수 재시험 (klb/claude-opus-5.5, 「원본 좌표에 찍지 말고 새로 설계, 예시도 베끼지 말 것」)
-- `L431` 라운드 3 (2026-09-29, v8) — 블록 키트로 빈 풀밭 없애기
-  - `L436` 무엇을 더했나
-  - `L452` 배우며 찾은 것
-  - `L460` 조수 재시험 (klb/claude-opus-5.5, 라운드 2 과제 + 「블록 키트로」, 블록 25종 번들)
-  - `L480` 정본 (v8)
-- `L484` 다음 방향 (보류 — 이번에는 다시 그리지 않음)
-- `L502` 농장 beodeul_farm 2판·3판 (2026-10-14, 1판 2026-10-13 PR #2489 다시 그림) — 경작지 `farmland`·`farmland_watered` · 작물 · 울타리 · 헛간·닭장
-- `L541` 남은 것
-- `L552` 조수 마을 경로 (2026-10-01) — 「마을 만들어 줘」가 버들항으로 안 가던 원인과 수리
-- `L563` 고른 장소 조각 (2026-10-01) — 변형 20곳에서 사용자가 고른 것을 공용 시트로
-  - `L576` 칸·키트
-  - `L599` 기존 프로젝트
-  - `L605` 참고문서 (조수)
-  - `L612` 화면 증거
-  - `L616` 남은 것
-- `L621` 마을 문법 (2026-10-01 오후) — 「마을 만들어 줘」가 바둑판이 아니라 고른 변형 마을처럼
-  - `L645` 마을 형태 넷 + 이어진 밭 울타리 (2026-10-11)
-  - `L667` 그림자·자연 물가·놓기 규칙·지형 (2026-10-11 사용자 8가지 지적 + 「지형 먼저」)
-  - `L715` 높은 단 오르막·고립 방지·포구 길가·둥근 울타리 (2026-10-11 후속)
-- `L738` 작은 마을 길·마당 구도 보정 (2026-10-04)
-- `L743` 우물 공동마당으로 원본 마을 재배치 (2026-10-04)
-- `L748` 공동마당 식생·울타리/돌벽 보정 (2026-10-04)
-  - `L753` 마을·붓 숲 = 이어진 수관 오토타일 (2026-10-22, 「숲 오토타일을 제대로 적용해야 함」)
-  - `L783` woodland 보정 (2026-10-20)
-- `L801` 기와 복원 · stone 박공 벽/중앙 창 (2026-10-04 사용자 정정)
-- `L806` 물굽이 조밀한 마을 표본 (2026-10-04)
-- `L812` 색 역할 정리 · 따뜻한 황록 확정 (2026-10-05)
-- `L818` 황록 마을 50×50 · 실제 선택 색 적용 (2026-10-05)
-  - `L826` 포석길 끊김 정정 (2026-10-05)
-- `L830` RPG 시설과 생활 역할 (2026-10-05)
-- `L838` 서로 다른 건축 구조의 강변 마을 (2026-10-05 초안 기록 · 4종 반려)
-- `L846` 던전 층: 받침 규칙 + `author_beodeul_dungeon` (2026-10-14, 사용자 스크린샷 · field-enemy fe1)
-  - `L867` 던전 시공기 2판 — 적대 시각 QA 뒤 한 번 고침 (2026-10-14 같은 날)
-  - `L890` 던전 시공기 3판 — 종류(`type`) 8가지 (2026-10-14, 사용자: 「던전 종류가 좀 다양해야 할 것 같다」)
-  - `L915` 던전 시공기 4판 — 장르 × 칩셋 어댑터 (2026-10-15, 사용자: 「던전을 장르별로 — 포켓몬풍 / 일반 RPG / 그 밖」)
-- `L992` 마당 바닥 오토타일 (2026-10-23, village-art)
-- `L1005` 자연 기물 beodeul_organic (2026-10-24) — 숲·들판의 바위·덤불·통나무·버섯·들꽃·고사리·풀·이끼 돌·고목·사당 돌
+- `L205` 동굴 기물 꼬리 bd-pick-dungeon-cave (2026-10-29) — 칸 33,920~, 주제 2 꼬리 바로 뒤
+- `L218` 민가·성당 외장: 원본 보존 보정 (2026-10-04 사용자 정정)
+- `L244` 원본 유지 일광·길 경계·잔디 보정 (2026-10-04)
+- `L251` 기본 타일셋 (2026-09-30)
+  - `L272` 빠른 집·도로 도구 (2026-10-03)
+  - `L287` 팔레트 실측 (2026-09-30, 헤드리스 chromium, dev 서버, 1600×900)
+- `L313` 무엇이 어디에 있나
+- `L333` 칸 자르기 규칙
+- `L345` 정본 저장·재로드 (2026-09-28)
+- `L353` 조수 시험 — 「버들항 비슷한 로마풍 항구 도시를 깔아줘」
+  - `L364` 결과 (2026-09-28, 두 번)
+- `L384` 라운드 2 (2026-09-29, v7) — 원본이 아닌 도시를 가르치기
+  - `L388` 무엇을 더했나
+  - `L401` 예시 배치 둘과 배치 자
+  - `L412` 참고문서 (v7)
+  - `L418` 정본 (v7)
+  - `L422` 조수 재시험 (klb/claude-opus-5.5, 「원본 좌표에 찍지 말고 새로 설계, 예시도 베끼지 말 것」)
+- `L444` 라운드 3 (2026-09-29, v8) — 블록 키트로 빈 풀밭 없애기
+  - `L449` 무엇을 더했나
+  - `L465` 배우며 찾은 것
+  - `L473` 조수 재시험 (klb/claude-opus-5.5, 라운드 2 과제 + 「블록 키트로」, 블록 25종 번들)
+  - `L493` 정본 (v8)
+- `L497` 다음 방향 (보류 — 이번에는 다시 그리지 않음)
+- `L515` 농장 beodeul_farm 2판·3판 (2026-10-14, 1판 2026-10-13 PR #2489 다시 그림) — 경작지 `farmland`·`farmland_watered` · 작물 · 울타리 · 헛간·닭장
+- `L554` 남은 것
+- `L565` 조수 마을 경로 (2026-10-01) — 「마을 만들어 줘」가 버들항으로 안 가던 원인과 수리
+- `L576` 고른 장소 조각 (2026-10-01) — 변형 20곳에서 사용자가 고른 것을 공용 시트로
+  - `L589` 칸·키트
+  - `L612` 기존 프로젝트
+  - `L618` 참고문서 (조수)
+  - `L625` 화면 증거
+  - `L629` 남은 것
+- `L634` 마을 문법 (2026-10-01 오후) — 「마을 만들어 줘」가 바둑판이 아니라 고른 변형 마을처럼
+  - `L658` 마을 형태 넷 + 이어진 밭 울타리 (2026-10-11)
+  - `L680` 그림자·자연 물가·놓기 규칙·지형 (2026-10-11 사용자 8가지 지적 + 「지형 먼저」)
+  - `L728` 높은 단 오르막·고립 방지·포구 길가·둥근 울타리 (2026-10-11 후속)
+- `L751` 작은 마을 길·마당 구도 보정 (2026-10-04)
+- `L756` 우물 공동마당으로 원본 마을 재배치 (2026-10-04)
+- `L761` 공동마당 식생·울타리/돌벽 보정 (2026-10-04)
+  - `L766` 마을·붓 숲 = 이어진 수관 오토타일 (2026-10-22, 「숲 오토타일을 제대로 적용해야 함」)
+  - `L796` woodland 보정 (2026-10-20)
+- `L815` 기와 복원 · stone 박공 벽/중앙 창 (2026-10-04 사용자 정정)
+- `L820` 물굽이 조밀한 마을 표본 (2026-10-04)
+- `L826` 색 역할 정리 · 따뜻한 황록 확정 (2026-10-05)
+- `L832` 황록 마을 50×50 · 실제 선택 색 적용 (2026-10-05)
+  - `L840` 포석길 끊김 정정 (2026-10-05)
+- `L844` RPG 시설과 생활 역할 (2026-10-05)
+- `L852` 서로 다른 건축 구조의 강변 마을 (2026-10-05 초안 기록 · 4종 반려)
+- `L860` 던전 층: 받침 규칙 + `author_beodeul_dungeon` (2026-10-14, 사용자 스크린샷 · field-enemy fe1)
+  - `L881` 던전 시공기 2판 — 적대 시각 QA 뒤 한 번 고침 (2026-10-14 같은 날)
+  - `L904` 던전 시공기 3판 — 종류(`type`) 8가지 (2026-10-14, 사용자: 「던전 종류가 좀 다양해야 할 것 같다」)
+  - `L929` 던전 시공기 4판 — 장르 × 칩셋 어댑터 (2026-10-15, 사용자: 「던전을 장르별로 — 포켓몬풍 / 일반 RPG / 그 밖」)
+- `L1006` 마당 바닥 오토타일 (2026-10-23, village-art)
+- `L1019` 자연 기물 beodeul_organic (2026-10-24) — 숲·들판의 바위·덤불·통나무·버섯·들꽃·고사리·풀·이끼 돌·고목·사당 돌
 
 ### `openwiki/bgm-catalog.md` — 27KB · 362줄 · ~7,031 토큰
 
@@ -1953,39 +1955,40 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L199` Public draft deployment
   - `L215` Wand scene panels and trial timing
 
-### `openwiki/harnesses/object-gate.md` — 84KB · 615줄 · ~25,505 토큰 · 통째읽기 잘림
+### `openwiki/harnesses/object-gate.md` — 89KB · 642줄 · ~26,964 토큰 · 통째읽기 잘림
 
-- `L5` 화풍 기준은 후보 칩셋의 묶음으로 (2026-10-23)
-- `L21` 공방 「한 번에 만들기」 단계 `workshop` (2026-10-23)
-- `L31` Opus 최종 판정 (사용자 결정 2026-10-21)
-- `L92` jp_city 굽기: 이미 출하된 그림 동결 (2026-10-21, 감독 결정·사용자 위임)
-- `L114` (대체됨) 사람 허용이 최종 (사용자 결정 2026-10-20, 옵션 A) — 2026-10-21 Opus 최종 판정으로 대체
-- `L159` 왜
-- `L171` 구성
-  - `L183` 저장소 위치 — 개별 저장소 `MovieHolic-Plex/object-gate` (2026-10-20 분리)
-- `L205` 판정
-- `L217` 보정
-- `L230` 시트 칸 관문
-- `L237` 쓰는 법
-- `L254` 부품은 조립 건물로 (2026-10-13)
-- `L261` 2026-10-14 개편 — 한 번에 3/4 + 버들항 화풍
-  - `L274` 보정 결과(프로필 `473db36f963972c9`, rejected, 기록 `calibration/run-473db36f963972c9.json`)
-- `L287` Sonnet 5.5 high 로 판정자 교체 (2026-10-14~15) — 보정 결과 rejected
-- `L308` 우회 길 제거 (2026-10-15)
-- `L322` 2026-10-15 규칙 v6·v7 (작업자 G, 전권 위임) — 3/4 반쪽 통과, 프로필은 아직 rejected
-  - `L324` 판정 구조 (실험으로 정함)
-  - `L339` 보정 표본 등급 (`calibration/tiers.json`)
-  - `L342` 보정 결과 (프로필 `03c2e291e607b97c`)
-  - `L354` 현재 배선 (2026-10-15 실측, `grep refusal|require_pass|require_all`)
-  - `L364` 비-기물(이펙트·초상·캐릭터 칩·트레이너·월드맵 아이콘)이 지나는 길 — 현재 해석
-- `L370` 후속 2·1 — 얇은 소품 기준 그림 보강 + 새 정상 35장 (2026-10-16, 프로필 `e48906a2b68b219a`, 여전히 rejected)
-- `L384` 정면형 소품 종류 `front_prop` (규칙 v8, 2026-10-16) — 보류로만 간다, 프로필은 여전히 rejected
-- `L399` front_prop 사람 승인 기록 (2026-10-16, 사용자 결정 옵션 2) — 승인 입구만 열었고 프로필은 여전히 rejected
-- `L410` 2026-10-20 1차(철회됨) — 프로필 `ee216f0de5822996` calibrated 로 머지했다가 정정 (규칙·지시문 변경 없음)
-- `L447` 2026-10-20 정정 — 선택 편향 철회, 블라인드 화소 규칙으로 다시 재니 rejected
-- `L477` 2026-10-20 규칙 v9 — 판정자 답 근거로 고침 + 얼린 새 숨김 fresh4 로 최종 측정 (프로필 `1db03a95223e5b0b`, rejected)
-- `L522` 보류(사람 확인) 승인 길 — 검토 화면 `serve-holds` (2026-10-20 낮, 같은 날 저녁 「사람 허용이 최종」 으로 넓어짐 — 위 절이 현행)
-- `L571` 규칙 v10 — 좌석 등받이·팔걸이 면제 (사용자 결정 2026-10-20, 프로필 `4d8774b517f41638`, rejected)
+- `L5` 던전 기물 화풍 묶음 beodeul_dungeon · 사용자 합격 기둥 · column 규칙 실측 (2026-10-29)
+- `L32` 화풍 기준은 후보 칩셋의 묶음으로 (2026-10-23)
+- `L48` 공방 「한 번에 만들기」 단계 `workshop` (2026-10-23)
+- `L58` Opus 최종 판정 (사용자 결정 2026-10-21)
+- `L119` jp_city 굽기: 이미 출하된 그림 동결 (2026-10-21, 감독 결정·사용자 위임)
+- `L141` (대체됨) 사람 허용이 최종 (사용자 결정 2026-10-20, 옵션 A) — 2026-10-21 Opus 최종 판정으로 대체
+- `L186` 왜
+- `L198` 구성
+  - `L210` 저장소 위치 — 개별 저장소 `MovieHolic-Plex/object-gate` (2026-10-20 분리)
+- `L232` 판정
+- `L244` 보정
+- `L257` 시트 칸 관문
+- `L264` 쓰는 법
+- `L281` 부품은 조립 건물로 (2026-10-13)
+- `L288` 2026-10-14 개편 — 한 번에 3/4 + 버들항 화풍
+  - `L301` 보정 결과(프로필 `473db36f963972c9`, rejected, 기록 `calibration/run-473db36f963972c9.json`)
+- `L314` Sonnet 5.5 high 로 판정자 교체 (2026-10-14~15) — 보정 결과 rejected
+- `L335` 우회 길 제거 (2026-10-15)
+- `L349` 2026-10-15 규칙 v6·v7 (작업자 G, 전권 위임) — 3/4 반쪽 통과, 프로필은 아직 rejected
+  - `L351` 판정 구조 (실험으로 정함)
+  - `L366` 보정 표본 등급 (`calibration/tiers.json`)
+  - `L369` 보정 결과 (프로필 `03c2e291e607b97c`)
+  - `L381` 현재 배선 (2026-10-15 실측, `grep refusal|require_pass|require_all`)
+  - `L391` 비-기물(이펙트·초상·캐릭터 칩·트레이너·월드맵 아이콘)이 지나는 길 — 현재 해석
+- `L397` 후속 2·1 — 얇은 소품 기준 그림 보강 + 새 정상 35장 (2026-10-16, 프로필 `e48906a2b68b219a`, 여전히 rejected)
+- `L411` 정면형 소품 종류 `front_prop` (규칙 v8, 2026-10-16) — 보류로만 간다, 프로필은 여전히 rejected
+- `L426` front_prop 사람 승인 기록 (2026-10-16, 사용자 결정 옵션 2) — 승인 입구만 열었고 프로필은 여전히 rejected
+- `L437` 2026-10-20 1차(철회됨) — 프로필 `ee216f0de5822996` calibrated 로 머지했다가 정정 (규칙·지시문 변경 없음)
+- `L474` 2026-10-20 정정 — 선택 편향 철회, 블라인드 화소 규칙으로 다시 재니 rejected
+- `L504` 2026-10-20 규칙 v9 — 판정자 답 근거로 고침 + 얼린 새 숨김 fresh4 로 최종 측정 (프로필 `1db03a95223e5b0b`, rejected)
+- `L549` 보류(사람 확인) 승인 길 — 검토 화면 `serve-holds` (2026-10-20 낮, 같은 날 저녁 「사람 허용이 최종」 으로 넓어짐 — 위 절이 현행)
+- `L598` 규칙 v10 — 좌석 등받이·팔걸이 면제 (사용자 결정 2026-10-20, 프로필 `4d8774b517f41638`, rejected)
 
 ### `openwiki/harnesses/pokemon-character-casting.md` — 25KB · 205줄 · ~6,489 토큰
 
@@ -2867,7 +2870,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L325` 그림 컷 준비와 direction (2026-10-04)
 - `L333` 글자·장면 오프닝 연출 (2026-10-04)
 
-### `openwiki/runtime-pre-edit-routing.md` — 196KB · 1180줄 · ~58,347 토큰 · 통째읽기 잘림
+### `openwiki/runtime-pre-edit-routing.md` — 197KB · 1180줄 · ~58,444 토큰 · 통째읽기 잘림
 
 - `L1` 목표 안내창 자리·한국어 줄바꿈·숫자 입력 (2026-10-28, 장부 hud.json)
 - `L47` 카메라 스크롤은 캔버스 픽셀 격자에 맞춘다 (2026-10-23)
@@ -2905,7 +2908,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L1161` 미연시 추가 화면 — 갤러리 잠금·엔딩 목록·세이브 카드 (2026-10-17, 미연시 시스템 UI 2단계)
 - `L1174` 인물 연출 런타임 — approach·turnToward·대사 자동 돌아보기 (2026-10-22)
 
-### `openwiki/runtime-project-schema.md` — 261KB · 1820줄 · ~73,723 토큰 · 통째읽기 잘림
+### `openwiki/runtime-project-schema.md` — 264KB · 1825줄 · ~74,678 토큰 · 통째읽기 잘림
 
 - `L3` 대사 책상 — 선택 필드 `project.dialogueDesk` (2026-10-24)
 - `L14` 세계 지도 연결 정의 — 선택 필드 `project.worldAtlases` (2026-10-05)
@@ -2967,48 +2970,48 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L1032` Showcase media save-copy durability (issue #693, 2026-09-08)
 - `L1072` 공용 첫 방문 데모 — 읽기 전용 저장 계약 (2026-09-14)
 - `L1106` Project schema & persistence
-- `L1376` Optional medicine PP recovery (2026-10-03)
-- `L1386` Variable arithmetic & loop runtime (2026-08-07)
-- `L1391` Canonical event-draft projection (2026-07-30)
-- `L1398` P2 general buildings and home decorations (2026-08-25)
-- `L1405` 이벤트 초안 보관함: 명시적 저장은 자기가 대체한 디바운스를 취소한다 (2026-08-29)
-- `L1423` Boot normalizers must not create dangling references (2026-08-30)
-- `L1449` `.oprn` 은 단일 파일 게임 컨테이너다 — 편집기와 플레이어 양쪽이 읽는다 (2026-08-30)
-- `L1483` 성장 트리 선택 확장 (2026-09-05)
-- `L1489` 마을 설계서 (2026-09-05)
-- `L1495` 공포 게임 제작 기능 (2026-09-05)
-  - `L1499` 저장된 대사 별칭과 맵 오버레이 (2026-09-05)
-- `L1503` NPC 표시 이름 (2026-09-05)
-- `L1516` 연결 실내 도면의 영속성 (2026-09-05)
-- `L1520` 개념 장소 형상 (2026-09-05)
-- `L1524` Optional village decoration attachments (2026-09-13)
-- `L1535` Optional map climate (Feature16, 2026-09-21)
-- `L1552` Optional authored combat rules (feature16, 2026-09-21)
-- `L1555` AI 저작 보조 설정의 프로젝트 지속성 (Feature16, 2026-09-21)
-- `L1568` 구름량 optional 필드 (2026-09-21)
-  - `L1580` Map atmosphere layers (2026-09-21)
-- `L1601` 필드 HUD 설정 (2026-09-21)
-  - `L1611` HUD 장르·서체 확장 (2026-09-21)
-- `L1623` 타일셋 참고문서 데이터 (2026-09-21)
-- `L1627` 몬스터 보유 조건 연결 작업 (2026-09-25, 진행 중)
-- `L1681` Optional authored slide tables (2026-10-04)
-- `L1691` Uploaded charset pose cadence (2026-10-05)
-- `L1700` 재편집 지형과 게임 높이 규칙 (2026-10-03)
-- `L1709` Optional internal authoring contract
-  - `L1713` Desktop fullscreen and mouse controls (2026-10-04)
-  - `L1728` Cinematic image direction (2026-10-04)
-- `L1737` 글자·장면 오프닝 연출 (2026-10-04)
-- `L1747` 자유 크기 인물 프레임의 발 기준점 (2026-10-06)
-  - `L1764` 공용 native 프레임 정의 보존 (2026-10-06)
-- `L1772` 필드 기술(HM) 선택 필드 (2026-10-15)
-- `L1778` 포켓몬풍 필드·진행 규칙 선택 필드 (2026-10-15, poke-fix-p)
-- `L1785` ItemRecord.heldEffect · MonsterInstance.heldItemId (2026-10-16, poke-depth PR4)
-- `L1790` MonsterSpeciesRecord.ability (2026-10-16, poke-depth PR3)
-- `L1795` StateRecord.volatileStatus·gen1MajorStatus "toxic" (2026-10-16, poke-depth PR2)
-- `L1800` SkillRecord.statStageEffects (2026-10-16, poke-depth PR1)
-- `L1805` SkillRecord.weather (2026-10-16, poke-depth PR5)
-- `L1813` ItemCaptureProfile.condition · MonsterInstance.caughtBallId (2026-10-16, poke-depth PR6)
-- `L1817` 상태의 부위 손실·전투 오라 (2026-10-27)
+- `L1381` Optional medicine PP recovery (2026-10-03)
+- `L1391` Variable arithmetic & loop runtime (2026-08-07)
+- `L1396` Canonical event-draft projection (2026-07-30)
+- `L1403` P2 general buildings and home decorations (2026-08-25)
+- `L1410` 이벤트 초안 보관함: 명시적 저장은 자기가 대체한 디바운스를 취소한다 (2026-08-29)
+- `L1428` Boot normalizers must not create dangling references (2026-08-30)
+- `L1454` `.oprn` 은 단일 파일 게임 컨테이너다 — 편집기와 플레이어 양쪽이 읽는다 (2026-08-30)
+- `L1488` 성장 트리 선택 확장 (2026-09-05)
+- `L1494` 마을 설계서 (2026-09-05)
+- `L1500` 공포 게임 제작 기능 (2026-09-05)
+  - `L1504` 저장된 대사 별칭과 맵 오버레이 (2026-09-05)
+- `L1508` NPC 표시 이름 (2026-09-05)
+- `L1521` 연결 실내 도면의 영속성 (2026-09-05)
+- `L1525` 개념 장소 형상 (2026-09-05)
+- `L1529` Optional village decoration attachments (2026-09-13)
+- `L1540` Optional map climate (Feature16, 2026-09-21)
+- `L1557` Optional authored combat rules (feature16, 2026-09-21)
+- `L1560` AI 저작 보조 설정의 프로젝트 지속성 (Feature16, 2026-09-21)
+- `L1573` 구름량 optional 필드 (2026-09-21)
+  - `L1585` Map atmosphere layers (2026-09-21)
+- `L1606` 필드 HUD 설정 (2026-09-21)
+  - `L1616` HUD 장르·서체 확장 (2026-09-21)
+- `L1628` 타일셋 참고문서 데이터 (2026-09-21)
+- `L1632` 몬스터 보유 조건 연결 작업 (2026-09-25, 진행 중)
+- `L1686` Optional authored slide tables (2026-10-04)
+- `L1696` Uploaded charset pose cadence (2026-10-05)
+- `L1705` 재편집 지형과 게임 높이 규칙 (2026-10-03)
+- `L1714` Optional internal authoring contract
+  - `L1718` Desktop fullscreen and mouse controls (2026-10-04)
+  - `L1733` Cinematic image direction (2026-10-04)
+- `L1742` 글자·장면 오프닝 연출 (2026-10-04)
+- `L1752` 자유 크기 인물 프레임의 발 기준점 (2026-10-06)
+  - `L1769` 공용 native 프레임 정의 보존 (2026-10-06)
+- `L1777` 필드 기술(HM) 선택 필드 (2026-10-15)
+- `L1783` 포켓몬풍 필드·진행 규칙 선택 필드 (2026-10-15, poke-fix-p)
+- `L1790` ItemRecord.heldEffect · MonsterInstance.heldItemId (2026-10-16, poke-depth PR4)
+- `L1795` MonsterSpeciesRecord.ability (2026-10-16, poke-depth PR3)
+- `L1800` StateRecord.volatileStatus·gen1MajorStatus "toxic" (2026-10-16, poke-depth PR2)
+- `L1805` SkillRecord.statStageEffects (2026-10-16, poke-depth PR1)
+- `L1810` SkillRecord.weather (2026-10-16, poke-depth PR5)
+- `L1818` ItemCaptureProfile.condition · MonsterInstance.caughtBallId (2026-10-16, poke-depth PR6)
+- `L1822` 상태의 부위 손실·전투 오라 (2026-10-27)
 
 ### `openwiki/runtime-sessions.md` — 166KB · 922줄 · ~45,466 토큰 · 통째읽기 잘림
 

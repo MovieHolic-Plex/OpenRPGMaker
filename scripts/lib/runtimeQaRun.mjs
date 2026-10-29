@@ -5,7 +5,7 @@ import { runAudioAction } from "./runtimeQaAudio.mjs";
 // 설계: docs/superpowers/specs/2026-08-28-runtime-vision-qa-design.md
 import { createServer as createNetServer } from "node:net";
 import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
-import { join, relative, resolve } from "node:path";
+import { dirname, join, relative, resolve } from "node:path";
 import { homedir, tmpdir } from "node:os";
 import { gunzipSync } from "node:zlib";
 import { fileURLToPath } from "node:url";
@@ -837,6 +837,7 @@ export async function applyOp(page, op, runState) {
     }
     case "evalToFile": {
       const value = await page.evaluate(`(${op.fn})()`);
+      await mkdir(dirname(op.out), { recursive: true });
       await writeFile(op.out, JSON.stringify(value, null, 1));
       return;
     }

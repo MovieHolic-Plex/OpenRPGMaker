@@ -131,6 +131,8 @@ export type BattleEventContext = {
   readonly turn: number;
   readonly activeActorId?: ActorId;
   readonly currentActorCommandKind?: string;
+  /** 지금 행동이 기술이면 그 기술 id(actorCommand 조건의 skillId 비교용). */
+  readonly currentActorSkillId?: string;
 };
 
 export type BattleEventRuntimeOptions = {
@@ -476,7 +478,8 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
       case "actorTurn":
         return options.actors.some((entry) => entry.recordId === condition.actorId) && context.turn === condition.turn;
       case "actorCommand":
-        return context.activeActorId === condition.actorId && (!condition.commandId || condition.commandId === context.currentActorCommandKind);
+        return context.activeActorId === condition.actorId && (!condition.commandId || condition.commandId === context.currentActorCommandKind)
+          && (!condition.skillId || condition.skillId === context.currentActorSkillId);
       case "enemyState": {
         const living = options.enemies.filter((enemy) => enemy.hp > 0 && (!condition.enemyId || enemy.recordId === condition.enemyId));
         const has = living.some((enemy) => enemy.stateIds.includes(condition.stateId));

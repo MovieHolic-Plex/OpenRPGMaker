@@ -3,6 +3,7 @@
 // 왜(2026-10-25 판정 J12/J13, 검은 장미 저택): 조각을 따로 지으니 금고는 자기 대사에 답을 말했고, 시계는 쪽지를 안 봐도 열쇠를 줬고,
 // 서재는 열쇠로 잠갔는데 복도 벽 틈으로 바로 들어갔다. 이 동사는 사슬을 순서대로 묶고(앞 고리가 켠 깃발·준 물건만 뒤 고리가 본다),
 // 답은 단서에만 두고, 문을 지은 뒤 문 칸을 막은 채 플레이어 시작·착지점에서 걸어 문 너머가 닿으면 그 틈을 벽으로 메운다.
+import { josa } from "@/util/josa";
 import { canMove, isPassable } from "@/project/collision";
 import { layerTileAt, setLayerTileAt, shadowAt, setShadowAt } from "@/project/mapLayers";
 import type { GameMap, Project } from "@/project/types";
@@ -288,7 +289,7 @@ export function buildPuzzleChain(run: BuildRun, args: ChainArgs): ContentBuildRe
     const pages: Obj[] = [];
     const rewardCmds = (): Obj[] => {
       const out: Obj[] = [...say(link.reward?.lines)];
-      if (link.reward?.item) { const it = itemId(link.reward.item); have.set(link.reward.item, { kind: "item", itemId: it }); out.push({ kind: "changeItem", itemId: it, op: "+=", amount: 1 }); if (!link.reward.lines?.length) out.push({ kind: "text", body: `『${link.reward.item}』을(를) 얻었다.` }); }
+      if (link.reward?.item) { const it = itemId(link.reward.item); have.set(link.reward.item, { kind: "item", itemId: it }); out.push({ kind: "changeItem", itemId: it, op: "+=", amount: 1 }); if (!link.reward.lines?.length) out.push({ kind: "text", body: `『${link.reward.item}』${josa(link.reward.item, "을/를")} 얻었다.` }); }
       if (link.reward?.flag) { const sw = flag(link.reward.flag, `${args.name}: ${link.reward.flag}`); have.set(link.reward.flag, { kind: "flag", switchId: sw }); out.push({ kind: "setSwitch", switchId: sw, value: true }); }
       return out;
     };

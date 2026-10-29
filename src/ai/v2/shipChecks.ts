@@ -4,6 +4,7 @@
 // 기본 이름(주인공)·기본 얼굴·기본 음악이 그대로 남았고(공포 저택 1턴·시타마치), 엔딩은 대사 한 줄이었다.
 // 기준은 빈 프로젝트(createBlankProject) 자체다 — 그 값과 같으면 «아무도 고르지 않은» 기본값이다.
 // 순수 함수(프로젝트만 읽는다). v2FinishGate 가 출하 차단으로, 조언자가 막는 항목(shipBlockers)으로 같이 부른다.
+import { reloadProblem } from "./reloadCheck";
 import { chaserMapsWithoutHiding } from "@/project/chaserHiding";
 import { createBlankProject } from "@/project/defaults";
 import type { Project } from "@/project/types";
@@ -527,6 +528,9 @@ export function requestedFeatureGaps(project: Project, task: string): ShipBlocke
 export function shipBlockers(project: Project, task: string): ShipBlocker[] {
   const spoilers = titleSpoilers(project);
   if (!wantsWholeGame(task)) return spoilers;
+  // 저장 → 다시 읽기(reloadCheck): 저장본이 안 열리면 플레이어·편집기 모두 게임을 못 연다 — 다른 검사가 다 통과해도 출하 결함(2026-10-29 vm6 「events[9].trigger」).
+  const reload = reloadProblem(project);
+  const reloadBlock: ShipBlocker[] = reload ? [{ id: "project-reload-failed", message: `저장한 프로젝트를 다시 읽지 못한다 — 게임이 열리지 않는다: ${reload.slice(0, 240)}. 그 필드를 고친 뒤 다시 저장한다.`, evidence: reload.slice(0, 120) }] : [];
   // 엔딩 길의 열쇠·금고·문·엔딩 이벤트에 걸어 닿지 못하면 게임을 끝낼 수 없다(J75) — 출하 차단.
   const silentExits = silentLockedExits(project).slice(0, 3).map((hit): ShipBlocker => ({ id: "locked-exit-silent", message: `「${project.maps[hit.mapId]?.name ?? hit.mapId}」 (${hit.x},${hit.y}) 출구는 조건이 맞아야 옮기는데 조건이 안 맞을 때 아무 말이 없다 — 막힐 때 이유 한 줄(무엇이 있어야·먼저 무엇을)을 둔다.`, evidence: `${hit.mapId} ${hit.eventId}` }));
   const strays = strayStepCopies(project).slice(0, 3).map((hit): ShipBlocker => ({ id: "blueprint-stray-copy", message: `청사진 ${hit.step} 이벤트의 사본이 「${project.maps[hit.mapId]?.name ?? hit.mapId}」 (${hit.x},${hit.y}) 에도 있어 싸우거나 엔딩을 부른다 — 「${project.maps[hit.canonicalMapId]?.name ?? hit.canonicalMapId}」 를 건너뛰는 지름길이다.`, evidence: `${hit.mapId} ${hit.eventId}` }));
@@ -580,7 +584,7 @@ export function shipBlockers(project: Project, task: string): ShipBlocker[] {
     message: `전투가 있는데(${sites.slice(0, 3).join(", ")}${sites.length > 3 ? ` 외 ${sites.length - 3}곳` : ""}) 여관·회복약·회복 기술·상점 회복약이 하나도 없어 깎인 HP 가 돌아오지 않는다 — build_blueprint_path 를 다시 부르면 시작 맵에 회복의 샘(전원 회복·저장)과 시작 회복약 3개를 넣고 목표 줄이 샘 자리를 가리킨다. 직접 고치려면 place_savepoint{mapId:시작 맵, heal:true} 와 set_session_start{inventory:{item_potion:3}}.`,
     evidence: `battleSites=${sites.length} healingSources=0`,
   }] : [];
-  return [...blueprint, ...noHealing, ...hidden, ...unlit, ...invisible, ...offArt, ...repeats, ...tints, ...objectives, ...romance, ...editorDefaultsLeft(project), ...endingClosureProblems(project), ...endingConditionsUnset(project), ...openingWithoutPlace(project), ...offPremiseArt(project, task), ...defaultPlaceLeaks(project, task), ...titleMismatch(project, task), ...assemblyTimeMismatches(project).map((m): ShipBlocker => ({ id: "assembly-time-mismatch", message: m.message, evidence: m.evidence })), ...requestedFeatureGaps(project, task), ...chaserWithoutHiding(project), ...selfLoops, ...silentExits, ...strays, ...sparkles, ...unreachable, ...spoilers];
+  return [...reloadBlock, ...blueprint, ...noHealing, ...hidden, ...unlit, ...invisible, ...offArt, ...repeats, ...tints, ...objectives, ...romance, ...editorDefaultsLeft(project), ...endingClosureProblems(project), ...endingConditionsUnset(project), ...openingWithoutPlace(project), ...offPremiseArt(project, task), ...defaultPlaceLeaks(project, task), ...titleMismatch(project, task), ...assemblyTimeMismatches(project).map((m): ShipBlocker => ({ id: "assembly-time-mismatch", message: m.message, evidence: m.evidence })), ...requestedFeatureGaps(project, task), ...chaserWithoutHiding(project), ...selfLoops, ...silentExits, ...strays, ...sparkles, ...unreachable, ...spoilers];
 }
 
 /** 게임이 «아직 안 지어졌다»는 신호 — 뼈대 자리표시만 남았거나 엔딩이 없다(편집기 기본 HUD·창 같은 마감 항목은 여기서 보지 않는다). */

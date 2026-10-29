@@ -9,7 +9,7 @@ import { applyBlueprintOpening } from "@/editor/tools/blueprintOpening";
 import { WRITE_BLUEPRINT_SCHEMA, blueprintDesignerFromEnv, blueprintProgressNote, designBlueprint, parseBlueprintArgs, walkBlueprint } from "./blueprint";
 import { projectBrief } from "./prompt";
 import type { PiAssistantV2Env } from "./env";
-import { roomSpecOf } from "@/editor/handInterior/builder";
+import { HAND_INTERIOR_TILESET_ID, roomSpecOf } from "@/editor/handInterior/builder";
 import { createBuildRun, type RecordingBuildRun } from "./buildRun";
 import { builderFor } from "./builders";
 import { localizePlaceSpec } from "./builders/modernCity";
@@ -21,7 +21,7 @@ import { interiorStampEdit, type StampEditState } from "./builders/interiorEdit"
 import { fixPlayerStart, runMachineChecks, summarizeChecks, type MachineCheck } from "./checks";
 import { critique } from "./critic";
 import type { CriticVerdict } from "@/ai/piAgent/featureReview";
-import type { ContentBuildResult, EventSpec, ObjectSpec, PersonSpec, PlaceBuildResult, PlacePatch, PlaceRecord, PlaceSpec, PlaceType } from "./types";
+import type { ContentBuildResult, EventSpec, ObjectSpec, PersonSpec, PlaceBuildResult, PlacePatch, PlaceRecord, PlaceSpec, PlaceType, ZoneSpec } from "./types";
 import type { Project } from "@/project/types";
 import { buildPeople, findMap, resolveWhere } from "./people";
 import { mapBundleIds } from "@/ai/piAgent/mapBundle";
@@ -32,10 +32,15 @@ import { buildPuzzleChain, sealLockedRoom, type ChainArgs } from "./puzzle";
 import { stageMysteryCase } from "./mysteryCase";
 import { BUILD_BLUEPRINT_PATH_SCHEMA, blueprintMapFor, buildBlueprintPath, sealEscapeExits, type PathStepText } from "./blueprintPath";
 import { clearTargetFronts, clearTransferLanes, repairEventReach, spreadCrowdedPeople, unreachableEvents } from "./eventReach";
-import { ensureSupplyShop } from "./healingAccess";
+import { ensureStartingGold, ensureSupplyShop } from "./healingAccess";
+import { lockBareHouseDoors } from "./lockedDoors";
+import { dressBareSealSteps, dressPickupSteps, seatEntranceSteps } from "./stepArt";
+import { markDeadEndRoads } from "./deadEndRoads";
 import { doorFloorTransfers, dressInteriorExits, dropBuriedTransfers } from "./exitDress";
 import { roadToEdgeExits } from "./edgeExitRoads";
-import { isPlaceholderMap, moveBareEvents, retireBlankStart, retireOrphanMaps } from "./blankStart";
+import { dressBareCaveGates } from "./caveGates";
+import { rampNearGoals } from "./reliefShortcut";
+import { dropShadowedStairLinks, isPlaceholderMap, moveBareEvents, retireBlankStart, retireOrphanMaps } from "./blankStart";
 import { chaserEvents, ensureChaserHidingSpots, mapHidingEvents, markHidingSpots } from "@/project/chaserHiding";
 import { relocateLeadingFace } from "@/editor/tools/eventCompile";
 import { dungeonGateSpot, pickTransferSpot } from "./transferSpot";
@@ -54,6 +59,7 @@ import { rememberObjectPlan, takeObjectPlan, type DrawObjectResult } from "./dra
 import { dressRoom } from "./builders/dressRoom";
 import { tileMoveObjects } from "./builders/tileMove";
 import { planObjective } from "./discoverability";
+import { roomParts, SHAPE_EXAMPLES } from "./roomParts";
 
 // 2026-10-23 5차: 고치기 3바퀴는 바퀴마다 다시 짓기+비평(20~35초)이라 던전 한 장에 200~250초가 들었다.
 // 속도 우선(6차)으로 1바퀴만 — 첫 비평의 major 를 한 번 고치고 남은 것은 보고한다.
@@ -78,6 +84,8 @@ export class V2Session {
   readonly questions: string[] = [];
   /** ask_user 를 한 번 되돌려 보냈는가(아무것도 짓지 않고 물었을 때). */
   askBounced = false;
+  /** 설계 없이 온 손 도트 실내 make_place 를 한 번 되돌려 보낸 장소 이름(2026-10-29 「방을 짓는 건 조수여야만 한다」). */
+  readonly designBounced = new Set<string>();
   /** 같은 청사진을 다시 쓴 횟수(내용이 같으면 바꾸지 않고 다음 동사로 보낸다). */
   blueprintRewrites = 0;
   /** 끝맺음에서 청사진 경로를 함수가 대신 지었는가(한 번만). */
@@ -88,6 +96,10 @@ export class V2Session {
   barePlaces?: Map<string, string>;
   /** 끝맺음에서 이동 칸 앞을 막는 이벤트를 옮겼는가(한 번만). */
   autoLanesDone = false;
+  /** 출구·이동 칸 마감을 돈 뒤의 맵 지문(finishAutoBuild.lanesStamp). 늦은 고치기 차례가 장소를 다시 지으면 달라져 마감을 다시 돈다. */
+  lanesStamp?: string;
+  /** 지문이 달라져 마감을 다시 돈 횟수(되풀이 상한). */
+  lanesReruns = 0;
   /** 이동 칸(착지·문) 앞을 막는 이벤트를 옆으로 옮긴다(createV2Tools 가 건다). 한 일 목록. */
   clearLanes?: () => Promise<string[]>;
   /** 청사진에 있는데 없는(또는 닿지 않는) 장소를 짓고 앞 장소와 잇는다(createV2Tools 가 건다). 한 일 목록. */
@@ -119,6 +131,38 @@ const text = (value: unknown): PiToolExecResult => ({ content: [{ type: "text", 
 
 const PLACE_TYPES: PlaceType[] = ["interior", "village", "dungeon", "cave", "street", "house"];
 const SIZE = { type: "string", enum: ["small", "medium", "large"] };
+// 모델이 쓰는 방 설계(손 도트 실내) — 2026-10-29 사용자 결정 「방을 짓는 건 조수여야만 한다」. 함수는 조화·검사만(designRoom.ts).
+const ROOM_DESIGN_SCHEMA = {
+  type: "object",
+  description: "(실내, 이 방을 직접 설계할 때) 방 모양·크기·문과 가구 묶음. 주면 빌더는 견본을 깔지 않고 이 설계대로 짓고, 이름 맞춤·겹침·의자 방향·문 앞 통로·도달만 고쳐 고친 것을 돌려준다. 기물 id 는 room_parts 로 본다.",
+  properties: {
+    shape: { type: "string", description: "rect 네모 · L ㄱ자(corner 귀퉁이를 도려 냄) · U ㄷ자(북벽 가운데를 도려 냄) · T ㅜ자(남쪽 두 귀퉁이) · bay 창가 돌출(북쪽 두 귀퉁이) · alcove 알코브(corner 쪽 북벽 구석만 남기고 나머지 북벽을 내림). 모양별 최소 바닥·예시·그림은 room_parts. 곁방은 모양이 아니라 zones 를 하나 더(각자 design)" },
+    w: { type: "integer", description: "바닥 가로 칸(5~24)" },
+    h: { type: "integer", description: "바닥 세로 칸(벽면 줄 빼고, 4~18)" },
+    corner: { type: "string", description: "(nw·ne·sw·se) L 이 도려 낼 귀퉁이" },
+    door: { type: "string", description: "남쪽 출구 자리 — left·center·right" },
+    floor: { type: "string", description: "바닥 재질 id(room_parts 의 floors)" },
+    wall: { type: "string", description: "벽면 재질 id(room_parts 의 walls)" },
+    groups: { type: "array", description: "(16개까지) 가구 묶음 — 함께 쓰이는 기물 무리(책상+의자, 안락의자 둘+원탁+등, 책장 줄). 무엇을 몇 개 놓을지는 이 목록이 전부다(함수는 더하지 않는다).", items: {
+      type: "object",
+      properties: {
+        name: { type: "string", description: "묶음 이름: 책상 자리·독서 구석·책장 벽" },
+        at: { type: "string", description: "(north·south·west·east·center·nw·ne·sw·se) 놓는 곳(벽·모서리·가운데). 책장·진열장(벽 가구)과 걸이(창·지도·액자)는 north 에만 선다." },
+        pos: { type: "number", description: "그 벽을 따라 0(서·북 끝)~1(동·남 끝). 기본 0.5" },
+        x: { type: "integer", description: "(선택) 바닥 칸 좌표 — 바닥 왼쪽 위가 0,0. 주면 at 보다 먼저" },
+        y: { type: "integer" },
+        rug: { type: "string", description: "(선택) 묶음 밑 깔개 색: red·royal·blue·green·purple·brown" },
+        items: { type: "array", items: { type: "object", properties: {
+          id: { type: "string", description: "칩셋 기물 id(room_parts) — 예: bookshelf 3w · desk 3x1 · chair N(북쪽을 보는 의자) · armchair" },
+          dx: { type: "integer", description: "묶음 안 상대 칸(왼쪽 위 0,0). 생략하면 앞 기물 옆(벽 서·동 묶음은 아래로)에 잇는다" },
+          dy: { type: "integer", description: "걸이는 -2(벽면 윗줄)" },
+          count: { type: "integer", description: "(1~8) 같은 기물을 몇 개 잇대어" },
+        }, required: ["id"] } },
+      },
+      required: ["items"],
+    } },
+  },
+};
 const ZONE_SCHEMA = {
   type: "object",
   properties: {
@@ -127,6 +171,7 @@ const ZONE_SCHEMA = {
     anchors: { type: "array", items: { type: "string" }, description: "이 구역의 주인공 물건 낱말" },
     vignettes: { type: "array", items: { type: "string" }, description: "(실내, 선택) 이 방에 놓을 기물 묶음 — 몸통 기물 id(bookshelf 2w·forge·counter 3x1). 자리는 함수가 잡는다. 생략하면 방 종류로 고른다" },
     size: SIZE,
+    design: ROOM_DESIGN_SCHEMA,
     floor: { type: "number", description: "몇 층(기본 1)" },
     id: { type: "string" },
   },
@@ -245,9 +290,11 @@ function recordWrite(env: PiAssistantV2Env, run: RecordingBuildRun, toolCallId: 
   env.record({ toolCallId, name, args, result: { ok, summary, ...(data !== undefined ? { data } : {}) }, ...(logs.length ? { constructionLogs: logs } : {}) });
 }
 
-function nextStep(seen: Seen, rounds: number): string {
+function nextStep(seen: Seen, rounds: number, designed = false): string {
   const bad = seen.checks.filter((c) => !c.ok).length + seen.critics.reduce((n, v) => n + v.majors.length, 0);
   if (!bad && !seen.critics.some((v) => v.problem)) return "통과 — 비평 major 0, 기계 검사 통과. 다른 요청 부분이 남았으면 이어서, 아니면 사용자에게 보고한다.";
+  // 조수가 설계한 방: 고치기도 설계로 — 함수가 가구를 골라 채우는 dress_room 을 권하지 않는다.
+  if (designed) return `문제 ${bad}건 — 이 방은 네 design 대로 지었다. warnings 의 「고침:」·「맨바닥」 줄과 비평을 보고 design(크기 w·h, 모양, 묶음과 자리)을 고쳐 edit_place({patch:{mapId, design: 고친 설계 전체}}) 로 다시 짓는다. 가구 하나만 옮기거나 돌리려면 move_object. 못 고치는 것(그림이 없는 물건 등)은 보고에 남긴다.`;
   const furniture = "놓인 가구 하나가 문·길을 막거나 방향이 틀린 major 는 move_object(그 칸 at → to·face·remove)로 고친다. 방이 비었다·빈 바닥이 많다는 문제는 dress_room(mapId, at: 그 방 바닥 한 칸, purpose: 방 쓰임)으로 채운다 — 둘 다 바퀴를 쓰지 않는다.";
   if (rounds >= V2_MAX_REPAIR_ROUNDS) return `고치기 상한(${V2_MAX_REPAIR_ROUNDS}바퀴)에 닿았다 — 다시 짓는 고치기는 더 하지 않는다. ${furniture} 그 밖의 남은 문제는 사용자에게 그대로 보고한다.`;
   return `문제 ${bad}건 — 고칠 수 있으면 edit_place 패치(구역 더하기·주인공 물건 near 좌표·크기·variant·dressing)로 한 번에 고친다(남은 바퀴 ${V2_MAX_REPAIR_ROUNDS - rounds}). ${furniture} 패치로 못 고치는 것(그림이 없는 물건 등)은 보고에 적는다.`;
@@ -272,7 +319,20 @@ function adoptInterior(run: RecordingBuildRun, mapId: string): PlaceRecord | und
 export function applyPatch(spec: PlaceSpec, patch: PlacePatch, floor = 1): PlaceSpec {
   const removed = new Set(patch.removeZones ?? []);
   let zones = (spec.zones ?? []).filter((z) => !removed.has(z.id ?? z.kind) && !removed.has(z.kind));
-  zones = [...zones, ...(patch.addZones ?? []).map((z) => (floor > 1 && !z.floor ? { ...z, floor } : z))];
+  // 설계 방 고치기: 고친 설계 전체로 그 구역의 design 을 바꾼다. 같은 종류의 설계 구역을 addZones 로 다시 보낸 것도 «바꾸기»로 읽는다
+  // (2026-10-29 flash 실조수: 고친 서재 설계를 addZones 로 보내 서재가 둘인 2실이 됐다).
+  const designAt = (want?: string) => zones.findIndex((z) => (z.floor ?? 1) === floor && (want ? z.id === want || z.kind === want : !!z.design));
+  if (patch.design) {
+    const i = designAt(patch.designZone) >= 0 ? designAt(patch.designZone) : zones.findIndex((z) => (z.floor ?? 1) === floor);
+    if (i >= 0) zones[i] = { ...zones[i]!, design: patch.design };
+  }
+  const adds: ZoneSpec[] = [];
+  for (const z of patch.addZones ?? []) {
+    const i = z.design ? zones.findIndex((q) => !!q.design && q.kind === z.kind && (q.floor ?? 1) === (z.floor ?? floor)) : -1;
+    if (i >= 0) zones[i] = { ...zones[i]!, ...z, design: z.design };
+    else adds.push(floor > 1 && !z.floor ? { ...z, floor } : z);
+  }
+  zones = [...zones, ...adds];
   // 위층 맵을 고치는 패치: 물건은 그 층 구역으로(없으면 객실 구역을 만든다) — 1층 홀에 침대가 들어갔다(2026-10-23 v2 실조수).
   if (floor > 1 && patch.addAnchors?.length && !zones.some((z) => z.floor === floor)) zones = [...zones, { kind: "inn_room", floor }];
   const loose: string[] = [];
@@ -375,7 +435,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
           next: keptRounds >= V2_MAX_REPAIR_ROUNDS ? "고치기 상한 — 남은 문제를 보고한다." : "더 작은 패치로 한 번 더 고친다 — 비평 major 중 좌표가 있는 것 하나·둘만 그 칸 범위로 고치고(바닥 전체·방 구조는 건드리지 않는다), 나머지는 보고한다." }, before.seen.get(oldIds[0]!));
       }
     }
-    return withImages({ ok: true, mapIds: result.mapIds, summary: result.summary, warnings: result.warnings, missingArt: result.missingArt, ...seenPayload(seen), round: rounds, next: nextStep(seen, rounds) }, seen);
+    return withImages({ ok: true, mapIds: result.mapIds, summary: result.summary, warnings: result.warnings, missingArt: result.missingArt, ...seenPayload(seen), round: rounds, next: nextStep(seen, rounds, (spec.zones ?? []).some((z) => !!z.design)) }, seen);
   };
 
   const finishContent = async (toolCallId: string, verb: string, args: unknown, result: ContentBuildResult): Promise<PiToolExecResult> => {
@@ -545,7 +605,9 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     // 전투 게임 보급(2026-10-29 vm3 jrpg 판정 「206G 를 쓸 곳이 없다」): 돈을 버는데 상점이 없으면 떠돌이 상인. 경로를 다시 짓지 않은 판도 여기서 건다.
     // 보스 앞 회복(쉼터 결정)·단계 순서 보호는 finishAutoBuild 의 ensureBossRest·orderStepBattlesIn 이 한다.
     try { notes.push(...ensureSupplyShop(run)); } catch { /* 상점 실패는 끝맺음을 깨지 않는다 */ }
+    try { notes.push(...ensureStartingGold(run)); } catch { /* 시작 돈 실패는 끝맺음을 깨지 않는다 */ }
     // 들어오는 길도 이벤트도 없는 빈 사본·끊긴 맵(봉인 뒤 「밀실 뒷방」)을 치운다.
+    notes.push(...dropShadowedStairLinks(run));
     notes.push(...retireOrphanMaps(run));
     // 추격자가 있는데 숨을 곳이 0곳인 맵(2026-10-29 standin horror 「폐병원」) — 맵에 있는 옷장·사물함·침대·커튼 1~2곳을 순찰 길 가까이에서 은신처로.
     for (const [mapId, map0] of Object.entries(env.ctx.project.maps)) {
@@ -593,8 +655,22 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
       for (const n of dropBuriedTransfers(run, mapId)) notes.push(`${env.ctx.project.maps[mapId]?.name ?? mapId}: ${n}`);
       // 바닥 한가운데 투명 이동 칸 → 가장 가까운 외벽에 문(북벽 문 그림·남벽 틈)을 내고 그 앞으로(2026-10-29 vm3 deepseek 탈출 「희미한 빛 위를 걷는 방 이동」).
       for (const n of doorFloorTransfers(run, mapId)) notes.push(`${env.ctx.project.maps[mapId]?.name ?? mapId}: ${n}`);
+      // 풀밭 한가운데 투명 동굴 출입구 → 그 위(또는 8걸음 안)에 갱구를 세운다(2026-10-29 vm3 argon jrpg 「마을 밖 동굴 길이 안 보임」).
+      for (const n of dressBareCaveGates(run, mapId)) notes.push(`${env.ctx.project.maps[mapId]?.name ?? mapId}: ${n}`);
+      // 목표 바로 곁 절벽(한 칸 위·아래인데 멀리 돌아가야 함)에 계단 경사로(2026-10-29 vm4 deepseek jrpg 「동굴 입구가 보이는데 못 닿음」).
+      for (const n of rampNearGoals(run, mapId)) notes.push(`${env.ctx.project.maps[mapId]?.name ?? mapId}: ${n}`);
       // 가장자리 출구가 풀밭 한가운데면 맵의 길로 잇는다(2026-10-29 vm3 argon jrpg 「마을 밖으로 나가는 길이 안 보임」).
       for (const n of roadToEdgeExits(run, mapId)) notes.push(`${env.ctx.project.maps[mapId]?.name ?? mapId}: ${n}`);
+      // 투명 칸 봉인·제단 단계에 돌 제단 그림(2026-10-29 vm6 terra jrpg «봉인이 어디인지 안 보임»).
+      for (const n of dressBareSealSteps(run, mapId)) notes.push(`${env.ctx.project.maps[mapId]?.name ?? mapId}: ${n}`);
+      // 출구 없이 가장자리에서 끊긴 길에 「막힌 길」 표지(2026-10-29 vm6 flash jrpg «동쪽 길은 (41,18)에서 막혔다»).
+      for (const n of markDeadEndRoads(run, mapId)) notes.push(`${env.ctx.project.maps[mapId]?.name ?? mapId}: ${n}`);
+      // 「동굴 입구」 같은 투명 단계 칸을 맵에 그려진 굴 입구(거목 밑동 굴 문·갱구)의 들어가는 칸으로(2026-10-29 vm7 flash jrpg «나무 구멍 무반응»).
+      for (const n of seatEntranceSteps(run, mapId)) notes.push(`${env.ctx.project.maps[mapId]?.name ?? mapId}: ${n}`);
+      // 물건을 얻는 투명 단계 칸은 보물상자로(2026-10-29 vm7 terra jrpg «용사의 검이 어느 건물에 있는지 모름» — 검은 촌장 옆 길 위 투명 칸이었다).
+      for (const n of dressPickupSteps(run, mapId)) notes.push(`${env.ctx.project.maps[mapId]?.name ?? mapId}: ${n}`);
+      // 들어갈 수 없는 집 문 그림에 「잠겨 있다」 한 줄(2026-10-29 vm6 flash·argon jrpg «집 문 무반응»).
+      for (const n of lockBareHouseDoors(run, mapId)) notes.push(`${env.ctx.project.maps[mapId]?.name ?? mapId}: ${n}`);
       const r = clearTransferLanes(run, mapId);
       const name = env.ctx.project.maps[mapId]?.name ?? mapId;
       // 조사·대화 대상 앞(아래 칸)을 막는 의자 하나를 치운다(2026-10-29 VM deepseek mystery: 「의자 때문에 NPC 앞으로 못 간다」).
@@ -649,6 +725,16 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
         spec = { ...rest, hints: { ...(spec.hints ?? {}), newMap: true } };
         keptNote = `「${other.spec.name}」(${target}) 는 이번에 지은 다른 장소라 덮지 않고 「${spec.name}」을 새 맵에 지었다 — 두 장소를 create_transfer_pair 로 잇는다(계단·문).`;
       }
+      // 손 도트 실내 방은 조수가 설계한다: 설계(zones[].design) 없이 오면 장소마다 한 번 되돌려 보낸다. 다시 설계 없이 오면 함수 견본으로 짓는다.
+      if (spec.type === "interior" && !spec.mapId && !/wizard|마법\s*학교|hogwart|sengoku|edo|전국|에도|사무라이|modern|현대|city|도시/iu.test(spec.style ?? "")
+        && !(spec.zones ?? []).some((z) => z.design) && run.ctx.project.tilesets[HAND_INTERIOR_TILESET_ID] && !session.designBounced.has(spec.name)) {
+        session.designBounced.add(spec.name);
+        // 재료(기물 이름표·견본 배치)를 같이 돌려준다 — 되돌려 보내기를 «실패»로 읽고 짓기를 그만둔 모델이 있었다(2026-10-29 flash 「마법사의 서재」).
+        const purpose = (spec.zones ?? []).map((z) => `${z.kind} ${z.purpose ?? ""}`).join(" ") || spec.name;
+        const parts = roomParts(run.ctx.project, purpose);
+        return text({ ok: false, notFailure: true, summary: `아직 짓지 않았다(실패 아님) — 「${spec.name}」의 방은 네가 설계한다. 아래 parts(기물 이름표·바닥/벽면·깔개·견본 배치)를 보고 방마다 zones[].design 을 채워 make_place 를 바로 다시 부르면 지어진다: shape(rect·L ㄱ자·U ㄷ자·T ㅜ자·bay 창가 돌출·alcove 알코브 — parts.shapes·shapeExamples 를 보고 고른다, 곁방은 zones 둘)·w×h(바닥 칸)·door·floor·wall·groups[{name, at(north·south·west·east·center·nw·ne·sw·se), pos, rug, items[{id, dx, dy, count}]}]. 무엇을 몇 개 어디에 놓을지는 네가 정하고 함수는 고친 것만 알린다. 견본은 참고 — 베끼지 않는다.`,
+          ...(parts ? { parts: { shapes: parts.shapes, shapeExamples: parts.shapeExamples, floors: parts.floors, walls: parts.walls, rugs: parts.rugs, items: parts.items, references: parts.references } } : {}) });
+      }
       const builder = builderFor(spec);
       if (!builder) {
         session.missingArt.add(`${spec.name}(${spec.type}${spec.style ? `·${spec.style}` : ""}) — 이 종류를 짓는 빌더가 없다`);
@@ -665,7 +751,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
 
   const editPlace: PiToolShape = {
     name: "edit_place", label: "장소 고치기", concurrency: "exclusive",
-    description: "지은(또는 이미 있는) 장소의 명세 일부만 바꿔 같은 빌더로 다시 짓는다. 비평 major 의 좌표는 addAnchors.near 로 넘긴다. 맵당 1바퀴까지.",
+    description: "지은(또는 이미 있는) 장소의 명세 일부만 바꿔 같은 빌더로 다시 짓는다. 비평 major 의 좌표는 addAnchors.near 로 넘긴다. 맵당 1바퀴까지. 네가 design 으로 설계한 방은 patch.design 에 고친 설계 전체를 넣는다(dressing 은 설계 방에 쓰지 않는다).",
     parameters: { type: "object", properties: { patch: { type: "object", properties: {
       mapId: { type: "string", description: "고칠 맵 id(patch 안에)" },
       set: { type: "object", properties: { name: { type: "string" }, style: { type: "string" }, theme: { type: "string" }, size: SIZE, floors: { type: "number" }, features: { type: "array", items: { type: "string" } }, exits: { type: "array", items: { type: "string", enum: ["south", "north", "east", "west"] } }, hints: HINTS_SCHEMA } },
@@ -675,6 +761,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
       addFeatures: { type: "array", items: { type: "string" } },
       removeFeatures: { type: "array", items: { type: "string" } },
       variant: { type: "number" }, seed: { type: "number" }, dressing: { type: "number" },
+      design: ROOM_DESIGN_SCHEMA, designZone: { type: "string", description: "(설계 방) design 을 바꿀 구역 id·kind — 생략하면 첫 설계 구역" },
     }, required: ["mapId"] } }, required: ["patch"] },
     async execute(id, params) {
       const raw = params as { patch: PlacePatch; mapId?: string };
@@ -918,6 +1005,11 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     async execute(id, params) {
       const p = params as { mapId: string; at: { x: number; y: number }; purpose: string };
       if (!env.ctx.project.maps[p.mapId]) return text({ ok: false, summary: `맵 ${p.mapId} 이 없다` });
+      // 조수가 design 으로 설계한 방은 함수가 가구를 골라 채우지 않는다(2026-10-29 사용자 결정 「방을 짓는 건 조수여야만 한다」 — 첫 실조수 시험에서
+      // Argon 이 설계한 서재를 dress_room 이 망원경 둘·책상 둘을 더해 채웠다).
+      if ((env.ctx.project.maps[p.mapId]!.locations ?? []).some((l) => (l.tags ?? []).includes("model-designed"))) {
+        return text({ ok: false, summary: "이 방은 네가 design 으로 설계한 방이라 함수가 가구를 골라 채우지 않는다. 빈 바닥이 넓으면 design 의 w·h 를 줄이거나 groups 에 묶음(무엇을·몇 개·어디)을 더해 edit_place({patch:{mapId, design: 고친 설계 전체}}) 로 다시 짓는다." });
+      }
       const used = dressBudget.get(p.mapId) ?? 0;
       if (used >= DRESS_ROOM_LIMIT) return text({ ok: false, summary: `${p.mapId} 의 방 채우기 상한(${DRESS_ROOM_LIMIT}번)에 닿았다 — 남은 문제를 사용자에게 보고한다.` });
       if (!p.at || typeof p.at.x !== "number" || typeof p.at.y !== "number") return text({ ok: false, summary: "at 에 그 방 바닥 한 칸 {x,y} 을 준다" });
@@ -1202,6 +1294,55 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     },
   };
 
+  // ───── room_parts: 방을 직접 설계하기 전에 보는 재료(기물 이름표 + 손 견본 배치 요약·그림). 읽기만 한다 ─────
+  const refPictures = new Map<string, string>();
+  const roomPartsVerb: PiToolShape = {
+    name: "room_parts", label: "방 재료 보기", concurrency: "shared",
+    description: "손 도트 실내 방을 직접 설계(make_place zones[].design)하기 전에 부른다. 그 용도에 쓰는 칩셋 기물 이름표(id·크기·놓는 곳), 바닥·벽면·깔개 id, 같은 용도 손 견본 몇 개의 배치 요약과 1배 그림을 돌려준다. 견본은 참고일 뿐 — 똑같이 베끼지 말고 요청에 맞게 모양·묶음·자리를 새로 짠다.",
+    parameters: { type: "object", properties: { purpose: { type: "string", description: "방 용도 — 예: 서재, 마법사의 서재, 침실" }, query: { type: "string", description: "(선택) 더 찾을 기물 낱말" } }, required: ["purpose"] },
+    async execute(_id, params) {
+      const p = params as { purpose: string; query?: string };
+      const out = roomParts(env.ctx.project, String(p.purpose ?? ""), p.query);
+      if (!out) return text({ ok: false, summary: "손 도트 실내 칩셋이 이 프로젝트에 없다" });
+      const result = text({ ok: true, ...out, how: "zones:[{kind, purpose, design:{shape, corner?, w, h, door, floor, wall, groups:[{name, at, pos?, rug?, items:[{id, dx?, dy?, count?}]}]}}]. 먼저 모양을 고른다(shapes·shapeExamples 와 아래 모양 그림 — 바닥 60칸 넘는 네모는 ㅁ자로 짚힌다, 곁방은 zones 둘). 묶음마다 무엇을 몇 개 놓을지는 네가 정한다 — 함수는 더하지 않고 이름 맞춤·겹침·의자 방향·문 앞 통로·도달만 고쳐 알려 준다. 기물 줄의 좌표는 바닥 왼쪽 위 0,0, 걸이는 y -2. 벽 가구·걸이는 북벽 밑에 서고, 도려 내 내려온 북벽(ㄷ자 가운데·창가 돌출 양옆·알코브 옆) 밑에도 선다." });
+      // 견본 그림(1배): 따로 지은 사본에서 찍는다 — 지금 프로젝트에는 남기지 않는다.
+      if (env.render) for (const tid of out.referenceIds.slice(0, 2)) {
+        let url = refPictures.get(tid);
+        if (!url) {
+          const scratch = { project: env.ctx.project, currentMapId: env.ctx.currentMapId, assistantRun: true } as typeof env.ctx;
+          const r = createBuildRun(scratch).call("build_hand_interior_room", { tileset: out.tileset, name: `견본 ${tid}`, layout: { rooms: [{ id: out.kind, kind: out.kind, template: tid }] } });
+          const mapId = String((r as { data?: { mapId?: string } }).data?.mapId ?? "");
+          const m = scratch.project.maps[mapId];
+          if (r.ok && m) {
+            const keep = env.ctx.project;
+            try { env.ctx.project = scratch.project; url = await env.render(mapId, 0, 0, m.width, m.height); } catch { url = undefined; } finally { env.ctx.project = keep; }
+            if (url) refPictures.set(tid, url);
+          }
+        }
+        if (url) { result.content.push({ type: "text", text: `견본 ${tid} 1배 그림:` }); result.content.push({ type: "image", mimeType: "image/png", data: url.slice(url.indexOf(",") + 1) }); }
+      }
+      // 모양 예시 그림(1배): shapeExamples 의 설계를 지금 빌더로 실제로 지어 찍는다 — 모양을 고르면 정말 그렇게 지어진다는 증거이기도 하다.
+      if (env.render && out.tileset === HAND_INTERIOR_TILESET_ID) for (const ex of SHAPE_EXAMPLES) {
+        const key = `shape:${ex.shape}`;
+        let url = refPictures.get(key);
+        if (!url) {
+          const scratch = { project: env.ctx.project, currentMapId: env.ctx.currentMapId, assistantRun: true } as typeof env.ctx;
+          const sp = { name: `모양 예시 ${ex.ko}`, type: "interior", hints: { newMap: true }, zones: ex.zones.map((z) => ({ ...z })) } as unknown as PlaceSpec;
+          const built = builderFor(sp)?.build(createBuildRun(scratch), sp);
+          const mapId = built?.ok ? built.mapIds[0] : undefined;
+          const m = mapId ? scratch.project.maps[mapId] : undefined;
+          if (m && mapId) {
+            const keep = env.ctx.project;
+            try { env.ctx.project = scratch.project; url = await env.render(mapId, 0, 0, m.width, m.height); } catch { url = undefined; } finally { env.ctx.project = keep; }
+            if (url) refPictures.set(key, url);
+          }
+        }
+        if (url) { result.content.push({ type: "text", text: `모양 ${ex.shape}(${ex.ko}) 예시 1배 그림 — shapeExamples 의 설계로 지은 것:` }); result.content.push({ type: "image", mimeType: "image/png", data: url.slice(url.indexOf(",") + 1) }); }
+      }
+      return result;
+    },
+  };
+
   const inspect: PiToolShape = {
     name: "inspect", label: "맵 보기", concurrency: "shared",
     description: "맵 하나의 1배 그림·기계 검사·사람/이벤트 목록을 본다(비평가 없이). 고치기 전에 지금 상태를 확인할 때.",
@@ -1285,7 +1426,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     }
     return result;
   } });
-  const verbs = [writeBlueprint, buildBlueprintPathVerb, makePlace, ...(makeGameOn() && wantsMakeGame(String(task ?? "")) ? [makeGame] : []), editPlace, moveObject, dressRoomVerb, addPeople, addEvent, addScene, ...(wantsPuzzle(String(task ?? "")) ? [authorPuzzleChain] : []), sealLockedRoomVerb, setObjectiveVerb, drawObjectVerb, placeObject, inspect, restoreEvent, ...(helpersOn() ? [askHelpers] : []), askUser].map((tool) => guard(flattenWrapperTool(tool)));
+  const verbs = [writeBlueprint, buildBlueprintPathVerb, makePlace, ...(makeGameOn() && wantsMakeGame(String(task ?? "")) ? [makeGame] : []), editPlace, moveObject, dressRoomVerb, addPeople, addEvent, addScene, ...(wantsPuzzle(String(task ?? "")) ? [authorPuzzleChain] : []), sealLockedRoomVerb, setObjectiveVerb, drawObjectVerb, placeObject, inspect, roomPartsVerb, restoreEvent, ...(helpersOn() ? [askHelpers] : []), askUser].map((tool) => guard(flattenWrapperTool(tool)));
   // 게임 요소(퀘스트·아이템·전투·파티) 요청이면 v1 게임 도구를 덧붙인다 — 기록은 도구 묶음이 env.record 로 직접 남긴다.
   const t = String(task ?? "");
   // 스토어 음악 카드(사용자가 듣고 고른다)를 띄웠으면 사용자 질문과 같다 — 끝맺음 관문이 «음악을 안 걸었다»며 넣기를 재촉하지 않게 한다.
@@ -1323,7 +1464,7 @@ export function v2FinishGate(session: V2Session, env?: PiAssistantV2Env): string
   if (env && !settingOnly && !storeOnly && !/\?\s*$|알려\s*줘|뭐야|어디|있어\?|보여\s*줘|설명|정리해서|요약/u.test(env.request.task.trim())) {
     const pick = (p: typeof env.ctx.project) => JSON.stringify([p.maps, p.database, p.endings ?? null, p.commonEvents ?? null, p.switches, p.variables, p.startMapId, p.startPos ?? null, p.system ?? null, p.dialogueDesk ?? null]);
     try {
-      if (pick(env.request.project) === pick(env.ctx.project)) game.push("[게임 검사 실행] 이 요청으로 맵·데이터가 하나도 바뀌지 않았다. 묻거나 «도구가 없다»고 끝내지 말고 실행한다: 있는 NPC·물건은 move_event·upsert_event·patch_event_page 로 고치고, 새 것은 add_people·add_event·upsert_event 로 만든다. 꼭 맞는 그림이 없으면 가장 비슷한 기존 그림·물건으로 두고 보고에 적는다(아이템·이벤트·대사는 그림과 상관없이 만든다).");
+      if (pick(env.request.project) === pick(env.ctx.project)) game.push("[게임 검사 실행] 이 요청으로 맵·데이터가 하나도 바뀌지 않았다. 묻거나 «도구가 없다»·«도구 호출 횟수 초과»라고 끝내지 말고 실행한다(도구 호출 횟수 제한은 없다 — 2026-10-29 3c Argon 이 room_parts 한 번 뒤 «호출 횟수 초과»라며 짓지 않았다). 장소·방은 make_place(방은 zones[].design 을 채워서)로 짓는다. 있는 NPC·물건은 move_event·upsert_event·patch_event_page 로 고치고, 새 것은 add_people·add_event·upsert_event 로 만든다. 꼭 맞는 그림이 없으면 가장 비슷한 기존 그림·물건으로 두고 보고에 적는다(아이템·이벤트·대사는 그림과 상관없이 만든다).");
     } catch { /* 비교 실패는 무시 */ }
   }
   // 고칠 것이 없으면 한 바퀴를 더 쓰지 않는다 — 남은 문제·「그림 없음」은 동사 결과가 이미 보고하라고 일렀다.

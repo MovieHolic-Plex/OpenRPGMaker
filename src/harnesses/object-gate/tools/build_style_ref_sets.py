@@ -86,10 +86,23 @@ SETS = {
             "wall": [("wall-home", "mc:interior-wall-mci-wall-home", 4, 2)],
         },
     },
+    # 버들항 던전(동굴·하수도·폐허 칸, 2026-10-29): 같은 버들항 시트지만 마을 소품(벤치·노점·우물)이 아니라 던전에 이미 출하된 돌·수정·기둥 조각과 견준다.
+    # 사용자가 「허접하다」고 한 옛 동굴 조각(sea-cave 석순·돌기둥·하수도 계단 면)과, 새 동굴 기물이 갈아 끼우는 옛 조각(뼈 더미·빛 이끼·빛 버섯)은 기준으로 쓰지 않는다.
+    # 동굴 후보 라벨은 beodeul_dungeon/… 로 붙이고, 돌·수정·버섯은 화풍 종류 prop(서 있는 물건)으로 준다 — 이 묶음에는 나무가 없다.
+    "beodeul_dungeon": {
+        "tileset": "src/assets/beodeulCityTileset.json", "sheet": "public/assets/beodeul-city/beodeul-city-chipset.png",
+        "kits": {
+            "prop": [("fallen-column", "bd-pick-aqueduct-sewer-fallen-column", None), ("rubble-cave", "bd-pick-sea-cave-rubble-cave", None),
+                     ("ice-crystal", "bd-pick-dungeon-theme-ice-crystal", None), ("corrupt-crystal-big", "bd-pick-dungeon-theme-corrupt-crystal-big", None),
+                     ("fire-crystal", "bd-pick-volcano-cave-fire-crystal", None), ("brazier", "bd-pick-aqueduct-sewer-brazier", None),
+                     ("crate-stack", "bd-pick-aqueduct-sewer-crate-stack", None)],
+        },
+    },
 }
 # 칩셋 이름의 다른 표기(하네스·라벨에서 쓰는 이름) → 묶음 id. TS 쪽 STYLE_REF_SET_ALIASES 와 같다.
 ALIASES = {"modern3": "modern_city", "jp-city": "jp_city", "wizarding": "wizarding_world", "joseon": "joseon_baram",
-           "atlas_interior": "atlas_biome_interior", "hand-interior": "atlas_biome_interior", "interior-v5": "atlas_biome_interior"}
+           "atlas_interior": "atlas_biome_interior", "hand-interior": "atlas_biome_interior", "interior-v5": "atlas_biome_interior",
+           "beodeul-dungeon": "beodeul_dungeon", "dungeon-cave": "beodeul_dungeon"}
 
 
 def group_ids(tileset: dict, gid: str) -> list[int]:

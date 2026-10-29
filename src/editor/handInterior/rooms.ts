@@ -12,7 +12,11 @@ import type { HandInteriorInput, HandInteriorObject, HandInteriorSpec, HandInter
 import { HandInteriorError } from "./builder";
 
 /** 방 한 귀퉁이를 막힌 덩이(구조 코어·벽장·돌출벽)로 도려 낸다 - 방 자체가 ㄱ자·ㄴ자(두 귀퉁이면 ㅜ·ㅗ자 현관 홈)가 된다. 북쪽 귀퉁이면 덩이 아래 벽면 두 줄이 같이 선다. */
-export interface HandInteriorNotch { readonly corner: "ne" | "nw" | "se" | "sw"; readonly w: number; readonly h: number }
+export interface HandInteriorNotch {
+  readonly corner: "ne" | "nw" | "se" | "sw"; readonly w: number; readonly h: number;
+  /** 귀퉁이가 아니라 북·남 벽 가운데를 도려 낼 때: 방 서쪽 끝에서 몇 칸 들어가 시작하나(corner 의 첫 글자 n·s 만 본다). 북벽 가운데면 ㄷ자(U), 양옆을 남기면 알코브. */
+  readonly at?: number;
+}
 export interface HandInteriorRoom {
   readonly id: string;
   readonly x0: number; readonly y0: number; readonly x1: number; readonly y1: number;
@@ -23,7 +27,7 @@ export interface HandInteriorRoom {
 /** 도려 낸 칸 + 그 아래 벽면 줄(북쪽 귀퉁이)의 절대 좌표 사각형 - 가구·문이 닿으면 안 되는 자리. */
 export function notchRect(r: HandInteriorRoom, n: HandInteriorNotch): { x0: number; y0: number; x1: number; y1: number } {
   const north = n.corner[0] === "n", west = n.corner[1] === "w";
-  const x0 = west ? r.x0 : r.x1 - n.w + 1, x1 = west ? r.x0 + n.w - 1 : r.x1;
+  const x0 = n.at !== undefined ? r.x0 + n.at : west ? r.x0 : r.x1 - n.w + 1, x1 = x0 + n.w - 1;
   return north ? { x0, x1, y0: r.y0, y1: r.y0 + n.h + 1 } : { x0, x1, y0: r.y1 - n.h + 1, y1: r.y1 };
 }
 export interface HandInteriorConnect {
@@ -74,6 +78,7 @@ export function composeHandInteriorRooms(
   for (const r of rooms) {
     for (const n of r.notches ?? []) {
       if (n.w < 1 || n.h < 1 || n.w > r.x1 - r.x0 - 3 || n.h > r.y1 - r.y0 - 4) fail(`방 ${r.id}: notch ${n.w}×${n.h} 가 방보다 크다`);
+      if (n.at !== undefined && (n.at < 1 || n.at + n.w > r.x1 - r.x0)) fail(`방 ${r.id}: 가운데 notch at=${n.at} w=${n.w} 는 양옆에 바닥을 한 칸 이상 남겨야 한다`);
       const nr = notchRect(r, n), solidY1 = n.corner[0] === "n" ? r.y0 + n.h - 1 : nr.y1;
       for (let y = nr.y0; y <= solidY1; y++) for (let x = nr.x0; x <= nr.x1; x++) g[y]![x] = "#";
     }

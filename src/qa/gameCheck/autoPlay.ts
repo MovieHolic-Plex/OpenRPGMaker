@@ -1849,7 +1849,9 @@ function pathOpenerGoals(project: Project, mapId: string | undefined): Goal[] {
     visitPageCommands(page, (visit) => {
       const command = visit.command;
       if (command.kind !== "setSwitch" || command.value !== true || typeof command.switchId !== "string" || !openers.has(command.switchId)) return;
-      if (requirementsOf(project, visit).some((req) => !satisfiedAtStart(project, req))) return;
+      // 이 맵에 이미 와 있다(목표가 막혀 다시 시도하는 자리) — 이 맵 진입 요구(문이 단계 뒤에만 열린다)는 채워진 것이다.
+      // 2026-10-29 vm4 terra jrpg: 단계 순서 잠금으로 동굴 문이 「촌장의 부탁」 뒤에만 열리자 레버의 맵 요구가 «처음엔 못 함» 이 되어 레버를 안 당겼다.
+      if (requirementsOf(project, visit).some((req) => !(req.kind === "map" && req.id === mapId) && !satisfiedAtStart(project, req))) return;
       const id = command.switchId;
       if (goals.some((goal) => goal.visit.command.switchId === id)) return;
       goals.push({ label: `${requirementLabel(project, { kind: "switch", id })} 켜기(길 막힘 풀기)`, visit, done: (session) => session.switches[id] === true });
@@ -2013,4 +2015,50 @@ export function runAutoPlay(
     plan: plan.goals.map((goal) => `${goal.label} — ${goal.visit.where.mapName ?? goal.visit.where.mapId} / ${goal.visit.where.eventName ?? goal.visit.where.eventId}`),
     runs,
   };
+}
+
+/**
+ * 처음 상태에서 «이 이벤트를 건드리지 않고» 실행할 수 있는 명령 방문 — 고정점(실행된 방문이 켠 것으로 다른 방문의 선행을 채운다).
+ * 페이지 덮어쓰기·변수 문턱 횟수는 보지 않는 넉넉한 근사다(실행될 수 있으면 센다). 단계 건너뛰기 검사(`stepSkip`)가 쓴다.
+ */
+export function visitsRunnableWithout(project: Project, excludedEventId: string): CommandVisit[] {
+  const visits: CommandVisit[] = [];
+  const own: CommandVisit[] = [];
+  for (const page of allPages(project)) {
+    if (!page.map || !page.event) continue;
+    visitPageCommands(page, (visit) => { (page.event!.id === excludedEventId ? own : visits).push(visit); });
+  }
+  // 그 이벤트와 «같은 조건»에 묶인 쌍둥이(같은 열쇠로 열리는 두 번째 입구 등)는 그 단계를 한 것과 같다 — 건너뛰기가 아니다.
+  const keysOf = (visit: CommandVisit) => new Set(requirementsOf(project, visit).filter((req) => !satisfiedAtStart(project, req)).map(reqKey));
+  const ownKeys = own.map(keysOf).filter((keys) => keys.size > 0);
+  const core = ownKeys.length ? [...ownKeys[0]!].filter((key) => ownKeys.every((keys) => keys.has(key))) : [];
+  if (core.length) for (let i = visits.length - 1; i >= 0; i -= 1) {
+    const keys = keysOf(visits[i]!);
+    if (core.every((key) => keys.has(key))) visits.splice(i, 1);
+  }
+  const ran: CommandVisit[] = [];
+  const pending = new Set(visits);
+  const known = new Set<string>();
+  const satisfied = (req: Requirement) => {
+    const key = reqKey(req);
+    if (known.has(key)) return true;
+    const ok = satisfiedAtStart(project, req) || ran.some((visit) => setterMatches(project, req, visit));
+    if (ok) known.add(key);
+    return ok;
+  };
+  for (let changed = true; changed;) {
+    changed = false;
+    for (const visit of pending) {
+      if (!requirementsOf(project, visit).every(satisfied)) continue;
+      pending.delete(visit);
+      ran.push(visit);
+      changed = true;
+    }
+  }
+  return ran;
+}
+
+/** 처음 상태로는 실행되지 않는(앞서 무언가를 해야 하는) 방문인가. */
+export function visitNeedsProgress(project: Project, visit: CommandVisit): boolean {
+  return requirementsOf(project, visit).some((req) => !satisfiedAtStart(project, req));
 }

@@ -1,5 +1,7 @@
 {
  "atlas_interior": "atlas_biome_interior",
+ "beodeul-dungeon": "beodeul_dungeon",
+ "dungeon-cave": "beodeul_dungeon",
  "hand-interior": "atlas_biome_interior",
  "interior-v5": "atlas_biome_interior",
  "joseon": "joseon_baram",

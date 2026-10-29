@@ -12,6 +12,7 @@ import type { GameMap, MapId, MapNamedLocation, Project } from "@/project/types"
 import { linkMapsInDraft, type LinkResult } from "./worldGraphTools";
 import { isDoorArtCell } from "@/project/staging/doorCells";
 import { isPassable } from "@/project/collision";
+import { reliefLevel } from "@/project/relief/walk";
 import { protectedHouseCells } from "./houseProtection";
 import { playerAnchors, walkableFromAnchors } from "./transferReachability";
 import { SHARED_OBJECT_TOOLS } from "./sharedObjectTools";
@@ -275,8 +276,11 @@ export function caveMouthSpotClear(draft: Project, map: GameMap, gate: Pt): bool
   const ground = new Set([...counts].filter(([, n]) => n >= map.lowerTiles.length * 0.15).map(([t]) => t));
   // 완성된 집의 보호 칸을 건드리면 던전 짓기 전체가 거절된다(커밋 검사) — 그 칸은 처음부터 피한다.
   const guarded = new Set(protectedHouseCells(map).map((c) => c.y * map.width + c.x));
+  // 높이 지형: 키트는 한 단 위에만 찍힌다(stamp_object 가 거절한다) — 갱구 3×4 와 출입구 칸이 모두 같은 단이어야 한다(2026-10-29 vm3 argon jrpg: 절벽 밑 출입구).
+  const level = map.relief ? reliefLevel(map.relief, gate.x, gate.y) : 0;
   for (let y = gate.y - 4; y <= gate.y - 1; y += 1) for (let x = gate.x - 2; x <= gate.x; x += 1) {
     if (x < 0 || y < 0 || x >= map.width || y >= map.height) return false;
+    if (map.relief && reliefLevel(map.relief, x, y) !== level) return false;
     const i = y * map.width + x;
     // 걸을 수 있는 바닥 덧그림(2·4층 풀포기·들꽃·그림자)은 덮어도 된다 — 막힌 칸(밀·울타리·나무·집)과 바탕 땅이 아닌 칸(길·광장·물)은 피한다.
     if (!ground.has(map.lowerTiles[i]!) || !isPassable(draft, map, x, y)) return false;
@@ -357,7 +361,7 @@ export function pickDungeonGateSpot(draft: Project, map: GameMap, score: (c: Pt)
   return undefined;
 }
 
-function caveMouth(draft: Project, map: GameMap, gate: Pt): string | undefined {
+export function caveMouth(draft: Project, map: GameMap, gate: Pt): string | undefined {
   const role = (map as unknown as { mapRole?: string }).mapRole;
   if (map.tilesetId !== "beodeul_city" || role === "dungeon" || role === "interior" || map.climate?.mode === "indoor") return undefined;
   if ([0, -1].some((dy) => isDoorArtCell(draft, map, gate.x, gate.y + dy))) return undefined;
