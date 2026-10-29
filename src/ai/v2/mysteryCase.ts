@@ -117,7 +117,7 @@ function showClueThings(run: BuildRun, resolved: readonly Resolved[]): string[] 
 
 /** 단계 gives 글에서 물건 이름만(「물증(천 조각) 아이템」→「천 조각」, 「장화 자국 확인」→「장화 자국」). */
 export function evidenceName(gives: string): string {
-  const inner = /\(([^()]+)\)/u.exec(gives)?.[1];
+  const inner = /«([^«»]+)»/u.exec(gives)?.[1] ?? /\(([^()]+)\)/u.exec(gives)?.[1];
   const base = (inner ?? gives).replace(/^(아이템|스위치)\s*[:：]\s*/u, "").replace(/\s*(아이템|스위치|확인|발견|획득|입수)$/u, "").trim();
   return base || gives.trim();
 }
@@ -168,17 +168,70 @@ export function stageMysteryCase(run: BuildRun): string[] {
     const ours = Object.values(project0.maps).flatMap((map) => (map.events ?? []).filter((ev) => (ev.pages ?? []).some((pg) => / · 탐문$/u.test(String((pg as { name?: string }).name ?? "")))).map((ev) => ({ mapId: map.id, ev })));
     const last = resolveSteps(project0).at(-1);
     const lost = last && last.k === project0.gameBlueprint.steps.length - 1 && !(last.ev.pages ?? []).some((pg) => /"kind":"(?:choices|presentItem)"/u.test(JSON.stringify(pg.commands ?? [])));
-    if (!ours.length || !lost) {
+    // 우리가 세운 범인이 엔딩 글이 말하는 범인과 다르면(vm3 deepseek 추리: 글은 「심부름꾼 두식」, 세운 범인은 악사 리노) 고르기를 풀고 다시 세운다.
+    const ourNames = ours.map(({ ev }) => nameOf(ev));
+    const unwrapped = last && !lost ? unwrapAccusation(last.ev) : undefined;
+    const named = unwrapped ? pickCulprit(project0, [textOf(unwrapped.original)], new Set()) : undefined;
+    const ourCulprit = unwrapped?.culprit;
+    const mismatch = Boolean(named && ourCulprit && named.name !== ourCulprit && !ourNames.includes(named.name));
+    if (!ours.length || (!lost && !mismatch)) {
       const art = showClueThings(run, resolveSteps(project0));
-      return [...(art.length ? [...art, "추리 사건은 이미 지어져 있어(증거 제시·범인 고르기) 그대로 두었다"] : []), ...explainRemainingClues(run)];
+      return [...ensureEvidenceCondition(run), ...(art.length ? [...art, "추리 사건은 이미 지어져 있어(증거 제시·범인 고르기) 그대로 두었다"] : []), ...explainRemainingClues(run)];
+    }
+    if (mismatch && last && unwrapped) {
+      run.call("upsert_event", { mapId: last.map.id, replacePages: true, event: { id: last.ev.id, pages: unwrapped.pages } });
+      pre.push(`세운 범인(${ourCulprit})이 엔딩 글의 범인(${named!.name})과 달라 다시 세웠다`);
     }
     for (const { mapId, ev } of ours) run.call("remove_event", { mapId, eventId: ev.id });
     if (modelBuiltCase(run.ctx.project)) return [...showClueThings(run, resolveSteps(run.ctx.project)), ...explainRemainingClues(run)];
     pre.push(`경로를 다시 지어 범인 고르기가 사라져 사건을 다시 세웠다(용의자 ${ours.length}명 걷음)`);
   }
-  const notes = stageCase(run);
+  const notes = [...stageCase(run), ...ensureEvidenceCondition(run)];
   // 단서 칸 소품은 사건을 세운 뒤에 — 범인 대면으로 바뀌어 지운 심문 칸에 소품이 남지 않게.
   return [...pre, ...showClueThings(run, resolveSteps(run.ctx.project)), ...notes, ...explainRemainingClues(run)];
+}
+
+const ACCUSE_PROMPT = "범인은 누구일까?";
+/** 우리가 세운 범인 고르기 페이지를 풀어 원래 엔딩 명령을 돌려준다(범인 이름·원래 명령·푼 페이지들). 고르기가 없으면 undefined. */
+function unwrapAccusation(ev: GameEvent): { culprit: string; original: Command[]; pages: Obj[] } | undefined {
+  let culprit = "", original: Command[] | undefined;
+  const pages = ((ev.pages ?? []) as unknown as Obj[]).map((page) => {
+    const cmds = (page.commands ?? []) as Obj[];
+    const pick = cmds.find((c) => c.kind === "choices" && c.prompt === ACCUSE_PROMPT);
+    if (!pick) return structuredClone(page);
+    const right = ((pick.options ?? []) as Obj[]).find((o) => ((o.branch ?? []) as Obj[])[0]?.kind === "presentItem");
+    const prove = right ? ((right.branch as Obj[])[0]!) : undefined;
+    const branch = ((((prove?.options ?? []) as Obj[])[0]?.branch ?? []) as Command[]);
+    if (!right || !branch.length) return structuredClone(page);
+    culprit = String(right.text ?? "");
+    original = structuredClone(branch.slice(1));
+    const lead = cmds.filter((c) => c.kind === "changeFace");
+    return { ...structuredClone(page), commands: [...lead, ...original] };
+  });
+  return original && culprit ? { culprit, original, pages } : undefined;
+}
+
+/**
+ * 범인 고르기 페이지는 결정적 증거를 가졌을 때만 열린다 — 앞 단계 사슬이 끊겨(모델 단계를 그대로 둔 판) 증거 없이 고르기에 닿으면
+ * 증거 제시가 「다른 것」 갈래로만 가서 엔딩에 못 간다(2026-10-29 vm3 deepseek·argon 추리 자동 플레이 실패 「페이지 2 대신 다른 페이지」).
+ */
+function ensureEvidenceCondition(run: BuildRun): string[] {
+  const last = resolveSteps(run.ctx.project).at(-1);
+  if (!last) return [];
+  let changed = false;
+  const pages = ((last.ev.pages ?? []) as unknown as Obj[]).map((page) => {
+    const pick = ((page.commands ?? []) as Obj[]).find((c) => c.kind === "choices" && c.prompt === ACCUSE_PROMPT);
+    if (!pick) return page;
+    const prove = ((pick.options ?? []) as Obj[]).map((o) => ((o.branch ?? []) as Obj[])[0]).find((c) => c?.kind === "presentItem");
+    const key = (((prove?.options ?? []) as Obj[])[0]?.itemId) as string | undefined;
+    const conds = (page.conditions ?? []) as Obj[];
+    if (!key || conds.some((c) => c.kind === "item" && c.itemId === key)) return page;
+    changed = true;
+    return { ...page, conditions: [...conds, { kind: "item", itemId: key, present: true }] };
+  });
+  if (!changed) return [];
+  run.call("upsert_event", { mapId: last.map.id, replacePages: true, event: { id: last.ev.id, pages } });
+  return [`「${last.step.event}」 범인 고르기는 결정적 증거를 가졌을 때만`];
 }
 
 /**
@@ -260,12 +313,16 @@ function stageCase(run: BuildRun): string[] {
   const taken = new Set(Object.values(run.ctx.project.maps).flatMap((m) => (m.events ?? []).map(nameOf)));
   const culpritTexts = [textOf(last.ev.pages), talk ? textOf(talk.ev.pages) : "", bp.steps.at(-1)!.action, talk?.step.action ?? ""];
   const seed = hash(bp.title + bp.request);
-  const culprit = pickCulprit(run.ctx.project, culpritTexts, taken) ?? POOL.filter((p) => !taken.has(p.name))[seed % POOL.length]!;
+  // 글이 범인으로 부르는 사람이 이미 맵에 서 있으면(모델이 세운 NPC) 그 사람을 범인으로 쓴다 — 새로 세우면 글은 「심부름꾼 두식을 지목한다」인데
+  // 고르기의 범인은 풀에서 뽑은 「악사 리노」가 됐다(2026-10-29 vm3 deepseek 추리).
+  const namedAny = pickCulprit(run.ctx.project, culpritTexts, new Set());
+  const standing = namedAny ? Object.values(run.ctx.project.maps).flatMap((m) => (m.events ?? []).filter((e) => nameOf(e) === namedAny.name && visiblePerson(e)).map((e) => ({ mapId: m.id, ev: e })))[0] : undefined;
+  const culprit = (standing ? namedAny : undefined) ?? pickCulprit(run.ctx.project, culpritTexts, taken) ?? POOL.filter((p) => !taken.has(p.name))[seed % POOL.length]!;
   const innocents = POOL.filter((p) => p.name !== culprit.name && p.role !== culprit.role && !taken.has(p.name));
   if (innocents.length < 2) return notes;
   const a = innocents[seed % innocents.length]!;
   const b = innocents.filter((p) => p !== a)[(seed >> 3) % (innocents.length - 1)]!;
-  const stage = (replaceTalk ?? talk ?? last).map;
+  const stage = standing ? run.ctx.project.maps[standing.mapId]! : (replaceTalk ?? talk ?? last).map;
   const anchor = replaceTalk?.ev ?? talk?.ev ?? last.ev;
   // 심문 칸의 「넘어가는」 페이지 — 범인 대면 갈래가 그 결과(스위치·아이템·다음 목표)를 그대로 한다.
   const talkOpen = replaceTalk ? (replaceTalk.ev.pages ?? []).find((p) => (p.commands ?? []).some((c) => ["setSwitch", "changeItem"].includes(String((c as { kind?: string }).kind)))) : undefined;
@@ -277,9 +334,11 @@ function stageCase(run: BuildRun): string[] {
   const baseline = new Set(unreachableEvents(run.ctx.project, stage.id));
   const people = [culprit, a, b];
   const order = [...people].sort((x, y) => (hash(x.name + seed) % 97) - (hash(y.name + seed) % 97));
-  const placed = buildPeople(run, order.map((p, i) => ({ role: p.role, name: p.name, looks: p.looks, mapId: stage.id, at: { x: anchor.x + (i - 1) * 2, y: anchor.y }, firstTalk: ["…"] })), stage.id);
+  const toPlace = order.filter((p) => !(standing && p.name === culprit.name));
+  const placed = buildPeople(run, toPlace.map((p, i) => ({ role: p.role, name: p.name, looks: p.looks, mapId: stage.id, at: { x: anchor.x + (i - 1) * 2, y: anchor.y }, firstTalk: ["…"] })), stage.id);
   const ids = new Map<string, string>();
-  for (const [i, e] of (placed.eventIds ?? []).entries()) ids.set(order[i]!.name, e.eventId);
+  for (const [i, e] of (placed.eventIds ?? []).entries()) ids.set(toPlace[i]!.name, e.eventId);
+  if (standing) ids.set(culprit.name, standing.ev.id);
   if (ids.size < 3) return [...notes, `용의자를 다 세우지 못했다: ${placed.summary}`];
   // 세운 사람이 다른 조사 칸·문 앞을 막으면(vm1 argon: 「상인」이 좁은 줄의 마지막 틈에 서서 여관 주인에게 못 갔다) 막지 않는 칸으로 옮긴다.
   for (const id of ids.values()) unblockPerson(run, stage.id, id, baseline, anchor);
@@ -334,7 +393,8 @@ function stageCase(run: BuildRun): string[] {
   const lastNow = run.ctx.project.maps[last.map.id]?.events.find((e) => e.id === last.ev.id) ?? last.ev;
   const accused = (lastNow.pages ?? []).map((page) => {
     if (!JSON.stringify(page.commands ?? []).includes('"triggerEnding"')) return structuredClone(page);
-    const original = structuredClone(page.commands ?? []);
+    // 모델이 대사에 남긴 설계 메모 「(범인을 잘못 지목하는 갈래도 있으나 진엔딩은 두식 지목)」는 뺀다.
+    const original = (structuredClone(page.commands ?? []) as unknown as Obj[]).map((c) => c.kind === "text" && typeof c.body === "string" ? { ...c, body: c.body.replace(/\s*\([^()]*(?:갈래|분기|진엔딩|엔딩은|플레이어가)[^()]*\)/gu, "").trim() } : c).filter((c) => c.kind !== "text" || String(c.body).length > 0) as unknown as Command[];
     const prove: Command = {
       kind: "presentItem", prompt: `무엇으로 ${withJosa(culprit.name, "을/를")} 증명할까?`, itemIds: allIds,
       options: [{ itemId: key.id, branch: [...narrate([`『${evName}』${jo(evName, "을/를")} 내밀자 ${withJosa(culprit.name, "은/는")} 더는 버티지 못했다.`]), ...original] }],
@@ -344,7 +404,7 @@ function stageCase(run: BuildRun): string[] {
       ? { text: n, branch: [prove] }
       : { text: n, branch: narrate([`${n}에게는 ${witness.get(n)?.name ?? "다른 사람"}의 증언이 있다. 범인이 아니다. 다시 생각해 보자.`]) });
     options.push({ text: "아직 모르겠다", branch: narrate(["조금 더 조사해 보자."]) });
-    const pick: Command = { kind: "choices", prompt: "범인은 누구일까?", options, cancelBehavior: "branch", cancelBranch: narrate(["조금 더 조사해 보자."]) } as unknown as Command;
+    const pick: Command = { kind: "choices", prompt: ACCUSE_PROMPT, options, cancelBehavior: "branch", cancelBranch: narrate(["조금 더 조사해 보자."]) } as unknown as Command;
     const lead = (page.commands ?? []).filter((c) => (c as { kind?: string }).kind === "changeFace");
     return { ...structuredClone(page), commands: [...lead, ...narrate(["모은 단서를 정리했다."]), pick] };
   });

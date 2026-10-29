@@ -3,7 +3,7 @@
 // 재생 스크립트(scripts/qa/assistant-v2/finishReplay.mts)도 이 함수를 불러, 실제 실행기와 같은 순서를 지나는지 따로 맞추지 않아도 된다.
 import type { PiAssistantV2Env } from "./env";
 import type { V2Session } from "./verbs";
-import { BLUEPRINT_PATH_IDS, walkBlueprint } from "./blueprint";
+import { BLUEPRINT_PATH_IDS, fillUnsetStepConditions, walkBlueprint } from "./blueprint";
 import { battleSites, healingSources } from "./combatChecks";
 import { wantsWholeGame } from "./shipChecks";
 import { applyShipDefaults } from "./shipDefaults";
@@ -94,6 +94,9 @@ export async function runFinishAutoBuild(env: PiAssistantV2Env, session: V2Sessi
     // 보스 앞 쉼터 — 깎인 HP·독으로 보스 앞에 서지 않게(2026-10-29 vm3 flash jrpg 리치). 던전 빌더도 같은 함수를 부른다.
     try { assembled.push(...ensureBossRest(createBuildRun(env.ctx))); }
     catch { /* 쉼터 넣기 실패는 끝맺음을 깨지 않는다 */ }
+    // 어디서도 안 켜지는 단계 조건을 앞 단계가 켜게(2026-10-29 vm3 argon mystery 「사건 조사 시작」).
+    try { assembled.push(...fillUnsetStepConditions(env.ctx.project)); }
+    catch { /* 켜기 보충 실패는 끝맺음을 깨지 않는다 */ }
     try { assembled.push(...orderStepBattlesIn(env.ctx.project)); }
     catch (error) { env.emit({ type: "execution_status", name: "v2.assembly", ok: false, summary: `단계 순서 보호를 하지 못했다: ${error instanceof Error ? error.message : String(error)}` }); }
     // 영문 id 맵 이름(「dungeon_cave」)을 뜻 낱말로 — 아래 목표 꼬리·런타임 출구 라벨이 그 이름을 그대로 보여 준다(2026-10-29 vm4 flash jrpg).

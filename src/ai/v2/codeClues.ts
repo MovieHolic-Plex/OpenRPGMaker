@@ -114,8 +114,12 @@ export function alignCodeClues(project0: Project): { project: Project; notes: st
 // 「『clue_number』을(를) 알아냈다」·「clue_number이(가) 있어야 할 것 같다」를 그대로 대사로 썼다. 영문 id 는 뜻 낱말로 보여 준다.
 const ASCII_ID = /^[A-Za-z][A-Za-z0-9_\-]*$/u;
 /** 대사에 쓸 이름 — 영문 id 면 뜻 낱말(단서·열쇠·…), 아니면 그대로. */
+/** 청사진 gives 를 종류 표식으로 감싼 것 — 「스위치 «짚단서»」「아이템: 회중시계」(vm3 deepseek 추리: 『스위치 «수프단서»』을(를) 알아냈다). */
+const WRAPPED = /^(?:스위치|아이템|플래그|변수|switch|item|flag)\s*(?:[«"'「『(:：]\s*)(.+?)\s*[»"'」』)]?$/iu;
 export function shownToken(token: string): string {
-  const t = token.trim();
+  const t0 = token.trim();
+  const t = WRAPPED.exec(t0)?.[1]?.trim() || t0;
+  if (t !== t0) return shownToken(t);
   if (!ASCII_ID.test(t)) return t;
   if (/key/iu.test(t)) return "열쇠";
   if (/clue|hint|number|code|pass|note|memo|cipher/iu.test(t)) return "단서";
@@ -128,10 +132,20 @@ const hasBatchim = (w: string) => { const c = (w.at(-1) ?? "").charCodeAt(0) - 0
 /** 이미 지은 대사 속 청사진 영문 id 를 뜻 낱말로(제자리, 사본). */
 export function humanizeBlueprintTokens(project0: Project): { project: Project; notes: string[] } {
   const bp = project0.gameBlueprint;
-  const ids = [...new Set((bp?.steps ?? []).flatMap((s) => [s.gives, s.needs]).filter((t): t is string => typeof t === "string" && ASCII_ID.test(t.trim()) && !/^(none|start)$/iu.test(t.trim())).map((t) => t.trim()))];
-  if (!ids.length) return { project: project0, notes: [] };
+  const ids = [...new Set((bp?.steps ?? []).flatMap((s) => [s.gives, s.needs]).filter((t): t is string => typeof t === "string" && (ASCII_ID.test(t.trim()) || WRAPPED.test(t.trim())) && !/^(none|start)$/iu.test(t.trim())).map((t) => t.trim()))].sort((a, b) => b.length - a.length);
+  const wrappedItems = project0.database.items.some((i) => WRAPPED.test(String(i.name ?? "").trim()));
+  if (!ids.length && !wrappedItems) return { project: project0, notes: [] };
   const project = structuredClone(project0);
   const notes: string[] = [];
+  // 아이템 이름도 — 증거 아이템이 「스위치 «수프단서»」 그대로 이름이 되어 증거 제시 창에 나왔다.
+  for (const item of project.database.items) {
+    const name = String(item.name ?? "").trim();
+    if (!WRAPPED.test(name)) continue;
+    const shown = shownToken(name);
+    ids.push(name);
+    (item as { name?: string }).name = shown;
+    notes.push(`아이템 이름 ${name} → ${shown}`);
+  }
   for (const map of Object.values(project.maps)) for (const ev of map.events ?? []) for (const c of textCommands(ev.pages)) {
     let body = String(c.body);
     for (const id of ids) {

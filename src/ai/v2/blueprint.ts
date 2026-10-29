@@ -406,8 +406,18 @@ export function walkBlueprint(project: Project): BlueprintWalk {
   };
   resolved.forEach((r, k) => {
     if (!r.ev || !r.map) return;
-    const pages = pagesOf(r.ev).filter(hasCommands);
-    if (!pages.length) { add("blueprint-event-empty", `청사진 ${r.step.id} 「${r.step.event}」(${r.map.id} ${r.ev.id}) 에 실행할 명령이 하나도 없다 — ${r.step.action} 를 할 수 있게 대사·선택·결과를 넣는다.`, `${r.step.id} ${r.ev.id}`); return; }
+    const pages0 = pagesOf(r.ev).filter(hasCommands);
+    // 일을 하는 페이지(켜기·주기·엔딩·이동·전투)만 본다 — 조건 없는 「아직 조사할 필요가 없다」 잠김 페이지가 있으면 단계가 열린 것으로 쳐서,
+    // 일하는 페이지의 조건(「사건 조사 시작」)을 아무도 켜지 않는 것을 못 봤다(2026-10-29 vm3 argon 추리: 자동 플레이가 2층 창문에서 멈춤).
+    const doing = pages0.filter((page) => { const s = settersOf(page.commands); return s.ends || s.switches.size > 0 || s.items.size > 0 || s.variables.size > 0 || /"kind":"(?:transfer|battleProcessing)"/u.test(JSON.stringify(page.commands ?? [])); });
+    // 같은 이벤트가 뒤 단계도 맡으면(「여관 주인」이 의뢰와 범인 지목을 함께) 뒤 단계 조건만 거는 페이지는 그 뒤 단계의 일이다 — 여기서 「순서가 틀렸다」고 하지 않는다.
+    const sharedLater = resolved.some((o, j) => j > k && o.ev?.id === r.ev!.id && o.map?.id === r.map!.id);
+    const laterOnly = (page: Obj) => { const before = new Set<string>(); for (let j = 0; j < k; j++) if (stepSetters[j]) for (const id of [...stepSetters[j]!.switches, ...stepSetters[j]!.items]) before.add(id); return pageNeeds(page).some((n) => !before.has(n.id) && !offPath.switches.has(n.id) && !offPath.items.has(n.id)); };
+    const pool = doing.length ? doing : pages0;
+    const own = sharedLater ? pool.filter((page) => !laterOnly(page)) : pool;
+    const pages = own.length ? own : sharedLater ? pages0.filter((page) => !laterOnly(page)) : pool;
+    if (!pages.length) return;
+    if (!pages0.length) { add("blueprint-event-empty", `청사진 ${r.step.id} 「${r.step.event}」(${r.map.id} ${r.ev.id}) 에 실행할 명령이 하나도 없다 — ${r.step.action} 를 할 수 있게 대사·선택·결과를 넣는다.`, `${r.step.id} ${r.ev.id}`); return; }
     const before: Setter = { switches: new Set(), items: new Set(), variables: new Set(), ends: false, commonEvents: new Set() };
     // 자기 자신이 켜는 것(다른 페이지·날마다 오르는 카운터)도 앞에 있는 것으로 본다 — 다시 말을 걸면 열린다.
     for (let j = 0; j <= k; j++) if (stepSetters[j]) merge(before, stepSetters[j]!);
@@ -508,4 +518,52 @@ export function blueprintProgressNote(project: Project): string | undefined {
   if (!project.gameBlueprint) return undefined;
   const walked = walkBlueprint(project);
   return ["[청사진 진행]", ...walked.lines, ...walked.blockers.slice(0, 4).map((b) => `- ${b.message}`)].join("\n");
+}
+
+/**
+ * 어디서도 안 켜지는 단계 조건을 앞 단계 이벤트가 켜게 한다(결정적, 출하 전 끝맺음).
+ * 왜(2026-10-29 vm3 argon mystery): 「열린 창문」 페이지가 「사건 조사 시작」 스위치를 조건으로 걸었는데 아무도 켜지 않았다 —
+ * 앞 단계 여관 주인(뒤 단계 지목도 같은 사람)의 첫 페이지는 목표 대사만 있어 지목 페이지까지 영영 못 갔다.
+ * 앞 단계 이벤트가 그 단계 시점에 실제로 도는 페이지(조건이 앞 단계들로 다 채워진 가장 높은 페이지)에 켜기를 붙인다.
+ */
+export function fillUnsetStepConditions(project: Project): string[] {
+  const bp = project.gameBlueprint;
+  if (!bp) return [];
+  const notes: string[] = [];
+  const unset = walkBlueprint(project).blockers.filter((b) => b.id === "blueprint-condition-unset");
+  if (!unset.length) return [];
+  const resolved = bp.steps.map((step) => {
+    const map = findMap(project, step.place);
+    return { step, map, ev: map ? findEvent(map, step.event) : undefined };
+  });
+  const switchIds = new Set(((project.switches ?? []) as unknown as { id: unknown }[]).map((s) => String(s.id)));
+  const itemIds = new Set(((project.database.items ?? []) as unknown as { id: unknown }[]).map((s) => String(s.id)));
+  for (const b of unset) {
+    const m = /^(\S+) (\S+) needs (\S+)$/u.exec(b.evidence);
+    if (!m) continue;
+    const k = resolved.findIndex((r) => r.step.id === m[1] && r.ev?.id === m[2]);
+    if (k <= 0) continue;
+    let p = k - 1;
+    while (p >= 0 && (!resolved[p]!.ev || resolved[p]!.ev === resolved[k]!.ev)) p--;
+    if (p < 0) continue;
+    const prev = resolved[p]!;
+    const have = new Set<string>();
+    for (let j = 0; j < p; j++) { const ev = resolved[j]!.ev; if (!ev) continue; const s = eventSetter(project, ev); for (const id of [...s.switches, ...s.items, ...s.variables]) have.add(id); }
+    const pages = pagesOf(prev.ev!);
+    let page: Obj | undefined;
+    for (let i = pages.length - 1; i >= 0; i--) if (hasCommands(pages[i]!) && pageNeeds(pages[i]!).every((n) => have.has(n.id))) { page = pages[i]; break; }
+    if (!page) continue;
+    const commands = page.commands as Obj[];
+    const add: Obj[] = [];
+    for (const id of m[3]!.split(",")) {
+      if (JSON.stringify(commands).includes(`"${id}"`)) continue;
+      if (switchIds.has(id)) add.push({ kind: "setSwitch", switchId: id, value: true });
+      else if (itemIds.has(id)) add.push({ kind: "changeItem", itemId: id, op: "+=", amount: 1 });
+    }
+    if (!add.length) continue;
+    const stop = commands.findIndex((c) => /^(transfer|gameOver|returnToTitle|ending|endGame|battleProcessing)$/u.test(String(c.kind ?? "")));
+    commands.splice(stop < 0 ? commands.length : stop, 0, ...add);
+    notes.push(`청사진 ${resolved[k]!.step.id} 「${resolved[k]!.step.event}」 의 조건 ${add.map((c) => String(c.switchId ?? c.itemId)).join("·")} 을 앞 단계 「${prev.step.event}」 가 켜게 했다.`);
+  }
+  return notes;
 }
