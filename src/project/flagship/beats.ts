@@ -84,11 +84,24 @@ export const FIRST_LOVE_STYLE_LOCK: FlagshipStyleLock = {
   bannedProperNouns: BANNED_IP_PROPER_NOUNS,
 } as const;
 
+export const ISEKAI_GODDING_STYLE_LOCK: FlagshipStyleLock = {
+  demoId: "isekai-godding",
+  presetId: "adventure-jrpg",
+  resolution: { width: 480, height: 270 },
+  cameraZoom: 1,
+  dialogueStyle: "glass",
+  allowedTilesetIds: ["beodeul_city", "atlas_biome_interior", "modern_campus", "jp_city", "modern_city"],
+  allowedCharsetPrefixes: ["oprn-charset-modern", "tex_oprn_charset_modern", "easyrpg-charset-", "tex_easyrpg_charset_"],
+  allowedPortraitPrefixes: ["shared-", "easyrpg-faceset-"],
+  bannedProperNouns: BANNED_IP_PROPER_NOUNS,
+} as const;
+
 export const FLAGSHIP_STYLE_LOCKS: Readonly<Record<FlagshipDemoId, FlagshipStyleLock>> = {
   "chrono-bell": CHRONO_BELL_STYLE_LOCK,
   "emerald-crown": EMERALD_CROWN_STYLE_LOCK,
   "shitamachi-fourth-season": SHITAMACHI_STYLE_LOCK,
   "first-love": FIRST_LOVE_STYLE_LOCK,
+  "isekai-godding": ISEKAI_GODDING_STYLE_LOCK,
 } as const;
 
 export const CHRONO_BELL_BEATS: readonly FlagshipBeat[] = [
@@ -217,6 +230,16 @@ const FIRST_LOVE_BEATS: readonly FlagshipBeat[] = [
   { id: "fl-07", atMinute: 17, act: "금요일 밤", mapKey: "fl_platform_pm", sceneTitle: "막차", playerFeel: "이번엔 먼저 말할까", mechanics: ["triggerEnding", "affection"], sharedAssets: [] },
 ];
 
+const ISEKAI_GODDING_BEATS: readonly FlagshipBeat[] = [
+  { id: "ig-00", atMinute: 0, act: "오프닝", mapKey: "map_ig_class", sceneTitle: "야자 시간, 배터리 3%", playerFeel: "교실 맵 그대로의 애니메틱 세 컷 뒤 바로 소환", mechanics: ["place_opening_background(mapId)", "upsert_opening_light_fx"], sharedAssets: ["oprn-charset-modern1"] },
+  { id: "ig-01", atMinute: 1, act: "소환", mapKey: "map_ig_hall", sceneTitle: "대본을 거부하는 용사", playerFeel: "60초 안에 조작, 왕의 대본을 선택지로 비튼다", mechanics: ["choices", "fieldHud"], sharedAssets: ["shared-modern-uni-boy-navy-expressions-bust-base"] },
+  { id: "ig-02", atMinute: 3, act: "왕도", mapKey: "map_ig_capital", sceneTitle: "급식 줄 규율", playerFeel: "길드 접수 줄을 급식 줄처럼 정리하고 동료를 얻는다", mechanics: ["choices", "changeParty"], sharedAssets: [] },
+  { id: "ig-03", atMinute: 8, act: "첫 전투", mapKey: "map_ig_capital", sceneTitle: "PC방 오더", playerFeel: "점사·어그로·힐 오더로 슬라임을 잡는다", mechanics: ["battleProcessing", "battle-backdrop"], sharedAssets: [] },
+  { id: "ig-04", atMinute: 12, act: "숲과 고블린 마을", mapKey: "map_ig_goblin", sceneTitle: "단톡방 외교", playerFeel: "통신 수정구로 단톡방을 열어 협상하거나 싸운다", mechanics: ["choices", "battleProcessing"], sharedAssets: [] },
+  { id: "ig-05", atMinute: 18, act: "마왕성", mapKey: "map_ig_castle", sceneTitle: "기출 변형 함정", playerFeel: "학원식 기출 분석으로 던전을 뚫는다", mechanics: ["author_beodeul_dungeon"], sharedAssets: [] },
+  { id: "ig-06", atMinute: 24, act: "결말", mapKey: "map_ig_castle", sceneTitle: "재수생 마왕", playerFeel: "수능·떡볶이·한 판, 고른 말로 결말이 갈린다", mechanics: ["triggerEnding"], sharedAssets: [] },
+];
+
 export const FLAGSHIP_BEAT_MANIFESTS: Readonly<Record<FlagshipDemoId, FlagshipBeatManifest>> = {
   "chrono-bell": {
     id: "chrono-bell",
@@ -307,6 +330,26 @@ export const FLAGSHIP_BEAT_MANIFESTS: Readonly<Record<FlagshipDemoId, FlagshipBe
     ],
     beats: FIRST_LOVE_BEATS,
     styleLock: FIRST_LOVE_STYLE_LOCK,
+  },
+  "isekai-godding": {
+    id: "isekai-godding",
+    title: "이세계로 떠난 한국 고딩, 깽판치다",
+    subtitle: "이세계 코미디 RPG · 배터리 3%로 시작하는 용사의 대본 거부",
+    genreChoiceId: "adventure-jrpg",
+    targetMinutes: 25,
+    mapCount: 8,
+    endingCount: 3,
+    releaseOrder: 6,
+    priorityRank: 6,
+    summary: "야자 시간에 떡볶이 생각을 하던 고2 강민재가 이세계 왕궁에 용사로 소환된다. 대본대로 할 생각은 없다. 길드 접수 줄은 급식 줄처럼, 전투는 PC방 오더로, 고블린과의 분쟁은 단톡방으로 푼다. 마왕성 꼭대기에서 기다리는 것은 2009년에 소환된 재수생 마왕이다.",
+    thumb: "/assets/generated/title/isekai-godding-thumb.png",
+    cast: [
+      { id: "actor_hero", name: "강민재", role: "주인공 · 고2, 폰 배터리 3%", assetId: "shared-modern-uni-boy-navy-expressions-bust-base" },
+      { id: "actor_ig_edel", name: "에델", role: "왕국 기사 · 의전 담당", assetId: "shared-helmet-blonde-expressions-bust-base" },
+      { id: "actor_ig_fio", name: "피오", role: "엘프 마법사 · 마법 시험 7수생", assetId: "shared-green-cap-blonde-expressions-bust-base" },
+    ],
+    beats: ISEKAI_GODDING_BEATS,
+    styleLock: ISEKAI_GODDING_STYLE_LOCK,
   },
 } as const;
 
