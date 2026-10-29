@@ -304,7 +304,7 @@ const B = {
   },
   async meeting(page, seg, mark) {
     await streetWalk(page, 12, 10); await streetWalk(page, 14, 10); await streetWalk(page, 22, 10); await walkTo(page, 31, 10); await walkTo(page, 31, 27); await page.waitForTimeout(1500); mark("park");
-    await play(page, seg, [1], quietAnd(() => page.evaluate(() => !!window.__oprnDebug.readState().switches.sw_mk_meeting_done)), { shotOn: /가르곤|회비|보름달/ }); mark("meeting-done");
+    await play(page, seg, [2, 1], quietAnd(() => page.evaluate(() => !!window.__oprnDebug.readState().switches.sw_mk_meeting_done)), { shotOn: /가르곤|회비|보름달/ }); mark("meeting-done");
     shot(page, "park-after", 500);
     await walkTo(page, 20, 8); await page.waitForTimeout(1500);
     await walkTo(page, 31, 10); await walkTo(page, 22, 10); await walkTo(page, roomDoorOnStreet.x + 1, roomDoorOnStreet.y + 1); await walkTo(page, roomDoorOnStreet.x, roomDoorOnStreet.y); await page.waitForTimeout(1500); mark("room");
