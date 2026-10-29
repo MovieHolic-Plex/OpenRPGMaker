@@ -371,7 +371,6 @@ export function applyFallenAct2Summit(project: Project, exec: Exec): void {
   summitData(project, exec);
   lensRoom(project, exec);
   summitScenes(project);
-  const sim = exec(project, "simulate_battle", { troopId: FS2_TROOP_COLLECTOR, heroLevel: 14, partyActorIds: [towerKit.HERO, towerKit.ELENA_ID, towerKit.SARAH_ID, towerKit.IRIS_ID],
-    useSkills: true, n: 30, seed: 7, inventory: { item_potion: 6 }, potionItemId: "item_potion" }) as Rec;
-  if (process.env.FS2_SIM) console.log("[summit sim]", JSON.stringify(sim).slice(0, 1500));
+  // 밸런스는 simulate_battle 로 쟀다(빌드마다 돌리지 않는다 — 브라우저에서 데모를 지을 때 느려진다):
+  //   Lv14 넷, 회복약 6, n=40 — 발렌 없이 승률 72.5%·행동 48·회복약 4.2 / 발렌 손님 95%·행동 38. 「재의 회수」 63회 중 42회 끊김.
 }
