@@ -38,13 +38,6 @@ THEME2_ITEMS = {"other.ground"}
 HANDLERS = {"other.ground": B.bake_field_floor("otherworld-floor", "마계 검은 돌 바닥", "마계의 갈라진 보라 검은 돌 바닥")}
 
 
-def retail_cave():
-    """주제 2 꼬리를 다시 쓰면 시트가 그 끝에서 잘린다 — 뒤의 동굴 기물 꼬리(bake_cave.py, 33,920~)를 저장소대로 다시 붙인다."""
-    import subprocess
-    if (ROOT / "tiledata/beodeul-dungeon/cave/cells.json").exists() and G.SHEET_PATH == ROOT / "public/assets/beodeul-city/beodeul-city-chipset.png":
-        subprocess.run([sys.executable, str(HERE / "bake_cave.py"), "--from-store"], cwd=ROOT, check=True)
-
-
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--dry", action="store_true")
@@ -58,7 +51,6 @@ def main():
     if a.from_store:
         if st.cells:
             print(f"주제 2 꼬리 다시 씀: {G.BASE}..{G.write_out(st) - 1}")
-            retail_cave()
         return
     if sheet_count < G.BASE:
         sys.exit(f"시트 count {sheet_count} < 주제 2 시작 {G.BASE} — 왕도 꼬리(bake_capital.py)부터 굽는다")
@@ -106,7 +98,6 @@ def main():
     else:
         st.save()
         print(f"썼다 (count {G.write_out(st)})")
-        retail_cave()
     if blocked:
         print("3/4 관문 미통과 — 굽지 않은 항목:", *blocked, sep="\n  ", file=sys.stderr)
         sys.exit(2)
