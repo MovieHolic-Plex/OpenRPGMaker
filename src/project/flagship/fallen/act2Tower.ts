@@ -653,7 +653,7 @@ function floorFour(project: Project, exec: Exec): void {
     // 카엘이 한 걸음 물러선다 — 바로 밑 칸에 서면 카엘·동료 그림이 석관을 반쯤 가렸다(QA 2026-10-29). 한 줄 띄워 관이 통째로 보이게.
     route("@player", [{ kind: "move", dir: "down" }, { kind: "turn", dir: "up" }]),
     // 가까이 — 석관과 그 앞에 선 카엘만 화면에 차게.
-    camTo("ev_fs2_t4_coffin", 1400, 2.2, 20),
+    camTo("ev_fs2_t4_coffin", 1400, 2.2),
     say(KAEL, "이리스."),
     wait(900),
     narrate("대답이 없다. 관 위 글자만 깜빡인다."),
@@ -667,7 +667,7 @@ function floorFour(project: Project, exec: Exec): void {
     // 탑이 걷어 간 기록 셋 — 직업이 주는 기술도 「잊기」로 빠진다(일지를 다시 읽으면 하나씩 돌아온다).
     ...forgetThree(),
     wait(700),
-    camTo("ev_fs2_t4_iris", 700, 2.4, 22),
+    camTo("ev_fs2_t4_iris", 700, 2.4),
     // 깨어난 이리스가 카엘 쪽으로 고개를 돌린다.
     route("ev_fs2_t4_iris", [{ kind: "turn", dir: "left" }]),
     say(IRIS, "…신호, 수신. 현지 시각 불명.\n귀환 준비 중입니다. 기록을 정리합니다."),
@@ -684,7 +684,7 @@ function floorFour(project: Project, exec: Exec): void {
     say(SARAH, "발렌 님이 끊겠다던 줄이 이거였군."),
     say(KAEL, "…괜찮아. 내가 읽어 줄게.\n약속했잖아."),
     // 둘을 한 화면에 — 천천히 당긴다.
-    camTo("ev_fs2_t4_coffin", 2200, 2.6, 24),
+    camTo("ev_fs2_t4_coffin", 2200, 2.6, 6),
     bgm(IRIS_BGM, 2500),
     narrate("카엘이 바랜 쪽을 짚는다. 카엘의 글씨다."),
     say(KAEL, "「오늘, 이리스가 빵을 먹었다.\n따뜻했다고 했다.」 …기억나?"),
