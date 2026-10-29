@@ -222,7 +222,9 @@ function shotDeal(project: Project): void {
     camZ.push({ atMs: b.at, value: camZ[camZ.length - 1]!.value }, { atMs: b.at + 260, value: z, ease: "ease-out" });
   }
   camY.push({ atMs: ms, value: hY - 20 }); camZ.push({ atMs: ms, value: 1.12, ease: "ease-in-out" });
-  execTool(project, "animate_opening_camera", { shotId: id, camera: { x: 240, y: 135, keys: { y: camY, zoom: camZ } } });
+  // 「거절한다!!」(6.3초) 두 번째 거절에 화면이 한 번 튄다 — 주석에만 있고 빠져 있던 박(2026-10-30 적대 VQA).
+  execTool(project, "animate_opening_camera", { shotId: id, camera: { x: 240, y: 135, keys: { y: camY, zoom: camZ },
+    shake: { atMs: 6300, durationMs: 420, amplitude: 4, frequency: 22, seed: 5 } } });
   // 배우는 카메라를 건 다음에 세운다(옥좌 위 마왕은 고정 무대로 치면 레터박스 위쪽이다). 층 순서는 빛 위·말풍선 아래.
   actor(project, id, "maou", MON2, 7, maouAt, "down", 2, "monster");
   actor(project, id, "leon", ACT1, 0, leonAt, "up", 2, "hero");
