@@ -5,6 +5,12 @@
 
 <!-- releases -->
 
+## 0.364.1 — 2026-10-30
+
+### 수정
+
+- **lint** — staging lint seeds the player at startPos for the start map's new-game autorun (#3936) (`e85a44d`)
+
 ## 0.364.0 — 2026-10-30
 
 ### 기능
