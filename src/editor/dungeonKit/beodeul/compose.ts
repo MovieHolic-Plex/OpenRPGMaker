@@ -558,9 +558,9 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
     }
     if (best) keyCells.push(best);
   });
-  const connected = (): boolean => {
+  const flood = (): Uint8Array | null => {
     const start = keyCells.find(([x, y]) => stand(x, y));
-    if (!start) return false;
+    if (!start) return null;
     const seen = new Uint8Array(W * H);
     const stack: [number, number][] = [start]; seen[idx(start[0], start[1])] = 1;
     while (stack.length) {
@@ -570,8 +570,18 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
         seen[idx(nx, ny)] = 1; stack.push([nx, ny]);
       }
     }
+    return seen;
+  };
+  // 장식 전에 입구에서 닿던 바닥 칸 — 물건 하나가 이 중 어느 칸이라도(물건이 선 칸 말고) 갈라 놓으면 되돌린다.
+  // 왜(2026-10-29 vm5 deepseek jrpg 동굴 B1): 방마다 «한 칸이라도 닿으면» 통과라 식물·바위가 좁은 목을 막아 호숫가 서쪽 바닥 120여 칸이
+  // 걸어 보이는데 못 가는 막다른 땅이 됐다(판정 「막다른 길과 식물·물로 막힌 곳이 많다」). 동굴 표본 58판 중 20판에서 7칸 이상이 갇혔다.
+  const reachedBefore = flood();
+  const connected = (): boolean => {
+    const seen = flood();
+    if (!seen) return false;
     // 방마다: 그 방 바닥 중 걸을 수 있는 칸이 하나라도 닿았나 + 모든 문 칸이 닿았나
     for (const [x, y] of keyCells) if (stand(x, y) && !seen[idx(x, y)]) return false;
+    if (reachedBefore) for (let i = 0; i < W * H; i += 1) if (reachedBefore[i] && !seen[i] && stand(i % W, (i - (i % W)) / W)) return false;
     return rooms.every((r, ri) => { for (let y = r.y; y < r.y + r.h; y += 1) for (let x = r.x; x < r.x + r.w; x += 1) if (roomAt[idx(x, y)] === ri && seen[idx(x, y)]) return true; return false; });
   };
   const put = (kitId: string, x: number, y: number, opts: { label?: string; free?: boolean; liquidOk?: boolean } = {}): boolean => {
