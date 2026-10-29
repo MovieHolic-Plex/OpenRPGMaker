@@ -1,5 +1,40 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## 설정집 쓰기 `upsert_world_codex` · 인물 한 줄 소개 · 데모 「이야기」 탭 (2026-10-29)
+
+전에는 설정집(`project.world`)에 쓰는 길이 대화 추출기와 화면 수동 편집뿐이어서, 코드로 짓는 대표 데모 넷은 자료집 「이야기」 탭(세계 개요·설정집·인물)이 모두 비어 있었다(구운 chrono-bell 실측: worldCanon 없음, 문서 0, 프로필 0).
+
+- `upsert_world_codex`(`src/editor/tools/worldCodexTools.ts`): 문서 최대 32장, 관계 최대 64줄을 한 번에 넣는다. 같은 id 면 그 문서를 통째로 고치고, 잠긴 문서는 `locked` 로 거절한다. 출처는 `manual` 한 줄(kind knowledge, basis explicit)로 남겨 대화 추출기가 덮지 못하게 한다. `visibility:"ai-hidden"` 은 작가 전용 비밀(반전, 아직 게임에 없는 기획)이다. refs 가 없는 맵·이벤트·아이템·액터를 가리키면 `reference-not-found`, 관계 끝이 없는 문서여도 같은 코드로 거절한다. 출처 시각은 기존 최댓값 다음 순번이라 같은 입력이면 같은 결과다(굽기 재현).
+- `upsert_character_profile` 에 `note`(한 줄 소개, 200자)를 더했다. 「인물」 탭에 「한 줄 소개」 칸이 생겼고, 목록 줄과 머리 부제에 보인다. 이전에는 이 탭에서 다른 칸을 고치면 note 가 지워졌다(`patchProfile` 이 note 를 안 옮김).
+- 화자 색은 `displayName` 이 대사 화자 이름과 같을 때만 붙는다. 이벤트 `characterId` 는 그 이벤트의 모든 줄에 한 프로필을 입히므로 데모 lore 는 이벤트에 characterId 를 달지 않는다.
+- 데모마다 lore 파일 하나(`src/project/flagship/*Lore.ts`, 데모 브랜치 `agent/demo-lore`)가 세 도구로 칸을 채우고 빌더 끝(`serialize` 직전)에서 한 줄로 부른다. 공용 도우미는 `src/project/flagship/loreKit.ts`(`loreExec`, `writeCodex` 는 없는 ref 만 빼고 쓴다, `demoLoreProblems`).
+- 회귀 경보: `bake-flagship-demos.mts` 가 데모마다 `demoLoreProblems` 를 돌려 하한(문서 12, 프로필 3, 개요 본문 400자) 아래면 `[demo-lore] … 「이야기」 탭이 비었다` 를 찍는다. 전체 굽기 없이 lore 파일만 시험하려면 `scripts/content/check-demo-lore.mts --demo <id> --in <구운 project.json>`(멱등성도 본다).
+
+## 평면도대로 버들항 맵 칠하기 `paint_beodeul_plan` (2026-10-29)
+
+참고 지도 그림(화산 지대 필드·폐허 마을·눈 덮인 산 요새)의 배치를 칸 단위로 옮기는 쓰기 도구다. 『폴른 스타』 2막 B5·B6 은
+처음에 이 일을 데모 코드가 맵 배열을 직접 칠해서 했고, 그러면 「조수와 에디터로 만들 수 있다」는 증거가 되지 못했다(감독 규칙).
+그래서 같은 칠하기를 도구로 올렸고, 데모(`src/project/flagship/fallen/act2Places.ts` 계획 → `act2Opening.ts` exec)는 이제 이 도구만 부른다.
+
+- 파일 `src/editor/tools/beodeulPlanTool.ts`, 레지스트리 `toolRegistry.ts`(map·tile 도메인), 라벨 「평면도대로 맵 칠하기」.
+- `plan` 은 같은 길이의 줄 배열이다.
+  - `#`: 바위 능선(윗면 오토타일, 열린 칸 바로 북쪽 두 줄은 앞면). 던전 gap 바위와 같은 규칙이다.
+  - `.`: 땅(`groundKit` 흩뿌림).
+  - `:`: 길(`pathKit`). `pathStyle` 이 pattern 이면 무늬를 그대로, scatter 면 흩뿌린다. `pathBlend`% 가장자리를 해지게 한다.
+  - `f`: 해진 돌바닥(`floorWear`%).
+  - `W`: 깨끗한 돌바닥.
+- `x`·`y` 를 주면 구역만 칠한다. 요새 북문 밖 눈길·벼랑 띠가 이렇게 칠해진다(`pathStyle: scatter`, 눈 키트).
+- `props[{kit,x,y}]` 는 평면도 좌표로 찍는다.
+- `burnt[{kit,x,y,collapse}]` 는 그 집 키트 자리를 불탄 집터로 바꾼다. 들어가는 것은 다음과 같다.
+  - 돌 기단 테두리, 숯 바닥, 귀퉁이 숯 기둥, 선 서까래(난파선 늑골).
+  - 숯더미·탄 판자·쓰러진 들보·불씨.
+  - left·right 면 그 집 지붕 칸 3×2 를 내려앉은 판으로 떨어뜨린다.
+  - 멀쩡한 통나무 벽과 덩굴을 남기면 불탄 집으로 읽히지 않았다(감독 검수 6/10).
+- 일반 실행기를 그대로 탄다. 받침 규칙(던전 키트가 천장 위에 서면 거절)과 완성된 집 보호 영역이 데모에도 걸린다.
+  직접 칠하기 시절에는 바위 윗면에 선 흑요석 뾰족돌 9개와 성벽 깃발이 이 검사를 피해 있었다.
+- 받침 규칙 보정(`src/project/groundSupport.ts` `mountSurfaceAt`): 마을 성벽 앞면은 3층에 그려지고 1층은 바닥이다.
+  그래서 벽에 거는 물건은 3층 성벽 앞면(태그 `town_wall` + `…:f`)도 벽으로 본다.
+
 ## 파티원 유대 `configure_party_bonds` · 「관계」에 유대 (2026-10-25)
 
 - **한 콜:** `members [{actorId, talk, choiceText?, variableId?}]` → 동료마다 유대 변수(기본 `var_bond_<배우>`, 0~`max` 기본 5).
@@ -35,7 +70,7 @@
     둘 다 없으면 `removalCondition` 글이 「전투 종료」일 때만 풀린다(「전투 종료 후 유지」는 남는다). 전투 불능은 풀지 않는다. 판정 `src/project/battleEndStates.ts`, 적용 `battleRewardsToSession.ts`.
   - `set_project_settings saveAccess:"savePoints"` → 메뉴 「저장」이 사라지고 자동 저장도 멈춘다. `place_savepoint`(openSaveMenu)는 그대로 저장한다. 눈에 띄게 하려면 `place_savepoint objectId:"kit:beodeul_city/bd-pick-dungeon-theme-crystal-pedestal"` — 오브젝트를 x,y(왼쪽 위)에 찍고 이벤트는 그림 맨 아래 줄 가운데에 투명하게 둔다(기본 크리스탈 칩은 회색 돌처럼 보여 눈에 안 띈다). `prompt:"기록하시겠습니까?"` 를 주면 예/아니오 뒤에만 저장 칸을 열고, `sparkleRadius`(objectId 를 주면 기본 2)는 페이지 `nearSparkle` 로 플레이어가 그 반경에 들어올 때 반짝임을 한 번 터뜨린다(런타임 `playSceneFieldStaging.syncNearSparkles` — 반짝임은 그 칸 줄의 인물 깊이+0.5 에 그려 앞줄에 선 주인공이 가린다, 2026-10-29).
   - `tune_field_enemies {mapIds?, sightRange, vision, pace, lungeSteps, lungeSpeed}` — 이미 놓인 보이는 적을 한꺼번에 추격형으로. 덮치기는 `movement.chaseLunge {steps, speed}`:
-    놀람(`sightAlert`) 멈춤이 끝난 뒤 첫 steps 칸을 speed 랭크 걸음으로 쉬지 않고(`playSceneAutonomous.ts`). speed 는 6(주인공 걷기 160ms/칸)까지만 받는다 — 계속 걸으면 피할 수 있다.
+    놀람(`sightAlert`) 멈춤이 끝난 뒤 첫 steps 칸을 speed 랭크 걸음으로 쉬지 않고(`playSceneAutonomous.ts`). speed 는 7(80ms/칸)까지 받는다 — 주인공보다 빠른 추격자는 12칸마다 숨을 고르고, 피할 길은 시야 끊기·엄폐·숨는 곳(`openwiki/field-enemy.md` 「추격 박자와 전술」).
   - 랜덤 조우 끄기는 `set_encounter_table {entries:[], encounterRate:0}`. 보이는 적으로 레벨을 올리게 하려면 `place_field_enemy respawnSec` 로 다시 나타나는 적을 둔다.
   - 연계기 「얼굴 교차」 컷인의 흉상(결의 표정)은 런타임이 고르는 그림이라 데이터에 이름이 없어 스토어 판본에 빠졌다(폴른 스타 1.20). 고르는 순서를 `src/project/comboBust.ts` 하나로 모으고 `webExportAssets` 가 같은 그림을 싣는다.
   - 노출: 「자동 전투·상태 이상 풀림·세이브 포인트·메뉴 저장」 → set_project_settings·upsert_state·place_savepoint, 「랜덤 조우·보이는 적·덮치·멀리서」 → set_encounter_table·tune_field_enemies·place_field_enemy.
@@ -3494,6 +3529,7 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
 - `link_world_entrance {worldMapId, links:[{place|x,y, toMapId, toGate?}], autoMatch?, fade?}` — 월드맵 장소 입구 ↔ 던전·마을 양방향. 던전은 `던전 입구` 표식이 문 칸을 알려 준다.
   `autoMatch:true` 는 이름·id 가 같은 맵이 정확히 하나일 때만 잇는다. 결과 `data.unlinkedPlaces` = 입구 이벤트가 없는 장소. 라벨 「월드 입구 잇기」.
 - `author_dungeon` 2026-10-22 인자 추가: `floors`·`direction`(여러 층 + 계단 잇기) · `populate`(rpg 기본 켜짐: 적·상자·보스·쉼터) · `troops` · `flooded` · `puzzle:"lever"` · `lair` · 2026-10-23 `rebuild`(이 도구가 지은 던전 맵을 같은 자리에서 다시 짓기). 채운 뒤 결과의 `data.placed` 가 실제로 놓인 수다. 자세한 규칙은 `openwiki/beodeul-city.md` 「조수 던전 시험 후 고친 것」.
+  - 쉼터 세이브(2026-10-30): 맵 칩셋에 세이브 받침 키트(id 에 `crystal-pedestal`·`save-point` 등, 버들항 `bd-pick-dungeon-theme-crystal-pedestal`)가 있으면 `place_savepoint objectId:"kit:<칩셋>/<키트>"` 로 세운다(받침 윗칸이 빈 바닥인 자리만). 없으면 옛 크리스탈 걷기 칩 — 그 칩(보라 수정이 맥동)이 버들항 던전 층마다 「움직이는 바위」로 읽혔다. 층 계단·입구 문이 닫힘/열림 키트 문이면 문 열기 명령이 들어간다(`openwiki/editor-event-commands.md` 키트 문).
 - `author_dungeon.entrance:{fromMapId, place|x,y, fade?}` — 짓는 즉시 야외 입구와 양방향(고아 맵 방지). 모르는 키·없는 장소는 거절하며 `link_world_entrance` 로 우회하는 문장을 준다.
   `author_dungeon` 최상위도 이제 모르는 인자를 거절한다(`style` 추가). 의도 선언·capability index·contextBuilder 24번 줄에 같은 안내.
 - `set_encounter_table` 항목 조건: `terrainId`(지형 레코드 id)·`locationId`(구역 id·이름) 추가, 모르는 조건 키 거절. 세계 지도 `terrain_world_*` 레코드는 지도 빌드 때 생긴다.

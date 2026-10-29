@@ -6,6 +6,7 @@ import { regionReferenceContext } from "@/project/regionReferences";
 // 토큰 예산(문자 수 근사) 상한을 넘으면 조회 툴 안내로 대체한다.
 
 import { genreLockPromptNote, genreMarkerNote } from "@/project/genreLock";
+import { peopleChipPromptNote } from "@/project/peopleChipLock";
 import { activeTools, runTool } from "@/editor/tools";
 import { spatialAuthoringContext } from "./spatialContext";
 import type { ToolContext } from "@/editor/tools";
@@ -653,6 +654,9 @@ export function buildSystemPrompt(project: Project, options: ContextOptions = {}
   // 장르 잠금(옵트인): 허용 계열 밖 칩셋은 쓰지 않는다는 한 덩어리. 잠금이 없으면 섹션이 없다(프롬프트 불변).
   const genreLock = genreLockPromptNote(project) ?? genreMarkerNote(project);
   if (genreLock) sections.push(genreLock);
+  // 사람 칩 계열 잠금(2026-10-29): 한 게임의 사람 칩은 한 계열 — 장르 잠금이 캐릭터를 맡으면 없다.
+  const peopleChips = peopleChipPromptNote(project);
+  if (peopleChips) sections.push(peopleChips);
   const currentMapId = resolveContextMapId(options);
   const tileSemantics = tileSemanticsSection(project);
   if (tileSemantics) sections.push(tileSemantics);

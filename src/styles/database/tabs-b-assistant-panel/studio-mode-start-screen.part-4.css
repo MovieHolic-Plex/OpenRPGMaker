@@ -49,7 +49,7 @@
 
 .ai-start-shortcut-hint {
   color: var(--text-3, var(--text-2));
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.5;
   opacity: 0.7;
 }
@@ -63,7 +63,7 @@
 
 .ai-start-sub {
   color: var(--text-2);
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.4;
 }
 
@@ -219,7 +219,7 @@
 }
 .ai-start-guide li {
   color: var(--text-2);
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.45;
 }
 .ai-start-guide strong {
@@ -276,7 +276,7 @@
 }
 .ai-empty-cta-hint {
   color: var(--text-3);
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.4;
   opacity: 0.85;
 }
@@ -363,7 +363,7 @@
 .ai-planning-origin {
   color: var(--text-3);
   flex: 0 0 auto;
-  font-size: 11.5px;
+  font-size: 12px;
   font-weight: 600;
 }
 
@@ -408,6 +408,8 @@
   border-radius: 8px;
   display: inline-flex;
   gap: 2px;
+  max-width: 100%;
+  overflow-x: auto;
   padding: 2px;
 }
 
@@ -420,6 +422,8 @@
   font-size: 12px;
   font-weight: 700;
   padding: 5px 10px;
+  /* 한 줄 — 좁은 폭에서 「스토리보드/흐름」으로 끊기지 않고 막대가 가로로 스크롤한다(C-63). */
+  white-space: nowrap;
 }
 
 .ai-studio-director-subtab:hover {
@@ -444,9 +448,11 @@
   border-radius: 999px;
   color: var(--text-2);
   cursor: pointer;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
-  padding: 3px 9px;
+  /* 포인터 대상 28px(C-64). */
+  min-height: 28px;
+  padding: 4px 12px;
 }
 
 .ai-studio-director-genre-pill.is-active {
@@ -456,7 +462,7 @@
 
 .ai-studio-director-subtitle {
   color: var(--text-2);
-  font-size: 11.5px;
+  font-size: 12px;
   line-height: 1.4;
   margin: 0;
 }
@@ -470,7 +476,7 @@
 
 .ai-studio-director-kicker {
   color: var(--text-3);
-  font-size: 10.5px;
+  font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.02em;
 }
@@ -485,7 +491,7 @@
 .ai-studio-director-defect-pill,
 .ai-studio-director-ok-pill {
   border-radius: 999px;
-  font-size: 10.5px;
+  font-size: 12px;
   font-weight: 700;
   padding: 1px 7px;
   white-space: nowrap;
@@ -529,7 +535,7 @@
 }
 
 .ai-studio-director-btn.is-small {
-  font-size: 11px;
+  font-size: 12px;
   padding: 3px 8px;
 }
 
@@ -582,7 +588,7 @@
 }
 
 .ai-studio-director-beat.has-defect {
-  border-left: 3px solid var(--danger);
+  background: color-mix(in srgb, var(--danger) 6%, var(--bg-raised));
 }
 
 .ai-studio-director-beat-thumb {
@@ -609,7 +615,7 @@
 
 .ai-studio-director-beat-meta {
   color: var(--text-2);
-  font-size: 11px;
+  font-size: 12px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -710,7 +716,7 @@
   border-radius: 4px;
   color: var(--cinema-paper);
   display: none;
-  font-size: 10px;
+  font-size: 12px;
   left: 50%;
   padding: 1px 4px;
   position: absolute;
@@ -737,7 +743,7 @@
   background: rgba(5, 8, 16, 0.72);
   border-radius: 4px;
   color: var(--cinema-paper);
-  font-size: 10.5px;
+  font-size: 12px;
   padding: 2px 6px;
 }
 
@@ -798,7 +804,7 @@
 .ai-studio-director-stage-step {
   align-items: center;
   display: flex;
-  font-size: 11px;
+  font-size: 12px;
   gap: 4px;
 }
 
@@ -843,7 +849,7 @@
 .ai-studio-director-control > span,
 .ai-studio-director-inline > span {
   color: var(--text-2);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
 }
 
@@ -880,10 +886,19 @@
   padding: 4px 9px;
 }
 
+/* 선택 상태는 옅은 바탕 + accent 글자 — 채운 accent 는 화면의 주 행동(플레이) 하나에만 쓴다(C-66). */
 .ai-studio-director-seg.is-active {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: var(--on-accent);
+  background: var(--accent-muted);
+  border-color: var(--accent-border, var(--accent));
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.ai-studio-director-empty-row {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 .ai-studio-director-defect-box {
@@ -904,7 +919,7 @@
 
 .ai-studio-director-defect-box p {
   color: var(--text-2);
-  font-size: 11.5px;
+  font-size: 12px;
   margin: 2px 0 0;
 }
 
@@ -922,7 +937,7 @@
 
 .ai-studio-director-section-head span {
   color: var(--text-3);
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .ai-studio-director-event-list,
@@ -955,7 +970,7 @@
 
 .ai-studio-director-event-kind {
   color: var(--text-2);
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 700;
   text-align: center;
 }
@@ -971,7 +986,7 @@
 
 .ai-studio-director-event-copy span {
   color: var(--text-2);
-  font-size: 11px;
+  font-size: 12px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -1004,7 +1019,7 @@
 
 .ai-studio-director-stat span {
   color: var(--text-3);
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .ai-studio-director-stat strong {
@@ -1070,7 +1085,7 @@
 .ai-studio-director-cast-art span {
   align-self: center;
   color: var(--text-3);
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .ai-studio-director-cast-body {
@@ -1088,7 +1103,7 @@
 
 .ai-studio-director-cast-fact {
   color: var(--text-2);
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .ai-studio-director-table {
@@ -1108,7 +1123,7 @@
 }
 
 .ai-studio-director-row.is-warn {
-  border-left: 3px solid var(--danger);
+  background: color-mix(in srgb, var(--danger) 6%, var(--bg-raised));
 }
 
 .ai-studio-director-row-main {
@@ -1123,7 +1138,7 @@
 
 .ai-studio-director-row-main span {
   color: var(--text-2);
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .ai-studio-director-row-main .ai-studio-director-row-reason {
@@ -1173,7 +1188,7 @@
 .ai-studio-director-theater-status {
   color: var(--text-2);
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .ai-studio-director-shot-grid {
@@ -1214,7 +1229,7 @@
   background: rgba(5, 8, 16, 0.75);
   border-radius: 4px;
   color: var(--cinema-paper);
-  font-size: 10px;
+  font-size: 12px;
   left: 4px;
   padding: 1px 5px;
   position: absolute;
@@ -1265,7 +1280,7 @@
 }
 
 .ai-studio-director-chip.is-fix {
-  border-left: 3px solid var(--danger);
+  background: color-mix(in srgb, var(--danger) 6%, var(--bg-raised));
 }
 
 .ai-studio-director-chip strong {
@@ -1275,7 +1290,7 @@
 .ai-studio-director-chip span {
   color: var(--text-2);
   display: -webkit-box;
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.4;
   overflow: hidden;
   -webkit-box-orient: vertical;
@@ -1290,4 +1305,27 @@
   .ai-studio-director-stats {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+}
+
+/* AI 미연결(C-60): 지시 카드는 비활성으로 보이고, 안내와 연결 버튼이 카드 위에 한 번 선다. */
+.ai-studio-director-chip[aria-disabled="true"] {
+  cursor: default;
+  opacity: 0.6;
+}
+.ai-studio-connect {
+  align-items: center;
+  background: var(--bg-inset);
+  border-radius: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  margin: 0 0 12px;
+  padding: 10px 12px;
+}
+.ai-studio-connect[hidden] { display: none; }
+.ai-studio-connect p {
+  color: var(--text-2);
+  flex: 1 1 200px;
+  font-size: 13px;
+  margin: 0;
 }

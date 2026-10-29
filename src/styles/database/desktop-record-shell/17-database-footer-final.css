@@ -30,3 +30,34 @@
   background: var(--db-studio-inset);
   border-color: var(--db-studio-border-default);
 }
+
+/* 주 버튼은 하나다. 저장하지 않는 세션에서는 databaseModal 이 「닫기」에 .primary 를 준다. */
+.database-modal-backdrop .database-modal-window .database-modal-footer .database-footer-button.primary[data-testid="database-footer-ok"] {
+  background: var(--db-studio-accent);
+  border-color: var(--db-studio-accent);
+  color: var(--on-accent);
+  font-weight: 600;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-footer .database-footer-button.primary[data-testid="database-footer-ok"]:hover {
+  background: var(--db-studio-accent-hover);
+  border-color: var(--db-studio-accent-hover);
+}
+
+/* 보조(되돌리기·도움말)는 주 버튼보다 가볍다 — 굵은 진한 글자라 저장보다 눈에 띄었다(V-shell-topbar-35). */
+.database-modal-backdrop .database-modal-window .database-modal-footer .database-footer-button.tertiary {
+  color: var(--db-studio-text-2);
+  font-weight: 500;
+}
+
+/* 도움말은 왼쪽 끝의 보조 링크. */
+.database-modal-backdrop .database-modal-window .database-modal-footer .database-footer-help {
+  margin-right: auto;
+}
+
+/* 비활성은 흐리게 — 「되돌릴 편집 없음」이 활성 단추와 같은 모양이었다(J-p2-power-user-20). */
+.database-modal-backdrop .database-modal-window .database-modal-footer .database-footer-button:disabled,
+.database-modal-backdrop .database-modal-window .database-modal-footer .database-footer-button[aria-disabled="true"] {
+  cursor: default;
+  opacity: 0.45;
+}

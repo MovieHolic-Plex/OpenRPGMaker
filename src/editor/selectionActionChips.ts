@@ -22,6 +22,9 @@ import { el } from "@/util/dom";
 import { openWalkEncounterForSelection } from "@/editor/panels/walkEncounterModal";
 import { buildSvgIcon, makeSvgIcon, type SvgNodeSpec } from "@/editor/panels/tileToolbarIcons";
 import { installDelayedTooltips } from "@/editor/delayedTooltipRollout";
+import { loadAiConfig } from "@/ai/llmClient";
+import { getAiConnectionStatus } from "@/editor/panels/aiConnectionStatus";
+import { isAssistantEndpointReady } from "@/ai/assistantEndpoint";
 
 /** 이 칸 수를 넘는 「지우기」는 두 번 눌러야 실행된다. 3×4 이하는 즉시 실행(기존 동작). */
 export const CLEAR_CONFIRM_CELLS = 12;
@@ -164,6 +167,16 @@ export function renderSelectionActionChips(
     dataset: { testid: "selection-action-chips" },
   });
 
+  // AI 가 연결돼 있지 않으면 조수 패널과 같은 상태를 말한다 — 입력은 막지 않되(쓰다가 연결해도 이어진다)
+  // 잠겼다는 사실과 이유를 aria 로, 실행 버튼은 비활성으로 보인다(C-60).
+  const aiConfig = loadAiConfig();
+  const aiReady = isAssistantEndpointReady(aiConfig, getAiConnectionStatus(aiConfig));
+  const reasonId = `selection-ai-reason-${selection.x}-${selection.y}`;
+  const reason = el("span", {
+    class: "visually-hidden",
+    attrs: { id: reasonId },
+    text: aiReady ? "" : "AI 연결이 필요합니다. 오른쪽 조수에서 「AI 연결하기」를 누르세요.",
+  });
   const prompt = el("textarea", {
     class: "selection-action-prompt",
     attrs: {
@@ -171,6 +184,7 @@ export function renderSelectionActionChips(
       placeholder: isStampPlaceOn() ? "바로 깔기 — 비우면 알아서" : "AI에게 시킬 일…",
       "aria-label": "이 영역에 내릴 AI 지시",
       spellcheck: "false",
+      ...(aiReady ? {} : { "aria-disabled": "true", "aria-describedby": reasonId }),
     },
     dataset: { testid: "selection-chip-prompt" },
   }) as HTMLTextAreaElement;
@@ -221,7 +235,11 @@ export function renderSelectionActionChips(
     const empty = prompt.value.trim().length === 0;
     const stamp = isStampPlaceOn();
     send.classList?.toggle?.("is-empty", empty && !stamp);
-    send.setAttribute("title", stamp ? "바로 깔기 (Enter) — 비우면 알아서" : aiPreset.title);
+    // 빈 입력의 실행은 할 일이 없다 — 눌러서 토스트로 알리는 대신 비활성으로 두고 이유를 툴팁에 쓴다(C-58).
+    send.disabled = !aiReady || (empty && !stamp);
+    send.setAttribute("title", !aiReady ? "AI 연결 후 실행할 수 있어요"
+      : stamp ? "바로 깔기 (Enter) — 비우면 알아서"
+        : empty ? "할 일을 적으면 실행할 수 있어요 (Enter)" : aiPreset.title);
     stampButton.setAttribute("aria-pressed", String(stamp));
     stampButton.classList?.toggle?.("is-active", stamp);
     const stampTitle = stamp
@@ -229,7 +247,7 @@ export function renderSelectionActionChips(
       : "바로 깔기 — 켜면 Enter 가 계획·승인 없이 곧바로 깐다";
     stampButton.setAttribute("title", stampTitle);
     stampButton.setAttribute("aria-label", "바로 깔기");
-    prompt.setAttribute("placeholder", stamp ? "바로 깔기 — 비우면 알아서" : "AI에게 시킬 일…");
+    prompt.setAttribute("placeholder", !aiReady ? "AI 연결 후 지시할 수 있어요" : stamp ? "바로 깔기 — 비우면 알아서" : "AI에게 시킬 일…");
   };
 
   const copyButton = iconButton({
@@ -363,17 +381,18 @@ export function renderSelectionActionChips(
       polishButton,
       copyButton,
       ...(pasteButton ? [pasteButton] : []),
-      clearButton,
       encounterButton,
       structureButton,
+      // 지우기는 구분선 뒤로 뗀다 — 복사 바로 옆이면 오클릭 거리가 한 칸이었다(C-58).
       el("span", { class: "selection-action-sep", attrs: { "aria-hidden": "true" } }),
+      clearButton,
       dismissButton,
     ],
   });
 
   // send 를 DOM 에서 입력창 바로 뒤에 둔다 — Tab 이 입력 → 실행 순서로 흐르고, 바의 첫 버튼이
   // AI 실행이라는 기존 계약(region-task-redesign e2e)도 유지된다. 화면 배치는 CSS order.
-  bar.append(makeAiSparkIcon(), prompt, send, stampButton, tools);
+  bar.append(makeAiSparkIcon(), prompt, send, stampButton, tools, reason);
   syncSendState();
   // 조수 입력줄에서 바로 깔기를 바꿔도 이 바가 따라간다. 바가 떨어지면 구독을 푼다.
   const unsubscribeStamp = subscribeStampPlace(() => {

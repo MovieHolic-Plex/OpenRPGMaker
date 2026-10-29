@@ -149,7 +149,19 @@ function greenOverlaySources(): Set<number> {
     for (const row of shadow.rows) for (const tile of row) if (tile >= 0) into.add(tile);
   }
   const out = new Set<number>([...treeShadow].filter((tile) => !otherShadow.has(tile)));
-  for (const tile of [...(BEODEUL_NATURE.bankGrass ?? []), ...(BEODEUL_NATURE.bankLawn ?? []), ...(BEODEUL_NATURE.edgeLawn ?? [])]) out.add(tile);
+  for (const tile of [...(BEODEUL_NATURE.bankGrass ?? []), ...(BEODEUL_NATURE.bankLawn ?? []), ...(BEODEUL_NATURE.edgeLawn ?? []), ...(BEODEUL_NATURE.forestShade?.leaf ?? [])]) out.add(tile);
+  return out;
+}
+
+/** 이어진 숲 수관(자연 덧그림 forestCanopy, 이식 칸)의 칩셋 칸 번호 — 이식 칸에는 tileMeta 가 없어 「tree」 태그로 안 잡혔다
+ *  (2026-10-28 폴른 스타 v1.25 VQA: 불탄 새벽샘에 초록 활엽수·소나무 덩이가 멀쩡히 남았다). */
+function canopyTargets(tileset: Tileset): Set<number> {
+  const { toTarget } = natureGraftTargets(tileset);
+  const out = new Set<number>();
+  for (const style of Object.values(BEODEUL_NATURE.forestCanopy ?? {})) for (const phase of style) for (const tile of phase) {
+    const target = tile >= 0 ? toTarget.get(tile) : undefined;
+    if (target !== undefined) out.add(target);
+  }
   return out;
 }
 
@@ -184,6 +196,10 @@ export function applyVariantTerrain(copy: GameMap, tileset: Tileset | undefined,
   }
 
   // ① 숲 — 황무지는 나무 덩어리를 고사목·광재·바위로, 원시림은 그대로 두고 아래 ④에서 더 심는다.
+  const canopy = canopyTargets(tileset);
+  const isTree = (tile: number | undefined): boolean => tile !== undefined && tile >= 0 && (canopy.has(tile) || tagsOf(tileset, tile).includes("tree"));
+  // 불탄 마을의 잔해는 덩어리로 — 6×6 칸 묶음 셋 중 하나쯤에만 남긴다(같은 간격 살포는 사람이 늘어놓은 것처럼 보였다, v1.25 VQA).
+  const clump = (cell: number): boolean => profile !== "scorched" || hash32(`${seed}:clump:${Math.floor((cell % width) / 6)}:${Math.floor(Math.floor(cell / width) / 6)}`) % 100 < 38;
   if (ashen) {
     const swaps = spec.treeSwaps.map((id) => upperPiece(kitsById.get(id))).filter((piece): piece is Piece => piece !== undefined);
     const walls = (profile === "scorched" ? SCORCHED_WALLS : WASTELAND_WALLS).map((id) => upperPiece(kitsById.get(id))).filter((piece): piece is Piece => piece !== undefined && piece.cells.every((c) => {
@@ -192,7 +208,7 @@ export function applyVariantTerrain(copy: GameMap, tileset: Tileset | undefined,
     }));
     const seen = new Uint8Array(width * height);
     for (let start = 0; start < width * height; start += 1) {
-      if (seen[start] || !tagsOf(tileset, copy.upperTiles[start]).includes("tree")) continue;
+      if (seen[start] || !isTree(copy.upperTiles[start])) continue;
       const component: number[] = [];
       const stack = [start];
       seen[start] = 1;
@@ -203,7 +219,7 @@ export function applyVariantTerrain(copy: GameMap, tileset: Tileset | undefined,
         for (const [nx, ny] of [[cx + 1, cy], [cx - 1, cy], [cx, cy + 1], [cx, cy - 1]] as const) {
           if (nx < 0 || ny < 0 || nx >= width || ny >= height) continue;
           const next = index(nx, ny);
-          if (seen[next] || !tagsOf(tileset, copy.upperTiles[next]).includes("tree")) continue;
+          if (seen[next] || !isTree(copy.upperTiles[next])) continue;
           seen[next] = 1;
           stack.push(next);
         }
@@ -218,10 +234,16 @@ export function applyVariantTerrain(copy: GameMap, tileset: Tileset | undefined,
       const xs = component.map((cell) => cell % width), ys = component.map((cell) => Math.floor(cell / width));
       const minX = Math.min(...xs), minY = Math.min(...ys), maxX = Math.max(...xs), maxY = Math.max(...ys);
       const taken = new Set<number>();
-      const order = swaps.map((piece, n) => ({ piece, key: hash32(`${seed}:swap:${start}:${n}`) })).sort((a, b) => a.key - b.key).map((entry) => entry.piece);
+      // 불탄 숲은 고목(가장 큰 조각)부터 — 남은 자리를 그루터기·통나무가 메운다.
+      const order = swaps.map((piece, n) => ({ piece, key: hash32(`${seed}:swap:${start}:${n}`) }))
+        .sort((a, b) => (profile === "scorched" && component.length > 16 ? b.piece.cells.length - a.piece.cells.length : 0) || a.key - b.key).map((entry) => entry.piece);
       let placed = 0;
-      const budget = component.length >= 9 ? 2 : 1;
-      for (const piece of order) {
+      // 불탄 숲 덩어리는 선 채 죽은 고목을 덩어리 크기만큼 더 세운다(12칸에 하나) — 통나무·숯더미 줄만 깔리면 「목재 야적장」으로 보였다(v1.25 VQA).
+      const budget = profile === "scorched" && component.length <= 16 && !clump(start) ? 0
+        : profile === "scorched" && component.length > 16 ? Math.max(2, Math.floor(component.length / 12))
+        : component.length >= 9 ? 2 : 1;
+      const sequence = profile === "scorched" && component.length > 16 && order[0] ? [...Array.from({ length: budget }, () => order[0]!), ...order.slice(1)] : order;
+      for (const piece of sequence) {
         if (placed >= budget) break;
         fit: for (let y = maxY - piece.h + 1; y >= minY; y -= 1) {
           for (let x = minX; x + piece.w - 1 <= maxX; x += 1) {
@@ -302,7 +324,7 @@ export function applyVariantTerrain(copy: GameMap, tileset: Tileset | undefined,
   if (ashen && scatter.length > 0) {
     copy.upperTiles.forEach((tile, cell) => {
       if (tile === undefined || tile < 0 || !flora.has(tile) || !inMask(cell)) return;
-      copy.upperTiles[cell] = scatter[hash32(`${seed}:f:${cell}`) % scatter.length]!.cells[0]!.tile;
+      copy.upperTiles[cell] = clump(cell) ? scatter[hash32(`${seed}:f:${cell}`) % scatter.length]!.cells[0]!.tile : -1;
     });
   }
 

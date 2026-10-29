@@ -876,6 +876,11 @@ function syncExitLabels(scene: PlaySceneContext, now: number): void {
     state = { mapId: map.id, labels: new Map(), nextCheck: 0 };
     exitLabelStates.set(scene, state);
   }
+  // 이벤트(대사·나레이션·컷신)가 도는 동안은 숨긴다 — 바닥 근처에 뜬 「→ 사쿠라자카 상점가」가 나레이션이 가리키는 분리수거함을 덮었다
+  // (마왕 편의점 처음 하는 사람 검수 2026-10-29). 다 끝나면 다음 검사(200ms) 안에 다시 그린다.
+  const hidden = scene.running === true;
+  for (const t of state.labels.values()) if (t.visible === hidden) t.setVisible(!hidden);
+  if (hidden) return;
   if (now < state.nextCheck) return;
   state.nextCheck = now + 200;
   const project = store.getCurrent();

@@ -459,7 +459,7 @@ export function renderEnemyPixelPreview(
     children: [
       el("div", { class: "db-enemy-pixel-skills-head", children: [
         el("span", { class: "db-enemy-pixel-skills-title", text: "몬스터 스킬" }),
-        el("span", { class: "db-skill-animation-chip db-enemy-pixel-skill-count", dataset: { testid: "db-enemy-pixel-skill-count" }, text: `스킬 ${skills.length}개` }),
+        el("span", { class: "db-skill-animation-chip db-enemy-pixel-skill-count", dataset: { testid: "db-enemy-pixel-skill-count" }, text: `스킬 · ${skills.length}` }),
         skillMotion,
       ] }),
       el("div", { class: "db-enemy-pixel-skill-buttons", children: skillButtons }),

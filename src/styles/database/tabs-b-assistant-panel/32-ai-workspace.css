@@ -1,12 +1,22 @@
 /* One workspace; 넓은 화면에서는 열면 도크가 자리를 차지해 맵이 그만큼 줄고(F24: 열면 맵 오른쪽이 패널 밑에 가려졌다),
    좁은 화면(<1100px)에서만 맵 폭을 지키는 오버레이로 남는다. */
 .ai-right-dock { flex: 0 0 44px; width: 44px; min-width: 44px; z-index: 43; }
-@media (min-width: 1100px) {
+/* 1000px 이상은 도킹한다(C-57): 1024 에서도 오버레이로 남아 캔버스 도구막대·선택 명령줄이 패널 밑에 깔렸다.
+   1024 에서 남는 맵 폭(약 300px)은 오버레이 때 패널 옆에 보이던 폭과 같다 — 가려지던 부분이 없어질 뿐이다. */
+@media (min-width: 1000px) {
   .ai-right-dock:not(.is-collapsed) { flex: 0 0 min(380px, calc(100vw - 48px)); width: min(380px, calc(100vw - 48px)); }
+}
+/* 그보다 좁으면 덮개 모드다 — 캔버스 위에 막을 깔아 「지금 맵 위를 덮고 있다」를 숨기지 않는다. 막을 누르면 패널이 접힌다(aiChatPanel). */
+.ai-panel-scrim { display: none; }
+@media (max-width: 999.98px) {
+  .ai-right-dock:not(.is-collapsed) > .ai-panel-scrim {
+    display: block; position: fixed; inset: 48px 0 0 0; z-index: 0; cursor: pointer;
+    background: color-mix(in srgb, var(--text-1) 32%, transparent);
+  }
 }
 /* 오버레이일 때만: 대화 패널이 맵 조작 도구를 가리지 않게 도구바를 비킨다.
    스튜디오 머리띠가 입양한 도구바(relative)는 제외 — 여기 right/max-width 가 들어가면 348px 왼쪽으로 밀려 제목을 덮는다. */
-@media (max-width: 1099.98px) {
+@media (max-width: 999.98px) {
   .editor-layout:has(> .ai-right-dock:not(.is-collapsed)) .canvas-toolbar:not(.ai-studio-monitor-chrome > .canvas-toolbar) {
     right: min(348px, calc(100vw - 80px));
     max-width: calc(100% - 360px);
@@ -92,4 +102,21 @@
     right: calc(clamp(280px, calc(100vw - 600px), 380px) + 8px);
     max-width: calc(100% - clamp(280px, calc(100vw - 600px), 380px) - 20px);
   }
+}
+
+/* AI 미연결(C-60): 막 뒤에 흐린 가짜 대화(스타터 제목·예시)를 깔지 않는다 — 읽을 수 없는 잡음이었다.
+   막은 불투명한 패널 바탕 위에 안내와 「AI 연결하기」만 둔다. 모달이 아니므로 장식 블러도 쓰지 않는다. */
+.ai-chat-panel .ai-deck > .ai-lock-scrim,
+.ai-chat-panel .ai-chat-body > .ai-lock-scrim {
+  /* 접두사 짝을 같이 쓰지 않는다 — 빌드 압축기가 둘을 합치며 표준 속성을 버려 블러가 남았다(실측: dist 에 -webkit- 만 남음). */
+  backdrop-filter: none;
+  background: var(--bg-raised);
+}
+.ai-chat-panel.is-ai-locked .ai-workspace-starter { display: none; }
+/* 좁은 패널(280px)에서 머리의 이름·맵 이름이 오른쪽 행동 버튼 밑으로 넘치지 않게 자른다 — 맵 이름이 먼저 말줄임된다. */
+.ai-chat-panel.is-workspace .ai-deck-rail-who { overflow: hidden; }
+.ai-chat-panel.is-workspace .ai-deck-rail-name { flex: none; }
+/* 덮개 모드의 좁은 패널(≤300px)에서는 「로그」 글자를 접고 아이콘만 둔다(접근 이름 「AI 로그 추출」은 그대로) — 머리 이름 「조수」가 잘리지 않게 자리를 낸다. */
+@media (max-width: 999.98px) {
+  .ai-chat-panel.is-workspace .ai-workspace-log-trigger > span { display: none; }
 }

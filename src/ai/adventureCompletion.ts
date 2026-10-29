@@ -25,7 +25,7 @@ export function adventureToolNames(required: AdventureRequirements | undefined):
   // A full RPG starts with its authored identity, not only maps and encounters.
   // Keep these in the preflight set so the first writer round can actually create
   // the protagonist's appearance/loadout and record the world/character canon.
-  return ["get_project_summary", "get_database_records", "read_project_wiki", "find_events", "list_resources", "generate_image_asset", "recommend_bgm", "get_soundtrack", "generate_original_bgm", "generate_original_se", "set_map_properties", "set_title_screen", "show_map_region", "upsert_event", "upsert_actor", "upsert_character_profile", "set_world_canon", "upsert_item", "upsert_equipment", "set_session_start", ...OPENING_ANIMATIC_AUTHORING_TOOLS,
+  return ["get_project_summary", "get_database_records", "read_project_wiki", "find_events", "list_resources", "generate_image_asset", "recommend_bgm", "get_soundtrack", "generate_original_bgm", "generate_original_se", "set_map_properties", "set_title_screen", "show_map_region", "upsert_event", "upsert_actor", "upsert_character_profile", "set_world_canon", "upsert_world_codex", "upsert_item", "upsert_equipment", "set_session_start", ...OPENING_ANIMATIC_AUTHORING_TOOLS,
     ...(required.world || required.village || required.dungeon ? ["plan_world", "build_world"] : []),
     ...(required.village ? ["author_beodeul_town", "inspect_terrain", "place_terrain_house"] : []),
     // EasyRPG 던전 생성기는 폐기(retiredEasyRpgTilesets.ts). 던전은 author_dungeon(칩셋 어댑터), 어댑터가 못 짓는 장소는 등록 장소 가져오기.
@@ -36,7 +36,7 @@ export function adventureToolNames(required: AdventureRequirements | undefined):
 }
 
 export const ADVENTURE_AUTHORING_GUIDE = `요청한 모험의 완료 조건은 실제 플레이 연결이다. 먼저 기존 프로젝트 위키·세계관·인물·맵·DB를 조회한다.
-첫 쓰기 순서는 세계관(set_world_canon 또는 read_project_wiki로 확인한 설정) → 핵심 인물(upsert_character_profile) → 주인공 액터(upsert_actor: appearanceId, faceResourceId, characterResourceId/characterIndex, battleCharacterResourceId, initialEquipment) → set_party로 시작 파티 → set_session_start로 시작 소지금·아이템 → 나머지 DB·맵·이벤트다. 리소스 ID는 list_resources로 실제 목록을 조회해 고르고, 장비는 upsert_equipment로 만든 뒤 주인공 initialEquipment.weapon에 연결한다. 외형·인물·장비를 생략한 채 맵만 먼저 만드는 것은 완성된 RPG가 아니다.
+첫 쓰기 순서는 세계관(set_world_canon 또는 read_project_wiki로 확인한 설정) → 핵심 인물(upsert_character_profile) → 장소·세력·사건·용어 설정집 문서(upsert_world_codex) → 주인공 액터(upsert_actor: appearanceId, faceResourceId, characterResourceId/characterIndex, battleCharacterResourceId, initialEquipment) → set_party로 시작 파티 → set_session_start로 시작 소지금·아이템 → 나머지 DB·맵·이벤트다. 리소스 ID는 list_resources로 실제 목록을 조회해 고르고, 장비는 upsert_equipment로 만든 뒤 주인공 initialEquipment.weapon에 연결한다. 외형·인물·장비를 생략한 채 맵만 먼저 만드는 것은 완성된 RPG가 아니다.
 음악·효과음도 저작한다. get_soundtrack으로 기존 배치를 읽고 맵 생성의 자동 BGM을 임시 선택으로 취급한다. 장소/서사 변화에 맞는 원곡 OST나 변주를 generate_original_bgm(score.loop:true)으로 작곡해 set_map_properties.bgm에 연결한다. 타이틀 키 이동/확정/취소는 generate_original_se의 짧고 조용한 서로 다른 소리를 set_title_screen.sounds에 연결한다. 사용자 원곡 요청은 후보 검색 없이 직접 작곡해도 된다. 기존 작곡 모티브의 의도적 재사용과 무관한 맵에 같은 기본 곡을 반복하는 것을 구분한다.
 마을은 author_beodeul_town(집은 place_terrain_house)으로 건물과 길을 실제 시공한다. 잔디+흙길+사람은 마을 완성이 아니다.
 던전 탐험을 요청했다면 author_dungeon({type?,genre?})으로 별도 던전 맵을 먼저 짓는다(칩셋 어댑터가 종류를 못 지으면 거절하며 가까운 종류를 권한다 — 그때는 권한 종류로 다시 부르거나 list_spatial_designs({kind:"place"})의 등록 장소를 import_region_reference({id,name})로 가져온다. EasyRPG 던전 생성기는 폐기됐다). 잔디 맵에 주택 벽 한 줄을 두는 것은 동굴이 아니다. 기존 맵의 무단 교체는 금지한다. 생성 결과의 통행 칸을 조회한 뒤 보물·적을 배치하고 create_transfer_pair로 왕복 연결하고 입구의 동굴/문/계단 외형을 조회해 사용한다. 사람 그림을 관문으로 쓰지 않는다.

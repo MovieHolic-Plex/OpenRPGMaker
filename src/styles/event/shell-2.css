@@ -153,8 +153,8 @@
 
 .event-editor .leaf.sel,
 .event-editor .leaf.is-selected {
-  background: var(--bg-raised);
-  box-shadow: inset 3px 0 0 var(--accent);
+  background: var(--accent-muted);
+  box-shadow: none;
 }
 
 .event-editor .ins-head h2 {

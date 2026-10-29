@@ -41,13 +41,22 @@ IPC `oprn:store.upload` → `AssetStoreClient.upload`(검증 → `/api/v1/blobs/
 
 2026-10-06 결정. 이름으로 막는 안전장치이고, 권리 확인은 올리는 사람 몫이다.
 
+2026-10-28: REFMAP 변형 걷기 칩 `RefmapDoll<n>`(번들, `public/assets/ATTRIBUTION.md` 「RefmapDoll」)은 편집기·게임 안에서 쓰도록 들였다(사용자 결정).
+
+2026-10-29 (사용자 결정, 약관 다시 읽음): 우리 칩의 약관은 REFMAP 캐릭터 글(https://refmap-l.blog.jp/archives/8633403.html)과 2000용 공통 약관
+(archives/8653555.html)이다 — 고친 그림은 다시 나눠도 되고(고쳤다는 표기·「REFMAP」+사이트 주소), 고치지 않은 원본은 안 된다. 「고쳐도 판매 금지」는
+2000용 **맵칩** 글과 유료 FSM MV 맵 소재집 약관에만 있고 캐릭터 칩에는 없다(10-28 문장 「소재 판매를 막는다」는 잘못 읽은 것이었다).
+그래서 라이선스 `REFMAP-MODIFIED` 를 더했다: 이 라이선스 상품만 이름의 「refmap」을 통과시키고(`storeThirdPartyName(text, license)`), 크레딧에
+`REFMAP_CREDIT` 이 있어야 한다. 공식 게시기·에이전트 제출만 쓴다 — 편집기 올리기 화면과 조수 도구는 이 라이선스를 고를 수 없고, 사용자 올리기
+경로(`pack.ts`)는 refmap 이름을 계속 막는다. 다른 제3자 이름(Rasak·PAW·RPG Maker·RTP)은 이 라이선스에서도 막힌다. 스토어 상품은 무료다.
+
 | 지점 | 무엇을 보나 |
 |---|---|
 | `storeThirdPartyName` (`format.ts`) | 공용 낱말표. rasak·라삭·refmap·rpgmaker·알만툴·쯔꾸르·ツクール 는 붙여 써도, paw·mv·mz·rtp 는 낱말로 떨어질 때만(camelCase·숫자 경계 분리, pawn·mvp 는 통과) |
 | `storePublishBlockReason`·`packBlockedItems` (`pack.ts`) | 고른 것 **과 딸려 들어가는 것 전부**(타일셋 그림·이식 원본·참고문서 원본 타일셋·번들 이식 칩셋 이름). 스토어에서 받은 것(`origin`)·공용 자료집(`shared_`)도 막는다 |
 | `buildPack` | 하나라도 걸리면 바이트를 읽기 전에 `StorePackBlockedError`(`.blocked` 목록, 한국어 문장) |
 | `uploadCandidates` (`storeUpload.ts`) | 같은 판정으로 후보를 막고 「딸려 들어가는 X: …」를 보여 준다 |
-| `publishProblems` (`scripts/store/storePublish.mts`) | 공식 팩도 제목·태그·id·이름에서 같은 낱말표 |
+| `publishProblems` (`scripts/store/storePublish.mts`) | 공식 팩도 제목·태그·id·이름에서 같은 낱말표(매니페스트 license 를 넘겨 `REFMAP-MODIFIED` 예외를 쓴다) |
 | 스토어 서버 검열 | 같은 `storeThirdPartyName` 으로 모든 역할에 422 거절, 다른 작가 상품의 blob 재사용 거절(스토어 저장소 쪽 변경) |
 
 스토어에서 받은 에셋을 다시 올리는 길은 없다 — 원작자·라이선스(`origin`)를 지우고 다시 내보내지 않도록 막는다.
@@ -108,9 +117,26 @@ faceset(48×48 얼굴)·picture(흉상·전신) 에셋을 가리킨다. 표정 �
 - **곡 고르기 점수**(`scoreStoreMusic`): 장면 > 사용자가 말한 장르(장르 이름 +6, 팩 줄 낱말 +6, 조선 팩은 실제로 들리는 만큼 3/1.5) > 분위기. 장르를 말했는데 다른 장르 곡은 −6.
   장르를 말하지 않았으면 프로젝트에 이미 든 스토어 곡의 줄을 따른다(같은 줄 +4×비율, 한 줄이 절반 넘는데 다른 줄이면 −8) — 판타지 게임의 「으스스한 던전」에 호러 팩 트립합이 붙던 것(2026-10-25 실조수)을 막는다.
   스토어 곡이 아직 없는 새 게임은 게임 이름·맵 이름의 세계 낱말(한양·도깨비·체육관·용사…, `projectHintLines`)로 줄을 짐작한다(합 0.5) — 몬스터 게임 「웅장한 타이틀」에 판타지 타이틀이 붙던 것.
+- **결(feelTags)과 게임 이름 요청**(2026-10-29). 새 음악 팩은 줄을 `meta.oprnMusic.genre`(`snes-jrpg`·`symphonic-jrpg`·`orchestral-melodrama`·`casual-race`·`piano-story`, 옛 팩은 `genreLine` — `readStoreMusicMeta` 가 둘 다 읽는다)로,
+  실제로 들리는 결을 `feelTags`(한·영, 예: 「16비트 SNES 음색」「16-bit SNES」「잔잔한 솔로 피아노」)로 싣는다. 결이 query 낱말과 맞으면 +5(장르 이름 다음), mood 낱말이면 +2. 결이 없는 옛 팩 점수는 그대로다.
+  결은 `briefStoreMusic`·`recommend_bgm` 의 `feel` 칸과 오디오 목록 태그·설명(「느낌 …」)에 실린다.
+  곡 메타에는 **게임 이름을 싣지 않는다**(원작과 거리 두기). 「크로노트리거 느낌」「투더문 같은 피아노」「테일즈런너처럼」「파판 전투곡」「마그나카르타풍 OST」는
+  조수 쪽 표 `GAME_FEELS`(`storeMusicPick.ts`, 한·영·일 표기·약칭)가 이름을 지우고 결 낱말 + 가리키는 줄(첫 줄 +4, 나머지 +2 — 새 팩이 없으면 옛 판타지 팩으로 물러선다)로 바꾼다(`expandStoreMusicQuery`).
+  그래서 도구 설명·v2 음악 카드는 「사용자의 말을 게임 이름째 query 에 넣어라, 장르를 지어내지 마라, 그 게임 곡이라고 말하지 마라」고 시킨다. 결과에 `feelFrom{games, heardAs}` 가 붙는다.
+  게임 제목에 든 이름(「파판풍 모험」)도 `projectHintLines` 가 그 게임의 첫 줄로 짐작한다. 짧은 영문 낱말(sf·sfc·ff·dq)은 같아야만 맞는다(`wordHits`, 「sfc」가 SF 줄에 걸리지 않게).
+  줄 낱말에는 분위기 낱말(애절·서사·감성)을 넣지 않는다 — 줄 낱말을 말하면 다른 줄 곡이 모두 −6 이 되기 때문이다.
+  단위 `test/storeMusicFeel.test.ts`, 실조수 요청 `g-music-feel-*`(5건, 팩 게시 뒤 위 `--store-url` 로 돌린다).
 - **장면 여럿 = 카드 하나.** (먼저 묻기일 때) 「게임 음악 전부」처럼 `store_find_music` 을 장면마다 부르면 패널이 한 카드로 묶는다(장면마다 「고르기」, 맨 아래 「고른 곡 넣기」 한 번 → 후속 요청 하나). v2 는 카드를 띄운 실행을 사용자 질문으로 보고 끝맺음 관문이 넣기를 재촉하지 않는다.
 - **보스전만 다른 곡.** `set_game_audio role:"boss"`(+`troopIds`, 비우면 이름에 보스·마왕·드래곤·관장 등이 든 부대)는 그 `battleProcessing` 앞뒤에 `m2-027-change-system-bgm`(battle set / reset)을 넣는다. 다시 불러도 한 쌍만 남는다.
-- 시험: 단위 `test/storeMusicInstall.test.ts`. 실조수: `bun src/harnesses/assistant-capability/node/musicStorePrepare.ts <dir> <fantasy|joseon|monster> <제목>`(마을·동굴·보스전 시드) →
+- **엔딩곡.** `set_game_audio role:"ending"`(+`endingIds`, 비우면 모든 엔딩과 이벤트의 `kind:'ending'` 명령)은 `project.endings[].presentation.musicResourceId`(엔딩 화면 「ending-music」, `playSceneOverlays.ts`)에 건다. 걸 엔딩이 없으면 거절한다 — 엔딩을 새로 만들지 않는다.
+- **음악 요청 알아보기**(2026-10-30, 실조수 e2e 5/8 → 수정). v2 는 `src/ai/v2/musicWords.ts` 한 곳에서 음악 요청을 판정한다: 음악·브금·bgm·사운드·선율·노래(부르는 장면 제외), 장면 붙은 「~곡」(엔딩곡·전투곡·보스곡·타이틀곡…; 계곡·곡괭이는 안 걸린다), 그리고 `GAME_FEELS` 의 모든 게임 이름 + 느낌·처럼·풍·같은(`STORE_MUSIC_GAME_NAME_SOURCE` — **표에 줄을 더하면 여기서도 맞는다**).
+  게임 요소 낱말이 없으면 음악 묶음(`MUSIC_TIER`)만 맵 동사 위에 덧붙인다(맵 동사를 대신하지 않는다 — 「파판처럼 마을 만들어」도 make_place 를 그대로 쓴다). 끝맺음 음악 검사(`gameChecks.ts`)는 `musicAsked` — 짓는 요청의 게임 이름(화풍일 수 있다)에는 곡을 요구하지 않는다. 엔딩곡 연결도 「걸었다」로 센다.
+  음악 카드는 「음악만 바라는 요청은 맵을 다시 짓거나 이벤트·엔딩을 새로 만들지 않는다」고 시킨다(실패 판에서 도구가 없던 조수가 마을을 다시 짓고 엔딩 이벤트를 새로 만들었다). 단위 `test/assistantMusicRouting.test.ts`.
+  새 줄(2026-10-30, 팩 게시 전): `dark-folk-fantasy`·`gallery-mystery`·`chase-horror`·`dark-fairytale`·`dream-ambient`·`eerie-minimal`·`school-horror`·`chiptune-indie-rpg`.
+  일반 낱말은 `LINE_WORDS`, 게임 이름은 `GAME_FEELS` 에만 넣고, 각 게임 줄의 lines 둘째 이후가 새 팩이 없을 때 물러설 옛 줄(fantasy·piano-story·horror·scifi·monster)이다.
+  흔한 낱말과 겹치는 이름(이브·イヴ·off·오프·위처)은 `guarded` — 바로 뒤에 느낌·처럼·풍·같은이 올 때만 그 게임이다(「이브닝」「불 꺼(off)」「위처럼」은 안 걸린다). 「Ib」「off rpg」는 낱말째 맞는다.
+  남은 것: 모델이 「I encountered an error…」 사과문을 내면 `scripts/lib/assistantV2Runtime.ts` 가 숨기기만 하고 그 차례를 다시 돌리지 않는다(재시도 장치가 이벤트 수신기 안에 없어 이번에는 손대지 않음).
+- 시험: 단위 `test/storeMusicInstall.test.ts`·`test/storeMusicFeel.test.ts`. 실조수: `bun src/harnesses/assistant-capability/node/musicStorePrepare.ts <dir> <fantasy|joseon|monster> <제목>`(마을·동굴·보스전 시드) →
   `node src/harnesses/assistant-capability/node/wholeGameSession.mjs --project-dir <dir>/project --out <dir>/session --v2 --store-url <스테이징> [--store-ask-first]`.
   브라우저 편집기에는 데스크톱 다리가 없어서 드라이버가 읽기 전용 스토어 다리를 붙인다(`storeBridgeShim.mjs`). 요청 목록은 `harness-data/space-craft/seed.json` 의 `g-music-*`.
   출하 플레이어 재생 확인: `wholeGamePlayer.mjs --project-dir <dir>/project --out <dir>/player --serve` 뒤
@@ -273,6 +299,9 @@ npm run harness -- game-concepts publish --target staging|prod --yes-prod|http:/
   다리: `window.oprn.store.gameMine/gamePublish/gameCurrent`(`electron/main/assetStoreClient.ts`), 순서는 `src/assetStore/gamePublish.ts`.
 - 대표 데모: `npm run store:publish-game -- --demo chrono-bell|emerald-crown|first-love --dry | --target staging | --target production --confirm <contentHash>`,
   되돌리기 `--rollback <slug>@<판본>`. 플레이어는 먼저 `npm run build:player`. 공용 그림·BGM 이 체크아웃 public/ 에 없으면 `OPRN_ASSET_ROOTS`.
+- 제3자 이름 자원(2026-10-30): 판본은 프로젝트 자원 목록 전체를 싣는데, 기본 목록에는 쓰지 않는 「RefmapDoll · REFMAP 변형 인물」 걷기 칩 321장이 딸려 왔다.
+  `store:publish-game` 은 `splitStoreGameThirdPartyProfiles`(`src/assetStore/storeGameThirdParty.ts`)로 스토어가 막는 이름(`storeThirdPartyName`)의 자원을
+  게임이 쓰지 않으면 빼고, 쓰면(assetId 가 자원 목록 밖에 나오면) 게시를 멈춘다. 공개 라이선스 카탈로그(`cc0-`·`easyrpg-`)는 「rtp」 낱말이 있어도 막지 않는다.
 
 **바뀐 점 쓰는 법(2026-10-25, 스토어 PR #22).** 판본의 `changelog` 는 여전히 글 한 덩어리(최대 4000자)이고 서버는 그대로 저장한다.
 게임 화면(play.openrpgmaker.com/games/<slug>)이 보여 줄 때만 나눈다 — 옛 글도 그대로 읽힌다(뒤 호환).

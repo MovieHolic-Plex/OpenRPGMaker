@@ -1644,7 +1644,15 @@ npm run qa:runtime -- --scenario checkpoints --checkpoint-set astra-horizon --ch
 - `--parallel` 기본 2, 최대 4. 일꾼 하나가 브라우저 하나다. 1분 load 가 코어 수를 넘으면 스스로 1 로 줄인다(실측: load 200+/32코어에서
   parallel 2 는 렌더러 «Target crashed», 1 은 통과). 렌더러가 죽은(크래시·부팅 시간 초과) 체크포인트는 끝에 혼자 한 번 더 돈다.
 - 세트 파일: `scripts/qa/runtime/checkpoints/<세트>.json` (데모마다 하나). 부팅은 세트의 `query`(예 `{ "demo": "fallen-star" }`,
-  소스에서 데모를 만드니 늘 현재 분기 내용) 또는 `projectFixture`. 체크포인트 하나의 필드:
+  소스에서 데모를 만드니 늘 현재 분기 내용) 또는 `projectFixture`. **데모 부팅은 구운 파일을 먼저 쓴다(2026-10-29):**
+  페이지 안에서 chrono-bell 을 지으면 부하 중 2~6분이라 체크포인트 하나가 12~20분 걸렸다. 하네스(`scripts/lib/runtimeQaDemo.mjs`)가
+  `dist/demos/<id>.play.json`(출하 플레이어와 같은 투영)이 `src/` 의 어느 파일보다 새것이면 그것을 `__OPENRPG_BOOT__.qaDemoUrl` 로 넘기고,
+  플레이어는 dev 에서만 그 주소를 읽는다. 낡았거나 없으면 예전처럼 페이지에서 짓는다(로그 `qaDemo … build-in-page`).
+  `--project dist/demos/<id>.(play|project).json` 은 낡아도 그 굽기를 쓴다(명시). `QA_DEMO_SOURCE=build` 는 늘 페이지에서 짓는다.
+  소스를 고쳤으면 `npm run bake:demos -- --only <id>` 로 다시 굽고 돌린다. 실측(load 20~45, hub-start): 페이지 빌드 655~1141초(노드 굽기 기준)
+  → 구운 파일 첫 판 23~29초·다음 판 17~19초. 남은 시간의 절반은 dev 서버가 모듈 약 1,200개를 내주는 폭포(DOMContentLoaded 11~17초)다.
+  같은 변경에서 웹 플레이어 시작 전 목록 만들기(`scenePreload.ts` — 타일셋 글자를 맵마다 다시 훑고 아이콘 id 를 배열에서 찾던 것)를
+  4~5초 → 1초 아래로 줄였다(출하 플레이어도 같다). 체크포인트 하나의 필드:
   `mapId x y facing`, `switches variables selfSwitches`, `party: [{ actorId, level }]`(그 레벨 최대 HP/MP 로 채움),
   `items gold`, `sessionPatch`(호감도 `relationships`·`friendship`, 몬스터 `monsterInstances/monsterParty` 등 세션 최상위 키에
   깊게 합침, 배열은 통째로 교체), `startEventId`(불러온 직후 실행할 맵 이벤트), `beats`(그 단계에서 할 일 — 없으면 세트의

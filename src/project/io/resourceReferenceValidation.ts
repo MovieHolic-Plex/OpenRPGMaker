@@ -20,6 +20,7 @@ import { FARMING_RESOURCE_IDS } from "@/assets/farmingSprites";
 import { OPRN_MONSTER_CHARSET_RESOURCE_IDS } from "@/assets/oprnMonsterCharsets";
 import { HEROES_CHARSET_RESOURCE_IDS } from "@/assets/heroesCharsets";
 import { MODERN_CHARSET_RESOURCE_IDS } from "@/assets/modernCharsets";
+import { REFMAP_DOLL_CHARSET_RESOURCE_IDS } from "@/assets/refmapDollCharsets";
 import { SCARLOXY_PEOPLE_CHARSET_RESOURCE_IDS } from "@/assets/scarloxyPeopleCharsets";
 import { WIZARDING_CHARSET_RESOURCE_IDS } from "@/assets/wizardingCharsets";
 import { GENERATED_EFFECT_RESOURCE_IDS } from "@/assets/generatedEffectSheets";
@@ -33,6 +34,7 @@ import { seCatalogResourceIds } from "@/assets/seCatalogRuntime";
 import { assert } from "./guards";
 import { isRetiredResourceId } from "@/assets/retiredAssets";
 import { openingMapViewResourceIds } from "@/project/openingMapView";
+import { openingStillBaseId, openingStillResourceIds } from "@/project/openingStill";
 
 export function collectResourceIds(project: Project): Set<string> {
   const ids = new Set<string>();
@@ -62,6 +64,8 @@ export function collectResourceIds(project: Project): Set<string> {
   for (const id of seCatalogResourceIds()) ids.add(id);
   // 오프닝 컷 배경 「게임 속 맵 그대로」(map-view:<mapId>) — 맵이 있으면 쓸 수 있다(openingMapView.ts).
   for (const id of openingMapViewResourceIds(project)) ids.add(id);
+  // 타이틀 배경 「오프닝 컷 한 순간」(opening-still:<컷>[@ms]) — 애니메틱 컷이 있으면 쓸 수 있다(openingStill.ts).
+  for (const id of openingStillResourceIds(project)) ids.add(id);
   for (const id of SCARLOXY_RESOURCE_IDS) ids.add(id);
   // 몬스터 수집 하네스 번들 종 그림. 캠페인 종이 이 id 를 쓰므로 빠지면 그 프로젝트가 역직렬화에서 던진다.
   for (const id of HARNESS_MONSTER_RESOURCE_IDS) ids.add(id);
@@ -77,6 +81,7 @@ export function collectResourceIds(project: Project): Set<string> {
   for (const id of WIZARDING_CHARSET_RESOURCE_IDS) ids.add(id);
   for (const id of HEROES_CHARSET_RESOURCE_IDS) ids.add(id);
   for (const id of MODERN_CHARSET_RESOURCE_IDS) ids.add(id);
+  for (const id of REFMAP_DOLL_CHARSET_RESOURCE_IDS) ids.add(id);
   for (const id of SCARLOXY_PEOPLE_CHARSET_RESOURCE_IDS) ids.add(id);
   // 절차 생성 전투 이펙트 시트. 기본 DB 가 이 id 를 참조하므로 빠지면 기본 프로젝트조차 역직렬화에서 던진다.
   for (const id of GENERATED_EFFECT_RESOURCE_IDS) ids.add(id);
@@ -174,7 +179,8 @@ function validateCinematicResources(label: string, sequence: CinematicSequence |
  * 새로 저작하는 경로(컷신 검증·조수 도구)는 이 함수를 쓰지 않고 살아 있는 집합만 본다.
  */
 export function isKnownResourceId(resourceIds: ReadonlySet<string>, id: string): boolean {
-  return resourceIds.has(id) || isRetiredResourceId(id);
+  const still = openingStillBaseId(id);
+  return resourceIds.has(id) || (still !== undefined && resourceIds.has(still)) || isRetiredResourceId(id);
 }
 
 export function validateOptionalResource(

@@ -4,6 +4,7 @@
 // 계산은 src/editor/dungeonKit/ — 중립 마스크(mask.ts) + 칩셋 어댑터(beodeul/·monster/) + 장르 프리셋(genres.ts) + 라우팅(route.ts).
 import { DUNGEON_DESIGN_SCHEMA } from "@/editor/dungeonKit/designLayout";
 import { isPassable } from "@/project/collision";
+import { kitDoorOpenCommands } from "@/project/kitDoors";
 import { groundSupportIssues } from "@/project/groundSupport";
 import { MAX_TOOL_MAP_DIMENSION } from "@/project/mapSizeLimits";
 import { addMapLocation, COMPOSED_LAYOUT_TAG } from "@/project/mapNamedLocations";
@@ -266,24 +267,28 @@ function defaultSeed(draft: Project, args: Record<string, unknown>): number {
 }
 
 /** 계단 칸 이동 이벤트(계단 계약: 이벤트는 계단 그림 칸, 도착은 상대 계단 앞 칸에서 계단을 등지고). */
-function stairEvent(map: GameMap, id: string, at: Stair, name: string, to: { mapId: string; land: Pt; facing: "up" | "down" | "left" | "right" }): void {
+function stairEvent(draft: Project, map: GameMap, id: string, at: Stair, name: string, to: { mapId: string; land: Pt; facing: "up" | "down" | "left" | "right" }): void {
   const bump = at.kind === "door";
   const event: GameEvent = {
     id, x: at.x, y: at.y, trigger: { kind: "playerTouch" }, commands: [],
     pages: [{
       id: `${id}_page`, name, conditions: [], graphic: { transparent: true }, trigger: { kind: "playerTouch" },
       priority: bump ? "same" : "below", overlapForbidden: false, movement: { type: "fixed", speed: 3, frequency: 3 },
-      commands: [...doorOpenCommands(map, at), { kind: "transfer", mapId: to.mapId, x: to.land.x, y: to.land.y, direction: to.facing, fade: "black" } as Command],
+      commands: [...doorOpenCommands(draft, map, at), { kind: "transfer", mapId: to.mapId, x: to.land.x, y: to.land.y, direction: to.facing, fade: "black" } as Command],
     }],
   } as GameEvent;
   upsertEventIntoMap(map, event);
 }
 
 /**
- * gap 문(bd-dg-door-closed/open, #3283): 문 칸에 상태 짝 그림이 실려 있으면 들어가기 전에 문을 연다(위층 두 칸 changeTile + 문 소리).
- * changeTile 은 세션에 남으니 한 번 연 문은 열린 채로 있다. 그림 짝이 없는 옛 나무 문은 빈 목록.
+ * gap 문(bd-dg-door-closed/open, #3283): 문 칸에 상태 짝 그림이 실려 있으면 들어가기 전에 문을 연다.
+ * 타일셋의 닫힘/열림 키트 짝으로 찾으면(project/kitDoors) 그 문 그림으로 1×2 전체를 여는 연출(fx:door-open) + changeTile —
+ * 런타임 이동은 이미 열린 키트 문에 연출을 겹치지 않는다. changeTile 은 세션에 남으니 한 번 연 문은 열린 채로 있다.
+ * 키트를 못 찾고 조립기가 doorTiles 만 남긴 경우는 옛 명령(소리 + 위층 두 칸 changeTile). 그림 짝이 없는 옛 나무 문은 빈 목록.
  */
-function doorOpenCommands(map: GameMap, at: Stair): Command[] {
+function doorOpenCommands(draft: Project, map: GameMap, at: Stair): Command[] {
+  const kit = kitDoorOpenCommands(draft, map, at);
+  if (kit.length) return kit;
   const dt = (at as Stair & { doorTiles?: { open: [number, number] } }).doorTiles;
   if (!dt) return [];
   return [
@@ -402,10 +407,26 @@ function populateFloor(draft: Project, mapId: string, data: Record<string, unkno
   else if (role.guardian) bosses = guard(troops.midBoss, `ev_${mapId}_guardian`, "층 수문장") ? 1 : 0;
   let saves = 0;
   if (restRoom) {
-    const at = restRoom.spots.find(free);
-    if (at && attempt(`세이브 포인트 (${at.x},${at.y})`, () => nested(draft, "place_savepoint", { mapId, x: at.x, y: at.y, heal: true, name: "쉼터 결정", id: `ev_${mapId}_rest` }))) { out.push(`쉼터(회복 세이브) ${restRoom.id} (${at.x},${at.y})`); saves = 1; }
+    // 맵 칩셋에 받침 위 수정(세이브 받침) 키트가 있으면 그 그림으로 세운다 — 없으면 옛 크리스탈 걷기 칩.
+    // 옛 칩(보라 바위 같은 수정이 맥동)은 버들항 던전에서 층마다 「움직이는 바위」로 읽혔다(2026-10-30 사용자).
+    const pedestal = saveCrystalKit(draft, map);
+    const fitsPedestal = (c: Pt): boolean => !!pedestal && c.y - (pedestal.height - 1) >= 0
+      && Array.from({ length: pedestal.height - 1 }, (_, k) => ({ x: c.x, y: c.y - 1 - k })).every((p) => isPassable(draft, map, p.x, p.y) && (map.upperTiles[p.y * map.width + p.x] ?? -1) < 0 && !map.events.some((e) => e.x === p.x && e.y === p.y));
+    const kitAt = pedestal && pedestal.width === 1 ? restRoom.spots.find((c) => free(c) && fitsPedestal(c)) : undefined;
+    const at = kitAt ?? restRoom.spots.find(free);
+    const args = kitAt && pedestal
+      ? { mapId, x: kitAt.x, y: kitAt.y - (pedestal.height - 1), objectId: `kit:${map.tilesetId}/${pedestal.id}`, heal: true, name: "쉼터 결정", id: `ev_${mapId}_rest` }
+      : at ? { mapId, x: at.x, y: at.y, heal: true, name: "쉼터 결정", id: `ev_${mapId}_rest` } : undefined;
+    if (at && args && attempt(`세이브 포인트 (${at.x},${at.y})`, () => nested(draft, "place_savepoint", args))) { out.push(`쉼터(회복 세이브) ${restRoom.id} (${at.x},${at.y})`); saves = 1; }
   }
   return { line: out.join(" · "), placed: { enemies: foes.length, chests: chests.length, boss: role.boss ? bosses : 0, guardian: role.boss ? 0 : bosses, save: saves } };
+}
+
+/** 맵 칩셋의 세이브 받침 키트(받침 위 수정·세이브 수정). 버들항 = bd-pick-dungeon-theme-crystal-pedestal. 없으면 undefined. */
+function saveCrystalKit(draft: Project, map: GameMap): { id: string; width: number; height: number } | undefined {
+  const kits = (draft.tilesets[map.tilesetId] as { structureKits?: readonly { id?: unknown; width?: unknown; height?: unknown }[] } | undefined)?.structureKits ?? [];
+  const hit = kits.find((k) => typeof k.id === "string" && /crystal-pedestal|save-(?:point|crystal|pedestal)/i.test(k.id));
+  return hit && Number.isInteger(hit.width) && Number.isInteger(hit.height) ? { id: hit.id as string, width: hit.width as number, height: hit.height as number } : undefined;
 }
 
 const FLOOR_NAME = (base: string, dir: "down" | "up", k: number, n: number): string => (n === 1 ? base : `${base} ${dir === "down" ? `지하 ${k}층` : `${k}층`}`);
@@ -629,8 +650,8 @@ function authorDungeon(draft: Project, argsIn: Record<string, unknown>): ToolExe
     const a = datas[k]!.exitStair as Stair | null, b = datas[k + 1]!.entryStair as Stair | null;
     const ma = draft.maps[mapIds[k]!]!, mb = draft.maps[mapIds[k + 1]!]!;
     if (!a || !b) { warnings.push(`${ma.name} ↔ ${mb.name}: 계단 자리가 없어 잇지 못했다 — create_transfer_pair 로 잇는다.`); continue; }
-    stairEvent(ma, `ev_${ma.id}_stair_next`, a, `${mb.name}(으)로`, { mapId: mb.id, land: b.front, facing: DIR_OF(b, b.front) });
-    stairEvent(mb, `ev_${mb.id}_stair_back`, b, `${ma.name}(으)로`, { mapId: ma.id, land: a.front, facing: DIR_OF(a, a.front) });
+    stairEvent(draft, ma, `ev_${ma.id}_stair_next`, a, `${mb.name}(으)로`, { mapId: mb.id, land: b.front, facing: DIR_OF(b, b.front) });
+    stairEvent(draft, mb, `ev_${mb.id}_stair_back`, b, `${ma.name}(으)로`, { mapId: ma.id, land: a.front, facing: DIR_OF(a, a.front) });
     links.push(`${ma.id}(${a.x},${a.y}) ↔ ${mb.id}(${b.x},${b.y})`);
   }
   // 주제 장치(2026-10-23 dungeon-themes): 버들항 rpg 던전은 마지막 층에 그 주제다운 장치 하나를 둔다(gimmick 생략 = 주제 기본, "none" = 끔).

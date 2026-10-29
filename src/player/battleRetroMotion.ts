@@ -491,7 +491,7 @@ export function isTravellingEffect(animation: { readonly resourceId?: string; re
 
 function motionSe(cue: MotionCue, volume = 0.3): void {
   if (reduced()) return;
-  playBattleSample(MOTION_SE[cue], volume);
+  playBattleSample(MOTION_SE[cue], volume, 1, "skill");
 }
 
 // ── 캐릭터별 접근 방식 ──────────────────────────────────────────────────────────────────

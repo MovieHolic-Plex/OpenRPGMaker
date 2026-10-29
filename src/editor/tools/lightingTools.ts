@@ -3,10 +3,24 @@ import { isPassable } from "@/project/collision";
 import { normalizeLightingState, normalizeLightSource } from "@/project/lightingRules";
 import type { Command, EventPage, GameEvent, LightSource, LightSourceAnchor, Rect, WeatherKind } from "@/project/types";
 import { requireMap } from "./mapHelpers";
-import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
+import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
 import { LIGHT_SOURCE_SCHEMA, RECT_SCHEMA } from "./schemaShapes";
 
 const PASSIVE: EventPage["movement"] = { type: "fixed", speed: 3, frequency: 3 };
+
+/** 광원 하나 + 켜질 조건(스위치). when 이 있는 광원은 맵 기본 조명이 아니라 그 스위치가 켜진 동안 도는 병렬 이벤트가 붙인다. */
+const CONDITIONAL_LIGHT_SOURCE_SCHEMA: JsonSchema = {
+  ...LIGHT_SOURCE_SCHEMA,
+  properties: {
+    ...LIGHT_SOURCE_SCHEMA.properties,
+    when: {
+      type: "object",
+      description: "켜질 조건(선택). {switchId} = 그 스위치가 켜지면 이 빛이 켜진다(맵에 있는 동안 켜져도 바로 켜짐, 맵에 다시 들어와도 유지). 예: 등을 건 집 창불.",
+      properties: { switchId: { type: "string" } },
+      required: ["switchId"],
+    },
+  },
+};
 
 const setLightingVolume: ToolDefinition = {
   name: "set_lighting_volume",
@@ -21,8 +35,8 @@ const setLightingVolume: ToolDefinition = {
       color: { type: "string", description: "마스크 색상. 기본 #000000" },
       sources: {
         type: "array",
-        description: "LightSource[]. at 은 객체: 플레이어를 따라가는 빛 {kind:'player'}, 칸 {x,y}, 이벤트 {eventId}.",
-        items: LIGHT_SOURCE_SCHEMA,
+        description: "LightSource[]. at 은 객체: 플레이어를 따라가는 빛 {kind:'player'}, 칸 {x,y}, 이벤트 {eventId}. when:{switchId} 를 단 광원은 그 스위치가 켜졌을 때만 켜진다(applyMode map).",
+        items: CONDITIONAL_LIGHT_SOURCE_SCHEMA,
       },
       applyMode: { type: "string", enum: ["map", "event"], description: "기본 map" },
       area: { ...RECT_SCHEMA, description: "event 모드 필수 {x,y,w,h}" },
@@ -37,17 +51,21 @@ const setLightingVolume: ToolDefinition = {
   },
   run(draft, args): ToolExecResult {
     const map = requireMap(draft, args.mapId as string);
+    const applyMode = args.applyMode === "event" ? "event" : "map";
+    const split = splitConditionalSources(draft, args.sources, applyMode);
     const lighting = normalizeLightingState({
       ambient: numberArg(args.ambient, "ambient"),
       ...(typeof args.color === "string" && args.color.trim() ? { color: args.color.trim() } : {}),
-      sources: sourceArgs(args.sources),
+      sources: sourceArgs(split.always),
     });
-    const applyMode = args.applyMode === "event" ? "event" : "map";
     if (applyMode === "map") {
       map.defaultLighting = lighting;
+      const conditionalEventIds = upsertConditionalLightEvents(map, split.bySwitch);
+      const conditionalCount = [...split.bySwitch.values()].reduce((n, list) => n + list.length, 0);
       return {
-        summary: `${map.name} 기본 조명 설정 — ambient ${lighting.ambient.toFixed(2)}, 광원 ${lighting.sources.length}개`,
-        data: { mapId: map.id, applyMode, lightCount: lighting.sources.length },
+        summary: `${map.name} 기본 조명 설정 — ambient ${lighting.ambient.toFixed(2)}, 광원 ${lighting.sources.length}개` +
+          (conditionalCount > 0 ? `, 스위치 조건 광원 ${conditionalCount}개(스위치 ${split.bySwitch.size}개)` : ""),
+        data: { mapId: map.id, applyMode, lightCount: lighting.sources.length, conditionalLightCount: conditionalCount, conditionalEventIds },
       };
     }
 
@@ -151,6 +169,61 @@ const setSceneMood: ToolDefinition = {
     };
   },
 };
+
+/** when:{switchId} 가 달린 광원을 떼어 스위치별로 묶는다. 없는 스위치는 거절(오타로 영영 안 켜지는 빛을 막는다). */
+function splitConditionalSources(
+  draft: { readonly switches: ReadonlyArray<{ readonly id: string }> },
+  value: unknown,
+  applyMode: "map" | "event",
+): { always: unknown; bySwitch: Map<string, LightSource[]> } {
+  const bySwitch = new Map<string, LightSource[]>();
+  if (!Array.isArray(value)) return { always: value, bySwitch };
+  const always: unknown[] = [];
+  value.forEach((entry, index) => {
+    const when = entry && typeof entry === "object" ? (entry as Record<string, unknown>).when : undefined;
+    if (when === undefined) { always.push(entry); return; }
+    const switchId = when && typeof when === "object" ? (when as Record<string, unknown>).switchId : undefined;
+    if (typeof switchId !== "string" || !switchId.trim()) {
+      throw new ToolError(`sources[${index}].when 은 {switchId} 입니다.`, { code: "lighting-source" });
+    }
+    if (applyMode !== "map") throw new ToolError(`sources[${index}].when 은 applyMode 'map' 에서만 씁니다.`, { code: "lighting-source" });
+    if (!draft.switches.some((sw) => sw.id === switchId)) {
+      throw new ToolError(`sources[${index}].when.switchId 스위치가 없습니다: ${switchId}. 먼저 스위치를 만드세요.`, { code: "lighting-source" });
+    }
+    const { when: _when, ...rest } = entry as Record<string, unknown>;
+    const list = bySwitch.get(switchId) ?? [];
+    list.push(normalizeLightSource(sourceArg(rest, `sources[${index}]`)));
+    bySwitch.set(switchId, list);
+  });
+  return { always, bySwitch };
+}
+
+/**
+ * 스위치 조건 광원 — 맵 조명은 맵에 들 때마다 기본값으로 돌아가므로, 그 스위치가 켜진 동안 도는 투명 병렬 이벤트가
+ * 들 때마다 광원을 다시 붙인다(한 번 붙이고 오래 기다려 같은 빛을 거듭 붙이지 않는다). 같은 맵·스위치로 다시 부르면 덮어쓴다.
+ */
+function upsertConditionalLightEvents(map: GameMapLike, bySwitch: ReadonlyMap<string, readonly LightSource[]>): string[] {
+  const ids: string[] = [];
+  for (const [switchId, sources] of bySwitch) {
+    const id = `ev_light_when_${sanitizeId(switchId)}`;
+    const base = { graphic: { transparent: true }, priority: "below" as const, overlapForbidden: false, animationType: "fixedGraphic" as const, movement: PASSIVE };
+    const event: GameEvent = {
+      id, name: `조건 광원 · ${switchId}`, x: 0, y: 0, trigger: { kind: "parallel" }, commands: [],
+      pages: [
+        { ...base, id: `${id}_off`, name: "꺼짐", conditions: [], trigger: { kind: "action" }, commands: [] },
+        {
+          ...base, id: `${id}_on`, name: "켜짐", conditions: [{ kind: "switch", switchId, value: true }], trigger: { kind: "parallel" },
+          commands: [...sources.map((source): Command => ({ kind: "addLight", source })), { kind: "wait", ms: 600000 } as unknown as Command],
+        },
+      ],
+    } as GameEvent;
+    const index = map.events.findIndex((entry) => entry.id === id);
+    if (index >= 0) map.events[index] = event;
+    else map.events.push(event);
+    ids.push(id);
+  }
+  return ids;
+}
 
 function impassableCellsWarning(count: number, cells: readonly { x: number; y: number }[]): string {
   return `통행 불가 칸 ${count}개를 건너뛰었습니다: ${cells.map(({ x, y }) => `(${x}, ${y})`).join(", ")}`;
@@ -313,7 +386,20 @@ function sourceArg(value: unknown, label: string): LightSource {
     ...(record.intensity !== undefined ? { intensity: numberArg(record.intensity, `${label}.intensity`) } : {}),
     ...(typeof record.color === "string" && record.color.trim() ? { color: record.color.trim() } : {}),
     ...(record.flicker === true ? { flicker: true } : {}),
+    ...(record.cone !== undefined ? { cone: coneArg(record.cone, `${label}.cone`) } : {}),
   };
+}
+
+/** 부채꼴 빛 {degrees, facing?} — 이벤트 앵커면 그 이벤트가 보는 쪽으로 돈다(경비 등불 시야). */
+function coneArg(value: unknown, label: string): NonNullable<LightSource["cone"]> {
+  const record = typeof value === "number" ? { degrees: value } : value;
+  if (typeof record !== "object" || record === null || Array.isArray(record)) throw new ToolError(`${label}는 {degrees:20~180, facing?} 입니다.`, { code: "lighting-source" });
+  const r = record as Record<string, unknown>;
+  const degrees = Number(r.degrees);
+  if (!Number.isFinite(degrees) || degrees < 20 || degrees > 180) throw new ToolError(`${label}.degrees 는 20~180 입니다.`, { code: "lighting-source" });
+  const facing = r.facing;
+  if (facing !== undefined && facing !== "up" && facing !== "down" && facing !== "left" && facing !== "right") throw new ToolError(`${label}.facing 은 up/down/left/right 입니다.`, { code: "lighting-source" });
+  return { degrees, ...(facing ? { facing } : {}) };
 }
 
 function lightAnchorArg(value: unknown, label: string): LightSourceAnchor {

@@ -539,7 +539,8 @@
 }
 .world-document-workspace .world-card.active {
   border-color: var(--db-studio-accent-border);
-  box-shadow: inset 3px 0 0 var(--db-studio-accent), var(--db-studio-shadow);
+  background: var(--db-studio-accent-soft);
+  box-shadow: var(--db-studio-shadow);
 }
 .world-document-workspace .world-card.active .world-card-title {
   letter-spacing: 0;
@@ -786,13 +787,13 @@
   gap: 1px;
   padding: 6px 10px;
   border: 1px solid var(--db-studio-border-subtle);
-  border-left: 3px solid var(--db-studio-success, #2e7d4f);
   border-radius: 8px;
   background: var(--db-studio-canvas, var(--db-studio-surface));
 }
 .world-document-workspace .world-canon-ai-grid-item[data-tone="missing"],
 .world-document-workspace .world-canon-ai-grid-item[data-tone="warn"] {
-  border-left-color: var(--db-studio-warning);
+  background: color-mix(in srgb, var(--db-studio-warning) 10%, var(--db-studio-surface));
+  border-color: color-mix(in srgb, var(--db-studio-warning) 40%, var(--db-studio-border-subtle));
 }
 .world-document-workspace .world-canon-ai-grid-label {
   font: 600 11px/1.4 var(--font-ui);
@@ -1239,7 +1240,7 @@
 .world-document-workspace .world-property-bar .db-segmented { gap: 4px; flex-wrap: nowrap; }
 .world-document-workspace .world-property-bar .db-field { flex: 0 0 auto; flex-wrap: nowrap; }
 .world-document-workspace .world-property-bar .db-segmented-pill, .world-document-workspace .world-property-bar .db-segmented-pill > span { flex: 0 0 auto; white-space: nowrap; }
-.database-modal-backdrop .database-modal-window .world-document-workspace .world-property-bar .db-segmented-pill { padding: 1px 10px; }
+.database-modal-backdrop .database-modal-window .world-document-workspace .world-property-bar .db-segmented-pill { min-height: 28px; padding: 1px 10px; }
 .world-document-workspace .world-prop-note { flex: 1 1 160px; min-width: 0; margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 /* 목록 위 한 줄: 분류 칩 + 개수 */
@@ -1320,3 +1321,9 @@
   display: inline-flex; grid-template-columns: none; align-items: center; gap: 6px; flex: 0 0 auto; min-width: 0;
 }
 .database-modal-backdrop .database-modal-window .database-modal-body .world-document-workspace .world-property-bar .db-segmented { flex: 0 0 auto; width: auto; }
+
+/* 세계 개요 본문 칸은 창 높이에 맞춰 줄어든다 — 320px 고정이면 1366×768·1024×640 에서 아래 「초안 잡기·이어쓰기」
+   막대가 바닥 막대에 잘렸다(V-overlays-modals-42, V-shell-topbar-32). 내용이 길어지면 칸이 자란다(field-sizing). */
+.database-modal-backdrop .database-modal-window .database-modal-body .world-document-workspace .db-world-canon-body {
+  min-height: clamp(120px, calc(100vh - 530px), 320px);
+}

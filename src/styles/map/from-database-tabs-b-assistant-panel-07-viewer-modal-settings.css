@@ -72,7 +72,7 @@
 
 /* database/tabs-b-assistant-panel/07-viewer-modal-settings.css:52-55 */
 .harness-row.is-ui {
-  border-left: 2px solid var(--accent);
+  background: var(--accent-muted);
   padding-left: var(--space-2);
 }
 

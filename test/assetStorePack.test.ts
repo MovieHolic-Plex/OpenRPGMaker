@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 import { describe, expect, it } from "vitest";
-import { STORE_BLOB_PREFIX, STORE_SLUG, slugify, storeProjectId, storeThirdPartyName, validateManifest, packGrade } from "@/assetStore/format";
+import { REFMAP_CREDIT, STORE_BLOB_PREFIX, STORE_SLUG, slugify, storeProjectId, storeThirdPartyName, validateManifest, packGrade } from "@/assetStore/format";
 import { aiMadeAssets, aiMaker, applyPackToProject, basicTilesetFor, buildPack, closeSelection, decodePackBundle, encodePackBundle, packBlockedItems, storeCredits, storeItemsInProject, StorePackBlockedError, type PackMeta } from "@/assetStore/pack";
 import { bytesToBase64, pngSize, sniffMime } from "@/assetStore/sniff";
 import { uploadBlockReason } from "@/editor/assetStore/storeUpload";
@@ -85,6 +85,8 @@ describe("asset store pack", () => {
     leaked.content.tilesets.forest!.name = "data:image/png;base64,AAAA";
     expect(validateManifest(leaked).ok).toBe(false);
     expect(validateManifest({ ...built.manifest, license: "All rights reserved" }).ok).toBe(false);
+    expect(validateManifest({ ...built.manifest, license: "REFMAP-MODIFIED", credits: "누군가" }).ok).toBe(false);
+    expect(validateManifest({ ...built.manifest, license: "REFMAP-MODIFIED", credits: `OPRN · ${REFMAP_CREDIT}` }).ok).toBe(true);
   });
 
   it("rejects prototype ids, cell counts that disagree with passability, and slugs that collide as project ids", async () => {
@@ -162,6 +164,13 @@ describe("asset store pack", () => {
   it("finds third-party names glued to words or digits but not inside ordinary words", () => {
     for (const name of ["rasaktown", "rasak01_house", "RASAK-B", "refmap2", "PAWModern", "paw_modern", "mv_actor1", "MZ Exterior", "RPGMaker 실내", "라삭 마을"]) expect(storeThirdPartyName(name), name).not.toBeNull();
     for (const name of ["pawn_shop", "전당포 pawnshop", "mvp_trophy", "내 숲 칩셋", "tex_easyrpg_chipset_retro_house"]) expect(storeThirdPartyName(name), name).toBeNull();
+  });
+
+  it("lets only REFMAP-MODIFIED items carry the refmap name, and keeps every other third-party name out", () => {
+    expect(storeThirdPartyName("RefmapDoll12-3", "REFMAP-MODIFIED")).toBeNull();
+    expect(storeThirdPartyName("RefmapDoll12-3", "OPRN-GAME")).toBe("refmap");
+    expect(storeThirdPartyName("refmap rasak mix", "REFMAP-MODIFIED")).toBe("rasak");
+    expect(storeThirdPartyName("rtp actor", "REFMAP-MODIFIED")).toBe("rtp");
   });
 
   it("refuses a pack when a picked tileset drags in third-party or store-bought dependencies", async () => {

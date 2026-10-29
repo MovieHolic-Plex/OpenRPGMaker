@@ -15,6 +15,39 @@ const saveProgressToastKey = Symbol("save-progress");
 const saveResultToastKey = Symbol("save-result");
 let saveInFlight: Promise<boolean> | null = null;
 
+/** 임시 세션을 파일로 내보낸 시각. 배너가 「방금 내보냄」을 말하는 근거다. */
+export const TEMPORARY_SESSION_EXPORTED_EVENT = "oprn:temporary-session-exported";
+let temporarySessionExportedAt: number | null = null;
+
+export function lastTemporarySessionExportAt(): number | null {
+  return temporarySessionExportedAt;
+}
+
+/**
+ * 임시 세션의 「보존」 경로 — 프로젝트 파일(.oprn)로 내려받는다. 성공했을 때만 시각을 남기고 배너에 알린다
+ * (실패는 오류 토스트로 끝난다).
+ */
+export async function exportTemporarySession(): Promise<boolean> {
+  try {
+    const [{ createProjectPackage, projectPackageFileName, projectWithInlineUploadedMedia }, { projectWithoutEventDrafts }, { downloadBlob }] = await Promise.all([
+      import("@/project/package"),
+      import("@/project/eventDrafts"),
+      import("@/util/downloadBlob"),
+    ]);
+    const project = await projectWithInlineUploadedMedia(projectWithoutEventDrafts(store.getCurrent()));
+    const fileName = projectPackageFileName(project);
+    downloadBlob(createProjectPackage(project), fileName);
+    temporarySessionExportedAt = Date.now();
+    saveToast(`「${fileName}」로 내보냈어요. 다운로드 폴더에 있어요. 이 파일을 다시 열면 이어서 작업할 수 있어요.`, "ok");
+    if (typeof window !== "undefined") window.dispatchEvent(new CustomEvent(TEMPORARY_SESSION_EXPORTED_EVENT));
+    return true;
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    saveToast(`내보내기 실패: ${message}`, "error");
+    return false;
+  }
+}
+
 function saveToast(message: string, kind: "ok" | "info" | "error"): void {
   dismissToastsByKey(saveResultToastKey);
   toast(message, { kind, key: saveResultToastKey });
@@ -57,7 +90,13 @@ async function saveProjectOnce(): Promise<boolean> {
         if (result.written === false) {
           // fresh/blank 같은 임시 세션은 기록을 건너뛴다. 「저장 완료」라고 하면 거짓이다.
           // 호출자(새 프로젝트 만들기 등)는 막지 않는다 — 임시 세션은 원래 저장할 곳이 없다.
-          saveToast("이 세션은 저장되지 않는 임시 세션입니다 — 아무것도 기록하지 않았습니다.", "info");
+          // 저장할 곳이 없다는 말로 끝내지 않고, 그 자리에서 보존하는 길(내보내기)을 준다.
+          dismissToastsByKey(saveResultToastKey);
+          toast("임시 세션이라 저장할 곳이 없어요. 파일로 내보내 보존하세요.", {
+            kind: "info",
+            key: saveResultToastKey,
+            action: { label: "내보내기", testid: "save-temporary-export", onClick: () => void exportTemporarySession() },
+          });
           return false;
         }
         saveToast("저장 완료 (브라우저)", "ok");

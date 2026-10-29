@@ -70,7 +70,9 @@
         "compact",
         "muted",
         "plain",
-        "transparent"
+        "transparent",
+        "ui-icon",
+        "ui-icon-"
       ],
       "roots": []
     },
@@ -115,7 +117,14 @@
         "left-layer-btn",
         "ai-connection-",
         "test-play-",
-        "jp-pin-repair-"
+        "jp-pin-repair-",
+        "studio-run-",
+        "studio-status-",
+        "oprn-window-control",
+        "oprn-window-control-",
+        "editor-product-brand",
+        "editor-product-brand-",
+        "header-relief-"
       ],
       "roots": [
         ".editor-layout"
@@ -159,7 +168,15 @@
         "runtime-overlay-",
         "runtime-debug-",
         "layout-bbox-",
-        "resource-"
+        "resource-",
+        "command-palette",
+        "command-palette-",
+        "event-list-",
+        "oprn-tile-",
+        "selected-tile-",
+        "sidebar-map-",
+        "sidebar-layer-",
+        "zoom-stepper-"
       ],
       "roots": [
         ".editor-layout"
@@ -384,7 +401,14 @@
         "tileset-",
         "title-",
         "troop-",
-        "world-gen-"
+        "world-gen-",
+        "ai-panel-scrim",
+        "ai-lock-scrim",
+        "ai-workspace-",
+        "ai-suggestion-peek-",
+        "left-links-",
+        "world-document-workspace",
+        "world-document-workspace-"
       ],
       "roots": [
         ".database-modal-backdrop",

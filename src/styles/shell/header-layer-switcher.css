@@ -1,38 +1,48 @@
-/* 소재 옆의 맵 편집 모드: 일반 헤더 아이콘과 구분되는 강조 버튼 묶음. */
+/* 소재 옆의 레이어 고르기(radiogroup) + 그 앞의 「지형 붓」 토글.
+   선택은 중립 채움 + 굵은 글자로 말한다 — 강조색 채움은 상단 바에서 「테스트 실행」 하나뿐이다(C-20). */
 .studio-bar .header-layer-switcher {
   display: inline-flex;
   flex: 0 0 auto;
   align-items: center;
   gap: 2px;
-  margin-inline: 6px;
-  padding: 3px;
-  border: 1px solid var(--accent);
+  margin-inline: 2px 6px;
+  padding: 2px;
+  border: 1px solid var(--border-default);
   border-radius: 9px;
-  background: var(--accent-muted);
+  background: var(--bg-inset);
 }
 
-.studio-bar .header-layer-switcher .left-layer-btn {
-  min-height: 28px;
+.studio-bar .left-layer-btn {
+  min-height: 32px;
   padding: 4px 10px;
   border: 0;
-  border-radius: 6px;
+  border-radius: 7px;
   background: transparent;
-  color: var(--accent);
-  font: 600 12px/1.2 var(--font-ui);
+  color: var(--text-2);
+  font: 600 13px/1.2 var(--font-ui);
   white-space: nowrap;
   cursor: pointer;
 }
 
-.studio-bar .header-layer-switcher .left-layer-btn:hover {
+.studio-bar .header-relief-brush {
+  flex: 0 0 auto;
+  margin-left: 6px;
+  border: 1px solid var(--border-default);
+}
+
+.studio-bar .left-layer-btn:hover {
   background: var(--bg-hover);
+  color: var(--text-1);
 }
 
-.studio-bar .header-layer-switcher .left-layer-btn.is-active {
-  background: var(--accent);
-  color: var(--on-accent);
+.studio-bar .left-layer-btn.is-active {
+  background: var(--bg-raised);
+  box-shadow: 0 0 0 1px var(--border-strong), var(--shadow-pop);
+  color: var(--text-1);
+  font-weight: 700;
 }
 
-.studio-bar .header-layer-switcher .left-layer-btn:focus-visible {
+.studio-bar .left-layer-btn:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
@@ -42,7 +52,7 @@
     margin-inline: 2px;
   }
 
-  .studio-bar .header-layer-switcher .left-layer-btn {
+  .studio-bar .left-layer-btn {
     padding-inline: 6px;
   }
 

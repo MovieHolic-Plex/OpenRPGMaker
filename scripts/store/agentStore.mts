@@ -139,7 +139,7 @@ function checkPack(pack: Pack, { gate = true }: { gate?: boolean } = {}): { prob
     for (const graft of tileset.tileGrafts ?? []) named.push([`타일셋 ${key} 이식`, graft.sourceChipset]);
   }
   for (const [where, text] of named) {
-    const hit = text ? storeThirdPartyName(text) : null;
+    const hit = text ? storeThirdPartyName(text, manifest.license) : null;
     if (hit) problems.push(`${where}: 타사 소재 이름 「${hit}」 — 스토어는 Rasak·REFMAP·PAW·RPG Maker MV/MZ·RTP 소재를 받지 않는다.`);
   }
   for (const ref of manifest.blobs ?? []) {

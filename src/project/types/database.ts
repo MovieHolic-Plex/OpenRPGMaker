@@ -60,6 +60,11 @@ export interface ActorRecord {
   appearanceId?: string;
   characterTransparent: boolean;
   battleCharacterResourceId?: string;
+  /**
+   * 측면 전투에서 이 배우 그림의 표시 크기(50~300%, 정수). 생략 = 100%.
+   * 지금은 파티원 몬스터 도트 시트(party-pixel-*)에 적용된다 — 마왕·드래곤처럼 사람보다 커야 하는 파티원.
+   */
+  battleScalePercent?: number;
   critical: ActorCritical;
   parameterCurves: ActorParameterCurves;
   expCurve: ActorExperienceCurve;
@@ -1052,7 +1057,8 @@ export type BattleEventCondition =
   | { kind: "actorHp"; actorId: ActorId; minPercent: number; maxPercent: number }
   | { kind: "enemyTurn"; enemyId: EnemyId; turn: number }
   | { kind: "actorTurn"; actorId: ActorId; turn: number }
-  | { kind: "actorCommand"; actorId: ActorId; commandId: string }
+  /** skillId: commandId 가 "skill" 일 때 그 기술을 쓴 행동만(생략 = 아무 기술). 기술마다 다른 반응(흥정 기술에만 대꾸 등)을 건다. */
+  | { kind: "actorCommand"; actorId: ActorId; commandId: string; skillId?: SkillId }
   /** 적(생략 = 아무 적)이 이 상태에 걸려 있다(present 생략 = true) / 걸려 있지 않다(false). 쓰러진 적은 세지 않는다. */
   | { kind: "enemyState"; enemyId?: EnemyId; stateId: string; present?: boolean }
   /**
@@ -1150,7 +1156,7 @@ export interface BattleBackdropAnimation {
 
 export interface BattleBackdropLayer {
   /** 그림 없이 그리는 프리셋. resourceId 가 있으면 그림이 먼저다. */
-  preset?: "fog" | "clouds" | "mist" | "rain" | "snow" | "embers" | "stars" | "lightRays" | "glow";
+  preset?: "fog" | "clouds" | "mist" | "rain" | "snow" | "embers" | "stars" | "lightRays" | "glow" | "night" | "smoke";
   /** 바둑판으로 깔 그림(투명 PNG 권장). */
   resourceId?: string;
   /** true = 배틀러·이펙트 앞(덤불·안개 장막). 생략 = 배경 바로 위. */
@@ -2245,6 +2251,11 @@ export interface SystemRecords {
    * 없으면 아무 동작도 바뀌지 않는다(저장 바이트 불변). 사용자의 손 편집은 막지 않는다.
    */
   genreLock?: import("../genreLock").GenreLock;
+  /**
+   * 사람 칩 계열 잠금(2026-10-29) — 주인공·NPC·동료 사람 칩은 이 계열만 쓴다. 없으면 조수가 처음 새로 놓는 사람 칩이 정한다.
+   * 판정은 project/peopleChipLock.ts 하나. 조수·도구만 막고 사용자의 손 편집은 막지 않는다.
+   */
+  peopleChipLock?: import("../peopleChipLock").PeopleChipLock;
   /** AI 마을 생성의 물·숲·길 수치와 낱말 규칙. 생략하면 내장 기본값(예전 하드코딩과 동일 동작). */
   worldGen?: import("@/project/worldGenRules").WorldGenRules;
   /** 배우별 리미트 게이지(0~100). 생략 = 없음. */

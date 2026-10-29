@@ -97,18 +97,19 @@ export function openResourceModal(initialKind?: ResourceKind): void {
   });
   const footer = el("footer", {
     class: "resource-modal-footer",
+    // 도움말은 왼쪽 끝 보조 단추, 오른쪽 끝(가장 강한 자리)은 닫기 — 둘이 같은 무게로 끝자리를 다투지 않게 한다.
     children: [
+      el("button", {
+        class: "resource-footer-button resource-footer-help",
+        text: "도움말",
+        attrs: { type: "button" },
+        on: { click: () => toast("리소스 종류를 선택하고 PNG 파일을 가져옵니다.", "ok") },
+      }),
       el("span", { class: "resource-footer-status", text: "사용 중인 리소스는 삭제할 수 없습니다." }),
       el("div", {
         class: "resource-footer-actions",
         children: [
           el("button", { class: "resource-footer-button", text: "닫기", attrs: { type: "button" }, on: { click: close } }),
-          el("button", {
-            class: "resource-footer-button",
-            text: "도움말",
-            attrs: { type: "button" },
-            on: { click: () => toast("리소스 종류를 선택하고 PNG 파일을 가져옵니다.", "ok") },
-          }),
         ],
       }),
     ],

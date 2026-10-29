@@ -21,6 +21,8 @@ export type CinematicPlayback = {
   readonly done: Promise<CinematicCompletion>;
   readonly teardown: () => void;
   readonly releaseMusic: (fadeMs?: number) => void;
+  /** 첫 장면이 실제로 보이기 시작했을 때(그림·소리 준비가 끝나 「불러오는 중」이 걷혔을 때) 풀린다. 끝나거나 실패해도 풀린다. */
+  readonly firstFrame: Promise<void>;
 };
 
 /** Preserve the visible multi-layer composition across the final map load. */
@@ -82,10 +84,14 @@ export function playCinematicSequence(options: {
   readonly musicHost?: HTMLElement;
   readonly onFrame?: (url: string, fadeMs?: number) => void;
   readonly dismissOnAnyInput?: boolean;
+  /** 엔진 기동과 겹쳐 도는 새 게임 오프닝 — 메인 스레드가 멈춘 동안 애니메틱 시계를 붙잡는다(openingAnimaticRenderer). */
+  readonly holdClockThroughStalls?: boolean;
+  /** 컷 끝까지 울리던 애니메틱 효과음을 끊지 않고 짧게 줄이며 다음 컷과 겹친다. */
+  readonly softCutTails?: boolean;
 }): CinematicPlayback {
   const { host, project, sequence, signal } = options;
   if (signal.aborted || !sequence?.enabled || sequence.scenes.length === 0) {
-    return { done: Promise.resolve(signal.aborted ? "aborted" : "completed"), teardown: () => undefined, releaseMusic: () => undefined };
+    return { done: Promise.resolve(signal.aborted ? "aborted" : "completed"), teardown: () => undefined, releaseMusic: () => undefined, firstFrame: Promise.resolve() };
   }
   const root = el("div", { class: "cinematic-sequence", dataset: { testid: "cinematic-sequence" } });
   const assets = options.assets ?? createCinematicAssets();
@@ -205,6 +211,7 @@ export function playCinematicSequence(options: {
     const lifetime = new AbortController();
     const media: HTMLMediaElement[] = [];
     let loadTimer: ReturnType<typeof setTimeout> | undefined;
+    let statusTimer: ReturnType<typeof setTimeout> | undefined;
     let advanceTimer: ReturnType<typeof setTimeout> | undefined;
     const paintFrames: number[] = [];
     let exitTimer: ReturnType<typeof setTimeout> | undefined;
@@ -221,6 +228,7 @@ export function playCinematicSequence(options: {
       mediaActive = false;
       lifetime.abort();
       clearTimeout(loadTimer);
+      clearTimeout(statusTimer);
       for (const item of media) {
         item.pause();
         item.removeAttribute("src");
@@ -285,7 +293,10 @@ export function playCinematicSequence(options: {
     const beginLoading = (): void => {
       root.dataset.mediaState = "loading";
       canContinueVideo = true;
-      status.textContent = "미디어 불러오는 중";
+      // 짧은 준비(컷 전환 사이 수백 ms)마다 글자가 번쩍이면 화면이 고장 난 것처럼 보인다 — 0.7초 넘게 걸릴 때만 알린다.
+      status.textContent = "";
+      clearTimeout(statusTimer);
+      statusTimer = setTimeout(() => { if (alive && root.dataset.mediaState === "loading") status.textContent = "미디어 불러오는 중"; }, 700);
       clearTimeout(loadTimer);
       loadTimer = setTimeout(() => {
         if (root.dataset.mediaState === "loading" || root.dataset.mediaState === "waiting") fail("error");
@@ -332,6 +343,8 @@ export function playCinematicSequence(options: {
       // The storybook page owns its paper/background on the root.
       frame.style.backgroundColor = isBook ? 'transparent' : presentation?.backgroundColor ?? '#000';
       frame.style.setProperty('--cinematic-letterbox', `${presentation?.letterbox ?? 0}%`);
+      // 건너뛰기 칩은 장면 틀 밖(root)에 산다 — 레터박스 높이를 root 에도 알려 칩이 검은 띠와 그림 경계에 걸치지 않게 한다(HIG C-94).
+      root.style.setProperty('--cinematic-letterbox', `${presentation?.letterbox ?? 0}%`);
       if (presentation?.letterbox) frame.append(el('div', { class: 'cinematic-letterbox', attrs: { 'aria-hidden': 'true' } }));
       root.replaceChildren(frame, status);
       // Book overlays live on the root so they survive page changes.
@@ -491,8 +504,10 @@ export function playCinematicSequence(options: {
         root.querySelector('.cinematic-status')?.remove();
         root.append(status);
         root.dataset.mediaState = 'loading';
-        // A short wait stays silent. A prolonged wait has a usable retry/skip boundary.
-        loadTimer = setTimeout(() => { if (alive) status.textContent = '장면을 준비하고 있습니다…'; }, 800);
+        // 첫 장면은 아직 아무것도 그려지지 않은 검은 화면이다 — 바로 무엇을 하는 중인지 적는다(테스트 실행 직후 글자 없는 검은 창, HIG C-92).
+        // 다음 장면부터는 앞 장면이 남아 있으니 짧은 기다림은 조용히 두고, 길어질 때만 적는다.
+        if (index === 0 && !root.querySelector('.cinematic-shot')) status.textContent = '장면 불러오는 중…';
+        else loadTimer = setTimeout(() => { if (alive) status.textContent = '장면을 준비하고 있습니다…'; }, 800);
         void (url ? assets.prepare(url) : Promise.reject(new Error('Missing image'))).then(async prepared => {
           image.src = prepared.url;
           await image.decode();
@@ -565,7 +580,7 @@ export function playCinematicSequence(options: {
           if (clearance.residual > 2 && !clearance.topHit) { narration.classList.add('cinematic-narration--top'); return (narrationInset = 0); }
           return (narrationInset = inset);
         };
-        playOpeningAnimatic({ project, canvas, composition: scene.composition, durationMs: scene.durationMs, signal: lifetime.signal, reducedMotion, bottomInset,
+        playOpeningAnimatic({ project, canvas, composition: scene.composition, durationMs: scene.durationMs, signal: lifetime.signal, reducedMotion, bottomInset, holdClockThroughStalls: options.holdClockThroughStalls, softCutTails: options.softCutTails,
           onReady: () => { if (!alive || !mediaActive) return; clearTimeout(loadTimer); root.dataset.mediaState = 'ready'; status.textContent = ''; },
           onError: message => { if (!alive || !mediaActive) return; console.warn('[opening animatic]', message); fail('error'); status.textContent = '장면을 그리지 못했어요. Enter로 넘어가세요.'; }, onDone: () => { if (alive) next(); } });
         break;
@@ -629,5 +644,10 @@ export function playCinematicSequence(options: {
   root.focus({ preventScroll: true });
   renderScene();
   atmosphere?.cue('entry');
-  return { done, teardown: abort, releaseMusic: stopMusic };
+  let shown!: () => void;
+  const firstFrame = new Promise<void>((resolve) => { shown = resolve; });
+  const shownObserver = new MutationObserver(() => { if (root.dataset.mediaState !== 'loading') { shownObserver.disconnect(); shown(); } });
+  if (root.dataset.mediaState !== 'loading') shown(); else shownObserver.observe(root, { attributes: true, attributeFilter: ['data-media-state'] });
+  void done.finally(() => { shownObserver.disconnect(); shown(); });
+  return { done, teardown: abort, releaseMusic: stopMusic, firstFrame };
 }

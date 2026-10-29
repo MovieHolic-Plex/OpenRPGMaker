@@ -785,11 +785,11 @@ function renderModalFooter(
             beginExistingEventDraft(request.mapId, request.eventId);
             refreshModalFooterStatus(footer, request);
           }),
-          footerButton("저장하고 닫기", "event-editor-save", () => {
+          withConfirmShortcut(footerButton("저장하고 닫기", "event-editor-save", () => {
             if (!commitValidatedEventDraft(request, "저장하고 닫기")) return;
             close(true);
             toast("이벤트 변경을 프로젝트에 반영했습니다.", "ok");
-          }, true),
+          }, true)),
         ],
       }),
     ],
@@ -935,8 +935,29 @@ function footerButton(text: string, testId: string, onClick?: () => void, primar
   return el("button", props) as HTMLButtonElement;
 }
 
+/** 「저장하고 닫기」의 확정 단축키를 보조기술과 툴팁에 함께 알린다. 처리는 handleModalKeyDown. */
+function withConfirmShortcut(button: HTMLButtonElement): HTMLButtonElement {
+  button.setAttribute("aria-keyshortcuts", "Control+Enter Meta+Enter");
+  button.title = "저장하고 닫기 (Ctrl+Enter)";
+  return button;
+}
+
 function handleModalKeyDown(event: KeyboardEvent, request: OpenEventEditorRequest): void {
   if (event.key === "Escape") return;
+  // Ctrl/Cmd+Enter = 「저장하고 닫기」. 안쪽 입력(조수 초안 상자 등)이 이미 처리한 키와 IME 조합 중인 키는
+  // 건드리지 않는다. 포커스된 입력을 먼저 blur 해 그 change(이벤트 이름 등)를 커밋한 뒤 같은 버튼 경로로 저장한다.
+  if ((event.ctrlKey || event.metaKey) && !event.altKey && !event.shiftKey && event.key === "Enter") {
+    if (event.defaultPrevented || event.isComposing) return;
+    const root = event.currentTarget instanceof HTMLElement ? event.currentTarget : null;
+    const save = root?.querySelector<HTMLButtonElement>('[data-testid="event-editor-save"]');
+    if (!root || !save || save.disabled) return;
+    event.preventDefault();
+    event.stopPropagation();
+    const active = root.ownerDocument.activeElement;
+    if (active instanceof HTMLElement && root.contains(active)) active.blur();
+    save.click();
+    return;
+  }
   if ((event.ctrlKey || event.metaKey) && !event.altKey && event.key.toLowerCase() === "k") {
     event.preventDefault();
     event.stopPropagation();

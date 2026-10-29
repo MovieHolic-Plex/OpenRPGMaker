@@ -4,6 +4,7 @@
 // 길은 Catmull-Rom 곡선(폭 2~3.6칸 물결), 빈터·나무 섬·나무 사이 틈(숨은 물건 자리)까지 같은 마스크로 그린다.
 // 숲 맵마다 어둡기·안개를 고를 수 있고, 틈에 숨은 물건(조사하면 한 번)을 둘 수 있다.
 import { paintWoodland, type Cell, type WoodSpec } from "@/project/flagship/fallen/woodland";
+import { isPassable } from "@/project/collision";
 import { computeReachableCells } from "@/project/lint/reachability";
 import type { GameMap, Project } from "@/project/types";
 import { mulberry32 } from "@/util/rng";
@@ -41,7 +42,13 @@ export function exitCell(side: Side, u: number, v: number): Cell {
   return { x: Math.round(c.x), y: Math.round(c.y) };
 }
 
-function forestSpec(id: string, name: string, side: Side, seed: number, last: boolean, entryU: number, field = false): { spec: WoodSpec; entry: Cell; exit: Cell | null } {
+type Terrain = "forest" | "field" | "edge";
+/** 숲 어귀(edge) — 들어오는 쪽 절반 남짓이 트인 풀밭이고, 그 너머로 들쭉날쭉한 나무 벽이 서서 숲길이 그 틈으로 들어간다. */
+const EDGE_MEADOW_V = 24;
+
+function forestSpec(id: string, name: string, side: Side, seed: number, last: boolean, entryU: number, terrain: Terrain = "forest"): { spec: WoodSpec; entry: Cell; exit: Cell | null } {
+  const field = terrain === "field";
+  const edge = terrain === "edge";
   const rnd = mulberry32(seed);
   const across = (lo: number, hi: number) => lo + rnd() * (hi - lo);
   const exitU = Math.round(across(7, 24)) + 0.5;
@@ -56,12 +63,16 @@ function forestSpec(id: string, name: string, side: Side, seed: number, last: bo
   raw.push({ x: last ? across(10, 22) : exitU, y: endV });
   const pts = raw.map((p) => toMap(side, p.x, p.y));
   const mid = raw[2]!;
+  const midBlob = centerBlob(side, mid.x, mid.y, across(3.2, 4.6), across(2.4, 3.4));
   const clearings = [
-    { ...centerBlob(side, mid.x, mid.y, across(3.2, 4.6), across(2.4, 3.4)) },
+    // 숲 어귀는 가운데 빈터를 두지 않는다 — 풀밭 끝 나무 벽 바로 앞이라 벽에 큰 구멍이 뚫렸다.
+    ...(edge ? [] : [midBlob]),
     { ...centerBlob(side, entryU, ALONG - 4, across(3.5, 5), 2.8) },
     ...(last ? [centerBlob(side, raw[raw.length - 1]!.x, endV + 1, 5.5, 4)] : []),
     // 들판: 길 따라 큰 풀밭 빈터 셋 — 나무는 가장자리 띠와 섬으로만 남는다.
     ...(field ? [raw[1]!, raw[2]!, raw[3]!].map((p) => centerBlob(side, Math.max(9, Math.min(ACROSS - 10, p.x)), p.y, across(9, 11.5), across(6, 8))) : []),
+    // 숲 어귀: 들어오는 쪽(v 21~39)을 맵 폭 거의 전체의 풀밭으로 — 그 북쪽 끝 들쭉날쭉한 경계가 나무 벽(숲 가장자리)이다.
+    ...(edge ? [centerBlob(side, ACROSS / 2 - 0.5, (EDGE_MEADOW_V + ALONG) / 2 + 0.5, ACROSS / 2 - 1.5, (ALONG - EDGE_MEADOW_V) / 2 + 0.5)] : []),
   ];
   const nooks = [raw[1]!, raw[3]!].map((p, k) => {
     const dir = k % 2 === 0 ? 1 : -1;
@@ -69,12 +80,14 @@ function forestSpec(id: string, name: string, side: Side, seed: number, last: bo
     const to = toMap(side, Math.max(2, Math.min(ACROSS - 3, Math.round(p.x + dir * across(3, 5)))), Math.round(p.y - 1));
     return { from, to };
   });
-  const groves = field ? [centerBlob(side, across(6, 10), across(12, 18), 1.6, 1.3), centerBlob(side, across(20, 26), across(22, 30), 1.8, 1.4)] : [];
+  const groves = field ? [centerBlob(side, across(6, 10), across(12, 18), 1.6, 1.3), centerBlob(side, across(20, 26), across(22, 30), 1.8, 1.4)]
+    // 숲 어귀 풀밭의 나무 섬 둘 — 길 좌우로 엇갈려 서서, 풀밭을 가로지르는 몸을 숨길 덩이·돌아가는 갈래가 된다.
+    : edge ? [centerBlob(side, across(5, 9), across(27, 30), 1.9, 1.5), centerBlob(side, across(22, 26), across(31, 34), 1.9, 1.5)] : [];
   const entry = exitCell(side, entryU, ALONG - 1);
   const exit = last ? null : exitCell(side, exitU, 0);
   const { width, height } = dims(side);
   return {
-    spec: { id, name, width, height, seed, paths: [{ pts, w: [2.2, 3.4] }], exits: exit ? [entry, exit] : [entry], clearings, nooks, ...(groves.length ? { groves } : {}), ...(field ? { undergrowth: 0.6 } : {}) },
+    spec: { id, name, width, height, seed, paths: [{ pts, w: [2.2, 3.4] }], exits: exit ? [entry, exit] : [entry], clearings, nooks, ...(groves.length ? { groves } : {}), ...(field || edge ? { undergrowth: 0.6 } : {}) },
     entry, exit,
   };
 }
@@ -85,11 +98,31 @@ export function centerBlob(side: Side, u: number, v: number, ru: number, rv: num
 }
 
 /** 시작 맵 그쪽 가장자리에서 걸어 닿는 칸 — 길·빈 칸을 가운데 가까운 것부터. 없으면 가까운 칸에서 가장자리까지 윗층을 걷어 길을 낸다. */
+/**
+ * 시작 칸에서 닿는 칸 — 단, 시작 칸(맵 가운데)이 집 안·나무 사이 같은 작은 섬이면 맵에서 가장 큰 걸을 수 있는 덩이를 쓴다.
+ * 가운데가 집 그림 위인 광장 마을에서는 닿는 칸이 몇 칸뿐이라 가장자리를 못 찾고, 곧은 길을 집을 뚫고 내다가
+ * 「완성된 집 보호」에 걸려 숲 전체가 실패했다(2026-10-30 isekai-godding: 광장 마을 60×44, 동·북 모두 protected-house-write).
+ */
+function mainWalkableArea(project: Project, map: GameMap, start: Cell): Set<string> {
+  const W = map.width, H = map.height;
+  const first = computeReachableCells(project, map, start.x, start.y);
+  if (first.size >= W * H * 0.15) return first;
+  let best = first;
+  const seen = new Set(first);
+  for (let y = 0; y < H; y += 2) for (let x = 0; x < W; x += 2) {
+    if (seen.has(`${x},${y}`) || !isPassable(project, map, x, y)) continue;
+    const area = computeReachableCells(project, map, x, y);
+    for (const k of area) seen.add(k);
+    if (area.size > best.size) best = area;
+  }
+  return best;
+}
+
 export function originEdge(project: Project, map: GameMap, side: Side, walkFrom?: Cell): Cell {
   const W = map.width, H = map.height;
   // 걸어 닿는 기준 칸 — 주면 그 칸(다른 맵에서 들어오는 입구), 아니면 시작 위치·맵 가운데.
   const start = walkFrom ?? (project.startMapId === map.id && project.startPos ? project.startPos : { x: Math.floor(W / 2), y: Math.floor(H / 2) });
-  const reach = computeReachableCells(project, map, start.x, start.y);
+  const reach = walkFrom ? computeReachableCells(project, map, start.x, start.y) : mainWalkableArea(project, map, start);
   const edge: Cell[] = [];
   if (side === "north" || side === "south") for (let x = 1; x < W - 1; x += 1) edge.push({ x, y: side === "north" ? 0 : H - 1 });
   else for (let y = 1; y < H - 1; y += 1) edge.push({ x: side === "west" ? 0 : W - 1, y });
@@ -155,7 +188,9 @@ const authorForestRoute: ToolDefinition = {
     "숲(또는 terrain:'field' 트인 들판)을 구불구불한 길 맵 여러 장(1~5)으로 지어 시작 맵의 한쪽 가장자리(north·south·east·west)와 줄줄이 잇는다 — 폴른 스타 속삭이는 숲과 같은 "
     + "B1 활엽수 화가(곡선 숲길·빈터·나무 섬·나무 사이 틈). 「마을 북쪽에 숲을 맵 3개로 나눠 이어 줘」「숲 두 개, 두 번째는 어둡고 안개」의 정본. "
     + "moods[i] = normal·dim·dark·fog·darkfog(실제 조명·안개). hiddenPerMap 개수만큼 나무 사이 틈에 숨은 물건(조사하면 한 번, 그림 없음)을 둔다. "
-    + "마지막 숲은 막다른 빈터로 끝난다(보스·사당 자리). 결과 data.maps[i] = {mapId, entry, exit, clearing}.",
+    + "terrain:'edge' = 숲 어귀 — 들어오는 쪽 절반이 트인 풀밭(나무 섬 둘)이고 그 너머 들쭉날쭉한 나무 벽 틈으로 숲길이 들어간다(성벽 밑을 빠져 숲으로 달아나는 추격·「숲 가장자리」 장면). "
+    + "terrains[i] 로 맵마다 따로 줄 수 있다(예: ['edge','field']). "
+    + "마지막 숲은 막다른 빈터로 끝난다(보스·사당 자리). 결과 data.maps[i] = {mapId, entry, exit, clearing, terrain, treeline?} — edge 맵의 treeline = 풀밭이 끝나고 나무 벽이 시작되는 줄(y 또는 x).",
   mode: "write",
   parameters: {
     type: "object",
@@ -167,7 +202,8 @@ const authorForestRoute: ToolDefinition = {
       moods: { type: "array", items: { type: "string", enum: ["normal", "dim", "dark", "fog", "darkfog"] } },
       hiddenPerMap: { type: "integer", description: "맵마다 숨은 물건 수 0~3(기본 0)" },
       hiddenItemIds: { type: "array", items: { type: "string" }, description: "숨은 물건 아이템 id(돌아가며 쓴다, 없으면 돈)" },
-      terrain: { type: "string", enum: ["forest", "field"], description: "forest(기본)=나무 사이 숲길 · field=트인 들판(큰 풀밭 빈터, 가장자리만 나무)" },
+      terrain: { type: "string", enum: ["forest", "field", "edge"], description: "forest(기본)=나무 사이 숲길 · field=트인 들판(큰 풀밭 빈터, 가장자리만 나무) · edge=숲 어귀(들어오는 쪽 풀밭 → 나무 벽 틈으로 숲길)" },
+      terrains: { type: "array", items: { type: "string", enum: ["forest", "field", "edge"] }, description: "맵마다 terrain(i 번째 맵). 빠진 자리는 terrain" },
       linkFrom: { type: "boolean", description: "false 면 시작 맵 가장자리에 길을 내지 않고 이동 이벤트도 두지 않는다 — 성벽 개구멍·뒷문·우물처럼 시작 맵의 정한 칸에서 이벤트로 들여보낼 때. 첫 맵 입구는 data.maps[0].entry(그 칸에 돌아가는 이벤트를 직접 둔다). 기본 true" },
       seed: { type: "integer" },
     },
@@ -184,19 +220,27 @@ const authorForestRoute: ToolDefinition = {
     const moods = Array.isArray(args.moods) ? args.moods.map(String) as Mood[] : [];
     const hidden = Math.max(0, Math.min(3, Math.floor(Number(args.hiddenPerMap ?? 0)) || 0));
     const itemIds = (Array.isArray(args.hiddenItemIds) ? args.hiddenItemIds.map(String) : []).filter((id) => draft.database.items.some((i) => i.id === id) || draft.database.equipment.some((i) => i.id === id));
-    const field = args.terrain === "field";
+    const terrainOf = (i: number): Terrain => {
+      const t = Array.isArray(args.terrains) ? args.terrains[i] : undefined;
+      const pick = typeof t === "string" ? t : args.terrain;
+      return pick === "field" || pick === "edge" ? pick : "forest";
+    };
     const warnings: string[] = [];
-    const out: Array<{ mapId: string; name: string; entry: Cell; exit: Cell | null; clearing: Cell; hidden: Cell[] }> = [];
+    const out: Array<{ mapId: string; name: string; entry: Cell; exit: Cell | null; clearing: Cell; hidden: Cell[]; terrain: Terrain; treeline?: number }> = [];
     const linkFrom = args.linkFrom !== false;
     let prev: ({ mapId: string } & Cell) | null = linkFrom ? { mapId: from.id, ...originEdge(draft, from, side) } : null;
     let used = 0;
     for (let i = 0; i < count; i += 1) {
-      let id = `map_${field ? "field" : "forest"}_${side}_${i + 1}`;
-      for (let n = 2; draft.maps[id]; n += 1) id = `map_${field ? "field" : "forest"}_${side}_${i + 1}_${n}`;
+      const terrain = terrainOf(i);
+      const field = terrain === "field";
+      // 숲 어귀(edge)는 들판에서 숲으로 드는 맵 — 들판 이름(map_field_*)을 쓴다(들판으로 짓던 맵을 edge 로 바꿔도 id 가 그대로다).
+      const kind = field || terrain === "edge" ? "field" : "forest";
+      let id = `map_${kind}_${side}_${i + 1}`;
+      for (let n = 2; draft.maps[id]; n += 1) id = `map_${kind}_${side}_${i + 1}_${n}`;
       const base = field ? "들판" : "숲";
       const name = names[i] ?? (count > 1 ? `${base} ${i + 1}` : base);
       const entryU = 10 + mulberry32(seed0 + i * 31)() * 12;
-      const { spec, entry, exit } = forestSpec(id, name, side, seed0 + i * 97, i === count - 1, entryU, field);
+      const { spec, entry, exit } = forestSpec(id, name, side, seed0 + i * 97, i === count - 1, entryU, terrain);
       const result = paintWoodland(draft, spec);
       // 시작 맵의 이 숲 묶음 아래로 — 범위 체크포인트가 새 맵을 버리지 않게.
       try { call(draft, "manage_map_tree", { operation: "move", mapId: id, parentId: from.id }); } catch { /* 트리 이동 실패는 무시 */ }
@@ -230,11 +274,12 @@ const authorForestRoute: ToolDefinition = {
       }
       if (result.pockets.length < hidden) warnings.push(`${name}: 나무 사이 틈이 ${result.pockets.length}곳뿐이라 숨은 물건 ${result.pockets.length}개만 두었다.`);
       const c = spec.clearings?.[spec.clearings.length - 1];
-      out.push({ mapId: id, name, entry, exit, clearing: c ? { x: Math.round(c.cx), y: Math.round(c.cy) } : entry, hidden: spots });
+      const treeline = terrain === "edge" ? (side === "north" ? EDGE_MEADOW_V : side === "south" ? ALONG - 1 - EDGE_MEADOW_V : side === "west" ? EDGE_MEADOW_V : ALONG - 1 - EDGE_MEADOW_V) : undefined;
+      out.push({ mapId: id, name, entry, exit, clearing: c ? { x: Math.round(c.cx), y: Math.round(c.cy) } : entry, hidden: spots, terrain, ...(treeline !== undefined ? { treeline } : {}) });
       if (exit) prev = { mapId: id, ...exit };
     }
     return {
-      summary: `${field ? "들판" : "숲"} ${count}장(${side}): ${out.map((m) => `${m.name}=${m.mapId}${m.hidden.length ? ` 숨은 물건 ${m.hidden.length}` : ""}`).join(" → ")} · ${from.id} ${side} 가장자리와 연결`,
+      summary: `숲길 ${count}장(${side}): ${out.map((m) => `${m.name}=${m.mapId}(${m.terrain})${m.hidden.length ? ` 숨은 물건 ${m.hidden.length}` : ""}`).join(" → ")} · ${from.id} ${side} 가장자리와 연결`,
       data: { maps: out },
       ...(warnings.length ? { warnings } : {}),
     };

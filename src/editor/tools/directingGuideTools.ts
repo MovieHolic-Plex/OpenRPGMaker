@@ -86,7 +86,7 @@ export const DIRECTING_GUIDE = `# 연출 지침 (script_cutscene 비트)
 - 적이 쓰러지는 모습 upsert_enemy collapseEffect: 잡몹 "pixelBreak"(FF6 보랏빛 픽셀 분해) 또는 "flash"(하얀 세 번 점멸),
   보스 "bossSink"(떨며 붉게 깜빡이고 땅속으로 가라앉음, 1.8초), 환영·소환수 "instant". 생략 = 기본 소멸.
 - 전투마다 분위기 upsert_troop backdropLayers(최대 4): 동굴 fog, 하늘 성 clouds, 늪 mist, 폭풍 전야 rain, 설원 snow,
-  화산·불타는 성 embers, 밤 stars, 성당 lightRays, 수정·마법진 등 중앙 광원 뒤 glow(정지, 청백색 빛무리). 앞 장막은 front:true + opacity 50 이하(숫자가 가려지지 않게).
+  화산·불타는 성 embers, 밤 stars, 성당 lightRays, 수정·마법진 등 중앙 광원 뒤 glow(정지, 청백색 빛무리). 밤 전투를 남색으로 어둡게 night, 불탄 들판·잿더미 smoke(곱하기 겹, 앞 장막 아님). 앞 장막은 front:true + opacity 50 이하(숫자가 가려지지 않게).
   backdropAnimation(배경 한 장 흐르기)은 도트 측면 전투(기본)에서 지형 겹 배경에 가려 안 보인다 — 분위기는 backdropLayers 로.
 - 상태가 몸에 보이게 upsert_state battleAura: sleep-zzz(Z) · paralyze-spark(전기) · silence-mute(…) · confuse-stars(별) ·
   charm-heart(하트) · burn-ember(불티) · poison-bubble · freeze-grey · petrify-still · regen-sparkle · dark-fog · berserk-pulse.

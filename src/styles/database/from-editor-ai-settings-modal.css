@@ -87,3 +87,15 @@
   border-color: var(--danger);
   color: var(--danger);
 }
+
+/* [레이어 보존] 닫기 버튼 히트 영역 32×32(C-72). 범용 .database-modal-close(tabs-a.part-1, 20×18)와 light-theme 의
+ * 3단 선택자가 같은 레이어에서 이기므로, 크기만 여기서 한 단 더 구체적으로 되돌린다. 글리프 크기는 그대로다. */
+.database-modal-backdrop .database-modal-window.ai-settings-window .database-modal-close {
+  align-items: center;
+  display: inline-grid;
+  height: 32px;
+  justify-content: center;
+  min-height: 32px;
+  min-width: 32px;
+  width: 32px;
+}

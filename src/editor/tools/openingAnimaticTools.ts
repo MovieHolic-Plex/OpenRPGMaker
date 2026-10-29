@@ -68,7 +68,10 @@ function check(project: Project, s: Shot, enforceBackdrop = false): void {
     if (criticalObject(l.id) && l.role !== 'effect' && ((l.kind === 'shape') || (l.kind === 'image' && (l.opacity ?? 1) < 0.3))) {
       throw new ToolError(`이야기 핵심 오브젝트 ${l.id}는 평면 도형/저불투명도로 만들 수 없습니다. 2상태 픽셀 스프라이트(sheet/strip + frame 키)를 사용하세요.`, { code: 'critical-pixel-sprite-required' });
     }
-    if (l.kind === 'image' && l.role === 'actor') {
+    // 카메라가 위아래로 움직이거나 줌하는 컷(세로로 긴 배경을 기울여 훑는 컷)에서는 배우의 세계 y 가 화면 y 가 아니다 —
+    // 그때는 고정 무대 기준의 안전영역 검사를 하지 않는다(2026-10-29 maou-konbini 성문 컷).
+    const cameraMovesVertically = Boolean(s.composition.camera?.keys?.y?.length || s.composition.camera?.keys?.zoom?.length);
+    if (l.kind === 'image' && l.role === 'actor' && !cameraMovesVertically) {
       const top = l.y - l.height * (l.anchorY ?? 0);
       const bottom = top + l.height;
       const safe = s.composition.height * (s.composition.letterbox ?? 0);
@@ -83,7 +86,8 @@ function backdropKey(l: { resourceId?: string; crop?: { x: number; y: number; wi
   const id = l.resourceId!;
   if (!openingMapViewMapId(id)) return id;
   const c = l.crop;
-  return c ? `${id}@${Math.round(c.x / 32)},${Math.round(c.y / 32)}` : id;
+  // 오려 낸 크기도 본다 — 같은 왼쪽 위라도 세로로 긴 훑기 컷과 두 사람을 잡은 컷은 다른 화면이다.
+  return c ? `${id}@${Math.round(c.x / 32)},${Math.round(c.y / 32)}:${Math.round(c.width / 32)}x${Math.round(c.height / 32)}` : id;
 }
 function backdropConflict(project: Project, s: Shot): string | null {
   const keys = s.composition.layers.filter(l => l.kind === 'image' && l.role === 'background').map(backdropKey);
@@ -373,6 +377,17 @@ export const OPENING_ANIMATIC_TOOLS: readonly ToolDefinition[] = [
     }
     const total = intro.scenes.reduce((sum, scene) => sum + scene.durationMs, 0);
     return { summary: `타이틀 인트로: 샷 ${intro.scenes.length}개 · ${(total / 1000).toFixed(1)}초 · ${intro.enabled ? '켜짐' : '꺼짐'} · 음악 ${intro.musicResourceId ?? '없음'}.`, data: { titleIntro: { enabled: intro.enabled, musicResourceId: intro.musicResourceId ?? null, entry: intro.entry ?? { mode: 'before-title' }, shots: intro.scenes.map(scene => ({ shotId: scene.id, durationMs: scene.durationMs })) } } };
+  }),
+  // 새 게임 오프닝(track:"opening") 전체에 깔리는 시퀀스 음악. 샷 컷을 넘어 이어지고 시작 맵으로 넘어갈 때 페이드된다.
+  // 예전에는 set_opening(그림책 경로, 샷을 통째로 바꾼다)만 이 값을 정해 애니메틱 경로에서는 정할 길이 없었다(마왕 편의점 오프닝 2026-10-29).
+  definition('configure_opening_music', '새 게임 오프닝(track:"opening") 전체에 깔리는 음악을 정하거나 지운다(빈 문자열). 샷을 건드리지 않는다. 샷마다 다른 음악·효과음은 upsert_opening_audio_cue.', 'write', schema({ musicResourceId: str }, ['musicResourceId']), (p, args) => {
+    const opening = p.system.opening;
+    if (!opening) throw new ToolError('먼저 create_opening_animatic_shot 으로 오프닝 샷을 만드세요.', { code: 'opening-not-found' });
+    const music = String(args.musicResourceId ?? '').trim();
+    if (!music) delete opening.musicResourceId;
+    else if (!catalogLookup(p)('music', music)) throw new ToolError(`음악 ${music} 을 찾을 수 없습니다. list_opening_media(kind:"music") 에서 고르세요.`, { code: 'resource-not-found' });
+    else opening.musicResourceId = music;
+    return { summary: `오프닝 음악: ${opening.musicResourceId ?? '없음'}.`, data: { musicResourceId: opening.musicResourceId ?? null } };
   }),
   definition('create_opening_animatic_shot', '빈 합성 샷 추가. 교체는 replace:true와 clearLayers:true를 함께 명시해야 기존 레이어를 지웁니다. track:"title-intro" 면 게임을 켜면 타이틀 앞에 도는 인트로(opening=새 게임 뒤 장면과 따로).', 'write', schema({ shotId: str, durationMs: integer, width: integer, height: integer, background: str, index: integer, replace: { type: 'boolean' }, clearLayers: { type: 'boolean' }, narration: str, track: trackSchema }, ['shotId', 'durationMs']), (p, args) => {
     const track = trackArg(args.track), otherTrack = trackOfShot(p, String(args.shotId ?? '').trim());

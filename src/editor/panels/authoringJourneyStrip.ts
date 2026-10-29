@@ -14,7 +14,7 @@ const JOURNEY_LAYER_OWNER = {};
 
 const JOURNEY_ICON = `
   <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true">
-    <path d="M3.5 4h9M3.5 8h9M3.5 12h6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+    <path d="M2.5 4.2l1.3 1.3 2.2-2.6M2.5 10.2l1.3 1.3 2.2-2.6M8 4.5h5.5M8 10.5h5.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
   </svg>
 `.trim();
 
@@ -139,10 +139,15 @@ export function renderAuthoringJourney(
       });
       item.append(taskButton);
     }
+    const stateWord = complete ? "완료" : acknowledged ? "직접 표시" : "진행 전";
     item.append(el("span", {
       class: "authoring-journey-evidence",
-      // ✓ 는 따로 둔다 — 한 문자열로 이으면 카탈로그의 정확 일치 키(「새 프로젝트 · 1 map」 등)가 깨진다.
-      children: complete ? ["✓ ", stage.detail] : [acknowledged ? `확인 · ${stage.detail}` : stage.detail],
+      // 상태 낱말은 따로 둔다 — 한 문자열로 이으면 카탈로그의 정확 일치 키(「새 프로젝트 · 1 map」 등)가 깨진다.
+      children: [
+        el("span", { class: `authoring-journey-state is-${complete ? "done" : acknowledged ? "claimed" : "pending"}`, text: stateWord }),
+        " · ",
+        stage.detail,
+      ],
       attrs: {
         "aria-label": `${stage.label}: ${complete ? "완료" : acknowledged ? "확인됨, 완료 증거 아님" : "진행 전"}, ${stage.detail}`,
       },
@@ -151,13 +156,11 @@ export function renderAuthoringJourney(
       const manualStage: ManualJourneyStageId = stage.id;
       item.append(el("button", {
         class: "authoring-journey-manual",
-        text: acknowledged ? "취소" : "확인",
+        text: "이미 했어요",
         attrs: {
           type: "button",
           "aria-pressed": String(acknowledged),
-          "aria-label": acknowledged
-            ? `${stage.label} 확인 취소`
-            : `${stage.label} 확인 (완료 증거 아님)`,
+          "aria-label": `이미 했어요 — ${stage.label}`,
           title: "직접 확인한 상태만 기록합니다. 완료 증거로 사용하지 않습니다.",
         },
         dataset: { testid: `authoring-journey-manual-${stage.id}` },

@@ -78,6 +78,7 @@ const MAP_ONLY_WRITE_TOOLS = new Set([
   "place_npc",
   "upsert_event",
   "patch_event_page",
+  "add_event_page",
   "script_cutscene",
   "move_event",
   "remove_event",

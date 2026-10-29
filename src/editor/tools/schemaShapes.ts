@@ -79,7 +79,7 @@ const COMMAND_LEAF_SCHEMA: JsonSchema = {
     canEscape: { type: "boolean", description: "battleProcessing: 도망 허용" },
     canLose: { type: "boolean", description: "battleProcessing: 져도 게임 오버 없이 계속" },
     actorId: { type: "string", description: "changeParty/changeExp/changeLevel/learnSkill/changeActorHp 등: 조회한 actor ID(몬스터 종 ID 아님)" },
-    action: { type: "string", description: "changeParty: add|remove|lead(선두 교대 — 그 배우를 맨 앞으로, 필드 주인공 그림이 바뀐다). learnSkill: learn|forget." },
+    action: { type: "string", description: "changeParty: add|remove|lead(선두 교대 — 그 배우를 맨 앞으로, 필드 주인공 그림이 바뀐다). learnSkill: learn|forget(forget 은 직업·배우 레벨이 주는 스킬까지 지운다 — 다시 learn 하면 돌아온다)." },
     skillId: { type: "string", description: "learnSkill: 조회한 skill ID" },
     eventId: { type: "string", description: "moveEvent/callMapEvent: 대상 이벤트 ID" },
     commonEventId: { type: "string", description: "callCommonEvent: 공통 이벤트 ID" },
@@ -525,6 +525,12 @@ export const LIGHT_SOURCE_SCHEMA: JsonSchema = {
     intensity: { type: "number" },
     color: { type: "string" },
     flicker: { type: "boolean" },
+    cone: {
+      type: "object",
+      description: "부채꼴 빛(경비 등불 시야·손전등): {degrees:20~180, facing?}. at 이 이벤트면 그 이벤트가 바라보는 쪽으로 돌며 바닥에 시야 모양이 그대로 보인다. 칸·주인공 앵커는 facing(기본 down / 주인공은 보는 쪽).",
+      properties: { degrees: { type: "number" }, facing: { type: "string", enum: ["up", "down", "left", "right"] } },
+      required: ["degrees"],
+    },
   },
   required: ["id", "radius"],
   // at 을 'player' 문자열로 보내는 경로를 스키마가 막지 않도록 자유 필드를 허용한다.

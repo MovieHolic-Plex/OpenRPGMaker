@@ -444,8 +444,8 @@
   text-shadow: 0 0 6px #000, 0 2px 12px #000, 0 1px 3px #000; font-weight: 500;
 }
 /* 하단 자막: 배경 질감 위에서도 읽히도록 가장자리까지 이어지는 어두운 띠(글자 대비 우선). */
-.cinematic-frame[data-presented="true"] .cinematic-narration[data-layout="bottom"] { position: absolute; bottom: calc(var(--cinematic-letterbox) + 8px); left: 0; right: 0; width: auto; max-width: none; max-height: 40%; text-align: center; padding: 10px 8%; background: linear-gradient(0deg, #000d 0%, #000c 65%, #0000 100%); }
-.cinematic-frame[data-presented="true"] .cinematic-narration[data-layout="bottom"].cinematic-narration--top { bottom: auto; top: calc(var(--cinematic-letterbox) + 8px); background: linear-gradient(180deg, #000d 0%, #000c 65%, #0000 100%); }
+.cinematic-frame[data-presented="true"] .cinematic-narration[data-layout="bottom"] { position: absolute; bottom: var(--cinematic-letterbox); left: 0; right: 0; width: auto; max-width: none; max-height: 40%; text-align: center; padding: 10px 8%; background: linear-gradient(0deg, #000d 0%, #000c 65%, #0000 100%); }
+.cinematic-frame[data-presented="true"] .cinematic-narration[data-layout="bottom"].cinematic-narration--top { bottom: auto; top: var(--cinematic-letterbox); background: linear-gradient(180deg, #000d 0%, #000c 65%, #0000 100%); }
 .cinematic-frame[data-presented="true"] .cinematic-narration[data-layout="left"] { position: absolute; left: 9%; top: 27%; width: 68%; text-align: left; }
 .cinematic-frame[data-presented="true"] .cinematic-narration[data-layout="credits"] { position: absolute; top: 0; max-height: none; overflow: visible; text-align: center; }
 .cinematic-narration[data-font="serif"] { font-family: var(--font-serif-myeongjo); }
@@ -465,7 +465,8 @@
 
 /* 시네마틱 오프닝: 건너뛰기 안내(3초 뒤 서서히) · 레터박스 막대 안 한 줄 자막. */
 /* 밝은 하늘·모래 위에서 흰 글자만으로는 보이지 않았다(2026-10-20 검수) — 어두운 바탕 띠를 깐다. */
-.cinematic-skip-hint { position: absolute; top: 8px; right: 10px; z-index: 5; font: 9px/12px var(--font-pixel-small); color: #fff; background: #0b1420c0; padding: 2px 6px; text-shadow: none; border: 0; border-radius: 0; margin: 0; cursor: pointer; touch-action: manipulation; pointer-events: auto; opacity: .85; }
+/* 칩은 그림 안쪽 위 모서리에 둔다 — top:8px 이면 레터박스 띠와 그림 경계에 반쯤 걸쳤다(HIG C-94). */
+.cinematic-skip-hint { position: absolute; top: calc(var(--cinematic-letterbox, 0%) + 8px); right: 10px; z-index: 5; font: 9px/12px var(--font-pixel-small); color: #fff; background: #0b1420c0; padding: 2px 6px; text-shadow: none; border: 0; border-radius: 0; margin: 0; cursor: pointer; touch-action: manipulation; pointer-events: auto; opacity: .85; }
 /* Visible from the first frame: it is re-created every shot, so a delayed fade-in hid the tap target for 3 s of each shot. */
 .cinematic-skip-hint:hover, .cinematic-skip-hint:active { opacity: 1; }
 .cinematic-frame[data-presented="true"] .cinematic-narration[data-layout="bar"] { position: absolute; left: 0; right: 0; bottom: 0; height: var(--cinematic-letterbox); width: auto; max-width: none; max-height: none; padding: 0 6%; display: flex; align-items: center; justify-content: center; text-align: center; background: none; overflow: hidden; }
