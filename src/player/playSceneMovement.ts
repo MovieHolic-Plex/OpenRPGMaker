@@ -45,7 +45,7 @@ import { assertNever, type PlayerRouteState, type PlaySceneContext } from "@/pla
 import { findBlockingEventOverlappingRect,
 findRuntimeEventAtInMap,
 setRuntimeEventPositionDirection, } from "@/project/runtimeEventState"
-import type { RuntimeEventView } from "@/project/runtimeEventState"
+import { runtimeEventViewById, type RuntimeEventView } from "@/project/runtimeEventState"
 import type { EventAnimationType, Trigger } from "@/project/types";
 import { nextSessionRandom } from "@/project/session";
 import { isCutsceneInputLocked } from "@/player/cutsceneControl";
