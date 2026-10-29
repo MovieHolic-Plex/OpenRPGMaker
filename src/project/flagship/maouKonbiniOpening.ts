@@ -20,7 +20,7 @@ import { openingMapViewCrop } from "@/project/openingMapView";
 import type { AnimaticLayer } from "@/project/openingAnimatic";
 import type { Command, GameMap, Project } from "@/project/types";
 import {
-  CAST, caption, type Cell, emote, event, execTool, fadeIn, fadeOut, flash, gone, letter, mustBlock, mustWalk, nearestFree, page,
+  CAST, caption, type Cell, emote, event, execTool, fadeIn, fadeOut, flash, gone, letter, m2, mustBlock, mustWalk, nearestFree, page,
   playSe, say, setSw, setVar, shake, stopBgm, thinkAs, transfer, varAtLeast, varIs, wait, walk, walkTo, face, bgm,
 } from "./maouKonbiniKit";
 
@@ -268,6 +268,9 @@ export function buildMaouOpening(project: Project): void {
   execTool(project, "configure_opening_music", { musicResourceId: BGM_THRONE });
 }
 
+/** 화면 효과 「색조」(Screen Effect tint) — 값 "R,G,B,A". 흰빛으로 덮었다가 fadeOut 이 그대로 검게 넘긴다. */
+const fieldTint = (value: string, ms: number): Command => m2("Screen Effect", { effect: "tint", value, durationMs: ms });
+
 // ── 옥좌의 방: 연출 전투 → 『동귀어진』 ────────────────────────────────────
 
 /** 옥좌 결전 전투 — 3합. 싸우는 중에도 흥정이 끼어들고, 3합째에 레온이 금단의 봉인술로 전투를 끝낸다(이기든 지든 같은 결말). */
@@ -319,17 +322,17 @@ export function buildMaouThrone(project: Project, roomWake: Cell): Cell {
     ...say("leonF", "base", "『동귀어진』! 너도 나도 이 세계에서 사라지는 거다!"),
     emote("player", "sweat", 900),
     ...say("maouF", "base", "자, 잠깐! 연금은? 연금은 어떻게 되는 거냐!"),
+    // 하얗게 타 버린다 — 화면 효과 「색조」로 흰빛을 채웠다가(맵 조명은 건드리지 않는다), 장엄한 음악을 그 순간 끊는다.
     playSe(SFX.vanish),
-    { kind: "setLighting", ambient: 0.9, color: "#ffffff", transitionMs: 2200 } as Command,
-    shake(2200, "3"),
-    wait(2250),
-    flash("white", 1600), shake(900, "10"),
-    { kind: "setLighting", ambient: 1, color: "#ffffff", transitionMs: 0 } as Command,
+    fieldTint("255,255,255,0.35", 700), shake(1800, "3"),
+    wait(900), flash("white", 300), wait(500),
+    fieldTint("255,255,255,1", 1000), shake(800, "10"),
+    wait(1000),
     stopBgm(),
-    wait(900),
+    wait(700),
     ...caption("빛이 모든 것을 삼켰다."),
-    ...fadeOut(1500),
-    wait(1400),
+    ...fadeOut(900),
+    wait(700),
     setVar(V_STAGE, "=", 1),
     // 전생 — 파티가 현대의 몸(마오)으로 바뀐다.
     { kind: "changeParty", actorId: DEFAULT_ACTOR_ID, action: "add" } as Command,
@@ -370,12 +373,11 @@ export function stageMaouRoomWake(project: Project): void {
   const zs = (expr: "base" | "happy" | "surprised" | "sad" | "embarrassed", ...l: string[]) => say("zervas", expr, ...l);
   const wakeScene: Command[] = [
     stopBgm(),
-    wait(1500),
+    wait(1200),
     playSe(SFX.fluoro),
     wait(250), flash("white", 90), wait(330), flash("white", 70), wait(220),
     ...fadeIn(350),
     playSe(SFX.room),
-    ...Z("……."),
     ...Z("낯선 천장이다."),
     emote("player", "question", 1100),
     walk("@player", ["right", "right"]),
@@ -383,11 +385,11 @@ export function stageMaouRoomWake(project: Project): void {
     ...zs("surprised", "뿔이 없다. 망토도 없다. 이 올리브색 겉옷은 또 뭐냐!"),
     walkTo("@player", { x: 11, y: 6 }), face("@player", "right"),
     playSe(SE_PAPER),
-    ...letter("「이세계 전생 관리국 안내문」", "귀하는 『동귀어진』 처리에 따라 지구의 일본으로 전생했습니다.", "마력은 봉인했습니다. 생활비는 직접 버십시오."),
+    ...letter("「이세계 전생 관리국 안내문」\n귀하는 『동귀어진』 처리에 따라 일본으로 전생했습니다.\n마력은 봉인했습니다. 생활비는 직접 버십시오."),
     ...zs("embarrassed", "…이 몸에게 일을 하라고?"),
     playSe(SE_PAPER),
-    ...letter("통장 잔고", "0엔"),
-    playSe(SFX.sadHorn), shake(500, "3"), wait(1500),
+    ...letter("통장 잔고\n0엔"),
+    playSe(SFX.sadHorn), shake(500, "3"), wait(1100),
     ...zs("sad", "세계의 절반을 가졌던 몸이 잔고 0엔이라니."),
     playSe(SFX.mailslot),
     emote("player", "exclamation", 900), face("@player", "down"),
@@ -396,7 +398,7 @@ export function stageMaouRoomWake(project: Project): void {
   ];
   const flyer: Command[] = [
     playSe(SE_PAPER),
-    ...letter("아르바이트 급구!", "해피 마트 사쿠라자카점", "시급 1,150엔. 초보 환영. 유니폼 지급.", "폐기 도시락 있음(?)", "이 건물 바로 왼쪽입니다!"),
+    ...letter("아르바이트 급구! 해피 마트 사쿠라자카점\n시급 1,150엔. 초보 환영. 유니폼 지급.\n폐기 도시락 있음(?) 이 건물 바로 왼쪽입니다!"),
     ...zs("base", "…이것이 이 세계의 마계 문서인가."),
     ...zs("happy", "좋다. 이 몸이 직접 가 주마. 엎드려 반기도록 해라."),
     bgm(BGM_ROOM, 1200),
