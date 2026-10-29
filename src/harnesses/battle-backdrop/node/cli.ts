@@ -7,7 +7,7 @@
  *   check    <판> [--judge claude:sonnet|agy:<모델>|none]   크기·색 수·아래 띠·밝기 + 그림 판정자(인물·글자·시간·시점). 통과 ≠ 합격
  *   sheet    <판> [<판>…] [--name <이름>]       ~/claude-viz/battle-backdrop-<이름>.html (캡처 옆 후보 1배·3배·전투 무대 미리보기)
  *   pick     <판> <글자> [--by <사람>]           사람이 고른 후보를 현재 도트 화소 해시에 묶는다(감독·에이전트는 고르지 않는다)
- *   build    <판> --project <project.json|폴더> [--target troop:<id>|map:<id>] [--out <새 json>] [--in-place]
+ *   build    <판> --project <project.json|폴더> [--target troop:<id>|map:<id>] [--out <새 json>] [--in-place] [--leave-field-mode]
  *   status   [<판>]
  *
  * 공용 핵심(프롬프트·팔레트·도트화·검사)은 src/editor/battleBackdropCore.ts — 편집기 조수 도구와 같은 코드다.
@@ -92,7 +92,7 @@ function opt(argv: string[], name: string): string | undefined {
   const i = argv.indexOf(`--${name}`);
   return i >= 0 && i + 1 < argv.length ? argv[i + 1] : undefined;
 }
-const positional = (argv: string[]) => argv.filter((v, i) => !v.startsWith("--") && !(i > 0 && argv[i - 1]!.startsWith("--") && !["--in-place"].includes(argv[i - 1]!)));
+const positional = (argv: string[]) => argv.filter((v, i) => !v.startsWith("--") && !(i > 0 && argv[i - 1]!.startsWith("--") && !["--in-place", "--leave-field-mode"].includes(argv[i - 1]!)));
 const runDir = (id: string) => path.join(RUNS, id);
 function getRun(ledger: Ledger, id: string | undefined): Run {
   if (!id || !ledger.runs[id]) throw new Error(`판이 없다: ${id ?? "(없음)"} — 있는 판: ${Object.keys(ledger.runs).join(", ") || "없음"}`);
@@ -463,7 +463,15 @@ async function build(argv: string[]): Promise<number> {
     map.battleBackground = resourceId;
   } else throw new Error("--target troop:<id> | map:<id>");
   const warn: string[] = [];
-  if (project.system?.battleBackdrop === "field" || project.system?.battlePresentation === "onField") warn.push("system.battleBackdrop=field/onField 이면 필드 화면이 그려져 이 그림이 안 보인다");
+  const fieldMode = project.system?.battleBackdrop === "field" || project.system?.battlePresentation === "onField";
+  if (fieldMode && argv.includes("--leave-field-mode")) {
+    // 프로젝트 전체의 전투 표시가 바뀐다(모든 전투가 필드 화면 대신 트룹·맵 배경을 그린다) — 명시 스위치로만.
+    delete project.system.battleBackdrop;
+    if (project.system.battlePresentation === "onField") delete project.system.battlePresentation;
+    warn.push("system.battleBackdrop field/onField 를 껐다 — 이제 모든 전투가 트룹·맵 배경을 그린다");
+  } else if (fieldMode) {
+    warn.push("system.battleBackdrop=field/onField — 전투가 필드 화면을 그리므로 이 그림은 필드 화면이 없을 때만 보인다. 보이게 하려면 --leave-field-mode(프로젝트 전체 전투 표시가 바뀐다)");
+  }
   let into = "";
   let reloaded = false;
   if (loaded.sqlite) {

@@ -5283,10 +5283,11 @@ export class AssistantSession {
                   ? runTool(this.ctx, "upsert_troop", { troop: { id: art.request.troopId, previewBackgroundResourceId: art.resourceId } }, { dryRun: false })
                   : runTool(this.ctx, "set_map_properties", { mapId: art.request.mapId, battleBackground: art.resourceId }, { dryRun: false });
                 const failed = Object.entries(art.checks).filter(([, check]) => !check.ok).map(([key, check]) => `${key}(${check.value})`);
+                const fieldMode = this.ctx.project.system.battleBackdrop === "field" || this.ctx.project.system.battlePresentation === "onField";
                 toolResult = linked.ok
                   ? {
                     ...linked,
-                    summary: `전투 배경 ${art.resourceId}(${art.facts.indoor ? "실내" : "야외"}·${art.facts.timeCertain ? art.facts.timeOfDay : "시간 무관"}·빛 ${art.facts.light}, ${art.colors}색)을 맵 ${art.request.mapId} 을 보고 만들어 ${art.request.target === "troop" ? `트룹 ${art.request.troopId}` : `맵 ${art.request.mapId}`}에 걸었습니다.${failed.length ? ` 기계 검사 경고: ${failed.join(", ")} — 사용자에게 그림을 보여 주고 다시 만들지 물어본다.` : ""}`,
+                    summary: `전투 배경 ${art.resourceId}(${art.facts.indoor ? "실내" : "야외"}·${art.facts.timeCertain ? art.facts.timeOfDay : "시간 무관"}·빛 ${art.facts.light}, ${art.colors}색)을 맵 ${art.request.mapId} 을 보고 만들어 ${art.request.target === "troop" ? `트룹 ${art.request.troopId}` : `맵 ${art.request.mapId}`}에 걸었습니다.${failed.length ? ` 기계 검사 경고: ${failed.join(", ")} — 사용자에게 그림을 보여 주고 다시 만들지 물어본다.` : ""}${fieldMode ? " 주의: 이 프로젝트는 전투 배경을 필드 화면으로 그리는 설정(system.battleBackdrop=field)이라 이 그림은 필드 화면이 없을 때만 보인다 — 바꿀지 사용자에게 묻는다." : ""}`,
                     data: { status: "generated", resourceId: art.resourceId, target: art.request.target, mapId: art.request.mapId, troopId: art.request.troopId, checks: art.checks },
                   }
                   : { ...linked, summary: `그림 ${art.resourceId} 는 등록했지만 전투 배경 연결에 실패했습니다: ${linked.summary}` };

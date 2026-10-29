@@ -37,7 +37,7 @@ npm run harness -- battle-backdrop build <판> --project <폴더|json> [--target
   그래서 마왕 편의점의 밤 편의점 트룹(`troop_mk_manual`)은 `battle-scenery-plains`(낮 풀밭)를 그렸다.
 - 바이옴 id 가 아닌 자원은 한 장 그림으로 `cover` 로 깔린다(640×480 무대 → 좌우가 잘린다). 한 장 그림에는 pixelated 표시가 없어서 2배로 미리 키워 저장한다.
 - 배틀러 발: retro2003 무대 640×480 에서 위 56px(스킨 inset) 아래 424px 영역에 저작 좌표 320×160 의 y 가 **발**로 놓인다(`battleFieldDom.positionBattleNode`, `_retro2003.css`) → 발이 높이 약 57~90%, 몸(약 144px)이 그 위. 그래서 아래 45%(`BACKDROP_GROUND_TOP` 0.55) 를 비운다. 시트의 무대 미리보기 상자가 이 자리다.
-- `system.battleBackdrop === "field"` / `battlePresentation === "onField"` 면 필드 스크린숏이 그려져 이 그림이 안 보인다(`build` 가 경고).
+- `system.battleBackdrop === "field"` / `battlePresentation === "onField"` 면 필드 스크린숏이 그려져 이 그림이 안 보인다. 스크린숏이 없으면 트룹 배경으로 떨어진다 — **마왕 편의점 데모가 이 상태다**(`battleBackdrop: "field"` → 밤 편의점에서 트룹의 낮 풀밭). `build` 는 경고하고, `--leave-field-mode` 를 줄 때만 끈다(프로젝트 전체 전투 표시가 바뀐다). 조수 도구도 요약에서 경고한다.
 - 바닥 띠 기준: 번들 8장 아래 무늬 밀도 0.02~0.18 → `≤0.22` 그리고 `≤ 위쪽×1.3+0.03`(8장 모두 통과).
 
 ## 시간·빛
@@ -67,6 +67,12 @@ npm run harness -- battle-backdrop build <판> --project <폴더|json> [--target
 
 ## 시범 판 (마왕 편의점, 2026-10-30)
 
-- `maou-konbini-night` — `troop_mk_manual`, 해피 마트 사쿠라자카점 22×23 통째. 시간 night(「새벽 2시」) · 빛 bright · 실내.
-- `maou-throne` — `troop_mk_castle`, 마왕성 옥좌의 방 칸 23,6 둘레 18×12. 빛 dim(ambient 0.5 #2a0618) · 시간 판정 안 함.
+| 판 | 장소·근거 | 결과 |
+|---|---|---|
+| `maou-konbini-night` | `troop_mk_manual`, 해피 마트 22×23 통째. 시간 night(「새벽 2시」) · 빛 bright · 실내 | 4장 모두 기계·판정 통과. 생성기가 참고 그림의 진열대·빨간 간판·시계·ATM·계산대 배치를 따라 그렸다. 반짝이는 바닥 반사가 양자화되며 얼룩졌다 |
+| `maou-konbini-night-matte` | 같은 캡처 + 「무광 바닥, 반사 없음」 문구 | 바닥 얼룩이 사라졌다. C 는 빨간 간판의 금색 문양을 판정자가 로고로 봤다(맵에도 있는 간판) |
+| `maou-throne` | `troop_mk_castle`, 옥좌의 방 칸 23,6 둘레 18×12. 빛 dim(ambient 0.5 #2a0618) · 시간 판정 안 함 | 옥좌·스테인드글라스·깃발·갑옷 석상·화로·벤치가 그대로 나왔다. 돌바닥 결이 남아 바닥 띠 무늬 밀도 0.27~0.33 으로 4장 모두 기계 실패. 판정자는 갑옷 석상을 사람으로 읽을 수 있다고 3장을 지적 |
+
+- 생성 시간은 한 장 40~55초(동시 4). CLI 시작이 렌더러를 읽는 capture/build 만 약 1~2분.
+- **데모는 `system.battleBackdrop: "field"`** 라 설치해도 필드 화면이 있으면 안 보인다 — 설치할 때 `--leave-field-mode` 여부를 감독이 정한다.
 - 시트 `http://mdc-server:18301/battle-backdrop-maou-pilot.html`. 데모에는 설치하지 않았다(선택은 감독·사람).
