@@ -1955,7 +1955,7 @@ function peopleChipLockField(project: Project, rerender: () => void): HTMLElemen
       : `${status.by === "user" ? "직접 고름" : "첫 사람 칩으로 정해짐"} — AI 조수는 주인공·NPC·동료에 ${peopleChipFamilyLabel(status.family)}만 씁니다. 몬스터·동물·기물 칩은 상관없고, 손 편집은 막지 않습니다.`
         + (status.outside ? ` 다른 계열 사람 칩 ${status.outside}곳이 맵·시작 파티에 있습니다.` : ""),
   });
-  return el("div", { class: "db-people-chip-lock-field", children: [row, badge] });
+  return el("div", { dataset: { testid: "db-people-chip-lock-field" }, children: [row, badge] });
 }
 
 /** 원작식 복종 레벨 상한(몬스터 캠페인이 있을 때만). 켜면 기본 상한과 배지당 증가폭으로 일차 사다리를 만든다 — 세부 사다리는 조수 도구(configure_monster_campaign). */
