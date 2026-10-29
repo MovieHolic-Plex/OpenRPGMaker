@@ -426,6 +426,62 @@ export function gateSuspectObjectives(project: Project): string[] {
   return wrapped ? [`용의자 대화 목표 ${wrapped}곳: 다 듣기 전엔 「${UNHEARD_OBJECTIVE}」, 다 들은 뒤에만 지목`] : [];
 }
 
+const THING_NOUN = "책상|탁자|테이블|식탁|의자|상자|궤짝|금고|서랍|책장|선반|침대|난로|벽난로|게시판|단상|제단|석상|우물|항아리|화분|장롱|옷장|진열장|진열대|계산대|카운터|수납장|보관함|장식장|책꽂이|작업대";
+
+/**
+ * 목표 글이 가리키는 물건이 맵에 없으면(이벤트 이름·칩셋 그림 어디에도 없는 꾸민 이름) 실제 대상 이벤트 이름으로 바꾼다 —
+ * 지목 목표면 지목 이벤트, 아니면 그 목표를 거는 이벤트 다음 청사진 단계 이벤트. 대상을 모르면 두고, 「」로 감싼 이름은 건드리지 않는다.
+ * 왜(2026-10-29 vm6 terra 추리): 목표 「홀의 단서 정리 책상에서 범인을 지목하고 증거를 제시하자」 — 그 책상은 맵 어디에도 없고 지목 칸은 「범인 지목」이었다.
+ */
+export function alignObjectiveThings(project: Project): string[] {
+  const bare = (t: string) => t.replace(/\s+/gu, "");
+  const eventNames = Object.values(project.maps).flatMap((m) => (m.events ?? []).map((e) => bare(nameOf(e)))).filter((n) => n.length >= 2);
+  const artOn = new Map<string, string[]>();
+  const artNames = (map: GameMap): string[] => {
+    const hit = artOn.get(map.id);
+    if (hit) return hit;
+    const seen = new Set<number>();
+    const m = map as unknown as Record<string, ArrayLike<number> | undefined>;
+    for (const key of ["lowerTiles", "lowerOverlayTiles", "upperTiles", "upperOverlayTiles"]) { const a = m[key]; if (a) for (let i = 0; i < a.length; i += 1) if (a[i]! >= 0) seen.add(a[i]!); }
+    const out = [...seen].map((t) => bare(thingWords(tileLabel(project, map, t).replace(/^.*·\s*/u, "")))).filter(Boolean);
+    artOn.set(map.id, out);
+    return out;
+  };
+  let gate: { mapId: string; ev: GameEvent } | undefined;
+  for (const map of Object.values(project.maps)) for (const ev of map.events ?? []) for (const pg of ev.pages ?? []) walkCommands(pg.commands, (c) => { if (!gate && c.kind === "choices" && c.prompt === ACCUSE_PROMPT) gate = { mapId: map.id, ev }; });
+  const steps = project.gameBlueprint ? resolveSteps(project) : [];
+  const phrase = new RegExp(`((?:[가-힣]+\\s+){1,3})([가-힣]*(?:${THING_NOUN}))(에서|을|를|에게|으로|로|에|앞|옆|위)`, "gu");
+  const notes: string[] = [];
+  for (const map of Object.values(project.maps)) for (const ev of map.events ?? []) for (const pg of ev.pages ?? []) walkCommands(pg.commands, (c) => {
+    if (!isObjectiveCommand(c as never)) return;
+    const fields = c.fields as Obj;
+    const message = String(fields.message);
+    const body = message.replace(/\s*\([^()]*\)\s*$/u, "");
+    let next = body;
+    for (const hit of body.matchAll(phrase)) {
+      // 「X의」·조사 붙은 앞말은 꾸밈말이 아니다 — 물건 이름은 그 뒤부터.
+      const lead = hit[1]!.trim().split(/\s+/u);
+      let cut = lead.length;
+      while (cut > 0 && !/(의|에서|에게|을|를|은|는|하고|하여|해서|하면)$/u.test(lead[cut - 1]!)) cut -= 1;
+      const words = [...lead.slice(cut), hit[2]!];
+      if (words.length < 2) continue; // 「책상」 하나는 그림 아무 책상 — 꾸민 이름만 본다
+      const name = bare(words.join(""));
+      if (eventNames.some((n) => n.includes(name) || name.includes(n) && n.length >= 3) || artNames(map).some((a) => a.includes(name))) continue;
+      const target = /지목|범인/u.test(body) && gate ? gate
+        : (() => { const k = steps.findIndex((r) => r.ev.id === ev.id); const r = k >= 0 ? steps[k + 1] : undefined; return r ? { mapId: r.map.id, ev: r.ev } : undefined; })();
+      const targetName = target ? nameOf(target.ev) : "";
+      if (!targetName || /^ev_/u.test(targetName)) continue;
+      const particle = hit[3]!;
+      const fixed = /^(을|를)$/u.test(particle) ? jo(targetName, "을/를") : /^(으로|로)$/u.test(particle) ? (() => { const code = targetName.charCodeAt(targetName.length - 1) - 0xac00; const fin = code >= 0 && code < 11172 ? code % 28 : 0; return fin && fin !== 8 ? "으로" : "로"; })() : particle;
+      next = next.replace(`${words.join(" ")}${particle}`, `「${targetName}」${fixed}`);
+    }
+    if (next === body) return;
+    fields.message = withWhere(project, map.id, next, gate && next.includes(`「${nameOf(gate.ev)}」`) ? gate.ev.id : undefined);
+    notes.push(`목표 「${body}」 → 「${String(fields.message)}」(맵에 없는 물건 이름)`);
+  });
+  return notes;
+}
+
 /**
  * 지목 증거를 사람이 말 끝에 그냥 건네면(「…발소리를 들었어.」 → 「『떨어진 은단추』를 증거로 챙겼다.」) 그 물건을 바닥에 떨어진 조사 칸으로 옮긴다 —
  * 사람은 어디를 보라고 말하고(그 사람 이야기를 들은 뒤에만 열림), 플레이어가 그 칸을 조사해 증거를 얻는다. 되풀이 안전(`<사람 id>_evidence`).
@@ -499,7 +555,8 @@ function evidenceCell(run: BuildRun, map: GameMap, giver: GameEvent): { x: numbe
       const t = m[key]?.[y * w + x];
       if (typeof t !== "number" || t < 0) continue;
       const label = tileLabel(project, map, t).replace(/\s*\((?:-?\d+,\s*-?\d+)\)\s*$/u, "").replace(/^.*·\s*/u, "").replace(/\s*\d+[×x]\d+$/u, "").replace(/\s+[NSEW]$/u, "").trim();
-      if (label && !/바닥|벽|깔개|러그|그림자|공허|천장|창|문|floor|wall|rug|shadow|ceiling|void|door/iu.test(label)) return label;
+      const named = thingWords(label);
+      if (named && !/바닥|벽|깔개|러그|그림자|공허|천장|창|문|floor|wall|rug|shadow|ceiling|void|door/iu.test(named)) return named;
     }
     return "";
   };
@@ -831,12 +888,23 @@ function ensureEvidenceCondition(run: BuildRun): string[] {
  * 이벤트가 놓인 칸(몸 사각 포함)의 가구 이름 — 바닥·벽·깔개·그림자는 뺀다. 없으면 "".
  * 의자 칸 조사(단서 그림을 옆 탁자 위에 얹은 경우, examineArt)는 탁자 위 물건 이름(「책」)이 찾을 것이다.
  */
+/**
+ * 칩셋 이름표 꼬리(조각 자리·방향·크기 표식)를 떼어 물건 이름만 — 「책장 1w」「탁자 조각 LB」「긴 목재 탁자 상단」「거실 탁자 1,0」 → 책장·탁자·긴 목재 탁자·거실 탁자.
+ * 왜(2026-10-29 vm6 terra 추리): 남은 단서 안내가 「「여관 장부」(남서쪽 책장 1w)」로 이름표 꼬리를 그대로 보였다.
+ */
+function thingWords(label: string): string {
+  const words = label.replace(/\s*\([^()]*\)/gu, "").trim().split(/\s+/u).filter(Boolean);
+  const tail = /[0-9A-Za-z]|^(상단|하단|중단|좌측|우측|중앙|왼쪽|오른쪽|윗부분|아랫부분|위|아래|조각|부분|끝|몸통|머리|다리)$/u;
+  while (words.length > 1 && tail.test(words.at(-1)!)) words.pop();
+  return words.length === 1 && /[0-9A-Za-z]/u.test(words[0]!) && !/[가-힣]/u.test(words[0]!) ? "" : words.join(" ");
+}
+
 function hostThing(project: Project, map: GameMap, ev: GameEvent): string {
   const m = map as unknown as Record<string, ArrayLike<number> | undefined>;
   const labelsAt = (x: number, y: number): string[] => x < 0 || y < 0 || x >= map.width || y >= map.height ? []
     : ["upperTiles", "upperOverlayTiles", "lowerOverlayTiles"].map((key) => m[key]?.[y * map.width + x])
       .filter((t): t is number => typeof t === "number" && t >= 0).map((t) => tileLabel(project, map, t));
-  const clean = (label: string) => label.replace(/\s*\((?:-?\d+,\s*-?\d+)\)\s*$/u, "").replace(/\s*\([^()]*\)/gu, "").replace(/\s+[NSEW]{2,4}$/u, "").replace(/^.*·\s*/u, "").replace(/\s*\d+[×x]\d+$/u, "").replace(/\s+[NSEW]$/u, "").trim();
+  const clean = (label: string) => thingWords(label.replace(/\s*\((?:-?\d+,\s*-?\d+)\)\s*$/u, "").replace(/\s*\([^()]*\)/gu, "").replace(/\s+[NSEW]{2,4}$/u, "").replace(/^.*·\s*/u, "").replace(/\s*\d+[×x]\d+$/u, "").replace(/\s+[NSEW]$/u, "").trim());
   const fp = (ev.pages?.[0] as { footprint?: { width?: number; height?: number } } | undefined)?.footprint;
   const w = Math.max(1, fp?.width ?? 1), h = Math.max(1, fp?.height ?? 1), left = ev.x - Math.floor((w - 1) / 2);
   for (let y = ev.y; y > ev.y - h; y -= 1) for (let x = left; x < left + w; x += 1) {

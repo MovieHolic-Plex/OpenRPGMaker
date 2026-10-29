@@ -9,6 +9,7 @@ import { battleSites, healingSources } from "./combatChecks";
 import { wantsWholeGame } from "./shipChecks";
 import { applyShipDefaults, fillStaleObjectives } from "./shipDefaults";
 import { refreshObjectiveRoutes } from "./discoverability";
+import { fitStairTransfers, hiddenStairExits } from "@/project/stairs/fit";
 import { fitUnwinnableStepBattlesIn, lockStepOrderDoorsIn, orderStepBattlesIn, pointLockedPagesIn } from "./blueprintPath";
 import { fitPathBattlesIn } from "./pathBattleBudget";
 import { ensureBossRest } from "./healingAccess";
@@ -19,7 +20,7 @@ import { renameBareBlueprintPlaces } from "./blankStart";
 import { alignCodeClues, fixDigitClaims, humanizeBlueprintTokens } from "./codeClues";
 import { alignClueObjects, dropStaleChainClues } from "./clueObjects";
 import { settleFurnitureSpots } from "./examineSpot";
-import { gateSuspectObjectives, refreshRemainingClues } from "./mysteryCase";
+import { alignObjectiveThings, gateSuspectObjectives, refreshRemainingClues } from "./mysteryCase";
 import { dropTokenLines, settleStepSubjects } from "./stepSubjects";
 import { humanizeMapNames } from "./mapNames";
 
@@ -178,6 +179,16 @@ export async function runFinishAutoBuild(env: PiAssistantV2Env, session: V2Sessi
     try { const n = refreshObjectiveRoutes(env.ctx.project); if (n) assembled.push(`목표 길 안내 ${n}곳`); }
     catch (error) { env.emit({ type: "execution_status", name: "v2.assembly", ok: false, summary: `목표 길 안내를 다시 쓰지 못했다: ${error instanceof Error ? error.message : String(error)}` }); }
     // 추리 용의자 대화의 목표는 다 듣기 전엔 「아직 이야기 안 한 용의자」, 다 들은 뒤에만 지목 자리로 — 위 두 단계가 건 목표까지 감싸도록 맨 끝에.
+    // 계단 그림 한 칸에만 남은 층 이동을 계단 폭 전체로(출하 exit-hidden) — 끝맺음이 이동 칸을 그림 칸으로 옮긴 뒤에는 도구의 넓히기가 다시 돌지 않았다
+    // (2026-10-29 vm3 argon 추리 재생: 여관 2층 2칸 계단 (12,6)에만 이동, (11,7)에서 위로 걸어도 아무 일 없음).
+    try {
+      const names = new Set(hiddenStairExits(env.ctx.project).map((line) => line.split(":")[0]!));
+      const ids = Object.values(env.ctx.project.maps).filter((m) => names.has(m.name ?? m.id)).map((m) => m.id);
+      if (ids.length) assembled.push(...fitStairTransfers(env.ctx.project, ids));
+    } catch { /* 계단 출구 넓히기 실패는 끝맺음을 깨지 않는다 */ }
+    // 목표 글이 가리키는 물건이 맵(이벤트·그림)에 없으면 실제 대상 이벤트 이름으로(2026-10-29 vm6 terra 추리 「단서 정리 책상」).
+    try { assembled.push(...alignObjectiveThings(env.ctx.project)); }
+    catch { /* 목표 물건 이름 맞추기 실패는 끝맺음을 깨지 않는다 */ }
     try { assembled.push(...gateSuspectObjectives(env.ctx.project)); }
     catch { /* 용의자 목표 갈래 실패는 끝맺음을 깨지 않는다 */ }
     if (assembled.length) {

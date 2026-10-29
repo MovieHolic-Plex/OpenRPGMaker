@@ -558,7 +558,11 @@ export function fillUnsetStepConditions(project: Project): string[] {
     let page: Obj | undefined;
     // 증거를 내밀어야 넘어가는 페이지(추리 용의자 「· 증거」)가 있으면 그 페이지 — 증거를 앞 단계가 아닌 조사 칸이 주면(evidenceOnThing) have 에 없어
     // 말만 걸면 도는 첫 페이지가 골라져 증거 없이 조건이 켜졌다(2026-10-29 vm5 argon 추리 재생).
-    page = [...pages].reverse().find((pg) => hasCommands(pg) && JSON.stringify(pg.commands).includes('"presentItem"'));
+    // 단, 그 페이지의 조건이 앞 단계 결과이거나 그 페이지가 내밀게 하는 증거일 때만 — 앞 단계와 뒤 지목 단계가 같은 사람이면 지목 페이지(뒤 단계 자백·
+    // 탐문 스위치가 조건)가 골라져 첫 단계 조건이 엔딩 갈래 안에서야 켜졌다(2026-10-29 vm3 argon 추리 회귀: 「사건 조사 시작」이 범인 지목 안에).
+    const presentedIds = (pg: Obj): Set<string> => new Set([...JSON.stringify(pg.commands ?? []).matchAll(/"itemIds":\[([^\]]*)\]/gu)].flatMap((x) => [...x[1]!.matchAll(/"([^"]+)"/gu)].map((y) => y[1]!)));
+    page = [...pages].reverse().find((pg) => hasCommands(pg) && JSON.stringify(pg.commands).includes('"presentItem"')
+      && pageNeeds(pg).every((n) => have.has(n.id) || presentedIds(pg).has(n.id)));
     if (!page) for (let i = pages.length - 1; i >= 0; i--) if (hasCommands(pages[i]!) && pageNeeds(pages[i]!).every((n) => have.has(n.id))) { page = pages[i]; break; }
     if (!page) continue;
     const commands = page.commands as Obj[];
