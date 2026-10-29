@@ -24,7 +24,7 @@ export function cleanLayoutHint(value: unknown): Record<string, unknown> | null 
   const lay = { ...(value as Record<string, unknown>) };
   const real = (p: unknown) => !!p && typeof p === "object" && !(Number((p as { x?: unknown }).x) === 0 && Number((p as { y?: unknown }).y) === 0);
   for (const k of ["gather", "landmark", "anchor", "work"]) if (!real(lay[k])) delete lay[k];
-  for (const k of ["houses", "fields", "forests", "pastures"]) { const a = Array.isArray(lay[k]) ? (lay[k] as unknown[]).filter(real) : []; if (a.length) lay[k] = a; else delete lay[k]; }
+  for (const k of ["houses", "fields", "forests", "pastures", "orchards", "props"]) { const a = Array.isArray(lay[k]) ? (lay[k] as unknown[]).filter(real) : []; if (a.length) lay[k] = a; else delete lay[k]; }
   if (!Array.isArray(lay.exits) || !(lay.exits as unknown[]).length) delete lay.exits;
   return lay.gather || lay.houses ? lay : null;
 }
@@ -112,14 +112,15 @@ export function villageArgs(spec: PlaceSpec): { args: Record<string, unknown>; m
 export function villageLayoutGuide(theme: string, fishing = false, scatter = false): string {
   const swamp = theme === "swamp";
   return "hints.layout 에 gather{x,y,plaza}(모이는 곳), landmark(높은 곳 건물 — 높은 단 넓은 터), anchor(여관·회관 — 모이는 곳 곁), work(일터), houses[{x,y}] 3~12(집 가운데), "
-    + "fields[{x,y}](밭), forests[{x,y}](숲 덩이), pastures[{x,y}](울타리 친 목초지·양), exits(큰길이 나가는 맵 가장자리) 를 넣는다. "
+    + "fields[{x,y}](밭), orchards[{x,y}](과수원), pastures[{x,y}](울타리 친 목초지·양), forests[{x,y}](숲 덩이), props[{x,y}](길가 소품 무더기 — 수레·상자·건초·장작·이정표), exits(큰길이 나가는 맵 가장자리) 를 넣는다. "
+    + "houses[].kind 에 small·medium·large 를 섞는다(안 섞으면 같은 집 그림이 되풀이된다 — 짓고 나면 반복을 보고한다). "
     + "집 하나는 문 앞까지 약 5×6칸이라 집 가운데끼리 6칸 이상 띄우고(큰 건물은 8칸), 한 단 평지에(단 경계 검은 선을 걸치지 않게) 둔다. "
     + (swamp ? "늪 마을은 물 위에 짓는다 — 집은 물(파랑) 위나 물가에 두면 널판 마루를 깔고 그 위에 서고, 길은 물을 건너는 널길이 된다. 진흙 섬만 쓰지 말고 물 위 집을 절반 넘게. "
       : "물(파랑) 위는 안 된다. ")
     + (fishing || theme === "coast" ? "어촌·포구는 모이는 곳·일터·집 몇 채를 물가(물에서 6칸 안)에 두어 물가 길에 그물·배·말림대가 서게 한다. " : "")
     + (scatter ? "흩어진 농가·들판 마을은 집을 3~6채만, 집 가운데끼리 9칸 넘게 흩고 집마다 곁에 밭(fields)·목초지(pastures)를 둔다 — 집이 모인 읍내가 되지 않게. " : "")
     + (theme === "river" ? "강가 마을이면 모이는 곳을 강에서 10칸 안에 둔다(시작 자리가 모이는 곳 곁이다). " : "")
-    + "집·길이 닿지 않는 넓은 빈 단은 비워 두지 말고 그 단에 맞는 쓰임(밭·숲·목초지)을 자리로 준다. 길·계단·널다리는 함수가 잇고, 못 놓은 자리·옮긴 거리·못 낸 길을 보고한다.";
+    + "집·길이 닿지 않는 넓은 빈 풀밭·빈 단은 비워 두지 말고 쓰임(밭·과수원·목초지·숲)을 자리로 주고, 큰길·모이는 곳 둘레에 길가 소품(props) 두세 곳을 둔다. 길·계단·널다리는 함수가 잇고, 못 놓은 자리·옮긴 거리·못 낸 길을 보고한다.";
 }
 
 /** 마을이 지어질 맵 크기(build·authorBeodeulTown 기본값과 같은 계산) — 코드 지형 미리보기가 같은 크기로 땅을 만든다. */
@@ -198,10 +199,35 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
   }
   const firstCall = run.calls.length;
   let result = run.call("author_beodeul_town", base);
-  // 완성된 집 보호: 집이 선 맵은 덮어 짓기가 거절된다 → 지우고 같은 id 로 다시 짓는다.
+  // 완성된 집 보호: 집이 선 맵은 덮어 짓기가 거절된다. 같은 id 로 지우고 다시 지어도 적용 단계의 보호 검사(같은 맵의 옛 집 칸)가 거절하고,
+  // 시작 맵은 지울 수도 없었다(2026-10-30 실조수 terra 「강가 장터」: 비평가가 고칠 곳을 짚었는데 edit_place 두 번 모두 거절).
+  // 그 맵에 이벤트가 없고 다른 맵이 그 맵으로 이어지지 않으면 새 id 로 다시 짓고, 시작 맵이었으면 시작을 새 맵으로 옮긴 뒤 옛 맵을 지운다
+  // (맵째 지운 집은 보호 대상이 아니다 — houseProtection). 문이 이어진 맵은 그대로 두고 고치는 길을 알려 준다.
+  let replacedFrom: string | undefined;
   if (!result.ok && mapId && run.ctx.project.maps[mapId] && /집 보호|house|완성된/.test(`${result.summary} ${(result.issues ?? []).map((i) => i.message).join(" ")}`)) {
-    const removed = run.call("remove_map", { mapId });
-    if (removed.ok) result = run.call("author_beodeul_town", { ...base, id: mapId });
+    const proj = run.ctx.project, old = proj.maps[mapId]!;
+    const linked = Object.values(proj.maps).some((m) => m.id !== mapId && JSON.stringify(m.events ?? []).includes(`"${mapId}"`));
+    if (old.events.length === 0 && !linked) {
+      let newId = `${mapId}_r2`; for (let n = 3; proj.maps[newId]; n += 1) newId = `${mapId}_r${n}`;
+      const { mapId: _drop, ...rest } = base; void _drop;
+      const rebuilt = run.call("author_beodeul_town", { ...rest, id: newId });
+      if (rebuilt.ok) {
+        let moved = run.ctx.project.startMapId !== mapId;
+        if (!moved) {
+          const ent = (rebuilt.data as { entrance?: { x?: number; y?: number } } | undefined)?.entrance;
+          const st = run.ctx.project.startPos;
+          for (const at of [st, ent && typeof ent.x === "number" && typeof ent.y === "number" ? { x: ent.x, y: ent.y } : undefined]) {
+            if (!at) continue;
+            if (run.call("set_start_position", { mapId: newId, x: at.x, y: at.y }).ok) { moved = true; break; }
+          }
+        }
+        const removed = moved ? run.call("remove_map", { mapId }) : { ok: false };
+        if (removed.ok) { result = rebuilt; replacedFrom = mapId; }
+        else run.call("remove_map", { mapId: newId });
+      }
+    } else {
+      warnings.push(`「${old.name}」(${mapId}) 은 집이 선 맵이라 다시 지을 수 없다(${old.events.length ? `이벤트 ${old.events.length}개` : "다른 맵의 문이 이어짐"}) — 같은 edit_place 를 되풀이하지 말고 집 밖 칸은 stamp_object·fill_region, 사람은 add_people 로 고친다.`);
+    }
   }
   const calls: BuilderCall[] = run.calls.slice(firstCall);
   const data = (result.data ?? {}) as Record<string, unknown>;
@@ -214,6 +240,7 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
   const asked = num(args.houseCount);
   if (asked !== undefined && houses !== undefined && houses < asked - 1) warnings.push(`집 ${asked}채 요청, 집 ${houses}채만 앉음(앵커 건물 별도) — 지형이 좁으면 size 를 키우거나 variant 를 바꿔 본다`);
   warnings.push(...(result.warnings ?? []));
+  if (replacedFrom) warnings.push(`완성된 집 보호로 「${replacedFrom}」 맵을 덮어 지을 수 없어 새 맵 ${builtId} 로 다시 짓고 옛 맵을 지웠다${run.ctx.project.startMapId === builtId ? "(시작 위치도 새 맵으로)" : ""} — 이 마을의 mapId 는 이제 ${builtId} 다.`);
   const start = run.ctx.project.startPos;
   const ent = data.entrance as { x?: number; y?: number } | undefined;
   const entrance = run.ctx.project.startMapId === builtId && start

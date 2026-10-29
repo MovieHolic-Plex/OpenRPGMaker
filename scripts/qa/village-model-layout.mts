@@ -24,7 +24,7 @@ await Promise.all(CASES.filter((c: any) => !only.length || only.includes(c.n)).m
   const png = terrainPreviewPng(t, 8); fs.writeFileSync(`${OUT}/${c.n}-terrain.png`, png);
   const sys = "너는 RPG 마을 배치를 정하는 조수다. 땅은 코드가 만들었다. 그림(좌표 눈금: 위 x·왼쪽 y, 칸 단위, 단 번호가 클수록 높다, 검은 선=단 경계 절벽, 파랑=물, 흰 점=강 건널 자리)과 요약을 보고 마을 자리를 고른다.";
   const user = `요청: 「${c.ask}」 (마을 이름 ${c.spec.name}, ${width}×${height}).\n`
-    + "hints.layout 을 JSON 하나로만 답한다(설명 없이): {\"gather\":{\"x\":..,\"y\":..,\"plaza\":true|false},\"landmark\":{x,y},\"anchor\":{x,y},\"work\":{x,y},\"houses\":[{x,y}...3~12],\"fields\":[{x,y}...],\"forests\":[{x,y}...],\"pastures\":[{x,y}...],\"exits\":[\"west\"|\"east\"|\"north\"|\"south\"]}.\n"
+    + "hints.layout 을 JSON 하나로만 답한다(설명 없이): {\"gather\":{\"x\":..,\"y\":..,\"plaza\":true|false},\"landmark\":{x,y},\"anchor\":{x,y},\"work\":{x,y},\"houses\":[{x,y,kind:\"small\"|\"medium\"|\"large\"}...3~12],\"fields\":[{x,y}...],\"orchards\":[{x,y}...],\"pastures\":[{x,y}...],\"forests\":[{x,y}...],\"props\":[{x,y}...],\"exits\":[\"west\"|\"east\"|\"north\"|\"south\"]}.\n"
     + villageLayoutGuide(String(va.theme ?? "river"), va.fishing === true, va.form === "scatter") + " 요청 성격에 맞게 고르되 그림의 땅을 살려라.\n"
     + `요약: ${JSON.stringify(describeCodeTerrain(t))}`;
   const body = { model: MODEL, messages: [{ role: "system", content: sys }, { role: "user", content: [{ type: "text", text: user }, { type: "image_url", image_url: { url: `data:image/png;base64,${Buffer.from(png).toString("base64")}` } }] }], temperature: 0.7 };

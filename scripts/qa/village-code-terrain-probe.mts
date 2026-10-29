@@ -44,7 +44,7 @@ for (const c of CASES) {
   const row = { n: c.n, ms: Date.now() - t0, size: `${map.width}x${map.height}`, houses: d.houses, anchors: d.anchors, unreached: doors.filter((x) => !x.reached).length, doors: doors.length,
     dead: cf.deadEnds.filter((x: any) => x.kind === "cell").length, ramps: d.relief?.ramps, rfail: d.relief?.fails, levels: d.relief?.levels,
     upMiss: Object.values(lr).reduce((s: number, e: any) => s + (e.walk - e.reached), 0), upWild: Object.values(lr).reduce((s: number, e: any) => s + (e.wild ?? 0), 0),
-    layout: d.layout ? { auto: d.layout.auto, moved: d.layout.moved, failed: d.layout.failed, roadsFailed: d.layout.roadsFailed } : null, terrainSeed: d.terrainSeed, note: d.codeTerrain?.note, warnings: (r as any).warnings ?? [] };
+    layout: d.layout ? { auto: d.layout.auto, moved: d.layout.moved, failed: d.layout.failed, roadsFailed: d.layout.roadsFailed } : null, terrainSeed: d.terrainSeed, note: d.codeTerrain?.note, summary: r.summary, warnings: (r as any).warnings ?? [] };
   rows.push(row); console.log(c.n, JSON.stringify(row).slice(0, 600));
 }
 fs.writeFileSync(`${OUT}/report.json`, JSON.stringify(rows, null, 1));

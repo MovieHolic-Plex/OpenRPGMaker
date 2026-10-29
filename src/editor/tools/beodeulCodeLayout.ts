@@ -10,6 +10,9 @@ import type { CodeTerrain } from "./beodeulTerrainGen";
 
 export type LayoutEdge = "west" | "east" | "north" | "south";
 export interface LayoutPoint { x: number; y: number }
+export type HouseKind = "small" | "medium" | "large";
+export const HOUSE_KINDS: readonly HouseKind[] = ["small", "medium", "large"];
+
 export interface VillageLayout {
   /** 모이는 곳(광장·우물 자리). plaza false 면 판석 광장 없이 우물·좌판만. */
   gather?: LayoutPoint & { plaza?: boolean };
@@ -19,14 +22,18 @@ export interface VillageLayout {
   anchor?: LayoutPoint;
   /** 일터(헛간·곳간 + 일터 소품). */
   work?: LayoutPoint;
-  /** 살림집 자리(집 가운데). */
-  houses?: LayoutPoint[];
+  /** 살림집 자리(집 가운데). kind 로 크기를 고른다(small 작은 집·medium 보통·large 큰 집) — 안 주면 함수가 섞는다. */
+  houses?: (LayoutPoint & { kind?: HouseKind })[];
   /** 밭 자리(밭 가운데). */
   fields?: LayoutPoint[];
   /** 숲 덩이 자리(덩이 가운데) — 빈 단의 쓰임(코드가 아니라 조수가 고른다). */
   forests?: LayoutPoint[];
   /** 울타리 친 목초지(양·짚가리) 자리(가운데). */
   pastures?: LayoutPoint[];
+  /** 과수원(울타리 안 줄지은 나무) 자리(가운데). */
+  orchards?: LayoutPoint[];
+  /** 길가 소품 무더기(수레·상자·건초·장작·이정표·벤치) 자리 — 가까운 길 옆에 놓는다. */
+  props?: LayoutPoint[];
   /** 마을 밖으로 나가는 큰길이 닿는 맵 가장자리(1~2개). */
   exits?: LayoutEdge[];
 }
@@ -51,9 +58,12 @@ export function parseLayout(raw: unknown, W: number, H: number): { layout: Villa
   const lm = pt(r.landmark, "landmark"); if (lm) out.landmark = lm;
   const an = pt(r.anchor, "anchor"); if (an) out.anchor = an;
   const wk = pt(r.work, "work"); if (wk) out.work = wk;
-  if (Array.isArray(r.houses)) out.houses = r.houses.map((h, i) => pt(h, `houses[${i}]`)).filter((p): p is LayoutPoint => !!p).slice(0, 24);
+  if (Array.isArray(r.houses)) out.houses = r.houses.map((h, i) => { const p = pt(h, `houses[${i}]`); if (!p) return null; const k = String((h as Record<string, unknown>).kind ?? ""); return (HOUSE_KINDS as readonly string[]).includes(k) ? { ...p, kind: k as HouseKind } : p; })
+    .filter((p): p is LayoutPoint & { kind?: HouseKind } => !!p).slice(0, 24);
   if (Array.isArray(r.fields)) out.fields = r.fields.map((h, i) => pt(h, `fields[${i}]`)).filter((p): p is LayoutPoint => !!p).slice(0, 6);
   if (Array.isArray(r.forests)) out.forests = r.forests.map((h, i) => pt(h, `forests[${i}]`)).filter((p): p is LayoutPoint => !!p).slice(0, 8);
+  if (Array.isArray(r.orchards)) out.orchards = r.orchards.map((h, i) => pt(h, `orchards[${i}]`)).filter((p): p is LayoutPoint => !!p).slice(0, 3);
+  if (Array.isArray(r.props)) out.props = r.props.map((h, i) => pt(h, `props[${i}]`)).filter((p): p is LayoutPoint => !!p).slice(0, 8);
   if (Array.isArray(r.pastures)) out.pastures = r.pastures.map((h, i) => pt(h, `pastures[${i}]`)).filter((p): p is LayoutPoint => !!p).slice(0, 4);
   if (Array.isArray(r.exits)) out.exits = r.exits.filter((e): e is LayoutEdge => (LAYOUT_EDGES as readonly string[]).includes(String(e))).slice(0, 3);
   return { layout: out, notes };

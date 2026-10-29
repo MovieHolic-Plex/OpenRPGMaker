@@ -476,6 +476,19 @@ export function generateCodeTerrain(input: TerrainGenInput): CodeTerrain {
       if (!changed) break;
     }
   }
+  // 꺾기·기둥 지우기가 남긴 작은 단 조각(2026-10-30 3판 사막: 못 곁 6×2 띠에 모이는 곳이 앉아 길이 하나도 안 났다)은 이웃 단으로
+  if (character !== "flat") for (let pass = 0; pass < 3; pass += 1) {
+    const { comp, list } = components(W, H, (a, b) => lv[a] === lv[b], (c) => !water[c]);
+    let changed = false;
+    list.forEach((cs, i) => {
+      if (cs.length >= Math.max(40, Math.round(W * H * 0.02))) return;
+      const cnt = new Map<number, number>();
+      for (const c of cs) { const x = c % W, y = (c - x) / W; for (const [dx, dy] of N4) { const X = x + dx, Y = y + dy; if (X < 0 || Y < 0 || X >= W || Y >= H) continue; const n = Y * W + X; if (comp[n] !== i && !water[n]) cnt.set(lv[n]!, (cnt.get(lv[n]!) ?? 0) + 1); } }
+      let best = -1, bk = 0; for (const [L, k] of cnt) if (k > bk) { best = L; bk = k; }
+      if (best >= 0) { for (const c of cs) lv[c] = best; changed = true; }
+    });
+    if (!changed) break;
+  }
   for (let pass = 0; pass < 6; pass += 1) {
     let changed = false;
     for (let c = 0; c < W * H; c += 1) { const x = c % W, y = (c - x) / W;
@@ -485,22 +498,45 @@ export function generateCodeTerrain(input: TerrainGenInput): CodeTerrain {
   // 평지 요청은 동서 띠 하나(2026-10-30 ab18·ab19: 강가 시골·들판이 「남북 절벽 토막·평지 한가운데 사다리 계단」으로 띠 지형에 졌다) —
   // 잡음 덩이 단을 버리고 북쪽에 맵 폭 전체를 가로지르는 띠 하나만 둔다. 띠 아래 경계는 7~13열 토막마다 1~2줄 어긋날 뿐 남북으로 길게 서지 않는다.
   // 물(강·못·바다)이 띠 자리에 들어오면 띠를 물 위 3칸까지 올리고, 그래도 3줄이 안 남는 열이 있으면 단을 아예 없앤다(평지).
+  const bandGaps: { x: number; y: number }[] = [];
   if (input.bands && input.water !== "bog") {
-    const base = Math.round(H * 0.27) + Math.floor(r() * 3);
+    // 3판(2026-10-30 ab20 판정 「맵 전폭을 자로 그은 직선 절벽」): 띠 아래 경계를 높이맵 등고선처럼 굽히고(큰 물결 ±4.5줄 + 잔물결 ±1.5줄,
+    // 열마다 1줄까지·같은 줄 3열 이상), 띠를 한두 곳에서 끊는다 — 끊긴 곳은 단이 없고 어깨(열마다 2줄씩 낮아짐)를 숲이 덮는다(bandGaps → cliffBreaks).
+    // 강·못이 띠 자리를 지나면 그 열이 끊긴 곳이 된다(예전엔 띠를 통째로 없앴다). 남은 띠 토막이 8열보다 짧으면 지운다.
+    const base = Math.round(H * 0.26) + Math.floor(r() * 3);
     const b = new Int16Array(W);
-    { let x = 0, prev = base;
-      while (x < W) { const w = 7 + Math.floor(r() * 7); const want = base + Math.round(2.2 * jn(x / 14, seed % 97)); const v = Math.max(prev - 2, Math.min(prev + 2, want));
-        for (let k = 0; k < w && x + k < W; k += 1) b[x + k] = v; prev = v; x += w; } }
-    let ok = true;
-    for (let x = 0; x < W && ok; x += 1) { let top = H; for (let y = 0; y < H; y += 1) if (water[y * W + x]) { top = y; break; }
-      for (let dx = -2; dx <= 2; dx += 1) { const X = x + dx; if (X < 0 || X >= W) continue; for (let y = 0; y < top; y += 1) if (water[y * W + X]) { top = y; break; } }
-      if (b[x]! > top - 3) b[x] = top - 3; if (b[x]! < 3) ok = false; }
-    // 물에 깎인 열과 이웃 열이 2줄 넘게 어긋나면 이웃을 맞춘다(띠가 남북으로 긴 벽을 세우지 않게)
-    for (let pass = 0; pass < W && ok; pass += 1) { let ch2 = false;
-      for (let x = 1; x < W; x += 1) { if (b[x]! - b[x - 1]! > 2) { b[x] = b[x - 1]! + 2; ch2 = true; } if (b[x - 1]! - b[x]! > 2) { b[x - 1] = b[x]! + 2; ch2 = true; } }
+    const s2 = (seed * 7 + 3) % 101;
+    for (let x = 0; x < W; x += 1) b[x] = Math.round(base + 4.5 * jn(x / 11, seed % 97 + 0.5) + 1.5 * jn(x / 4.5, s2 + 0.5));
+    for (let x = 1; x < W; x += 1) b[x] = Math.max(b[x - 1]! - 1, Math.min(b[x - 1]! + 1, b[x]!));
+    // 같은 줄 3열 미만 토막은 앞 토막에 붙인다(한 열짜리 톱니 금지)
+    { let x0 = 0; for (let x = 1; x <= W; x += 1) if (x === W || b[x] !== b[x0]) { if (x - x0 < 3 && x0 > 0) for (let k = x0; k < x; k += 1) b[k] = b[x0 - 1]!; x0 = x; } }
+    const gap = new Uint8Array(W);
+    for (let x = 0; x < W; x += 1) { let top = H; for (let dx = -2; dx <= 2; dx += 1) { const X = x + dx; if (X < 0 || X >= W) continue; for (let y = 0; y < top; y += 1) if (water[y * W + X]) { top = y; break; } }
+      if (b[x]! > top - 3) gap[x] = 1; }
+    // 일부러 끊는 곳은 긴 띠(가로 70칸 이상)만 하나 — 좁은 맵에서 둘씩 끊으니 어깨 둘이 마주 보는 골짜기(V자 도랑)로 보였다(3판 r12 강가 시골). 물이 지나는 곳은 늘 끊긴다.
+    const nGaps = W >= 70 ? 1 : 0;
+    for (let g = 0, t = 0; g < nGaps && t < 30; t += 1) {
+      const gw = 6 + Math.floor(r() * 5), gx = 6 + Math.floor(r() * Math.max(1, W - 12 - gw));
+      if ([...gap.slice(Math.max(0, gx - 8), Math.min(W, gx + gw + 8))].some((v) => v)) continue;
+      for (let k = 0; k < gw; k += 1) gap[gx + k] = 1; g += 1;
+    }
+    for (let x = 0; x < W; x += 1) if (gap[x] || b[x]! < 3) b[x] = 0;
+    // 어깨: 끊긴 곳에서 열마다 2줄씩 오른다(0 → 2 → 4 …) — 예전엔 얕은 열을 어깨 뒤에 지워 0 에서 4줄로 곧장 서는 남북 선이 남았다(r13 강가 시골 x 13)
+    for (let pass = 0; pass < W; pass += 1) { let ch2 = false;
+      for (let x = 0; x < W; x += 1) { const lim = Math.min(x > 0 ? b[x - 1]! + 2 : 99, x < W - 1 ? b[x + 1]! + 2 : 99); if (b[x]! > lim) { b[x] = lim; ch2 = true; } }
       if (!ch2) break; }
+    { let x0 = -1; for (let x = 0; x <= W; x += 1) { const on = x < W && b[x]! > 0; if (on && x0 < 0) x0 = x; if (!on && x0 >= 0) { if (x - x0 < 8) for (let k = x0; k < x; k += 1) b[k] = 0; x0 = -1; } } }
+    let bandCols = 0; for (let x = 0; x < W; x += 1) if (b[x]! > 0) bandCols += 1;
+    const ok = bandCols >= W * 0.35;
+    // 끊긴 곳 어깨(띠가 0 으로 내려가는 열) — 숲 씨앗
+    // 어깨마다 숲 씨앗 넷(쓰는 쪽이 [0,-2]·[0,4] 를 더한다): 띠 위 어깨 안쪽 두 곳 + 띠 아래 어깨 바깥 두 곳 — 띠가 숲 속으로 사라진다
+    if (ok) for (let x = 1; x < W; x += 1) if ((b[x - 1]! > 0) !== (b[x]! > 0)) {
+      const hx = b[x]! > 0 ? x : x - 1, dir = b[x]! > 0 ? 1 : -1, bh = b[Math.min(W - 1, Math.max(0, hx + dir * 4))]!;
+      bandGaps.push({ x: Math.min(W - 2, Math.max(1, hx + dir * 3)), y: Math.max(3, Math.round(bh / 2) + 2) });
+      bandGaps.push({ x: Math.min(W - 2, Math.max(1, hx - dir * 3)), y: Math.min(H - 6, Math.max(3, Math.round(bh / 2) + 2)) });
+    }
     for (let c = 0; c < W * H; c += 1) { const x = c % W, y = (c - x) / W; lv[c] = ok && !water[c] && y < b[x]! ? 1 : 0; }
-    notes.push(ok ? "평지 요청: 북쪽 동서 띠 하나" : "평지 요청: 물이 띠를 가로질러 단 없음");
+    notes.push(ok ? `평지 요청: 북쪽 굽은 띠(끊긴 곳 어깨 ${bandGaps.length / 2 | 0}곳)` : "평지 요청: 물이 띠를 가로질러 단 없음");
   }
   tidyLevels(lv, W, H);
   // 단 하나 = 두 칸 절벽(2026-10-30 ab13 판정 「절벽이 1px 갈색 선 — 높이가 안 읽힌다」): 띠 지형의 마을 위 단처럼 이웃 단 차를 2 로 —
@@ -546,7 +582,7 @@ export function generateCodeTerrain(input: TerrainGenInput): CodeTerrain {
     crossings.push({ x, y, dir: dir === "ns" ? "ew" : "ns" });
   }
   // 긴 남향 절벽 띠의 끊을 자리: 한 줄로 10칸 넘게 이어진 절벽은 9칸마다 한 자리
-  const cliffBreaks: { x: number; y: number }[] = [];
+  const cliffBreaks: { x: number; y: number }[] = [...bandGaps];
   for (let y = 0; y < H - 1; y += 1) {
     let x0 = -1;
     for (let x = 0; x <= W; x += 1) {
