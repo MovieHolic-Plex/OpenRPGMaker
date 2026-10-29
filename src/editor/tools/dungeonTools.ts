@@ -3,6 +3,7 @@
 // 횃불·화로·통·상자·기둥이 허공에 뜨고 벽 조각이 바닥에 서고 이벤트가 천장 칸에 놓였다. 좌표를 모델이 고르지 않게 한다.
 // 계산은 src/editor/dungeonKit/ — 중립 마스크(mask.ts) + 칩셋 어댑터(beodeul/·monster/) + 장르 프리셋(genres.ts) + 라우팅(route.ts).
 import { isPassable } from "@/project/collision";
+import { kitDoorOpenCommands } from "@/project/kitDoors";
 import { groundSupportIssues } from "@/project/groundSupport";
 import { MAX_TOOL_MAP_DIMENSION } from "@/project/mapSizeLimits";
 import { addMapLocation, COMPOSED_LAYOUT_TAG } from "@/project/mapNamedLocations";
@@ -264,24 +265,28 @@ function defaultSeed(draft: Project, args: Record<string, unknown>): number {
 }
 
 /** 계단 칸 이동 이벤트(계단 계약: 이벤트는 계단 그림 칸, 도착은 상대 계단 앞 칸에서 계단을 등지고). */
-function stairEvent(map: GameMap, id: string, at: Stair, name: string, to: { mapId: string; land: Pt; facing: "up" | "down" | "left" | "right" }): void {
+function stairEvent(draft: Project, map: GameMap, id: string, at: Stair, name: string, to: { mapId: string; land: Pt; facing: "up" | "down" | "left" | "right" }): void {
   const bump = at.kind === "door";
   const event: GameEvent = {
     id, x: at.x, y: at.y, trigger: { kind: "playerTouch" }, commands: [],
     pages: [{
       id: `${id}_page`, name, conditions: [], graphic: { transparent: true }, trigger: { kind: "playerTouch" },
       priority: bump ? "same" : "below", overlapForbidden: false, movement: { type: "fixed", speed: 3, frequency: 3 },
-      commands: [...doorOpenCommands(map, at), { kind: "transfer", mapId: to.mapId, x: to.land.x, y: to.land.y, direction: to.facing, fade: "black" } as Command],
+      commands: [...doorOpenCommands(draft, map, at), { kind: "transfer", mapId: to.mapId, x: to.land.x, y: to.land.y, direction: to.facing, fade: "black" } as Command],
     }],
   } as GameEvent;
   upsertEventIntoMap(map, event);
 }
 
 /**
- * gap 문(bd-dg-door-closed/open, #3283): 문 칸에 상태 짝 그림이 실려 있으면 들어가기 전에 문을 연다(위층 두 칸 changeTile + 문 소리).
- * changeTile 은 세션에 남으니 한 번 연 문은 열린 채로 있다. 그림 짝이 없는 옛 나무 문은 빈 목록.
+ * gap 문(bd-dg-door-closed/open, #3283): 문 칸에 상태 짝 그림이 실려 있으면 들어가기 전에 문을 연다.
+ * 타일셋의 닫힘/열림 키트 짝으로 찾으면(project/kitDoors) 그 문 그림으로 1×2 전체를 여는 연출(fx:door-open) + changeTile —
+ * 런타임 이동은 이미 열린 키트 문에 연출을 겹치지 않는다. changeTile 은 세션에 남으니 한 번 연 문은 열린 채로 있다.
+ * 키트를 못 찾고 조립기가 doorTiles 만 남긴 경우는 옛 명령(소리 + 위층 두 칸 changeTile). 그림 짝이 없는 옛 나무 문은 빈 목록.
  */
-function doorOpenCommands(map: GameMap, at: Stair): Command[] {
+function doorOpenCommands(draft: Project, map: GameMap, at: Stair): Command[] {
+  const kit = kitDoorOpenCommands(draft, map, at);
+  if (kit.length) return kit;
   const dt = (at as Stair & { doorTiles?: { open: [number, number] } }).doorTiles;
   if (!dt) return [];
   return [
@@ -618,8 +623,8 @@ function authorDungeon(draft: Project, argsIn: Record<string, unknown>): ToolExe
     const a = datas[k]!.exitStair as Stair | null, b = datas[k + 1]!.entryStair as Stair | null;
     const ma = draft.maps[mapIds[k]!]!, mb = draft.maps[mapIds[k + 1]!]!;
     if (!a || !b) { warnings.push(`${ma.name} ↔ ${mb.name}: 계단 자리가 없어 잇지 못했다 — create_transfer_pair 로 잇는다.`); continue; }
-    stairEvent(ma, `ev_${ma.id}_stair_next`, a, `${mb.name}(으)로`, { mapId: mb.id, land: b.front, facing: DIR_OF(b, b.front) });
-    stairEvent(mb, `ev_${mb.id}_stair_back`, b, `${ma.name}(으)로`, { mapId: ma.id, land: a.front, facing: DIR_OF(a, a.front) });
+    stairEvent(draft, ma, `ev_${ma.id}_stair_next`, a, `${mb.name}(으)로`, { mapId: mb.id, land: b.front, facing: DIR_OF(b, b.front) });
+    stairEvent(draft, mb, `ev_${mb.id}_stair_back`, b, `${ma.name}(으)로`, { mapId: ma.id, land: a.front, facing: DIR_OF(a, a.front) });
     links.push(`${ma.id}(${a.x},${a.y}) ↔ ${mb.id}(${b.x},${b.y})`);
   }
   // 주제 장치(2026-10-23 dungeon-themes): 버들항 rpg 던전은 마지막 층에 그 주제다운 장치 하나를 둔다(gimmick 생략 = 주제 기본, "none" = 끔).
