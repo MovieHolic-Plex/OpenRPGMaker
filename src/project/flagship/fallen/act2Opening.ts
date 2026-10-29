@@ -1118,9 +1118,10 @@ function northGateEvents(project: Project, exec: Exec): void {
       narrate("브람이 성벽 돌 틈에 손가락을 건다."),
       route("ev_fs2_hub_bram", [
         { kind: "setDirectionFix", enabled: true },
-        { kind: "jump", dx: 0, dy: 0, heightPx: 2, durationMs: 200, se: "cc0-se-ors-item-stone-02" },
+        // 제자리에서 두 번 버틴다 — jump 는 dx/dy 0 이면 바라보는 쪽으로 두 칸 뛴다(성벽 너머로 사라졌다, VQA 2026-10-30). dropIn 은 칸 이동이 없다.
+        { kind: "dropIn", heightPx: 3, durationMs: 200, se: "cc0-se-ors-item-stone-02", impact: false },
         { kind: "wait" },
-        { kind: "jump", dx: 0, dy: 0, heightPx: 3, durationMs: 220, se: "cc0-se-ors-item-stone-03" },
+        { kind: "dropIn", heightPx: 4, durationMs: 220, se: "cc0-se-ors-item-stone-03", impact: false },
       ]),
       say(BRAM, "끄응……!"),
       narrate("돌이 끌려 나온다."),

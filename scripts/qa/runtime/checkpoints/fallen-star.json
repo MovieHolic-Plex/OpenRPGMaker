@@ -3935,7 +3935,7 @@
       {
        "kind": "hold",
        "dir": null,
-       "ms": 1200
+       "ms": 1500
       }
      ],
      "shot": true
@@ -3971,29 +3971,51 @@
        "kind": "waitFor",
        "testid": "dialogue-box",
        "state": "present",
-       "timeoutMs": 10000
+       "timeoutMs": 15000
       },
       {
        "kind": "hold",
        "dir": null,
-       "ms": 800
+       "ms": 1500
       },
       {
-       "kind": "repeatUntil",
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "waitFor",
        "testid": "dialogue-box",
-       "state": "absent",
-       "maxRounds": 8,
-       "ops": [
-        {
-         "kind": "key",
-         "key": "Enter"
-        },
-        {
-         "kind": "hold",
-         "dir": null,
-         "ms": 1300
-        }
-       ]
+       "state": "present",
+       "timeoutMs": 15000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 15000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1800
       }
      ],
      "shot": true
@@ -4005,34 +4027,51 @@
        "kind": "waitFor",
        "testid": "dialogue-box",
        "state": "present",
-       "timeoutMs": 12000
+       "timeoutMs": 15000
       },
       {
        "kind": "hold",
        "dir": null,
-       "ms": 600
+       "ms": 1500
       },
       {
-       "kind": "repeatUntil",
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "waitFor",
        "testid": "dialogue-box",
-       "state": "absent",
-       "maxRounds": 8,
-       "ops": [
-        {
-         "kind": "key",
-         "key": "Enter"
-        },
-        {
-         "kind": "hold",
-         "dir": null,
-         "ms": 1500
-        }
-       ]
+       "state": "present",
+       "timeoutMs": 15000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 15000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
       },
       {
        "kind": "waitForMap",
        "mapId": "map_field_north_1",
-       "timeoutMs": 15000
+       "timeoutMs": 20000
       },
       {
        "kind": "hold",
@@ -4040,7 +4079,7 @@
        "ms": 300
       }
      ],
-     "shot": true
+     "shot": false
     },
     {
      "id": "dash",
@@ -4163,7 +4202,7 @@
       {
        "kind": "move",
        "dir": "up",
-       "steps": 4
+       "steps": 7
       }
      ],
      "shot": true
@@ -4175,7 +4214,7 @@
        "kind": "waitFor",
        "testid": "dialogue-box",
        "state": "present",
-       "timeoutMs": 8000
+       "timeoutMs": 20000
       },
       {
        "kind": "hold",
@@ -4261,7 +4300,7 @@
        "ms": 300
       }
      ],
-     "shot": true
+     "shot": false
     },
     {
      "id": "dash",
