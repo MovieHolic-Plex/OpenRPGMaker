@@ -403,6 +403,7 @@ export const TOOL_LABELS: Readonly<Record<string, ToolLabelEntry>> = {
   stamp_tileset_object: build("타일셋 물체 찍기", "box"),
   stamp_layer_block: build("층 배열 찍기", "grid"),
   paint_shadow: build("그림자 칠하기", "brush"),
+  paint_beodeul_plan: build("평면도대로 맵 칠하기", "map"),
   read_relief: inspect("절벽 높이 읽기", "map"),
   sculpt_relief: build("절벽 높이 빚기", "map"),
   check_relief: inspect("절벽 높이 검사", "shield"),
