@@ -445,19 +445,27 @@ function barracks(project: Project, exec: Exec): void {
       { id: "ship ladder", x: BARRACKS.ladder.x, y: BARRACKS.ladder.y },
       // 알코브 사이 벽 기둥 앞면 — 무기 걸이·횃불·방패, 마지막 기둥엔 근무표
       ...[5, 12, 19].flatMap((x) => [{ id: "weapon rack", x, y: 3 }, { id: "wall torch", x: x + 1, y: 3 }, { id: x === 19 ? "notice board" : "shield", x: x + 2, y: 3 }]),
-      // 홀 가운데 돌기둥 — 기둥 그늘(등불을 가린다)
+      // 홀 가운데 돌기둥·작전 탁자·짐 더미 — 등불을 가리는 그늘(두 순찰 길 y7·y10 사이)
       ...BARRACKS.pillars.map((c) => ({ id: "column stone", x: c.x, y: c.y })),
+      { id: "war map table", x: 12, y: 8 },
+      { id: "sack pile", x: 5, y: 9 }, { id: "crate stack", x: 21, y: 9 }, { id: "barrel", x: 25, y: 9 },
       // 남쪽: 식탁 둘과 걸상, 동쪽 훈련 구석
       { id: "stool", x: 6, y: 13 }, { id: "stool", x: 9, y: 13 }, { id: "stool", x: 14, y: 13 }, { id: "stool", x: 17, y: 13 },
       { id: "spear rack", x: 26, y: 11 }, { id: "armor stand", x: 26, y: 12 }, { id: "training dummy", x: 23, y: 13 },
       { id: "barrel stack", x: 20, y: 13 }, { id: "weapon crate", x: 26, y: 13 }, { id: "arrow barrel", x: 1, y: 13 },
     ],
     tables: [{ style: "dining", x: 6, y: 11, w: 4, h: 2 }, { style: "dining", x: 14, y: 11, w: 4, h: 2 }],
+    // 두 순찰 길에 깐 긴 깔개 — 야경꾼이 오가는 길이 바닥에 보인다
+    lines: [{ id: "rug blue", rect: { x0: 6, y0: 7, x1: 24, y1: 7 } }, { id: "rug brown", rect: { x0: 4, y0: 10, x1: 17, y1: 10 } }],
     goods: [{ id: "mug", x: 7, y: 11 }, { id: "bottle", x: 15, y: 11 }],
     start: [BARRACKS.entry],
-    links: [{ x: BARRACKS.exit.x, y: BARRACKS.exit.y, toMapId: FS2_CELL_ID, toX: CELL.arrive.x, toY: CELL.arrive.y, direction: "down" }],
   }) as { mapId?: string } | undefined;
   void built;
+  // 남벽 틈 = 감방으로 내려가는 계단. links 로 주면 계단 맞춤(fitStairTransfers)이 이동을 무기고 사다리 칸으로 옮긴다 — 직접 단다.
+  const back = "ev_fs2_barracks_down";
+  addEv(project, FS2_BARRACKS_ID, back, "감방으로 내려가는 계단", BARRACKS.exit, [
+    page(`${back}_p`, "계단", [], [transfer(FS2_CELL_ID, CELL.arrive, "down")], { priority: "below", trigger: { kind: "playerTouch" } }),
+  ]);
   exec(project, "set_map_properties", { mapId: FS2_BARRACKS_ID, battleBackground: "battle-scenery-cave" });
   (M(project, FS2_BARRACKS_ID) as unknown as Rec).bgm = { mode: "custom", resourceId: "cc0-bgm-rtp-mys-002" };
   // 어둠 — 벽 횃불은 작게, 압수품 상자는 무기고에서 노랗게 빛난다(들어서자마자 목표가 보인다).
@@ -470,6 +478,7 @@ function barracks(project: Project, exec: Exec): void {
     ],
   });
   ensureItemRecord(project, exec);
+  ensureSwitch(project, SW_BARRACKS, "B1: 막사에서 압수품을 되찾음");
   ensureSwitch(project, SW_BARRACKS_MID, "B1: 막사 첫 침상 알코브(중간 지점)");
   // 야경꾼 둘 — 정해진 길을 오가며 끝에서 멈춰 고개를 돌린다(규칙이 보이는 순찰). 들키면 「!」 뒤 곧장 덮친다.
   // 붙잡히면: 첫 알코브 전엔 지하 감방으로, 그 뒤엔 첫 알코브 침상 앞으로.
