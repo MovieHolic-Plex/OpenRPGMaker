@@ -252,6 +252,27 @@ export function furnishFromDesign(base: HandInteriorInput, rooms: readonly Layou
       if (dx || dy) fixes.push(`${label}: 바닥 (${tx - room.x0},${ty - fy0}) → (${done[0] - room.x0},${done[1] - fy0}) 로 ${Math.abs(dx) + Math.abs(dy)}칸 옮겼다(${firstWhy})`);
       placed.push(`${g.name ?? label} @${done[0] - room.x0},${done[1] - fy0}`);
     }
+    // 묶음을 넘는 의자 방향: 다른 묶음의 책상·탁자와 맞닿은 의자도 그쪽을 보게(2026-10-29 flash: 「의자」를 따로 묶어 책상 북쪽에 두어 책장을 보고 앉았다).
+    {
+      const inRoom = (x: number, y: number) => x >= room.x0 && x <= room.x1 && y >= fy0 && y <= room.y1;
+      const surfaces: [number, number, number, number][] = [
+        ...(input.objects ?? []).filter((o) => SURFACE_RE.test(o.id) && S.objects[o.id] && inRoom(o.x, o.y)).map((o) => box({ t: "o", id: o.id, x: o.x, y: o.y }, S)),
+        ...(input.tables ?? []).filter((t) => inRoom(t.x, t.y)).map((t) => [t.x, t.y, t.x + t.w, t.y + t.h] as [number, number, number, number]),
+      ];
+      const hit = (x: number, y: number) => surfaces.some((b) => x >= b[0] && x < b[2] && y >= b[1] && y < b[3]);
+      const objects = (input.objects ?? []).map((o) => {
+        const m = FACE_RE.exec(o.id);
+        if (!m || !/chair|stool|armchair|sofa|bench/iu.test(m[1]!) || !inRoom(o.x, o.y)) return o;
+        const facing: Record<string, [number, number]> = { N: [0, -1], S: [0, 1], W: [-1, 0], E: [1, 0] };
+        if (hit(o.x + facing[m[2]!]![0], o.y + facing[m[2]!]![1])) return o;
+        const want = (["N", "S", "W", "E"] as const).find((d) => hit(o.x + facing[d]![0], o.y + facing[d]![1]));
+        const next = want ? `${m[1]} ${want}` : undefined;
+        if (!next || !S.objects[next]) return o;
+        fixes.push(`${o.id}(${o.x - room.x0},${o.y - fy0}) 를 맞닿은 책상·탁자 쪽을 보게 ${next} 로 돌렸다`);
+        return { ...o, id: next };
+      });
+      input = { ...input, objects };
+    }
     perRoom[room.id] = { placed, fixes, blockedShare: floor ? Math.round(100 * blocked / floor) / 100 : 0, floor, items: itemCount };
   }
   return { input, perRoom };

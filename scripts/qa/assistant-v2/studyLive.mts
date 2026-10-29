@@ -9,7 +9,8 @@ import { renderMapPng } from "../../qa-game/render.mts";
 import { createBuildRun } from "../../../src/ai/v2/buildRun.ts";
 import { builderFor } from "../../../src/ai/v2/builders/index.ts";
 import { measureInteriorBareFloor } from "../../../src/editor/handInterior/bareFloor.ts";
-import type { PlaceSpec } from "../../../src/ai/v2/types.ts";
+import type { PlacePatch, PlaceSpec } from "../../../src/ai/v2/types.ts";
+import { applyPatch } from "../../../src/ai/v2/verbs.ts";
 import type { Project } from "../../../src/project/types.ts";
 
 const [batch, out] = process.argv.slice(2);
@@ -35,8 +36,11 @@ for (const arm of fs.readdirSync(batch).sort()) {
       if (t.answer) answer = String(t.answer);
     }
     const makes = calls.filter((c) => c.name === "make_place" && c.ok);
-    const last = makes[makes.length - 1];
-    const spec = last ? ((last.args.spec ?? last.args) as PlaceSpec) : undefined;
+    // 최종 명세 = 마지막 make_place + 그 뒤 성공한 edit_place 패치(실행기와 같은 applyPatch).
+    const lastIdx = calls.lastIndexOf(makes[makes.length - 1]!);
+    let spec = lastIdx >= 0 ? ((calls[lastIdx]!.args.spec ?? calls[lastIdx]!.args) as PlaceSpec) : undefined;
+    const edits = lastIdx >= 0 ? calls.slice(lastIdx + 1).filter((c) => c.name === "edit_place" && c.ok) : [];
+    for (const e of edits) { const patch = (e.args.patch ?? e.args) as PlacePatch; if (spec) spec = applyPatch(spec, { ...patch, mapId: patch.mapId ?? "" }); }
     const designs = (spec?.zones ?? []).map((z) => z.design).filter(Boolean);
     const projFile = path.join(G, "check", "project.json");
     const live = fs.existsSync(projFile) ? (JSON.parse(fs.readFileSync(projFile, "utf8")) as Project) : undefined;
@@ -69,7 +73,7 @@ for (const arm of fs.readdirSync(batch).sort()) {
     }
     const liveBare = live && m ? measureInteriorBareFloor(live, m)?.pct : undefined;
     const used = calls.map((c) => c.name);
-    rows.push({ arm, pid, file, mapSize: m ? `${m.width}x${m.height}` : "", designed: designs.length > 0, designs, makes: makes.length, tools: used, fixes, otherWarnings: warnings.filter((w) => !fixes.includes(w)).slice(0, 6), replaySame, bare: liveBare ?? bare, funcs: funcsOf(objects), objects, answer: answer.slice(0, 500) });
+    rows.push({ arm, pid, file, edits: edits.length, mapSize: m ? `${m.width}x${m.height}` : "", designed: designs.length > 0, designs, makes: makes.length, tools: used, fixes, otherWarnings: warnings.filter((w) => !fixes.includes(w)).slice(0, 6), replaySame, bare: liveBare ?? bare, funcs: funcsOf(objects), objects, answer: answer.slice(0, 500) });
     console.log(`${arm.padEnd(6)} ${pid.padEnd(8)} ${m ? `${m.width}x${m.height}` : "-"} designed=${designs.length > 0} makes=${makes.length} fixes=${fixes.length} same=${replaySame} bare=${liveBare} tools=${used.join(",")}`);
   }
 }

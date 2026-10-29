@@ -9,7 +9,7 @@ import { applyBlueprintOpening } from "@/editor/tools/blueprintOpening";
 import { WRITE_BLUEPRINT_SCHEMA, blueprintDesignerFromEnv, blueprintProgressNote, designBlueprint, parseBlueprintArgs, walkBlueprint } from "./blueprint";
 import { projectBrief } from "./prompt";
 import type { PiAssistantV2Env } from "./env";
-import { roomSpecOf } from "@/editor/handInterior/builder";
+import { HAND_INTERIOR_TILESET_ID, roomSpecOf } from "@/editor/handInterior/builder";
 import { createBuildRun, type RecordingBuildRun } from "./buildRun";
 import { builderFor } from "./builders";
 import { localizePlaceSpec } from "./builders/modernCity";
@@ -81,6 +81,8 @@ export class V2Session {
   readonly questions: string[] = [];
   /** ask_user 를 한 번 되돌려 보냈는가(아무것도 짓지 않고 물었을 때). */
   askBounced = false;
+  /** 설계 없이 온 손 도트 실내 make_place 를 한 번 되돌려 보낸 장소 이름(2026-10-29 「방을 짓는 건 조수여야만 한다」). */
+  readonly designBounced = new Set<string>();
   /** 같은 청사진을 다시 쓴 횟수(내용이 같으면 바꾸지 않고 다음 동사로 보낸다). */
   blueprintRewrites = 0;
   /** 끝맺음에서 청사진 경로를 함수가 대신 지었는가(한 번만). */
@@ -708,6 +710,12 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
         const { mapId: _drop, ...rest } = spec;
         spec = { ...rest, hints: { ...(spec.hints ?? {}), newMap: true } };
         keptNote = `「${other.spec.name}」(${target}) 는 이번에 지은 다른 장소라 덮지 않고 「${spec.name}」을 새 맵에 지었다 — 두 장소를 create_transfer_pair 로 잇는다(계단·문).`;
+      }
+      // 손 도트 실내 방은 조수가 설계한다: 설계(zones[].design) 없이 오면 장소마다 한 번 되돌려 보낸다. 다시 설계 없이 오면 함수 견본으로 짓는다.
+      if (spec.type === "interior" && !spec.mapId && !/wizard|마법\s*학교|hogwart|sengoku|edo|전국|에도|사무라이|modern|현대|city|도시/iu.test(spec.style ?? "")
+        && !(spec.zones ?? []).some((z) => z.design) && run.ctx.project.tilesets[HAND_INTERIOR_TILESET_ID] && !session.designBounced.has(spec.name)) {
+        session.designBounced.add(spec.name);
+        return text({ ok: false, summary: `「${spec.name}」의 방은 네가 설계한다 — room_parts({purpose}) 로 기물 이름표·견본 배치·그림을 보고, 방마다 zones[].design(모양 shape·바닥 w×h·문 door·재질 floor/wall·가구 묶음 groups: 무엇을·몇 개·어느 벽/모서리/가운데·깔개)을 채워 make_place 를 다시 부른다. 함수는 설계대로 짓고 고친 것만 알린다(가구를 더하지 않는다). 견본은 참고 — 베끼지 않는다.` });
       }
       const builder = builderFor(spec);
       if (!builder) {
