@@ -4,6 +4,7 @@
 //   bun scripts/qa/assistant-v2/finishReplay.mts <run-dir>... [--out <dir>] [--followup <마지막 차례 글>]
 // --followup 을 주면 끝맺음이 도는 마지막 차례처럼 그 글 + 첫 요청 메모(composePiTask·priorRequestsNote — 편집기와 같은 합치기)를 요청 글로 쓴다.
 // 주지 않으면 첫 요청 글(steps.log 의 001)만 — 「RPG 만들어 줘」처럼 «게임» 낱말이 없는 첫 요청은 출하 검사·조립이 돌지 않는다.
+import { stepSkipSetters, stepSkipShortcuts } from "../../../src/ai/v2/stepSkip";
 import fs from "node:fs";
 import path from "node:path";
 import { readProjectSqlite } from "../../content/read-project-sqlite.mts";
@@ -22,14 +23,17 @@ const outAt = argv.indexOf("--out");
 const out = outAt >= 0 ? argv[outAt + 1]! : "qa-runs/v2scratch/finish-replay";
 const followAt = argv.indexOf("--followup");
 const followup = followAt >= 0 ? argv[followAt + 1] : undefined;
-const dirs = argv.filter((a, i) => a !== "--out" && i !== outAt + 1 && a !== "--followup" && (followAt < 0 || i !== followAt + 1));
+// --snapshot <json>: 저장본 대신 이 프로젝트 JSON(세션 snapshots/NNN-before.json 등)에서 끝맺음을 돈다 — 빌드 사이 회귀를 같은 입력으로 비교할 때.
+const snapAt = argv.indexOf("--snapshot");
+const snapshotFile = snapAt >= 0 ? argv[snapAt + 1] : undefined;
+const dirs = argv.filter((a, i) => a !== "--out" && i !== outAt + 1 && a !== "--followup" && (followAt < 0 || i !== followAt + 1) && a !== "--snapshot" && (snapAt < 0 || i !== snapAt + 1));
 fs.mkdirSync(out, { recursive: true });
 
 const brief = (project: Project, task: string) => {
   const r = runGameCheck(project, { autoPlayBudgetMs: 30_000 });
   const blockers = r.findings.filter((f) => f.severity === "blocker").map((f) => `[${f.code}] ${f.message.slice(0, 200)}`);
   const run = r.autoPlay?.runs?.[0];
-  return { blockers, auto: run ? `${run.ok ? "성공" : "실패"} 엔딩=${run.endingReached ?? "-"}${run.failure ? ` · ${run.failure.goal}: ${run.failure.detail.slice(0, 220)}` : ""}` : (r.autoPlay?.skipped ?? "자동 플레이 없음"), bp: walkBlueprint(project).blockers.map((b) => b.id), ship: shipBlockers(project, task).map((b) => b.id) };
+  return { blockers, auto: run ? `${run.ok ? "성공" : "실패"} 엔딩=${run.endingReached ?? "-"}${run.failure ? ` · ${run.failure.goal}: ${run.failure.detail.slice(0, 220)}` : ""}` : (r.autoPlay?.skipped ?? "자동 플레이 없음"), bp: walkBlueprint(project).blockers.map((b) => b.id), ship: shipBlockers(project, task).map((b) => b.id), skip: [...stepSkipShortcuts(project).flatMap((f) => f.exits.map((e) => `단계${f.step}←${e.from}(${e.x},${e.y})`)), ...stepSkipSetters(project).map((f) => `단계${f.skipped}없이 단계${f.step}「${f.stepEvent}」`)] };
 };
 
 /**
@@ -51,7 +55,7 @@ function firstRequest(dir: string): string {
 
 for (const dir of dirs) {
   const name = `${path.basename(path.dirname(path.resolve(dir)))}-${path.basename(dir)}`;
-  const project = readProjectSqlite(path.join(dir, "project"));
+  const project = snapshotFile ? ((raw) => (raw.project ?? raw) as Project)(JSON.parse(fs.readFileSync(snapshotFile, "utf8"))) : readProjectSqlite(path.join(dir, "project"));
   const first = firstRequest(dir);
   const task = followup ? composePiTask(followup, priorRequestsNote([{ kind: "user", text: first } as never], followup)) : first;
   const before = brief(project, task);
@@ -72,5 +76,5 @@ for (const dir of dirs) {
   const rec = { name, task, before, notes, after };
   fs.writeFileSync(path.join(out, `${name}.json`), JSON.stringify(rec, null, 1));
   fs.writeFileSync(path.join(out, `${name}.project.json`), JSON.stringify(ctx.project));
-  console.log(`\n### ${name}\n  전: 막힘 ${before.blockers.length} ${before.blockers.map((b) => b.slice(0, 120)).join(" | ")}\n      자동 ${before.auto}\n      청사진 ${before.bp.join(",") || "-"}\n      출하 ${before.ship.length} ${before.ship.join(",")}\n  끝맺음: ${notes.join("\n          ")}\n  후: 막힘 ${after.blockers.length} ${after.blockers.map((b) => b.slice(0, 160)).join(" | ")}\n      자동 ${after.auto}\n      청사진 ${after.bp.join(",") || "-"}\n      출하 ${after.ship.length} ${after.ship.join(",")}`);
+  console.log(`\n### ${name}\n  전: 막힘 ${before.blockers.length} ${before.blockers.map((b) => b.slice(0, 120)).join(" | ")}\n      자동 ${before.auto}\n      청사진 ${before.bp.join(",") || "-"}\n      출하 ${before.ship.length} ${before.ship.join(",")}\n      지름길 ${before.skip.length} ${before.skip.join(",")}\n  끝맺음: ${notes.join("\n          ")}\n  후: 막힘 ${after.blockers.length} ${after.blockers.map((b) => b.slice(0, 160)).join(" | ")}\n      자동 ${after.auto}\n      청사진 ${after.bp.join(",") || "-"}\n      출하 ${after.ship.length} ${after.ship.join(",")}\n      지름길 ${after.skip.length} ${after.skip.join(",")}`);
 }

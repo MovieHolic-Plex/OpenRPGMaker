@@ -19,7 +19,7 @@ import { isEmeraldMonsterStyle } from "@/project/emeraldMonsterStyle";
 import type { ItemId, SkillId } from "@/project/types";
 import { resolveTerms, type ResolvedTerms } from "@/project/terms";
 import { isCaptureTool } from "@/project/itemUsage";
-import { activeActor } from "@/battle/battlePredict";
+import { activeActor, predictSkillDamageFor } from "@/battle/battlePredict";
 import { battleCommandsForActor, type RuntimeBattleCommand } from "@/battle/battleCommands";
 import { battleActorSkillFailure, battleSkillMpCostFor, battleSkillResource2Cost, battleSkillUseFailure, battleSkillUseFailureLabel, battlerSkillIdsWithGrants, comboActorIdsOf, comboParticipantsFromSnapshot, comboSkillIdsFor } from "@/battle/battleSkillUse";
 import { resource2Config } from "@/battle/battleGauges";
@@ -842,6 +842,11 @@ function pokemonFightSubmenu(snapshot: BattleSnapshot, options: BattleCommandPan
       options.beginTargetCommand({ kind: "skill", skillId });
     }, Boolean(reason), reason);
     appendSkillTypeBadge(button, project, skill?.elementId);
+    // 지금 앞의 적에게 줄 평균 기대 피해(상성·자속 포함) — 화면엔 안 보이고 런타임 QA 의 「가장 좋은 기술」 고르기가 읽는다(sim 과 같은 계산).
+    const foe = snapshot.enemies.find((enemy) => enemy.hp > 0);
+    if (skill && actor && foe && !reason) {
+      try { button.dataset.expectedDamage = String(Math.round(predictSkillDamageFor(project, actor, skill, foe).amount)); } catch { /* 예측 불가 기술은 비워 둔다 */ }
+    }
     const slot = String(infoNodes.length + 1);
     button.dataset.moveSlot = slot;
     nodes.push(button);

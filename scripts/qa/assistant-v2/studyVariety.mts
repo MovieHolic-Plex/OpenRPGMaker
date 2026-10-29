@@ -35,7 +35,7 @@ for (const p of STUDY_PROMPTS) for (const game of STUDY_GAMES) {
   const ctx: ToolContext = { project, currentMapId: project.startMapId, assistantRun: true };
   const run = createBuildRun(ctx);
   // 마지막 build_hand_interior_room 결과(data.layout.rooms[].vignettes)를 잡아 둔다.
-  let lastData: { layout?: { rooms?: { id: string; vignettes?: { placed: string[]; blockedShare: number } }[] } } | undefined;
+  let lastData: { layout?: { rooms?: { id: string; vignettes?: { placed: string[]; blockedShare: number } }[] }; rebuild?: { objects?: { id: string }[] } } | undefined;
   const call0 = run.call.bind(run);
   (run as { call: typeof run.call }).call = (tool, args) => { const r = call0(tool, args); if (tool === "build_hand_interior_room" && r.ok && (r as { data?: { layout?: unknown } }).data?.layout) lastData = (r as { data?: typeof lastData }).data; return r; };
   const spec: PlaceSpec = { ...p.spec, salt: hash(game) % 1_000_000, variety: `${game}|${p.spec.name}`, ...(furnish !== "auto" ? { hints: { furnish } } : {}) } as PlaceSpec;
@@ -53,8 +53,12 @@ for (const p of STUDY_PROMPTS) for (const game of STUDY_GAMES) {
   const templates = (m?.locations ?? []).flatMap((l) => (l.tags ?? []).filter((t) => t.startsWith("template:")).map((t) => t.slice(9)));
   const roomsN = (m?.locations ?? []).filter((l) => (l.tags ?? []).includes("hand-layout-room")).length;
   const placed = Object.fromEntries((lastData?.layout?.rooms ?? []).map((q) => [q.id, q.vignettes?.placed ?? []]));
-  const row = { prompt: p.id, game, file, ok: res.ok, size: m ? `${m.width}x${m.height}` : "", template: templates.join(","), rooms: roomsN, placed, bare, unreached, warnings: warnCount, notes: res.warnings };
+  // 기능별 개수(사용자 「소파·책상·의자가 왜 이리 많냐」) — 지은 기물 목록에서 센다.
+  const objs = (lastData?.rebuild?.objects ?? []).map((o) => o.id);
+  const count = (re: RegExp) => objs.filter((id) => re.test(id)).length;
+  const funcs = { desk: count(/^desk |captain desk|chart table|alchemy table|^work /u), chair: count(/^chair |stool/u), armchair: count(/armchair|sofa/u), shelf: count(/bookshelf|cabinet:book|scroll rack/u), table: count(/roundtable|^dining /u) };
+  const row = { prompt: p.id, game, file, ok: res.ok, size: m ? `${m.width}x${m.height}` : "", template: templates.join(","), rooms: roomsN, placed, funcs, bare, unreached, warnings: warnCount, notes: res.warnings };
   rows.push(row);
-  console.log(`${p.id.padEnd(8)} ${game.padEnd(16)} ${row.size.padEnd(6)} rooms=${roomsN} tpl=${row.template || "-"} bare=${bare}% unreached=${unreached} warn=${warnCount}`);
+  console.log(`${p.id.padEnd(8)} ${game.padEnd(16)} ${row.size.padEnd(6)} rooms=${roomsN} tpl=${row.template || "-"} bare=${bare}% unreached=${unreached} warn=${warnCount} ${JSON.stringify(funcs)}`);
 }
 fs.writeFileSync(path.join(out, `${tag}.json`), JSON.stringify(rows, null, 1));

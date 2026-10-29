@@ -25,7 +25,7 @@ import { normalizeGameOverSettings } from "@/project/cinematicSettings";
 import { fieldMenu, storyFieldMenu } from "@/project/fieldMenu";
 import { syncMenuFeatures, syncMenuUiStyle } from "@/project/menuSystem";
 import { FACTORY_HERO_ARMS } from "./genreDefaults";
-import { fitGateLevelCurve, fitRouteLevelsToGates } from "./monsterRouteLevels";
+import { equipMonsterCampaign, fitGateLevelCurve, fitRequiredBattlesToStarters, fitRouteLevelsToGates } from "./monsterRouteLevels";
 
 type Obj = Record<string, unknown>;
 
@@ -50,8 +50,15 @@ export function applyShipDefaults(project: Project, task = project.gameBlueprint
   if (lateStartObjective(project)) applied.push(...pullBackStartObjective(project));
   if (staleMilestoneTargets(project).length) applied.push(...fillStaleObjectives(project));
   applied.push(...fillGymArrivalObjectives(project));
-  applied.push(...fitGateLevelCurve(project));
-  applied.push(...fitRouteLevelsToGates(project));
+  // 레벨 맞춤 전에: 경험치 나누기·체육관 회복 지점(깎기보다 먼저 쓰는 수단).
+  applied.push(...equipMonsterCampaign(project));
+  // 곡선 → 스타터 맞춤(선물 동료·기술·깎기)을 바뀌는 것이 없을 때까지(최대 3바퀴). 선물 동료가 생기면 다음 바퀴 곡선이 관문을 더 올릴 수 있다 —
+  // 한 바퀴만 돌면 두 번째 끝맺음이 관문을 또 올렸다(멱등 아님).
+  for (let round = 0; round < 3; round += 1) {
+    const changed = [...fitGateLevelCurve(project), ...fitRouteLevelsToGates(project), ...fitRequiredBattlesToStarters(project)];
+    applied.push(...changed);
+    if (!changed.length) break;
+  }
   if (endingConditionsUnset(project).length) applied.push(...dropDeadEndingConditions(project));
   if (selfLoopTransfers(project).length) applied.push(...dropSelfLoopTransfers(project));
   if (emptySparkles(project).length) applied.push(...dropEmptySparkles(project));
@@ -493,7 +500,7 @@ function moveEntrancesOntoArt(project: Project): string[] {
  * 없으면 이 이벤트가 켠 스위치·준 아이템을 읽는 첫 이벤트를 「찾아가자」로. 거는 자리·「어디」 힌트는 set_objective 와 같은 planObjective.
  * 다음 대상을 모르면(엔딩 정의만 읽는다) 건너뛴다.
  */
-function fillStaleObjectives(project: Project): string[] {
+export function fillStaleObjectives(project: Project): string[] {
   const out: string[] = [];
   const steps = project.gameBlueprint?.steps ?? [];
   const object = (word: string): string => `${word}${hasFinal(word.replace(/[」』"”')\]\s]+$/u, "")) ? "을" : "를"}`;

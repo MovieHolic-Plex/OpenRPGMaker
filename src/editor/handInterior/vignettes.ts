@@ -48,19 +48,19 @@ const D = data as unknown as VignetteData;
 export function roomVignettes(tilesetId: string): readonly Vignette[] { return D.tilesets[tilesetId] ?? []; }
 
 const TOP_KINDS = new Set(["wall", "hang", "door", "sidedoor"]);
-const blocks = (it: InteriorTemplateItem, S: HandInteriorSpec): boolean => {
+export const blocks = (it: InteriorTemplateItem, S: HandInteriorSpec): boolean => {
   if (it.t === "g" || it.t === "l" || it.t === "d") return false;
   if (it.t === "t") return true;
   const k = S.objects[it.id]?.kind;
   return k !== undefined && k !== "hang" && k !== "flat" && k !== "door" && k !== "sidedoor";
 };
-function box(it: InteriorTemplateItem, S: HandInteriorSpec): [number, number, number, number] {
+export function box(it: InteriorTemplateItem, S: HandInteriorSpec): [number, number, number, number] {
   if (it.t === "l") { const xs = it.cells!.map((c) => c[0]), ys = it.cells!.map((c) => c[1]); return [Math.min(...xs), Math.min(...ys), Math.max(...xs) + 1, Math.max(...ys) + 1]; }
   if (it.t === "o") { const o = S.objects[it.id]; return [it.x, it.y, it.x + (o?.w ?? 1), it.y + Math.max(1, o?.h ?? 1)]; }
   if (it.t === "t" || it.t === "d") return [it.x, it.y, it.x + (it.w ?? 1), it.y + (it.h ?? 1)];
   return [it.x, it.y, it.x + 1, it.y + 1];
 }
-const cellsOfBox = (b: readonly number[]): string[] => { const out: string[] = []; for (let y = b[1]!; y < b[3]!; y++) for (let x = b[0]!; x < b[2]!; x++) out.push(`${x},${y}`); return out; };
+export const cellsOfBox = (b: readonly number[]): string[] => { const out: string[] = []; for (let y = b[1]!; y < b[3]!; y++) for (let x = b[0]!; x < b[2]!; x++) out.push(`${x},${y}`); return out; };
 
 /**
  * 묶음 = 맞닿은(틈 0칸) 기물 무리. 방 견본 옮겨 심기(templateClusters)는 1칸 띄운 것까지 한 덩이로 묶어, 여관 홀은 계산대부터 식탁 줄까지
@@ -181,7 +181,7 @@ export interface VignetteFurnishResult {
   readonly perRoom: Record<string, { placed: string[]; blockedShare: number; floor: number }>;
 }
 
-function withItems(base: HandInteriorInput, items: readonly InteriorTemplateItem[]): HandInteriorInput {
+export function withItems(base: HandInteriorInput, items: readonly InteriorTemplateItem[]): HandInteriorInput {
   return {
     ...base,
     objects: [...(base.objects ?? []), ...items.filter((i) => i.t === "o").map((i) => ({ id: i.id, x: i.x, y: i.y }))],
@@ -193,7 +193,7 @@ function withItems(base: HandInteriorInput, items: readonly InteriorTemplateItem
 }
 
 /** 북벽에 닿는 열(걸이·벽 가구·키 큰 가구가 벽면을 쓰는 열) — 같은 열을 둘이 쓰지 않는다. */
-function wallColumns(it: InteriorTemplateItem, S: HandInteriorSpec): string[] {
+export function wallColumns(it: InteriorTemplateItem, S: HandInteriorSpec): string[] {
   if (it.t !== "o") return [];
   const o = S.objects[it.id];
   if (!o) return [];
@@ -265,10 +265,16 @@ export function furnishWithVignettes(base: HandInteriorInput, rooms: readonly La
     for (let y = fy0; y <= room.y1; y++) for (let x = room.x0; x <= room.x1; x++) if (!inNotch(x, y)) floor++;
     const style = room.template ? templateStyle(byTemplate.get(room.template) ?? { map: "" }) : undefined;
     const composed = opts.seed !== undefined && !opts.picks?.[room.id]?.length ? composedPool(tilesetId, room.kind, opts.purposes?.[room.id] ?? room.kind, S) : undefined;
-    const cands = composed?.cands ?? pool(tilesetId, room.kind, style, opts.picks?.[room.id], opts.purposes?.[room.id], S);
+    // 조합: 독서 구석은 서·동 벽 중 씨앗이 고른 한쪽만(늘 서쪽 벽이 되지 않게).
+    // 쉼 자리도 씨앗이 고른다: 서벽 독서 구석 · 동벽 독서 구석 · 독서 구석 없이 대화 탁자(마주 앉은 의자 둘).
+    const lounge = opts.seed !== undefined ? seeded((opts.seed >>> 0) ^ hashText(`${room.id}|side`))() : 0;
+    const readingSide = lounge < 0.38 ? "core:reading-w" : lounge < 0.76 ? "core:reading-e" : "none";
+    const cands = composed ? composed.cands.filter((v) => !(v.id.startsWith("core:reading-") && v.id !== readingSide) && (readingSide !== "none" || vignetteFunction(v) !== "reading")) : pool(tilesetId, room.kind, style, opts.picks?.[room.id], opts.purposes?.[room.id], S);
     const rnd = composed ? seeded((opts.seed! >>> 0) ^ hashText(room.id)) : undefined;
     const placed: string[] = [];
     const placedIds = new Map<string, number>();
+    const placedFns = new Map<string, number>();
+    const noReading = composed && readingSide === "none";
     const uses = new Map<string, number>();
     let blockedCells = 0;
 
@@ -284,23 +290,27 @@ export function furnishWithVignettes(base: HandInteriorInput, rooms: readonly La
     const tryPlace = (v: Vignette, px: number, py: number, mirror = false): boolean => {
       // 조합: 방에 하나면 되는 기물(지구의·시계·벽난로·안락의자 둘…)은 다른 묶음에 섞여 다시 오지 않게 — 안락의자 넷·지구의 둘이 한 방에 섰다.
       if (rnd && v.items.some((it) => it.t === "o" && (placedIds.get(it.id) ?? 0) >= (ONE_PER_ROOM.get(it.id) ?? 99))) return false;
+      // 조합: 기능 상한 — 같은 기능 묶음(책상 세트·독서 구석·탁자 자리)이 몸통 기물만 달라 여러 벌 서지 않게(2026-10-29 사용자 「소파·책상·의자가 왜 이리 많냐」).
+      const fn = rnd ? vignetteFunction(v) : undefined;
+      if (fn && (placedFns.get(fn) ?? 0) >= (fn === "table" && noReading ? 1 : functionCap(fn, floor))) return false;
       const items = at(v, px, py, mirror);
+      const dbg = (why: string) => { if (typeof process !== "undefined" && process.env?.OPRN_VIGNETTE_DEBUG && (v.id.startsWith("core:desk") || v.id.startsWith("core:shelf"))) console.log(`[vig] ${room.id} ${v.id} @${px},${py} ${why}`); return false; };
       const sCells: string[] = [], fCells: string[] = [], cols: string[] = [];
       for (const it of items) {
         const b = box(it, S);
         const ground = !(it.t === "o" && S.objects[it.id]?.kind === "hang") && it.t !== "g";
         if (ground) for (let y = b[1]; y < b[3]; y++) for (let x = b[0]; x < b[2]; x++) {
-          if (x < room.x0 || x > room.x1 || y < fy0 || y > room.y1 || inNotch(x, y)) return false;
+          if (x < room.x0 || x > room.x1 || y < fy0 || y > room.y1 || inNotch(x, y)) return dbg("out");
         }
         if (it.t === "o" && S.objects[it.id]?.kind === "hang" && (b[0] < room.x0 || b[2] - 1 > room.x1)) return false;
         if (blocks(it, S)) sCells.push(...cellsOfBox(b));
         else if (it.t !== "g" && ground) fCells.push(...cellsOfBox(b));
         cols.push(...wallColumns(it, S));
       }
-      if (sCells.some((c) => keep.has(c) || solid.has(c) || walk.has(c) || flat.has(c))) return false;
-      if (fCells.some((c) => keep.has(c) || solid.has(c) || flat.has(c))) return false;
+      if (sCells.some((c) => keep.has(c) || solid.has(c) || walk.has(c) || flat.has(c))) return dbg(`solid hit keep${sCells.filter((c) => keep.has(c))} solid${sCells.filter((c) => solid.has(c))} walk${sCells.filter((c) => walk.has(c))} flat${sCells.filter((c) => flat.has(c))}`);
+      if (fCells.some((c) => keep.has(c) || solid.has(c) || flat.has(c))) return dbg(`flat hit keep${fCells.filter((c) => keep.has(c))} solid${fCells.filter((c) => solid.has(c))}`);
       if (cols.some((c) => wcols.has(c))) return false;
-      if (blockedCells + new Set(sCells).size > floor * density) return false;
+      if (blockedCells + new Set(sCells).size > floor * density) return dbg("density");
       // 앞(열린 쪽) 통로 — 막힌 칸의 열린 쪽 이웃 줄.
       const front: string[] = [];
       const ss = new Set(sCells);
@@ -315,11 +325,11 @@ export function furnishWithVignettes(base: HandInteriorInput, rooms: readonly La
           front.push(k);
         }
       }
-      if (front.some((c) => solid.has(c))) return false;
+      if (front.some((c) => solid.has(c))) return dbg("front");
       const next = withItems(input, items);
       const built = buildHandInteriorLayers(next, tileset, S);
       const e = built.issues.filter((i) => i.severity === "error").length;
-      if (e > errors || built.unreachedFloor.length > unreached) return false;
+      if (e > errors || built.unreachedFloor.length > unreached) return dbg(`reach e${e}>${errors} u${built.unreachedFloor.length}>${unreached}`);
       input = next; errors = e; unreached = built.unreachedFloor.length;
       for (const c of sCells) solid.add(c);
       for (const c of fCells) flat.add(c);
@@ -327,6 +337,7 @@ export function furnishWithVignettes(base: HandInteriorInput, rooms: readonly La
       for (const c of cols) wcols.add(c);
       blockedCells += ss.size;
       for (const it of items) if (it.t === "o") placedIds.set(it.id, (placedIds.get(it.id) ?? 0) + 1);
+      if (fn) placedFns.set(fn, (placedFns.get(fn) ?? 0) + 1);
       uses.set(v.id, (uses.get(v.id) ?? 0) + 1);
       placed.push(mirror ? `${v.id}~` : v.id);
       return true;
@@ -348,7 +359,9 @@ export function furnishWithVignettes(base: HandInteriorInput, rooms: readonly La
         const near = (x: number, y: number) => x === room.x0 || x + v.w - 1 === room.x1 || y === fy0 || [...solid].some((c) => { const [sx, sy] = c.split(",").map(Number) as [number, number]; return sx >= x - 1 && sx <= x + v.w && sy >= y - 1 && sy <= y + v.h; });
         for (const y of ys) for (const x of xs) if (near(x, y)) out.push([x, y]);
       } else if (floor >= CENTRE_MIN_FLOOR) {
-        const inner = xs.filter((x) => x > room.x0 && x + v.w - 1 < room.x1), innerY = ys.filter((y) => y > fy0 && y + v.h - 1 < room.y1);
+        // 조합 책상 자리는 옆벽에 닿아도 된다(좁은 방에서 가운데 한 자리가 문 앞 칸과 겹쳐 책상 없는 서재가 됐다).
+        const wallOk = v.id.startsWith("core:desk");
+        const inner = xs.filter((x) => wallOk || (x > room.x0 && x + v.w - 1 < room.x1)), innerY = ys.filter((y) => y > fy0 && (wallOk || y + v.h - 1 < room.y1));
         for (const y of byCentre(innerY, fy0 + Math.floor((fh - v.h) / 2))) for (const x of byCentre(inner, cx(v.w))) out.push([x, y]);
       }
       return out;
@@ -376,7 +389,7 @@ export function furnishWithVignettes(base: HandInteriorInput, rooms: readonly La
     const flipStart = rnd ? rnd() < 0.5 : false;
     const seededSpots = (list: [number, number][], anchor: boolean): [number, number][] => {
       if (!rnd || list.length < 2) return list;
-      if (anchor) { const k = Math.floor(rnd() * Math.min(3, list.length)); return [...list.slice(k), ...list.slice(0, k)]; }
+      if (anchor || list.length > 2) { const k = Math.floor(rnd() * Math.min(anchor ? 3 : 4, list.length)); return [...list.slice(k), ...list.slice(0, k)]; }
       return flipStart ? [...list].reverse() : list;
     };
     const place = (v: Vignette, anchor: boolean): boolean => {
@@ -387,7 +400,8 @@ export function furnishWithVignettes(base: HandInteriorInput, rooms: readonly La
 
     const hangCap = Math.max(1, Math.floor(fw / 4));
     const hangCount = () => cands.filter((q) => q.h === 0).reduce((n, q) => n + (uses.get(q.id) ?? 0), 0);
-    const recipe = vignetteRecipe(cands, S, floor, composed ? (v) => composed.bias(v) + rnd!() * 4 : undefined);
+    const fallbacks = cands.filter((v) => v.id.startsWith("core:fallback-"));
+    const recipe = vignetteRecipe(cands.filter((v) => !fallbacks.includes(v)), S, floor, composed ? (v) => composed.bias(v) + rnd!() * 4 : undefined);
     const mains = new Map<string, number>();
     const cap = (v: Vignette) => (v.id.startsWith("core:") ? Math.max(2, v.perRoom) : v.wall === "C" ? 2 : 1);   // 가운데 묶음만 두 번(탁자 줄), 벽 묶음은 한 번
     const tryRole = (list: readonly Vignette[], want: number, anchor: boolean, stopAt = density): number => {
@@ -404,6 +418,19 @@ export function furnishWithVignettes(base: HandInteriorInput, rooms: readonly La
     // 앵커는 몸통 기물이 서로 달라야 한다(책상 둘이 아니라 책상+책장).
     // 조합 씨앗: 역할마다 앞 몇 개 가운데 어디서 시작할지를 씨앗이 정한다 — 점수만 따르면 「책장+벽난로」 앵커와 안락의자 묶음이 판마다 같았다.
     const turn = <T,>(list: readonly T[], top: number): T[] => { if (!rnd || list.length < 2) return [...list]; const k = Math.floor(rnd() * Math.min(top, list.length)); return [...list.slice(k), ...list.slice(0, k)]; };
+    // 조합 서재: 북벽 하나에 책장이 벽 길이의 60% 넘게 줄지어 선다(2026-10-29 감독 눈 검수 「책장 한두 개라 서재로 안 읽힌다」).
+    if (composed?.shelfWall && rnd) {
+      // 북쪽 귀퉁이를 도려 낸 방(창가 돌출)은 남은 북벽 구간만 잰다.
+      const nn = (room.notches ?? []).filter((n) => n.corner[0] === "n");
+      // inNotch 는 도려 낸 자리 옆 한 칸까지 막는다 — 그만큼 더 뺀다.
+      const sx0 = room.x0 + Math.max(0, ...nn.filter((n) => n.corner[1] === "w").map((n) => n.w + 1)), sx1 = room.x1 - Math.max(0, ...nn.filter((n) => n.corner[1] === "e").map((n) => n.w + 1));
+      const sw = sx1 - sx0 + 1;
+      const runs = shelfWalls(sw, rnd, S);
+      for (const v of runs) {
+        const xs = v.w >= sw - 1 ? [sx0 + Math.floor((sw - v.w) / 2)] : rnd() < 0.5 ? [sx0, sx1 - v.w + 1, sx0 + Math.floor((sw - v.w) / 2)] : [sx1 - v.w + 1, sx0, sx0 + Math.floor((sw - v.w) / 2)];
+        if (xs.some((x) => tryPlace(v, x, fy0))) { mains.set(v.main, 1); break; }
+      }
+    }
     {
       const seen = new Set<string>();
       const list = turn(recipe.anchors.filter((v) => !seen.has(v.main) && seen.add(v.main)), 5);
@@ -413,12 +440,19 @@ export function furnishWithVignettes(base: HandInteriorInput, rooms: readonly La
     }
     // 핵심 줄 묶음(교실 책상 줄)은 바닥 20칸마다 한 줄까지.
     const rows = recipe.centre[0]?.id.startsWith("core:") && recipe.centre[0].perRoom > 1 ? Math.min(recipe.centre[0].perRoom, Math.max(1, Math.floor(floor / 20))) : 0;
-    tryRole(turn(recipe.centre, 4), Math.max(recipe.counts.centre, rows), false);
+    // 조합 서재: 책상 자리(깔개 위 책상 + 책상을 보는 의자)가 먼저 — 가운데 자리를 대화 탁자·독서 탁자가 먼저 차지해 책상 없는 서재가 됐다.
+    const desks = composed ? recipe.centre.filter((v) => v.id.startsWith("core:desk")) : [];
+    let centreLeft = Math.max(recipe.counts.centre, rows);
+    if (desks.length && tryRole(turn(desks, desks.length), 1, false)) centreLeft--;
+    // 가운데에 안 들어갔으면(작은 방) 벽에 붙인 책상으로.
+    if (composed && ![...placedIds.keys()].some((id) => /^desk /u.test(id))) for (const v of turn(fallbacks, fallbacks.length)) if (place(v, false)) break;
+    tryRole(turn(recipe.centre.filter((v) => !desks.includes(v)), 4), centreLeft, false);
     tryRole(turn(recipe.support, 4), recipe.counts.support, false);
     tryRole(recipe.small, 6, false, 0.25);
     // 예제가 적은 용도(재봉 가게 묶음 5개)는 레시피를 다 놓아도 막힘이 30% 에 못 미친다 — 같은 묶음을 함께 쓰는 가까운 용도(재봉 작업실·가봉실)의
     // 보조·가운데 묶음으로 마저 채운다(같은 화풍만).
-    if (blockedCells < floor * 0.3 && !opts.picks?.[room.id]?.length) {
+    // 조합 방은 남는 바닥을 이웃 용도 가구로 메우지 않는다 — 빈 바닥은 짓기 쪽이 방을 줄인다.
+    if (!composed && blockedCells < floor * 0.3 && !opts.picks?.[room.id]?.length) {
       const near = relatedKinds(tilesetId, room.kind);
       const more = vignetteRecipe(roomVignettes(tilesetId).filter((v) => !cands.includes(v) && v.kinds.some((k) => near.includes(k)) && (!style || v.style === style)), S, floor);
       tryRole(more.centre, 1, false, 0.36);
@@ -500,9 +534,25 @@ export function relatedKinds(tilesetId: string, kind: string): string[] {
 
 // ── 조합(씨앗 + 성격 낱말) ─────────────────────────────────────────────
 
+/**
+ * 묶음의 기능 — 손 견본 다섯이 한 설계의 크기 변형이라 「책상+의자+책·잉크·촛대」가 아홉 벌, 「안락의자+협탁」이 일곱 벌 따로 후보였다.
+ * 조합은 기능마다 방당 상한(functionCap)으로 센다. 의자는 책상·탁자에 딸린 것만 남으므로 따로 세지 않는다.
+ */
+export function vignetteFunction(v: Vignette): string | undefined {
+  const ids = v.items.filter((it) => it.t === "o").map((it) => it.id);
+  if (ids.some((id) => /^desk |captain desk|chart table|alchemy table|^work /u.test(id))) return "desk";
+  if (ids.some((id) => /armchair|sofa/u.test(id))) return "reading";
+  if (ids.some((id) => /roundtable|^dining 2|^table:/u.test(id))) return "table";
+  if (ids.some((id) => /bookshelf|cabinet:book|scroll rack/u.test(id))) return undefined;   // 책장은 북벽 열이 막는다 — 상한 없음
+  if (v.h === 0) return undefined;   // 걸이는 따로 센다
+  return "deco";
+}
+function functionCap(fn: string, floor: number): number {
+  return fn === "desk" ? (floor >= 60 ? 2 : 1) : fn === "reading" ? 1 : fn === "table" ? (floor >= 45 ? 1 : 0) : fn === "deco" ? 3 : 99;
+}
 /** 조합 방 하나에 이 수까지만 서는 기물. */
 const ONE_PER_ROOM: ReadonlyMap<string, number> = new Map([["globe", 1], ["globe_s", 1], ["clock", 1], ["fireplace", 1], ["telescope", 1], ["safe", 1], ["orrery", 1],
-  ["magic circle", 1], ["cauldron", 1], ["owl perch", 1], ["armchair", 2], ["royal chest", 1], ["luggage trunk", 1], ["chart table", 1], ["spellbook stand", 1], ["dining 1x1", 2]]);
+  ["magic circle", 1], ["cauldron", 1], ["owl perch", 1], ["armchair", 2], ["royal chest", 1], ["luggage trunk", 1], ["chart table", 1], ["spellbook stand", 1], ["dining 1x1", 2], ["desk 3x1", 1], ["desk 2x1", 1], ["roundtable", 1], ["fireplace", 1]]);
 /** 좌우로 기운 기물(옆을 보는 의자·문) — 뒤집으면 등을 돌린다. */
 const LATERAL = /\b[EW]\d?$|\b[EW] |left|right|side/u;
 export function hashText(s: string): number { let h = 0x811c9dc5; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; } return h >>> 0; }
@@ -560,15 +610,95 @@ const COMPOSE_SKIP = /spiral stair|stairs?\b|ladder|door/u;
  */
 /** 용도마다 «없으면 그 방이 아닌» 기물 — 조합이 첫 앵커로 꼭 세운다. */
 const COMPOSE_MUST: Readonly<Record<string, RegExp>> = { study: /bookshelf|cabinet:book|scroll rack/u, library: /bookshelf|cabinet:book/u };
-export function composedPool(tilesetId: string, kind: string, purpose: string, S: HandInteriorSpec): { cands: Vignette[]; bias: (v: Vignette) => number; characters: RoomCharacter[]; must?: RegExp } {
+/** 앉을 것·받칠 것 — 조합 묶음 규칙(의자는 책상·탁자와 한 묶음일 때만). */
+const SEAT_ID = /chair|stool|bench|sofa|armchair|pew/u;
+const TABLE_ID = /desk|table|dining|roundtable|counter|work \d/u;
+/** 조합 묶음 하나(동적) — 상자·막는 칸·몸통을 기물에서 잰다. */
+function coreVignette(id: string, wall: VignetteWall, items: InteriorTemplateItem[], S: HandInteriorSpec, kinds: readonly string[]): Vignette {
+  const all = items.map((it) => box(it, S));
+  const x1 = Math.max(...all.map((b) => b[2])), y1 = Math.max(...all.map((b) => b[3]));
+  const area = items.reduce((n, it) => n + (blocks(it, S) ? (box(it, S)[2] - box(it, S)[0]) * (box(it, S)[3] - box(it, S)[1]) : 0), 0);
+  const main = items.find((it) => it.t === "o" && blocks(it, S) && !SEAT_ID.test(it.id))?.id ?? items[0]!.id;
+  return { id, kinds, style: "any", wall, w: x1, h: y1, items, front: 1, area, main, count: 9, perRoom: 1, from: [] };
+}
+/**
+ * 사람이 꾸민 서재의 기능 묶음(2026-10-29 감독 눈 검수: 의자가 혼자 떠 있고 안락의자가 아무것도 안 마주봤다) — 모두 «마주보기·짝»:
+ *  · 책상 자리: 책상(3×1·2×1) 뒤에 책상을 보는 의자(chair N), 상판에 책·잉크·촛대, 의자 줄까지 깔개.
+ *  · 대화 자리: 둥근 탁자를 사이에 두고 서로 보는 의자 둘(chair E · chair W), 깔개 위.
+ *  · 독서 구석: 안락의자 둘 사이 협탁(촛대·찻주전자) — 벽에 붙는다.
+ */
+function composedCores(kind: string, S: HandInteriorSpec): Vignette[] {
+  if (kind !== "study" && kind !== "library") return [];
+  const o = (id: string, x: number, y: number): InteriorTemplateItem => ({ t: "o", id, x, y });
+  const g = (id: string, x: number, y: number): InteriorTemplateItem => ({ t: "g", id, x, y });
+  const rug = (id: string, x0: number, y0: number, w: number, h: number): InteriorTemplateItem => ({ t: "l", id, x: 0, y: 0, cells: Array.from({ length: w * h }, (_, i) => [x0 + (i % w), y0 + Math.floor(i / w)] as [number, number]) });
+  const rugs = ["rug red", "rug green", "rug brown", "rug purple", "rug blue"];
+  const out: Vignette[] = [
+    ...rugs.map((r) => coreVignette(`core:desk3-${r}`, "C", [rug(r, 0, 0, 5, 2), o("desk 3x1", 1, 0), g("openbook", 1, 0), g("inkwell", 2, 0), g("candlestick", 3, 0), o("chair N", 2, 1)], S, [kind])),
+    // 방을 향한 책상: 의자가 책상 북쪽에서 남쪽(방·문)을 보고 앉는다 — 같은 책상 자리라도 방향이 다르다.
+    ...rugs.slice(1, 4).map((r) => coreVignette(`core:desk3s-${r}`, "C", [rug(r, 0, 0, 5, 2), o("chair S", 2, 0), o("desk 3x1", 1, 1), g("openbook", 1, 1), g("inkwell", 2, 1), g("candlestick", 3, 1)], S, [kind])),
+    ...rugs.slice(0, 3).map((r) => coreVignette(`core:desk2-${r}`, "C", [rug(r, 0, 0, 4, 2), o("desk 2x1", 1, 0), g("openbook", 1, 0), g("candlestick", 2, 0), o("chair N", 1, 1)], S, [kind])),
+    ...rugs.slice(2).map((r) => coreVignette(`core:talk-${r}`, "C", [rug(r, 0, 0, 3, 2), o("chair E", 0, 0), o("roundtable", 1, 0), g("teapot", 1, 0), o("chair W", 2, 0)], S, [kind])),
+    // 작은 방: 가운데에 책상 자리가 안 들어가면 벽에 붙인 책상(의자는 책상 앞에서 책상을 본다).
+    coreVignette("core:fallback-desk-w", "W", [o("desk 2x1", 0, 0), g("openbook", 0, 0), g("candlestick", 1, 0), o("chair N", 0, 1)], S, [kind]),
+    coreVignette("core:fallback-desk-e", "E", [o("desk 2x1", 0, 0), g("inkwell", 0, 0), g("openbook", 1, 0), o("chair N", 1, 1)], S, [kind]),
+    coreVignette("core:reading-w", "W", [o("armchair", 0, 0), o("dining 1x1", 0, 1), g("candlestick", 0, 1), o("armchair", 0, 2)], S, [kind]),
+    coreVignette("core:reading-e", "E", [o("armchair", 0, 0), o("dining 1x1", 0, 1), g("teapot", 0, 1), o("armchair", 0, 2)], S, [kind]),
+  ];
+  return out.filter((v) => v.items.every((it) => it.t !== "o" || S.objects[it.id]) && v.items.every((it) => it.t !== "l" || S.lines?.[it.id]));
+}
+/**
+ * 북벽 책장 줄 — 방 바닥 폭(fw)의 60~85% 를 책장(3w·2w·1w·책 진열장)으로 채운다. 폭 9칸 이상이면 씨앗에 따라 「책장 | 벽난로 | 책장」.
+ * 여러 길이 후보(긴 것부터)를 돌려준다 — 부르는 쪽이 놓이는 첫 것을 쓴다.
+ */
+function shelfWalls(fw: number, rnd: () => number, S: HandInteriorSpec): Vignette[] {
+  const pieces = (["bookshelf 3w", "bookshelf 2w", "cabinet:book+bookb+bookg", "bookshelf 1w"] as const).filter((id) => S.objects[id]);
+  const width = (id: string) => S.objects[id]?.w ?? 1;
+  const fill = (n: number): string[] => {
+    const out: string[] = [];
+    let left = n;
+    while (left > 0) {
+      const fit = pieces.filter((p) => width(p) <= left);
+      if (!fit.length) break;
+      // 큰 책장 위주, 씨앗으로 가끔 작은 것·진열장을 섞는다(같은 책장만 늘어선 벽이 되지 않게).
+      const p = rnd() < 0.45 ? fit[0]! : fit[Math.floor(rnd() * fit.length)]!;
+      out.push(p); left -= width(p);
+    }
+    return out;
+  };
+  const row = (ids: readonly string[], x0 = 0): InteriorTemplateItem[] => { let x = x0; return ids.map((id) => { const it: InteriorTemplateItem = { t: "o", id, x, y: 0 }; x += width(id); return it; }); };
+  const out: Vignette[] = [];
+  const fire = S.objects.fireplace && fw >= 9 && rnd() < 0.5;
+  for (const share of [0.85, 0.75, 0.65, 0.6]) {
+    const n = Math.min(fw, Math.max(3, Math.min(fw - 1, Math.ceil(fw * share))));
+    if (n < 2) continue;
+    if (fire) {
+      const side = Math.max(2, Math.floor((n - 2) / 2));
+      const left = row(fill(side)), lw = side;
+      const items = [...left, { t: "o" as const, id: "fireplace", x: lw, y: 0 }, ...row(fill(side), lw + 2)];
+      out.push(coreVignette(`core:shelf-fire-${n}`, "N", items, S, ["study"]));
+    }
+    out.push(coreVignette(`core:shelf-${n}`, "N", row(fill(n)), S, ["study"]));
+  }
+  return out;
+}
+
+export function composedPool(tilesetId: string, kind: string, purpose: string, S: HandInteriorSpec): { cands: Vignette[]; bias: (v: Vignette) => number; characters: RoomCharacter[]; must?: RegExp; shelfWall?: boolean } {
   const said = roomCharacters(purpose);
-  const characters: RoomCharacter[] = said.length ? said : ["scholar", "noble"];
+  const characters: RoomCharacter[] = said.length ? said : ["scholar"];
   const kinds = [kind, ...(COMPOSE_NEAR[kind] ?? []), ...(said.includes("arcane") ? COMPOSE_ARCANE : [])];
   const lib = roomVignettes(tilesetId).filter((v) => v.kinds.some((k) => kinds.includes(k)));
-  const all = [...lib, ...authoredVignettes(tilesetId, kinds, S)];
+  const all = [...composedCores(kind, S), ...lib, ...authoredVignettes(tilesetId, kinds, S)];
   const seen = new Set<string>();
   const cands = all.filter((v) => {
     if (v.items.some((it) => COMPOSE_SKIP.test(it.id))) return false;
+    // 마주보기·짝: 의자·안락의자는 책상·탁자와 한 묶음일 때만(혼자 뜬 의자 금지). 가운데 묶음은 받칠 가구가 있어야 하고 단품은 벽에만.
+    const ids = v.items.filter((it) => it.t === "o").map((it) => it.id);
+    if (ids.some((id) => SEAT_ID.test(id)) && !ids.some((id) => TABLE_ID.test(id))) return false;
+    if (v.wall === "C" && v.area > 0 && (v.area <= 2 || !ids.some((id) => TABLE_ID.test(id)))) return false;
+    // 깔개만 덩그러니(둥근 깔개 한 장)는 빼고, 책상 자리는 깔개를 받친 조합 묶음(core:desk…)만 쓴다.
+    if (!v.id.startsWith("core:") && v.h > 0 && v.area === 0) return false;
+    if (!v.id.startsWith("core:") && ids.some((id) => /^desk /u.test(id))) return false;
     if (v.items.some((it) => it.t === "o" && !S.objects[it.id])) return false;
     const c = vignetteCharacters(v);
     if (c.has("arcane") && !characters.includes("arcane")) return false;
@@ -581,11 +711,14 @@ export function composedPool(tilesetId: string, kind: string, purpose: string, S
     return true;
   });
   const bias = (v: Vignette): number => {
+    if (v.id.startsWith("core:")) return 4;
     const c = vignetteCharacters(v);
+    // 성격 가중은 꾸밈(지구의·망원경·마법진…)에만 — 안락의자가 「귀족」 +3 을 받아 앵커·보조 상위가 전부 안락의자 묶음이 됐다.
+    if (vignetteFunction(v) === "reading" || vignetteFunction(v) === "desk" || vignetteFunction(v) === "table") return 0;
     if (!c.size) return 0;
     let b = 0;
     for (const x of c) b += characters.includes(x) ? 3 : -2;
     return b;
   };
-  return { cands, bias, characters, ...(COMPOSE_MUST[kind] ? { must: COMPOSE_MUST[kind] } : {}) };
+  return { cands, bias, characters, ...(COMPOSE_MUST[kind] ? { must: COMPOSE_MUST[kind], shelfWall: true } : {}) };
 }
