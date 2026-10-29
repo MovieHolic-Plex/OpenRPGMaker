@@ -293,6 +293,12 @@ function setupThroneBattle(project: Project): void {
     ...say("maouF", "base", "기다려라. 16분의 1에 연금, 휴가, 성 앞 주차장까지 얹으마."),
     ...say("leonF", "base", "싸우는 중에 흥정하지 마!"),
   ]);
+  // 「세계의 절반 제안」 기술을 쓴 직후에만 오는 대꾸(성공·실패 어느 쪽이어도 맞는 말).
+  execTool(project, "upsert_troop_battle_page", { troopId: T, page: { id: "mk_castle_half_world", name: "절반 제안에 대꾸", span: "battle", runOnce: true,
+    conditions: [{ kind: "actorCommand", actorId: MAOU_TRUE, commandId: "skill", skillId: "skill_mk_half_world" }], commands: [
+      ...say("leonF", "base", "또 절반 타령이냐! 안 넘어간다!"),
+      ...say("mira", "base", "레온, 방금 고개 끄덕였잖아."),
+    ] } });
   pageOf("mk_castle_r2", "2합 미라가 흔들린다", 2, [
     ...say("mira", "base", "레온, 주차장은 좀 탐나는데."),
     ...say("leonF", "base", "미라!!"),
