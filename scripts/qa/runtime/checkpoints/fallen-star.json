@@ -7012,7 +7012,29 @@
         {
          "kind": "hold",
          "dir": null,
-         "ms": 1100
+         "ms": 1300
+        }
+       ]
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 2000
+      },
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 4,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 1300
         }
        ]
       },
@@ -7070,14 +7092,58 @@
         {
          "kind": "hold",
          "dir": null,
-         "ms": 1100
+         "ms": 1300
         }
        ]
       },
       {
        "kind": "hold",
        "dir": null,
-       "ms": 1200
+       "ms": 2500
+      },
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 6,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 1300
+        }
+       ]
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 2500
+      },
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 4,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 1300
+        }
+       ]
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
       }
      ],
      "shot": true
