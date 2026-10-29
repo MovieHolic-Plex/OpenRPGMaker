@@ -176,6 +176,14 @@ function enemyHomeMaps(project: Project): Map<string, Set<string>> {
 function relevel(project: Project, enemy: EnemyRecord, level: number): void {
   const moved = speciesEnemyAtLevel(project, enemy, level);
   if (!moved) return;
+  // 가르친 기술(⑦ — 그 종이 어느 레벨에서도 배우지 않는 기술)은 레벨을 옮겨도 남긴다.
+  const learnset = new Set((monsterSpeciesById(project, enemy.speciesId ?? "")?.skillsByLevel ?? []).map((item) => item.skillId));
+  const tutored = (enemy.skillIds ?? []).filter((id) => !learnset.has(id) && !moved.skillIds.includes(id));
+  if (tutored.length) {
+    moved.skillIds = [...moved.skillIds.filter((id) => !tutored.includes(id)).slice(-(4 - tutored.length)), ...tutored];
+    const keep = new Set(moved.skillIds);
+    moved.actions = [...moved.actions.filter((action) => !action.skillId || keep.has(action.skillId)), ...(enemy.actions ?? []).filter((action) => action.skillId && tutored.includes(action.skillId))];
+  }
   const old = enemy.level && enemy.level > 0 ? enemy.level : level;
   const exp = enemy.rewards?.exp;
   const index = project.database.enemies.findIndex((entry) => entry.id === enemy.id);
@@ -791,8 +799,9 @@ function runRequiredBattles(project: Project, adjust: boolean): { out: string[];
           });
           for (const speciesId of candidates) {
             const oldName = monsterSpeciesById(project, original.speciesId!)?.name;
-            const swapped = { ...structuredClone(original), speciesId, monsterResourceId: (donors.get(speciesId) as { monsterResourceId?: string }).monsterResourceId, name: original.name === oldName ? monsterSpeciesById(project, speciesId)?.name ?? original.name : original.name } as EnemyRecord;
+            const swapped = { ...structuredClone(original), speciesId, monsterResourceId: (donors.get(speciesId) as { monsterResourceId?: string }).monsterResourceId, level: undefined, skillIds: [], actions: [], name: original.name === oldName ? monsterSpeciesById(project, speciesId)?.name ?? original.name : original.name } as EnemyRecord;
             project.database.enemies[index] = swapped;
+            // level 을 비워 두고 옮긴다 — 같은 레벨이면 speciesEnemyAtLevel 이 아무것도 안 해 바꾼 종이 옛 종의 능력치·기술을 그대로 들고 있었다.
             relevel(project, swapped, original.level!);
             const trial = evaluate();
             if (!best || trial.rate > best.rate) best = { speciesId, rate: trial.rate, record: structuredClone(enemyOf(enemyId)!) };
@@ -904,8 +913,9 @@ function runRequiredBattles(project: Project, adjust: boolean): { out: string[];
           && (monsterSpeciesById(project, id)?.captureRate ?? 0) >= 0.4 && tierOf(id) < 3)
           .map((id) => ({ id, tier: tierOf(id), lean: matchupLean(id, original.level!) }))
           .sort((a, b) => a.tier - b.tier || a.lean - b.lean || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0))
-          // 칸마다 모의전 비용을 묶는다(앞 5종) — 다 보면 끝맺음이 3분 → 12분, 10종이면 9분이 됐다. 치우침 순이라 앞쪽이 띠에 가장 가깝다.
-          .slice(0, 5).map((item) => item.id);
+          // 칸마다 모의전 비용을 묶는다(차례마다 앞 2종, 모두 6종까지) — 다 보면 끝맺음이 3분 → 12분, 10종이면 9분이 됐다. 치우침 순이라 앞쪽이 띠에 가장 가깝다.
+          // 앞 5종만 보던 판은 체육관 차례(풀 종)만 보고 물 스타터에게 모두 띠 밖이라 관원 셋이 다시 관장과 같은 토리프로 남았다.
+          .filter((item, at, all) => all.slice(0, at).filter((other) => other.tier === item.tier).length < 2).slice(0, 6).map((item) => item.id);
         let best: { speciesId: string; tier: number; easy: number; record: EnemyRecord } | undefined;
         const better = (tier: number, easy: number): boolean => {
           if (!best) return true;
@@ -919,7 +929,7 @@ function runRequiredBattles(project: Project, adjust: boolean): { out: string[];
           // 차례 안을 모두 모의전하던 판은 ⑥ 하나에 약 110초를 썼다(2026-10-29).
           if (best && best.easy <= HP_EASY) break;
           const oldName = monsterSpeciesById(project, original.speciesId!)?.name;
-          const swapped = { ...structuredClone(original), speciesId, monsterResourceId: art.get(speciesId), name: original.name === oldName ? monsterSpeciesById(project, speciesId)?.name ?? original.name : original.name } as EnemyRecord;
+          const swapped = { ...structuredClone(original), speciesId, monsterResourceId: art.get(speciesId), level: undefined, skillIds: [], actions: [], name: original.name === oldName ? monsterSpeciesById(project, speciesId)?.name ?? original.name : original.name } as EnemyRecord;
           project.database.enemies[index] = swapped;
           relevel(project, swapped, original.level!);
           const trial = trialBand();
@@ -934,6 +944,56 @@ function runRequiredBattles(project: Project, adjust: boolean): { out: string[];
         low = evaluate();
       }
       raiseWhileEasy();
+    }
+    // ⑦ 기술 가르치기 — 그래도 가장 쉬운 스타터가 HP_EASY 를 넘는 판(관원이 불꽃 스타터에 82~83%, 조련사가 물에 87%, 챔피언이 풀에 85%):
+    //    상대 몬스터 하나에 「가장 쉬운 스타터에게 ×2 이상이고, 남은 HP 가 0.5 아래인 스타터에게는 ×1 이하」인 피해 기술 하나를 가르친다
+    //    (어느 종이든 배우는 기술만, 위력 낮은 순 앞 4개). 레벨로는 약한 스타터까지 같이 세지고, 이 기술은 쉬운 스타터만 아프게 한다.
+    //    띠 안(모든 스타터 80%·HP_MARGIN, 가장 쉬운 ≤ HP_EASY)이 되는 첫 기술, 없으면 0.03 이상 나아지는 가장 좋은 기술. 기술이 넷이면 위력이 가장 낮은 것과 바꾼다.
+    if (adjust && low.rate >= FIT_WIN_RATE && easiest() > HP_EASY) {
+      ownEnemies();
+      const easyOne = outcomes.reduce((top, item) => (item.hpFrac > top.hpFrac ? item : top));
+      const typesOf = (speciesId: string) => monsterSpeciesById(project, speciesId)?.types ?? [];
+      const struggling = outcomes.filter((item) => item.hpFrac < 0.5);
+      const learnable = new Set((project.database.monsterSpecies ?? []).flatMap((species) => (species.skillsByLevel ?? []).map((item) => item.skillId)));
+      const pool = project.database.skills.filter((skill) => learnable.has(skill.id) && skill.effect.kind === "damage" && skill.scope !== "ally" && (skill.power ?? 0) > 0
+        && typeChartMultiplierForTypes(project, skill.elementId, [], typesOf(easyOne.speciesId)) >= 2
+        && struggling.every((item) => typeChartMultiplierForTypes(project, skill.elementId, [], typesOf(item.speciesId)) <= 1))
+        .sort((a, b) => (a.power ?? 0) - (b.power ?? 0) || (a.id < b.id ? -1 : 1)).slice(0, 4);
+      const power = (id: string) => project.database.skills.find((skill) => skill.id === id)?.power ?? 0;
+      const trial = (): number | null => {
+        const order = [...outcomes].sort((a, b) => a.hpFrac - b.hpFrac).map((item) => item.speciesId);
+        let easy = 0;
+        for (const speciesId of order) {
+          const outcome = starterOutcome(project, troop.id, speciesId, starter, gained, entry.stage, healHere ? undefined : carry.get(speciesId));
+          if (outcome.rate < FIT_WIN_RATE) return null;
+          easy = Math.max(easy, outcome.hpFrac);
+        }
+        return easy;
+      };
+      const current = easiest();
+      let best: { easy: number; enemyId: string; record: EnemyRecord; skillId: string } | undefined;
+      search: for (const enemyId of troop.enemyIds) {
+        const enemy = enemyOf(enemyId);
+        if (!enemy?.speciesId) continue;
+        const index = project.database.enemies.findIndex((item) => item.id === enemyId);
+        for (const skill of pool) {
+          if ((enemy.skillIds ?? []).includes(skill.id)) continue;
+          const skills = [...(enemy.skillIds ?? [])];
+          if (skills.length >= 4) skills.splice(skills.indexOf([...skills].sort((a, b) => power(a) - power(b))[0]!), 1);
+          const taught = { ...structuredClone(enemy), skillIds: [...skills, skill.id], actions: [...(enemy.actions ?? []).filter((action) => !action.skillId || skills.includes(action.skillId)),
+            { skillId: skill.id, priority: 6, condition: { kind: "always" }, switchOnAfterAction: { enabled: false }, switchOffAfterAction: { enabled: false } }] } as EnemyRecord;
+          project.database.enemies[index] = taught;
+          const easy = trial();
+          project.database.enemies[index] = enemy;
+          if (easy !== null && (!best || easy < best.easy)) best = { easy, enemyId, record: taught, skillId: skill.id };
+          if (best && best.easy <= HP_EASY) break search;
+        }
+      }
+      if (best && (best.easy <= HP_EASY || best.easy < current - 0.03)) {
+        project.database.enemies[project.database.enemies.findIndex((item) => item.id === best!.enemyId)] = best.record;
+        notes.push(`${enemyOf(best.enemyId)?.name ?? best.enemyId} 기술 「${project.database.skills.find((skill) => skill.id === best!.skillId)?.name ?? best.skillId}」 가르침`);
+      }
+      low = evaluate();
     }
     const after = troop.enemyIds.map((id) => enemyOf(id)?.level ?? 0);
     if (notes.length || swaps.length || after.join() !== before.join()) {
