@@ -20,7 +20,7 @@ import path from "node:path";
 import { PNG } from "pngjs";
 import {
   BACKDROP_GROUND_TOP, BACKDROP_NATIVE_HEIGHT, BACKDROP_NATIVE_WIDTH, BACKDROP_STORE_SCALE,
-  backdropJudgePrompt, backdropMachineChecks, backdropPrompt, hexToRgb, inferTimeAndLight, judgeFindings, mapPalette,
+  backdropJudgePrompt, backdropMachineChecks, findBattleSites, backdropPrompt, hexToRgb, inferTimeAndLight, judgeFindings, mapPalette,
   meanLuma, parseJudgeVerdict, pixelizeBackdrop, scaleNearest,
   type BackdropFacts, type JudgeVerdict, type MachineCheck, type Rgba,
 } from "../../../editor/battleBackdropCore";
@@ -123,30 +123,6 @@ async function loadProject(input: string): Promise<{ project: AnyProject; file: 
   return { project, file: abs, bytes, sqlite: false };
 }
 
-function findBattleSites(project: AnyProject, troopId: string): { mapId: string; texts: string[] }[] {
-  const out: { mapId: string; texts: string[] }[] = [];
-  for (const map of Object.values(project.maps ?? {}) as AnyProject[]) {
-    for (const event of map.events ?? []) for (const page of event.pages ?? []) {
-      const texts: string[] = [];
-      let found = false;
-      const walk = (cmds: AnyProject[]) => {
-        for (const cmd of cmds ?? []) {
-          if (found) return;
-          if (cmd?.kind === "text" && typeof cmd.body === "string") texts.push(cmd.body);
-          if (cmd?.kind === "battleProcessing" && cmd.troopId === troopId) { found = true; return; }
-          for (const value of Object.values(cmd ?? {})) {
-            if (Array.isArray(value) && value.some((v) => v && typeof v === "object" && "kind" in v)) walk(value);
-            else if (Array.isArray(value)) for (const v of value) if (v && typeof v === "object" && Array.isArray(v.branch)) walk(v.branch);
-          }
-        }
-      };
-      walk(page.commands ?? []);
-      if (found) out.push({ mapId: map.id, texts });
-    }
-  }
-  return out;
-}
-
 // ---------- capture ----------
 
 async function capture(argv: string[]): Promise<number> {
@@ -197,7 +173,7 @@ async function capture(argv: string[]): Promise<number> {
 
   // 참고 그림: 16:9 로 맞춘 판(어두운 테두리) → 정수배 최근접 확대(생성기 출력 비율이 참고 그림을 따른다).
   const ref169 = letterbox169(cap);
-  const k = Math.max(1, Math.floor(1280 / ref169.width));
+  const k = Math.max(1, Math.round(1280 / ref169.width));
   const reference = scaleNearest(ref169, k);
 
   const indoor = map.climate?.mode === "indoor" || /실내|indoor|interior/iu.test(`${tileset?.name ?? ""}`);
@@ -206,7 +182,7 @@ async function capture(argv: string[]): Promise<number> {
   const tl = inferTimeAndLight({ lighting: map.defaultLighting, texts: [...texts, map.name ?? ""], indoor });
   const facts: BackdropFacts = {
     mapId, mapName: String(map.name ?? mapId), tilesetName: String(tileset?.name ?? map.tilesetId), indoor,
-    timeOfDay: tl.time, light: tl.light, evidence: tl.evidence,
+    timeOfDay: tl.time, timeCertain: tl.certain, light: tl.light, evidence: tl.evidence,
     placeWords: [String(map.name ?? ""), ...locNames, ...(troop?.name ? [String(troop.name)] : [])].filter(Boolean),
     captureLuma: Number(meanLuma(cap).toFixed(3)),
     palette: mapPalette(cap).map((c) => "#" + c.map((v) => v.toString(16).padStart(2, "0")).join("")),

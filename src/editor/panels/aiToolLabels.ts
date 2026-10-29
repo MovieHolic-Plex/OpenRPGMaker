@@ -332,6 +332,7 @@ export const TOOL_LABELS: Readonly<Record<string, ToolLabelEntry>> = {
   generate_game_over_image: build("게임오버 그림 만들기", "spark"),
   generate_image_asset: build("그림 만들기", "spark"),
   generate_title_art: build("타이틀 아트 만들기", "spark"),
+  generate_battle_backdrop: build("전투 배경 만들기", "spark"),
   improve_title_screen: system("타이틀 단계 개선"),
   play_walkthrough: inspect("명령 흐름 검사", "shield"),
   run_scene_test: inspect("장면 검사", "shield"),

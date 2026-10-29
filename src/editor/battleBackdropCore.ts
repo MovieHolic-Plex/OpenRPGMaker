@@ -36,6 +36,8 @@ export type BackdropFacts = {
   readonly tilesetName: string;
   readonly indoor: boolean;
   readonly timeOfDay: TimeOfDay;
+  /** 시간 근거(조명·낱말)가 있다. 창 없는 실내처럼 근거가 없으면 false — 프롬프트가 시간을 강요하지 않고 판정자도 시간을 묻지 않는다. */
+  readonly timeCertain: boolean;
   readonly light: LightLevel;
   /** 시간·빛을 그렇게 정한 근거(사람이 시트에서 확인). */
   readonly evidence: readonly string[];
@@ -61,7 +63,7 @@ export function inferTimeAndLight(input: {
   readonly lighting?: { readonly ambient?: number; readonly color?: string } | null;
   readonly texts: readonly string[];
   readonly indoor: boolean;
-}): { time: TimeOfDay; light: LightLevel; evidence: string[] } {
+}): { time: TimeOfDay; certain: boolean; light: LightLevel; evidence: string[] } {
   const evidence: string[] = [];
   const ambient = Math.max(0, Math.min(1, input.lighting?.ambient ?? 0));
   const color = hexToRgb(input.lighting?.color ?? "#000000") ?? [0, 0, 0];
@@ -70,6 +72,7 @@ export function inferTimeAndLight(input: {
   if (ambient > 0) evidence.push(`맵 기본 조명 ambient ${ambient} · ${input.lighting?.color ?? "#000000"} → 밝기 ×${lightMul.toFixed(2)}`);
   else evidence.push("맵 기본 조명 없음(ambient 0)");
   let time: TimeOfDay | null = null;
+  let certain = true;
   for (const text of input.texts) {
     const hit = NIGHT_WORDS.exec(text) ?? DUSK_WORDS.exec(text) ?? DAY_WORDS.exec(text);
     if (!hit) continue;
@@ -79,11 +82,12 @@ export function inferTimeAndLight(input: {
   }
   if (!time) {
     if (!input.indoor && light !== "bright") { time = light === "dark" ? "night" : "dusk"; evidence.push("야외인데 조명이 어둡다"); }
+    else if (input.indoor) { time = "day"; certain = false; evidence.push("시간 낱말 없음 · 실내 → 시간은 정하지 않고 조명만 맞춘다"); }
     else { time = "day"; evidence.push("시간 낱말 없음 → 낮으로 둔다"); }
   }
   // 실내는 낮밤과 무관하게 조명이 정한다. 야외 밤인데 조명이 없으면(대사로만 밤) 그림은 어둡게 그린다.
   if (!input.indoor && time === "night" && light === "bright") light = "dark";
-  return { time, light, evidence };
+  return { time, certain, light, evidence };
 }
 
 const TIME_BRIEF: Record<TimeOfDay, string> = {
@@ -114,7 +118,9 @@ export function backdropPrompt(facts: BackdropFacts, variant: number): string {
     "Use case: side-view JRPG battle background (battleback), one image, 16:9 landscape.",
     `Image 1 is a top-down 16px pixel-art game map of the EXACT place where this battle happens: ${JSON.stringify(facts.mapName)} (${facts.indoor ? "indoor" : "outdoor"}). It is a content reference only: read its walls, floor material, furniture, colors and light, then REDRAW THE SAME PLACE seen from the side at eye level, like SNES Final Fantasy VI or RPG Maker 2003 battle backgrounds. Do not draw a top-down view.`,
     `Place words: ${words || JSON.stringify(facts.mapName)}.`,
-    `Time and light: ${TIME_BRIEF[facts.timeOfDay]}, ${LIGHT_BRIEF[facts.light]}. Keep the same time of day and lighting as Image 1.`,
+    facts.timeCertain
+      ? `Time and light: ${TIME_BRIEF[facts.timeOfDay]}, ${LIGHT_BRIEF[facts.light]}. Keep the same time of day and lighting as Image 1.`
+      : `Light: ${LIGHT_BRIEF[facts.light]}, same mood and brightness as Image 1. No windows to the outside are needed.`,
     `Composition: ${framing} The back wall or horizon and the place's distinctive objects stay in the UPPER HALF. The LOWER 45% is open, flat, uncluttered floor or ground where battle characters will stand: no furniture, props, holes or strong patterns there.`,
     "Style: 16-bit pixel art with large clear pixels, limited palette of about 24 colors close to Image 1's colors, crisp hard pixel edges, no anti-aliasing, no soft gradients, no dithering noise, no photo texture.",
     "Forbidden: NO characters, people, silhouettes, animals or monsters. NO text, letters, numbers, readable signs, logos, UI, frame, border or watermark.",
@@ -367,8 +373,8 @@ export function edgeDensity(img: Rgba, y0: number, y1: number): number {
 export type MachineCheck = { readonly ok: boolean; readonly value: string; readonly rule: string };
 
 /**
- * 기계 검사 — 통과해도 합격이 아니다(사람이 고른다). 실측 기준:
- * 번들 plains/cave preview 의 아래 띠 무늬 밀도 0.10~0.25.
+ * 기계 검사 — 통과해도 합격이 아니다(사람이 고른다). 기준은 번들 배경 8장 실측(2026-10-30, 320×180 격자):
+ * 아래 45% 무늬 밀도 battle-scenery 0.08~0.11 · scarloxy 0.02~0.18(모래만 위쪽 0.13 보다 높음), 위쪽 밝기 동굴 0.22 · 낮 0.50~0.91.
  */
 export function backdropMachineChecks(native: Rgba, facts: Pick<BackdropFacts, "timeOfDay" | "light" | "captureLuma">): Record<string, MachineCheck> {
   const colors = new Set<number>();
@@ -382,7 +388,7 @@ export function backdropMachineChecks(native: Rgba, facts: Pick<BackdropFacts, "
   return {
     size: { ok: native.width === BACKDROP_NATIVE_WIDTH && native.height === BACKDROP_NATIVE_HEIGHT, value: `${native.width}×${native.height}`, rule: `정확히 ${BACKDROP_NATIVE_WIDTH}×${BACKDROP_NATIVE_HEIGHT} (저장 ${BACKDROP_STORE_SCALE}배)` },
     colors: { ok: colors.size >= 8 && colors.size <= BACKDROP_MAX_COLORS, value: String(colors.size), rule: `색 8~${BACKDROP_MAX_COLORS}개` },
-    groundClear: { ok: ground <= 0.32 && ground <= upper * 1.15 + 0.02, value: `아래 ${ground.toFixed(3)} / 위 ${upper.toFixed(3)}`, rule: `아래 ${Math.round((1 - BACKDROP_GROUND_TOP) * 100)}% 무늬 밀도 ≤0.32 이고 위쪽보다 크지 않다` },
+    groundClear: { ok: ground <= 0.22 && ground <= upper * 1.3 + 0.03, value: `아래 ${ground.toFixed(3)} / 위 ${upper.toFixed(3)}`, rule: `아래 ${Math.round((1 - BACKDROP_GROUND_TOP) * 100)}% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)` },
     lightMatch: expectDark
       ? { ok: top <= 0.42, value: `위쪽 밝기 ${top.toFixed(2)} (캡처 ${facts.captureLuma.toFixed(2)})`, rule: "밤·어두운 장면: 위쪽 평균 밝기 ≤0.42" }
       : { ok: Math.abs(all - facts.captureLuma) <= 0.25 && all >= 0.18, value: `전체 밝기 ${all.toFixed(2)} (캡처 ${facts.captureLuma.toFixed(2)})`, rule: "밝은 장면: 캡처와 밝기 차 ≤0.25, 0.18 이상" },
@@ -394,7 +400,7 @@ export function backdropJudgePrompt(facts: BackdropFacts): string {
   return [
     "You are a strict QA judge for a JRPG side-view battle background.",
     `Image 1 = top-down map of the place ("${facts.mapName}", ${facts.indoor ? "indoor" : "outdoor"}). Image 2 = candidate battle background (pixel art, shown 2x).`,
-    `Expected time of day: ${facts.timeOfDay}; expected light: ${facts.light}.`,
+    facts.timeCertain ? `Expected time of day: ${facts.timeOfDay}; expected light: ${facts.light}.` : `Expected light: ${facts.light} (time of day is not judged for this indoor place; answer "unclear" if not visible).`,
     "Answer ONLY one line of JSON with these keys:",
     '{"characters":bool (any person, silhouette, animal or monster visible in image 2),',
     ' "text":bool (any letters, numbers, readable sign or logo in image 2),',
@@ -426,14 +432,52 @@ export function parseJudgeVerdict(raw: string): JudgeVerdict | null {
 }
 
 /** 판정자 결과의 합격 조건(기계 검사의 일부 — 사람 선택을 대신하지 않는다). */
-export function judgeFindings(verdict: JudgeVerdict, facts: Pick<BackdropFacts, "timeOfDay">): string[] {
+export function judgeFindings(verdict: JudgeVerdict, facts: Pick<BackdropFacts, "timeOfDay" | "timeCertain">): string[] {
   const out: string[] = [];
   if (verdict.characters) out.push("인물·동물이 보인다");
   if (verdict.text) out.push("글자가 보인다");
-  if (verdict.time !== facts.timeOfDay) out.push(`시간이 다르다(기대 ${facts.timeOfDay}, 판정 ${verdict.time})`);
+  if (facts.timeCertain && verdict.time !== facts.timeOfDay) out.push(`시간이 다르다(기대 ${facts.timeOfDay}, 판정 ${verdict.time})`);
   if (!verdict.samePlace) out.push("같은 장소로 안 읽힌다");
   if (!verdict.sideView) out.push("측면 시점이 아니다");
   if (!verdict.groundClear) out.push("아래 띠가 비어 있지 않다");
   if (!verdict.pixelArt) out.push("도트로 안 읽힌다");
+  return out;
+}
+
+type LooseRecord = { readonly [key: string]: unknown };
+const isRecord = (v: unknown): v is LooseRecord => typeof v === "object" && v !== null;
+
+/**
+ * 트룹을 부르는 전투 명령(battleProcessing)이 있는 맵과, 그 페이지에서 전투 전까지 나온 대사.
+ * 선택지 가지(options[].branch)·조건 가지 안까지 찾는다. 대사는 시간 낱말(「새벽 2시」) 근거로 쓴다.
+ */
+export function findBattleSites(project: { readonly maps?: unknown }, troopId: string): { mapId: string; eventName: string; texts: string[] }[] {
+  const out: { mapId: string; eventName: string; texts: string[] }[] = [];
+  const maps = isRecord(project.maps) ? Object.values(project.maps) : [];
+  for (const map of maps) {
+    if (!isRecord(map) || typeof map.id !== "string" || !Array.isArray(map.events)) continue;
+    for (const event of map.events) {
+      if (!isRecord(event) || !Array.isArray(event.pages)) continue;
+      for (const page of event.pages) {
+        if (!isRecord(page) || !Array.isArray(page.commands)) continue;
+        const texts: string[] = [];
+        let found = false;
+        const walk = (commands: readonly unknown[]): void => {
+          for (const command of commands) {
+            if (found || !isRecord(command)) return;
+            if (command.kind === "text" && typeof command.body === "string") texts.push(command.body);
+            if (command.kind === "battleProcessing" && command.troopId === troopId) { found = true; return; }
+            for (const value of Object.values(command)) {
+              if (!Array.isArray(value)) continue;
+              if (value.some((v) => isRecord(v) && "kind" in v)) walk(value);
+              else for (const v of value) if (isRecord(v) && Array.isArray(v.branch)) walk(v.branch);
+            }
+          }
+        };
+        walk(page.commands);
+        if (found) out.push({ mapId: map.id, eventName: typeof event.name === "string" ? event.name : "", texts });
+      }
+    }
+  }
   return out;
 }

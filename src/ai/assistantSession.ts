@@ -35,6 +35,7 @@ import { APPEARANCE_GENERATION_TOOL } from "@/editor/tools/characterAppearanceTo
 import { GAME_OVER_IMAGE_TOOL, OPENING_IMAGE_TOOL } from "@/editor/tools/cinematicTools";
 import { IMAGE_ASSET_TOOL } from "@/editor/tools/imageAssetTools";
 import { TITLE_ART_TOOL } from "@/editor/tools/titleArtTools";
+import { BATTLE_BACKDROP_TOOL } from "@/editor/tools/battleBackdropTools";
 import type { AppearanceGenerationHandoff } from "@/editor/characterAppearanceGeneration";
 import { EVENT_COMMAND_ASSIST_TOOL } from "@/editor/tools/eventCommandAssistTool";
 import { prepareTool, runToolAsync } from "@/editor/tools/asyncToolRunner";
@@ -5138,7 +5139,7 @@ export class AssistantSession {
         if (typeof args.theme === "string" && args.theme.trim()) turnTheme = args.theme.trim();
         this.emitToolStarted(onEvent, name, args);
         await operation.wait(this.yieldForUi(signal));
-        if (tool?.mode === "write" || name === APPEARANCE_GENERATION_TOOL || name === OPENING_IMAGE_TOOL || name === GAME_OVER_IMAGE_TOOL || name === IMAGE_ASSET_TOOL || name === TITLE_ART_TOOL) writeToolAttempts += 1;
+        if (tool?.mode === "write" || name === APPEARANCE_GENERATION_TOOL || name === OPENING_IMAGE_TOOL || name === GAME_OVER_IMAGE_TOOL || name === IMAGE_ASSET_TOOL || name === TITLE_ART_TOOL || name === BATTLE_BACKDROP_TOOL) writeToolAttempts += 1;
         // 프로토콜 보장: 이 호출에 대한 role:"tool" 응답을 반드시 남긴다. 응답 없이 라운드를 벗어나면
         // 세션의 영구 대화에 짝 없는 tool_calls 가 남아 **그 뒤 모든 턴**이 공급자 400 으로 죽는다
         // (실측 2026-08-30). 예외는 삼키지 않고 응답을 붙인 뒤 그대로 다시 던진다.
@@ -5264,6 +5265,32 @@ export class AssistantSession {
                   data: { status: "generated", kind: asset.kind, resourceId: asset.resourceId, name: asset.name, tags: asset.tags },
                 }
                 : applied;
+            }
+          } else if (name === BATTLE_BACKDROP_TOOL) {
+            const { generateBattleBackdrop } = await operation.wait(import("@/editor/battleBackdropGeneration"));
+            const art = await operation.wait(generateBattleBackdrop(this.ctx.project, args, { signal }));
+            if (!art.ok) {
+              toolResult = { ok: false, summary: art.summary, issues: [{ severity: "error", code: art.code, message: art.summary }] };
+            } else {
+              // 등록 → 연결 모두 기존 쓰기 툴로. 연결이 실패해도 그림은 남으므로 id 를 돌려준다.
+              const registered = runTool(this.ctx, "upsert_resource", {
+                resource: { id: art.resourceId, name: art.name, kind: "backdrop", dataUrl: art.dataUrl },
+              }, { dryRun: false });
+              if (!registered.ok) {
+                toolResult = registered;
+              } else {
+                const linked = art.request.target === "troop" && art.request.troopId
+                  ? runTool(this.ctx, "upsert_troop", { troop: { id: art.request.troopId, previewBackgroundResourceId: art.resourceId } }, { dryRun: false })
+                  : runTool(this.ctx, "set_map_properties", { mapId: art.request.mapId, battleBackground: art.resourceId }, { dryRun: false });
+                const failed = Object.entries(art.checks).filter(([, check]) => !check.ok).map(([key, check]) => `${key}(${check.value})`);
+                toolResult = linked.ok
+                  ? {
+                    ...linked,
+                    summary: `전투 배경 ${art.resourceId}(${art.facts.indoor ? "실내" : "야외"}·${art.facts.timeCertain ? art.facts.timeOfDay : "시간 무관"}·빛 ${art.facts.light}, ${art.colors}색)을 맵 ${art.request.mapId} 을 보고 만들어 ${art.request.target === "troop" ? `트룹 ${art.request.troopId}` : `맵 ${art.request.mapId}`}에 걸었습니다.${failed.length ? ` 기계 검사 경고: ${failed.join(", ")} — 사용자에게 그림을 보여 주고 다시 만들지 물어본다.` : ""}`,
+                    data: { status: "generated", resourceId: art.resourceId, target: art.request.target, mapId: art.request.mapId, troopId: art.request.troopId, checks: art.checks },
+                  }
+                  : { ...linked, summary: `그림 ${art.resourceId} 는 등록했지만 전투 배경 연결에 실패했습니다: ${linked.summary}` };
+              }
             }
           } else if (name === TITLE_ART_TOOL) {
             const { generateTitleArt, titleArtScreenArgs } = await operation.wait(import("@/editor/titleArtGeneration"));

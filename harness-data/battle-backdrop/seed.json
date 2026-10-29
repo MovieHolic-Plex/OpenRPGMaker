@@ -11,6 +11,6 @@
  "generator": "god-tibo-imagen POST /v1/generate/json (OPRN_HARNESS_IMAGE_URL, 기본 http://mdc-server:8091) — monster-collect-species/node/imageSource.ts 를 그대로 쓴다",
  "pilot": [
   { "run": "maou-konbini-night", "project": "../rpg-zzu-maou/dist/demos/maou-konbini.project.json", "assetsRoot": "../rpg-zzu-maou", "troop": "troop_mk_manual", "why": "새벽 2시 편의점 레온 전투에 낮 풀밭(battle-scenery-plains)이 깔린다" },
-  { "run": "maou-throne", "project": "../rpg-zzu-maou/dist/demos/maou-konbini.project.json", "assetsRoot": "../rpg-zzu-maou", "troop": "troop_mk_castle", "cell": "23,9", "window": "26x15", "why": "마왕성 옥좌의 방 결전에 동굴 배경(battle-scenery-cave)" }
+  { "run": "maou-throne", "project": "../rpg-zzu-maou/dist/demos/maou-konbini.project.json", "assetsRoot": "../rpg-zzu-maou", "troop": "troop_mk_castle", "cell": "23,6", "window": "18x12", "why": "마왕성 옥좌의 방 결전에 동굴 배경(battle-scenery-cave)" }
  ]
 }
