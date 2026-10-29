@@ -72,12 +72,16 @@ export type VnUiKey =
   | "ending.kicker.dark"
   | "ending.kicker.couple"
   | "ending.kicker.journey"
+  | "ending.kicker.solo"
   | "ending.hallOfFame"
   | "ending.continue"
   | "ending.creditsSkip"
   | "ending.creditsRead"
   | "ending.returnTitle"
-  | "ending.nextAct";
+  | "ending.nextAct"
+  | "onboard.objective"
+  | "onboard.newObjective"
+  | "onboard.controls";
 
 type Row = Readonly<Record<SupportedLocale, string>>;
 
@@ -146,12 +150,16 @@ export const VN_UI_STRINGS: Readonly<Record<VnUiKey, Row>> = {
   "ending.kicker.dark": { ko: "이야기의 끝", en: "The end of the story", ja: "物語の終わり", zh: "故事的终点" },
   "ending.kicker.couple": { ko: "두 사람의 이야기", en: "Their story", ja: "ふたりの物語", zh: "两个人的故事" },
   "ending.kicker.journey": { ko: "우리의 여정", en: "Our journey", ja: "わたしたちの旅", zh: "我们的旅程" },
+  "ending.kicker.solo": { ko: "{0}의 이야기", en: "{0}'s story", ja: "{0}の物語", zh: "{0}的故事" },
   "ending.hallOfFame": { ko: "전당 등록!", en: "Hall of Fame!", ja: "殿堂入り!", zh: "荣登殿堂!" },
   "ending.continue": { ko: "Z / Enter 계속", en: "Z / Enter  Continue", ja: "Z / Enter 次へ", zh: "Z / Enter 继续" },
-  "ending.creditsSkip": { ko: "Z / Enter 누르면 빠르게   ·   Esc 건너뛰기", en: "Hold Z / Enter  Fast   ·   Esc  Skip", ja: "Z / Enter 長押しで早送り   ·   Esc とばす", zh: "按住 Z / Enter 快进   ·   Esc 跳过" },
+  "ending.creditsSkip": { ko: "Z / Enter 빠르게 · 한 번 더 넘기기   ·   Esc 건너뛰기   ·   끝나면 타이틀로", en: "Z / Enter  Fast, again to skip   ·   Esc  Skip   ·   Title afterwards", ja: "Z / Enter 早送り・もう一度でとばす   ·   Esc とばす   ·   終わるとタイトルへ", zh: "Z / Enter 快进·再按跳过   ·   Esc 跳过   ·   结束后回到标题" },
   "ending.creditsRead": { ko: "PgUp/PgDn 읽기   ·   Z / Enter 마침", en: "PgUp/PgDn  Read   ·   Z / Enter  Finish", ja: "PgUp/PgDn 読む   ·   Z / Enter 終わる", zh: "PgUp/PgDn 阅读   ·   Z / Enter 结束" },
   "ending.returnTitle": { ko: "타이틀로 돌아가기", en: "Return to title", ja: "タイトルへ戻る", zh: "返回标题" },
   "ending.nextAct": { ko: "다음 막으로", en: "On to the next act", ja: "次の幕へ", zh: "进入下一幕" },
+  "onboard.objective": { ko: "현재 목표", en: "Objective", ja: "現在の目標", zh: "当前目标" },
+  "onboard.newObjective": { ko: "새 목표", en: "New objective", ja: "新しい目標", zh: "新目标" },
+  "onboard.controls": { ko: "방향키 이동 · Z 조사 · Esc 메뉴", en: "Arrows  Move · Z  Examine · Esc  Menu", ja: "方向キー 移動 · Z 調べる · Esc メニュー", zh: "方向键 移动 · Z 调查 · Esc 菜单" },
 };
 
 export function vnUiText(language: { readonly language: DialogueUiLanguage } | undefined, key: VnUiKey, ...args: readonly (string | number)[]): string {

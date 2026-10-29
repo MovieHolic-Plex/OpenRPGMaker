@@ -1,3 +1,4 @@
+import { currentObjectiveText } from "@/player/zoneFeedback";
 import { dialogueUiText } from "@/player/dialogueUiStrings";
 import { resolveDialogueSystem, type AuthoredDialogueSystem } from "@/project/dialogueSystem";
 import { usesMonsterParty } from "@/player/playerMonsterPartyModel";
@@ -259,14 +260,14 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
       ],
     }),
     ...(landingOnly
-      ? [snapshot.relationship
+      ? [withObjectiveCard(options.session, snapshot.relationship
         ? renderRelationshipOverview(options.project, options.session, snapshot)
         : snapshot.story
           ? renderStoryOverview(options.project, options.session, snapshot)
         : skin.landing === "hub"
           ? renderPartyStrip(options.project, snapshot)
           // 사이드 시트는 140px 폭에 4행이라 얼굴을 22px 로 줄인다(파티 퍼스트는 30px).
-          : renderPartyOverview(options.project, snapshot, skin.landing === "sheet" ? 22 : 30, skin.partyArt === "character" ? options.session : undefined, skin.partyStats === true)]
+          : renderPartyOverview(options.project, snapshot, skin.landing === "sheet" ? 22 : 30, skin.partyArt === "character" ? options.session : undefined, skin.partyStats === true))]
       : [detailPanel]),
     ...(showParty ? [renderPartyPanel(options.project, snapshot)] : []),
     renderFooter(
@@ -581,6 +582,26 @@ function renderPartyCharacter(project: PlayerStatusMenuOptions["project"], sessi
   const characterIndex = override !== undefined ? sprite.characterIndex : requestedId === sprite.resourceId ? effective?.characterIndex ?? 0 : 0;
   applyCharsetFrameCrop(node, url, { characterIndex, direction: "down", pattern: 1 }, 1);
   return node;
+}
+
+/**
+ * 메뉴 첫 화면 개요 밑에 「현재 목표」를 붙인다. 한 사람뿐인 이야기·방탈출 게임은 개요가 주인공 한 줄이라
+ * 화면 대부분을 차지하는 판이 비어 미완성 상태창처럼 보였다(장부 hud #5·#15·#25·#48·#83·#90·#94·#96·#112).
+ * 목표 줄을 닫고 메뉴를 연 사람에게도 지금 할 일이 보인다. 목표가 없으면 아무것도 붙이지 않는다.
+ */
+function withObjectiveCard(session: PlayerStatusMenuOptions["session"], overview: HTMLElement): HTMLElement {
+  const objective = currentObjectiveText(session.m2Runtime?.ui);
+  if (!objective) return overview;
+  overview.append(el("section", {
+    class: "status-menu-objective-card",
+    attrs: { "aria-label": "현재 목표" },
+    dataset: { testid: "status-menu-objective" },
+    children: [
+      el("span", { class: "status-menu-objective-label", text: "현재 목표" }),
+      el("p", { class: "status-menu-objective-text", text: objective }),
+    ],
+  }));
+  return overview;
 }
 
 // ── 관계 중심(연애) 게임의 첫 화면 — 전투 수치(HP·MP·EX·직업·Lv) 없이 주인공, 오늘 남은 시간, 호감 높은 순 몇 사람 ──

@@ -12,6 +12,40 @@ import { catalogEntry, resolveObjectAlias, sharedObjectDef, sharedObjects, share
 import { rejectSettlementPropOnRoute } from "./routePropPolicy";
 import { rejectOnSceneStage } from "./sceneStageGuard";
 import { ToolError, type ToolDefinition } from "./types";
+import { roomSpecOf, type HandInteriorSpec } from "@/editor/handInterior/builder";
+
+/** 손 도트 실내 깔개·카펫 그림 칸(flat 물건 + flat 줄). */
+const flatTileCache = new WeakMap<HandInteriorSpec, Set<number>>();
+function flatTiles(spec: HandInteriorSpec): Set<number> {
+  const hit = flatTileCache.get(spec);
+  if (hit) return hit;
+  const out = new Set<number>();
+  for (const o of Object.values(spec.objects)) if (o.kind === "flat") for (const c of o.cells) out.add(c[2]);
+  for (const l of Object.values(spec.lines ?? {})) if (l.kind === "flat") for (const cells of Object.values(l.pieces)) for (const c of cells) out.add(c[2]);
+  flatTileCache.set(spec, out);
+  return out;
+}
+
+/**
+ * 손 도트 실내의 깔개(flat 물건)를 이미 깔린 깔개·카펫 줄 위에 겹쳐 찍으면 거부한다.
+ * 왜(2026-10-28 interior 장부 67~79): 할머니 집 거실 초록 카펫 줄 위에 빨간 깔개를 찍어 양탄자가 두 겹으로 보였다 — 발자국 검사는 3·4층 물체만 본다.
+ */
+function flatOverFlat(project: Project, map: GameMap, kit: StructureKitDef | undefined, pattern: StampPattern, ox: number, oy: number): string | null {
+  const name = /hand-interior:(.+)$/u.exec(kit?.id ?? "")?.[1];
+  const spec = roomSpecOf(project.tilesets[map.tilesetId]);
+  if (!name || !spec || spec.objects[name]?.kind !== "flat") return null;
+  const flats = flatTiles(spec);
+  for (let dy = 0; dy < pattern.height; dy++) for (let dx = 0; dx < pattern.width; dx++) {
+    const k = dy * pattern.width + dx;
+    if ((pattern.upper[k] ?? -1) < 0 && (pattern.lower[k] ?? -1) < 0) continue;
+    const x = ox + dx, y = oy + dy;
+    if (x < 0 || y < 0 || x >= map.width || y >= map.height) continue;
+    const i = y * map.width + x;
+    if ([map.lowerOverlayTiles?.[i], map.upperTiles[i], map.upperOverlayTiles?.[i]].some((t) => t !== undefined && t >= 0 && flats.has(t)))
+      return `「${spec.objects[name]!.ko}」(${kit!.id}) 을(를) (${ox},${oy}) 에 깔면 (${x},${y}) 칸이 이미 깔린 깔개·카펫과 겹친다 — 깔개는 겹쳐 깔지 않는다. 깔개가 없는 맨바닥을 고르거나, 그 방은 이미 깔개가 있으니 다른 가구를 놓는다.`;
+  }
+  return null;
+}
 
 type Layers = "both" | "lower" | "upper";
 type Resolved = { name: string; source: TilesetDef; pattern: StampPattern; assets: Project["assets"]["uploaded"]; defaultLayers: Layers; entrances?: StructureKitDef["parts"]; kit?: StructureKitDef };
@@ -132,6 +166,8 @@ export const SHARED_OBJECT_TOOLS: readonly ToolDefinition[] = [
         const broken = checkKitPlacement(map, mapTileset, kitDef.id, kitDef, Number(args.x), Number(args.y));
         if (broken) throw new ToolError(broken, { code: "kit-placement-rule", mapId: map.id });
       }
+      const doubled = flatOverFlat(project, map, kitDef, pattern, Number(args.x), Number(args.y));
+      if (doubled) throw new ToolError(doubled, { code: "object-overlaps-object", mapId: map.id });
       // 발자국(project/objectFootprint.ts, 2026-10-21): 소품 킷(kit: 서는 물건, 8×8 이하, 아래층 그림 없음)의 발이 벽·천장·허공·물 위거나
       // 다른 물체와 겹치면 거부하고 가까운 빈 바닥을 알려 준다. 실측: 2×4 혼천의를 서재 두 방 사이 벽·천장 위에 찍었다(objectgen VQA FAIL).
       const footprintChecked = !!kitDef && isStandingPropKit(kitDef, pattern) && layers !== "lower";

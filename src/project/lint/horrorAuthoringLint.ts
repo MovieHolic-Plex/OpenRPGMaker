@@ -17,8 +17,11 @@ export function lintHorrorAuthoring(project: Project): LintIssue[] {
         if ((globalIds.get(event.id) ?? 0) > 1) add('persistent-id', `${page.name}: 위치를 저장하는 이벤트는 프로젝트 전체에서 고유한 ID가 필요합니다.`, event.x, event.y);
       }
       if (page.interaction) {
-        if (!page.graphic.sprite || page.graphic.transparent) add('object-graphic', `${page.name}: 물체 동작은 있지만 보이는 그림이 없습니다.`, event.x, event.y);
-        if (!isPassable(project, map, event.x, event.y)) add('object-floor', `${page.name}: 물체 아래에 통행을 막는 타일이 남아 있습니다. 이벤트에 그림을 붙이고 바닥을 비워 주세요.`, event.x, event.y);
+        // 은신처는 움직이지 않는다 — 칸에 그려진 가구 타일(침대·옷장, 위층·덧층)이 곧 그림이고 그 칸이 막혀 있는 것이 맞다(2026-10-29 추격자 은신처 자동).
+        const i = event.y * map.width + event.x;
+        const tileFurniture = page.interaction.kind === 'hiding' && ((map.upperTiles?.[i] ?? -1) >= 0 || (map.upperOverlayTiles?.[i] ?? -1) >= 0);
+        if (!tileFurniture && (!page.graphic.sprite || page.graphic.transparent)) add('object-graphic', `${page.name}: 물체 동작은 있지만 보이는 그림이 없습니다.`, event.x, event.y);
+        if (!tileFurniture && !isPassable(project, map, event.x, event.y)) add('object-floor', `${page.name}: 물체 아래에 통행을 막는 타일이 남아 있습니다. 이벤트에 그림을 붙이고 바닥을 비워 주세요.`, event.x, event.y);
         if (page.movement.type !== 'fixed' || page.trigger.kind !== 'action' || page.priority !== 'same' || page.overlapForbidden === false) add('object-contract', `${page.name}: 물체는 정지·조사·주인공과 같은 높이·겹침 금지로 설정하세요.`, event.x, event.y);
         if (commands.length) add('object-commands', `${page.name}: 물체 동작이 일반 조사 명령보다 우선합니다.`, event.x, event.y);
       }

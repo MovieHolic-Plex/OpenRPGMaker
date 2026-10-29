@@ -20,6 +20,7 @@ import { characterSpriteY, footprintSpriteX, updateCharacterDepth } from "@/play
 import { UNIT_FOOTPRINT } from "@/project/footprint";
 import { abortHop, applyHopFrame, finishHop } from "@/player/characterHopRuntime";
 import type { AutonomousMover, PlaySceneContext } from "@/player/playSceneTypes";
+import { VACATED_GRACE_MS } from "@/player/playSceneTypes";
 import { showSceneEmote } from "@/player/playSceneEmotes";
 import {
   applyFacing,
@@ -618,6 +619,7 @@ function updateActiveNpcMove(target: ActiveNpcMoveTarget, deltaMs: number): void
     // 체공 중에 스프라이트가 사라졌다(맵 재렌더/이벤트 소거). 그림자만 남기면 고아가 된다.
     abortHop(scene, eventId, undefined);
   }
+  if (move.fromX !== move.toX || move.fromY !== move.toY) mover.vacated = { x: move.fromX, y: move.fromY, until: (typeof performance !== "undefined" ? performance.now() : Date.now()) + VACATED_GRACE_MS };
   mover.activeMove = null;
   mover.timer = 0;
   // 다음 칸은 다른 발로(한 칸에 패턴 두 장). 점프는 걸음 패턴을 돌리지 않았으므로 위상을 그대로 둔다.

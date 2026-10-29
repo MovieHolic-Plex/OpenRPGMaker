@@ -15,6 +15,7 @@ import templateData from "./mapTemplates.json";
 import { composeTown, START_ROUTES, START_TOWNS, TOWN_SKETCHES, VOLCANO_ROUTE_KEYS, VOLCANO_TOWN_KEYS, volcanoRouteSketch, volcanoTownSketch, homeTownSketch, type HomeTownLayout, type StartTheme } from "./townLayouts";
 import { autotileGroupsForTileset } from "@/project/defaults/autotileGroups";
 import { shapeAllAutotileGroupsAround } from "@/project/defaults/autotileEngine";
+import { roughenTallGrass } from "./tallGrassShape";
 import { expeditionEnemyActions } from "./enemyActions";
 import { repairExpeditionShopPrices } from './shopPrices';
 import { monsterCenterCommands } from "@/project/monsterCenterRecipe";
@@ -199,6 +200,8 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
       map.lowerTiles.forEach((tile, i) => { if (sand.has(tile)) { map.lowerTiles[i] = clearing.variantMap["255"]!; changed.push({ x: i % map.width, y: Math.floor(i / map.width) }); } });
       shapeAllAutotileGroupsAround(map, [clearing], changed);
     }
+    // 길 맵의 키큰 풀숲은 템플릿의 자로 그은 네모였다(2026-10-28 장부 125 「풀이 경직된 격자」) — 가장자리를 깎고 내밀어 둥근 덩이로.
+    if (role === "field") roughenTallGrass(map, t.names, map.id);
     project.maps[map.id] = map;
     sources.set(map.id, t);
     reserved.set(map.id, new Set());

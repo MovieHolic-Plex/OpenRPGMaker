@@ -1,3 +1,4 @@
+import { pickBlueprintTitleArt } from "@/project/blueprintAssembly";
 import { normalizeCameraZoom } from "@/project/cameraZoom";
 import { mapCharacterSizeFactor } from "@/project/characterScale";
 import { CHASER_SPAWN_MIN_STEPS, chaserThreatLine, chaserThreatsAt } from "@/project/chaserSpawnSafety";
@@ -2732,7 +2733,15 @@ const removeMapTool: ToolDefinition = {
     const plan = planMapDeletion(draft, map.id);
     if (!plan.ok) throw new ToolError(plan.block.message, { code: plan.block.code });
     const name = map.name;
+    const titleBefore = draft.system.titleScreen?.backgroundResourceId ?? draft.system.titleResourceId;
     applyMapDeletion(draft, map.id);
+    // 지운 맵을 가리키던 맵 화면 타이틀은 비워졌다 — 청사진이 있으면 다음 규칙(맞는 그림, 없으면 남은 시작 맵 화면)으로 다시 고른다.
+    let titleNote = "";
+    if (titleBefore === `map-view:${map.id}` && draft.system.titleScreen && !draft.system.titleScreen.backgroundResourceId) {
+      const pick = pickBlueprintTitleArt(draft);
+      if (pick) draft.system.titleScreen = { ...draft.system.titleScreen, backgroundResourceId: pick.id };
+      titleNote = ` · 타이틀 배경이 이 맵 화면이라 ${pick ? `${pick.id}(${pick.name}) 로 다시 골랐다` : "비웠다(기본 그림)"}`;
+    }
     if (wasStartMap) {
       const nextStart = draft.maps[draft.startMapId];
       if (nextStart && (!inMapBounds(nextStart, draft.startPos.x, draft.startPos.y) || !isPassable(draft, nextStart, draft.startPos.x, draft.startPos.y))) {
@@ -2756,7 +2765,7 @@ const removeMapTool: ToolDefinition = {
       impact.questCount > 0 ? `퀘스트 ${impact.questCount}개` : null,
     ].filter(Boolean);
     return {
-      summary: `맵 '${name}'(${map.id}) 삭제됨${cleaned.length > 0 ? ` — 함께 정리: ${cleaned.join(", ")}` : ""}`,
+      summary: `맵 '${name}'(${map.id}) 삭제됨${cleaned.length > 0 ? ` — 함께 정리: ${cleaned.join(", ")}` : ""}${titleNote}`,
       data: { mapId: map.id, impact },
     };
   },

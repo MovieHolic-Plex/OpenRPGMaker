@@ -196,10 +196,12 @@ export function checkRomance(project: Project, briefText = briefTextOf(project))
   // 1c) 오프닝 — 비었거나 제목 카드(「— 새 게임 —」 씨앗·제목만 적은 글)뿐이면 새 게임을 눌러도 검은 화면에 글자만 뜬다. 사용자가 끈 오프닝(enabled:false)은 짚지 않는다.
   const opening = project.system?.opening;
   const openingEmpty = opening?.enabled !== false && (opening?.scenes ?? []).length === 0;
+  // 어느 장면이 걸렸는지 — 글·그림 장면을 쓴 모델이 무엇을 바꿔야 하는지 알게(2026-10-29 standin romance: 글 둘·그림 하나).
+  const stillSlides = (opening?.scenes ?? []).filter((scene) => scene.kind === "image").map((scene) => String(scene.id));
   if (openingEmpty || openingIsOnlyTitleCard(opening, project.system?.titleScreen?.title ?? project.meta?.title)) {
     findings.push({
       severity: "warning", code: "romance-opening-title-card",
-      message: `오프닝이 ${openingEmpty ? "비어 있습니다" : "제목 카드·단문 카드 한 장뿐이거나 정지 그림 슬라이드뿐입니다"} — 새 게임을 누르면 바로 걷거나 검은 화면에 제목만 뜹니다. plan_opening/set_opening 및 #2852 도트 애니메틱 도구(create_opening_animatic_shot 384×216 → set_opening_pixel_grid 384×216 → place_opening_background → place_opening_charset_actor 번들 24×32 캐릭터 칩 → set_opening_caption → set_opening → preview_opening_animatic → review_opening)로 이 게임의 도입을 여러 장면(무대·주인공·첫 만남의 계기)으로 써 넣으세요.`,
+      message: `오프닝이 ${openingEmpty ? "비어 있습니다" : stillSlides.length ? `정지 그림 슬라이드(${stillSlides.join("·")})와 글 카드뿐입니다 — 도트 애니메틱 장면이 하나도 없습니다` : "제목 카드·단문 카드 한 장뿐입니다"} — 새 게임을 누르면 바로 걷거나 검은 화면에 제목만 뜹니다. plan_opening/set_opening 및 #2852 도트 애니메틱 도구(create_opening_animatic_shot 384×216 → set_opening_pixel_grid 384×216 → place_opening_background → place_opening_charset_actor 번들 24×32 캐릭터 칩 → set_opening_caption → set_opening → preview_opening_animatic → review_opening)로 이 게임의 도입을 여러 장면(무대·주인공·첫 만남의 계기)으로 써 넣으세요.`,
     });
   }
 

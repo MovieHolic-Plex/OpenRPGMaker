@@ -72,6 +72,9 @@ export function recoverAll(session: PlaySessionLike, actorId: ActorId | undefine
     vitals.hp = vitals.maxHp;
     vitals.mp = vitals.maxMp;
   }
+  // 전원 회복은 전투 뒤에도 남는 상태(독·공격 하락…)까지 푼다 — RPG 만들기의 「완전 회복」과 같다.
+  // 왜(2026-10-29 vm3 flash jrpg 판정): 동굴 잡몹에게 걸린 독이 회복의 샘을 거쳐도 남아 보스전 내내 HP 를 깎았다.
+  if (session.actorStateIds) for (const id of actorIds) delete session.actorStateIds[id];
   if (actorId || !project) return;
   for (const instanceId of session.monsterParty ?? []) {
     const instance = session.monsterInstances?.[instanceId];

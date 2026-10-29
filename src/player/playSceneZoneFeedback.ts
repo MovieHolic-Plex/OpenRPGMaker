@@ -3,7 +3,14 @@ import { store } from "@/project/store";
 import { stampEmeraldSurface } from "@/player/emeraldSurfaces";
 import type { RuntimeEventView } from "@/project/runtimeEventState"
 import type { PlaySceneContext } from "@/player/playSceneTypes";
-import { footprintContains } from "@/project/footprint";
+import { footprintBounds, footprintContains } from "@/project/footprint";
+import { objectClusterAt } from "@/project/objectFootprint";
+import { promptTargetName } from "@/player/objectiveTarget";
+import { mapTileSize } from "@/project/tileGeometry";
+import { runtimePixelDensity } from "@/player/runtimeViewScale";
+import type { GameMap } from "@/project/types";
+import { createObjectiveCard, destroyObjectiveCard, syncObjectiveCard, type ObjectiveCard } from "@/player/objectiveCard";
+import { chooseObjectivePlacement, choosePromptPlacement, type ObjectivePlacement, type PlacementRect } from "@/player/objectivePlacement";
 import {
   createZoneFeedbackModel,
   interactionPromptLabel,
@@ -25,6 +32,8 @@ const SUPPRESSING_TEST_IDS = [
   "inn-scene",
   "chest-scene",
   "ending-screen",
+  // 숫자 입력창 뒤로 목표 안내가 비쳐 두 창이 겹쳐 보였다(장부 hud #18·#37).
+  "runtime-input-number",
 ] as const;
 
 // ── 씬 로컬 농사 안내 채널 ──
@@ -56,6 +65,11 @@ export type ZoneFeedbackScene = {
   /** 이벤트(컷신·대사 사이 걷기)가 도는 중 — 조작할 수 없으니 「Z 조사」 안내를 띄우지 않는다. */
   running?: boolean;
   game: { registry: { get: (key: string) => unknown } };
+  /** 목표 안내창 자리 고르기에 쓰는 화면 기하(PlayScene 이 가진 것). 없으면 CSS 기본 자리(오른쪽 위). */
+  cameras?: { main: { worldView: { x: number; y: number }; zoom: number } };
+  player?: { getBounds(): PlacementRect } | null;
+  eventSprites?: ReadonlyMap<string, { visible: boolean; alpha: number; getBounds(): PlacementRect }>;
+  map?: GameMap;
 };
 
 type FeedbackElements = {
@@ -80,7 +94,15 @@ export type PlaySceneZoneFeedback = {
   dom: ZoneFeedbackDom | null;
   /** 정면 조사 안내 기억. 칸·방향·세션이 같으면 PROMPT_REFRESH_MS 동안 다시 찾지 않는다. */
   prompt?: { readonly x: number; readonly y: number; readonly facing: string; readonly session: PlaySession; readonly atMs: number; readonly value: string | null };
+  /** 목표 안내창 자리. OBJECTIVE_PLACE_MS 마다 다시 고른다. */
+  objectivePlace?: { atMs: number; text: string; placement: ObjectivePlacement | null };
+  /** 상호작용 안내 자리. 같은 주기로 다시 고른다. */
+  promptPlace?: { atMs: number; text: string; x: number; y: number };
+  /** 첫 조작·목표 변경 때 가운데에 잠깐 뜨는 목표 카드(objectiveCard.ts). */
+  card?: ObjectiveCard | null;
 };
+
+const OBJECTIVE_PLACE_MS = 300;
 
 /**
  * 정면 조사 안내를 다시 계산하는 주기. 예전에는 매 프레임 맵의 모든 조사 이벤트 뷰(페이지 조건
@@ -111,6 +133,7 @@ export function syncPlaySceneZoneFeedback(
   const host = dialogueHost(scene);
   if (host !== feedback.host) {
     feedback.dom?.destroy();
+    destroyObjectiveCard(feedback.card); feedback.card = null;
     feedback.host = host;
     feedback.dom = host ? createZoneFeedbackDom(host) : null;
   }
@@ -133,6 +156,191 @@ export function syncPlaySceneZoneFeedback(
   });
   feedback.model = update.model;
   feedback.dom?.render(update.view, update.effects);
+  // 안내를 먼저 놓는다 — 목표 창은 안내(다른 HUD)를 피해 자리를 고른다.
+  if (host && feedback.dom && update.view.prompt && !update.view.suppressed) placePrompt(scene, feedback, host, update.view.prompt);
+  if (host && feedback.dom && update.view.objective && !update.view.suppressed) placeObjective(scene, feedback, host, update.view.objective);
+  if (host) {
+    // 로딩 막이 걷히고 이벤트(도입 연출)가 끝나 실제로 움직일 수 있는 첫 순간부터 센다.
+    const controllable = !suppressed && !scene.running && !document.querySelector("[data-testid='play-loading-overlay']");
+    // 벽시계로 센다 — 게임 시간(elapsedMs)은 느린 기계에서 프레임 델타 상한 때문에 늘어져 2.8초 카드가 6초 떠 있었다.
+    syncObjectiveCard(feedback.card ??= createObjectiveCard(), host, scene.session, update.view.objective, controllable, performance.now());
+  }
+}
+
+function placePrompt(scene: ZoneFeedbackScene, feedback: PlaySceneZoneFeedback, host: HTMLElement, text: string): void {
+  const element = host.querySelector<HTMLElement>(":scope > .zone-feedback > .zone-feedback-prompt");
+  if (!element || element.hidden) return;
+  const memo = feedback.promptPlace;
+  if (memo && memo.text === text && feedback.elapsedMs - memo.atMs < OBJECTIVE_PLACE_MS) return;
+  const geometry = sceneGeometry(scene, host);
+  if (!geometry) return;
+  const box = { width: element.offsetWidth, height: element.offsetHeight };
+  if (box.width <= 0 || box.height <= 0) return;
+  const stage = { width: host.clientWidth, height: host.clientHeight };
+  const uiScale = Number.parseFloat(getComputedStyle(host).getPropertyValue("--play-ui-scale")) || 1;
+  const placement = choosePromptPlacement({
+    stage, box, margin: Math.round(4 * uiScale),
+    player: geometry.player, actors: geometry.actors, map: geometry.map,
+    // 자기 자신은 뺀다(목표 창은 선택자에서 이미 빠진다 — 목표 창이 안내를 피한다).
+    hud: hudRects(host, element, stage),
+    current: memo?.text === text ? { x: memo.x, y: memo.y } : null,
+  });
+  feedback.promptPlace = { atMs: feedback.elapsedMs, text, x: placement.x, y: placement.y };
+  Object.assign(element.style, { left: `${placement.x}px`, top: `${placement.y}px`, bottom: "auto", right: "auto", transform: "none" });
+}
+
+/**
+ * 목표 안내창을 주인공·인물·다른 HUD 를 덮지 않는 자리로 옮긴다(objectivePlacement.ts).
+ * 맵이 화면보다 작아 둘레가 비면 그 여백으로 간다. 300ms 마다, 또는 글이 바뀔 때만 잰다.
+ */
+function placeObjective(scene: ZoneFeedbackScene, feedback: PlaySceneZoneFeedback, host: HTMLElement, text: string): void {
+  const element = host.querySelector<HTMLElement>(":scope > .zone-feedback > .zone-feedback-objective");
+  if (!element || element.hidden) return;
+  const memo = feedback.objectivePlace;
+  if (memo && memo.text === text && feedback.elapsedMs - memo.atMs < OBJECTIVE_PLACE_MS) return;
+  const geometry = sceneGeometry(scene, host);
+  if (!geometry) return;
+  // 자연 크기(CSS 최대 폭으로 줄바꿈한 창)를 잰다 — 좁힌 폭은 아래에서 다시 건다.
+  // 왼쪽 끝에 놓고 잰다 — 지난 자리(left)에 둔 채 재면 남은 폭만큼 줄어든 크기를 자연 크기로 잘못 읽는다.
+  Object.assign(element.style, { width: "", maxWidth: "", left: "0px", right: "auto" });
+  const box = { width: element.offsetWidth, height: element.offsetHeight };
+  if (box.width <= 0 || box.height <= 0) return;
+  const stage = { width: host.clientWidth, height: host.clientHeight };
+  const uiScale = Number.parseFloat(getComputedStyle(host).getPropertyValue("--play-ui-scale")) || 1;
+  const margin = Math.round(4 * uiScale);
+  // 좁힌 폭의 실제 높이를 잰다(글자 크기는 그대로, 줄만 는다). 잰 뒤 자연 폭으로 되돌린다.
+  const heights = new Map<number, number>();
+  const measure = (width: number): number => {
+    const cached = heights.get(width);
+    if (cached !== undefined) return cached;
+    element.style.width = `${width}px`;
+    element.style.maxWidth = "none";
+    const height = element.offsetHeight;
+    heights.set(width, height);
+    return height;
+  };
+  const style = getComputedStyle(element);
+  const fontPx = Number.parseFloat(style.fontSize) || 10;
+  const padX = (Number.parseFloat(style.paddingLeft) || 0) + (Number.parseFloat(style.paddingRight) || 0);
+  const placement = chooseObjectivePlacement({
+    stage,
+    box,
+    maxWidth: stage.width - 2 * margin,
+    minWidth: Math.min(box.width, Math.max(Math.round(stage.width * 0.22), objectiveMinWidth(box.width, fontPx, padX))),
+    // 여백 띠도 같은 최소 폭 — 한 줄 4글자까지 좁히던 때는 방 옆 여백에 4~5줄로 접혀 「한 어절씩 끊긴 안내」가 됐다
+    // (2026-10-29 VQA vm 9·17, terra 178, 감독 지적: 여백 무늬를 이은 뒤에도 2줄 → 4줄). 들어가지 않는 띠는 후보가 안 되고, 창은 방 가장자리를 조금 덮는다.
+    minBandWidth: objectiveMinWidth(box.width, fontPx, padX),
+    measure,
+    margin,
+    player: geometry.player,
+    actors: geometry.actors,
+    landmarks: geometry.landmarks,
+    hud: hudRects(host, element, stage),
+    map: geometry.map,
+    current: memo?.text === text ? memo.placement : null,
+  });
+  element.style.width = ""; element.style.maxWidth = "";
+  feedback.objectivePlace = { atMs: feedback.elapsedMs, text, placement };
+  element.dataset.placed = "true";
+  Object.assign(element.style, {
+    left: `${placement.x}px`,
+    top: `${placement.y}px`,
+    right: "auto",
+    bottom: "auto",
+    width: placement.width !== box.width ? `${placement.width}px` : "",
+    maxWidth: placement.width !== box.width ? "none" : "",
+  });
+}
+
+/** 목표 창 최소 폭: 한 줄 10글자 또는 자연 폭의 70% 중 큰 쪽(자연 폭보다 넓히지는 않는다). 두 줄 문장이 세 줄 넘게 접히지 않는다. */
+function objectiveMinWidth(naturalWidth: number, fontPx: number, padX: number): number {
+  return Math.min(naturalWidth, Math.max(Math.round(fontPx * 10 + padX), Math.round(naturalWidth * 0.7)));
+}
+
+type SceneGeometry = { readonly player: PlacementRect | null; readonly actors: PlacementRect[]; readonly landmarks: PlacementRect[]; readonly map: PlacementRect | null };
+
+/**
+ * 맵의 입구(다른 맵으로 옮기는 이벤트 칸)와 그 위 건물 얼굴(좌우 한 칸·위로 세 칸 — 간판·지붕 표지) 칸 사각형. 맵마다 한 번 잰다.
+ * 왜(2026-10-29 standin monster 새싹마을): 맵 위 끝에 붙은 몬스터 센터 앞에서 카메라가 더 올라가지 못해, 오른쪽 위 목표 창이
+ * 센터의 「+」 지붕 간판을 덮었다 — 마을에서 회복 장소를 알아보는 표지다.
+ */
+const entranceCache = new WeakMap<GameMap, { x: number; y: number; width: number; height: number }[]>();
+function entranceCells(map: GameMap): { x: number; y: number; width: number; height: number }[] {
+  const cached = entranceCache.get(map);
+  if (cached) return cached;
+  const out: { x: number; y: number; width: number; height: number }[] = [];
+  const leads = (node: unknown): boolean => Array.isArray(node) ? node.some(leads)
+    : !!node && typeof node === "object" && (((node as { kind?: unknown; mapId?: unknown }).kind === "transfer" && typeof (node as { mapId?: unknown }).mapId === "string" && (node as { mapId: string }).mapId !== map.id)
+      || Object.values(node as object).some((value) => value && typeof value === "object" && leads(value)));
+  for (const event of map.events ?? []) {
+    if (!leads(event.pages)) continue;
+    const top = Math.max(0, event.y - 3), left = Math.max(0, event.x - 1);
+    out.push({ x: left, y: top, width: Math.min(map.width, event.x + 2) - left, height: event.y + 1 - top });
+  }
+  entranceCache.set(map, out);
+  return out;
+}
+
+function sceneGeometry(scene: ZoneFeedbackScene, host: HTMLElement): SceneGeometry | null {
+  const camera = scene.cameras?.main;
+  if (!camera || !(camera.zoom > 0)) return null;
+  // 손 슬롯 칩과 같은 환산: worldView 원점 기준, 캔버스 px 를 픽셀 밀도로 나눠 논리 px.
+  const scale = camera.zoom / runtimePixelDensity(scene);
+  const toScreen = (rect: PlacementRect): PlacementRect => ({
+    x: (rect.x - camera.worldView.x) * scale,
+    y: (rect.y - camera.worldView.y) * scale,
+    width: rect.width * scale,
+    height: rect.height * scale,
+  });
+  const player = scene.player ? toScreen(scene.player.getBounds()) : null;
+  const actors: PlacementRect[] = [];
+  const width = host.clientWidth, height = host.clientHeight;
+  for (const sprite of scene.eventSprites?.values() ?? []) {
+    if (!sprite.visible || sprite.alpha <= 0.05) continue;
+    const rect = toScreen(sprite.getBounds());
+    if (rect.x + rect.width < 0 || rect.y + rect.height < 0 || rect.x > width || rect.y > height) continue;
+    actors.push(rect);
+  }
+  const tile = scene.map ? mapTileSize(scene.map) : 0;
+  // 조사 대상(결정 키 이벤트)은 그림이 없는 투명 이벤트여도 피한다 — 방탈출의 책장·금고·벽시계가 대개 그렇다.
+  if (tile > 0) {
+    for (const view of scene.activeRuntimeEvents("action")) {
+      const b = footprintBounds(view.x, view.y, view.footprint);
+      const rect = toScreen({ x: b.left * tile, y: b.top * tile, width: (b.right - b.left + 1) * tile, height: (b.bottom - b.top + 1) * tile });
+      if (rect.x + rect.width < 0 || rect.y + rect.height < 0 || rect.x > width || rect.y > height) continue;
+      actors.push(rect);
+    }
+  }
+  const landmarks: PlacementRect[] = [];
+  if (tile > 0 && scene.map) {
+    for (const cell of entranceCells(scene.map)) {
+      const rect = toScreen({ x: cell.x * tile, y: cell.y * tile, width: cell.width * tile, height: cell.height * tile });
+      if (rect.x + rect.width < 0 || rect.y + rect.height < 0 || rect.x > width || rect.y > height) continue;
+      landmarks.push(rect);
+    }
+  }
+  const map = scene.map ? toScreen({ x: 0, y: 0, width: scene.map.width * tile, height: scene.map.height * tile }) : null;
+  return { player, actors, landmarks, map };
+}
+
+/** 목표 창이 피할 다른 화면 고정 UI(필드 HUD 위젯·지역 알림·조작 안내·미니맵 등). */
+const HUD_SELECTOR = [
+  ".field-hud > .hud-widget:not([hidden])",
+  ".zone-feedback > :not(.zone-feedback-objective):not([hidden])",
+  ".action-hud", ".hand-slot", ".runtime-time-hud", "[data-testid='minimap-root']",
+].join(",");
+
+function hudRects(host: HTMLElement, objective: HTMLElement, stage: { width: number; height: number }): PlacementRect[] {
+  const hostRect = host.getBoundingClientRect();
+  const scale = hostRect.width > 0 && stage.width > 0 ? hostRect.width / stage.width : 1;
+  const rects: PlacementRect[] = [];
+  for (const node of host.querySelectorAll<HTMLElement>(HUD_SELECTOR)) {
+    if (node === objective || node.offsetParent === null) continue;
+    const r = node.getBoundingClientRect();
+    if (r.width <= 0 || r.height <= 0) continue;
+    rects.push({ x: (r.x - hostRect.x) / scale, y: (r.y - hostRect.y) / scale, width: r.width / scale, height: r.height / scale });
+  }
+  return rects;
 }
 
 function syncSessionSource(session: PlaySession, feedback: PlaySceneZoneFeedback): void {
@@ -150,6 +358,7 @@ function syncSessionSource(session: PlaySession, feedback: PlaySceneZoneFeedback
 
 export function destroyPlaySceneZoneFeedback(feedback: PlaySceneZoneFeedback): void {
   feedback.dom?.destroy();
+  destroyObjectiveCard(feedback.card); feedback.card = null;
   feedback.dom = null;
   feedback.host = null;
 }
@@ -195,7 +404,7 @@ function renderFeedback(
 ): void {
   setLine(elements.banner, view.banner);
   setLine(elements.toast, view.toast);
-  setLine(elements.objective, view.objective);
+  setPromptLine(elements.objective, view.objective);
   setPromptLine(elements.prompt, view.prompt);
   const hasContent = Boolean(view.banner || view.toast || view.objective || view.prompt);
   if (view.suppressed || !hasContent) {
@@ -209,6 +418,9 @@ function renderFeedback(
 }
 
 /**
+ * 목표 줄도 같은 방식으로 다시 또렷해진다 — 글이 바뀔 때 또렷하고 몇 초 뒤 반투명으로 가라앉는다(zone-objective-settle).
+ * 작은 방을 화면에 채우면(playSceneCamera smallMapFillZoom) 오른쪽 위 목표 창이 책장·벽을 늘 덮었다(2026-10-28 적대 VQA).
+ *
  * 「Z 조사」 같은 상호작용 안내는 처음 보일 때만 또렷하고 몇 초 뒤 옅어진다(zoneFeedback.css 의 zone-prompt-settle).
  * 같은 이벤트 앞에 서 있는 내내 화면 아래에 남아 시각 소음이 됐다(폴른 스타 가혹 검수 r3~r5). 글이 바뀌면 다시 또렷해진다.
  */
@@ -255,10 +467,26 @@ function facingPrompt(scene: ZoneFeedbackScene): string | null {
   const targetX = scene.tileX + delta.x;
   const targetY = scene.tileY + delta.y;
   const events = scene.activeRuntimeEvents("action");
-  const target = events.find((event) => footprintContains(event.x, event.y, event.footprint, targetX, targetY))
+  const faced = events.find((event) => footprintContains(event.x, event.y, event.footprint, targetX, targetY))
     ?? events.find((event) => footprintContains(event.x, event.y, event.footprint, scene.tileX, scene.tileY));
+  // 은신처는 가구 타일 위의 투명 이벤트라 들어가기 전엔 안 보인다 — 바로 곁(상하좌우)에 서면 등을 대고 있어도 「숨기」 를 띄운다(2026-10-29).
+  const target = promptForEvent(faced) ? faced
+    : events.find((event) => event.page?.interaction?.kind === "hiding" && Math.abs(event.x - scene.tileX) + Math.abs(event.y - scene.tileY) === 1) ?? faced;
   const label = promptForEvent(target);
-  return rememberPrompt(scene.session, label && target ? `${(scene.session as { currentMapId?: string }).currentMapId ?? ""}:${target.event.id}:${target.pageId ?? ""}:${label}` : null) ? label : null;
+  return rememberPrompt(scene.session, label && target ? `${(scene.session as { currentMapId?: string }).currentMapId ?? ""}:${target.event.id}:${target.pageId ?? ""}:${label}` : null) ? namedPrompt(scene, target, label) : null;
+}
+
+/**
+ * 「Z 조사」 → 「Z 조사 · 책상의 메모」 — 무엇을 조사하는지(이벤트 이름, 문이면 가는 맵, 없으면 그 칸 가구 이름표)를 붙인다.
+ * 2026-10-29 VM 측정 판 5개 판정자: 「메모·시계·금고가 어느 오브젝트인지 화면에서 구분이 안 된다」 — 투명 조사 칸 앞에서 무엇인지 알려 준다.
+ */
+function namedPrompt(scene: ZoneFeedbackScene, target: RuntimeEventView | undefined, label: string | null): string | null {
+  if (!label || !target || label.includes(" · ")) return label;
+  const project = store.getCurrent();
+  const map = scene.map;
+  const tile = map ? objectClusterAt(project, map, target.x, target.y)?.label : undefined;
+  const name = promptTargetName(project, target, label, tile);
+  return name ? `${label} · ${name}` : label;
 }
 
 /**

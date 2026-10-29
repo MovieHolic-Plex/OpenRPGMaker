@@ -6,13 +6,14 @@
 // 이 파일은 그 도구들을 순서대로 부르고, 이벤트가 길을 막지 않는 칸(지워도 닿는 칸 수가 하나만 주는 칸)만 고른다.
 import { isPassable } from "@/project/collision";
 import type { GameMap, Project } from "@/project/types";
+import { FITTED_TROOP_PREFIX, fitTroopCopy } from "./bossThreatScaling";
 import { applyVariantLook, VARIANT_LOOKS, type VariantLook } from "./mapVariantLook";
 import { requireMap } from "./mapHelpers";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 
 export type Cell = { readonly x: number; readonly y: number };
 type Role = "inn" | "shop" | "elder";
-export type Room = { readonly id: string; readonly kind: string; readonly from: string | null; readonly spots: Cell[] };
+export type Room = { readonly id: string; readonly kind: string; readonly from: string | null; readonly spots: Cell[]; readonly chestSpots?: Cell[] };
 
 // 하위 도구의 data 는 unknown 이다 — 쓰는 필드만 좁혀 읽는다.
 type Rec = Record<string, unknown>;
@@ -28,7 +29,8 @@ export function asCell(v: unknown): Cell | undefined {
 export function asRoom(v: unknown): Room | undefined {
   const id = text(v, "id"), kind = text(v, "kind");
   if (!id || !kind) return undefined;
-  return { id, kind, from: text(v, "from") ?? null, spots: list(v, "spots").map(asCell).filter((c): c is Cell => !!c) };
+  const chestSpots = list(v, "chestSpots").map(asCell).filter((c): c is Cell => !!c);
+  return { id, kind, from: text(v, "from") ?? null, spots: list(v, "spots").map(asCell).filter((c): c is Cell => !!c), ...(chestSpots.length ? { chestSpots } : {}) };
 }
 const isLook = (v: unknown): v is VariantLook => typeof v === "string" && (VARIANT_LOOKS as readonly string[]).includes(v);
 
@@ -194,7 +196,8 @@ function storyTroops(project: Project): Set<string> {
 }
 
 export function pickTroops(project: Project, given: unknown): { field: string[]; midBoss?: string; boss?: string } {
-  const all = project.database.troops.map((t) => t.id).sort((a, b) => troopStrength(project, a) - troopStrength(project, b));
+  // 맞춘 사본(troop_fit_*)은 고를 거리가 아니다 — 원본을 고르고 pickFittedTroops 가 다시 맞춘다.
+  const all = project.database.troops.map((t) => t.id).filter((id) => !id.startsWith(FITTED_TROOP_PREFIX)).sort((a, b) => troopStrength(project, a) - troopStrength(project, b));
   const known = (id: unknown): id is string => typeof id === "string" && all.includes(id);
   const givenField = list(given, "field").filter(known);
   const givenMid = text(given, "midBoss"), givenBoss = text(given, "boss");
@@ -213,6 +216,22 @@ export function pickTroops(project: Project, given: unknown): { field: string[];
     field,
     midBoss: known(givenMid) ? givenMid : strong[Math.floor(strong.length * 0.4)] ?? pool[pool.length - 1],
     boss: known(givenBoss) ? givenBoss : strong[strong.length - 1] ?? pool[pool.length - 1],
+  };
+}
+
+/**
+ * pickTroops 로 고른 그룹을 시작 파티에 맞춘 사본으로 바꾼다(준 그룹은 그대로) — 일반 JRPG 경로(가도·던전·장)가 쓰는 값.
+ * 원본 DB 적은 건드리지 않는다. 시작 파티가 없으면 고른 그대로.
+ */
+export function pickFittedTroops(project: Project, given: unknown): { field: string[]; midBoss?: string; boss?: string } {
+  const picked = pickTroops(project, given);
+  const givenField = list(given, "field").length > 0;
+  const givenMid = picked.midBoss !== undefined && text(given, "midBoss") === picked.midBoss;
+  const givenBoss = picked.boss !== undefined && text(given, "boss") === picked.boss;
+  return {
+    field: givenField ? picked.field : [...new Set(picked.field.map((id) => fitTroopCopy(project, id, "field") ?? id))],
+    midBoss: givenMid ? picked.midBoss : fitTroopCopy(project, picked.midBoss, "midBoss"),
+    boss: givenBoss ? picked.boss : fitTroopCopy(project, picked.boss, "boss"),
   };
 }
 
@@ -286,7 +305,7 @@ const expandJrpgCampaignVolume: ToolDefinition = {
     const routeNameArg = text(args, "routeName")?.trim();
     const dungeonNameArg = text(args, "dungeonName")?.trim();
     const dungeonTypeArg = text(args, "dungeonType")?.trim();
-    const troops = pickTroops(draft, args.troops);
+    const troops = pickFittedTroops(draft, args.troops);
     const warnings: string[] = [];
     const lines: string[] = [];
     const newMaps: string[] = [];

@@ -3,12 +3,17 @@
 // 「비평 major 0 + 기계 검사 통과」가 아닌 장소를 남긴 채 「다 됐다」고 말하지 못하게 한다.
 import { flattenWrapperTool } from "./flatWrapper";
 import type { PiToolShape, PiToolExecResult } from "@/ai/piAgent/toolAdapter";
-import { shipBlockers } from "./shipChecks";
+import { shipBlockers, wantsWholeGame } from "./shipChecks";
+import { applyBlueprintAssembly, isPlaceholderTitle } from "@/project/blueprintAssembly";
+import { applyBlueprintOpening } from "@/editor/tools/blueprintOpening";
+import { WRITE_BLUEPRINT_SCHEMA, blueprintDesignerFromEnv, blueprintProgressNote, designBlueprint, parseBlueprintArgs, walkBlueprint } from "./blueprint";
+import { projectBrief } from "./prompt";
 import type { PiAssistantV2Env } from "./env";
 import { roomSpecOf } from "@/editor/handInterior/builder";
 import { createBuildRun, type RecordingBuildRun } from "./buildRun";
 import { builderFor } from "./builders";
 import { localizePlaceSpec } from "./builders/modernCity";
+import { localizeCultureSpec } from "./builders/joseon";
 import { applyModernSetupDefaults, applyStorySetupDefaults, isFreshProject } from "./genreDefaults";
 import { dedupeToolSchemas } from "./schemaDedupe";
 import { adoptExactInterior, interiorAddAnchors, interiorBuilder, interiorEditFromArgs, interiorMoveObjects, roomMaterials, type ObjectEdit } from "./builders/interior";
@@ -24,6 +29,17 @@ import { buildEvent } from "./events";
 import { drawObject } from "./drawObject";
 import { buildScene, SCENE_SCHEMA, type SceneSpec } from "./scene";
 import { buildPuzzleChain, sealLockedRoom, type ChainArgs } from "./puzzle";
+import { stageMysteryCase } from "./mysteryCase";
+import { BUILD_BLUEPRINT_PATH_SCHEMA, blueprintMapFor, buildBlueprintPath, sealEscapeExits, type PathStepText } from "./blueprintPath";
+import { clearTargetFronts, clearTransferLanes, repairEventReach, spreadCrowdedPeople, unreachableEvents } from "./eventReach";
+import { ensureSupplyShop } from "./healingAccess";
+import { doorFloorTransfers, dressInteriorExits, dropBuriedTransfers } from "./exitDress";
+import { roadToEdgeExits } from "./edgeExitRoads";
+import { isPlaceholderMap, moveBareEvents, retireBlankStart, retireOrphanMaps } from "./blankStart";
+import { chaserEvents, ensureChaserHidingSpots, mapHidingEvents, markHidingSpots } from "@/project/chaserHiding";
+import { relocateLeadingFace } from "@/editor/tools/eventCompile";
+import { dungeonGateSpot, pickTransferSpot } from "./transferSpot";
+import { guessPlaceSpec } from "./placeGuess";
 // 콘텐츠 동사(컷신 무대·연출 비평·물건 자리 계획) — finishContent·addEvent·drawObjectVerb·placeObject 가 쓴다.
 import { critiqueStaging } from "./critic";
 import { createGameTools, wantsPuzzle, wantsGameTools, wantsStoreTools, wantsTerrainTools } from "./game";
@@ -62,6 +78,22 @@ export class V2Session {
   readonly questions: string[] = [];
   /** ask_user 를 한 번 되돌려 보냈는가(아무것도 짓지 않고 물었을 때). */
   askBounced = false;
+  /** 같은 청사진을 다시 쓴 횟수(내용이 같으면 바꾸지 않고 다음 동사로 보낸다). */
+  blueprintRewrites = 0;
+  /** 끝맺음에서 청사진 경로를 함수가 대신 지었는가(한 번만). */
+  autoPathDone = false;
+  /** 끝맺음에서 청사진 장소를 함수가 대신 지었는가(한 번만). */
+  autoPlacesDone = false;
+  /** 빈 맵을 가리키던 청사진 장소의 새 이름 → 그 빈 맵 id(renameBareBlueprintPlaces). 장소를 지으면 빈 맵 이벤트를 옮긴다. */
+  barePlaces?: Map<string, string>;
+  /** 끝맺음에서 이동 칸 앞을 막는 이벤트를 옮겼는가(한 번만). */
+  autoLanesDone = false;
+  /** 이동 칸(착지·문) 앞을 막는 이벤트를 옆으로 옮긴다(createV2Tools 가 건다). 한 일 목록. */
+  clearLanes?: () => Promise<string[]>;
+  /** 청사진에 있는데 없는(또는 닿지 않는) 장소를 짓고 앞 장소와 잇는다(createV2Tools 가 건다). 한 일 목록. */
+  buildPlaces?: () => Promise<string[]>;
+  /** 청사진 경로를 결정적으로 짓는다(createV2Tools 가 건다) — 끝맺음 단계가 모델 대신 부른다. */
+  buildPath?: (why: string) => Promise<{ ok: boolean; summary: string }>;
   criticCalls = 0;
   criticMs = 0;
   /** 모델 입장에서 「아직 안 끝난 것」 — 끝맺음 관문이 읽는다. */
@@ -93,6 +125,7 @@ const ZONE_SCHEMA = {
     kind: { type: "string", description: "구역 종류 낱말(카드의 낱말)" },
     purpose: { type: "string", description: "무엇을 위한 곳인지 한 줄" },
     anchors: { type: "array", items: { type: "string" }, description: "이 구역의 주인공 물건 낱말" },
+    vignettes: { type: "array", items: { type: "string" }, description: "(실내, 선택) 이 방에 놓을 기물 묶음 — 몸통 기물 id(bookshelf 2w·forge·counter 3x1). 자리는 함수가 잡는다. 생략하면 방 종류로 고른다" },
     size: SIZE,
     floor: { type: "number", description: "몇 층(기본 1)" },
     id: { type: "string" },
@@ -202,6 +235,9 @@ function withImages(payload: unknown, seen: Seen | undefined, maxImages = 2): Pi
 
 /** 쓰기 기록 하나: 시공 재생 단계를 실어 다음 체크포인트가 편집기에서 다시 튼다. */
 const recorded = new WeakMap<PiAssistantV2Env, Set<string>>();
+/** 청사진 경로를 하나씩 맞추려 할 때 build_blueprint_path 로 보낼 하위 도구. */
+const PATH_LOW_LEVEL = new Set(["upsert_event", "patch_event_page", "define_ending", "declare_story_flag", "upsert_item", "place_npc", "upsert_common_event"]);
+const BLUEPRINT_PROGRESS_VERBS = new Set(["make_place", "make_game", "edit_place", "add_people", "add_event", "add_scene", "author_puzzle_chain", "build_blueprint_path"]);
 function recordWrite(env: PiAssistantV2Env, run: RecordingBuildRun, toolCallId: string, name: string, args: unknown, ok: boolean, summary: string, data?: unknown): void {
   if (!recorded.has(env)) recorded.set(env, new Set());
   recorded.get(env)!.add(toolCallId);
@@ -263,6 +299,11 @@ function withSetupDefaults(result: PlaceBuildResult, builderId: string, project:
   return set.length ? { ...result, warnings: [...result.warnings, `게임 기본값을 깔았다: ${set.join(" · ")} — 사용자가 다른 것을 원하면 바꾼다`] } : result;
 }
 
+/** 결정적 장소 열쇠 — 프로젝트 열쇠(없으면 게임 제목) + 요청문. 실내 빌더가 견본·조합 씨앗에 쓴다(같은 게임·같은 요청 → 같은 방, 다른 게임 → 다른 설계). */
+function placeVariety(env: PiAssistantV2Env, task: unknown): string {
+  return `${env.request.projectKey ?? env.ctx.project.meta.title ?? ""}|${String(task ?? "").slice(0, 400)}`;
+}
+
 export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiToolShape[] {
   const task = env.request.task;
   const run = createBuildRun(env.ctx);
@@ -292,9 +333,17 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
         }
       }
     }
-    if (spec.type !== "interior" && spec.type !== "house") {
+    // 실내·집도 시작 칸을 본다(2026-10-28 interior 장부 5): 방을 줄여 다시 짓거나 dress_room·stamp 뒤에 시작 칸이 가구·벽면 밑에 남을 수 있다.
+    // 시작 맵이 이번에 지은 맵이고 시작 칸이 큰 땅(걸어 닿는 가장 큰 덩이) 밖일 때만 옮긴다 — 문 안쪽 시작 칸은 그대로다.
+    {
       const fixed = fixPlayerStart(env.ctx.project, result.mapIds);
       if (fixed.note) { env.ctx.project = fixed.project; result = { ...result, warnings: [...result.warnings, fixed.note], ...(result.entrance && result.entrance.mapId === fixed.project.startMapId ? { entrance: { mapId: fixed.project.startMapId, x: fixed.project.startPos.x, y: fixed.project.startPos.y } } : {}) }; }
+    }
+    // 다시 짓기(edit_place) 뒤 바닥이 바뀌어 앞서 둔 사람이 문 곁·가구 접근 칸·큰 양탄자 위에 남을 수 있다 — 방 하나만 짓는 판은 끝맺음(clearLanes)이
+    // 돌지 않으므로 여기서도 spreadCrowdedPeople 을 부른다.
+    for (const mapId of result.mapIds) {
+      const settled = spreadCrowdedPeople(run, mapId);
+      if (settled.length) result = { ...result, warnings: [...result.warnings, `사람 자리: ${settled.join(" · ")}`] };
     }
     const record: PlaceRecord = { builder: builderId, spec, result, rounds };
     for (const mapId of result.mapIds) session.places.set(mapId, record);
@@ -399,14 +448,195 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
         : "명세를 고쳐 다시 부르거나 못 하는 것을 보고한다." }, seen, 1);
   };
 
+  // 청사진 먼저(2026-10-28): 게임 하나를 만드는 요청이면 짓기 전에 write_blueprint 로 목표·핵심 경로·엔딩을 쓴다.
+  // 설계자가 따로 정해진 실행(비교 C: Argon 설계 + Flash 실행)은 설계자가 처음에 한 번 쓰고, 실행 모델은 그 청사진대로 짓는다.
+  const needsBlueprint = wantsWholeGame(String(task ?? "")) && !env.ctx.project.gameBlueprint;
+  const designer = needsBlueprint ? blueprintDesignerFromEnv() : undefined;
+  const designed = designer && env.roleChat ? (() => {
+    env.emit({ type: "execution_status", name: "v2.blueprint", ok: true, summary: `설계자(${designer.model})가 청사진을 쓰는 중` });
+    return designBlueprint((messages, signal) => env.roleChat!(designer, messages, signal), String(task ?? ""), projectBrief(env.ctx.project, env.ctx.currentMapId), env.signal);
+  })() : undefined;
+  let designerNoted = false;
+  const noteAssembly = (applied: string[]): void => {
+    if (applied.length) env.emit({ type: "execution_status", name: "v2.assembly", ok: true, summary: `청사진 조립 기본값: ${applied.join(" · ")}` });
+  };
+  const blueprintGate = async (): Promise<{ ok: false; summary: string } | undefined> => {
+    if (env.ctx.project.gameBlueprint || !wantsWholeGame(String(task ?? ""))) return undefined;
+    if (designed) {
+      const result = await designed;
+      if ("blueprint" in result) {
+        env.ctx.project.gameBlueprint = result.blueprint;
+        noteAssembly(applyBlueprintAssembly(env.ctx.project));
+        await env.checkpoint("write_blueprint");
+        env.emit({ type: "execution_status", name: "v2.blueprint", ok: true, summary: `설계자 청사진 ${result.blueprint.steps.length}단계` });
+        return { ok: false, summary: `설계자가 이 게임의 청사진을 썼다 — 이 명세는 짓지 않았다. 청사진의 장소·이벤트 이름 그대로 다시 부른다.\n${walkBlueprint(env.ctx.project).lines.join("\n")}\n${result.blueprint.steps.map((st) => `${st.id} 「${st.place}」 「${st.event}」: ${st.action} → ${st.gives}`).join("\n")}` };
+      }
+      if (!designerNoted) { designerNoted = true; env.emit({ type: "execution_status", name: "v2.blueprint", ok: false, summary: result.error }); }
+    }
+    return { ok: false, summary: "게임 하나를 만드는 요청이다 — 짓기 전에 write_blueprint 로 이 게임의 청사진(playerGoal·핵심 경로 steps·ending)을 먼저 쓴다. 그다음 청사진의 장소 이름 그대로 짓는다." };
+  };
+  const writeBlueprint: PiToolShape = {
+    name: "write_blueprint", label: "게임 청사진", concurrency: "exclusive",
+    description: "게임 하나를 짓기 전에 이 게임의 청사진(새 플레이어 목표 한 줄·시작부터 엔딩까지 핵심 경로·엔딩·장면마다 느낌)을 쓴다. 이미 있으면 통째로 바꾼다(실제 지은 이름에 맞출 때도). 결과로 지금 프로젝트에서 이 경로가 어디까지 이어지는지 돌려준다.",
+    parameters: WRITE_BLUEPRINT_SCHEMA as unknown as PiToolShape["parameters"],
+    async execute(_id, params) {
+      // 설계자 실행에서는 첫 청사진을 설계자가 쓴다 — 실행 모델의 초안은 설계자 청사진이 없을 때만 쓴다(이름 맞추기 다시 쓰기는 그 뒤에 허용).
+      if (designed && !env.ctx.project.gameBlueprint) {
+        const gate = await blueprintGate();
+        if (env.ctx.project.gameBlueprint) return text({ ok: true, summary: `설계자 청사진을 걸었다(네 초안 대신). ${gate?.summary ?? ""}` });
+      }
+      // 제목·장르를 빠뜨린 다시 쓰기(mt2 Flash: 매 턴 «title·genre is required» 로 한 번 실패한 뒤 다시 썼다)는 앞 청사진·프로젝트 제목으로 채운다.
+      const prior = env.ctx.project.gameBlueprint;
+      const raw = (params ?? {}) as Record<string, unknown>;
+      const filled = { ...raw, title: raw.title || prior?.title || (isPlaceholderTitle(env.ctx.project.meta?.title) ? "" : env.ctx.project.meta?.title) || "제목 없는 게임", genre: raw.genre || prior?.genre || "게임" };
+      const parsed = parseBlueprintArgs(filled, String(task ?? ""));
+      if ("error" in parsed) return text({ ok: false, summary: `청사진을 읽지 못했다: ${parsed.error}` });
+      // 같은 내용을 다시 쓰면 바꾸지 않는다 — 청사진을 되풀이해 쓰는 대신 경로를 짓게 한다.
+      const core = (b: typeof parsed.blueprint | undefined) => b ? JSON.stringify({ t: b.title, g: b.genre, p: b.playerGoal, s: b.steps, e: b.ending }) : "";
+      if (prior && core(prior) === core(parsed.blueprint)) {
+        session.blueprintRewrites += 1;
+        const walked = walkBlueprint(env.ctx.project);
+        return text({ ok: true, summary: `청사진이 이미 같은 내용이다 — 다시 쓰지 않았다(${session.blueprintRewrites}번째). write_blueprint 를 또 부르지 않는다. ${walked.blockers.length ? "다음: build_blueprint_path 를 불러 청사진 단계대로 이벤트·조건·엔딩 호출을 짓는다." : "경로가 이어져 있다 — 남은 일(장소 꾸미기·대사)을 한다."}`, path: walked.lines, open: walked.blockers.slice(0, 6).map((b) => b.message) });
+      }
+      env.ctx.project.gameBlueprint = parsed.blueprint;
+      const assembled = applyBlueprintAssembly(env.ctx.project);
+      // 맵을 이미 지은 뒤 청사진을 다시 쓴 경우에만 실제로 깐다(빈 맵이면 건너뛴다 — 끝맺음 조립이 다시 부른다).
+      try { assembled.push(...applyBlueprintOpening(env.ctx.project)); } catch { /* 끝맺음 조립이 다시 시도한다 */ }
+      noteAssembly(assembled);
+      const walked = walkBlueprint(env.ctx.project);
+      await env.checkpoint("write_blueprint");
+      return text({ ok: true, summary: `청사진을 걸었다(${parsed.blueprint.steps.length}단계). 장소를 make_place 로 지은 뒤 build_blueprint_path 한 번으로 단계별 이벤트·조건·엔딩 호출을 짓는다(이벤트를 upsert_event 로 하나씩 쓰지 않는다).${assembled.length ? ` 청사진에 맞춰 타이틀 기본값을 바꿨다: ${assembled.join(" · ")}.` : ""}`, path: walked.lines, open: walked.blockers.slice(0, 8).map((b) => b.message) });
+    },
+  };
+
+  // 청사진 경로 짓기(2026-10-28 mt2): 단계(place·event·needs·gives)와 엔딩에서 이벤트·조건·스위치·아이템·엔딩 호출을 함수가 짓는다.
+  const runBlueprintPath = (steps: readonly PathStepText[]) => {
+    const result = buildBlueprintPath(run, steps);
+    return result;
+  };
+  const buildBlueprintPathVerb: PiToolShape = {
+    name: "build_blueprint_path", label: "청사진 경로 짓기", concurrency: "exclusive",
+    description: "청사진(write_blueprint)의 핵심 경로를 실제 플레이 길로 짓는다 — 단계마다 그 맵에 조사·대화 이벤트를 두고(같은 이름 이벤트가 있으면 고쳐 쓴다), 앞 단계의 gives(열쇠·쪽지는 아이템, 나머지는 스위치)를 다음 단계의 조건으로 걸고, 마지막 단계가 엔딩을 부르게 한다(엔딩이 없으면 청사진 ending 으로 정의). 장소를 지은 뒤 한 번 부른다 — 이벤트를 upsert_event·define_ending 으로 하나씩 맞추지 않는다. 대사만 steps[{id, lines, lockedLines}] 로 줄 수 있고(비우면 청사진 글로 채움), 숫자 자물쇠는 그 단계에 code 와 앞 단계 lines 에 답을 준다. 다시 불러도 같은 이벤트를 고쳐 쓴다.",
+    parameters: BUILD_BLUEPRINT_PATH_SCHEMA as unknown as PiToolShape["parameters"],
+    async execute(id, params) {
+      if (!env.ctx.project.gameBlueprint) return text({ ok: false, summary: "청사진이 없다 — write_blueprint 를 먼저 부른다." });
+      const steps = ((params as { steps?: PathStepText[] }).steps ?? []).filter((t) => t && typeof t.id === "string");
+      return finishContent(id, "build_blueprint_path", params, runBlueprintPath(steps));
+    },
+  };
+  session.buildPath = async (why: string) => {
+    const before = env.ctx.project;
+    const result = runBlueprintPath([]);
+    recordWrite(env, run, `auto-path-${Date.now()}`, "build_blueprint_path", { auto: why }, result.ok, result.summary, { eventIds: result.eventIds });
+    session.content.push({ verb: "build_blueprint_path", result });
+    // 경로를 다시 짓지 않고 거절해도(전투 단계 이벤트) 끝의 맞춤(열쇠 문·승리 관문·회복 길)은 했을 수 있다 — 바뀌었으면 저장한다.
+    if (result.ok || env.ctx.project !== before) await env.checkpoint("build_blueprint_path");
+    return { ok: result.ok, summary: result.summary };
+  };
+  // 끝맺음(2026-10-28 standin jrpg): 컷신에서 주인공에게 다가온 소녀가 동굴 입구 착지 칸 앞에 서서 자동 플레이가 막혔다.
+  session.clearLanes = async () => {
+    // 쓰지 않는 빈 시작 맵(잔디 한 장)을 먼저 치운다 — 그쪽으로 가던 이동이 사라진 막다른 틈은 아래 출구 마감이 문 그림으로 닫는다.
+    const notes: string[] = retireBlankStart(run);
+    // 방탈출이면 청사진 장소 밖으로 조건 없이 나가는 이동을 치운다(빈 맵이 아닌 바깥 맵 — retireBlankStart 가 못 치운다). 틈은 아래 출구 마감이 메운다.
+    notes.push(...sealEscapeExits(run));
+    // 추리 청사진이 투명 칸 일직선이면(2026-10-29 vm mystery 판정 「NPC 없음·추리·선택 없음」) 용의자·증거 제시·범인 고르기를 세운다.
+    // 모델이 사건을 이미 지었으면 단서 칸 소품만 본다(mysteryCase.ts). 경로를 다시 짓지 않은 판(막힘 없음)도 여기서 세운다.
+    try { notes.push(...stageMysteryCase(run)); } catch { /* 추리 세우기 실패는 끝맺음을 깨지 않는다 */ }
+    // 전투 게임 보급(2026-10-29 vm3 jrpg 판정 「206G 를 쓸 곳이 없다」): 돈을 버는데 상점이 없으면 떠돌이 상인. 경로를 다시 짓지 않은 판도 여기서 건다.
+    // 보스 앞 회복(쉼터 결정)·단계 순서 보호는 finishAutoBuild 의 ensureBossRest·orderStepBattlesIn 이 한다.
+    try { notes.push(...ensureSupplyShop(run)); } catch { /* 상점 실패는 끝맺음을 깨지 않는다 */ }
+    // 들어오는 길도 이벤트도 없는 빈 사본·끊긴 맵(봉인 뒤 「밀실 뒷방」)을 치운다.
+    notes.push(...retireOrphanMaps(run));
+    // 추격자가 있는데 숨을 곳이 0곳인 맵(2026-10-29 standin horror 「폐병원」) — 맵에 있는 옷장·사물함·침대·커튼 1~2곳을 순찰 길 가까이에서 은신처로.
+    for (const [mapId, map0] of Object.entries(env.ctx.project.maps)) {
+      if (!chaserEvents(map0).length) continue;
+      if (mapHidingEvents(map0).some((ev) => (ev.pages ?? []).some((pg) => (pg.interaction as { kind?: string } | undefined)?.kind === "hiding" && !pg.nearSparkle))) {
+        // 이미 있는 은신처에 가까이 반짝임을 단다(들어가기 전엔 안 보였다).
+        const marked = { ...map0, events: (map0.events ?? []).map((ev) => structuredClone(ev)) };
+        const n = markHidingSpots(marked);
+        env.ctx.project = { ...env.ctx.project, maps: { ...env.ctx.project.maps, [mapId]: marked } } as Project;
+        notes.push(`${map0.name}: 은신처 ${n}곳에 가까이 반짝임`);
+        continue;
+      }
+      if (mapHidingEvents(map0).length) continue;
+      const copy = { ...map0, events: [...(map0.events ?? [])] };
+      const auto = ensureChaserHidingSpots(env.ctx.project, copy);
+      if (auto.placed.length) {
+        env.ctx.project = { ...env.ctx.project, maps: { ...env.ctx.project.maps, [mapId]: copy } } as Project;
+        notes.push(`${map0.name}: 추격자 은신처 ${auto.placed.map((p) => `${p.label}(${p.x},${p.y})`).join(" · ")}`);
+      } else if (auto.note) notes.push(`${auto.note} — 은신처 0곳`);
+    }
+    // 내레이션 줄에 인물 얼굴이 남지 않게(2026-10-29 standin 마법학교 천문탑: 「망원경 곁에 파란 모자의 여인이…」에 교수 흉상) —
+    // 맨 앞 얼굴 하나를 그 인물이 화자로 말하는 줄 바로 앞에만 다시 둔다. 모델이 patch_event_page 로 옛 순서를 되써도 여기서 고친다.
+    for (const [mapId, map0] of Object.entries(env.ctx.project.maps)) {
+      let fixed = 0;
+      const events = (map0.events ?? []).map((ev) => {
+        let changed = false;
+        const pages = (ev.pages ?? []).map((page) => {
+          const next = relocateLeadingFace(page.commands ?? [], ev.name ?? "");
+          if (!next) return page;
+          changed = true;
+          return { ...page, commands: next };
+        });
+        if (changed) fixed += 1;
+        return changed ? { ...ev, pages } : ev;
+      });
+      if (fixed) {
+        env.ctx.project = { ...env.ctx.project, maps: { ...env.ctx.project.maps, [mapId]: { ...map0, events } } } as Project;
+        notes.push(`${map0.name}: 인물 ${fixed}명의 얼굴을 그 인물 대사 바로 앞으로(내레이션 줄에서 뺌)`);
+      }
+    }
+    for (const mapId of Object.keys(env.ctx.project.maps)) {
+      // 실내 출구·공허 마감(막다른 남쪽 틈 메우기·문 그림·남색 공허 칸) — 화면 검수 장부 builder-exit/builder-tiles.
+      for (const n of dressInteriorExits(run, mapId).notes) notes.push(`${env.ctx.project.maps[mapId]?.name ?? mapId}: ${n}`);
+      // 가구·벽 밑에 묻힌 이동 칸은 같은 곳으로 가는 문이 따로 있으면 지운다(2026-10-29 vm4 argon 추리).
+      for (const n of dropBuriedTransfers(run, mapId)) notes.push(`${env.ctx.project.maps[mapId]?.name ?? mapId}: ${n}`);
+      // 바닥 한가운데 투명 이동 칸 → 가장 가까운 외벽에 문(북벽 문 그림·남벽 틈)을 내고 그 앞으로(2026-10-29 vm3 deepseek 탈출 「희미한 빛 위를 걷는 방 이동」).
+      for (const n of doorFloorTransfers(run, mapId)) notes.push(`${env.ctx.project.maps[mapId]?.name ?? mapId}: ${n}`);
+      // 가장자리 출구가 풀밭 한가운데면 맵의 길로 잇는다(2026-10-29 vm3 argon jrpg 「마을 밖으로 나가는 길이 안 보임」).
+      for (const n of roadToEdgeExits(run, mapId)) notes.push(`${env.ctx.project.maps[mapId]?.name ?? mapId}: ${n}`);
+      const r = clearTransferLanes(run, mapId);
+      const name = env.ctx.project.maps[mapId]?.name ?? mapId;
+      // 조사·대화 대상 앞(아래 칸)을 막는 의자 하나를 치운다(2026-10-29 VM deepseek mystery: 「의자 때문에 NPC 앞으로 못 간다」).
+      for (const n of clearTargetFronts(run, mapId)) notes.push(`${name}: ${n}`);
+      // 붙어 선 사람 사이에서 한 면만 열린 사람은 둘레가 열린 칸으로(2026-10-29 vm3 flash 추리: 갈색 머리 손님이 위에서만 말이 걸렸다).
+      // 실내에서 문 곁·가구의 하나뿐인 접근 칸·다른 사람 바로 위아래·큰 양탄자 위에 선 사람도(personSpotCost — room-vig6 tavern, 탈출·추리 인물 포함).
+      for (const n of spreadCrowdedPeople(run, mapId)) notes.push(`${name}: ${n}`);
+      // 걸어 닿지 못하는 진행 이벤트(전투·스위치·아이템·엔딩 — 출하 검사 critical-unreachable)는 닿는 빈 바닥으로(repairEventReach).
+      // 경로를 다시 짓지 않는 판(전투가 든 단계라 build_blueprint_path 가 건너뜀)에도 돈다 — 2026-10-29 vm4 argon jrpg: 동굴 잡몹 (6,9)가 바위 속에 갇혔다.
+      {
+        const live = env.ctx.project.maps[mapId];
+        const progress = (ev: NonNullable<typeof live>["events"][number]) => {
+          const text = JSON.stringify(ev.pages ?? []);
+          const acts = (ev.pages ?? []).some((p) => { const t = p.trigger as unknown; const k = typeof t === "string" ? t : (t as { kind?: string } | undefined)?.kind; return k !== "auto" && k !== "autorun" && k !== "parallel"; });
+          return acts && /"kind":"(?:battleProcessing|setSwitch|changeItem|triggerEnding)"/u.test(text) && !/"kind":"transfer"/u.test(text);
+        };
+        const lost = live ? unreachableEvents(env.ctx.project, mapId).filter((id) => { const ev = live.events.find((e) => e.id === id); return !!ev && progress(ev); }) : [];
+        if (lost.length) {
+          const fixed = repairEventReach(run, mapId, lost);
+          for (const m of fixed.moved) notes.push(`${name}: 닿지 못하던 ${m}`);
+        }
+      }
+      for (const m of r.moved) notes.push(`${name}: ${m}`);
+      for (const s of r.stuck) notes.push(`${name}: ${s} — 옮길 자리가 없어 그대로 둠`);
+    }
+    if (notes.length) {
+      recordWrite(env, run, `auto-lanes-${Date.now()}`, "move_event", { auto: "transfer-lanes" }, true, notes.join(" / ").slice(0, 400), {});
+      await env.checkpoint("clear_transfer_lanes");
+    }
+    return notes;
+  };
+
   const makePlace: PiToolShape = {
     name: "make_place", label: "장소 짓기", concurrency: "exclusive",
     description: "장소(실내·마을·던전·동굴·거리·집)를 명세 하나로 짓는다. 칸·좌표·타일 번호는 쓰지 않는다 — 함수가 짓고, 1배 그림·기계 검사·독립 비평 결과를 돌려준다.",
     parameters: { type: "object", properties: { spec: PLACE_SPEC_SCHEMA }, required: ["spec"] },
     async execute(id, params) {
+      const gate = await blueprintGate();
+      if (gate) return text(gate);
       // 같은 요청 → 같은 맵을 막는다(2026-10-23 다양성: 역전 상점가가 v1·v2·4차·5차 모두 화소까지 같았다). 고치기는 기록된 명세의 salt 를 물려받는다.
       const raw = (params as { spec: PlaceSpec }).spec;
-      let spec: PlaceSpec = localizePlaceSpec({ ...raw, salt: Math.floor(Math.random() * 1_000_000) }, String(task ?? ""));
+      let spec: PlaceSpec = localizeCultureSpec(localizePlaceSpec({ ...raw, salt: Math.floor(Math.random() * 1_000_000), variety: placeVariety(env, task) }, String(task ?? "")), String(task ?? ""));
       // 이번 실행에서 이미 다른 장소를 지은 맵 위에 새 장소를 짓지 않는다 — 「지하 예배당」을 지은 맵에 「검은 장미 저택」을 다시 지어
       // 예배당이 1층 한 구석으로 사라졌다(2026-10-25 조수 단독 게임 G27). 같은 장소를 다시 짓는 것(이름이 같거나 한쪽이 다른 쪽을 품음)은 그대로 둔다.
       const target = spec.mapId ?? (spec.type === "interior" ? (run.ctx.currentMapId ?? run.ctx.project.startMapId) : undefined);
@@ -484,6 +714,12 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
       if (!record && !env.ctx.project.maps[patch.mapId]) {
         const now = [...new Set([...session.places.values()].flatMap((r) => r.result.mapIds))].filter((id) => env.ctx.project.maps[id]).map((id) => `${id}(${env.ctx.project.maps[id]!.name ?? ""})`);
         return text({ ok: false, summary: `${patch.mapId} 는 이제 없는 맵이다(앞의 다시 짓기로 층이 새 id 로 바뀌었다). 지금 v2 가 지은 맵: ${now.join(", ") || "없음"} — 이 id 로 고친다.` });
+      }
+      // 빈 자리표시 시작 맵(풀밭 한 장)에 구역을 붙여 「고치려」 했다 — 고칠 장소가 없으니 그 구역으로 그 자리에 실내를 새로 짓는다
+      // (2026-10-29 방 과제 room-base/room-vig-1029: 교실·침실·예배당·주점 10개 중 4개가 edit_place(map_blank_start) 실패 한 번으로 빈 맵인 채 끝났다).
+      if (!record && existing && isPlaceholderMap(existing) && patch.addZones?.length && !(patch.set as { type?: string } | undefined)?.type) {
+        const spec = applyPatch({ type: "interior", name: patch.set?.name ?? existing.name ?? "실내", mapId: patch.mapId }, patch);
+        return makePlace.execute(id, { spec });
       }
       if (!record) return text({ ok: false, summary: `${patch.mapId} 는 v2 가 지은 기록이 없고 다시 지을 방 구성도 읽지 못했다. make_place(mapId=${patch.mapId}) 로 그 자리에 새로 짓거나 못 한다고 알린다.` });
       if (record.rounds >= V2_MAX_REPAIR_ROUNDS) return text({ ok: false, summary: `고치기 상한(${V2_MAX_REPAIR_ROUNDS}바퀴)에 닿았다. 남은 문제를 사용자에게 보고한다.` });
@@ -595,7 +831,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
   };
   const setObjectiveVerb: PiToolShape = {
     name: "set_objective", label: "현재 목표 걸기", concurrency: "exclusive",
-    description: "화면 오른쪽 위 「현재 목표」 줄에 지금 할 일 한 줄을 건다(불러오기·맵 이동 뒤에도 남는다). 게임을 만들면 반드시: at:'start' 로 시작 목표 하나, 그리고 이야기를 한 단계 넘기는 이벤트(열쇠를 줌·회상을 봄·스위치를 켬)마다 eventId 로 다음 목표 — 그 이벤트의 스위치 켜기·아이템 얻기 바로 뒤에 들어간다. 글은 장소·사람·물건 이름을 넣어 구체적으로(「창고 상자에서 태엽 열쇠를 찾자」, 「밤이 되면 집 현관에서 쉬자」). 「어디」도 붙는다: where 에 대상 이벤트·장소(id 또는 이름)를 주거나 글에 다른 장소 이름이 나오면 그 입구의 방위가 자동으로 붙는다(「(지하철역 입구: 동네 거리 남동쪽)」). 엔딩을 부르는 이벤트에는 필요 없다.",
+    description: "화면 오른쪽 위 「현재 목표」 줄에 지금 할 일 한 줄을 건다(불러오기·맵 이동 뒤에도 남는다). 게임을 만들면 반드시: at:'start' 로 시작 목표 하나, 그리고 이야기를 한 단계 넘기는 이벤트(열쇠를 줌·회상을 봄·스위치를 켬)마다 eventId 로 다음 목표 — 그 이벤트의 스위치 켜기·아이템 얻기 바로 뒤에 들어간다. 글은 장소·사람·물건 이름을 넣어 구체적으로(「창고 상자에서 태엽 열쇠를 찾자」, 「밤이 되면 집 현관에서 쉬자」). 「어디」도 붙는다: where 에 대상 이벤트·장소(id 또는 이름)를 주거나 글에 다른 장소 이름이 나오면 그 입구의 방위가 자동으로 붙는다(「(지하철역 입구: 남동쪽)」). 엔딩을 부르는 이벤트에는 필요 없다.",
     parameters: { type: "object", properties: {
       text: { type: "string", description: "지금 할 일 한 줄(80자 안)" },
       at: { type: "string", enum: ["start"], description: "start = 게임 시작 목표" },
@@ -751,6 +987,118 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     const walk = (node: unknown): boolean => Array.isArray(node) ? node.some(walk) : !!node && typeof node === "object" && (((node as { kind?: string; mapId?: string }).kind === "transfer" && (node as { mapId?: string }).mapId === toId) || Object.values(node).some(walk));
     return (env.ctx.project.maps[fromId]?.events ?? []).some((e) => walk(e.commands ?? []) || walk(e.pages ?? []));
   };
+  // 부모 맵 ↔ 새로 지은 자식 장소 잇기(make_game 과 끝맺음 자동 짓기가 같이 쓴다): 실내는 마을 집 문, 던전은 입구, 바깥끼리는 가장자리, 못 하면 이동 칸.
+  const linkChild = (parentMap: string, parentSpec: PlaceSpec | undefined, parentResult: PlaceBuildResult | undefined, spec: PlaceSpec, result: PlaceBuildResult, side?: "north" | "south" | "east" | "west"): string => {
+    const notes: string[] = [];
+    const childMap = result.mapIds[0]!;
+        const pName = env.ctx.project.maps[parentMap]?.name ?? parentMap, cName = env.ctx.project.maps[childMap]?.name ?? childMap;
+        if (hasTransferTo(parentMap, childMap)) return `${pName} ↔ ${cName}: 짓기에서 이어짐`;
+        const usedDoors = new Set<string>((env.ctx.project.maps[parentMap]?.events ?? []).map((e) => `${e.x},${e.y + 1}`));
+        let linked = false;
+        if (isInside(spec) && result.entrance) {
+          const door = pickDoor(villageDoors(parentResult ?? ({ state: undefined } as unknown as PlaceBuildResult)), spec.name, usedDoors, env.ctx.project.maps[parentMap]!);
+          if (door) {
+            const r = run.call("create_transfer_pair", { a: { mapId: parentMap, x: door.x, y: door.y, doorAt: { x: door.x, y: door.y - 1 } }, b: { mapId: childMap, x: result.entrance.x, y: result.entrance.y } });
+            linked = r.ok; notes.push(r.ok ? `${pName} 집 문(${door.x},${door.y - 1}${door.kit ? ` ${door.kit}` : ""}) ↔ ${cName}` : `${pName} 집 문 잇기 실패: ${r.summary.slice(0, 160)}`);
+          } else {
+            // 지은 결과의 집 문 목록이 없으면(모델이 지은 부모 맵) 그 맵의 문 그림·계단·길 끝, 없으면 칩셋 문을 벽에 깔아 그 앞으로.
+            const spot = pickTransferSpot(run, parentMap, { side: side ?? "north", outdoor: !!parentSpec && isOutdoor(parentSpec), otherName: cName });
+            if (spot) {
+              const { note, ...a } = spot;
+              const r = run.call("create_transfer_pair", { a: { mapId: parentMap, ...a }, b: { mapId: childMap, x: result.entrance.x, y: result.entrance.y } });
+              linked = r.ok; notes.push(r.ok ? `${pName} ${note} ↔ ${cName}` : `${pName} ${note} 잇기 실패: ${r.summary.slice(0, 160)}`);
+            }
+          }
+        } else if (spec.type === "dungeon" || spec.type === "cave") {
+          // 던전: 부모 맵의 걸어 닿는 칸 ↔ 던전 입구 계단(자리표시 출구가 있으면 그것을 바꾼다).
+          // 문 자리는 정본 하나(transferSpot.dungeonGateSpot = dungeonLinkTools.pickDungeonGateSpot): 갱구가 맞는 길 곁 칸 → 갱구 자리 → 가장자리 길 끝 → 가장자리.
+          // 못 찾으면 예전처럼 걸어 닿는 가장자리 칸.
+          const pm = env.ctx.project.maps[parentMap]!;
+          const gate = dungeonGateSpot(env.ctx.project, pm, side ?? "north");
+          const at = gate ? { x: gate.x, y: gate.y } : edgeCell(env.ctx.project, pm, side ?? "north");
+          const r = at ? run.call("link_world_entrance", { worldMapId: parentMap, links: [{ x: at.x, y: at.y, toMapId: childMap }] }) : undefined;
+          linked = !!r?.ok && hasTransferTo(parentMap, childMap);
+          if (linked) notes.push(`${pName}(${at!.x},${at!.y}) ↔ ${cName} 입구`);
+        } else if (isOutdoor(spec) && !!parentSpec && isOutdoor(parentSpec)) {
+          const dir = side ?? "north";
+          const r = run.call("link_maps", { from: { mapId: parentMap, exit: { side: dir } }, to: { mapId: childMap, entry: { side: oppositeSide(dir) } } });
+          linked = r.ok; if (r.ok) notes.push(`${pName} ${dir} 가장자리 ↔ ${cName}`);
+        }
+        if (!linked) {
+          // 대신 걸어 닿는 칸끼리 문을 둔다(그림 없는 이동 칸) — 못 이은 채 두지 않는다.
+          // 문 그림·계단·길 끝을 먼저 고르고(없으면 칩셋 문을 벽에 깐다), 그래도 없을 때만 그림 없는 가장자리 칸.
+          const dir = side ?? "north";
+          const spotA = pickTransferSpot(run, parentMap, { side: dir, outdoor: !parentSpec || isOutdoor(parentSpec), otherName: cName });
+          const a = spotA ? { x: spotA.x, y: spotA.y, ...(spotA.doorAt ? { doorAt: spotA.doorAt } : {}) } : edgeCell(env.ctx.project, env.ctx.project.maps[parentMap]!, dir);
+          const spotB = result.entrance && result.entrance.mapId === childMap ? undefined : pickTransferSpot(run, childMap, { side: oppositeSide(dir), outdoor: isOutdoor(spec), otherName: pName });
+          const b = result.entrance && result.entrance.mapId === childMap ? { x: result.entrance.x, y: result.entrance.y } : spotB ? { x: spotB.x, y: spotB.y, ...(spotB.doorAt ? { doorAt: spotB.doorAt } : {}) } : edgeCell(env.ctx.project, env.ctx.project.maps[childMap]!, oppositeSide(dir));
+          const r = a && b ? run.call("create_transfer_pair", { a: { mapId: parentMap, ...a }, b: { mapId: childMap, ...b } }) : undefined;
+          const how = [spotA?.note, spotB?.note].filter(Boolean).join(" · ");
+          if (r?.ok) notes.push(`${pName}(${a!.x},${a!.y}) ↔ ${cName}(${b!.x},${b!.y}) — ${how || "문 그림 없이 이동 칸으로 이었다"}`);
+          else notes.push(`${pName} ↔ ${cName}: 잇지 못했다(${r?.summary.slice(0, 120) ?? "걸어 닿는 칸이 없다"})`);
+        }
+    return notes.join(" / ");
+  };
+  // 끝맺음 자동 짓기(2026-10-28 스위트): 청사진 장소가 없으면 이름·장르로 명세를 추정해 make_place 와 같은 빌더로 짓고 앞 단계 장소와 잇는다.
+  // 있는데 시작에서 걸어 닿지 않으면 잇기만 한다. 칩셋 계열은 placeGuess 가 같은 종류 기존 맵에서 물려받는다.
+  session.buildPlaces = async () => {
+    const bp = env.ctx.project.gameBlueprint;
+    if (!bp) return [];
+    const notes: string[] = [];
+    // 시작 맵이 빈 자리표시 맵(잔디 한 장)이면 그 맵과 잇지 않는다 — 장소를 지은 뒤 retireBlankStart 가 시작을 첫 장소로 옮기고 빈 맵을 지운다.
+    const start0 = env.ctx.project.maps[env.ctx.project.startMapId];
+    const bareIds = new Set(session.barePlaces?.values() ?? []);
+    const settle: { mapId: string; ids: string[] }[] = [];
+    let prev: { mapId: string; spec?: PlaceSpec; result?: PlaceBuildResult } = { mapId: start0 && (isPlaceholderMap(start0) || bareIds.has(start0.id)) ? "" : env.ctx.project.startMapId };
+    for (const step of bp.steps) {
+      let map = blueprintMapFor(env.ctx.project, step.place);
+      if (!map) {
+        const guess = guessPlaceSpec(step.place, env.ctx.project, bp.genre, String(task ?? ""));
+        const spec: PlaceSpec = { ...guess, salt: Math.floor(Math.random() * 1_000_000), variety: placeVariety(env, task), ...(isInside(guess) ? { mapId: `map_auto_${Math.floor(Math.random() * 1e9).toString(36)}` } : {}) };
+        const builder = builderFor(spec);
+        if (!builder) { notes.push(`「${step.place}」(${spec.type}) — 짓는 빌더가 없다`); continue; }
+        env.emit({ type: "execution_status", name: "v2.build", ok: true, summary: `청사진 장소 「${step.place}」 자동으로 짓는 중(${builder.id})` });
+        await builder.prepare?.(spec);
+        const sub = { ...env.ctx, project: env.ctx.project, currentMapId: prev.mapId || env.ctx.project.startMapId };
+        const subRun = createBuildRun(sub);
+        const result = builder.build(subRun, spec);
+        env.ctx.project = sub.project;
+        recordWrite(env, subRun, `auto-place-${step.id}`, "make_place", { spec, auto: true }, result.ok, result.summary, { mapIds: result.mapIds });
+        for (const m of result.missingArt) session.missingArt.add(m);
+        if (!result.ok || !result.mapIds[0] || !env.ctx.project.maps[result.mapIds[0]]) { notes.push(`「${step.place}」 짓기 실패: ${result.summary.slice(0, 160)}`); continue; }
+        const first = env.ctx.project.maps[result.mapIds[0]]!;
+        if (first.name !== step.place) run.call("set_map_properties", { mapId: first.id, name: step.place });
+        const bareId = session.barePlaces?.get(step.place);
+        if (bareId) {
+          session.barePlaces!.delete(step.place);
+          const moved = moveBareEvents(env.ctx.project, bareId, first.id);
+          env.ctx.project = moved.project;
+          if (moved.notes.length) notes.push(`빈 맵 이벤트를 「${step.place}」로 옮김: ${moved.notes.join(", ")}`);
+          if (moved.ids.length) settle.push({ mapId: first.id, ids: moved.ids });
+        }
+        const record: PlaceRecord = { builder: builder.id, spec, result, rounds: 0 };
+        for (const mapId of result.mapIds) session.places.set(mapId, record);
+        const link = prev.mapId && env.ctx.project.maps[prev.mapId] && prev.mapId !== first.id ? linkChild(prev.mapId, prev.spec, prev.result, spec, result) : "";
+        notes.push(`「${step.place}」(${spec.type}${spec.style ? `·${spec.style}` : ""}, ${first.id}) 지음${link ? ` — ${link}` : ""}`);
+        map = env.ctx.project.maps[first.id];
+        prev = { mapId: first.id, spec, result };
+        continue;
+      }
+      const known = session.places.get(map.id);
+      if (prev.mapId !== map.id && env.ctx.project.maps[prev.mapId] && walkGame(env.ctx.project, [map.id]).unreached.includes(map.id)) {
+        const spec = known?.spec ?? guessPlaceSpec(map.name ?? step.place, env.ctx.project, bp.genre, String(task ?? ""));
+        const result: PlaceBuildResult = known?.result ?? { ok: true, mapIds: [map.id], summary: "", warnings: [], missingArt: [], calls: [] };
+        notes.push(`「${map.name ?? map.id}」 잇기 — ${linkChild(prev.mapId, prev.spec, prev.result, spec, result)}`);
+      }
+      prev = { mapId: map.id, ...(known ? { spec: known.spec, result: known.result } : {}) };
+    }
+    for (const n of retireBlankStart(run)) notes.push(n);
+    // 옮긴 조사 이벤트를 이름이 가리키는 물건(책상·쪽지…)·문 그림 칸으로 — 빈 맵에서는 물건이 없어 아무 칸이었다.
+    // 시작이 새 방으로 옮겨진 뒤에 돈다(걸어 닿는지는 시작점에서 잰다).
+    for (const { mapId, ids } of settle) { const rep = repairEventReach(run, mapId, ids); if (rep.moved.length) notes.push(`옮긴 이벤트 자리 맞춤: ${rep.moved.join(", ").slice(0, 300)}`); }
+    if (notes.length) await env.checkpoint("auto_places");
+    return notes;
+  };
   const makeGame: PiToolShape = {
     name: "make_game", label: "작은 게임 짓기", concurrency: "exclusive",
     description: "작은 게임 한 판 — 장소 여러 곳(5~8)을 짓고 부모-자식으로 잇고(마을 집 문↔실내, 바깥 가장자리끼리, 던전 입구), 사람·사건을 둔 뒤, 시작에서 모든 맵에 갔다 돌아오는 길을 기계로 걸어 보고 맵마다 비평을 돌려준다. 맵마다 make_place 를 따로 부르지 않는다.",
@@ -765,6 +1113,8 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
       events: { type: "array", items: { ...eventItem, properties: { ...eventItem.properties, place: { type: "string", description: "장소 key" } }, required: [...eventItem.required, "place"] } },
     }, required: ["places"] } }, required: ["game"] },
     async execute(id, params) {
+      const gate = await blueprintGate();
+      if (gate) return text(gate);
       const game = (params as { game: GameSpec }).game;
       const { order, warnings } = orderPlaces(game);
       if (order.length < 2) return text({ ok: false, summary: "장소가 둘 이상이어야 한다 — 하나면 make_place 를 쓴다." });
@@ -772,7 +1122,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
       const lines: string[] = [];
       const linkNotes: string[] = [];
       for (const [i, place] of order.entries()) {
-        const spec0: PlaceSpec = localizePlaceSpec({ ...place.spec, salt: Math.floor(Math.random() * 1_000_000) }, String(task ?? ""));
+        const spec0: PlaceSpec = localizeCultureSpec(localizePlaceSpec({ ...place.spec, salt: Math.floor(Math.random() * 1_000_000), variety: placeVariety(env, task) }, String(task ?? "")), String(task ?? ""));
         const parent = place.from ? built.get(place.from) : undefined;
         const parentMap = parent?.result.mapIds[0];
         // 실내는 새 맵 id 로(지금 맵을 덮어쓰지 않게), 나머지는 부모 맵을 「지금 맵」으로 — 빌더가 새 맵을 만들고 던전은 부모와 입구를 잇는다.
@@ -801,37 +1151,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
         lines.push(`${place.key}: ${result.summary.slice(0, 200)}`);
         // 잇기
         if (!parent || !parentMap) continue;
-        const childMap = result.mapIds[0]!;
-        const pName = env.ctx.project.maps[parentMap]?.name ?? parentMap, cName = env.ctx.project.maps[childMap]?.name ?? childMap;
-        if (hasTransferTo(parentMap, childMap)) { linkNotes.push(`${pName} ↔ ${cName}: 짓기에서 이어짐`); continue; }
-        const usedDoors = new Set<string>((env.ctx.project.maps[parentMap]?.events ?? []).map((e) => `${e.x},${e.y + 1}`));
-        let linked = false;
-        if (isInside(spec) && result.entrance) {
-          const door = pickDoor(villageDoors(parent.result), spec.name, usedDoors, env.ctx.project.maps[parentMap]!);
-          if (door) {
-            const r = run.call("create_transfer_pair", { a: { mapId: parentMap, x: door.x, y: door.y, doorAt: { x: door.x, y: door.y - 1 } }, b: { mapId: childMap, x: result.entrance.x, y: result.entrance.y } });
-            linked = r.ok; linkNotes.push(r.ok ? `${pName} 집 문(${door.x},${door.y - 1}${door.kit ? ` ${door.kit}` : ""}) ↔ ${cName}` : `${pName} 집 문 잇기 실패: ${r.summary.slice(0, 160)}`);
-          }
-        } else if (spec.type === "dungeon" || spec.type === "cave") {
-          // 던전: 부모 맵의 걸어 닿는 칸 ↔ 던전 입구 계단(자리표시 출구가 있으면 그것을 바꾼다).
-          const at = edgeCell(env.ctx.project, env.ctx.project.maps[parentMap]!, place.side ?? "north");
-          const r = at ? run.call("link_world_entrance", { worldMapId: parentMap, links: [{ x: at.x, y: at.y, toMapId: childMap }] }) : undefined;
-          linked = !!r?.ok && hasTransferTo(parentMap, childMap);
-          if (linked) linkNotes.push(`${pName}(${at!.x},${at!.y}) ↔ ${cName} 입구`);
-        } else if (isOutdoor(spec) && isOutdoor(parent.spec)) {
-          const side = place.side ?? "north";
-          const r = run.call("link_maps", { from: { mapId: parentMap, exit: { side } }, to: { mapId: childMap, entry: { side: oppositeSide(side) } } });
-          linked = r.ok; if (r.ok) linkNotes.push(`${pName} ${side} 가장자리 ↔ ${cName}`);
-        }
-        if (!linked) {
-          // 대신 걸어 닿는 칸끼리 문을 둔다(그림 없는 이동 칸) — 못 이은 채 두지 않는다.
-          const side = place.side ?? "north";
-          const a = edgeCell(env.ctx.project, env.ctx.project.maps[parentMap]!, side);
-          const b = result.entrance && result.entrance.mapId === childMap ? { x: result.entrance.x, y: result.entrance.y } : edgeCell(env.ctx.project, env.ctx.project.maps[childMap]!, oppositeSide(side));
-          const r = a && b ? run.call("create_transfer_pair", { a: { mapId: parentMap, ...a }, b: { mapId: childMap, ...b } }) : undefined;
-          if (r?.ok) linkNotes.push(`${pName}(${a!.x},${a!.y}) ↔ ${cName}(${b!.x},${b!.y}) — 문 그림 없이 이동 칸으로 이었다`);
-          else linkNotes.push(`${pName} ↔ ${cName}: 잇지 못했다(${r?.summary.slice(0, 120) ?? "걸어 닿는 칸이 없다"})`);
-        }
+        linkNotes.push(linkChild(parentMap, parent.spec, parent.result, spec, result, place.side));
       }
       recordWrite(env, run, `${id}:links`, "make_game", { links: true }, true, linkNotes.join(" / ").slice(0, 400));
       // 사람·사건
@@ -955,6 +1275,8 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     let result: PiToolExecResult;
     try { result = await tool.execute(id, params, signal); }
     catch (error) { result = text({ ok: false, summary: `${tool.name} 실패: ${error instanceof Error ? error.message : String(error)}` }); }
+    // 짓는 단계마다 청사진과 대조한 진행을 덧붙인다(2026-10-28) — 모델이 어느 항목을 구현했고 무엇이 남았는지 매번 본다.
+    if (BLUEPRINT_PROGRESS_VERBS.has(tool.name)) { const note = blueprintProgressNote(env.ctx.project); if (note) result = { ...result, content: [...result.content, { type: "text", text: note }] }; }
     if (!recorded.get(env)?.has(id)) {
       const first = result.content.find((c) => c.type === "text") as { text: string } | undefined;
       let parsed: { ok?: boolean; summary?: string } = {};
@@ -963,7 +1285,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     }
     return result;
   } });
-  const verbs = [makePlace, ...(makeGameOn() && wantsMakeGame(String(task ?? "")) ? [makeGame] : []), editPlace, moveObject, dressRoomVerb, addPeople, addEvent, addScene, ...(wantsPuzzle(String(task ?? "")) ? [authorPuzzleChain] : []), sealLockedRoomVerb, setObjectiveVerb, drawObjectVerb, placeObject, inspect, restoreEvent, ...(helpersOn() ? [askHelpers] : []), askUser].map((tool) => guard(flattenWrapperTool(tool)));
+  const verbs = [writeBlueprint, buildBlueprintPathVerb, makePlace, ...(makeGameOn() && wantsMakeGame(String(task ?? "")) ? [makeGame] : []), editPlace, moveObject, dressRoomVerb, addPeople, addEvent, addScene, ...(wantsPuzzle(String(task ?? "")) ? [authorPuzzleChain] : []), sealLockedRoomVerb, setObjectiveVerb, drawObjectVerb, placeObject, inspect, restoreEvent, ...(helpersOn() ? [askHelpers] : []), askUser].map((tool) => guard(flattenWrapperTool(tool)));
   // 게임 요소(퀘스트·아이템·전투·파티) 요청이면 v1 게임 도구를 덧붙인다 — 기록은 도구 묶음이 env.record 로 직접 남긴다.
   const t = String(task ?? "");
   // 스토어 음악 카드(사용자가 듣고 고른다)를 띄웠으면 사용자 질문과 같다 — 끝맺음 관문이 «음악을 안 걸었다»며 넣기를 재촉하지 않게 한다.
@@ -972,7 +1294,11 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     env.record(r);
   } };
   // 같은 Command·페이지 스키마의 설명은 처음 한 번만 보낸다(schemaDedupe.ts — 매 턴 다시 가는 도구 목록이 21만 자였다).
-  return wantsGameTools(t) || wantsTerrainTools(t) || wantsStoreTools(t) ? dedupeToolSchemas([...verbs, ...createGameTools(gameEnv, t).map((tool) => flattenWrapperTool(tool, gameEnv.record))]) : verbs;
+  // 청사진이 있는 게임에서 이벤트·엔딩 하위 도구가 되풀이해 실패하면 build_blueprint_path 로 보낸다(mt2 Flash: upsert_event 6번 인자 실패).
+  const escalate = (tool: PiToolShape): PiToolShape => !PATH_LOW_LEVEL.has(tool.name) ? tool : { ...tool, escalateHint: () => env.ctx.project.gameBlueprint
+    ? `[상위 동사로] ${tool.name} 로 청사진 경로(단계 이벤트·조건·엔딩 호출)를 하나씩 맞추지 않는다 — build_blueprint_path 를 한 번 부르면 청사진 단계대로 함수가 짓는다(대사만 steps[{id,lines}]). 이 도구는 경로 밖의 작은 수정에만 쓴다.`
+    : undefined };
+  return wantsGameTools(t) || wantsTerrainTools(t) || wantsStoreTools(t) ? dedupeToolSchemas([...verbs, ...createGameTools(gameEnv, t).map((tool) => escalate(flattenWrapperTool(tool, gameEnv.record)))]) : verbs;
 }
 
 /** 끝맺음 관문 — 남은 문제가 있으면 한 번 더 돌게 하는 글. 다 통과면 undefined. */
@@ -987,7 +1313,7 @@ export function v2FinishGate(session: V2Session, env?: PiAssistantV2Env): string
   // 끝까지 깰 수 있는 전투인가(2026-10-25 판정 J55·J4): 회복 수단 없음·시키지 않은 무작위 조우·첫 구역이 너무 센 조우.
   if (env) { try { game.push(...combatProblems(env.request.project, env.ctx.project, env.request.task)); } catch { /* 검사 실패는 무시 */ } }
   // 출하 차단(2026-10-25 사용자 규칙): 게임을 만드는 요청이면 편집기 기본값·한 줄 엔딩이 남은 채 «다 됐다»고 하지 못한다.
-  if (env) { try { game.push(...shipBlockers(env.ctx.project, env.request.task).map((b) => `[출하 차단 ${b.id}] ${b.message} 고치지 못하면 «완성»이라고 쓰지 말고 남은 기본값으로 보고한다.`)); } catch { /* 검사 실패는 무시 */ } }
+  if (env) { try { game.push(...shipBlockers(env.ctx.project, env.request.task).filter((b) => b.id !== "combat-no-healing" /* combatProblems no-healing 이 같은 것을 짚는다 */).map((b) => `[출하 차단 ${b.id}] ${b.message} 고치지 못하면 «완성»이라고 쓰지 말고 남은 기본값으로 보고한다.`)); } catch { /* 검사 실패는 무시 */ } }
   // 아무것도 안 바꾸고 «도구가 없다»며 끝내기(2026-10-24 g3-edit-move: 대장장이 옮기기를 묻기만 했다, g3-apple-count: 그림 카드만 남겼다).
   // 설정이 이미 기본값(켜짐)이면 set_project_settings 가 아무것도 안 바꾸는 것이 맞다(2026-10-25 데모 과업: 탭 걷기·팡파레·빠른 달려들기는 기본 켜짐).
   const settingOnly = /휴대폰|모바일|터치|탭하면|진동|조이스틱|달리기 단추|레벨 ?업|팡파레|달려들|도움말/u.test(env?.request.task ?? "") && !/만들|두고|세워|놓아|놔|추가/u.test(env?.request.task ?? "");

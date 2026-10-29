@@ -37,7 +37,7 @@ function walk(list: unknown, visit: (cmd: Obj) => void): void {
 }
 
 /** 프로젝트의 모든 명령(맵 이벤트·공통 이벤트·적 무리 전투 페이지) — mapId 와 함께. */
-function allCommands(project: Project): { cmd: Obj; mapId: string; eventName: string }[] {
+export function allCommands(project: Project): { cmd: Obj; mapId: string; eventName: string }[] {
   const out: { cmd: Obj; mapId: string; eventName: string }[] = [];
   for (const map of Object.values(project.maps)) for (const ev of map.events ?? []) {
     const e = ev as unknown as Obj;
@@ -187,7 +187,7 @@ export function combatProblems(before: Project, after: Project, task: string): s
   if (!sites.length) return [];
   const problems: string[] = [];
   if (!healingSources(after).length) {
-    problems.push(`[출하 차단 no-healing] 전투가 있는데(${sites.slice(0, 3).join(", ")}${sites.length > 3 ? ` 외 ${sites.length - 3}곳` : ""}) HP 를 되찾을 길이 하나도 없다 — 깎인 HP 가 그대로 남아 보스에서 무한 게임 오버가 나고, 승리 직후 자동 저장(HP 1)을 불러와도 그대로다. 마을에 여관(recoverAll 이벤트 또는 inn 명령)을 두거나, set_shop_stock 으로 상점에서 포션(item_potion)을 팔거나, place_chest{contents:{itemId:'item_potion'}} 로 보스 앞에 회복약을, 보스 앞에 place_savepoint{heal:true} 를 둔다. 회복 기술을 쓰는 동료(upsert_actor learnedSkills 에 skill_heal)도 된다. 고치지 못하면 «완성»이라고 쓰지 않는다.`);
+    problems.push(`[출하 차단 no-healing] 전투가 있는데(${sites.slice(0, 3).join(", ")}${sites.length > 3 ? ` 외 ${sites.length - 3}곳` : ""}) HP 를 되찾을 길이 하나도 없다 — 깎인 HP 가 그대로 남아 보스에서 무한 게임 오버가 나고, 승리 직후 자동 저장(HP 1)을 불러와도 그대로다. build_blueprint_path 를 다시 부르면 시작 맵에 회복의 샘(전원 회복·저장)과 시작 회복약 3개를 결정적으로 넣는다. 직접 고치려면 마을에 여관(recoverAll 이벤트 또는 inn 명령)을 두거나, set_shop_stock 으로 상점에서 포션(item_potion)을 팔거나, place_chest{contents:{itemId:'item_potion'}} 로 보스 앞에 회복약을, 보스 앞에 place_savepoint{heal:true} 를 둔다. 회복 기술을 쓰는 동료(upsert_actor learnedSkills 에 skill_heal)도 된다. 고치지 못하면 «완성»이라고 쓰지 않는다.`);
   }
   // 요청에 없는 무작위 조우: 이 실행이 새로 켠 맵만(전에 켜져 있던 맵은 앞 요청이 켰다).
   if (!ENCOUNTER_ASK.test(task)) {

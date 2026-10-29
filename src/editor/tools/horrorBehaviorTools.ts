@@ -1,3 +1,4 @@
+import { HIDING_SPARKLE } from '@/project/chaserHiding';
 import type { ChaseAcrossMaps } from '@/project/types';
 import { ToolError, type ToolDefinition, type JsonSchema } from './types';
 import { requireMap } from './mapHelpers';
@@ -41,6 +42,8 @@ export const CONFIGURE_OBJECT_BEHAVIOR: ToolDefinition = {
       page.interaction = { kind: args.kind as 'pushable' | 'hiding' };
       page.movement = { ...page.movement, type: 'fixed' };
       page.trigger = { kind: 'action' }; page.priority = 'same'; page.overlapForbidden = true;
+      // 은신처는 가까이 오면 반짝인다 — 들어가기 전에는 어느 가구가 숨을 곳인지 안 보였다(2026-10-29).
+      if (args.kind === 'hiding') page.nearSparkle ??= { ...HIDING_SPARKLE };
     }
     return { summary: `${page.name}: ${args.kind}`, data: { eventId: args.eventId, pageId: page.id },
       warnings: page.commands.length ? ['물체 동작이 일반 조사 명령보다 우선합니다.'] : [] };

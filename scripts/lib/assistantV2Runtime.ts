@@ -10,8 +10,12 @@ import type { PiAgentDoneEvent, PiAgentEvent, PiAgentRequest } from "../../src/a
 import { buildV2SystemPrompt } from "../../src/ai/v2/prompt.ts";
 import { createV2Tools, V2Session, v2FinishGate } from "../../src/ai/v2/verbs.ts";
 import { shipBlockers } from "../../src/ai/v2/shipChecks.ts";
-import { reviewVqaRound, vqaReviewerCandidates, vqaClean, vqaFixBrief, vqaFixRetry, vqaFollowUp, vqaLeftoverInstruction, vqaShotPlan, vqaReviewerLabel, vqaShouldContinue, vqaSummary, wantsWholeGame, VQA_MAX_ROUNDS, type VqaReviewerPick, type VqaRound, type VqaShot } from "../../src/ai/v2/vqa.ts";
+import { finishBuildPending, runFinishAutoBuild } from "../../src/ai/v2/finishAutoBuild.ts";
+import { assembledReport, isProviderErrorReply } from "../../src/ai/v2/finalReport.ts";
+import { reviewVqaRound, vqaReviewerCandidates, vqaClean, vqaFixBrief, vqaFixRetry, vqaFollowUp, vqaLeftoverInstruction, vqaShotPlan, vqaReviewerLabel, vqaShouldContinue, vqaSummary, wantsWholeGame, VQA_MAX_ROUNDS, VQA_ROUND_CAP, vqaBlockers, vqaActionable, vqaLedgerLine, type VqaReviewerPick, type VqaRound, type VqaShot } from "../../src/ai/v2/vqa.ts";
 import { familyOfProviderId } from "../../src/ai/assistantRoles.ts";
+import { VqaFixBudget, vqaFixCapRefusal } from "../../src/ai/v2/vqaFixBudget.ts";
+import type { PiToolShape } from "../../src/ai/piAgent/toolAdapter.ts";
 import type { PiAssistantV2Env } from "../../src/ai/v2/env.ts";
 import { adviseTurn, advisorFollowUp, withShipBlockers, advisorSummary, compactToolLog, summarizeProjectDiff, type AdvisorToolCall, type AdvisorVerdict } from "../../src/ai/v2/advisor.ts";
 
@@ -80,13 +84,27 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
   // 검토자의 재료: 이 실행의 도구 기록과 마지막 보고 초안. 사용자 화면으로 가는 이벤트를 그대로 흘려보내며 옆에서 모은다.
   const calls: AdvisorToolCall[] = [];
   const argsById = new Map<string, unknown>();
+  // 화면 검수 고치기 차례의 상한(src/ai/v2/vqaFixBudget.ts) — 고치기 지시를 낼 때 켜고, 다음 afterMain 에서 끈다.
+  const fixBudget = new VqaFixBudget();
+  let fixCapReported = false;
   let draft = "";
   const onEvent = (event: PiAgentEvent) => {
     if (event.type === "tool_start") argsById.set(event.id, event.args);
-    else if (event.type === "tool_end") { calls.push({ name: event.name, ok: event.ok, args: argsById.get(event.id), summary: event.summary }); argsById.delete(event.id); }
-    else if (event.type === "assistant" && event.text.trim()) draft = event.text;
+    else if (event.type === "tool_end") { fixBudget.record(event.name, argsById.get(event.id), event.ok); calls.push({ name: event.name, ok: event.ok, args: argsById.get(event.id), summary: event.summary }); argsById.delete(event.id); }
+    else if (event.type === "assistant") {
+      // 제공자 일반 오류 문장(«Sorry, something went wrong» 등)은 보고가 아니다 — 대화창에 보내지 않는다. 그러면 앞의 정직한 보고가 마지막 답으로 남는다.
+      // 앞에 보고가 하나도 없으면 실제 프로젝트 상태로 조립한 보고를 대신 보낸다(2026-10-28 mt3 flash·mt2 argon escape).
+      if (isProviderErrorReply(event.text)) {
+        options.onEvent?.({ type: "execution_status", name: "v2.answer.provider_error", ok: false, at: Date.now(), summary: `모델이 보고 대신 제공자 오류 문장을 돌려줌 — 최종 답으로 쓰지 않음: ${JSON.stringify(event.text.trim().slice(0, 120))}` });
+        if (!draft) { draft = assembledReport(lastProject()); options.onEvent?.({ type: "assistant", text: draft }); }
+        return;
+      }
+      draft = event.text;
+    }
     options.onEvent?.(event);
   };
+  let liveEnv: PiAssistantV2Env | undefined;
+  const lastProject = () => liveEnv?.ctx.project ?? request.project;
   let advice: AdvisorVerdict | undefined;
   // 검토자가 더한 시간: 검토 호출(advice.ms) + 검토자 글로 한 차례 더 돈 시간(followMs, 막음이 있을 때만).
   let followFrom = 0, followMs = 0;
@@ -100,6 +118,7 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
   let vqaCandidateIndex = 0;
   let vqaMs = 0;
   let vqaReviewedFingerprint: string | undefined;
+  const vqaLedgerSeen = new Set<string>();
   const runVqaRound = async (env: PiAssistantV2Env): Promise<VqaRound> => {
     if (!env.render && !env.renderArt) {
       // 그림 경로가 없는 실행(편집기 렌더 브로커 없음): 검수자를 부르지 않고 «검수 못 함» 판 하나를 남긴다. vqaStep 이 거기서 멈춘다.
@@ -143,10 +162,23 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
     const withFailed: VqaRound = failed.length && !round.problem && !shots.length ? { ...round, problem: `그림을 찍지 못함: ${failed.join(", ").slice(0, 400)}` } : round;
     vqaRounds.push(withFailed);
     vqaMs += Date.now() - t0;
-    env.emit({ type: "execution_status", name: "v2.vqa", ok: vqaClean(withFailed), summary: `화면 검수 ${withFailed.round}/${VQA_MAX_ROUNDS} · ${withFailed.problem ?? `결함 ${withFailed.defects.length}건`} · 그림 ${shots.length}장${failed.length ? ` (못 찍음 ${failed.length}: ${failed.join(" / ").slice(0, 300)})` : ""} · ${reviewer} · ${Math.round((Date.now() - t0) / 1000)}초`,
+    env.emit({ type: "execution_status", name: "v2.vqa", ok: vqaClean(withFailed), summary: `화면 검수 ${withFailed.round}/${withFailed.round > VQA_MAX_ROUNDS ? VQA_ROUND_CAP : VQA_MAX_ROUNDS} · ${withFailed.problem ?? `결함 ${withFailed.defects.length}건${vqaBlockers(withFailed).length ? `(막음 ${vqaBlockers(withFailed).length})` : ""}`} · 그림 ${shots.length}장${failed.length ? ` (못 찍음 ${failed.length}: ${failed.join(" / ").slice(0, 300)})` : ""} · ${reviewer} · ${Math.round((Date.now() - t0) / 1000)}초`,
       data: { ...withFailed, failed } });
     return withFailed;
   };
+  const startFixBudget = () => { fixBudget.start(); fixCapReported = false; };
+  /** 고치기 차례에는 도구 실행 앞에서 상한을 본다 — 넘으면 실행하지 않고 «남은 결함을 보고하라» 거절을 돌려준다. */
+  const withFixBudget = (env: PiAssistantV2Env, tools: PiToolShape[]): PiToolShape[] => tools.map((tool) => Object.assign(Object.create(Object.getPrototypeOf(tool)) as PiToolShape, tool, {
+    execute: async (id: string, params: unknown, signal?: AbortSignal) => {
+      const why = fixBudget.check(tool.name, params);
+      if (!why) return tool.execute(id, params, signal);
+      if (!fixCapReported) {
+        fixCapReported = true;
+        env.emit({ type: "execution_status", name: "v2.vqa.fix_cap", ok: false, summary: `화면 검수 고치기 상한 — ${why}(도구 ${fixBudget.calls}회 실행). 남은 호출은 실행하지 않고 남은 결함으로 보고하게 한다`, data: { why, calls: fixBudget.calls, limits: fixBudget.limits } });
+      }
+      return { content: [{ type: "text" as const, text: vqaFixCapRefusal(why) }] };
+    },
+  }));
   /** 화면 검수 한 걸음: 판 하나를 돌고, 결함이 있으면 고치기 지시, 끝났으면 (남은 결함이 있을 때) 정직한 최종 보고 지시. */
   const vqaStep = async (env: PiAssistantV2Env): Promise<string | undefined> => {
     if (!vqaEnabled(env.request) || (vqaRounds.length && !vqaShouldContinue(vqaRounds))) { vqaPhase = "done"; return undefined; }
@@ -159,7 +191,8 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
         env.emit({ type: "execution_status", name: "v2.vqa.fix_retry", ok: false, summary: `화면 검수 ${previous.round}/${VQA_MAX_ROUNDS} 고치기 차례에 도구 0회 — 판으로 세지 않고 결함 ${previous.defects.length}건을 다시 주며 도구 호출을 강제`, data: { round: previous.round, defects: previous.defects.length } });
         env.requireToolNextTurn?.();
         env.freshContextNextTurn?.();
-        return vqaFixRetry(previous, vqaFixBrief(env.request.task, env.ctx.project, previous.defects, draft));
+        startFixBudget();
+        return vqaFixRetry(previous, vqaFixBrief(env.request.task, env.ctx.project, vqaActionable(previous).fix, draft));
       }
       fixFromCalls = undefined;
       vqaPhase = "final-check";
@@ -177,19 +210,39 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
     vqaReviewedFingerprint = fingerprint;
     const round = await runVqaRound(env);
     const noRenderPath = !env.render && !env.renderArt;
+    // 결함 나누기(2026-10-28 terra 575초): 모델 밖(런타임·빌더) 결함은 장부로만, 두 판 연속 그대로인 결함은 빼고, 고칠 것이 0 이면 끝낸다.
+    const act = vqaActionable(round, vqaRounds.at(-2));
+    for (const d of act.ledger) {
+      const line = vqaLedgerLine(d);
+      if (vqaLedgerSeen.has(line)) continue;
+      vqaLedgerSeen.add(line);
+      env.emit({ type: "execution_status", name: "v2.vqa.outside", ok: false, summary: line.slice(0, 600), data: { round: round.round, defect: d } });
+    }
+    if (act.stuck.length) env.emit({ type: "execution_status", name: "v2.vqa.stuck", ok: false, summary: `두 판 연속 그대로인 결함 ${act.stuck.length}건은 고치기 차례에서 뺀다(미해결로 남김): ${act.stuck.map((d) => d.what).join(" / ").slice(0, 400)}`, data: { round: round.round, stuck: act.stuck } });
+    if (!noRenderPath && round.defects.length && !act.fix.length) {
+      vqaPhase = "final-check";
+      env.emit({ type: "execution_status", name: "v2.vqa", ok: false, summary: `화면 검수 ${round.round}판 뒤 고칠 수 있는 결함 0건 — 반복을 끝낸다(남은 결함 ${round.defects.length}건: 모델 밖 ${act.ledger.length} · 그대로 ${act.stuck.length})`, data: { round: round.round, outside: act.ledger.length, stuck: act.stuck.length } });
+      return vqaLeftoverInstruction(vqaRounds, `고칠 수 있는 결함이 없다 — 모델 밖 ${act.ledger.length}건·두 판 연속 그대로 ${act.stuck.length}건`);
+    }
     if (!noRenderPath && !vqaClean(round) && vqaShouldContinue(vqaRounds)) {
       // 검수 못 한 판(결함 0, problem)은 고칠 것이 없다 — 도구 강제·0회 감시는 결함이 있는 판에만.
       if (!round.defects.length) return vqaFollowUp(round);
       fixFromCalls = calls.length;
       env.requireToolNextTurn?.();
       env.freshContextNextTurn?.();
-      return vqaFollowUp(round, vqaFixBrief(env.request.task, env.ctx.project, round.defects, draft), vqaRounds.at(-2));
+      startFixBudget();
+      return vqaFollowUp(round, vqaFixBrief(env.request.task, env.ctx.project, act.fix, draft), vqaRounds.at(-2));
     }
     // 결함이 남은 채 끝나면 조수가 최종 보고에 남은 목록을 쓰게 한 번 더 돌린다(고치지 말고 정직하게). 그 보고는 검토자가 실제 변경에 대어 본다.
     if (vqaClean(round)) { vqaPhase = "done"; return undefined; }
     vqaPhase = "final-check";
     return vqaLeftoverInstruction(vqaRounds);
   };
+  // 청사진 자동 짓기(장소 → 경로 → 출구·이동 칸 마감 → 조립 기본값). 한 실행에 한 번씩(세션 깃발). 무엇을 지었는지 조수에게 줄 글.
+  // 끝맺음 관문 ① 에서 부르고, 그 뒤 차례(검토자 재검토·화면 검수 고치기)에서 청사진이 처음 생겼을 때도 부른다(2026-10-28 mt3 flash:
+  // 턴 1 은 첫 끝맺음에 청사진이 없었고, 고치기 차례에 write_blueprint 만 부른 뒤 끝나 장소 0으로 남았다).
+  const autoBuild = (env: PiAssistantV2Env): Promise<string | undefined> => runFinishAutoBuild(env, session);
+  const lateBuildPending = (env: PiAssistantV2Env) => finishBuildPending(env, session);
   const done = await runPiAgent({
     ...request,
     systemPrompt: buildV2SystemPrompt(request.project, request.currentMapId, request.task),
@@ -201,11 +254,24 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
     // 존재하지 않는 이름 하나 — 레지스트리 도구를 하나도 고르지 않고, 이름 지정 실행이라 v1 확인표·작가 도구도 꺼진다.
     toolNames: ["__assistant_v2__"],
     v2: {
-      tools: (env) => createV2Tools(env, session),
+      tools: (env) => withFixBudget(env, createV2Tools(env, session)),
       // 차례 순서: ① 끝맺음 관문 + 검토자 → (막음이면) ② 재검토(기록만) → ③ 화면 검수 1~3판(게임 전체 요청만). 판마다 결함이 있으면 고치는 한 바퀴.
       // 화면 검수: 판마다 한 차례 + 고치기 다시 한 번 + 남은 결함 보고 + 그 보고의 최종 검토 후속.
-      maxRounds: 2 + VQA_MAX_ROUNDS + 3,
+      maxRounds: 2 + VQA_ROUND_CAP + 3,
       afterMain: async (env) => {
+        liveEnv = env;
+        // 고치기 차례가 끝났다 — 다음 지시(고치기 다시·다음 판·최종 보고)에서 새로 켠다.
+        fixBudget.stop();
+        // 끝맺음 ① 뒤에 청사진이 처음 생겼거나 다시 끊겼으면 지금 짓는다 — 화면 검수는 지은 뒤의 그림으로 다시 한 판.
+        if (vqaPhase !== "advisor" && lateBuildPending(env)) {
+          const late = await autoBuild(env);
+          if (late) {
+            vqaPhase = "vqa";
+            const gate = v2FinishGate(session, env);
+            env.emit({ type: "execution_status", name: "v2.blueprint.late", ok: true, summary: "끝맺음 뒤에 생긴 청사진을 함수가 지었다 — 지은 뒤 화면 검수를 다시 돈다" });
+            return gate ? `${late}\n\n${gate}` : late;
+          }
+        }
         if (vqaPhase === "advisor-recheck") {
           if (followFrom) followMs = Date.now() - followFrom;
           vqaPhase = "vqa";
@@ -228,7 +294,12 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
         if (vqaPhase === "done") return undefined;
         // ① 끝맺음 관문 + 검토자. 보고 초안을 «실제로 바뀐 것»에 대어 본다. 막는 메모는 끝맺음 관문 글과 함께 한 차례 더 돌린다.
         // 우려·참고는 조수에게만(관문 글에 붙거나 실행 기록 v2.advisor) — 사용자 대화창에는 싣지 않는다.
-        const gate = v2FinishGate(session, env);
+        // 청사진 경로가 끊긴 채 끝내려 하면 함수가 청사진대로 짓는다 — 모델이 무엇을 불렀든(2026-10-28 mt2: Flash·Argon 둘 다
+        // define_ending 만 하고 엔딩 호출이 없었다. standin 묶음: 장소 셋을 적고 하나만 지었다).
+        // ① 없는 장소는 이름·장르로 추정해 짓고, 있는데 닿지 않는 장소는 앞 단계 장소와 잇는다. ② 그다음 경로(이벤트·조건·엔딩).
+        const autoPath = await autoBuild(env);
+        const gate0 = v2FinishGate(session, env);
+        const gate = autoPath ? (gate0 ? `${autoPath}\n\n${gate0}` : autoPath) : gate0;
         let text: string | undefined = gate;
         if (advisorEnabled(env.request)) {
           advice = withShipBlockers(await adviseTurn({ task: env.request.task, toolLog: compactToolLog(calls), diff: safeDiff(env), report: draft }, advisorChatOf(env), env.signal), safeShip(env));
@@ -245,7 +316,7 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
       },
     },
   });
-  options.onEvent?.({ type: "execution_status", name: "v2.summary", ok: done.ok, at: Date.now(), summary: `v2 요약: 장소 ${new Set([...session.places.values()]).size}·사람/사건 ${session.content.length}·비평 ${session.criticCalls}회(${Math.round(session.criticMs / 1000)}초)·남은 문제 ${session.unresolved().length}·그림 없음 ${session.missingArt.size}${advice ? `·검토 ${advice.notes.filter((n) => n.level === "blocker").length}막음(${(advice.ms / 1000).toFixed(1)}초${followMs ? `+후속 ${Math.round(followMs / 1000)}초` : ""})` : ""}${vqaRounds.length ? `·${vqaSummary(vqaRounds).text}(${Math.round(vqaMs / 1000)}초)` : ""} · 전체 ${Math.round((Date.now() - started) / 1000)}초`,
+  options.onEvent?.({ type: "execution_status", name: "v2.summary", ok: (done as { ok?: boolean }).ok, at: Date.now(), summary: `v2 요약: 장소 ${new Set([...session.places.values()]).size}·사람/사건 ${session.content.length}·비평 ${session.criticCalls}회(${Math.round(session.criticMs / 1000)}초)·남은 문제 ${session.unresolved().length}·그림 없음 ${session.missingArt.size}${advice ? `·검토 ${advice.notes.filter((n) => n.level === "blocker").length}막음(${(advice.ms / 1000).toFixed(1)}초${followMs ? `+후속 ${Math.round(followMs / 1000)}초` : ""})` : ""}${vqaRounds.length ? `·${vqaSummary(vqaRounds).text}(${Math.round(vqaMs / 1000)}초)` : ""} · 전체 ${Math.round((Date.now() - started) / 1000)}초`,
     data: { places: [...session.places.keys()], unresolved: session.unresolved(), missingArt: [...session.missingArt], criticCalls: session.criticCalls, criticMs: session.criticMs, ...(vqaRounds.length ? { vqa: { rounds: vqaRounds.map(({ round, defects, problem, reviewer, ms }) => ({ round, defects, problem, reviewer, ms })), ...vqaSummary(vqaRounds), ms: vqaMs } } : {}), ...(advice ? { advisor: { blockers: advice.notes.filter((n) => n.level === "blocker").length, notes: advice.notes.length, ms: advice.ms, followMs, inputChars: advice.inputChars } } : {}) } });
   return done;
 }

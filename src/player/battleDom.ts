@@ -124,8 +124,20 @@ const BATTLE_BOSS_INTRO_MS = 2_000;
 const BATTLE_RETRO_INTERLUDE_SCALE = 0.6;
 /** 도트 측면 전투에서 메뉴가 닫힌 게이지 충전 구간을 감는 배수(battle-feel r2). */
 const BATTLE_IDLE_CHARGE_BOOST = 3;
-/** 연출 중 확인/취소를 누를 때 걸리는 1회성 빨리감기 배속. */
-const SKIP_SPEED = 5.0;
+/**
+ * 연출 중 확인/취소를 누를 때 걸리는 1회성 빨리감기 배속. 5배는 타격·이펙트가 한 덩어리로 뭉개졌다 — 3배로 감고,
+ * 히트스톱(타격 정지)은 battleSequencer 가 배속과 무관하게 원래 길이로 둔다(2026-10-29 vm3 flash jrpg 「명령마다 4~8초」).
+ */
+const SKIP_SPEED = 3.0;
+/**
+ * 플레이어가 Shift 로 고른 배속 — 같은 플레이 동안 다음 전투에도 이어진다(자동 전투가 켜며 올린 배속은 아니다).
+ * 왜(2026-10-29 vm3 flash jrpg 판정 「전투 명령마다 4~8초 대기」): 손 안 대면 적 둘 한 턴이 4.5~6.2초였고, 배속을 올려도 다음 전투에서 1× 로 돌아갔다.
+ */
+let chosenBattleSpeed = 1.0;
+/** 연출이 끝나 명령 카드가 뜬 직후 이만큼은, 연출 중에 누르던 확인키가 명령으로 새지 않게 확인을 버린다. */
+const READY_CONFIRM_GUARD_MS = 350;
+/** 연출 중 마지막 확인키가 카드가 뜨기 전 이 안에 눌렸으면 「넘기려고 연타하던 손」으로 본다. */
+const BUSY_CONFIRM_RECENT_MS = 900;
 
 // host 기준으로 활성 전투 컨트롤러를 추적한다. 같은 host에 다시 마운트할 때
 // 이전 컨트롤러의 destroy()를 먼저 불러 setInterval(200ms 틱)·window keydown 리스너·
@@ -321,7 +333,10 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   let autoBattle = false;
   // system.allowAutoBattle false = 이 게임에는 자동 전투가 없다(F 키·자동 표시 모두).
   const autoBattleAllowed = store.getCurrent().system.allowAutoBattle !== false;
-  let speedMultiplier = 1.0;
+  let speedMultiplier = chosenBattleSpeed;
+  // 연출 중 확인키를 누른 마지막 시각·연출이 끝난 시각(명령 겹침 막기, READY_CONFIRM_GUARD_MS).
+  let busyConfirmAt = -Infinity;
+  let readyAt = -Infinity;
   // 연출 중 확인/취소로 켜지는 1회성 빨리감기. 시퀀스가 끝나면 배속이 원래대로 돌아온다.
   let skipping = false;
 
@@ -384,6 +399,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   function toggleSpeed(): void {
     const nextSpeed = speedMultiplier === 1.0 ? 1.8 : speedMultiplier === 1.8 ? 3.0 : 1.0;
     setSpeed(nextSpeed);
+    chosenBattleSpeed = nextSpeed;
   }
 
   function setSpeed(spd: number): void {
@@ -816,6 +832,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     },
     onSequenceBusy(busy) {
       sequenceBusy = busy;
+      if (!busy) readyAt = performance.now();
       if (!busy) endSkip();
       root.dataset.battleSequenceBusy = busy ? "true" : "false";
       // 시퀀스가 끝나면 원장을 버리고 실제 스냅샷으로 복귀한다.
@@ -827,6 +844,8 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       });
     },
   });
+  // 앞 전투에서 고른 배속을 이어받는다(chosenBattleSpeed).
+  if (speedMultiplier !== 1.0) { sequencer.speedMultiplier = speedMultiplier; root.dataset.battleSpeed = speedMultiplier.toFixed(1); }
 
   root.addEventListener("click", (event) => {
     unlockBattleSfx();
@@ -939,6 +958,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       // 지연이다. 배속(Shift) 토글과 달리 이건 이 시퀀스 한 번에만 걸리고 끝나면 복귀한다.
       if (isBattleConfirmKey(key) || isBattleCancelKey(key)) {
         event.preventDefault();
+        if (isBattleConfirmKey(key)) busyConfirmAt = performance.now();
         // 문장이 글자 단위로 나오는 중이면 이 입력은 그 문장을 한 번에 끝내는 데 쓴다(3세대). 다음 입력부터 빨리감기.
         if (completeBattleMessageTyping(messageWindow)) return;
         beginSkip();
@@ -970,6 +990,10 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     if (isBattleConfirmKey(key)) {
       // preventDefault 로 네이티부 활성화를 잠가 놓고 z 와 같은 커서 모델로 통일한다.
       event.preventDefault();
+      // 연출을 넘기려고 누르던 확인키가 카드가 뜬 순간 명령으로 들어가지 않게(2026-10-29 vm3 flash jrpg 「지연 중 Enter 누르면 명령이 겹쳐 들어감」).
+      // 대기 중 입력은 쌓아 두지 않고 버린다 — 카드가 뜬 뒤 READY_CONFIRM_GUARD_MS 지나 다시 누르면 받는다.
+      const at = performance.now();
+      if (at - readyAt < READY_CONFIRM_GUARD_MS && readyAt - busyConfirmAt < BUSY_CONFIRM_RECENT_MS) return;
       handleConfirm(snapshot);
     }
   }

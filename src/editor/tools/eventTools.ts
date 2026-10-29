@@ -18,6 +18,7 @@ import { ACTION_CONTROLS_GUIDE } from "@/player/keyBindings";
 import { EventPlacementAnalysis, eventRequiresPassableTile } from "@/project/eventPlacementRecovery";
 import { canMove, isPassable, tileAt } from "@/project/collision";
 import { unsafeSpawnLines } from "@/project/chaserSpawnSafety";
+import { ensureChaserHidingSpots, HIDING_SPARKLE } from "@/project/chaserHiding";
 import { isDoorArtCell } from "@/project/lint/scenePolishLint";
 import { normalizeLightingState } from "@/project/lightingRules";
 import { isWaterChipsetTile } from "@/project/defaults/chipsetMapping";
@@ -569,6 +570,8 @@ function fillRequiredPageFields(event: GameEvent, page: Partial<EventPage>, page
       // 이름에 맞는 그림이 없으면 투명으로 두고 알린다. 이름과 무관한 대체 그림(예전 보석 표식)은 붙이지 않는다 —
       // 「고대 진실의 제단」이 보석으로 저장돼 제단 자리에 보석이 놓였다(2026-09-27 사용자 지적).
       page.graphic = object.graphic;
+      // 칩 그림 사물(문·철창·상자)은 조사하면 플레이어 쪽으로 돌아 다른 줄(열린 문짝)을 보였다 — 잠긴 문이 열린 문으로 보였다(2026-10-28 interior 장부 38).
+      if (!object.graphic.transparent && page.animationType === undefined) page.animationType = "fixedGraphic";
       warnings?.push(object.graphic.transparent
         ? `${event.id}.${pageId}: '${event.name ?? event.id}' 은(는) 말하는 인물이 아니라 조사할 사물로 보여 주민 그림을 세우지 않고 투명으로 두었습니다 — ` +
           `이대로는 바닥에서 보이지 않습니다. 그 칸에 사물 타일을 칠하거나(paint_tiles·place_props) graphic 을 지정하세요.`
@@ -3131,6 +3134,7 @@ function placeHidingSpots(draft: Project, chaserMap: GameMap, raw: unknown, chas
     if (!inMapBounds(map, x, y)) { warnings.push(`은신처 (${x}, ${y}) 가 맵 밖이라 건너뛰었습니다.`); continue; }
     const hideIn = (page: EventPage): void => {
       page.interaction = { kind: "hiding" };
+      page.nearSparkle ??= { ...HIDING_SPARKLE };
       page.movement = { ...page.movement, type: "fixed" };
       page.trigger = { kind: "action" };
       page.priority = "same";
@@ -3421,7 +3425,7 @@ const makeChaseScene: ToolDefinition = {
       activateSwitch: { type: "string" },
       checkpointOnEntry: { type: "boolean" },
       mood: { type: "boolean", description: "공포 장르에서 조명이 없는 추격 맵을 어둡게(ambient 0.5). 기본 true, false 면 그대로" },
-      hidingSpots: { type: "array", items: { type: "object", properties: { x: { type: "integer" }, y: { type: "integer" }, mapId: { type: "string", description: "옷장이 다른 방(맵)에 있으면 그 mapId. 생략하면 추격자 맵" } }, required: ["x", "y"] }, description: "{x,y,mapId?}[] 은신처(옷장 등) 칸. 그 칸의 조사 이벤트를 은신처로 바꾸고, 없으면 투명 은신 이벤트를 만든다." },
+      hidingSpots: { type: "array", items: { type: "object", properties: { x: { type: "integer" }, y: { type: "integer" }, mapId: { type: "string", description: "옷장이 다른 방(맵)에 있으면 그 mapId. 생략하면 추격자 맵" } }, required: ["x", "y"] }, description: "{x,y,mapId?}[] 은신처(옷장 등) 칸. 그 칸의 조사 이벤트를 은신처로 바꾸고, 없으면 투명 은신 이벤트를 만든다. 생략하면 맵에 있는 옷장·사물함·침대·커튼 1~2곳(순찰 길에서 걸어서 2~14걸음)을 스스로 고른다. [] 면 은신처 없음." },
     },
     required: ["mapId", "chaser"],
   },
@@ -3547,6 +3551,14 @@ const makeChaseScene: ToolDefinition = {
     const darkened = args.mood !== false && draft.system?.genre === "horror-chase" && !map.defaultLighting;
     if (darkened) map.defaultLighting = normalizeLightingState({ ambient: 0.5, color: "#1a1020", sources: [] });
     const hiding = placeHidingSpots(draft, map, args.hidingSpots, id);
+    // hidingSpots 를 안 주면 맵에 이미 있는 숨을 만한 가구(옷장·사물함·침대·커튼) 1~2곳을 순찰 길 가까이에서 고른다 —
+    // 2026-10-29 standin horror: 순찰·즉사 추격자가 있는데 숨을 곳이 0곳이었다. hidingSpots:[] 를 명시하면 두지 않는다.
+    if (args.hidingSpots === undefined) {
+      const auto = ensureChaserHidingSpots(draft, map, id);
+      hiding.eventIds.push(...auto.placed.map((pick) => pick.eventId));
+      if (auto.placed.length) hiding.warnings.push(`은신처 자동: ${auto.placed.map((p) => `${p.label}(${p.x},${p.y})`).join(" · ")} — 다른 칸을 원하면 hidingSpots 로 준다.`);
+      else if (auto.note) hiding.warnings.push(`${auto.note} — 숨을 곳이 0곳이다. 옷장·사물함을 놓고(place_object) hidingSpots 로 그 칸을 준다.`);
+    }
     const ratio = PLAYER_WALK_STEP_MS / paceMs;
     // 안전지대 안에서는 절대 잡히지 않는다. 2026-09-24 r4 에서 11×22 복도에 12×17 안전지대를 깔아
     // 추격 맵 전체가 무적 구역이 됐다 — 안전지대는 세이브 방·계단참 같은 작은 구역이다.

@@ -19,7 +19,7 @@ import { computeOnFieldAnchors, hideOnFieldSprites, instantBattleTransition, typ
 import { mapTileSize } from "@/project/tileGeometry";
 import { resolveSkinId, getBattleSkin } from "@/battle/skins/registry";
 import { applyBattleRewardsToSession } from "@/player/battleRewardsToSession";
-import { maybeAutosave } from "@/player/autosave";
+import { requestAutosaveWhenIdle } from "@/player/autosave";
 import { applyBattleTimerWrites } from "@/player/playSceneTimers";
 import { dialogueHost, dialogueUi } from "@/player/playSceneDom";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
@@ -404,7 +404,8 @@ export async function playBattle(
                   if (replaced.ok) session.monsterInstances[decision.instanceId] = replaced.instance;
                 }
                 appendBattleReport(session, project, snapshot, result);
-                if (result === "victory") maybeAutosave(project, session, "battleVictory");
+                // 전투를 연 이벤트가 승리 뒤 명령(처치 스위치 등)을 마친 다음에 굽는다 — autosave.ts.
+                if (result === "victory") requestAutosaveWhenIdle(session, "battleVictory");
                 settled = true;
                 cleanup();
                 if (authoredGameOver) {

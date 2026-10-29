@@ -4,12 +4,14 @@
 // 층마다 보이는 적 수, 가장 깊은 곳 상자, 보스 그림이 잡몹·수문장과 다르게.
 import { isBlankMap } from "@/editor/tools/mapEmptiness";
 import { dungeonTheme } from "@/editor/tools/dungeonThemeTroops";
+import { fitEnemyToStartParty } from "@/editor/tools/bossThreatScaling";
+import { ensureBossRest, ensureHealingAccess } from "../healingAccess";
 import { pickTroops } from "@/editor/tools/jrpgVolumeTools";
 import { DUNGEON_TYPES, type DungeonType } from "@/editor/dungeonKit/types";
 import { isPassable } from "@/project/collision";
 import { terrainReachability } from "@/project/terrainReachability";
 import { cloneProjectSharingSharedDictionaries } from "@/project/projectClone";
-import type { GameMap, Project } from "@/project/types";
+import type { EnemyRecord, GameMap, Project } from "@/project/types";
 import { createBuildRun } from "../buildRun";
 import type { BuildRun, BuilderCall, PlaceBuildResult, PlaceBuilder, PlaceRecord, PlaceSpec } from "../types";
 
@@ -214,6 +216,9 @@ function ensureFoeTroop(run: BuildRun, enemyId: string, role: "field" | "boss" |
   const s = source as unknown as Record<string, unknown>;
   const copy: Record<string, unknown> = { id: enemyIdCopy, name: name ?? source.name, stats };
   for (const key of ["monsterResourceId", "battleScalePercent", "level", "skillIds", "rewards", "actions", "criticalHit", "attackOptions"]) if (s[key] !== undefined) copy[key] = structuredClone(s[key]);
+  // 세기는 시작 파티에 맞춘다(dungeonThemeTroops 와 같은 맞춤) — 비례 옮기기는 파티가 없을 때만.
+  const fit = fitEnemyToStartParty(project, { ...source, id: enemyIdCopy, stats } as unknown as EnemyRecord, role, count);
+  if (fit) { copy.stats = fit.stats; copy.level = fit.level; if (fit.actions) copy.actions = fit.actions; if (fit.skillIds) copy.skillIds = fit.skillIds; }
   const made = run.call("upsert_enemy", { enemy: copy, role: role === "boss" ? "boss" : "normal" });
   const useId = made.ok ? enemyIdCopy : enemyId;
   const r = run.call("upsert_troop", { troop: { id: troopId, name: role === "field" ? `${source.name} 무리` : name ?? source.name, enemyIds: Array.from({ length: count }, () => useId) } });
@@ -418,7 +423,11 @@ function topUp(run: BuildRun, floors: readonly string[], floorData: readonly Rec
       const deepChest = chests.some((e) => { const dd = dist[e.y * map.width + e.x]!; return dd >= maxD * (bossRoom ? 0.6 : 0.8) && (!bossRoom || inRoom(bossRoom, e)); });
       if (!deepChest) {
         const zone = [...cells].filter((c) => deepZone(c) && !near(c, 1));
-        const spot = (zone.some((c) => c.clean) ? zone.filter((c) => c.clean) : zone).sort((a, b) => b.d - a.d)[0];
+        // 벽을 등진 상자 자리(조립기 chestSpots: 물에서 떨어진 칸)가 먼저 — 트인 바닥 한가운데·물길 옆 상자는 떠 있어 보였다(2026-10-29 야외 VQA).
+        const backedSet = new Set(((d?.rooms ?? []) as { chestSpots?: Pt[] }[]).flatMap((r) => r.chestSpots ?? []).map((c) => c.y * map.width + c.x));
+        const rank = (c: Pt) => (backedSet.has(c.y * map.width + c.x) ? 0 : 1);
+        const pool = zone.some((c) => c.clean) ? zone.filter((c) => c.clean) : zone;
+        const spot = pool.sort((a, b) => rank(a) - rank(b) || b.d - a.d)[0];
         if (spot) {
           // 같은 그림 상자 셋부터는 「임시 표식」 린트 — 둘이면 얕은 상자 하나를 깊은 곳으로 옮긴다.
           if (chests.length >= 2) {
@@ -598,6 +607,10 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
     const others = floors.flatMap((id) => (run.ctx.project.maps[id]?.events ?? []).filter((e) => isFoe(e.id) || /_guardian$/.test(e.id))).map((e) => art(run.ctx.project, JSON.stringify(e).match(/troop_[a-z0-9_]+/)?.[0]));
     if (others.includes(art(run.ctx.project, bossTroop))) warnings.push("보스 그림이 잡몹·수문장 그림과 같다");
   } else if (/boss|보스|주인|군주|용|히드라|대마법사/u.test(wanted)) warnings.push("보스를 놓지 못했다");
+  // 적을 둔 던전인데 이 게임에 회복할 길이 하나도 없으면 시작 맵에 회복의 샘·시작 회복약(2026-10-29 vm1 flash jrpg 「전투 못 이김」).
+  let healNote = "";
+  try { const heal = ensureHealingAccess(run); if (heal.length) healNote = ` · 회복 길을 넣었다: ${heal.join(", ")}`; } catch { /* 회복 넣기 실패는 던전을 깨지 않는다 */ }
+  try { const rest = ensureBossRest(run); if (rest.length) healNote += ` · ${rest.join(", ")}`; } catch { /* 쉼터 넣기 실패는 던전을 깨지 않는다 */ }
   const calls: BuilderCall[] = run.calls.slice(firstCall);
   const first = floors[0]!;
   const ent = data.entrance as { x?: number; y?: number } | undefined;
@@ -607,7 +620,7 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
     : { mapId: first, x: ent?.x ?? Math.floor((num(data.width) ?? 40) / 2), y: ent?.y ?? Math.floor((num(data.height) ?? 30) / 2) };
   const seed = num(data.seed) ?? num(args.seed);
   const state: DungeonState = { args, seed, variant, floors };
-  const summary = `${spec.name}: ${type} ${floors.length}층${args.direction === "up" ? "(위로)" : ""}${args.flooded ? " · 물에 잠김" : ""}${args.lair ? " · 고블린 소굴" : ""}${data.gimmick ? ` · 장치 ${String(data.gimmick)}` : ""} (${num(data.width)}×${num(data.height)})`;
+  const summary = `${spec.name}: ${type} ${floors.length}층${args.direction === "up" ? "(위로)" : ""}${args.flooded ? " · 물에 잠김" : ""}${args.lair ? " · 고블린 소굴" : ""}${data.gimmick ? ` · 장치 ${String(data.gimmick)}` : ""} (${num(data.width)}×${num(data.height)})${healNote}`;
   return { ok: true, mapIds: floors, entrance, summary, warnings, missingArt: missing, calls, state };
 }
 

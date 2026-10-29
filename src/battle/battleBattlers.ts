@@ -10,7 +10,7 @@ import { startStateOf } from "@/project/session";
 import type { MonsterInstance } from "@/project/session";
 import { monsterBattleStats, monsterBattleStatsForSpecies, monsterCurrentHp, monsterDisplayName, monsterSkillIds, monsterSkillIdsAtLevel, monsterSpeciesById, normalizeMonsterInstanceBattleState } from "@/project/monsterCollection";
 import { classLearnedSkillIdsUpToLevel, effectiveActorClassId } from "@/project/sessionClass";
-import type { ActorId, ActorInitialEquipment, ActorParameterKey, ClassBattleCommand, EnemyActionPattern, EnemyId, Project, SkillId } from "@/project/types";
+import type { ActorId, ActorInitialEquipment, ActorParameterKey, ClassBattleCommand, EnemyActionPattern, EnemyId, EnemyRecord, Project, SkillId } from "@/project/types";
 import { resolveBattlerPose } from "@/battle/battlePose";
 import type { BattleActionResultSnapshot, BattleBattlerSnapshot } from "@/battle/types";
 import { classicEnemyFormation } from "@/battle/battlerPlacements";
@@ -557,6 +557,15 @@ function wildLevelAdjusted(project: Project, enemy: ReturnType<typeof normalizeE
     } as EnemyActionPattern;
   });
   return { level, stats: { ...enemy.stats, ...stats }, skillIds, actions: [...kept, ...added] };
+}
+
+/**
+ * 종 몬스터 적 레코드를 다른 레벨로 옮긴 값(능력치·기술·행동) — 야생 레벨 굴림과 같은 계산이다. 끝맺음이 길 몬스터 레벨을 관문 곡선에
+ * 맞출 때 레코드 자체를 바꾸는 데 쓴다(ai/v2/monsterRouteLevels). 종이 없거나 레벨이 같으면 undefined.
+ */
+export function speciesEnemyAtLevel(project: Project, enemy: EnemyRecord, level: number): { level: number; stats: EnemyRecord["stats"]; skillIds: SkillId[]; actions: EnemyActionPattern[] } | undefined {
+  const adjusted = wildLevelAdjusted(project, normalizeEnemyRecord(enemy), level);
+  return adjusted ? { level: adjusted.level, stats: adjusted.stats, skillIds: adjusted.skillIds, actions: [...adjusted.actions] } : undefined;
 }
 
 export function enemyBattlers(project: Project, troop: TroopRecord, options?: { readonly wildLevel?: number }): MutableBattler[] {

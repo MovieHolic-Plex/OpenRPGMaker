@@ -181,6 +181,30 @@ export function playerAnchors(project: Project, map: GameMap): Point[] {
   return anchors.filter((point) => inMapBounds(map, point.x, point.y));
 }
 
+/**
+ * 같은 맵 안으로 옮기는 이벤트(퍼즐로 여는 덩굴 문·잘린 덤불 틈 «어느 쪽으로 지나갈까?»)의 자리와 도착 칸.
+ * 왜(2026-10-29 standin monster 「새순 체육관」): 관장(14,3)은 받침→덩굴 문·가위→덤불 틈 두 장치 너머에 있었는데,
+ * 걸어 닿는 칸만 세던 확인이 관장을 «닿지 않음»으로 보고 입구 앞(14,15)으로 옮겨 체육관 퍼즐을 통째로 건너뛰게 했다.
+ * 스위치가 걸린 문이라도 같은 맵 안 이동이면 지나갈 수 있다고 본다 — 장치를 켤 수 있는지는 자동 플레이가 따로 본다.
+ * 걷기 확인은 이 이벤트 칸(또는 이웃)에 닿으면 도착 칸에서 이어 걷는다.
+ */
+export function sameMapPassages(map: GameMap): { at: Point; to: Point[] }[] {
+  const out: { at: Point; to: Point[] }[] = [];
+  for (const event of map.events ?? []) {
+    const to: Point[] = [];
+    const visit = (node: unknown): void => {
+      if (Array.isArray(node)) { for (const item of node) visit(item); return; }
+      if (!node || typeof node !== "object") return;
+      const record = node as Record<string, unknown>;
+      if (record.kind === "transfer" && record.mapId === map.id && typeof record.x === "number" && typeof record.y === "number" && inMapBounds(map, record.x, record.y)) to.push({ x: record.x, y: record.y });
+      for (const value of Object.values(record)) if (value && typeof value === "object") visit(value);
+    };
+    visit(event.pages ?? event.commands);
+    if (to.length) out.push({ at: { x: event.x, y: event.y }, to });
+  }
+  return out;
+}
+
 /** 앵커에서 걸어 닿는 칸 집합(y*width+x). 앵커가 없으면 null — 판단할 근거가 없다. */
 export function walkableFromAnchors(project: Project, map: GameMap): Set<number> | null {
   // 월드맵 키트 지도는 걸어서 닿지 않는 장소(섬·장벽 너머)를 배·비행선·관문으로 잇도록 만든 곳이다. 도달성은 키트의 여정 검사가

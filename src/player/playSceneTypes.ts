@@ -36,6 +36,9 @@ export type ParallelProcess = {
   pendingResult?: import("./interpreter").StepResult;
 };
 
+/** 걷는 NPC 가 떠난 칸을 보고 눌러도 말을 거는 여유(ms). */
+export const VACATED_GRACE_MS = 300;
+
 export type AutonomousMover = {
   stopOnBlocked?: boolean;
   moves: MoveCommand[];
@@ -53,6 +56,8 @@ export type AutonomousMover = {
   moveIntervalMs: number;
   moveDurationMs: number;
   activeMove: AutonomousMoveTween | null;
+  /** 방금 떠난 칸 — 걸음이 끝난 직후 잠깐, 그 칸을 보고 눌러도 말을 건다(playSceneMovement.findWalkerLeaving). */
+  vacated?: { readonly x: number; readonly y: number; readonly until: number };
   /**
    * 걷기 패턴 위상(0~3). 한 칸에 두 장씩 넘어가고 다음 칸은 이어서 — 왼발·오른발이 칸마다 번갈아 나온다.
    * 예전에는 칸마다 같은 발로 다시 시작했다(2026-10-22 「NPC 걷는 게 이상함」).

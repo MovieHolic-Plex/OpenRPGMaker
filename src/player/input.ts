@@ -369,6 +369,13 @@ export class Input {
   // 매 프레임 호출. 엣지 이벤트 갱신. RPG Maker 의 Input.update 처럼 「지금 눌림」을 읽고, 프레임 사이에
   // 시작하고 끝난 탭만 한 번 눌림으로 보충한다. 미루기는 없다 — 걷는 중에 온 입력은 그 프레임에 소비된다.
   update(): InputState {
+    if (this.dropEdgesOnce) {
+      // 불러오기를 고른 확인 키(Enter·Z)가 같은 keydown 안에서 필드 조사 엣지로도 잡혔다 — 메뉴는 이미 닫혀 있어 다음 프레임에
+      // 정면 이벤트를 다시 조사했다(2026-10-29 vm3 terra 방탈출 A6: 불러오자 번호 쪽지 대사가 다시 시작). 그 한 번의 엣지만 버린다.
+      this.dropEdgesOnce = false;
+      this.runtimeKeys.clearPendingActionEdge();
+      this.runtimeKeys.clearTappedDirections();
+    }
     if (!this.enabled) {
       this.runtimeKeys.clearPendingActionEdge();
       this.runtimeKeys.clearTappedDirections();
@@ -426,6 +433,12 @@ export class Input {
     if (state.confirmPressed) this.confirmConsumed = true;
     if (state.attackPressed) this.attackConsumed = true;
     return state;
+  }
+
+  private dropEdgesOnce = false;
+  /** 다음 update 에서 그때까지 쌓인 조사·공격·스킬 엣지와 방향 탭을 버린다(눌림 상태는 그대로 — 키를 떼면 평소대로). */
+  dropPendingEdgesOnNextUpdate(): void {
+    this.dropEdgesOnce = true;
   }
 
   // 엣지 소비 후 리셋(다음 눌름을 다시 잡기 위해).

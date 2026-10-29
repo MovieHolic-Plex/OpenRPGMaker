@@ -771,7 +771,7 @@ function resultHead(project: Project, snapshot: BattleSnapshot): HTMLElement {
     dataset: { testid: "battle-result-summary" },
     children: [
       el("span", { class: "battle-result-summary-item", children: ["EXP ", el("span", { class: "battle-result-summary-value", text: `+${snapshot.rewards.exp.toLocaleString("ko-KR")}` })] }),
-      el("span", { class: "battle-result-summary-gold", text: `+${snapshot.rewards.gold.toLocaleString("ko-KR")} ${resolveTerms(project).gold}` }),
+      el("span", { class: "battle-result-summary-gold", children: [`+${snapshot.rewards.gold.toLocaleString("ko-KR")} `, currencyUnitNode(resolveTerms(project).gold.trim() || "G")] }),
       ...(loot ? [el("span", { class: "battle-result-summary-loot", text: loot })] : []),
     ],
   });
@@ -793,16 +793,16 @@ function syncPixelLoot(panel: HTMLElement, snapshot: BattleSnapshot): void {
     row.dataset.rewardKind = kind;
     const entry = kind === "item" ? counts[itemIndex++] : undefined;
     if (row.querySelector(".battle-result-reward-owned")) continue;
-    let owned: string | undefined;
+    let owned: (string | HTMLElement)[] | undefined;
     if (kind === "gold") {
       const unit = battleCurrencyUnit();
-      owned = `소지금 ${gold.toLocaleString("ko-KR")} ${unit} → ${(gold + snapshot.rewards.gold).toLocaleString("ko-KR")} ${unit}`;
+      owned = [`소지금 ${gold.toLocaleString("ko-KR")} `, currencyUnitNode(unit), ` → ${(gold + snapshot.rewards.gold).toLocaleString("ko-KR")} `, currencyUnitNode(unit)];
     }
     if (entry) {
       const before = snapshot.eventState.inventory[entry[0]] ?? 0;
-      owned = `보유 ${before} → ${before + entry[1]}`;
+      owned = [`보유 ${before} → ${before + entry[1]}`];
     }
-    if (owned) row.append(el("span", { class: "battle-result-reward-owned", text: owned }));
+    if (owned) row.append(el("span", { class: "battle-result-reward-owned", children: owned }));
   }
 }
 
@@ -1130,6 +1130,14 @@ function resultLine(result: BattleSnapshot["result"]): string {
 
 /** 자료집 용어의 화폐 단위. 비어 있으면 기본 「G」.
  *  승리 칸이 「골드」로 고정되면 상점·메뉴의 「G」(또는 만든 사람이 바꾼 이름)와 다른 돈을 받은 것처럼 읽힌다. */
+/**
+ * 돈 단위 글자. 도트 창의 갈무리·둥근모 「G」는 「6」과 같은 모양이라 「+37 G」가 「+37 6」으로 읽혔다(2026-10-29 전투 승리 창 검수).
+ * 단위만 따로 감싸 도트 창 CSS 가 획이 분명한 굵은 글꼴·같은 크기로 그린다.
+ */
+function currencyUnitNode(unit: string): HTMLElement {
+  return el("span", { class: "battle-currency-unit", text: unit });
+}
+
 function battleCurrencyUnit(): string {
   return resolveTerms(store.getCurrent()).gold.trim() || "G";
 }

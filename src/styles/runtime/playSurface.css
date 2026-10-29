@@ -51,6 +51,10 @@
   opacity: 1;
 }
 .play-stage {
+  /* 한국어는 어절(공백) 단위로 줄을 바꾼다 — 기본값은 글자 사이에서 꺾어 「암호/를」「가운/데」가 됐다(장부 hud.json).
+     무대 안 모든 창(목표 안내·대사·메뉴·엔딩)이 물려받는다. 공백 없는 긴 낱말은 anywhere 가 넘칠 때만 끊는다. */
+  word-break: keep-all;
+  overflow-wrap: anywhere;
   background: #000;
   height: var(--play-logical-height);
   left: var(--play-stage-left);
@@ -104,6 +108,12 @@
    위쪽 선택지도 대사용 높이(position-top 의 height)를 물려받으면 셋째 줄이 잘린다. */
 .player-layout .play-stage > .dialogue-overlay.choices-active.position-bottom,
 .player-layout .play-stage > .dialogue-overlay.choices-active.position-top {
+  height: auto;
+  min-height: min(var(--runtime-choice-panel-height, 26%), var(--play-visible-height));
+  max-height: calc(var(--play-visible-height) - 8px);
+}
+/* 숫자 입력창도 내용 높이로 자란다 — 대사용 높이(25%)를 물려받으면 제목·확인 단추가 창 밖으로 넘쳤다(장부 hud #35). */
+.player-layout .play-stage > .dialogue-overlay:has(> .number-input-box) {
   height: auto;
   min-height: min(var(--runtime-choice-panel-height, 26%), var(--play-visible-height));
   max-height: calc(var(--play-visible-height) - 8px);
@@ -284,6 +294,8 @@
 .cinematic-shot > .cinematic-effects { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
 .cinematic-narration[hidden] { display: none; }
 .cinematic-narration {
+  /* 줄 길이를 고르게 — 「이십 / 년이 지났다」처럼 둘째 줄에 한두 낱말만 남지 않게(장부 assembly #24). */
+  text-wrap: balance;
   max-height: 65%;
   overflow-y: auto;
   white-space: pre-wrap;
@@ -297,6 +309,11 @@
   margin-top: auto;
   padding: 8px;
   background: rgb(0 0 0 / 80%);
+}
+/* 애니메틱 인물이 아래 띠에 가려지고 카메라로도 못 비킬 때(cinematicSequence animaticBandClearance) 띠를 위로 옮긴다(장부 assembly #31). */
+.cinematic-sequence:not([data-scene-kind="text"]) .cinematic-narration.cinematic-narration--top {
+  margin-top: 0;
+  margin-bottom: auto;
 }
 /* 애니메틱 캔버스는 position:absolute 라 static 자막을 덮는다 - 연출 없는 애니메틱 컷도 자막이 캔버스 위에 와야 읽힌다. */
 .cinematic-sequence[data-scene-kind="animatic"] .cinematic-frame:not([data-presented="true"]) .cinematic-narration { position: relative; z-index: 1; }
@@ -428,6 +445,7 @@
 }
 /* 하단 자막: 배경 질감 위에서도 읽히도록 가장자리까지 이어지는 어두운 띠(글자 대비 우선). */
 .cinematic-frame[data-presented="true"] .cinematic-narration[data-layout="bottom"] { position: absolute; bottom: var(--cinematic-letterbox); left: 0; right: 0; width: auto; max-width: none; max-height: 40%; text-align: center; padding: 10px 8%; background: linear-gradient(0deg, #000d 0%, #000c 65%, #0000 100%); }
+.cinematic-frame[data-presented="true"] .cinematic-narration[data-layout="bottom"].cinematic-narration--top { bottom: auto; top: var(--cinematic-letterbox); background: linear-gradient(180deg, #000d 0%, #000c 65%, #0000 100%); }
 .cinematic-frame[data-presented="true"] .cinematic-narration[data-layout="left"] { position: absolute; left: 9%; top: 27%; width: 68%; text-align: left; }
 .cinematic-frame[data-presented="true"] .cinematic-narration[data-layout="credits"] { position: absolute; top: 0; max-height: none; overflow: visible; text-align: center; }
 .cinematic-narration[data-font="serif"] { font-family: var(--font-serif-myeongjo); }
@@ -544,4 +562,15 @@
 /* 미연시 bar 레이아웃은 화면 끝에 닿는 전폭 띠다 — 위 창 6px 내림(이름표 여백)을 받지 않는다(이름표는 vnLook 이 띠 아래로 내린다). */
 .player-layout .play-stage > .dialogue-overlay[data-vn-layout="bar"][data-vn-look].position-top {
   top: var(--play-crop-top);
+}
+
+/* 고해상도 무대(높이/240 ≥ 1.5, playSurface.ts hiresUiZoom): 320×240 기준으로 그린 글자 UI 를 무대 배율만큼 키운다.
+   zoom 은 퍼센트 위치(left:10% 등)는 그대로 두고 글자·px 여백만 키운다. 양쪽 전신 대화창(data-dialogue-stage)은
+   자기 --dialogue-ui-scale 로 이미 키우므로 빼고, 에메랄드 타이틀은 자기 격자 규칙이 있어 뺀다. */
+[data-hires-ui] .dialogue-overlay:not([data-dialogue-stage]) > .dialogue-box,
+[data-hires-ui] .rm-title-screen:not([data-monster-style]) > :is(.rm-title-screen-title, .rm-title-screen-logo, .rm-title-logo-subtitle, .rm-title-menu, .rm-title-kicker, .rm-title-subtitle, .rm-title-press-start, .rm-title-editorial-copy),
+[data-hires-ui] .cinematic-narration,
+[data-hires-ui] .cinematic-skip-hint,
+[data-hires-ui] .play-stage > .runtime-overlay[data-testid="cutscene-skip-hint"] {
+  zoom: var(--hires-ui-zoom, 1);
 }

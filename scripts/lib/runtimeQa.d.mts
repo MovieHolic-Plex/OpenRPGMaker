@@ -32,6 +32,8 @@ export type RuntimeQaOp =
       /** 생략하면 현재 파티 전원. */
       readonly actorIds?: readonly string[];
     }
+  | { readonly kind: "giveItem"; readonly itemId: string; readonly amount?: number }
+  | { readonly kind: "setSwitch"; readonly switchId: string; readonly value?: boolean }
   | { readonly kind: "dir"; readonly dir: RuntimeQaDir | null }
   /**
    * 방향을 `ms` 동안 밀고 있다가 뗀다. 금지된 고정 `wait` 와 다르다 — 경과 시간이 곧 자극이고,

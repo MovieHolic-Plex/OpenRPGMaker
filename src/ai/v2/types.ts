@@ -23,6 +23,8 @@ export interface ZoneSpec {
   readonly purpose?: string;
   /** 이 구역의 주인공 물건(낱말): 「망원경」「벽난로」「바 카운터」「계단」. 빌더가 부품 사전에서 찾아 놓는다. */
   readonly anchors?: readonly string[];
+  /** (실내) 이 방에 놓을 기물 묶음 — 묶음 id 또는 몸통 기물 id(「bookshelf 2w」「forge」). 없으면 방 종류로 함수가 고른다. */
+  readonly vignettes?: readonly string[];
   readonly size?: PlaceSize;
   /** 몇 층의 구역인가(실내·집, 기본 1). 2 이면 위층에 짓는다. */
   readonly floor?: number;
@@ -38,6 +40,8 @@ export interface PlaceSpec {
   readonly name: string;
   /** make_place 가 처음 지을 때 넣는 무작위 값 — 같은 요청이 늘 같은 맵이 되지 않게 빌더가 씨앗·배치 변형에 섞는다. 고치기는 같은 값을 물려받는다. 모델은 쓰지 않는다. */
   readonly salt?: number;
+  /** make_place 가 넣는 결정적 열쇠(프로젝트 열쇠 + 요청문) — 같은 게임·같은 요청이면 같은 방, 다른 게임이면 다른 설계를 고르게 실내 빌더가 견본·묶음 씨앗에 쓴다. 모델은 쓰지 않는다. */
+  readonly variety?: string;
   /** 화풍·문화권 낱말: fantasy(기본) · jp-modern · wizarding · sengoku · modern-city … 카드가 고를 수 있는 값을 준다. */
   readonly style?: string;
   /** 던전·동굴 주제: cave · catacomb · castle · temple · volcano · ice · mine … */

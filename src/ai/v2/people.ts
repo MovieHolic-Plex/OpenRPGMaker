@@ -51,6 +51,22 @@ export function transferCells(map: GameMap): Cell[] {
 }
 
 /** 사람이 서서 막는 칸: 이동 칸이 아닌 이벤트 칸 전부(그림 있는 이벤트·기존 NPC). */
+/**
+ * 큰 몸(page.footprint)을 가진 이벤트가 덮는 칸 전부(앵커 칸 제외) — 키운 보스(3×2)처럼 그림이 여러 칸을 덮는다.
+ * 그 칸에 조사 칸을 두면 보스 그림 밑에 묻혀 보스를 쓰러뜨리기 전에는 조사할 수 없었다(2026-10-29 vm1 deepseek 「동굴 입구의 봉인」).
+ */
+export function eventBodyCells(map: GameMap): Set<number> {
+  const set = new Set<number>();
+  for (const e of eventsOf(map)) for (const p of e.pages ?? []) {
+    const fp = (p as { footprint?: { width?: number; height?: number } }).footprint;
+    const fw = Math.max(1, Math.floor(fp?.width ?? 1)), fh = Math.max(1, Math.floor(fp?.height ?? 1));
+    if (fw === 1 && fh === 1) continue;
+    const left = e.x - Math.floor((fw - 1) / 2);
+    for (let y = e.y - (fh - 1); y <= e.y; y++) for (let x = left; x < left + fw; x++) if (x >= 0 && y >= 0 && x < map.width && y < map.height && !(x === e.x && y === e.y)) set.add(y * map.width + x);
+  }
+  return set;
+}
+
 export function eventBlockers(map: GameMap): Set<number> {
   const set = new Set<number>();
   for (const e of eventsOf(map)) if (!hasTransfer(e)) set.add(e.y * map.width + e.x);
@@ -406,6 +422,73 @@ function findObjectBox(project: Project, map: GameMap, word: string, room: RoomR
  * 한쪽·벽 쪽 / 북쪽 벽(남·동·서) / 구석 / 창가 — 방 낱말(홀·부엌·침실…)이 같이 오면 손 도트 실내의 그 방 안에서.
  * avoid: 이미 쓴 칸(다른 사람·컷신 자리).
  */
+// ── 실내 사람 자리 비용 ──────────────────────────────────────────────────────
+// 2026-10-29 room-vig6 tavern 88: 주인·선원·일꾼 셋이 양탄자 윗머리에 위아래로 붙어 섰다(판정 「NPC 가 겹쳐 서서 카펫 시작부를 막는다」).
+// 이 칸들이 «못 서는 칸»은 아니다 — 다른 곳이 없으면 선다. 그래서 금지가 아니라 비용으로, 같은 비용 계산을 놓을 때(resolveWhere)와
+// 끝맺음·다시 짓기 뒤(eventReach spreadCrowdedPeople)에 같이 쓴다. 비용 4 이상 = 길·가구·문을 막는 자리(양탄자는 이어진 칸 6 이상인 큰 것만 — 침대 밑 깔개는 괜찮다).
+const RUG_LABEL = /양탄자|카펫|러그|깔개|carpet|rug/iu;
+export const PERSON_SPOT_BAD = 4;
+export interface PersonSpotContext { readonly reach: Uint8Array; readonly doors: readonly Cell[]; readonly others: ReadonlySet<number>; readonly bigRug: ReadonlySet<number> }
+/** 큰 양탄자(이어진 칸 6 이상 — 통로 러너·홀 카펫) 칸. 침대 밑 작은 깔개는 서도 된다. */
+function bigRugCells(project: Project, map: GameMap): Set<number> {
+  const w = map.width, n = w * map.height;
+  const { lowerOverlay } = layers(map);
+  const rug = new Uint8Array(n);
+  for (let i = 0; i < n; i++) if (RUG_LABEL.test(tileLabel(project, map, lowerOverlay?.[i]))) rug[i] = 1;
+  const out = new Set<number>(), seen = new Uint8Array(n);
+  for (let i = 0; i < n; i++) {
+    if (!rug[i] || seen[i]) continue;
+    const comp = [i]; seen[i] = 1;
+    for (let k = 0; k < comp.length; k++) {
+      const j = comp[k]!, x = j % w, y = (j - x) / w;
+      for (const [dx, dy] of DIRS) { const nx = x + dx, ny = y + dy, m = ny * w + nx; if (nx >= 0 && ny >= 0 && nx < w && ny < map.height && rug[m] && !seen[m]) { seen[m] = 1; comp.push(m); } }
+    }
+    if (comp.length >= 6) for (const j of comp) out.add(j);
+  }
+  return out;
+}
+export function personSpotContext(project: Project, map: GameMap, exceptId?: string): PersonSpotContext {
+  const start = walkStart(project, map);
+  const reach = terrainReachability(project, map, start);
+  const others = new Set<number>();
+  for (const e of eventsOf(map)) if (e.id !== exceptId && !hasTransfer(e)) others.add(e.y * map.width + e.x);
+  return { reach, doors: [...transferCells(map), ...edgeExitCells(map, reach)], others, bigRug: bigRugCells(project, map) };
+}
+/** 실내에서 사람이 이 칸에 서면 드는 비용(0 = 괜찮다). 문 곁 2칸 안 6 · 가구의 하나뿐인 접근 칸 6 · 가구 그림 칸 위 4 · 벽 사이 한 칸 문틈 6 · 다른 사람 바로 위·아래 4(옆 1) · 큰 양탄자(통로 러너·홀 카펫) 위 4. */
+export function personSpotCost(project: Project, map: GameMap, c: Cell, ctx: PersonSpotContext): number {
+  const w = map.width, h = map.height;
+  const inside = (x: number, y: number) => x >= 0 && y >= 0 && x < w && y < h;
+  let cost = 0;
+  if (ctx.doors.some((d) => dist(d, c) < 2)) cost += 6;
+  const { lower } = layers(map);
+  for (const [dx, dy] of DIRS) {
+    const nx = c.x + dx, ny = c.y + dy;
+    if (!inside(nx, ny) || !objectAt(map, { x: nx, y: ny })) continue;
+    if (WALL_LABEL.test(tileLabel(project, map, lower?.[ny * w + nx]))) continue; // 벽에 건 그림·창은 앞을 막아도 쓸 수 있다
+    let open = 0;
+    for (const [ex, ey] of DIRS) {
+      const mx = nx + ex, my = ny + ey;
+      if (!inside(mx, my) || (mx === c.x && my === c.y)) continue;
+      const j = my * w + mx;
+      if (ctx.reach[j] && !objectAt(map, { x: mx, y: my }) && !ctx.others.has(j)) open++;
+    }
+    if (!open) { cost += 6; break; }
+  }
+  // 가구 그림 칸(바 의자 줄·가구 윗칸) 위에 선 사람 — 의자에 파묻힌 것처럼 읽혔다(2026-10-29 vm4 terra mystery 「빨간 머리 NPC 가 의자와 장작에 파묻힘」).
+  if (objectAt(map, c)) cost += 4;
+  // 칸막이 벽 사이 한 칸 틈(방과 방을 잇는 문틈) — 양옆이 가구 아닌 벽이고 앞뒤가 열렸다. 그 자리에 선 사람은 벽에 박혀 보이고 길을 막는다
+  // (2026-10-29 vm4 deepseek mystery 「흰머리 NPC 가 두 방을 가르는 벽 틈에 끼어」 major 셋). 카운터 뒤 주인 줄(앞뒤가 벽·카운터)은 가구라 아니다.
+  const wallAt = (x: number, y: number) => !inside(x, y) || (!ctx.reach[y * w + x] && !objectAt(map, { x, y }));
+  const openAt = (x: number, y: number) => inside(x, y) && !!ctx.reach[y * w + x];
+  if ((wallAt(c.x - 1, c.y) && wallAt(c.x + 1, c.y) && openAt(c.x, c.y - 1) && openAt(c.x, c.y + 1))
+    || (wallAt(c.x, c.y - 1) && wallAt(c.x, c.y + 1) && openAt(c.x - 1, c.y) && openAt(c.x + 1, c.y))) cost += 6;
+  const has = (x: number, y: number) => inside(x, y) && ctx.others.has(y * w + x);
+  if (has(c.x, c.y - 1) || has(c.x, c.y + 1)) cost += 4;
+  else if (has(c.x - 1, c.y) || has(c.x + 1, c.y)) cost += 1;
+  if (ctx.bigRug.has(c.y * w + c.x)) cost += 4;
+  return cost;
+}
+
 export function resolveWhere(
   project: Project,
   map: GameMap,
@@ -415,6 +498,7 @@ export function resolveWhere(
   const w = map.width;
   const start = walkStart(project, map);
   const blockers = eventBlockers(map);
+  const bodies = eventBodyCells(map);
   const reach = terrainReachability(project, map, start);
   const transferList = transferCells(map);
   const transfers = new Set(transferList.map((c) => c.y * w + c.x));
@@ -434,8 +518,10 @@ export function resolveWhere(
   const usableCell = (c: Cell): boolean => {
     if (!inside(c)) return false;
     const i = c.y * w + c.x;
-    if (!reach[i] || blockers.has(i) || transfers.has(i) || avoid.has(i) || lanes.has(i) || throats.has(i)) return false;
+    if (!reach[i] || blockers.has(i) || bodies.has(i) || transfers.has(i) || avoid.has(i) || lanes.has(i) || throats.has(i)) return false;
     if (playerStart && c.x === playerStart.x && c.y === playerStart.y) return false;
+    // 사람은 시작 칸 바로 위·아래에 세우지 않는다 — 3/4 시점에서 주인공 머리 위에 다른 사람이 올라탄 것처럼 겹쳤다(2026-10-29 야외 VQA vm2 terra jrpg 319·350).
+    if (!fp && playerStart && c.x === playerStart.x && Math.abs(c.y - playerStart.y) === 1) return false;
     if ((isObject || indoor) && objectAt(map, c)) return false; // 가구·소품 칸 위에 서거나 놓지 않는다
     return true;
   };
@@ -472,8 +558,11 @@ export function resolveWhere(
   // 바깥 맵의 사람은 길 위가 아니라 길가에 선다(2026-10-23 3차 몬스터 마을: 주민 둘이 큰길 한가운데 서서 길을 좁혔다).
   const outdoorRoads = !fp && !indoor ? roadCellSet(project, map) : undefined;
   const roadCost = (c: Cell): number => (outdoorRoads?.has(c.y * w + c.x) ? 8 : 0);
+  // 실내 사람은 문 곁·가구의 하나뿐인 접근 칸·다른 사람 바로 위아래·양탄자 가운데를 피한다(personSpotCost).
+  const spotCtx = !fp && indoor ? personSpotContext(project, map) : undefined;
+  const spotCost = (c: Cell): number => (spotCtx ? personSpotCost(project, map, c, spotCtx) : 0);
   const pick = (score: (c: Cell) => number): Cell | undefined => {
-    const ranked = cells.map((c) => ({ c, s: score(c) + roadCost(c) })).filter((r) => Number.isFinite(r.s)).sort((a, b) => a.s - b.s);
+    const ranked = cells.map((c) => ({ c, s: score(c) + roadCost(c) + spotCost(c) })).filter((r) => Number.isFinite(r.s)).sort((a, b) => a.s - b.s);
     let tries = 0;
     for (const { c } of ranked) {
       if (++tries > 80) break;
@@ -668,6 +757,15 @@ export function dirTowardCell(from: Cell, to: Cell): Dir {
 const ROLE_LOOKS: ReadonlyArray<readonly [RegExp, readonly string[], ("male" | "female")?]> = [
   [/경비|문지기|수문장|파수|위병|보초|병사|군인|초병|guard|sentry|gatekeeper|soldier|watchman/i, ["병사", "guard"], "male"],
   [/촌장|이장|장로|원로|마을 ?어른|elder|chief|headman|mayor/i, ["할아버지", "노인"], "male"],
+  // 청사진 단계 이름의 직함(2026-10-28 standin joseon·magic: 포졸·주모·종사관·교수·사서가 전부 「중년 남성 주민」이 됐다).
+  [/포졸|포교|나졸|군졸|순라/i, ["병사", "guard"], "male"],
+  [/종사관|사또|대감|양반|관원|나리|선비|영주|귀족|noble|lord/i, ["귀족", "노학자"], "male"],
+  [/주모|여주인|안주인|주인댁/i, ["아줌마", "여관 주인"], "female"],
+  [/교장|학장|headmaster|principal/i, ["교수", "노학자"]],
+  [/교수|박사|학자|연구원|professor|scholar|researcher/i, ["교수", "노학자", "박사"]],
+  [/사서|librarian/i, ["사서", "노학자"]],
+  [/선생|교사|스승|teacher|tutor/i, ["선생", "교수"]],
+  [/의사|doctor|medic/i, ["박사", "연구원"]],
   [/할머니|노파|old woman|grandma/i, ["할머니", "노인"], "female"],
   [/할아버지|노인|영감|old man|grandpa/i, ["할아버지", "노인"], "male"],
   [/여관|바텐더|술집 ?주인|주점 ?주인|innkeeper|bartender|barkeep/i, ["여관 주인", "상인"]],
@@ -735,6 +833,12 @@ export function pickPersonGraphic(project: Project, map: GameMap, role: string |
     const g = e.pages?.[0]?.graphic as { sprite?: { id?: string }; pattern?: number } | undefined;
     if (g?.sprite?.id && typeof g.pattern === "number" && g.pattern >= 3) used.add(`${g.sprite.id}#${decodeCharsetFrameIndex(g.pattern).characterIndex}`);
   }
+  // 주인공(시작 파티) 칩은 NPC 에 쓰지 않는다 — 2026-10-29 vm mystery: 용의자 「마부 한스」가 탐정 주인공과 같은 칩으로 서 있었다.
+  const resKey = (s: string) => s.replace(/^tex_/u, "").replace(/[_-]/gu, "").toLowerCase();
+  const heroes = new Set((project.system?.startActorIds ?? []).flatMap((id) => {
+    const actor = project.database.actors.find((a) => a.id === id) as { characterResourceId?: string; characterIndex?: number } | undefined;
+    return actor?.characterResourceId ? [`${resKey(actor.characterResourceId)}#${actor.characterIndex ?? 0}`] : [];
+  }));
   const overrides = (project as unknown as { charsetLabels?: Parameters<typeof queryNpcGraphics>[2] }).charsetLabels;
   let best: (PersonGraphic & { score: number }) | undefined;
   // 장르 잠금(몬스터 수집·현대 연애)이 강제 중이면 허용 칩만 — 막힌 칩을 골라 place_npc 가 거부하던 길을 미리 막는다.
@@ -753,6 +857,7 @@ export function pickPersonGraphic(project: Project, map: GameMap, role: string |
       const key = `${e.textureKey}#${e.characterIndex}`;
       const score = qi * 100 + rank + (face ? 0 : 70) + (familyFits(map, e.textureKey) ? 0 : 45)
         + (gender && e.gender && e.gender !== "none" && e.gender !== gender ? 25 : 0) + (used.has(key) ? 15 : 0)
+        + (heroes.has(`${resKey(e.textureKey)}#${e.characterIndex}`) ? 300 : 0)
         // 특이한 차림(이국 터번·닌자·요정·난쟁이·수녀)은 그렇게 말했을 때만 — 마을 촌장이 터번 노인으로 나왔다.
         + (ODD_LOOK.test(text) && !ODD_LOOK.test(asked) ? 20 : 0);
       if (!best || score < best.score) best = { textureKey: e.textureKey, characterIndex: e.characterIndex, label: e.label, query: q, score, ...(face ? { faceResourceId: face } : {}) };
@@ -842,7 +947,10 @@ export function buildPeople(run: BuildRun, people: readonly PersonSpec[], mapId?
     // 바깥 맵에서는 같은 부름의 사람끼리 바로 옆에 붙여 세우지 않는다(마을 광장에 둘이 겹쳐 선 줄처럼 보였다) — 실내는 바 앞 손님처럼 붙어도 된다.
     const outdoor = (map as unknown as { climate?: { mode?: string } }).climate?.mode !== "indoor";
     const avoid = outdoor ? used.flatMap((c) => [-1, 0, 1].flatMap((dy) => [-1, 0, 1].map((dx) => ({ x: c.x + dx, y: c.y + dy })))) : used;
-    const where = resolveWhere(run.ctx.project, map, person.where, { at: person.at, avoid, role: `${person.role} ${person.name ?? ""}` });
+    // at {x:0,y:0} 은 모델이 빈 칸을 채운 자리표시다(2026-10-29 room-vig6 tavern: 셋 다 at (0,0) → 맵 왼쪽 위에서 가장 가까운 칸 (6,4)·(7,4)·(6,5) 에 몰렸다).
+    // (0,0) 은 어느 맵에서나 벽·가장자리 칸이라 진짜 자리로 쓰지 않는다 — 자리 낱말(where)로 푼다.
+    const at = person.at && !(person.at.x === 0 && person.at.y === 0) ? person.at : undefined;
+    const where = resolveWhere(run.ctx.project, map, person.where, { at, avoid, role: `${person.role} ${person.name ?? ""}` });
     if (where.note) warnings.push(`${label}: ${where.note}`);
     const cell = where.cell;
 

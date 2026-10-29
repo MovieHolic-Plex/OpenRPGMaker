@@ -13,11 +13,16 @@
 //   … --checkpoint boss,ending                           # 고른 것만 / 접두사는 boss*
 //   … --netns                                            # 루프백만 있는 네트워크 이름 공간에서(ERR_NETWORK_CHANGED 회피)
 //   … --save-checkpoints                                 # captureCheckpoint op 이 뜬 실제 저장을 세트 파일에 넣는다
+//   … --whole-game <project 폴더>                        # project.sqlite + assets/ 실물 게임을 컴파일된 출하 플레이어
+//                                                        # (dist/export-player, wholeGamePlayer --serve)로 띄운다. 올린 그림도 나온다.
+//                                                        # 먼저 `vite build --config vite.player.config.ts` 로 dist 를 만든다.
 //
 // 게이트가 실패하면 비영점으로 종료한다. 결과는 SUMMARY.md 를 **먼저** 읽어라.
 // 설계: docs/superpowers/specs/2026-08-28-runtime-vision-qa-design.md
 import { chromium, firefox } from "@playwright/test";
-import { spawnSync } from "node:child_process";
+import { spawn, spawnSync } from "node:child_process";
+import { mkdtempSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { runRuntimeQa, startPlayerQaServer } from "./lib/runtimeQaRun.mjs";
@@ -35,7 +40,7 @@ const REPO_ROOT = fileURLToPath(new URL("../", import.meta.url));
 function parseArgs(argv) {
   const args = {
     scenario: "smoke", project: null, out: null, headed: false, browser: "chromium",
-    checkpoint: null, checkpointSet: null, parallel: 2, saveCheckpoints: false,
+    checkpoint: null, checkpointSet: null, parallel: 2, saveCheckpoints: false, wholeGame: null,
   };
   for (let i = 0; i < argv.length; i += 1) {
     const arg = argv[i];
@@ -48,6 +53,7 @@ function parseArgs(argv) {
     else if (arg === "--checkpoint-set") args.checkpointSet = argv[++i];
     else if (arg === "--parallel") args.parallel = Number(argv[++i]);
     else if (arg === "--save-checkpoints") args.saveCheckpoints = true;
+    else if (arg === "--whole-game") args.wholeGame = argv[++i];
     else throw new Error(`알 수 없는 인자: ${arg}`);
   }
   if (!["chromium", "firefox"].includes(args.browser)) throw new Error(`알 수 없는 브라우저: ${args.browser}`);
@@ -109,11 +115,13 @@ if (args.checkpoint || args.checkpointSet) {
   }
   const checkpoints = selectCheckpoints(set, args.checkpoint ?? "all");
   const outRoot = resolveOutRoot(args.out, scenario.id);
-  const server = await startPlayerQaServer();
+  // --whole-game: 체크포인트도 SQLite 실물 게임(출하 플레이어)으로 부팅한다 — 빠지면 기본 픽스처로 떨어져 «없는 맵» 으로 죽었다.
+  const server = args.wholeGame ? await startWholeGameServer(args.wholeGame) : await startPlayerQaServer();
+  if (args.wholeGame) effective = { ...effective, projectFixture: server.projectFixture };
   let results;
   try {
     console.log(JSON.stringify({ qaBrowser: args.browser, qaPort: server.port, checkpointSet: set.set, checkpoints: checkpoints.map((c) => c.id), parallel: args.parallel }));
-    results = await runCheckpoints({ scenario: effective, set, checkpoints, parallel: args.parallel, launchBrowser, serverUrl: server.url, outRoot });
+    results = await runCheckpoints({ scenario: effective, set, checkpoints, parallel: args.parallel, launchBrowser, serverUrl: server.url, ...(server.projectUrl ? { projectUrl: server.projectUrl } : {}), outRoot });
   } finally {
     await server.close();
     console.log(JSON.stringify({ qaCleanup: "browsers and server closed", qaPort: server.port }));
@@ -129,7 +137,33 @@ if (args.checkpoint || args.checkpointSet) {
   process.exit(failedCheckpoints.length > 0 ? 1 : 0);
 }
 
-const server = await startPlayerQaServer();
+/** SQLite 실물 게임을 wholeGamePlayer --serve 로 띄운다 — 제품 prepareWebExport + dist/export-player + 올린 그림(SHA 확인). */
+async function startWholeGameServer(projectDir) {
+  const serveOut = mkdtempSync(join(tmpdir(), "runtime-qa-whole-"));
+  const child = spawn(process.execPath, [join(REPO_ROOT, "src/harnesses/assistant-capability/node/wholeGamePlayer.mjs"), "--project-dir", resolve(projectDir), "--out", serveOut, "--serve"], { cwd: REPO_ROOT, stdio: ["ignore", "pipe", "inherit"] });
+  const served = await new Promise((done, fail) => {
+    let buffer = "";
+    const timer = setTimeout(() => { child.kill("SIGTERM"); fail(new Error("wholeGamePlayer --serve 가 10분 안에 뜨지 않았다")); }, 600_000);
+    child.stdout.on("data", (chunk) => {
+      buffer += chunk;
+      const line = buffer.split("\n").find((row) => row.startsWith("{"));
+      if (!line) return;
+      try { const parsed = JSON.parse(line); clearTimeout(timer); done(parsed); } catch { /* 줄이 덜 왔다 */ }
+    });
+    child.on("exit", (code) => { clearTimeout(timer); fail(new Error(`wholeGamePlayer 종료 ${code}`)); });
+  });
+  const url = new URL(served.playUrl);
+  return {
+    url: url.origin,
+    port: Number(url.port),
+    projectUrl: served.boot.projectUrl,
+    projectFixture: join(serveOut, "player.json"),
+    close: async () => { child.kill("SIGTERM"); },
+  };
+}
+
+const server = args.wholeGame ? await startWholeGameServer(args.wholeGame) : await startPlayerQaServer();
+if (args.wholeGame) effective = { ...effective, projectFixture: server.projectFixture };
 let browser;
 let report;
 try {
@@ -143,6 +177,7 @@ try {
   const page = context ? await context.newPage() : await browser.newPage();
   report = await runRuntimeQa(page, effective, {
     serverUrl: server.url,
+    ...(server.projectUrl ? { projectUrl: server.projectUrl } : {}),
     // resolve: 절대 경로(--out /tmp/...)는 그대로 쓴다. join 은 저장소 안 tmp/... 로 바꿔 버린다.
     outDir: args.out ? resolve(REPO_ROOT, args.out) : undefined,
   });

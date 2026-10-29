@@ -7,7 +7,8 @@
 /* ── 글자 ── */
 .dialogue-overlay[data-vn-look][data-vn-look] {
   --runtime-dialogue-text: var(--vn-text);
-  --runtime-dialogue-font-size: calc(var(--runtime-font-size-9) * var(--vn-font-scale, 1));
+  /* 양쪽 전신 무대(1024×768)에서 dialogue.ts 가 거는 --dialogue-ui-scale 을 여기서도 곱한다 — 빠뜨리면 넓은 창에 9px 한 줄(VQA hud#106). */
+  --runtime-dialogue-font-size: calc(var(--runtime-font-size-9) * var(--dialogue-ui-scale, 1) * var(--vn-font-scale, 1));
   --vn-name-h: calc(var(--runtime-dialogue-font-size) * 1.9);
 }
 

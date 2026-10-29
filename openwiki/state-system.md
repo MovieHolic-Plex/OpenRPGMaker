@@ -22,6 +22,8 @@ End-to-end map of the state/status-effect system: authored definition, runtime a
 
 `StateRecord` fields are **optional (sparse)** — the record only stores user overrides; missing fields fall back to the ontology template. `normalizeStateRecord` (`src/project/databaseRecordModel.ts`) preserves values as-is without arbitrary clamping; `resolvedStateValues(id, name, record)` merges record-overrides onto `stateOntologyFor(id, name)` for view/runtime resolution.
 
+- **전원 회복(`recoverAll`)은 남는 상태도 푼다**(2026-10-29 vm3 flash jrpg): RPG 만들기의 「완전 회복」처럼 대상 배우의 `actorStateIds` 를 비운다(`src/project/sessionActorCommands.ts`). 전에는 HP/MP 만 채워 동굴 잡몹의 독(「전투 종료 후 유지」)이 회복의 샘을 지나도 남아 보스전 내내 HP 를 깎았다. 회복의 샘·쓰러진 뒤 회복(`defeatRecovery`)·체크포인트 재시도가 같은 함수를 쓴다. 여관(`inn`)은 그대로 「휴식」 해제 조건 상태만 푼다.
+
 ## StateRecord fields (authored)
 
 Defined at `src/project/types/database.ts:562`. All fields optional except `id`, `name`.

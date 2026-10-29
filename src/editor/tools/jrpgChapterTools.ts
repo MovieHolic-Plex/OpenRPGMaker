@@ -17,7 +17,7 @@ import { charsetGraphic } from "./eventCompile";
 import { heroCharacterResourceId } from "./cutsceneCharacterLock";
 import { ensureNamedSwitch } from "./flagHelpers";
 import {
-  asCell, asRoom, chestLoot, edgeGate, field, houseDoors, list, mainComponent, nested, num, pickSpot, pickTroops, placeRoamer, sanitizeId, text,
+  asCell, asRoom, chestLoot, edgeGate, field, houseDoors, list, mainComponent, nested, num, pickSpot, pickFittedTroops, placeRoamer, sanitizeId, text,
   type Cell, type Room,
 } from "./jrpgVolumeTools";
 import { requireMap } from "./mapHelpers";
@@ -1239,7 +1239,7 @@ export function buildJrpgChapter(
 ): ToolExecResult {
     const { chapterId, prefix, seed, timeGateFrom } = opts;
     if (timeGateFrom) requireMap(draft, timeGateFrom);
-    const troops = pickTroops(draft, opts.troops);
+    const troops = pickFittedTroops(draft, opts.troops);
     const warnings: string[] = [];
     const ids = new Map<string, string>();
     const taken = new Map<string, Set<string>>();

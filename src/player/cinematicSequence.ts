@@ -9,7 +9,7 @@ import { el } from "@/util/dom";
 import { createCinematicAssets, type CinematicAssets } from "@/player/cinematicAssets";
 import { createTitleEffectsCanvas, freezeTitleEffects, stopTitleEffects } from "@/player/titleEffects/renderer";
 import { getPlayerPreferences } from './playerPreferences';
-import { playOpeningAnimatic } from "./openingAnimaticRenderer";
+import { animaticBandClearance, playOpeningAnimatic } from "./openingAnimaticRenderer";
 import { isEmeraldMonsterStyle } from '@/project/emeraldMonsterStyle';
 import { createEmeraldOpeningAtmosphere } from './emeraldOpeningAtmosphere';
 import { bindIntegerArtScale } from './monsterArtScale';
@@ -554,7 +554,26 @@ export function playCinematicSequence(options: {
         canvas.setAttribute('aria-label', canvasCaptions && scene.narration.trim() ? scene.narration : '레이어와 카메라로 구성한 오프닝');
         canvas.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#000';
         ready(canvas); beginLoading();
-        playOpeningAnimatic({ project, canvas, composition: scene.composition, durationMs: scene.durationMs, signal: lifetime.signal, reducedMotion, holdClockThroughStalls: options.holdClockThroughStalls, softCutTails: options.softCutTails,
+        // 내레이션 띠가 캔버스 아래를 덮는 높이(구도 단위). 처음 잰 값을 장면 내내 쓴다(띠가 늦게 떠도 카메라가 튀지 않게 숨김을 잠깐 풀고 잰다).
+        let narrationInset: number | undefined;
+        const bottomInset = (): number => {
+          if (narrationInset !== undefined) return narrationInset;
+          if (canvasCaptions || !scene.narration.trim() || narration.classList.contains('cinematic-narration--captioned')) return (narrationInset = 0);
+          const box = canvas.getBoundingClientRect();
+          if (!canvas.isConnected || box.width <= 0 || box.height <= 0) return 0;
+          const wasHidden = narration.hidden; narration.hidden = false;
+          const band = narration.getBoundingClientRect();
+          narration.hidden = wasHidden;
+          if (band.height <= 0) return 0;
+          const comp = scene.composition, scale = Math.min(box.width / comp.width, box.height / comp.height);
+          const contentBottom = box.top + (box.height + comp.height * scale) / 2;
+          const inset = Math.max(0, contentBottom - band.top) / scale;
+          // 카메라를 올려도(배경이 끝나서) 인물 발이 띠 밑에 남고, 위쪽은 비어 있으면 띠를 화면 위로 옮긴다.
+          const clearance = animaticBandClearance(comp, inset, scene.durationMs);
+          if (clearance.residual > 2 && !clearance.topHit) { narration.classList.add('cinematic-narration--top'); return (narrationInset = 0); }
+          return (narrationInset = inset);
+        };
+        playOpeningAnimatic({ project, canvas, composition: scene.composition, durationMs: scene.durationMs, signal: lifetime.signal, reducedMotion, bottomInset, holdClockThroughStalls: options.holdClockThroughStalls, softCutTails: options.softCutTails,
           onReady: () => { if (!alive || !mediaActive) return; clearTimeout(loadTimer); root.dataset.mediaState = 'ready'; status.textContent = ''; },
           onError: message => { if (!alive || !mediaActive) return; console.warn('[opening animatic]', message); fail('error'); status.textContent = '장면을 그리지 못했어요. Enter로 넘어가세요.'; }, onDone: () => { if (alive) next(); } });
         break;

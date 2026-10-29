@@ -791,6 +791,11 @@
   border-color: var(--runtime-dialogue-glass-border-strong);
 }
 
+.dialogue-overlay:has(> .number-input-box) {
+  height: auto;
+  max-height: calc(100% - 8px);
+}
+
 .number-input-box {
   align-items: center;
   cursor: default;
@@ -818,13 +823,15 @@
   image-rendering: pixelated;
 }
 
+/* 칸·확인 단추의 색은 대사창 글자색(currentColor)에서 뽑는다 — 종이(밝은) 창에서 어두운 유리 칸을 쓰면
+   짙은 갈색 글자가 묻혀 「확인」이 비활성처럼 보였다(장부 hud #36). 어두운 창이든 밝은 창이든 같은 대비가 난다. */
 .number-input-slot {
   align-items: center;
-  background: var(--runtime-dialogue-glass-surface-strong);
-  border: 1px solid var(--runtime-dialogue-glass-border);
+  background: color-mix(in srgb, currentColor 10%, transparent);
+  border: 1px solid color-mix(in srgb, currentColor 40%, transparent);
   border-radius: var(--runtime-dialogue-radius-small);
   box-sizing: border-box;
-  color: transparent;
+  color: var(--runtime-dialogue-text);
   display: inline-flex;
   font-family: var(--runtime-dialogue-font);
   font-size: var(--runtime-font-size-22);
@@ -837,18 +844,44 @@
   text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.75);
 }
 
+/* 빈 칸은 흐린 밑줄 자리표 — 아직 안 넣은 자리. */
 .number-input-slot.empty {
-  color: transparent;
+  color: color-mix(in srgb, var(--runtime-dialogue-text) 35%, transparent);
+  text-shadow: none;
 }
 
 .number-input-slot.filled {
-  border-color: var(--runtime-window-focus);
   color: var(--runtime-dialogue-text);
 }
 
+/* 지금 고치는 자리: 굵은 테두리 + 진한 바탕 + 위아래 ▲▼(↑↓ 로 바뀐다는 표시). */
 .number-input-slot.cursor {
-  border-color: var(--runtime-window-highlight);
-  box-shadow: 0 0 0 1px rgba(255, 246, 168, 0.45);
+  background: color-mix(in srgb, currentColor 24%, transparent);
+  border: 2px solid currentColor;
+  position: relative;
+}
+
+.number-input-slot.cursor::before,
+.number-input-slot.cursor::after {
+  color: var(--runtime-dialogue-text);
+  font-size: 8px;
+  left: 50%;
+  line-height: 1;
+  position: absolute;
+  text-shadow: none;
+  transform: translateX(-50%);
+}
+
+.number-input-slot.cursor::before { content: "▲"; top: -10px; }
+.number-input-slot.cursor::after { content: "▼"; bottom: -10px; }
+
+.number-input-hint {
+  color: var(--runtime-dialogue-text);
+  font-family: var(--runtime-dialogue-font);
+  font-size: var(--runtime-font-size-9);
+  line-height: 1.2;
+  opacity: 0.85;
+  text-align: center;
 }
 
 /* 자릿수 알림. 칸은 숨겨져 있고 값은 스크립트가 넣으므로, 읽히는 문장만 화면 밖에 둔다. */
@@ -884,8 +917,8 @@
 }
 
 .number-input-pad-key {
-  background: var(--runtime-dialogue-glass-surface-soft);
-  border: 1px solid var(--runtime-dialogue-glass-border);
+  background: color-mix(in srgb, currentColor 10%, transparent);
+  border: 1px solid color-mix(in srgb, currentColor 40%, transparent);
   border-radius: var(--runtime-dialogue-radius-small);
   color: var(--runtime-dialogue-text);
   cursor: default;
@@ -911,8 +944,8 @@
 }
 
 .number-input-ok {
-  background: var(--runtime-dialogue-glass-surface-strong);
-  border: 1px solid var(--runtime-dialogue-glass-border);
+  background: color-mix(in srgb, currentColor 16%, transparent);
+  border: 1px solid color-mix(in srgb, currentColor 60%, transparent);
   border-image: none;
   border-radius: var(--runtime-dialogue-radius-small);
   color: var(--runtime-dialogue-text);
@@ -925,7 +958,7 @@
 }
 
 .number-input-ok:focus-visible {
-  background: var(--runtime-dialogue-glass-accent-soft);
+  background: color-mix(in srgb, currentColor 28%, transparent);
 }
 
 /* === dialogue pagination cursor === */

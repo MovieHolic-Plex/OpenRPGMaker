@@ -603,7 +603,61 @@ function quantizePixelGrid(canvas: HTMLCanvasElement, composition: OpeningAnimat
   ctx.putImageData(image, 0, 0);
 }
 
-type DrawOptions = { reducedMotion?: boolean; durationMs?: number };
+type DrawOptions = {
+  reducedMotion?: boolean; durationMs?: number;
+  /** 화면 아래를 덮는 내레이션 띠 높이(구도 단위). 인물이 띠 밑에 들어가면 장면 내내 같은 만큼 카메라를 내려(그림을 올려) 띠 위로 보이게 한다(장부 assembly #31).
+   *  0 이면 보정하지 않는다(띠를 위로 옮긴 장면). */
+  bottomInset?: () => number;
+};
+
+type BandClearance = { readonly shift: number; readonly residual: number; readonly topHit: boolean };
+const bandClearances = new WeakMap<OpeningAnimatic, Map<number, BandClearance>>();
+/**
+ * 내레이션 띠(화면 아래 inset 높이)와 인물(role actor, 장면 공간)의 관계를 장면 전체에서 한 번 잰다.
+ *  - shift: 인물이 띠 밑에 들어가지 않게 카메라 y 를 내리는(그림을 올리는) 값 — 띠 높이와 배경 아래 끝까지 남은 여유를 넘지 않는다.
+ *  - residual: shift 로도 못 비킨 만큼(배경이 끝나 더 올릴 수 없을 때). 0 보다 크면 띠를 위로 옮기는 것을 검토한다.
+ *  - topHit: 같은 높이의 띠를 화면 위에 두면 인물을 덮는지.
+ */
+export function animaticBandClearance(a: OpeningAnimatic, inset: number, durationMs: number): BandClearance {
+  const key = Math.round(inset);
+  if (key <= 0) return { shift: 0, residual: 0, topHit: false };
+  let byInset = bandClearances.get(a);
+  if (!byInset) { byInset = new Map(); bandClearances.set(a, byInset); }
+  const cached = byInset.get(key);
+  if (cached) return cached;
+  const c = a.camera, h = a.height, w = a.width, limit = h - key - 2;
+  const fallbackX = c?.x ?? w / 2, fallbackY = c?.y ?? h / 2;
+  let need = 0, room = Number.POSITIVE_INFINITY, topHit = false;
+  const end = Math.max(0, durationMs);
+  for (let t = 0; t <= end; t += 100) {
+    const cx = resolveAnimaticCameraAxis(sampleAnimaticTrack(c?.keys?.x, t, fallbackX), c?.keys?.x, fallbackX, w);
+    const cy = resolveAnimaticCameraAxis(sampleAnimaticTrack(c?.keys?.y, t, fallbackY), c?.keys?.y, fallbackY, h);
+    const zoom = sampleAnimaticTrack(c?.keys?.zoom, t, c?.zoom ?? 1);
+    for (const l of a.layers) {
+      if (l.space === 'screen' || t < (l.startMs ?? 0) || l.endMs !== undefined && t >= l.endMs) continue;
+      const p = l.parallax ?? 1, z = zoom ** p;
+      const camY = h / 2 + (cy - h / 2) * p, camX = w / 2 + (cx - w / 2) * p;
+      const y = sampleAnimaticTrack(l.keys?.y, t, l.y) - l.height * (l.anchorY ?? 0);
+      const x = sampleAnimaticTrack(l.keys?.x, t, l.x) - l.width * (l.anchorX ?? 0);
+      if (l.role === 'background' && l.kind === 'image' && p === 1) {
+        // 이만큼 더 내려도 배경 아래 끝이 화면 아래에 닿는다.
+        room = Math.min(room, (y + l.height - camY) - h / (2 * z));
+        continue;
+      }
+      if (l.role !== 'actor' || p !== 1) continue;
+      const top = h / 2 + (y - camY) * z, bottom = h / 2 + (y + l.height - camY) * z;
+      const left = w / 2 + (x - camX) * z, right = w / 2 + (x + l.width - camX) * z;
+      if (right <= 0 || left >= w || bottom <= 0 || top >= h) continue;
+      if (bottom > limit) need = Math.max(need, (bottom - limit) / z);
+      if (top < key + 2) topHit = true;
+    }
+  }
+  const shift = Math.max(0, Math.min(need, key, room));
+  const result = { shift, residual: Math.max(0, need - shift), topHit };
+  byInset.set(key, result);
+  return result;
+}
+
 /** The same absolute-time draw function is used for playback, scrubbing and model previews. */
 export function drawAnimaticFrame(canvas: HTMLCanvasElement, a: OpeningAnimatic, images: AnimaticImages, atMs: number, options: DrawOptions = {}): void {
   const ctx = canvas.getContext('2d'); if (!ctx) throw Error('2D 무대를 만들 수 없습니다.');
@@ -640,6 +694,7 @@ function drawStage(ctx: CanvasRenderingContext2D, sx: number, sy: number, snappi
     cx += Math.sin(s * (shake.frequency ?? 14) * 6.28 + phase) * shake.amplitude * decay;
     cy += Math.cos(s * (shake.frequency ?? 14) * 4.6 + phase) * shake.amplitude * decay;
   }
+  cy += animaticBandClearance(a, options.bottomInset?.() ?? 0, options.durationMs ?? 0).shift;
   cx = snap(cx); cy = snap(cy);
   ctx.save(); try { ctx.setTransform(sx, 0, 0, sy, 0, 0); ctx.clearRect(0, 0, a.width, a.height);
   ctx.fillStyle = a.background ?? '#000000'; ctx.fillRect(0, 0, a.width, a.height);
@@ -752,9 +807,9 @@ const CUT_TAIL_MS = 180;
  * softCutTails: 컷 끝까지 울리던 효과음을 CUT_TAIL_MS 동안 줄이며 다음 컷과 겹친다(같은 소리를 offsetMs 로 이어 받는 다음 컷이 불러오는 사이 50ms 빈틈).
  * 둘 다 기본은 꺼져 있다 — 새 게임 오프닝(player.ts bootRun)만 켠다. 타이틀 인트로·유휴 데모·편집기 미리보기는 그대로다.
  */
-export function playOpeningAnimatic(options: { project: Project; canvas: HTMLCanvasElement; composition: OpeningAnimatic; durationMs: number; signal: AbortSignal; reducedMotion?: boolean; holdClockThroughStalls?: boolean; softCutTails?: boolean; onReady: () => void; onError: (message: string) => void; onDone: () => void }): AnimaticPlayback {
+export function playOpeningAnimatic(options: { project: Project; canvas: HTMLCanvasElement; composition: OpeningAnimatic; durationMs: number; signal: AbortSignal; reducedMotion?: boolean; bottomInset?: () => number; holdClockThroughStalls?: boolean; softCutTails?: boolean; onReady: () => void; onError: (message: string) => void; onDone: () => void }): AnimaticPlayback {
   const { canvas, composition: a, signal } = options, view = canvas.ownerDocument.defaultView!;
-  const draw: DrawOptions = { reducedMotion: options.reducedMotion, durationMs: options.durationMs };
+  const draw: DrawOptions = { reducedMotion: options.reducedMotion, durationMs: options.durationMs, bottomInset: options.bottomInset };
   let frame = 0, stopped = false, started = 0, clock = 0, lastNow = 0;
   const elapsed = (now: number): number => {
     if (!options.holdClockThroughStalls) return now - started;
