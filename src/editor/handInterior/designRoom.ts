@@ -207,9 +207,11 @@ export function furnishFromDesign(base: HandInteriorInput, rooms: readonly Layou
       groups.push({ g, label });
     });
     for (const { g: g0, label } of groups) {
-      // 묶음 자리를 dx·dy 로 쓴 모델도 있다(flash) — x·y 로 읽는다.
+      // 묶음 자리를 dx·dy 로 쓴 모델도 있다(flash): at 이 있으면 그 자리에서 민 만큼, 없으면 바닥 좌표 x·y 로 읽는다.
       const lg = g0 as RoomDesignGroup & { dx?: number; dy?: number };
-      const g: RoomDesignGroup = typeof g0.x !== "number" && typeof lg.dx === "number" && typeof lg.dy === "number" ? { ...g0, x: lg.dx, y: lg.dy } : g0;
+      const shove = typeof lg.dx === "number" || typeof lg.dy === "number" ? [Math.round(lg.dx ?? 0), Math.round(lg.dy ?? 0)] as const : undefined;
+      const g: RoomDesignGroup = shove && typeof g0.x !== "number" && g0.at === undefined ? { ...g0, x: shove[0], y: shove[1] } : g0;
+      const offset = shove && g0.at !== undefined && typeof g0.x !== "number" ? shove : [0, 0] as const;
       if (!(g.items ?? []).length) continue;
       const { items: local, origin } = localGroup(g, S, label, fixes);
       if (!local.length) continue;
@@ -232,6 +234,7 @@ export function furnishFromDesign(base: HandInteriorInput, rooms: readonly Layou
         const north = at === "north" || at === "nw" || at === "ne", south = at === "south" || at === "sw" || at === "se";
         tx = west ? room.x0 : east ? room.x1 - gw + 1 : room.x0 + along(fw - gw);
         ty = north ? fy0 : south ? room.y1 - gh + 1 : at === "west" || at === "east" ? fy0 + along(fh - gh) : fy0 + Math.round((fh - gh) / 2);
+        tx += offset[0]; ty += offset[1];
       }
       const onLine = (x: number, y: number) => {
         if (!at) return 0;
