@@ -587,9 +587,9 @@ function lampQuestDoors(project: Project, hubId: string): GameEvent[] {
     addEv(project, FS2_HUB_NIGHT_ID, `ev_fs2_q4_glow_${i}`, "등 건 집 창불", { x: 1 + i, y: 0 }, [
       page(`ev_fs2_q4_glow_${i}_off`, "꺼짐", [], [], { priority: "below" }),
       page(`ev_fs2_q4_glow_${i}_on`, "켜짐", [sw(lamp)], [
-        // 문 양옆 창 자리에 작은 불 둘 — 큰 원 하나는 벽 전체가 불난 것처럼 보였다(VQA 1차).
-        { kind: "addLight", source: { id: `q4_glow_${i}a`, at: { x: door.x - 1, y: door.y - 2 }, radius: 1.2, intensity: 0.8, color: "#ffb050", flicker: true } } as unknown as Command,
-        { kind: "addLight", source: { id: `q4_glow_${i}b`, at: { x: door.x + 1, y: door.y - 2 }, radius: 1.2, intensity: 0.8, color: "#ffb050", flicker: true } } as unknown as Command,
+        // 그 집 창(없으면 문 위 틈)에만 작은 불 — 큰 원 하나는 벽 전체가 불난 것처럼 보였다(VQA 1·2차).
+        ...(Q4_WINDOWS[`${door.x},${door.y}`] ?? [{ x: door.x, y: door.y - 1 }]).map((c, k) =>
+          ({ kind: "addLight", source: { id: `q4_glow_${i}_${k}`, at: c, radius: 1, intensity: 0.85, color: "#ffb050", flicker: true } } as unknown as Command)),
         wait(600000),
       ], { priority: "below", trigger: { kind: "parallel" } }),
     ]);
@@ -599,10 +599,16 @@ function lampQuestDoors(project: Project, hubId: string): GameEvent[] {
 
 /** 창마다 새는 불빛(계획 그림 royal_rain) — 통금에도 사람 사는 집 창은 희미하게 샌다. 등을 뺏긴 Q4 세 집은 캄캄하다. */
 const HUB_WINDOWS: Cell[] = [
-  { x: 3, y: 8 }, { x: 7, y: 9 }, { x: 10, y: 9 }, { x: 13, y: 8 }, { x: 24, y: 11 },
-  { x: 3, y: 29 }, { x: 7, y: 29 }, { x: 50, y: 28 },
-  { x: 29, y: 41 }, { x: 36, y: 40 }, { x: 39, y: 40 }, { x: 45, y: 40 }, { x: 50, y: 41 },
+  // 창 그림이 있는 칸만(2026-10-29 VQA 2차: 지붕·벽 한가운데 놓인 불빛이 「불난 집」처럼 보였다 — 칸마다 그림을 보고 다시 골랐다).
+  { x: 3, y: 8 }, { x: 13, y: 9 }, { x: 23, y: 11 }, { x: 24, y: 11 }, { x: 24, y: 14 },
+  { x: 3, y: 29 }, { x: 50, y: 29 }, { x: 36, y: 39 }, { x: 39, y: 40 }, { x: 45, y: 39 },
 ];
+/** Q4 세 집의 창(없으면 문 위 틈). 문 칸 → 불이 들 칸. */
+const Q4_WINDOWS: Record<string, Cell[]> = {
+  "31,31": [{ x: 30, y: 28 }, { x: 32, y: 28 }],   // 약방 — 창 둘
+  "4,20": [{ x: 4, y: 19 }],                       // 별지기 할아버지 댁 — 창이 없는 벽, 문 위 틈
+  "32,20": [{ x: 32, y: 19 }],                     // 리사네 집 — 벽돌 벽, 문 위 틈
+};
 
 /** 제1막 광장 이벤트의 걷기 칩을 그대로 쓴다(새 사람 그림 금지). */
 function hubChip(project: Project, hubId: string, eventId: string): { textureKey: string; characterIndex: number } {
@@ -640,8 +646,8 @@ function curfewHub(project: Project, exec: Exec, hubId: string): void {
     mapId: FS2_HUB_NIGHT_ID, applyMode: "map", ambient: 0.78, color: "#0f1a4c",
     sources: [
       { id: "lamp", at: { kind: "player" }, radius: 3, intensity: 0.45, color: "#9fb4ff" },
-      ...[MIRE_AT, TOBY_AT, MARTA_AT].map((c, i) => ({ id: `crack${i}`, at: { x: c.x, y: c.y - 1 }, radius: 2, intensity: 0.7, color: "#ffc070", flicker: true })),
-      ...HUB_WINDOWS.map((c, i) => ({ id: `window${i}`, at: c, radius: 1.2, intensity: 0.7, color: "#ffb050" })),
+      ...[MIRE_AT, TOBY_AT, MARTA_AT].map((c, i) => ({ id: `crack${i}`, at: { x: c.x, y: c.y - 1 }, radius: 1.5, intensity: 0.7, color: "#ffc070", flicker: true })),
+      ...HUB_WINDOWS.map((c, i) => ({ id: `window${i}`, at: c, radius: 1, intensity: 0.75, color: "#ffb050" })),
       ...patrolIds.map((eventId, i) => ({ id: `patrol_lamp${i}`, at: { eventId }, radius: 2.2, intensity: 0.75, color: "#ffc070", flicker: true })),
       // 뚜껑 문 골목의 출구 틈(한 칸) — 불빛이 새어 나와 보이게(엘레나가 도착 때 이 불빛을 짚는다).
       { id: "alley_gap", at: { x: HUB_ALLEY_GAP.x, y: HUB_ALLEY_GAP.y }, radius: 2, intensity: 0.75, color: "#ffc070", flicker: true },
@@ -806,13 +812,11 @@ function observatoryNight(project: Project, exec: Exec, obsId: string): void {
     toMapId: FS2_SHAFT_ID, toX: SHAFT.lift.x, toY: SHAFT.lift.y, toDirection: "down",
   });
   // 승강구 쪽 발판 그림 — 천문대 쪽 승강 칸(2×2 발판 그림, 아래 겹층)을 그대로 옮겨 찍는다. 그림이 없어 「어디서 타는지」 몰랐다.
-  const shaftMap = M(project, FS2_SHAFT_ID);
   const obsMap = M(project, FS2_OBS_NIGHT_ID);
   for (let dy = 0; dy < 2; dy += 1) for (let dx = 0; dx < 2; dx += 1) {
     const tile = obsMap.lowerOverlayTiles?.[(OBS.lift.y + dy) * obsMap.width + OBS.lift.x + dx] ?? -1;
     if (tile < 0) throw new Error("[fallen-star act2] 천문대 승강 발판 그림이 없다");
-    if (!shaftMap.lowerOverlayTiles) shaftMap.lowerOverlayTiles = new Array(shaftMap.width * shaftMap.height).fill(-1);
-    shaftMap.lowerOverlayTiles[(SHAFT.lift.y + dy) * shaftMap.width + SHAFT.lift.x + dx] = tile;
+    exec(project, "paint_tiles", { mapId: FS2_SHAFT_ID, layer: "2", mode: "cells", tile, cells: [{ x: SHAFT.lift.x + dx, y: SHAFT.lift.y + dy }] });
   }
   // 정문 — 연금 중. 기사가 지킨다.
   addEv(project, FS2_OBS_NIGHT_ID, "ev_fs2_obs_door", "천문대 정문", OBS.door, [
@@ -946,9 +950,8 @@ function northGateEvents(project: Project, exec: Exec, hubId: string): void {
   ]);
   // 개구멍 앞(38,16)·브람 자리(39,16)를 3×3 덤불 그림(37~39, 16~18)이 통째로 막아 닿을 길이 없었다(2026-10-29 결함 목록, 진행 불가).
   // 덤불 윗층만 걷어 성벽 밑 풀밭을 연다 — 남쪽(37~38,19)에서 걸어 들어간다. 좌우 사이프러스는 남겨 그늘진 틈으로 보이게.
-  const hubW = hub.width;
-  for (let y = 16; y <= 18; y += 1) for (let x = 37; x <= 39; x += 1) hub.upperTiles[y * hubW + x] = -1;
-  if (!walkSteps(project, hub, WELL_FRONT).has(`${HOLE.front.x},${HOLE.front.y}`)) throw new Error("[fallen-star act2] 개구멍 앞 칸에 닿을 수 없다");
+  exec(project, "paint_tiles", { mapId: FS2_HUB_NIGHT_ID, layer: "3", mode: "rect", tile: -1, from: { x: 37, y: 16 }, to: { x: 39, y: 18 } });
+  if (!walkSteps(project, M(project, FS2_HUB_NIGHT_ID), WELL_FRONT).has(`${HOLE.front.x},${HOLE.front.y}`)) throw new Error("[fallen-star act2] 개구멍 앞 칸에 닿을 수 없다");
   // 브람 — 성벽 밑 그늘. 로한을 만난 뒤에만 나타나 개구멍을 연다.
   const bramChip = hubChipAny(project, "ev_fs_bram");
   addEv(project, FS2_HUB_NIGHT_ID, "ev_fs2_hub_bram", BRAM, HOLE.bram, [
