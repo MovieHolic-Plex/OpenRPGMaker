@@ -31,7 +31,13 @@ const snapshotFile = snapAt >= 0 ? argv[snapAt + 1] : undefined;
 // --trace: 끝맺음이 낸 실행 기록(v2.* 이름·ok·요약)과 체크포인트 이름을 rec.trace 에 남기고, Math.random·Date.now·crypto.randomUUID 를 고정해
 // 같은 입력이면 같은 출력이 나오게 한다 — 구조만 바꾼 리팩터가 동작을 바꾸지 않았는지 커밋 둘을 대조할 때(rec.projectHash).
 const trace = argv.includes("--trace");
-const dirs = argv.filter((a, i) => a !== "--out" && a !== "--trace" && i !== outAt + 1 && a !== "--followup" && (followAt < 0 || i !== followAt + 1) && a !== "--snapshot" && (snapAt < 0 || i !== snapAt + 1));
+// --task <글>: 요청 글을 그대로 쓴다(씬 벤치 판 — 첫 요청이 장면 하나라 게임 전체 요청으로 읽히면 안 된다; sceneToolReplay.mts 와 같이 쓴다).
+const taskAt = argv.indexOf("--task");
+const taskText = taskAt >= 0 ? argv[taskAt + 1] : undefined;
+// --built <mapId,…>: 그 판이 make_place 로 지은 장소 맵(세션 기록 session.places 를 대신한다 — 끝맺음 「지은 장소 잇기」가 읽는다).
+const builtAt = argv.indexOf("--built");
+const builtIds = builtAt >= 0 ? argv[builtAt + 1]!.split(",").filter(Boolean) : [];
+const dirs = argv.filter((a, i) => a !== "--built" && (builtAt < 0 || i !== builtAt + 1) && a !== "--out" && a !== "--trace" && i !== outAt + 1 && a !== "--followup" && (followAt < 0 || i !== followAt + 1) && a !== "--snapshot" && (snapAt < 0 || i !== snapAt + 1) && a !== "--task" && (taskAt < 0 || i !== taskAt + 1));
 if (trace) {
   let seed = 0x2545f491;
   Math.random = () => { seed = (Math.imul(seed ^ (seed >>> 15), 0x2c1b3c6d) + 0x6d2b79f5) >>> 0; return seed / 0x100000000; };
@@ -73,7 +79,7 @@ for (const dir of dirs) {
   const name = `${path.basename(path.dirname(path.resolve(dir)))}-${path.basename(dir)}`;
   const project = snapshotFile ? ((raw) => (raw.project ?? raw) as Project)(JSON.parse(fs.readFileSync(snapshotFile, "utf8"))) : readProjectSqlite(path.join(dir, "project"));
   const first = firstRequest(dir);
-  const task = followup ? composePiTask(followup, priorRequestsNote([{ kind: "user", text: first } as never], followup)) : first;
+  const task = taskText ?? (followup ? composePiTask(followup, priorRequestsNote([{ kind: "user", text: first } as never], followup)) : first);
   const before = brief(project, task);
   const events: string[] = [];
   const ctx = { project: structuredClone(project), currentMapId: project.startMapId, assistantRun: true };
@@ -84,6 +90,10 @@ for (const dir of dirs) {
   } as unknown as PiAssistantV2Env;
   const session = new V2Session();
   createV2Tools(env, session);
+  for (const id of builtIds) {
+    const m = ctx.project.maps[id];
+    if (m) session.places.set(id, { builder: "replay", spec: { type: m.tilesetId === "beodeul_city" && (m as { climate?: { mode?: string } }).climate?.mode !== "indoor" ? "village" : "interior", name: m.name ?? id, mapId: id }, result: { ok: true, mapIds: [id], summary: "", warnings: [], missingArt: [], calls: [] }, rounds: 0 } as never);
+  }
   const notes: string[] = [];
   try {
     const auto = await runFinishAutoBuild(env, session);

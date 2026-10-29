@@ -97,8 +97,27 @@ function gymHealBeat(tag) {
   };
 }
 
+/**
+ * 실제 방향키로 걷는다 — 한 줄(방향, 칸 수)마다 그 끝 칸에 닿을 때까지 그 방향키를 누른다(지나가는 사람에게 잠깐 막혀도 다시 민다).
+ * 마지막 줄의 끝이 이동 칸이면 맵이 바뀌는 것으로 끝난다. 고정 걸음 수(move)로 걷던 판은 한 걸음이 씹히면 한 칸씩 밀려 관측탑 출구를 밟았다.
+ */
+function walkRuns(mapId, x, y, runs) {
+  const key = { up: "ArrowUp", down: "ArrowDown", left: "ArrowLeft", right: "ArrowRight" };
+  const delta = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] };
+  const ops = [];
+  for (const [dir, steps] of runs) {
+    x += delta[dir][0] * steps; y += delta[dir][1] * steps;
+    ops.push({ kind: "pressUntilJs", key: key[dir], maxPresses: steps * 6, settleMs: 600,
+      fn: `() => { const s = window.__oprnDebug?.readLive?.(); return !!s && (s.currentMapId !== ${JSON.stringify(mapId)} || (s.x === ${x} && s.y === ${y})); }` });
+    // 걸음마다 실제 자리를 남긴다 — 어느 줄에서 어긋났는지 판정하려고.
+    ops.push({ kind: "evalToFile", out: `${HP_OUT}/walk-${mapId}-${ops.length}.json`,
+      fn: `() => { const s = window.__oprnDebug?.readLive?.(); return { want: [${x}, ${y}], dir: ${JSON.stringify(dir)}, at: s ? [s.currentMapId, s.x, s.y] : null }; }` });
+  }
+  return ops;
+}
+
 /** 말을 걸고 전투에 들어가 끝까지 싸운 뒤 필드(또는 게임 오버)로. */
-function fightBeats(tag, note, mapId, x, y, dir) {
+function fightBeats(tag, note, mapId, x, y, dir, { walked = false } = {}) {
   return [
     {
       id: `${tag}-enter`,
@@ -107,7 +126,8 @@ function fightBeats(tag, note, mapId, x, y, dir) {
         settle,
         // 싸우기 전 파티 HP(라이브 세션, 최대 HP 포함) — 남은 HP 표의 「들어갈 때」 칸.
         { kind: "evalToFile", out: `${HP_OUT}/${tag}-before.json`, fn: partyHpFn(tag) },
-        { kind: "teleport", mapId, x, y },
+        // walked: 앞 비트가 이미 그 칸까지 걸어 왔다 — 순간이동하지 않는다(리그 길을 실제로 걷는 판).
+        ...(walked ? [] : [{ kind: "teleport", mapId, x, y }]),
         { kind: "waitForPosition", mapId, x, y },
         // 트레이너 시야에 내려서면 순간이동 직후 전투가 먼저 열린다 — 그때 Enter 를 누르면 「싸운다」 기술 목록이 열린 채 전투 op 가 멈췄다
         // (grunt2). 기다릴 때는 Shift(아무것도 고르지 않음), 말 걸기는 전투가 아직 없을 때만 누르는 pressUntilJs 로.
@@ -310,7 +330,26 @@ export default {
     healBeat("boss", "관측탑 앞"),
     ...fightBeats("boss", "관측탑 밤막회사 대표(11,4)", "mx_map_observatory", 11, 5, "up"),
     healBeat("champion", "리그 앞"),
-    ...fightBeats("champion", "리그 챔피언 나루(7,4)", "mx_map_league_0", 7, 5, "up"),
+    {
+      // 순간이동 없이 새순 마을에서 리그 출구(12,0)까지 걷고, 리그 안에서 챔피언 앞(7,5)까지 걷는다 — 출구 옆 길 넓히기 사본이
+      // 북쪽 길을 막아 자동 플레이가 리그에 못 가던 판(2026-10-29, 52b189f762 에서 수리)을 실제 걸음으로 다시 본다.
+      // 걸음은 끝맺음 뒤 standin 지도의 BFS 경로(이벤트 칸을 피함): 센터 문 앞(4,8) → (12,0), 리그 도착(7,10) → (7,5).
+      id: "league-walk",
+      note: "새순 마을 센터 앞에서 리그 출구까지 걸어가 리그에 들어가 챔피언 앞까지 걷는다",
+      ops: [
+        settle,
+        { kind: "teleport", mapId: "mx_map_grove", x: 4, y: 8 },
+        { kind: "waitForPosition", mapId: "mx_map_grove", x: 4, y: 8 },
+        { kind: "pressUntilJs", key: "Shift", fn: fieldIdle, maxPresses: 30, settleMs: 500 },
+        ...walkRuns("mx_map_grove", 4, 8, [["down", 2], ["right", 3], ["up", 1], ["right", 1], ["up", 2], ["right", 2], ["up", 2], ["right", 1], ["up", 4], ["right", 1], ["up", 1]]),
+        { kind: "waitForMap", mapId: "mx_map_league_0", timeoutMs: 20000 },
+        { kind: "waitForPosition", mapId: "mx_map_league_0", x: 7, y: 10 },
+        { kind: "pressUntilJs", key: "Shift", fn: fieldIdle, maxPresses: 30, settleMs: 500 },
+        ...walkRuns("mx_map_league_0", 7, 10, [["up", 5]]),
+      ],
+      shot: true,
+    },
+    ...fightBeats("champion", "리그 챔피언 나루(7,4)", "mx_map_league_0", 7, 5, "up", { walked: true }),
     {
       id: "ending",
       note: "챔피언 뒤 엔딩",

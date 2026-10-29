@@ -62,8 +62,12 @@ export interface PlaceSpec {
   readonly exits?: readonly ("south" | "north" | "east" | "west")[];
   /** 이미 있는 맵을 그 자리에서 다시 지을 때(고치기·「이 방을」). 생략하면 빌더가 정한다(빈 시작 맵이면 그 맵). */
   readonly mapId?: string;
-  /** 카드가 알려 준 빌더 손잡이(물·지붕·형태·씨앗 등). 모르는 키는 빌더가 무시하고 경고한다. */
+  /** 카드가 알려 준 빌더 손잡이(물·지붕·형태 등). 모르는 키는 빌더가 무시하고 경고한다. 씨앗(seed)은 모델이 쓰지 않는다 — make_place 가 버리고 요청·게임 열쇠로 정한다. */
   readonly hints?: Readonly<Record<string, string | number | boolean>>;
+  /** (던전·동굴) 조수가 설계한 층 — 방(역할·크기·모양·자리·물·특징)·잇는 길·입구 쪽. 형식 src/editor/dungeonKit/designLayout.ts DungeonDesign. 함수는 조화·검사만. */
+  readonly dungeonDesign?: import("@/editor/dungeonKit/designLayout").DungeonDesign;
+  /** (여러 층 던전) 층마다 설계(아래층부터). */
+  readonly floorDesigns?: readonly import("@/editor/dungeonKit/designLayout").DungeonDesign[];
 }
 
 /** 고치기 패치 — edit_place 의 인자. 명세의 그 부분만 바꾼 뒤 같은 빌더로 다시 짓는다. */
