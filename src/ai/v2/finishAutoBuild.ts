@@ -3,7 +3,7 @@
 // 재생 스크립트(scripts/qa/assistant-v2/finishReplay.mts)도 이 함수를 불러, 실제 실행기와 같은 순서를 지나는지 따로 맞추지 않아도 된다.
 import type { PiAssistantV2Env } from "./env";
 import type { V2Session } from "./verbs";
-import { BLUEPRINT_PATH_IDS, fillUnsetStepConditions, walkBlueprint } from "./blueprint";
+import { BLUEPRINT_PATH_IDS, fillUnsetStepConditions, gateOpenSteps, walkBlueprint } from "./blueprint";
 import { battleSites, healingSources } from "./combatChecks";
 import { wantsWholeGame } from "./shipChecks";
 import { applyShipDefaults, fillStaleObjectives } from "./shipDefaults";
@@ -108,6 +108,9 @@ export async function runFinishAutoBuild(env: PiAssistantV2Env, session: V2Sessi
     // autoBuild 안이라 늦게 쓴 청사진(v2.blueprint.late)에서도 장소·경로·출구를 지은 뒤 돈다.
     try { assembled.push(...applyBlueprintOpening(env.ctx.project)); }
     catch (error) { env.emit({ type: "execution_status", name: "v2.assembly", ok: false, summary: `기본 오프닝을 깔지 못했다: ${error instanceof Error ? error.message : String(error)}` }); }
+    // 앞 단계 없이 열리는 단계를 앞 단계 뒤에만 열리게 — 대화만 하는 앞 단계는 「마침」 스위치를 켜게(2026-10-29 vm3 deepseek 추리: 덕수·말순 건너뜀). 출하 기본값보다 먼저 — 새로 켜는 스위치에 다음 목표가 붙게.
+    try { assembled.push(...gateOpenSteps(env.ctx.project)); }
+    catch { /* 단계 잠금 실패는 끝맺음을 깨지 않는다 */ }
     // 출하 기본값(2026-10-29 vm1): 전투 곡·전투 배경·파티 모습/얼굴·엔딩 맺음·기본 지명 — 출하 검사가 «기본값이 남았다»고 짚는 것만 채운다.
     try { assembled.push(...applyShipDefaults(env.ctx.project, env.request.task)); }
     catch (error) { env.emit({ type: "execution_status", name: "v2.assembly", ok: false, summary: `출하 기본값을 채우지 못했다: ${error instanceof Error ? error.message : String(error)}` }); }

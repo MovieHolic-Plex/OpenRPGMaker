@@ -2016,3 +2016,49 @@ export function runAutoPlay(
     runs,
   };
 }
+
+/**
+ * 처음 상태에서 «이 이벤트를 건드리지 않고» 실행할 수 있는 명령 방문 — 고정점(실행된 방문이 켠 것으로 다른 방문의 선행을 채운다).
+ * 페이지 덮어쓰기·변수 문턱 횟수는 보지 않는 넉넉한 근사다(실행될 수 있으면 센다). 단계 건너뛰기 검사(`stepSkip`)가 쓴다.
+ */
+export function visitsRunnableWithout(project: Project, excludedEventId: string): CommandVisit[] {
+  const visits: CommandVisit[] = [];
+  const own: CommandVisit[] = [];
+  for (const page of allPages(project)) {
+    if (!page.map || !page.event) continue;
+    visitPageCommands(page, (visit) => { (page.event!.id === excludedEventId ? own : visits).push(visit); });
+  }
+  // 그 이벤트와 «같은 조건»에 묶인 쌍둥이(같은 열쇠로 열리는 두 번째 입구 등)는 그 단계를 한 것과 같다 — 건너뛰기가 아니다.
+  const keysOf = (visit: CommandVisit) => new Set(requirementsOf(project, visit).filter((req) => !satisfiedAtStart(project, req)).map(reqKey));
+  const ownKeys = own.map(keysOf).filter((keys) => keys.size > 0);
+  const core = ownKeys.length ? [...ownKeys[0]!].filter((key) => ownKeys.every((keys) => keys.has(key))) : [];
+  if (core.length) for (let i = visits.length - 1; i >= 0; i -= 1) {
+    const keys = keysOf(visits[i]!);
+    if (core.every((key) => keys.has(key))) visits.splice(i, 1);
+  }
+  const ran: CommandVisit[] = [];
+  const pending = new Set(visits);
+  const known = new Set<string>();
+  const satisfied = (req: Requirement) => {
+    const key = reqKey(req);
+    if (known.has(key)) return true;
+    const ok = satisfiedAtStart(project, req) || ran.some((visit) => setterMatches(project, req, visit));
+    if (ok) known.add(key);
+    return ok;
+  };
+  for (let changed = true; changed;) {
+    changed = false;
+    for (const visit of pending) {
+      if (!requirementsOf(project, visit).every(satisfied)) continue;
+      pending.delete(visit);
+      ran.push(visit);
+      changed = true;
+    }
+  }
+  return ran;
+}
+
+/** 처음 상태로는 실행되지 않는(앞서 무언가를 해야 하는) 방문인가. */
+export function visitNeedsProgress(project: Project, visit: CommandVisit): boolean {
+  return requirementsOf(project, visit).some((req) => !satisfiedAtStart(project, req));
+}

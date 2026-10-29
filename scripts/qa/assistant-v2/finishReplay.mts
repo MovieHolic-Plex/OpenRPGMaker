@@ -4,7 +4,7 @@
 //   bun scripts/qa/assistant-v2/finishReplay.mts <run-dir>... [--out <dir>] [--followup <마지막 차례 글>]
 // --followup 을 주면 끝맺음이 도는 마지막 차례처럼 그 글 + 첫 요청 메모(composePiTask·priorRequestsNote — 편집기와 같은 합치기)를 요청 글로 쓴다.
 // 주지 않으면 첫 요청 글(steps.log 의 001)만 — 「RPG 만들어 줘」처럼 «게임» 낱말이 없는 첫 요청은 출하 검사·조립이 돌지 않는다.
-import { stepSkipShortcuts } from "../../../src/ai/v2/stepSkip";
+import { stepSkipSetters, stepSkipShortcuts } from "../../../src/ai/v2/stepSkip";
 import fs from "node:fs";
 import path from "node:path";
 import { readProjectSqlite } from "../../content/read-project-sqlite.mts";
@@ -30,7 +30,7 @@ const brief = (project: Project, task: string) => {
   const r = runGameCheck(project, { autoPlayBudgetMs: 30_000 });
   const blockers = r.findings.filter((f) => f.severity === "blocker").map((f) => `[${f.code}] ${f.message.slice(0, 200)}`);
   const run = r.autoPlay?.runs?.[0];
-  return { blockers, auto: run ? `${run.ok ? "성공" : "실패"} 엔딩=${run.endingReached ?? "-"}${run.failure ? ` · ${run.failure.goal}: ${run.failure.detail.slice(0, 220)}` : ""}` : (r.autoPlay?.skipped ?? "자동 플레이 없음"), bp: walkBlueprint(project).blockers.map((b) => b.id), ship: shipBlockers(project, task).map((b) => b.id), skip: stepSkipShortcuts(project).flatMap((f) => f.exits.map((e) => `단계${f.step}←${e.from}(${e.x},${e.y})`)) };
+  return { blockers, auto: run ? `${run.ok ? "성공" : "실패"} 엔딩=${run.endingReached ?? "-"}${run.failure ? ` · ${run.failure.goal}: ${run.failure.detail.slice(0, 220)}` : ""}` : (r.autoPlay?.skipped ?? "자동 플레이 없음"), bp: walkBlueprint(project).blockers.map((b) => b.id), ship: shipBlockers(project, task).map((b) => b.id), skip: [...stepSkipShortcuts(project).flatMap((f) => f.exits.map((e) => `단계${f.step}←${e.from}(${e.x},${e.y})`)), ...stepSkipSetters(project).map((f) => `단계${f.skipped}없이 단계${f.step}「${f.stepEvent}」`)] };
 };
 
 /**

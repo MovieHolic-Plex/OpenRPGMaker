@@ -2,6 +2,7 @@
 // 시작 맵부터 「지금 도는 페이지가 옮기는」 문만 따라가 닿는 맵에, 앞 단계와 다른 맵에 있는 뒤 단계 맵이 들어 있으면 지름길이다.
 // 왜(2026-10-29 vm3 argon jrpg): 마을 서쪽 가장자리 (0,20)이 조건 없이 마왕의 옥좌로 옮겨 동굴·결계 단계를 건너뛰었다.
 // 데이터 도달성·자동 플레이는 「엔딩에 닿는가」만 보므로 이 지름길을 못 본다.
+import { visitNeedsProgress, visitsRunnableWithout } from "@/qa/gameCheck/autoPlay";
 import type { Project } from "@/project/types";
 
 type Cond = { kind?: string; switchId?: string; itemId?: string; key?: string; value?: unknown; present?: unknown };
@@ -61,6 +62,40 @@ export function stepSkipShortcuts(project: Project): StepSkip[] {
       }
     }
     if (exits.length) out.push({ step: k, stepEvent: step.event, map: target.name ?? target.id, exits });
+  });
+  return out;
+}
+
+// ── 같은 맵 안 단계 건너뛰기 ─────────────────────────────────────────────
+// 맵 출구만 보면 같은 맵 안에서 앞 단계를 건너뛰는 길을 못 본다 — 처음 상태에서 닿는 다른 이벤트가 뒤 단계의 조건(스위치·아이템·변수)을
+// 켜 주면 앞 단계 없이 뒤 단계가 열린다. 단계 j 이벤트를 아예 건드리지 않고 실행할 수 있는 명령(고정점, 자동 플레이의 선행 판정과 같은 규칙)
+// 가운데 뒤 단계 k 이벤트의 «하는» 명령(켜기·주기·변수·엔딩·전투·이동)이 있으면 단계 j 를 건너뛰는 지름길로 센다.
+
+const DOING = new Set(["setSwitch", "changeItem", "setVariable", "triggerEnding", "battle", "startBattle", "battleProcessing", "transfer", "changeParty"]);
+
+export interface StepSetterSkip { readonly skipped: number; readonly skippedEvent: string; readonly step: number; readonly stepEvent: string; readonly map: string; readonly via: string }
+
+export function stepSkipSetters(project: Project): StepSetterSkip[] {
+  const steps = project.gameBlueprint?.steps ?? [];
+  if (steps.length < 2) return [];
+  const all = Object.values(project.maps).flatMap((map) => (map.events ?? []).map((ev) => ({ map, ev })));
+  const name = (ev: { name?: string }) => String(ev.name ?? "").trim();
+  const refs = steps.map((s) => all.find((r) => r.ev.id === s.event) ?? all.find((r) => name(r.ev as { name?: string }) === s.event));
+  const out: StepSetterSkip[] = [];
+  steps.forEach((skippedStep, j) => {
+    const skipped = refs[j];
+    if (!skipped || j === steps.length - 1) return;
+    const ran = visitsRunnableWithout(project, skipped.ev.id);
+    for (let k = j + 1; k < steps.length; k += 1) {
+      const ref = refs[k];
+      if (!ref || ref.ev.id === skipped.ev.id) continue;
+      const hit = ran.find((v) => v.page.event?.id === ref.ev.id && visitNeedsProgress(project, v) && DOING.has(String(v.command.kind))
+        && !(v.command.kind === "changeItem" && v.command.op === "-=") && !(v.command.kind === "setSwitch" && v.command.value === false)
+        && !(v.command.kind === "transfer" && v.command.mapId === v.page.map?.id));
+      if (!hit) continue;
+      out.push({ skipped: j, skippedEvent: skippedStep.event, step: k, stepEvent: steps[k]!.event, map: ref.map.name ?? ref.map.id, via: `p${hit.page.pageIndex} ${hit.indexPath.join(".")} ${String(hit.command.kind)}` });
+      break;
+    }
   });
   return out;
 }
