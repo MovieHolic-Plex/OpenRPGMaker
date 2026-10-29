@@ -21,6 +21,7 @@ import {
 } from "@/player/cloudShadows";
 import { inBounds, isPassable } from "@/project/collision";
 import { store } from "@/project/store";
+import { monsterCurrentHp, monsterMaxHp } from "@/project/monsterCollection";
 import { terrainRecordAt } from "@/project/terrainAt";
 import { createSaveSnapshot, type SaveSnapshot } from "@/player/saveSlots";
 import { vehicleSpritesDebug } from "@/player/playSceneVehicles";
@@ -42,6 +43,11 @@ export type RuntimeDebugHook = {
   setSeed: (seed: number) => void;
   /** 지금 세션을 실제 저장과 같은 모양으로 뜬다 — QA 체크포인트(scripts/qa/runtime/checkpoints) 수집용. */
   captureSave?: () => SaveSnapshot;
+  /**
+   * 몬스터 파티의 지금 HP/최대 HP(라이브 세션) — readState 는 동기화 시점 사본이라 전투 직후엔 낡았다.
+   * battleStamp = 마지막 전투 보고 표식 — 전투가 세션에 결과(HP·경험치)를 되쓴 뒤에 바뀐다(전투 화면이 사라진 직후는 아직 아니다).
+   */
+  monsterPartyHp?: () => { battleStamp: string; party: Array<{ id: string; speciesId: string; level: number; hp: number; maxHp: number }> };
   /** 지금 맵 (x,y) 칸의 지형 레코드 id(키큰풀 조우 칸 찾기 등). 번들 타일셋의 지형은 런타임에만 채워져 바깥에서 못 읽는다. */
   terrainIdAt?: (x: number, y: number) => string | null;
   /**
@@ -358,6 +364,18 @@ export function installPlaySceneTestHooks(
       syncRuntimeState();
     },
     captureSave: () => createSaveSnapshot(store.getCurrent(), getSession()),
+    monsterPartyHp: () => {
+      const session = getSession(), project = store.getCurrent();
+      const reports = session.battleReports ?? [];
+      const last = reports.at(-1);
+      return {
+        battleStamp: `${reports.length}:${last?.troopId ?? ""}:${last?.turns ?? 0}:${last?.lines.length ?? 0}:${last?.lines.at(-1)?.sequence ?? 0}`,
+        party: (session.monsterParty ?? []).map((id) => {
+          const instance = session.monsterInstances?.[id];
+          return { id, speciesId: instance?.speciesId ?? "", level: instance?.level ?? 0, hp: monsterCurrentHp(project, instance), maxHp: monsterMaxHp(project, instance) };
+        }),
+      };
+    },
     terrainIdAt: (x, y) => terrainRecordAt(store.getCurrent(), { mapId: getSession().currentMapId, x, y })?.record.id ?? null,
     readLive: (switchId) => {
       const session = getSession();

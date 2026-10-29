@@ -47,6 +47,8 @@ async function readBattleUi(page) {
         .filter((n) => !n.disabled && n.dataset.testid !== "battle-target-cancel").map((n) => n.dataset.testid),
       active: document.querySelector(".battle-actor-status.is-active-actor")?.getAttribute("data-record-id") ?? null,
       resultConfirm: Boolean(document.querySelector('[data-testid="battle-result-confirm"]')),
+      // 승리 뒤 「기술을 배우려면 다른 기술을 잊어야 한다」 장면(emeraldMoveLearnScene) — 결과 창 대신 뜬다.
+      moveLearn: Boolean(document.querySelector('[data-testid="emerald-movelearn"]')),
       // 전투 중 이벤트 대사(발렌의 소환 외침 등)는 .dialogue-box 로 뜨고, 그동안 장면은 busy 다.
       dialogue: [...document.querySelectorAll('.dialogue-box, [data-testid="dialogue-box"]')].some((n) => n.offsetParent !== null),
     };
@@ -113,6 +115,18 @@ export async function battleQaOp(page, op) {
     if (!ui.scene) {
       await dumpLog(page, op, issued);
       return { issued, ended: true };
+    }
+    if (ui.moveLearn) {
+      // 확인키만 누르는 플레이어처럼: 「예」(커서 기본) → 첫 기술(가장 오래 배운 기술)을 잊는다.
+      // 빌더 모의전도 그 레벨에서 배운 마지막 네 기술을 쓰므로 같은 기술 구성이 된다.
+      // 이것 없이는 water 스타터 챔피언전(2026-10-29)이 승리 뒤 이 질문에서 90초를 기다리다 실패했다.
+      if (!op.untilEnd) {
+        await dumpLog(page, op, issued);
+        return { issued, ended: true };
+      }
+      await page.keyboard.press("Enter");
+      await sleep(500);
+      continue;
     }
     if (ui.resultConfirm) {
       if (!op.untilEnd) {
