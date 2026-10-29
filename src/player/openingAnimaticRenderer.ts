@@ -74,18 +74,25 @@ export function warmAnimaticImages(project: Project, a: OpeningAnimatic): void {
  * 같은 맵 객체면 다시 그리지 않는다(편집기에서 맵을 고치면 새 객체라 새로 그린다).
  */
 const mapViewImages = new WeakMap<object, Promise<HTMLImageElement>>();
+const mapViewBySignature = new Map<string, { signature: string; promise: Promise<HTMLImageElement> }>();
 function mapViewImage(project: Project, mapId: string): Promise<HTMLImageElement> {
   const map = project.maps[mapId];
   if (!map) return Promise.reject(Error(`애니메틱 맵 배경 없음: ${mapId}`));
   const cached = mapViewImages.get(map);
   if (cached) return cached;
+  // 새 게임은 structuredClone 한 프로젝트로 돈다(preflightProjectForPlay) — 타이틀에서 데워 둔 그림을 객체로만 찾으면
+  // 늘 놓쳐 첫 컷이 「미디어 불러오는 중」으로 2초 멈췄다. 내용이 같은 맵이면 같은 그림을 쓴다.
+  const tileset = project.tilesets[map.tilesetId];
+  const signature = JSON.stringify([mapId, tileset?.image, tileset?.transparentColor, map]);
+  const same = mapViewBySignature.get(mapId);
+  if (same && same.signature === signature) { mapViewImages.set(map, same.promise); return same.promise; }
   const promise = (async () => {
     const canvas = await renderMapViewCanvas(project, { mapId, scale: 1, haze: 0, desaturate: 0 });
     if (!canvas) throw Error(`애니메틱 맵 배경을 그릴 수 없음: ${mapId}`);
     const image = new Image(); image.src = canvas.toDataURL('image/png'); await image.decode(); return image;
   })();
-  promise.catch(() => { if (mapViewImages.get(map) === promise) mapViewImages.delete(map); });
-  mapViewImages.set(map, promise);
+  promise.catch(() => { if (mapViewImages.get(map) === promise) mapViewImages.delete(map); if (mapViewBySignature.get(mapId)?.promise === promise) mapViewBySignature.delete(mapId); });
+  mapViewImages.set(map, promise); mapViewBySignature.set(mapId, { signature, promise });
   return promise;
 }
 export async function loadAnimaticImages(project: Project, a: OpeningAnimatic, signal: AbortSignal): Promise<AnimaticImages> {
@@ -786,11 +793,51 @@ function drawStage(ctx: CanvasRenderingContext2D, sx: number, sy: number, snappi
 }
 
 export type AnimaticPlayback = { ready: Promise<void>; stop: () => void };
-export function playOpeningAnimatic(options: { project: Project; canvas: HTMLCanvasElement; composition: OpeningAnimatic; durationMs: number; signal: AbortSignal; reducedMotion?: boolean; bottomInset?: () => number; onReady: () => void; onError: (message: string) => void; onDone: () => void }): AnimaticPlayback {
+/** 컷 경계에서 소리를 짧게 줄이고 치운다. */
+function fadeTail(view: Window, audio: HTMLAudioElement, ms: number): void {
+  const from = audio.volume, start = view.performance.now();
+  const step = (): void => {
+    const u = (view.performance.now() - start) / ms;
+    if (u >= 1) { audio.pause(); audio.removeAttribute('src'); audio.load(); audio.remove(); return; }
+    audio.volume = Math.max(0, from * (1 - u)); view.setTimeout(step, 20);
+  };
+  step();
+}
+/** 한 프레임 간격이 이보다 길면 «멈춤»으로 보고 시계를 그만큼만 나아가게 한다(holdClockThroughStalls). */
+const STALL_FRAME_MS = 250;
+/** 컷이 끝까지 돌았을 때 아직 울리던 소리를 끊지 않고 이만큼 줄여 다음 컷 소리와 겹친다(다음 컷 소리가 불러와지는 사이의 빈틈을 메운다). */
+const CUT_TAIL_MS = 180;
+/**
+ * holdClockThroughStalls: 새 게임 오프닝은 엔진이 뒤에서 맵을 짓는 동안 돈다. 그동안 메인 스레드가 몇 초씩 멈추면
+ * 벽시계로 도는 컷이 멈춘 만큼 건너뛰어 첫 몇 초를 통째로 잃었다(폴른 스타: 1.4초에서 3.2초 멈춤 → 시계가 1.5→4.6초로 튐).
+ * 이 옵션이 켜지면 한 프레임에 STALL_FRAME_MS 넘게 나아가지 않는다 — 멈춘 동안은 마지막 그림이 그대로 보이고, 풀리면 그 자리에서 잇는다.
+ * softCutTails: 컷 끝까지 울리던 효과음을 CUT_TAIL_MS 동안 줄이며 다음 컷과 겹친다(같은 소리를 offsetMs 로 이어 받는 다음 컷이 불러오는 사이 50ms 빈틈).
+ * 둘 다 기본은 꺼져 있다 — 새 게임 오프닝(player.ts bootRun)만 켠다. 타이틀 인트로·유휴 데모·편집기 미리보기는 그대로다.
+ */
+export function playOpeningAnimatic(options: { project: Project; canvas: HTMLCanvasElement; composition: OpeningAnimatic; durationMs: number; signal: AbortSignal; reducedMotion?: boolean; bottomInset?: () => number; holdClockThroughStalls?: boolean; softCutTails?: boolean; onReady: () => void; onError: (message: string) => void; onDone: () => void }): AnimaticPlayback {
   const { canvas, composition: a, signal } = options, view = canvas.ownerDocument.defaultView!;
   const draw: DrawOptions = { reducedMotion: options.reducedMotion, durationMs: options.durationMs, bottomInset: options.bottomInset };
-  let frame = 0, stopped = false, started = 0;
+  let frame = 0, stopped = false, started = 0, clock = 0, lastNow = 0;
+  const elapsed = (now: number): number => {
+    if (!options.holdClockThroughStalls) return now - started;
+    clock += Math.min(STALL_FRAME_MS, Math.max(0, now - lastNow)); lastNow = now; return clock;
+  };
   const cues = new Map<string, HTMLAudioElement>();
+  // 큐 소리는 그림과 함께 미리 받아 둔다. 예전에는 큐 시각에 처음 <audio> 를 만들어 받았다 — 받는 사이(수백 ms~2초)에
+  // 짧은 큐(0.5초 레코드 긁힘·칼 뽑기)는 창이 지나 pause 되어 아예 안 들렸고, 긴 큐는 늦은 만큼 앞이 잘렸다(2026-10-29 maou-konbini 녹화).
+  const preloaded = new Map<string, HTMLAudioElement>();
+  const preloadCues = async (): Promise<void> => {
+    const waits: Promise<void>[] = [];
+    for (const cue of a.audioCues ?? []) {
+      const url = resolveAssetResourceUrl(cue.resourceId, { project: options.project }); if (!url || preloaded.has(cue.id)) continue;
+      const el = canvas.ownerDocument.createElement('audio'); el.preload = 'auto'; el.src = url; preloaded.set(cue.id, el);
+      // 컷을 붙잡고 기다리는 것은 첫 1초 안에 울릴 큐뿐이다. 뒤의 큐는 컷이 도는 동안 받힌다.
+      if (cue.atMs < 1000) waits.push(new Promise<void>((resolve) => { for (const type of ['canplay', 'error'] as const) el.addEventListener(type, () => resolve(), { once: true, signal }); }));
+      el.load();
+    }
+    // 느린 망에서도 장면을 오래 붙잡지 않는다(0.8초) — 다 못 받으면 큐 시각에 받으며 튼다(예전 동작). 다음 컷 소리는 cinematicAssets.warm 이 미리 받는다.
+    if (waits.length) await Promise.race([Promise.all(waits), new Promise<void>((resolve) => view.setTimeout(resolve, 800))]);
+  };
   // 브라우저 자동재생 막힘(첫 화면에 사용자 입력이 없을 때 정상)은 그림을 멈출 이유가 아니다 — 소리만 미뤘다가 첫 입력에 다시 튼다.
   // 예전에는 장면 전체를 멈추고 「오디오 큐 자동재생 차단: …」 개발자 글을 화면에 남겼다(2026-10-25 J26).
   const skipped = new Set<string>();
@@ -802,20 +849,21 @@ export function playOpeningAnimatic(options: { project: Project; canvas: HTMLCan
     const retry = () => { retryArmed = false; for (const a of [...blocked]) { blocked.delete(a); if (!stopped && !a.paused) continue; if (!stopped) void a.play().catch(() => { blocked.add(a); armRetry(); }); } };
     for (const type of ['pointerdown', 'keydown', 'touchstart'] as const) doc.addEventListener(type, retry, { once: true, capture: true, signal });
   };
-  const stop = () => { if (stopped) return; stopped = true; view.cancelAnimationFrame(frame); signal.removeEventListener('abort', stop); for (const audio of cues.values()) { audio.pause(); audio.removeAttribute('src'); audio.load(); audio.remove(); } cues.clear(); };
+  const stop = () => { if (stopped) return; stopped = true; view.cancelAnimationFrame(frame); signal.removeEventListener('abort', stop); for (const audio of cues.values()) { audio.pause(); audio.removeAttribute('src'); audio.load(); audio.remove(); } cues.clear(); for (const audio of preloaded.values()) { audio.removeAttribute('src'); audio.load(); } preloaded.clear(); };
   signal.addEventListener('abort', stop, { once: true });
   const ready = (async () => {
     try {
-      const images = await loadAnimaticImages(options.project, a, signal); if (stopped || signal.aborted) return;
+      const [images] = await Promise.all([loadAnimaticImages(options.project, a, signal), preloadCues()]); if (stopped || signal.aborted) return;
       const box = canvas.getBoundingClientRect(), dpr = view.devicePixelRatio || 1;
       const k = a.upscale === 'nearest' && !a.pixelGrid && box.width > 0 && box.height > 0
         ? Math.max(1, Math.min(8, Math.floor(Math.min(box.width * dpr / a.width, box.height * dpr / a.height)))) : 1;
       canvas.width = a.width * k; canvas.height = a.height * k; if (k > 1) canvas.style.imageRendering = 'pixelated';
       drawAnimaticFrame(canvas, a, images, 0, draw);
-      started = view.performance.now(); options.onReady();
+      started = lastNow = view.performance.now(); options.onReady();
       const tick = (now: number) => {
         if (stopped || signal.aborted) return;
-        const t = Math.min(options.durationMs, now - started); canvas.dataset.timeMs = String(Math.round(t));
+        const t = Math.min(options.durationMs, elapsed(now)); canvas.dataset.timeMs = String(Math.round(t));
+        const ending = t >= options.durationMs;
         try { drawAnimaticFrame(canvas, a, images, t, draw); }
         catch (error) { stop(); options.onError(String(error)); return; }
         for (const cue of a.audioCues ?? []) {
@@ -823,8 +871,10 @@ export function playOpeningAnimatic(options: { project: Project; canvas: HTMLCan
           let audio = cues.get(cue.id); const active = t >= cue.atMs && t < cue.atMs + cue.durationMs;
           if (active && !audio) {
             const url = resolveAssetResourceUrl(cue.resourceId, { project: options.project }); if (!url) { console.warn('[animatic] audio cue missing:', cue.resourceId); skipped.add(cue.id); continue; }
-            audio = canvas.ownerDocument.createElement('audio'); audio.src = url; audio.loop = cue.loop ?? false; audio.dataset.testid = 'animatic-audio-cue'; audio.dataset.cueId = cue.id; audio.volume = animaticCueVolume(cue, t); canvas.parentElement?.append(audio); cues.set(cue.id, audio);
-            audio.addEventListener('loadedmetadata', () => { if (!stopped && audio!.duration > 0 && Number.isFinite(audio!.duration)) { const offset = (cue.offsetMs ?? 0) / 1000 + Math.max(0, view.performance.now() - started - cue.atMs) / 1000; audio!.currentTime = audio!.loop ? offset % audio!.duration : Math.min(offset, audio!.duration); } }, { once: true, signal });
+            const warm = preloaded.get(cue.id); preloaded.delete(cue.id);
+            audio = warm ?? canvas.ownerDocument.createElement('audio'); if (!warm) audio.src = url; audio.loop = cue.loop ?? false; audio.dataset.testid = 'animatic-audio-cue'; audio.dataset.cueId = cue.id; audio.volume = animaticCueVolume(cue, t); canvas.parentElement?.append(audio); cues.set(cue.id, audio);
+            const seek = () => { if (!stopped && audio!.duration > 0 && Number.isFinite(audio!.duration)) { const now = options.holdClockThroughStalls ? Number(canvas.dataset.timeMs ?? 0) : view.performance.now() - started; const offset = (cue.offsetMs ?? 0) / 1000 + Math.max(0, now - cue.atMs) / 1000; audio!.currentTime = audio!.loop ? offset % audio!.duration : Math.min(offset, audio!.duration); } };
+            if (audio.readyState >= 1) seek(); else audio.addEventListener('loadedmetadata', seek, { once: true, signal });
             audio.addEventListener('error', () => { if (!stopped) console.warn('[animatic] audio cue failed to load:', cue.resourceId); }, { once: true, signal });
             void audio.play().catch((error: unknown) => {
               // 짧은 큐(0.5초 시계 소리)는 play() 가 끝나기 전에 pause() 되어 AbortError 로 거절된다 — 정상이다(판정자 J26 근본 원인). 무시한다.
@@ -832,9 +882,18 @@ export function playOpeningAnimatic(options: { project: Project; canvas: HTMLCan
               if (!stopped && (error as { name?: string } | null)?.name === 'NotAllowedError') { blocked.add(audio!); armRetry(); }
             });
           }
-          if (audio) { audio.volume = animaticCueVolume(cue, t); if (!active) audio.pause(); }
+          // 컷 끝까지 울리던 소리는 끊지 않고 꼬리를 남긴다(아래). 그 밖의 소리는 제 구간이 끝나면 멈춘다.
+          const runsToCut = ending && !!options.softCutTails && !audio?.paused && cue.atMs + cue.durationMs >= options.durationMs - 1;
+          if (audio) { if (!runsToCut) audio.volume = animaticCueVolume(cue, t); if (!active && !runsToCut) audio.pause(); }
         }
-        if (t >= options.durationMs) { stop(); options.onDone(); } else frame = view.requestAnimationFrame(tick);
+        if (ending && options.softCutTails) {
+          for (const cue of a.audioCues ?? []) {
+            const audio = cues.get(cue.id);
+            if (!audio || audio.paused || cue.atMs + cue.durationMs < options.durationMs - 1) continue;
+            cues.delete(cue.id); fadeTail(view, audio, CUT_TAIL_MS);
+          }
+        }
+        if (ending) { stop(); options.onDone(); } else frame = view.requestAnimationFrame(tick);
       };
       frame = view.requestAnimationFrame(tick);
     } catch (error) { if (!signal.aborted && !stopped) { stop(); options.onError(error instanceof Error ? error.message : String(error)); } }

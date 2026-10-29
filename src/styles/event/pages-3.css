@@ -637,7 +637,6 @@
 .event-editor .event-character-social-extras {
   background: color-mix(in srgb, var(--mk-accent) 5%, var(--mk-raised));
   border: 1px solid var(--mk-line);
-  border-left: 3px solid var(--mk-accent);
   border-radius: var(--mk-radius);
   display: grid;
   gap: 10px;

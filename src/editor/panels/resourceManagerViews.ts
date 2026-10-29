@@ -549,10 +549,13 @@ function resourceEntryList(
     pills.append(pill);
   }
   const toggle = el("div", { class: "rm-view-toggle" });
-  for (const [mode, text, name] of [["grid", "⊞", "그리드 뷰"], ["list", "≡", "리스트 뷰"]] as const) {
-    const button = el("button", { class: `rm-view-btn${currentViewMode === mode ? " active" : ""}`, text,
-      attrs: { type: "button", "aria-label": name }, on: { click: () => {
-        currentViewMode = mode; for (const b of toggle.children) b.classList.toggle("active", b === button); renderList();
+  for (const [mode, name] of [["grid", "그리드 뷰"], ["list", "리스트 뷰"]] as const) {
+    const button = el("button", { class: `rm-view-btn${currentViewMode === mode ? " active" : ""}`,
+      children: [mode === "grid" ? makeSvgIcon("grid") : deckIcon("list", { size: 15 })],
+      attrs: { type: "button", "aria-label": name, "aria-pressed": String(currentViewMode === mode) }, on: { click: () => {
+        currentViewMode = mode;
+        for (const b of toggle.children) { b.classList.toggle("active", b === button); b.setAttribute("aria-pressed", String(b === button)); }
+        renderList();
       } } });
     toggle.append(button);
   }
@@ -575,10 +578,13 @@ function resourceEntryList(
     initial = false; page = Math.max(0, Math.min(page, Math.ceil(filtered.length / RESOURCE_GALLERY_PAGE_SIZE) - 1));
     previous.disabled = page === 0; next.disabled = (page + 1) * RESOURCE_GALLERY_PAGE_SIZE >= filtered.length;
     label.textContent = filtered.length ? `${page * RESOURCE_GALLERY_PAGE_SIZE + 1}–${Math.min((page + 1) * RESOURCE_GALLERY_PAGE_SIZE, filtered.length)} / ${filtered.length}` : "0 / 0";
+    // 넘길 쪽이 없으면 쪽 넘김을 보이지 않는다(0 / 0 과 꺼진 이전·다음은 정보가 없다).
+    pager.style.display = filtered.length > RESOURCE_GALLERY_PAGE_SIZE ? "flex" : "none";
     if (!filtered.length) {
       list.append(el("div", { class: "rm-gallery-empty", children: [
         el("div", { class: "rm-empty-title", text: query ? "검색 결과가 없습니다" : "등록된 리소스가 없습니다" }),
-        el("button", { class: "btn primary rm-empty-cta", text: "새 파일 가져오기", attrs: { type: "button" }, on: { click: onImport } }),
+        // 주 동작(채운 단추)은 위 「가져오기…」 하나다 — 같은 명령을 여기서는 보조 모양으로 되풀이한다.
+        el("button", { class: "btn rm-empty-cta", text: "새 파일 가져오기", attrs: { type: "button" }, on: { click: onImport } }),
       ] })); return;
     }
     const charset = selectedKind === "charset" || selectedKind === "battleCharset";
@@ -936,7 +942,11 @@ function resourceCommandPanel(
       on: { click: options.onBrowseCreatorPage },
     }));
   }
-  quickActions.push(el("button", { class: "rm-command-button rm-action-compact", text: "삭제", attrs: { type: "button", disabled: "true" } }));
+  quickActions.push(el("button", {
+    class: "rm-command-button rm-action-compact rm-delete-disabled",
+    text: "삭제",
+    attrs: { type: "button", disabled: "true", title: "내가 올린 리소스를 고르면 지울 수 있습니다. 사용 중인 리소스는 지울 수 없습니다." },
+  }));
 
   return el("aside", {
     class: "rm-command-panel rm-modern-side-panel",
@@ -955,15 +965,9 @@ function importFormatNote(): HTMLElement {
     children: [
       el("div", { class: "rm-import-format-title", text: "가져오기 형식" }),
       el("div", { text: "PNG·JPEG (표준)" }),
+      // 이 칸은 그림 분류에서만 보인다(소리 분류는 audioPanes 가 따로 그린다) — 같은 형식을 칩으로 되풀이하던 줄과
+      // 그림 분류에 맞지 않는 MP3·WAV 칩을 뺐다.
       el("div", { text: "WebP·GIF (PNG 첫 프레임으로 자동 변환)" }),
-      el("div", { class: "rm-format-tags", children: [
-        el("span", { class: "rm-tag", text: "PNG" }),
-        el("span", { class: "rm-tag", text: "JPEG" }),
-        el("span", { class: "rm-tag", text: "WebP" }),
-        el("span", { class: "rm-tag", text: "GIF" }),
-        el("span", { class: "rm-tag", text: "MP3" }),
-        el("span", { class: "rm-tag", text: "WAV" }),
-      ]}),
       el("div", { class: "rm-drop-tip", text: "탐색기에서 파일이나 폴더를 창으로 바로 끌어다 놓아도 됩니다." }),
     ],
   });
@@ -1057,7 +1061,7 @@ function renderInspector(
       el("div", {
         class: "rm-inspector-empty",
         children: [
-          el("div", { class: "rm-inspector-empty-icon", text: "🎨" }),
+          el("div", { class: "rm-inspector-empty-icon", attrs: { "aria-hidden": "true" }, children: [makeSvgIcon("image")] }),
           el("div", { class: "rm-inspector-empty-text", text: "에셋을 선택하면 고해상도 프리뷰와 메타데이터가 표시됩니다." }),
         ],
       })
@@ -1148,7 +1152,7 @@ function renderInspector(
       actionBox.append(
         el("button", {
           class: "btn primary rm-action-btn",
-          text: "🗺️ 현재 맵에 적용",
+          text: "현재 맵에 적용",
           attrs: { type: "button" },
           on: { click: () => actions.applyTileset(item.asset) }
         }),
@@ -1163,7 +1167,7 @@ function renderInspector(
     actionBox.append(
       el("button", {
         class: "btn danger rm-action-btn",
-        text: "🗑️ 리소스 삭제",
+        text: "리소스 삭제",
         attrs: { type: "button" },
         on: { click: () => actions.deleteAsset(item.asset) }
       })

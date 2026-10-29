@@ -150,6 +150,25 @@ export function terrainChipCounts(cards: readonly TerrainCard[]): ReadonlyMap<Te
 
 export type PrefabChip = { readonly id: string; readonly label: string };
 
+/** 프리팹 테마 태그(영문 원시 값)의 화면 이름. 이름이 없는 영문 태그는 칩으로 내놓지 않는다(검색으로는 찾힌다). */
+const PREFAB_THEME_LABELS: Readonly<Record<string, string>> = {
+  floor: "바닥", structure: "구조물", wall: "벽", roof: "지붕", house: "집", home: "집", building: "건물", interior: "실내",
+  exterior: "야외", outdoor: "야외", indoor: "실내", nature: "자연", tree: "나무", trees: "나무", plant: "식물", water: "물",
+  road: "길", path: "길", street: "거리", fence: "울타리", decor: "장식", decoration: "장식", furniture: "가구", market: "시장",
+  harbor: "항구", harbour: "항구", port: "항구", dock: "부두", pier: "부두", ship: "배", boat: "배", church: "교회", temple: "신전",
+  castle: "성", fort: "요새", town: "마을", village: "마을", city: "도시", garden: "정원", farm: "농장", field: "들판", forest: "숲",
+  stone: "돌", rock: "바위", wood: "나무", wooden: "나무", bridge: "다리", door: "문", gate: "문", window: "창문", stairs: "계단",
+  plaza: "광장", square: "광장", shop: "가게", store: "가게", inn: "여관", tavern: "주점", flower: "꽃", flowers: "꽃", lamp: "등",
+  light: "조명", sign: "간판", crate: "상자", barrel: "통", cart: "수레", well: "우물", statue: "조각상", fountain: "분수", tower: "탑",
+  bench: "벤치", table: "탁자", chair: "의자", bed: "침대", roman: "로마풍", medieval: "중세", ruin: "폐허", ruins: "폐허", cave: "동굴",
+  dungeon: "던전", prop: "소품", props: "소품", ground: "땅", grass: "풀밭", sand: "모래", snow: "눈", dirt: "흙",
+};
+
+function prefabThemeLabel(theme: string): string | null {
+  if (/[가-힣]/.test(theme)) return theme;
+  return PREFAB_THEME_LABELS[theme.trim().toLowerCase()] ?? null;
+}
+
 export function prefabChips(cards: readonly PrefabCard[]): readonly PrefabChip[] {
   const roles = new Map<string, number>();
   const themes = new Map<string, number>();
@@ -158,13 +177,24 @@ export function prefabChips(cards: readonly PrefabCard[]): readonly PrefabChip[]
     for (const theme of card.themes) themes.set(theme, (themes.get(theme) ?? 0) + 1);
   }
   const chips: PrefabChip[] = [{ id: "all", label: "전체" }];
+  const used = new Set<string>(["전체"]);
   for (const [role] of [...roles.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], "ko"))) {
-    chips.push({ id: `role:${role}`, label: PREFAB_ROLE_LABELS[role] ?? role });
+    const label = PREFAB_ROLE_LABELS[role] ?? prefabThemeLabel(role);
+    if (!label || used.has(label)) continue;
+    used.add(label);
+    chips.push({ id: `role:${role}`, label });
   }
   const hangul = [...themes.entries()].filter(([theme]) => /[가-힣]/.test(theme));
   const themeSource = hangul.length > 0 ? hangul : [...themes.entries()];
   themeSource.sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], "ko"));
-  for (const [theme] of themeSource.slice(0, 12)) chips.push({ id: `theme:${theme}`, label: theme });
+  for (const [theme] of themeSource) {
+    if (chips.length >= 13) break;
+    const label = prefabThemeLabel(theme);
+    // 화면 이름이 없거나 이미 같은 이름의 칩이 있으면 내놓지 않는다 — 「floor」 같은 원시 태그가 칩에 보이지 않게.
+    if (!label || used.has(label)) continue;
+    used.add(label);
+    chips.push({ id: `theme:${theme}`, label });
+  }
   return chips;
 }
 

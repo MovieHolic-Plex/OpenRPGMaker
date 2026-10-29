@@ -1,8 +1,8 @@
 .tile-mapping-inspector {
   background: var(--bg);
   border: 1px solid var(--border-soft);
-  font-family: var(--font-mono);
-  font-size: 11px;
+  font-family: var(--font-ui);
+  font-size: 12px;
   line-height: 1.35;
   margin-top: var(--space-1);
   padding: var(--space-2);

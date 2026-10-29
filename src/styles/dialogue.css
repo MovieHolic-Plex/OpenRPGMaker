@@ -1396,13 +1396,14 @@
   }
 }
 
-/* 명작 공백 #1(2026-09-27) — 제한시간 선택지 막대·퀵타임 입력 오버레이. */
+/* 명작 공백 #1(2026-09-27) — 제한시간 선택지 막대·퀵타임 입력 오버레이.
+   막대는 대사창 윗변에 얹는다 — 창 위 12px 에 띄웠을 때 창 위로 쌓이는 선택지 목록의 셋째 줄을 가렸다(마왕 편의점 실플레이 2026-10-29). */
 .timed-choice-bar {
   position: absolute;
   left: 8%;
   right: 8%;
-  bottom: calc(var(--dialogue-window-height, 30%) + 12px);
-  height: 8px;
+  bottom: calc(var(--dialogue-window-height, 30%) - 3px);
+  height: 6px;
   border-radius: 4px;
   background: rgba(0, 0, 0, 0.5);
   overflow: hidden;

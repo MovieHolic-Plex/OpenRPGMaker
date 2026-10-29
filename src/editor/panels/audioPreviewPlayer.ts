@@ -105,6 +105,15 @@ export function createAudioPreviewPlayer(prefix = "audio-preview") {
       }
     } },
   }));
+  // 접힌 동안 안의 컨트롤은 배치에서 뺀다 — 닫힌 <details> 안 단추가 이름 없는 빈 상자로 잡혀
+  // 키보드·낭독기 사용자가 보이지 않는 단추를 만났다. 단추의 레이어 밖 display 규칙을 이기도록 인라인으로 둔다.
+  const syncAdvanced = (): void => {
+    for (const child of Array.from(advanced.children)) {
+      if (child instanceof HTMLElement && child.tagName !== "SUMMARY") child.style.display = advanced.open ? "" : "none";
+    }
+  };
+  advanced.addEventListener("toggle", syncAdvanced);
+  syncAdvanced();
   return {
     transport, advanced,
     select(resource: AudioResource | undefined, project: Project): void {

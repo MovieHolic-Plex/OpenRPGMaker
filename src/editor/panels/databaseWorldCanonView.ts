@@ -35,11 +35,15 @@ const aiReachOpen = new WeakMap<HTMLElement, boolean>();
 const aiProbe: { query: string } = { query: "" };
 const activeSpreadTab = new WeakMap<HTMLElement, string>();
 
+// 글자 수 한도는 이 줄 한 곳에만 쓴다 — 머리 오른쪽과 본문 보조에 두 번 나오고, 문장 끝도 평서형과
+// 존댓말이 섞여 있었다(V-overlays-modals-40). 숫자는 묶음 기호를 쓴다(20,000).
+const EXCERPT_MAX_LABEL = EXCERPT_MAX.toLocaleString("en-US");
+
 function excerptHint(filled: number): string {
   const excerptLen = Math.min(EXCERPT_MAX, filled);
   return filled > EXCERPT_MAX
-    ? `역사·지형·문화·비밀 — 조수는 앞 ${EXCERPT_MAX}자를 본다 (뒤 ${filled - EXCERPT_MAX}자는 발췌 밖)`
-    : `역사·지형·문화·비밀 — 조수는 앞 ${EXCERPT_MAX}자 중 ${excerptLen}자를 본다`;
+    ? `조수는 본문 앞 ${EXCERPT_MAX_LABEL}자를 읽습니다. 뒤 ${(filled - EXCERPT_MAX).toLocaleString("en-US")}자는 읽지 않습니다.`
+    : `조수는 본문 앞 ${EXCERPT_MAX_LABEL}자까지 읽습니다. 지금 ${excerptLen.toLocaleString("en-US")}자`;
 }
 
 export function renderWorldCanonTab(host: HTMLElement, rerender: () => void): void {
@@ -162,7 +166,8 @@ export function renderWorldCanonTab(host: HTMLElement, rerender: () => void): vo
     children: [
       el("p", {
         class: "world-canon-body-lead",
-        text: "이 세계의 이야기를 자유롭게 적으세요 — 역사, 땅, 문화, 숨겨 둔 것. 이름·톤·법칙 같은 설정은 세계 설정 탭에 있다.",
+        // 「자유롭게 적으세요」 안내는 본문 칸의 자리표시자 한 곳에 있다 — 여기서는 다른 설정의 위치만 알린다.
+        text: "이름·톤·법칙 같은 설정은 「세계 설정」 탭에 있습니다.",
       }),
       bodyCard,
     ],
@@ -184,7 +189,7 @@ export function renderWorldCanonTab(host: HTMLElement, rerender: () => void): vo
     const wrap = el("div", { class: "world-canon-tab-body world-canon-ai-panel", dataset: { testid: "world-canon-ai-panel" } });
     wrap.append(el("p", {
       class: "world-canon-ai-lead",
-      text: "조수가 매 턴 읽는 고정 블록이다. 설정집 문서는 여기 없다 — 질문과 관련될 때만 따로 전달된다(설정집 위쪽 「AI가 읽는 것」 칩). 고치려면 세계 설정 탭에서 해당 필드를 수정하면 된다.",
+      text: "조수가 매 턴 읽는 고정 블록입니다. 설정집 문서는 질문과 관련될 때만 따로 전달됩니다(설정집 위쪽 「AI가 읽는 것」 칩). 고치려면 「세계 설정」 탭에서 해당 필드를 고치세요.",
     }));
     const grid = el("div", { class: "world-canon-ai-grid" });
     aiRefs.tiles = new Map();
@@ -225,7 +230,7 @@ export function renderWorldCanonTab(host: HTMLElement, rerender: () => void): vo
         dataset: { testid: "db-world-canon-hero" },
         children: [
           el("strong", { text: "세계 개요" }),
-          el("span", { class: "world-ai-scope-label", text: `AI 참고 · 핵심 설정 + 본문 앞 ${EXCERPT_MAX}자` }),
+          el("span", { class: "world-ai-scope-label", text: "조수 참고 · 핵심 설정과 본문" }),
         ],
       }),
       detail: detailPane({
@@ -401,7 +406,7 @@ function buildInterviewPanel(
     if (history.length === 0) {
       log.append(el("p", {
         class: "world-canon-interview-empty",
-        text: "조수가 세계 설정을 한 칸씩 함께 정한다. 「시작하기」를 누르면 첫 질문이 온다.",
+        text: "조수가 세계 설정을 한 칸씩 함께 정합니다. 「시작하기」를 누르면 첫 질문이 옵니다.",
       }));
       return;
     }
@@ -486,7 +491,7 @@ function buildInterviewPanel(
   host.append(
     el("p", {
       class: "world-canon-interview-lead",
-      text: "조수가 한 번에 한 칸씩 묻는다. 답하면 이름·전제·톤·법칙으로 정리되어 이 세계에 저장된다.",
+      text: "조수가 한 번에 한 칸씩 묻습니다. 답하면 이름·전제·톤·법칙으로 정리되어 이 세계에 저장됩니다.",
     }),
     summary,
     log,

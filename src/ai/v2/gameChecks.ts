@@ -4,6 +4,7 @@
 // 암호 → 「이미 통과」 페이지 없음·선언 안 한 깃발. 모델이 「됐다」고 말해도 이 검사가 남은 문제를 끝맺음 관문에 올린다.
 // 순수 함수(before·after·요청 글) — 워커·테스트가 같이 부른다.
 import type { Command, GameMap, Project } from "@/project/types";
+import { chaseCellMs } from "@/project/chaseTempo";
 import { choiceMetaTag } from "@/project/choiceText";
 import { fieldMenu } from "@/project/fieldMenu";
 import { usesRelationshipMenu } from "@/project/relationshipMenu";
@@ -15,7 +16,7 @@ import { lookMismatches, oversizedSprites, pristineFantasyHero, titleBackdropMis
 import { dryBoats, dryBridges, placementProblems, type PlacementProblem } from "./placementRules";
 import { offPurposeProps } from "./roomPurpose";
 import { unsafeSpawnLines } from "@/project/chaserSpawnSafety";
-import { npcMoveDurationMs, npcPageMoveIntervalMs, PLAYER_WALK_STEP_MS } from "@/project/characterMotion";
+import { PLAYER_WALK_STEP_MS } from "@/project/characterMotion";
 import { fieldApproachRecipe } from "@/project/fieldApproachStyle";
 import { projectCanLoseHp, resolvedHudWidgets } from "@/project/fieldHud";
 import { gameHasCombat } from "@/project/combatPresence";
@@ -304,10 +305,12 @@ export function slowChasers(project: Project, changedIds?: ReadonlySet<string>):
       if (mv?.type !== "chase" || startsBattle(page.commands)) continue;
       // 다가오는 방식(approachStyle: 육중·둥실·통통…)은 일부러 고른 걸음새다 — 그 추격자는 이 검사로 보지 않는다.
       if (fieldApproachRecipe(mv.approachStyle)) continue;
-      const stepMs = npcMoveDurationMs(Number(mv.speed ?? 3));
-      const pauseMs = npcPageMoveIntervalMs({ frequency: Number(mv.frequency ?? 3), ...(typeof mv.moveIntervalMs === "number" ? { moveIntervalMs: mv.moveIntervalMs } : {}) });
-      if (stepMs <= PLAYER_WALK_STEP_MS && pauseMs <= 80) continue;
-      out.push(`「${ev.name || ev.id}」(${ev.id}) 추격자가 한 칸에 ${Math.round(stepMs + pauseMs)}ms(걸음 ${stepMs}ms + 쉼 ${Math.round(pauseMs)}ms · speed ${String(mv.speed ?? 3)}·frequency ${String(mv.frequency ?? 3)}) — 주인공 걷기(${PLAYER_WALK_STEP_MS}ms/칸)를 못 따라와 걸어서 도망치면 잡히지 않는다`);
+      // 런타임 추격 박자(@/project/chaseTempo) 그대로 — 쫓는 동안은 칸 사이에 서지 않는다.
+      const cellMs = chaseCellMs({ speed: Number(mv.speed ?? 3), frequency: Number(mv.frequency ?? 3),
+        ...(typeof mv.moveIntervalMs === "number" ? { moveIntervalMs: mv.moveIntervalMs } : {}),
+        ...(typeof mv.chaseStepMs === "number" ? { chaseStepMs: mv.chaseStepMs } : {}) });
+      if (cellMs <= PLAYER_WALK_STEP_MS) continue;
+      out.push(`「${ev.name || ev.id}」(${ev.id}) 추격자가 쫓는 동안 한 칸에 ${cellMs}ms(speed ${String(mv.speed ?? 3)}·frequency ${String(mv.frequency ?? 3)}${typeof mv.chaseStepMs === "number" ? `·chaseStepMs ${mv.chaseStepMs}` : ""}) — 주인공 걷기(${PLAYER_WALK_STEP_MS}ms/칸)보다 느려 걸어서 도망치면 잡히지 않는다`);
       break;
     }
   }

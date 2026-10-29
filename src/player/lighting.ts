@@ -2,6 +2,7 @@ import type { LightSource, LightingState } from "@/project/types";
 import {
   deterministicFlickerFactor,
   effectiveDarkness,
+  lightConeAngle,
   lightSourceIntensity,
   normalizeLightingState,
   PLAYER_PRESENCE_LIGHT,
@@ -32,6 +33,8 @@ export type LightGradientParam = {
   readonly intensity: number;
   readonly color?: string;
   readonly flicker: number;
+  /** 부채꼴 빛이면 [시작각, 끝각](라디안) — 그 사이만 칠한다. */
+  readonly arc?: readonly [number, number];
 };
 
 export type LightingMaskParams = {
@@ -94,7 +97,7 @@ export function lightingMaskSignature(params: LightingMaskParams): string {
   let signature = `${round(params.ambient)}|${params.color}|${params.width}x${params.height}`;
   if (params.clip) signature += `|c${params.clip.x},${params.clip.y},${params.clip.width},${params.clip.height}`;
   for (const entry of params.gradients) {
-    signature += `|${entry.id}:${round(entry.centerX)},${round(entry.centerY)},${round(entry.radiusPx)},${round(entry.intensity)},${entry.color ?? ""},${round(entry.flicker)}`;
+    signature += `|${entry.id}:${round(entry.centerX)},${round(entry.centerY)},${round(entry.radiusPx)},${round(entry.intensity)},${entry.color ?? ""},${round(entry.flicker)}${entry.arc ? `,${round(entry.arc[0])}~${round(entry.arc[1])}` : ""}`;
   }
   return signature;
 }
@@ -135,12 +138,7 @@ export function drawLightingMask(canvas: HTMLCanvasElement, params: LightingMask
     gradient.addColorStop(0.7, `rgba(0,0,0,${alpha * 0.65})`);
     gradient.addColorStop(1, "rgba(0,0,0,0)");
     context.fillStyle = gradient;
-    context.fillRect(
-      light.centerX - light.radiusPx,
-      light.centerY - light.radiusPx,
-      light.radiusPx * 2,
-      light.radiusPx * 2
-    );
+    fillLight(context, light);
   }
   context.restore();
 
@@ -157,12 +155,25 @@ export function drawLightingMask(canvas: HTMLCanvasElement, params: LightingMask
     gradient.addColorStop(0.6, `rgba(${rgb},${alpha * 0.45})`);
     gradient.addColorStop(1, `rgba(${rgb},0)`);
     context.fillStyle = gradient;
-    context.fillRect(light.centerX - light.radiusPx, light.centerY - light.radiusPx, light.radiusPx * 2, light.radiusPx * 2);
+    fillLight(context, light);
   }
   context.restore();
 }
 
 const LIGHT_TINT_STRENGTH = 0.4;
+
+/** 둥근 빛은 사각을, 부채꼴 빛(경비 등불 시야)은 그 부채꼴만 칠한다 — 바닥에 시야가 그대로 보인다. */
+function fillLight(context: CanvasRenderingContext2D, light: LightGradientParam): void {
+  if (!light.arc) {
+    context.fillRect(light.centerX - light.radiusPx, light.centerY - light.radiusPx, light.radiusPx * 2, light.radiusPx * 2);
+    return;
+  }
+  context.beginPath();
+  context.moveTo(light.centerX, light.centerY);
+  context.arc(light.centerX, light.centerY, light.radiusPx, light.arc[0], light.arc[1]);
+  context.closePath();
+  context.fill();
+}
 
 function hexRgb(color: string): string | null {
   const m = /^#([0-9a-f]{6})$/iu.exec(color.trim());
@@ -185,7 +196,14 @@ function lightGradientParam(source: LightSource, context: LightingMaskContext): 
     intensity: lightSourceIntensity(source, context.timeMs),
     color: source.color,
     flicker: source.flicker ? deterministicFlickerFactor(source.id, context.timeMs) : 1,
+    ...(source.cone ? { arc: coneArc(source.cone.degrees, position.facing ?? source.cone.facing) } : {}),
   };
+}
+
+function coneArc(degrees: number, facing: "up" | "down" | "left" | "right" | undefined): readonly [number, number] {
+  const mid = lightConeAngle(facing);
+  const half = (clamp(20, 180, degrees) / 2) * Math.PI / 180;
+  return [mid - half, mid + half];
 }
 
 function clamp01(value: number): number {

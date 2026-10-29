@@ -60,6 +60,11 @@ export interface ActorRecord {
   appearanceId?: string;
   characterTransparent: boolean;
   battleCharacterResourceId?: string;
+  /**
+   * 측면 전투에서 이 배우 그림의 표시 크기(50~300%, 정수). 생략 = 100%.
+   * 지금은 파티원 몬스터 도트 시트(party-pixel-*)에 적용된다 — 마왕·드래곤처럼 사람보다 커야 하는 파티원.
+   */
+  battleScalePercent?: number;
   critical: ActorCritical;
   parameterCurves: ActorParameterCurves;
   expCurve: ActorExperienceCurve;
@@ -1150,7 +1155,7 @@ export interface BattleBackdropAnimation {
 
 export interface BattleBackdropLayer {
   /** 그림 없이 그리는 프리셋. resourceId 가 있으면 그림이 먼저다. */
-  preset?: "fog" | "clouds" | "mist" | "rain" | "snow" | "embers" | "stars" | "lightRays" | "glow";
+  preset?: "fog" | "clouds" | "mist" | "rain" | "snow" | "embers" | "stars" | "lightRays" | "glow" | "night" | "smoke";
   /** 바둑판으로 깔 그림(투명 PNG 권장). */
   resourceId?: string;
   /** true = 배틀러·이펙트 앞(덤불·안개 장막). 생략 = 배경 바로 위. */

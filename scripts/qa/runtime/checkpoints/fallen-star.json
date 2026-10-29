@@ -3254,7 +3254,8 @@
     "sw_fs2_bread_given": true,
     "sw_fs2_cell_key_found": true,
     "sw_fs2_cell_open": true,
-    "sw_fs2_barracks_cleared": true
+    "sw_fs2_barracks_cleared": true,
+    "sw_fs2_barracks_entered": true
    },
    "party": [
     {
@@ -6902,7 +6903,7 @@
   },
   {
    "id": "act2-b1-patrol",
-   "label": "제2막 B1 — 막사 통로의 순찰 기사, 붙잡히면 전투 → 감방",
+   "label": "제2막 B1 — 막사 들어서면 엘레나의 귀띔 → 통로의 순찰 기사에게 붙잡히면 감방으로",
    "note": "act2Opening.ts barracks make_chase_scene caughtPenalty (3,10)↔(15,10)",
    "mapId": "fs2_barracks",
    "x": 10,
@@ -6932,9 +6933,43 @@
      "id": "look",
      "ops": [
       {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 20000
+      },
+      {
        "kind": "hold",
        "dir": null,
-       "ms": 3000
+       "ms": 1500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "hint-done",
+     "ops": [
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 16,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 700
+        }
+       ]
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
       }
      ],
      "shot": true
@@ -6972,20 +7007,34 @@
      "shot": true
     },
     {
-     "id": "battle",
+     "id": "dragged",
      "ops": [
       {
-       "kind": "pressUntil",
-       "key": "Enter",
-       "testid": "battle-scene",
-       "state": "present",
-       "maxPresses": 10,
-       "timeoutMs": 1200
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 8,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 700
+        }
+       ]
+      },
+      {
+       "kind": "waitForMap",
+       "mapId": "fs2_cell",
+       "timeoutMs": 20000
       },
       {
        "kind": "hold",
        "dir": null,
-       "ms": 2500
+       "ms": 1500
       }
      ],
      "shot": true
@@ -7021,6 +7070,366 @@
      "ops": [
       {
        "kind": "interactive"
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "act2-play-hub",
+   "label": "제2막 막사를 빠져나온 뒤부터 대화형 플레이(독립 판정용) — 짐을 찾고 사다리 앞",
+   "note": "runtimeQaInteractive.mjs — QA_INTERACTIVE_DIR 폴더에 scripts/qa/play-step.mjs 로 조작을 보낸다",
+   "mapId": "fs2_barracks",
+   "x": 18,
+   "y": 6,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_done": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs2_act2_started": true,
+    "sw_fs2_bread_given": true,
+    "sw_fs2_cell_key_found": true,
+    "sw_fs2_cell_open": true,
+    "sw_fs2_barracks_cleared": true,
+    "sw_fs2_barracks_entered": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 8
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 8
+    }
+   ],
+   "beats": [
+    {
+     "id": "play",
+     "ops": [
+      {
+       "kind": "interactive"
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "act2-play-b5",
+   "label": "제2막 B5 재의 들판부터 대화형 플레이(독립 판정 구간)",
+   "note": "runtimeQaInteractive.mjs — QA_INTERACTIVE_DIR 폴더에 scripts/qa/play-step.mjs 로 조작을 보낸다",
+   "mapId": "map_field_north_2",
+   "x": 16,
+   "y": 24,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_done": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs2_act2_started": true,
+    "sw_fs2_out_of_cells": true,
+    "sw_fs2_hub_arrived": true,
+    "sw_fs2_mire_well": true,
+    "sw_fs2_heard_carriage": true,
+    "sw_fs2_hanel_told": true,
+    "sw_fs2_rohan_spear": true,
+    "sw_fs2_bram_hole": true,
+    "sw_fs2_bread_given": true,
+    "sw_fs2_cell_open": true,
+    "sw_fs2_barracks_cleared": true,
+    "sw_fs2_gear_meds": true,
+    "sw_fs2_b4_forest_edge": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 10
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 10
+    }
+   ],
+   "beats": [
+    {
+     "id": "play",
+     "ops": [
+      {
+       "kind": "interactive"
+      }
+     ],
+     "shot": true
+    }
+   ],
+   "items": {
+    "item_potion": 6,
+    "item_ether": 2,
+    "item_panacea": 1
+   },
+   "gold": 150
+  },
+  {
+   "id": "act2-play-b7",
+   "label": "제2막 B7 서리 가도부터 대화형 플레이(독립 판정 구간)",
+   "note": "runtimeQaInteractive.mjs — QA_INTERACTIVE_DIR 폴더에 scripts/qa/play-step.mjs 로 조작을 보낸다",
+   "mapId": "map_snow_north_1",
+   "x": 13,
+   "y": 17,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_done": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs2_act2_started": true,
+    "sw_fs2_out_of_cells": true,
+    "sw_fs2_hub_arrived": true,
+    "sw_fs2_mire_well": true,
+    "sw_fs2_heard_carriage": true,
+    "sw_fs2_hanel_told": true,
+    "sw_fs2_rohan_spear": true,
+    "sw_fs2_bram_hole": true,
+    "sw_fs2_dawn_mem_0": true,
+    "sw_fs2_dawn_mem_1": true,
+    "sw_fs2_dawn_mem_2": true,
+    "sw_fs2_serin_form": true,
+    "sw_fs2_sarah_joined": true,
+    "sw_fs2_snow_arrived": true,
+    "sw_fs2_spear_returned": true,
+    "sw_fs2_bread_given": true,
+    "sw_fs2_cell_open": true,
+    "sw_fs2_barracks_cleared": true,
+    "sw_fs2_gear_meds": true,
+    "sw_fs2_b4_forest_edge": true,
+    "sw_fs2_fortress_f2_lever": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 14
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 14
+    },
+    {
+     "actorId": "actor_fs2_sarah",
+     "level": 14
+    }
+   ],
+   "beats": [
+    {
+     "id": "play",
+     "ops": [
+      {
+       "kind": "interactive"
+      }
+     ],
+     "shot": true
+    }
+   ],
+   "items": {
+    "item_potion": 6,
+    "item_hi_potion": 2,
+    "item_ether": 3,
+    "item_panacea": 1
+   },
+   "gold": 400
+  },
+  {
+   "id": "act2-b1-bells",
+   "label": "제2막 B1 — 막사 종 줄 둘(푸른 종 → 붉은 종) → 등불이 꺼지고 금고 → 사다리",
+   "note": "act2Opening.ts barracks make_chase_scene caughtPenalty (3,10)↔(15,10)",
+   "mapId": "fs2_barracks",
+   "x": 11,
+   "y": 6,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_done": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs2_act2_started": true,
+    "sw_fs2_bread_given": true,
+    "sw_fs2_cell_key_found": true,
+    "sw_fs2_cell_open": true,
+    "sw_fs2_barracks_entered": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 8
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 8
+    }
+   ],
+   "beats": [
+    {
+     "id": "blue-bell",
+     "ops": [
+      {
+       "kind": "move",
+       "dir": "up",
+       "steps": 1
+      },
+      {
+       "kind": "face",
+       "dir": "up"
+      },
+      {
+       "kind": "action"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "blue-done",
+     "ops": [
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 10,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 600
+        }
+       ]
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 800
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "red-bell",
+     "ops": [
+      {
+       "kind": "move",
+       "dir": "left",
+       "steps": 4
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 300
+      },
+      {
+       "kind": "move",
+       "dir": "left",
+       "steps": 4
+      },
+      {
+       "kind": "face",
+       "dir": "up"
+      },
+      {
+       "kind": "action"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "red-done",
+     "ops": [
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 10,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 600
+        }
+       ]
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "act2-b5-north",
+   "label": "제2막 B5 — 재의 들판 북쪽 길 끝(두 칸 폭 어디로 나가도) → 새벽샘 터",
+   "note": "act2Opening.ts dawnwell foes map_field_north_2",
+   "mapId": "map_field_north_2",
+   "x": 17,
+   "y": 2,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_done": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs2_act2_started": true,
+    "sw_fs2_out_of_cells": true,
+    "sw_fs2_hub_arrived": true,
+    "sw_fs2_mire_well": true,
+    "sw_fs2_heard_carriage": true,
+    "sw_fs2_hanel_told": true,
+    "sw_fs2_rohan_spear": true,
+    "sw_fs2_bram_hole": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 10
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 10
+    }
+   ],
+   "beats": [
+    {
+     "id": "exit",
+     "ops": [
+      {
+       "kind": "move",
+       "dir": "up",
+       "steps": 3
+      },
+      {
+       "kind": "waitForMap",
+       "mapId": "fs2_dawnwell",
+       "timeoutMs": 20000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 2000
       }
      ],
      "shot": true

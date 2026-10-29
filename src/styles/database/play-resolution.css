@@ -41,9 +41,10 @@
   margin: 0;
 }
 
+/* 경고는 옅은 바탕 묶음이다 — 한쪽 줄무늬 대신(C-88). */
 .database-modal-backdrop .db-system-resolution-warning {
   background: var(--db-studio-inset);
-  border-left: 3px solid var(--db-studio-text-2);
+  border-radius: 6px;
   color: var(--db-studio-text-2);
   font: 400 11px/1.4 var(--font-ui);
   margin: 0;
@@ -51,8 +52,8 @@
 }
 
 .database-modal-backdrop .db-system-resolution-warning.danger {
-  background: rgba(220, 38, 38, 0.06);
-  border-left-color: var(--db-studio-danger);
+  background: rgba(220, 38, 38, 0.08);
+  color: var(--db-studio-text-1);
 }
 
 @media (max-width: 720px) {

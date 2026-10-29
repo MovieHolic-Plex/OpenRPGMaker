@@ -1,5 +1,4 @@
 import { renderGrowthTreeTab } from "@/editor/panels/growthTree/studio";
-import { t } from "@/i18n";
 import type { DatabaseCollection } from "@/editor/databaseActions";
 import { renderCommonEventsTab } from "@/editor/panels/databaseCommonEventViews";
 import { dialogueTabCount, renderDialogueTab } from "@/editor/panels/databaseDialogueView";
@@ -234,8 +233,10 @@ export const TAB_GROUPS: readonly DatabaseTabGroup[] = [
       retroChoreographies: "화면·연출",
     },
   },
+  // 편집기 왼쪽 막대의 「맵」(맵 목록)과 같은 이름이면 그쪽을 누르려다 자료집이 닫혔다(V-database-08).
+  // 이 그룹은 맵을 짓는 재료(타일·오브젝트·장소·지역·세계)라 「공간」이다.
   {
-    label: "맵",
+    label: "공간",
     slug: "world",
     description: "어디서 벌어지나요?",
     tabs: ["spatialTiles", "spatialObjects", "spatialPlaces", "spatialRegions", "spatialWorlds"],
@@ -276,7 +277,9 @@ export const PARTY_SUBVIEW_PARENT: Partial<Record<DatabaseTab, DatabaseTab>> = {
 
 const PARTY_SUBVIEWS: Partial<Record<DatabaseTab, readonly { readonly tab: DatabaseTab; readonly label: string; readonly slug: string }[]>> = {
   actors: [
-    { tab: "actors", label: "주인공", slug: "actors" },
+    // 보기 이름은 탭 이름(「주인공」)을 되풀이하지 않는다 — 범주 낱말이 레일·크럼·보기 줄·목록 제목에 네 번
+    // 겹쳐 레코드 「주인공」과 구별되지 않았다(V-database-25).
+    { tab: "actors", label: "목록", slug: "actors" },
     { tab: "characterAppearances", label: "공유 외형", slug: "character-appearances" },
   ],
   classes: [
@@ -469,15 +472,32 @@ function applyEmptyTabFold(header: HTMLElement): void {
       continue;
     }
     if (!classes.contains("db-tab-fold")) continue;
-    const names = [...folded].map((id) => tabFor(id).label);
+    const foldedTabs = [...folded];
+    const names = foldedTabs.map((id) => tabFor(id).label);
     child.hidden = folded.size === 0;
-    const [count, text] = Array.from(child.children) as HTMLElement[];
     const hasProfileFold = group.tabs.some((id) => folded.has(id) && profileFolded.includes(id));
-    if (count) count.textContent = hasProfileFold ? `숨긴 탭 ${folded.size}개 · 모두 보기` : `빈 탭 ${folded.size}개`;
-    if (text) text.textContent = names.map((name) => t(name)).join("·");
     child.setAttribute("data-count", String(folded.size));
-    child.setAttribute("title", hasProfileFold ? `숨긴 탭 모두 보기 — ${names.join(", ")}` : `비어 있는 탭 펼치기 — ${names.join(", ")}`);
-    child.setAttribute("aria-label", hasProfileFold ? `${group.label}: 숨긴 탭 ${folded.size}개 모두 보기` : `${group.label}: 빈 탭 ${folded.size}개 펼치기`);
+    // 숨긴 탭은 이름마다 단추다 — 예전에는 「공용 이벤트·대사·변수」처럼 가운뎃점으로 이은 회색 줄글이라
+    // 어느 것을 눌러야 켜지는지 알 수 없었다(V-database-09·10). 단추를 누르면 그 탭이 바로 열린다.
+    const caption = el("span", { class: "db-tab-fold-count", text: hasProfileFold ? `숨긴 탭 ${folded.size}개` : `빈 탭 ${folded.size}개` });
+    const reveal = foldedTabs.map((id) => el("button", {
+      class: "db-tab-fold-tab",
+      text: tabFor(id).label,
+      attrs: { type: "button", title: `${tabFor(id).label} 열기` },
+      dataset: { revealTab: id, testid: `db-tab-fold-open-${id}` },
+    }));
+    // 아이콘 레일(좁은 창·도크)에서는 이름 단추가 들어갈 자리가 없다 — 「+N」 한 단추로 그룹을 펼친다.
+    const all = el("button", {
+      class: "db-tab-fold-all",
+      text: `+${folded.size}`,
+      attrs: {
+        type: "button",
+        title: hasProfileFold ? `숨긴 탭 모두 보기 — ${names.join(", ")}` : `비어 있는 탭 펼치기 — ${names.join(", ")}`,
+        "aria-label": hasProfileFold ? `${group.label}: 숨긴 탭 ${folded.size}개 모두 보기` : `${group.label}: 빈 탭 ${folded.size}개 펼치기`,
+      },
+      dataset: { testid: `db-tab-fold-all-${group.slug}`, groupSlug: group.slug },
+    });
+    child.replaceChildren(caption, ...reveal, all);
   }
 }
 
@@ -502,6 +522,8 @@ const DATABASE_ACTIVE_TAB_KEY = "oprn:database.activeTab";
 const DATABASE_REVEALED_EMPTY_GROUPS_KEY = "oprn:database.revealedEmptyTabGroups";
 
 let activeTab: DatabaseTab = readStoredActiveTab();
+// 그룹마다 마지막으로 연 탭. 띠로 그룹을 바꾸면 그 탭(없으면 그룹의 첫 보이는 탭)을 연다.
+const lastTabByGroup = new Map<string, DatabaseTab>();
 let databaseHeaderResizeObserver: ResizeObserver | null = null;
 let spatialDatabaseHost: HTMLElement | null = null;
 
@@ -566,6 +588,8 @@ export function setDatabaseActiveTab(tab: DatabaseTab): void {
   else if (shellTab) setSpatialTab(shellTab);
   persistActiveTab();
   recordRecentDatabaseTab(primaryTab(activeTab));
+  const owner = groupForTab(activeTab);
+  if (owner) lastTabByGroup.set(owner.slug, primaryTab(activeTab));
   for (const listener of activeTabListeners) listener(activeTab);
 }
 
@@ -645,21 +669,25 @@ export function renderDatabasePanel(container: HTMLElement): void {
     }
     // 빈 탭 접기 줄. `.db-tab` 이 아니다 — 탭 버튼 계약(라벨·testid·포커스 순서 검사)은
     // `.db-tab` 만 센다. 문구·숨김은 applyEmptyTabFold 가 채운다.
-    header.append(el("button", {
+    header.append(el("div", {
       class: "db-tab-fold",
-      attrs: { type: "button", hidden: "" },
+      attrs: { role: "group", "aria-label": `${group.label}: 숨긴 탭`, hidden: "" },
       dataset: { testid: `db-tab-fold-${group.slug}`, groupSlug: group.slug },
-      children: [
-        el("span", { class: "db-tab-fold-count" }),
-        el("span", { class: "db-tab-fold-names" }),
-      ],
-      on: { click: () => revealGroupEmptyTabs(group.slug, header) },
+      on: {
+        click: (event: Event) => {
+          const target = event.target instanceof Element ? event.target.closest<HTMLElement>("button") : null;
+          if (!target) return;
+          const tab = target.dataset.revealTab as DatabaseTab | undefined;
+          if (tab) openRailDestination(header, body, container, tab);
+          else revealGroupEmptyTabs(group.slug, header);
+        },
+      },
     }));
   }
   applyEmptyTabFold(header);
 
   renderActiveTab(body, container);
-  container.append(buildGroupStrip(header), header, body);
+  container.append(buildGroupStrip(header, body, container), header, body);
   resumeSkillAnimationStagesIn(body);
   syncGroupStrip(header);
   revealActiveTab(header);
@@ -1102,7 +1130,9 @@ function appendTabButton(
       // 아이콘은 `children` 으로만 넣는다 — el() 은 `text` 를 먼저 배정하고 children 을
       // 나중에 append 하므로 둘을 섞으면 라벨이 아이콘 앞으로 온다. <path> 는 텍스트
       // 노드를 안 가지므로 button.textContent 는 라벨 그대로 남는다(G006 라벨 계약).
-      children: [makeDatabaseTabIcon(tab.id), tab.label],
+      // 라벨은 span 에 담는다 — 플렉스 버튼의 맨 텍스트에는 말줄임이 걸리지 않아, 영어처럼 긴 이름이
+      // 「Equipmer」로 글자째 잘렸다(V-database-17). textContent 는 그대로 라벨이다(G006 계약).
+      children: [makeDatabaseTabIcon(tab.id), el("span", { class: "db-tab-label", text: tab.label })],
       // 카운트 배지(CSS `content: attr(data-count)`)는 보조기술이 못 읽는다. 다만 이 버튼은
       // `aria-label === title === 라벨` 을 계약으로 쓰고 있어(databaseTabIcons·databaseSidebarNav
       // 가 단언, e2e getByLabel 도 의존) 숫자를 둘 중 어디에도 끼워 넣을 수 없다.
@@ -1220,17 +1250,38 @@ function viewGroup(header: HTMLElement, slug: string): void {
   header.scrollTop = 0;
 }
 
-function buildGroupStrip(header: HTMLElement): HTMLElement {
+function groupLandingTab(group: DatabaseTabGroup): DatabaseTab {
+  const remembered = lastTabByGroup.get(group.slug);
+  if (remembered && group.tabs.includes(remembered)) return remembered;
+  const folded = new Set(foldedEmptyTabs(group));
+  return group.tabs.find((id) => !folded.has(id)) ?? group.tabs[0]!;
+}
+
+function buildGroupStrip(header: HTMLElement, body: HTMLElement, container: HTMLElement): HTMLElement {
   return el("nav", {
     class: "db-group-strip",
     attrs: { "aria-label": "자료 분류" },
     dataset: { testid: "db-group-strip" },
     children: TAB_GROUPS.map((group) => el("button", {
       class: "db-group-strip-btn",
-      attrs: { type: "button", title: group.description ?? group.label, "aria-pressed": "false" },
+      // 설명 문장은 이름이 아니라 설명이다 — 접근 이름은 보이는 글자, 설명은 aria-description 으로 준다.
+      attrs: { type: "button", title: group.description ?? group.label, "aria-pressed": "false", ...(group.description ? { "aria-description": group.description } : {}) },
       dataset: { testid: `db-group-strip-${group.slug}`, groupSlug: group.slug },
       children: [makeDatabaseGroupIcon(group.slug), el("span", { class: "db-group-strip-label", text: group.label })],
-      on: { click: () => viewGroup(header, group.slug) },
+      on: {
+        click: () => {
+          // 그룹을 바꾸면 본문·크럼도 그 그룹으로 간다. 예전에는 하위 목록만 바뀌고 본문은 이전 그룹의
+          // 탭(「파티 › 주인공」)에 머물러, 지금 무엇을 편집 중인지 두 신호가 어긋났다(V-database-05~08).
+          const owner = groupForTab(activeTab)?.slug;
+          if (owner === group.slug) {
+            viewGroup(header, group.slug);
+            return;
+          }
+          viewGroup(header, group.slug);
+          openRailDestination(header, body, container, groupLandingTab(group));
+          (container.querySelector(`[data-testid="db-group-strip-${group.slug}"]`) as HTMLElement | null)?.focus();
+        },
+      },
     })),
   });
 }

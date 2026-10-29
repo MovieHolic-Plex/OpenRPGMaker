@@ -26,12 +26,12 @@ export function createProjectSuggestions(options: {
 }) {
   const status = el("p", { attrs: { role: "status", "aria-live": "polite" }, text: "현재 맵과 DB를 살펴볼게요." });
   const cards = el("div", { class: "ai-chat-suggestion-list" });
-  const pause = el("button", { text: "잠시 멈추기", attrs: { type: "button" } });
+  const pause = el("button", { class: "ai-chat-suggestion-pause", text: "잠시 멈추기", attrs: { type: "button" } });
   const details = el("details", { children: [el("summary", { text: "살펴본 내용" })] });
   const records = el("p");
   details.append(records);
   const root = el("section", { class: "ai-chat-suggestions", dataset: { testid: "ai-project-suggestions" },
-    children: [el("div", { class: "ai-chat-suggestion-heading", children: [deckIcon("spark"), el("strong", { text: "프로젝트 살펴보기" })] }), status, cards, details, pause] });
+    children: [el("div", { class: "ai-chat-suggestion-heading", children: [deckIcon("list"), el("strong", { text: "프로젝트 살펴보기" })] }), status, cards, details, pause] });
   let disposed = false, paused = false, key = "", generation = 0, nextRun = 0;
   /**
    * 로컬 탐지 결과를 **마지막으로 그린** 키. key 와 분리하는 이유:
@@ -95,7 +95,7 @@ export function createProjectSuggestions(options: {
           // (나가는 길 없음·DB 미사용 등)에 이 버튼을 달면 (0,0) 으로 카메라를 옮겨
           // 「가리켰다」고 거짓말한다 — 좌표가 없는 제안은 버튼도 없다.
           ...(c.x === undefined || c.y === undefined ? [] : [button("위치 보기", () => { if (current()) options.locate(c); })]),
-          button("AI와 이어가기", () => { if (current()) options.request(c); }),
+          Object.assign(button("AI와 이어가기", () => { if (current()) options.request(c); }), { className: "is-primary" }),
           button("넘기기", () => { dismissed.set(identity(snapshot, c), c.fingerprint); card.remove(); reportCount(); if (!cards.childElementCount) status.textContent = "새로 확인할 내용이 생기면 알려드릴게요."; }),
         ] }));
       return card;

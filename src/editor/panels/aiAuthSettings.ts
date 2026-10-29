@@ -99,7 +99,8 @@ const QUICK_PROVIDERS: readonly Readonly<{ id: string; label: string; sub: strin
   {
     id: ANTIGRAVITY_PROVIDER_ID,
     label: "Google 계정",
-    sub: "Gemini · Antigravity",
+    // 부제는 모델 계열만 — 내부 연결 방식 이름(Antigravity)은 작가에게 뜻이 없다(C-71).
+    sub: "Gemini",
     hint: "Google 계정으로 로그인합니다. 빠른 Gemini를 기본으로 사용합니다.",
   },
   {

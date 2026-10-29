@@ -395,14 +395,17 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     openingController = controller;
     let lastFrame = '#000', handoffFadeMs = 500;
     const playback = playCinematicSequence({ host: surface.stage, project: bootProject, sequence: opening,
-      signal: controller.signal, assets: cinematicAssets, holdMusicOnComplete: true, musicHost: main,
+      signal: controller.signal, assets: cinematicAssets, holdMusicOnComplete: true, musicHost: main, holdClockThroughStalls: true, softCutTails: true,
       musicVolume: () => audioEngine.audioStateSnapshot().volume.bgm,
       onFrame: (url, fadeMs) => { lastFrame = url; if (fadeMs !== undefined) handoffFadeMs = fadeMs; } });
     openingMusicPlayback = playback;
     firstScreen();
     // Start the real engine, decode textures and assemble the map during the cinematic.
     // PlayScene gates time, events, input and map audio until the presentation handoff.
-    const prepared = bootPlayGame(surface.phaserContainer, session, eventTestId, loading, run, startedAt, repairs, true);
+    // 엔진 기동은 첫 컷이 보인 뒤에 건다. 같이 시작하면 엔진의 긴 작업(초 단위)이 첫 컷 준비를 막아
+    // 새 게임 직후 「미디어 불러오는 중」 검은 화면이 2초 넘게 떴다(2026-10-29 maou-konbini 녹화). 첫 컷이 늦어도 1.5초 뒤엔 건다.
+    const prepared = Promise.race([playback.firstFrame, new Promise<void>((resolve) => window.setTimeout(resolve, 1500))])
+      .then(() => run === startRun && shellActive ? bootPlayGame(surface.phaserContainer, session, eventTestId, loading, run, startedAt, repairs, true) : undefined);
     void playback.done.then(async result => {
       if (result === 'aborted' || run !== startRun || !shellActive) return;
       openingController = null;

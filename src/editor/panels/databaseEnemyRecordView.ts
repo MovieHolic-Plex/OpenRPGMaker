@@ -147,10 +147,15 @@ function enemyHero(record: EnemyRecord): { readonly node: HTMLElement; readonly 
   const live = currentEnemy(record);
   const species = monsterSpeciesForEnemy(store.getCurrent(), live);
   const factionTable = resolveFactionTable(store.getCurrent().factions);
-  const tags = [
+  // 배지는 「라벨 + 값」 두 조각이다. 값(종족 이름·진영 이름)은 저작 데이터라 번역하지 않는다(translate=no).
+  // 예전처럼 「종족 슬라임」 한 문자열로 이으면 번역기가 데이터의 한국어 때문에 라벨까지 원문으로 남겼다
+  // (J-p8-language-15). 개수는 「행동 · 3」 처럼 값으로 써서 영어 복수형(「1 actions」) 문제를 피한다.
+  const tags: (string | Node)[] = [
     `Lv ${live.level ?? 1}`,
-    species ? `종족 ${species.name}${live.speciesId ? "" : " · 같은 ID 호환 연결"}` : live.speciesId ? `종족 ${live.speciesId} · 존재하지 않음` : "종족 미설정",
-    `행동 ${live.actions.length}개`,
+    species
+      ? labelledTag("종족", species.name, live.speciesId ? undefined : "같은 ID 호환 연결")
+      : live.speciesId ? labelledTag("종족", live.speciesId, "존재하지 않음") : "종족 미설정",
+    labelledTag("행동", String(live.actions.length)),
     enemyFactionHeroTag(factionTable, live.factionId),
   ];
   const node = detailHero({
@@ -171,14 +176,36 @@ function enemyHero(record: EnemyRecord): { readonly node: HTMLElement; readonly 
   };
 }
 
+/** 「라벨 · 값 · 덧붙임」 배지. 라벨·덧붙임은 화면 글자(번역), 값은 저작 데이터(번역하지 않음)다. */
+function labelledTag(label: string, value: string, note?: string): Node {
+  const fragment = document.createDocumentFragment();
+  fragment.append(
+    el("span", { class: "db-ws-tag-label", text: label }),
+    document.createTextNode(" "),
+    el("span", { class: "db-ws-tag-value", text: value, attrs: { translate: "no" } }),
+  );
+  if (note) fragment.append(document.createTextNode(" · "), el("span", { text: note }));
+  return fragment;
+}
+
+/** 기본 진영(player·enemy)의 이름은 화면 글자(번역 대상), 저작한 진영 이름은 데이터다. */
+function isBuiltInFaction(id: string): boolean {
+  return id === PLAYER_FACTION_ID || id === DEFAULT_ENEMY_FACTION_ID;
+}
+
 function enemyFactionHeroTag(
   table: ReturnType<typeof resolveFactionTable>,
   factionId: string | undefined,
-): string {
+): Node {
   if (factionId && !table.ids.includes(factionId)) {
-    return `진영 ${factionId} (존재하지 않음 · enemy로 전투)`;
+    return labelledTag("진영", factionId, "존재하지 않는 진영 · 기본 적 진영으로 전투");
   }
-  return `진영 ${factionName(table, factionId)}`;
+  const id = factionId ?? DEFAULT_ENEMY_FACTION_ID;
+  const name = factionName(table, factionId);
+  if (!isBuiltInFaction(id)) return labelledTag("진영", name);
+  const fragment = document.createDocumentFragment();
+  fragment.append(el("span", { class: "db-ws-tag-label", text: "진영" }), document.createTextNode(" "), el("span", { text: name }));
+  return fragment;
 }
 
 function identityFields(
@@ -224,15 +251,23 @@ function factionFields(record: EnemyRecord, rerender: () => void): HTMLElement[]
     // 렌더만으로 원본을 고치지 않으면서, 다른 유효 진영을 고르면 명시적으로 복구된다.
     select.append(el("option", {
       attrs: { value: storedId, disabled: "" },
-      text: `${storedId} · 존재하지 않는 진영 (enemy로 전투)`,
+      text: `${storedId} · 존재하지 않는 진영`,
     }));
   }
+  // 선택지는 진영 이름으로 읽는다. 내부 id(「(enemy)」)는 이름이 겹칠 때만 구별용으로 붙인다 — 예전에는
+  // 「적 (enemy) · 기본값」처럼 원시 enum 이 모든 언어에 그대로 보였다(J-p8-language-15·20).
+  const nameCounts = new Map<string, number>();
+  for (const id of table.ids) nameCounts.set(factionName(table, id), (nameCounts.get(factionName(table, id)) ?? 0) + 1);
   for (const id of table.ids) {
     const isDefault = id === DEFAULT_ENEMY_FACTION_ID;
-    select.append(el("option", {
-      attrs: { value: id },
-      text: `${factionName(table, id)} (${id})${isDefault ? " · 기본값" : ""}`,
-    }));
+    const name = factionName(table, id);
+    const option = el("option", {
+      attrs: { value: id, title: id },
+      // 기본 진영은 「기본: 적」 — 「적 · 기본값」은 번역기가 「{0} 기본값」 틀로 읽어 「적」을 원문으로 남겼다.
+      text: `${isDefault ? "기본: " : ""}${(nameCounts.get(name) ?? 0) > 1 ? `${name} [${id}]` : name}`,
+    });
+    if (!isBuiltInFaction(id)) option.setAttribute("translate", "no");
+    select.append(option);
   }
   select.value = dangling && storedId ? storedId : effectiveId;
   select.addEventListener("change", () => {
@@ -248,14 +283,14 @@ function factionFields(record: EnemyRecord, rerender: () => void): HTMLElement[]
     field("소속 진영", select),
     el("p", {
       class: "db-enemy-faction-clear-hint",
-      text: "적 (enemy) · 기본값을 선택하면 저장된 소속 진영 값이 삭제됩니다.",
+      text: "기본값을 고르면 저장된 소속 진영 값을 지웁니다.",
       dataset: { testid: "db-enemy-faction-default-clears" },
     }),
     factionConsequence(table, effectiveId, dangling ? "dangling" : storedId === effectiveId ? "authored" : "default", storedId),
   ];
   if (dangling && storedId) {
     const missingNotice = noticeBar({
-      text: `저장된 진영 ID '${storedId}'가 존재하지 않는 진영을 가리킵니다. 런타임에서는 enemy로 전투합니다. 드롭다운에서 다시 지정하거나 저장값을 지우세요.`,
+      text: `저장된 진영 ID '${storedId}'가 존재하지 않는 진영을 가리킵니다. 런타임에서는 기본 적 진영으로 전투합니다. 드롭다운에서 다시 지정하거나 저장값을 지우세요.`,
       tone: "bad",
       action: {
         label: "저장값 지우기",
@@ -330,8 +365,8 @@ function factionConsequence(
   const identityName = missing ? "존재하지 않는 진영" : factionName(table, effectiveId);
   const identityId = missing ? (storedId ?? effectiveId) : effectiveId;
   const sourceText = missing
-    ? "저장됨 · enemy로 전투"
-    : source === "authored" ? "레코드에 저장됨" : "미저장 · enemy로 전투";
+    ? "저장됨 · 기본 적 진영으로 전투"
+    : source === "authored" ? "레코드에 저장됨" : "미저장 · 기본 적 진영으로 전투";
   const swatch = el("span", {
     class: "db-enemy-faction-swatch",
     attrs: { role: "img", "aria-label": `${factionName(table, effectiveId)} 런타임 식별 색` },

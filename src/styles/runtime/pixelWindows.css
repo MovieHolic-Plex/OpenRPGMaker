@@ -345,6 +345,10 @@
 .oprn-status-menu[data-menu-skin="pixel"] .status-menu-overview-info { gap: 0; line-height: 11px; }
 /* 이야기형(주인공 한 명 + 현재 목표) 머리는 칸 걱정이 없다 — 12px 글자에 11px 줄이라 이름과 장소 줄이 붙어 보였다(VQA vm 29·48). */
 .oprn-status-menu[data-menu-skin="pixel"] .status-menu-story-overview .status-menu-overview-info { gap: 3px; line-height: 15px; }
+/* 주인공 한 줄(이야기·관계 첫 화면)은 이름과 지금 있는 곳을 머리 묶음 없이 두 줄로 쌓는다. 11px 줄 높이는 12px 글자보다 작아
+   「주인공」 아랫부분이 「빈 맵」 위에 겹쳐 그려졌다(HIG C-97). 이 두 줄만 글자 높이에 맞는 줄 간격을 준다. */
+.oprn-status-menu[data-menu-skin="pixel"] .status-menu-rel-lead .status-menu-overview-info { align-content: center; gap: 2px; line-height: 1.25; }
+.oprn-status-menu[data-menu-skin="pixel"] .status-menu-rel-lead .status-menu-actor-subline { color: var(--px-ink-dim); font-family: var(--px-small-font); font-size: 10px; }
 /* 12px 글자에서는 네 칸(파티 넷)에 이름·HP·MP·EX 만 들어간다 — 「정상」 상태 줄은 이상이 있을 때만 보인다. */
 .oprn-status-menu[data-menu-skin="pixel"] .status-menu-overview-states:not(.has-state) { display: none; }
 /* 상태가 있으면 이름 줄 오른쪽에 붙인다 — 따로 한 줄을 쓰면 넷째 줄(EX)이 칸 아래로 밀려 다음 파티원 이름을 덮었다

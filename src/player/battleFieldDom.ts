@@ -1336,6 +1336,8 @@ function enemyButton(
   const name = document.createElement("span");
   name.className = "battle-enemy-name";
   name.textContent = disambiguatedBattlerName(enemy, snapshot.enemies);
+  // 이름표는 스킨에 따라 숨는다 — 버튼 이름은 그와 무관하게 적 이름이다(이름 없는 대상 단추, HIG C-96).
+  enemyNode.setAttribute("aria-label", name.textContent);
   // 이름·순번·상태·HP 는 스프라이트 **아래에 겹쳐** 놓는다(.battle-enemy-chrome 이 절대 배치).
   // 흐름에 두면 HUD 를 펼칠 때 노드 높이가 변하고, 그 높이로 스프라이트 top 을 보정하던
   // 옛 코드(alignEnemyFeetToAuthoredY) 때문에 몬스터가 눈에 보이게 튀었다.
@@ -1496,11 +1498,15 @@ function actorNode(view: BattleBattlerSnapshot, index = 0, count = 4): HTMLEleme
   if (resourceId) {
     node.dataset.authoredBattler = "true";
     node.dataset.battleCharsetResourceId = resourceId;
-    const pixelParty = Object.hasOwn(store.getCurrent().assets.uploaded, resourceId) ? undefined : partyPixelSheet(resourceId);
+    let pixelParty = Object.hasOwn(store.getCurrent().assets.uploaded, resourceId) ? undefined : partyPixelSheet(resourceId);
     if (pixelParty) {
       // 사람형이 아닌 파티원(짐승·탈것·몬스터 칩): 24포즈 걷기 칩 시트 대신 몬스터 9칸 시트로 선다. battlerExtended 는 켜지 않는다.
       node.dataset.pixelParty = pixelParty.motion;
       node.dataset.pixelEnemyCell = String(pixelParty.cell);
+      // 배우 기록의 battleScalePercent 로 상자를 키운다(마왕처럼 사람보다 큰 파티원). 시트는 배경 백분율이라 함께 커진다.
+      const record = store.getCurrent().database.actors.find((entry) => entry.id === actor.recordId);
+      const box = Math.round(pixelParty.box * (record?.battleScalePercent ?? 100) / 100);
+      pixelParty = { ...pixelParty, box };
       node.style.setProperty("--party-pixel-box", `${pixelParty.box}px`);
       // 상자가 사람 도트(96px)보다 넓은 파티원(화면 128px)은 오른쪽 사선 열 끝(x 294)에서 무대 밖으로 잘렸다
       // (범선·비공정 녹화 실측). 넓어진 반폭만큼 왼쪽으로 당긴다(RM 논리 px = 화면 px / 2).
@@ -2154,6 +2160,8 @@ function statusIconCluster(battler: BattleBattlerSnapshot): HTMLElement {
     node.setAttribute("aria-label", entry.name);
     cluster.append(node);
   }
+  // 문서 언어가 한국어면 우리말 이름 — 상태 아이콘(03-vxace-status-nodes.css 의 :lang(ko))과 같은 규칙이다.
+  const stageLocale = document.documentElement.lang.toLowerCase().startsWith("ko") ? "ko" : "other";
   for (const { stat, stage } of stagePills) {
     const node = document.createElement("span");
     node.className = `battle-stage-pill battle-stage-pill-${stage > 0 ? "up" : "down"}`;
@@ -2161,7 +2169,8 @@ function statusIconCluster(battler: BattleBattlerSnapshot): HTMLElement {
     node.dataset.stageStat = stat;
     node.dataset.stage = String(stage);
     const arrows = Math.abs(stage);
-    node.textContent = `${STAT_STAGE_ABBREVIATIONS[stat]}${stage > 0 ? "↑" : "↓"}${arrows}`;
+    // 한국어 게임에서는 「방어↑1」처럼 우리말 이름을 쓴다 — 팝업은 「공격 하락」인데 배지만 「ATK↓」였다(HIG C-95).
+    node.textContent = `${stageLocale === "ko" ? STAT_STAGE_LABELS[stat] : STAT_STAGE_ABBREVIATIONS[stat]}${stage > 0 ? "↑" : "↓"}${arrows}`;
     node.setAttribute("role", "img");
     node.setAttribute("aria-label", `${STAT_STAGE_LABELS[stat]} ${stage > 0 ? "+" : ""}${stage}단계`);
     cluster.append(node);

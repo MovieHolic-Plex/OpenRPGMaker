@@ -1,7 +1,7 @@
 import { CC0_MUSIC_ASSETS, CC0_SOUND_ASSETS } from "@/assets/cc0AudioAssets";
 import { EASYRPG_MUSIC_ASSETS, EASYRPG_SOUND_ASSETS } from "@/assets/easyrpgRtp";
 import { listAudioResources } from "@/assets/audioResourceCatalog";
-import { audioResourceDocument, audioPlayback } from "./audioResourcePresentation";
+import { audioResourceDocument, audioPlayback, audioRowParts, audioUnplayableReason } from "./audioResourcePresentation";
 import { createAudioPreviewPlayer } from "./audioPreviewPlayer";
 import { bgmInstallBanner } from "./bgmInstallBanner";
 import { renderEditorIcon as editorIcon } from "./eventEditor/editorIcons";
@@ -75,8 +75,23 @@ export function openAudioTestDialog(): void {
   const current = () => listAudioResources(category, store.getCurrent()).find(entry => entry.id === selectedId);
   function renderDetail(): void {
     const resource = current();
-    description.replaceChildren(...(resource ? [audioResourceDocument(resource, store.getCurrent())] : []));
+    description.replaceChildren(resource ? audioResourceDocument(resource, store.getCurrent()) : selectionGuide());
     player.select(resource, store.getCurrent());
+  }
+  // 고르기 전의 오른쪽 칸 — 빈 칸 대신 목록이 어떤 곡을 담고 있는지(들을 수 있는 수·못 듣는 수와 이유)를 보여 준다.
+  function selectionGuide(): HTMLElement {
+    const resources = listAudioResources(category, store.getCurrent());
+    const unplayable = resources.filter(entry => !audioPlayback(entry.id, store.getCurrent()).playable).length;
+    return el("div", {
+      class: "audio-test-guide", dataset: { testid: "audio-test-guide" },
+      children: [
+        el("h3", { text: category === "music" ? "고른 음악 없음" : "고른 효과음 없음" }),
+        el("p", { text: "왼쪽 목록에서 고르면 설명·태그·파일 정보가 여기에 나오고, 아래 재생 단추로 바로 들을 수 있습니다." }),
+        el("p", { class: "audio-preview-meta", text: unplayable
+          ? `미리 듣기 가능 ${resources.length - unplayable}개 · 불가 ${unplayable}개 — 불가 항목에는 이유가 함께 적혀 있습니다.`
+          : `미리 듣기 가능 ${resources.length}개` }),
+      ],
+    });
   }
   function renderList(): void {
     const order = category === "music" ? [...CC0_MUSIC_ASSETS, ...EASYRPG_MUSIC_ASSETS] : [...CC0_SOUND_ASSETS, ...EASYRPG_SOUND_ASSETS];
@@ -87,13 +102,23 @@ export function openAudioTestDialog(): void {
     const filtered = resources.filter(entry => !needle || [entry.id, entry.name, entry.description, ...entry.tags].some(value => value.toLowerCase().includes(needle)));
     const entries = [{ id: "", name: "(꺼짐)" }, ...filtered];
     list.replaceChildren(...entries.map(entry => {
-      const playback = entry.id ? audioPlayback(entry.id, store.getCurrent()) : { playable: true, midi: false };
+      const playback = entry.id ? audioPlayback(entry.id, store.getCurrent()) : { url: null, playable: true, midi: false };
+      // 이름 한 줄에 용도·곡 이름·라이선스가 붙어 있었다 — 곡 이름을 주 글자로, 나머지를 보조 줄로 나눈다.
+      const parts = audioRowParts(entry.name);
+      const reason = playback.playable ? "" : audioUnplayableReason(playback);
       return el("button", {
         class: `audio-test-option${entry.id === selectedId ? " selected" : ""}${playback.playable ? "" : " unplayable"}`,
-        attrs: { type: "button", role: "option", tabindex: entry.id === selectedId ? "0" : "-1", "aria-selected": String(entry.id === selectedId), title: entry.name,
+        attrs: { type: "button", role: "option", tabindex: entry.id === selectedId ? "0" : "-1", "aria-selected": String(entry.id === selectedId),
+          title: reason ? `${entry.name} — ${reason}` : entry.name,
           ...(playback.playable ? {} : { "aria-disabled": "true" }) },
         dataset: { testid: entry.id ? `audio-test-option-${resources.findIndex(item => item.id === entry.id) + 1}` : "audio-test-option-off", resourceId: entry.id, audioMidi: String(playback.midi) },
-        children: [el("span", { class: "audio-test-option-label", text: entry.name }), ...(playback.playable ? [] : [el("span", { class: "audio-test-option-badge", text: "재생 불가" })])],
+        children: [
+          el("span", { class: "audio-test-option-text", children: [
+            el("span", { class: "audio-test-option-label", text: parts.title }),
+            ...(parts.meta ? [el("span", { class: "audio-test-option-meta", text: parts.meta })] : []),
+          ] }),
+          ...(reason ? [el("span", { class: "audio-test-option-badge", text: reason })] : []),
+        ],
         on: { click: () => {
           selectedId = entry.id;
           renderList();
@@ -105,7 +130,8 @@ export function openAudioTestDialog(): void {
     if (!list.querySelector('[tabindex="0"]')) list.querySelector("button")?.setAttribute("tabindex", "0");
     if (filtered.length === 0) list.append(el("p", { class: "audio-preview-meta", text: "일치하는 음원이 없습니다. 검색어를 바꿔 보세요." }));
     count.textContent = needle ? `${filtered.length}/${resources.length}개` : `${resources.length}개`;
-    notice.textContent = selectedId && !filtered.some(entry => entry.id === selectedId) ? "선택한 음원은 검색 결과 밖에 있습니다." : selectedId ? "" : "목록에서 음원을 선택한 뒤 재생하세요.";
+    // 고르기 전 안내는 재생 막대 상태 한 곳(「음원을 선택하세요」)과 오른쪽 안내 칸이 맡는다 — 같은 말을 두 번 하지 않는다.
+    notice.textContent = selectedId && !filtered.some(entry => entry.id === selectedId) ? "선택한 음원은 검색 결과 밖에 있습니다." : "";
   }
   function renderTabs(): void {
     tabs.replaceChildren(...(["music", "sound"] as const).map(kind => el("button", {

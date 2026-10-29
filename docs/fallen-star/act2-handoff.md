@@ -2,6 +2,39 @@
 
 기획 정본: `docs/fallen-star/act2-plan.md`. 제1막·1.22 는 운영 스토어에 게시됨(fallen-star 1.22, PR #3509).
 
+## ★ 재개 지점 (2026-10-27 밤 — 1.24 에서 멈춤)
+
+감독 지시로 **1.24 게시 뒤 멈췄다. B10~B13 은 0줄.** 이어받는 사람은 여기서 시작한다.
+
+- **판본 끝 마개:** `act2Opening.ts` 의 `FS2_RELEASE_STOP = "B9"` → `towerReleaseStop(project)`(하늘탑 1층 자동 이벤트 `ev_fs2_tower_stop`: 막 카드·회복·저장, 위층 계단 문구를 「다음 업데이트」로 덮어씀).
+  **B10 을 열 때 `null` 로 바꾼다.** 그러면 카드·계단 덮어쓰기가 함께 빠진다. 체크포인트 `act2-b9-stop` 은 그때 지우거나 B13 끝 막 카드로 옮긴다.
+- **하늘탑 맵:** `author_dungeon type:"tower" adapter:"beodeul" floors:4` 가 이미 지었다. 맵은 `fs2_sky_tower`(1층), `fs2_sky_tower_f2`, `fs2_sky_tower_f3`, `fs2_sky_tower_f4`. 입구는 서리나루 밤 맵(`fs2_frostford_night`)의 탑 문이다.
+- **B10~B13 에 쓸 도구**(계획 `act2-plan.md` 7절, 모두 main 에 있음):
+  - B10 2층 분리 진행: `author_party_split`. 렌즈·빛 퍼즐: `author_map_puzzle` 의 `mirror_beam_refraction`.
+  - B11 이리스 재회: `configure_story_journal`, 일지 한 줄 m2 명령, `place_field_obstacle kind:"dark"`(손끝 빛).
+  - B13 보스: `upsert_skill chargeBreak`, `add_battle_guest`, `upsert_combo_tech` 4인(「네 번째 대답」).
+  - 적 그림 후보(공용 140종 도트 — 새 캐릭터 그림 금지): golem-iron, moth-dust, spider-cave 또는 golem-crystal, snake-01, bat-cave.
+- **비트마다 할 일:** 굽기 → 정본 저장·재로드 → 체크포인트 녹화 → `~/claude-viz/fs-act2-1.html` 맨 위에 1배 영상 → PR → `node scripts/merge-pr.mjs`.
+  판본을 낼 때는 **독립 플레이 판정을 한 번** 돌린다(아래).
+
+### 독립 플레이 판정 (1.24 에서 처음 씀)
+
+Claude·Sonnet 이 아닌 판정자(omp + DeepSeek)가 출하 플레이어를 사람처럼 한 걸음씩 플레이한다. 순간이동·스위치 조작은 없다.
+
+```bash
+# 1) 대화형 세션 — 체크포인트 act2-play(감방에서 막 시작)에서 멈춰 /tmp/fs2/judge/play 의 cmd-<n>.json 을 기다린다(부팅 6~9분)
+QA_INTERACTIVE_DIR=/tmp/fs2/judge/play QA_INTERACTIVE_IDLE_MS=2400000 QA_RECORD_VIDEO=/tmp/fs2/qaplay/vid timeout 40000 unshare -rn bash -c "ip link set lo up; npm run -s qa:runtime -- --scenario checkpoints --checkpoint-set fallen-star --checkpoint act2-play --project <굽기>/demos/chrono-bell.project.json --out /tmp/fs2/qaplay --parallel 1"
+# 2) res-0.json 이 생기면 판정자
+omp -p --model cb/deepseek-v4.1-flash --thinking high --mode json --max-time 6h --cwd <체크아웃> "$(cat docs/fallen-star/act2-judge-prompt.md)" > /tmp/fs2/judge/omp-raw.jsonl
+```
+- 조작 도구: `node scripts/qa/play-step.mjs <dir> '<ops json>'`. 상태 JSON 과 화면 PNG 를 돌려준다(`scripts/lib/runtimeQaInteractive.mjs`).
+- **증거는 omp 원본 출력(jsonl)과 판정자가 쓴 report.md 뿐이다.** 감독이 대신 요약하지 않는다.
+- 판정이 찾아 고친 것(1.24, PR #3864):
+  1. 순찰에게 지면 HP 0 파티로 계속 걸었다 → `make_chase_scene caughtPenalty` 가 전투 뒤 회복.
+  2. 감방 문 앞에서 180걸음 맴돎 → 빵을 들고 문을 조사하면 엘레나가 침대에서 쪼개 보자고 짚는다.
+  3. 감방으로 끌려간 뒤 막사 입구에서 즉시 재포획(여섯 번) → 추격자가 주인공을 다른 맵으로 끌고 가면 제자리로 돌아간다(`sendPursuerHome`, 엔진 공통).
+- 함정: QA 플레이어는 HMR·watch 가 꺼져 있지만, 아직 안 불린 모듈은 요청할 때 현재 소스로 변환된다. 판정 도중 `src/player` 를 고치지 말 것.
+
 ## 0. 지금 진행 중 (2026-10-26)
 
 - 열린 도구 PR 셋(#3546 일지·#3548 시간 탈출·#3557 전투 손님)과 인계 문서 #3561 은 **모두 머지됨**.

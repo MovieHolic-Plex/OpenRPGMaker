@@ -1,9 +1,11 @@
 import { editorState } from "@/editor/editorState";
-import { layerSwitcherKey, makeLeftLayerSwitcher } from "./leftLayerSwitcher";
+import { makeLeftLayerSwitcher, paintLayerSwitcher } from "./leftLayerSwitcher";
+import { isTextEditingElement } from "@/editor/hotkeys";
+import { hasOpenModalLayer } from "@/editor/ui/modalStack";
 import { captureFocus, restoreFocus } from "./sidebarFocus";
 import { getMode, toggleMode } from "@/app/mode";
 import { PRODUCT_BRAND, PRODUCT_TAGLINE } from "@/brand";
-import { t } from "@/i18n";
+import { getLocale, LOCALE_NATIVE_NAMES, setLocale, SUPPORTED_LOCALES, t } from "@/i18n";
 import { showAlert, showConfirm } from "@/editor/ui/modal";
 import { showBackupRestoreDialog } from "@/editor/ui/backupRestoreDialog";
 import { openAudioTestDialog } from "@/editor/panels/audioTestDialog";
@@ -53,9 +55,9 @@ import { projectRepository } from "@/project/persistence/repository";
 import { sameProjectTarget } from "@/project/persistence/target";
 import { persistenceSurfaceVisible } from "@/editor/persistenceRecoveryUi";
 import { reloadProjectFromDbNow, saveProjectNow } from "@/editor/saveActions";
-import { uiLabel, type UiCopyKey } from "@/editor/uiCopy";
+import { toolLabel, uiLabel, type UiCopyKey } from "@/editor/uiCopy";
 import { requestCommandPalette } from "@/editor/panels/commandPalette";
-import { makeSvgIcon, type SvgIconName } from "@/editor/panels/tileToolbarIcons";
+import { buildSvgIcon, makeSvgIcon, type SvgIconName, type SvgNodeSpec } from "@/editor/panels/tileToolbarIcons";
 import { installToolbarOverflow } from "@/editor/panels/toolbarOverflow";
 import { installTopbarFit } from "@/editor/panels/topbarFit";
 import { focusFirstMenuItem, handleMenuArrowKeys, renderWorkspaceBar } from "@/editor/panels/workspaceBar";
@@ -78,12 +80,47 @@ import { claimTransientLayer, releaseTransientLayer } from "@/editor/ui/transien
 // 초보/표준/전문가 편집 모드는 2026-09-27 에 없앴다 — 편집기 화면은 하나다. 초보 전용이던
 // 「도구 ▾」 메뉴도 그때 걷었다(자료집·소재·세계관·음악·찾기가 모두 인라인 버튼이다).
 
-type MenuId = "project" | "help" | "more-tools";
+type MenuId = "project" | "help" | "more-tools" | "language";
 
 const autoSaveLog = createLogger("autosave");
 
+// 톱바 전용 그림 — 공용 세트(tileToolbarIcons)와 같은 22px 선 규격으로 그린다. 지구본은 언어 전환이
+// 쓰므로 세계관은 책, 스튜디오는 장면 모니터, 랜덤 전투는 주사위로 다른 기능과 모양을 나눈다.
+const TOPBAR_ICONS: Readonly<Record<"world" | "studio" | "dice", readonly SvgNodeSpec[]>> = {
+  world: [
+    { tag: "path", attrs: { d: "M11 6.5C9.2 5 6.8 4.5 4 4.8v11.5c2.8-.3 5.2.2 7 1.7 1.8-1.5 4.2-2 7-1.7V4.8c-2.8-.3-5.2.2-7 1.7z" } },
+    { tag: "path", attrs: { d: "M11 6.5V18" } },
+  ],
+  studio: [
+    { tag: "rect", attrs: { x: "3.5", y: "4.5", width: "15", height: "10", rx: "1.5" } },
+    { tag: "path", attrs: { d: "M8 18.5h6M11 14.5v4" } },
+    { tag: "path", attrs: { d: "M9.5 7.5v4l3.5-2z", fill: "currentColor", stroke: "none" } },
+  ],
+  dice: [
+    { tag: "rect", attrs: { x: "4", y: "4", width: "14", height: "14", rx: "2.5" } },
+    { tag: "circle", attrs: { cx: "8", cy: "8", r: "1.2", fill: "currentColor", stroke: "none" } },
+    { tag: "circle", attrs: { cx: "11", cy: "11", r: "1.2", fill: "currentColor", stroke: "none" } },
+    { tag: "circle", attrs: { cx: "14", cy: "14", r: "1.2", fill: "currentColor", stroke: "none" } },
+  ],
+};
+
 type MenuCommand =
-  | { readonly kind: "item"; readonly disabled?: boolean; readonly label: string; readonly icon?: SvgIconName; readonly onClick: () => void; readonly testId: string }
+  | {
+      readonly kind: "item";
+      readonly disabled?: boolean;
+      readonly label: string;
+      readonly icon?: SvgIconName;
+      readonly onClick: () => void;
+      readonly testId: string;
+      /** 보이는 단축키 표기(예: "Ctrl+S"). 항목 오른쪽 <kbd> 로 그린다. */
+      readonly shortcut?: string;
+      /** aria-keyshortcuts 값. */
+      readonly keys?: string;
+      /** 하나만 고르는 항목(언어)이면 선택 여부 — menuitemradio 로 그린다. */
+      readonly checked?: boolean;
+      /** 항목 글자의 언어(언어 이름은 그 언어로 쓴다). */
+      readonly lang?: string;
+    }
   | { readonly kind: "submenu"; readonly label: string; readonly popupId: string; readonly testId: string; readonly commands: () => readonly MenuCommand[] }
   | { readonly kind: "separator" };
 
@@ -108,6 +145,8 @@ let disposeAiConnectionChip: (() => void) | null = null;
 let disposeFullscreenButton: (() => void) | null = null;
 let disposeTopbarFit: (() => void) | null = null;
 let disposeProjectLabel: (() => void) | null = null;
+let disposeStatusStrip: (() => void) | null = null;
+let paintStripSave: ((state: AutoSaveState) => void) | null = null;
 let lastLoggedAutoSaveKind: AutoSaveState["kind"] | null = null;
 // 실패 에피소드가 진행 중인가. error 로 켜지고 saved/idle 로 꺼진다 — 재시도 중(saving)에도
 // 칩을 붙잡아 두는 데 쓴다. 톱바가 다시 그려져도 에피소드는 이어져야 하므로 모듈 상태다.
@@ -134,6 +173,10 @@ export function renderTopbar(topbar: HTMLElement): void {
   disposeTopbarFit = null;
   disposeProjectLabel?.();
   disposeProjectLabel = null;
+  disposeStatusStrip?.();
+  disposeStatusStrip = null;
+  paintStripSave = null;
+  installTopbarChords();
   while (topbar.firstChild) topbar.removeChild(topbar.firstChild);
   const mode = getMode();
   const menuBar = el("div", {
@@ -144,7 +187,7 @@ export function renderTopbar(topbar: HTMLElement): void {
   // 왼쪽 — 파일·자료 묶음.
   const lead = el("div", { class: "studio-bar-lead", dataset: { testid: "studio-bar-lead" } });
   const projectLabel = projectMenuLabel();
-  const projectButton = renderMenu("project", projectLabel, menuCommands("project", topbar), { chevron: true, className: "studio-project-button", title: `프로젝트 — ${projectLabel}` });
+  const projectButton = renderMenu("project", projectLabel, menuCommands("project", topbar), { chevron: true, className: "studio-project-button", title: `프로젝트 메뉴 — ${projectLabel}` });
   disposeProjectLabel = watchProjectMenuLabel(projectButton);
   lead.append(
     renderProductBrand(),
@@ -153,33 +196,28 @@ export function renderTopbar(topbar: HTMLElement): void {
     renderTopbarSaveStatus(topbar),
     toolButton({ testId: "toolbar-database", icon: "database", label: headerLabel("databaseShort"), title: headerLabel("database"), onClick: () => openDatabaseModalLazy() }),
     toolButton({ testId: "toolbar-resource-manager", icon: "image", label: headerLabel("resources"), title: headerLabel("resourceLibrary"), onClick: () => openResourceModal() }),
-    toolButton({ testId: "toolbar-world", icon: "globe", title: headerLabel("world"), onClick: () => openWorldPanel() }),
-    toolButton({ testId: "toolbar-sound-test", icon: "music", title: headerLabel("audio"), onClick: () => openAudioTestDialog() }),
-    toolButton({ testId: "toolbar-search", icon: "docSearch", title: headerLabel("mapEventSearch"), onClick: () => openMapEventSearchModal() }),
-    // 폭이 모자랄 때만 보인다(topbarFit 1단계) — 위 세 아이콘과 같은 일을 메뉴 한 칸으로 한다.
+    toolButton({ testId: "toolbar-world", icon: TOPBAR_ICONS.world, title: headerLabel("world"), keys: "Control+Alt+W", onClick: () => openWorldPanel() }),
+    toolButton({ testId: "toolbar-sound-test", icon: "music", title: headerLabel("audio"), keys: "Control+Alt+M", onClick: () => openAudioTestDialog() }),
+    toolButton({ testId: "toolbar-search", icon: "docSearch", title: headerLabel("mapEventSearch"), keys: "Control+Shift+F", onClick: () => openMapEventSearchModal() }),
+    // 폭이 모자랄 때만 보인다(topbarFit 1단계) — 위 세 아이콘과 전체화면을 메뉴 한 칸으로 옮긴다.
     renderMenu("more-tools", "도구 더 보기", menuCommands("more-tools", topbar), { icon: "more", className: "studio-icon-button studio-tools-more" }),
   );
   if (mode === "edit") {
     const resources = lead.querySelector<HTMLElement>('[data-testid="toolbar-resource-manager"]');
-    const layers = makeLeftLayerSwitcher(layerSwitcherKey(editorState.get()));
+    const [relief, layers] = makeLeftLayerSwitcher(editorState.get());
     layers.classList.add("header-layer-switcher");
-    let paintedKey = layerSwitcherKey(editorState.get());
+    let painted = `${editorState.get().layer}|${editorState.get().tool === "relief"}`;
     disposeLayerSwitcher = editorState.subscribe((state) => {
-      const key = layerSwitcherKey(state);
+      const key = `${state.layer}|${state.tool === "relief"}`;
       // 켜진 칸이 그대로면(맵 전환·타일 선택 등) 단추를 훑지 않는다.
-      if (key === paintedKey) return;
-      paintedKey = key;
-      const keepFocus = layers.contains(document.activeElement);
-      for (const button of layers.querySelectorAll<HTMLButtonElement>("button")) {
-        const active = button.dataset.sidebarLayer === key;
-        button.classList.toggle("is-active", active);
-        if (active) button.setAttribute("aria-current", "true");
-        else button.removeAttribute("aria-current");
-        if (!keepFocus) button.tabIndex = active ? 0 : -1;
-      }
+      if (key === painted) return;
+      painted = key;
+      paintLayerSwitcher(relief, layers, state);
     });
     const resourceIndex = resources ? Array.from(lead.children).indexOf(resources) : -1;
-    lead.insertBefore(layers, resourceIndex >= 0 ? lead.children[resourceIndex + 1] ?? null : null);
+    lead.insertBefore(relief, resourceIndex >= 0 ? lead.children[resourceIndex + 1] ?? null : null);
+    lead.insertBefore(layers, relief.nextSibling);
+    lead.append(renderStatusStrip());
   }
   menuBar.append(lead);
 
@@ -208,6 +246,8 @@ export function renderTopbar(topbar: HTMLElement): void {
   trailing.append(panelsButton, panelsMenu);
   const cluster = el("div", { class: "studio-icon-cluster", dataset: { testid: "studio-icon-cluster" } });
   cluster.append(renderMenu("help", "도움말", menuCommands("help", topbar), { icon: "help", className: "studio-icon-button" }));
+  // 언어는 「보기」 메뉴 바닥에 묻혀 있었다 — 한국어를 못 읽는 사람도 찾게 지구본 단추 하나로 둔다.
+  cluster.append(renderMenu("language", "언어 · Language", menuCommands("language", topbar), { icon: "globe", className: "studio-icon-button studio-language-button" }));
   cluster.append(renderCommitHistoryButton(), renderTopbarIdentityControl(topbar));
   if (mode === "edit") cluster.append(renderTopbarAiSettingsButton(), renderTopbarAiConnectionChip());
   cluster.append(renderFullscreenButton());
@@ -230,6 +270,54 @@ export function renderTopbar(topbar: HTMLElement): void {
   }
 }
 
+/** 자동 저장 상태의 짧은 말 — 상태 줄에 들어간다. 폭을 아끼려 「이 세션은 …」 대신 낱말로 쓴다. */
+export function autosaveStripText(state: AutoSaveState): string {
+  switch (state.kind) {
+    case "saved": {
+      const at = new Date(state.at);
+      return `저장됨 ${String(at.getHours()).padStart(2, "0")}:${String(at.getMinutes()).padStart(2, "0")}`;
+    }
+    case "pending":
+    case "saving":
+      return "저장 중";
+    case "error":
+      return state.code === "session-not-persisted" ? "저장 안 함(임시)" : "저장 실패";
+    default:
+      return "변경 없음";
+  }
+}
+
+/**
+ * 상태 줄 — 지금 쥐고 있는 도구와 저장 상태를 글자로 말한다. 도구는 아이콘 단추의 켜짐으로만
+ * 보였고, 저장 상태는 저장 단추의 7px 점과 숨은 문장뿐이었다(IS-009·IS-036). 항목은 둘로 고정한다.
+ */
+function renderStatusStrip(): HTMLElement {
+  const tool = el("span", { class: "studio-status-item studio-status-tool", dataset: { testid: "studio-status-tool" } });
+  const save = el("span", { class: "studio-status-item studio-status-save", dataset: { testid: "studio-status-save" } });
+  const strip = el("div", {
+    class: "studio-status-strip has-save-state",
+    attrs: { role: "status", "aria-live": "polite", "aria-label": "편집 상태" },
+    dataset: { testid: "studio-status-strip" },
+    children: [tool, save],
+  });
+  const paintTool = (): void => {
+    const next = toolLabel(editorState.get().tool);
+    if (tool.textContent !== next) tool.textContent = next;
+    tool.title = `지금 도구: ${next}`;
+  };
+  const paintSave = (state: AutoSaveState): void => {
+    const next = autosaveStripText(state);
+    if (save.textContent !== next) save.textContent = next;
+    save.title = autosaveStatusText(state);
+    save.dataset.autosaveKind = isSessionNotPersisted(state) ? "unsaved-session" : state.kind;
+  };
+  paintTool();
+  paintSave(store.getAutoSaveState());
+  paintStripSave = paintSave;
+  disposeStatusStrip = editorState.subscribe(() => paintTool());
+  return strip;
+}
+
 /** 프로젝트 메뉴의 얼굴은 프로젝트 이름이다 — 지금 어느 프로젝트를 만지는지 톱바가 말해야 한다. */
 export function projectMenuLabel(): string {
   const title = store.getCurrent().meta?.title?.trim();
@@ -248,7 +336,7 @@ function watchProjectMenuLabel(button: HTMLElement): () => void {
     shown = next;
     const label = button.querySelector(".oprn-menu-item-label");
     if (label) label.textContent = next;
-    button.setAttribute("title", `프로젝트 — ${next}`);
+    button.setAttribute("title", `프로젝트 메뉴 — ${next}`);
   });
 }
 
@@ -271,6 +359,7 @@ function renderSaveButton(): HTMLElement {
     // 저장하지 않는 세션은 빨간 오류 점이 아니라 회색 「저장 안 함」 점이다(배너가 이유를 말한다).
     button.dataset.autosaveKind = isSessionNotPersisted(state) ? "unsaved-session" : state.kind;
     status.textContent = autosaveStatusText(state);
+    paintStripSave?.(state);
   };
   paint(store.getAutoSaveState());
   paintSaveDot = paint;
@@ -303,22 +392,28 @@ export function autosaveStatusText(state: AutoSaveState): string {
 
 type ToolButtonSpec = {
   readonly testId: string;
-  readonly icon: SvgIconName;
+  readonly icon: SvgIconName | readonly SvgNodeSpec[];
   /** 없으면 아이콘만 — title 이 이름이다. */
   readonly label?: string;
   readonly title: string;
+  /** aria-keyshortcuts 값(있으면). */
+  readonly keys?: string;
   readonly onClick: () => void;
 };
+
+function iconOf(icon: SvgIconName | readonly SvgNodeSpec[]): SVGSVGElement {
+  return typeof icon === "string" ? makeSvgIcon(icon) : buildSvgIcon(icon);
+}
 
 function toolButton(spec: ToolButtonSpec): HTMLElement {
   const iconOnly = spec.label === undefined;
   return el("button", {
     class: iconOnly ? "studio-icon-button studio-tool-button" : "studio-tool-button",
-    attrs: { type: "button", title: spec.title, "aria-label": spec.label ?? spec.title },
+    attrs: { type: "button", title: spec.title, "aria-label": spec.label ?? spec.title, ...(spec.keys ? { "aria-keyshortcuts": spec.keys } : {}) },
     dataset: { testid: spec.testId },
     children: iconOnly
-      ? [makeSvgIcon(spec.icon)]
-      : [makeSvgIcon(spec.icon), el("span", { class: "studio-tool-button-label", text: spec.label })],
+      ? [iconOf(spec.icon)]
+      : [iconOf(spec.icon), el("span", { class: "studio-tool-button-label", text: spec.label })],
     on: { click: spec.onClick },
   });
 }
@@ -380,8 +475,8 @@ function renderTopbarStudioButton(): HTMLElement {
     },
     dataset: { testid: "topbar-ai-studio" },
     children: [
-      el("span", { class: "topbar-ai-studio-icon", attrs: { "aria-hidden": "true" }, text: "✦" }),
-      el("span", { class: "topbar-ai-studio-label", text: "스튜디오" }),
+      el("span", { class: "topbar-ai-studio-icon", attrs: { "aria-hidden": "true" }, children: [buildSvgIcon(TOPBAR_ICONS.studio)] }),
+      el("span", { class: "topbar-ai-studio-label", text: "AI 스튜디오" }),
     ],
     on: { click: () => requestAiStudioToggle() },
   }) as HTMLButtonElement;
@@ -669,13 +764,21 @@ function openMenuPopup(id: string, button: HTMLElement, commands: readonly MenuC
       }));
       continue;
     }
+    const radio = command.checked !== undefined;
     const item = el("button", {
-      class: `oprn-menu-command${command.icon ? " has-icon" : ""}`,
-      attrs: { role: "menuitem" },
+      class: `oprn-menu-command${command.icon ? " has-icon" : ""}${command.shortcut ? " has-shortcut" : ""}${command.checked ? " is-checked" : ""}`,
+      attrs: {
+        role: radio ? "menuitemradio" : "menuitem",
+        ...(radio ? { "aria-checked": String(command.checked) } : {}),
+        ...(command.keys ? { "aria-keyshortcuts": command.keys } : {}),
+        ...(command.lang ? { lang: command.lang, translate: "no" } : {}),
+      },
       dataset: { testid: command.testId },
-      children: command.icon
-        ? [el("span", { class: "oprn-menu-command-icon", attrs: { "aria-hidden": "true" }, children: [makeSvgIcon(command.icon)] }), el("span", { class: "oprn-menu-command-label", text: command.label })]
-        : [el("span", { class: "oprn-menu-command-label", text: command.label })],
+      children: [
+        ...(command.icon ? [el("span", { class: "oprn-menu-command-icon", attrs: { "aria-hidden": "true" }, children: [makeSvgIcon(command.icon)] })] : []),
+        el("span", { class: "oprn-menu-command-label", text: command.label }),
+        ...(command.shortcut ? [el("kbd", { class: "oprn-menu-command-kbd", text: command.shortcut, attrs: { translate: "no" } })] : []),
+      ],
       on: {
         click: () => {
           command.onClick();
@@ -768,12 +871,14 @@ function positionMenuPopup(popup: HTMLElement, trigger: HTMLElement): void {
 function menuCommands(id: MenuId, topbar: HTMLElement): readonly MenuCommand[] {
   switch (id) {
     case "project":
-      // 「저장」은 톱바의 저장 버튼(toolbar-save, Ctrl+S)이 집이다 — 여기엔 두지 않는다.
+      // 파일 메뉴의 관례: 만들기·열기·저장이 맨 위다. 저장은 톱바 저장 단추와 같은 한 동작이고, 메뉴에서는
+      // 단축키를 보여 주는 자리다. 내보내기 성격 항목 넷은 하위 메뉴 하나로 묶는다(IS-051 — 항목 이름 24자 이하).
       return [
-        item("새 프로젝트", "menu-project-new", () => void newProject()),
-        ...(store.getCurrent().gameDesignBrief ? [item("게임 기획...", "menu-project-design-brief", () => void editGameDesignBrief())] : []),
-        item("열기", "menu-project-load", () => void doLoad()),
-        item("저장본 다시 불러오기", "menu-project-reload-db", () => void reloadProjectFromDb(topbar)),
+        item("새 프로젝트 만들기…", "menu-project-new", () => void newProject()),
+        ...(store.getCurrent().gameDesignBrief ? [item("게임 기획…", "menu-project-design-brief", () => void editGameDesignBrief())] : []),
+        item("열기…", "menu-project-load", () => void doLoad()),
+        { ...item("저장", "menu-project-save", () => void saveProjectNow()), shortcut: "Ctrl+S", keys: "Control+S" },
+        item("저장본 다시 불러오기…", "menu-project-reload-db", () => void reloadProjectFromDb(topbar)),
         { kind: "separator" },
         // 데모 로더 9개가 이 메뉴 최상위에 나란히 붙어 14줄을 만들고 있었다 — 하위 메뉴로 접는다.
         {
@@ -784,28 +889,72 @@ function menuCommands(id: MenuId, topbar: HTMLElement): readonly MenuCommand[] {
           commands: sampleProjectCommands,
         },
         { kind: "separator" },
-        item("가져오기...", "menu-project-import", () => doImport()),
-        // 라벨 구분: 전에는 프로젝트/게임 메뉴에 「내보내기...」가 따로 있어 같은 말로 다른 일을
-        // 했다. 둘을 한 자리에 모으고 무엇을 내보내는지 이름에 쓴다.
-        item("프로젝트 파일 내보내기...", "menu-project-export", () => void exportProjectPackage()),
+        item("가져오기…", "menu-project-import", () => doImport()),
         item("백업 만들기", "menu-project-backup", () => void doBackupProject()),
-        item("백업에서 복구...", "menu-project-restore-backup", () => void doRestoreBackup()),
-        item("데스크톱 · Steam 게임 빌드...", "menu-project-publication", () => void openDesktopSteamStudio(topbar)),
-        item("웹 서버 번들 내보내기 (.zip)...", "menu-project-export-web", () => void doExportWebGame()),
-        item("Windows · Steam Depot 패키지 내보내기...", "menu-project-export-standalone", () => void doExportDesktopSteamGame({ platform: "win64-steam" })),
+        item("백업에서 복구…", "menu-project-restore-backup", () => void doRestoreBackup()),
+        // 내보내기는 무엇을 내보내는지 항목 이름이 말한다 — 같은 동사로 다른 일을 하던 항목을 한 하위 메뉴에 모았다.
+        {
+          kind: "submenu",
+          label: "내보내기",
+          testId: "menu-project-export-group",
+          popupId: "project-export",
+          commands: () => [
+            item("프로젝트 파일(.oprn)…", "menu-project-export", () => void exportProjectPackage()),
+            item("웹 서버 번들(.zip)…", "menu-project-export-web", () => void doExportWebGame()),
+            item("데스크톱 · Steam 빌드…", "menu-project-publication", () => void openDesktopSteamStudio(topbar)),
+            item("Windows Steam Depot…", "menu-project-export-standalone", () => void doExportDesktopSteamGame({ platform: "win64-steam" })),
+          ],
+        },
       ];
     case "more-tools":
+      // 폭이 모자라 톱바가 숨긴 것과 같은 넷 — 숫긴 것은 모두 여기서 같은 이름·단축키로 닿는다.
       return [
-        item(headerLabel("world"), "menu-more-tools-world", () => openWorldPanel(), "globe"),
-        item(headerLabel("audio"), "menu-more-tools-audio", () => openAudioTestDialog(), "music"),
-        item(headerLabel("mapEventSearch"), "menu-more-tools-search", () => openMapEventSearchModal(), "docSearch"),
+        { ...item(headerLabel("world"), "menu-more-tools-world", () => openWorldPanel(), "globe"), shortcut: "Ctrl+Alt+W", keys: "Control+Alt+W" },
+        { ...item(headerLabel("audio"), "menu-more-tools-audio", () => openAudioTestDialog(), "music"), shortcut: "Ctrl+Alt+M", keys: "Control+Alt+M" },
+        { ...item(headerLabel("mapEventSearch"), "menu-more-tools-search", () => openMapEventSearchModal(), "docSearch"), shortcut: "Ctrl+Shift+F", keys: "Control+Shift+F" },
+        item("전체화면 전환", "menu-more-tools-fullscreen", () => void toggleFullscreen(), "expand"),
       ];
     case "help":
       return [
-        item("단축키 · 도움말", "menu-help-shortcuts", () => openHelpModal()),
+        { ...item("단축키 보기", "menu-help-shortcuts", () => openHelpModal("shortcuts")), shortcut: "?", keys: "?" },
+        item("에디터 가이드", "menu-help-guide", () => openHelpModal()),
         item("정보", "menu-help-about", () => toast(`${PRODUCT_BRAND} — ${t(PRODUCT_TAGLINE)}`, "ok")),
       ];
+    case "language": {
+      // 언어 이름은 그 언어로 쓴다 — 못 읽는 언어로 바뀐 화면에서도 자기 언어를 찾을 수 있어야 한다.
+      const current = getLocale();
+      return SUPPORTED_LOCALES.map((locale): MenuCommand => ({
+        ...item(LOCALE_NATIVE_NAMES[locale], `menu-language-${locale}`, () => { if (locale !== getLocale()) void setLocale(locale); }),
+        checked: locale === current,
+        lang: locale,
+      }));
+    }
   }
+}
+
+let topbarChordsInstalled = false;
+
+/**
+ * 톱바 도구의 단축키. 넓은 창에서는 아이콘, 좁은 창에서는 「도구 더 보기」 메뉴 항목이 같은 키를 보여 준다.
+ * 편집 캐내버스(Phaser)는 Ctrl 조합을 도구 키로 넘기지 않으므로 문서 수준에서 한 번만 받는다.
+ * 글자 입력 중이거나 다른 창이 떠 있으면 양보한다.
+ */
+function installTopbarChords(): void {
+  if (topbarChordsInstalled || typeof document === "undefined") return;
+  topbarChordsInstalled = true;
+  document.addEventListener("keydown", (event) => {
+    if (event.defaultPrevented || event.isComposing || isTextEditingElement(event.target) || hasOpenModalLayer()) return;
+    const ctrl = event.ctrlKey || event.metaKey;
+    const code = event.code;
+    let run: (() => void) | null = null;
+    if (ctrl && event.altKey && !event.shiftKey && code === "KeyW") run = () => void openWorldPanel();
+    else if (ctrl && event.altKey && !event.shiftKey && code === "KeyM") run = () => openAudioTestDialog();
+    else if (ctrl && event.shiftKey && !event.altKey && code === "KeyF") run = () => openMapEventSearchModal();
+    else if (!ctrl && !event.altKey && event.key === "?") run = () => openHelpModal("shortcuts");
+    if (!run) return;
+    event.preventDefault();
+    run();
+  });
 }
 
 /** 예제 프로젝트 하위 메뉴 — 전부 「현재 작업을 지우고 시작」 확인을 거치는 로더다.
@@ -833,7 +982,9 @@ function headerLabel(key: UiCopyKey): string {
   return uiLabel(key);
 }
 
-function item(label: string, testId: string, onClick: () => void, icon?: SvgIconName): MenuCommand {
+type MenuItemCommand = Extract<MenuCommand, { readonly kind: "item" }>;
+
+function item(label: string, testId: string, onClick: () => void, icon?: SvgIconName): MenuItemCommand {
   return icon ? { kind: "item", label, testId, onClick, icon } : { kind: "item", label, testId, onClick };
 }
 
@@ -866,7 +1017,7 @@ function renderTestPlayButton(): HTMLElement {
           },
         },
         children: [
-          el("span", { class: "topbar-test-play-glyph", text: "▶", attrs: { "aria-hidden": "true" } }),
+          el("span", { class: "topbar-test-play-glyph", attrs: { "aria-hidden": "true" }, children: [makeSvgIcon("play")] }),
           el("span", { class: "topbar-test-play-label", text: headerLabel("testPlayShort") }),
         ],
       }),
@@ -883,7 +1034,8 @@ function renderQuickBattleTestButton(): HTMLElement {
       "aria-label": headerLabel("battleTest"),
     },
     dataset: { testid: "topbar-battle-test" },
-    children: [makeSvgIcon("combat")],
+    // 걸을 때 적 만나기 설정이 교차 검(combat)을 쓴다 — 무작위로 동작하는 이쪽은 주사위로 구분한다.
+    children: [buildSvgIcon(TOPBAR_ICONS.dice)],
     on: {
       click: (event) => {
         event.stopPropagation();

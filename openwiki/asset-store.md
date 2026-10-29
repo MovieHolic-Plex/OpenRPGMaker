@@ -41,13 +41,22 @@ IPC `oprn:store.upload` → `AssetStoreClient.upload`(검증 → `/api/v1/blobs/
 
 2026-10-06 결정. 이름으로 막는 안전장치이고, 권리 확인은 올리는 사람 몫이다.
 
+2026-10-28: REFMAP 변형 걷기 칩 `RefmapDoll<n>`(번들, `public/assets/ATTRIBUTION.md` 「RefmapDoll」)은 편집기·게임 안에서 쓰도록 들였다(사용자 결정).
+
+2026-10-29 (사용자 결정, 약관 다시 읽음): 우리 칩의 약관은 REFMAP 캐릭터 글(https://refmap-l.blog.jp/archives/8633403.html)과 2000용 공통 약관
+(archives/8653555.html)이다 — 고친 그림은 다시 나눠도 되고(고쳤다는 표기·「REFMAP」+사이트 주소), 고치지 않은 원본은 안 된다. 「고쳐도 판매 금지」는
+2000용 **맵칩** 글과 유료 FSM MV 맵 소재집 약관에만 있고 캐릭터 칩에는 없다(10-28 문장 「소재 판매를 막는다」는 잘못 읽은 것이었다).
+그래서 라이선스 `REFMAP-MODIFIED` 를 더했다: 이 라이선스 상품만 이름의 「refmap」을 통과시키고(`storeThirdPartyName(text, license)`), 크레딧에
+`REFMAP_CREDIT` 이 있어야 한다. 공식 게시기·에이전트 제출만 쓴다 — 편집기 올리기 화면과 조수 도구는 이 라이선스를 고를 수 없고, 사용자 올리기
+경로(`pack.ts`)는 refmap 이름을 계속 막는다. 다른 제3자 이름(Rasak·PAW·RPG Maker·RTP)은 이 라이선스에서도 막힌다. 스토어 상품은 무료다.
+
 | 지점 | 무엇을 보나 |
 |---|---|
 | `storeThirdPartyName` (`format.ts`) | 공용 낱말표. rasak·라삭·refmap·rpgmaker·알만툴·쯔꾸르·ツクール 는 붙여 써도, paw·mv·mz·rtp 는 낱말로 떨어질 때만(camelCase·숫자 경계 분리, pawn·mvp 는 통과) |
 | `storePublishBlockReason`·`packBlockedItems` (`pack.ts`) | 고른 것 **과 딸려 들어가는 것 전부**(타일셋 그림·이식 원본·참고문서 원본 타일셋·번들 이식 칩셋 이름). 스토어에서 받은 것(`origin`)·공용 자료집(`shared_`)도 막는다 |
 | `buildPack` | 하나라도 걸리면 바이트를 읽기 전에 `StorePackBlockedError`(`.blocked` 목록, 한국어 문장) |
 | `uploadCandidates` (`storeUpload.ts`) | 같은 판정으로 후보를 막고 「딸려 들어가는 X: …」를 보여 준다 |
-| `publishProblems` (`scripts/store/storePublish.mts`) | 공식 팩도 제목·태그·id·이름에서 같은 낱말표 |
+| `publishProblems` (`scripts/store/storePublish.mts`) | 공식 팩도 제목·태그·id·이름에서 같은 낱말표(매니페스트 license 를 넘겨 `REFMAP-MODIFIED` 예외를 쓴다) |
 | 스토어 서버 검열 | 같은 `storeThirdPartyName` 으로 모든 역할에 422 거절, 다른 작가 상품의 blob 재사용 거절(스토어 저장소 쪽 변경) |
 
 스토어에서 받은 에셋을 다시 올리는 길은 없다 — 원작자·라이선스(`origin`)를 지우고 다시 내보내지 않도록 막는다.

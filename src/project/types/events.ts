@@ -341,6 +341,11 @@ export type LightSource = {
   readonly intensity?: number;
   readonly color?: string;
   readonly flicker?: boolean;
+  /**
+   * 부채꼴 빛 — 이벤트(at.eventId)가 바라보는 쪽으로만 degrees 만큼 퍼진다(경비 등불 시야). 이벤트가 돌아서면 같이 돈다.
+   * 이벤트가 아닌 자리·주인공에 주면 facing 으로 정한 쪽(기본 아래)을 비춘다.
+   */
+  readonly cone?: { readonly degrees: number; readonly facing?: "up" | "down" | "left" | "right" };
 };
 
 export type LightingState = {
@@ -867,6 +872,8 @@ export interface EventPageMovement {
 export interface ChaseLunge {
   steps: number;
   speed: number;
+  /** 덮치기 한 칸 시간(ms, 60..400). 있으면 랭크(speed) 대신 이 값 — 랭크는 160 다음이 80 이라 그 사이(돌진 100~120)를 못 고른다. */
+  stepMs?: number;
 }
 
 export interface EventPage {

@@ -17,6 +17,25 @@ import { el } from "@/util/dom";
 
 const CHIPSET_CELL_SIZE = TILE_SIZE * 2;
 
+const TOGGLE_ON_ICON = '<svg class="tile-brush-toggle-mark" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M3.5 8.5l3 3 6-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const TOGGLE_OFF_ICON = '<svg class="tile-brush-toggle-mark" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><rect x="3" y="3" width="10" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>';
+
+/**
+ * 이름이 바뀌지 않는 켜고 끄기 단추. 보이는 글자 = 접근 이름(「이웃 연결」)이고 상태는 aria-pressed 와 표시(체크)가 말한다.
+ * 예전 칩은 글자에 상태(자동/수동)를, aria-label 에 반대 동작(…켜기)을 넣어 둘이 엇갈렸다.
+ */
+function brushToggle(label: string, on: boolean, title: string, testid: string, onClick: () => void): HTMLElement {
+  const button = el("button", {
+    class: "btn tile-brush-chip tile-brush-toggle" + (on ? " active" : ""),
+    html: on ? TOGGLE_ON_ICON : TOGGLE_OFF_ICON,
+    attrs: { type: "button", title, "aria-pressed": String(on) },
+    dataset: { testid },
+    on: { click: onClick },
+  });
+  button.append(el("span", { class: "tile-brush-toggle-label", text: label }));
+  return button;
+}
+
 export type TileBrushAssistModel = {
   readonly autoConnectMode: boolean;
   readonly clusterAssistMode: boolean;
@@ -80,27 +99,19 @@ export function makeTileBrushAssistControls(model: TileBrushAssistModel): { mode
   const modeRow = el("div", {
     class: "tile-brush-row tile-brush-mode-row",
     children: [
-      el("span", { class: "tile-brush-label", text: "이웃 연결" }),
-      el("button", {
-        class: "btn tile-brush-chip" + (autoOn ? " active" : ""),
-        text: autoOn ? "자동" : "수동",
-        attrs: {
-          type: "button",
-          title: autoOn
-            ? "자동 연결 켜짐 — 이웃 지형까지 다시 검사해 이어 붙입니다. 누르면 수동으로."
-            : "수동 배치 켜짐 — 일반 타일은 그대로 둡니다. 단 오토타일 브러시(흙길·모래·실내 366 등)는 항상 성형됩니다."
-              + " 이것은 지형 연결만 끕니다 — 나무·벤치 같은 구조물의 짝 배치는 아래 「구조 보조」가 따로 정합니다.",
-          "aria-pressed": String(autoOn),
-          "aria-label": autoOn ? "자동 연결 끄기" : "자동 연결 켜기",
+      brushToggle(
+        "이웃 연결",
+        autoOn,
+        autoOn
+          ? "이웃 연결 켜짐 — 이웃 지형까지 다시 검사해 이어 붙입니다."
+          : "이웃 연결 꺼짐 — 일반 타일은 그대로 둡니다. 단 오토타일 브러시(흙길·모래·실내 366 등)는 항상 성형됩니다."
+            + " 이것은 지형 연결만 끕니다 — 나무·벤치 같은 구조물의 짝 배치는 아래 「구조 보조」가 따로 정합니다.",
+        "auto-connect-mode-toggle",
+        () => {
+          editorState.set({ autoConnectMode: !editorState.get().autoConnectMode });
+          model.rerender();
         },
-        dataset: { testid: "auto-connect-mode-toggle" },
-        on: {
-          click: () => {
-            editorState.set({ autoConnectMode: !editorState.get().autoConnectMode });
-            model.rerender();
-          },
-        },
-      }),
+      ),
       el("span", {
         class: "tile-brush-hint",
         text: autoConnectHint(autoOn, candidate),
@@ -136,23 +147,9 @@ function makeClusterAssistRow(model: TileBrushAssistModel): HTMLElement {
   return el("div", {
     class: "tile-brush-row tile-brush-cluster-row",
     children: [
-      el("span", { class: "tile-brush-label", text: "구조 보조" }),
-      el("button", {
-        class: "btn tile-brush-chip" + (on ? " active" : ""),
-        text: copy.chip,
-        attrs: {
-          type: "button",
-          title: copy.title,
-          "aria-pressed": String(on),
-          "aria-label": on ? "구조 보조 끄고 정확 배치" : "구조 보조 켜기",
-        },
-        dataset: { testid: "cluster-assist-mode-toggle" },
-        on: {
-          click: () => {
-            toggleClusterAssistMode();
-            model.rerender();
-          },
-        },
+      brushToggle("구조 보조", on, copy.title, "cluster-assist-mode-toggle", () => {
+        toggleClusterAssistMode();
+        model.rerender();
       }),
       el("span", {
         class: "tile-brush-hint",

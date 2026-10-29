@@ -413,7 +413,7 @@
 .event-editor-modal-window .event-editor .cmd-list .cmd-item.selected > .cmd-head {
   background: var(--accent-muted);
   border: 1px solid transparent;
-  box-shadow: inset 3px 0 0 var(--accent);
+  box-shadow: none;
 }
 
 /* 들여쓰기 세로선 — 28px 마다 하나, 행 사이 2px 틈을 넘어 이어진다. */

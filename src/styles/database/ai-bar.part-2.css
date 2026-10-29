@@ -246,13 +246,15 @@
   display: none;
 }
 
+/* 보낸 요청은 옅은 바탕 묶음으로 구별한다(한쪽 줄무늬 대신 — C-88). */
 .database-modal-backdrop .database-modal-window .database-ai-turn-request {
-  border-left: 2px solid var(--db-studio-accent-border);
+  background: var(--db-studio-inset);
+  border-radius: 6px;
   color: var(--db-studio-text-2);
   font: 500 13px/1.45 var(--font-ui);
   margin: 0;
   overflow-wrap: anywhere;
-  padding: 1px 0 1px 10px;
+  padding: 4px 10px;
 }
 
 .database-modal-backdrop .database-modal-window .database-ai-turn-status {

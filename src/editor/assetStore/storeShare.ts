@@ -72,6 +72,7 @@ const SHARE_LICENSE_LABELS: Record<StoreLicense, string> = {
   "CC-BY-4.0": "이름만 적으면 누구나 쓰게 하기",
   "CC-BY-SA-4.0": "이름을 적고, 고친 것도 같은 조건으로 나누게 하기",
   "CC0": "아무 조건 없이 주기",
+  "REFMAP-MODIFIED": "REFMAP 약관 그대로(고친 REFMAP 그림 전용)",
 };
 
 export function shareView(host: ShareHost): HTMLElement {

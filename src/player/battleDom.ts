@@ -88,6 +88,8 @@ export interface BattleDomOptions {
   readonly audioContext?: BattleAudioContext;
   readonly onSnapshot?: (snapshot: BattleSnapshot) => void;
   readonly onResult: (result: BattleResult, snapshot: BattleSnapshot) => void;
+  /** 명령 첫 단계(대상 선택·하위 메뉴가 없을 때)에서 취소 키를 눌렀다. 전투 안에서 할 일이 없는 키라 테스트 창이 닫기에 쓴다. */
+  readonly onRootCancel?: () => void;
   readonly introHold?: boolean;
   /**
    * true 면 인트로 연출과 ATB 시계를 `controller.begin()` 까지 미룬다. 진입 연출이 `controller.ready` 를 기다리는 동안
@@ -1313,7 +1315,9 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       submenu = null;
       panelOptions.submenu = null;
       syncView();
+      return;
     }
+    if (snapshot.phase === "actorCommand" || snapshot.phase === "charging") options.onRootCancel?.();
   }
 
   function cancelTargetSelectionAndRestore(): void {
@@ -1718,7 +1722,8 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       return;
     }
     // 에메랄드 도주는 「무사히 도망쳤다!」로 끝난다 — 「후퇴 [확인]」 상자를 띄우지 않고 필드로 돌아간다.
-    if (snapshot.result === "escape" && emeraldNarrationActive()) {
+    // 전투 이벤트의 「전투 중단」(연출 전투를 대사로 끊는 RM2K3 Abort Battle)도 상자 없이 바로 돌아간다 — 「후퇴」라고 띄우면 연출이 깨진다.
+    if (snapshot.result === "escape" && (emeraldNarrationActive() || snapshot.endedByEvent === true)) {
       if (!resultSent) {
         resultSent = true;
         const result = snapshot.result;

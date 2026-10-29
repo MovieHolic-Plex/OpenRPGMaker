@@ -335,7 +335,7 @@ body:has(.database-modal-backdrop:not(.is-parked)) .ai-chat-panel .ai-deck {
 .ai-pending-review-actions button { font: 500 12px var(--font-ui); color: var(--accent); border: 1px solid var(--border-subtle); background: var(--bg-raised); border-radius: var(--radius-s); padding: 7px 10px; cursor: pointer; }
 .ai-pending-review-actions button:first-child { background: var(--accent); color: white; border-color: var(--accent); }
 .ai-pending-review-actions button:disabled { opacity: .55; cursor: wait; }
-.ai-pending-review p.ai-pending-review-hint { color: var(--text-muted); font-size: 11px; }
+p.ai-chat-decision-hint { color: var(--text-muted); font-size: 11px; }
 
 /* Compact shared team controls, anchored by the existing composer popover owner. */
 .ai-team-menu { position: absolute; z-index: 6; background: var(--bg-raised); color: var(--text-1); border: 1px solid var(--border-default); box-shadow: var(--shadow-pop); width: 280px; padding: 12px; border-radius: 10px; font-size: 12px; }
@@ -385,3 +385,13 @@ body.ai-studio-open .ai-suggestion-peek { display: none; }
 .ai-new-replies:not([hidden]) { display: block; position: sticky; bottom: 6px; margin: 6px auto; padding: 5px 12px; border: 1px solid var(--border-subtle); border-radius: var(--radius-s); background: var(--bg-raised); color: var(--text-1); cursor: pointer; flex: 0 0 auto; z-index: 1; }
 
 .ai-pending-review.is-danger .ai-pending-review-actions button:first-child { background: var(--danger, #c33); border-color: var(--danger, #c33); }
+
+/* 입구 하나(C-61): 조수 패널이 열려 있으면 같은 팝오버를 패널 머리의 점검표 버튼이 연다 — 캔버스 위 떠 있는 버튼은 숨긴다.
+   팝오버(.ai-suggestion-peek-popover)는 그대로 캔버스 오른쪽 아래에 열린다. */
+body:not(.ai-dock-collapsed) .ai-suggestion-peek-button { display: none; }
+.ai-suggestion-peek-header { position: relative; }
+.ai-suggestion-peek-header .ai-suggestion-peek-badge { right: -4px; top: -4px; }
+/* 카드 행동: 「AI와 이어가기」가 주 행동, 「살펴본 내용」 펼침 줄은 24px 이상(V-shell-topbar-40). */
+.ai-chat-suggestions .ai-chat-suggestion-actions button.is-primary { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+.ai-chat-suggestions > button.ai-chat-suggestion-pause { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+.ai-chat-suggestions summary { padding: 6px 0; }

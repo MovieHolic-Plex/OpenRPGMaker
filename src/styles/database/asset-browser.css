@@ -12,7 +12,7 @@
 .asset-browser-title:hover { border-bottom-color: var(--db-studio-border-default); }
 .asset-browser-title:hover::after, .asset-browser-title:focus-visible::after { opacity: 1; }
 .asset-browser-title:focus-visible { outline: 2px solid var(--db-studio-accent); outline-offset: 2px; }
-.asset-browser-title-input { max-width: 100%; margin: 0 0 5px; padding: 2px 6px 2px 0; border: 0; border-bottom: 2px solid var(--db-studio-accent); border-radius: 0; background: none; color: var(--db-studio-text-1); font: inherit; font-size: 21px; font-weight: 700; line-height: 1.3; }
+.asset-browser-title-input { max-width: 100%; margin: 0 0 5px; padding: 2px 6px 2px 0; border: 1px solid transparent; border-radius: 6px; background: none; color: var(--db-studio-text-1); font: inherit; font-size: 21px; font-weight: 700; line-height: 1.3; }
 .asset-browser-title-input:focus { outline: none; }
 /* 복합 편집기 상단 빵부스러기 — ← 장소 목록이 주 경로, 드롭다운은 빠른 전환. */
 .asset-browser-crumbs { display: flex; align-items: center; gap: 8px; margin: 0 0 10px; font-size: 12px; }

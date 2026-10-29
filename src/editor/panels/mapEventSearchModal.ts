@@ -16,9 +16,11 @@ import { registerModal, unregisterModal } from "@/editor/ui/modalStack";
 import { uiLabel } from "@/editor/uiCopy";
 import { store } from "@/project/store";
 import { el } from "@/util/dom";
+import { makeSvgIcon } from "@/editor/panels/tileToolbarIcons";
 
 const RESULT_KIND_ORDER: readonly SearchKind[] = ["map", "mapEvent", "commonEvent", "switch", "variable"];
-const EMPTY_QUERY_COPY = "맵 이름, 이벤트 이름, 공통 이벤트, 스위치와 변수를 찾아보세요.";
+// 무엇을 찾는지는 빈 상태 한 곳에서만 말한다 — 자리표시·요약·빈 상태 제목이 같은 안내를 네 번 되풀이했다.
+const EMPTY_QUERY_COPY = "맵·이벤트·공통 이벤트·스위치·변수를 이름이나 ID로 찾습니다.";
 const EMPTY_RESULT_COPY = "일치하는 항목이 없습니다. 맵·이벤트 이름이나 스위치·변수 이름과 ID를 확인해 보세요.";
 
 let closeActiveModal: (() => void) | null = null;
@@ -31,7 +33,8 @@ export interface OpenMapEventSearchOptions {
 export function openMapEventSearchModal(options: OpenMapEventSearchOptions = {}): void {
   closeActiveModal?.();
   const opener = document.activeElement;
-  let scope: SearchScope = "selectedMap";
+  // 프로젝트 전체를 찾는 창이므로 기본 범위는 전체다. 좁히기는 고르는 것이다.
+  let scope: SearchScope = "all";
   let results: readonly SearchResult[] = [];
   let activeIndex = 0;
   const expandedRecords = new Set<string>();
@@ -40,7 +43,7 @@ export function openMapEventSearchModal(options: OpenMapEventSearchOptions = {})
     class: "map-event-search-input",
     attrs: {
       type: "search",
-      placeholder: "맵, 이벤트, 스위치, 변수 이름 또는 ID",
+      placeholder: "이름 또는 ID",
       autocomplete: "off",
       "aria-label": uiLabel("mapEventSearch"),
       "aria-controls": "map-event-search-results-list",
@@ -49,7 +52,6 @@ export function openMapEventSearchModal(options: OpenMapEventSearchOptions = {})
   }) as HTMLInputElement;
   const resultSummary = el("span", {
     class: "map-event-search-summary",
-    text: "찾을 내용을 입력하세요",
     attrs: { "aria-live": "polite" },
   });
   const resultsPane = el("div", {
@@ -85,10 +87,7 @@ export function openMapEventSearchModal(options: OpenMapEventSearchOptions = {})
         children: [
           el("div", {
             class: "map-event-search-heading",
-            children: [
-              el("span", { class: "map-event-search-kicker", text: "PROJECT NAVIGATOR" }),
-              el("h2", { text: uiLabel("mapEventSearch") }),
-            ],
+            children: [el("h2", { text: uiLabel("mapEventSearch") })],
           }),
           closeButton,
         ],
@@ -102,9 +101,8 @@ export function openMapEventSearchModal(options: OpenMapEventSearchOptions = {})
               el("label", {
                 class: "map-event-search-input-shell",
                 children: [
-                  el("span", { class: "map-event-search-input-mark", text: "⌕", attrs: { "aria-hidden": "true" } }),
+                  el("span", { class: "map-event-search-input-mark", attrs: { "aria-hidden": "true" }, children: [makeSvgIcon("command")] }),
                   input,
-                  el("kbd", { class: "map-event-search-enter-hint", text: "Enter" }),
                 ],
               }),
               scopeControl,
@@ -117,8 +115,8 @@ export function openMapEventSearchModal(options: OpenMapEventSearchOptions = {})
       el("footer", {
         class: "map-event-search-footer",
         children: [
-          el("span", { text: "↑↓ 이동 · Enter 열기 · Esc 닫기" }),
-          el("span", { text: "입력하는 즉시 결과가 바뀝니다" }),
+          // 결과는 입력하는 대로 바뀐다. Enter 는 고른 결과를 연다 — 키 안내는 이 한 줄이다.
+          el("span", { text: "↑↓ 고르기 · Enter 열기 · Esc 닫기" }),
         ],
       }),
     ],
@@ -215,7 +213,7 @@ export function openMapEventSearchModal(options: OpenMapEventSearchOptions = {})
 
     resultsPane.classList.toggle("empty", groupNodes.length === 0);
     if (groupNodes.length === 0) {
-      resultSummary.textContent = query ? "결과 없음" : "찾을 내용을 입력하세요";
+      resultSummary.textContent = query ? "결과 없음" : "";
       resultsPane.replaceChildren(emptyState(query ? EMPTY_RESULT_COPY : EMPTY_QUERY_COPY));
       input.removeAttribute("aria-activedescendant");
       return;
@@ -407,8 +405,7 @@ function emptyState(copy: string): HTMLElement {
   return el("div", {
     class: "map-event-search-empty-state",
     children: [
-      el("span", { class: "map-event-search-empty-mark", text: "⌕", attrs: { "aria-hidden": "true" } }),
-      el("strong", { text: "프로젝트에서 바로 찾아 이동하세요" }),
+      el("span", { class: "map-event-search-empty-mark", attrs: { "aria-hidden": "true" }, children: [makeSvgIcon("command")] }),
       el("p", { text: copy }),
     ],
   });

@@ -617,6 +617,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   let strictResolution: { readonly round: number; readonly actions: StrictQueuedAction[]; index: number; grantedExtraActions: number } | undefined;
   let drainingStrictActions = false;
   let escaped = false;
+  /** 전투 이벤트가 전투를 끝냈다(전투 중단·이벤트 패배). 스냅샷 endedByEvent. */
+  let endedByEvent = false;
   // turn 의 의미를 두 플로우에서 통일한다: **완료된 행동 사이클 수**.
   // strict 는 라운드 완료 시 +1. gauge 에서는 생존 배틀러 전원이 한 번씩 행동(또는
   // 행동 불가로 스킵)할 때마다 사이클이 닫히며 +1 — 예전에는 적 행동 1회마다 +1 이라
@@ -2590,6 +2592,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       // 그래야 이전 스냅샷이 나중 상태로 바뀌지 않고, 스냅샷에 쓴 값이 런타임으로 새지 않는다.
       capturedMonsters: [...capturedMonsters],
       result,
+      ...(endedByEvent ? { endedByEvent: true as const } : {}),
       rewards: structuredClone(rewards),
       canEscape: options.canEscape,
       formation,
@@ -3057,7 +3060,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       paramBonuses: options.party?.paramBonuses?.[battler.recordId],
       equipment: equipmentAfterSlotLoss(battler),
       skills: refreshSkills
-        ? { sessionSkillIds: battleEventState.actorSkillIds?.[battler.recordId] }
+        ? { sessionSkillIds: battleEventState.actorSkillIds?.[battler.recordId], forgottenSkillIds: options.party?.forgottenSkillIds?.[battler.recordId] }
         : undefined,
     });
   }
@@ -4926,6 +4929,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     eventChoice = undefined;
     if (step.kind === "terminated" && !result) {
       result = step.result;
+      endedByEvent = true;
       escaped = result === "escape";
       phase = "resolved";
       if (result === "defeat") clearEndOfBattleStates();
