@@ -70,7 +70,7 @@
     둘 다 없으면 `removalCondition` 글이 「전투 종료」일 때만 풀린다(「전투 종료 후 유지」는 남는다). 전투 불능은 풀지 않는다. 판정 `src/project/battleEndStates.ts`, 적용 `battleRewardsToSession.ts`.
   - `set_project_settings saveAccess:"savePoints"` → 메뉴 「저장」이 사라지고 자동 저장도 멈춘다. `place_savepoint`(openSaveMenu)는 그대로 저장한다. 눈에 띄게 하려면 `place_savepoint objectId:"kit:beodeul_city/bd-pick-dungeon-theme-crystal-pedestal"` — 오브젝트를 x,y(왼쪽 위)에 찍고 이벤트는 그림 맨 아래 줄 가운데에 투명하게 둔다(기본 크리스탈 칩은 회색 돌처럼 보여 눈에 안 띈다). `prompt:"기록하시겠습니까?"` 를 주면 예/아니오 뒤에만 저장 칸을 열고, `sparkleRadius`(objectId 를 주면 기본 2)는 페이지 `nearSparkle` 로 플레이어가 그 반경에 들어올 때 반짝임을 한 번 터뜨린다(런타임 `playSceneFieldStaging.syncNearSparkles` — 반짝임은 그 칸 줄의 인물 깊이+0.5 에 그려 앞줄에 선 주인공이 가린다, 2026-10-29).
   - `tune_field_enemies {mapIds?, sightRange, vision, pace, lungeSteps, lungeSpeed}` — 이미 놓인 보이는 적을 한꺼번에 추격형으로. 덮치기는 `movement.chaseLunge {steps, speed}`:
-    놀람(`sightAlert`) 멈춤이 끝난 뒤 첫 steps 칸을 speed 랭크 걸음으로 쉬지 않고(`playSceneAutonomous.ts`). speed 는 6(주인공 걷기 160ms/칸)까지만 받는다 — 계속 걸으면 피할 수 있다.
+    놀람(`sightAlert`) 멈춤이 끝난 뒤 첫 steps 칸을 speed 랭크 걸음으로 쉬지 않고(`playSceneAutonomous.ts`). speed 는 7(80ms/칸)까지 받는다 — 주인공보다 빠른 추격자는 12칸마다 숨을 고르고, 피할 길은 시야 끊기·엄폐·숨는 곳(`openwiki/field-enemy.md` 「추격 박자와 전술」).
   - 랜덤 조우 끄기는 `set_encounter_table {entries:[], encounterRate:0}`. 보이는 적으로 레벨을 올리게 하려면 `place_field_enemy respawnSec` 로 다시 나타나는 적을 둔다.
   - 연계기 「얼굴 교차」 컷인의 흉상(결의 표정)은 런타임이 고르는 그림이라 데이터에 이름이 없어 스토어 판본에 빠졌다(폴른 스타 1.20). 고르는 순서를 `src/project/comboBust.ts` 하나로 모으고 `webExportAssets` 가 같은 그림을 싣는다.
   - 노출: 「자동 전투·상태 이상 풀림·세이브 포인트·메뉴 저장」 → set_project_settings·upsert_state·place_savepoint, 「랜덤 조우·보이는 적·덮치·멀리서」 → set_encounter_table·tune_field_enemies·place_field_enemy.
