@@ -17,6 +17,7 @@ import { unreachableEvents } from "./eventReach";
 import { mapRegion } from "./discoverability";
 import { isPassable } from "@/project/collision";
 import { buildPeople, tileLabel } from "./people";
+import { shownToken } from "./codeClues";
 import type { BuildRun } from "./types";
 
 /** 추리 청사진 낱말(요청·목표·단계·엔딩 어디든). 「도난」만으로는 추리로 보지 않는다(심부름 RPG). */
@@ -80,7 +81,7 @@ export function modelBuiltCase(project: Project): boolean {
 
 interface Resolved { readonly k: number; readonly step: { id: string; place: string; event: string; action: string; needs: string; gives: string }; readonly map: GameMap; readonly ev: GameEvent }
 
-function resolveSteps(project: Project): Resolved[] {
+export function resolveSteps(project: Project): Resolved[] {
   const bp = project.gameBlueprint!;
   const norm = (s: string) => s.normalize("NFC").replace(/[\s·・,.!?'"「」『』()[\]~\-_/]+/gu, "").toLowerCase();
   const maps = Object.values(project.maps);
@@ -119,7 +120,9 @@ function showClueThings(run: BuildRun, resolved: readonly Resolved[]): string[] 
 export function evidenceName(gives: string): string {
   const inner = /«([^«»]+)»/u.exec(gives)?.[1] ?? /\(([^()]+)\)/u.exec(gives)?.[1];
   const base = (inner ?? gives).replace(/^(아이템|스위치)\s*[:：]\s*/u, "").replace(/\s*(아이템|스위치|확인|발견|획득|입수)$/u, "").trim();
-  return base || gives.trim();
+  // 진행 낱말(「수사 시작」「모든 단서」)은 물건이 아니다 — 증거 이름으로 쓰면 「『수사 시작』… 내 것이 맞소」가 됐다(vm5 argon 추리).
+  if (!base || /(\s|^)(시작|수사|조사|진행|해결|엔딩|정보)$/u.test(base) || /^(모든\s*)?단서들?$/u.test(base) || /^(started|found_clue|clue|asked)$/iu.test(base)) return "결정적 단서";
+  return base;
 }
 
 /** 범인 — 마지막·심문 단계 글에 나온 「부름 이름」(심부름꾼 준), 없으면 부름만(수상한 상인), 없으면 풀에서. */
@@ -159,8 +162,141 @@ const narrate = (lines: readonly string[]): Command[] => lines.map((body) => ({ 
  * 추리 청사진이면 사건을 세운다. 바꾼 것을 줄로 돌려준다. 되풀이해도 같은 결과(이미 세웠으면 소품만 다시 본다).
  */
 export function stageMysteryCase(run: BuildRun): string[] {
+  if (!run.ctx.project.gameBlueprint || !isMysteryBlueprint(run.ctx.project)) return [];
+  // 이름표 되돌리기 → 지름길 닫기(마지막 단계를 지목 이벤트로) → 사건 세우기·남은 단서 → 새로 세운 지목에 대한 지름길 → 증거를 실제로 주는지.
+  const named = repairPageNameLabels(run);
+  const closed = closeEndingShortcuts(run);
+  const notes = stageMysteryCaseInner(run);
+  return [...named, ...closed, ...notes, ...closeEndingShortcuts(run), ...ensureEvidenceGiven(run), ...nameLeakedEventIds(run)];
+}
+
+/** 대사 속 「ev_npc_…」(청사진 step.event 가 id 라 그대로 적힌 이름)을 그 이벤트 이름으로. */
+function nameLeakedEventIds(run: BuildRun): string[] {
+  const names = new Map(Object.values(run.ctx.project.maps).flatMap((m) => (m.events ?? []).map((ev) => [ev.id, nameOf(ev)] as const)).filter(([, n]) => n && !/^ev_/u.test(n)));
+  let n = 0;
+  const maps = Object.fromEntries(Object.entries(run.ctx.project.maps).map(([id, m]) => {
+    const json = JSON.stringify(m.events ?? []);
+    const next = json.replace(/「(ev_[^」"]+)」/gu, (all, evId: string) => { const to = names.get(evId); if (!to) return all; n += 1; return `「${to}」`; });
+    return [id, next === json ? m : { ...m, events: JSON.parse(next) }];
+  }));
+  if (!n) return [];
+  run.ctx.project = { ...run.ctx.project, maps } as Project;
+  return [`대사 속 이벤트 id ${n}곳을 이름으로`];
+}
+
+/**
+ * 지목의 증거 제시(presentItem)가 요구하는 아이템을 아무도 주지 않으면 그 단서 단계가 준다 — 청사진 gives 가 그 아이템 이름(또는 그 스위치)인 단계,
+ * 없으면 마지막 앞 단서 단계. 아이템 이름이 영문 토큰(「found_clue」)이면 설명의 괄호 속 물건 이름(없으면 「결정적 단서」)으로.
+ * 왜(2026-10-29 vm4 argon 추리): 앞 빌드가 준 증거 아이템이 경로를 다시 지을 때 빠져, 지목은 영영 증명할 수 없고 판정자는 지름길로만 끝냈다.
+ */
+function ensureEvidenceGiven(run: BuildRun): string[] {
+  const project = run.ctx.project;
+  const bp = project.gameBlueprint;
+  if (!bp) return [];
+  const notes: string[] = [];
+  const wanted = new Set<string>();
+  for (const map of Object.values(project.maps)) for (const ev of map.events ?? []) for (const pg of ev.pages ?? []) walkCommands(pg.commands, (c) => {
+    if (c.kind === "presentItem") for (const o of (c.options ?? []) as Obj[]) if (typeof o.itemId === "string" && JSON.stringify(o.branch ?? []).includes('"triggerEnding"')) wanted.add(o.itemId);
+  });
+  const given = (id: string) => Object.values(run.ctx.project.maps).some((m) => (m.events ?? []).some((ev) => { let g = false; for (const pg of ev.pages ?? []) walkCommands(pg.commands, (c) => { if (c.kind === "changeItem" && c.itemId === id && c.op !== "-=") g = true; }); return g; }));
+  const steps = resolveSteps(project);
+  const last = steps.at(-1);
+  for (const id of wanted) {
+    if (given(id)) continue;
+    const item = run.ctx.project.database.items.find((i) => i.id === id);
+    if (!item) continue;
+    const token = String(item.name ?? "");
+    const src = steps.find((r) => r.k < (last?.k ?? Infinity) && (r.step.gives === token || shownToken(r.step.gives) === token)) ?? steps.filter((r) => r.k < (last?.k ?? Infinity) && !visiblePerson(r.ev)).at(-1);
+    if (!src) continue;
+    let name = token;
+    if (!name || /^[A-Za-z0-9_\-]+$/u.test(name)) {
+      name = /\(([^()]{2,16})\)/u.exec(String(item.description ?? ""))?.[1]?.trim() ?? "결정적 단서";
+      run.call("upsert_item", { item: { ...structuredClone(item), name } });
+    }
+    let added = false;
+    const pages = (src.ev.pages ?? []).map((page) => {
+      const commands = [...(page.commands ?? [])] as Command[];
+      const at = commands.findIndex((c) => (c as unknown as Obj).kind === "setSwitch" && (c as unknown as Obj).value !== false && !String((c as unknown as Obj).switchId).includes("taken"));
+      if (at < 0 || added) return structuredClone(page);
+      added = true;
+      commands.splice(at + 1, 0, { kind: "changeItem", itemId: id, op: "+=", amount: 1 } as unknown as Command, { kind: "text", body: `『${name}』${jo(name, "을/를")} 증거로 챙겼다.` } as unknown as Command);
+      return { ...structuredClone(page), commands };
+    });
+    if (!added) continue;
+    run.call("upsert_event", { mapId: src.map.id, replacePages: true, event: { id: src.ev.id, ...(nameOf(src.ev) ? { name: nameOf(src.ev) } : {}), pages } });
+    notes.push(`지목 증거 『${name}』 를 「${nameOf(src.ev) || src.step.event}」 에서 주게 함(아무도 주지 않았다)`);
+  }
+  return notes;
+}
+
+/** 페이지 이름(「남은 단서 3」)이 이벤트 이름이 된 판을 되돌린다 — 대사의 말하는 이(「수상한 손님: …」·speaker)가 있으면 그 이름, 없으면 「수상한 사람」. */
+function repairPageNameLabels(run: BuildRun): string[] {
+  const notes: string[] = [];
+  for (const map of Object.values(run.ctx.project.maps)) for (const ev of map.events ?? []) {
+    const name = nameOf(ev);
+    if (!/^남은 단서 \d+$/u.test(name)) continue;
+    const said = [...JSON.stringify(ev.pages ?? []).matchAll(/"(?:speaker":"([^"]+)"|body":"([^":]{1,8}): )/gu)].map((m) => (m[1] ?? m[2] ?? "").trim()).filter((n) => n && !/^(주인공|나|플레이어)$/u.test(n));
+    const to = said[0] ?? "수상한 사람";
+    run.call("upsert_event", { mapId: map.id, event: { id: ev.id, name: to } });
+    const bp = run.ctx.project.gameBlueprint;
+    if (bp?.steps.some((st) => st.event === name)) run.ctx.project = { ...run.ctx.project, gameBlueprint: { ...bp, steps: bp.steps.map((st) => st.event === name ? { ...st, event: ev.id } : st) } } as Project;
+    notes.push(`이벤트 이름 「${name}」 → 「${to}」`);
+  }
+  return notes;
+}
+
+/**
+ * 범인 고르기·증거 제시를 거치지 않고 같은 엔딩을 부르는 다른 이벤트(지름길)를 닫는다 — 그 페이지는 지목하는 곳을 가리키는 한 줄만 남기고,
+ * 청사진 마지막 단계가 그 지름길이면 지목 이벤트로 옮긴다.
+ * 왜(2026-10-29 vm4 argon 추리 판정 major): 지목 고르기는 「범인 투숙객」에 섰는데, 모델 사슬의 마지막 「수상한 손님」은 단서 하나 뒤 말만 걸어도 자백·엔딩이었다.
+ */
+function closeEndingShortcuts(run: BuildRun): string[] {
+  const project = run.ctx.project;
+  const bp = project.gameBlueprint;
+  if (!bp) return [];
+  const endsIn = (list: unknown): string[] => { const ids: string[] = []; walkCommands(list, (c) => { if (c.kind === "triggerEnding" && typeof c.endingId === "string") ids.push(c.endingId); }); return ids; };
+  const gates: { mapId: string; ev: GameEvent; endings: Set<string> }[] = [];
+  for (const map of Object.values(project.maps)) for (const ev of map.events ?? []) {
+    let gate = false;
+    for (const pg of ev.pages ?? []) walkCommands(pg.commands, (c) => { if ((c.kind === "choices" && c.prompt === ACCUSE_PROMPT) || c.kind === "presentItem") gate = true; });
+    if (gate) gates.push({ mapId: map.id, ev, endings: new Set((ev.pages ?? []).flatMap((pg) => endsIn(pg.commands))) });
+  }
+  const gate = gates.find((g) => g.endings.size > 0);
+  if (!gate) return [];
+  const gateName = nameOf(gate.ev) && !/^ev_/u.test(nameOf(gate.ev)) ? nameOf(gate.ev) : "범인 지목";
+  const notes: string[] = [];
+  let lastMoved = false;
+  const lastStep = bp.steps.at(-1)!;
+  for (const map of Object.values(run.ctx.project.maps)) for (const ev of map.events ?? []) {
+    if (gates.some((g) => g.ev.id === ev.id)) continue;
+    let touched = false;
+    const pages = ((ev.pages ?? []) as unknown as Obj[]).map((pg) => {
+      const hits = endsIn(pg.commands);
+      if (!hits.length || !hits.some((id) => gate.endings.has(id))) return pg;
+      let decides = false;
+      walkCommands(pg.commands, (c) => { if (c.kind === "choices" || c.kind === "presentItem") decides = true; });
+      if (decides) return pg;
+      touched = true;
+      const keep = ((pg.commands ?? []) as Obj[]).filter((c) => c.kind === "setSwitch" || c.kind === "changeItem" || c.kind === "setSelfSwitch");
+      return { ...structuredClone(pg), commands: [{ kind: "text", body: `범인을 밝히려면 「${gateName}」에서 증거를 내밀고 지목하자.` }, ...structuredClone(keep)] };
+    });
+    if (!touched) continue;
+    run.call("upsert_event", { mapId: map.id, replacePages: true, event: { id: ev.id, ...(nameOf(ev) ? { name: nameOf(ev) } : {}), pages } });
+    notes.push(`「${nameOf(ev) || ev.id}」 의 바로 엔딩(자백)을 닫고 「${gateName}」 지목으로 보냄`);
+    if (lastStep.event === ev.id || lastStep.event === nameOf(ev)) lastMoved = true;
+  }
+  if (lastMoved) {
+    const gateMap = run.ctx.project.maps[gate.mapId];
+    const steps = bp.steps.map((st, i) => i === bp.steps.length - 1 ? { ...st, event: gate.ev.id, place: gateMap?.name ?? gate.mapId } : st);
+    run.ctx.project = { ...run.ctx.project, gameBlueprint: { ...run.ctx.project.gameBlueprint!, steps } } as Project;
+    notes.push(`청사진 마지막 단계를 「${gateName}」 로`);
+  }
+  return notes;
+}
+
+function stageMysteryCaseInner(run: BuildRun): string[] {
   const project0 = run.ctx.project;
-  if (!project0.gameBlueprint || !isMysteryBlueprint(project0)) return [];
+  if (!project0.gameBlueprint) return [];
   const pre: string[] = [];
   if (modelBuiltCase(project0)) {
     // 우리가 세운 용의자는 남았는데 경로를 다시 지어 마지막 단계의 범인 고르기가 사라졌으면(2026-10-29 vm3 terra 추리: 단서 셋 뒤 장부 보관함이 대사만 하고 엔딩)
@@ -312,10 +448,12 @@ function explainRemainingClues(run: BuildRun): string[] {
   }
   if (lockedAt < 0 || !locked) return [];
   // 자리 = 맵 방위 + 이벤트가 실제로 놓인 물건 이름(「난로 옆 보관함」이 안락의자 위면 「가운데 안락의자」) — 이름 낱말만으로는 어느 가구를 눌러야 할지 모른다.
+  // 이름은 이벤트 이름(청사진 step.event 가 이벤트 id 로 바뀐 판에 「ev_npc_…」가 샜다 — vm4 argon 추리).
+  const label = (r: Resolved) => { const n = nameOf(r.ev); return n && !/^ev_/u.test(n) ? n : r.step.event; };
   const where = (r: Resolved) => {
     const thing = hostThing(project, r.map, r.ev);
     const place = r.map.id === last.map.id ? mapRegion(r.map, r.ev.x, r.ev.y) : r.map.name ?? r.map.id;
-    return `「${r.step.event}」(${thing && !r.step.event.includes(thing) ? `${place} ${thing}` : place})`;
+    return `「${label(r)}」(${thing && !label(r).includes(thing) ? `${place} ${thing}` : place})`;
   };
   const progress: Obj[] = [];
   for (let j = 0; j < clues.length; j += 1) {
@@ -327,8 +465,9 @@ function explainRemainingClues(run: BuildRun): string[] {
   }
   const pages = [...pages0.slice(0, lockedAt), ...progress, ...pages0.slice(lockedAt + 1)];
   if (JSON.stringify(pages) === JSON.stringify(last.ev.pages ?? [])) return [];
-  run.call("upsert_event", { mapId: last.map.id, replacePages: true, event: { id: last.ev.id, pages } });
-  return [`「${last.step.event}」 잠김 대사에 남은 단서 수·자리(${clues.length}단계)`];
+  // 이름을 함께 넘긴다 — 빠지면 첫 페이지 이름 「남은 단서 3」이 이벤트 이름표가 됐다(vm4 argon 추리 판정 「범인 라벨이 시스템 문구」).
+  run.call("upsert_event", { mapId: last.map.id, replacePages: true, event: { id: last.ev.id, ...(nameOf(last.ev) ? { name: nameOf(last.ev) } : {}), pages } });
+  return [`「${label(last)}」 잠김 대사에 남은 단서 수·자리(${clues.length}단계)`];
 }
 
 function stageCase(run: BuildRun): string[] {
@@ -340,7 +479,10 @@ function stageCase(run: BuildRun): string[] {
   const ends = (ev: GameEvent) => (ev.pages ?? []).some((p) => JSON.stringify(p.commands ?? []).includes('"triggerEnding"'));
   if (!ends(last.ev)) return notes;
   // 심문 단계 — 마지막 앞 단계 중 말하는 단계(사람이 아닌 칸만 범인 대면으로 바꾼다).
-  const talk = [...resolved].reverse().find((r) => r.k > 0 && r.k < last.k && TALK_STEP.test(`${r.step.event} ${r.step.action}`));
+  // 증거 물건(열쇠 아닌 아이템)을 주는 단계는 «심문»이 아니라 단서 단계다 — vm5 flash 「증거 수집」(투숙객 심문하고 방을 뒤져 밀봉된 편지)을
+  // 심문으로 잡아 증거가 앞 단계의 객실 열쇠뿐이 되자 사건을 못 세웠다(용의자 0명).
+  const givesEvidence = (r: Resolved) => eventGives(run.ctx.project, r.ev).items.some((id) => { const it = run.ctx.project.database.items.find((i) => i.id === id); return Boolean(it) && !KEY_ITEM.test(it!.name ?? ""); });
+  const talk = [...resolved].reverse().find((r) => r.k > 0 && r.k < last.k && TALK_STEP.test(`${r.step.event} ${r.step.action}`) && !givesEvidence(r));
   const replaceTalk = talk && !visiblePerson(talk.ev) ? talk : undefined;
   // 증거 — 심문(없으면 마지막) 앞 단계들이 주는 아이템. 없으면 바로 앞 단계가 켜는 것을 증거 아이템으로도 준다.
   const pivot = talk ?? last;

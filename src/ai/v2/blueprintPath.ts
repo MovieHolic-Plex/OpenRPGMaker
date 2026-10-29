@@ -425,24 +425,29 @@ export function orderStepBattlesIn(project: Project): string[] {
   for (const ref of stepEvents) {
     if (!ref) continue;
     for (const page of (ref.ev.pages ?? []) as unknown as RawPage[]) {
-      const conds = (page.conditions ?? []) as { kind?: string; switchId?: string }[];
+      const conds = (page.conditions ?? []) as { kind?: string; switchId?: string; itemId?: string; present?: unknown }[];
       const w = conds.find((c) => c.kind === "switch" && c.switchId && won.has(c.switchId))?.switchId;
       if (!w || !pageMoves(page)) continue;
-      const prereqs = conds.filter((c) => c.kind === "switch" && c.switchId && c.switchId !== w).map((c) => c.switchId!);
+      // 앞 단계 조건 — 스위치와 아이템(vm5 flash jrpg: 「동굴 열쇠」 아이템 조건이라 보스가 열쇠 전에도 싸웠다).
+      type Need = { kind: "switch" | "item"; id: string };
+      const prereqs: Need[] = conds.flatMap((c): Need[] => c.kind === "switch" && c.switchId && c.switchId !== w ? [{ kind: "switch", id: c.switchId }] : c.kind === "item" && c.itemId && c.present !== false ? [{ kind: "item", id: c.itemId }] : []);
       if (!prereqs.length) continue;
       const holder = all.find((r) => r.ev.id !== ref.ev.id && (r.ev.pages ?? []).some((pg) => JSON.stringify(pg.commands ?? []).includes('"battleProcessing"') && setsSwitch(pg.commands, w)));
       if (!holder) continue;
-      // 앞 단계 스위치를 다른 이벤트(전투 이벤트 자신이 아닌)가 켜야 건다 — 아무도 안 켜면 적이 영영 안 나타난다.
-      const need = prereqs.filter((id) => all.some((r) => r.ev.id !== holder.ev.id && (r.ev.pages ?? []).some((pg) => setsSwitch(pg.commands, id))));
+      const givesItem = (value: unknown, id: string): boolean => JSON.stringify(value ?? []).includes(`"itemId":"${id}"`) && JSON.stringify(value ?? []).includes('"changeItem"');
+      // 앞 단계 스위치·아이템을 다른 이벤트(전투 이벤트 자신이 아닌)가 켜야·줘야 건다 — 아무도 안 주면 적이 영영 안 나타난다.
+      // 그 전투에 이겨야 켜지는 페이지만 주는 조건은 빼다 — 전투 앞에 걸면 서로 기다린다(vm4 flash jrpg: 동굴의 열쇠는 과부 거미를 이긴 뒤에야 나온다).
+      const wonGated = (pg: RawPage) => ((pg.conditions ?? []) as { kind?: string; switchId?: string }[]).some((c) => c.kind === "switch" && c.switchId === w);
+      const need = prereqs.filter((n) => all.some((r) => r.ev.id !== holder.ev.id && (r.ev.pages ?? []).some((pg) => !wonGated(pg as unknown as RawPage) && (n.kind === "switch" ? setsSwitch(pg.commands, n.id) : givesItem(pg.commands, n.id)))));
       if (!need.length) continue;
       let touched = false;
       const pages = ((holder.ev.pages ?? []) as unknown as RawPage[]).map((pg) => {
         const fights = JSON.stringify(pg.commands ?? []).includes('"battleProcessing"') && setsSwitch(pg.commands, w);
-        const have = new Set(((pg.conditions ?? []) as { switchId?: string }[]).map((c) => c.switchId));
-        const add = fights ? need.filter((id) => !have.has(id)) : [];
+        const have = new Set(((pg.conditions ?? []) as { switchId?: string; itemId?: string }[]).map((c) => c.switchId ?? c.itemId));
+        const add = fights ? need.filter((n) => !have.has(n.id)) : [];
         if (!add.length) return structuredClone(pg);
         touched = true;
-        return { ...structuredClone(pg), conditions: [...(pg.conditions ?? []), ...add.map((id) => ({ kind: "switch", switchId: id, value: true }))] };
+        return { ...structuredClone(pg), conditions: [...(pg.conditions ?? []), ...add.map((n) => n.kind === "switch" ? { kind: "switch", switchId: n.id, value: true } : { kind: "item", itemId: n.id, present: true })] };
       });
       if (touched) {
         holder.map.events = holder.map.events.map((e) => e.id === holder.ev.id ? { ...e, pages: pages as unknown as typeof e.pages } : e);
@@ -465,7 +470,8 @@ export function orderStepBattlesIn(project: Project): string[] {
       if (hit < 0) return structuredClone(pg);
       touched = true;
       const next = structuredClone(cmds);
-      next[hit] = { ...next[hit], body: `${next[hit]!.body} 먼저 ${where}「${prevName}」${josa(prevName, "을", "를")} 마쳐야 한다.` };
+      const talkTo = ((prevRef.ev.pages ?? []) as unknown as RawPage[]).some((p) => { const g = (p.graphic ?? {}) as { sprite?: unknown; transparent?: boolean }; return Boolean(g.sprite) && g.transparent !== true; }) && !JSON.stringify(prevRef.ev.pages ?? []).includes('"battleProcessing"');
+      next[hit] = { ...next[hit], body: `${next[hit]!.body} 먼저 ${where}「${prevName}」${talkTo ? "에게 말을 걸어야 한다." : `${josa(prevName, "을", "를")} 마쳐야 한다.`}` };
       return { ...structuredClone(pg), commands: next };
     });
     if (touched) ref.map.events = ref.map.events.map((e) => e.id === ref.ev.id ? { ...e, pages: pages as unknown as typeof e.pages } : e);
@@ -855,6 +861,8 @@ export function pointLockedPagesIn(project: Project): string[] {
     const name = named(src.ev);
     if (!name || /^ev_/u.test(name)) continue;
     const texts = ((pages[lockedAt]!.commands ?? []) as Cmd[]).filter((c) => c.kind === "text");
+    // 말하는 사람의 대사(용의자 첫 탐문·「여관 주인: …」)는 잠김 안내가 아니다 — 대사 뒤에 「먼저 …」를 붙이지 않는다(vm5 argon 추리 상인 오언).
+    if (texts.some((c) => typeof (c as { speaker?: unknown }).speaker === "string" && String((c as { speaker?: unknown }).speaker).trim() || /^[^:：\s]{1,8}\s?[:：]\s/u.test(String(c.body ?? ""))) || / · 탐문$/u.test(String(pages[lockedAt]!.name ?? ""))) continue;
     const flat = (s: string) => s.replace(/[\s「」『』]/gu, "");
     // 인물은 말하는 이름으로(이벤트 이름이 「촌장의 부탁」 같은 일 제목이면 「촌장 보른」).
     const speakers = cmdsOf(src.ev).flatMap((c) => typeof (c as { speaker?: unknown }).speaker === "string" && (c as { speaker: string }).speaker.trim() ? [(c as { speaker: string }).speaker.trim()] : []);

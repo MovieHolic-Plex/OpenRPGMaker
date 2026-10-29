@@ -19,6 +19,7 @@ import { alignCodeClues, fixDigitClaims, humanizeBlueprintTokens } from "./codeC
 import { alignClueObjects, dropStaleChainClues } from "./clueObjects";
 import { settleFurnitureSpots } from "./examineSpot";
 import { refreshRemainingClues } from "./mysteryCase";
+import { settleStepSubjects } from "./stepSubjects";
 import { humanizeMapNames } from "./mapNames";
 
 /** 청사진 자동 짓기(한 실행에 한 번씩 — 세션 깃발). 무엇을 지었는지 조수에게 줄 글(없으면 undefined). */
@@ -62,6 +63,13 @@ export async function runFinishAutoBuild(env: PiAssistantV2Env, session: V2Sessi
       env.ctx.project = human.project;
       const fixed = [...aligned.notes, ...digits.notes, ...(human.notes.length ? [`청사진 id 대사 ${human.notes.length}줄을 뜻 낱말로`] : [])];
       if (fixed.length) done.push(`번호·단서 대사: ${fixed.join(" / ").slice(0, 500)}`);
+    }
+    // 단계 이벤트의 주인공 — 사람과 이야기하는 단계는 사람으로, 진행 낱말뿐인 칸은 결과 물건·살펴보는 대상 이름으로(stepSubjects.ts, vm4·vm5 판정).
+    // 가구 앉히기 앞에 — 사람이 될 칸을 가구에 붙이지 않게.
+    {
+      const run = createBuildRun(env.ctx);
+      const subjects = settleStepSubjects(run);
+      if (subjects.length) done.push(`단계 주인공: ${subjects.join(" / ").slice(0, 500)}`);
     }
     // 그림 없는 조사 칸은 가구에 앉히고, 가구 위 조사는 가구 전체에서 받는다(examineSpot.settleFurnitureSpots).
     {

@@ -1,0 +1,186 @@
+// 청사진 단계 이벤트의 «주인공»을 이름·대사에 세운다(끝맺음, 결정적).
+// 왜(2026-10-29 vm4·vm5 판정): 경로 빌더가 단계 이름을 그대로 이벤트 이름·대사로 썼다 —
+//  - vm4 flash jrpg: 「촌장과 대화」 단계가 「촌장의 대화」라는 이름표의 칸이 되어 「촌장의 대화를 살펴보았다」「『낡은 검』을 알아냈다」만 나왔다(판정 「촌장이 사람이 아니라 조사 오브젝트」).
+//  - vm4·vm5 flash mystery: 「사건 조사 시작」「증거 수집」 투명 칸이 「…을 살펴보았다」만 하고 이유 없이 객실 열쇠를 줬다.
+// 단계 행동(action)이 사람과 이야기하는 일이면 그 사람(Actor 칩)으로 세우고, 단계 이름이 «시작·수집·대치» 같은 진행 낱말뿐이면
+// 행동·결과 낱말(gives·조사하는 대상)로 이름과 살펴보기 대사를 짓는다. 모델이 쓴 대사는 건드리지 않고 함수가 넣은 자리표시 줄만 바꾼다.
+import type { GameEvent, Project } from "@/project/types";
+import type { BuildRun } from "./types";
+import { josa } from "@/util/josa";
+import { buildPeople } from "./people";
+import { resolveSteps } from "./mysteryCase";
+import { unreachableEvents } from "./eventReach";
+
+type Obj = Record<string, unknown>;
+const PERSON = /(여관\s*주인|가게\s*주인|촌장|이장|주인|할머니|할아버지|노인|노파|박사|교수|선생님|선생|기사단장|기사|대장장이|상인|경비병|경비|병사|여왕|왕비|국왕|왕자|공주|왕|신관|사제|수녀|마법사|현자|사냥꾼|어부|농부|의사|간호사|목격자|투숙객|손님|선장|대장|사장|점장|집사|하녀|요리사|정원사|순경|형사|탐정|경찰|장로|족장|스승|사부)/u;
+const TALK = /대화|이야기|말을\s*걸|만나|부탁|의뢰|듣|묻|물어|인사|소개|안내|받/u;
+const SEARCH = /뒤지|뒤져|찾|줍|발견|수색/u;
+/** 단계 이름이 진행 낱말뿐인가(「사건 조사 시작」「증거 수집」「촌장의 대화」). */
+const ABSTRACT = /(시작|수집|탐색|발생|대치|추궁|해결|탐험|결전|대화|만남|의뢰|심문|지목|추리|도착|출발|진입|단계|진행|조사)$/u;
+/** 보이지 않는 앎(정보·단서)이라 「받았다」로 쓰지 않는 결과. */
+const KNOWLEDGE = /정보|단서|사실|비밀|번호|암호|진실|소문|증언|기억|위치|길|방법|해결|엔딩|시작|허락/u;
+
+const nameOf = (ev: GameEvent) => String((ev as { name?: string }).name ?? "").trim();
+const flat = (s: string) => s.replace(/[\s「」『』.,!?]/gu, "");
+const isPerson = (ev: GameEvent) => (ev.pages ?? []).some((p) => { const g = (p.graphic ?? {}) as { sprite?: unknown; appearanceId?: unknown; transparent?: boolean }; return g.transparent !== true && Boolean(g.sprite || g.appearanceId); });
+const transparent = (ev: GameEvent) => (ev.pages ?? []).every((p) => { const g = (p.graphic ?? {}) as { sprite?: unknown; appearanceId?: unknown; transparent?: boolean; tileId?: number }; return g.transparent === true || (!g.sprite && !g.appearanceId && !(typeof g.tileId === "number" && g.tileId > 0)); });
+
+/** 단계가 이야기하는 사람 — 행동(또는 이름)에서 사람 낱말 바로 뒤에 이야기 낱말이 오고, 무리(「투숙객들」)가 아니며, 뒤져 찾는 단계가 아니다. */
+export function talkPerson(step: { event: string; action: string; gives?: string }): string | undefined {
+  for (const text of [step.action, step.event]) {
+    const m = new RegExp(`(?<![가-힣])${PERSON.source}(들)?\\s*(?:과|와|의|에게서|에게|께|을|를)?\\s*([^.,]{0,12})`, "u").exec(text);
+    if (!m || m[2] || !TALK.test(m[3] ?? "")) continue;
+    if (SEARCH.test(step.action) && step.gives && !KNOWLEDGE.test(step.gives)) return undefined;
+    const who = m[1]!.replace(/\s+/gu, " ");
+    // 「주인에게 안내를 받자」 — 어느 집 주인인지 장소 낱말로(여관 로비 → 여관 주인).
+    const house = who === "주인" ? /(여관|가게|상점|식당|주점|술집|카페|빵집|대장간|약방|여인숙)/u.exec(`${(step as { place?: string }).place ?? ""} ${step.action}`)?.[1] : undefined;
+    return house ? `${house} 주인` : who;
+  }
+  return undefined;
+}
+
+/** 행동에서 살펴보는 대상(「사건 현장을 조사한다」 → 사건 현장, 「방을 뒤져」 → 방). */
+function lookTarget(action: string): string | undefined {
+  const m = /([가-힣]+(?:\s[가-힣]+)?)[을를]\s*(?:조사|살펴|뒤지|뒤져|수색|확인|찾)/u.exec(action);
+  // 「심문하고 방」처럼 앞 낱말이 이음 말(…고·…며·…서)이면 떼고 명사만.
+  const words = (m?.[1] ?? "").split(/\s+/u).filter(Boolean);
+  while (words.length > 1 && /(고|며|서|여|해|면|니|다)$/u.test(words[0]!)) words.shift();
+  const noun = words.join(" ").replace(/^(그|이|저|모든|모은|여러)\s/u, "").trim();
+  return noun && noun.length >= 1 && !/단서|증거|정보|범인|진실/u.test(noun) ? noun : undefined;
+}
+
+const lookLines = (event: string): string[] => {
+  const noun = event.replace(/\s*(조사하기|조사|살펴보기|확인하기|확인|열기|탈출하기|탈출|찾기|수색)$/u, "").trim() || event;
+  return [`${event}${josa(event, "을/를")} 살펴보았다.`, `${noun}${josa(noun, "을/를")} 살펴보았다.`];
+};
+
+function rewriteTexts(pages: Obj[], swap: (body: string) => string | undefined): number {
+  let n = 0;
+  const visit = (list: unknown): void => {
+    if (!Array.isArray(list)) return;
+    for (const c of list as Obj[]) {
+      if (!c || typeof c !== "object") continue;
+      if (c.kind === "text" && typeof c.body === "string") { const next = swap(c.body); if (next !== undefined && next !== c.body) { c.body = next; n += 1; } }
+      for (const v of Object.values(c)) if (Array.isArray(v)) visit(v);
+    }
+  };
+  for (const p of pages) visit(p.commands);
+  return n;
+}
+
+/** 사람 그림 하나를 고른다 — 같은 맵 빈 칸에 잠깐 세워 그림을 읽고 바로 걷는다(buildPeople 이 역할·외형으로 Actor 칩을 고른다). */
+function personGraphic(run: BuildRun, mapId: string, role: string, at: { x: number; y: number }): Obj | undefined {
+  const before = run.ctx.project;
+  const placed = buildPeople(run, [{ role, name: `__look_${role}`, mapId, at, firstTalk: ["…"] }], mapId);
+  const id = placed.eventIds?.[0]?.eventId;
+  const ev = id ? run.ctx.project.maps[mapId]?.events.find((e) => e.id === id) : undefined;
+  const graphic = ev?.pages?.[0]?.graphic ? structuredClone(ev.pages[0]!.graphic) as unknown as Obj : undefined;
+  run.ctx.project = before;
+  return graphic && !(graphic as { transparent?: boolean }).transparent ? graphic : undefined;
+}
+
+export function settleStepSubjects(run: BuildRun): string[] {
+  const project0 = run.ctx.project;
+  const bp = project0.gameBlueprint;
+  if (!bp) return [];
+  const notes: string[] = [];
+  const resolved = resolveSteps(project0);
+  const renamed = new Map<string, string>();
+  const olds = new Map<string, string>();
+  const personIds = new Set<string>();
+  for (const r of resolved) {
+    const last = r.k === bp.steps.length - 1;
+    const map = run.ctx.project.maps[r.map.id];
+    const ev = map?.events.find((e) => e.id === r.ev.id);
+    if (!map || !ev) continue;
+    const name = nameOf(ev);
+    if (name) olds.set(ev.id, name);
+    const person = talkPerson(r.step);
+    const pages = structuredClone(ev.pages ?? []) as unknown as Obj[];
+    const looks = new Set(lookLines(r.step.event).concat(name ? lookLines(name) : []));
+    if (person && !last) {
+      // 이미 이 사람 이름을 가진 다른 NPC 가 같은 맵에 서 있으면 이 칸은 그대로 둔다(둘이 되지 않게).
+      const twin = map.events.find((e) => e.id !== ev.id && isPerson(e) && flat(nameOf(e)).includes(flat(person)));
+      if (twin) continue;
+      const speaker = JSON.stringify(ev.pages ?? []).match(new RegExp(`"speaker":"([^"]*${person.replace(/\s+/gu, "\\s*")}[^"]*)"`, "u"))?.[1];
+      // 이미 사람으로 선 NPC 는 제 이름 그대로(「여관 주인 덕수」를 「여관 주인」으로 줄이지 않는다).
+      const who = isPerson(ev) && name && !ABSTRACT.test(name) ? name : speaker ?? person;
+      const action = r.step.action.trim().replace(/[.。!]+$/u, "");
+      let n = rewriteTexts(pages, (body) => looks.has(body) ? `${action}.` : undefined);
+      n += rewriteTexts(pages, (body) => {
+        const m = /^『([^』]+)』(?:을|를|을\(를\))\s*(알아냈다|얻었다)\.$/u.exec(body);
+        if (!m || KNOWLEDGE.test(m[1]!)) return undefined;
+        return `${who}에게서 『${m[1]}』${josa(m[1]!, "을/를")} 받았다.`;
+      });
+      let graphicNote = "";
+      if (!isPerson(ev)) {
+        const graphic = personGraphic(run, map.id, person, { x: ev.x, y: ev.y });
+        if (graphic) {
+          const trial = pages.map((p) => ({ ...p, graphic: structuredClone(graphic), priority: "same" }));
+          const snapshot = run.ctx.project;
+          const was = new Set(unreachableEvents(snapshot, map.id));
+          run.ctx.project = { ...snapshot, maps: { ...snapshot.maps, [map.id]: { ...map, events: map.events.map((e) => e.id === ev.id ? { ...e, name: who, pages: trial as unknown as typeof e.pages } : e) } } } as Project;
+          if (unreachableEvents(run.ctx.project, map.id).some((id) => !was.has(id))) run.ctx.project = snapshot;
+          else { renamed.set(ev.id, who); personIds.add(ev.id); notes.push(`「${name || ev.id}」 → 사람 「${who}」(${ev.x},${ev.y})${n ? ` · 자리표시 대사 ${n}줄` : ""}`); continue; }
+          graphicNote = " (사람 그림은 길을 막아 못 세움)";
+        }
+      }
+      const cur = run.ctx.project.maps[map.id]!;
+      run.ctx.project = { ...run.ctx.project, maps: { ...run.ctx.project.maps, [map.id]: { ...cur, events: cur.events.map((e) => e.id === ev.id ? { ...e, name: who, pages: pages as unknown as typeof e.pages } : e) } } } as Project;
+      renamed.set(ev.id, who);
+      if (isPerson(ev)) personIds.add(ev.id);
+      notes.push(`「${name || ev.id}」 → 「${who}」${n ? ` · 자리표시 대사 ${n}줄` : ""}${graphicNote}`);
+      continue;
+    }
+    // 진행 낱말뿐인 투명 칸 — 결과 물건(gives)이나 살펴보는 대상으로 이름·대사를 짓는다. 마지막 단계(지목·엔딩)는 사건 세우기가 맡는다.
+    if (last || !transparent(ev) || !ABSTRACT.test(name || r.step.event)) continue;
+    const target = lookTarget(r.step.action);
+    const thing = r.step.gives && !KNOWLEDGE.test(r.step.gives) && !/^(?:엔딩|ending)$/iu.test(r.step.gives) ? r.step.gives.trim() : target;
+    if (!thing) continue;
+    const seen = target ?? thing;
+    const n = rewriteTexts(pages, (body) => looks.has(body) ? `${seen}${josa(seen, "을/를")} 살펴보았다.` : undefined);
+    const cur = run.ctx.project.maps[map.id]!;
+    run.ctx.project = { ...run.ctx.project, maps: { ...run.ctx.project.maps, [map.id]: { ...cur, events: cur.events.map((e) => e.id === ev.id ? { ...e, name: thing, pages: pages as unknown as typeof e.pages } : e) } } } as Project;
+    renamed.set(ev.id, thing);
+    notes.push(`「${name || r.step.event}」 → 「${thing}」${n ? ` · 살펴보기 대사 「${seen}」` : ""}`);
+  }
+  // 다른 이벤트 대사·목표 글이 옛 이름(「사건 조사 시작」)을 가리키면 새 이름으로(잠김 대사·남은 단서·목표 꼬리).
+  if (renamed.size) {
+    const pairs = [...renamed].flatMap(([id, to]) => { const from = olds.get(id); return from && from !== to ? [[from, to] as const] : []; });
+    if (pairs.length) {
+      const esc = (x: string) => x.replace(/[.*+?^${}()|[\]\\]/gu, "\\$&");
+      const people = new Set([...renamed].filter(([id]) => personIds.has(id)).map(([, to]) => to));
+      // 「옛 이름」 + 조사는 새 이름 받침에 맞추고, 사람에게 「…을 마쳐야 한다」는 「…에게 말을 걸어야 한다」로. 목표 꼬리 (옛 이름)·→ 옛 이름) 도.
+      const swapAll = (text: string) => pairs.reduce((t, [from, to]) => t
+        .replace(new RegExp(`「${esc(from)}」(?:을|를)\\s*마쳐야 한다`, "gu"), people.has(to) ? `「${to}」에게 말을 걸어야 한다` : `「${to}」${josa(to, "을/를")} 찾아야 한다`)
+        .replace(new RegExp(`「${esc(from)}」(을|를|이|가|은|는|과|와)(?![가-힣])`, "gu"), (_m, j: string) => `「${to}」${josa(to, /을|를/u.test(j) ? "을/를" : /이|가/u.test(j) ? "이/가" : /은|는/u.test(j) ? "은/는" : "와/과")}`)
+        .split(`「${from}」`).join(`「${to}」`)
+        .replace(new RegExp(`([(→·]\\s*)${esc(from)}(\\s*[)·])`, "gu"), `$1${to}$2`), text);
+      const maps = Object.fromEntries(Object.entries(run.ctx.project.maps).map(([id, m]) => {
+        const json = JSON.stringify(m.events ?? []);
+        const next = swapAll(json).replace(/『([^』"]+)』을\(를\)/gu, (_m, w: string) => `『${w}』${josa(w, "을/를")}`);
+        return [id, next === json ? m : { ...m, events: JSON.parse(next) }];
+      }));
+      run.ctx.project = { ...run.ctx.project, maps } as Project;
+    }
+  }
+  // 사람에게 「「촌장」을 마쳐야 한다」 — 사람은 마치는 것이 아니라 말을 거는 것(vm5 flash jrpg 잠김 대사).
+  {
+    const people = new Set(Object.values(run.ctx.project.maps).flatMap((m) => (m.events ?? []).filter((e) => isPerson(e) && !JSON.stringify(e.pages ?? []).includes('"battleProcessing"')).map(nameOf)).filter((n) => n.length >= 1));
+    if (people.size) {
+      let n = 0;
+      const maps = Object.fromEntries(Object.entries(run.ctx.project.maps).map(([id, m]) => {
+        const json = JSON.stringify(m.events ?? []);
+        const next = json.replace(/「([^」"]+)」(?:을|를)\s*마쳐야 한다/gu, (all, who: string) => { if (!people.has(who)) return all; n += 1; return `「${who}」에게 말을 걸어야 한다`; });
+        return [id, next === json ? m : { ...m, events: JSON.parse(next) }];
+      }));
+      if (n) { run.ctx.project = { ...run.ctx.project, maps } as Project; notes.push(`사람에게 「마쳐야」 → 「말을 걸어야」 ${n}곳`); }
+    }
+  }
+  // 청사진 단계가 바뀐 이름 대신 이벤트 id 로 가리키게(출하 검사·목표가 같은 이벤트를 찾는다).
+  if (renamed.size) {
+    const steps = bp.steps.map((step) => { const hit = resolved.find((r) => r.step.id === step.id && renamed.has(r.ev.id)); return hit ? { ...step, event: hit.ev.id } : step; });
+    run.ctx.project = { ...run.ctx.project, gameBlueprint: { ...run.ctx.project.gameBlueprint!, steps } } as Project;
+  }
+  return notes;
+}
