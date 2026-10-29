@@ -17,7 +17,7 @@ export type Expr =
 export type Who =
   | "minjae" | "suah" | "teacher" | "king" | "priest" | "edel" | "fio" | "kkur" | "clerk" | "goblin" | "maou"
   | "guard" | "cook" | "merchant" | "villager" | "kid" | "adventurer" | "chief"
-  | "examiner" | "dean" | "slime";
+  | "examiner" | "dean" | "slime" | "adventurer2" | "adventurer3";
 
 interface CastMember {
   readonly name: string;
@@ -53,6 +53,8 @@ export const CAST: Readonly<Record<Who, CastMember>> = {
   // 흉상 없는 마물 — 걷기 칩만 있고 대사는 이름표만 붙는다.
   examiner: { name: "출제 위원 해골", tex: "tex_easyrpg_charset_monster1", resource: "easyrpg-charset-monster1", index: 4, side: "right" },
   dean: { name: "교무부장", tex: "tex_easyrpg_charset_monster1", resource: "easyrpg-charset-monster1", index: 6, side: "right" },
+  adventurer2: { name: "모험가", tex: "tex_easyrpg_charset_actor4", resource: "easyrpg-charset-actor4", index: 0, side: "right" },
+  adventurer3: { name: "모험가", tex: "tex_easyrpg_charset_actor4", resource: "easyrpg-charset-actor4", index: 2, side: "right" },
   slime: { name: "슬라임", tex: "tex_easyrpg_charset_monster1", resource: "easyrpg-charset-monster1", index: 0, side: "right" },
 };
 
@@ -175,6 +177,8 @@ export function execTool(project: Project, name: string, args: Record<string, un
   const res = runTool(ctx, name, args, { dryRun: false });
   if (!res.ok) throw new Error(`[isekai-godding] ${name} failed: ${res.summary} ${JSON.stringify(res.issues ?? [])}`);
   Object.assign(project, ctx.project);
+  const warnings = (res as { warnings?: unknown }).warnings;
+  if (Array.isArray(warnings) && warnings.length > 0 && process.env.IG_WARN) console.warn(`[isekai-godding] ${name} 경고: ${warnings.join(" | ")}`);
   return { summary: res.summary, data: res.data };
 }
 

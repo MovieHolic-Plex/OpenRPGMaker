@@ -77,13 +77,23 @@ export function setupIsekaiDatabase(project: Project, backdrops: typeof BACKDROP
   makeClass(CLASS.chief, "고블린 족장", ["skill_ig_group_call", "skill_ig_chief_roar"], "몽둥이");
 
   // ── 배우
-  exec("upsert_actor", { actor: { id: ACTOR.minjae, name: "강민재", nickname: "고2 · 자칭 용사", classId: CLASS.student, initialLevel: 5,
+  // 파티원마다 곡선을 다르게 — 기본 곡선을 그대로 두면 넷 다 HP 545 로 똑같았다(QA castle). 배율: maxHp maxMp attack defense mind agility.
+  const baseCurves = clone(project.database.actors.find((a) => a.id === DEFAULT_ACTOR_ID)!.parameterCurves ?? {}) as Record<string, number[]>;
+  const curves = (m: [number, number, number, number, number, number]) => Object.fromEntries(
+    (["maxHp", "maxMp", "attack", "defense", "mind", "agility"] as const).flatMap((k, i) => baseCurves[k] ? [[k, baseCurves[k]!.map((v) => Math.max(1, Math.round(v * m[i]!)))]] : []));
+  const STATS = {
+    minjae: curves([0.9, 0.8, 0.95, 0.85, 1.0, 1.25]),
+    edel: curves([1.2, 0.6, 1.15, 1.3, 0.7, 0.85]),
+    fio: curves([0.75, 1.6, 0.7, 0.75, 1.4, 1.0]),
+    kkur: curves([1.35, 0.5, 1.25, 1.05, 0.6, 0.8]),
+  };
+  exec("upsert_actor", { actor: { id: ACTOR.minjae, name: "강민재", nickname: "고2 · 자칭 용사", classId: CLASS.student, initialLevel: 5, parameterCurves: STATS.minjae,
     characterResourceId: CAST.minjae.resource, characterIndex: CAST.minjae.index, faceResourceId: "shared-modern-uni-boy-navy-expressions-bust-base" } });
   const fantasyActor = (id: string, name: string, nickname: string, classId: string, who: "edel" | "fio" | "kkur", level: number, battle?: string) =>
     exec("upsert_actor", { actor: {
       ...clone(project.database.actors.find((a) => a.id === DEFAULT_ACTOR_ID)!), id, name, nickname, classId, initialLevel: level,
       characterResourceId: CAST[who].resource, characterIndex: CAST[who].index, faceResourceId: `shared-${CAST[who].stem}-expressions-bust-base`,
-      ...(battle ? { battleCharacterResourceId: battle } : {}), learnedSkills: [],
+      ...(battle ? { battleCharacterResourceId: battle } : {}), learnedSkills: [], parameterCurves: STATS[who],
     } });
   fantasyActor(ACTOR.edel, "에델", "왕국 기사 · 의전 담당", CLASS.knight, "edel", 6, "charset-battler-actor1-3");
   fantasyActor(ACTOR.fio, "피오", "엘프 마법사 · 시험 7수", CLASS.mage, "fio", 5, "charset-battler-actor2-7");

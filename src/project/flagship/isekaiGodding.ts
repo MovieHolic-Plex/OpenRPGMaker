@@ -14,6 +14,7 @@
  * 맵은 전부 조수 도구로 짓는다(author_beodeul_town · author_forest_route · author_beodeul_dungeon · build_hand_interior_room ·
  * create_transfer_pair · set_map_properties). 사람 그림은 공용 흉상·EasyRPG 걷기 칩·현대 걷기 칩만 쓴다 — 새 그림 없음.
  */
+import { withJosa } from "@/util/josa";
 import { createBlankProject } from "@/project/defaults";
 import { deserialize, serialize } from "@/project/io";
 import type { Command, GameMap, Project } from "@/project/types";
@@ -87,7 +88,7 @@ const objective = (message: string): Command =>
 /** 대본을 어긴 선택 한 번 — 깽판 지수가 오른다. */
 const chaos = (): Command[] => [setVar(V_CHAOS, "+=", 1), emote("player", "sweat", 700)];
 const join = (actorId: string, name: string): Command[] => [
-  { kind: "changeParty", actorId, action: "add" } as Command, playSe(SE_JOIN), ...caption(`${name}이(가) 동료가 되었다.`),
+  { kind: "changeParty", actorId, action: "add" } as Command, playSe(SE_JOIN), ...caption(`${withJosa(name, "이/가")} 동료가 되었다.`),
 ];
 const giveItem = (itemId: string): Command => ({ kind: "changeItem", itemId, op: "+=", amount: 1 } as Command);
 const takeItem = (itemId: string): Command => ({ kind: "changeItem", itemId, op: "-=", amount: 1 } as Command);
@@ -209,37 +210,33 @@ function buildHall(project: Project, b: Built): void {
 
   const summon: Command[] = [
     bgm(BGM_HALL, 300),
-    flash("white", 600), playSe(SE_SUMMON), wait(500),
+    flash("white", 600), playSe(SE_SUMMON), wait(400),
     ...say("priest", "surprised", "성공이다! 전설의 용사가 내려오셨다!"),
-    emote("player", "exclamation", 900),
-    ...think("교실이 아니다. 성? 코스프레 동아리?"),
+    emote("player", "exclamation", 700),
     ...say("king", "happy", "용사여, 아르벤 왕국에 온 것을 환영하오.\n부디 마왕을 쓰러뜨려 주시오."),
     ...say("minjae", "surprised", "잠깐만요. 저 내일 모의고사인데요."),
     ...say("king", "doubtful", "모의고사…? 그건 어느 마물이오?"),
     choices([
       { text: "와이파이 비번이 뭐예요?", then: [
-        ...say("priest", "surprised", "와이…? 고대 주문이옵니까?"),
-        ...say("minjae", "annoyed", "배터리 3%라고요. 충전기라도 주세요."), ...chaos(),
+        ...say("priest", "surprised", "와이…? 고대 주문이옵니까?"), ...chaos(),
       ] },
       { text: "계약서부터 보여 주세요", then: [
-        ...say("priest", "serious", "용사 대본이옵니다.\n7장 3절, 「용사는 마왕을 벤다」."),
-        ...say("minjae", "doubtful", "보수 칸이 비었는데요?"),
-        ...say("king", "embarrassed", "…그건 나중에 의논합시다."), ...chaos(),
+        ...say("priest", "serious", "용사 대본이옵니다. 7장 3절,\n「용사는 마왕을 벤다」."),
+        ...say("minjae", "doubtful", "보수 칸이 비었는데요?"), ...chaos(),
       ] },
       { text: "집에 보내 주세요", then: [
         ...say("king", "sad", "돌려보내는 주문은 우리도 모르오."),
       ] },
     ]),
-    ...say("priest", "serious", "귀환 주문서는 마왕성 꼭대기에 있사옵니다."),
+    ...say("king", "serious", "귀환 주문서는 마왕성 꼭대기에 있소."),
     ...say("minjae", "base", "마왕성만 가면 집에 간다는 거죠?\n오케이. 모의고사 전에 끝낸다."),
-    ...say("king", "happy", "기사 에델을 붙여 드리겠소."),
     walkTo(EDEL, { x: me.x + 1, y: me.y }),
-    ...say("edel", "determined", "에델이 모시겠습니다!\n대본 1장 1절, 「용사는 왕께 무릎을 꿇는다」."),
+    ...say("edel", "determined", "기사 에델, 모시겠습니다!\n대본 1장 1절, 「용사는 왕께 무릎을 꿇는다」."),
     ...say("minjae", "base", "안 꿇는데요."),
-    ...say("edel", "surprised", "예?!"),
+    emote(EDEL, "exclamation", 700),
     setVar(V_STAGE, "=", 1),
     ...join(ACTOR.edel, "에델"),
-    ...say("king", "base", "먼저 왕도의 모험가 길드에 등록하시오.\n길드는 광장 앞 큰 건물이오."),
+    ...say("king", "base", "먼저 광장 앞 모험가 길드에 등록하시오."),
     objective("왕도 광장 앞 모험가 길드에서 등록하기"),
   ];
   map.events.push(event("ev_ig_h_summon", "소환", { x: 0, y: 0 }, [
@@ -410,8 +407,9 @@ function buildGuild(project: Project, _b: Built): void {
       ["반반 마을 고블린들, 원래 착했어.", "요즘 서로 말이 안 통해서 그래."],
       ["번호표… 집에 가져가도 되나?"],
     ][i]!;
+    const who = (["adventurer", "adventurer2", "adventurer3"] as const)[i]!;
     map.events.push(event(advIds[i]!, "모험가", at, [
-      page(`${advIds[i]}_p`, [], [faceHero(advIds[i]!), ...say("adventurer", "base", ...lines)], { who: "adventurer" }),
+      page(`${advIds[i]}_p`, [], [faceHero(advIds[i]!), ...say(who, "base", ...lines)], { who }),
     ]));
   });
   // 여관 주인 — 떡볶이 부탁(떡볶이 결말의 열쇠).
@@ -850,8 +848,6 @@ export function createIsekaiGoddingFlagshipDemo(): FlagshipDemoBuildResult {
   execTool(project, "set_project_settings", { fieldHud: { objective: true, widgets: [
     { id: "chaos", kind: "gauge", source: "variable", variableId: V_CHAOS, max: 10, shape: "number", label: "깽판 지수", anchor: "top-left", x: 8, y: 14, width: 104, height: 30, panel: "paper", color: "#e0503a" },
   ] } });
-  // 직접 코드: set_project_settings.fieldHud 에 「현재 목표」 줄 스위치(objective)가 없다 — 목표 칩이 안 보인다(도구 결함, PR 대상).
-  project.system.fieldHud = { ...project.system.fieldHud!, objective: true };
   execTool(project, "set_project_settings", { resources: { defaultBgmResourceId: BGM_CAPITAL } });
 
   for (const id of new Set(JSON.stringify(project.maps).match(/sw_ig_[a-z0-9_]+/g) ?? [])) ensureSw(id, id.replace(/^sw_ig_/, "이세계 · "));
