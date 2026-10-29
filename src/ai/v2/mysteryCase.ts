@@ -16,7 +16,7 @@ import { settleExamineSpot } from "./examineSpot";
 import { unreachableEvents } from "./eventReach";
 import { mapRegion } from "./discoverability";
 import { isPassable } from "@/project/collision";
-import { buildPeople } from "./people";
+import { buildPeople, tileLabel } from "./people";
 import type { BuildRun } from "./types";
 
 /** 추리 청사진 낱말(요청·목표·단계·엔딩 어디든). 「도난」만으로는 추리로 보지 않는다(심부름 RPG). */
@@ -239,6 +239,43 @@ function ensureEvidenceCondition(run: BuildRun): string[] {
  * 앞 단계를 하나씩 마칠 때마다 켜지는 조건으로 페이지를 나눠, 지금 남은 것만 말한다. 되풀이 안전(이름 「남은 단서」 페이지를 다시 쓴다).
  * 왜(2026-10-29 vm3 terra 추리 판정): 단서 없이 장부 보관함을 조사하면 「먼저 금고를 살펴보자.」뿐 — 몇 개가 남았고 어디인지 몰라 맵을 뒤졌다.
  */
+/**
+ * 이벤트가 놓인 칸(몸 사각 포함)의 가구 이름 — 바닥·벽·깔개·그림자는 뺀다. 없으면 "".
+ * 의자 칸 조사(단서 그림을 옆 탁자 위에 얹은 경우, examineArt)는 탁자 위 물건 이름(「책」)이 찾을 것이다.
+ */
+function hostThing(project: Project, map: GameMap, ev: GameEvent): string {
+  const m = map as unknown as Record<string, ArrayLike<number> | undefined>;
+  const labelsAt = (x: number, y: number): string[] => x < 0 || y < 0 || x >= map.width || y >= map.height ? []
+    : ["upperTiles", "upperOverlayTiles", "lowerOverlayTiles"].map((key) => m[key]?.[y * map.width + x])
+      .filter((t): t is number => typeof t === "number" && t >= 0).map((t) => tileLabel(project, map, t));
+  const clean = (label: string) => label.replace(/\s*\((?:-?\d+,\s*-?\d+)\)\s*$/u, "").replace(/^.*·\s*/u, "").replace(/\s*\d+[×x]\d+$/u, "").replace(/\s+[NSEW]$/u, "").trim();
+  const fp = (ev.pages?.[0] as { footprint?: { width?: number; height?: number } } | undefined)?.footprint;
+  const w = Math.max(1, fp?.width ?? 1), h = Math.max(1, fp?.height ?? 1), left = ev.x - Math.floor((w - 1) / 2);
+  for (let y = ev.y; y > ev.y - h; y -= 1) for (let x = left; x < left + w; x += 1) {
+    for (const raw of labelsAt(x, y)) {
+      const label = clean(raw);
+      if (!label || /바닥|벽|깔개|러그|그림자|공허|천장|창|floor|wall|rug|shadow|ceiling|void/iu.test(label)) continue;
+      if (/의자|걸상|chair|stool|bench/iu.test(label)) {
+        const onTop = [[0, -1], [-1, 0], [1, 0], [0, 1]].flatMap(([dx, dy]) => labelsAt(ev.x + dx!, ev.y + dy!)).find((l) => /탁상 물건/u.test(l));
+        if (onTop) return `탁자 위 ${clean(onTop)}`;
+      }
+      return label;
+    }
+  }
+  return "";
+}
+
+/**
+ * 끝맺음이 단서 이벤트를 옮긴 뒤(길목 비우기·물건 맞추기·가구 앉히기) 다시 불러 「남은 단서」 자리를 지금 자리로 고친다.
+ * 왜(2026-10-29 vm5 terra 추리): 사건을 세울 때 쓴 「난로 옆 보관함(동쪽)」이 그대로 남았는데 이벤트는 그 뒤 가운데 안락의자로 옮겨졌다 —
+ * 판정자가 동쪽 상자를 눌러 보다가 헤맸다.
+ */
+export function refreshRemainingClues(run: BuildRun): string[] {
+  const project = run.ctx.project;
+  if (!project.gameBlueprint || !isMysteryBlueprint(project)) return [];
+  return explainRemainingClues(run);
+}
+
 function explainRemainingClues(run: BuildRun): string[] {
   const project = run.ctx.project;
   const bp = project.gameBlueprint;
@@ -262,10 +299,24 @@ function explainRemainingClues(run: BuildRun): string[] {
   // 마지막 단계 이벤트가 앞 단계도 맡으면(standin 추리: 「여관 주인」이 첫 단계와 범인 지목을 함께) 그 잠김 페이지는 앞 단계의 일이다 — 건드리지 않는다.
   if (clues.some((r) => r.ev.id === last.ev.id && r.map.id === last.map.id)) return [];
   // 잠김 페이지 = 조건 없이 대사만 하는 페이지(스위치·아이템·이동 같은 다른 명령이 없다).
-  const lockedAt = pages0.findIndex((pg) => !(pg.conditions as unknown[] | undefined)?.length && Array.isArray(pg.commands) && pg.commands.length > 0 && (pg.commands as Obj[]).every((c) => c.kind === "text" || c.kind === "changeFace"));
-  if (lockedAt < 0) return [];
-  const locked = pages0[lockedAt]!;
-  const where = (r: Resolved) => `「${r.step.event}」(${r.map.id === last.map.id ? mapRegion(r.map, r.ev.x, r.ev.y) : r.map.name ?? r.map.id})`;
+  const isLocked = (pg: Obj) => !(pg.conditions as unknown[] | undefined)?.length && Array.isArray(pg.commands) && pg.commands.length > 0 && (pg.commands as Obj[]).every((c) => c.kind === "text" || c.kind === "changeFace");
+  let lockedAt = pages0.findIndex(isLocked);
+  let locked = pages0[lockedAt];
+  // 다시 부를 때(끝맺음이 단서를 옮긴 뒤 refreshRemainingClues): 잠김 페이지는 이미 「남은 단서 n」 페이지들로 바뀌었다 — 그 첫 장을 틀로, 그 자리에 다시 쓴다.
+  const all = (last.ev.pages ?? []) as unknown as Obj[];
+  const firstOld = all.findIndex((pg) => /^남은 단서/u.test(String(pg.name ?? "")) && isLocked(pg));
+  if (lockedAt < 0 && firstOld >= 0) {
+    lockedAt = all.slice(0, firstOld).filter((pg) => !/^남은 단서/u.test(String(pg.name ?? ""))).length;
+    locked = { ...all[firstOld]!, name: undefined, id: String(all[firstOld]!.id ?? "").replace(/_left\d+$/u, "") };
+    pages0.splice(lockedAt, 0, locked);
+  }
+  if (lockedAt < 0 || !locked) return [];
+  // 자리 = 맵 방위 + 이벤트가 실제로 놓인 물건 이름(「난로 옆 보관함」이 안락의자 위면 「가운데 안락의자」) — 이름 낱말만으로는 어느 가구를 눌러야 할지 모른다.
+  const where = (r: Resolved) => {
+    const thing = hostThing(project, r.map, r.ev);
+    const place = r.map.id === last.map.id ? mapRegion(r.map, r.ev.x, r.ev.y) : r.map.name ?? r.map.id;
+    return `「${r.step.event}」(${thing && !r.step.event.includes(thing) ? `${place} ${thing}` : place})`;
+  };
   const progress: Obj[] = [];
   for (let j = 0; j < clues.length; j += 1) {
     const cond = j === 0 ? [] : openCond(j);
