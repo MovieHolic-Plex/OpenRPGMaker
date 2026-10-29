@@ -115,6 +115,24 @@ export async function preloadRegionReference(id: string): Promise<void> {
   if (source) await load(source.file);
 }
 
+/**
+ * 동기 빌더(대표 데모 굽기·편집기 「데모 만들기」)가 정적으로 읽은 스냅숏 묶음을 미리 넣는다.
+ * 그 뒤로 regionReferenceSnapshotScene·regionReferenceScene 이 기다리지 않고 장면을 준다(import_region_reference 를 동기 실행기로 부를 수 있다).
+ * 같은 파일을 쓰는 다른 장소(웨이브 다섯 곳처럼 한 파일에 여러 맵)도 함께 준비된다.
+ */
+export function primeRegionReferenceSnapshot(id: string, data: unknown): void {
+  const source = sharedRegionSnapshot(id) ? undefined : snapshotSource(id);
+  if (!source) throw new Error(`${id}: 스냅숏 파일로 싣는 장소가 아니다`);
+  if (!loaded.has(source.file)) loaded.set(source.file, data);
+}
+
+/** 스냅숏이 이미 메모리에 있는가(공용 장소는 늘 있다). */
+export function regionReferenceSnapshotReady(id: string): boolean {
+  if (sharedRegionSnapshot(id)) return true;
+  const source = snapshotSource(id);
+  return source !== undefined && loaded.has(source.file);
+}
+
 /** Every snapshot chunk — for sweeps over all references (tests, capture scripts). */
 export async function preloadAllRegionReferences(): Promise<void> {
   await Promise.all([...Object.values(SNAPSHOT_FILES), JOSEON_FILE, BEODEUL_WAVE_FILE].map(load));

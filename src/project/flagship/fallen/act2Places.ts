@@ -1,257 +1,77 @@
 /**
- * 『폴른 스타』 2막 B5 재의 들판·새벽샘 터 — 칸 평면도(plan 문자열)로 버들항 칩셋에 직접 그린다.
+ * 『폴른 스타』 2막 B5·B6·얼음 호수 — 되살린 버들항 웨이브 장소(원본 그림을 16px 칸으로 자른 공용 장소)를 그대로 쓴다.
  *
- * 왜 평면도인가(2026-10-29): 계획 그림(fs-act2-plan.html)의 참고 지도 「화산 지대 필드」·「폐허 마을」은 버들항 웨이브 2 장소
- * (volcano-field·ruined-village)였는데, 그 그림은 생성 스크립트로만 남아 있고(고아 커밋 0bfba316bc) 공용 칩셋에 구워진 적이 없다.
- * 새 도트를 굽지 않고 그 결(잿빛 땅·마른 고목·뼈 무더기·검푸른 바위 능선, 무너진 예배당·빈 집)을 이미 있는 조각으로 다시 짠다.
+ * 왜(2026-10-29 사용자 결정): 기획 그림(fs-act2-plan.html)의 새벽샘 터·얼음 호수·재의 들판·관문 요새를 「개잘만든 거니까 어떻게든 살려」.
+ * 웨이브 장소 그림은 3/4 관문(object-gate)을 통과하지 못했지만(199조각 중 39), 원본을 그대로 자른 것이라 이번에 한해 예외로 바로 쓴다 —
+ * 데모 브랜치에만 넣고 다시 그리거나 고치지 않는다. 장소는 조수와 같은 import_region_reference 로 가져온다(칸 배열을 손으로 옮기지 않는다).
  *
- * 평면도 글자: `#` 바위 능선(윗면 오토타일 + 남쪽 앞면 2단 — 던전 gap 바위와 같은 규칙), `.` 잿빛 땅, `:` 밝은 잿길,
- * `f`·`W` 무너진 예배당 바닥(돌). 물건은 PlaceProp(키트 왼쪽 위 칸), 불탄 집은 BurntHouse(지붕 반쪽이 내려앉은 집).
+ *   재의 들판  map_field_north_2 ← bd-wave-ash-plain        (72×21, 화산 지대 필드의 남쪽 재 평원)
+ *   새벽샘 터  fs2_dawnwell      ← bd-wave-ruined-village   (64×48, 불탄 폐허 마을)
+ *   관문 요새  fs2_fort_court    ← bd-wave-mountain-fortress(72×56, 산길 → 도개교 → 성문 → 앞뜰 → 거대 석문)
+ *   얼음 호수  fs2_ice_lake      ← bd-wave-ice-age-field    (72×52, 눈보라 고개 → 언 호수 얼음 다리 → 빙벽 얼음 굴 → 서리나루)
+ *
+ * 아래 칸은 모두 장소 원본 좌표다(가져올 때 칸이 바뀌지 않는다). 걷기 칸·닿음은 짓는 쪽(act2Opening.ts)이 canMove BFS 로 다시 확인한다.
  */
-import type { GameMap, Project, StructureKitDef } from "@/project/types";
+import wavePlaces from "@/project/regionReferences/beodeul-wave-places.json";
+import { primeRegionReferenceSnapshot } from "@/project/regionReferenceSnapshots";
 
-// 2차(2026-10-29 감독 규칙): 이 파일은 칠하지 않는다 — 배치 계획(평면도·소품·불탄 집)만 들고,
-// 칠하기는 조수도 쓰는 paint_beodeul_plan 도구(src/editor/tools/beodeulPlanTool.ts)가 한다.
+type Cell = { x: number; y: number };
 
-export type PlaceProp = readonly [kitId: string, x: number, y: number];
-/** 불탄 집터 — 집 키트 자리. l·r = 그쪽으로 지붕 판이 내려앉음, c = 통째로 무너짐. */
-export type BurntHouse = readonly [kitId: string, x: number, y: number, side: "l" | "r" | "c"];
+/** 웨이브 장소 스냅숏을 미리 넣는다 — 데모 빌더는 동기라 import_region_reference 가 「불러오는 중」으로 거절하지 않게. */
+export function primeWavePlaces(): void {
+  primeRegionReferenceSnapshot("bd-wave-ash-plain", wavePlaces);
+}
 
-const h32 = (x: number, y: number, s: number): number => {
-  let k = (Math.imul(x, 73856093) ^ Math.imul(y, 19349663) ^ Math.imul(s, 83492791)) >>> 0;
-  k ^= k >>> 16; k = Math.imul(k, 0x85ebca6b) >>> 0; k ^= k >>> 13; k = Math.imul(k, 0xc2b2ae35) >>> 0; k ^= k >>> 16;
-  return k >>> 0;
+export const WAVE_ASH_PLAIN = "bd-wave-ash-plain";
+export const WAVE_RUINED_VILLAGE = "bd-wave-ruined-village";
+export const WAVE_MOUNTAIN_FORTRESS = "bd-wave-mountain-fortress";
+export const WAVE_ICE_AGE_FIELD = "bd-wave-ice-age-field";
+
+/** 재의 들판(72×21) — 남쪽 입구 오솔길 → 북쪽 끝 오솔길. 서쪽 그을린 고목 숲·짐승 뼈, 가운데 주상절리·흑요석, 동쪽 유황 분기공 벌판. */
+export const ASH_SPOTS = {
+  entry: { x: 35, y: 20 } as Cell, north: { x: 35, y: 0 } as Cell,
+  // 도깨비 — 서쪽 고목 숲 어귀. 재뱀 — 흑요석 가시 사이. 골렘 — 동쪽 유황 벌판의 짐 상자 앞(비켜 갈 수 있는 정예).
+  wisps: { x: 26, y: 11 } as Cell, snakes: { x: 46, y: 15 } as Cell, golem: { x: 59, y: 9 } as Cell, chest: { x: 62, y: 6 } as Cell,
 };
 
-/** paint_beodeul_plan 인자 — 평면도 + 소품 + 불탄 집. */
-export function planArgs(mapId: string, plan: readonly string[], props: readonly PlaceProp[], burnt: readonly BurntHouse[], rockLine: "A" | "B" | "C" | "ice", seed: number, extra: Record<string, unknown> = {}): Record<string, unknown> {
-  const collapse = { l: "left", r: "right", c: "whole" } as const;
-  return {
-    mapId, plan: [...plan], rockLine, seed,
-    props: props.map(([kit, x, y]) => ({ kit, x, y })),
-    burnt: burnt.map(([kit, x, y, side]) => ({ kit, x, y, collapse: collapse[side] })),
-    ...extra,
-  };
-}
-
-export const ASH_FIELD_PLAN: readonly string[] = [
-  "##############:::###############",
-  "##############:::###############",
-  "##############:::###############",
-  "#########.....:::....###########",
-  "#######.......:::......#########",
-  "######........:::........#######",
-  "#####.........:::..........#####",
-  "#####........:::.............###",
-  "####.........:::.....###.....###",
-  "####........:::.....#####.....##",
-  "###.........:::.....####......##",
-  "###....##...:::......##.......##",
-  "###...####..:::..............###",
-  "####..###...:::.............####",
-  "#####......::::...........######",
-  "######....:::::.........########",
-  "#######...:::.....##############",
-  "########..:::....###############",
-  "#########.:::...################",
-  "#########.:::....###############",
-  "########..:::.....##############",
-  "######....:::.......############",
-  "####......:::..........#########",
-  "###.......::::..........########",
-  "###........::::...........######",
-  "###.........::::...........#####",
-  "##...........::::...........####",
-  "##............::::..........####",
-  "##.....##......::::.........####",
-  "###...####......:::.........####",
-  "###....##.......:::........#####",
-  "####............:::.......######",
-  "#####...........:::......#######",
-  "########.........:::...#########",
-  "###########......:::..##########",
-  "#############....:::.###########",
-  "##############...:::############",
-  "#################::::###########",
-  "##################:::###########",
-  "##################:::###########",
-];
-export const ASH_FIELD_PROPS: readonly PlaceProp[] = [
-  ["bd-pick-swamp-stilt-snag", 1, 20],
-  ["bd-pick-swamp-stilt-snag", 4, 21],
-  ["bd-pick-swamp-stilt-snag", 2, 24],
-  ["bd-pick-swamp-stilt-snag", 6, 24],
-  ["bd-pick-swamp-stilt-snag", 4, 27],
-  ["bd-pick-swamp-stilt-snag", 8, 27],
-  ["bd-pick-swamp-stilt-snag", 1, 28],
-  ["bd-pick-deep-forest-path-stump", 7, 30],
-  ["bd-pick-deep-forest-path-stump", 10, 21],
-  ["bd-pick-volcano-cave-coal-pile", 5, 31],
-  ["bd-pick-volcano-cave-pillar-fallen", 8, 23],
-  ["bd-pick-volcano-cave-ember-a", 9, 31],
-  ["bd-pick-volcano-cave-ember-a", 3, 30],
-  ["bd-pick-aqueduct-sewer-bone-heap", 22, 24],
-  ["bd-pick-aqueduct-sewer-skulls", 25, 27],
-  ["bd-pick-aqueduct-sewer-bones", 20, 27],
-  ["bd-pick-volcano-cave-bones", 21, 22],
-  ["bd-pick-dungeon-theme-bone-pillar", 24, 24],
-  ["bd-pick-aqueduct-sewer-bones", 26, 29],
-  ["bd-pick-dungeon-theme-bone-pillar", 21, 21],
-  ["bd-pick-desert-oasis-bones", 23, 28],
-  ["bd-pick-aqueduct-sewer-skulls", 19, 24],
-  ["bd-pick-mining-valley-slagrock", 18, 12],
-  ["bd-pick-mining-valley-slagrock", 5, 13],
-  ["bd-pick-volcano-cave-spike-tall", 9, 7],
-  ["bd-pick-volcano-cave-spike-small", 10, 8],
-  ["bd-pick-volcano-cave-spike-wide", 6, 9],
-  ["bd-pick-volcano-cave-spike-tall", 7, 6],
-  ["bd-pick-mining-valley-slagheap", 25, 10],
-  ["bd-pick-volcano-cave-ember-a", 23, 13],
-  ["bd-pick-swamp-stilt-snag", 6, 3],
-  ["bd-pick-swamp-stilt-snag", 19, 3],
-  ["bd-pick-swamp-stilt-snag", 22, 5],
-  ["bd-pick-swamp-stilt-snag", 9, 3],
-  ["bd-pick-volcano-cave-spike-wide", 13, 31],
-  ["bd-pick-volcano-cave-pillar-fallen", 21, 33],
-  ["bd-pick-volcano-cave-spike-tall", 15, 26],
-  ["bd-pick-volcano-cave-spike-small", 16, 27],
-  ["bd-pick-swamp-stilt-snag", 0, 14],
-  ["bd-pick-swamp-stilt-snag", 28, 18],
-  ["bd-pick-volcano-cave-spike-tall", 5, 9],
-  ["bd-pick-volcano-cave-spike-wide", 21, 4],
-  ["bd-pick-swamp-stilt-snag", 11, 0],
-  ["bd-pick-volcano-cave-spike-tall", 21, 32],
-  ["bd-pick-swamp-stilt-snag", 3, 34],
-  ["bd-pick-volcano-cave-spike-small", 26, 30],
-  ["bd-pick-swamp-stilt-snag", 19, 15],
-  ["bd-pick-volcano-cave-stalagmite", 20, 14],
-  ["bd-pick-swamp-stilt-snag", 25, 14],
-  ["bd-pick-swamp-stilt-snag", 27, 35],
-  ["bd-pick-swamp-stilt-snag", 22, 0],
-  ["bd-pick-volcano-cave-spike-wide", 12, 16],
-  ["bd-pick-swamp-stilt-snag", 12, 34],
-];
-export const DAWN_PLAN: readonly string[] = [
-  "#################::#################",
-  "#####............::...........######",
-  "###..............::.............####",
-  "##...WWWWWWWWW...::.............####",
-  "##...WWWWWWWWW...::...............##",
-  "##...WWWWWWWWW...::...............##",
-  "#....fffffffff...::...............##",
-  "#....fffffffff...::................#",
-  "#....fffffffff...:::...............#",
-  "#....fffffffff....:::..............#",
-  "#....fffffffff.....::..............#",
-  "#....fffffffff.....::..............#",
-  "##......::::::::::::::::::.........#",
-  "##......::.....::::::..::::........#",
-  "##......::....::::::::...::.......##",
-  "#.......::....::::::::....::......##",
-  "#.......::....::::::::.....::.....##",
-  "#.......::.....::::::......::.....##",
-  "#......::........::.........::....##",
-  "#......::........::..........::...##",
-  "##.....::........::...........::..##",
-  "##....::.........::............:..##",
-  "##....::.........::...............##",
-  "###...::.........::..............###",
-  "###..............::.............####",
-  "####.............::............#####",
-  "######...........::.........########",
-  "#########........::......###########",
-  "###########......::....#############",
-  "################::::################",
-];
-export const DAWN_PROPS: readonly PlaceProp[] = [
-  ["bd-out-cabin", 27, 2],
-  ["bd-pick-temple-ruins-face-temple-3h", 5, 3],
-  ["bd-pick-temple-ruins-face-temple-3h", 8, 3],
-  ["bd-pick-temple-ruins-face-temple-3h", 11, 3],
-  ["bd-pick-temple-ruins-ruined-wall-2", 5, 9],
-  ["bd-pick-temple-ruins-ruined-wall-2", 12, 9],
-  ["bd-pick-temple-ruins-column-temple-broken", 6, 6],
-  ["bd-pick-temple-ruins-column-temple-tall", 13, 6],
-  // 장미창 원판(모자이크 메달리온)은 뺐다 — 땅바닥에 눕힌 큰 원으로 읽혔다(감독 검수). 대신 무너진 지붕·숯이 예배당 바닥을 덮는다.
-  ["bd-pick-dungeon-theme-rubble-heap", 7, 7],
-  ["bd-pick-volcano-cave-coal-pile", 10, 7],
-  ["bd-pick-volcano-cave-pillar-fallen", 9, 9],
-  ["bd-pick-shipwreck-reef-plank-pile", 7, 10],
-  ["bd-pick-volcano-cave-ember-a", 11, 8],
-  ["bd-pick-temple-ruins-rubble-temple", 12, 7],
-  // 꺼진 화톳불 — 광장에서 밤을 버티던 사람들의 흔적.
-  ["bd-pick-deep-forest-path-campfire", 12, 16],
-  ["bd-pick-shipwreck-reef-campfire", 22, 16],
-  ["bd-pick-temple-ruins-fallen-column-temple", 10, 11],
-  ["bd-pick-dungeon-theme-rubble-heap", 5, 11],
-  ["bd-pick-castle-catacombs-rubble", 9, 11],
-  ["bd-prop-well_roofed", 16, 13],
-  ["bd-pick-swamp-stilt-snag", 20, 2],
-  ["bd-pick-swamp-stilt-snag", 23, 4],
-  ["bd-pick-swamp-stilt-snag", 2, 1],
-  ["bd-pick-swamp-stilt-snag", 31, 9],
-  ["bd-pick-swamp-stilt-snag", 9, 23],
-  ["bd-pick-swamp-stilt-snag", 13, 25],
-  ["bd-pick-swamp-stilt-snag", 21, 25],
-  ["bd-pick-deep-forest-path-stump", 24, 10],
-  ["bd-pick-aqueduct-sewer-bone-heap", 20, 17],
-  ["bd-pick-volcano-cave-coal-pile", 11, 17],
-  ["bd-pick-dungeon-theme-tomb-slab", 22, 9],
-  ["bd-pick-dungeon-theme-waystone", 25, 9],
-  ["bd-pick-dungeon-theme-waystone", 21, 8],
-  ["bd-pick-volcano-cave-ember-a", 13, 19],
-  ["bd-pick-volcano-cave-bones", 24, 13],
-  ["bd-pick-mining-valley-slagrock", 29, 24],
-  ["bd-pick-volcano-cave-spike-small", 6, 25],
-];
-export const DAWN_BURNT: readonly BurntHouse[] = [
-  ["bd-out-longhouse", 1, 13, "r"],
-  ["bd-out-cabin", 29, 13, "c"],
-  ["bd-out-house-plank", 23, 20, "r"],
-  ["bd-out-cabin-small", 2, 22, "c"],
-]
+/** 새벽샘 터(64×48) — 남쪽 문기둥 입구, 판석 광장(마른 우물), 북쪽 무너진 예배당, 둘레의 반쯤 무너진 집 여섯. */
+export const DAWN_SPOTS = {
+  entry: { x: 31, y: 47 } as Cell, north: { x: 39, y: 0 } as Cell,
+  // 바깥에서 잠긴 집 — 광장 남동쪽 돌집(지붕이 남은 단 한 채). 문 칸(44,38)은 집 맨 아랫줄, 문 앞(44,39).
+  kept: { x: 42, y: 33, w: 4, h: 6 }, front: { x: 44, y: 39 } as Cell,
+  wisps: { x: 12, y: 33 } as Cell, save: { x: 28, y: 45 } as Cell,
+  // 기억 셋 — 마른 우물 남쪽, 불탄 예배당 잔해 곁, 서쪽 길 한가운데.
+  mems: [{ x: 30, y: 27 }, { x: 37, y: 18 }, { x: 20, y: 33 }] as Cell[],
+};
 
 /**
- * 북방 관문 요새 바깥 북쪽 — author_beodeul_town 성벽 마을을 pad 줄만큼 아래로 민 뒤, 비운 북쪽 줄(0..pad-1)의 평면도.
- * 북문 길(gateXs 열)이 맵 끝까지 곧게 이어지고, 양옆은 잿빛 산 바위 벼랑(B 줄)이 깔때기처럼 길을 조인다.
- * 벼랑 발치와 성벽 사이 두 줄은 눈 덮인 턱 — 성벽 위에서 내려다보면 바깥(눈·벼랑)이 보인다. 눈 소나무 몇 그루.
- * 돌려준 인자를 paint_beodeul_plan 에 그대로 넘긴다(눈 땅·다져진 눈길 흩뿌림).
+ * 관문 요새 바깥(72×56). 남쪽 산길 → 지그재그 오르막(돌계단 둘) → 골짜기 위 도개교 → 성문(쇠창살) → 앞뜰 → 거대 석문.
+ * 성문은 쇠창살이 내려져 있어 도개교 꼭대기에서 성문 망루(요새 안 던전)로 들어간다. 던전 2층 성벽 문을 나오면 앞뜰 서쪽 망루 위 —
+ * 앞뜰은 성벽 위 높이라 그대로 「성벽 위 결투장」이다. 새라는 거대 석문(북문) 앞을 지킨다. 이기면 석문이 열려 서리 가도로 간다.
  */
-export function fortApproachArgs(project: Project, map: GameMap, pad: number, gateXs: readonly number[], seed: number): Record<string, unknown> {
-  const W = map.width;
-  const g0 = Math.min(...gateXs), g1 = Math.max(...gateXs);
-  const rock = (x: number, y: number): boolean => {
-    if (y >= pad - 2) return false;
-    const wob = h32(x, y, seed) % 3 === 0 ? 1 : 0;
-    const spread = 3 + Math.floor(y * 1.4) + wob;
-    return x < g0 - spread || x > g1 + spread;
-  };
-  const plan: string[] = [];
-  for (let y = 0; y < pad; y += 1) {
-    let row = "";
-    for (let x = 0; x < W; x += 1) row += rock(x, y) ? "#" : x >= g0 && x <= g1 ? ":" : ".";
-    plan.push(row);
-  }
-  // 눈 덮인 소나무 — 벼랑과 길 사이 눈비탈에 몇 그루(길 양옆 한 칸은 비우고, 서로 겹치지 않게).
-  const pine = (project.tilesets[map.tilesetId]?.structureKits ?? []).find((k) => k.id === "bd-pick-snowfield-pine") as (StructureKitDef & { rows: { upperTiles?: number[] }[] }) | undefined;
-  const props: PlaceProp[] = [];
-  if (pine) {
-    const taken = new Set<number>();
-    const spots: [number, number][] = [[g0 - 4, 0], [g0 - 6, 2], [g0 - 9, 3], [g0 - 3, 3], [g1 + 3, 0], [g1 + 5, 2], [g1 + 8, 3], [g1 + 2, 4]];
-    for (const [px, py] of spots) {
-      const cells: number[] = [];
-      const fits = pine.rows.every((row, dy) => (row.upperTiles ?? []).every((t, dx) => {
-        const x = px + dx, y = py + dy;
-        if (t < 0) return true;
-        cells.push(y * W + x);
-        return x >= 0 && x < W && y < pad && !rock(x, y) && !(x >= g0 - 1 && x <= g1 + 1) && !taken.has(y * W + x);
-      }));
-      if (!fits || px < 0 || px + pine.width > W || py + pine.height > pad) continue;
-      cells.forEach((c) => taken.add(c));
-      props.push(["bd-pick-snowfield-pine", px, py]);
-    }
-  }
-  return planArgs(map.id, plan, props, [], "B", seed, {
-    x: 0, y: 0, groundKit: "bd-pick-snowfield-ground-snow", pathKit: "bd-pick-snowfield-ground-road", pathStyle: "scatter", pathBlend: 0,
-  });
-}
+export const COURT_SPOTS = {
+  entry: { x: 14, y: 55 } as Cell,
+  /** 도개교 꼭대기(성문 쇠창살 바로 앞) 세 칸 — 요새 안(던전 1층)으로 들어가는 문. 가운데가 던전 입구 연결, 양옆은 같은 이동. */
+  gate: [{ x: 35, y: 20 }, { x: 34, y: 20 }, { x: 36, y: 20 }] as Cell[],
+  /** 성문 쇠창살(앞뜰 쪽에서 내려가지 못하게 막는다). */
+  portcullis: [{ x: 34, y: 18 }, { x: 35, y: 18 }, { x: 36, y: 18 }] as Cell[],
+  /** 거대 석문 문짝 두 칸과 그 앞 칸. */
+  door: [{ x: 35, y: 11 }, { x: 36, y: 11 }] as Cell[], doorFront: [{ x: 35, y: 12 }, { x: 36, y: 12 }] as Cell[],
+  /** 서리 가도에서 돌아오면 서는 칸(석문 앞 두 줄 아래). */
+  north: { x: 35, y: 13 } as Cell,
+  /** 던전 2층 성벽 문으로 나오면 서는 칸(서쪽 망루 앞)과 다시 들어가는 망루 칸. */
+  arrive: { x: 17, y: 15 } as Cell, tower: { x: 17, y: 16 } as Cell,
+  sarah: { x: 35, y: 13 } as Cell, dog: { x: 34, y: 13 } as Cell,
+  /** 바깥 적 — 경비견은 가운데 단 길, 순찰 기사는 도개교 앞 눈 턱을 가로로 오간다. */
+  dogs: { x: 44, y: 40 } as Cell, knight: { x: 28, y: 28 } as Cell,
+};
+
+/** 얼음 호수(72×52) — 남쪽 모피 천막 야영지 → 언 호수(얼음 다리로 검은 물길을 건넘) → 북쪽 빙벽 얼음 굴 → 서리나루 남쪽 어귀. */
+export const FS2_ICE_LAKE_ID = "fs2_ice_lake";
+export const ICE_SPOTS = {
+  entry: { x: 35, y: 51 } as Cell,
+  cave: [{ x: 45, y: 10 }, { x: 46, y: 10 }] as Cell[],
+  // 서리늑대 — 서쪽 눈 전나무 숲 가장자리. 박쥐 떼 — 언 호수 위. 늑대와 박쥐 — 동쪽 거대 짐승 뼈 벌판.
+  wolves: { x: 20, y: 40 } as Cell, bats: { x: 24, y: 17 } as Cell, mixed: { x: 58, y: 44 } as Cell,
+  save: { x: 33, y: 41 } as Cell,
+};
