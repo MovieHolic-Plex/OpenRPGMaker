@@ -770,7 +770,7 @@ const actorRecordSchema = objectSchema({
   characterResourceId: stringSchema(),
   characterIndex: { type: "integer", minimum: 0, maximum: 7, description: "캐릭터셋 안의 칸(0~7). 0은 기본값" },
   characterTransparent: booleanSchema(),
-  battleCharacterResourceId: stringSchema(),
+  battleCharacterResourceId: stringSchema("측면 전투 도트 시트 id(charset-battler-* · party-pixel-* 등). 빈 문자열 \"\" 이면 지운다 — 전투 시트가 없는 배우는 자기 걷기 칩(characterResourceId·characterIndex) 한 칸으로 측면 전투에 선다. 기본 주인공(actor_hero)을 현대 교복 칩 같은 다른 걷기 칩으로 바꿨다면 물려받은 전투 시트(Actor1 검사)를 \"\" 로 지워야 전투에서도 같은 인물이 보인다."),
   battleScalePercent: integerSchema("측면 전투 표시 크기(%). 50~300, 기본 100. 파티원 몬스터 도트 시트(party-pixel-*)에 적용 — 마왕처럼 사람보다 큰 파티원."),
   critical: objectSchema({ enabled: booleanSchema(), chanceDenominator: integerSchema() }),
   parameterCurves: parameterCurvesSchema,
