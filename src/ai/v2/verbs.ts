@@ -55,6 +55,8 @@ import { tileMoveObjects } from "./builders/tileMove";
 import { planObjective } from "./discoverability";
 import { roomParts, SHAPE_EXAMPLES } from "./roomParts";
 import { DUNGEON_DESIGN_SCHEMA, createDungeonPartsVerb, dungeonParts, screenDungeonSpec } from "./dungeonParts";
+import { buildsHandInterior, designMissingRooms } from "./designRooms";
+import { dropModelSeed } from "./modelSeed";
 
 // 2026-10-23 5차: 고치기 3바퀴는 바퀴마다 다시 짓기+비평(20~35초)이라 던전 한 장에 200~250초가 들었다.
 // 속도 우선(6차)으로 1바퀴만 — 첫 비평의 major 를 한 번 고치고 남은 것은 보고한다.
@@ -634,7 +636,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
       const raw0 = (params as { spec: PlaceSpec }).spec;
       const { seed: _modelSeed, ...rawHints } = (raw0.hints ?? {}) as Record<string, string | number | boolean>;
       const raw: PlaceSpec = raw0.hints ? { ...raw0, hints: rawHints } : raw0;
-      let spec: PlaceSpec = localizeCultureSpec(localizePlaceSpec({ ...raw, salt: Math.floor(Math.random() * 1_000_000), variety: placeVariety(env, task) }, String(task ?? "")), String(task ?? ""));
+      let spec: PlaceSpec = localizeCultureSpec(localizePlaceSpec(dropModelSeed({ ...raw, salt: Math.floor(Math.random() * 1_000_000), variety: placeVariety(env, task) }, true), String(task ?? "")), String(task ?? ""));
       // 없는 맵 id 는 버리고 새 맵에 짓는다 — flash 가 타일셋 id(beodeul_city)를 mapId 로 보내 「맵이 없습니다」로 한 채도 못 지었다(2026-10-29 b5 강가 마을).
       if (spec.mapId && !run.ctx.project.maps[spec.mapId]) { const { mapId: _gone, ...rest } = spec; spec = rest; }
       // 이번 실행에서 이미 다른 장소를 지은 맵 위에 새 장소를 짓지 않는다 — 「지하 예배당」을 지은 맵에 「검은 장미 저택」을 다시 지어
@@ -649,9 +651,10 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
         spec = { ...rest, hints: { ...(spec.hints ?? {}), newMap: true } };
         keptNote = `「${other.spec.name}」(${target}) 는 이번에 지은 다른 장소라 덮지 않고 「${spec.name}」을 새 맵에 지었다 — 두 장소를 create_transfer_pair 로 잇는다(계단·문).`;
       }
-      // 손 도트 실내 방은 조수가 설계한다: 설계(zones[].design) 없이 오면 장소마다 한 번 되돌려 보낸다. 다시 설계 없이 오면 함수 견본으로 짓는다.
-      if (spec.type === "interior" && !spec.mapId && !/wizard|마법\s*학교|hogwart|sengoku|edo|전국|에도|사무라이|modern|현대|city|도시/iu.test(spec.style ?? "")
-        && !(spec.zones ?? []).some((z) => z.design) && run.ctx.project.tilesets[HAND_INTERIOR_TILESET_ID] && !session.designBounced.has(spec.name)) {
+      // 손 도트 실내 방은 조수가 설계한다: 설계(zones[].design) 없이 오면 장소마다 한 번 되돌려 보낸다. 다시 설계 없이 오면 짓기 전에 같은 모델에게 따로 설계를 받는다(designRooms.ts).
+      // 손 도트 실내로 지어지는지는 빌더와 같은 함수로 본다 — style:modern 이어도 주인공 물건 때문에 v5 로 짓는 방이 견본 서재로 섰다(2026-10-29 vm8 flash 방탈출).
+      if (spec.type === "interior" && !spec.mapId && buildsHandInterior(run.ctx.project, spec)
+        && !(spec.zones ?? []).some((z) => z.design) && !session.designBounced.has(spec.name)) {
         session.designBounced.add(spec.name);
         // 재료(기물 이름표·견본 배치)를 같이 돌려준다 — 되돌려 보내기를 «실패»로 읽고 짓기를 그만둔 모델이 있었다(2026-10-29 flash 「마법사의 서재」).
         const purpose = (spec.zones ?? []).map((z) => `${z.kind} ${z.purpose ?? ""}`).join(" ") || spec.name;
@@ -711,11 +714,13 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
           if (kept) spec = { ...spec, hints: { ...(spec.hints ?? {}), terrainSeed: kept.terrainSeed, width: kept.width, height: kept.height } };
         }
       }
+      const designed = await designMissingRooms(env, spec, "make_place 설계 빈 방");
+      spec = designed.spec;
       env.emit({ type: "execution_status", name: "v2.build", ok: true, summary: `${spec.name} 짓는 중(${builder.id})` });
       await builder.prepare?.(spec);
       let result = builder.build(run, spec);
       result = withSetupDefaults(result, builder.id, run.ctx.project, String(task ?? ""), freshStart);
-      if (keptNote) result = { ...result, warnings: [keptNote, ...result.warnings] };
+      if (keptNote || designed.notes.length) result = { ...result, warnings: [...(keptNote ? [keptNote] : []), ...designed.notes, ...result.warnings] };
       return finishPlace(id, "make_place", params, spec, builder.id, result, 0);
     },
   };
@@ -737,7 +742,9 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     async execute(id, params) {
       const raw = params as { patch: PlacePatch; mapId?: string };
       // 모델이 mapId 를 patch 바깥에 두기도 한다(2026-10-23 실조수) — 둘 다 받는다.
-      const patch: PlacePatch = { ...raw.patch, mapId: raw.patch?.mapId ?? raw.mapId ?? env.ctx.currentMapId ?? "" };
+      const { seed: _seed, ...rawPatch } = (raw.patch ?? {}) as PlacePatch;
+      const patch0: PlacePatch = { ...rawPatch, mapId: raw.patch?.mapId ?? raw.mapId ?? env.ctx.currentMapId ?? "" };
+      const patch: PlacePatch = patch0.set?.hints && "seed" in patch0.set.hints ? { ...patch0, set: { ...patch0.set, hints: Object.fromEntries(Object.entries(patch0.set.hints).filter(([k]) => k !== "seed")) } } : patch0;
       let record = session.places.get(patch.mapId);
       // 이미 있는 방(이 실행이 짓지 않은 방)의 「아늑하게·물건 더하기·뒷문」은 다시 짓지 않고 덧찍는다 — 다시 지으면 원래 바닥·가구가 바뀐다(2026-10-23 비교).
       const doorWord = /뒷문|출입문|back ?door|^문$|^door$/iu;
@@ -796,10 +803,14 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
       }
       const floor = Math.max(1, record.result.mapIds.indexOf(patch.mapId) + 1);
       const onlyAnchors = floor === 1 && !!patch.addAnchors?.length && !patch.set && !patch.addZones?.length && !patch.removeZones?.length && !patch.addFeatures?.length && !patch.removeFeatures?.length && patch.variant === undefined && patch.seed === undefined && patch.dressing === undefined;
-      const spec = applyPatch(record.spec, patch, floor);
+      let spec = applyPatch(record.spec, patch, floor);
+      // 고치며 더한 구역·설계 없던 방도 모델이 설계한다(원래 방을 지키는 keep 구역은 빼고).
+      const redesigned = onlyAnchors || builder.id !== interiorBuilder.id ? undefined : await designMissingRooms(env, spec, "edit_place 설계 빈 방");
+      if (redesigned) spec = redesigned.spec;
       env.emit({ type: "execution_status", name: "v2.repair", ok: true, summary: `${spec.name} 고치는 중(${record.rounds + 1}바퀴)` });
       const before = { project: env.ctx.project, record, seen: new Map(record.result.mapIds.map((m) => [m, session.seen.get(m)!] as const).filter(([, v]) => !!v)) };
-      const result = onlyAnchors && builder.id === interiorBuilder.id ? interiorAddAnchors(run, record, patch.addAnchors!) : builder.build(run, spec, record);
+      const built = onlyAnchors && builder.id === interiorBuilder.id ? interiorAddAnchors(run, record, patch.addAnchors!) : builder.build(run, spec, record);
+      const result = redesigned?.notes.length ? { ...built, warnings: [...redesigned.notes, ...built.warnings] } : built;
       return finishPlace(id, "edit_place", params, spec, builder.id, result, record.rounds + 1, before.seen.size ? before : undefined);
     },
   };
@@ -1117,9 +1128,13 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
       let map = blueprintMapFor(env.ctx.project, step.place);
       if (!map) {
         const guess = guessPlaceSpec(step.place, env.ctx.project, bp.genre, String(task ?? ""));
-        const spec: PlaceSpec = { ...guess, salt: Math.floor(Math.random() * 1_000_000), variety: placeVariety(env, task), ...(isInside(guess) ? { mapId: `map_auto_${Math.floor(Math.random() * 1e9).toString(36)}` } : {}) };
-        const builder = builderFor(spec);
-        if (!builder) { notes.push(`「${step.place}」(${spec.type}) — 짓는 빌더가 없다`); continue; }
+        const spec0: PlaceSpec = { ...guess, salt: Math.floor(Math.random() * 1_000_000), variety: placeVariety(env, task), ...(isInside(guess) ? { mapId: `map_auto_${Math.floor(Math.random() * 1e9).toString(36)}` } : {}) };
+        const builder = builderFor(spec0);
+        if (!builder) { notes.push(`「${step.place}」(${spec0.type}) — 짓는 빌더가 없다`); continue; }
+        // 자동으로 짓는 실내도 방은 모델이 설계한다(견본 거실 9×10 이 vm6·7·8 flash 방탈출 시작 방이 됐다) — 같은 모델에게 따로 받는다.
+        const designedAuto = await designMissingRooms(env, spec0, `청사진 장소 「${step.place}」 자동 짓기`);
+        const spec = designedAuto.spec;
+        notes.push(...designedAuto.notes);
         env.emit({ type: "execution_status", name: "v2.build", ok: true, summary: `청사진 장소 「${step.place}」 자동으로 짓는 중(${builder.id})` });
         await builder.prepare?.(spec);
         const sub = { ...env.ctx, project: env.ctx.project, currentMapId: prev.mapId || env.ctx.project.startMapId };
@@ -1185,11 +1200,13 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
       const lines: string[] = [];
       const linkNotes: string[] = [];
       for (const [i, place] of order.entries()) {
-        const spec0: PlaceSpec = localizeCultureSpec(localizePlaceSpec({ ...place.spec, salt: Math.floor(Math.random() * 1_000_000), variety: placeVariety(env, task) }, String(task ?? "")), String(task ?? ""));
+        const spec0: PlaceSpec = localizeCultureSpec(localizePlaceSpec(dropModelSeed({ ...place.spec, salt: Math.floor(Math.random() * 1_000_000), variety: placeVariety(env, task) }, true), String(task ?? "")), String(task ?? ""));
         const parent = place.from ? built.get(place.from) : undefined;
         const parentMap = parent?.result.mapIds[0];
         // 실내는 새 맵 id 로(지금 맵을 덮어쓰지 않게), 나머지는 부모 맵을 「지금 맵」으로 — 빌더가 새 맵을 만들고 던전은 부모와 입구를 잇는다.
-        const spec: PlaceSpec = i > 0 && isInside(spec0) && !spec0.mapId ? { ...spec0, mapId: `map_${place.key.replace(/[^A-Za-z0-9_]/gu, "") || "room"}_${Math.floor(Math.random() * 1e6).toString(36)}` } : spec0;
+        const spec1: PlaceSpec = i > 0 && isInside(spec0) && !spec0.mapId ? { ...spec0, mapId: `map_${place.key.replace(/[^A-Za-z0-9_]/gu, "") || "room"}_${Math.floor(Math.random() * 1e6).toString(36)}` } : spec0;
+        // 손 도트 실내 방은 모델이 설계한다 — 설계가 빈 방은 같은 모델에게 따로 받는다(designRooms.ts).
+        const spec: PlaceSpec = (await designMissingRooms(env, spec1, "make_game 설계 빈 방")).spec;
         const builder = builderFor(spec);
         if (!builder) { session.missingArt.add(`${spec.name}(${spec.type}) — 이 종류를 짓는 빌더가 없다`); lines.push(`${place.key}: 짓는 빌더 없음`); continue; }
         env.emit({ type: "execution_status", name: "v2.build", ok: true, summary: `${spec.name} 짓는 중(${i + 1}/${order.length}, ${builder.id})` });

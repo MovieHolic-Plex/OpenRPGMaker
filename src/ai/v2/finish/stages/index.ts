@@ -2,6 +2,7 @@
 // 단계를 더하려면: stages/<id>.ts 를 만들고(형 FinishStage) 여기에 한 줄을 더한다. 문서 openwiki/assistant-v2.md 「끝맺음 단계 더하기」.
 export { stage as renameBarePlaces } from "./rename-bare-places";
 export { stage as walkBlueprint } from "./walk-blueprint";
+export { stage as adoptModelPlaces } from "./adopt-model-places";
 export { stage as autoPlaces } from "./auto-places";
 export { stage as autoPath } from "./auto-path";
 export { stage as codeClues } from "./code-clues";
