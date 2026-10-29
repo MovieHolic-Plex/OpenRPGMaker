@@ -8,6 +8,7 @@
  *   sheet    <판> [<판>…] [--name <이름>]       ~/claude-viz/battle-backdrop-<이름>.html (캡처 옆 후보 1배·3배·전투 무대 미리보기)
  *   pick     <판> <글자> [--by <사람>]           사람이 고른 후보를 현재 도트 화소 해시에 묶는다(감독·에이전트는 고르지 않는다)
  *   build    <판> --project <project.json|폴더> [--target troop:<id>|map:<id>] [--out <새 json>] [--in-place] [--leave-field-mode]
+ *   build    <판> --emit <폴더> [--target troop:<id>|map:<id>]   (프로젝트 없이 upsert_resource 인자 JSON + PNG 만)
  *   status   [<판>]
  *
  * 공용 핵심(프롬프트·팔레트·도트화·검사)은 src/editor/battleBackdropCore.ts — 편집기 조수 도구와 같은 코드다.
@@ -439,18 +440,39 @@ async function build(argv: string[]): Promise<number> {
   const storedFile = path.join(dir, `stored-${run.pick.letter}.png`);
   const stored = readPng(storedFile);
   if (pixelSha(stored) !== run.pick.storedPixelSha256) throw new Error("고른 그림이 선택 이후 바뀌었다 — 다시 고른다");
-  const projectArg = opt(argv, "project");
-  if (!projectArg) throw new Error("--project 가 필요하다");
-  const loaded = await loadProject(projectArg);
-  const project = loaded.project;
   const target = opt(argv, "target") ?? (run.troopId ? `troop:${run.troopId}` : `map:${run.mapId}`);
   const [kind, targetId] = target.split(":");
   const resourceId = `battle_backdrop_${run.id.replace(/[^a-z0-9]+/giu, "_")}_${run.pick.storedPixelSha256.slice(0, 8)}`;
   const png = encodePng(stored);
+  const resource = {
+    id: resourceId, name: `전투 배경 · ${run.facts.mapName}`, kind: "backdrop" as const,
+    dataUrl: `data:image/png;base64,${png.toString("base64")}`,
+  };
+  const emitDir = opt(argv, "emit");
+  if (emitDir) {
+    // 프로젝트 없이 자원 파일만 낸다 — 코드로 프로젝트를 짓는 빌더(플래그십 데모 등)가 커밋해 두고
+    // execTool("upsert_resource", { resource }) 로 넣은 뒤 트룹·맵에 resource.id 를 건다.
+    // 그림 화소 해시를 함께 적어 두어 다시 고르면 파일 이름(해시8)부터 바뀐다.
+    fs.mkdirSync(emitDir, { recursive: true });
+    const pngFile = path.join(emitDir, `${resourceId}.png`);
+    const jsonFile = path.join(emitDir, `${resourceId}.json`);
+    fs.writeFileSync(pngFile, png);
+    const body = { resource, target, run: run.id, pixelSha256: run.pick.storedPixelSha256, width: stored.width, height: stored.height };
+    fs.writeFileSync(jsonFile, `${JSON.stringify(body, null, 2)}\n`);
+    const back = JSON.parse(fs.readFileSync(jsonFile, "utf8")) as typeof body;
+    const reloaded = back.resource.dataUrl === resource.dataUrl && pixelSha(readPng(pngFile)) === run.pick.storedPixelSha256;
+    (run.builds ??= []).push({ at: now(), target, resourceId, storedPixelSha256: run.pick.storedPixelSha256, into: jsonFile, reloaded });
+    writeJson(LEDGER, ledger);
+    console.log(JSON.stringify({ resourceId, target, into: jsonFile, png: pngFile, reloaded }));
+    return reloaded ? 0 : 1;
+  }
+  const projectArg = opt(argv, "project");
+  if (!projectArg) throw new Error("--project 또는 --emit <폴더> 가 필요하다");
+  const loaded = await loadProject(projectArg);
+  const project = loaded.project;
   project.assets ??= {}; project.assets.uploaded ??= {};
   project.assets.uploaded[resourceId] = {
-    id: resourceId, name: `전투 배경 · ${run.facts.mapName}`, kind: "backdrop",
-    dataUrl: `data:image/png;base64,${png.toString("base64")}`,
+    ...resource,
     meta: { width: stored.width, height: stored.height, source: "battle-backdrop", run: run.id, pixelSha256: run.pick.storedPixelSha256 },
   };
   if (kind === "troop") {
