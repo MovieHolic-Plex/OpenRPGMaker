@@ -587,7 +587,9 @@ function lampQuestDoors(project: Project, hubId: string): GameEvent[] {
     addEv(project, FS2_HUB_NIGHT_ID, `ev_fs2_q4_glow_${i}`, "등 건 집 창불", { x: 1 + i, y: 0 }, [
       page(`ev_fs2_q4_glow_${i}_off`, "꺼짐", [], [], { priority: "below" }),
       page(`ev_fs2_q4_glow_${i}_on`, "켜짐", [sw(lamp)], [
-        { kind: "addLight", source: { id: `q4_glow_${i}`, at: { x: door.x, y: door.y - 2 }, radius: 2.4, intensity: 0.85, color: "#ffb050", flicker: true } } as unknown as Command,
+        // 문 양옆 창 자리에 작은 불 둘 — 큰 원 하나는 벽 전체가 불난 것처럼 보였다(VQA 1차).
+        { kind: "addLight", source: { id: `q4_glow_${i}a`, at: { x: door.x - 1, y: door.y - 2 }, radius: 1.2, intensity: 0.8, color: "#ffb050", flicker: true } } as unknown as Command,
+        { kind: "addLight", source: { id: `q4_glow_${i}b`, at: { x: door.x + 1, y: door.y - 2 }, radius: 1.2, intensity: 0.8, color: "#ffb050", flicker: true } } as unknown as Command,
         wait(600000),
       ], { priority: "below", trigger: { kind: "parallel" } }),
     ]);
@@ -631,12 +633,16 @@ function curfewHub(project: Project, exec: Exec, hubId: string): void {
   });
   // 남색 밤(계획 그림 royal_fall·royal_rain) — 검은 막이 아니라 푸른 막. 길은 어둡고, 창마다 불빛이 조금씩 샌다.
   // 주민이 선 문간마다 작은 등잔. 등을 뺏긴 Q4 세 집 창만 캄캄하다(등을 걸면 켜진다 — lampQuestDoors).
+  // 야경꾼 손등불 — 순찰 2인조를 따라다니는 불빛. 「손등불만 흔들린다」는데 등불이 없었다(VQA 1차).
+  const patrolIds = M(project, FS2_HUB_NIGHT_ID).events.filter((e) => JSON.stringify(e.pages ?? []).includes(`"troopId":"${FS2_PATROL_TROOP}"`)).map((e) => e.id);
+  if (patrolIds.length < PATROLS.length) throw new Error(`[fallen-star act2] 야경꾼 이벤트를 못 찾았다(${patrolIds.length})`);
   exec(project, "set_lighting_volume", {
     mapId: FS2_HUB_NIGHT_ID, applyMode: "map", ambient: 0.78, color: "#0f1a4c",
     sources: [
       { id: "lamp", at: { kind: "player" }, radius: 3, intensity: 0.45, color: "#9fb4ff" },
       ...[MIRE_AT, TOBY_AT, MARTA_AT].map((c, i) => ({ id: `crack${i}`, at: { x: c.x, y: c.y - 1 }, radius: 2, intensity: 0.7, color: "#ffc070", flicker: true })),
-      ...HUB_WINDOWS.map((c, i) => ({ id: `window${i}`, at: c, radius: 1.7, intensity: 0.8, color: "#ffb050" })),
+      ...HUB_WINDOWS.map((c, i) => ({ id: `window${i}`, at: c, radius: 1.2, intensity: 0.7, color: "#ffb050" })),
+      ...patrolIds.map((eventId, i) => ({ id: `patrol_lamp${i}`, at: { eventId }, radius: 2.2, intensity: 0.75, color: "#ffc070", flicker: true })),
       // 뚜껑 문 골목의 출구 틈(한 칸) — 불빛이 새어 나와 보이게(엘레나가 도착 때 이 불빛을 짚는다).
       { id: "alley_gap", at: { x: HUB_ALLEY_GAP.x, y: HUB_ALLEY_GAP.y }, radius: 2, intensity: 0.75, color: "#ffc070", flicker: true },
     ],
@@ -1023,13 +1029,6 @@ function forestEdgeChase(project: Project, exec: Exec, mapId: string, hubId: str
   exec(project, "paint_shadow", { mapId, cells: shade, mode: "add" });
   // 밤 숲 — 1막 낮 숲길과 다른 맵처럼 어둡게. 개구멍~숲 그늘 사이 빈터에만 달빛이 들어, 그늘 줄이 어둠의 경계로 읽힌다.
   const moonY = Math.round((arrive.y + edgeY) / 2) + 1;
-  exec(project, "set_lighting_volume", {
-    mapId, applyMode: "map", ambient: 0.7, color: "#0a1024",
-    sources: [
-      { id: "moon", at: { x: arrive.x, y: moonY }, radius: Math.max(4, arrive.y - edgeY - 3), intensity: 0.45, color: "#c4d2ff" },
-      { id: "player", at: { kind: "player" }, radius: 3, intensity: 0.35, color: "#9fb4ff" },
-    ],
-  });
   // 순찰 기사 둘 — 경보가 켜지면 개구멍 곁 다섯~여섯 걸음에서 깨어 쫓는다. 숲 그늘에 닿으면 사라진다(전투 없음).
   const knight = hubChip(project, hubId, "ev_fs_knight");
   const near = [...cells(5), ...cells(6)].filter((c) => c.y > edgeY + 2).sort((a, b) => Math.abs(b.x - arrive.x) - Math.abs(a.x - arrive.x));
@@ -1062,8 +1061,17 @@ function forestEdgeChase(project: Project, exec: Exec, mapId: string, hubId: str
     } catch (e) { why = String((e as Error).message).slice(0, 300); /* 그 칸은 도구가 거절 — 다음 자리 */ }
   }
   if (!knightIds.length) throw new Error(`[fallen-star act2] 숲 어귀에 추격 기사를 못 세웠다(후보 ${near.length}칸): ${why}`);
-  // 기사 추격 — 시야 9. 개구멍을 빠져나온 직후라 「거기 서라!」 1.4초 뒤에 움직인다(그동안 달려야 산다), 네 칸 돌진(칸당 0.1초), 평소 0.17초/칸(주인공 0.16초보다 조금 느림).
-  exec(project, "set_field_detection", { mapIds: [mapId], eventIds: knightIds, sightRange: 9, alertMs: 1400, chaseStepMs: 170, rush: true, rushSteps: 4, rushStepMs: 100, searchMs: 4000, giveUpRange: 20 });
+  // 밤 숲 조명 — 기사마다 손등불(이벤트를 따라다닌다). 등불이 없어 「등불들이 멈춘다」가 화면과 어긋났다(VQA 1차).
+  exec(project, "set_lighting_volume", {
+    mapId, applyMode: "map", ambient: 0.7, color: "#0a1024",
+    sources: [
+      { id: "moon", at: { x: arrive.x, y: moonY }, radius: Math.max(4, arrive.y - edgeY - 3), intensity: 0.45, color: "#c4d2ff" },
+      { id: "player", at: { kind: "player" }, radius: 3, intensity: 0.35, color: "#9fb4ff" },
+      ...knightIds.map((eventId, i) => ({ id: `knight_lamp${i}`, at: { eventId }, radius: 2.5, intensity: 0.8, color: "#ffb050", flicker: true })),
+    ],
+  });
+  // 기사 추격 — 시야 9. 「거기 서라!」 0.8초 뒤에 움직인다(예전 1.4초는 기사가 멀뚱히 선 채 추격이 3초 만에 끝났다 — VQA 1차), 네 칸 돌진(칸당 0.1초), 평소 0.17초/칸(주인공 0.16초보다 조금 느림).
+  exec(project, "set_field_detection", { mapIds: [mapId], eventIds: knightIds, sightRange: 9, alertMs: 800, chaseStepMs: 170, rush: true, rushSteps: 4, rushStepMs: 100, searchMs: 4000, giveUpRange: 20 });
   // 붙잡히면 개구멍 앞(광장)으로 — 도구 검사 뒤에 직접 붙인다(위 caughtPenalty 주석).
   for (const id of knightIds) {
     const chasePage = M(project, mapId).events.find((e) => e.id === id)?.pages?.[0];
@@ -1898,7 +1906,7 @@ function snowPass(project: Project, exec: Exec): void {
   maps.forEach((m) => m.gaps.forEach((g, k) => {
     exec(project, "place_field_obstacle", {
       mapId: m.mapId, kind: "gap", x: g.from.x, y: g.from.y, requiresActorId: FS2_SARAH_ACTOR, id: `ev_fs2_snow_gap_${m.mapId}_${k}`, name: "얼음 틈",
-      hint: "새라가 창을 얼음에 꽂는다.\n「잡아. 뛴다.」", blockedText: "얼음이 길을 가로질러 쩍 갈라졌다.\n맨몸으로 뛰기엔 너무 넓다.",
+      hint: "새라가 틈 앞에서 창을 고쳐 쥔다.\n「창을 짚고 넘으면 돼. 내 손 잡아.」", blockedText: "얼음이 길을 가로질러 쩍 갈라졌다.\n맨몸으로 뛰기엔 너무 넓다.",
     });
   }));
   // 얼음 덩이 — 첫 틈을 건넌 뒤 좁은 눈길을 막는다. 엘레나의 불씨로 녹인다(계획 4-3 불씨 녹이기, 필드 기술 게이트).
@@ -1915,7 +1923,7 @@ function snowPass(project: Project, exec: Exec): void {
         mapId: maps[0]!.mapId, kind: "rock", x: g0.to.x + fwd.x * step, y: g0.to.y + fwd.y * step, fullWidth: true, direction: fwd.y !== 0 ? "right" : "down",
         tile: ICE_BLOCK.foot, tileAbove: ICE_BLOCK.head, requiresSkillId: FS2_SKILL_EMBER_MELT, skillName: "불씨 녹이기", machine: "none",
         id: "ev_fs2_snow_ice", name: "얼음 덩이",
-        hint: "엘레나가 손바닥에 불씨를 피워 얼음에 댄다. 「조금만 기다려.」",
+        hint: "엘레나가 얼음에 손바닥을 대 본다.\n「불씨로 녹일 수 있겠어. 조금 걸려.」",
         blockedText: "길 한가운데 얼음 덩이가 솟아 있다.\n밀어도 꿈쩍 않는다.",
       });
       iced = true;
