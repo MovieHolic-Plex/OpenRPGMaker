@@ -4758,7 +4758,7 @@
   {
    "id": "act2-b6-lever",
    "label": "제2막 B6 — 요새 2층 레버를 당겨 성벽 위 쇠창살을 연다",
-   "note": "act2Opening.ts northFortress — author_dungeon floors 2 floorRooms + gimmick lever",
+   "note": "act2Opening.ts northFortress — author_dungeon floors 2 floorRooms + gimmick lever — 레버 방 앞 경비견(foe1)은 이미 쓰러뜨린 뒤로 시작한다(돌진에 레버 장면이 끊기지 않게)",
    "mapId": "fs2_fortress_f2",
    "x": 8,
    "y": 20,
@@ -4778,7 +4778,8 @@
     "sw_fs2_dawn_mem_0": true,
     "sw_fs2_dawn_mem_1": true,
     "sw_fs2_dawn_mem_2": true,
-    "sw_fs2_serin_form": true
+    "sw_fs2_serin_form": true,
+    "sw_ev_fs2_fortress_f2_foe1_clear": true
    },
    "party": [
     {
