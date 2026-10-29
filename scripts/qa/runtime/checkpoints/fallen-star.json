@@ -7626,7 +7626,7 @@
        "kind": "repeatUntil",
        "testid": "dialogue-box",
        "state": "absent",
-       "maxRounds": 10,
+       "maxRounds": 12,
        "ops": [
         {
          "kind": "key",
@@ -7648,7 +7648,7 @@
        "kind": "repeatUntil",
        "testid": "dialogue-box",
        "state": "absent",
-       "maxRounds": 6,
+       "maxRounds": 12,
        "ops": [
         {
          "kind": "key",

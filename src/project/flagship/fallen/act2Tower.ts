@@ -414,7 +414,7 @@ function floorTwo(project: Project, exec: Exec): void {
     levers: [
       { lever: T2.westLever, door: T2.eastDoor, doorHeight: 2, name: "동쪽 쇠창살",
         text: "벽에 쇠 손잡이가 박혀 있다.\n쇠줄이 동쪽 벽 속으로 이어진다.", prompt: "손잡이를 내릴까?", pullLabel: "내린다",
-        pullText: "끼긱— 손잡이가 내려가고 쇠줄이 감긴다.\n벽 너머 동쪽에서 쇠창살 올라가는 소리.",
+        pullText: "끼긱. 손잡이가 내려가고 쇠줄이 감긴다.\n벽 너머 동쪽에서 쇠창살 올라가는 소리.",
         pullLines: [{ speaker: ELENA, text: "(벽 너머) 열렸어! 카엘, 들려?\n이쪽 창살이 올라갔어." }, { speaker: KAEL, text: "들려! 거울은?" }],
         doneText: "손잡이가 끝까지 내려가 있다.", doorText: "굵은 쇠창살이 길을 막고 있다.\n반대편 어딘가의 장치로 올라갈 것 같다." },
       { lever: T2.eastLever, door: T2.westDoor, doorHeight: 2, name: "서쪽 쇠창살",
