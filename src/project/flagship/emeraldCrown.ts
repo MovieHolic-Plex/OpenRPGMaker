@@ -1,4 +1,5 @@
 import { charsetFrameIndex, decodeCharsetFrameIndex } from "@/assets/easyrpgRtp";
+import { applyEmeraldCrownLore } from "./emeraldCrownLore";
 import { ASTRA_TITLE_ART_ID } from "@/assets/astraCast";
 import { configureEmeraldMonsterOpening, type EmeraldOpeningPage } from "@/project/emeraldMonsterOpening";
 import { astraIntroCast, buildAstraTitleIntro } from "@/project/flagship/astraTitleIntro";
@@ -1247,6 +1248,7 @@ export function createEmeraldCrownFlagshipDemo(): FlagshipDemoBuildResult {
   buildAstraTitleIntro(project);
 
   remapAstraBuildingKits(project);
+  applyEmeraldCrownLore(project);
   const serialized = serialize(project);
   const reloaded = deserialize(serialized);
   const manifest = {
