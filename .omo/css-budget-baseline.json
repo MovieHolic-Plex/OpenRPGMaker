@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-10-29T06:51:03.634Z",
+  "generatedAt": "2026-10-29T13:35:55.840Z",
   "metrics": {
-    "hexLiterals": 2782,
-    "important": 381,
+    "hexLiterals": 2786,
+    "important": 385,
     "undefinedVars": 56,
     "globalRootFiles": 11,
     "cssFileCount": 420
@@ -170,7 +170,7 @@
       "src/styles/runtime/statusMenuSkins.css": 18,
       "src/styles/runtime/tacticsBattle.css": 3,
       "src/styles/runtime/timer.css": 1,
-      "src/styles/runtime/title.css": 56,
+      "src/styles/runtime/title.css": 60,
       "src/styles/runtime/tokens.dark.css": 3,
       "src/styles/runtime/touchpad.css": 1,
       "src/styles/runtime/transitions.css": 2,
@@ -233,7 +233,7 @@
       "src/styles/runtime/mobileUi.css": 26,
       "src/styles/runtime/playSurface.css": 4,
       "src/styles/runtime/statusMenuEdgeDock.css": 5,
-      "src/styles/runtime/title.css": 7,
+      "src/styles/runtime/title.css": 11,
       "src/styles/runtime/touchpad.css": 1,
       "src/styles/shell/dialogs/cinematic-interview.css": 2,
       "src/styles/shell/editor-ui-modes.css": 2,
