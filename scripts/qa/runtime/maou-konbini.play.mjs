@@ -123,6 +123,18 @@ async function walkTo(page, x, y, timeout = 40_000) {
   log("walk", `${from?.map}:${from?.x},${from?.y} → want ${x},${y} → ${to?.map}:${to?.x},${to?.y}`, ok ? "" : "TIMEOUT", retries ? `retries ${retries}` : "");
   return ok;
 }
+/** 거리 걷기 — 길 찾기가 행인을 피해 원룸 문 칸을 밟으면 원룸으로 들어가 버린다. 그러면 나와서 다시 걷는다. */
+async function streetWalk(page, x, y) {
+  for (let i = 0; i < 3; i++) {
+    await walkTo(page, x, y);
+    if ((await st(page))?.map !== "map_mk_room") return;
+    await page.waitForTimeout(1500);
+    await walkTo(page, roomExit.x, roomExit.y);
+    const t0 = Date.now();
+    while (Date.now() - t0 < 15_000 && (await st(page))?.map !== "map_mk_street") await page.waitForTimeout(300);
+    await page.waitForTimeout(1200);
+  }
+}
 async function faceAndAct(page, dir) {
   // 방향키로 돌면 앞 칸이 비었을 때 한 걸음 걸어 버린다(문 칸이면 들어간다) — 제자리 돌기만 시킨다.
   await page.evaluate((dir) => window.__oprnDebug.playerRoute([{ kind: "turn", dir }]), dir);
@@ -234,8 +246,8 @@ const B = {
   },
   async interview(page, seg, mark) {
     await play(page, seg, [], idle);
-    await walkTo(page, roomDoorOnStreet.x + 1, roomDoorOnStreet.y + 1); await walkTo(page, roomDoorOnStreet.x - 3, roomDoorOnStreet.y + 1);
-    await walkTo(page, konDoorOnStreet.x + 1, konDoorOnStreet.y); await walkTo(page, konDoorOnStreet.x, konDoorOnStreet.y); await page.waitForTimeout(2000); mark("enter");
+    await streetWalk(page, roomDoorOnStreet.x + 1, roomDoorOnStreet.y + 1); await streetWalk(page, roomDoorOnStreet.x - 3, roomDoorOnStreet.y + 1);
+    await streetWalk(page, konDoorOnStreet.x + 1, konDoorOnStreet.y); await walkTo(page, konDoorOnStreet.x, konDoorOnStreet.y); await page.waitForTimeout(2000); mark("enter");
     await play(page, seg, [2, 1], quietAnd(async () => (await st(page))?.v?.var_mk_stage === 3), { shotOn: /이력서|마계|명찰|선배라고|매뉴얼 제1조/ }); mark("hired");
     shot(page, "shift-start", 600);
   },
@@ -253,7 +265,7 @@ const B = {
     await play(page, seg, [], quietAnd(() => page.evaluate(() => !!window.__oprnDebug.readState().switches.sw_mk_lily_met)), { shotOn: /리리스|블랙 기업|재결성/ }); mark("lily");
     const cat = ev("map_mk_street", "ev_mk_st_cat");
     await walkTo(page, cat.x + 1, cat.y); await faceAndAct(page, "left"); await play(page, seg, [], idle); mark("cat");
-    await walkTo(page, 12, 10); await walkTo(page, 14, 10); await walkTo(page, 22, 10); await walkTo(page, 31, 9); await walkTo(page, 31, 0); await page.waitForTimeout(1500); mark("shrine");
+    await streetWalk(page, 12, 10); await streetWalk(page, 14, 10); await streetWalk(page, 22, 10); await walkTo(page, 31, 9); await walkTo(page, 31, 0); await page.waitForTimeout(1500); mark("shrine");
     shot(page, "shrine", 800);
     const leon = ev("map_mk_shrine", "ev_mk_sh_leon");
     await walkTo(page, leon.x + 1, leon.y); await faceAndAct(page, "left"); await play(page, seg, [], idle, { shotOn: /세계의 절반을 주마|고기만두/ }); mark("leon");
@@ -274,7 +286,7 @@ const B = {
     await play(page, seg, [1], quietAnd(async () => { const x = await st(page); return x?.v?.var_mk_stage === 6 && x.map === "map_mk_street"; }), { shotOn: /999|근무 평가/ }); mark("order-end");
   },
   async meeting(page, seg, mark) {
-    await walkTo(page, 12, 10); await walkTo(page, 14, 10); await walkTo(page, 22, 10); await walkTo(page, 31, 10); await walkTo(page, 31, 27); await page.waitForTimeout(1500); mark("park");
+    await streetWalk(page, 12, 10); await streetWalk(page, 14, 10); await streetWalk(page, 22, 10); await walkTo(page, 31, 10); await walkTo(page, 31, 27); await page.waitForTimeout(1500); mark("park");
     await play(page, seg, [1], quietAnd(() => page.evaluate(() => !!window.__oprnDebug.readState().switches.sw_mk_meeting_done)), { shotOn: /가르곤|회비|보름달/ }); mark("meeting-done");
     shot(page, "park-after", 500);
     await walkTo(page, 20, 8); await page.waitForTimeout(1500);
