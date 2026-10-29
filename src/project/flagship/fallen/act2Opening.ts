@@ -451,7 +451,7 @@ function barracks(project: Project, exec: Exec): void {
       { id: "sack pile", x: 5, y: 9 }, { id: "crate stack", x: 21, y: 9 }, { id: "barrel", x: 25, y: 9 },
       // 무기고 앞 짐 더미(y6, x23..26) — 북쪽 야경꾼이 동쪽 끝(24,7)에서 고개를 들어도 무기고 안(상자·사다리)은 안 보인다.
       // 예전엔 상자 대사를 읽고 사다리로 걷는 사이 그 자리에서 붙잡혔다(목표를 손에 쥔 뒤의 억울한 실패, VQA 2026-10-30). 들어가는 길은 서쪽(22,5).
-      { id: "weapon crate", x: 23, y: 6 }, { id: "barrel stack", x: 24, y: 6 }, { id: "crate stack", x: 25, y: 6 }, { id: "barrel", x: 26, y: 6 },
+      { id: "crate", x: 23, y: 6 }, { id: "barrel", x: 24, y: 6 }, { id: "weapon crate", x: 25, y: 6 }, { id: "barrel", x: 26, y: 6 },
       // 남쪽: 식탁 둘과 걸상, 동쪽 훈련 구석
       { id: "stool", x: 6, y: 13 }, { id: "stool", x: 9, y: 13 }, { id: "stool", x: 14, y: 13 }, { id: "stool", x: 17, y: 13 },
       { id: "spear rack", x: 26, y: 11 }, { id: "armor stand", x: 26, y: 12 }, { id: "training dummy", x: 23, y: 13 },
