@@ -3,7 +3,9 @@
 //
 // 데이터(종류별 소리·흔들림·파편·흔적)는 project/containerFx.ts 가 갖고, 여기서는 그대로 그린다.
 // 그림은 전부 절차 그림(사각형·그래픽)과 칸에 이미 그려진 타일 이미지 흔들기다 — 새 그림 자산이 필요 없다.
-//  - 문: 이동(transfer) 직전 문 칸이면 문짝이 경첩 쪽으로 접히며 어두운 문간이 드러나고 문 소리가 난다.
+//  - 문: 이동(transfer) 직전 문 칸이 타일셋의 닫힘/열림 키트 짝(project/kitDoors.ts, 예 1×2 던전 문)이면 그 문 자신의 그림으로
+//    닫힘 → 열림을 문 전체(키트 크기)에 걸쳐 바꾸고, 열린 그림을 세션에 남긴다. 이미 열린 키트 문이면 연출하지 않는다.
+//    키트 짝이 없으면 문짝이 경첩 쪽으로 접히며 어두운 문간이 드러나고 문 소리가 난다.
 //    문 이벤트가 문 캐릭터 시트(RPG Maker 관례: 방향 줄 = 닫힘→열림)를 쓰면 그 프레임을 넘긴다.
 //  - 수납: showAnimation 의 `fx:container:<종류>` · `fx:popup:…` · `fx:door-open`.
 //  - 흔적: `interaction: { kind: "container", searched: true }` 페이지가 켜진 칸 위에 그린다(syncContainerSearchedMarks).
@@ -11,7 +13,7 @@ import type Phaser from "phaser";
 import { playSoundEffect } from "@/player/audio";
 import { characterDepth, characterSpriteY } from "@/player/characterDepth";
 import { applyDoorCue, DOOR_OPEN_SE } from "@/player/playSceneDoorway";
-import { rootYSortTileImagesAt } from "@/player/playSceneMapRuntime";
+import { applyMapOverrides, rootYSortTileImagesAt } from "@/player/playSceneMapRuntime";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import {
   CONTAINER_FX,
@@ -24,7 +26,9 @@ import {
   type ContainerStyle,
   type FieldFx,
 } from "@/project/containerFx";
+import { findKitDoor, type KitDoorMatch } from "@/project/kitDoors";
 import { runtimeEventViewById, runtimeEventViewsForMap } from "@/project/runtimeEventState";
+import { getMapTile, setMapTileOverride } from "@/project/session";
 import { store } from "@/project/store";
 import { mapTileSize } from "@/project/tileGeometry";
 import type { GameMap, Project } from "@/project/types";
@@ -189,6 +193,14 @@ export async function playDoorOpenBeforeTransfer(
 ): Promise<boolean> {
   const project = store.getCurrent();
   const map = scene.map;
+  // 키트 문(닫힘/열림 짝): 그 문 자신의 그림으로 연다. 이벤트가 먼저 연 문(열림)이면 연출을 겹치지 않는다.
+  const kit = kitDoorForTransfer(scene, project, eventId, options.mode);
+  if (kit) {
+    if (kit.state === "open") return false;
+    if (!options.silent) playSe(DOOR_OPEN_SE);
+    await Promise.race([openKitDoor(scene, kit, "transfer"), sleep(scene, DOOR_LEAD_MS)]);
+    return true;
+  }
   prepareDoorFx(scene);
   let plan = eventId ? doorPlans.get(map)?.plans.get(eventId) ?? null : null;
   if (!plan && options.mode === "on") {
@@ -220,6 +232,90 @@ export async function playDoorOpenBeforeTransfer(
   }
   await Promise.race([animation, sleep(scene, DOOR_LEAD_MS)]);
   return true;
+}
+
+// ───────────────────────── 키트 문(닫힘/열림 짝) ─────────────────────────
+
+/** 세션의 changeTile 덮어쓰기까지 본 칸 읽기로 키트 문을 찾는다(이벤트가 이미 연 문은 열림). */
+function runtimeKitDoor(scene: PlaySceneContext, project: Project, at: Cell): KitDoorMatch | null {
+  const map = scene.map;
+  return findKitDoor(project, map, at, (layer, index) => getMapTile(scene.session, map.id, layer, map, index) ?? -1);
+}
+
+/** 이동 이벤트의 키트 문: 이벤트 칸(또는 바로 윗칸). door:true 면 주인공이 바라보는 칸·선 칸까지. */
+function kitDoorForTransfer(scene: PlaySceneContext, project: Project, eventId: string | undefined, mode: "auto" | "on" | undefined): KitDoorMatch | null {
+  const view = eventId ? runtimeEventViewById(project, scene.map, scene.session, scene.eventPositions, eventId) : undefined;
+  const cells: Cell[] = view ? [{ x: view.x, y: view.y }] : [];
+  if (mode === "on") {
+    const facing = scene.session.playerFacing ?? "down";
+    const d = facing === "up" ? [0, -1] : facing === "down" ? [0, 1] : facing === "left" ? [-1, 0] : [1, 0];
+    cells.push({ x: scene.tileX + d[0]!, y: scene.tileY + d[1]! }, { x: scene.tileX, y: scene.tileY });
+  }
+  for (const cell of cells) {
+    const kit = runtimeKitDoor(scene, project, cell);
+    if (kit) return kit;
+  }
+  return null;
+}
+
+/** 열림 단계(닫힌 그림이 걷히고 열린 그림이 드러난다). 칸 그림이라 계단식으로 끊어 바꾼다. */
+const KIT_DOOR_STEPS = [0.34, 0.67, 1] as const;
+
+/**
+ * 키트 문을 그 문 자신의 그림으로 연다 — 문 전체(키트 크기, 예 1×2)에 닫힌 그림을 덮고 열린 그림으로 바꿔 간다.
+ * 끝나면 열린 그림을 세션 덮어쓰기로 남긴다(다시 와도 열려 있다). why: "transfer" 면 페이드와 겹쳐 흐르니 덮개를 조금 더 남긴다.
+ */
+async function openKitDoor(scene: PlaySceneContext, kit: KitDoorMatch, why: "transfer" | "event"): Promise<void> {
+  const project = store.getCurrent();
+  const map = scene.map;
+  const textureKey = tilesetTextureKeyFor(scene, project, map);
+  const size = mapTileSize(map);
+  const bottomY = kit.origin.y + kit.pair.height - 1;
+  const depth = rowDepth(bottomY, size) + FX_DEPTH_BUMP;
+  const closing: Phaser.GameObjects.Image[] = [];
+  const opening: Phaser.GameObjects.Image[] = [];
+  const objects: Phaser.GameObjects.GameObject[] = [];
+  const frameOk = (tile: number) => tile >= 0 && !!textureKey && scene.textures.get(textureKey).has(`tile_${tile}`);
+  if (textureKey) {
+    kit.pair.closed.forEach((closedCell, i) => {
+      const openCell = kit.pair.open[i]!;
+      const x = (kit.origin.x + closedCell.dx) * size, y = (kit.origin.y + closedCell.dy) * size;
+      if (closedCell.lower === openCell.lower && closedCell.upper === openCell.upper) return;
+      const index = (kit.origin.y + closedCell.dy) * map.width + (kit.origin.x + closedCell.dx);
+      // 칸을 층 순서대로 다시 쌓는다: 아래층(바뀌면 닫힘→열림) 위에 위층(바뀌면 닫힘→열림). 키트가 비운 층은 맵 그림 그대로.
+      let order = 0;
+      for (const layer of ["lower", "upper"] as const) {
+        const before = layer === "lower" ? closedCell.lower : closedCell.upper;
+        const after = layer === "lower" ? openCell.lower : openCell.upper;
+        const shown = before >= 0 ? before : getMapTile(scene.session, map.id, layer, map, index) ?? -1;
+        const add = (tile: number, alpha: number) => {
+          const image = scene.add.image(x, y, textureKey, `tile_${tile}`).setOrigin(0, 0).setDepth(depth + order++ * 0.001).setAlpha(alpha);
+          objects.push(image);
+          return image;
+        };
+        if (before === after) { if (frameOk(shown)) add(shown, 1); continue; }
+        if (frameOk(before)) closing.push(add(before, 1));
+        if (frameOk(after)) opening.push(add(after, 0));
+      }
+    });
+  }
+  const playerDepth = scene.player?.depth;
+  const onDoor = scene.player && scene.tileX >= kit.origin.x && scene.tileX < kit.origin.x + kit.pair.width && scene.tileY >= kit.origin.y && scene.tileY <= bottomY;
+  if (onDoor) scene.player!.setDepth(depth + 0.1);
+  for (const t of KIT_DOOR_STEPS) {
+    for (const image of closing) image.setAlpha(1 - t);
+    for (const image of opening) image.setAlpha(t);
+    await sleep(scene, DOOR_FRAME_MS);
+  }
+  // 열린 그림을 남긴다(이벤트의 changeTile 과 같은 값 — 다시 들어와도 열려 있다).
+  for (const change of kit.changes) {
+    setMapTileOverride(scene.session, map.id, change.layer, change.y * map.width + change.x, change.open);
+  }
+  if (scene.map === map) applyMapOverrides(scene);
+  scene.time.delayedCall(why === "transfer" ? 900 : 120, () => {
+    for (const object of objects) object.destroy();
+    if (scene.player && playerDepth !== undefined && scene.player.active) scene.player.setDepth(Math.max(scene.player.depth, playerDepth));
+  });
 }
 
 type DoorBox = { readonly x: number; readonly y: number; readonly w: number; readonly h: number };
@@ -285,15 +381,21 @@ function doorPanelBox(scene: PlaySceneContext, textureKey: string, doorTile: num
   return box;
 }
 
-/** 같은 층 좌우 칸에서 문이 아닌 벽 타일. */
+/**
+ * 좌우 칸에서 문이 아닌 벽 타일 — 같은 층을 먼저, 없으면 그 아래 층들. 문짝을 위층에 얹고 벽은 아래층에 깐 칩셋(버들항)은
+ * 같은 층 이웃이 비어 문짝 상자를 못 재고 1칸 기본 상자로 떨어졌다(2026-10-30 사용자 「왜 1×1 이냐」).
+ */
 function neighbourWallTile(project: Project, map: GameMap, cell: Cell, layer: (typeof LAYER_KEYS)[number]): number | null {
-  for (const dx of [-1, 1]) {
-    const x = cell.x + dx;
-    if (x < 0 || x >= map.width) continue;
-    const tile = (map[layer] as ArrayLike<number> | undefined)?.[cell.y * map.width + x] ?? -1;
-    if (tile < 0) continue;
-    if (doorTileAt(project, map, x, cell.y)) continue;
-    return tile;
+  const layers = LAYER_KEYS.slice(LAYER_KEYS.indexOf(layer));
+  for (const from of layers) {
+    for (const dx of [-1, 1]) {
+      const x = cell.x + dx;
+      if (x < 0 || x >= map.width) continue;
+      const tile = (map[from] as ArrayLike<number> | undefined)?.[cell.y * map.width + x] ?? -1;
+      if (tile < 0) continue;
+      if (doorTileAt(project, map, x, cell.y)) continue;
+      return tile;
+    }
   }
   return null;
 }
@@ -319,15 +421,23 @@ function doorPieces(scene: PlaySceneContext, project: Project, map: GameMap, bot
   if (!door) return pieces;
   const layer = cellTiles(project, map, bottom.x, bottom.y).find((t) => t.tile === door.tile)?.layer ?? "upperTiles";
   const inset = Math.round(2 * size / 16);
-  const box = doorPanelBox(scene, textureKey, door.tile, neighbourWallTile(project, map, bottom, layer), size)
-    ?? { x: inset, y: inset, w: size - inset * 2, h: size - inset };
+  // 윗칸도 같은 문(문 이름표가 붙은 같은 층 그림)이면 문짝은 두 칸 높이다 — 아래 칸 상자를 칸 꼭대기까지 올려 둘을 잇는다.
+  const aboveIsDoor = (cell: Cell) => cell.y >= 0 && cellTiles(project, map, cell.x, cell.y).some((t) => t.layer === layer && SWING_DOOR.test(t.label) && !NOT_SWING.test(t.label));
+  const measured = doorPanelBox(scene, textureKey, door.tile, neighbourWallTile(project, map, bottom, layer), size);
+  /** 잴 수 없을 때의 기본 상자 — 윗칸도 문이면 칸 꼭대기까지(두 칸이 이어진다). */
+  const fallbackBox = (cell: Cell, x: number, w: number): DoorBox => {
+    const top = aboveIsDoor({ x: cell.x, y: cell.y - 1 }) ? 0 : inset;
+    return { x, y: top, w, h: size - top };
+  };
+  const box = measured ?? fallbackBox(bottom, inset, size - inset * 2);
   pieces.push({ cell: bottom, tile: door.tile, box });
   let below = box;
   for (let up = 1; up <= 2; up++) {
     const cell = { x: bottom.x, y: bottom.y - up };
     const tile = (map[layer] as ArrayLike<number> | undefined)?.[cell.y * map.width + cell.x] ?? -1;
     if (cell.y < 0 || tile < 0 || below.y > 1) break;
-    const found = doorPanelBox(scene, textureKey, tile, neighbourWallTile(project, map, cell, layer), size);
+    const found = doorPanelBox(scene, textureKey, tile, neighbourWallTile(project, map, cell, layer), size)
+      ?? (aboveIsDoor(cell) ? fallbackBox(cell, box.x, box.w) : null);
     if (!found || found.y + found.h < size - 1) break;
     const left = Math.max(found.x, box.x), right = Math.min(found.x + found.w, box.x + box.w);
     if (right - left < box.w * 0.5) break;
@@ -534,7 +644,13 @@ export async function playFieldFx(scene: PlaySceneContext, fx: FieldFx, target: 
       break;
     case "doorOpen": {
       const project = store.getCurrent();
-      if (doorTileAt(project, scene.map, cell.x, cell.y)) {
+      const kit = runtimeKitDoor(scene, project, cell);
+      if (kit) {
+        if (kit.state === "closed") {
+          playSe(DOOR_OPEN_SE);
+          await openKitDoor(scene, kit, "event");
+        }
+      } else if (doorTileAt(project, scene.map, cell.x, cell.y)) {
         playSe(DOOR_OPEN_SE);
         const textureKey = tilesetTextureKeyFor(scene, project, scene.map);
         const plan = textureKey ? tileDoorPlan(scene, project, scene.map, cell, textureKey, mapTileSize(scene.map)) : null;

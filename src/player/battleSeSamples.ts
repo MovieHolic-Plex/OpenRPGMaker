@@ -1,6 +1,7 @@
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { store } from "@/project/store";
 import { battleAudioContext } from "@/player/battleSfx";
+import { duckBgmForEffect, seMixScale } from "@/player/audio";
 
 /**
  * 전투 샘플 SE 디코드 캐시.
@@ -18,8 +19,22 @@ const buffers = new Map<string, AudioBuffer | null>();
 const pending = new Map<string, Promise<AudioBuffer | null>>();
 /** 같은 샘플이 이 간격 안에 **다른 출처**에서 다시 시작되면 한 번으로 친다(ms, AudioContext 시계). */
 const SAME_SAMPLE_MERGE_MS = 80;
-/** 소리 출처. `cue` = 전투 사건 신호(battleJuice), `animation` = 이펙트 프레임의 타이밍 소리. 그 밖은 합치지 않는다. */
-export type BattleSampleSource = "cue" | "animation" | "other";
+/**
+ * 타격·기술 소리(cue·animation·skill)의 크기 보정과 그동안의 BGM 배율.
+ * 호출부 이득(0.3~0.4)은 조용한 RTP 시절 곡에 맞춘 값이라, 최근 마스터링된 전투 BGM(평균 -14dB, 0.7 배) 아래로 RTP 효과음
+ * (평균 -18dB 안팎)이 약 10dB 묻혔다(2026-10-30 Pulse 실녹음). 1.8 배 + BGM 0.5 배면 효과음이 덕킹된 BGM 보다 조금 위에 선다.
+ * 덕킹은 샘플 길이만큼(최대 700ms) — 긴 꼬리까지 낮추면 음악이 숨을 죽인 듯 들린다.
+ */
+const IMPACT_GAIN = 1.8;
+const IMPACT_GAIN_MAX = 0.85;
+const BATTLE_DUCK_LEVEL = 0.5;
+const BATTLE_DUCK_MAX_MS = 700;
+const isImpact = (origin: BattleSampleSource): boolean => origin === "cue" || origin === "animation" || origin === "skill";
+/**
+ * 소리 출처. `cue` = 전투 사건 신호(battleJuice), `animation` = 이펙트 프레임의 타이밍 소리 — 이 둘만 같은 샘플을 합친다.
+ * `skill` = 도트 측면 전투의 기술 레시피·몸동작 소리, `ui` = 명령 커서·확정·취소. 그 밖(`other`, 몬스터 수집 소리 세트 등)은 손대지 않는다.
+ */
+export type BattleSampleSource = "cue" | "animation" | "skill" | "ui" | "other";
 const lastStarted = new Map<string, { at: number; origin: BattleSampleSource; node: { stop(): void } }>();
 /** 샘플마다 마지막으로 시작한 재생 — fadeOutBattleSample 이 꼬리를 거둔다. */
 const live = new Map<string, { source: AudioBufferSourceNode; gain: GainNode }>();
@@ -85,7 +100,7 @@ export function playBattleSample(resourceId: string, volume: number, rate = 1, o
   // 20~30ms 먼저 내므로 먼저 온 쪽을 남기면 세기 모양이 사라졌다. 이펙트가 먼저면 멈추고 신호로 바꾼다.
   // 같은 출처끼리는 합치지 않는다 — 빠른 배속(프레임 40ms)에서 매 프레임 같은 소리를 내는 저작은 그대로 들려야 한다.
   const now = context.currentTime * 1000;
-  const merging = origin !== "other" && Number.isFinite(now);
+  const merging = (origin === "cue" || origin === "animation") && Number.isFinite(now);
   if (merging) {
     const last = lastStarted.get(resourceId);
     if (last && last.origin !== origin && now - last.at >= 0 && now - last.at < SAME_SAMPLE_MERGE_MS) {
@@ -101,9 +116,13 @@ export function playBattleSample(resourceId: string, volume: number, rate = 1, o
   source.buffer = buffer;
   if (rate !== 1) source.playbackRate.value = rate;
   const gain = context.createGain();
-  gain.gain.value = volume;
+  // 사용자 SE 음량을 따른다(이 경로는 오디오 엔진의 SE 그룹을 거치지 않는다).
+  const impact = isImpact(origin);
+  gain.gain.value = (impact ? Math.min(IMPACT_GAIN_MAX, volume * IMPACT_GAIN) : volume) * seMixScale();
   source.connect(gain).connect(context.destination);
   source.start();
+  // 타격·기술 소리는 BGM 을 잠깐 낮춰 묻히지 않게 한다(명령 커서·몬스터 세트 등은 그대로).
+  if (impact) duckBgmForEffect(BATTLE_DUCK_LEVEL, Math.min(BATTLE_DUCK_MAX_MS, buffer.duration * 1000));
   if (merging) lastStarted.set(resourceId, { at: now, origin, node: source });
   live.set(resourceId, { source, gain });
   source.onended = () => {

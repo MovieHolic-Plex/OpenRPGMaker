@@ -21,6 +21,7 @@ import { canMove, isPassable, tileAt } from "@/project/collision";
 import { unsafeSpawnLines } from "@/project/chaserSpawnSafety";
 import { ensureChaserHidingSpots, HIDING_SPARKLE } from "@/project/chaserHiding";
 import { isDoorArtCell } from "@/project/lint/scenePolishLint";
+import { kitDoorOpenCommands } from "@/project/kitDoors";
 import { normalizeLightingState } from "@/project/lightingRules";
 import { isWaterChipsetTile } from "@/project/defaults/chipsetMapping";
 import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
@@ -2908,7 +2909,8 @@ const createTransferPair: ToolDefinition = {
     const idA = genId("ev_gate");
     const idB = genId("ev_gate");
     const transferTo = (mapId: string, x: number, y: number, direction: Dir): Command => ({ kind: "transfer", mapId, x, y, direction, fade });
-    const gate = (id: string, x: number, y: number, target: Command, bump = false): GameEvent => ({
+    // 닫힘/열림 키트 짝으로 그린 문(예 버들항 던전 문 1×2)이면 들어가기 전에 그 문 그림으로 연다(project/kitDoors).
+    const gate = (id: string, x: number, y: number, target: Command, bump = false, opens: readonly Command[] = []): GameEvent => ({
       id,
       x,
       y,
@@ -2925,7 +2927,7 @@ const createTransferPair: ToolDefinition = {
           priority: bump ? "same" : "below",
           overlapForbidden: bump, // 런타임 부딪힘 판정(findBlockingEventOverlappingRect)은 same + overlapForbidden 만 막는 이벤트로 본다.
           movement: PASSIVE,
-          commands: [target],
+          commands: [...opens, target],
         },
       ],
     });
@@ -2934,8 +2936,8 @@ const createTransferPair: ToolDefinition = {
     for (const map of a.mapId === b.mapId ? [mapA] : [mapA, mapB]) {
       for (const entry of transferGatesStayApproachable(draft, map).sealed) sealedBefore.add(`${map.id}:${entry.replace(/\(.*$/u, "")}`);
     }
-    upsertEventIntoMap(mapA, gate(idA, gateA.x, gateA.y, transferTo(b.mapId, landingB.x, landingB.y, awayFrom(gateB, landingB)), bumpA));
-    upsertEventIntoMap(mapB, gate(idB, gateB.x, gateB.y, transferTo(a.mapId, landingA.x, landingA.y, awayFrom(gateA, landingA)), bumpB));
+    upsertEventIntoMap(mapA, gate(idA, gateA.x, gateA.y, transferTo(b.mapId, landingB.x, landingB.y, awayFrom(gateB, landingB)), bumpA, kitDoorOpenCommands(draft, mapA, gateA)));
+    upsertEventIntoMap(mapB, gate(idB, gateB.x, gateB.y, transferTo(a.mapId, landingA.x, landingA.y, awayFrom(gateA, landingA)), bumpB, kitDoorOpenCommands(draft, mapB, gateB)));
     // 배치가 끝난 뒤 두 맵의 모든 transfer 문이 방 바닥으로 열리는지 최종 점검(같은 맵 쌍·후보가
     // 없어 원자리를 쓴 경우 포함). 실패하면 toolRunner가 초안을 버려 두 맵 모두 보존한다.
     const sealedAfter: string[] = [];
