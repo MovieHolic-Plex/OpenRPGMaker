@@ -557,14 +557,16 @@ function composeShape(key: string, size: string | undefined, text: string, base:
   const main = characters[0]!;
   // 바닥 넓이는 크기 낱말로 — 손 서재 견본의 바닥(7×5 35칸 · 8×6 48칸 · 9×6 54칸)과 같은 띠, 씨앗으로 ±15%. 묶음 발자국 넓이(base)는
   // 큰 벽 묶음(책장+벽난로+책장) 하나로 방이 14×11 로 부풀어 맨바닥 40% 넘는 빈 방이 됐다(2026-10-29 study-variety 첫 판) — 그보다 크게 잡지 않는다.
-  const band = size === "small" ? [24, 32] : size === "large" ? [56, 72] : [36, 50];
+  // 2판(감독 눈 검수 「맨바닥 30%」): 띠를 한 단 줄였다 — 남는 바닥은 메우지 않고 방을 줄인다(맨바닥 15% 한도).
+  const band = size === "small" ? [18, 24] : size === "large" ? [42, 54] : [28, 36];
   const floorArea = Math.min(base.w * Math.max(3, base.h - 2), Math.round(band[0]! + r() * (band[1]! - band[0]!)));
   const small = size === "small";
   const kinds: [string, number][] = [["rect", 2], ["wide", 1.5], ["deep", 1], ["L", 2.5], ...(small ? [] : [["bay", 1.5], ["T", 1.5], ...(single ? [["annex", 2] as [string, number]] : [])] as [string, number][])];
   const total = kinds.reduce((n, [, w]) => n + w, 0);
   let roll = r() * total, kindPick = "rect";
   for (const [k, w] of kinds) { if ((roll -= w) < 0) { kindPick = k; break; } }
-  const dims = (ratio: number, extra = 0) => { const a = floorArea + extra; const w = Math.max(5, Math.round(Math.sqrt(a * ratio))); return { w, h: Math.max(5, Math.ceil(a / w)) + 2 }; };
+  // 바닥은 6줄 이상 — 북벽 책장 줄·그 앞 통로·책상·책상을 보는 의자·문 앞 통로가 한 줄씩(5줄이면 의자가 문 앞 칸에 걸려 책상이 빠졌다).
+  const dims = (ratio: number, extra = 0) => { const a = floorArea + extra; const w = Math.max(7, Math.round(Math.sqrt(a * ratio))); return { w, h: Math.max(6, Math.ceil(a / w)) + 2 }; };
   const mats = SHAPE_MATERIALS[main] ?? SHAPE_MATERIALS.plain!;
   const [floor, wall] = mats[Math.floor(r() * mats.length)]!;
   const exitAt = 0.25 + r() * 0.5;
@@ -579,9 +581,10 @@ function composeShape(key: string, size: string | undefined, text: string, base:
       return out(north ? "ㄱ자(북쪽 귀퉁이 벽장)" : "ㄴ자(남쪽 귀퉁이 도려 냄)", { w: Math.max(d.w, 8), h: Math.max(d.h, north ? 7 : 8) }, [n]);
     }
     case "bay": {
-      const nw = 3;
+      // 가운데 북벽에 책장 줄이 설 만큼(6칸↑) 넓게 — 3칸씩 도려 낸 10칸 방은 가운데가 4칸이라 책장이 하나도 못 섰다.
+      const nw = 2;
       const d = dims(1.7, 2 * nw * 2);
-      return out("창가 돌출(북쪽 가운데가 나온 방)", { w: Math.max(d.w, 2 * nw + 5), h: Math.max(d.h, 7) }, [{ corner: "nw", w: nw, h: 2 }, { corner: "ne", w: nw, h: 2 }]);
+      return out("창가 돌출(북쪽 가운데가 나온 방)", { w: Math.max(d.w, 2 * nw + 10), h: Math.max(d.h, 8) }, [{ corner: "nw", w: nw, h: 2 }, { corner: "ne", w: nw, h: 2 }]);
     }
     case "T": {
       const d = dims(1.8, 2 * 2 * 2);
@@ -1080,13 +1083,13 @@ export const interiorBuilder: PlaceBuilder = {
       const grow = spec.size === "large" && !zone.keep && firstFloor.length === 1 && !vsize ? scale : 1;
       const sized = t ? { w: Math.max(minW, Math.round(t.w * grow)), h: Math.max(minH, Math.round(t.h * grow)) } : minW ? { w: minW, h: minH } : {};
       // 고른 견본을 layout 에 못 박는다 — 크기만 넘기면 layout 이 같은 크기·화풍에서 늘 같은 견본(authored-study-sq)을 다시 골랐다.
-      return { id: zone.id ?? (n > 1 ? `${kind}${n}` : kind), kind, vig, tplId, ...(tplId ? { template: tplId } : {}), ...sized, min: { w: Math.max(5, minW), h: Math.max(6, minH) },
+      return { id: zone.id ?? (n > 1 ? `${kind}${n}` : kind), kind, vig, tplId, composed: !!shape, ...(tplId ? { template: tplId } : {}), ...sized, min: { w: Math.max(shape ? 7 : 5, minW), h: Math.max(shape ? 8 : 6, minH) },
         ...(zone.keep?.floor ? { floor: zone.keep.floor } : shape?.floor ? { floor: shape.floor } : {}), ...(zone.keep?.wall ? { wall: zone.keep.wall } : shape?.wall ? { wall: shape.wall } : {}), ...(shape?.notches.length ? { notches: shape.notches } : {}), zone };
     });
     // 조합 곁방(서고·연금 구석) — 한 방짜리 서재에만. 같은 바닥·벽 재질, 묶음 배치기로 꾸민다.
     if (single && shapeOut?.annex && rooms[0]) {
       const a = shapeOut.annex;
-      rooms.push({ id: a.id, kind: a.kind, vig: true, tplId: undefined, w: a.w, h: a.h, min: { w: 5, h: 6 }, ...(shapeOut.floor ? { floor: shapeOut.floor } : {}), ...(shapeOut.wall ? { wall: shapeOut.wall } : {}), zone: { kind: a.kind, purpose: a.purpose } } as unknown as typeof rooms[number]);
+      rooms.push({ id: a.id, kind: a.kind, vig: true, tplId: undefined, composed: true, w: a.w, h: a.h, min: { w: 5, h: 6 }, ...(shapeOut.floor ? { floor: shapeOut.floor } : {}), ...(shapeOut.wall ? { wall: shapeOut.wall } : {}), zone: { kind: a.kind, purpose: a.purpose } } as unknown as typeof rooms[number]);
     }
     const hints = spec.hints ?? {};
     // 묶음 길은 방 크기를 묶음 발자국으로 정했다 — 배치 변주 C·D 는 한 방을 가로 +4·사방 +2 칸 키워(서재 6×6 → 10×6·8×8) 그 크기를 버린다.
@@ -1122,7 +1125,8 @@ export const interiorBuilder: PlaceBuilder = {
     if (vignette && !rooms.some((r) => r.zone.keep)) {
       const builtId = String(first.data?.mapId ?? mapId);
       const shares = () => new Map(((first.data?.layout as { rooms?: { id: string; vignettes?: { blockedShare: number; floor: number } }[] } | undefined)?.rooms ?? []).map((r) => [r.id, r.vignettes] as const));
-      for (let pass = 0; pass < 1; pass++) {
+      // 조합 방은 맨바닥 15%(vqa 한도)를 목표로 두 번까지 줄인다.
+      for (let pass = 0; pass < (rooms.some((r) => r.composed) ? 2 : 1); pass++) {
         const got = shares();
         const layout = base.layout as { rooms: { id?: string; w?: number; h?: number }[] };
         let changed = false;
@@ -1138,8 +1142,10 @@ export const interiorBuilder: PlaceBuilder = {
           const bare = bareOfRoom(id);
           if (!v || !r.w || !r.h) return r;
           const byShare = v.blockedShare < 0.3 || v.blockedShare > 0.44 ? Math.max(0.05, v.blockedShare) / VIGNETTE_TARGET : 1;
-          const byBare = bare > 30 ? (1 - bare / 100) / 0.75 : 1;
-          const want = Math.min(byShare, byBare);
+          const comp = !!rooms[i]?.composed;
+          const byBare = bare > (comp ? 15 : 30) ? (1 - bare / 100) / (comp ? 0.87 : 0.75) : 1;
+          // 조합 방은 막힘이 높다고 키우지 않는다(책장 줄이 막힘을 올린다) — 줄이기만.
+          const want = Math.min(comp ? Math.min(1, byShare) : byShare, byBare);
           if (want === 1) return r;
           // 줄일 때는 깊이를 먼저 — 묶음은 북벽·가운데에 서므로 남는 맨바닥은 문 쪽 아래 줄에 모인다(벤치 room-vig-1029 서재·침실).
           const k = Math.max(0.5, Math.min(1.6, want));
