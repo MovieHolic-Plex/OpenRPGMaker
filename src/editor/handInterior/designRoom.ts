@@ -214,7 +214,8 @@ export function furnishFromDesign(base: HandInteriorInput, rooms: readonly Layou
           if (it.t === "o" && S.objects[it.id]?.kind === "wall" && b[1] !== fy0) { why = "벽 가구가 북벽에서 떨어짐"; return undefined; }
           if (blocks(it, S)) sCells.push(...cellsOfBox(b));
           else if (!hang && it.t !== "g") fCells.push(...cellsOfBox(b));
-          cols.push(...wallColumns(it, S));
+          // 벽면 열은 북벽에 붙은 키 큰 가구·걸이만 쓴다(방 가운데·남쪽의 망원경이 북벽 책장 열과 다툰다며 빠졌다 — 2026-10-29 Argon 첫 시험).
+          if (hang || b[1] === fy0) cols.push(...wallColumns(it, S));
         }
         if (sCells.some((c) => keep.has(c))) { why = "문 앞 통로"; return undefined; }
         if (sCells.some((c) => solid.has(c) || flat.has(c)) || fCells.some((c) => solid.has(c))) { why = "다른 묶음과 겹침"; return undefined; }
