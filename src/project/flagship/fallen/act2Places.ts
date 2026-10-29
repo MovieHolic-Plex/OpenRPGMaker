@@ -22,6 +22,9 @@ export function primeWavePlaces(): void {
   primeRegionReferenceSnapshot("bd-wave-ash-plain", wavePlaces);
 }
 
+/** 되살린 웨이브 장소로 지은 맵과 그 요새 던전 — 1막 끝 일괄 적 조율(applyFallenFieldRules)에서 뺀다(2막 감지 값을 지킨다). */
+export const FS2_WAVE_OWNED_MAPS: readonly string[] = ["map_field_north_2", "fs2_dawnwell", "fs2_fort_court", "fs2_fortress", "fs2_fortress_f2", "fs2_ice_lake"];
+
 export const WAVE_ASH_PLAIN = "bd-wave-ash-plain";
 export const WAVE_RUINED_VILLAGE = "bd-wave-ruined-village";
 export const WAVE_MOUNTAIN_FORTRESS = "bd-wave-mountain-fortress";
@@ -47,7 +50,7 @@ export const DAWN_SPOTS = {
 /**
  * 관문 요새 바깥(72×56). 남쪽 산길 → 지그재그 오르막(돌계단 둘) → 골짜기 위 도개교 → 성문(쇠창살) → 앞뜰 → 거대 석문.
  * 성문은 쇠창살이 내려져 있어 도개교 꼭대기에서 성문 망루(요새 안 던전)로 들어간다. 던전 2층 성벽 문을 나오면 앞뜰 서쪽 망루 위 —
- * 앞뜰은 성벽 위 높이라 그대로 「성벽 위 결투장」이다. 새라는 거대 석문(북문) 앞을 지킨다. 이기면 석문이 열려 서리 가도로 간다.
+ * 앞뜰은 성벽 위 높이라 그대로 「성벽 위 결투장」이다. 새라는 성벽 문으로 나온 자리 바로 앞 성벽 길을 막아서 그 자리에서 싸운다. 이기면 석문이 열려 서리 가도로 간다.
  */
 export const COURT_SPOTS = {
   entry: { x: 14, y: 55 } as Cell,
@@ -61,7 +64,8 @@ export const COURT_SPOTS = {
   north: { x: 35, y: 13 } as Cell,
   /** 던전 2층 성벽 문으로 나오면 서는 칸(서쪽 망루 앞)과 다시 들어가는 망루 칸. */
   arrive: { x: 17, y: 15 } as Cell, tower: { x: 17, y: 16 } as Cell,
-  sarah: { x: 35, y: 13 } as Cell, dog: { x: 34, y: 13 } as Cell,
+  /** 새라는 성벽 문으로 나온 자리(arrive) 두 칸 앞 성벽 길을 막아선다 — 나오자마자 그 자리에서 싸운다(2026-10-30 사용자). 경비견은 그 뒤. */
+  sarah: { x: 19, y: 15 } as Cell, dog: { x: 20, y: 15 } as Cell,
   /** 바깥 적 — 경비견은 가운데 단 길, 순찰 기사는 도개교 앞 눈 턱을 가로로 오간다. */
   dogs: { x: 44, y: 40 } as Cell, knight: { x: 28, y: 28 } as Cell,
 };

@@ -1434,6 +1434,8 @@ const SW_SARAH = "sw_fs2_sarah_joined";
 const SW_SPEAR_BACK = "sw_fs2_spear_returned";
 const SW_SPEAR_KEPT = "sw_fs2_spear_kept";
 const SW_SARAH_LOST = "sw_fs2_sarah_lost_once";
+/** 2층 성벽 문으로 성벽 위(앞뜰 서쪽 망루 앞)에 막 나왔다 — 새라가 그 자리에서 막아선다(2026-10-30 사용자: 「성벽 위에서 바로 전투」). */
+const SW_ON_WALL = "sw_fs2_fort_on_wall";
 const VAR_BOND_SARAH = "var_fs2_bond_sarah";
 const FS2_STAR_IRON = "item_fs2_star_iron";
 const SARAH = "새라";
@@ -1607,7 +1609,7 @@ function fortCourt(project: Project, exec: Exec): void {
 }
 
 function northFortress(project: Project, exec: Exec, hubId: string): void {
-  for (const [id, name] of [[SW_SARAH, "B6: 새라 합류"], [SW_SPEAR_BACK, "B6 선택1: 창을 돌려줬다"], [SW_SPEAR_KEPT, "B6 선택1: 창을 맡아 뒀다"], [SW_SARAH_LOST, "B6: 성벽 위에서 한 번 졌다"]] as const) ensureSwitch(project, id, name);
+  for (const [id, name] of [[SW_ON_WALL, "B6: 성벽 위에 나왔다"], [SW_SARAH, "B6: 새라 합류"], [SW_SPEAR_BACK, "B6 선택1: 창을 돌려줬다"], [SW_SPEAR_KEPT, "B6 선택1: 창을 맡아 뒀다"], [SW_SARAH_LOST, "B6: 성벽 위에서 한 번 졌다"]] as const) ensureSwitch(project, id, name);
   exec(project, "upsert_item", { item: {
     id: FS2_STAR_IRON, name: "별쇠 조각", type: "special", occasion: "never", consumable: false, price: 0,
     description: "새라의 창끝에서 떼어 낸 별쇠.\n로한이라면 이걸로 창을 한 번 더 벼려 줄 거다.",
@@ -1851,7 +1853,7 @@ function fortressEvents(project: Project, exec: Exec): void {
   for (const map of [fort, top]) delete (map as unknown as Rec).background;
   // 2층 성주 홀 북쪽 문 → 바깥 앞뜰 서쪽 망루 앞(성벽 위). 그 망루 칸을 밟으면 다시 요새 안으로.
   addEvent(top, "ev_fs2_fort_wall_door", "성벽으로 나가는 문", FORT.sarah, [
-    page("ev_fs2_fort_wall_door_p", "성벽으로", [], [se("cc0-se-osx-door-open"), transfer(FS2_FORT_COURT_ID, COURT.arrive, "right")], { trigger: { kind: "playerTouch" }, priority: "below" }),
+    page("ev_fs2_fort_wall_door_p", "성벽으로", [], [se("cc0-se-osx-door-open"), setSw(SW_ON_WALL), transfer(FS2_FORT_COURT_ID, COURT.arrive, "right")], { trigger: { kind: "playerTouch" }, priority: "below" }),
   ]);
   addEvent(court, "ev_fs2_fort_wall_back", "망루 안으로", COURT_SPOTS.tower, [
     page("ev_fs2_fort_wall_back_p", "요새 안으로", [], [transfer(FS2_FORT_TOP_ID, { x: FORT.sarah.x, y: FORT.sarah.y + 1 }, "down")], { trigger: { kind: "playerTouch" }, priority: "below" }),
@@ -1937,15 +1939,27 @@ function fortressEvents(project: Project, exec: Exec): void {
       cutEnd(),
       { kind: "battleProcessing", troopId: FS2_SARAH_TROOP, canEscape: false, canLose: true, branchOnResult: true, victoryBranch: win, defeatBranch: lose, escapeBranch: [] } as unknown as Command,
     ], { graphic: sarahChip }),
+    // 성벽 문으로 막 나오면 — 새라가 바로 앞에서 막아서고 그 자리에서 싸운다(앞뜰을 가로질러 북문까지 걸어가지 않는다).
+    page("ev_fs2_fort_sarah_wall", "성벽 위에서 막아선다", [sw(SW_ON_WALL)], [
+      cutBegin(),
+      emote("ev_fs2_fort_sarah", "exclamation", 700),
+      say(SARAH, "별지기 꼬마들. 여기서 돌아가라.\n명령이다. …내 명령이 아니라서 미안하다."),
+      say(KAEL, "로한 아저씨가 전해 달래요.\n「고개 들어라」."),
+      say(SARAH, "…그 말, 발렌 님이 늘 하던 말인데.\n아버지한테서 배운 거였구나."),
+      say(SARAH, "그래도 길은 못 비켜 준다.\n할 말 있으면 창으로 해라."),
+      cutLabel(),
+      cutEnd(),
+      { kind: "battleProcessing", troopId: FS2_SARAH_TROOP, canEscape: false, canLose: true, branchOnResult: true, victoryBranch: win, defeatBranch: lose, escapeBranch: [] } as unknown as Command,
+    ], { graphic: chip(SARAH_CHIP[0], SARAH_CHIP[1], "left"), trigger: { kind: "auto" } }),
     // 합류 뒤 — 새라가 서 있던 자리는 빈 성벽 길(북문은 열렸다 — 안뜰로 내려가 북문으로 나간다).
     page("ev_fs2_fort_sarah_gone", "빈 성벽", [sw(SW_SARAH)], [], { graphic: { transparent: true }, priority: "below" }),
   ]);
   // 새라 발치의 경비견 — 전투 무리(새라+경비견)가 맵에서도 보이게. 안뜰 개 무리와 같은 그림을 쓴다.
   const houndPage = court.events.find((e) => e.pages?.[0]?.graphic && JSON.stringify(e.pages[0].graphic).includes("hound"))?.pages?.[0];
   if (!houndPage) throw new Error("[fallen-star act2] 안뜰 경비견 그림을 못 찾았다");
-  addEvent(court, "ev_fs2_fort_sarah_dog", "새라의 경비견", { x: COURT.sarah.x - 1, y: COURT.sarah.y }, [
+  addEvent(court, "ev_fs2_fort_sarah_dog", "새라의 경비견", COURT_SPOTS.dog, [
     page("ev_fs2_fort_sarah_dog_p", "새라 발치", [], [narrate("새라 발치의 경비견이 낮게 으르렁거린다.")],
-      { graphic: { ...(houndPage.graphic as Rec), direction: "right" }, ...(houndPage.animationType ? { animationType: houndPage.animationType } : {}) }),
+      { graphic: { ...(houndPage.graphic as Rec), direction: "left" }, ...(houndPage.animationType ? { animationType: houndPage.animationType } : {}) }),
     page("ev_fs2_fort_sarah_dog_gone", "빈 성벽", [sw(SW_SARAH)], [], { graphic: { transparent: true }, priority: "below" }),
   ]);
   // 졌을 때 — 요새 감방에서 깬다(게임 오버 아님). 창살 문은 새라가 열어 두었다.
@@ -1957,6 +1971,7 @@ function fortressEvents(project: Project, exec: Exec): void {
       say(ELENA, "…창살이 열려 있어. 일부러 안 잠갔나 봐."),
       say(KAEL, "한 번 더 가 보자. 이번엔 개부터."),
       setSw(SW_SARAH_LOST, false),
+      setSw(SW_ON_WALL, false),
     ], { trigger: { kind: "auto" }, priority: "below" }),
   ]);
 }
@@ -2242,6 +2257,88 @@ export const FS2_SNOW_EXTRA: { chest: Cell } = { chest: { x: 0, y: 0 } };
 // 북쪽 빙벽 얼음 굴 → 서리나루 남쪽 어귀. 서리나루 마을(frostford.ts)은 그대로 두고 그 사이 이동만 다시 잇는다.
 // ════════════════════════════════════════════════════════════════════
 
+/**
+ * 되살린 장소에서 밟는 바닥인데 「늘 사람 위에 그리는」(★) 상층 조각 — 도개교·나무다리·석문 앞 돌계단·얼음 다리 가장자리.
+ * 원본 그림은 그대로 두고 그 조각의 그리기 순서만 ○(사람 아래)로 고친다(사용자: 「성문에 들어설 때 충돌·우선순위가 틀렸다」).
+ * 성문 아치·쇠창살 통로(★)와 벽 윗단(×, 줄 정렬)은 그대로 — 지나가는 사람 머리 위에 그려진다.
+ */
+const WAVE_FLOOR_RECTS: Record<string, { x: number; y: number; w: number; h: number }[]> = {
+  fs2_fort_court: [{ x: 34, y: 20, w: 3, h: 4 }, { x: 29, y: 12, w: 13, h: 1 }, { x: 29, y: 49, w: 4, h: 2 }],
+  [FS2_ICE_LAKE_ID]: [{ x: 36, y: 21, w: 1, h: 5 }],
+};
+function waveFloorUnderFeet(project: Project, exec: Exec): void {
+  const tiles = new Set<number>();
+  let tilesetId = "";
+  for (const [mapId, rects] of Object.entries(WAVE_FLOOR_RECTS)) {
+    const map = M(project, mapId);
+    const ts = project.tilesets[map.tilesetId]!;
+    tilesetId = map.tilesetId;
+    for (const r of rects) for (let y = r.y; y < r.y + r.h; y += 1) for (let x = r.x; x < r.x + r.w; x += 1) {
+      const t = map.upperTiles[y * map.width + x] ?? -1;
+      if (t < 0 || ts.priority[t] !== "upper") continue;
+      const pass = ts.passability[t];
+      if (pass && (pass.up || pass.down || pass.left || pass.right)) tiles.add(t);
+    }
+  }
+  if (tiles.size === 0) throw new Error("[fallen-star act2] 되살린 장소에 고칠 바닥 ★ 조각이 없다 — 칸 좌표를 다시 확인");
+  exec(project, "set_tile_rules", { tilesetId, confirmedByUser: true, entries: [...tiles].map((tile) => ({ tile, layer: "lower" })) });
+}
+
+/**
+ * B6 요새 안(성 던전 도구가 지은 두 층) 손질 — 사용자 지적(2026-10-30):
+ * - 「돌덩이가 왜 계속 반복되나, 왜 움직이나」: 층마다 도구가 둔 쉼터 결정이 옛 캐릭터 시트의 보라 수정 덩이(돌처럼 보임)에 반짝임을 단 것이었다
+ *   → 손 도트 받침 수정(다른 세이브 포인트와 같은 모습)으로 바꾼다. 레버 옆 감방 칸마다 하나씩 줄지어 깐 짚 침상도 한 줄에 하나만 남긴다.
+ * - 「레버를 당기면 소리가 나니 위쪽 기사가 바로 쫓아와야」: 레버 스위치가 켜지면 2층 사람 순찰이 맵 어디서든 알아채고 달려온다.
+ */
+function fortressFixes(project: Project, exec: Exec): void {
+  for (const mapId of [FS2_FORTRESS_ID, FS2_FORT_TOP_ID]) {
+    const rest = M(project, mapId).events.find((e) => e.id === `ev_${mapId}_rest`);
+    if (!rest) throw new Error(`[fallen-star act2] ${mapId} 쉼터 결정이 없다`);
+    const at = { x: rest.x, y: rest.y };
+    exec(project, "remove_event", { mapId, eventId: rest.id });
+    exec(project, "place_savepoint", { mapId, x: at.x, y: at.y, heal: true, name: "쉼터 결정", id: rest.id, objectId: "kit:beodeul_city/bd-pick-dungeon-theme-crystal-pedestal", sparkleRadius: 2 });
+    // 짚 침상 줄 — 가로로 붙은 같은 침상은 첫 하나만 남긴다.
+    const map = M(project, mapId);
+    const kits = (project.tilesets[map.tilesetId] as unknown as { structureKits?: { id: string; rows: { upperTiles?: number[] }[] }[] }).structureKits ?? [];
+    const straw = new Set(kits.filter((k) => /straw-bed$/.test(k.id)).flatMap((k) => k.rows.flatMap((r) => r.upperTiles ?? [])).filter((t) => t >= 0));
+    if (straw.size === 0) throw new Error("[fallen-star act2] 짚 침상 조각을 못 찾았다");
+    for (let y = 0; y < map.height; y += 1) for (let x = 1; x < map.width; x += 1) {
+      const i = y * map.width + x;
+      if (straw.has(map.upperTiles[i]!) && map.upperTiles[i - 1] === map.upperTiles[i]) {
+        // 줄의 둘째부터 지운다(왼쪽 끝 하나가 남는다) — 지운 칸은 아래층 돌바닥.
+        let k = x; while (k < map.width && map.upperTiles[y * map.width + k] === map.upperTiles[i]) { map.upperTiles[y * map.width + k] = -1; k += 1; }
+        x = k;
+      }
+    }
+  }
+  // 레버 → 2층 사람 순찰이 곧장 쫓아온다.
+  const top = M(project, FS2_FORT_TOP_ID);
+  const lever = top.events.find((e) => e.id === `ev_${FS2_FORT_TOP_ID}_lever`);
+  const leverSw = JSON.stringify(lever?.pages ?? []).match(/"switchId":"(sw_[^"]*lever)"/)?.[1];
+  if (!lever || !leverSw) throw new Error("[fallen-star act2] 2층 레버·스위치를 못 찾았다");
+  lever.pages![0]!.commands.push(narrate("쇠사슬 감기는 소리가 요새 안에 쩌렁쩌렁 울렸다!"));
+  const guards = top.events.filter((e) => {
+    const p0 = e.pages?.[0];
+    return p0?.movement?.type === "chase" && /tex_easyrpg_charset_actor1/.test(JSON.stringify(p0.graphic ?? {}));
+  });
+  if (guards.length === 0) throw new Error("[fallen-star act2] 2층 사람 순찰이 없다");
+  for (const g of guards) {
+    const fight = g.pages![0]!;
+    const alarm = structuredClone(fight);
+    alarm.id = `${fight.id}_alarm`;
+    alarm.name = "레버 소리에 달려온다";
+    alarm.conditions = [sw(leverSw)];
+    const mv = alarm.movement as unknown as Rec;
+    mv.sightRange = 40; mv.giveUpRange = 60;
+    mv.sight = { range: 40, lineOfSight: false, facing: "any" };
+    mv.sightAlert = { emote: "exclamation", holdMs: 150 };
+    mv.chaseLunge = { steps: 16, speed: 7, stepMs: 80 };
+    mv.chaseStepMs = 110;
+    mv.pursuit = { ...((mv.pursuit as Rec | undefined) ?? { scope: "map", doorDelayMs: 0, onLost: "return" }), searchMs: 9000 };
+    g.pages!.splice(1, 0, alarm);
+  }
+}
+
 function iceLake(project: Project, exec: Exec): void {
   const snowEnd = FS2_SNOW.mapIds[1]!;
   const exit = FS2_SNOW.exit;
@@ -2312,6 +2409,8 @@ export function applyFallenAct2Opening(project: Project, exec: Exec, ids: Fallen
   frostFoes(project, exec, FS2_SNOW_PLAN.maps, FS2_SNOW_PLAN.fire);
   iceLake(project, exec);
   detection(project, exec);
+  fortressFixes(project, exec);
+  waveFloorUnderFeet(project, exec);
   widenEdgeGates(project);
   act2Quest(project, exec);
   applyFallenAct2Tower(project, exec);
@@ -2395,8 +2494,13 @@ function widenEdgeGates(project: Project): void {
 const DETECTION_PROFILES: { troops: string[]; args: Rec }[] = [
   { troops: [FS2_PATROL_TROOP], args: { sightRange: 6, coneDegrees: 120, alertMs: 250, rush: true, rushSteps: 3, rushStepMs: 110, chaseStepMs: 170, searchMs: 4000, giveUpRange: 12 } },
   { troops: ["troop_fs2_starved_dogs", "troop_fs2_ash_crows", "troop_fs2_fort_dogs", "troop_fs2_frost_wolves", "troop_fs2_frost_mixed"], args: { sightRange: 7, coneDegrees: 110, alertMs: 150, rush: true, rushSteps: 4, rushStepMs: 100, chaseStepMs: 160 } },
-  { troops: ["troop_fs2_ash_wisps", "troop_fs2_frost_bats"], args: { sightRange: 7, coneDegrees: 120, alertMs: 200, rush: true, rushSteps: 3, rushStepMs: 110, chaseStepMs: 170 } },
-  { troops: [FS2_KNIGHT_TROOP, FS2_KNIGHT_TROOP_OUT, FS2_GATE_CAPTAIN_TROOP], args: { sightRange: 7, coneDegrees: 120, alertMs: 200, rush: true, rushSteps: 5, rushStepMs: 100, chaseStepMs: 170, searchMs: 5000, giveUpRange: 14 } },
+  // 잿불 도깨비(B5) — 트인 재 들판의 매복꾼(2026-10-30 사용자: 「10칸 넘게 밖에서 알아보고 3배 이상 빨리, 닿는 순간 전투」).
+  // 사방을 보고(allRound) 바위·고목이 시선을 안 가린다(lineOfSight:false). 알아챔 멈춤 없이 50ms/칸으로 끝까지 덮친다(예전 170ms/칸의 3.4배).
+  { troops: ["troop_fs2_ash_wisps"], args: { sightRange: 12, allRound: true, lineOfSight: false, alertMs: 0, rush: true, rushSteps: 30, rushStepMs: 50, chaseStepMs: 90, searchMs: 3000, giveUpRange: 22 } },
+  { troops: ["troop_fs2_frost_bats"], args: { sightRange: 7, coneDegrees: 120, alertMs: 200, rush: true, rushSteps: 3, rushStepMs: 110, chaseStepMs: 170 } },
+  // 요새 바깥 순찰 기사(B6) — 도개교 앞 눈 턱에서 멀리 보고 곧장 달려든다(사용자: 「더 빨리 알아보고 멀리서 덤비게」).
+  { troops: [FS2_KNIGHT_TROOP_OUT], args: { sightRange: 12, coneDegrees: 170, alertMs: 100, rush: true, rushSteps: 16, rushStepMs: 70, chaseStepMs: 110, searchMs: 6000, giveUpRange: 22 } },
+  { troops: [FS2_KNIGHT_TROOP, FS2_GATE_CAPTAIN_TROOP], args: { sightRange: 7, coneDegrees: 120, alertMs: 200, rush: true, rushSteps: 5, rushStepMs: 100, chaseStepMs: 170, searchMs: 5000, giveUpRange: 14 } },
   { troops: ["troop_fs2_ash_snakes"], args: { sightRange: 6, coneDegrees: 100, alertMs: 350, rush: false, chaseStepMs: 300 } },
   { troops: ["troop_fs2_cinder_golem"], args: { sightRange: 6, coneDegrees: 90, alertMs: 600, rush: false, chaseStepMs: 400, giveUpRange: 8 } },
 ];

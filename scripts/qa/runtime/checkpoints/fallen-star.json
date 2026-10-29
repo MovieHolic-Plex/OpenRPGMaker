@@ -4386,11 +4386,11 @@
   {
    "id": "act2-b6-sarah",
    "label": "제2막 B6 — 성벽 위 결투장, 새라 + 경비견 하나(파티 Lv8), 이기면 선택 1·합류",
-   "note": "act2Opening.ts fortressEvents ev_fs2_fort_sarah — 바깥 북쪽 성벽 위(fs2_fort_court)",
+   "note": "act2Opening.ts fortressEvents — 성벽 문으로 나온 자리(17,15) 바로 앞 새라(19,15)·경비견(20,15), 성벽 위에서 바로 전투(SW_ON_WALL 자동 페이지)",
    "mapId": "fs2_fort_court",
-   "x": 35,
-   "y": 14,
-   "facing": "up",
+   "x": 17,
+   "y": 15,
+   "facing": "right",
    "switches": {
     "sw_fs_main_started": true,
     "sw_fs_main_done": true,
@@ -4406,7 +4406,8 @@
     "sw_fs2_dawn_mem_0": true,
     "sw_fs2_dawn_mem_1": true,
     "sw_fs2_dawn_mem_2": true,
-    "sw_fs2_serin_form": true
+    "sw_fs2_serin_form": true,
+    "sw_fs2_fort_on_wall": true
    },
    "party": [
     {
@@ -4426,9 +4427,6 @@
        "kind": "hold",
        "dir": null,
        "ms": 800
-      },
-      {
-       "kind": "action"
       },
       {
        "kind": "waitFor",
@@ -4634,11 +4632,11 @@
   {
    "id": "act2-b6-lose",
    "label": "제2막 B6 — 새라에게 지면 요새 감방에서 깬다(게임 오버 아님)",
-   "note": "act2Opening.ts fortressEvents defeatBranch → ev_fs2_fort_cell_wake — 바깥 북쪽 성벽 위(fs2_fort_court)",
+   "note": "act2Opening.ts fortressEvents — 성벽 문으로 나온 자리(17,15) 바로 앞 새라(19,15)·경비견(20,15), 성벽 위에서 바로 전투(SW_ON_WALL 자동 페이지)",
    "mapId": "fs2_fort_court",
-   "x": 35,
-   "y": 14,
-   "facing": "up",
+   "x": 17,
+   "y": 15,
+   "facing": "right",
    "switches": {
     "sw_fs_main_started": true,
     "sw_fs_main_done": true,
@@ -4654,7 +4652,8 @@
     "sw_fs2_dawn_mem_0": true,
     "sw_fs2_dawn_mem_1": true,
     "sw_fs2_dawn_mem_2": true,
-    "sw_fs2_serin_form": true
+    "sw_fs2_serin_form": true,
+    "sw_fs2_fort_on_wall": true
    },
    "party": [
     {
@@ -4674,9 +4673,6 @@
        "kind": "hold",
        "dir": null,
        "ms": 800
-      },
-      {
-       "kind": "action"
       },
       {
        "kind": "waitFor",
@@ -4767,7 +4763,7 @@
   },
   {
    "id": "act2-b6-lever",
-   "label": "제2막 B6 — 요새 2층 레버를 당겨 성벽 위 쇠창살을 연다",
+   "label": "제2막 B6 — 2층 레버: 당기면 쇠사슬 소리에 순찰 기사가 곧장 달려온다",
    "note": "act2Opening.ts northFortress — author_dungeon floors 2 floorRooms + gimmick lever — 레버 바로 밑 칸(15,19)에서 시작하고 홀 경비견(foe1)은 이미 쓰러뜨린 뒤다(돌진에 레버 장면이 끊기지 않게). 쇠창살까지는 19줄로 돌아간다(18줄 13·14열은 벽)",
    "mapId": "fs2_fortress_f2",
    "x": 15,
@@ -4859,27 +4855,12 @@
      "shot": true
     },
     {
-     "id": "gate",
+     "id": "alarm",
      "ops": [
-      {
-       "kind": "move",
-       "dir": "down",
-       "steps": 1
-      },
-      {
-       "kind": "move",
-       "dir": "left",
-       "steps": 7
-      },
-      {
-       "kind": "move",
-       "dir": "up",
-       "steps": 6
-      },
       {
        "kind": "hold",
        "dir": null,
-       "ms": 1500
+       "ms": 6000
       }
      ],
      "shot": true
@@ -4962,7 +4943,7 @@
   },
   {
    "id": "act2-b6-wall",
-   "label": "제2막 B6 — 2층 성벽 문 → 앞뜰 서쪽 망루 위(성벽 위 결투장)",
+   "label": "제2막 B6 — 2층 성벽 문 → 성벽 위: 새라가 바로 앞을 막아서고 그 자리에서 전투",
    "note": "act2Opening.ts fortressEvents ev_fs2_fort_wall_door",
    "mapId": "fs2_fortress_f2",
    "x": 25,
@@ -5018,17 +4999,48 @@
      "shot": true
     },
     {
-     "id": "walk",
+     "id": "sarah",
      "ops": [
       {
-       "kind": "move",
-       "dir": "right",
-       "steps": 3
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 15000
       },
       {
        "kind": "hold",
        "dir": null,
        "ms": 1200
+      },
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 10,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 1100
+        }
+       ]
+      },
+      {
+       "kind": "pressUntil",
+       "key": "Enter",
+       "testid": "battle-scene",
+       "state": "present",
+       "maxPresses": 20,
+       "timeoutMs": 900
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 3000
       }
      ],
      "shot": true
