@@ -102,15 +102,13 @@ const ROLES = "entrance 입구(하나) · boss 보스(하나, 3×2 몸이 설 la
 export interface DungeonPartsOut {
   readonly theme: DungeonType;
   readonly label: string;
-  readonly grammar: string;
-  readonly liquid: string;
-  readonly shapes: readonly { id: string; ko: string; use: string; min: string }[];
-  readonly roles: string;
-  readonly water: string;
-  readonly features: Readonly<Record<string, string>>;
-  readonly connections: string;
-  readonly entrance: string;
+  /** 어휘 한 덩이(모양·역할·물·특징·잇기·입구) — 글을 짧게(2026-10-30 실내 안내 동사 회귀: 글 1.3만 자+그림 8장이면 Gemini 가 짓지 못하고 끝났다). */
+  readonly vocab: string;
+  /** 예시 설계 둘(게임마다 돌린 순서의 앞 둘) — 형식 보기. 나머지 둘은 한 줄로. */
   readonly examples: readonly { name: string; ko: string; design: DungeonDesign }[];
+  readonly moreExamples: string;
+  /** 참고 그림(버들항 던전 다섯)의 구성 한 줄씩 — 구성 아이디어, 베끼지 않는다. */
+  readonly references: string;
   readonly note: string;
 }
 
@@ -121,20 +119,23 @@ export function rotatedExamples(gameKey: string): typeof DUNGEON_DESIGN_EXAMPLES
   return [...DUNGEON_DESIGN_EXAMPLES.slice(h), ...DUNGEON_DESIGN_EXAMPLES.slice(0, h)];
 }
 
-/** 테마(낱말) → 재료. 방+통로 문법(지하묘지·성·신전…)은 모양·물을 크기·역할로만 옮긴다고 적는다. gameKey 로 예시 순서를 돌린다. */
+/** 테마(낱말) → 재료(짧게). 방+통로 문법(지하묘지·성·신전…)은 모양·물을 크기·역할로만 옮긴다고 적는다. gameKey 로 예시 순서를 돌린다. */
 export function dungeonParts(theme: string, gameKey = ""): DungeonPartsOut {
   const type: DungeonType = inferDungeonType(theme).type ?? "cave";
   const g = GRAMMAR[type];
   const liquid = g.liquid === "lava" ? "용암" : g.liquid === "void" ? "허공(다리로 건넌다)" : g.liquid === "water" ? "물" : type === "ice" ? "얼어붙은 빙판(걷는다)" : "없음";
+  const grammar = g.grammar === "blob" ? "불규칙 굴 — 설계한 자리·모양 그대로 판다" : g.grammar === "rooms" ? "네모 방+통로 — 역할·크기·이웃·방향으로 옮긴다(ring 은 팔각 방)" : "미궁 격자 — 설계를 쓰지 않는다(type 을 바꿔라)";
+  const ex = rotatedExamples(gameKey);
+  const refs = referencePictures(type, gameKey);
   return {
-    theme: type, label: g.label, grammar: g.grammar === "blob" ? "불규칙 굴 — 설계한 자리·모양 그대로 판다" : g.grammar === "rooms" ? "네모 방+통로 — 역할·크기·from·방향(at 비교)으로 옮긴다(모양은 크기로, ring 은 팔각 방)" : "미궁 격자 — 설계를 쓰지 않는다(type 을 바꿔라)",
-    liquid, shapes: DESIGN_SHAPES, roles: ROLES,
-    water: `none · pool · lake · stream — 이 테마의 액체는 ${liquid}`,
-    features: DESIGN_FEATURES,
-    connections: "links 로 방 id 끼리 직접(고리 = 닫히는 길 하나 더), 또는 connections: linear 한 줄 · branch 갈래 · loop 고리 · hub 가운데 방에서 사방",
-    entrance: "entrance: south·north·west·east — 입구 방(at 없으면 그 쪽 끝). 숲·늪은 그 쪽 맵 끝으로 나가는 길이 출구",
-    examples: rotatedExamples(gameKey),
-    note: "방 수는 굴의 크기·요청에 맞게 네가 정한다(보통 작은 굴 3~4 · 보통 5~7 · 큰 굴 8~10 — 입구·보스 둘만 잇는 일자 굴은 걸을 거리가 없다). 예시는 뼈대가 서로 다른 참고일 뿐 — 베끼지 말고 요청(무엇이 사는 굴인지, 어디가 위험한지, 무엇을 숨겼는지)에 맞게 방 수·자리·모양·물·길을 새로 짠다. 같은 게임의 다른 던전과도 입구 쪽·연결 모양을 다르게.",
+    theme: type, label: g.label,
+    vocab: `${grammar}. 모양 ${DESIGN_SHAPES.map((x) => `${x.id} ${x.ko}(${x.min})`).join(" · ")}. 역할 ${ROLES}. `
+      + `물 none·pool·lake·stream(이 테마 액체 ${liquid}). 특징 ${Object.entries(DESIGN_FEATURES).map(([k, v]) => `${k} ${v}`).join(" · ")}. `
+      + `잇기 links[{from,to,kind winding·straight·narrow·wide}] 또는 connections linear·branch·loop·hub. 입구 south·north·west·east(숲·늪은 그 쪽 맵 끝이 출구). at 은 n·se·center 또는 "x,y"(0~1).`,
+    examples: ex.slice(0, 2),
+    moreExamples: ex.slice(2).map((e) => e.ko).join(" / "),
+    references: refs.map((r) => `${r.id}: ${r.idea}`).join(" / "),
+    note: "방 수는 굴의 크기·요청에 맞게 네가 정한다(작은 굴 3~4 · 보통 5~7 · 큰 굴 8~10 — 입구·보스 둘만 잇는 일자 굴은 걸을 거리가 없다). 예시·참고 그림은 구성 아이디어일 뿐 — 베끼지 말고 요청(무엇이 사는 굴인지·어디가 위험한지·무엇을 숨겼는지)에 맞게 방 수·자리·모양·물·길·입구 쪽을 새로 짠다. 검수는 예시·참고 그림과 거의 같은 맵을 반복으로 친다.",
   };
 }
 
@@ -161,26 +162,56 @@ export function createDungeonPartsVerb(env: PiAssistantV2Env): PiToolShape {
     async execute(_id, params) {
       const gameKey = String(env.request.projectKey ?? env.ctx.project.meta.title ?? "");
       const out = dungeonParts(String((params as { theme?: string }).theme ?? "cave"), gameKey);
-      const result = text({ ok: true, ...out, how: "make_place({spec:{type:'cave'|'dungeon', name, theme, dungeonDesign:{entrance, rooms:[{id, role, size, shape, dir?, at, water?, features?}], links:[{from,to,kind?}]}}}). 방마다 at 을 서로 다르게, 입구 하나·보스 하나. 함수는 방을 더하거나 고르지 않고 겹침·길·도달·크기 모순만 고쳐 「고침:」으로 알린다." });
-      // 그림은 넷 중 둘만(게임마다 다른 둘) — Gemini(argon·flash)는 큰 전맵 그림 넷을 받은 바로 다음 차례에 제공자 오류(«Sorry, something went wrong»)나
-      // 글로 적은 tool_call 을 자주 냈다(2026-10-29 실조수 6판 중 4판). 설계 넷은 글로 모두 준다.
-      // 참고 그림 둘(테마에 맞는 것 먼저) + 지금 빌더로 지은 예시 하나 — 그림이 많으면 Gemini 가 다음 차례에 제공자 오류를 냈다.
+      const result = text({ ok: true, ...out, how: "make_place({spec:{type:'cave'|'dungeon', name, theme, dungeonDesign:{entrance, rooms:[{id, role, size, shape, dir?, at, water?, features?}], links:[{from,to,kind?}]}}}). 방마다 at 을 서로 다르게, 입구 하나·보스 하나. 함수는 겹침·길·도달·크기 모순만 고쳐 「고침:」으로 알린다." });
+      // 그림은 한 장으로 합친다(참고 그림 둘 + 첫 예시를 지금 빌더로 지은 그림, 반 크기로 나란히).
+      // Gemini(argon·flash)는 큰 그림 여러 장을 받은 바로 다음 차례에 제공자 오류·글로 적은 tool_call 을 자주 냈다(2026-10-29 던전 6판 중 4판, 2026-10-30 실내 안내 동사).
       const refs = referencePictures(out.theme, gameKey).slice(0, 2);
-      result.content.push({ type: "text", text: `참고 그림(사람이 조각을 고른 버들항 던전 — 그대로 베끼지 말고 구성 아이디어만: 구역 순서·볼거리·가지 길·고리. 맵 검수는 이 그림과 거의 같은 맵을 «반복»으로 친다): ${DUNGEON_REFERENCE_PICTURES.map((r) => `${r.id} — ${r.idea}`).join(" / ")}` });
-      for (const r of refs) {
-        const data = await referencePng(r.id);
-        if (data) { result.content.push({ type: "text", text: `참고 그림 ${r.id}(${r.idea}):` }); result.content.push({ type: "image", mimeType: "image/png", data }); }
-      }
-      const pics = out.theme === "labyrinth" ? [] : out.examples.slice(0, 1);
-      for (const ex of pics) {
+      const panels: { label: string; b64: string }[] = [];
+      for (const r of refs) { const b64 = await referencePng(r.id); if (b64) panels.push({ label: `참고 그림 ${r.id}`, b64 }); }
+      const ex = out.theme === "labyrinth" ? undefined : out.examples[0];
+      if (ex) {
         const key = `${out.theme}:${ex.name}`;
         let url = pictures.get(key);
         if (!url) { url = await examplePicture(env, out.theme, ex.design, `예시 ${ex.ko.split(" — ")[0]}`).catch(() => undefined); if (url) pictures.set(key, url); }
-        if (url) { result.content.push({ type: "text", text: `예시 ${ex.name}(${ex.ko}) — 이 설계로 지은 1배 그림:` }); result.content.push({ type: "image", mimeType: "image/png", data: url.slice(url.indexOf(",") + 1) }); }
+        if (url) panels.push({ label: `예시 ${ex.name} 를 지금 빌더로 지은 그림`, b64: url.slice(url.indexOf(",") + 1) });
+      }
+      const sheet = panels.length ? await sideBySide(panels.map((x) => x.b64)).catch(() => undefined) : undefined;
+      if (sheet) {
+        result.content.push({ type: "text", text: `그림 한 장(반 크기, 왼쪽부터): ${panels.map((x) => x.label).join(" · ")} — 구성 아이디어만, 베끼지 않는다.` });
+        result.content.push({ type: "image", mimeType: "image/png", data: sheet });
       }
       return result;
     },
   };
+}
+
+/** PNG 여러 장을 같은 높이(≤280px, 정수 배 축소)로 줄여 한 줄로 붙인다(pngjs — 워커·스크립트 전용 경로). */
+async function sideBySide(pngs: readonly string[]): Promise<string | undefined> {
+  type Img = { width: number; height: number; data: Uint8Array };
+  type PngLib = { PNG: { new (o: { width: number; height: number }): Img; sync: { read(b: Uint8Array): Img; write(p: Img): Uint8Array } } };
+  const lib = "pngjs";   // 형식 선언이 없는 모듈 — 이름을 변수로 두어 타입 검사에서 뺀다
+  const { PNG } = (await import(lib)) as PngLib;
+  const ims = pngs.map((b) => PNG.sync.read(Buffer.from(b, "base64")));
+  const H = 280, GAP = 8;
+  const scaled = ims.map((im) => {
+    const f = Math.max(1, Math.ceil(im.height / H));
+    const w = Math.floor(im.width / f), h = Math.floor(im.height / f);
+    const out = new Uint8Array(w * h * 4);
+    for (let y = 0; y < h; y += 1) for (let x = 0; x < w; x += 1) for (let c = 0; c < 4; c += 1) {
+      let sum = 0; for (let dy = 0; dy < f; dy += 1) for (let dx = 0; dx < f; dx += 1) sum += im.data[((y * f + dy) * im.width + x * f + dx) * 4 + c]!;
+      out[(y * w + x) * 4 + c] = Math.round(sum / (f * f));
+    }
+    return { w, h, data: out };
+  });
+  const W = scaled.reduce((a, s) => a + s.w, 0) + GAP * (scaled.length - 1), HH = Math.max(...scaled.map((s) => s.h));
+  const sheet = new PNG({ width: W, height: HH });
+  for (let k = 0; k < W * HH; k += 1) { sheet.data[k * 4] = 20; sheet.data[k * 4 + 1] = 20; sheet.data[k * 4 + 2] = 24; sheet.data[k * 4 + 3] = 255; }
+  let ox = 0;
+  for (const s of scaled) {
+    for (let y = 0; y < s.h; y += 1) for (let x = 0; x < s.w; x += 1) for (let c = 0; c < 4; c += 1) sheet.data[((y * W) + ox + x) * 4 + c] = s.data[(y * s.w + x) * 4 + c]!;
+    ox += s.w + GAP;
+  }
+  return Buffer.from(PNG.sync.write(sheet)).toString("base64");
 }
 
 const roomKey = (r: { id?: unknown; role?: unknown; at?: unknown }) => `${String(r.role ?? "")}@${String(r.at ?? "").replace(/\s+/gu, "")}`;
