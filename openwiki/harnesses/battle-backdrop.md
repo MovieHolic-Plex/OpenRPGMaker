@@ -36,7 +36,7 @@ npm run harness -- battle-backdrop build <판> --project <폴더|json> [--target
 - 런타임 선택 순서 `resolveBattleBackdropId`(`src/battle/battleBackdrop.ts`): 전투 이벤트 `changeBattleback` → **트룹 `previewBackgroundResourceId`**(기본 숲 id 면 건너뜀) → 지형 → **맵 `battleBackground`** → 기후 → 던전 → 장소 이름 → 실내 → 스킨 기본(retro2003 = plains).
   그래서 마왕 편의점의 밤 편의점 트룹(`troop_mk_manual`)은 `battle-scenery-plains`(낮 풀밭)를 그렸다.
 - 바이옴 id 가 아닌 자원은 한 장 그림으로 `cover` 로 깔린다(640×480 무대 → 좌우가 잘린다). 한 장 그림에는 pixelated 표시가 없어서 2배로 미리 키워 저장한다.
-- 배틀러는 320×240 논리 공간 y 82~160 → 그림 세로 약 0.45~0.9. 그래서 아래 45%(`BACKDROP_GROUND_TOP` 0.55) 를 비운다.
+- 배틀러 발: retro2003 무대 640×480 에서 위 56px(스킨 inset) 아래 424px 영역에 저작 좌표 320×160 의 y 가 **발**로 놓인다(`battleFieldDom.positionBattleNode`, `_retro2003.css`) → 발이 높이 약 57~90%, 몸(약 144px)이 그 위. 그래서 아래 45%(`BACKDROP_GROUND_TOP` 0.55) 를 비운다. 시트의 무대 미리보기 상자가 이 자리다.
 - `system.battleBackdrop === "field"` / `battlePresentation === "onField"` 면 필드 스크린숏이 그려져 이 그림이 안 보인다(`build` 가 경고).
 - 바닥 띠 기준: 번들 8장 아래 무늬 밀도 0.02~0.18 → `≤0.22` 그리고 `≤ 위쪽×1.3+0.03`(8장 모두 통과).
 

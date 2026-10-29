@@ -17,6 +17,7 @@ import { createHash } from "node:crypto";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
+import jpeg from "jpeg-js";
 import { PNG } from "pngjs";
 import {
   BACKDROP_GROUND_TOP, BACKDROP_NATIVE_HEIGHT, BACKDROP_NATIVE_WIDTH, BACKDROP_STORE_SCALE,
@@ -24,8 +25,6 @@ import {
   meanLuma, parseJudgeVerdict, pixelizeBackdrop, scaleNearest,
   type BackdropFacts, type JudgeVerdict, type MachineCheck, type Rgba,
 } from "../../../editor/battleBackdropCore";
-import { addRenderAssetRoot, renderMapPng } from "../../../../scripts/qa-game/render.mts";
-import { restoreBundledTilesetDiffs } from "../../../project/bundledTilesetDiff";
 import { generateImage, mapLimit } from "../../monster-collect-species/node/imageSource";
 
 const ROOT = path.resolve(import.meta.dirname, "../../../..");
@@ -117,6 +116,8 @@ async function loadProject(input: string): Promise<{ project: AnyProject; file: 
   }
   const bytes = fs.readFileSync(abs);
   const raw = JSON.parse(bytes.toString("utf8")) as AnyProject;
+  // 무거운 모듈(번들 타일셋 정의·렌더러)은 capture/build 에서만 읽는다 — 다른 단계는 몇 초에 뜬다.
+  const { restoreBundledTilesetDiffs } = await import("../../../project/bundledTilesetDiff");
   const project = (raw.project && raw.maps === undefined ? raw.project : raw) as AnyProject;
   // 번들 타일셋은 차이만 저장된다 — 그리기 전에 되돌린다. 로더 전체(검증)는 다른 브랜치 데모의 자원 id 를 거부하므로 쓰지 않는다.
   restoreBundledTilesetDiffs(project);
@@ -147,6 +148,7 @@ async function capture(argv: string[]): Promise<number> {
 
   // 그리기: 이벤트(캐릭터·표식)와 시작 표시를 빼고 타일만. 번들 칩셋 그림은 assets-root/public 에서 읽는다.
   const assetsRoot = path.resolve(opt(argv, "assets-root") ?? ROOT);
+  const { renderMapPng, addRenderAssetRoot } = await import("../../../../scripts/qa-game/render.mts");
   for (const dir of [path.join(path.dirname(file), "assets"), path.join(file, "assets")]) if (fs.existsSync(dir)) addRenderAssetRoot(dir);
   const cwd = process.cwd();
   process.chdir(assetsRoot);
@@ -331,6 +333,18 @@ async function check(argv: string[]): Promise<number> {
 // ---------- sheet ----------
 
 const dataUri = (file: string) => `data:image/png;base64,${fs.readFileSync(file).toString("base64")}`;
+/** 생성 원본은 크다(약 2MB) — 시트에는 반 크기 JPEG 로 넣는다(도트화 전 참고용이라 화소 정확도가 필요 없다). */
+function rawPreviewUri(file: string): string {
+  const img = readPng(file);
+  const w = Math.floor(img.width / 2), h = Math.floor(img.height / 2);
+  const data = Buffer.alloc(w * h * 4);
+  for (let y = 0; y < h; y += 1) for (let x = 0; x < w; x += 1) for (let c = 0; c < 4; c += 1) {
+    let sum = 0;
+    for (let dy = 0; dy < 2; dy += 1) for (let dx = 0; dx < 2; dx += 1) sum += img.data[((y * 2 + dy) * img.width + x * 2 + dx) * 4 + c]!;
+    data[(y * w + x) * 4 + c] = sum >> 2;
+  }
+  return `data:image/jpeg;base64,${jpeg.encode({ width: w, height: h, data }, 82).data.toString("base64")}`;
+}
 const esc = (s: string) => s.replace(/[&<>"]/gu, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]!));
 
 function sheet(argv: string[]): number {
@@ -351,12 +365,12 @@ function sheet(argv: string[]): number {
       const picked = run.pick?.letter === c.letter ? `<b class="pick">사람 선택됨</b>` : "";
       return `<div class="card" id="${run.id}-${c.letter}"><h3>${c.letter} ${picked} <span class="dim">색 ${c.colors} · 화소 해시 ${c.nativePixelSha256.slice(0, 12)}</span></h3>
 <div class="row"><figure><img class="x1" src="${native}"><figcaption>1배 320×180</figcaption></figure>
-<figure class="stage"><div class="stagebox" style="background-image:url(${native})"><div class="ground"></div>${battlers()}</div><figcaption>전투 무대 640×480 cover 미리보기(회색 상자 = 배틀러 자리, 점선 = 바닥 띠 시작)</figcaption></figure></div>
+<figure class="stage"><div class="stagebox" style="background-image:url(${native})"><div class="ground"></div>${battlers()}</div><figcaption>전투 무대 640×480 cover 미리보기(회색 상자 = retro2003 배틀러 자리, 아래 끝이 발 · 점선 = 바닥 띠 시작)</figcaption></figure></div>
 <figure><img class="x3" src="${native}"><figcaption>3배</figcaption></figure>
 ${judgeHtml}<table>${machine}</table>
 <div class="pal">${(c.palette ?? []).map((h) => `<i style="background:${h}" title="${h}${c.extras?.includes(h) ? " (덧색)" : ""}" class="${c.extras?.includes(h) ? "extra" : ""}"></i>`).join("")}</div>
 <details><summary>프롬프트</summary><pre>${esc(fs.existsSync(path.join(dir, `prompt-${c.letter}.txt`)) ? fs.readFileSync(path.join(dir, `prompt-${c.letter}.txt`), "utf8") : "")}</pre></details>
-<details><summary>생성 원본(도트화 전)</summary><img class="raw" src="${dataUri(path.join(dir, `raw-${c.letter}.png`))}"></details>
+<details><summary>생성 원본(도트화 전)</summary><img class="raw" src="${rawPreviewUri(path.join(dir, `raw-${c.letter}.png`))}"></details>
 <p class="cmd">고르기: <code>npm run harness -- battle-backdrop pick ${run.id} ${c.letter} --by &lt;이름&gt;</code></p></div>`;
     }).join("\n");
     return `<section><h2>${esc(run.id)} — ${esc(f.mapName)} ${run.troopId ? `· 트룹 <code>${esc(run.troopId)}</code>` : ""}</h2>
@@ -370,7 +384,7 @@ ${judgeHtml}<table>${machine}</table>
 .cap{width:auto;max-width:720px;zoom:2}.x1{width:320px}.x3{width:960px}.raw{max-width:960px;image-rendering:auto}.cards{display:flex;flex-direction:column;gap:22px}
 .card{background:#20232b;border:1px solid #333;padding:12px;border-radius:6px}.card.bad{opacity:.6}.row{display:flex;gap:18px;align-items:flex-start;flex-wrap:wrap}
 .stagebox{position:relative;width:640px;height:480px;background-size:cover;background-position:center;image-rendering:pixelated;outline:1px solid #555}
-.ground{position:absolute;left:0;right:0;top:${(BACKDROP_GROUND_TOP * 100).toFixed(0)}%;border-top:1px dashed #ff0a}.bat{position:absolute;width:44px;height:60px;border:2px solid #fff8;background:#8888;border-radius:4px}
+.ground{position:absolute;left:0;right:0;top:${(BACKDROP_GROUND_TOP * 100).toFixed(0)}%;border-top:1px dashed #ff0a}.bat{position:absolute;width:60px;height:144px;border:2px solid #fff8;background:#8888;border-radius:4px}
 table{border-collapse:collapse;margin:6px 0}td{padding:2px 8px;border-bottom:1px solid #333;font-size:12px}.ok{color:#8d8}.no{color:#f88}.dim{color:#889}.pick{color:#ff0}
 .pal i{display:inline-block;width:14px;height:14px;margin-right:1px;border:1px solid #0006}.pal i.extra{outline:2px solid #fc0}figure{margin:0}.facts{display:flex;gap:20px;flex-wrap:wrap}.cmd code{background:#000;padding:2px 6px}
 pre{white-space:pre-wrap;background:#111;padding:8px;font-size:12px}</style>
@@ -385,11 +399,16 @@ ${sections}`;
   return 0;
 }
 
-/** 배틀러 자리 표시(320×240 논리 → 640×480 무대 2배). src/battle/battlerPlacements.ts 의 retro 자리. */
+/**
+ * 배틀러 자리 표시 — retro2003 무대 640×480. 배틀러 무리는 위에서 56px(스킨 inset) 아래 424px 영역에 깔리고,
+ * 저작 좌표 320×160 의 y 는 **발**이다(src/battle/battlerPlacements.ts · battleFieldDom.positionBattleNode · _retro2003.css).
+ * 적 1마리 자리(구역 중심 92,117 + 오프셋 -4,4), 아군 4명 222+24i, 82+18i. 상자 = 발 기준 높이 144px(아군 프레임).
+ */
 function battlers(): string {
-  const enemy = [[92, 117]];
+  const enemy = [[88, 121]];
   const party = [0, 1, 2, 3].map((i) => [222 + i * 24, 82 + i * 18]);
-  return [...enemy, ...party].map(([x, y]) => `<div class="bat" style="left:${x! * 2 - 22}px;top:${y! * 2 - 30}px"></div>`).join("");
+  const foot = (y: number) => 56 + (y / 160) * 424;
+  return [...enemy, ...party].map(([x, y]) => `<div class="bat" style="left:${(x! / 320) * 640 - 30}px;top:${foot(y!) - 144}px"></div>`).join("");
 }
 
 // ---------- pick / build ----------

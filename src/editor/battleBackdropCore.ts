@@ -8,7 +8,8 @@
  * 규격(2026-10-29 실측): 번들 측면 배경(`public/assets/generated/battle-scenery/<biome>/preview.png`)은
  * 640×360 이고 2×2 블록이 100% 같다 — 즉 **원래 격자는 320×180, 2배 최근접 확대로 저장**, 색은 20~23개.
  * 전투 화면(retro2003)은 비-바이옴 id 를 한 장 그림으로 `cover` 로 깐다(640×480 무대 → 좌우가 잘린다).
- * 배틀러는 320×240 논리 공간의 y 82~160 에 선다 → 그림 세로로 대략 0.45~0.9. 그래서 아래 45% 는 비어 있어야 한다.
+ * 배틀러 발은 무대(640×480) 위 56px 아래 424px 영역의 저작 좌표 320×160 에 놓인다(retro2003) → 발이 무대 높이 약 57%~90%,
+ * 몸(약 144px)은 그 위 30%. 그래서 아래 45% 는 비어 있어야 하고 벽·물체는 위쪽 절반 안에서 끝나야 한다.
  *
  * 생성형 그림은 원래 타일 저작에서 금지다. 사용자가 2026-10-29 **전투 배경에 한해** 「도트처럼 보이고 게임 그림과 맞으면」 허용했다.
  */
@@ -122,6 +123,7 @@ export function backdropPrompt(facts: BackdropFacts, variant: number): string {
       ? `Time and light: ${TIME_BRIEF[facts.timeOfDay]}, ${LIGHT_BRIEF[facts.light]}. Keep the same time of day and lighting as Image 1.`
       : `Light: ${LIGHT_BRIEF[facts.light]}, same mood and brightness as Image 1. No windows to the outside are needed.`,
     `Composition: ${framing} The back wall or horizon and the place's distinctive objects stay in the UPPER HALF. The LOWER 45% is open, flat, uncluttered floor or ground where battle characters will stand: no furniture, props, holes or strong patterns there.`,
+    "Floor and ground are matte: no glossy reflections, no mirror-like highlights, no soft gradients on the floor.",
     "Style: 16-bit pixel art with large clear pixels, limited palette of about 24 colors close to Image 1's colors, crisp hard pixel edges, no anti-aliasing, no soft gradients, no dithering noise, no photo texture.",
     "Forbidden: NO characters, people, silhouettes, animals or monsters. NO text, letters, numbers, readable signs, logos, UI, frame, border or watermark.",
     ...(facts.note ? [`Extra direction: ${facts.note}`] : []),
@@ -244,7 +246,7 @@ export type PixelizeResult = {
  *  2. 팔레트 = 맵 팔레트(최대 24) + 원본에서 맵 팔레트로 표현이 안 되는 색만 median-cut 으로 최대 8.
  *  3. 원본 전체를 팔레트로 양자화(최근접 OKLab, 디더링 없음).
  *  4. 목표 화소 하나 = 원본 블록의 가운데 70% 에서 **가장 흔한 팔레트 색**(평균이 아니다 → 중간색·흐림 없음).
- *  5. 외톨이 점 청소: 8이웃이 모두 다르고 이웃 중 같은 색이 5개 이상이면 그 색으로.
+ *  5. 잔점 청소(2회): 같은 색 이웃이 1개 이하(점·두 점)이고 이웃 중 한 색이 5개 이상이면 그 색으로. 1px 선(이웃 2개)은 남는다.
  *  6. 거의 안 쓰인 색(0.05% 미만)을 지우고 최근접으로 다시 매핑.
  */
 export function pixelizeBackdrop(raw: Rgba, mapColors: readonly Rgb[], options: { maxColors?: number; extraColors?: number } = {}): PixelizeResult {
@@ -283,8 +285,9 @@ export function pixelizeBackdrop(raw: Rgba, mapColors: readonly Rgb[], options: 
     for (let i = 1; i < votes.length; i += 1) if (votes[i]! > votes[best]!) best = i;
     grid[y * W + x] = best;
   }
-  // 5. 외톨이 점.
+  // 5. 잔점(돌바닥 결이 양자화되면 바닥이 지글거린다 — 2026-10-30 옥좌의 방 시범 판).
   let cleaned = 0;
+  for (let pass = 0; pass < 2; pass += 1) {
   const next = grid.slice();
   for (let y = 1; y < H - 1; y += 1) for (let x = 1; x < W - 1; x += 1) {
     const c = grid[y * W + x]!;
@@ -296,12 +299,13 @@ export function pixelizeBackdrop(raw: Rgba, mapColors: readonly Rgb[], options: 
       if (n === c) same += 1;
       local.set(n, (local.get(n) ?? 0) + 1);
     }
-    if (same > 0) continue;
+    if (same > 1) continue;
     let major = -1, majorN = 0;
     for (const [k, n] of local) if (n > majorN) { majorN = n; major = k; }
     if (majorN >= 5) { next[y * W + x] = major; cleaned += 1; }
   }
   grid = next;
+  }
   // 6. 드문 색 지우기.
   const usage = new Uint32Array(palette.length);
   for (const v of grid) usage[v]! += 1;
@@ -376,7 +380,7 @@ export type MachineCheck = { readonly ok: boolean; readonly value: string; reado
  * 기계 검사 — 통과해도 합격이 아니다(사람이 고른다). 기준은 번들 배경 8장 실측(2026-10-30, 320×180 격자):
  * 아래 45% 무늬 밀도 battle-scenery 0.08~0.11 · scarloxy 0.02~0.18(모래만 위쪽 0.13 보다 높음), 위쪽 밝기 동굴 0.22 · 낮 0.50~0.91.
  */
-export function backdropMachineChecks(native: Rgba, facts: Pick<BackdropFacts, "timeOfDay" | "light" | "captureLuma">): Record<string, MachineCheck> {
+export function backdropMachineChecks(native: Rgba, facts: Pick<BackdropFacts, "timeOfDay" | "light" | "captureLuma" | "indoor">): Record<string, MachineCheck> {
   const colors = new Set<number>();
   for (let i = 0; i < native.data.length; i += 4) colors.add((native.data[i]! << 16) | (native.data[i + 1]! << 8) | native.data[i + 2]!);
   const groundTop = Math.round(native.height * BACKDROP_GROUND_TOP);
@@ -384,7 +388,8 @@ export function backdropMachineChecks(native: Rgba, facts: Pick<BackdropFacts, "
   const ground = edgeDensity(native, groundTop, native.height);
   const top = meanLuma(native, 0, groundTop);
   const all = meanLuma(native);
-  const expectDark = facts.timeOfDay === "night" || facts.light === "dark";
+  // 밤이라도 불 켠 실내(새벽 편의점)는 밝다 — 어두움을 요구하는 건 야외의 밤이나 정말 어두운 조명뿐.
+  const expectDark = facts.light === "dark" || (!facts.indoor && facts.timeOfDay === "night");
   return {
     size: { ok: native.width === BACKDROP_NATIVE_WIDTH && native.height === BACKDROP_NATIVE_HEIGHT, value: `${native.width}×${native.height}`, rule: `정확히 ${BACKDROP_NATIVE_WIDTH}×${BACKDROP_NATIVE_HEIGHT} (저장 ${BACKDROP_STORE_SCALE}배)` },
     colors: { ok: colors.size >= 8 && colors.size <= BACKDROP_MAX_COLORS, value: String(colors.size), rule: `색 8~${BACKDROP_MAX_COLORS}개` },
