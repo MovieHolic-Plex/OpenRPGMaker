@@ -55,6 +55,7 @@ import { tileMoveObjects } from "./builders/tileMove";
 import { planObjective } from "./discoverability";
 import { roomParts, SHAPE_EXAMPLES } from "./roomParts";
 import { DUNGEON_DESIGN_SCHEMA, createDungeonPartsVerb, dungeonParts, screenDungeonSpec } from "./dungeonParts";
+import { ROOM_IDEA_RULE, roomIdeasFor } from "./roomIdeas";
 import { buildsHandInterior, designMissingRooms } from "./designRooms";
 import { dropModelSeed } from "./modelSeed";
 
@@ -1286,31 +1287,25 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
   const refPictures = new Map<string, string>();
   const roomPartsVerb: PiToolShape = {
     name: "room_parts", label: "방 재료 보기", concurrency: "shared",
-    description: "손 도트 실내 방을 직접 설계(make_place zones[].design)하기 전에 부른다. 그 용도에 쓰는 칩셋 기물 이름표(id·크기·놓는 곳), 바닥·벽면·깔개 id, 같은 용도 손 견본 몇 개의 배치 요약과 1배 그림을 돌려준다. 견본은 참고일 뿐 — 똑같이 베끼지 말고 요청에 맞게 모양·묶음·자리를 새로 짠다.",
+    description: "손 도트 실내 방을 직접 설계(make_place zones[].design)하기 전에 부른다. 그 용도에 쓰는 칩셋 기물 이름표(id·크기·놓는 곳), 바닥·벽면·깔개 id, 같은 용도 견본 배치 요약, 구성 아이디어 그림(1배)을 돌려준다. 그림은 동선·초점·가구 묶음을 보는 아이디어일 뿐 — 베끼지 말고 요청에 맞게 모양·묶음·자리를 새로 짠다.",
     parameters: { type: "object", properties: { purpose: { type: "string", description: "방 용도 — 예: 서재, 마법사의 서재, 침실" }, query: { type: "string", description: "(선택) 더 찾을 기물 낱말" } }, required: ["purpose"] },
     async execute(_id, params) {
       const p = params as { purpose: string; query?: string };
       const out = roomParts(env.ctx.project, String(p.purpose ?? ""), p.query);
       if (!out) return text({ ok: false, summary: "손 도트 실내 칩셋이 이 프로젝트에 없다" });
       const result = text({ ok: true, ...out, how: "zones:[{kind, purpose, design:{shape, corner?, w, h, door, floor, wall, groups:[{name, at, pos?, rug?, items:[{id, dx?, dy?, count?}]}]}}]. 먼저 모양을 고른다(shapes·shapeExamples 와 아래 모양 그림 — 바닥 60칸 넘는 네모는 ㅁ자로 짚힌다, 곁방은 zones 둘). 묶음마다 무엇을 몇 개 놓을지는 네가 정한다 — 함수는 더하지 않고 이름 맞춤·겹침·의자 방향·문 앞 통로·도달만 고쳐 알려 준다. 기물 줄의 좌표는 바닥 왼쪽 위 0,0, 걸이는 y -2. 벽 가구·걸이는 북벽 밑에 서고, 도려 내 내려온 북벽(ㄷ자 가운데·창가 돌출 양옆·알코브 옆) 밑에도 선다." });
-      // 견본 그림(1배): 따로 지은 사본에서 찍는다 — 지금 프로젝트에는 남기지 않는다.
-      if (env.render) for (const tid of out.referenceIds.slice(0, 2)) {
-        let url = refPictures.get(tid);
-        if (!url) {
-          const scratch = { project: env.ctx.project, currentMapId: env.ctx.currentMapId, assistantRun: true } as typeof env.ctx;
-          const r = createBuildRun(scratch).call("build_hand_interior_room", { tileset: out.tileset, name: `견본 ${tid}`, layout: { rooms: [{ id: out.kind, kind: out.kind, template: tid }] } });
-          const mapId = String((r as { data?: { mapId?: string } }).data?.mapId ?? "");
-          const m = scratch.project.maps[mapId];
-          if (r.ok && m) {
-            const keep = env.ctx.project;
-            try { env.ctx.project = scratch.project; url = await env.render(mapId, 0, 0, m.width, m.height); } catch { url = undefined; } finally { env.ctx.project = keep; }
-            if (url) refPictures.set(tid, url);
-          }
-        }
-        if (url) { result.content.push({ type: "text", text: `견본 ${tid} 1배 그림:` }); result.content.push({ type: "image", mimeType: "image/png", data: url.slice(url.indexOf(",") + 1) }); }
+      // 그림: 구성 아이디어(사용자가 실내 기준으로 고른 assistant-rooms-2 방 — 동선·초점·묶음만 보고 베끼지 않는다) + 모양 예시(shapeExamples 를 지금 빌더로 지은 것).
+      // 옛 사람 견본 그림(견본을 지어 찍은 것)은 더 보여 주지 않는다 — 2026-10-29 감사에서 모델이 그 서재를 그대로 옮겨 방탈출 방이 다 같아졌다.
+      // 기본은 한 장으로 합쳐 싣는다(env.roomPartsPictures): 2026-10-30 서재 3d 에서 그림 8장·글 1.3만 자 결과 뒤 Gemini 계열이 짓지 못한 판이 늘었다(인계 handoff-study.md).
+      const mode = env.roomPartsPictures ?? "one";
+      const panels: { label: string; url: string }[] = [];
+      if (mode !== "none" && env.readPublicAsset) for (const idea of roomIdeasFor(`${p.purpose ?? ""} ${p.query ?? ""}`)) {
+        const key = `idea:${idea.id}`;
+        let url = refPictures.get(key);
+        if (!url) { try { url = await env.readPublicAsset(idea.file); } catch { url = undefined; } if (url) refPictures.set(key, url); }
+        if (url) panels.push({ label: `구성 아이디어 ${idea.id} — ${idea.idea}`, url });
       }
-      // 모양 예시 그림(1배): shapeExamples 의 설계를 지금 빌더로 실제로 지어 찍는다 — 모양을 고르면 정말 그렇게 지어진다는 증거이기도 하다.
-      if (env.render && out.tileset === HAND_INTERIOR_TILESET_ID) for (const ex of SHAPE_EXAMPLES) {
+      if (mode !== "none" && env.render && out.tileset === HAND_INTERIOR_TILESET_ID) for (const ex of SHAPE_EXAMPLES) {
         const key = `shape:${ex.shape}`;
         let url = refPictures.get(key);
         if (!url) {
@@ -1325,7 +1320,16 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
             if (url) refPictures.set(key, url);
           }
         }
-        if (url) { result.content.push({ type: "text", text: `모양 ${ex.shape}(${ex.ko}) 예시 1배 그림 — shapeExamples 의 설계로 지은 것:` }); result.content.push({ type: "image", mimeType: "image/png", data: url.slice(url.indexOf(",") + 1) }); }
+        if (url) panels.push({ label: `모양 ${ex.shape}(${ex.ko}) 예시 — shapeExamples 의 설계로 지은 것`, url });
+      }
+      const img = (url: string) => ({ type: "image" as const, mimeType: "image/png", data: url.slice(url.indexOf(",") + 1) });
+      if (panels.length && mode === "each") for (const x of panels) { result.content.push({ type: "text", text: `${x.label} 1배 그림:` }); result.content.push(img(x.url)); }
+      else if (panels.length && mode === "one") {
+        const sheet = env.combinePictures ? await env.combinePictures(panels.map((x) => x.url)).catch(() => undefined) : undefined;
+        const first = sheet ?? panels[0]!.url;
+        const shown = sheet ? panels : panels.slice(0, 1);
+        result.content.push({ type: "text", text: `그림 한 장(1배, 왼쪽 위부터 차례로 ${shown.length}칸): ${shown.map((x, i) => `${i + 1}) ${x.label}`).join(" / ")}. ${ROOM_IDEA_RULE}` });
+        result.content.push(img(first));
       }
       return result;
     },

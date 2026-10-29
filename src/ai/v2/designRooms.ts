@@ -17,6 +17,7 @@ import { HAND_INTERIOR_TILESET_ID } from "@/editor/handInterior/builder";
 const HAND_LAYOUT_ROOM_TAG = "hand-layout-room";
 import { interiorTilesetOf } from "./builders/interior";
 import { roomParts } from "./roomParts";
+import { ROOM_IDEA_RULE, roomIdeasFor } from "./roomIdeas";
 
 /** 이 명세가 손 도트 실내(v5)로 지어지나 — 설계는 이 칩셋에서만 쓴다. */
 export function buildsHandInterior(project: Project, spec: PlaceSpec): boolean {
@@ -69,7 +70,7 @@ function promptFor(project: Project, spec: PlaceSpec, zones: readonly ZoneSpec[]
       "기물(id | 이름 | 크기 | 놓는 곳):",
       ...parts.items.map((l) => `  ${l}`),
       `탁상 물건(id): ${parts.goods.join(", ")}`,
-      "참고 견본(바닥 좌표의 배치 요약 — 읽고 참고만 한다, 같은 배치·같은 크기로 베끼지 않는다):",
+      "참고 견본(바닥 좌표의 배치 요약 — 읽고 참고만 한다, 같은 배치·같은 크기로 베끼지 않는다. 옛 서재 견본은 뺐다):",
       ...parts.references.slice(0, 2).map((r) => `  ${r.id} 바닥 ${r.floorSize}: ${clip(r.items.join(", "), 400)}`),
       `설계 꼴 예(모양만 보는 예 — 기물은 네 방 용도 것으로): ${JSON.stringify(parts.shapeExamples[0]?.zones)}`,
     ] : []),
@@ -114,11 +115,24 @@ export async function designMissingRooms(env: PiAssistantV2Env, spec: PlaceSpec,
   if (!need.length) return { spec, notes: [] };
   const task = String(env.request.task ?? "");
   env.emit({ type: "execution_status", name: "v2.design", ok: true, summary: `「${spec.name}」 방 ${need.length}개 설계를 모델에게 받는 중(${why})` });
+  // 구성 아이디어 그림(사용자가 고른 실내 기준) — 글과 함께 싣는다. 못 읽으면 글만.
+  const purposes = need.map((i) => `${zones[i]!.kind} ${zones[i]!.purpose ?? ""}`).join(" ");
+  const ideas: { text: string; url: string }[] = [];
+  if (env.readPublicAsset) for (const idea of roomIdeasFor(`${purposes} ${spec.name}`)) {
+    const url = await env.readPublicAsset(idea.file).catch(() => undefined);
+    if (url) ideas.push({ text: `구성 아이디어 ${idea.id}: ${idea.idea}`, url });
+  }
+  // 그림은 한 장으로 합쳐 싣는다(room_parts 와 같은 까닭 — 그림 여러 장 뒤 Gemini 계열이 짓지 못한 판이 늘었다).
+  const sheet = ideas.length > 1 && env.combinePictures ? await env.combinePictures(ideas.map((x) => x.url)).catch(() => undefined) : undefined;
+  const pics = sheet ? [sheet] : ideas.slice(0, 1).map((x) => x.url);
+  const ask = (body: string) => ideas.length
+    ? [{ role: "user", content: [{ type: "text", text: `${body}\n${ROOM_IDEA_RULE}\n그림 한 장(왼쪽부터 차례로): ${(sheet ? ideas : ideas.slice(0, 1)).map((x) => x.text).join(" / ")}` }, ...pics.map((url) => ({ type: "image_url", image_url: { url } }))] }]
+    : [{ role: "user", content: body }];
   let got = new Map<number, RoomDesign>();
   let problem = "";
   for (let attempt = 0; attempt < 2 && got.size < need.length; attempt++) {
     try {
-      const reply = await env.sideChat([{ role: "user", content: promptFor(project, spec, zones, need, task, attempt ? problem : undefined) }], env.signal);
+      const reply = await env.sideChat(ask(promptFor(project, spec, zones, need, task, attempt ? problem : undefined)), env.signal);
       const read = readDesignReply(reply, need, zones);
       for (const [i, d] of read) if (!got.has(i)) got.set(i, d);
       problem = got.size < need.length ? `방 ${need.length}개 중 ${got.size}개만 읽었다` : "";

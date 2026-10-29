@@ -29,6 +29,12 @@ export interface PiAssistantV2Env {
   readonly keyedProviders?: ReadonlySet<string>;
   /** 맵 한 구역을 약 1배 PNG(data URL)로. 렌더 경로가 없으면 undefined. */
   readonly render?: (mapId: string, x: number, y: number, w: number, h: number) => Promise<string>;
+  /** public/ 아래 정적 그림 하나를 data URL 로(예: assets/room-ideas/rooms2-28.png). 못 읽으면 undefined. */
+  readonly readPublicAsset?: (path: string) => Promise<string | undefined>;
+  /** 그림 여러 장(data URL)을 1배 그대로 한 장에 차례로 모은다(줄바꿈 격자). 못 하면 undefined. */
+  readonly combinePictures?: (urls: readonly string[]) => Promise<string | undefined>;
+  /** room_parts 그림 싣기: one 한 장으로 합침(기본) · each 따로 · none 글만. 실행기가 OPRN_ROOM_PARTS_PICTURES 로 바꾼다(A/B 시험용). */
+  readonly roomPartsPictures?: "one" | "each" | "none";
   /** 동사 안에서 중간 결과를 편집기에 바로 싣는다(첫 짓기를 비평 전에 보이게). */
   readonly checkpoint: (label: string) => Promise<void>;
   readonly signal?: AbortSignal;
