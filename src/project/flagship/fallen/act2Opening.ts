@@ -585,15 +585,22 @@ function lampQuestGlowSources(doors: readonly GameEvent[]): Rec[] {
 }
 
 /** 등 걸기 — 잠긴 문에 퀘스트 페이지 둘을 덧붙인다(add_event_page: 문 그림·발동은 첫 페이지에서 물려받는다). */
-function lampQuestDoors(project: Project, exec: Exec, doors: readonly GameEvent[]): void {
+function lampQuestDoors(project: Project, exec: Exec, doors: readonly GameEvent[], patrolIds: readonly string[]): void {
+  const hub = M(project, FS2_HUB_NIGHT_ID);
   doors.forEach((door, i) => {
     const lamp = `${SW_Q4_LAMP}${i}`;
+    // 가장 가까운 야경꾼이 문고리 소리에 고개를 든다 — 등을 거는 순간이 통금 속 짧은 긴장으로 읽히게(감독 검수: 야경꾼이 반응하지 않았다).
+    const watcher = [...patrolIds].sort((a, b) => {
+      const ea = hub.events.find((e) => e.id === a), eb = hub.events.find((e) => e.id === b);
+      return (ea ? Math.abs(ea.x - door.x) + Math.abs(ea.y - door.y) : 999) - (eb ? Math.abs(eb.x - door.x) + Math.abs(eb.y - door.y) : 999);
+    })[0];
     exec(project, "add_event_page", { mapId: FS2_HUB_NIGHT_ID, eventId: door.id, page: {
       id: `${door.id}_q4_hang`, name: "등 걸기", conditions: [sw(SW_Q4_TAKEN)], commands: [
         narrate("문고리에 꺼진 등을 건다."),
         item(FS2_UNLIT_LAMP, -1),
         setSw(lamp),
         se("cc0-se-ors-item-wood-01"),
+        ...(watcher ? [emote(watcher, "question", 900), wait(500), narrate("…달그락. 멀리서 손등불 하나가 이쪽을 비추다 지나간다.")] : []),
         narrate("안에서 누가 가만히 두드린다. 똑, 똑, 똑.\n잠시 뒤, 창 안쪽에 작은 불이 켜진다."),
       ] } });
     exec(project, "add_event_page", { mapId: FS2_HUB_NIGHT_ID, eventId: door.id, page: {
@@ -700,7 +707,7 @@ function curfewHub(project: Project, exec: Exec, hubId: string): void {
       { name: "꺼진 등(뒤)", conditions: [sw(SW_Q4_DONE)], commands: [say(MIRE, "아침 되면 저 등부터 켤 거야. 꼭 돌아오렴.")] },
     ],
   });
-  lampQuestDoors(project, exec, lampDoors);
+  lampQuestDoors(project, exec, lampDoors, patrolIds);
   exec(project, "place_npc", {
     mapId: FS2_HUB_NIGHT_ID, id: "ev_fs2_night_toby", name: TOBY, x: TOBY_AT.x, y: TOBY_AT.y, movement: "fixed", graphic: toby,
     pages: [
@@ -807,13 +814,14 @@ function observatoryNight(project: Project, exec: Exec, obsId: string): void {
   // 1막 지하 4층에서 탔던 승강 장치를 이번엔 서고 밑에서 탄다 — 오르면 천문대 서고, 내려오면 다시 여기.
   // 양쪽 다 도착 칸이 발판 위라, 밟으면 타는 방식이면 걸어 나가다 도로 탄다(QA 2026-10-26) — 발판 위에서 조사해야 탄다.
   exec(project, "place_lift", {
-    mapId: FS2_SHAFT_ID, x: SHAFT.lift.x, y: SHAFT.lift.y, direction: "up", distance: 5, trigger: "action", text: "승강 장치에 올라탄다. 위는 천문대 서고다.",
+  // 오르는 거리 3칸 — 5칸이면 발판이 천장 벽을 다 넘어 맵 위 끝까지 솟았다(VQA: 승강기가 벽 위로 떠오른다). 짧게 올라가 어두워진다.
+    mapId: FS2_SHAFT_ID, x: SHAFT.lift.x, y: SHAFT.lift.y, direction: "up", distance: 3, trigger: "action", text: "승강 장치에 올라탄다. 위는 천문대 서고다.",
     toMapId: FS2_OBS_NIGHT_ID, toX: OBS.lift.x, toY: OBS.lift.y, toDirection: "right",
     // 승강구 쪽에도 천문대 쪽 발판 그림을 칠한다 — 그림이 없어 「어디서 타는지」 몰랐다.
     copyPlate: true,
   });
   exec(project, "place_lift", {
-    mapId: FS2_OBS_NIGHT_ID, x: OBS.lift.x, y: OBS.lift.y, direction: "down", distance: 5, trigger: "action", text: "승강 장치로 서고 밑으로 내려간다.",
+    mapId: FS2_OBS_NIGHT_ID, x: OBS.lift.x, y: OBS.lift.y, direction: "down", distance: 3, trigger: "action", text: "승강 장치로 서고 밑으로 내려간다.",
     toMapId: FS2_SHAFT_ID, toX: SHAFT.lift.x, toY: SHAFT.lift.y, toDirection: "down",
   });
   // 정문 — 연금 중. 기사가 지킨다.
