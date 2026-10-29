@@ -8,3 +8,8 @@ const p = r.project;
 console.log(`built in ${Date.now() - t0}ms`);
 for (const [id, m] of Object.entries(p.maps)) console.log(id, m.name, `${m.width}x${m.height}`, m.tilesetId, `events=${m.events.length}`);
 console.log("endings", p.endings?.length, "entities", Object.keys((p as unknown as { world?: { entities?: object } }).world?.entities ?? {}).length);
+// 장면 다듬기 검사(편집기 「검사」와 같은 규칙) — 이동 뒤 명령·빈 대사 같은 실제 플레이 결함을 굽기 전에 본다.
+const { lintScenePolish } = await import("@/project/lint/scenePolishLint");
+const { lintSceneStaging } = await import("@/project/lint/sceneStagingLint");
+const { lintStairEntrances } = await import("@/project/lint/stairEntranceLint");
+for (const i of [...lintSceneStaging(p), ...lintStairEntrances(p)]) console.log("lint", i.severity, i.code, i.mapId ?? "", i.eventId ?? "", String(i.message).slice(0, 200));

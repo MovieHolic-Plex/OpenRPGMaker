@@ -193,7 +193,10 @@ async function segment(browser, server, key, checkpoint, run) {
   const videoStart = Date.now();
   if (process.env.IG_AUDIO) await installOpeningEvidence(page, true);
   page.on("pageerror", (e) => facts.errors.push(`${key}: ${String(e).slice(0, 400)}`));
-  page.on("console", (m) => { if (m.type() === "error") facts.errors.push(`${key} console: ${m.text().slice(0, 300)}`); });
+  page.on("console", (m) => {
+    if (m.type() === "error") facts.errors.push(`${key} console: ${m.text().slice(0, 300)}`);
+    else if (process.env.IG_DEBUG && !/public directory|Instead of/.test(m.text())) log("console", m.type(), m.text().slice(0, 300));
+  });
   await page.addInitScript(([projectUrl, ns, qaCheckpoint]) => {
     localStorage.clear();
     window.__OPENRPG_BOOT__ = { projectUrl, saveNamespace: ns, qaInstrumentation: true, ...(qaCheckpoint ? { qaCheckpoint } : {}) };
@@ -301,6 +304,16 @@ const B = {
     await play(page, seg, [], idle, { shotOn: /연필/ });
     const maou = evAt(M.castle2, "ev_ig_k2_maou");
     await walkTo(page, maou.x, maou.y + 1); await faceAndAct(page, "up"); mark("maou");
+    if (process.env.IG_DEBUG) {
+      await play(page, seg, [pick], async (s) => s.battle || s.ending || (s.box ?? "").includes("쓰면 되지") || (s.box ?? "").includes("이번엔 도망"), { shotOn: /명찰|2009|수능|주문서/ });
+      for (let i = 0; i < 16; i++) {
+        const s = await st(page); const u = await ui(page);
+        log("dbg", i, s && { map: s.map, x: s.x, y: s.y }, JSON.stringify(u).slice(0, 200));
+        if (u.box !== null) await page.keyboard.press("Enter");
+        await page.waitForTimeout(2500);
+      }
+      return;
+    }
     await play(page, seg, [pick], async (s) => s.battle || s.ending, { shotOn: /명찰|2009|수능|주문서/ });
     if ((await ui(page)).battle) { mark("battle"); shot(page, `${seg.key}-maou-battle`, 2500); await battle(page, seg, PLAN4); mark("battle-end"); }
     await play(page, seg, [], async (s) => s.ending, { shotOn: /모의고사 날|열다섯|분식|날아갔다|깽판왕/ }); mark("ending");

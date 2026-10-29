@@ -700,12 +700,20 @@ function buildEndingStages(project: Project): void {
   at("ev_ig_cl_suah", "수아", suahAt, "suah", "left");
   at("ev_ig_cl_newbie", "배재민", newbieAt, "maou", "down");
   custom(cls, BGM_HOME);
+  cls.events.push(event("ev_ig_cl_end_home", "귀환 결말", { x: 0, y: 0 }, [
+    gone("ev_ig_cl_end_home_off", []),
+    page("ev_ig_cl_end_home_on", [swOn(SW_HOME), swOff(SW_OVER)], endingHomeArrive(), { trigger: "auto" }),
+  ]));
 
   const guild = project.maps[M.guild]!;
   const chefAt = nearestFree(project, guild, { x: 4, y: 12 });
   guild.events.push(event("ev_ig_g_chef_maou", "분식집 사장 벨제", chefAt, [gone("ev_ig_g_chef_maou_off", []), page("ev_ig_g_chef_maou_on", [swOn(SW_STAY)], [], { who: "maou", dir: "down" })]));
   for (const ev of guild.events) if (ev.id.startsWith("ev_ig_g_adv")) ev.pages = [...(ev.pages ?? []), gone(`${ev.id}_stay`, [swOn(SW_STAY)])];
   const kkurAt = nearestFree(project, guild, { x: 8, y: 13 }, [chefAt]);
+  guild.events.push(event("ev_ig_g_end_stay", "분식 결말", { x: 0, y: 0 }, [
+    gone("ev_ig_g_end_stay_off", []),
+    page("ev_ig_g_end_stay_on", [swOn(SW_STAY), swOff(SW_OVER)], endingStayArrive(), { trigger: "auto" }),
+  ]));
   guild.events.push(event("ev_ig_g_kkur_stay", "꾸르", kkurAt, [gone("ev_ig_g_kkur_stay_off", []), page("ev_ig_g_kkur_stay_on", [swOn(SW_STAY)], [], { who: "kkur", dir: "left" })]));
 }
 
@@ -713,7 +721,7 @@ function buildEndingStages(project: Project): void {
 const endingCommon = (endingId: string): Command[] => [setSw(SW_OVER), setVar(V_STAGE, "=", 6), ...fadeOut(900), { kind: "triggerEnding", endingId } as Command];
 
 function endingHome(): Command[] {
-  const room: Cell = { x: DESK.x, y: DESK.y + 1 };
+  const room: Cell = { x: DESK.x, y: DESK.y + 1 }; // buildEndingStages 가 실제 빈 자리로 고친다
   return [
     ...say("maou", "base", "…좋다. 같이 가자. 이번엔 도망 안 간다."),
     ...say("edel", "crying", "용사님, 대본 마지막 장은 제가 쓰겠습니다!"),
@@ -722,6 +730,12 @@ function endingHome(): Command[] {
     flash("white", 700), playSe(SE_SUMMON), ...fadeOut(800),
     stopBgm(), setSw(SW_HOME),
     { kind: "transfer", mapId: M.class, x: room.x, y: room.y, direction: "up", fade: "white" } as Command,
+  ];
+}
+
+/** 귀환 결말 — 교실에 도착한 뒤(맵 이벤트는 장소 이동에서 끝나므로 도착 맵의 자동 장면으로 잇는다). */
+function endingHomeArrive(): Command[] {
+  return [
     setLight(0, "#000000", 0),
     bgm(BGM_HOME, 600), ...fadeIn(900),
     ...say("teacher", "annoyed", "강민재! 모의고사 날 엎드려 자?"),
@@ -747,6 +761,12 @@ function endingStay(): Command[] {
     ...say("minjae", "happy", "없으면 지금 쓰면 되지."),
     ...fadeOut(800), stopBgm(), setSw(SW_STAY),
     { kind: "transfer", mapId: M.guild, x: 6, y: 14, direction: "up", fade: "black" } as Command,
+  ];
+}
+
+/** 분식 결말 — 길드에 도착한 뒤(도착 맵의 자동 장면). */
+function endingStayArrive(): Command[] {
+  return [
     bgm(BGM_END, 600), ...fadeIn(900),
     ...caption("한 달 뒤. 모험가 길드 1층에 「이세계 분식 1호점」이 열렸다."),
     ...say("cook", "happy", "떡볶이 둘, 순대 하나! …순대가 뭔지는 아직 몰라."),
