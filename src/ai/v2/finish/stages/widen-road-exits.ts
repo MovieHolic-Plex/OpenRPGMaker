@@ -1,4 +1,4 @@
-// 두 줄 길 위·곁 출구는 길 폭 전체로(2026-10-29 vm7 flash jrpg: 오른쪽 줄로 걸어 출구를 지나쳐 길 끝 가장자리에서 막혔다). 출구를 그림 칸으로 옮기는 출하 기본값·문 잠금 뒤에.
+// 맵 가장자리 길 끝 출구는 길 폭 전체로 — 가장자리 칸·길 폭 방향만, 다른 칸을 막으면 안 둔다(edgeExitRoads.widenRoadExits; 2026-10-29 vm7 flash jrpg, 몬스터 새순 마을 회귀 뒤 좁힘). 출구를 그림 칸으로 옮기는 출하 기본값·문 잠금 뒤에.
 import type { FinishStage } from "../types";
 import { createBuildRun } from "../../buildRun";
 import { widenRoadExits } from "../../edgeExitRoads";

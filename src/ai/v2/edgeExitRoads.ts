@@ -102,12 +102,13 @@ export function roadToEdgeExits(run: BuildRun, mapId: string): string[] {
   return notes;
 }
 
-// ───────────── 두 줄 길 위 출구는 길 폭 전체로 ─────────────
-// 왜(2026-10-29 vm7 flash jrpg): 「→ 숲속 동굴」 출구가 두 칸 폭 포석 길의 왼쪽 줄 (28,5) 한 칸뿐이었다. 판정자는 오른쪽 줄(29)로 걸어 올라가
-// 출구를 밟지 않고 길 끝 맵 가장자리 (29,0)에서 막혔다 — 「동쪽 길을 못 찾았다」. 길을 따라가는 사람은 어느 줄로든 지나가야 한다.
-// 규칙: 투명 접촉 이동 칸(길 위이거나, 길 바로 곁의 굴·문 그림 칸)에서 길을 가로지르는 줄의 «지나가는» 길 칸(앞뒤 칸도 길, 합쳐 3칸 이하 — 넘으면 광장)에
-// 같은 페이지의 사본(`<id>__road<dx>_<dy>`)을 둔다. 이벤트가 있는 칸·이 맵으로 들어오는 이동의 착지 칸·못 걷는 칸이 끼면 넓히지 않는다.
-// 끝맺음 조립 단계(출구를 굴 그림으로 옮기는 출하 기본값·문 잠금 뒤)에 돈다 — 사본도 잠긴 페이지를 그대로 갖는다. 다시 불리면 사본을 걷고 다시 잰다.
+// ───────────── 맵 가장자리 길 끝 출구는 길 폭 전체로 ─────────────
+// 왜(2026-10-29 vm7 flash jrpg): 두 칸 폭 길의 한 줄만 출구라 다른 줄로 걸으면 출구를 지나쳤다. 길을 따라가는 사람은 어느 줄로든 나가야 한다.
+// 규칙(2026-10-29 회귀 뒤 좁힘 — 몬스터 게임 새순 마을: 길 «한가운데»의 이동 칸 (12,4)·(12,2) 옆 (11,4)·(11,2)에 사본이 서서 남북 통로를 막아
+// 리그 출구 (12,0)에 못 갔다): 사본은 ① 맵 가장자리 칸(맵 밖으로 나가는 칸)의 투명 접촉 이동 칸 옆에만, ② 같은 가장자리 줄을 따라(길 폭 방향)
+// 이어진 길 칸에만(출구 포함 3칸까지, 넘으면 광장), ③ 각 칸 안쪽 칸도 길이고(길이 가장자리로 나가는 끝), 이벤트·착지 칸·못 걷는 칸이 아니며,
+// ④ 둔 뒤 이 맵의 착지점·시작점에서 이동 칸을 밟지 않고 닿던 칸이 하나라도 줄면 그 출구의 사본은 두지 않는다.
+// 끝맺음 조립 단계(finish/stages/widen-road-exits.ts)에서 돈다 — 다시 불리면 사본을 걷고 다시 잰다.
 const ROAD_CELL = /길|포석|road|path|보도|인도|sidewalk/iu;
 
 function lowerLabels(project: Project, map: GameMap, x: number, y: number): string[] {
@@ -123,6 +124,24 @@ const isTouchTransfer = (ev: GameMap["events"][number], here: string): boolean =
 
 const ROAD_COPY = "__road";
 
+/** 출발점들에서 걸어 닿는 칸 — 이동 칸(투명 접촉 이동)은 밟을 수는 있어도 지나가지 못한다(밟으면 맵을 떠난다). */
+function walkReach(project: Project, map: GameMap, starts: readonly { x: number; y: number }[], stops: ReadonlySet<string>): Set<string> {
+  const seen = new Set<string>();
+  const queue = starts.filter((p) => p.x >= 0 && p.y >= 0 && p.x < map.width && p.y < map.height).map((p) => ({ ...p }));
+  for (const p of queue) seen.add(`${p.x},${p.y}`);
+  for (let i = 0; i < queue.length; i += 1) {
+    const { x, y } = queue[i]!;
+    if (i >= starts.length && stops.has(`${x},${y}`)) continue;
+    for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+      const nx = x + dx, ny = y + dy, key = `${nx},${ny}`;
+      if (nx < 0 || ny < 0 || nx >= map.width || ny >= map.height || seen.has(key) || !canMove(project, map, x, y, nx, ny)) continue;
+      seen.add(key);
+      queue.push({ x: nx, y: ny });
+    }
+  }
+  return seen;
+}
+
 export function widenRoadExits(run: BuildRun, mapId: string): string[] {
   const notes: string[] = [];
   const project = run.ctx.project;
@@ -130,41 +149,55 @@ export function widenRoadExits(run: BuildRun, mapId: string): string[] {
   if (!map0) return notes;
   // 다시 불리면 앞서 둔 사본을 걷고 지금 출구 자리로 다시 잰다(끝맺음이 출구를 굴 그림 칸으로 옮기면 옛 사본이 떨어져 남는다).
   const map = { ...map0, events: (map0.events ?? []).filter((e) => !e.id.includes(ROAD_COPY)) };
+  const changed = map.events.length !== (map0.events ?? []).length;
+  const commit = (events: GameMap["events"]) => { run.ctx.project = { ...project, maps: { ...project.maps, [mapId]: { ...map, events } } } as Project; };
   const role = (map as unknown as { mapRole?: string; climate?: { mode?: string } });
-  if (role.mapRole === "interior" || role.climate?.mode === "indoor") return notes;
+  if (role.mapRole === "interior" || role.climate?.mode === "indoor") { if (changed) commit(map.events); return notes; }
   const road = (x: number, y: number) => lowerLabels(project, map, x, y).some((l) => ROAD_CELL.test(l) && !NOT_ROAD.test(l));
-  const landings = new Set<string>();
+  const landings: { x: number; y: number }[] = [];
   const findLandings = (node: unknown): void => {
     if (Array.isArray(node)) { node.forEach(findLandings); return; }
     if (!node || typeof node !== "object") return;
     const r = node as Record<string, unknown>;
-    if (r.kind === "transfer" && r.mapId === mapId && typeof r.x === "number" && typeof r.y === "number") landings.add(`${r.x},${r.y}`);
+    if (r.kind === "transfer" && r.mapId === mapId && typeof r.x === "number" && typeof r.y === "number") landings.push({ x: r.x, y: r.y });
     Object.values(r).forEach((v) => { if (v && typeof v === "object") findLandings(v); });
   };
   for (const m of Object.values(project.maps)) for (const e of m.events ?? []) findLandings(e.pages ?? []);
+  const start = (project as unknown as { startMapId?: string; startPos?: { x: number; y: number } });
+  const starts = [...landings, ...(start.startMapId === mapId && start.startPos ? [start.startPos] : [])];
+  const landingKeys = new Set(landings.map((p) => `${p.x},${p.y}`));
   const taken = new Set((map.events ?? []).map((e) => `${e.x},${e.y}`));
+  const stops = new Set(map.events.filter((e) => isTouchTransfer(e, mapId)).map((e) => `${e.x},${e.y}`));
+  const reach0 = starts.length ? walkReach(project, map, starts, stops) : undefined;
   const added: GameMap["events"] = [];
+  const W = map.width, H = map.height;
   for (const ev of map.events ?? []) {
     if (ev.id.includes(ROAD_COPY) || ev.id.includes("__w") || !isTouchTransfer(ev, mapId)) continue;
-    // 길을 가로지르는 줄: 출구 칸(길이거나 길 바로 곁의 굴·문 그림 칸)에서 좌우(또는 위아래)로 이어진 «지나가는» 길 칸 — 그 줄의 앞뒤 칸도 길이다.
-    // 줄이 4칸을 넘으면 광장이라 넓히지 않는다(어느 쪽으로 지나갈지 모른다).
-    let best: { x: number; y: number }[] = [];
-    for (const across of [[1, 0], [0, 1]] as const) {
-      const along: [number, number] = across[0] ? [0, 1] : [1, 0];
-      const through = (x: number, y: number) => road(x, y) && road(x + along[0], y + along[1]) && road(x - along[0], y - along[1]);
-      const run: { x: number; y: number }[] = [];
-      for (const sign of [-1, 1]) for (let k = 1; k <= 4; k += 1) {
-        const x = ev.x + across[0] * sign * k, y = ev.y + across[1] * sign * k;
-        if (!through(x, y)) break;
-        run.push({ x, y });
-      }
-      if (!run.length || run.length + (road(ev.x, ev.y) ? 1 : 0) > 3) continue;
-      // 출구 칸 자신이 길이면 그 길도 이 방향으로 지나가야 한다(길 끝·모퉁이 출구는 넓히지 않는다).
-      if (road(ev.x, ev.y) && !through(ev.x, ev.y)) continue;
-      if (run.length > best.length) best = run;
+    // ① 맵 가장자리 칸만. 모서리 칸은 어느 줄인지 모호해 넘긴다.
+    const top = ev.y === 0, bottom = ev.y === H - 1, left = ev.x === 0, right = ev.x === W - 1;
+    if (Number(top) + Number(bottom) + Number(left) + Number(right) !== 1) continue;
+    // ② 길 폭 방향 = 가장자리 줄을 따라, 안쪽 = 맵 안으로 한 칸.
+    const across: [number, number] = top || bottom ? [1, 0] : [0, 1];
+    const inward: [number, number] = top ? [0, 1] : bottom ? [0, -1] : left ? [1, 0] : [-1, 0];
+    // ③ 길이 가장자리로 나가는 끝 — 칸과 안쪽 칸이 모두 길.
+    const exitEnd = (x: number, y: number) => road(x, y) && road(x + inward[0], y + inward[1]);
+    if (!exitEnd(ev.x, ev.y)) continue;
+    const width: { x: number; y: number }[] = [];
+    for (const sign of [-1, 1]) for (let k = 1; k <= 3; k += 1) {
+      const x = ev.x + across[0] * sign * k, y = ev.y + across[1] * sign * k;
+      if (x < 0 || y < 0 || x >= W || y >= H || !exitEnd(x, y)) break;
+      width.push({ x, y });
     }
-    const copies = best.filter((c) => !taken.has(`${c.x},${c.y}`) && !landings.has(`${c.x},${c.y}`) && canMoveInto(project, map, c.x, c.y));
-    if (copies.length !== best.length) continue;
+    if (!width.length || width.length + 1 > 3) continue;
+    const copies = width.filter((c) => !taken.has(`${c.x},${c.y}`) && !landingKeys.has(`${c.x},${c.y}`) && canMoveInto(project, map, c.x, c.y));
+    if (copies.length !== width.length) continue;
+    // ④ 둔 뒤 이동 칸을 밟지 않고 닿던 칸이 줄면(다른 출구·통로를 막으면) 두지 않는다.
+    if (reach0) {
+      const stops1 = new Set([...stops, ...added.map((a) => `${a.x},${a.y}`), ...copies.map((c) => `${c.x},${c.y}`)]);
+      const reach1 = walkReach(project, map, starts, stops1);
+      const lost = [...reach0].filter((k) => !reach1.has(k) && !stops1.has(k));
+      if (lost.length) { notes.push(`가장자리 출구 (${ev.x},${ev.y}) 길 폭 사본은 다른 칸 ${lost.length}곳을 막아 두지 않음`); continue; }
+    }
     for (const c of copies) {
       const copy = structuredClone(ev) as GameMap["events"][number];
       copy.id = `${ev.id}${ROAD_COPY}${c.x - ev.x}_${c.y - ev.y}`;
@@ -173,9 +206,9 @@ export function widenRoadExits(run: BuildRun, mapId: string): string[] {
       added.push(copy);
       taken.add(`${c.x},${c.y}`);
     }
-    if (copies.length) notes.push(`길 곁·위 출구 (${ev.x},${ev.y})를 길 폭 전체로: ${copies.map((c) => `(${c.x},${c.y})`).join(" ")}`);
+    notes.push(`가장자리 길 끝 출구 (${ev.x},${ev.y})를 길 폭 전체로: ${copies.map((c) => `(${c.x},${c.y})`).join(" ")}`);
   }
-  if (added.length || map.events.length !== (map0.events ?? []).length) run.ctx.project = { ...project, maps: { ...project.maps, [mapId]: { ...map, events: [...map.events, ...added] } } } as Project;
+  if (added.length || changed) commit([...map.events, ...added]);
   return notes;
 }
 
