@@ -809,37 +809,77 @@ function runRequiredBattles(project: Project, adjust: boolean): { out: string[];
       }
     };
     if (adjust) raiseWhileEasy();
-    // ⑥ 그래도 너무 쉬운 관문 아닌 트룹: 스타터끼리 상성 차이가 커서(한 스타터는 거의 안 맞고 다른 스타터는 띠 아래쪽) 레벨로는 못 좁힌 판.
-    //    몬스터를 이 단계까지 잡을 수 있는 길 풀숲 종 가운데 「가장 쉬운 스타터의 남은 HP」가 가장 낮고 모두 띠 안인 종으로 바꾸고(지금 종도 후보,
-    //    0.05 이상 나아질 때만) ⑤ 를 다시 돈다. 왜(2026-10-29 런타임 표): 1번길 트레이너가 불꽃 스타터에 95%, 물에 91~93% 남았다.
-    //    다른 필수 트룹이 이미 쓰는 종은 한 번에 0.02 씩 불리하게 친다 — 없으면 1번길 트레이너 넷이 모두 같은 새(gustchick)가 됐다.
-    if (adjust && entry.rank !== 2 && low.rate >= FIT_WIN_RATE && easiest() > HP_EASY) {
-      const pool = new Set(catchableUpTo(project, entry.stage).keys());
-      const donors = new Map<string, EnemyRecord>();
-      for (const enemy of project.database.enemies) if (enemy.speciesId && pool.has(enemy.speciesId) && (enemy as { monsterResourceId?: string }).monsterResourceId && !donors.has(enemy.speciesId)) donors.set(enemy.speciesId, enemy);
+    // ⑥ 관문 아닌 트룹의 종 다시 고르기 — 두 경우:
+    //    (가) 같은 맵(같은 길·같은 체육관)의 앞 필수 트룹이 이미 쓴 종이거나 트룹 안에서 겹치는 종 → 아직 안 쓴 종으로 바꾼다.
+    //        왜(2026-10-29 감독): 쉬움 줄이기가 1번길 트레이너 셋을 모두 피오르 Lv6 으로, 체육관 관원·관장을 모두 토리프로 두었다.
+    //    (나) 그래도 너무 쉬운 판(어느 스타터든 남은 HP > HP_EASY) — 스타터끼리 상성 차이가 커 레벨로는 못 좁힌 판
+    //        (1번길 트레이너가 불꽃 스타터에 95%, 물에 91~93%).
+    //    후보 = 그림이 있는 적 레코드가 있는 종 가운데 스타터·선물·최종형과 전설(포획률 < 0.4)·같은 맵 앞 트룹과 이 트룹의 다른 칸이 쓴 종을 뺀 것.
+    //    차례: 체육관(관문 맵)은 관문 몬스터와 타입을 나누는 종 → 이 단계까지 잡을 수 있는 길 풀숲 종 → 첫 단계 종(포획률 ≥ 0.7).
+    //    앞 차례에서 띠 안(모든 스타터 80%·HP_MARGIN, 가장 쉬운 스타터 ≤ HP_EASY)인 종이 있으면 그중 가장 쉬운 스타터의 남은 HP 가 가장 낮은 종,
+    //    없으면 띠 아래쪽만 지키는 종 가운데 가장 낮은 종. 레벨은 바꾸기 전 그 칸 레벨. 그다음 ⑤ 를 다시 돈다.
+    //    「앞 트룹」만 보므로 두 번째 끝맺음에서 앞 트룹이 뒤 트룹 때문에 바뀌지 않는다(멱등).
+    //    관문(관장·보스·챔피언)은 그 구성이 앞 관문과 똑같을 때만(보스·챔피언이 둘 다 피오르 한 마리) 같은 규칙으로 바꾼다 — 앞 관문들이 쓴 종을 피한다.
+    const speciesOfTroop = (id: string): string[] => (project.database.troops.find((item) => item.id === id)?.enemyIds ?? []).map((enemyId) => enemyOf(enemyId)?.speciesId).filter((sid): sid is string => !!sid);
+    const earlierGates = required.slice(0, required.indexOf(entry)).filter((other) => other.rank === 2 && other.troopId !== troop.id);
+    const sameAsEarlierGate = entry.rank === 2 && earlierGates.some((other) => speciesOfTroop(other.troopId).sort().join() === speciesOfTroop(troop.id).sort().join());
+    if (adjust && (entry.rank !== 2 || sameAsEarlierGate)) {
+      const sameMapBefore = entry.rank === 2 ? earlierGates : required.slice(0, required.indexOf(entry)).filter((other) => other.mapId === entry.mapId && other.troopId !== troop.id);
+      // 체육관 관원은 관장 종도 피한다(관장은 관문이라 바꾸지 않는다 — 관원이 관장과 같은 종이면 관원 쪽을 바꾼다).
+      const gateOnMap = entry.rank === 1 && gateTroopId ? [gateTroopId] : [];
+      const usedBefore = new Set([...sameMapBefore.map((other) => other.troopId), ...gateOnMap].flatMap((id) => project.database.troops.find((item) => item.id === id)?.enemyIds ?? []).map((id) => enemyOf(id)?.speciesId).filter((id): id is string => !!id));
+      const gifts = new Set(campaignGifts(project).map((gift) => gift.speciesId));
+      const art = new Map<string, string>();
+      for (const enemy of project.database.enemies) {
+        const resource = (enemy as { monsterResourceId?: string }).monsterResourceId;
+        if (enemy.speciesId && resource && !art.has(enemy.speciesId)) art.set(enemy.speciesId, resource);
+      }
+      const catchable = new Set(catchableUpTo(project, entry.stage).keys());
+      const gateTypes = new Set(entry.rank === 1 && gateTroopId ? defendersOf(gateTroopId).flat() : []);
+      const tierOf = (speciesId: string): number => {
+        const species = monsterSpeciesById(project, speciesId);
+        if (gateTypes.size && (species?.types ?? []).some((type) => gateTypes.has(type))) return 0;
+        if (catchable.has(speciesId)) return 1;
+        return (species?.captureRate ?? 0) >= 0.7 ? 2 : 3;
+      };
       ownEnemies();
-      for (const enemyId of [...troop.enemyIds]) {
+      for (const [slot, enemyId] of [...troop.enemyIds].entries()) {
         const enemy = enemyOf(enemyId);
         if (!enemy?.speciesId || typeof enemy.level !== "number") continue;
+        const inTroop = new Set(troop.enemyIds.filter((_, other) => other < slot).map((id) => enemyOf(id)?.speciesId).filter((id): id is string => !!id));
+        const duplicate = usedBefore.has(enemy.speciesId) || inTroop.has(enemy.speciesId);
+        if (!duplicate && (entry.rank === 2 || low.rate < FIT_WIN_RATE || easiest() <= HP_EASY)) continue;
         const original = structuredClone(enemy);
         const index = project.database.enemies.findIndex((item) => item.id === enemyId);
-        const current = easiest();
-        let best: { speciesId: string; score: number; record: EnemyRecord } | undefined;
-        const usedElsewhere = (speciesId: string): number => required.filter((other) => other.troopId !== troop.id)
-          .filter((other) => (project.database.troops.find((item) => item.id === other.troopId)?.enemyIds ?? []).some((id) => enemyOf(id)?.speciesId === speciesId)).length;
-        for (const speciesId of [...donors.keys()].filter((id) => id !== original.speciesId).sort()) {
+        const current = { rate: low.rate, easy: easiest() };
+        const candidates = [...art.keys()].filter((id) => id !== original.speciesId && !choices.includes(id) && !gifts.has(id) && !usedBefore.has(id) && !inTroop.has(id)
+          // 포획률 < 0.4 = 마지막 진화형·전설 — 관원 Lv8 에 벨데로드(최종형)가 나왔다. 중간형까지만.
+          && (monsterSpeciesById(project, id)?.captureRate ?? 0) >= 0.4 && tierOf(id) < 3).sort((a, b) => tierOf(a) - tierOf(b) || (a < b ? -1 : a > b ? 1 : 0))
+          // 칸마다 모의전 비용을 묶는다(앞 차례부터 10종) — 다 보면 끝맺음이 3분 → 12분이 됐다.
+          .slice(0, 10);
+        let best: { speciesId: string; tier: number; easy: number; record: EnemyRecord } | undefined;
+        const better = (tier: number, easy: number): boolean => {
+          if (!best) return true;
+          const inBand = easy <= HP_EASY, bestIn = best.easy <= HP_EASY;
+          if (inBand !== bestIn) return inBand;
+          if (inBand && tier !== best.tier) return tier < best.tier;
+          return easy < best.easy;
+        };
+        for (const speciesId of candidates) {
+          // 앞 차례에서 띠 안 후보를 찾았으면 뒤 차례는 보지 않는다(차례가 우선, 모의전도 아낀다).
+          if (best && best.easy <= HP_EASY && tierOf(speciesId) > best.tier) break;
           const oldName = monsterSpeciesById(project, original.speciesId!)?.name;
-          const swapped = { ...structuredClone(original), speciesId, monsterResourceId: (donors.get(speciesId) as { monsterResourceId?: string }).monsterResourceId, name: original.name === oldName ? monsterSpeciesById(project, speciesId)?.name ?? original.name : original.name } as EnemyRecord;
+          const swapped = { ...structuredClone(original), speciesId, monsterResourceId: art.get(speciesId), name: original.name === oldName ? monsterSpeciesById(project, speciesId)?.name ?? original.name : original.name } as EnemyRecord;
           project.database.enemies[index] = swapped;
           relevel(project, swapped, original.level!);
           const trial = evaluate();
-          const score = trial.rate >= FIT_WIN_RATE ? easiest() + 0.02 * usedElsewhere(speciesId) : Infinity;
-          if (score < (best?.score ?? Infinity)) best = { speciesId, score, record: structuredClone(enemyOf(enemyId)!) };
+          if (trial.rate >= FIT_WIN_RATE && better(tierOf(speciesId), easiest())) best = { speciesId, tier: tierOf(speciesId), easy: easiest(), record: structuredClone(enemyOf(enemyId)!) };
           project.database.enemies[index] = original;
         }
-        if (best && best.score < current + 0.02 * usedElsewhere(original.speciesId!) - 0.05) {
+        // 겹침은 띠 아래쪽만 지키면 바꾼다. 쉬움만 문제면 0.05 이상 나아질 때만.
+        if (best && (duplicate || (current.rate >= FIT_WIN_RATE && best.easy < current.easy - 0.05))) {
           project.database.enemies[index] = best.record;
-          swaps.push(`${monsterSpeciesById(project, original.speciesId!)?.name ?? original.speciesId}→${monsterSpeciesById(project, best.speciesId)?.name ?? best.speciesId}(쉬움 줄이기)`);
+          swaps.push(`${monsterSpeciesById(project, original.speciesId!)?.name ?? original.speciesId}→${monsterSpeciesById(project, best.speciesId)?.name ?? best.speciesId}(${duplicate ? "겹침 피하기" : "쉬움 줄이기"})`);
         }
         low = evaluate();
       }
