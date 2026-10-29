@@ -867,6 +867,7 @@ const skillRecordSchema = objectSchema({
       shake: { type: "string", enum: ["none", "light", "heavy"], description: "착탄 흔들림(생략 = 셋 이상 heavy · 듀얼 light)" },
       slowMo: booleanSchema("착탄 순간 느린 화면(생략 = 켜기)"),
       kicker: { type: "string", description: "제목 카드 위 작은 글(예: 「듀얼 테크」). 생략 = 인원수로" },
+      partners: { type: "string", enum: ["auto", "rush", "cast", "ranged"], description: "시전자 말고 다른 참가자 동작: rush 달려가 베기 · cast 반 걸음 나와 시전 · ranged 쏘기 · auto(기본) 요구 기술로" },
     },
     "연계기 연출(컷인 얼굴 교차 → 참가자별 빛 → 합쳐진 마무리 → 제목 카드). 전역 세기는 set_project_settings battle.staging. 해제 = null",
   ),
