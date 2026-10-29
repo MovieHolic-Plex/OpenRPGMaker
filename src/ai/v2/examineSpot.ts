@@ -86,6 +86,68 @@ function attachToNeighbor(run: BuildRun, mapId: string, ev: GameEvent, words: st
   return undefined;
 }
 
+/** 이름 낱말이 가리키는 가구 이름표(보관함 → 상자·금고). */
+const THING_LABELS: readonly [RegExp, RegExp][] = [
+  [/보관함|금고|상자|궤|함$|chest|box|safe|locker/iu, /상자|금고|궤|보관|함|chest|box|safe|locker/iu],
+  [/시계|clock/iu, /시계|clock/iu],
+  [/책장|서가|장서|bookshelf/iu, /책장|서가|bookshelf/iu],
+  [/쪽지|메모|편지|일기|일지|수첩|서류|기록|note|memo|letter|diary/iu, /책상|탁자|탁상|테이블|desk|table/iu],
+  [/지구본|globe/iu, /지구본|globe/iu],
+];
+/**
+ * 1b) 바로 옆에 가구가 없으면 4걸음 안에서 이름에 맞는 가구(보관함 → 상자)로 옮긴다 — 이름이 맞을 때만.
+ * 왜(2026-10-29 vm3 terra 방탈출 판정): 「잠긴 보관함」이 빈 바닥(2,6)에 발밑으로 내려가 있었고 상자 그림은 세 칸 옆(5,6)에 있었다 —
+ * 판정자는 상자 앞에서 눌러도 무반응이라 「특정 칸에서만 나온다」고 적었다.
+ */
+function attachNearby(run: BuildRun, mapId: string, ev: GameEvent, words: string): string | undefined {
+  const map = run.ctx.project.maps[mapId]!;
+  const name = String((ev as { name?: string }).name ?? "");
+  const wants = THING_LABELS.filter(([word]) => word.test(name) || word.test(words)).map(([, label]) => label);
+  if (!wants.length) return undefined;
+  const taken = new Set(map.events.filter((e) => e.id !== ev.id).map((e) => e.y * map.width + e.x));
+  const cands: { c: Cell; d: number; what: string; rank: number }[] = [];
+  for (let dy = -4; dy <= 4; dy += 1) for (let dx = -4; dx <= 4; dx += 1) {
+    const d = Math.abs(dx) + Math.abs(dy);
+    if (d < 1 || d > 4) continue;
+    const c = { x: ev.x + dx, y: ev.y + dy };
+    if (c.x < 0 || c.y < 0 || c.x >= map.width || c.y >= map.height || taken.has(c.y * map.width + c.x)) continue;
+    if (isPassable(run.ctx.project, map, c.x, c.y) || !objectAt(map, c)) continue;
+    const labels = labelsAt(run, map, c);
+    const rank = wants.findIndex((re) => labels.some((l) => re.test(l) && !NOT_FURNITURE.test(l)));
+    if (rank < 0) continue;
+    cands.push({ c, d, what: labels[0] ?? "가구", rank });
+  }
+  cands.sort((a, b) => a.rank - b.rank || a.d - b.d || a.c.y - b.c.y || a.c.x - b.c.x);
+  const before = new Set(unreachableEvents(run.ctx.project, mapId));
+  for (const { c, what } of cands) {
+    const snapshot = run.ctx.project;
+    const res = run.call("move_event", { mapId, eventId: ev.id, x: c.x, y: c.y });
+    const after = res.ok ? unreachableEvents(run.ctx.project, mapId) : [ev.id];
+    if (res.ok && !after.includes(ev.id) && after.every((id) => before.has(id))) return `「${name || ev.id}」 (${ev.x},${ev.y}) 빈 바닥 → 이름에 맞는 ${what} 칸 (${c.x},${c.y})`;
+    run.ctx.project = snapshot;
+  }
+  return undefined;
+}
+
+/** 빈 바닥(가구 아닌 걸을 수 있는 칸)에 놓인 그림 없는 조사 칸 — 높이와 상관없이(발밑으로 내린 것도). 문 이름은 뺀다. */
+function blankFloorExamine(run: BuildRun, map: GameMap, ev: GameEvent): boolean {
+  if (ev.id.startsWith("ev_chain_seal_") || isDoorName(String((ev as { name?: string }).name ?? ""))) return false;
+  return invisible(ev) && examineOnly(ev) && !objectAt(map, ev) && isPassable(run.ctx.project, map, ev.x, ev.y);
+}
+
+/** 맵의 빈 바닥 조사 칸(발밑으로 내린 것 포함)을 이름에 맞는 가까운 가구로 옮긴다 — 끝맺음이 이미 지은 맵을 고친다. */
+export function attachFloorExaminesNearby(run: BuildRun, mapId: string): string[] {
+  const notes: string[] = [];
+  for (const id of (run.ctx.project.maps[mapId]?.events ?? []).map((e) => e.id)) {
+    const map = run.ctx.project.maps[mapId];
+    const ev = map?.events.find((e) => e.id === id);
+    if (!map || !ev || /^ev_objective|^ev_heal_spring|_rest$/u.test(ev.id) || !blankFloorExamine(run, map, ev)) continue;
+    const moved = attachNearby(run, mapId, ev, "");
+    if (moved) notes.push(moved);
+  }
+  return notes;
+}
+
 /** 3) 발밑으로 — 같은 높이 조사 페이지를 below 로 내린다. */
 function lowerToFloor(run: BuildRun, mapId: string, ev: GameEvent): string | undefined {
   let changed = false;
@@ -107,7 +169,7 @@ export function settleExamineSpot(run: BuildRun, mapId: string, eventId: string,
   const map0 = run.ctx.project.maps[mapId];
   if (!ev0 || !map0 || !blankFloorBlocker(run, map0, ev0)) return [];
   const notes: string[] = [];
-  const attached = attachToNeighbor(run, mapId, ev0, hint);
+  const attached = attachToNeighbor(run, mapId, ev0, hint) ?? attachNearby(run, mapId, ev0, hint);
   if (attached) notes.push(attached);
   const shown = showExaminedThing(run, mapId, eventId, hint);
   if (shown) notes.push(shown);

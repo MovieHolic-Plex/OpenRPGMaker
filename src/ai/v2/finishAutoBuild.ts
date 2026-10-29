@@ -8,9 +8,11 @@ import { battleSites, healingSources } from "./combatChecks";
 import { wantsWholeGame } from "./shipChecks";
 import { applyShipDefaults } from "./shipDefaults";
 import { refreshObjectiveRoutes } from "./discoverability";
-import { fitUnwinnableStepBattlesIn, orderStepBattlesIn } from "./blueprintPath";
+import { blueprintMapFor, fitUnwinnableStepBattlesIn, orderStepBattlesIn } from "./blueprintPath";
+import { attachFloorExaminesNearby } from "./examineSpot";
 import { ensureBossRest } from "./healingAccess";
 import { createBuildRun } from "./buildRun";
+import { settleCodeSolvedLines } from "./puzzle";
 import { applyBlueprintAssembly } from "@/project/blueprintAssembly";
 import { applyBlueprintOpening } from "@/editor/tools/blueprintOpening";
 import { renameBareBlueprintPlaces } from "./blankStart";
@@ -90,6 +92,15 @@ export async function runFinishAutoBuild(env: PiAssistantV2Env, session: V2Sessi
     // 보스 앞 쉼터 — 깎인 HP·독으로 보스 앞에 서지 않게(2026-10-29 vm3 flash jrpg 리치). 던전 빌더도 같은 함수를 부른다.
     try { assembled.push(...ensureBossRest(createBuildRun(env.ctx))); }
     catch { /* 쉼터 넣기 실패는 끝맺음을 깨지 않는다 */ }
+    // 번호 자물쇠의 「열렸다」 대사는 맞힌 뒤에만(2026-10-29 vm3 flash 방탈출).
+    try { assembled.push(...settleCodeSolvedLines(env.ctx.project)); }
+    catch { /* 대사 옮기기 실패는 끝맺음을 깨지 않는다 */ }
+    // 빈 바닥 조사 칸을 이름에 맞는 가까운 가구로(2026-10-29 vm3 terra 방탈출 「보관함」이 상자 세 칸 옆 바닥에 있었다).
+    try {
+      const run = createBuildRun(env.ctx);
+      const ids = new Set((env.ctx.project.gameBlueprint?.steps ?? []).flatMap((step) => { const m = blueprintMapFor(env.ctx.project, step.place); return m ? [m.id] : []; }));
+      for (const id of ids) assembled.push(...attachFloorExaminesNearby(run, id));
+    } catch { /* 조사 칸 옮기기 실패는 끝맺음을 깨지 않는다 */ }
     try { assembled.push(...orderStepBattlesIn(env.ctx.project)); }
     catch (error) { env.emit({ type: "execution_status", name: "v2.assembly", ok: false, summary: `단계 순서 보호를 하지 못했다: ${error instanceof Error ? error.message : String(error)}` }); }
     // 목표 꼬리 「(<맵> 입구: 방위)」를 마지막 연결로 다시 쓴다 — 목표가 걸리는 자리에서 본 첫 출구 방위·그 뒤 대상(2026-10-29 vm2 jrpg 길 못 찾음).
