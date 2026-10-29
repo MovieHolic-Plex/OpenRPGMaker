@@ -294,7 +294,7 @@ const B = {
     await play(page, seg, [1], async (s) => s.battle); mark("battle");
     shot(page, "manual-battle", 2500);
     await battle(page, seg, lose ? ["attack"] : ["skill_mk_irasshai", "skill_mk_nikuman", "skill_mk_point_card", "skill_mk_nikuman", "skill_mk_irasshai", "skill_mk_nikuman", "skill_mk_smile", "skill_mk_irasshai"]); mark("battle-end");
-    await play(page, seg, [], async (s) => s.ending, { shotOn: /따뜻하다|일하면 된다|근무 평가|액자|평생|얻어맞으라는/ }); mark("ending");
+    await play(page, seg, [], async (s) => s.ending, { shotOn: /따뜻하다|일하면 된다|근무 평가|액자|평생|맞으라는/ }); mark("ending");
     shot(page, "ending", 2500);
     await page.waitForTimeout(4000);
     await play(page, seg, [], async () => false, { maxMs: 60_000 });
