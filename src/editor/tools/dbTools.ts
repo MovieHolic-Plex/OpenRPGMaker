@@ -1774,6 +1774,29 @@ function skillDamagesFoe(project: Project, skillId: string): boolean {
   return skill?.effect?.kind === "damage" && (skill.scope === "enemy" || skill.scope === "allEnemies");
 }
 
+/** upsert_enemy.clearFields 로 지울 수 있는 선택 필드. id·name·stats·actions·그림(monsterResourceId)은 적의 뼈대라 뺀다. */
+const ENEMY_CLEARABLE_FIELDS = [
+  "speciesId", "level", "battleScalePercent", "lungeSpeedPercent", "collapseEffect", "hideHp", "criticalHit", "attackOptions",
+  "reactions", "stealItems", "stateRates", "elementRates", "damageTypeRates",
+] as const;
+
+/** 병합된 적에서 clearFields 를 지운다. 실제로 지운 필드 이름을 돌려준다(없던 필드는 조용히 넘어간다). */
+function clearEnemyFields(merged: Record<string, unknown>, patch: unknown, clearFields: unknown): string[] {
+  if (clearFields === undefined) return [];
+  if (!Array.isArray(clearFields)) throw new ToolError("clearFields 는 필드 이름 배열이어야 합니다.", { code: "invalid-clear-fields" });
+  const allowed = new Set<string>(ENEMY_CLEARABLE_FIELDS);
+  const given = patch && typeof patch === "object" ? patch as Record<string, unknown> : {};
+  const removed: string[] = [];
+  for (const field of clearFields) {
+    if (typeof field !== "string" || !allowed.has(field)) {
+      throw new ToolError(`clearFields '${String(field)}' 는 지울 수 없는 필드입니다. 지울 수 있는 필드: ${ENEMY_CLEARABLE_FIELDS.join(", ")}`, { code: "invalid-clear-fields" });
+    }
+    if (field in given) throw new ToolError(`'${field}' 를 enemy 에 주면서 clearFields 로 지우라고 했습니다 — 한쪽만 주세요.`, { code: "invalid-clear-fields" });
+    if (field in merged) { delete merged[field]; removed.push(field); }
+  }
+  return removed;
+}
+
 const upsertEnemy: ToolDefinition = {
   name: "upsert_enemy",
   description:
@@ -1787,6 +1810,11 @@ const upsertEnemy: ToolDefinition = {
   mode: "write",
   parameters: parametersForRecord("enemy", enemyRecordSchema, { id: "enemy_slime", name: "슬라임", stats: { maxHp: 40, attack: 12 }, rewards: { exp: 3, gold: 2 } }, {
     role: { type: "string", enum: ["boss", "normal"], description: "boss 면 시작 파티 기준 위협 하한을 맞춘다. 생략 시 id·이름의 boss/보스로 판정." },
+    clearFields: {
+      type: "array",
+      items: { type: "string", enum: [...ENEMY_CLEARABLE_FIELDS] },
+      description: "기존 적에서 지울 필드(병합은 필드를 지우지 못한다). 예: 몬스터 종에서 복제한 사람 적이 「야생의 ○○」로 나오면 [\"speciesId\"]. 같은 호출의 enemy 에 같은 필드를 함께 주지 않는다.",
+    },
   }),
   run(draft, rawArgs): ToolExecResult {
     const repaired = repairRecordArgs("enemy", "enemy", rawArgs, enemyRecordSchema, upsertEnemy.parameters);
@@ -1796,9 +1824,11 @@ const upsertEnemy: ToolDefinition = {
     requirePositiveTp((args.enemy as { rewards?: { tp?: unknown } } | undefined)?.rewards?.tp, "enemy.rewards.tp");
     requirePositiveAp((args.enemy as { rewards?: { ap?: unknown } } | undefined)?.rewards?.ap, "enemy.rewards.ap");
     const merged = mergeRecord(draft.database.enemies, args.enemy, "enemy", enemyRecordSchema, { id: "enemy_slime", name: "슬라임" });
+    const cleared = clearEnemyFields(merged as Record<string, unknown>, args.enemy, args.clearFields);
     rejectUnknownEnemyReferences(draft, args.enemy);
     const record = normalizeEnemyRecord(merged as Partial<EnemyRecord> & Pick<EnemyRecord, "id" | "name">);
     const warnings: string[] = [...repaired.notes];
+    if (cleared.length > 0) warnings.push(`지운 필드: ${cleared.join(", ")}`);
     dropUnknownElementRates(draft, record, "enemy", warnings);
     dropUnknownSpeciesId(draft, record, "enemy", warnings);
     ensureMonsterGraphic(draft, record, record, "enemy.monsterResourceId", warnings, args.appearanceTags as unknown[] | undefined, { pendingWhenLocked: true });
