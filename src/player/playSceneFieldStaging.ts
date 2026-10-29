@@ -884,8 +884,11 @@ function syncExitLabels(scene: PlaySceneContext, now: number): void {
       }).setResolution(zoom).setScale(1 / zoom).setOrigin(0, 1).setDepth(MAP_UPPER_LAYER_DEPTH + 901);
       state.labels.set(id, label);
     }
-    label.x = Math.round(at.x - label.displayWidth / 2);
-    label.y = Math.round(at.y);
+    // 가장자리 출구(2026-10-29 vm3 argon jrpg «마을 가장자리가 어디로도 이어지지 않아 보임»): 글자가 맵 밖으로 반쯤 나가 잘리지 않게 맵 안으로 민다.
+    // 맨 윗줄 출구는 칸 위에 둘 자리가 없으니 칸 아래에 둔다.
+    const mapW = map.width * size;
+    label.x = Math.round(Math.max(1, Math.min(mapW - label.displayWidth - 1, at.x - label.displayWidth / 2)));
+    label.y = Math.round(at.y - label.displayHeight < 0 ? at.y + size + 2 + label.displayHeight : at.y);
   }
 }
 
