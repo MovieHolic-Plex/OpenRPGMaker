@@ -129,7 +129,7 @@ export function talkBossBattles(run: BuildRun, mapId: string): string[] {
             }
             return r;
           };
-          const marked = mark(e.pages ?? []) as typeof e.pages;
+          const marked = mark(e.pages ?? []) as NonNullable<typeof e.pages>;
           const quiet = { ...structuredClone((e.pages ?? [])[0]!), id: `${e.id}_after_${p.id}`, name: "격파 뒤", conditions: [{ kind: "switch", switchId: sw, value: true }], graphic: { transparent: true }, priority: "below", commands: [] };
           return { ...e, pages: [...marked, quiet] as unknown as typeof e.pages };
         }
