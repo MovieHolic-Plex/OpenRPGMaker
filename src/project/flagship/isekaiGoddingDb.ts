@@ -6,6 +6,10 @@
 import { DEFAULT_ACTOR_ID } from "@/project/defaults/constants";
 import type { Project } from "@/project/types";
 import { CAST, execTool } from "./isekaiGoddingKit";
+import forestBackdrop from "./isekaiGoddingBackdrops/battle_backdrop_ig_forest_476a116d.json";
+import villageBackdrop from "./isekaiGoddingBackdrops/battle_backdrop_ig_village_4521bc89.json";
+import castleBackdrop from "./isekaiGoddingBackdrops/battle_backdrop_ig_castle_5b8389f0.json";
+import throneBackdrop from "./isekaiGoddingBackdrops/battle_backdrop_ig_throne_953aef61.json";
 
 export const ACTOR = { minjae: DEFAULT_ACTOR_ID, edel: "actor_ig_edel", fio: "actor_ig_fio", kkur: "actor_ig_kkur" } as const;
 export const CLASS = { student: "class_ig_student", knight: "class_ig_knight", mage: "class_ig_mage", chief: "class_ig_chief" } as const;
@@ -18,19 +22,25 @@ export const TROOP = {
   maouExam: "troop_ig_maou_exam",
   maouBrawl: "troop_ig_maou_brawl",
 } as const;
-/** 전투 배경 — battle-backdrop 하네스 판이 끝나면 감독이 고른 id 로 바꾼다. 그 전에는 번들 측면 배경. */
+/**
+ * 전투 배경 — battle-backdrop 하네스(맵 캡처 → 생성 → 도트화 → 검사)로 이 데모의 맵 넷을 그렸다.
+ * 판 ig-forest/A · ig-village/B · ig-castle/D · ig-throne/B (선택은 화소 해시에 묶임, harness-data/battle-backdrop/ledger.json).
+ * 자원 JSON 은 build --out 결과에서 그대로 떼어 냈다(maou-konbini 와 같은 방식).
+ */
+const BACKDROP_RESOURCES = [forestBackdrop, villageBackdrop, castleBackdrop, throneBackdrop] as const;
 export const BACKDROP = {
-  field: "battle-scenery-plains",
-  forest: "battle-scenery-forest",
-  village: "battle-scenery-plains",
-  castle: "battle-scenery-cave",
-  throne: "battle-scenery-cave",
+  field: forestBackdrop.resource.id,
+  forest: forestBackdrop.resource.id,
+  village: villageBackdrop.resource.id,
+  castle: castleBackdrop.resource.id,
+  throne: throneBackdrop.resource.id,
 };
 
 const clone = <T>(value: T): T => JSON.parse(JSON.stringify(value)) as T;
 
 export function setupIsekaiDatabase(project: Project, backdrops: typeof BACKDROP = BACKDROP): void {
   const exec = (name: string, args: Record<string, unknown>) => execTool(project, name, args);
+  for (const bd of BACKDROP_RESOURCES) exec("upsert_resource", { resource: bd.resource });
   const skillOf = (id: string) => {
     const s = project.database.skills.find((x) => x.id === id);
     if (!s) throw new Error(`[isekai-godding] 기술 견본 ${id} 없음`);

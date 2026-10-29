@@ -1282,6 +1282,1742 @@
     "by": "supervisor",
     "at": "2026-10-29T17:43:44Z"
    }
+  },
+  "ig-village": {
+   "id": "ig-village",
+   "createdAt": "2026-10-29T21:37:53Z",
+   "project": {
+    "file": "/tmp/ig-bb/project.json",
+    "sha256": "be3cf6f523b49e42c4e3e3da7d1c28f6f267db4c5c2c4f479c2bfceafda41ade",
+    "title": "이세계로 떠난 한국 고딩, 깽판치다"
+   },
+   "assetsRoot": "/home/main/z-project/rpg-zzu-isekai-godding",
+   "mapId": "map_ig_goblin",
+   "troopId": "troop_ig_goblin",
+   "window": {
+    "x": 0,
+    "y": 7,
+    "w": 32,
+    "h": 18
+   },
+   "captureSha256": "ce7c3ecd014c1d015d98291a57fe76ea11cdc37eb83922eff93ab0545d75b630",
+   "referenceSha256": "3334d4a1c1f9ae1f691c5e660c29bd665b9c4eb31ac7205e60d23d75a374cfd1",
+   "facts": {
+    "mapId": "map_ig_goblin",
+    "mapName": "반반 마을",
+    "tilesetName": "버들항 v6 · 로마풍 항구 도시 (손 도트)",
+    "indoor": false,
+    "timeOfDay": "day",
+    "timeCertain": true,
+    "light": "bright",
+    "evidence": [
+     "맵 기본 조명 없음(ambient 0)",
+     "시간 낱말 없음 → 낮으로 둔다"
+    ],
+    "placeWords": [
+     "반반 마을",
+     "통행세 받는 고블린"
+    ],
+    "captureLuma": 0.446,
+    "palette": [
+     "#071f1d",
+     "#431d00",
+     "#08372c",
+     "#452a17",
+     "#5e3a1c",
+     "#744c2a",
+     "#33849a",
+     "#3b6330",
+     "#2e6446",
+     "#44622d",
+     "#2f6546",
+     "#34653e",
+     "#3a6530",
+     "#35653f",
+     "#618c3b",
+     "#4b8020",
+     "#8a745c",
+     "#885a26",
+     "#6e9943",
+     "#aa7a08",
+     "#7aa34b",
+     "#c69250",
+     "#8cbf5f",
+     "#ecd6c6"
+    ]
+   },
+   "candidates": [
+    {
+     "letter": "A",
+     "promptSha256": "674016a3db420a3d4ed2801d66104d175c2e800f2ab9a3f3588cc820c3f0c16f",
+     "rawSha256": "17a04ce06fdde244f62c6ddb24b681aece1b43bf9eb4ec074813cf6cebf32605",
+     "nativePixelSha256": "efe19e101cd8b2435ce4229c6381c55775daec105404287b426ac7c78bbdae46",
+     "storedPixelSha256": "8983a8de6947669f5259ffe0bafe96a84f53eec9ace41402b5702fc3d898493f",
+     "colors": 32,
+     "palette": [
+      "#071f1d",
+      "#431d00",
+      "#08372c",
+      "#452a17",
+      "#5e3a1c",
+      "#744c2a",
+      "#33849a",
+      "#3b6330",
+      "#2e6446",
+      "#44622d",
+      "#2f6546",
+      "#34653e",
+      "#3a6530",
+      "#35653f",
+      "#618c3b",
+      "#4b8020",
+      "#8a745c",
+      "#885a26",
+      "#6e9943",
+      "#aa7a08",
+      "#7aa34b",
+      "#c69250",
+      "#8cbf5f",
+      "#ecd6c6",
+      "#085336",
+      "#753034",
+      "#a6875d",
+      "#a7875d",
+      "#5aacfd",
+      "#5aadfd",
+      "#5aadfe",
+      "#78c4fd"
+     ],
+     "extras": [
+      "#085336",
+      "#753034",
+      "#a6875d",
+      "#a7875d",
+      "#5aacfd",
+      "#5aadfd",
+      "#5aadfe",
+      "#78c4fd"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "32",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": false,
+       "value": "아래 0.334 / 위 0.641",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "전체 밝기 0.50 (캡처 0.45)",
+       "rule": "밝은 장면: 캡처와 밝기 차 ≤0.25, 0.18 이상"
+      }
+     },
+     "judge": {
+      "by": "claude:sonnet",
+      "nativePixelSha256": "efe19e101cd8b2435ce4229c6381c55775daec105404287b426ac7c78bbdae46",
+      "verdict": {
+       "characters": false,
+       "text": false,
+       "time": "day",
+       "samePlace": true,
+       "sideView": true,
+       "groundClear": true,
+       "pixelArt": true,
+       "notes": "Bright daytime village with log cabins, a half-timbered house, a well and a fenced field, and open grass with dirt patches in the lower half; no characters or text."
+      },
+      "findings": [],
+      "at": "2026-10-29T22:39:37Z"
+     }
+    },
+    {
+     "letter": "B",
+     "promptSha256": "9af724baa65757154e822216123df9e7f2a078f9a6cbc552cf6932ae0fdef1cc",
+     "rawSha256": "ace4b1aff0c0259b52b337031b859337b14b1e505d4e7f3c3bd4621df8f396e7",
+     "nativePixelSha256": "f817923323b3c0f3f6c6fbf37d0c27ed3d904eae8a8bdce75a1ced1f4928289f",
+     "storedPixelSha256": "4521bc89a804d7b637321553fb4dfd088965e2155fe2741aeeb8a374f2d75545",
+     "colors": 30,
+     "palette": [
+      "#071f1d",
+      "#431d00",
+      "#08372c",
+      "#452a17",
+      "#5e3a1c",
+      "#744c2a",
+      "#33849a",
+      "#3b6330",
+      "#2e6446",
+      "#44622d",
+      "#2f6546",
+      "#34653e",
+      "#3a6530",
+      "#618c3b",
+      "#4b8020",
+      "#8a745c",
+      "#885a26",
+      "#6e9943",
+      "#aa7a08",
+      "#7aa34b",
+      "#c69250",
+      "#8cbf5f",
+      "#ecd6c6",
+      "#014c3e",
+      "#014e41",
+      "#43a5fd",
+      "#686764",
+      "#43a6fd",
+      "#d3e7fd",
+      "#d4e9fd"
+     ],
+     "extras": [
+      "#014c3e",
+      "#014e41",
+      "#43a5fd",
+      "#686764",
+      "#43a6fd",
+      "#d3e7fd",
+      "#d4e9fd"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "30",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": false,
+       "value": "아래 0.246 / 위 0.630",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "전체 밝기 0.51 (캡처 0.45)",
+       "rule": "밝은 장면: 캡처와 밝기 차 ≤0.25, 0.18 이상"
+      }
+     },
+     "judge": {
+      "by": "claude:sonnet",
+      "nativePixelSha256": "f817923323b3c0f3f6c6fbf37d0c27ed3d904eae8a8bdce75a1ced1f4928289f",
+      "verdict": {
+       "characters": false,
+       "text": false,
+       "time": "day",
+       "samePlace": true,
+       "sideView": true,
+       "groundClear": true,
+       "pixelArt": true,
+       "notes": "Bright daytime village with a half-timbered house, log cabins, a well and a cart in front of a forest; the lower half is open grass and dirt with no figures or text."
+      },
+      "findings": [],
+      "at": "2026-10-29T22:39:38Z"
+     }
+    },
+    {
+     "letter": "C",
+     "promptSha256": "c0d7aa6b4875149c7d4a1c713adf791dca98003e182c49307989b22b3f19bb3f",
+     "rawSha256": "e5bb8b862d891b0b8ba894633b15db1b752738b6f0099b70b5dab442fd46f938",
+     "nativePixelSha256": "44d6bd3a040b216421aa64634080a5329c1958182ed9ccf7b83f7fef16996ae4",
+     "storedPixelSha256": "67a9389d9ecd9555a20f5650fd47d7a139b23bf6ced9343fec5f282e7811854e",
+     "colors": 30,
+     "palette": [
+      "#071f1d",
+      "#431d00",
+      "#08372c",
+      "#452a17",
+      "#5e3a1c",
+      "#744c2a",
+      "#33849a",
+      "#3b6330",
+      "#2e6446",
+      "#44622d",
+      "#2f6546",
+      "#34653e",
+      "#3a6530",
+      "#618c3b",
+      "#4b8020",
+      "#8a745c",
+      "#885a26",
+      "#6e9943",
+      "#aa7a08",
+      "#7aa34b",
+      "#c69250",
+      "#8cbf5f",
+      "#ecd6c6",
+      "#064d3c",
+      "#54545a",
+      "#60adfd",
+      "#a7a04c",
+      "#b89a8a",
+      "#60aefd",
+      "#e5f2fa"
+     ],
+     "extras": [
+      "#064d3c",
+      "#54545a",
+      "#60adfd",
+      "#a7a04c",
+      "#b89a8a",
+      "#60aefd",
+      "#e5f2fa"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "30",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": false,
+       "value": "아래 0.236 / 위 0.616",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "전체 밝기 0.51 (캡처 0.45)",
+       "rule": "밝은 장면: 캡처와 밝기 차 ≤0.25, 0.18 이상"
+      }
+     },
+     "judge": {
+      "by": "claude:sonnet",
+      "nativePixelSha256": "44d6bd3a040b216421aa64634080a5329c1958182ed9ccf7b83f7fef16996ae4",
+      "verdict": {
+       "characters": false,
+       "text": false,
+       "time": "day",
+       "samePlace": true,
+       "sideView": true,
+       "groundClear": true,
+       "pixelArt": true,
+       "notes": "Bright daytime village with log cabins, a half-timbered house, a well, a cart and a fence; the lower half is an open grass field with no figures or text."
+      },
+      "findings": [],
+      "at": "2026-10-29T22:39:36Z"
+     }
+    },
+    {
+     "letter": "D",
+     "promptSha256": "646fab53397a1ed823b73dc1771a539def48fae154c2559e11a6d28f8ffb828e",
+     "rawSha256": "709ceeffcd955593844d348fcb23de4e6116ee272cee9675d687cefc426fe9f7",
+     "nativePixelSha256": "9f117b024d0c8f4bc7d2cdf3ebc151ec7ef2257e2481ff2237a06a88886f3e09",
+     "storedPixelSha256": "b0e2d397c84fd8a94fb114edde72e1a3e90252193bc5c0287c1578b712a9f8fd",
+     "colors": 32,
+     "palette": [
+      "#071f1d",
+      "#431d00",
+      "#08372c",
+      "#452a17",
+      "#5e3a1c",
+      "#744c2a",
+      "#33849a",
+      "#3b6330",
+      "#2e6446",
+      "#44622d",
+      "#2f6546",
+      "#34653e",
+      "#3a6530",
+      "#35653f",
+      "#618c3b",
+      "#4b8020",
+      "#8a745c",
+      "#885a26",
+      "#6e9943",
+      "#aa7a08",
+      "#7aa34b",
+      "#c69250",
+      "#8cbf5f",
+      "#ecd6c6",
+      "#084939",
+      "#0c4f39",
+      "#2c6670",
+      "#5aa6ed",
+      "#a36632",
+      "#5ba7ee",
+      "#5da9ed",
+      "#81b8f2"
+     ],
+     "extras": [
+      "#084939",
+      "#0c4f39",
+      "#2c6670",
+      "#5aa6ed",
+      "#a36632",
+      "#5ba7ee",
+      "#5da9ed",
+      "#81b8f2"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "32",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": false,
+       "value": "아래 0.312 / 위 0.647",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "전체 밝기 0.48 (캡처 0.45)",
+       "rule": "밝은 장면: 캡처와 밝기 차 ≤0.25, 0.18 이상"
+      }
+     },
+     "judge": {
+      "by": "claude:sonnet",
+      "nativePixelSha256": "9f117b024d0c8f4bc7d2cdf3ebc151ec7ef2257e2481ff2237a06a88886f3e09",
+      "verdict": {
+       "characters": false,
+       "text": false,
+       "time": "day",
+       "samePlace": true,
+       "sideView": true,
+       "groundClear": true,
+       "pixelArt": true,
+       "notes": "Bright daytime village with log cabins and a half-timbered house over an open grass field with dirt patches; no people, text or animals."
+      },
+      "findings": [],
+      "at": "2026-10-29T22:39:36Z"
+     }
+    }
+   ],
+   "pick": {
+    "letter": "B",
+    "nativePixelSha256": "f817923323b3c0f3f6c6fbf37d0c27ed3d904eae8a8bdce75a1ced1f4928289f",
+    "storedPixelSha256": "4521bc89a804d7b637321553fb4dfd088965e2155fe2741aeeb8a374f2d75545",
+    "by": "isekai-godding 데모 에이전트(감독 임시 선택, 감독이 바꿀 수 있음)",
+    "at": "2026-10-29T22:44:03Z"
+   },
+   "builds": [
+    {
+     "at": "2026-10-29T22:56:38Z",
+     "target": "troop:troop_ig_goblin",
+     "resourceId": "battle_backdrop_ig_village_4521bc89",
+     "storedPixelSha256": "4521bc89a804d7b637321553fb4dfd088965e2155fe2741aeeb8a374f2d75545",
+     "into": "/tmp/ig-bb/p2.json",
+     "reloaded": true
+    }
+   ]
+  },
+  "ig-castle": {
+   "id": "ig-castle",
+   "createdAt": "2026-10-29T21:55:25Z",
+   "project": {
+    "file": "/tmp/ig-bb/project.json",
+    "sha256": "be3cf6f523b49e42c4e3e3da7d1c28f6f267db4c5c2c4f479c2bfceafda41ade",
+    "title": "이세계로 떠난 한국 고딩, 깽판치다"
+   },
+   "assetsRoot": "/home/main/z-project/rpg-zzu-isekai-godding",
+   "mapId": "map_ig_castle",
+   "troopId": "troop_ig_dean",
+   "window": {
+    "x": 0,
+    "y": 0,
+    "w": 40,
+    "h": 27
+   },
+   "captureSha256": "30f1d4819873c77478e9ddd1f3e9cb19fcbcb5def3368d0edc38f439c4837d2a",
+   "referenceSha256": "422a2d2aa00383256d934db2e71ee7a22dbf0363e3a667cdd0eb20dde2a4f0b6",
+   "facts": {
+    "mapId": "map_ig_castle",
+    "mapName": "마왕성 1층",
+    "tilesetName": "버들항 v6 · 로마풍 항구 도시 (손 도트)",
+    "indoor": false,
+    "timeOfDay": "day",
+    "timeCertain": true,
+    "light": "bright",
+    "evidence": [
+     "맵 기본 조명 없음(ambient 0)",
+     "시간 낱말 없음 → 낮으로 둔다"
+    ],
+    "placeWords": [
+     "마왕성 1층",
+     "입구 홀 entrance",
+     "큰 홀 hall",
+     "창고 storage2",
+     "감방 cell3",
+     "보스방 boss",
+     "보물 방 vault",
+     "던전 입구",
+     "마왕군 교무부장"
+    ],
+    "captureLuma": 0.296,
+    "palette": [
+     "#0e0a14",
+     "#14101c",
+     "#1a1624",
+     "#181b19",
+     "#383d3a",
+     "#292d2b",
+     "#4b4d4a",
+     "#5f6360",
+     "#595b58",
+     "#9e2514",
+     "#616462",
+     "#636562",
+     "#646764",
+     "#7e807d",
+     "#80827f",
+     "#6e6c70",
+     "#967a3c",
+     "#828582",
+     "#929491",
+     "#aa7a08",
+     "#9d9f9c",
+     "#c4c6c3",
+     "#a3a5a2",
+     "#dee0dd"
+    ]
+   },
+   "candidates": [
+    {
+     "letter": "A",
+     "promptSha256": "7c900b7fd72ace96a9c24de34204bf5c2cfd169bef937a617c7835b4c7c8dc90",
+     "rawSha256": "d36c66ef5c297d8be41893a3fcf33ce0e0c501fbfb6e8c2411a5a213cbc45131",
+     "nativePixelSha256": "d3a64b14e5370b265e9e530d9ff2343b29ee4fedfcec16502b89a8222cd7df1e",
+     "storedPixelSha256": "ed67757a9adfec4ee0ef749955249c5a76b1bb5adf385a6f60c0fe31b0c6dca6",
+     "colors": 28,
+     "palette": [
+      "#0e0a14",
+      "#14101c",
+      "#181b19",
+      "#383d3a",
+      "#292d2b",
+      "#4b4d4a",
+      "#5f6360",
+      "#595b58",
+      "#9e2514",
+      "#646764",
+      "#7e807d",
+      "#80827f",
+      "#6e6c70",
+      "#967a3c",
+      "#828582",
+      "#929491",
+      "#aa7a08",
+      "#9d9f9c",
+      "#c4c6c3",
+      "#a3a5a2",
+      "#dee0dd",
+      "#65a7fc",
+      "#66a8fd",
+      "#67a9fd",
+      "#68a9fd",
+      "#68aafd",
+      "#69abfd",
+      "#aacefd"
+     ],
+     "extras": [
+      "#65a7fc",
+      "#66a8fd",
+      "#67a9fd",
+      "#68a9fd",
+      "#68aafd",
+      "#69abfd",
+      "#aacefd"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "28",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": false,
+       "value": "아래 0.429 / 위 0.576",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "전체 밝기 0.51 (캡처 0.30)",
+       "rule": "밝은 장면: 캡처와 밝기 차 ≤0.25, 0.18 이상"
+      }
+     },
+     "judge": {
+      "by": "claude:sonnet",
+      "nativePixelSha256": "d3a64b14e5370b265e9e530d9ff2343b29ee4fedfcec16502b89a8222cd7df1e",
+      "verdict": {
+       "characters": false,
+       "text": false,
+       "time": "day",
+       "samePlace": true,
+       "sideView": true,
+       "groundClear": true,
+       "pixelArt": true,
+       "notes": "Open-roof stone castle courtyard with a red throne, torches and pillars under a bright blue sky. The lower half is clear paved floor and no figures appear."
+      },
+      "findings": [],
+      "at": "2026-10-29T22:40:27Z"
+     }
+    },
+    {
+     "letter": "B",
+     "promptSha256": "a8c54de4f67884040da920e1f6980d1ad4f9c9e705ab4df61dcde24e15c5029e",
+     "rawSha256": "6e60f007b4fa05a13290828f2711fce8925954ba09cc403ca4beb5800bfbd84a",
+     "nativePixelSha256": "31486e17ee4e867adcd014e2605d5c97bac60d077b896adf468a97dd755a4a6f",
+     "storedPixelSha256": "0018ee30051e23251092ae8437cd7b24017f89a9227a99ed012b4af95f7f9126",
+     "colors": 29,
+     "palette": [
+      "#0e0a14",
+      "#14101c",
+      "#181b19",
+      "#383d3a",
+      "#292d2b",
+      "#4b4d4a",
+      "#5f6360",
+      "#595b58",
+      "#9e2514",
+      "#616462",
+      "#646764",
+      "#7e807d",
+      "#80827f",
+      "#6e6c70",
+      "#967a3c",
+      "#828582",
+      "#929491",
+      "#aa7a08",
+      "#9d9f9c",
+      "#c4c6c3",
+      "#a3a5a2",
+      "#dee0dd",
+      "#620d0e",
+      "#6e0a0c",
+      "#7f0b0c",
+      "#880b0c",
+      "#d4190e",
+      "#dc8b00",
+      "#eeb70f"
+     ],
+     "extras": [
+      "#620d0e",
+      "#6e0a0c",
+      "#7f0b0c",
+      "#880b0c",
+      "#d4190e",
+      "#dc8b00",
+      "#eeb70f"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "29",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": false,
+       "value": "아래 0.432 / 위 0.600",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "전체 밝기 0.43 (캡처 0.30)",
+       "rule": "밝은 장면: 캡처와 밝기 차 ≤0.25, 0.18 이상"
+      }
+     },
+     "judge": {
+      "by": "claude:sonnet",
+      "nativePixelSha256": "31486e17ee4e867adcd014e2605d5c97bac60d077b896adf468a97dd755a4a6f",
+      "verdict": {
+       "characters": false,
+       "text": false,
+       "time": "unclear",
+       "samePlace": true,
+       "sideView": true,
+       "groundClear": true,
+       "pixelArt": true,
+       "notes": "A throne room with a red carpet, torches and a stone floor matches the map. It is an indoor scene with no windows, so the time of day can't be read, and the torch-lit mood is dimmer than the expected bright day."
+      },
+      "findings": [
+       "시간이 다르다(기대 day, 판정 unclear)"
+      ],
+      "at": "2026-10-29T22:40:27Z"
+     }
+    },
+    {
+     "letter": "C",
+     "promptSha256": "8403bcaac468a5ec6bfe32a3c74da4a24f8cf5b49b4021cad0ab0c271cfd2b22",
+     "rawSha256": "5627f46492b3594018d2568cf7893af57a78b072584b98e4d89b2f4967f93239",
+     "nativePixelSha256": "ede3268bbbbc61c514b2609e0a8649583732a4af9850d1838f5123bde7df4673",
+     "storedPixelSha256": "1cddb159d011f26e4c50ec019d7078b000cf3e54f03a5d083a3a1195773f0e07",
+     "colors": 28,
+     "palette": [
+      "#0e0a14",
+      "#14101c",
+      "#1a1624",
+      "#181b19",
+      "#383d3a",
+      "#292d2b",
+      "#4b4d4a",
+      "#5f6360",
+      "#595b58",
+      "#9e2514",
+      "#616462",
+      "#646764",
+      "#7e807d",
+      "#80827f",
+      "#6e6c70",
+      "#828582",
+      "#929491",
+      "#aa7a08",
+      "#9d9f9c",
+      "#c4c6c3",
+      "#a3a5a2",
+      "#dee0dd",
+      "#4f2f16",
+      "#563015",
+      "#830a0c",
+      "#864d1c",
+      "#ca8e03",
+      "#d3980a"
+     ],
+     "extras": [
+      "#4f2f16",
+      "#563015",
+      "#830a0c",
+      "#864d1c",
+      "#ca8e03",
+      "#d3980a"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "28",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": true,
+       "value": "아래 0.172 / 위 0.516",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "전체 밝기 0.44 (캡처 0.30)",
+       "rule": "밝은 장면: 캡처와 밝기 차 ≤0.25, 0.18 이상"
+      }
+     },
+     "judge": {
+      "by": "claude:sonnet",
+      "nativePixelSha256": "ede3268bbbbc61c514b2609e0a8649583732a4af9850d1838f5123bde7df4673",
+      "verdict": {
+       "characters": false,
+       "text": false,
+       "time": "unclear",
+       "samePlace": true,
+       "sideView": true,
+       "groundClear": true,
+       "pixelArt": true,
+       "notes": "Throne room with red carpet, torches and stone walls matches the map; there are no windows, only torchlight and a dark void at the top, so it doesn't read as bright day."
+      },
+      "findings": [
+       "시간이 다르다(기대 day, 판정 unclear)"
+      ],
+      "at": "2026-10-29T22:40:32Z"
+     }
+    },
+    {
+     "letter": "D",
+     "promptSha256": "47dd2888e54208058c7aa0acd1285d7a18efdaf8dba645d32e20d7aff0fbbc3d",
+     "rawSha256": "be92ef7344a9945c6a1c381b0fe9cb95293c41d318eba6209c4f1b2fb74ebcc3",
+     "nativePixelSha256": "1948cfc8240ec542bd3a8d579aa9400b8042e110e2243d1eca5d2db3552f009b",
+     "storedPixelSha256": "5b8389f025b832453aafe6252d574161b54d93912b49aedff8a4b4e878af9979",
+     "colors": 29,
+     "palette": [
+      "#0e0a14",
+      "#14101c",
+      "#1a1624",
+      "#181b19",
+      "#383d3a",
+      "#292d2b",
+      "#4b4d4a",
+      "#5f6360",
+      "#595b58",
+      "#9e2514",
+      "#616462",
+      "#646764",
+      "#7e807d",
+      "#80827f",
+      "#6e6c70",
+      "#967a3c",
+      "#828582",
+      "#929491",
+      "#aa7a08",
+      "#9d9f9c",
+      "#c4c6c3",
+      "#a3a5a2",
+      "#dee0dd",
+      "#010205",
+      "#5c0f13",
+      "#810a0e",
+      "#83090e",
+      "#cb2709",
+      "#f76b02"
+     ],
+     "extras": [
+      "#010205",
+      "#5c0f13",
+      "#810a0e",
+      "#83090e",
+      "#cb2709",
+      "#f76b02"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "29",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": true,
+       "value": "아래 0.014 / 위 0.446",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "전체 밝기 0.45 (캡처 0.30)",
+       "rule": "밝은 장면: 캡처와 밝기 차 ≤0.25, 0.18 이상"
+      }
+     },
+     "judge": {
+      "by": "claude:sonnet",
+      "nativePixelSha256": "1948cfc8240ec542bd3a8d579aa9400b8042e110e2243d1eca5d2db3552f009b",
+      "verdict": {
+       "characters": false,
+       "text": false,
+       "time": "unclear",
+       "samePlace": true,
+       "sideView": true,
+       "groundClear": true,
+       "pixelArt": true,
+       "notes": "Side-view throne hall with torch-lit dark stone walls and an empty red throne matches the map's castle. It has no windows or daylight, so it reads dim and torch-lit rather than bright day. The floor is a wide plain grey area."
+      },
+      "findings": [
+       "시간이 다르다(기대 day, 판정 unclear)"
+      ],
+      "at": "2026-10-29T22:40:30Z"
+     }
+    }
+   ],
+   "pick": {
+    "letter": "D",
+    "nativePixelSha256": "1948cfc8240ec542bd3a8d579aa9400b8042e110e2243d1eca5d2db3552f009b",
+    "storedPixelSha256": "5b8389f025b832453aafe6252d574161b54d93912b49aedff8a4b4e878af9979",
+    "by": "isekai-godding 데모 에이전트(감독 임시 선택, 감독이 바꿀 수 있음)",
+    "at": "2026-10-29T22:44:31Z"
+   },
+   "builds": [
+    {
+     "at": "2026-10-29T22:58:06Z",
+     "target": "troop:troop_ig_dean",
+     "resourceId": "battle_backdrop_ig_castle_5b8389f0",
+     "storedPixelSha256": "5b8389f025b832453aafe6252d574161b54d93912b49aedff8a4b4e878af9979",
+     "into": "/tmp/ig-bb/p3.json",
+     "reloaded": true
+    }
+   ]
+  },
+  "ig-throne": {
+   "id": "ig-throne",
+   "createdAt": "2026-10-29T21:58:34Z",
+   "project": {
+    "file": "/tmp/ig-bb/project.json",
+    "sha256": "be3cf6f523b49e42c4e3e3da7d1c28f6f267db4c5c2c4f479c2bfceafda41ade",
+    "title": "이세계로 떠난 한국 고딩, 깽판치다"
+   },
+   "assetsRoot": "/home/main/z-project/rpg-zzu-isekai-godding",
+   "mapId": "map_ig_castle_f2",
+   "troopId": "troop_ig_maou_exam",
+   "window": {
+    "x": 5,
+    "y": 23,
+    "w": 32,
+    "h": 18
+   },
+   "captureSha256": "31784a4d76820ca6c3762780224335b0fcd1dc8dbd833688f437006c7cebfd16",
+   "referenceSha256": "2cb471e36195c82c2dea1861cd1bfc9b2992deaa304c3831893597226d0a7810",
+   "facts": {
+    "mapId": "map_ig_castle_f2",
+    "mapName": "마왕성 꼭대기",
+    "tilesetName": "버들항 v6 · 로마풍 항구 도시 (손 도트)",
+    "indoor": false,
+    "timeOfDay": "day",
+    "timeCertain": true,
+    "light": "bright",
+    "evidence": [
+     "맵 기본 조명 없음(ambient 0)",
+     "시간 낱말 없음 → 낮으로 둔다"
+    ],
+    "placeWords": [
+     "마왕성 꼭대기",
+     "입구 홀 entrance",
+     "큰 홀 hub",
+     "큰 홀 hall1",
+     "묘실 crypt2",
+     "보스방 boss",
+     "보물 방 vault",
+     "던전 입구",
+     "마왕과 모의고사"
+    ],
+    "captureLuma": 0.277,
+    "palette": [
+     "#0e0a14",
+     "#1a1624",
+     "#282c29",
+     "#292d2b",
+     "#2c2f2d",
+     "#2c302e",
+     "#4b4d4a",
+     "#562945",
+     "#714210",
+     "#545755",
+     "#575a58",
+     "#575b58",
+     "#595b58",
+     "#595c5a",
+     "#5a5d5b",
+     "#5d605d",
+     "#80827f",
+     "#9e2514",
+     "#a40100",
+     "#929491",
+     "#aa7a08",
+     "#9d9f9c",
+     "#a3a5a2",
+     "#dee0dd"
+    ]
+   },
+   "candidates": [
+    {
+     "letter": "A",
+     "promptSha256": "29e002b8419f1f0991e0d96599c301240d5921909181b861671cfc9f3cc95890",
+     "rawSha256": "b7915bbfecbd9160fc0fb8670cf9d3b947261035feb5a7beb4e054ec7330f899",
+     "nativePixelSha256": "e8baa1dabc37fe6cddd10a82c91e9812bd4a12587d7b0ab17f4899f50167df8a",
+     "storedPixelSha256": "3f5159cd2796da17a07ac021946cf13cbbafa8f8ff6ff95aeaebec07ad1e1ae0",
+     "colors": 24,
+     "palette": [
+      "#0e0a14",
+      "#1a1624",
+      "#282c29",
+      "#292d2b",
+      "#2c2f2d",
+      "#2c302e",
+      "#4b4d4a",
+      "#714210",
+      "#545755",
+      "#5d605d",
+      "#80827f",
+      "#9e2514",
+      "#a40100",
+      "#929491",
+      "#aa7a08",
+      "#9d9f9c",
+      "#a3a5a2",
+      "#dee0dd",
+      "#730502",
+      "#7a0a07",
+      "#716f72",
+      "#b7b8b6",
+      "#bfc0be",
+      "#c6c6c1"
+     ],
+     "extras": [
+      "#730502",
+      "#7a0a07",
+      "#716f72",
+      "#b7b8b6",
+      "#bfc0be",
+      "#c6c6c1"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "24",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": true,
+       "value": "아래 0.125 / 위 0.400",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "전체 밝기 0.43 (캡처 0.28)",
+       "rule": "밝은 장면: 캡처와 밝기 차 ≤0.25, 0.18 이상"
+      }
+     },
+     "judge": {
+      "by": "claude:sonnet",
+      "nativePixelSha256": "e8baa1dabc37fe6cddd10a82c91e9812bd4a12587d7b0ab17f4899f50167df8a",
+      "verdict": {
+       "characters": false,
+       "text": false,
+       "time": "night",
+       "samePlace": true,
+       "sideView": true,
+       "groundClear": true,
+       "pixelArt": true,
+       "notes": "The throne, red carpet, torches and stone floor match the reference. The black sky and the dark arches don't read as bright daytime. The floor is a bit blurry in places."
+      },
+      "findings": [
+       "시간이 다르다(기대 day, 판정 night)"
+      ],
+      "at": "2026-10-29T22:41:20Z"
+     }
+    },
+    {
+     "letter": "B",
+     "promptSha256": "5772dba64e50b3ff3233aadcbc79cfe38defc9414fb2f21bef0c24e0b66576ed",
+     "rawSha256": "01a954dcf6bd6004d5faf5acc142a1ab44a55a3bb56a1289e2b39ff47704d5c1",
+     "nativePixelSha256": "34cafa2c172e3b28272e996ebe6ab6aa4c08b2f1ead6965595fadf15667115bb",
+     "storedPixelSha256": "953aef61564515febb6e68bc97dfaab2384407241e2abd1f8573ce8d2af74ca4",
+     "colors": 29,
+     "palette": [
+      "#0e0a14",
+      "#1a1624",
+      "#282c29",
+      "#292d2b",
+      "#2c2f2d",
+      "#2c302e",
+      "#4b4d4a",
+      "#714210",
+      "#545755",
+      "#575a58",
+      "#575b58",
+      "#595b58",
+      "#595c5a",
+      "#5a5d5b",
+      "#5d605d",
+      "#80827f",
+      "#a40100",
+      "#929491",
+      "#aa7a08",
+      "#9d9f9c",
+      "#a3a5a2",
+      "#dee0dd",
+      "#540616",
+      "#5e0711",
+      "#810317",
+      "#89051b",
+      "#db272d",
+      "#bebebb",
+      "#c4c4bf"
+     ],
+     "extras": [
+      "#540616",
+      "#5e0711",
+      "#810317",
+      "#89051b",
+      "#db272d",
+      "#bebebb",
+      "#c4c4bf"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "29",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": true,
+       "value": "아래 0.207 / 위 0.561",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "전체 밝기 0.43 (캡처 0.28)",
+       "rule": "밝은 장면: 캡처와 밝기 차 ≤0.25, 0.18 이상"
+      }
+     },
+     "judge": {
+      "by": "claude:sonnet",
+      "nativePixelSha256": "34cafa2c172e3b28272e996ebe6ab6aa4c08b2f1ead6965595fadf15667115bb",
+      "verdict": {
+       "characters": false,
+       "text": false,
+       "time": "unclear",
+       "samePlace": true,
+       "sideView": true,
+       "groundClear": true,
+       "pixelArt": true,
+       "notes": "Stone throne hall with red carpet and torches matches the reference, but the light is dim grey and the windows are dark, so it doesn't read as bright day, and it is an indoor hall where the label says outdoor."
+      },
+      "findings": [
+       "시간이 다르다(기대 day, 판정 unclear)"
+      ],
+      "at": "2026-10-29T22:41:19Z"
+     }
+    },
+    {
+     "letter": "C",
+     "promptSha256": "54f4203894e80da08100ac5bad73a08586141e3a7869f5db2a2e15d057842054",
+     "rawSha256": "e9a191a7f577166c77e538ab9c8ed205b2524411298daf49ac84dab09144057e",
+     "nativePixelSha256": "56ade5b0eea566a1744635263bced9e1ce0f22f10ed47548ac211fb40891e7e4",
+     "storedPixelSha256": "aed94826e20443914ef1c90e6b1321d6a11ffd3ae9a8852644d9a57993fabf4d",
+     "colors": 25,
+     "palette": [
+      "#0e0a14",
+      "#1a1624",
+      "#282c29",
+      "#292d2b",
+      "#2c302e",
+      "#4b4d4a",
+      "#714210",
+      "#545755",
+      "#575a58",
+      "#5a5d5b",
+      "#5d605d",
+      "#80827f",
+      "#9e2514",
+      "#a40100",
+      "#929491",
+      "#aa7a08",
+      "#9d9f9c",
+      "#a3a5a2",
+      "#dee0dd",
+      "#4a180f",
+      "#7b0d19",
+      "#890e21",
+      "#746f6a",
+      "#b9b9b6",
+      "#bdbdba"
+     ],
+     "extras": [
+      "#4a180f",
+      "#7b0d19",
+      "#890e21",
+      "#746f6a",
+      "#b9b9b6",
+      "#bdbdba"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "25",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": false,
+       "value": "아래 0.324 / 위 0.349",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "전체 밝기 0.37 (캡처 0.28)",
+       "rule": "밝은 장면: 캡처와 밝기 차 ≤0.25, 0.18 이상"
+      }
+     },
+     "judge": {
+      "by": "claude:sonnet",
+      "nativePixelSha256": "56ade5b0eea566a1744635263bced9e1ce0f22f10ed47548ac211fb40891e7e4",
+      "verdict": {
+       "characters": false,
+       "text": false,
+       "time": "night",
+       "samePlace": true,
+       "sideView": true,
+       "groundClear": true,
+       "pixelArt": true,
+       "notes": "Throne, torches and castle battlements match the place, but the sky is solid black and the light is dim, so it reads as night, not the expected bright day."
+      },
+      "findings": [
+       "시간이 다르다(기대 day, 판정 night)"
+      ],
+      "at": "2026-10-29T22:41:20Z"
+     }
+    },
+    {
+     "letter": "D",
+     "promptSha256": "3fd5462fc47dd8a26a35f6ad7b49fec938d1a86288e6de6d46a305bcbc81952d",
+     "rawSha256": "a5080e68a64614b586b079ab79c3324ffbad7392e5ffe2ad0766cffb6c65f24c",
+     "nativePixelSha256": "59133da4fba67919e27d0f1b4ab4aee2a4cf5b66b4957b37a143e4cad1e8ebc2",
+     "storedPixelSha256": "521ac43ed96bf93d6f22585c6022460bf5f7610d246ab677c7517d5f7183bd81",
+     "colors": 24,
+     "palette": [
+      "#0e0a14",
+      "#1a1624",
+      "#282c29",
+      "#2c302e",
+      "#4b4d4a",
+      "#562945",
+      "#714210",
+      "#545755",
+      "#5d605d",
+      "#80827f",
+      "#9e2514",
+      "#a40100",
+      "#929491",
+      "#aa7a08",
+      "#9d9f9c",
+      "#a3a5a2",
+      "#dee0dd",
+      "#4e80df",
+      "#5081e0",
+      "#5182e1",
+      "#5182e0",
+      "#5283e2",
+      "#5384e2",
+      "#b6b8b3"
+     ],
+     "extras": [
+      "#4e80df",
+      "#5081e0",
+      "#5182e1",
+      "#5182e0",
+      "#5283e2",
+      "#5384e2",
+      "#b6b8b3"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "24",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": false,
+       "value": "아래 0.239 / 위 0.499",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "전체 밝기 0.47 (캡처 0.28)",
+       "rule": "밝은 장면: 캡처와 밝기 차 ≤0.25, 0.18 이상"
+      }
+     },
+     "judge": {
+      "by": "claude:sonnet",
+      "nativePixelSha256": "59133da4fba67919e27d0f1b4ab4aee2a4cf5b66b4957b37a143e4cad1e8ebc2",
+      "verdict": {
+       "characters": true,
+       "text": false,
+       "time": "day",
+       "samePlace": true,
+       "sideView": true,
+       "groundClear": true,
+       "pixelArt": true,
+       "notes": "Bright blue sky and a crenellated wall with the throne match the reference, but the armored knight statue on a pedestal at left reads as a figure."
+      },
+      "findings": [
+       "인물·동물이 보인다"
+      ],
+      "at": "2026-10-29T22:41:15Z"
+     }
+    }
+   ],
+   "pick": {
+    "letter": "B",
+    "nativePixelSha256": "34cafa2c172e3b28272e996ebe6ab6aa4c08b2f1ead6965595fadf15667115bb",
+    "storedPixelSha256": "953aef61564515febb6e68bc97dfaab2384407241e2abd1f8573ce8d2af74ca4",
+    "by": "isekai-godding 데모 에이전트(감독 임시 선택, 감독이 바꿀 수 있음)",
+    "at": "2026-10-29T22:44:56Z"
+   },
+   "builds": [
+    {
+     "at": "2026-10-29T22:59:03Z",
+     "target": "troop:troop_ig_maou_exam",
+     "resourceId": "battle_backdrop_ig_throne_953aef61",
+     "storedPixelSha256": "953aef61564515febb6e68bc97dfaab2384407241e2abd1f8573ce8d2af74ca4",
+     "into": "/tmp/ig-bb/p4.json",
+     "reloaded": true
+    }
+   ]
+  },
+  "ig-forest": {
+   "id": "ig-forest",
+   "createdAt": "2026-10-29T22:12:46Z",
+   "project": {
+    "file": "/tmp/ig-bb/project.json",
+    "sha256": "be3cf6f523b49e42c4e3e3da7d1c28f6f267db4c5c2c4f479c2bfceafda41ade",
+    "title": "이세계로 떠난 한국 고딩, 깽판치다"
+   },
+   "assetsRoot": "/home/main/z-project/rpg-zzu-isekai-godding",
+   "mapId": "map_ig_forest",
+   "troopId": "troop_ig_slime",
+   "window": {
+    "x": 0,
+    "y": 7,
+    "w": 32,
+    "h": 18
+   },
+   "captureSha256": "d792214fddf39e531d4c6549a0787744ec52c4faaf0b9908d019042d752288d9",
+   "referenceSha256": "705235271a3a8e9ab0d4c865999b1f17b9eb1301116f8d95c98c655a6786f8a6",
+   "facts": {
+    "mapId": "map_ig_forest",
+    "mapName": "동쪽 숲길",
+    "tilesetName": "버들항 v6 · 로마풍 항구 도시 (손 도트)",
+    "indoor": false,
+    "timeOfDay": "day",
+    "timeCertain": true,
+    "light": "bright",
+    "evidence": [
+     "맵 기본 조명 없음(ambient 0)",
+     "시간 낱말 없음 → 낮으로 둔다"
+    ],
+    "placeWords": [
+     "동쪽 숲길",
+     "슬라임 셋"
+    ],
+    "captureLuma": 0.411,
+    "palette": [
+     "#071d1b",
+     "#063328",
+     "#0d2224",
+     "#104c2f",
+     "#08372c",
+     "#375a27",
+     "#58493c",
+     "#296535",
+     "#497f3c",
+     "#418640",
+     "#426a2e",
+     "#816a56",
+     "#70502e",
+     "#618c3b",
+     "#759951",
+     "#8a745c",
+     "#797a84",
+     "#688c48",
+     "#e0482a",
+     "#9e8b64",
+     "#81a359",
+     "#94b353",
+     "#8cbf5f",
+     "#96c254"
+    ]
+   },
+   "candidates": [
+    {
+     "letter": "A",
+     "promptSha256": "96bf767f5d34f5999277554254c2a9a242691669b5e5e84b2db61ead86689a4f",
+     "rawSha256": "1ed79bbd08792bd2c973789c9375bd83fcb281507cdd1b9d88c636c8c3565dbd",
+     "nativePixelSha256": "5a432fb0df25767d38736a6c0b67a37686d4ccb9a709d1307e385cdd402b9e08",
+     "storedPixelSha256": "476a116d02aea114bedc9216859815c4848037cdfc8a4f7e4ced6e0615d26ab2",
+     "colors": 30,
+     "palette": [
+      "#071d1b",
+      "#063328",
+      "#0d2224",
+      "#104c2f",
+      "#08372c",
+      "#375a27",
+      "#58493c",
+      "#296535",
+      "#497f3c",
+      "#418640",
+      "#426a2e",
+      "#816a56",
+      "#70502e",
+      "#618c3b",
+      "#759951",
+      "#8a745c",
+      "#688c48",
+      "#9e8b64",
+      "#81a359",
+      "#94b353",
+      "#8cbf5f",
+      "#96c254",
+      "#3c2d1c",
+      "#443120",
+      "#4b3822",
+      "#80bff2",
+      "#84c3f4",
+      "#85c4f4",
+      "#86c7f4",
+      "#d5e4e8"
+     ],
+     "extras": [
+      "#3c2d1c",
+      "#443120",
+      "#4b3822",
+      "#80bff2",
+      "#84c3f4",
+      "#85c4f4",
+      "#86c7f4",
+      "#d5e4e8"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "30",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": false,
+       "value": "아래 0.271 / 위 0.626",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "전체 밝기 0.47 (캡처 0.41)",
+       "rule": "밝은 장면: 캡처와 밝기 차 ≤0.25, 0.18 이상"
+      }
+     },
+     "judge": {
+      "by": "claude:sonnet",
+      "nativePixelSha256": "5a432fb0df25767d38736a6c0b67a37686d4ccb9a709d1307e385cdd402b9e08",
+      "verdict": {
+       "characters": false,
+       "text": false,
+       "time": "day",
+       "samePlace": true,
+       "sideView": true,
+       "groundClear": true,
+       "pixelArt": true,
+       "notes": "Eye-level forest with trees, bushes and dirt paths at the edges, bright daylight and sky patches, and an open grass floor below."
+      },
+      "findings": [],
+      "at": "2026-10-29T22:37:53Z"
+     }
+    },
+    {
+     "letter": "B",
+     "promptSha256": "ffc82ed843c6769ab53332d7b26b568152e73572a452843e87cc206b52fe1edc",
+     "rawSha256": "ddf2345f1a9dcd0669ef15ce1b4276b9b1e32c21cbfd96668ff04bf6add63b39",
+     "nativePixelSha256": "8804303a8cccdf1db88509f6ca33ecb95811da12f9bb71e37153bddd07183605",
+     "storedPixelSha256": "3e01321ebafa0771971eaea4cda1276339450aaeada7dd4ad939608fac0cada0",
+     "colors": 30,
+     "palette": [
+      "#071d1b",
+      "#063328",
+      "#0d2224",
+      "#104c2f",
+      "#08372c",
+      "#375a27",
+      "#58493c",
+      "#296535",
+      "#497f3c",
+      "#418640",
+      "#426a2e",
+      "#816a56",
+      "#70502e",
+      "#618c3b",
+      "#759951",
+      "#8a745c",
+      "#688c48",
+      "#9e8b64",
+      "#81a359",
+      "#94b353",
+      "#8cbf5f",
+      "#96c254",
+      "#43301d",
+      "#493522",
+      "#4f3721",
+      "#0d5e5c",
+      "#1e705f",
+      "#70c9fd",
+      "#70cafd",
+      "#71cafc"
+     ],
+     "extras": [
+      "#43301d",
+      "#493522",
+      "#4f3721",
+      "#0d5e5c",
+      "#1e705f",
+      "#70c9fd",
+      "#70cafd",
+      "#71cafc"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "30",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": false,
+       "value": "아래 0.321 / 위 0.694",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "전체 밝기 0.44 (캡처 0.41)",
+       "rule": "밝은 장면: 캡처와 밝기 차 ≤0.25, 0.18 이상"
+      }
+     },
+     "judge": {
+      "by": "claude:sonnet",
+      "nativePixelSha256": "8804303a8cccdf1db88509f6ca33ecb95811da12f9bb71e37153bddd07183605",
+      "verdict": {
+       "characters": false,
+       "text": false,
+       "time": "day",
+       "samePlace": true,
+       "sideView": true,
+       "groundClear": true,
+       "pixelArt": true,
+       "notes": "Eye-level forest path with a tree wall, small bushes and rocks, and blue sky visible through the canopy. The lower half is open grass and dirt, which matches the reference."
+      },
+      "findings": [],
+      "at": "2026-10-29T22:37:50Z"
+     }
+    },
+    {
+     "letter": "C",
+     "promptSha256": "8fde199c65615f0bafa2298c746c62ce5443583e07010cb78992d835e2c20f36",
+     "rawSha256": "38e15c78a010caefc5696e615f1aee8def0c6710855a451b92aad69e9b49de00",
+     "nativePixelSha256": "78458108cba49ded377bd56ff4a80562349495eb51bc3b72d20d6e2572657c8e",
+     "storedPixelSha256": "0a4fb5ed2b1d6f5e1a2be51b06499d8818528fccef92f531003f8ecc9a436181",
+     "colors": 31,
+     "palette": [
+      "#071d1b",
+      "#063328",
+      "#0d2224",
+      "#104c2f",
+      "#08372c",
+      "#375a27",
+      "#58493c",
+      "#296535",
+      "#497f3c",
+      "#418640",
+      "#426a2e",
+      "#816a56",
+      "#70502e",
+      "#618c3b",
+      "#759951",
+      "#8a745c",
+      "#797a84",
+      "#688c48",
+      "#9e8b64",
+      "#81a359",
+      "#94b353",
+      "#8cbf5f",
+      "#96c254",
+      "#3d2a1e",
+      "#473224",
+      "#493422",
+      "#337667",
+      "#78bbf9",
+      "#7dbefb",
+      "#7ebffb",
+      "#7ec0fb"
+     ],
+     "extras": [
+      "#3d2a1e",
+      "#473224",
+      "#493422",
+      "#337667",
+      "#78bbf9",
+      "#7dbefb",
+      "#7ebffb",
+      "#7ec0fb"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "31",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": false,
+       "value": "아래 0.282 / 위 0.665",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "전체 밝기 0.46 (캡처 0.41)",
+       "rule": "밝은 장면: 캡처와 밝기 차 ≤0.25, 0.18 이상"
+      }
+     },
+     "judge": {
+      "by": "claude:sonnet",
+      "nativePixelSha256": "78458108cba49ded377bd56ff4a80562349495eb51bc3b72d20d6e2572657c8e",
+      "verdict": {
+       "characters": false,
+       "text": false,
+       "time": "day",
+       "samePlace": true,
+       "sideView": true,
+       "groundClear": true,
+       "pixelArt": true,
+       "notes": "Eye-level forest clearing with a dirt path and grass, bright daylight with a bit of sky at the top, and open ground in the lower half."
+      },
+      "findings": [],
+      "at": "2026-10-29T22:37:51Z"
+     }
+    },
+    {
+     "letter": "D",
+     "promptSha256": "d6bed46cb10b1b908e1ce36d5644a787a6d14638f5eaa771aed7fff453b0b85e",
+     "rawSha256": "8c1869331f0dc3162a44aecf4b55a33e4aff963c3b4e4a1944edb5bc8b22cc2a",
+     "nativePixelSha256": "72d5ac428fa7842cdff0735ea4b44665d00348377a662051a36235f8dc7f1000",
+     "storedPixelSha256": "a3c806e9eabf34b62919d7e91fcefdef58e33ade7bc6c75db25a438f8d51f703",
+     "colors": 31,
+     "palette": [
+      "#071d1b",
+      "#063328",
+      "#0d2224",
+      "#104c2f",
+      "#08372c",
+      "#375a27",
+      "#58493c",
+      "#296535",
+      "#497f3c",
+      "#418640",
+      "#426a2e",
+      "#816a56",
+      "#70502e",
+      "#618c3b",
+      "#759951",
+      "#8a745c",
+      "#797a84",
+      "#688c48",
+      "#9e8b64",
+      "#81a359",
+      "#94b353",
+      "#8cbf5f",
+      "#96c254",
+      "#3b2a1f",
+      "#442f21",
+      "#483224",
+      "#523623",
+      "#2d7565",
+      "#2f7865",
+      "#74bdf4",
+      "#75bef4"
+     ],
+     "extras": [
+      "#3b2a1f",
+      "#442f21",
+      "#483224",
+      "#523623",
+      "#2d7565",
+      "#2f7865",
+      "#74bdf4",
+      "#75bef4"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "31",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": false,
+       "value": "아래 0.322 / 위 0.735",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "전체 밝기 0.41 (캡처 0.41)",
+       "rule": "밝은 장면: 캡처와 밝기 차 ≤0.25, 0.18 이상"
+      }
+     },
+     "judge": {
+      "by": "claude:sonnet",
+      "nativePixelSha256": "72d5ac428fa7842cdff0735ea4b44665d00348377a662051a36235f8dc7f1000",
+      "verdict": {
+       "characters": false,
+       "text": false,
+       "time": "day",
+       "samePlace": true,
+       "sideView": true,
+       "groundClear": true,
+       "pixelArt": true,
+       "notes": "Eye-level forest with dense trees, bushes and small rocks over a wide open dirt floor, with daylight sky showing through the canopy. It matches the reference's forest path."
+      },
+      "findings": [],
+      "at": "2026-10-29T22:37:53Z"
+     }
+    }
+   ],
+   "pick": {
+    "letter": "A",
+    "nativePixelSha256": "5a432fb0df25767d38736a6c0b67a37686d4ccb9a709d1307e385cdd402b9e08",
+    "storedPixelSha256": "476a116d02aea114bedc9216859815c4848037cdfc8a4f7e4ced6e0615d26ab2",
+    "by": "isekai-godding 데모 에이전트(감독 임시 선택, 감독이 바꿀 수 있음)",
+    "at": "2026-10-29T22:43:36Z"
+   },
+   "builds": [
+    {
+     "at": "2026-10-29T22:49:35Z",
+     "target": "troop:troop_ig_slime",
+     "resourceId": "battle_backdrop_ig_forest_476a116d",
+     "storedPixelSha256": "476a116d02aea114bedc9216859815c4848037cdfc8a4f7e4ced6e0615d26ab2",
+     "into": "/tmp/ig-bb/p1.json",
+     "reloaded": true
+    }
+   ]
   }
  }
 }
