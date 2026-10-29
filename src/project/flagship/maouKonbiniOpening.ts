@@ -199,7 +199,7 @@ function shotDeal(project: Project): void {
   screenTint(project, id, "tint", "#4a1460", 0.34);
   throneLights(project, id, view);
   const maouAt = chipAt(view, { x: 23, y: 5 }), leonAt = chipAt(view, { x: 23, y: 9 }), garetAt = chipAt(view, { x: 22, y: 10 }), miraAt = chipAt(view, { x: 24, y: 10 });
-  const above = (a: { x: number; y: number }) => ({ x: a.x + 12, y: a.y - 26 });
+  const above = (a: { x: number; y: number }) => ({ x: a.x + 12, y: a.y - 16 });
   // 반응(말풍선) → 반 박자(250ms) 뒤 자막.
   const beats: { at: number; who: "maou" | "leon" | "garet" | "mira"; pop?: "exclaim" | "question" | "ellipsis" | "heart" | "sweat"; text: string }[] = [
     { at: 400, who: "maou", text: "제르바스 「잘 왔다, 용사여. 내 편에 서라. 세계의 절반을 주마.」" },
@@ -212,7 +212,8 @@ function shotDeal(project: Project): void {
     { at: 13700, who: "leon", pop: "sweat", text: "레온 「둘 다 흔들리지 마! 마왕, 너도 흥정하지 마!」" },
   ];
   // 카메라: 박마다 말하는 쪽으로 짧게 밀었다 돌아온다(세계 좌표). 마왕은 위, 일행은 아래.
-  const mY = cellCenter(view, { x: 23, y: 5 }).y + 10, hY = cellCenter(view, { x: 23, y: 9 }).y;
+  // 마왕 쪽은 머리 위 말풍선이 레터박스에 잘리지 않게 마왕보다 조금 위를 가운데로 잡는다.
+  const mY = cellCenter(view, { x: 23, y: 5 }).y - 14, hY = cellCenter(view, { x: 23, y: 9 }).y;
   const camY: { atMs: number; value: number; ease?: string }[] = [{ atMs: 0, value: 135 }];
   const camZ: { atMs: number; value: number; ease?: string }[] = [{ atMs: 0, value: 1 }];
   for (const b of beats) {
@@ -240,9 +241,11 @@ function shotDeal(project: Project): void {
 function shotPower(project: Project): void {
   const id = "mk_op_power", ms = 3800;
   newShot(project, id, ms, { kind: "flash", durationMs: 220, color: "#ffd8ff" });
-  const view = mapBackground(project, id, MAP_THRONE, { x: 23, y: 6 }, 3);
+  const view = mapBackground(project, id, MAP_THRONE, { x: 23, y: 5 }, 3);
   execTool(project, "animate_opening_camera", { shotId: id, camera: { x: 240, y: 135, keys: {
     zoom: [{ atMs: 0, value: 1 }, { atMs: ms, value: 1.18, ease: "ease-in" }],
+    // 뿔이 레터박스에 잘리지 않게 마왕 머리 쪽으로 조금 올려 잡는다.
+    y: [{ atMs: 0, value: 120 }, { atMs: ms, value: 110 }],
   }, shake: { atMs: 1700, durationMs: 1900, amplitude: 3, frequency: 18, seed: 9 } } });
   screenTint(project, id, "tint", "#5a0a2a", 0.5);
   const center = cellCenter(view, { x: 23, y: 5 });
