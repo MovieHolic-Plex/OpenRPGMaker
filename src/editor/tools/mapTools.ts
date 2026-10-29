@@ -357,7 +357,7 @@ const duplicateMap: ToolDefinition = {
   name: "duplicate_map",
   description: "맵 전체(타일·이벤트·BGM·배경·미니맵 설정)를 복제하고 원본 바로 뒤에 배치한다. 새 map id는 명시해야 한다. " +
     "같은 장소의 다른 때 판(점령된 밤·통금·폐허 직후)을 만들 때는 events:\"doors\" 로 사람·연출 이벤트를 비우고 문·출입구(이동만 하는 이벤트)만 남기며, " +
-    "lockedDoorText 를 주면 남긴 문은 옮기지 않고 그 한 줄만 보여 준다(통금으로 잠긴 집). 열어 둘 문은 openDoorMapIds 에 그 문이 가는 맵 id 를 적는다.",
+    "lockedDoorText 를 주면 남긴 문은 옮기지 않고 그 한 줄만 보여 준다(통금으로 잠긴 집). 문마다 다른 문구는 lockedDoorTexts:[{mapId,text}](그 맵으로 가는 문). 열어 둘 문은 openDoorMapIds 에 그 문이 가는 맵 id 를 적는다.",
   mode: "write",
   parameters: {
     type: "object",
@@ -368,6 +368,11 @@ const duplicateMap: ToolDefinition = {
       events: { type: "string", enum: ["all", "doors", "none"], description: "all(기본)=이벤트 전부 복제 · doors=이동(transfer)만 하는 문·출입구 이벤트만 남김 · none=이벤트 없이 타일만" },
       lockedDoorText: { type: "string", description: "events:doors 일 때 남긴 문을 잠근다 — 이동 대신 이 한 줄(예: 「통금이다. 문이 굳게 잠겨 있다.」)" },
       openDoorMapIds: { type: "array", items: { type: "string" }, description: "lockedDoorText 를 줘도 그대로 열어 둘 문(이 맵들로 가는 문)" },
+      lockedDoorTexts: {
+        type: "array",
+        description: "events:doors 일 때 문마다 다른 잠금 문구 — 그 맵으로 가는 문만 이 문구로 잠근다(예: 성문만 「쇠사슬이 감겨 있다」). 나머지 문은 lockedDoorText.",
+        items: { type: "object", additionalProperties: false, properties: { mapId: { type: "string", description: "이 맵으로 가는 문" }, text: { type: "string" } }, required: ["mapId", "text"] },
+      },
     },
     required: ["mapId", "id"],
     additionalProperties: false,
@@ -395,14 +400,31 @@ const duplicateMap: ToolDefinition = {
       kept = copy.events.length;
       const lockText = typeof args.lockedDoorText === "string" ? args.lockedDoorText.trim() : "";
       const open = new Set(Array.isArray(args.openDoorMapIds) ? args.openDoorMapIds.map(String) : []);
-      if (mode === "doors" && lockText) {
+      const perDoor = new Map<string, string>();
+      if (args.lockedDoorTexts !== undefined) {
+        if (!Array.isArray(args.lockedDoorTexts)) throw new ToolError("lockedDoorTexts 는 [{mapId, text}] 배열입니다.", { code: "invalid-args" });
+        for (const entry of args.lockedDoorTexts) {
+          const rec = (entry ?? {}) as Record<string, unknown>;
+          const text = typeof rec.text === "string" ? rec.text.trim() : "";
+          if (typeof rec.mapId !== "string" || !rec.mapId || !text) throw new ToolError("lockedDoorTexts 의 각 항목은 {mapId, text} 입니다.", { code: "invalid-args" });
+          perDoor.set(rec.mapId, text);
+        }
+      }
+      if (mode === "doors" && (lockText || perDoor.size > 0)) {
+        const usedPerDoor = new Set<string>();
         for (const event of copy.events) {
           const targets = (event.pages ?? []).flatMap((page) => page.commands.flatMap((command) => command.kind === "transfer" ? [String((command as { mapId?: unknown }).mapId)] : []));
           if (targets.some((target) => open.has(target))) continue;
+          const special = targets.find((target) => perDoor.has(target));
+          const text = special ? perDoor.get(special)! : lockText;
+          if (!text) continue;
+          if (special) usedPerDoor.add(special);
           const first = event.pages![0]!;
-          event.pages = [{ ...first, conditions: [], commands: [{ kind: "text", body: lockText } as Command] }];
+          event.pages = [{ ...first, conditions: [], commands: [{ kind: "text", body: text } as Command] }];
           locked += 1;
         }
+        const unused = [...perDoor.keys()].filter((mapId) => !usedPerDoor.has(mapId));
+        if (unused.length > 0) throw new ToolError(`lockedDoorTexts 의 맵으로 가는 문이 원본에 없습니다: ${unused.join(", ")}`, { code: "invalid-args" });
       }
     }
     const note = mode === "all" ? "" : ` — 이벤트 ${mode === "none" ? "비움" : `문 ${kept}개만 남김${locked ? `(잠금 ${locked})` : ""}`}`;

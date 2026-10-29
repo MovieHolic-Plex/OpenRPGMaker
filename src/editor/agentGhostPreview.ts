@@ -346,9 +346,10 @@ export function summarizeAgentGhostPreviewForToolCall(
     case "upsert_event":
       pushArea(upsertEventArea(project, args));
       break;
-    case "patch_event_page": {
+    case "patch_event_page":
+    case "add_event_page": {
       const target = mapId ? project.maps[mapId]?.events.find((entry) => entry.id === args.eventId) : undefined;
-      if (target) pushArea(pointArea(project, mapId, { x: target.x, y: target.y }, "patch_event_page", "이벤트 페이지 수정"));
+      if (target) pushArea(pointArea(project, mapId, { x: target.x, y: target.y }, toolName, toolName === "add_event_page" ? "이벤트 페이지 추가" : "이벤트 페이지 수정"));
       break;
     }
     case "move_event":
