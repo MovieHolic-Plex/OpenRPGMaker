@@ -748,7 +748,8 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
     ? vaultRoom ?? [...rooms].filter((r) => r.kind !== "entrance" && r !== deepRoomPre).sort((a, b) => b.depth - a.depth)[0] ?? null
     : null;
   /** 북쪽 벽 가운데 줄(b=1)에서 양옆 두 칸까지 같은 높이 벽인 칸(가운데 쪽 먼저). 앞 칸(바닥 첫 줄)이 비어 있어야 한다. */
-  const flatAt = (q: { x: number; y: number }, width: number) => [-2, -1, ...Array.from({ length: width + 1 }, (_, k) => k + 1)].every((d) => wallB[idx(q.x + d, q.y)] === 1 && wallB[idx(q.x + d, q.y + 1)] === 0)
+  // 2칸 폭 동굴 계단은 그림 양옆에 바위가 그려져 있어 옆 여유 한 칸이면 된다(1칸 그림은 두 칸 — 마구리에 반쯤 걸리지 않게).
+  const flatAt = (q: { x: number; y: number }, width: number) => (width >= 2 ? [-1, ...Array.from({ length: width + 1 }, (_, k) => k)] : [-2, -1, ...Array.from({ length: width + 1 }, (_, k) => k + 1)]).every((d) => wallB[idx(q.x + d, q.y)] === 1 && wallB[idx(q.x + d, q.y + 1)] === 0)
     && Array.from({ length: width }, (_, k) => k).every((d) => upper[idx(q.x + d, q.y)]! < 0 && upper[idx(q.x + d, q.y + 1)]! < 0 && !blocked[idx(q.x + d, q.y + 2)] && isWalk(q.x + d, q.y + 2));
   const flatWall = (_r: PlacedRoom, centerFirst: { x: number; y: number }[], width = 1): { x: number; y: number } | null => {
     // 동굴 새 계단(2칸 폭)을 걸 수 있으면 그 자리를 먼저 — 없으면 1칸 자리.

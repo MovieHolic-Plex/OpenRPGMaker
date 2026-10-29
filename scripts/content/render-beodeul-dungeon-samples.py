@@ -4,7 +4,8 @@
 import json, os, sys, glob
 from PIL import Image, ImageDraw
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-SHEET = Image.open(os.path.join(ROOT, 'public/assets/beodeul-city/beodeul-city-chipset.png')).convert('RGBA')
+# BEODEUL_SHEET = 시험 굽기 시트(예: bake_cave.py --test-out 폴더의 beodeul-city-chipset.png)로 그릴 때.
+SHEET = Image.open(os.environ.get('BEODEUL_SHEET') or os.path.join(ROOT, 'public/assets/beodeul-city/beodeul-city-chipset.png')).convert('RGBA')
 PER = SHEET.width // 16
 _cache = {}
 def tile(t):
