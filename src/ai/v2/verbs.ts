@@ -27,6 +27,7 @@ import { critique } from "./critic";
 import type { CriticVerdict } from "@/ai/piAgent/featureReview";
 import type { ContentBuildResult, EventSpec, ObjectSpec, PersonSpec, PlaceBuildResult, PlacePatch, PlaceRecord, PlaceSpec, PlaceType, ZoneSpec } from "./types";
 import type { Project } from "@/project/types";
+import { DEAD_END_PREFIX } from "./deadEndRoads";
 import { buildPeople, findMap, resolveWhere } from "./people";
 import { mapBundleIds } from "@/ai/piAgent/mapBundle";
 import { buildEvent } from "./events";
@@ -96,6 +97,8 @@ export class V2Session {
   autoPathDone = false;
   /** 끝맺음에서 청사진 장소를 함수가 대신 지었는가(한 번만). */
   autoPlacesDone = false;
+  /** 끝맺음에서 지은 장소를 시작과 이었는가(한 번만). */
+  linkBuiltDone = false;
   /** 빈 맵을 가리키던 청사진 장소의 새 이름 → 그 빈 맵 id(renameBareBlueprintPlaces). 장소를 지으면 빈 맵 이벤트를 옮긴다. */
   barePlaces?: Map<string, string>;
   /** 끝맺음에서 이동 칸 앞을 막는 이벤트를 옮겼는가(한 번만). */
@@ -108,6 +111,8 @@ export class V2Session {
   clearLanes?: () => Promise<string[]>;
   /** 청사진에 있는데 없는(또는 닿지 않는) 장소를 짓고 앞 장소와 잇는다(createV2Tools 가 건다). 한 일 목록. */
   buildPlaces?: () => Promise<string[]>;
+  /** 이번 실행에 make_place 로 지은 장소가 시작에서 닿지 않으면 요청 속 맵(없으면 지금·시작 맵)과 잇는다(createV2Tools 가 건다). 한 일 목록. */
+  linkBuiltPlaces?: () => Promise<string[]>;
   /** 청사진 경로를 결정적으로 짓는다(createV2Tools 가 건다) — 끝맺음 단계가 모델 대신 부른다. */
   buildPath?: (why: string) => Promise<{ ok: boolean; summary: string }>;
   criticCalls = 0;
@@ -1176,6 +1181,39 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     // 시작이 새 방으로 옮겨진 뒤에 돈다(걸어 닿는지는 시작점에서 잰다).
     for (const { mapId, ids } of settle) { const rep = repairEventReach(run, mapId, ids); if (rep.moved.length) notes.push(`옮긴 이벤트 자리 맞춤: ${rep.moved.join(", ").slice(0, 300)}`); }
     if (notes.length) await env.checkpoint("auto_places");
+    return notes;
+  };
+  // 지은 장소 잇기(2026-10-30 씬 벤치 sc-1030a terra river-village r2·r3): 「강가 어촌을 새로 만들어서 지금 마을과 이어 줘」에 조수가 어촌을 짓고
+  // create_transfer_pair 를 버들마을 (35,14)·(20,29)에 불렀다가 「안전한 출입구를 만들 수 없다」로 거절당한 채 끝냈다 — 어촌은 어느 맵에서도 들어갈 수 없었고
+  // 판정자는 「버들마을로 가는 출입구 없음」(blocker)이라 했다. 규칙: 이번 실행에 지은 장소 맵이 시작에서 걸어 닿지 않으면, 요청 글에 이름이 나온 맵
+  // (없으면 요청 때 보던 맵, 그것도 이번에 지은 맵이면 시작 맵)과 make_game 의 잇기(linkChild: 문 그림·길 끝·칩셋 문 → 그림 없는 이동 칸)로 잇는다.
+  // 길 끝에 세운 「막힌 길」 표지(ev_dead_end_*)는 잇기 전에 걷는다 — 표지가 길 끝 칸을 차지해 자리 고르기가 길 끝을 못 썼다. 남은 막힌 길은 마감이 다시 세운다.
+  session.linkBuiltPlaces = async () => {
+    const notes: string[] = [];
+    const project0 = env.ctx.project;
+    const built = new Map<string, PlaceRecord>();
+    for (const [mapId, rec] of session.places) if (project0.maps[mapId] && rec.result.mapIds[0] === mapId) built.set(mapId, rec);
+    if (!built.size) return notes;
+    const taskText = String(task ?? "");
+    const named = Object.values(project0.maps).filter((m) => !built.has(m.id) && m.name && m.name.length >= 2 && taskText.includes(m.name)).map((m) => m.id);
+    const cur = env.ctx.currentMapId && !built.has(env.ctx.currentMapId) ? env.ctx.currentMapId : undefined;
+    const parent = named[0] ?? cur ?? project0.startMapId;
+    if (!project0.maps[parent] || built.has(parent)) return notes;
+    for (const [mapId, rec] of built) {
+      if (!walkGame(env.ctx.project, [mapId]).unreached.includes(mapId)) continue;
+      // 막힌 길 표지 걷기(두 맵).
+      const strip = (id: string) => {
+        const m = env.ctx.project.maps[id];
+        if (!m || !(m.events ?? []).some((e) => e.id.startsWith(DEAD_END_PREFIX))) return;
+        env.ctx.project = { ...env.ctx.project, maps: { ...env.ctx.project.maps, [id]: { ...m, events: m.events.filter((e) => !e.id.startsWith(DEAD_END_PREFIX)) } } } as Project;
+      };
+      strip(parent); strip(mapId);
+      const side = (["south", "east", "west", "north"] as const).find((d) => !!edgeCell(env.ctx.project, env.ctx.project.maps[parent]!, d)) ?? "south";
+      const link = linkChild(parent, undefined, undefined, rec.spec, rec.result, side);
+      const ok = !walkGame(env.ctx.project, [mapId]).unreached.includes(mapId);
+      notes.push(`「${env.ctx.project.maps[mapId]?.name ?? mapId}」 시작에서 닿지 않아 「${env.ctx.project.maps[parent]?.name ?? parent}」와 이음 — ${link}${ok ? "" : " (그래도 닿지 않음)"}`);
+    }
+    if (notes.length) await env.checkpoint("link_built_places");
     return notes;
   };
   const makeGame: PiToolShape = {

@@ -4,6 +4,7 @@ export { stage as renameBarePlaces } from "./rename-bare-places";
 export { stage as walkBlueprint } from "./walk-blueprint";
 export { stage as adoptModelPlaces } from "./adopt-model-places";
 export { stage as autoPlaces } from "./auto-places";
+export { stage as linkBuiltPlaces } from "./link-built-places";
 export { stage as autoPath } from "./auto-path";
 export { stage as codeClues } from "./code-clues";
 export { stage as stepSubjects } from "./step-subjects";
