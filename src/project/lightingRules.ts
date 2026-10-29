@@ -11,6 +11,8 @@ export const LIGHTING_FIXED_STEP_MS = 16;
 export type LightTilePosition = {
   readonly x: number;
   readonly y: number;
+  /** 부채꼴 빛(source.cone)의 방향 — 이벤트 앵커면 그 이벤트가 지금 보는 쪽. */
+  readonly facing?: "up" | "down" | "left" | "right";
 };
 
 export type LightAnchorResolver = (
@@ -98,6 +100,9 @@ export function normalizeLightSource(value: LightSource): LightSource {
     ...(value.intensity !== undefined ? { intensity: clamp01(value.intensity) } : {}),
     ...(typeof value.color === "string" && value.color.trim() ? { color: value.color.trim() } : {}),
     ...(value.flicker === true ? { flicker: true } : {}),
+    ...(value.cone && Number.isFinite(value.cone.degrees)
+      ? { cone: { degrees: clamp(20, 180, value.cone.degrees), ...(value.cone.facing && ["up", "down", "left", "right"].includes(value.cone.facing) ? { facing: value.cone.facing } : {}) } }
+      : {}),
   };
 }
 
@@ -147,9 +152,20 @@ export function lightAtTile(
     if (intensity <= 0) continue;
     const dx = position.x - x;
     const dy = position.y - y;
-    if (Math.sqrt(dx * dx + dy * dy) <= source.radius) return true;
+    if (Math.sqrt(dx * dx + dy * dy) > source.radius) continue;
+    if (source.cone && (dx !== 0 || dy !== 0)) {
+      const half = (source.cone.degrees / 2) * Math.PI / 180;
+      const diff = Math.atan2(-dy, -dx) - lightConeAngle(position.facing ?? source.cone.facing);
+      if (Math.abs(Math.atan2(Math.sin(diff), Math.cos(diff))) > half) continue;
+    }
+    return true;
   }
   return false;
+}
+
+/** 부채꼴 빛 가운데 각(라디안, 화면 좌표: 오른쪽 0, 아래 +π/2). */
+export function lightConeAngle(facing: "up" | "down" | "left" | "right" | undefined): number {
+  return facing === "right" ? 0 : facing === "left" ? Math.PI : facing === "up" ? -Math.PI / 2 : Math.PI / 2;
 }
 
 export function deterministicFlickerFactor(sourceId: string, timeMs: number): number {

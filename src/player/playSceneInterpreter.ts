@@ -1,4 +1,5 @@
 import { playLiftRide } from "@/player/playSceneLiftRide";
+import { releaseOrphanedFadeOut } from "@/player/playSceneScreenEffects";
 import { sendPursuerHome } from "@/player/pursuitNavigation";
 import { isTouchUiHost } from "@/player/touchTap";
 import { stepStopReason, stopsReading } from "@/project/dialogueSystem";
@@ -342,7 +343,7 @@ export async function runCommands(
         const landing = recoverPlayerFromTerrain(project, scene.session, scene.eventPositions);
         if (landing) placePlayerOnCurrentMap(scene, landing.x, landing.y);
       }
-      if (lease) lease.release();
+      if (lease) { lease.release(); releaseOrphanedFadeOut(scene); }
       else { scene.running = previousRunning; scene.setInputEnabled(previousInputEnabled); }
       dialogue.close(); scene.refreshRuntimeSurfaces();
     } else lease?.release(false);

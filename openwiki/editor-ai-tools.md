@@ -1,5 +1,40 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## 설정집 쓰기 `upsert_world_codex` · 인물 한 줄 소개 · 데모 「이야기」 탭 (2026-10-29)
+
+전에는 설정집(`project.world`)에 쓰는 길이 대화 추출기와 화면 수동 편집뿐이어서, 코드로 짓는 대표 데모 넷은 자료집 「이야기」 탭(세계 개요·설정집·인물)이 모두 비어 있었다(구운 chrono-bell 실측: worldCanon 없음, 문서 0, 프로필 0).
+
+- `upsert_world_codex`(`src/editor/tools/worldCodexTools.ts`): 문서 최대 32장, 관계 최대 64줄을 한 번에 넣는다. 같은 id 면 그 문서를 통째로 고치고, 잠긴 문서는 `locked` 로 거절한다. 출처는 `manual` 한 줄(kind knowledge, basis explicit)로 남겨 대화 추출기가 덮지 못하게 한다. `visibility:"ai-hidden"` 은 작가 전용 비밀(반전, 아직 게임에 없는 기획)이다. refs 가 없는 맵·이벤트·아이템·액터를 가리키면 `reference-not-found`, 관계 끝이 없는 문서여도 같은 코드로 거절한다. 출처 시각은 기존 최댓값 다음 순번이라 같은 입력이면 같은 결과다(굽기 재현).
+- `upsert_character_profile` 에 `note`(한 줄 소개, 200자)를 더했다. 「인물」 탭에 「한 줄 소개」 칸이 생겼고, 목록 줄과 머리 부제에 보인다. 이전에는 이 탭에서 다른 칸을 고치면 note 가 지워졌다(`patchProfile` 이 note 를 안 옮김).
+- 화자 색은 `displayName` 이 대사 화자 이름과 같을 때만 붙는다. 이벤트 `characterId` 는 그 이벤트의 모든 줄에 한 프로필을 입히므로 데모 lore 는 이벤트에 characterId 를 달지 않는다.
+- 데모마다 lore 파일 하나(`src/project/flagship/*Lore.ts`, 데모 브랜치 `agent/demo-lore`)가 세 도구로 칸을 채우고 빌더 끝(`serialize` 직전)에서 한 줄로 부른다. 공용 도우미는 `src/project/flagship/loreKit.ts`(`loreExec`, `writeCodex` 는 없는 ref 만 빼고 쓴다, `demoLoreProblems`).
+- 회귀 경보: `bake-flagship-demos.mts` 가 데모마다 `demoLoreProblems` 를 돌려 하한(문서 12, 프로필 3, 개요 본문 400자) 아래면 `[demo-lore] … 「이야기」 탭이 비었다` 를 찍는다. 전체 굽기 없이 lore 파일만 시험하려면 `scripts/content/check-demo-lore.mts --demo <id> --in <구운 project.json>`(멱등성도 본다).
+
+## 평면도대로 버들항 맵 칠하기 `paint_beodeul_plan` (2026-10-29)
+
+참고 지도 그림(화산 지대 필드·폐허 마을·눈 덮인 산 요새)의 배치를 칸 단위로 옮기는 쓰기 도구다. 『폴른 스타』 2막 B5·B6 은
+처음에 이 일을 데모 코드가 맵 배열을 직접 칠해서 했고, 그러면 「조수와 에디터로 만들 수 있다」는 증거가 되지 못했다(감독 규칙).
+그래서 같은 칠하기를 도구로 올렸고, 데모(`src/project/flagship/fallen/act2Places.ts` 계획 → `act2Opening.ts` exec)는 이제 이 도구만 부른다.
+
+- 파일 `src/editor/tools/beodeulPlanTool.ts`, 레지스트리 `toolRegistry.ts`(map·tile 도메인), 라벨 「평면도대로 맵 칠하기」.
+- `plan` 은 같은 길이의 줄 배열이다.
+  - `#`: 바위 능선(윗면 오토타일, 열린 칸 바로 북쪽 두 줄은 앞면). 던전 gap 바위와 같은 규칙이다.
+  - `.`: 땅(`groundKit` 흩뿌림).
+  - `:`: 길(`pathKit`). `pathStyle` 이 pattern 이면 무늬를 그대로, scatter 면 흩뿌린다. `pathBlend`% 가장자리를 해지게 한다.
+  - `f`: 해진 돌바닥(`floorWear`%).
+  - `W`: 깨끗한 돌바닥.
+- `x`·`y` 를 주면 구역만 칠한다. 요새 북문 밖 눈길·벼랑 띠가 이렇게 칠해진다(`pathStyle: scatter`, 눈 키트).
+- `props[{kit,x,y}]` 는 평면도 좌표로 찍는다.
+- `burnt[{kit,x,y,collapse}]` 는 그 집 키트 자리를 불탄 집터로 바꾼다. 들어가는 것은 다음과 같다.
+  - 돌 기단 테두리, 숯 바닥, 귀퉁이 숯 기둥, 선 서까래(난파선 늑골).
+  - 숯더미·탄 판자·쓰러진 들보·불씨.
+  - left·right 면 그 집 지붕 칸 3×2 를 내려앉은 판으로 떨어뜨린다.
+  - 멀쩡한 통나무 벽과 덩굴을 남기면 불탄 집으로 읽히지 않았다(감독 검수 6/10).
+- 일반 실행기를 그대로 탄다. 받침 규칙(던전 키트가 천장 위에 서면 거절)과 완성된 집 보호 영역이 데모에도 걸린다.
+  직접 칠하기 시절에는 바위 윗면에 선 흑요석 뾰족돌 9개와 성벽 깃발이 이 검사를 피해 있었다.
+- 받침 규칙 보정(`src/project/groundSupport.ts` `mountSurfaceAt`): 마을 성벽 앞면은 3층에 그려지고 1층은 바닥이다.
+  그래서 벽에 거는 물건은 3층 성벽 앞면(태그 `town_wall` + `…:f`)도 벽으로 본다.
+
 ## 파티원 유대 `configure_party_bonds` · 「관계」에 유대 (2026-10-25)
 
 - **한 콜:** `members [{actorId, talk, choiceText?, variableId?}]` → 동료마다 유대 변수(기본 `var_bond_<배우>`, 0~`max` 기본 5).
