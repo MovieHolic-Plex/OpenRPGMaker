@@ -1018,7 +1018,7 @@ const BRAM = "숲지기 브람";
 /** 광장 → 대장간 문(1막 문 칸) · 대장간 안 문 칸·로한 자리. */
 const SMITHY = { hubDoor: { x: 29, y: 42 } as Cell, hubFront: { x: 29, y: 43 } as Cell, door: { x: 7, y: 10 } as Cell, arrive: { x: 7, y: 9 } as Cell, rohan: { x: 10, y: 6 } as Cell };
 /** 북쪽 성벽 개구멍 — 광장 북쪽 돌바닥(38,16)에서 위를 보고 조사. 브람이 그 곁(39,16)에 숨어 있다. */
-const HOLE = { wall: { x: 38, y: 15 } as Cell, front: { x: 38, y: 16 } as Cell, bram: { x: 39, y: 16 } as Cell, rubble: { x: 37, y: 16 } as Cell };
+const HOLE = { wall: { x: 38, y: 15 } as Cell, front: { x: 38, y: 16 } as Cell, bram: { x: 39, y: 16 } as Cell, rubble: { x: 40, y: 16 } as Cell };
 /** 버들항 장소 · 돌무더기 — 브람이 빼낸 돌을 내려놓는 자리. */
 const HOLE_RUBBLE = 26720;
 /** 버들항 장소 · 벽 아치(어두운 아치 윗부분) 왼쪽·오른쪽 칸 — 개구멍 그림. */
@@ -1109,11 +1109,12 @@ function northGateEvents(project: Project, exec: Exec): void {
     page("ev_fs2_hub_hole_p", "성벽", [], [narrate("두꺼운 성벽이다. 돌 하나가 조금 튀어나와 있다.")]),
     page("ev_fs2_hub_hole_open", "개구멍", [sw(SW_BRAM)], [
       // 브람이 직접 돌을 뺀다(사용자 지적 2026-10-29: 「성벽 돌 빼는 것도 이상함」 — 대사뿐, 화면에선 아무도 움직이지 않았다).
-      // 카엘이 한 걸음 물러서고 → 브람이 성벽 앞으로 와 돌에 손을 걸고 두 번 버틴다(긁는 소리) → 카메라가 다가가 먼지와 함께 구멍이 열린다
-      // → 브람이 빼낸 돌을 옆에 내려놓는다(돌무더기) → 브람이 먼저 기어 나간다.
+      // 브람이 제자리(카엘 오른쪽)에서 성벽을 보고 돌에 손을 걸고 두 번 버틴다(긁는 소리) → 카메라가 다가가 먼지와 함께 구멍이 열린다
+      // → 브람이 빼낸 돌을 오른쪽에 내려놓는다(돌무더기) → 브람이 먼저 기어 나간다.
+      // 예전 판은 카엘이 한 칸 내려서고 브람이 카엘 자리로 왔다 — 뒤따르던 엘레나가 그 칸으로 들어와 브람이 화면에서 가려졌다(VQA, 2026-10-30).
       cutBegin(),
-      route("@player", [{ kind: "move", dir: "down" }, { kind: "turn", dir: "up" }]),
-      route("ev_fs2_hub_bram", [{ kind: "move", dir: "left" }, { kind: "turn", dir: "up" }]),
+      route("@player", [{ kind: "turn", dir: "up" }]),
+      route("ev_fs2_hub_bram", [{ kind: "turn", dir: "up" }]),
       narrate("브람이 성벽 돌 틈에 손가락을 건다."),
       route("ev_fs2_hub_bram", [
         { kind: "setDirectionFix", enabled: true },
@@ -1237,9 +1238,9 @@ function forestEdgeChase(project: Project, exec: Exec, mapId: string, bramChip: 
       .filter((c) => c.y > edgeY + 2 && !avoid.some((a) => Math.abs(a.x - c.x) + Math.abs(a.y - c.y) < 3))
       .sort((a, b) => Math.abs(a.x - want.x) + Math.abs(a.y - want.y) - (Math.abs(b.x - want.x) + Math.abs(b.y - want.y)))[0];
   const spots: { at: Cell; patrol?: Cell[] }[] = [];
-  const behindL = pick({ x: arrive.x - 6, y: arrive.y - 1 });
+  const behindL = pick({ x: arrive.x - 9, y: arrive.y - 1 });
   if (behindL) spots.push({ at: behindL });
-  const aheadR = pick({ x: arrive.x + 10, y: arrive.y - 8 }, spots.map((s) => s.at));
+  const aheadR = pick({ x: arrive.x + 13, y: arrive.y - 8 }, spots.map((s) => s.at));
   if (aheadR) spots.push({ at: aheadR });
   // 나무 벽 틈 어귀 앞(도착선 네 줄 아래)을 가로로 도는 야경꾼 — 좌우 끝에서 멈춰 둘러본다. 서쪽 끝에서 출발해 동쪽으로.
   // 곧장 틈으로 내달리면 등 뒤를 스치고 지나가지만, 서쪽으로 돌아가면 그 부채꼴에 걸린다(추격 시뮬레이션 /tmp/fs2front/sim, 2026-10-29).
