@@ -459,6 +459,34 @@ function namedMaps(project: Project, text: string, except: string): GameMap[] {
  * 「어디」 한 줄 — 목표가 걸리는 맵(from)에서 본 자리. 같은 맵의 대상은 그 맵의 방위, 다른 맵은 거기로 가는 문의 방위.
  * 새 플레이어가 「지하철역」이 어디인지 몰라 2일차에 멈췄다(2026-10-27 romance-j91 J105).
  */
+/**
+ * 같은 줄에 다른 곳으로 가는 문이 나란히 있으면 그 가운데 몇째인지 — 「 · 문 셋 중 왼쪽」.
+ * 왜(2026-10-29 vm3 deepseek 방탈출 판정): 현관 홀 남쪽 벽에 응접실·서재·지하실 문이 3칸 간격으로 붙어 있었는데 목표는 「응접실 입구: 남동쪽」뿐이라
+ * 판정자가 응접실 문을 끝내 고르지 못했다.
+ */
+function siblingOrdinal(project: Project, from: GameMap, gate: { x: number; y: number }, hopId: string): string {
+  const others: { x: number; y: number; to: string }[] = [];
+  for (const map of Object.values(project.maps)) {
+    if (map.id === from.id) continue;
+    const cells = gatesTo(from, map.id);
+    if (!cells.length) continue;
+    const pick = [...cells].sort((a, b) => Math.abs(a.x - gate.x) + Math.abs(a.y - gate.y) - (Math.abs(b.x - gate.x) + Math.abs(b.y - gate.y)))[0]!;
+    others.push({ ...pick, to: map.id });
+  }
+  const row = others.filter((o) => Math.abs(o.y - gate.y) <= 1 && Math.abs(o.x - gate.x) <= 8);
+  const col = others.filter((o) => Math.abs(o.x - gate.x) <= 1 && Math.abs(o.y - gate.y) <= 8);
+  const line = row.length >= col.length ? row : col;
+  if (line.length < 2 || !line.some((o) => o.to === hopId)) return "";
+  const horizontal = line === row;
+  line.sort((a, b) => (horizontal ? a.x - b.x : a.y - b.y));
+  const k = line.findIndex((o) => o.to === hopId);
+  const n = line.length;
+  const COUNT = ["", "", "둘", "셋", "넷", "다섯"];
+  const [first, last] = horizontal ? ["왼쪽", "오른쪽"] : ["위쪽", "아래쪽"];
+  const pos = k === 0 ? first : k === n - 1 ? last : n === 3 ? "가운데" : `${first}에서 ${k + 1}번째`;
+  return ` · 문 ${COUNT[n] ?? n} 중 ${pos}`;
+}
+
 export function whereHint(project: Project, fromMapId: string, target: { mapId: string; x?: number; y?: number; label?: string }, origin?: Cell): string | undefined {
   const from = project.maps[fromMapId];
   const to = project.maps[target.mapId];
@@ -479,7 +507,8 @@ export function whereHint(project: Project, fromMapId: string, target: { mapId: 
   const gates = gatesTo(from, hop.id);
   if (gates.length === 0) return undefined;
   const near = origin ? [...gates].sort((a, b) => Math.abs(a.x - origin.x) + Math.abs(a.y - origin.y) - (Math.abs(b.x - origin.x) + Math.abs(b.y - origin.y)))[0]! : undefined;
-  const dir = near && origin ? bearingWord(origin, near) : [...new Set(gates.map((gate) => mapRegion(from, gate.x, gate.y)))].slice(0, 2).join("·");
+  const dir0 = near && origin ? bearingWord(origin, near) : [...new Set(gates.map((gate) => mapRegion(from, gate.x, gate.y)))].slice(0, 2).join("·");
+  const dir = `${dir0}${siblingOrdinal(project, from, near ?? gates[0]!, hop.id)}`;
   const label = target.label?.trim();
   if (hop.id === to.id) return `${to.name ?? to.id} 입구: ${dir}${label ? ` → ${label}` : ""}`;
   return `${hop.name ?? hop.id} 입구: ${dir} → ${to.name ?? to.id}${label ? ` · ${label}` : ""}`;
