@@ -41,6 +41,7 @@ import { COMBO_MAX_ACTORS, MAX_TITLE_BACKGROUND_LAYERS, MAX_TITLE_RUNNERS, norma
 import { normalizeCropRecord } from "@/project/farmModel";
 import { monsterBattleStatsForSpecies, monsterSkillIdsAtLevel, monsterSpeciesById, normalizeMonsterSpeciesRecord } from "@/project/monsterCollection";
 import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
+import { findOpeningStillScene, parseOpeningStill } from "@/project/openingStill";
 import { countLimitedRuntimeSupportCommands } from "@/project/lint/projectLint";
 import { ensureMonsterGraphic } from "./monsterGraphicAssignment";
 import { CHARACTER_SCALE_MIN, CHARACTER_SCALE_MAX } from "@/project/footprint";
@@ -2788,7 +2789,7 @@ const setTitleScreen: ToolDefinition = {
           menuY: { type: "integer" },
         },
       },
-      backgroundResourceId: { type: "string", description: "titleScreen.background only; does not clear system.titleResourceId" },
+      backgroundResourceId: { type: "string", description: "titleScreen.background only; does not clear system.titleResourceId. 게임 맵·걷기 칩으로 지은 오프닝 애니메틱 컷의 한 순간을 타이틀 그림으로 쓰려면 \"opening-still:<컷 id>@<ms>\"(예: opening-still:shot_throne@2400) — 그림 파일 없이 플레이어가 그 컷을 그 시각으로 그려 쓴다. 타이틀 전용 컷이 필요하면 오프닝 도구로 컷을 만들고 그 id 를 준다" },
       musicResourceId: { type: "string" },
       backgroundLayers: {
         type: "array",
@@ -2960,9 +2961,20 @@ const setTitleScreen: ToolDefinition = {
     if (typeof args.backgroundResourceId === "string") {
       const background = args.backgroundResourceId.trim();
       if (background) {
-        const banned = unsuitableOpeningStillMessage(background, "backgroundResourceId");
-        if (banned) throw new ToolError(banned, { code: "invalid-args" });
-        current.backgroundResourceId = requireTitleResource(draft, "backgroundResourceId", background, "picture");
+        const still = parseOpeningStill(background);
+        if (still) {
+          const scene = findOpeningStillScene(draft, still.sceneId);
+          if (!scene) {
+            const shots = [...(draft.system.opening?.scenes ?? []), ...(draft.system.titleIntro?.scenes ?? [])].filter((entry) => entry.kind === "animatic").map((entry) => entry.id);
+            throw new ToolError(`backgroundResourceId '${background}': 애니메틱 컷 '${still.sceneId}' 가 오프닝·타이틀 인트로에 없습니다.${shots.length ? ` 있는 컷: ${shots.join(", ")}` : " 오프닝 애니메틱 컷을 먼저 만드세요."}`, { code: "invalid-args" });
+          }
+          if (still.atMs > scene.durationMs) throw new ToolError(`backgroundResourceId '${background}': @${still.atMs}ms 가 컷 길이 ${scene.durationMs}ms 를 넘습니다.`, { code: "invalid-args" });
+          current.backgroundResourceId = background;
+        } else {
+          const banned = unsuitableOpeningStillMessage(background, "backgroundResourceId");
+          if (banned) throw new ToolError(banned, { code: "invalid-args" });
+          current.backgroundResourceId = requireTitleResource(draft, "backgroundResourceId", background, "picture");
+        }
       }
       else delete current.backgroundResourceId;
     }
