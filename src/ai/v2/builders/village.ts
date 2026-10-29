@@ -9,16 +9,27 @@ import type { BuildRun, BuilderCall, PlaceBuildResult, PlaceBuilder, PlaceRecord
 
 /** v2 계획 모델에게 주는 유일한 마을 지식(≤900자). */
 export const VILLAGE_CARD =
-  "[마을 type:village] 버들항 판타지 바깥 마을. size small(집3)·medium(4)·large(5). " +
-  "theme/style: river(풀밭 들 마을 — 강이 있는지는 water 로 따로)·coast(포구)·desert(사막 오아시스)·snow(설원)·swamp(늪 수상 마을). " +
-  "땅은 네가 먼저 설계한다(빠지면 한 번 되돌려 보낸다): hints.landform(terraces 계단식 단|hill 언덕|slope 산골 비탈|plateau 고원|flat 평지)·" +
-  "water(river 남쪽으로 동서로 흐르는 강 — 나루 널다리로 건넌다|none 물 없음, 풀밭 마을은 꼭 정한다)·settle(low 마을이 물가 맨 아래 단 — 강가·늪은 이쪽|middle 가운데 단)·" +
-  "tiers(마을 위 단 겹 1~4)·high(north|center|west|east 높은 곳). 마을은 그 땅에 맞춰 자란다: 맨 윗단에 망루·예배당·사원, 단마다 집, 낮은 단에 헛간, 강가면 나루 길목에 모이는 곳. " +
+  "[마을 type:village] 버들항 판타지 마을. 땅은 코드가 만든다 — 첫 make_place 는 짓지 않고 땅 그림(좌표 눈금)·요약을 준다. " +
+  "그림을 보고 hints.layout 에 자리를 골라 다시 부르면 짓는다: gather{x,y,plaza}·landmark(높은 단 건물)·anchor(여관)·work(일터)·houses[{x,y}](3~12)·fields[{x,y}]·exits(west|east|north|south). " +
+  "함수는 가까운 놓을 자리로 옮기고 길·계단·다리를 잇고 옮김·실패를 보고한다. hints.terrainSeed 를 바꾸면 다른 땅. " +
+    "theme/style: river(풀밭 들 마을 — 강이 있는지는 water 로 따로)·coast(포구)·desert(사막 오아시스)·snow(설원)·swamp(늪 수상 마을). " +
+  "땅 성격 힌트: landform(terraces|hill|slope|plateau|flat)·water(river 강|none, 풀밭 마을)·high(north|south|west|east|center)·tiers(1~4). " +
   "features: plaza(광장)·scatter(흩어진 농가)·harbour(포구, 큰 맵)·walls(성벽, river·desert·snow, 평지)·forest·dense forest·conifer. " +
   "그 밖 hints: houseCount(3~5)·roofs(red|slate|moss|log)·woods(edge|dense)·forestType·wallGate(S|N|NS)·width·height·variant(같은 명세의 다른 배치). " +
   "교회·시장 건물 지정은 못 한다(보고됨). 집이 선 마을은 다시 지을 수 없다 — 처음 make_place 에 다 넣는다.";
 
-const KNOWN_HINTS = new Set(["landform", "settle", "tiers", "high", "houseCount", "roofs", "water", "woods", "form", "terrain", "theme", "forestType", "walls", "wallGate", "wallSideGaps", "width", "height", "variant", "harbour"]);
+/** 스키마 칸을 0·빈 값으로 다 채우는 모델(terra)이 보낸 layout 에서 {x:0,y:0} 자리·빈 배열을 버린다. 모이는 곳도 집도 없으면 「안 줬다」(null). */
+export function cleanLayoutHint(value: unknown): Record<string, unknown> | null {
+  if (!value || typeof value !== "object") return null;
+  const lay = { ...(value as Record<string, unknown>) };
+  const real = (p: unknown) => !!p && typeof p === "object" && !(Number((p as { x?: unknown }).x) === 0 && Number((p as { y?: unknown }).y) === 0);
+  for (const k of ["gather", "landmark", "anchor", "work"]) if (!real(lay[k])) delete lay[k];
+  for (const k of ["houses", "fields"]) { const a = Array.isArray(lay[k]) ? (lay[k] as unknown[]).filter(real) : []; if (a.length) lay[k] = a; else delete lay[k]; }
+  if (!Array.isArray(lay.exits) || !(lay.exits as unknown[]).length) delete lay.exits;
+  return lay.gather || lay.houses ? lay : null;
+}
+
+const KNOWN_HINTS = new Set(["layout", "terrainSeed", "terrainGen", "landform", "settle", "tiers", "high", "houseCount", "roofs", "water", "woods", "form", "terrain", "theme", "forestType", "walls", "wallGate", "wallSideGaps", "width", "height", "variant", "harbour"]);
 const BEODEUL_TILESET = "beodeul_city";
 
 interface VillageState { readonly args: Record<string, unknown>; readonly seed?: number; readonly variant?: number; readonly doors?: readonly { x: number; y: number; kit?: string }[] }
@@ -72,13 +83,29 @@ export function villageArgs(spec: PlaceSpec): { args: Record<string, unknown>; m
     if (key === "seed") continue;
     if (!KNOWN_HINTS.has(key)) { warnings.push(`알 수 없는 hints.${key} 는 무시했다`); continue; }
     // 스키마 칸을 다 채워 보내는 모델(gpt-6.1-terra)은 안 정한 칸을 ""·0 으로 보낸다 — width·height 0 이 최소 크기(36×30)로 잘려 지형 먼저의 위 단이 설 자리가 없었다(2026-10-29 실조수)
-    if (value === "" || value === null || (["width", "height", "tiers", "houseCount"].includes(key) && typeof value === "number" && value <= 0)) continue;
+    if (value === "" || value === null || (["width", "height", "tiers", "houseCount", "terrainSeed"].includes(key) && typeof value === "number" && value <= 0)) continue;
+    if (key === "layout") { const lay = cleanLayoutHint(value); if (lay) args.layout = lay; continue; }
     if (key !== "variant") args[key] = value;
   }
   // 모델이 땅 모양 낱말(hillside·terraces·highland)을 form 에 넣으면 인자 검증에서 한 번 실패했다(2026-10-29 실조수 flash) — terrain 으로 옮긴다
   if (typeof args.form === "string" && ["hillside", "terraces", "highland"].includes(args.form)) { if (args.terrain === undefined) args.terrain = args.form; delete args.form; warnings.push("hints.form 의 땅 모양 낱말을 terrain 으로 옮겼다"); }
   if (args.harbour === true) { args.width = Math.max(Number(args.width ?? 0), 84); args.height = Math.max(Number(args.height ?? 0), args.landform === "flat" || args.terrain === "flat" ? 30 : 38); } // 지형 먼저 포구는 마을 단 뒤 높은 단 자리까지 8줄 더
   return { args, missing, warnings };
+}
+
+/** 마을이 지어질 맵 크기(build·authorBeodeulTown 기본값과 같은 계산) — 코드 지형 미리보기가 같은 크기로 땅을 만든다. */
+export function villageMapSize(spec: PlaceSpec, args: Record<string, unknown>): [number, number] {
+  const w = num(args.width), h = num(args.height);
+  const flat = args.walls === true || args.landform === "flat" || args.terrain === "flat";
+  if (w !== undefined && h !== undefined) return [w, h];
+  const theme = args.theme as string | undefined;
+  if (spec.salt !== undefined && (theme === undefined || theme === "river" || theme === "coast") && w === undefined && h === undefined) {
+    const [a, b] = ([[42, 34], [50, 32], [38, 40]] as const)[Math.floor(spec.salt / 9) % 3]!; return [a, b + (flat ? 0 : 8)];
+  }
+  const hc = num(args.houseCount);
+  const base: [number, number] = hc === undefined ? ({ river: [56, 44], coast: [56, 40], desert: [58, 44], snow: [56, 44], swamp: [56, 44] } as Record<string, [number, number]>)[theme ?? "river"] ?? [56, 44]
+    : hc <= 3 ? [40, 32] : hc === 4 ? [42, 34] : [44, 36];
+  return [w ?? base[0], h ?? base[1] + (flat ? 0 : 8)];
 }
 
 /** 지을 맵 고르기: 명세 mapId → (이전 기록) → 현재 맵이 빈 버들항 맵이면 그 맵 → 새 맵. */
@@ -114,7 +141,7 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
   // 실제 맵에 한 번 지으면 「완성된 집 보호」로 AI 가 다시 지을 수 없어서(2026-10-23 v2), 고르기는 짓기 전에 끝낸다.
   const wantHouses = num(args.houseCount);
   if (!prev && args.seed === undefined && wantHouses === undefined && spec.salt !== undefined) args.seed = spec.salt % 100000;
-  if (!prev && args.seed === undefined && wantHouses !== undefined) {
+  if (!prev && args.seed === undefined && wantHouses !== undefined && !args.layout) {
     let best: { seed: number; houses: number } | undefined;
     const salt = ([...spec.name].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7) + (spec.salt ?? 0)) >>> 0;
     for (let i = 0; i < 5; i++) {

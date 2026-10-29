@@ -19,10 +19,11 @@ import type { AutotileGroup, GameMap, StructureKitDef, TilesetDef } from "@/proj
 import { DungeonComposeError } from "../errors";
 import { WALL_ROWS, hash01, rng, vnoise } from "../grid";
 import { layoutBlob, layoutMaze } from "../layouts";
+import { designToRooms } from "../designLayout";
 import { layoutDungeon } from "../layoutRooms";
 import { buildMask } from "../mask";
 import { PROFILES, TK, type KitPref } from "./profiles";
-import { dressCorridor, dressTyped, type DressCtx } from "./dress";
+import { dressCorridor, dressDesignFeatures, dressTyped, type DressCtx } from "./dress";
 import { DUNGEON_DIRS, DUNGEON_ROOM_KINDS, DUNGEON_SIZES, DUNGEON_STYLES, DUNGEON_TYPES } from "../types";
 import type { DungeonCompose, DungeonStairCell, DungeonDir, DungeonLayout, DungeonRoomInput, DungeonRoomKind, DungeonSize, DungeonSpec, DungeonStyle, DungeonType, PlacedCorridor, PlacedRoom } from "../types";
 /** 사람이 지은 던전(벽돌·석재) — 창·성문이 어울린다. 나머지(cave·mine·volcano·ice·forest·swamp·otherworld)는 자연 굴. */
@@ -119,7 +120,12 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
   const type: DungeonType = spec.type ?? spec.style ?? "catacomb";
   const profile = PROFILES[type];
   const specT: DungeonSpec = { ...spec, type };
-  const layout = profile.grammar === "maze" ? layoutMaze(specT) : profile.grammar === "blob" ? layoutBlob(specT, profile) : layoutDungeon(specT);
+  // 방+통로 문법에 조수 설계가 오면 rooms 로 옮긴다(designLayout.ts) — 고친 것은 notes 로 warnings 에 실린다.
+  const designed = profile.grammar === "rooms" && spec.design && !spec.rooms?.length ? designToRooms(spec.design, type, profile) : undefined;
+  const layout = profile.grammar === "maze" ? layoutMaze(specT) : profile.grammar === "blob" ? layoutBlob(specT, profile)
+    : designed ? (() => { const l = layoutDungeon({ ...specT, rooms: designed.rooms, ...(designed.loop ? { layout: "loop" as const } : {}) }); return { ...l, notes: [...designed.fixes, ...l.notes] }; })()
+    : layoutDungeon(specT);
+  if (profile.grammar === "maze" && spec.design) layout.notes.push("고침: 미궁은 갈림길 격자라 방 설계(dungeonDesign)를 쓰지 않았다 — 설계대로 지으려면 type 을 cave·catacomb 등으로.");
   const seed = spec.seed ?? 7;
   const random = rng(seed);
   const kits = new Map<string, StructureKitDef>((ts.structureKits ?? []).map((kit) => [kit.id, kit]));
@@ -235,7 +241,28 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
   const stranded: string[] = [];
   // 야외 출구: 입구 빈터 아랫변 가운데에서 맵 남쪽 끝까지 길을 낸다(숲·늪을 걸어 나가는 길 — 계단 대신 맵 끝 칸이 바깥 출구).
   let trailExit: DungeonStairCell | null = null;
-  if (outdoor) {
+  if (outdoor && (layout.entranceSide === "west" || layout.entranceSide === "east")) {
+    // 설계한 입구 쪽이 서·동이면 입구 빈터 가운데 줄에서 그 쪽 맵 끝까지 길(2026-10-29 설계 던전).
+    const e = rooms[0]!;
+    const ey = e.y + Math.floor(e.h / 2);
+    const west = layout.entranceSide === "west";
+    let x0 = -1;
+    for (let k = 0; k < W; k += 1) { const x = west ? k : W - 1 - k; if (floorMask[idx(x, ey)] === 1 && !liquid[idx(x, ey)] && roomAt[idx(x, ey)] === 0) { x0 = x; break; } }
+    if (x0 >= 0) {
+      for (let k = 0; west ? k <= x0 : x0 + k < W; k += 1) for (let y = ey - 1; y <= ey + 1; y += 1) { const x = west ? k : x0 + k; if (inb(x, y)) { floorMask[idx(x, y)] = 1; liquid[idx(x, y)] = 0; if (roomAt[idx(x, y)]! < 0) roomAt[idx(x, y)] = 0; } }
+      const ex = west ? 0 : W - 1;
+      trailExit = { x: ex, y: ey, front: { x: west ? 1 : W - 2, y: ey }, kind: "up" };
+    }
+  } else if (outdoor && layout.entranceSide === "north") {
+    const e = rooms[0]!;
+    const ex = e.x + Math.floor(e.w / 2);
+    let y0 = -1;
+    for (let y = 0; y < H; y += 1) if (floorMask[idx(ex, y)] === 1 && !liquid[idx(ex, y)] && roomAt[idx(ex, y)] === 0) { y0 = y; break; }
+    if (y0 >= 0) {
+      for (let y = 0; y <= y0; y += 1) for (let x = ex - 1; x <= ex + 1; x += 1) if (inb(x, y)) { floorMask[idx(x, y)] = 1; liquid[idx(x, y)] = 0; if (roomAt[idx(x, y)]! < 0) roomAt[idx(x, y)] = 0; }
+      trailExit = { x: ex, y: 0, front: { x: ex, y: 1 }, kind: "up" };
+    }
+  } else if (outdoor) {
     const e = rooms[0]!;
     const ex = e.x + Math.floor(e.w / 2);
     let y0 = -1;
@@ -1017,6 +1044,12 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
         break;
       }
     }
+  });
+  // 조수가 설계한 방의 특징(석순·수정·뼈·기둥·야영…)은 방 꾸미기 뒤에 덩이로 덧붙인다(designLayout.ts, dress.ts dressDesignFeatures).
+  rooms.forEach((r, i) => {
+    if (!r.features?.length) return;
+    const missed = dressDesignFeatures(ctx, r, rng(seed * 53 + i * 29 + 1));
+    if (missed.length) warnings.push(`고침: 방 ${r.id} 의 특징 ${missed.join("·")} 은 놓을 빈 바닥·그림이 없어 빠졌다.`);
   });
   // 탑 층(여러 층 탑: 다음 층으로 올라가는 계단·바닥 계단 입구·문 입구)은 북쪽 벽 앞면 위 두 줄에 화살 구멍 창(gap bd-dg-tower-window-*)을 방마다 한두 개.
   // 자연 굴(동굴·광산·화산·얼음굴·숲·늪·이계)에는 창이 없다 — 동굴 북벽에 빛 든 화살 구멍 창이 «아무 데도 안 가는 문틀»로 읽혔다(2026-10-25 J25).

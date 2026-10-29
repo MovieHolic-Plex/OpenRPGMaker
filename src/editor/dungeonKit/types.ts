@@ -86,6 +86,11 @@ export interface DungeonSpec {
    * A 해안 흙굴 · B 산속 바위굴 · C 검푸른 심층굴 · none 옛 검은 천장. 생략하면 종류 기본(cave A · mine B · volcano C, 그 밖 none).
    */
   readonly rockLine?: "A" | "B" | "C" | "none";
+  /**
+   * 조수가 설계한 층(2026-10-29 「맵은 조수가 설계한다」, designLayout.ts): 방(역할·크기·모양·자리·물·특징)·잇는 길·입구 쪽.
+   * 주면 불규칙 문법은 이 설계대로 파고(layoutDesignedBlob), 방+통로 문법은 rooms 로 옮긴다(designToRooms). 함수는 고친 것만 warnings 「고침:」 줄로 알린다.
+   */
+  readonly design?: import("./designLayout").DungeonDesign;
 }
 
 /** 층 계단·문 하나: x,y = 이동 이벤트를 둘 칸(계단 그림 칸), front = 들어서는 앞 칸(도착 칸). */
@@ -96,7 +101,7 @@ export interface DungeonStairCell {
 }
 
 export interface Rect { x: number; y: number; w: number; h: number }
-export interface PlacedRoom extends Rect { id: string; kind: DungeonRoomKind; from: string | null; dir: DungeonDir | null; depth: number; shape?: "round" | "apse" | "ring" }
+export interface PlacedRoom extends Rect { id: string; kind: DungeonRoomKind; from: string | null; dir: DungeonDir | null; depth: number; shape?: "round" | "apse" | "ring"; /** 설계한 방의 특징(stalagmites·crystals·mushrooms·bones·pillars·boulders·camp) — 꾸미기가 더한다. */ features?: readonly string[] }
 export interface PlacedCorridor { a: string; b: string; dir: DungeonDir; rect: Rect; loop?: boolean }
 
 
@@ -104,6 +109,8 @@ export interface DungeonLayout {
   rooms: PlacedRoom[]; corridors: PlacedCorridor[]; width: number; height: number; notes: string[]; grid?: Grid;
   /** 얇은 칸막이 배치(벽 1칸) — 벽 두께 규칙(settle)을 적용하지 않는다. */
   thin?: boolean;
+  /** 설계한 입구 쪽(야외 던전의 출구 길 방향). */
+  entranceSide?: "south" | "north" | "west" | "east";
 }
 
 export interface DungeonCompose {

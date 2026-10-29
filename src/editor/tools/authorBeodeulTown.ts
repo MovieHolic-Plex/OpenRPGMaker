@@ -18,6 +18,8 @@ import { BEODEUL_YARD_QUARTERS, beodeulYardReserve } from "./villageQuarterTool"
 import { BEODEUL_FOREST_TYPES, parseBeodeulForestType, type BeodeulForestType } from "./beodeulForest";
 import { BEODEUL_ROOF_PALETTES, BEODEUL_VILLAGE_WATERS, BEODEUL_VILLAGE_WOODS, BEODEUL_VILLAGE_FORMS, BEODEUL_VILLAGE_THEMES, buildBeodeulVillage, resolveVillageForm, themeDefaultSize, type BeodeulVillageTheme } from "./beodeulVillage";
 import { VILLAGE_TERRAINS } from "./beodeulTerrain";
+import { generateCodeTerrain, TERRAIN_CHARACTERS, type CodeTerrain, type TerrainCharacter, type TerrainHigh, type TerrainWater } from "./beodeulTerrainGen";
+import { LAYOUT_EDGES, parseLayout } from "./beodeulCodeLayout";
 
 import { buildSmallBeodeulVillage } from "./beodeulSmallVillage";
 import { addBeodeulVillageChurch } from './beodeulArchitectureTools';
@@ -92,6 +94,18 @@ export const AUTHOR_BEODEUL_TOWN_TOOL: ToolDefinition = {
       walls: { type: "boolean", description: "true 이면 마을 둘레에 성벽을 두른다(성벽·성곽·성문·요새 마을). theme river·desert·snow 마을만 — 평지로, 강가 마을은 강 없이 짓는다. 성문루·망루·계단도 함께. 결과 data.walls." },
       wallGate: { type: "string", enum: ["S", "N", "NS"], description: "walls 일 때 성문 쪽. S 남문 하나(기본) · N 북문 하나 · NS 남북에 하나씩. 사용자가 말한 쪽을 그대로." },
       wallSideGaps: { type: "boolean", description: "walls 일 때 서·동 성벽 밑으로 길이 지나는 쪽문(작은 문루)을 낼지(기본 false — 성문 말고는 성벽이 닫힌다). 사용자가 옆 출입구를 말할 때만 true." },
+      terrainGen: { type: "string", enum: ["code", "bands"], description: "땅 짓기(theme 마을, 성벽 없음): code(기본) 코드가 높이맵·침식·강으로 자연 지형을 만들고 그 위에 layout 자리대로 짓는다 · bands 예전 등고선 띠 지형(지형 먼저)." },
+      terrainSeed: { type: "integer", description: "코드 지형 씨앗(지형 미리보기에서 받은 값 — 같은 값 = 같은 땅). 생략하면 seed." },
+      layout: { type: "object", description: "코드 지형 위 자리(지형 미리보기의 좌표, x 오른쪽·y 아래). 함수는 가장 가까운 놓을 수 있는 자리로 옮기고 길을 잇고 옮김·실패를 보고한다. 생략하면 함수가 대신 고른다.",
+        properties: {
+          gather: { type: "object", properties: { x: { type: "integer" }, y: { type: "integer" }, plaza: { type: "boolean", description: "판석 광장(기본 true) · false 면 우물·좌판만" } }, required: ["x", "y"], description: "모이는 곳(광장·우물)" },
+          landmark: { type: "object", properties: { x: { type: "integer" }, y: { type: "integer" } }, required: ["x", "y"], description: "높은 곳 건물(망루 집·예배당·사원·사당) — 보통 높은 단" },
+          anchor: { type: "object", properties: { x: { type: "integer" }, y: { type: "integer" } }, required: ["x", "y"], description: "큰 건물(여관·회관) — 보통 모이는 곳 곁" },
+          work: { type: "object", properties: { x: { type: "integer" }, y: { type: "integer" } }, required: ["x", "y"], description: "일터(헛간·곳간과 일터 소품)" },
+          houses: { type: "array", items: { type: "object", properties: { x: { type: "integer" }, y: { type: "integer" } }, required: ["x", "y"] }, description: "살림집 자리(집 가운데), 3~12" },
+          fields: { type: "array", items: { type: "object", properties: { x: { type: "integer" }, y: { type: "integer" } }, required: ["x", "y"] }, description: "밭 자리(밭 가운데)" },
+          exits: { type: "array", items: { type: "string", enum: [...LAYOUT_EDGES] }, description: "큰길이 마을 밖으로 나가는 맵 가장자리(1~2)" },
+        } },
       harbour: { type: "boolean", description: `true 이고 가로 ${HARBOUR_W} 이상이면 맨 아래에 항구 호수를 붙인다(세로 ${HARBOUR_H}칸 추가).` },
     },
   },
@@ -582,6 +596,22 @@ function wallsWanted(args: Record<string, unknown>, theme: BeodeulVillageTheme):
   return asked && WALL_THEMES.includes(theme);
 }
 
+/** 코드 지형을 쓰는가(theme 마을·성벽 없음·terrainGen bands 아님). */
+export function usesCodeTerrain(args: Record<string, unknown>, theme: string): boolean {
+  return (BEODEUL_VILLAGE_THEMES as readonly string[]).includes(theme) && !wallsWanted(args, theme as BeodeulVillageTheme) && args.terrainGen !== "bands";
+}
+/** 마을 인자 → 코드 지형(같은 인자·크기·씨앗 = 같은 땅). landform·terrain 낱말은 큰 모양 힌트로만 쓴다. */
+export function codeTerrainFor(theme: string, args: Record<string, unknown>, W: number, H: number, seed: number): CodeTerrain {
+  const lf = typeof args.landform === "string" ? args.landform : "";
+  const tr = typeof args.terrain === "string" ? args.terrain : "";
+  const character: TerrainCharacter | undefined = (TERRAIN_CHARACTERS as readonly string[]).includes(lf) ? lf as TerrainCharacter
+    : tr === "hillside" ? "hill" : tr === "highland" ? "slope" : tr === "terraces" ? "terraces" : tr === "flat" ? "flat" : undefined;
+  const high = (["north", "south", "west", "east", "center"] as const).find((h) => h === args.high) as TerrainHigh | undefined;
+  const water: TerrainWater = theme === "coast" ? "sea" : theme === "desert" ? "oasis" : theme === "snow" ? "lake" : theme === "swamp" ? "bog" : args.water === "none" ? "none" : "river";
+  const tiers = Number(args.tiers);
+  return generateCodeTerrain({ W, H, seed, ...(character ? { character } : {}), ...(high ? { high } : {}), water, ...(Number.isFinite(tiers) && tiers > 0 ? { tiers } : {}) });
+}
+
 function buildVillage(draft: Project, args: Record<string, unknown>, theme: BeodeulVillageTheme): ToolExecResult {
   const seed = intArg(args, "seed", 7, 0, 2 ** 31 - 1);
   const hc = Number(args.houseCount);
@@ -637,7 +667,17 @@ function buildVillage(draft: Project, args: Record<string, unknown>, theme: Beod
     if (terrain && terrain !== "flat") { wallTerrain = "flat"; wallNotes.push(`성벽 마을이라 지형 ${terrain} 대신 평지로 지었다.`); }
     else wallTerrain = "flat";
   } else if (args.walls === true) wallNotes.push(`성벽은 강가·사막·설원 마을(theme river·desert·snow)만 두른다 — ${theme} 마을은 성벽 없이 지었다.`);
-  const build = () => buildBeodeulVillage(draft, mapId, theme, seed, wallForm, wallTerrain, forestType, { roofs, water: wallWater, woods, houseLimit: houseCount, walls, ...(typeof args.landform === "string" && args.landform ? { landform: args.landform } : {}), ...(typeof args.settle === "string" && args.settle ? { settle: args.settle } : {}), ...(args.tiers !== undefined ? { tiers: Number(args.tiers) } : {}), ...(typeof args.high === "string" && args.high ? { high: args.high } : {}), ...(typeof args.quarter === "string" && beodeulYardReserve(args.quarter) ? { yard: beodeulYardReserve(args.quarter) } : {}),
+  const code = usesCodeTerrain(args, theme);
+  const terrainSeed = args.terrainSeed !== undefined && Number.isFinite(Number(args.terrainSeed)) ? Math.max(0, Math.floor(Number(args.terrainSeed))) : seed;
+  const layoutNotes: string[] = [];
+  const codeOpts = (): Record<string, unknown> => {
+    if (!code) return {};
+    const m = draft.maps[mapId]!;
+    const { layout, notes } = parseLayout(args.layout, m.width, m.height);
+    layoutNotes.splice(0, layoutNotes.length, ...notes);
+    return { codeTerrain: codeTerrainFor(theme, args, m.width, m.height, terrainSeed), layout };
+  };
+  const build = () => buildBeodeulVillage(draft, mapId, theme, seed, wallForm, wallTerrain, forestType, { ...codeOpts(), roofs, water: wallWater, woods, houseLimit: houseCount, walls, ...(typeof args.landform === "string" && args.landform ? { landform: args.landform } : {}), ...(typeof args.settle === "string" && args.settle ? { settle: args.settle } : {}), ...(args.tiers !== undefined ? { tiers: Number(args.tiers) } : {}), ...(typeof args.high === "string" && args.high ? { high: args.high } : {}), ...(typeof args.quarter === "string" && beodeulYardReserve(args.quarter) ? { yard: beodeulYardReserve(args.quarter) } : {}),
     ...(args.wallGate === "N" || args.wallGate === "NS" || args.wallGate === "S" ? { wallGate: args.wallGate } : {}), ...(args.wallSideGaps === true ? { wallSideGaps: true } : {}) });
   let r = build();
   // 성벽 띠가 가장자리를 먹어 요청한 집 수가 다 앉지 않는다(2026-10-22 조수 시험 r3: 5채 요청 → 44×32 에서 2채, 조수가 52×38 로 다시 지어 3채).
@@ -645,7 +685,9 @@ function buildVillage(draft: Project, args: Record<string, unknown>, theme: Beod
   const housesOf = (x: typeof r) => Number((x.data as { houses?: number }).houses ?? 0);
   const grown: string[] = [];
   // 지형 먼저 마을도 단 띠에 집이 다 앉지 않으면 같은 방식으로 넓혀 다시 짓는다(줄어든 마을 단에 맞춘 집 수)
-  if ((walls || (terrainFirst && !walls)) && houseCount !== undefined && !rebuilt && housesOf(r) < houseCount) {
+  // 조수가 준 자리(layout)는 그 맵 크기의 땅 좌표다 — 넓혀 다시 지으면 땅이 바뀌어 자리가 어긋난다(못 놓은 자리는 보고로 돌려준다)
+  const layoutGiven = !!args.layout && typeof args.layout === "object" && Object.keys(args.layout as object).length > 0;
+  if ((walls || (terrainFirst && !walls)) && houseCount !== undefined && !rebuilt && !layoutGiven && housesOf(r) < houseCount) {
     const name = draft.maps[mapId]!.name;
     const rebuildAt = (w: number, h: number) => {
       requireTool(MAP_TOOLS, "remove_map").run(draft, { mapId });
@@ -673,8 +715,8 @@ function buildVillage(draft: Project, args: Record<string, unknown>, theme: Beod
     ? " 같은 mapId 로 다시 지어 맵 전체를 새로 깔았다(손으로 고친 부분은 사라졌다)."
     : " 2026-10-11 지형 도입 이후 같은 seed 도 예전과 다른 배치다 — 기존 마을 맵에 지형을 넣으려면 다시 지어야 한다(맵 전체를 다시 깐다 — 손으로 고친 부분은 사라진다. 마을 집이 선 맵은 완성된 집 보호로 덮어 짓기가 거절되니 remove_map 후 같은 id 로).";
   const wallNote = wallNotes.length ? ` ${wallNotes.join(" ")}` : "";
-  const warnings = [...wallNotes, ...r.warnings];
-  return { summary: r.summary + note + wallNote, data: r.data, warnings: warnings.length ? warnings : undefined };
+  const warnings = [...wallNotes, ...layoutNotes, ...r.warnings];
+  return { summary: r.summary + note + wallNote, data: code ? { ...r.data, terrainSeed } : r.data, warnings: warnings.length ? warnings : undefined };
 }
 
 function uniqueId(draft: Project, prefix: string, body: string): string {

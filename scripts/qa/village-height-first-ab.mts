@@ -53,8 +53,9 @@ for (const c of CASES) {
     fs.writeFileSync(`${OUT}/${name}.project.json`, JSON.stringify({ project: ctx.project, mapId: d.mapId }));
     const cf = analyzeCityForm(ctx.project, map);
     const doors = (d.doors ?? []) as { reached: boolean }[];
-    const lr = (d.levelReach ?? {}) as Record<string, { walk: number; reached: number }>;
+    const lr = (d.levelReach ?? {}) as Record<string, { walk: number; reached: number; wild?: number }>;
     const upMiss = Object.values(lr).reduce((s, e) => s + (e.walk - e.reached), 0);
+    const upWild = Object.values(lr).reduce((s, e) => s + (e.wild ?? 0), 0); // 일부러 숲으로 둔 높은 단(못 닿아도 결함 아님)
     const gates = (d.fenceGates ?? []) as { reached: boolean }[];
     const warnings = ((r as any).diff?.warnings ?? (r as any).warnings ?? []) as string[];
     const levels = d.relief?.levels as Record<string, number> | undefined;
@@ -65,11 +66,11 @@ for (const c of CASES) {
       longest: cf.lines.longestLen, isolated: cf.graph.isolated.length,
       levels, levelCount: levels ? Object.keys(levels).filter((k) => (levels[k] ?? 0) > 0).length : 1,
       ramps: d.relief?.ramps ?? 0, rampFails: d.relief?.fails ?? 0, cuts: d.relief?.cuts ?? 0, straddle: d.relief?.straddle ?? 0, roadOnRim: d.relief?.roadOnRim ?? 0, lowered: d.relief?.lowered ?? 0,
-      upMiss, gateMiss: gates.filter((g) => !g.reached).length, stampFailed: d.stampFailed, trees: d.trees, fields: d.fields,
+      upMiss, upWild, gateMiss: gates.filter((g) => !g.reached).length, stampFailed: d.stampFailed, trees: d.trees, fields: d.fields,
       note: d.relief?.note ?? "", warnings, summary: r.summary,
     };
     rows.push(row);
-    console.log(name, JSON.stringify({ ms: row.ms, houses: row.houses, unreached: row.unreachedDoors, dead: row.deadCells, deadSt: row.deadStreets, lv: row.levels, ramps: row.ramps, rfail: row.rampFails, upMiss, gateMiss: row.gateMiss, fail: row.stampFailed, warn: warnings.length, note: row.note }));
+    console.log(name, JSON.stringify({ ms: row.ms, houses: row.houses, unreached: row.unreachedDoors, dead: row.deadCells, deadSt: row.deadStreets, lv: row.levels, ramps: row.ramps, rfail: row.rampFails, upMiss, upWild, gateMiss: row.gateMiss, fail: row.stampFailed, warn: warnings.length, note: row.note }));
   }
 }
 fs.writeFileSync(`${OUT}/report.json`, JSON.stringify(rows, null, 1));
