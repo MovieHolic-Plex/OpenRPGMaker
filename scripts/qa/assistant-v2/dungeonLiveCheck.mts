@@ -8,7 +8,8 @@ import { canMove, isPassable } from "../../../src/project/collision.ts";
 
 const out: unknown[] = [];
 for (const dir of process.argv.slice(2)) {
-  const project = readProjectSqlite(path.join(dir, "project"));
+  let project: ReturnType<typeof readProjectSqlite>;
+  try { project = readProjectSqlite(path.join(dir, "project")); } catch (e) { out.push({ dir, error: String(e).slice(0, 160) }); continue; }
   const r = runGameCheck(project, { autoPlayBudgetMs: 30_000, skipAutoPlay: process.env.DLC_NOPLAY === "1" });
   const runs = (r.autoPlay?.runs ?? []).map((x) => ({ label: x.label, ok: x.ok, ending: x.endingReached ?? null, fail: x.failure ? `${x.failure.goal}: ${x.failure.detail.slice(0, 200)}` : null }));
   const maps = Object.values(project.maps).filter((m) => (m.locations ?? []).some((l) => (l.tags ?? []).includes("dungeon-room"))).map((m) => {
