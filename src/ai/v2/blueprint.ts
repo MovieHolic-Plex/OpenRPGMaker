@@ -556,7 +556,10 @@ export function fillUnsetStepConditions(project: Project): string[] {
     for (let j = 0; j < p; j++) { const ev = resolved[j]!.ev; if (!ev) continue; const s = eventSetter(project, ev); for (const id of [...s.switches, ...s.items, ...s.variables]) have.add(id); }
     const pages = pagesOf(prev.ev!);
     let page: Obj | undefined;
-    for (let i = pages.length - 1; i >= 0; i--) if (hasCommands(pages[i]!) && pageNeeds(pages[i]!).every((n) => have.has(n.id))) { page = pages[i]; break; }
+    // 증거를 내밀어야 넘어가는 페이지(추리 용의자 「· 증거」)가 있으면 그 페이지 — 증거를 앞 단계가 아닌 조사 칸이 주면(evidenceOnThing) have 에 없어
+    // 말만 걸면 도는 첫 페이지가 골라져 증거 없이 조건이 켜졌다(2026-10-29 vm5 argon 추리 재생).
+    page = [...pages].reverse().find((pg) => hasCommands(pg) && JSON.stringify(pg.commands).includes('"presentItem"'));
+    if (!page) for (let i = pages.length - 1; i >= 0; i--) if (hasCommands(pages[i]!) && pageNeeds(pages[i]!).every((n) => have.has(n.id))) { page = pages[i]; break; }
     if (!page) continue;
     const commands = page.commands as Obj[];
     const add: Obj[] = [];

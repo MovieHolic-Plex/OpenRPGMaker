@@ -8,7 +8,7 @@ import type { GameEvent, Project } from "@/project/types";
 import type { BuildRun } from "./types";
 import { josa } from "@/util/josa";
 import { buildPeople } from "./people";
-import { resolveSteps } from "./mysteryCase";
+import { isProgressWord, resolveSteps } from "./mysteryCase";
 import { unreachableEvents } from "./eventReach";
 
 type Obj = Record<string, unknown>;
@@ -222,5 +222,61 @@ export function settleStepSubjects(run: BuildRun): string[] {
     const steps = bp.steps.map((step) => { const hit = resolved.find((r) => r.step.id === step.id && renamed.has(r.ev.id)); return hit ? { ...step, event: hit.ev.id } : step; });
     run.ctx.project = { ...run.ctx.project, gameBlueprint: { ...run.ctx.project.gameBlueprint!, steps } } as Project;
   }
+  notes.push(...dropTokenLines(run), ...matchSpeakerPrefix(run));
   return notes;
+}
+
+/** 물건이 아닌 막연한 토큰(「필요한 것」「단서」「수사 시작」) — 『』에 넣어 「알아냈다·받았다」로 쓰면 자리표시로 읽힌다. */
+const vagueToken = (x: string) => isProgressWord(x) || /^(필요한\s*것|무언가|그것|단서|증거|정보|힌트)$/u.test(x.trim());
+
+/**
+ * 『필요한 것』을 알아냈다 · 여관 주인에게서 『필요한 것』을 받았다 · 「필요한 것이 있어야 할 것 같다」 — 스위치 토큰이 물건처럼 새어 나온 줄을 뺀다
+ * (같은 목록에 그 이름의 아이템을 실제로 주는 명령이 있으면 둔다. 잠김 줄은 뒤에 「먼저 …」 안내가 이어질 때만 뺀다).
+ * 왜(2026-10-29 vm4 argon 추리 재생): 여관 주인이 아무것도 안 주는데 「『필요한 것』을 받았다」, 짐을 뒤지자 「『단서』를 알아냈다」.
+ */
+export function dropTokenLines(run: BuildRun): string[] {
+  const items = new Map(run.ctx.project.database.items.map((i) => [i.id, String(i.name ?? "")]));
+  let n = 0;
+  const visit = (list: unknown): unknown => {
+    if (!Array.isArray(list)) return list;
+    const arr = list as Obj[];
+    const given = new Set(arr.filter((c) => c && c.kind === "changeItem").map((c) => items.get(String(c.itemId)) ?? ""));
+    const kept = arr.filter((c, i) => {
+      if (!c || c.kind !== "text" || typeof c.body !== "string") return true;
+      const got = /^(?:.+에게서\s)?『([^』]+)』(?:을|를|을\(를\))\s*(?:알아냈다|얻었다|받았다)\.?$/u.exec(c.body);
+      if (got && vagueToken(got[1]!) && !given.has(got[1]!)) { n += 1; return false; }
+      const need = /^(.+?)(?:이|가|이\(가\))\s*있어야 할 것 같다\.?$/u.exec(c.body);
+      const next = arr[i + 1];
+      if (need && vagueToken(need[1]!) && next && next.kind === "text" && /^먼저 /u.test(String(next.body ?? ""))) { n += 1; return false; }
+      return true;
+    });
+    return kept.map((c) => !c || typeof c !== "object" ? c : Object.fromEntries(Object.entries(c).map(([k, v]) => [k, !Array.isArray(v) ? v : (v as Obj[]).every((x) => x && typeof x === "object" && "kind" in x) ? visit(v) : (v as Obj[]).map((o) => o && typeof o === "object" && Array.isArray(o.branch) ? { ...o, branch: visit(o.branch) } : o)])));
+  };
+  const maps = Object.fromEntries(Object.entries(run.ctx.project.maps).map(([id, m]) => [id, { ...m, events: (m.events ?? []).map((ev) => ({ ...ev, pages: (ev.pages ?? []).map((pg) => ({ ...pg, commands: visit(pg.commands) })) })) }]));
+  if (!n) return [];
+  run.ctx.project = { ...run.ctx.project, maps: maps as unknown as Project["maps"] } as Project;
+  return [`토큰 줄(『필요한 것』을 받았다 등) ${n}개 뺌`];
+}
+
+/**
+ * 사람 NPC 대사 머리 「투숙객: …」가 그 사람 이름(「악사 리노」)과 다른 일반 역할 낱말이면 이름으로 맞춘다 — 사건 세우기가 그 칸을 용의자로 바꿔 이름이 달라졌다.
+ * 왜(2026-10-29 vm4 argon 추리 재생): 이름표는 「악사 리노」인데 대사는 「투숙객: 네? 도난 사건이라뇨.」.
+ */
+function matchSpeakerPrefix(run: BuildRun): string[] {
+  let n = 0;
+  const maps = Object.fromEntries(Object.entries(run.ctx.project.maps).map(([id, m]) => [id, { ...m, events: (m.events ?? []).map((ev) => {
+    const name = nameOf(ev);
+    if (!name || !isPerson(ev)) return ev;
+    const json = JSON.stringify(ev.pages ?? []);
+    const heads = new Set([...json.matchAll(/"body":"([^":]{1,8}):\s/gu)].map((x) => x[1]!.trim()));
+    if (heads.size !== 1) return ev;
+    const head = [...heads][0]!;
+    if (head === name || name.includes(head) || !new RegExp(`^${PERSON.source}$`, "u").test(head)) return ev;
+    const next = json.split(`"body":"${head}: `).join(`"body":"${name}: `);
+    n += 1;
+    return { ...ev, pages: JSON.parse(next) };
+  }) }]));
+  if (!n) return [];
+  run.ctx.project = { ...run.ctx.project, maps: maps as unknown as Project["maps"] } as Project;
+  return [`대사 머리 역할 낱말을 이름으로 ${n}명`];
 }

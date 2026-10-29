@@ -19,7 +19,7 @@ import { alignCodeClues, fixDigitClaims, humanizeBlueprintTokens } from "./codeC
 import { alignClueObjects, dropStaleChainClues } from "./clueObjects";
 import { settleFurnitureSpots } from "./examineSpot";
 import { refreshRemainingClues } from "./mysteryCase";
-import { settleStepSubjects } from "./stepSubjects";
+import { dropTokenLines, settleStepSubjects } from "./stepSubjects";
 import { humanizeMapNames } from "./mapNames";
 
 /** 청사진 자동 짓기(한 실행에 한 번씩 — 세션 깃발). 무엇을 지었는지 조수에게 줄 글(없으면 undefined). */
@@ -138,6 +138,9 @@ export async function runFinishAutoBuild(env: PiAssistantV2Env, session: V2Sessi
     // 잠긴 조사 대사가 먼저 할 일(그 조건을 켜는 이벤트와 자리)을 말하게(2026-10-29 vm3 argon 추리 열린 창문·deepseek jrpg 계단). 맵 이름을 뜻 낱말로 바꾼 뒤.
     try { assembled.push(...pointLockedPagesIn(env.ctx.project)); }
     catch { /* 잠김 대사 보충 실패는 끝맺음을 깨지 않는다 */ }
+    // 「먼저 …」 안내가 붙은 뒤 — 그 앞의 「필요한 것이 있어야 할 것 같다」 같은 토큰 줄을 뺀다(vm4 argon 추리 재생).
+    try { assembled.push(...dropTokenLines(createBuildRun(env.ctx))); }
+    catch { /* 토큰 줄 정리 실패는 끝맺음을 깨지 않는다 */ }
     // 위 단계(fillUnsetStepConditions·orderStepBattles)가 이정표를 새로 만들면(조건 스위치를 켜는 갈래) 다음 목표를 다시 건다
     // (2026-10-29 vm5 argon 추리: 「모든 단서」를 켜게 된 상인 오언이 다음 목표를 안 바꿔 출하 검사 objective-missing).
     try { assembled.push(...fillStaleObjectives(env.ctx.project)); }

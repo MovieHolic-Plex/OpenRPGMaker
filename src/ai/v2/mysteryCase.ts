@@ -129,7 +129,7 @@ export function evidenceName(gives: string): string {
 /** 물건이 아닌 진행 낱말인가(「수사 시작」「모든 단서」「사건 해결」「found_clue」). */
 export function isProgressWord(word: string): boolean {
   const w = word.trim();
-  return !w || /(\s|^)(시작|수사|조사|진행|해결|엔딩|정보|탐문|추리)$/u.test(w) || /^(모든\s*)?(단서|증거)들?$/u.test(w) || /^(started|found_clue|clue|asked|evidence)$/iu.test(w);
+  return !w || /(\s|^)(시작|수사|조사|진행|해결|엔딩|정보|탐문|추리)$/u.test(w) || /^(모든\s*|결정적(인)?\s*)?(단서|증거)들?$/u.test(w) || /^(started|found_clue|clue|asked|evidence)$/iu.test(w);
 }
 
 /** 진행 낱말 대신 쓰는 증거 물건 — 범인이 제 것이라 털어놓을 만한 작은 소지품. */
@@ -214,7 +214,7 @@ export function stageMysteryCase(run: BuildRun): string[] {
   const named = repairPageNameLabels(run);
   const closed = closeEndingShortcuts(run);
   const notes = stageMysteryCaseInner(run);
-  return [...named, ...closed, ...notes, ...closeEndingShortcuts(run), ...ensureEvidenceGiven(run), ...renameProgressEvidence(run), ...evidenceOnThing(run), ...nameLeakedEventIds(run)];
+  return [...named, ...closed, ...notes, ...closeEndingShortcuts(run), ...ensureEvidenceGiven(run), ...renameProgressEvidence(run), ...evidenceOnThing(run), ...deepenCase(run), ...nameLeakedEventIds(run)];
 }
 
 /**
@@ -305,6 +305,103 @@ function evidenceCell(run: BuildRun, map: GameMap, giver: GameEvent): { x: numbe
     if (!best || score < best.score || (score === best.score && (y < best.y || (y === best.y && x < best.x)))) best = { x, y, near, score };
   }
   return best ? { x: best.x, y: best.y, near: best.near } : undefined;
+}
+
+/**
+ * 추리 깊이(결정적): 범인의 진술과 그 진술을 깨는 증거를 잇고, 오답 지목에는 그 사람의 진술·증인으로 반박한다. 우리가 세운 사건 틀(「· 탐문」 용의자,
+ * 「범인은 누구일까?」 고르기)에만 하고, 되풀이 안전(이미 쓴 줄은 다시 쓰지 않는다).
+ *  - 범인 진술: 「밤새 <곳>에 혼자 있었소…」 뒤에 「<증거가 나온 맵>엔 간 적도 없소.」
+ *  - 범인에게 증거를 내밀면: 「<범인>은 <맵>엔 간 적도 없다고 했다. 그런데 『X』는 <맵 자리>에 떨어져 있었다.」
+ *  - 지목 증명: 「『X』는 <자리>에서 나왔다. <맵>엔 간 적도 없다던 <범인>의 말과 맞지 않는다.」
+ *  - 오답: 「<그 사람>은 밤새 <곳>에 있었고, <증인>이 함께 있었다고 증언했다. 『X』도 처음 본다고 했다. 범인이 아니다.」
+ *  - 증거 설명: 「[증거] <자리>에 떨어져 있던 『X』. 주인은 그 밤 <맵>에 있었다.」
+ * 왜(2026-10-29 vm3~vm5 추리 판정): 「추리가 한 줄 증언으로 풀린다」「어떤 증거가 왜 범인을 가리키는지 한 번도 안 나온다」「증언이 어떻게 정리되는지 모른다」.
+ */
+function deepenCase(run: BuildRun): string[] {
+  const project = run.ctx.project;
+  let accuse: { mapId: string; ev: GameEvent } | undefined;
+  let keyId: string | undefined, culprit = "";
+  for (const map of Object.values(project.maps)) for (const ev of map.events ?? []) for (const pg of ev.pages ?? []) walkCommands(pg.commands, (c) => {
+    if (c.kind !== "choices" || c.prompt !== ACCUSE_PROMPT || accuse) return;
+    for (const o of (c.options ?? []) as Obj[]) {
+      const first = ((o.branch ?? []) as Obj[])[0];
+      if (first?.kind === "presentItem") { keyId = String((((first.options ?? []) as Obj[])[0]?.itemId) ?? ""); culprit = String(o.text ?? ""); }
+    }
+    if (keyId) accuse = { mapId: map.id, ev };
+  });
+  if (!accuse || !keyId || !culprit) return [];
+  const item = project.database.items.find((i) => i.id === keyId);
+  if (!item) return [];
+  const X = String(item.name ?? "").trim();
+  // 용의자 진술(「· 탐문」 페이지): 머문 곳·증인.
+  const said = new Map<string, { place: string; witness?: string }>();
+  for (const map of Object.values(project.maps)) for (const ev of map.events ?? []) {
+    const ask = (ev.pages ?? []).find((pg) => / · 탐문$/u.test(String((pg as { name?: string }).name ?? "")));
+    if (!ask) continue;
+    const text = textOf(ask.commands);
+    const place = /밤새 ([^"]+?)에 (?:혼자 )?있었/u.exec(text)?.[1];
+    if (place) said.set(nameOf(ev), { place, witness: /([^".]+?)(?:이|가) 같이 있었으니/u.exec(text)?.[1]?.replace(/^.*\s(?=\S+\s\S+$)/u, "").trim() });
+  }
+  // 증거가 나온 자리 — 그 아이템을 주는(사람 아닌) 조사 칸.
+  let scene: { map: string; mapId: string; spot: string; near: string } | undefined;
+  for (const map of Object.values(project.maps)) for (const ev of map.events ?? []) {
+    if (scene || visiblePerson(ev)) continue;
+    let gives = false;
+    for (const pg of ev.pages ?? []) walkCommands(pg.commands, (c) => { if (c.kind === "changeItem" && c.itemId === keyId && c.op !== "-=") gives = true; });
+    if (!gives) continue;
+    // 증거 물건 칸(evidenceOnThing)은 사람이 일러 준 자리 말(「남서쪽 의자 옆」)을 그대로 — 둘이 다르게 말하지 않게.
+    const told = ev.id.endsWith("_evidence") ? /"body":"([^"]+?) 바닥에 『/u.exec(JSON.stringify(ev.pages ?? []))?.[1] : undefined;
+    const thing = told ?? (hostThing(project, map, ev) || mapRegion(map, ev.x, ev.y));
+    scene = { map: String(map.name ?? map.id), mapId: map.id, spot: `${String(map.name ?? map.id)} ${thing}`, near: /(옆|앞|근처|곁)$/u.test(thing) ? thing : `${thing} 근처` };
+  }
+  const notes: string[] = [];
+  const C = culprit;
+  const where = said.get(C);
+  const contradiction = Boolean(scene && where && !where.place.includes(scene.map) && !scene.map.includes(where.place));
+  // 용의자가 증거가 나온 그 맵에 서 있으면 맵 이름으로 부인하면 우습다(「여관 로비엔 간 적도 없소」라고 로비에서 말했다) — 그 자리 근처로.
+  const culpritMap = Object.values(project.maps).find((m) => (m.events ?? []).some((e) => nameOf(e) === C && visiblePerson(e)))?.id;
+  const denied = scene ? (culpritMap === scene.mapId ? `어젯밤 ${scene.near}` : scene.map) : "";
+  let n = 0;
+  const rewrite = (list: unknown): unknown => {
+    if (!Array.isArray(list)) return list;
+    const out: Obj[] = [];
+    for (const raw of list as Obj[]) {
+      if (!raw || typeof raw !== "object") { out.push(raw); continue; }
+      // 앞서 쓴 깊이 줄은 걷고 지금 자리로 다시 쓴다(끝맺음이 증거 칸을 옮긴 뒤 다시 불린다 — 자리 말이 낡지 않게).
+      if (raw.kind === "text" && typeof raw.body === "string" && /간 적도 없다고 했다|말과 맞지 않는다/u.test(raw.body)) continue;
+      const c: Obj = Object.fromEntries(Object.entries(raw).map(([k, v]) => [k, Array.isArray(v) ? (v as Obj[]).map((o) => o && typeof o === "object" && Array.isArray(o.branch) ? { ...o, branch: rewrite(o.branch) } : o) : v]));
+      for (const [k, v] of Object.entries(c)) if (Array.isArray(v) && /^(then|else|branch|commands)$|Branch$/u.test(k)) c[k] = rewrite(v);
+      if (c.kind === "text" && typeof c.body === "string") c.body = c.body.replace(/ [^.]+엔 간 적도 없소\.$/u, "");
+      const body = c.kind === "text" && typeof c.body === "string" ? c.body : undefined;
+      if (body !== undefined && contradiction && c.speaker === C && /^밤새 .+에 혼자 있었소\. 본 사람\? …없지만, 그게 무슨 상관이오\.$/u.test(body)) { c.body = `${body} ${denied}엔 간 적도 없소.`; n += 1; }
+      const wrong = body !== undefined ? (/^(.+)에게는 (.+)의 증언이 있다\. 범인이 아니다\. 다시 생각해 보자\.$/u.exec(body)
+        ?? /^(.+?)(?:은|는) (?:밤새 .+?에 있었고, )?(.+?)(?:이|가) 함께 있었다고 증언했다\. 『.+』도 처음 본다고 했다\. .+ 범인이 아니다\. 다시 생각해 보자\.$/u.exec(body)) : null;
+      if (wrong) {
+        const who = wrong[1]!, w = said.get(who)?.witness ?? wrong[2]!, at = said.get(who)?.place;
+        c.body = `${who}${jo(who, "은/는")} ${at ? `밤새 ${at}에 있었고, ` : ""}${w}${jo(w, "이/가")} 함께 있었다고 증언했다. 『${X}』도 처음 본다고 했다. ${who}${jo(who, "은/는")} 범인이 아니다. 다시 생각해 보자.`;
+        n += 1;
+      }
+      // 지목 증명 앞 — 진술과 증거가 맞지 않는다는 줄.
+      if (body !== undefined && contradiction && body === `『${X}』${jo(X, "을/를")} 내밀자 ${C}${jo(C, "은/는")} 더는 버티지 못했다.` && !out.some((o) => String(o.body ?? "").includes("말과 맞지 않는다"))) {
+        out.push({ kind: "text", body: `『${X}』${jo(X, "은/는")} ${scene!.spot}에서 나왔다. ${denied}엔 간 적도 없다던 ${C}의 말과 맞지 않는다.` });
+        n += 1;
+      }
+      out.push(c);
+      // 범인이 제 것이라 인정한 뒤 — 진술과 어긋난다는 서술.
+      if (body !== undefined && contradiction && c.speaker === C && body === `『${X}』… 그건… 내 것이 맞소.`) {
+        out.push({ kind: "text", body: `${C}${jo(C, "은/는")} ${denied}엔 간 적도 없다고 했다. 그런데 『${X}』${jo(X, "은/는")} ${scene!.spot}에서 나왔다.` });
+        n += 1;
+      }
+    }
+    // 되풀이 안전: 같은 서술이 둘이면 하나만.
+    return out.filter((c, i) => !(c && c.kind === "text" && typeof c.body === "string" && /간 적도 없다고 했다|말과 맞지 않는다/u.test(c.body) && out.findIndex((o) => o && o.body === c.body) !== i));
+  };
+  const maps = Object.fromEntries(Object.entries(project.maps).map(([id, m]) => [id, { ...m, events: (m.events ?? []).map((ev) => ({ ...ev, pages: (ev.pages ?? []).map((pg) => ({ ...pg, commands: rewrite(pg.commands) })) })) }]));
+  if (!n || JSON.stringify(maps) === JSON.stringify(project.maps)) return [];
+  run.ctx.project = { ...project, maps: maps as unknown as Project["maps"] } as Project;
+  if (scene && /^\[증거\]/u.test(String(item.description ?? ""))) run.call("upsert_item", { item: { ...structuredClone(item), description: `[증거] ${scene.spot}에 떨어져 있던 『${X}』. 주인은 그 밤 ${scene.map}에 있었다.` } });
+  notes.push(`추리 깊이: 범인 ${C} 진술${contradiction ? `(「${where!.place}」) ↔ 증거 『${X}』(${scene!.spot}) 모순` : ""}·오답 반박 ${n}줄`);
+  return notes;
 }
 
 /** 대사 속 「ev_npc_…」(청사진 step.event 가 id 라 그대로 적힌 이름)을 그 이벤트 이름으로. */
@@ -521,13 +618,13 @@ function hostThing(project: Project, map: GameMap, ev: GameEvent): string {
   const labelsAt = (x: number, y: number): string[] => x < 0 || y < 0 || x >= map.width || y >= map.height ? []
     : ["upperTiles", "upperOverlayTiles", "lowerOverlayTiles"].map((key) => m[key]?.[y * map.width + x])
       .filter((t): t is number => typeof t === "number" && t >= 0).map((t) => tileLabel(project, map, t));
-  const clean = (label: string) => label.replace(/\s*\((?:-?\d+,\s*-?\d+)\)\s*$/u, "").replace(/^.*·\s*/u, "").replace(/\s*\d+[×x]\d+$/u, "").replace(/\s+[NSEW]$/u, "").trim();
+  const clean = (label: string) => label.replace(/\s*\((?:-?\d+,\s*-?\d+)\)\s*$/u, "").replace(/\s*\([^()]*\)/gu, "").replace(/\s+[NSEW]{2,4}$/u, "").replace(/^.*·\s*/u, "").replace(/\s*\d+[×x]\d+$/u, "").replace(/\s+[NSEW]$/u, "").trim();
   const fp = (ev.pages?.[0] as { footprint?: { width?: number; height?: number } } | undefined)?.footprint;
   const w = Math.max(1, fp?.width ?? 1), h = Math.max(1, fp?.height ?? 1), left = ev.x - Math.floor((w - 1) / 2);
   for (let y = ev.y; y > ev.y - h; y -= 1) for (let x = left; x < left + w; x += 1) {
     for (const raw of labelsAt(x, y)) {
       const label = clean(raw);
-      if (!label || /바닥|벽|깔개|러그|그림자|공허|천장|창|floor|wall|rug|shadow|ceiling|void/iu.test(label)) continue;
+      if (!label || /바닥|벽|깔개|러그|양탄자|카펫|그림자|공허|천장|창|floor|wall|rug|carpet|shadow|ceiling|void/iu.test(label)) continue;
       if (/의자|걸상|chair|stool|bench/iu.test(label)) {
         const onTop = [[0, -1], [-1, 0], [1, 0], [0, 1]].flatMap(([dx, dy]) => labelsAt(ev.x + dx!, ev.y + dy!)).find((l) => /탁상 물건/u.test(l));
         if (onTop) return `탁자 위 ${clean(onTop)}`;
