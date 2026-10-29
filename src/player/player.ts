@@ -406,6 +406,9 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     if (heldTitle) {
       heldTitle.dataset.testid = 'title-hold-cover';
       heldTitle.setAttribute('aria-hidden', 'true');
+      // 전환 막은 이미 끝났다. 노드를 옮기면 CSS 애니메이션이 처음부터 다시 돌아 섬광이 한 번 더 터지므로 뗀다.
+      heldTitle.querySelector('.rm-title-transition')?.remove();
+      heldTitle.classList.add('rm-title-hold-cover');
       heldTitle.style.cssText += ';position:absolute;inset:0;z-index:60;pointer-events:none';
       surface.stage.append(heldTitle);
       const release = (): void => {
