@@ -2497,8 +2497,8 @@ const DETECTION_PROFILES: { troops: string[]; args: Rec }[] = [
   { troops: [FS2_PATROL_TROOP], args: { sightRange: 6, coneDegrees: 120, alertMs: 250, rush: true, rushSteps: 3, rushStepMs: 110, chaseStepMs: 170, searchMs: 4000, giveUpRange: 12 } },
   { troops: ["troop_fs2_starved_dogs", "troop_fs2_ash_crows", "troop_fs2_fort_dogs", "troop_fs2_frost_wolves", "troop_fs2_frost_mixed"], args: { sightRange: 7, coneDegrees: 110, alertMs: 150, rush: true, rushSteps: 4, rushStepMs: 100, chaseStepMs: 160 } },
   // 잿불 도깨비(B5) — 트인 재 들판의 매복꾼(2026-10-30 사용자: 「10칸 넘게 밖에서 알아보고 3배 이상 빨리, 닿는 순간 전투」).
-  // 사방을 보고(allRound) 바위·고목이 시선을 안 가린다(lineOfSight:false). 알아챔 멈춤 없이 50ms/칸으로 끝까지 덮친다(예전 170ms/칸의 3.4배).
-  { troops: ["troop_fs2_ash_wisps"], args: { sightRange: 12, allRound: true, lineOfSight: false, alertMs: 0, rush: true, rushSteps: 30, rushStepMs: 50, chaseStepMs: 90, searchMs: 3000, giveUpRange: 22 } },
+  // 사방을 보고(allRound) 바위·고목이 시선을 안 가린다(lineOfSight:false). 알아챔 멈춤 없이 35ms/칸으로 끝까지 덮친다(예전 부유 110~170ms/칸의 3~5배).
+  { troops: ["troop_fs2_ash_wisps"], args: { sightRange: 12, allRound: true, lineOfSight: false, alertMs: 0, rush: true, rushSteps: 30, rushStepMs: 35, chaseStepMs: 90, searchMs: 3000, giveUpRange: 22 } },
   { troops: ["troop_fs2_frost_bats"], args: { sightRange: 7, coneDegrees: 120, alertMs: 200, rush: true, rushSteps: 3, rushStepMs: 110, chaseStepMs: 170 } },
   // 요새 바깥 순찰 기사(B6) — 도개교 앞 눈 턱에서 멀리 보고 곧장 달려든다(사용자: 「더 빨리 알아보고 멀리서 덤비게」).
   { troops: [FS2_KNIGHT_TROOP_OUT], args: { sightRange: 12, coneDegrees: 170, alertMs: 100, rush: true, rushSteps: 16, rushStepMs: 70, chaseStepMs: 110, searchMs: 6000, giveUpRange: 22 } },
