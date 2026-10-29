@@ -670,7 +670,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
             const res = text({ ok: false, notFailure: true,
               summary: `아직 짓지 않았다(실패 아님) — 「${spec.name}」의 땅을 코드가 만들었다(${width}×${height}, terrainSeed ${terrainSeed}). 아래 그림(좌표 눈금: 위 x·왼쪽 y, 칸 단위)과 요약을 보고 `
                 + `마을 자리를 네가 고른다 — hints.layout 에 gather{x,y,plaza}(모이는 곳), landmark(높은 곳 건물 — 높은 단 넓은 터), anchor(여관·회관 — 모이는 곳 곁), work(일터), houses[{x,y}] 3~12(집 가운데), fields[{x,y}](밭), exits(큰길이 나가는 맵 가장자리) 를 넣어 같은 make_place 를 다시 부르면 이 땅 위에 짓는다. `
-                + `집은 한 단 평지에(단 경계 검은 선을 걸치지 않게), 물(파랑) 위는 안 된다. 길·계단·널다리는 함수가 잇고, 못 놓은 자리·옮긴 거리·못 낸 길을 보고한다. 땅이 요청과 다르면 hints.landform·water·high 나 terrainSeed 를 바꿔 다시 부르면 새 땅을 보여 준다.`,
+                + `집 하나는 문 앞까지 약 5×6칸이라 집 가운데끼리 6칸 이상 띄우고(큰 건물은 8칸), 한 단 평지에(단 경계 검은 선을 걸치지 않게), 물(파랑) 위는 안 된다. 길·계단·널다리는 함수가 잇고, 못 놓은 자리·옮긴 거리·못 낸 길을 보고한다. 땅이 요청과 다르면 hints.landform·water·high 나 terrainSeed 를 바꿔 다시 부르면 새 땅을 보여 준다.`,
               terrain: describeCodeTerrain(terrain) });
             const png = terrainPreviewPng(terrain, 8);
             let bin = ""; for (let k = 0; k < png.length; k += 1) bin += String.fromCharCode(png[k]!);

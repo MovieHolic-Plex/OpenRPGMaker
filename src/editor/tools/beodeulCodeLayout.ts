@@ -107,6 +107,8 @@ export interface RouteOpts {
   turnCost: number;
   climbCost: number;
   fordCost: number;
+  /** 단은 남북으로만 건넌다(동서로 오르는 계단 조각이 칩셋에 없다). */
+  climbNS?: boolean;
   /** 폭 2 길: 진행 방향 오른쪽·아래 칸(쌍둥이 칸)도 같은 단·지날 수 있어야 한다. */
   wide?: boolean;
 }
@@ -118,7 +120,7 @@ const DX = [1, 0, -1, 0], DY = [0, 1, 0, -1];
  */
 export function routePath(g: RouteGrid, starts: number[], isGoal: (c: number) => boolean, o: RouteOpts): number[] | null {
   const { W, H, lv } = g;
-  const RUN = Math.max(o.before, 1) + 1, LOCK = Math.max(o.after, 2) + 1;
+  const RUN = Math.max(o.before, 1) + o.maxStep, LOCK = Math.max(o.after, 2) + o.maxStep;
   const S = W * H * 4 * RUN * LOCK;
   const dist = new Float64Array(S).fill(Infinity);
   const prev = new Int32Array(S).fill(-1);
@@ -139,7 +141,8 @@ export function routePath(g: RouteGrid, starts: number[], isGoal: (c: number) =>
     const s = pop();
     const lock = s % LOCK, run = Math.floor(s / LOCK) % RUN, d = Math.floor(s / (LOCK * RUN)) % 4, c = Math.floor(s / (LOCK * RUN * 4));
     const base = dist[s]!;
-    if (isGoal(c) && !starts.includes(c)) {
+    // 건넌 뒤 곧은 구간(lock)을 다 걷기 전에는 닿은 것으로 치지 않는다 — 계단 바로 끝이 다른 길에 붙으면 계단 단면(아랫 층계참)이 안 나온다(2026-10-30 늪 오름길)
+    if (isGoal(c) && !starts.includes(c) && lock === 0) {
       const path: number[] = []; for (let k = s; k >= 0; k = prev[k]!) path.push(Math.floor(k / (LOCK * RUN * 4)));
       return path.reverse();
     }
@@ -147,6 +150,8 @@ export function routePath(g: RouteGrid, starts: number[], isGoal: (c: number) =>
     for (let nd = 0; nd < 4; nd += 1) {
       if (nd === (d + 2) % 4) continue;
       if (nd !== d && lock > 0) continue;
+      // 꺾은 뒤 한 칸 만에 또 꺾지 않는다 — 한 칸 비켜 되돌아오는 머리핀(곧은 걸음 수를 채우려는 U자)·톱니 길을 막는다(2026-10-30 장터 큰길)
+      if (nd !== d && run === 1 && base > 0) continue;
       const nx = x + DX[nd]!, ny = y + DY[nd]!; if (nx < 0 || ny < 0 || nx >= W || ny >= H) continue;
       const n = ny * W + nx;
       if (!cellOk(n, nd)) continue;
@@ -158,8 +163,11 @@ export function routePath(g: RouteGrid, starts: number[], isGoal: (c: number) =>
       const onFord = g.ford(n);
       if (step !== 0 || (onFord && !g.ford(c))) {
         // 단(또는 강)을 건너는 칸: 곧게 온 걸음이 모자라거나 앞 건넘의 곧은 구간 안이면 못 건넌다
-        if (nd !== d || run < o.before || lock > 0) continue;
-        nlock = LOCK - 1;
+        // 두 단 계단은 한 칸 더 길다 — 앞뒤 곧은 구간도 단 차만큼 늘린다
+        const need = step !== 0 ? Math.abs(step) - 1 : 0;
+        if (nd !== d || run < o.before + need || lock > 0) continue;
+        if (step !== 0 && o.climbNS && nd % 2 === 0) continue;
+        nlock = Math.min(LOCK - 1, o.after + need);
         cost += step !== 0 ? o.climbCost * Math.abs(step) : 0;
       }
       if (onFord) { cost += o.fordCost; nlock = Math.max(nlock, 2); }
@@ -182,6 +190,9 @@ export function pathRuns(path: number[], W: number): { horizontal: boolean; cell
   // 한 걸음 비켜 가기(가로-세로1-가로) 는 가로 토막 하나로
   for (let i = 1; i + 1 < runs.length; i += 1) {
     const r = runs[i]!; if (r.cells.length !== 2 || runs[i - 1]!.horizontal !== runs[i + 1]!.horizontal || runs[i - 1]!.horizontal === r.horizontal) continue;
+    // 같은 쪽으로 이어 가는 비켜 가기만 — 되돌아가는 U자는 합치지 않는다
+    const pa = runs[i - 1]!.cells, na = runs[i + 1]!.cells;
+    if (Math.sign(pa[pa.length - 1]! - pa[0]!) !== Math.sign(na[na.length - 1]! - na[0]!)) continue;
     const merged = { horizontal: runs[i - 1]!.horizontal, cells: [...runs[i - 1]!.cells, ...r.cells.slice(1), ...runs[i + 1]!.cells.slice(1)] };
     runs.splice(i - 1, 3, merged); i -= 1;
   }

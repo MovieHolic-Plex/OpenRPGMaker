@@ -691,7 +691,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       },
       wide,
     });
-    const opts = (wide: boolean) => ({ maxStep: 2, before: 3, after: 3, turnCost: wide ? 1.6 : 0.9, climbCost: 6, fordCost: 4, wide });
+    const opts = (wide: boolean) => ({ maxStep: 2, before: 3, after: 3, turnCost: wide ? 1.6 : 0.9, climbCost: 6, fordCost: 4, wide, climbNS: true });
     const snapFree = (p: LayoutPoint): number => {
       let best = -1, bd = Infinity;
       for (let y = 1; y < H - 1; y += 1) for (let x = 1; x < W - 1; x += 1) { const c = idx(x, y); if (occ[c] !== FREE) continue; const d = Math.hypot(x - p.x, y - p.y); if (d < bd) { bd = d; best = c; } }
@@ -2783,12 +2783,38 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   }
   // ---------- 12c. 지형을 맵에 싣는다 ----------
   // 0단계 지형 + 3b 경사로를 map.relief 로. 칠하기·찍기 도구는 높이를 모르므로 찍기가 끝난 뒤에 넣는다(마을이 이미 지형을 따라 앉았다).
-  let reliefInfo: { terrain: string; note: string; levels: Record<string, number>; ramps: number; cuts: number; fails: number; straddle: number; rampsOffRoad: number; roadOnRim?: number; lowered?: number; climbs?: number } | null = null;
+  let stairTiles = 0;
+  let reliefInfo: { terrain: string; note: string; levels: Record<string, number>; ramps: number; cuts: number; fails: number; straddle: number; rampsOffRoad: number; roadOnRim?: number; lowered?: number; climbs?: number; stairTiles?: number } | null = null;
   {
     const m0 = draft.maps[mapId]!;
     if (hasTerrain && rel && lv.some((v) => v > 0)) {
       m0.relief = { ...rel, levels: Array.from(lv), ramps: ramps.slice(), style: RELIEF_STYLE[theme] };
       invalidateReliefSlopes(m0.relief);
+      // 계단 칸 그림(2026-10-30 「경사로를 전부 계단으로 — 버들항 칩셋 계단 조각」): 남북으로 오르는 계단 칸의 1층을 칩셋 돌계단 조각 화소 그대로 —
+      // 폭 1·2 계단은 왕도 선착 계단 윗칸(bd-capital-quay-steps-w/-e 0줄, 양옆 볼돌 — 아랫칸은 물이 비쳐 안 쓴다)을 세로로 되풀이(폭 2 = 서·동 한 줄씩),
+      // 폭 3 이상은 bd-mpart-stairs 가운데 세 열(왼끝 1열·가운데 2열·오른끝 3열), 아래부터 조각 아랫줄·윗줄을 번갈아(단 1 = 두 칸, 단 2 = 세 칸). *-steps 양식은 계단을 비탈 높이로 잇고 그 칸의 1층 타일을 그대로 그린다.
+      // 동서로 오르는 계단 조각은 칩셋에 없다 — 코드 지형의 길 찾기는 단을 남북으로만 건넌다(beodeulCodeLayout climbNS).
+      {
+        const quay = kitIndex.get("bd-capital-quay-steps-w"), quayE = kitIndex.get("bd-capital-quay-steps-e") ?? quay, mp = kitIndex.get("bd-mpart-stairs");
+        const tileAt = (k: Kit | undefined, col: number, row: number) => k?.def.rows[row]?.tiles?.[col] ?? -1;
+        const ns = (c: number) => { const v = ramps[c]!; return v > 0 && ((v - 1) % 4 === 0 || (v - 1) % 4 === 1); };
+        const seenS = new Uint8Array(W * H);
+        for (let c0 = 0; c0 < W * H; c0 += 1) {
+          if (seenS[c0] || !ns(c0)) continue;
+          const fl = [c0]; seenS[c0] = 1;
+          for (let h = 0; h < fl.length; h += 1) { const c = fl[h]!, x = c % W, y = (c - x) / W;
+            for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) { if (!inMap(x + dx, y + dy)) continue; const n = idx(x + dx, y + dy); if (!seenS[n] && ns(n)) { seenS[n] = 1; fl.push(n); } } }
+          const xs = fl.map((c) => c % W), ys = fl.map((c) => Math.floor(c / W));
+          const x0 = Math.min(...xs), x1 = Math.max(...xs), y1 = Math.max(...ys);
+          for (const c of fl) {
+            const x = c % W, y = Math.floor(c / W), row = (y1 - y) % 2 === 0 ? 1 : 0;
+            const t = x1 - x0 <= 1 ? tileAt(x === x0 ? quay : quayE, 0, 0) : tileAt(mp, x === x0 ? 1 : x === x1 ? 3 : 2, row);
+            if (t < 0) continue;
+            m0.lowerTiles[c] = t; for (const L of [2, 3, 4] as const) setLayerTileAt(m0, L, c, -1);
+            stairTiles += 1;
+          }
+        }
+      }
       const counts: Record<string, number> = {}; for (const v of lv) counts[v] = (counts[v] ?? 0) + 1;
       // 자가 점검: 두 단에 걸친 찍기(다리·물 위 소품은 0단 물 위라 제외 대상이 아니다 — 물과 둑은 0단), 길이 아닌 경사로 칸
       let straddle = 0;
@@ -2799,7 +2825,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       // 절벽 끝 위의 길 칸(바로 남쪽이 낮은 단이고 경사로가 아닌 칸) — 경사로 윗 층계참은 뺀다
       let roadOnRim = 0;
       for (let c = 0; c < W * H - W; c += 1) if ((occ[c] === ROAD || occ[c] === PLAZAC) && lv[c + W]! < lv[c]! && !rampCells.has(c + W)) roadOnRim += 1;
-      reliefInfo = { terrain: terrain.name, note: terrain.note, levels: counts, ramps: rampCount, cuts: cutCells, fails: rampFails, straddle, rampsOffRoad, roadOnRim, lowered, climbs: climbs.length };
+      reliefInfo = { terrain: terrain.name, note: terrain.note, levels: counts, ramps: rampCount, cuts: cutCells, fails: rampFails, straddle, rampsOffRoad, roadOnRim, lowered, climbs: climbs.length, stairTiles };
       logConstructionTiles(m0, "stamp", "지형 높이", { major: false });
     } else {
       delete m0.relief;
