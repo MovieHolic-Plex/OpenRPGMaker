@@ -34,7 +34,7 @@ import { BUILD_BLUEPRINT_PATH_SCHEMA, blueprintMapFor, buildBlueprintPath, sealE
 import { clearTargetFronts, clearTransferLanes, repairEventReach, spreadCrowdedPeople, unreachableEvents } from "./eventReach";
 import { ensureStartingGold, ensureSupplyShop } from "./healingAccess";
 import { lockBareHouseDoors } from "./lockedDoors";
-import { dressBareSealSteps } from "./stepArt";
+import { dressBareSealSteps, dressPickupSteps, seatEntranceSteps } from "./stepArt";
 import { markDeadEndRoads } from "./deadEndRoads";
 import { doorFloorTransfers, dressInteriorExits, dropBuriedTransfers } from "./exitDress";
 import { roadToEdgeExits } from "./edgeExitRoads";
@@ -665,6 +665,10 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
       for (const n of dressBareSealSteps(run, mapId)) notes.push(`${env.ctx.project.maps[mapId]?.name ?? mapId}: ${n}`);
       // 출구 없이 가장자리에서 끊긴 길에 「막힌 길」 표지(2026-10-29 vm6 flash jrpg «동쪽 길은 (41,18)에서 막혔다»).
       for (const n of markDeadEndRoads(run, mapId)) notes.push(`${env.ctx.project.maps[mapId]?.name ?? mapId}: ${n}`);
+      // 「동굴 입구」 같은 투명 단계 칸을 맵에 그려진 굴 입구(거목 밑동 굴 문·갱구)의 들어가는 칸으로(2026-10-29 vm7 flash jrpg «나무 구멍 무반응»).
+      for (const n of seatEntranceSteps(run, mapId)) notes.push(`${env.ctx.project.maps[mapId]?.name ?? mapId}: ${n}`);
+      // 물건을 얻는 투명 단계 칸은 보물상자로(2026-10-29 vm7 terra jrpg «용사의 검이 어느 건물에 있는지 모름» — 검은 촌장 옆 길 위 투명 칸이었다).
+      for (const n of dressPickupSteps(run, mapId)) notes.push(`${env.ctx.project.maps[mapId]?.name ?? mapId}: ${n}`);
       // 들어갈 수 없는 집 문 그림에 「잠겨 있다」 한 줄(2026-10-29 vm6 flash·argon jrpg «집 문 무반응»).
       for (const n of lockBareHouseDoors(run, mapId)) notes.push(`${env.ctx.project.maps[mapId]?.name ?? mapId}: ${n}`);
       const r = clearTransferLanes(run, mapId);
