@@ -282,10 +282,9 @@ function setupThroneBattle(project: Project): void {
   execTool(project, "upsert_actor", { actor: { id: MAOU_TRUE, battleCharacterResourceId: "party-pixel-monster2-7", battleScalePercent: 260 } });
   const leon = project.database.enemies.find((e) => e.id === "enemy_mk_leon_castle");
   if (!leon) throw new Error("[maou-konbini] 옥좌 결전 적(enemy_mk_leon_castle)이 없다");
-  // 직접 코드: 슬라임을 본뜬 적이라 종(speciesId)이 남아 「야생의 용사 레온」이라고 나왔다. upsert_enemy 는 필드를 지우지 못한다.
-  delete (leon as { speciesId?: string }).speciesId;
+  // 슬라임을 본뜬 적이라 종(speciesId)이 남아 「야생의 용사 레온」이라고 나왔다 — clearFields 로 지운다.
   // 3합 안에 쓰러지지 않게(연출 전투는 3합째 봉인술로 끝난다).
-  execTool(project, "upsert_enemy", { enemy: { id: leon.id, stats: { ...leon.stats, maxHp: 4000, attack: 96 } } });
+  execTool(project, "upsert_enemy", { enemy: { id: leon.id, stats: { ...leon.stats, maxHp: 4000, attack: 96 } }, ...(leon.speciesId ? { clearFields: ["speciesId"] } : {}) });
   const T = "troop_mk_castle";
   const pageOf = (pid: string, name: string, round: number, commands: Command[]) =>
     execTool(project, "upsert_troop_battle_page", { troopId: T, page: { id: pid, name, span: "battle", runOnce: true, conditions: [{ kind: "onRound", round }], commands } });
@@ -378,10 +377,8 @@ export function buildMaouThrone(project: Project, roomWake: Cell): Cell {
 export function stageMaouRoomWake(project: Project): void {
   // 방 음악은 아주 느리게 들어오게 한다(8초). 옥좌에서 넘어오는 순간 눈뜨기 장면이 곧바로 음악을 끄는데, 그 사이 들어온 소리가
   // 들리지 않아야 「정적 → 형광등」이 산다(v3 녹화: 기본 곡이 0.7초 울렸다). 나중에 현관으로 들어올 때도 같은 곡이 천천히 깔린다.
-  // 도구가 project.maps 를 바꿔 끼우므로 맵은 그다음에 잡는다.
   // 16×12 칸 원룸은 배율 1 이면 480×270 화면 가운데 작은 섬으로 떠 미완성처럼 보였다(감독 검수 v10). 배율 2 면 15×8 칸 시야라 방이 화면을 채운다.
   execTool(project, "set_map_properties", { mapId: MAP_ROOM, zoom: 2, bgm: { mode: "custom", resourceId: BGM_ROOM, fadeInMs: 8000 } });
-  const map = project.maps[MAP_ROOM]!;
   const Z = (...l: string[]) => thinkAs(CAST.zervas.name, ...l);
   const zs = (expr: "base" | "happy" | "surprised" | "sad" | "embarrassed", ...l: string[]) => say("zervas", expr, ...l);
   const wakeScene: Command[] = [
@@ -417,11 +414,9 @@ export function stageMaouRoomWake(project: Project): void {
     bgm(BGM_ROOM, 1200),
     setVar(V_STAGE, "=", 2),
   ];
-  const replace = (eventId: string, pageId: string, commands: Command[]) => {
-    const p = map.events.find((e) => e.id === eventId)?.pages?.find((pg) => pg.id === pageId);
-    if (!p) throw new Error(`[maou-konbini] 원룸 ${eventId}/${pageId} 가 없다 — buildRoom 이 바뀌었다`);
-    p.commands = commands;
-  };
+  // 이벤트 칸·조건은 buildRoom 것 그대로, 그 페이지의 명령만 patch_event_page 로 바꾼다.
+  const replace = (eventId: string, pageId: string, commands: Command[]) =>
+    execTool(project, "patch_event_page", { mapId: MAP_ROOM, eventId, pageId, set: { commands } });
   replace("ev_mk_room_wake", "ev_mk_room_wake_p", wakeScene);
   replace("ev_mk_room_flyer", "ev_mk_room_flyer_p", flyer);
 }
