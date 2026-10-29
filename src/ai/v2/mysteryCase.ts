@@ -14,7 +14,7 @@ import { eventGives } from "./blueprint";
 import { showExaminedThing } from "./examineArt";
 import { settleExamineSpot } from "./examineSpot";
 import { reachableCells, unreachableEvents } from "./eventReach";
-import { mapRegion, withWhere } from "./discoverability";
+import { isObjectiveCommand, mapRegion, objectiveCommand, withWhere } from "./discoverability";
 import { isPassable } from "@/project/collision";
 import { buildPeople, tileLabel } from "./people";
 import { shownToken } from "./codeClues";
@@ -386,6 +386,44 @@ function requireInterrogation(run: BuildRun): string[] {
   const pages = [...pages0.slice(0, at).filter((pg) => pg.name !== "탐문 남음"), waiting, gated, ...pages0.slice(at + 1)];
   run.call("upsert_event", { mapId: gate.mapId, replacePages: true, event: { id: gate.ev.id, ...(nameOf(gate.ev) ? { name: nameOf(gate.ev) } : {}), pages } });
   return [`용의자 심문 필수: ${heard.map((s) => s.name).join("·")}에게 한 번씩 말을 걸어야 지목이 열린다`];
+}
+
+const UNHEARD_OBJECTIVE = "아직 이야기 안 한 용의자";
+
+/**
+ * 용의자 대화 페이지의 목표를 「아직 이야기 안 한 용의자」 갈래로 건다 — 「이야기 들음」 스위치가 꺼진 용의자가 남아 있으면 그 사람에게 말을 걸라고,
+ * 모두 들었을 때만 원래 목표(지목 자리)로. 끝맺음 맨 끝(fillStaleObjectives·refreshObjectiveRoutes 뒤)에 돈다 — 그 둘이 걸거나 다시 쓰는 목표도 감싼다.
+ * 왜(2026-10-29 vm4 argon 추리 재생, 감독 지적): 리노와 이야기하자 다른 둘을 듣기 전인데도 목표가 「「범인 지목」을 찾아가자」였다(지목은 다 들어야 열린다).
+ */
+export function gateSuspectObjectives(project: Project): string[] {
+  const registered = new Set((project.switches ?? []).map((w) => String((w as { id?: string }).id ?? "")));
+  const suspects = suspectsHeard(project).filter((s) => registered.has(s.switchId));
+  if (suspects.length < 2) return [];
+  let gate: { mapId: string; ev: GameEvent } | undefined;
+  for (const map of Object.values(project.maps)) for (const ev of map.events ?? []) for (const pg of ev.pages ?? []) walkCommands(pg.commands, (c) => { if (!gate && c.kind === "choices" && c.prompt === ACCUSE_PROMPT) gate = { mapId: map.id, ev }; });
+  const gateName = gate ? nameOf(gate.ev) : "";
+  let wrapped = 0;
+  for (const s of suspects) {
+    const ev = (project.maps[s.mapId]?.events ?? []).find((e) => e.id === s.ev.id);
+    if (!ev) continue;
+    const chain = (final: Obj): Obj[] => suspects.slice().reverse().reduce<Obj[]>((acc, other) => [{
+      kind: "fork",
+      condition: { kind: "switch", switchId: other.switchId, value: false },
+      then: [objectiveCommand(withWhere(project, s.mapId, `${UNHEARD_OBJECTIVE} 「${other.name}」에게 말을 걸어 보자.`, other.ev.id)) as Obj],
+      else: acc,
+    }], [final]);
+    for (const pg of (ev.pages ?? []) as unknown as Obj[]) {
+      const cmds = (pg.commands ?? []) as Obj[];
+      const at = cmds.findIndex((c) => c.kind === "setSwitch" && c.switchId === s.switchId);
+      if (at < 0 || JSON.stringify(cmds).includes(UNHEARD_OBJECTIVE)) continue;
+      const chips = cmds.filter((c) => isObjectiveCommand(c as never));
+      if (chips.length) pg.commands = cmds.flatMap((c) => chips.includes(c) ? chain(c) : [c]);
+      else if (gate) pg.commands = [...cmds.slice(0, at + 1), ...chain(objectiveCommand(withWhere(project, s.mapId, `용의자들의 이야기를 모두 들었다. 「${gateName}」에서 증거를 내밀어 범인을 지목하자.`, gate.ev.id)) as Obj), ...cmds.slice(at + 1)];
+      else continue;
+      wrapped += 1;
+    }
+  }
+  return wrapped ? [`용의자 대화 목표 ${wrapped}곳: 다 듣기 전엔 「${UNHEARD_OBJECTIVE}」, 다 들은 뒤에만 지목`] : [];
 }
 
 /**

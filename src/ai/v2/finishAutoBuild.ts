@@ -18,7 +18,7 @@ import { renameBareBlueprintPlaces } from "./blankStart";
 import { alignCodeClues, fixDigitClaims, humanizeBlueprintTokens } from "./codeClues";
 import { alignClueObjects, dropStaleChainClues } from "./clueObjects";
 import { settleFurnitureSpots } from "./examineSpot";
-import { refreshRemainingClues } from "./mysteryCase";
+import { gateSuspectObjectives, refreshRemainingClues } from "./mysteryCase";
 import { dropTokenLines, settleStepSubjects } from "./stepSubjects";
 import { humanizeMapNames } from "./mapNames";
 
@@ -148,6 +148,9 @@ export async function runFinishAutoBuild(env: PiAssistantV2Env, session: V2Sessi
     // 목표 꼬리 「(<맵> 입구: 방위)」를 마지막 연결로 다시 쓴다 — 목표가 걸리는 자리에서 본 첫 출구 방위·그 뒤 대상(2026-10-29 vm2 jrpg 길 못 찾음).
     try { const n = refreshObjectiveRoutes(env.ctx.project); if (n) assembled.push(`목표 길 안내 ${n}곳`); }
     catch (error) { env.emit({ type: "execution_status", name: "v2.assembly", ok: false, summary: `목표 길 안내를 다시 쓰지 못했다: ${error instanceof Error ? error.message : String(error)}` }); }
+    // 추리 용의자 대화의 목표는 다 듣기 전엔 「아직 이야기 안 한 용의자」, 다 들은 뒤에만 지목 자리로 — 위 두 단계가 건 목표까지 감싸도록 맨 끝에.
+    try { assembled.push(...gateSuspectObjectives(env.ctx.project)); }
+    catch { /* 용의자 목표 갈래 실패는 끝맺음을 깨지 않는다 */ }
     if (assembled.length) {
       env.emit({ type: "execution_status", name: "v2.assembly", ok: true, summary: `청사진 조립 기본값: ${assembled.join(" · ")}` });
       await env.checkpoint("blueprint_assembly");
