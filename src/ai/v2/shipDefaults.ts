@@ -25,7 +25,7 @@ import { normalizeGameOverSettings } from "@/project/cinematicSettings";
 import { fieldMenu, storyFieldMenu } from "@/project/fieldMenu";
 import { syncMenuFeatures, syncMenuUiStyle } from "@/project/menuSystem";
 import { FACTORY_HERO_ARMS } from "./genreDefaults";
-import { fitGateLevelCurve, fitRouteLevelsToGates } from "./monsterRouteLevels";
+import { equipMonsterCampaign, fitGateLevelCurve, fitRequiredBattlesToStarters, fitRouteLevelsToGates } from "./monsterRouteLevels";
 
 type Obj = Record<string, unknown>;
 
@@ -48,10 +48,17 @@ export function applyShipDefaults(project: Project, task = project.gameBlueprint
   if (offArtEntrances(project).length) applied.push(...moveEntrancesOntoArt(project));
   if (repeatingStartObjectives(project).length) applied.push(...moveRepeatingStartObjective(project));
   if (lateStartObjective(project)) applied.push(...pullBackStartObjective(project));
-  if (staleMilestoneTargets(project).length) applied.push(...fillStaleObjectives(project));
+  applied.push(...fillStaleObjectives(project));
   applied.push(...fillGymArrivalObjectives(project));
-  applied.push(...fitGateLevelCurve(project));
-  applied.push(...fitRouteLevelsToGates(project));
+  // 레벨 맞춤 전에: 경험치 나누기·체육관 회복 지점(깎기보다 먼저 쓰는 수단).
+  applied.push(...equipMonsterCampaign(project));
+  // 곡선 → 스타터 맞춤(선물 동료·기술·깎기)을 바뀌는 것이 없을 때까지(최대 3바퀴). 선물 동료가 생기면 다음 바퀴 곡선이 관문을 더 올릴 수 있다 —
+  // 한 바퀴만 돌면 두 번째 끝맺음이 관문을 또 올렸다(멱등 아님).
+  for (let round = 0; round < 3; round += 1) {
+    const changed = [...fitGateLevelCurve(project), ...fitRouteLevelsToGates(project), ...fitRequiredBattlesToStarters(project)];
+    applied.push(...changed);
+    if (!changed.length) break;
+  }
   if (endingConditionsUnset(project).length) applied.push(...dropDeadEndingConditions(project));
   if (selfLoopTransfers(project).length) applied.push(...dropSelfLoopTransfers(project));
   if (emptySparkles(project).length) applied.push(...dropEmptySparkles(project));
@@ -488,20 +495,66 @@ function moveEntrancesOntoArt(project: Project): string[] {
   return out;
 }
 
+/** 이 이벤트가 조건이 켜지면 사라지는가 — 조건 붙은 페이지가 그림 없음·아래 층·명령 없음(레버가 치우는 바위·열리는 덤불). */
+function vanishesWhenRead(project: Project, mapId: string, eventId: string): boolean {
+  const ev = project.maps[mapId]?.events.find((e) => e.id === eventId);
+  return !!ev && (ev.pages ?? []).some((p) => {
+    const g = (p.graphic ?? {}) as { transparent?: boolean; sprite?: unknown; appearanceId?: unknown; tileId?: number };
+    const drawn = g.transparent !== true && Boolean(g.sprite || g.appearanceId || (typeof g.tileId === "number" && g.tileId > 0));
+    return (p.conditions ?? []).length > 0 && !drawn && (p.priority ?? "same") !== "same" && !(p.commands ?? []).length;
+  });
+}
+
+/**
+ * 「「X」를 찾아가자」 목표가 그 이벤트가 켜자마자 사라지는 X(치워진 바위)를 가리키면 그 목표를 뗀다 — 아래 fillStaleObjectives 가 다음 대상으로 다시 건다.
+ * 왜(2026-10-29 vm6 terra jrpg 판정 major): 레버를 당기자 목표가 「「막힌 바위」를 찾아가자」가 됐는데 바위는 그 레버로 굴러가 사라졌다 —
+ * 판정자는 30분 동안 없는 바위를 찾았고 바로 곁의 「동굴의 봉인」을 못 찾았다.
+ */
+function dropVanishedTargetObjectives(project: Project): string[] {
+  const out: string[] = [];
+  const steps = project.gameBlueprint?.steps ?? [];
+  // 다시 걸 대상(같은 맵의 청사진 단계)이 없는 맵에서는 떼지 않는다 — 떼면 목표 없는 이정표가 남는다(vm3 terra 「지하 던전」 레버).
+  const hasStep = (map: Project["maps"][string], self: string) => steps.some((step) => (map.events ?? []).some((e) => e.id !== self && (e.id === step.event || e.name === step.event)));
+  for (const map of Object.values(project.maps)) for (const ev of map.events ?? []) for (const page of ev.pages ?? []) {
+    if (!hasStep(map, ev.id)) continue;
+    const cmds = page.commands ?? [];
+    const written = new Set<string>();
+    for (const c of cmds as unknown as Record<string, unknown>[]) if (c.kind === "setSwitch" && c.value === true) written.add(`sw:${String(c.switchId)}`);
+    if (!written.size) continue;
+    const keep = (cmds as unknown as Record<string, unknown>[]).filter((c) => {
+      if (c.kind !== "m2Command" || c.commandId !== "m2-214-ui-command") return true;
+      const name = /^「([^」]+)」[을를] 찾아가자/u.exec(String((c.fields as Record<string, unknown> | undefined)?.message ?? ""))?.[1];
+      if (!name) return true;
+      const hits = (map.events ?? []).filter((o) => o.id !== ev.id && String(o.name ?? "") === name);
+      const gone = hits.length > 0 && hits.every((o) => vanishesWhenRead(project, map.id, o.id) && (o.pages ?? []).some((p) => (p.conditions ?? []).some((cond) => { const r = cond as { kind?: string; switchId?: string; value?: boolean }; return r.kind === "switch" && r.value !== false && written.has(`sw:${r.switchId}`); })));
+      if (gone) out.push(`목표 「「${name}」 찾아가자」(${ev.name ?? ev.id}) 는 이 이벤트가 치우는 대상이라 뗌`);
+      return !gone;
+    });
+    if (keep.length !== cmds.length) page.commands = keep as unknown as typeof page.commands;
+  }
+  return out;
+}
+
 /**
  * 이야기를 한 단계 넘기면서 다음 목표를 안 바꾸는 이정표 이벤트(objectiveGaps)에 다음 목표를 건다 — 청사진 다음 단계 이벤트가 있으면 그것,
  * 없으면 이 이벤트가 켠 스위치·준 아이템을 읽는 첫 이벤트를 「찾아가자」로. 거는 자리·「어디」 힌트는 set_objective 와 같은 planObjective.
  * 다음 대상을 모르면(엔딩 정의만 읽는다) 건너뛴다.
  */
-function fillStaleObjectives(project: Project): string[] {
+export function fillStaleObjectives(project: Project): string[] {
   const out: string[] = [];
   const steps = project.gameBlueprint?.steps ?? [];
   const object = (word: string): string => `${word}${hasFinal(word.replace(/[」』"”')\]\s]+$/u, "")) ? "을" : "를"}`;
+  out.push(...dropVanishedTargetObjectives(project));
+  const stepEventName = (ref: string) => Object.values(project.maps).flatMap((m) => (m.events ?? []).filter((e) => e.id === ref || e.name === ref).map((e) => String(e.name ?? e.id))).at(0);
   for (const { event, readers } of staleMilestoneTargets(project)) {
     const k = steps.findIndex((step) => step.event === event.eventId || step.event === event.name);
     const nextStep = k >= 0 ? steps[k + 1] : undefined;
-    const stepTarget = nextStep ? Object.values(project.maps).flatMap((m) => (m.events ?? []).filter((e) => e.id === nextStep.event || e.name === nextStep.event).map((e) => String(e.name ?? e.id))).at(0) : undefined;
-    const target = stepTarget ?? readers.map((r) => r.name).find((n) => n && !/^ev_/u.test(n));
+    const stepTarget = nextStep ? stepEventName(nextStep.event) : undefined;
+    // 켜면 사라지는 장애물(레버가 치우는 「막힌 바위」)은 찾아갈 대상이 아니다 — 치운 뒤엔 그 자리에 아무것도 없다.
+    const live = readers.filter((r) => !vanishesWhenRead(project, r.mapId, r.eventId));
+    // 청사진 밖 장치(레버)면 같은 맵의 청사진 단계 대상으로 — 길이 열린 뒤 할 일은 그 단계다.
+    const sameMapStep = k < 0 ? steps.map((step) => (project.maps[event.mapId]?.events ?? []).find((e) => e.id === step.event || e.name === step.event)).find((e) => !!e && e.id !== event.eventId) : undefined;
+    const target = stepTarget ?? live.map((r) => r.name).find((n) => n && !/^ev_/u.test(n)) ?? (sameMapStep ? String(sameMapStep.name ?? sameMapStep.id) : undefined);
     if (!target) continue;
     const plan = planObjective(project, { text: `${object(`「${target}」`)} 찾아가자`, eventId: event.eventId, mapId: event.mapId });
     if (!plan.ok) continue;

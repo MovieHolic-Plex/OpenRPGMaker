@@ -11,6 +11,8 @@
 //  - 다른 판의 번들로 되돌리면(앱 갱신) 저자가 바꾸지 않은 칸은 지금 번들 값이 되고, 저자가 바꾼 칸·필드·덧붙인 칸은 그대로다.
 //    칸 표 배열은 저장 때 길이(n)를 지킨다 — 옛 사본과 같은 모양이라 ensureBundledTilesets 의 「옛 사본 맞추기」가 예전처럼 돈다.
 //    목록(킷·오토타일·참고문서)은 id 로 맞춘다. 번들에서 사라진 칸을 저자가 안 바꿨으면 채울 값이 없어 마지막 칸을 복제한다(드묾, 세어 보고).
+//  - 번들 시트가 끝(번들 자신의 이식 칸 앞)에 칸을 끼워 자랐으면 그 칸을 뺀 «저장 때 번들»을 다시 만들어 얹는다(아래 「시트 끝에 칸을 끼운 번들」).
+//    번들 칸을 굽는 변경은 scripts/content/check-bundle-save-compat.mts 로 실제 저장본 사본을 열어 본다.
 //  - 이 앱에 그 번들 정의가 없으면 되돌릴 수 없다 — 조용히 빈 타일셋을 만들지 않고 ProjectFormatError 로 막는다.
 //  - 편집기는 번들 정의 JSON 을 지연으로 읽는다(bundledJson.ts). 읽지 않은 정의로는 차이를 만들지 않고 예전처럼 통째로 싣는다 —
 //    저장 보기가 동기 XHR 을 부르지 않는다. 로드는 되돌리기 전에 그 정의를 미리 읽는다(electronRepository).
@@ -320,9 +322,127 @@ function readDiff(id: string, value: unknown): TilesetDiff {
   return value as unknown as TilesetDiff;
 }
 
-/** 차이 보기 하나 → 타일셋. `base` 는 이 앱의 새 번들 정의(되돌린 결과가 그 객체를 그대로 쓴다). */
-function restoreOne(id: string, view: Record<string, unknown>, base: Record<string, unknown>, counters: { rebased: number; missing: number }): Record<string, unknown> {
+// ── 시트 끝에 칸을 끼운 번들 ────────────────────────────────────────────────
+// 번들 시트는 끝에 칸을 덧붙이며 자란다. 그런데 번들 정의 자신의 이식 칸(tileGrafts — 버들항은 2,515칸)이 시트 끝 바로 뒤에 붙어 있어서,
+// 시트가 S 칸 자라면 그 이식 칸과 그 칸을 겨누는 킷·묶음 번호가 모두 S 만큼 뒤로 밀린다.
+// 차이는 «저장 때 번들» 대비이므로, 지금 번들에 그대로 얹으면 안 바꾼 칸 표는 지금 번들 길이로 돌아와 머리의 count 와 어긋나고
+// (실측 2026-10-29: 기둥 128칸을 굽자 옛 저장본 전부가 「passability 길이 불일치」로 열리지 않았다), 바꾼 칸 표의 꼬리는 밀린 번들 값을 받는다.
+// 그래서 저장 때 번들과 지금 번들이 «시트 끝(첫 번들 이식 칸 앞)에 S 칸 끼움»만 다르다는 것을 이식 목록으로 확인되면, 지금 번들에서 그
+// S 칸을 빼고 뒤 번호를 S 만큼 당긴 «저장 때 번들»을 다시 만들어 그 위에 차이를 얹는다 — 저장 때와 같은 칸 번호의 사본이 된다.
+// 사본을 새 번들 번호로 옮기는 일(이식 꼬리·맵·킷 번호 밀기, 끼운 칸 채우기)은 로드 정규화(ensureBundledTilesets → 칩셋별 ensure,
+// 버들항은 localTailRelocation.ts)가 프로젝트 전체를 보고 한다. 확인되지 않으면 예전처럼 지금 번들에 얹는다.
+
+type Insertion = { readonly at: number; readonly size: number };
+
+function finiteNumber(value: unknown): number | undefined {
+  return typeof value === "number" && Number.isInteger(value) ? value : undefined;
+}
+
+function graftTarget(value: unknown): number | undefined {
+  return isRecord(value) ? finiteNumber(value.targetTile) : undefined;
+}
+
+/** 저장 때 번들의 칸 수: 칸 표 패치의 b, 없으면 머리의 count(칸 표를 하나도 안 바꾼 사본). */
+function savedBundleCount(view: Record<string, unknown>, diff: TilesetDiff): number | undefined {
+  for (const patch of Object.values(diff.arrays ?? {})) if (patch.t === 1) return patch.b;
+  for (const key of Object.keys(diff.set ?? {})) if (key === "passability" || key === "priority" || key === "terrain" || key === "tileMeta") return undefined;
+  return finiteNumber(view.count);
+}
+
+/** 저장 때 번들과 지금 번들이 «첫 번들 이식 칸 앞에 size 칸 끼움»만 다른가. 이식 목록이 같은 칸을 size 만큼 앞에서 가리켜야 한다. */
+function bundleInsertion(view: Record<string, unknown>, diff: TilesetDiff, base: Record<string, unknown>): Insertion | null {
+  const count = finiteNumber(base.count);
+  const saved = savedBundleCount(view, diff);
+  if (count === undefined || saved === undefined || saved >= count) return null;
+  const size = count - saved;
+  const baseGrafts = Array.isArray(base.tileGrafts) ? base.tileGrafts : [];
+  let first = count;
+  for (const graft of baseGrafts) {
+    const target = graftTarget(graft);
+    if (target === undefined) return null;
+    first = Math.min(first, target);
+  }
+  const at = first - size;
+  if (at < 0) return null;
+  const savedGrafts = new Map<number, unknown>();
+  for (const graft of Array.isArray(view.tileGrafts) ? view.tileGrafts : []) {
+    const target = graftTarget(graft);
+    if (target !== undefined) savedGrafts.set(target, graft);
+  }
+  for (const graft of baseGrafts) {
+    const target = graftTarget(graft)!;
+    const before = savedGrafts.get(target - size);
+    if (!isRecord(before) || !jsonEqual({ ...before, targetTile: target }, graft)) return null;
+  }
+  return { at, size };
+}
+
+/** 지금 번들에서 끼운 칸 [at, at+size) 를 빼고 뒤 번호를 당긴 «저장 때 번들». 빠진 칸을 가리키던 킷·묶음·띠는 뺀다(칩셋 ensure 가 다시 넣는다). */
+function bundleBeforeInsertion(base: Record<string, unknown>, { at, size }: Insertion): Record<string, unknown> {
+  const count = base.count as number;
+  const end = at + size;
+  let dropped = false;
+  const re = (tile: number): number => {
+    if (!Number.isInteger(tile) || tile < at || tile >= count) return tile;
+    if (tile < end) { dropped = true; return tile; }
+    return tile - size;
+  };
+  // localTailRelocation.ts 와 같은 범위: 설명 글·참고문서는 숫자를 칸 번호로 쓰지 않는다.
+  const deep = (value: unknown): unknown => {
+    if (typeof value === "number") return re(value);
+    if (Array.isArray(value)) return value.map(deep);
+    if (isRecord(value)) {
+      const out: Record<string, unknown> = {};
+      for (const [key, inner] of Object.entries(value)) out[key] = key === "ai" || key === "spec" || key === "referenceDocuments" || key === "parts" ? inner : deep(inner);
+      return out;
+    }
+    return value;
+  };
+  const kept = (list: unknown, map: (item: unknown) => unknown): unknown => {
+    if (!Array.isArray(list)) { const whole = isRecord(list) ? deep(list) : list; dropped = false; return whole; }
+    const out: unknown[] = [];
+    for (const item of list) {
+      dropped = false;
+      const next = map(item);
+      if (!dropped) out.push(next);
+    }
+    dropped = false;
+    return out;
+  };
+  const out: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(base)) {
+    if (Array.isArray(value) && value.length === count && key !== "tileGrafts") { out[key] = [...value.slice(0, at), ...value.slice(end)]; continue; }
+    switch (key) {
+      case "count": out[key] = count - size; break;
+      case "tileGrafts": out[key] = (value as unknown[]).map((graft) => (isRecord(graft) ? { ...graft, targetTile: re(graft.targetTile as number) } : graft)); break;
+      case "animationStrips": out[key] = kept(value, (strip) => (isRecord(strip) ? { ...strip, baseTile: re(strip.baseTile as number) } : strip)); break;
+      case "structureKits": out[key] = kept(value, (kit) => (isRecord(kit) ? { ...kit, rows: deep(kit.rows) } : kit)); break;
+      case "autotileGroups": case "tileGroups": case "palettePresets": case "materialSlots": out[key] = kept(value, deep); break;
+      case "counterTiles": out[key] = kept(value, (tile) => (typeof tile === "number" ? re(tile) : tile)); break;
+      case "ledgeDirections": case "slideTiles": {
+        if (!isRecord(value)) { out[key] = value; break; }
+        const record: Record<string, unknown> = {};
+        for (const [tile, inner] of Object.entries(value)) {
+          dropped = false;
+          const next = re(Number(tile));
+          if (!dropped) record[String(next)] = inner;
+        }
+        dropped = false;
+        out[key] = record;
+        break;
+      }
+      default: out[key] = value;
+    }
+  }
+  return out;
+}
+
+/** 차이 보기 하나 → 타일셋. `current` 는 이 앱의 새 번들 정의(되돌린 결과가 그 객체를 그대로 쓴다). */
+function restoreOne(id: string, view: Record<string, unknown>, current: Record<string, unknown>, counters: { rebased: number; missing: number }): Record<string, unknown> {
   const diff = readDiff(id, view[BUNDLED_TILESET_DIFF]);
+  const insertion = bundleInsertion(view, diff, current);
+  if (insertion) counters.rebased += 1;
+  const base = insertion ? bundleBeforeInsertion(current, insertion) : current;
   const set = (diff.set ?? {}) as Record<string, unknown>;
   const arrays = (diff.arrays ?? {}) as Record<string, ArrayPatch>;
   const deleted = new Set(diff.del ?? []);

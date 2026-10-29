@@ -2,7 +2,7 @@
 //
 //   { "kind": "battle",
 //     "plan": { "actor_fs_elena": ["skill_mage_blizzard"], "actor_hero": ["attack", "skill_hero_cross_slash"] },
-//     "fallback": "attack",          // 계획이 빈 배우의 명령(attack · defend · escape · skill:first · skill_<id> · item:<itemId> · capture:<itemId>)
+//     "fallback": "attack",          // 계획이 빈 배우의 명령(attack · defend · escape · skill:first · skill:best · skill_<id> · item:<itemId> · capture:<itemId>)
 //     "commands": 2,                 // 이만큼 명령을 내린 뒤, 연출이 끝나고 다음 명령 카드가 뜰 때까지 기다리고 돌아온다
 //     "untilEnd": false,             // true 면 결과 창까지 누르고 닫는다
 //     "target": 0 | "last" | "enemy-2",
@@ -26,6 +26,9 @@ async function dumpLog(page, op, issued) {
 
 /** 포켓몬 스킨(「싸운다」→ 기술 목록)에서 attack 은 쓸 수 있는 첫 기술이다. */
 const FIRST_MOVE = "\u0000first-move";
+// 「가장 좋은 기술」: 기술 단추의 data-expected-damage(앞의 적에게 줄 평균 기대 피해, 상성·자속 포함)가 가장 큰 것. 없으면 첫 기술.
+// 실제 플레이어는 타입 배지를 보고 고른다 — 첫 기술만 누르면 풀 스타터가 벌레 Lv4 에게 몸통박치기만 하다 졌다(2026-10-29 standin monster).
+const BEST_MOVE = "\u0000best-move";
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -44,6 +47,8 @@ async function readBattleUi(page) {
         .filter((n) => !n.disabled && n.dataset.testid !== "battle-target-cancel").map((n) => n.dataset.testid),
       active: document.querySelector(".battle-actor-status.is-active-actor")?.getAttribute("data-record-id") ?? null,
       resultConfirm: Boolean(document.querySelector('[data-testid="battle-result-confirm"]')),
+      // 승리 뒤 「기술을 배우려면 다른 기술을 잊어야 한다」 장면(emeraldMoveLearnScene) — 결과 창 대신 뜬다.
+      moveLearn: Boolean(document.querySelector('[data-testid="emerald-movelearn"]')),
       // 전투 중 이벤트 대사(발렌의 소환 외침 등)는 .dialogue-box 로 뜨고, 그동안 장면은 busy 다.
       dialogue: [...document.querySelectorAll('.dialogue-box, [data-testid="dialogue-box"]')].some((n) => n.offsetParent !== null),
     };
@@ -111,6 +116,18 @@ export async function battleQaOp(page, op) {
       await dumpLog(page, op, issued);
       return { issued, ended: true };
     }
+    if (ui.moveLearn) {
+      // 확인키만 누르는 플레이어처럼: 「예」(커서 기본) → 첫 기술(가장 오래 배운 기술)을 잊는다.
+      // 빌더 모의전도 그 레벨에서 배운 마지막 네 기술을 쓰므로 같은 기술 구성이 된다.
+      // 이것 없이는 water 스타터 챔피언전(2026-10-29)이 승리 뒤 이 질문에서 90초를 기다리다 실패했다.
+      if (!op.untilEnd) {
+        await dumpLog(page, op, issued);
+        return { issued, ended: true };
+      }
+      await page.keyboard.press("Enter");
+      await sleep(500);
+      continue;
+    }
     if (ui.resultConfirm) {
       if (!op.untilEnd) {
         await dumpLog(page, op, issued);
@@ -153,6 +170,23 @@ export async function battleQaOp(page, op) {
       continue;
     }
     const submenu = ui.menu.filter((id) => id.startsWith("actor-skill-") || id.startsWith("actor-item-") || id.startsWith("actor-capture-"));
+    if (submenu.length > 0 && wanted === BEST_MOVE) {
+      const best = await page.evaluate(() => {
+        let pick = null; let top = -Infinity;
+        for (const node of document.querySelectorAll("[data-testid^='actor-skill-']")) {
+          if (node.disabled || node.getAttribute("aria-disabled") === "true") continue;
+          const value = Number(node.dataset.expectedDamage ?? "NaN");
+          const score = Number.isFinite(value) ? value : -1;
+          if (pick === null || score > top) { pick = node.dataset.testid; top = score; }
+        }
+        return pick;
+      });
+      wanted = null;
+      if (best) await press(page, best);
+      else await page.keyboard.press("Escape");
+      await sleep(300);
+      continue;
+    }
     if (submenu.length > 0 && wanted === FIRST_MOVE) {
       // 포켓몬 스킨 「싸운다」: 기술 목록에서 쓸 수 있는 첫 기술(보이는 단추는 이미 disabled 를 걸러 냈다).
       const move = submenu.find((id) => id.startsWith("actor-skill-"));
@@ -206,6 +240,7 @@ export async function battleQaOp(page, op) {
       else if (choice === "escape") ok = await press(page, root.includes("actor-command-run") ? "actor-command-run" : "actor-command-escape");
       // 기술 목록의 첫 기술(어떤 기술이 있는지 모르는 실물 게임용).
       else if (choice === "skill:first") { wanted = FIRST_MOVE; ok = await press(page, "actor-command-skill"); }
+      else if (choice === "skill:best") { wanted = BEST_MOVE; ok = await press(page, root.includes("actor-command-fight") ? "actor-command-fight" : "actor-command-skill"); }
       // 포획 구슬: 포획 명령이 있으면 그쪽, 없으면(포켓몬 스킨) 가방.
       else if (choice.startsWith("capture:")) { wanted = choice; ok = await press(page, root.includes("actor-command-capture") ? "actor-command-capture" : "actor-command-item"); }
       else if (choice === "attack") ok = await press(page, "actor-command-attack");

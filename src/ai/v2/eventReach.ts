@@ -422,6 +422,24 @@ function approachEnds(project: Project, map: GameMap, from: Cell, player: Cell):
   return out;
 }
 
+/**
+ * 착지점마다 따로 걸어 본 기준(base 막힘)에 대어, blocked 막힘에서 어느 착지점이든 닿던 이벤트를 잃는가.
+ * 앵커를 한데 모은 닿기(reachFrom(anchors))는 잠긴 문 너머에서 돌아오는 착지점이 막힌 쪽을 채워 하나뿐인 목을 못 본다.
+ */
+function anchorSplitter(project: Project, map: GameMap, anchors: readonly Cell[], base: ReadonlySet<number>, events: readonly GameEvent[]) {
+  const perAnchor = anchors.map((a) => reachFrom(project, map, [a], base));
+  return (blocked: ReadonlySet<number>, onMap: GameMap = map, onProject: Project = project) => anchors.some((a, k) => {
+    const now = reachFrom(onProject, onMap, [a], blocked);
+    return events.some((o) => !bodyReached(onMap, now, onMap.events.find((e) => e.id === o.id) ?? o) && bodyReached(map, perAnchor[k]!, o));
+  });
+}
+
+/** 모든 페이지가 길을 막는가(어느 페이지에서든 비켜나면 이야기로 길을 여는 문지기일 수 있다). */
+function alwaysBlocks(ev: GameEvent): boolean {
+  const pages = ev.pages ?? [];
+  return pages.length > 0 && pages.every((p) => eventBlocks({ ...ev, pages: [p] } as GameEvent));
+}
+
 /** 착지 칸·그 둘레, 이동 이벤트 둘레 — 막는 이벤트가 서면 안 되는 칸들. */
 export function transferLaneCells(project: Project, map: GameMap): Set<number> {
   const w = map.width;
@@ -453,11 +471,18 @@ export function clearTransferLanes(run: BuildRun, mapId: string): ReachRepair {
     const start = project.startMapId === mapId && project.startPos ? { x: project.startPos.x, y: project.startPos.y } : undefined;
     const approach = !!start && approachesPlayer(map, id);
     const bad = (c: Cell) => lanes.has(c.y * w + c.x) || (approach && approachEnds(project, map, c, start!).some((e) => lanes.has(e.y * w + e.x)));
-    if (!bad(ev)) continue;
     const anchors = anchorsOf(project, map);
     const othersBlocked = blockersOf(map, id);
     const free = reachFrom(project, map, anchors, othersBlocked);
     const others = map.events.filter((e) => e.id !== id);
+    // 하나뿐인 목: 이 이벤트가 서 있어서 못 닿는(빼면 닿는) 다른 이벤트가 있으면 비켜 세운다 — 출구 둘레만 보면 놓친다.
+    // 2026-10-29 vm6 flash 추리: 마부 한스(7,7)가 식당 오른쪽으로 가는 한 칸 통로에 서서 창고 출입구(8,3)에 못 갔다.
+    // vm6 argon 추리: 상인 도윤(8,7)이 뒷마당 출입구(4,3)로 올라가는 목을 막았다. 어느 페이지에서든 비켜나는(통과·아래 층) 이벤트는
+    // 일부러 길을 막은 문지기일 수 있어 건드리지 않는다.
+    // 착지점마다 따로 본다 — 앵커를 한데 모으면 창고에서 돌아오는 착지점(8,5)이 막힌 쪽을 «닿음»으로 채워 목을 못 본다(vm6 flash 추리).
+    const splits = anchorSplitter(project, map, anchors, othersBlocked, others);
+    const chokes = alwaysBlocks(ev) && anchors.length > 0 && splits(blockersOf(map));
+    if (!bad(ev) && !chokes) continue;
     const taken = new Set(others.map((e) => e.y * w + e.x));
     const anchorSet = new Set(anchors.map((a) => a.y * w + a.x));
     const okOthers = (reach: Uint8Array) => others.every((o) => (!free[o.y * w + o.x] && !nextTo(map, free, o)) || nextTo(map, reach, o) || !!reach[o.y * w + o.x]);
@@ -472,12 +497,12 @@ export function clearTransferLanes(run: BuildRun, mapId: string): ReachRepair {
       if (bad(c)) return false;
       const blocked = new Set(othersBlocked);
       blocked.add(c.y * w + c.x);
-      return okOthers(reachFrom(project, map, anchors, blocked));
+      return okOthers(reachFrom(project, map, anchors, blocked)) && !splits(blocked);
     })?.c;
     const name = String((ev as { name?: string }).name ?? id);
     if (!target) { stuck.push(`${name}(${ev.x},${ev.y})`); continue; }
     const res = run.call("move_event", { mapId, eventId: id, x: target.x, y: target.y });
-    if (res.ok) moved.push(`${name} (${ev.x},${ev.y})→(${target.x},${target.y}) 이동 칸 앞 비움${approach ? "(컷신에서 다가가는 끝 칸 포함)" : ""}`);
+    if (res.ok) moved.push(`${name} (${ev.x},${ev.y})→(${target.x},${target.y})${chokes && !bad(ev) ? " 하나뿐인 목 비움" : " 이동 칸 앞 비움"}${approach ? "(컷신에서 다가가는 끝 칸 포함)" : ""}`);
     else stuck.push(`${name}: ${String(res.summary).slice(0, 120)}`);
   }
   return { moved, stuck };
@@ -613,6 +638,8 @@ export function spreadCrowdedPeople(run: BuildRun, mapId: string): string[] {
     const before = unreachableEvents(project, mapId).length;
     const sidesBefore = new Map(people.map((p) => [p.id, openSides(map, reach, p)]));
     const free = reachFrom(project, map, anchors, blockersOf(map, id));
+    // 옮긴 자리가 어느 착지점에서든 닿던 이벤트를 끊으면 안 된다(vm6 flash 추리: 여행자 미라를 한스가 비운 목 (7,7)에 세웠다).
+    const splits = anchorSplitter(project, map, anchors, blockersOf(map, id), (map.events ?? []).filter((e) => e.id !== id));
     const lanes = transferLaneCells(project, map);
     const anchorSet = new Set(anchors.map((a) => a.y * w + a.x));
     const cands: { c: Cell; s: number }[] = [];
@@ -634,6 +661,7 @@ export function spreadCrowdedPeople(run: BuildRun, mapId: string): string[] {
       moved.x = c.x; moved.y = c.y;
       const trial = { ...project, maps: { ...project.maps, [mapId]: copy } } as Project;
       if (unreachableEvents(trial, mapId).length > before) continue;
+      if (splits(blockersOf(copy), copy, trial)) continue;
       const r2 = reachFrom(trial, copy, anchors, blockersOf(copy));
       if (openSides(copy, r2, c) < 2) continue;
       if (people.some((p) => openSides(copy, r2, p) < Math.min(2, sidesBefore.get(p.id) ?? 0))) continue;

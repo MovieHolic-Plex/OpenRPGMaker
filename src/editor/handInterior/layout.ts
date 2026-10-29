@@ -816,7 +816,8 @@ function buildCandidatesForVariant(
       const rc = rects.get(w.id)!;
       const x0 = mirrorHorizontal ? BW - rc.x - rc.w : rc.x;
       // 요청한 귀퉁이는 방 크기가 받을 때만(넓이 고치기로 방이 줄면 빠진다) — 동서 뒤집기면 서↔동.
-      const notches = (w.notches ?? []).filter((n) => n.w <= rc.w - 4 && n.h <= rc.h - 5).map((n) => mirrorHorizontal ? { ...n, corner: `${n.corner[0]}${n.corner[1] === "w" ? "e" : "w"}` as HandInteriorNotch["corner"] } : n);
+      const notches = (w.notches ?? []).filter((n) => n.w <= rc.w - 4 && n.h <= rc.h - 5 && (n.at === undefined || (n.at >= 1 && n.at + n.w <= rc.w - 1)))
+        .map((n) => mirrorHorizontal ? { ...n, corner: `${n.corner[0]}${n.corner[1] === "w" ? "e" : "w"}` as HandInteriorNotch["corner"], ...(n.at !== undefined ? { at: rc.w - n.at - n.w } : {}) } : n);
       return { id: w.id, kind: w.kind, x0, y0: rc.y, x1: x0 + rc.w - 1, y1: rc.y + rc.h - 1, ...(w.floor ? { floor: w.floor } : {}), ...(w.wall ? { wall: w.wall } : {}), ...(w.template ? { template: w.template.id } : {}), ...(w.dress ? { dress: w.dress } : {}), ...(notches.length ? { notches } : {}) };
     });
     // ㄱ·ㄴ자 방 - 바닥 줄 방(남쪽이 건물 밖 벽, 아래 이웃 없음) 중 큰 방의 한 귀퉁이를 구조 코어(설비 샤프트·벽장)로 도려 낸다. 이웃 방 쪽 귀퉁이와 출구 방은 피한다.

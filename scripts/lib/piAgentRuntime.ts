@@ -1239,6 +1239,11 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
           event.isError && (publicationFailed || !record) ? toolErrorText(event.result) : "",
         ),
       });
+      // 진단: 도구 결과가 모델에게 얼마나 크게 갔나(글자 수·그림 수) — 큰 결과 뒤에 모델이 멈추거나 사유를 지어내는지 가르려고(2026-10-29 3c Argon room_parts).
+      if (process.env.OPRN_TURN_DIAG) {
+        const parts = ((event.result as { content?: Array<{ type?: string; text?: string }> } | undefined)?.content ?? []);
+        emit({ type: "execution_status", name: "tool.size", ok: true, summary: `${name} 결과 글 ${parts.filter((p) => p.type === "text").reduce((n, p) => n + (p.text?.length ?? 0), 0)}자 · 그림 ${parts.filter((p) => p.type === "image").length}장${event.isError ? " · 오류" : ""}` });
+      }
       // 순서 계약: 무엇을 했나(tool_end) 다음에 무엇이 바뀌었나(map_delta). 브라우저 다리가
       // 실행 중 도구 이름을 먼저 세우고 그 아래 칸을 그린다.
       const changed = emitMapDelta() > 0;
@@ -1256,7 +1261,9 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     }
     if (event.type === "message_end" && process.env.OPRN_TURN_DIAG) {
       const m = event.message as { role?: string; content?: Array<{ type?: string; text?: string; name?: string }>; stopReason?: string; usage?: unknown } | undefined;
-      if (m?.role === "assistant") emit({ type: "execution_status", name: "turn.diag", ok: true, summary: `stop=${m.stopReason} blocks=${(m.content ?? []).map(b => b.type === "text" ? `text(${(b.text ?? "").length})` : b.type === "toolCall" ? `call:${b.name}` : String(b.type)).join(",") || "none"} text=${JSON.stringify((m.content ?? []).filter(b => b.type === "text").map(b => b.text).join(" ").slice(0, 160))}` });
+      // 오류로 끝난 차례는 제공자 오류 글도 싣는다 — 「호출 횟수 초과」처럼 모델이 지어낸 사유와 실제 제공자 오류를 가르려면 필요하다(2026-10-29 3c Argon).
+      const errText = (event.message as { errorMessage?: string } | undefined)?.errorMessage;
+      if (m?.role === "assistant") emit({ type: "execution_status", name: "turn.diag", ok: true, summary: `${errText ? `error=${JSON.stringify(String(errText).slice(0, 240))} ` : ""}stop=${m.stopReason} blocks=${(m.content ?? []).map(b => b.type === "text" ? `text(${(b.text ?? "").length})` : b.type === "toolCall" ? `call:${b.name}` : String(b.type)).join(",") || "none"} text=${JSON.stringify((m.content ?? []).filter(b => b.type === "text").map(b => b.text).join(" ").slice(0, 160))}` });
     }
     if (event.type === "message_end") {
       const message = event.message as { role?: string; content?: unknown[]; usage?: unknown; stopReason?: string; errorMessage?: string } | undefined;

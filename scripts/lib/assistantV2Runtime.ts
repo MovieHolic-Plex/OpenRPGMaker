@@ -316,6 +316,16 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
       },
     },
   });
+  // 남은 검사 문제를 보고에서 빼지 못하게(2026-10-29 3c flash: 맨바닥 60% 가 남았는데 «기계 검사 통과·못 한 것: 없음»으로 끝냈다).
+  // 보고가 «통과/없음»이라 쓰거나 보고가 없으면 함수가 남은 것을 붙인 최종 보고를 한 번 더 낸다 — 모델 말이 아니라 검사 기록이다.
+  try {
+    const left = session.unresolved();
+    if (left.length && !(options.signal?.aborted) && (!draft || /통과|없음|다\s*됐|완료/u.test(draft))) {
+      const lines = left.flatMap((o) => o.problems.slice(0, 4).map((p) => `- ${o.name}(${o.mapId}): ${p.replace(/ — (dress_room|네가 설계한 방이다).*$/u, "").slice(0, 200)}`));
+      const text = `${draft ? `${draft.replace(/^최종 보고\(앞 보고를 고침\):\s*/u, "")}\n\n` : ""}남은 문제(함수 검사 기록 — 위 보고와 별개로 붙인다, 고치지 못했다):\n${lines.join("\n")}`;
+      options.onEvent?.({ type: "assistant", text: `최종 보고(함수가 남은 검사를 붙임):\n${text}` });
+    }
+  } catch { /* 붙이기 실패는 보고를 막지 않는다 */ }
   options.onEvent?.({ type: "execution_status", name: "v2.summary", ok: (done as { ok?: boolean }).ok, at: Date.now(), summary: `v2 요약: 장소 ${new Set([...session.places.values()]).size}·사람/사건 ${session.content.length}·비평 ${session.criticCalls}회(${Math.round(session.criticMs / 1000)}초)·남은 문제 ${session.unresolved().length}·그림 없음 ${session.missingArt.size}${advice ? `·검토 ${advice.notes.filter((n) => n.level === "blocker").length}막음(${(advice.ms / 1000).toFixed(1)}초${followMs ? `+후속 ${Math.round(followMs / 1000)}초` : ""})` : ""}${vqaRounds.length ? `·${vqaSummary(vqaRounds).text}(${Math.round(vqaMs / 1000)}초)` : ""} · 전체 ${Math.round((Date.now() - started) / 1000)}초`,
     data: { places: [...session.places.keys()], unresolved: session.unresolved(), missingArt: [...session.missingArt], criticCalls: session.criticCalls, criticMs: session.criticMs, ...(vqaRounds.length ? { vqa: { rounds: vqaRounds.map(({ round, defects, problem, reviewer, ms }) => ({ round, defects, problem, reviewer, ms })), ...vqaSummary(vqaRounds), ms: vqaMs } } : {}), ...(advice ? { advisor: { blockers: advice.notes.filter((n) => n.level === "blocker").length, notes: advice.notes.length, ms: advice.ms, followMs, inputChars: advice.inputChars } } : {}) } });
   return done;

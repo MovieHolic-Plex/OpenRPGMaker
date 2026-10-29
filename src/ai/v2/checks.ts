@@ -78,9 +78,13 @@ export function runMachineChecks(project: Project, mapIds: readonly string[], en
     }
     if (interior) {
       const bare = measureInteriorBareFloor(project, map);
-      if (bare && bare.floorCells >= 40) {
+      // 모델이 설계한 방은 함수가 채우지 않는다 — 고칠 말도 설계로(dress_room 은 설계 방을 거절한다).
+      const designedMap = (map.locations ?? []).some((l) => (l.tags ?? []).includes("model-designed"));
+      if (bare && (bare.floorCells >= 40 || (designedMap && bare.floorCells >= 20))) {
         const big = [...bare.regions].sort((a, b) => b.w * b.h - a.w * a.h)[0];
-        checks.push({ id: "bare-floor", mapId, ok: bare.pct <= INTERIOR_BARE_FLOOR_LIMIT + 5, detail: `맨바닥 덩이 ${bare.pct}%(기준 ${INTERIOR_BARE_FLOOR_LIMIT}%, 여유 5)${big ? ` — 가장 큰 덩이 (${big.x},${big.y}) ${big.w}×${big.h}` : ""}${bare.pct > INTERIOR_BARE_FLOOR_LIMIT + 5 && big ? ` — dress_room(mapId, at: (${big.x},${big.y}), purpose: 그 방의 쓰임)으로 채운다` : ""}`, ...(big ? { at: { x: big.x, y: big.y } } : {}) });
+        checks.push({ id: "bare-floor", mapId, ok: bare.pct <= INTERIOR_BARE_FLOOR_LIMIT + 5, detail: `맨바닥 덩이 ${bare.pct}%(기준 ${INTERIOR_BARE_FLOOR_LIMIT}%, 여유 5)${big ? ` — 가장 큰 덩이 (${big.x},${big.y}) ${big.w}×${big.h}` : ""}${bare.pct > INTERIOR_BARE_FLOOR_LIMIT + 5 && big ? (designedMap
+          ? ` — 네가 설계한 방이다: design.w·h 를 줄이거나 그 자리에 묶음을 더해 edit_place({patch:{mapId, design: 고친 설계 전체}}) 로 다시 짓는다(함수는 채우지 않는다)`
+          : ` — dress_room(mapId, at: (${big.x},${big.y}), purpose: 그 방의 쓰임)으로 채운다`) : ""}`, ...(big ? { at: { x: big.x, y: big.y } } : {}) });
       }
     } else {
       let empty = 0;

@@ -3,12 +3,14 @@
 // 재생 스크립트(scripts/qa/assistant-v2/finishReplay.mts)도 이 함수를 불러, 실제 실행기와 같은 순서를 지나는지 따로 맞추지 않아도 된다.
 import type { PiAssistantV2Env } from "./env";
 import type { V2Session } from "./verbs";
-import { BLUEPRINT_PATH_IDS, fillUnsetStepConditions, walkBlueprint } from "./blueprint";
+import type { Project } from "@/project/types";
+import { BLUEPRINT_PATH_IDS, fillUnsetStepConditions, gateOpenSteps, walkBlueprint } from "./blueprint";
 import { battleSites, healingSources } from "./combatChecks";
 import { wantsWholeGame } from "./shipChecks";
-import { applyShipDefaults } from "./shipDefaults";
+import { applyShipDefaults, fillStaleObjectives } from "./shipDefaults";
 import { refreshObjectiveRoutes } from "./discoverability";
-import { fitUnwinnableStepBattlesIn, lockStepOrderDoorsIn, orderStepBattlesIn, pointLockedPagesIn } from "./blueprintPath";
+import { fitStairTransfers, hiddenStairExits } from "@/project/stairs/fit";
+import { fitUnwinnableStepBattlesIn, lockStepOrderDoorsIn, orderStepBattlesIn, pointLockedPagesIn, ungateTalkStepBattlesIn } from "./blueprintPath";
 import { fitPathBattlesIn } from "./pathBattleBudget";
 import { ensureBossRest } from "./healingAccess";
 import { createBuildRun } from "./buildRun";
@@ -18,11 +20,43 @@ import { renameBareBlueprintPlaces } from "./blankStart";
 import { alignCodeClues, fixDigitClaims, humanizeBlueprintTokens } from "./codeClues";
 import { alignClueObjects, dropStaleChainClues } from "./clueObjects";
 import { settleFurnitureSpots } from "./examineSpot";
+import { alignObjectiveThings, gateSuspectObjectives, refreshRemainingClues } from "./mysteryCase";
+import { dropTokenLines, settleStepSubjects } from "./stepSubjects";
 import { humanizeMapNames } from "./mapNames";
+import { ensureReloadable } from "./reloadCheck";
+import { widenRoadExits } from "./edgeExitRoads";
+import { openDoorSteps } from "./stepArt";
+
+/**
+ * 출구·이동 칸 마감이 본 맵들의 지문 — 맵 크기·타일 층·이벤트 자리. 마감은 한 실행에 한 번이라, 그 뒤 화면 검수 고치기 차례에서
+ * 모델이 make_place·edit_place 로 장소를 다시 지으면 새 방은 마감을 못 받는다(2026-10-29 vm6 argon 탈출: 고치기 차례에 밀실을 7×8 로 다시 지어
+ * 자물쇠 상자 (3,6)가 철문 (3,7) 앞을 막은 채 출하). 지문이 달라졌으면 마감을 다시 돈다.
+ */
+export function lanesStamp(project: Project): string {
+  let h = 0x811c9dc5;
+  const mix = (n: number) => { h = Math.imul(h ^ (n | 0), 0x01000193) >>> 0; };
+  const str = (t: string) => { for (let i = 0; i < t.length; i++) mix(t.charCodeAt(i)); };
+  for (const id of Object.keys(project.maps).sort()) {
+    const map = project.maps[id]!;
+    str(id); mix(map.width); mix(map.height);
+    for (const [key, value] of Object.entries(map).sort(([a], [b]) => a.localeCompare(b))) {
+      if (!/Tiles$/u.test(key) || !Array.isArray(value)) continue;
+      str(key);
+      for (const t of value as unknown[]) mix(typeof t === "number" ? t : -2);
+    }
+    for (const ev of map.events ?? []) { str(ev.id); mix(ev.x); mix(ev.y); }
+  }
+  return h.toString(16);
+}
+const LANES_RERUN_CAP = 2;
+/** 마감을 돈 뒤 맵이 바뀌었나(다시 돌 횟수가 남았을 때만). */
+const lanesStale = (env: PiAssistantV2Env, session: V2Session) =>
+  session.autoLanesDone && session.lanesStamp !== undefined && session.lanesReruns < LANES_RERUN_CAP && session.lanesStamp !== lanesStamp(env.ctx.project);
 
 /** 청사진 자동 짓기(한 실행에 한 번씩 — 세션 깃발). 무엇을 지었는지 조수에게 줄 글(없으면 undefined). */
 export async function runFinishAutoBuild(env: PiAssistantV2Env, session: V2Session): Promise<string | undefined> {
   let autoPath: string | undefined;
+  if (lanesStale(env, session)) { session.autoLanesDone = false; session.lanesReruns++; }
   if (env.ctx.project.gameBlueprint) {
     const done: string[] = [];
     // 청사진 장소가 잔디 한 장뿐인 빈 맵이면 장소 이름을 요청의 장소 낱말로 바꿔 아래 장소 짓기가 실제 방을 짓게 한다(blankStart.renameBareBlueprintPlaces).
@@ -62,6 +96,13 @@ export async function runFinishAutoBuild(env: PiAssistantV2Env, session: V2Sessi
       const fixed = [...aligned.notes, ...digits.notes, ...(human.notes.length ? [`청사진 id 대사 ${human.notes.length}줄을 뜻 낱말로`] : [])];
       if (fixed.length) done.push(`번호·단서 대사: ${fixed.join(" / ").slice(0, 500)}`);
     }
+    // 단계 이벤트의 주인공 — 사람과 이야기하는 단계는 사람으로, 진행 낱말뿐인 칸은 결과 물건·살펴보는 대상 이름으로(stepSubjects.ts, vm4·vm5 판정).
+    // 가구 앉히기 앞에 — 사람이 될 칸을 가구에 붙이지 않게.
+    {
+      const run = createBuildRun(env.ctx);
+      const subjects = settleStepSubjects(run);
+      if (subjects.length) done.push(`단계 주인공: ${subjects.join(" / ").slice(0, 500)}`);
+    }
     // 그림 없는 조사 칸은 가구에 앉히고, 가구 위 조사는 가구 전체에서 받는다(examineSpot.settleFurnitureSpots).
     {
       const run = createBuildRun(env.ctx);
@@ -70,6 +111,8 @@ export async function runFinishAutoBuild(env: PiAssistantV2Env, session: V2Sessi
       if (pointed.length) done.push(`단서 물건 자리: ${pointed.join(" / ").slice(0, 500)}`);
       const settled = Object.keys(env.ctx.project.maps).flatMap((mapId) => settleFurnitureSpots(run, mapId));
       if (settled.length) done.push(`조사 자리: ${settled.join(" / ").slice(0, 500)}`);
+      const left = refreshRemainingClues(run);
+      if (left.length) done.push(`남은 단서 자리: ${left.join(" / ")}`);
     }
     if (session.clearLanes && !session.autoLanesDone) {
       session.autoLanesDone = true;
@@ -84,7 +127,10 @@ export async function runFinishAutoBuild(env: PiAssistantV2Env, session: V2Sessi
       if (repointed.length) done.push(`단서 물건 자리(길목 뒤): ${repointed.join(" / ").slice(0, 400)}`);
       const resettled = Object.keys(env.ctx.project.maps).flatMap((mapId) => settleFurnitureSpots(run, mapId));
       if (resettled.length) done.push(`조사 자리(길목 뒤): ${resettled.join(" / ").slice(0, 400)}`);
+      const left = refreshRemainingClues(run);
+      if (left.length) done.push(`남은 단서 자리(길목 뒤): ${left.join(" / ")}`);
     }
+    if (session.autoLanesDone) session.lanesStamp = lanesStamp(env.ctx.project);
     if (done.length) autoPath = [`[자동으로 지음] 청사진이 엔딩까지 이어지지 않거나 길목·출구가 막혀 함수가 대신 지었다 — 최종 보고에 「자동으로 지음:」으로 이 목록을 그대로 적는다(네가 지었다고 쓰지 않는다):`, ...done.map((d) => `- ${d}`), "대사를 다듬으려면 build_blueprint_path{steps:[{id,lines,lockedLines}]} 로 다시 부른다(같은 이벤트를 고쳐 쓴다). 자동으로 지은 장소를 꾸미려면 edit_place·dress_room."].join("\n");
   }
   // 조립 기본값(2026-10-28): 청사진이 있는 게임 요청이면 아무도 고르지 않은 타이틀 그림·기본 문구·기본 왕국 오프닝을 청사진에 맞춘다 — 모델이 부르지 않아도.
@@ -95,6 +141,9 @@ export async function runFinishAutoBuild(env: PiAssistantV2Env, session: V2Sessi
     // autoBuild 안이라 늦게 쓴 청사진(v2.blueprint.late)에서도 장소·경로·출구를 지은 뒤 돈다.
     try { assembled.push(...applyBlueprintOpening(env.ctx.project)); }
     catch (error) { env.emit({ type: "execution_status", name: "v2.assembly", ok: false, summary: `기본 오프닝을 깔지 못했다: ${error instanceof Error ? error.message : String(error)}` }); }
+    // 앞 단계 없이 열리는 단계를 앞 단계 뒤에만 열리게 — 대화만 하는 앞 단계는 「마침」 스위치를 켜게(2026-10-29 vm3 deepseek 추리: 덕수·말순 건너뜀). 출하 기본값보다 먼저 — 새로 켜는 스위치에 다음 목표가 붙게.
+    try { assembled.push(...gateOpenSteps(env.ctx.project)); }
+    catch { /* 단계 잠금 실패는 끝맺음을 깨지 않는다 */ }
     // 출하 기본값(2026-10-29 vm1): 전투 곡·전투 배경·파티 모습/얼굴·엔딩 맺음·기본 지명 — 출하 검사가 «기본값이 남았다»고 짚는 것만 채운다.
     try { assembled.push(...applyShipDefaults(env.ctx.project, env.request.task)); }
     catch (error) { env.emit({ type: "execution_status", name: "v2.assembly", ok: false, summary: `출하 기본값을 채우지 못했다: ${error instanceof Error ? error.message : String(error)}` }); }
@@ -111,6 +160,9 @@ export async function runFinishAutoBuild(env: PiAssistantV2Env, session: V2Sessi
     // 어디서도 안 켜지는 단계 조건을 앞 단계가 켜게(2026-10-29 vm3 argon mystery 「사건 조사 시작」).
     try { assembled.push(...fillUnsetStepConditions(env.ctx.project)); }
     catch { /* 켜기 보충 실패는 끝맺음을 깨지 않는다 */ }
+    // 싸우는 단계가 아닌데 보스 전투로 감싼 페이지는 푼다(2026-10-29 vm7 argon jrpg: 촌장이 말 걸자마자 용과 싸움).
+    try { assembled.push(...ungateTalkStepBattlesIn(env.ctx.project)); }
+    catch { /* 전투 풀기 실패는 끝맺음을 깨지 않는다 */ }
     try { assembled.push(...orderStepBattlesIn(env.ctx.project)); }
     catch (error) { env.emit({ type: "execution_status", name: "v2.assembly", ok: false, summary: `단계 순서 보호를 하지 못했다: ${error instanceof Error ? error.message : String(error)}` }); }
     // 영문 id 맵 이름(「dungeon_cave」)을 뜻 낱말로 — 아래 목표 꼬리·런타임 출구 라벨이 그 이름을 그대로 보여 준다(2026-10-29 vm4 flash jrpg).
@@ -122,19 +174,58 @@ export async function runFinishAutoBuild(env: PiAssistantV2Env, session: V2Sessi
     // 잠긴 조사 대사가 먼저 할 일(그 조건을 켜는 이벤트와 자리)을 말하게(2026-10-29 vm3 argon 추리 열린 창문·deepseek jrpg 계단). 맵 이름을 뜻 낱말로 바꾼 뒤.
     try { assembled.push(...pointLockedPagesIn(env.ctx.project)); }
     catch { /* 잠김 대사 보충 실패는 끝맺음을 깨지 않는다 */ }
+    // 「먼저 …」 안내가 붙은 뒤 — 그 앞의 「필요한 것이 있어야 할 것 같다」 같은 토큰 줄을 뺀다(vm4 argon 추리 재생).
+    try { assembled.push(...dropTokenLines(createBuildRun(env.ctx))); }
+    catch { /* 토큰 줄 정리 실패는 끝맺음을 깨지 않는다 */ }
+    // 위 단계(fillUnsetStepConditions·orderStepBattles)가 이정표를 새로 만들면(조건 스위치를 켜는 갈래) 다음 목표를 다시 건다
+    // (2026-10-29 vm5 argon 추리: 「모든 단서」를 켜게 된 상인 오언이 다음 목표를 안 바꿔 출하 검사 objective-missing).
+    try { assembled.push(...fillStaleObjectives(env.ctx.project)); }
+    catch { /* 목표 보충 실패는 끝맺음을 깨지 않는다 */ }
     // 목표 꼬리 「(<맵> 입구: 방위)」를 마지막 연결로 다시 쓴다 — 목표가 걸리는 자리에서 본 첫 출구 방위·그 뒤 대상(2026-10-29 vm2 jrpg 길 못 찾음).
     try { const n = refreshObjectiveRoutes(env.ctx.project); if (n) assembled.push(`목표 길 안내 ${n}곳`); }
     catch (error) { env.emit({ type: "execution_status", name: "v2.assembly", ok: false, summary: `목표 길 안내를 다시 쓰지 못했다: ${error instanceof Error ? error.message : String(error)}` }); }
+    // 추리 용의자 대화의 목표는 다 듣기 전엔 「아직 이야기 안 한 용의자」, 다 들은 뒤에만 지목 자리로 — 위 두 단계가 건 목표까지 감싸도록 맨 끝에.
+    // 계단 그림 한 칸에만 남은 층 이동을 계단 폭 전체로(출하 exit-hidden) — 끝맺음이 이동 칸을 그림 칸으로 옮긴 뒤에는 도구의 넓히기가 다시 돌지 않았다
+    // (2026-10-29 vm3 argon 추리 재생: 여관 2층 2칸 계단 (12,6)에만 이동, (11,7)에서 위로 걸어도 아무 일 없음).
+    try {
+      const names = new Set(hiddenStairExits(env.ctx.project).map((line) => line.split(":")[0]!));
+      const ids = Object.values(env.ctx.project.maps).filter((m) => names.has(m.name ?? m.id)).map((m) => m.id);
+      if (ids.length) assembled.push(...fitStairTransfers(env.ctx.project, ids));
+    } catch { /* 계단 출구 넓히기 실패는 끝맺음을 깨지 않는다 */ }
+    // 두 줄 길 위·곁 출구는 길 폭 전체로(2026-10-29 vm7 flash jrpg: 오른쪽 줄로 걸어 출구를 지나쳐 길 끝 가장자리에서 막혔다). 출구를 그림 칸으로 옮기는 출하 기본값·문 잠금 뒤에.
+    try { const run = createBuildRun(env.ctx); for (const mapId of Object.keys(env.ctx.project.maps)) assembled.push(...widenRoadExits(run, mapId).map((n) => `${env.ctx.project.maps[mapId]?.name ?? mapId}: ${n}`)); }
+    catch { /* 출구 넓히기 실패는 끝맺음을 깨지 않는다 */ }
+    // 연 문은 열려 보이게(2026-10-29 vm7 argon jrpg: 열쇠로 연 쇠창살이 그대로라 문을 지났는지 몰랐다).
+    try { assembled.push(...openDoorSteps(env.ctx.project)); }
+    catch { /* 문 열기 그림 실패는 끝맺음을 깨지 않는다 */ }
+    // 목표 글이 가리키는 물건이 맵(이벤트·그림)에 없으면 실제 대상 이벤트 이름으로(2026-10-29 vm6 terra 추리 「단서 정리 책상」).
+    try { assembled.push(...alignObjectiveThings(env.ctx.project)); }
+    catch { /* 목표 물건 이름 맞추기 실패는 끝맺음을 깨지 않는다 */ }
+    try { assembled.push(...gateSuspectObjectives(env.ctx.project)); }
+    catch { /* 용의자 목표 갈래 실패는 끝맺음을 깨지 않는다 */ }
     if (assembled.length) {
       env.emit({ type: "execution_status", name: "v2.assembly", ok: true, summary: `청사진 조립 기본값: ${assembled.join(" · ")}` });
       await env.checkpoint("blueprint_assembly");
     }
+  }
+  // 저장 → 다시 읽기(reloadCheck): 빌더가 넣은 이벤트의 빠진 필드는 메우고, 그래도 안 열리면 그 필드를 조수에게 알린다(출하 검사도 project-reload-failed 로 막는다).
+  if (env.ctx.project.gameBlueprint || wantsWholeGame(env.request.task)) {
+    try {
+      const reload = ensureReloadable(env.ctx.project);
+      if (reload.project !== env.ctx.project) env.ctx.project = reload.project;
+      if (reload.fixed.length || reload.problem) {
+        const line = `${reload.fixed.length ? `저장본 다시 읽기: 이벤트 빠진 필드 ${reload.fixed.length}곳을 기본값으로 메움(${reload.fixed.slice(0, 4).join(", ")})` : ""}${reload.problem ? `${reload.fixed.length ? " — " : ""}저장본이 여전히 안 열린다: ${reload.problem.slice(0, 240)}` : ""}`;
+        env.emit({ type: "execution_status", name: "v2.reload", ok: !reload.problem, summary: line });
+        autoPath = autoPath ? `${autoPath}\n- ${line}` : `[자동으로 지음]\n- ${line}`;
+      }
+    } catch (error) { env.emit({ type: "execution_status", name: "v2.reload", ok: false, summary: `저장본 다시 읽기 검사 실패: ${error instanceof Error ? error.message : String(error)}` }); }
   }
   return autoPath;
 }
 
 /** 끝맺음 뒤 차례에서 자동 단계를 다시 돌릴 일이 남았나(늦게 쓴 청사진·다시 끊긴 경로·회복 길). */
 export function finishBuildPending(env: PiAssistantV2Env, session: V2Session): boolean {
+  if (env.ctx.project.gameBlueprint && lanesStale(env, session)) return true;
   return Boolean(env.ctx.project.gameBlueprint) && (!session.autoPlacesDone || !session.autoPathDone || !session.autoLanesDone)
     && (!session.autoLanesDone || (!session.autoPathDone && battleSites(env.ctx.project).length > 0 && healingSources(env.ctx.project).length === 0)
       || walkBlueprint(env.ctx.project).blockers.some((b) => b.id === "blueprint-place-missing" || b.id === "blueprint-place-unreachable" || BLUEPRINT_PATH_IDS.has(b.id)));

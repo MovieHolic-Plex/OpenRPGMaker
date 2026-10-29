@@ -2,7 +2,8 @@
 //
 //   node scripts/runtime-qa.mjs --scenario whole-game-monster-campaign --browser firefox --netns \
 //     --whole-game ~/z-project/assistant-whole-game/suite/runs/2026-10-28-standin/standin/monster/project --out /tmp/bq/mon/rt-before
-//   MONSTER_QA_STARTER=1 을 앞에 붙이면 두 번째 스타터(불꽃)를 고른다(기본 0 = 첫 선택지, 풀).
+//   MONSTER_QA_STARTER=1 을 앞에 붙이면 두 번째 스타터(불꽃)를 고른다(기본 0 = 첫 선택지, 풀, 2 = 물).
+//   전투는 「가장 좋은 기술」(skill:best — 기술 단추의 기대 피해가 가장 큰 것)로 싸운다. 첫 기술만 누르면 실제 플레이어보다 약했다.
 //
 // 스타터 받기 → 1번길 야생 조우·포획 → 1번길 트레이너 셋 → 새순 마을 도착(목표 줄이 체육관을 가리키나) → 몬스터 센터 위치·회복 →
 // 체육관 관원 셋 → 체육관 퍼즐(받침→덩굴 문→가시 덤불→관장) → 관장전 → 관측탑 보스 → 리그 챔피언 → 엔딩. 전투 화면 자체는 whole-game-battle-monster 가
@@ -54,6 +55,48 @@ function healBeat(tag, note) {
   };
 }
 
+const HP_OUT = process.env.QA_MON_OUT ?? "/tmp/monster-campaign-hp";
+// 파티 HP(라이브 세션). 들어갈 때 마지막 전투 보고 표식을 window.__qaMonStamp 에 둔다 — 결판 뒤에는 표식이 바뀔 때(세션에 결과를 되쓴 뒤)까지 기다렸다 잰다.
+const partyHpFn = (tag) => `() => { const r = window.__oprnDebug?.monsterPartyHp?.(); if (r) window.__qaMonStamp = r.battleStamp; return { tag: ${JSON.stringify(tag)}, stamp: r?.battleStamp ?? null, party: r?.party ?? null }; }`;
+const battleCommitted = `() => { const r = window.__oprnDebug?.monsterPartyHp?.(); return !!r && r.battleStamp !== window.__qaMonStamp; }`;
+
+/** 1번길 회복의 샘(10,25)에서 회복 — 끝맺음이 필수 트레이너가 둘 이상인 길에 둔다(equipMonsterCampaign). 장치가 있으니 플레이어도 쓴다. */
+function springHealBeat(tag) {
+  return {
+    id: `${tag}-spring`,
+    note: "1번길 회복의 샘",
+    ops: [
+      settle,
+      { kind: "teleport", mapId: "mx_map_meadow", x: 10, y: 26 },
+      { kind: "waitForPosition", mapId: "mx_map_meadow", x: 10, y: 26 },
+      { kind: "pressUntilJs", key: "Shift", fn: fieldIdle, maxPresses: 30, settleMs: 500 },
+      { kind: "face", dir: "up" },
+      { kind: "pressUntilJs", key: "Enter", fn: `() => /기운이 돌아왔다/.test(document.body.innerText)`, maxPresses: 8, settleMs: 700 },
+      { kind: "pressUntilJs", key: "Enter", fn: fieldIdle, maxPresses: 6, settleMs: 700 },
+    ],
+    shot: true,
+  };
+}
+
+/** 체육관 안내원(2,18)에게 회복받는다 — 끝맺음이 관원 전투가 있는 체육관 안내원에 회복을 붙인다(equipMonsterCampaign). */
+function gymHealBeat(tag) {
+  return {
+    id: `${tag}-gymheal`,
+    note: "체육관 안내원에게 회복",
+    ops: [
+      settle,
+      { kind: "teleport", mapId: "mx_map_grove_gym", x: 3, y: 18 },
+      { kind: "waitForPosition", mapId: "mx_map_grove_gym", x: 3, y: 18 },
+      { kind: "pressUntilJs", key: "Shift", fn: fieldIdle, maxPresses: 30, settleMs: 500 },
+      { kind: "face", dir: "left" },
+      { kind: "pressUntilJs", key: "Enter", fn: `() => /회복할까요/.test(document.body.innerText)`, maxPresses: 10, settleMs: 700 },
+      { kind: "pressUntilJs", key: "Enter", fn: `() => /건강해졌어요/.test(document.body.innerText)`, maxPresses: 10, settleMs: 700 },
+      { kind: "pressUntilJs", key: "Enter", fn: fieldIdle, maxPresses: 6, settleMs: 700 },
+    ],
+    shot: true,
+  };
+}
+
 /** 말을 걸고 전투에 들어가 끝까지 싸운 뒤 필드(또는 게임 오버)로. */
 function fightBeats(tag, note, mapId, x, y, dir) {
   return [
@@ -62,6 +105,8 @@ function fightBeats(tag, note, mapId, x, y, dir) {
       note: `${note} — 말을 걸어 전투로`,
       ops: [
         settle,
+        // 싸우기 전 파티 HP(라이브 세션, 최대 HP 포함) — 남은 HP 표의 「들어갈 때」 칸.
+        { kind: "evalToFile", out: `${HP_OUT}/${tag}-before.json`, fn: partyHpFn(tag) },
         { kind: "teleport", mapId, x, y },
         { kind: "waitForPosition", mapId, x, y },
         // 트레이너 시야에 내려서면 순간이동 직후 전투가 먼저 열린다 — 그때 Enter 를 누르면 「싸운다」 기술 목록이 열린 채 전투 op 가 멈췄다
@@ -77,14 +122,24 @@ function fightBeats(tag, note, mapId, x, y, dir) {
     {
       id: `${tag}-end`,
       note: `${note} — 결판(승리 결과 창 또는 패배)`,
-      ops: [{ kind: "battle", fallback: "attack", timeoutMs: 300000 }],
+      ops: [
+        { kind: "battle", fallback: "skill:best", timeoutMs: 300000 },
+        // 전투별 남은 HP 표: 결과 창의 「현재/최대」와 이긴/진 문구, 파티 몬스터(종·레벨·남은 HP). QA_MON_OUT 폴더에 <tag>.json.
+        { kind: "evalToFile", out: `${HP_OUT}/${tag}.json`, fn: `() => { const scene = document.querySelector("[data-testid='battle-scene']"); const text = scene?.innerText ?? ""; const s = window.__oprnDebug?.readState?.(); return { tag: ${JSON.stringify(tag)}, hp: [...text.matchAll(/(\\d+)\\s*\\/\\s*(\\d+)/g)].map((m) => [Number(m[1]), Number(m[2])]), won: /이겼다/.test(text), lost: /싸울 수 있는 몬스터가 없다|눈앞이 캄캄/.test(text), party: (s?.monsterParty ?? []).map((id) => { const m = s.monsterInstances?.[id] ?? {}; return { s: m.speciesId, l: m.level, hp: m.currentHp }; }) }; }` },
+      ],
       shot: true,
     },
     {
       id: `${tag}-back`,
       note: `${note} — 결과를 닫고 필드(또는 게임 오버·센터에서 깸)`,
       ops: [
-        { kind: "battle", untilEnd: true, resultHoldMs: 300, timeoutMs: 90000 },
+        { kind: "battle", untilEnd: true, fallback: "skill:best", resultHoldMs: 300, timeoutMs: 90000 },
+        // 결판 뒤 파티 HP(라이브 세션) — 전투가 세션에 HP 를 되쓴 직후(보고 표식이 바뀜), 승리 뒤 대사·회복 명령이 돌기 전.
+        // 전투 화면이 사라진 순간에 재면 아직 전투 전 값이었다(관장전 28/28 = 들어갈 때 그대로).
+        // 결과 창 DOM 의 「현재/최대」는 나와 있던 한 마리뿐이고 readState 는 전투 전 사본이었다(2026-10-29 boss: DOM 1/30, readState 30).
+        // 필드로 넘긴 뒤 재면 보스의 승리 뒤 recoverAll 이 이미 돌아 100% 로 찍혔다.
+        { kind: "pressUntilJs", key: "Shift", fn: battleCommitted, maxPresses: 40, settleMs: 250 },
+        { kind: "evalToFile", out: `${HP_OUT}/${tag}-after.json`, fn: partyHpFn(tag) },
         { kind: "pressUntilJs", key: "Enter", fn: fieldOrOver, maxPresses: 40, settleMs: 500 },
       ],
       shot: true,
@@ -147,7 +202,7 @@ export default {
       id: "capture-back",
       note: "포획 문장을 넘겨 필드로",
       ops: [
-        { kind: "battle", untilEnd: true, resultHoldMs: 300, timeoutMs: 90000 },
+        { kind: "battle", untilEnd: true, fallback: "skill:best", resultHoldMs: 300, timeoutMs: 90000 },
         { kind: "waitFor", testid: "battle-scene", state: "absent", timeoutMs: 30000 },
         { kind: "pressUntilJs", key: "Enter", fn: fieldIdle, maxPresses: 30 },
       ],
@@ -156,8 +211,11 @@ export default {
     // 길 트레이너 셋·체육관 관원 셋을 모두 이긴다 — 실제 플레이어가 받는 경험치(스타터 Lv8 → 관장 뒤 Lv10). 예전에는 트레이너 하나만 싸우고
     // 관원을 스위치로 건너뛴 뒤 도감 정원 야생(Lv7~9)에서 키우려 했는데, 정원 다섯 판 중 넷을 져서(센터에서 깸) 경험치가 +31 뿐이었다 —
     // Lv8 로 관측탑 보스에 갔다. 원정 끝맺음의 관문 곡선(fitGateLevelCurve)도 이 경로(길 트레이너 + 관원 + 관장)로 도착 레벨을 잰다.
+    springHealBeat("trainer"),
     ...fightBeats("trainer", "1번길 트레이너(4,6)", "mx_map_meadow", 4, 7, "up"),
+    springHealBeat("trainer1"),
     ...fightBeats("trainer1", "1번길 트레이너(10,14)", "mx_map_meadow", 10, 15, "up"),
+    springHealBeat("trainer2"),
     ...fightBeats("trainer2", "1번길 트레이너 둘(16,22)", "mx_map_meadow", 16, 23, "up"),
     {
       id: "grove-arrive",
@@ -194,7 +252,9 @@ export default {
       shot: true,
     },
     ...fightBeats("grunt0", "체육관 관원(10,15)", "mx_map_grove_gym", 9, 15, "right"),
+    gymHealBeat("grunt1"),
     ...fightBeats("grunt1", "체육관 관원(13,17)", "mx_map_grove_gym", 12, 17, "right"),
+    gymHealBeat("grunt2"),
     ...fightBeats("grunt2", "체육관 관원(6,16)", "mx_map_grove_gym", 5, 16, "right"),
     {
       id: "gym-pivot",
@@ -239,7 +299,7 @@ export default {
       ],
       shot: true,
     },
-    healBeat("leader", "관장전 앞"),
+    gymHealBeat("leader"),
     ...fightBeats("leader", "체육관 관장 유림(14,3)", "mx_map_grove_gym", 14, 4, "up"),
     {
       id: "badge",
