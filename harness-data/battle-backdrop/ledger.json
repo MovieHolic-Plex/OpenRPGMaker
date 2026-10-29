@@ -853,7 +853,17 @@
     "storedPixelSha256": "212b912701cf9679b68e446a9ea993c5b49bf5a2c95abc6804f9c15e69a2bdc8",
     "by": "supervisor",
     "at": "2026-10-29T17:44:42Z"
-   }
+   },
+   "builds": [
+    {
+     "at": "2026-10-29T20:59:57Z",
+     "target": "troop:troop_mk_castle",
+     "resourceId": "battle_backdrop_maou_throne_212b9127",
+     "storedPixelSha256": "212b912701cf9679b68e446a9ea993c5b49bf5a2c95abc6804f9c15e69a2bdc8",
+     "into": "/tmp/maou/emit/battle_backdrop_maou_throne_212b9127.json",
+     "reloaded": true
+    }
+   ]
   },
   "maou-konbini-night-matte": {
    "id": "maou-konbini-night-matte",
@@ -1281,7 +1291,17 @@
     "storedPixelSha256": "632903254fa68822cf8281332679eec3ed4dc6a53d0cdc46b6909d4e11f4730c",
     "by": "supervisor",
     "at": "2026-10-29T17:43:44Z"
-   }
+   },
+   "builds": [
+    {
+     "at": "2026-10-29T20:59:11Z",
+     "target": "troop:troop_mk_manual",
+     "resourceId": "battle_backdrop_maou_konbini_night_matte_63290325",
+     "storedPixelSha256": "632903254fa68822cf8281332679eec3ed4dc6a53d0cdc46b6909d4e11f4730c",
+     "into": "/tmp/maou/emit/battle_backdrop_maou_konbini_night_matte_63290325.json",
+     "reloaded": true
+    }
+   ]
   }
  }
 }
