@@ -18,11 +18,16 @@ const ROW = "button, [role='menuitem'], [role='option'], [role='button'], li, .r
  * ESC 메뉴 첫 명령 줄(아이템·스킬·장비…) — 화면을 여는 것뿐이라 되돌리기 쉽고, 두 번 눌러야 열리면 고장처럼 보였다(2026-10-25).
  * 그 안의 목록(아이템 쓰기·장비 바꾸기 등 되돌리기 어려운 결정)은 여전히 첫 탭 = 커서, 두 번째 = 결정이다.
  */
-const EXCLUDE = "[role='tab'], .touch-pad, .name-entry-overlay, [data-testid='dialogue-log'], [data-testid='dialogue-backlog'], input, textarea, select, .play-fullscreen-toggle, .status-menu-command-rail";
-/** 고르면 바로 여는 줄 무리(EXCLUDE 안이지만 눌림 영역 넓히기는 받는다). */
-const ONE_TAP = ".status-menu-command-rail";
+/**
+ * 고르면 바로 여는 줄 무리(EXCLUDE 안이지만 눌림 영역 넓히기는 받는다).
+ * 대사 선택지(.choice-list)도 한 번 탭이다(2026-10-30) — RPG 쯔꾸르 MZ 처럼 누른 줄이 곧 답이다. 선택지는 두세 줄뿐이고 글이 보이므로
+ * 「첫 탭 = 커서」는 고장처럼 느껴졌다. 대사를 넘기던 누름이 막 뜬 선택지를 고르지 않게 touchTap 이 그 누름의 click 을 삼킨다.
+ */
+const ONE_TAP_GROUPS = [".status-menu-command-rail", ".choice-list"];
+const ONE_TAP = ONE_TAP_GROUPS.join(", ");
+const EXCLUDE = ["[role='tab']", ".touch-pad", ".name-entry-overlay", "[data-testid='dialogue-log']", "[data-testid='dialogue-backlog']", "input", "textarea", "select", ".play-fullscreen-toggle", ...ONE_TAP_GROUPS].join(", ");
 /** 눌림 영역을 넓히지 않는 곳 — EXCLUDE 에서 한 번 탭 줄(ONE_TAP)만 뺀 것. */
-const NO_SNAP = EXCLUDE.split(", ").filter((selector) => selector !== ONE_TAP).join(", ");
+const NO_SNAP = EXCLUDE.split(", ").filter((selector) => !ONE_TAP_GROUPS.includes(selector)).join(", ");
 /** 줄 밖 탭을 줄로 받아 주는 거리(화면 px). 줄 둘레 22px — 혼자 선 줄이면 어느 방향이든 44px 이상이다. */
 const SNAP_REACH = 22;
 /** 떠 있는 동안 맵이 탭을 받지 않는 창(touchTap BUSY 와 같은 무리). */

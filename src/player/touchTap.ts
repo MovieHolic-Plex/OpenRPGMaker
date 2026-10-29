@@ -126,7 +126,12 @@ export function installTapConfirm(root: HTMLElement, options: TapConfirmOptions 
     }
     const start = down;
     down = null;
-    if (!start || start.id !== event.pointerId || start.handled) return;
+    if (start && start.id === event.pointerId && start.handled) {
+      // 누르는 순간 대사를 넘긴 손가락: 뗄 때 오는 click 이 막 뜬 선택지·다음 대사 창을 또 누르지 않게 한 번 삼킨다.
+      swallowNextClick();
+      return;
+    }
+    if (!start || start.id !== event.pointerId) return;
     if (inputTime(event) - start.at > TAP_MAX_MS) return;
     if (Math.hypot(event.clientX - start.x, event.clientY - start.y) > TAP_MAX_MOVE) return;
     if (!isBackdrop(start.target)) return;
@@ -146,6 +151,12 @@ export function installTapConfirm(root: HTMLElement, options: TapConfirmOptions 
     down = null;
   }, { capture: true, signal });
   return () => controller.abort();
+}
+
+function swallowNextClick(): void {
+  const swallow = (event: Event): void => { event.stopPropagation(); event.preventDefault(); };
+  window.addEventListener("click", swallow, { capture: true, once: true });
+  window.setTimeout(() => window.removeEventListener("click", swallow, true), 400);
 }
 
 function insideCanvas(root: HTMLElement, x: number, y: number): boolean {
