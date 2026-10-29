@@ -74,18 +74,25 @@ export function warmAnimaticImages(project: Project, a: OpeningAnimatic): void {
  * 같은 맵 객체면 다시 그리지 않는다(편집기에서 맵을 고치면 새 객체라 새로 그린다).
  */
 const mapViewImages = new WeakMap<object, Promise<HTMLImageElement>>();
+const mapViewBySignature = new Map<string, { signature: string; promise: Promise<HTMLImageElement> }>();
 function mapViewImage(project: Project, mapId: string): Promise<HTMLImageElement> {
   const map = project.maps[mapId];
   if (!map) return Promise.reject(Error(`애니메틱 맵 배경 없음: ${mapId}`));
   const cached = mapViewImages.get(map);
   if (cached) return cached;
+  // 새 게임은 structuredClone 한 프로젝트로 돈다(preflightProjectForPlay) — 타이틀에서 데워 둔 그림을 객체로만 찾으면
+  // 늘 놓쳐 첫 컷이 「미디어 불러오는 중」으로 2초 멈췄다. 내용이 같은 맵이면 같은 그림을 쓴다.
+  const tileset = project.tilesets[map.tilesetId];
+  const signature = JSON.stringify([mapId, tileset?.image, tileset?.transparentColor, map]);
+  const same = mapViewBySignature.get(mapId);
+  if (same && same.signature === signature) { mapViewImages.set(map, same.promise); return same.promise; }
   const promise = (async () => {
     const canvas = await renderMapViewCanvas(project, { mapId, scale: 1, haze: 0, desaturate: 0 });
     if (!canvas) throw Error(`애니메틱 맵 배경을 그릴 수 없음: ${mapId}`);
     const image = new Image(); image.src = canvas.toDataURL('image/png'); await image.decode(); return image;
   })();
-  promise.catch(() => { if (mapViewImages.get(map) === promise) mapViewImages.delete(map); });
-  mapViewImages.set(map, promise);
+  promise.catch(() => { if (mapViewImages.get(map) === promise) mapViewImages.delete(map); if (mapViewBySignature.get(mapId)?.promise === promise) mapViewBySignature.delete(mapId); });
+  mapViewImages.set(map, promise); mapViewBySignature.set(mapId, { signature, promise });
   return promise;
 }
 export async function loadAnimaticImages(project: Project, a: OpeningAnimatic, signal: AbortSignal): Promise<AnimaticImages> {
