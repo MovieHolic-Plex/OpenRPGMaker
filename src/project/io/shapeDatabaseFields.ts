@@ -6,6 +6,7 @@ import { parseCinematicDirection } from '../cinematicDirection';
 import { isEquipmentSlotId } from "@/project/equipmentSlots";
 import { isGenrePackId } from "@/project/genrePackId";
 import { isGenreLockPresetId } from "@/project/genreLock";
+import { isPeopleChipFamily } from "@/project/peopleChipLock";
 import { TOOL_CAPABILITY_AXIS_MAX, TOOL_CAPABILITY_TILE_MAX } from "@/project/upgrades";
 import { ITEM_QUANTITY_MAX } from "@/project/itemQuantities";
 import {
@@ -131,6 +132,12 @@ export function validateSystem(value: unknown): void {
   if (system.genre !== undefined) {
     requireString("system.genre", system.genre);
     assert(isGenrePackId(system.genre), `system.genre is not a supported genre pack id: ${system.genre}`);
+  }
+  if (system.peopleChipLock !== undefined) {
+    const peopleChipLock = requireRecord("system.peopleChipLock", system.peopleChipLock);
+    requireOnlyFields("system.peopleChipLock", peopleChipLock, ["family", "by"]);
+    assert(isPeopleChipFamily(peopleChipLock.family), `system.peopleChipLock.family is not a lockable people chip family: ${String(peopleChipLock.family)}`);
+    assert(peopleChipLock.by === "auto" || peopleChipLock.by === "user", "system.peopleChipLock.by must be auto or user.");
   }
   if (system.genreLock !== undefined) {
     const genreLock = requireRecord("system.genreLock", system.genreLock);

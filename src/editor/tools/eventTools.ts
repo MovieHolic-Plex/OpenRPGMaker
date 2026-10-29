@@ -9,7 +9,7 @@ import { CONFIGURE_OBJECT_BEHAVIOR, PURSUIT_SCHEMA, parsePursuit } from "./horro
 //              / duplicate_event / remove_event / move_event.
 
 import { shadowedPageWarnings } from "@/project/eventPageShadow";
-import { genreLockCharsetCatalogFilter } from "@/project/genreLockCharsets";
+import { genreLockLimitsCharsets } from "@/project/genreLockCharsets";
 import { EVENT_ANIMATION_TYPES } from "@/project/types";
 import { projectSetterShadowedPages } from "@/project/eventPageSetterShadow";
 import { nestedCommandLists } from "@/project/authoredCommandIndex";
@@ -1471,7 +1471,7 @@ const placeNpc: ToolDefinition = {
     const recurring = specQuery !== undefined && !('selectionId' in graphicSpec) ? recurringCharacterLook(draft, map.id, name) : undefined;
     if (recurring) normalizationWarnings.push(`같은 인물 '${name}' 이 ${recurring.mapId} 에 이미 있어 그 외형을 그대로 썼습니다(graphic.query "${specQuery}" 대신). 다른 모습이 의도라면 graphic 을 sprite 로 명시하세요.`);
     // 허용 칩이 적은 장르 잠금 아래에서는 다른 맵에 선 다른 인물의 칩도 피한다(같은 사람은 recurring 이 같은 모습을 준다).
-    const avoidKeys = genreLockCharsetCatalogFilter(draft) ? usedCharsetGraphicKeysOnProject(draft, name) : usedCharsetGraphicKeysOnMap(map);
+    const avoidKeys = genreLockLimitsCharsets(draft) ? usedCharsetGraphicKeysOnProject(draft, name) : usedCharsetGraphicKeysOnMap(map);
     const graphic = recurring?.graphic ?? resolveGraphic(graphicSpec, {
       avoidKeys,
       seed: `${map.id}:${name}:${x},${y}`,
@@ -1483,7 +1483,7 @@ const placeNpc: ToolDefinition = {
       if (sameChip >= 2) normalizationWarnings.push(`같은 걷기 칩(${graphic.sprite.id}#${decodeCharsetFrameIndex(typeof graphic.pattern === "number" ? graphic.pattern : 0).characterIndex})이 이 맵에 이미 ${sameChip}명 있어 ${sameChip + 1}번째가 됩니다 — 한 화면에 같은 얼굴이 셋 이상이면 어색합니다. list_npc_graphics 로 다른 인물 칩을 골라 graphic 으로 주세요(query 를 생략하거나 "villager" 로 두면 쓰이지 않은 칩이 먼저 골라집니다).`);
     }
     // 허용 칩이 적은 잠금(현대 연애): 다른 인물이 이미 쓴 칩을 직접 골랐으면(맵이 달라도) 알린다 — 칸이 모자라 어쩔 수 없을 때까지는 다른 칸을 쓰게 한다(2026-10-16 연애 첫 실측: 서로 다른 인물 셋이 같은 칩).
-    if (!graphic.transparent && graphic.sprite?.id && !recurring && genreLockCharsetCatalogFilter(draft)) {
+    if (!graphic.transparent && graphic.sprite?.id && !recurring && genreLockLimitsCharsets(draft)) {
       const key = `${graphic.sprite.id}#${decodeCharsetFrameIndex(typeof graphic.pattern === "number" ? graphic.pattern : 0).characterIndex}`;
       if (usedCharsetGraphicKeysOnProject(draft, name).has(key)) {
         normalizationWarnings.push(`이 칩(${key})은 이미 다른 인물이 쓰고 있어 '${name}' 이(가) 그 사람과 같은 얼굴이 됩니다 — list_npc_graphics 로 아직 안 쓴 허용 칩을 골라 graphic 으로 주세요(같은 사람이 다른 맵에 다시 나올 때만 같은 칩을 씁니다).`);

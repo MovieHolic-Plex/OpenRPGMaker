@@ -2251,6 +2251,11 @@ export interface SystemRecords {
    * 없으면 아무 동작도 바뀌지 않는다(저장 바이트 불변). 사용자의 손 편집은 막지 않는다.
    */
   genreLock?: import("../genreLock").GenreLock;
+  /**
+   * 사람 칩 계열 잠금(2026-10-29) — 주인공·NPC·동료 사람 칩은 이 계열만 쓴다. 없으면 조수가 처음 새로 놓는 사람 칩이 정한다.
+   * 판정은 project/peopleChipLock.ts 하나. 조수·도구만 막고 사용자의 손 편집은 막지 않는다.
+   */
+  peopleChipLock?: import("../peopleChipLock").PeopleChipLock;
   /** AI 마을 생성의 물·숲·길 수치와 낱말 규칙. 생략하면 내장 기본값(예전 하드코딩과 동일 동작). */
   worldGen?: import("@/project/worldGenRules").WorldGenRules;
   /** 배우별 리미트 게이지(0~100). 생략 = 없음. */
