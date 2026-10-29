@@ -4132,11 +4132,11 @@
   },
   {
    "id": "act2-b5-field",
-   "label": "제2막 B5 — 재의 들판: 잿불 도깨비가 둥실 다가온다",
-   "note": "act2Opening.ts dawnwell — 재의 들판(웨이브 장소 bd-wave-ash-plain) 서쪽 고목 숲 어귀 도깨비 (26,11)",
+   "label": "제2막 B5 — 재의 들판: 잿불 도깨비가 12칸 밖에서 알아보고 순식간에 덮친다",
+   "note": "act2Opening.ts DETECTION_PROFILES troop_fs2_ash_wisps — 사방 시야 12·벽 무시·알아챔 0·50ms/칸 돌진 30칸. 도깨비 (26,11)",
    "mapId": "map_field_north_2",
-   "x": 26,
-   "y": 16,
+   "x": 33,
+   "y": 19,
    "facing": "up",
    "switches": {
     "sw_fs_main_started": true,
@@ -4168,7 +4168,17 @@
       {
        "kind": "hold",
        "dir": null,
-       "ms": 7000
+       "ms": 600
+      },
+      {
+       "kind": "hold",
+       "dir": "up",
+       "ms": 700
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 4000
       }
      ],
      "shot": true

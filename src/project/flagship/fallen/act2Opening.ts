@@ -2294,9 +2294,12 @@ function fortressFixes(project: Project, exec: Exec): void {
   for (const mapId of [FS2_FORTRESS_ID, FS2_FORT_TOP_ID]) {
     const rest = M(project, mapId).events.find((e) => e.id === `ev_${mapId}_rest`);
     if (!rest) throw new Error(`[fallen-star act2] ${mapId} 쉼터 결정이 없다`);
-    const at = { x: rest.x, y: rest.y };
-    exec(project, "remove_event", { mapId, eventId: rest.id });
-    exec(project, "place_savepoint", { mapId, x: at.x, y: at.y, heal: true, name: "쉼터 결정", id: rest.id, objectId: "kit:beodeul_city/bd-pick-dungeon-theme-crystal-pedestal", sparkleRadius: 2 });
+    // 도구(#3925)가 받침 수정 키트로 세웠으면 그대로. 위 칸이 막혀 옛 캐릭터 수정으로 떨어졌을 때만 바꾼다.
+    if (/charset_object2/.test(JSON.stringify(rest.pages?.[0]?.graphic ?? {}))) {
+      const at = { x: rest.x, y: rest.y };
+      exec(project, "remove_event", { mapId, eventId: rest.id });
+      exec(project, "place_savepoint", { mapId, x: at.x, y: at.y, heal: true, name: "쉼터 결정", id: rest.id, objectId: "kit:beodeul_city/bd-pick-dungeon-theme-crystal-pedestal", sparkleRadius: 2 });
+    }
     // 짚 침상 줄 — 가로로 붙은 같은 침상은 첫 하나만 남긴다.
     const map = M(project, mapId);
     const kits = (project.tilesets[map.tilesetId] as unknown as { structureKits?: { id: string; rows: { upperTiles?: number[] }[] }[] }).structureKits ?? [];
