@@ -2,9 +2,10 @@
 //
 //   node scripts/runtime-qa.mjs --scenario whole-game-monster-campaign --browser firefox --netns \
 //     --whole-game ~/z-project/assistant-whole-game/suite/runs/2026-10-28-standin/standin/monster/project --out /tmp/bq/mon/rt-before
+//   MONSTER_QA_STARTER=1 을 앞에 붙이면 두 번째 스타터(불꽃)를 고른다(기본 0 = 첫 선택지, 풀).
 //
-// 스타터 받기 → 1번길 야생 조우·포획 → 1번길 트레이너 → 새순 마을 도착(목표 줄이 체육관을 가리키나) → 몬스터 센터 위치·회복 →
-// 체육관 퍼즐(받침→덩굴 문→가시 덤불→관장) → 관장전 → 관측탑 보스 → 리그 챔피언 → 엔딩. 전투 화면 자체는 whole-game-battle-monster 가
+// 스타터 받기 → 1번길 야생 조우·포획 → 1번길 트레이너 셋 → 새순 마을 도착(목표 줄이 체육관을 가리키나) → 몬스터 센터 위치·회복 →
+// 체육관 관원 셋 → 체육관 퍼즐(받침→덩굴 문→가시 덤불→관장) → 관장전 → 관측탑 보스 → 리그 챔피언 → 엔딩. 전투 화면 자체는 whole-game-battle-monster 가
 // 이미 본다 — 여기서는 전투를 자동으로 끝내고 결판·목표 줄·위치만 찍는다.
 import { fieldReady, wholeGameOpening } from "./wholeGameBattleCommon.mjs";
 
@@ -15,6 +16,15 @@ const fieldIdle = `() => {
   if (flags && (flags[3] !== "true" || flags[4] === "true")) return false;
   return (${fieldReady})();
 }`;
+
+// 패배 뒤(게임 오버 화면 → 센터에서 깸) 다음 비트가 바로 순간이동하면 깨어나는 이동이 그 뒤에 끼어든다(grind-2·boss-heal 이 센터에서 멈춘 판).
+// 순간이동 전에 게임 오버 화면이 닫히고 필드가 조용해질 때까지 넘긴다.
+const settled = `() => !document.querySelector("[data-testid='game-over-screen']") && (${fieldIdle})()`;
+const settle = { kind: "pressUntilJs", key: "Enter", fn: settled, maxPresses: 40, settleMs: 700 };
+
+// 박사의 첫 동료 선택지에서 몇 번째를 고를지(0 = 첫 선택지). MONSTER_QA_STARTER=1 이면 두 번째(불꽃).
+const STARTER = Number(process.env.MONSTER_QA_STARTER ?? 0);
+const starterChoice = `() => /첫 동료를 선택/.test(document.querySelector("[data-testid='dialogue-choice-frame']")?.closest("[data-testid='dialogue-box']")?.innerText ?? document.body.innerText) && Boolean(document.querySelector("[data-testid='dialogue-choice-frame']"))`;
 
 const starterReady = `() => window.__oprnDebug?.readState?.().switches?.mx_starter === true && (${fieldIdle})()`;
 const inBattle = `() => Boolean(document.querySelector("[data-testid='battle-scene']"))`;
@@ -28,6 +38,7 @@ function healBeat(tag, note) {
     id: `${tag}-heal`,
     note: `${note} — 새순 마을 몬스터 센터에서 회복`,
     ops: [
+      settle,
       { kind: "teleport", mapId: "mx_map_grove_center", x: 7, y: 7 },
       { kind: "waitForPosition", mapId: "mx_map_grove_center", x: 7, y: 7 },
       // 순간이동 뒤 입력이 열릴 때까지(실행·입력 깃발) — 바로 말을 걸면 Enter 가 먹히지 않은 판이 있었다.
@@ -43,26 +54,6 @@ function healBeat(tag, note) {
   };
 }
 
-/**
- * 도감 정원 키큰풀(12~13, 3~6·12~16 — 런타임 terrainIdAt 으로 확인한 terrain_grass, 야생 Lv7~9)에서 레벨을 올린다.
- * 1번길 야생은 Lv2~4 라 Lv8 스타터가 세 판을 싸워도 레벨이 그대로였다 — 관측탑 보스(Lv7 비행) 앞에 플레이어가 하는 일.
- */
-function grindBeat(n) {
-  return {
-    id: `grind-${n}`,
-    note: `도감 정원 풀숲 야생전 ${n} — 이겨서 경험치(지면 센터에서 깸)`,
-    ops: [
-      { kind: "teleport", mapId: "mx_map_garden", x: 12, y: 13 },
-      { kind: "waitForPosition", mapId: "mx_map_garden", x: 12, y: 13 },
-      { kind: "pressUntilJs", key: "Enter", fn: fieldIdle, maxPresses: 10 },
-      { kind: "pressUntilJs", keys: ["ArrowUp", "ArrowDown"], fn: inBattle, maxPresses: 240, settleMs: 320 },
-      { kind: "battle", fallback: "attack", untilEnd: true, resultHoldMs: 300, timeoutMs: 240000 },
-      { kind: "pressUntilJs", key: "Enter", fn: fieldOrOver, maxPresses: 40, settleMs: 500 },
-    ],
-    shot: true,
-  };
-}
-
 /** 말을 걸고 전투에 들어가 끝까지 싸운 뒤 필드(또는 게임 오버)로. */
 function fightBeats(tag, note, mapId, x, y, dir) {
   return [
@@ -70,11 +61,13 @@ function fightBeats(tag, note, mapId, x, y, dir) {
       id: `${tag}-enter`,
       note: `${note} — 말을 걸어 전투로`,
       ops: [
+        settle,
         { kind: "teleport", mapId, x, y },
         { kind: "waitForPosition", mapId, x, y },
-        { kind: "pressUntilJs", key: "Enter", fn: fieldIdle, maxPresses: 10 },
+        // 트레이너 시야에 내려서면 순간이동 직후 전투가 먼저 열린다 — 그때 Enter 를 누르면 「싸운다」 기술 목록이 열린 채 전투 op 가 멈췄다
+        // (grunt2). 기다릴 때는 Shift(아무것도 고르지 않음), 말 걸기는 전투가 아직 없을 때만 누르는 pressUntilJs 로.
+        { kind: "pressUntilJs", key: "Shift", fn: `() => (${inBattle})() || (${fieldIdle})()`, maxPresses: 20, settleMs: 500 },
         { kind: "face", dir },
-        { kind: "action" },
         { kind: "pressUntilJs", key: "Enter", fn: inBattle, maxPresses: 30, settleMs: 500 },
         { kind: "waitFor", testid: "actor-command-fight", state: "present", timeoutMs: 40000 },
       ],
@@ -107,12 +100,16 @@ export default {
     ...wholeGameOpening(),
     {
       id: "starter",
-      note: "연구소 박사에게서 첫 동료(첫 선택지)를 받는다 — 받은 뒤 목표 줄",
+      note: `연구소 박사에게서 첫 동료(${STARTER + 1}번째 선택지)를 받는다 — 받은 뒤 목표 줄`,
       ops: [
         { kind: "teleport", mapId: "mx_map_lab", x: 7, y: 6 },
         { kind: "waitForPosition", mapId: "mx_map_lab", x: 7, y: 6 },
         { kind: "face", dir: "up" },
         { kind: "action" },
+        ...(STARTER > 0 ? [
+          { kind: "pressUntilJs", key: "Enter", fn: starterChoice, maxPresses: 40, settleMs: 600 },
+          { kind: "key", key: "ArrowDown", times: STARTER },
+        ] : []),
         { kind: "pressUntilJs", key: "Enter", fn: starterReady, maxPresses: 60, settleMs: 600 },
       ],
       shot: true,
@@ -155,7 +152,12 @@ export default {
       ],
       shot: true,
     },
+    // 길 트레이너 셋·체육관 관원 셋을 모두 이긴다 — 실제 플레이어가 받는 경험치(스타터 Lv8 → 관장 뒤 Lv10). 예전에는 트레이너 하나만 싸우고
+    // 관원을 스위치로 건너뛴 뒤 도감 정원 야생(Lv7~9)에서 키우려 했는데, 정원 다섯 판 중 넷을 져서(센터에서 깸) 경험치가 +31 뿐이었다 —
+    // Lv8 로 관측탑 보스에 갔다. 원정 끝맺음의 관문 곡선(fitGateLevelCurve)도 이 경로(길 트레이너 + 관원 + 관장)로 도착 레벨을 잰다.
     ...fightBeats("trainer", "1번길 트레이너(4,6)", "mx_map_meadow", 4, 7, "up"),
+    ...fightBeats("trainer1", "1번길 트레이너(10,14)", "mx_map_meadow", 10, 15, "up"),
+    ...fightBeats("trainer2", "1번길 트레이너 둘(16,22)", "mx_map_meadow", 16, 23, "up"),
     {
       id: "grove-arrive",
       note: "1번길 북쪽 출구(12,2)로 걸어 새순 마을에 들어선다 — 목표 줄이 체육관을 가리키나",
@@ -190,9 +192,12 @@ export default {
       ],
       shot: true,
     },
+    ...fightBeats("grunt0", "체육관 관원(10,15)", "mx_map_grove_gym", 9, 15, "right"),
+    ...fightBeats("grunt1", "체육관 관원(13,17)", "mx_map_grove_gym", 12, 17, "right"),
+    ...fightBeats("grunt2", "체육관 관원(6,16)", "mx_map_grove_gym", 5, 16, "right"),
     {
       id: "gym-pivot",
-      note: "새싹 돌 받침(8,17)에 손을 얹는다 → 덩굴 문이 열린다 — 관원 세 명은 이긴 것으로 둔다(시야 전투가 퍼즐 칸마다 끼어든다; 트레이너 전투 화면은 1번길에서 봤다)",
+      note: "새싹 돌 받침(8,17)에 손을 얹는다 → 덩굴 문이 열린다 — 관원 셋은 위에서 이겼다(못 이긴 판이면 스위치로 넘긴다: 시야 전투가 퍼즐 칸마다 끼어든다)",
       ops: [
         { kind: "setSwitch", switchId: "mx_map_grove_gym_grunt_0_won" },
         { kind: "setSwitch", switchId: "mx_map_grove_gym_grunt_1_won" },
@@ -241,7 +246,6 @@ export default {
       ops: [{ kind: "pressUntilJs", key: "Enter", fn: `() => ${switchOn("mx_badge_1")} && (${fieldIdle})()`, maxPresses: 30, settleMs: 500 }],
       shot: true,
     },
-    grindBeat(1), grindBeat(2), grindBeat(3), grindBeat(4), grindBeat(5),
     healBeat("boss", "관측탑 앞"),
     ...fightBeats("boss", "관측탑 밤막회사 대표(11,4)", "mx_map_observatory", 11, 5, "up"),
     healBeat("champion", "리그 앞"),
