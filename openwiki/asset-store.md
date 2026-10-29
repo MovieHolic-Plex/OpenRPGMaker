@@ -117,9 +117,18 @@ faceset(48×48 얼굴)·picture(흉상·전신) 에셋을 가리킨다. 표정 �
 - **곡 고르기 점수**(`scoreStoreMusic`): 장면 > 사용자가 말한 장르(장르 이름 +6, 팩 줄 낱말 +6, 조선 팩은 실제로 들리는 만큼 3/1.5) > 분위기. 장르를 말했는데 다른 장르 곡은 −6.
   장르를 말하지 않았으면 프로젝트에 이미 든 스토어 곡의 줄을 따른다(같은 줄 +4×비율, 한 줄이 절반 넘는데 다른 줄이면 −8) — 판타지 게임의 「으스스한 던전」에 호러 팩 트립합이 붙던 것(2026-10-25 실조수)을 막는다.
   스토어 곡이 아직 없는 새 게임은 게임 이름·맵 이름의 세계 낱말(한양·도깨비·체육관·용사…, `projectHintLines`)로 줄을 짐작한다(합 0.5) — 몬스터 게임 「웅장한 타이틀」에 판타지 타이틀이 붙던 것.
+- **결(feelTags)과 게임 이름 요청**(2026-10-29). 새 음악 팩은 줄을 `meta.oprnMusic.genre`(`snes-jrpg`·`symphonic-jrpg`·`orchestral-melodrama`·`casual-race`·`piano-story`, 옛 팩은 `genreLine` — `readStoreMusicMeta` 가 둘 다 읽는다)로,
+  실제로 들리는 결을 `feelTags`(한·영, 예: 「16비트 SNES 음색」「16-bit SNES」「잔잔한 솔로 피아노」)로 싣는다. 결이 query 낱말과 맞으면 +5(장르 이름 다음), mood 낱말이면 +2. 결이 없는 옛 팩 점수는 그대로다.
+  결은 `briefStoreMusic`·`recommend_bgm` 의 `feel` 칸과 오디오 목록 태그·설명(「느낌 …」)에 실린다.
+  곡 메타에는 **게임 이름을 싣지 않는다**(원작과 거리 두기). 「크로노트리거 느낌」「투더문 같은 피아노」「테일즈런너처럼」「파판 전투곡」「마그나카르타풍 OST」는
+  조수 쪽 표 `GAME_FEELS`(`storeMusicPick.ts`, 한·영·일 표기·약칭)가 이름을 지우고 결 낱말 + 가리키는 줄(첫 줄 +4, 나머지 +2 — 새 팩이 없으면 옛 판타지 팩으로 물러선다)로 바꾼다(`expandStoreMusicQuery`).
+  그래서 도구 설명·v2 음악 카드는 「사용자의 말을 게임 이름째 query 에 넣어라, 장르를 지어내지 마라, 그 게임 곡이라고 말하지 마라」고 시킨다. 결과에 `feelFrom{games, heardAs}` 가 붙는다.
+  게임 제목에 든 이름(「파판풍 모험」)도 `projectHintLines` 가 그 게임의 첫 줄로 짐작한다. 짧은 영문 낱말(sf·sfc·ff·dq)은 같아야만 맞는다(`wordHits`, 「sfc」가 SF 줄에 걸리지 않게).
+  줄 낱말에는 분위기 낱말(애절·서사·감성)을 넣지 않는다 — 줄 낱말을 말하면 다른 줄 곡이 모두 −6 이 되기 때문이다.
+  단위 `test/storeMusicFeel.test.ts`, 실조수 요청 `g-music-feel-*`(5건, 팩 게시 뒤 위 `--store-url` 로 돌린다).
 - **장면 여럿 = 카드 하나.** (먼저 묻기일 때) 「게임 음악 전부」처럼 `store_find_music` 을 장면마다 부르면 패널이 한 카드로 묶는다(장면마다 「고르기」, 맨 아래 「고른 곡 넣기」 한 번 → 후속 요청 하나). v2 는 카드를 띄운 실행을 사용자 질문으로 보고 끝맺음 관문이 넣기를 재촉하지 않는다.
 - **보스전만 다른 곡.** `set_game_audio role:"boss"`(+`troopIds`, 비우면 이름에 보스·마왕·드래곤·관장 등이 든 부대)는 그 `battleProcessing` 앞뒤에 `m2-027-change-system-bgm`(battle set / reset)을 넣는다. 다시 불러도 한 쌍만 남는다.
-- 시험: 단위 `test/storeMusicInstall.test.ts`. 실조수: `bun src/harnesses/assistant-capability/node/musicStorePrepare.ts <dir> <fantasy|joseon|monster> <제목>`(마을·동굴·보스전 시드) →
+- 시험: 단위 `test/storeMusicInstall.test.ts`·`test/storeMusicFeel.test.ts`. 실조수: `bun src/harnesses/assistant-capability/node/musicStorePrepare.ts <dir> <fantasy|joseon|monster> <제목>`(마을·동굴·보스전 시드) →
   `node src/harnesses/assistant-capability/node/wholeGameSession.mjs --project-dir <dir>/project --out <dir>/session --v2 --store-url <스테이징> [--store-ask-first]`.
   브라우저 편집기에는 데스크톱 다리가 없어서 드라이버가 읽기 전용 스토어 다리를 붙인다(`storeBridgeShim.mjs`). 요청 목록은 `harness-data/space-craft/seed.json` 의 `g-music-*`.
   출하 플레이어 재생 확인: `wholeGamePlayer.mjs --project-dir <dir>/project --out <dir>/player --serve` 뒤
