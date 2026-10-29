@@ -161,6 +161,7 @@ import { MONSTER_RESOURCE_TOOLS } from "./monsterResourceTools";
 import { withMonsterAppearanceEnvelope } from "./monsterAppearanceTools";
 import { WORLD_STRUCTURE_TOOLS } from "./worldStructureTools";
 import { WORLD_CANON_TOOLS } from "./worldCanonTools";
+import { WORLD_CODEX_TOOLS } from "./worldCodexTools";
 import { SPATIAL_TOOLS } from "./spatialTools";
 import { BUILD_CONCEPT_EXAMPLE_TOOL } from "./conceptExampleTool";
 import { SHARED_SCENE_TOOLS } from "./sharedSceneTools";
@@ -260,6 +261,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...AUTHORING_PRESET_TOOLS,
   ...PROJECT_WIKI_TOOLS,
   ...WORLD_CANON_TOOLS,
+  ...WORLD_CODEX_TOOLS,
   ...PROJECT_TOOLS,
   ...withDomain(VOCABULARY_TOOLS_V3, "tile"),
   AUTHOR_BEODEUL_TOWN_TOOL,

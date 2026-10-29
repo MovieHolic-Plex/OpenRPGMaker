@@ -178,6 +178,7 @@ export const TOOL_LABELS: Readonly<Record<string, ToolLabelEntry>> = {
   // (「read tileset reference」)이 작업 과정에 그대로 보였다. ──
   read_project_wiki: inspect("설정집 읽기", "book"),
   set_world_canon: world("세계관 정하기", "book"),
+  upsert_world_codex: world("설정집 쓰기", "book"),
   set_party: system("파티 구성"),
   get_world_structure_rules: inspect("월드 지형 규칙 읽기", "map"),
   author_world_bridge: world("다리 놓기", "road"),
