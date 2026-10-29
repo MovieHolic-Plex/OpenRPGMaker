@@ -576,7 +576,8 @@ function dressCave(c: DressCtx, r: PlacedRoom, rs: () => number, s: Slot | null,
   };
   switch (r.kind) {
     case "entrance": {
-      if (s) { c.put(TORCH, s.x - 2, s.y); c.put(TORCH, s.x + 2, s.y); }
+      // 2칸 폭 동굴 계단(오른 칸에 위층 그림)이면 오른쪽 횃불을 한 칸 더 — 계단 바위 테에 붙어 걸렸다.
+      if (s) { const wide = c.upper[c.idx(s.x + 1, s.y + 1)]! >= 0; c.put(TORCH, s.x - 2, s.y); c.put(TORCH, s.x + (wide ? 3 : 2), s.y); }
       const e = c.edgeCells(r, rs);
       edgeClumps(c, rs, e, 2, CLUMP);
       mossPatch(e, 3);
