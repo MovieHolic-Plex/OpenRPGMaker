@@ -201,6 +201,8 @@ RM2k3 투명 칸 자동 보정(`applyCustomChipsetMinimalHarness`)에서 이 시
   - 재료: v2 동사 `room_parts({purpose, query?})` (`src/ai/v2/roomParts.ts`) — 그 용도 기물 이름표 90줄(id·한국어·크기·벽 가구/걸이/바닥·놓는 곳), 바닥·벽면·깔개 id, 같은 용도 손 견본 3개의 바닥 좌표 배치 요약과 견본 1배 그림 2장(따로 지은 사본에서 찍고 프로젝트에는 남기지 않는다). 견본은 참고 — 카드가 「베끼지 않는다」고 적는다.
   - 설계 없이 온 손 도트 실내 `make_place`(마법 학교·전국·현대 화풍과 `mapId` 다시 짓기 제외)는 장소 이름마다 한 번 되돌려 보낸다(`session.designBounced`) — 다시 설계 없이 오면 예전 함수 견본 길로 짓는다. 2026-10-29 실조수 3a 판: 되돌려 보내기 전 설계율 Argon 3/5 · flash 2/5 · terra 5/5.
   - 의자 방향은 묶음을 넘어서도 맞춘다: 방을 다 놓은 뒤 책상·탁자와 맞닿은 의자가 다른 쪽을 보면 그쪽 방향 그림으로 바꾼다(그림이 칩셋에 있을 때만).
+  - 설계 읽기는 너그럽다(2026-10-29 Argon 이 `door:{edge:"south"}`·`at` 없는 묶음으로 엄격한 enum 검증에 15번 막혔다): 스키마에 enum·범위를 두지 않고 `normalizeShape/Door/Corner/At` 이 「southeast」「north wall」「북서」「0.5」 같은 말을 읽는다. `at`·`x/y` 가 없는 묶음은 items 의 `dx/dy` 를 바닥 좌표로, 기물 `x/y` 는 `dx/dy` 로, 묶음 `dx/dy` 는 `at` 이 있으면 그 자리에서 민 만큼·없으면 `x/y` 로 읽는다.
+  - 되돌려 보내기 답은 「아직 짓지 않았다(실패 아님)」과 함께 room_parts 재료(이름표·견본 배치, 그림 없이)를 싣는다 — 되돌려 보내기를 실패로 읽고 그만둔 모델(flash)이 있었다.
   - 도구 층: `build_hand_interior_room` 의 `layout.designs:{방 id: RoomDesign}`. 설계가 없는 방은 예전 가구 길(견본·묶음) 그대로.
 
 ## 남은 것
