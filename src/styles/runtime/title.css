@@ -869,6 +869,31 @@
   animation: rm-title-transition-zoom var(--transition-ms, 1000ms) cubic-bezier(.5, 0, .9, .5) both;
 }
 
+/* 새 게임 뒤 오프닝이 이어질 때: 섬광·안개가 검게 끝나지 않고 타이틀 그림(메뉴는 숨김)으로 돌아와 머문다.
+   플레이어가 이 그림을 오프닝 첫 컷이 보일 때까지 덮개로 쓰고 걷는다(player.ts bootRun). */
+.rm-title-screen.rm-title-transition-hold .rm-title-transition {
+  animation-fill-mode: forwards;
+}
+.rm-title-screen.rm-title-transition-hold .rm-title-transition[data-kind="flash"] {
+  animation-name: rm-title-transition-flash-hold;
+}
+.rm-title-screen.rm-title-transition-hold .rm-title-transition[data-kind="mist"] {
+  animation-name: rm-title-transition-mist-hold;
+}
+
+@keyframes rm-title-transition-flash-hold {
+  0% { opacity: 0; background: #fff; }
+  12% { opacity: 1; background: #fff; }
+  45% { opacity: 0.85; background: #fff4dc; }
+  100% { opacity: 0; background: #fff4dc; }
+}
+
+@keyframes rm-title-transition-mist-hold {
+  0% { opacity: 0; background: rgb(230 236 244); }
+  60% { opacity: 0.92; background: rgb(230 236 244); }
+  100% { opacity: 0; background: rgb(230 236 244); }
+}
+
 @keyframes rm-title-transition-fade {
   from { opacity: 0; }
   to { opacity: 1; }

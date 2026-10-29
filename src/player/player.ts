@@ -356,6 +356,9 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     warnIfPlayBootIssues(store.getCurrent());
     const run = ++startRun;
     const startedAt = performance.now();
+    // 타이틀 전환이 그림으로 돌아와 머문 상태(rm-title-transition-hold)면 그 타이틀을 떼어 오프닝 첫 컷이 보일 때까지 덮개로 쓴다.
+    const heldTitle = opening ? layout.querySelector<HTMLElement>("[data-testid='title-screen'].rm-title-transition-hold") : null;
+    heldTitle?.remove();
     clearChildren(layout);
     const surface = createPlaySurface(resolvePlayResolution(store.getCurrent().system), surfaceScaleFor(store.getCurrent()), store.getCurrent().system.displayFilter, surfaceOptions);
     playStage = surface.stage;
@@ -400,6 +403,19 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
       onFrame: (url, fadeMs) => { lastFrame = url; if (fadeMs !== undefined) handoffFadeMs = fadeMs; } });
     openingMusicPlayback = playback;
     firstScreen();
+    if (heldTitle) {
+      heldTitle.dataset.testid = 'title-hold-cover';
+      heldTitle.setAttribute('aria-hidden', 'true');
+      heldTitle.style.cssText += ';position:absolute;inset:0;z-index:60;pointer-events:none';
+      surface.stage.append(heldTitle);
+      const release = (): void => {
+        if (!heldTitle.isConnected) return;
+        void heldTitle.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 450, fill: 'forwards' }).finished
+          .catch(() => undefined).then(() => heldTitle.remove());
+      };
+      void playback.firstFrame.then(release);
+      controller.signal.addEventListener('abort', () => heldTitle.remove(), { once: true });
+    }
     // Start the real engine, decode textures and assemble the map during the cinematic.
     // PlayScene gates time, events, input and map audio until the presentation handoff.
     // 엔진 기동은 첫 컷이 보인 뒤에 건다. 같이 시작하면 엔진의 긴 작업(초 단위)이 첫 컷 준비를 막아
@@ -1194,12 +1210,15 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
       title?.removeAttribute('aria-busy');
       title?.querySelector('.title-preparing')?.remove();
       stopTitleBgm();
-      const transitionMs = withTransition
-        ? playTitleTransition(
-            layout.querySelector<HTMLElement>("[data-testid='title-screen']"),
-            store.getCurrent().system.titleScreen ?? defaultTitleScreenSettings(),
-          )
-        : null;
+      // 새 게임 뒤 오프닝이 이어지면 밝은 전환(섬광·안개)은 검게 끝나지 않고 타이틀 그림으로 돌아와 머문다.
+      // 그 그림이 오프닝 첫 컷이 보일 때까지 덮개로 남는다(bootRun) — 예전에는 전환 끝의 검은 화면이 첫 컷까지 1.5~2초 이어졌다.
+      const transitionSettings = store.getCurrent().system.titleScreen ?? defaultTitleScreenSettings();
+      const nextOpening = store.getCurrent().system.opening;
+      const holdForOpening = withTransition && !!nextOpening?.enabled && (!nextOpening.entry || nextOpening.entry.mode === 'new-game')
+        && nextOpening.scenes.length > 0 && (transitionSettings.transition?.kind === 'flash' || transitionSettings.transition?.kind === 'mist');
+      const titleNode = layout.querySelector<HTMLElement>("[data-testid='title-screen']");
+      if (holdForOpening) titleNode?.classList.add('rm-title-transition-hold');
+      const transitionMs = withTransition ? playTitleTransition(titleNode, transitionSettings) : null;
       titleConfirmTimer = setTimeout(() => {
         titleConfirmTimer = undefined;
         if (!shellActive) return;
