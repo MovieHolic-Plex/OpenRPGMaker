@@ -201,7 +201,7 @@ export function stageMysteryCase(run: BuildRun): string[] {
   const named = repairPageNameLabels(run);
   const closed = closeEndingShortcuts(run);
   const notes = stageMysteryCaseInner(run);
-  return [...named, ...closed, ...notes, ...closeEndingShortcuts(run), ...ensureEvidenceGiven(run), ...renameProgressEvidence(run), ...alignEvidenceToText(run), ...evidenceOnThing(run), ...deepenCase(run), ...polishCaseNames(run), ...requireInterrogation(run), ...alignCulpritLines(run), ...nameLeakedEventIds(run)];
+  return [...named, ...closed, ...notes, ...closeEndingShortcuts(run), ...ensureEvidenceGiven(run), ...renameProgressEvidence(run), ...alignEvidenceToText(run), ...dropDanglingEvidenceHints(run), ...evidenceOnThing(run), ...deepenCase(run), ...polishCaseNames(run), ...requireInterrogation(run), ...alignCulpritLines(run), ...nameLeakedEventIds(run), ...dropDanglingEvidenceHints(run)];
 }
 
 const ROLE_WORDS = ["투숙객", "손님", "하녀", "하인", "요리사", "악사", "마부", "상인", "여행자", "점원", "집사", "정원사", "경비", "하숙생", "직원", "노파", "청년", "사내", "여인"];
@@ -471,6 +471,16 @@ function requireInterrogation(run: BuildRun): string[] {
 
 const UNHEARD_OBJECTIVE = "아직 이야기 안 한 용의자";
 
+const PENDING_MARK = /아직 못 찾은 단서가 있다|의 이야기를 듣지 않았다/u;
+const forkObjectiveText = (c: Obj): string => {
+  const then = (c.then ?? []) as Obj[];
+  return then.length === 1 && isObjectiveCommand(then[0] as never) ? String(((then[0]!.fields ?? {}) as Obj).message ?? "") : "";
+};
+/** gateSuspectObjectives·pendingClueChain 이 씌운 갈래인가. */
+const isWrapFork = (c: Obj): boolean => c.kind === "fork" && Array.isArray(c.else) && (c.else as Obj[]).length === 1 && (forkObjectiveText(c).includes(UNHEARD_OBJECTIVE) || PENDING_MARK.test(forkObjectiveText(c)));
+/** 씌운 갈래를 벗긴 맨 안쪽 목표. */
+const innerFinal = (c: Obj): Obj => (isWrapFork(c) ? innerFinal((c.else as Obj[])[0]!) : c);
+
 /**
  * 용의자 대화 페이지의 목표를 「아직 이야기 안 한 용의자」 갈래로 건다 — 「이야기 들음」 스위치가 꺼진 용의자가 남아 있으면 그 사람에게 말을 걸라고,
  * 모두 들었을 때만 원래 목표(지목 자리)로. 끝맺음 맨 끝(fillStaleObjectives·refreshObjectiveRoutes 뒤)에 돈다 — 그 둘이 걸거나 다시 쓰는 목표도 감싼다.
@@ -487,16 +497,24 @@ export function gateSuspectObjectives(project: Project): string[] {
   for (const s of suspects) {
     const ev = (project.maps[s.mapId]?.events ?? []).find((e) => e.id === s.ev.id);
     if (!ev) continue;
-    const chain = (final: Obj): Obj[] => suspects.slice().reverse().reduce<Obj[]>((acc, other) => [{
+    const chain = (final0: Obj): Obj[] => suspects.slice().reverse().reduce<Obj[]>((acc, other) => [{
       kind: "fork",
       condition: { kind: "switch", switchId: other.switchId, value: false },
       then: [objectiveCommand(withWhere(project, s.mapId, `${UNHEARD_OBJECTIVE} 「${other.name}」에게 말을 걸어 보자.`, other.ev.id)) as Obj],
       else: acc,
-    }], [final]);
+    }], [pendingClueChain(project, s.mapId, final0)]);
     for (const pg of (ev.pages ?? []) as unknown as Obj[]) {
       const cmds = (pg.commands ?? []) as Obj[];
       const at = cmds.findIndex((c) => c.kind === "setSwitch" && c.switchId === s.switchId);
-      if (at < 0 || JSON.stringify(cmds).includes(UNHEARD_OBJECTIVE)) continue;
+      if (at < 0) continue;
+      // 이미 감싼 페이지는 감싼 갈래를 풀어 맨 안쪽 목표를 다시 감싼다(남은 단서 갈래가 새로 붙거나 바뀌게 — 되풀이 안전).
+      if (cmds.some(isWrapFork)) {
+        const before = JSON.stringify(cmds);
+        pg.commands = cmds.flatMap((c) => (isWrapFork(c) ? chain(innerFinal(c)) : [c]));
+        if (JSON.stringify(pg.commands) !== before) wrapped += 1;
+        continue;
+      }
+      if (JSON.stringify(cmds).includes(UNHEARD_OBJECTIVE)) continue;
       const chips = cmds.filter((c) => isObjectiveCommand(c as never));
       if (chips.length) pg.commands = cmds.flatMap((c) => chips.includes(c) ? chain(c) : [c]);
       else if (gate) pg.commands = [...cmds.slice(0, at + 1), ...chain(objectiveCommand(withWhere(project, s.mapId, `용의자들의 이야기를 모두 들었다. 「${gateName}」에서 증거를 내밀어 범인을 지목하자.`, gate.ev.id)) as Obj), ...cmds.slice(at + 1)];
@@ -563,6 +581,64 @@ export function alignObjectiveThings(project: Project): string[] {
   return notes;
 }
 
+/** `<사람 id>_evidence` 조사 칸 — 사람(그림 있는 NPC)이 그 id 를 쥐고 있으면 칸이 아니다. */
+const evidenceSpot = (map: GameMap, giverId: string): GameEvent | undefined => (map.events ?? []).find((e) => e.id === `${giverId}_evidence` && !visiblePerson(e));
+
+/** 맵·청사진 안의 이벤트 id 참조를 바꾼다(따옴표로 감싼 정확한 id 만 — 페이지 id `…_p0` 같은 앞부분 일치는 건드리지 않는다). */
+function renameEventId(project: Project, oldId: string, newId: string): Project {
+  const escaped = oldId.replace(/[.*+?^$()|[\]\\{}]/gu, "\\$&");
+  const quoted = new RegExp(`"${escaped}"`, "gu");
+  const maps = { ...project.maps };
+  for (const [mapId, map] of Object.entries(project.maps)) {
+    const text = JSON.stringify(map.events ?? []);
+    if (text.includes(`"${oldId}"`)) maps[mapId] = { ...map, events: JSON.parse(text.replace(quoted, `"${newId}"`)) as GameEvent[] };
+  }
+  const bp = project.gameBlueprint;
+  return { ...project, maps, ...(bp ? { gameBlueprint: { ...bp, steps: bp.steps.map((st) => (st.event === oldId ? { ...st, event: newId } : st)) } } : {}) };
+}
+
+/**
+ * 증거 자리 안내가 허공을 가리키지 않게 — 사람이 「그러고 보니 소동 뒤에 <자리> 바닥에서 뭔가 반짝이던데…」「<자리> 바닥을 살펴보게…」라고 하는데
+ * 그 사람의 조사 칸(`<id>_evidence`)이 없으면 그 두 줄을 뺀다. 그 id 를 사람(용의자)이 쥐고 있으면 사람 id 를 `<…>_person` 으로 바꾼다.
+ * 왜(2026-10-29 vm7 argon 추리): 「주민 탐문」이 「가운데 안락의자 옆 바닥」을 보라고 했는데 그 조사 칸 id 를 용의자 「상인 도윤」이 쥐고 있었다
+ * (다시 세운 사건이 같은 id 로 사람을 세웠다). 판정자는 안락의자 둘레를 여러 칸 눌러도 반응이 없어 진행이 막혔다고 했다.
+ */
+function dropDanglingEvidenceHints(run: BuildRun): string[] {
+  const notes: string[] = [];
+  for (const map of Object.values(run.ctx.project.maps)) for (const ev of [...(map.events ?? [])]) {
+    if (!ev.id.endsWith("_evidence") || !visiblePerson(ev)) continue;
+    const next = `${ev.id.replace(/_evidence$/u, "")}_person`;
+    if (Object.values(run.ctx.project.maps).some((m) => (m.events ?? []).some((e) => e.id === next))) continue;
+    run.ctx.project = renameEventId(run.ctx.project, ev.id, next);
+    notes.push(`사람 「${nameOf(ev)}」이 증거 조사 칸 id(${ev.id})를 쥐고 있어 ${next} 로 바꿈`);
+  }
+  const HINT = /^(?:그러고 보니 소동 뒤에 .+ 바닥에서 뭔가 반짝이던데… 한번 살펴보게\.|.+ 바닥을 살펴보게\. 범인이 흘린 게 있을지도 모르네\.)$/u;
+  for (const [mapId, map] of Object.entries(run.ctx.project.maps)) {
+    let changed = false;
+    const events = (map.events ?? []).map((ev) => {
+      if (!visiblePerson(ev) || evidenceSpot(map, ev.id)) return ev;
+      let dropped = 0;
+      const strip = (list: unknown): unknown => Array.isArray(list)
+        ? list.filter((c) => { const hit = (c as Obj)?.kind === "text" && HINT.test(String((c as Obj).body ?? "")); if (hit) dropped += 1; return !hit; }).map((c) => {
+          if (!c || typeof c !== "object") return c;
+          const o = { ...(c as Obj) };
+          for (const k of ["then", "else", "commands", "branch", "otherwiseBranch", "cancelBranch"]) if (Array.isArray(o[k])) o[k] = strip(o[k]);
+          if (Array.isArray(o.options)) o.options = (o.options as Obj[]).map((opt) => (Array.isArray(opt.branch) ? { ...opt, branch: strip(opt.branch) } : opt));
+          return o;
+        })
+        : list;
+      const pages = (ev.pages ?? []).map((pg) => ({ ...pg, commands: strip(pg.commands ?? []) as typeof pg.commands }));
+      if (!dropped) return ev;
+      changed = true;
+      notes.push(`「${nameOf(ev)}」 대사에서 없는 증거 조사 칸을 가리키던 ${dropped}줄을 뺌`);
+      // 그 사람의 페이지가 비면(「다시 말을 걸면 자리를 다시 일러 준다」 페이지) 「더는 볼 것이 없다」 대신 사람 말투로 한 줄.
+      return { ...ev, pages: pages.map((pg) => ((pg.commands ?? []).length ? pg : { ...pg, commands: say(nameOf(ev), ["이제 내가 아는 건 다 말했네."]) })) };
+    });
+    if (changed) run.ctx.project = { ...run.ctx.project, maps: { ...run.ctx.project.maps, [mapId]: { ...map, events } } };
+  }
+  return notes;
+}
+
 /**
  * 지목 증거를 사람이 말 끝에 그냥 건네면(「…발소리를 들었어.」 → 「『떨어진 은단추』를 증거로 챙겼다.」) 그 물건을 바닥에 떨어진 조사 칸으로 옮긴다 —
  * 사람은 어디를 보라고 말하고(그 사람 이야기를 들은 뒤에만 열림), 플레이어가 그 칸을 조사해 증거를 얻는다. 되풀이 안전(`<사람 id>_evidence`).
@@ -582,6 +658,7 @@ function evidenceOnThing(run: BuildRun): string[] {
       if (!visiblePerson(giver) || /^용의자|· 탐문$/u.test(nameOf(giver))) continue;
       if ((giver.pages ?? []).some((pg) => / · (탐문|증거)$/u.test(String((pg as { name?: string }).name ?? "")))) continue;
       const spotId = `${giver.id}_evidence`;
+      // 그 id 를 사람이 쥐고 있으면(다시 세운 용의자) 칸이 있는 것으로 치지 않는다 — 사람 id 는 dropDanglingEvidenceHints 가 먼저 바꾼다.
       if ((map0.events ?? []).some((e) => e.id === spotId)) continue;
       const pages = structuredClone(giver.pages ?? []) as unknown as Obj[];
       const pi = pages.findIndex((pg) => ((pg.commands ?? []) as Obj[]).some((c) => c.kind === "changeItem" && c.itemId === itemId && c.op !== "-="));
@@ -1013,6 +1090,58 @@ export function refreshRemainingClues(run: BuildRun): string[] {
   return explainRemainingClues(run);
 }
 
+/** 단계 r 을 마쳤다는 조건 — r 이벤트(와 그 사람이 가리킨 증거 조사 칸)가 켜는·주는 것 가운데 다음 단계 페이지 조건으로 쓰이는 것. */
+function clueDoneCond(project: Project, r: Resolved, next: Resolved, earlier: readonly Resolved[] = []): Obj[] | undefined {
+  const givesOf = (x: Resolved) => {
+    const spot = evidenceSpot(x.map, x.ev.id);
+    const own = eventGives(project, x.ev), more = spot ? eventGives(project, spot) : undefined;
+    return { switches: [...own.switches, ...(more?.switches ?? [])], items: [...own.items, ...(more?.items ?? [])] };
+  };
+  const gives = givesOf(r);
+  // 앞 단계도 켜는·주는 것은 이 단계를 마쳤다는 표시가 못 된다(vm7 argon 추리: 「주민 탐문」이 준 『상인과 용병의 증언』을 뒤뜰 단서도 다시 주어,
+  // «뒤뜰 단서 찾음»이 그 아이템으로 잡혔다) — 이 단계만의 것을 먼저, 없으면 같이 주는 것.
+  const before = earlier.filter((x) => x !== r).map(givesOf);
+  const shared = (kind: "switches" | "items", id: string) => before.some((b) => b[kind].includes(id));
+  let fallback: Obj[] | undefined;
+  for (const pg of next.ev.pages ?? []) for (const c of ((pg.conditions ?? []) as unknown as Obj[])) {
+    let hit: Obj[] | undefined, kind: "switches" | "items" = "switches", id = "";
+    if (c.kind === "switch" && c.value !== false && gives.switches.includes(String(c.switchId))) { hit = [{ kind: "switch", switchId: c.switchId, value: true }]; id = String(c.switchId); }
+    if (c.kind === "item" && c.present !== false && gives.items.includes(String(c.itemId))) { hit = [{ kind: "item", itemId: c.itemId, present: true }]; kind = "items"; id = String(c.itemId); }
+    if (!hit) continue;
+    if (!shared(kind, id)) return hit;
+    fallback ??= hit;
+  }
+  return fallback;
+}
+
+/**
+ * 지목 목표(final) 앞에 «아직 못 찾은 단서» 갈래를 씌운다 — 단서 단계(용의자 아님)마다 마친 조건이 꺼져 있으면 그 단서로 가는 목표(맵 입구 꼬리 포함)를 건다.
+ * 왜(2026-10-29 vm7 argon 추리): 용의자 셋과 이야기를 마치자 목표가 「「범인 지목」을 찾아가자」로 바뀌었는데 뒤뜰 덤불 단서를 아직 못 찾은 때였다.
+ * 지목 칸은 「단서가 모자라다」고 거절했고, 목표 화살표는 뒤뜰이 아니라 지목 칸을 가리켜 판정자는 넓은 뒤뜰에서 덤불을 끝내 못 찾았다.
+ */
+function pendingClueChain(project: Project, fromMapId: string, final: Obj): Obj {
+  const bp = project.gameBlueprint;
+  const steps = resolveSteps(project);
+  const last = steps.at(-1);
+  if (!bp || !last || last.k !== bp.steps.length - 1) return final;
+  const clues = steps.filter((r) => r.k < last.k);
+  const suspect = (ev: GameEvent) => (ev.pages ?? []).some((pg) => / · 탐문$/u.test(String((pg as { name?: string }).name ?? "")));
+  const label = (r: Resolved) => { const n = nameOf(r.ev); return n && !/^ev_/u.test(n) ? n : r.step.event; };
+  const pending: { cond: Obj; text: string }[] = [];
+  for (const [j, r] of clues.entries()) {
+    if (suspect(r.ev)) continue;
+    const cond = clueDoneCond(project, r, clues[j + 1] ?? last, clues.slice(0, j))?.[0];
+    if (!cond) continue;
+    const spot = evidenceSpot(r.map, r.ev.id);
+    const target = spot ?? r.ev;
+    const name = spot ? nameOf(spot) : label(r);
+    const text = visiblePerson(target) ? `아직 「${name}」의 이야기를 듣지 않았다. 「${name}」에게 말을 걸어 보자.` : `아직 못 찾은 단서가 있다. 「${name}」${jo(name, "을/를")} 찾아보자.`;
+    const negated = cond.kind === "switch" ? { kind: "switch", switchId: cond.switchId, value: false } : { kind: "item", itemId: cond.itemId, present: false };
+    pending.push({ cond: negated, text: withWhere(project, fromMapId, text, target.id) });
+  }
+  return pending.reduceRight<Obj>((acc, p) => ({ kind: "fork", condition: p.cond, then: [objectiveCommand(p.text) as Obj], else: [acc] }), final);
+}
+
 function explainRemainingClues(run: BuildRun): string[] {
   const project = run.ctx.project;
   const bp = project.gameBlueprint;
@@ -1024,16 +1153,8 @@ function explainRemainingClues(run: BuildRun): string[] {
   // 단계 j 를 마쳤다는 표시 = 그 단계 이벤트가 켜는(주는) 전역 스위치·아이템 가운데 다음 단계(마지막이면 지목 단계)의 페이지 조건으로 쓰이는 것.
   // 자기 스위치·「taken」 같은 그 이벤트 안 표식은 다른 이벤트 조건으로 옮기면 뜻이 없다(vm3 deepseek 추리 재생: 남의 selfSwitch 를 복사해 자동 플레이가 깨졌다).
   // 단계 사람이 가리킨 증거 물건 칸(evidenceOnThing `<id>_evidence`)이 주는 것도 그 단계의 결과다.
-  const spotOf = (r: Resolved) => (r.map.events ?? []).find((e) => e.id === `${r.ev.id}_evidence`);
-  const doneCond = (r: Resolved, next: Resolved): Obj[] | undefined => {
-    const own = eventGives(project, r.ev), spot = spotOf(r) ? eventGives(project, spotOf(r)!) : undefined;
-    const gives = { switches: [...own.switches, ...(spot?.switches ?? [])], items: [...own.items, ...(spot?.items ?? [])] };
-    for (const pg of next.ev.pages ?? []) for (const c of ((pg.conditions ?? []) as unknown as Obj[])) {
-      if (c.kind === "switch" && c.value !== false && gives.switches.includes(String(c.switchId))) return [{ kind: "switch", switchId: c.switchId, value: true }];
-      if (c.kind === "item" && c.present !== false && gives.items.includes(String(c.itemId))) return [{ kind: "item", itemId: c.itemId, present: true }];
-    }
-    return undefined;
-  };
+  const spotOf = (r: Resolved) => evidenceSpot(r.map, r.ev.id);
+  const doneCond = (r: Resolved, next: Resolved): Obj[] | undefined => clueDoneCond(project, r, next, steps.filter((x) => x.k < r.k));
   const openCond = (j: number): Obj[] | undefined => doneCond(clues[j - 1]!, clues[j] ?? last);
   const pages0 = ((last.ev.pages ?? []) as unknown as Obj[]).filter((pg) => !/^남은 단서/u.test(String(pg.name ?? "")));
   // 마지막 단계 이벤트가 앞 단계도 맡으면(standin 추리: 「여관 주인」이 첫 단계와 범인 지목을 함께) 그 잠김 페이지는 앞 단계의 일이다 — 건드리지 않는다.
@@ -1044,7 +1165,10 @@ function explainRemainingClues(run: BuildRun): string[] {
   let locked = pages0[lockedAt];
   // 다시 부를 때(끝맺음이 단서를 옮긴 뒤 refreshRemainingClues): 잠김 페이지는 이미 「남은 단서 n」 페이지들로 바뀌었다 — 그 첫 장을 틀로, 그 자리에 다시 쓴다.
   const all = (last.ev.pages ?? []) as unknown as Obj[];
-  const firstOld = all.findIndex((pg) => /^남은 단서/u.test(String(pg.name ?? "")) && isLocked(pg));
+  // 「남은 단서」 페이지에는 「아직 「X」의 이야기를 듣지 못했다」 갈래가 붙는다 — 그 갈래(대사뿐)도 잠김 페이지로 친다. 전에는 갈래 때문에 다시 쓰기를 못 해
+  // 사건을 다시 세워 사라진 옛 용의자(「마부 한스」)를 계속 «아직 못 들었다»고 했다(2026-10-29 vm7 argon 추리).
+  const textFork = (c: Obj) => c.kind === "fork" && ((c.then ?? []) as Obj[]).every((t) => t.kind === "text") && !((c.else ?? []) as Obj[]).length;
+  const firstOld = all.findIndex((pg) => /^남은 단서/u.test(String(pg.name ?? "")) && !(pg.conditions as unknown[] | undefined)?.length && Array.isArray(pg.commands) && (pg.commands as Obj[]).every((c) => c.kind === "text" || c.kind === "changeFace" || textFork(c)));
   if (lockedAt < 0 && firstOld >= 0) {
     lockedAt = all.slice(0, firstOld).filter((pg) => !/^남은 단서/u.test(String(pg.name ?? ""))).length;
     locked = { ...all[firstOld]!, name: undefined, id: String(all[firstOld]!.id ?? "").replace(/_left\d+$/u, "") };
