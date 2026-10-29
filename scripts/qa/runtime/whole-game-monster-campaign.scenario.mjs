@@ -55,6 +55,27 @@ function healBeat(tag, note) {
   };
 }
 
+const HP_OUT = process.env.QA_MON_OUT ?? "/tmp/monster-campaign-hp";
+
+/** 체육관 안내원(2,18)에게 회복받는다 — 끝맺음이 관원 전투가 있는 체육관 안내원에 회복을 붙인다(equipMonsterCampaign). */
+function gymHealBeat(tag) {
+  return {
+    id: `${tag}-gymheal`,
+    note: "체육관 안내원에게 회복",
+    ops: [
+      settle,
+      { kind: "teleport", mapId: "mx_map_grove_gym", x: 3, y: 18 },
+      { kind: "waitForPosition", mapId: "mx_map_grove_gym", x: 3, y: 18 },
+      { kind: "pressUntilJs", key: "Shift", fn: fieldIdle, maxPresses: 30, settleMs: 500 },
+      { kind: "face", dir: "left" },
+      { kind: "pressUntilJs", key: "Enter", fn: `() => /회복할까요/.test(document.body.innerText)`, maxPresses: 10, settleMs: 700 },
+      { kind: "pressUntilJs", key: "Enter", fn: `() => /건강해졌어요/.test(document.body.innerText)`, maxPresses: 10, settleMs: 700 },
+      { kind: "pressUntilJs", key: "Enter", fn: fieldIdle, maxPresses: 6, settleMs: 700 },
+    ],
+    shot: true,
+  };
+}
+
 /** 말을 걸고 전투에 들어가 끝까지 싸운 뒤 필드(또는 게임 오버)로. */
 function fightBeats(tag, note, mapId, x, y, dir) {
   return [
@@ -78,7 +99,11 @@ function fightBeats(tag, note, mapId, x, y, dir) {
     {
       id: `${tag}-end`,
       note: `${note} — 결판(승리 결과 창 또는 패배)`,
-      ops: [{ kind: "battle", fallback: "skill:best", timeoutMs: 300000 }],
+      ops: [
+        { kind: "battle", fallback: "skill:best", timeoutMs: 300000 },
+        // 전투별 남은 HP 표: 결과 창의 「현재/최대」와 이긴/진 문구, 파티 몬스터(종·레벨·남은 HP). QA_MON_OUT 폴더에 <tag>.json.
+        { kind: "evalToFile", out: `${HP_OUT}/${tag}.json`, fn: `() => { const scene = document.querySelector("[data-testid='battle-scene']"); const text = scene?.innerText ?? ""; const s = window.__oprnDebug?.readState?.(); return { tag: ${JSON.stringify(tag)}, hp: [...text.matchAll(/(\\d+)\\s*\\/\\s*(\\d+)/g)].map((m) => [Number(m[1]), Number(m[2])]), won: /이겼다/.test(text), lost: /싸울 수 있는 몬스터가 없다|눈앞이 캄캄/.test(text), party: (s?.monsterParty ?? []).map((id) => { const m = s.monsterInstances?.[id] ?? {}; return { s: m.speciesId, l: m.level, hp: m.currentHp }; }) }; }` },
+      ],
       shot: true,
     },
     {
@@ -195,7 +220,9 @@ export default {
       shot: true,
     },
     ...fightBeats("grunt0", "체육관 관원(10,15)", "mx_map_grove_gym", 9, 15, "right"),
+    gymHealBeat("grunt1"),
     ...fightBeats("grunt1", "체육관 관원(13,17)", "mx_map_grove_gym", 12, 17, "right"),
+    gymHealBeat("grunt2"),
     ...fightBeats("grunt2", "체육관 관원(6,16)", "mx_map_grove_gym", 5, 16, "right"),
     {
       id: "gym-pivot",
@@ -240,7 +267,7 @@ export default {
       ],
       shot: true,
     },
-    healBeat("leader", "관장전 앞"),
+    gymHealBeat("leader"),
     ...fightBeats("leader", "체육관 관장 유림(14,3)", "mx_map_grove_gym", 14, 4, "up"),
     {
       id: "badge",
