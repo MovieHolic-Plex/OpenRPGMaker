@@ -121,7 +121,7 @@ async function bootExportedPlayer(root: HTMLElement): Promise<void> {
   rebaseRuntimeCssAssetUrls(assetBase);
   const rawDemoParam = new URLSearchParams(window.location.search).get("demo");
   const demoParam = rawDemoParam === "fallen-star" ? "chrono-bell" : rawDemoParam === "astra-horizon" ? "emerald-crown" : rawDemoParam;
-  if (demoParam === "chrono-bell" || demoParam === "emerald-crown" || demoParam === "shitamachi-fourth-season" || demoParam === "first-love") {
+  if (demoParam === "chrono-bell" || demoParam === "emerald-crown" || demoParam === "shitamachi-fourth-season" || demoParam === "first-love" || demoParam === "isekai-godding") {
     const loader = mountBootLoader(root, { title: document.title });
     const demo = await loadFlagshipDemo(demoParam, assetBase, (bytes) => loader.projectProgress(bytes), devQaDemoUrl(boot));
     if (!demo.ok) { loader.remove(); renderBootError(root, demo.message); return; }

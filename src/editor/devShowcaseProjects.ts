@@ -19,7 +19,7 @@ export function flagshipDemoIdForLocation(): FlagshipDemoId | null {
   if (typeof window === "undefined") return null;
   const rawDemo = new URLSearchParams(window.location.search).get("demo");
   const demo = rawDemo === "fallen-star" ? "chrono-bell" : rawDemo === "astra-horizon" ? "emerald-crown" : rawDemo;
-  return demo === "chrono-bell" || demo === "emerald-crown" || demo === "shitamachi-fourth-season" || demo === "first-love" ? demo : null;
+  return demo === "chrono-bell" || demo === "emerald-crown" || demo === "shitamachi-fourth-season" || demo === "first-love" || demo === "isekai-godding" ? demo : null;
 }
 
 /**
