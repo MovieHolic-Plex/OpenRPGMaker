@@ -129,7 +129,7 @@ export function createDungeonPartsVerb(env: PiAssistantV2Env): PiToolShape {
     description: "던전·동굴 층을 직접 설계(make_place spec.dungeonDesign)하기 전에 부른다. 그 테마의 방 모양·역할·물·특징·잇는 모양 어휘와, 뼈대가 서로 다른 설계 예시 넷(그중 둘은 지금 빌더로 실제로 지은 그림과 함께)을 돌려준다. 예시는 참고일 뿐 — 요청에 맞게 방 수·자리·모양·길을 새로 짠다.",
     parameters: { type: "object", properties: { theme: { type: "string", description: "던전 테마 낱말 — 예: 동굴, 화산, 마계, 숲, 지하묘지" } }, required: ["theme"] },
     async execute(_id, params) {
-      const gameKey = (env.ctx.project as { meta?: { id?: string } }).meta?.id ?? "";
+      const gameKey = String(env.request.projectKey ?? env.ctx.project.meta.title ?? "");
       const out = dungeonParts(String((params as { theme?: string }).theme ?? "cave"), gameKey);
       const result = text({ ok: true, ...out, how: "make_place({spec:{type:'cave'|'dungeon', name, theme, dungeonDesign:{entrance, rooms:[{id, role, size, shape, dir?, at, water?, features?}], links:[{from,to,kind?}]}}}). 방마다 at 을 서로 다르게, 입구 하나·보스 하나. 함수는 방을 더하거나 고르지 않고 겹침·길·도달·크기 모순만 고쳐 「고침:」으로 알린다." });
       // 그림은 넷 중 둘만(게임마다 다른 둘) — Gemini(argon·flash)는 큰 전맵 그림 넷을 받은 바로 다음 차례에 제공자 오류(«Sorry, something went wrong»)나
