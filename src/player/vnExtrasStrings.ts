@@ -150,7 +150,7 @@ export const VN_UI_STRINGS: Readonly<Record<VnUiKey, Row>> = {
   "ending.kicker.solo": { ko: "{0}의 이야기", en: "{0}'s story", ja: "{0}の物語", zh: "{0}的故事" },
   "ending.hallOfFame": { ko: "전당 등록!", en: "Hall of Fame!", ja: "殿堂入り!", zh: "荣登殿堂!" },
   "ending.continue": { ko: "Z / Enter 계속", en: "Z / Enter  Continue", ja: "Z / Enter 次へ", zh: "Z / Enter 继续" },
-  "ending.creditsSkip": { ko: "Z / Enter 누르면 빠르게   ·   Esc 건너뛰기", en: "Hold Z / Enter  Fast   ·   Esc  Skip", ja: "Z / Enter 長押しで早送り   ·   Esc とばす", zh: "按住 Z / Enter 快进   ·   Esc 跳过" },
+  "ending.creditsSkip": { ko: "Z / Enter 빠르게 · 한 번 더 넘기기   ·   Esc 건너뛰기   ·   끝나면 타이틀로", en: "Z / Enter  Fast, again to skip   ·   Esc  Skip   ·   Title afterwards", ja: "Z / Enter 早送り・もう一度でとばす   ·   Esc とばす   ·   終わるとタイトルへ", zh: "Z / Enter 快进·再按跳过   ·   Esc 跳过   ·   结束后回到标题" },
   "ending.creditsRead": { ko: "PgUp/PgDn 읽기   ·   Z / Enter 마침", en: "PgUp/PgDn  Read   ·   Z / Enter  Finish", ja: "PgUp/PgDn 読む   ·   Z / Enter 終わる", zh: "PgUp/PgDn 阅读   ·   Z / Enter 结束" },
   "ending.returnTitle": { ko: "타이틀로 돌아가기", en: "Return to title", ja: "タイトルへ戻る", zh: "返回标题" },
   "ending.nextAct": { ko: "다음 막으로", en: "On to the next act", ja: "次の幕へ", zh: "进入下一幕" },
