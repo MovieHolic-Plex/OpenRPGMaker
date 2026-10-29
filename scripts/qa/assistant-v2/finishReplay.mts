@@ -28,7 +28,7 @@ const followup = followAt >= 0 ? argv[followAt + 1] : undefined;
 // --snapshot <json>: 저장본 대신 이 프로젝트 JSON(세션 snapshots/NNN-before.json 등)에서 끝맺음을 돈다 — 빌드 사이 회귀를 같은 입력으로 비교할 때.
 const snapAt = argv.indexOf("--snapshot");
 const snapshotFile = snapAt >= 0 ? argv[snapAt + 1] : undefined;
-// --trace: 끝맺음이 낸 실행 기록(v2.* 이름·ok·요약)과 체크포인트 이름을 rec.trace 에 남기고, Math.random·Date.now 를 고정해
+// --trace: 끝맺음이 낸 실행 기록(v2.* 이름·ok·요약)과 체크포인트 이름을 rec.trace 에 남기고, Math.random·Date.now·crypto.randomUUID 를 고정해
 // 같은 입력이면 같은 출력이 나오게 한다 — 구조만 바꾼 리팩터가 동작을 바꾸지 않았는지 커밋 둘을 대조할 때(rec.projectHash).
 const trace = argv.includes("--trace");
 const dirs = argv.filter((a, i) => a !== "--out" && a !== "--trace" && i !== outAt + 1 && a !== "--followup" && (followAt < 0 || i !== followAt + 1) && a !== "--snapshot" && (snapAt < 0 || i !== snapAt + 1));
@@ -37,6 +37,11 @@ if (trace) {
   Math.random = () => { seed = (Math.imul(seed ^ (seed >>> 15), 0x2c1b3c6d) + 0x6d2b79f5) >>> 0; return seed / 0x100000000; };
   let clock = 1_800_000_000_000;
   Date.now = () => (clock += 1000);
+  // 이벤트 id(ev_npc_<uuid>)와 거기서 나온 스위치 id 도 고정한다.
+  globalThis.crypto.randomUUID = () => {
+    const hex = Array.from({ length: 32 }, () => Math.floor(Math.random() * 16).toString(16)).join("");
+    return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-4${hex.slice(13, 16)}-a${hex.slice(17, 20)}-${hex.slice(20)}` as `${string}-${string}-${string}-${string}-${string}`;
+  };
 }
 fs.mkdirSync(out, { recursive: true });
 
