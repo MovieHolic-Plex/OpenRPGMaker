@@ -10863,6 +10863,20 @@
    ],
    "verify": "밤 광장 도착 칸에서 걸어 브람에게 말을 걸고 바로 옆 개구멍을 조사할 수 있다(출하 플레이어)",
    "suiteCategory": "fs2-npc-reachable"
+  },
+  {
+   "category": "game",
+   "kind": "logic",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "id": "fs2-relief-ramp-access",
+   "prompt": "불탄 마을 북쪽 높은 단으로 올라가는 길을 못 찾겠어. 한 칸짜리 오르막이 울타리 길 옆에 숨어 있대. 요새 가는 길 밑에 넓게 보이는 오르막을 놔 줘.",
+   "requires": [
+    "check_terrain_access 로 마을 입구에서 북쪽 출구까지 실제 통행(높이·경사로 옆벽 포함) 확인",
+    "place_terrain_ramp — 출구 길 바로 밑 단 가장자리, 폭 4"
+   ],
+   "verify": "마을 입구에서 걸어 새 오르막으로 북쪽 단에 올라 요새 길에 닿는다(출하 플레이어)",
+   "suiteCategory": "fs2-relief-ramp-access"
   }
  ],
  "gates": {

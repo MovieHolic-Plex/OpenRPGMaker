@@ -1,3 +1,4 @@
+import { setSessionCheckpoint } from "@/player/checkpoints";
 import { playCinematicSequence } from "@/player/cinematicSequence";
 import { LifeReconciliationError } from "@/project/lifeRecovery";
 import { openEventMenu } from "@/player/playerEventMenus";
@@ -666,6 +667,9 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
       renderLoad(fromTitle, `${slot}번 저장 칸을 불러올 수 없습니다`);
       return;
     }
+    // 독립 판정(judge15): 저장을 불러온 뒤 지면 「체크포인트에서 다시 시작」이 사라졌다(체크포인트는 판 메모리라 불러오기로 비었다).
+    // 불러온 저장을 그 판의 체크포인트로 삼는다 — 다음 맵 진입·체크포인트 이벤트가 오면 그것으로 바뀐다.
+    setSessionCheckpoint(restored, result.snapshot);
     if (fromTitle || !game) {
       startGame({ session: restored });
       return;
@@ -695,6 +699,9 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
       renderLoad(fromTitle, "자동 저장을 불러올 수 없습니다");
       return;
     }
+    // 독립 판정(judge15): 저장을 불러온 뒤 지면 「체크포인트에서 다시 시작」이 사라졌다(체크포인트는 판 메모리라 불러오기로 비었다).
+    // 불러온 저장을 그 판의 체크포인트로 삼는다 — 다음 맵 진입·체크포인트 이벤트가 오면 그것으로 바뀐다.
+    setSessionCheckpoint(restored, result.snapshot);
     if (fromTitle || !game) {
       startGame({ session: restored });
       return;

@@ -713,7 +713,10 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
 
   applySession(session: PlaySession): void {
     this.battleAbortController?.abort();
+    // 불러온 저장은 그 자체가 체크포인트다(loadSlot 이 붙인다) — 복제본으로 옮겨 붙인다.
+    const carried = getSessionCheckpoint(session);
     this.session = structuredClone(session);
+    if (carried) setSessionCheckpoint(this.session, carried);
     // 불러오기·체크포인트·패배 복구는 주인공을 새로 세운다 — 추격자가 곧바로 잡지 않게 은총 시간을 다시 준다(J61).
     startChaseSpawnGrace(this);
     // 엔딩·CG 해금은 세이브가 아니라 이 기기 기록이다 — 불러오기·체크포인트·패배 복구로 세션을 갈아 끼워도 목록이 0 으로 돌아가지 않게 다시 비춘다.
@@ -849,7 +852,11 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
 
   private initialSession(project: ReturnType<typeof store.getCurrent>): PlaySession {
     const value: unknown = this.game.registry.get("initialSession");
-    return isPlaySession(value) ? structuredClone(value) : startSession(project);
+    if (!isPlaySession(value)) return startSession(project);
+    const session = structuredClone(value);
+    const carried = getSessionCheckpoint(value);
+    if (carried) setSessionCheckpoint(session, carried);
+    return session;
   }
 
   private initialEventTestId(): string {

@@ -1086,7 +1086,8 @@ function dawnwell(project: Project, exec: Exec): void {
   exec(project, "set_map_properties", { mapId: FS2_DAWNWELL_ID, mapRole: "field" });
   exec(project, "set_scene_mood", {
     mapId: FS2_DAWNWELL_ID, applyMode: "map",
-    lighting: { ambient: 0.4, color: "#3a3440" }, weather: { kind: "fog", intensity: 0.45 },
+    lighting: { ambient: 0.62, color: "#4a4450" }, weather: { kind: "fog", intensity: 0.3 },
+    // 독립 판정(judge15): 마을 터 들어선 화면이 거의 검정이라 감마를 올려 가며 걸었다 — 재 안개는 남기고 밝기를 올린다.
   });
   // 재의 들판(두 번째 들판) 북쪽 끝 → 마을 터 남쪽.
   const [north1, field] = FS2_NORTH_ROUTE.mapIds;
@@ -1380,6 +1381,9 @@ function northFortress(project: Project, exec: Exec, hubId: string): void {
   } });
   // 새벽샘 북쪽 — 돌길에서 맵 끝까지 흙길을 내 요새 입구로 이끈다(풀밭 한가운데 출구로 보이지 않게).
   exec(project, "paint_road", { mapId: FS2_DAWNWELL_ID, points: [{ x: FORT_GATE.x, y: 6 }, { x: FORT_GATE.x, y: 0 }], style: "dirt", naturalness: 0 });
+  // 독립 판정(judge15): 북쪽 고지로 오르는 길이 동쪽 울타리 길의 한 칸 경사로(28,9~10)뿐이라 30걸음 넘게 단 밑을 더듬었다.
+  // 요새 길(x=24) 바로 밑 단 가장자리에 넓은 매끈한 경사로를 하나 더 놓는다 — 문에서 북쪽으로 곧장 보이는 오르막.
+  exec(project, "place_terrain_ramp", { mapId: FS2_DAWNWELL_ID, at: { x: FORT_GATE.x - 2, y: 9 }, width: 4 });
   // 요새 — 새벽샘 북쪽 길 끝. 방 문법으로 짓고, 보이는 적(경비견)·상자·쉼터는 도구가 채운다. 사람 순찰은 아래에서 칩을 주고 따로 놓는다.
   // 쇠뇌병 — 2층 막사의 고정 보초. 시야가 길고 빠르게 겨눈다(닿기 전에 느낌표).
   copyEnemy("enemy_fs2_night_soldier", {
