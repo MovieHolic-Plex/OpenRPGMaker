@@ -187,7 +187,7 @@ function shotHeroes(project: Project): void {
   const leonEnd = chipAt(view, { x: 23, y: 10 });
   pop(project, id, "leon-shout", "exclaim", { x: leonEnd.x + 12, y: leonEnd.y - 16 }, 3450, ms);
   sfx(project, id, "doors", SFX.doors, 0, 2600, 0.95);
-  sfx(project, id, "unsheathe", SFX.sword, 3400, 900, 0.5);
+  sfx(project, id, "unsheathe", SFX.sword, 3400, 900, 1);
   captions(project, id, [{ atMs: 3700, text: "레온 「여기까지다, 마왕 제르바스!」", color: INK.hero }]);
 }
 
@@ -232,9 +232,10 @@ function shotDeal(project: Project): void {
   beats.forEach((b, i) => { if (b.pop) pop(project, id, `pop-${i}`, b.pop, above(at[b.who]), b.at, Math.min(ms, b.at + 1500)); });
   captions(project, id, beats.map((b) => ({ atMs: b.at + (b.pop ? 250 : 0), text: b.text, color: b.who === "maou" ? INK.maou : INK.hero })));
   // 개그 박 — 「4분의 1」에 레코드가 긁히고, 「거절한다!!」에 화면이 한 번 흔들린다.
-  sfx(project, id, "scratch", SFX.scratch, 4650, 550, 0.85);
-  sfx(project, id, "no-2", "cc0-se-orp-battle-sword-unsheathe", 6300, 700, 0.45);
-  sfx(project, id, "heart", "cc0-se-osx-bell-02", 10200, 900, 0.35);
+  // 개그 박 효과음은 애니메틱 음악 위로 들려야 한다 — 0.35~0.5 는 녹음에서 검출되지 않았다(2026-10-30 실녹음 상관 0.0~0.2).
+  sfx(project, id, "scratch", SFX.scratch, 4650, 550, 1);
+  sfx(project, id, "no-2", "cc0-se-orp-battle-sword-unsheathe", 6300, 700, 1);
+  sfx(project, id, "heart", "cc0-se-osx-bell-02", 10200, 900, 0.9);
 }
 
 /** 컷 4 — 「말로 안 되면 힘으로」. 마왕에게 바짝 다가서고 붉은 빛이 차오르다 하얗게 닫힌다(바로 전투로). */
