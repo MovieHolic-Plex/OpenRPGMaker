@@ -170,6 +170,9 @@ async function battle(page, seg, plan) {
       if (want !== "attack") {
         const skill = by(`actor-skill-${want}`);
         if (skill) { w.i++; skill.click(); return `skill:${want}`; }
+        // 계획한 기술이 이 배우 것이 아니다(쓰러진 동료 차례가 건너뛰어져 계획이 어긋남) — 열린 목록의 첫 기술을 쓴다.
+        const anySkill = live.find((n) => (n.dataset.testid || "").startsWith("actor-skill-") && !/back|cancel/.test(n.dataset.testid));
+        if (anySkill) { w.i++; anySkill.click(); return `skill:${anySkill.dataset.testid.slice(12)}`; }
         const menu = by("actor-command-skill");
         if (menu && !w.triedMenu) { w.triedMenu = true; menu.click(); return "menu"; }
         w.triedMenu = false;
@@ -177,6 +180,7 @@ async function battle(page, seg, plan) {
       }
       w.triedMenu = false;
       const attack = by("actor-command-attack"); if (attack) { w.i++; attack.click(); return "attack"; }
+      const backText = live.find((n) => n.innerText.trim() === "뒤로"); if (backText) { backText.click(); return "back-list"; }
       return null;
     }, plan);
     if (done) { seg.texts.push(`[전투] ${done}`); if (done.startsWith("skill") || done === "attack") turns++; await page.waitForTimeout(900); }
