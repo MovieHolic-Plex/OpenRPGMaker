@@ -4,6 +4,8 @@
 //
 // 1-boot : Enter 시각을 0 으로 로딩 막의 단계(data-stage)·진행 막대가 바뀐 시각, 막이 사라진 시각, 첫 대사창/오프닝이 뜬 시각.
 const OUT = process.env.QA_OUT ?? "/tmp/pacing-boot";
+// 칩셋 스트립 애니메이션(분수·물·횃불) — 만들어진 수와 지금 도는 스프라이트 수. 게으른 생성(2026-10-29)이 실제로 도는지 본다.
+const STRIP_ANIMS = `(() => { const sc = window.__oprnHooksScene; if (!sc) return null; const keys = sc.anims.anims.keys().filter((k) => k.includes(':uploaded_tiles_')); let playing = 0; const other = {}; const seen = new Set(); const walk = (o) => { if (!o || seen.has(o)) return; seen.add(o); const k = o.anims?.isPlaying ? String(o.anims.currentAnim?.key) : null; if (k?.includes(':uploaded_tiles_')) playing++; else if (k) other[k.slice(0, 40)] = (other[k.slice(0, 40)] ?? 0) + 1; for (const c of o.list ?? []) walk(c); }; for (const c of sc.children.list) walk(c); for (const c of sc.sys.displayList?.list ?? []) walk(c); return { created: keys.length, playing, objects: seen.size, other: Object.entries(other).slice(0, 8) }; })()`;
 /** @type {import("../../lib/runtimeQa.d.mts").RuntimeQaScenario} */
 export const pacingBootScenario = {
   id: "pacing-boot",
@@ -41,8 +43,14 @@ export const pacingBootScenario = {
     { id: "boot", note: "Enter → 필드", ops: [
       { kind: "waitForRuntime", timeoutMs: 240000 },
       { kind: "hold", dir: null, ms: 4000 },
-      { kind: "evalToFile", out: `${OUT}/1-boot.json`, fn: "() => { clearInterval(window.__qaBootTimer); return { log: window.__qaBoot, create: window.__qaCreate, boot: window.__oprnPlayBootLog?.()?.map((d) => ({ stage: d.stage, ms: Math.round(d.elapsedMs), detail: d.detail })), images: (() => { const r = performance.getEntriesByType('resource').filter((e) => /\\.(png|webp|jpe?g)(\\?|$)/.test(e.name)); return { count: r.length, kB: Math.round(r.reduce((a, e) => a + (e.decodedBodySize || e.encodedBodySize || 0), 0) / 1024), top: r.sort((a, b) => (b.decodedBodySize || 0) - (a.decodedBodySize || 0)).slice(0, 8).map((e) => ({ name: e.name.split('/').slice(-1)[0].slice(0, 60), kB: Math.round((e.decodedBodySize || 0) / 1024), ms: Math.round(e.duration) })) }; })() }; }" },
+      { kind: "evalToFile", out: `${OUT}/1-boot.json`, fn: `() => { clearInterval(window.__qaBootTimer); return { log: window.__qaBoot, create: window.__qaCreate, stripAnims: ${STRIP_ANIMS}, boot: window.__oprnPlayBootLog?.()?.map((d) => ({ stage: d.stage, ms: Math.round(d.elapsedMs), detail: d.detail })), images: (() => { const r = performance.getEntriesByType('resource').filter((e) => /\\.(png|webp|jpe?g)(\\?|$)/.test(e.name)); return { count: r.length, kB: Math.round(r.reduce((a, e) => a + (e.decodedBodySize || e.encodedBodySize || 0), 0) / 1024), top: r.sort((a, b) => (b.decodedBodySize || 0) - (a.decodedBodySize || 0)).slice(0, 8).map((e) => ({ name: e.name.split('/').slice(-1)[0].slice(0, 60), kB: Math.round((e.decodedBodySize || 0) / 1024), ms: Math.round(e.duration) })) }; })() }; }` },
       ...(process.env.QA_PROFILE ? [{ kind: "cpuProfileStop", out: `${OUT}/2-profile.json`, raw: `${OUT}/2-boot.cpuprofile` }] : []),
     ], shot: true },
+    // QA_STRIP_MAP=<맵 id> QA_STRIP_AT=x,y : 스트립 칸이 있는 맵으로 옮겨 애니메이션이 실제로 도는지 본다.
+    ...(process.env.QA_STRIP_MAP ? [{ id: "strip", note: "스트립 칸이 있는 맵", ops: [
+      { kind: "teleport", mapId: process.env.QA_STRIP_MAP, x: Number((process.env.QA_STRIP_AT ?? "1,1").split(",")[0]), y: Number((process.env.QA_STRIP_AT ?? "1,1").split(",")[1]) },
+      { kind: "evalToFile", out: `${OUT}/3-strip-wait.json`, fn: "async () => { await new Promise((r) => setTimeout(r, 2500)); return 2500; }" },
+      { kind: "evalToFile", out: `${OUT}/3-strip.json`, fn: `() => (${STRIP_ANIMS})` },
+    ], shot: true }] : []),
   ],
 };

@@ -894,11 +894,20 @@ vm3/vm4 판정 「대사 한 글자씩 느리게」「엔딩 뒤 크레딧 대�
   주의: 타이틀로 나간 뒤에도 옛 판의 `window.__oprnDebug` 가 남아 새 판이 훅을 갈아 끼우기 전까지 옛 상태를 읽는다(QA 는 훅 교체를 기다린다).
 - **저장 직후 Esc** (`src/player/playerStatusMenuController.ts` `justSaved`): 저장 칸에 저장한 바로 다음 Esc 는 저장 화면 한 단계가 아니라 메뉴 전체를 닫는다
   (menu-save-escape: 필드까지 Esc 2 → 1번). 다른 키·마우스를 쓰면 풀리고, 덮어쓰기 확인 중 Esc·최상위 Esc 한 번 닫기는 그대로다.
-- **새 게임 로딩 8~10초 (측정만, 미수정)** — `pacing-boot.scenario.mjs`(`QA_SKIP_OPENING=1` 판정자처럼 오프닝을 넘김, `QA_PROFILE=1` CPU 표본 → 새 QA op `cpuProfileStart`/`cpuProfileStop`).
+- **새 게임 로딩 8~10초 (측정, 아래 게으른 등록으로 일부 수정)** — `pacing-boot.scenario.mjs`(`QA_SKIP_OPENING=1` 판정자처럼 오프닝을 넘김, `QA_PROFILE=1` CPU 표본 → 새 QA op `cpuProfileStart`/`cpuProfileStop`).
   vm3 flash jrpg(web json 11.7MB, 그중 `beodeul_city` 타일셋 정의 7.9MB·23,936칸), 머신 부하 50~60에서: Enter → 에셋 단계 시작 2.3~2.6s,
   에셋(그림 받기·디코드·텍스처 올리기) 15→85% 5~6.7s, `PlayScene.create` 2.6~5s(프레임 등록 0.7~1.4s, 높이 지형 `reliefGroundFromImage` 시트 픽셀 읽기 ~1s,
   `renderReliefLayer` ~0.8s; 칸 그리기는 60ms). 오프닝은 로딩 위를 덮어 돌고 넘겨도 총 시간은 같다(13.2 vs 13.3s) — 오프닝 렌더(`quantizePixelGrid`)는 병목이 아니다.
   원인은 버들항 공용 칩셋 한 장의 크기다. 고치려면 쓰는 칸만 프레임 등록·시트 픽셀 읽기 캐시(세션 간)·relief 지면 사전 계산 중 하나가 필요하고, 모두 런타임 타일 경로 변경이다.
+- **큰 칩셋 게으른 등록 (2026-10-29)** — 버들항(38,016칸·스트립 2,266)처럼 큰 칩셋은 맵이 쓰는 칸만 만든다.
+  `src/assets/bundled.ts` `installLazyTileFrames`: 4,096칸 넘는 시트는 `tile_N`(+네 쿼터) 프레임을 미리 다 만들지 않고 텍스처의 `get`/`has` 가 처음 부를 때 만든다
+  (`Texture.add` 가 안에서 `has` 를 부르므로 재진입 막기 필수 — 빠뜨리면 스택 넘침). 작은 시트는 그대로 미리 등록하고, 그 경로의 `includes` 는 `Set` 으로 바꿨다.
+  `src/assets/uploadedTilesets.ts`: 스트립이 256개 넘으면 `registerTilesetStripAnimations` 가 만들지 않고, `ensureTilesetStripAnimation(scene, 이름)` 이
+  애니메이션 이름(`텍스처:uploaded_tiles_첫칸_프레임수_fps`)만으로 처음 쓸 때 만든다 — 호출처는 `playTileAnimation`(플레이어)·`createSharedAnimatedTile`(편집기) 둘뿐이다.
+  `src/editor/reliefGroundSurface.ts`: 높이 지면 픽셀은 시트 전체 `getImageData` 대신 16줄 띠(`GroundRaster.band`)를 처음 쓸 때 읽는다(띠 찾기는 줄마다 한 번).
+  측정(pacing-boot `QA_PROFILE=1`, 같은 부하 연속, 출하 플레이어): `ensureTilesetTexture` 853→559ms, `registerBundledFrames` 739→334, `reliefGroundFromImage` 98→7,
+  게으른 프레임 생성 합계 27ms, 부팅 로그 ready 8.4→5.8s(부하 요동 큼). 스트립 맵(`QA_STRIP_MAP`) 확인: 만든 스트립 애니 4,532→2, 도는 칸 2=2, 그림 같음.
+  남은 비용은 그림판 굽기(`bakeTilesetTextureCanvas`·`texImage2D` ~0.5s)와 `renderReliefLayer`(~0.8s, relief 렌더 자체)다.
 - **HUD 목표 줄 「…푼다 (」 잘림 (런타임 결함 아님)** — `hud-objective-long.scenario.mjs` 로 vm3 argon jrpg 를 재현하면 긴 목표
   「동굴 입구를 막고 있는 결계를 푼다 (마왕의 동굴 입구: 동쪽 → 결계 해제 / 회복의 샘: 시작 마을 서쪽)」가 오른쪽 위 상자(최대 폭 40%)에 세 줄로 다 보이고 넘침 0이다.
   판정자의 화면 캡처도 세 줄 전부였다. 잘린 것은 판정자 손 도구(`assistant-whole-game/tools/hplay.mjs` 의 `ui` 본문)가 `document.body.innerText` 를 300자로 자르는데
