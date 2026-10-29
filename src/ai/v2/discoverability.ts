@@ -19,6 +19,7 @@ import { mapRoute, objectiveTargetViews } from "@/player/objectiveTarget";
 import type { RuntimeEventView } from "@/project/runtimeEventState";
 import { computeReachableCells } from "@/project/lint/reachability";
 import { josa } from "@/util/josa";
+import { unreachableEvents } from "./eventReach";
 
 export const OBJECTIVE_COMMAND_ID = "m2-214-ui-command";
 export const OBJECTIVE_SURFACE = "objectiveChip";
@@ -814,6 +815,13 @@ function doorClusterTaken(project: Project, map: GameMap, x: number, y: number, 
   return false;
 }
 
+/** 이벤트를 문 그림 칸 (x,y) 로 옮겨도 걸어 가 설 칸이 남나(지금 닿지 않는 이벤트는 따지지 않는다). */
+function doorStandable(project: Project, map: GameMap, event: GameEvent, x: number, y: number): boolean {
+  if (unreachableEvents(project, map.id, [event.id]).length) return true;
+  const moved = { ...map, events: (map.events ?? []).map((e) => e.id === event.id ? { ...e, x, y } : e) } as GameMap;
+  return unreachableEvents({ ...project, maps: { ...project.maps, [map.id]: moved } } as Project, map.id, [event.id]).length === 0;
+}
+
 export function offArtEntrances(project: Project): OffArtEntrance[] {
   const story = new Set(storyEvents(project).map((event) => `${event.mapId}|${event.eventId}`));
   const out: OffArtEntrance[] = [];
@@ -839,6 +847,8 @@ export function offArtEntrances(project: Project): OffArtEntrance[] {
         if (!isDoorArtCell(project, map, x, y) || taken.has(`${x},${y}`)) continue;
         if (doorClusterTaken(project, map, x, y, taken)) continue;
         if ((Math.abs(dx) === 2 || Math.abs(dy) === 2) && (!isPassable(project, map, event.x + dx / 2, event.y + dy / 2) || isDoorArtCell(project, map, event.x + dx / 2, event.y + dy / 2))) continue;
+        // 그림 칸으로 옮기면 앞에 설 칸이 없는 문(벽 속 석문 그림 — 아래 줄도 벽)은 이 이벤트의 입구가 아니다(vm2 deepseek jrpg 「마왕과의 결전」).
+        if (!doorStandable(project, map, event, x, y)) continue;
         // 칸막이·건물 벽에 붙은 같은 문 덩어리에 이미 다른 이벤트가 있으면 이 이벤트의 문이 아니다.
         door = { x, y };
         break;

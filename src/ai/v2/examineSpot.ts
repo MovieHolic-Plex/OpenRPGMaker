@@ -218,7 +218,9 @@ function furnitureRect(run: BuildRun, map: GameMap, c: Cell): { left: number; to
 
 export function settleFurnitureSpots(run: BuildRun, mapId: string): string[] {
   const notes: string[] = [];
-  const ids = (run.ctx.project.maps[mapId]?.events ?? []).filter((e) => invisible(e) && examineOnly(e) && !carriesTransfer(e) && !e.id.startsWith("ev_chain_seal_") && !isDoorName(String((e as { name?: string }).name ?? ""))).map((e) => e.id);
+  // 싸움·이동을 하는 이벤트는 조사 칸이 아니다 — 투명 보스 「마왕과의 결전」이 옆 벽에 붙고 벽 몸이 되어 설 칸을 잃었다(vm2 deepseek jrpg 재생).
+  const fights = (e: GameEvent) => /"kind":"battleProcessing"/u.test(JSON.stringify(e.pages ?? []));
+  const ids = (run.ctx.project.maps[mapId]?.events ?? []).filter((e) => invisible(e) && examineOnly(e) && !carriesTransfer(e) && !fights(e) && !e.id.startsWith("ev_chain_seal_") && !isDoorName(String((e as { name?: string }).name ?? ""))).map((e) => e.id);
   for (const id of ids) {
     const find = () => run.ctx.project.maps[mapId]?.events.find((e) => e.id === id);
     const ev0 = find(), map0 = run.ctx.project.maps[mapId];
@@ -244,6 +246,9 @@ export function settleFurnitureSpots(run: BuildRun, mapId: string): string[] {
     // b) 가구 위 → 가구 전체가 몸.
     const ev = find(), map = run.ctx.project.maps[mapId];
     if (!ev || !map || !objectAt(map, ev) || isPassable(run.ctx.project, map, ev.x, ev.y)) continue;
+    // 지나가는 장치(열리면 건너편으로 옮겨 주는 덩굴 문 등)는 가구가 아니다 — 몸을 넓히면 그 줄의 지나갈 칸이 막힌다
+    // (standin monster 재생: 「vine_gate」 3×1 몸이 (9,14)를 막아 자동 플레이가 체육관 장치에 못 갔다).
+    if (DOORISH.test(`${String((ev as { name?: string }).name ?? "")} ${ev.id}`)) continue;
     if ((ev.pages ?? []).some((p) => { const f = (p as { footprint?: { width?: number; height?: number } }).footprint; return (f?.width ?? 1) > 1 || (f?.height ?? 1) > 1; })) continue;
     const rect = furnitureRect(run, map, ev);
     if (!rect) continue;
