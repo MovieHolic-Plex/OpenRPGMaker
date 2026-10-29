@@ -65,6 +65,17 @@ Phaser `preRender` 는 경계가 있으면 따라가기·패닝 뒤 clamp 를 �
 캐릭터 아래의 줄별 마스크·카메라 창 캐시·타일 제자리 수정 무효화·shutdown 정리는
 [sunlight-shadows.md](sunlight-shadows.md)를 읽는다. 통행/시야 계산과 독립이다.
 
+## ★ 기물 뒤에 가려진 주인공 실루엣 (2026-10-29)
+
+- `src/player/playerOcclusionGhost.ts`(PlayScene.update 에서 `syncPlayerOcclusionGhost`). vm4/vm5 판정 D 「주인공이 가구·NPC 와 겹쳐 그려짐」 21건을
+  `depth-overlap` 시나리오(자리마다 주인공을 옮겨 겹치는 그림의 깊이를 적음)로 재현하니 **깊이 규칙 위반은 0** 이었다 — 주인공보다 북쪽 줄 그림이 위에 그려진 곳이 없다.
+  실제로 있던 것: ① 책장과 지구본 사이처럼 북쪽이 막힌 ★ 칸(지구본 윗칸 `tile_5173`, 늘 캐릭터 위)에 서면 머리만 남고 몸이 사라짐(vm4 terra/escape·vm5 flash/escape·
+  deepseek/escape 지구본·지도 탁자) ② 위아래로 붙어 선 인물끼리 24×32 그림이 한 칸 겹침(RM2000 과 같은 3/4 규칙, 런타임 결함 아님)
+  ③ 인물을 독서대·깔개 위에 놓은 배치·지구본 크기(빌더·그림).
+- ①만 런타임에서 고친다: 몸 칸의 ★ 칸 불투명 비율 ≥ 0.35 이거나 몸·머리 칸 6:4 가중 ≥ 0.45 이면 주인공 그림을 반투명(0.5) 실루엣으로 ★ 그릇(250k) 바로 위에 한 번 더 그린다.
+  충돌은 바꾸지 않는다 — 처마 밑 길·숲 가장자리처럼 일부러 뒤로 지나가는 칸이 막히기 때문. 계산은 주인공 칸이 바뀔 때만, 칸 불투명 비율은 텍스처·칸마다 한 번.
+  QA 는 `scene.playerOcclusion`({body, head, weighted, ghost})과 이름 `player-occlusion-ghost` 스프라이트를 읽는다.
+
 ## 작은 방은 화면을 채운다 · 어둠 막은 맵 안에만 (2026-10-28)
 
 - **작은 맵 맞춤 배율.** `playSceneCamera.smallMapFillZoom` = 맵 전체(북쪽 돌출 포함)가 화면에 다 들어가는 가장 큰 **정수 캔버스 배율**.

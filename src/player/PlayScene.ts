@@ -1,4 +1,5 @@
 import { syncSessionWithDeviceRecords } from "@/player/deviceRecords";
+import { syncPlayerOcclusionGhost } from "@/player/playerOcclusionGhost";
 import { setCharacterBaseOrigin } from "./characterOrigin";
 import { restoreRuntimeTimers } from "@/player/playSceneTimers";
 import { syncTerrainVision } from "./terrainVision";
@@ -460,6 +461,8 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     // 맵 크기만큼 부풀고, 마커 클릭이 무대를 스크롤시켜 재생 화면이 검게 된다(runtimeDom 주석).
     this.runtimeDom.syncCameraOffset(this.cameras.main.scrollX, this.cameras.main.scrollY);
     syncSceneEmotes(this);
+    // ★ 기물 뒤에 몸이 가려지면 반투명 실루엣(playerOcclusionGhost.ts).
+    syncPlayerOcclusionGhost(this);
     if (this.zoneFeedback) syncPlaySceneZoneFeedback(this, this.zoneFeedback, deltaMs);
     this.syncHandSlotChip();
     if (this.minimap) {
