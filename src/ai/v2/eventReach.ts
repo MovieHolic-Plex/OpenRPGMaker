@@ -10,7 +10,7 @@
 import { canMove, isPassable } from "@/project/collision";
 import { playerAnchors } from "@/editor/tools/transferReachability";
 import type { GameEvent, GameMap, Project } from "@/project/types";
-import { objectAt, tileLabel } from "./people";
+import { objectAt, PERSON_SPOT_BAD, personSpotContext, personSpotCost, tileLabel } from "./people";
 import { objectBaseLabel, objectClusterAt } from "@/project/objectFootprint";
 import type { BuildRun } from "./types";
 
@@ -546,11 +546,17 @@ export function spreadCrowdedPeople(run: BuildRun, mapId: string): string[] {
     if (!anchors.length) continue;
     const w = map.width;
     const reach = reachFrom(project, map, anchors, blockersOf(map));
-    if (openSides(map, reach, ev) >= 2) continue;
+    // 「막는 칸」(2026-10-29 room-vig6 tavern 88: 주인·선원·일꾼이 양탄자 윗머리에 위아래로 붙어 섰다): 실내에서 문 곁·가구의 하나뿐인 접근 칸·
+    // 다른 사람 바로 위아래·큰 양탄자 위(people.ts personSpotCost ≥ 4)도 옮길 이유다 — 둘레가 열려 있어도, 다른 사람과 붙지 않았어도.
+    const indoor = (map as unknown as { climate?: { mode?: string } }).climate?.mode === "indoor";
+    const spotCtx = indoor ? personSpotContext(project, map, id) : undefined;
+    const spot = (c: Cell) => (spotCtx ? personSpotCost(project, map, c, spotCtx) : 0);
+    const blocking = spot(ev) >= PERSON_SPOT_BAD;
+    if (!blocking && openSides(map, reach, ev) >= 2) continue;
     const blockerAt = new Map((map.events ?? []).filter((e) => e.id !== id && eventBlocks(e)).map((e) => [e.y * w + e.x, e] as const));
     // 대각으로도 다른 사람과 붙은 칸은 덜 반긴다(줄 서 있는 듯 보이고, 다음 사람이 옮길 자리를 막는다).
     const nearPerson = (c: Cell) => { for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) { const o = blockerAt.get((c.y + dy) * w + c.x + dx); if ((dx || dy) && o && isPerson(o)) return true; } return false; };
-    if (!DIRS.some(([dx, dy]) => blockerAt.has((ev.y + dy) * w + ev.x + dx))) continue; // 혼자 한 면만 열린 자리(카운터 뒤)
+    if (!blocking && !DIRS.some(([dx, dy]) => blockerAt.has((ev.y + dy) * w + ev.x + dx))) continue; // 혼자 한 면만 열린 자리(카운터 뒤)
     const people = (map.events ?? []).filter((e) => e.id !== id && isPerson(e) && eventBlocks(e));
     const before = unreachableEvents(project, mapId).length;
     const sidesBefore = new Map(people.map((p) => [p.id, openSides(map, reach, p)]));
@@ -564,7 +570,9 @@ export function spreadCrowdedPeople(run: BuildRun, mapId: string): string[] {
       if (!free[i] || d === 0 || d > 6 || blockerAt.has(i) || anchorSet.has(i) || lanes.has(i)) continue;
       if ((map.events ?? []).some((e) => e.id !== id && e.x === x && e.y === y)) continue;
       if (DIRS.some(([dx, dy]) => blockerAt.has((y + dy) * w + x + dx))) continue;
-      cands.push({ c: { x, y }, s: d + (nearPerson({ x, y }) ? 2 : 0) });
+      const sc = spot({ x, y });
+      if (sc >= PERSON_SPOT_BAD) continue; // 옮긴 자리도 막는 칸이면 안 된다
+      cands.push({ c: { x, y }, s: d + (nearPerson({ x, y }) ? 2 : 0) + sc });
     }
     cands.sort((a, b) => a.s - b.s);
     let target: Cell | undefined;
@@ -582,7 +590,7 @@ export function spreadCrowdedPeople(run: BuildRun, mapId: string): string[] {
     }
     if (!target) continue;
     const res = run.call("move_event", { mapId, eventId: id, x: target.x, y: target.y });
-    if (res.ok) notes.push(`${String(ev.name ?? id)} (${ev.x},${ev.y})→(${target.x},${target.y}) 붙어 선 사람 사이에서 한 면만 열려 있었음`);
+    if (res.ok) notes.push(`${String(ev.name ?? id)} (${ev.x},${ev.y})→(${target.x},${target.y}) ${blocking ? "문 곁·가구 접근 칸·통로 양탄자를 막고 있었음" : "붙어 선 사람 사이에서 한 면만 열려 있었음"}`);
   }
   return notes;
 }

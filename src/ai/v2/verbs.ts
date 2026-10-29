@@ -333,6 +333,12 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
       const fixed = fixPlayerStart(env.ctx.project, result.mapIds);
       if (fixed.note) { env.ctx.project = fixed.project; result = { ...result, warnings: [...result.warnings, fixed.note], ...(result.entrance && result.entrance.mapId === fixed.project.startMapId ? { entrance: { mapId: fixed.project.startMapId, x: fixed.project.startPos.x, y: fixed.project.startPos.y } } : {}) }; }
     }
+    // 다시 짓기(edit_place) 뒤 바닥이 바뀌어 앞서 둔 사람이 문 곁·가구 접근 칸·큰 양탄자 위에 남을 수 있다 — 방 하나만 짓는 판은 끝맺음(clearLanes)이
+    // 돌지 않으므로 여기서도 spreadCrowdedPeople 을 부른다.
+    for (const mapId of result.mapIds) {
+      const settled = spreadCrowdedPeople(run, mapId);
+      if (settled.length) result = { ...result, warnings: [...result.warnings, `사람 자리: ${settled.join(" · ")}`] };
+    }
     const record: PlaceRecord = { builder: builderId, spec, result, rounds };
     for (const mapId of result.mapIds) session.places.set(mapId, record);
     // 다시 짓기로 사라진 층(새 id 로 바뀐 위층)은 기록·검사에서 뺀다 — 남겨 두면 없는 맵의 옛 major 를 「남은 문제」로 들고 다닌다.
@@ -582,6 +588,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
       // 조사·대화 대상 앞(아래 칸)을 막는 의자 하나를 치운다(2026-10-29 VM deepseek mystery: 「의자 때문에 NPC 앞으로 못 간다」).
       for (const n of clearTargetFronts(run, mapId)) notes.push(`${name}: ${n}`);
       // 붙어 선 사람 사이에서 한 면만 열린 사람은 둘레가 열린 칸으로(2026-10-29 vm3 flash 추리: 갈색 머리 손님이 위에서만 말이 걸렸다).
+      // 실내에서 문 곁·가구의 하나뿐인 접근 칸·다른 사람 바로 위아래·큰 양탄자 위에 선 사람도(personSpotCost — room-vig6 tavern, 탈출·추리 인물 포함).
       for (const n of spreadCrowdedPeople(run, mapId)) notes.push(`${name}: ${n}`);
       for (const m of r.moved) notes.push(`${name}: ${m}`);
       for (const s of r.stuck) notes.push(`${name}: ${s} — 옮길 자리가 없어 그대로 둠`);

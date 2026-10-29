@@ -240,6 +240,19 @@ function build(run: BuildRun, args: Record<string, unknown>): Attempt {
   return { ok: r.ok, data: r.data as Record<string, unknown> | undefined, summary: String(r.summary ?? "") };
 }
 const reachOk = (a: Attempt) => a.ok && Array.isArray(a.data?.unreachedFloor) && (a.data!.unreachedFloor as unknown[]).length === 0;
+/**
+ * 짓기 경고 중 기물끼리 부딪힌 것의 수 — 같은 칸 조각 버림·「옆에 닿는 칸이 없다(쓸 수 없는 가구)」·겹침.
+ * 빈 바닥 줄이기가 이걸 늘리면 받지 않는다(2026-10-29 room-vig6 horror-ward 76~78: modern_city 병동 견본을 10×11 로 줄이자
+ * 침대 넷·모니터 셋이 서로 겹치고 협탁 둘이 못 쓰는 가구가 됐다 — 빈 바닥 0% 는 겹침으로 산 숫자였다).
+ */
+// 겹침(같은 칸 조각 버림·겹침)은 하나라도 늘면 안 받고, 벽 쪽 한 칸 소품이 「옆에 닿는 칸이 없다」가 되는 것은 둘까지 봐준다
+// (×0.72 병동 15×17 → 13×15: 세면대·정수기 둘이 구석에 몰린 것뿐 — 맨바닥 44% → 31%).
+const OVERLAP_WARNING = /조각 \d+개|버림|겹/u;
+const UNUSABLE_WARNING = /닿는 칸이 없다|쓸 수 없는/u;
+const crashesOf = (a: Attempt) => {
+  const ws = (a.data?.warnings as string[] | undefined) ?? [];
+  return ws.filter((w) => OVERLAP_WARNING.test(w)).length + ws.filter((w) => !OVERLAP_WARNING.test(w) && UNUSABLE_WARNING.test(w)).length / 3;
+};
 
 /** 칸막이 문틈(위·아래 방 사이) 바로 아래·위 칸 — 벽 가구를 걸 벽면이 없다. */
 function openingColumns(rb: Rebuild, data?: Record<string, unknown>): Set<string> {
@@ -1012,6 +1025,9 @@ export const interiorBuilder: PlaceBuilder = {
       let kept = base;
       // 줄인 크기로는 다른 견본이 골라져 재질이 바뀐다(통나무 여관 홀이 푸른 얼룩 돌바닥이 됐다) — 첫 짓기의 바닥·벽면 재질을 물려준다.
       const firstRooms = ((first.data?.rebuild as Rebuild | undefined)?.rooms ?? []);
+      // 줄이기 전 기물 부딪힘 수 — 줄인 판이 이보다 많으면 받지 않는다(crashesOf).
+      let crashes = crashesOf(first);
+      const crashNotes: string[] = [];
       for (const f of [0.85, 0.72, 0.62]) {
         if (pct <= SHRINK_BARE_PCT) break;
         const layout = base.layout as { rooms: { w?: number; h?: number }[] };
@@ -1027,8 +1043,10 @@ export const interiorBuilder: PlaceBuilder = {
         const attempt = build(run, next);
         const now = attempt.ok ? bareOf() : Infinity;
         // 배율마다 배치가 달라져 맨바닥이 들쭉날쭉하다 — 한 번 나빠졌다고 멈추지 않고 셋 다 재 보고 가장 덜 빈 것을 받는다(5칸 넘게 줄어야).
-        if (attempt.ok && now <= pct - 5) { first = attempt; kept = next; pct = now; }
+        if (attempt.ok && now <= pct - 5 && crashesOf(attempt) >= crashes + 1) { crashNotes.push(`×${f} 은 기물 부딪힘 ${crashes.toFixed(1)}→${crashesOf(attempt).toFixed(1)}`); continue; }
+        if (attempt.ok && now <= pct - 5) { first = attempt; kept = next; pct = now; crashes = crashesOf(attempt); }
       }
+      if (crashNotes.length) notes.push(`빈 바닥 줄이기를 일부 받지 않았다 — 줄이면 기물끼리 겹친다(${crashNotes.join(", ")})`);
       // 한 방만 텅 빈 경우(마법학교: 입학 홀만 맨바닥 60%, 서고·교실은 꽉 참) — 전체를 같은 배율로 줄이면 꽉 찬 방이 같이 줄어 자리가 없어
       // 받지 못한다. 가장 빈 방 하나씩 0.7 배로 줄여 보고, 맨바닥 칸 수가 줄면 받는다(최대 다섯 번, 못 줄인 방은 건너뛴다). 비율로 재면 다른 빈 방들에 묻혀
       // 한 방을 줄여도 숫자가 안 움직인다(입학 홀 22×18 → 15×13 이 전체 64% → 65%).
@@ -1065,8 +1083,8 @@ export const interiorBuilder: PlaceBuilder = {
         });
         const next = { ...kept, mapId: builtId, replace: true, layout: { ...layout, rooms: shrunk } };
         const attempt = build(run, next);
-        const nowCells = attempt.ok && reachOk(attempt) ? bareCellsOf() : Infinity;
-        if (nowCells < cells - 8) { first = attempt; kept = next; pct = bareOf(); cells = nowCells; }
+        const nowCells = attempt.ok && reachOk(attempt) && crashesOf(attempt) < crashes + 1 ? bareCellsOf() : Infinity;
+        if (nowCells < cells - 8) { first = attempt; kept = next; pct = bareOf(); cells = nowCells; crashes = crashesOf(attempt); }
         else { build(run, kept); stuck.add(worst.r.id); }
       }
       if (kept !== base || pct > SHRINK_BARE_PCT) build(run, kept);
