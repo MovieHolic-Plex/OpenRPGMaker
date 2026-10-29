@@ -770,9 +770,10 @@ function resultHead(project: Project, snapshot: BattleSnapshot): HTMLElement {
   return el("div", {
     class: "battle-result-summary",
     dataset: { testid: "battle-result-summary" },
+    // 0 인 경험치·돈은 적지 않는다(rewardRows 와 같은 규칙).
     children: [
-      el("span", { class: "battle-result-summary-item", children: ["EXP ", el("span", { class: "battle-result-summary-value", text: `+${snapshot.rewards.exp.toLocaleString("ko-KR")}` })] }),
-      el("span", { class: "battle-result-summary-gold", children: [`+${snapshot.rewards.gold.toLocaleString("ko-KR")} `, currencyUnitNode(resolveTerms(project).gold.trim() || "G")] }),
+      ...(snapshot.rewards.exp > 0 ? [el("span", { class: "battle-result-summary-item", children: ["EXP ", el("span", { class: "battle-result-summary-value", text: `+${snapshot.rewards.exp.toLocaleString("ko-KR")}` })] })] : []),
+      ...(snapshot.rewards.gold > 0 ? [el("span", { class: "battle-result-summary-gold", children: [`+${snapshot.rewards.gold.toLocaleString("ko-KR")} `, currencyUnitNode(resolveTerms(project).gold.trim() || "G")] })] : []),
       ...(loot ? [el("span", { class: "battle-result-summary-loot", text: loot })] : []),
     ],
   });
@@ -1167,9 +1168,11 @@ function rewardRows(snapshot: BattleSnapshot): readonly EmeraldResultRow[] {
   // 저대비 남색 띠로만 보였다(적대 리뷰 3차). 제목+확인 버튼만 남긴다.
   if (emeraldNarrationActive()) return emeraldResultRows(snapshot, skillName);
   if (snapshot.result !== "victory") return [];
+  // 0 인 경험치·돈 줄은 뺀다 — 이야기 전투(보상 없는 연출 전투)에서 「EXP +0 · +0 G」, 「소지금 0 G → 0 G」만 남아
+  // 처음 하는 사람이 보상 계산이 고장 났다고 읽었다(마왕 편의점 처음 하는 사람 검수 2026-10-29).
   const rows: { kind: string; label: string; value: string }[] = [
-    { kind: "exp", label: "경험치", value: `+${snapshot.rewards.exp}` },
-    { kind: "gold", label: battleCurrencyUnit(), value: `+${snapshot.rewards.gold}` },
+    ...(snapshot.rewards.exp > 0 ? [{ kind: "exp", label: "경험치", value: `+${snapshot.rewards.exp}` }] : []),
+    ...(snapshot.rewards.gold > 0 ? [{ kind: "gold", label: battleCurrencyUnit(), value: `+${snapshot.rewards.gold}` }] : []),
   ];
   // 획득한 아이템이 있으면 실제 이름으로, 없으면 행을 추가하지 않는다(거짓 표시 금지).
   // 같은 아이템은 한 행에 ×n — 드롭 6개가 「아이템」 라벨 6줄·같은 아이콘 6개로 늘어나
