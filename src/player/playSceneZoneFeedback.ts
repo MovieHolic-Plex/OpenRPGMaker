@@ -9,6 +9,7 @@ import { promptTargetName } from "@/player/objectiveTarget";
 import { mapTileSize } from "@/project/tileGeometry";
 import { runtimePixelDensity } from "@/player/runtimeViewScale";
 import type { GameMap } from "@/project/types";
+import { createObjectiveCard, destroyObjectiveCard, syncObjectiveCard, type ObjectiveCard } from "@/player/objectiveCard";
 import { chooseObjectivePlacement, choosePromptPlacement, type ObjectivePlacement, type PlacementRect } from "@/player/objectivePlacement";
 import {
   createZoneFeedbackModel,
@@ -97,6 +98,8 @@ export type PlaySceneZoneFeedback = {
   objectivePlace?: { atMs: number; text: string; placement: ObjectivePlacement | null };
   /** 상호작용 안내 자리. 같은 주기로 다시 고른다. */
   promptPlace?: { atMs: number; text: string; x: number; y: number };
+  /** 첫 조작·목표 변경 때 가운데에 잠깐 뜨는 목표 카드(objectiveCard.ts). */
+  card?: ObjectiveCard | null;
 };
 
 const OBJECTIVE_PLACE_MS = 300;
@@ -130,6 +133,7 @@ export function syncPlaySceneZoneFeedback(
   const host = dialogueHost(scene);
   if (host !== feedback.host) {
     feedback.dom?.destroy();
+    destroyObjectiveCard(feedback.card); feedback.card = null;
     feedback.host = host;
     feedback.dom = host ? createZoneFeedbackDom(host) : null;
   }
@@ -155,6 +159,12 @@ export function syncPlaySceneZoneFeedback(
   // 안내를 먼저 놓는다 — 목표 창은 안내(다른 HUD)를 피해 자리를 고른다.
   if (host && feedback.dom && update.view.prompt && !update.view.suppressed) placePrompt(scene, feedback, host, update.view.prompt);
   if (host && feedback.dom && update.view.objective && !update.view.suppressed) placeObjective(scene, feedback, host, update.view.objective);
+  if (host) {
+    // 로딩 막이 걷히고 이벤트(도입 연출)가 끝나 실제로 움직일 수 있는 첫 순간부터 센다.
+    const controllable = !suppressed && !scene.running && !document.querySelector("[data-testid='play-loading-overlay']");
+    // 벽시계로 센다 — 게임 시간(elapsedMs)은 느린 기계에서 프레임 델타 상한 때문에 늘어져 2.8초 카드가 6초 떠 있었다.
+    syncObjectiveCard(feedback.card ??= createObjectiveCard(), host, scene.session, update.view.objective, controllable, performance.now());
+  }
 }
 
 function placePrompt(scene: ZoneFeedbackScene, feedback: PlaySceneZoneFeedback, host: HTMLElement, text: string): void {
@@ -348,6 +358,7 @@ function syncSessionSource(session: PlaySession, feedback: PlaySceneZoneFeedback
 
 export function destroyPlaySceneZoneFeedback(feedback: PlaySceneZoneFeedback): void {
   feedback.dom?.destroy();
+  destroyObjectiveCard(feedback.card); feedback.card = null;
   feedback.dom = null;
   feedback.host = null;
 }

@@ -78,7 +78,10 @@ export type VnUiKey =
   | "ending.creditsSkip"
   | "ending.creditsRead"
   | "ending.returnTitle"
-  | "ending.nextAct";
+  | "ending.nextAct"
+  | "onboard.objective"
+  | "onboard.newObjective"
+  | "onboard.controls";
 
 type Row = Readonly<Record<SupportedLocale, string>>;
 
@@ -154,6 +157,9 @@ export const VN_UI_STRINGS: Readonly<Record<VnUiKey, Row>> = {
   "ending.creditsRead": { ko: "PgUp/PgDn 읽기   ·   Z / Enter 마침", en: "PgUp/PgDn  Read   ·   Z / Enter  Finish", ja: "PgUp/PgDn 読む   ·   Z / Enter 終わる", zh: "PgUp/PgDn 阅读   ·   Z / Enter 结束" },
   "ending.returnTitle": { ko: "타이틀로 돌아가기", en: "Return to title", ja: "タイトルへ戻る", zh: "返回标题" },
   "ending.nextAct": { ko: "다음 막으로", en: "On to the next act", ja: "次の幕へ", zh: "进入下一幕" },
+  "onboard.objective": { ko: "현재 목표", en: "Objective", ja: "現在の目標", zh: "当前目标" },
+  "onboard.newObjective": { ko: "새 목표", en: "New objective", ja: "新しい目標", zh: "新目标" },
+  "onboard.controls": { ko: "방향키 이동 · Z 조사 · Esc 메뉴", en: "Arrows  Move · Z  Examine · Esc  Menu", ja: "方向キー 移動 · Z 調べる · Esc メニュー", zh: "方向键 移动 · Z 调查 · Esc 菜单" },
 };
 
 export function vnUiText(language: { readonly language: DialogueUiLanguage } | undefined, key: VnUiKey, ...args: readonly (string | number)[]): string {

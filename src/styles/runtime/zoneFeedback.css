@@ -77,3 +77,60 @@
     text-align: center;
   }
 }
+
+/* 첫 조작·목표 변경 때 가운데에 잠깐 뜨는 목표 카드(objectiveCard.ts). 구석 목표 줄은 판정자가 「안내 없음」으로 읽었다(2026-10-29). */
+.objective-card {
+  animation: objective-card-in 0.22s ease-out;
+  background: rgba(12, 15, 30, 0.94);
+  border: 1px solid var(--runtime-glass-hairline);
+  border-image: none;
+  border-radius: var(--runtime-glass-radius-small);
+  box-shadow: var(--runtime-glass-shadow);
+  box-sizing: border-box;
+  color: var(--runtime-window-text);
+  display: flex;
+  flex-direction: column;
+  font-family: var(--runtime-ui-font);
+  gap: calc(var(--space-1) * var(--play-ui-scale, 1));
+  left: 50%;
+  max-width: 78%;
+  padding: calc(var(--space-2) * var(--play-ui-scale, 1)) calc(var(--space-3) * var(--play-ui-scale, 1));
+  pointer-events: none;
+  position: absolute;
+  text-align: center;
+  text-shadow: 1px 1px 0 var(--runtime-window-shadow);
+  top: 38%;
+  transform: translate(-50%, -50%);
+  z-index: 31;
+}
+
+.objective-card[hidden] { display: none; }
+
+.objective-card-label {
+  color: var(--runtime-accent, #f4d27a);
+  font-size: calc(var(--runtime-font-size-9) * var(--play-ui-scale, 1));
+  letter-spacing: 0.08em;
+}
+
+.objective-card-text {
+  font-size: calc(var(--runtime-font-size-9) * 1.45 * var(--play-ui-scale, 1));
+  line-height: 1.35;
+  margin: 0;
+  text-wrap: balance;
+}
+
+.objective-card-controls {
+  border-top: 1px solid var(--runtime-glass-hairline);
+  font-size: calc(var(--runtime-font-size-9) * var(--play-ui-scale, 1));
+  opacity: 0.85;
+  padding-top: calc(var(--space-1) * var(--play-ui-scale, 1));
+}
+
+@keyframes objective-card-in {
+  from { opacity: 0; transform: translate(-50%, -42%); }
+  to { opacity: 1; transform: translate(-50%, -50%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .objective-card { animation: none; }
+}
