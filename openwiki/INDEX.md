@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **187쪽 / 7435KB / 약 2,181,916 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **187쪽 / 7441KB / 약 2,183,597 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -15,12 +15,12 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 
 | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
 |---|---|---|---|---|
-| `openwiki/assistant-v2.md` | 77KB | 23KB | 281 | ~23,438 |
+| `openwiki/assistant-v2.md` | 78KB | 23KB | 287 | ~23,856 |
 | `openwiki/atlas-biome-interior.md` | 98KB | 21KB | 511 | ~29,589 |
 | `openwiki/beodeul-city.md` | 191KB | 19KB | 1015 | ~57,960 |
 | `openwiki/charset-actor-harness.md` | 70KB | 7KB | 501 | ~22,135 |
 | `openwiki/editor-ai-panel.md` | 717KB | 100KB ⚠상한 초과 — 절을 더 쪼개라 | 4646 | ~210,745 |
-| `openwiki/editor-ai-tools.md` | 588KB | 90KB ⚠상한 초과 — 절을 더 쪼개라 | 3918 | ~172,335 |
+| `openwiki/editor-ai-tools.md` | 588KB | 90KB ⚠상한 초과 — 절을 더 쪼개라 | 3919 | ~172,591 |
 | `openwiki/editor-database.md` | 457KB | 64KB ⚠상한 초과 — 절을 더 쪼개라 | 2680 | ~134,365 |
 | `openwiki/editor-event-authoring.md` | 185KB | 78KB ⚠상한 초과 — 절을 더 쪼개라 | 1136 | ~54,218 |
 | `openwiki/editor-event-commands.md` | 75KB | 32KB | 322 | ~20,970 |
@@ -38,11 +38,11 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/harnesses/object-gate.md` | 84KB | 12KB | 615 | ~25,505 |
 | `openwiki/harnesses/super-harness.md` | 102KB | 4KB | 1063 | ~32,225 |
 | `openwiki/jp-city.md` | 108KB | 14KB | 510 | ~31,925 |
-| `openwiki/runtime-battle.md` | 436KB | 32KB | 2412 | ~127,987 |
+| `openwiki/runtime-battle.md` | 437KB | 32KB | 2414 | ~128,311 |
 | `openwiki/runtime-m2-flow-controls.md` | 52KB | 23KB | 342 | ~14,200 |
-| `openwiki/runtime-pre-edit-routing.md` | 193KB | 99KB ⚠상한 초과 — 절을 더 쪼개라 | 1161 | ~57,228 |
+| `openwiki/runtime-pre-edit-routing.md` | 193KB | 99KB ⚠상한 초과 — 절을 더 쪼개라 | 1161 | ~57,274 |
 | `openwiki/runtime-project-schema.md` | 261KB | 80KB ⚠상한 초과 — 절을 더 쪼개라 | 1820 | ~73,723 |
-| `openwiki/runtime-sessions.md` | 159KB | 63KB ⚠상한 초과 — 절을 더 쪼개라 | 895 | ~43,571 |
+| `openwiki/runtime-sessions.md` | 161KB | 63KB ⚠상한 초과 — 절을 더 쪼개라 | 906 | ~44,208 |
 | `openwiki/team-project-host.md` | 51KB | 5KB | 536 | ~15,628 |
 | `openwiki/testing.md` | 264KB | 48KB | 2395 | ~74,321 |
 | `openwiki/tileset-reference-documents.md` | 60KB | 4KB | 603 | ~18,386 |
@@ -182,7 +182,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/runtime-m2-flow-controls.md` | 7 | `.omo/evidence/event-runtime-adversarial/README.md`, `cloud-amount-editor.png`, `docs/reviews/2026-09-05-event-runtime-audit.md`, `scripts/capture/capture-parallax-easing.mjs`, `test/runtimePictureStacking.test.ts`, `verify-shots/runtime-qa/cloud-shadows/SUMMARY.md`, `verify-shots/runtime-qa/coordinate-move/SUMMARY.md` |
 | `openwiki/runtime-pre-edit-routing.md` | 11 | `.json`, `.omo/evidence/dialogue-face-url-r13/README.md`, `_trace.json`, `dialogueControlBar.ts`, `docs/reviews/2026-09-05-event-runtime-audit.md`, `editor/core.part-1.css`, `replay.mjs`, `test/playerInputCss.test.ts`, `test/runtimeQaInstrumentationBoundary.test.ts`, `verify-shots/romance-art/SUMMARY.md`, `verify-shots/runtime-qa/emote/SUMMARY.md` |
 | `openwiki/runtime-project-schema.md` | 59 | `.json`, `.png`, `20260827000000_ai_log_anon_delete_revoke.sql`, `@/styles/map/delayed-tooltip.css`, `DRAFT_20260706_auth_rls.sql`, `bake_fallen_star_backdrops.mts`, `communitySaveBoot.test.ts`, `devMediaPromotion.test.ts`, `docs/superpowers/specs/2026-09-15-oprn-local-sqlite-store-design.md`, `docs/superpowers/specs/2026-09-24-mz-four-layer-design.md`, `docs/superpowers/specs/2026-10-07-concept-feed-design.md`, `firstWorldArrival.ts`, `interiorLoadConsistency.test.ts`, `largeRiverMarketVillageBuild.ts`, `mediaImportDurability.test.ts`, `newProjectDialog.ts`, `openwiki/large-village-generation.md`, `output/evidence/event-command-completion/legacy-persistence/ledger.json`, `persist-trace.mjs`, `phaser.min.js`, `presets-editor.json`, `project.json`, `render-relief-maps.mts`, `scripts/lib/fixtureDefaultDatabase.mts`, `scripts/lib/legacyDb-database-ops.mjs`, `scripts/publish-first-visit-demo.mts`, `scripts/qa/issue693-media.mjs`, `scripts/sync-fixture-default-database.mts`, `small-village-generation.md`, `src/project/defaults/fixtures/dew-village-demo.json`, `src/project/legacyDbProjectSync.ts`, `startLobby.ts`, `storeLifecycleReentrancy.test.ts`, `storePersistenceLineage.test.ts`, `tamper-doc.mjs`, `test/aiBlockedEventRelocation.test.ts`, `test/audioDescriptionConcurrentPersistence.test.ts`, `test/cropRegrowthContract.test.ts`, `test/fixtureDefaultDatabaseDrift.test.ts`, `test/fixtures/life-full/coverage.json`, `test/interiorConceptRoutes.test.ts`, `test/io.test.ts`, `test/legacyDbCanonicalRoundtrip.live.test.ts`, `test/legacyDbDatabaseOps.node.test.mjs`, `test/legacyDbMapPatchRecovery.test.ts`, `test/legacyDbProjectSync.test.ts`, `test/legacyDbRlsCoverage.node.test.mjs`, `test/mapPlanningReuse.test.ts`, `test/sampleAdventureNeedsNoBackfill.test.ts`, `test/sharedDemoStore.test.ts`, `test/transactionalNewRemoteProject.test.ts`, `transactionalRemoteSourceLineage.test.ts`, `verify-shots/battle-fix-2026-09-30/rules-probe.json`, `verify-shots/editor-lag-fix/F/normalizer-cost.mts`, `verify-shots/editor-lag-fix/F/ref-roundtrip-eq.mts`, `verify-shots/editor-ux-fixes-round2-20261004/storage/README.md`, `verify-shots/loc-transition/SUMMARY.md`, `verify-shots/worldmap-autotile-adversarial/export-checked.json`, `village/builder.ts` |
-| `openwiki/runtime-sessions.md` | 17 | `docs/qa/saesol-three-hour-ai-authoring.md`, `docs/reviews/2026-09-18-menu-design.md`, `docs/reviews/2026-09-18-menu-eras.md`, `docs/reviews/2026-09-22-game-over/README.md`, `docs/reviews/2026-09-22-terminal-flows/README.md`, `output/evidence/cinematics-p1/runtime.md`, `output/evidence/cinematics-stall.md`, `output/evidence/stardew/stardew-legacyDb.json`, `reports/shots/companion/gap4-follow.png`, `scripts/qa/runtime/opening-assistant-native.cjs`, `src/project/defaults/actionCombatDemoProject.ts`, `test/emberQuestGame.test.ts`, `test/p1DayTransitionIntegration.test.ts`, `test/p1WeatherDayTransition.test.ts`, `verify-shots/runtime-qa/feature16-player/SUMMARY.md`, `verify-shots/runtime-qa/menu-design/SUMMARY.md`, `verify-shots/runtime-qa/weather-after/SUMMARY.md` |
+| `openwiki/runtime-sessions.md` | 18 | `assistant-whole-game/tools/hplay.mjs`, `docs/qa/saesol-three-hour-ai-authoring.md`, `docs/reviews/2026-09-18-menu-design.md`, `docs/reviews/2026-09-18-menu-eras.md`, `docs/reviews/2026-09-22-game-over/README.md`, `docs/reviews/2026-09-22-terminal-flows/README.md`, `output/evidence/cinematics-p1/runtime.md`, `output/evidence/cinematics-stall.md`, `output/evidence/stardew/stardew-legacyDb.json`, `reports/shots/companion/gap4-follow.png`, `scripts/qa/runtime/opening-assistant-native.cjs`, `src/project/defaults/actionCombatDemoProject.ts`, `test/emberQuestGame.test.ts`, `test/p1DayTransitionIntegration.test.ts`, `test/p1WeatherDayTransition.test.ts`, `verify-shots/runtime-qa/feature16-player/SUMMARY.md`, `verify-shots/runtime-qa/menu-design/SUMMARY.md`, `verify-shots/runtime-qa/weather-after/SUMMARY.md` |
 | `openwiki/se-catalog.md` | 9 | `.mjs`, `audio-features.json`, `audition.html`, `cross-check.json`, `dist/se-staging/audition.html`, `inventory.json`, `lib/staticFile.ts`, `placed.json`, `test/audioDescriptionCommandSurfaces.test.ts` |
 | `openwiki/spatial-ai-tools.md` | 6 | `build-shared-object-index.mjs`, `publish-pixel-art-world-local-library.mjs`, `read-pixel-art-world-host.mjs`, `revise-pixel-art-world-civic.mjs`, `save-pixel-art-world-patch.mjs`, `scripts/content/lib/shared-object-catalog-entry.ts` |
 | `openwiki/spatial-authoring-controller.md` | 2 | `output/evidence/tile-to-world/task-11/refresh-identity/Scope.json`, `storeMutationInstrumentation.test.ts` |
@@ -315,7 +315,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L213` 바로 플레이 게임 (2026-10-23)
   - `L307` 조수와 평가 (2026-10-25)
 
-### `openwiki/assistant-v2.md` — 77KB · 281줄 · ~23,438 토큰 · 통째읽기 잘림
+### `openwiki/assistant-v2.md` — 78KB · 287줄 · ~23,856 토큰 · 통째읽기 잘림
 
 - `L16` 다양성 — 같은 요청이 같은 맵이 되지 않게 (2026-10-23)
 - `L24` 게임 요소 — 퀘스트·아이템·전투·파티·스위치 (2026-10-24)
@@ -326,11 +326,11 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L132` 이벤트 자리·시작 칸 (2026-10-29 야외 자동 플레이)
 - `L137` 번호 자물쇠·빈 맵 탈출 (2026-10-29 vm3 flash escape 판정 «가짜 단서·자동 입력»·«단일 빈 맵»)
 - `L151` 조사 자리·조사 표식 (2026-10-29 vm3 terra escape «책상 정면에서는 반응 없음·하이라이트가 흐림»)
-- `L182` 켜는 법
-- `L189` 구조 — v1 실행기를 그대로 쓴다
-- `L207` 빌더가 하는 것 / 못 하는 것
-- `L259` 시험
-- `L267` v1 비교 결과 (2026-10-23, 코드 e06766bd8d)
+- `L188` 켜는 법
+- `L195` 구조 — v1 실행기를 그대로 쓴다
+- `L213` 빌더가 하는 것 / 못 하는 것
+- `L265` 시험
+- `L273` v1 비교 결과 (2026-10-23, 코드 e06766bd8d)
 
 ### `openwiki/atlas-biome-interior.md` — 98KB · 511줄 · ~29,589 토큰 · 통째읽기 잘림
 
@@ -774,7 +774,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L4633` 왼쪽 사이드바(그리기·지형·활동 막대) 탭 전환 계약 (2026-10-17)
 - `L4641` UX 2차 — 도크 배치·서버 AI 꺼짐 문구 (2026-10-21, F24)
 
-### `openwiki/editor-ai-tools.md` — 588KB · 3918줄 · ~172,335 토큰 · 통째읽기 잘림 · 깨진 줄 5
+### `openwiki/editor-ai-tools.md` — 588KB · 3919줄 · ~172,591 토큰 · 통째읽기 잘림 · 깨진 줄 5
 
 - `L3` 파티원 유대 `configure_party_bonds` · 「관계」에 유대 (2026-10-25)
 - `L17` 「드러났다」를 지도에 보이기 `stage_map_reveal` · 장면 대형 `sceneFormation` · 보스 HP 숨김 (2026-10-25)
@@ -974,8 +974,8 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L3829` `author_party_split` — FF6 식 파티 나누기·전환·레버 짝·합류 + 풀이 검사 (2026-10-25, 폴른 2막 과제 4)
 - `L3837` 이야기 일지 — `configure_story_journal` · m2 «Journal Line»(일지에 한 줄 쓰기) (2026-10-25, 폴른 2막 과제 7)
 - `L3848` 전투 중 손님 `add_battle_guest` · 보이는 적 진영 싸움 (2026-10-25, 폴른 스타 2막 과제 8·11)
-- `L3863` `write_blueprint` — 게임 청사진 먼저 (2026-10-28, suite-blueprint)
-- `L3885` `build_blueprint_path` — 청사진 경로를 함수가 짓는다 (2026-10-28, fix-gamepath)
+- `L3864` `write_blueprint` — 게임 청사진 먼저 (2026-10-28, suite-blueprint)
+- `L3886` `build_blueprint_path` — 청사진 경로를 함수가 짓는다 (2026-10-28, fix-gamepath)
 
 ### `openwiki/editor-database.md` — 457KB · 2680줄 · ~134,365 토큰 · 통째읽기 잘림 · 깨진 줄 6
 
@@ -2725,7 +2725,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L15` Quick routing
 - `L24` For AI agents
 
-### `openwiki/runtime-battle.md` — 436KB · 2412줄 · ~127,987 토큰 · 통째읽기 잘림
+### `openwiki/runtime-battle.md` — 437KB · 2414줄 · ~128,311 토큰 · 통째읽기 잘림
 
 - `L1` 기술 목록에 기본 공격(skill_attack)을 싣지 않는다 (2026-10-29)
 - `L6` 레트로 파티 창 수치 칸은 글자만큼 늘어난다 (2026-10-29)
@@ -2777,71 +2777,71 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L841` 타격감 층 (2026-09-25)
 - `L1011` 진입 · 결판 · 복귀 연출 (2026-09-25)
 - `L1045` 전투 리뷰 후속: 상태 안내와 무대 채움 (2026-09-20)
-- `L1071` 전투 적대적 리뷰의 무결성 수정 (2026-09-20)
-- `L1096` 공격 효과음 지연 — 샘플 SE 디코드 캐시 (2026-09-15)
-- `L1118` 전투 UI/UX·모션 적대적 리뷰 5축 후속 (2026-09-14)
-- `L1196` 몬스터 파티의 전투 회복약 자격 (2026-09-24)
-- `L1207` 회복 자원·인트로 배너·타이머 write-back 계약 (2026-09-15)
-- `L1256` Native event battle admission (2026-09-08)
-- `L1302` Supported action authoring (2026-09-07)
-- `L1314` 적별 전투 표시 크기 (2026-09-06)
-- `L1324` Capture-only victory (2026-09-08)
-- `L1335` Event friendship and live level changes (2026-09-06)
-- `L1354` Sequential battle event completion (2026-09-08)
-- `L1389` Battle-event continuation and cancellation (2026-09-06)
-- `L1432` 전투 명령 custom CSS (2026-09-05)
-- `L1436` 빈 페이지와 실행 빈도 계약 (2026-09-05)
-  - `L1453` 체공 배율 채널과 착지 눌림 (2026-08-30, PR #297)
-- `L1471` 지원 전투 시스템은 둘뿐이다 (2026-08-28, 스킨 부분은 2026-09-25 개정)
-- `L1542` Roguelike run boundary (2026-08-24)
-- `L1547` 연계기 · 위치 범위기 · 기술 포인트 (Chrono Trigger 계열, 2026-09-26)
-- `L1566` CT 감사 후속 — 연계기 해금·합체 능력치·Active/Wait 설정·필드 위 배치 (2026-10-15)
-- `L1577` 전투 자원 · 감정 · 장비 부여 (JRPG 레인 L3, 2026-09-27)
-- `L1600` FF6 마석 성장 — AP 영구 습득 · 레벨업 보너스 · 전투당 1회 (2026-10-15, 작업자 A)
-- `L1617` 팀 교대 전투 (2026-10-15, FF6 수정 A)
-- `L1634` FF6 전투 특수 효과 — 스케치 · 폭주 · 대열 섞기 · 강제 교대 · 좀비 · 트랜스 (2026-10-15, 작업자 A)
-- `L1657` Chrono Trigger 전투 엔진: Active ATB · 상태 · 반격 · 자동 부활 · 적 이동 · 승리 포즈 · 필드 배경 (2026-09-26)
-- `L1700` Battle rules & runtime
-  - `L1715` 전투 화면 표현 · 전환 · 타임라인 · 연출 타이밍
-  - `L1740` 커맨드/대상 메뉴 기하와 글자 가시성 계약
-  - `L1756` 스킨 CSS 캐스케이드와 저작 가능 스킨
-  - `L1760` Gen 1(포켓몬식) 규칙 모델
-  - `L1768` 능력치 단계 −6~+6 (포켓몬식, 2026-10-16, poke-depth PR1)
-  - `L1779` 플레이 모드 런타임 (이 절에 섞여 있는 비전투 항목)
-  - `L1801` 전투 흐름 · 몬스터 수집 · 트룹 이벤트 · 보상
-- `L1848` Starter hero battle sheets (2026-08-29)
-- `L1869` Per-actor back battlers (2026-08-29)
-- `L1887` Battle input and visibility P0 contract (2026-07-30)
-- `L1898` 배틀러 idle 애니메이션 (2026-08-30)
-- `L2026` 필드 아이템 상태 부여 복구 (2026-09-05)
-- `L2030` Authored combat rules (feature16, 2026-09-21)
-- `L2044` Battle reports and physical formation (2026-09-21)
-- `L2048` Combat correctness hardening (2026-09-21)
-- `L2056` Gen1 교체 후 이전 적 HUD 잔류 (2026-09-24)
-- `L2066` 트레이너 전투의 도입 문구 (2026-09-24)
-  - `L2073` 야생 도입 문구의 이름 출처와 「야생」 접두 (2026-10-23)
-  - `L2088` Emerald trainer portraits (2026-10-04)
-- `L2153` 포획 불가 전투의 가방 목록 (2026-09-25)
-- `L2164` 특수 명령 · 입력 기술 · 다부위 적 (명작 공백 #4 #8 #10, 2026-09-27)
-- `L2178` 롤링 HP · 움직이는 배경 · 화면 색 필터 (명작 공백 #15 #37, 2026-09-27)
-- `L2188` 전투 개시 형태 · 동료 작전 · 패배 규칙 · 피해 전가 · 도주 가산 (명작 공백 #3 #11 #20 #33 #34 #36, 2026-09-27)
-- `L2205` 리미트 · 기력 · 파티 게이지 · 감정 상성 · 장비 부여 (명작 공백 #7 #9 #16 #21 #23, 2026-09-27)
-- `L2218` 공용 몬스터 옛 그림 폐기 (2026-10-02)
-  - `L2222` 공용 이동 설계·32종 전투 기믹 (2026-10-02)
-- `L2227` Emerald authored monster profile
-- `L2231` Monster result EXP gauge (2026-10-04)
-  - `L2249` Emerald trainer source dimensions correction (2026-10-04)
-  - `L2255` 경험치 바닥 — 시작 레벨 > 1·중간 합류 (2026-10-21)
-  - `L2263` 도망 불가 안내와 경험치 분배 expSplitAlive (2026-10-16)
-  - `L2275` 못 움직인 차례·얼음 녹음·명령 대사의 결과 찾기 (2026-10-07)
-  - `L2290` 레벨업 기술 배우기·잊기 장면 (2026-10-16)
-  - `L2303` 기술 규칙 어휘: 고정 피해·연속 타수·반동·풀죽음 (2026-10-16)
-  - `L2321` 더블 배틀(2대2) 설계 메모 — 구현하지 않았다 (2026-10-16)
-- `L2343` 기술 목록 폭 — 룩 프리셋(actor·keys·fan)
-- `L2347` 스냅샷 소유권·전술 전투 수명 (#2586, 2026-10-22)
-- `L2361` 전투 깊이 — 기술 도움말 · 「연계」 명령 · 연계 대기 · 약점 공략 · 결과 팡파레 (fs-battle-2, 2026-10-24)
-- `L2386` 전투 연출 설정 — 달려드는 속도 · 얼굴 교차 컷인 · 화려한 연계 착탄 · 한 줄 도움말 · 성장 곡선 (fs-battle-3, 2026-10-25)
-- `L2403` 적 약점은 알아 가는 것 — 처음 맞힌 타격에서 발견 · 세이브 기록 · 공개 설정 (2026-10-25)
+- `L1073` 전투 적대적 리뷰의 무결성 수정 (2026-09-20)
+- `L1098` 공격 효과음 지연 — 샘플 SE 디코드 캐시 (2026-09-15)
+- `L1120` 전투 UI/UX·모션 적대적 리뷰 5축 후속 (2026-09-14)
+- `L1198` 몬스터 파티의 전투 회복약 자격 (2026-09-24)
+- `L1209` 회복 자원·인트로 배너·타이머 write-back 계약 (2026-09-15)
+- `L1258` Native event battle admission (2026-09-08)
+- `L1304` Supported action authoring (2026-09-07)
+- `L1316` 적별 전투 표시 크기 (2026-09-06)
+- `L1326` Capture-only victory (2026-09-08)
+- `L1337` Event friendship and live level changes (2026-09-06)
+- `L1356` Sequential battle event completion (2026-09-08)
+- `L1391` Battle-event continuation and cancellation (2026-09-06)
+- `L1434` 전투 명령 custom CSS (2026-09-05)
+- `L1438` 빈 페이지와 실행 빈도 계약 (2026-09-05)
+  - `L1455` 체공 배율 채널과 착지 눌림 (2026-08-30, PR #297)
+- `L1473` 지원 전투 시스템은 둘뿐이다 (2026-08-28, 스킨 부분은 2026-09-25 개정)
+- `L1544` Roguelike run boundary (2026-08-24)
+- `L1549` 연계기 · 위치 범위기 · 기술 포인트 (Chrono Trigger 계열, 2026-09-26)
+- `L1568` CT 감사 후속 — 연계기 해금·합체 능력치·Active/Wait 설정·필드 위 배치 (2026-10-15)
+- `L1579` 전투 자원 · 감정 · 장비 부여 (JRPG 레인 L3, 2026-09-27)
+- `L1602` FF6 마석 성장 — AP 영구 습득 · 레벨업 보너스 · 전투당 1회 (2026-10-15, 작업자 A)
+- `L1619` 팀 교대 전투 (2026-10-15, FF6 수정 A)
+- `L1636` FF6 전투 특수 효과 — 스케치 · 폭주 · 대열 섞기 · 강제 교대 · 좀비 · 트랜스 (2026-10-15, 작업자 A)
+- `L1659` Chrono Trigger 전투 엔진: Active ATB · 상태 · 반격 · 자동 부활 · 적 이동 · 승리 포즈 · 필드 배경 (2026-09-26)
+- `L1702` Battle rules & runtime
+  - `L1717` 전투 화면 표현 · 전환 · 타임라인 · 연출 타이밍
+  - `L1742` 커맨드/대상 메뉴 기하와 글자 가시성 계약
+  - `L1758` 스킨 CSS 캐스케이드와 저작 가능 스킨
+  - `L1762` Gen 1(포켓몬식) 규칙 모델
+  - `L1770` 능력치 단계 −6~+6 (포켓몬식, 2026-10-16, poke-depth PR1)
+  - `L1781` 플레이 모드 런타임 (이 절에 섞여 있는 비전투 항목)
+  - `L1803` 전투 흐름 · 몬스터 수집 · 트룹 이벤트 · 보상
+- `L1850` Starter hero battle sheets (2026-08-29)
+- `L1871` Per-actor back battlers (2026-08-29)
+- `L1889` Battle input and visibility P0 contract (2026-07-30)
+- `L1900` 배틀러 idle 애니메이션 (2026-08-30)
+- `L2028` 필드 아이템 상태 부여 복구 (2026-09-05)
+- `L2032` Authored combat rules (feature16, 2026-09-21)
+- `L2046` Battle reports and physical formation (2026-09-21)
+- `L2050` Combat correctness hardening (2026-09-21)
+- `L2058` Gen1 교체 후 이전 적 HUD 잔류 (2026-09-24)
+- `L2068` 트레이너 전투의 도입 문구 (2026-09-24)
+  - `L2075` 야생 도입 문구의 이름 출처와 「야생」 접두 (2026-10-23)
+  - `L2090` Emerald trainer portraits (2026-10-04)
+- `L2155` 포획 불가 전투의 가방 목록 (2026-09-25)
+- `L2166` 특수 명령 · 입력 기술 · 다부위 적 (명작 공백 #4 #8 #10, 2026-09-27)
+- `L2180` 롤링 HP · 움직이는 배경 · 화면 색 필터 (명작 공백 #15 #37, 2026-09-27)
+- `L2190` 전투 개시 형태 · 동료 작전 · 패배 규칙 · 피해 전가 · 도주 가산 (명작 공백 #3 #11 #20 #33 #34 #36, 2026-09-27)
+- `L2207` 리미트 · 기력 · 파티 게이지 · 감정 상성 · 장비 부여 (명작 공백 #7 #9 #16 #21 #23, 2026-09-27)
+- `L2220` 공용 몬스터 옛 그림 폐기 (2026-10-02)
+  - `L2224` 공용 이동 설계·32종 전투 기믹 (2026-10-02)
+- `L2229` Emerald authored monster profile
+- `L2233` Monster result EXP gauge (2026-10-04)
+  - `L2251` Emerald trainer source dimensions correction (2026-10-04)
+  - `L2257` 경험치 바닥 — 시작 레벨 > 1·중간 합류 (2026-10-21)
+  - `L2265` 도망 불가 안내와 경험치 분배 expSplitAlive (2026-10-16)
+  - `L2277` 못 움직인 차례·얼음 녹음·명령 대사의 결과 찾기 (2026-10-07)
+  - `L2292` 레벨업 기술 배우기·잊기 장면 (2026-10-16)
+  - `L2305` 기술 규칙 어휘: 고정 피해·연속 타수·반동·풀죽음 (2026-10-16)
+  - `L2323` 더블 배틀(2대2) 설계 메모 — 구현하지 않았다 (2026-10-16)
+- `L2345` 기술 목록 폭 — 룩 프리셋(actor·keys·fan)
+- `L2349` 스냅샷 소유권·전술 전투 수명 (#2586, 2026-10-22)
+- `L2363` 전투 깊이 — 기술 도움말 · 「연계」 명령 · 연계 대기 · 약점 공략 · 결과 팡파레 (fs-battle-2, 2026-10-24)
+- `L2388` 전투 연출 설정 — 달려드는 속도 · 얼굴 교차 컷인 · 화려한 연계 착탄 · 한 줄 도움말 · 성장 곡선 (fs-battle-3, 2026-10-25)
+- `L2405` 적 약점은 알아 가는 것 — 처음 맞힌 타격에서 발견 · 세이브 기록 · 공개 설정 (2026-10-25)
 
 ### `openwiki/runtime-m2-flow-controls.md` — 52KB · 342줄 · ~14,200 토큰 · 통째읽기 잘림
 
@@ -2862,7 +2862,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L325` 그림 컷 준비와 direction (2026-10-04)
 - `L333` 글자·장면 오프닝 연출 (2026-10-04)
 
-### `openwiki/runtime-pre-edit-routing.md` — 193KB · 1161줄 · ~57,228 토큰 · 통째읽기 잘림
+### `openwiki/runtime-pre-edit-routing.md` — 193KB · 1161줄 · ~57,274 토큰 · 통째읽기 잘림
 
 - `L1` 목표 안내창 자리·한국어 줄바꿈·숫자 입력 (2026-10-28, 장부 hud.json)
 - `L45` 카메라 스크롤은 캔버스 픽셀 격자에 맞춘다 (2026-10-23)
@@ -3004,7 +3004,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L1813` ItemCaptureProfile.condition · MonsterInstance.caughtBallId (2026-10-16, poke-depth PR6)
 - `L1817` 상태의 부위 손실·전투 오라 (2026-10-27)
 
-### `openwiki/runtime-sessions.md` — 159KB · 895줄 · ~43,571 토큰 · 통째읽기 잘림
+### `openwiki/runtime-sessions.md` — 161KB · 906줄 · ~44,208 토큰 · 통째읽기 잘림
 
 - `L3` 여러 게임 오버의 실행과 미리보기 (2026-09-23)
 - `L21` 장르별 패배와 엔딩 흐름 (2026-09-22)

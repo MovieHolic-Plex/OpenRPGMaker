@@ -12,9 +12,10 @@
 
 import { actorBattlers } from "@/battle/battleBattlers";
 import { simulateBattle } from "@/battle/simulate";
-import { monsterBattleStatsForSpecies, monsterSkillIdsAtLevel, monsterSpeciesById } from "@/project/monsterCollection";
+import { monsterTypesForRecord, typeChartMultiplierForTypes } from "@/battle/typeChart";
+import { monsterBattleStats, monsterBattleStatsForSpecies, monsterSkillIdsAtLevel, monsterSpeciesById } from "@/project/monsterCollection";
 import type { MonsterInstance } from "@/project/session";
-import type { Project } from "@/project/types";
+import type { EnemyRecord, Project } from "@/project/types";
 import { visitProjectCommands } from "./commandTraversal";
 
 const SAMPLES = 3;
@@ -233,6 +234,56 @@ export function monsterBalanceParty(project: Project, troopId: string, level?: n
   const party = depth >= PROGRESSED_DEPTH ? progressedParty(project, starter, troop, depth) : [starter];
   if (level === undefined || level <= 0) return party;
   return party.map(monster => balanceMonster(project, monster.speciesId, level) ?? monster);
+}
+
+/** 이 기술 목록 중 상성·자속까지 친 가장 센 피해 기술(위력·쓰는 능력치·배율). 피해 기술이 없으면 undefined. */
+function strongestDamageMove(project: Project, skillIds: readonly string[], attackerTypes: readonly string[], defenderTypes: readonly string[], only?: "attack"): { id: string; power: number; statistic: "attack" | "mind"; multiplier: number } | undefined {
+  let best: { id: string; power: number; statistic: "attack" | "mind"; multiplier: number } | undefined;
+  for (const skillId of skillIds) {
+    const skill = project.database.skills.find(entry => entry.id === skillId);
+    if (!skill || skill.effect.kind !== "damage" || skill.effect.affects !== "hp" || skill.scope === "ally") continue;
+    const power = typeof skill.power === "number" ? skill.power : 0;
+    const statistic = (skill.effect as { statistic?: string }).statistic === "mind" ? "mind" : "attack";
+    if (power <= 0 || (only && statistic !== only)) continue;
+    const multiplier = typeChartMultiplierForTypes(project, (skill as { elementId?: string }).elementId, attackerTypes, defenderTypes);
+    if (multiplier <= 0) continue;
+    if (!best || power * multiplier > best.power * best.multiplier) best = { id: skill.id, power, statistic, multiplier };
+  }
+  return best;
+}
+
+/**
+ * 몬스터 파티 게임에서 tune_enemy 가 역산할 기준 — 스타터 종을 level(없으면 스타터 레벨)로 올린 몬스터의 공격·방어와 그 레벨에서 아는
+ * 가장 센 피해 기술(한 대 = 그 기술), 그리고 적이 아군을 가장 세게 칠 기술(공격·특수). 런타임 아군 배틀러(monsterPartyBattlers)와 같은 monsterBattleStats.
+ * 몬스터 파티 게임이 아니면 null.
+ * 왜(2026-10-29 standin monster): tune_enemy 가 영웅 액터(공 45·방 59 근처)의 평타로 역산해 트레이너 몬스터 수치가 스타터 척도와 어긋났다 —
+ * 몬스터는 평타가 아니라 위력 30~55 기술로 싸운다(평타 기준이면 관장 토리프가 HP 8·공 24 가 됐다).
+ */
+export function monsterTuningBaseline(project: Project, enemy: EnemyRecord, level?: number): {
+  hero: { name: string; level: number; attack: number; defense: number; move?: { id: string; power: number; stat: number; targetDefense: number; multiplier: number } };
+  /** 적이 가장 세게 치는 기술 — 특수(mind) 기술이면 tune_enemy 는 attack 이 아니라 mind 를 푼다. */
+  enemyMove?: { id: string; power: number; multiplier: number; statistic: "attack" | "mind"; heroGuard: number };
+} | null {
+  const starter = baselineStarterMonster(project);
+  if (!starter) return null;
+  const at = level && level > 0 ? level : starter.level;
+  const monster = balanceMonster(project, starter.speciesId, at) ?? starter;
+  const stats = monsterBattleStats(project, monster);
+  const heroTypes = monsterSpeciesById(project, monster.speciesId)?.types ?? [];
+  const enemyTypes = monsterTypesForRecord(project, enemy.id);
+  const heroMove = strongestDamageMove(project, monster.skillIds ?? [], heroTypes, enemyTypes);
+  const enemySkills = [...(enemy.skillIds ?? []), ...(enemy.actions ?? []).flatMap(action => action.skillId ? [action.skillId] : [])];
+  const enemyMove = strongestDamageMove(project, enemySkills, enemyTypes, heroTypes);
+  return {
+    hero: {
+      name: monsterSpeciesById(project, monster.speciesId)?.name ?? monster.speciesId,
+      level: monster.level,
+      attack: stats.attack,
+      defense: stats.defense,
+      ...(heroMove ? { move: { id: heroMove.id, power: heroMove.power, stat: heroMove.statistic === "mind" ? stats.mind : stats.attack, targetDefense: heroMove.statistic === "mind" ? enemy.stats.mind : enemy.stats.defense, multiplier: heroMove.multiplier } } : {}),
+    },
+    ...(enemyMove ? { enemyMove: { id: enemyMove.id, power: enemyMove.power, multiplier: enemyMove.multiplier, statistic: enemyMove.statistic, heroGuard: enemyMove.statistic === "mind" ? stats.mind : stats.defense } } : {}),
+  };
 }
 
 export function troopBalanceWarnings(project: Project, troopId: string): string[] {

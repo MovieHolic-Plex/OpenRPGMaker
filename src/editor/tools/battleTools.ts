@@ -5,7 +5,7 @@ import { computeEnemyTuning, simulateBattle } from "@/battle/simulate";
 import { normalizeEnemyRecord } from "@/project/databaseEnemyTroopRecordModel";
 import type { EnemyRecord } from "@/project/types";
 import { monsterSpeciesById } from "@/project/monsterCollection";
-import { monsterBalanceParty } from "./troopBalanceCheck";
+import { monsterBalanceParty, monsterTuningBaseline } from "./troopBalanceCheck";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 
 const simulateBattleTool: ToolDefinition = {
@@ -121,15 +121,15 @@ const simulateBattleTool: ToolDefinition = {
 
 const tuneEnemy: ToolDefinition = {
   name: "tune_enemy",
-  description: "데미지 공식을 역산해 적의 maxHp/attack을 목표(처치 타수/영웅 피해량)에 맞춘다. 반환 data에 산출 근거 포함.",
+  description: "데미지 공식을 역산해 적의 maxHp/attack을 목표(처치 타수/영웅 피해량)에 맞춘다. 반환 data에 산출 근거 포함. 몬스터 파티 게임은 영웅 액터 평타가 아니라 스타터 몬스터(heroLevel 생략 시 그 적의 레벨)의 가장 센 기술(상성·자속 포함)로 한 대를 재고, 적도 가장 센 기술로 친다 — 그 기술이 특수면 attack 대신 mind 를 맞춘다.",
   mode: "write",
   parameters: {
     type: "object",
     properties: {
       enemyId: { type: "string" },
-      targetHitsToKill: { type: "integer", description: "영웅 평타 몇 대에 처치" },
+      targetHitsToKill: { type: "integer", description: "영웅 평타 몇 대에 처치(몬스터 파티 게임: 스타터의 가장 센 기술 몇 대)" },
       targetDamageToHeroPerHit: { type: "integer", description: "적 평타가 영웅에게 주는 목표 데미지" },
-      heroLevel: { type: "integer", description: "기준 영웅 레벨(기본 1)" },
+      heroLevel: { type: "integer", description: "기준 영웅 레벨(기본 1). 몬스터 파티 게임은 기준 스타터 몬스터 레벨(기본 = 그 적의 레벨)" },
     },
     required: ["enemyId", "targetHitsToKill", "targetDamageToHeroPerHit"],
   },
@@ -137,22 +137,31 @@ const tuneEnemy: ToolDefinition = {
     const enemyId = args.enemyId as string;
     const enemy = draft.database.enemies.find((entry) => entry.id === enemyId);
     if (!enemy) throw new ToolError(`적을 찾을 수 없습니다: ${enemyId}`, { code: "enemy-not-found" });
+    // 몬스터 파티 게임: 트레이너·관장 몬스터는 같은 레벨의 내 몬스터와 싸운다 — 스타터 종을 그 레벨로 올려 기준으로 삼는다.
+    const askedLevel = args.heroLevel as number | undefined;
+    const baseline = monsterTuningBaseline(draft, enemy, askedLevel ?? (typeof enemy.level === "number" && enemy.level > 0 ? enemy.level : undefined));
+    const monsterHero = baseline?.hero;
+    const heroLevel = monsterHero?.level ?? askedLevel ?? 1;
     const tuning = computeEnemyTuning({
       project: draft,
-      heroLevel: (args.heroLevel as number | undefined) ?? 1,
+      heroLevel,
+      ...(monsterHero ? { hero: monsterHero } : {}),
+      ...(baseline?.enemyMove ? { enemyMovePower: baseline.enemyMove.power, enemyMoveMultiplier: baseline.enemyMove.multiplier, enemyMoveTargetDefense: baseline.enemyMove.heroGuard } : {}),
       enemyDefense: enemy.stats.defense,
       targetHitsToKill: args.targetHitsToKill as number,
       targetDamageToHeroPerHit: args.targetDamageToHeroPerHit as number,
     });
+    // 적의 가장 센 기술이 특수(mind)면 푼 값은 mind 다 — attack 을 바꿔도 그 기술 피해는 그대로다.
+    const solvedStat: "attack" | "mind" = baseline?.enemyMove?.statistic === "mind" ? "mind" : "attack";
     const updated: EnemyRecord = normalizeEnemyRecord({
       ...enemy,
-      stats: { ...enemy.stats, maxHp: tuning.maxHp, attack: tuning.attack },
+      stats: { ...enemy.stats, maxHp: tuning.maxHp, [solvedStat]: tuning.attack },
     });
     const index = draft.database.enemies.findIndex((entry) => entry.id === enemyId);
     draft.database.enemies[index] = updated;
     return {
-      summary: `적 '${enemy.name}' 튜닝: maxHp ${enemy.stats.maxHp}→${updated.stats.maxHp}, attack ${enemy.stats.attack}→${updated.stats.attack}`,
-      data: { enemyId, before: { maxHp: enemy.stats.maxHp, attack: enemy.stats.attack }, after: { maxHp: updated.stats.maxHp, attack: updated.stats.attack }, rationale: tuning.rationale },
+      summary: `적 '${enemy.name}' 튜닝: maxHp ${enemy.stats.maxHp}→${updated.stats.maxHp}, ${solvedStat} ${enemy.stats[solvedStat]}→${updated.stats[solvedStat]}${monsterHero ? ` (기준 스타터 ${monsterHero.name} Lv${monsterHero.level} 공 ${monsterHero.attack}·방 ${monsterHero.defense}${monsterHero.move ? `, 한 대 = 기술 ${monsterHero.move.id} 위력 ${monsterHero.move.power}×${monsterHero.move.multiplier}` : ""}${baseline?.enemyMove ? `, 적의 가장 센 기술 ${baseline.enemyMove.id} 위력 ${baseline.enemyMove.power}×${baseline.enemyMove.multiplier}(${baseline.enemyMove.statistic})` : ""})` : ""}`,
+      data: { enemyId, heroLevel, solvedStat, ...(baseline ? { baseline } : {}), before: { maxHp: enemy.stats.maxHp, [solvedStat]: enemy.stats[solvedStat] }, after: { maxHp: updated.stats.maxHp, [solvedStat]: updated.stats[solvedStat] }, rationale: tuning.rationale },
     };
   },
 };
