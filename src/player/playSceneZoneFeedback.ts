@@ -224,6 +224,7 @@ function placeObjective(scene: ZoneFeedbackScene, feedback: PlaySceneZoneFeedbac
     margin,
     player: geometry.player,
     actors: geometry.actors,
+    landmarks: geometry.landmarks,
     hud: hudRects(host, element, stage),
     map: geometry.map,
     current: memo?.text === text ? memo.placement : null,
@@ -246,7 +247,29 @@ function objectiveMinWidth(naturalWidth: number, fontPx: number, padX: number): 
   return Math.min(naturalWidth, Math.max(Math.round(fontPx * 10 + padX), Math.round(naturalWidth * 0.7)));
 }
 
-type SceneGeometry = { readonly player: PlacementRect | null; readonly actors: PlacementRect[]; readonly map: PlacementRect | null };
+type SceneGeometry = { readonly player: PlacementRect | null; readonly actors: PlacementRect[]; readonly landmarks: PlacementRect[]; readonly map: PlacementRect | null };
+
+/**
+ * 맵의 입구(다른 맵으로 옮기는 이벤트 칸)와 그 위 건물 얼굴(좌우 한 칸·위로 세 칸 — 간판·지붕 표지) 칸 사각형. 맵마다 한 번 잰다.
+ * 왜(2026-10-29 standin monster 새싹마을): 맵 위 끝에 붙은 몬스터 센터 앞에서 카메라가 더 올라가지 못해, 오른쪽 위 목표 창이
+ * 센터의 「+」 지붕 간판을 덮었다 — 마을에서 회복 장소를 알아보는 표지다.
+ */
+const entranceCache = new WeakMap<GameMap, { x: number; y: number; width: number; height: number }[]>();
+function entranceCells(map: GameMap): { x: number; y: number; width: number; height: number }[] {
+  const cached = entranceCache.get(map);
+  if (cached) return cached;
+  const out: { x: number; y: number; width: number; height: number }[] = [];
+  const leads = (node: unknown): boolean => Array.isArray(node) ? node.some(leads)
+    : !!node && typeof node === "object" && (((node as { kind?: unknown; mapId?: unknown }).kind === "transfer" && typeof (node as { mapId?: unknown }).mapId === "string" && (node as { mapId: string }).mapId !== map.id)
+      || Object.values(node as object).some((value) => value && typeof value === "object" && leads(value)));
+  for (const event of map.events ?? []) {
+    if (!leads(event.pages)) continue;
+    const top = Math.max(0, event.y - 3), left = Math.max(0, event.x - 1);
+    out.push({ x: left, y: top, width: Math.min(map.width, event.x + 2) - left, height: event.y + 1 - top });
+  }
+  entranceCache.set(map, out);
+  return out;
+}
 
 function sceneGeometry(scene: ZoneFeedbackScene, host: HTMLElement): SceneGeometry | null {
   const camera = scene.cameras?.main;
@@ -278,8 +301,16 @@ function sceneGeometry(scene: ZoneFeedbackScene, host: HTMLElement): SceneGeomet
       actors.push(rect);
     }
   }
+  const landmarks: PlacementRect[] = [];
+  if (tile > 0 && scene.map) {
+    for (const cell of entranceCells(scene.map)) {
+      const rect = toScreen({ x: cell.x * tile, y: cell.y * tile, width: cell.width * tile, height: cell.height * tile });
+      if (rect.x + rect.width < 0 || rect.y + rect.height < 0 || rect.x > width || rect.y > height) continue;
+      landmarks.push(rect);
+    }
+  }
   const map = scene.map ? toScreen({ x: 0, y: 0, width: scene.map.width * tile, height: scene.map.height * tile }) : null;
-  return { player, actors, map };
+  return { player, actors, landmarks, map };
 }
 
 /** 목표 창이 피할 다른 화면 고정 UI(필드 HUD 위젯·지역 알림·조작 안내·미니맵 등). */

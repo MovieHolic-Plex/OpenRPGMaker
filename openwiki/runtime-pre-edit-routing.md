@@ -2,7 +2,8 @@
 
 - **목표 안내창 자리**: `playSceneZoneFeedback.placeObjective` 가 300ms 마다(글이 바뀌면 즉시) `objectivePlacement.chooseObjectivePlacement` 로 고른다.
   후보 = 네 모서리·위아래 가운데·맵 바깥 여백 띠(맵이 화면보다 작을 때), 좁힌 폭(넓이 보존 높이 어림) 후보.
-  값 = 주인공 덮음(60) ≫ 다른 HUD(80, `.field-hud > .hud-widget`·다른 안내 줄·손 슬롯·미니맵) ≫ 이벤트 그림(10) ≫ 맵 위(3). 지금 자리가 최선+0.6 안이면 옮기지 않는다.
+  값 = 주인공 덮음(60) ≫ 다른 HUD(80, `.field-hud > .hud-widget`·다른 안내 줄·손 슬롯·미니맵) ≫ 이벤트 그림(10) ≫ 입구와 그 위 건물 얼굴(6, 다른 맵으로 옮기는 이벤트 칸의 좌우 한 칸·위로 세 칸 — 간판·지붕 표지, 맵마다 한 번 재 둔다) ≫ 맵 위(3). 지금 자리가 최선+0.6 안이면 옮기지 않는다.
+  입구 값은 2026-10-29 standin monster 새싹마을: 맵 위 끝 몬스터 센터 앞에서 카메라가 더 못 올라가 오른쪽 위 창이 「+」 지붕 간판을 덮었다(`whole-game-monster-campaign` home-center 비트).
   CSS 의 오른쪽 위·`top:88px`(테마 HUD)는 씬 기하가 없을 때의 기본이다. 좌표 환산은 손 슬롯과 같다(worldView·zoom/`runtimePixelDensity`).
   창은 거의 불투명(0.95)·`text-wrap: balance`. 에메랄드는 목표만 Galmuri9 10px(원래 격자).
 - **한국어 줄바꿈**: `.play-stage` 가 `word-break: keep-all; overflow-wrap: anywhere` — 무대 안 모든 창이 어절 단위로 꺾인다. 창마다 다시 넣지 않는다.

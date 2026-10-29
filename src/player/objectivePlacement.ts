@@ -4,7 +4,7 @@
  * 예전에는 오른쪽 위 고정(테마 HUD 는 top:88px)이라, 카메라가 주인공을 화면 가운데에 두는
  * 작은 방·좁은 맵에서 주인공 옆 가구·NPC·주인공 머리를 덮었다(장부 hud.json 93건, 14게임 전부).
  * 후보 자리(네 모서리·위아래 가운데·맵 바깥 여백 띠)마다 무엇을 덮는지 값을 매겨 가장 덜 덮는 곳을 고른다.
- *  - 주인공·인물(이벤트 그림)·다른 HUD 를 덮는 것이 가장 비싸다.
+ *  - 주인공·인물(이벤트 그림)·다른 HUD 를 덮는 것이 가장 비싸다. 입구와 그 위 건물 얼굴(간판)도 덮지 않으려 한다.
  *  - 맵 바깥 여백(작은 방 둘레의 빈 화면)은 공짜다. 거기 들어가도록 창 폭을 줄인 후보도 낸다.
  *  - 지금 자리가 거의 같은 값이면 옮기지 않는다(걷는 동안 깜빡이지 않게).
  */
@@ -25,6 +25,8 @@ export type ObjectivePlacementInput = {
   readonly margin: number;
   readonly player: PlacementRect | null;
   readonly actors: readonly PlacementRect[];
+  /** 입구와 그 위 건물 얼굴(간판·지붕 표지) — 인물보다 싸게 피한다. 없으면 없음. */
+  readonly landmarks?: readonly PlacementRect[];
   readonly hud: readonly PlacementRect[];
   /** 맵이 화면에 그려진 사각형(화면 밖으로 넘친 부분 포함). 없으면 화면 전체가 맵이다. */
   readonly map: PlacementRect | null;
@@ -190,6 +192,7 @@ function placementCost(box: PlacementRect, input: ObjectivePlacementInput): numb
     cost += 60 * overlap(box, player) / Math.max(1, area(player));
   }
   for (const actor of input.actors) cost += 10 * overlap(box, inflate(actor, 2)) / Math.max(1, area(actor));
+  for (const landmark of input.landmarks ?? []) cost += 6 * overlap(box, landmark) / Math.max(1, area(landmark));
   for (const hud of input.hud) cost += 80 * overlap(box, inflate(hud, 2)) / Math.max(1, Math.min(boxArea, area(hud)));
   // 맵 위를 덮는 넓이(여백 위는 공짜). 0~3.
   const map = input.map ?? { x: 0, y: 0, width: input.stage.width, height: input.stage.height };
