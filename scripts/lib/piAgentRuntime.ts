@@ -962,6 +962,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     readPublicAsset: readPublicAssetDataUrl,
     combinePictures: combinePngDataUrls,
     ...(/^(one|each|none)$/u.test(process.env.OPRN_ROOM_PARTS_PICTURES ?? "") ? { roomPartsPictures: process.env.OPRN_ROOM_PARTS_PICTURES as "one" | "each" | "none" } : {}),
+    ...(/^(slim|full)$/u.test(process.env.OPRN_ROOM_PARTS_TEXT ?? "") ? { roomPartsText: process.env.OPRN_ROOM_PARTS_TEXT as "slim" | "full" } : {}),
     ...(options.signal ? { signal: options.signal } : {}),
     toolsetOptions: { referenceGate, charsetGate, findToolsCallable, eventAssistChat: eventAssistChat as never, ...scopeGuard },
   } : undefined;

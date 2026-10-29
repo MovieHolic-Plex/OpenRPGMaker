@@ -1291,8 +1291,12 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     parameters: { type: "object", properties: { purpose: { type: "string", description: "방 용도 — 예: 서재, 마법사의 서재, 침실" }, query: { type: "string", description: "(선택) 더 찾을 기물 낱말" } }, required: ["purpose"] },
     async execute(_id, params) {
       const p = params as { purpose: string; query?: string };
-      const out = roomParts(env.ctx.project, String(p.purpose ?? ""), p.query);
-      if (!out) return text({ ok: false, summary: "손 도트 실내 칩셋이 이 프로젝트에 없다" });
+      // 글은 가볍게(기본 slim): 기물 40줄·모양 예 하나 — 2026-10-30 서재 시험에서 결과 글 1.2~1.3만 자 뒤 flash 가 도구 호출을 글로 쓰거나 «I'm having a hard time»으로 멈췄다.
+      // 더 필요한 기물은 query 로 다시 묻는다.
+      const slim = (env.roomPartsText ?? "slim") === "slim";
+      const full = roomParts(env.ctx.project, String(p.purpose ?? ""), p.query, undefined, slim ? 40 : 90);
+      if (!full) return text({ ok: false, summary: "손 도트 실내 칩셋이 이 프로젝트에 없다" });
+      const out = slim ? { ...full, references: full.references.slice(0, 2), referenceIds: full.referenceIds.slice(0, 2), shapeExamples: full.shapeExamples.slice(0, 1), more: "기물은 용도에 맞는 40줄만 보였다 — 더 찾으려면 query 에 낱말을 넣어 다시 부른다. 모양 예는 하나만 글로, 나머지 모양은 그림으로." } : full;
       const result = text({ ok: true, ...out, how: "zones:[{kind, purpose, design:{shape, corner?, w, h, door, floor, wall, groups:[{name, at, pos?, rug?, items:[{id, dx?, dy?, count?}]}]}}]. 먼저 모양을 고른다(shapes·shapeExamples 와 아래 모양 그림 — 바닥 60칸 넘는 네모는 ㅁ자로 짚힌다, 곁방은 zones 둘). 묶음마다 무엇을 몇 개 놓을지는 네가 정한다 — 함수는 더하지 않고 이름 맞춤·겹침·의자 방향·문 앞 통로·도달만 고쳐 알려 준다. 기물 줄의 좌표는 바닥 왼쪽 위 0,0, 걸이는 y -2. 벽 가구·걸이는 북벽 밑에 서고, 도려 내 내려온 북벽(ㄷ자 가운데·창가 돌출 양옆·알코브 옆) 밑에도 선다." });
       // 그림: 구성 아이디어(사용자가 실내 기준으로 고른 assistant-rooms-2 방 — 동선·초점·묶음만 보고 베끼지 않는다) + 모양 예시(shapeExamples 를 지금 빌더로 지은 것).
       // 옛 사람 견본 그림(견본을 지어 찍은 것)은 더 보여 주지 않는다 — 2026-10-29 감사에서 모델이 그 서재를 그대로 옮겨 방탈출 방이 다 같아졌다.

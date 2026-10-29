@@ -47,7 +47,7 @@ function builtRooms(project: Project): string[] {
 
 function promptFor(project: Project, spec: PlaceSpec, zones: readonly ZoneSpec[], need: readonly number[], task: string, retryNote?: string): string {
   const purposes = need.map((i) => `${zones[i]!.kind} ${zones[i]!.purpose ?? ""}`).join(" ");
-  const parts = roomParts(project, `${purposes} ${spec.name} ${spec.theme ?? ""}`, undefined, HAND_INTERIOR_TILESET_ID, 70);
+  const parts = roomParts(project, `${purposes} ${spec.name} ${spec.theme ?? ""}`, undefined, HAND_INTERIOR_TILESET_ID, 40);
   const lines = [
     "너는 RPG 손 도트 실내 방을 설계하는 사람이다. 아래 장소의 방들을 직접 설계해 JSON 하나로만 답한다(설명 글 없이).",
     `요청: ${clip(task.replace(/\s+/gu, " "), 500)}`,

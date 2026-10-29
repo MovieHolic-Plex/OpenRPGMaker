@@ -35,6 +35,8 @@ export interface PiAssistantV2Env {
   readonly combinePictures?: (urls: readonly string[]) => Promise<string | undefined>;
   /** room_parts 그림 싣기: one 한 장으로 합침(기본) · each 따로 · none 글만. 실행기가 OPRN_ROOM_PARTS_PICTURES 로 바꾼다(A/B 시험용). */
   readonly roomPartsPictures?: "one" | "each" | "none";
+  /** room_parts 글: slim 기물 40줄·모양 예 하나(기본) · full 기물 90줄·모양 예 여섯. 실행기가 OPRN_ROOM_PARTS_TEXT 로 바꾼다(A/B 시험용). */
+  readonly roomPartsText?: "slim" | "full";
   /** 동사 안에서 중간 결과를 편집기에 바로 싣는다(첫 짓기를 비평 전에 보이게). */
   readonly checkpoint: (label: string) => Promise<void>;
   readonly signal?: AbortSignal;
