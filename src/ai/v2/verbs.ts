@@ -14,7 +14,7 @@ import { createBuildRun, type RecordingBuildRun } from "./buildRun";
 import { builderFor } from "./builders";
 import { localizePlaceSpec } from "./builders/modernCity";
 import { localizeCultureSpec } from "./builders/joseon";
-import { cleanLayoutHint, villageArgs, villageMapSize } from "./builders/village";
+import { villageLayoutGuide, cleanLayoutHint, villageArgs, villageMapSize } from "./builders/village";
 import { codeTerrainFor, usesCodeTerrain } from "@/editor/tools/authorBeodeulTown";
 import { describeCodeTerrain } from "@/editor/tools/beodeulTerrainGen";
 import { terrainPreviewPng } from "@/editor/tools/beodeulTerrainPreview";
@@ -709,8 +709,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
             session.villageTerrain.set(spec.name, { terrainSeed, width, height, shape, previews: (kept?.previews ?? 0) + 1 });
             const res = text({ ok: false, notFailure: true,
               summary: `아직 짓지 않았다(실패 아님) — 「${spec.name}」의 땅을 코드가 만들었다(${width}×${height}, terrainSeed ${terrainSeed}). 아래 그림(좌표 눈금: 위 x·왼쪽 y, 칸 단위)과 요약을 보고 `
-                + `마을 자리를 네가 고른다 — hints.layout 에 gather{x,y,plaza}(모이는 곳), landmark(높은 곳 건물 — 높은 단 넓은 터), anchor(여관·회관 — 모이는 곳 곁), work(일터), houses[{x,y}] 3~12(집 가운데), fields[{x,y}](밭), exits(큰길이 나가는 맵 가장자리) 를 넣어 같은 make_place 를 다시 부르면 이 땅 위에 짓는다. `
-                + `집 하나는 문 앞까지 약 5×6칸이라 집 가운데끼리 6칸 이상 띄우고(큰 건물은 8칸), 한 단 평지에(단 경계 검은 선을 걸치지 않게), 물(파랑) 위는 안 된다. 길·계단·널다리는 함수가 잇고, 못 놓은 자리·옮긴 거리·못 낸 길을 보고한다. 땅이 요청과 다르면 hints.landform·water·high 나 terrainSeed 를 바꿔 다시 부르면 새 땅을 보여 준다.`,
+                + `마을 자리를 네가 고른다 — 같은 make_place 에 hints.layout 을 넣어 다시 부르면 이 땅 위에 짓는다. ${villageLayoutGuide(vt, va.fishing === true, va.form === "scatter")} 땅이 요청과 다르면 hints.landform·water·high 나 terrainSeed 를 바꿔 다시 부르면 새 땅을 보여 준다.`,
               terrain: describeCodeTerrain(terrain) });
             const png = terrainPreviewPng(terrain, 8);
             let bin = ""; for (let k = 0; k < png.length; k += 1) bin += String.fromCharCode(png[k]!);
@@ -727,6 +726,11 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
       let result = builder.build(run, spec);
       result = withSetupDefaults(result, builder.id, run.ctx.project, String(task ?? ""), freshStart);
       if (keptNote || designed.notes.length) result = { ...result, warnings: [...(keptNote ? [keptNote] : []), ...designed.notes, ...result.warnings] };
+      // 요청에 주민이 있는데 마을만 짓고 끝냈다(2026-10-30 씬 벤치 「강가 마을」: 「주민 몇 명」 요청 → NPC 0명) — 마을 결과에 다음 할 일로 붙인다
+      if (result.ok && builder.id === "village" && /주민|마을\s*사람|사람\s*몇|npc|villager|resident/i.test(String(task ?? ""))) {
+        const mapId = result.mapIds[0]; const npcs = mapId ? (run.ctx.project.maps[mapId]?.events ?? []).length : 0;
+        if (mapId && npcs < 2) result = { ...result, warnings: [...result.warnings, `요청에 주민이 있다 — 이 마을(${mapId})에는 아직 말을 걸 사람이 ${npcs}명이다. add_people 로 둘 이상(어부·주민 등 요청에 맞게, 모이는 곳·물가 곁) 둔다.`] };
+      }
       return finishPlace(id, "make_place", params, spec, builder.id, result, 0);
     },
   };

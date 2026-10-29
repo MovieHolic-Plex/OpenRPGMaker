@@ -24,12 +24,12 @@ export function cleanLayoutHint(value: unknown): Record<string, unknown> | null 
   const lay = { ...(value as Record<string, unknown>) };
   const real = (p: unknown) => !!p && typeof p === "object" && !(Number((p as { x?: unknown }).x) === 0 && Number((p as { y?: unknown }).y) === 0);
   for (const k of ["gather", "landmark", "anchor", "work"]) if (!real(lay[k])) delete lay[k];
-  for (const k of ["houses", "fields"]) { const a = Array.isArray(lay[k]) ? (lay[k] as unknown[]).filter(real) : []; if (a.length) lay[k] = a; else delete lay[k]; }
+  for (const k of ["houses", "fields", "forests", "pastures"]) { const a = Array.isArray(lay[k]) ? (lay[k] as unknown[]).filter(real) : []; if (a.length) lay[k] = a; else delete lay[k]; }
   if (!Array.isArray(lay.exits) || !(lay.exits as unknown[]).length) delete lay.exits;
   return lay.gather || lay.houses ? lay : null;
 }
 
-const KNOWN_HINTS = new Set(["layout", "terrainSeed", "terrainGen", "landform", "settle", "tiers", "high", "houseCount", "roofs", "water", "woods", "form", "terrain", "theme", "forestType", "walls", "wallGate", "wallSideGaps", "width", "height", "variant", "harbour"]);
+const KNOWN_HINTS = new Set(["fishing", "layout", "terrainSeed", "terrainGen", "landform", "settle", "tiers", "high", "houseCount", "roofs", "water", "woods", "form", "terrain", "theme", "forestType", "walls", "wallGate", "wallSideGaps", "width", "height", "variant", "harbour"]);
 const BEODEUL_TILESET = "beodeul_city";
 
 interface VillageState { readonly args: Record<string, unknown>; readonly seed?: number; readonly variant?: number; readonly doors?: readonly { x: number; y: number; kit?: string }[] }
@@ -41,7 +41,9 @@ function pickTheme(spec: PlaceSpec, text: string): string | undefined {
   const own = `${spec.theme ?? ""} ${spec.style ?? ""}`.toLowerCase();
   const order: [string, RegExp][] = [["snow", /snow|설원|눈|겨울|얼음/], ["desert", /desert|사막|오아시스/], ["swamp", /swamp|늪|습지/], ["coast", /coast|harbou?r|port|항구|포구|해안|바닷가|어촌/], ["river", /river|강/]];
   for (const [theme, re] of order) if (has(own, re)) return theme;
-  for (const [theme, re] of order) if (theme !== "river" && has(text, re)) return theme;
+  // 「강가 어촌」은 바다 포구가 아니라 강 마을(어촌 낱말만으로 바다를 깔면 강이 사라졌다) — 바다 낱말이 없고 강 낱말이 있으면 강
+  const riverFishing = has(text, /강가|강변|강나루|냇가|\briver/) && !has(text, /바다|바닷가|해안|항구|포구|harbou?r|coast|\bsea\b/);
+  for (const [theme, re] of order) if (theme !== "river" && has(text, re) && !(theme === "coast" && riverFishing)) return theme;
   return undefined;
 }
 
@@ -72,6 +74,8 @@ export function villageArgs(spec: PlaceSpec): { args: Record<string, unknown>; m
     else missing.push(`성벽(theme ${String(args.theme)} 마을은 성벽을 못 지음 — river·desert·snow 만)`);
   }
   if (has(text, /harbou?r|항구|포구/) && args.theme === "coast") args.harbour = true;
+  // 강가 어촌(2026-10-30 씬 벤치 「강가 마을」: 어촌 요청인데 부두·그물 없이 강 낀 들판) — 물가에 그물 말림대·통발·배·계류 말뚝 띠
+  if (has(text, /어촌|어부|고깃배|fishing|fisher/) && (args.theme === undefined || args.theme === "river")) args.fishing = true;
   const count = spec.size === "small" ? 3 : spec.size === "large" ? 5 : spec.size === "medium" ? 4 : undefined;
   if (count) args.houseCount = count;
   // 무협(중국 무림)은 전용 칩셋이 아직 번들에 없다(murim-chipset 하네스는 후보 단계) — 지어낸 대체 대신 버들항으로 지었다고 알린다.
@@ -91,6 +95,23 @@ export function villageArgs(spec: PlaceSpec): { args: Record<string, unknown>; m
   if (typeof args.form === "string" && ["hillside", "terraces", "highland"].includes(args.form)) { if (args.terrain === undefined) args.terrain = args.form; delete args.form; warnings.push("hints.form 의 땅 모양 낱말을 terrain 으로 옮겼다"); }
   if (args.harbour === true) { args.width = Math.max(Number(args.width ?? 0), 84); args.height = Math.max(Number(args.height ?? 0), args.landform === "flat" || args.terrain === "flat" ? 30 : 38); } // 지형 먼저 포구는 마을 단 뒤 높은 단 자리까지 8줄 더
   return { args, missing, warnings };
+}
+
+/**
+ * 코드 지형 그림을 본 조수가 hints.layout 을 고를 때 읽는 지침(make_place 미리보기 답과 프로브가 같은 글을 쓴다).
+ * 테마마다 다른 것: 늪은 물 위 널판 집·널길, 강가 어촌·포구는 물가에 일터.
+ */
+export function villageLayoutGuide(theme: string, fishing = false, scatter = false): string {
+  const swamp = theme === "swamp";
+  return "hints.layout 에 gather{x,y,plaza}(모이는 곳), landmark(높은 곳 건물 — 높은 단 넓은 터), anchor(여관·회관 — 모이는 곳 곁), work(일터), houses[{x,y}] 3~12(집 가운데), "
+    + "fields[{x,y}](밭), forests[{x,y}](숲 덩이), pastures[{x,y}](울타리 친 목초지·양), exits(큰길이 나가는 맵 가장자리) 를 넣는다. "
+    + "집 하나는 문 앞까지 약 5×6칸이라 집 가운데끼리 6칸 이상 띄우고(큰 건물은 8칸), 한 단 평지에(단 경계 검은 선을 걸치지 않게) 둔다. "
+    + (swamp ? "늪 마을은 물 위에 짓는다 — 집은 물(파랑) 위나 물가에 두면 널판 마루를 깔고 그 위에 서고, 길은 물을 건너는 널길이 된다. 진흙 섬만 쓰지 말고 물 위 집을 절반 넘게. "
+      : "물(파랑) 위는 안 된다. ")
+    + (fishing || theme === "coast" ? "어촌·포구는 모이는 곳·일터·집 몇 채를 물가(물에서 6칸 안)에 두어 물가 길에 그물·배·말림대가 서게 한다. " : "")
+    + (scatter ? "흩어진 농가·들판 마을은 집을 3~6채만, 집 가운데끼리 9칸 넘게 흩고 집마다 곁에 밭(fields)·목초지(pastures)를 둔다 — 집이 모인 읍내가 되지 않게. " : "")
+    + (theme === "river" ? "강가 마을이면 모이는 곳을 강에서 10칸 안에 둔다(시작 자리가 모이는 곳 곁이다). " : "")
+    + "집·길이 닿지 않는 넓은 빈 단은 비워 두지 말고 그 단에 맞는 쓰임(밭·숲·목초지)을 자리로 준다. 길·계단·널다리는 함수가 잇고, 못 놓은 자리·옮긴 거리·못 낸 길을 보고한다.";
 }
 
 /** 마을이 지어질 맵 크기(build·authorBeodeulTown 기본값과 같은 계산) — 코드 지형 미리보기가 같은 크기로 땅을 만든다. */

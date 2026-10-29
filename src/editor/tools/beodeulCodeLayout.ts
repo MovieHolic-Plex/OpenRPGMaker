@@ -23,6 +23,10 @@ export interface VillageLayout {
   houses?: LayoutPoint[];
   /** 밭 자리(밭 가운데). */
   fields?: LayoutPoint[];
+  /** 숲 덩이 자리(덩이 가운데) — 빈 단의 쓰임(코드가 아니라 조수가 고른다). */
+  forests?: LayoutPoint[];
+  /** 울타리 친 목초지(양·짚가리) 자리(가운데). */
+  pastures?: LayoutPoint[];
   /** 마을 밖으로 나가는 큰길이 닿는 맵 가장자리(1~2개). */
   exits?: LayoutEdge[];
 }
@@ -49,6 +53,8 @@ export function parseLayout(raw: unknown, W: number, H: number): { layout: Villa
   const wk = pt(r.work, "work"); if (wk) out.work = wk;
   if (Array.isArray(r.houses)) out.houses = r.houses.map((h, i) => pt(h, `houses[${i}]`)).filter((p): p is LayoutPoint => !!p).slice(0, 24);
   if (Array.isArray(r.fields)) out.fields = r.fields.map((h, i) => pt(h, `fields[${i}]`)).filter((p): p is LayoutPoint => !!p).slice(0, 6);
+  if (Array.isArray(r.forests)) out.forests = r.forests.map((h, i) => pt(h, `forests[${i}]`)).filter((p): p is LayoutPoint => !!p).slice(0, 8);
+  if (Array.isArray(r.pastures)) out.pastures = r.pastures.map((h, i) => pt(h, `pastures[${i}]`)).filter((p): p is LayoutPoint => !!p).slice(0, 4);
   if (Array.isArray(r.exits)) out.exits = r.exits.filter((e): e is LayoutEdge => (LAYOUT_EDGES as readonly string[]).includes(String(e))).slice(0, 3);
   return { layout: out, notes };
 }
@@ -59,13 +65,26 @@ function rng(seed: number): () => number {
 }
 
 /** 모델이 자리를 안 주었을 때의 대체 배치. 모이는 곳은 가장 넓은 낮은 터, 높은 곳 건물은 가장 높은 터, 집은 모이는 곳 둘레 고리. */
-export function autoLayout(t: CodeTerrain, seed: number, houseCount: number): VillageLayout {
+export function autoLayout(t: CodeTerrain, seed: number, houseCount: number, nearWater = false): VillageLayout {
   const rand = rng(seed * 131 + 7);
   const { W, H } = t;
   const areas = t.areas.filter((a) => a.inner >= 20);
   const low = [...areas].sort((a, b) => a.level - b.level || b.inner - a.inner);
-  const home = [...areas].sort((a, b) => b.inner - a.inner - (a.level - b.level) * 40)[0] ?? low[0];
-  const g: LayoutPoint = home ? { x: home.cx, y: home.cy } : { x: Math.round(W / 2), y: Math.round(H / 2) };
+  // 강가·포구 마을은 물에 가까운 터에(2026-10-30 씬 벤치 「시작점에서 강가까지 38칸」) — 터 한가운데에서 강·바다까지 거리만큼 깎는다
+  const wet: number[] = []; t.water.forEach((v, c) => { if (v === 1 || v === 3) wet.push(c); });
+  const toWater = (x: number, y: number) => { let d = Infinity; for (const c of wet) d = Math.min(d, Math.hypot((c % W) - x, Math.floor(c / W) - y)); return d; };
+  const score = (a: (typeof areas)[number]) => a.inner + (a.level ? -a.level * 40 : 0) - (nearWater && wet.length ? Math.max(0, toWater(a.cx, a.cy) - 6) * 12 : 0);
+  const home = [...areas].sort((a, b) => score(b) - score(a))[0] ?? low[0];
+  let g: LayoutPoint = home ? { x: home.cx, y: home.cy } : { x: Math.round(W / 2), y: Math.round(H / 2) };
+  if (nearWater && wet.length && home) {
+    // 터 안에서 물에 가장 가까운(물에서 5칸쯤) 자리로 모이는 곳을 당긴다
+    let best = g, bd = Infinity;
+    for (let y = Math.max(2, home.y0); y <= Math.min(H - 3, home.y1); y += 1) for (let x = Math.max(3, home.x0); x <= Math.min(W - 4, home.x1); x += 1) {
+      if (t.levels[y * W + x] !== home.level || t.water[y * W + x]) continue; const d = Math.abs(toWater(x, y) - 5) + 0.05 * Math.hypot(x - home.cx, y - home.cy);
+      if (d < bd) { bd = d; best = { x, y }; }
+    }
+    g = best;
+  }
   const top = [...areas].filter((a) => a.level > (home?.level ?? 0)).sort((a, b) => b.level - a.level || b.inner - a.inner)[0];
   const houses: LayoutPoint[] = [];
   const n = Math.max(3, houseCount);

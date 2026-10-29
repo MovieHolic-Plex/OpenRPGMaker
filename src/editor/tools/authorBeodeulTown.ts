@@ -104,8 +104,11 @@ export const AUTHOR_BEODEUL_TOWN_TOOL: ToolDefinition = {
           work: { type: "object", properties: { x: { type: "integer" }, y: { type: "integer" } }, required: ["x", "y"], description: "일터(헛간·곳간과 일터 소품)" },
           houses: { type: "array", items: { type: "object", properties: { x: { type: "integer" }, y: { type: "integer" } }, required: ["x", "y"] }, description: "살림집 자리(집 가운데), 3~12" },
           fields: { type: "array", items: { type: "object", properties: { x: { type: "integer" }, y: { type: "integer" } }, required: ["x", "y"] }, description: "밭 자리(밭 가운데)" },
+          forests: { type: "array", items: { type: "object", properties: { x: { type: "integer" }, y: { type: "integer" } }, required: ["x", "y"] }, description: "숲 덩이 자리(덩이 가운데) — 집·길이 없는 빈 단의 쓰임" },
+          pastures: { type: "array", items: { type: "object", properties: { x: { type: "integer" }, y: { type: "integer" } }, required: ["x", "y"] }, description: "울타리 친 목초지(양·짚가리) 자리 — 풀밭 마을(river·coast)" },
           exits: { type: "array", items: { type: "string", enum: [...LAYOUT_EDGES] }, description: "큰길이 마을 밖으로 나가는 맵 가장자리(1~2)" },
         } },
+      fishing: { type: "boolean", description: "강가 어촌(theme river): 물가 길에 그물 말림대·통발·엎어 둔 배·계류 말뚝과 물에 매어 둔 배를 둔다. 사용자가 어촌·어부를 말할 때." },
       harbour: { type: "boolean", description: `true 이고 가로 ${HARBOUR_W} 이상이면 맨 아래에 항구 호수를 붙인다(세로 ${HARBOUR_H}칸 추가).` },
     },
   },
@@ -608,8 +611,13 @@ export function codeTerrainFor(theme: string, args: Record<string, unknown>, W: 
     : tr === "hillside" ? "hill" : tr === "highland" ? "slope" : tr === "terraces" ? "terraces" : tr === "flat" ? "flat" : undefined;
   const high = (["north", "south", "west", "east", "center"] as const).find((h) => h === args.high) as TerrainHigh | undefined;
   const water: TerrainWater = theme === "coast" ? "sea" : theme === "desert" ? "oasis" : theme === "snow" ? "lake" : theme === "swamp" ? "bog" : args.water === "none" ? "none" : "river";
-  const tiers = Number(args.tiers);
-  return generateCodeTerrain({ W, H, seed, ...(character ? { character } : {}), ...(high ? { high } : {}), water, ...(Number.isFinite(tiers) && tiers > 0 ? { tiers } : {}) });
+  // 땅 모양 낱말이 없는 요청(평범한 강가 시골·포구·장터·늪)은 낮게(2026-10-30 ab15: 평지 요청에 세 단 계단 땅이 깔려 띠 지형에 졌다) —
+  // 늪·포구·광장 마을은 평지(뒤쪽 둔덕 하나), 그 밖은 언덕 한 단. 낱말이 있으면 그 성격대로.
+  const plain = !character && !high;
+  const ch: TerrainCharacter | undefined = character ?? (theme === "swamp" || theme === "coast" || args.form === "plaza" ? "flat" : theme === "river" ? "hill" : undefined);
+  const tiers0 = Number(args.tiers);
+  const tiers = Number.isFinite(tiers0) && tiers0 > 0 ? tiers0 : plain && ch === "hill" ? 1 : undefined;
+  return generateCodeTerrain({ W, H, seed, ...(ch ? { character: ch } : {}), ...(high ? { high } : {}), water, ...(tiers ? { tiers } : {}) });
 }
 
 function buildVillage(draft: Project, args: Record<string, unknown>, theme: BeodeulVillageTheme): ToolExecResult {
@@ -677,7 +685,7 @@ function buildVillage(draft: Project, args: Record<string, unknown>, theme: Beod
     layoutNotes.splice(0, layoutNotes.length, ...notes);
     return { codeTerrain: codeTerrainFor(theme, args, m.width, m.height, terrainSeed), layout };
   };
-  const build = () => buildBeodeulVillage(draft, mapId, theme, seed, wallForm, wallTerrain, forestType, { ...codeOpts(), roofs, water: wallWater, woods, houseLimit: houseCount, walls, ...(typeof args.landform === "string" && args.landform ? { landform: args.landform } : {}), ...(typeof args.settle === "string" && args.settle ? { settle: args.settle } : {}), ...(args.tiers !== undefined ? { tiers: Number(args.tiers) } : {}), ...(typeof args.high === "string" && args.high ? { high: args.high } : {}), ...(typeof args.quarter === "string" && beodeulYardReserve(args.quarter) ? { yard: beodeulYardReserve(args.quarter) } : {}),
+  const build = () => buildBeodeulVillage(draft, mapId, theme, seed, wallForm, wallTerrain, forestType, { ...codeOpts(), roofs, water: wallWater, woods, houseLimit: houseCount, walls, ...(args.fishing === true ? { fishing: true } : {}), ...(typeof args.landform === "string" && args.landform ? { landform: args.landform } : {}), ...(typeof args.settle === "string" && args.settle ? { settle: args.settle } : {}), ...(args.tiers !== undefined ? { tiers: Number(args.tiers) } : {}), ...(typeof args.high === "string" && args.high ? { high: args.high } : {}), ...(typeof args.quarter === "string" && beodeulYardReserve(args.quarter) ? { yard: beodeulYardReserve(args.quarter) } : {}),
     ...(args.wallGate === "N" || args.wallGate === "NS" || args.wallGate === "S" ? { wallGate: args.wallGate } : {}), ...(args.wallSideGaps === true ? { wallSideGaps: true } : {}) });
   let r = build();
   // 성벽 띠가 가장자리를 먹어 요청한 집 수가 다 앉지 않는다(2026-10-22 조수 시험 r3: 5채 요청 → 44×32 에서 2채, 조수가 52×38 로 다시 지어 3채).
