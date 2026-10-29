@@ -136,6 +136,7 @@ import { CINEMATIC_TOOLS } from "./cinematicTools";
 import { IMAGE_ASSET_TOOLS } from "./imageAssetTools";
 import { MAP_BACKGROUND_GENERATION_TOOLS } from "./mapBackgroundGenerationTool";
 import { TITLE_ART_TOOLS } from "./titleArtTools";
+import { BATTLE_BACKDROP_TOOLS } from "./battleBackdropTools";
 import { PRESENTATION_TOOLS } from "./presentationTools";
 import { TITLE_IMPROVE_TOOLS } from "./titleImproveTools";
 import { AUDIO_DESCRIPTION_TOOLS } from "./audioDescriptionTools";
@@ -439,6 +440,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(OPENING_STORYBOOK_TOOLS, 'system'),
   ...withDomain(IMAGE_ASSET_TOOLS, "system"),
   ...withDomain(TITLE_ART_TOOLS, "system"),
+  ...withDomain(BATTLE_BACKDROP_TOOLS, "system"),
   ...withDomain(PRESENTATION_TOOLS, "system"),
   ...withDomain(TITLE_IMPROVE_TOOLS, "system"),
   ...withDomain(AUDIO_DESCRIPTION_TOOLS, "system"),

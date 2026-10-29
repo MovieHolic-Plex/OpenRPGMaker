@@ -1,0 +1,1287 @@
+{
+ "version": 1,
+ "runs": {
+  "maou-konbini-night": {
+   "id": "maou-konbini-night",
+   "createdAt": "2026-10-29T15:53:24Z",
+   "project": {
+    "file": "/home/main/z-project/rpg-zzu-maou/dist/demos/maou-konbini.project.json",
+    "sha256": "80ee91a484649eb63b568c6325a9da0219f9dcbb3ccbee33908450dafb928566",
+    "title": "전생한 마왕, 편의점 알바 시작하다"
+   },
+   "assetsRoot": "/home/main/z-project/rpg-zzu-maou",
+   "mapId": "map_mk_konbini",
+   "troopId": "troop_mk_manual",
+   "window": {
+    "x": 0,
+    "y": 0,
+    "w": 22,
+    "h": 23
+   },
+   "captureSha256": "5e4aadb05bf8f66c20c6405c9fefe0aeba1a0ad8d1d5ecbadfa8584fd1381676",
+   "referenceSha256": "f7a322ffc8aa739baee7ac822598feec4cfbd5b018a38b4b184eee12f3bfdffa",
+   "facts": {
+    "mapId": "map_mk_konbini",
+    "mapName": "해피 마트 사쿠라자카점",
+    "tilesetName": "현대 도시 · 도쿄풍 (도트)",
+    "indoor": true,
+    "timeOfDay": "night",
+    "timeCertain": true,
+    "light": "bright",
+    "evidence": [
+     "맵 기본 조명 없음(ambient 0)",
+     "낱말 「새벽」: 새벽 2시. 손님이 끊긴 시간."
+    ],
+    "placeWords": [
+     "해피 마트 사쿠라자카점",
+     "konbini-floor",
+     "konbini-backroom",
+     "편의점의 결전 · 알바 매뉴얼"
+    ],
+    "captureLuma": 0.485,
+    "palette": [
+     "#0b1224",
+     "#34363e",
+     "#283d53",
+     "#516268",
+     "#2e5042",
+     "#3d4b51",
+     "#486090",
+     "#326c72",
+     "#2864b4",
+     "#4a6ba1",
+     "#6c7076",
+     "#3c6ebe",
+     "#3e6ebe",
+     "#a6a9ad",
+     "#8bafcd",
+     "#5aa05a",
+     "#8d9095",
+     "#d2a54c",
+     "#c6cad4",
+     "#b5c2bf",
+     "#d0c2a8",
+     "#dde0e7",
+     "#c1cfcc",
+     "#f3f4f7"
+    ]
+   },
+   "candidates": [
+    {
+     "letter": "A",
+     "promptSha256": "ccabce165a2875a907ddbdbacd983b42d570f5953103439fae67a5463508d21e",
+     "rawSha256": "259ceba22965c2eeb6c1b9106a28c725bf0aa1c754466ad5a08dcb5dc2fc11a3",
+     "nativePixelSha256": "437c91bf8b6b0d917a086b826f88dd2b348610f37e1f8a5964997b1c19fb77d2",
+     "storedPixelSha256": "b29f22bbd8539d6a57935f4138d06836b10c43c928e55b5c36f151cb17945c93",
+     "colors": 29,
+     "palette": [
+      "#0b1224",
+      "#34363e",
+      "#283d53",
+      "#516268",
+      "#2e5042",
+      "#3d4b51",
+      "#486090",
+      "#326c72",
+      "#6c7076",
+      "#3e6ebe",
+      "#a6a9ad",
+      "#8bafcd",
+      "#5aa05a",
+      "#8d9095",
+      "#d2a54c",
+      "#c6cad4",
+      "#b5c2bf",
+      "#d0c2a8",
+      "#dde0e7",
+      "#c1cfcc",
+      "#f3f4f7",
+      "#162233",
+      "#172334",
+      "#062e60",
+      "#747f99",
+      "#d02e3a",
+      "#a9977d",
+      "#c38749",
+      "#ac997f"
+     ],
+     "extras": [
+      "#162233",
+      "#172334",
+      "#062e60",
+      "#747f99",
+      "#d02e3a",
+      "#a9977d",
+      "#c38749",
+      "#ac997f"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "29",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": true,
+       "value": "아래 0.196 / 위 0.513",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "전체 밝기 0.64 (캡처 0.48)",
+       "rule": "밝은 장면: 캡처와 밝기 차 ≤0.25, 0.18 이상"
+      }
+     },
+     "judge": {
+      "by": "claude:sonnet",
+      "nativePixelSha256": "437c91bf8b6b0d917a086b826f88dd2b348610f37e1f8a5964997b1c19fb77d2",
+      "verdict": {
+       "characters": false,
+       "text": false,
+       "time": "night",
+       "samePlace": true,
+       "sideView": true,
+       "groundClear": true,
+       "pixelArt": true,
+       "notes": "Bright convenience-store interior with the same fridge and shelf lineup, a dark blue window at left reads as night, and the floor is open; the red sign with a yellow emblem is logo-like but has no readable letters."
+      },
+      "findings": [],
+      "at": "2026-10-29T16:37:03Z"
+     }
+    },
+    {
+     "letter": "B",
+     "promptSha256": "faa8a7bf04b343d26f2c2266156eebe9bf101f78b2c0af28c6f713606d13bb15",
+     "rawSha256": "dfc562ad48592e88fa9b39d86cd8d4a6010343f4739138e86d21498600316841",
+     "nativePixelSha256": "f7e320230ff85734586c018e00261af5574173f14fac1addb5f3b62d2a12d6f6",
+     "storedPixelSha256": "d8e949f9c5bb3cce8d0ca2fcdb3e99b58d63d7cc1425f7e93f0a3efe349e6aef",
+     "colors": 29,
+     "palette": [
+      "#0b1224",
+      "#34363e",
+      "#283d53",
+      "#516268",
+      "#2e5042",
+      "#3d4b51",
+      "#486090",
+      "#326c72",
+      "#4a6ba1",
+      "#6c7076",
+      "#3e6ebe",
+      "#a6a9ad",
+      "#8bafcd",
+      "#5aa05a",
+      "#8d9095",
+      "#d2a54c",
+      "#c6cad4",
+      "#b5c2bf",
+      "#d0c2a8",
+      "#dde0e7",
+      "#f3f4f7",
+      "#0c1e40",
+      "#0c1f40",
+      "#0c1f41",
+      "#1d2736",
+      "#9f7953",
+      "#9d7650",
+      "#a47c53",
+      "#e8d5b2"
+     ],
+     "extras": [
+      "#0c1e40",
+      "#0c1f40",
+      "#0c1f41",
+      "#1d2736",
+      "#9f7953",
+      "#9d7650",
+      "#a47c53",
+      "#e8d5b2"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "29",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": true,
+       "value": "아래 0.170 / 위 0.607",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "전체 밝기 0.63 (캡처 0.48)",
+       "rule": "밝은 장면: 캡처와 밝기 차 ≤0.25, 0.18 이상"
+      }
+     },
+     "judge": {
+      "by": "claude:sonnet",
+      "nativePixelSha256": "f7e320230ff85734586c018e00261af5574173f14fac1addb5f3b62d2a12d6f6",
+      "verdict": {
+       "characters": false,
+       "text": false,
+       "time": "night",
+       "samePlace": true,
+       "sideView": true,
+       "groundClear": true,
+       "pixelArt": true,
+       "notes": "Bright fluorescent convenience-store interior with dark night windows, shelves and coolers along the back wall, and a wide open tile floor."
+      },
+      "findings": [],
+      "at": "2026-10-29T16:37:03Z"
+     }
+    },
+    {
+     "letter": "C",
+     "promptSha256": "b4ee2a821e769019dc26dd7d54fb579e3a82232d103b7d8b30278a9fc2556101",
+     "rawSha256": "082e6c42ffc3d65499caec6c4a56ae1a82178931c7758a7bc511e4ef3da50cd9",
+     "nativePixelSha256": "01b096c7774f4fa2e1df1203341536264e21d7df390581e01eaae4df1c3511ec",
+     "storedPixelSha256": "a5421d62d33b9284ab78f1cbc7cca3e198d9b9697c99a7c3b6ed45628e00b0d6",
+     "colors": 29,
+     "palette": [
+      "#0b1224",
+      "#34363e",
+      "#283d53",
+      "#516268",
+      "#3d4b51",
+      "#486090",
+      "#326c72",
+      "#4a6ba1",
+      "#6c7076",
+      "#3e6ebe",
+      "#a6a9ad",
+      "#8bafcd",
+      "#5aa05a",
+      "#8d9095",
+      "#d2a54c",
+      "#c6cad4",
+      "#b5c2bf",
+      "#d0c2a8",
+      "#dde0e7",
+      "#c1cfcc",
+      "#f3f4f7",
+      "#20232d",
+      "#232630",
+      "#102750",
+      "#242730",
+      "#867e71",
+      "#ce3843",
+      "#b18a56",
+      "#ba925d"
+     ],
+     "extras": [
+      "#20232d",
+      "#232630",
+      "#102750",
+      "#242730",
+      "#867e71",
+      "#ce3843",
+      "#b18a56",
+      "#ba925d"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "29",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": true,
+       "value": "아래 0.166 / 위 0.532",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "전체 밝기 0.63 (캡처 0.48)",
+       "rule": "밝은 장면: 캡처와 밝기 차 ≤0.25, 0.18 이상"
+      }
+     },
+     "judge": {
+      "by": "claude:sonnet",
+      "nativePixelSha256": "01b096c7774f4fa2e1df1203341536264e21d7df390581e01eaae4df1c3511ec",
+      "verdict": {
+       "characters": false,
+       "text": false,
+       "time": "night",
+       "samePlace": true,
+       "sideView": true,
+       "groundClear": true,
+       "pixelArt": true,
+       "notes": "Bright, lit convenience-store interior with dark night windows at the sides, shelves and counter along the back wall, and a large open tiled floor; the reflections on the floor are slightly smeary but still pixel-styled."
+      },
+      "findings": [],
+      "at": "2026-10-29T16:37:03Z"
+     }
+    },
+    {
+     "letter": "D",
+     "promptSha256": "19b9ed5ef8abfd581a0e19ec21b48cf15f68bf175244fe3d7e7fc537c0b264af",
+     "rawSha256": "6e540bdd1085c6777d45dbc22f5d76cf6629f2657849aafa48396a937dd541ef",
+     "nativePixelSha256": "3730f0bf1424a6b7b80c6f7ae7d199393d16919d8a9b71e73ac38abcf03a5427",
+     "storedPixelSha256": "e83f3e4f412aaac45f1b5800695baf3589afaf5bf7723ed3873522201caebe54",
+     "colors": 30,
+     "palette": [
+      "#0b1224",
+      "#34363e",
+      "#283d53",
+      "#516268",
+      "#3d4b51",
+      "#486090",
+      "#326c72",
+      "#2864b4",
+      "#4a6ba1",
+      "#6c7076",
+      "#3e6ebe",
+      "#a6a9ad",
+      "#8bafcd",
+      "#5aa05a",
+      "#8d9095",
+      "#d2a54c",
+      "#c6cad4",
+      "#b5c2bf",
+      "#d0c2a8",
+      "#dde0e7",
+      "#c1cfcc",
+      "#f3f4f7",
+      "#031e49",
+      "#041f4b",
+      "#1a4782",
+      "#7b4f38",
+      "#8d7e6c",
+      "#cb343f",
+      "#b19670",
+      "#a98151"
+     ],
+     "extras": [
+      "#031e49",
+      "#041f4b",
+      "#1a4782",
+      "#7b4f38",
+      "#8d7e6c",
+      "#cb343f",
+      "#b19670",
+      "#a98151"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "30",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": true,
+       "value": "아래 0.115 / 위 0.495",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "전체 밝기 0.67 (캡처 0.48)",
+       "rule": "밝은 장면: 캡처와 밝기 차 ≤0.25, 0.18 이상"
+      }
+     },
+     "judge": {
+      "by": "claude:sonnet",
+      "nativePixelSha256": "3730f0bf1424a6b7b80c6f7ae7d199393d16919d8a9b71e73ac38abcf03a5427",
+      "verdict": {
+       "characters": false,
+       "text": false,
+       "time": "night",
+       "samePlace": true,
+       "sideView": true,
+       "groundClear": true,
+       "pixelArt": true,
+       "notes": "Bright convenience-store interior with fluorescent lights and a dark-blue window at upper left that suggests night. Open reflective floor, no people and no readable text. The floor reflections are slightly smeared."
+      },
+      "findings": [],
+      "at": "2026-10-29T16:37:04Z"
+     }
+    }
+   ]
+  },
+  "maou-throne": {
+   "id": "maou-throne",
+   "createdAt": "2026-10-29T16:02:58Z",
+   "project": {
+    "file": "/home/main/z-project/rpg-zzu-maou/dist/demos/maou-konbini.project.json",
+    "sha256": "80ee91a484649eb63b568c6325a9da0219f9dcbb3ccbee33908450dafb928566",
+    "title": "전생한 마왕, 편의점 알바 시작하다"
+   },
+   "assetsRoot": "/home/main/z-project/rpg-zzu-maou",
+   "mapId": "map_mk_throne",
+   "troopId": "troop_mk_castle",
+   "window": {
+    "x": 15,
+    "y": 1,
+    "w": 18,
+    "h": 12
+   },
+   "captureSha256": "560d0cd9e278b6e0f3c846f08ed4d071d47a4100acbf89af82abf0f4fdcada9f",
+   "referenceSha256": "9db26592fae4e809427d8c99948c033e550300492e526da4badc5dddbe733526",
+   "facts": {
+    "mapId": "map_mk_throne",
+    "mapName": "마왕성 옥좌의 방",
+    "tilesetName": "실내 · 손 도트 v5 (아틀라스)",
+    "indoor": true,
+    "timeOfDay": "day",
+    "timeCertain": false,
+    "light": "dim",
+    "evidence": [
+     "맵 기본 조명 ambient 0.5 · #2a0618 → 밝기 ×0.53",
+     "시간 낱말 없음 · 실내 → 시간은 정하지 않고 조명만 맞춘다"
+    ],
+    "placeWords": [
+     "마왕성 옥좌의 방",
+     "알현실",
+     "어전 회의실",
+     "무기고",
+     "보물고",
+     "왕실 예배당",
+     "근위대 대기실",
+     "접견 대기실",
+     "옥좌의 결전"
+    ],
+    "captureLuma": 0.325,
+    "palette": [
+     "#250d10",
+     "#311e28",
+     "#490512",
+     "#26371c",
+     "#510c1f",
+     "#601427",
+     "#412f3f",
+     "#584553",
+     "#624025",
+     "#4b313f",
+     "#611421",
+     "#770316",
+     "#564857",
+     "#3f4c71",
+     "#594758",
+     "#614b57",
+     "#5e4f5b",
+     "#735d69",
+     "#714f7e",
+     "#805c35",
+     "#713c2f",
+     "#7b6671",
+     "#7e6a76",
+     "#8a6c4f"
+    ]
+   },
+   "candidates": [
+    {
+     "letter": "A",
+     "promptSha256": "30426d21f9596e7268aef231cc0113ce77d4419e8e50e394ac256da87a81ba45",
+     "rawSha256": "037e04a2fd8211a92a2c227c3b8f2db6bb1f464253f4a7c7afb75d92d860f079",
+     "nativePixelSha256": "3f590a24beb181d73bd3df389cced86c3e98e5ba658666737c1f4cf5f309b159",
+     "storedPixelSha256": "212b912701cf9679b68e446a9ea993c5b49bf5a2c95abc6804f9c15e69a2bdc8",
+     "colors": 30,
+     "palette": [
+      "#250d10",
+      "#311e28",
+      "#490512",
+      "#26371c",
+      "#510c1f",
+      "#601427",
+      "#412f3f",
+      "#584553",
+      "#624025",
+      "#4b313f",
+      "#611421",
+      "#770316",
+      "#564857",
+      "#3f4c71",
+      "#594758",
+      "#614b57",
+      "#5e4f5b",
+      "#735d69",
+      "#805c35",
+      "#713c2f",
+      "#7b6671",
+      "#7e6a76",
+      "#8a6c4f",
+      "#31482b",
+      "#962438",
+      "#94838d",
+      "#a57e6d",
+      "#a7816e",
+      "#a6969c",
+      "#c09576"
+     ],
+     "extras": [
+      "#31482b",
+      "#962438",
+      "#94838d",
+      "#a57e6d",
+      "#a7816e",
+      "#a6969c",
+      "#c09576"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "30",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": false,
+       "value": "아래 0.294 / 위 0.583",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "전체 밝기 0.32 (캡처 0.33)",
+       "rule": "밝은 장면: 캡처와 밝기 차 ≤0.25, 0.18 이상"
+      }
+     },
+     "judge": {
+      "by": "claude:sonnet",
+      "nativePixelSha256": "3f590a24beb181d73bd3df389cced86c3e98e5ba658666737c1f4cf5f309b159",
+      "verdict": {
+       "characters": true,
+       "text": false,
+       "time": "unclear",
+       "samePlace": true,
+       "sideView": true,
+       "groundClear": true,
+       "pixelArt": true,
+       "notes": "The two armored knight figures flanking the throne match the statues in the reference, but they read as standing people, so a strict judge would flag them. The rest is a good match: throne, banners, stained glass, braziers, and an open flagstone floor."
+      },
+      "findings": [
+       "인물·동물이 보인다"
+      ],
+      "at": "2026-10-29T16:41:28Z"
+     }
+    },
+    {
+     "letter": "B",
+     "promptSha256": "3abc1c507bd0a881feec13269c792582ae21ed188f0f0cf7bbf96a47f55963f0",
+     "rawSha256": "6f610c1612d4ce524b416fd94c41a8f46332a9e62e0bf7ffb657b877e1e31261",
+     "nativePixelSha256": "a50b9dd06326e5c5b236c700dfa7ae717fdb366592a674b4e5e8c2ef689776ca",
+     "storedPixelSha256": "4fbe582021b57dd3c8908474775dcffdcc29bf2533c7e5931b298bd8b1124b9e",
+     "colors": 31,
+     "palette": [
+      "#250d10",
+      "#311e28",
+      "#490512",
+      "#26371c",
+      "#510c1f",
+      "#601427",
+      "#412f3f",
+      "#584553",
+      "#624025",
+      "#4b313f",
+      "#611421",
+      "#770316",
+      "#3f4c71",
+      "#594758",
+      "#614b57",
+      "#5e4f5b",
+      "#735d69",
+      "#714f7e",
+      "#805c35",
+      "#713c2f",
+      "#7b6671",
+      "#7e6a76",
+      "#8a6c4f",
+      "#130202",
+      "#3f562b",
+      "#a6263e",
+      "#947e8d",
+      "#a47668",
+      "#967f8f",
+      "#b7887e",
+      "#cf9f90"
+     ],
+     "extras": [
+      "#130202",
+      "#3f562b",
+      "#a6263e",
+      "#947e8d",
+      "#a47668",
+      "#967f8f",
+      "#b7887e",
+      "#cf9f90"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "31",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": false,
+       "value": "아래 0.268 / 위 0.527",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "전체 밝기 0.34 (캡처 0.33)",
+       "rule": "밝은 장면: 캡처와 밝기 차 ≤0.25, 0.18 이상"
+      }
+     },
+     "judge": {
+      "by": "claude:sonnet",
+      "nativePixelSha256": "a50b9dd06326e5c5b236c700dfa7ae717fdb366592a674b4e5e8c2ef689776ca",
+      "verdict": {
+       "characters": true,
+       "text": false,
+       "time": "unclear",
+       "samePlace": true,
+       "sideView": true,
+       "groundClear": true,
+       "pixelArt": true,
+       "notes": "Two armored knight statues flank the throne and could be read as figures, but they're statues. Otherwise it matches the throne room: stained glass, banners, throne and braziers, with a wide open stone floor and dim indoor light."
+      },
+      "findings": [
+       "인물·동물이 보인다"
+      ],
+      "at": "2026-10-29T16:41:28Z"
+     }
+    },
+    {
+     "letter": "C",
+     "promptSha256": "b0e392c7a339d00d4d3815a04edc26be35a43fd7066dd797390f7d3c2482884f",
+     "rawSha256": "eb968a5a2521d7bf970544f48d16df706075799b3f68daef095aece53ddc09c8",
+     "nativePixelSha256": "3fcd1848e65b5f5c7222714a016a0fe28a7d18deb23b1fa34360477d4ed9291d",
+     "storedPixelSha256": "b79877966aed3be1584ca4893f8fd608095a362c754530598c958802f73f5bf2",
+     "colors": 30,
+     "palette": [
+      "#250d10",
+      "#311e28",
+      "#490512",
+      "#26371c",
+      "#510c1f",
+      "#601427",
+      "#412f3f",
+      "#584553",
+      "#624025",
+      "#4b313f",
+      "#611421",
+      "#770316",
+      "#3f4c71",
+      "#594758",
+      "#614b57",
+      "#5e4f5b",
+      "#735d69",
+      "#805c35",
+      "#713c2f",
+      "#7b6671",
+      "#7e6a76",
+      "#8a6c4f",
+      "#0a030e",
+      "#950726",
+      "#957a81",
+      "#967a81",
+      "#9b8187",
+      "#ba775b",
+      "#b2979c",
+      "#b499a0"
+     ],
+     "extras": [
+      "#0a030e",
+      "#950726",
+      "#957a81",
+      "#967a81",
+      "#9b8187",
+      "#ba775b",
+      "#b2979c",
+      "#b499a0"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "30",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": false,
+       "value": "아래 0.302 / 위 0.595",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "전체 밝기 0.33 (캡처 0.33)",
+       "rule": "밝은 장면: 캡처와 밝기 차 ≤0.25, 0.18 이상"
+      }
+     },
+     "judge": {
+      "by": "claude:sonnet",
+      "nativePixelSha256": "3fcd1848e65b5f5c7222714a016a0fe28a7d18deb23b1fa34360477d4ed9291d",
+      "verdict": {
+       "characters": false,
+       "text": false,
+       "time": "unclear",
+       "samePlace": true,
+       "sideView": true,
+       "groundClear": true,
+       "pixelArt": true,
+       "notes": "Dim throne hall with a red throne, banners, braziers and armor statues on pedestals (decor, not live characters, but they could be read as figures), plus an open stone floor in the lower half."
+      },
+      "findings": [],
+      "at": "2026-10-29T16:41:27Z"
+     }
+    },
+    {
+     "letter": "D",
+     "promptSha256": "b8fe1344ff45138c99d463387b90a02f490d1418017a6163eee19fb601310293",
+     "rawSha256": "7b0af8509b0a151a7930e5f07992f6baae5b21bddc9bcd4a4d44e407c37126de",
+     "nativePixelSha256": "94ebb005f6008192f8e133a03d3851d0dde7e985db817ea631f1994292b6aec1",
+     "storedPixelSha256": "c718a9a9a476990d0cf153e93300a5c3b17329476f264d75b9b84751d840fd0b",
+     "colors": 29,
+     "palette": [
+      "#250d10",
+      "#311e28",
+      "#490512",
+      "#26371c",
+      "#510c1f",
+      "#601427",
+      "#412f3f",
+      "#584553",
+      "#624025",
+      "#4b313f",
+      "#611421",
+      "#770316",
+      "#594758",
+      "#614b57",
+      "#5e4f5b",
+      "#735d69",
+      "#805c35",
+      "#713c2f",
+      "#7b6671",
+      "#7e6a76",
+      "#8a6c4f",
+      "#0f0613",
+      "#2c5598",
+      "#ab7139",
+      "#917b89",
+      "#927b89",
+      "#9d8693",
+      "#a8909a",
+      "#ad98a2"
+     ],
+     "extras": [
+      "#0f0613",
+      "#2c5598",
+      "#ab7139",
+      "#917b89",
+      "#927b89",
+      "#9d8693",
+      "#a8909a",
+      "#ad98a2"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "29",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": false,
+       "value": "아래 0.332 / 위 0.616",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "전체 밝기 0.37 (캡처 0.33)",
+       "rule": "밝은 장면: 캡처와 밝기 차 ≤0.25, 0.18 이상"
+      }
+     },
+     "judge": {
+      "by": "claude:sonnet",
+      "nativePixelSha256": "94ebb005f6008192f8e133a03d3851d0dde7e985db817ea631f1994292b6aec1",
+      "verdict": {
+       "characters": true,
+       "text": false,
+       "time": "unclear",
+       "samePlace": true,
+       "sideView": true,
+       "groundClear": true,
+       "pixelArt": true,
+       "notes": "Two armored knight statues stand in wall alcoves and could pass for guards. The rest is a throne hall with a red throne, banners, stained glass and braziers, over an open stone floor that has faint vertical reflection streaks."
+      },
+      "findings": [
+       "인물·동물이 보인다"
+      ],
+      "at": "2026-10-29T16:41:28Z"
+     }
+    }
+   ],
+   "pick": {
+    "letter": "A",
+    "nativePixelSha256": "3f590a24beb181d73bd3df389cced86c3e98e5ba658666737c1f4cf5f309b159",
+    "storedPixelSha256": "212b912701cf9679b68e446a9ea993c5b49bf5a2c95abc6804f9c15e69a2bdc8",
+    "by": "supervisor",
+    "at": "2026-10-29T17:44:42Z"
+   }
+  },
+  "maou-konbini-night-matte": {
+   "id": "maou-konbini-night-matte",
+   "createdAt": "2026-10-29T17:01:42Z",
+   "project": {
+    "file": "/home/main/z-project/rpg-zzu-maou/dist/demos/maou-konbini.project.json",
+    "sha256": "80ee91a484649eb63b568c6325a9da0219f9dcbb3ccbee33908450dafb928566",
+    "title": "전생한 마왕, 편의점 알바 시작하다"
+   },
+   "assetsRoot": "/home/main/z-project/rpg-zzu-maou",
+   "mapId": "map_mk_konbini",
+   "troopId": "troop_mk_manual",
+   "window": {
+    "x": 0,
+    "y": 0,
+    "w": 22,
+    "h": 23
+   },
+   "captureSha256": "5e4aadb05bf8f66c20c6405c9fefe0aeba1a0ad8d1d5ecbadfa8584fd1381676",
+   "referenceSha256": "f7a322ffc8aa739baee7ac822598feec4cfbd5b018a38b4b184eee12f3bfdffa",
+   "facts": {
+    "mapId": "map_mk_konbini",
+    "mapName": "해피 마트 사쿠라자카점",
+    "tilesetName": "현대 도시 · 도쿄풍 (도트)",
+    "indoor": true,
+    "timeOfDay": "night",
+    "timeCertain": true,
+    "light": "bright",
+    "evidence": [
+     "맵 기본 조명 없음(ambient 0)",
+     "낱말 「새벽」: 새벽 2시. 손님이 끊긴 시간."
+    ],
+    "placeWords": [
+     "해피 마트 사쿠라자카점",
+     "konbini-floor",
+     "konbini-backroom",
+     "편의점의 결전 · 알바 매뉴얼"
+    ],
+    "captureLuma": 0.485,
+    "palette": [
+     "#0b1224",
+     "#34363e",
+     "#283d53",
+     "#516268",
+     "#2e5042",
+     "#3d4b51",
+     "#486090",
+     "#326c72",
+     "#2864b4",
+     "#4a6ba1",
+     "#6c7076",
+     "#3c6ebe",
+     "#3e6ebe",
+     "#a6a9ad",
+     "#8bafcd",
+     "#5aa05a",
+     "#8d9095",
+     "#d2a54c",
+     "#c6cad4",
+     "#b5c2bf",
+     "#d0c2a8",
+     "#dde0e7",
+     "#c1cfcc",
+     "#f3f4f7"
+    ]
+   },
+   "candidates": [
+    {
+     "letter": "A",
+     "promptSha256": "72721c5843a921b34f5d830e4529334a92f34df996917aa01514981320a6ad94",
+     "rawSha256": "3b461c6e00aa28c9a051aaaa93e460a4ceb08f378e2407f61ff65323bd03a19d",
+     "nativePixelSha256": "399ce85e7fc2b40d15b398b25896be03e288aa35768498f848c4b2c609526da3",
+     "storedPixelSha256": "9fe4cd26182c283133b239fbf8fa1f212963a2031f74181bb900ff258a800a61",
+     "colors": 29,
+     "palette": [
+      "#0b1224",
+      "#34363e",
+      "#283d53",
+      "#516268",
+      "#3d4b51",
+      "#486090",
+      "#326c72",
+      "#4a6ba1",
+      "#6c7076",
+      "#3e6ebe",
+      "#a6a9ad",
+      "#8bafcd",
+      "#5aa05a",
+      "#8d9095",
+      "#d2a54c",
+      "#c6cad4",
+      "#b5c2bf",
+      "#d0c2a8",
+      "#dde0e7",
+      "#c1cfcc",
+      "#f3f4f7",
+      "#0e1f40",
+      "#142641",
+      "#1a253a",
+      "#797f97",
+      "#bd3440",
+      "#a77f49",
+      "#b98e53",
+      "#f6a82c"
+     ],
+     "extras": [
+      "#0e1f40",
+      "#142641",
+      "#1a253a",
+      "#797f97",
+      "#bd3440",
+      "#a77f49",
+      "#b98e53",
+      "#f6a82c"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "29",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": true,
+       "value": "아래 0.185 / 위 0.529",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "전체 밝기 0.65 (캡처 0.48)",
+       "rule": "밝은 장면: 캡처와 밝기 차 ≤0.25, 0.18 이상"
+      }
+     },
+     "judge": {
+      "by": "claude:sonnet",
+      "nativePixelSha256": "399ce85e7fc2b40d15b398b25896be03e288aa35768498f848c4b2c609526da3",
+      "verdict": {
+       "characters": false,
+       "text": false,
+       "time": "night",
+       "samePlace": true,
+       "sideView": true,
+       "groundClear": true,
+       "pixelArt": true,
+       "notes": "A bright convenience-store interior with fridges and a counter along the back wall; the far-left window shows a dark night city, and the lower half is open tiled floor with only minor speckle noise."
+      },
+      "findings": [],
+      "at": "2026-10-29T17:05:12Z"
+     }
+    },
+    {
+     "letter": "B",
+     "promptSha256": "164578ee74cfa8b49a72b95f51f855fd87f4e28d679a66c59958440ba76dc2c3",
+     "rawSha256": "41f50e630bb61bb235631f7dac68374d4fee7f1560446bb4c64aafe9131a9f99",
+     "nativePixelSha256": "08a0d1ce739a61cfe80edbbeb1c3ce379c388acdb1e98afa68b9203a02068d73",
+     "storedPixelSha256": "632903254fa68822cf8281332679eec3ed4dc6a53d0cdc46b6909d4e11f4730c",
+     "colors": 28,
+     "palette": [
+      "#0b1224",
+      "#34363e",
+      "#283d53",
+      "#516268",
+      "#3d4b51",
+      "#486090",
+      "#326c72",
+      "#4a6ba1",
+      "#6c7076",
+      "#3e6ebe",
+      "#a6a9ad",
+      "#8bafcd",
+      "#5aa05a",
+      "#8d9095",
+      "#d2a54c",
+      "#c6cad4",
+      "#b5c2bf",
+      "#d0c2a8",
+      "#dde0e7",
+      "#f3f4f7",
+      "#0c1d3f",
+      "#08204f",
+      "#0f2c62",
+      "#8b6c4e",
+      "#c12f3b",
+      "#ad885d",
+      "#ac865b",
+      "#fddc6d"
+     ],
+     "extras": [
+      "#0c1d3f",
+      "#08204f",
+      "#0f2c62",
+      "#8b6c4e",
+      "#c12f3b",
+      "#ad885d",
+      "#ac865b",
+      "#fddc6d"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "28",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": true,
+       "value": "아래 0.166 / 위 0.566",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "전체 밝기 0.59 (캡처 0.48)",
+       "rule": "밝은 장면: 캡처와 밝기 차 ≤0.25, 0.18 이상"
+      }
+     },
+     "judge": {
+      "by": "claude:sonnet",
+      "nativePixelSha256": "08a0d1ce739a61cfe80edbbeb1c3ce379c388acdb1e98afa68b9203a02068d73",
+      "verdict": {
+       "characters": false,
+       "text": false,
+       "time": "night",
+       "samePlace": true,
+       "sideView": true,
+       "groundClear": true,
+       "pixelArt": true,
+       "notes": "Bright convenience-store interior with fridge shelves along the back wall, dark blue night windows at the top, and a wide empty tiled floor; the right-hand wall clock is a small round object with no readable numerals."
+      },
+      "findings": [],
+      "at": "2026-10-29T17:05:10Z"
+     }
+    },
+    {
+     "letter": "C",
+     "promptSha256": "cea69fbd73265421fbe466cb7815695ec5d132241cc5aea716052cc75c73b9e2",
+     "rawSha256": "1b13a22ffdf756218a56881700f61bd7f376e3099d3e6f021cda1900eb499e23",
+     "nativePixelSha256": "3680001ee5f12b33e9ba25004ff4724c489e8c8cdf9960e5bc1306f0035d0b4b",
+     "storedPixelSha256": "9347303cd382d7e798e00292fb053064370b49f534e70bff0e0ee115e8c73977",
+     "colors": 32,
+     "palette": [
+      "#0b1224",
+      "#34363e",
+      "#283d53",
+      "#516268",
+      "#2e5042",
+      "#3d4b51",
+      "#486090",
+      "#326c72",
+      "#2864b4",
+      "#4a6ba1",
+      "#6c7076",
+      "#3c6ebe",
+      "#3e6ebe",
+      "#a6a9ad",
+      "#8bafcd",
+      "#5aa05a",
+      "#8d9095",
+      "#d2a54c",
+      "#c6cad4",
+      "#b5c2bf",
+      "#d0c2a8",
+      "#dde0e7",
+      "#c1cfcc",
+      "#f3f4f7",
+      "#041e4c",
+      "#07224f",
+      "#1d293f",
+      "#338e5f",
+      "#d3353d",
+      "#e4b770",
+      "#fcd484",
+      "#bb8a4a"
+     ],
+     "extras": [
+      "#041e4c",
+      "#07224f",
+      "#1d293f",
+      "#338e5f",
+      "#d3353d",
+      "#e4b770",
+      "#fcd484",
+      "#bb8a4a"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "32",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": true,
+       "value": "아래 0.000 / 위 0.508",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "전체 밝기 0.69 (캡처 0.48)",
+       "rule": "밝은 장면: 캡처와 밝기 차 ≤0.25, 0.18 이상"
+      }
+     },
+     "judge": {
+      "by": "claude:sonnet",
+      "nativePixelSha256": "3680001ee5f12b33e9ba25004ff4724c489e8c8cdf9960e5bc1306f0035d0b4b",
+      "verdict": {
+       "characters": false,
+       "text": true,
+       "time": "night",
+       "samePlace": true,
+       "sideView": true,
+       "groundClear": true,
+       "pixelArt": true,
+       "notes": "Convenience-store interior with dark night windows and bright lights over a clear gray floor; the red banner with golden arches at top center reads as a logo, so text is flagged."
+      },
+      "findings": [
+       "글자가 보인다"
+      ],
+      "at": "2026-10-29T17:05:12Z"
+     }
+    },
+    {
+     "letter": "D",
+     "promptSha256": "5008c644029874432f4af849cb518841a295a15edb3967c93bc172d4e314b337",
+     "rawSha256": "066abb804b1308228b322f604bebed058c90a8012d815824d815d951de207b4f",
+     "nativePixelSha256": "519714dd674759966e36b91e6288bb94af4bbff695b6bea3cf10d77592cad643",
+     "storedPixelSha256": "014de5c10581441ae5dca1a18d9e8380cf5aeb17d72802ec3f6192fb4751722f",
+     "colors": 30,
+     "palette": [
+      "#0b1224",
+      "#34363e",
+      "#283d53",
+      "#516268",
+      "#2e5042",
+      "#3d4b51",
+      "#486090",
+      "#326c72",
+      "#4a6ba1",
+      "#6c7076",
+      "#3e6ebe",
+      "#a6a9ad",
+      "#8bafcd",
+      "#5aa05a",
+      "#8d9095",
+      "#d2a54c",
+      "#c6cad4",
+      "#b5c2bf",
+      "#d0c2a8",
+      "#dde0e7",
+      "#c1cfcc",
+      "#f3f4f7",
+      "#0e224c",
+      "#0e234d",
+      "#0f244e",
+      "#877d68",
+      "#d5393f",
+      "#b88f56",
+      "#bc8e52",
+      "#a89b81"
+     ],
+     "extras": [
+      "#0e224c",
+      "#0e234d",
+      "#0f244e",
+      "#877d68",
+      "#d5393f",
+      "#b88f56",
+      "#bc8e52",
+      "#a89b81"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "30",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": true,
+       "value": "아래 0.056 / 위 0.554",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "전체 밝기 0.62 (캡처 0.48)",
+       "rule": "밝은 장면: 캡처와 밝기 차 ≤0.25, 0.18 이상"
+      }
+     },
+     "judge": {
+      "by": "claude:sonnet",
+      "nativePixelSha256": "519714dd674759966e36b91e6288bb94af4bbff695b6bea3cf10d77592cad643",
+      "verdict": {
+       "characters": false,
+       "text": false,
+       "time": "night",
+       "samePlace": true,
+       "sideView": true,
+       "groundClear": true,
+       "pixelArt": true,
+       "notes": "Convenience store interior with dark-blue night windows and bright ceiling lights; open pale tile floor in the lower half. The shapes at the counter ends read as boxes and a register, not people."
+      },
+      "findings": [],
+      "at": "2026-10-29T17:05:07Z"
+     }
+    }
+   ],
+   "pick": {
+    "letter": "B",
+    "nativePixelSha256": "08a0d1ce739a61cfe80edbbeb1c3ce379c388acdb1e98afa68b9203a02068d73",
+    "storedPixelSha256": "632903254fa68822cf8281332679eec3ed4dc6a53d0cdc46b6909d4e11f4730c",
+    "by": "supervisor",
+    "at": "2026-10-29T17:43:44Z"
+   }
+  }
+ }
+}
