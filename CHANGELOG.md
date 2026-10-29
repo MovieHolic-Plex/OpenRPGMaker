@@ -5,6 +5,71 @@
 
 <!-- releases -->
 
+## 0.365.0 — 2026-10-30
+
+### 기능
+
+- **music** — chase scene + set_game_audio role chase; store_find_music scene synonyms (`02bf2d5`)
+- **ai** — lanes stage objective-targets checks every objective marker target is reachable and does something (`141edd8`)
+- **ai** — room_parts shows the user's chosen rooms (assistant-rooms-2) as composition ideas in one combined picture; the old authored study templates are no longer shown (`71899cf`)
+- **ai** — dungeon_parts shows the hand-picked beodeul dungeon renders as reference pictures (ideas, not copies) (`83f4750`)
+- **ai** — dungeon_parts rotates example order per game so models do not all anchor on the first skeleton (`4f505f9`)
+- **ai** — the assistant designs dungeon/cave floors — dungeonDesign (rooms with role·size·shape·at·water·features, links, entrance side) built as given; functions only harmonise (overlap push, compaction, linking strays, size contradictions) and report 「고침:」; dungeon_parts verb with varied built examples; design bounce once; model seed dropped from make_place/edit_place, dungeon seed from request+game key (`6a4283d`)
+
+### 수정
+
+- **player** — mobile touch feel — press-to-advance dialogue, input-timestamp taps, one-tap choices, two-finger cancel, finger-reach NPC taps (#3938) (`3f361e1`)
+- **ai** — bossTalkBattles marked pages typed as a defined array (ci-fast TS2488) (`59f721e`)
+- **runtime** — opening music ducks under short animatic sound cues so gag beats and hits are heard (#3939) (`a9b5b71`)
+- **ai** — unlocked room exits use the open iron gate before the padlocked door (`014dc91`)
+- **ai** — two-lane edge road exits are widened in scene runs too; one exit label per adjacent same-destination group (`a5bbdb6`)
+- **ai** — places built this run that nobody can walk into are linked to the map the request names (`1c2671a`)
+- **ai** — talking bosses open their battle; boss defeat recovers at that map's entrance; ship check boss-talk-no-battle (`2ed61e3`)
+- **builder** — a designed room's location note says it was designed by the model, not «견본 가구 한 벌» (`0ba7f98`)
+- **ai** — room_parts text is slim by default — 40 furniture lines and one shape example (more via query); the side design ask lists 40 lines (`27864f4`)
+- **ai** — the endpoint picture probe also tests models named in the allow list — gemini-4-argon on proxy8318 was never probed and got pictures it answers empty (`8042626`)
+- **builder** — an anchor already met by a same-kind piece in the room is recorded with that piece's id — designed rooms no longer report anchor-missing for a desk/bookshelf/chest the model drew (`7bd2be3`)
+- **ai** — designed upper floors put the stairwell in a designed room (corridor only when every room is small); the design prompt asks for a floor big enough for it (`79f997d`)
+- **ai** — adopt-model-places binds a drifted blueprint place by name overlap, the start map, or a single leftover — candidates come from the project, not only this turn's session (`e261ef5`)
+- **ai** — every hand interior is designed by the model — no venue/template stamping (`0e7caea`)
+- **ai** — seed is no longer model-facing — dropped from hints/edit schemas and cards; a seed (and a fresh variant 0) the model still sends is discarded (`b9c3831`)
+- **ai** — dungeon_parts returns short text and one combined picture (Gemini stalls after many large images) (`209f0c2`)
+- **ai** — dungeon_parts example rotation keys on projectKey/title (projects have no meta.id) (`acc92f2`)
+- **dungeon** — designed caves keep entrance links clear of the stair band, reconnect rooms cut off by walls or water, streams may end in boss/treasure rooms; dungeon_parts sends two example pictures (`fa3c146`)
+- **ai** — dungeon make_place drops invented map ids, treats empty designs as missing, bounces verbatim example copies once (`68bd77a`)
+- **ai** — dungeon design schema lives in designLayout (typed JsonSchema) and is shared by author_dungeon and make_place — no free-key objects (`6b6f33b`)
+- **ai** — village make_place reads all-zero layout points / terrainSeed 0 as not given (terra fills every schema slot) (`345fd29`)
+- **interior** — sofa (tiles 3678-3679) redrawn in place — user picked object-gen r1 C2 (`47aee63`)
+
+### 문서
+
+- **tools** — upsert_actor says how to clear an inherited battle sheet so the walk chip stands in (#3943) (`d1e0fda`)
+- **openwiki** — regenerate index after merging main (`f17aafe`)
+- **openwiki** — room_parts examples are the user's chosen rooms in one picture, slim text by default, and the 2026-10-30 size A/B (`7cd4376`)
+- **openwiki** — picture probe covers allow-listed models; proxy8318 bare gemini ids answer empty to any picture (`9b17e2c`)
+- **openwiki** — rooms are designed by the model — routes, design ask, upper floors, adopt-model-places, seed hygiene (`5b499bc`)
+- **wiki** — dungeon_parts reference pictures, example rotation, picture budget (`0203245`)
+- **openwiki** — dungeon/cave floors designed by the assistant — dungeonDesign, harmoniser fixes, dungeon_parts, bounce, seed (`58a1742`)
+- **openwiki** — code-terrain village live runs (opus/terra) and game QA (`3784633`)
+- **openwiki** — code terrain + assistant layout + chipset stairs section, A/B ab12-ab15 (`620fb09`)
+
+### 테스트
+
+- **qa** — rebuild scene-bench runs from session tool logs; finishReplay --task/--built; walkpath dialogueDump/vitals/untilField; wiki (`ca3a220`)
+- **ai** — dungeonLiveCheck for live dungeon runs (reach, lone props, autoplay); wiki notes on spec screening (`a9c64e2`)
+- **qa** — monster campaign walks from 새순 마을 to the league exit by real keys (no teleport) — each run presses until the exact tile, logs where it stood (`165b373`)
+
+### 기타
+
+- **village** — code-terrain port jetty, scatter farms on dirt tracks; probe + model-layout scripts (`e9cdb5d`)
+- **village** — two-cell cliffs per code-terrain tier, jittered slanted side edges, no level change on ford cells, side-road stairs fallback, gather ring held (`ed1ae30`)
+- **village** — 3/4-aware code terrain (E-W stretched noise, slanted side edges, filled basins), plaza held before houses, no regrow with model layout, straighter roads (`bfa4d3c`)
+- **village** — chipset stair tiles on N-S flights, routing climbs N-S only, no hairpins, lock before goal (`d22ef45`)
+- **village** — code terrain + model layout mode, terrain preview bounce, chipset stair ramp art (`cda7d45`)
+- **village** — code terrain generator (warped fBm, priority-flood, stream-power erosion, meandering river, quantile terracing) (`3920618`)
+- **village** — ab11 notes, pond gathering label per theme (`dba6e8f`)
+- **village** — landmark-sized tops, irregular fades, low-band roads for scatter, merged stairs, noisy bog shores, wild cells counted apart (`55ca914`)
+
 ## 0.364.1 — 2026-10-30
 
 ### 수정
