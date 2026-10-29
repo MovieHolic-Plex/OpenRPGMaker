@@ -134,6 +134,8 @@ export interface DungeonCompose {
   /** 자연 물가 둑 덧그림(2층): 액체 칸 목록 — 맵에 쓸 때 beodeul_nature 둑 칸(256 이웃 모양)으로 덮는다. 다리 칸은 이웃(같은 물)로 친다. */
   readonly banks?: { readonly style: "grass" | "bog" | "lava"; readonly cells: readonly number[] };
   readonly counts: Record<string, number>;
+  /** 놓인 키트(왼쪽 위 칸) — 배치 검사·표본 그림용. 되돌린 놓기는 빠진다. */
+  readonly placed?: readonly { readonly id: string; readonly x: number; readonly y: number }[];
   /** 이 층을 그린 어댑터와 쓴 타일셋(몬스터 키트는 시트마다 타일셋이 다르다). */
   readonly adapter?: string;
   readonly tilesetId?: string;
