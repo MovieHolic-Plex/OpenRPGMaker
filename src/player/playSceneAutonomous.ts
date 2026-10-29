@@ -34,6 +34,7 @@ import { startPlayerRoute } from "@/player/playerRouteState";
 import { animationStepsWhileStopped, applySpriteAlpha, setNpcIdleFrame, setNpcWalkFrame } from "@/player/playSceneAutonomousSprites";
 import { isInSafeZone, nextChaseDecision, type ChasePoint } from "@/player/chaseAi";
 import { chooseChaseGoal, trackPlayerMotion, type PlayerMotion } from "@/player/chaseTactics";
+import { moverVisualShift, playerVisualShift, rectsTouchVisually } from "@/player/chaseContact";
 import { CHASE_BREATHER_MS, CHASE_SEARCH_SLOWDOWN, CHASE_STAMINA_STEPS, chaseAlertHoldMs, chaseCellMs, chaseTempoAuthored, chaseTires } from "@/project/chaseTempo";
 import { PLAYER_WALK_STEP_MS } from "@/project/characterMotion";
 import { tickChaseSpawnGrace } from "@/player/chaseSpawnGrace";
@@ -52,6 +53,27 @@ const frameMotion = new WeakMap<object, PlayerMotion>();
 /** 막힌 걸음 뒤 재탐색까지 남기는 시간: 재탐색 주기 500ms 중 이 값부터 센다(= 약 150ms 뒤). */
 const CHASE_BLOCKED_REPATH_AT_MS = 350;
 const FACING_STEP: Readonly<Record<Dir, ChasePoint>> = { up: { x: 0, y: -1 }, down: { x: 0, y: 1 }, left: { x: -1, y: 0 }, right: { x: 1, y: 0 } };
+
+/**
+ * 이 이벤트(논리 칸 at, 걷는 중이 아님)와 주인공의 **그림**이 닿았는가. 접촉 전투는 이것이 참일 때만 연다.
+ * 주인공이 걷는 중이면 진행률만큼 옮긴 자리로 본다 — 막 떠나는 칸은 닿은 것이 아니다.
+ */
+function playerBodyTouches(scene: AutonomousNpcSceneContext, project: ReturnType<typeof store.getCurrent>, view: RuntimeEventView): boolean {
+  const body = resolvePlayerBody(project, scene.session);
+  const own = passageBounds(view.x, view.y, view.footprint, view.passRows);
+  const player = playerPassageRect(body, scene.tileX, scene.tileY);
+  const shift = playerVisualShift(scene as unknown as Parameters<typeof playerVisualShift>[0]);
+  return rectsTouchVisually(own, { x: 0, y: 0 }, player, shift);
+}
+
+/** 걷는 중인 추격자(그림 = 진행률만큼 옮긴 자리)와 주인공 그림이 닿았는가. */
+function chaserBodyTouches(scene: AutonomousNpcSceneContext, project: ReturnType<typeof store.getCurrent>, view: RuntimeEventView, mover: AutonomousMover): boolean {
+  const body = resolvePlayerBody(project, scene.session);
+  const own = passageBounds(view.x, view.y, view.footprint, view.passRows);
+  const player = playerPassageRect(body, scene.tileX, scene.tileY);
+  const shift = playerVisualShift(scene as unknown as Parameters<typeof playerVisualShift>[0]);
+  return rectsTouchVisually(own, moverVisualShift(mover, view), player, shift);
+}
 
 function parseGoalKey(key: string): ChasePoint {
   const [x, y] = key.split(":").map(Number);
@@ -166,9 +188,17 @@ function updateAutonomousNPCsInPass(scene: AutonomousNpcSceneContext, frameDelta
     if (mover.activeMove) {
       if (mover.strategy === "chase" && !mover.chaseTarget && !mover.actionFrozen) {
         const view = runtimeEventViewById(project, scene.map, scene.session, scene.eventPositions, eventId);
-        if (view) pursuitTarget({ project, map: scene.map, session: scene.session, positions: scene.eventPositions }, view, mover, deltaMs);
+        const chasing = view ? pursuitTarget({ project, map: scene.map, session: scene.session, positions: scene.eventPositions }, view, mover, deltaMs) : null;
+        updateActiveNpcMove({ scene, eventId, mover }, deltaMs);
+        // 걸어오는 도중에도 그림이 닿는 그 프레임에 전투를 연다 — 닿기 전에는 열지 않는다(@/player/chaseContact).
+        if (view && chasing && !chasing.searching && !mover.kite && !mover.through
+          && chaserBodyTouches(scene, project, view, mover)) {
+          fireEventTouch(scene, eventId, view.trigger.kind);
+          continue;
+        }
+      } else {
+        updateActiveNpcMove({ scene, eventId, mover }, deltaMs);
       }
-      updateActiveNpcMove({ scene, eventId, mover }, deltaMs);
       // 걸음이 이번 프레임에 끝났으면 같은 프레임에 다음 명령으로 — 칸 경계에서 한 프레임 서지 않는다.
       if (mover.activeMove) continue;
       if (strolling && !strollChainPending(mover)) {
@@ -275,7 +305,8 @@ function updateAutonomousNPCsInPass(scene: AutonomousNpcSceneContext, frameDelta
       livingBlockers.delete(mover);
       mover.lastStepDir = undefined;
       mover.wanderRun = undefined;
-      fireEventTouch(scene, eventId, view.trigger.kind);
+      // 닿는 판정은 그림 자리로 — 달아나는 주인공이 막 떠난 칸(그림은 아직 반 칸~한 칸 앞)으로는 닿지 않는다(@/player/chaseContact).
+      if (playerBodyTouches(scene, project, view)) fireEventTouch(scene, eventId, view.trigger.kind);
       setNpcIdleFrame(sprite, baseFrame, frameDir, view.animationType, mover.animationEnabled);
       // 명령 경로(moveEvent)는 주인공을 비켜 같은 끝 칸으로 간다 — 말을 건 주인공이 옆에 서 있어 걸음이 다 버려지고
       // 인물이 제자리에서 사라지던 결함(commandRouteDetour 머리말).
@@ -567,9 +598,13 @@ function updateChaseNpc(
       setNpcIdleFrame(sprite, baseFrame, frameDir, view.animationType, mover.animationEnabled);
       return;
     }
-    if (!tracked?.searching) fireEventTouch(scene, eventId, view.trigger.kind);
-    setNpcIdleFrame(sprite, baseFrame, frameDir, view.animationType, mover.animationEnabled);
-    return;
+    // 「닿기」 결정은 목표 칸이 곧 주인공일 때 나온다 — 그 칸으로 한 걸음 딛는 것으로 바꿔 아래 몸 접촉 판정에 맡긴다.
+    // 앞질러 막기 목표(빈 칸)에서 나온 「닿기」는 주인공이 거기 없으니 그냥 걸어 들어간다(예전에는 여기서 바로 전투가 열렸다).
+    const d = decision.dir === "up" ? { x: 0, y: -1 } : decision.dir === "down" ? { x: 0, y: 1 } : decision.dir === "left" ? { x: -1, y: 0 } : { x: 1, y: 0 };
+    const to = { x: view.x + d.x, y: view.y + d.y };
+    const path = mover.chasePath ?? [];
+    if (path[0] && path[0].x === to.x && path[0].y === to.y) mover.chasePath = path.slice(1);
+    decision = { kind: "move", x: to.x, y: to.y, dir: decision.dir };
   }
   // Touch uses the same passage rectangles as feet collision, including the player's reserved destination.
   const nextRect = passageBounds(decision.x, decision.y, view.footprint, view.passRows);
@@ -577,8 +612,13 @@ function updateChaseNpc(
   const touchesPlayer = rectsOverlap(nextRect, playerPassageRect(playerBody, scene.tileX, scene.tileY))
     || (scene.moving === true && scene.movingTo !== undefined
       && rectsOverlap(nextRect, playerPassageRect(playerBody, scene.movingTo.x, scene.movingTo.y)));
-  if (!mover.through && touchesPlayer) {
-    if (!mover.chaseTarget && !mover.kite && !tracked?.searching) fireEventTouch(scene, eventId, view.trigger.kind);
+  // 주인공이 막 떠나는 칸(예약 칸이 아닌 지금 칸)이면 뒤따라 들어선다 — 그 칸은 곧 빈다.
+  // 그림이 아직 떨어져 있는데 논리 칸만 겹쳤다고 전투를 열던 것이 「부딪히지도 않았는데 전투」였다(@/player/chaseContact).
+  const followVacated = !mover.through && touchesPlayer && scene.moving === true && scene.movingTo !== undefined
+    && !rectsOverlap(nextRect, playerPassageRect(playerBody, scene.movingTo.x, scene.movingTo.y))
+    && !playerBodyTouches(scene, project, view);
+  if (!mover.through && touchesPlayer && !followVacated) {
+    if (!mover.chaseTarget && !mover.kite && !tracked?.searching && playerBodyTouches(scene, project, view)) fireEventTouch(scene, eventId, view.trigger.kind);
     setNpcIdleFrame(sprite, baseFrame, frameDir, view.animationType, mover.animationEnabled);
     return;
   }
@@ -586,7 +626,7 @@ function updateChaseNpc(
   // 점유되어 있으면 이번 틱은 대기 — 추적 결정은 순차 처리되고 목적지는 즉시 커밋되므로
   // 같은 칸으로 몰려 겹치는(stacking) 현상이 방지된다.
   if (
-    !canNpcMove(
+    !followVacated && !canNpcMove(
       { project, scene, mover, eventId, from: { x: view.x, y: view.y }, to: { x: decision.x, y: decision.y } },
       { x: decision.x - view.x, y: decision.y - view.y, face: frameDir }
     )

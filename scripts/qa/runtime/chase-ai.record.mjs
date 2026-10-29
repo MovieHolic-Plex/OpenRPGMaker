@@ -120,6 +120,29 @@ try {
   await delay(800);
 
   const t0 = Date.now();
+  // 그림 좌표 추적(매 rAF): 이벤트 실행(scene.running)이 켜지는 그 프레임 = 접촉 판정 순간. 앞 40프레임과 함께 남긴다.
+  await page.evaluate(({ ids }) => {
+    const start = performance.now();
+    const ring = [];
+    window.__chaseContact = { ring, fired: null, tile: 16 };
+    const tick = () => {
+      const sc = window.__oprnHooksScene;
+      const ps = window.__oprnPlayerSprite?.();
+      const cs = window.__oprnCharacterSprites?.();
+      if (sc && ps && cs) {
+        const tile = sc.map?.tileSize ?? sc.tileSize ?? 16;
+        window.__chaseContact.tile = tile;
+        const f = { t: Math.round(performance.now() - start), running: !!sc.running,
+          player: { x: Math.round(ps.x * 10) / 10, y: Math.round(ps.y * 10) / 10, tileX: sc.tileX, tileY: sc.tileY, moving: !!sc.moving, to: sc.movingTo ? { x: sc.movingTo.x, y: sc.movingTo.y } : null, progress: sc.moveProgress ?? null },
+          chasers: ids.map((id) => { const e = cs.events?.[id]; const p = sc.eventPositions?.get?.(id) ?? sc.eventPositions?.[id];
+            return e ? { id, x: Math.round(e.x * 10) / 10, y: Math.round(e.y * 10) / 10, logical: p ? { x: p.x, y: p.y } : null } : { id }; }) };
+        ring.push(f); if (ring.length > 40) ring.shift();
+        if (f.running && !window.__chaseContact.fired && window.__chaseContact.armed) window.__chaseContact.fired = { at: f, before: ring.slice() };
+      }
+      if (!window.__chaseContact.fired) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }, { ids: meta.chasers });
   const deadline = t0 + Number(values.timeout);
   let held = null, phase = 'approach', lastTile = '';
   const hold = async (key) => {
@@ -144,7 +167,7 @@ try {
       const last = list[list.length - 1];
       if (!last || last.x !== c.x || last.y !== c.y) list.push({ t, x: c.x, y: c.y });
     }
-    if (phase === 'approach' && s.chasers.some((c) => c.active)) { phase = 'flee'; report.chaseStartMs = t; }
+    if (phase === 'approach' && s.chasers.some((c) => c.active)) { phase = 'flee'; report.chaseStartMs = t; await page.evaluate(() => { window.__chaseContact.armed = true; }); }
     if (tile !== lastTile || !held) {
       lastTile = tile;
       report.steps.push({ t, x: s.x, y: s.y, phase });
@@ -170,6 +193,12 @@ try {
     await delay(30);
   }
   await hold(null);
+  report.contact = await page.evaluate(() => {
+    const c = window.__chaseContact; if (!c?.fired) return null;
+    const gap = (f) => Math.min(...f.chasers.filter((e) => e.x !== undefined).map((e) => Math.hypot(e.x - f.player.x, e.y - f.player.y) / c.tile));
+    return { tile: c.tile, firedAtPageMs: c.fired.at.t, gapCellsAtFire: Math.round(gap(c.fired.at) * 100) / 100,
+      frames: c.fired.before.map((f) => ({ ...f, gapCells: Math.round(gap(f) * 100) / 100 })) };
+  }).catch((e) => ({ error: String(e) }));
   await delay(report.caughtAtMs !== null ? 3200 : 600);
   await finishRecording();
   report.audio = (() => {
@@ -187,4 +216,4 @@ try {
   for (const child of processes.reverse()) child.kill('SIGTERM');
 }
 await writeFile(join(out, 'report.json'), JSON.stringify(report, null, 1));
-console.log(JSON.stringify({ label: report.label, caughtAtMs: report.caughtAtMs, chaseStartMs: report.chaseStartMs, audio: report.audio, errors: report.errors.map((e) => e.slice(0, 300)) }));
+console.log(JSON.stringify({ label: report.label, contactGapCells: report.contact?.gapCellsAtFire ?? null, caughtAtMs: report.caughtAtMs, chaseStartMs: report.chaseStartMs, audio: report.audio, errors: report.errors.map((e) => e.slice(0, 300)) }));

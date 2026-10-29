@@ -200,7 +200,7 @@ function bfsDist(project: Project, map: GameMap, from: P, blocked: Set<string> =
 }
 
 export type SimResult = {
-  name: string; label: string; caughtMs: number | null; timeoutMs: number;
+  name: string; label: string; caughtMs: number | null; catchGap: number | null; timeoutMs: number;
   stalls: number; stallMs: number; reversals: number; cellsWalked: number; optimalCells?: number; pathRatio?: number;
   avgCellMs: number | null; reacquired?: boolean; trace: { t: number; player: P; chasers: (P & { fx: number; fy: number })[] }[];
   rows: string[];
@@ -212,11 +212,12 @@ export function runScenario(s: Scenario): SimResult {
   const session = startSession(project);
   session.currentMapId = map.id; session.x = start.x; session.y = start.y;
   let caught: number | null = null;
+  let catchGap: number | null = null;
   const scene = {
     map, session, eventPositions: initialRuntimeEventPositions(map.events),
-    tileX: start.x, tileY: start.y, running: false, moving: false, movingTo: { x: start.x, y: start.y },
+    tileX: start.x, tileY: start.y, running: false, moving: false, moveProgress: 0, movingTo: { x: start.x, y: start.y },
     autonomousNPCs: new Map<string, AutonomousMover>(), eventSprites: new Map(),
-    runtimeDom: { upsertEventMarker: () => undefined }, runEvent: async () => { if (caught === null) caught = t; },
+    runtimeDom: { upsertEventMarker: () => undefined }, runEvent: async () => { if (caught === null) { caught = t; catchGap = visualGap(); } },
     pageMoveRouteKeys: new Set<string>(), pageMoveRouteEventIds: new Set<string>(),
     registerAutonomousMover: (id: string, moves: never[], repeat: boolean) => registerAutonomousMover(scene as never, id, moves, repeat),
   };
@@ -231,12 +232,24 @@ export function runScenario(s: Scenario): SimResult {
   let stalls = 0, stallMs = 0, reversals = 0, cells = 0;
   const stallOpen = new Map<string, boolean>();
   const trace: SimResult["trace"] = [];
+  // 잡힌 순간 두 그림(칸 단위 보간 자리) 사이 가장 가까운 거리 — 1.05 를 넘으면 「안 닿았는데 전투」다.
+  const visualGap = (): number => {
+    const pk = scene.moving ? (scene.moveProgress ?? 0) : 0;
+    const px = scene.tileX + (scene.movingTo.x - scene.tileX) * pk, py = scene.tileY + (scene.movingTo.y - scene.tileY) * pk;
+    return Math.min(...chasers.map((id) => {
+      const m = scene.autonomousNPCs.get(id)!; const v = view(id); const a = m.activeMove;
+      const k = a ? Math.min(1, a.elapsedMs / (a.durationMs ?? m.moveDurationMs)) : 1;
+      const fx = a ? a.fromX + (a.toX - a.fromX) * k : v.x, fy = a ? a.fromY + (a.toY - a.fromY) * k : v.y;
+      return Math.hypot(fx - px, fy - py);
+    }));
+  };
   let sawLost = false, reacquired = false;
   const cellTimes: number[] = [];
   while (t < s.timeoutMs && caught === null) {
     // 주인공
     if (scene.moving) {
       playerMoveLeft -= FRAME;
+      scene.moveProgress = Math.min(1, 1 - Math.max(0, playerMoveLeft) / PLAYER_STEP);
       if (playerMoveLeft <= 0) {
         scene.moving = false;
         scene.tileX = scene.movingTo.x; scene.tileY = scene.movingTo.y;
@@ -272,7 +285,7 @@ export function runScenario(s: Scenario): SimResult {
       if (next) {
         const occupied = chasers.some((id) => view(id).x === next!.x && view(id).y === next!.y);
         if (!occupied && canMove(project, map, here.x, here.y, next.x, next.y)) {
-          scene.moving = true; scene.movingTo = next; playerMoveLeft = PLAYER_STEP;
+          scene.moving = true; scene.movingTo = next; playerMoveLeft = PLAYER_STEP; scene.moveProgress = 0;
         }
       }
     }
@@ -315,7 +328,7 @@ export function runScenario(s: Scenario): SimResult {
   // 첫 칸(놀람 멈춤 포함)은 박자 평균에서 뺀다
   const steady = cellTimes.slice(chasers.length);
   return {
-    name: s.name, label: s.label, caughtMs: caught, timeoutMs: s.timeoutMs, stalls, stallMs: Math.round(stallMs), reversals, cellsWalked: cells,
+    name: s.name, label: s.label, caughtMs: caught, catchGap: catchGap === null ? null : Number(catchGap.toFixed(2)), timeoutMs: s.timeoutMs, stalls, stallMs: Math.round(stallMs), reversals, cellsWalked: cells,
     ...(optimal !== undefined ? { optimalCells: optimal, pathRatio: Number((cells / Math.max(1, optimal)).toFixed(2)) } : {}),
     avgCellMs: steady.length ? Math.round(steady.reduce((a, b) => a + b, 0) / steady.length) : null,
     ...(s.policy === "breakSight" ? { reacquired } : {}),

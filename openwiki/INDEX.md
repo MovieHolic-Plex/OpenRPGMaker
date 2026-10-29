@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **187쪽 / 7481KB / 약 2,196,001 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **187쪽 / 7483KB / 약 2,196,350 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -1493,7 +1493,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L33` Parent-owned verification (not run by this worker)
   - `L43` Fresh-project editor capture boot isolation
 
-### `openwiki/field-enemy.md` — 13KB · 120줄 · ~3,787 토큰
+### `openwiki/field-enemy.md` — 14KB · 126줄 · ~4,136 토큰
 
 - `L12` 다른 수단과의 구분
 - `L25` 필드 그림 = 전투 그림 (2026-10-14)
@@ -1501,8 +1501,8 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L55` 이벤트 모양 (한 마리 = 이벤트 하나, 페이지 셋)
 - `L70` 이미 놓인 적을 「보면 달려드는」 적으로 — `makeFieldEnemyChase` (2026-10-24)
 - `L82` 추격 박자와 전술 (2026-10-29 「2배 이상 빠르고 스마트하게」)
-- `L106` 안전 장치 (도구가 거절하는 것)
-- `L114` 알려진 한계
+- `L112` 안전 장치 (도구가 거절하는 것)
+- `L120` 알려진 한계
 
 ### `openwiki/getting-started.ko.md` — 22KB · 306줄 · ~6,910 토큰
 
