@@ -107,7 +107,15 @@ export function createCinematicAssets(): CinematicAssets {
           const url = id && resolveAssetResourceUrl(id, { project });
           if (url) void prepareAudio(url).catch(() => undefined);
         }
-        if (scene.kind === 'animatic') { warmAnimaticImages(project, scene.composition); continue; }
+        if (scene.kind === 'animatic') {
+          warmAnimaticImages(project, scene.composition);
+          // 컷의 효과음도 미리 받는다 — 렌더러가 컷 시작 때 큐 소리를 받아 두므로(최대 1.5초), 받아 둔 게 없으면 컷 사이가 검게 멈춘다.
+          for (const cue of scene.composition.audioCues ?? []) {
+            const url = resolveAssetResourceUrl(cue.resourceId, { project });
+            if (url) void prepareAudio(url).catch(() => undefined);
+          }
+          continue;
+        }
         if (scene.kind !== 'image') continue;
         for (const id of [scene.resourceId, ...(scene.direction?.layers?.map(layer => layer.resourceId) ?? [])]) {
           const url = resolveAssetResourceUrl(id, { project });
