@@ -747,8 +747,8 @@ export function playOpeningAnimatic(options: { project: Project; canvas: HTMLCan
       waits.push(new Promise<void>((resolve) => { for (const type of ['canplaythrough', 'error'] as const) el.addEventListener(type, () => resolve(), { once: true, signal }); }));
       el.load();
     }
-    // 느린 망에서도 장면을 오래 붙잡지 않는다 — 다 못 받으면 큐 시각에 받으며 튼다(예전 동작).
-    if (waits.length) await Promise.race([Promise.all(waits), new Promise<void>((resolve) => view.setTimeout(resolve, 1500))]);
+    // 느린 망에서도 장면을 오래 붙잡지 않는다(0.8초) — 다 못 받으면 큐 시각에 받으며 튼다(예전 동작). 다음 컷 소리는 cinematicAssets.warm 이 미리 받는다.
+    if (waits.length) await Promise.race([Promise.all(waits), new Promise<void>((resolve) => view.setTimeout(resolve, 800))]);
   };
   // 브라우저 자동재생 막힘(첫 화면에 사용자 입력이 없을 때 정상)은 그림을 멈출 이유가 아니다 — 소리만 미뤘다가 첫 입력에 다시 튼다.
   // 예전에는 장면 전체를 멈추고 「오디오 큐 자동재생 차단: …」 개발자 글을 화면에 남겼다(2026-10-25 J26).
