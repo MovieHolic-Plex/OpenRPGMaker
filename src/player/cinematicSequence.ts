@@ -82,6 +82,10 @@ export function playCinematicSequence(options: {
   readonly musicHost?: HTMLElement;
   readonly onFrame?: (url: string, fadeMs?: number) => void;
   readonly dismissOnAnyInput?: boolean;
+  /** 엔진 기동과 겹쳐 도는 새 게임 오프닝 — 메인 스레드가 멈춘 동안 애니메틱 시계를 붙잡는다(openingAnimaticRenderer). */
+  readonly holdClockThroughStalls?: boolean;
+  /** 컷 끝까지 울리던 애니메틱 효과음을 끊지 않고 짧게 줄이며 다음 컷과 겹친다. */
+  readonly softCutTails?: boolean;
 }): CinematicPlayback {
   const { host, project, sequence, signal } = options;
   if (signal.aborted || !sequence?.enabled || sequence.scenes.length === 0) {
@@ -550,7 +554,7 @@ export function playCinematicSequence(options: {
         canvas.setAttribute('aria-label', canvasCaptions && scene.narration.trim() ? scene.narration : '레이어와 카메라로 구성한 오프닝');
         canvas.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#000';
         ready(canvas); beginLoading();
-        playOpeningAnimatic({ project, canvas, composition: scene.composition, durationMs: scene.durationMs, signal: lifetime.signal, reducedMotion,
+        playOpeningAnimatic({ project, canvas, composition: scene.composition, durationMs: scene.durationMs, signal: lifetime.signal, reducedMotion, holdClockThroughStalls: options.holdClockThroughStalls, softCutTails: options.softCutTails,
           onReady: () => { if (!alive || !mediaActive) return; clearTimeout(loadTimer); root.dataset.mediaState = 'ready'; status.textContent = ''; },
           onError: message => { if (!alive || !mediaActive) return; console.warn('[opening animatic]', message); fail('error'); status.textContent = '장면을 그리지 못했어요. Enter로 넘어가세요.'; }, onDone: () => { if (alive) next(); } });
         break;

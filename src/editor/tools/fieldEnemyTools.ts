@@ -270,6 +270,10 @@ export interface FieldDetectionTuning {
   readonly searchMs?: number;
   /** 이만큼(칸) 멀어지면 포기(시야+1..30). */
   readonly giveUpRange?: number;
+  /** 발견하면 놀람 뒤 주인공보다 빠르게(rushStepMs, 기본 110ms/칸) 쉬지 않고 rushSteps 칸(기본 10) 달려와 덮친다. 그 뒤는 지쳐 chaseStepMs 로. */
+  readonly rush?: boolean;
+  readonly rushStepMs?: number;
+  readonly rushSteps?: number;
 }
 
 export const FIELD_DETECTION_SCHEMA: Record<string, JsonSchema> = {
@@ -279,6 +283,9 @@ export const FIELD_DETECTION_SCHEMA: Record<string, JsonSchema> = {
   alertMs: { type: 'integer', description: '알아챈 순간 느낌표를 띄우고 멈추는 시간(0..3000ms, 기본 700). 짧을수록 빨리 덤빈다' },
   searchMs: { type: 'integer', description: '놓친 뒤 마지막으로 본 자리를 뒤지는 시간(0..20000ms, 기본 1500~2500) — 추격 기억' },
   giveUpRange: { type: 'integer', description: '이만큼(칸) 멀어지면 포기하고 돌아간다(시야+1..30)' },
+  rush: { type: 'boolean', description: 'true 면 알아챈 뒤 주인공(160ms/칸)보다 빠르게 쉬지 않고 달려와 바로 전투를 건다 — 경비병·사냥꾼 몬스터. 피하려면 시야에 들지 말아야 한다(엄폐·그늘 길을 맵에 둘 것). rushSteps 칸을 달린 뒤에는 지쳐 chaseStepMs 로 떨어진다' },
+  rushStepMs: { type: 'integer', description: 'rush 돌진 한 칸 시간(60..150ms, 기본 110). 주인공 걷기 160' },
+  rushSteps: { type: 'integer', description: 'rush 로 달리는 칸 수(1..30, 기본 10). 그 뒤 지친다 — 놓쳤다 다시 보면 새로 센다' },
 };
 
 const intIn = (value: unknown, lo: number, hi: number, name: string): number | undefined => {
@@ -297,6 +304,12 @@ export function readFieldDetectionArgs(args: Record<string, unknown>): FieldDete
   const alert = intIn(args.alertMs, 0, 3000, 'alertMs'); if (alert !== undefined) out.alertMs = alert;
   const search = intIn(args.searchMs, 0, 20000, 'searchMs'); if (search !== undefined) out.searchMs = search;
   const give = intIn(args.giveUpRange, 3, 30, 'giveUpRange'); if (give !== undefined) out.giveUpRange = give;
+  if (args.rush !== undefined && args.rush !== null) {
+    if (typeof args.rush !== 'boolean') throw new ToolError('rush 는 true/false 입니다.', { code: 'invalid-args' });
+    out.rush = args.rush;
+  }
+  const rushMs = intIn(args.rushStepMs, 60, 150, 'rushStepMs'); if (rushMs !== undefined) out.rushStepMs = rushMs;
+  const rushN = intIn(args.rushSteps, 1, 30, 'rushSteps'); if (rushN !== undefined) out.rushSteps = rushN;
   return out;
 }
 
@@ -352,8 +365,14 @@ export function applyFieldDetection(movement: EventPageMovement, tuning: FieldDe
     next.pursuit = { ...(next.pursuit ?? { scope: 'map', doorDelayMs: 0, onLost: 'return' }), searchMs: tuning.searchMs } as NonNullable<EventPageMovement['pursuit']>;
   }
   if (tuning.giveUpRange !== undefined) next.giveUpRange = Math.max((next.sightRange ?? next.sight?.range ?? 2) + 1, tuning.giveUpRange);
+  if (tuning.rush === true) next.chaseLunge = { steps: tuning.rushSteps ?? RUSH_STEPS, speed: 7, stepMs: tuning.rushStepMs ?? RUSH_STEP_MS };
+  else if (tuning.rush === false && next.chaseLunge?.stepMs !== undefined) delete next.chaseLunge;
   return next;
 }
+
+/** rush 기본 — 10칸을 110ms/칸(주인공 160 보다 빠르게)으로 달린 뒤 지친다. 놓쳤다 다시 보면 새로 센다. */
+const RUSH_STEPS = 10;
+const RUSH_STEP_MS = 110;
 
 const schema = (properties: Record<string, JsonSchema>, required: string[]): JsonSchema => ({ type: 'object', additionalProperties: false, properties, required });
 
@@ -364,7 +383,7 @@ export const FIELD_ENEMY_TOOLS: readonly ToolDefinition[] = [
     choosesOwnGraphic: (args) => args.graphic === undefined,
     description:
       '필드 맵에 「보이는 적」(심볼 인카운터, 크로노 트리거·FF 심볼식) 한 마리를 놓는다. 걸어 다니는 적에게 닿으면 그 자리에서 전투가 열리고, 이기면 사라지며 맵을 나갔다 들어와도 그대로 사라져 있다(승리 스위치). 패배는 기존 게임 오버 경로, 도망치면 몇 초 기절해 같은 전투가 바로 다시 열리지 않는다. 느낌표(alert)는 chase 는 시야에 든 순간, stationary·patrol 은 닿기 직전에 뜬다. ' +
-      'behavior: stationary=제자리 보초(주인공이 닿거나 부딪히면 전투) · patrol=닫힌 왕복 순찰(patrol.length 칸 직선 또는 patrol.directions 닫힌 경로) · chase=시야(sightRange 칸, 벽 가림) 안에 들면 머리 위 느낌표(alert)와 짧은 멈춤 뒤 쫓아오고, 놓치면 마지막 목격 자리를 잠깐 뒤진 뒤 원래 자리로 돌아간다. chase 에 patrol 을 같이 주면 시야 밖에서는 순찰하다 시야에 들면 쫓고 놓치면 돌아와 다시 순찰한다. pace 는 주인공 걷기보다 항상 느려 피할 수 있다. ' +
+      'behavior: stationary=제자리 보초(주인공이 닿거나 부딪히면 전투) · patrol=닫힌 왕복 순찰(patrol.length 칸 직선 또는 patrol.directions 닫힌 경로) · chase=시야(sightRange 칸, 벽 가림) 안에 들면 머리 위 느낌표(alert)와 짧은 멈춤 뒤 쫓아오고, 놓치면 마지막 목격 자리를 잠깐 뒤진 뒤 원래 자리로 돌아간다. chase 에 patrol 을 같이 주면 시야 밖에서는 순찰하다 시야에 들면 쫓고 놓치면 돌아와 다시 순찰한다. pace 는 기본으로 주인공 걷기보다 느려 피할 수 있다(rush:true 면 알아챈 뒤 두 배 빠르기로 달려와 바로 덮친다 — 경비병·사냥꾼). ' +
       '던전 층·들판·길목에서 「몬스터가 돌아다닌다/눈에 보이는 적/피하거나 선제」 요청의 정본 — 한 마리씩 의도한 자리에 놓고 필요한 만큼 여러 번 호출한다(보통 한 맵 3~6마리, 서로 다른 troopId·behavior 로). ' +
       '필드 그림은 **전투 그림이 정본**: 적 그룹 선두 적의 monsterResourceId 와 같은 종류의 charset 을 자동으로 고른다(슬라임→슬라임 칩, 해골→해골 칩). 대응하는 걷기 칩이 없는 종(박쥐·늑대·거미 등)은 **전투에 서는 같은 도트 그림을 정지 심볼로 그대로** 쓴다(다른 그림으로 대체하지 않는다). 전투 그림(monsterResourceId)이 아예 없는 적만 거절한다. ' +
       '쓰지 말 것: 마을·실내 생활 공간(마을 맵은 거부됨), 보스방·이야기 전투(place_battle_blocker 로 조사 전투 + upsert_troop_battle_page), 걸을 때마다 무작위로 터지는 랜덤 인카운터(set_encounter_table), 구역 전체에 리스폰하는 사냥터(make_hunting_ground). 출입구·시작점 주변과 도달 불가 칸은 거부하며 chase 는 입구에서 시야 밖에 놓아야 한다. ' +
@@ -377,7 +396,7 @@ export const FIELD_ENEMY_TOOLS: readonly ToolDefinition[] = [
       behavior: { type: 'string', enum: [...BEHAVIORS], description: '기본 stationary' },
       patrol: { type: 'object', description: 'behavior:patrol 또는 chase(순찰+추격) 일 때. {length?:1..8 칸 왕복(기본 3), axis?:horizontal|vertical} 또는 {directions:[up|down|left|right..]} 출발 칸으로 돌아오는 닫힌 경로', properties: { length: { type: 'integer' }, axis: { type: 'string', enum: ['horizontal', 'vertical'] }, directions: { type: 'array', items: { type: 'string', enum: ['up', 'down', 'left', 'right'] } } } },
       sightRange: { type: 'integer', description: 'behavior:chase 시야(칸, 2..12, 기본 4). 이 안에서 벽에 안 가리면 쫓는다' },
-      coneDegrees: FIELD_DETECTION_SCHEMA.coneDegrees!, chaseStepMs: FIELD_DETECTION_SCHEMA.chaseStepMs!, alertMs: FIELD_DETECTION_SCHEMA.alertMs!, searchMs: FIELD_DETECTION_SCHEMA.searchMs!,
+      coneDegrees: FIELD_DETECTION_SCHEMA.coneDegrees!, chaseStepMs: FIELD_DETECTION_SCHEMA.chaseStepMs!, alertMs: FIELD_DETECTION_SCHEMA.alertMs!, searchMs: FIELD_DETECTION_SCHEMA.searchMs!, rush: FIELD_DETECTION_SCHEMA.rush!, rushStepMs: FIELD_DETECTION_SCHEMA.rushStepMs!, rushSteps: FIELD_DETECTION_SCHEMA.rushSteps!,
       vision: { type: 'string', enum: ['any', 'cone'], description: "behavior:chase 시야 모양. any(기본)=사방, cone=바라보는 방향 앞 부채꼴만(등 뒤로 몰래 지나가면 못 본다)" },
       giveUpRange: { type: 'integer', description: 'behavior:chase 이만큼(칸) 멀어지면 포기하고 출발 칸으로 돌아간다(기본 시야+4, 시야+1..20)' },
       pace: { type: 'string', enum: [...PACES], description: 'slow(기본)|normal|fast — 셋 다 주인공 걷기보다 느리다' },
@@ -429,7 +448,7 @@ export const FIELD_ENEMY_TOOLS: readonly ToolDefinition[] = [
       if (!Number.isFinite(respawnSec) || respawnSec < 0 || respawnSec > 3600) throw new ToolError('respawnSec 은 0..3600 입니다.', { code: 'invalid-args' });
       const sightRaw = args.sightRange === undefined ? DEFAULT_SIGHT : Number(args.sightRange);
       if (!Number.isInteger(sightRaw) || sightRaw < 2 || sightRaw > 12) throw new ToolError('sightRange 는 2..12 칸입니다.', { code: 'invalid-args' });
-      const detection = readFieldDetectionArgs({ coneDegrees: args.coneDegrees, chaseStepMs: args.chaseStepMs, alertMs: args.alertMs, searchMs: args.searchMs });
+      const detection = readFieldDetectionArgs({ coneDegrees: args.coneDegrees, chaseStepMs: args.chaseStepMs, alertMs: args.alertMs, searchMs: args.searchMs, rush: args.rush, rushStepMs: args.rushStepMs, rushSteps: args.rushSteps });
 
       // 마을·실내는 안전한 곳이다 — 거기서 적이 돌아다니면 시나리오가 깨진다.
       const role = buildMapPlacementContext(draft, map.id)?.role;
@@ -580,7 +599,7 @@ export const FIELD_ENEMY_TOOLS: readonly ToolDefinition[] = [
     parameters: schema({
       mapIds: { type: 'array', items: { type: 'string' }, description: '고칠 맵(생략 = 필드 적이 있는 모든 맵)' },
       sightRange: { type: 'integer', description: '시야(칸, 2..12, 기본 5)' },
-      coneDegrees: FIELD_DETECTION_SCHEMA.coneDegrees!, chaseStepMs: FIELD_DETECTION_SCHEMA.chaseStepMs!, alertMs: FIELD_DETECTION_SCHEMA.alertMs!, searchMs: FIELD_DETECTION_SCHEMA.searchMs!,
+      coneDegrees: FIELD_DETECTION_SCHEMA.coneDegrees!, chaseStepMs: FIELD_DETECTION_SCHEMA.chaseStepMs!, alertMs: FIELD_DETECTION_SCHEMA.alertMs!, searchMs: FIELD_DETECTION_SCHEMA.searchMs!, rush: FIELD_DETECTION_SCHEMA.rush!, rushStepMs: FIELD_DETECTION_SCHEMA.rushStepMs!, rushSteps: FIELD_DETECTION_SCHEMA.rushSteps!,
       vision: { type: 'string', enum: ['any', 'cone'], description: 'cone(기본) = 앞쪽 부채꼴, any = 사방' },
       pace: { type: 'string', enum: [...PACES], description: '덮치기 뒤 평소 추격 걸음(기본 fast)' },
       lungeSteps: { type: 'integer', description: '발견 직후 덮치는 칸 수(0..8, 0 = 없음)' },
@@ -591,7 +610,7 @@ export const FIELD_ENEMY_TOOLS: readonly ToolDefinition[] = [
     run(draft, args): ToolExecResult {
       const sight = args.sightRange === undefined ? undefined : Number(args.sightRange);
       if (sight !== undefined && (!Number.isInteger(sight) || sight < 2 || sight > 12)) throw new ToolError('sightRange 는 2..12 칸입니다.', { code: 'invalid-args' });
-      const detection = readFieldDetectionArgs({ coneDegrees: args.coneDegrees, chaseStepMs: args.chaseStepMs, alertMs: args.alertMs, searchMs: args.searchMs });
+      const detection = readFieldDetectionArgs({ coneDegrees: args.coneDegrees, chaseStepMs: args.chaseStepMs, alertMs: args.alertMs, searchMs: args.searchMs, rush: args.rush, rushStepMs: args.rushStepMs, rushSteps: args.rushSteps });
       const steps = args.lungeSteps === undefined ? 0 : Number(args.lungeSteps);
       if (!Number.isInteger(steps) || steps < 0 || steps > 8) throw new ToolError('lungeSteps 는 0..8 입니다.', { code: 'invalid-args' });
       const speed = args.lungeSpeed === undefined ? 6 : Number(args.lungeSpeed);
@@ -627,18 +646,18 @@ export const FIELD_ENEMY_TOOLS: readonly ToolDefinition[] = [
     domains: ['event'],
     description:
       '추격하는 적(보면 쫓아오는 필드 적·순찰 경비병 — movement chase 페이지)의 「알아채기·다가오기」만 조율한다. 다른 것(그림·전투·순찰 길)은 그대로. ' +
-      'sightRange 시야(칸) · coneDegrees 부채꼴 각(넓을수록 곁눈으로도 봄) · chaseStepMs 쫓는 동안 한 칸 시간(작을수록 빨리 다가옴, 주인공 걷기 160) · alertMs 알아챈 뒤 멈춤(짧을수록 빨리 덤빔) · searchMs 놓친 뒤 뒤지는 시간(추격 기억) · giveUpRange 포기 거리. ' +
-      '「몬스터가 보면 훨씬 빨리 다가오게」「밤 순찰을 더 예민하게, 더 넓게 찾게」 요청의 정본. eventIds 를 주면 그 적만, 생략하면 mapIds(생략 = 모든 맵)의 추격 적 전부. ' +
+      'sightRange 시야(칸) · coneDegrees 부채꼴 각(넓을수록 곁눈으로도 봄) · chaseStepMs 쫓는 동안 한 칸 시간(작을수록 빨리 다가옴, 주인공 걷기 160) · alertMs 알아챈 뒤 멈춤(짧을수록 빨리 덤빔) · searchMs 놓친 뒤 뒤지는 시간(추격 기억) · giveUpRange 포기 거리 · rush 알아채면 두 배 빠르기로 달려와 덮침. ' +
+      '「몬스터가 보면 순식간에 달려와 전투를 걸게」「몬스터가 보면 훨씬 빨리 다가오게」「밤 순찰을 더 예민하게, 더 넓게 찾게」 요청의 정본. eventIds 를 주면 그 적만, 생략하면 mapIds(생략 = 모든 맵)의 추격 적 전부. ' +
       '순찰 경로가 있으면 칸 사이 쉼을 늘려 시야 밖 순찰 걸음은 예전 빠르기를 지킨다. 시야를 넓힐 때 입구가 시야+1 칸 안이면 그 적만 시야를 줄인다(들어서자마자 덮치지 않게).',
     parameters: schema({
       mapIds: { type: 'array', items: { type: 'string' }, description: '고칠 맵(생략 = 모든 맵)' },
       eventIds: { type: 'array', items: { type: 'string' }, description: '고칠 적 이벤트 id(생략 = 맵의 추격 적 전부)' },
       ...FIELD_DETECTION_SCHEMA,
     }, []),
-    invalidArgsExample: { mapIds: ['map_field_1'], sightRange: 7, coneDegrees: 140, chaseStepMs: 200, alertMs: 300, searchMs: 6000 },
+    invalidArgsExample: { mapIds: ['map_field_1'], sightRange: 7, coneDegrees: 140, alertMs: 300, searchMs: 6000, rush: true },
     run(draft, args): ToolExecResult {
       const tuning = readFieldDetectionArgs(args);
-      if (Object.keys(tuning).length === 0) throw new ToolError('바꿀 값(sightRange·coneDegrees·chaseStepMs·alertMs·searchMs·giveUpRange)을 하나 이상 주세요.', { code: 'invalid-args' });
+      if (Object.keys(tuning).length === 0) throw new ToolError('바꿀 값(sightRange·coneDegrees·chaseStepMs·alertMs·searchMs·giveUpRange·rush)을 하나 이상 주세요.', { code: 'invalid-args' });
       const wantedMaps = Array.isArray(args.mapIds) ? (args.mapIds as unknown[]).map(String) : undefined;
       for (const id of wantedMaps ?? []) if (!draft.maps[id]) throw new ToolError(`맵을 찾을 수 없습니다: ${id}`, { code: 'map-not-found' });
       const wantedEvents = Array.isArray(args.eventIds) ? new Set((args.eventIds as unknown[]).map(String)) : undefined;
@@ -665,7 +684,7 @@ export const FIELD_ENEMY_TOOLS: readonly ToolDefinition[] = [
         }
       }
       if (changed.length === 0) throw new ToolError('추격하는 적이 없습니다 — place_field_enemy behavior:chase 나 tune_field_enemies 로 먼저 추격형으로 만드세요.', { code: 'field-enemy-none' });
-      const parts = [tuning.sightRange !== undefined ? `시야 ${tuning.sightRange}칸` : '', tuning.coneDegrees !== undefined ? `부채꼴 ${tuning.coneDegrees}°` : '', tuning.chaseStepMs !== undefined ? `추격 ${tuning.chaseStepMs}ms/칸` : '', tuning.alertMs !== undefined ? `알아챔 ${tuning.alertMs}ms` : '', tuning.searchMs !== undefined ? `수색 ${tuning.searchMs}ms` : '', tuning.giveUpRange !== undefined ? `포기 ${tuning.giveUpRange}칸` : ''].filter(Boolean);
+      const parts = [tuning.sightRange !== undefined ? `시야 ${tuning.sightRange}칸` : '', tuning.coneDegrees !== undefined ? `부채꼴 ${tuning.coneDegrees}°` : '', tuning.chaseStepMs !== undefined ? `추격 ${tuning.chaseStepMs}ms/칸` : '', tuning.alertMs !== undefined ? `알아챔 ${tuning.alertMs}ms` : '', tuning.searchMs !== undefined ? `수색 ${tuning.searchMs}ms` : '', tuning.giveUpRange !== undefined ? `포기 ${tuning.giveUpRange}칸` : '', tuning.rush !== undefined ? (tuning.rush ? `돌진 ${tuning.rushSteps ?? RUSH_STEPS}칸 ${tuning.rushStepMs ?? RUSH_STEP_MS}ms/칸` : '돌진 끔') : ''].filter(Boolean);
       return {
         summary: `추격 적 ${changed.length}마리 조율 — ${parts.join(' · ')}`,
         data: { changed, tuning },
