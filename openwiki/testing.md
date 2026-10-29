@@ -2383,4 +2383,12 @@ magic 첫 필드 비트가 「Esc 두 번」 회귀를 잡는다 — 대사 창�
 첫 필드(목표 대상 칸의 금빛 표시) → 대상 곁에서 바라봄(안내 「Z 조사 · 이름」) → 조사·대사 넘김 → 다음 목표 대상 표시를 찍는다.
 VM 판 5개의 곁 칸: deepseek escape (3,4) up · terra escape (2,4) up · terra mystery (4,9) up · flash mystery (7,10) up · deepseek mystery (11,7) right.
 
+몬스터 수집 전 구간 `whole-game-monster-campaign`(standin monster 「새싹 몬스터 모험」, 2026-10-29): 스타터 → 새싹마을 센터 → 1번길 야생·포획 →
+1번길 트레이너 → 새순 마을 도착(목표 줄이 체육관을 가리키나) → 센터 회복 → 체육관 퍼즐(받침→덩굴 문→가시 덤불; 관원 셋의 `_won` 은
+`setSwitch` 로 둔다 — 시야 전투가 퍼즐 칸마다 끼어든다) → 관장전 → 배지 → 도감 정원 풀숲 레벨업 5판 → 관측탑 보스 → 리그 챔피언 → 엔딩.
+순간이동 뒤 판정은 `fieldReady` 가 아니라 실행·입력 깃발(`runtime-state-json` 의 `data-live-flags`)까지 보는 `fieldIdle` 이다 — 배지 번쩍임·간호사
+회복 연출 중에도 대사창이 없어 `fieldReady` 가 통과하고, 다음 비트에 대사가 엉뚱한 곳에서 떴다. 전투 op 는 선두가 쓰러져 교체 창
+(`actor-switch-*` 만 있고 뿌리 명령 없음)이 뜨면 첫 교체 대상을 누른다(`runtimeQaBattle.mjs`). 보스 이후는 풀숲 조우·레벨에 따라 지기도 한다
+(진 판은 센터에서 깨고 챔피언은 잠겨 있다 — 결함이 아니라 레벨 부족).
+
 체크포인트도 같은 실물 게임으로 부팅된다(2026-10-29 — 전에는 `--checkpoint-set` 경로가 `--whole-game` 을 무시하고 기본 픽스처로 떨어져 «없는 맵» 으로 죽었다). 판정자가 멈춘 자리 하나를 확인할 때: 세트 파일에 `{ mapId, x, y, facing, beats }` 만 적고 `--scenario checkpoints --checkpoint-set <세트> --whole-game <폴더> --netns`. 예: standin monster 1번길 (19,20) 오른쪽 누르기 — 대화창 없이 제자리, 아래는 움직임 → 오른쪽 칸은 숲 경계(대사 잠금 아님).

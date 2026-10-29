@@ -144,6 +144,14 @@ export async function battleQaOp(page, op) {
       await sleep(300);
       continue;
     }
+    // 몬스터 파티의 리더가 쓰러지면 「다음은 누구를 내보낼까?」 교체 목록(actor-switch-*)만 뜬다 — 첫 후보를 내보낸다.
+    // 이것 없이는 관측탑 보스전(2026-10-29 standin monster)이 교체 화면에서 5분을 기다리다 끝났다.
+    const forcedSwitch = ui.menu.filter((id) => id.startsWith("actor-switch-"));
+    if (forcedSwitch.length > 0 && !ui.menu.some((id) => id.startsWith("actor-command-") && id !== "actor-command-back")) {
+      await press(page, forcedSwitch[0]);
+      await sleep(300);
+      continue;
+    }
     const submenu = ui.menu.filter((id) => id.startsWith("actor-skill-") || id.startsWith("actor-item-") || id.startsWith("actor-capture-"));
     if (submenu.length > 0 && wanted === FIRST_MOVE) {
       // 포켓몬 스킨 「싸운다」: 기술 목록에서 쓸 수 있는 첫 기술(보이는 단추는 이미 disabled 를 걸러 냈다).
