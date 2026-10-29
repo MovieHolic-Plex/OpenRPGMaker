@@ -122,8 +122,11 @@ const BATTLE_BOSS_INTRO_MS = 2_000;
 const BATTLE_RETRO_INTERLUDE_SCALE = 0.6;
 /** 도트 측면 전투에서 메뉴가 닫힌 게이지 충전 구간을 감는 배수(battle-feel r2). */
 const BATTLE_IDLE_CHARGE_BOOST = 3;
-/** 연출 중 확인/취소를 누를 때 걸리는 1회성 빨리감기 배속. */
-const SKIP_SPEED = 5.0;
+/**
+ * 연출 중 확인/취소를 누를 때 걸리는 1회성 빨리감기 배속. 5배는 타격·이펙트가 한 덩어리로 뭉개졌다 — 3배로 감고,
+ * 히트스톱(타격 정지)은 battleSequencer 가 배속과 무관하게 원래 길이로 둔다(2026-10-29 vm3 flash jrpg 「명령마다 4~8초」).
+ */
+const SKIP_SPEED = 3.0;
 /**
  * 플레이어가 Shift 로 고른 배속 — 같은 플레이 동안 다음 전투에도 이어진다(자동 전투가 켜며 올린 배속은 아니다).
  * 왜(2026-10-29 vm3 flash jrpg 판정 「전투 명령마다 4~8초 대기」): 손 안 대면 적 둘 한 턴이 4.5~6.2초였고, 배속을 올려도 다음 전투에서 1× 로 돌아갔다.
