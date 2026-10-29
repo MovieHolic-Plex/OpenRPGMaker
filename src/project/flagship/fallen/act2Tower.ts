@@ -666,7 +666,7 @@ function floorFour(project: Project, exec: Exec): void {
     // 이리스는 관 속(오른쪽 칸)에서 일어나 관 밖으로 뛰어내린다 — 「원래 서 있던 사람」으로 읽혔다(적대 VQA 2026-10-30).
     m2("m2-040-set-event-location", { target: "ev_fs2_t4_iris", mapId: FS2_T4, x: T4.coffin.x + 1, y: T4.coffin.y }),
     fx("sparkle", T4.coffin.x + 1, T4.coffin.y, 1400),
-    flash("green", 600),
+    flash("white", 500),
     setSw(SW_IRIS_WAKE),
     wait(900),
     route("ev_fs2_t4_iris", [{ kind: "setDirectionFix", enabled: true }, { kind: "jump", dx: 1, dy: 0, heightPx: 10, durationMs: 520 }, { kind: "setDirectionFix", enabled: false }]),
@@ -696,8 +696,8 @@ function floorFour(project: Project, exec: Exec): void {
     narrate("카엘이 바랜 쪽을 짚는다. 카엘의 글씨다."),
     say(KAEL, "「오늘, 이리스가 빵을 먹었다.\n따뜻했다고 했다.」 …기억나?"),
     // 읽은 줄이 돌아오는 순간 — 렌즈와 수정 받침이 함께 맥박친다.
-    // 빛이 약해 안 읽혔다(적대 VQA) — 렌즈·수정·이리스가 한 번에, 화면 전체가 초록빛으로 숨 쉰다.
-    flash("green", 900),
+    // 빛이 약해 안 읽혔다(적대 VQA) — 렌즈·수정·이리스가 한 번에, 화면이 하얗게 한 번 숨 쉰다(초록 플래시는 화면이 통째로 초록이 됐다).
+    flash("white", 400),
     fx("heal", T4.iris.x, T4.iris.y, 1600), se("easyrpg-sound-recovery7"),
     fx("magic", (lens?.x ?? T4.coffin.x) + 1, (lens?.y ?? T4.coffin.y - 4) + 2, 1800),
     fx("sparkle", (lens?.x ?? T4.coffin.x) + 1, (lens?.y ?? T4.coffin.y - 4) + 2, 1800),
