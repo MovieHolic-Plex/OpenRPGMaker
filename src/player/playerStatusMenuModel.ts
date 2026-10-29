@@ -464,12 +464,17 @@ export function partyVitalLevel(ratio: number): PartyVitalLevel {
   return "safe";
 }
 
-/** h:mm — 세션 플레이 시간(초)을 상태 메뉴 시계 글자로. */
+/**
+ * 세션 플레이 시간(초)을 상태 메뉴 시계 글자로 — 저장·불러오기 칸과 같은 꼴(한 시간 안은 m:ss, 넘으면 h:mm:ss).
+ * 왜(2026-10-29 vm3 terra 추리 판정): 메뉴는 h:mm(「0:00」), 저장 칸은 m:ss(「0:38」)라 같은 38초가 서로 다른 시각처럼 읽혔다.
+ */
 function formatPlayClock(seconds: number): string {
-  const totalSeconds = Math.max(0, Math.floor(Number.isFinite(seconds) ? seconds : 0));
-  const hours = Math.floor(totalSeconds / 3600);
-  const minutes = Math.floor((totalSeconds % 3600) / 60);
-  return `${hours}:${minutes.toString().padStart(2, "0")}`;
+  const total = Math.max(0, Math.floor(Number.isFinite(seconds) ? seconds : 0));
+  const hours = Math.floor(total / 3600);
+  const minutes = Math.floor((total % 3600) / 60);
+  const secs = total % 60;
+  if (hours > 0) return `${hours}:${minutes.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
+  return `${minutes}:${secs.toString().padStart(2, "0")}`;
 }
 
 function assertNever(value: never): never {

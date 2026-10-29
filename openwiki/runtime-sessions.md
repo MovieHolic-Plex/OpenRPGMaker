@@ -246,6 +246,8 @@ Session state, save slots, farming, friendship, calendar, lighting, weather, fie
 - 시작 목표를 반복 자동 페이지에 싣지 않는 쪽은 빌더 몫(`openwiki/assistant-v2.md` 「시작 목표는 한 번만 도는 페이지에」). 둘 다 있어야 한다 — 런타임만 고치면 반복 페이지가 덮어쓰고, 빌더만 고치면 목표가 사라진다.
 - 재현: `node scripts/runtime-qa.mjs --scenario save-load-objective --project <prepareWebExport 한 web.json> --netns` (원본 83MB 프로젝트는 브라우저가 죽으니 먼저 `prepareWebExport`). 단계별 목표·스위치·소지품 JSON 을 `QA_OBJ_OUT` 에 남긴다.
 - **불러오기를 확정한 키가 필드 조사로 새지 않는다**(2026-10-29 vm3 terra 방탈출 A6): 메뉴에서 불러오기 칸을 Enter 로 고르면 그 keydown 안에서 `applySession`·메뉴 닫기가 끝나고, 같은 Enter 가 필드 입력(`RuntimeKeyHoldTracker` 의 document 리스너)에도 조사 엣지로 남았다. 다음 프레임엔 메뉴가 없어 저장 때 바라보던 정면 이벤트(번호 쪽지)를 다시 조사했다. `applySession` 이 `input_.dropPendingEdgesOnNextUpdate()` 로 다음 `update` 에서 그때까지 쌓인 조사·공격·스킬 엣지와 방향 탭을 버린다(눌림 상태는 그대로). 재현 `load-confirm-key` 시나리오(`QA_STAND=x,y,dir QA_WALK=x,y`, 키보드 Enter 로 불러오기·묶음 메뉴 「시스템 ▸」 도 연다): 옛 코드 불러온 뒤 대사 「번호 쪽지를 살펴보았다」, 고친 뒤 없음. 같은 시나리오로 flash 방탈출 「현재 목표」 빈칸(저장 칸 목표 없음)도 76b96e4a11 이전 saveSlots 에서 재현·현재 머리에서 해소를 본다.
+  - 같은 뿌리(vm3 추리): flash 「불러오기 선택 때 누른 Enter 가 새서 『더는 볼 것이 없다』」, terra 「불러온 직후 무관한 한스 대사창」 — 같은 시나리오로 옛 코드에서 둘 다 재현(책 받침대·한스 대사), 고친 뒤 없음.
+- **메뉴 시계는 저장 칸과 같은 꼴**(2026-10-29 vm3 terra 추리 「메뉴 0:00 인데 슬롯 0:38」): 상태 메뉴 시계(`formatPlayClock`)가 h:mm, 저장·불러오기 칸이 m:ss 라 같은 38초가 「0:00」·「0:38」로 읽혔다. 메뉴도 한 시간 안은 m:ss, 넘으면 h:mm:ss. 값의 정본은 그대로 `session.playTimeSeconds`.
 
 ## Roguelike run kernel and field rooms (Phase 0–3, 2026-08-24)
 
