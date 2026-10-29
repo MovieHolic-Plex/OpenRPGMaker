@@ -207,6 +207,7 @@ export function playCinematicSequence(options: {
     const lifetime = new AbortController();
     const media: HTMLMediaElement[] = [];
     let loadTimer: ReturnType<typeof setTimeout> | undefined;
+    let statusTimer: ReturnType<typeof setTimeout> | undefined;
     let advanceTimer: ReturnType<typeof setTimeout> | undefined;
     const paintFrames: number[] = [];
     let exitTimer: ReturnType<typeof setTimeout> | undefined;
@@ -223,6 +224,7 @@ export function playCinematicSequence(options: {
       mediaActive = false;
       lifetime.abort();
       clearTimeout(loadTimer);
+      clearTimeout(statusTimer);
       for (const item of media) {
         item.pause();
         item.removeAttribute("src");
@@ -287,7 +289,10 @@ export function playCinematicSequence(options: {
     const beginLoading = (): void => {
       root.dataset.mediaState = "loading";
       canContinueVideo = true;
-      status.textContent = "미디어 불러오는 중";
+      // 짧은 준비(컷 전환 사이 수백 ms)마다 글자가 번쩍이면 화면이 고장 난 것처럼 보인다 — 0.7초 넘게 걸릴 때만 알린다.
+      status.textContent = "";
+      clearTimeout(statusTimer);
+      statusTimer = setTimeout(() => { if (alive && root.dataset.mediaState === "loading") status.textContent = "미디어 불러오는 중"; }, 700);
       clearTimeout(loadTimer);
       loadTimer = setTimeout(() => {
         if (root.dataset.mediaState === "loading" || root.dataset.mediaState === "waiting") fail("error");
