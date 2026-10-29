@@ -279,6 +279,10 @@ export interface FieldDetectionTuning {
   readonly rush?: boolean;
   readonly rushStepMs?: number;
   readonly rushSteps?: number;
+  /** true 면 사방을 본다(부채꼴·앞만 보기 해제). 트인 들판의 매복꾼. */
+  readonly allRound?: boolean;
+  /** false 면 벽·기물이 시선을 가리지 않는다(시야 칸 수 안이면 본다). 트인 들판·유령. */
+  readonly lineOfSight?: boolean;
 }
 
 export const FIELD_DETECTION_SCHEMA: Record<string, JsonSchema> = {
@@ -289,8 +293,10 @@ export const FIELD_DETECTION_SCHEMA: Record<string, JsonSchema> = {
   searchMs: { type: 'integer', description: '놓친 뒤 마지막으로 본 자리와 달아난 방향을 뒤지는 시간(0..20000ms, 기본 3500) — 추격 기억' },
   giveUpRange: { type: 'integer', description: '이만큼(칸) 멀어지면 포기하고 돌아간다(시야+1..30)' },
   rush: { type: 'boolean', description: 'true 면 알아챈 뒤 주인공(160ms/칸)보다 빠르게 쉬지 않고 달려와 바로 전투를 건다 — 경비병·사냥꾼 몬스터. 피하려면 시야에 들지 말아야 한다(엄폐·그늘 길을 맵에 둘 것). rushSteps 칸을 달린 뒤에는 지쳐 chaseStepMs 로 떨어진다' },
-  rushStepMs: { type: 'integer', description: 'rush 돌진 한 칸 시간(60..150ms, 기본 110). 주인공 걷기 160' },
+  rushStepMs: { type: 'integer', description: 'rush 돌진 한 칸 시간(40..150ms, 기본 110). 주인공 걷기 160. 40~60 은 「매복 — 보자마자 순식간에 덮친다」' },
   rushSteps: { type: 'integer', description: 'rush 로 달리는 칸 수(1..30, 기본 10). 그 뒤 지친다 — 놓쳤다 다시 보면 새로 센다' },
+  allRound: { type: 'boolean', description: 'true 면 사방을 본다 — 부채꼴·앞만 보기를 끄고 뒤·옆도 알아챈다(트인 들판의 매복꾼·유령). false 면 앞쪽 부채꼴로 되돌린다' },
+  lineOfSight: { type: 'boolean', description: 'false 면 벽·나무·바위가 시선을 가리지 않는다(시야 칸 안이면 무조건 본다 — 트인 들판·유령). 기본 true(가린다)' },
 };
 
 const intIn = (value: unknown, lo: number, hi: number, name: string): number | undefined => {
@@ -313,8 +319,13 @@ export function readFieldDetectionArgs(args: Record<string, unknown>): FieldDete
     if (typeof args.rush !== 'boolean') throw new ToolError('rush 는 true/false 입니다.', { code: 'invalid-args' });
     out.rush = args.rush;
   }
-  const rushMs = intIn(args.rushStepMs, 60, 150, 'rushStepMs'); if (rushMs !== undefined) out.rushStepMs = rushMs;
+  const rushMs = intIn(args.rushStepMs, 40, 150, 'rushStepMs'); if (rushMs !== undefined) out.rushStepMs = rushMs;
   const rushN = intIn(args.rushSteps, 1, 30, 'rushSteps'); if (rushN !== undefined) out.rushSteps = rushN;
+  for (const key of ['allRound', 'lineOfSight'] as const) {
+    if (args[key] === undefined || args[key] === null) continue;
+    if (typeof args[key] !== 'boolean') throw new ToolError(`${key} 는 true/false 입니다.`, { code: 'invalid-args' });
+    out[key] = args[key] as boolean;
+  }
   return out;
 }
 
@@ -370,6 +381,15 @@ export function applyFieldDetection(movement: EventPageMovement, tuning: FieldDe
     next.pursuit = { ...(next.pursuit ?? { scope: 'map', doorDelayMs: 0, onLost: 'return' }), searchMs: tuning.searchMs } as NonNullable<EventPageMovement['pursuit']>;
   }
   if (tuning.giveUpRange !== undefined) next.giveUpRange = Math.max((next.sightRange ?? next.sight?.range ?? 2) + 1, tuning.giveUpRange);
+  if (tuning.allRound !== undefined || tuning.lineOfSight !== undefined) {
+    const base = next.sight ?? { range: next.sightRange ?? 5, lineOfSight: true, facing: 'cone' as const };
+    next.sight = {
+      ...base,
+      ...(tuning.lineOfSight !== undefined ? { lineOfSight: tuning.lineOfSight } : {}),
+      ...(tuning.allRound === true ? { facing: 'any' as const } : tuning.allRound === false ? { facing: 'cone' as const } : {}),
+    };
+    if (tuning.allRound === true) delete (next.sight as { coneDegrees?: number }).coneDegrees;
+  }
   if (tuning.rush === true) next.chaseLunge = { steps: tuning.rushSteps ?? RUSH_STEPS, speed: 7, stepMs: tuning.rushStepMs ?? RUSH_STEP_MS };
   else if (tuning.rush === false && next.chaseLunge?.stepMs !== undefined) delete next.chaseLunge;
   return next;
@@ -651,7 +671,7 @@ export const FIELD_ENEMY_TOOLS: readonly ToolDefinition[] = [
     domains: ['event'],
     description:
       '추격하는 적(보면 쫓아오는 필드 적·순찰 경비병 — movement chase 페이지)의 「알아채기·다가오기」만 조율한다. 다른 것(그림·전투·순찰 길)은 그대로. ' +
-      'sightRange 시야(칸) · coneDegrees 부채꼴 각(넓을수록 곁눈으로도 봄) · chaseStepMs 쫓는 동안 한 칸 시간(작을수록 빨리 다가옴, 주인공 걷기 160, 그보다 작으면 12칸마다 숨 고름) · alertMs 알아챈 뒤 멈춤(짧을수록 빨리 덤빔) · searchMs 놓친 뒤 뒤지는 시간(추격 기억) · giveUpRange 포기 거리 · rush 알아채면 두 배 빠르기로 달려와 덮침. ' +
+      'sightRange 시야(칸) · coneDegrees 부채꼴 각(넓을수록 곁눈으로도 봄) · chaseStepMs 쫓는 동안 한 칸 시간(작을수록 빨리 다가옴, 주인공 걷기 160, 그보다 작으면 12칸마다 숨 고름) · alertMs 알아챈 뒤 멈춤(짧을수록 빨리 덤빔) · searchMs 놓친 뒤 뒤지는 시간(추격 기억) · giveUpRange 포기 거리 · rush 알아채면 두 배 빠르기로 달려와 덮침 · allRound 사방을 봄 · lineOfSight:false 벽·나무가 시선을 안 가림(트인 들판 매복). ' +
       '「몬스터가 보면 순식간에 달려와 전투를 걸게」「몬스터가 보면 훨씬 빨리 다가오게」「밤 순찰을 더 예민하게, 더 넓게 찾게」 요청의 정본. eventIds 를 주면 그 적만, 생략하면 mapIds(생략 = 모든 맵)의 추격 적 전부. ' +
       '순찰 경로가 있으면 칸 사이 쉼을 늘려 시야 밖 순찰 걸음은 예전 빠르기를 지킨다. 시야를 넓힐 때 입구가 시야+1 칸 안이면 그 적만 시야를 줄인다(들어서자마자 덮치지 않게).',
     parameters: schema({
@@ -662,7 +682,7 @@ export const FIELD_ENEMY_TOOLS: readonly ToolDefinition[] = [
     invalidArgsExample: { mapIds: ['map_field_1'], sightRange: 7, coneDegrees: 140, alertMs: 300, searchMs: 6000, rush: true },
     run(draft, args): ToolExecResult {
       const tuning = readFieldDetectionArgs(args);
-      if (Object.keys(tuning).length === 0) throw new ToolError('바꿀 값(sightRange·coneDegrees·chaseStepMs·alertMs·searchMs·giveUpRange·rush)을 하나 이상 주세요.', { code: 'invalid-args' });
+      if (Object.keys(tuning).length === 0) throw new ToolError('바꿀 값(sightRange·coneDegrees·chaseStepMs·alertMs·searchMs·giveUpRange·rush·allRound·lineOfSight)을 하나 이상 주세요.', { code: 'invalid-args' });
       const wantedMaps = Array.isArray(args.mapIds) ? (args.mapIds as unknown[]).map(String) : undefined;
       for (const id of wantedMaps ?? []) if (!draft.maps[id]) throw new ToolError(`맵을 찾을 수 없습니다: ${id}`, { code: 'map-not-found' });
       const wantedEvents = Array.isArray(args.eventIds) ? new Set((args.eventIds as unknown[]).map(String)) : undefined;
