@@ -814,6 +814,12 @@ const CUT_TAIL_MS = 180;
  * softCutTails: 컷 끝까지 울리던 효과음을 CUT_TAIL_MS 동안 줄이며 다음 컷과 겹친다(같은 소리를 offsetMs 로 이어 받는 다음 컷이 불러오는 사이 50ms 빈틈).
  * 둘 다 기본은 꺼져 있다 — 새 게임 오프닝(player.ts bootRun)만 켠다. 타이틀 인트로·유휴 데모·편집기 미리보기는 그대로다.
  */
+/**
+ * 짧은 효과음 큐(고리 아님)가 울리기 시작할 때 캔버스에서 올라가는 이벤트. 오프닝 음악을 그 순간만 낮춰
+ * 개그 박·타격음이 음악에 묻히지 않게 한다(cinematicSequence 가 받는다). detail.durationMs = 큐 길이.
+ */
+export const ANIMATIC_CUE_EVENT = 'oprn-animatic-cue';
+
 export function playOpeningAnimatic(options: { project: Project; canvas: HTMLCanvasElement; composition: OpeningAnimatic; durationMs: number; signal: AbortSignal; reducedMotion?: boolean; bottomInset?: () => number; holdClockThroughStalls?: boolean; softCutTails?: boolean; onReady: () => void; onError: (message: string) => void; onDone: () => void }): AnimaticPlayback {
   const { canvas, composition: a, signal } = options, view = canvas.ownerDocument.defaultView!;
   const draw: DrawOptions = { reducedMotion: options.reducedMotion, durationMs: options.durationMs, bottomInset: options.bottomInset };
@@ -873,6 +879,7 @@ export function playOpeningAnimatic(options: { project: Project; canvas: HTMLCan
             const url = resolveAssetResourceUrl(cue.resourceId, { project: options.project }); if (!url) { console.warn('[animatic] audio cue missing:', cue.resourceId); skipped.add(cue.id); continue; }
             const warm = preloaded.get(cue.id); preloaded.delete(cue.id);
             audio = warm ?? canvas.ownerDocument.createElement('audio'); if (!warm) audio.src = url; audio.loop = cue.loop ?? false; audio.dataset.testid = 'animatic-audio-cue'; audio.dataset.cueId = cue.id; audio.volume = animaticCueVolume(cue, t); canvas.parentElement?.append(audio); cues.set(cue.id, audio);
+            if (!audio.loop) canvas.dispatchEvent(new CustomEvent(ANIMATIC_CUE_EVENT, { bubbles: true, detail: { durationMs: cue.durationMs } }));
             const seek = () => { if (!stopped && audio!.duration > 0 && Number.isFinite(audio!.duration)) { const now = options.holdClockThroughStalls ? Number(canvas.dataset.timeMs ?? 0) : view.performance.now() - started; const offset = (cue.offsetMs ?? 0) / 1000 + Math.max(0, now - cue.atMs) / 1000; audio!.currentTime = audio!.loop ? offset % audio!.duration : Math.min(offset, audio!.duration); } };
             if (audio.readyState >= 1) seek(); else audio.addEventListener('loadedmetadata', seek, { once: true, signal });
             audio.addEventListener('error', () => { if (!stopped) console.warn('[animatic] audio cue failed to load:', cue.resourceId); }, { once: true, signal });
