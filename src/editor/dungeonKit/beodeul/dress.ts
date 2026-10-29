@@ -661,7 +661,7 @@ function dressCave(c: DressCtx, r: PlacedRoom, rs: () => number, s: Slot | null,
       }
       const e = c.edgeCells(r, rs);
       // 부러진 돌기둥(옛 사당 흔적)은 보스 굴에만 — 굴마다 섞었더니 자연 동굴 곳곳에 돌기둥이 서 폐허처럼 읽혔다(2026-10-29 미리 보기).
-      edgeClumps(c, rs, e, 3, neu && c.hasKit(CK("broken-pillar")) ? [...CLUMP, [CK("broken-pillar"), 3]] : CLUMP);
+      edgeClumps(c, rs, e, 3, c.hasKit(CK("broken-pillar")) ? [...CLUMP, [CK("broken-pillar"), 3]] : CLUMP); // 기둥만 구워져도(다른 새 기물 없이) 보스 굴에 선다
       if (e[0]) stand(c, caveBones(c), e[0][0], e[0][1]);
       if (c.lair) lairCamp(c, r, rs, e.slice(1), true);
       sprinkle(c, rs, r, 0.04, () => c.weighted(rs, [[SW("bones"), 2], [SW("skulls"), 2]]), { inset: 2, max: 5 });
