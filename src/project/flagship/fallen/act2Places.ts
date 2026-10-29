@@ -22,9 +22,6 @@ export function primeWavePlaces(): void {
   primeRegionReferenceSnapshot("bd-wave-ash-plain", wavePlaces);
 }
 
-/** 되살린 웨이브 장소로 지은 맵과 그 요새 던전 — 1막 끝 일괄 적 조율(applyFallenFieldRules)에서 뺀다(2막 감지 값을 지킨다). */
-export const FS2_WAVE_OWNED_MAPS: readonly string[] = ["map_field_north_2", "fs2_dawnwell", "fs2_fort_court", "fs2_fortress", "fs2_fortress_f2", "fs2_ice_lake"];
-
 export const WAVE_ASH_PLAIN = "bd-wave-ash-plain";
 export const WAVE_RUINED_VILLAGE = "bd-wave-ruined-village";
 export const WAVE_MOUNTAIN_FORTRESS = "bd-wave-mountain-fortress";

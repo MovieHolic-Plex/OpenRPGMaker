@@ -20,7 +20,6 @@ import { FS_NAMES, FS_PREFIX } from "../fallenStarStory";
 import { build, lightRoom } from "../fallenStarRooms";
 import { FS_VALEN_CHARSET_ID, FS_VALEN_CHARSET_INDEX } from "../fallenValenChip";
 import { B3, B3_ROOM, B4, B4_ROOM, FS_B3_ID, FS_B3_NAME, FS_B4_ID, FS_B4_NAME } from "./vaultLabyrinthRooms";
-import { FS2_WAVE_OWNED_MAPS } from "./act2Places";
 
 const SAVE_PROMPT = "기록하시겠습니까?";
 
@@ -1507,9 +1506,11 @@ export function applyFallenFieldRules(project: Project, exec: Exec): void {
     exec(project, "set_encounter_table", { mapId: map.id, entries: [], encounterRate: 0 });
   }
   // 보이는 적은 더 멀리서(7칸) 알아보고, 발견 직후 3칸을 주인공 걷기와 같은 빠르기로 덮친다 — 계속 걸으면 피할 수 있다.
-  // 되살린 웨이브 장소(B5·B6·얼음 호수)의 적은 2막이 맵마다 정한 알아채기·덮치기(act2Opening detection)를 지킨다 — 이 일괄 조율이
-  // 모든 맵을 덮어 도깨비 매복(시야 12·50ms/칸)이 다시 시야 7·느린 덮치기로 돌아갔다(2026-10-30 실측).
-  exec(project, "tune_field_enemies", { mapIds: Object.keys(project.maps).filter((id) => !FS2_WAVE_OWNED_MAPS.includes(id)),
+  // 이 일괄 조율은 1막 기본값이다. 추격 박자(chaseStepMs)를 직접 정한 적이 있는 맵(2막 detection·탑·추격 장면이 맵마다 정한
+  // 알아채기·덮치기)은 건너뛴다 — 예전에는 모든 맵을 덮어 2막 프로필(도깨비 매복 시야 12·35ms/칸, 기사·늑대·탑 수호자)이 전부
+  // 시야 7·느린 덮치기로 돌아갔다(2026-10-30 실측: 굽힌 판의 2막 추격 적 중 chaseStepMs 가 남은 것은 B4 추격 장면 둘뿐).
+  const authoredChase = (map: GameMap): boolean => map.events.some((e) => (e.pages ?? []).some((pg) => pg.movement?.type === "chase" && pg.movement.chaseStepMs !== undefined));
+  exec(project, "tune_field_enemies", { mapIds: Object.values(project.maps).filter((m) => !authoredChase(m)).map((m) => m.id),
     sightRange: 7, vision: "cone", pace: "fast", lungeSteps: 3, lungeSpeed: 6, approachStyle: "auto" });
   exec(project, "set_project_settings", { battle: { allowAutoBattle: false, clearStatesAfterBattle: true }, saveAccess: "savePoints" });
   // 마을 세이브 포인트 — 광장 분수 곁 별빛 결정(사당 제단·지하 4층 푸른 결정과 같은 결정 모양).
