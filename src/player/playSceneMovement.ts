@@ -63,6 +63,7 @@ import { grantEscapeGrace, repelBlocksWildLevel, repelExpiredMessage, tickEncoun
 import { terrainRecordAt } from "@/project/terrainAt";
 import { applyTerrainWalkDamage, scaledEncounterRate } from "@/project/terrainStep";
 import { firesOnPlayerCollision, PLAYER_COLLISION_TRIGGER_KINDS } from "@/project/eventTouchRules";
+import { doorWalkInActive, isDoorstepPadInScene, tryEnterDoor, updateDoorEntryGuard } from "@/player/playSceneDoorEntry";
 import type { RuntimeDomOverlay } from "@/player/runtimeDom";
 import type { FarmInteractionResult } from "@/player/farming";
 import { farmIntentForHand, interactWithFarmPlot, farmIgnoreMessage } from "@/player/farming";
@@ -218,6 +219,8 @@ function tickPlayerMovement(scene: PlaySceneContext, input: InputState, cutscene
   // 맵 탭으로 걷는 중에 패드·키로 방향을 넣으면 탭 경로를 그만두고 손 조작으로 넘어간다.
   if (scene.playerRoute?.pointer === true && !cutsceneInputLocked && (input.x !== 0 || input.y !== 0)) cancelPointerRoute(scene);
   if (!scene.moving && !scene.playerHop) {
+    // 문 앞 칸에 막 나왔을 때의 보호(그 문으로 곧장 되돌아 들어가지 않기)는 칸을 떠나거나 이동 입력을 놓으면 풀린다.
+    updateDoorEntryGuard(scene, input.x === 0 && input.y === 0);
     // 자유 걷기(맵 탭·QA 걷기)는 이벤트가 돌면 칸 경계에서 그만둔다 — 대사·놀래킴 동안 주인공이 계속 걸어가지 않는다(J62).
     yieldPlayerRouteToEvents(scene, cutsceneInputLocked);
     // 주인공 강제 이동 루트가 있으면 입력보다 우선해 자동으로 걷는다.
@@ -233,7 +236,8 @@ function tickPlayerMovement(scene: PlaySceneContext, input: InputState, cutscene
     advancePlayerStepFrame(scene);
   } else if (scene.playerHop) {
     advancePlayerStationaryHopFrame(scene);
-  } else {
+  } else if (!doorWalkInActive(scene)) {
+    // 문간으로 걸어 들어가는 동안은 그 걸음 그림을 덮지 않는다(playSceneDoorEntry.walkIntoDoorway).
     scene.player.setFrame(scene.playerSprite.idleFrameFor(scene.facing));
     // 걷기 주기는 **멈출 때** 처음으로 돌아간다. 걸음마다 되돌리면 160ms 걸음에서 패턴 0·1 만 반복돼
     // 세 번째 패턴(다른 발)이 한 번도 나오지 않는다 — RM2K3 은 걷는 동안 주기를 이어 간다.
@@ -435,6 +439,8 @@ function beginPlayerStep(scene: PlaySceneContext, toX: number, toY: number): voi
 
 function tryStartMove(scene: PlaySceneContext, input: InputState): void {
   if (tryStartVehicleStep(scene, input)) return;
+  // 문 앞 칸에서 문 쪽으로 걸으면 그 문으로 들어간다(문 앞 칸을 밟는 것만으로는 들어가지 않는다 — project/doorEntries.ts).
+  if (input.dir && (input.x === 0 || input.y === 0) && tryEnterDoor(scene, input.dir)) return;
   const project = store.getCurrent();
   const body = resolvePlayerBody(project, scene.session);
   const canStep = (dx: number, dy: number): boolean => playerCanStep(scene, body, dx, dy);
@@ -822,6 +828,8 @@ function performAction(
     void scene.runEvent(event.event.id);
     return true;
   }
+  // 문 앞 칸에서 문을 보고 확인 — 그 문으로 들어간다(RM 관례: 확인 버튼은 정면의 접촉 이벤트도 발동한다).
+  if (tryEnterDoor(scene, scene.facing, { viaAction: true })) return true;
   if (tryBoardTransit(scene, tx, ty)) return true;   // 정류장에 문 연 버스·전차·전철에 타기
   if (tryChestInteraction(scene as any, tx, ty)) return true;
   if (attemptLifeInteraction(scene, tx, ty)) return true;
@@ -1024,7 +1032,8 @@ function setActionEventRuntimeDirection(
 
 function fireTouchTriggers(scene: PlaySceneContext): void {
   const event = findRuntimeEventInScene(scene, scene.tileX, scene.tileY, PLAYER_COLLISION_TRIGGER_KINDS);
-  if (event) void scene.runEvent(event.event.id);
+  // 옛 맵의 문 앞 발판(문 바로 아래 칸의 이동 이벤트)은 밟아도 발동하지 않는다 — 문 쪽으로 걸어 들어갈 때 발동한다(tryEnterDoor).
+  if (event && !isDoorstepPadInScene(scene, event.event.id, scene.tileX, scene.tileY)) void scene.runEvent(event.event.id);
 }
 
 export function findRuntimeEventInScene(

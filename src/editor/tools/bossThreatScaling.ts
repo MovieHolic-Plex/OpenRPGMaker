@@ -6,6 +6,10 @@
 // 경고(troopBalanceWarnings)는 모델이 따를 때만 듣는다 — 파티 스탯을 모르는 채 고친 2판째도 민첩은
 // 파티의 절반이었다. 보스라고 선언된 적은 쓰기 도구가 **올리기만** 하는 하한을 직접 맞추고 무엇을 바꿨는지
 // 경고로 돌려준다(게이트 아님: 쓰기는 늘 성공하고, 저자가 준 값보다 낮추지 않는다).
+//
+// 2026-10-30 「이세계 고딩」 리뷰: 저자가 짧은 보스전을 의도해 maxHp 400·430 을 명시했는데 하한이 590·560 으로 덮었다.
+// 하한은 **기본값**이다 — 저자가 이번 호출에서 직접 준 능력치(locked)는 손대지 않고, 빠진 값에만 적용한다.
+// 명시값이 하한보다 낮으면 바꾸지 않고 「저자 값 유지(권장 하한 N)」로 알려 준다.
 
 import { actorBattlers } from "@/battle/battleBattlers";
 import { computeEnemyTuning, simulateBattle } from "@/battle/simulate";
@@ -34,13 +38,19 @@ const PROBE_TROOP_ID = "__boss_threat_probe";
 export type BossScalingResult = {
   readonly stats: EnemyStats;
   readonly note?: string;
+  /** 하한(기본값)으로 실제로 올린 능력치. 비면 저자 값 그대로다. */
+  readonly applied?: readonly BossFloorStat[];
 };
+
+/** 하한이 건드릴 수 있는 능력치. */
+export const BOSS_FLOOR_STATS = ["maxHp", "attack", "mind", "agility"] as const;
+export type BossFloorStat = (typeof BOSS_FLOOR_STATS)[number];
 
 /**
  * `enemy` 는 이미 draft.database.enemies 안에 들어간 레코드여야 한다(모의전이 그 레코드를 읽는다).
  * 스탯을 제자리에서 바꾸고 무엇을 바꿨는지 돌려준다. 시작 파티가 없으면 아무것도 하지 않는다.
  */
-export function scaleBossToStartParty(project: Project, enemy: EnemyRecord): BossScalingResult {
+export function scaleBossToStartParty(project: Project, enemy: EnemyRecord, locked: ReadonlySet<BossFloorStat> = new Set()): BossScalingResult {
   const partyActorIds = project.session.partyActorIds ?? [];
   const actors = project.database.actors.filter(actor => partyActorIds.includes(actor.id));
   if (actors.length === 0) return { stats: enemy.stats };
@@ -62,14 +72,24 @@ export function scaleBossToStartParty(project: Project, enemy: EnemyRecord): Bos
   });
   // 하한만 올린다. 마법 스킬은 mind 로 때리므로 mind 도 같은 공격 하한을 받는다. 민첩이 크게 낮으면
   // 게이지 전투에서 차례가 오기 전에 쓰러진다(1판째 「보스가 한 번도 공격하지 않았다」).
+  const floor: Record<BossFloorStat, number> = {
+    maxHp: tuning.maxHp,
+    attack: tuning.attack,
+    mind: tuning.attack,
+    agility: Math.round(partyAgility * 0.9),
+  };
+  const raised = (key: BossFloorStat): number => (locked.has(key) ? enemy.stats[key] : Math.max(enemy.stats[key], floor[key]));
   const stats: EnemyStats = {
     ...enemy.stats,
-    maxHp: Math.max(enemy.stats.maxHp, tuning.maxHp),
-    attack: Math.max(enemy.stats.attack, tuning.attack),
-    mind: Math.max(enemy.stats.mind, tuning.attack),
-    agility: Math.max(enemy.stats.agility, Math.round(partyAgility * 0.9)),
+    maxHp: raised("maxHp"),
+    attack: raised("attack"),
+    mind: raised("mind"),
+    agility: raised("agility"),
   };
   enemy.stats = stats;
+  // 공격·마력을 다시 맞추는 두 고리는 저자가 고정하지 않은 쪽만 움직인다.
+  const tuneAttack = !locked.has("attack");
+  const tuneMind = !locked.has("mind");
 
   const probe = normalizeTroopRecord({ id: PROBE_TROOP_ID, name: enemy.name, enemyIds: [enemy.id] });
   project.database.troops.push(probe);
@@ -82,16 +102,20 @@ export function scaleBossToStartParty(project: Project, enemy: EnemyRecord): Bos
     outcome = measure();
     // 하한이 너무 세면(스킬 위력·다수 행동으로 파티가 진다) 올린 공격·마력만 15%씩 되돌린다 — 저자 값 아래로는 안 간다.
     for (let round = 0; round < MAX_ROUNDS && (outcome.winRate < BOSS_MIN_WIN_RATE || outcome.loss > BOSS_MAX_PARTY_LOSS); round += 1) {
-      const attack = Math.max(before.attack, Math.floor(enemy.stats.attack * 0.85));
-      const mind = Math.max(before.mind, Math.floor(enemy.stats.mind * 0.85));
+      const attack = tuneAttack ? Math.max(before.attack, Math.floor(enemy.stats.attack * 0.85)) : enemy.stats.attack;
+      const mind = tuneMind ? Math.max(before.mind, Math.floor(enemy.stats.mind * 0.85)) : enemy.stats.mind;
       if (attack === enemy.stats.attack && mind === enemy.stats.mind) break;
       enemy.stats = { ...enemy.stats, attack, mind };
       outcome = measure();
     }
     // 모의전이 여전히 「거의 안 맞는다」면 공격만 20%씩 올린다. 파티가 지기 시작하면 한 단계 되돌리고 멈춘다.
-    for (let round = 0; round < MAX_ROUNDS && outcome.winRate >= BOSS_MIN_WIN_RATE && outcome.loss < BOSS_MIN_PARTY_LOSS; round += 1) {
+    for (let round = 0; round < MAX_ROUNDS && (tuneAttack || tuneMind) && outcome.winRate >= BOSS_MIN_WIN_RATE && outcome.loss < BOSS_MIN_PARTY_LOSS; round += 1) {
       const previous = { attack: enemy.stats.attack, mind: enemy.stats.mind };
-      enemy.stats = { ...enemy.stats, attack: Math.ceil(enemy.stats.attack * 1.2), mind: Math.ceil(enemy.stats.mind * 1.2) };
+      enemy.stats = {
+        ...enemy.stats,
+        attack: tuneAttack ? Math.ceil(enemy.stats.attack * 1.2) : enemy.stats.attack,
+        mind: tuneMind ? Math.ceil(enemy.stats.mind * 1.2) : enemy.stats.mind,
+      };
       const next = measure();
       if (next.winRate < BOSS_MIN_WIN_RATE || next.loss > BOSS_MAX_PARTY_LOSS) {
         enemy.stats = { ...enemy.stats, ...previous };
@@ -106,14 +130,23 @@ export function scaleBossToStartParty(project: Project, enemy: EnemyRecord): Bos
     if (index >= 0) project.database.troops.splice(index, 1);
   }
 
-  const changed = (["maxHp", "attack", "mind", "agility"] as const).filter(key => enemy.stats[key] !== before[key]);
-  if (changed.length === 0) return { stats: enemy.stats };
-  const diff = changed.map(key => `${key} ${before[key]}→${enemy.stats[key]}`).join(", ");
+  const changed = BOSS_FLOOR_STATS.filter(key => enemy.stats[key] !== before[key]);
+  // 저자가 고정한 값이 권장 하한보다 낮으면 바꾸지 않고 알려만 준다.
+  const keptBelow = BOSS_FLOOR_STATS.filter(key => locked.has(key) && before[key] < floor[key]);
+  if (changed.length === 0 && keptBelow.length === 0) return { stats: enemy.stats };
   const measured = outcome ? ` — 모의전 ${SIM_SAMPLES}판 승률 ${Math.round(outcome.winRate * 100)}%, 파티 HP 손실 평균 ${Math.round(outcome.loss * 100)}%` : "";
+  const basis = `시작 파티 Lv${heroLevel} HP ${partyHp}·공 ${hero.attackPower}·방 ${hero.defense}·민 ${Math.round(partyAgility)} 기준`;
+  const parts: string[] = [];
+  if (changed.length > 0) {
+    parts.push(`보스 위협 하한을 기본값으로 적용(${basis}, 저자가 주지 않은 값만·올리기만 함): ${changed.map(key => `${key} ${before[key]}→${enemy.stats[key]}`).join(", ")}`);
+  }
+  if (keptBelow.length > 0) {
+    parts.push(`저자 값 유지(권장 하한보다 낮지만 명시값이 우선): ${keptBelow.map(key => `${key} ${before[key]}(권장 ${floor[key]})`).join(", ")}`);
+  }
   return {
     stats: enemy.stats,
-    note: `보스 위협 하한 적용(시작 파티 Lv${heroLevel} HP ${partyHp}·공 ${hero.attackPower}·방 ${hero.defense}·민 ${Math.round(partyAgility)} 기준, 올리기만 함): ${diff}${measured}. ` +
-      `더 쉽거나 어렵게 하려면 tune_enemy 로 조정하고 simulate_battle 로 확인하세요.`,
+    note: `${parts.join(". ")}${measured}. 더 쉽거나 어렵게 하려면 tune_enemy 로 조정하고 simulate_battle 로 확인하세요.`,
+    applied: changed,
   };
 }
 

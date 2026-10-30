@@ -18,7 +18,8 @@ import { resolveAuthoredVnLook, resolveVnLook, vnLookAttributes, vnLookShowsPort
 import { decodeCharsetFrameIndex } from "@/assets/easyrpgRtp";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { reviewedFaceIdForCharset } from "@/assets/reviewedCharsetFaces";
-import { applyPixelBust } from "@/player/bustPixelate";
+import { applyPixelBust, pixelBustSettled, preloadPixelBust } from "@/player/bustPixelate";
+import { warmImageUrl } from "@/assets/imageWarmQueue";
 import { dialogueFaceForEmotion, findSharedPortrait, sharedExpressionSetIdOf, sharedPortraitId, sharedPortraitNativeGaze, sharedPortraitRendering } from "@/assets/sharedPortraitAssets";
 import { FACE_IMAGE_SIZE } from "@/assets/resourceSlicing";
 import { appearancePortraitForEmotion, faceForDialogueEmotion, resolveActorAppearance, resolveAppearancePortrait } from "@/project/characterAppearances";
@@ -612,6 +613,15 @@ export function createDialogueUI(
     if (!settled) pendingExit = { cancelTimer, finish };
   };
 
+  /** 다음 줄이 초상을 기다리는 동안 앞 줄의 퇴장을 멈추고 창을 그대로 세워 둔다(세션이 끊기지 않게 — 화자·듣는 사람 무대를 잇는다). */
+  const holdPendingExit = (): void => {
+    if (!pendingExit) return;
+    pendingExit.cancelTimer();
+    pendingExit = null;
+    const exiting = overlay.querySelector<HTMLElement>('.dialogue-box[data-dialogue-phase="exit"]');
+    if (exiting) exiting.dataset.dialoguePhase = "shown";
+  };
+
   /** 변환(진입 연출)을 뺀 레이아웃 윗변 — 화면 좌표. 연출 도중의 값이 섞이면 미끄러짐의 출발점이 틀어진다. */
   const layoutTop = (host: HTMLElement, node: HTMLElement): { readonly top: number; readonly scale: number } | undefined => {
     if (typeof host.getBoundingClientRect !== "function" || host.offsetHeight <= 0) return undefined;
@@ -899,17 +909,41 @@ export function createDialogueUI(
     const activeProjectForRequest = (request.textContext?.project && "system" in request.textContext.project ? request.textContext.project as Project : undefined) ?? store.getCurrent();
     const voiceFile = request.voiceResourceId?.trim();
     const voiceUrl = voiceFile ? resolveAudioSource(voiceFile, activeProjectForRequest) : null;
-    if (voiceUrl) playLineVoice(voiceUrl);
-    else stopLineVoice();
     const requestedLook = request.look ?? resolveDialogueLook(activeProjectForRequest, {
       speaker: resolveDialogueSpeakerName(request.speaker, request.textContext) ?? request.speaker,
       emotion: request.emotion,
     });
+    const startVoice = (): void => {
+      if (voiceUrl) playLineVoice(voiceUrl);
+      else stopLineVoice();
+    };
     if (isNonBlockingContainer(requestedLook.container)) {
+      startVoice();
       // 흘림·코너 대사는 대사 상자를 건드리지 않고, 기다리지도 않는다.
       showAmbient(request, voiceUrl ? { ...requestedLook, voice: null } : requestedLook);
       return Promise.resolve();
     }
+    // 초상이 아직 안 받아졌으면 받을 때까지(상한 있음) 창을 열지 않는다 — 이름표만 있는 빈 창이 먼저 뜨고
+    // 초상·본문이 약 1초 뒤에 따라오던 결함(2026-10-30 이세계 고딩). 그동안 앞 줄의 창은 퇴장하지 않고 그대로 선다.
+    const waiting = unsettledLinePortraits(request, requestedLook, activeProjectForRequest);
+    if (waiting.length > 0) {
+      holdPendingExit();
+      return waitForLinePortraits(waiting, request.signal).then(() => {
+        if (request.signal?.aborted) throw new DOMException("Text cancelled", "AbortError");
+        startVoice();
+        return presentText(request, requestedLook, voiceUrl, system);
+      });
+    }
+    startVoice();
+    return presentText(request, requestedLook, voiceUrl, system);
+  }
+
+  function presentText(
+    request: DialogueTextRequest,
+    requestedLook: DialogueLook,
+    voiceUrl: string | null,
+    system: ReturnType<typeof systemFor>,
+  ): Promise<void> {
     const wasOpen = takeOverOverlay();
     return new Promise<void>((resolve, reject) => {
       let settled = false;
@@ -2710,6 +2744,62 @@ function effectivePosition(model: {
   if (normalizedY <= 0.35) return "bottom";
   if (normalizedY >= 0.65) return "top";
   return model.settings.position;
+}
+
+/** 초상을 기다리는 상한. 넘으면 예전처럼 창을 먼저 열고 초상은 받는 대로 보인다. */
+const LINE_PORTRAIT_WAIT_MAX_MS = 1500;
+/** 받아 둔 작은 얼굴(48px) 그림 주소. 흉상은 bustPixelate 가 따로 센다. */
+const settledFaceUrls = new Set<string>();
+
+function runningUnderTest(): boolean {
+  const env = import.meta.env as { readonly VITEST?: boolean; readonly MODE?: string } | undefined;
+  return env?.VITEST === true || env?.MODE === "test";
+}
+
+type PendingLinePortrait = { readonly url: string; readonly kind: "bust" | "face" };
+
+/**
+ * 이 줄이 그릴 초상(화자·표정 변형·듣는 사람) 중 아직 받지 않은 것. 비면 창을 바로 연다.
+ * 단위 테스트(happy-dom 은 그림을 받지 않는다)와 그림을 받을 수 없는 환경에서는 늘 비어 있다 — 옛 동기 경로 그대로.
+ */
+function unsettledLinePortraits(request: DialogueTextRequest, look: DialogueLook, project: Project): PendingLinePortrait[] {
+  if (runningUnderTest() || typeof window === "undefined" || typeof Image === "undefined") return [];
+  if (look.hideFace || look.container === "balloon") return [];
+  const faces: FaceGraphic[] = [];
+  if (request.face?.resourceId) {
+    faces.push(request.face);
+    const variant = faceForDialogueEmotion(project, request.face.resourceId, look.emotion, look.expressionFace);
+    if (variant && variant !== request.face.resourceId) faces.push({ ...request.face, resourceId: variant });
+  }
+  if (request.listenerFace?.resourceId) faces.push(request.listenerFace);
+  const pending: PendingLinePortrait[] = [];
+  for (const face of faces) {
+    const url = safeResourceImageUrl(resolveAssetResourceUrl(face.resourceId, { project: store.getCurrent() }));
+    if (!url || pending.some((entry) => entry.url === url)) continue;
+    const kind = dialoguePortraitMode(face) === "face" ? "face" : "bust";
+    if (kind === "bust" ? pixelBustSettled(url) : settledFaceUrls.has(url)) continue;
+    pending.push({ url, kind });
+  }
+  return pending;
+}
+
+function waitForLinePortraits(pending: readonly PendingLinePortrait[], signal: AbortSignal | undefined): Promise<void> {
+  const loads = Promise.all(pending.map((entry) => entry.kind === "bust"
+    ? preloadPixelBust(entry.url)
+    : warmImageUrl(entry.url).then(() => { settledFaceUrls.add(entry.url); })));
+  return new Promise<void>((resolve) => {
+    let done = false;
+    const finish = (): void => {
+      if (done) return;
+      done = true;
+      window.clearTimeout(timer);
+      signal?.removeEventListener("abort", finish);
+      resolve();
+    };
+    const timer = window.setTimeout(finish, LINE_PORTRAIT_WAIT_MAX_MS);
+    signal?.addEventListener("abort", finish, { once: true });
+    void loads.then(finish, finish);
+  });
 }
 
 function dialoguePortraitMode(face: FaceGraphic | undefined): "face" | "bust" | "full" {

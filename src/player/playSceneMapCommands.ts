@@ -1,3 +1,5 @@
+import { doorstepArrival } from "@/project/doorEntries";
+import { noteDoorArrival } from "@/player/playSceneDoorEntry";
 import { findBlockingRuntimeEventAtInMap } from "@/project/runtimeEventState";
 import { getLoadedPhaser } from "@/app/phaserRuntime";
 import { mapTileSize } from "@/project/tileGeometry";
@@ -104,7 +106,10 @@ export async function transferTo(scene: PlaySceneContext, request: TransferReque
   // Resolve once against destination runtime terrain and destination-scoped event positions.
   // Queue this final landing, not the requested tile or the source map's position overlay.
   const destinationMap = runtimeMap(targetMap, scene.session);
-  const destination = nearestPassableTile(project, destinationMap, request.x, request.y);
+  // 문으로 나오는 도착(project/doorEntries.ts): 문 앞 칸이면 문을 등지고 서고, 옛 도구가 문 앞 발판을 피해 한 칸 더 바깥에 내리던
+  // 도착이면(방금 나온 그 맵으로 가는 문) 문 앞 칸으로 올린다 — 문 앞 칸은 이제 밟아도 발동하지 않는다.
+  const doorArrival = request.mapId !== scene.map.id ? doorstepArrival(project, targetMap, request.x, request.y, scene.map.id) : null;
+  const destination = nearestPassableTile(project, destinationMap, doorArrival?.x ?? request.x, doorArrival?.y ?? request.y);
   // 저작한 도착 칸이 통행 불가일 때만 가까운 칸으로 물러선다(저작 검사 checkMapGraph 는 그 도착을
   // blocker `transfer-impassable` 로 이미 잡는다). 다만 조용히 옮기지는 않는다 — 예전에는 나무 밑동이
   // 도착 칸을 덮은 데모에서 (15,20)→(14,19) 로 아무 흔적 없이 밀려, 플레이어와 저자 모두 원인을 몰랐다
@@ -134,6 +139,9 @@ export async function transferTo(scene: PlaySceneContext, request: TransferReque
     removeFollowerFromSession(scene.session, { all: true });
   }
   if (request.direction && request.direction !== "retain") scene.facing = request.direction;
+  else if (doorArrival) scene.facing = doorArrival.facing;
+  // 문 앞 칸에 내렸으면 그 칸을 떠나거나 이동 입력을 놓을 때까지 그 문으로 다시 들어가지 않는다(나오며 누르던 키로 왕복하지 않게).
+  noteDoorArrival(scene);
   // 착지 방향이 정해진 뒤에 깐다 — 동료는 주인공이 바라보는 반대쪽(뒤)에 한 줄로 선다.
   resetFollowerTrailNearPlayer(scene.session, destinationMap, project.system.companions, {
     project, facing: scene.facing, blocked: (x, y) => findBlockingRuntimeEventAtInMap(project, destinationMap, scene.session, scene.eventPositions, x, y) !== undefined,
