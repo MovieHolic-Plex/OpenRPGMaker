@@ -1,3 +1,10 @@
+## 프레임 hold — 전투 애니메이션 한 프레임을 길게 (2026-10-31)
+
+`BattleAnimationFrame.hold?`(1~16 정수, 생략 = 1)는 그 프레임을 기본 프레임 시간(120ms, 번들 생성 이펙트 75ms)의 몇 배 동안 보이는가다. 1 은 저장하지 않아 옛 레코드는 바이트·타이밍이 그대로다.
+산식은 `src/battle/animationTiming.ts` 한 곳: `battleAnimationFrameStartUnits`(프레임 시작까지의 기본 프레임 수), `battleAnimationFrameAtUnits`(흐른 칸 → 프레임).
+길이·후속 길이·착탄 ms(`battleAnimationImpactMs`)·앞당겨 틀기(`battleAnimationLeadPlan`)·후속 시작·재생 루프(`battleAnimationDom.ts`)와 자료집 미리보기가 이것을 쓴다.
+맵 `showAnimation`(`playSceneMapAnimations.ts`)과 이벤트 편집기 미리보기는 아직 hold 를 무시한다(프레임마다 같은 간격). 스토어 애니메이션 팩이 이 칸을 싣는다(`openwiki/asset-store.md`).
+
 ## 걷기 칩으로 서는 적 (2026-10-30)
 
 - `EnemyRecord.walkChip?: { characterResourceId: string; characterIndex: number }`(0~7). 있으면 측면 전투에서 몬스터 그림 대신 걷기 칩(CharSet 288×256, 24×32)이 **오른쪽 보기** 행으로 선다. 없으면 기존 경로 그대로(바이트 동일). 정규화는 `normalizeEnemyWalkChip`(`databaseEnemyTroopRecordModel.ts`): 빈 id 는 버리고 칸은 반올림해 0~7 로 자른다. 변신(`transformResourceId`)한 적이나 id 가 풀리지 않는 칩은 옛 경로로 떨어진다.

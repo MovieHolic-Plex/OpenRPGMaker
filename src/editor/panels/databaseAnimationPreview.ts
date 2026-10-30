@@ -263,9 +263,16 @@ function bindPlayback(
     }
   };
 
+  // 프레임 hold(기본 프레임의 배수): 그 프레임에서 남은 틱 수. 1 이면 매 틱 넘어간다(예전과 같다).
+  let holdLeft = 1;
+  const holdOf = (index: number): number => {
+    const hold = context.frames[index]?.hold;
+    return typeof hold === "number" && hold >= 1 ? Math.min(16, Math.floor(hold)) : 1;
+  };
   const start = (): void => {
     if (disposed || !ready || timer !== null || !lifecycle?.isActive()) return;
     frameIndex = 0;
+    holdLeft = holdOf(0);
     renderStageCells(cellLayer, context, context.frames[frameIndex] ?? context.selectedFrame, url);
     button.textContent = "정지";
     button.setAttribute("aria-pressed", "true");
@@ -276,7 +283,10 @@ function bindPlayback(
         stop(false);
         return;
       }
+      holdLeft -= 1;
+      if (holdLeft > 0) return;
       frameIndex = (frameIndex + 1) % context.frames.length;
+      holdLeft = holdOf(frameIndex);
       renderStageCells(cellLayer, context, context.frames[frameIndex] ?? context.selectedFrame, url);
     }, ANIMATION_PLAYBACK_FRAME_MS);
   };
