@@ -6,8 +6,8 @@
  * 새 판본으로 바꾼 넣기면 옛 판본이 되살아난다. 넣은 뒤 맵·이벤트가 그것을 쓰기 시작했으면 지우지 않고 이유를 돌려준다.
  */
 import { storeProjectId, type StorePackManifest } from "@/assetStore/format";
-import { storeAppearanceId } from "@/assetStore/pack";
-import type { CharacterAppearanceRecord, CharsetLabelOverride, Project, ResourceProfile, TilesetDef, UploadedAsset } from "@/project/types";
+import { storeAnimationId, storeAppearanceId } from "@/assetStore/pack";
+import type { BattleAnimationRecord, CharacterAppearanceRecord, CharsetLabelOverride, Project, ResourceProfile, TilesetDef, UploadedAsset } from "@/project/types";
 
 export interface StoreAddSnapshot {
   readonly assets: Readonly<Record<string, UploadedAsset | null>>;
@@ -16,11 +16,14 @@ export interface StoreAddSnapshot {
   readonly profiles: readonly ResourceProfile[];
   /** 짝 초상이 만든 캐릭터 외형(넣기 전 모습, 없었으면 null). 옛 되돌리기 기록에는 없다. */
   readonly appearances?: Readonly<Record<string, CharacterAppearanceRecord | null>>;
+  /** 팩 전투 애니메이션(넣기 전 모습, 없었으면 null). 옛 되돌리기 기록에는 없다. */
+  readonly animations?: Readonly<Record<string, BattleAnimationRecord | null>>;
 }
 
 /** 넣기가 건드릴 키 — 매니페스트만 보고 안다(넣기 전에 잡아야 하므로). */
-export function storeAddKeys(manifest: StorePackManifest, slug: string): { assetIds: string[]; tilesetIds: string[]; appearanceIds: string[] } {
+export function storeAddKeys(manifest: StorePackManifest, slug: string): { assetIds: string[]; tilesetIds: string[]; appearanceIds: string[]; animationIds: string[] } {
   return {
+    animationIds: (manifest.content.battleAnimations ?? []).map((record) => storeAnimationId(slug, record.id)),
     assetIds: Object.keys(manifest.content.assets).map((id) => storeProjectId(slug, id)),
     tilesetIds: Object.keys(manifest.content.tilesets).map((id) => storeProjectId(slug, id)),
     appearanceIds: (manifest.content.characters ?? []).filter((c) => c.portraits).map((c) => storeAppearanceId(slug, c.asset, c.characterIndex)),
@@ -29,13 +32,25 @@ export function storeAddKeys(manifest: StorePackManifest, slug: string): { asset
 
 const isStoreAppearance = (id: string, prefix: string): boolean => id.startsWith(`${prefix}appearance-`);
 
-/** 프로젝트 자료에서 이 외형 레코드들을 뺀 사본(쓰는 곳 검색이 외형 자신을 「쓰는 곳」으로 세지 않게). */
+/**
+ * 프로젝트 자료에서 이 외형·전투 애니메이션 레코드들을 뺀 사본(쓰는 곳 검색이 레코드 자신을 「쓰는 곳」으로 세지 않게 —
+ * 애니메이션 레코드는 시트 에셋 id 를 들고 있다).
+ */
 function withoutAppearances(project: Project, ids: ReadonlySet<string>): Project {
-  if (ids.size === 0 || !project.database?.characterAppearances?.some((record) => ids.has(record.id))) return project;
-  return { ...project, database: { ...project.database, characterAppearances: project.database.characterAppearances.filter((record) => !ids.has(record.id)) } };
+  const appearances = project.database?.characterAppearances?.some((record) => ids.has(record.id));
+  const animations = project.database?.battleAnimations?.some((record) => ids.has(record.id));
+  if (ids.size === 0 || (!appearances && !animations)) return project;
+  return {
+    ...project,
+    database: {
+      ...project.database,
+      ...(appearances ? { characterAppearances: project.database.characterAppearances!.filter((record) => !ids.has(record.id)) } : {}),
+      ...(animations ? { battleAnimations: project.database.battleAnimations.filter((record) => !ids.has(record.id)) } : {}),
+    },
+  };
 }
 
-export function captureStoreAdd(project: Project, keys: { assetIds: readonly string[]; tilesetIds: readonly string[]; appearanceIds?: readonly string[] }): StoreAddSnapshot {
+export function captureStoreAdd(project: Project, keys: { assetIds: readonly string[]; tilesetIds: readonly string[]; appearanceIds?: readonly string[]; animationIds?: readonly string[] }): StoreAddSnapshot {
   const assetSet = new Set(keys.assetIds);
   const own = <T>(record: Record<string, T>, id: string): T | null => (Object.hasOwn(record, id) ? structuredClone(record[id]!) : null);
   return {
@@ -44,6 +59,7 @@ export function captureStoreAdd(project: Project, keys: { assetIds: readonly str
     labels: structuredClone((project.charsetLabels ?? []).filter((label) => assetSet.has(label.textureKey))),
     profiles: structuredClone(project.resourceProfiles.filter((profile) => profile.assetId !== undefined && assetSet.has(profile.assetId))),
     appearances: Object.fromEntries((keys.appearanceIds ?? []).map((id) => [id, structuredClone(project.database?.characterAppearances?.find((record) => record.id === id) ?? null)])),
+    ...(keys.animationIds?.length ? { animations: Object.fromEntries(keys.animationIds.map((id) => [id, structuredClone(project.database?.battleAnimations?.find((record) => record.id === id) ?? null)])) } : {}),
   };
 }
 
@@ -83,8 +99,16 @@ export function undoStoreAdd(project: Project, snapshot: StoreAddSnapshot): { ok
     ...Object.entries(snapshot.tilesets).filter(([, before]) => before === null).map(([id]) => id),
   ];
   const newAppearances = Object.entries(snapshot.appearances ?? {}).filter(([, before]) => before === null).map(([id]) => id);
-  const usedBy = storeItemUsages(withoutAppearances(project, new Set(Object.keys(snapshot.appearances ?? {}))), [...created, ...newAppearances], new Set(Object.keys(snapshot.tilesets)));
+  const newAnimations = Object.entries(snapshot.animations ?? {}).filter(([, before]) => before === null).map(([id]) => id);
+  const records = new Set([...Object.keys(snapshot.appearances ?? {}), ...Object.keys(snapshot.animations ?? {})]);
+  const usedBy = storeItemUsages(withoutAppearances(project, records), [...created, ...newAppearances, ...newAnimations], new Set(Object.keys(snapshot.tilesets)));
   if (usedBy.length > 0) return { ok: false, usedBy };
+  for (const [id, before] of Object.entries(snapshot.animations ?? {})) {
+    const at = project.database.battleAnimations.findIndex((record) => record.id === id);
+    if (before && at >= 0) project.database.battleAnimations[at] = structuredClone(before);
+    else if (before) project.database.battleAnimations.push(structuredClone(before));
+    else if (at >= 0) project.database.battleAnimations.splice(at, 1);
+  }
   for (const [id, before] of Object.entries(snapshot.appearances ?? {})) {
     const rest = (project.database.characterAppearances ?? []).filter((record) => record.id !== id);
     project.database.characterAppearances = before ? [...rest, structuredClone(before)] : rest;
@@ -104,7 +128,7 @@ export function undoStoreAdd(project: Project, snapshot: StoreAddSnapshot): { ok
 }
 
 /** 이 상품이 프로젝트에 넣은 에셋·타일셋 id. */
-export function storeItemKeys(project: Project, slug: string): { assetIds: string[]; tilesetIds: string[]; appearanceIds: string[] } {
+export function storeItemKeys(project: Project, slug: string): { assetIds: string[]; tilesetIds: string[]; appearanceIds: string[]; animationIds: string[] } {
   const assetIds = Object.values(project.assets.uploaded).filter((asset) => asset.origin?.itemSlug === slug).map((asset) => asset.id);
   const assets = new Set(assetIds);
   const prefix = storeProjectId(slug, "");
@@ -112,7 +136,8 @@ export function storeItemKeys(project: Project, slug: string): { assetIds: strin
     .filter((tileset) => tileset.id.startsWith(prefix) || (tileset.image.type === "uploaded" && assets.has(tileset.image.id)))
     .map((tileset) => tileset.id);
   const appearanceIds = (project.database?.characterAppearances ?? []).filter((record) => isStoreAppearance(record.id, prefix)).map((record) => record.id);
-  return { assetIds, tilesetIds, appearanceIds };
+  const animationIds = (project.database?.battleAnimations ?? []).filter((record) => record.id.startsWith(`${prefix}anim-`)).map((record) => record.id);
+  return { assetIds, tilesetIds, appearanceIds, animationIds };
 }
 
 /** 프로젝트에서 이 상품을 뺀다(받아 둔 파일은 그대로). 쓰는 곳이 있으면 바꾸지 않는다. */
@@ -133,11 +158,13 @@ export function removeStaleStoreAssets(project: Project, staleIds: readonly stri
   return removeKeys(project, { assetIds: [...staleIds], tilesetIds });
 }
 
-function removeKeys(project: Project, keys: { assetIds: string[]; tilesetIds: string[]; appearanceIds?: string[] }): { ok: true; removed: number } | { ok: false; usedBy: string[] } {
+function removeKeys(project: Project, keys: { assetIds: string[]; tilesetIds: string[]; appearanceIds?: string[]; animationIds?: string[] }): { ok: true; removed: number } | { ok: false; usedBy: string[] } {
   const appearances = new Set(keys.appearanceIds ?? []);
-  const ids = [...keys.assetIds, ...keys.tilesetIds, ...appearances];
-  const usedBy = storeItemUsages(withoutAppearances(project, appearances), ids, new Set(keys.tilesetIds));
+  const animations = new Set(keys.animationIds ?? []);
+  const ids = [...keys.assetIds, ...keys.tilesetIds, ...appearances, ...animations];
+  const usedBy = storeItemUsages(withoutAppearances(project, new Set([...appearances, ...animations])), ids, new Set(keys.tilesetIds));
   if (usedBy.length > 0) return { ok: false, usedBy };
+  if (animations.size > 0) project.database.battleAnimations = project.database.battleAnimations.filter((record) => !animations.has(record.id));
   if (appearances.size > 0) project.database.characterAppearances = (project.database.characterAppearances ?? []).filter((record) => !appearances.has(record.id));
   const assets = new Set(keys.assetIds);
   for (const id of keys.assetIds) delete project.assets.uploaded[id];

@@ -351,6 +351,40 @@ salt 를 찾아(무작위 salt 를 고정해 몇 번 지어 본다) 같은 마�
 - **잠기지 않은 출구에 자물쇠 문을 세우지 않는다**(`exitDress.doorPiece`): 손 도트 실내 칩셋(`atlas_biome_interior`)에는 사람이 드나드는 1칸 나무 문 조각이 없어 boss-room r2 새 방의 「→ 지하 던전」 출구가 `locked door`(큰 자물쇠 나무 문)로 섰다. 잠기지 않은 출구는 낱말 「door」 조각(「indoor well」·「trapdoor」·「doormat」 제외) → 같은 1×2 모양의 `iron gate open`(열린 쇠창살 문, 6423·6424) → `locked door` 순으로 고른다. 칩셋에 있는 다른 문 조각: 「둥근 문」(호빗 굴 2×2 장식 걸이)·「둥근 아치 문틀」(칸막이 틈에 거는 3×2) — 벽 발치 출구 모양이 아니다. 새 방 쪽 지하 던전 착지 칸은 문 그림 없는 이동 칸이다(잇기 `linkChild` 의 마지막 갈래).
 - 런타임 걸음 `walkpath` 에 `dialogueDump`·`vitals`(파티 HP, `e2eVitals=1` 쿼리를 단다)·`untilField`(Enter 로 넘겨 필드로 돌아올 때까지 + `stateDump` 위치 파일)를 더했다. 전/후 그림: `suite/ledger/evidence/vm7-wayfind/1030-*`.
 
+## 조수 대조 1회차 — 마왕 편의점 거리 (2026-10-30 asst-parity p1-maou-opus·terra)
+
+`assistant-capability genre-run`(실제 입력창 Pi 경로, opus 5.5 medium · gpt-6.1-terra medium)으로 코딩 에이전트판(마왕 편의점 데모 브랜치의 maouKonbini 굽기)과 같은
+「일본 상점가 + 편의점 + 원룸」 요청을 돌려 비교했다. 두 판 모두 저장·재로드·lint 0 은 통과했지만 아래 결함이 있었다.
+
+- **「상점가」가 실내로 읽혔다**(`todo/checks.ts` KIND_WORDS): `상점` 이 interior 낱말이라 거리 할 일의 기계 검사가 실내를 찾아 실패했다. interior 는 `상점(?!가)`·`가게(?!\s*거리)`, street 에 상점가·시장·아케이드.
+- **문 잇기 도구가 v2 풀에 없었다**(`game.ts` FALLEN_TIERS 일본 거리 묶음): terra 가 `link_jp_city_interior` 를 불러 unknown tool, 둘 다 `create_transfer_pair` 로 손으로 이었다. 일본 거리 낱말이면 `link_jp_city_interior`·`list_map_locations`·`set_map_door`·`add_street_walkers` 를 싣고 카드에 「문마다 link_jp_city_interior」를 적는다.
+- **차임을 문 이벤트에 또 넣었다**(`mapDoorTools.doorLine`): 편의점 문은 이미 `chimeSe` 가 켜졌는데 두 모델 모두 `patch_event_page` 로 소리 명령을 넣다가 transfer 를 지웠다. 문 목록 줄에 「입점 차임 이미 켜짐 — 소리 명령을 따로 넣지 않는다」를 붙인다.
+- **「자전거 없이」를 빌더가 무시했다**(`builders/jpCity.ts` `jpAvoidProps`): 요청 낱말 중 부정형(없이·빼·말고·no/without)은 소품 낱말에서 빼고 `hints.avoidProps`(bike·vend·car·bench·planter·nobori·cone)를 `compose_jp_city_street` 의 avoidProps 로 넘긴다. opus 는 이걸 돌아가려고 15번쯤 불렀다.
+- **행인 검색어 「회사원」「행인」이 0건**(`charsetQuery.ts` SYNONYMS): 회사원·직장인·점원·행인 동의어를 더했다(회사원 → modern3 정장 칩). REFMAP 칩 자동 선택 문제와는 무관하다.
+- **`add_street_walkers` 의 {query} 칩이 칩 관문에 거절됐다**(`streetWalkersTool.ts`): query 로 도구가 고른 칩은 `noteToolChosenGraphic` 으로 적어 관문이 면제하고, 같은 맵에서 이미 쓴 칩을 피해(avoidKeys·seed) 행인끼리 같은 칩이 되지 않게 한다.
+- 남은 것: 편의점 점원이 마법 상점 직원 칩(terra), 기본 타이틀·판타지 오프닝을 그대로 둠(둘 다), 요청 없이 주인공 외형·시작 장비를 바꿈(둘 다), `patch_event_page` 의 「transfer 빠짐」 경고가 door:true 추가에도 뜨는지 확인.
+- 증거: http://mdc-server:18301/assistant-parity.html
+
+## 조수 대조 2회차 — 밤 숲 어귀 들개 추격 (2026-10-31 asst-parity p2-chase-opus·terra)
+
+폴른 스타 2막 B5(숲 어귀 굶은 들개, `place_field_enemy` chase·cone·checkpointOnEntry)와 같은 장면을 실제 입력창으로 요청했다.
+두 모델 모두 `author_forest_route` → `upsert_enemy`/`upsert_troop` → `place_field_enemy{behavior:'chase', vision:'cone', checkpointOnEntry}` → `set_encounter_table{encounterRate:0}` 로 맞게 골랐다(opus 10분·호출 45·실패 2, terra 4.5분·호출 26·실패 2).
+
+- **「무작위 조우는 없어」를 조우 요청으로 읽었다**(`combatChecks.asksForEncounters`·`withoutNegatedEncounters`): 끝맺음 검사가 「요청에 무작위 조우가 있는데 조우표가 안 바뀌었다」를 두 판 모두에 띄웠다. 같은 절에서 부정(없어·없이·빼·말고·끄·금지·no/without)이 뒤따르는 조우 낱말은 지우고 본다. `withEncountersOnlyWhenAsked`·조우 켬 검사·조우 요청 검사가 같은 함수를 쓴다.
+- **「밤의 숲길」이 거의 대낮**(`forestRouteTool` MOODS): 두 모델 모두 `moods:['dark']` 를 줬는데 dark 가 ambient 0.3(dim 0.55 보다 밝음)이었다. dim 0.3 · dark 0.55 · 새 `night` 0.62 남색(폴른 스타 2막 밤 맵 값) · darkfog 0.55 로 고쳤다. 영어 도구 설명에 「밤 숲은 night」.
+- **마을 비평가가 숲길 특징을 마을의 major 로 잡았다**(`verbs.see`·`critic.critique`): terra 판 마을 비평이 「어둡고 구불구불한 숲길이 안 보인다」를 세 번 내 고치기 항목이 막힘으로 끝났다. 비평가에게 프로젝트의 다른 맵 이름(최대 8)을 주고, 요청이 장소를 여럿 말하면 이 맵이 맡은 장소만 보라고 적는다.
+- 남은 것: 밤 숲 전투 배경은 두 판 모두 적 그룹 `previewBackgroundResourceId` 숲 + 밤 겹으로 맞음. 회복 수단(여관 주인·쉼터)을 요청 없이 더함(끝맺음 no-healing 관문 때문 — 의도된 동작).
+
+## 조수 대조 1회차 다시 재기 — 마왕 편의점 거리 (2026-10-31 asst-parity p1b-maou-opus, #4015·#4023 뒤)
+
+Opus 다시 재기: 호출 68 → 31, 실패 11 → 4, 14분 → 6분. `link_jp_city_interior`·`hints.avoidProps`·`add_street_walkers{query}` 를 바로 썼다. 남은 결함과 고친 것:
+
+- **「점장 NPC」 대사 검사 실패**(`todo/names.normName`): 할 일 이름 「점장 NPC」가 이벤트 「점장」과 맞지 않았다. NPC·엔피씨는 종류 표시라 이름 비교에서 뺀다.
+- **현대 거리 첫 사람이 판타지 RTP 칩**(`people.pickPersonGraphic`): 점장이 얼굴 짝이 있는 RTP 주민 칩으로 뽑혔고(맵 화풍 벌점 45 < 얼굴 없음 벌점 70), 첫 사람 칩이라 사람 칩 잠금이 RTP 로 걸려 뒤이은 행인 「여학생」 검색이 0개가 됐다. 맵 화풍 벌점을 120 으로 올렸다. 오류 글의 「장르 잠금 중이라 … 몬스터 수집 캐릭터 칩」 문구는 사람 칩 잠금에도 같이 뜬다(문구는 아직 그대로).
+- **「주부」 칩 0개**(`charsetQuery` SYNONYMS): 아주머니·주부·housewife 를 아줌마 줄에 더했다.
+- **자전거가 슈퍼마켓 그림에 박혀 남았다**(`jpCityStreetComposer` LANDMARK_BAKED_PROPS): avoidProps 는 따로 찍는 소품만 뺀다. bike 를 빼 달라면 자전거 줄이 그려진 슈퍼마켓 완성 건물을 고르지 않는다(씨앗 40개: 기본 3번 → 0번).
+- 촬영 도구(`sceneFilm.mjs`)가 오프닝 안내 「Esc · 탭 건너뛰기」를 못 알아봐 오프닝 중에 걸음을 보냈다 — 정규식을 넓혔다.
+
 ## 끝맺음 단계 더하기 (2026-10-29 단계 목록화)
 
 끝맺음 자동 단계와 출구·이동 칸 마감은 **단계 하나 = 파일 하나** 목록이다. 수리 작업자 여럿이 같은 파일(옛 `finishAutoBuild.ts`·`verbs.ts clearLanes`)을 고쳐 체리픽이 부딪히던 것을 없앤 구조 변경이며 동작은 같다(`finishReplay --trace` 로 vm5~vm7 판 대조).

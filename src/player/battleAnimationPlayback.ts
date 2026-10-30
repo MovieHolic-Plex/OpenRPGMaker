@@ -6,7 +6,10 @@ export {
   DEFAULT_BATTLE_ANIMATION_DURATION_MS,
   battleAnimationChainDurationMs,
   battleAnimationDurationMs,
+  battleAnimationFrameAtUnits,
   battleAnimationFrameDurationMs,
+  battleAnimationFrameHold,
+  battleAnimationFrameStartUnits,
 } from "@/battle/animationTiming";
 
 /**

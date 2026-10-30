@@ -16,6 +16,19 @@ const obj = (v: unknown): Obj | undefined => (v && typeof v === "object" && !Arr
 /** 요청이 무작위 조우를 말하는가 — 말하지 않으면 조수가 켜지 않는다(보이는 적·이벤트 전투로 충분하다). */
 export const ENCOUNTER_ASK = /랜덤|무작위|인카운터|조우|마주치|튀어나|풀숲에서|사냥|레벨(을|이)?\s*(조금\s*)?(올|업)|경험치|몇 번 싸우|싸우면서|encounter|random battle|grind/iu;
 
+/**
+ * 「무작위 조우는 없어」「랜덤 인카운터 없이」처럼 조우를 끄라는 말은 조우 요청이 아니다.
+ * 실측(2026-10-31 asst-parity 숲 추격 opus): 「숲길에서는 무작위 조우는 없어」에 끝맺음 검사가
+ * 「요청에 무작위 조우가 있는데 조우표가 안 바뀌었다」를 띄웠다. 같은 절 안에서 부정이 뒤따르는 조우 낱말은 지우고 본다.
+ */
+const ENCOUNTER_NEGATED = /(?:랜덤|무작위|인카운터|조우|마주치|encounter|random battle)[^.,!?\n。]{0,12}?(?:없[어이게고음는다]|없도록|빼|말고|끄|꺼|금지|안\s*(?:나|생기|되)|않)|(?:no|without|disable|turn off)\s+(?:random\s+)?(?:encounters?|battles?)/giu;
+export function withoutNegatedEncounters(task: string): string {
+  return task.replace(ENCOUNTER_NEGATED, " ");
+}
+export function asksForEncounters(task: string): boolean {
+  return ENCOUNTER_ASK.test(withoutNegatedEncounters(task));
+}
+
 /** 첫 전투 구역 기준: 시작 파티·시작 레벨로 이 승률·남은 HP 비율 밑이면 «초반이 너무 세다». */
 export const FIRST_AREA_MIN_WIN = 0.8;
 export const FIRST_AREA_MIN_HP_SHARE = 0.3;
@@ -190,7 +203,7 @@ export function combatProblems(before: Project, after: Project, task: string): s
     problems.push(`[출하 차단 no-healing] 전투가 있는데(${sites.slice(0, 3).join(", ")}${sites.length > 3 ? ` 외 ${sites.length - 3}곳` : ""}) HP 를 되찾을 길이 하나도 없다 — 깎인 HP 가 그대로 남아 보스에서 무한 게임 오버가 나고, 승리 직후 자동 저장(HP 1)을 불러와도 그대로다. build_blueprint_path 를 다시 부르면 시작 맵에 회복의 샘(전원 회복·저장)과 시작 회복약 3개를 결정적으로 넣는다. 직접 고치려면 마을에 여관(recoverAll 이벤트 또는 inn 명령)을 두거나, set_shop_stock 으로 상점에서 포션(item_potion)을 팔거나, place_chest{contents:{itemId:'item_potion'}} 로 보스 앞에 회복약을, 보스 앞에 place_savepoint{heal:true} 를 둔다. 회복 기술을 쓰는 동료(upsert_actor learnedSkills 에 skill_heal)도 된다. 고치지 못하면 «완성»이라고 쓰지 않는다.`);
   }
   // 요청에 없는 무작위 조우: 이 실행이 새로 켠 맵만(전에 켜져 있던 맵은 앞 요청이 켰다).
-  if (!ENCOUNTER_ASK.test(task)) {
+  if (!asksForEncounters(task)) {
     const was = new Set(encounterMaps(before));
     const turnedOn = encounterMaps(after).filter((id) => !was.has(id));
     if (turnedOn.length) problems.push(`[게임 검사 조우] 요청에 무작위 조우(랜덤 인카운터)가 없는데 ${turnedOn.slice(0, 3).map((id) => `「${after.maps[id]!.name}」`).join(", ")} 에 켰다 — 시키지 않은 조우가 파티를 깎는다. set_encounter_table{mapId, entries, encounterRate:0} 으로 끄고, 싸움이 필요하면 보이는 적(place_field_enemy)이나 이벤트 전투로 둔다. 일부러 켰다면 보고에 «무작위 조우를 켰다(약 N걸음마다)»고 적는다.`);

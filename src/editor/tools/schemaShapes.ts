@@ -204,7 +204,7 @@ export const COMMAND_SCHEMA: JsonSchema = {
     cancelBehavior: { type: "string", enum: ["disallow", "choice1", "choice2", "choice3", "choice4", "choice5", "branch"],
       description: 'choices의 Esc 동작. 취소하면 아무 일 없이 종료: cancelBehavior:"branch",cancelBranch:[]. choice1~choice5는 취소 시 해당 선택지를 실행하므로 종료가 아니다. disallow는 취소 불가. branch일 때만 cancelBranch를 실행한다.' },
     cancelBranch: { type: "array", items: COMMAND_BRANCH_ITEM_SCHEMA, description: 'choices: cancelBehavior:"branch"일 때만 실행하는 취소 명령. 빈 배열이면 종료. choice1~choice5/disallow에서는 무시된다. presentItem: 아무것도 안 내고 닫았거나 보여줄 후보가 없을 때.' },
-    itemIds: { type: "array", items: { type: "string" }, description: "shop: 파는 아이템 ID 목록(필수). presentItem: 목록 후보 — 생략하면 소지품 전체, 소지한 것만 뜬다." },
+    itemIds: { type: "array", items: { type: "string" }, description: "shop: 파는 아이템 ID 목록(필수). presentItem: 목록 후보 — 생략하면 소지품 전체 — 단 정답(options[].itemId)이 모두 「중요한 물건」(pocket key, 또는 occasion never·가격 0)이면 소지한 중요한 물건만(증거 제시에 약이 섞이지 않는다). 소지한 것만 뜬다." },
     otherwiseBranch: { type: "array", items: COMMAND_BRANCH_ITEM_SCHEMA, description: "presentItem: options 에 없는(틀린) 아이템을 냈을 때." },
     consume: { type: "boolean", description: "presentItem: true 면 맞는 아이템을 1개 소모." },
     troopId: { type: "string", description: "battleProcessing·tacticsBattle: 싸울 부대(troop) ID" },

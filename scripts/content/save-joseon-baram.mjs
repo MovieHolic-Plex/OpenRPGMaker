@@ -28,6 +28,10 @@ const REPORT_ONLY = process.env.JOSEON_REPORT_ONLY === "1";
 function must(cond, msg) { if (cond) return; if (REPORT_ONLY) console.log("FAIL", msg); else assert.fail(msg); }
 
 const NPC_SHEET = "tex_easyrpg_charset_actor1";
+// 조선 검수에서 반려된 Actor1 칩(#1 파란 머리, #7 마법사 모자)은 조선으로 읽히는 평민 칩으로 바꿔 싣는다(2026-10-30).
+// 그 밖의 칩은 Actor1 그대로. 키 = extra.json people[].char.
+const NPC_REPLACE = { 1: { sheet: "tex_easyrpg_charset_people1", char: 5 }, 7: { sheet: "tex_easyrpg_charset_people4", char: 4 } };
+const npcSprite = (char) => NPC_REPLACE[char] ?? { sheet: NPC_SHEET, char };
 
 function checkWalk(api, p, map, src) {
   let same = 0; const diff = [];
@@ -215,7 +219,7 @@ const project = await withTsModule("scripts/content/lib/joseon-baram-entry.ts", 
     const events = src.people.map((n, i) => ({
       id: `ev_${src.id}_npc_${i + 1}`, name: `${src.name} 주민 ${i + 1}`, placementRole: "npc", x: n.x, y: n.y, trigger: { kind: "action" }, commands: [],
       pages: [{ id: `ev_${src.id}_npc_${i + 1}_p`, name: "주민", conditions: [],
-        graphic: { sprite: { type: "bundled", id: NPC_SHEET }, direction: DIRS[n.dir], pattern: api.charsetFrameIndex({ characterIndex: n.char, direction: DIRS[n.dir], pattern: n.frame }) },
+        graphic: { sprite: { type: "bundled", id: npcSprite(n.char).sheet }, direction: DIRS[n.dir], pattern: api.charsetFrameIndex({ characterIndex: npcSprite(n.char).char, direction: DIRS[n.dir], pattern: n.frame }) },
         trigger: { kind: "action" }, priority: "same", overlapForbidden: true, movement: { type: "fixed", speed: 3, frequency: 3 },
         commands: [{ kind: "text", speaker: "마을 사람", body: LINES[i % LINES.length] }] }],
     }));

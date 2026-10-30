@@ -105,7 +105,8 @@ try {
   await page.keyboard.press('Enter');
   await page.waitForFunction(() => Boolean(window.__oprnDebug?.readState?.()?.currentMapId), null, { timeout: 60000 });
   for (let i = 0; i < 40; i++) {
-    const opening = await page.evaluate(() => /Esc\s*건너뛰기|Esc to skip/i.test(document.body.innerText)).catch(() => false);
+    // 오프닝 안내는 「Esc · 탭 건너뛰기」다 — 예전 정규식(Esc\s*건너뛰기)이 가운뎃점을 못 넘겨 오프닝 중에 걸음을 보냈다(2026-10-31 asst-parity 숲 추격 terra 영상).
+    const opening = await page.evaluate(() => /Esc[^\n]{0,8}건너뛰기|Esc[^\n]{0,8}skip/i.test(document.body.innerText)).catch(() => false);
     if (!opening) break;
     await page.keyboard.press('Escape'); await sleep(1200);
   }

@@ -56,7 +56,7 @@ IPC `oprn:store.upload` → `AssetStoreClient.upload`(검증 → `/api/v1/blobs/
 
 | 지점 | 무엇을 보나 |
 |---|---|
-| `storeThirdPartyName` (`format.ts`) | 공용 낱말표. rasak·라삭·refmap·rpgmaker·알만툴·쯔꾸르·ツクール 는 붙여 써도, paw·mv·mz·rtp 는 낱말로 떨어질 때만(camelCase·숫자 경계 분리, pawn·mvp 는 통과) |
+| `storeThirdPartyName` (`format.ts`) | 공용 낱말표. rasak·라삭·refmap·rpgmaker·알만툴·쯔꾸르·ツクール 는 붙여 써도, paw·mv·mz·rtp 는 낱말로 떨어질 때만(camelCase·숫자 경계 분리, pawn·mvp 는 통과). 「EasyRPG RTP」 구절(CC BY 4.0 걷기 칩 출처, easyrpg-rtp·github.com/EasyRPG/RTP 포함)은 rtp 로 치지 않는다 — 따로 선 RTP·「RPG Maker RTP」는 그대로 걸린다(2026-10-31) |
 | `storePublishBlockReason`·`packBlockedItems` (`pack.ts`) | 고른 것 **과 딸려 들어가는 것 전부**(타일셋 그림·이식 원본·참고문서 원본 타일셋·번들 이식 칩셋 이름). 스토어에서 받은 것(`origin`)·공용 자료집(`shared_`)도 막는다 |
 | `buildPack` | 하나라도 걸리면 바이트를 읽기 전에 `StorePackBlockedError`(`.blocked` 목록, 한국어 문장) |
 | `uploadCandidates` (`storeUpload.ts`) | 같은 판정으로 후보를 막고 「딸려 들어가는 X: …」를 보여 준다 |
@@ -73,6 +73,38 @@ IPC `oprn:store.upload` → `AssetStoreClient.upload`(검증 → `/api/v1/blobs/
 gzip 은 풀린 크기에도 같은 상한(`maxOutputLength`). 캐시 blob 은 읽을 때마다 sha256 을 다시 보고 깨졌으면 다시 받는다.
 `applyPackToProject` 는 프로젝트를 건드리기 전에 그림 규격(캐릭터 시트 등)과 타일셋 칸이 그림 안에 드는지 본다.
 `validateManifest` 는 `__proto__`·`constructor`·`prototype` id, `count` 와 통행·층 배열 길이가 다른 타일셋, `--` 든 slug 를 받지 않는다.
+
+### 몬스터 전투 도트 시트 (2026-10-30)
+
+스토어 몬스터(`kind: "monster"`, 한 칸 PNG)는 전투에서 움직이는 3×3 시트를 함께 실을 수 있다. 계약은 프로젝트 공방 시트와 **같은**
+`meta.pixelEnemySheet`(`src/project/types/base.ts` `UploadedPixelEnemySheetMeta`)라 넣을 때 번역하지 않는다.
+
+```json
+"drake": { "kind": "monster", "blob": "<cell×cell PNG>", "meta": { "width": 64, "height": 64, "oprnBattler": { … },
+  "pixelEnemySheet": { "sheetResourceId": "drake-sheet", "cell": 64, "motion": "swoop", "idleFrameMs": 180, "skillCell": true } } },
+"drake-sheet": { "kind": "picture", "blob": "<(3·cell)×(3·cell) PNG>", "meta": { "width": 192, "height": 192, "frameWidth": 64, "frameHeight": 64, "frames": 9 } }
+```
+
+- 칸 배치·기준선은 번들 시트와 같다(`src/assets/pixelEnemySheets.ts` 머리 주석): 1행 idle a·b·c, 2행 windup·move·attack, 3행 recover(skillCell 이면 스킬 방출)·hit·dead, 오른쪽 보기, 가로 중심 cell/2, 바닥 y=cell−4. 초상은 idle_a 와 같은 그림.
+- `validateManifest`(`monsterSheetProblems`): 몬스터 에셋에만, `sheetResourceId` 는 같은 팩의 다른 picture PNG, `cell` 48·64·96, `motion` 은 `STORE_MONSTER_MOTIONS`(런타임 7종), `idleFrameMs` 60~2000 정수, `skillCell` 은 true 또는 없음.
+- 크기 검사 `storeMonsterSheetSizeProblems`(초상 cell×cell, 시트 3cell×3cell)는 바이트가 있는 곳에서 돈다: `applyPackToProject`(프로젝트를 건드리기 전)·`scripts/store/agentStore.mts` check/submit.
+- 넣기: `applyPackToProject` 가 `sheetResourceId` 를 `storeProjectId` 로 바꾼다. 그 뒤로는 전투(`projectPixelEnemySheet`)·자료집 미리보기·웹 내보내기(`collectUsedUploadedAssetIds` 가 meta 로 이어진 시트를 함께 싣는다)가 공방 시트와 같은 길을 탄다. 다른 종류 에셋에 붙은 표식은 넣을 때 버린다.
+- 올리기: `closeSelection` 이 몬스터의 시트 자산을 의존으로 딸려 보낸다.
+- 공방(`isAuthoredMonsterAsset`)은 출처(`origin`)가 있는 몬스터를 자기 저작물로 치지 않는다 — 스토어 그림을 레시피로 덮어 그리지 않는다.
+- 조수: `list_monster_resources`·`get_monster_resource` 가 시트로 움직이는 소재에 `battleMotion` 을 붙이고 설명이 그것을 먼저 고르라고 한다. `store_install` 결과는 `monsters[{resourceId, name, battleMotion?}]`.
+- 테스트 `test/assetStoreMonsterMotion.test.ts`.
+
+### 전투 애니메이션 팩 (2026-10-31)
+
+종류 `animation`. `content.battleAnimations?` = `BattleAnimationRecord[]`(최대 64)이고 id·`resourceId`·`timings[].soundResourceId`·`followUps[].animationId` 는 **팩 안의 id** 다.
+검사(`format.ts` `battleAnimationProblems`): 시트는 같은 팩의 `battle` PNG 에셋, `sheet` = `{frameWidth 8~640, frameHeight 8~640, columns 1~20, assetScale? 0.125~8}`,
+프레임 1~120 · 셀 1~16(정수 범위, 모르는 칸 거부) · `hold?` 1~16, timings 64·followUps 4, 소리 = 팩 `sound` 에셋 또는 내장 `cc0-se-*`, 후속은 같은 목록의 다른 id.
+시트 기하(`storeBattleAnimationSizeProblems`: 가로 = columns×frameWidth, 세로 = frameHeight 배수, pattern < 칸 수)는 바이트가 있는 쪽 — 편집기 넣기와 스토어 서버 받기 — 가 본다.
+
+넣기(`applyPackBattleAnimations`): `database.battleAnimations` 에 `store_<slug>__anim-<id>`(`storeAnimationId`)로, 시트·소리·후속 id 를 바꿔 넣는다.
+**같은 id 레코드가 이미 있으면 덮지 않는다** — 넣은 뒤 저자가 고친 이름·타이밍이 남고, 다시 넣기는 레코드에 아무것도 하지 않는다(새 판본의 레코드 변경도 반영 안 됨, 지우고 다시 넣어야 한다).
+되돌리기·빼기(`storeUndo.ts`)는 레코드도 함께 다룬다. 기술이 쓰고 있으면 빼기가 막힌다. 조수 `store_install` 결과 `animations[]` 의 id 를 `upsert_skill`·`upsert_item` 의 `animationId` 로 건다.
+웹 내보내기는 레코드의 `resourceId`·소리 id 문자열로 시트·소리를 싣는다(`collectUsedUploadedAssetIds`). 시험 `test/assetStoreBattleAnimations.test.ts`.
 
 ### 캐릭터 칸의 짝 초상 (char-gen 캐릭터 세트, 2026-10-20)
 
@@ -289,8 +321,15 @@ npm run harness -- game-concepts publish --target staging|prod --yes-prod|http:/
   `/var/lib/oprn-store/games` 를 그대로 내보낸다(스토어 앱으로 가지 않음, 쿠키 없음, nosniff, 확장자별 형식, 판본 파일 immutable,
   html 은 `frame-ancestors` 를 스토어로 제한, Cloudflare 엣지 밖 직접 접속 403). 템플릿: 스토어 저장소 `deploy/nginx-games.conf.template`.
   스테이징은 같은 규칙의 `scripts/games-host.mjs`(http://mdc-server:18322).
+- **나라별 출처(2026-10-31).** 한국 밖 방문자는 판본 파일을 **`games-cdn.openrpgmaker.com`**(R2 버킷 `oprn-games` 사용자 도메인, Cloudflare 엣지 캐시)에서 받는다.
+  한국(`CF-IPCountry: KR`)과 나라를 모르는 요청은 지금처럼 games-kr. 고르는 곳은 play 화면(`/games/<slug>/play`) 하나 —
+  응답 머리 `x-oprn-game-origin` 이 고른 출처. 게시하면 스토어가 디스크 판본 폴더를 바이트 그대로(서버가 쓴 index.html·CSP 해시 포함) 사본 버킷에 올리고,
+  다 놓인 판본만 사본으로 보낸다. 세이브가 갈라지지 않게 고른 출처는 게임마다 쿠키에 남고, 사본을 켜기 전에 그 게임을 플레이한 사람은 games-kr 에 남는다.
+  사본 쪽 머리(nosniff·`frame-ancestors`·HSTS)와 경로 제한(GET 만, `_files/`·index 아닌 html 막음)은 Cloudflare 규칙이 붙인다. play CSP `frame-src` 는 두 출처.
+  플레이어 쪽 바꿀 것은 없다: `storeGame.embedders`(play)와 클라우드 세이브 다리(`event.origin` = iframe 출처)는 출처마다 그대로 돈다.
+  되돌리기는 스토어 env `STORE_GAMES_MIRROR_SERVE=off` + 재시작 한 줄. 상세·채우기 명령: 스토어 저장소 `deploy/README.md` 「게임 판본 해외 사본」.
 - 스토어 쪽은 `<iframe sandbox="allow-scripts allow-same-origin allow-pointer-lock allow-fullscreen">` 으로 품는다. 출처가 달라서
-  allow-same-origin 은 게임 출처 자신의 저장소(세이브)만 연다. 스토어 페이지 CSP `frame-src` 는 게임 출처 하나.
+  allow-same-origin 은 게임 출처 자신의 저장소(세이브)만 연다. 스토어 페이지 CSP `frame-src` 는 게임 출처(games-kr·games-cdn)만.
 - 스토어 세션 쿠키는 https 에서 `__Host-oprn_store_session`(Secure·Path=/·Domain 없음). 옛 이름은 2026-11-23 까지 한 번 받아 새 이름으로 다시 준다.
   상태를 바꾸는 요청은 Origin 이 스토어가 아니면 403(형제 하위 도메인 games.* 포함) + 기존 CSRF 토큰.
 - 진입 문서 index.html 은 서버가 공식 플레이어 틀로 쓴다: meta CSP(부팅 스크립트 해시), `__OPENRPG_BOOT__.storeGame`(slug·판본·세이브 이름·품을 수 있는 출처).

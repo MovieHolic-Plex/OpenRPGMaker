@@ -3,7 +3,7 @@
  * 이 파일은 편집기·브라우저 모듈을 import 하지 않는다(서버 번들에 들어간다). 타입만 project 에서 빌린다.
  * 설계: docs/superpowers/specs/2026-10-06-asset-store-design.md, 위키 openwiki/asset-store.md.
  */
-import type { TilesetDef, UploadedAsset } from "../project/types";
+import type { BattleAnimationRecord, TilesetDef, UploadedAsset } from "../project/types";
 import { validateObjectSpec, type ObjectSpecV1 } from "../project/objectSpec";
 
 export const STORE_PACK_SCHEMA = "oprn-store-pack/1" as const;
@@ -36,11 +36,11 @@ export const STORE_LICENSE_LABELS: Readonly<Record<StoreLicense, string>> = {
   "REFMAP-MODIFIED": "REFMAP 약관(고친 그림) — 게임에 자유, 출처·「고침」 표기, 원본 재배포 금지",
 };
 
-export const STORE_ITEM_KINDS = ["tileset", "character", "face", "battler", "picture", "music", "sound", "pack"] as const;
+export const STORE_ITEM_KINDS = ["tileset", "character", "face", "battler", "picture", "music", "sound", "animation", "pack"] as const;
 export type StoreItemKind = (typeof STORE_ITEM_KINDS)[number];
 export const STORE_KIND_LABELS: Readonly<Record<StoreItemKind, string>> = {
   tileset: "타일셋", character: "캐릭터", face: "얼굴", battler: "전투 그림",
-  picture: "그림", music: "음악", sound: "효과음", pack: "묶음",
+  picture: "그림", music: "음악", sound: "효과음", animation: "전투 애니메이션", pack: "묶음",
 };
 
 /** 스토어가 지원하는 언어(편집기 i18n 과 같은 넷). zh 는 간체. */
@@ -56,6 +56,7 @@ export const STORE_KIND_NAMES: Readonly<Record<StoreItemKind, Readonly<Record<St
   picture: { ko: "그림", en: "Pictures", ja: "ピクチャー", zh: "图片" },
   music: { ko: "음악", en: "Music", ja: "音楽", zh: "音乐" },
   sound: { ko: "효과음", en: "Sound effects", ja: "効果音", zh: "音效" },
+  animation: { ko: "전투 애니메이션", en: "Battle animations", ja: "戦闘アニメーション", zh: "战斗动画" },
   pack: { ko: "묶음", en: "Bundles", ja: "バンドル", zh: "合集" },
 };
 export const STORE_LICENSE_NAMES: Readonly<Record<StoreLicense, Readonly<Record<StoreLocale, string>>>> = {
@@ -100,6 +101,13 @@ export const STORE_LIMITS = {
   characterAppearance: 240,
   /** 기물 설명서(content.objects): 타일셋 하나에 기물 수백 개가 들어간다(버들항 키트 120). */
   objects: 4096,
+  /** 전투 애니메이션(content.battleAnimations)과 그 안의 크기. */
+  battleAnimations: 64,
+  animationFrames: 120,
+  animationCells: 16,
+  animationTimings: 64,
+  animationFollowUps: 4,
+  animationFrameHold: 16,
 } as const;
 
 /** 에디터 UploadedAsset.kind 중 스토어로 오갈 수 있는 것. */
@@ -211,6 +219,8 @@ export interface StorePackContent {
   characters?: StorePackCharacter[];
   /** 기물 설명서 목록(없어도 된다 — 옛 팩·캐릭터·소리 팩). */
   objects?: StorePackObject[];
+  /** 전투 애니메이션(2026-10-31). 시트는 같은 팩의 battle 에셋. 넣으면 database.battleAnimations 에 store_<slug>__anim-<id> 로 들어간다. */
+  battleAnimations?: BattleAnimationRecord[];
 }
 
 export interface StorePackManifest {
@@ -365,6 +375,191 @@ function portraitProblems(raw: unknown, assets: Record<string, unknown>, where: 
   return out;
 }
 
+/**
+ * 몬스터 전투 도트 시트(전투가 움직이는 3×3 칸). 몬스터 에셋의 meta.pixelEnemySheet 는 프로젝트의 공방 시트와 같은 계약이다
+ * (src/project/types/base.ts UploadedPixelEnemySheetMeta, 런타임 src/assets/pixelEnemySheets.ts projectPixelEnemySheet).
+ * sheetResourceId 는 같은 팩의 picture 에셋이고, 그림은 (3·cell)×(3·cell), 초상(몬스터 에셋)은 cell×cell 이다.
+ */
+export const STORE_MONSTER_MOTIONS = ["hop", "swoop", "stomp", "dash", "float", "shoot", "breath"] as const;
+export const STORE_MONSTER_SHEET_CELLS = [48, 64, 96] as const;
+export const STORE_MONSTER_IDLE_MS = { min: 60, max: 2000 } as const;
+
+/** 몬스터 에셋 하나의 meta.pixelEnemySheet 검사(크기는 storeMonsterSheetSizeProblems). 표식이 없으면 빈 목록. */
+function monsterSheetProblems(id: string, raw: Record<string, unknown>, assets: Record<string, unknown>): string[] {
+  const meta = isRecord(raw.meta) ? raw.meta : null;
+  if (!meta || meta.pixelEnemySheet === undefined) return [];
+  const where = `에셋 ${id}`;
+  if (raw.kind !== "monster") return [`${where}: 전투 도트 시트(pixelEnemySheet)는 몬스터(monster) 에셋에만 붙일 수 있습니다.`];
+  const sheet = meta.pixelEnemySheet;
+  if (!isRecord(sheet)) return [`${where}: pixelEnemySheet 가 객체가 아닙니다.`];
+  const out: string[] = [];
+  const target = typeof sheet.sheetResourceId === "string" && sheet.sheetResourceId !== id && Object.hasOwn(assets, sheet.sheetResourceId)
+    ? assets[sheet.sheetResourceId] : undefined;
+  if (!isRecord(target)) out.push(`${where}: pixelEnemySheet.sheetResourceId 는 같은 팩의 다른 에셋 id 여야 합니다.`);
+  else if (target.kind !== "picture") out.push(`${where}: 전투 도트 시트 에셋은 그림(picture) 이어야 합니다.`);
+  else if (target.mime !== "image/png") out.push(`${where}: 전투 도트 시트는 PNG 여야 합니다.`);
+  if (!(STORE_MONSTER_SHEET_CELLS as readonly unknown[]).includes(sheet.cell)) out.push(`${where}: pixelEnemySheet.cell 은 ${STORE_MONSTER_SHEET_CELLS.join("·")} 중 하나여야 합니다.`);
+  if (!includes(STORE_MONSTER_MOTIONS, sheet.motion)) out.push(`${where}: pixelEnemySheet.motion 은 ${STORE_MONSTER_MOTIONS.join("·")} 중 하나여야 합니다.`);
+  if (!Number.isInteger(sheet.idleFrameMs) || (sheet.idleFrameMs as number) < STORE_MONSTER_IDLE_MS.min || (sheet.idleFrameMs as number) > STORE_MONSTER_IDLE_MS.max) {
+    out.push(`${where}: pixelEnemySheet.idleFrameMs 는 ${STORE_MONSTER_IDLE_MS.min}~${STORE_MONSTER_IDLE_MS.max} 정수(ms)여야 합니다.`);
+  }
+  if (sheet.skillCell !== undefined && sheet.skillCell !== true) out.push(`${where}: pixelEnemySheet.skillCell 은 true 이거나 없어야 합니다.`);
+  if (sheet.skillSlug !== undefined && !isString(sheet.skillSlug, 80, 1)) out.push(`${where}: pixelEnemySheet.skillSlug 가 올바르지 않습니다.`);
+  if (sheet.recipe !== undefined && !isRecord(sheet.recipe)) out.push(`${where}: pixelEnemySheet.recipe 는 객체여야 합니다.`);
+  return out;
+}
+
+/**
+ * 전투 도트 시트가 붙은 몬스터의 그림 크기 검사 — 초상 cell×cell, 시트 (3·cell)×(3·cell).
+ * 바이트가 있는 쪽(편집기 넣기·에이전트 제출)이 부른다. pngSize 는 sniff.ts 의 것(이 파일은 sniff 를 import 하지 않는다).
+ */
+export function storeMonsterSheetSizeProblems(
+  manifest: Pick<StorePackManifest, "content">,
+  sizeOfBlob: (sha256: string) => { width: number; height: number } | null,
+): string[] {
+  const out: string[] = [];
+  const assets = manifest.content.assets;
+  for (const [id, asset] of Object.entries(assets)) {
+    const sheet = asset.kind === "monster" ? asset.meta.pixelEnemySheet : undefined;
+    if (!sheet) continue;
+    const cell = sheet.cell;
+    const portrait = sizeOfBlob(asset.blob);
+    if (!portrait || portrait.width !== cell || portrait.height !== cell) {
+      out.push(`${asset.name}: 전투 도트 시트가 있는 몬스터 초상은 ${cell}×${cell} 이어야 합니다(지금 ${portrait ? `${portrait.width}×${portrait.height}` : "PNG 아님"}).`);
+    }
+    const sheetAsset = Object.hasOwn(assets, sheet.sheetResourceId) ? assets[sheet.sheetResourceId] : undefined;
+    const size = sheetAsset ? sizeOfBlob(sheetAsset.blob) : null;
+    if (!size || size.width !== cell * 3 || size.height !== cell * 3) {
+      out.push(`${asset.name}: 전투 도트 시트(${sheet.sheetResourceId})는 3×3 칸 ${cell * 3}×${cell * 3} 이어야 합니다(지금 ${size ? `${size.width}×${size.height}` : "PNG 아님"}) — ${id}.`);
+    }
+  }
+  return out;
+}
+
+/**
+ * 팩 전투 애니메이션(content.battleAnimations, 2026-10-31). 레코드는 프로젝트의 BattleAnimationRecord 와 같은 꼴이고
+ * id·resourceId·timings[].soundResourceId·followUps[].animationId 는 **팩 안의 id** 다(넣을 때 storeProjectId 로 바뀐다).
+ * resourceId 는 같은 팩의 battle(PNG) 에셋, 소리는 같은 팩의 sound 에셋 또는 내장 CC0 효과음 카탈로그 id(cc0-se-…).
+ * 시트 크기(가로 = columns×frameWidth, 세로 = 행×frameHeight, 패턴 < 칸 수)는 바이트가 있는 쪽이 storeBattleAnimationSizeProblems 로 본다.
+ */
+export const STORE_ANIMATION_BUILTIN_SOUND = /^cc0-se-[a-z0-9][a-z0-9-]{0,100}$/;
+const ANIMATION_SCOPES = ["singleTarget", "allTargets", "screen"] as const;
+const ANIMATION_POSITIONS = ["head", "center", "feet", "screen"] as const;
+const ANIMATION_BLENDS = ["add", "screen", "multiply"] as const;
+const ANIMATION_RECORD_KEYS = new Set(["id", "name", "resourceId", "sheet", "scope", "position", "large", "frames", "timings", "followUps", "blendMode"]);
+const ANIMATION_CELL_KEYS = new Set(["pattern", "x", "y", "zoom", "opacity", "visible", "tone", "rotation", "mirror"]);
+
+const intIn = (value: unknown, min: number, max: number): boolean => Number.isInteger(value) && (value as number) >= min && (value as number) <= max;
+const isTone = (value: unknown): boolean => isRecord(value) && ["red", "green", "blue", "gray"].every((key) => intIn(value[key], 0, 255)) && Object.keys(value).length === 4;
+
+function battleAnimationProblems(raw: unknown, assets: Record<string, unknown>): string[] {
+  const L = STORE_LIMITS;
+  if (!Array.isArray(raw) || raw.length > L.battleAnimations) return [`전투 애니메이션은 ${L.battleAnimations}개 이하의 목록이어야 합니다.`];
+  const out: string[] = [];
+  const ids = new Set<string>();
+  for (const entry of raw as unknown[]) {
+    const id = isRecord(entry) && typeof entry.id === "string" ? entry.id : "";
+    if (!ASSET_ID.test(id)) { out.push(`전투 애니메이션 id 가 올바르지 않습니다: ${id.slice(0, 40) || "?"}`); continue; }
+    if (ids.has(id)) out.push(`같은 전투 애니메이션 id 가 두 번 적혔습니다: ${id}`);
+    ids.add(id);
+  }
+  const kindOf = (id: unknown): unknown => (typeof id === "string" && Object.hasOwn(assets, id) && isRecord(assets[id]) ? (assets[id] as Record<string, unknown>).kind : undefined);
+  for (const entry of raw as unknown[]) {
+    if (!isRecord(entry) || typeof entry.id !== "string" || !ASSET_ID.test(entry.id)) continue;
+    const a = entry;
+    const where = `전투 애니메이션 ${a.id}`;
+    const extra = Object.keys(a).filter((key) => !ANIMATION_RECORD_KEYS.has(key));
+    if (extra.length) out.push(`${where}: 모르는 칸이 있습니다(${extra.slice(0, 3).join(", ").slice(0, 60)}).`);
+    if (!isString(a.name, 80, 1)) out.push(`${where}: 이름은 1~80자여야 합니다.`);
+    const sheetAsset = typeof a.resourceId === "string" && Object.hasOwn(assets, a.resourceId) ? assets[a.resourceId] : undefined;
+    if (!isRecord(sheetAsset) || sheetAsset.kind !== "battle" || sheetAsset.mime !== "image/png") out.push(`${where}: resourceId 는 같은 팩의 전투 애니메이션 시트(battle, PNG) 에셋이어야 합니다.`);
+    const sheet = isRecord(a.sheet) ? a.sheet : null;
+    if (!sheet || !intIn(sheet.frameWidth, 8, 640) || !intIn(sheet.frameHeight, 8, 640) || !intIn(sheet.columns, 1, 20)
+      || (sheet.assetScale !== undefined && !(typeof sheet.assetScale === "number" && Number.isFinite(sheet.assetScale) && sheet.assetScale >= 0.125 && sheet.assetScale <= 8))
+      || Object.keys(sheet).some((key) => !["frameWidth", "frameHeight", "columns", "assetScale"].includes(key))) {
+      out.push(`${where}: sheet 는 { frameWidth 8~640, frameHeight 8~640, columns 1~20, assetScale? 0.125~8 } 이어야 합니다.`);
+    }
+    if (a.scope !== undefined && !includes(ANIMATION_SCOPES, a.scope)) out.push(`${where}: scope 는 ${ANIMATION_SCOPES.join("·")} 중 하나여야 합니다.`);
+    if (a.position !== undefined && !includes(ANIMATION_POSITIONS, a.position)) out.push(`${where}: position 은 ${ANIMATION_POSITIONS.join("·")} 중 하나여야 합니다.`);
+    if (a.large !== undefined && typeof a.large !== "boolean") out.push(`${where}: large 는 참·거짓이어야 합니다.`);
+    if (a.blendMode !== undefined && !includes(ANIMATION_BLENDS, a.blendMode)) out.push(`${where}: blendMode 는 ${ANIMATION_BLENDS.join("·")} 중 하나여야 합니다.`);
+    const frames = Array.isArray(a.frames) ? a.frames as unknown[] : null;
+    if (!frames || frames.length < 1 || frames.length > L.animationFrames) { out.push(`${where}: 프레임은 1~${L.animationFrames}개여야 합니다.`); continue; }
+    frames.forEach((frame, index) => {
+      const at = `${where} 프레임 ${index}`;
+      if (!isRecord(frame) || Object.keys(frame).some((key) => key !== "cells" && key !== "hold")) { out.push(`${at}: { cells, hold? } 이어야 합니다.`); return; }
+      if (frame.hold !== undefined && !intIn(frame.hold, 1, L.animationFrameHold)) out.push(`${at}: hold 는 1~${L.animationFrameHold} 정수(기본 프레임 시간의 배수)여야 합니다.`);
+      const cells = Array.isArray(frame.cells) ? frame.cells as unknown[] : null;
+      if (!cells || cells.length < 1 || cells.length > L.animationCells) { out.push(`${at}: 셀은 1~${L.animationCells}개여야 합니다.`); return; }
+      for (const cell of cells) {
+        const ok = isRecord(cell) && intIn(cell.pattern, 0, 999) && intIn(cell.x, -999, 999) && intIn(cell.y, -999, 999)
+          && intIn(cell.zoom, 1, 800) && intIn(cell.opacity, 0, 255) && typeof cell.visible === "boolean"
+          && (cell.tone === undefined || isTone(cell.tone)) && (cell.rotation === undefined || intIn(cell.rotation, -360, 360))
+          && (cell.mirror === undefined || typeof cell.mirror === "boolean") && Object.keys(cell).every((key) => ANIMATION_CELL_KEYS.has(key));
+        if (!ok) { out.push(`${at}: 셀은 { pattern 0~999, x·y -999~999, zoom 1~800, opacity 0~255, visible, tone?, rotation? -360~360, mirror? } 정수여야 합니다.`); break; }
+      }
+    });
+    if (a.timings !== undefined) {
+      if (!Array.isArray(a.timings) || a.timings.length > L.animationTimings) out.push(`${where}: timings 는 ${L.animationTimings}개 이하의 목록이어야 합니다.`);
+      else for (const timing of a.timings as unknown[]) {
+        const t = isRecord(timing) ? timing : null;
+        if (!t || !intIn(t.frameIndex, 0, frames.length - 1)) { out.push(`${where}: timing.frameIndex 는 0~${frames.length - 1} 이어야 합니다.`); continue; }
+        if (Object.keys(t).some((key) => !["frameIndex", "soundResourceId", "flash", "screenShake"].includes(key))) out.push(`${where}: timing 에 모르는 칸이 있습니다.`);
+        if (t.soundResourceId !== undefined) {
+          const sound = t.soundResourceId;
+          const packSound = kindOf(sound) === "sound";
+          if (!packSound && !(typeof sound === "string" && STORE_ANIMATION_BUILTIN_SOUND.test(sound))) out.push(`${where}: 소리는 같은 팩의 sound 에셋이나 내장 효과음 id(cc0-se-…)여야 합니다.`);
+        }
+        if (t.flash !== undefined) {
+          const f = t.flash;
+          if (!isRecord(f) || (f.target !== "target" && f.target !== "screen") || !isTone(f.color) || !intIn(f.durationFrames, 1, 120) || Object.keys(f).length !== 3) out.push(`${where}: flash 는 { target target|screen, color, durationFrames 1~120 } 이어야 합니다.`);
+        }
+        if (t.screenShake !== undefined) {
+          const k = t.screenShake;
+          if (!isRecord(k) || !intIn(k.power, 1, 9) || !intIn(k.speed, 1, 9) || !intIn(k.durationFrames, 1, 120) || Object.keys(k).length !== 3) out.push(`${where}: screenShake 는 { power 1~9, speed 1~9, durationFrames 1~120 } 이어야 합니다.`);
+        }
+      }
+    }
+    if (a.followUps !== undefined) {
+      if (!Array.isArray(a.followUps) || a.followUps.length > L.animationFollowUps) out.push(`${where}: followUps 는 ${L.animationFollowUps}개 이하의 목록이어야 합니다.`);
+      else for (const follow of a.followUps as unknown[]) {
+        const f = isRecord(follow) ? follow : null;
+        if (!f || typeof f.animationId !== "string" || f.animationId === a.id || !ids.has(f.animationId) || !intIn(f.startFrame, 0, frames.length - 1) || Object.keys(f).length !== 2) {
+          out.push(`${where}: followUp 은 같은 목록의 다른 애니메이션 id 와 startFrame 0~${frames.length - 1} 이어야 합니다.`);
+        }
+      }
+    }
+  }
+  return out;
+}
+
+/**
+ * 전투 애니메이션 시트 크기 검사 — 가로 = columns×frameWidth, 세로 = frameHeight 의 배수, 모든 셀 pattern 이 칸 안.
+ * 바이트가 있는 쪽(편집기 넣기·스토어 서버 받기)이 부른다(storeMonsterSheetSizeProblems 와 같은 방식).
+ */
+export function storeBattleAnimationSizeProblems(
+  manifest: Pick<StorePackManifest, "content">,
+  sizeOfBlob: (sha256: string) => { width: number; height: number } | null,
+): string[] {
+  const out: string[] = [];
+  const assets = manifest.content.assets;
+  for (const record of manifest.content.battleAnimations ?? []) {
+    const asset = record.resourceId && Object.hasOwn(assets, record.resourceId) ? assets[record.resourceId] : undefined;
+    const sheet = record.sheet;
+    if (!asset || !sheet) continue;
+    const size = sizeOfBlob(asset.blob);
+    const rows = size ? Math.floor(size.height / sheet.frameHeight) : 0;
+    if (!size || size.width !== sheet.columns * sheet.frameWidth || size.height % sheet.frameHeight !== 0 || rows < 1) {
+      out.push(`전투 애니메이션 ${record.id}: 시트(${asset.name})는 가로 ${sheet.columns}×${sheet.frameWidth}=${sheet.columns * sheet.frameWidth}px, 세로 ${sheet.frameHeight}px 의 배수여야 합니다(지금 ${size ? `${size.width}×${size.height}` : "PNG 아님"}).`);
+      continue;
+    }
+    const cellCount = sheet.columns * rows;
+    const bad = (record.frames ?? []).flatMap((frame) => frame.cells).find((cell) => cell.pattern >= cellCount);
+    if (bad) out.push(`전투 애니메이션 ${record.id}: 셀 pattern ${bad.pattern} 이 시트 칸 수(${cellCount})를 넘습니다.`);
+  }
+  return out;
+}
+
 /** 프로젝트에 넣을 때의 id. 같은 상품의 다음 판본이 같은 id 를 덮어써 맵 참조가 유지된다. */
 export const storeProjectId = (slug: string, originalId: string): string => `store_${slug.replace(/-/g, "_")}${STORE_SLUG_SEPARATOR}${originalId}`;
 
@@ -405,7 +600,10 @@ export function storeThirdPartyName(text: string, license?: string): string | nu
     .replace(/([a-z])([A-Z])/g, "$1 $2")
     .replace(/([A-Z]+)([A-Z][a-z])/g, "$1 $2")
     .replace(/(\p{L})(?=\p{N})|(\p{N})(?=\p{L})/gu, "$1$2 ")
-    .toLowerCase();
+    .toLowerCase()
+    // 「EasyRPG RTP」(CC BY 4.0, 2026-10-07 저작권 정리에서 남긴 걷기 칩 바탕)는 RPG Maker RTP 가 아니다. 그 한 구절만 지운다 —
+    // 대소문자·띄어쓰기·구분자(easyrpg-rtp, github.com/EasyRPG/RTP)를 가리지 않는다. 따로 선 「RTP」·「RPG Maker RTP」는 그대로 걸린다.
+    .replace(/easy[^\p{L}\p{N}]*rpg[^\p{L}\p{N}]*rtp(?![\p{L}\p{N}])/gu, "easyrpg");
   const compact = spaced.replace(/[^\p{L}\p{N}]+/gu, "");
   const tokens = new Set(spaced.split(/[^\p{L}\p{N}]+/u));
   // REFMAP 약관 상품(고친 REFMAP 칩)은 「refmap」 만 허용한다 — 다른 제3자 이름은 그대로 막는다.
@@ -527,7 +725,9 @@ export function validateManifest(input: unknown): Validation<StorePackManifest> 
       else if (blobs.get(raw.blob)!.mime !== raw.mime) errors.push(`에셋 ${id} 의 형식이 blob 과 다릅니다.`);
       if (!isRecord(raw.meta)) errors.push(`에셋 ${id} 의 meta 가 없습니다.`);
       if (raw.generation !== undefined) errors.push(...storeGenerationProblems(raw.generation, `에셋 ${id}`));
+      errors.push(...monsterSheetProblems(id, raw, assets));
     }
+    if (content.battleAnimations !== undefined) errors.push(...battleAnimationProblems(content.battleAnimations, assets));
     for (const [id, raw] of Object.entries(tilesets)) {
       if (!ASSET_ID.test(id) || !isRecord(raw) || raw.id !== id) { errors.push(`타일셋 id 가 올바르지 않습니다: ${id.slice(0, 40)}`); continue; }
       const tileset = raw as unknown as TilesetDef;
