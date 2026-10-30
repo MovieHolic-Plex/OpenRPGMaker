@@ -42,10 +42,13 @@ export function buildFromLayout(run: BuildRun, spec: PlaceSpec, S: HandInteriorS
     for (const i of drop) { const o = src[i]; if (o) dropped.push(`"${o.id}"@(${o.x},${o.y})`); }
   }
   if (check.errors.length || !check.input) return { ok: false, mapIds: [], summary: rejectionText(spec.name, check, L, left), warnings: [], missingArt: [], calls: run.calls };
+  // 공간 문제(빈 바닥·깔개 상한 …): 고치기가 남았으면 거절, 다 썼으면 경고로 남기고 깐다.
+  const soft = check.soft ?? [];
+  if (soft.length && left > 0) return { ok: false, mapIds: [], summary: rejectionText(spec.name, check, L, left), warnings: [], missingArt: [], calls: run.calls };
 
   const input = check.input;
   const args: Record<string, unknown> = { tileset: tilesetId, mapId, name: spec.name, replace: mapId ? true : undefined,
-    plan: input.plan, floor: input.floor, wall: input.wall, zones: input.zones, objects: input.objects, lines: input.lines, daises: input.daises, start: input.start };
+    plan: input.plan, floor: input.floor, wall: input.wall, zones: input.zones, objects: input.objects, lines: input.lines, daises: input.daises, start: input.start, passages: input.passages };
   const clean = (a: Record<string, unknown>) => Object.fromEntries(Object.entries(a).filter(([, v]) => v !== undefined));
   let r = run.call("build_hand_interior_room", clean(args));
   if (!r.ok && mapId) r = run.call("build_hand_interior_room", clean({ ...args, mapId: undefined, replace: undefined }));
@@ -67,7 +70,7 @@ export function buildFromLayout(run: BuildRun, spec: PlaceSpec, S: HandInteriorS
   const decl0 = layoutDecl(L, check, S);
   const reviews = Number(spec.hints?.layoutReviews ?? 0) || 0;
   const reviewNotes = String(spec.hints?.layoutReviewNotes ?? "").split(" || ").filter(Boolean).slice(-6);
-  const decl = { ...decl0, regions: decl0.regions.map(sh), objects: decl0.objects.map(sh), ...(decl0.landmark ? { landmark: sh(decl0.landmark) } : {}), entrance: sh(decl0.entrance), reviews, ...(reviewNotes.length ? { reviewNotes } : {}) };
+  const decl = { ...decl0, regions: decl0.regions.map(sh), objects: decl0.objects.map(sh), ...(decl0.landmark ? { landmark: sh(decl0.landmark) } : {}), entrance: sh(decl0.entrance), reviews, ...(check.space ? { space: { emptyPct: check.space.emptyPct, roomCV: check.space.roomCV, open: soft.length, rooms: Object.fromEntries(Object.entries(check.space.rooms).map(([k, v]) => [k, { floor: v.floor, emptyPct: v.emptyPct, rugs: v.rugs, pieces: v.pieces }])) } } : {}), ...(reviewNotes.length ? { reviewNotes } : {}) };
   const walled = !!check.rooms;
   type Reg = { id: string; x: number; y: number; w: number; h: number; purpose?: string; role?: string; landmark?: string; stairs?: string };
   const regions: Reg[] = walled ? check.rooms!.map(sh) : (L.regions ?? []).map(sh);
@@ -117,7 +120,7 @@ export function buildFromLayout(run: BuildRun, spec: PlaceSpec, S: HandInteriorS
     run.call("create_map_location", { mapId: builtId, name: String(q.purpose ?? q.id).slice(0, 40), x: q.x, y: q.y, w: q.w, h: q.h, note: `layout region ${q.id}`, tags });
   }
   const entrance = Array.isArray(data.entrance) ? (data.entrance as { x: number; y: number }[])[0] : undefined;
-  const warnings = [...check.warnings, ...(dropped.length ? [`left out (still failing after the repairs): ${dropped.join(", ")}`] : []), ...((data.warnings as string[] | undefined) ?? []).filter((w) => !/[\uac00-\ud7a3]/.test(w)).slice(0, 4)];
+  const warnings = [...soft.map((w) => `still open after the repairs — fix it in review_layout: ${w}`), ...check.warnings, ...(dropped.length ? [`left out (still failing after the repairs): ${dropped.join(", ")}`] : []), ...((data.warnings as string[] | undefined) ?? []).filter((w) => !/[\uac00-\ud7a3]/.test(w)).slice(0, 4)];
   return {
     ok: true, mapIds: [builtId], ...(entrance ? { entrance: { mapId: builtId, ...entrance } } : {}),
     summary: `${spec.name}: laid your layout exactly — ${regions.length} region${regions.length === 1 ? "" : "s"} (${regions.map((q) => q.id).join(", ")}), ${decl.objects.length} pieces, landmark ${decl.landmark?.id ?? "none"}, map ${map.width}×${map.height} (${builtId}). Reachable floor ${String(data.reachable ?? "?")} cells.`,

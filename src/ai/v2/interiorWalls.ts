@@ -9,7 +9,7 @@ import type { LayoutCheck, LayoutObject } from "./interiorLayout";
 
 export interface WallPath { readonly id?: string; readonly material: string; readonly path: readonly (readonly [number, number])[]; readonly thickness?: number; readonly stub?: boolean; readonly purpose?: string }
 export interface WallDoor { readonly wall: string; readonly x: number; readonly y: number; readonly width?: number; readonly piece?: string | null; readonly purpose?: string }
-export interface WallRoom { readonly id: string; readonly at: readonly [number, number]; readonly floor: string; readonly purpose?: string; readonly role?: string; readonly landmark?: string; readonly stairs?: string }
+export interface WallRoom { readonly id: string; readonly at: readonly [number, number]; readonly floor: string; readonly purpose?: string; readonly role?: string; readonly landmark?: string; readonly stairs?: string; readonly repeat?: boolean }
 export interface WallItem extends LayoutObject { readonly wall?: string }
 export interface WallsLayoutFields {
   readonly outer_wall?: WallPath;
@@ -22,6 +22,8 @@ export interface WallsLayoutFields {
 
 /** 지은 방(벽으로 닫힌 공간) — 상자는 방 칸의 바깥 상자, cells 는 방 칸 수. */
 export interface WallsRoomOut { id: string; x: number; y: number; w: number; h: number; cells: number; floor: string; purpose?: string; role?: string; landmark?: string; stairs?: string }
+
+import { spaceChecks } from "./interiorSpace";
 
 const DOOR_PIECES = new Set(["locked door", "iron gate", "iron gate open"]);
 const WINDOW = /window|stained glass/u;
@@ -259,6 +261,59 @@ export function checkWallLayout(raw: unknown, S: HandInteriorSpec, tileset: Tile
     lines.push({ id: r.id, cells });
   }
   for (const p of objs) { const { w, h } = fp(p.id); if (p.x < 0 || p.y < 0 || p.x + w > W || p.y + h > H) { errors.push(`"${p.id}" at ${P(p.x, p.y)} (${w}x${h}) is out of the map.`); if (p.src >= 0) badObjects.add(p.src); } }
+  const stairSoft: string[] = [];
+  // ---- 계단: 칩셋 계단 킷 그대로 — 위로 가는 계단은 3칸 폭 x 3줄(북벽 벽면 두 줄 + 첫 바닥 줄), 남쪽 한 줄이 들어오는 자리(비운 바닥) ----
+  {
+    const occ = new Map<number, string>();
+    for (const p of objs) { const d = S.objects[p.id]; if (d && (d.kind === "hang" || d.kind === "flat" || d.stairs)) continue; if (isDoorPiece(p.id)) continue;
+      const { w, h } = fp(p.id); for (let dy = 0; dy < h; dy++) for (let dx = 0; dx < w; dx++) if (inMap(p.x + dx, p.y + dy)) occ.set(idx(p.x + dx, p.y + dy), `"${p.id}"@${P(p.x, p.y)}`); }
+    for (const i of railCells) occ.set(i, "a rail");
+    const upWhy = (id: string, x: number, y: number, k: number): string | null => {
+      const d = S.objects[id]!; const cols = Array.from({ length: d.w }, (_, i) => x + i);
+      const badCol = cols.filter((c) => !(A.face[y - 2]?.[c] === 1 && A.face[y - 1]?.[c] === 2 && inMap(c, y - 3) && wallOf[idx(c, y - 3)] === k && A.isFloor(c, y) && !occ.has(idx(c, y))));
+      if (badCol.length) return `its ${d.w}x3 kit does not fit: column(s) ${badCol.join(",")} are not [2 face rows of one straight wall at rows ${y - 2},${y - 1}] + [free floor at row ${y}] (no door, corner or furniture in those ${d.w} columns)`;
+      const blocked = cols.filter((c) => !A.isFloor(c, y + 1) || occ.has(idx(c, y + 1)) || doorCell.has(idx(c, y + 1)));
+      if (blocked.length) return `its entry side (south) is blocked: ${blocked.map((c) => P(c, y + 1) + (occ.has(idx(c, y + 1)) ? ` by ${occ.get(idx(c, y + 1))}` : doorCell.has(idx(c, y + 1)) ? " (a doorway)" : " (not floor)")).join(", ")} — the ${d.w} cells ${P(x, y + 1)}..${P(x + d.w - 1, y + 1)} must stay free walkable floor`;
+      return null;
+    };
+    const upSpots = (id: string, k?: number) => { const out: { x: number; y: number; k: number }[] = [];
+      for (let y = 3; y < H - 1; y++) for (let x = 0; x < W; x++) { const kk = wallOf[idx(x, y - 3)]!; if (kk < 0 || (k !== undefined && kk !== k)) continue; if (!upWhy(id, x, y, kk)) out.push({ x, y, k: kk }); }
+      return out; };
+    const fixedUp = (id: string, x: number, y: number, k?: number): string => {
+      let c = k !== undefined ? upSpots(id, k) : []; if (!c.length) c = upSpots(id);
+      if (!c.length) return ` No wall in this layout has a free straight ${S.objects[id]!.w}-cell north face with free floor in front: lengthen a room northward or clear a stretch of a north wall.`;
+      c.sort((a, b) => Math.abs(a.x - x) + Math.abs(a.y - y) - Math.abs(b.x - x) - Math.abs(b.y - y));
+      const f = c[0]!; return ` Fixed call: wall_items entry {"id": "${id}", "wall": "${walls[f.k]!.id}", "x": ${f.x}, "y": ${f.y}} (kit covers ${P(f.x, f.y - 2)}..${P(f.x + S.objects[id]!.w - 1, f.y)}, entry ${P(f.x, f.y + 1)}..${P(f.x + S.objects[id]!.w - 1, f.y + 1)}).`;
+    };
+    const seen = new Set<number>();
+    for (const p of objs) {
+      const d = S.objects[p.id]; if (!d?.stairs || seen.has(p.src)) continue;
+      if (d.stairs === "up" && d.kind === "wall") {
+        const k = p.wall !== undefined ? wallByName.get(p.wall) : undefined;
+        if (k === undefined) continue; // 벽 이름이 틀린 것은 위에서 이미 거절했다
+        const why = upWhy(p.id, p.x, p.y, k);
+        if (why) { seen.add(p.src); errors.push(`"${p.id}" at ${P(p.x, p.y)} on wall "${walls[k]!.id}": ${why}.${fixedUp(p.id, p.x, p.y, k)}`); if (p.src >= 0) badObjects.add(p.src); }
+      } else if (d.stairs === "down") {
+        const bad = Array.from({ length: d.w }, (_, i) => [p.x + i, p.y + Math.max(1, d.h)] as const).filter(([c, r]) => !inMap(c, r) || !A.isFloor(c, r) || occ.has(idx(c, r)));
+        if (bad.length) { seen.add(p.src); errors.push(`"${p.id}" at ${P(p.x, p.y)} is a ${d.w}x${Math.max(1, d.h)} hole in the floor entered from the south: ${bad.map(([c, r]) => P(c, r)).join(" ")} must stay free walkable floor — move it so the row below it is open floor.`); if (p.src >= 0) badObjects.add(p.src); }
+      }
+    }
+    // 방이 계단을 선언했는데 계단이 없다 — 고치기 글(soft): 고치기를 다 쓰면(걸린 계단을 뺀 뒤에도) 경고로 남기고 깐다
+    for (const [c, r] of roomOfComp) {
+      const want = r.stairs === "up" || r.stairs === "down" ? r.stairs : undefined; if (!want) continue;
+      const cells = new Set(comps[c]!);
+      const has = objs.some((p) => S.objects[p.id]?.stairs === want && (cells.has(idx(p.x, p.y)) || cells.has(idx(p.x, p.y + 1))));
+      if (has) continue;
+      const ids = Object.keys(S.objects).filter((id) => S.objects[id]!.stairs === want);
+      if (!ids.length) continue;
+      if (want === "up") {
+        const id = ids.find((i) => /wood/u.test(i)) ?? ids[0]!;
+        const spots = upSpots(id).filter((s) => cells.has(idx(s.x, s.y)));
+        const xs = comps[c]!.map((i) => i % W), ys = comps[c]!.map((i) => Math.floor(i / W));
+        stairSoft.push(`room "${r.id}" says "stairs": "up" but has no stairs up (${ids.map((i) => `"${i}"`).join(" / ")}, a ${S.objects[id]!.w}x3 kit on a north wall, in "wall_items").${spots.length ? fixedUp(id, spots[0]!.x, spots[0]!.y, spots[0]!.k) : fixedUp(id, Math.round((Math.min(...xs) + Math.max(...xs)) / 2), Math.max(...ys))}`);
+      } else stairSoft.push(`room "${r.id}" says "stairs": "down" but has no stairs down (${ids.map((i) => `"${i}" ${S.objects[i]!.w}x${Math.max(1, S.objects[i]!.h)}`).join(", ")} in "objects", with free floor on the row below it).`);
+    }
+  }
   const objectsOut = objs.map((p) => ({ id: p.id, x: p.x, y: p.y, ...(p.purpose ? { purpose: p.purpose } : {}), region: roomIdAt(p.x, p.y + fp(p.id).h - 1) ?? roomIdAt(p.x, p.y) }));
   if (errors.length) return out({ objects: objectsOut, sources: srcList.map((x) => x.o) });
 
@@ -274,7 +329,9 @@ export function checkWallLayout(raw: unknown, S: HandInteriorSpec, tileset: Tile
   for (let y = 0; y < H; y++) { let x = 0; while (x < W) { const k = roomAt[idx(x, y)]!; let x1 = x; while (x1 + 1 < W && roomAt[idx(x1 + 1, y)] === k) x1++; if (k >= 0) zones.push({ x0: x, y0: y, x1, y1: y, floor: roomList[k]![1].floor }); x = x1 + 1; } }
   for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (A.face[y]![x]) { const k = wallAbove(x, y); if (k >= 0) zones.push({ x0: x, y0: y, x1: x, y1: y, wall: walls[k]!.material }); }
 
-  const input: HandInteriorInput = { plan, floor: roomList[0]![1].floor, wall: ow.material, zones, objects: objs.map(({ id, x, y }) => ({ id, x, y })), lines, start: [{ x: ent.x, y: ent.y }] };
+  // 세로 칸막이 문 틈 위 두 칸은 트인 통로로 그린다(bbox-walls-4: 벽면으로 그리면 «벽판»으로 읽혔다).
+  const passages = doors.filter((d) => d.vertical).flatMap((d) => d.cells.map((i) => ({ x: i % W, y: Math.floor(i / W) })).filter((c) => c.y < d.y));
+  const input: HandInteriorInput = { plan, floor: roomList[0]![1].floor, wall: ow.material, zones, objects: objs.map(({ id, x, y }) => ({ id, x, y })), lines, start: [{ x: ent.x, y: ent.y }], ...(passages.length ? { passages } : {}) };
   const built = buildHandInteriorLayers(input, tileset, S);
   const EN: Record<string, string> = {
     overlap: "two pieces overlap on this cell — move one of them",
@@ -317,6 +374,29 @@ export function checkWallLayout(raw: unknown, S: HandInteriorSpec, tileset: Tile
   if (lmRaw && built.issues.some((i) => i.code === "unreachable-piece" && hits(i.x, i.y).some((p) => p.src === 0))) errors.push(`landmark "${lmRaw.id}" at ${P(lmRaw.x, lmRaw.y)} has no reachable free side — clear a cell next to it that connects to the entrance.`);
   if (built.unreachedFloor.length) warnings.push(`${built.unreachedFloor.length} floor cells are not reachable from the entrance (e.g. ${built.unreachedFloor.slice(0, 6).map((c) => P(c.x, c.y)).join(" ")}) — furniture blocks the way.`);
   const compRoom = (i: number) => { const c = comp[i]!; return c >= 0 ? roomOfComp.get(c)?.id : undefined; };
+  // ---- 공간 검사(빈 바닥·큰 빈 사각형·복도 폭·큰 방 채움·깔개 상한·방 크기 위계) — 구조가 맞을 때만, 고치기 글은 soft 로 ----
+  let soft: string[] = [], notes: string[] = [], space: LayoutCheck["space"];
+  if (!errors.length) {
+    const roomIdx = new Map<string, number>(); roomList.forEach(([c, r]) => roomIdx.set(r.id, c));
+    const rugs = new Map<string, number>(), pieces = new Map<string, number>();
+    for (const cp of Array.isArray(L.carpets) ? L.carpets : []) { const id = num(cp?.x) && num(cp?.y) && inMap(cp.x, cp.y) ? compRoom(idx(cp.x, cp.y)) : undefined; if (id) rugs.set(id, (rugs.get(id) ?? 0) + 1); }
+    for (const p of objs) {
+      const d = S.objects[p.id]; const id = roomIdAt(p.x, p.y + fp(p.id).h - 1) ?? roomIdAt(p.x, p.y); if (!id) continue;
+      if (d?.kind === "flat") { if (/rug|runner|carpet/u.test(p.id)) rugs.set(id, (rugs.get(id) ?? 0) + 1); continue; }
+      if (d?.kind === "hang" || isDoorPiece(p.id)) continue;
+      pieces.set(id, (pieces.get(id) ?? 0) + 1);
+    }
+    const portals = [...doorCell, idx(ent.x, ent.y)];
+    for (const p of objs) { const d = S.objects[p.id]; if (d?.stairs === "up") for (let c = 0; c < d.w; c++) portals.push(idx(p.x + c, p.y + 1)); else if (d?.stairs === "down") for (let c = 0; c < d.w; c++) portals.push(idx(p.x + c, p.y + Math.max(1, d.h))); }
+    const spaceRooms = roomList.map(([c, r]) => {
+      const ws = new Set<string>();
+      for (const i of comps[c]!) { const x = i % W, y = (i - x) / W; for (const [dx, dy] of N4) { const X = x + dx, Y = y + dy; if (inMap(X, Y) && wallOf[idx(X, Y)]! >= 0 && !doorCell.has(idx(X, Y))) ws.add(walls[wallOf[idx(X, Y)]!]!.id); } }
+      return { id: r.id, cells: comps[c]!, ...(r.purpose ? { purpose: String(r.purpose) } : {}), ...(r.role ? { role: String(r.role) } : {}), ...(r.repeat ? { repeat: true } : {}), walls: [...ws] };
+    });
+    const res = spaceChecks({ W, H, isFloor: A.isFloor, block, dais: new Set<number>(), rooms: spaceRooms, portals, rugs, pieces });
+    soft = [...stairSoft, ...res.problems]; notes = res.notes;
+    space = { emptyPct: res.emptyPct, roomCV: res.roomCV, rooms: res.rooms };
+  }
   const connections = doors.flatMap((d) => { const a = compRoom(d.a), b = compRoom(d.b); return a && b && a !== b ? [{ a, b, type: "door" }] : []; });
-  return { errors, warnings, badObjects, input, built, objects: objectsOut, sources: srcList.map((x) => x.o), rooms: roomsOut, connections, entranceRoom: compRoom(idx(ent.x, ent.y - 1)) };
+  return { errors, warnings: [...warnings, ...notes], soft, ...(space ? { space } : {}), badObjects, input, built, objects: objectsOut, sources: srcList.map((x) => x.o), rooms: roomsOut, connections, entranceRoom: compRoom(idx(ent.x, ent.y - 1)) };
 }

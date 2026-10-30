@@ -38,14 +38,16 @@ export function layoutCatalog(S: HandInteriorSpec, opts: { categories?: readonly
     const entry = `${id} ${o.w}x${Math.max(1, o.h)} ${k}${up > 0 ? `^${up}` : ""}`;
     (by.get(o.category) ?? by.set(o.category, []).get(o.category)!).push(entry);
   }
-  const lines = [...by.entries()].sort((a, b) => b[1].length - a[1].length).map(([c, ids]) => `${c}: ${ids.slice(0, opts.limit ?? 999).join(", ")}`);
+  const groups = [...by.entries()].sort((a, b) => b[1].length - a[1].length);
+  const lines = groups.map(([c, ids]) => `${c} (${ids.length}): ${ids.slice(0, opts.limit ?? 999).join(", ")}`);
+  const total = groups.reduce((n, [, ids]) => n + ids.length, 0);
   return [
     `floors: ${Object.keys(S.floors).join(", ")}`,
     `walls: ${Object.keys(S.walls).join(", ")}`,
     `sized tables (any WxH in the id, e.g. "dining 3x2"; counter/kcounter are 1 row): ${Object.entries(S.tables).map(([k, t]) => `${k}${t.oneRow ? "(1 row)" : ""}`).join(", ")}`,
     `carpets (any rect, walkable): ${Object.keys(S.lines).filter((k) => S.lines[k]!.kind === "flat").join(", ")}`,
     `daises (any rect, walkable raised platform): ${Object.keys(S.daises).join(", ")}`,
-    "objects — id WxH kind (f = stands on floor, blocks walking · w = against the north wall, on the first floor row under a wall face · h = wall-mounted, on the UPPER wall-face row · d = walkable floor decal · su/sd = stairs up/down, su against the north wall · ^N = art N cells taller, drawn upward):",
+    `objects — ${total} pieces in ${groups.length} categories, grouped as category (count): id WxH kind (f = stands on floor, blocks walking · w = against the north wall, on the first floor row under a wall face · h = wall-mounted, on the UPPER wall-face row · d = walkable floor decal · su/sd = stairs up/down: su is a 3-wide x 3-tall kit on a north wall with free floor south of it, sd a hole in the floor entered from the south · ^N = art N cells taller, drawn upward). Use the whole list, not only the suggested slice: find_pieces(category, tags) returns every piece of a category (or matching words) with its placement and the rooms it is used in.`,
     ...lines,
   ].join("\n");
 }
@@ -57,7 +59,7 @@ export const LAYOUT_FORMAT = `{"map":{"w":W,"h":H},
  "walls":[{"id":"w_kitchen","material":"<wall id>","thickness":1,"path":[[x,y],[x,y]],"purpose":"..."}],
  "doors":[{"wall":"w_kitchen","x":X,"y":Y,"piece":null,"purpose":"..."}],
  "entrance":{"x":X,"y":H-1},
- "rooms":[{"id":"hall","at":[x,y],"floor":"<floor id>","purpose":"...","role":"main|side|corridor|stairs","stairs":"up|down|none"}],
+ "rooms":[{"id":"hall","at":[x,y],"floor":"<floor id>","purpose":"...","role":"main|side|corridor|stairs","stairs":"up|down|none","repeat":false}],
  "wall_items":[{"id":"<catalog id>","wall":"outer","x":X,"y":Y,"purpose":"..."}],
  "objects":[{"id":"<catalog id>","x":X,"y":Y,"repeat":{"count":2,"dx":3,"dy":0},"purpose":"..."}],
  "carpets":[{"id":"<carpet id>","x":X,"y":Y,"w":W,"h":H}], "rails":[{"id":"bars","path":[[x,y],[x,y]]}]}`;
@@ -73,6 +75,9 @@ export const LAYOUT_GRID_RULES = [
   "rooms: every space closed by walls needs exactly one entry {id, at:[x,y] any cell inside, floor, purpose}; two labels in one space means a wall is not closed.",
   "objects: floor pieces, x,y = top-left of the footprint, optional repeat {count,dx,dy}. Footprints must not overlap and must be on floor cells (not face rows). Keep every doorway and the cells in front of it free so every room and the landmark are reachable from the entrance. Tall art draws upward; keep that space free of other tall pieces. Carpets and decals are walkable.",
   "landmark: the one big piece the place is built around, written once (it may also appear in objects/wall_items at the same x,y — counted once).",
+  "Stairs up (su) are a KIT 3 wide x 3 tall: they cover the 2 face rows of a NORTH wall plus the first floor row under it. Put them in wall_items with that wall, x,y = the LEFT cell of the floor row (y = wall row + 3); all 3 columns must be under one straight stretch of that wall (no door or corner), and the 3 cells south of them (y+1) must stay free floor — that is where the player walks in. Stairs down (sd) are a hole in the floor (WxH as listed) entered from the south: keep the row under them free. A room with \"stairs\": \"up\"|\"down\" must contain those stairs.",
+  "Size each room to its content. Empty floor = a floor cell with nothing on it or next to it (wall, face, furniture). A room is rejected when it has an empty area of 3x4 or more off its door-to-door walkways, or more than 25% of its floor is empty; a hall of 80+ floor cells needs 20% of the floor off its walkways furnished. Walkways (shortest paths between doors, entrance and stair entries, 3 cells wide) are never counted as empty. Rugs, carpets and decals do not count as furnishing; at most 1 rug per room (2 in a room of 150+ floor cells). Fix an empty room by moving its walls in or by adding a purposeful group of standing pieces.",
+  "Size rooms by importance: main hall > dining or drawing room > bedrooms > closets and storage. Rooms of the same size side by side should be truly repeated rooms (guest rooms, cells — mark them \"repeat\": true).",
 ];
 
 export const LAYOUT_FORMAT_REGIONS = `{"map":{"w":W,"h":H}, "landmark":{"id":"<object id>","x":X,"y":Y,"purpose":"..."},
@@ -103,6 +108,10 @@ export interface LayoutCheck {
   readonly sources?: readonly LayoutObject[];
   readonly connections?: { a: string; b: string; type: string }[];
   readonly entranceRoom?: string;
+  /** 공간 문제(빈 바닥·큰 빈 사각형·복도 폭·큰 방 채움·깔개 상한) — 고치기가 남았으면 거절 글로, 다 썼으면 경고로 깐다(interiorSpace.ts). */
+  readonly soft?: string[];
+  /** 공간 실측(방마다 빈 칸 %·가장 큰 빈 사각형·깔개 수·기물 수) — 선언에 남겨 측정에 쓴다. */
+  readonly space?: { emptyPct: number; roomCV: number; rooms: Record<string, import("./interiorSpace").SpaceRoomStat> };
 }
 
 /** 칸 배치가 실제로 왔나 — 엄격 스키마로 빈 껍데기({regions:[], outer_wall:{path:[]}})를 채워 보내는 모델이 있다. */
@@ -233,11 +242,12 @@ export function checkLayout(raw: unknown, S: HandInteriorSpec, tileset: TilesetD
 /** 거절 글: Rejected / You sent / Fixed call (영어). */
 export function rejectionText(name: string, check: LayoutCheck, sent: unknown, left: number): string {
   const sentText = JSON.stringify(sent ?? {}).slice(0, 500);
-  return [`Rejected: the interior layout for "${name}" cannot be laid as written (${check.errors.length} problem${check.errors.length === 1 ? "" : "s"}):`,
-    ...check.errors.slice(0, 30).map((e) => `- ${e}`),
+  const all = [...check.errors, ...(check.soft ?? [])];
+  return [`Rejected: the interior layout for "${name}" cannot be laid as written (${all.length} problem${all.length === 1 ? "" : "s"}):`,
+    ...all.slice(0, 30).map((e) => `- ${e}`),
     ...(check.warnings.length ? ["Warnings (fix if you can):", ...check.warnings.slice(0, 8).map((w) => `- ${w}`)] : []),
     `You sent: ${sentText}${sentText.length >= 500 ? "…" : ""}`,
-    `Fixed call: make_place again with the same name and the full corrected spec.layout — change only what the problems name (move or drop the listed pieces, close or extend the named walls, carve the missing doors). ${left > 0 ? `${left} repair${left === 1 ? "" : "s"} left; after that, pieces that still fail are left out and the rest is laid.` : "This was the last repair: next time the pieces that still fail are left out and the rest is laid."}`].join("\n");
+    `Fixed call: make_place again with the same name and the full corrected spec.layout — change only what the problems name (move or drop the listed pieces, close or extend the named walls, carve the missing doors, shrink or furnish the empty rooms). ${left > 0 ? `${left} repair${left === 1 ? "" : "s"} left; after that, pieces that still fail are left out, the rest is laid and space problems stay as warnings.` : "This was the last repair: next time the pieces that still fail are left out and the rest is laid."}`].join("\n");
 }
 
 /** 지은 뒤 남기는 선언(맵 위치 note) — 할 일 검사 layout_built 가 읽는다. 좌표는 지은 맵 좌표. */

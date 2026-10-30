@@ -632,7 +632,7 @@ function trimPlanMargin(args: Record<string, unknown>): { args: Record<string, u
   plan.forEach((row, y) => { for (let x = 0; x < row.length; x++) if (row[x] !== "#") include(x, y); });
   if (x1 < 0) return { args, dx: 0, dy: 0 };
   const points = (value: unknown): XYLike[] => Array.isArray(value) ? value.filter((v): v is XYLike => !!v && typeof v === "object" && typeof (v as XYLike).x === "number" && typeof (v as XYLike).y === "number") : [];
-  for (const key of ["objects", "goods", "start", "links"]) for (const p of points(args[key])) include(p.x, p.y);
+  for (const key of ["objects", "goods", "start", "links", "passages"]) for (const p of points(args[key])) include(p.x, p.y);
   for (const key of ["tables", "daises"]) for (const p of points(args[key]) as (XYLike & { w?: number; h?: number })[]) { include(p.x, p.y); include(p.x + (p.w ?? 1) - 1, p.y + (p.h ?? 1) - 1); }
   for (const zone of Array.isArray(args.zones) ? args.zones as Record<string, number>[] : []) { include(zone.x0, zone.y0); include(zone.x1, zone.y1); }
   for (const line of Array.isArray(args.lines) ? args.lines as { cells?: unknown; rect?: Record<string, number> }[] : []) {
@@ -645,7 +645,7 @@ function trimPlanMargin(args: Record<string, unknown>): { args: Record<string, u
   const shift = <T extends XYLike>(p: T): T => ({ ...p, x: p.x - dx, y: p.y - dy });
   const shiftList = (value: unknown) => Array.isArray(value) ? value.map((v) => v && typeof v === "object" && typeof (v as XYLike).x === "number" ? shift(v as XYLike) : v) : value;
   const next: Record<string, unknown> = { ...args, plan: plan.slice(dy, bottom + 1).map((row) => row.padEnd(W, "#").slice(dx, right + 1)) };
-  for (const key of ["objects", "goods", "start", "links", "tables", "daises"]) if (key in args) next[key] = shiftList(args[key]);
+  for (const key of ["objects", "goods", "start", "links", "tables", "daises", "passages"]) if (key in args) next[key] = shiftList(args[key]);
   if (Array.isArray(args.zones)) next.zones = (args.zones as Record<string, number>[]).map((z) => ({ ...z, x0: z.x0 - dx, x1: z.x1 - dx, y0: z.y0 - dy, y1: z.y1 - dy }));
   if (Array.isArray(args.lines)) next.lines = (args.lines as { cells?: unknown; rect?: Record<string, number> }[]).map((line) => ({
     ...line,
@@ -749,6 +749,7 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
       daises: { type: "array", items: { type: "object", properties: { id: { type: "string" }, x: { type: "integer" }, y: { type: "integer" }, w: { type: "integer", minimum: 1 }, h: { type: "integer", minimum: 1 } }, required: ["id", "x", "y", "w", "h"], additionalProperties: false } },
       goods: { type: "array", items: { type: "object", properties: { id: { type: "string" }, x: { type: "integer" }, y: { type: "integer" } }, required: ["id", "x", "y"], additionalProperties: false } },
       start: { type: "array", items: XY, description: "출입구 칸(생략 시 맨 아래 줄 실내 칸). 위층은 계단 도착 칸." },
+      passages: { type: "array", items: XY, description: "세로 칸막이 3줄 문 틈의 위 두 칸 — 벽면 대신 트인 통로(바닥)로 그린다. 생략하면 칸막이 끝 벽면." },
       links: { type: "array", description: "이동 이벤트(계단·문): 이 맵의 x,y 에 닿으면 toMapId 의 toX,toY 로", items: { type: "object", properties: {
         x: { type: "integer" }, y: { type: "integer" }, toMapId: { type: "string" }, toX: { type: "integer" }, toY: { type: "integer" }, direction: { type: "string", enum: ["up", "down", "left", "right"] },
       }, required: ["x", "y", "toMapId", "toX", "toY"], additionalProperties: false } },

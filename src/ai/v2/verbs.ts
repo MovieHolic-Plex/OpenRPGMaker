@@ -11,6 +11,7 @@ import { INTERIOR_WORDS, interiorCatalogCard, projectBrief } from "./prompt";
 import { hasLayout } from "./builders/interiorLayoutBuild";
 import { LAYOUT_FORMAT, applyLayoutPatch, layoutGiven, layoutPatchIsEmpty, type LayoutPatch } from "./interiorLayout";
 import { layoutReviewRounds } from "./layoutReview";
+import { effectiveSpec, findPieces, interiorTilesetFor } from "./interiorCatalog";
 import type { PiAssistantV2Env } from "./env";
 import { HAND_INTERIOR_TILESET_ID, roomSpecOf } from "@/editor/handInterior/builder";
 import { createBuildRun, type RecordingBuildRun } from "./buildRun";
@@ -1024,6 +1025,25 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     },
   };
 
+  // 실내 칸 배치 목록 조회(2026-10-31 bbox-walls-5·bbox-chipsets 2회차): 목록 카드는 범주별 id 만 싣고, 크기·놓는 자리·쓰인 방은 여기서 범주 하나씩 본다.
+  const findPiecesVerb: PiToolShape = {
+    name: "find_pieces", label: "실내 기물 찾기", concurrency: "shared",
+    description: "Look up interior catalog pieces for spec.layout: every piece of one category (or the pieces matching some words), each with footprint, where it goes (objects / wall_items row), art rise, the example rooms it is used in and what it goes with. Use it to furnish rooms with varied, purposeful pieces beyond the suggested slice.",
+    parameters: { type: "object", properties: {
+      category: { type: "string", description: "a category name from the [Interior catalog] card, e.g. home, kitchen, study, decor (empty = all categories)" },
+      tags: { type: "array", items: { type: "string" }, description: "optional English words to match in ids, e.g. [\"shelf\", \"barrel\"]" },
+    }, required: [] },
+    async execute(_id, params) {
+      const p = params as { category?: string; tags?: string[] };
+      const t = interiorTilesetFor(env.ctx.project, env.ctx.currentMapId);
+      const S = effectiveSpec(t);
+      if (!t || !S) return text({ ok: false, summary: "This project has no interior chipset with a room table." });
+      const r = findPieces(S, String(p.category ?? ""), Array.isArray(p.tags) ? p.tags : []);
+      return text({ ok: true, chipset: t.id, category: p.category ?? "", matched: r.total, shown: r.lines.length, format: "id | footprint WxH (x,y = top-left) | category | where it goes | art rise | used in example rooms | goes with",
+        pieces: r.lines, ...(r.lines.length ? {} : { categories: r.categories }) });
+    },
+  };
+
   const addPeople: PiToolShape = {
     name: "add_people", label: "사람 두기", concurrency: "exclusive",
     description: "Place NPCs from a spec (role, spot word, appearance words, lines). The function picks a walkable cell and builds the first-talk / later-talk pages.",
@@ -1713,7 +1733,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     }
     return result;
   } });
-  const verbs = [writeBlueprint, buildBlueprintPathVerb, makePlace, ...(makeGameOn() && wantsMakeGame(String(task ?? "")) ? [makeGame] : []), editPlace, reviewLayout, moveObject, dressRoomVerb, addPeople, addEvent, addScene, ...(wantsBossEncounter(String(task ?? "")) ? [addBossEncounter] : []), ...(wantsEndingScene(String(task ?? "")) ? [addEndingScene] : []), ...(wantsPuzzle(String(task ?? "")) ? [authorPuzzleChain] : []), sealLockedRoomVerb, setObjectiveVerb, drawObjectVerb, placeObject, inspect, roomPartsVerb, createDungeonPartsVerb(env, () => session.places.values(), session.nonce), restoreEvent, ...(helpersOn() ? [askHelpers] : []), askUser]
+  const verbs = [writeBlueprint, buildBlueprintPathVerb, makePlace, ...(makeGameOn() && wantsMakeGame(String(task ?? "")) ? [makeGame] : []), editPlace, reviewLayout, findPiecesVerb, moveObject, dressRoomVerb, addPeople, addEvent, addScene, ...(wantsBossEncounter(String(task ?? "")) ? [addBossEncounter] : []), ...(wantsEndingScene(String(task ?? "")) ? [addEndingScene] : []), ...(wantsPuzzle(String(task ?? "")) ? [authorPuzzleChain] : []), sealLockedRoomVerb, setObjectiveVerb, drawObjectVerb, placeObject, inspect, roomPartsVerb, createDungeonPartsVerb(env, () => session.places.values(), session.nonce), restoreEvent, ...(helpersOn() ? [askHelpers] : []), askUser]
     // 음악만 바라는 요청은 맵·이벤트를 쓰는 동사를 싣지 않는다 — 보기·묻기만(2026-10-30 r12: 추격 음악 요청에 상자를 찍었다).
     .filter((tool) => !audioOnly(String(task ?? "")) || MUSIC_ONLY_VERBS.has(tool.name))
     .map((tool) => guard(flattenWrapperTool(tool)));

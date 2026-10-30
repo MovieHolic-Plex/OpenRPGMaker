@@ -6,7 +6,8 @@
 import { roomSpecOf, type HandInteriorSpec } from "@/editor/handInterior/builder";
 import { searchParts } from "@/editor/handInterior/parts";
 import { kitHandObjects } from "@/project/roomKit";
-import type { TilesetDef } from "@/project/types";
+import type { Project, TilesetDef } from "@/project/types";
+import { HAND_INTERIOR_TILESET_ID } from "@/editor/handInterior/builder";
 import { layoutCatalog } from "./interiorLayout";
 
 /** 칩셋의 실효 방 사양 — roomKit 역할표(roomSpecOf), 가구 표가 비면 조립 킷 기물(kitHandObjects). 편집기 도구 specFor 와 같은 규칙. */
@@ -68,4 +69,31 @@ export function chipsetCatalog(tileset: TilesetDef | undefined, text = ""): stri
   ].join("\n");
   cache.set(key, out);
   return out;
+}
+
+/** 실내 칸 배치에 쓰는 칩셋 — 지금 맵의 칩셋이 방 역할표를 가진 실내 칩셋이면 그것, 아니면 손 도트 실내 v5. 목록 카드·find_pieces 가 같은 규칙을 쓴다. */
+export function interiorTilesetFor(project: Project | undefined, mapId?: string): TilesetDef | undefined {
+  const cur = project?.tilesets[project.maps[mapId ?? project.startMapId]?.tilesetId ?? ""];
+  if (cur && cur.id !== HAND_INTERIOR_TILESET_ID && cur.roomKit && effectiveSpec(cur)) return cur;
+  return project?.tilesets[HAND_INTERIOR_TILESET_ID];
+}
+
+const PLACE: Record<string, string> = { floor: "floor piece -> objects", wall: "against-wall -> wall_items, y = wall row + 3", hang: "wall-mounted -> wall_items, upper face row y = wall row + 1", flat: "walkable decal -> objects", door: "door leaf -> a door's piece", sidedoor: "side door leaf" };
+/** find_pieces — 한 범주(또는 낱말에 맞는 것)의 기물 전부(영어): id · 크기 · 놓는 자리 · 솟음 · 쓰인 방 종류 · 짝. */
+export function findPieces(S: HandInteriorSpec, category = "", tags: readonly string[] = [], max = 80): { categories: string[]; total: number; lines: string[] } {
+  const cats = new Map<string, number>(); for (const o of Object.values(S.objects)) cats.set(o.category, (cats.get(o.category) ?? 0) + 1);
+  const cat = cats.has(category) ? category : "";
+  const words = tags.map((t) => String(t).trim()).filter(Boolean).join(" ");
+  const ids = words ? searchParts(words, cat, S).ids : Object.keys(S.objects).filter((id) => !cat || S.objects[id]!.category === cat);
+  const rooms = new Map<string, Set<string>>();
+  for (const [, , room, items] of S.rooms?.examples ?? []) for (const [id] of items) (rooms.get(id) ?? rooms.set(id, new Set()).get(id)!).add(room);
+  const lines = ids.filter((id) => S.objects[id]!.kind !== "door" && S.objects[id]!.kind !== "sidedoor").slice(0, max).map((id) => {
+    const o = S.objects[id]!; const up = Math.round((o.up ?? 0) / 16);
+    const place = o.stairs === "up" ? `STAIRS UP kit ${o.w}x3 -> wall_items on a north wall, x,y = left cell of the floor row (y = wall row + 3); the ${o.w} cells south of it stay free floor`
+      : o.stairs === "down" ? `STAIRS DOWN, a ${o.w}x${Math.max(1, o.h)} hole -> objects; the row south of it stays free floor` : PLACE[o.kind] ?? "objects";
+    const used = [...(rooms.get(id) ?? [])].slice(0, 4).join(", ");
+    const pair = (o.pair ?? []).filter((p) => S.objects[p]).slice(0, 3).join(", ");
+    return `${id} | ${o.w}x${Math.max(1, o.h)} | ${o.category} | ${place}${up > 0 ? ` | art +${up} up` : ""}${used ? ` | used in: ${used}` : ""}${pair ? ` | goes with: ${pair}` : ""}`;
+  });
+  return { categories: [...cats].sort((a, b) => b[1] - a[1]).map(([c, n]) => `${c} (${n})`), total: ids.length, lines };
 }

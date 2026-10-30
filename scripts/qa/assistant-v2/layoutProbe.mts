@@ -27,8 +27,13 @@ const fresh = () => {
 // 1) 좋은 배치
 {
   const { env, call } = fresh();
-  const made = await call("make_place", { spec: { type: "interior", name: "Probe Inn", layout } });
-  console.log(`[good] ok=${made.ok} map=${made.mapIds?.[0]}\n  summary=${String(made.summary).slice(0, 400)}\n  warnings=${JSON.stringify(made.warnings ?? []).slice(0, 600)}`);
+  // 공간 문제(빈 바닥·깔개)는 고치기 두 번 동안 거절, 그다음 경고로 깐다 — 같은 배치를 세 번까지 보낸다.
+  let made = await call("make_place", { spec: { type: "interior", name: "Probe Inn", layout } });
+  for (let k = 1; k < 3 && !made.ok && /^Rejected:/u.test(String(made.summary)); k++) {
+    console.log(`[good try ${k}] ${String(made.summary).split("\nYou sent")[0]!.slice(0, 2500)}`);
+    made = await call("make_place", { spec: { type: "interior", name: "Probe Inn", layout } });
+  }
+  console.log(`[good] ok=${made.ok} map=${made.mapIds?.[0]}\n  summary=${String(made.summary).slice(0, 400)}\n  warnings=${JSON.stringify(made.warnings ?? []).slice(0, 4000)}`);
   const mapId = made.mapIds?.[0];
   if (mapId) {
     const m = env.ctx.project.maps[mapId]!;
