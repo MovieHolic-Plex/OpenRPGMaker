@@ -71,11 +71,19 @@ function walk(value: unknown, path: string, nouns: readonly string[], hits: Ship
  * 검사 낱말 = 그 데모 styleLock.bannedProperNouns + 전역 목록 + WIZARDING_ORIGINAL_NAMES.
  */
 export function validateShippedPlayJson(id: FlagshipDemoId | string, playJsonText: string): readonly ShippedPlayJsonHit[] {
-  const parsed = JSON.parse(playJsonText) as Record<string, unknown>;
-  const nouns = nounsFor(id);
+  return findOriginalIpNames(JSON.parse(playJsonText), nounsFor(id));
+}
+
+/**
+ * 이미 파싱된 프로젝트·play.json 객체에서 낱말 목록이 들어간 «플레이어에게 보이는 글»을 찾는다.
+ * run_lint 의 original-ip-name 경고(조수가 부를 수 있는 길)와 validateShippedPlayJson 이 같은 걷기를 쓴다.
+ */
+export function findOriginalIpNames(root: unknown, nouns: readonly string[]): readonly ShippedPlayJsonHit[] {
   const hits: ShippedPlayJsonHit[] = [];
-  for (const root of PLAYER_VISIBLE_ROOTS) {
-    if (parsed[root] !== undefined) walk(parsed[root], root, nouns, hits);
+  if (!root || typeof root !== "object") return hits;
+  const record = root as Record<string, unknown>;
+  for (const key of PLAYER_VISIBLE_ROOTS) {
+    if (record[key] !== undefined) walk(record[key], key, nouns, hits);
   }
   return hits;
 }

@@ -7,6 +7,7 @@ import { faceLookText } from "@/assets/faceLooks";
 import { oprnPanoramaSetOfImage } from "@/assets/oprnPanoramas";
 import { mapBackgroundVisibility } from "@/project/mapBackgroundVisibility";
 import { lintScenePolish } from "@/project/lint/scenePolishLint";
+import { lintOriginalIpNames } from "@/project/lint/originalIpLint";
 import { SHARED_PORTRAIT_ASSETS, findSharedPortrait, sharedExpressionSetIdOf, sharedPortraitExpressionsOfSet, sharedPortraitReferenceNote } from "@/assets/sharedPortraitAssets";
 import { activeGenreLockVisualCatalog } from "@/project/genreLockVisuals";
 import { facePresentationForResource } from "@/project/facePresentation";
@@ -761,6 +762,7 @@ export function runProjectLint(project: Project, args: Record<string, unknown>):
     ...verifyPlacedTiles(project),
     ...flatGroundIssues(project),
     ...lintScenePolish(project),
+    ...lintOriginalIpNames(project),
   ];
   const errors = issues.filter((issue) => issue.severity === "error").length;
   const warnings = issues.filter((issue) => issue.severity === "warning").length;
@@ -782,6 +784,7 @@ const runLint: ToolDefinition = {
   description:
     "projectLint, 타일셋 팔레트 lint, 타일 후검증을 실행해 무결성 issue 목록(error/warning/info)을 반환한다. "
     + "검사 범위는 구조 무결성(참조·도달성·전이·이벤트 겹침·맵 크기·플래그 사용)과 장면 다듬기 경고 scene-*(문 아닌 칸의 이동·짝 안 맞는 착지·제자리 사라짐·대화창 위치 섞임·BGM 없는 맵·움직이는 교통·겹쳐 선 인물 — read_assistant_skill game-scene-polish)다. "
+    + "원작 IP 고유명(해리포터풍 학교·기숙사 이름 등)이 플레이어에게 보이는 글에 있으면 warning original-ip-name 으로 알린다 — 공개·판매용이면 일반 낱말로 바꾼다. "
     + "보상 중복, 경제 균형, 퀘스트 진행 순서 같은 게임플레이 설계 결함은 검사하지 않는다 — error 0 은 '설계가 옳다'는 뜻이 아니다.",
   mode: "read",
   parameters: {
