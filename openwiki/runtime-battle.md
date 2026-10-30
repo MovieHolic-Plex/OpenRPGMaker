@@ -3,6 +3,10 @@
 - `EnemyRecord.walkChip?: { characterResourceId: string; characterIndex: number }`(0~7). 있으면 측면 전투에서 몬스터 그림 대신 걷기 칩(CharSet 288×256, 24×32)이 **오른쪽 보기** 행으로 선다. 없으면 기존 경로 그대로(바이트 동일). 정규화는 `normalizeEnemyWalkChip`(`databaseEnemyTroopRecordModel.ts`): 빈 id 는 버리고 칸은 반올림해 0~7 로 자른다. 변신(`transformResourceId`)한 적이나 id 가 풀리지 않는 칩은 옛 경로로 떨어진다.
 - 그림: `battleFieldDom.enemyButton` 의 첫 분기가 `appendWalkChipBattler(..., "right")` 를 부르고(`facing` 인자, 기본 `"left"` 라 파티 경로 불변) 스프라이트에 `battle-enemy-image` 를 함께 단다 — 적 HP·표적·쓰러짐·맞춤 규칙이 계속 그림을 찾는다. 포즈는 파티원과 같다(대기·접근/복귀 걸음·공격 한 걸음·피격·쓰러짐).
 - 준비 관문: `battleAssetPrefetch.troopImageUrls` 가 `walkChip.characterResourceId` 도 싣는다.
+- 크기(2026-10-30): `EnemyRecord.battleScalePercent` 가 걷기 칩 적에도 먹는다. 예전에는 칸·노드 상자가 인라인 고정 px(48×64·96)라 200% 도 100% 와 같았다(실측: 두 적 모두 css 48×64).
+  100% 가 아니면 `appendWalkChipBattler(..., "right", true)` 가 노드에 `--battle-walk-chip-k = --battle-enemy-scale × --battle-enemy-fit` 을 두고 노드 상자·칸·시트 크기·칸 위치(포즈·걸음 키프레임 포함)를 모두 그 배율로 calc 한다.
+  노드는 발밑 가운데 기준이라 발이 그대로 서고(발 아래 여백 6px 는 배율과 무관), 상자가 함께 커져 조준 ▼·이름표가 가운데에 붙는다. 맞춤(`battleEnemyFit`)은 스프라이트의 `--battle-enemy-base-width/height`(=96px)로 잰다.
+  100% 는 예전 인라인 값 그대로(파티 걷기 칩 경로도 불변). 실측(런타임 QA, retro2003 측면): 100% css 48×64 · 200% 94.4×125.9(fit 0.983) · 300% 128.4×171.3(fit 0.892), 200%·300% 의 발 바닥선은 같은 자리 100% 때와 같은 줄(화면 457.4px).
 - 편집기: 적 탭 「걷기 칩 (서 있는 적)」 선택기. 조수: `upsert_enemy.enemy.walkChip {characterResourceId, characterIndex}`(고정 속성), 지우기는 `clearFields:["walkChip"]`. 풀리지 않는 id 는 `enemy-reference-not-found` 로 거부하고 후보 id 를 알린다(`tex_*_charset_*` 는 `<계열>-charset-*` 로 바꿔 받는다). 헤드리스 `simulate_battle` 은 그림과 무관해 영향이 없다.
 
 ## 상태 배지 글자는 저작 상태 이름 · 승리 띠·명령 질문은 용어 (2026-10-30)
@@ -15,6 +19,9 @@
   규칙: 이름이 4글자 이하면 그대로(「마비」「독」), 한글·한자·가나가 든 긴 이름은 첫 낱말 3글자까지(「마비 상태」→「마비」), 긴 라틴 이름(「Paralysis」)은 비워서 CSS 약어(PAR)가 남는다.
   능력 증감(`*-up`/`*-down`, 화살표가 뜻)과 전투불능(`death`)은 이 규칙을 타지 않는다. 런타임은 i18n DOM 번역을 받지 않으므로(게임 글자는 저작물) 게임의 언어 = 저작한 상태 이름이다.
 - **승리 띠** `meta.terms.battleVictory`(기본 「승리!」) — `battleDom.showFinaleStamp`. 에메랄드 화면에는 띠가 없다. 「전멸…」은 아직 고정 글자다.
+  - **적 그룹별 덮어쓰기** `TroopRecord.victoryBanner?: string`(최대 40자, 2026-10-30). 우선순위는 이 전투 적 그룹의 `victoryBanner` → `terms.battleVictory` → 기본 「승리!」이고,
+    빈 문자열은 어느 단계에서도 「없음」이다(`resolveVictoryBannerText`, `src/project/terms.ts`). `normalizeTroopRecord` 는 비거나 빈칸뿐이면 키를 만들지 않는다(옛 JSON 바이트 유지).
+    편집: 적 그룹 「설정」 카드의 「승리 띠 글자」(자리표시자 = 지금 용어 값). 조수: `upsert_troop` 의 `troop.victoryBanner`(문자열; 빈 문자열 또는 `clearFields:["victoryBanner"]` = 지움).
 - **명령 질문 줄** `meta.terms.battleCommandPrompt`(기본 「{name은} 무엇을 할까?」) — `battleDirectorDom.commandPromptState` 가 `formatBattleCommandPrompt`(`src/project/terms.ts`)로 채운다.
   `{name}` = 이름 그대로, `{name은}`·`{name이}`·`{name을}` = 받침에 맞춘 조사. 포켓몬 화면은 이름 자리표시자 바로 뒤 첫 빈칸이 줄바꿈이 된다 — 기본값에서 예전 글자와 한 글자도 다르지 않다.
 - 편집: 자료집 「용어 → 전투」(명령 질문·승리 띠, 미리보기 포함). 조수: `set_project_settings` 의 `terms.battleVictory`·`terms.battleCommandPrompt`(문자열, 설명 달림 — 빈 문자열은 무시).
