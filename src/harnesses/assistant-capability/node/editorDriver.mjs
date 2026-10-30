@@ -12,6 +12,8 @@ import { isDeepStrictEqual } from 'node:util';
 // Capture the actual rendered pixels even when an unrelated web font request
 // never settles. The reviewer still checks text and chip visibility in the PNG.
 process.env.PW_TEST_SCREENSHOT_NO_FONTS_READY = '1';
+// 편집기 부팅 대기 상한(밀리초). 부하가 높은 박스에서는 HARNESS_WAIT_MS 로 늘린다(기본 120초).
+const HARNESS_WAIT_MS = Number(process.env.HARNESS_WAIT_MS ?? 120000);
 
 const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../../../..');
 export const digest = value => createHash('sha256').update(value).digest('hex');
@@ -66,7 +68,7 @@ export async function startHost(projectDir, dir) {
   // HARNESS_HOST_LOG=<file>: 진단용으로 호스트 출력을 그 파일(0600)에 남긴다. 제공자 오류에 자격 정보가 섞일 수 있으니 저장소·증거 폴더에 두지 말 것.
   if (process.env.HARNESS_HOST_LOG) { const fd = openSync(process.env.HARNESS_HOST_LOG, 'a', 0o600); const tee = data => writeSync(fd, data); child.stdout.on('data', tee); child.stderr.on('data', tee); }
   const url=await new Promise((done, fail)=>{
-    const timer=setTimeout(()=>fail(Error('Project host startup deadline')),180000);
+    const timer=setTimeout(()=>fail(Error('Project host startup deadline')),Math.max(180000,HARNESS_WAIT_MS));
     child.on('error', error=>{clearTimeout(timer);fail(error);});
     child.on('exit', code=>{clearTimeout(timer);fail(Error(`Project host exited ${code}: ${log.slice(-1000)}`));});
     child.stdout.on('data', ()=>{if(log.includes('OPRN 로컬 편집기:')){clearTimeout(timer);done(`http://127.0.0.1:${port}`);}});
@@ -172,22 +174,22 @@ export async function newEditor(browser, url, projectDir, config, captureOptions
       return response;
     };
   },{...(config??{}),hideStartMarker:process.env.HARNESS_START_MARKER!=='1'});
-  await page.goto(url,{waitUntil:'domcontentloaded',timeout:120000});
+  await page.goto(url,{waitUntil:'domcontentloaded',timeout:HARNESS_WAIT_MS});
   if(await page.locator('#access-code').count()) {
     await page.locator('#access-code').fill(readFileSync(resolve(projectDir,'.oprn-host-access'),'utf8').trim());
-    await Promise.all([page.waitForNavigation({waitUntil:'domcontentloaded',timeout:120000}),page.locator('form[action="/__oprn/login"] button').click()]);
+    await Promise.all([page.waitForNavigation({waitUntil:'domcontentloaded',timeout:HARNESS_WAIT_MS}),page.locator('form[action="/__oprn/login"] button').click()]);
   }
   await page.getByTestId('boot-loader').waitFor({state:'hidden',timeout:bootTimeoutMs});
-  await page.waitForFunction(()=>window.__oprnAiBridge?.status().ready && document.querySelector('[data-testid="ai-input"]'),null,{timeout:120000});
+  await page.waitForFunction(()=>window.__oprnAiBridge?.status().ready && document.querySelector('[data-testid="ai-input"]'),null,{timeout:HARNESS_WAIT_MS});
   // Companion readiness precedes canvas construction in a fresh context.
   // Wait for the editor's own rendered tile residency before taking evidence.
-  await page.waitForFunction(()=>window.__oprnEditReliefStats?.().residentTileCells>0,null,{timeout:120000});
+  await page.waitForFunction(()=>window.__oprnEditReliefStats?.().residentTileCells>0,null,{timeout:HARNESS_WAIT_MS});
   const welcome=page.getByTestId('editor-welcome-skip');if(await welcome.isVisible().catch(()=>false))await welcome.click();
   // A fresh editor now starts with the conversation folded. Open it through
   // the visible restore control before using the actual input/settings UI.
   const restore = page.getByTestId('ai-collapsed-restore');
   if (await restore.isVisible().catch(()=>false)) await restore.click();
-  await page.getByTestId('ai-input').waitFor({state:'visible',timeout:120000});
+  await page.getByTestId('ai-input').waitFor({state:'visible',timeout:HARNESS_WAIT_MS});
   // 로컬 CLI 엔진: 부팅 직후 첫 연결 확인이 부하로 시간 초과하면 그 결과(unreachable)를 캐시해 입력칸이 끝까지 잠긴다
   // (2026-10-30 실측, 부하 80: 「Claude Code (내 PC) 연결 확인 필요」 → fill 120초 초과). 워커는 그사이 데워지므로 다시 읽어 확인을 새로 받는다(최대 2번).
   const inputLocked=()=>page.getByTestId('ai-input').evaluate(el=>el.getAttribute('aria-disabled')==='true').catch(()=>false);
@@ -196,18 +198,18 @@ export async function newEditor(browser, url, projectDir, config, captureOptions
     while(await inputLocked()&&Date.now()<until)await page.waitForTimeout(3000);
     if(!await inputLocked())break;
     console.error(`[editorDriver] ai-input still locked after boot — reload ${retry+1}/2`);
-    await page.reload({waitUntil:'domcontentloaded',timeout:120000});
+    await page.reload({waitUntil:'domcontentloaded',timeout:HARNESS_WAIT_MS});
     await page.getByTestId('boot-loader').waitFor({state:'hidden',timeout:bootTimeoutMs});
-    await page.waitForFunction(()=>window.__oprnAiBridge?.status().ready && document.querySelector('[data-testid="ai-input"]'),null,{timeout:120000});
+    await page.waitForFunction(()=>window.__oprnAiBridge?.status().ready && document.querySelector('[data-testid="ai-input"]'),null,{timeout:HARNESS_WAIT_MS});
     const again=page.getByTestId('ai-collapsed-restore');
     if (await again.isVisible().catch(()=>false)) await again.click();
-    await page.getByTestId('ai-input').waitFor({state:'visible',timeout:120000});
+    await page.getByTestId('ai-input').waitFor({state:'visible',timeout:HARNESS_WAIT_MS});
   }
   return { page,context,loads };
 }
 async function saveThroughUi(page) {
   await page.getByTestId('toolbar-save').click();
-  await page.waitForFunction(()=>['idle','saved','error','unsaved-session'].includes(document.querySelector('[data-testid="toolbar-save"]')?.dataset.autosaveKind),null,{timeout:120000});
+  await page.waitForFunction(()=>['idle','saved','error','unsaved-session'].includes(document.querySelector('[data-testid="toolbar-save"]')?.dataset.autosaveKind),null,{timeout:HARNESS_WAIT_MS});
   const kind=await page.getByTestId('toolbar-save').getAttribute('data-autosave-kind');
   if(!['idle','saved'].includes(kind))throw Error(`Actual editor save failed: ${kind}`);
   return {kind,dirty:false};

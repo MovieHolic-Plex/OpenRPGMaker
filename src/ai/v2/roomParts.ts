@@ -7,47 +7,47 @@ import { SHAPE_GUIDE, type RoomDesign } from "@/editor/handInterior/designRoom";
 
 /**
  * 모양 예시 — 모델이 모양을 «고를» 재료(2026-10-29 3c: 15판 설계 14개가 rect, 모양 어휘가 한 줄 이름뿐이라 고를 수 없었다).
- * 기물은 자리 보기용 서재 물건이다 — 네 방 용도의 기물로 바꾼다. 곁방 예시(two-room)는 zones 두 개(각자 design)다.
+ * 기물은 자리 보기용 서재 물건이다 — 네 방 용도의 기물로 바꾼다. 곁방 예시(two-room)는 zones 두 개(각자 design)다. 예마다 areas(구역·초점·오갈 이유 — designAreas.ts)를 보인다.
  */
 export const SHAPE_EXAMPLES: readonly { readonly shape: string; readonly ko: string; readonly zones: readonly { kind: string; purpose: string; design: RoomDesign }[] }[] = [
-  { shape: "L", ko: "ㄱ자", zones: [{ kind: "study", purpose: "ㄱ자 서재", design: { shape: "L", corner: "ne", w: 8, h: 5, door: "left", floor: "boards", wall: "plaster", groups: [
-    { name: "책장 벽", at: "nw", items: [{ id: "bookshelf 3w" }, { id: "bookshelf 2w" }] },
-    { name: "꺾인 벽 밑", at: "ne", items: [{ id: "globe" }, { id: "curtained window", dy: -2 }] },
-    { name: "책상", at: "center", pos: 0.6, rug: "green", items: [{ id: "desk 3x1" }, { id: "chair N", dx: 1, dy: 1 }] },
-    { name: "독서 구석", at: "sw", items: [{ id: "armchair" }, { id: "roundtable", dx: 1 }] },
-    { name: "상자", at: "se", items: [{ id: "chest" }] }] } }] },
-  { shape: "U", ko: "ㄷ자", zones: [{ kind: "study", purpose: "ㄷ자 서재", design: { shape: "U", w: 9, h: 5, door: "center", floor: "dplank", wall: "goldwood", groups: [
-    { name: "서쪽 날개 책장", at: "nw", items: [{ id: "bookshelf 2w" }] },
-    { name: "동쪽 날개 책장", at: "ne", items: [{ id: "bookshelf 2w" }] },
-    { name: "들어간 벽 앞 벽난로", at: "north", pos: 0.5, items: [{ id: "fireplace" }] },
-    { name: "책상", at: "center", rug: "royal", items: [{ id: "desk 3x1" }, { id: "chair N", dx: 1, dy: 1 }] },
-    { name: "손님 자리", at: "sw", items: [{ id: "armchair" }, { id: "plant", dx: 1 }] },
-    { name: "지구본", at: "se", items: [{ id: "globe" }] }] } }] },
-  { shape: "bay", ko: "창가 돌출", zones: [{ kind: "study", purpose: "창가 돌출 서재", design: { shape: "bay", w: 9, h: 5, door: "center", floor: "parquet", wall: "plaster", groups: [
-    { name: "돌출부 창가 책상", at: "north", pos: 0.5, items: [{ id: "curtained window", dx: 1, dy: -2 }, { id: "desk 3x1" }, { id: "chair N", dx: 1, dy: 1 }] },
-    { name: "서쪽 내려온 벽 책장", at: "nw", items: [{ id: "bookshelf 2w" }] },
-    { name: "동쪽 내려온 벽 책장", at: "ne", items: [{ id: "bookshelf 2w" }] },
-    { name: "독서 구석", at: "sw", rug: "red", items: [{ id: "armchair" }, { id: "roundtable", dx: 1 }] },
-    { name: "지구본", at: "se", items: [{ id: "globe" }] }] } }] },
-  { shape: "alcove", ko: "알코브", zones: [{ kind: "study", purpose: "알코브 서재", design: { shape: "alcove", corner: "nw", w: 8, h: 5, door: "right", floor: "boards", wall: "stone", groups: [
-    { name: "알코브 독서 의자", at: "nw", rug: "red", items: [{ id: "armchair" }, { id: "book pile", dx: 1 }] },
-    { name: "내려온 북벽 책장", at: "north", pos: 1, items: [{ id: "bookshelf 3w" }, { id: "bookshelf 2w" }] },
-    { name: "책상", at: "center", pos: 0.6, items: [{ id: "desk 3x1" }, { id: "chair N", dx: 1, dy: 1 }] },
-    { name: "화분", at: "sw", items: [{ id: "plant" }] },
-    { name: "상자", at: "se", items: [{ id: "chest" }] }] } }] },
-  { shape: "T", ko: "ㅜ자", zones: [{ kind: "study", purpose: "ㅜ자 서재", design: { shape: "T", w: 8, h: 5, door: "center", floor: "flag", wall: "stone", groups: [
-    { name: "책장 벽", at: "north", items: [{ id: "bookshelf 3w" }, { id: "bookshelf 2w" }, { id: "bookshelf 3w" }] },
-    { name: "책상", at: "center", rug: "blue", items: [{ id: "desk 3x1" }, { id: "chair N", dx: 1, dy: 1 }] },
-    { name: "서쪽 안락의자", at: "west", pos: 0.3, items: [{ id: "armchair" }] },
-    { name: "동쪽 지구본", at: "east", pos: 0.3, items: [{ id: "globe" }] }] } }] },
+  { shape: "L", ko: "ㄱ자", zones: [{ kind: "study", purpose: "L-shaped study", design: { shape: "L", corner: "ne", w: 8, h: 5, door: "left", floor: "boards", wall: "plaster", areas: [{ name: "bookshelf wall", purpose: "where the owner's books are", focal: "bookshelf 3w", visit: "a missing book is a clue" }, { name: "desk", purpose: "where the owner worked", focal: "desk 3x1", visit: "inspect a note in the drawer" }, { name: "reading nook", purpose: "where guests sit", focal: "armchair", visit: "a key under the chair" }], groups: [
+    { name: "bookshelf wall", at: "nw", items: [{ id: "bookshelf 3w" }, { id: "bookshelf 2w" }] },
+    { name: "under the bent wall", at: "ne", items: [{ id: "globe" }, { id: "curtained window", dy: -2 }] },
+    { name: "desk", at: "center", pos: 0.6, rug: "green", items: [{ id: "desk 3x1" }, { id: "chair N", dx: 1, dy: 1 }] },
+    { name: "reading nook", at: "sw", items: [{ id: "armchair" }, { id: "roundtable", dx: 1 }] },
+    { name: "chest", at: "se", items: [{ id: "chest" }] }] } }] },
+  { shape: "U", ko: "ㄷ자", zones: [{ kind: "study", purpose: "U-shaped study", design: { shape: "U", w: 9, h: 5, door: "center", floor: "dplank", wall: "goldwood", areas: [{ name: "fireplace", purpose: "the heart of the room", focal: "fireplace", visit: "a half-burnt letter in the ashes" }, { name: "desk", purpose: "work spot", focal: "desk 3x1", visit: "read the ledger" }, { name: "guest seats", purpose: "conversation", focal: "armchair", visit: "talk to a person" }], groups: [
+    { name: "west wing shelf", at: "nw", items: [{ id: "bookshelf 2w" }] },
+    { name: "east wing shelf", at: "ne", items: [{ id: "bookshelf 2w" }] },
+    { name: "fireplace at the recessed wall", at: "north", pos: 0.5, items: [{ id: "fireplace" }] },
+    { name: "desk", at: "center", rug: "royal", items: [{ id: "desk 3x1" }, { id: "chair N", dx: 1, dy: 1 }] },
+    { name: "guest seats", at: "sw", items: [{ id: "armchair" }, { id: "plant", dx: 1 }] },
+    { name: "globe", at: "se", items: [{ id: "globe" }] }] } }] },
+  { shape: "bay", ko: "창가 돌출", zones: [{ kind: "study", purpose: "bay-window study", design: { shape: "bay", w: 9, h: 5, door: "center", floor: "parquet", wall: "plaster", areas: [{ name: "window desk", purpose: "writing while looking outside", focal: "desk 3x1", visit: "clue outside the window, diary" }, { name: "reading nook", purpose: "resting spot", focal: "armchair", visit: "a book on the table" }], groups: [
+    { name: "desk in the bay", at: "north", pos: 0.5, items: [{ id: "curtained window", dx: 1, dy: -2 }, { id: "desk 3x1" }, { id: "chair N", dx: 1, dy: 1 }] },
+    { name: "shelf on the lowered west wall", at: "nw", items: [{ id: "bookshelf 2w" }] },
+    { name: "shelf on the lowered east wall", at: "ne", items: [{ id: "bookshelf 2w" }] },
+    { name: "reading nook", at: "sw", rug: "red", items: [{ id: "armchair" }, { id: "roundtable", dx: 1 }] },
+    { name: "globe", at: "se", items: [{ id: "globe" }] }] } }] },
+  { shape: "alcove", ko: "알코브", zones: [{ kind: "study", purpose: "alcove study", design: { shape: "alcove", corner: "nw", w: 8, h: 5, door: "right", floor: "boards", wall: "stone", areas: [{ name: "alcove", purpose: "hidden reading spot", focal: "armchair", visit: "a memo in the book pile" }, { name: "desk", purpose: "work spot", focal: "desk 3x1", visit: "inspect the drawer" }], groups: [
+    { name: "alcove reading chair", at: "nw", rug: "red", items: [{ id: "armchair" }, { id: "book pile", dx: 1 }] },
+    { name: "shelves on the lowered north wall", at: "north", pos: 1, items: [{ id: "bookshelf 3w" }, { id: "bookshelf 2w" }] },
+    { name: "desk", at: "center", pos: 0.6, items: [{ id: "desk 3x1" }, { id: "chair N", dx: 1, dy: 1 }] },
+    { name: "plant", at: "sw", items: [{ id: "plant" }] },
+    { name: "chest", at: "se", items: [{ id: "chest" }] }] } }] },
+  { shape: "T", ko: "ㅜ자", zones: [{ kind: "study", purpose: "T-shaped study", design: { shape: "T", w: 8, h: 5, door: "center", floor: "flag", wall: "stone", areas: [{ name: "bookshelf wall", purpose: "the collection", focal: "bookshelf 3w", visit: "book order puzzle" }, { name: "desk", purpose: "work spot", focal: "desk 3x1", visit: "locked drawer" }], groups: [
+    { name: "bookshelf wall", at: "north", items: [{ id: "bookshelf 3w" }, { id: "bookshelf 2w" }, { id: "bookshelf 3w" }] },
+    { name: "desk", at: "center", rug: "blue", items: [{ id: "desk 3x1" }, { id: "chair N", dx: 1, dy: 1 }] },
+    { name: "west armchair", at: "west", pos: 0.3, items: [{ id: "armchair" }] },
+    { name: "east globe", at: "east", pos: 0.3, items: [{ id: "globe" }] }] } }] },
   { shape: "two-room", ko: "곁방 딸린 2실(zones 둘)", zones: [
-    { kind: "study", purpose: "본 서재", design: { shape: "rect", w: 7, h: 5, door: "center", floor: "boards", wall: "plaster", groups: [
-      { name: "책장 벽", at: "north", items: [{ id: "bookshelf 3w" }, { id: "bookshelf 2w" }] },
-      { name: "책상", at: "center", rug: "red", items: [{ id: "desk 3x1" }, { id: "chair N", dx: 1, dy: 1 }] },
-      { name: "안락의자", at: "sw", items: [{ id: "armchair" }, { id: "roundtable", dx: 1 }] }] } },
-    { kind: "storeroom", purpose: "곁방 서고", design: { shape: "rect", w: 4, h: 4, floor: "dplank", wall: "plaster", groups: [
-      { name: "책장", at: "north", items: [{ id: "bookshelf 2w" }, { id: "bookshelf 1w" }] },
-      { name: "상자", at: "sw", items: [{ id: "chest" }, { id: "crate", dx: 1 }] }] } }] },
+    { kind: "study", purpose: "main study", design: { shape: "rect", w: 7, h: 5, door: "center", floor: "boards", wall: "plaster", areas: [{ name: "desk", purpose: "the owner's workplace", focal: "desk 3x1", visit: "clue to the side-room key" }], groups: [
+      { name: "bookshelf wall", at: "north", items: [{ id: "bookshelf 3w" }, { id: "bookshelf 2w" }] },
+      { name: "desk", at: "center", rug: "red", items: [{ id: "desk 3x1" }, { id: "chair N", dx: 1, dy: 1 }] },
+      { name: "armchair", at: "sw", items: [{ id: "armchair" }, { id: "roundtable", dx: 1 }] }] } },
+    { kind: "storeroom", purpose: "side archive", design: { shape: "rect", w: 4, h: 4, floor: "dplank", wall: "plaster", areas: [{ name: "archive", purpose: "where hidden records are kept", focal: "chest", visit: "open the locked chest" }], groups: [
+      { name: "bookshelf", at: "north", items: [{ id: "bookshelf 2w" }, { id: "bookshelf 1w" }] },
+      { name: "chest", at: "sw", items: [{ id: "chest" }, { id: "crate", dx: 1 }] }] } }] },
 ];
 
 const KIND_WORDS: readonly [RegExp, string][] = [
@@ -70,13 +70,13 @@ export interface RoomPartsOut {
   readonly referenceIds: string[];
   /** 모양 어휘(최소 바닥 크기·쓰임)와 모양별 설계 예시(zones 그대로 make_place 에 넣을 수 있는 꼴). */
   readonly shapes: string[];
-  readonly shapeExamples: { shape: string; ko: string; zones: unknown }[];
+  readonly shapeExamples: { shape: string; zones: unknown }[];
 }
 
 /** 기물 한 줄: id | 한국어 | 가로×세로 | 종류 | 놓는 곳. */
 const line = (id: string, S: HandInteriorSpec): string => {
   const o = S.objects[id]!;
-  const kind = o.kind === "wall" ? "벽 가구(북벽만)" : o.kind === "hang" ? "걸이(북벽 벽면, dy -2)" : o.kind === "flat" ? "바닥 그림(밟음)" : o.facing ? `바닥(${o.facing}쪽을 봄)` : "바닥";
+  const kind = o.kind === "wall" ? "wall furniture (north wall only)" : o.kind === "hang" ? "hung (north wall face, dy -2)" : o.kind === "flat" ? "floor art (walkable)" : o.facing ? `floor (faces ${o.facing})` : "floor";
   return `${id} | ${o.ko} | ${o.w}×${Math.max(1, o.h)} | ${kind}${o.place ? ` | ${o.place.slice(0, 60)}` : ""}`;
 };
 
@@ -110,8 +110,8 @@ export function roomParts(project: Project, purpose: string, query?: string, til
     goods: Object.keys(S.goods).slice(0, 40),
     references: refs.map((t) => referenceSummary(t, S)),
     referenceIds: refs.map((t) => t.id),
-    shapes: SHAPE_GUIDE.map((g) => `${g.shape} (${g.ko}) — 바닥 ${g.min} 이상 — ${g.what}`).concat("곁방 딸린 2실 — 모양이 아니라 zones 를 둘 둔다(각자 kind·design). 두 방은 문으로 이어진다"),
-    shapeExamples: SHAPE_EXAMPLES.map((e) => ({ shape: e.shape, ko: e.ko, zones: e.zones })),
+    shapes: SHAPE_GUIDE.map((g) => `${g.shape} — floor ${g.min} or more — ${g.en}`).concat("several rooms — not a shape: declare one zone per room (each with id, x, y, design) plus connections; that is the room graph"),
+    shapeExamples: SHAPE_EXAMPLES.map((e) => ({ shape: e.shape, zones: e.zones })),
   };
 }
 
@@ -127,7 +127,7 @@ function pickReferences(tpls: readonly InteriorRoomTemplate[], n: number): Inter
 /** 견본 하나 → 바닥 좌표(바닥 왼쪽 위 0,0) 기물 목록. 걸이는 y -2. */
 export function referenceSummary(t: InteriorRoomTemplate, S: HandInteriorSpec): { id: string; floorSize: string; items: string[] } {
   const items = t.items.filter((it) => it.t === "o" || it.t === "l").map((it) => it.t === "l"
-    ? `깔개 ${it.id} 칸 ${(it.cells ?? []).length}개(${(it.cells ?? [])[0]?.[0]},${((it.cells ?? [])[0]?.[1] ?? 2) - 2}부터)`
-    : `${it.id} (${it.x},${it.y - 2})${S.objects[it.id]?.kind === "hang" ? " 걸이" : ""}`);
+    ? `rug ${it.id} ${(it.cells ?? []).length} cells (from ${(it.cells ?? [])[0]?.[0]},${((it.cells ?? [])[0]?.[1] ?? 2) - 2})`
+    : `${it.id} (${it.x},${it.y - 2})${S.objects[it.id]?.kind === "hang" ? " hung" : ""}`);
   return { id: t.id, floorSize: `${t.w}×${t.h - 2}`, items };
 }

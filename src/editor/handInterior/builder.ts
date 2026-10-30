@@ -150,6 +150,12 @@ export interface HandInteriorInput {
   readonly goods?: readonly HandInteriorGoods[];
   /** 출입구 칸. 생략하면 맨 아래 줄의 실내 칸. */
   readonly start?: readonly { readonly x: number; readonly y: number }[];
+  /**
+   * 세로 칸막이 3줄 문 틈을 «트인 통로»로 그릴 칸(틈 위 두 칸). 기본(생략)은 칸막이 끝 벽면으로 그린다 — 옆문(sidedoor) 조각을 다는 자리.
+   * 2026-10-31 bbox-walls-4 실험: 벽면으로 그린 세로 문 틈은 판정자가 «벽판»으로 읽었다 → 칸 배치(v2) 길은 틈 칸을 들어가는 방의 바닥으로 그린다.
+   * 그림만 바꾼다(통행·검사는 그대로 — 벽면 칸이라 걷지는 못한다).
+   */
+  readonly passages?: readonly { readonly x: number; readonly y: number }[];
 }
 export interface HandInteriorIssue { readonly severity: "error" | "warning"; readonly code: string; readonly message: string; readonly x?: number; readonly y?: number }
 export interface HandInteriorLayers {
@@ -221,7 +227,7 @@ export function floorLayX(fd: { readonly cols: number; readonly lay?: string }, 
 }
 
 /** 1층(구조) — build_tileset.py structure() 와 같다. */
-export function handInteriorStructure(input: Pick<HandInteriorInput, "plan" | "floor" | "wall" | "zones" | "ceiling">, issues: HandInteriorIssue[] = [], S: HandInteriorSpec = HAND_INTERIOR_SPEC): { W: number; H: number; lower: number[] } {
+export function handInteriorStructure(input: Pick<HandInteriorInput, "plan" | "floor" | "wall" | "zones" | "ceiling" | "passages">, issues: HandInteriorIssue[] = [], S: HandInteriorSpec = HAND_INTERIOR_SPEC): { W: number; H: number; lower: number[] } {
   const { W, H, g, face, top, inn } = analyseHandInteriorPlan(input.plan);
   const ceiling = input.ceiling ?? "default";
   const ceil = S.ceilings[ceiling];
@@ -239,10 +245,15 @@ export function handInteriorStructure(input: Pick<HandInteriorInput, "plan" | "f
     return { f, w };
   };
   const lower: number[] = [];
+  const pass = new Set((input.passages ?? []).map((p) => p.y * W + p.x));
   for (let cy = 0; cy < H; cy++) for (let cx = 0; cx < W; cx++) {
     const { f, w } = mat(cx, cy);
     const west = inn(cx - 1, cy) ? 0 : 1;
-    if (g[cy]![cx] && face[cy]![cx]) { const wd = S.walls[w]!; lower.push(wd.tiles[(((face[cy]![cx]! - 1) * wd.cols + (cx % wd.cols)) * 2) + west]!); }
+    if (g[cy]![cx] && face[cy]![cx] && pass.has(cy * W + cx)) {
+      const sh = (pass.has((cy - 1) * W + cx) ? 0 : 1) | (west ? 2 : 0);
+      const fd = S.floors[f]!;
+      lower.push(fd.tiles[((cy % fd.rows) * fd.cols + (floorLayX(fd, cx, cy) % fd.cols)) * 4 + sh]!);
+    } else if (g[cy]![cx] && face[cy]![cx]) { const wd = S.walls[w]!; lower.push(wd.tiles[(((face[cy]![cx]! - 1) * wd.cols + (cx % wd.cols)) * 2) + west]!); }
     else if (g[cy]![cx]) {
       const sh = (cy > 0 && face[cy - 1]![cx] ? 1 : 0) | (west ? 2 : 0);
       const fd = S.floors[f]!;
@@ -636,6 +647,7 @@ export function buildHandInteriorLayers(input: HandInteriorInput, tileset?: Tile
       if (!ok) issues.push({ severity: "warning", code: "unreachable-piece", message: `${label} 옆에 닿는 칸이 없다 — 쓸 수 없는 가구` });
     }
   }
+  for (const p of input.passages ?? []) { const i = p.y * W + p.x; if (inBounds(p.x, p.y) && A.face[p.y]?.[p.x]) { L2[i] = -1; L3[i] = -1; L4[i] = -1; } }
   return { width: W, height: H, lowerTiles: lower, lowerOverlayTiles: L2, upperTiles: L3, upperOverlayTiles: L4, issues, reachable, floorCells, unreachedFloor, start,
     travel: landings.map((l) => ({ label: l.label, x: l.i % W, y: Math.floor(l.i / W),
       ...(l.trigger !== undefined ? { trigger: { x: l.trigger % W, y: Math.floor(l.trigger / W) } } : {}),
