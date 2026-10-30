@@ -1611,7 +1611,8 @@ function actorNode(view: BattleBattlerSnapshot, index = 0, count = 4): HTMLEleme
       node.append(pixelPlatform);
       return node;
     }
-    if (charsetBattler(resourceId)) node.dataset.battlerExtended = "true";
+    // 올린(스토어·업로드) 전투 시트는 id 가 아니라 적어 둔 시트 모양으로 판정한다 — 3열×8행이면 24포즈 확장 시트다.
+    if (charsetBattler(resourceId) || uploadedBattleSheet(resourceId)?.extended) node.dataset.battlerExtended = "true";
     const url = resolveAssetResourceUrl(resourceId, { project: store.getCurrent() });
     if (url) node.append(actorBattleImage(actor.name, resourceId, url));
     applyBattlerPose(node, actor.pose);
@@ -2311,7 +2312,8 @@ function partyPixelSprite(name: string, sheet: PartyPixelSheet): HTMLElement {
 }
 
 function actorBattleImage(name: string, resourceId: string, url: string): HTMLElement {
-  if (charsetBattler(resourceId) || resourceId === "hero" || isGeneratedBattleActor(resourceId)) {
+  const uploadedSheet = uploadedBattleSheet(resourceId);
+  if (charsetBattler(resourceId) || resourceId === "hero" || isGeneratedBattleActor(resourceId) || uploadedSheet) {
     // 생성 전투 시트는 144×384 새로 48×48 셀을 3열×8행으로 담는다(자산 계획서의 "3x8 battle sheet").
     // 48×64 로 잘리면 한 프레임에 아랫행 머리 16px 이 따라들어와 발밑에 쟘러기 스프라이트가 보인다.
     // Asset pixels are authored for the old 320×240 stage, so one source pixel maps
@@ -2341,8 +2343,9 @@ function actorBattleImage(name: string, resourceId: string, url: string): HTMLEl
     sprite.style.setProperty("--battle-sprite-frame-width", `${frameW}px`);
     sprite.style.setProperty("--battle-sprite-frame-height", `${frameH}px`);
     sprite.style.backgroundPosition = "0 0";
-    sprite.style.backgroundSize = `${frameW * BATTLE_SHEET_COLUMNS}px ${frameH * BATTLE_SHEET_ROWS}px`;
+    sprite.style.backgroundSize = `${frameW * (uploadedSheet?.columns ?? BATTLE_SHEET_COLUMNS)}px ${frameH * (uploadedSheet?.rows ?? BATTLE_SHEET_ROWS)}px`;
     sprite.dataset.battlerSheetSize = sprite.style.backgroundSize;
+    if (uploadedSheet) sprite.dataset.rendering = "pixelated";
     sprite.style.backgroundImage = `url("${sheetUrl}")`;
     if (charsetBattler(resourceId)) preloadCastSheet(sprite);
     return sprite;
@@ -2381,6 +2384,26 @@ export function preloadCastSheet(sprite: HTMLElement): void {
 }
 const BATTLE_SHEET_COLUMNS = 3;
 const BATTLE_SHEET_ROWS = 8;
+
+/**
+ * 프로젝트에 올린 전투 캐릭터 시트(kind battleCharset — 스토어 「파티 직업」 팩 등)의 모양. 번들 id 표(charsetBattler)에 없어도
+ * 48px 칸 격자로 적힌 시트면 칸을 잘라 포즈를 그린다. 예전에는 id 로만 판정해 올린 144×384 시트가 통짜 <img> 로 서서
+ * 24칸이 한 화면에 깔리고 움직이지 않았다(2026-10-31 스토어 검증). 3열×8행 = 24포즈 확장 시트(EXTENDED_POSE_FRAME),
+ * 3열×2행 이상 = 5포즈 시트(POSE_FRAME). 칸 격자가 아니면 undefined(예전처럼 그림 한 장).
+ */
+function uploadedBattleSheet(resourceId: string): { readonly columns: number; readonly rows: number; readonly extended: boolean } | undefined {
+  const asset = store.getCurrent().assets.uploaded[resourceId];
+  if (!asset || asset.kind !== "battleCharset") return undefined;
+  const cellW = asset.meta.frameWidth ?? BATTLE_SHEET_CELL;
+  const cellH = asset.meta.frameHeight ?? BATTLE_SHEET_CELL;
+  const { width, height } = asset.meta;
+  if (cellW !== BATTLE_SHEET_CELL || cellH !== BATTLE_SHEET_CELL || !width || !height) return undefined;
+  if (width % cellW !== 0 || height % cellH !== 0) return undefined;
+  const columns = width / cellW;
+  const rows = height / cellH;
+  if (columns !== BATTLE_SHEET_COLUMNS || rows < 2) return undefined;
+  return { columns, rows, extended: rows === BATTLE_SHEET_ROWS };
+}
 
 function isGeneratedBattleActor(resourceId: string): boolean {
   return resourceId.startsWith("generated-actor-") && resourceId.endsWith("-battle");
