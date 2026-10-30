@@ -33,6 +33,8 @@ export function normName(raw: string | undefined | null, keepParens = false): st
   let s = String(raw ?? "").normalize("NFC").toLowerCase();
   if (!keepParens) s = s.replace(/\([^()]*\)|\[[^[\]]*\]|（[^（）]*）|「|」|『|』/gu, " ");
   for (const [re, ko] of SYNONYMS) s = s.replace(re, ko);
+  // 「점장 NPC」「경비병 npc」의 NPC 는 이름이 아니라 종류 표시다 — 이벤트 이름 「점장」과 맞지 않아 대사 검사가 실패했다(2026-10-31 asst-parity 마왕 편의점 opus 후).
+  s = s.replace(/(?<![a-z])npcs?(?![a-z])|엔피씨/gu, " ");
   s = s.replace(/[\s\p{P}\p{S}_]+/gu, "");
   const t = s.replace(TAIL, "");
   return t.length >= 2 ? t : s;
