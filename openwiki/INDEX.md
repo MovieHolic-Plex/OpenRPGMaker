@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **188쪽 / 7680KB / 약 2,256,240 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **188쪽 / 7681KB / 약 2,256,406 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -40,8 +40,8 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/harnesses/super-harness.md` | 102KB | 4KB | 1063 | ~32,225 |
 | `openwiki/jp-city.md` | 108KB | 14KB | 511 | ~32,141 |
 | `openwiki/runtime-battle.md` | 440KB | 32KB | 2417 | ~129,307 |
-| `openwiki/runtime-m2-flow-controls.md` | 54KB | 25KB | 346 | ~14,800 |
-| `openwiki/runtime-pre-edit-routing.md` | 206KB | 103KB ⚠상한 초과 — 절을 더 쪼개라 | 1234 | ~61,167 |
+| `openwiki/runtime-m2-flow-controls.md` | 55KB | 26KB | 347 | ~14,985 |
+| `openwiki/runtime-pre-edit-routing.md` | 205KB | 103KB ⚠상한 초과 — 절을 더 쪼개라 | 1233 | ~60,998 |
 | `openwiki/runtime-project-schema.md` | 264KB | 83KB ⚠상한 초과 — 절을 더 쪼개라 | 1825 | ~74,678 |
 | `openwiki/runtime-sessions.md` | 166KB | 64KB ⚠상한 초과 — 절을 더 쪼개라 | 922 | ~45,466 |
 | `openwiki/team-project-host.md` | 51KB | 5KB | 536 | ~15,628 |
@@ -2336,7 +2336,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L172` 첫 판 기록 — 굽기·번들·조수 길 (2026-10-14, PR bake-themes, 반려된 그림)
 - `L185` 죽은 문 강제 (2026-10-14, known-bugs-fix)
 
-### `openwiki/modern-city.md` — 35KB · 172줄 · ~10,559 토큰
+### `openwiki/modern-city.md` — 36KB · 173줄 · ~10,709 토큰
 
 - `L5` 식별자
 - `L15` 파일
@@ -2876,26 +2876,26 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L2391` 전투 연출 설정 — 달려드는 속도 · 얼굴 교차 컷인 · 화려한 연계 착탄 · 한 줄 도움말 · 성장 곡선 (fs-battle-3, 2026-10-25)
 - `L2408` 적 약점은 알아 가는 것 — 처음 맞힌 타격에서 발견 · 세이브 기록 · 공개 설정 (2026-10-25)
 
-### `openwiki/runtime-m2-flow-controls.md` — 54KB · 346줄 · ~14,800 토큰 · 통째읽기 잘림
+### `openwiki/runtime-m2-flow-controls.md` — 55KB · 347줄 · ~14,985 토큰 · 통째읽기 잘림
 
 - `L5` Quest companion presence query (2026-10-01)
 - `L15` Map-effect repair boundary (2026-09-06)
 - `L22` Sound Layer audio controls (2026-09-06)
 - `L30` M2 Runtime Flow Controls
-- `L92` Storage chest authoring
-- `L98` Page 3 location/vehicle compatibility (2026-07-30)
-- `L102` 저장된 M2 명령 실행 연결 복구 (2026-09-05)
-- `L115` 좌표 목적지 이동의 실패 계약 (OPRN-OUT-013, 2026-09-10)
-  - `L174` 이동 중 경로 재지정 — 2026-09-05 브라우저 적대적 QA
-  - `L181` 맵 위를 흐르는 구름 그림자 (2026-09-14)
-  - `L255` Weather sound (2026-09-21)
-  - `L269` Map-wide atmosphere presets (2026-09-21)
-  - `L290` Genre ambience presets and sound pairing (2026-09-21)
-  - `L314` Thirty audiovisual presets — evidence (2026-09-21)
-  - `L329` 그림 컷 준비와 direction (2026-10-04)
-- `L337` 글자·장면 오프닝 연출 (2026-10-04)
+- `L93` Storage chest authoring
+- `L99` Page 3 location/vehicle compatibility (2026-07-30)
+- `L103` 저장된 M2 명령 실행 연결 복구 (2026-09-05)
+- `L116` 좌표 목적지 이동의 실패 계약 (OPRN-OUT-013, 2026-09-10)
+  - `L175` 이동 중 경로 재지정 — 2026-09-05 브라우저 적대적 QA
+  - `L182` 맵 위를 흐르는 구름 그림자 (2026-09-14)
+  - `L256` Weather sound (2026-09-21)
+  - `L270` Map-wide atmosphere presets (2026-09-21)
+  - `L291` Genre ambience presets and sound pairing (2026-09-21)
+  - `L315` Thirty audiovisual presets — evidence (2026-09-21)
+  - `L330` 그림 컷 준비와 direction (2026-10-04)
+- `L338` 글자·장면 오프닝 연출 (2026-10-04)
 
-### `openwiki/runtime-pre-edit-routing.md` — 206KB · 1234줄 · ~61,167 토큰 · 통째읽기 잘림
+### `openwiki/runtime-pre-edit-routing.md` — 205KB · 1233줄 · ~60,998 토큰 · 통째읽기 잘림
 
 - `L1` 이식 아틀라스 워커 굽기(#3963)는 되돌렸다 — 텍스처 등록만 `addImage` (2026-10-30)
 - `L13` 목표 안내창 자리·한국어 줄바꿈·숫자 입력 (2026-10-28, 장부 hud.json)
@@ -2920,20 +2920,20 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L911` 맵 배경 깊이(카메라 따라가기)·흐름 배율 — 회상 파노라마 (2026-09-27)
 - `L959` 맵 배경 사용성 — OPRN 자체 파노라마 견본·움직임 프리셋·게임 화면 미리보기 (2026-10-21)
 - `L1004` 맵 배경 조수 경로 — 견본 고르기 정확도·새 배경 생성 generate_map_background (2026-10-22)
-- `L1032` 맵 배경 「다른 맵 보기」 층 `fromMap` (2026-10-24)
-- `L1040` 8차 맵 진입 (2026-09-28)
-- `L1073` 화면 주변 타일 유지 (2026-10-01)
-- `L1102` 자유 크기 인물 프레임의 발 기준점 (2026-10-06)
-- `L1114` Independent opening timelines
-- `L1118` Monster authoring dogfood (2026-10-03)
-- `L1129` 위쪽 대사창의 흉상·전신 초상 (2026-10-17 romance-loop-1)
-  - `L1136` 흉상·전신이 있는 대사는 대사창이 항상 아래 (2026-10-17, vn-bust-bottom-1)
-- `L1153` 대사창은 고정 틀 (2026-10-22, dialogue-stable-frame)
-- `L1184` 엔딩 카드 글자는 게임 언어 (2026-10-22)
-- `L1192` 대사창 읽기 보조 — 백로그·오토·스킵·숨기기 (2026-10-17, 미연시 시스템 UI 1단계)
-  - `L1203` 대사창 읽기 보조 수리 1 (2026-10-17, 적대 리뷰 D1~D12)
-- `L1215` 미연시 추가 화면 — 갤러리 잠금·엔딩 목록·세이브 카드 (2026-10-17, 미연시 시스템 UI 2단계)
-- `L1228` 인물 연출 런타임 — approach·turnToward·대사 자동 돌아보기 (2026-10-22)
+- `L1031` 맵 배경 「다른 맵 보기」 층 `fromMap` (2026-10-24)
+- `L1039` 8차 맵 진입 (2026-09-28)
+- `L1072` 화면 주변 타일 유지 (2026-10-01)
+- `L1101` 자유 크기 인물 프레임의 발 기준점 (2026-10-06)
+- `L1113` Independent opening timelines
+- `L1117` Monster authoring dogfood (2026-10-03)
+- `L1128` 위쪽 대사창의 흉상·전신 초상 (2026-10-17 romance-loop-1)
+  - `L1135` 흉상·전신이 있는 대사는 대사창이 항상 아래 (2026-10-17, vn-bust-bottom-1)
+- `L1152` 대사창은 고정 틀 (2026-10-22, dialogue-stable-frame)
+- `L1183` 엔딩 카드 글자는 게임 언어 (2026-10-22)
+- `L1191` 대사창 읽기 보조 — 백로그·오토·스킵·숨기기 (2026-10-17, 미연시 시스템 UI 1단계)
+  - `L1202` 대사창 읽기 보조 수리 1 (2026-10-17, 적대 리뷰 D1~D12)
+- `L1214` 미연시 추가 화면 — 갤러리 잠금·엔딩 목록·세이브 카드 (2026-10-17, 미연시 시스템 UI 2단계)
+- `L1227` 인물 연출 런타임 — approach·turnToward·대사 자동 돌아보기 (2026-10-22)
 
 ### `openwiki/runtime-project-schema.md` — 264KB · 1825줄 · ~74,678 토큰 · 통째읽기 잘림
 
