@@ -7,6 +7,7 @@ import {
   addFieldSpawnEntry,
   advanceFieldSpawns,
   createFieldSpawnRuntime,
+  fieldSpawnTimePhase,
   fieldSpawnTroopId,
   fieldSpawnRuntimeNeedsRefresh,
   removeFieldSpawnEntry,
@@ -43,7 +44,8 @@ export function initializeFieldSpawnsForScene(scene: PlaySceneContext): void {
     scene.map,
     { x: scene.session.x, y: scene.session.y },
     scene.session.killedFieldSpawns?.[scene.map.id],
-    scene.session.roguelikeRun
+    scene.session.roguelikeRun,
+    fieldSpawnTimePhase(project, scene.session.gameTime),
   );
   syncFieldSpawnEventsIntoMap(scene.map, scene.fieldSpawnState, scene.eventPositions);
 }
@@ -52,7 +54,7 @@ export function updateFieldSpawnsForScene(scene: PlaySceneContext, deltaMs: numb
   if (scene.running) return;
   const project = store.getCurrent();
   if (refreshRoguelikeRoomForScene(scene)) return;
-  const changed = advanceFieldSpawns(scene.fieldSpawnState, project, scene.map, { x: scene.tileX, y: scene.tileY }, deltaMs, scene.eventPositions);
+  const changed = advanceFieldSpawns(scene.fieldSpawnState, project, scene.map, { x: scene.tileX, y: scene.tileY }, deltaMs, scene.eventPositions, fieldSpawnTimePhase(project, scene.session.gameTime));
   if (!changed) return;
   syncFieldSpawnEventsIntoMap(scene.map, scene.fieldSpawnState, scene.eventPositions);
   scene.renderTiles();
@@ -71,7 +73,8 @@ export function refreshRoguelikeRoomForScene(scene: PlaySceneContext): boolean {
     scene.map,
     { x: scene.tileX, y: scene.tileY },
     scene.session.killedFieldSpawns?.[scene.map.id],
-    scene.session.roguelikeRun
+    scene.session.roguelikeRun,
+    fieldSpawnTimePhase(project, scene.session.gameTime),
   );
   syncFieldSpawnEventsIntoMap(scene.map, scene.fieldSpawnState, scene.eventPositions);
   scene.renderTiles();
@@ -156,7 +159,8 @@ export function spawnFieldEnemyForScene(scene: PlaySceneContext, spawn: FieldSpa
       scene.map,
       { x: scene.session.x, y: scene.session.y },
       scene.session.killedFieldSpawns?.[scene.map.id],
-      scene.session.roguelikeRun
+      scene.session.roguelikeRun,
+      fieldSpawnTimePhase(project, scene.session.gameTime),
     );
   }
   addFieldSpawnEntry(
