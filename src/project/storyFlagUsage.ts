@@ -225,6 +225,9 @@ function scanCommand(
     case "getFriendship":
       add("write", "variable", command.variableId, { ...owner, commandPath, detail: "getFriendship result" });
       break;
+    case "runSchedule":
+      if (command.slotVariableId) add("write", "variable", command.slotVariableId, { ...owner, commandPath, detail: "runSchedule slot index" });
+      break;
     case "fork":
       addConditionReads(command.condition, add, { ...owner, commandPath: `${commandPath}.condition`, detail: "conditional branch" });
       scanCommands(command.then, add, owner, `${commandPath}.then`);

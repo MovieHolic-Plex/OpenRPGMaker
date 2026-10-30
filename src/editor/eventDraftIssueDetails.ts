@@ -55,6 +55,7 @@ export function commandReferenceField(kind: string, label: string): { readonly t
     "setEventGraphicPattern:외형 변경 이벤트": "set-event-graphic-pattern-event-input",
     "callCommonEvent:다른 이벤트": "event-command-call-common-event-select",
     "callMapEvent:맵 위 이벤트": "event-command-call-map-event-select",
+    "planSchedule:일정표": "plan-schedule-schedule-id-picker", "runSchedule:일정표": "run-schedule-schedule-id-picker",
     "battleProcessing:적 그룹": "battle-processing-troop-select", "battleProcessing:적 그룹 변수": "battle-processing-troop-variable",
     "learnSkill:배우": "learn-skill-actor-select", "learnSkill:스킬": "learn-skill-browser",
     "changeLevel:배우": "change-level-actor-select", "changeActorHp:배우": "change-actor-hp-actor-select",

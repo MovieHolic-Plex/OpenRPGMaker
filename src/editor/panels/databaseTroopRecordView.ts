@@ -59,7 +59,8 @@ import { classicEnemyFormation } from "@/battle/battleBattlers";
 import { BATTLE_SKINS, resolveSkinId } from "@/battle/skins/registry";
 import { BATTLER_PLACEMENTS, resolveSkinEnemyPositions } from "@/battle/battlerPlacements";
 import type { BattleSkinId } from "@/battle/skins/types";
-import { normalizeEnemyRecord } from "@/project/databaseEnemyTroopRecordModel";
+import { normalizeEnemyRecord, TROOP_VICTORY_BANNER_MAX_LENGTH } from "@/project/databaseEnemyTroopRecordModel";
+import { resolveVictoryBannerText } from "@/project/terms";
 import { simulateBattle } from "@/battle/simulate";
 import { applyMagentaChromaKeyToImageData } from "./chromaKey";
 
@@ -341,6 +342,7 @@ function configurationPanel(record: TroopRecord, rerender: () => void): HTMLElem
         children: [trainerBattleField(record, rerender), uncapturableField(record, rerender)],
       }),
       duelRulesField(record, rerender),
+      victoryBannerField(record),
     ],
     testid: "db-troop-config-card",
     extraClass: "db-troop-card-config",
@@ -1027,6 +1029,23 @@ function activeSlotsField(record: TroopRecord, rerender: () => void): HTMLElemen
 }
 
 /** 팀 교대 전투(system.battleTeams)가 있을 때만 — 이 적 그룹만 교대 비용을 덮어쓴다. */
+/**
+ * 이 그룹을 이겼을 때의 승리 띠 글자. 비우면 자료집 용어 「승리 띠」를 따른다 — 자리표시자로 그 값을 보인다.
+ * 타이핑 중 포커스를 지키려고 rerender 하지 않는다(부위 태그 칸과 같은 방식).
+ */
+function victoryBannerField(record: TroopRecord): HTMLElement {
+  const wrapper = textField("승리 띠 글자", "db-field-troop-victory-banner", record.victoryBanner ?? "", (value) => {
+    updateDatabaseRecord("troops", record.id, { victoryBanner: emptyToUndefined(value) });
+  });
+  const input = wrapper.querySelector("input");
+  if (input) {
+    input.placeholder = resolveVictoryBannerText(store.getCurrent(), undefined);
+    input.maxLength = TROOP_VICTORY_BANNER_MAX_LENGTH;
+  }
+  wrapper.title = "이 적 그룹을 이겼을 때 화면 가운데 뜨는 큰 글자입니다. 비우면 용어 › 전투 › 승리 띠를 씁니다.";
+  return wrapper;
+}
+
 function teamSwapCostField(record: TroopRecord, rerender: () => void): HTMLElement {
   const system = store.getCurrent().system;
   const base = system.teamSwapCost ?? DEFAULT_TEAM_SWAP_COST;
