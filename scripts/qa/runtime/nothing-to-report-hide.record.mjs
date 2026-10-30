@@ -122,6 +122,29 @@ async function goTo(target, label) {
   report.errors.push('goTo timeout ' + label);
   return false;
 }
+/** 정해진 길로 한 칸씩 — 칸이 바뀔 때까지 방향키를 누르고 있다(문은 밀어서 연다, 부하 중 한 칸 2~3초). 대사가 뜨면 읽고 다시 민다. */
+async function walkPath(label, segments) {
+  mark('걷기 → ' + label);
+  for (const [dir, count] of segments) {
+    const key = DIRS.find((d) => d[4] === dir)[0];
+    for (let n = 0; n < count; n++) {
+      const from = await state();
+      const end = Date.now() + 15000;
+      await hold(key);
+      for (;;) {
+        await delay(60);
+        const s = await state();
+        if (s.text) { await hold(null); await readThrough(); await hold(key); continue; }
+        if (s.x !== from.x || s.y !== from.y) break;
+        if (Date.now() > end) { report.errors.push(`walk stuck ${label} at ${s.x},${s.y} ${dir}`); break; }
+      }
+    }
+    await hold(null);
+  }
+  await delay(250);
+  const s = await state();
+  if (s.text) await readThrough();
+}
 async function faceAndAct(dir) {
   const key = DIRS.find((d) => d[4] === dir)[0];
   await page.evaluate((d) => window.__oprnInput.face(d), dir);
@@ -203,17 +226,20 @@ try {
   await delay(900);
   if (values.opening) throw Object.assign(new Error('opening-done'), { done: true });
   // 교탁 서랍(16,4) — (17,4) 에서 왼쪽.
-  await goTo({ x: 17, y: 4 }, '교탁');
+  // 깨는 자리 (17,7) → 교탁 앞 (17,4)
+  await walkPath('교탁', [['up', 3]]);
   await faceAndAct('left');
   await readThrough();
   await delay(700);
   // 서쪽 문으로 복도까지 — (13,15) 에서 첫 손전등.
-  await goTo({ x: 13, y: 15 }, '복도');
+  // (17,4) → 통로 아래 (17,10) → 서쪽 (13,10) → 문간 아래로 복도 (13,15)
+  await walkPath('복도', [['down', 6], ['left', 4], ['down', 5]]);
   await readThrough();
   mark('계단참 손전등');
   await delay(600);
   // 도구함(12,11) — (13,11) 에서 왼쪽.
-  await goTo({ x: 13, y: 11 }, '도구함 앞');
+  // 복도에서 교실 뒷문으로 되돌아가 도구함(12,11) 앞 (13,11)
+  await walkPath('도구함 앞', [['up', 4]]);
   await faceAndAct('left');
   await readThrough(4000);
   const sh = await state();
