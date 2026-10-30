@@ -5,6 +5,20 @@
 
 <!-- releases -->
 
+## 0.372.0 — 2026-10-30
+
+### 기능
+
+- **runtime** — system.fieldGuides off hides automatic field guide markers (`02a482e`)
+
+### 수정
+
+- **runtime** — star tiles resting on solid furniture y-sort with their row (`ff7d3e1`)
+
+### 문서
+
+- **openwiki** — regenerate INDEX (`2caf26f`)
+
 ## 0.371.0 — 2026-10-30
 
 ### 기능
