@@ -90,13 +90,13 @@ export function normalizeShape(raw: unknown): DesignShape {
 }
 
 /** 모델이 모양을 고를 재료(room_parts·되돌려 보내기에 그대로 싣는다). 최소 크기는 바닥 칸(벽면 줄 빼고). */
-export const SHAPE_GUIDE: readonly { shape: DesignShape; ko: string; min: string; what: string }[] = [
-  { shape: "rect", ko: "네모", min: "5×4", what: "작은 방(바닥 40칸 아래)에 맞다. 60칸이 넘는 네모 방은 ㅁ자로 읽혀 검사가 짚는다" },
-  { shape: "L", ko: "ㄱ자", min: "6×5", what: "corner(nw·ne·sw·se) 귀퉁이 하나를 막힌 덩이로 도려 낸다 — 꺾인 안쪽에 책상·독서 구석을 둔다" },
-  { shape: "U", ko: "ㄷ자", min: "8×5", what: "북벽 가운데를 도려 낸다 — 양쪽 날개(서·동 북쪽 끝)가 위로 뻗고, 가운데 들어간 벽 앞이 주인공 자리" },
-  { shape: "T", ko: "ㅜ자", min: "7×5", what: "남쪽 두 귀퉁이를 도려 낸다 — 문 쪽이 좁은 현관, 안쪽이 넓다" },
-  { shape: "bay", ko: "창가 돌출", min: "8×5", what: "북쪽 두 귀퉁이를 도려 북벽 가운데가 앞으로 튀어나온다 — 돌출부에 창·책상·망원경" },
-  { shape: "alcove", ko: "알코브", min: "7×5", what: "corner 쪽 북벽에 좁은(3~4칸) 들어간 구석을 남기고 나머지 북벽을 두 줄 내린다 — 구석에 침대·독서 의자·제단" },
+export const SHAPE_GUIDE: readonly { shape: DesignShape; ko: string; min: string; what: string; en: string }[] = [
+  { shape: "rect", ko: "네모", min: "5×4", what: "작은 방(바닥 40칸 아래)에 맞다. 60칸이 넘는 네모 방은 ㅁ자로 읽혀 검사가 짚는다", en: "fits small rooms (under 40 floor cells). A rect room over 60 cells reads as a hollow box and the check flags it" },
+  { shape: "L", ko: "ㄱ자", min: "6×5", what: "corner(nw·ne·sw·se) 귀퉁이 하나를 막힌 덩이로 도려 낸다 — 꺾인 안쪽에 책상·독서 구석을 둔다", en: "cuts one corner (nw · ne · sw · se) away as a solid block — put a desk or reading nook in the inner bend" },
+  { shape: "U", ko: "ㄷ자", min: "8×5", what: "북벽 가운데를 도려 낸다 — 양쪽 날개(서·동 북쪽 끝)가 위로 뻗고, 가운데 들어간 벽 앞이 주인공 자리", en: "cuts the middle of the north wall — two wings reach north on the west and east, and the recessed wall between them is the hero spot" },
+  { shape: "T", ko: "ㅜ자", min: "7×5", what: "남쪽 두 귀퉁이를 도려 낸다 — 문 쪽이 좁은 현관, 안쪽이 넓다", en: "cuts both south corners — a narrow entry by the door, wide inside" },
+  { shape: "bay", ko: "창가 돌출", min: "8×5", what: "북쪽 두 귀퉁이를 도려 북벽 가운데가 앞으로 튀어나온다 — 돌출부에 창·책상·망원경", en: "cuts both north corners so the middle of the north wall juts out — a window, desk or telescope in the bay" },
+  { shape: "alcove", ko: "알코브", min: "7×5", what: "corner 쪽 북벽에 좁은(3~4칸) 들어간 구석을 남기고 나머지 북벽을 두 줄 내린다 — 구석에 침대·독서 의자·제단", en: "leaves a narrow (3–4 cell) recess in the north wall on the corner side and lowers the rest of the north wall by two rows — a bed, reading chair or altar in the recess" },
 ];
 
 /** 설계 모양 → 귀퉁이·가운데 도려내기. 바닥이 모양 최소 크기보다 작으면 네모로 짓고 이유를 돌려준다(함수가 크기를 바꾸지 않는다). */
