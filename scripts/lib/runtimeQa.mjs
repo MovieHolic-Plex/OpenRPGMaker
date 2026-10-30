@@ -24,6 +24,8 @@ export const OP_KINDS = [
   "move",
   "clickCanvas",
   "waitForBodyText",
+  // 사람 손 연타를 부하와 무관하게 흉내 낸다: 누른 시각(event.timeStamp)을 intervalMs 간격으로 박은 키를 한꺼번에 보낸다(choice-mash).
+  "keyBurst",
   // 맵 타일을 실제 캔버스 위에서 누른다(클릭 이동 #32, masterpiece-field).
   "clickTile",
   // 키를 누르며 JS 조건이 설 때까지 되풀이(first-love 시나리오).
