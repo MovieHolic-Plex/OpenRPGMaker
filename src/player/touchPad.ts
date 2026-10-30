@@ -12,6 +12,7 @@
 
 import { el } from "@/util/dom";
 import { HeldDirectionRepeat } from "@/player/heldDirectionRepeat";
+import { markPlayerPadKey } from "@/player/confirmMashGuard";
 import { getPlayerPreferences, playerAlwaysRun, updatePlayerPreferences } from "@/player/playerPreferences";
 import { DEFAULT_TOUCH_CONTROLS, type ResolvedTouchControls } from "@/project/touchControls";
 
@@ -198,7 +199,7 @@ export function keyTarget(): EventTarget {
 function dispatchKey(type: "keydown" | "keyup", key: string, repeat = false): void {
   // cancelable so a menu can preventDefault the same way it does for a real key.
   // repeat is set only for a direction the stick is still holding.
-  keyTarget().dispatchEvent(new KeyboardEvent(type, { key, code: key, bubbles: true, cancelable: true, repeat }));
+  keyTarget().dispatchEvent(markPlayerPadKey(new KeyboardEvent(type, { key, code: key, bubbles: true, cancelable: true, repeat })));
 }
 
 // host(플레이 스테이지)에 가상 패드를 부착한다.
