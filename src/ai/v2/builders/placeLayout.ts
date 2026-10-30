@@ -77,7 +77,13 @@ function buildDungeon(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): P
   // 옛 빌더로 지었던 여러 층 던전을 칸 배치로 다시 짓는다 — 위층은 지운다(한 층 배치).
   // 먼저 검사만(순수) — 거절이면 문제 목록 전부를 돌려준다(도구 거절 글은 잘린다).
   const ts = run.ctx.project.tilesets[TS];
-  const pre = ts ? layBboxDungeon(ts, L) : { ok: false, errors: ["the beodeul_city chipset is not in this project."], warnings: [] };
+  const laidCheck = ts ? layBboxDungeon(ts, L) : { ok: false, errors: ["the beodeul_city chipset is not in this project."], warnings: [] };
+  // 적 없는 던전 층 — 평화 던전(populate:false)이 아니면 최소 수를 요구한다(규칙 글과 같은 수).
+  const peaceful = dungeonArgs({ ...spec, dungeonDesign: undefined, floorDesigns: undefined } as PlaceSpec).args.populate === false;
+  const minFoes = Math.max(2, (Array.isArray(L.rooms) ? L.rooms.length : 0) - 3);
+  const foeCount = (Array.isArray(L.enemies) ? L.enemies : []).filter(Boolean).length;
+  const foeErrors = laidCheck.ok && !peaceful && foeCount < minFoes ? [`enemies: ${foeCount} given — a dungeon floor needs at least ${minFoes} visible enemies (max(2, rooms - 3)) on walkable floor outside the boss room, spread over the rooms on the way.`] : [];
+  const pre = { ok: laidCheck.ok && !foeErrors.length, errors: [...laidCheck.errors, ...foeErrors] };
   if (!pre.ok) return { ok: false, mapIds: [], summary: `Rejected: ${pre.errors.length} problem(s) in dungeonLayout`, warnings: pre.errors, missingArt: [], calls: [], state: { bbox: "dungeon", rejected: pre.errors } };
   if (previous) for (const id of previous.result.mapIds.slice(1)) if (run.ctx.project.maps[id]) run.call("remove_map", { mapId: id });
   const laid = run.call("lay_dungeon_layout", { layout: L, name: spec.name, ...(mapId ? { mapId } : {}), ...(gate ? { entrance: gate } : {}) });
