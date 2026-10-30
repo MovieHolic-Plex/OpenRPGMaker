@@ -53,6 +53,9 @@ export class FieldHud {
     const font = config.font && config.font !== "auto" ? config.font : recommendedHudFont(config.theme);
     writeDataset(this.host, "hudFont", font);
     writeDataset(this.root, "font", font);
+    // 「현재 목표」 줄은 HUD 판 밖(zone-feedback)에 있다. 저자가 글꼴을 직접 고른 때만 따라가게 해 기존 게임 모양은 그대로 둔다.
+    if (config.font && config.font !== "auto") writeDataset(this.host, "hudObjectiveFont", config.font);
+    else if (this.host.dataset.hudObjectiveFont !== undefined) delete this.host.dataset.hudObjectiveFont;
     if (this.root.hidden !== !modern) this.root.hidden = !modern;
     if (!modern) {
       if (this.host.dataset.hudStamina !== undefined) delete this.host.dataset.hudStamina;
@@ -157,7 +160,7 @@ export class FieldHud {
   }
   destroy(): void {
     this.root.remove(); this.mounts.clear();
-    for (const key of ["fieldHud", "hudFont", "hudObjective", "hudStamina", "hudHp"]) delete this.host.dataset[key];
+    for (const key of ["fieldHud", "hudFont", "hudObjectiveFont", "hudObjective", "hudStamina", "hudHp"]) delete this.host.dataset[key];
   }
 }
 
