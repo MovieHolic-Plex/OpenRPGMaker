@@ -133,7 +133,7 @@ export async function newEditor(browser, url, projectDir, config, captureOptions
             // Never persist reasoning, auth headers or system prompt payloads. A prompt_inspection keeps only its
             // scalar receipt (model·max_tokens·reasoning_effort) — the sections are the whole prompt and stay out.
             window.__capEvents.push({type:event.type,name:event.name??event.toolName,id:event.id,ok:event.ok,
-              text:event.type==='assistant'?event.text:undefined,summary:event.summary,message:event.message,args:event.args,
+              text:event.type==='assistant'?event.text:undefined,summary:event.summary,modelText:event.type==='tool_end'?event.modelText:undefined,message:event.message,args:event.args,
               data:event.type==='prompt_inspection'?(event.snapshot?{boundary:event.snapshot.boundary,model:event.snapshot.model,scalars:event.snapshot.scalars}:undefined)
                 :['charset.image.delivered','charset.image.received','feature_checklist','feature_review','feature_review.critic','feature_review.repair','cutscene.review','cutscene.review.judged','v2.advisor','v2.advisor.recheck','dialogue_polish','dialogue_polish.lint','dialogue_polish.skip','dialogue_polish.speaker_labels'].includes(event.name)?event.data:undefined,
               runId:outer.runId,usage:event.usage,stats:event.type==='done'?event.stats:undefined,at:Date.now()});

@@ -36,4 +36,5 @@ export { stage as openDoorSteps } from "./open-door-steps";
 export { stage as entryStepsOnArrival } from "./entry-steps-on-arrival";
 export { stage as objectiveThings } from "./objective-things";
 export { stage as suspectObjectives } from "./suspect-objectives";
+export { stage as combatMenu } from "./combat-menu";
 export { stage as reloadCheck } from "./reload-check";
