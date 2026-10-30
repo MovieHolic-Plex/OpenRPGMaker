@@ -5,6 +5,35 @@
 
 <!-- releases -->
 
+## 0.371.0 — 2026-10-30
+
+### 기능
+
+- **assistant** — compose_jp_city_street avoidProps skips unwanted street props (`a068e74`)
+
+### 수정
+
+- **ai** — label map ids in the v2 map list so mapIds stops getting tileset ids; horror words pull horror store music lines (`15f50ae`)
+
+### 문서
+
+- **readme** — refresh all four READMEs — playable demos, what's new since October, fresh editor/store/play screens (`8840ff0`)
+- **openwiki** — regenerate INDEX (`e310d0b`)
+
+### 잡무
+
+- retrigger ci (`3013a02`)
+
+## 0.370.0 — 2026-10-30
+
+### 기능
+
+- **chase** — smart chase AI — touch means battle, hearing, per-kind brains, pack perf (#3967) (`3aa7175`)
+
+### 성능
+
+- **runtime** — bake grafted tileset atlases in a worker, upload to the GPU in bands, prewarm neighbour maps (#3963) (`8b516cf`)
+
 ## 0.369.0 — 2026-10-30
 
 ### 기능
