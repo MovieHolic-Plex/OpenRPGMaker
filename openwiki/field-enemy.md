@@ -171,6 +171,10 @@ FF6·크로노 트리거식 「필드에 보이는 적」을 조수가 한 마�
 - 저장 형식: 모두 선택 필드다. 옛 프로젝트는 그대로 돌고, 형식 검사(`shapeEventFields`)·허용 키(`eventPageKeys`)·정규화(`eventPages`)·스키마(`schemaShapes`)에 같이 넣었다.
   내보내기는 프로젝트 문자열을 훑으므로(`webExportAssets`) 새 효과음 id 도 따라간다.
 
+## 시간대 무리 (2026-10-30)
+
+사냥터 스폰(`make_hunting_ground`)은 `timePhases:["night"]` 처럼 나오는 시간대를 정할 수 있다. 시간 시스템이 켜졌을 때만 듣고, 시간대를 벗어나면 살아 있던 무리가 사라지고, 다시 그 시간대가 오면 상한까지 새로 나온다. 플레이어가 그 시간대까지 기다리는 길은 ESC 「쉬기」(`configure_time_system.restMenu`)다. 한 마리씩 놓는 `place_field_enemy` 는 페이지 조건 `timePhase` 를 쓴다. 정본 설명은 `runtime-sessions.md` 「Rest menu」·`fieldSpawns` 항목.
+
 ## 안전 장치 (도구가 거절하는 것)
 
 - 문·시작 위치·착지 칸·표지판 등 보호 칸(`protectedCells`) 맨해튼 거리 2 이내: `field-enemy-unsafe-spot`.

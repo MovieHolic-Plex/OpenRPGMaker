@@ -626,6 +626,11 @@ export interface FieldSpawnDef {
   persistKill?: boolean;
   /** 인스턴스 처치 시 켜는 스위치(킬 리액션 이벤트용). */
   onKillSwitchId?: string;
+  /**
+   * 이 시간대에만 나온다(시간 시스템이 켜졌을 때). 시간대를 벗어나면 살아 있던 무리도 사라지고, 다시 들어오면 새로 나온다.
+   * 생략하거나 시간 시스템이 꺼져 있으면 늘 나온다. 시간대 구분은 gameTime.timePhaseFor(아침 6~10·낮 10~17·저녁 17~20·밤).
+   */
+  timePhases?: import("../gameTime").TimePhase[];
 }
 
 export interface RoguelikeRoomDef {
