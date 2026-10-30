@@ -18,12 +18,14 @@ import { inMapBounds, requireMap } from './mapHelpers';
 import { ensureNamedSwitch } from './flagHelpers';
 import { assertEventShape, placeChest, upsertEventIntoMap } from './eventTools';
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from './types';
+import { M2_COMMAND_CATALOG } from '@/project/eventCommands/m2Catalog';
+import { isParticlePreset } from '@/project/eventCommands/cinematicStaging';
 
 export const FIELD_OBSTACLE_KINDS = ['rock', 'tree', 'water', 'dark', 'waterfall', 'gap'] as const;
 type ObstacleKind = (typeof FIELD_OBSTACLE_KINDS)[number];
 
 const DIRS: Record<Dir, readonly [number, number]> = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] };
-const KEYS = ['mapId', 'x', 'y', 'kind', 'requiresSkillId', 'requiresActorId', 'skillName', 'name', 'tile', 'tileAbove', 'passTile', 'direction', 'length', 'span', 'fullWidth', 'machine', 'hint', 'blockedText', 'requiresBadge', 'requiresSwitchId', 'giverX', 'giverY', 'giverMapId', 'id'] as const;
+const KEYS = ['mapId', 'x', 'y', 'kind', 'requiresSkillId', 'requiresActorId', 'skillName', 'name', 'tile', 'tileAbove', 'passTile', 'direction', 'length', 'span', 'fullWidth', 'machine', 'hint', 'blockedText', 'requiresBadge', 'requiresSwitchId', 'giverX', 'giverY', 'giverMapId', 'id', 'openEffect', 'darkness', 'blockCells', 'litSwitchId'] as const;
 
 /** 종류별 기본: 독자 기술 이름(원작 이름을 쓰지 않는다), 안내 대사, 칩셋 타일 라벨 패턴. */
 const DEFAULTS: Record<ObstacleKind, { skillId: string; skillName: string; skillText: string; blocked: string; event: string; tile?: RegExp; pass?: RegExp; hmName: string }> = {
@@ -36,6 +38,11 @@ const DEFAULTS: Record<ObstacleKind, { skillId: string; skillName: string; skill
 };
 
 const text = (body: string): Command => ({ kind: 'text', body });
+function m2(title: string, fields: Record<string, string | number | boolean>): Command {
+  const entry = M2_COMMAND_CATALOG.find((candidate) => candidate.title === title);
+  if (!entry) throw new ToolError(`m2 명령 「${title}」 이 카탈로그에 없습니다.`);
+  return { kind: 'm2Command', commandId: entry.id, fields } as Command;
+}
 const isDir = (value: unknown): value is Dir => typeof value === 'string' && Object.hasOwn(DIRS, value);
 const schema = (properties: Record<string, JsonSchema>, required: string[]): JsonSchema => ({ type: 'object', additionalProperties: false, properties, required });
 
@@ -187,6 +194,25 @@ function openByAbility(skillName: string, doneSwitchId: string, gates: readonly 
   return [{ kind: 'fork', condition: { kind: 'switch', switchId: first!.switchId, value: true }, then: inner, else: [text(`아직 ${withJosa(first!.label, '이/가')} 없어 ${withJosa(skillName, '이/가')} 말을 듣지 않는다…`)] }];
 }
 
+interface OpenEffect { particles: string[]; se?: string; durationMs: number; text?: string }
+
+/** openEffect 인자 — 기술로 열 때의 파티클·효과음·기다림. 틈(gap)·어둠(dark)에는 쓰지 않는다. */
+function readOpenEffect(raw: unknown, kind: ObstacleKind): OpenEffect | undefined {
+  if (raw === undefined || raw === null) return undefined;
+  if (kind === 'gap' || kind === 'dark') throw new ToolError(`openEffect 는 rock·tree·water·waterfall 에만 씁니다(${kind} 는 받지 않음).`, { code: 'invalid-args' });
+  if (typeof raw !== 'object' || Array.isArray(raw)) throw new ToolError('openEffect 는 {particles?, se?, durationMs?, text?} 입니다.', { code: 'invalid-args' });
+  const r = raw as Record<string, unknown>;
+  const particles = Array.isArray(r.particles) ? r.particles.map(String) : [];
+  const bad = particles.filter((preset) => !isParticlePreset(preset));
+  if (bad.length) throw new ToolError(`openEffect.particles 에 없는 프리셋: ${bad.join(', ')} (sparkle·magic·heal·fire·smoke·dust·explosion·splash).`, { code: 'invalid-args' });
+  const durationMs = r.durationMs === undefined ? 1200 : Math.max(200, Math.min(4000, Math.round(Number(r.durationMs) || 1200)));
+  return {
+    particles, durationMs,
+    ...(typeof r.se === 'string' && r.se.trim() ? { se: r.se.trim() } : {}),
+    ...(typeof r.text === 'string' && r.text.trim() ? { text: r.text.trim() } : {}),
+  };
+}
+
 /** 틈 건너뛰기에 쓰는 문맥 — run() 앞부분이 이미 검사·정리한 값. */
 interface GapContext {
   x: number; y: number; id: string; eventName: string; machine: 'hm' | 'tm' | 'none';
@@ -275,13 +301,21 @@ function runGap(draft: Project, map: GameMap, args: Record<string, unknown>, ctx
   const gateConditions = gateSwitches.map((gate) => ({ kind: 'switch', switchId: gate.switchId, value: true }) as const);
   const sidePages = (eventId: string, jump: Dir): EventPage[] => {
     const [jx, jy] = DIRS[jump];
-    const leap: Command = { kind: 'moveEvent', eventId: '@player', route: { moves: [{ kind: 'turn', dir: jump }, { kind: 'jump', dx: jx * (width + 1), dy: jy * (width + 1), heightPx: 16 + 4 * width }, { kind: 'turn', dir: jump }], repeat: false, wait: true, skippable: false } };
+    // 도약 — 기본 점프(0.3초·낮은 호)는 틈 너머로 순간이동한 것처럼 보였다(2026-10-29 폴른 스타 B7 검수).
+    // 한 박자 숨 고르고(제자리 웅크림 대신 짧은 기다림) → 휙 소리 → 높고 느린 호로 넘어 → 착지 먼지.
+    const leap: Command[] = [
+      { kind: 'moveEvent', eventId: '@player', route: { moves: [{ kind: 'turn', dir: jump }], repeat: false, wait: true, skippable: false } },
+      { kind: 'wait', ms: 250 },
+      { kind: 'playAudio', resourceId: 'cc0-se-orp-battle-swing', loop: false, channel: 'se' } as Command,
+      { kind: 'moveEvent', eventId: '@player', route: { moves: [{ kind: 'jump', dx: jx * (width + 1), dy: jy * (width + 1), heightPx: 26 + 8 * width, durationMs: 560 + 140 * width }, { kind: 'turn', dir: jump }], repeat: false, wait: true, skippable: false } },
+      m2('Particle Effect', { preset: 'dust', target: 'player', durationMs: 500, wait: false }),
+    ];
     return [
       { id: `${eventId}_blocked`, name: '건널 수 없음', conditions: [], graphic: { transparent: true }, ...PASS, trigger: { kind: 'action' }, commands: [text(blockedLine)] },
       ...(gateConditions.length ? [{ id: `${eventId}_lacking`, name: '능력은 있지만 조건 부족', conditions, graphic: { transparent: true }, ...PASS, trigger: { kind: 'action' }, commands: [text(`아직 ${withJosa(gateSwitches.map((gate) => gate.label).join('·'), '이/가')} 없어 뛰어넘을 수 없다…`)] } as EventPage] : []),
       { id: `${eventId}_leap`, name: '뛰어넘기', conditions: [...conditions, ...gateConditions], graphic: { transparent: true }, ...PASS, trigger: { kind: 'action' }, commands: [
         text(hint),
-        { kind: 'choices', prompt: '틈을 뛰어넘을까?', options: [{ text: '뛰어넘는다', branch: [leap] }, { text: '그만둔다', branch: [] }] },
+        { kind: 'choices', prompt: '틈을 뛰어넘을까?', options: [{ text: '뛰어넘는다', branch: leap }, { text: '그만둔다', branch: [] }] },
       ] },
     ];
   };
@@ -320,10 +354,11 @@ export const FIELD_OBSTACLE_TOOLS: readonly ToolDefinition[] = [
       '포켓몬식 필드 기술 게이트(비전머신 HM)를 한 호출로 만든다: 길을 막는 바위(rock)·덩굴 나무(tree)·물길(water)·폭포(waterfall)·어둠(dark). ' +
       '이 도구가 막는 지형(칩셋의 실제 타일), 조사하는 투명 이벤트(모르면 안내·아는 파티면 「쓰자」 안내), 필드 스킬(없으면 독자 이름으로 생성·잊을 수 없는 기술) + 그 스킬의 공통 이벤트(이 장애물만 연다), ' +
       '기술머신 아이템(몬스터 파티 게임에서는 파티 몬스터에게 가르친다)을 전부 만든다. 어떤 파티원(배우·몬스터)이 requiresSkillId 를 알아야 열린다(partyKnowsSkill). ' +
-      '길이 막혀 있는 칸(x,y)을 주면 된다 — rock·tree 는 걸어갈 수 있는 길 칸(바위·덩굴 타일을 깔아 막음; 기본 한 칸, 도로가 넓으면 span 칸 수나 fullWidth:true 로 폭 전체를 닫는다 — 한 칸만 놓으면 응답이 우회 가능(data.bypass:true)과 필요한 span 을 경고한다), water·waterfall 은 막힌 물·폭포 칸에서 시작해 direction 으로 length 칸(기술을 쓰면 다리·발판이 놓임), dark 는 걸을 수 있는 길목 칸(맵 전체를 어둡게 하고 그 칸에서 길을 막는다. 기술을 쓰거나 아는 파티가 입장하면 밝아지고 열림). ' +
+      '길이 막혀 있는 칸(x,y)을 주면 된다 — rock·tree 는 걸어갈 수 있는 길 칸(바위·덩굴 타일을 깔아 막음; 기본 한 칸, 도로가 넓으면 span 칸 수나 fullWidth:true 로 폭 전체를 닫는다 — 한 칸만 놓으면 응답이 우회 가능(data.bypass:true)과 필요한 span 을 경고한다), water·waterfall 은 막힌 물·폭포 칸에서 시작해 direction 으로 length 칸(기술을 쓰면 다리·발판이 놓임), dark 는 걸을 수 있는 칸(맵 전체를 darkness 세기로 어둡게 한다. 실제로 길을 막을 칸은 blockCells 로 준다. 기술을 쓰거나 아는 파티가 입장하면, 또는 litSwitchId 가 켜지면 밝아지고 열림). ' +
       '**기술을 가르칠 방법**: giverX·giverY 를 주면 이 도구가 비전서 상자를 같이 놓는다(장애물보다 먼저 닿는 칸에). 안 주면 호출자가 data.itemId(기술머신)를 NPC·상자가 changeItem 으로 주게 하라(place_chest 나 upsert_event) — 자동 플레이(qa:game check)는 그 줄을 따라가 기술을 익힌 뒤 장애물 앞에서 쓴다. 몬스터마다 가르칠 수 있는 종을 제한하려면 define_monster_species.machineSkillIds. ' +
       '**원작식 진행 게이팅**: requiresBadge(캠페인 배지 번호) 또는 requiresSwitchId 를 주면 그 배지·스위치가 있어야 기술이 말을 듣는다(조사해도 메뉴에서 써도 안내만 나오고 열리지 않는다). 조사하면 기술을 아는 파티는 「쓸까?」 선택지를 받는다. ' +
-      '**gap(틈 건너뛰기·장대 도약)**: (x,y)=폭 1~2칸 막힌 틈(얼음 틈·구렁) 바로 앞의 걸을 수 있는 가장자리 칸. direction·length(1..2) 생략=자동 탐지. 지형을 바꾸지 않고 다리도 놓지 않는다 — 양쪽 가장자리 칸에 발밑 조사 이벤트(id, id_far)를 두고, requiresActorId 배우가 파티에 있거나(또는/그리고) requiresSkillId 를 누가 알면 「뛰어넘을까?」 → 주인공 jump 로 건너편에 내려선다(돌아올 때도 같음). 없으면 안내 대사. 둘 다 생략=기본 기술 skill_field_vault(장대 도약) 생성. gap 의 machine 기본은 none. ' +
+      'openEffect{particles,se,durationMs,text} = 기술로 열 때 칸마다 파티클·효과음·기다림 뒤 지형이 바뀐다(예: 불씨로 얼음 녹이기 particles:[fire,smoke]). ' +
+      '**gap(틈 건너뛰기·장대 도약)**: (x,y)=폭 1~2칸 막힌 틈(얼음 틈·구렁) 바로 앞의 걸을 수 있는 가장자리 칸. direction·length(1..2) 생략=자동 탐지. 지형을 바꾸지 않고 다리도 놓지 않는다 — 양쪽 가장자리 칸에 발밑 조사 이벤트(id, id_far)를 두고, requiresActorId 배우가 파티에 있거나(또는/그리고) requiresSkillId 를 누가 알면 「뛰어넘을까?」 → 주인공이 숨 고르고 휙 소리와 함께 높은 호로 뛰어 건너편에 내려선다(착지 먼지, 돌아올 때도 같음). 없으면 안내 대사. 둘 다 생략=기본 기술 skill_field_vault(장대 도약) 생성. gap 의 machine 기본은 none. ' +
       '쓰지 말 것: 퍼즐 문·열쇠 문(compile_puzzle), 밀어서 움직이는 바위(place_pushable), 전투로 지키는 길목(place_battle_blocker).',
     parameters: schema({
       mapId: { type: 'string' },
@@ -335,6 +370,16 @@ export const FIELD_OBSTACLE_TOOLS: readonly ToolDefinition[] = [
       skillName: { type: 'string', description: '새로 만들 때 기술 이름(독자 이름 — 원작 이름은 쓰지 않는다). 이미 있는 스킬이면 무시' },
       name: { type: 'string', description: '이벤트 이름(생략=종류별 기본)' },
       tile: { type: 'integer', description: 'rock·tree 에 깔 막는 칸 번호(생략=칩셋에서 자동). 칩셋에 없으면 필요 — tile_query' },
+      openEffect: {
+        type: 'object', additionalProperties: false,
+        description: "rock·tree·water·waterfall: 기술로 열 때의 연출(선택) — 장애물 칸마다 파티클을 띄우고 효과음과 함께 잠깐 기다린 뒤 지형이 바뀐다(없으면 순간 교체). 예: 얼음 녹이기 {particles:['fire','smoke'], se:'cc0-se-ors-spell-fire-03', durationMs:1400, text:'얼음이 녹아 물이 된다.'}",
+        properties: {
+          particles: { type: 'array', items: { type: 'string', enum: ['sparkle', 'magic', 'heal', 'fire', 'smoke', 'dust', 'explosion', 'splash'] }, description: '순서대로 겹쳐 띄울 파티클 프리셋' },
+          se: { type: 'string', description: '효과음 resource id' },
+          durationMs: { type: 'integer', description: '지형이 바뀌기 전까지 기다리는 시간(200~4000, 기본 1200)' },
+          text: { type: 'string', description: '바뀐 뒤 한 줄(선택)' },
+        },
+      },
       tileAbove: { type: 'integer', description: 'rock·tree: 두 칸 높이 그림(얼음 덩이·큰 바위)의 윗머리 칸 번호 — 막는 칸 바로 위 칸 위층에 얹고, 기술로 열면 함께 걷는다. 생략=한 칸 그림' },
       passTile: { type: 'integer', description: 'water·waterfall 에서 기술을 쓰면 놓이는 다리·발판 칸 번호(생략=칩셋에서 나무다리·디딤돌 자동)' },
       direction: { type: 'string', enum: ['up', 'down', 'left', 'right'], description: 'water·waterfall·gap: (x,y)에서 건너갈 방향(기본 right=물, up=폭포, gap 은 자동 탐지). rock·tree 의 span: 막는 줄이 뻗는 방향(생략=도로 폭이 좁은 쪽 축)' },
@@ -350,6 +395,9 @@ export const FIELD_OBSTACLE_TOOLS: readonly ToolDefinition[] = [
       giverY: { type: 'integer', description: '비전서 상자의 y(giverX 와 함께)' },
       giverMapId: { type: 'string', description: '비전서 상자를 놓을 맵 id(생략=장애물과 같은 맵). 장애물보다 먼저 닿을 수 있는 곳에 둘 것' },
       id: { type: 'string' },
+      darkness: { type: 'number', description: 'dark 전용: 어두울 때 맵 어둠 세기 0.3..0.95(기본 0.82 = 칠흑). 등불·광원이 있는 방에서 윤곽은 보이게 하려면 0.6 안팎' },
+      blockCells: { type: 'array', maxItems: 6, items: { type: 'object', additionalProperties: false, properties: { x: { type: 'integer' }, y: { type: 'integer' } }, required: ['x', 'y'] }, description: 'dark 전용: 어두운 동안 실제로 길을 막는 칸들(보이지 않는 벽, 조사하면 blockedText). 기술을 아는 파티이거나 litSwitchId 가 켜지면 지나간다. 생략 = 막지 않고 어둡게만' },
+      litSwitchId: { type: 'string', description: 'dark 전용: 이 스위치가 켜지면(이야기로 빛이 돌아오면) 들어설 때마다 밝고 blockCells 도 열린다' },
     }, ['mapId', 'x', 'y', 'kind']),
     invalidArgsHint: '종류는 kind(rock|tree|water|dark|waterfall|gap), 여는 기술은 requiresSkillId(gap 은 배우 requiresActorId 도), 대사는 hint(알 때)·blockedText(모를 때), 바위·덩굴은 span·fullWidth, 물길·폭포는 direction·length, 배지 제한은 requiresBadge, 비전서 상자는 giverX·giverY. 그 밖의 칸은 받지 않습니다.',
     invalidArgsExample: { mapId: 'map_route_3', x: 12, y: 9, kind: 'tree', skillName: '덩굴 가르기' },
@@ -425,6 +473,7 @@ export const FIELD_OBSTACLE_TOOLS: readonly ToolDefinition[] = [
 
       const hint = typeof args.hint === 'string' && args.hint.trim() ? args.hint.trim() : undefined;
       const blocked = typeof args.blockedText === 'string' && args.blockedText.trim() ? args.blockedText.trim() : base.blocked;
+      const effect = readOpenEffect(args.openEffect, k);
       const scratch = structuredClone(map);
       const probe: Project = { ...draft, maps: { ...draft.maps, [map.id]: scratch } };
       const pages: EventPage[] = [];
@@ -528,7 +577,9 @@ export const FIELD_OBSTACLE_TOOLS: readonly ToolDefinition[] = [
       } else {
         // dark — 맵을 어둡게 하고 기술을 아는 파티가 들어서면 밝힌다.
         const current = map.defaultLighting;
-        map.defaultLighting = { ambient: Math.max(0.82, current?.ambient ?? 0), ...(current?.color ? { color: current.color } : {}), sources: current?.sources ?? [] };
+        const darkness = args.darkness === undefined ? 0.82 : Number(args.darkness);
+        if (!Number.isFinite(darkness) || darkness < 0.3 || darkness > 0.95) throw new ToolError('darkness 는 0.3..0.95 입니다.', { code: 'invalid-args' });
+        map.defaultLighting = { ambient: Math.max(darkness, current?.ambient ?? 0), ...(current?.color ? { color: current.color } : {}), sources: current?.sources ?? [] };
         if (!isPassable(draft, map, x, y)) warnings.push(`(${x}, ${y}) 가 막힌 칸입니다 — 어둠 이벤트는 걸을 수 있는 칸에 두세요.`);
       }
 
@@ -583,13 +634,21 @@ export const FIELD_OBSTACLE_TOOLS: readonly ToolDefinition[] = [
           { text: '그만둔다', branch: [] },
         ] },
       ];
-      const gatePages = (eventId: string, clear: Command[]): EventPage[] => [
+      // 여는 연출 — 첫 이벤트만 칸마다 파티클·효과음·기다림을 돌고(자동 페이지는 차례로 돈다), 나머지 칸은 바로 바뀐다.
+      const effectCells = k === 'rock' || k === 'tree' ? perCell.map((entry) => ({ x: entry.x, y: entry.y })) : cells.filter((cell) => !isPassable(draft, map, cell.x, cell.y));
+      const openingLead = (lead: boolean): Command[] => !effect || !lead ? [] : [
+        ...(effect.se ? [{ kind: 'playAudio', resourceId: effect.se, loop: false, channel: 'se' } as Command] : []),
+        ...effect.particles.flatMap((preset) => effectCells.map((cell) => m2('Particle Effect', { preset, target: 'tile', x: cell.x, y: cell.y, durationMs: effect.durationMs, wait: false }))),
+        { kind: 'wait', ms: effect.durationMs },
+      ];
+      const openingTail = (lead: boolean): Command[] => effect?.text && lead ? [text(effect.text)] : [];
+      const gatePages = (eventId: string, clear: Command[], lead = true): EventPage[] => [
         { id: `${eventId}_blocked`, name: '막힘', conditions: [], graphic: { transparent: true }, ...SOLID, commands: [text(`${blocked} ${withJosa(skill.name, '을/를')} 쓸 수 있는 동료가 있다면…`)] },
         ...(gateConditions.length ? [{ id: `${eventId}_lacking`, name: '기술은 알지만 조건 부족', conditions: [knows], graphic: { transparent: true }, ...SOLID, commands: [text(lackingText)] } as EventPage] : []),
         { id: `${eventId}_know`, name: '기술을 앎', conditions: [knows, ...gateConditions], graphic: { transparent: true }, ...SOLID, commands: askToUse },
         {
           id: `${eventId}_opening`, name: '열리는 중', conditions: [{ kind: 'switch', switchId: doneSwitchId, value: true }], graphic: { transparent: true }, ...PASS, trigger: { kind: 'auto' },
-          commands: [...clear, { kind: 'setSelfSwitch', key: 'B', value: true }],
+          commands: [...openingLead(lead), ...clear, ...openingTail(lead), { kind: 'setSelfSwitch', key: 'B', value: true }],
         },
         { id: `${eventId}_open`, name: '열림', conditions: [{ kind: 'selfSwitch', key: 'B', value: true }], graphic: { transparent: true }, ...PASS, trigger: { kind: 'action' }, commands: [] },
       ];
@@ -597,12 +656,37 @@ export const FIELD_OBSTACLE_TOOLS: readonly ToolDefinition[] = [
       if (k === 'dark') {
         pages.push({
           id: `${id}_dark`, name: '어둠 밝히기', conditions: [], graphic: { transparent: true }, ...PASS, trigger: { kind: 'auto' },
-          commands: [{ kind: 'fork', condition: knows, then: [{ kind: 'setLighting', ambient: 0, transitionMs: 600 }, text(knowsText)], else: [text(`${blocked} ${withJosa(skill.name, '을/를')} 쓸 수 있는 동료가 있다면 밝힐 수 있을 것이다.`)] }],
+          commands: [{ kind: 'fork', condition: knows, then: [{ kind: 'setLighting', ambient: 0, transitionMs: 600 }, text(knowsText)], else: [text(`${blocked} ${withJosa(skill.name, '을/를')} 쓸 줄 아는 동료가 있으면 밝힐 수 있겠다.`)] }],
         });
+        const litSwitch = typeof args.litSwitchId === 'string' && args.litSwitchId.trim() ? args.litSwitchId.trim() : undefined;
+        if (litSwitch) {
+          if (!draft.switches.some((entry) => entry.id === litSwitch)) { ensureNamedSwitch(draft, litSwitch, `${eventName}: 빛이 돌아옴`); warnings.push(`스위치 '${litSwitch}' 가 없어 등록했습니다 — 켜는 곳이 있어야 밝아집니다.`); }
+          pages.push({ id: `${id}_lit`, name: '빛이 돌아옴', conditions: [{ kind: 'switch', switchId: litSwitch, value: true }], graphic: { transparent: true }, ...PASS, trigger: { kind: 'auto' }, commands: [{ kind: 'setLighting', ambient: 0, transitionMs: 0 }] });
+        }
         const event: GameEvent = { id, name: eventName, x, y, trigger: { kind: 'auto' }, commands: [], pages };
         assertEventShape(event, warnings, event, draft);
         upsertEventIntoMap(map, event);
         eventIds.push(id);
+        // 어두운 동안 막는 칸 — 보이지 않는 벽. 기술을 알거나 빛이 돌아오면 지나간다.
+        const rawBlocks = args.blockCells === undefined ? [] : args.blockCells;
+        if (!Array.isArray(rawBlocks) || rawBlocks.length > 6) throw new ToolError('blockCells 는 [{x,y}] 6칸까지입니다.', { code: 'invalid-args' });
+        rawBlocks.forEach((raw, index) => {
+          const cell = raw as { x?: unknown; y?: unknown };
+          const bx = Number(cell?.x), by = Number(cell?.y);
+          if (!Number.isInteger(bx) || !Number.isInteger(by) || !inMapBounds(map, bx, by)) throw new ToolError(`blockCells[${index}] (${String(cell?.x)}, ${String(cell?.y)}) 가 맵 밖입니다.`, { code: 'invalid-args' });
+          if (!isPassable(draft, map, bx, by)) warnings.push(`blockCells[${index}] (${bx}, ${by}) 는 이미 막힌 칸입니다 — 막을 필요가 없습니다.`);
+          const other = map.events.find((e) => e.x === bx && e.y === by && e.id !== `${id}_block_${index + 1}`);
+          if (other) throw new ToolError(`blockCells[${index}] (${bx}, ${by}) 에 이미 이벤트 '${other.id}' 가 있습니다.`, { code: 'obstacle-cell-occupied', mapId: map.id, x: bx, y: by });
+          const blockId = `${id}_block_${index + 1}`;
+          const blockEvent: GameEvent = { id: blockId, name: `${eventName}(길목)`, x: bx, y: by, trigger: { kind: 'action' }, commands: [], pages: [
+            { id: `${blockId}_dark`, name: '캄캄함', conditions: [], graphic: { transparent: true }, ...SOLID, commands: [text(blocked)] },
+            { id: `${blockId}_known`, name: '기술로 밝음', conditions: [knows], graphic: { transparent: true }, ...PASS, trigger: { kind: 'action' }, commands: [] },
+            ...(litSwitch ? [{ id: `${blockId}_lit`, name: '빛이 돌아옴', conditions: [{ kind: 'switch', switchId: litSwitch, value: true }], graphic: { transparent: true }, ...PASS, trigger: { kind: 'action' }, commands: [] } as EventPage] : []),
+          ] };
+          assertEventShape(blockEvent, warnings, blockEvent, draft);
+          upsertEventIntoMap(map, blockEvent);
+          eventIds.push(blockId);
+        });
       } else if (k === 'water' || k === 'waterfall') {
         const event: GameEvent = { id, name: eventName, x, y, trigger: { kind: 'action' }, commands: [], pages: gatePages(id, clearCommands) };
         assertEventShape(event, warnings, event, draft);
@@ -613,7 +697,7 @@ export const FIELD_OBSTACLE_TOOLS: readonly ToolDefinition[] = [
         perCell.forEach((entry, index) => {
           const eventId = index === 0 ? id : `${id}_c${index + 1}`;
           if (index > 0) ensureFieldCommonEvent(draft, commonEventId, skillName, eventId, openByAbility(skillName, doneSwitchId, gateSwitches));
-          const event: GameEvent = { id: eventId, name: index === 0 ? eventName : `${eventName} ${index + 1}`, x: entry.x, y: entry.y, trigger: { kind: 'action' }, commands: [], pages: gatePages(eventId, entry.clear) };
+          const event: GameEvent = { id: eventId, name: index === 0 ? eventName : `${eventName} ${index + 1}`, x: entry.x, y: entry.y, trigger: { kind: 'action' }, commands: [], pages: gatePages(eventId, entry.clear, index === 0) };
           assertEventShape(event, warnings, event, draft);
           upsertEventIntoMap(map, event);
           eventIds.push(eventId);

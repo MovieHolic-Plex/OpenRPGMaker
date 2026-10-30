@@ -431,6 +431,14 @@ export const RELIEF_STYLES: Readonly<Record<string, ReliefStyleSpec>> = {
   // earth faces under a lawn lip (top = the pilgrim-meadow sheet's lawn 240), vines on some columns, stairs cut into the faces
   // (stone) and log steps across the gentler climbs (carvedStairs.log: risers in the accent ramp = log wood)
   "grass-cliff": { family: "earth", overlay: "vines", overlayEvery: 4, carvedStairs: { log: true, tread: "wall" }, top: ["#1a4c22", "#276d2d", "#3d8d43", "#5fa84a", "#87c464", "#b4e08a"], wall: ["#24170b", "#432c16", "#634223", "#825a30", "#a2753f", "#c29552"], accent: ["#2e1a0a", "#4a2c12", "#6e4520", "#94632f", "#b98648", "#d8a866"] },
+  // 마을 지형 계단(2026-10-30 사용자 「경사로를 전부 계단으로 — 버들항 칩셋 계단 조각」): 바탕 양식과 같은 색·벽에, 자동 계단(5~8)을
+  // 칩셋 bd-mpart-stairs 돌계단 화소(rampArt.json *-steps, scripts/content/build-village-stair-art.mts)로 칠한다 — 걷기 규칙은 그대로.
+  "grass-steps": { smoothStairs: true, family: "earth", overlay: "vines", overlayEvery: 4, top: ["#1a4c22", "#276d2d", "#3d8d43", "#5fa84a", "#87c464", "#b4e08a"], wall: ["#24170b", "#432c16", "#634223", "#825a30", "#a2753f", "#c29552"], accent: ["#2e1a0a", "#4a2c12", "#6e4520", "#94632f", "#b98648", "#d8a866"] },
+  "snow-steps": { smoothStairs: true, family: "snow", overlay: "icicles", overlayEvery: 2, top: ["#6a7f9e", "#93a9c6", "#b9cce0", "#d6e3ef", "#e9f1f8", "#ffffff"], wall: ["#2a3040", "#3c4658", "#566479", "#71819a", "#93a3bb", "#b9c6d8"], accent: SNOW_WHITE },
+  "sand-steps": { smoothStairs: true, family: "strata", top: ["#5b4d35", "#826e4c", "#ae9366", "#d9b87f", "#f5d090", "#ffefa5"], wall: ["#5a3e22", "#7a5630", "#98703f", "#b58a50", "#cfa566", "#e8c282"], accent: MOSS },
+  // 던전 높이 단(2026-10-30 「던전 설계에 높이 단 — 마을과 같은 버들항 계단 조각」): 버들항 동굴 바위 앞면 색(칩셋에서 뽑은 6색)의 흙벽 절벽 + 같은 bd-mpart-stairs 돌계단.
+  "cave-steps": { smoothStairs: true, family: "earth", top: ["#30242a", "#463a3a", "#604e48", "#6c5c54", "#806a5d", "#8d7766"], wall: ["#30242a", "#463a3a", "#604e48", "#6c5c54", "#806a5d", "#8d7766"], accent: ["#2b3934", "#3c4642", "#525a56", "#595b58", "#6f716e", "#929491"] },
+  "peat-steps": { smoothStairs: true, family: "peat", overlay: "roots", overlayEvery: 3, rim: { side: 6, lip: 2 }, top: ["#373b1f", "#4e542c", "#68703b", "#828c4a", "#939e54", "#a9b660"], wall: ["#1a1510", "#2a2118", "#3a2d1f", "#4a3a27", "#5b4930", "#6e5a3c"], accent: MOSS },
   tundra: { family: "snow", overlay: "icicles", overlayEvery: 2, top: ["#444335", "#625f4c", "#827f66", "#a39f7f", "#b8b490", "#d4cfa5"], wall: ["#2a3040", "#3c4658", "#566479", "#71819a", "#93a3bb", "#b9c6d8"], accent: SNOW_WHITE },
   // tundra-snow (설원·툰드라 relief fields 2026-09-28, agent/r3-relief-stairs 브랜치의 openwiki/biome-tundra.md): the rebuilt sheet's snow field (cell 240) as the
   // top ramp — the "tundra" row above keeps the old moss-steppe olive for the fantasy-500 fields that already use it

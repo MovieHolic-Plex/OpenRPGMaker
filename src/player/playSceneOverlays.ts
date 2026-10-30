@@ -16,6 +16,7 @@ import { isEmeraldMonsterStyle } from "@/project/emeraldMonsterStyle";
 import { monsterMenuIconResourceId, monsterUiEntry } from "@/player/playerMonsterPartyModel";
 import { resolveEndingCouplePortraits } from "@/player/dialogue";
 import { ANY_FRIENDSHIP_KEY } from "@/project/session";
+import { resolveActorName } from "@/project/sessionActorCommands";
 import type { FaceGraphic } from "@/project/types";
 import { sharedPortraitRendering } from "@/assets/sharedPortraitAssets";
 import { vnUiText, type VnUiKey } from "@/player/vnExtrasStrings";
@@ -35,7 +36,9 @@ export function endingSegmentOf(endingId: string | undefined): { readonly kind: 
 }
 
 /** Credits read at roughly 24 px/s; holding a confirm key fast-forwards 4x. */
-const CREDITS_SPEED_PX_PER_SEC = 24;
+const CREDITS_SPEED_PX_PER_SEC = 36;
+/** 크레딧 최소 길이 — 한 줄짜리 크레딧도 8초를 기다리게 하던 바닥(2026-10-29 vm3 「엔딩 뒤 크레딧 대기 김」)을 낮췄다. */
+const CREDITS_MIN_MS = 5000;
 const CREDITS_FAST_RATE = 4;
 
 export function showRuntimeOverlay(
@@ -267,7 +270,8 @@ function renderDefeatMenu(terminal: TerminalScene, scene: GameOverPresentationAc
     const hint = textNode("div", "game-over-hint", "↑↓ 선택   ·   Z / Enter 결정");
     overlay.append(hint);
     const messageBody = overlay.querySelector<HTMLElement>(".game-over-message");
-    if (messageBody && messageBody.scrollHeight > messageBody.clientHeight) {
+    // 한 줄짜리 본문도 소수 줄 높이(9px×1.5) 반올림으로 scrollHeight 가 1 크게 나와 「PgUp/PgDn 본문」 안내가 붙었다 — 1px 는 넘침이 아니다.
+    if (messageBody && messageBody.scrollHeight > messageBody.clientHeight + 1) {
       hint.textContent += "   ·   PgUp/PgDn 본문";
       window.addEventListener("keydown", event => {
         if (event.isComposing || !["PageUp", "PageDown"].includes(event.key)) return;
@@ -312,11 +316,17 @@ function emeraldHallOfFame(scene: PlaySceneContext): HTMLElement | undefined {
   return hall;
 }
 
-function endingKicker(presentation?: EndingPresentation): string {
+function endingKicker(scene: PlaySceneContext, presentation?: EndingPresentation): string {
   const own = presentation?.kicker?.trim();
   if (own) return own;
   if (presentation?.tone === "dark") return endingText("ending.kicker.dark");
-  return endingText(usesRelationshipMenu(store.getCurrent()) ? "ending.kicker.couple" : "ending.kicker.journey");
+  const project = store.getCurrent();
+  if (usesRelationshipMenu(project)) return endingText("ending.kicker.couple");
+  // 혼자 갇혔다 나오는 방탈출 같은 1인 이야기에 「우리의 여정」은 남의 문구였다(VQA mt3 flash 156·terra 214) — 주인공 이름으로.
+  const party = scene.session.partyActorIds ?? [];
+  const solo = party.length === 1 ? project.database.actors.find((actor) => actor.id === party[0]) : undefined;
+  const name = solo ? resolveActorName(scene.session, solo).trim() : "";
+  return name ? endingText("ending.kicker.solo", name) : endingText("ending.kicker.journey");
 }
 
 /** 마지막 장의 큰 글자. 저작한 finalTitle → 막·장 끝이면 「제1막 끝」 → 「끝」(게임 언어). */
@@ -452,6 +462,21 @@ function fitOneLine(element: HTMLElement, from: number, to: number, unit: string
   element.style.whiteSpace = "";
 }
 
+/** 시드 프로젝트가 남기는 임시 제목 — 청사진이 이 이름일 때 지은 크레딧은 나중에 정해진 게임 제목으로 보인다. */
+const PLACEHOLDER_CREDIT_TITLES: ReadonlySet<string> = new Set(["제목 없는 게임", "새 프로젝트", "새 게임", "New Project", "New Game", "Untitled Game"]);
+
+/**
+ * 크레딧 본문. 조수가 줄바꿈을 글자 「\n」로 저장한 크레딧(2026-10-25 G50·심판 J2)도 줄로 보이고, 크레딧이 임시 제목 그대로면
+ * (청사진을 지을 때 제목이 아직 「제목 없는 게임」이었다) 지금 타이틀 화면의 제목으로 바꾼다 — 엔딩 뒤 「제목 없는 게임」 화면이
+ * 임시 화면처럼 보였다(2026-10-29 vm4 flash 방탈출 판정).
+ */
+function creditsCopy(credits: string | undefined, project: Project): string | undefined {
+  const copy = credits?.replace(/(?:\\r)?\\n/gu, "\n").trim();
+  if (!copy || !PLACEHOLDER_CREDIT_TITLES.has(copy)) return copy;
+  const title = (project.system.titleScreen?.title ?? "").trim() || (project.meta?.title ?? "").trim();
+  return title && !PLACEHOLDER_CREDIT_TITLES.has(title) ? title : copy;
+}
+
 export function showEndingScreen(scene: PlaySceneContext, title: string, message: string, presentation?: EndingPresentation, endingId?: string, continueTo?: EndingContinueTo): void {
   const terminal = createTerminalScene(scene, "ending", title || endingText("ending.heading"));
   if (!terminal) return;
@@ -488,7 +513,7 @@ export function showEndingScreen(scene: PlaySceneContext, title: string, message
       badge.dataset.testid = "ending-badge";
       epilogue.append(badge);
     }
-    epilogue.append(textNode("div", "ending-kicker", endingKicker(presentation)));
+    epilogue.append(textNode("div", "ending-kicker", endingKicker(scene, presentation)));
     // 「본제 · 부제」 이름은 구분점에서 줄을 나눈다 — 점이 줄 끝에 매달리지 않게 점은 빼고 부제를 둘째 줄로 보낸다.
     const heading = textNode("h1", "ending-heading", "");
     (title || endingText("ending.heading")).split(/\s+[·・•]\s+/).forEach((part, index) => {
@@ -505,7 +530,8 @@ export function showEndingScreen(scene: PlaySceneContext, title: string, message
       void document.fonts?.ready.then(() => { if (epilogue.isConnected) fitEndingMessage(epilogue); });
     }
     terminal.phase("epilogue");
-    if (!await terminal.wait(1800)) return;
+    // 에필로그 제목을 읽을 시간만 막는다 — 1.8초는 톡톡 누르는 손을 두 번 삼켰다(2026-10-29 pacing-ending).
+    if (!await terminal.wait(1200)) return;
     const hint = textNode("div", "game-over-hint", endingText("ending.continue"));
     terminal.root.append(hint);
     terminal.keys(event => {
@@ -553,8 +579,7 @@ export function showEndingScreen(scene: PlaySceneContext, title: string, message
     terminal.phase("credits-transition");
     if (!await terminal.wait(terminal.reducedMotion ? 0 : 500)) return;
     terminal.root.querySelector(".ending-epilogue")?.remove();
-    // 조수가 줄바꿈을 글자 「\n」로 저장한 크레딧(2026-10-25 G50·심판 J2)도 줄로 보인다.
-    const copy = presentation?.credits?.replace(/(?:\\r)?\\n/gu, "\n").trim();
+    const copy = creditsCopy(presentation?.credits, store.getCurrent());
     if (!copy) { finish(); return; }
     terminal.phase("credits");
     const viewport = textNode("div", "ending-credits", "");
@@ -563,7 +588,7 @@ export function showEndingScreen(scene: PlaySceneContext, title: string, message
     // 롤 첫 줄이 0초부터 마스크가 불투명한 구간 안에 보이게 아래 가장자리 밖이 아니라 위쪽 1/3 지점에서 출발한다(VQA R8).
     const startOffset = Math.round(viewport.clientHeight * .3);
     const distance = startOffset + roll.scrollHeight;
-    const duration = Math.max(8000, distance / CREDITS_SPEED_PX_PER_SEC * 1000);
+    const duration = Math.max(CREDITS_MIN_MS, distance / CREDITS_SPEED_PX_PER_SEC * 1000);
     terminal.root.style.setProperty("--credits-duration", `${duration}ms`);
     terminal.root.style.setProperty("--credits-start", `${startOffset}px`);
     terminal.root.style.setProperty("--credits-end", `${-roll.scrollHeight}px`);
@@ -574,16 +599,17 @@ export function showEndingScreen(scene: PlaySceneContext, title: string, message
     const rollAnimation = terminal.reducedMotion ? undefined : roll.getAnimations()[0];
     if (rollAnimation) void rollAnimation.finished.then(() => finishOnce(), () => undefined);
     else if (!terminal.reducedMotion) void terminal.wait(duration).then(alive => { if (alive) finishOnce(); });
-    // Holding a confirm key fast-forwards the roll; releasing it returns to reading speed.
-    const setFast = (fast: boolean): void => { if (rollAnimation && rollAnimation.playState === "running") rollAnimation.playbackRate = fast ? CREDITS_FAST_RATE : 1; };
-    terminal.root.ownerDocument.addEventListener("keyup", event => { if (isCinematicAdvanceKey(normalizeKey(event.key))) setFast(false); }, { signal: terminal.signal });
-    if (!await terminal.wait(800)) return;
+    // 확인키 한 번이면 빨리 감기가 켜진 채로 남고, 한 번 더 누르면 바로 끝 장으로 간다. 예전엔 누르고 있는 동안만 빨라져
+    // 톡톡 누르는 플레이어는 1줄 크레딧도 8초를 그대로 기다렸다(2026-10-29 vm3 flash 방탈출 판정, 계측 hud/pacing-ending).
+    let fast = false;
+    const setFast = (): void => { fast = true; if (rollAnimation && rollAnimation.playState === "running") rollAnimation.playbackRate = CREDITS_FAST_RATE; };
+    if (!await terminal.wait(400)) return;
     terminal.keys(event => {
       if (["PageDown", "PageUp"].includes(event.key) && terminal.reducedMotion) viewport.scrollTop += (event.key === "PageUp" ? -1 : 1) * viewport.clientHeight * .9;
       const key = normalizeKey(event.key);
       if (terminal.reducedMotion) { if (isCinematicAdvanceKey(key)) finishOnce(); return; }
       if (isCancelKey(key)) finishOnce();
-      else if (isCinematicAdvanceKey(key)) setFast(true);
+      else if (isCinematicAdvanceKey(key) && !event.repeat) { if (fast) finishOnce(); else setFast(); }
     });
   };
   void run();

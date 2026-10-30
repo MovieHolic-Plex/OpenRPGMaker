@@ -8,6 +8,9 @@ import sengokuData from "@/assets/sengokuEdoRoomTemplates.json";
 // 박물관·배 안·투기장(interior-plus, 손 도트 v5 에 덧붙인 조각) 방 견본 — scripts/content/interior-plus/templates.mts 가 굽는다.
 // 같은 칩셋(atlas_biome_interior) 키라 펼치기로 합치면 v5 견본을 덮는다 → 배열·건물 목록을 이어 붙인다.
 import plusData from "@/assets/interiorPlusRoomTemplates.json";
+// 손으로 짠 방 견본 — 예제 맵에 없거나 약한 용도(교실·잡화점·연구실·감옥·작은 예배당·작은 서재·방탈출 작은 방)를 칩셋에 있는 기물로 짠 것.
+// scripts/content/interior-authored/build.mts 가 rooms.mts 에서 굽는다(적대 검수·도달 검사를 통과한 것만).
+import authoredData from "@/assets/interiorAuthoredRoomTemplates.json";
 import type { HandInteriorSpec } from "./builder";
 import { MODERN_PRESET_DATA } from "./modernPresets";
 export interface InteriorTemplateItem {
@@ -33,6 +36,7 @@ interface TemplateData {
 const D0 = data as unknown as TemplateData;
 const DS = sengokuData as unknown as TemplateData;
 const DP = plusData as unknown as TemplateData;
+const DA = authoredData as unknown as TemplateData;
 const DM = MODERN_PRESET_DATA as unknown as TemplateData;
 const OVERRIDE_MODERN_MAPS: Readonly<Record<string, true>> = {
   "office-floor": true,
@@ -91,7 +95,7 @@ function mergeTemplateData(base: TemplateData, ...all: TemplateData[]): Template
   }
   return { templates, programs };
 }
-const D: TemplateData = mergeTemplateData(D0, DS, DP, DM);
+const D: TemplateData = mergeTemplateData(D0, DS, DP, DA, DM);
 export function roomTemplates(tilesetId: string): readonly InteriorRoomTemplate[] { return D.templates[tilesetId] ?? []; }
 export function roomPrograms(tilesetId: string) { return D.programs[tilesetId] ?? {}; }
 
@@ -114,7 +118,7 @@ const V5_STYLE: Record<string, string> = {
   // interior-plus: 박물관·범선·투기장은 각자 한 묶음(다른 건물 방과 섞지 않는다)
   museum: "museum", "museum-gallery": "museum", ship: "ship", ship_hold: "ship", arena: "arena",
 };
-export function templateStyle(t: Pick<InteriorRoomTemplate, "map">): string { return V5_STYLE[t.map] ?? "any"; }
+export function templateStyle(t: Pick<InteriorRoomTemplate, "map">): string { return V5_STYLE[t.map] ?? /^authored-(town|noble|fantasy)-/u.exec(t.map)?.[1] ?? "any"; }
 
 /** 종류가 같은 견본들(크기 가까운 순). style 을 주면 그 화풍 묶음을 먼저(없으면 전부). */
 export function templatesOfKind(tilesetId: string, kind: string, near?: { w: number; h: number }, style?: string): InteriorRoomTemplate[] {

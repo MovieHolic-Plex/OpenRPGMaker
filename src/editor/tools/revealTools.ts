@@ -106,6 +106,7 @@ const stageMapReveal: ToolDefinition = {
       afterText: { type: "string", description: "이 글이 본문에 든 첫 대사 바로 뒤에 넣는다(예: 「드러났다」)" },
       theme: { type: "string", enum: ["stone", "machine", "magic", "fire"], description: "입자·색조 묶음. 기본 stone" },
       camera: { type: "boolean", description: "false 면 카메라를 옮기지 않는다(이미 화면 안일 때). 기본 true" },
+      zoom: { type: "number", description: "카메라가 그 자리로 갈 때 확대 배율(1~3, 예: 2 = 가까이). 돌아올 때 1 로 되돌린다. 작은 변화(돌 하나·자물쇠)를 가까이 보여 줄 때. 기본 1" },
       switchId: { type: "string", description: "드러난 뒤 켤 스위치(그 칸 이벤트의 조건으로 쓴다)" },
     },
     required: ["mapId", "eventId"],
@@ -140,12 +141,14 @@ const stageMapReveal: ToolDefinition = {
     const theme = THEMES[String(args.theme ?? "stone")] ?? THEMES.stone!;
     const changeTiles = changes.map((c) => ({ kind: "changeTile", mapId: map.id, layer: c.layer, x: c.x, y: c.y, tile: c.tile } as unknown as Command));
     const useCamera = args.camera !== false;
+    const zoom = Number.isFinite(Number(args.zoom)) ? Math.max(1, Math.min(3, Number(args.zoom))) : 1;
+    const zoomField: Record<string, string> = zoom !== 1 ? { zoom: String(zoom) } : {};
     const inserted: Command[] = [
-      ...(useCamera ? [m2("Camera Control", { mode: "panTo", x: cx, y: cy, durationMs: "900", wait: "true" }), { kind: "wait", ms: 300 } as Command] : []),
+      ...(useCamera ? [m2("Camera Control", { mode: "panTo", x: cx, y: cy, durationMs: "900", wait: "true", ...zoomField }), { kind: "wait", ms: 300 } as Command] : []),
       ...revealInWaves(changeTiles, theme),
       ...(typeof args.switchId === "string" && args.switchId ? [{ kind: "setSwitch", switchId: args.switchId, value: true } as unknown as Command] : []),
       { kind: "wait", ms: 600 } as Command,
-      ...(useCamera ? [m2("Camera Control", { mode: "return", durationMs: "600", wait: "true" })] : []),
+      ...(useCamera ? [m2("Camera Control", { mode: "return", durationMs: "600", wait: "true", ...(zoom !== 1 ? { zoom: "1" } : {}) })] : []),
     ];
 
     const anchor = typeof args.afterText === "string" && args.afterText ? args.afterText : undefined;
@@ -166,7 +169,7 @@ const stageMapReveal: ToolDefinition = {
       placedIn = page.id;
     }
     return {
-      summary: `${map.id} (${cx},${cy}) 둘레 ${changes.length}칸이 이벤트 ${event.id} 페이지 ${placedIn} 에서 드러난다(${placement}${useCamera ? ", 카메라 이동" : ""}).`,
+      summary: `${map.id} (${cx},${cy}) 둘레 ${changes.length}칸이 이벤트 ${event.id} 페이지 ${placedIn} 에서 드러난다(${placement}${useCamera ? `, 카메라 이동${zoom !== 1 ? ` ×${zoom}` : ""}` : ""}).`,
       data: { mapId: map.id, eventId: event.id, pageId: placedIn, cells: changes.length, center: { x: cx, y: cy }, commands: inserted.length },
     };
   },
@@ -203,6 +206,7 @@ const placeLift: ToolDefinition = {
       toDirection: { type: "string", enum: ["up", "down", "left", "right"], description: "도착해서 보는 방향. 기본 down" },
       arrivedSwitchId: { type: "string", description: "도착 이벤트가 쓰는 스위치(도착 맵 다른 이벤트가 이어 받을 때). 기본 자동" },
       se: { type: "string", description: "기계음 효과음 id. 기본 cc0-se-osx-machine-02" },
+      copyPlate: { type: "boolean", description: "true = 도착 맵 발판 칸(아래 겹층)에 그려진 발판 그림을 이쪽 발판 칸에도 칠한다. «Lift Ride» 발판은 탈 때만 그려져서, 타기 전에는 어디서 타는지 보이지 않는다(toMapId 필요, 이쪽 칸에 이미 그림이 있으면 그대로 둔다)" },
       trigger: { type: "string", enum: ["touch", "action"], description: "touch(기본)=발판에 올라서면 바로 탄다 · action=발판 위에서 조사 키를 눌러야 탄다(도착한 발판에서 걸어 나가다 도로 타 버리지 않게 — 양방향 승강 장치의 도착 쪽에 쓴다)" },
     },
     required: ["mapId", "x", "y"],
@@ -267,6 +271,21 @@ const placeLift: ToolDefinition = {
       upsertEventIntoMap(map, event);
       made.push(id);
     }
+    // 평소 발판 — 도착 쪽 발판 그림(아래 겹층)을 이쪽 발판 칸에 옮겨 칠한다.
+    let platePainted = 0;
+    if (args.copyPlate === true) {
+      if (!toMap) throw new ToolError("copyPlate 에는 toMapId 가 필요합니다(도착 쪽 발판 그림을 옮겨 칠한다).", { code: "lift-plate" });
+      const size = map.width * map.height;
+      if (!map.lowerOverlayTiles || map.lowerOverlayTiles.length !== size) map.lowerOverlayTiles = new Array<number>(size).fill(-1);
+      for (let dy = 0; dy < depth; dy += 1) for (let dx = 0; dx < width; dx += 1) {
+        const tile = toMap.lowerOverlayTiles?.[(toY + dy) * toMap.width + toX + dx] ?? -1;
+        const at = (y + dy) * map.width + x + dx;
+        if (tile < 0 || (map.lowerOverlayTiles[at] ?? -1) >= 0) continue;
+        map.lowerOverlayTiles[at] = tile;
+        platePainted += 1;
+      }
+      if (platePainted === 0) throw new ToolError(`copyPlate: ${toMap.id} (${toX},${toY}) 발판 칸에 옮길 그림이 없거나 이쪽이 이미 칠해져 있습니다.`, { code: "lift-plate" });
+    }
     let arrivalId: string | undefined;
     if (toMap) {
       // 도착 스위치가 프로젝트에 없으면 만든다 — 자동 이름(sw_ev_lift_…_arrived)은 참조 검증에서 「없는 스위치」로 거부됐다.
@@ -296,8 +315,8 @@ const placeLift: ToolDefinition = {
     }
     return {
       summary: `${map.id} (${x},${y}) ${width}×${depth} 승강 장치 — ${direction === "up" ? "위로" : "아래로"} ${distance}칸` +
-        (toMap ? ` → ${toMap.id} (${toX},${toY}) 도착 이벤트 ${arrivalId}` : " (같은 맵 다른 층)") + (switchId ? `, 스위치 ${switchId} 켜진 뒤` : "") + ".",
-      data: { mapId: map.id, rideEvents: made, ...(arrivalId ? { arrivalEventId: arrivalId, arrivedSwitchId: arrived } : {}) },
+        (toMap ? ` → ${toMap.id} (${toX},${toY}) 도착 이벤트 ${arrivalId}` : " (같은 맵 다른 층)") + (switchId ? `, 스위치 ${switchId} 켜진 뒤` : "") + (platePainted ? `, 발판 그림 ${platePainted}칸` : "") + ".",
+      data: { mapId: map.id, rideEvents: made, platePainted, ...(arrivalId ? { arrivalEventId: arrivalId, arrivedSwitchId: arrived } : {}) },
     };
   },
 };

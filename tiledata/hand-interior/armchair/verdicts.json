@@ -1,0 +1,68 @@
+{
+ "note": "object-gen redraws of atlas_biome_interior armchair (tile 3677), 2026-10-29. None baked: every picked drawing failed the independent adversarial VQA (Sonnet 5.5 high x3, better_than_old false). Sheet unchanged.",
+ "items": {
+  "r3-A2": {
+   "pixelSha256": "97119ee8006b0fa044f3920ecb133ae11f9c70aa6dbb7eac5039488f05f101b1",
+   "objectGate": "not sent to object-gate (VQA failed first)",
+   "vqa": [
+    {
+     "verdict": "FAIL",
+     "better_than_old": false,
+     "reads_as": "a red cushion block or box with tiny feet"
+    },
+    {
+     "verdict": "FAIL",
+     "better_than_old": false,
+     "reads_as": "red cushion box or low loveseat block, not a clear armchair"
+    },
+    {
+     "verdict": "FAIL",
+     "better_than_old": false,
+     "reads_as": "a low red box, cushion or chest with two stub feet, not clearly an armchair"
+    }
+   ]
+  },
+  "r4-A2": {
+   "pixelSha256": "c8f972f73d81b644deee6a038946d736ee124cb10ed990549cea07db1646f1a5",
+   "objectGate": "object-gate FAIL (front_elevation, top 1 row) — review --no-write",
+   "vqa": [
+    {
+     "verdict": "FAIL",
+     "better_than_old": false,
+     "reads_as": "red boxy block/pouffe with a cushion panel, only weakly an armchair"
+    },
+    {
+     "verdict": "FAIL",
+     "better_than_old": false,
+     "reads_as": "red upholstered armchair, but close to a rounded red block with a front-facing seat panel"
+    },
+    {
+     "verdict": "FAIL",
+     "better_than_old": false,
+     "reads_as": "a red rounded block or box-like armchair with a faint cushion panel"
+    }
+   ]
+  },
+  "r5-B2": {
+   "pixelSha256": "80ceed0bffa6df4f0bf112482f2e6040298339442770120da9242eeb081aa353",
+   "objectGate": "object-gate PASS (seat, refSet atlas_biome_interior, profile uncalibrated = advisory)",
+   "vqa": [
+    {
+     "verdict": "FAIL",
+     "better_than_old": false,
+     "reads_as": "a small red box or cube with a pink square, not clearly an armchair"
+    },
+    {
+     "verdict": "FAIL",
+     "better_than_old": false,
+     "reads_as": "red upholstered block/box with a pink patch and two feet; only weakly an armchair"
+    },
+    {
+     "verdict": "FAIL",
+     "better_than_old": false,
+     "reads_as": "red box or block with a pale square patch; only weakly an armchair"
+    }
+   ]
+  }
+ }
+}

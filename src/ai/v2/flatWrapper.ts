@@ -49,7 +49,9 @@ export function flatWrapperShape(name: string, parameters: unknown): { readonly 
       // 감싼 모양(예전 습관). 최상위에 칸이 더 있으면 그 칸을 버리거나 거절하지 않고 감싼 값에 합친다.
       if (!Object.keys(moved).length) return { args, missing: [] };
       if (w.array && Array.isArray(slotValue)) {
-        const incomplete = innerRequired.filter((k) => moved[k] === undefined);
+        // 빈 문자열도 빈 칸이다 — 목록과 함께 최상위에 role:""·name:""·where:"" 를 채워 보낸 찌꺼기가 이름 없는 사람 한 명으로 붙었다
+        // (2026-10-29 room-vig6 tavern: 「이름 없는 인물 한 명과 기본 대사가 의도치 않게 추가」).
+        const incomplete = innerRequired.filter((k) => moved[k] === undefined || moved[k] === "");
         if (incomplete.length === 0) return { args: { ...out, [w.slot]: [...slotValue, moved] }, missing: [] };
         // 목록이 이미 있으면 그게 본문이다. role 없는 찌꺼기(이름만 한 번 더 적은 것)를 사람으로 붙이면
         // 필수 칸이 비어 목록 전체가 거절됐다. 한 명뿐이면 비어 있는 칸만 채우고, 여럿이면 찌꺼기는 버린다.

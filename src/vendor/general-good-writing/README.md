@@ -2,7 +2,7 @@
 
 - 원본: https://github.com/code-yeongyu/general-good-writing , 커밋 `eeb868e` (`scripts/src/`)
 - 저작자: 코드 연규(code-yeongyu)
-- 라이선스: 원본 저장소에 라이선스 파일이 없다(2026-10-29 확인). 저작자의 사용 허락을 받는 중이다. origin(OpenRPGMaker)은 공개 저장소라, 허락 전에는 이 폴더를 푸시·머지하지 않는다.
+- 라이선스: 원본 저장소에 라이선스 파일이 없다. 저작자가 크레딧 표기를 조건으로 OPRN 에서 쓰는 것을 허락했다(2026-10-30). 크레딧은 저장소 루트 `ATTRIBUTION.md` 와 에디터 「설정 → 정보」.
 - 크레딧: 저장소 루트 `ATTRIBUTION.md`, 에디터 「설정 → 정보」.
 
 ## 무엇을 가져왔나

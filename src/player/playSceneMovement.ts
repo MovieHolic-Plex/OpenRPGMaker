@@ -16,6 +16,7 @@ import { conditionWaitScenes } from "@/player/runtimeConditionWait";
 import { canMoveFootprint, inBounds, isPassable, ledgeDirectionAt } from "@/project/collision";
 import { slideAfterStep, slideRuleAt } from "@/project/slideTiles";
 import { counterReachTarget } from "@/project/counterTiles";
+import { objectClusterAt } from "@/project/objectFootprint";
 import { loopStepTarget, wrapLoopPosition } from "@/project/mapLoop";
 // 경로 세팅은 잎 모듈에 있다(가벼운 소비자가 이 파일 전체를 끌어오지 않도록) — 기존
 // 임포트 경로를 깨지 않기 위해 여기서 다시 내보낸다.
@@ -23,7 +24,8 @@ export { startPlayerRoute } from "@/player/playerRouteState";
 import { yieldPlayerRouteToEvents } from "@/player/playerRouteState";
 import { expandApproach, turnTowardDir } from "@/player/playSceneApproach";
 import { PLAYER_MOVE_TARGET } from "@/project/moveRouteTarget";
-import { footprintBounds, nearestCellInRect } from "@/project/footprint";
+import { footprintBounds, nearestCellInRect, passageBounds } from "@/project/footprint";
+import { moverVisualShift, playerVisualShift, rectsTouchVisually } from "@/player/chaseContact";
 import { playerPassageRect, resolvePlayerBody, type PlayerBody } from "@/project/playerFootprint";
 import { isSpatialPlacementBlocking } from "@/project/spatialOccupancy";
 import { isActionCombatMap, resolveActionCombatConfig } from "@/project/actionCombat";
@@ -44,10 +46,11 @@ import { assertNever, type PlayerRouteState, type PlaySceneContext } from "@/pla
 import { findBlockingEventOverlappingRect,
 findRuntimeEventAtInMap,
 setRuntimeEventPositionDirection, } from "@/project/runtimeEventState"
-import type { RuntimeEventView } from "@/project/runtimeEventState"
+import { runtimeEventViewById, type RuntimeEventView } from "@/project/runtimeEventState"
 import type { EventAnimationType, Trigger } from "@/project/types";
 import { nextSessionRandom } from "@/project/session";
 import { isCutsceneInputLocked } from "@/player/cutsceneControl";
+import { flushPendingAutosave } from "@/player/autosave";
 import { recordFollowerPlayerStep } from "@/project/followers";
 import { beginFollowerStep } from "@/player/playSceneFollowers";
 import { updateAmbientFlyers } from "@/player/playSceneAmbientFlyers";
@@ -120,6 +123,8 @@ export function updatePlayScene(scene: PlaySceneContext, deltaMs: number): void 
     scene.syncRuntimeState();
     return;
   }
+  // 전투 승리 자동 저장은 그 전투를 연 이벤트가 끝난 뒤 첫 필드 프레임에 굽는다(autosave.ts).
+  if (!scene.running && !isCutsceneInputLocked(scene.session)) flushPendingAutosave(store.getCurrent(), scene.session);
   updateDetectionEncounters(scene, deltaMs);
   const world = { project: store.getCurrent(), map: scene.map, session: scene.session, positions: scene.eventPositions };
   if (!scene.running && advancePursuitDoors(world, deltaMs)) refreshRuntimeEntities(scene);
@@ -794,7 +799,7 @@ function performAction(
   const delta = directionDelta(scene.facing);
   const tx = scene.tileX + delta.x;
   const ty = scene.tileY + delta.y;
-  const event = findRuntimeEventInScene(scene, tx, ty, "action") ?? findEventAcrossCounter(scene, world.project, tx, ty, delta);
+  const event = findRuntimeEventInScene(scene, tx, ty, "action") ?? findEventAcrossCounter(scene, world.project, tx, ty, delta) ?? findWalkerLeaving(scene, world.project, tx, ty) ?? findEventOnFacedObject(scene, world.project, tx, ty);
   if (event) {
     if (event.page?.interaction?.kind === 'hiding') return toggleHiding(world, event);
     if (event.page?.interaction?.kind === 'pushable') {
@@ -841,6 +846,57 @@ function performAction(
   const message = underfootFarm.message ?? facingFarm.message;
   if (message) showFarmFeedbackMessage(scene, message);
   return false;
+}
+
+/**
+ * 걷는 NPC 는 걸음을 떼는 순간 논리 칸이 도착 칸으로 넘어가고 그림만 미끄러진다. 그래서 그림이 아직 서 있는 칸(출발 칸)을 보고
+ * 눌러도 아무 일이 없었다(2026-10-29 vm3 flash 추리 판정 「얼굴 방향과 칸이 정확해야만 대화가 열린다」).
+ * 정면 칸이 «지금 걸어 나가는 중인 출발 칸» 이거나 «방금(VACATED_GRACE_MS 안) 떠난 칸» 이면 그 NPC 를 대상으로 본다.
+ */
+function findWalkerLeaving(
+  scene: ActionEventSceneContext,
+  project: ReturnType<typeof store.getCurrent>,
+  tx: number,
+  ty: number,
+): RuntimeEventView | undefined {
+  const now = typeof performance !== "undefined" ? performance.now() : Date.now();
+  for (const [id, mover] of scene.autonomousNPCs ?? []) {
+    const move = mover.activeMove;
+    const leaving = move && move.fromX === tx && move.fromY === ty && (move.toX !== tx || move.toY !== ty);
+    const left = mover.vacated && mover.vacated.x === tx && mover.vacated.y === ty && mover.vacated.until > now;
+    if (!leaving && !left) continue;
+    const view = runtimeEventViewById(project, scene.map, scene.session, scene.eventPositions, id);
+    if (view && view.trigger.kind === "action") return view;
+  }
+  return undefined;
+}
+
+/**
+ * 정면 칸이 이벤트 없는 가구·문·벽 장치 그림 칸이면, 같은 그림(같은 이름표가 이어진 위층 칸, 24칸까지)을 몸으로 덮는 조사 이벤트를 대상으로 본다.
+ * 왜(2026-10-29 vm5 argon 방탈출 판정): 「책장·상자·벽 장치·문이 모두 특정 칸·특정 방향에서만 반응」 — 조사 이벤트가 2칸 책장의 한 칸,
+ * 2칸 문의 아래 칸에만 있으면 그림의 다른 칸 앞에서 눌러도 아무 일이 없었다. 빌드의 몸 넓히기(settleFurnitureSpots)는 문 이름·사람 그림을
+ * 건너뛰고, 모델이 직접 놓은 이벤트에는 돌지 않는다. 정면 판정 자체를 «바라보는 칸의 그림이 이벤트 몸에 닿으면»으로 넓힌다.
+ * 지나갈 수 있는 칸(바닥 덧그림·양탄자)은 보지 않는다. 같은 그림에 이벤트가 둘이면 정면 칸에 가까운 것.
+ */
+function findEventOnFacedObject(
+  scene: ActionEventSceneContext,
+  project: ReturnType<typeof store.getCurrent>,
+  tx: number,
+  ty: number,
+): RuntimeEventView | undefined {
+  const map = scene.map;
+  if (!inBounds(map, tx, ty) || isPassable(project, map, tx, ty)) return undefined;
+  const cluster = objectClusterAt(project, map, tx, ty);
+  if (!cluster || cluster.cells.length > 24) return undefined;
+  let best: RuntimeEventView | undefined;
+  let bestD = Infinity;
+  for (const i of cluster.cells) {
+    const x = i % map.width, y = (i - x) / map.width;
+    const view = findRuntimeEventInScene(scene, x, y, "action");
+    const d = Math.abs(x - tx) + Math.abs(y - ty);
+    if (view && d < bestD) { best = view; bestD = d; }
+  }
+  return best;
 }
 
 /**
@@ -1046,7 +1102,19 @@ export function findBlockingEventForPlayerBody(
 }
 
 function firePlayerTouchEvent(scene: PlaySceneContext, eventId: string, triggerKind: Trigger["kind"]): void {
-  if (firesOnPlayerCollision(triggerKind)) void scene.runEvent(eventId);
+  if (!firesOnPlayerCollision(triggerKind)) return;
+  // 걸어오는 이벤트는 걸음을 시작할 때 논리 칸을 먼저 옮긴다 — 그 칸에 부딪혀도 그림이 아직 떨어져 있으면 닿은 게 아니다(@/player/chaseContact).
+  const mover = scene.autonomousNPCs.get(eventId);
+  if (mover?.activeMove) {
+    const project = store.getCurrent();
+    const view = runtimeEventViewById(project, scene.map, scene.session, scene.eventPositions, eventId);
+    if (view) {
+      const own = passageBounds(view.x, view.y, view.footprint, view.passRows);
+      const player = playerPassageRect(resolvePlayerBody(project, scene.session), scene.tileX, scene.tileY);
+      if (!rectsTouchVisually(own, moverVisualShift(mover, view), player, playerVisualShift(scene))) return;
+    }
+  }
+  void scene.runEvent(eventId);
 }
 
 function directionDelta(dir: Dir): { x: number; y: number } {

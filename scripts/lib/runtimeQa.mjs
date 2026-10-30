@@ -34,11 +34,16 @@ export const OP_KINDS = [
   "waitForStyleVar",
   // 하위 op 묶음을 조건이 설 때까지 되풀이(ct-engine: 적이 쓰러질 때까지 공격).
   "repeatUntil",
+  // 하위 op 묶음을 그 맵에 들어설 때까지 되풀이(폴른 스타 B4: 대사 줄 수와 흘림 속도에 기대지 않고 장면 전환까지 넘긴다).
+  "repeatUntilMap",
   // 파티 동료 수·키와 선두 교대를 상태로 기다린다(ct-field).
   "waitForFollowers",
   "waitForLeader",
   "seed",
   "setVitals",
+  // 가방에 아이템을 넣는다(시작 아이템이 없는 실물 게임의 전투 아이템 QA).
+  "giveItem",
+  "setSwitch",
   "dir",
   // 방향을 정해진 시간 동안 **밀고 있는다.** 금지된 고정 `wait` 와 다른 것이다: 여기서는
   // 경과 시간이 곧 자극이고, 기다릴 조건이 존재하지 않는다("막혀서 아무 일도 안 일어난다"를
@@ -94,6 +99,8 @@ export const OP_KINDS = [
   "waitForClass",
   // 페이지 안에서 함수 본문을 실행하고 결과를 JSON 파일로 남긴다(레이아웃 측정용 탐침).
   "evalToFile",
+  "cpuProfileStart",
+  "cpuProfileStop",
   "captureCheckpoint",
   // 체공(jump/dropIn). 이동 경로를 주인공에게 직접 물리고 리프트를 조건으로 기다린다 —
   // Phaser 의 displayOrigin 계약은 jsdom 으로 재현되지 않아 브라우저에서만 증명된다.

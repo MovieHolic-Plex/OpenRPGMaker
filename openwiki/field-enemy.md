@@ -55,8 +55,9 @@ FF6·크로노 트리거식 「필드에 보이는 적」을 조수가 한 마�
 ## 이벤트 모양 (한 마리 = 이벤트 하나, 페이지 셋)
 
 1. `_fight` — 접촉(eventTouch). 움직임은 behavior 에 따라 fixed / 닫힌 경로 custom / chase.
-   chase 는 시야(`movement.sight`, 벽 너머 안 봄)·추격(`movement.pursuit`: scope map, 놓친 뒤 `searchMs` 1500 두리번 → `onLost:'return'` 으로 **원래 자리 복귀**)
-   ·`movement.sightAlert {emote:'surprise', holdMs:700}`(**시야에 처음 들어온 순간** 머리 위 「!」 를 띄우고 0.7초 멈춘 뒤 쫓는다) 를 갖는다.
+   chase 는 시야(`movement.sight`, 벽 너머 안 봄)·추격(`movement.pursuit`: scope map, 놓친 뒤 `searchMs` 3500 동안 마지막 목격 자리·달아난 방향을 뒤지고 → `onLost:'return'` 으로 **원래 자리 복귀**)
+   ·`movement.sightAlert {emote:'exclamation', holdMs:300}`(**시야에 처음 들어온 순간** 머리 위 「!」 를 띄우고 0.3초 멈춘 뒤 쫓는다) 를 갖는다.
+   추격 박자·전술은 아래 「추격 박자와 전술」 절.
    `patrol` 을 함께 주면 `movement.route` 로 순찰하다 시야에 들어오면 추격하고, 놓치면 복귀 → 순찰로 돌아간다(`patrolChaseState`, `playSceneAutonomous.ts`).
    접촉 명령: (sightAlert 가 없을 때만 `showEmote` → `wait 520`) → `battleProcessing {canEscape, canLose:false}` → `fork`:
    승리 = `setSwitch(clearSwitch, true)`, 도주 = `setSelfSwitch B`. 패배는 `canLose:false` 라 기존 게임 오버 경로(`applyBattleDefeat`).
@@ -70,13 +71,44 @@ FF6·크로노 트리거식 「필드에 보이는 적」을 조수가 한 마�
 
 `src/editor/tools/fieldEnemyTools.ts` 의 `makeFieldEnemyChase(project, map, event, options)` 는 이미 놓인 필드 적(순찰·보초)의 `_fight` 페이지를
 추격으로 바꾸는 다시 쓰는 묶음이다(도구 인자 아님 — 데모·생성기 코드용). 순찰 경로(custom route)는 걸음마다 두 박자 쉬는 시야 밖 걸음으로 살리고,
-추격은 `pace`(기본 fast: speed 5·frequency 6)로 순찰보다 눈에 띄게 빠르다(그래도 주인공 걷기보다는 느리다).
+추격은 `pace`(기본 fast: speed 5·frequency 6 → 쫓는 동안 ≈127ms/칸, 주인공보다 빠르고 12칸마다 숨 고름)로 순찰보다 눈에 띄게 빠르다.
 
 - 시야 `sight.facing:'cone'` — `NpcSight` 의 새 값. 이벤트 시선 조건 `eventSeesPlayer` 와 같은 90° 앞쪽 부채꼴(`conditionEventSight.inViewCone`)을
   `npcPerception.npcSeesPoint` 가 쓴다(거리는 맨해튼, 벽 가림 lineOfSight 그대로). 등 뒤로는 못 본다. 편집기 「정면 부채꼴」.
-- 들면 `sightAlert`(기본 exclamation, 0.7초) → 쫓다 닿으면 전투 → 놓치면 `pursuit.searchMs`(기본 2500) 두리번 뒤 `onLost:'return'` 으로 제자리 → 순찰.
+- 들면 `sightAlert`(기본 exclamation, 0.3초) → 쫓다 닿으면 전투 → 놓치면 `pursuit.searchMs`(기본 3500) 두리번 뒤 `onLost:'return'` 으로 제자리 → 순찰.
 - 입구(`entryCells`)가 시야+1 안이면 시야를 줄이고, 2칸 밑이면 바꾸지 않는다(들어서자마자 덮치지 않게, `field-enemy-ambush` 와 같은 규칙).
 - 폴른 스타는 모든 맵의 `…_foeN` 에 건다(chronoBell.ts — 숲 여섯 맵 포함). 보스·수호자는 제자리.
+
+## 추격 박자와 전술 (2026-10-29 「2배 이상 빠르고 스마트하게」)
+
+정본 `src/project/chaseTempo.ts`(박자·알아챔·지치기·수색 하한, 순수 함수) + `src/player/chaseTactics.ts`(목표 칸 고르기) +
+`src/player/playSceneAutonomous.ts §updateChaseNpc`(적용). 헤드리스 지표 `scripts/qa/chase-sim/sim.mts`(vite-node), 실제 플레이 소리 포함 녹화
+`scripts/qa/runtime/chase-ai.record.mjs`(+ `chase-ai-fixture.mts`, Xvfb·Pulse, 도망 봇).
+
+- **박자**: 쫓는 동안(시야에 든 뒤·400ms 시야 유예 동안)은 칸 사이에 서지 않고 한 칸을 `chaseCellMs` 동안 미끄러진다(남은 시간 이어받기).
+  `chaseStepMs` 를 적은 페이지는 **그 값 그대로**(90..3000). 안 적은 페이지는 예전 한 칸(걸음 트윈 speed + 결정 대기 frequency)을 2.2 로 나눈다(하한 115):
+  pace slow 720→327 · normal 480→218 · fast 280→127ms, 공포 추격자 speed 6(240)→115. 수색·복귀는 그 1.15배.
+  다가오는 방식(`approachStyle`) 표도 칸당 시간을 절반 이하로 줄였다(질주 130→100, 통통 460→210, 육중 300→150 …, `fieldApproachStyle.ts`).
+- **옛 규칙 폐기**: 「pace 는 늘 주인공보다 느려 피할 수 있다」는 버렸다. 피하는 수단은 시야 끊기·엄폐·문·숨는 곳, 그리고 **지치기** —
+  주인공(160ms)보다 빠른 추격자는 12칸 달릴 때마다 650ms 숨을 고른다(머리 위 땀 말풍선).
+- **알아챔**: 박자를 안 적은 옛 페이지의 `sightAlert.holdMs` 는 350ms 로 줄인다(옛 도구 기본 700 이 저장돼 있다). 새 도구 기본 300.
+- **매복**(2026-10-30 「도깨비가 10칸 밖에서 알아보고 3배 빠르게, 닿자마자 전투」): `set_field_detection` 의 `allRound:true`(사방을 봄 — `sight.facing:'any'`)·`lineOfSight:false`(벽·나무가 시선을 안 가림)·`rushStepMs` 하한 30(예전 60, 프로젝트 형식 검사 `shapeEventFields` 도 30~400). 트인 들판의 매복꾼에만 쓴다 — 엄폐로 피하는 맛은 사라진다.
+- **목표 칸**(`chooseChaseGoal`): 2칸 안이면 곧장. 나보다 가까운 동료가 있으면 그 반대편 두 칸 자리(감싸기). 주인공이 같은 흐름으로 2칸 이상 달리면
+  진행 방향(막히면 마지막으로 꺾은 쪽으로 꺾어 복도를 따라)으로 14칸 내다봐 내가 먼저 닿는 첫 칸(앞질러 막기, 직전 목표는 2칸 여유로 유지).
+  지그재그 주인공(흐름 1칸)은 예측하지 않는다 — 좌우로 떨린다.
+- **길 찾기**: 쫓을 때 A* 는 같은 길이면 덜 꺾는 길(첫 걸음은 지금 보는 쪽)을 고른다(`straight`) — 계단식 떨림 제거. 표적에 길이 없으면(닫힌 문)
+  표적에 가장 가까운 닿는 칸까지 간다(`approachWhenBlocked`). 걸음이 다른 추격자에게 막히면 어긋난 경로를 버리고 약 150ms 뒤 다시 찾는다.
+- **놓친 뒤**: 시야가 끊긴 뒤 400ms(`LOS_GRACE_MS`, horrorRuntime) 동안은 간 쪽을 안다. 그 뒤 마지막 목격 자리 → 달아난 방향 6칸 앞(`lastHeading`·`lastTurn`,
+  `pursuitNavigation.searchTarget`) → 그 둘레를 뒤진다. 옛 페이지의 수색 시간은 3500ms 아래로 내려가지 않는다(`chaseSearchLimitMs`).
+- **입장 유예**: 다른 맵에 들어서면 1200ms 동안 추격자가 움직이지 않는다(`extendChaseSpawnGrace`, transferTo). 시작·불러오기 2000ms 는 그대로.
+- **접촉 = 그림이 닿을 때만**(`src/player/chaseContact.ts`, 2026-10-29 「부딪히지도 않았는데 전투가」): 칸 이동은 걸음을 시작할 때 논리 칸을 먼저 옮긴다
+  (추격자 `moveAutonomousRuntimePosition`, 주인공 `movingTo` 예약). 예전에는 접촉을 논리 칸으로 봐서, 달아나는 주인공이 막 떠난 칸으로 추격자가 들어서려는 순간
+  그림이 1~2칸 떨어져 있어도 전투가 열렸다. 지금은 두 그림(걸음 진행률로 보간한 칸 자리)의 가장 가까운 칸 중심 거리가 `TOUCH_REACH` 1.05칸 이하일 때만 연다
+  (옆 칸에 붙어 섬 = 1.0, 대각 1.41 은 아님). 주인공이 떠나는 칸은 뒤따라 들어서고(`followVacated`), 걷는 도중 닿으면 그 프레임에 연다. 앞질러 막기 목표 칸에서 나온
+  「닿기」 결정은 걸음으로 바꾼다(그 칸에 주인공이 없으면 전투가 아니다). 주인공이 걸어오는 추격자에 부딪힐 때(`firePlayerTouchEvent`)도 같은 판정을 쓴다.
+  헤드리스 sim 의 `catchGap`(잡힌 순간 그림 거리)은 모든 장면에서 1.00~1.05.
+- 지표(헤드리스, 같은 맵·같은 시작, 전→후): ㄷ자 벽 돌아오기 8.45s→3.63s(경로/최적 1.00), 기둥 돌기(같은 빠르기 160 명시) 12.7s→1.8s,
+  느린 둘 협공 7.7s→1.7s, 벽 뒤로 꺾어 달아남 못 잡음→6.2s, 빠른 추격 1마리 도망 못 잡음→13.1s.
 
 ## 안전 장치 (도구가 거절하는 것)
 

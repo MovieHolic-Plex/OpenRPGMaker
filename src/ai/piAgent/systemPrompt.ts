@@ -1,5 +1,6 @@
 import { defaultOutdoorTilesetId } from "@/project/defaults/outdoorTileset";
 import { genreLockPromptNote, genreLockShortNote, genreMarkerNote } from "@/project/genreLock";
+import { peopleChipPromptNote } from "@/project/peopleChipLock";
 import { authoringPresetDiscoveryText } from '@/project/authoringPresets';
 import { USER_FACING_REPORT_RULE } from "./userFacingCopy";
 // Pi 에이전트 기본 시스템 프롬프트. 순수 함수 — 프로젝트 요약과 작업 범위만 넣는다.
@@ -29,11 +30,12 @@ import { JOSEON_POINTER_LINE } from "../joseonPolicy";
 /**
  * 장르 잠금·표지 줄. 공간 시공 실행은 긴 잠금 덩어리를 싣고, 그 밖의 실행(대사·가격·이름·NPC 그림 고치기)도 한 줄 표지는 매번 싣는다 —
  * 「이 프로젝트는 몬스터 수집으로 잠겼다」는 사실과 캐릭터 그림 규칙(2026-10-16)은 NPC·배우를 만지는 비공간 턴에서 더 필요하다.
- * 잠금도 표지도 없으면 빈 배열(프롬프트 불변).
+ * 잠금도 표지도 없으면 그 줄은 없다. 사람 칩 계열 잠금 한 줄(peopleChipLock.ts)은 장르 잠금이 캐릭터를 맡지 않는 한 늘 붙는다.
  */
 function genreLockLines(project: Project, spatial: boolean): string[] {
   const note = (spatial ? genreLockPromptNote(project) : genreLockShortNote(project)) ?? genreMarkerNote(project);
-  return note ? [note] : [];
+  const people = peopleChipPromptNote(project);   // 사람 칩 계열 잠금(2026-10-29) — 장르 잠금이 캐릭터를 맡으면 null
+  return [...(note ? [note] : []), ...(people ? [people] : [])];
 }
 
 export function describeScopedMaps(project: Project, mapIds: readonly string[]): string[] {

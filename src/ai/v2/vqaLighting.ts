@@ -4,6 +4,7 @@
 // (결함 2→2→2, 조수 보고 「맵 미리보기 그림에는 조명이 그려지지 않아서 여전히 밝게 보입니다」). 게임의 조명 마스크(player/lighting.ts
 // drawLightingMask — ambient 만큼 덮고 광원마다 방사형으로 걷어 낸다)를 같은 식으로 RGBA 에 칠한다. 순수 함수 — 그림 해독·인코딩은 호출자.
 import type { GameMap, LightSource, Project } from "@/project/types";
+import { effectiveDarkness } from "@/project/lightingRules";
 
 export interface LitShot { readonly applied: boolean; readonly ambient: number; readonly lights: number; readonly playerLightAtStart: boolean }
 
@@ -40,7 +41,9 @@ export function applyMapLighting(rgba: Uint8Array, width: number, height: number
     if (!cell || !(source.radius > 0)) continue;
     centers.push({ x: (cell.x + 0.5) * tile, y: padY + (cell.y + 0.5) * tile, r: source.radius * tile, a: clamp01(source.intensity ?? 1) });
   }
-  const [cr, cg, cb] = hex(lighting.color);
+  // 게임과 같은 어둠 막(player/lighting.ts): 밝은 색은 어두운 색조로 낮추고 진하기를 묶는다.
+  const darkness = effectiveDarkness(lighting.color, ambient);
+  const [cr, cg, cb] = hex(darkness.color);
   // 어둠 한 겹을 먼저 칠할 몫(keep=1)으로 두고, 광원 둘레 네모 안에서만 걷어 낼 몫을 곱한다(큰 맵 × 광원 여럿도 빛 둘레만 계산).
   const keep = new Float32Array(width * height).fill(1);
   for (const c of centers) {
@@ -53,7 +56,7 @@ export function applyMapLighting(rgba: Uint8Array, width: number, height: number
     }
   }
   for (let p = 0; p < width * height; p++) {
-    const m = ambient * keep[p]!;
+    const m = darkness.ambient * keep[p]!;
     if (m <= 0) continue;
     const i = p * 4;
     rgba[i] = Math.round(rgba[i]! * (1 - m) + cr * m);

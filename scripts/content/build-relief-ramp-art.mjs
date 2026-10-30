@@ -88,5 +88,11 @@ for (const f of fs.readdirSync(DIR).filter((n) => n.endsWith("-ramp.png")).sort(
   }
   out[f.replace(/-ramp\.png$/, "")] = { lit: cut(png, 0, 16), shade: cut(png, 18, 16), side: cut(png, 36, 3) };
 }
+// 마을 계단(scripts/content/build-village-stair-art.mts 가 칩셋 bd-mpart-stairs 화소에서 만든 40×32 원본 <style>-steps.png): 디딤판 주기 32px 그대로
+for (const f of fs.readdirSync(DIR).filter((n) => n.endsWith("-steps.png")).sort()) {
+  const png = PNG.sync.read(fs.readFileSync(`${DIR}/${f}`));
+  const cutH = (x0, w, h) => { const rgba = []; for (let y = 0; y < h; y++) for (let x = x0; x < x0 + w; x++) { const o = (y * png.width + x) * 4; rgba.push(png.data[o], png.data[o + 1], png.data[o + 2], png.data[o + 3]); } return { w, h, rgba }; };
+  out[f.replace(/\.png$/, "")] = { lit: cutH(0, 16, 32), shade: cutH(18, 16, 32), side: cutH(36, 3, 16) };
+}
 fs.writeFileSync(OUT, JSON.stringify(out) + "\n");
 console.log(JSON.stringify({ styles: Object.keys(out), out: OUT }));

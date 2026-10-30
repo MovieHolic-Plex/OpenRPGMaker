@@ -1,5 +1,6 @@
 import { playLiftRide } from "@/player/playSceneLiftRide";
-import { sendPursuerHome } from "@/player/pursuitNavigation";
+import { releaseOrphanedFadeOut } from "@/player/playSceneScreenEffects";
+import { sendMapPursuersHome, sendPursuerHome } from "@/player/pursuitNavigation";
 import { isTouchUiHost } from "@/player/touchTap";
 import { stepStopReason, stopsReading } from "@/project/dialogueSystem";
 import { applySpriteLookStep, playParticleEffect } from "@/player/playSceneFieldStaging";
@@ -314,7 +315,7 @@ export async function runCommands(
     // 다시 깔면서 쓰레기 수거까지 겹쳐, 문 칸을 밟는 순간 한 프레임이 100ms 넘게 멈췄다(2026-10-24 프로파일).
     if (!(result.kind === "transfer" && result.mapId !== scene.map.id)) scene.refreshRuntimeSurfaces();
     while (result.kind !== "done" && current()) {
-      if (isCutsceneSkippable(activeSession)) scene.showRuntimeOverlay("cutscene-skip-hint", isTouchUiHost(scene.game?.canvas) ? "B 두 번: 컷신 건너뛰기" : "Esc Esc: 컷신 건너뛰기");
+      if (isCutsceneSkippable(activeSession)) scene.showRuntimeOverlay("cutscene-skip-hint", isTouchUiHost(scene.game?.canvas) ? "B 두 번: 컷신 건너뛰기" : "Esc 두 번: 컷신 건너뛰기");
       const step = result;
       if (step.kind === "changeTile") changedTerrainMaps.add(step.mapId);
       result = await consumeBlockingStep(scene, interpreter, step, currentEventId, skipController, current, () => { handledFailure = true; });
@@ -342,7 +343,7 @@ export async function runCommands(
         const landing = recoverPlayerFromTerrain(project, scene.session, scene.eventPositions);
         if (landing) placePlayerOnCurrentMap(scene, landing.x, landing.y);
       }
-      if (lease) lease.release();
+      if (lease) { lease.release(); releaseOrphanedFadeOut(scene); }
       else { scene.running = previousRunning; scene.setInputEnabled(previousInputEnabled); }
       dialogue.close(); scene.refreshRuntimeSurfaces();
     } else lease?.release(false);
@@ -430,7 +431,7 @@ async function consumeBlockingStep(
       applyDialogueFacing(scene, step, currentEventId);
       // 흉상 좌우·듣는 흉상을 맵 위 자리로(text.bustSide = "stage").
       const staged = stageBusts(scene, step);
-      await dialogue.showText({
+      const shown = dialogue.showText({
         speaker,
         look: resolveDialogueLook(project, {
           speaker,
@@ -453,7 +454,18 @@ async function consumeBlockingStep(
         emotion: step.emotion,
         ...(step.voiceResourceId ? { voiceResourceId: step.voiceResourceId } : {}),
         ...(step.endingEpilogue ? { endingEpilogue: true } : {}),
+        ...(step.beforeChoices ? { beforeChoices: true } : {}),
       });
+      // 「Esc 두 번: 컷신 건너뛰기」는 대사가 떠 있을 때도 바로 끝나야 한다 — 대사 창이 닫히기를 기다리면
+      // 두 번 눌러도 창이 그대로라 안내가 거짓말이 됐다(2026-10-29 마법학교 오프닝 실측: Esc 12번에도 첫 줄 그대로).
+      const outcome = await Promise.race([
+        shown.then(() => "shown" as const),
+        skipController.waitForSkip().then(() => "skip" as const),
+      ]);
+      if (outcome === "skip") {
+        shown.catch(() => undefined);
+        dialogue.close();
+      }
       {
         const skipped = skipController.takeResult();
         if (skipped) return skipped;
@@ -562,7 +574,8 @@ async function consumeBlockingStep(
         try { await playDoorOpenBeforeTransfer(scene, currentEventId, { silent: genreDoorSound, mode: step.door === true ? "on" : "auto" }); } catch (error) { console.warn("[player] door open fx", error); }
       }
       // 추격자의 접촉 페이지가 주인공을 다른 맵으로 보내면(붙잡혀 끌려감) 그 추격자는 제자리로 — 돌아오자마자 재포획 방지.
-      if (step.mapId !== scene.map.id && currentEventId) sendPursuerHome(scene.session, currentEventId);
+      // 같은 맵의 다른 추격자도 같이 — 남은 하나가 길목에 서 있으면 재도전이 곧 재포획이다.
+      if (step.mapId !== scene.map.id && currentEventId && sendPursuerHome(scene.session, currentEventId)) sendMapPursuersHome(scene.session, scene.map.id);
       try { await scene.transferTo(step); }
       finally { finishTransfer?.(); }
       return resumeAfterSurface(scene, interpreter);

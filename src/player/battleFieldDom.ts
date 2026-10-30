@@ -5,7 +5,8 @@ import { beginEnemyCollapse, markEnemyCollapsed } from "@/player/battleEnemyColl
 import { WEATHER_GLYPHS, WEATHER_LABELS } from "@/battle/weather";
 import type { SkillWeatherKind } from "@/project/types";
 import { opaqueBounds, snapshotSprite } from "@/player/battleSpriteSnapshot";
-import { charsetBattler, resolvePartyBattleCharset, retroFallbackPartyBattler } from "@/assets/charsetBattlers";
+import { charsetBattler, partyWalkChipBattler, resolvePartyBattleCharset, retroFallbackPartyBattler } from "@/assets/charsetBattlers";
+import { appendWalkChipBattler, paintWalkChipBattler } from "@/player/battleWalkChipBattler";
 import { resolveBattlerAuras } from "@/assets/battleStateAuras";
 import { retroCastFrameFor, retroMotionPose, retroPartyPixelCell, retroPixelEnemyCell } from "@/player/battleRetroMotion";
 import { pixelEnemyFrame, pixelEnemySheet, pixelEnemySheetUrl, projectPixelEnemySheet } from "@/assets/pixelEnemySheets";
@@ -644,6 +645,8 @@ function syncEnemyGroup(field: HTMLElement, snapshot: BattleSnapshot, presentati
   }
   const onFieldPositions = onFieldEnemyPositions(group as HTMLElement, snapshot, presentation?.onField);
   const positions = onFieldPositions ?? spreadRetroEnemyRow(group as HTMLElement, snapshot, resolveEnemyRowPositions(snapshot, snapshot.enemies));
+  // 쓰기 전에 한 번에 읽는다(적마다 읽고 쓰면 레이아웃을 적 수만큼 다시 계산한다).
+  const plateFloors = presentation?.onField ? undefined : enemyPlateFloors(field, group as HTMLElement, snapshot);
   for (const [index, enemy] of snapshot.enemies.entries()) {
     let node = group.querySelector<HTMLElement>(`[data-testid="${enemy.id}"]`);
     const form = presentedForm(enemy, presentation);
@@ -661,7 +664,10 @@ function syncEnemyGroup(field: HTMLElement, snapshot: BattleSnapshot, presentati
     if (!node) continue;
     syncEnemyNode(node, enemy, snapshot, presentation);
     // 필드 위 전투는 심볼 발밑이 곧 자리다 — 큰 적을 전장 안으로 밀어 넣는 보정을 하지 않는다.
-    const position = presentation?.onField ? positions[index]! : fitBattleEnemy(field, node, positions[index]);
+    const fitted = presentation?.onField ? positions[index]! : fitBattleEnemy(field, node, positions[index]);
+    // 이름·HP 이름표가 전장 아래(명령 창 뒤)로 잘리지 않게 그만큼 적을 올린다.
+    const floor = plateFloors?.get(enemy.id);
+    const position = floor !== undefined && fitted.y > floor ? { x: fitted.x, y: floor } : fitted;
     if (presentation?.onField) fitNodeToFieldSprite(node, ".battle-enemy-image", presentation.onField);
     // 옮겨진 적: 새 좌표로 미끄러지게 이동 시간을 노드에 싣는다(01-scene-base.css 의 left/top 트랜지션).
     if (enemy.moved && node.dataset.battleMoveSequence !== String(enemy.moved.sequence)) {
@@ -680,6 +686,41 @@ function syncEnemyGroup(field: HTMLElement, snapshot: BattleSnapshot, presentati
  * 피격·숨쉬기 애니메이션에 흔들리지 않고, 같은 적·같은 그룹 크기면 그룹에 적어 둔 값을 다시 쓴다.
  * 그림이 아직 없는 적(새로 생긴 노드)은 다음 동기화에서 잰다. 옮겨진 적(moved)은 손대지 않는다.
  */
+/** 적 이름표(.battle-enemy-chrome)의 아래끝이 발 기준점에서 몇 저작 단위(160 = 전장 높이) 아래인가. 노드마다 한 번 재고 적어 둔다. */
+function enemyPlateDrop(node: HTMLElement, unitY: number): number | undefined {
+  const cached = node.dataset.plateDropPx;
+  if (cached !== undefined) return Number(cached) / unitY;
+  const chrome = node.querySelector<HTMLElement>(".battle-enemy-chrome");
+  const height = node.offsetHeight;
+  if (!chrome || chrome.offsetParent !== node || !(chrome.offsetHeight > 0) || !(height > 0)) return undefined;
+  const dropPx = chrome.offsetTop + chrome.offsetHeight - height;
+  node.dataset.plateDropPx = String(dropPx);
+  return dropPx / unitY;
+}
+
+/**
+ * 적마다 발 기준점 y 의 상한(저작 단위). 이름표 아래끝이 전장의 보이는 아래끝 4px 위에 오게 한다.
+ * 진형이 아래쪽 줄에 둔 적은 이름·HP 가 명령 창 뒤로 잘렸다(이세계 고딩 첫인상 리뷰 2026-10-30, 「매운 슬라임」 HP).
+ * 이름표가 없거나 아직 그려지지 않은 적은 다음 동기화에서 잰다.
+ */
+function enemyPlateFloors(field: HTMLElement, group: HTMLElement, snapshot: BattleSnapshot): Map<string, number> | undefined {
+  const groupRect = group.getBoundingClientRect();
+  const fieldRect = field.getBoundingClientRect();
+  if (!(groupRect.height > 0 && fieldRect.height > 0)) return undefined;
+  const unitY = group.offsetHeight / 160;
+  if (!(unitY > 0)) return undefined;
+  const scale = groupRect.height / group.offsetHeight;
+  const visibleBottom = (Math.min(fieldRect.bottom, groupRect.bottom) - groupRect.top) / scale / unitY;
+  const floors = new Map<string, number>();
+  for (const enemy of snapshot.enemies) {
+    const node = group.querySelector<HTMLElement>(`[data-testid="${enemy.id}"]`);
+    const drop = node ? enemyPlateDrop(node, unitY) : undefined;
+    if (drop === undefined) continue;
+    floors.set(enemy.id, visibleBottom - drop - 4 / unitY);
+  }
+  return floors;
+}
+
 function spreadRetroEnemyRow(group: HTMLElement, snapshot: BattleSnapshot, positions: readonly { x: number; y: number }[]): readonly { x: number; y: number }[] {
   if (activeSkin().motionStyle !== "retro" || positions.length < 2 || snapshot.enemies.some((enemy) => enemy.moved)) return positions;
   const width = group.offsetWidth;
@@ -700,9 +741,18 @@ function spreadRetroEnemyRow(group: HTMLElement, snapshot: BattleSnapshot, posit
     const url = image.style.getPropertyValue("--pixel-enemy-url") || image.getAttribute("src") || undefined;
     // 등록되지 않은 그림(업로드)은 칸 전체를 상자로 본다.
     const [l, t, r, b] = battleContactBounds(url, "idle") ?? [0, 0, 1, 1];
-    return { left: (l - 0.5) * w / unitX, right: (r - 0.5) * w / unitX, top: -(1 - t) * h / unitY, bottom: -(1 - b) * h / unitY };
+    const sprite = { left: (l - 0.5) * w / unitX, right: (r - 0.5) * w / unitX, top: -(1 - t) * h / unitY, bottom: -(1 - b) * h / unitY };
+    // 이름표도 상자에 넣는다 — 뒷줄 적의 이름표가 앞줄 적 그림 위에 얹혔다(이세계 고딩 첫인상 리뷰 2026-10-30, 「말랑 슬라임 1」).
+    const node = image.closest<HTMLElement>(".battle-enemy");
+    const chrome = node?.querySelector<HTMLElement>(".battle-enemy-chrome");
+    const drop = node ? enemyPlateDrop(node, unitY) : undefined;
+    if (!chrome || drop === undefined) return sprite;
+    const half = chrome.offsetWidth / 2 / unitX;
+    return { left: Math.min(sprite.left, -half), right: Math.max(sprite.right, half), top: sprite.top, bottom: Math.max(sprite.bottom, drop) };
   });
-  const spread = spreadEnemyFormation(positions, boxes);
+  // 이름표가 상자에 들어가면 겹침 허용폭을 거의 없앤다 — 그림은 가장자리가 투명해 조금 겹쳐도 되지만 이름표 판은 모서리째 겹쳐 보인다.
+  const withPlates = snapshot.enemies.some((enemy) => group.querySelector<HTMLElement>(`[data-testid="${enemy.id}"]`)?.dataset.plateDropPx !== undefined);
+  const spread = spreadEnemyFormation(positions, boxes, withPlates ? { allowed: 0 } : {});
   if (complete) {
     group.dataset.formationKey = key;
     group.dataset.formation = JSON.stringify(spread);
@@ -880,6 +930,11 @@ function applyBattlerPose(node: HTMLElement, pose: ExtendedBattlerPose): void {
       const at = pixelEnemyFrame(pixelEnemySheet(sprite.dataset.pixelSheet), cell);
       sprite.style.backgroundPosition = `${at.col * 50}% ${at.row * 50}%`;
     }
+    return;
+  }
+  if (node.dataset.walkChipBattler && sprite?.classList.contains("battle-actor-sprite")) {
+    // 전투 시트 없는 파티원의 걷기 칩(battleWalkChipBattler.ts). 전투 시트 좌표(POSE_FRAME)를 쓰면 엉뚱한 칸이 나온다.
+    paintWalkChipBattler(node, sprite, pose);
     return;
   }
   if (node.dataset.pixelParty && sprite?.classList.contains("battle-actor-sprite")) {
@@ -1492,17 +1547,36 @@ function actorNode(view: BattleBattlerSnapshot, index = 0, count = 4): HTMLEleme
   // 정면 사이드뷰에서는 배우가 저작한 전투 시트를 최우선으로 쓴다. 스킨 공용 전사/마법사를
   // 먼저 쓰면 모든 짝수 배우와 홀수 배우가 각각 같은 사람으로 보이고 faceset과도 어긋난다.
   const retroParty = activeSkin().motionStyle === "retro";
+  const resolvedSheet = place.partyFacing === "front" ? resolvePartyBattleCharset(actor, retroParty) : undefined;
+  // 전투 시트도 칩 대응도 없으면 기본 도트(낯선 검사) 대신 그 배우의 걷기 칩을 그대로 세운다(battleWalkChipBattler.ts).
+  // 걷기 칩 주소를 못 풀면 예전처럼 자리 순서의 기본 도트로 물러난다.
+  const walkChip = place.partyFacing === "front" && retroParty && !resolvedSheet ? partyWalkChipBattler(actor, retroParty) : undefined;
+  const walkChipUrl = walkChip ? resolveAssetResourceUrl(walkChip.characterResourceId, { project: store.getCurrent() }) : null;
+  if (walkChip && walkChipUrl) {
+    appendWalkChipBattler(node, actor.name, walkChip.characterResourceId, walkChip.characterIndex, walkChipUrl);
+    applyBattlerPose(node, actor.pose);
+    node.append(statusIconCluster(actor));
+    if (actor.defeated) node.classList.add("defeated");
+    const walkChipPlatform = document.createElement("span");
+    walkChipPlatform.className = "battle-actor-platform";
+    node.append(walkChipPlatform);
+    return node;
+  }
   const resourceId = place.partyFacing === "front"
-    ? resolvePartyBattleCharset(actor, retroParty) ?? (retroParty ? retroFallbackPartyBattler(index) : undefined)
+    ? resolvedSheet ?? (retroParty ? retroFallbackPartyBattler(index) : undefined)
     : undefined;
   if (resourceId) {
     node.dataset.authoredBattler = "true";
     node.dataset.battleCharsetResourceId = resourceId;
-    const pixelParty = Object.hasOwn(store.getCurrent().assets.uploaded, resourceId) ? undefined : partyPixelSheet(resourceId);
+    let pixelParty = Object.hasOwn(store.getCurrent().assets.uploaded, resourceId) ? undefined : partyPixelSheet(resourceId);
     if (pixelParty) {
       // 사람형이 아닌 파티원(짐승·탈것·몬스터 칩): 24포즈 걷기 칩 시트 대신 몬스터 9칸 시트로 선다. battlerExtended 는 켜지 않는다.
       node.dataset.pixelParty = pixelParty.motion;
       node.dataset.pixelEnemyCell = String(pixelParty.cell);
+      // 배우 기록의 battleScalePercent 로 상자를 키운다(마왕처럼 사람보다 큰 파티원). 시트는 배경 백분율이라 함께 커진다.
+      const record = store.getCurrent().database.actors.find((entry) => entry.id === actor.recordId);
+      const box = Math.round(pixelParty.box * (record?.battleScalePercent ?? 100) / 100);
+      pixelParty = { ...pixelParty, box };
       node.style.setProperty("--party-pixel-box", `${pixelParty.box}px`);
       // 상자가 사람 도트(96px)보다 넓은 파티원(화면 128px)은 오른쪽 사선 열 끝(x 294)에서 무대 밖으로 잘렸다
       // (범선·비공정 녹화 실측). 넓어진 반폭만큼 왼쪽으로 당긴다(RM 논리 px = 화면 px / 2).

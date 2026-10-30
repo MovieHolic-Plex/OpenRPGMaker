@@ -9,7 +9,8 @@ import { el } from "@/util/dom";
 import { createCinematicAssets, type CinematicAssets } from "@/player/cinematicAssets";
 import { createTitleEffectsCanvas, freezeTitleEffects, stopTitleEffects } from "@/player/titleEffects/renderer";
 import { getPlayerPreferences } from './playerPreferences';
-import { playOpeningAnimatic } from "./openingAnimaticRenderer";
+import { ANIMATIC_CUE_EVENT, animaticBandClearance, playOpeningAnimatic } from "./openingAnimaticRenderer";
+import { duckGainAt } from "./audio/fade";
 import { isEmeraldMonsterStyle } from '@/project/emeraldMonsterStyle';
 import { createEmeraldOpeningAtmosphere } from './emeraldOpeningAtmosphere';
 import { bindIntegerArtScale } from './monsterArtScale';
@@ -21,6 +22,8 @@ export type CinematicPlayback = {
   readonly done: Promise<CinematicCompletion>;
   readonly teardown: () => void;
   readonly releaseMusic: (fadeMs?: number) => void;
+  /** 첫 장면이 실제로 보이기 시작했을 때(그림·소리 준비가 끝나 「불러오는 중」이 걷혔을 때) 풀린다. 끝나거나 실패해도 풀린다. */
+  readonly firstFrame: Promise<void>;
 };
 
 /** Preserve the visible multi-layer composition across the final map load. */
@@ -71,6 +74,11 @@ function ditherMasks(): string[] {
 }
 
 /** DOM-only playback: no session, Phaser, editor store or global audio ownership. */
+/** 애니메틱 효과음 큐가 울릴 때 오프닝 음악 배율·최대 유지·되돌림 시간. */
+export const OPENING_DUCK_LEVEL = 0.5;
+export const OPENING_DUCK_HOLD_MAX_MS = 900;
+export const OPENING_DUCK_RELEASE_MS = 350;
+
 export function playCinematicSequence(options: {
   readonly host: HTMLElement;
   readonly project: Project;
@@ -82,10 +90,14 @@ export function playCinematicSequence(options: {
   readonly musicHost?: HTMLElement;
   readonly onFrame?: (url: string, fadeMs?: number) => void;
   readonly dismissOnAnyInput?: boolean;
+  /** 엔진 기동과 겹쳐 도는 새 게임 오프닝 — 메인 스레드가 멈춘 동안 애니메틱 시계를 붙잡는다(openingAnimaticRenderer). */
+  readonly holdClockThroughStalls?: boolean;
+  /** 컷 끝까지 울리던 애니메틱 효과음을 끊지 않고 짧게 줄이며 다음 컷과 겹친다. */
+  readonly softCutTails?: boolean;
 }): CinematicPlayback {
   const { host, project, sequence, signal } = options;
   if (signal.aborted || !sequence?.enabled || sequence.scenes.length === 0) {
-    return { done: Promise.resolve(signal.aborted ? "aborted" : "completed"), teardown: () => undefined, releaseMusic: () => undefined };
+    return { done: Promise.resolve(signal.aborted ? "aborted" : "completed"), teardown: () => undefined, releaseMusic: () => undefined, firstFrame: Promise.resolve() };
   }
   const root = el("div", { class: "cinematic-sequence", dataset: { testid: "cinematic-sequence" } });
   const assets = options.assets ?? createCinematicAssets();
@@ -205,6 +217,7 @@ export function playCinematicSequence(options: {
     const lifetime = new AbortController();
     const media: HTMLMediaElement[] = [];
     let loadTimer: ReturnType<typeof setTimeout> | undefined;
+    let statusTimer: ReturnType<typeof setTimeout> | undefined;
     let advanceTimer: ReturnType<typeof setTimeout> | undefined;
     const paintFrames: number[] = [];
     let exitTimer: ReturnType<typeof setTimeout> | undefined;
@@ -221,6 +234,7 @@ export function playCinematicSequence(options: {
       mediaActive = false;
       lifetime.abort();
       clearTimeout(loadTimer);
+      clearTimeout(statusTimer);
       for (const item of media) {
         item.pause();
         item.removeAttribute("src");
@@ -285,7 +299,10 @@ export function playCinematicSequence(options: {
     const beginLoading = (): void => {
       root.dataset.mediaState = "loading";
       canContinueVideo = true;
-      status.textContent = "미디어 불러오는 중";
+      // 짧은 준비(컷 전환 사이 수백 ms)마다 글자가 번쩍이면 화면이 고장 난 것처럼 보인다 — 0.7초 넘게 걸릴 때만 알린다.
+      status.textContent = "";
+      clearTimeout(statusTimer);
+      statusTimer = setTimeout(() => { if (alive && root.dataset.mediaState === "loading") status.textContent = "미디어 불러오는 중"; }, 700);
       clearTimeout(loadTimer);
       loadTimer = setTimeout(() => {
         if (root.dataset.mediaState === "loading" || root.dataset.mediaState === "waiting") fail("error");
@@ -550,7 +567,26 @@ export function playCinematicSequence(options: {
         canvas.setAttribute('aria-label', canvasCaptions && scene.narration.trim() ? scene.narration : '레이어와 카메라로 구성한 오프닝');
         canvas.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#000';
         ready(canvas); beginLoading();
-        playOpeningAnimatic({ project, canvas, composition: scene.composition, durationMs: scene.durationMs, signal: lifetime.signal, reducedMotion,
+        // 내레이션 띠가 캔버스 아래를 덮는 높이(구도 단위). 처음 잰 값을 장면 내내 쓴다(띠가 늦게 떠도 카메라가 튀지 않게 숨김을 잠깐 풀고 잰다).
+        let narrationInset: number | undefined;
+        const bottomInset = (): number => {
+          if (narrationInset !== undefined) return narrationInset;
+          if (canvasCaptions || !scene.narration.trim() || narration.classList.contains('cinematic-narration--captioned')) return (narrationInset = 0);
+          const box = canvas.getBoundingClientRect();
+          if (!canvas.isConnected || box.width <= 0 || box.height <= 0) return 0;
+          const wasHidden = narration.hidden; narration.hidden = false;
+          const band = narration.getBoundingClientRect();
+          narration.hidden = wasHidden;
+          if (band.height <= 0) return 0;
+          const comp = scene.composition, scale = Math.min(box.width / comp.width, box.height / comp.height);
+          const contentBottom = box.top + (box.height + comp.height * scale) / 2;
+          const inset = Math.max(0, contentBottom - band.top) / scale;
+          // 카메라를 올려도(배경이 끝나서) 인물 발이 띠 밑에 남고, 위쪽은 비어 있으면 띠를 화면 위로 옮긴다.
+          const clearance = animaticBandClearance(comp, inset, scene.durationMs);
+          if (clearance.residual > 2 && !clearance.topHit) { narration.classList.add('cinematic-narration--top'); return (narrationInset = 0); }
+          return (narrationInset = inset);
+        };
+        playOpeningAnimatic({ project, canvas, composition: scene.composition, durationMs: scene.durationMs, signal: lifetime.signal, reducedMotion, bottomInset, holdClockThroughStalls: options.holdClockThroughStalls, softCutTails: options.softCutTails,
           onReady: () => { if (!alive || !mediaActive) return; clearTimeout(loadTimer); root.dataset.mediaState = 'ready'; status.textContent = ''; },
           onError: message => { if (!alive || !mediaActive) return; console.warn('[opening animatic]', message); fail('error'); status.textContent = '장면을 그리지 못했어요. Enter로 넘어가세요.'; }, onDone: () => { if (alive) next(); } });
         break;
@@ -583,6 +619,14 @@ export function playCinematicSequence(options: {
       }
     }
   };
+  // 애니메틱의 짧은 효과음 큐가 울리는 동안 오프닝 음악을 반으로 낮췄다가(최대 0.9초) 0.35초에 걸쳐 되돌린다.
+  // 전투 효과음 덕킹(#3923)과 같은 방식이다 — 0.35~1.0 음량의 개그 효과음이 현대식으로 큰 음악 밑으로 -1~-6dB 에 묻혔다(2026-10-30 마왕 편의점 r4).
+  let duckHoldUntil = -Infinity;
+  const duckFactor = (now: number): number => duckGainAt(OPENING_DUCK_LEVEL, now - duckHoldUntil, OPENING_DUCK_RELEASE_MS);
+  root.addEventListener(ANIMATIC_CUE_EVENT, (event) => {
+    const ms = Number((event as CustomEvent<{ durationMs?: number }>).detail?.durationMs ?? 0);
+    duckHoldUntil = Math.max(duckHoldUntil, performance.now() + Math.min(OPENING_DUCK_HOLD_MAX_MS, Math.max(0, Number.isFinite(ms) ? ms : 0)));
+  });
   if (sequence.musicResourceId) {
     root.dataset.music = sequence.musicResourceId;
     const url = resolveAssetResourceUrl(sequence.musicResourceId, { project });
@@ -601,7 +645,8 @@ export function playCinematicSequence(options: {
           const start = performance.now();
           musicFadeTimer = setInterval(() => {
             if (music !== audio) { clearInterval(musicFadeTimer); return; }
-            audio.volume = Math.min(1, Math.max(0, options.musicVolume?.() ?? 0.7)) * Math.min(1, (performance.now() - start) / 600);
+            const now = performance.now();
+            audio.volume = Math.min(1, Math.max(0, options.musicVolume?.() ?? 0.7)) * Math.min(1, (now - start) / 600) * duckFactor(now);
           }, 40);
         }, () => { audio.volume = Math.min(1, Math.max(0, options.musicVolume?.() ?? 0.7)); audio.dataset.playback = 'blocked'; });
       }, () => { if (!settled) audio.dataset.playback = 'error'; });
@@ -614,5 +659,10 @@ export function playCinematicSequence(options: {
   root.focus({ preventScroll: true });
   renderScene();
   atmosphere?.cue('entry');
-  return { done, teardown: abort, releaseMusic: stopMusic };
+  let shown!: () => void;
+  const firstFrame = new Promise<void>((resolve) => { shown = resolve; });
+  const shownObserver = new MutationObserver(() => { if (root.dataset.mediaState !== 'loading') { shownObserver.disconnect(); shown(); } });
+  if (root.dataset.mediaState !== 'loading') shown(); else shownObserver.observe(root, { attributes: true, attributeFilter: ['data-media-state'] });
+  void done.finally(() => { shownObserver.disconnect(); shown(); });
+  return { done, teardown: abort, releaseMusic: stopMusic, firstFrame };
 }

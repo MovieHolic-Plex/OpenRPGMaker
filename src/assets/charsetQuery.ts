@@ -120,6 +120,8 @@ function categoryOf(entry: CharsetSemanticEntry): CharsetCategory {
   if (entry.textureKey.startsWith('tex_scarloxy_charset_people') || entry.textureKey.startsWith('tex_oprn_charset_scarloxy_people')) return 'people';
   // 현대 연애 칩(Modern1~3)은 전부 사람이다. 이게 빠지면 "villager"/"npc" 같은 일반 질의가 0건이 된다.
   if (entry.textureKey.startsWith('tex_oprn_charset_modern')) return 'people';
+  // REFMAP 변형 인물 칩(RefmapDoll<n>)도 전부 사람이다 — 빠지면 「object」로 떨어져 사람 칩 잠금이 REFMAP 일 때 기본 주민(villager) 질의가 0건이 된다(2026-10-29).
+  if (entry.textureKey.startsWith('tex_oprn_charset_refmap_doll')) return 'people';
   // CT·FF6풍 영웅 칩(Heroes1)은 주인공·동료 칩이다 — "hero"/"actor"/"주인공" 같은 일반 질의에 RTP Actor 와 같은 분류로 나와야 한다.
   // 전엔 아래에서 「object」로 떨어져 한 번도 검색되지 않았다(jrpg-real-1 J02).
   if (isHeroesEntry(entry)) return 'actor';

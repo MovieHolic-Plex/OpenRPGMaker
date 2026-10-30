@@ -1,7 +1,7 @@
 import { retimeOpeningAnimatic, validateOpeningAnimatic, animaticResourceIds, ANIMATIC_LIMITS, ANIMATIC_EMOTE_PRESETS, sampleAnimaticTrack, type AnimaticLayer, type AnimaticTracks, type OpeningAnimatic } from '@/project/openingAnimatic';
 import type { CinematicScene, CinematicSequence, Project } from '@/project/types';
 import { CINEMATIC_SCENE_LIMIT } from '@/project/cinematicSettings';
-import { catalogLookup, hasOpeningImage } from './cinematicTools';
+import { catalogLookup, characterSheetKind, hasOpeningImage } from './cinematicTools';
 import { ToolError, type ToolDefinition, type JsonSchema, type ToolExecResult } from './types';
 import { unsuitableOpeningStillMessage } from '@/assets/openingStillMoods';
 import references from '@/assets/openingReferences.json';
@@ -56,6 +56,8 @@ function check(project: Project, s: Shot, enforceBackdrop = false): void {
     if (l.kind === 'image' && l.role === 'background') {
       const banned = unsuitableOpeningStillMessage(l.resourceId!, `배경 ${l.id}`);
       if (banned) throw new ToolError(banned, { code: 'opening-composition-invalid' });
+      const sheet = characterSheetKind(project, l.resourceId!);
+      if (sheet) throw new ToolError(`배경 ${l.id} 의 '${l.resourceId}' 는 ${sheet}라 배경으로 쓸 수 없다 — 인물은 place_opening_charset_actor 로 얹고, 배경은 place_opening_background{mapId} 나 배경화를 깐다.`, { code: 'opening-composition-invalid' });
       if ((l.opacity ?? 1) < 0.9) throw new ToolError(`배경 ${l.id}의 opacity가 ${(l.opacity ?? 1).toFixed(2)}로 너무 낮습니다. 팔레트/오버레이로 어둡게 하세요.`, { code: 'opening-composition-invalid' });
       const hasIndependentSubjects = s.composition.layers.some(candidate => candidate.role === 'actor' || candidate.role === 'prop' || candidate.role === 'foreground');
       if (enforceBackdrop && hasIndependentSubjects && isBundledPaintedBackdrop(project, l.resourceId!)) throw new ToolError(`번들 스틸 ${l.resourceId}를 오프닝 배경으로 쓸 수 없습니다. 이미지 생성이 실패했다면 조용히 대체하지 말고 중단·보고하세요.`, { code: 'dedicated-backdrop-required' });
@@ -66,7 +68,10 @@ function check(project: Project, s: Shot, enforceBackdrop = false): void {
     if (criticalObject(l.id) && l.role !== 'effect' && ((l.kind === 'shape') || (l.kind === 'image' && (l.opacity ?? 1) < 0.3))) {
       throw new ToolError(`이야기 핵심 오브젝트 ${l.id}는 평면 도형/저불투명도로 만들 수 없습니다. 2상태 픽셀 스프라이트(sheet/strip + frame 키)를 사용하세요.`, { code: 'critical-pixel-sprite-required' });
     }
-    if (l.kind === 'image' && l.role === 'actor') {
+    // 카메라가 위아래로 움직이거나 줌하는 컷(세로로 긴 배경을 기울여 훑는 컷)에서는 배우의 세계 y 가 화면 y 가 아니다 —
+    // 그때는 고정 무대 기준의 안전영역 검사를 하지 않는다(2026-10-29 maou-konbini 성문 컷).
+    const cameraMovesVertically = Boolean(s.composition.camera?.keys?.y?.length || s.composition.camera?.keys?.zoom?.length);
+    if (l.kind === 'image' && l.role === 'actor' && !cameraMovesVertically) {
       const top = l.y - l.height * (l.anchorY ?? 0);
       const bottom = top + l.height;
       const safe = s.composition.height * (s.composition.letterbox ?? 0);
@@ -81,7 +86,8 @@ function backdropKey(l: { resourceId?: string; crop?: { x: number; y: number; wi
   const id = l.resourceId!;
   if (!openingMapViewMapId(id)) return id;
   const c = l.crop;
-  return c ? `${id}@${Math.round(c.x / 32)},${Math.round(c.y / 32)}` : id;
+  // 오려 낸 크기도 본다 — 같은 왼쪽 위라도 세로로 긴 훑기 컷과 두 사람을 잡은 컷은 다른 화면이다.
+  return c ? `${id}@${Math.round(c.x / 32)},${Math.round(c.y / 32)}:${Math.round(c.width / 32)}x${Math.round(c.height / 32)}` : id;
 }
 function backdropConflict(project: Project, s: Shot): string | null {
   const keys = s.composition.layers.filter(l => l.kind === 'image' && l.role === 'background').map(backdropKey);
@@ -183,6 +189,14 @@ function resolveOpeningCharsetForGenre(project: Project, rawResourceId: string):
   return normalized;
 }
 
+/** 샷의 배경이 게임 맵 그대로(map-view)면 그 배경이 맵 화소를 몇 배로 그리는가(정수로 반올림, 1..8). 아니면 undefined. */
+function mapViewBackdropScale(s: Shot): number | undefined {
+  const backdrop = s.composition.layers.find((layer) => layer.kind === 'image' && layer.role === 'background' && typeof layer.resourceId === 'string' && openingMapViewMapId(layer.resourceId) !== undefined);
+  const crop = backdrop?.crop;
+  if (!backdrop || !crop || !(crop.width > 0)) return undefined;
+  return Math.max(1, Math.min(8, Math.round(backdrop.width / crop.width)));
+}
+
 function charsetActorLayer(project: Project, s: Shot, args: Record<string, unknown>): AnimaticLayer {
   const rawId = text(args.charsetResourceId ?? args.resourceId ?? args.characterResourceId, 'charsetResourceId');
   const colonMatch = /^(.+):([0-7])$/u.exec(rawId);
@@ -192,8 +206,12 @@ function charsetActorLayer(project: Project, s: Shot, args: Record<string, unkno
   if (!Number.isSafeInteger(characterIndex) || characterIndex < 0 || characterIndex >= CHARSET_CHARACTER_COUNT) throw new ToolError(`characterIndex 는 0..${CHARSET_CHARACTER_COUNT - 1} 입니다.`, { code: 'invalid-args' });
   const direction = String(args.direction ?? 'right') as CharsetDirection;
   if (!(CHARSET_DIRECTIONS_ALLOWED as readonly string[]).includes(direction)) throw new ToolError('direction 은 down/left/right/up 입니다.', { code: 'invalid-args' });
-  const scale = Number(args.scale ?? 1);
-  if (!Number.isSafeInteger(scale) || scale < 1 || scale > 8) throw new ToolError('scale 은 1..8 정수입니다(칩 24px의 정수배여야 배경과 도트 크기가 같습니다).', { code: 'invalid-args' });
+  const requestedScale = Number(args.scale ?? 1);
+  if (!Number.isSafeInteger(requestedScale) || requestedScale < 1 || requestedScale > 8) throw new ToolError('scale 은 1..8 정수입니다(칩 24px의 정수배여야 배경과 도트 크기가 같습니다).', { code: 'invalid-args' });
+  // 게임 맵 그대로(map-view) 배경 위의 배우는 그 배경의 도트 배율을 따른다(2026-10-28). 조수가 1280×720 무대에 맵 720×405 를
+  // 깔고(1.78배) scale 4 를 주면 주인공이 기둥·문보다 두 배 크게 «따로 확대해 붙인 그림»이 됐다(지하묘지 오프닝, 적대 VQA).
+  const mapBackdropScale = mapViewBackdropScale(s);
+  const scale = mapBackdropScale ?? requestedScale;
   const stride = Number(args.stride ?? 8 * scale);
   if (!Number.isSafeInteger(stride) || stride < 1) throw new ToolError('stride 는 1 이상 정수(한 걸음에 이동하는 격자 픽셀)입니다.', { code: 'invalid-args' });
   const walkFrames = [0, 1, 2, 1].map(pattern => charsetFrameIndex({ characterIndex, direction, pattern })).filter(frame => frame < CHARSET_FRAME_COUNT);
@@ -284,7 +302,7 @@ export const OPENING_ANIMATIC_TOOLS: readonly ToolDefinition[] = [
       stage: '모든 샷을 width:384, height:216 으로 만들고 set_opening_pixel_grid({shotId,width:384,height:216})을 부른다. 배경은 place_opening_background({shotId, layerId, resourceId}) 로 깐다 — 레이어 x,y 는 «앵커 점»의 자리이고 기본 앵커가 0.5(중심)라, 직접 upsert 하면서 x:0,y:0 만 넣으면 무대의 한 사분면만 덮인다(2026-10-16 run-3 실측: 여섯 샷 배경이 모두 좌상단 사분면만 칠해졌다). 레터박스는 letterbox:0.15(216의 32px — 참조 도입부 KNIGHT OF LUMERIA 실측 32/216), 가시 영역 y:32..184. 샷 길이는 반드시 6000~9500ms(6~9.5초)로 맞춘다.',
       shots: '샷 목록은 7~8개(총 52~64초): (1) 밤하늘·성좌에서 수정 왕국 전경으로 카메라 하강(하늘/구름 레이어 + 빛기둥 + 카메라 y 하강), (2) 대성당 제단과 스테인드글라스 아래 진홍 기사단 대열(place_opening_charset_actor로 기사 5~7명을 2열 대열로 배치 + 대장 전진 보행 + 대각 빛줄기 shaft 2개 + 제단 glow), (3) 지하 동굴의 황금 수호 수정과 오른편에서 눈을 뜨는 거대한 마젠타 타락의 눈(독립 전경 레이어 role:foreground로 마젠타 눈/덩굴을 얹어 opacity/scale 키로 서서히 깨어나게 연출 + 수정 glow + 마젠타 입자), (4) 분수대가 있는 새벽의 평화로운 마을 광장(분수 수면 region palette-cycle + place_opening_charset_actor로 주민 5~6명 광장 배치 및 산책 + 주민 머리 위 12×14 소형 말풍선 2~3개만), (5) 노을빛 들판 길을 걷는 주인공과 절벽 위 검 발광(하늘·언덕·길 시차 레이어 + 주인공 보행 + 절벽 끝에서 검을 치켜들고 빛기둥/번개 flash), (6) 다크 크림슨 배경 위 황금 검 문장과 타이틀 로고 충격파(상단 y:18..46 문장 소품 + 중앙 제목/부제 텍스트 + 황금 입자 + 발광 고리). 마지막 로고 샷 뒤에 여분 맵 전환 샷을 만들지 않는다.',
       backgroundDiscipline: '배경은 place_opening_background({shotId, layerId, resourceId}) 로 깐다(x,y 는 «앵커 점»의 자리라 손으로 0,0 을 넣으면 중심 앵커 때문에 사분면만 덮인다). 배경 그림은 반드시 generate_opening_image(role:"backdrop") 로 이 오프닝 전용으로 만들고 프롬프트에 "16-bit SNES JRPG pixel art, crisp pixel clusters, unified 32-color dark fantasy palette, empty environment only, no people or characters in background"와 cast:"nobody"를 넣는다 — 번들 스틸(oprn-still-*, battle-scenery-*, title_art_*)은 인물이 그려진 부드러운 일러스트라 도트 배우와 화풍이 갈리고 배경 인물과 겹친다.',
-      regionDiscipline: '⚠️ 절대 384×216 전체 배경(width>=300, height>=150)에 scroll-x나 scroll-y를 걸지 마라. scroll-x는 반드시 상단 하늘/구름 띠(예: x:0, y:28, width:384, height:44)에만 걸고, 마을 분수대·수호 수정·스테인드글라스에는 작은 영역(예: width:28..48, height:24..40) palette-cycle을 써라. 전체 화면 하강/패닝은 animate_opening_camera(예: y: 98 -> 114 또는 zoom: 1.04 -> 1.14)로 연출한다.',
+      regionDiscipline: '⚠️ 절대 384×216 전체 배경(width>=300, height>=150)에 scroll-x나 scroll-y를 걸지 마라. scroll-x는 반드시 상단 하늘/구름 띠(예: x:0, y:28, width:384, height:44)에만 걸고, 마을 분수대·수호 수정·스테인드글라스에는 작은 영역(예: width:28..48, height:24..40) palette-cycle을 써라. 전체 화면 하강/패닝은 animate_opening_camera(예: y: 98 -> 114 또는 zoom: 1 -> 2 — 도트 무대는 멈추는 줌을 정수로)로 연출한다.',
       spriteDiscipline: '⚠️ 인물·기사·주민·주인공을 author_pixel_art로 찍지 마라(막대인간 금지!). 인물은 반드시 번들 24×32 캐릭터 칩(현대·연애·학원·오피스는 oprn-charset-modern1~3, 중세·판타지 JRPG는 oprn-charset-heroes1, easyrpg-charset-actor1~4, easyrpg-charset-people1~5)을 place_opening_charset_actor로 놓아라(scale:1 = 24×32, 정밀한 16-bit JRPG 도트 + 자동 보폭 걷기). 성당에서는 기사 5~7명을 대열로 놓고, 마을 광장에서는 분수대 둘레에 주민 5~6명을 놓아 살아 있는 광장을 만든다. author_pixel_art(kind:"picture")는 타이틀 검 문장이나 마젠타 눈/수정 코어 같은 비인물 소품에만 쓴다. 인물은 배경 그림 안이 아니라 배경 위에 독립 레이어로 놓는다.',
       primitives: '샷마다 최소 3개 이상의 독립 움직임(region 루프 + shaft/glow pulse + particles + place_opening_charset_actor 보행 + animate_opening_camera)을 겹쳐라. 말풍선(upsert_opening_emote)은 width:12, height:14 소형으로 마을 광장(주민 2~3명: ellipsis/question/exclaim)과 절벽(주인공: exclaim 1개)에만 쓰고 성당이나 수정 동굴에는 절대 쓰지 마라.',
       captionDiscipline: '자막(set_opening_caption)은 모든 샷에서 letterbox:0.15 하단 검정 바 안에 한 줄씩 타이프라이터로 찍고, 오프닝 전체에서 기본 색 하나(#fff0dc)로 통일하며 클라이맥스 대사 한두 큐만 강조색(#ff6878)을 써라(전체 색 종류 2가지 이하, 샷마다 무지개색 자막 금지!).',
@@ -360,6 +378,17 @@ export const OPENING_ANIMATIC_TOOLS: readonly ToolDefinition[] = [
     const total = intro.scenes.reduce((sum, scene) => sum + scene.durationMs, 0);
     return { summary: `타이틀 인트로: 샷 ${intro.scenes.length}개 · ${(total / 1000).toFixed(1)}초 · ${intro.enabled ? '켜짐' : '꺼짐'} · 음악 ${intro.musicResourceId ?? '없음'}.`, data: { titleIntro: { enabled: intro.enabled, musicResourceId: intro.musicResourceId ?? null, entry: intro.entry ?? { mode: 'before-title' }, shots: intro.scenes.map(scene => ({ shotId: scene.id, durationMs: scene.durationMs })) } } };
   }),
+  // 새 게임 오프닝(track:"opening") 전체에 깔리는 시퀀스 음악. 샷 컷을 넘어 이어지고 시작 맵으로 넘어갈 때 페이드된다.
+  // 예전에는 set_opening(그림책 경로, 샷을 통째로 바꾼다)만 이 값을 정해 애니메틱 경로에서는 정할 길이 없었다(마왕 편의점 오프닝 2026-10-29).
+  definition('configure_opening_music', '새 게임 오프닝(track:"opening") 전체에 깔리는 음악을 정하거나 지운다(빈 문자열). 샷을 건드리지 않는다. 샷마다 다른 음악·효과음은 upsert_opening_audio_cue.', 'write', schema({ musicResourceId: str }, ['musicResourceId']), (p, args) => {
+    const opening = p.system.opening;
+    if (!opening) throw new ToolError('먼저 create_opening_animatic_shot 으로 오프닝 샷을 만드세요.', { code: 'opening-not-found' });
+    const music = String(args.musicResourceId ?? '').trim();
+    if (!music) delete opening.musicResourceId;
+    else if (!catalogLookup(p)('music', music)) throw new ToolError(`음악 ${music} 을 찾을 수 없습니다. list_opening_media(kind:"music") 에서 고르세요.`, { code: 'resource-not-found' });
+    else opening.musicResourceId = music;
+    return { summary: `오프닝 음악: ${opening.musicResourceId ?? '없음'}.`, data: { musicResourceId: opening.musicResourceId ?? null } };
+  }),
   definition('create_opening_animatic_shot', '빈 합성 샷 추가. 교체는 replace:true와 clearLayers:true를 함께 명시해야 기존 레이어를 지웁니다. track:"title-intro" 면 게임을 켜면 타이틀 앞에 도는 인트로(opening=새 게임 뒤 장면과 따로).', 'write', schema({ shotId: str, durationMs: integer, width: integer, height: integer, background: str, index: integer, replace: { type: 'boolean' }, clearLayers: { type: 'boolean' }, narration: str, track: trackSchema }, ['shotId', 'durationMs']), (p, args) => {
     const track = trackArg(args.track), otherTrack = trackOfShot(p, String(args.shotId ?? '').trim());
     if (otherTrack && otherTrack !== track) throw new ToolError(`샷 ${String(args.shotId)} 은 이미 ${otherTrack} 트랙에 있습니다. 다른 shotId 를 쓰세요.`, { code: 'scene-exists' });
@@ -431,7 +460,10 @@ export const OPENING_ANIMATIC_TOOLS: readonly ToolDefinition[] = [
     const s = shot(p, args.shotId);
     const camera = cameraFromTo(args.camera, s.durationMs) as OpeningAnimatic['camera'];
     s.composition.camera = { ...s.composition.camera, ...structuredClone(camera), keys: { ...s.composition.camera?.keys, ...camera?.keys } };
-    return commit(p, s, '카메라 타임라인을 저장했습니다.');
+    const result = commit(p, s, '카메라 타임라인을 저장했습니다.');
+    // 값은 그대로 저장하고(렌더러도 안 바꾼다) 소수 줌만 알린다 — 도트 무대에서 1.18·1.25 로 멈추면 도트 굵기가 들쭉날쭉하다.
+    const zoomWarning = openingCameraZoomWarning(s.composition.camera);
+    return zoomWarning ? { ...result, summary: `${result.summary} (경고: ${zoomWarning})`, warnings: [...(result.warnings ?? []), zoomWarning] } : result;
   }),
   definition('set_opening_transition', '샷 입장 cut/fade/wipe/iris/flash와 레터박스.', 'write', schema({ shotId: str, transition: obj, letterbox: { type: 'number' } }, ['shotId', 'transition']), (p, args) => {
     const s = shot(p, args.shotId); s.composition.transition = structuredClone(args.transition) as OpeningAnimatic['transition']; if (args.letterbox !== undefined) s.composition.letterbox = Number(args.letterbox); return commit(p, s, '샷 전환을 저장했습니다.');
@@ -634,6 +666,17 @@ export const OPENING_ANIMATIC_TOOLS: readonly ToolDefinition[] = [
     return commit(p, s, `픽셀 스프라이트 상태 ${entries.map(([name]) => name).join('/') }를 연결했습니다. 실제 frame strip으로 전환됩니다.`);
   }),
 ];
+
+/** 오프닝 카메라의 줌(기본값·zoom 키)에 정수가 아닌 값이 있으면 한국어 경고 한 줄. 저장값은 바꾸지 않는다. */
+export function openingCameraZoomWarning(camera: OpeningAnimatic['camera'] | undefined): string | null {
+  if (!camera) return null;
+  const values = [camera.zoom, ...(camera.keys?.zoom ?? []).map(key => key.value)]
+    .filter((value): value is number => typeof value === 'number' && Number.isFinite(value));
+  const odd = [...new Set(values.filter(value => Math.abs(value - Math.round(value)) > 1e-6))];
+  if (!odd.length) return null;
+  const shown = odd.slice(0, 4).map(value => `${value}(→${Math.max(1, Math.round(value))})`).join(', ');
+  return `카메라 줌 ${shown} 이(가) 정수가 아닙니다. 도트 그림·맵 무대는 1·2 같은 정수 줌으로 멈춰야 도트 굵기가 고르게 나옵니다 — 멈추는 줌 값을 정수로 맞추세요.`;
+}
 
 /**
  * camera:{from:{x,y,zoom},to:{x,y,zoom}} 를 정본 모양(시작 값 + 샷 길이에 걸친 keys)으로 옮긴다.

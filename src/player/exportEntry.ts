@@ -5,8 +5,17 @@ import { installVitePreloadRecovery } from "@/app/moduleLoadRecovery";
 import { syncProjectFontTheme } from "@/app/fontTheme";
 
 installVitePreloadRecovery();
+// 번들 타일셋 정의 JSON(칩셋 하나에 최대 12MB)도 첫 화면 파일처럼 멈춤 감시로 받는다 — 한 연결이 20~60초 서는 엣지에서
+// 불러오기 화면이 그대로 멈추지 않게(scenePreload.ts readWithStallGuard: 12초 무바이트면 다시 받기).
+setBundledJsonReader(async (url, onBytes) => {
+  const blob = await fetchBlobWithRetry(url, "high", onBytes);
+  if (!blob) throw new Error(`번들 자료를 받지 못했습니다: ${url}`);
+  return blob.text();
+});
 import { PRODUCT_BRAND } from "@/brand";
-import { deserialize } from "@/project/io";
+import { deserialize, deserializeParsed } from "@/project/io";
+import { preloadBundledTilesetDefinitions } from "@/project/defaults/defaultAssets";
+import { setBundledJsonReader, type BundledJsonProgress } from "@/project/defaults/bundledJson";
 import { OPRN_EXTENSION } from "@/project/package";
 import type { Project } from "@/project/types";
 import { renderPlayer } from "@/player/player";
@@ -23,7 +32,7 @@ import { hostExitReturnUrl, parseHostBridge, type HostBridge } from "@/player/ho
 import { installDesktopShellBridge, type DesktopShellBootConfig } from "@/player/desktopShellBridge";
 import { getAudioEngine, stopAllAudio } from "@/player/audio";
 import { fetchTextWithProgress, mountBootLoader, readLoadingInfo, type BootLoader } from "@/player/bootLoader";
-import { backgroundUrls, enableScenePreload, firstPlayableUrls, preloadUrls } from "@/player/scenePreload";
+import { backgroundUrls, enableScenePreload, fetchBlobWithRetry, firstPlayableUrls, preloadUrls } from "@/player/scenePreload";
 import { registerAssetAliases, registerExportAssetBase } from "@/assets/inlineAssetStore";
 import { exportAssetBaseFor } from "@/player/exportAssetBase";
 import { dropOtherVersionPackCaches, loadPacks, startPackServiceWorker, type PreloadPack } from "@/player/preloadPacks";
@@ -62,6 +71,11 @@ interface OpenRpgBootConfig {
   readonly actionCombatProbe?: { readonly runId: string; readonly mapId: string };
   /** Private runtime-QA checkpoint (scripts/qa/runtime/checkpoints). Ignored unless qaInstrumentation is true. */
   readonly qaCheckpoint?: unknown;
+  /**
+   * Private runtime-QA: on the dev server, read `?demo=` from this baked play.json instead of building the demo in the page.
+   * Ignored unless qaInstrumentation is true, and only read in dev (production always reads demos/<id>.play.json).
+   */
+  readonly qaDemoUrl?: string;
   // 호스트 주입값은 신뢰하지 않는다 — hostBridge.parseHostBridge 가 방어적으로 파싱한다.
   readonly returnUrl?: unknown;
   readonly hostFeatures?: unknown;
@@ -118,7 +132,7 @@ async function bootExportedPlayer(root: HTMLElement): Promise<void> {
   const demoParam = rawDemoParam === "fallen-star" ? "chrono-bell" : rawDemoParam === "astra-horizon" ? "emerald-crown" : rawDemoParam;
   if (demoParam === "chrono-bell" || demoParam === "emerald-crown" || demoParam === "shitamachi-fourth-season" || demoParam === "first-love") {
     const loader = mountBootLoader(root, { title: document.title });
-    const demo = await loadFlagshipDemo(demoParam, assetBase, (bytes) => loader.projectProgress(bytes));
+    const demo = await loadFlagshipDemo(demoParam, assetBase, (bytes) => loader.projectProgress(bytes), devQaDemoUrl(boot), (done, total, bytes) => loader.definitionsProgress(done, total, bytes));
     if (!demo.ok) { loader.remove(); renderBootError(root, demo.message); return; }
     loader.setInfo({ title: demo.project.meta.title });
     await prepareFirstScreen(loader, demo.project, autoStartFor(boot));
@@ -140,7 +154,7 @@ async function bootExportedPlayer(root: HTMLElement): Promise<void> {
   const loader = mountBootLoader(root, { title: storeGame?.title ?? "" });
   const projectUrl = new URL(boot.projectUrl ?? "project.json", window.location.href);
   const loadingInfo = readLoadingInfo(projectUrl).then((info) => { loader.setInfo(storeGame ? { ...info, title: storeGame.title } : info); return info; });
-  const bundled = await loadBundledProject(projectUrl, (bytes) => loader.projectProgress(bytes));
+  const bundled = await loadBundledProject(projectUrl, (bytes) => loader.projectProgress(bytes), (done, total, bytes) => loader.definitionsProgress(done, total, bytes));
   if (!bundled.ok) {
     loader.remove();
     openGameFilePicker(root, boot, bundled.message);
@@ -243,18 +257,35 @@ async function readPreloadPlan(base: URL): Promise<{ readonly files: string[]; r
   }
 }
 
+/**
+ * 받은 project.json 을 읽어 Project 로 만든다. 번들 타일셋 정의(칩셋 하나에 수 MB)는 플레이어에서도 지연 JSON 이다
+ * (scripts/lib/bundledJsonLazy.mjs) — 첫 화면 청크에 모든 칩셋 정의를 싣던 때는 dist 진입 청크가 약 52MB 였다.
+ * 이 게임이 쓰는 타일셋 정의만 비동기로 받아 둔 뒤 되돌린다. 받지 않으면 되돌리기가 동기 요청 대비책으로 메인 스레드를 막는다.
+ */
+async function deserializeWithBundledTilesets(text: string, onDefinitions?: BundledJsonProgress): Promise<Project> {
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(text) as unknown;
+  } catch {
+    return deserialize(text); // 같은 형식 오류 문구를 낸다.
+  }
+  const tilesets = parsed && typeof parsed === "object" ? (parsed as { tilesets?: unknown }).tilesets : undefined;
+  if (tilesets && typeof tilesets === "object") await preloadBundledTilesetDefinitions(Object.keys(tilesets), onDefinitions);
+  return deserializeParsed(parsed);
+}
+
 type BundledProjectLoad =
   | { readonly ok: true; readonly project: Project }
   | { readonly ok: false; readonly message: string };
 
-async function loadBundledProject(projectUrl: URL, onBytes: (bytes: number) => void): Promise<BundledProjectLoad> {
+async function loadBundledProject(projectUrl: URL, onBytes: (bytes: number) => void, onDefinitions?: BundledJsonProgress): Promise<BundledProjectLoad> {
   try {
     const response = await fetchTextWithProgress(projectUrl, onBytes);
     if (response.status === 404) {
       return { ok: false, message: `이 주소에는 번들된 게임이 없습니다. ${OPRN_EXTENSION} 게임 파일을 열어 주세요.` };
     }
     if (!response.ok) return { ok: false, message: `project.json 로드 실패 (${response.status})` };
-    return { ok: true, project: deserialize(response.text) };
+    return { ok: true, project: await deserializeWithBundledTilesets(response.text, onDefinitions) };
   } catch (error) {
     return { ok: false, message: error instanceof Error ? error.message : String(error) };
   }
@@ -268,18 +299,28 @@ async function loadBundledProject(projectUrl: URL, onBytes: (bytes: number) => v
  * dev 서버(QA 하네스)에는 구운 파일이 없으므로 그때만 예전처럼 짓는다. 출하 빌드에서는 import.meta.env.DEV 가
  * 거짓이라 빌더 import 가 통째로 빠지고, 내보낸 게임 zip 에도 데모 빌더 청크가 실리지 않는다.
  */
-async function loadFlagshipDemo(id: string, assetBase: URL, onBytes: (bytes: number) => void): Promise<BundledProjectLoad> {
-  if (import.meta.env.DEV) {
+async function loadFlagshipDemo(id: string, assetBase: URL, onBytes: (bytes: number) => void, devBakedUrl?: URL, onDefinitions?: BundledJsonProgress): Promise<BundledProjectLoad> {
+  if (import.meta.env.DEV && !devBakedUrl) {
     const { createFlagshipDemoProject } = await import("@/project/flagship");
     return { ok: true, project: createFlagshipDemoProject(id as Parameters<typeof createFlagshipDemoProject>[0]).project };
   }
   try {
-    const response = await fetchTextWithProgress(new URL(`demos/${encodeURIComponent(id)}.play.json`, assetBase), onBytes);
+    const response = await fetchTextWithProgress(devBakedUrl ?? new URL(`demos/${encodeURIComponent(id)}.play.json`, assetBase), onBytes);
     if (!response.ok) return { ok: false, message: `데모 ${id} 를 읽지 못했습니다 (${response.status})` };
-    return { ok: true, project: deserialize(response.text) };
+    return { ok: true, project: await deserializeWithBundledTilesets(response.text, onDefinitions) };
   } catch (error) {
     return { ok: false, message: error instanceof Error ? error.message : String(error) };
   }
+}
+
+/**
+ * 런타임 QA 하네스가 구운 데모(dist/demos/<id>.play.json)를 넘겼으면 그 주소. dev 서버에서만 본다 —
+ * 페이지 안에서 데모를 짓는 데 chrono-bell 이 수 분 걸려(체크포인트 하나 12~20분) 하네스가 미리 구운 파일을 준다.
+ * 하네스가 주지 않으면(구운 파일이 없거나 소스보다 낡았으면) 예전처럼 페이지에서 짓는다(scripts/lib/runtimeQaDemo.mjs).
+ */
+function devQaDemoUrl(boot: OpenRpgBootConfig): URL | undefined {
+  if (!import.meta.env.DEV || boot.qaInstrumentation !== true || typeof boot.qaDemoUrl !== "string") return undefined;
+  return new URL(boot.qaDemoUrl, window.location.href);
 }
 
 /**

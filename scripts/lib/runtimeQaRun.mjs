@@ -1,11 +1,12 @@
 import assert from "node:assert/strict";
 import { runAudioAction } from "./runtimeQaAudio.mjs";
+import { bakedDemoBody, resolveBakedDemo } from "./runtimeQaDemo.mjs";
 // 런타임 QA 하네스 — 부수효과 담당(vite 서버 · 브라우저 구동 · 디스크 쓰기).
 // 순수 판정 로직은 ./runtimeQa.mjs 에 있고 여기서 소비만 한다.
 // 설계: docs/superpowers/specs/2026-08-28-runtime-vision-qa-design.md
 import { createServer as createNetServer } from "node:net";
 import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
-import { join, relative, resolve } from "node:path";
+import { dirname, join, relative, resolve } from "node:path";
 import { homedir, tmpdir } from "node:os";
 import { gunzipSync } from "node:zlib";
 import { fileURLToPath } from "node:url";
@@ -33,6 +34,9 @@ const REPO_ROOT = fileURLToPath(new URL("../../", import.meta.url));
 /** exportEntry.ts 가 fetch 할 주소. 실제 파일이 아니라 page.route 로 가로채 채운다. */
 const PROJECT_URL = "/__runtime-qa/project.json";
 const PROJECT_ROUTE = "**/__runtime-qa/project.json";
+/** `?demo=` 를 구운 파일로 부팅할 때 플레이어가 읽을 주소(runtimeQaDemo.mjs). */
+const DEMO_URL = "/__runtime-qa/demo.play.json";
+const DEMO_ROUTE = "**/__runtime-qa/demo.play.json";
 
 /** 훅을 요구하는 op — 이들 앞에서는 런타임 훅 설치를 기다린다. */
 export const HOOK_OPS = new Set([
@@ -149,7 +153,8 @@ async function waitForCheckpointBoot(page) {
       if (error) { finish(); reject(new Error(`체크포인트 부팅 실패: ${error.textContent}`)); }
     };
     const observer = new MutationObserver(check);
-    // 부하(load 150+) 중 실측 부팅 112~219초, 폴른 스타(2막 41맵) 두 판 동시면 330~380초 — 넉넉히 기다린다(QA_CHECKPOINT_BOOT_MS 로 조절).
+    // 부하(load 150+) 중 실측 부팅 112~219초, 폴른 스타(2막 41맵) 두 판 동시면 330~380초였다 — 데모를 페이지에서 짓던 때다.
+    // 구운 파일로 부팅하면(runtimeQaDemo.mjs) load 20~45 에서 17~31초(2026-10-29). 기다림 상한은 그대로 넉넉히 둔다(QA_CHECKPOINT_BOOT_MS).
     const deadline = setTimeout(() => { finish(); reject(new Error("QA scene did not become ready")); }, bootMs);
     observer.observe(document.documentElement, { childList: true, subtree: true });
     check();
@@ -388,6 +393,14 @@ export async function applyOp(page, op, runState) {
       return;
     case "seed":
       await page.evaluate((seed) => window.__oprnDebug.setSeed(seed), op.seed);
+      return;
+    case "giveItem":
+      // 실물 게임에 시작 아이템이 없을 때 전투 아이템 사용을 보려고 가방에 넣는다(__oprnDebug.giveItem — 실제 세션 인벤토리).
+      await page.evaluate(([itemId, amount]) => window.__oprnDebug.giveItem(itemId, amount), [op.itemId, op.amount ?? 1]);
+      return;
+    case "setSwitch":
+      // 실물 게임의 진행 스위치(예: 공포판 추격자 등장 sw_0001)를 퍼즐을 다 풀지 않고 켠다(__oprnDebug.setSwitch — 실제 세션).
+      await page.evaluate(([switchId, value]) => window.__oprnDebug.setSwitch(switchId, value), [op.switchId, op.value ?? true]);
       return;
     case "setVitals":
       await page.evaluate(
@@ -661,6 +674,17 @@ export async function applyOp(page, op, runState) {
       if (!(await testidMatches(page, op))) throw new Error(`repeatUntil: ${max}회 뒤에도 ${op.testid} 가 ${op.state} 가 되지 않았다`);
       return;
     }
+    case "repeatUntilMap": {
+      // 하위 op 묶음을 그 맵에 들어설 때까지 되풀이한다 — 대사 줄 수·글자 흘림 속도에 기대지 않고 장면 전환까지 넘긴다.
+      const onMap = () => page.evaluate((mapId) => window.__oprnDebug?.readState?.()?.currentMapId === mapId, op.mapId);
+      const max = op.maxRounds ?? 20;
+      for (let round = 0; round < max; round += 1) {
+        if (await onMap()) return;
+        for (const inner of op.ops) await applyOp(page, inner, runState);
+      }
+      if (!(await onMap())) throw new Error(`repeatUntilMap: ${max}회 뒤에도 ${op.mapId} 에 들어서지 않았다`);
+      return;
+    }
     case "waitForStyleVar":
       // 인라인 CSS 사용자 속성(예: --battle-node-x) 값 대기 — 렌더된 위치를 좌표계 그대로 단정한다.
       await page.waitForFunction(
@@ -705,7 +729,10 @@ export async function applyOp(page, op, runState) {
       const ok = () => page.evaluate(`(${op.fn})()`).catch(() => false);
       for (let i = 0; i < max; i += 1) {
         if (await ok()) return;
-        await page.keyboard.press(op.key ?? "Enter");
+        // times: 한 바퀴에 연달아 누를 횟수(「Esc 두 번: 컷신 건너뛰기」처럼 짧은 간격의 두 번 누르기).
+        // keys: 바퀴마다 돌려 쓰는 키 목록(풀숲을 좌우로 오가며 조우를 기다릴 때). 없으면 key 하나.
+        const key = Array.isArray(op.keys) && op.keys.length > 0 ? op.keys[i % op.keys.length] : (op.key ?? "Enter");
+        for (let n = 0; n < (op.times ?? 1); n += 1) await page.keyboard.press(key);
         await page.waitForTimeout(op.settleMs ?? 450);
       }
       if (!(await ok())) throw new Error(`pressUntilJs: ${max}회 뒤에도 조건이 참이 아니다: ${op.fn}`);
@@ -795,8 +822,38 @@ export async function applyOp(page, op, runState) {
       runState.capturedCheckpoints.push({ id: op.id, ...(op.label ? { label: op.label } : {}), snapshot });
       return;
     }
+    case "cpuProfileStart": {
+      // CPU 표본 수집 시작 — 「무엇이 n초 걸리나」를 함수 단위로 보려고(2026-10-29 새 게임 로딩 8~10초 원인 계측).
+      runState.cpuProfiler = await page.context().newCDPSession(page);
+      await runState.cpuProfiler.send("Profiler.enable");
+      await runState.cpuProfiler.send("Profiler.setSamplingInterval", { interval: op.intervalUs ?? 1000 });
+      await runState.cpuProfiler.send("Profiler.start");
+      return;
+    }
+    case "cpuProfileStop": {
+      // 멈추고 자기 시간(self) 상위 함수 표를 op.out 에 쓴다(전체 .cpuprofile 은 op.raw 가 있을 때만).
+      const session = runState.cpuProfiler;
+      if (!session) throw new Error("cpuProfileStop: cpuProfileStart 가 먼저다");
+      const { profile } = await session.send("Profiler.stop");
+      runState.cpuProfiler = undefined;
+      if (op.raw) await writeFile(op.raw, JSON.stringify(profile));
+      const dt = profile.timeDeltas ?? [];
+      const self = new Map();
+      profile.samples.forEach((id, i) => self.set(id, (self.get(id) ?? 0) + (dt[i] ?? 0)));
+      const byFn = new Map();
+      for (const node of profile.nodes) {
+        const f = node.callFrame;
+        const key = `${f.functionName || "(anon)"} ${(f.url ?? "").split("/").slice(-2).join("/")}:${f.lineNumber + 1}`;
+        byFn.set(key, (byFn.get(key) ?? 0) + (self.get(node.id) ?? 0));
+      }
+      const totalMs = (profile.endTime - profile.startTime) / 1000;
+      const top = [...byFn.entries()].sort((a, b) => b[1] - a[1]).slice(0, op.top ?? 40).map(([fn, us]) => ({ fn, selfMs: Math.round(us / 1000) }));
+      await writeFile(op.out, JSON.stringify({ totalMs: Math.round(totalMs), top }, null, 1));
+      return;
+    }
     case "evalToFile": {
       const value = await page.evaluate(`(${op.fn})()`);
+      await mkdir(dirname(op.out), { recursive: true });
       await writeFile(op.out, JSON.stringify(value, null, 1));
       return;
     }
@@ -1209,8 +1266,14 @@ export async function runRuntimeQa(page, rawScenario, opts = {}) {
   // exportEntry.ts 는 최상위에서 즉시 부팅하므로 주입은 addInitScript 여야 한다.
   // localStorage.clear() 는 이전 실행의 세이브가 타이틀 화면을 바꾸는 것을 막는다.
   const checkpoint = opts.checkpoint ?? null;
+  // ?demo= 는 페이지에서 데모를 짓느라 수 분 걸린다 — 구운 파일이 있으면 그것을 넘긴다(runtimeQaDemo.mjs).
+  const bakedDemo = opts.projectUrl ? null : resolveBakedDemo(scenario);
+  if (bakedDemo) {
+    const body = await bakedDemoBody(bakedDemo.path);
+    await page.route(DEMO_ROUTE, (route) => route.fulfill({ status: 200, contentType: "application/json", body }));
+  }
   await page.addInitScript(
-    ([projectUrl, saveNamespace, storageSeed, qaCheckpoint]) => {
+    ([projectUrl, saveNamespace, storageSeed, qaCheckpoint, qaDemoUrl]) => {
       try {
         localStorage.clear();
         // 시나리오가 「이 기기에 이미 있던 기록」(예: 본 엔딩)을 심는다. 키의 {ns} 는 세이브 이름 공간으로 바뀐다.
@@ -1218,9 +1281,9 @@ export async function runRuntimeQa(page, rawScenario, opts = {}) {
       } catch {
         // 접근 불가 환경이면 그대로 진행한다.
       }
-      window.__OPENRPG_BOOT__ = { projectUrl, saveNamespace, qaInstrumentation: true, ...(qaCheckpoint ? { qaCheckpoint } : {}) };
+      window.__OPENRPG_BOOT__ = { projectUrl, saveNamespace, qaInstrumentation: true, ...(qaCheckpoint ? { qaCheckpoint } : {}), ...(qaDemoUrl ? { qaDemoUrl } : {}) };
     },
-    [opts.projectUrl ?? PROJECT_URL, `runtime-qa:${scenario.id}`, scenario.localStorageSeed ?? null, checkpoint],
+    [opts.projectUrl ?? PROJECT_URL, `runtime-qa:${scenario.id}`, scenario.localStorageSeed ?? null, checkpoint, bakedDemo ? DEMO_URL : null],
   );
   if (!opts.projectUrl) {
     await page.route(PROJECT_ROUTE, (route) =>
@@ -1236,13 +1299,26 @@ export async function runRuntimeQa(page, rawScenario, opts = {}) {
   // 영상 클립에 같은 파일을 그 시각에 다시 섞을 수 있다(scripts/qa/runtime/mux-audio-cues.py). 읽기만 하고 재생은 바꾸지 않는다.
   await page.addInitScript(`(() => {
     window.__qaSfx = [];
+    // 곡(BGM)은 fetch → blob URL 로 재생된다 — blob 이 어느 파일에서 왔는지 적어 두어야 다시 섞을 수 있다.
+    const blobSrc = {};
+    try {
+      const cou = URL.createObjectURL;
+      URL.createObjectURL = function (o) { const u = cou.call(URL, o); try { if (o && o.__qaSrc) blobSrc[u] = o.__qaSrc; } catch {} return u; };
+      const f = window.fetch;
+      window.fetch = async function (...a) {
+        const r = await f.apply(this, a);
+        try { const url = typeof a[0] === "string" ? a[0] : a[0]?.url; const bl = r.blob.bind(r); r.blob = async () => { const x = await bl(); try { x.__qaSrc = new URL(url, location.href).href; } catch {} return x; }; } catch {}
+        return r;
+      };
+    } catch {}
     const proto = HTMLMediaElement.prototype;
     const play = proto.play, pause = proto.pause;
     const cueOf = (el) => el.__qaCue;
     proto.play = function (...a) {
       try {
         if (window.__qaSfx.length < 4000) {
-          const cue = { at: Date.now(), src: this.currentSrc || this.src, volume: this.volume, rate: this.playbackRate, loop: !!this.loop };
+          const raw = this.currentSrc || this.src;
+          const cue = { at: Date.now(), src: blobSrc[raw] ?? raw, volume: this.volume, rate: this.playbackRate, loop: !!this.loop };
           this.__qaCue = cue; window.__qaSfx.push(cue);
           if (!this.__qaWatch) {
             this.__qaWatch = true;
@@ -1421,7 +1497,7 @@ export async function runRuntimeQa(page, rawScenario, opts = {}) {
   const report = {
     scenarioId: scenario.id,
     ...(checkpoint ? { checkpointId: checkpoint.id } : {}),
-    timing: { bootMs, totalMs: Date.now() - startedAt },
+    timing: { bootMs, totalMs: Date.now() - startedAt, startedAt },
     ...(runState.capturedCheckpoints?.length ? { capturedCheckpoints: runState.capturedCheckpoints } : {}),
     projectPath: relative(REPO_ROOT, projectPath),
     seed: scenario.seed,

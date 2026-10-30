@@ -340,8 +340,9 @@ export async function startLocalProjectServer(options: LocalProjectServerOptions
     // the editor bridge changes those bytes and rejects every hosted ZIP export.
     if (extension !== ".html" || relative.startsWith("export-player/")) {
       // The shipped player's hashed chunks live under export-player/assets/ — the ?demo= links and test plays
-      // re-read ~50MB of them on every visit while they were marked no-cache.
-      const fingerprinted = /^(?:export-player\/)?assets\/[^/]+-[A-Za-z0-9_-]{8}\.(?:js|css|woff2|png)$/.test(relative);
+      // re-read ~50MB of them on every visit while they were marked no-cache. The bundled tileset definitions
+      // (assets/jpCityTileset-<hash>.json …, up to 12MB each) are fingerprinted the same way.
+      const fingerprinted = /^(?:export-player\/)?assets\/[^/]+-[A-Za-z0-9_-]{8}\.(?:js|css|woff2|png|json)$/.test(relative);
       await sendHttpBody(response, 200, bytes, {
         "content-type": contentType,
         "cache-control": fingerprinted ? "private, max-age=31536000, immutable" : "no-cache",

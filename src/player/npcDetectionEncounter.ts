@@ -3,7 +3,7 @@ import { store } from '@/project/store';
 import { completeDetectionEncounter } from '@/project/npcBehavior';
 import { passageBounds } from '@/project/footprint';
 import { resolvePlayerBody } from '@/project/playerFootprint';
-import { runtimeEventViewById, runtimeEventViewsForMap, type RuntimeEventView } from '@/project/runtimeEventState';
+import { eventMayHaveDetectionEncounter, runtimeEventViewById, runtimeEventViewsForMap, type RuntimeEventView } from '@/project/runtimeEventState';
 import type { FootprintRect } from '@/project/types';
 import type { PlaySceneContext } from './playSceneTypes';
 import { claimForeground, foregroundOwner, type ForegroundLease } from './foregroundControl';
@@ -100,7 +100,8 @@ export function updateDetectionEncounters(scene: PlaySceneContext, deltaMs: numb
   const project = store.getCurrent();
   const world = { project, map: scene.map, session: scene.session, positions: scene.eventPositions };
   if (isPlayerHiding(world)) { controller.suppressed.clear(); return; }
-  for (const view of runtimeEventViewsForMap(project, scene.map, scene.session, scene.eventPositions)) {
+  // 발견 조우 페이지가 없는 이벤트는 뷰(페이지 조건·발자국)를 만들지 않는다. 플레이어가 서 있는 동안 매 프레임 돈다.
+  for (const view of runtimeEventViewsForMap(project, scene.map, scene.session, scene.eventPositions, eventMayHaveDetectionEncounter)) {
     const config = view.page?.detectionEncounter;
     if (!config || !view.pageId || scene.session.horror?.pursuits[view.event.id]?.doors.length) continue;
     if (scene.commandMoveRouteEventIds.has(view.event.id)) continue;

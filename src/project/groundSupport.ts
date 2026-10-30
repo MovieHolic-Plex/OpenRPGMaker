@@ -26,6 +26,17 @@ export function supportSurfaceOf(ts: TilesetDef, tile: number): SupportSurface {
   return "ground";
 }
 
+/**
+ * 마을 성벽(author_beodeul_town walls)의 앞면은 3층(위층)에 그려지고 1층은 눈·흙 바닥이다 — 1층만 보면 그 앞면에 건 깃발·횃불이
+ * 「바닥 칸에 걸렸다」로 잡혔다(폴른 스타 북방 요새 성벽 깃발, 2026-10-29). 벽에 거는 물건은 3층 성벽 앞면(태그 town_wall + 「…:f」)도 벽으로 본다.
+ */
+function mountSurfaceAt(map: GameMap, ts: TilesetDef, x: number, y: number): SupportSurface {
+  const lower = supportSurfaceOf(ts, at(map, x, y));
+  if (lower === "wall" || lower === "ceiling") return lower;
+  const tags = ts.tileMeta?.[map.upperTiles[y * map.width + x] ?? -1]?.tags ?? [];
+  return tags.includes("town_wall") && tags.some((t) => /:f$/.test(t)) ? "wall" : lower;
+}
+
 const isDungeonKit = (kit: StructureKitDef): boolean => (kit.ai?.themes ?? []).some((t) => t === "dungeon" || t === "던전");
 /** 벽 앞면에 붙는 물건 — 바닥 위에 서면 허공에 걸린 것처럼 보인다. */
 const WALL_MOUNT = /torch-wall|banner|niche|chains|sconce|wall-lamp|vines|hanging-chain|tower-window|lever-(up|down)|timber-frame|ore-vein|icicles|stalactites|ossuary/;
@@ -106,7 +117,7 @@ function supportProblems(map: GameMap, ts: TilesetDef, kit: StructureKitDef, kin
     if (surface === "ceiling") problems.push(`(${X},${Y}) 가 ${SURFACE_KO.ceiling} 칸이다 — 허공에는 물체를 놓지 않는다`);
     else if (kind !== "mount" && surface === "ground" && isLiquidTile(ts, at(map, X, Y)) && !LIQUID_OK.test(kit.id)) problems.push(`(${X},${Y}) 가 물·용암 칸이다 — 걸을 수 없는 칸 위에는 물체를 놓지 않는다(배·말뚝만 예외)`);
     else if (kind === "stand" && bottom && surface === "wall" && !NECK_GATE.test(kit.id)) problems.push(`(${X},${Y}) 밑이 벽이다 — 물체는 걷는 바닥 위에 선다`);
-    else if (kind === "mount" && surface !== "wall") problems.push(`(${X},${Y}) 가 ${SURFACE_KO[surface]} 칸이다 — 벽 앞면에 거는 물건은 벽 칸에만 건다`);
+    else if (kind === "mount" && mountSurfaceAt(map, ts, X, Y) !== "wall") problems.push(`(${X},${Y}) 가 ${SURFACE_KO[surface]} 칸이다 — 벽 앞면에 거는 물건은 벽 칸에만 건다`);
   }
   if (kind === "door") {
     const bottomCells = cells.filter((c) => c.dy === kit.height - 1);
@@ -205,7 +216,7 @@ export function groundSupportIssues(map: GameMap, ts: TilesetDef | undefined, op
         if (surface === "ceiling") why = `${SURFACE_KO.ceiling} 위에 놓였다`;
         else if (entry.kind !== "mount" && surface === "ground" && isLiquidTile(ts, at(map, x, y)) && !LIQUID_OK.test(entry.kitId)) why = "물·용암 칸 위에 놓였다(걸을 수 없는 칸)";
         else if (entry.kind === "stand" && entry.bottom && surface === "wall" && !NECK_GATE.test(entry.kitId)) why = "벽 칸 위에 서 있다";
-        else if (entry.kind === "mount" && surface !== "wall") why = `${SURFACE_KO[surface]} 칸에 걸려 있다(벽 앞면에만 건다)`;
+        else if (entry.kind === "mount" && mountSurfaceAt(map, ts, x, y) !== "wall") why = `${SURFACE_KO[surface]} 칸에 걸려 있다(벽 앞면에만 건다)`;
         else if (entry.kind === "door" && entry.bottom) {
           const south = y + 1 < H ? supportSurfaceOf(ts, at(map, x, y + 1)) : "ground";
           if (south !== "ground") why = `문 앞(${x},${y + 1})이 ${SURFACE_KO[south]} 칸이라 드나들 수 없다`;

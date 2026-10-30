@@ -1,4 +1,5 @@
 import type { Command, Condition, EventPage, GameEvent, GameMap, MapNamedLocation, Project } from "@/project/types";
+import { autotileVariantForMask } from "@/project/defaults/autotileEngine";
 import { assertEventShape, upsertEventIntoMap } from "./eventTools";
 import { ensureNamedSwitch } from "./flagHelpers";
 import { FIXED_MOVEMENT, particles, se, shake } from "./puzzleKit";
@@ -110,6 +111,9 @@ const makeTimedEscape: ToolDefinition = {
     "바닥 칸이 시간에 따라 차례로 무너진다 — 칸 그림이 collapsedTile 로 바뀌고(기본: 그 층을 비움) 그 칸이 막히며 화면이 흔들린다. 출구 칸(exit)을 밟으면 성공(타이머 끔, successSwitchId 켬), " +
     "시간이 다 되거나 무너지는 칸 위에 서 있으면 무너진 칸을 되돌리고 checkpoint 로 보낸다(다시 시작은 시작 칸을 다시 밟기). " +
     "무너지는 순서는 area + from(south|north|east|west: 그쪽부터) + bands(띠 수)로 주거나, steps([{x,y,width,height,atSecond}])로 칸 묶음과 시작 후 몇 초에 무너질지를 직접 준다. " +
+    "steps 의 묶음은 사각형(x,y,width,height) 대신 칸 목록 cells[{x,y}] 로 줄 수 있다 — 뒤에서 쫓아오는 붕괴(출발점에서 걸은 거리 순으로 초마다 한 묶음)는 이렇게 준다. " +
+    "collapsedAutotile(오토타일 묶음 id, 예: 어두운 물)을 주면 무너진 칸을 그 묶음으로 칠하되, 다 무너진 모양 기준으로 가장자리를 맞춘다(낱칸 네모 대신 물가 테두리). " +
+    "warnSeconds(초)·warnTiles(칸 번호들)를 주면 무너지기 그만큼 전에 칸을 금 간 그림으로 바꿔 미리 알린다(밟을 수는 있다). collapseRestOnSuccess:true 면 출구에 닿는 순간 남은 칸이 한꺼번에 무너진다. " +
     "start·exit·checkpoint 칸은 무너지지 않는다. 대사·페이드 타이머로 흉내내지 말고 이 도구를 쓴다. 같은 escapeId 로 다시 부르면 그 탈출을 새로 짓는다.",
   parameters: {
     type: "object",
@@ -139,22 +143,30 @@ const makeTimedEscape: ToolDefinition = {
       bands: { type: "integer", description: "area 를 나눌 띠 수(1~20). 기본 5. 시간에 고르게 나눠 무너진다" },
       steps: {
         type: "array",
-        description: "직접 정하는 붕괴 순서. 각 묶음은 시작 후 atSecond 초에 무너진다(area 대신)",
+        description: "직접 정하는 붕괴 순서. 각 묶음은 시작 후 atSecond 초에 무너진다(area 대신). 묶음 = 사각형(x,y,width,height) 또는 칸 목록(cells)",
         items: {
           type: "object",
           properties: {
-            x: { type: "integer" },
-            y: { type: "integer" },
+            x: { type: "integer", description: "사각형 왼쪽 위 x(cells 를 주면 생략)" },
+            y: { type: "integer", description: "사각형 왼쪽 위 y(cells 를 주면 생략)" },
             width: { type: "integer", description: "기본 1" },
             height: { type: "integer", description: "기본 1" },
+            cells: {
+              type: "array", description: "사각형 대신 이 칸들(모양이 자유로운 묶음)",
+              items: { type: "object", properties: { x: { type: "integer" }, y: { type: "integer" } }, required: ["x", "y"], additionalProperties: false },
+            },
             atSecond: { type: "integer", description: "시작 후 몇 초에 무너지나(1 ~ seconds-1)" },
           },
-          required: ["x", "y", "atSecond"],
+          required: ["atSecond"],
           additionalProperties: false,
         },
       },
       layer: { type: "string", enum: ["lower", "lower2", "upper", "upper2"], description: "무너질 때 바꿀 층. 기본 lower(바닥)" },
       collapsedTile: { type: "integer", description: "무너진 칸 그림(그 층 칩셋 칸 번호, 예: 물·구렁). 기본 -1(비움 = 어두운 구멍)" },
+      collapsedAutotile: { type: "string", description: "무너진 칸을 이 오토타일 묶음(칩셋 autotileGroups id, 예: 어두운 물)으로 칠한다 — 다 무너진 모양 기준으로 가장자리 칸을 고른다. collapsedTile 보다 먼저" },
+      warnSeconds: { type: "integer", description: "무너지기 몇 초 전에 금 간 그림으로 바꿔 알릴지(0~5). 기본 0(알림 없음). warnTiles 와 함께" },
+      warnTiles: { type: "array", items: { type: "integer" }, description: "금 간 칸 그림(그 층 칩셋 칸 번호들 — 칸 위치에 따라 고르게 섞는다)" },
+      collapseRestOnSuccess: { type: "boolean", description: "출구에 닿으면 아직 안 무너진 칸이 한꺼번에 무너진다(뒤에서 통째로 꺼지는 연출). 기본 false" },
       fallOnCollapse: { type: "boolean", description: "무너지는 순간 그 칸에 서 있으면 실패로 친다. 기본 true" },
       startText: { type: "string", description: "시작할 때 한 줄. 기본 「발밑이 갈라지기 시작했다! 서둘러!」. 빈 문자열이면 없음" },
       successText: { type: "string", description: "출구에 닿았을 때 한 줄. 빈 문자열이면 없음" },
@@ -192,17 +204,19 @@ const makeTimedEscape: ToolDefinition = {
 
     // 무너지는 묶음 — 시작 후 atSecond 초.
     type Step = { atSecond: number; cells: Cell[] };
-    let rawSteps: { rect: Rect; atSecond: number }[];
+    let rawSteps: { cells: Cell[]; atSecond: number }[];
     if (Array.isArray(args.steps) && args.steps.length > 0) {
       rawSteps = (args.steps as Record<string, unknown>[]).map((s, i) => ({
-        rect: readRect(map, s, `steps[${i}]`),
+        cells: Array.isArray(s.cells) && s.cells.length > 0
+          ? (s.cells as Record<string, unknown>[]).map((c, k) => { const r = readRect(map, { x: c.x, y: c.y }, `steps[${i}].cells[${k}]`); return { x: r.x, y: r.y }; })
+          : cellsOf(readRect(map, s, `steps[${i}]`)),
         atSecond: int(s.atSecond, 1, seconds - 1, Math.max(1, Math.round((seconds * (i + 1)) / ((args.steps as unknown[]).length + 1)))),
       }));
     } else if (args.area) {
       const area = readRect(map, args.area, "무너질 영역");
       const from = ["south", "north", "east", "west"].includes(String(args.from)) ? String(args.from) : "south";
       const bands = bandsOf(area, from, int(args.bands, 1, 20, 5));
-      rawSteps = bands.map((rect, i) => ({ rect, atSecond: Math.max(1, Math.round((seconds * (i + 1)) / (bands.length + 1))) }));
+      rawSteps = bands.map((rect, i) => ({ cells: cellsOf(rect), atSecond: Math.max(1, Math.round((seconds * (i + 1)) / (bands.length + 1))) }));
     } else {
       throw new ToolError("무너질 칸이 없습니다 — area(+from·bands) 또는 steps 를 주세요.", { code: "escape-no-collapse" });
     }
@@ -211,9 +225,9 @@ const makeTimedEscape: ToolDefinition = {
     for (const e of map.events ?? []) if (!String(e.id).startsWith(`ev_escape_${map.id}_${escapeId}`)) keep.add(`${e.x},${e.y}`);
     const taken = new Set<string>();
     const steps: Step[] = rawSteps
-      .map(({ rect, atSecond }) => ({
+      .map(({ cells, atSecond }) => ({
         atSecond,
-        cells: cellsOf(rect).filter((c) => {
+        cells: cells.filter((c) => {
           const key = `${c.x},${c.y}`;
           if (keep.has(key) || taken.has(key)) return false;
           taken.add(key);
@@ -244,6 +258,13 @@ const makeTimedEscape: ToolDefinition = {
       ensureNamedSwitch(draft, id, `탈출 ${escapeId} 붕괴 ${i + 1}`);
       return id;
     });
+    const warnSeconds = int(args.warnSeconds, 0, 5, 0);
+    const warnTiles = Array.isArray(args.warnTiles) ? (args.warnTiles as unknown[]).filter((t): t is number => Number.isInteger(t) && (t as number) >= 0) : [];
+    const warnSw = warnSeconds > 0 && warnTiles.length ? steps.map((_, i) => {
+      const id = `${swBase}_w${i}`;
+      ensureNamedSwitch(draft, id, `탈출 ${escapeId} 금 ${i + 1}`);
+      return id;
+    }) : [];
     const successSwitchId = str(args.successSwitchId);
     if (successSwitchId) ensureNamedSwitch(draft, successSwitchId, successSwitchId);
     if (startSwitchId) ensureNamedSwitch(draft, startSwitchId, startSwitchId);
@@ -253,8 +274,32 @@ const makeTimedEscape: ToolDefinition = {
     const tileAt = (l: Layer, c: Cell): number => tiles[LAYER_KEY[l]]?.[c.y * map.width + c.x] ?? -1;
     const changeTile = (l: Layer, c: Cell, tile: number): Command => ({ kind: "changeTile", mapId: map.id, layer: l, x: c.x, y: c.y, tile });
     const clearOverlay = layer !== "lower2";
+    // 오토타일로 무너뜨리기 — 다 무너진 모양(무너질 칸 전부 + 이미 그 묶음인 칸)을 기준으로 칸마다 가장자리 변형을 고른다.
+    const autoId = str(args.collapsedAutotile);
+    const autoGroup = autoId ? (draft.tilesets[map.tilesetId]?.autotileGroups ?? []).find((g) => g.id === autoId) : undefined;
+    if (autoId && !autoGroup) throw new ToolError(`칩셋 ${map.tilesetId} 에 오토타일 묶음 ${autoId} 이 없습니다.`, { code: "escape-autotile" });
+    const collapsedAt = new Map<string, number>();
+    if (autoGroup) {
+      const members = new Set(autoGroup.memberTileIds);
+      const water = new Set<string>(steps.flatMap((st) => st.cells.map((c) => `${c.x},${c.y}`)));
+      for (let y = 0; y < map.height; y += 1) for (let x = 0; x < map.width; x += 1) if (members.has(tileAt(layer, { x, y }))) water.add(`${x},${y}`);
+      const bits: [number, number, number][] = [[0, -1, 1], [1, 0, 2], [0, 1, 4], [-1, 0, 8], [1, -1, 16], [1, 1, 32], [-1, 1, 64], [-1, -1, 128]];
+      for (const st of steps) for (const c of st.cells) {
+        let m = 0;
+        for (const [dx, dy, bit] of bits) {
+          const nx = c.x + dx, ny = c.y + dy;
+          if ((autoGroup.edgeConnects && (nx < 0 || ny < 0 || nx >= map.width || ny >= map.height)) || water.has(`${nx},${ny}`)) m |= bit;
+        }
+        const inner = autoGroup.interiorVariants?.[0];
+        const h = Math.imul(c.x * 73856093 ^ c.y * 19349663, 0x27d4eb2d) >>> 0;
+        const t = m === 255 && inner?.length ? inner[h % inner.length]! : autotileVariantForMask(autoGroup, m, c.x, c.y) ?? autoGroup.variantMap["255"] ?? collapsedTile;
+        collapsedAt.set(`${c.x},${c.y}`, t);
+      }
+    }
+    const warnTile = (c: Cell): number => warnTiles[((c.x % 3) + 3 * (c.y % 3) + Math.floor(c.y / 3) * 7) % warnTiles.length]!;
+    const warnCmds = (cells: readonly Cell[]): Command[] => cells.map((c) => changeTile(layer, c, warnTile(c)));
     const collapseTiles = (cells: readonly Cell[]): Command[] => cells.flatMap((c) => [
-      changeTile(layer, c, collapsedTile),
+      changeTile(layer, c, collapsedAt.get(`${c.x},${c.y}`) ?? collapsedTile),
       ...(clearOverlay && tileAt("lower2", c) >= 0 ? [changeTile("lower2", c, -1)] : []),
     ]);
     const restoreTiles = (cells: readonly Cell[]): Command[] => cells.flatMap((c) => [
@@ -285,7 +330,7 @@ const makeTimedEscape: ToolDefinition = {
         then: [...text(args.fallText, "발밑이 무너졌다!"), setSw(swFell, false)],
         else: text(args.failText, "…늦었다. 처음부터 다시."),
       } as Command,
-      ...steps.flatMap((s, i) => [setSw(stepSw[i]!, false), ...restoreTiles(s.cells)]),
+      ...steps.flatMap((s, i) => [setSw(stepSw[i]!, false), ...(warnSw[i] ? [setSw(warnSw[i]!, false)] : []), ...restoreTiles(s.cells)]),
       { kind: "transfer", mapId: cpMap.id, x: cpRect.x, y: cpRect.y, direction: cpDir, fade: "black" } as Command,
     ];
     // 진행 스위치를 먼저 끈다 — 타이머를 먼저 0 으로 두면 그 사이 「시간 초과」 자동 페이지가 실패로 받는다.
@@ -295,6 +340,12 @@ const makeTimedEscape: ToolDefinition = {
       setSw(swDone, true),
       ...(successSwitchId ? [setSw(successSwitchId, true)] : []),
       se("chime2"),
+      // 남은 칸이 뒤에서 한꺼번에 꺼진다 — 무너진 칸 스위치를 켜 길도 막는다.
+      ...(args.collapseRestOnSuccess === true ? [
+        se("collapse1"),
+        shake(6, 900),
+        ...steps.flatMap((st, i) => [{ kind: "fork", condition: swOff(stepSw[i]!), then: [...collapseTiles(st.cells), setSw(stepSw[i]!, true)], else: [] } as Command]),
+      ] : []),
       ...text(args.successText, ""),
     ];
 
@@ -365,6 +416,13 @@ const makeTimedEscape: ToolDefinition = {
       step.cells.forEach((c, k) => {
         const id = `${base}_c${i}_${c.x}_${c.y}`;
         const pages: EventPage[] = [idle(id)];
+        if (k === 0 && warnSw[i] && step.atSecond - warnSeconds >= 0) {
+          pages.push(page(`${id}_warn`, "금", [
+            swOn(swActive), swOff(warnSw[i]!), swOff(stepSw[i]!),
+            { kind: "timer", timerId, seconds: Math.min(seconds, remainingAt + warnSeconds), op: "<=" },
+            { kind: "timer", timerId, seconds: 0, op: ">" },
+          ], "parallel", "below", [se("ice2"), ...warnCmds(step.cells), setSw(warnSw[i]!, true)]));
+        }
         if (k === 0) {
           pages.push(page(`${id}_collapse`, "무너짐", [
             swOn(swActive), swOff(stepSw[i]!),

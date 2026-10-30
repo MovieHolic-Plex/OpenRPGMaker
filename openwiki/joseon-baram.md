@@ -173,6 +173,10 @@ BFS 는 `save-joseon-baram.mjs` 가 **엔진 `canMove`** 로 돌린다(`storage-
 - 참고문서는 6용도 그대로이고 소품 용도(`joseon-baram-props`)가 문서 21개·그림 12장으로 늘었다.
 
 
+## 조수 v2 가 짓는 길 (2026-10-28)
+
+조수 v2 `make_place` 는 조선 낱말(조선·한양·사극·고려·한옥·저잣거리·포도청·주막…)이 요청이나 명세에 있으면 이 칩셋의 등록 장소를 가져온다(`src/ai/v2/builders/joseon.ts`): 마을 → 마을 20호(+저잣거리·장터면 `dress_joseon_market`), 실내 → 이름 낱말로 방 6·궁 4 중 하나, 동굴·사냥터. 새 판을 짓지 않고 등록 장소를 그대로 쓰므로 같은 마을이 판마다 같다. 자세한 규칙은 `openwiki/assistant-v2.md`.
+
 ## 한계
 
 - 실내 방 맵(민가·주막·대장간·약방·서당·관아·궁 4장)과 사냥터·동굴은 있지만 **건물 문 ↔ 방 입구를 잇는 이동 이벤트는 없다**(맵 사이 전송은 저작자가 건다). 주민 NPC 만(마을 20호 20명·국내성 21명·국내성 원작 규모 40명·사냥터·방 몇 명), 몬스터는 `extra.json.spawns` 자리 좌표뿐이다. 장소 적대 검수 점수는 3~5/10 대에 머문다(검수 결과 요약은 `tiledata/joseon-field/QA_ROUND1.md`·`tiledata/joseon-interior/QA_ROUND1~2.md`).

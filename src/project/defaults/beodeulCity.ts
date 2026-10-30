@@ -70,6 +70,8 @@ export const isBeodeulDungeonGapAutotile = (id: string): boolean => /^beodeul_du
 export const BEODEUL_DUNGEON_THEME_BASE = 30848;
 export const BEODEUL_DUNGEON_THEME_KIT_PREFIX = "bd-pick-dungeon-theme-";
 export const BEODEUL_DUNGEON_THEME2_KIT_PREFIX = "bd-pick-dungeon-theme2-";
+/** 동굴 기물 꼬리(2026-10-29, bake_cave.py, 33,920~): object-gen 으로 그린 석순·수정·뼈 더미·계단 등. 주제 2 꼬리 뒤라 같은 막힘(theme2Blocked)을 따른다. */
+export const BEODEUL_DUNGEON_CAVE_KIT_PREFIX = "bd-pick-dungeon-cave-";
 /**
  * 쓰임 마당 바닥(2026-10-22 village-art, scripts/content/beodeul-yard/bake_yard.py · yard_art.py): 던전 주제 꼬리(~33,151) 바로 뒤 두 행 256칸(33,152~33,407: 마당 71칸, 포도나무 줄 16칸 33,223~, 판석→흙 가장자리 129칸 33,239~ `beodeul_yard_flag_dirt`).
  * 2026-10-24 main 의 던전 gap·주제 꼬리가 29,568~ 를 먼저 차지해 29,568 에서 33,024 로, 2026-10-25 main 의 주제 꼬리가 33,151 까지 늘어 다시 33,152 로 옮겼다(덧붙이기 전용, main 에 나간 적 없는 번호).
@@ -277,7 +279,7 @@ function extendPickedParts(tileset: TilesetDef, limit: number = sheet.count): bo
 function mergeShippedKits(tileset: TilesetDef, withWall = true, withGap = true, withYard = true, withCapital = true, withTheme2 = true): boolean {
   const shipped = (data().structureKits as unknown as StructureKitDef[]).filter(kit => (withWall || !kit.id.startsWith(BEODEUL_WALL_KIT_PREFIX))
     && (withGap || (!kit.id.startsWith(BEODEUL_DUNGEON_GAP_KIT_PREFIX) && !kit.id.startsWith(BEODEUL_DUNGEON_THEME_KIT_PREFIX)))
-    && (withTheme2 || !kit.id.startsWith(BEODEUL_DUNGEON_THEME2_KIT_PREFIX))
+    && (withTheme2 || (!kit.id.startsWith(BEODEUL_DUNGEON_THEME2_KIT_PREFIX) && !kit.id.startsWith(BEODEUL_DUNGEON_CAVE_KIT_PREFIX)))
     && (withYard || !kit.id.startsWith(BEODEUL_YARD_KIT_PREFIX)) && (withCapital || !kit.id.startsWith(BEODEUL_CAPITAL_KIT_PREFIX)));
   const shippedById = new Map(shipped.map(kit => [kit.id, kit]));
   const current = tileset.structureKits ?? [];

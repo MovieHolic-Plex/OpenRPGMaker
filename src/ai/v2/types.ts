@@ -4,6 +4,7 @@
 // 모델은 칸 번호·평면 문자열·좌표 목록을 쓰지 않는다. 빌더가 명세를 v1 의 결정론 도구 인자로 옮겨 부른다.
 // 이 파일은 순수 타입이다 — 워커(scripts/lib/assistantV2Runtime.ts)와 테스트가 같이 읽는다.
 import type { ToolContext, ToolResult } from "@/editor/tools/types";
+import type { RoomDesign } from "@/editor/handInterior/designRoom";
 
 export type PlaceType =
   | "interior" // 건물 안(방 하나 또는 여러 방) — 여관·선술집·천문대·가게·집 안
@@ -23,7 +24,14 @@ export interface ZoneSpec {
   readonly purpose?: string;
   /** 이 구역의 주인공 물건(낱말): 「망원경」「벽난로」「바 카운터」「계단」. 빌더가 부품 사전에서 찾아 놓는다. */
   readonly anchors?: readonly string[];
+  /** (실내) 이 방에 놓을 기물 묶음 — 묶음 id 또는 몸통 기물 id(「bookshelf 2w」「forge」). 없으면 방 종류로 함수가 고른다. */
+  readonly vignettes?: readonly string[];
   readonly size?: PlaceSize;
+  /**
+   * (손 도트 실내) 모델이 설계한 방 — 모양·바닥 크기·문 자리·재질과 가구 묶음(무엇을·몇 개·어느 벽/모서리/가운데·묶음 안 상대 칸·깔개).
+   * 주면 빌더는 견본·묶음 고르기를 하지 않고 이 설계대로 지은 뒤 조화·검사만 한다(이름 맞춤·겹침 풀기·의자 방향·문 앞 통로·도달) — 고친 것을 결과에 돌려준다.
+   */
+  readonly design?: RoomDesign;
   /** 몇 층의 구역인가(실내·집, 기본 1). 2 이면 위층에 짓는다. */
   readonly floor?: number;
   /** 고치기에서 가리킬 이름(생략하면 kind). */
@@ -38,6 +46,10 @@ export interface PlaceSpec {
   readonly name: string;
   /** make_place 가 처음 지을 때 넣는 무작위 값 — 같은 요청이 늘 같은 맵이 되지 않게 빌더가 씨앗·배치 변형에 섞는다. 고치기는 같은 값을 물려받는다. 모델은 쓰지 않는다. */
   readonly salt?: number;
+  /** make_place 가 넣는 결정적 열쇠(프로젝트 열쇠 + 요청문) — 같은 게임·같은 요청이면 같은 방, 다른 게임이면 다른 설계를 고르게 실내 빌더가 견본·묶음 씨앗에 쓴다. 모델은 쓰지 않는다. */
+  readonly variety?: string;
+  /** 던전 바깥 문(make_place·make_game 이 넣는다, 모델은 쓰지 않는다): 들어오는 바깥 맵과 그 맵의 세계 방향 가장자리 길 칸 — author_dungeon entrance 로 바로 잇는다(dungeonGates.ts). */
+  readonly gate?: { readonly fromMapId: string; readonly x: number; readonly y: number };
   /** 화풍·문화권 낱말: fantasy(기본) · jp-modern · wizarding · sengoku · modern-city … 카드가 고를 수 있는 값을 준다. */
   readonly style?: string;
   /** 던전·동굴 주제: cave · catacomb · castle · temple · volcano · ice · mine … */
@@ -52,8 +64,12 @@ export interface PlaceSpec {
   readonly exits?: readonly ("south" | "north" | "east" | "west")[];
   /** 이미 있는 맵을 그 자리에서 다시 지을 때(고치기·「이 방을」). 생략하면 빌더가 정한다(빈 시작 맵이면 그 맵). */
   readonly mapId?: string;
-  /** 카드가 알려 준 빌더 손잡이(물·지붕·형태·씨앗 등). 모르는 키는 빌더가 무시하고 경고한다. */
+  /** 카드가 알려 준 빌더 손잡이(물·지붕·형태 등). 모르는 키는 빌더가 무시하고 경고한다. 씨앗(seed)은 모델이 쓰지 않는다 — make_place 가 버리고 요청·게임 열쇠로 정한다. */
   readonly hints?: Readonly<Record<string, string | number | boolean>>;
+  /** (던전·동굴) 조수가 설계한 층 — 방(역할·크기·모양·자리·물·특징)·잇는 길·입구 쪽. 형식 src/editor/dungeonKit/designLayout.ts DungeonDesign. 함수는 조화·검사만. */
+  readonly dungeonDesign?: import("@/editor/dungeonKit/designLayout").DungeonDesign;
+  /** (여러 층 던전) 층마다 설계(아래층부터). */
+  readonly floorDesigns?: readonly import("@/editor/dungeonKit/designLayout").DungeonDesign[];
 }
 
 /** 고치기 패치 — edit_place 의 인자. 명세의 그 부분만 바꾼 뒤 같은 빌더로 다시 짓는다. */
@@ -72,6 +88,9 @@ export interface PlacePatch {
   readonly seed?: number;
   /** 더 아늑하게·더 빽빽하게 같은 꾸밈 정도(0 보통 · 1 많이 · 2 가득). 빌더가 아는 만큼만. */
   readonly dressing?: number;
+  /** (설계 방) 고친 방 설계 전체 — designZone(구역 id·kind, 생략하면 첫 설계 구역)의 design 을 바꿔 다시 짓는다. */
+  readonly design?: RoomDesign;
+  readonly designZone?: string;
 }
 
 /** 빌더가 실제로 부른 v1 결정론 도구 하나. */

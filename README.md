@@ -94,6 +94,8 @@ npm run mac:launch   # macOS / Linux — asks for a project folder, then opens h
 On first launch, enter the full path of a **new** folder; your project is saved there as SQLite plus asset files.
 Click the AI chip at the top right to sign in.
 
+The full 281-track music pack is the public [bgm-v1 release](https://github.com/MovieHolic-Plex/OpenRPGMaker/releases/tag/bgm-v1) (`rpg-zzu-bgm-v1.tar`), separate from the desktop downloads above. From a source checkout, `npm run bgm:install` downloads that asset over HTTPS and checks the committed SHA-256. The GitHub CLI is only a fallback.
+
 ## Gallery
 
 <table>

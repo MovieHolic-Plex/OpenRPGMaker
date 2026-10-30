@@ -19,8 +19,9 @@ import { isEmeraldMonsterStyle } from "@/project/emeraldMonsterStyle";
 import type { ItemId, SkillId } from "@/project/types";
 import { resolveTerms, type ResolvedTerms } from "@/project/terms";
 import { isCaptureTool } from "@/project/itemUsage";
-import { activeActor } from "@/battle/battlePredict";
+import { activeActor, predictSkillDamageFor } from "@/battle/battlePredict";
 import { battleCommandsForActor, type RuntimeBattleCommand } from "@/battle/battleCommands";
+import { alreadyAppliedLabel, skillAddsNothingTo, skillAlreadyAppliedStateId } from "@/battle/battleSkillRedundancy";
 import { battleActorSkillFailure, battleSkillMpCostFor, battleSkillResource2Cost, battleSkillUseFailure, battleSkillUseFailureLabel, battlerSkillIdsWithGrants, comboActorIdsOf, comboParticipantsFromSnapshot, comboSkillIdsFor } from "@/battle/battleSkillUse";
 import { resource2Config } from "@/battle/battleGauges";
 import { targetScopeForCommand } from "@/battle/battleTargetResolver";
@@ -578,6 +579,8 @@ function syncEnemyListName(
 // 여기서 다시 내보내 기존 소비자(battleDirectorDom·battleSequencer)의 경로를 유지한다.
 export { disambiguatedBattlerName };
 
+const BASIC_ATTACK_SKILL_ID = "skill_attack";
+
 function listedSkillIds(actor: BattleBattlerSnapshot | undefined, command?: RuntimeBattleCommand, _snapshot?: BattleSnapshot): SkillId[] {
   if (!actor) return command?.skillId ? [command.skillId] : [];
   if (command?.skillId) return [command.skillId];
@@ -587,6 +590,10 @@ function listedSkillIds(actor: BattleBattlerSnapshot | undefined, command?: Runt
   const owned = battlerSkillIdsWithGrants(actor);
   return owned.filter((id) => {
     const skill = project.database.skills.find((record) => record.id === id);
+    // 기본 공격 기술(skill_attack, 이름 「공격」)은 「공격」 명령 그 자체다 — RPG 메이커처럼 기술 목록에 다시 싣지 않는다.
+    // 실은 채로 두면 기술이 그것뿐인 배우의 「스킬」이 공격 한 줄짜리 목록을 열었다(2026-10-29 잊힌 지하묘지·마왕의 동굴 실측).
+    // 몬스터 파티(포켓몬 「싸운다」 기술 4칸)는 기술이 곧 공격 수단이라 그대로 둔다.
+    if (id === BASIC_ATTACK_SKILL_ID && !actor.monsterInstanceId) return false;
     if (!skill) return true;
     if (comboActorIdsOf(skill)) return false;
     if (command?.skillSubsetName) return skill.type === skillTypeForSubsetName(command.skillSubsetName);
@@ -652,7 +659,11 @@ function comboSubmenu(snapshot: BattleSnapshot, options: BattleCommandPanelOptio
   for (const skillId of listedComboSkillIds(actor, snapshot)) {
     const skill = project.database.skills.find((record) => record.id === skillId);
     const failure = actor ? actorSkillFailure(snapshot, actor, skillId) : "notLearned";
-    const reason = failure && actor ? battleSkillUseFailureLabel(failure, skill, actor, project) : failure ? "사용자가 없습니다." : undefined;
+    // 받을 수 있는 대상 모두에게 이미 걸린 순수 보조 기술은 쓰면 「이미 … 상태다」 한 줄로 차례만 사라진다 — 회색으로 막고 이유를 보인다.
+    const appliedStateId = !failure && skill && actor ? skillAlreadyAppliedStateId(skill, actor, snapshot.actors, snapshot.enemies) : undefined;
+    const reason = failure && actor
+      ? battleSkillUseFailureLabel(failure, skill, actor, project)
+      : failure ? "사용자가 없습니다." : appliedStateId ? alreadyAppliedLabel(project, appliedStateId) : undefined;
     const partners = skill && actor ? comboPartnerNames(snapshot, skill, actor.recordId) : "";
     const detail = [skill && actor ? skillMpDetail(project, skill, terms, actor) : "", partners ? `+ ${partners}` : ""].filter(Boolean).join(" · ");
     const hint = skill && actor ? skillDetailFor(project, skill, terms, actor) : reason ?? terms.skill;
@@ -756,7 +767,11 @@ function skillSubmenu(snapshot: BattleSnapshot, options: BattleCommandPanelOptio
   for (const skillId of listedSkillIds(actor, command, snapshot)) {
     const skill = project.database.skills.find((record) => record.id === skillId);
     const failure = actor ? actorSkillFailure(snapshot, actor, skillId) : "notLearned";
-    const reason = failure && actor ? battleSkillUseFailureLabel(failure, skill, actor, project) : failure ? "사용자가 없습니다." : undefined;
+    // 받을 수 있는 대상 모두에게 이미 걸린 순수 보조 기술은 쓰면 「이미 … 상태다」 한 줄로 차례만 사라진다 — 회색으로 막고 이유를 보인다.
+    const appliedStateId = !failure && skill && actor ? skillAlreadyAppliedStateId(skill, actor, snapshot.actors, snapshot.enemies) : undefined;
+    const reason = failure && actor
+      ? battleSkillUseFailureLabel(failure, skill, actor, project)
+      : failure ? "사용자가 없습니다." : appliedStateId ? alreadyAppliedLabel(project, appliedStateId) : undefined;
     const partners = skill && actor ? comboPartnerNames(snapshot, skill, actor.recordId) : "";
     const detail = [skill && actor ? skillMpDetail(project, skill, terms, actor) : "", partners ? `${withJosa(partners, "와/과")} 연계` : ""].filter(Boolean).join(" · ");
     const hint = skill && actor ? skillDetailFor(project, skill, terms, actor) : reason ?? terms.skill;
@@ -836,6 +851,11 @@ function pokemonFightSubmenu(snapshot: BattleSnapshot, options: BattleCommandPan
       options.beginTargetCommand({ kind: "skill", skillId });
     }, Boolean(reason), reason);
     appendSkillTypeBadge(button, project, skill?.elementId);
+    // 지금 앞의 적에게 줄 평균 기대 피해(상성·자속 포함) — 화면엔 안 보이고 런타임 QA 의 「가장 좋은 기술」 고르기가 읽는다(sim 과 같은 계산).
+    const foe = snapshot.enemies.find((enemy) => enemy.hp > 0);
+    if (skill && actor && foe && !reason) {
+      try { button.dataset.expectedDamage = String(Math.round(predictSkillDamageFor(project, actor, skill, foe).amount)); } catch { /* 예측 불가 기술은 비워 둔다 */ }
+    }
     const slot = String(infoNodes.length + 1);
     button.dataset.moveSlot = slot;
     nodes.push(button);
@@ -1041,6 +1061,20 @@ function targetSelectionMenu(snapshot: BattleSnapshot, options: BattleCommandPan
         ordinal.textContent = fullName.slice(target.name.length).trim();
         title.after(ordinal);
       }
+    }
+    // 고른 보조 기술이 이 대상에게 이미 다 걸려 있으면 미리 말한다(고를 수는 있다 — 막는 것은 기술 목록에서 전원일 때만).
+    const pendingCommand = snapshot.targetSelection?.command;
+    const pendingSkill = pendingCommand?.kind === "skill"
+      ? store.getCurrent().database.skills.find((record) => record.id === pendingCommand.skillId)
+      : undefined;
+    if (pendingSkill && snapshot.targetSelection?.side === "actor" && skillAddsNothingTo(pendingSkill, target)) {
+      const stateId = pendingSkill.stateEffects?.[0]?.stateId;
+      const note = document.createElement("small");
+      note.className = "battle-command-reason";
+      note.dataset.testid = `battle-target-${target.id}-already`;
+      note.textContent = stateId ? alreadyAppliedLabel(store.getCurrent(), stateId) : "이미 적용됨";
+      button.querySelector(".battle-command-text")?.append(note);
+      button.dataset.battleTargetAlreadyApplied = "true";
     }
     button.dataset.battleTargetable = "true";
     button.dataset.battleTargetId = target.id;

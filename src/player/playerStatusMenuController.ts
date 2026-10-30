@@ -104,6 +104,9 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
   let pcMode = false;
   let lifeLedgerTab: LifeLedgerTabId | undefined;
   let confirmSaveSlot: SaveSlotIndex | undefined;
+  // 방금 저장을 마쳤다(그다음 키 하나 동안만). 저장 직후 Esc 는 저장 화면 한 단계가 아니라 메뉴 전체를 닫는다 — 저장한 사람은
+  // 필드로 돌아가려는 것이고 한 단계씩 닫혀 Esc 를 여러 번 눌러야 했다(2026-10-29 vm3 terra jrpg 판정). 다른 키·마우스를 쓰면 풀린다.
+  let justSaved = false;
   let confirmToTitlePending = false;
   // 「대기」 ON = 명령 메뉴가 열린 동안 시간이 멈춘다(wait). 플레이어 장치 설정이 게임 저작 기본(system.atbMode)을 덮는다.
   const currentWaitMode = (): boolean => (getPlayerPreferences().atbMode ?? store.getCurrent().system.atbMode ?? "wait") !== "active";
@@ -442,6 +445,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       return;
     }
     mode = "main";
+    justSaved = false;
     selectedCommand = initialMenuSelection && session
       ? listStatusMenuRailIds(store.getCurrent(), session)[0] ?? "items"
       : statusMenuRailIdForCommand(selectedCommand, store.getCurrent(), session);
@@ -452,6 +456,8 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
 
   const handleKey = (key: RuntimeMenuKey): boolean => {
     if (!currentMenu()) return false;
+    const afterSave = justSaved;
+    justSaved = false;
     // 진화 장면이 도는 동안 메뉴는 입력을 받지 않는다(장면이 확인키로 문장을 넘긴다).
     if (evolutionPlaying) return true;
     if (galleryViewerIsOpen()) {
@@ -504,7 +510,8 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       if (isDetailNavKey(key)) return moveSelectedDetailAction(detailDelta(key)) ? emitAndHandle("menu-select") : rejectInput();
       if (isConfirmMenuKey(key)) return activateSelectedDetailAction() || rejectInput();
       if (isCancelMenuKey(key)) {
-        backOneStep();
+        if (afterSave) options.closeMenuWithJuice();
+        else backOneStep();
         return true;
       }
       return rejectInput();
@@ -590,6 +597,9 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       return;
     }
     options.emitMenuJuice("menu-confirm", renderMenu(`${slot}번 저장 칸에 저장했습니다`, "save"));
+    justSaved = true;
+    // 마우스로 다른 것을 만지면 「저장 직후」가 아니다 — 그 뒤 Esc 는 평소처럼 한 단계만 닫는다.
+    document.addEventListener("pointerdown", () => { justSaved = false; }, { capture: true, once: true });
   }
 
   function loadSlot(slot: SaveSlotIndex): void {

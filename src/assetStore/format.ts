@@ -11,7 +11,14 @@ export const STORE_PACK_SCHEMA = "oprn-store-pack/1" as const;
 export const STORE_BLOB_PREFIX = "oprn-blob:" as const;
 export const STORE_SLUG_SEPARATOR = "__" as const;
 
-export const STORE_LICENSES = ["CC0", "CC-BY-4.0", "CC-BY-SA-4.0", "OPRN-GAME"] as const;
+export const STORE_LICENSES = ["CC0", "CC-BY-4.0", "CC-BY-SA-4.0", "OPRN-GAME", "REFMAP-MODIFIED"] as const;
+/**
+ * REFMAP-MODIFIED(2026-10-29 사용자 결정): REFMAP 무료 RPG Maker 2000 캐릭터 칩을 고친 그림 전용. 저작권은 REFMAP 에 남아 CC 를 붙일 수 없어
+ * REFMAP 약관(https://refmap-l.blog.jp/archives/8633403.html · 8653555.html)을 그대로 옮긴다: 게임(유료·무료)에 자유, 고친 그림은 다시 나눠도 되나
+ * 고쳤다는 표기와 「REFMAP」+사이트 주소가 있어야 하고, 고치지 않은 원본은 나누지 않는다. 이 라이선스 상품만 이름의 「refmap」을 허용한다
+ * (storeThirdPartyName 의 license 인자). 크레딧에 REFMAP_CREDIT 이 있어야 한다.
+ */
+export const REFMAP_CREDIT = "REFMAP (http://refmap.wixsite.com/fsm-material), modified";
 /**
  * 그림·소리 하나를 어떻게 만들었나(2026-10-20 감독 결정 — AI 표시는 정확해야 한다. 「에이전트가 냈다」와 「AI 가 그렸다」는 다르다).
  * - generative-model: 생성 모델이 만들었다(이미지·소리 생성, LLM 이 픽셀을 직접 찍기 포함). model 필수.
@@ -26,6 +33,7 @@ export const STORE_LICENSE_LABELS: Readonly<Record<StoreLicense, string>> = {
   "CC-BY-4.0": "CC BY 4.0 — 저작자 표기 후 자유 사용",
   "CC-BY-SA-4.0": "CC BY-SA 4.0 — 저작자 표기, 같은 조건으로 공유",
   "OPRN-GAME": "OPRN 게임 사용 — 게임 안에서는 자유, 원본 파일 재배포 금지",
+  "REFMAP-MODIFIED": "REFMAP 약관(고친 그림) — 게임에 자유, 출처·「고침」 표기, 원본 재배포 금지",
 };
 
 export const STORE_ITEM_KINDS = ["tileset", "character", "face", "battler", "picture", "music", "sound", "pack"] as const;
@@ -55,8 +63,9 @@ export const STORE_LICENSE_NAMES: Readonly<Record<StoreLicense, Readonly<Record<
   "CC-BY-4.0": { ko: "CC BY 4.0 — 저작자 표기 후 자유 사용", en: "CC BY 4.0 — free to use with attribution", ja: "CC BY 4.0 — クレジット表記で自由に使用", zh: "CC BY 4.0 — 署名后自由使用" },
   "CC-BY-SA-4.0": { ko: "CC BY-SA 4.0 — 저작자 표기, 같은 조건으로 공유", en: "CC BY-SA 4.0 — attribution, share alike", ja: "CC BY-SA 4.0 — クレジット表記・同条件で共有", zh: "CC BY-SA 4.0 — 署名，以相同方式共享" },
   "OPRN-GAME": { ko: "OPRN 게임 사용 — 게임 안에서는 자유, 원본 파일 재배포 금지", en: "OPRN Game Use — free inside games; no redistribution of source files", ja: "OPRN ゲーム使用 — ゲーム内では自由、元ファイルの再配布は禁止", zh: "OPRN 游戏使用 — 游戏内自由使用，禁止再分发原始文件" },
+  "REFMAP-MODIFIED": { ko: "REFMAP 약관(고친 그림) — 게임에 자유, 출처·「고침」 표기, 원본 재배포 금지", en: "REFMAP terms (modified) — free in games; credit REFMAP and note it is modified; no unmodified redistribution", ja: "REFMAP 規約（改変素材）— ゲームに自由、REFMAP 表記と改変の旨を記載、無加工の再配布は禁止", zh: "REFMAP 条款（修改版）— 游戏内自由使用，须注明 REFMAP 及已修改，禁止再分发未修改原图" },
 };
-export const STORE_LICENSE_SHORT: Readonly<Record<StoreLicense, string>> = { "CC0": "CC0", "CC-BY-4.0": "CC BY 4.0", "CC-BY-SA-4.0": "CC BY-SA 4.0", "OPRN-GAME": "OPRN Game" };
+export const STORE_LICENSE_SHORT: Readonly<Record<StoreLicense, string>> = { "CC0": "CC0", "CC-BY-4.0": "CC BY 4.0", "CC-BY-SA-4.0": "CC BY-SA 4.0", "OPRN-GAME": "OPRN Game", "REFMAP-MODIFIED": "REFMAP (modified)" };
 /** 상품 글의 다른 언어판. 기본 글(title·summary·description)은 작가가 쓴 언어 그대로 두고 여기에 번역을 더한다. */
 export interface StoreLocalizedText { title: string; summary: string; description: string }
 export type StoreLocalizedTexts = Partial<Record<StoreLocale, StoreLocalizedText>>;
@@ -391,7 +400,7 @@ const THIRD_PARTY_TOKENS = ["paw", "mv", "mz", "rtp"] as const;
  * 편집기 buildPack·올리기 화면과 스토어 서버 검열이 같이 쓴다. id·이름에만 쓴다(참고문서 본문의 `layer-model: mz4` 같은 표지는 대상이 아니다).
  * 이름으로 막는 안전장치일 뿐 권리 확인은 올리는 사람 몫이다.
  */
-export function storeThirdPartyName(text: string): string | null {
+export function storeThirdPartyName(text: string, license?: string): string | null {
   const spaced = text.normalize("NFKC")
     .replace(/([a-z])([A-Z])/g, "$1 $2")
     .replace(/([A-Z]+)([A-Z][a-z])/g, "$1 $2")
@@ -399,7 +408,9 @@ export function storeThirdPartyName(text: string): string | null {
     .toLowerCase();
   const compact = spaced.replace(/[^\p{L}\p{N}]+/gu, "");
   const tokens = new Set(spaced.split(/[^\p{L}\p{N}]+/u));
-  return THIRD_PARTY_SUBSTRINGS.find((word) => compact.includes(word)) ?? THIRD_PARTY_TOKENS.find((word) => tokens.has(word)) ?? null;
+  // REFMAP 약관 상품(고친 REFMAP 칩)은 「refmap」 만 허용한다 — 다른 제3자 이름은 그대로 막는다.
+  const allowed = license === "REFMAP-MODIFIED" ? (word: string) => word !== "refmap" : () => true;
+  return THIRD_PARTY_SUBSTRINGS.find((word) => allowed(word) && compact.includes(word)) ?? THIRD_PARTY_TOKENS.find((word) => tokens.has(word)) ?? null;
 }
 
 const GENERATION_NAME = 80;
@@ -467,6 +478,9 @@ export function validateManifest(input: unknown): Validation<StorePackManifest> 
   }
   if (!includes(STORE_ITEM_KINDS, m.kind)) errors.push("종류가 올바르지 않습니다.");
   if (!includes(STORE_LICENSES, m.license)) errors.push("라이선스를 골라야 합니다.");
+  else if (m.license === "REFMAP-MODIFIED" && (typeof m.credits !== "string" || !m.credits.includes(REFMAP_CREDIT))) {
+    errors.push(`REFMAP 약관 상품은 크레딧에 「${REFMAP_CREDIT}」 를 적어야 합니다.`);
+  }
   if (typeof m.aiGenerated !== "boolean") errors.push("AI 생성 여부(aiGenerated)를 밝혀야 합니다.");
   if (m.locales !== undefined) {
     if (!isRecord(m.locales)) errors.push("locales 는 언어별 글 객체여야 합니다.");

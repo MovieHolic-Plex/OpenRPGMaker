@@ -197,6 +197,14 @@ export function applyMapDeletions(draft: Project, mapIds: readonly MapId[], opti
     return unassigned;
   });
   for (const mapId of targets) delete draft.maps[mapId];
+  // 타이틀 배경 「게임 속 맵 그대로」(map-view:<맵>)가 지운 맵을 가리키면 비운다 — 남겨 두면 무결성 검사가 삭제를 통째로 거절했다
+  // (2026-10-28: 빈 시작 맵을 지우고 다시 지으려다 「backgroundResourceId 가 존재하지 않습니다: map-view:map_blank_start」). 다시 고르기는 호출자(remove_map)가 한다.
+  const deletedView = (id: string | undefined) => !!id && id.startsWith("map-view:") && deleted.has(id.slice("map-view:".length));
+  if (draft.system.titleScreen && deletedView(draft.system.titleScreen.backgroundResourceId)) {
+    const { backgroundResourceId: _gone, ...rest } = draft.system.titleScreen;
+    draft.system.titleScreen = rest as typeof draft.system.titleScreen;
+  }
+  if (deletedView(draft.system.titleResourceId)) delete (draft.system as { titleResourceId?: string }).titleResourceId;
 
   if (draft.session.farmBuildingPlacements) {
     draft.session.farmBuildingPlacements = draft.session.farmBuildingPlacements.filter((placement) => !deleted.has(placement.mapId));

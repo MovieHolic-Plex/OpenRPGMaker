@@ -65,6 +65,9 @@ function resolveBattleBackdropId(input: {
   // 마을·도시·폐허·사막으로 읽히는 맵 이름도 숲이 아니다(jrpg-loop-1 ct1: 안개 낀 「멸망한 폐허 크로노폴리스」의 보스전이 울창한 숲에서 벌어졌다).
   const placeBg = placeNameBattleBackground(input.project, input.location?.mapId);
   if (placeBg) return placeBg;
+  // 실내 칩셋 맵(이름이 숲·사막·마을을 말하지 않는)의 전투가 기본값 숲에서 벌어지지 않게 — 겹 배경 다섯(숲·평원·동굴·눈·사막) 중 동굴이 가장 가깝다.
+  const interiorBg = interiorBattleBackground(input.project, input.location?.mapId);
+  if (interiorBg) return interiorBg;
   if (troopBg) return troopBg;
   return input.project.system.battleUiStyle === "pokemon"
     ? POKEMON_BATTLE_BACKDROP_ID
@@ -84,8 +87,10 @@ export function terrainBattleBackgroundAt(
 }
 
 /** 던전·동굴로 읽히는 맵 이름 — 이름이 곧 장소의 성격이다(지하묘지·갱도·미궁 …). */
-const DUNGEON_MAP_NAME = /던전|동굴|지하|묘지|광산|갱도|미궁|하수도|catacomb|\bcave\b|dungeon|\bmine\b|sewer/iu;
+const DUNGEON_MAP_NAME = /던전|동굴|지하|묘지|무덤|고분|납골|광산|갱도|미궁|미로|하수도|감옥|옥사|석굴|catacomb|crypt|tomb|\bcave\b|dungeon|\bmine\b|sewer|prison|jail|labyrinth|maze/iu;
 const DUNGEON_TILESET_ID = /dungeon|cave/iu;
+/** 실내 전용 칩셋(집·성·기숙사·연구소 방). 이름이 아무 장소도 말하지 않는 실내 전투는 숲보다 막힌 돌 공간(동굴 겹 배경)이 가깝다. */
+const INTERIOR_TILESET_ID = /interior|_rooms\b|manor|gyms?\b/iu;
 
 /** 맵이 `battleBackground` 를 저작했으면 그 값(emerald:<갈래> 는 emeraldBattleTerrain 의 몫이므로 제외). */
 export function authoredMapBattleBackground(project: Project, mapId: string | undefined): string | undefined {
@@ -100,6 +105,13 @@ export function dungeonBattleBackground(project: Project, mapId: string | undefi
   if (!map) return undefined;
   if (DUNGEON_MAP_NAME.test(map.name ?? "") || DUNGEON_TILESET_ID.test(map.tilesetId ?? "")) return "battle-scenery-cave";
   return undefined;
+}
+
+/** 실내 칩셋 맵이면 동굴 겹 배경(숲 이름 맵은 제외), 아니면 undefined. */
+export function interiorBattleBackground(project: Project, mapId: string | undefined): string | undefined {
+  const map = mapId ? project.maps[mapId] : undefined;
+  if (!map || !INTERIOR_TILESET_ID.test(map.tilesetId ?? "") || FOREST_MAP_NAME.test(map.name ?? "")) return undefined;
+  return "battle-scenery-cave";
 }
 
 const FOREST_MAP_NAME = /숲|삼림|밀림|수풀|forest|woods?\b/iu;

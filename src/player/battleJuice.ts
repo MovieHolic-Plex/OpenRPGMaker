@@ -157,8 +157,10 @@ export function playBattleCue(event: BattleJuiceEvent, context?: BattleAudioCont
   }
   const primary = BATTLE_SFX[event];
   const fallback = SFX_FALLBACK[event];
-  if (tryPlay(primary, shape)) return;
-  if (fallback && tryPlay(fallback, shape)) return;
+  // 명령 커서·확정·취소는 UI 소리 — 타격음처럼 키우거나 BGM 을 낮추지 않는다.
+  const origin = event.startsWith("command-") ? "ui" : "cue";
+  if (tryPlay(primary, shape, origin)) return;
+  if (fallback && tryPlay(fallback, shape, origin)) return;
   playSynthVoice(SYNTH_VOICE[event]);
 }
 
@@ -169,12 +171,12 @@ export function fadeBattleCue(event: BattleJuiceEvent, ms: number): void {
   if (fallback) fadeOutBattleSample(fallback, ms);
 }
 
-function tryPlay(soundResourceId: string, shape?: BattleCueShape): boolean {
+function tryPlay(soundResourceId: string, shape: BattleCueShape | undefined, origin: "cue" | "ui"): boolean {
   const volume = Math.max(0, Math.min(1, DEFAULT_VOLUME * (shape?.volume ?? 1)));
   const rate = shape?.rate ?? 1;
   // 디코딩 캐시에 있으면 WebAudio 로 즉시 재생 — 요소 경로는 새 요소마다 로드를 기다리므로
   // 임팩트 발화가 그만큼 늦게 들린다. 캐시 미스면 false 로 요소 경로가 소리를 낸다.
-  if (playBattleSample(soundResourceId, volume, rate, "cue")) return true;
+  if (playBattleSample(soundResourceId, volume, rate, origin)) return true;
   const url = resolveAssetResourceUrl(soundResourceId, { project: store.getCurrent() });
   if (!url) return false;
   const audio = new Audio(url);

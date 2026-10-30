@@ -156,8 +156,7 @@ describe("event-opened save menu in the shipping player shell", () => {
     keyDown("z");
     expect(readSaveSlot(window.localStorage, 2)).toMatchObject({ kind: "present", snapshot: { session: { gold: 123 } } });
 
-    keyDown("Escape");
-    expect(menu().dataset.statusMenuScreen).toBe("main");
+    // 저장 직후 Esc 는 메뉴 전체를 닫는다(2026-10-29 vm3 terra jrpg — 한 단계씩 닫혀 여러 번 눌러야 필드로 갔다).
     const closingMenu = menu();
     keyDown("Escape");
     expect(closingMenu.dataset.statusMenuClosing).toBe("1");

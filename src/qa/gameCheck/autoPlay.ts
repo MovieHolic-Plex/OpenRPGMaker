@@ -2,7 +2,7 @@
 // 실제 헤드리스 런타임(`testing/sceneTestRunner.runSceneTest`, run_scene_test 도구와 같은 엔진)으로 걸어서 실행한다.
 //
 // 걷기는 런타임의 충돌 판정으로 BFS 하고, 전투는 러너가 결정적으로 푼다(seed 1, 첫 적을 계속 공격),
-// 선택지는 목표 명령이 든 보기를 고른다. 처음 실패한 목표를 맵·이벤트·명령 자리와 함께 보고한다.
+// 선택지는 목표 명령이 든 보기를 고르고, 증거 제시(presentItem)는 목표가 든 보기의 아이템을 낸다. 처음 실패한 목표를 맵·이벤트·명령 자리와 함께 보고한다.
 //
 // 러너는 매번 새 세션으로 처음부터 돈다 — 목표 하나를 붙일 때마다 누적 단계 전체를 다시 돌린다(작은 게임이면 수 초).
 
@@ -11,6 +11,7 @@ import { resolveEventPage as resolveEventPageRaw } from "@/project/io";
 import { actorKnownSkillIds, partyKnownSkillIds, partySkillContext, type PartySkillSession } from "@/project/partySkills";
 import { ANY_FRIENDSHIP_KEY, evalCondition, friendshipValueOf, type PlaySession } from "@/project/session";
 import type { Condition, GameEvent, Project } from "@/project/types";
+import { footprintBounds, normalizeCharacterFootprint, normalizePassRows, passageBounds } from "@/project/footprint";
 import { runSceneTest, type SceneStep, type SceneTestResult } from "@/testing/sceneTestRunner";
 import { numberInputAnswer } from "@/testing/numberInputAnswer";
 import { initiallyOn } from "./progression";
@@ -76,6 +77,11 @@ interface Goal {
    * 「== 3」 이 서로 다른 한 번짜리 이벤트 셋의 +1 로 채워질 때 차례로 부른다.
    */
   readonly pool?: readonly CommandVisit[];
+  /**
+   * 같은 이벤트의 다른 페이지에 있는 같은 쪽 세터 — 날마다 다른 페이지가 열리는 다일 반복(1일째 페이지 +10, 2일째 페이지 +10 …,
+   * 출입문이 날을 넘김)에서 되풀이할 때 지금 열린 페이지의 세터를 부른다. 지금 페이지에 세터가 없으면 그 바퀴는 실패다.
+   */
+  readonly siblings?: readonly CommandVisit[];
 }
 
 function requirementLabel(project: Project, req: Requirement): string {
@@ -213,6 +219,17 @@ function pageInputtedVariables(page: PageRef): Set<string> {
   return out;
 }
 
+/** 이 명령보다 앞서 같은 실행에서 「물건 개수 묻기」(m2-217-data-query itemCount)로 채우는 변수 → 그 물건 id. */
+function queriedItemCounts(visit: CommandVisit): Map<string, string> {
+  const out = new Map<string, string>();
+  for (const command of commandsRunBefore(visit)) {
+    if (command.kind !== "m2Command" || command.commandId !== "m2-217-data-query") continue;
+    const fields = command.fields as { query?: unknown; target?: unknown; variableId?: unknown } | undefined;
+    if (fields?.query === "itemCount" && typeof fields.target === "string" && typeof fields.variableId === "string") out.set(fields.variableId, fields.target);
+  }
+  return out;
+}
+
 /** 이 명령보다 먼저 실행되는 명령들 — 같은 목록의 앞 형제와 바깥 목록들의 앞 형제(분기 진입 전에 돈다). */
 function commandsRunBefore(visit: CommandVisit): RawCommand[] {
   const out: RawCommand[] = [];
@@ -289,7 +306,15 @@ function baseRequirementsOf(project: Project, visit: CommandVisit): Requirement[
       // (2026-09-24 추격 호러 r7: 금고 inputNumber→fork(var == 7419) 를 「세터 없는 선행」으로 오판해
       //  암호 이벤트와 열쇠 사슬이 전부 unresolved 로 뜨고 엔딩까지 못 갔다).
       const inputted = leaves.some((req) => req.kind === "variable") ? pageInputtedVariables(visit.page) : undefined;
-      reqs.push(...(inputted ? leaves.filter((req) => !(req.kind === "variable" && inputted.has(req.id))) : leaves));
+      // 같은 실행에서 앞서 「물건 개수 묻기」(m2-217 itemCount → 변수)로 채운 변수는 그 물건을 가진 것으로 푼다
+      // (2026-10-29 standin slice: author_quest 의 납품 단계 fork(var_…_quantity0 >= 1) 를 「세터 없는 선행」으로 봐 엔딩 계획이 끊겼다).
+      const counted = leaves.some((req) => req.kind === "variable") ? queriedItemCounts(visit) : undefined;
+      for (const req of inputted ? leaves.filter((req) => !(req.kind === "variable" && inputted.has(req.id))) : leaves) {
+        const item = req.kind === "variable" && counted ? counted.get(req.id) : undefined;
+        // 개수 문턱(≥3)은 계획이 세지 않는다 — 물건 하나를 선행으로 두고, 실제 개수는 러너가 런타임으로 돌려 본다(모자라면 그 목표가 실패로 남는다).
+        if (item && req.kind === "variable" && (req.op === ">=" || req.op === ">")) reqs.push({ kind: "item", id: item });
+        else reqs.push(req);
+      }
     }
     // 2026-09-24 갤러리 r2: 장미를 건넨 else 의 triggerEnding 을, 스위치가 꺼진 채로 같은 이벤트를 돌려 놓쳤다.
     if (segment.branch === "else") reqs.push(...elseBranchRequirements(segment.command.condition, visit.page));
@@ -421,13 +446,38 @@ function pageResetGoals(project: Project, setter: CommandVisit, visits: readonly
     if (condition.kind !== "switch" || condition.value !== false || typeof condition.switchId !== "string") continue;
     const id = condition.switchId;
     if (resets.some((goal) => goal.label.includes(id))) continue;
+    // 끄는 이벤트가 「그 스위치가 켜져 있을 때」만 열려도 된다 — 세터가 방금 켰다(2026-10-29 standin romance 카페: 출입문은
+    // 「오늘 대화 끝」 ON 페이지에서만 「집에 간다」로 끄고 날을 넘긴다. 전에는 시작 조건만 봐서 되돌리는 이벤트 없음으로 오판했다).
     const reset = visits.find((visit) => visit.command.kind === "setSwitch" && visit.command.switchId === id && visit.command.value === false
-      && visit.page.event !== setter.page.event && requirementsOf(project, visit).every((req) => satisfiedAtStart(project, req)));
+      && visit.page.event !== setter.page.event && requirementsOf(project, visit).every((req) => satisfiedAtStart(project, req)
+        || (req.kind === "switch" && req.id === id && turnsOn.has(id))));
     if (reset) { resets.push({ label: `스위치 ${project.switches.find((s) => s.id === id)?.name || id}(${id}) 끄기`, visit: reset, done: (session) => session.switches[id] !== true }); continue; }
     // 침대 이벤트가 없어도 날이 바뀌며 onDayEnd 공통 이벤트가 끈다 — 2026-10-16 연애 도그푸딩(R3): 「오늘 만남 끝」 sw_0001 을
     // ce_new_day 가 끄는데 계획기는 공통 이벤트 안의 세터를 못 봐 「되풀이해도 문턱에 닿지 않습니다(호감 3)」 로 오판했다.
     if (dayEndHookTurnsOff(project, id) && !resets.some((goal) => goal.sleepDays)) {
       resets.push({ label: `하룻밤 넘기기(onDayEnd 가 스위치 ${id} 를 끈다)`, visit: setter, sleepDays: 1, done: (session) => session.switches[id] !== true });
+    }
+  }
+  // 세터 페이지가 스위치 ON 을 요구하고 그 세터가 스스로 끈다(출입문: 「오늘 대화 끝」 ON 이면 날을 넘기고 끈다) — 되풀이 준비는
+  // 그 스위치를 다시 켜는 이벤트(그날 열린 하은 페이지의 대화)다. 날마다 다른 페이지가 켜므로 같은 이벤트의 다른 페이지 세터를 형제로 둔다.
+  if (!resets.length) {
+    const turnsOff = new Set<string>();
+    const collectOff = (commands: readonly RawCommand[] | undefined): void => {
+      for (const command of commands ?? []) {
+        if (command.kind === "setSwitch" && command.value === false && typeof command.switchId === "string") turnsOff.add(command.switchId);
+        for (const child of childLists(command)) collectOff(child.list);
+      }
+    };
+    collectOff(setter.page.commands as readonly RawCommand[]);
+    for (const condition of setter.page.conditions as readonly RawCommand[]) {
+      if (condition.kind !== "switch" || condition.value !== true || typeof condition.switchId !== "string" || !turnsOff.has(condition.switchId)) continue;
+      const id = condition.switchId;
+      const arm = (visit: CommandVisit): boolean => visit.command.kind === "setSwitch" && visit.command.switchId === id && visit.command.value === true
+        && visit.page.event !== setter.page.event;
+      const rearm = visits.find((visit) => arm(visit) && requirementsOf(project, visit).every((req) => satisfiedAtStart(project, req)));
+      if (!rearm) continue;
+      const siblings = visits.filter((visit) => visit !== rearm && arm(visit) && visit.page.event === rearm.page.event && visit.page.page !== rearm.page.page);
+      resets.push({ label: `스위치 ${project.switches.find((s) => s.id === id)?.name || id}(${id}) 다시 켜기`, visit: rearm, done: (session) => session.switches[id] === true, ...(siblings.length ? { siblings } : {}) });
     }
   }
   return resets;
@@ -581,6 +631,10 @@ export function planCriticalPath(project: Project, target: CommandVisit, targetG
             ...(req.kind === "skill" && candidate.command.kind === "changeItem" && typeof candidate.command.itemId === "string" ? { useItemAfter: candidate.command.itemId } : {}),
             ...(threshold || friendshipGoal ? { repeat: { resets, max: 20 } } : {}),
             ...(pool.length ? { pool } : {}),
+            ...((threshold || friendshipGoal) && resets.length ? (() => {
+              const siblings = candidates.filter((other) => other.page.event === candidate.page.event && other.page.page !== candidate.page.page);
+              return siblings.length ? { siblings } : {};
+            })() : {}),
             alternatives: candidates.filter((other) => other !== candidate && other.page.map?.id === candidate.page.map?.id
               && requirementsOf(project, other).length <= requirementsOf(project, candidate).length),
           });
@@ -616,15 +670,31 @@ export function planCriticalPath(project: Project, target: CommandVisit, targetG
   return { goals, unresolved };
 }
 
-/** 페이지를 처음부터 목표 명령까지 실행할 때 고를 선택지 번호(길 밖 선택지는 0번). */
-function choiceSequence(visit: CommandVisit): number[] {
-  const seq: number[] = [];
+/** 선택지 번호, 또는 증거 제시(presentItem)에 낼 아이템(undefined 면 닫기). */
+type Answer = number | { readonly present: string | undefined };
+
+/** 페이지를 처음부터 목표 명령까지 실행할 때 고를 선택지 번호·낼 아이템(길 밖 선택지는 0번, 길 밖 증거 제시는 닫기). */
+function choiceSequence(visit: CommandVisit, caps?: ReadonlyMap<string, number>): Answer[] {
+  const seq: Answer[] = [];
+  // 길 밖 선택지는 0번 — 단 목표가 호감 상한을 지녀야 하면(평범·혼자 엔딩, 호감 문턱 페이지에 덮이는 7일째 페이지) 그 호감을 올리지 않는 보기를 고른다.
+  const fallbackKey = visit.page.event?.characterId?.trim() ?? "";
+  const raises = (list: readonly RawCommand[]): boolean => list.some((command) =>
+    (command.kind === "changeFriendship" && typeof command.delta === "number" && command.delta > 0
+      && caps!.has(`friendship:${(typeof command.npcKey === "string" && command.npcKey.trim()) || fallbackKey}`))
+    || (command.kind === "setVariable" && command.op === "+=" && typeof command.value === "number" && command.value > 0
+      && caps!.has(`variable:${String(command.variableId)}`))
+    || childLists(command).some((child) => raises(child.list)));
   const zeroes = (list: readonly RawCommand[]): void => {
     for (const command of list) {
       if (command.kind === "choices") {
-        seq.push(0);
-        const first = childLists(command).find((child) => child.segment.kind === "option" && child.segment.index === 0);
-        if (first) zeroes(first.list);
+        const options = childLists(command).filter((child) => child.segment.kind === "option");
+        const pick = caps?.size ? options.find((child) => !raises(child.list)) ?? options[0] : options.find((child) => child.segment.kind === "option" && child.segment.index === 0);
+        const index = pick && pick.segment.kind === "option" ? pick.segment.index : 0;
+        seq.push(index);
+        if (pick) zeroes(pick.list);
+      } else if (command.kind === "presentItem") {
+        seq.push({ present: undefined });
+        zeroes(childLists(command).find((child) => child.key === "cancelBranch")?.list ?? []);
       }
     }
   };
@@ -635,6 +705,12 @@ function choiceSequence(visit: CommandVisit): number[] {
     const segment = visit.segments[level];
     if (!command || !segment) return;
     if (segment.kind === "option" && command.kind === "choices") seq.push(segment.index);
+    if (command.kind === "presentItem") {
+      // 증거 제시 갈래 — 그 보기의 아이템을 낸다(추리 범인 대면·지목). 닫기·그 밖 갈래는 닫는다.
+      const options = Array.isArray(command.options) ? command.options as { itemId?: unknown }[] : [];
+      const itemId = segment.kind === "option" ? options[segment.index]?.itemId : undefined;
+      seq.push({ present: typeof itemId === "string" ? itemId : undefined });
+    }
     list = childLists(command).find((entry) => entry.key === childKey(segment))?.list ?? [];
   });
   return seq;
@@ -666,6 +742,8 @@ interface Driver {
   /** 수련하다 쓰러진 맵 — 상성이 나쁜 풀숲(유령 탑의 풀·에스퍼 리더)은 다시 고르지 않는다. */
   /** 수련하다 쓰러진 풀숲 → 그때 리더 레벨. 리더가 그보다 3 넘게 자라면 다시 쓴다(8번길이 영영 막혀 7번길에서 Lv52 가 멈췄다). */
   readonly badGrounds: Map<string, number>;
+  /** 이 판 목표가 넘지 말아야 할 호감·누적 변수(`friendship:<npc>`·`variable:<id>` → 이 값 미만) — 길 밖 선택지가 올리지 않게 한다(`targetCaps`). */
+  caps?: ReadonlyMap<string, number>;
   /** 필드 기술을 익히러 가는 중인 스킬 — 익히는 길이 같은 장애물에 막혀 맴돌지 않게 한다. */
   acquiring?: Set<string>;
   /** 이번 판에서 확정한 단계마다 본 변수 값·켜진 스위치 — 지나간 일시 값을 「이미 거쳤다」로 알아보는 증거. */
@@ -844,15 +922,28 @@ function tryCommit(driver: Driver, extra: SceneStep[]): { ok: true } | { ok: fal
 }
 
 const NO_PENDING = "대기 중 선택지가 없습니다";
+const NO_PENDING_PRESENT = "대기 중 아이템 제시가 없습니다";
 
 /** 조사·접촉 뒤 대기 중인 선택지를 고른다. 선택지가 더 없으면 멈춘다. */
-function resolveChoices(driver: Driver, sequence: readonly number[]): string | null {
+function resolveChoices(driver: Driver, sequence: readonly Answer[]): string | null {
   const pending = [...sequence];
   for (let guard = 0; guard < 12; guard += 1) {
-    const index = pending.shift() ?? 0;
+    const next = pending.shift() ?? 0;
+    if (typeof next === "object") {
+      const shown = tryCommit(driver, [{ kind: "present", ...(next.present ? { itemId: next.present } : {}) }]);
+      if (shown.ok) continue;
+      if (shown.reason.includes(NO_PENDING_PRESENT)) return null;
+      return shown.reason;
+    }
+    const index = next;
     const attempt = tryCommit(driver, [{ kind: "choose", index }]);
     if (attempt.ok) continue;
-    if (attempt.reason.includes(NO_PENDING)) return null;
+    if (attempt.reason.includes(NO_PENDING)) {
+      // 선택지가 아니라 증거 제시가 떠 있으면(계획에 없던 presentItem) 닫고 이어 간다.
+      const closed = tryCommit(driver, [{ kind: "present" }]);
+      if (closed.ok) continue;
+      return null;
+    }
     if (/out of range/u.test(attempt.reason) && index !== 0) {
       const fallback = tryCommit(driver, [{ kind: "choose", index: 0 }]);
       if (fallback.ok) continue;
@@ -991,7 +1082,7 @@ function relaysTo(event: GameEvent, targetId: string): boolean {
  * 한 칸씩 걷는 경로. 러너의 walk 는 밑에 깔린 다른 문(접촉 이벤트) 위를 지나가다 엉뚱한 맵으로 튄다 —
  * 여기서는 목표 말고 모든 이벤트 칸을 피해서 BFS 한다. 충돌은 런타임과 같은 canMove.
  */
-function pathMoves(project: Project, session: PlaySession, mapId: string, from: { x: number; y: number }, target: GameEvent, adjacent: boolean, ignoreIds?: ReadonlySet<string>): SceneStep[] | null {
+function pathMoves(project: Project, session: PlaySession, mapId: string, from: { x: number; y: number }, target: GameEvent, adjacent: boolean, ignoreIds?: ReadonlySet<string>, moved?: SceneTestResult["movedEvents"]): SceneStep[] | null {
   // 장치가 changeTile 로 연 길까지 본다(세션 오버라이드를 입힌 맵).
   const authored = project.maps[mapId];
   if (!authored) return null;
@@ -1026,9 +1117,29 @@ function pathMoves(project: Project, session: PlaySession, mapId: string, from: 
     const jump = (page?.commands ?? event.commands ?? []).find((command) => command.kind === "transfer");
     if (jump?.kind === "transfer" && jump.mapId === mapId) warps.set(`${event.x},${event.y}`, { x: jump.x, y: jump.y });
   }
-  const occupied = new Set((map.events ?? []).filter((event) => event.id !== target.id && !harmless(event) && !ignoreIds?.has(event.id)).map((event) => `${event.x},${event.y}`)
+  // 막는 이벤트는 지금 서 있는 자리로 잰다 — 컷신에서 주인공에게 다가온 NPC 를 저작 칸으로 보고 길을 짜면, 실행기는 실제 자리에서
+  // 「막는 이벤트」로 멈췄다(2026-10-28 standin jrpg: 소녀가 시작 컷신에서 (11,8)로 와 동굴 입구 가는 길을 막은 것으로 실패).
+  // 몸 사각이 여러 칸인 이벤트(가구 전체 조사 — settleFurnitureSpots)는 런타임처럼 통행 줄(passRect) 전부가 막힌다. 조사는 몸 사각 어느 칸이든
+  // 맞은편에 서서 한다(런타임 조사 히트가 몸 사각). 앵커 한 칸만 보던 때는 1×2 선반 윗칸으로 길을 짜 «막는 이벤트»로 멈추거나, 3×1 책상의
+  // 앵커 곁이 벽이라 «걸어갈 길이 없다»로 봤다(2026-10-29 vm4 deepseek 탈출).
+  const cellsOf = (event: GameEvent): string[] => {
+    const at = mapId === session.currentMapId ? moved?.[event.id] : undefined;
+    if (at) return [`${at.x},${at.y}`];
+    // 지금 켜진 페이지의 몸·통행 줄(런타임 뷰와 같다) — 페이지마다 발자국이 다를 수 있다(범인 지목: 앞 페이지 1×2, 마지막 1×1).
+    const page = event.pages?.length ? resolveEventPage(event, session) : undefined;
+    const fp = normalizeCharacterFootprint(page?.footprint);
+    const rect = passageBounds(event.x, event.y, fp, normalizePassRows(page?.passRows, fp.height));
+    const out = [`${event.x},${event.y}`];
+    for (let y = rect.top; y <= rect.bottom; y++) for (let x = rect.left; x <= rect.right; x++) out.push(`${x},${y}`);
+    return out;
+  };
+  const occupied = new Set((map.events ?? []).filter((event) => event.id !== target.id && !harmless(event) && !ignoreIds?.has(event.id)).flatMap(cellsOf)
     .filter((cell) => !relayCells.has(cell) && !warps.has(cell)));
-  const isGoal = (x: number, y: number) => adjacent ? Math.abs(x - target.x) + Math.abs(y - target.y) === 1 : (x === target.x && y === target.y) || relayCells.has(`${x},${y}`);
+  const targetPage = target.pages?.length ? resolveEventPage(target, session) : undefined;
+  const body = footprintBounds(target.x, target.y, normalizeCharacterFootprint(targetPage?.footprint));
+  const inBody = (x: number, y: number) => x >= body.left && x <= body.right && y >= body.top && y <= body.bottom;
+  const faceCell = (x: number, y: number) => DIRS.map((d) => ({ x: x + d.dx, y: y + d.dy })).find((c) => (c.x === target.x && c.y === target.y) || inBody(c.x, c.y));
+  const isGoal = (x: number, y: number) => adjacent ? !inBody(x, y) && !(x === target.x && y === target.y) && !!faceCell(x, y) : (x === target.x && y === target.y) || relayCells.has(`${x},${y}`);
   const key = (x: number, y: number) => `${x},${y}`;
   const previous = new Map<string, { from: string; dir: typeof DIRS[number]["dir"] }>();
   const queue = [from];
@@ -1042,7 +1153,7 @@ function pathMoves(project: Project, session: PlaySession, mapId: string, from: 
       const k = key(nx, ny);
       if (seen.has(k) || occupied.has(k)) continue;
       if (!(nx === target.x && ny === target.y && !adjacent) && !canMove(project, map, current.x, current.y, nx, ny)) continue;
-      if (nx === target.x && ny === target.y && adjacent) continue;
+      if (adjacent && ((nx === target.x && ny === target.y) || inBody(nx, ny))) continue;
       const warp = warps.get(k);
       if (warp) {
         const landing = key(warp.x, warp.y);
@@ -1071,8 +1182,10 @@ function pathMoves(project: Project, session: PlaySession, mapId: string, from: 
   }
   const steps: SceneStep[] = dirs.map((dir) => ({ kind: "move", dir }));
   if (adjacent) {
-    const dx = target.x - goal.x;
-    const dy = target.y - goal.y;
+    // 앵커 곁이면 앵커 쪽, 아니면 맞닿은 몸 사각 칸 쪽을 본다.
+    const near = Math.abs(target.x - goal.x) + Math.abs(target.y - goal.y) === 1 ? target : faceCell(goal.x, goal.y) ?? target;
+    const dx = near.x - goal.x;
+    const dy = near.y - goal.y;
     steps.push({ kind: "face", dir: dx === 1 ? "right" : dx === -1 ? "left" : dy === 1 ? "down" : "up" });
   }
   return steps;
@@ -1210,10 +1323,10 @@ function fireEvent(driver: Driver, event: GameEvent, visit: CommandVisit): strin
     if (aside) {
       const stepped = tryCommit(driver, [{ kind: "move", dir: aside.dir }, { kind: "move", dir: opposite[aside.dir] }]);
       if (!stepped.ok) return `${event.name ?? event.id} 칸에서 비켰다 다시 밟다 멈췄습니다: ${stepped.reason}`;
-      return resolveChoices(driver, choiceSequence(visit));
+      return resolveChoices(driver, choiceSequence(visit, driver.caps));
     }
   }
-  let moves = pathMoves(driver.project, session, mapId, { x: session.x, y: session.y }, event, !touch);
+  let moves = pathMoves(driver.project, session, mapId, { x: session.x, y: session.y }, event, !touch, undefined, driver.last.movedEvents);
   let skillNote = "";
   if (!moves) {
     // 필드 스킬 문: 바위·물길을 필드 스킬(skill.fieldCommonEventId)로 열어야 지나가는 길이면 아는 스킬을 써 열어 본다.
@@ -1221,7 +1334,7 @@ function fireEvent(driver: Driver, event: GameEvent, visit: CommandVisit): strin
     skillNote = unlock.note;
     if (unlock.unlocked) {
       const now = driver.last.session;
-      moves = pathMoves(driver.project, now, now.currentMapId, { x: now.x, y: now.y }, event, !touch);
+      moves = pathMoves(driver.project, now, now.currentMapId, { x: now.x, y: now.y }, event, !touch, undefined, driver.last.movedEvents);
     }
   }
   if (!moves) return `${driver.project.maps[mapId]?.name ?? mapId} (${session.x},${session.y}) 에서 ${event.name ?? event.id} ${touch ? "칸" : "옆"} (${event.x},${event.y}) 까지 걸어갈 길이 없습니다(벽·물·다른 이벤트에 막힘).${skillNote}`;
@@ -1229,10 +1342,10 @@ function fireEvent(driver: Driver, event: GameEvent, visit: CommandVisit): strin
     const walked = tryCommit(driver, moves);
     if (!walked.ok) return `${event.name ?? event.id} ${touch ? "칸" : "옆"} (${event.x},${event.y}) 까지 걷다 멈췄습니다: ${walked.reason}`;
   }
-  if (touch) return resolveChoices(driver, choiceSequence(visit));
+  if (touch) return resolveChoices(driver, choiceSequence(visit, driver.caps));
   const talk = tryCommit(driver, [{ kind: "interact", eventId: event.id }]);
   if (!talk.ok) return `${event.name ?? event.id} 조사 실패: ${talk.reason}`;
-  return resolveChoices(driver, choiceSequence(visit));
+  return resolveChoices(driver, choiceSequence(visit, driver.caps));
 }
 
 function trace(goal: string, ok: boolean, detail: string, driver: Driver, where?: CommandWhere): AutoPlayStepTrace {
@@ -1261,6 +1374,14 @@ function leadLevel(session: PlaySession): number {
 }
 
 /** 리더 몬스터가 지쳤는가 — 체력 90% 아래거나 반 넘게 쓴 기술이 있다. */
+/** 배우 파티 누군가의 HP 가 60% 밑. */
+function partyWornOut(session: PlaySession): boolean {
+  return (session.partyActorIds ?? []).some((id) => {
+    const vitals = session.actorVitals?.[id];
+    return Boolean(vitals && vitals.maxHp > 0 && vitals.hp < vitals.maxHp * 0.6);
+  });
+}
+
 function wornOut(project: Project, session: PlaySession): boolean {
   const lead = session.monsterInstances?.[session.monsterParty?.[0] ?? ""];
   if (!lead) return false;
@@ -1458,6 +1579,17 @@ function executeGoal(driver: Driver, goal: Goal, escaped = false, trained = 0, h
     const slept = tryCommit(driver, [{ kind: "advanceDays", days: goal.sleepDays }]);
     return slept.ok ? trace(goal.label, true, "하룻밤 지남", driver, visit.where) : trace(goal.label, false, `하룻밤 넘기기 실패: ${slept.reason}`, driver, visit.where);
   }
+  // 다일 반복: 오늘 열린 페이지가 이 세터의 페이지가 아니면 같은 이벤트의 형제 세터(오늘 페이지)로 바꾼다. 오늘 페이지에 세터가 없으면
+  // 부르지 않는다 — 7일째 고백 페이지를 «되풀이 준비» 로 눌러 엔딩을 먼저 터뜨리면 안 된다.
+  if (goal.siblings?.length && visit.page.event && visit.page.page) {
+    if (goal.done?.(driver.last.session, driver.last)) return trace(goal.label, true, "이미 충족돼 건너뜀", driver, visit.where);
+    const active = resolveEventPage(visit.page.event, driver.last.session);
+    if (active !== visit.page.page) {
+      const today = goal.siblings.find((other) => other.page.page === active);
+      if (!today) return trace(goal.label, false, `${visit.page.event.name ?? visit.page.event.id} 의 지금 페이지에는 이 세터가 없습니다(날마다 다른 페이지가 여는 세터가 끝났음).`, driver, visit.where);
+      return executeGoal(driver, { ...goal, visit: today, siblings: undefined }, escaped, trained, healed, walkRetries);
+    }
+  }
   const authoredMap = visit.page.map?.id;
   const authoredEvent = visit.page.event;
   if (!authoredMap || !authoredEvent) return trace(goal.label, false, "공통 이벤트 안의 명령은 자동 플레이가 부를 수 없습니다.", driver, visit.where);
@@ -1517,7 +1649,9 @@ function executeGoal(driver: Driver, goal: Goal, escaped = false, trained = 0, h
   // 관장·트레이너 앞에 닿았는데 지쳤으면 실제 플레이어처럼 그 맵에서 가장 가까운 센터에 들렀다 다시 온다 — 사천왕 넷을
   // 연달아 치르거나 수련터에서 야생 길을 거슬러 오느라 기술 횟수가 바닥난 채 챔피언에게 Lv97 로 졌다(2026-10-06).
   // 무작위 인카운터 전 회복(소모전 판정)과는 별개다. 한 목표에 한 번만(회복이 안 되는 게임에서 맴돌지 않게).
-  if (!healed && isMonsterPartyGame(project) && wornOut(project, driver.last.session)
+  // 배우 파티(측면 전투)도 같다 — 앞 전투로 HP 가 깎인 채 다음 이벤트 전투에 서지 않고 닿는 회복(샘·쉼터)에 들른다.
+  // 왜(2026-10-29 vm4 argon jrpg): 촌장 전투 뒤 HP 214/514 로 곧장 마왕에게 가 졌다 — 촌장 옆 샘·동굴 쉼터가 있었는데 들르지 않았다.
+  if (!healed && (isMonsterPartyGame(project) ? wornOut(project, driver.last.session) : partyWornOut(driver.last.session))
     && JSON.stringify(visit.page.commands ?? []).includes('"battleProcessing"')) {
     healAtCenter(driver, targetMap);
     checkpoint(driver);
@@ -1568,6 +1702,7 @@ function executeGoal(driver: Driver, goal: Goal, escaped = false, trained = 0, h
       const step = executeGoal(driver, reset);
       if (!step.ok) return trace(goal.label, false, `${round}번째 뒤 되풀이 준비(${reset.label})에 실패했습니다: ${step.detail}`, driver, reset.visit.where);
     }
+    // 형제 세터가 있으면 done 을 남겨 두지 않는다 — 되풀이 한 바퀴는 문턱과 상관없이 오늘 페이지를 한 번 돌린다.
     const again = executeGoal(driver, { ...goal, repeat: undefined, done: undefined });
     if (!again.ok) {
       return trace(goal.label, false, `${round}번 되풀이한 뒤 더 할 수 없습니다(지금 ${describeProgress(driver, goal)}): ${again.detail}`, driver, goal.visit.where);
@@ -1645,10 +1780,92 @@ function starterGoal(visit: CommandVisit): Goal {
   };
 }
 
+/**
+ * 목표 명령이 실행되려면 넘지 말아야 할 호감·누적 변수(`friendship:<npc>` / `variable:<id>` → 이 값 미만). 다일 연애(2026-10-29 standin
+ * romance 카페)에서 날을 넘기는 대화의 길 밖 선택지를 0번(호감 +10)으로 고르면 호감이 쌓여 ① 평범 엔딩 페이지(7일째)를 고백 페이지
+ * (7일째 + 호감 ≥ 50)가 덮고 ② 혼자 엔딩 앞의 평범 엔딩(호감 ≥ 20)이 먼저 터졌다. 사람은 그 엔딩을 보려고 덜 올린다 — 그 상한을 계획에 준다.
+ *  - 같은 이벤트의 뒤 페이지가 목표 페이지 조건을 모두 갖고 문턱(호감 ≥ / 변수 ≥·>) 하나를 더 가지면 그 문턱 미만.
+ *  - 같은 실행 길에서 목표 앞에 있는 triggerEnding 의 엔딩 조건 호감 문턱 미만(그 엔딩이 먼저 열리면 목표에 못 닿는다).
+ */
+function targetCaps(project: Project, visit: CommandVisit): Map<string, number> {
+  const caps = new Map<string, number>();
+  const cap = (key: string, value: number): void => { caps.set(key, Math.min(caps.get(key) ?? Infinity, value)); };
+  const npc = (key: unknown): string => (typeof key === "string" && key.trim()) || visit.page.event?.characterId?.trim() || "";
+  const threshold = (condition: RawCommand): { key: string; value: number } | undefined => {
+    if (condition.kind === "friendshipAtLeast" && typeof condition.value === "number" && npc(condition.npcKey) && npc(condition.npcKey) !== ANY_FRIENDSHIP_KEY) {
+      return { key: `friendship:${npc(condition.npcKey)}`, value: condition.value };
+    }
+    if (condition.kind === "variable" && typeof condition.variableId === "string" && typeof condition.value === "number") {
+      if (condition.op === ">=") return { key: `variable:${condition.variableId}`, value: condition.value };
+      if (condition.op === ">") return { key: `variable:${condition.variableId}`, value: condition.value + 1 };
+    }
+    return undefined;
+  };
+  const own = new Set((visit.page.conditions as readonly unknown[]).map((condition) => JSON.stringify(condition)));
+  for (const later of (visit.page.event?.pages ?? []).slice(visit.page.pageIndex + 1)) {
+    const conditions = (later.conditions ?? []) as readonly RawCommand[];
+    const extra = conditions.filter((condition) => !own.has(JSON.stringify(condition)));
+    const keeps = [...own].every((key) => conditions.some((condition) => JSON.stringify(condition) === key));
+    const limit = keeps && extra.length === 1 ? threshold(extra[0]!) : undefined;
+    if (limit) cap(limit.key, limit.value);
+  }
+  if (visit.command.kind === "triggerEnding") {
+    for (const command of commandsRunBefore(visit)) {
+      if (command.kind !== "triggerEnding" || typeof command.endingId !== "string") continue;
+      const ending = (project.endings ?? []).find((entry) => entry.id === command.endingId);
+      for (const condition of ending?.conditions ?? []) {
+        const limit = threshold(condition as unknown as RawCommand);
+        if (limit) cap(limit.key, limit.value);
+      }
+    }
+  }
+  return caps;
+}
+
+/**
+ * 같은 맵에서 길을 막는 이벤트(지금 페이지가 막는다)를 «스위치 ON» 페이지에서 지나갈 수 있게 바꾸는 스위치의 세터 목표들.
+ * 계획(planCriticalPath)은 목표 이벤트의 페이지 조건만 선행으로 잡으므로, 길 위 장애물을 치우는 레버는 여기서 찾는다.
+ */
+function pathOpenerGoals(project: Project, mapId: string | undefined): Goal[] {
+  const map = mapId ? project.maps[mapId] : undefined;
+  if (!map) return [];
+  const passable = (page: { priority?: string; overlapForbidden?: boolean; trigger?: { kind?: string } }): boolean =>
+    !((page.priority ?? "same") === "same" && (page.overlapForbidden ?? true)) && !["playerTouch", "touch", "eventTouch"].includes(page.trigger?.kind ?? "");
+  const openers = new Set<string>();
+  for (const event of map.events ?? []) {
+    const pages = event.pages ?? [];
+    if (!pages.length || passable(pages[0]!)) continue;
+    for (const page of pages.slice(1)) {
+      if (!passable(page)) continue;
+      for (const condition of (page.conditions ?? []) as unknown as RawCommand[]) {
+        if (condition.kind === "switch" && condition.value === true && typeof condition.switchId === "string") openers.add(condition.switchId);
+      }
+    }
+  }
+  if (!openers.size) return [];
+  const goals: Goal[] = [];
+  for (const page of allPages(project)) {
+    if (page.map?.id !== mapId || !page.event) continue;
+    visitPageCommands(page, (visit) => {
+      const command = visit.command;
+      if (command.kind !== "setSwitch" || command.value !== true || typeof command.switchId !== "string" || !openers.has(command.switchId)) return;
+      // 이 맵에 이미 와 있다(목표가 막혀 다시 시도하는 자리) — 이 맵 진입 요구(문이 단계 뒤에만 열린다)는 채워진 것이다.
+      // 2026-10-29 vm4 terra jrpg: 단계 순서 잠금으로 동굴 문이 「촌장의 부탁」 뒤에만 열리자 레버의 맵 요구가 «처음엔 못 함» 이 되어 레버를 안 당겼다.
+      if (requirementsOf(project, visit).some((req) => !(req.kind === "map" && req.id === mapId) && !satisfiedAtStart(project, req))) return;
+      const id = command.switchId;
+      if (goals.some((goal) => goal.visit.command.switchId === id)) return;
+      goals.push({ label: `${requirementLabel(project, { kind: "switch", id })} 켜기(길 막힘 풀기)`, visit, done: (session) => session.switches[id] === true });
+    });
+  }
+  return goals;
+}
+
 function runPlan(project: Project, label: string, goals: readonly Goal[], deadline: number, preamble: readonly string[] = []): AutoPlayRun {
   const started = Date.now();
   const first = quietScene(project, []);
-  const driver: Driver = { project, steps: [], runs: 1, last: first, deadline, committed: 0, badGrounds: new Map() };
+  const lastGoal = goals.at(-1);
+  const caps = lastGoal ? targetCaps(project, lastGoal.visit) : undefined;
+  const driver: Driver = { project, steps: [], runs: 1, last: first, deadline, committed: 0, badGrounds: new Map(), ...(caps?.size ? { caps } : {}) };
   observe(driver, first.session);
   const steps: AutoPlayStepTrace[] = preamble.map((detail) => ({ goal: "계획", ok: false, detail }));
   if (!first.ok) {
@@ -1674,6 +1891,19 @@ function runPlan(project: Project, label: string, goals: readonly Goal[], deadli
         queue.splice(later, 1);
         step = executeGoal(driver, goal);
         break;
+      }
+    }
+    // 레버가 바위를 치우는 길(스위치가 켜지면 막던 이벤트가 지나갈 수 있는 페이지로 바뀐다)은 계획에 없다 — 목표의
+    // 선행 조건이 아니라 길 위의 장애물이라서다. 같은 맵의 그런 스위치 세터를 하나씩 켜 보고 다시 시도한다
+    // (2026-10-29 vm1 terra/jrpg: 마왕의 동굴 레버 (6,12) → 막힌 바위 (12,14)·(12,15) → 마왕 (20,8)).
+    if (!step.ok && !step.soft && /걸어갈 길이 없습니다/u.test(step.detail)) {
+      for (const opener of pathOpenerGoals(project, goal.visit.page.map?.id)) {
+        if (opener.done?.(driver.last.session, driver.last)) continue;
+        const opened = executeGoal(driver, opener);
+        if (!opened.ok) continue;
+        steps.push(opened);
+        step = executeGoal(driver, goal);
+        if (step.ok || !/걸어갈 길이 없습니다/u.test(step.detail)) break;
       }
     }
     steps.push(step);
@@ -1785,4 +2015,50 @@ export function runAutoPlay(
     plan: plan.goals.map((goal) => `${goal.label} — ${goal.visit.where.mapName ?? goal.visit.where.mapId} / ${goal.visit.where.eventName ?? goal.visit.where.eventId}`),
     runs,
   };
+}
+
+/**
+ * 처음 상태에서 «이 이벤트를 건드리지 않고» 실행할 수 있는 명령 방문 — 고정점(실행된 방문이 켠 것으로 다른 방문의 선행을 채운다).
+ * 페이지 덮어쓰기·변수 문턱 횟수는 보지 않는 넉넉한 근사다(실행될 수 있으면 센다). 단계 건너뛰기 검사(`stepSkip`)가 쓴다.
+ */
+export function visitsRunnableWithout(project: Project, excludedEventId: string): CommandVisit[] {
+  const visits: CommandVisit[] = [];
+  const own: CommandVisit[] = [];
+  for (const page of allPages(project)) {
+    if (!page.map || !page.event) continue;
+    visitPageCommands(page, (visit) => { (page.event!.id === excludedEventId ? own : visits).push(visit); });
+  }
+  // 그 이벤트와 «같은 조건»에 묶인 쌍둥이(같은 열쇠로 열리는 두 번째 입구 등)는 그 단계를 한 것과 같다 — 건너뛰기가 아니다.
+  const keysOf = (visit: CommandVisit) => new Set(requirementsOf(project, visit).filter((req) => !satisfiedAtStart(project, req)).map(reqKey));
+  const ownKeys = own.map(keysOf).filter((keys) => keys.size > 0);
+  const core = ownKeys.length ? [...ownKeys[0]!].filter((key) => ownKeys.every((keys) => keys.has(key))) : [];
+  if (core.length) for (let i = visits.length - 1; i >= 0; i -= 1) {
+    const keys = keysOf(visits[i]!);
+    if (core.every((key) => keys.has(key))) visits.splice(i, 1);
+  }
+  const ran: CommandVisit[] = [];
+  const pending = new Set(visits);
+  const known = new Set<string>();
+  const satisfied = (req: Requirement) => {
+    const key = reqKey(req);
+    if (known.has(key)) return true;
+    const ok = satisfiedAtStart(project, req) || ran.some((visit) => setterMatches(project, req, visit));
+    if (ok) known.add(key);
+    return ok;
+  };
+  for (let changed = true; changed;) {
+    changed = false;
+    for (const visit of pending) {
+      if (!requirementsOf(project, visit).every(satisfied)) continue;
+      pending.delete(visit);
+      ran.push(visit);
+      changed = true;
+    }
+  }
+  return ran;
+}
+
+/** 처음 상태로는 실행되지 않는(앞서 무언가를 해야 하는) 방문인가. */
+export function visitNeedsProgress(project: Project, visit: CommandVisit): boolean {
+  return requirementsOf(project, visit).some((req) => !satisfiedAtStart(project, req));
 }

@@ -124,6 +124,7 @@ export const UPSERT_CHARACTER_PROFILE_SCHEMA: JsonSchema = {
       type: "object",
       properties: {
         displayName: { type: "string" },
+        note: { type: "string", maxLength: 200, description: "한 줄 소개(누구인지·어떤 사람인지). 관계 메뉴와 자료집 인물 카드에 보인다." },
         birthday: {
           type: "object",
           properties: {

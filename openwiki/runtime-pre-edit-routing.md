@@ -1,3 +1,49 @@
+## 목표 안내창 자리·한국어 줄바꿈·숫자 입력 (2026-10-28, 장부 hud.json)
+
+- **목표 안내창 자리**: `playSceneZoneFeedback.placeObjective` 가 300ms 마다(글이 바뀌면 즉시) `objectivePlacement.chooseObjectivePlacement` 로 고른다.
+  후보 = 네 모서리·위아래 가운데·맵 바깥 여백 띠(맵이 화면보다 작을 때), 좁힌 폭(넓이 보존 높이 어림) 후보.
+  값 = 주인공 덮음(60) ≫ 다른 HUD(80, `.field-hud > .hud-widget`·다른 안내 줄·손 슬롯·미니맵) ≫ 이벤트 그림(10) ≫ 입구와 그 위 건물 얼굴(6, 다른 맵으로 옮기는 이벤트 칸의 좌우 한 칸·위로 세 칸 — 간판·지붕 표지, 맵마다 한 번 재 둔다) ≫ 맵 위(3). 지금 자리가 최선+0.6 안이면 옮기지 않는다.
+  입구 값은 2026-10-29 standin monster 새싹마을: 맵 위 끝 몬스터 센터 앞에서 카메라가 더 못 올라가 오른쪽 위 창이 「+」 지붕 간판을 덮었다(`whole-game-monster-campaign` home-center 비트).
+  CSS 의 오른쪽 위·`top:88px`(테마 HUD)는 씬 기하가 없을 때의 기본이다. 좌표 환산은 손 슬롯과 같다(worldView·zoom/`runtimePixelDensity`).
+  창은 거의 불투명(0.95)·`text-wrap: balance`. 에메랄드는 목표만 Galmuri9 10px(원래 격자).
+- **한국어 줄바꿈**: `.play-stage` 가 `word-break: keep-all; overflow-wrap: anywhere` — 무대 안 모든 창이 어절 단위로 꺾인다. 창마다 다시 넣지 않는다.
+- **숫자 입력**(`dialogueNumberInput.ts`): 자리 칸+커서. 숫자 키는 커서 자리에 쓰고 다음 자리로, ↑↓ 커서 자리 숫자, ←→ 자리, Backspace 지우기. 값은 앞에서부터 채운 글(뒤 빈칸 버림, 사이 빈칸 0) — 「12」 입력은 여전히 12.
+  칸·확인 색은 대사 글자색(currentColor)에서 뽑는다(종이 창 대비). 입력창이 떠 있는 동안 목표 안내는 숨는다(`SUPPRESSING_TEST_IDS`). 오버레이는 내용 높이로 자란다(`playSurface.css`).
+- **타이틀 복귀 상세**: 항목은 늘 있다. 첫 결정은 확인 대기(「진행을 버리고 타이틀로 · 확인」), 둘째가 돌아간다. 빈 상세 문구(「준비하지 못했습니다」)는 없앴다.
+- **메뉴 첫 화면 현재 목표**: `playerStatusMenu.withObjectiveCard` 가 개요 밑에 `zoneFeedback.currentObjectiveText` 를 붙인다(목표가 없으면 없음).
+- 컷신 건너뛰기 안내는 「Esc 두 번: 컷신 건너뛰기」(터치는 「B 두 번」). 대사 창이 떠 있어도 두 번째 Esc 에서 바로 건너뛴다 — `playSceneInterpreter` text 단계가 `showText` 와 `skipController.waitForSkip()` 을 경주시키고, 건너뛰면 `dialogue.close()`(2026-10-29; 전에는 창이 닫힐 때까지 기다려 Esc 를 아무리 눌러도 첫 줄 그대로였다).
+- 목표창은 `activeRuntimeEvents("action")` 발자국(보이지 않는 조사 지점 포함)도 피한다.
+- **맵 바깥 여백 우선**: 맵을 조금이라도 덮는 자리는 고정 벌점(+4)이라, 여백에 통째로 들어가는 자리가 있으면 늘 그쪽이다.
+  옆 띠는 폭을 띠에 맞춰 줄이고(글자 크기 그대로), 위아래 띠는 띠 높이에 들어갈 때까지 넓힌다(`max-width` 를 그때만 풂).
+  **최소 폭**(2026-10-29): 한 줄 10글자 또는 자연 폭의 70% 중 큰 쪽(`objectiveMinWidth`) — 예전 4글자 하한은 방 옆 여백에서 2줄 문장을 4~5줄로 접었다.
+  띠가 그보다 좁으면 띠 후보를 내지 않고, 창은 방 가장자리(천장 띠)를 조금 덮는다.
+- **상호작용 안내(「Z 조사」) 자리**(2026-10-29): `placePrompt` 가 목표 창보다 먼저 `choosePromptPlacement` 로 아래 가운데·왼쪽·오른쪽 중
+  주인공·인물·HUD·방을 가장 덜 덮는 곳을 고른다(아래 가운데가 기본, 큰 맵은 그대로). 작은 방 아래로 난 출구 통로를 덮던 것(VQA argon 79·terra 185·212).
+  높이는 실제로 잰다(`measure`). 자연 크기는 `left:0` 에서 잰다 — 지난 자리에 둔 채 재면 남은 폭만큼 줄어든 값을 읽는다.
+- **정면 칸이 그림이면 그 그림 전체**(2026-10-29 vm5 argon 방탈출 «특정 칸·방향에서만 반응»): `performAction` 은 정면 칸에 이벤트가 없고 그 칸이 못 지나는 물체 그림이면(`objectClusterAt`, 같은 이름표가 이어진 위층 칸 24칸까지) 그 그림 칸을 몸으로 덮는 조사 이벤트를 대상으로 본다(`findEventOnFacedObject`, 정면에 가까운 것). 2칸 문·책장의 다른 칸 앞에서 눌러도 반응한다. 번들 타일셋은 참조로 실려 이름표가 런타임에 있다.
+- **안내에 대상 이름**(2026-10-29): 「Z 조사 · 책상의 메모」「Z 대화 · 한스」「Z 이동 · 2층 객실」 — `playSceneZoneFeedback.namedPrompt` → `objectiveTarget.promptTargetName`
+  (이벤트 이름이 사람이 읽는 이름이면 그것, 문이면 가는 맵 이름, 아니면 그 칸 가구 이름표, 12자). 안내를 한 번만 보이는 규칙(`rememberPrompt` 키)은 그대로.
+  VM 측정 판 5개 판정자 공통 「메모·시계·금고가 어느 오브젝트인지 모른다」.
+- **현재 목표 대상 표시**(2026-10-29): `playSceneFieldStaging.syncObjectiveMarkers` 가 지금 목표 글(`currentObjectiveText`)의 대상
+  (`objectiveTarget.objectiveTargetViews`: 꼬리 「(이름: 자리)」 이름의 이벤트 → 「(<맵> 입구: …)」면 그 맵으로 가는 문 → 글에 나온 이벤트 이름 전부(다른 나온 이름에 품긴 짧은 이름은 뺀다 — 「용의자: 마부 한스·여행자 미라·상인 도윤」이면 셋 다) → 글에 나온 다른 맵의 문)에
+  금빛 빛무리·바닥 고리를 거리와 무관하게 둔다(page.glow 보다 옅게, 깊이는 그 칸 사물 줄). 목표가 바뀌면 400ms 안에 옮긴다. QA: `objectiveMarkerIds(scene)`.
+  **길 잇기(2026-10-29 vm2 jrpg 「길 못 찾음」)**: 지금 맵에서 그 맵으로 바로 가는 문이 없으면 `mapRoute`(옮기기 이벤트로 이은 가장 짧은 맵 경로)의
+  첫 맵으로 가는 문을 짚는다. 꼬리 「→」 뒤(「(숲 입구: 북쪽 → 숲 통과)」·「(마을 입구: 남쪽 → 마왕의 동굴 · 마왕 처치)」)는 그 뒤 대상이다 —
+  그 이름의 이벤트가 지금 맵에 있으면 그것, 아니면 그 맵으로 가는 첫 출구. 글에 나온 다른 맵도 같은 첫 출구 규칙.
+  대상이 화면 밖이면 `syncObjectiveArrow` 가 주인공 둘레 1.7칸에 금빛 화살표 하나를 가장 가까운 대상 쪽으로 둔다(화면에 들어오면 사라짐; 화면 가장자리는 오른쪽 위 목표 칩이 덮었다). 방향은 직선이 아니라 걸어갈 길의 3걸음 앞(`objectiveRoute`), 길이 크게 돌아가면 대상이 화면 안이어도 띄운다. 빈 행동 페이지는 「Z 조사」 안내를 띄우지 않는다(`interactionPromptLabel`).
+  QA: `readState().objectiveMarkers`·`objectiveArrow`, 시나리오 `whole-game-objective-route`.
+- **오프닝 애니메틱 내레이션 띠**: `openingAnimaticRenderer.animaticBandClearance` 가 장면 전체에서 한 번, 띠 밑에 들어가는 인물(role actor)을
+  띠 위로 올리는 카메라 y 보정을 구한다(띠 높이·배경 아래 끝 여유 이내). 배경이 끝나 못 올리고 위쪽에 인물이 없으면 띠를 위로(`cinematic-narration--top`).
+- **고해상도 무대 글자 배율**: 320×240 기준 UI 를 높이/240 ≥ 1.5 무대(연애 1024×768 등)에서 `playSurface.hiresUiZoom` 배(반올림)로 키운다 —
+  뷰포트 `data-hires-ui` + `--hires-ui-zoom`, `playSurface.css` 끝 규칙이 일반 대사창·타이틀 글/메뉴·컷신 자막·건너뛰기 안내에 `zoom` 을 건다.
+  zoom 은 px 글자·여백만 키우고 퍼센트 위치는 그대로다. 양쪽 전신 대사창(`data-dialogue-stage`)은 자기 `--dialogue-ui-scale` 을 쓰므로 빠지며,
+  저작 VN 룩(`vnLook.css` `[data-vn-look]`)의 글자 크기도 이 변수를 곱해야 한다(빠뜨리면 넓은 창에 9px 한 줄).
+- **타이틀 글 가독성**: 부제·평문 메뉴는 1px 네 방향 어두운 테두리+넓은 그림자. 타이틀 입자(비·눈)는 `.rm-title-fx`(z 1) 안이라 글(z 3) 아래다 — 「비가 글 위」 신고는 층이 아니라 대비 문제였다.
+  컷신 자막은 `text-wrap: balance`(「이십 / 년」 방지), 엔딩·크레딧(`.terminal-scene`)도 `keep-all`.
+- **타이틀 메뉴 창은 거의 불투명**(2026-10-29): 창 칠(`--runtime-window-fill-fallback`, 유리판 0.82) 아래에 `rgb(8 10 20 / 88%)` 받침을 한 겹 깐다(합쳐 약 0.98) — 칠만으로는 뒤 맵의 촛대·탁자가 메뉴 글자 뒤로 비쳤다. 평문 메뉴(`data-menu-style="plain"`)는 창이 없으므로 그대로.
+  도트 스킨 ESC 명령 줄은 16px(`--px-dock-h` 계산과 같은 값), 글자는 손가락 커서 뒤 5px(`padding-left: 19px`).
+- 증거: `~/z-project/assistant-whole-game/suite/ledger/evidence/hud/`(전/후, 재현 `replay.mjs` — 출하 player.html 로 판정자 손·체크포인트를 다시 돈다).
+
 ## 카메라 스크롤은 캔버스 픽셀 격자에 맞춘다 (2026-10-23)
 
 `playSceneCamera.ts` `snapCameraScrollToCanvasPixels` 가 맵 카메라의 `clampX/clampY` 를 감싸 스크롤을 `1/zoom` 세계 픽셀 단위로 반올림한다.
@@ -19,6 +65,62 @@ Phaser `preRender` 는 경계가 있으면 따라가기·패닝 뒤 clamp 를 �
 선택적 `map.sunlight`는 기본 off, 편집기와 내보낸 게임이 `project/sunlight.ts`를 공유한다.
 캐릭터 아래의 줄별 마스크·카메라 창 캐시·타일 제자리 수정 무효화·shutdown 정리는
 [sunlight-shadows.md](sunlight-shadows.md)를 읽는다. 통행/시야 계산과 독립이다.
+
+## ★ 기물 뒤에 가려진 주인공 실루엣 (2026-10-29)
+
+- `src/player/playerOcclusionGhost.ts`(PlayScene.update 에서 `syncPlayerOcclusionGhost`). vm4/vm5 판정 D 「주인공이 가구·NPC 와 겹쳐 그려짐」 21건을
+  `depth-overlap` 시나리오(자리마다 주인공을 옮겨 겹치는 그림의 깊이를 적음)로 재현하니 **깊이 규칙 위반은 0** 이었다 — 주인공보다 북쪽 줄 그림이 위에 그려진 곳이 없다.
+  실제로 있던 것: ① 책장과 지구본 사이처럼 북쪽이 막힌 ★ 칸(지구본 윗칸 `tile_5173`, 늘 캐릭터 위)에 서면 머리만 남고 몸이 사라짐(vm4 terra/escape·vm5 flash/escape·
+  deepseek/escape 지구본·지도 탁자) ② 위아래로 붙어 선 인물끼리 24×32 그림이 한 칸 겹침(RM2000 과 같은 3/4 규칙, 런타임 결함 아님)
+  ③ 인물을 독서대·깔개 위에 놓은 배치·지구본 크기(빌더·그림).
+- ①만 런타임에서 고친다: 몸 칸의 ★ 칸 불투명 비율 ≥ 0.35 이거나 몸·머리 칸 6:4 가중 ≥ 0.45 이면 주인공 그림을 반투명(0.5) 실루엣으로 ★ 그릇(250k) 바로 위에 한 번 더 그린다.
+  충돌은 바꾸지 않는다 — 처마 밑 길·숲 가장자리처럼 일부러 뒤로 지나가는 칸이 막히기 때문. 계산은 주인공 칸이 바뀔 때만, 칸 불투명 비율은 텍스처·칸마다 한 번.
+  QA 는 `scene.playerOcclusion`({body, head, weighted, ghost})과 이름 `player-occlusion-ghost` 스프라이트를 읽는다.
+
+## 도트 게임은 정수 배율로 보인다 (2026-10-30)
+
+- **규칙.** `cameraZoom.pixelSnappedCameraZoom` — 저작 배율(맵 `cameraZoom`·`system.cameraZoom`·카메라 명령 `zoom`)이 1 이상이고 정수가 아니면
+  가장 가까운 정수(최소 1)로 **보인다**. `applyCameraZoom` 이 클램프 뒤 이 값을 저작값으로 기억하고, 맵 보기 배율(`runtimeMapViewZoom`, 섞인 칸 크기)은
+  그 위에 곱한다 — 곱한 결과는 반올림하지 않는다. 저장값은 그대로다(스키마 변경 없음, 옛 프로젝트는 표시만 바뀐다).
+  왜: 480×270·16px 게임이 맵마다 2·1.5배, 오프닝 카메라 1.18·1.25배로 끝나 세계 1px 이 캔버스 1px·2px 로 번갈아 그려졌다.
+- **맞추지 않는 것.** 1 미만(멀리 보기), `dialogueStyle: "dual-fullbody-veil"`(3.2배 기본), 논리 해상도 높이 > `PIXEL_ZOOM_SNAP_MAX_HEIGHT`(540)
+  인 고해상도 화면(1440×1080 + 4.5배 「배경 1:1」 조합). Phaser 는 항상 `pixelArt: true` 라 「도트 게임」 판정은 이 예외 밖 전부다.
+  `smallMapFillZoom` 의 `integer` 판정은 맞춘 뒤의 base 를 보므로 보통 정수 맞춤이 된다.
+- **저작 도구.** `set_map_properties.zoom`·`set_project_settings.cameraZoom` 은 값을 그대로 저장하고, 표시 배율이 달라지면
+  `pixelZoomWarning` 한국어 경고(실제 보일 배율 포함)를 warnings·요약에 붙인다. `animate_opening_camera` 는 카메라 줌(기본값·zoom 키)에
+  정수 아닌 값이 있으면 `openingCameraZoomWarning` 으로 경고만 한다 — 애니메틱 렌더러는 바꾸지 않았다(1.04→1.14 같은 느린 줌이 사라지므로).
+  시험: `test/pixelCameraZoom.test.ts`.
+
+## 작은 방은 화면을 채운다 · 어둠 막은 맵 안에만 (2026-10-28)
+
+- **작은 맵 맞춤 배율.** `playSceneCamera.smallMapFillZoom` = 맵 전체(북쪽 돌출 포함)가 화면에 다 들어가는 가장 큰 **정수 캔버스 배율**.
+  `applyCameraZoom` 은 저작 배율 ≥ 1 이면 `max(기존 배율, 맞춤 배율)` 을 쓴다 — 화면보다 크거나 같은 맵은 맞춤이 1 이하라 시야가 그대로다.
+  연출이 멀리 보기(<1)를 걸면 그 뜻을 따른다. 320×240 의 8×9 방은 캔버스 밀도 1 에서 정수 확대가 안 되므로(1.67배) `createPlayGame` 이
+  타일 크기가 하나뿐인 프로젝트에 작은 맵이 있으면 밀도를 2·3 중 확대 합이 큰 쪽으로 올린다(`mapViewScale.smallMapFillDensity`,
+  섞인 프로젝트는 `playPixelDensity` 그대로, 캔버스 넓이 1920×1080 이하). 맞춤은 사방 반 칸 여백을 포함한다(가로·세로 +1칸) —
+  320×240 의 8×9·12×9 방은 밀도 2·캔버스 3px/세계 px(1.5배). 논리 해상도·DOM 은 그대로다.
+  성능 실측(출하 플레이어, 데스크톱 Firefox, 이동 10초): 320×240·640×480·960×720 캔버스 모두 57~60fps·p95 17.3~17.5ms.
+- **한 축만 넘치는 길쭉한 맵 (2026-10-29).** `mapViewScale.smallMapFitScale` 이 두 곳(밀도 고르기·맞춤 배율)의 확대 배수를 같이 고른다 —
+  둘 다 들어가면 작은 쪽(위와 같음), **한 축만 넘치면 좁은 축을 채우는 만큼(기본 시야의 1.5배까지)**, 둘 다 넘치면 확대 없음.
+  `smallMapFillZoom` 은 `base`(저작×맵 보기 배율) 대비 비율로 고른다. 왜: vm4 판정 E 22건 중 13×17 여관(320×240 에서 가로 65%)·24×10 서재(세로 67%)는
+  「둘 다 들어가야만 키운다」 규칙이라 확대가 0이었다 → smallmap-fill 시나리오(960×720) 13×17 가로 65→87%, 24×10 세로 67→89%(둘 다 캔버스 4/3배).
+  남은 E: 7×8·8×9·9×9 세로로 긴 작은 방은 이미 정수 최대(세로 89~90%)라 4:3 화면에서 가로 58~68% 가 한계다 — 양옆은 맵 밖 여백(천장 무늬)이고,
+  더 키우면 방이 잘린다. 방을 4:3 에 가깝게 짓는 것(빌더)이 남은 길이다. 39×20 여관의 「방 사이 남색 빈 곳」은 맵 안 빈 칸(빌더)이다.
+- **맵 밖 여백** (`playSceneMapSkirt.ts`, `centerCamera` 끝): 여백이 보이는 맵만 카메라 배경색을 맵 둘레 하층 타일 평균색(밝기 ≤0.32, 어둠 막 반영)으로,
+  가장자리 줄에서 그 줄 대부분과 다른 타일이고 안쪽 칸이 밟히며 이어 붙여도 이음매가 안 보이는(양 끝 줄 화소 차 ≤28) 칸 중 그 줄 전체에 넉 칸 이하로만 나오는 타일의 **넉 칸 이하 토막**(출구 통로)만(가구에 끊긴 옆벽 조각이 줄무늬로 뻗던 것 방지)
+  바깥으로 8칸 이어 그린다 — 긴 토막(ㄱ자 방 옆벽)을 이으면 창살 줄무늬가 됐다(마법학교 기숙사). 맵 데이터·통행은 그대로. 배경 그림 있는 맵은 손대지 않는다.
+  배경색이 검정이 아닐 때(어두운 둘레) 둘레에서 흔한 타일 넷의 반 칸 사분면 중 줄·열 평균이 고르고(편차 ≤4) 반복해도 이음매가 없는 조각을 찾아
+  **그 무늬(천장 체크무늬)로 여백 전체를 덮는다**(`ceilingFillFrame`, TileSprite, 배경 depth+1, 어둠 막은 tint). 둘레 칸 바깥 끝 1px 테두리 선도
+  안쪽 두 줄이 무늬와 같으면 무늬로 덮는다(`coverEdgeOutlines`, depth 0.5). 단색 여백과 점무늬 천장 띠의 경계가 「맵 바깥 빈 타일이 계단식으로 드러난다」로
+  읽혔다(2026-10-29 적대 VQA 네 판 20건). 배율은 그대로다 — 이 방들은 이미 정수 맞춤(5·4배)으로 화면 높이의 78~89% 를 쓰고 있었다.
+- 기본 배율이 이미 정수가 아니면(양쪽 전신 대화창 1024×768·3.2배) 맞춤도 소수까지 쓴다 — 연애 카페 16×11 이 화면 72% 에서 88% 로.
+- **어둠 막.** `player/lighting.ts` 는 ambient 를 맵 사각 안에만 칠한다(`mapBounds` → `clip`) — 작은 방 바깥 여백이 베이지·회색 판이 되던 것.
+  밝은 막 색(상대 밝기 > 0.3)은 같은 색상의 어두운 색으로 낮추고 진하기를 0.35 로 묶는다(`lightingRules.effectiveDarkness`, 조수 VQA 그림
+  `ai/v2/vqaLighting.ts` 도 같은 식). ambient ≥ 0.6 인데 플레이어를 따라가는 빛이 없으면 플레이어 둘레 1.6칸을 0.6 만큼 걷어 낸다(`PLAYER_PRESENCE_LIGHT`).
+- 세이브 표지 빛무리(page.glow, ADD)는 밝은 바닥에서 흰 덩이가 되어 알파를 절반 남짓으로 낮췄다. 목표 줄(`zone-feedback-objective`)은
+  바뀐 직후 또렷하고 4초 뒤 0.4 로 가라앉는다(`zone-objective-settle`, 글이 바뀌면 다시 튼다) — 맞춤 확대로 방이 화면을 채우면 늘 책장을 덮었다.
+- 시작 칸에 늘 막는 보이는 물체(모든 쪽이 같은 층·겹침 금지·그림 있음)가 있으면 `playPreflight` 가 가장 가까운 빈 칸으로 옮긴다.
+- 증거: `~/z-project/assistant-whole-game/suite/ledger/evidence/camera/` (출하 player.html, 같은 게임 전/후).
 
 ## 내보낸 게임의 화면 배율 (2026-10-04 → 2026-10-20 개정)
 
@@ -59,6 +161,10 @@ Phaser `preRender` 는 경계가 있으면 따라가기·패닝 뒤 clamp 를 �
   - `runtimeEventViewById` 는 그 id 하나만 뷰로 만든다. 사각 질의(`findEventOverlappingRect`·`findBlocking*`)는
     앵커가 사각에 닿을 수 없는 이벤트를 뷰 없이 건너뛴다 — 몸 사각 상한(축 8)에서 파생한 범위라, 상한을 바꾸면
     `anchorMayOverlap` 이 따라 바뀐다.
+  - 매 프레임 병렬 이벤트(`activeRuntimeEvents("parallel")`)와 발견 조우(`updateDetectionEncounters`)는
+    활성 페이지가 그 질문과 맞을 수 있는 이벤트만 뷰로 만든다(`eventMayMatchTrigger`·`eventMayHaveDetectionEncounter`).
+    페이지가 있으면 그 페이지의 trigger·detectionEncounter 만 보고, 페이지가 없는 레거시 이벤트는 이벤트 trigger 를 본다.
+    지워졌거나 다른 맵으로 옮겨 간 이벤트는 예전과 같이 후보가 아니다.
   - 생활 NPC 는 같은 목표로 걷는 중이면 BFS 를 다시 돌리지 않는다(`reusableLivingRouteKey`). 호러 수색이 막히면
     500ms 동안 다시 훑지 않는다(`SEARCH_RETRY_MS`). `nearestPassableTile` 은 고리만 훑는다(결과 순서는 같다).
   - 조명은 어둠 0 이면 마스크를 그리지 않는다. 천둥 잡음 버퍼는 한 번 만들어 재사용한다. 필드 HUD·타이머·시계 HUD·
@@ -80,6 +186,10 @@ Phaser `preRender` 는 경계가 있으면 따라가기·패닝 뒤 clamp 를 �
   - 시간 틴트는 색·알파·화면 크기가 같으면 Graphics 를 다시 비우고 칠하지 않는다(`timeTintPainted`).
     시계가 없거나 낮(알파 0)이라 이미 숨긴 틴트는 매 프레임 `clear` 하지 않는다. 위상 전환 중에는
     보간값이 바뀔 때만 다시 칠한다.
+  - 구역 안내 가림(`feedbackSuppressedByOverlay`)은 프레임마다 testid 마다 호스트와 문서를 훑지 않는다.
+    선택자 한 줄로 호스트를 한 번, 없으면 문서를 한 번만 본다. 떼어 낸 대사 호스트와 호스트 밖
+    상점·전투·타이틀도 그대로 가린다. 줄의 글·hidden 은 값이 바뀔 때만 쓰고, 새 글·만료가 없는 프레임은
+    피드백 모델을 다시 만들지 않는다.
   - 남은 후보(고치지 않음): 자동저장은 동기다(큰 세션에서 스냅샷 약 17–28ms, stringify 약 3ms). `maybeAutosave` 가
     곧바로 true 를 내고 복제 실패를 동기로 던지는 계약(`test/autosave.test.ts`)이 있어 미루지 않았다.
     맵 타일 표시는 아래 「화면 주변 타일 유지」로 바뀌었다(2026-10-01). Phaser Container 는 자식을 깊이로 정렬하지
@@ -98,6 +208,9 @@ Phaser `preRender` 는 경계가 있으면 따라가기·패닝 뒤 clamp 를 �
     - 디버그 패널 라이브 줄은 `readLive` 만 읽는다. 전체 `readState` 는 덤프를 펼쳤을 때만.
     - 전투 적 맞춤은 배율 1 이하면 레이아웃을 읽지 않는다(브라우저 실측 전투 진입 작업 51–110ms 의 주범).
     - 미니맵은 해안 렌더 패스로 그리고, 생성 세대 번호로 늦게 끝난 낡은 생성을 버린다.
+    - 미니맵 가림(`minimap.ts` `isSuppressed`)은 프레임마다 testid 마다 호스트와 문서를 훑지 않는다.
+      선택자 한 줄로 호스트를 한 번, 없으면 문서를 한 번만 본다. 떼어 낸 대사 호스트와 호스트 밖
+      상점·전투도 그대로 가린다. 점 좌표와 `display` 는 값이 바뀔 때만 쓴다.
     - 조사했지만 고치지 않은 것: 이벤트 층 전량 재생성(스프라이트 재사용은 이동 보간·패턴 override·그림자 계약이
       얽혀 별도 작업이었으며 아래 6차에서 해결), 대기 없는 라벨 루프(`gotoLabel` 선형 검색), 빈자리 없는 필드 스폰의 1초 재검사, 빈칸 조사의
       세션 복제(`farming.ts`). 각각 Node 에서 재현은 됐지만 사용자 맵에서 흔한 조건인지 확인되지 않았다.
@@ -408,6 +521,13 @@ Phaser `preRender` 는 경계가 있으면 따라가기·패닝 뒤 clamp 를 �
   점유 기록(`session.occupiedLocationIds`, ID 만·optional)은 큐와 무관하게 즉시 갱신한다.
   새 스케줄러를 만들지 마라 — 이 트리거는 auto 와 같은 «사건 하나» 성질이다. 계약 전문은
   `openwiki/runtime-project-schema.md` 의 「구역 드나듦 트리거」 절.
+- **장소 이동의 검은 화면은 일한 시간만 남긴다 (2026-10-30):** `transferTo`(`src/player/playSceneMapCommands.ts`)는
+  새 맵 파일 받기를 페이드아웃과 **같이** 건다(`prefetchMapAssets`, 뒤의 `holdForMapAssets` 는 같은 받기를 기다릴 뿐).
+  화면 효과 층(z 27, 캔버스 위)이 이미 불투명하게 덮었거나 덮어 가는 중이면(`screenCoverRemainingMs`, 저작된
+  「화면 효과 fadeOut」 → 전투 패배 재시작·붙잡혀 끌려감) 카메라 페이드아웃 대신 그 덮개 트윈만 기다리고, 착지 뒤 카메라
+  페이드인은 기다리지 않고 걷는다(`fadeEffect.reset`) — 그 아래 카메라 페이드는 보이지 않는데 0.5초씩 검은 화면을 늘렸고,
+  도착 맵 자동 장면의 「fadeIn」도 그만큼 늦게 시작했다(폴른 2막 B6 패배 → 감방, 프레임 밝기 실측). 플래시는 덮개로 치지 않는다.
+  남은 검은 시간은 `loadMap`(첫 방문 타일셋의 이식 굽기 `ensureTilesetTexture` 가 1~2초)이다 — 줄이려면 굽기를 앞당겨야 한다.
 - **이벤트 명령 실동작 검토 (2026-09-05):** `docs/reviews/2026-09-05-event-runtime-audit.md`. 「철수의 기억」에서 강제 NPC 방향 전환이 `scene.running` 게이트에 막혀 30초 뒤에야 다음 명령으로 진행됐다. `updatePlayScene`은 NPC 업데이트를 호출하고 `updateAutonomousNPCs`가 대화 중 **명령 루트만** 허용한다. 배경 자율 이동과 병렬 이벤트는 기존 설정대로 정지한다. 직접 NPC updater만 호출하는 테스트로는 이 배선 결함을 잡지 못하므로 `test/runtimeMovementStability.test.ts`의 실제 프레임 디스패치 회귀를 유지한다. 저장된 M2 대화 설정의 강제 기본값 초기화도 수정했다(`test/persistedMessageSettings.test.ts`). `Wait Until`, `Pathfind Move`, 메뉴/로드 화면, 좌표 ID 조회, 저장된 M2 영화 명령의 후속 미구현·오연결도 수정했다. 실행 계약과 제한은 `openwiki/runtime-m2-flow-controls.md`의 2026-09-05 항목을 따른다. 카탈로그 배지나 최종 종료만으로 전체 명령을 검증했다고 보고하지 않는다.
 - **실내 화로 불 애니메이션:** `src/editor/tilesetImage.ts`의 `supportsChipsetTileAnimation(tileset,tile)`이 기존 마을 애니메이션과 실내 불 스트립 124/154/184/214만 허용한다. 플레이어 `playSceneMapRuntime.renderTile`과 편집기 `chipsetTileRender.createRawTileObject`가 공통 조건을 쓴다. `isDefaultTilesetTexture`를 넓히면 실내에 마을 길/나무 규칙까지 적용되므로 바꾸지 않는다. `stone_hearth_unlit`의 463은 정지, `stone_hearth_lit`의 아래 가운데 124는 4fps이다. `test/interiorFireRendering.test.ts`는 양 레이어의 실제 렌더 경로를 검사한다.
 - **Shipping pointer-exclusion contract (2026-08-28):** `.player-layout[data-play-input-owner="keyboard-only"]` is keyboard-only regardless of `navigator.webdriver`. The capture blocker rejects mouse, pointer, touch, wheel, context-menu, drag, selection, auxiliary, and native trusted-click channels; Phaser mouse/touch managers are disabled. The root prevents selection, dragging, canvas hit testing, browser scroll, and autoscroll. Exactly two pointer owners exist: `[data-play-input-owner="touch-controls"]`, mounted only by explicit `VITE_TOUCH_CONTROLS` / `OPENRPG_PLAYER_TOUCH_CONTROLS`, and `[data-play-input-owner="host-fullscreen"]`, mounted only when `hostFeatures` advertises fullscreen. Ownership never escapes those subtrees, and keyboard-only runtime content has no native `title` tooltips.
@@ -416,10 +536,10 @@ Phaser `preRender` 는 경계가 있으면 따라가기·패닝 뒤 clamp 를 �
   - `isTouchDevice()` = coarse pointer, or touch points + mobile UA (iPadOS via Mac UA + touch points), or any-pointer coarse + no hover, or a remembered first touch (`localStorage oprn-touch-input`). `exportEntry.installTouchUpgrade` reloads once into touch mode when a real touch arrives in keyboard-only mode.
   - Layout: `createPlaySurface(..., { touchUi })` → `calculateTouchLayout` (playSurface.ts) reserves room first, then fits the stage: portrait = stage on top under the safe area, controls (menu row + 112–136px stick + A/B) in the band below; landscape (2026-10-25 v2, user: "landscape buttons are hard to press, the experience is bad — give mobile the desktop experience") = side gutters of `LANDSCAPE_GUTTER` (128px + 60% of the safe inset) hold only the controls (108px stick on the left, A/B + Menu on the right) and the stage is fitted between them, so no control covers the game; A/B/Menu/Run get a hit area ~10px larger than the drawn button. The old overlay rules (`data-touch-overlay`) no longer trigger on phones. Probe: `scripts/qa/runtime/landscape-touch.probe.mjs` (iPhone 13 844×390, Android 915×412, real touch taps, `--video`).
   - The pad (`touchPad.ts`) is mounted on every surface (title, opening, load-from-title, difficulty, game) and never hidden. Floating stick: pressing anywhere in `.touch-stick-zone` centers the stick under the thumb and it follows a long drag. A `메뉴` button (Escape). Keys go to `document.activeElement` (`keyTarget()`), so screens that listen on their own root (shop) receive the pad. A held stick direction, and a held gamepad D-pad or left stick, repeat like a keyboard key (`heldDirectionRepeat.ts`: 500ms, then every 33ms, `repeat: true`). Field movement ignores repeats and keeps the hold. Confirm, cancel, and Shift do not repeat. Blurring the window or hiding the page releases gamepad stick and D-pad directions (field movement already dropped every hold, so leaving the tokens latched made a still-tilted stick stand still until it recentered) and presses them again when the game is visible; a held confirm or cancel does not fire a second edge.
-  - The pad (`touchPad.ts`) is mounted on every surface (title, opening, load-from-title, difficulty, game) and never hidden. Floating stick: pressing anywhere in `.touch-stick-zone` centers the stick under the thumb and it follows a long drag. A `메뉴` button (Escape). Keys go to `document.activeElement` (`keyTarget()`), so screens that listen on their own root (shop) receive the pad. A held stick direction, and a held gamepad D-pad or left stick, repeat like a keyboard key (`heldDirectionRepeat.ts`: 500ms, then every 33ms, `repeat: true`). The gamepad left stick uses a radial dead zone (`gamepadStickSector` in `desktopShellBridge.ts`: enter 0.45, hold 0.30) and then the same cardinal-biased sectors as the touch stick — an older per-axis 0.45 gate dropped a 45° push until each axis cleared 0.45 (magnitude about 0.64). Field movement ignores repeats and keeps the hold. Confirm, cancel, and Shift do not repeat.  - `touchTap.ts`: a short tap on the game backdrop (canvas, stage, title backdrop, dialogue overlay) is Enter; ignored while choices/menu/shop/battle/log are open, and on the field canvas when `system.pointerMovement` walks by tapping. Dialogue log and backlog get a visible 「닫기 ✕」 and close on a tap or a sideways/down swipe; the in-box 「기록」 button is hidden on touch (open the log from the menu).
+  - The pad (`touchPad.ts`) is mounted on every surface (title, opening, load-from-title, difficulty, game) and never hidden. Floating stick: pressing anywhere in `.touch-stick-zone` centers the stick under the thumb and it follows a long drag. A `메뉴` button (Escape). Keys go to `document.activeElement` (`keyTarget()`), so screens that listen on their own root (shop) receive the pad. A held stick direction, and a held gamepad D-pad or left stick, repeat like a keyboard key (`heldDirectionRepeat.ts`: 500ms, then every 33ms, `repeat: true`). The gamepad left stick uses a radial dead zone (`gamepadStickSector` in `desktopShellBridge.ts`: enter 0.45, hold 0.30) and then the same cardinal-biased sectors as the touch stick — an older per-axis 0.45 gate dropped a 45° push until each axis cleared 0.45 (magnitude about 0.64). Field movement ignores repeats and keeps the hold. Confirm, cancel, and Shift do not repeat.  - `touchTap.ts`: a short tap on the game backdrop (canvas, stage, title backdrop, dialogue overlay) is Enter; ignored while choices/menu/shop/battle/log are open, and on the field canvas when `system.pointerMovement` walks by tapping. **While a dialogue line is open the backdrop press sends Enter on pointerdown** (RPG Maker MZ triggers on press; 2026-10-30: the old release-only test with a 400ms cap dropped 2 of 3 real taps when the page was busy). The hidden-dialogue state (`[data-dialogue-hidden]`) and taps that snap to a list row are excluded. Other taps are judged on release with `TAP_MAX_MS` 700 / `TAP_MAX_MOVE` 20px (shared with tap-to-walk). **Two-finger tap = Escape** (MZ convention): the second finger within 300ms, both up within 700ms, no drag, neither finger on the pad/buttons, and not while dialogue/choices are open. Accepted confirm/cancel buzz when haptics are on. The 메뉴 button is dimmed while a dialogue is open (Escape does nothing there). The stick dead zone scales with the pad radius (`stickDeadzone`: enter 12%, hold 8%, floor 6/4px; old fixed 12/8px was 18% on the 130px portrait pad). Dialogue log and backlog get a visible 「닫기 ✕」 and close on a tap or a sideways/down swipe; the in-box 「기록」 button is hidden on touch (open the log from the menu).
   - Fullscreen toggle (hostBridge) locks `screen.orientation` to landscape after `requestFullscreen` on touch devices (Android); iOS has no lock, so portrait is laid out to be playable and the Korean rotate hint (「가로로 돌리면 화면이 커져요」) fades after 6 s.
   - Store side (OpenRPGMaker-store): iframe `sandbox` adds `allow-orientation-lock`; play page uses `viewport-fit=cover`, the theater shell follows `visualViewport` height (`--play-vh`) and pads the safe area (the iframe cannot see it); the 「클릭해서 계속」 focus cover never shows on touch; the page's fullscreen button also locks landscape.
-  - List rows (`touchListTap.ts`, touch layout only): the first tap on a row of any list that shows a selection mark (`.selected` / `aria-current="true"` / `aria-selected="true"`: status-menu rail and detail rows, items, equip, shop rows, choices, title menu, save slots, battle commands) only moves the cursor; tapping the highlighted row confirms. The window's own cursor model is not touched: the row is first "hovered" (mouseover/mouseenter, which `runtimeCursorMenu` follows), otherwise arrow keys are sent one at a time towards the row's on-screen position. If the list does not take the keys (another pane is active), the keys are undone and the click goes through as before. Tabs (`role=tab`), the name-entry keyboard, the log and the pad are excluded. Mouse clicks are untouched. **Invisible hit areas (2026-10-27, `snapRowAt`)**: a touch that lands on the list/window/stage backdrop (not on another control) within 22 screen px of such a row counts as a tap on the nearest visible row — gaps between rows, window padding and the space past the first/last row no longer miss. The drawn rows do not change. Stacked rows are still limited to their pitch (the nearest row wins). The ESC command rail joins this (one tap opens). `touchTap` skips the backdrop Enter for these taps, so tapping next to a title row no longer confirms the highlighted option. QA hook: `window.__oprnTouchRowAt(x, y)`.
+  - List rows (`touchListTap.ts`, touch layout only): the first tap on a row of any list that shows a selection mark (`.selected` / `aria-current="true"` / `aria-selected="true"`: status-menu rail and detail rows, items, equip, shop rows, choices, title menu, save slots, battle commands) only moves the cursor; tapping the highlighted row confirms. The window's own cursor model is not touched: the row is first "hovered" (mouseover/mouseenter, which `runtimeCursorMenu` follows), otherwise arrow keys are sent one at a time towards the row's on-screen position. If the list does not take the keys (another pane is active), the keys are undone and the click goes through as before. Tabs (`role=tab`), the name-entry keyboard, the log and the pad are excluded. Mouse clicks are untouched. **Invisible hit areas (2026-10-27, `snapRowAt`)**: a touch that lands on the list/window/stage backdrop (not on another control) within 22 screen px of such a row counts as a tap on the nearest visible row — gaps between rows, window padding and the space past the first/last row no longer miss. The drawn rows do not change. Stacked rows are still limited to their pitch (the nearest row wins). The ESC command rail joins this (one tap opens). **Dialogue choices (`.choice-list`) are one-tap too (2026-10-30, MZ-style)**: the tapped choice is the answer; `touchTap` swallows the click of a press that already advanced the dialogue, so the release cannot pick a choice window that just opened under the finger. `touchTap` skips the backdrop Enter for these taps, so tapping next to a title row no longer confirms the highlighted option. QA hook: `window.__oprnTouchRowAt(x, y)`.
   - **Device-independent UI (2026-10-24, replaces the #3347 "narrow touch" enlargement).** Every in-game window is laid out in game px inside the logical resolution and scaled as one piece with the stage, so phones, tablets and desktop show the same layout, only bigger or smaller. `mobileUi.css` no longer re-sizes anything by `--mobile-ui-k` (title, dialogue, ESC menu, battle, shop); it only places the pad and the dock. Touch layout follows the project `scaleMode` (`calculateTouchLayout(..., {scaleMode})`; `integer` floors at ≥1). Pixel ESC menu text is on the font grids: 12px `Galmuri11 Regular` (`--px-menu-font`), 10px `Galmuri9` (`--px-small-font`), rows 16px (`pixelWindows.css`). Shops are mounted outside the stage (`.play-viewport`), so in the player the overlay is a logical-size frame centered on the stage and scaled by `--play-scale-x/y`, with `--play-scale: 1` inside (`shop.css` end). The shop's compact/tiny layouts are chosen by logical resolution (`viewport.dataset.shopFit`, set in `applyPlaySurfaceResolution`) through `@scope` copies of the old viewport `@media` blocks; the originals are scoped `to (.player-layout .play-viewport)` so they only apply outside the player. The emerald shop keeps its own 480×320 frame but is centered on the stage, not the viewport. Do not add viewport `@media`/`vw`/`vh` rules for in-game windows.
   - **Whole rows and measured text (2026-10-25, J21/J22).** Window lists must never show a half row: `keepWholeRows(list)` (`src/player/runtimeTextFit.ts`) measures the real rows (BCR ÷ overlay scale) and caps the list's `max-height` at the last fully visible row; it re-measures when the parent window resizes. It is on the pixel shop goods list and every ESC-menu detail list (the CSS `--oprn-menu-row-step` rounding assumes 16px rows, but pixel rows are ~18.7px). The pixel shop description (`shop-desc-text`) wraps (Korean `keep-all`), puts the equipment stats first (`shop-desc-stats`, 「공격 +8」 — the tiny layout hides the comparison window, so this is the only place stats show), and `fitTextToLines` tries 2 lines → smaller font (≥10px) → 3 lines → whole-glyph line-clamp with the full text in `title`. Save/load with a showcase stack the showcase under the slot list at full width (`:not(.has-side)`, `statusMenuEdgeDock.css` + pixel copy in `pixelWindows.css`), and compact rows that start with a label shrink the label (ellipsis) instead of overflowing the value past the list edge. Known remaining: the pixel skills/items lists with a 128px showcase still squeeze labels to a few glyphs.
   - Dialogue dock (portrait, stage scale < 1, enough free height): the dialogue/choice overlay stays a stage child but is moved below the stage, above the controls, and counter-scaled to 1x (`data-dialogue-dock`, `--dock-top/left` in stage coordinates, `--dock-width/height`, `--dock-unscale`, `--touch-controls-top`; `DIALOGUE_DOCK_MIN_HEIGHT`). Turn it off with `localStorage oprn-dialogue-dock = "0"` to compare with in-canvas dialogue. Menus are not docked.
@@ -428,7 +548,7 @@ Phaser `preRender` 는 경계가 있으면 따라가기·패닝 뒤 clamp 를 �
   - Shop regression note (fallen-star 1.15 = #3353 without #3359): the logical frame turned shop text into 12 game px, but the compact/tiny `@scope` copies never matched, so the wide-screen rules ran inside 480×270. The party and comparison windows collapsed into an empty area, and the entrance key hints overflowed the frame. #3359 made the copies apply. The pixel shop's party cards now share the panel width by member count (`grid-auto-flow: column`) instead of four fixed slots, which cut names to 「엘…」 at 12px. Check desktop at 2x with `mobile-play2.flow.mjs --only shop --device Desktop [--smith]`.
   - **Mobile feel v3 (2026-10-24, measured with `scripts/qa/runtime/mobile-feel.probe.mjs` — CDP `Input.dispatchTouchEvent` on emulated iPhone 15 / Fold, portrait+landscape; bake `chrono-bell` once with `bake-flagship-demos.mts --out /tmp/mf`).** Latency was already fine (touch → first pixel of movement 1 frame, release → stop finishes the current tile). What felt bad: (1) no tap-to-walk on touch — a map tap sent Enter (talk to whatever you face); (2) the stick's per-axis 0.35 threshold made 54% of all angles diagonal and had no hysteresis → zig-zag on a grid; (3) floating stick: a first touch beside the pad gave no direction until you dragged; (4) knob trailed the thumb by a 60ms transition; (5) Menu button 36px tall; (6) no way to run on touch; (7) cutscene hint said "Esc Esc" on phones. Now:
     - `system.touchControls` (`project/touchControls.ts`: `tapToMove`, `stick: auto|fixed|floating`, `haptics`, `runButton`; defaults all on / `auto`, only non-defaults saved) + device prefs in `playerPreferences` (`touchTapToMove`, `touchStick`, `touchHaptics`, `alwaysRun`) shown in the in-game Options when `data-touch-ui`; DB 시스템 → 「휴대폰: …」 fields; assistant `set_project_settings.touchControls`. Resolve with `player/touchControlSettings.ts currentTouchControls()` (device > authored > default).
-    - Tap-to-walk (`playScenePointerMove.ts`): touch taps are judged on pointerup (≤400ms, ≤14px), only on `data-touch-ui`. Map tap → path walk (`playerRoute.pointer = true`); tapping again while walking retargets from the step's landing tile; tapping a person/object (body rect, or the tile under a tall sprite's head) walks to the nearest free side, turns, and fires the action edge (`consumePendingTapAction`, injected **before** `input.update()` because `resetEdges()` clears unconsumed edges at frame end); tapping the hero = A. Any pad/key direction cancels the tap route. `touchTap.ts` no longer sends Enter for taps inside the canvas box when tap-walk is on (the old `target instanceof HTMLCanvasElement` test never matched — the canvas is `pointer-events:none`). A ring (`.touch-tap-ripple`) marks each accepted tap.
+    - Tap-to-walk (`playScenePointerMove.ts`): touch taps are judged on pointerup (≤700ms, ≤20px, `touchTap` constants), only on `data-touch-ui`. A press that starts while a dialogue/choice is open never walks (that press already advanced the line), and a tap while another finger is down never walks (two-finger cancel, stick + tap). **Finger reach (2026-10-30):** if the tapped tile holds no event, the nearest visible person (`hasFigure`, head row included) within `TOUCH_REACH_PX` 22 screen px (≤1.5 tiles) is chosen and approached — portrait tiles are ~10 CSS px, so exact-tile hits on NPCs mostly missed. Map tap → path walk (`playerRoute.pointer = true`); tapping again while walking retargets from the step's landing tile; tapping a person/object (body rect, or the tile under a tall sprite's head) walks to the nearest free side, turns, and fires the action edge (`consumePendingTapAction`, injected **before** `input.update()` because `resetEdges()` clears unconsumed edges at frame end); tapping the hero = A. Any pad/key direction cancels the tap route. `touchTap.ts` no longer sends Enter for taps inside the canvas box when tap-walk is on (the old `target instanceof HTMLCanvasElement` test never matched — the canvas is `pointer-events:none`). A ring (`.touch-tap-ripple`) marks each accepted tap.
     - Stick (`touchPad.ts stickSector`): 8 sectors, cardinals 56°, diagonals 34° (28°–62°), 8° hysteresis, dead zone 12px to start / 8px to release. `auto`: touches within 1.7× the pad radius use the pad center (direction at once), farther ones float the pad under the thumb; `fixed` never moves; `floating` = old behaviour. Knob has no transition while held. Haptics via `navigator.vibrate` (Android; iOS Safari has none). 「달리기」 toggle button = `alwaysRun` pref (Shift inverts it, RPG Maker MZ style). Menu/Run buttons 44px; the portrait control block reserves 52px for that row.
     - Known, not fixed here: skipping a cutscene with Esc Esc / B B can leave the camera parked where the cutscene panned (seen on Fallen Star `fs_hub` march); menu rows in the pixel ESC menu are 14px tall (first tap only moves the cursor, so mis-taps are harmless).
   - **Touch leftovers (2026-10-25, `scripts/qa/runtime/mobile-leftovers.probe.mjs`; battle needs `fallen-battle-fixture.mjs dist/demos/chrono-bell.play.json /tmp/mf/lo/fsb-fixture.json`).**
@@ -711,6 +831,8 @@ Do not use matching map IDs or a canvas-export PNG alone as evidence for Phaser 
   (맵을 적기 전에 저장된 세이브)은 모든 맵에 적용한다. 맵을 다시 싣지 않고 명령이 들어오는
   경로가 있으므로 `updateMapBackground` 가 매 프레임 «해석 결과 ≠ 적용/로드 중 id» 를 보고
   그 자리에서 다시 건다 — 그 비교가 없으면 명령이 다음 맵 전환까지 아무 일도 안 한다.
+  해석(층 배열·서명)은 맵·배경 객체·오버라이드 기록이 같고 그 자리의 속도·반복·깊이·그림·맵 보기가
+  그대로일 때 재사용한다. 바뀌면 다음 프레임에 다시 만든다.
   형제 명령 둘은 **여전히 소비자가 없다** — 「타일셋 변경」(`map.tileset_override`)과
   「인카운터율 설정」(`map.encounter_rate`)은 같은 모양(`{mapId,x,y,value}`)으로 세션에만 적힌다.
   같은 방식으로 붙이려면 «어느 맵에 적용되는가» 를 먼저 정하라(배경은 명령 시점의 현재 맵으로 정했다).
@@ -996,6 +1118,7 @@ See [opening-animatic-authoring.md](opening-animatic-authoring.md) for assistant
 - **규칙.** 흉상·전신 초상이 실제로 그려지는 줄은 저작한 위치(위·가운데, `displayTextSettings`·say `position`·가림 방지 자동)와 상관없이 `position-bottom` 이다. 초상이 없는 줄·48px 작은 얼굴·`hideFace`·말풍선은 저작한 위치를 그대로 따른다. 위·가운데 저장은 막지 않는다.
 - **결정은 한 곳.** `src/project/dialoguePortraitPosition.ts`(`portraitForcesBottom`·`positionWithPortrait`·안내 문구 `PORTRAIT_BOTTOM_NOTICE`/`PORTRAIT_BOTTOM_RULE`). 플레이어는 `dialogue.ts` `mount()` 에서 vnLook→초상(`baseFace`/`portraitMode`)을 **먼저** 구한 뒤 `applyTextSettings(…, forceBottom)` → `applyOverlayPosition(…, forceBottom)` 로 넘긴다(순서가 거꾸로면 위치를 먼저 정해 버린다). 스크림 방향도 같은 `position` 을 쓴다.
 - **선택지.** (2026-10-22 고정 틀로 대체) 선택지는 같은 세션이면 바로 앞 대사 상자의 자리(`lastBoxPosition`)에 선다 — 흉상 대사 바로 뒤 선택지가 위로 뛰지 않는다. 퇴장 끝·`resetOverlay`/`dispose` 에서 초기화한다. 숫자 입력(`dialogueNumberInput.ts`)은 대사 직후가 아니라 따로 이어 쓰지 않는다.
+- **질문 없는 선택지 앞 글은 자기 결정 키를 기다린다 (2026-10-29).** 인터프리터 text 단계가 바로 다음 명령이 `prompt` 없는 `choices` 인지 보고(`commandCatalog.textLeadsIntoChoices`) `beforeChoices` 를 싣는다. `showText` 는 그 글의 끝 쪽 커서를 ■ 대신 ▼ 로 그리고(선택지가 이어진다는 표시, VQA mt3 terra 197 「▼ 만 보이고 선택지가 없어 보인다」에 대한 답), 결정 키를 받으면 선택지가 그 글을 틀에 남긴 채 뜬다(RPG 메이커 2000 과 같다). **글이 다 나오자마자 스스로 닫히게 하지 말 것** — 같은 날 그렇게 했더니 「계속」 하려고 누른 Enter/Z 가 이미 열린 선택지의 0번을 골라 엔딩 분기가 틀어졌다(마왕 편의점 데모 QA). 글을 닫은 그 키·누른 채 반복은 `showChoices` 의 `CHOICE_CONFIRM_GRACE_MS`(300ms)·`e.repeat` 거르기·키보드발 클릭(detail 0) 거르기가 버린다.
 - **선택지 입력 유예 (2026-10-21, 첫사랑).** `showChoices` 는 열린 뒤 `CHOICE_CONFIRM_GRACE_MS`(300ms) 동안 **실제(isTrusted)** 결정·숫자 키를 버리고, 그 사이 키보드발 클릭(detail 0)도 버린다. 앞 대사를 넘기던 Enter 연타가 선택지가 그려진 바로 그 순간 닿아 플레이어가 읽지 못한 0번이 골라지고, 이어진 연타가 엔딩·타이틀을 넘겨 「새 게임으로 리셋」처럼 보이던 결함의 수정이다(재현 로그: 선택지 등장과 Enter 가 같은 0.1초). 단위 테스트의 합성 이벤트는 isTrusted 가 거짓이라 영향이 없다.
 - **호감 변화 알림 (2026-10-21).** `changeFriendship` 은 인터프리터 훅 `onFriendshipChanged` 를 부르고, 관계 메뉴를 쓰는 게임(`usesRelationshipMenu`)에서만 `playSceneRelationshipPulse.ts` 가 오른쪽 위에 「♥ 이름 · 호감이 올랐다/내려갔다」를 3.2초 띄운다(대사 진행을 막지 않음, 스타일 `playSurface.css`). 관계 메뉴 행은 `project.characters[key].note` 한 줄 소개를 함께 보인다.
 - **오른쪽 흉상 이름표 (2026-10-21, 첫사랑 r2).** 미연시 룩(`[data-vn-look]`)에서 말하는 흉상이 오른쪽이면(`.bust-right`) 이름표도 오른쪽(`vnLook.css`). 앞 화자 흉상이 왼쪽 「듣는 사람」으로 남는 두 사람 장면에서 왼쪽 이름표가 듣는 사람 이름처럼 읽히던 결함.

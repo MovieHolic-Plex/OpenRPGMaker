@@ -29,8 +29,26 @@ export function tilesetStripAnimationName(tileset: TilesetDef, tile: number): st
 }
 
 /** 스트립마다 `${textureKey}:${이름}` 애니메이션을 한 번만 만든다. 프레임(tile_N)은 이미 등록돼 있어야 한다. */
+const LAZY_STRIP_ANIMATION_THRESHOLD = 256;
+const STRIP_ANIMATION_NAME = /^(.*):uploaded_tiles_(\d+)_(\d+)_(\d+(?:\.\d+)?)$/u;
+
+/** 스트립 애니메이션 이름(`${텍스처}:uploaded_tiles_${첫칸}_${프레임수}_${fps}`)만으로 그 애니메이션을 처음 쓸 때 만든다. */
+export function ensureTilesetStripAnimation(scene: Pick<Phaser.Scene, "anims" | "textures">, name: string): void {
+  if (!scene.anims || scene.anims.exists(name)) return;
+  const match = STRIP_ANIMATION_NAME.exec(name);
+  if (!match) return;
+  const key = match[1]!, base = Number(match[2]), frames = Number(match[3]), fps = Number(match[4]);
+  if (!scene.textures?.exists(key)) return;
+  scene.anims.create({ key: name, frameRate: fps, repeat: -1,
+    frames: Array.from({ length: frames }, (_, frame) => ({ key, frame: `tile_${base + frame}` })),
+  });
+}
+
 export function registerTilesetStripAnimations(scene: Phaser.Scene, tileset: TilesetDef, key: string): void {
   if (!scene.textures.exists(key)) return;
+  // 스트립이 많은 칩셋(버들항 2,266개)은 다 만들지 않는다 — 칸을 그릴 때 이름으로 만든다(ensureTilesetStripAnimation).
+  // 새 게임마다 0.2초를 맵이 쓰지도 않는 분수·횃불 애니메이션에 썼다(2026-10-29 pacing-boot).
+  if ((tileset.animationStrips?.length ?? 0) > LAZY_STRIP_ANIMATION_THRESHOLD) return;
   for (const strip of tileset.animationStrips ?? []) {
     const name = `${key}:${animationName(strip)}`;
     if (scene.anims.exists(name)) continue;

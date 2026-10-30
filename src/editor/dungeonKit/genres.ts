@@ -93,6 +93,7 @@ export function planPopulation(genre: DungeonGenre, composed: DungeonCompose, se
   const passable = (x: number, y: number) => { const c = pic[y]?.[x]; return c === "." || c === "=" || c === "i"; };
   const rooms = composed.rooms;
   const spotsOf = (id: string) => composed.spots[id] ?? [];
+  const chestOf = (id: string) => composed.chestSpots?.[id] ?? [];
   const inner = rooms.filter((r) => r.kind !== "entrance" && r.kind !== "boss" && r.kind !== "vault");
   const bossId = composed.anchors.boss, vaultId = composed.anchors.treasure;
   const notes: string[] = [];
@@ -132,9 +133,13 @@ export function planPopulation(genre: DungeonGenre, composed: DungeonCompose, se
     const sp = spotsOf(r.id);
     if (!sp.length) continue;
     addEnemy(r.id, rooms.indexOf(r) % 2 === 0 ? "patrol" : "stationary", 4, "필드 적(보이는 적 — 닿으면 전투)");
-    if (sp.length >= 3) { const c = sp[sp.length - 1]!; if (!enemies.some((e) => e.x === c.x && e.y === c.y)) chests.push({ room: r.id, x: c.x, y: c.y }); }
+    // 상자는 벽을 등진 자리(chestSpots)가 먼저 — 방 한가운데 트인 바닥의 상자는 떠 있어 보였다(2026-10-29 야외 VQA).
+    // 벽을 등진 자리가 없는 방은 벽에 가장 가까운(둘레 5×5 에 벽·천장 칸이 가장 많고 물이 적은) 자리 — 방 가운데에서 먼 끝 자리보다 덜 떠 보인다.
+    const wallish = (q: Pt) => { let n = 0; for (let dy = -2; dy <= 2; dy += 1) for (let dx = -2; dx <= 2; dx += 1) { const ch = pic[q.y + dy]?.[q.x + dx]; if (ch === "#" || ch === "W") n += 1; else if (ch === "~") n -= 2; } return n; };
+    const byWall = [...sp].filter((q) => !enemies.some((e) => e.x === q.x && e.y === q.y)).sort((a, b) => wallish(b) - wallish(a));
+    if (sp.length >= 3) { const c = chestOf(r.id).find((q) => !enemies.some((e) => e.x === q.x && e.y === q.y)) ?? byWall[0] ?? sp[sp.length - 1]!; if (!enemies.some((e) => e.x === c.x && e.y === c.y)) chests.push({ room: r.id, x: c.x, y: c.y }); }
   }
-  if (vaultId) for (const s of spotsOf(vaultId).slice(0, 2)) chests.push({ room: vaultId, x: s.x, y: s.y });
+  if (vaultId) for (const s of [...chestOf(vaultId), ...spotsOf(vaultId)].slice(0, 2)) chests.push({ room: vaultId, x: s.x, y: s.y });
   const bossRoom = bossId ? rooms.find((r) => r.id === bossId) : null;
   const bossSpot = bossRoom ? spotsOf(bossRoom.id)[0] ?? null : null;
   const boss = bossRoom && bossSpot ? { room: bossRoom.id, x: bossSpot.x, y: bossSpot.y, optional: false } : null;

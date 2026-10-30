@@ -1568,6 +1568,9 @@ function pump(state: RunnerState, interp: Interpreter, first: StepResult): PumpS
       case "waitForAllMovement":
       case "stopAllMovement":
       case "inn":
+      // 저장 메뉴는 플레이어가 닫으면 이어진다 — 처리하지 않던 때는 같은 걸음을 돌다 «무한루프 가드»로 실패해, 쉼터(회복+저장 메뉴)를 조사해도
+      // 회복이 남지 않았다(2026-10-29 vm4 argon jrpg 보스 앞 쉼터).
+      case "openSaveMenu":
       case "flashScreen":
       case "shakeScreen":
       case "particleEffect":

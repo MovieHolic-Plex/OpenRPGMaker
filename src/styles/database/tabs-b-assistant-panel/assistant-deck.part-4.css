@@ -335,6 +335,7 @@ body:has(.database-modal-backdrop:not(.is-parked)) .ai-chat-panel .ai-deck {
 .ai-pending-review-actions button { font: 500 12px var(--font-ui); color: var(--accent); border: 1px solid var(--border-subtle); background: var(--bg-raised); border-radius: var(--radius-s); padding: 7px 10px; cursor: pointer; }
 .ai-pending-review-actions button:first-child { background: var(--accent); color: white; border-color: var(--accent); }
 .ai-pending-review-actions button:disabled { opacity: .55; cursor: wait; }
+p.ai-chat-decision-hint { color: var(--text-muted); font-size: 11px; }
 
 /* Compact shared team controls, anchored by the existing composer popover owner. */
 .ai-team-menu { position: absolute; z-index: 6; background: var(--bg-raised); color: var(--text-1); border: 1px solid var(--border-default); box-shadow: var(--shadow-pop); width: 280px; padding: 12px; border-radius: 10px; font-size: 12px; }

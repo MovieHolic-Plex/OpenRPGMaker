@@ -59,7 +59,11 @@ async function main(): Promise<number> {
   return cli.run(rest);
 }
 
-main().then((code) => process.exit(code), (error) => {
+// 최상위에서 기다린다 — vite-node --script 는 진입 모듈 평가가 끝나면 서버를 닫는다. `main().then(...)` 만 두면
+// 가져오기에 오래 걸리는 하네스 CLI(편집기 저장소·렌더러를 끌어오는 battle-backdrop, 약 90초)가 가져오는 도중
+// 「The server is being restarted or closed. Request is outdated」로 죽었다(2026-10-30 실측).
+const exitCode = await main().catch((error: unknown) => {
   console.error(error instanceof Error ? error.message : error);
-  process.exit(1);
+  return 1;
 });
+process.exit(exitCode);

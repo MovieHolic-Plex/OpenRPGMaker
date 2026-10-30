@@ -41,7 +41,7 @@ const BATTLE_CONDITION_SCHEMA: JsonSchema = {
   description:
     "전투 이벤트 조건. 전투 전용 kind: turn{start,interval} / onRound{round} / everyRound{start,interval} / " +
     "enemyHp{enemyId,minPercent,maxPercent} / enemyHpBelow{enemyId?,percent} / actorHp{actorId,minPercent,maxPercent} / " +
-    "enemyTurn{enemyId,turn} / actorTurn{actorId,turn} / actorCommand{actorId,commandId} / " +
+    "enemyTurn{enemyId,turn} / actorTurn{actorId,turn} / actorCommand{actorId,commandId,skillId?} — 그 배우가 그 행동(attack/skill/item/defend…)을 한 직후; commandId skill 에 skillId 를 주면 그 기술을 쓴 직후만(기술 전용 반응·대꾸) / " +
     "enemyState{enemyId?,stateId,present?} — 적(생략=아무 적)이 그 상태에 걸려 있다(present false = 걸려 있지 않다; 약점 노출·변신 단계 대사) / " +
     "enemiesAlive{enemyId?,atMost} — 살아 있는 적(enemyId 면 그 적 기록만) 수가 atMost 이하(졸병을 다 쓰러뜨리면 보스 2막). switch/variable 등 일반 조건도 쓸 수 있다.",
   properties: {
@@ -56,6 +56,7 @@ const BATTLE_CONDITION_SCHEMA: JsonSchema = {
     start: { type: "integer" },
     interval: { type: "integer" },
     commandId: { type: "string" },
+    skillId: { type: "string", description: "actorCommand — commandId \"skill\" 일 때 이 기술 id 를 쓴 행동만(생략 = 아무 기술)" },
     stateId: { type: "string", description: "enemyState — 상태 id" },
     present: { type: "boolean", description: "enemyState — false 면 걸려 있지 않을 때(생략 true)" },
     atMost: { type: "integer", description: "enemiesAlive — 살아 있는 적이 이 수 이하일 때(0 = 모두 쓰러짐)" },
@@ -188,6 +189,14 @@ function normalizeBattleCondition(project: Project, troop: TroopRecord, raw: unk
       const commandId = record.commandId;
       if (typeof commandId !== "string" || commandId.trim().length === 0) {
         throw new ToolError(`${label}.commandId(문자열)가 필요합니다.`, { code: "invalid-battle-condition" });
+      }
+      const skillId = record.skillId;
+      if (skillId !== undefined) {
+        if (typeof skillId !== "string" || !project.database.skills.some((skill) => skill.id === skillId)) {
+          throw new ToolError(`${label}.skillId 가 없는 기술입니다: ${String(skillId)} — upsert_skill 로 먼저 만드세요.`, { code: "invalid-battle-condition" });
+        }
+        if (commandId !== "skill") throw new ToolError(`${label}.skillId 는 commandId "skill" 과 함께만 씁니다(지금 ${commandId}).`, { code: "invalid-battle-condition" });
+        return { kind: "actorCommand", actorId: requireActor(project, record.actorId, label), commandId, skillId };
       }
       return { kind: "actorCommand", actorId: requireActor(project, record.actorId, label), commandId };
     }

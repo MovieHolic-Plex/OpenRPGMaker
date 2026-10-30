@@ -2,10 +2,11 @@
 //
 //   { "kind": "battle",
 //     "plan": { "actor_fs_elena": ["skill_mage_blizzard"], "actor_hero": ["attack", "skill_hero_cross_slash"] },
-//     "fallback": "attack",          // 계획이 빈 배우의 명령(attack · defend · skill_<id> · item:<itemId>)
+//     "fallback": "attack",          // 계획이 빈 배우의 명령(attack · defend · escape · skill:first · skill:best · skill_<id> · item:<itemId> · capture:<itemId>)
 //     "commands": 2,                 // 이만큼 명령을 내린 뒤, 연출이 끝나고 다음 명령 카드가 뜰 때까지 기다리고 돌아온다
 //     "untilEnd": false,             // true 면 결과 창까지 누르고 닫는다
 //     "target": 0 | "last" | "enemy-2",
+//     "stopAfter": "skill",          // 기술 명령을 낸 뒤 연출이 시작되면 바로 돌아온다(연출 도중 스크린샷용)
 //     "timeoutMs": 90000 }
 // 배우별 큐는 앞에서부터 하나씩 쓰고, 마지막 하나는 계속 되풀이한다.
 // 명령 뒤에 「@대상」을 붙이면 그 명령만 대상을 따로 고른다: "item:item_ether@1"(두 번째 아군), "skill_x@enemy-2", "attack@last".
@@ -22,6 +23,12 @@ async function dumpLog(page, op, issued) {
   await mkdir(dirname(path), { recursive: true });
   await appendFile(path, `${JSON.stringify({ label: op.label ?? null, issued, log: await readBattleLog(page) })}\n`);
 }
+
+/** 포켓몬 스킨(「싸운다」→ 기술 목록)에서 attack 은 쓸 수 있는 첫 기술이다. */
+const FIRST_MOVE = "\u0000first-move";
+// 「가장 좋은 기술」: 기술 단추의 data-expected-damage(앞의 적에게 줄 평균 기대 피해, 상성·자속 포함)가 가장 큰 것. 없으면 첫 기술.
+// 실제 플레이어는 타입 배지를 보고 고른다 — 첫 기술만 누르면 풀 스타터가 벌레 Lv4 에게 몸통박치기만 하다 졌다(2026-10-29 standin monster).
+const BEST_MOVE = "\u0000best-move";
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -40,6 +47,8 @@ async function readBattleUi(page) {
         .filter((n) => !n.disabled && n.dataset.testid !== "battle-target-cancel").map((n) => n.dataset.testid),
       active: document.querySelector(".battle-actor-status.is-active-actor")?.getAttribute("data-record-id") ?? null,
       resultConfirm: Boolean(document.querySelector('[data-testid="battle-result-confirm"]')),
+      // 승리 뒤 「기술을 배우려면 다른 기술을 잊어야 한다」 장면(emeraldMoveLearnScene) — 결과 창 대신 뜬다.
+      moveLearn: Boolean(document.querySelector('[data-testid="emerald-movelearn"]')),
       // 전투 중 이벤트 대사(발렌의 소환 외침 등)는 .dialogue-box 로 뜨고, 그동안 장면은 busy 다.
       dialogue: [...document.querySelectorAll('.dialogue-box, [data-testid="dialogue-box"]')].some((n) => n.offsetParent !== null),
     };
@@ -49,7 +58,9 @@ async function readBattleUi(page) {
 async function press(page, testid) {
   return page.evaluate((id) => {
     const button = document.querySelector(`[data-testid="${id}"]`);
-    if (!button || button.disabled) return false;
+    // 막힌 행(MP 부족·PP 없음)은 `disabled` 가 아니라 aria-disabled + data-battle-command-inert 이고 클릭 리스너가 없다
+    // (battleCommandDom: 커서가 서서 사유를 읽히게). 그 행을 «눌렀다»고 하면 목록이 열린 채 명령이 안 나가 op 가 시간을 다 쓴다.
+    if (!button || button.disabled || button.getAttribute("aria-disabled") === "true" || button.dataset.battleCommandInert === "true") return false;
     button.click();
     return true;
   }, testid);
@@ -88,6 +99,8 @@ export async function battleQaOp(page, op) {
   let wanted = null;
   let pendingTarget;
   let forceFallback = false;
+  let skillIssued = false;
+  let stuckSince = null;
   await page.waitForSelector('[data-testid="battle-scene"]', { timeout: op.sceneTimeoutMs ?? 60_000 });
   await installBattleLog(page);
   const nextFor = (actor) => {
@@ -97,9 +110,26 @@ export async function battleQaOp(page, op) {
   };
   while (Date.now() < deadline) {
     const ui = await readBattleUi(page);
+    // stopAfter:"skill" — 기술 명령을 낸 뒤 연출이 시작되면(busy) 바로 돌아온다(연출 도중 한 장을 찍을 때).
+    if (op.stopAfter === "skill" && skillIssued && ui.busy) {
+      await dumpLog(page, op, issued);
+      return { issued, ended: false };
+    }
     if (!ui.scene) {
       await dumpLog(page, op, issued);
       return { issued, ended: true };
+    }
+    if (ui.moveLearn) {
+      // 확인키만 누르는 플레이어처럼: 「예」(커서 기본) → 첫 기술(가장 오래 배운 기술)을 잊는다.
+      // 빌더 모의전도 그 레벨에서 배운 마지막 네 기술을 쓰므로 같은 기술 구성이 된다.
+      // 이것 없이는 water 스타터 챔피언전(2026-10-29)이 승리 뒤 이 질문에서 90초를 기다리다 실패했다.
+      if (!op.untilEnd) {
+        await dumpLog(page, op, issued);
+        return { issued, ended: true };
+      }
+      await page.keyboard.press("Enter");
+      await sleep(500);
+      continue;
     }
     if (ui.resultConfirm) {
       if (!op.untilEnd) {
@@ -134,13 +164,49 @@ export async function battleQaOp(page, op) {
       await sleep(300);
       continue;
     }
-    const submenu = ui.menu.filter((id) => id.startsWith("actor-skill-") || id.startsWith("actor-item-"));
+    // 몬스터 파티의 리더가 쓰러지면 「다음은 누구를 내보낼까?」 교체 목록(actor-switch-*)만 뜬다 — 첫 후보를 내보낸다.
+    // 이것 없이는 관측탑 보스전(2026-10-29 standin monster)이 교체 화면에서 5분을 기다리다 끝났다.
+    const forcedSwitch = ui.menu.filter((id) => id.startsWith("actor-switch-"));
+    if (forcedSwitch.length > 0 && !ui.menu.some((id) => id.startsWith("actor-command-") && id !== "actor-command-back")) {
+      await press(page, forcedSwitch[0]);
+      await sleep(300);
+      continue;
+    }
+    const submenu = ui.menu.filter((id) => id.startsWith("actor-skill-") || id.startsWith("actor-item-") || id.startsWith("actor-capture-"));
+    if (submenu.length > 0 && wanted === BEST_MOVE) {
+      const best = await page.evaluate(() => {
+        let pick = null; let top = -Infinity;
+        for (const node of document.querySelectorAll("[data-testid^='actor-skill-']")) {
+          if (node.disabled || node.getAttribute("aria-disabled") === "true") continue;
+          const value = Number(node.dataset.expectedDamage ?? "NaN");
+          const score = Number.isFinite(value) ? value : -1;
+          if (pick === null || score > top) { pick = node.dataset.testid; top = score; }
+        }
+        return pick;
+      });
+      wanted = null;
+      if (best) await press(page, best);
+      else await page.keyboard.press("Escape");
+      await sleep(300);
+      continue;
+    }
+    if (submenu.length > 0 && wanted === FIRST_MOVE) {
+      // 포켓몬 스킨 「싸운다」: 기술 목록에서 쓸 수 있는 첫 기술(보이는 단추는 이미 disabled 를 걸러 냈다).
+      const move = submenu.find((id) => id.startsWith("actor-skill-"));
+      wanted = null;
+      if (move) await press(page, move);
+      else await page.keyboard.press("Escape");
+      await sleep(300);
+      continue;
+    }
     if (submenu.length > 0 && wanted) {
-      const id = wanted.startsWith("item:") ? `actor-item-${wanted.slice(5)}` : `actor-skill-${wanted}`;
+      const id = wanted.startsWith("item:") ? `actor-item-${wanted.slice(5)}`
+        : wanted.startsWith("capture:") ? `actor-capture-${wanted.slice(8)}`
+          : `actor-skill-${wanted}`;
       if (!(await press(page, id))) {
         if (!submenu.includes(id) && !(await page.$(`[data-testid="${id}"]`))) throw new Error(`battle op: ${id} 를 고를 수 없다 (보이는 것: ${submenu.join(", ")})`);
-        // 막힌 칸(MP 부족 등) — 목록을 닫고 다음 바퀴에서 fallback 으로 다시 고른다.
-        await page.keyboard.press("Escape");
+        // 막힌 칸(MP 부족 등) — 목록을 닫고 다음 바퀴에서 fallback 으로 다시 고른다. 「뒤로」 단추가 먼저(Esc 는 컷신 건너뛰기와 겹친다).
+        await press(page, "actor-command-back") || await page.keyboard.press("Escape");
         wanted = null;
         forceFallback = true;
         issued -= 1;
@@ -172,7 +238,15 @@ export async function battleQaOp(page, op) {
       const choice = at > 0 ? raw.slice(0, at) : raw;
       if (at > 0) { const t = raw.slice(at + 1); pendingTarget = /^\d+$/.test(t) ? Number(t) : t; }
       let ok = false;
-      if (choice === "attack") ok = await press(page, "actor-command-attack");
+      if (choice === "attack" && !root.includes("actor-command-attack") && root.includes("actor-command-fight")) { wanted = FIRST_MOVE; ok = await press(page, "actor-command-fight"); }
+      // 도주: 레트로 「도주」(escape) · 포켓몬 「도망간다」(run).
+      else if (choice === "escape") ok = await press(page, root.includes("actor-command-run") ? "actor-command-run" : "actor-command-escape");
+      // 기술 목록의 첫 기술(어떤 기술이 있는지 모르는 실물 게임용).
+      else if (choice === "skill:first") { wanted = FIRST_MOVE; ok = await press(page, "actor-command-skill"); }
+      else if (choice === "skill:best") { wanted = BEST_MOVE; ok = await press(page, root.includes("actor-command-fight") ? "actor-command-fight" : "actor-command-skill"); }
+      // 포획 구슬: 포획 명령이 있으면 그쪽, 없으면(포켓몬 스킨) 가방.
+      else if (choice.startsWith("capture:")) { wanted = choice; ok = await press(page, root.includes("actor-command-capture") ? "actor-command-capture" : "actor-command-item"); }
+      else if (choice === "attack") ok = await press(page, "actor-command-attack");
       else if (choice === "defend") ok = await press(page, "actor-command-defend");
       else if (choice.startsWith("item:")) { wanted = choice; ok = await press(page, "actor-command-item"); }
       // 연계기는 「연계」 명령의 목록에 있다(combo:<skillId>). 연계 명령이 없으면(옛 화면) 기술 목록에서 찾는다.
@@ -180,11 +254,25 @@ export async function battleQaOp(page, op) {
       else if (root.includes(`actor-command-skill-${choice}`)) ok = await press(page, `actor-command-skill-${choice}`);
       else { wanted = choice; ok = await press(page, "actor-command-skill"); }
       if (!ok) throw new Error(`battle op: ${ui.active} 의 명령 ${choice} 를 누를 수 없다 (보이는 것: ${root.join(", ")})`);
+      if (!["attack", "defend", "escape"].includes(choice) && !choice.startsWith("item:") && !choice.startsWith("capture:")) skillIssued = true;
       issued += 1;
       await sleep(300);
       continue;
     }
     if (ui.dialogue) { await page.keyboard.press("Enter"); await sleep(300); continue; }
+    // 하위 목록(기술·아이템)이 열린 채 고를 것도 없고 명령 카드도 없이 멈춰 있으면(누른 행이 반응하지 않음) 닫고 fallback 으로.
+    // 2026-10-30 폴른 스타 B13: MP 3 엘레나의 눈보라 행을 «눌렀다»고 보고 15분을 기다렸다.
+    if (!wanted && submenu.length > 0 && ui.menu.includes("actor-command-back")) {
+      stuckSince ??= Date.now();
+      if (Date.now() - stuckSince > 4000) {
+        stuckSince = null;
+        await press(page, "actor-command-back") || await page.keyboard.press("Escape");
+        forceFallback = true;
+        issued -= 1;
+        await sleep(300);
+        continue;
+      }
+    } else stuckSince = null;
     await sleep(150);
   }
   throw new Error(`battle op: ${op.timeoutMs ?? 90_000}ms 안에 끝나지 않았다 (명령 ${issued}개)`);

@@ -26,6 +26,8 @@ import { withComposedRooms } from '@/editor/handInterior/rooms';
 import { layoutAscii, layoutCandidates, LayoutError, type LayoutCandidate, type LayoutRequest } from '@/editor/handInterior/layout';
 import { composeInteriorBlueprint, type BlueprintInteriorArgs } from '@/editor/handInterior/blueprintComposers';
 import { furnishRooms } from '@/editor/handInterior/furnish';
+import { furnishWithVignettes } from '@/editor/handInterior/vignettes';
+import { furnishFromDesign, type RoomDesign } from '@/editor/handInterior/designRoom';
 import { addMapLocation, COMPOSED_LAYOUT_TAG } from '@/project/mapNamedLocations';
 
 /** layout 으로 짠 방의 이름표 — 다시 지을 때 이 이름표만 갈아 끼운다. */
@@ -823,7 +825,7 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
         if (canon && programKinds(tilesetId, canon)) args = { ...args, layout: { ...lbag, program: canon } };
       }
     }
-    let picked: { c: LayoutCandidate; variant: number; variants: number; furnish: boolean } | undefined;
+    let picked: { c: LayoutCandidate; variant: number; variants: number; furnish: boolean; vignette?: { picks?: Record<string, string[]>; purposes?: Record<string, string>; seed?: number }; designs?: Record<string, RoomDesign> } | undefined;
     // 청사진 구성기가 있는 공간(오피스 로비·대학 강의동·왕성 알현실·백화점)은 견본 한 벌 대신 청사진 규칙으로 매번 새로 짠다 —
     // 2026-10-18 사용자 반려 「프리셋을 그대로 깔지 말고 AI 가 참고해서, 똑같이 깔지 말고」. 방 목록을 직접 준 layout 은 그대로 따른다.
     let blueprint: BlueprintInteriorArgs | undefined;
@@ -855,13 +857,16 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
         args = kept as typeof args;
         if (dropped.length) fitNotes.push(`layout 이 방 배치를 짜므로 같이 온 ${dropped.join("·")} 는 버리고 layout 대로 지었다(plan·rooms 를 직접 주려면 layout 을 빼라)`);
       }
-      const req = args.layout as LayoutRequest & { variant?: number; furnish?: boolean };
+      const req = args.layout as LayoutRequest & { variant?: number; furnish?: boolean | "vignette" | "template"; vignettes?: Record<string, string[]>; purposes?: Record<string, string>; composeSeed?: number; designs?: Record<string, RoomDesign> };
       const variant = Math.max(0, Math.floor(req.variant ?? 0));
       let cands: LayoutCandidate[];
       try { cands = layoutCandidates(tilesetId, req, spec, Math.max(4, variant + 1)); }
       catch (error) { if (error instanceof LayoutError) throw new ToolError(error.message, { code: "layout-failed" }); throw error; }
       const c = cands[Math.min(variant, cands.length - 1)]!;
-      picked = { c, variant: Math.min(variant, cands.length - 1), variants: cands.length, furnish: req.furnish !== false };
+      // furnish:"vignette" = 견본 한 벌 대신 기물 묶음 배치기(vignettes.ts) — 방 용도에 맞는 묶음을 함수가 골라 벽·앞 통로·밀도를 지켜 놓는다.
+      // vignettes:{방 id: [묶음 id·몸통 기물 id]} 로 모델이 묶음을 고를 수 있다.
+      // designs:{방 id: RoomDesign} = 모델이 설계한 방 — 그 방은 설계대로 놓고 함수는 조화·검사만 한다(designRoom.ts). 다른 방은 아래 가구 길 그대로.
+      picked = { c, variant: Math.min(variant, cands.length - 1), variants: cands.length, furnish: req.furnish !== false, ...(req.designs && typeof req.designs === "object" ? { designs: req.designs } : {}), ...(req.furnish === "vignette" ? { vignette: { ...(req.vignettes ? { picks: req.vignettes } : {}), ...(req.purposes ? { purposes: req.purposes } : {}), ...(typeof req.composeSeed === "number" ? { seed: req.composeSeed } : {}) } } : {}) };
       const { layout: _l, ...rest } = args;
       args = { ...rest, rooms: c.rooms, connect: c.connect, exit: c.exit };
     }
@@ -905,8 +910,19 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
     const fitsGapDoors = tilesetId === HAND_INTERIOR_TILESET_ID;
     let input = fitsGapDoors ? withDoormat(args as unknown as HandInteriorInput, shape) : args as unknown as HandInteriorInput;
     let furnished: ReturnType<typeof furnishRooms>["perRoom"] | undefined;
-    if (picked?.furnish && composed) {
-      const f = furnishRooms(input, picked.c.rooms, composed, tilesetId, tileset, spec, picked.c.styleVariant ?? "A");
+    let vignetteRooms: ReturnType<typeof furnishWithVignettes>["perRoom"] | undefined;
+    let designRooms: ReturnType<typeof furnishFromDesign>["perRoom"] | undefined;
+    const designs = picked?.designs;
+    if (picked?.furnish && composed && designs) {
+      const f = furnishFromDesign(input, picked.c.rooms.filter((r) => designs[r.id]), designs, composed, tileset, spec);
+      input = f.input; designRooms = f.perRoom;
+    }
+    const restRooms = picked ? picked.c.rooms.filter((r) => !designs?.[r.id]) : [];
+    if (picked?.furnish && composed && picked.vignette && restRooms.length) {
+      const f = furnishWithVignettes(input, restRooms, composed, tilesetId, tileset, spec, picked.vignette);
+      input = f.input; vignetteRooms = f.perRoom;
+    } else if (picked?.furnish && composed && restRooms.length) {
+      const f = furnishRooms(input, restRooms, composed, tilesetId, tileset, spec, picked.c.styleVariant ?? "A");
       input = f.input; furnished = f.perRoom;
     }
     let built;
@@ -969,7 +985,7 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
     // 35×16 → 22×16 손 평면·손 가구로 다시 지어 견본 배치를 버렸다(복도는 원래 비어 있는 동선이다).
     if (picked) {
       map.locations = (map.locations ?? []).filter((l) => !(l.tags ?? []).includes(HAND_LAYOUT_ROOM_TAG));
-      for (const r of picked.c.rooms) addMapLocation(map, { name: r.kind, x: r.x0, y: r.y0, w: r.x1 - r.x0 + 1, h: r.y1 - r.y0 + 1, note: "layout 으로 짠 방(견본 가구 한 벌)", tags: [HAND_LAYOUT_ROOM_TAG, COMPOSED_LAYOUT_TAG] });
+      for (const r of picked.c.rooms) addMapLocation(map, { name: r.kind, x: r.x0, y: r.y0, w: r.x1 - r.x0 + 1, h: r.y1 - r.y0 + 1, note: picked.designs?.[r.id] ? "모델이 설계한 방(design)" : "layout 으로 짠 방(견본 가구 한 벌)", tags: [HAND_LAYOUT_ROOM_TAG, COMPOSED_LAYOUT_TAG, ...(r.template && !picked.designs?.[r.id] ? [`template:${r.template}`] : []), ...(picked.designs?.[r.id] ? ["model-designed"] : [])] });
     }
     if (blueprint) {
       map.locations = (map.locations ?? []).filter((l) => !(l.tags ?? []).includes(HAND_LAYOUT_ROOM_TAG));
@@ -1024,13 +1040,13 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
         : `${t.label.replace(/ @\(.*$/u, "")} (${t.x},${t.y})`).join(" · ")}`
       : "";
     return {
-      summary: `손 도트 실내 '${name}' ${built.width}×${built.height} (${mapId}, ${tilesetId})${picked ? ` — 배치 후보 ${picked.variant + 1}/${picked.variants}(방 ${picked.c.rooms.length}개, 견본 가구 ${Object.values(furnished ?? {}).reduce((a, f) => a + f.placed, 0)}점 — data.layout.picture 로 배치를 보고, 다른 배치는 layout.variant 를 바꿔 replace:true)` : ""} — 출입구에서 닿는 칸 ${built.reachable}, 닿지 못한 빈 바닥 ${built.unreachedFloor.length}, 경고 ${warnings.length}${warnings.length ? ` — ${warnings.slice(0, 4).join(" / ")}${warnings.length > 4 ? " …" : ""}` : ""}${travelNote}`,
+      summary: `손 도트 실내 '${name}' ${built.width}×${built.height} (${mapId}, ${tilesetId})${picked ? ` — 배치 후보 ${picked.variant + 1}/${picked.variants}(방 ${picked.c.rooms.length}개, ${vignetteRooms ? `기물 묶음 ${Object.values(vignetteRooms).reduce((a, f) => a + f.placed.length, 0)}개` : `견본 가구 ${Object.values(furnished ?? {}).reduce((a, f) => a + f.placed, 0)}점`} — data.layout.picture 로 배치를 보고, 다른 배치는 layout.variant 를 바꿔 replace:true)` : ""} — 출입구에서 닿는 칸 ${built.reachable}, 닿지 못한 빈 바닥 ${built.unreachedFloor.length}, 경고 ${warnings.length}${warnings.length ? ` — ${warnings.slice(0, 4).join(" / ")}${warnings.length > 4 ? " …" : ""}` : ""}${travelNote}`,
       data: { mapId, tilesetId, width: built.width, height: built.height, reachable: built.reachable, floorCells: built.floorCells,
         unreachedFloor: built.unreachedFloor.slice(0, 20), ...("bareFloor" in composition && composition.bareFloor !== undefined ? { bareFloorPct: composition.bareFloor } : {}), entrance: built.start, exitWidth, exits, links: links.length, warnings: warnings.slice(0, 20), travel: travelSpots,
         ...(composed ? { plan: composed.plan, openings: composed.openings } : {}),
         ...(picked && composed ? {
           layout: { variant: picked.variant, variants: picked.variants, score: picked.c.score, notes: picked.c.notes, picture: layoutAscii(picked.c, composed.plan),
-            rooms: picked.c.rooms.map((r, i) => ({ letter: String.fromCharCode(65 + (i % 26)), id: r.id, kind: r.kind, x0: r.x0, y0: r.y0, x1: r.x1, y1: r.y1, floor: r.floor, wall: r.wall, notches: r.notches, template: furnished?.[r.id]?.template ?? r.template, furniture: furnished?.[r.id] })) },
+            rooms: picked.c.rooms.map((r, i) => ({ letter: String.fromCharCode(65 + (i % 26)), id: r.id, kind: r.kind, x0: r.x0, y0: r.y0, x1: r.x1, y1: r.y1, floor: r.floor, wall: r.wall, notches: r.notches, template: furnished?.[r.id]?.template ?? r.template, furniture: furnished?.[r.id], ...(vignetteRooms?.[r.id] ? { vignettes: vignetteRooms[r.id] } : {}), ...(designRooms?.[r.id] ? { design: designRooms[r.id] } : {}) })) },
           // 이 집을 손보려면 이 값을 그대로 rooms·connect·exit·objects… 로 넘기고 replace:true(가구를 빼거나 더해서)
           rebuild: { rooms: picked.c.rooms.map(({ kind: _k, template: _t, ...r }) => r), connect: picked.c.connect, exit: picked.c.exit,
             objects: (input.objects ?? []).filter((o) => !composed.doors.some((d) => d.id === o.id && d.x === o.x && d.y === o.y)), tables: input.tables, goods: input.goods, lines: input.lines, daises: input.daises },

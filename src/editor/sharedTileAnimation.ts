@@ -1,5 +1,6 @@
 import type Phaser from "phaser";
 import { requestEditRenderFrame } from "@/editor/editRenderGate";
+import { ensureTilesetStripAnimation } from "@/assets/uploadedTilesets";
 
 interface TileAnimationGroup {
   readonly driver: Phaser.GameObjects.Sprite;
@@ -45,6 +46,7 @@ export function createSharedAnimatedTile(
       // 편집기는 유휴 중 렌더를 건너뛴다(editRenderGate) — 보이는 물 칸이 바뀐 프레임만 그리게 한다.
       if (updated) requestEditRenderFrame(scene.game);
     });
+    ensureTilesetStripAnimation(scene, animation);
     driver.play(animation);
   }
   const { driver, images } = group;

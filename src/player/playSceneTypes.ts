@@ -36,6 +36,9 @@ export type ParallelProcess = {
   pendingResult?: import("./interpreter").StepResult;
 };
 
+/** 걷는 NPC 가 떠난 칸을 보고 눌러도 말을 거는 여유(ms). */
+export const VACATED_GRACE_MS = 300;
+
 export type AutonomousMover = {
   stopOnBlocked?: boolean;
   moves: MoveCommand[];
@@ -53,6 +56,8 @@ export type AutonomousMover = {
   moveIntervalMs: number;
   moveDurationMs: number;
   activeMove: AutonomousMoveTween | null;
+  /** 방금 떠난 칸 — 걸음이 끝난 직후 잠깐, 그 칸을 보고 눌러도 말을 건다(playSceneMovement.findWalkerLeaving). */
+  vacated?: { readonly x: number; readonly y: number; readonly until: number };
   /**
    * 걷기 패턴 위상(0~3). 한 칸에 두 장씩 넘어가고 다음 칸은 이어서 — 왼발·오른발이 칸마다 번갈아 나온다.
    * 예전에는 칸마다 같은 발로 다시 시작했다(2026-10-22 「NPC 걷는 게 이상함」).
@@ -98,6 +103,12 @@ export type AutonomousMover = {
   /** movement.approachStyle: 추격 중 지금까지 뗀 칸 수(묶음 쉼 계산)와 이번 칸 뒤 쉴 시간. */
   approachStep?: number;
   approachPauseMs?: number;
+  /** 추격 박자(@/project/chaseTempo): 주인공보다 빠른 추격자가 숨 고르기 없이 달린 칸 수. */
+  chaseFastSteps?: number;
+  /** 숨 고르기 남은 시간(ms) — 이 동안 서서 헐떡인다(빠른 추격자를 따돌릴 틈). */
+  chaseBreathMs?: number;
+  /** 추격 전술(@/player/chaseTactics)이 고른 지금 목표 칸 — 바뀌면 경로를 다시 찾는다. */
+  chaseGoalKey?: string;
   /** 순찰+추격: 직전 프레임에 추격 상태였다. 추격이 끝나면 순찰을 처음 걸음부터 다시 시작한다. */
   patrolChasing?: boolean;
   chaseHome?: { readonly x: number; readonly y: number };

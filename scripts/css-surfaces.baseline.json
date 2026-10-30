@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-28T16:41:51.140Z",
+  "generatedAt": "2026-10-29T13:41:38.105Z",
   "counts": {
     "tokens": {
       "important": 0,
@@ -42,7 +42,7 @@
       "hubs": 0
     },
     "runtime": {
-      "important": 125,
+      "important": 136,
       "unlayered": 0,
       "hubs": 0
     },

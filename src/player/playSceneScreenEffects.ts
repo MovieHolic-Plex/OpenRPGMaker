@@ -1,6 +1,7 @@
 import { dialogueHost } from "@/player/playSceneDom";
 import { el } from "@/util/dom";
 import { restoreTintAfterFlash } from "@/player/screen/flashTint";
+import { FADE_OUT_TINT } from "@/player/interpreter/screenEffectPlan";
 import {
   interpolateRgba,
   isVisibleTint,
@@ -66,6 +67,25 @@ export function holdScreenFlash(scene: PlaySceneContext, color: Rgba, durationMs
   const until = nowMs() + Math.max(80, durationMs);
   flashHolds.set(host, { color, until });
   setImmediateColor(host, color, "screen-flash");
+}
+
+/**
+ * 이벤트가 「화면 효과 fadeOut」으로 화면을 덮은 채 끝나면(맵 이벤트는 장소 이동에서 끝나므로 이동 뒤의 fadeIn 이
+ * 돌지 않는다) 조작이 돌아온 주인공이 검은 화면 속을 걷게 된다 — 출하 플레이어 실측(2026-10-29 maou-konbini S1).
+ * 잠깐 기다려 다음 자동 장면이 이어받지 않았고(running 아님·입력 켜짐) 여전히 완전 검정 fadeOut 색조뿐이면 걷어 낸다.
+ * 「화면 숨기기」(hidden)·다른 색조는 저자의 뜻이라 건드리지 않는다.
+ */
+export function releaseOrphanedFadeOut(scene: PlaySceneContext, delayMs = 450): void {
+  const session = scene.session;
+  const check = () => {
+    if (scene.session !== session || scene.running || !scene.inputEnabled || scene.sys?.isActive() === false) return;
+    const screen = session.m2Runtime?.screen;
+    if (!screen || screen.hidden === true || screen.tint !== FADE_OUT_TINT) return;
+    screen.tint = "none";
+    screen.tintDurationMs = 500;
+    syncScreenEffects(scene);
+  };
+  setTimeout(check, delayMs);
 }
 
 export function syncScreenEffects(scene: PlaySceneContext): void {
@@ -231,6 +251,25 @@ function animFor(host: HTMLElement): TintAnim {
     tintAnimations.set(host, anim);
   }
   return anim;
+}
+
+/**
+ * 화면 효과 층(z 27, 캔버스 위)이 화면을 불투명하게 덮었거나 덮어 가는 중인지.
+ * - `null`: 덮지 않는다(투명·반투명 색조, 걷히는 중) — 그 아래 카메라 페이드가 보인다.
+ * - `0`: 이미 불투명하게 덮었다 — 그 아래 카메라 페이드는 보이지 않는다.
+ * - 양수: 불투명으로 가는 트윈이 이만큼 남았다.
+ * 장소 이동(playSceneMapCommands.transferTo)이 「보이지 않는 카메라 페이드」를 건너뛰는 데 쓴다.
+ */
+export function screenCoverRemainingMs(scene: PlaySceneContext): number | null {
+  const host = overlayHost(scene);
+  if (!host) return null;
+  const anim = tintAnimations.get(host);
+  // 플래시는 곧 걷히는 한순간이라 덮개로 치지 않는다.
+  if (!anim || anim.mode === "screen-flash") return null;
+  const opaque = (color: Rgba): boolean => color.a >= 0.999;
+  if (anim.durationMs <= 0 || anim.rafId === 0) return opaque(anim.displayed) ? 0 : null;
+  if (!opaque(anim.to)) return null;
+  return Math.max(0, anim.startedAt + anim.durationMs - nowMs());
 }
 
 function setImmediateColor(host: HTMLElement, color: Rgba, mode: string): void {

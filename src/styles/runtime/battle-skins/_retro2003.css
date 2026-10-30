@@ -350,6 +350,16 @@
   grid-template-columns: minmax(0, 1fr);
 }
 .battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-command-scroll-cue { grid-column: 1 / -1; }
+/* 「뒤로」는 머리줄(「스킬」) 오른쪽 빈자리에 앉는다. 목록 끝 행으로 두면 기술 3개만으로 4행 스크롤포트가
+   차서 뒤로 행 하나 때문에 「▾」가 기술 행 위에 떴다 — 기술은 다 보이는데 더 있다고 말했다(2026-10-29 실측). */
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-command-menu > .battle-submenu-header { grid-row: 1; grid-column: 1; }
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-command-menu:has(> .battle-submenu-header) > .battle-command[data-testid="actor-command-back"] {
+  grid-row: 1;
+  grid-column: 1;
+  justify-self: end;
+  width: auto;
+  min-width: 0;
+}
 /* 기술·아이템 목록은 파티 창 자리까지 넓게 편다(FF6 마법 목록처럼). 38fr 창(약 149px)에서는 22px 글자로 한글 3자부터 「홍…」「십자…」 로 잘리고,
    속성 꼬리표·MP 가 이름 자리를 더 먹어 기술 이름을 읽을 수 없었다(jrpg-loop-1 ct1 실측: 「홍련의 시공참」 143px 가 66px 에 갇힘). 목록이 열린 동안만 호스트가 두 열을 덮고, 닫히면 원래 자리로 돌아온다. */
 .battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"]:has(.battle-command-menu > .battle-submenu-header) .battle-command-host {
@@ -420,9 +430,10 @@
 .battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-party .battle-actor-status,
 .battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-party:not(:has(> .battle-actor-status:nth-child(3))) .battle-actor-status {
   grid-template-areas: "name state hpnum mpnum tp";
-  /* 상태 창이 오른쪽 넓은 칸(62fr)이 되어 수치·게이지 칸을 넓혔다. 이름은 남는 폭을 쓰고 넘치면 말줄임. */
-  /* HP 칸은 「HP」 이름표까지 들어가도록 112px — 92px 에서는 「447/51」 처럼 최대치 끝자리가 잘렸다(HIG C-95). */
-  grid-template-columns: minmax(0, 1fr) auto 112px 56px 56px;
+  /* 상태 창이 오른쪽 넓은 칸(62fr)이 되어 수치·게이지 칸을 넓혔다. 이름은 남는 폭을 쓰고 넘치면 말줄임.
+     HP 칸은 「HP」 이름표까지 들어가도록 최소 112px(92px 에서는 「447/51」 처럼 최대치 끝자리가 잘렸다, HIG C-95),
+     수치 칸은 글자만큼 늘어난다 — 네 자리 HP(「1447/1447」)가 MP 칸 밑으로 잘렸다(2026-10-29 마왕의 동굴 실측). 늘어난 만큼은 이름 칸이 내준다. */
+  grid-template-columns: minmax(0, 1fr) auto minmax(112px, max-content) minmax(56px, max-content) 56px;
 }
 /* 파티 창 배지는 작은 두 줄 격자 — 한 줄(행 높이 32px)에 두 개를 세로로 쌓아 이름 칸을 덜 민다. */
 .battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-party .battle-actor-status > .battle-status-icons,
@@ -461,9 +472,11 @@
 .battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-actor > .battle-status-icons { display: none; }
 .battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-enemy > .battle-status-icons {
   position: absolute;
-  /* 머리 위가 아니라 이름판 옆 — 머리 위에 두면 키 큰 적(발렌)의 얼굴에 걸린다(가혹 검수 r13). */
-  top: calc(100% + 8px);
-  left: calc(50% + 38px);
+  /* 머리 위가 아니라 몸 오른쪽 어깨 옆 — 머리 위에 두면 키 큰 적(발렌)의 얼굴에 걸린다(가혹 검수 r13).
+     발밑 이름판 옆(가운데 + 38px)에 두면 긴 이름(「분노한 고교생 레온」)의 끝을 「SLP」가 덮었다(마왕 편의점 처음 하는 사람 검수 2026-10-29).
+     노드 폭 = 스프라이트 폭이므로 left: 100% 가 몸의 오른쪽 끝이다 — 이름판 길이와 상관없이 비켜 선다. */
+  top: 4px;
+  left: calc(100% + 2px);
   transform: none;
   /* 두 개씩 줄을 바꿔 위로 쌓는다 — 옆 적의 배지 줄과 이어 붙어 누구 것인지 흐려졌다. */
   flex-wrap: wrap;
@@ -474,8 +487,6 @@
   z-index: 5;
   pointer-events: none;
 }
-/* 대상 선택의 ▼ 커서와 겹치지 않게 한 칸 더 올린다. */
-.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-enemy.battle-target-selected > .battle-status-icons { top: calc(100% + 8px); }
 .battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-enemy.defeated > .battle-status-icons { display: none; }
 
 /* ---- 적 이름 창 (2026-10-01) ----------------------------------------------

@@ -137,7 +137,7 @@ export function packBlockedItems(project: Project, selection: PackSelection): Pa
       ...(tileset.image.type === "bundled" ? [tileset.image.id] : []),
       ...(tileset.tileGrafts ?? []).map((graft) => graft.sourceChipset).filter((key) => !Object.hasOwn(uploaded, key)),
     ];
-    const bundledWord = bundledNames.map(storeThirdPartyName).find((word) => word !== null);
+    const bundledWord = bundledNames.map((name) => storeThirdPartyName(name)).find((word) => word !== null);
     const reason = storePublishBlockReason(id, tileset.name, null)
       ?? (bundledWord ? `제3자 팩 칩셋(「${bundledWord}」)을 씁니다.` : null);
     if (reason) blocked.push({ id, kind: "tileset", reason });

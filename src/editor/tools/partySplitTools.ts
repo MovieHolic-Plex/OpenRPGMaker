@@ -13,19 +13,64 @@ import { withJosa } from '@/util/josa';
 import { assertEventShape, upsertEventIntoMap } from './eventTools';
 import { ensureNamedSwitch } from './flagHelpers';
 import { inMapBounds, requireMap } from './mapHelpers';
-import { choices, ifSw, makePage, objGraphic, setSw, sfx, shake, textCmd, TRANSPARENT } from './puzzleKit';
+import { choices, ifSw, makePage, objGraphic, setSw, sfx, shake, textCmd, TRANSPARENT, wait } from './puzzleKit';
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from './types';
 
 interface Spot { readonly mapId: string; readonly x: number; readonly y: number }
 interface Group { readonly key: 'a' | 'b'; readonly name: string; readonly actorIds: string[]; readonly start: Spot; readonly switchAt: Spot }
-interface LeverPair { readonly index: number; readonly lever: Spot; readonly door: Spot; readonly name: string }
+interface Line { readonly speaker?: string; readonly text: string }
+interface LeverPair {
+  readonly index: number; readonly lever: Spot; readonly door: Spot; readonly name: string;
+  /** 문이 막는 칸 전부(door + doorHeight 2 면 그 바로 위 칸). */
+  readonly cells: readonly Spot[];
+  readonly text?: string; readonly prompt?: string; readonly pullLabel?: string; readonly pullText?: string; readonly doneText?: string;
+  readonly pullLines: readonly Line[]; readonly doorText?: string;
+}
 
-const KEYS = ['id', 'mapId', 'splitAt', 'groups', 'levers', 'rejoin', 'splitText', 'rejoinText'] as const;
+const KEYS = ['id', 'mapId', 'splitAt', 'groups', 'levers', 'rejoin', 'splitText', 'rejoinText',
+  'splitTrigger', 'splitWhenSwitchId', 'splitLines', 'splitQuake', 'fadeOnSplit', 'afterSplitLines', 'rejoinLines', 'gateLook', 'leverLook', 'switchLook', 'switchIdleText'] as const;
 const GROUP_KEYS = ['name', 'actorIds', 'mapId', 'x', 'y', 'switchAt'] as const;
-const LEVER_KEYS = ['lever', 'door', 'name'] as const;
+const LEVER_KEYS = ['lever', 'door', 'name', 'doorHeight', 'text', 'prompt', 'pullLabel', 'pullText', 'doneText', 'pullLines', 'doorText'] as const;
 const STEPS = [[1, 0], [-1, 0], [0, 1], [0, -1]] as const;
 /** 이 도구가 짓는 이벤트 id 꼬리 — 같은 id 로 다시 부르면 이것들만 치우고 새로 짓는다. */
-const OWN_EVENT = /^(?:split|switch_[ab]|rejoin|lever_\d+|door_\d+)$/u;
+const OWN_EVENT = /^(?:split|switch_[ab]|rejoin|lever_\d+|door_\d+(?:_top)?|after_split)$/u;
+
+/** 그림 키트(버들항 계열). 칩셋에 없으면 그 모양을 쓸 수 없다고 거절한다. */
+const PORTCULLIS = { closed: 'bd-pick-dungeon-theme-portcullis', open: 'bd-pick-dungeon-theme-portcullis-open' } as const;
+const WALL_LEVER = { up: 'bd-dg-lever-up', down: 'bd-dg-lever-down' } as const;
+const PEDESTAL = 'bd-pick-dungeon-theme-crystal-pedestal';
+type KitRow = { tiles?: number[]; upperTiles?: number[] };
+type Kit = { id: string; width: number; height: number; rows: KitRow[] };
+function kitIn(project: Project, map: GameMap, id: string, look: string): Kit {
+  const kits = (project.tilesets[map.tilesetId] as unknown as { structureKits?: Kit[] } | undefined)?.structureKits ?? [];
+  const kit = kits.find((entry) => entry.id === id);
+  if (!kit) throw new ToolError(`${look} 모양은 이 맵 칩셋(${map.tilesetId})에 키트 '${id}' 가 없어 쓸 수 없습니다 — 기본 모양을 쓰세요.`, { code: 'party-split-look-missing', mapId: map.id });
+  return kit;
+}
+/** 키트 가운데 열의 위층 칸(위→아래). */
+const midColumn = (kit: Kit): number[] => kit.rows.map((row) => (row.upperTiles ?? [])[Math.floor(kit.width / 2)] ?? -1);
+const upperAt = (map: GameMap, x: number, y: number): number => map.upperTiles[y * map.width + x] ?? -1;
+
+const LINE_SCHEMA = (description: string): JsonSchema => ({
+  type: 'array', maxItems: 12, description,
+  items: { type: 'object', additionalProperties: false, properties: { speaker: { type: 'string', description: '말하는 사람 이름(생략 = 지문)' }, text: { type: 'string', description: '대사(줄바꿈 \\n)' } }, required: ['text'] },
+});
+function linesOf(raw: unknown, label: string): Line[] {
+  if (raw === undefined) return [];
+  if (!Array.isArray(raw)) throw new ToolError(`${label} 는 [{speaker?, text}] 배열입니다.`, { code: 'invalid-args' });
+  return raw.map((entry, index) => {
+    if (!entry || typeof entry !== 'object') throw new ToolError(`${label}[${index}] 는 {speaker?, text} 입니다.`, { code: 'invalid-args' });
+    const value = entry as Record<string, unknown>;
+    rejectUnknown(`${label}[${index}]`, value, ['speaker', 'text']);
+    const text = typeof value.text === 'string' ? value.text.trim() : '';
+    if (!text) throw new ToolError(`${label}[${index}].text 가 비었습니다.`, { code: 'invalid-args' });
+    const speaker = typeof value.speaker === 'string' && value.speaker.trim() ? value.speaker.trim() : undefined;
+    return speaker ? { speaker, text } : { text };
+  });
+}
+const sayLines = (lines: readonly Line[]): Command[] => lines.map((line) => (line.speaker ? { kind: 'text', speaker: line.speaker, body: line.text } : { kind: 'text', body: line.text }) as Command);
+const optText = (value: unknown): string | undefined => (typeof value === 'string' && value.trim() ? value.trim() : undefined);
+const screen = (effect: 'fadeOut' | 'fadeIn', durationMs: number): Command => ({ kind: 'm2Command', commandId: 'm2-202-screen-effect', fields: { effect, value: '', durationMs } } as Command);
 
 const cellSchema = (description: string): JsonSchema => ({
   type: 'object', additionalProperties: false, description,
@@ -113,7 +158,7 @@ function solve(project: Project, groups: readonly Group[], levers: readonly Leve
   const order: { lever: number; by: 'a' | 'b' | 'both' }[] = [];
   for (;;) {
     const blocked = new Set(staticBlocked);
-    levers.forEach((pair) => { if (!open.has(pair.index)) blocked.add(keyOf(pair.door)); });
+    levers.forEach((pair) => { if (!open.has(pair.index)) for (const cell of pair.cells) blocked.add(keyOf(cell)); });
     const [ra, rb] = groups.map((group) => walk(project, group.start, blocked)) as [Set<string>, Set<string>];
     let progressed = false;
     for (const pair of levers) {
@@ -160,7 +205,10 @@ export const PARTY_SPLIT_TOOLS: readonly ToolDefinition[] = [
       'rejoin 칸에 먼저 닿은 묶음은 그 자리에서 기다리고 조작이 자동으로 다른 묶음으로 넘어가며, 둘 다 닿으면 하나로 합쳐진다. 묶음은 한 맵이든 두 맵이든 된다(그룹마다 mapId). ' +
       '쓰기 전에 끝까지 풀리는지 칸 단위로 검사한다(타일 통행·이동 이벤트·늘 막는 이벤트를 보고, 닿는 레버를 당겨 문을 여는 것을 되풀이) — 안 풀리면 거절하고 어느 묶음이 어디서 막혔는지 돌려준다. ' +
       '결과 data.solve 에 레버를 당기는 순서와 묶음, data.warnings 에 쓸모없는 문(없어도 풀림)·레버 없이도 만나는 길을 알린다. 같은 id 로 다시 부르면 앞서 지은 이벤트를 치우고 다시 짓는다. ' +
-      '두 묶음이 지나갈 길·벽은 먼저 맵에 있어야 한다(이 도구는 지형을 칠하지 않는다). 문 칸은 걸을 수 있는 길 칸(문 이벤트가 막는다), 레버·전환 지점은 곁에 설 수 있는 칸에 둔다.',
+      '두 묶음이 지나갈 길·벽은 먼저 맵에 있어야 한다(이 도구는 지형을 칠하지 않는다). 문 칸은 걸을 수 있는 길 칸(문 이벤트가 막는다), 레버·전환 지점은 곁에 설 수 있는 칸에 둔다. ' +
+      '모양·연출(선택): gateLook portcullis = 칩셋 쇠창살문 타일(doorHeight 2 로 두 칸 높이 옆 틈을 한 창살로), leverLook wall = 벽걸이 레버 타일, switchLook pedestal = 받침 위 수정. ' +
+      'splitTrigger auto(+ splitWhenSwitchId) = 이야기 순서가 되면 맵에 들어서자마자 갈린다. splitLines·afterSplitLines·rejoinLines 와 레버마다 text·prompt·pullText·pullLines·doorText 로 대사를 그 장소에 맞게 쓴다. ' +
+      'fadeOnSplit 은 갈라질 때 맵 다시 읽기를 어둠으로 가린다(밝히기는 갈라진 직후 이벤트가 한다).',
     parameters: {
       type: 'object',
       additionalProperties: false,
@@ -189,13 +237,34 @@ export const PARTY_SPLIT_TOOLS: readonly ToolDefinition[] = [
           description: '레버→문 짝. 레버(조사해서 당김)가 짝 문(닫힌 철문 이벤트)을 연다. 보통 묶음 A 쪽 레버가 묶음 B 쪽 문을, B 쪽 레버가 A 쪽 문을 연다',
           items: {
             type: 'object', additionalProperties: false,
-            properties: { lever: cellSchema('레버 칸'), door: cellSchema('문 칸(걸을 수 있는 길 칸)'), name: { type: 'string', description: '문 이름(생략 = 철문 n)' } },
+            properties: {
+              lever: cellSchema('레버 칸(leverLook wall 이면 벽 앞면 칸 — 바로 남쪽 바닥에서 조사)'), door: cellSchema('문 칸(걸을 수 있는 길 칸)'), name: { type: 'string', description: '문 이름(생략 = 철문 n)' },
+              doorHeight: { type: 'integer', enum: [1, 2], description: '2 = 문 칸과 그 바로 위 칸을 함께 막는다(두 칸 높이 옆 틈을 쇠창살 하나로). 생략 = 1' },
+              text: { type: 'string', description: '레버를 조사할 때 첫 줄(생략 = 기본)' },
+              prompt: { type: 'string', description: '당길지 묻는 줄(생략 = 「레버를 당길까?」)' },
+              pullLabel: { type: 'string', description: '당기는 선택지 글(생략 = 「당긴다」)' },
+              pullText: { type: 'string', description: '당긴 직후 줄(생략 = 「어딘가에서 ~ 열리는 소리」)' },
+              doneText: { type: 'string', description: '당긴 뒤 다시 조사할 때 줄' },
+              pullLines: LINE_SCHEMA('당긴 뒤 이어지는 대사(벽 너머 동료의 대답 등)'),
+              doorText: { type: 'string', description: '닫힌 문을 조사할 때 줄' },
+            },
             required: ['lever', 'door'],
           },
         },
         rejoin: cellSchema('두 묶음이 다시 만나는 칸(예: 위층 계단 앞). 둘 다 밟으면 합쳐진다'),
         splitText: { type: 'string', description: '갈라질 때 대사(생략 = 기본)' },
         rejoinText: { type: 'string', description: '합쳐질 때 대사(생략 = 기본)' },
+        splitTrigger: { type: 'string', enum: ['touch', 'auto'], description: 'touch(기본) = splitAt 칸을 밟으면 · auto = 이 맵에 들어오면 곧바로(splitAt 은 도착 칸, 우회로 없이 내려서자마자 갈린다)' },
+        splitWhenSwitchId: { type: 'string', description: '이 스위치가 켜져 있을 때만 갈라진다(이야기 순서 잠금, 생략 = 늘)' },
+        splitLines: LINE_SCHEMA('갈라지기 직전 대사(splitText 앞)'),
+        splitQuake: { type: 'boolean', description: 'true = 갈라지는 순간 쇳소리·흔들림·번쩍임(바닥이 꺼지거나 창살이 내려꽂힐 때)' },
+        fadeOnSplit: { type: 'boolean', description: 'true = 갈라질 때 화면을 어둡게 했다가 첫 묶음 자리에서 밝힌다(맵 다시 읽기를 가린다)' },
+        afterSplitLines: LINE_SCHEMA('갈라진 직후 첫 묶음 자리에서 한 번 나오는 대사(벽 너머 대화 등)'),
+        rejoinLines: LINE_SCHEMA('합쳐진 뒤 대사(rejoinText 뒤)'),
+        gateLook: { type: 'string', enum: ['door', 'portcullis'], description: 'door(기본) = 캐릭터 철문 그림 · portcullis = 칩셋의 내리닫이 쇠창살문 타일(문 이벤트는 보이지 않고 막기만, 당기면 창살이 올라간 그림으로 바뀐다)' },
+        leverLook: { type: 'string', enum: ['floor', 'wall'], description: 'floor(기본) = 바닥 위 레버 그림 · wall = 칩셋의 벽걸이 레버 타일(레버 칸은 벽 앞면, 당기면 내린 그림으로)' },
+        switchLook: { type: 'string', enum: ['orb', 'pedestal'], description: 'orb(기본) = 빛나는 구슬 그림 · pedestal = 칩셋의 받침 위 수정(1×2, 전환 칸이 받침 아랫칸)' },
+        switchIdleText: { type: 'string', description: '다른 묶음을 조작 중일 때 전환 지점을 조사한 줄(생략 = 「희미하게 빛나는 구슬이다.」)' },
       },
       required: ['mapId', 'splitAt', 'groups', 'rejoin'],
     },
@@ -240,11 +309,18 @@ export const PARTY_SPLIT_TOOLS: readonly ToolDefinition[] = [
         if (!raw || typeof raw !== 'object') throw new ToolError(`levers[${index}] 는 {lever,door} 입니다.`, { code: 'invalid-args' });
         const value = raw as Record<string, unknown>;
         rejectUnknown(`levers[${index}]`, value, LEVER_KEYS);
+        const door = spotOf(draft, value.door, baseMap.id, `levers[${index}].door`);
+        const height = value.doorHeight === undefined ? 1 : Number(value.doorHeight);
+        if (height !== 1 && height !== 2) throw new ToolError(`levers[${index}].doorHeight 는 1 또는 2 입니다.`, { code: 'invalid-args' });
+        if (height === 2 && door.y < 1) throw new ToolError(`levers[${index}] 문 위 칸이 맵 밖입니다.`, { code: 'invalid-args' });
         return {
           index: index + 1,
           lever: spotOf(draft, value.lever, baseMap.id, `levers[${index}].lever`),
-          door: spotOf(draft, value.door, baseMap.id, `levers[${index}].door`),
+          door,
+          cells: height === 2 ? [{ mapId: door.mapId, x: door.x, y: door.y - 1 }, door] : [door],
           name: typeof value.name === 'string' && value.name.trim() ? value.name.trim() : `철문 ${index + 1}`,
+          text: optText(value.text), prompt: optText(value.prompt), pullLabel: optText(value.pullLabel), pullText: optText(value.pullText), doneText: optText(value.doneText),
+          pullLines: linesOf(value.pullLines, `levers[${index}].pullLines`), doorText: optText(value.doorText),
         };
       });
       if (levers.length > 8) throw new ToolError('levers 는 8짝까지입니다.', { code: 'invalid-args' });
@@ -268,7 +344,7 @@ export const PARTY_SPLIT_TOOLS: readonly ToolDefinition[] = [
       };
       claim(splitAt, 'splitAt');
       claim(rejoin, 'rejoin');
-      for (const pair of levers) { claim(pair.lever, `레버 ${pair.index}`); claim(pair.door, `문 ${pair.index}`); }
+      for (const pair of levers) { claim(pair.lever, `레버 ${pair.index}`); for (const cell of pair.cells) claim(cell, `문 ${pair.index}`); }
       const groups: Group[] = rawGroups.map((entry) => {
         const map = draft.maps[entry.start.mapId]!;
         let switchAt: Spot | null = entry.value.switchAt === undefined ? null : spotOf(draft, entry.value.switchAt, entry.start.mapId, `groups[${entry.index}].switchAt`);
@@ -305,15 +381,16 @@ export const PARTY_SPLIT_TOOLS: readonly ToolDefinition[] = [
         throw new ToolError(`끝까지 풀리지 않습니다 — ${withJosa(stuck, '이/가')} 합류 칸 (${rejoin.x}, ${rejoin.y}) 에 닿지 못합니다.${closed.length ? ` 끝내 안 열린 문: ${closed.join(', ')}.` : ''} 길·벽(get_map_region)이나 레버·문 자리를 고치세요. 열린 순서: ${result.order.map((step) => `레버 ${step.lever}(${step.by})`).join(' → ') || '없음'}.`, { code: 'party-split-unsolvable', mapId: rejoin.mapId });
       }
       // 퍼즐다운가 — 문 없이도 풀리면 레버가 쓸모없다. 문 하나만 닫아 두고(나머지 열고) 풀리면 그 문은 길을 막지 않는다.
-      const noDoors = solve(draft, groups, [], rejoin, new Set([...staticBlocked, ...levers.map((pair) => keyOf(pair.door))]));
+      const doorKeys = (pair: LeverPair): string[] => pair.cells.map(keyOf);
+      const noDoors = solve(draft, groups, [], rejoin, new Set([...staticBlocked, ...levers.flatMap(doorKeys)]));
       if (levers.length && noDoors.solvable) warnings.push('레버를 하나도 안 당겨도 두 묶음이 합류 칸에 닿습니다 — 문이 길목을 막지 못합니다(문 곁으로 돌아가는 길이 있음). 문을 폭 1칸 길목에 두세요.');
       else for (const pair of levers) {
         // 이 문만 영영 닫혀 있고 나머지 문은 다 열렸다고 쳐도 풀리면, 이 문은 아무 길도 막지 않는다.
-        if (solve(draft, groups, [], rejoin, new Set([...staticBlocked, keyOf(pair.door)])).solvable) warnings.push(`문 ${pair.index}(${pair.door.x}, ${pair.door.y}) 는 열지 않아도 풀립니다 — 길을 막지 않습니다(곁으로 돌아가는 길이 있음).`);
+        if (solve(draft, groups, [], rejoin, new Set([...staticBlocked, ...doorKeys(pair)])).solvable) warnings.push(`문 ${pair.index}(${pair.door.x}, ${pair.door.y}) 는 열지 않아도 풀립니다 — 길을 막지 않습니다(곁으로 돌아가는 길이 있음).`);
       }
       if (!result.switchReachable.a) warnings.push(`${groupA.name}의 전환 지점 (${groupA.switchAt.x}, ${groupA.switchAt.y}) 곁에 설 수 없습니다 — 조작을 바꿀 수 없습니다.`);
       if (!result.switchReachable.b) warnings.push(`${groupB.name}의 전환 지점 (${groupB.switchAt.x}, ${groupB.switchAt.y}) 곁에 설 수 없습니다 — 조작을 바꿀 수 없습니다.`);
-      const allClosed = new Set([...staticBlocked, ...levers.map((pair) => keyOf(pair.door))]);
+      const allClosed = new Set([...staticBlocked, ...levers.flatMap(doorKeys)]);
       const crossing = walk(draft, groupA.start, allClosed);
       const closedReachB = walk(draft, groupB.start, allClosed);
       // 짝인가 — 레버를 당긴 묶음과, 그 문 앞에 (문이 다 닫힌 채로) 서는 묶음이 다르면 서로 열어 주는 짝이다.
@@ -324,6 +401,57 @@ export const PARTY_SPLIT_TOOLS: readonly ToolDefinition[] = [
       });
       if (selfOpened.length && selfOpened.length === result.order.length) warnings.push(`모든 레버를 그 문 앞의 묶음이 스스로 당깁니다(${selfOpened.map((step) => `레버 ${step.lever}`).join(', ')}) — 서로 열어 주는 짝이 아닙니다. 한쪽 레버가 다른 쪽 문을 열게 레버·문 자리를 바꾸세요.`);
       if (crossing.has(keyOf(groupB.start))) warnings.push(`문이 모두 닫혀 있어도 ${withJosa(groupA.name, '이/가')} ${groupB.name}의 출발 칸까지 걸어갈 수 있습니다 — 두 길이 갈라져 있지 않습니다.`);
+
+      // 모양(칩셋 타일) — 문·레버·전환 지점을 캐릭터 그림 대신 칩셋 키트로.
+      const gateLook = args.gateLook === undefined ? 'door' : String(args.gateLook);
+      const leverLook = args.leverLook === undefined ? 'floor' : String(args.leverLook);
+      const switchLook = args.switchLook === undefined ? 'orb' : String(args.switchLook);
+      if (!['door', 'portcullis'].includes(gateLook)) throw new ToolError(`gateLook 은 door·portcullis 중 하나입니다.`, { code: 'invalid-args' });
+      if (!['floor', 'wall'].includes(leverLook)) throw new ToolError(`leverLook 은 floor·wall 중 하나입니다.`, { code: 'invalid-args' });
+      if (!['orb', 'pedestal'].includes(switchLook)) throw new ToolError(`switchLook 은 orb·pedestal 중 하나입니다.`, { code: 'invalid-args' });
+      if (args.splitTrigger !== undefined && !['touch', 'auto'].includes(String(args.splitTrigger))) throw new ToolError('splitTrigger 는 touch·auto 중 하나입니다.', { code: 'invalid-args' });
+      const splitAuto = args.splitTrigger === 'auto';
+      const splitWhen = optText(args.splitWhenSwitchId);
+      if (splitWhen && !draft.switches.some((entry) => entry.id === splitWhen)) warnings.push(`splitWhenSwitchId '${splitWhen}' 가 스위치 목록에 없습니다 — 켜는 곳이 없으면 영영 갈라지지 않습니다.`);
+      const splitLines = linesOf(args.splitLines, 'splitLines');
+      const afterSplitLines = linesOf(args.afterSplitLines, 'afterSplitLines');
+      const rejoinLines = linesOf(args.rejoinLines, 'rejoinLines');
+      const fadeOnSplit = args.fadeOnSplit === true;
+      // 쇠창살 그림 — 문 칸(아래)부터 키트 가운데 열 아랫칸, doorHeight 2 면 그 위 칸에 윗칸.
+      const gateTiles = new Map<number, { cells: { spot: Spot; closed: number; open: number }[] }>();
+      if (gateLook === 'portcullis') for (const pair of levers) {
+        const map = draft.maps[pair.door.mapId]!;
+        const closed = midColumn(kitIn(draft, map, PORTCULLIS.closed, 'gateLook portcullis')), opened = midColumn(kitIn(draft, map, PORTCULLIS.open, 'gateLook portcullis'));
+        const cells = pair.cells.map((spot, i) => {
+          const k = closed.length - pair.cells.length + i;
+          if (upperAt(map, spot.x, spot.y) >= 0) throw new ToolError(`문 ${pair.index} 칸 (${spot.x}, ${spot.y}) 위층에 이미 그림이 있어 쇠창살을 칠할 수 없습니다.`, { code: 'party-split-look-occupied', mapId: map.id });
+          return { spot, closed: closed[k] ?? -1, open: opened[k] ?? -1 };
+        });
+        gateTiles.set(pair.index, { cells });
+      }
+      const leverTiles = new Map<number, { up: number; down: number }>();
+      if (leverLook === 'wall') for (const pair of levers) {
+        const map = draft.maps[pair.lever.mapId]!;
+        const one = (id: string): number => { const row = kitIn(draft, map, id, 'leverLook wall').rows[0]; const t = (row?.upperTiles ?? [])[0] ?? -1; return t; };
+        if (canMove(draft, map, pair.lever.x, pair.lever.y + 1, pair.lever.x, pair.lever.y) || !inMapBounds(map, pair.lever.x, pair.lever.y + 1)) throw new ToolError(`레버 ${pair.index} (${pair.lever.x}, ${pair.lever.y}) 는 벽 앞면 칸이 아닙니다 — leverLook wall 은 바로 남쪽이 바닥인 벽 칸에 겁니다.`, { code: 'party-split-lever-not-wall', mapId: map.id });
+        if (upperAt(map, pair.lever.x, pair.lever.y) >= 0) throw new ToolError(`레버 ${pair.index} 칸 위층에 이미 그림이 있습니다.`, { code: 'party-split-look-occupied', mapId: map.id });
+        leverTiles.set(pair.index, { up: one(WALL_LEVER.up), down: one(WALL_LEVER.down) });
+      }
+      if (switchLook === 'pedestal') for (const group of groups) {
+        const map = draft.maps[group.switchAt.mapId]!;
+        const kit = kitIn(draft, map, PEDESTAL, 'switchLook pedestal');
+        const top = group.switchAt.y - (kit.height - 1);
+        if (top < 0) throw new ToolError(`전환 지점 (${group.switchAt.x}, ${group.switchAt.y}) 위로 받침 그림이 맵 밖입니다.`, { code: 'invalid-args' });
+        kit.rows.forEach((row, dy) => {
+          const y = top + dy, i = y * map.width + group.switchAt.x;
+          const up = (row.upperTiles ?? [])[0] ?? -1, lo = (row.tiles ?? [])[0] ?? -1;
+          if (up >= 0) { if (upperAt(map, group.switchAt.x, y) >= 0) throw new ToolError(`전환 지점 (${group.switchAt.x}, ${y}) 위층에 이미 그림이 있습니다.`, { code: 'party-split-look-occupied', mapId: map.id }); map.upperTiles[i] = up; }
+          if (lo >= 0) map.lowerTiles[i] = lo;
+        });
+      }
+      for (const [, gate] of gateTiles) for (const cell of gate.cells) { const map = draft.maps[cell.spot.mapId]!; if (cell.closed >= 0) map.upperTiles[cell.spot.y * map.width + cell.spot.x] = cell.closed; }
+      for (const pair of levers) { const t = leverTiles.get(pair.index); if (t) { const map = draft.maps[pair.lever.mapId]!; map.upperTiles[pair.lever.y * map.width + pair.lever.x] = t.up; } }
+      const tileSwap = (spot: Spot, tile: number): Command => ({ kind: 'changeTile', mapId: spot.mapId, layer: 'upper', x: spot.x, y: spot.y, tile } as Command);
 
       // 스위치·파티 묶음 이름
       const sw = (tail: string): string => `${id}_${tail}`;
@@ -349,16 +477,44 @@ export const PARTY_SPLIT_TOOLS: readonly ToolDefinition[] = [
       // 1) 갈라지는 칸
       const splitText = typeof args.splitText === 'string' && args.splitText.trim() ? args.splitText.trim() : `여기서 둘로 나뉘자. ${groupA.name}, 그리고 ${groupB.name}.`;
       put(splitAt, at(splitAt, sw('split'), '파티 나누기', [
-        makePage({ id: `${id}_split_p1`, name: '갈라지기', graphic: TRANSPARENT, trigger: 'playerTouch', priority: 'below', overlapForbidden: false, commands: [
-          textCmd(splitText),
-          preset(groupA), preset(groupB),
-          setSw(ARRIVED_A, false), setSw(ARRIVED_B, false), setSw(DONE, false),
-          ...levers.map((pair) => setSw(sw(`lever_${pair.index}`), false)),
-          setSw(SPLIT, true),
-          ...recall(groupA),
-        ] }),
+        // 파티 불러오기(recallParty)는 맵을 다시 읽어 그 뒤 명령이 이어지지 않는다 — 밝히기·첫 대사는 따로 둔 「갈라진 직후」 이벤트가 한다.
+        makePage({ id: `${id}_split_p1`, name: '갈라지기', graphic: TRANSPARENT, trigger: splitAuto ? 'auto' : 'playerTouch', priority: 'below', overlapForbidden: false,
+          ...(splitWhen ? { conditions: [{ kind: 'switch', switchId: splitWhen, value: true }] } : {}),
+          commands: [
+            ...sayLines(splitLines),
+            ...(args.splitQuake === true ? [sfx('switch-clack'), shake(6, 700), { kind: 'm2Command', commandId: 'm2-047-flash-screen', fields: { color: 'white', value: 'flash', durationMs: 200 } } as Command] : []),
+            textCmd(splitText),
+            preset(groupA), preset(groupB),
+            setSw(ARRIVED_A, false), setSw(ARRIVED_B, false), setSw(DONE, false),
+            ...levers.map((pair) => setSw(sw(`lever_${pair.index}`), false)),
+            setSw(SPLIT, true),
+            ...(fadeOnSplit ? [screen('fadeOut', 500)] : []),
+            ...recall(groupA),
+          ] }),
         { ...HIDDEN(`${id}_split_p2`), conditions: [{ kind: 'switch', switchId: SPLIT, value: true }] },
       ]), '갈라지는 칸');
+      // 1-b) 갈라진 직후 한 번 — 어둡게 했으면 밝히고, 벽 너머 대사.
+      if (fadeOnSplit || afterSplitLines.length) {
+        const AFTER = sw('after_split');
+        ensureNamedSwitch(draft, AFTER, `파티 나누기 ${id}: 갈라진 직후 대사`);
+        const startMap = draft.maps[groupA.start.mapId]!;
+        let spot: Spot | null = null;
+        for (let y = 0; y < startMap.height && !spot; y += 1) for (let x = 0; x < startMap.width && !spot; x += 1) {
+          const c = { mapId: startMap.id, x, y };
+          if (!taken.has(keyOf(c)) && !startMap.events.some((event) => event.x === x && event.y === y) && !canMove(draft, startMap, x, y + 1, x, y) && !canMove(draft, startMap, x + 1, y, x, y)) spot = c;
+        }
+        if (!spot) throw new ToolError('갈라진 직후 이벤트를 둘 빈 벽 칸이 없습니다.', { code: 'party-split-no-cell', mapId: startMap.id });
+        taken.add(keyOf(spot));
+        put(spot, { ...at(spot, AFTER, '갈라진 직후', [
+          HIDDEN(`${id}_after_split_p0`),
+          makePage({ id: `${id}_after_split_p1`, name: '갈라진 직후', conditions: [{ kind: 'switch', switchId: SPLIT, value: true }], graphic: TRANSPARENT, trigger: 'auto', priority: 'below', overlapForbidden: false, commands: [
+            ...(fadeOnSplit ? [screen('fadeIn', 700), wait(400)] : []),
+            ...sayLines(afterSplitLines),
+            setSw(AFTER, true),
+          ] }),
+          { ...HIDDEN(`${id}_after_split_p2`), conditions: [{ kind: 'switch', switchId: AFTER, value: true }] },
+        ]) }, '갈라진 직후');
+      }
 
       // 2) 전환 지점 — 자기 묶음을 조작할 때만 다른 묶음으로 바꾼다.
       for (const group of groups) {
@@ -368,10 +524,10 @@ export const PARTY_SPLIT_TOOLS: readonly ToolDefinition[] = [
             { text: `${other.name}(으)로 바꾼다`, branch: [sfx('switch-clack'), ...recall(other)] },
             { text: '그대로 간다', branch: [] },
           ]),
-        ], [textCmd('희미하게 빛나는 구슬이다.')]);
+        ], [textCmd(optText(args.switchIdleText) ?? '희미하게 빛나는 구슬이다.')]);
         put(group.switchAt, at(group.switchAt, sw(`switch_${group.key}`), `전환 지점 (${group.name})`, [
           HIDDEN(`${id}_switch_${group.key}_p0`),
-          makePage({ id: `${id}_switch_${group.key}_p1`, name: '조작 바꾸기', conditions: [{ kind: 'switch', switchId: SPLIT, value: true }], graphic: objGraphic('object2', 6), commands: [mine] }),
+          makePage({ id: `${id}_switch_${group.key}_p1`, name: '조작 바꾸기', conditions: [{ kind: 'switch', switchId: SPLIT, value: true }], graphic: switchLook === 'pedestal' ? TRANSPARENT : objGraphic('object2', 6), commands: [mine] }),
           { ...HIDDEN(`${id}_switch_${group.key}_p2`), conditions: [{ kind: 'switch', switchId: DONE, value: true }] },
         ]), `전환 지점 ${group.key.toUpperCase()}`);
       }
@@ -379,20 +535,34 @@ export const PARTY_SPLIT_TOOLS: readonly ToolDefinition[] = [
       // 3) 레버 → 문
       for (const pair of levers) {
         const open = sw(`lever_${pair.index}`);
+        const leverTile = leverTiles.get(pair.index);
+        const gate = gateTiles.get(pair.index);
         put(pair.lever, at(pair.lever, sw(`lever_${pair.index}`), `레버 → ${pair.name}`, [
-          makePage({ id: `${id}_lever_${pair.index}_p1`, name: '레버 (당기기 전)', graphic: objGraphic('object2', 0, 'down'), commands: [
-            textCmd('묵직한 레버다. 어딘가의 문과 이어져 있는 것 같다.'),
-            choices('레버를 당길까?', [
-              { text: '당긴다', branch: [sfx('switch-clack'), shake(3, 400), setSw(open, true), textCmd(`철컥— 어딘가에서 ${withJosa(pair.name, '이/가')} 열리는 소리가 났다.`)] },
+          makePage({ id: `${id}_lever_${pair.index}_p1`, name: '레버 (당기기 전)', graphic: leverTile ? TRANSPARENT : objGraphic('object2', 0, 'down'), commands: [
+            textCmd(pair.text ?? '묵직한 레버다. 어딘가의 문과 이어져 있는 것 같다.'),
+            choices(pair.prompt ?? '레버를 당길까?', [
+              { text: pair.pullLabel ?? '당긴다', branch: [
+                sfx('switch-clack'), shake(3, 400),
+                ...(leverTile ? [tileSwap(pair.lever, leverTile.down)] : []),
+                ...(gate ? gate.cells.filter((cell) => cell.open !== cell.closed).map((cell) => tileSwap(cell.spot, cell.open)) : []),
+                setSw(open, true),
+                textCmd(pair.pullText ?? `철컥— 어딘가에서 ${withJosa(pair.name, '이/가')} 열리는 소리가 났다.`),
+                ...sayLines(pair.pullLines),
+              ] },
               { text: '그만둔다', branch: [] },
             ]),
           ] }),
-          makePage({ id: `${id}_lever_${pair.index}_p2`, name: '레버 (당김)', conditions: [{ kind: 'switch', switchId: open, value: true }], graphic: objGraphic('object2', 0, 'up'), commands: [textCmd('레버가 당겨져 있다.')] }),
+          makePage({ id: `${id}_lever_${pair.index}_p2`, name: '레버 (당김)', conditions: [{ kind: 'switch', switchId: open, value: true }], graphic: leverTile ? TRANSPARENT : objGraphic('object2', 0, 'up'), commands: [textCmd(pair.doneText ?? '레버가 당겨져 있다.')] }),
         ]), `레버 ${pair.index}`);
-        put(pair.door, at(pair.door, sw(`door_${pair.index}`), pair.name, [
-          makePage({ id: `${id}_door_${pair.index}_p1`, name: '닫힘', graphic: objGraphic('object1', 3, 'down'), commands: [textCmd('굳게 닫혀 있다. 어딘가의 레버로 열리는 것 같다.')] }),
-          makePage({ id: `${id}_door_${pair.index}_p2`, name: '열림', conditions: [{ kind: 'switch', switchId: open, value: true }], graphic: objGraphic('object1', 3, 'up'), priority: 'below', overlapForbidden: false, commands: [] }),
-        ]), `문 ${pair.index}`);
+        const doorText = pair.doorText ?? '굳게 닫혀 있다. 어딘가의 레버로 열리는 것 같다.';
+        pair.cells.forEach((cell, k) => {
+          const bottom = sameSpot(cell, pair.door);
+          const eventId = bottom ? sw(`door_${pair.index}`) : sw(`door_${pair.index}_top`);
+          put(cell, at(cell, eventId, pair.name, [
+            makePage({ id: `${eventId}_p1`, name: '닫힘', graphic: gate || !bottom ? TRANSPARENT : objGraphic('object1', 3, 'down'), commands: [textCmd(doorText)] }),
+            makePage({ id: `${eventId}_p2`, name: '열림', conditions: [{ kind: 'switch', switchId: open, value: true }], graphic: gate || !bottom ? TRANSPARENT : objGraphic('object1', 3, 'up'), priority: 'below', overlapForbidden: false, commands: [] }),
+          ]), k === pair.cells.length - 1 ? `문 ${pair.index}` : `문 ${pair.index} 윗칸`);
+        });
       }
 
       // 4) 합류 칸 — 먼저 온 묶음은 기다리고 조작이 다른 묶음으로 넘어간다. 둘 다 오면 합친다(첫 묶음 → 둘째 묶음 순서).
@@ -403,6 +573,7 @@ export const PARTY_SPLIT_TOOLS: readonly ToolDefinition[] = [
         ...[...merged].reverse().map((actorId): Command => ({ kind: 'changeParty', actorId, action: 'lead' })),
         setSw(DONE, true), setSw(CTRL_B, false),
         textCmd(rejoinText),
+        ...sayLines(rejoinLines),
       ];
       const arrive = (self: Group, other: Group): Command[] => [
         setSw(self.key === 'a' ? ARRIVED_A : ARRIVED_B, true),

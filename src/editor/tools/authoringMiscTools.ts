@@ -308,6 +308,7 @@ function parseCharacterProfile(project: Project, value: unknown): CharacterProfi
   const dialogue = record.dialogue === undefined ? undefined : normalizeSpeakerDialogueProfile(recordArg(record.dialogue, "profile.dialogue"));
   return {
     ...(optionalString(record.displayName) ? { displayName: optionalString(record.displayName) } : {}),
+    ...(optionalString(record.note) ? { note: optionalString(record.note) } : {}),
     ...(birthday ? { birthday } : {}),
     ...(giftPrefs ? { giftPrefs } : {}),
     ...(giftResponses ? { giftResponses } : {}),
@@ -317,7 +318,7 @@ function parseCharacterProfile(project: Project, value: unknown): CharacterProfi
 
 const upsertCharacterProfile: ToolDefinition = {
   name: "upsert_character_profile",
-  description: "characterId별 인물 프로필의 표시 이름·생일·선물 선호·반응 문구·대화(이름 색·목소리·말 빠르기)를 등록하거나 수정한다.",
+  description: "characterId별 인물 프로필의 표시 이름·한 줄 소개(note)·생일·선물 선호·반응 문구·대화(이름 색·목소리·말 빠르기)를 등록하거나 수정한다. displayName 이 대사 화자 이름과 같으면 그 화자의 대사에 이름 색·목소리가 붙는다.",
   mode: "write",
   domains: ["database"],
   parameters: UPSERT_CHARACTER_PROFILE_SCHEMA,

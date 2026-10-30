@@ -5,6 +5,567 @@
 
 <!-- releases -->
 
+## 0.368.1 — 2026-10-30
+
+### 수정
+
+- **runtime** — exit destination label no longer covers authored door art (#3960) (`5f3d25b`)
+- **qa** — battle driver no longer 'presses' inert skill rows and waits out the op timeout (#3959) (`c30731f`)
+
+## 0.368.0 — 2026-10-30
+
+### 기능
+
+- **workshop** — natural objects drop geometric shapes — organic recipe, Beodeul exemplars, judge Q7, 12 crown checks (WIP: VQA not at 0 majors) (#3279) (`e5e0fd4`)
+- **runtime** — door kinds x footprint — auto glass, double, slide, shutter doors open with their own art (#3949) (`10cd5e0`)
+- **runtime** — snap non-integer camera zoom >= 1 to an integer for pixel games (#3950) (`b4fad37`)
+
+### 수정
+
+- **player** — follow-ups to lazy tileset definitions — stall-guarded fetch with progress, immutable json cache, build assertions (#3958) (`7027c93`)
+- **runtime** — first-timer review fixes — nameplate side, victory box, redundant buffs, enemy plates, exit labels (#3956) (`33ff457`)
+- **bgm** — install the public bgm-v1 pack without gh (#3565) (`85d334c`)
+- **editor** — 자료집 개요에 「이야기 구조」(퀘스트·엔딩 목록) 절 (#3954) (`9f3cde2`)
+- **runtime** — storefront door rect from the label column, not the clicked leaf (#3955) (`33e4bcb`)
+- **runtime** — cut dead black time on retry transfers (caught / battle-loss) (#3953) (`1fa4589`)
+- **openwiki** — regenerate the index (`996e8c6`)
+- **ai** — store music sees every pack, marks the recommended pick, wires gallery music to the start map (`6a06568`)
+
+### 성능
+
+- **player** — load only the bundled tileset definitions the game uses (52MB entry chunk → 7.6MB) (#3957) (`3684ce3`)
+- **player** — reuse life-calendar HUD lines between clock minutes (#3580) (`d2810c2`)
+- **player** — skip page resolution for events that cannot match the frame query (#3598) (`6310ab3`)
+- **player** — scan minimap overlays once per frame (#3675) (`28bdc74`)
+- **player** — reuse map background layers between frames (#3693) (`ddb563d`)
+- **player** — scan zone feedback overlays once per frame (#3735) (`bb7e72b`)
+
+## 0.367.0 — 2026-10-30
+
+### 기능
+
+- **assistant** — open-field ambushers + chasers go home together + qa repeatUntilMap (#3947) (`17b7340`)
+
+## 0.366.0 — 2026-10-30
+
+### 기능
+
+- **dungeon** — rooms carry height levels with village stone stairs, labyrinth follows the design, entrance from the arrival side, cross-formula bounce (`6052bd9`)
+- **village** — plain requests get one east-west tier band — no north-south tier slivers or mid-field stairs (`3fccf4f`)
+- **village** — code terrain round 2 — broken cliffs, swamp decks, fishing banks, ford-end reachability (`ece7fc1`)
+
+### 수정
+
+- **player,ai** — QA checkpoints carry the current objective line; scene starts pick the furthest objective already passed by the on-switches (`4869978`)
+- **player** — examine prompt names the page's speaker instead of an internal tile/event id (gym leader showed 'gyd_dais_gr…') (`2c459d6`)
+- **ai** — puzzle gates — two-way passage choices go to the far side of the way the player faces; note gates whose opening device is unreachable from the gate's outside (`e3a3012`)
+- **village** — built land matches the code-terrain preview (no salt terraces on code-terrain villages); requested house kinds win over nearer small fallbacks (`1ce3868`)
+- **village** — request direction exits (spec.exits) reach the map edge, crossing rivers by plank; exits-only layout keeps auto placement (`7e8d624`)
+- **ai,player** — chase music follows the chase switch; music-only requests stay music-only (`eb8ab92`)
+- **ai** — dungeon door falls back to the reachable row nearest the world-side edge when no road reaches the edge itself (`101a942`)
+- **ai** — one outside door per dungeon, on the world-side edge road cell of the village/street it is entered from (`a8ab983`)
+- **ai** — dungeon builder reads empty/object hints as not given (terra's village hints.layout object failed author_dungeon validation); spec.exits sets the entrance only when the design names neither side nor entrance spot (`ede7f80`)
+- **ai** — bossTalkBattles marked pages typed as a defined array (ci-fast TS2488) (`02fb614`)
+- **village** — drop model-added tier hints when the request names no landform; explicit flat also gets the east-west band (`97e7f20`)
+
+### 문서
+
+- **openwiki** — regenerate INDEX for suite bundle 5 (`78312f8`)
+- **beodeul-city** — round 4 village verification (ab21-ab23, live b25/b26) (`6561b7f`)
+- **openwiki** — regenerate INDEX without local build output (`35b2aa3`)
+- **openwiki** — drop local-only probe path from asset-store page (`b77c71e`)
+- **openwiki** — regenerate INDEX (`cd0b4ec`)
+- **openwiki** — v2 drops model-added tier hints for plain requests; live runs after the fix (`142a618`)
+- **openwiki** — plain-request east-west band, ab20 results, rebase onto 0ba7f987fa (`a2eea95`)
+
+### 기타
+
+- **village** — round 3 — curved band, wide stone stairs, house kinds, orchards/props, rebuild under new id (`9797b40`)
+
+## 0.365.0 — 2026-10-30
+
+### 기능
+
+- **music** — chase scene + set_game_audio role chase; store_find_music scene synonyms (`02bf2d5`)
+- **ai** — lanes stage objective-targets checks every objective marker target is reachable and does something (`141edd8`)
+- **ai** — room_parts shows the user's chosen rooms (assistant-rooms-2) as composition ideas in one combined picture; the old authored study templates are no longer shown (`71899cf`)
+- **ai** — dungeon_parts shows the hand-picked beodeul dungeon renders as reference pictures (ideas, not copies) (`83f4750`)
+- **ai** — dungeon_parts rotates example order per game so models do not all anchor on the first skeleton (`4f505f9`)
+- **ai** — the assistant designs dungeon/cave floors — dungeonDesign (rooms with role·size·shape·at·water·features, links, entrance side) built as given; functions only harmonise (overlap push, compaction, linking strays, size contradictions) and report 「고침:」; dungeon_parts verb with varied built examples; design bounce once; model seed dropped from make_place/edit_place, dungeon seed from request+game key (`6a4283d`)
+
+### 수정
+
+- **player** — mobile touch feel — press-to-advance dialogue, input-timestamp taps, one-tap choices, two-finger cancel, finger-reach NPC taps (#3938) (`3f361e1`)
+- **ai** — bossTalkBattles marked pages typed as a defined array (ci-fast TS2488) (`59f721e`)
+- **runtime** — opening music ducks under short animatic sound cues so gag beats and hits are heard (#3939) (`a9b5b71`)
+- **ai** — unlocked room exits use the open iron gate before the padlocked door (`014dc91`)
+- **ai** — two-lane edge road exits are widened in scene runs too; one exit label per adjacent same-destination group (`a5bbdb6`)
+- **ai** — places built this run that nobody can walk into are linked to the map the request names (`1c2671a`)
+- **ai** — talking bosses open their battle; boss defeat recovers at that map's entrance; ship check boss-talk-no-battle (`2ed61e3`)
+- **builder** — a designed room's location note says it was designed by the model, not «견본 가구 한 벌» (`0ba7f98`)
+- **ai** — room_parts text is slim by default — 40 furniture lines and one shape example (more via query); the side design ask lists 40 lines (`27864f4`)
+- **ai** — the endpoint picture probe also tests models named in the allow list — gemini-4-argon on proxy8318 was never probed and got pictures it answers empty (`8042626`)
+- **builder** — an anchor already met by a same-kind piece in the room is recorded with that piece's id — designed rooms no longer report anchor-missing for a desk/bookshelf/chest the model drew (`7bd2be3`)
+- **ai** — designed upper floors put the stairwell in a designed room (corridor only when every room is small); the design prompt asks for a floor big enough for it (`79f997d`)
+- **ai** — adopt-model-places binds a drifted blueprint place by name overlap, the start map, or a single leftover — candidates come from the project, not only this turn's session (`e261ef5`)
+- **ai** — every hand interior is designed by the model — no venue/template stamping (`0e7caea`)
+- **ai** — seed is no longer model-facing — dropped from hints/edit schemas and cards; a seed (and a fresh variant 0) the model still sends is discarded (`b9c3831`)
+- **ai** — dungeon_parts returns short text and one combined picture (Gemini stalls after many large images) (`209f0c2`)
+- **ai** — dungeon_parts example rotation keys on projectKey/title (projects have no meta.id) (`acc92f2`)
+- **dungeon** — designed caves keep entrance links clear of the stair band, reconnect rooms cut off by walls or water, streams may end in boss/treasure rooms; dungeon_parts sends two example pictures (`fa3c146`)
+- **ai** — dungeon make_place drops invented map ids, treats empty designs as missing, bounces verbatim example copies once (`68bd77a`)
+- **ai** — dungeon design schema lives in designLayout (typed JsonSchema) and is shared by author_dungeon and make_place — no free-key objects (`6b6f33b`)
+- **ai** — village make_place reads all-zero layout points / terrainSeed 0 as not given (terra fills every schema slot) (`345fd29`)
+- **interior** — sofa (tiles 3678-3679) redrawn in place — user picked object-gen r1 C2 (`47aee63`)
+
+### 문서
+
+- **tools** — upsert_actor says how to clear an inherited battle sheet so the walk chip stands in (#3943) (`d1e0fda`)
+- **openwiki** — regenerate index after merging main (`f17aafe`)
+- **openwiki** — room_parts examples are the user's chosen rooms in one picture, slim text by default, and the 2026-10-30 size A/B (`7cd4376`)
+- **openwiki** — picture probe covers allow-listed models; proxy8318 bare gemini ids answer empty to any picture (`9b17e2c`)
+- **openwiki** — rooms are designed by the model — routes, design ask, upper floors, adopt-model-places, seed hygiene (`5b499bc`)
+- **wiki** — dungeon_parts reference pictures, example rotation, picture budget (`0203245`)
+- **openwiki** — dungeon/cave floors designed by the assistant — dungeonDesign, harmoniser fixes, dungeon_parts, bounce, seed (`58a1742`)
+- **openwiki** — code-terrain village live runs (opus/terra) and game QA (`3784633`)
+- **openwiki** — code terrain + assistant layout + chipset stairs section, A/B ab12-ab15 (`620fb09`)
+
+### 테스트
+
+- **qa** — rebuild scene-bench runs from session tool logs; finishReplay --task/--built; walkpath dialogueDump/vitals/untilField; wiki (`ca3a220`)
+- **ai** — dungeonLiveCheck for live dungeon runs (reach, lone props, autoplay); wiki notes on spec screening (`a9c64e2`)
+- **qa** — monster campaign walks from 새순 마을 to the league exit by real keys (no teleport) — each run presses until the exact tile, logs where it stood (`165b373`)
+
+### 기타
+
+- **village** — code-terrain port jetty, scatter farms on dirt tracks; probe + model-layout scripts (`e9cdb5d`)
+- **village** — two-cell cliffs per code-terrain tier, jittered slanted side edges, no level change on ford cells, side-road stairs fallback, gather ring held (`ed1ae30`)
+- **village** — 3/4-aware code terrain (E-W stretched noise, slanted side edges, filled basins), plaza held before houses, no regrow with model layout, straighter roads (`bfa4d3c`)
+- **village** — chipset stair tiles on N-S flights, routing climbs N-S only, no hairpins, lock before goal (`d22ef45`)
+- **village** — code terrain + model layout mode, terrain preview bounce, chipset stair ramp art (`cda7d45`)
+- **village** — code terrain generator (warped fBm, priority-flood, stream-power erosion, meandering river, quantile terracing) (`3920618`)
+- **village** — ab11 notes, pond gathering label per theme (`dba6e8f`)
+- **village** — landmark-sized tops, irregular fades, low-band roads for scatter, merged stairs, noisy bog shores, wild cells counted apart (`55ca914`)
+
+## 0.364.1 — 2026-10-30
+
+### 수정
+
+- **lint** — staging lint seeds the player at startPos for the start map's new-game autorun (#3936) (`e85a44d`)
+
+## 0.364.0 — 2026-10-30
+
+### 기능
+
+- **harness** — battle-backdrop build --emit (upsert_resource file for code builders) (#3934) (`7442621`)
+
+### 수정
+
+- **store** — publish-game drops unused third-party-named resources, refuses games that use one (#3933) (`112d69d`)
+- **battle** — stand party actors without a battle sheet on their own walk chip (#3932) (`0b72a7a`)
+
+## 0.363.0 — 2026-10-30
+
+### 기능
+
+- **store-music** — eight upcoming genre lines with old-line fallback; guarded game names (이브·off·오프·위처); regen openwiki index (`6c8077e`)
+
+### 수정
+
+- **ai-tools** — forest route finds the town edge from plaza towns; set_project_settings can turn on the HUD objective line (#3930) (`9839a71`)
+- **assistant** — route game-feel / 엔딩곡 music requests to the music tools, add set_game_audio ending role (`7445367`)
+
+## 0.362.0 — 2026-10-30
+
+### 기능
+
+- **assistant** — forest-edge terrain for author_forest_route, close-up zoom for stage_map_reveal; QA records blob-BGM sources for sound re-mix (#3927) (`3639d7d`)
+
+## 0.361.0 — 2026-10-30
+
+### 기능
+
+- **harness** — battle-backdrop — map-matched side-view battle backgrounds (capture → generate → pixelize → human pick) (#3926) (`e71e87c`)
+- **village** — villages grow to the terrain — meandering fading cliffs, homes and landmarks per tier, river on the village bank with a plank ford (`8697342`)
+- **assistant** — people-chip lock - one family of people chips per game (#3919) (`5da5f47`)
+- **village** — terrain-first is the default village order; model designs landform; two-level cliffs and stairs (`d49de1d`)
+- **village** — height-first terrain option (landform/settle) for author_beodeul_town, A/B probe (`34095b5`)
+- **runtime,assistant** — from 마왕 편의점 opening — skill-specific troop reactions, upsert_enemy clearFields, opening-still title backgrounds, no black gap after new game, single boot clone (#3916) (`af2e5cb`)
+- **ai** — store music search reads heard traits (feelTags) and game-name requests (`01bea2b`)
+- **ai** — room shapes the model can pick — U/alcove/bay/T/L notches incl. mid-edge cuts, shape guide + built example pictures in room_parts, wall furniture under lowered north walls; over-long groups place what fits; designed-room bare/ㅁ자 warnings point to the design; turn.diag logs provider errors and tool result size (`b84901a`)
+- **ai** — the assistant designs the room — zones[].design (shape, size, door, materials, furniture groups) built as given; functions only harmonise and report fixes; room_parts verb shows chipset labels and reference rooms (`b5c772a`)
+- **object-gate** — beodeul_dungeon style reference set (shipped dungeon props, not village benches/trees); user-accepted broken pillar joins the calibration originals; column rule measured (`78da692`)
+- **content** — bake the broken pillar into the cave piece tail (33,920~) — user allow recorded as delegated on 18323 (`7d0fdbe`)
+- **content** — object-gen cave piece picks (Opus picker) — stalagmite, stalagmite cluster, crystal cluster, bone pile, glow mushrooms, broken pillar, cave stairs down/up (`669937c`)
+- **builder** — bake_cave.py — object-gen cave pieces as a new sheet tail (33,920~), gated per picture (`e90fcb5`)
+- **builder** — cave stairs can be 2x2 — wall stairs over the rock face, floor stairs as a hole with the move cell bottom-left (`60e3482`)
+
+### 수정
+
+- **runtime** — kit doors open with their own 1x2 art; dungeon save points use the pedestal kit (#3925) (`0099fe8`)
+- **runtime** — battle sound effects no longer drown under the battle BGM (#3923) (`6f7ae41`)
+- **ai** — the step-skip check counts a door that completes an entry step as doing that step (`2d257be`)
+- **ai** — a village warning/news step is told by a villager, step people stand by the road, the start objective names where the first step's person stands; wiki for the vm8 wayfinding fixes (`c5c5714`)
+- **ai** — locked doors say where the key lies (landmark words); an event named after the item it gives becomes a chest even under a roof; a stale start-objective tail points at the first step (`fae7615`)
+- **ai** — an entry step (cave entrance) completes when you pass the door already locked by the same key; exits that advance the story count as visible (`e88819f`)
+- **ai** — a road running past a non-edge exit (cave mouth) ends at the exit; the spare stub and far lane become ground, dead-end signs on it go (`990ad05`)
+- **builder** — monster required fights stay under 80% simulated HP for every starter — teach one move that only hurts the easiest starter, re-species swaps now take the new species' real stats and moves, candidates span every tier (`4b843e4`)
+- **runtime** — exit labels hide during events, enemy status badges off the nameplate, no zero EXP/G lines (#3922) (`046980e`)
+- **ai** — road-width exit copies only beside true map-edge exits, along the edge, and never when they cut off cells (monster grove regression) (`52b189f`)
+- **runtime** — line before prompt-less choices waits for its own confirm (#3920) (`b597703`)
+- **interior** — armchair (tile 3677) redrawn in place — user picked object-gen r4 C2; signed allow bound to its pixel hash, object-gate advisory FAIL recorded (`d6fbfa6`)
+- **ai** — a big sprite covering a seated cave/hollow entrance steps aside (`5f3ed31`)
+- **ai** — errand words (토벌의 부탁) are not battle steps; boss fights wrapped around talk steps are unwrapped (`2de6c4c`)
+- **ai** — mystery objectives point at the clue still missing; dangling evidence hints and stale suspect names removed (`72e1ec4`)
+- **ai** — entrance steps sit in the drawn cave/hollow doorway; bare pickup steps become a treasure chest (`60c8bee`)
+- **ai** — exits beside/on a two-lane road cover the road width; opened door steps vanish and let you pass (`c67eac8`)
+- **builder** — monster finish gives every trainer on a route or in a gym a different monster — re-species picks species not yet used there (gym theme, then route grass, then base forms), a gate identical to an earlier gate is re-speciesed too, HP band kept (`c033cc8`)
+- **ai** — objective exit tails use map-fixed words (west edge, middle) instead of a bearing from where the objective was set (`e0b80fa`)
+- **ai-v2** — save-and-reload gate at the end of the finish and in finishReplay (fill builder event shape holes, count the rest as project-reload-failed); dead-end edge roads get a blocked-road sign (`af59d9b`)
+- **ai** — group pos without at reads along the north wall (wall items) or the middle row instead of floor coordinates; the run appends unresolved check problems to a report that says passed/none (`4bfbfe6`)
+- **ai-v2** — wayfinding a person can follow — crowd-talk steps become a villager off the wall, bare house doors say locked, seal steps get a stone altar, levers stop pointing at the rocks they remove, start gold for the start-map shop (`85613b5`)
+- **builder** — monster finish keeps every starter's required fights inside a 35-80% simulated HP band — gift partner chosen against the stage gate, gifts no longer counted as starter choices, easy fights raised or re-speciesed toward neutral route monsters (`664f4f4`)
+- **builder** — monster finish gives a guaranteed gift partner instead of counting optional catches, places a heal spring on routes with back-to-back trainers, measures chained HP between heals, and iterates the fit until stable (`5fefb07`)
+- **project** — saved bundled-tileset diffs reopen after the bundle sheet grows — rebuild the saved-time bundle (inserted sheet-end cells removed, bundle grafts pulled back) before applying the diff; check-bundle-save-compat.mts opens/saves/reopens real save copies (`6ddcba2`)
+- **builder** — a group dx/dy next to at shifts the group from that spot instead of becoming floor coordinates (`a1503bc`)
+- **ai** — lenient room design — shape/door/corner/at accept free words (southeast, north wall, 0.5), no strict enums or ranges in the schema; a group without at or x/y reads item dx/dy as floor coordinates; item x/y and group dx/dy are read too (`3667e9e`)
+- **ai** — the design bounce says it is not a failure and carries the room parts, so the model designs and calls make_place again instead of giving up (`4ccf72e`)
+- **ai** — a hand interior make_place without a room design is sent back once per place to design it (room_parts → zones[].design); harmoniser turns chairs toward desks across groups (`7c49809`)
+- **ai** — designed rooms are revised with edit_place patch.design (a re-sent designed zone of the same kind replaces, not adds); dressing never adds function-picked props to designed rooms (`d5c5e74`)
+- **builder** — design harmoniser counts wall columns only for north-row tall pieces and hangs; studyLive bench collects live model designs, pictures and fix lists (`ef838b0`)
+- **builder** — designed rooms skip the salt layout variant (no flip/widen of the model's size) (`7621f66`)
+- **ai** — designed rooms are revised through the design — dress_room refuses model-designed maps and the next step points to make_place(mapId) with a fixed design (`f3ae54b`)
+- **builder** — composed study reads as a study — shelf wall, facing desk/reading sets on rugs, per-function caps, 15% bare target (`34aafe3`)
+- **builder** — restaged mystery case rewrites old culprit references — non-culprit named as culprit gets the new culprit, a non-culprit's confession becomes a witness line, speakerless confession in the culprit branch is spoken by the culprit (`dcf608a`)
+- **builder** — unset step condition no longer lands inside the accusation branch (vm3 argon mystery regression); stair exits widened after finish moves; objective thing names match the map; tile-label tails stripped from clue hints (`fa9bb16`)
+- **builder** — boss caves use the baked broken pillar even when the other new cave pieces are not baked (`0092d59`)
+- **ai-v2** — clear people standing in a one-cell choke (per-landing reach), re-run finish lanes when a late fix round rebuilds a place; finishReplay --snapshot (`29cd3bd`)
+- **builder** — monster finish turns on exp share and a gym heal point before fitting levels; starters may use a catchable partner; lowering is a last resort floored at arrival-1 (`c1db358`)
+- **builder** — cave dressing — no lone stalagmites or campfires in open floor, scenes keep a clear ring, crystals and broken pillars only where they belong (`3d3cbf9`)
+- **builder** — cave dressing stops lining props up — compact blobs for glow patches, spaced shore mushrooms, scenes 8 cells apart, rockfall as a triangle (`5762aab`)
+- **builder** — suspect talk sets 'talk to the unheard suspect' objective until every suspect is heard, accusation objective only after (`3478bc5`)
+- **builder** — mystery suspects must each be heard before the accusation; ghost suspects restaged; accusation spot named 범인 지목; evidence item matches the found-object line (`7a08954`)
+- **builder** — mystery depth — the culprit's statement is broken by where the evidence lay, wrong accusations are refuted by alibi and witness; token lines and role speaker heads cleaned (`9f9deeb`)
+- **builder** — starter fit pulls a type-cover move forward, carries HP through back-to-back fights, rejects near-dead wins, and swaps grunt species as a last resort (`83ead81`)
+- **builder** — monster finish lowers required trainers, grunts and gates until every starter choice wins them alone (`b5c3378`)
+- **ai-v2** — no duplicate upper floors, drop stair links shadowed by a model door, examine spot moves to the art its name names (`aaae422`)
+- **ai-v2** — same-map step-skip check + gate kept talk steps behind the previous step (`c6cae59`)
+- **builder** — mystery evidence a person hands over becomes a floor spot the player examines after hearing them (`ebf58f9`)
+- **builder** — mystery evidence is an object, clue hints name all suspects, dead south gap closed under the start cell (`4d82835`)
+- **builder** — step subjects become people/things, mystery shortcuts closed and evidence actually given (`84c1334`)
+- **builder** — step-order locks cover every door into the next step's map; add a step-skip shortcut check (`a113dae`)
+- **builder** — monster gate curve raises a gate only if every starter choice wins it alone at its arrival level (`11beb22`)
+- **builder** — a goal next to a one-level cliff that is 17 steps around gets a ramp down the cliff (`36a3530`)
+- **builder** — a bare mid-field cave gate gets a mine adit (moved up to 8 steps if needed) or yields to a visible twin gate (`9ebe1ea`)
+- **builder** — remaining-clue hints are rewritten after finish moves the clue events, and name the object each clue sits on (`f3b168a`)
+
+### 성능
+
+- **qa** — demo checkpoints boot from the baked play.json; web player preload list no longer rescans tilesets per map (#3921) (`358bb5a`)
+- **builder** — monster finish reuses identical fit simulations and screens re-species candidates by type lean (5 per slot, stop at the first in-band, weakest starter first) — finish 7m00s → 2m33s, same variety and HP band (`f227371`)
+
+### 정리
+
+- **ai** — finish auto-build and clearLanes as ordered one-file-per-stage registries (`04b01a8`)
+
+### 문서
+
+- **openwiki** — regenerate index for monster move tutoring (`f41bca2`)
+- **openwiki** — regenerate index for the monster finish speedup (`ae6c850`)
+- **ai** — guard-aside, errand battle words, debug-marker label note; walkpath dump option (`3671c96`)
+- **ai** — wayfinding round 2 notes; walkpath items option (`b0bdba3`)
+- **openwiki** — regenerate index for monster trainer variety (`93ce007`)
+- **openwiki** — regenerate index (`4762814`)
+- **openwiki** — bundle save-compat check results (224 saves; 34 pre-existing graft-layout warnings, 0 kit damage) (`3544e9a`)
+- **openwiki** — pos-only groups and unresolved checks appended to the report (`70ea145`)
+- **openwiki** — room shapes, partial groups, bare floor back to the model, turn diagnostics (`e8873f0`)
+- **openwiki** — regenerate index for the monster required-battle HP band (`c7bc9ba`)
+- **openwiki** — lenient design reading and the bounce payload (`e307df2`)
+- **openwiki** — design bounce and cross-group chair facing (`98caa4f`)
+- **openwiki** — model-designed interior rooms — who decides what, room_parts, fix lines (`e7ee4f8`)
+- **openwiki** — cave piece tail outcome — only the user-allowed broken pillar is baked; eight pieces kept their old art after three redraws each failed the independent adversarial VQA (`f6b2fd3`)
+- **openwiki** — regenerate index for the monster campaign support note (`8a2da94`)
+- **openwiki** — cave piece tail (object-gen picks, bake_cave, gate state, builder wiring, layout rules); existing copies follow theme2Blocked for bd-pick-dungeon-cave-* (`58c29bd`)
+- **openwiki** — regenerate index for the required-battle starter fit note (`f552e4c`)
+- **openwiki** — regenerate index for the starter-alone gate curve note (`06ad9ea`)
+
+### 테스트
+
+- **runtime-qa** — monster campaign heals only at real devices (route spring, gym guide, center), answers the move-learn prompt like a confirm-key player, and records live party HP before each fight and right after the battle commits (`1e564d6`)
+- **runtime-qa** — monster campaign heals at the gym guide between grunts and before the leader, and writes each fight's HP left to QA_MON_OUT (`25d36c3`)
+- **runtime-qa** — battle op skill:best picks the move with the highest expected damage; monster campaign fights with it (`70aafc6`)
+
+### 잡무
+
+- **qa** — finishReplay --trace records run-log/checkpoints and fixes random/clock for identity diffs (`6eadd07`)
+- **css** — #3916 타이틀 덮개 !important 를 CSS 래칫 기준선에 기록 (#3917) (`af7f8bf`)
+- **content** — check-bundle-save-compat separates hard failures from old-copy graft layout warnings (bundle-numbered grafts with other art; shipped kits pointing at other art); --strict fails on warnings too (`a5f14c3`)
+- **builder** — dungeon layout probe (rows of same-family props, lone props in open floor, room density spread) (`4bd2b5a`)
+- **builder** — bake_theme2 re-attaches the cave piece tail after rewriting the sheet (`7414a69`)
+
+### 기타
+
+- **interior** — armchair redraw attempts (object-gen r3-r5) and an in-place rebake script — none baked, all failed independent adversarial VQA (`df62b06`)
+- **builder** — composed study — desk facing the room variant, seeded lounge (west/east reading corner or a facing-chairs table), wider size band and rect aspect (`7fb075e`)
+- Revert "feat(content): bake the broken pillar into the cave piece tail (33,920~) — user allow recorded as delegated on 18323" (`21fcdff`)
+- Revert "fix(builder): boss caves use the baked broken pillar even when the other new cave pieces are not baked" (`308b267`)
+
+## 0.360.1 — 2026-10-29
+
+### 수정
+
+- **fallen** — freeze Fallen Star towns to committed snapshots so generator changes cannot break the demo bake (#3912) (`147ffa2`)
+- **runtime** — field-backdrop battle snapshot wait, timed-choice bar position (#3911) (`8cbb079`)
+
+## 0.360.0 — 2026-10-29
+
+### 기능
+
+- **runtime** — opening animatic without black gaps, battler scale, no retreat box on evented battle ends (#3910) (`574cd06`)
+- **store** — REFMAP-MODIFIED licence for modified REFMAP chips (#3908) (`9fe500f`)
+
+## 0.359.0 — 2026-10-29
+
+### 기능
+
+- **chase** — field chasers 2x+ faster and smarter (#3907) (`4127a63`)
+- **assistant** — party split looks/dialogue, dark obstacle cells, puzzle rewording, skill forgetting (#3904) (`6693f3d`)
+- **assistant** — stealth patrol & puzzle tools, cone light sources (#3902) (`48d969d`)
+- **assistant** — upsert_world_codex writes Codex documents and relations; character profile note; demo bake warns on empty lore (#3901) (`95b99e7`)
+- **assistant** — paint_beodeul_plan tool, wall-mount on town walls, orphaned fadeOut safety net (#3899) (`65dbf02`)
+- **assistant** — tool and runtime upgrades found while building the Fallen Star act 2 demo (#3898) (`5913c49`)
+- **builder** — re-authored shop templates (bakery s/m, flower shop, tailor, village store) with a one-row keeper lane behind the counter and a customer row — all five Sonnet high PASS; clothing-shop words route to tailor_shop (`e93a888`)
+- **builder** — 11 more hand-composed templates (retried inn halls/house/monster lab, clinic exam, nurse station, morgue, attic, grandma living/bedroom); hospital/attic/flower-shop words; lab bench (ball-like art) out of templates (`22f2d1b`)
+- **builder** — no repeated room template within one game — rooms tag their template, venue maps tag the venue; the next same-use room rotates to the least-used variant and a second inn skips the venue (`205ff0e`)
+- **builder** — 18 more hand-composed room templates from real game-run interiors (inn hall/guest rooms/kitchen, escape study/storeroom/bedroom sizes, village house, weapon shop, monster lab), Sonnet-reviewed; guest room/weapon shop/cottage/shop words route to them (`6699063`)
+- **builder** — 15 hand-composed room templates from existing chipset objects (classroom, general store, laboratory, jail, chapel, small escape rooms) with overlap and reach lints (`600c723`)
+- **builder** — vignette recipes per room use, room size from group footprint, purpose cores for rooms without examples (`acc13bc`)
+- **builder** — assistant interiors place furniture with the vignette placer by default (no whole-room venue, no bare-floor filling) (`9ae49e7`)
+- **builder** — interior vignette library — touching furniture groups from author example rooms, with wall/front/repeat rules, and a deterministic placer (`50017f5`)
+- **ai** — leftover VQA blocker defects are a ship blocker — up to 2 extra fix rounds, report must say not complete (`9241a9c`)
+- **ai** — blueprint progress after every build verb; optional designer model writes the blueprint (A/B/C comparison) (`a4dbc8f`)
+- **ai** — blueprint-first whole-game building — write_blueprint verb, pinned blueprint, ship gate walks the critical path (`1b3ec87`)
+
+### 수정
+
+- **assistant** — patrol pauses survive retiming and scale with pace; combo staging accepts partners (#3906) (`ab75dd7`)
+- **flagship** — leave bare floor under the vault star seal (#3905) (`872b5e3`)
+- **css** — pass the CSS ratchet for the assistant suite bundle (`e4d0798`)
+- **builder** — studies stop repeating one room — seeded template pick over hand + example designs, and a composed study path (seeded room shape, character-weighted vignettes) (`b358d77`)
+- **builder** — dungeon dressing never cuts off floor that was reachable before it (`3a6f2ac`)
+- **builder** — doors to the next step's map open only after this map's step; locked lines name the step (`0cfa491`)
+- **builder** — clue lines point at the real clue object, stale chain clues dropped, digit words match codes, combined-clue safes ask for the number; facing any cell of an object reaches its examine event (`4dd2844`)
+- **runtime** — draw a translucent player silhouette when a star furniture tile hides the body (`35abd2e`)
+- **runtime** — zoom long narrow maps to fill their narrow axis (up to 1.5x the base view) (`dcb1efa`)
+- **builder** — the first path battle levels the starting party up — shrink the shared exp curve when it does not (`c82d664`)
+- **runtime** — battle-victory autosave waits until the event that started the fight finishes; the menu does not open while an event runs (`1aadc3f`)
+- **builder** — start objective points at the first step, locked lines name what opens them; restore createBuildRun import after rebase (`5af5fc6`)
+- **builder** — integration-head replay regressions — passage gates keep a 1-cell body, battle/transfer events are not examine spots, off-art entrance needs a cell to stand at (`5babed0`)
+- **builder** — mystery accusation opens — evidence item gates the accusation, standing NPC stays the culprit, wrapped token names unwrapped, unset step conditions set by the previous step (`1a746e2`)
+- **builder** — one path for lock result lines and floor examine spots after the outdoor merge (`693d9fc`)
+- **builder** — a defeat without an authored outcome returns the party with progress kept instead of a title-only menu (`356c778`)
+- **builder** — path battle budget sees route maps, common events, random lists and field spawns, carries lingering poison, and lowers enemy skill power (`8c13f07`)
+- **builder** — monster finish rebuilds the gate level curve leader < boss < champion (`24aef91`)
+- **runtime** — auto-battle breaks rounding ties by type-chart multiplier instead of a coin flip (`7020853`)
+- **builder** — object-sheet chips (chests, bars) are not people for crowd spreading — boxes inside clocks/desks were dragged to the floor (`10abb52`)
+- **builder** — interior majors from real game runs (vm4/vm5) — people avoid furniture cells and wall gaps, reach seeds the start cell even on an exit gate, 'inn ledger' is not a person, clue props move off runner rugs, a floor-standing door chip in an escape room moves to the wall; bakery-cafe lounge against the east wall (`ecbab1d`)
+- **modern-city** — bakery-cafe back row uses staggered cafe round tables (2x1 tables read as benches) and the table under the espresso-bar gap has no north chairs; the full window-bar redesign blocked the gap from the upper rooms (room-vig9 77.8) (`c36d5b9`)
+- **modern-city** — bakery-cafe hall seats vary by group instead of three copied table sets with back-to-back chair rows; hospital ward beds keep monitors/bedsides beside the bed and curtains two rows below; room shrink counts dropped template furniture as a crash; template rooms skip same-kind anchors (`9a53707`)
+- **runtime** — show the current objective and controls in a centre card when play first becomes controllable (`42de9f0`)
+- **runtime** — register large chipset frames, strip animations and relief pixels lazily (`9e765cc`)
+- **runtime** — battle fast-forward runs at 3x and keeps hit-stop frames at full length (`c52b8b9`)
+- **builder** — vm4 blocked runs — ending on the last step, footprint-aware reach, buried exits, route tails past bare bearings; bolder gold objective arrow (`d511748`)
+- **builder** — JRPG finish fits path battles to a no-wipe budget (pre-boss HP loss sum, per-battle turn caps, symbol-foe count cap) and stocks a potion per pre-boss fight (`b646134`)
+- **builder** — an objective naming two places tails only the one on the way to the other instead of repeating the same first exit twice (`0141576`)
+- **runtime** — the objective window also avoids entrances and the building face above them, so it no longer covers a town's monster-center sign when the camera is pinned at the map edge (`1533879`)
+- **builder** — route level lift stops where the lone starter still wins 80% of seeded sims, so newly learned typed moves do not make route 1 unwinnable (`ea90138`)
+- **builder** — monster campaign finish lifts route wild and trainer levels onto the curve from the starter (or previous gate) to the next gym leader (`efc42dc`)
+- **builder** — tune_enemy in monster games solves against the starter monster at the enemy's level and both sides' strongest moves (type chart, special moves tune mind) (`b1f8ba6`)
+- **runtime** — reproduce the 'truncated HUD objective' report; the HUD shows it whole (`5fea982`)
+- **runtime** — measure new-game load stages (pacing-boot) and add CPU profile ops to runtime QA (`77f4ae7`)
+- **runtime** — Escape right after saving closes the whole menu (`07a6842`)
+- **runtime** — a confirm key pressed to skip a battle sequence no longer lands as a command the instant the command card appears; the player's chosen battle speed carries into the next battle (`75d78ab`)
+- **builder** — humanize id-like map names; objective arrow follows the walking route (`ec361a6`)
+- **builder** — shelves/cabinets and crates/sacks/baskets count as the same kind for anchors in hand-composed rooms (no shelf hung over a wall cabinet, no chopping block in the counter gap) (`efed5fe`)
+- **interior** — tabletop goods sit on the drawn top of raised-surface furniture (counter top is dy -1, not the drawer face); goods tiles are star so the lifted cell behind a counter stays walkable (`b2bc82a`)
+- **builder** — connect map-edge exits to the map's road; keep edge exit labels inside the map (`d021d84`)
+- **builder** — move mid-floor transfer cells onto a wall door, south gap or stairs, and re-pair the return transfer (`7387bd4`)
+- **runtime** — hide title Resume when the newest save predates the last ending (`d08cdd7`)
+- **runtime** — ending credits — one confirm keeps fast-forward, a second skips; placeholder credit title uses the game title (`25eca46`)
+- **runtime** — dialogue typing catches up when the device lags; shorter punctuation pauses (`1534926`)
+- **builder** — furniture-wide examine bodies skip events that carry a transfer, so a same-map puzzle gate does not become a 3x1 rotating door that walls off its side (`83bc506`)
+- **builder** — monster campaigns point the objective at the gym on arriving in its town and refill branches no longer become fake milestones (`22ff4cf`)
+- **builder** — monster-game balance checks measure later campaign battles with a caught-and-levelled party and simulate_battle uses monsters (`458f435`)
+- **builder** — reach checks walk through same-map passages so a puzzle-gated gym leader stays behind the puzzle (`a1f753c`)
+- **builder** — indoor people avoid doors, sole furniture access, stacking and runner rugs — placement cost in resolveWhere, and spreadCrowdedPeople also moves people standing on such blocking cells (finish and after place rebuilds); at (0,0) is a placeholder; blank flat filler is not a person; bare-floor shrink is refused when it makes furniture overlap (`4422ec1`)
+- **builder** — combat games with gold and no shop get a supply merchant near the start (never on the start pocket's only neck); the boss rest crystal prefers the entrance side of the boss (`c065734`)
+- **builder** — label transfer cells with the destination map name when the player is near (`78563be`)
+- **runtime** — recover-all also clears lasting states (poison carried out of battle no longer survives the healing spring) (`43b19f7`)
+- **runtime** — the status menu clock reads like the save slots (m:ss under an hour) — a 38-second game no longer shows 0:00 in the menu and 0:38 on the slot (`8f3ed48`)
+- **runtime** — the key that confirms a load no longer re-examines the event the hero faces (`ccba55a`)
+- **builder** — spread crowded NPCs so each has two open sides; story-NPC and spent-target examine markers; talk to walkers from the cell they are leaving (`155531c`)
+- **builder** — replay regressions — self-loop only onto the event cell, remaining-clue pages only with real progress conditions (`05fba6d`)
+- **builder** — mystery finish restores a lost culprit pick and tells how many clues are left (`406ef84`)
+- **builder** — multi-map objective tails name the next door inside the map passed through; locked exits must say why (`b2d355f`)
+- **builder** — objective exit hint says which of the side-by-side doors (문 셋 중 왼쪽) (`d08ff0f`)
+- **builder** — lock success lines only after the right code; examine spots move to the named furniture nearby (`a88fd45`)
+- **builder** — drop stray step copies, fit unwinnable gate bosses and put a rest crystal before bosses at finish (`0d9ff4e`)
+- **builder** — order step battles behind earlier steps, drop self-loop transfers and empty sparkles at finish (`eb0cdaf`)
+- **builder** — examine events answer from every furniture face; bare clue spots get a prop; runtime examine marker (`ecd8082`)
+- **builder** — bed/bookshelf/wardrobe anchors count as present in authored rooms (no second bed in a hand-composed bedroom) (`d3497ac`)
+- **ai** — a single-place request that names its game ("…game's village shop interior, just this one room") is not a whole-game request — the blueprint gate blocked make_place (`909ab9e`)
+- **builder** — code locks use the model's clue number, no result line before input, empty Enter never submits, bare-map escape gets a real room (`b0b990b`)
+- **builder** — whole-game requests include RPG and exclude single-room/part-of-game asks; entry steps carry the player into the next place and lock its other doors; objectives read where they land (`582c594`)
+- **builder** — finish clears combat leftovers in combat-free games and forks stacked named ending calls on their conditions; critical reachability follows same-map transfers; time-mismatch and romance opening messages name the scene and the safe tool call (`442b127`)
+- **builder** — examine cells off big event bodies, start in main walk area, cave mouth never seals start (`29944b0`)
+- **builder** — no floating props in caves/villages, cave room purposes, second-door road stubs (`6dc29b1`)
+- **builder** — title/ending off-premise check reads the blueprint story and title subtitle, the same text the assembly picks art from (`b3b3325`)
+- **builder** — finish assembly also adds the where-tail to tail-less objectives that ship check objective-missing says can take one (`71eee0e`)
+- **builder** — start objective never rides a page that reruns on map load; remove decoy door art next to the real door (`2a7d11d`)
+- **builder** — escape exits on a south wall gap when the north wall has no door spot; code steps keyed by a code clue need input and the clue tells the number; retire orphan empty maps (`7015754`)
+- **runtime** — save slots keep the current objective line (`76b96e4`)
+- **builder** — objectives aimed at a battle-gated step point at the battle that opens it, and unnamed boss events take their troop name (`a90f6bc`)
+- **builder** — objective tails give the bearing of the first exit from where the objective is set, route through intermediate maps, start objectives point at the first blueprint step, and finish assembly rewrites stale tails (`fbb2a63`)
+- **builder** — cave wall stalagmites grow as mixed staggered clumps; no stray logs on cave shores (`92106cb`)
+- **builder** — village start cell is no longer a grass hole in the river or the map's bottom row (`7692b0b`)
+- **runtime** — objective marker follows the map route to the first exit, shows an arrow by the player when the target is off screen, and empty action pages stop offering 「Z 조사」 (`0f4a85e`)
+- **builder** — generic kind words (shop/store/room) no longer pick a template by name fragment — kind shop picked tailor_shop over general_store (`b9a4fe6`)
+- **builder** — a zone group that is all parts of one use (jail = cells + guard corridor) builds as that use's single template room; table/seat anchors count as present in authored rooms (`dbaf379`)
+- **runtime** — an objective naming several people marks all of them, not only the longest name (`8cd99e1`)
+- **builder** — mystery blueprints get three suspects, evidence presentation and a culprit pick instead of four invisible spots in a row (`cbf29c7`)
+- **builder** — one finish auto-build for runtime and replay; fit unwinnable step battles, fill stale objectives, drop dead ending conditions, keep the start off sealed gaps; autoplay opens lever-gated paths (`8052e6c`)
+- **builder** — clear a single chair blocking the front cell of an examine or talk target (`c579dd7`)
+- **runtime** — current objective target keeps a soft marker on screen and the action prompt names what you face (`854bae9`)
+- **builder** — hiding spots sparkle when the player comes within two tiles and show the hide prompt from any adjacent side (`9c87189`)
+- **runtime** — a new chat message closes the open confirm card that would block it instead of queueing behind it for 30 minutes (`7cd2681`)
+- **builder** — ship defaults also fill party names, menu look, game over and off-art entrances; inner battle rooms take the nearest dungeon ancestor's backdrop via transfers and blueprint order (`80c2d98`)
+- **harness** — whole-game session declines an open decision card before typing the next request (`9cdfb28`)
+- **runtime** — model calls give up on silent streams after short per-call limits and bounded retries; screen-fix turns stop repeating failed edits (`13820de`)
+- **builder** — fill the six ship-check leftovers (battle music, battle backdrop, party look/face, ending closure, default place word) deterministically at finish assembly; slug map names are not place names (`a662c5a`)
+- **builder** — keep authored room templates as authored (no shrink/fill/dress), count same-kind anchors, let small rooms pick authored templates (`936bf44`)
+- **builder** — interiors default back to venue/room templates; vignette placer only when a zone has no template for its use or none fits its fixed size (`0eef614`)
+- **builder** — vignette rooms stop copy-pasting wall groups, seat dining tables, keep footprint size (no C/D variant growth), shrink depth first (`969c83d`)
+- **builder** — auto path step also fixes battle-bypass and no-healing games; checkpoint end fixes even when the path rebuild declines (`e3b6f9a`)
+- **builder** — upper floors pick the layout and corridor width with the fewest void cells (`126b259`)
+- **builder** — NPC faces sit right before that speaker's lines, not over narration (`c997630`)
+- **types** — clear the narrow tsc errors in this batch's files; openwiki states one order for clearLanes and points battle steps to one page (`ec3dafc`)
+- **builder** — a blueprint battle step only advances after winning the fight; the ship check flags endings reachable without the boss (`9a1b1e8`)
+- **builder** — battle games get a healing spring and starting potions, and a blueprint key locks the door to its place (`4aba5c3`)
+- **runtime** — double-Esc cutscene skip works while a dialogue line is open (`1af8803`)
+- **builder** — the plain JRPG path fits picked troops to the start party too (`67a815d`)
+- **builder** — title never shows the project id slug; subtitle drops words already in the title (`825e4db`)
+- **builder** — objective tails name only the event on the same map (`0249551`)
+- **builder** — chaser maps get 1-2 hiding spots on existing furniture near the patrol; ship check blocks a chaser with zero hiding spots (`dda715a`)
+- **builder** — dungeon enemies are fitted to the start party instead of copying the strongest DB troop's strength (`0443ebf`)
+- **runtime** — title menu window no longer shows the map through it; pixel ESC command rows get 16px and clear the cursor (`5f37d91`)
+- **runtime** — game-over choice plates over a background share one width instead of stepping by label length (`68c547a`)
+- **runtime** — skill list keeps the weapon tag next to the name and seats Back in the header row so three skills no longer show a false scroll cue (`83844aa`)
+- **runtime** — objective chip keeps a minimum width, Z prompt steps off the exit corridor, firmer night-glass box, roomier ESC header (`ea285c7`)
+- **runtime** — small-room margin continues the ceiling pattern instead of a flat colour band (`2082922`)
+- **builder** — edit_place with zones on the blank placeholder start map builds the place there instead of failing (`870e7c4`)
+- **runtime** — the skill list no longer repeats the basic attack skill (`7e432a6`)
+- **runtime** — choices show with their question text, sparkles stay behind the hero, solo ending kicker, calmer ESC title item (`ca7eb58`)
+- **runtime** — autoplay models multi-day loops where each day's page raises affection (`f690019`)
+- **builder** — mark 1-wide doorways between partition rooms with round arch or doormats (`192db6a`)
+- **qa** — runtime-qa checkpoints boot the --whole-game SQLite project (`bc4a825`)
+- **runtime** — readable gold unit on the victory window; interior/crypt maps fight on the cave backdrop (`d8a9554`)
+- **qa** — autoplay plans quest deliveries — itemCount-queried variables resolve to holding the item (`2fc1db5`)
+- **builder** — invisible examine spots no longer become invisible walls on blank floor (`f52862f`)
+- **builder** — blueprint walk sees battle/shop branches; ending devices are doors only in escape games; narrow dead gaps close without a door (`caea8d1`)
+- **runtime** — game-over text gets a dark plate over background art; no PgUp hint for one-line bodies (`cedfd8d`)
+- **runtime** — retro party window HP/MP columns grow to fit four-digit vitals (`b960c0c`)
+- **builder** — blueprint objectives point at the next step; where-only set_objective no longer overwrites the start goal; parse array-string needs/gives (`92177fe`)
+- **builder** — escape-room blueprints can no longer be walked out of — ship check flags off-place exits, builder seals them (`fed5795`)
+- **builder** — blueprint code steps need the number — clue + input-gated ending; exit door finds room when the north wall is full (`ed9a7fc`)
+- **builder** — blueprint default opening — map-view shots of start/next places with blueprint-sentence narration when the opening is missing/off/preset stills (`f6b1579`)
+- **runtime** — opening animatics keep actors above the narration band (camera lift, or band to top when the backdrop ends) (#31) (`b244c7b`)
+- **runtime** — objective box prefers off-map margin bands over any room overlap (narrowed/widened to fit, real measured height) (`3872bea`)
+- **builder** — build late blueprints, retire the blank start map, keep provider error text out of the final answer, classify empty maps as fixable (`2aa1f3c`)
+- **builder** — size dungeon rooms and cave chambers to their contents; give the monster home town's empty side a pond and clustered trees (`8c715d1`)
+- **builder** — village trees and shrubs grow as clumps instead of rows and scattered singles (`01a3d74`)
+- **builder** — flat villages also reopen walkable meadows sealed off by props (jrpg north meadow); cave mouth never half-covers a multi-cell prop (`76733b3`)
+- **builder** — dungeon down-stairs no longer land inside the boss-room ritual circle; wiki notes for bridge deck, gate spot and floor decals (`b62f953`)
+- **builder** — dungeon outdoor gate avoids fields, fences, houses and roads — cave mouth only where its 3x4 fits on open ground, else a reachable map-edge road end (`a95ec38`)
+- **builder** — route tall grass patches get ragged, rounded edges instead of ruler-cut rectangles (ledger 125); replay honours the monster-request turn (`1d727fa`)
+- **builder** — village stone bridge deck carries the road paving — the ashlar deck read as a wall across the road (ledger 120) (`67000b4`)
+- **builder** — single-room interiors stay under 30% bare — downsize retry, workbench rows, magic circle floor decor, doormat is not a room rug (`f223179`)
+- **builder** — close dead south exits with wall-door art and fill navy void cells in interiors (`982b37a`)
+- **runtime** — fill non-integer-zoom small maps by fractional fit; skirt only extends rare seamless exit runs (`ddf16a3`)
+- **builder** — magic-school places build wizarding_world spaces per room with linked doors and in-set prop substitutes; Joseon picks village by request hash and links extra rooms (`bff4f5f`)
+- **builder** — deleting a map that the title shows as map-view clears it and remove_map re-picks the title instead of failing integrity (`fa04009`)
+- **runtime** — ending/credits screens keep Korean words whole and balance credit lines (#107) (`29ff1df`)
+- **runtime** — authored VN looks keep the veil stage's --dialogue-ui-scale (9px line in a 1024x768 box, #106) (`8533493`)
+- **runtime** — pixel menu location name wraps instead of ellipsis (#47) (`2c34244`)
+- **runtime** — emerald notebook hint contrast (#134), softer battle message shadow (#138) (`f658726`)
+- **runtime** — title subtitle/menu legibility over art and weather (outline, brighter, tighter Hangul tracking) (`34ed277`)
+- **runtime** — scale 320x240-designed UI on hi-res stages (dialogue, title, narration, skip hint); balance narration lines (`95d0419`)
+- **runtime** — objective box also avoids action events (incl. invisible investigation spots) (`4ca05fa`)
+- **builder** — Joseon/Hanyang/sageuk requests build joseon_baram registered places; Japanese-modern villages go to jp_city; murim reports missing chipset (`1e7e07d`)
+- **runtime** — map-view title frames the busiest window at 1-2x and lays a dark vignette under the title text (`ed38f46`)
+- **builder** — blueprint title never points at a still-blank map (it blocked builders from replacing the blank start map) (`e6e05f4`)
+- **builder** — VQA fix loop only hands the model defects a verb can fix; ledger the rest, stop at zero (`c406fbe`)
+- **builder** — auto links use door/stairs/road-end art, person steps get character chips, NPCs step off transfer lanes (`ef20f81`)
+- **builder** — interior rooms sized to their content — dense templates, no per-room 1.3x in multi-room buildings, inner trim, every room dressed for its purpose (`d7ede3d`)
+- **builder** — a "great" hero object too big for its room becomes its small variant (`00bb93c`)
+- **builder** — goods on pedestal tables sit on the tabletop; interior/house make_place keeps the start on the main floor (`fc87b7b`)
+- **builder** — shrink the emptiest interior room instead of filling it; no rug on rug; set repetition caps (`ba80a6f`)
+- **builder** — interior rooms sized to content, dress_room keeps walkways, examined things drawn (`c54613b`)
+- **builder** — reject character/face sheets as opening images and animatic backgrounds (`9d1d0f4`)
+- **builder** — title art only when it strongly fits the genre/place, else the game's start map; horror art only for horror (`7642ebd`)
+- **runtime** — title background accepts map-view:<mapId> and draws that map as dots (`1ab5f5b`)
+- **builder** — an exact place match (폐병원) outranks a mood-only match in the blueprint title picker (`184ca5f`)
+- **builder** — title/opening defaults follow the game blueprint; lenient set_opening/set_title_screen args (`ae026f4`)
+- **builder** — finish gate builds missing blueprint places and links unreachable ones before the path (`b2e5a05`)
+- **runtime** — cutscene skip hint reads 'Esc 두 번'; menu landing shows the current objective (`d6081c9`)
+- **runtime** — to-title detail always offers its entry instead of an unprepared-confirm notice (`07b54d9`)
+- **runtime** — number input shows the cursor digit, takes arrow keys, explains its controls (`609a6c4`)
+- **runtime** — objective HUD picks a spot clear of player, NPCs and HUD; Korean wraps at word boundaries (`d0b2752`)
+- **runtime** — small-map fit keeps a half-tile margin; margin takes the room's edge colour and exit passages continue (`8cfc7d5`)
+- **builder** — clue events sit on the object their name names — chipset label match, item tile fallback (`acced81`)
+- **runtime** — start cell avoids solid visible objects; map VQA shots say the player is not drawn (`716be07`)
+- **builder** — opening actors on a map-view backdrop use the backdrop's pixel scale (`e47e4a6`)
+- **runtime** — save-point glow no longer washes out light floors; objective chip settles to 0.4 (`f9f1983`)
+- **runtime** — darkness mask stays inside the map, light mask colours become a soft tint (`99db5f3`)
+- **runtime** — small rooms fill the screen at an integer canvas zoom (`3a88eca`)
+- **builder** — puzzle-chain and blueprint-path events must be walkable — repair reach, snap door events to door art (`1dd26da`)
+- **builder** — blueprint path is built deterministically — build_blueprint_path verb, auto-build at finish, no-ending gate (`804c6d6`)
+- **harness** — wholeGameSession honours --ai-config again (`287902e`)
+- **harness** — project host startup deadline 60s → 180s (suite runs under load) (`1d5513f`)
+
+### 문서
+
+- **openwiki** — study composed path, seeded template pick, variety key and the study-variety bench (`c4b122d`)
+- **openwiki** — regenerate index for the autosave and first-level-up notes (`7927caa`)
+- **openwiki** — furniture body and off-art entrance limits (`c7f3e01`)
+- **openwiki** — finish one-path lock lines/examine spots, unset step conditions, model accusation culprit (`4ca6ac0`)
+- **openwiki** — finish deterministic repairs from the vm3 judge pass (`61e0fd9`)
+- **interior** — hospital props are a TODO checklist — not drawn, ward falls back to bedroom until they land (`9baf348`)
+- **openwiki** — vignette phase 2 — recipes, footprint sizing, purpose cores (`18949be`)
+- **openwiki** — objective margin-first placement, animatic narration band clearance (`1df56b5`)
+- **openwiki** — hi-res stage UI zoom, VN look scale, title legibility, credits wrap (`cf34e6e`)
+- **openwiki** — objective placement, keep-all wrapping, number input controls, to-title detail (`dd11b96`)
+- **openwiki** — write_blueprint and the blueprint ship walk (`c794afb`)
+
+### 테스트
+
+- **runtime-qa** — victory-autosave scenario (save after the foe is cleared, load does not re-fight, ESC during a touch event); monster campaign waits through a sight trainer's speech (`1e10e91`)
+- **runtime-qa** — defeat-recover scenario loses a cave bat fight at 1 HP and records where the party wakes and what it kept (`e573dc3`)
+- **runtime-qa** — monster campaign fights every route trainer and gym grunt, settles after a loss, and can pick the starter (`874bb83`)
+- **runtime-qa** — monster campaign scenario walks starter, capture, trainer, gym puzzle, leader, boss and league; battle op answers the forced switch (`ae4ec62`)
+- **runtime-qa** — autoplay presents the evidence a goal needs and a mystery scenario walks suspects, presentation and the culprit pick (`64b8167`)
+- **runtime-qa** — objective-target scenario shoots the target marker, the named prompt and the next objective (`9a457ff`)
+- **runtime-qa** — horror run shows the hiding spot before entering and records how close the chaser came while hidden (`75f4dce`)
+- **runtime-qa** — magic scenario plays the desk and statue riddle instead of forcing the tower switch (`d6cb8d4`)
+- **runtime-qa** — whole-game magic/joseon story scenarios (opening, bust dialogue, door transfers, ending) (`1a975d4`)
+- **runtime-qa** — horror run hides — spotted at the corridor mouth, runs to the bed hiding spot, chaser comes within two tiles and leaves (`4a906df`)
+- **runtime-qa** — whole-game horror run — locked door, chaser sight and catch, horror game over, checkpoint retry, title load; debug switch writes refresh event pages (`6ec145e`)
+- **runtime-qa** — whole-game battles cover skills, items, escape, wild encounter and capture (`605bbcb`)
+- **runtime-qa** — whole-game battle scenarios for jrpg/dungeon/monster in the shipped player (`0c22e69`)
+
+### 잡무
+
+- **interior-authored** — build collects rooms*.mts (--skip-bad for parallel drafts), survey of real game-run interiors, Sonnet review script (`5f56871`)
+
 ## 0.358.0 — 2026-10-29
 
 ### 기능

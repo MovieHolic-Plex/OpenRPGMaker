@@ -89,6 +89,12 @@ function pause(pending: PendingStep, step: Exclude<StepResult, { kind: "done" }>
   return { kind: "pause", pending, step };
 }
 
+/** 지금 글 바로 다음 명령이 질문(prompt) 없는 선택지인가. 질문이 있으면 선택지 틀에 질문이 서므로 앞 글은 따로 읽힌다. */
+function textLeadsIntoChoices(frame: Frame): boolean {
+  const next = frame.commands[frame.pc + 1];
+  return next?.kind === "choices" && !next.prompt?.trim() && next.options.length > 0;
+}
+
 function resumeNext(frame: Frame): CommandExecution {
   frame.pc += 1;
   return { kind: "continue" };
@@ -628,6 +634,8 @@ export function executeCommand(
         ...(command.position ? { position: command.position } : {}),
         ...(command.voiceResourceId ? { voiceResourceId: command.voiceResourceId } : {}),
         ...(ENDING_EPILOGUE_TEXT.has(command) ? { endingEpilogue: true } : {}),
+        // 바로 뒤가 질문 없는 선택지면 이 글이 곧 질문이다 — 끝 쪽 커서를 ▼ 로 그리고, 결정 키 한 번에 선택지가 이 글을 틀에 남긴 채 뜬다.
+        ...(textLeadsIntoChoices(frame) ? { beforeChoices: true } : {}),
         ...(command.speakerActor ? { speakerActor: command.speakerActor } : {}),
         ...(command.addressee ? { addressee: command.addressee } : {}),
         ...(command.autoFace === false ? { autoFace: false } : {}),

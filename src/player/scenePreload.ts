@@ -40,8 +40,36 @@ function collectStrings(value: unknown, out: Set<string>, key = ""): void {
 
 const bundledPathByKey = new Map<string, string>(BUNDLED_IMAGE_ASSETS.map((asset) => [asset.textureKey, asset.path]));
 
-/** 자원 id(또는 텍스처 키) → 플레이어가 실제로 부르는 주소. 자원이 아니면 null. */
+/**
+ * 타일셋 한 벌의 글자(이름표 수만 개)는 그 타일셋을 쓰는 맵마다 다시 훑지 않는다 — 폴른 스타는 41맵이 같은 버들항 타일셋을 써서
+ * 시작 전 목록 만들기가 메인 스레드 4~5초였다(2026-10-29 실측). 타일셋 객체가 바뀌면(편집) 새 키라 다시 훑는다.
+ */
+const tilesetStrings = new WeakMap<object, readonly string[]>();
+function collectTilesetStrings(tileset: object, out: Set<string>): void {
+  let strings = tilesetStrings.get(tileset);
+  if (!strings) {
+    const found = new Set<string>();
+    collectStrings(tileset, found);
+    strings = [...found];
+    tilesetStrings.set(tileset, strings);
+  }
+  for (const value of strings) out.add(value);
+}
+
+/** 같은 프로젝트에서 같은 글자는 한 번만 해석한다(맵마다 같은 이름표·자원 id 가 되풀이된다). */
+const resolvedUrls = new WeakMap<Project, Map<string, string | null>>();
 function resourceUrl(id: string, project: Project): string | null {
+  let cache = resolvedUrls.get(project);
+  if (!cache) resolvedUrls.set(project, (cache = new Map()));
+  const hit = cache.get(id);
+  if (hit !== undefined) return hit;
+  const url = resolveResourceUrl(id, project);
+  cache.set(id, url);
+  return url;
+}
+
+/** 자원 id(또는 텍스처 키) → 플레이어가 실제로 부르는 주소. 자원이 아니면 null. */
+function resolveResourceUrl(id: string, project: Project): string | null {
   const bundled = bundledPathByKey.get(id);
   if (bundled) return withInlineAsset(bundled);
   let url: string | null = null;
@@ -112,7 +140,7 @@ export function mapSceneUrls(project: Project, mapId: MapId): Set<string> {
   const actors = new Map(project.database.actors.map((actor) => [actor.id, actor]));
   for (const value of [...strings]) {
     const tileset = project.tilesets[value];
-    if (tileset) collectStrings(tileset, strings);
+    if (tileset) collectTilesetStrings(tileset, strings);
     // 대사의 화자(배우 id)는 그 배우의 얼굴·걷기 그림으로 그린다.
     const actor = actors.get(value);
     if (actor) for (const id of [actor.faceResourceId, actor.characterResourceId]) if (id) strings.add(id);
@@ -121,6 +149,8 @@ export function mapSceneUrls(project: Project, mapId: MapId): Set<string> {
   try {
     const bgm = resolveMapBgm(project, mapId);
     if (bgm.kind === "play") strings.add(bgm.resourceId);
+    // 스위치가 켜진 동안의 곡(추격 곡)도 이 맵에서 울릴 수 있다.
+    for (const entry of project.maps[mapId]?.bgmWhileSwitch ?? []) if (entry?.resourceId) strings.add(entry.resourceId);
   } catch { /* 맵 트리가 낡았으면 맵 글자만 쓴다 */ }
   urlsFromStrings(strings, project, urls);
   return urls;
@@ -321,6 +351,15 @@ export async function preloadUrls(
   };
   await Promise.all(Array.from({ length: Math.max(1, options.concurrency ?? 6) }, worker));
   return { doneFiles, totalFiles, bytes };
+}
+
+/**
+ * 맵 이동을 시작하는 순간 그 맵의 파일 받기를 먼저 건다(기다리지 않는다). 페이드아웃 동안 받아 두면
+ * 검은 화면에서 holdForMapAssets 가 기다릴 몫이 준다 — 같은 주소는 fetchOne 이 한 번만 받는다.
+ */
+export function prefetchMapAssets(project: Project, mapId: MapId): void {
+  if (!preloadActive) return;
+  void ensureMapReady(project, mapId).catch(() => undefined);
 }
 
 /** 맵 이동 직전: 그 맵의 파일이 다 왔는지 확인하고, 아니면 받을 때까지 기다린다. */

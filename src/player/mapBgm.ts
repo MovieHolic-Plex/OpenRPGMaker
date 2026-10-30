@@ -10,6 +10,7 @@
 //   none    → 무음. 상속하지 않는다(명시적 침묵이 목적).
 //   parent  → mapTree 부모 체인을 올라가며 첫 결정(custom/none)을 따른다. 없으면 프로젝트 기본.
 //   (bgm 미지정) → parent 와 동일. project.ts 의 "없으면 프로젝트 기본 BGM" 주석과 맞춘다.
+//   bgmWhileSwitch → 세션 스위치가 켜진 항목이 있으면 위 규칙보다 먼저(추격 곡: 다시 들어오거나 패배 복구해도 이어진다).
 //
 // 같은 곡이 이미 루프 중이면 재시작하지 않는다 — RM2K3 동작이며 audioEngine.playLoop 가
 // resourceId 비교로 이미 보장한다. 그래서 맵을 오가도 음악이 끊기지 않는다.
@@ -44,11 +45,12 @@ export function applyMapBgmToSession(audio: AudioCommandState, resolution: MapBg
 /** 맵 진입 시 호출 — 해석 → 세션 기록 → 엔진 재생/정지. loadMap 이 유일한 호출자다. */
 export function startMapBgm(
   project: BgmProject & Pick<Project, "assets">,
-  session: { audio: AudioCommandState; m2Runtime?: Pick<M2RuntimeState, "system"> },
+  session: { audio: AudioCommandState; m2Runtime?: Pick<M2RuntimeState, "system">; switches?: Readonly<Record<string, boolean>> },
   mapId: MapId,
 ): MapBgmResolution {
   const resolution = resolveMapBgm(project, mapId, {
     defaultBgmResourceId: systemAudioOverride(session.m2Runtime, "field"),
+    ...(session.switches ? { switches: session.switches } : {}),
   });
   const previous = session.audio.bgm?.resourceId;
   applyMapBgmToSession(session.audio, resolution);

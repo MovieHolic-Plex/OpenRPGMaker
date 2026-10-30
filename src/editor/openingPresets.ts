@@ -126,7 +126,8 @@ export const OPENING_PRESETS: readonly OpeningPreset[] = [
     scenes: [
       {
         narration: "초대장에는 날짜가 적혀 있지 않았다.",
-        resourceId: "oprn-still-manor-night",
+        // oprn-still-manor-night 은 편집 격자선이 박힌 그림이라 뺐다(2026-10-28) — 같은 저택 회랑 무드의 초상화 복도.
+        resourceId: "oprn-still-festival",
         motion: "zoom",
         durationMs: 5400,
       },
@@ -159,7 +160,7 @@ export const OPENING_PRESETS: readonly OpeningPreset[] = [
       },
       {
         narration: "호수가 별을 삼키고, 세계는 다른 이름을 얻었다.",
-        resourceId: "oprn-still-manor-night",
+        resourceId: "oprn-still-snow-village",
         motion: "pan",
         durationMs: 5200,
       },

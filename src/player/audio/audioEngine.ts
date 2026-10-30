@@ -8,7 +8,7 @@ import { AtmosphereAudio } from "./atmosphereAudio";
 // 순수 로직(큐/페이드/리소스 해석)은 audioQueue/fade/audioResources 에 분리돼 단위 테스트된다.
 
 import type { AudioChannel, AudioCommandState } from "@/project/session";
-import { authoredTrackGain, clampVolume, computeFadeVolume, isFadeComplete } from "./fade";
+import { authoredTrackGain, clampVolume, computeFadeVolume, duckGainAt, isFadeComplete } from "./fade";
 import {
   createAudioQueueState,
   requestAudio,
@@ -85,6 +85,12 @@ export class AudioEngine {
   private readonly oneShots: Set<ManagedTrack> = new Set();
   private readonly fadingTracks: Set<ManagedTrack> = new Set();
   private volumes: Record<AudioVolumeGroup, number> = { bgm: 0.7, se: 0.8 };
+  // 효과음 덕킹(BGM 그룹에만 곱한다). 전투 효과음은 Web Audio 로 곧장 나가서 이 엔진의 SE 그룹을 거치지 않는다 —
+  // 최근 마스터링된 BGM(평균 -14dB) 위에서 RTP 효과음(평균 -20dB 안팎)이 묻혀 「전투에 효과음이 없다」로 들렸다(2026-10-30 실측).
+  private bgmDuck = 1;
+  private duckLow = 1;
+  private duckUntil = 0;
+  private duckTimer: number | null = null;
   private playbackRate = 1;
   private pan = 0;
   private fadeInMs = DEFAULT_FADE_MS;
@@ -176,6 +182,34 @@ export class AudioEngine {
 
   getVolume(group: AudioVolumeGroup): number {
     return this.volumes[group];
+  }
+
+  /** 효과음이 울리는 동안 BGM 을 level 배로 낮추고, holdMs 뒤 releaseMs 동안 되돌린다. 겹치면 더 낮은 값·더 늦은 끝을 쓴다. */
+  duckBgm(level: number, holdMs: number, releaseMs = 350): void {
+    if (typeof window === "undefined") return;
+    const now = nowMs();
+    const active = now < this.duckUntil + releaseMs;
+    this.duckLow = active ? Math.min(this.duckLow, clampVolume(level)) : clampVolume(level);
+    this.duckUntil = Math.max(active ? this.duckUntil : 0, now + Math.max(0, holdMs));
+    this.applyBgmDuck(duckGainAt(this.duckLow, now - this.duckUntil, releaseMs));
+    if (this.duckTimer !== null) return;
+    this.duckTimer = window.setInterval(() => {
+      const elapsed = nowMs() - this.duckUntil;
+      this.applyBgmDuck(duckGainAt(this.duckLow, elapsed, releaseMs));
+      if (elapsed >= releaseMs && this.duckTimer !== null) {
+        window.clearInterval(this.duckTimer);
+        this.duckTimer = null;
+        this.duckLow = 1;
+      }
+    }, FADE_TICK_MS);
+  }
+
+  private applyBgmDuck(gain: number): void {
+    if (gain === this.bgmDuck) return;
+    this.bgmDuck = gain;
+    for (const track of [...this.loopTracks.values(), ...this.fadingTracks]) {
+      if (volumeGroupForChannel(track.channel) === "bgm") this.updateTrackVolume(track);
+    }
   }
 
   // 재생 속도(템포). 재생 중인 모든 요소에 즉시 반영된다.
@@ -501,7 +535,8 @@ export class AudioEngine {
   }
 
   private updateTrackVolume(track: ManagedTrack): void {
-    track.audio.volume = this.volumes[volumeGroupForChannel(track.channel)] * track.gain * track.fadeLevel;
+    const group = volumeGroupForChannel(track.channel);
+    track.audio.volume = this.volumes[group] * track.gain * track.fadeLevel * (group === "bgm" ? this.bgmDuck : 1);
   }
 
   private fadeOutAndDispose(track: ManagedTrack, fadeMs: number): void {

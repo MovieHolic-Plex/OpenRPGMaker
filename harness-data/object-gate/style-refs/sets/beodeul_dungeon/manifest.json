@@ -1,0 +1,58 @@
+{
+ "_meta": {
+  "chipset": "beodeul_dungeon",
+  "sheet": "public/assets/beodeul-city/beodeul-city-chipset.png",
+  "tileset": "src/assets/beodeulCityTileset.json"
+ },
+ "prop": {
+  "brazier": {
+   "h": 14,
+   "kit": "bd-pick-aqueduct-sewer-brazier",
+   "rows": null,
+   "sha256": "a95c329f590b0dfbed59005d503d1cbe12ca1d73a9924085223d8708b28a16d2",
+   "w": 12
+  },
+  "corrupt-crystal-big": {
+   "h": 29,
+   "kit": "bd-pick-dungeon-theme-corrupt-crystal-big",
+   "rows": null,
+   "sha256": "4dec554f060d527e04b54f0a2c1244f6aa45a686f08d5d68bc14335a17dc2ec3",
+   "w": 32
+  },
+  "crate-stack": {
+   "h": 22,
+   "kit": "bd-pick-aqueduct-sewer-crate-stack",
+   "rows": null,
+   "sha256": "7a144637c1d354072de880f9d7e2cca95f984e40d531b6bda7c85d15bea9f42a",
+   "w": 14
+  },
+  "fallen-column": {
+   "h": 11,
+   "kit": "bd-pick-aqueduct-sewer-fallen-column",
+   "rows": null,
+   "sha256": "40b9318c4860a5b8eb08f272f0c1df18cdfe1011b9a6f0ad172df7fe57909cb8",
+   "w": 31
+  },
+  "fire-crystal": {
+   "h": 15,
+   "kit": "bd-pick-volcano-cave-fire-crystal",
+   "rows": null,
+   "sha256": "bd28e95b2d8b1caa190efd60af70525f3ea067454d6c735b69c471280ed3ea97",
+   "w": 15
+  },
+  "ice-crystal": {
+   "h": 30,
+   "kit": "bd-pick-dungeon-theme-ice-crystal",
+   "rows": null,
+   "sha256": "e732d4739e2e4af0e161286cab85eea79d40b4ef34651f8fe7f22afcde813022",
+   "w": 16
+  },
+  "rubble-cave": {
+   "h": 9,
+   "kit": "bd-pick-sea-cave-rubble-cave",
+   "rows": null,
+   "sha256": "2c4f5a86f91c0beeca95a426abcbf1c56b604bea6a6495d82871f121cff1701d",
+   "w": 14
+  }
+ }
+}

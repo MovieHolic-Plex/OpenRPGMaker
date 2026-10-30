@@ -4,6 +4,7 @@
 // 암호 → 「이미 통과」 페이지 없음·선언 안 한 깃발. 모델이 「됐다」고 말해도 이 검사가 남은 문제를 끝맺음 관문에 올린다.
 // 순수 함수(before·after·요청 글) — 워커·테스트가 같이 부른다.
 import type { Command, GameMap, Project } from "@/project/types";
+import { chaseCellMs } from "@/project/chaseTempo";
 import { choiceMetaTag } from "@/project/choiceText";
 import { fieldMenu } from "@/project/fieldMenu";
 import { usesRelationshipMenu } from "@/project/relationshipMenu";
@@ -15,11 +16,12 @@ import { lookMismatches, oversizedSprites, pristineFantasyHero, titleBackdropMis
 import { dryBoats, dryBridges, placementProblems, type PlacementProblem } from "./placementRules";
 import { offPurposeProps } from "./roomPurpose";
 import { unsafeSpawnLines } from "@/project/chaserSpawnSafety";
-import { npcMoveDurationMs, npcPageMoveIntervalMs, PLAYER_WALK_STEP_MS } from "@/project/characterMotion";
+import { PLAYER_WALK_STEP_MS } from "@/project/characterMotion";
 import { fieldApproachRecipe } from "@/project/fieldApproachStyle";
 import { projectCanLoseHp, resolvedHudWidgets } from "@/project/fieldHud";
 import { gameHasCombat } from "@/project/combatPresence";
 import { FACTORY_HERO_ARMS } from "./genreDefaults";
+import { musicAsked, musicOnly } from "./musicWords";
 
 type Obj = Record<string, unknown>;
 const obj = (v: unknown): Obj | undefined => (v && typeof v === "object" && !Array.isArray(v) ? (v as Obj) : undefined);
@@ -123,6 +125,15 @@ function allCommands(ev: EventRef): { cmd: Obj; guards: readonly Obj[]; page: Ob
   const out: { cmd: Obj; guards: readonly Obj[]; page: Obj; pageIndex: number }[] = [];
   ev.pages.forEach((page, pageIndex) => walkCommands(page.commands, (cmd, guards) => out.push({ cmd, guards, page, pageIndex })));
   return out;
+}
+
+/** 프로젝트 어딘가(모든 맵 이벤트·공통 이벤트)에 그 종류의 명령이 있는가. */
+function projectHasCommand(project: Project, kind: string): boolean {
+  let found = false;
+  const visit = (commands: unknown) => { if (!found) walkCommands(commands, (cmd) => { if (cmd.kind === kind) found = true; }); };
+  for (const map of Object.values(project.maps ?? {})) for (const ev of map.events ?? []) for (const page of ev.pages ?? []) visit(page.commands);
+  for (const ce of project.commonEvents ?? []) visit((ce as { commands?: unknown }).commands);
+  return found;
 }
 
 /** 조건 나무 안의 모든 조건(all·any·not 펼침). */
@@ -304,10 +315,12 @@ export function slowChasers(project: Project, changedIds?: ReadonlySet<string>):
       if (mv?.type !== "chase" || startsBattle(page.commands)) continue;
       // 다가오는 방식(approachStyle: 육중·둥실·통통…)은 일부러 고른 걸음새다 — 그 추격자는 이 검사로 보지 않는다.
       if (fieldApproachRecipe(mv.approachStyle)) continue;
-      const stepMs = npcMoveDurationMs(Number(mv.speed ?? 3));
-      const pauseMs = npcPageMoveIntervalMs({ frequency: Number(mv.frequency ?? 3), ...(typeof mv.moveIntervalMs === "number" ? { moveIntervalMs: mv.moveIntervalMs } : {}) });
-      if (stepMs <= PLAYER_WALK_STEP_MS && pauseMs <= 80) continue;
-      out.push(`「${ev.name || ev.id}」(${ev.id}) 추격자가 한 칸에 ${Math.round(stepMs + pauseMs)}ms(걸음 ${stepMs}ms + 쉼 ${Math.round(pauseMs)}ms · speed ${String(mv.speed ?? 3)}·frequency ${String(mv.frequency ?? 3)}) — 주인공 걷기(${PLAYER_WALK_STEP_MS}ms/칸)를 못 따라와 걸어서 도망치면 잡히지 않는다`);
+      // 런타임 추격 박자(@/project/chaseTempo) 그대로 — 쫓는 동안은 칸 사이에 서지 않는다.
+      const cellMs = chaseCellMs({ speed: Number(mv.speed ?? 3), frequency: Number(mv.frequency ?? 3),
+        ...(typeof mv.moveIntervalMs === "number" ? { moveIntervalMs: mv.moveIntervalMs } : {}),
+        ...(typeof mv.chaseStepMs === "number" ? { chaseStepMs: mv.chaseStepMs } : {}) });
+      if (cellMs <= PLAYER_WALK_STEP_MS) continue;
+      out.push(`「${ev.name || ev.id}」(${ev.id}) 추격자가 쫓는 동안 한 칸에 ${cellMs}ms(speed ${String(mv.speed ?? 3)}·frequency ${String(mv.frequency ?? 3)}${typeof mv.chaseStepMs === "number" ? `·chaseStepMs ${mv.chaseStepMs}` : ""}) — 주인공 걷기(${PLAYER_WALK_STEP_MS}ms/칸)보다 느려 걸어서 도망치면 잡히지 않는다`);
       break;
     }
   }
@@ -401,17 +414,17 @@ export function deadClues(project: Project, changedIds: ReadonlySet<string>): st
 const WEATHER_WORDS = /비가|비\s*(가\s*)?오|빗방울|빗줄기|소나기|폭우|장마|눈이\s*(오|내|와|쌓)|눈\s*내리|함박눈|폭풍|폭설|안개|날씨|천둥 ?(이|소리|번개)|rain|snow|storm|fog|weather/iu;
 const SHAKE_WORDS = /흔들리|흔들린|흔들려|흔들어|지진|진동|쿵\s*(하|소리)|earthquake|tremor|shake/iu;
 const FLASH_WORDS = /번쩍|섬광|번개(?!\s*(의\s*서|마법|기술|스킬|주문|책|의\s*검))(?!['’」』])|빛이\s*터|flash|lightning/iu;
-const MUSIC_WORDS = /음악|배경음|브금|bgm|music/iu;
 const HIDDEN_WORDS = /숨겨|숨은|몰래|보이지\s*않|투명|비밀|hidden|secret|invisible/iu;
 const ENDING_WORDS = /엔딩|결말|ending/iu;
 const STATE_WORDS = /독초|독에|독이|독을|독\s*상태|중독|맹독|마비|수면\s*상태|잠\s*상태|상태\s*이상|혼란|침묵|poison|paraly|stun/iu;
 
-/** 맵 배경음·기본 전투곡·승리 팡파르·타이틀·오프닝 곡 연결이 바뀌었나(set_game_audio) — 그러면 음악 요청은 이벤트 명령 없이도 채워졌다. */
+/** 맵 배경음·기본 전투곡·승리 팡파르·타이틀·오프닝·엔딩 곡 연결이 바뀌었나(set_game_audio) — 그러면 음악 요청은 이벤트 명령 없이도 채워졌다. */
 function audioBindingsChanged(before: Project, after: Project): boolean {
   const pick = (p: Project) => JSON.stringify([
     Object.entries(p.maps).map(([id, map]) => [id, map.bgm ?? null]),
     p.system.defaultBgmResourceId ?? null, p.system.battleBgmResourceId ?? null, p.system.battleVictoryMeResourceId ?? null,
     p.system.titleScreen?.musicResourceId ?? null, p.system.opening?.musicResourceId ?? null,
+    (p.endings ?? []).map((e) => [e.id, e.presentation?.musicResourceId ?? null]),
   ]);
   return pick(before) !== pick(after);
 }
@@ -443,7 +456,9 @@ export function gameContentProblems(before: Project, after: Project, task: strin
   const m2Has = (re: RegExp) => cmds.some((r) => r.cmd.kind === "m2Command" && re.test(String(r.cmd.commandId)));
   if (SHAKE_WORDS.test(task) && !m2Has(/m2-048/u)) problems.push("[게임 검사 화면] 요청에 흔들림·지진이 있는데 실제 화면 흔들기 명령이 없다(카메라 이동은 흔들림이 아니다). add_event 의 shake 비트({do:'shake',strength:'strong',axis:'vertical'})로 넣는다.");
   if (FLASH_WORDS.test(task) && !m2Has(/m2-047/u) && !cmds.some((r) => r.cmd.kind === "setWeather" && r.cmd.weather === "storm")) problems.push("[게임 검사 화면] 요청에 번쩍임·번개가 있는데 실제 화면 번쩍 명령이 없다(페이드 아웃은 번쩍이 아니다). add_event 의 flash 비트({do:'flash',color:'white'})로 넣는다.");
-  if (MUSIC_WORDS.test(task) && !audioBindingsChanged(before, after) && !kinds.has("playAudio") && !kinds.has("stopAudio") && !m2Has(/bgm|audio|music/iu)) problems.push("[게임 검사 음악] 요청에 음악·BGM 이 있는데 어느 자리에도 곡을 걸지 않았다. 맵·전투·보스·승리·타이틀 곡은 set_game_audio 로 건다(맞는 곡이 프로젝트에 없으면 store_find_music → 묻지 말고 store_install 로 넣은 뒤). 장면 도중 잠깐 바뀌는 곡만 add_event 의 music 비트({do:'music',action:'bgm',query:'festival'}).");
+  if (musicAsked(task) && !audioBindingsChanged(before, after) && !kinds.has("playAudio") && !kinds.has("stopAudio") && !m2Has(/bgm|audio|music/iu)) problems.push("[게임 검사 음악] 요청에 음악·BGM 이 있는데 어느 자리에도 곡을 걸지 않았다. 맵·전투·보스·승리·타이틀·엔딩 곡은 set_game_audio 로 건다(맞는 곡이 프로젝트에 없으면 store_find_music → 묻지 말고 store_install 로 넣은 뒤). 장면 도중 잠깐 바뀌는 곡만 add_event 의 music 비트({do:'music',action:'bgm',query:'festival'}).");
+  // 추격 음악은 추격자가 나타날 때의 곡이다 — 전투 곡이 아니다(2026-10-30 실조수 e2e: 「아오오니 느낌으로 추격 음악」이 모든 전투에 걸렸다).
+  if (musicAsked(task) && /추격|쫓아|쫓기|chase/iu.test(task) && !/전투|배틀|battle/iu.test(task) && (before.system.battleBgmResourceId ?? null) !== (after.system.battleBgmResourceId ?? null)) problems.push("[게임 검사 음악] 추격 음악을 모든 전투 곡(battle-default)에 걸었다. 추격 곡은 set_game_audio role:'chase'(+mapIds)로 추격자가 나타날 때 바꾸고 끝나면 되돌린다 — 전투 곡은 원래대로 돌려놓는다(추격자가 없으면 곡만 넣어 두고 보고에 적는다).");
   // 1c) 눈에 안 보이는 «조사하는» 물건: 새로 만든 결정 키(action) 이벤트에 그림도 없고 그 칸에 물건 타일도 없다(이동석·덤불·표지판이 맨땅으로 보였다).
   if (!HIDDEN_WORDS.test(task)) {
     for (const ev of changed) {
@@ -577,9 +592,11 @@ export function gameContentProblems(before: Project, after: Project, task: strin
     if (!changedEnc) problems.push("[게임 검사 조우] 요청에 무작위 조우가 있는데 어느 맵의 조우표도 바뀌지 않았다 — set_encounter_table 로 그 맵에 적 그룹·빈도를 단다(보이는 적 이벤트는 무작위 조우가 아니다).");
   }
   // 2) 엔딩: 엔딩 정의 + triggerEnding.
-  if (ENDING_WORDS.test(task)) {
+  // 음악만 바라는 엔딩 요청(「잔잔하게 엔딩곡」)은 엔딩을 짓는 요청이 아니다. 엔딩 명령은 이번에 바꾼 이벤트가 아니라 프로젝트 전체에서 찾는다 —
+  // 이미 있던 보스 이벤트의 triggerEnding 도 엔딩이다(2026-10-30 r11: 바꾼 이벤트만 봐서 «triggerEnding 이 없다»고 거짓으로 막았다).
+  if (ENDING_WORDS.test(task) && !musicOnly(task)) {
     const newEndings = (after.endings ?? []).filter((e) => !(before.endings ?? []).some((b) => b.id === e.id && JSON.stringify(b) === JSON.stringify(e)));
-    if (!kinds.has("triggerEnding")) problems.push(`[게임 검사 엔딩] 요청에 엔딩이 있는데 triggerEnding 명령이 없다${kinds.has("returnToTitle") ? "(내레이션+타이틀로 돌아가기는 엔딩이 아니다)" : ""}. define_ending 으로 엔딩을 정의하고 갈래에 {kind:'triggerEnding',endingId} 를 넣는다.`);
+    if (!kinds.has("triggerEnding") && !projectHasCommand(after, "triggerEnding")) problems.push(`[게임 검사 엔딩] 요청에 엔딩이 있는데 triggerEnding 명령이 없다${kinds.has("returnToTitle") ? "(내레이션+타이틀로 돌아가기는 엔딩이 아니다)" : ""}. define_ending 으로 엔딩을 정의하고 갈래에 {kind:'triggerEnding',endingId} 를 넣는다.`);
     else if (!newEndings.length && !(after.endings ?? []).length) problems.push("[게임 검사 엔딩] triggerEnding 은 있는데 정의된 엔딩(define_ending)이 없다.");
   }
   // 2b) 엔딩 카드 요약은 내레이션이다: 에필로그 대사 본문 앞에 「이름:」을 직접 쓰면 카드에 대본 머리말이 그대로 샌다

@@ -25,7 +25,7 @@ import { DOOR_DEFAULT_MS, parseDoorValue, type DoorSpec } from "@/project/eventC
 export const HIDE_SHOW_SCREEN_FADE_MS = 300;
 
 /** 페이드아웃이 도달하는 색 — 불투명 검정. tintModel 의 "r,g,b,a" 형식. */
-const FADE_OUT_TINT = "0,0,0,1";
+export const FADE_OUT_TINT = "0,0,0,1";
 /** 페이드인이 도달하는 색 — 투명. tintModel 이 "none" 을 TRANSPARENT_TINT 로 읽는다. */
 const FADE_IN_TINT = "none";
 

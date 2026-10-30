@@ -16,6 +16,7 @@
 // 걸음은 지형에 막히면 버린다(런타임과 같다), 인물에 막히면 비켜 간다고 본다. 다가가기는 런타임과 같은 planApproach.
 // 주인공 칸: 페이지가 다른 맵에서 이 맵으로 오는 이동의 도착 칸이 하나뿐이면 그 칸(방향 포함), 아니면 모름.
 // 갈래(선택지·조건 분기)는 각 갈래를 따로 되짚고, 뒤는 갈래 앞 상태로 잇는다.
+import { compareVariableValue } from "@/project/conditionEvaluation";
 import type { Command, Condition, Dir, EventPage, GameEvent, GameMap, MoveCommand, Project } from "../types";
 import { canMove, isPassable } from "../collision";
 import { AUTO_FACE_RANGE, CALLING_FACE_RANGE, chebyshev, DIR_DELTA, dirToward, facesToward, planApproach, TALK_DISTANCE_LIMIT, type StageCell } from "../staging/approach";
@@ -111,6 +112,18 @@ function seedFromConditions(conditions: readonly EventPageConditionLike[], st: R
   }
 }
 type EventPageConditionLike = { kind: string; switchId?: string; variableId?: string; key?: string; value?: unknown; op?: string };
+
+/** 새 게임 첫 순간(변수 0, 스위치·자기 스위치 꺼짐)에도 모든 조건이 참인가. 모르는 조건이 하나라도 있으면 아니다. */
+function holdsAtNewGame(conditions: readonly EventPageConditionLike[]): boolean {
+  return conditions.every((c) => {
+    if (c.kind === "switch" || c.kind === "selfSwitch") return c.value === false;
+    if (c.kind === "variable" && typeof c.value === "number") {
+      const op = (c.op ?? ">=") as Parameters<typeof compareVariableValue>[1];
+      return compareVariableValue(0, op, c.value);
+    }
+    return false;
+  });
+}
 
 /** 다른 맵에서 이 맵으로 오는 이동의 도착 칸들(모든 이벤트·공용 이벤트). */
 function arrivalsInto(project: Project, mapId: string): { x: number; y: number; dir: Dir }[] {
@@ -565,6 +578,10 @@ export function checkSceneStaging(project: Project, issues: LintIssue[]): void {
             const front = { x: host.x + DIR_DELTA[dir].x, y: host.y + DIR_DELTA[dir].y };
             st.player = { ...front, dir: dirToward(front, host) ?? "up" };
           }
+        } else if (project.startMapId === map.id && project.startPos && holdsAtNewGame((page.conditions ?? []) as EventPageConditionLike[])) {
+          // 시작 맵의 첫 자동 장면(조건이 새 게임 상태 — 변수 0·스위치 꺼짐 — 에서 참): 주인공은 시작 칸에 있다.
+          // 도착 칸(되돌아오는 문)으로 두면 시작 칸 곁의 인물이 수십 칸 떨어진 것으로 잘못 잡힌다(isekai-godding 소환의 방).
+          st.player = { x: project.startPos.x, y: project.startPos.y, dir: "down" };
         } else {
           arrivals ??= arrivalsInto(project, map.id);
           const cells = new Set(arrivals.map((a) => `${a.x},${a.y}`));

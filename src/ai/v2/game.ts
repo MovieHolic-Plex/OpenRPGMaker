@@ -8,6 +8,7 @@ import { WHOLE_GAME_WORDS } from "./shipChecks";
 import { getTool } from "@/editor/tools/toolRegistry";
 import type { PiAssistantV2Env } from "./env";
 import { ENCOUNTER_ASK } from "./combatChecks";
+import { MUSIC_REQUEST_WORDS, musicOnly, wantsMusic } from "./musicWords";
 
 export const GAME_WORDS = /퀘스트|의뢰|심부름|부탁|아이템|회복약|포션|무기|갑옷|방패|장비|장신구|상점|가게|팔게|팔기|열쇠|잠긴|보물|상자|제작|만들어 주는|주인공|이름|직업|레벨|능력치|체력|동료|파티|합류|떠나|스킬|기술|전투|싸우|보스|적\b|몬스터|무리|선택지|호감|기억|스위치|변수|횟수|레버|여관|묵으|저장|회복|치료|신부|골드|돈|엔딩|결말|게임|일지|제한 시간|타이머|낮에|밤에|시간대|아침|저녁|팻말|표지판|우물|동전|암호|비밀번호|통행료|경비|문지기|함정|독|중독|마비|수면|상태 ?이상|날씨|비가|비 ?오|무작위|랜덤|인카운터|조우|마주치|늑대|멧돼지|슬라임|고블린|얻게|얻는|얻을|모으|모았|모아|줍|주워|개수|몇 개|조사하면|조사할|입력|자물쇠|숫자|비밀번호|옮겨|옮기|묘비|회상|따라오|따라와|따라다|도망|사라지|나타나|말 걸|말을 걸|대사|다가가|밟으면|들어가면|문을|잇|이어 줘|이어줘|연결|follow|random|encounter|지진|흔들|번쩍|번개|음악|배경음|브금|bgm|팡파르|사운드트랙|약초|광맥|이동석|눈이|눈 ?내|폭풍|안개|대화|표정|얼굴|초상|흉상|웃으|걱정|장면|뛰어다|돌아다|걸어 다|순찰|쫓아|쫓다|추격|발견|뒤지|뒤져|뒤질|수납|항아리|서랍|옷장|들키|들켜|몰래|숲|사당|오프닝|제목|타이틀|레터박스|검은 띠|카메라|연기|막 끝|막이|제\s*\d+\s*막|카드|페이즈|소환|불러|예고|힘을 모|꿰뚫|속성|약하게|약점|치명타|반지|목걸이|마나|에테르|\bMP\b|화상|기절|잠 |잠은|책장|비석|역사|망원경|이름을|줄여|절반|추가해|연계|합체|협동|콤보|레벨 ?업|팡파레|습득|달려들|돌진|느릿|컷인|도움말|말투|존댓말|반말|다듬|윤문|호칭|대화창|넘치|줄거리|대본|휴대폰|모바일|폰에서|터치|탭하면|탭해서|진동|조이스틱|달리기 단추|들판|초원|필드|바위|버섯|들꽃|고사리|그루터기|통나무|덤불|풀숲|행인|오가|출근|지나다니|옥상|내려다|전망|황무지|문 열리|여는 효과|문 효과|한 명만|두 명|중복|겹쳐|남겨|지워|없애|삭제|빼 줘|치워|combo|touch|mobile|quest|item|shop|weapon|armor|battle|enemy|party|skill|inn|save|gold|ending|poison|weather/iu;
 
@@ -17,6 +18,11 @@ export const HORROR_WORDS = /공포|호러|무서|오싹|귀신|유령|괴물|�
 /** 퍼즐 사슬 동사를 실을 요청 — 단서·자물쇠·잠긴 방·탈출. */
 export function wantsPuzzle(task: string): boolean {
   return HORROR_WORDS.test(task) || /퍼즐|단서|금고|비밀번호|암호|열쇠|잠긴|잠겨|탈출|수수께끼|puzzle|clue|escape|riddle/iu.test(task);
+}
+/** 음악 묶음 — 게임 요소 낱말이 없어도 음악 요청이면 이 묶음만 따로 싣는다(createGameTools). */
+export const MUSIC_TIER = { words: MUSIC_REQUEST_WORDS, tools: ["recommend_bgm", "store_find_music", "store_install", "set_game_audio", "get_database_records", "list_endings"], card: "· 배경음악·전투곡·보스곡·승리 팡파르·타이틀곡·엔딩곡: 1) recommend_bgm{scene, query(장르)} 로 프로젝트에 있는 곡을 본다 2) 후보가 기본 내장곡(cc0-·rtp 계열, music 칸 없음)뿐이거나 장르 곡(조선풍·무협·호러·16비트 레트로·피아노…)이 필요하면 store_find_music{scene, query, mood, need} — query 에는 사용자의 말을 그대로(「크로노트리거 느낌」「투더문 같은」「파판 전투곡」처럼 게임 이름이 있으면 이름째) 넣는다, 장르를 지어내 바꾸지 않는다(도구가 이름을 들리는 결로 바꾼다). 후보는 점수 순이고 1위에 recommended:true 와 이유(why)가 붙는다 — 사용자가 다른 곡을 고르지 않았으면 recommended 곡을 쓴다(fallback:true 는 게임 결 줄이 아닌 대신 곡). 그 게임 곡이라고 말하지 않는다(「그런 느낌의 곡」). 미술관·갤러리·박물관·저택 배경음은 scene:'town' 이다(던전이 아니다). 결과 autoInstall:true(기본)면 묻지 말고 recommended 곡을 store_install{slug, assetIds:[assetId]} 로 넣는다, false(사용자가 「먼저 묻기」를 켬)면 카드가 뜨니 넣지 말고 이 턴을 끝낸다 3) 연결은 set_game_audio: 마을·맵 = role:'maps'+mapIds(mapIds 는 맵 id — 타일셋 id 가 아니다. 사용자가 맵 이름을 말하지 않았으면 시작 맵(지금 보는 맵)에 건다 — 곡 분위기와 이름이 비슷한 맵(「미술관」 곡 → 동굴 맵)을 고르지 않는다), 모든 전투 = 'battle-default', 보스전만 = 'boss'(+troopIds, 비우면 이름에 보스·마왕·드래곤이 든 부대), 승리 = 'victory'(loopable:false 짧은 곡), 타이틀 = 'title', 엔딩·크레딧 곡 = 'ending'(+endingIds — 비우면 모든 엔딩과 엔딩 명령에 건다; 엔딩이 아직 없으면 곡만 넣어 두고 보고에 적는다). 추격 음악(「쫓아올 때」「아오오니 느낌 추격」) = store_find_music{scene:'chase'} 로 찾고 'chase'(+mapIds — 추격자가 나타날 때 바꾸고 끝나면 되돌린다; 추격자가 없으면 곡만 넣어 두고 보고에 적는다) — 전투 곡(battle-default)이 아니다. 「게임 음악 전부」는 맵마다(마을·필드·던전 각각) + 전투 + 보스 + 승리 + 타이틀을 장면에 맞는 서로 다른 곡으로 건다. 맵 배경음을 이벤트의 playAudio 로 흉내 내지 않는다(장면 도중 잠깐 바뀌는 곡만 add_event music 비트). 음악만 바라는 요청(「X처럼 신나는 곡 마을에」「잔잔한 엔딩곡」)은 곡을 찾고·넣고·연결하는 일만 한다 — 맵을 다시 짓거나 이벤트·엔딩을 새로 만들지 않는다(곡을 걸 자리가 없으면 보고에 적는다)." } as const;
+export function wantsMusicTools(task: string): boolean {
+  return wantsMusic(task);
 }
 export const FALLEN_TIERS: readonly { readonly words: RegExp; readonly tools: readonly string[]; readonly card?: string }[] = [
   { words: /숲|들판|필드|초원|forest|woods?\b|field|meadow/iu, tools: ["author_forest_route"] },
@@ -29,7 +35,8 @@ export const FALLEN_TIERS: readonly { readonly words: RegExp; readonly tools: re
   { words: /오프닝|시작할 때|게임 시작|타이틀|제목|영화처럼|opening|title/iu, tools: ["plan_opening", "set_opening", "edit_opening", "get_animatic_capabilities", "configure_opening_entry", "create_opening_animatic_shot", "place_opening_background", "upsert_opening_layer", "animate_opening_camera", "animate_opening_layer", "set_opening_transition", "set_opening_caption", "upsert_opening_audio_cue", "inspect_opening_timeline", "set_title_screen", "list_resources"], card: "· 오프닝의 하늘·배경: 마을 맵 위를 카메라로 훑어 «밤하늘»을 흉내 내지 않는다. list_resources{kind:'backdrop', query:'night'|'sky'|'stars'} 로 그림을 찾아 place_opening_background{shotId, layerId, resourceId} 로 깔고, 별은 upsert_opening_layer 의 particles{preset:'stars'}, «흘러가는» 하늘은 animate_opening_layer 로 그 배경 층 x(또는 y)를 천천히 옮긴다. 레터박스·흔들림·제목은 create_opening_animatic_shot/animate_opening_camera/set_opening_caption. 다 짓고 inspect_opening_timeline 으로 확인." },
   { words: /순찰|돌아다|뛰어다|걸어 다|patrol/iu, tools: ["configure_npc_patrol"] },
   // 2026-10-25 스토어 음악 팩: 곡마다 들어 보고 적은 장면·분위기로 골라 넣고 자리에 연결한다.
-  { words: /음악|배경음|브금|bgm|팡파르|팡파레|사운드트랙|\bost\b|soundtrack|music|fanfare/iu, tools: ["recommend_bgm", "store_find_music", "store_install", "set_game_audio", "get_database_records"], card: "· 배경음악·전투곡·보스곡·승리 팡파르·타이틀곡: 1) recommend_bgm{scene, query(장르)} 로 프로젝트에 있는 곡을 본다 2) 후보가 기본 내장곡(cc0-·rtp 계열, music 칸 없음)뿐이거나 장르 곡(조선풍·무협·호러…)이 필요하면 store_find_music{scene, query, mood, need} — 곡마다 실제로 들리는 장르(genre)가 적혀 있으니 요청 장르와 맞는 것을 고른다. 결과 autoInstall:true(기본)면 묻지 말고 고른 곡을 store_install{slug, assetIds:[assetId]} 로 넣는다, false(사용자가 「먼저 묻기」를 켬)면 카드가 뜨니 넣지 말고 이 턴을 끝낸다 3) 연결은 set_game_audio: 마을·맵 = role:'maps'+mapIds, 모든 전투 = 'battle-default', 보스전만 = 'boss'(+troopIds, 비우면 이름에 보스·마왕·드래곤이 든 부대), 승리 = 'victory'(loopable:false 짧은 곡), 타이틀 = 'title'. 「게임 음악 전부」는 맵마다(마을·필드·던전 각각) + 전투 + 보스 + 승리 + 타이틀을 장면에 맞는 서로 다른 곡으로 건다. 맵 배경음을 이벤트의 playAudio 로 흉내 내지 않는다(장면 도중 잠깐 바뀌는 곡만 add_event music 비트)." },
+  // 2026-10-30 낱말은 musicWords.ts 하나(「엔딩곡」「테일즈런너처럼」도 맞는다) — 끝맺음 음악 검사와 같은 판정.
+  MUSIC_TIER,
   { words: /문을 열|문 열|성문|잠긴|창고 문|뒷문|door/iu, tools: ["place_door"] },
   // 2026-10-25 데모(폴른 스타 전투·대사 책상·모바일·첫사랑 거리)에서 일반 기능으로 연 것 — 낱말이 맞을 때만.
   // 2026-10-25 폴른 스타 2막 과제 11: 보이는 적끼리 진영 싸움(set_factions + place_field_enemy factionId).
@@ -41,7 +48,7 @@ export const FALLEN_TIERS: readonly { readonly words: RegExp; readonly tools: re
   { words: /말투|존댓말|반말|다듬|윤문|호칭|통일|대화창|넘치|줄거리|이야기 순서|순서대로|대본|대사를 (전부|모두|정리)|대사 (전부|모두)|screenplay|polish/iu, tools: ["list_dialogue", "get_dialogue_context", "rewrite_dialogue", "set_speaker_voice", "get_story_outline", "read_story_script", "set_scene_summaries", "lint_dialogue", "read_assistant_skill"], card: "· 윤문 지침은 read_assistant_skill{id:'dialogue-polish'}, 고친 글은 lint_dialogue{texts|lineIds} 로 검사한다. · 대사 다듬기·말투·호칭 통일·넘치는 줄·이야기 정리: patch_event_page 로 대사를 하나씩 다시 쓰지 않는다. list_dialogue{speaker, overflowOnly} 또는 read_story_script 로 읽고 → rewrite_dialogue{edits:[{id|ref, hash, text, reason}], instruction:요청 원문} 로 고친 줄만 낸다(기본 propose = 사용자가 자료집 「대사」 탭에서 줄마다 받는다 — 보고에 «제안으로 남겼다»고 쓴다, 사용자가 «바로 바꿔»라 했으면 mode:'apply'). 넘치는 줄은 대화창에 맞게 줄바꿈·두 줄로 나눠 낸다. 인물 말투를 «기억해 둬» = set_speaker_voice{speaker, note}. 이야기 순서 요약은 get_story_outline/read_story_script 를 읽고 답만(아무것도 바꾸지 않는다)." },
   { words: /휴대폰|모바일|폰에서|터치|탭하면|탭해서|탭으로|진동|조이스틱|달리기 단추|화면 단추|touch|mobile|haptic/iu, tools: ["set_project_settings"], card: "· 휴대폰 조작: set_project_settings{touchControls:{tapToMove:true(맵 탭 걷기·사람 탭 말 걸기), stick:'auto'|'fixed'|'floating'(누른 자리 = floating), haptics:true(진동), runButton:true}}. 상하좌우만 = 조이스틱은 이미 네 방향 쪽으로 붙는다(설정 칸 없음 — 그렇다고 보고). 기본이 이미 켜짐이면 바뀌는 것이 없어도 된다." },
   { words: /행인|오가|출근|퇴근|지나다니|사람들이 (걸|다니|오|지나)|walkers?\b|pedestrian/iu, tools: ["add_street_walkers"], card: "· 거리를 오가는 행인: add_street_walkers{mapId, walkers:[{name, graphic:{query:'회사원'}, stops:[{x,y},{x,y,waitSec}](들를 칸 2곳 이상 — 정류장·횡단보도 건너편·건물 문 앞·지하철 계단), speed 2~4 를 사람마다 다르게}]} — 길찾기·차 양보는 함수가 한다. 좌표는 read_npc_layout/find_empty_ground 나 거리 도구 결과(문·정류장·출구 칸)에서." },
-  { words: /회사 거리|오피스|빌딩 거리|지하철 출구|도시 거리|도심|modern city|office street/iu, tools: ["resize_map", "create_map", "compose_modern_city_street", "link_modern_city_interior", "add_street_walkers", "set_map_properties"], card: "· 현대 도시 거리(modern_city 칩셋): compose_modern_city_street{mapId, seed, shops, landmark:'tower10'(큰 빌딩), subwayExits:1~4(번호 출구), korean:true(한국 거리)} — 맵은 60×50 권장(작으면 먼저 resize_map{mapId,width:60,height:50}; 새 거리 맵이면 create_map{tilesetId:'modern_city',width:60,height:50}). 결과 data.subwayExits·buildings 의 칸으로 행인 stops·이동 이벤트를 단다." },
+  { words: /회사 거리|오피스|빌딩 거리|지하철 출구|도시 거리|도심|modern city|office street/iu, tools: ["resize_map", "create_map", "compose_modern_city_street", "link_modern_city_interior", "add_street_walkers", "set_map_properties"], card: "· 현대 도시 거리(modern_city 칩셋): compose_modern_city_street{mapId, shops, landmark:'tower10'(큰 빌딩), subwayExits:1~4(번호 출구), korean:true(한국 거리)} — 맵은 60×50 권장(작으면 먼저 resize_map{mapId,width:60,height:50}; 새 거리 맵이면 create_map{tilesetId:'modern_city',width:60,height:50}). 결과 data.subwayExits·buildings 의 칸으로 행인 stops·이동 이벤트를 단다." },
   { words: /옥상|내려다|전망대|전망|아래 거리|배경으로|rooftop/iu, tools: ["set_map_properties"], card: "· 옥상·전망대에서 아래 동네가 보이는 배경: set_map_properties{mapId:옥상 맵, background:{fromMap:{mapId:아래 거리 맵, scale:0.33, haze:0.3}, showInEmptyCells:true}} — 그림을 지어내지 않는다. 옥상 맵 가장자리(울타리 밖)는 빈 칸으로 둬야 배경이 보인다." },
   // 2026-10-25 공포 트랙(판정 J11~J15): 어둠·손전등·추격·숨기·게임 오버·퍼즐 — v1 에 있던 일반 기능을 공포 낱말에 싣는다.
   // 2026-10-25 사용자 규칙: 다 지은 게임에 편집기 기본 타이틀·오프닝·HUD·창·음악·이름·얼굴·엔딩 카드를 남기지 않는다(J59: 첫 턴에 오프닝 도구가 없어 「새 프로젝트」 타이틀이 남았다).
@@ -66,7 +73,7 @@ export const V2_GAME_TOOLS: readonly string[] = [
   "upsert_item", "upsert_equipment", "set_shop_stock", "set_sell_prices", "place_chest", "upsert_craft_recipe",
   "upsert_actor", "upsert_class", "upsert_skill", "set_party", "add_companion",
   "upsert_enemy", "upsert_troop", "upsert_troop_battle_page", "set_encounter_table",
-  "find_empty_ground", "place_npc", "upsert_event", "patch_event_page", "run_scene_test", "upsert_common_event", "set_npc_schedule", "configure_time_system", "place_savepoint", "set_start_position",
+  "find_empty_ground", "place_npc", "upsert_event", "patch_event_page", "add_event_page", "run_scene_test", "upsert_common_event", "set_npc_schedule", "configure_time_system", "place_savepoint", "set_start_position",
   // 2026-10-24 새 12 사례 비교: v1 이 쓰고 v2 에 없던 것 — 칩 고르기(없으면 그림 관문이 막는다)·이야기 깃발·엔딩·필드 적·이벤트 옮기기/지우기·문 잇기·날씨.
   "list_npc_graphics", "list_resources", "read_npc_layout", "declare_story_flag", "list_endings", "define_ending", "place_field_enemy",
   "move_event", "remove_event", "create_transfer_pair", "set_scene_mood",
@@ -184,10 +191,19 @@ export function gameToolNames(task: string): string[] {
   return [...V2_GAME_TOOLS.filter((name) => !GROUPED.has(name)), ...groups];
 }
 
+/**
+ * 맵 동사(make_place·add_event…, verbs.ts 가 늘 싣는다) 위에 덧붙일 도구 이름. 음악 낱말만 있으면 음악 묶음만 — 맵 동사를 대신하지 않는다.
+ * 게임 요청도 «조사하는 물건»(비석·이동석·분수)을 보이게 찍어야 해서 물건 찾기·찍기를 같이 준다(2026-10-24: 투명 이벤트가 맨땅에 남았다).
+ */
+export function v2ExtraToolNames(task: string): string[] {
+  // 음악만 바라는 요청은 음악 묶음만 — 「추격」「엔딩」 낱말이 게임 도구(찍기·추격 장면·엔딩 정의)를 끌어오지 않게(2026-10-30 r12).
+  if (musicOnly(task)) return [...new Set([...MUSIC_TIER.tools, ...storeTierTools(task)])];
+  const want = [...(wantsGameTools(task) ? [...gameToolNames(task), "list_spatial_designs", "stamp_object", ...fallenTierTools(task)] : wantsMusicTools(task) ? MUSIC_TIER.tools : []), ...(wantsTerrainTools(task) ? V2_TERRAIN_TOOLS : []), ...storeTierTools(task)];
+  return [...new Set(want)];
+}
+
 export function createGameTools(env: PiAssistantV2Env, task = ""): PiToolShape[] {
-  // 게임 요청도 «조사하는 물건»(비석·이동석·분수)을 보이게 찍어야 해서 물건 찾기·찍기를 같이 준다(2026-10-24: 투명 이벤트가 맨땅에 남았다).
-  const want = [...(wantsGameTools(task) ? [...gameToolNames(task), "list_spatial_designs", "stamp_object", ...fallenTierTools(task)] : []), ...(wantsTerrainTools(task) ? V2_TERRAIN_TOOLS : []), ...storeTierTools(task)];
-  const names = [...new Set(want)].filter((name) => getTool(name));
+  const names = v2ExtraToolNames(task).filter((name) => getTool(name));
   return withEncountersOnlyWhenAsked(withPictureSearchBudget(createPiToolset(env.ctx, { ...(env.toolsetOptions ?? {}), toolNames: names, onCall: env.record })), task);
 }
 

@@ -4,6 +4,9 @@
 // 기본 이름(주인공)·기본 얼굴·기본 음악이 그대로 남았고(공포 저택 1턴·시타마치), 엔딩은 대사 한 줄이었다.
 // 기준은 빈 프로젝트(createBlankProject) 자체다 — 그 값과 같으면 «아무도 고르지 않은» 기본값이다.
 // 순수 함수(프로젝트만 읽는다). v2FinishGate 가 출하 차단으로, 조언자가 막는 항목(shipBlockers)으로 같이 부른다.
+import { bossTalkWithoutBattle } from "./bossTalkBattles";
+import { reloadProblem } from "./reloadCheck";
+import { chaserMapsWithoutHiding } from "@/project/chaserHiding";
 import { createBlankProject } from "@/project/defaults";
 import type { Project } from "@/project/types";
 import { findOpeningStillMood } from "@/assets/openingStillMoods";
@@ -17,17 +20,94 @@ import { romanceCompletionGaps } from "@/qa/gameCheck/romance";
 import { invisibleStoryEvents, objectiveGaps, offArtEntrances, doorCellBlocked, repeatedDayDialogue, lingeringHeavyTints } from "./discoverability";
 import { fieldMenu } from "@/project/fieldMenu";
 import { FACTORY_HERO_ARMS } from "./genreDefaults";
+import { strayStepCopies, walkBlueprint } from "./blueprint";
+import { assemblyTimeMismatches, blueprintStoryText } from "@/project/blueprintAssembly";
+import { battleSites, healingSources } from "./combatChecks";
 
 type Obj = Record<string, unknown>;
 export interface ShipBlocker { readonly id: string; readonly message: string; readonly evidence: string }
 
+/**
+ * 조건이 맞아야만 옮기는 출구인데, 조건이 안 맞을 때 켜지는 페이지(조건 없는 페이지)에 대사가 없다 — 걸어 들어가도 아무 말 없이 막힌다.
+ * 2026-10-29 감독 지시(vm3 flash 추리 BLOCKER 「출구에서 막혔는데 안내 문구가 전혀 없다」): 조건부 출구는 막힐 때 이유 한 줄이 필수다.
+ */
+export function silentLockedExits(project: Project): { mapId: string; eventId: string; x: number; y: number }[] {
+  const out: { mapId: string; eventId: string; x: number; y: number }[] = [];
+  for (const map of Object.values(project.maps)) for (const ev of map.events ?? []) {
+    const pages = (ev.pages ?? []) as unknown as Obj[];
+    const moving = pages.filter((p) => JSON.stringify(p.commands ?? []).includes('"kind":"transfer"'));
+    if (!moving.length || moving.some((p) => !(p.conditions as unknown[] | undefined)?.length)) continue;
+    const told = pages.some((p) => !(p.conditions as unknown[] | undefined)?.length && JSON.stringify(p.commands ?? []).includes('"kind":"text"'));
+    if (!told) out.push({ mapId: map.id, eventId: ev.id, x: ev.x, y: ev.y });
+  }
+  return out;
+}
+
+/** 반짝임만 있고 아무 일도 안 하는 페이지 — 조사해도 대사·아이템이 없어 판정자가 「반짝이는 곳을 눌러도 무반응」 이라 막혔다(2026-10-29 vm3 terra jrpg 판정). 숨을 곳(interaction)은 뺀다. */
+export function emptySparkles(project: Project): { mapId: string; eventId: string; x: number; y: number; page: number }[] {
+  const out: { mapId: string; eventId: string; x: number; y: number; page: number }[] = [];
+  for (const map of Object.values(project.maps)) for (const event of map.events ?? []) (event.pages ?? []).forEach((page, i) => {
+    const raw = page as unknown as Obj;
+    if (!raw.nearSparkle || raw.interaction || (Array.isArray(raw.commands) && raw.commands.length)) return;
+    out.push({ mapId: map.id, eventId: event.id, x: event.x, y: event.y, page: i });
+  });
+  return out;
+}
+
+/**
+ * 제자리 옮기기 — 같은 맵의 그 이벤트 칸으로 옮기는 이동 명령(한 칸 옆은 막힌 문을 건너가는 통로라 뺀다). 화면이 깜빡이고 제자리로 돌아올 뿐이라 플레이어는 문이 고장 났다고 읽는다
+ * (2026-10-29 판정 요청). 함정(「꺼지는 바닥」→ 방 입구, 16칸)처럼 멀리 되돌리는 같은 맵 이동은 의도라 짚지 않는다.
+ */
+export function selfLoopTransfers(project: Project): { mapId: string; eventId: string; x: number; y: number; to: { x: number; y: number } }[] {
+  const out: { mapId: string; eventId: string; x: number; y: number; to: { x: number; y: number } }[] = [];
+  const walk = (value: unknown, hit: (c: Obj) => void): void => {
+    if (Array.isArray(value)) { value.forEach((v) => walk(v, hit)); return; }
+    if (!value || typeof value !== "object") return;
+    const c = value as Obj;
+    if (c.kind === "transfer") hit(c);
+    for (const child of Object.values(c)) if (child && typeof child === "object") walk(child, hit);
+  };
+  for (const map of Object.values(project.maps)) for (const event of map.events ?? []) {
+    walk(event.pages ?? [], (c) => {
+      if (c.mapId !== map.id || typeof c.x !== "number" || typeof c.y !== "number") return;
+      // 그 이벤트 칸 자체로 옮기는 것만 — 한 칸 옆은 막힌 문·덤불을 건너가는 정상 통로다(standin monster 체육관 「덩굴 문」 위/아래 고르기).
+      if (c.x === event.x && c.y === event.y) out.push({ mapId: map.id, eventId: event.id, x: event.x, y: event.y, to: { x: c.x, y: c.y } });
+    });
+  }
+  return out;
+}
+
 /** 게임 하나를 만들거나 완성하는 요청(작은 고치기 요청에는 출하 검사를 걸지 않는다). */
 // 컨셉 카드 한 줄(「폐업 직전 태엽 장난감 가게, 밤마다 손님이 깨어난다 (회상 스토리)」)도 게임 하나를 만드는 요청이다 — 끝의 (장르) 괄호가 표지.
 // 2026-10-26 toy-j90: 이 한 줄이 출하 검사·화면 검수 없이 1턴을 끝냈다.
-export const WHOLE_GAME_WORDS = /(게임|game)[^.!?\n]{0,60}(만들|지어|짜\s*줘|완성|제작|build|make)|(만들|지어|완성)[^.!?\n]{0,20}(게임|game)|엔딩까지|처음부터 끝까지|whole game|\([^()\n]{0,24}(스토리|이야기|RPG|어드벤처|호러|공포|연애|로맨스|추리|미스터리|탐험|퍼즐|시뮬레이션|액션|비주얼\s*노벨|생존|육성|수집|게임)[^()\n]{0,12}\)\s*$/iu;
+export const WHOLE_GAME_WORDS = /(게임|game|RPG|알피지)[^.!?\n]{0,60}(만들|지어|짜\s*줘|완성|제작|build|make)|(만들|지어|완성)[^.!?\n]{0,20}(게임|game|RPG|알피지)|엔딩까지|처음부터 끝까지|whole game|\([^()\n]{0,24}(스토리|이야기|RPG|어드벤처|호러|공포|연애|로맨스|추리|미스터리|탐험|퍼즐|시뮬레이션|액션|비주얼\s*노벨|생존|육성|수집|게임)[^()\n]{0,12}\)\s*$/iu;
 /** 고치기 동사로 끝나는 짧은 요청(「버튼 효과 고쳐 (액션)」)은 괄호 장르가 붙어도 전체 게임 요청이 아니다. */
 const EDIT_REQUEST = /(고쳐|바꿔|옮겨|지워|없애|줄여|늘려|수정|변경)\s*(줘|주세요|라)?[^()\n]{0,4}\([^()\n]*\)\s*$/u;
-export function wantsWholeGame(task: string): boolean { return WHOLE_GAME_WORDS.test(task) && !(EDIT_REQUEST.test(task) && !/(게임|game)[^.!?\n]{0,60}(만들|지어|완성|제작)|엔딩까지|처음부터 끝까지/iu.test(task)); }
+/** 「게임」 뒤에 바로 만들기 동사(「추리 게임 만들어 줘」·「RPG 하나 만들어」) — 게임 자체가 만들 대상이다. */
+const GAME_IS_OBJECT = /(게임|game|RPG|알피지)\s*(하나|한\s*개)?\s*(을|를)?\s*(만들|지어|짜\s*줘|완성|제작)/iu;
+const WHOLE_STRONG = /엔딩까지|처음부터 끝까지/u;
+/** 게임의 한 부분을 만드는 요청 — 「방탈출 게임에 쓸 서재」·「공포 게임에 나오는 병실」·「힐링 게임의 잡화점」·「배달 게임에서 소포 받는 빵집」. */
+const PART_OF_GAME = /(게임|game|RPG)\s*(에\s*(쓸|쓰일|나오는|넣을|들어갈)|에서|의)\s/iu;
+/**
+ * 방·맵 하나만 짓는 요청(방 과제 접미 「다른 맵은 만들지 말고 이 방 하나만 지어 줘」, 「… 잡화점 실내를 만들어 줘」).
+ * 게임 이름이 들어 있어도 장소 하나를 짓는 말이면 청사진 관문이 make_place·edit_place 를 막지 않게 한다(2026-10-29 room-base2x healing-store·delivery-bakery 0점).
+ */
+const SINGLE_PLACE = /(방|맵|장소|실내|건물)\s*하나만|다른\s*맵은\s*만들지|(실내|방|맵|장소)(를|을)?\s*(하나\s*)?(만들어|지어)\s*(줘|주세요)/u;
+/**
+ * 게임 하나를 만들거나 완성하는 요청인가 — 끝맺음 조립·출하 검사·화면 검수가 이 판정으로 켜진다.
+ * 2026-10-29 판정표(scripts/qa/assistant-v2/wholeGameTable.mts, 스위트 12 프롬프트·방 과제 17개): 「짧은 판타지 RPG 만들어 줘」 가 false 라
+ * jrpg 첫 차례에 끝맺음 조립이 돌지 않았고, 「공포 게임에 나오는 병실 실내를 만들어 줘. … 이 방 하나만 지어 줘」 같은 방 과제 6개가 true 라
+ * 방 하나 짓기에 출하 검사가 걸렸다.
+ */
+export function wantsWholeGame(task: string): boolean {
+  if (!WHOLE_GAME_WORDS.test(task)) return false;
+  const strong = WHOLE_STRONG.test(task);
+  if (EDIT_REQUEST.test(task) && !strong && !/(게임|game|RPG|알피지)[^.!?\n]{0,60}(만들|지어|완성|제작)/iu.test(task)) return false;
+  if (strong) return true;
+  // 「방 하나만 있는 방탈출 게임 만들어 줘」 는 게임 요청 — 게임이 만들 대상이면 방·부분 낱말로 끄지 않는다.
+  if ((SINGLE_PLACE.test(task) || PART_OF_GAME.test(task)) && !GAME_IS_OBJECT.test(task)) return false;
+  return true;
+}
 
 let factoryCache: Project | undefined;
 function factory(): Project {
@@ -51,7 +131,8 @@ function walk(list: unknown, visit: (cmd: Obj) => void): void {
     const cmd = raw && typeof raw === "object" ? raw as Obj : undefined;
     if (!cmd) continue;
     visit(cmd);
-    for (const key of ["then", "else", "branch", "commands", "cancelBranch", "beats"]) walk(cmd[key], visit);
+    // 전투 victoryBranch·상점 transactionBranch 같은 「…Branch」 갈래도 걷는다(blueprint.ts walk 와 같은 규칙).
+    for (const [key, value] of Object.entries(cmd)) if (Array.isArray(value) && (/^(then|else|branch|commands|body|loop|beats)$/u.test(key) || /Branch$/u.test(key))) walk(value, visit);
     if (Array.isArray(cmd.options)) for (const o of cmd.options as Obj[]) walk(o?.branch, visit);
   }
 }
@@ -180,6 +261,41 @@ export function endingClosureProblems(project: Project): ShipBlocker[] {
   return out;
 }
 
+/** 이벤트·공통 이벤트 명령이 쓰는(조건이 아닌 자리에 나오는) 스위치·변수 id. 조건(conditions·condition) 안은 읽기라 뺀다. */
+export function writtenStateIds(project: Project): { switches: Set<string>; variables: Set<string> } {
+  const switches = new Set<string>(Object.entries(project.session?.switches ?? {}).filter(([, v]) => v).map(([k]) => k));
+  const variables = new Set<string>(Object.keys(project.session?.variables ?? {}));
+  const visit = (node: unknown, depth = 0): void => {
+    if (depth > 40 || !node || typeof node !== "object") return;
+    if (Array.isArray(node)) { for (const item of node) visit(item, depth + 1); return; }
+    const o = node as Obj;
+    if (typeof o.switchId === "string" && o.value !== false) switches.add(o.switchId);
+    if (typeof o.variableId === "string") variables.add(o.variableId);
+    for (const [key, value] of Object.entries(o)) if (key !== "conditions" && key !== "condition" && value && typeof value === "object") visit(value, depth + 1);
+  };
+  for (const map of Object.values(project.maps)) for (const ev of map.events ?? []) for (const page of ((ev as unknown as Obj).pages as Obj[] | undefined) ?? []) visit(page.commands);
+  for (const ce of (project.commonEvents ?? []) as unknown as Obj[]) visit(ce.commands);
+  return { switches, variables };
+}
+
+/**
+ * 엔딩 id 로 부르는 엔딩의 조건이 아무도 켜지 않는 스위치·변수를 기다린다(2026-10-29 vm1 flash 방탈출: 「탈출 문」이 triggerEnding 을 부르는데 엔딩 조건
+ * switch_escape_success 를 켜는 곳이 없어 엔딩이 나지 않았다 — 자동 플레이 «페이지 2 대신 다른 페이지»). 친밀도·회차 조건은 보지 않는다.
+ */
+export function endingConditionsUnset(project: Project): ShipBlocker[] {
+  const written = writtenStateIds(project);
+  // 엔딩 id 를 집어 부르는 명령이 있는 엔딩만 — id 없이 부르면 조건으로 엔딩을 고르므로 조건이 곧 갈래다.
+  const targeted = new Set(allCommands(project).filter((r) => r.cmd.kind === "triggerEnding" && typeof r.cmd.endingId === "string").map((r) => String(r.cmd.endingId)));
+  const out: ShipBlocker[] = [];
+  for (const e of (project.endings ?? []).filter((ending) => targeted.has(ending.id))) {
+    const dead = (e.conditions ?? []).filter((c) => (c.kind === "switch" && c.value !== false && !written.switches.has(c.switchId)) || (c.kind === "variable" && !written.variables.has(c.variableId)));
+    if (!dead.length) continue;
+    const ids = dead.map((c) => c.kind === "switch" ? c.switchId : (c as { variableId: string }).variableId);
+    out.push({ id: "ending-condition-unset", message: `엔딩 「${e.name}」의 조건 ${ids.join("·")} 을 켜는 이벤트가 없어 엔딩을 부르는 명령이 돌아도 엔딩이 나지 않는다 — define_ending 의 conditions 에서 빼거나(엔딩을 부르는 이벤트가 곧 관문이다) 그 이벤트에서 그 스위치를 켠다.`, evidence: `${e.id}: ${ids.join(",")}` });
+  }
+  return out;
+}
+
 /** 제목이 퍼즐 답을 말한다(2026-10-25 공포 저택 J60: 「10시 24분의 저택」 = 금고 암호 1024). */
 export function titleSpoilers(project: Project): ShipBlocker[] {
   const title = String(((project.system as unknown as Obj).titleScreen as Obj | undefined)?.title ?? project.meta.title ?? "");
@@ -245,8 +361,10 @@ export function openingWithoutPlace(project: Project): ShipBlocker[] {
 }
 
 /** 그림 설명·태그가 말하는 계절·풍토 낱말 — 요청·게임 글에 같은 계열 낱말이 없으면 «다른 이야기 그림»이다. */
-const SETTING_WORDS: readonly { readonly key: string; readonly art: RegExp; readonly premise: RegExp }[] = [
-  { key: "눈·겨울", art: /눈 덮인|설원|겨울|눈 쌓인|winter|snow|얼음|오로라/iu, premise: /눈|겨울|설원|얼음|빙|크리스마스|winter|snow|ice/iu },
+// story = 청사진 이야기·부제처럼 긴 글에 쓰는 좁은 낱말(「눈을 떴다」의 눈은 겨울이 아니다). 없으면 premise.
+const SETTING_WORDS: readonly { readonly key: string; readonly art: RegExp; readonly premise: RegExp; readonly story?: RegExp }[] = [
+  { key: "눈·겨울", art: /눈 덮인|설원|겨울|눈 쌓인|winter|snow|얼음|오로라/iu, premise: /눈|겨울|설원|얼음|빙|크리스마스|winter|snow|ice/iu,
+    story: /눈보라|눈 덮|눈 쌓|눈이 내|눈 내리|눈발|눈송이|폭설|겨울|설원|빙판|얼음|크리스마스|winter|snow/iu },
   { key: "사막", art: /사막|모래|피라미드|desert|오아시스/iu, premise: /사막|모래|피라미드|오아시스|desert/iu },
   { key: "바다·해저", art: /해저|바다|항구|ocean|harbor/iu, premise: /바다|해저|항구|섬|배를|해변|ocean|sea|harbor/iu },
 ];
@@ -265,10 +383,13 @@ export function offPremiseArt(project: Project, task: string): ShipBlocker[] {
   const s = project.system as unknown as Obj;
   const title = (s.titleScreen ?? {}) as Obj;
   const titleBg = (title.backgroundResourceId ?? s.titleResourceId) as string | undefined;
+  // 청사진 이야기·타이틀 부제도 이야기다 — 조립(applyBlueprintAssembly)이 청사진 글로 타이틀 그림을 고르니 검사도 같은 글을 본다
+  // (2026-10-29 standin 추리 「눈보라에 갇힌 겨울밤 시골 여관」: 조립이 눈 마을을 골랐는데 요청 글에 눈이 없다고 막았다).
   const premise = [task, project.meta.title, String(title.title ?? ""), ...(project.endings ?? []).map((e) => e.name), ...Object.values(project.maps).map((m) => m.name)].join(" ");
+  const story = [String(title.logoSubtitle ?? ""), project.gameBlueprint ? blueprintStoryText(project, project.gameBlueprint) : ""].join("\n");
   const clash = (id: string | undefined): string | undefined => {
     const text = artText(id);
-    return SETTING_WORDS.find((w) => w.art.test(text) && !w.premise.test(premise))?.key;
+    return SETTING_WORDS.find((w) => w.art.test(text) && !w.premise.test(premise) && !(w.story ?? w.premise).test(story))?.key;
   };
   const out: ShipBlocker[] = [];
   // 편집기 기본 타이틀 그림은 title-image 가 이미 짚는다.
@@ -385,6 +506,17 @@ export const REQUESTED_FEATURES: readonly RequestedFeature[] = [
     fix: "사물함·옷장·청소도구함 같은 보이는 물건 칸을 숨을 곳으로 한다 — 그 칸에 가구를 놓고(place_object·draw_object) configure_object_behavior{kind:'hiding'} 또는 make_chase_scene 의 hidingSpots 로 그 칸을 준다. 맨바닥의 투명 은신처는 숨을 곳으로 치지 않는다",
   },
 ];
+/**
+ * 추격자가 있는데 그 맵에 숨을 곳(interaction hiding)이 0곳이다(2026-10-29 standin horror 「폐병원」: 순찰·즉사 추격자, 은신처 0).
+ * 기획이 «숨기» 를 말하지 않아도 막는다 — 쫓기기만 하고 피할 수단이 없다. 고칠 수 있는 결함: 맵에 있는 옷장·사물함·침대·커튼에 건다.
+ */
+export function chaserWithoutHiding(project: Project): ShipBlocker[] {
+  return chaserMapsWithoutHiding(project).slice(0, 4).map((m): ShipBlocker => ({
+    id: "chaser-no-hiding",
+    message: `「${m.mapName}」 에 추격자(${m.chaserId})가 있는데 숨을 곳이 0곳이다 — 쫓기면 피할 수단이 없다. 그 맵의 옷장·사물함·침대·커튼 칸을 make_chase_scene 의 hidingSpots 또는 configure_object_behavior{kind:'hiding'} 로 은신처로 한다(순찰 길에서 걸어서 2~14걸음). 그런 가구가 없으면 place_object 로 사물함·옷장을 놓고 그 칸을 준다.`,
+    evidence: `${m.mapId} ${m.chaserId}`,
+  }));
+}
 export function requestedFeatureGaps(project: Project, task: string): ShipBlocker[] {
   return REQUESTED_FEATURES.filter((f) => f.words.test(task) && !f.present(project)).map((f) => ({
     id: "requested-feature-missing",
@@ -397,7 +529,15 @@ export function requestedFeatureGaps(project: Project, task: string): ShipBlocke
 export function shipBlockers(project: Project, task: string): ShipBlocker[] {
   const spoilers = titleSpoilers(project);
   if (!wantsWholeGame(task)) return spoilers;
+  // 저장 → 다시 읽기(reloadCheck): 저장본이 안 열리면 플레이어·편집기 모두 게임을 못 연다 — 다른 검사가 다 통과해도 출하 결함(2026-10-29 vm6 「events[9].trigger」).
+  const reload = reloadProblem(project);
+  const reloadBlock: ShipBlocker[] = reload ? [{ id: "project-reload-failed", message: `저장한 프로젝트를 다시 읽지 못한다 — 게임이 열리지 않는다: ${reload.slice(0, 240)}. 그 필드를 고친 뒤 다시 저장한다.`, evidence: reload.slice(0, 120) }] : [];
   // 엔딩 길의 열쇠·금고·문·엔딩 이벤트에 걸어 닿지 못하면 게임을 끝낼 수 없다(J75) — 출하 차단.
+  const silentExits = silentLockedExits(project).slice(0, 3).map((hit): ShipBlocker => ({ id: "locked-exit-silent", message: `「${project.maps[hit.mapId]?.name ?? hit.mapId}」 (${hit.x},${hit.y}) 출구는 조건이 맞아야 옮기는데 조건이 안 맞을 때 아무 말이 없다 — 막힐 때 이유 한 줄(무엇이 있어야·먼저 무엇을)을 둔다.`, evidence: `${hit.mapId} ${hit.eventId}` }));
+  const strays = strayStepCopies(project).slice(0, 3).map((hit): ShipBlocker => ({ id: "blueprint-stray-copy", message: `청사진 ${hit.step} 이벤트의 사본이 「${project.maps[hit.mapId]?.name ?? hit.mapId}」 (${hit.x},${hit.y}) 에도 있어 싸우거나 엔딩을 부른다 — 「${project.maps[hit.canonicalMapId]?.name ?? hit.canonicalMapId}」 를 건너뛰는 지름길이다.`, evidence: `${hit.mapId} ${hit.eventId}` }));
+  const sparkles = emptySparkles(project).slice(0, 4).map((hit): ShipBlocker => ({ id: "empty-sparkle", message: `「${project.maps[hit.mapId]?.name ?? hit.mapId}」 ${hit.eventId}(${hit.x},${hit.y}) 페이지 ${hit.page + 1} 이 반짝이는데 조사해도 아무 일도 없다 — 반짝임을 떼거나 대사 한 줄을 넣는다.`, evidence: `${hit.mapId} ${hit.eventId} p${hit.page}` }));
+  const selfLoops = selfLoopTransfers(project).slice(0, 4).map((loop): ShipBlocker => ({ id: "transfer-self-loop", message: `「${project.maps[loop.mapId]?.name ?? loop.mapId}」 ${loop.eventId}(${loop.x},${loop.y}) 이 같은 맵 바로 옆 칸 (${loop.to.x},${loop.to.y}) 으로 옮긴다 — 제자리로 돌아올 뿐이라 고장 난 문처럼 보인다. 옮기기를 지우거나 다른 맵·먼 칸으로 잇는다.`, evidence: `${loop.mapId} ${loop.eventId} → (${loop.to.x},${loop.to.y})` }));
+  const bossTalk = bossTalkWithoutBattle(project).slice(0, 3).map((hit): ShipBlocker => ({ id: "boss-talk-no-battle", message: `「${project.maps[hit.mapId]?.name ?? hit.mapId}」 「${hit.name}」(${hit.x},${hit.y}) 이 싸움을 거는 말을 하는데 전투가 열리지 않는다 — 말만 되풀이된다. 그 대사 페이지 끝에 battleProcessing{troopId:<${hit.name} 부대>} 을 붙이고 이긴 뒤 페이지를 둔다.`, evidence: `${hit.mapId} ${hit.eventId}` }));
   const unreachable = unreachableCriticalEvents(project).map((message): ShipBlocker => ({ id: "critical-unreachable", message: `${message}. 이벤트를 걸어 닿는 칸 옆으로 move_event 하거나 막는 가구를 치운다.`, evidence: message.slice(0, 120) }));
   // 계단 출구가 숨은 칸이다(J87) — 계단 앞에서 계단 쪽으로 걸어도 이동이 없다.
   const hiddenExits = hiddenStairExits(project).slice(0, 4);
@@ -436,7 +576,17 @@ export function shipBlockers(project: Project, task: string): ShipBlocker[] {
     const finding = unlitDarkFinding(map);
     return finding ? [{ id: "dark-unlit", message: `「${map.name ?? map.id}」(${map.id}) ${finding.message.replace(/^시각 공백: /u, "")}`, evidence: `${map.id} ambient ${map.defaultLighting?.ambient}` }] : [];
   }).slice(0, 3);
-  return [...hidden, ...unlit, ...invisible, ...offArt, ...repeats, ...tints, ...objectives, ...romance, ...editorDefaultsLeft(project), ...endingClosureProblems(project), ...openingWithoutPlace(project), ...offPremiseArt(project, task), ...defaultPlaceLeaks(project, task), ...titleMismatch(project, task), ...requestedFeatureGaps(project, task), ...unreachable, ...spoilers];
+  // 청사진 경로를 데이터로 걷는다(2026-10-28): 맵·이벤트가 있나, 걸어 닿나, 조건을 켜는 곳이 앞에 있나, 마지막이 엔딩인가.
+  const blueprint: ShipBlocker[] = project.gameBlueprint ? walkBlueprint(project).blockers.slice(0, 6)
+    : [{ id: "blueprint-missing", message: "이 게임의 청사진이 없다 — write_blueprint 로 새 플레이어 목표 한 줄·시작부터 엔딩까지 핵심 경로(장소·이벤트·조건)·엔딩을 지금 지은 이름 그대로 쓴다.", evidence: "project.gameBlueprint=undefined" }];
+  // 전투가 있는데 HP 를 되찾을 길이 0(2026-10-29 vm1 flash jrpg 「전투 못 이김」) — 고칠 수 있는 결함: build_blueprint_path 가 결정적으로 넣는다.
+  const sites = battleSites(project);
+  const noHealing: ShipBlocker[] = sites.length && !healingSources(project).length ? [{
+    id: "combat-no-healing",
+    message: `전투가 있는데(${sites.slice(0, 3).join(", ")}${sites.length > 3 ? ` 외 ${sites.length - 3}곳` : ""}) 여관·회복약·회복 기술·상점 회복약이 하나도 없어 깎인 HP 가 돌아오지 않는다 — build_blueprint_path 를 다시 부르면 시작 맵에 회복의 샘(전원 회복·저장)과 시작 회복약 3개를 넣고 목표 줄이 샘 자리를 가리킨다. 직접 고치려면 place_savepoint{mapId:시작 맵, heal:true} 와 set_session_start{inventory:{item_potion:3}}.`,
+    evidence: `battleSites=${sites.length} healingSources=0`,
+  }] : [];
+  return [...reloadBlock, ...blueprint, ...noHealing, ...hidden, ...unlit, ...invisible, ...offArt, ...repeats, ...tints, ...objectives, ...romance, ...editorDefaultsLeft(project), ...endingClosureProblems(project), ...endingConditionsUnset(project), ...openingWithoutPlace(project), ...offPremiseArt(project, task), ...defaultPlaceLeaks(project, task), ...titleMismatch(project, task), ...assemblyTimeMismatches(project).map((m): ShipBlocker => ({ id: "assembly-time-mismatch", message: m.message, evidence: m.evidence })), ...requestedFeatureGaps(project, task), ...chaserWithoutHiding(project), ...selfLoops, ...silentExits, ...bossTalk, ...strays, ...sparkles, ...unreachable, ...spoilers];
 }
 
 /** 게임이 «아직 안 지어졌다»는 신호 — 뼈대 자리표시만 남았거나 엔딩이 없다(편집기 기본 HUD·창 같은 마감 항목은 여기서 보지 않는다). */

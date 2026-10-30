@@ -1,0 +1,16 @@
+{
+ "version": 1,
+ "about": "측면 전투 배경 하네스 시드. 규격은 src/editor/battleBackdropCore.ts 상수가 정본이고 여기는 실행 기본값과 시범 판이다.",
+ "native": { "width": 320, "height": 180, "storeScale": 2, "note": "번들 battle-scenery preview 640x360 = 320x180 격자 2배(2x2 블록 100% 동일, 2026-10-29 실측)" },
+ "colors": { "map": 24, "extra": 8 },
+ "groundTop": 0.55,
+ "candidates": 4,
+ "parallel": 4,
+ "judge": "claude:sonnet",
+ "judgeNote": "agy:gemini-3.8-flash 도 된다(BATTLE_BACKDROP_JUDGE). 2026-10-29 agy 개인 할당량 소진으로 기본을 claude:sonnet 으로 둠.",
+ "generator": "god-tibo-imagen POST /v1/generate/json (OPRN_HARNESS_IMAGE_URL, 기본 http://mdc-server:8091) — monster-collect-species/node/imageSource.ts 를 그대로 쓴다",
+ "pilot": [
+  { "run": "maou-konbini-night", "project": "../rpg-zzu-maou/dist/demos/maou-konbini.project.json", "assetsRoot": "../rpg-zzu-maou", "troop": "troop_mk_manual", "why": "새벽 2시 편의점 레온 전투에 낮 풀밭(battle-scenery-plains)이 깔린다" },
+  { "run": "maou-throne", "project": "../rpg-zzu-maou/dist/demos/maou-konbini.project.json", "assetsRoot": "../rpg-zzu-maou", "troop": "troop_mk_castle", "cell": "23,6", "window": "18x12", "why": "마왕성 옥좌의 방 결전에 동굴 배경(battle-scenery-cave)" }
+ ]
+}
