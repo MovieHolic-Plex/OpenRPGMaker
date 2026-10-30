@@ -5,6 +5,19 @@
 
 <!-- releases -->
 
+## 0.373.0 — 2026-10-30
+
+### 기능
+
+- **runtime** — walk into a door to enter it — doorstep no longer transfers on step (#3973) (`3c60f02`)
+
+### 수정
+
+- **runtime** — menu locked by default while events run — keyboard, touch button, hint (#3981) (`affb99b`)
+- **editor** — residents tab counts profiles used by dialogue speaker name, not only event characterId (#3985) (`a16fe56`)
+- **runtime** — one-sheet background layers follow the map vertically (pinY) + offsetY (#3980) (`585199b`)
+- **runtime** — paper particle falls like paper (#3979) (`41b5472`)
+
 ## 0.372.2 — 2026-10-30
 
 ### 수정
