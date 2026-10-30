@@ -93,6 +93,65 @@ User request (Korean): {REQ}
 - Typical edges: a jangdokdae (crock terrace) next to the kitchen wing, a well with a stone path to the kitchen, a vegetable patch, a firewood stack by the kitchen, drying racks / pepper mats, stepping-stone paths between the wings, and a back garden (hwagye terraces, trees, rocks) behind the anchae.
 - So: choose the wing layout by function, put the open madang between the wings, and line its edges with these groups. The catalog's category list has these pieces — use find_pieces on the prop categories (e.g. prop-other, trees, bushes) to get them.
 Design a specific, lived-in place that fits the request: a clear landmark, distinct functional zones, enclosing walls where they belong, and enough pieces that no large ground area is empty. Use the chipset's range: many different pieces (look them up with find_pieces), not the same few repeated."""
+ARM = os.environ.get("BBOX_ARM", "json")   # round 4: "sketch" = ASCII floor plan first, then JSON for rooms/objects
+ASKS = []
+def ask_once(text):
+    body = json.dumps({"model": MODEL, "messages": [{"role": "user", "content": text}], "reasoning_effort": "high"}).encode()
+    for attempt in range(3):
+        try:
+            with urllib.request.urlopen(urllib.request.Request(OCX, body, {"content-type": "application/json"}), timeout=600) as r: return json.load(r)["choices"][0]["message"]["content"] or ""
+        except Exception:
+            if attempt == 2: raise
+            time.sleep(20)
+if ARM == "sketch" and P.get("mode") != "outdoor":
+    t = ask_once("List the things this map request explicitly asks to be in the place: named rooms/areas, and furniture or equipment the described activities need "
+                 "(e.g. 'students practise at cauldrons' -> 'cauldron workstations for the students'). Only what the text says or directly implies; no extras. "
+                 "Answer with a JSON array of 2-8 short English phrases only.\n\nRequest (Korean): " + REQ)
+    m = re.search(r"\[.*\]", t, re.S)
+    try: ASKS = [str(a).strip() for a in json.loads(m.group(0))][:8] if m else []
+    except Exception: ASKS = []
+    json.dump(ASKS, open(f"{G}/asks.json", "w"), ensure_ascii=False, indent=1)
+    FLOORS = PROMPT[PROMPT.index("# Floors (a material"):PROMPT.index("x,y of a piece")]
+    SPACE = PROMPT[PROMPT.index("# Size and space"):PROMPT.index("Design a specific")]
+    PROMPT = f"""You design one RPG map room. First you draw its floor plan as a character grid, like an architect's sketch, at the real cell size; then a JSON object adds the rooms' floors and walls and every piece. Code executes both exactly — nothing is added.
+
+User request (Korean): {REQ}
+
+{catalog}
+# Draw the plan like an architect (why it matters)
+- Shape each room by its use, not by a default rectangle: how people move through it (circulation from the entrance to every room, no dead corridors), where light and views come from, which rooms open into each other and which are closed off. A kitchen hangs off the living room it serves; a tatami room sits apart, behind its own sliding door; a classroom has its teaching end and its working floor.
+- Plain boxes lined up are what to avoid. Use the outline and the partitions that fit the purpose: an L-shaped or stepped room, a bay or alcove, a corridor that bends, a room opening into another without a wall (two letters touching = one open space with two floor zones), columns, a half-wall or counter dividing zones, a raised dais at the teaching or ceremonial end.
+# Plan sketch rules (16px cells, x to the right, y down, origin top-left; every row exactly the map width)
+- '#' solid wall or void outside. Room cells use the room's letter (A-Z, not D), on EVERY cell of that room. Walls between rooms are 1 cell of '#'.
+- 'D' = a door/opening. In a horizontal wall: one 'D' with '#' left and right and rooms above and below. In a vertical wall: 3 'D' stacked (the top two become wall face, the bottom one is the passage).
+- The outer border is all '#', except exactly one 'D' on the bottom row = the entrance, directly below a room cell.
+- Inside any room, the two rows directly below a '#' are wall face (drawn as wall, not walkable): draw them with the room letter. So a room's top two rows are its north wall; walkable floor starts on the third row. 'wall-mounted' pieces go on the first of those rows; 'against-wall' pieces on the first walkable row.
+- Optional, inside rooms: 'c' column, '=' half-wall / counter / railing / planter (each a 1x1 standing piece you name in "symbols"), '^' dais cells (a dais id from the catalog in "symbols"). These cells count as the room's floor.
+# Output: a ```plan block, then a ```json block, nothing else
+```plan
+##########
+#AAAA#BBB#
+#AAAA#BBB#
+#AAAA#BBB#
+#AAcA##D##
+#AAAAAAAA#
+#AAAAAAAA#
+####D#####
+```
+(example of the format only — not a template; your plan has the size and shape your room needs)
+```json
+{{"rooms": {{"A": {{"id": "hall", "floor": "<floor id>", "wall": "<wall id>", "purpose": "..."}}, "B": {{"id": "...", "floor": "...", "wall": "...", "purpose": "..."}}}},
+ "symbols": {{"c": "<1x1 catalog piece id>", "=": "<1x1 catalog piece id>", "^": "<dais id>"}},
+ "landmark": {{"id": "...", "x": X, "y": Y, "purpose": "..."}},
+ "carpets": [{{"id": "<carpet id>", "x": X, "y": Y, "w": W, "h": H, "purpose": "..."}}],
+ "objects": [{{"id": "<catalog id>", "x": X, "y": Y, "repeat": {{"count": 4, "dx": 2, "dy": 0}}, "purpose": "..."}}],
+ "required": [{{"ask": "<required item, exactly as listed below>", "ids": ["<catalog ids you placed for it>"]}}]}}
+```
+x,y of a piece = the top-left cell of its footprint (same coordinates as the plan). "repeat" is optional. Footprints must not overlap, must lie on walkable floor, and every piece needs a reachable free side; keep paths from the entrance to every area. Sized pieces go in "objects" with the size in the id (e.g. "<id> 3x2"). "symbols" only for the characters you use; carpets only if the catalog lists them.
+{FLOORS}{SPACE}# Required items (a todo list read from the request — each one must be in your layout)
+""" + "\n".join(f"- {a}" for a in ASKS) + """
+For each, find a fitting piece (use find_pieces with the item's words), place it sized and positioned for its use, and list it in "required" with the ids you placed. Only if the chipset truly has no fitting piece, give {"ask": ..., "missing": "<why nothing fits>"} instead of "ids".
+""" + (STRUCT.replace("# Structure vocabulary", "# More structure ideas") if STRUCT else "") + "Design a specific, lived-in room that fits the request, with a clear landmark, distinct functional zones and enough furniture that no large floor area is empty. Use the chipset's range: many different pieces (look them up with find_pieces), not the same few repeated."
 open(f"{G}/prompt.txt", "w").write(PROMPT)
 IMG = "data:image/png;base64," + base64.b64encode(open(f"{RUNS}/cat/palette-{task}.png", "rb").read()).decode()
 msgs = [{"role": "user", "content": [{"type": "text", "text": PROMPT}, {"type": "image_url", "image_url": {"url": IMG}}]}]
@@ -166,21 +225,43 @@ def lay(n, layout, render=False):
     try: return json.loads(p.stdout.strip().splitlines()[-1])
     except Exception: return {"ok": False, "errors": ["painter crashed: " + (p.stderr or p.stdout)[-500:]], "warnings": []}
 
+NUDGED, REQNOTES, SKINFO = set(), [], {}
+def sketch_turn(n, text):
+    """```plan block → layout (sketch.py), then the usual lay.mts check plus the required-items todo check."""
+    import sketch
+    pm = re.search(r"```plan\s*\n(.*?)```", text, re.S); jm = re.search(r"```json\s*\n(.*?)```", text, re.S)
+    J = None
+    try: J = json.loads(jm.group(1)) if jm else parse(text[pm.end():] if pm else text)
+    except Exception: J = None
+    if not pm: return None, {"ok": False, "errors": ["The answer has no ```plan block. Start with the plan sketch in a ```plan fenced block, then the ```json block."], "warnings": []}
+    if not isinstance(J, dict): return None, {"ok": False, "errors": ["The ```json block is missing or not one parseable JSON object."], "warnings": []}
+    layout, errs, info = sketch.to_layout(pm.group(1).split("\n"), J); SKINFO.update(info)
+    if errs or layout is None:
+        if layout: json.dump(layout, open(f"{G}/layout-{n}.json", "w"), indent=1)
+        return layout, {"ok": False, "errors": errs, "warnings": []}
+    chk = lay(n, layout)
+    rerr, notes = sketch.required_check(J, ASKS, layout, IDX["pieces"], NUDGED); REQNOTES[:] = notes
+    chk["errors"] = list(chk.get("errors", [])) + rerr; chk["ok"] = chk.get("ok", False) and not rerr
+    return layout, chk
+
 calls, layout, chk = [], None, None
 for n in range(4):   # first call + at most 3 repairs
     text, secs, u = call(n); calls.append({"secs": secs, "tokens": u.get("total_tokens", 0), "in": u.get("prompt_tokens", 0), "out": u.get("completion_tokens", 0)})
     msgs.append({"role": "assistant", "content": text})
-    layout = parse(text)
-    chk = lay(n, layout) if layout else {"ok": False, "errors": ["Your answer was not one parseable JSON object."], "warnings": []}
+    if ARM == "sketch" and P.get("mode") != "outdoor":
+        layout, chk = sketch_turn(n, text)
+    else:
+        layout = parse(text)
+        chk = lay(n, layout) if layout else {"ok": False, "errors": ["Your answer was not one parseable JSON object."], "warnings": []}
     json.dump(chk, open(f"{G}/check-{n}.json", "w"), indent=1)
     print(f"{arm}{rep}/{task} call {n}: {secs}s tok={u.get('total_tokens')} ok={chk['ok']} errors={len(chk['errors'])}", flush=True)
     if chk["ok"]: break
     if n < 3:
-        msgs.append({"role": "user", "content": "Fixed call: the layout was rejected by the validator. Fix every problem below and return the full corrected layout JSON only (same format).\n- "
+        msgs.append({"role": "user", "content": "Fixed call: the layout was rejected by the validator. Fix every problem below and return the full corrected answer only (same format" + (": the ```plan block and the ```json block" if ARM == "sketch" else " — the layout JSON") + ").\n- "
                      + "\n- ".join(chk["errors"][:40]) + ("\nWarnings (fix if you can):\n- " + "\n- ".join(chk["warnings"][:10]) if chk["warnings"] else "")})
 spaceOnly = bool(chk and not chk["ok"] and chk.get("structOk"))
 res = {"task": task, "tileset": TS, "arm": arm, "rep": int(rep), "model": MODEL, "calls": calls, "repairs": len(calls) - 1, "ok": bool(chk and chk["ok"]),
-       "structOk": bool(chk and chk.get("structOk")), "structVocab": bool(STRUCT), "spaceErrors": [e for e in (chk or {}).get("errors", []) if e.startswith("space:")], "lookups": lookups,
+       "structOk": bool(chk and chk.get("structOk")), "structVocab": bool(STRUCT), "arm2": ARM, "asks": ASKS, "requiredNotes": REQNOTES, "sketch": SKINFO, "spaceErrors": [e for e in (chk or {}).get("errors", []) if e.startswith("space:")], "lookups": lookups,
        "secs": round(sum(c["secs"] for c in calls), 1), "tokens": sum(c["tokens"] for c in calls)}
 if res["ok"] or spaceOnly:
     json.dump(layout, open(f"{G}/layout.json", "w"), indent=1)

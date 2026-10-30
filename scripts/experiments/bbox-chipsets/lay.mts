@@ -174,6 +174,17 @@ warnings.push(...fr.warnings);
 const structOk = errors.length === 0;
 // size/space checks (space.mts): only measured once the structure is valid, named as "space:" errors so the repair call can shrink or fill
 const space = indoorSpace(plan, footprints(S, objs, tables, daises), regions.map((r: any) => ({ id: r.id, x: r.x, y: r.y, w: r.w, h: r.h })));
+// sketch arm: a room drawn as one letter is cut into several rectangles; judge space per room (a 1-row notch strip is not a room of its own)
+if (L.regionRoom && typeof L.regionRoom === "object") {
+  const by = new Map<string, any[]>();
+  for (const r of space.rooms) { const k = L.regionRoom[r.id] ?? r.id; (by.get(k) ?? by.set(k, []).get(k)!).push(r); }
+  space.rooms = [...by.entries()].map(([id, rs]) => {
+    const floor = rs.reduce((a, r) => a + r.floor, 0), bare = rs.reduce((a, r) => a + r.bare, 0);
+    const largest = rs.map((r) => r.largest).filter(Boolean).sort((a: any, b: any) => b.w * b.h - a.w * a.h)[0] ?? null;
+    const x0 = Math.min(...rs.map((r) => r.rect.x)), y0 = Math.min(...rs.map((r) => r.rect.y)), x1 = Math.max(...rs.map((r) => r.rect.x + r.rect.w)), y1 = Math.max(...rs.map((r) => r.rect.y + r.rect.h));
+    return rs.length === 1 ? rs[0] : { id, floor, bare, emptyPct: floor ? Math.round((100 * bare) / floor) : 0, largest, rect: { x: x0, y: y0, w: x1 - x0, h: y1 - y0 }, used: null };
+  });
+}
 if (structOk) errors.push(...indoorProblems(space));
 const types = typesOf(S, [...objs.map((p) => p.id), ...tables.map((t) => `${t.style} ${t.w}x${t.h}`)]);
 const boxes = boxRegions(regions, plan, daises);
