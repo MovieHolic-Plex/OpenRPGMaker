@@ -57,10 +57,10 @@ export function syncGateItems(store: TodoStore, problems: readonly V2GateProblem
 /**
  * 시작 저장본에 이미 있던 결함을 가른다(2026-10-30 감독: 이번 턴에 생긴 결함만 완료를 막는다).
  *  - 게임 검사 문제의 열쇠가 시작 저장본 검사(v2BaselineGameKeys)에도 있으면 기존 결함
- *  - 문제 글이 짚는 이벤트(ev_…)가 모두 시작 저장본에 같은 지문으로 있으면(이번 턴에 안 건드린 이벤트) 기존 결함 — 요청 범위 밖
+ *  - 문제 글이 짚는 이벤트(ev_…)가 모두 시작 저장본에 같은 지문으로 있거나 함수 마감만 건드렸으면(조수가 안 건드린 기존 이벤트) 기존 결함 — 요청 범위 밖
  * 장소 고치기(place:)는 이번 실행이 지은 장소라 늘 이번 턴 결함이다.
  */
-export function splitPreexisting(problems: readonly V2GateProblem[], baselineKeys: ReadonlySet<string> | undefined, baseline: ProjectIndex | undefined, now: ProjectIndex | undefined): { current: V2GateProblem[]; preexisting: V2GateProblem[] } {
+export function splitPreexisting(problems: readonly V2GateProblem[], baselineKeys: ReadonlySet<string> | undefined, baseline: ProjectIndex | undefined, now: ProjectIndex | undefined, autoTouched?: ReadonlyMap<string, string>): { current: V2GateProblem[]; preexisting: V2GateProblem[] } {
   const current: V2GateProblem[] = [];
   const preexisting: V2GateProblem[] = [];
   const byId = new Map<string, string[]>();
@@ -70,7 +70,10 @@ export function splitPreexisting(problems: readonly V2GateProblem[], baselineKey
     if (baselineKeys?.has(p.key)) { preexisting.push(p); continue; }
     const ids = [...new Set([...p.text.matchAll(/\bev_[A-Za-z0-9_\-]+/gu)].map((m) => m[0]))];
     const keys = ids.flatMap((id) => byId.get(id) ?? []);
-    const untouched = !!baseline && !!now && ids.length > 0 && keys.length > 0 && keys.every((k) => baseline.events.get(k) === now.events.get(k));
+    // 함수 마감(출구 길 잇기·출구 넓히기)만 건드린 기존 이벤트도 «조수가 안 건드림»으로 본다 — 2026-10-30 boss-room: 마감이 버들마을 출구를 옮기자
+    // 원래 그림 없던 출구가 이번 턴 변경으로 잡혀 세 판 모두 할 일이 됐다.
+    const untouched = !!baseline && !!now && ids.length > 0 && keys.length > 0
+      && keys.every((k) => baseline.events.get(k) === now.events.get(k) || (autoTouched?.has(k) && autoTouched.get(k) === now.events.get(k)));
     (untouched ? preexisting : current).push(p);
   }
   return { current, preexisting };

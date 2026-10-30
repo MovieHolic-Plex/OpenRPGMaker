@@ -283,7 +283,17 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
     return [...opened, ...reopened];
   };
   // 청사진 자동 짓기(장소 → 경로 → 출구·이동 칸 마감 → 조립 기본값). 한 실행에 한 번씩(세션 깃발) + 늦게 생긴 청사진.
-  const autoBuild = (env: PiAssistantV2Env): Promise<string | undefined> => runFinishAutoBuild(env, session);
+  /** 함수 마감(autoBuild)만 건드린 기존 이벤트 — 「mapId:eventId」 → 마감 직후 지문. 관문 문제가 이런 이벤트만 짚으면 요청 밖 기존 결함이다. */
+  const autoTouched = new Map<string, string>();
+  const autoBuild = async (env: PiAssistantV2Env): Promise<string | undefined> => {
+    let pre; try { pre = indexProject(env.ctx.project); } catch { pre = undefined; }
+    const note = await runFinishAutoBuild(env, session);
+    try {
+      const post = indexProject(env.ctx.project);
+      if (pre && store.baseline) for (const [k, fp] of post.events) if (store.baseline.events.get(k) === pre.events.get(k) && pre.events.has(k) && pre.events.get(k) !== fp) autoTouched.set(k, fp);
+    } catch { /* 기록 실패는 분류만 덜 정확해진다 */ }
+    return note;
+  };
   const lateBuildPending = (env: PiAssistantV2Env) => finishBuildPending(env, session);
   const done = await runPiAgent({
     ...request,
@@ -329,7 +339,7 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
           const gate = v2GateProblems(session, env);
           if (!baselineKeys) { try { baselineKeys = v2BaselineGameKeys(env.request.project, env.request.task); } catch { baselineKeys = new Set(); } }
           let nowIndex; try { nowIndex = indexProject(env.ctx.project); } catch { nowIndex = undefined; }
-          const split = splitPreexisting(gate.problems, baselineKeys, store.baseline, nowIndex);
+          const split = splitPreexisting(gate.problems, baselineKeys, store.baseline, nowIndex, autoTouched);
           for (const p of split.preexisting) if (!preexisting.has(p.key)) {
             preexisting.set(p.key, p.text);
             env.emit({ type: "execution_status", name: "v2.gate.preexisting", ok: true, summary: `기존 결함(시작 저장본에 있었음 — 완료를 막지 않음): ${p.text.slice(0, 160)}` });
