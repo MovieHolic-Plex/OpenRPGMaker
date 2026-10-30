@@ -31,6 +31,18 @@ export function sendPursuerHome(session: PlaySession, eventId: string): boolean 
   return true;
 }
 
+/**
+ * 붙잡혀 끌려갈 때 같은 맵의 다른 추격자도 모두 제자리로 — 잡은 하나만 돌려보내면 나머지가 들판 한복판(붙잡힌 자리 곁)에 남아,
+ * 다시 들어서자마자 길목에서 또 붙잡혔다(2026-10-30 폴른 B4 숲 가장자리: 재도전 네 걸음 만에 재포획).
+ */
+export function sendMapPursuersHome(session: PlaySession, mapId: string): number {
+  let sent = 0;
+  for (const [eventId, state] of Object.entries(session.horror?.pursuits ?? {})) {
+    if (state.home.mapId === mapId && sendPursuerHome(session, eventId)) sent += 1;
+  }
+  return sent;
+}
+
 /** All pursuit paths use the same feet/body policy as autonomous movement. */
 export function pursuitPass(world: PursuitWorld, view: RuntimeEventView, targetEventId?: string): ChasePassSize {
   // 막는 이벤트 목록은 이 통행 판정기 하나(= 추격 결정 한 번)에서만 공유한다.
