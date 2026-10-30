@@ -174,8 +174,8 @@ export function renderStoryStructure(project: Project): HTMLElement {
           children: rows.map((row) => el("li", {
             children: [
               row.authored
-                ? authoredText("span", row.label, "db-overview-story-step-label")
-                : el("span", { class: "db-overview-story-step-label", text: row.label }),
+                ? authoredText("span", row.label)
+                : el("span", { text: row.label }),
               el("span", { class: "db-overview-story-switches", children: row.switchIds.map((id) => switchChip(id, switchNames)) }),
             ],
           })),
