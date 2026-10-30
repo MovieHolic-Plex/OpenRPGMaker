@@ -16,7 +16,7 @@ description: Use when authoring or reviewing story scenes, events, cutscenes, NP
    왜: 스위치·페이지 조건만 바꾸면 방 한가운데서 «펑» 사라진다(세 데모 모두). 예외: 쓰러진 필드 적(전투 직후 대사 없이), 동료 합류, 검은 화면. 확인: `scene-npc-vanish` 0.
 2. **경로는 그 맵의 이벤트를 다 놓은 뒤에 짠다.** 막힘 = 통행 불가 + 다른 이벤트 칸 + 주인공 칸. 두 인물을 같은 목표 칸에 동시에 세우지 않는다 — 같은 문으로 차례로 떠나는 것은 괜찮다(앞 인물을 지우거나 «떠남» 스위치를 켠 **뒤** 다음 인물이 걷기 시작). 확인: 경로를 한 칸씩 되짚어 통행·겹침이 없다, `scene-actors-stacked` 0.
 3. **도구 호출 사이에 명령 객체를 붙잡지 않는다.** 도구는 프로젝트를 복제해 maps 를 갈아끼운다 — 앞서 만든 명령을 고쳐도 반영되지 않는다. 고칠 명령은 최종 프로젝트를 다시 읽어 찾는다. 확인: 빈 moves 의 moveEvent 가 없다.
-4. **새 스위치는 처음 쓰는 단계에서 project.switches 에 등록한다.** 미등록 id 는 저장·불러오기 참조 오류다. 확인: `run_lint` reference-validation 0.
+4. **새 스위치는 처음 쓰는 단계에서 project.switches 에 등록한다.** 미등록 id 는 저장·불러오기 참조 오류다. 추리 사건을 여러 장으로 이을 때는 `author_mystery_case` 의 `verdict:{mode:"chapter"}` 가 결과 스위치(`sw_mystery_<caseId>_solved`/`_wrong`)를 등록해 주니 다음 장 이벤트는 그 id 를 조건으로 건다(손으로 엔딩·스위치를 따로 만들지 않는다). 확인: `run_lint` reference-validation 0.
 5. **자리는 이름 붙은 앵커로.** 자리에서 +1·+2 같은 고정 오프셋은 방을 다시 지으면 의자·탁자 위에 떨어진다. 맵 작가가 준 앵커(좌석·난간 앞·NPC 출구)를 쓴다. 확인: 앵커를 맵 그림 위에 찍어 본다.
 
 ## 2. 문·이동·계단
@@ -113,6 +113,7 @@ description: Use when authoring or reviewing story scenes, events, cutscenes, NP
 
 1. **선택지는 열린 직후 확인 키를 잠깐 무시한다(엔진, 약 300ms — `CHOICE_CONFIRM_GRACE_MS`).** 대사를 Enter 로 넘기던 손이 선택지 첫 줄을 못 보고 고른다. 조수는 그래도 중요한 선택 바로 앞 대사를 autoAdvance 로 넘기지 않는다.
 2. **자막을 즉시 닫히는 창으로 띄우지 않는다**(4-2).
+3. **주간 일정표(학원물·육성 시뮬)는 손으로 선택지를 늘어놓지 않는다.** `upsert_schedule` 로 슬롯·활동 카드(각 카드는 공통 이벤트 하나)를 만들고, 이벤트에서 `planSchedule {scheduleId}` 로 짜게 한 뒤 `runSchedule {scheduleId, slotVariableId}` 로 슬롯 순서대로 실행한다(다른 맵으로 가도 이어진다). 활동마다 `commonEventId` 가 실제 공통 이벤트여야 하고, 횟수 한도·조건은 카드 필드(`maxUses`·`condition*`)에 둔다. 확인: `run_lint` reference-validation 0, `get_event` 로 두 명령이 같은 scheduleId.
 
 ## 10. 엔진 화면 (코딩 에이전트만)
 

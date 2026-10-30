@@ -81,6 +81,21 @@ export interface CaseEndingSpec {
   readonly epilogue?: readonly unknown[];
 }
 
+/**
+ * 지목 뒤 무엇이 일어나는가. ending(기본) = 정답·오답이 각자 엔딩을 부른다(게임이 끝난다).
+ * chapter = 엔딩 대신 결과 스위치를 켜고 뒤 명령을 이어 붓는다 — 사건 여럿을 잇는 이야기(1막 사건 → 2막 사건)에서 지목 뒤에도 게임이 계속된다.
+ * 지목 페이지는 판정 뒤 닫힌다(지목 NPC 의 셀프 스위치 D) — 같은 사건을 다시 지목하지 않는다.
+ */
+export interface CaseVerdictSpec {
+  readonly mode: "ending" | "chapter";
+  readonly solvedSwitchId: string;
+  readonly wrongSwitchId: string;
+  readonly onSolved: readonly Command[];
+  readonly onWrong: readonly Command[];
+  /** 판정 뒤 지목 NPC 가 하는 말(닫힌 페이지). 생략하면 기본 한 줄. */
+  readonly after: readonly string[];
+}
+
 export interface MysteryCase {
   readonly caseId: string;
   readonly title: string;
@@ -91,6 +106,7 @@ export interface MysteryCase {
   readonly accuser: AccuserSpec;
   readonly endings: { readonly solved: CaseEndingSpec; readonly wrong: CaseEndingSpec };
   readonly requiredClues: readonly string[];
+  readonly verdict: CaseVerdictSpec;
 }
 
 export interface MysteryProblem {
@@ -101,7 +117,8 @@ export interface MysteryProblem {
     | "mystery-unexcluded-suspect"
     | "mystery-unreachable"
     | "mystery-leak"
-    | "mystery-order";
+    | "mystery-order"
+    | "mystery-verdict";
   readonly message: string;
 }
 
@@ -238,6 +255,33 @@ function parseEnding(value: unknown, fallbackId: string, fallbackName: string): 
   };
 }
 
+function parseVerdict(value: unknown, id: string): CaseVerdictSpec {
+  const record = isRecord(value) ? value : {};
+  if (record.mode !== undefined && record.mode !== "ending" && record.mode !== "chapter") {
+    throw new ToolError("verdict.mode 는 'ending' 또는 'chapter' 여야 합니다.", { code: "invalid-args" });
+  }
+  const commands = (list: unknown, label: string): Command[] => {
+    if (list === undefined) return [];
+    if (!Array.isArray(list) || list.some((entry) => !isRecord(entry) || typeof entry.kind !== "string")) {
+      throw new ToolError(`verdict.${label} 는 명령({kind,...}) 배열이어야 합니다.`, { code: "invalid-args" });
+    }
+    return structuredClone(list) as Command[];
+  };
+  const switchId = (raw: unknown, fallback: string, label: string): string => {
+    const text = optionalText(raw);
+    if (text && !ID_PATTERN.test(text)) throw new ToolError(`verdict.${label} '${text}' 는 영문·숫자·_ 만 쓸 수 있습니다.`, { code: "invalid-args" });
+    return text ?? fallback;
+  };
+  return {
+    mode: record.mode === "chapter" ? "chapter" : "ending",
+    solvedSwitchId: switchId(record.solvedSwitchId, `sw_mystery_${id}_solved`, "solvedSwitchId"),
+    wrongSwitchId: switchId(record.wrongSwitchId, `sw_mystery_${id}_wrong`, "wrongSwitchId"),
+    onSolved: commands(record.onSolved, "onSolved"),
+    onWrong: commands(record.onWrong, "onWrong"),
+    after: lines(record.after),
+  };
+}
+
 export function parseMysteryCase(args: RecordValue): MysteryCase {
   const id = caseId(args.caseId, "caseId");
   const victimRecord = isRecord(args.victim) ? args.victim : undefined;
@@ -276,6 +320,7 @@ export function parseMysteryCase(args: RecordValue): MysteryCase {
       wrong: parseEnding(endingsRecord.wrong, `ending_mystery_${id}_wrong`, "미궁"),
     },
     requiredClues: requiredExplicit ? idList(args.requiredClues) : defaultRequiredClues(partial),
+    verdict: parseVerdict(args.verdict, id),
   };
 }
 
@@ -340,7 +385,14 @@ function checkReferences(spec: MysteryCase, problems: MysteryProblem[]): boolean
   for (const id of spec.requiredClues) {
     if (!clueIds.has(id)) push(`requiredClues 의 '${id}' 가 clues 의 id 가 아닙니다.`);
   }
-  if (spec.endings.solved.id === spec.endings.wrong.id) push(`solved/wrong 엔딩 id 가 같습니다: ${spec.endings.solved.id}`);
+  if (spec.verdict.mode === "ending" && spec.endings.solved.id === spec.endings.wrong.id) push(`solved/wrong 엔딩 id 가 같습니다: ${spec.endings.solved.id}`);
+  if (spec.verdict.mode === "chapter") {
+    if (spec.verdict.solvedSwitchId === spec.verdict.wrongSwitchId) {
+      problems.push({ code: "mystery-verdict", message: `verdict 의 solvedSwitchId 와 wrongSwitchId 가 같습니다(${spec.verdict.solvedSwitchId}) — 정답과 오답을 구분할 수 없습니다.` });
+    }
+    const endsIn = [...spec.verdict.onSolved, ...spec.verdict.onWrong].some((command) => command.kind === "triggerEnding");
+    if (endsIn) problems.push({ code: "mystery-verdict", message: "verdict.mode 'chapter' 인데 onSolved/onWrong 에 triggerEnding 이 있습니다 — 사건 하나로 게임을 끝내려면 mode 'ending' 을 쓰세요." });
+  }
   return problems.length === before;
 }
 
@@ -677,7 +729,9 @@ function checkLeaks(spec: MysteryCase, problems: MysteryProblem[]): void {
 
 function checkOrder(project: Project, spec: MysteryCase, problems: MysteryProblem[]): void {
   // 사건 밖 이벤트가 같은 엔딩을 부르면 증거 게이트를 우회한다(이전 시도의 무조건 진엔딩 NPC 등).
-  const endingIds = new Set([spec.endings.solved.id, spec.endings.wrong.id]);
+  // chapter 모드는 엔딩 대신 결과 스위치가 같은 자리다 — 사건 밖 이벤트가 그 스위치를 켜면 지목 없이 다음 장이 열린다.
+  const endingIds = new Set(spec.verdict.mode === "ending" ? [spec.endings.solved.id, spec.endings.wrong.id] : []);
+  const resultSwitches = new Set(spec.verdict.mode === "chapter" ? [spec.verdict.solvedSwitchId, spec.verdict.wrongSwitchId] : []);
   const owned = new Set([
     ...spec.suspects.flatMap((suspect) => (suspect.eventId ? [suspect.eventId] : [])),
     ...(spec.accuser.eventId ? [spec.accuser.eventId] : []),
@@ -686,10 +740,17 @@ function checkOrder(project: Project, spec: MysteryCase, problems: MysteryProble
   for (const map of Object.values(project.maps)) {
     for (const event of map.events) {
       if (event.id.startsWith(prefix) || owned.has(event.id)) continue;
+      const setter = eventCommands(event).find((command) => command.kind === "setSwitch" && resultSwitches.has(command.switchId) && command.value !== false);
+      if (setter) {
+        problems.push({
+          code: "mystery-order",
+          message: `사건 밖 이벤트 '${event.name ?? event.id}'(${map.id}) 가 사건 결과 스위치 '${(setter as { switchId: string }).switchId}' 를 지목 없이 켭니다. 그 명령을 지우거나 verdict 의 스위치 id 를 바꾸세요.`,
+        });
+      }
       const hit = eventCommands(event).find((command) =>
         command.kind === "triggerEnding" && command.endingId !== undefined && endingIds.has(command.endingId));
       // 사건 엔딩은 조건 없이 endingId 로만 부르므로, endingId 없는 triggerEnding 은 조건 검사에서 사건 엔딩을 고를 수 있다.
-      const bare = eventCommands(event).some((command) => command.kind === "triggerEnding" && command.endingId === undefined);
+      const bare = spec.verdict.mode === "ending" && eventCommands(event).some((command) => command.kind === "triggerEnding" && command.endingId === undefined);
       if (bare) {
         problems.push({
           code: "mystery-order",
@@ -774,9 +835,27 @@ export interface AccusationInput {
   readonly wrongLines: readonly string[];
   readonly notYetLines: readonly string[];
   readonly speaker: string;
+  /** 생략 = ending 모드(엔딩을 부른다). chapter 면 결과 스위치를 켜고 뒤 명령을 붓고 지목 페이지를 닫는다. */
+  readonly verdict?: CaseVerdictSpec;
 }
 
-/** 지목 선택지. 라벨은 용의자 이름뿐이고, 정답 여부는 분기 안쪽 엔딩으로만 갈린다. */
+/** 판정 분기의 끝: ending 모드는 엔딩, chapter 모드는 결과 스위치 + 뒤 명령 + 지목 페이지 닫기(셀프 스위치 D). */
+function verdictTail(input: AccusationInput, solved: boolean): Command[] {
+  const verdict = input.verdict;
+  if (!verdict || verdict.mode === "ending") {
+    return [{ kind: "triggerEnding", endingId: solved ? input.solvedEndingId : input.wrongEndingId } as Command];
+  }
+  return [
+    { kind: "setSwitch", switchId: solved ? verdict.solvedSwitchId : verdict.wrongSwitchId, value: true },
+    { kind: "setSelfSwitch", key: VERDICT_DONE_SELF_SWITCH, value: true },
+    ...structuredClone(solved ? verdict.onSolved : verdict.onWrong),
+  ];
+}
+
+/** chapter 모드 지목 NPC 가 판정 뒤 닫는 셀프 스위치. */
+export const VERDICT_DONE_SELF_SWITCH = "D" as const;
+
+/** 지목 선택지. 라벨은 용의자 이름뿐이고, 정답 여부는 분기 안쪽 엔딩(chapter 모드면 결과 스위치)으로만 갈린다. */
 export function compileAccusationChoice(input: AccusationInput): Extract<Command, { kind: "choices" }> {
   const notYet = say(input.speaker, input.notYetLines);
   return {
@@ -789,7 +868,7 @@ export function compileAccusationChoice(input: AccusationInput): Extract<Command
           text: suspect.name,
           branch: [
             ...say(input.speaker, solved ? input.solvedLines : input.wrongLines),
-            { kind: "triggerEnding", endingId: solved ? input.solvedEndingId : input.wrongEndingId } as Command,
+            ...verdictTail(input, solved),
           ],
         };
       }),
@@ -962,6 +1041,13 @@ function upsertEvidenceItems(draft: Project, spec: MysteryCase): string[] {
 }
 
 function defineEndings(draft: Project, spec: MysteryCase, warnings: string[]): void {
+  if (spec.verdict.mode === "chapter") {
+    // 엔딩은 만들지 않는다 — 결과 스위치 둘을 프로젝트 스위치 목록에 올린다(편집기·조건 고르기에 이름이 보이게).
+    for (const [id, label] of [[spec.verdict.solvedSwitchId, "해결"], [spec.verdict.wrongSwitchId, "오판"]] as const) {
+      if (!draft.switches.some((entry) => entry.id === id)) draft.switches.push({ id, name: `${spec.title} ${label}` });
+    }
+    return;
+  }
   const define = toolByName(ENDING_TOOLS, "define_ending");
   for (const ending of [spec.endings.solved, spec.endings.wrong]) {
     const result = define.run(draft, {
@@ -1167,9 +1253,16 @@ function placeAccuser(draft: Project, spec: MysteryCase, warnings: string[]): st
             wrongLines: spec.endings.wrong.lines,
             notYetLines: [object ? "아직 확신이 서지 않는다." : "확신이 서면 다시 오게."],
             speaker: voice,
+            verdict: spec.verdict,
           }),
         ],
       },
+      // chapter 모드: 3페이지(가장 뒤 = 우선) — 판정이 끝난 뒤. 다시 지목하지 않는다.
+      ...(spec.verdict.mode === "chapter" ? [{
+        name: "판정 뒤",
+        conditions: [{ kind: "selfSwitch", key: VERDICT_DONE_SELF_SWITCH, value: true } as EventPageCondition],
+        commands: say(voice, spec.verdict.after.length > 0 ? spec.verdict.after : [object ? "이 사건은 이미 매듭지었다." : "그 사건은 이미 매듭지었네."]),
+      }] : []),
     ],
   }, warnings);
   if (object) {
@@ -1186,23 +1279,29 @@ function placeAccuser(draft: Project, spec: MysteryCase, warnings: string[]): st
   return id;
 }
 
-/** 컴파일 사후 검사: 엔딩을 부르는 사건 페이지는 모두 필수 증거 전부를 조건으로 가져야 한다. */
+/**
+ * 컴파일 사후 검사: 사건 결과(ending 모드 = 엔딩, chapter 모드 = 결과 스위치 켜기)를 내는 사건 페이지는 모두 필수 증거 전부를 조건으로 가져야 한다.
+ * chapter 모드의 판정 뒤 페이지는 결과를 내지 않으니 대상이 아니다.
+ */
 function assertEndingsGated(draft: Project, spec: MysteryCase, eventIds: readonly string[]): void {
   const required = new Set(spec.requiredClues.map((clueId) => mysteryClueItemId(spec.caseId, clueId)));
   const ids = new Set(eventIds);
+  const results = new Set([spec.verdict.solvedSwitchId, spec.verdict.wrongSwitchId]);
+  const isResult = (command: Command) => command.kind === "triggerEnding"
+    || (spec.verdict.mode === "chapter" && command.kind === "setSwitch" && results.has(command.switchId) && command.value !== false);
   for (const map of Object.values(draft.maps)) {
     for (const event of map.events) {
       if (!ids.has(event.id)) continue;
-      if (eventCommands({ ...event, pages: [] }).some((command) => command.kind === "triggerEnding")) {
-        throw new ToolError(`'${event.name ?? event.id}' 의 조건 없는 본문에 엔딩이 있습니다.`, { code: "mystery-order" });
+      if (eventCommands({ ...event, pages: [] }).some(isResult)) {
+        throw new ToolError(`'${event.name ?? event.id}' 의 조건 없는 본문에 사건 결과(엔딩·결과 스위치)가 있습니다.`, { code: "mystery-order" });
       }
       for (const page of event.pages ?? []) {
-        if (!eventCommands({ ...event, commands: [], pages: [page] }).some((command) => command.kind === "triggerEnding")) continue;
+        if (!eventCommands({ ...event, commands: [], pages: [page] }).some(isResult)) continue;
         const held = new Set(page.conditions.flatMap((condition) =>
           condition.kind === "item" && condition.present ? [condition.itemId] : []));
         const missing = [...required].filter((itemId) => !held.has(itemId));
         if (missing.length > 0) {
-          throw new ToolError(`'${event.name ?? event.id}' 페이지 '${page.name}' 가 증거 ${missing.join(", ")} 없이 엔딩에 닿습니다.`, { code: "mystery-order" });
+          throw new ToolError(`'${event.name ?? event.id}' 페이지 '${page.name}' 가 증거 ${missing.join(", ")} 없이 ${spec.verdict.mode === "chapter" ? "사건 결과 스위치를 켭니다" : "엔딩에 닿습니다"}.`, { code: "mystery-order" });
         }
       }
     }
@@ -1299,12 +1398,15 @@ function buildVerificationScene(
   }
   // 4) 지목: 필수 증거를 모두 가졌으니 2페이지(범인 지목)가 뜬다. 정답(범인) 선택지를 고른다.
   const { event: accuser } = locateEvent(draft, ids.accuserEvent);
+  const chapter = spec.verdict.mode === "chapter";
   const solvedIndex = choiceIndex(accuser, "범인 지목", (option) =>
-    option.branch.some((command) => command.kind === "triggerEnding" && command.endingId === spec.endings.solved.id));
+    option.branch.some((command) => chapter
+      ? command.kind === "setSwitch" && command.switchId === spec.verdict.solvedSwitchId
+      : command.kind === "triggerEnding" && command.endingId === spec.endings.solved.id));
   steps.push(
     ...talkSteps(draft, ids.accuserEvent, reachable),
     { kind: "choose", index: solvedIndex }, { kind: "wait", ticks: 1500 },
-    { kind: "expect", endingReached: spec.endings.solved.id },
+    chapter ? { kind: "expect", switchOn: spec.verdict.solvedSwitchId, switchOff: spec.verdict.wrongSwitchId } : { kind: "expect", endingReached: spec.endings.solved.id },
   );
   return { mapId: draft.startMapId, start: { x: draft.startPos.x, y: draft.startPos.y }, steps };
 }
@@ -1371,7 +1473,7 @@ function compileMysteryCase(draft: Project, spec: MysteryCase): ToolExecResult {
       ? ""
       : "run_scene_test 로 증거 수집 → 지목을 플레이 검증하라.";
   return {
-    summary: `추리 사건 '${spec.title}' 저작 — 용의자 ${spec.suspects.length}명, 증거 ${itemIds.length}개(필수 ${spec.requiredClues.length}), 조사 지점 ${clueEvents.length}곳, 지목 NPC '${spec.accuser.name}', 엔딩 2개${removed > 0 ? ` (이전 사건 이벤트 ${removed}개 교체)` : ""}. ${next}${verify}`,
+    summary: `추리 사건 '${spec.title}' 저작 — 용의자 ${spec.suspects.length}명, 증거 ${itemIds.length}개(필수 ${spec.requiredClues.length}), 조사 지점 ${clueEvents.length}곳, 지목 NPC '${spec.accuser.name}', ${spec.verdict.mode === "chapter" ? `장(chapter) 판정 — 엔딩 없이 정답 ${spec.verdict.solvedSwitchId} / 오답 ${spec.verdict.wrongSwitchId} 스위치를 켜고 게임이 이어진다(다음 장 이벤트는 이 스위치를 조건으로 건다)` : "엔딩 2개"}${removed > 0 ? ` (이전 사건 이벤트 ${removed}개 교체)` : ""}. ${next}${verify}`,
     data: {
       caseId: spec.caseId,
       culprit: culprit.id,
@@ -1380,7 +1482,10 @@ function compileMysteryCase(draft: Project, spec: MysteryCase): ToolExecResult {
       clueEventIds: clueEvents,
       suspectEventIds: suspectEvents,
       accuserEventId: accuserEvent,
-      endings: { solved: spec.endings.solved.id, wrong: spec.endings.wrong.id },
+      verdict: spec.verdict.mode === "chapter"
+        ? { mode: "chapter", solvedSwitchId: spec.verdict.solvedSwitchId, wrongSwitchId: spec.verdict.wrongSwitchId }
+        : { mode: "ending" },
+      ...(spec.verdict.mode === "ending" ? { endings: { solved: spec.endings.solved.id, wrong: spec.endings.wrong.id } } : {}),
       ...(verificationScene ? { verificationScene } : {}),
     },
     ...(warnings.length > 0 ? { warnings } : {}),
@@ -1481,6 +1586,18 @@ const CASE_PARAMETERS: JsonSchema = {
       properties: { solved: ENDING_SCHEMA, wrong: ENDING_SCHEMA },
     },
     requiredClues: { type: "array", items: { type: "string" }, description: "생략 시 범인 특정에 필요한 단서 전부" },
+    verdict: {
+      type: "object",
+      description: "지목 뒤. 생략 = mode ending(정답·오답 엔딩으로 게임이 끝난다). 사건 여럿을 잇는 이야기면 mode chapter — 엔딩 대신 결과 스위치를 켜고 onSolved/onWrong 명령을 이어 붓는다(게임 계속). 다음 장 이벤트는 solvedSwitchId·wrongSwitchId 를 페이지 조건으로 건다",
+      properties: {
+        mode: { type: "string", enum: ["ending", "chapter"] },
+        solvedSwitchId: { type: "string", description: "정답 지목 때 켤 스위치 id(생략 = sw_mystery_<caseId>_solved)" },
+        wrongSwitchId: { type: "string", description: "오답 지목 때 켤 스위치 id(생략 = sw_mystery_<caseId>_wrong)" },
+        onSolved: { type: "array", items: { type: "object" }, description: "정답 판정 뒤 이어 붓는 명령(대사·이동·다음 장 준비). triggerEnding 금지" },
+        onWrong: { type: "array", items: { type: "object" }, description: "오답 판정 뒤 명령. triggerEnding 금지" },
+        after: LINES_SCHEMA,
+      },
+    },
   },
   required: ["caseId", "victim", "culprit", "suspects", "clues", "accuser"],
 };
@@ -1499,6 +1616,7 @@ const CHECK_PARAMETERS: JsonSchema = {
     accuser: { type: "object" },
     endings: { type: "object" },
     requiredClues: { type: "array", items: { type: "string" } },
+    verdict: { type: "object" },
   },
   required: ["caseId", "victim", "culprit", "suspects", "clues", "accuser"],
 };
@@ -1523,7 +1641,8 @@ const CHECK_RULES =
   "검사: ①특정 가능성 — 필수 단서만으로 범인만 남아야 한다(범인은 implicates 또는 거짓말 반박 1개 이상, 비범인은 각자 excludes 또는 거짓말 반박으로 배제, 범인을 excludes 하면 모순) " +
   "②도달 가능성 — 좌표가 맵 안·인접 통행 가능·다른 이벤트와 겹치지 않고 시작 맵이면 시작 위치에서 걸어서 닿음, 증언 단서는 givenBy 용의자 탐문으로 획득 " +
   "③누설 — 용의자·단서 이름, 지목 NPC 대사·선택 문구에 「진범/범인은/(정답)/culprit」 류나 범인 이름+단정 금지 " +
-  "④순서 — 필수 단서 0개 금지, 사건 밖 이벤트가 같은 엔딩을 부르면 거부.";
+  "④순서 — 필수 단서 0개 금지, 사건 밖 이벤트가 같은 엔딩(chapter 모드면 같은 결과 스위치)을 부르면 거부 " +
+  "⑤판정 — verdict.mode chapter 는 정답·오답 스위치가 달라야 하고 onSolved/onWrong 에 triggerEnding 을 두지 않는다.";
 
 const authorMysteryCase: ToolDefinition = {
   name: "author_mystery_case",
@@ -1532,6 +1651,7 @@ const authorMysteryCase: ToolDefinition = {
     "사건 무대(저택·여관 실내 등)가 아직 없으면 먼저 build_hand_interior_room 으로 방이 있는 맵을 짓고 그 좌표로 명세를 쓴다. " +
     "사건 명세 하나로 증거 아이템(스위치 없음)·한 번만 주는 조사 지점·용의자 탐문(알리바이/동기/증언/증거 대면)·" +
     "지목 NPC(증거 부족=힌트, 필수 증거 전부=이름 목록→solved/wrong 엔딩)를 컴파일한다. 기존 주민은 suspects[].eventId 로 재사용(시간표 정리). " +
+    "사건 여럿을 잇는 이야기(1장 사건을 풀면 2장이 열린다)는 verdict:{mode:'chapter', onSolved, onWrong} — 엔딩 대신 결과 스위치(sw_mystery_<caseId>_solved / _wrong)를 켜고 게임이 이어지며, 지목 NPC 는 판정 뒤 다시 지목받지 않는다. 다음 장 이벤트·대사는 그 스위치를 페이지 조건으로 건다. " +
     "쓰기 전 check_mystery_case 규칙으로 검사해 범인 특정 불가·누설·도달 불가·증거 없는 엔딩을 사유와 함께 거부한다. " +
     "요약이 data.verificationScene 을 run_scene_test 에 넣으라고 할 때만 그 입력을 그대로 검증한다. " +
     "요약이 맨땅이라 지금은 run_scene_test 를 호출하지 말라고 하면 방을 짓고 같은 caseId 로 다시 부른다.",

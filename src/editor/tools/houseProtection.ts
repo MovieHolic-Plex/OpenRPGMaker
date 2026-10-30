@@ -267,8 +267,17 @@ export function assertHouseProtection(before: readonly HouseSnapshot[], project:
     // 집 보호가 함께 물고 있으면 고아·중복 맵을 지우는 remove_map 이 막힌다
     // (2026-09-24 감성 스토리 r3: 같은 거부로 두 번 — 고아 맵 12개가 정리되지 못함).
     if (!map) continue;
-    if (map.id !== house.mapId || map.tilesetId !== house.tilesetId || map.tileSize !== house.tileSize
-      || map.width < house.width || map.height < house.height) rejectWrite(house);
+    if (map.id !== house.mapId || map.tilesetId !== house.tilesetId || map.tileSize !== house.tileSize) rejectWrite(house);
+    // 맵 축소(resize_map)는 집 칸을 자를 때만 막는다. 예전에는 맵이 조금이라도 작아지면 집이 어디 있든 거부해
+    // 마을 맵의 빈 물·들판 띠를 줄일 수 없었다(2026-10-30 사냥꾼 계약 늪 마을: 아래 11줄이 전부 물인데 높이 33~38 이 다 거절).
+    if (map.width < house.width || map.height < house.height) {
+      const cut = house.cells.find((cell) => cell.x >= map.width || cell.y >= map.height);
+      if (cut) {
+        const minW = Math.max(...house.cells.map((cell) => cell.x)) + 1, minH = Math.max(...house.cells.map((cell) => cell.y)) + 1;
+        throw new ToolError(`축소가 완성된 집의 보호 칸 (${cut.x},${cut.y})을 자릅니다. 이 집을 지키려면 너비 ${minW}·높이 ${minH} 이상으로 줄이세요.`,
+          { code: "protected-house-write", mapId: house.mapId, x: cut.x, y: cut.y });
+      }
+    }
     const owners = afterByOwner.get(ownerKey(house)) ?? [];
     const owner = owners[0];
     if (owners.length === 1 && owner && isExactRoofResize(house, owner, project)) continue;
