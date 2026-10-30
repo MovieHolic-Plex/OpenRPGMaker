@@ -334,7 +334,7 @@ export function skipVerdict(input: {
 
 /** 인터프리터의 막는 단계 중 오토·스킵을 멈춰야 하는 것(사람이 직접 골라야 하거나 장면이 바뀌는 것). */
 const READING_STOP_STEP_KINDS: ReadonlySet<string> = new Set([
-  "choices", "presentItem", "inputNumber", "enterHeroName", "timedChoice", "quickTimeEvent", "teleportMenu",
+  "choices", "presentItem", "planSchedule", "inputNumber", "enterHeroName", "timedChoice", "quickTimeEvent", "teleportMenu",
   "transfer", "battleProcessing", "tacticsBattle", "shop", "inn", "gameOver", "returnToTitle",
   "openSaveMenu", "openMenuScreen", "openLoadMenu", "openChest", "sleepUntilMorning", "playMovie", "inputWait",
 ]);
@@ -344,7 +344,7 @@ export function stopsReading(stepKind: string): boolean {
 }
 
 export function stepStopReason(stepKind: string): ReadingStopReason {
-  if (stepKind === "choices" || stepKind === "presentItem" || stepKind === "inputNumber" || stepKind === "enterHeroName" || stepKind === "timedChoice" || stepKind === "quickTimeEvent" || stepKind === "teleportMenu") return "choices";
+  if (stepKind === "choices" || stepKind === "presentItem" || stepKind === "planSchedule" || stepKind === "inputNumber" || stepKind === "enterHeroName" || stepKind === "timedChoice" || stepKind === "quickTimeEvent" || stepKind === "teleportMenu") return "choices";
   if (stepKind === "returnToTitle" || stepKind === "gameOver") return "ending";
   return "boundary";
 }
