@@ -83,6 +83,8 @@ export function advanceResume(
     frame.pc += 1;
   } else if (pending === "inputNumber") {
     const command = frame.commands[frame.pc];
+    // 취소(NUMBER_INPUT_CANCELLED = -1, dialogueNumberInput.ts)면 변수는 그대로 두고 이 이벤트를 끝낸다 — 틀린 번호 분기로 가지 않는다.
+    if (value === -1) return "done";
     if (command?.kind === "inputNumber") {
       state.session.variables[command.variableId] = typeof value === "number" ? value : 0;
     }

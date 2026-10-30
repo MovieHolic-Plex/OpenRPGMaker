@@ -151,6 +151,7 @@ import { VIEW_FOCUS_TOOLS } from "./viewFocusTools";
 import { CHARACTER_APPEARANCE_TOOLS } from "./characterAppearanceTools";
 import { WORLD_GRAPH_TOOLS } from "./worldGraphTools";
 import { DUNGEON_LINK_TOOLS } from "./dungeonLinkTools";
+import { BBOX_PLACE_TOOLS } from "./bboxPlaceTools";
 import { TILE_QUERY_TOOLS } from "./tileQueryTool";
 import { AUTHOR_BEODEUL_TOWN_TOOL } from "./authorBeodeulTown";
 import { AUTHOR_BEODEUL_DUNGEON_ALIAS, AUTHOR_DUNGEON_TOOL } from "./dungeonTools";
@@ -420,6 +421,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(MONSTER_RESOURCE_TOOLS, "database"),
   ...withDomain(WORLD_GRAPH_TOOLS, "world"),
   ...DUNGEON_LINK_TOOLS,
+  ...BBOX_PLACE_TOOLS,
   ...withDomain(PALETTE_PRESET_TOOLS, "tile"),
   ...withDomain(QUEST_TOOLS, "quest"),
   ...withDomain(STORY_ARC_TOOLS, "event"),

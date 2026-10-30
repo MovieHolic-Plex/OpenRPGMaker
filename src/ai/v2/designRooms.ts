@@ -18,6 +18,7 @@ const HAND_LAYOUT_ROOM_TAG = "hand-layout-room";
 import { interiorTilesetOf } from "./builders/interior";
 import { roomParts } from "./roomParts";
 import { ROOM_IDEA_RULE, roomIdeasFor } from "./roomIdeas";
+import { AREA_MAX, AREA_MIN, wantsSmallRoom } from "./designAreas";
 
 /** 이 명세가 손 도트 실내(v5)로 지어지나 — 설계는 이 칩셋에서만 쓴다. */
 export function buildsHandInterior(project: Project, spec: PlaceSpec): boolean {
@@ -49,33 +50,35 @@ function promptFor(project: Project, spec: PlaceSpec, zones: readonly ZoneSpec[]
   const purposes = need.map((i) => `${zones[i]!.kind} ${zones[i]!.purpose ?? ""}`).join(" ");
   const parts = roomParts(project, `${purposes} ${spec.name} ${spec.theme ?? ""}`, undefined, HAND_INTERIOR_TILESET_ID, 40);
   const lines = [
-    "너는 RPG 손 도트 실내 방을 설계하는 사람이다. 아래 장소의 방들을 직접 설계해 JSON 하나로만 답한다(설명 글 없이).",
-    `요청: ${clip(task.replace(/\s+/gu, " "), 500)}`,
-    `게임: ${project.meta.title ?? ""} · 장소: ${spec.name}${spec.theme ? ` · 분위기: ${spec.theme}` : ""}${spec.size ? ` · 크기: ${spec.size}` : ""}`,
-    "설계할 방(i 는 번호):",
-    ...need.map((i) => { const z = zones[i]!; return `- i=${i} kind=${z.kind} 용도=${z.purpose ?? z.kind}${(z.floor ?? 1) > 1 ? ` (${z.floor}층)` : ""}${z.anchors?.length ? ` 꼭 넣을 물건: ${z.anchors.join("·")}` : ""}`; }),
-    ...(zones.some((z, i) => !need.includes(i) && z.design) ? [`이미 설계된 같은 장소 방: ${zones.filter((z, i) => !need.includes(i) && z.design).map((z) => `${z.kind} ${z.design!.shape ?? "rect"} ${z.design!.w ?? "?"}×${z.design!.h ?? "?"}`).join(", ")}`] : []),
-    ...(builtRooms(project).length ? [`이 게임에 이미 선 방(모양·크기·배치를 이것과 다르게): ${builtRooms(project).join(", ")}`] : []),
-    "design 꼴: {shape, corner?, w, h, door, floor, wall, groups:[{name, at, pos?, rug?, items:[{id, dx?, dy?, count?}]}]}",
-    "- shape: rect 네모(작은 방) · L ㄱ자(corner 귀퉁이를 도려 냄) · U ㄷ자 · T ㅜ자 · bay 창가 돌출 · alcove 알코브(corner). 방 이야기에 맞는 모양을 네가 고른다.",
+    "You design hand-pixel RPG interior rooms. Design the rooms of the place below yourself and answer with one JSON object only (no prose).",
+    `Request: ${clip(task.replace(/\s+/gu, " "), 500)}`,
+    `Game: ${project.meta.title ?? ""} · place: ${spec.name}${spec.theme ? ` · mood: ${spec.theme}` : ""}${spec.size ? ` · size: ${spec.size}` : ""}`,
+    "Rooms to design (i is the index):",
+    ...need.map((i) => { const z = zones[i]!; return `- i=${i} kind=${z.kind} purpose=${z.purpose ?? z.kind}${(z.floor ?? 1) > 1 ? ` (floor ${z.floor})` : ""}${z.anchors?.length ? ` must include: ${z.anchors.join(", ")}` : ""}`; }),
+    ...(zones.some((z, i) => !need.includes(i) && z.design) ? [`Rooms of this place already designed: ${zones.filter((z, i) => !need.includes(i) && z.design).map((z) => `${z.kind} ${z.design!.shape ?? "rect"} ${z.design!.w ?? "?"}×${z.design!.h ?? "?"}`).join(", ")}`] : []),
+    ...(builtRooms(project).length ? [`Rooms already built in this game (make shape, size and layout different from these): ${builtRooms(project).join(", ")}`] : []),
+    "design format: {shape, corner?, w, h, door, floor, wall, areas:[{name, purpose, focal, visit}], groups:[{name, area, at, pos?, rug?, items:[{id, dx?, dy?, count?}]}]}",
+    `- areas (required): ${AREA_MIN}–${AREA_MAX} distinct zones in the room${wantsSmallRoom(spec, task) ? " (this request is a small room, one is fine)" : " (one only when the request is truly a small room)"} — each with purpose (one line), focal (the zone's focal part = a part id in groups) and visit (why the player comes here — an inspect point, clue, locked place, stairs, counter or person of this game). Tie groups to zones with area. When there are several designed ground-floor rooms, each room counts as one zone.`,
+    "- One place is one map, not one cell: if the place needs several rooms (an inn: hall, kitchen, guest rooms; a jail: guard room, corridor, cells), they are the zones listed above — players expect a place with structure.",
+    "- shape: rect (small room) · L (corner cut away) · U · T · bay (window bay) · alcove (corner). Pick the shape that fits the room's story.",
     ...(parts ? parts.shapes.map((s) => `  · ${s}`) : []),
-    ...(need.some((i) => (zones[i]!.floor ?? 1) > 1) ? ["- 위층 방: 아래층에서 올라오는 계단통(3×2)이 위층 방 하나의 빈 바닥에 선다 — 위층 방 중 하나는 바닥 6×4 이상으로 비워 둘 자리를 둔다(복도·계단참을 따로 설계해도 된다)."] : []),
-    "- w×h = 바닥 칸(벽면 줄 빼고). 방 용도와 가구 양에 맞춘다 — 빈 바닥이 넓으면 방이 너무 큰 것이다. door = 남쪽 출구 left·center·right.",
-    "- at = north·south·west·east·center·nw·ne·sw·se, pos 0~1 = 그 벽을 따라 자리. 책장·진열장 같은 벽 가구와 창·지도(걸이, dy -2)는 북벽(north·nw·ne)에만.",
-    "- 의자는 chair N/S/E/W(그쪽을 봄) — 탁자·책상 쪽을 보게. 무엇을 몇 개 놓을지는 네 목록이 전부다(함수는 더하지 않고, 칩셋에 없는 이름·겹침·문 앞 통로만 고친다).",
+    ...(need.some((i) => (zones[i]!.floor ?? 1) > 1) ? ["- Upper rooms: the stairwell from below (3×2) stands on the empty floor of one upper room — give one upper room at least 6×4 floor to leave room for it (a separate corridor or landing is fine)."] : []),
+    "- w×h = floor cells (without the wall rows). Fit them to the room's use and amount of furniture — wide empty floor means the room is too big. door = south exit left · center · right.",
+    "- at = north · south · west · east · center · nw · ne · sw · se, pos 0–1 = position along that wall. Wall furniture (bookshelves, cabinets) and hung things (windows, maps, dy -2) go on the north wall only (north · nw · ne).",
+    "- Chairs are chair N/S/E/W (the way they face) — face them to the table or desk. Your list is everything that gets placed (functions add nothing; they only fix unknown names, overlaps and the path in front of the door).",
     ...(parts ? [
-      `바닥 재질 floor: ${parts.floors.join(", ")}`,
-      `벽면 재질 wall: ${parts.walls.join(", ")}`,
-      `깔개 rug: ${parts.rugs.join(", ")}`,
-      "기물(id | 이름 | 크기 | 놓는 곳):",
+      `floor materials: ${parts.floors.join(", ")}`,
+      `wall materials: ${parts.walls.join(", ")}`,
+      `rugs: ${parts.rugs.join(", ")}`,
+      "parts (id | name | size | where):",
       ...parts.items.map((l) => `  ${l}`),
-      `탁상 물건(id): ${parts.goods.join(", ")}`,
-      "참고 견본(바닥 좌표의 배치 요약 — 읽고 참고만 한다, 같은 배치·같은 크기로 베끼지 않는다. 옛 서재 견본은 뺐다):",
-      ...parts.references.slice(0, 2).map((r) => `  ${r.id} 바닥 ${r.floorSize}: ${clip(r.items.join(", "), 400)}`),
-      `설계 꼴 예(모양만 보는 예 — 기물은 네 방 용도 것으로): ${JSON.stringify(parts.shapeExamples[0]?.zones)}`,
+      `tabletop goods (id): ${parts.goods.join(", ")}`,
+      "Reference samples (layout summaries in floor coordinates — read for ideas only; do not copy the same layout or size):",
+      ...parts.references.slice(0, 2).map((r) => `  ${r.id} floor ${r.floorSize}: ${clip(r.items.join(", "), 400)}`),
+      `design example (for the format only — use parts that fit your room): ${JSON.stringify(parts.shapeExamples[0]?.zones)}`,
     ] : []),
-    `답 꼴: {"rooms":[{"i":${need[0] ?? 0},"design":{...}}${need.length > 1 ? ",…" : ""}]} — 방마다 하나.`,
-    ...(retryNote ? [`앞 답을 읽지 못했다(${retryNote}). JSON 하나로만 다시 답한다.`] : []),
+    `Answer format: {"rooms":[{"i":${need[0] ?? 0},"design":{...}}${need.length > 1 ? ",…" : ""}]} — one per room.`,
+    ...(retryNote ? [`Could not read the previous answer (${retryNote}). Answer again with one JSON object only.`] : []),
   ];
   return lines.join("\n");
 }
