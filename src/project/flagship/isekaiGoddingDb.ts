@@ -115,7 +115,7 @@ export function setupIsekaiDatabase(project: Project, backdrops: typeof BACKDROP
   exec("set_session_start", { party: [ACTOR.minjae], gold: 0 });
   project.system.battleLook = { ...project.system.battleLook, enemyHp: true, enemyNames: true };
   // v8c: 기본 「승리!」 띠·「○○는 무엇을 할까?」(두 검수자: 아동용 기본 문구) — 왕국 행정 말투로.
-  exec("set_project_settings", { terms: { battleVictory: "결재 완료", battleCommandPrompt: "{name}의 차례." } });
+  exec("set_project_settings", { terms: { battleVictory: "이겼다", battleCommandPrompt: "{name}의 차례." } });
   // 필드 화면을 전투 배경으로 깔지 않는다 — 위에서 본 맵 위에 옆모습 배틀러가 서면 어색했다(마왕 편의점 처음 하는 사람 검수 4).
   delete project.system.battleBackdrop;
 
@@ -177,15 +177,17 @@ export function setupIsekaiDatabase(project: Project, backdrops: typeof BACKDROP
     boss.stats = { ...boss.stats, maxHp: hp };
   }
 
-  const troop = (id: string, name: string, enemyIds: string[], background: string) =>
-    exec("upsert_troop", { troop: { id, name, enemyIds, previewBackgroundResourceId: background } });
+  // 승리 띠(v8c 두 검수자: 「결재 완료」가 슬라임·마왕전까지 모든 승리에 떠 농담이 닳았다) — 기본은 「이겼다」,
+  // 서류로 싸우는 감독관전만 「결재 완료」, 시험관은 채점, 마왕 둘은 그 장면의 말로(TroopRecord.victoryBanner, #4016).
+  const troop = (id: string, name: string, enemyIds: string[], background: string, victoryBanner?: string) =>
+    exec("upsert_troop", { troop: { id, name, enemyIds, previewBackgroundResourceId: background, ...(victoryBanner ? { victoryBanner } : {}) } });
   // 첫 전투는 둘(처음 하는 사람 검수 4: 셋이면 첫 전투가 54초로 늘어졌다).
   troop(TROOP.slime, "슬라임 둘", ["enemy_ig_slime", "enemy_ig_slime_red"], backdrops.field);
   troop(TROOP.goblin, "통행세 받는 고블린", ["enemy_ig_goblin", "enemy_ig_goblin_brute", "enemy_ig_goblin"], backdrops.village);
-  troop(TROOP.quiz, "성문 시험관", ["enemy_ig_quiz"], backdrops.castle);
-  troop(TROOP.dean, "대본 감독관", ["enemy_ig_dean"], backdrops.castle);
-  troop(TROOP.maouExam, "마왕과 마지막 시험", ["enemy_ig_maou"], backdrops.throne);
-  troop(TROOP.maouBrawl, "마왕과 7장", ["enemy_ig_maou"], backdrops.throne);
+  troop(TROOP.quiz, "성문 시험관", ["enemy_ig_quiz"], backdrops.castle, "채점 완료");
+  troop(TROOP.dean, "대본 감독관", ["enemy_ig_dean"], backdrops.castle, "결재 완료");
+  troop(TROOP.maouExam, "마왕과 마지막 시험", ["enemy_ig_maou"], backdrops.throne, "15년 만의 답안 제출");
+  troop(TROOP.maouBrawl, "마왕과 7장", ["enemy_ig_maou"], backdrops.throne, "대본 7장, 끝");
   // 마왕 = 걷기 칩의 배재민 그대로 + 검은 안개(새 그림 없음). 첫 차례에 걸고 전투가 끝나면 풀린다.
   for (const id of [TROOP.maouExam, TROOP.maouBrawl]) {
     exec("upsert_troop_battle_page", { troopId: id, page: { id: `${id}_shadow`, name: "왕좌의 그림자", span: "battle", runOnce: true,
