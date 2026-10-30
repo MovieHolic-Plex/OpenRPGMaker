@@ -510,6 +510,13 @@ Phaser `preRender` 는 경계가 있으면 따라가기·패닝 뒤 clamp 를 �
   점유 기록(`session.occupiedLocationIds`, ID 만·optional)은 큐와 무관하게 즉시 갱신한다.
   새 스케줄러를 만들지 마라 — 이 트리거는 auto 와 같은 «사건 하나» 성질이다. 계약 전문은
   `openwiki/runtime-project-schema.md` 의 「구역 드나듦 트리거」 절.
+- **장소 이동의 검은 화면은 일한 시간만 남긴다 (2026-10-30):** `transferTo`(`src/player/playSceneMapCommands.ts`)는
+  새 맵 파일 받기를 페이드아웃과 **같이** 건다(`prefetchMapAssets`, 뒤의 `holdForMapAssets` 는 같은 받기를 기다릴 뿐).
+  화면 효과 층(z 27, 캔버스 위)이 이미 불투명하게 덮었거나 덮어 가는 중이면(`screenCoverRemainingMs`, 저작된
+  「화면 효과 fadeOut」 → 전투 패배 재시작·붙잡혀 끌려감) 카메라 페이드아웃 대신 그 덮개 트윈만 기다리고, 착지 뒤 카메라
+  페이드인은 기다리지 않고 걷는다(`fadeEffect.reset`) — 그 아래 카메라 페이드는 보이지 않는데 0.5초씩 검은 화면을 늘렸고,
+  도착 맵 자동 장면의 「fadeIn」도 그만큼 늦게 시작했다(폴른 2막 B6 패배 → 감방, 프레임 밝기 실측). 플래시는 덮개로 치지 않는다.
+  남은 검은 시간은 `loadMap`(첫 방문 타일셋의 이식 굽기 `ensureTilesetTexture` 가 1~2초)이다 — 줄이려면 굽기를 앞당겨야 한다.
 - **이벤트 명령 실동작 검토 (2026-09-05):** `docs/reviews/2026-09-05-event-runtime-audit.md`. 「철수의 기억」에서 강제 NPC 방향 전환이 `scene.running` 게이트에 막혀 30초 뒤에야 다음 명령으로 진행됐다. `updatePlayScene`은 NPC 업데이트를 호출하고 `updateAutonomousNPCs`가 대화 중 **명령 루트만** 허용한다. 배경 자율 이동과 병렬 이벤트는 기존 설정대로 정지한다. 직접 NPC updater만 호출하는 테스트로는 이 배선 결함을 잡지 못하므로 `test/runtimeMovementStability.test.ts`의 실제 프레임 디스패치 회귀를 유지한다. 저장된 M2 대화 설정의 강제 기본값 초기화도 수정했다(`test/persistedMessageSettings.test.ts`). `Wait Until`, `Pathfind Move`, 메뉴/로드 화면, 좌표 ID 조회, 저장된 M2 영화 명령의 후속 미구현·오연결도 수정했다. 실행 계약과 제한은 `openwiki/runtime-m2-flow-controls.md`의 2026-09-05 항목을 따른다. 카탈로그 배지나 최종 종료만으로 전체 명령을 검증했다고 보고하지 않는다.
 - **실내 화로 불 애니메이션:** `src/editor/tilesetImage.ts`의 `supportsChipsetTileAnimation(tileset,tile)`이 기존 마을 애니메이션과 실내 불 스트립 124/154/184/214만 허용한다. 플레이어 `playSceneMapRuntime.renderTile`과 편집기 `chipsetTileRender.createRawTileObject`가 공통 조건을 쓴다. `isDefaultTilesetTexture`를 넓히면 실내에 마을 길/나무 규칙까지 적용되므로 바꾸지 않는다. `stone_hearth_unlit`의 463은 정지, `stone_hearth_lit`의 아래 가운데 124는 4fps이다. `test/interiorFireRendering.test.ts`는 양 레이어의 실제 렌더 경로를 검사한다.
 - **Shipping pointer-exclusion contract (2026-08-28):** `.player-layout[data-play-input-owner="keyboard-only"]` is keyboard-only regardless of `navigator.webdriver`. The capture blocker rejects mouse, pointer, touch, wheel, context-menu, drag, selection, auxiliary, and native trusted-click channels; Phaser mouse/touch managers are disabled. The root prevents selection, dragging, canvas hit testing, browser scroll, and autoscroll. Exactly two pointer owners exist: `[data-play-input-owner="touch-controls"]`, mounted only by explicit `VITE_TOUCH_CONTROLS` / `OPENRPG_PLAYER_TOUCH_CONTROLS`, and `[data-play-input-owner="host-fullscreen"]`, mounted only when `hostFeatures` advertises fullscreen. Ownership never escapes those subtrees, and keyboard-only runtime content has no native `title` tooltips.
