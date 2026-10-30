@@ -416,6 +416,8 @@ const SHAKE_WORDS = /흔들리|흔들린|흔들려|흔들어|지진|진동|쿵\s
 const FLASH_WORDS = /번쩍|섬광|번개(?!\s*(의\s*서|마법|기술|스킬|주문|책|의\s*검))(?!['’」』])|빛이\s*터|flash|lightning/iu;
 const HIDDEN_WORDS = /숨겨|숨은|몰래|보이지\s*않|투명|비밀|hidden|secret|invisible/iu;
 const ENDING_WORDS = /엔딩|결말|ending/iu;
+/** 싸울 몬스터·적을 바라는 요청(「약한 몬스터가 있게」「고블린과 싸우는」). 「기적이 있」 같은 낱말 속 「적」은 빼려고 앞 글자를 본다. */
+export const FOE_ASK = /(몬스터|마물|(?<![가-힣])적|고블린|슬라임|늑대|멧돼지|도적)(들)?(이|가|와|과|랑|하고)?\s*(있|나오|나타나|출몰|싸우|싸울|싸워|덤비|잡)|필드 적|(?<![가-힣])적을\s*(두|놓|배치)|monsters?|enemies|enemy/iu;
 const STATE_WORDS = /독초|독에|독이|독을|독\s*상태|중독|맹독|마비|수면\s*상태|잠\s*상태|상태\s*이상|혼란|침묵|poison|paraly|stun/iu;
 
 /** 맵 배경음·기본 전투곡·승리 팡파르·타이틀·오프닝·엔딩 곡 연결이 바뀌었나(set_game_audio) — 그러면 음악 요청은 이벤트 명령 없이도 채워졌다. */
@@ -590,6 +592,13 @@ export function gameContentProblems(before: Project, after: Project, task: strin
     const enc = (m: unknown) => { const o = m as Obj | undefined; const v = o?.encounterTable ?? o?.encounters ?? o?.encounter; return Array.isArray(v) && v.length ? JSON.stringify(v) : ""; };
     const changedEnc = Object.values(after.maps).some((m) => enc(m) && enc(m) !== enc(before.maps[m.id]));
     if (!changedEnc) problems.push("[게임 검사 조우] 요청에 무작위 조우가 있는데 어느 맵의 조우표도 바뀌지 않았다 — set_encounter_table 로 그 맵에 적 그룹·빈도를 단다(보이는 적 이벤트는 무작위 조우가 아니다).");
+  }
+  // 1i) 싸울 몬스터: 「약한 몬스터가 있게·적과 싸우는」 요청인데 이번에 바뀐 이벤트에 전투가 없고 켜진 조우도 바뀌지 않았다
+  // (2026-10-31 sc-1031-b4 terra 숲길 3판 «몬스터·조우 없음» — 할 일 고리는 모델이 전투 항목을 적을 때만 이것을 본다).
+  if (FOE_ASK.test(task) && !kinds.has("battleProcessing")) {
+    const enc = (m: unknown) => { const o = m as Obj | undefined; return Number(o?.encounterRate ?? 0) > 0 && Array.isArray(o?.encounterTable) && (o!.encounterTable as unknown[]).length ? JSON.stringify([o!.encounterTable, o!.encounterRate]) : ""; };
+    const encOn = Object.values(after.maps).some((m) => enc(m) && enc(m) !== enc(before.maps[m.id]));
+    if (!encOn) problems.push("[게임 검사 전투] 요청에 싸울 몬스터·적이 있는데 이번에 단 전투(battleProcessing)도 켠 조우도 없다 — upsert_enemy·upsert_troop 로 적을 만들고 place_field_enemy 로 그 맵에 둔다(author_forest_route 결과 data.maps[i].enemySpots 가 적 자리, clearing·deadEnds·출입구 칸에 겹치지 않게).");
   }
   // 2) 엔딩: 엔딩 정의 + triggerEnding.
   // 음악만 바라는 엔딩 요청(「잔잔하게 엔딩곡」)은 엔딩을 짓는 요청이 아니다. 엔딩 명령은 이번에 바꾼 이벤트가 아니라 프로젝트 전체에서 찾는다 —

@@ -10,6 +10,7 @@ import type { PiAssistantV2Env } from "./env";
 import { ENCOUNTER_ASK } from "./combatChecks";
 import { MUSIC_REQUEST_WORDS, musicOnly, wantsMusic } from "./musicWords";
 import { englishToolMessage, parseFailure } from "./loop/failureText";
+import { withForestRouteBrief } from "./forestBrief";
 
 /** 거절 본문(JSON·감싼 JSON·글)에서 첫 이유 한 줄 — 머리(«'도구' 실행 실패:»)를 걷는다. */
 const firstReason = (why: string): string => { const p = parseFailure(why); return (p.issues[0]?.message ?? p.summary).replace(/^'[^']+'\s*실행 실패:\s*/u, ""); };
@@ -120,7 +121,7 @@ export const GAME_CARD = `[Game elements — quests, items, shops, battles, part
 - If a spot the request points to (in front of the bridge, riverside, beside the well…) does not exist on the map, do not ask: create that object or terrain (stamp_object, fill_region overpaint; otherwise the most plausible path spot), build it, and write «~가 없어 ~에 만들었다» (X was missing, so I made it at Y) in the report.
 - [Fallen-Star-style jobs — when a matching tool exists, use it instead of assembling by hand]
   · Snowfield route maps (snowy pass, frost road, ice field, 1–3 maps): author_snow_route{fromMapId, side, count, moods:['snow','blizzard'], gapCount (number of ice gaps), openEnd} — do not build the north with the green forest tool. It links the edges too. Ice gap spots come back as data.maps[i].gaps[k].from/to (path cells before and after the gap) — the device for crossing a gap is placed separately.
-  · Forest and field maps (one or several: winding forest path, broadleaf trees, objects hidden between trees, dark foggy forest; open field is terrain:'field'): author_forest_route{fromMapId, side:'north'…, count, terrain, moods:['normal','darkfog'], hiddenPerMap} — it links the edges too (no separate create_transfer_pair). Put the boss, shrine and field enemies on the returned data.maps[i].mapId · clearing. If the request says «enemies/shrine in the forest» and there is no forest map, build the forest with this tool first instead of using the village map's tree clumps.
+  · Forest and field maps (one or several: winding forest path, broadleaf trees, objects hidden between trees, dark foggy forest; open field is terrain:'field'): author_forest_route{fromMapId, side:'north'…, count, terrain, moods:['normal','darkfog'], hiddenPerMap, designs:[{bends, sway, entryAt, exitAt, width, branches:[{at, toward, length, end:'chest'}], clearings}]} — you design each map's route shape (bends, branches, clearings) to fit the story and make it differ from routes built before. It links the edges too (no separate create_transfer_pair). Put the boss or shrine on the returned data.maps[i].clearing, chests on deadEnds and field enemies (place_field_enemy) on enemySpots — never two on one cell. This tool places no monsters or encounters (encounters:'none'), so for «a forest with monsters» place them yourself. If the request says «enemies/shrine in the forest» and there is no forest map, build the forest with this tool first instead of using the village map's tree clumps.
   · Searchable barrels, chests, jars, wardrobes (search animation, once only, empty on re-check, «!» scolding if the owner sees, owners do not see through walls or into other rooms, caught count): place_search_containers{mapId, containers:[{x,y,style,loot,ownerId,caughtLines,caughtVariableId}]}. For «caught three times and the shop won't sell», give caughtVariableId and add a page on the shop NPC conditioned on that variable ≥3.
   · Visible field enemies (roam, «!» and chase on sight, battle on touch, give up when far, forward-only vision, vanish when beaten): place_field_enemy{behavior:'chase', sightRange, vision:'cone' (forward only), giveUpRange (give up and return when far), patrol (patrol + chase)} — village maps are rejected, so use forest or field maps. Different from random encounters.
   · Bulk text replace («change every 'North Forest' to 'Whispering Forest'», an NPC name in both name tag and dialogue): replace_text_in_project{find, replace} once. Do not patch line by line.
@@ -220,7 +221,7 @@ export function v2ToolPool(): string[] {
 /** pool:true 면 이 요청의 도구에 v2ToolPool 전부를 더한다(필요할 때 싣는 도구도 같은 감싸개를 지나게). */
 export function createGameTools(env: PiAssistantV2Env, task = "", options: { readonly pool?: boolean } = {}): PiToolShape[] {
   const names = [...new Set([...v2ExtraToolNames(task), ...(options.pool ? v2ToolPool() : [])])].filter((name) => getTool(name));
-  return withActorLookRetry(withSchemaFillCleanup(withTransferRelocation(withEncountersOnlyWhenAsked(withPictureSearchBudget(createPiToolset(env.ctx, { ...(env.toolsetOptions ?? {}), toolNames: names, onCall: env.record })), task))));
+  return withActorLookRetry(withSchemaFillCleanup(withTransferRelocation(withForestRouteBrief(withEncountersOnlyWhenAsked(withPictureSearchBudget(createPiToolset(env.ctx, { ...(env.toolsetOptions ?? {}), toolNames: names, onCall: env.record })), task), () => env.ctx.project, env.record))));
 }
 
 /**

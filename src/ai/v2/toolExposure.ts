@@ -64,7 +64,9 @@ function translateParams(node: Json, en: ToolTextEn | undefined, keepKorean: boo
 export function englishToolCopy(tool: PiToolShape, upFront: boolean): PiToolShape {
   if (!getTool(tool.name)) return tool;
   const en = V2_TOOL_EN[tool.name];
-  const description = en?.d ?? tool.description;
+  // 감싸개가 덧붙인 세션별 꼬리(예: forestBrief 의 설계 지시서)는 영어 설명으로 바꿔도 남긴다.
+  const tail = (tool as PiToolShape & { readonly descriptionTail?: string }).descriptionTail ?? "";
+  const description = en?.d ? `${en.d}${tail}` : tool.description;
   return { ...tool, description, parameters: translateParams(tool.parameters, en, !upFront) as PiToolShape["parameters"] };
 }
 

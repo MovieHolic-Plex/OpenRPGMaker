@@ -160,6 +160,30 @@ export interface DungeonPartsOut {
   readonly note: string;
   /** 이 게임에서 이미 지은 장소의 출구(들어오는 길)·이미 지은 굴의 설계 한 줄 — 입구 쪽과 「다르게」의 근거. */
   readonly context?: string;
+  /** 이번 설계의 실마리 둘(세션마다 다르게 고른다) — 쓰거나 버리는 것은 모델. */
+  readonly angle: string;
+}
+
+/**
+ * 설계 실마리 — 같은 요청을 다른 세션에서 받아도 같은 굴이 되지 않게(2026-10-31 씬 벤치 opus 「보스 방」 3판이 모두 입구·회랑·보스 세 방 일자).
+ * 예시 순서·입구 낱말 순서는 게임 열쇠로만 돌려 같은 시작 저장본의 같은 요청이면 늘 같았다 — 세션마다 다른 덧값(V2Session.nonce)을 섞고, 실마리 둘을 고른다.
+ */
+const DESIGN_ANGLES = [
+  "보스 방이 높은 단(level 2) 위 — 바로 보이지만 돌아 올라가야 닿는다",
+  "물(lake·stream)이 굴을 가르고 좁은 곳으로 건넌다",
+  "고리(loop) — 두 갈래 길이 보스 앞에서 다시 만난다",
+  "큰 방 하나에서 곁굴 셋이 바퀴살처럼(hub) 갈라진다",
+  "긴 회랑 없이 큰 방 둘(twin)을 좁은 틈(narrow)으로 잇는다",
+  "보스 방이 입구의 반대쪽 끝이 아니라 옆 끝에 — 길이 꺾여 들어간다",
+  "보물 방이 보스 방 뒤 막다른 곳 — 보스를 지나야 닿는다",
+  "보스 앞에 쉬는 곳(camp)이나 제단(shrine) — 숨 고르고 들어간다",
+  "아래로 내려가는 굴 — 입구가 가장 높고(level 2) 보스가 가장 낮다",
+  "샛길 끝 숨은 곁굴(grotto) — 본길에서 안 보이는 막다른 곳",
+] as const;
+export function designAngles(key: string): string {
+  const h = [...`angle|${key}`].reduce((a, c) => (Math.imul(a, 31) + c.charCodeAt(0)) >>> 0, 3);
+  const a = h % DESIGN_ANGLES.length; const b = (a + 1 + ((h >>> 8) % (DESIGN_ANGLES.length - 1))) % DESIGN_ANGLES.length;
+  return `이번 설계 실마리(쓰거나 버린다 — 요청이 우선): ${DESIGN_ANGLES[a]} / ${DESIGN_ANGLES[b]}.`;
 }
 
 /** 입구 쪽 낱말 순서를 게임마다 돌린다 — 늘 south 가 먼저 적혀 있어 맨 요청의 입구가 남쪽으로 쏠렸다(2026-10-30 지문: 13/16). */
@@ -248,6 +272,7 @@ export function dungeonParts(theme: string, gameKey = "", context = ""): Dungeon
     moreExamples: ex.slice(2).map((e) => e.ko).join(" / "),
     references: refs.map((r) => `${r.id}: ${r.idea}`).join(" / "),
     ...(context ? { context } : {}),
+    angle: designAngles(gameKey),
     note: "방 수는 굴의 크기·요청에 맞게 네가 정한다(작은 굴 3~4 · 보통 5~7 · 큰 굴 8~10 — 입구·보스 둘만 잇는 일자 굴은 걸을 거리가 없다). 예시·참고 그림은 구성 아이디어일 뿐 — 베끼지 말고 요청(무엇이 사는 굴인지·어디가 위험한지·무엇을 숨겼는지)에 맞게 방 수·자리·모양·물·길·입구 쪽을 새로 짠다. 검수는 예시·참고 그림과 거의 같은 맵, 그리고 흔한 십자 공식(입구 한쪽 끝 · 가운데 회랑 · 양옆 곁굴 · 반대쪽 끝 보스)을 반복으로 친다.",
   };
 }
@@ -266,14 +291,14 @@ async function examplePicture(env: PiAssistantV2Env, type: DungeonType, design: 
   try { env.ctx.project = scratch.project; return await env.render(mapId, 0, 0, m.width, m.height); } catch { return undefined; } finally { env.ctx.project = keep; }
 }
 
-export function createDungeonPartsVerb(env: PiAssistantV2Env, places?: () => Iterable<PlaceRecord>): PiToolShape {
+export function createDungeonPartsVerb(env: PiAssistantV2Env, places?: () => Iterable<PlaceRecord>, nonce = 0): PiToolShape {
   const pictures = new Map<string, string>();
   return {
     name: "dungeon_parts", label: "던전 재료 보기", concurrency: "shared",
     description: "Call before designing a dungeon/cave floor yourself (make_place spec.dungeonDesign). Returns that theme's vocabulary for room shapes, roles, water, features and link shapes; four sample designs with different skeletons (one with a picture built by the current builder); and human-picked Beodeul dungeon reference pictures (composition ideas — do not copy). Samples are only references — compose room count, spots, shapes and paths fresh for the request.",
     parameters: { type: "object", properties: { theme: { type: "string", description: "dungeon theme word — e.g. 동굴 cave, 화산 volcano, 마계 demon realm, 숲 forest, 지하묘지 catacombs" } }, required: ["theme"] },
     async execute(_id, params) {
-      const gameKey = String(env.request.projectKey ?? env.ctx.project.meta.title ?? "");
+      const gameKey = `${String(env.request.projectKey ?? env.ctx.project.meta.title ?? "")}|${nonce}`;
       const out = dungeonParts(String((params as { theme?: string }).theme ?? "cave"), gameKey, places ? dungeonContext(places(), "") : "");
       const result = text({ ok: true, ...out, how: "make_place({spec:{type:'cave'|'dungeon', name, theme, dungeonDesign:{entrance, rooms:[{id, role, size, shape, dir?, at, water?, features?}], links:[{from,to,kind?}]}}}). 방마다 at 을 서로 다르게, 입구 하나·보스 하나. 함수는 겹침·길·도달·크기 모순만 고쳐 「고침:」으로 알린다." });
       // 그림은 한 장으로 합친다(참고 그림 둘 + 첫 예시를 지금 빌더로 지은 그림, 반 크기로 나란히).
