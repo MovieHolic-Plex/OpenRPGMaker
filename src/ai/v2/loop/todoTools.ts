@@ -15,6 +15,7 @@ import { callKey, effectFingerprint, maskVolatile, type TodoLoop } from "./conti
 import { bindRefs, changedSince, checkItem, indexProject, isAmbiguous, refsFromDiff, refsLabel } from "./refs";
 import { HookStats } from "./hookStats";
 import { isRegistryTool, preCheck, retryCandidates } from "./argGuard";
+import { covers, requestSkeleton, type SkeletonElement } from "./requestSkeleton";
 import { formatCall, nextAfterFailure, nextForItem, strategyAfterRepeat, type NextCall } from "./nextCall";
 
 const text = (value: unknown): PiToolExecResult => ({ content: [{ type: "text", text: typeof value === "string" ? value : JSON.stringify(value) }] });
@@ -117,7 +118,27 @@ function runCheck(env: PiAssistantV2Env, store: TodoStore, item: TodoItem): Chec
 /** 「모호함」 판정에 붙이는 한 줄 — 후보 id 는 판정 글에 있다. */
 export const BIND_HINT = (id: string) => `→ 후보 중 이 항목이 가리키는 것을 todo(op:"bind", task:"${id}", mapId|eventId|itemId|troopId:<id>)로 묶고 다시 done 한다.`;
 
-export function createTodoTool(env: PiAssistantV2Env, store: TodoStore, state: TodoToolsState, verbNames: ReadonlySet<string>): PiToolShape {
+/** H1 요청 뼈대 맞추기: 모델 목록(added)이 덮지 못한 확인 요소를 «요청 뼈대» 단계로 덧붙이고, 다시 init 해 이제 덮인 뼈대 항목은 뺀다. 돌려주는 값: 결과에 붙일 한 줄. */
+export function applySkeleton(env: PiAssistantV2Env, store: TodoStore, hooks: HookStats, added: readonly TodoItem[]): string | undefined {
+  if (!isWriteRequest(env.request)) return undefined;
+  const els = requestSkeleton(env.request.task).filter((e) => e.check);
+  if (!els.length) return undefined;
+  const model = store.items.filter((i) => i.source === "model");
+  for (const item of store.items) {
+    const key = store.meta.get(item.id)?.key;
+    if (!key?.startsWith("skeleton:") || !isOpen(item.status)) continue;
+    const el = els.find((e) => skeletonKey(e) === key);
+    if (el && covers(model, el)) store.drop(item, "조수 목록이 이 요소를 덮는다", "auto");
+  }
+  const missing = els.filter((e) => !covers(model, e));
+  const opened = store.append("요청 뼈대", missing.map((e) => ({ content: `[요청 뼈대] ${e.content}`, check: e.check!, key: skeletonKey(e) })), "gate");
+  if (!opened.length) return undefined;
+  hooks.fire("skeleton", `조수 목록이 빠뜨린 요청 요소 ${opened.length}개 덧붙임: ${opened.map((i) => i.content).join(" · ").slice(0, 300)}`, { items: opened.map((i) => ({ id: i.id, content: i.content, check: i.check })), modelItems: added.length });
+  return `[요청 뼈대] 요청 글에 있는데 목록에 없는 요소 ${opened.length}개를 덧붙였다: ${opened.map((i) => `${i.id} «${i.content.replace("[요청 뼈대] ", "")}»(${checkLabel(i.check)})`).join(" · ")} — 이 항목도 끝내야 완료다.`;
+}
+const skeletonKey = (e: SkeletonElement) => `skeleton:${e.check?.kind}:${JSON.stringify(e.check)}`;
+
+export function createTodoTool(env: PiAssistantV2Env, store: TodoStore, state: TodoToolsState, verbNames: ReadonlySet<string>, hooks: HookStats = new HookStats()): PiToolShape {
   const done = (summary: string, ok = true, extra: Record<string, unknown> = {}): PiToolExecResult => text({ ok, summary, ...extra, list: store.view() });
   return {
     name: "todo", label: "할 일", concurrency: "exclusive", description: TODO_TOOL_DESCRIPTION,
@@ -153,10 +174,11 @@ export function createTodoTool(env: PiAssistantV2Env, store: TodoStore, state: T
           }).filter((ph) => ph.items.length);
           if (!phases.length) { result = done("목록이 비었다 — list:[{phase, items:[{content, check}]}] 로 적는다", false); break; }
           const added = store.init(phases);
+          const skeletonNote = applySkeleton(env, store, hooks, added);
           const unchecked = added.filter((i) => !i.check || i.check.kind === "none").length;
           const first = store.current();
           env.emit({ type: "execution_status", name: "v2.todo.init", ok: true, summary: `할 일 ${added.length}개(기계 확인 ${added.length - unchecked})`, data: { items: added.map(({ id: iid, content, check }) => ({ id: iid, content, check })) } });
-          result = done(`할 일 ${added.length}개를 적었다${unchecked ? ` (기계 확인 없는 항목 ${unchecked}개 — 확인할 수 있으면 check 를 달아 append 로 다시)` : ""}. ${first ? `${first.id} «${first.content}» 를 진행 중으로 올렸다 — 이 응답에서 바로 동사로 진행한다.` : ""}`, true, warnings.length ? { warnings } : {});
+          result = done(`할 일 ${added.length}개를 적었다${unchecked ? ` (기계 확인 없는 항목 ${unchecked}개 — 확인할 수 있으면 check 를 달아 append 로 다시)` : ""}. ${first ? `${first.id} «${first.content}» 를 진행 중으로 올렸다 — 이 응답에서 바로 동사로 진행한다.` : ""}${skeletonNote ? `\n${skeletonNote}` : ""}`, true, warnings.length ? { warnings } : {});
           break;
         }
         case "append": {
@@ -326,6 +348,7 @@ export function withTodoLoop(env: PiAssistantV2Env, store: TodoStore, loop: Todo
           return text({ ok: false, summary: `[할 일 먼저] 쓰기 전에 todo(op:"init")로 요청 전체를 단계별 항목으로 적는다(항목마다 check). 같은 응답에서 이어 이 ${tool.name} 호출을 다시 한다.` });
         }
         store.init([{ phase: "요청", items: [{ content: `요청 전체: ${env.request.task.trim().slice(0, 160)}` }] }]);
+        applySkeleton(env, store, hooks, []);
         env.emit({ type: "execution_status", name: "v2.todo.auto_init", ok: false, summary: "조수가 할 일 목록을 두 번 거르고 쓰기를 불러 — 요청 한 줄로 목록을 대신 적었다" });
       }
       const key = callKey(tool.name, params);
@@ -439,5 +462,5 @@ export function withTodoLoop(env: PiAssistantV2Env, store: TodoStore, loop: Todo
       return notes.length ? withNote(result, notes.join("\n")) : result;
     },
   });
-  return [createTodoTool(env, store, state, verbNames), ...tools.map(wrap)];
+  return [createTodoTool(env, store, state, verbNames, hooks), ...tools.map(wrap)];
 }

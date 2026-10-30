@@ -407,6 +407,9 @@ salt 를 찾아(무작위 salt 를 고정해 몇 번 지어 본다) 같은 마�
 - **문 잇기 자리 옮기기**(`game.ts withTransferRelocation`): v2 의 `create_transfer_pair` 가 doorAt 모양 어긋남·문앞 막힘·도착 칸 겹침으로 거절되면 거절된 끝(그래도 안 되면 두 끝)의 doorAt 을 빼고 다시 불러 걸어 닿는 가장 가까운 칸에 잇는다(편집기 도구의 «문을 옆 칸으로 대신 잇지 않는다» 계약은 그대로, v2 감싸개만). terra boss-room r1~r3 저장본 셋 모두 link ✓ 로 재현.
 - **대사 판정**(`todo/checks.ts checkTalk`): refs 로 묶인 이벤트 하나는 이름이 안 맞아도 골라지지만, 그때는 그 이벤트 대사에 그 인물이 말하는 줄(speaker·「이름: …」 머리)이 있어야 ✓.
 - **갈고리(2026-10-30, 싼 모델 terra 기준 — `loop/hookStats.ts`, 발화마다 `v2.hook.<이름>` 상태, 끝 `v2.summary` data.hooks 에 수)**:
+  - H1 요청 뼈대(`loop/requestSkeleton.ts`): 요청 글에서 낱말 규칙으로 필수 요소를 뽑는다 — 「X가 말을 걸/나타나/경고/맞이」→인물+대사, 「X를 만나/심문」·「X와 흥정/대화」→인물+대사, 「X와 싸우/X를 쓰러뜨리」→인물, 싸우·전투·몬스터·관장전→전투(보스·관장전·마왕 상대면 boss, «쓰러뜨린 뒤»류 지난 일은 뺀다), 엔딩→엔딩(«X로 돌아와» 맵), 「X를 주는/받는」→지급.
+    목록을 적기 전 호출에는 상태 카드로 뼈대를 보이고(`v2.hook.skeleton_card`), init(또는 자동 init) 뒤 모델 목록이 덮지 못한(같은 확인 종류+이름 맞음, 전투·엔딩은 종류만) 요소를 «요청 뼈대» 단계 gate 항목(열쇠 skeleton:…)으로 덧붙인다(`skeleton`). 다시 init 해 덮이면 그 항목은 뺀다.
+    장소·이동·합류·증거·갈림길·상자·다리·흥정처럼 이름을 모델이 정하거나 확인 종류가 없는 요소는 덧붙이지 않고 카드의 «잊지 말 것» 줄에만 둔다(동료 합류는 확인 종류가 없다).
   - H2 인자 검사·보정(`loop/argGuard.ts`, 감싸개가 모든 동사 실행 전에): 레지스트리 도구의 선택 칸 중 빈 글·빈 배열·null·잎이 다 기본값인 객체를 걷어 낸다(terra 는 스키마의 모든 칸을 기본값으로 채웠다 — patrol.directions:[]·graphic{…""}·members:[]·referencePurpose:"").
     규칙 표 `PRE_RULES`(도구 거절 글에서 뽑음): create_transfer_pair doorAt=출입구 칸 → 걸을 수 있는 쪽으로 doorAt=(x,y-1) 또는 출입구=(doorAt.x,doorAt.y+1), 둘 다 안 되면 doorAt 뺌 ·
     place_field_enemy 보초에 patrol 뺌 · upsert_troop 적이 비면 이름 맞는 적 하나(하나뿐일 때, 아니면 돌려보냄+후보) · 이벤트 id 가 그 맵에 없으면 다른 맵에 하나뿐일 때 맵을, 이벤트 이름이면 id 로(아니면 돌려보냄+그 맵 이벤트 목록) ·

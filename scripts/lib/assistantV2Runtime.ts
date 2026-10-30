@@ -17,6 +17,7 @@ import type { PiAssistantV2Env } from "../../src/ai/v2/env.ts";
 import { adviseTurn, scopeAdviceToRequest, withShipBlockers, advisorSummary, compactToolLog, summarizeProjectDiff, type AdvisorToolCall, type AdvisorVerdict } from "../../src/ai/v2/advisor.ts";
 import { withTodoLoop, isWriteRequest } from "../../src/ai/v2/loop/todoTools.ts";
 import { formatCall, nextForItem } from "../../src/ai/v2/loop/nextCall.ts";
+import { requestSkeleton, skeletonCard } from "../../src/ai/v2/loop/requestSkeleton.ts";
 import { continuationPrompt, projectFingerprint, textHash, STOP_REASON_KO } from "../../src/ai/v2/loop/continuation.ts";
 import { splitPreexisting, syncGateItems } from "../../src/ai/v2/loop/gates.ts";
 import { TODO_MAX_ATTEMPTS, checkLabel, isOpen } from "../../src/ai/v2/loop/todoStore.ts";
@@ -184,6 +185,7 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
   let pendingBrief: string | undefined;
   let freshNext = false;
   let reinjections = 0;
+  let skeletonShown = false;
   const writeRequest = isWriteRequest(request);
   /** 이 실행에 노출한 동사·도구 이름 — 관문 항목이 이르는 도구가 없으면 그 항목은 돌리지 않는다. */
   const toolNames = new Set<string>();
@@ -318,7 +320,13 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
       // H6 상태 카드(src/ai/v2/loop/contextTrim.ts 와 함께): 호출마다 마지막 메시지 끝에만 붙는 짧은 카드 — 진척 줄·지금 할 것+다음 호출·그 항목의 마지막 ✗.
       // 오래된 도구 결과가 줄어도 할 일과 마지막 실패는 매 호출 눈앞에 있다. 대화 기록에는 남지 않는다.
       stateCard: (env) => {
-        if (!store.items.length) return undefined;
+        if (!store.items.length) {
+          // H1: 목록을 적기 전 호출에는 요청 뼈대 카드(함수가 요청 글에서 뽑은 필수 요소)를 보인다.
+          if (!writeRequest) return undefined;
+          const card = skeletonCard(requestSkeleton(env.request.task));
+          if (card && !skeletonShown) { skeletonShown = true; env.emit({ type: "execution_status", name: "v2.hook.skeleton_card", ok: true, summary: card.slice(0, 400) }); }
+          return card;
+        }
         const cur = store.next();
         const lines = [`[상태 카드 — 이 호출에만] ${store.view(0).split("\n")[0]}`];
         if (cur) {
