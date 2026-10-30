@@ -340,4 +340,14 @@ describe("DB write tools", () => {
     expect(result.summary).toContain("skillId does not exist");
     expect(result.issues?.some((issue) => issue.code === "reference-validation")).toBe(true);
   });
+
+  it("upsert_enemy accepts a record copied from an existing enemy (legacy graphicHue/flying dropped with a note)", () => {
+    const ctx: ToolContext = { project: createBlankProject() };
+    const src = ctx.project.database.enemies[0]!;
+    const copy = { ...structuredClone(src), id: "enemy_copy_test", name: "복사본" };
+    const result = runTool(ctx, "upsert_enemy", { enemy: copy }, { dryRun: false });
+    expect(result.ok, JSON.stringify(result.issues)).toBe(true);
+    expect(ctx.project.database.enemies.some((entry) => entry.id === "enemy_copy_test")).toBe(true);
+    expect(JSON.stringify(result.warnings ?? result.issues ?? [])).toMatch(/graphicHue/);
+  });
 });
