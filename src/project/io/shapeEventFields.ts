@@ -530,7 +530,8 @@ function validatePageShape(label: string, value: unknown): void {
   if (movement.pathfind !== undefined) requireBoolean(`${label}.movement.pathfind`, movement.pathfind);
   if (movement.sightAlert !== undefined) {
     const alert = requireRecord(`${label}.movement.sightAlert`, movement.sightAlert);
-    requireString(`${label}.movement.sightAlert.emote`, alert.emote);
+    // emote null = 말풍선 없이 멈춤만(호러).
+    if (alert.emote !== null) requireString(`${label}.movement.sightAlert.emote`, alert.emote);
     const holdMs = requireNumber(`${label}.movement.sightAlert.holdMs`, alert.holdMs);
     assert(Number.isFinite(holdMs) && holdMs >= 0 && holdMs <= 5000, `${label}: 시야 놀람 멈춤은 0~5000ms`);
   }
@@ -549,6 +550,23 @@ function validatePageShape(label: string, value: unknown): void {
   }
   if (movement.chaseBrain !== undefined) {
     assert(isChaseBrain(movement.chaseBrain), `${label}: 추격 성격은 ${CHASE_BRAINS.join("|")}`);
+  }
+  if (movement.quietBreath !== undefined) requireBoolean(`${label}.movement.quietBreath`, movement.quietBreath);
+  if (movement.footsteps !== undefined) {
+    const steps = requireRecord(`${label}.movement.footsteps`, movement.footsteps);
+    requireString(`${label}.movement.footsteps.se`, steps.se);
+    if (steps.everySteps !== undefined) {
+      const n = requireNumber(`${label}.movement.footsteps.everySteps`, steps.everySteps);
+      assert(Number.isInteger(n) && n >= 1 && n <= 8, `${label}: 발소리 everySteps 는 1~8`);
+    }
+    if (steps.radius !== undefined) {
+      const r = requireNumber(`${label}.movement.footsteps.radius`, steps.radius);
+      assert(r >= 2 && r <= 30, `${label}: 발소리 radius 는 2~30칸`);
+    }
+    if (steps.volume !== undefined) {
+      const v = requireNumber(`${label}.movement.footsteps.volume`, steps.volume);
+      assert(v >= 0 && v <= 1, `${label}: 발소리 volume 은 0~1`);
+    }
   }
   if (movement.pursuit !== undefined) {
     const pursuit = requireRecord(`${label}.movement.pursuit`, movement.pursuit);
@@ -571,6 +589,9 @@ function validatePageShape(label: string, value: unknown): void {
       for (const dir of requireArray(`${label}.interaction.directions`, interaction.directions)) validateDir(label, dir);
     }
     if (interaction.sound !== undefined) requireString(`${label}.interaction.sound`, interaction.sound);
+    for (const key of ["enterSe", "exitSe", "heldSe"] as const) {
+      if (interaction[key] !== undefined) requireString(`${label}.interaction.${key}`, interaction[key]);
+    }
   }
   validateCommandArray(`${label}.commands`, page.commands);
 }

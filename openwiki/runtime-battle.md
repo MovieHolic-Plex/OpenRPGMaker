@@ -1,3 +1,18 @@
+## 상태 배지 글자는 저작 상태 이름 · 승리 띠·명령 질문은 용어 (2026-10-30)
+
+한국어 측면 전투에서 마비 배지가 「PAR」, 승리 띠와 질문 줄은 고칠 수 없는 고정 글자였다.
+
+- **상태 배지**: 글자는 원래 `03-vxace-status-nodes.css` 의 토큰별 `::before { content: "PAR" }` 였다(토큰은 `battleFieldDom.stateIconToken` 이 상태 id 로 고른다).
+  이제 `statusIconCluster` 가 저작 상태 이름에서 `stateBadgeLabel`(`src/player/battleStatusLabel.ts`)로 짧은 글자를 뽑아 `data-status-label` 에 싣고,
+  CSS `.battle-status-icon[data-status-label]::before { content: attr(data-status-label) }` 가 토큰 약어를 이긴다(명시도 0,2,1 > 0,1,1).
+  규칙: 이름이 4글자 이하면 그대로(「마비」「독」), 한글·한자·가나가 든 긴 이름은 첫 낱말 3글자까지(「마비 상태」→「마비」), 긴 라틴 이름(「Paralysis」)은 비워서 CSS 약어(PAR)가 남는다.
+  능력 증감(`*-up`/`*-down`, 화살표가 뜻)과 전투불능(`death`)은 이 규칙을 타지 않는다. 런타임은 i18n DOM 번역을 받지 않으므로(게임 글자는 저작물) 게임의 언어 = 저작한 상태 이름이다.
+- **승리 띠** `meta.terms.battleVictory`(기본 「승리!」) — `battleDom.showFinaleStamp`. 에메랄드 화면에는 띠가 없다. 「전멸…」은 아직 고정 글자다.
+- **명령 질문 줄** `meta.terms.battleCommandPrompt`(기본 「{name은} 무엇을 할까?」) — `battleDirectorDom.commandPromptState` 가 `formatBattleCommandPrompt`(`src/project/terms.ts`)로 채운다.
+  `{name}` = 이름 그대로, `{name은}`·`{name이}`·`{name을}` = 받침에 맞춘 조사. 포켓몬 화면은 이름 자리표시자 바로 뒤 첫 빈칸이 줄바꿈이 된다 — 기본값에서 예전 글자와 한 글자도 다르지 않다.
+- 편집: 자료집 「용어 → 전투」(명령 질문·승리 띠, 미리보기 포함). 조수: `set_project_settings` 의 `terms.battleVictory`·`terms.battleCommandPrompt`(문자열, 설명 달림 — 빈 문자열은 무시).
+- 시험: `test/battleTermsAndStatusLabels.test.ts`.
+
 ## 기술 목록에 기본 공격(skill_attack)을 싣지 않는다 (2026-10-29)
 
 `battleCommandDom.ts` `listedSkillIds` 는 사람 배우의 기술 목록에서 `skill_attack`(이름 「공격」)을 뺀다 — 「공격」 명령과 같은 것이다.
@@ -41,8 +56,14 @@
 (`BATTLE_GROUP_IMPACT_STAGGER_MS = 0` — 30ms 타이머 간격은 부하에서 49~144ms 로 벌어져 차례로 맞는 것처럼 보였다).
 메시지는 「적 N체에게 합계 X 피해! 약점을 찔렀다!」 한 줄, 쓰러짐은 「A, B, C을 쓰러뜨렸다!」 한 줄, 상태는 종류별 한 줄(`playGroupStates`).
 `battleDom` 은 `onImpactGroup` 으로 맞는 대상 전체를 `hitTargetIds` 로 표시하고 히트스톱 해제 때 모두 깜빡인다.
-**단일 대상 경로는 그대로다** — `planEntryBeats` 로 뽑아낸 같은 박자를 쓴다. 에메랄드 문장 경로(`emeraldNarrationActive`)와
-보조형 광역(「action」 항목)은 묶지 않는다(차례 재생, 알려진 한계).
+**단일 대상 경로는 그대로다** — `planEntryBeats` 로 뽑아낸 같은 박자를 쓴다. 에메랄드 문장 경로(`emeraldNarrationActive`)는 묶지 않는다.
+
+**광역 보조기 묶음 (2026-10-30, 이세계 고딩 리뷰).** 파티 전체 버프처럼 피해 0 보조 기술(「action」 항목)은 런타임이 대상마다
+`[action, stateAdded…]` 를 적어서, 대상마다 「…을 사용했다!」·시전 동작·상태 문장이 따로 돌았다(넷 버프 약 4.2초).
+`collectSupportGroup` 이 같은 행동(actionId·쪽·사용자·명령·기술, 피해 0·명중)의 action 이 서로 다른 대상 둘 이상이면 그 사이의 상태 부여·해제까지 한 묶음으로 잡고,
+`playSupportGroup` 이 선언 한 줄·시전 박자 한 번 → `playGroupStates` 로 같은 상태끼리 한 줄(「강민재, 에델, 피오의 공격이 올랐다!」, 대상 위 글자는 함께) →
+아무것도 안 붙은 대상만 끝에 한 줄(「…은 이미 공격 상승 상태다.」/「…에게는 효과가 없었다.」)로 돈다. 특수 결과(special)·피해가 끼면 묶음을 거기서 끊는다.
+보조기 밖에서도 같은 행동의 같은 상태 부여·해제가 서로 다른 대상에 연달아 오면(`collectStateRun`, 쓰러진 대상의 해제는 건너뜀) 한 줄로 묶는다 — 승리 직후 「강민재, 에델, 피오, 꾸르의 공격 상승이 풀렸다.」가 대상마다 네 줄로 돌던 것.
 
 **숫자 꼬리표 (`battleFieldDom.showDamageFeedback`).** 팝업 앞에 `.battle-damage-popup-tag` — 치명타! · 약점! · 저항 · 무효 · 무기↑.
 `data-effectiveness` 로 약점(주황)·저항 색. 레트로 스킨 덮어쓰기는 `27-retro-motion.css`.
@@ -836,6 +857,7 @@ SQLite 저장소를 자동 변경하는 이관은 수행하지 않는다.
   stateAdded 는 `DamageFeedback.label` 팝업(숫자 경로 재사용, `battle-damage-popup-status`, battleDom 이 원장·타격·효과음을 건너뜀)으로 상태 이름이 떠오른다.
   이미 걸린 상태라 새로 안 붙었으면 「…은 이미 프로텍트 상태다.」(실패 아님). gen1 주요 상태가 서로 달라 안 붙었으면(화상 중에 마비 등) 「…은 이미 화상 상태다.」— 「효과가 없었다」로 읽히면 기술이 빗나간 것처럼 보인다. 피해 기술의 부가 실패는 이 문장을 쓰지 않는다. 훔치기처럼 action 없이 special 한 줄만 남기는 명령은
   명령 대사가 그 엔트리를 차지해 결과가 사라졌다 → 명령 줄 뒤에 special 줄을 따로 읽힌다(`specialAfterCommand`).
+  **막힌 기술의 한 줄 도움말 (2026-10-30):** 질문 줄 자리의 한 줄 도움말(`syncBattleSkillHintLine`)은 막힌 기술이면 사유를 **앞에** 둔다 — 「이미 공격 상승 · MP4 · 아군 전체 · 공격 상승」. 사유를 뒤에 붙이면 창을 넘쳐 말줄임으로 「왜 못 쓰나」가 잘렸다.
   **헛차례 막기 (2026-10-30, 이세계 고딩 첫인상 리뷰):** 상태 부여는 이미 걸린 상태의 지속 차례를 늘리지 않으므로(`applyStateEffects`) 위 문장이 나오는 차례는 그냥 사라진다. 순수 보조 기술(효과 support·상태 add 만·능력치 단계/날씨/기믹 없음)이 고를 수 있는 모든 대상에게 이미 다 걸려 있으면 기술 메뉴가 회색(inert)+사유 「이미 공격 상승」으로 막고, 아군 대상 행에도 같은 메모가 붙으며, 자동 전투의 남는 기술 고르기(`fallbackLearnedSkill`)도 건너뛴다 — 판정 `src/battle/battleSkillRedundancy.ts`.
   **결과 상자·적 이름표 자리 (같은 날):** 결과 상자는 가운데에 뜨되 아군 몸통을 덮으면 적 쪽으로 `translate` 만큼 비킨다(`battleResultPlacement.ts`, 측면 대각선의 뒷줄 주인공이 사라져 보였다). 저작 승리 ME 가 없을 때 합성 팡파레는 약 2.4초. 적 이름표(`.battle-enemy-chrome`)는 도트 측면 진형 벌리기 상자에 함께 들어가고(겹침 허용 0), 이름표 아래끝이 전장 보이는 아래끝 4px 위에 오도록 적을 올린다(`enemyPlateFloors`, 노드마다 한 번 재서 `data-plate-drop-px` 에 적는다).
   배지는 스냅샷이 아니라 **재생된 타임라인** 기준 — `stateView` 가 아직 재생 안 한 stateAdded/Removed 를 되감아 「걸렸다!」 비트에 붙는다.
@@ -2414,3 +2436,14 @@ retro2003 sideview 의 명령 창은 `data-look-command`(actor 156px · keys 152
 - **기록** `PlaySession.knownWeaknesses` (적 레코드 id → key → 배율). `playSceneBattle` 이 `session.knownWeaknesses ??= {}` 객체를 `sessionState.knownWeaknesses` 로 넘기고 전투가 **그 객체에 직접** 적는다 — 보상 정산을 거치지 않으므로 져도 도망쳐도 남는다. 세이브 슬롯이 저장·복원한다(`saveSlots.ts`, 검증 `isKnownWeaknessesRecord` — 유한한 배율, 흡수처럼 음수도 포함). PP 검증(`isActorSkillPpRecord`, 0 이상)으로 읽으면 흡수 칸 하나가 장부 전체를 버린다. 세션이 없으면 그 전투만의 장부.
 - **공개 설정** `system.battleStaging.revealWeakness`: never · afterDiscovery(기본) · always. 대상 고르기(`battleDom.syncWeaknessReveal`, 명령 패널을 만들 때마다)가 지금 명령(통상 공격 = 무기 속성·물리, 기술 = 속성·statistic 으로 물리/마법)의 `revealedEffectiveness` 를 적마다 구해 적 노드 위 칩(`battle-weakness-reveal`)과 대상 목록 줄 이름 옆(`.battle-weakness-row`)에 「약점」·「저항」·「무효」를 단다. afterDiscovery 는 아는 칸만 곱한다. 스냅샷 `knownWeaknesses` 가 그 객체다.
 - QA: `fallen-battle-depth.json` `weakness-discovery`(첫 대상 고르기 칩 없음 `measureLayout reveal-before: null` → 화염검 「약점 발견!」 → 다음 화염검 대상 고르기 칩·목록 「약점」).
+
+## 효과음 자리 — 세션 → 프로젝트 표 → 기본 (2026-10-30)
+
+전투·메뉴·필드 효과음은 사건마다 **자리**(`project.system.seCues`, `runtime-project-schema.md` 「효과음 자리 표」)를 찾는다. 순서: 세션 덮어쓰기(m2 「시스템 효과음 바꾸기」, 13자리만) → 프로젝트 자리 표 → 옛 저작 칸(메뉴 소리 `meta.oprnMenuSounds`·타이틀 소리·패배/도주 SE) → 몬스터 세트·내장 RTP 기본 → 합성. **자리 표가 빈 프로젝트는 소리가 바뀌지 않는다.**
+
+- 전투(`battleJuice.authoredBattleCue`): 사건 → 자리 목록 `SE_CUES`. 새 사건 `hit-actor`(아군이 맞음 → `actorDamage` → `damage`)·`boss-collapse`(쓰러짐 연출 `bossSink` 인 적 → `bossCollapse` → `faint`). 몬스터 세트는 두 사건을 `hit-damage`·`faint` 와 같게 친다. 포켓몬 피해 박자(`playPokemonDamagePhase`)는 그대로 `hit-damage`.
+- 기술 시전(`battleJuice.playSkillCastCue`, 명령 확정 순간): 속성 → `magic-<속성>`(`magicCueForElement`, 기본 속성 id·한국어 이름) → `cast`. 속성이 없어도 마력 계열(statistic mind)·마법 속성이면 `cast`. **자리 표에 소리가 있을 때만** 울린다 — 기술 애니메이션 소리는 그대로다.
+- 메뉴(`runtimeJuice.emitRuntimeJuice` 의 `cue`): 저장 `save`, 불러오기 `load`, 장비·해제 `equip`, 아이템 사용 `useItem`, 상점 거래 `shop`, 메뉴 열기 `menuOpen` → 사건의 기본 자리(confirm…). 자리마다 세션 → 표 순.
+- 그 밖(`player/seCuePlayback.playProjectSeCue`, 표에 있을 때만): 레벨 업 창 `levelUp`(없으면 합성), 아이템 늘리기 명령 `itemGet`(없으면 몬스터 세트), 전투 진입 `battleStart`(몬스터 전환음 대신), 문 `door`·`doorClose`(내장 CC0 문 소리 대신), 궤짝 뒤지기 `chest`, 「+ 아이템」 떠오름 `itemGet`.
+- **발소리**(`player/footsteps.ts`): 한 칸을 다 걸은 뒤(비행선·탈것 제외) 그 칸 지형 기록의 `footstepSoundResourceId` → 지형 이름이 가리키는 `footstep-<표면>`(`footstepCueForTerrain`) → 무음. 180ms 안에 한 번, 효과음 채널 크기의 45%. 예전에는 지형 발소리 칸이 저장만 되고 런타임이 틀지 않았다.
+- 자료집: 시스템 → 「전투 오디오」 아래 「효과음 자리 · 메뉴·화면/전투/마법·상태/필드·문」(`databaseSeCueTable.ts`).

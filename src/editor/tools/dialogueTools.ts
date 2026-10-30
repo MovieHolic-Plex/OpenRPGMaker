@@ -248,6 +248,20 @@ function resolveEditTarget(project: Project, story: () => Story, index: number, 
   return { id, hash };
 }
 
+/**
+ * rewrite_dialogue 의 edits 한 칸({ref 또는 id, hash, …})이 가리키는 지금 줄. 못 찾으면 undefined(던지지 않는다).
+ * 실행기의 완성 뒤 윤문 고리(src/ai/piAgent/dialoguePolishHook.ts)가 「조수가 이번 실행에 쓴 줄인가」를 이것으로 가른다.
+ */
+export function resolveDialogueEditLine(project: Project, record: Record<string, unknown>): DialogueLine | undefined {
+  try {
+    let story: Story | undefined;
+    const { id } = resolveEditTarget(project, () => (story ??= buildStory(project, { fresh: true })), 0, record);
+    return collectDialogueLinesCached(project).get(id);
+  } catch {
+    return undefined;
+  }
+}
+
 const lineMaps = new WeakMap<Project, Map<string, DialogueLine>>();
 function collectDialogueLinesCached(project: Project): Map<string, DialogueLine> {
   let map = lineMaps.get(project);

@@ -12,6 +12,7 @@ import { resolveBattleFanfare, type ResolvedBattleFanfare } from "@/project/batt
 import type { Project, SkillRecord } from "@/project/types";
 import { el } from "@/util/dom";
 import { playBattleSfx } from "@/player/battleSfx";
+import { playProjectSeCue } from "@/player/seCuePlayback";
 
 export function battleFanfareFor(project: Project): ResolvedBattleFanfare {
   return resolveBattleFanfare(project.system.battleFanfare);
@@ -152,5 +153,5 @@ export function playFanfareCue(windowNode: HTMLElement, fanfare: ResolvedBattleF
   if (!fanfare.sound) return;
   const kind = windowNode.dataset.fanfareKind;
   if (kind === "skill" || kind === "combo") playBattleSfx(kind === "combo" ? "combo" : "skillLearned");
-  else if (kind === "levelUp") playBattleSfx("levelUp");
+  else if (kind === "levelUp" && !playProjectSeCue("levelUp")) playBattleSfx("levelUp");
 }

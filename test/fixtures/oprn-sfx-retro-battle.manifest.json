@@ -1,0 +1,372 @@
+{
+ "schema": "oprn-store-pack/1",
+ "title": "OPRN SFX — Retro Chip Battle Hits Vol.1",
+ "summary": "45 retro chip sound effects for RPG battle hits — 15 cues, up to 3 variants, loudness-matched OGG.",
+ "description": "45 sound effects (15 cues, up to 3 variants each) in a consistent 8/16-bit console-style chip sounds: pulse and triangle waves, stepped volume, crushed noise. Silence-trimmed, loudness-matched per cue, peaks at -1 dBFS, OGG Vorbis 44.1 kHz.\nEvery sound is tagged with the engine cue it is made for (meta.oprnSound.slots), so the editor assistant can wire a whole set in one step.\n\nCues: battleStart, attack, attack-blunt, attack-pierce, attack-claw, damage, actorDamage, critical, miss, defend, faint, bossCollapse, escape, defeat, cast\n\nMade by code-based procedural synthesis — no samples, no recordings. OPRN procedural SFX.\n\nLicense summary: free to use, modify and ship in any game, commercial included; no resale or redistribution of the raw files as a sound library.",
+ "tags": [
+  "sfx",
+  "sound",
+  "효과음",
+  "procedural",
+  "retro",
+  "battle",
+  "hit",
+  "전투",
+  "칩튠",
+  "8bit"
+ ],
+ "kind": "sound",
+ "license": "OPRN-GAME",
+ "aiGenerated": false,
+ "credits": "OPRN 합성 효과음 (OPRN procedural SFX)",
+ "content": {
+  "assets": {
+   "oprn-sfx-retro-damage-a": {
+    "id": "oprn-sfx-retro-damage-a",
+    "name": "적 피해 A (레트로 칩)",
+    "kind": "sound",
+    "blob": "52c026d7dc634f7846642fe690152a71c099066ffa5cd969e114dce137fd8ed0",
+    "mime": "audio/ogg",
+    "meta": {
+     "oprnSound": {
+      "version": 1,
+      "slots": [
+       "damage"
+      ],
+      "group": "battle",
+      "style": "retro",
+      "set": "oprn-sfx-retro",
+      "variant": "a",
+      "mood": [
+       "punchy",
+       "impact"
+      ],
+      "intensity": 3,
+      "durationSec": 0.22,
+      "loopable": false,
+      "pairWith": [
+       "attack"
+      ],
+      "lufs": -15.0,
+      "summaryKo": "적 피해 — 레트로 칩 A안, 0.22초.",
+      "feelTags": [
+       "칩튠",
+       "8bit",
+       "16bit",
+       "레트로",
+       "적 피해",
+       "punchy",
+       "impact"
+      ],
+      "qa": {
+       "clapFit": 9.7,
+       "tech": 10.0,
+       "ear": null
+      }
+     }
+    },
+    "generation": {
+     "method": "procedural",
+     "engine": "OPRN SFX synth v2 (numpy, code-authored)"
+    }
+   },
+   "oprn-sfx-retro-damage-b": {
+    "id": "oprn-sfx-retro-damage-b",
+    "name": "적 피해 B (레트로 칩)",
+    "kind": "sound",
+    "blob": "c5af6f2cf358e596f94c9ca525b2c4d93f987210e1b49d4c7e740df4ed0eee98",
+    "mime": "audio/ogg",
+    "meta": {
+     "oprnSound": {
+      "version": 1,
+      "slots": [
+       "damage"
+      ],
+      "group": "battle",
+      "style": "retro",
+      "set": "oprn-sfx-retro",
+      "variant": "b",
+      "mood": [
+       "punchy",
+       "impact"
+      ],
+      "intensity": 3,
+      "durationSec": 0.22,
+      "loopable": false,
+      "pairWith": [
+       "attack"
+      ],
+      "lufs": -15.0,
+      "summaryKo": "적 피해 — 레트로 칩 B안, 0.22초.",
+      "feelTags": [
+       "칩튠",
+       "8bit",
+       "16bit",
+       "레트로",
+       "적 피해",
+       "punchy",
+       "impact"
+      ],
+      "qa": {
+       "clapFit": 9.7,
+       "tech": 10.0,
+       "ear": null
+      }
+     }
+    },
+    "generation": {
+     "method": "procedural",
+     "engine": "OPRN SFX synth v2 (numpy, code-authored)"
+    }
+   },
+   "oprn-sfx-retro-actorDamage-a": {
+    "id": "oprn-sfx-retro-actorDamage-a",
+    "name": "아군 피해 A (레트로 칩)",
+    "kind": "sound",
+    "blob": "0653f544c9aebca547936931f8385dd9bb7601a3ad9d95c9fcf54e7ccf473194",
+    "mime": "audio/ogg",
+    "meta": {
+     "oprnSound": {
+      "version": 1,
+      "slots": [
+       "actorDamage"
+      ],
+      "group": "battle",
+      "style": "retro",
+      "set": "oprn-sfx-retro",
+      "variant": "a",
+      "mood": [
+       "heavy",
+       "painful"
+      ],
+      "intensity": 3,
+      "durationSec": 0.32,
+      "loopable": false,
+      "pairWith": [],
+      "lufs": -15.0,
+      "summaryKo": "아군 피해 — 레트로 칩 A안, 0.32초.",
+      "feelTags": [
+       "칩튠",
+       "8bit",
+       "16bit",
+       "레트로",
+       "아군 피해",
+       "heavy",
+       "painful"
+      ],
+      "qa": {
+       "clapFit": 9.2,
+       "tech": 10.0,
+       "ear": null
+      }
+     }
+    },
+    "generation": {
+     "method": "procedural",
+     "engine": "OPRN SFX synth v2 (numpy, code-authored)"
+    }
+   },
+   "oprn-sfx-retro-miss-a": {
+    "id": "oprn-sfx-retro-miss-a",
+    "name": "빗나감·회피 A (레트로 칩)",
+    "kind": "sound",
+    "blob": "e3d9e50c25995c27b11bbd15c8dec2dbc9ef9004e4ca29264868fde47305c870",
+    "mime": "audio/ogg",
+    "meta": {
+     "oprnSound": {
+      "version": 1,
+      "slots": [
+       "miss",
+       "evasion"
+      ],
+      "group": "battle",
+      "style": "retro",
+      "set": "oprn-sfx-retro",
+      "variant": "a",
+      "mood": [
+       "light",
+       "swift"
+      ],
+      "intensity": 2,
+      "durationSec": 0.18,
+      "loopable": false,
+      "pairWith": [],
+      "lufs": -18.0,
+      "summaryKo": "빗나감·회피 — 레트로 칩 A안, 0.18초.",
+      "feelTags": [
+       "칩튠",
+       "8bit",
+       "16bit",
+       "레트로",
+       "빗나감·회피",
+       "light",
+       "swift"
+      ],
+      "qa": {
+       "clapFit": 7.6,
+       "tech": 10.0,
+       "ear": null
+      }
+     }
+    },
+    "generation": {
+     "method": "procedural",
+     "engine": "OPRN SFX synth v2 (numpy, code-authored)"
+    }
+   },
+   "oprn-sfx-retro-faint-a": {
+    "id": "oprn-sfx-retro-faint-a",
+    "name": "적 쓰러짐 A (레트로 칩)",
+    "kind": "sound",
+    "blob": "ecf09b98ed68b27657eff296c752bd3cb36441b091e94f3dd754a75b4491ad87",
+    "mime": "audio/ogg",
+    "meta": {
+     "oprnSound": {
+      "version": 1,
+      "slots": [
+       "faint",
+       "collapse"
+      ],
+      "group": "battle",
+      "style": "retro",
+      "set": "oprn-sfx-retro",
+      "variant": "a",
+      "mood": [
+       "fading",
+       "defeat"
+      ],
+      "intensity": 3,
+      "durationSec": 0.7,
+      "loopable": false,
+      "pairWith": [],
+      "lufs": -16.0,
+      "summaryKo": "적 쓰러짐 — 레트로 칩 A안, 0.70초.",
+      "feelTags": [
+       "칩튠",
+       "8bit",
+       "16bit",
+       "레트로",
+       "적 쓰러짐",
+       "fading",
+       "defeat"
+      ],
+      "qa": {
+       "clapFit": 7.1,
+       "tech": 10.0,
+       "ear": null
+      }
+     }
+    },
+    "generation": {
+     "method": "procedural",
+     "engine": "OPRN SFX synth v2 (numpy, code-authored)"
+    }
+   },
+   "oprn-sfx-retro-cast-a": {
+    "id": "oprn-sfx-retro-cast-a",
+    "name": "스킬 시전 A (레트로 칩)",
+    "kind": "sound",
+    "blob": "00676d51d8310af182d509095cf4682e6296c7d55ad70c1e01319d84c8f87897",
+    "mime": "audio/ogg",
+    "meta": {
+     "oprnSound": {
+      "version": 1,
+      "slots": [
+       "cast"
+      ],
+      "group": "battle",
+      "style": "retro",
+      "set": "oprn-sfx-retro",
+      "variant": "a",
+      "mood": [
+       "magical",
+       "rising"
+      ],
+      "intensity": 3,
+      "durationSec": 0.4,
+      "loopable": false,
+      "pairWith": [],
+      "lufs": -18.0,
+      "summaryKo": "스킬 시전 — 레트로 칩 A안, 0.40초.",
+      "feelTags": [
+       "칩튠",
+       "8bit",
+       "16bit",
+       "레트로",
+       "스킬 시전",
+       "magical",
+       "rising"
+      ],
+      "qa": {
+       "clapFit": 9.4,
+       "tech": 10.0,
+       "ear": null
+      }
+     }
+    },
+    "generation": {
+     "method": "procedural",
+     "engine": "OPRN SFX synth v2 (numpy, code-authored)"
+    }
+   }
+  },
+  "tilesets": {},
+  "characters": [],
+  "objects": []
+ },
+ "previews": [],
+ "blobs": [
+  {
+   "sha256": "52c026d7dc634f7846642fe690152a71c099066ffa5cd969e114dce137fd8ed0",
+   "mime": "audio/ogg",
+   "bytes": 8201
+  },
+  {
+   "sha256": "c5af6f2cf358e596f94c9ca525b2c4d93f987210e1b49d4c7e740df4ed0eee98",
+   "mime": "audio/ogg",
+   "bytes": 8041
+  },
+  {
+   "sha256": "0653f544c9aebca547936931f8385dd9bb7601a3ad9d95c9fcf54e7ccf473194",
+   "mime": "audio/ogg",
+   "bytes": 9462
+  },
+  {
+   "sha256": "e3d9e50c25995c27b11bbd15c8dec2dbc9ef9004e4ca29264868fde47305c870",
+   "mime": "audio/ogg",
+   "bytes": 7451
+  },
+  {
+   "sha256": "ecf09b98ed68b27657eff296c752bd3cb36441b091e94f3dd754a75b4491ad87",
+   "mime": "audio/ogg",
+   "bytes": 16214
+  },
+  {
+   "sha256": "00676d51d8310af182d509095cf4682e6296c7d55ad70c1e01319d84c8f87897",
+   "mime": "audio/ogg",
+   "bytes": 11450
+  }
+ ],
+ "locales": {
+  "ko": {
+   "title": "OPRN 효과음 — 레트로 칩 전투 타격 1집",
+   "summary": "RPG 전투 타격 효과음 45개(15칸, 칸마다 최대 3안). 칸마다 엔진 신호 이름을 달아 에디터 조수가 한 번에 연결합니다.",
+   "description": "8·16비트 콘솔풍 칩 소리 — 펄스·삼각파, 계단식 음량, 거칠게 깎은 잡음. 같은 화풍 한 벌이라 섞어 써도 결이 맞습니다. 앞뒤 무음을 자르고 칸마다 음량을 맞췄습니다(피크 -1dB, OGG).\n에디터 조수에게 「메뉴 효과음 레트로로 바꿔줘」처럼 말하면 이 팩의 칸 이름으로 찾아 연결합니다.\n\n- 전투 시작 (battleStart) × 3\n- 공격(베기) (attack) × 3\n- 공격(타격) (attack-blunt) × 3\n- 공격(찌르기·화살) (attack-pierce) × 3\n- 공격(할퀴기) (attack-claw) × 3\n- 적 피해 (damage) × 3\n- 아군 피해 (actorDamage) × 3\n- 치명타 (critical) × 3\n- 빗나감·회피 (miss) × 3\n- 방어 (defend) × 3\n- 적 쓰러짐 (faint) × 3\n- 보스 쓰러짐 (bossCollapse) × 3\n- 도망 (escape) × 3\n- 전멸·패배 (defeat) × 3\n- 스킬 시전 (cast) × 3\n\n코드 합성으로 만든 OPRN 합성 효과음입니다(녹음·샘플 없음). 게임 안에서는 상업용 포함 자유롭게 쓸 수 있고, 소리 파일만 따로 다시 파는 것은 안 됩니다."
+  },
+  "en": {
+   "title": "OPRN SFX — Retro Chip Battle Hits Vol.1",
+   "summary": "45 retro chip RPG sound effects (15 cues, up to 3 variants), tagged with engine cue names for one-step wiring.",
+   "description": "8/16-bit console-style chip sounds: pulse and triangle waves, stepped volume, crushed noise. One consistent set, silence-trimmed and loudness-matched (OGG, -1 dBFS peak). Cues: battleStart, attack, attack-blunt, attack-pierce, attack-claw, damage, actorDamage, critical, miss, defend, faint, bossCollapse, escape, defeat, cast. Code-synthesized OPRN procedural SFX (no samples). Free to use in games; no resale of the raw files."
+  },
+  "ja": {
+   "title": "OPRN 効果音 — レトロチップ バトル打撃 Vol.1",
+   "summary": "RPG用効果音45個（15種、各最大3案）。エンジンの合図名付きで、エディタのアシスタントが一度に設定できます。",
+   "description": "統一された一式の効果音です。前後の無音を削り、音量をそろえました（OGG、ピーク-1dB）。合図: battleStart, attack, attack-blunt, attack-pierce, attack-claw, damage, actorDamage, critical, miss, defend, faint, bossCollapse, escape, defeat, cast。コード合成によるOPRN合成効果音（サンプル不使用）。ゲーム内では商用含め自由に使えます。音源単体の再配布・販売は不可。"
+  },
+  "zh": {
+   "title": "OPRN 音效 — 复古芯片 战斗打击 第1辑",
+   "summary": "RPG 音效 45 个（15 种，每种最多 3 版），标注引擎信号名，编辑器助手可一步接好。",
+   "description": "风格统一的一套音效，已去除首尾静音并统一响度（OGG，峰值 -1dB）。信号：battleStart, attack, attack-blunt, attack-pierce, attack-claw, damage, actorDamage, critical, miss, defend, faint, bossCollapse, escape, defeat, cast。代码合成的 OPRN 合成音效（无采样）。可在游戏中免费使用（含商用），不得单独转售或再分发音频文件。"
+  }
+ }
+}

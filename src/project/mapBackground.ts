@@ -174,6 +174,7 @@ function normalizeMapBackgroundLayer(value: unknown): MapBackgroundLayer | undef
   const scrollY = normalizeMapBackgroundScroll(record.scrollY);
   const fit = normalizeMapBackgroundFit(record.fit);
   const cameraFollow = normalizeMapBackgroundCameraFollow(record.cameraFollow);
+  const offsetY = normalizeMapBackgroundOffset(record.offsetY);
   return {
     imageId: fromMap ? "" : imageId,
     ...(fromMap ? { fromMap } : {}),
@@ -183,7 +184,16 @@ function normalizeMapBackgroundLayer(value: unknown): MapBackgroundLayer | undef
     ...(record.loopY === false ? { loopY: false } : {}),
     ...(fit !== undefined ? { fit } : {}),
     ...(cameraFollow !== undefined ? { cameraFollow } : {}),
+    ...(offsetY !== undefined ? { offsetY } : {}),
   };
+}
+
+/** 층 세로 자리(논리 px). 0·잘못된 값은 생략(undefined), ±MAP_BACKGROUND_OFFSET_LIMIT 로 자른다. */
+export const MAP_BACKGROUND_OFFSET_LIMIT = 2000;
+export function normalizeMapBackgroundOffset(value: unknown): number | undefined {
+  if (typeof value !== "number" || !Number.isFinite(value)) return undefined;
+  const clamped = Math.round(Math.min(MAP_BACKGROUND_OFFSET_LIMIT, Math.max(-MAP_BACKGROUND_OFFSET_LIMIT, value)));
+  return clamped === 0 ? undefined : clamped;
 }
 
 /** 추가 레이어 목록 정리. 유효한 레이어가 없으면 필드 자체를 생략한다(레거시 JSON 바이트 유지). */

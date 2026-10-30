@@ -42,6 +42,10 @@ Phaser 에 실린 텍스처와 파일이 같다는 가정이 맞는지 확인하
 - **안내 표시 끄기(2026-10-30):** `system.fieldGuides: "off"`(조수 `set_project_settings({fieldGuides:"off"})`)면 `updateFieldStaging` 이 목표 빛무리·화살표, 조사 ▼, 출구 「→ 목적지」 글자를
   그리지 않고 남은 것을 걷는다(`clearFieldGuides`). 저자가 단 `page.glow`·`nearSparkle` 은 남는다. 장면이 스스로 길을 보여 주는 이야기 게임(마왕 편의점 「너무 친절함 … 화살표 짜증남」)용.
   `databaseRecordModel` 화이트리스트에 넣어 저장/로드 왕복에서 살아남는다.
+  **중간값 `"arrows"`(2026-10-30 사용자 「화살표만 남겨줘도 충분히 친절」):** 목표 빛무리·화살표와 ▼ 는 끄고(`clearFieldGuides(scene,{keepExits:true})`),
+  출구에는 `syncExitLabels(...,{arrowOnly:true})` 로 목적지 이름 없이 화살표 글자 하나만 띄운다. 방향은 `exitArrowGlyph` —
+  맵 가장자리에 붙은 출구는 그 가장자리 쪽(↓↑←→), 건물 문(`map.doors` 위 칸)은 늘 ↑, 그 밖의 맵 안 출구는 주인공에게서 출구 쪽(위아래 먼저 — 옆에서 다가와도 문 화살표가 ←가 되지 않게). 편집기 「시스템 → 필드 안내 표시」(`fieldGuidesField`)와
+  `set_project_settings({fieldGuides:"on"|"arrows"|"off"})` 가 같은 값을 쓴다.
   **길 잇기(2026-10-29 vm2 jrpg 「길 못 찾음」)**: 지금 맵에서 그 맵으로 바로 가는 문이 없으면 `mapRoute`(옮기기 이벤트로 이은 가장 짧은 맵 경로)의
   첫 맵으로 가는 문을 짚는다. 꼬리 「→」 뒤(「(숲 입구: 북쪽 → 숲 통과)」·「(마을 입구: 남쪽 → 마왕의 동굴 · 마왕 처치)」)는 그 뒤 대상이다 —
   그 이름의 이벤트가 지금 맵에 있으면 그것, 아니면 그 맵으로 가는 첫 출구. 글에 나온 다른 맵도 같은 첫 출구 규칙.
@@ -1025,6 +1029,7 @@ Do not use matching map IDs or a canvas-export PNG alone as evidence for Phaser 
 - **반복하지 않는 축은 카메라를 따라가지 않는다**(`playSceneMapBackground.placeMapBackgroundLayer`): `cameraFollow` 는 두 축에 같이 걸리는데,
   그림 한 장짜리 축(지평선 loopY:false)이 따라가면 위로 걸을 때 그림이 내려가 위쪽에 검은 띠가 생기고, 실루엣 층은 맵 바닥선을 떠나 아래 채움 줄이 드러났다
   (출하 플레이어 실측). 이제 깊이는 반복하는 축에만 적용 — 지평선은 가로 시차만, 세로는 화면 고정. 편집기 탭 미리보기는 원래 가로로만 흔든다.
+- **세로 한 장 층은 카메라 세로 이동을 따라간다 — `pinY` (2026-10-30)** (`playSceneMapBackground` extra 층 `loopY:false` → `pinY:true`): 화면 고정이던 지평선 띠가 대사 카메라 들림(`syncDialogueCameraLift`)·위아래 걷기에서 맵과 따로 놀아 옥상 난간 위 하늘 한가운데에 거리 띠가 떠 보였다(첫사랑 옥상). 이제 세로는 맵과 1:1 로 붙는다(가로 시차는 그대로). 층 `offsetY`(논리 px, + = 아래, ±2000, `normalizeMapBackgroundOffset`)로 지평선을 난간 높이에 앉힌다.
 - **남은 한계:** `show_map_region` 은 배경을 그리지 못해(설계상 거부) 조수가 배경을 눈으로 검수하지 못한다 — 생성 도구는 그림을 첨부해 대신한다.
   Pi 경로는 되묻기를 건너뛰므로(`executionRoute.ts clarifyBypassed`) 「배경 좀 예쁘게」 는 묻지 않고 해석한다. 칸을 비운 가장자리는 여전히 각지다. 견본 바다·구름 바다는 흐릿한 얼룩 질감이고 노을 견본의 해는 7줄 바닥선에 반쯤 잘린다(견본 그림 문제, 이번 변경 밖). 다리 상판 타일(버들항 3640)은 자기 그림에 물이 있어 다리 밑으로 배경이 비치지 않는다.
 
@@ -1179,6 +1184,18 @@ QA 근거와 재실행: `scripts/qa/runtime/dialogue-frame-fixture.mts`(데모�
 `DFRAME_STYLE`/`DFRAME_VN` 또는 같은 픽스처의 `system.dialogueStyle`·`meta.oprnVnLook` 만 바꾼 사본 + `DFRAME_FAST=1`.
 `DFRAME_SCENE=door`(천문대 철문 칸에서 화자 → 잠긴 문 안내)·`letterbox`(광장 컷신 그대로). 영상: `QA_RECORD_VIDEO=<폴더>`(runtime-qa.mjs, 컨텍스트 녹화) + `DFRAME_VIDEO=1`, `<out>-t0.json` 으로 자른다(영상 시각 ≈ performance.now + 0.75초). 오버레이의
 `data-dialogue-position-reason`(portrait·session·fixed·auto:0.25·previous-box)이 자리를 정한 근거다. 저작 쪽 경고는 `scene-dialogue-position-jump`(`scenePolishLint.ts`).
+
+### 초상이 준비된 뒤에 창을 연다 · 양쪽 초상이면 선택지는 가운데 (2026-10-30, 이세계 고딩 리뷰)
+
+- **이름표만 있는 빈 창.** 흉상은 그림(또는 에메랄드 도트 변환본)이 풀릴 때까지 `visibility:hidden` 이었다(`renderFace` → `applyPixelBust` onReady).
+  새 표정·새 인물 줄마다 그림을 처음 받는 동안 창은 이름표만 보였고(부하 없는 탐침에서도 줄마다 120~330ms, 부하 녹화에서는 약 1초), 본문 흘림도 같이 늦게 보였다.
+  이제 `showText` 가 창을 만들기 **전에** 그 줄의 초상(화자 `request.face`·표정 변형 `faceForDialogueEmotion`·`listenerFace`) 중 아직 안 받은 것을 기다린다
+  (`unsettledLinePortraits` → `waitForLinePortraits`, 흉상은 `bustPixelate.preloadPixelBust`(받기+`decode()`+변환), 48px 얼굴은 `imageWarmQueue.warmImageUrl`, 상한 1.5초·중단 신호 존중).
+  기다리는 동안 앞 줄의 창은 퇴장하지 않고 그대로 선다(`holdPendingExit` — 세션·듣는 사람 무대가 끊기지 않는다). 목소리도 창과 함께 시작한다.
+  이미 풀린 흉상은 `applyPixelBust` 가 마이크로태스크에서 붙여 첫 페인트부터 보인다. 단위 테스트(`import.meta.env.VITEST`)·그림을 못 받는 환경은 옛 동기 경로 그대로다.
+- **선택지가 듣는 사람 흉상을 덮음.** 오른쪽 흉상이 선 틀이면 선택지 칸이 왼쪽으로 비켰는데, 왼쪽에 듣는 사람 흉상이 있으면 그 사람을 덮었다.
+  틀에 양쪽 초상이 다 있으면(`.choices-frame.has-portrait-listener`) 선택지 칸은 가운데에 서고 폭은 양옆 흉상 자리(`--runtime-dialogue-bust-width` + 26px)만큼 비운다(`dialogue.css` 「고정 틀 선택지」).
+- 탐침(커밋 안 함): 구운 데모 + `qaCheckpoint` 로 옥좌 앞 대사·선택지를 돌리며 rAF 마다 이름표·얼굴 보임·본문 글자 수와 선택지/흉상 사각형을 적는다.
 
 ## 엔딩 카드 글자는 게임 언어 (2026-10-22)
 

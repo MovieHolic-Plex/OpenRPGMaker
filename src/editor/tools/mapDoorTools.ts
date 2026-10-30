@@ -54,6 +54,29 @@ export function recordDoorForGate(project: Project, map: GameMap, gate: Cell): {
   return { door, widened: widenDoorTriggers(project, map, door.rect) };
 }
 
+/**
+ * 문 앞 칸 gate 의 이동 이벤트를 문에 묶는다 — 이벤트는 문 칸에 서고(막힌 칸이면 같은 층 부딪힘), 그 문으로 나오는 도착은 문 앞 칸(gate)에
+ * 문을 등지고 선다. 왜: 문 앞 칸을 밟는 순간 옮기면 「문 앞에 서자마자 이동」이다(2026-10-30 사용자). 문 칸 이벤트는 문 앞에서
+ * 문 쪽으로 걸어 들어갈 때만 발동하고, 런타임이 문을 열고 문간으로 한 걸음 들어간 뒤 옮긴다(project/doorEntries.ts).
+ * 문: doorAt(문 앞 칸과 맞닿은 칸) 또는 gate 바로 위의 문 그림(mapDoorKinds.inferMapDoor — 통로·아치·계단 같은 문짝 없는 출구는 빼고).
+ * 문 칸에 이미 다른 이벤트가 있거나 문이 없으면 null(옛 발판 그대로).
+ */
+export function bindGateToDoor(project: Project, map: GameMap, gate: Cell, doorAt?: Cell, ignoreIds: ReadonlySet<string> = new Set()): { door: Cell; landing: Cell; bump: boolean; direction: "up" | "down" | "left" | "right" } | null {
+  const inside = (c: Cell) => c.x >= 0 && c.y >= 0 && c.x < map.width && c.y < map.height;
+  let door: Cell | null = null;
+  if (doorAt && inside(doorAt) && Math.abs(doorAt.x - gate.x) + Math.abs(doorAt.y - gate.y) === 1) door = doorAt;
+  else if (!doorAt) {
+    const inferred = inferMapDoor(project, map, gate);
+    const bottom = inferred ? inferred.rect.y + inferred.rect.h - 1 : -1;
+    if (inferred && inferred.kind !== "none" && bottom === gate.y - 1 && gate.x >= inferred.rect.x && gate.x < inferred.rect.x + inferred.rect.w) door = { x: gate.x, y: bottom };
+  }
+  if (!door) return null;
+  if ((map.events ?? []).some((e) => e.x === door!.x && e.y === door!.y && !ignoreIds.has(e.id))) return null;
+  const dx = gate.x - door.x, dy = gate.y - door.y;
+  const direction = dy > 0 ? "down" : dy < 0 ? "up" : dx > 0 ? "right" : "left";
+  return { door, landing: gate, bump: !isPassable(project, map, door.x, door.y), direction };
+}
+
 export function doorLine(door: InferredMapDoor): string {
   return `${door.kind}(${door.rect.w}×${door.rect.h}, (${door.rect.x},${door.rect.y}))`;
 }
