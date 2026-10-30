@@ -28,6 +28,8 @@ export interface DungeonDesignRoom {
   readonly water?: string;
   /** stalagmites 석순 무리 · crystals 수정 · mushrooms 빛 버섯 · bones 뼈 더미 · pillars 부러진 돌기둥 · boulders 바위 · camp 모닥불 야영 흔적 · bridge(물줄기가 지나면 다리). */
   readonly features?: readonly string[];
+  /** 높이 단: 0 바닥(기본) · 1 한 단 높은 굴 · 2 두 단. 높이가 다른 방 사이 길에는 버들항 돌계단(마을 지형과 같은 bd-mpart-stairs 화소)을 놓는다. */
+  readonly level?: number | string;
 }
 export interface DungeonDesignLink { readonly from?: string; readonly to?: string; readonly kind?: string }
 export interface DungeonDesign {
@@ -36,9 +38,9 @@ export interface DungeonDesign {
   readonly links?: readonly (DungeonDesignLink | readonly string[] | string)[];
   /** links 를 안 줄 때 방 순서대로 잇는 모양: linear 한 줄 · branch 갈래 · loop 고리 · hub 가운데 방에서 사방. */
   readonly connections?: string;
-  /** 입구가 맵의 어느 쪽: south(기본)·north·west·east. 입구 방에 at 이 없으면 이 쪽에 둔다. 숲·늪은 이 쪽 맵 끝으로 나가는 길이 출구다. */
+  /** 입구가 맵의 어느 쪽(south·north·west·east) — 플레이어가 들어오는 길 쪽. 없으면 입구 방 자리(at)에서 읽는다. 숲·늪은 이 쪽 맵 끝으로 나가는 길이 출구다. */
   readonly entrance?: string;
-  /** 높이 단 — 던전은 아직 짓지 못한다(무시하고 알린다). */
+  /** (옛 형식) 방 id → 높이 단. 방마다 level 을 주는 것이 기본. */
   readonly levels?: unknown;
 }
 
@@ -56,6 +58,7 @@ const ROOM_SCHEMA: JsonSchema = {
     at: { type: "string", description: "맵 안 자리 — n·ne·e·se·s·sw·w·nw·center 또는 \"x,y\"(0~1, 왼쪽 위 0,0). 방마다 다른 자리를 준다" },
     water: { type: "string", description: "none · pool 웅덩이 · lake 호수 · stream 다음 방으로 흐르는 물줄기(다리로 건넌다). 테마 액체로 칠한다(동굴·숲·늪 물, 화산 용암, 마계 허공)" },
     features: { type: "array", items: { type: "string" }, description: "stalagmites 석순 · crystals 수정 · mushrooms 빛 버섯 · bones 뼈 더미 · pillars 부러진 돌기둥 · boulders 바위 · camp 모닥불 야영" },
+    level: { type: "integer", description: "높이 단 0(바닥, 기본) · 1 한 단 높은 굴 · 2 두 단 — 높이가 다른 방 사이 길에 돌계단을 놓는다(턱 위 제단·내려다보는 둥지·물 아래 낮은 굴)" },
   },
 };
 export const DUNGEON_DESIGN_SCHEMA: JsonSchema = {
@@ -65,7 +68,7 @@ export const DUNGEON_DESIGN_SCHEMA: JsonSchema = {
     rooms: { type: "array", items: ROOM_SCHEMA, description: "방 2~12개(입구 하나·보스 하나 포함). 방 수·크기·자리는 네가 정한다" },
     links: { type: "array", items: { type: "object", properties: { from: { type: "string" }, to: { type: "string" }, kind: { type: "string", description: "winding 굽은 길(기본) · straight 곧은 길 · narrow 좁은 틈 · wide 넓은 길" } } }, description: "잇는 길(방 id 끼리). 고리(지름길)를 원하면 닫히는 길을 하나 더" },
     connections: { type: "string", description: "(links 를 안 줄 때) 방을 적은 순서로 잇는 모양: linear · branch · loop · hub" },
-    entrance: { type: "string", description: "입구가 맵의 어느 쪽: south · north · west · east" },
+    entrance: { type: "string", description: "입구가 맵의 어느 쪽 — 플레이어가 들어오는 길 쪽(마을 출구·세계 배치에 맞춘다): north · east · south · west" },
   },
 };
 
@@ -150,7 +153,7 @@ const normFeature = (v: unknown): string | undefined => {
   return undefined;
 };
 
-type Role = "entrance" | "boss" | "treasure" | "lake" | "camp" | "shrine" | "forge" | "hall" | "grotto";
+export type Role = "entrance" | "boss" | "treasure" | "lake" | "camp" | "shrine" | "forge" | "hall" | "grotto";
 const normRole = (v: unknown): Role => {
   const s = String(v ?? "").toLowerCase();
   if (/entr|start|입구|시작|들어/u.test(s)) return "entrance";
@@ -195,7 +198,18 @@ const normSide = (v: unknown): "south" | "north" | "west" | "east" | undefined =
   return undefined;
 };
 
-interface NRoom { id: string; role: Role; rx: number; ry: number; shape: DesignShape; dir: "ew" | "ns"; at?: [number, number]; water: Water; features: string[] }
+export interface NRoom { id: string; role: Role; rx: number; ry: number; shape: DesignShape; dir: "ew" | "ns"; at?: [number, number]; water: Water; features: string[]; level: number }
+/** 높이 단 읽기: 0~2(숫자·"1"·"high"·"높은"). 3 이상은 2로. */
+const normLevel = (v: unknown): number | undefined => {
+  if (v === undefined || v === null || v === "") return undefined;
+  if (typeof v === "number" && Number.isFinite(v)) return Math.max(0, Math.min(2, Math.round(v)));
+  const s = String(v).toLowerCase();
+  const n = Number(s); if (Number.isFinite(n)) return Math.max(0, Math.min(2, Math.round(n)));
+  if (/two|2|두|아주|높이\s*솟/u.test(s)) return 2;
+  if (/high|up|raised|ledge|위|높|턱|단/u.test(s)) return 1;
+  if (/low|ground|아래|낮|바닥/u.test(s)) return 0;
+  return undefined;
+};
 export interface NormalizedDesign { rooms: NRoom[]; links: { a: number; b: number; kind: LinkKind }[]; side: "south" | "north" | "west" | "east"; fixes: string[] }
 
 /**
@@ -228,7 +242,9 @@ export function normalizeDesign(design: DungeonDesign, profile: GrammarInfo): No
       if (k && !features.includes(k)) features.push(k);
       else if (!k) fixes.push(`고침: 방 ${id} 특징 「${String(f)}」을 몰라 뺐다 — 특징: ${Object.keys(DESIGN_FEATURES).join("·")}.`);
     }
-    return { id, role: normRole(r.role), rx, ry, shape, dir, at: readAt(r.at), water: profile.liquid || profile.id === "ice" ? water : "none", features };
+    const lvMap = design.levels && typeof design.levels === "object" && !Array.isArray(design.levels) ? (design.levels as Record<string, unknown>)[String(r.id ?? "")] : undefined;
+    const level = normLevel(r.level ?? lvMap) ?? 0;
+    return { id, role: normRole(r.role), rx, ry, shape, dir, at: readAt(r.at), water: profile.liquid || profile.id === "ice" ? water : "none", features, level };
   });
   // 역할 모순: 입구·보스는 하나씩. 없으면 자리로 정하고 알린다.
   let side = normSide(design.entrance) ?? "south";
@@ -307,11 +323,13 @@ export function normalizeDesign(design: DungeonDesign, profile: GrammarInfo): No
     deep.role = "boss";
     fixes.push(`고침: 보스 방이 없어 입구에서 가장 깊은 ${deep.id} 를 보스 방으로 삼았다.`);
   }
-  if (design.levels !== undefined) fixes.push("고침: 높이 단(levels)은 던전에서 아직 짓지 못해 한 단으로 지었다.");
+  // 높이 단: 입구 방이 기준(입구 계단·문이 그 단에 선다). 입구가 0 이 아니면 모두 그만큼 내린다.
+  const e0 = rooms[0]!.level;
+  if (e0 > 0) { for (const r of rooms) r.level = Math.max(0, r.level - e0); fixes.push(`고침: 입구 방 ${rooms[0]!.id} 이 높이 ${e0} 단이라 입구를 바닥(0)으로 두고 다른 방을 그만큼 내렸다.`); }
   return { rooms, links, side, fixes };
 }
 
-function bfsDepth(n: number, links: readonly { a: number; b: number }[]): number[] {
+export function bfsDepth(n: number, links: readonly { a: number; b: number }[]): number[] {
   const d = new Array<number>(n).fill(-1); d[0] = 0;
   const q = [0];
   for (let k = 0; k < q.length; k += 1) for (const l of links) {
@@ -324,7 +342,7 @@ function bfsDepth(n: number, links: readonly { a: number; b: number }[]): number
 // ---------------------------------------------------------------- 불규칙 문법: 설계대로 파기
 
 const MARGIN = 2;
-const KIND: Record<Role, DungeonRoomKind> = { entrance: "entrance", boss: "boss", treasure: "vault", lake: "lake", camp: "cavern", shrine: "grotto", forge: "forge", hall: "cavern", grotto: "grotto" };
+export const KIND: Record<Role, DungeonRoomKind> = { entrance: "entrance", boss: "boss", treasure: "vault", lake: "lake", camp: "cavern", shrine: "grotto", forge: "forge", hall: "cavern", grotto: "grotto" };
 
 /** 방 모양 → 그 방에 속하는 타원 잎 목록(중심 기준 상대). */
 function lobesOf(r: NRoom, random: () => number): { dx: number; dy: number; rx: number; ry: number }[] {
@@ -625,7 +643,7 @@ export function layoutDesignedBlob(spec: DungeonSpec, profile: GrammarInfo, desi
       id: i === 0 ? "entrance" : r.role === "boss" ? "boss" : r.role === "treasure" ? "vault" : r.id, kind: KIND[r.role],
       x: C[i]!.x + b.x0, y: C[i]!.y + b.y0, w: b.x1 - b.x0 + 1, h: b.y1 - b.y0 + 1,
       from: i === 0 ? null : parent === undefined ? "entrance" : parent === 0 ? "entrance" : rooms[parent]!.role === "boss" ? "boss" : rooms[parent]!.role === "treasure" ? "vault" : rooms[parent]!.id,
-      dir: null, depth: depth[i]!, ...(r.features.length ? { features: r.features } : {}),
+      dir: null, depth: depth[i]!, ...(r.features.length ? { features: r.features } : {}), ...(r.level ? { level: r.level } : {}),
     };
   });
   // 같은 id 가 둘이면(설계 id 가 entrance·boss·vault 와 겹침) 뒤를 바꾼다
@@ -701,7 +719,7 @@ function fillSmallWallIslands(g: Grid, maxArea: number): void {
 }
 
 /** 열린 칸 둘레로 맵을 줄인다(layoutBlob 과 같은 여백). */
-function cropToContent<T extends DungeonLayout & { grid: Grid }>(layout: T): T {
+export function cropToContent<T extends DungeonLayout & { grid: Grid }>(layout: T): T {
   const g = layout.grid;
   let x0 = g.W, y0 = g.H, x1 = -1, y1 = -1;
   for (let y = 0; y < g.H; y += 1) for (let x = 0; x < g.W; x += 1) if (g.floor[g.idx(x, y)]) { x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y); }
@@ -734,7 +752,7 @@ const RECT_SIZE: Record<string, [number, number]> = { small: [8, 6], medium: [11
  * 방+통로 던전: 설계의 방(역할·크기)·길·자리를 rooms 목록으로 옮긴다 — 첫 방 = 입구, from = 길로 이어진 앞 방(입구에서 가까운 쪽),
  * dir = 앞 방에서 이 방으로 가는 방향(두 방의 at 비교, 큰 축). 고리 길(나무 밖 길)은 layout loop 로만 그린다(알린다).
  */
-export function designToRooms(design: DungeonDesign, type: DungeonType, profile: GrammarInfo): { rooms: DungeonRoomInput[]; fixes: string[]; loop: boolean } {
+export function designToRooms(design: DungeonDesign, type: DungeonType, profile: GrammarInfo): { rooms: DungeonRoomInput[]; fixes: string[]; loop: boolean; levels: Record<string, number> } {
   const nd = normalizeDesign(design, profile);
   const fixes = nd.fixes.filter((f) => !/물|용암|웅덩이/u.test(f));
   const map = ROOM_ROLE_KIND[type] ?? {};
@@ -761,5 +779,7 @@ export function designToRooms(design: DungeonDesign, type: DungeonType, profile:
   if (nd.rooms.some((r) => r.shape !== "blob" && r.shape !== "ring")) fixes.push(`고침: ${profile.label} 은 네모 방+통로라 방 모양(cavern·long·shaft·twin)은 크기로만 옮겼다 — 고리(ring)는 팔각 방.`);
   if (nd.rooms.some((r) => r.water !== "none") && type !== "sewer") fixes.push(`고침: ${profile.label} 방에는 물을 설계대로 칠하지 못한다 — 잠긴 던전은 features 에 flooded.`);
   if (loop) fixes.push("고침: 나무 밖 길(고리)은 방+통로 던전에서 layout loop 의 지름길 하나로 그렸다.");
-  return { rooms, fixes, loop };
+  const levels: Record<string, number> = {};
+  nd.rooms.forEach((r, i) => { if (r.level) levels[idOf(i)] = r.level; });
+  return { rooms, fixes, loop, levels };
 }

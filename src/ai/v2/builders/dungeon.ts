@@ -155,6 +155,10 @@ export function dungeonArgs(spec: PlaceSpec, keepType?: DungeonType): DungeonPla
   }
   if (/torch|횃불|door|문\s*지정/.test(text)) warnings.push("조각(문·횃불) 지정은 못 한다 — 도구가 알아서 놓는다");
   for (const [key, value] of Object.entries(spec.hints ?? {})) {
+    // 스키마 칸을 0·빈 값으로 다 채우는 모델(terra)이 있다 — 빈 값은 「안 줬다」로 읽는다. 마을의 hints.layout(자리 객체)이 던전 layout(배치 가족 낱말)으로
+    // 넘어가 author_dungeon 인자 검증에 걸렸다(2026-10-30 dd1030 terra 같은 요청 3판 모두 실패).
+    if (value === "" || value === 0 || value === null || (typeof value === "object" && !Array.isArray(value))) continue;
+    if (value === false && !KNOWN_HINTS.has(key)) continue;
     if (!KNOWN_HINTS.has(key)) { warnings.push(`알 수 없는 hints.${key} 는 무시했다`); continue; }
     if (key === "variant" || key === "style") continue;
     if (key === "type" && !(TYPES as readonly string[]).includes(String(value))) { warnings.push(`알 수 없는 type ${String(value)} → ${type}`); continue; }
@@ -515,6 +519,11 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
     args.seed = base0 + (variant ?? 0) * 7919;
   }
   const base: Record<string, unknown> = { name: spec.name, ...args };
+  // 바깥 문 자리를 make_place·make_game 이 정해 주면(세계 방향 가장자리 길 칸) 짓기가 그 칸과 바로 잇는다 — 기본 출구(시작점 곁 갱구 자리)를 쓰지 않는다.
+  if (spec.gate && run.ctx.project.maps[spec.gate.fromMapId]) base.entrance = { fromMapId: spec.gate.fromMapId, x: spec.gate.x, y: spec.gate.y };
+  // 다시 짓기: 옛 바깥 문 칸에 짓기가 바로 잇는다(entrance) — 기본 출구 + 나중 create_transfer_pair 로 문이 둘 생기던 것.
+  else if (relink) base.entrance = { fromMapId: relink.fromMapId, x: relink.x, y: relink.y };
+  const gateAt = base.entrance as { x: number; y: number } | undefined;
   const firstCall = run.calls.length;
   const wanted = words(spec);
   const wantsFoes = args.populate !== false;
@@ -564,8 +573,10 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
     dropOldGate(trial);
     if (mapId) { base.mapId = mapId; base.rebuild = true; }
     result = exec(trial);
+    if (!result.ok && base.entrance) { warnings.push(`바깥 문 자리 (${gateAt!.x},${gateAt!.y}) 와 잇지 못해 기본 출구로 지었다`); delete base.entrance; result = exec(trial); }
     // 지운 바깥 문을 다시 지은 1층 입구와 다시 잇는다 — 짓기(make_game)가 처음 이은 방식(create_transfer_pair, 던전 쪽은 입구 칸) 그대로.
-    if (result.ok && relink) {
+    // 바깥 문 자리(entrance)를 짓기에 넘겼으면 짓기가 이미 이었다 — 또 이으면 문이 둘이 된다(2026-10-30 dd1030 opus 마을+동굴: (19,0)·(30,19)).
+    if (result.ok && relink && !base.entrance) {
       const d = (result.data ?? {}) as { floors?: string[]; entrance?: { x: number; y: number } };
       const first = d.floors?.[0];
       const fm = first ? trial.ctx.project.maps[first] : undefined;
@@ -580,6 +591,7 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
   } else {
     if (mapId) base.mapId = mapId;
     result = exec(run);
+    if (!result.ok && base.entrance) { warnings.push(`바깥 문 자리 (${gateAt!.x},${gateAt!.y}) 와 잇지 못해 기본 출구로 지었다`); delete base.entrance; result = exec(run); }
   }
   const data = (result.data ?? {}) as Record<string, unknown>;
   const floors = Array.isArray(data.floors) ? (data.floors as unknown[]).filter((f): f is string => typeof f === "string") : [];
@@ -588,7 +600,8 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
     if (refused) missing.push(`${type} 던전 그림이 이 칩셋에 없다 — 가장 가까운 대체: cave 동굴(type 을 cave 로 바꿔 다시 요청)`);
     return { ok: false, mapIds: [], summary: `던전 짓기 실패: ${result.summary}`, warnings: [...warnings, ...(result.issues ?? []).map((i) => i.message)], missingArt: missing, calls: run.calls.slice(firstCall), state: prev };
   }
-  warnings.push(...(result.warnings ?? []));
+  // 쓰기 도구의 경고(「고침:」 줄 포함)는 diff.warnings 로 온다 — result.warnings 만 읽어 설계 조화 보고가 조수에게 가지 않았다(2026-10-30).
+  warnings.push(...(result.warnings ?? []), ...((result as { diff?: { warnings?: string[] } }).diff?.warnings ?? []).filter((w) => !(result.warnings ?? []).includes(w)));
   // 도구가 손잡이로 못 하는 것: 층마다 보이는 적 수, 맨 안쪽 상자. 잡몹 그룹은 실제로 놓인 적에서 읽는다.
   const floorData = (Array.isArray(data.floorData) ? data.floorData : [data]) as Record<string, unknown>[];
   const project = into.ctx.project;

@@ -1,7 +1,7 @@
 // 코드 지형 그림 + 요약 → 실제 모델이 마을 자리(layout)를 고른다. 결과 layouts.json(village-code-terrain-probe.mts --layouts 입력).
 import fs from "node:fs";
 const R = new URL("../..", import.meta.url).pathname.replace(/\/$/, "");
-const { villageArgs, villageMapSize } = await import(`${R}/src/ai/v2/builders/village.ts`);
+const { villageArgs, villageMapSize, villageLayoutGuide } = await import(`${R}/src/ai/v2/builders/village.ts`);
 const { codeTerrainFor } = await import(`${R}/src/editor/tools/authorBeodeulTown.ts`);
 const { describeCodeTerrain } = await import(`${R}/src/editor/tools/beodeulTerrainGen.ts`);
 const { terrainPreviewPng } = await import(`${R}/src/editor/tools/beodeulTerrainPreview.ts`);
@@ -17,15 +17,15 @@ const ep = list.find((e) => (e.allowModels ?? []).includes(MODEL));
 const out: Record<number, any> = fs.existsSync(`${OUT}/layouts.json`) ? JSON.parse(fs.readFileSync(`${OUT}/layouts.json`, "utf8")) : {};
 await Promise.all(CASES.filter((c: any) => !only.length || only.includes(c.n)).map(async (c: any) => {
   const spec = { type: "village", ...c.spec };
-  const va: any = { ...villageArgs(spec as any).args, landform: c.landform, ...(c.settle ? { settle: c.settle } : {}) };
+  const va: any = { ...villageArgs(spec as any).args, ...(c.landform ? { landform: c.landform } : {}), ...(c.settle ? { settle: c.settle } : {}) };
   const [width, height] = villageMapSize(spec as any, va);
   const terrainSeed = c.seed + salt;
   const t = codeTerrainFor(String(va.theme ?? "river"), va, width, height, terrainSeed);
   const png = terrainPreviewPng(t, 8); fs.writeFileSync(`${OUT}/${c.n}-terrain.png`, png);
   const sys = "너는 RPG 마을 배치를 정하는 조수다. 땅은 코드가 만들었다. 그림(좌표 눈금: 위 x·왼쪽 y, 칸 단위, 단 번호가 클수록 높다, 검은 선=단 경계 절벽, 파랑=물, 흰 점=강 건널 자리)과 요약을 보고 마을 자리를 고른다.";
   const user = `요청: 「${c.ask}」 (마을 이름 ${c.spec.name}, ${width}×${height}).\n`
-    + "hints.layout 을 JSON 하나로만 답한다(설명 없이): {\"gather\":{\"x\":..,\"y\":..,\"plaza\":true|false},\"landmark\":{x,y},\"anchor\":{x,y},\"work\":{x,y},\"houses\":[{x,y}...3~12],\"fields\":[{x,y}...],\"exits\":[\"west\"|\"east\"|\"north\"|\"south\"]}.\n"
-    + "gather=모이는 곳(광장·우물), landmark=높은 단 넓은 터의 높은 곳 건물, anchor=여관·회관(모이는 곳 곁), work=일터, houses=집 가운데, fields=밭, exits=큰길이 나가는 가장자리 1~2개. 집 하나는 문 앞까지 약 5×6칸이라 집 가운데끼리 6칸 이상 띄우고(큰 건물은 8칸), 한 단 평지에(단 경계 검은 선을 걸치지 않게), 물(파랑) 위는 안 된다. 요청 성격에 맞게 고르되 그림의 땅을 살려라.\n"
+    + "hints.layout 을 JSON 하나로만 답한다(설명 없이): {\"gather\":{\"x\":..,\"y\":..,\"plaza\":true|false},\"landmark\":{x,y},\"anchor\":{x,y},\"work\":{x,y},\"houses\":[{x,y,kind:\"small\"|\"medium\"|\"large\"}...3~12],\"fields\":[{x,y}...],\"orchards\":[{x,y}...],\"pastures\":[{x,y}...],\"forests\":[{x,y}...],\"props\":[{x,y}...],\"exits\":[\"west\"|\"east\"|\"north\"|\"south\"]}.\n"
+    + villageLayoutGuide(String(va.theme ?? "river"), va.fishing === true, va.form === "scatter") + " 요청 성격에 맞게 고르되 그림의 땅을 살려라.\n"
     + `요약: ${JSON.stringify(describeCodeTerrain(t))}`;
   const body = { model: MODEL, messages: [{ role: "system", content: sys }, { role: "user", content: [{ type: "text", text: user }, { type: "image_url", image_url: { url: `data:image/png;base64,${Buffer.from(png).toString("base64")}` } }] }], temperature: 0.7 };
   for (let tries = 0; tries < 3; tries += 1) {

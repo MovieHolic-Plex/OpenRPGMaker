@@ -20,6 +20,8 @@ import { DungeonComposeError } from "../errors";
 import { WALL_ROWS, hash01, rng, vnoise } from "../grid";
 import { layoutBlob, layoutMaze } from "../layouts";
 import { designToRooms } from "../designLayout";
+import { layoutDesignedMaze } from "../designMaze";
+import { dungeonReliefStyle, planDungeonRelief } from "../reliefPlan";
 import { layoutDungeon } from "../layoutRooms";
 import { buildMask } from "../mask";
 import { PROFILES, TK, type KitPref } from "./profiles";
@@ -122,10 +124,11 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
   const specT: DungeonSpec = { ...spec, type };
   // 방+통로 문법에 조수 설계가 오면 rooms 로 옮긴다(designLayout.ts) — 고친 것은 notes 로 warnings 에 실린다.
   const designed = profile.grammar === "rooms" && spec.design && !spec.rooms?.length ? designToRooms(spec.design, type, profile) : undefined;
-  const layout = profile.grammar === "maze" ? layoutMaze(specT) : profile.grammar === "blob" ? layoutBlob(specT, profile)
+  const layout = profile.grammar === "maze" ? (spec.design ? layoutDesignedMaze(specT, profile, spec.design) : layoutMaze(specT)) : profile.grammar === "blob" ? layoutBlob(specT, profile)
     : designed ? (() => { const l = layoutDungeon({ ...specT, rooms: designed.rooms, ...(designed.loop ? { layout: "loop" as const } : {}) }); return { ...l, notes: [...designed.fixes, ...l.notes] }; })()
     : layoutDungeon(specT);
-  if (profile.grammar === "maze" && spec.design) layout.notes.push("고침: 미궁은 갈림길 격자라 방 설계(dungeonDesign)를 쓰지 않았다 — 설계대로 지으려면 type 을 cave·catacomb 등으로.");
+  // 방+통로 문법: 설계한 높이 단을 지은 방 id 에 옮긴다
+  if (designed) for (const r of layout.rooms) { const lv = designed.levels[r.id]; if (lv) r.level = lv; }
   const seed = spec.seed ?? 7;
   const random = rng(seed);
   const kits = new Map<string, StructureKitDef>((ts.structureKits ?? []).map((kit) => [kit.id, kit]));
@@ -559,11 +562,17 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
     }
   }
 
+  const counts: Record<string, number> = {};
+  // ---- 높이 단(설계한 rooms[].level, reliefPlan.ts): 통로 높이 채우기 + 경계마다 곧은 돌계단 한 줄. 계단·층계참 칸은 장식·이벤트 자리에서 뺀다. ----
+  const reliefPlan = !voidLiquid && !rings.length ? planDungeonRelief(W, H, floorMask, roomAt, liquid, bridge, doorstep, rooms, outdoor ? 0 : WR) : undefined;
+  if (rooms.some((r) => (r.level ?? 0) > 0) && !reliefPlan) warnings.push(voidLiquid ? "고침: 마계(허공 사이 떠 있는 땅)는 높이 단을 그릴 수 없어 한 단으로 지었다." : "고침: 탑 링 방이 있는 층은 높이 단을 그릴 수 없어 한 단으로 지었다.");
+  if (reliefPlan) { warnings.push(...reliefPlan.fixes); if (reliefPlan.stairs) counts["relief-stairs"] = reliefPlan.stairs; }
+
   // ---- 장식 ----
   const pseudo = { id: "compose", name: "compose", width: W, height: H, tilesetId: ts.id, events: [], lowerTiles: lower, upperTiles: upper } as unknown as GameMap;
-  const counts: Record<string, number> = {};
   if (rings.length) counts["tower-ring"] = rings.length;
   const blocked = new Uint8Array(W * H);
+  if (reliefPlan) for (const c of reliefPlan.reserved) blocked[c] = 1;
   // 바닥 그림(모자이크 의식 원·깔개처럼 1층에만 그린 키트) 칸 — 내려가는 계단이 의식 원 한가운데에 박혔다(2026-10-28 지하묘지 2층).
   const decal = new Uint8Array(W * H);
   /** 계단 자리 후보에서 바닥 그림을 건드리는 칸(세 칸 사방)을 뒤로 — 자리가 그것뿐이면 그래도 놓는다(층이 끊기지 않게). */
@@ -1116,6 +1125,8 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
     reservedFront.add(idx(st.front.x, st.front.y));
     blocked[idx(st.front.x, st.front.y)] = 0;
   }
+  // 높이 단 돌계단·층계참도 같은 규칙(걷는 바닥, 이벤트 자리 아님)
+  if (reliefPlan) for (const c of reliefPlan.reserved) { reservedFront.add(c); blocked[c] = 0; }
   const en = entryStair as DungeonStairCell | null;
   const entranceGuess = en ? { x: en.front.x, y: en.front.y } : { x: rooms[0]!.x + Math.floor(rooms[0]!.w / 2), y: rooms[0]!.y + rooms[0]!.h - 2 };
   const findStand = (x0: number, y0: number): [number, number] => {
@@ -1201,6 +1212,7 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
     ...(outdoor ? { canopy: { style: profile.canopy ?? "leaf", cells: canopyCells } } : {}),
     ...(profile.bank && bankCells.length ? { banks: { style: profile.bank, cells: bankCells } } : {}),
     anchors: { boss: bossRoom?.id ?? null, treasure: vaultRoom?.id ?? null, gate }, spots, chestSpots, picture, counts, warnings,
+    ...(reliefPlan && reliefPlan.levels.some((v) => v > 0) ? { relief: { levels: reliefPlan.levels, ramps: reliefPlan.ramps, style: dungeonReliefStyle(type) } } : {}),
   };
 }
 

@@ -101,7 +101,7 @@ export interface DungeonStairCell {
 }
 
 export interface Rect { x: number; y: number; w: number; h: number }
-export interface PlacedRoom extends Rect { id: string; kind: DungeonRoomKind; from: string | null; dir: DungeonDir | null; depth: number; shape?: "round" | "apse" | "ring"; /** 설계한 방의 특징(stalagmites·crystals·mushrooms·bones·pillars·boulders·camp) — 꾸미기가 더한다. */ features?: readonly string[] }
+export interface PlacedRoom extends Rect { id: string; kind: DungeonRoomKind; from: string | null; dir: DungeonDir | null; depth: number; shape?: "round" | "apse" | "ring"; /** 설계한 방의 특징(stalagmites·crystals·mushrooms·bones·pillars·boulders·camp) — 꾸미기가 더한다. */ features?: readonly string[]; /** 설계한 높이 단(0 바닥 · 1 · 2) — compose 가 map.relief 와 돌계단으로 짓는다. */ level?: number }
 export interface PlacedCorridor { a: string; b: string; dir: DungeonDir; rect: Rect; loop?: boolean }
 
 
@@ -141,6 +141,8 @@ export interface DungeonCompose {
   /** 자연 물가 둑 덧그림(2층): 액체 칸 목록 — 맵에 쓸 때 beodeul_nature 둑 칸(256 이웃 모양)으로 덮는다. 다리 칸은 이웃(같은 물)로 친다. */
   readonly banks?: { readonly style: "grass" | "bog" | "lava"; readonly cells: readonly number[] };
   readonly counts: Record<string, number>;
+  /** 설계한 높이 단(rooms[].level)이 있으면 map.relief 로 쓸 높이·계단(코드 5~8)·양식(*-steps = 버들항 돌계단 화소). */
+  readonly relief?: { readonly levels: number[]; readonly ramps: number[]; readonly style: string };
   /** 놓인 키트(왼쪽 위 칸) — 배치 검사·표본 그림용. 되돌린 놓기는 빠진다. */
   readonly placed?: readonly { readonly id: string; readonly x: number; readonly y: number }[];
   /** 이 층을 그린 어댑터와 쓴 타일셋(몬스터 키트는 시트마다 타일셋이 다르다). */

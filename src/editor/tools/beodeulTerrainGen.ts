@@ -27,6 +27,8 @@ export interface TerrainGenInput {
   water: TerrainWater;
   /** 위로 쌓을 단 수 힌트(1~4). */
   tiers?: number;
+  /** 평지 요청(땅 모양 낱말 없음): 단은 북쪽의 동서 띠 하나뿐 — 남북 경계 토막·평지 한가운데 계단이 없다. 물이 띠를 가로지르면 단 없음. */
+  bands?: boolean;
 }
 
 export interface TerrainArea {
@@ -53,6 +55,8 @@ export interface CodeTerrain {
   areas: TerrainArea[];
   /** 강 건널 자리 후보(강이 곧게 3칸 흐르고 양쪽 둑이 같은 단). */
   crossings: { x: number; y: number; dir: "ns" | "ew" }[];
+  /** 긴 남향 절벽의 끊을 자리(위 단 칸) — 시공기가 절벽 위·아래에 숲 덩이를 세워 긴 띠를 조각으로 끊어 보이게 한다. */
+  cliffBreaks: { x: number; y: number }[];
   maxLevel: number;
   note: string;
 }
@@ -229,7 +233,7 @@ export function generateCodeTerrain(input: TerrainGenInput): CodeTerrain {
   const pick = <T,>(xs: readonly T[]): T => xs[Math.floor(r() * xs.length)]!;
   const character: TerrainCharacter = input.character ?? pick(["hill", "slope", "terraces", "plateau", "hill", "terraces"] as const);
   const high: TerrainHigh = input.high ?? (character === "hill" || character === "plateau" ? pick(["center", "center", "north", "west", "east"] as const) : pick(["north", "north", "west", "east", "north"] as const));
-  const n1 = gradientNoise(seed * 31 + 1), n2 = gradientNoise(seed * 31 + 2), n3 = gradientNoise(seed * 31 + 3), n4 = gradientNoise(seed * 31 + 4);
+  const n1 = gradientNoise(seed * 31 + 1), n2 = gradientNoise(seed * 31 + 2), n3 = gradientNoise(seed * 31 + 3), n4 = gradientNoise(seed * 31 + 4), n5 = gradientNoise(seed * 31 + 5);
   const F = 16 + r() * 8; // 큰 모양 하나의 칸 수(맵 하나에 산·골이 두세 개)
   const ox = r() * 100, oy = r() * 100;
   // 높은 곳 자리: 언덕·고원 꼭대기 중심, 비탈·계단식은 그쪽 가장자리
@@ -239,7 +243,7 @@ export function generateCodeTerrain(input: TerrainGenInput): CodeTerrain {
   const warpK = 0.9 + r() * 0.8;
   for (let y = 0; y < H; y += 1) for (let x = 0; x < W; x += 1) {
     // 동서로 늘인 잡음(가로 1.8배) — 3/4 시점에서 높이는 남쪽을 보는 절벽으로만 읽힌다. 둥근 잡음은 남북 단 경계(가는 선)를 맵 곳곳에 그었다(ab12 판정자 「풀밭 위 다각형 윤곽선」)
-    const px = x / (F * 1.8) + ox, py = y / F + oy;
+    const px = x / (F * 2.6) + ox, py = y / F + oy;
     // domain warping(Quilez): 좌표를 fBm 으로 한 번 비튼다 — 둥근 혹이 고르게 늘어선 fBm 이 골짜기·곶 모양으로 흐른다
     const qx = fbm(n2, px, py, 3), qy = fbm(n3, px + 5.2, py + 1.3, 3);
     const base = fbm(n1, px + warpK * qx, py + warpK * qy, 5) * 0.5 + 0.5;
@@ -247,8 +251,13 @@ export function generateCodeTerrain(input: TerrainGenInput): CodeTerrain {
     // 큰 모양(요청 성격): 기울기·혹·고원
     const tx = (x - hx) / W, ty = (y - hy) / H;
     // 서·동이 높아도 북쪽으로 함께 오른다 — 순수 동서 기울기는 단 경계가 남북으로 달려 가는 선만 남았다
-    const toward = high === "north" ? 1 - y / H : high === "south" ? y / H : high === "west" ? 0.5 * (1 - x / W) + 0.5 * (1 - y / H) : high === "east" ? 0.5 * (x / W) + 0.5 * (1 - y / H) : 1 - Math.min(1, Math.hypot(tx, ty) * 2.2);
-    const dome = Math.max(0, 1 - Math.hypot(tx * 1.1, ty * 1.9) * 2.2); // 동서로 긴 혹
+    const toward0 = high === "north" ? 1 - y / H : high === "south" ? y / H : high === "west" ? (1 - y / H) * (0.55 + 0.45 * (1 - x / W)) + 0.2 * (1 - x / W) : high === "east" ? (1 - y / H) * (0.55 + 0.45 * (x / W)) + 0.2 * (x / W) : 1 - Math.min(1, Math.hypot(tx, ty) * 2.2);
+    // 혀(lobe) 잡음: 큰 기울기만 쓰면 등고선이 맵을 가로지르는 긴 절벽 한 줄이 된다(ab15 판정 「긴 사선 절벽 띠」) — 반 크기 잡음을 기울기에 더해
+    // 높은 땅이 혀 몇 개로 내려오고 사이에 골이 파여, 절벽이 짧게 끊기고 휘는 조각들이 된다
+    const lobeK = character === "flat" ? 0 : character === "plateau" ? 0.25 : 0.6;
+    const lobe = lobeK * fbm(n5, px * 1.6 + 0.7 * qx, py * 2.8 + 0.7 * qy, 3);
+    const dome = Math.max(0, 1 - Math.hypot(tx * 0.9, ty * 2.1) * 2.2) + lobe; // 동서로 긴 혹
+    const toward = toward0 + lobe;
     let v: number;
     if (character === "flat") v = 0.55 * base + 0.15 * toward;
     else if (character === "slope") v = 0.35 * base + 0.5 * toward + 0.3 * rid * toward;
@@ -265,7 +274,7 @@ export function generateCodeTerrain(input: TerrainGenInput): CodeTerrain {
     // 고원: 높은 쪽을 판판하게 자른다(메사) — 위는 평평, 옆은 가파르다
     for (let c = 0; c < W * H; c += 1) { const v = h[c]!; h[c] = v > 0.55 ? 0.78 + (v - 0.55) * 0.25 : v * (0.78 / 0.55) * (0.55 + 0.45 * (v / 0.55)); }
   }
-  erode(h, W, H, character === "flat" ? 6 : 10, 0.9, 0.05);
+  erode(h, W, H, character === "flat" ? 6 : 10, character === "flat" ? 0.9 : 1.4, 0.05);
 
   // ── 물 ──
   const water = new Uint8Array(W * H);
@@ -313,34 +322,53 @@ export function generateCodeTerrain(input: TerrainGenInput): CodeTerrain {
       notes.push(`강은 ${src} → ${sink}`);
     }
   }
-  if (input.water === "lake" || input.water === "oasis" || input.water === "bog") {
+  if (input.water === "bog") {
+    // 늪(2026-10-30 「늪 수상 마을」): 낮은 땅 절반 가까이가 얕은 물 — 물길로 이어진 큰 늪에 진흙 섬이 흩어진다. 집은 물 위 널판 위에, 길은 널길로(시공기).
+    const sorted = Float32Array.from(h).sort(); const lvl = sorted[Math.floor(sorted.length * 0.46)]!;
+    const bn = gradientNoise(seed * 31 + 12);
+    for (let c = 0; c < W * H; c += 1) { const x = c % W, y = (c - x) / W; if (h[c]! + 0.06 * bn(x / 3.5, y / 3) < lvl) water[c] = 2; }
+    for (let pass = 0; pass < 3; pass += 1) { const out = Uint8Array.from(water); for (let y = 1; y < H - 1; y += 1) for (let x = 1; x < W - 1; x += 1) { let k = 0; for (const [dx, dy] of N8) if (water[(y + dy) * W + x + dx] === 2) k += 1; const c = y * W + x; if (water[c] === 2 && k <= 2) out[c] = 0; else if (!water[c] && k >= 6) out[c] = 2; } water.set(out); }
+    // 작은 물웅덩이(10칸 미만)는 메우고, 작은 섬(12칸 미만)은 물로
+    { const { list } = components(W, H, (a, b) => !!water[a] === !!water[b], () => true);
+      for (const cs of list) { const wet = !!water[cs[0]!]; if (wet && cs.length < 10) for (const c of cs) water[c] = 0; else if (!wet && cs.length < 12) for (const c of cs) water[c] = 2; } }
+    let n = 0; for (const v of water) if (v === 2) n += 1;
+    notes.push(`늪 물 ${Math.round((100 * n) / (W * H))}%`);
+  }
+  if (input.water === "lake" || input.water === "oasis") {
     // 채운 웅덩이 깊이가 깊은 곳이 못 — 없으면(사막 오아시스는 늘) 가장 낮은 안쪽 땅에 둥근 분지를 판다
     const f = priorityFlood(h, W, H);
-    const deep = (c: number) => f[c]! - h[c]! > (input.water === "bog" ? 0.004 : 0.012);
+    const deep = (c: number) => f[c]! - h[c]! > 0.012;
     const { list } = components(W, H, () => true, (c) => deep(c) && !water[c]);
-    const lakes = list.filter((cs) => cs.length >= 5).sort((a, b) => b.length - a.length).slice(0, input.water === "bog" ? 5 : 1);
+    const lakes = list.filter((cs) => cs.length >= 5).sort((a, b) => b.length - a.length).slice(0, 1);
     for (const cs of lakes) for (const c of cs) water[c] = 2;
-    const want = input.water === "bog" ? 4 : 1;
+    const want = 1;
     let made = lakes.length;
     const ln = gradientNoise(seed * 31 + 11);
     for (let t = 0; t < 60 && made < want; t += 1) {
       // 가장 낮은 안쪽 칸 근처에 잡음으로 일그러진 분지
       let best = -1; for (let k = 0; k < 40; k += 1) { const x = 5 + Math.floor(r() * (W - 10)), y = 5 + Math.floor(r() * (H - 10)); const c = y * W + x; if (water[c]) continue; if (best < 0 || h[c]! < h[best]!) best = c; }
       if (best < 0) break;
-      const bx = best % W, by = (best - bx) / W; const rx = input.water === "bog" ? 2 + r() * 3 : 3 + r() * 2.5, ry = rx * (0.6 + r() * 0.5);
+      const bx = best % W, by = (best - bx) / W; const rx = 3 + r() * 2.5, ry = rx * (0.6 + r() * 0.5);
       let n = 0;
       for (let y = Math.max(1, Math.floor(by - ry - 2)); y <= Math.min(H - 2, by + ry + 2); y += 1) for (let x = Math.max(1, Math.floor(bx - rx - 2)); x <= Math.min(W - 2, bx + rx + 2); x += 1) {
         const ex = (x - bx) / rx, ey = (y - by) / ry; if (ex * ex + ey * ey + 0.45 * ln(x / 3, y / 3) <= 1) { const c = y * W + x; water[c] = 2; n += 1; }
       }
       if (n >= 6) made += 1;
     }
-    notes.push(`${input.water === "oasis" ? "오아시스 못" : input.water === "bog" ? "늪 못" : "못"} ${made}개`);
+    // 못은 한 덩이(2026-10-30 「사막 못이 쪼개진다」): 잡음 일그러짐·채운 웅덩이 합집합이 조각 여럿을 남겼다 — 가장 큰 덩이만 남기고 그 안 구멍은 메운다
+    { const { list } = components(W, H, () => true, (c) => water[c] === 2);
+      const keep = list.sort((a, b) => b.length - a.length)[0]; const ks = new Set(keep ?? []);
+      for (let c = 0; c < W * H; c += 1) if (water[c] === 2 && !ks.has(c)) water[c] = 0;
+      const { list: holes } = components(W, H, () => true, (c) => water[c] !== 2);
+      for (const cs of holes) if (cs.length < 12 && !cs.some((c) => { const x = c % W, y = (c - x) / W; return x === 0 || y === 0 || x === W - 1 || y === H - 1; })) for (const c of cs) water[c] = 2; }
+    notes.push(`${input.water === "oasis" ? "오아시스 못" : "못"} ${made}개`);
   }
 
   // ── 단 자르기 ──
   const tiersHint = input.tiers && input.tiers > 0 ? Math.min(4, input.tiers) : undefined;
   // 단 문턱(땅 높이 분위수): 성격마다 단 수가 다르다. 맨 아래 단이 넓어야 마을·밭이 선다.
-  const fr: number[] = character === "flat" ? [0.78]
+  // 평지: 맨 아래 단이 대부분이고 뒤쪽에 낮은 둔덕 하나(두 칸 절벽) — 늪은 단 없이 물과 섬만
+  const fr: number[] = character === "flat" ? (input.water === "bog" ? [] : [0.8])
     // 단은 넓게(2026-10-30 첫 판: 문턱 넷이 좁은 띠를 여럿 만들어 맵이 등고선 지도처럼 선투성이였다) — 기본 두 단, 힌트로 더
     : character === "slope" ? [0.36, 0.62, 0.84].slice(0, tiersHint ?? 2)
     : character === "terraces" ? [0.4, 0.68, 0.88].slice(0, tiersHint ?? 2)
@@ -351,13 +379,18 @@ export function generateCodeTerrain(input: TerrainGenInput): CodeTerrain {
   // 자르기 전에 낮은 주파수 잡음으로 높이를 흔든다 — 단 가장자리가 높이맵 등고선을 자로 잰 듯 따라가지 않게
   const jn = gradientNoise(seed * 31 + 7);
   const lv = new Uint8Array(W * H);
-  for (let c = 0; c < W * H; c += 1) {
-    const x = c % W, y = (c - x) / W; const v = h[c]! + 0.035 * jn(x / 5, y / 5);
-    let L = 0; for (const t of thr) if (v >= t) L += 1;
-    // 고원: 꼭대기는 그 아래 단보다 두 단 높다(두꺼운 벽)
-    if (character === "plateau" && L >= 2) L = 3;
-    lv[c] = L;
-  }
+  // 히스테리시스 자르기(Canny 의 두 문턱): 문턱 t 에 ±δ — t+δ 넘는 칸에서 출발해 t-δ 넘는 칸으로만 번진다. 등고선 근처의 잡음이 1~2칸
+  // 톱니·외딴 섬을 만들지 않고, 단 가장자리가 잡음을 따라 크게 휘어진다.
+  const vv = new Float32Array(W * H);
+  for (let c = 0; c < W * H; c += 1) { const x = c % W, y = (c - x) / W; vv[c] = h[c]! + 0.05 * jn(x / 6, y / 4); }
+  const HY = 0.025;
+  thr.forEach((t, k) => {
+    const q: number[] = [];
+    for (let c = 0; c < W * H; c += 1) if (lv[c] === k && vv[c]! >= t + HY) { lv[c] = k + 1; q.push(c); }
+    for (let i = 0; i < q.length; i += 1) { const c = q[i]!, x = c % W, y = (c - x) / W;
+      for (const [dx, dy] of N4) { const X = x + dx, Y = y + dy; if (X < 0 || Y < 0 || X >= W || Y >= H) continue; const n = Y * W + X; if (lv[n] === k && vv[n]! >= t - HY) { lv[n] = k + 1; q.push(n); } } }
+  });
+  if (character === "plateau") for (let c = 0; c < W * H; c += 1) if (lv[c]! >= 2) lv[c] = 3; // 고원: 꼭대기는 그 아래 단보다 두 단 높다(두꺼운 벽)
   // 물: 강·못·바다는 그 물에 닿은 땅 중 가장 낮은 단에 — 물 칸과 둘레 한 칸(둑)을 그 단으로
   {
     const { list } = components(W, H, (a, b) => water[a] === water[b], (c) => water[c]! > 0);
@@ -378,24 +411,6 @@ export function generateCodeTerrain(input: TerrainGenInput): CodeTerrain {
       out[c] = best;
     }
     lv.set(out);
-  }
-  const cellHash = (x: number, y: number) => { let k = Math.imul(x * 374761393 + y * 668265263 + seed * 1442695041, 1274126177) >>> 0; k ^= k >>> 13; k = Math.imul(k, 1103515245) >>> 0; return (k >>> 8) / 16777216; };
-  // 옆 경계 비스듬히(2026-10-30 ab12 판정 8:12 「풀밭 위 다각형 윤곽선·떠 있는 대지」): 3/4 탑뷰에서 높이는 남쪽을 보는 절벽으로만 두껍게 그려지고
-  // 동·서를 보는 단 경계는 가는 세로선이 된다. 두 줄 넘게 곧게 내려가는 옆 경계는 아래 칸부터 한 칸씩 깎아 45° 계단(짧은 남향 절벽이 이어진 사선)으로 —
-  // 옛 띠 지형의 「사라지는 옆면」과 같은 읽힘. 물 칸은 건드리지 않는다.
-  for (let pass = 0; pass < 40; pass += 1) {
-    let changed = false;
-    for (let y = H - 2; y >= 0; y -= 1) for (let x = 0; x < W; x += 1) {
-      const c = y * W + x, b = c + W; if (water[c] || water[b]) continue; const L = lv[c]!; if (lv[b] !== L) continue;
-      for (const dx of [1, -1]) {
-        const X = x + dx; if (X < 0 || X >= W) continue; const n = c + dx, m = b + dx;
-        if (water[n] || water[m] || lv[n]! >= L || lv[m]! >= L) continue;
-        // 칸마다 정해진 값으로 열에 셋 중 하나는 깎지 않는다 — 자로 그은 45° 사선이 아니라 가파르기가 들쭉날쭉한 사선(ab13 판정 「곧은 긴 대각선」)
-        if (cellHash(x, y + 1) < 0.3) continue;
-        lv[b] = Math.max(lv[m]!, lv[n]!); changed = true; break;
-      }
-    }
-    if (!changed) break;
   }
   // 가로 다수결(7칸 창) 두 번 — 등고선의 한두 열짜리 톱니(판정자 「지그재그 절벽」)를 펴서 남쪽 절벽 띠가 길게 이어지게
   for (let pass = 0; pass < 2; pass += 1) {
@@ -431,16 +446,102 @@ export function generateCodeTerrain(input: TerrainGenInput): CodeTerrain {
       if (!open && rim < 99 && cs.length < W * H * 0.12) for (const c of cs) lv[c] = rim;
     });
   }
+  // 끊긴 절벽 조각(2026-10-30 ab15 판정 「맵을 가로지르는 긴 절벽 띠」): 열을 7~13칸 토막으로 나눠 토막마다 높이를 위·아래로 1~3칸 밀어 읽는다 —
+  // 한 등고선이 토막마다 어긋나 짧은 절벽 조각들이 엇갈려 이어지고(바위 턱), 토막 안에서는 활처럼 한 번 휜다.
+  const off = new Float32Array(W);
+  { let x = 0, o = 0;
+    while (x < W) {
+      const w = 7 + Math.floor(r() * 7), arc = (r() - 0.5) * 2.4;
+      const step = [-2, -2, -1, 1, 2, 2][Math.floor(r() * 6)]!; o = Math.max(-3, Math.min(3, o + step));
+      for (let k = 0; k < w && x + k < W; k += 1) off[x + k] = o + arc * Math.sin(Math.PI * (k + 0.5) / w);
+      x += w;
+    } }
+  if (character !== "flat") {
+    const src = Uint8Array.from(lv); const nearW = (x: number, y: number) => { for (let dy = -1; dy <= 1; dy += 1) for (let dx = -1; dx <= 1; dx += 1) { const X = x + dx, Y = y + dy; if (X >= 0 && Y >= 0 && X < W && Y < H && water[Y * W + X]) return true; } return false; };
+    for (let y = 0; y < H; y += 1) for (let x = 0; x < W; x += 1) {
+      const sy = Math.max(0, Math.min(H - 1, Math.round(y + off[x]!))); if (nearW(x, y) || nearW(x, sy)) continue;
+      lv[y * W + x] = src[sy * W + x]!;
+    }
+    // 어긋남이 남긴 한두 칸 폭 기둥·턱(ab16 판정 「외딴 절벽 기둥 조각」)은 이웃 단으로 — 좌우 둘 다 낮은(높은) 칸, 위아래 둘 다 낮은(높은) 칸
+    for (let pass = 0; pass < 4; pass += 1) {
+      let changed = false;
+      for (let y = 1; y < H - 1; y += 1) for (let x = 1; x < W - 1; x += 1) {
+        const c = y * W + x; if (water[c]) continue; const L = lv[c]!;
+        for (const [a, b] of [[c - 1, c + 1], [c - 2 >= y * W ? c - 2 : c - 1, c + 1], [c - W, c + W]] as const) {
+          if (water[a] || water[b]) continue;
+          if (L > lv[a]! && L > lv[b]!) { lv[c] = Math.max(lv[a]!, lv[b]!); changed = true; break; }
+          if (L < lv[a]! && L < lv[b]!) { lv[c] = Math.min(lv[a]!, lv[b]!); changed = true; break; }
+        }
+      }
+      if (!changed) break;
+    }
+  }
+  // 꺾기·기둥 지우기가 남긴 작은 단 조각(2026-10-30 3판 사막: 못 곁 6×2 띠에 모이는 곳이 앉아 길이 하나도 안 났다)은 이웃 단으로
+  if (character !== "flat") for (let pass = 0; pass < 3; pass += 1) {
+    const { comp, list } = components(W, H, (a, b) => lv[a] === lv[b], (c) => !water[c]);
+    let changed = false;
+    list.forEach((cs, i) => {
+      if (cs.length >= Math.max(40, Math.round(W * H * 0.02))) return;
+      const cnt = new Map<number, number>();
+      for (const c of cs) { const x = c % W, y = (c - x) / W; for (const [dx, dy] of N4) { const X = x + dx, Y = y + dy; if (X < 0 || Y < 0 || X >= W || Y >= H) continue; const n = Y * W + X; if (comp[n] !== i && !water[n]) cnt.set(lv[n]!, (cnt.get(lv[n]!) ?? 0) + 1); } }
+      let best = -1, bk = 0; for (const [L, k] of cnt) if (k > bk) { best = L; bk = k; }
+      if (best >= 0) { for (const c of cs) lv[c] = best; changed = true; }
+    });
+    if (!changed) break;
+  }
   for (let pass = 0; pass < 6; pass += 1) {
     let changed = false;
     for (let c = 0; c < W * H; c += 1) { const x = c % W, y = (c - x) / W;
       for (const [dx, dy] of N4) { const X = x + dx, Y = y + dy; if (X < 0 || Y < 0 || X >= W || Y >= H) continue; const n = Y * W + X; if (lv[c]! - lv[n]! > 1) { lv[c] -= 1; changed = true; break; } } }
     if (!changed) break;
   }
+  // 평지 요청은 동서 띠 하나(2026-10-30 ab18·ab19: 강가 시골·들판이 「남북 절벽 토막·평지 한가운데 사다리 계단」으로 띠 지형에 졌다) —
+  // 잡음 덩이 단을 버리고 북쪽에 맵 폭 전체를 가로지르는 띠 하나만 둔다. 띠 아래 경계는 7~13열 토막마다 1~2줄 어긋날 뿐 남북으로 길게 서지 않는다.
+  // 물(강·못·바다)이 띠 자리에 들어오면 띠를 물 위 3칸까지 올리고, 그래도 3줄이 안 남는 열이 있으면 단을 아예 없앤다(평지).
+  const bandGaps: { x: number; y: number }[] = [];
+  if (input.bands && input.water !== "bog") {
+    // 3판(2026-10-30 ab20 판정 「맵 전폭을 자로 그은 직선 절벽」): 띠 아래 경계를 높이맵 등고선처럼 굽히고(큰 물결 ±4.5줄 + 잔물결 ±1.5줄,
+    // 열마다 1줄까지·같은 줄 3열 이상), 띠를 한두 곳에서 끊는다 — 끊긴 곳은 단이 없고 어깨(열마다 2줄씩 낮아짐)를 숲이 덮는다(bandGaps → cliffBreaks).
+    // 강·못이 띠 자리를 지나면 그 열이 끊긴 곳이 된다(예전엔 띠를 통째로 없앴다). 남은 띠 토막이 8열보다 짧으면 지운다.
+    const base = Math.round(H * 0.26) + Math.floor(r() * 3);
+    const b = new Int16Array(W);
+    const s2 = (seed * 7 + 3) % 101;
+    for (let x = 0; x < W; x += 1) b[x] = Math.round(base + 4.5 * jn(x / 11, seed % 97 + 0.5) + 1.5 * jn(x / 4.5, s2 + 0.5));
+    for (let x = 1; x < W; x += 1) b[x] = Math.max(b[x - 1]! - 1, Math.min(b[x - 1]! + 1, b[x]!));
+    // 같은 줄 3열 미만 토막은 앞 토막에 붙인다(한 열짜리 톱니 금지)
+    { let x0 = 0; for (let x = 1; x <= W; x += 1) if (x === W || b[x] !== b[x0]) { if (x - x0 < 3 && x0 > 0) for (let k = x0; k < x; k += 1) b[k] = b[x0 - 1]!; x0 = x; } }
+    const gap = new Uint8Array(W);
+    for (let x = 0; x < W; x += 1) { let top = H; for (let dx = -2; dx <= 2; dx += 1) { const X = x + dx; if (X < 0 || X >= W) continue; for (let y = 0; y < top; y += 1) if (water[y * W + X]) { top = y; break; } }
+      if (b[x]! > top - 3) gap[x] = 1; }
+    // 일부러 끊는 곳은 긴 띠(가로 70칸 이상)만 하나 — 좁은 맵에서 둘씩 끊으니 어깨 둘이 마주 보는 골짜기(V자 도랑)로 보였다(3판 r12 강가 시골). 물이 지나는 곳은 늘 끊긴다.
+    const nGaps = W >= 70 ? 1 : 0;
+    for (let g = 0, t = 0; g < nGaps && t < 30; t += 1) {
+      const gw = 6 + Math.floor(r() * 5), gx = 6 + Math.floor(r() * Math.max(1, W - 12 - gw));
+      if ([...gap.slice(Math.max(0, gx - 8), Math.min(W, gx + gw + 8))].some((v) => v)) continue;
+      for (let k = 0; k < gw; k += 1) gap[gx + k] = 1; g += 1;
+    }
+    for (let x = 0; x < W; x += 1) if (gap[x] || b[x]! < 3) b[x] = 0;
+    // 어깨: 끊긴 곳에서 열마다 2줄씩 오른다(0 → 2 → 4 …) — 예전엔 얕은 열을 어깨 뒤에 지워 0 에서 4줄로 곧장 서는 남북 선이 남았다(r13 강가 시골 x 13)
+    for (let pass = 0; pass < W; pass += 1) { let ch2 = false;
+      for (let x = 0; x < W; x += 1) { const lim = Math.min(x > 0 ? b[x - 1]! + 2 : 99, x < W - 1 ? b[x + 1]! + 2 : 99); if (b[x]! > lim) { b[x] = lim; ch2 = true; } }
+      if (!ch2) break; }
+    { let x0 = -1; for (let x = 0; x <= W; x += 1) { const on = x < W && b[x]! > 0; if (on && x0 < 0) x0 = x; if (!on && x0 >= 0) { if (x - x0 < 8) for (let k = x0; k < x; k += 1) b[k] = 0; x0 = -1; } } }
+    let bandCols = 0; for (let x = 0; x < W; x += 1) if (b[x]! > 0) bandCols += 1;
+    const ok = bandCols >= W * 0.35;
+    // 끊긴 곳 어깨(띠가 0 으로 내려가는 열) — 숲 씨앗
+    // 어깨마다 숲 씨앗 넷(쓰는 쪽이 [0,-2]·[0,4] 를 더한다): 띠 위 어깨 안쪽 두 곳 + 띠 아래 어깨 바깥 두 곳 — 띠가 숲 속으로 사라진다
+    if (ok) for (let x = 1; x < W; x += 1) if ((b[x - 1]! > 0) !== (b[x]! > 0)) {
+      const hx = b[x]! > 0 ? x : x - 1, dir = b[x]! > 0 ? 1 : -1, bh = b[Math.min(W - 1, Math.max(0, hx + dir * 4))]!;
+      bandGaps.push({ x: Math.min(W - 2, Math.max(1, hx + dir * 3)), y: Math.max(3, Math.round(bh / 2) + 2) });
+      bandGaps.push({ x: Math.min(W - 2, Math.max(1, hx - dir * 3)), y: Math.min(H - 6, Math.max(3, Math.round(bh / 2) + 2)) });
+    }
+    for (let c = 0; c < W * H; c += 1) { const x = c % W, y = (c - x) / W; lv[c] = ok && !water[c] && y < b[x]! ? 1 : 0; }
+    notes.push(ok ? `평지 요청: 북쪽 굽은 띠(끊긴 곳 어깨 ${bandGaps.length / 2 | 0}곳)` : "평지 요청: 물이 띠를 가로질러 단 없음");
+  }
   tidyLevels(lv, W, H);
   // 단 하나 = 두 칸 절벽(2026-10-30 ab13 판정 「절벽이 1px 갈색 선 — 높이가 안 읽힌다」): 띠 지형의 마을 위 단처럼 이웃 단 차를 2 로 —
   // 3/4 에서 남향 절벽면이 두 칸 높이로 그려지고, 길은 세 칸 계단으로 오른다.
-  if (character !== "flat") for (let c = 0; c < W * H; c += 1) lv[c] = lv[c]! * 2;
+  for (let c = 0; c < W * H; c += 1) lv[c] = lv[c]! * 2;
   for (let c = 0; c < W * H; c += 1) if (water[c]) { /* 물은 다듬기에서 둑과 같은 단으로 남아 있다 */ }
   let maxLevel = 0; for (const v of lv) maxLevel = Math.max(maxLevel, v);
 
@@ -480,9 +581,19 @@ export function generateCodeTerrain(input: TerrainGenInput): CodeTerrain {
     if (crossings.some((k) => Math.abs(k.x - x) + Math.abs(k.y - y) < 6)) continue;
     crossings.push({ x, y, dir: dir === "ns" ? "ew" : "ns" });
   }
+  // 긴 남향 절벽 띠의 끊을 자리: 한 줄로 10칸 넘게 이어진 절벽은 9칸마다 한 자리
+  const cliffBreaks: { x: number; y: number }[] = [...bandGaps];
+  for (let y = 0; y < H - 1; y += 1) {
+    let x0 = -1;
+    for (let x = 0; x <= W; x += 1) {
+      const cliff = x < W && !water[y * W + x] && !water[(y + 1) * W + x] && lv[y * W + x]! > lv[(y + 1) * W + x]!;
+      if (cliff && x0 < 0) x0 = x;
+      if (!cliff && x0 >= 0) { const len = x - x0; if (len >= 10) for (let bx = x0 + 5 + Math.floor(r() * 3); bx < x - 3; bx += 8 + Math.floor(r() * 4)) cliffBreaks.push({ x: bx, y }); x0 = -1; }
+    }
+  }
   const counts = new Map<number, number>(); for (let c = 0; c < W * H; c += 1) if (!water[c]) counts.set(lv[c]!, (counts.get(lv[c]!) ?? 0) + 1);
   const note = `코드 지형 · ${CHAR_LABEL[character]}(높은 곳 ${high}) · 단 ${[...counts.keys()].sort().map((k) => `${k}:${counts.get(k)}`).join("/")}${notes.length ? " · " + notes.join(" · ") : ""}`;
-  return { W, H, character, high, height: h, levels: lv, water, river, forest, areas, crossings, maxLevel, note };
+  return { W, H, character, high, height: h, levels: lv, water, river, forest, areas, crossings, cliffBreaks, maxLevel, note };
 }
 
 /** 모델에게 보여 줄 지형 요약(글) — 좌표는 칸(x 오른쪽, y 아래). */
