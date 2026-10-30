@@ -33,6 +33,7 @@ for g in sorted(glob.glob(f"{RUNS}/{COND}[0-9]/*/*"), key=lambda p: (p.split("/"
             + (f" · 표→맵 {round(100 * (tb.get('coverage') or 0))}%" if tb.get("coverage") is not None else "")
             + (f" · 계산 충실도 칸 {round(100 * fi['cells'])}%·물건 {round(100 * fi.get('objects', 0))}%" if fi else "")
             + (f" · 자기 검사 {rounds}번" if rounds else "")
+            + (f" · 다시 짓기 상한 {6 if cond[-1] in '34' else 3}" if COND == "V" else "")
             + f" · 새 조각 {gen.get('placed', 0)}/{gen.get('made', 0)} 놓임")
     cards.append(f"<section><p>{E(line)}</p><div class=pair><figure><img class=m src='{jpg(f'{g}/mockup.png', f'O-{task}-mockup', False)}'><figcaption>GPT 목업</figcaption></figure>"
                  f"<figure><img src='{jpg(f'{g}/room/map.png', slug + '-map', True)}'><figcaption>지은 방</figcaption></figure></div>"
