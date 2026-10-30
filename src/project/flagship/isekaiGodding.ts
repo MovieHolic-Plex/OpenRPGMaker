@@ -190,18 +190,19 @@ function buildMaps(project: Project): Built {
   }
 
   // 마왕성 입구 — 반반 마을에서 걸어서 닿는 가장 북쪽 빈터.
-  // 시드 9: 꼭대기 층 보스방이 맵 가운데라 마왕 장면 화면에 허공이 거의 없다(시드 3 은 화면 오른쪽 절반이 허공이었다 — v7 검수).
+  // 시드 12: 꼭대기 층 보스방이 맵 가운데 위라 마왕 장면 화면에 허공이 적다(시드 3 은 화면 오른쪽 절반이 허공이었다 — v7 검수).
+  // 시드 9·6 은 보스방은 좋은데 층 사이 계단을 만들지 않는다(links [], exitStair null — 던전 도구 결함, 감독자 보고).
   const vmap = project.maps[M.goblin]!;
   const vReach = reachableCells(project, vmap, goblinEntry);
   const northMost = vReach.filter((c) => c.x > 2 && c.x < vmap.width - 3).reduce((best, c) => (c.y < best.y ? c : best), vReach[0]!);
-  const dungeon = execTool(project, "author_beodeul_dungeon", { id: M.castle, name: "마왕성", type: "castle", floors: 2, size: "medium", seed: 9, populate: false, gimmick: "none",
+  const dungeon = execTool(project, "author_beodeul_dungeon", { id: M.castle, name: "마왕성", type: "castle", floors: 2, size: "medium", seed: 12, populate: false, gimmick: "none",
     entrance: { fromMapId: M.goblin, x: northMost.x, y: northMost.y } });
-  type FloorData = { entrance: Cell; exitStair?: { front: Cell } | null; rooms: Room[]; corridors: { from: string; to: string; x: number; y: number; w: number; h: number }[] };
+  type FloorData = { entrance: Cell; exitStair?: { x: number; y: number; front: Cell } | null; rooms: Room[]; corridors: { from: string; to: string; x: number; y: number; w: number; h: number }[] };
   const dd = dungeon.data as { floorData: FloorData[]; floors: string[] };
   const f1 = dd.floorData[0]!, f2 = dd.floorData[1]!;
   const bossRoom2 = f2.rooms.find((r) => r.kind === "boss")!;
-  // 도구의 보스 자리(population.boss)는 융단 옆 칸이라, 시드 9 고정 배치에서 옥좌(17~19, 6~8) 앞 융단 머리에 세운다.
-  const seatRaw = { x: 18, y: 9 };
+  // 도구의 보스 자리(population.boss)는 융단 옆 칸이라, 시드 12 고정 배치에서 옥좌(18~20, 6~8) 앞 융단 머리에 세운다.
+  const seatRaw = { x: 19, y: 9 };
   const f2Id = dd.floors[1]!;
   if (f2Id !== M.castle2) throw new Error(`[isekai-godding] 마왕성 2층 id 가 ${f2Id} 이다(기대 ${M.castle2})`);
 
@@ -235,12 +236,14 @@ function buildMaps(project: Project): Built {
   execTool(project, "set_map_properties", { mapId: M.castle2, name: "마왕성 꼭대기" });
 
   // ── 마왕성 장식 — 꼭 닿아야 할 칸(입구→시험 구역·계단 앞·창고, 꼭대기 입구→마왕 자리)을 끊지 않는 것만 남긴다.
-  const stairFront = f1.exitStair?.front ?? { x: 27, y: 9 };
+  if (!f1.exitStair) throw new Error("[isekai-godding] 마왕성 1층에 위층 계단이 없다 — 던전 시드가 층을 잇지 않았다");
+  const stairFront = f1.exitStair.front;
   const cor = f1.corridors.find((c) => c.from === "hall") ?? f1.corridors[1]!;
   const quizRow: Cell[] = [];
   for (let x = cor.x; x < cor.x + cor.w; x++) quizRow.push({ x, y: cor.y + cor.h - 1 });
-  const storage = f1.rooms.find((r) => r.kind === "storage");
-  const f1Must = [stairFront, ...quizRow, ...(storage ? [{ x: storage.x + 1, y: storage.y + 1 }] : [])];
+  // 2009 쪽지 상자를 둘 방 — 창고가 없으면 보물 방, 그것도 없으면 홀.
+  const storage = f1.rooms.find((r) => r.kind === "storage") ?? f1.rooms.find((r) => r.kind === "vault") ?? f1.rooms.find((r) => r.kind === "hall");
+  const f1Must = [stairFront, { x: f1.exitStair.x, y: f1.exitStair.y }, ...quizRow, ...(storage ? [{ x: storage.x + 1, y: storage.y + 1 }] : [])];
   const keep1 = () => reachesAll(project, M.castle, f1.entrance, f1Must);
   let dressed1 = 0;
   for (const r of f1.rooms) {
@@ -757,7 +760,7 @@ function buildCastle(project: Project, b: Built): void {
   ]));
 
   // 창고 상자 — 15년 전의 쪽지.
-  const storage = k.rooms.find((r) => r.kind === "storage");
+  const storage = k.rooms.find((r) => r.kind === "storage") ?? k.rooms.find((r) => r.kind === "vault") ?? k.rooms.find((r) => r.kind === "hall");
   if (storage) {
     const boxAt = nearestFree(project, map, { x: storage.x + 1, y: storage.y + 1 });
     map.events.push(event("ev_ig_k1_box", "낡은 상자", boxAt, [
