@@ -92,5 +92,8 @@ figure{{margin:0;flex:1 1 0;min-width:0}}img{{image-rendering:pixelated;width:10
 <table><tr><th>장소</th><th>빈 바닥 평균 1→2→3</th><th>물건 종류 평균 1→2→3</th><th>상자 방 / 마당 가장자리</th><th>Opus vs 기준 1→2→3</th><th>3판 vs 2판(같은 칸)</th></tr>{''.join(summary)}
 <tr><td><b>합계</b></td><td></td><td></td><td></td><td>{fmt(tot['r1'])} → {fmt(tot['r2'])} → <b>{fmt(tot['r3'])}</b></td><td>{fmt(tot['vs'])}</td></tr></table>
 {''.join(secs)}"""
+import page4
+page = page.replace("<h1>", "<p><a href='#r4' style='color:#8cf'>→ 4판(평면 스케치) 절</a></p><h1>", 1) + page4.section(J, M, copy, (NM, IMG), fmt, wdl, add)
+page = page.replace("figcaption{{", "figcaption{{") .replace("</style>", "pre.plan{font:11px/1.05 monospace;color:#cde;background:#111;padding:6px;margin:0}h3.sub{font-size:16px;margin-top:20px}</style>", 1)
 open(f"{VIZ}/{NM}.html", "w").write(page)
 print("ok", tot)

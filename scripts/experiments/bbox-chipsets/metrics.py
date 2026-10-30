@@ -8,7 +8,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from places import PLACES
 H = os.path.expanduser("~"); S = f"{H}/z-project/assistant-whole-game/suite/rooms"
 R1 = f"{S}/runs-bbox-chipsets"; RUNS = os.environ.get("BBOX_RUNS", f"{S}/runs-bbox-chipsets-3")
-ROUNDS = [("r1", R1), ("r2", f"{S}/runs-bbox-chipsets-2"), ("r3", f"{S}/runs-bbox-chipsets-3")]
+ROUNDS = [("r1", R1), ("r2", f"{S}/runs-bbox-chipsets-2"), ("r3", f"{S}/runs-bbox-chipsets-3"), ("r4", f"{S}/runs-bbox-chipsets-4")]
 f = f"{RUNS}/metrics.json"; M = json.load(open(f)) if os.path.exists(f) else {}
 D = "scripts/experiments/bbox-chipsets"
 def env(base): return dict(os.environ, OPRN_SHARED_CONTENT_SQLITE=f"{RUNS}/shared-content.sqlite", BBOX_POOL_DIR=f"{RUNS}/base/pool")

@@ -109,7 +109,7 @@ def to_layout(rows, J):
               "plan": ["".join(r) for r in g], "rooms": rooms, "symbols": syms, "required": J.get("required"), "regionRoom": regionRoom}
     return layout, errors, info
 
-STOP = set("a an the of for with and or in on at to from by as is are be where which who that this those these each".split())
+STOP = set("a an the of for with and or in on at to from by as is are be where which who that this those these each area areas room rooms space front back side corner zone place single combined".split())
 def _words(s): return [w for w in re.findall(r"[a-z]+", (s or "").lower()) if w not in STOP and len(w) > 2]
 
 def required_check(J, asks, layout, pieces, nudged):
@@ -129,7 +129,16 @@ def required_check(J, asks, layout, pieces, nudged):
         ids = [i for i in (r.get("ids") or []) if isinstance(i, str)]
         if ids:
             nope = [i for i in ids if i not in placed]
-            if nope: errors.append(f"required: \"{a}\" lists {nope} but they are not placed in \"objects\" — place them, sized and positioned for this use.")
+            if nope: errors.append(f"required: \"{a}\" lists {nope} but they are not placed in \"objects\" — place them, sized and positioned for this use."); continue
+            # round 4: an overlay drawn onto a bench is hidden by the bench art (wz cauldron overlays on work benches read as "no cauldron"
+            # to the judge). If the item's word is carried only by overlays the model listed, and standing pieces with that word exist, ask for one.
+            P = {p["id"]: p for p in pieces}
+            listed = [P[i.split(" ")[0]] for i in ids if i.split(" ")[0] in P]
+            std = lambda p: "overlay" not in p["line"]
+            for w in [w for w in _words(a) if len(w) > 3]:
+                if any(w in p["text"] for p in listed if not std(p)) and not any(w in p["text"] for p in listed if std(p)):
+                    alt = [p["id"] for p in pieces if std(p) and w in p["text"]][:6]
+                    if alt: errors.append(f"required: \"{a}\" shows '{w}' only through an overlay ({', '.join(p['id'] for p in listed if not std(p))}); an overlay drawn on a table is mostly hidden by it and does not read as a {w}. Use a standing piece that shows it, e.g. {', '.join(alt)}.")
             continue
         if r.get("missing"):
             words = _words(a)
