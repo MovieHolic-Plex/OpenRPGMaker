@@ -16,6 +16,7 @@ import { GAME_CARD, MUSIC_TIER, TERRAIN_CARD, fallenTierCard, storeTierCard, wan
 import { MAKE_GAME_CARD, makeGameOn, wantsMakeGame } from "./makeGame";
 import { BLUEPRINT_CARD, blueprintPin } from "./blueprint";
 import { wantsWholeGame } from "./shipChecks";
+import { musicOnly } from "./musicWords";
 
 export const V2_CORE_PROMPT = [
   "너는 OPRN RPG 편집기의 조수(v2)다. 역할 분담: 너는 «무엇을» 정한다(명세), 함수가 «어떻게» 짓는다(결정론 빌더), 다른 눈(독립 비평가)이 1배 그림을 본다.",
@@ -50,7 +51,7 @@ export function conditionalCards(project: Project, currentMapId?: string, task =
   const monster = MONSTER_WORDS.test(task) || /^oprn-monster/u.test(tileset?.family ?? "");
   const contract = project.gameDesignBrief?.implementation?.harnessId === "romance-scene";
   const joseon = JOSEON_WORDS.test(task) || tileset?.id === "joseon_baram";
-  return [...(monster ? [MONSTER_TOWN_CARD] : []), ...(joseon ? [JOSEON_CARD] : []), ...(WIZARDING_WORDS.test(task) || tileset?.id === "wizarding_world" ? [WIZARDING_CARD] : []), ...(contract || SCENE_WORDS.test(task) ? [SCENE_CARD] : []), ...(wantsGameTools(task) ? [GAME_CARD, ...[fallenTierCard(task)].filter(Boolean)] : wantsMusicTools(task) ? [`[음악 요청 — 이 도구를 쓴다]\n${MUSIC_TIER.card}`] : []), ...(wantsTerrainTools(task) ? [TERRAIN_CARD] : []), ...(wantsStoreTools(task) ? [storeTierCard(task)] : []), ...(makeGameOn() && wantsMakeGame(task) ? [MAKE_GAME_CARD] : [])];
+  return [...(monster ? [MONSTER_TOWN_CARD] : []), ...(joseon ? [JOSEON_CARD] : []), ...(WIZARDING_WORDS.test(task) || tileset?.id === "wizarding_world" ? [WIZARDING_CARD] : []), ...(contract || SCENE_WORDS.test(task) ? [SCENE_CARD] : []), ...(musicOnly(task) ? [`[음악만 바라는 요청 — 곡을 찾고·넣고·거는 일만 한다. 맵·이벤트·물건은 고치지 않는다(이미 있던 문제는 보고에 참고로만 적는다)]\n${MUSIC_TIER.card}`] : wantsGameTools(task) ? [GAME_CARD, ...[fallenTierCard(task)].filter(Boolean)] : wantsMusicTools(task) ? [`[음악 요청 — 이 도구를 쓴다]\n${MUSIC_TIER.card}`] : []), ...(wantsTerrainTools(task) && !musicOnly(task) ? [TERRAIN_CARD] : []), ...(wantsStoreTools(task) ? [storeTierCard(task)] : []), ...(makeGameOn() && wantsMakeGame(task) ? [MAKE_GAME_CARD] : [])];
 }
 
 export function buildV2SystemPrompt(project: Project, currentMapId?: string, task?: string): string[] {

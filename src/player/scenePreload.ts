@@ -149,6 +149,8 @@ export function mapSceneUrls(project: Project, mapId: MapId): Set<string> {
   try {
     const bgm = resolveMapBgm(project, mapId);
     if (bgm.kind === "play") strings.add(bgm.resourceId);
+    // 스위치가 켜진 동안의 곡(추격 곡)도 이 맵에서 울릴 수 있다.
+    for (const entry of project.maps[mapId]?.bgmWhileSwitch ?? []) if (entry?.resourceId) strings.add(entry.resourceId);
   } catch { /* 맵 트리가 낡았으면 맵 글자만 쓴다 */ }
   urlsFromStrings(strings, project, urls);
   return urls;
