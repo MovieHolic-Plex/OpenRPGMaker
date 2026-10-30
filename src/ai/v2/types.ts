@@ -166,7 +166,7 @@ export interface EventSpec {
   readonly kind: "cutscene" | "talk" | "trigger";
   readonly mapId?: string;
   /** 언제: 게임 시작 자동 재생 / 칸을 밟으면 / 말을 걸면. */
-  readonly when?: "game-start" | "touch" | "talk";
+  readonly when?: "game-start" | "enter" | "touch" | "talk";
   readonly where?: string;
   readonly at?: { readonly x: number; readonly y: number };
   /** 이 NPC(이름)와 대화가 끝나면 이어서 재생 — 그 NPC 의 말 걸기 끝에 붙는다(한 번만). */

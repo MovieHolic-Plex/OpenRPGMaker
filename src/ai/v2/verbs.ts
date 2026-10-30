@@ -952,7 +952,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     description: "Make a cutscene or dialogue event as a list of beats (walk/say/appear/face/wait/fade/tint/weather/shake/flash/music/emote/camera/look/vanish). The function decides walkable paths and spots and checks with a preview probe.",
     parameters: { type: "object", properties: { event: { type: "object", properties: {
       kind: { type: "string", enum: ["cutscene", "talk", "trigger"] }, mapId: { type: "string" },
-      when: { type: "string", enum: ["game-start", "touch", "talk"] }, where: { type: "string" }, at: POINT,
+      when: { type: "string", enum: ["game-start", "enter", "touch", "talk"], description: "game-start = once when the game starts (start map) · enter = once when the player enters this map (arrival spot) · touch = when the player steps on the scene cell (where/at) · talk = when talked to" }, where: { type: "string" }, at: POINT,
       after: { type: "string", description: "play right after talking with this NPC name ends (appended to the end of that NPC's talk, once only)" },
       afterTalk: { type: "array", items: { type: "string" }, description: "what that NPC says when talked to again after the after scene (if the situation changed, like night falling or after an incident). Omitted = the original lines" },
       afterPage: { type: "integer", description: "when the after NPC has several talk pages, the page number (from 0) to attach the scene to. If pages split like day/night, the page where the scene happens — if unsure leave it empty and the call returns the page list" },
