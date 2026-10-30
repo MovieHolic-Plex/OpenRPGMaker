@@ -116,6 +116,8 @@ export class V2Session {
   readonly designBounced = new Map<string, number>();
   /** 장소 이름 → 칸 배치 거절 횟수(고치기 두 번까지). */
   readonly layoutRejects = new Map<string, number>();
+  /** 거절된(아직 짓지 않은) 칸 배치 장소 — 맵 id·장소 이름으로. edit_place layoutPatch 가 이것을 고쳐 make_place 로 다시 보낸다. */
+  readonly pendingLayouts = new Map<string, PlaceSpec>();
   /** 지형 설계(hints.landform) 없이 온 마을 make_place 를 한 번 되돌려 보낸 장소 이름(2026-10-29 「지형을 먼저 깔고 마을은 지형에 맞춰 자란다」). */
   readonly terrainBounced = new Set<string>();
   /** 코드 지형 마을: 미리보기로 보여 준 땅(장소 이름 → 씨앗·크기·성격 힌트). 자리(hints.layout)를 받아 지을 때 같은 땅을 쓴다. */
@@ -891,7 +893,13 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
       const layoutTries = hasLayout(spec) ? session.layoutRejects.get(spec.name) ?? 0 : 0;
       if (hasLayout(spec)) spec = { ...spec, hints: { ...(spec.hints ?? {}), layoutRepairsLeft: 2 - layoutTries } };
       let result = builder.build(run, spec);
-      if (hasLayout(spec)) { if (!result.ok && /^Rejected:/u.test(result.summary)) session.layoutRejects.set(spec.name, layoutTries + 1); else if (result.ok) session.layoutRejects.delete(spec.name); }
+      if (hasLayout(spec)) {
+        // 거절된 배치는 기억한다 — 모델이 edit_place layoutPatch 로 그것을 고쳐 보내면 받아 준다(2026-10-31 6회차 terra-high 여관: 거절 뒤 layoutPatch 네 번이
+        // «짓지 않은 맵»으로 거절돼 짓지 못하고 끝났다).
+        const keys = [spec.name, spec.mapId, env.ctx.currentMapId].filter((k): k is string => !!k);
+        if (!result.ok && /^Rejected:/u.test(result.summary)) { session.layoutRejects.set(spec.name, layoutTries + 1); for (const k of keys) session.pendingLayouts.set(k, spec); }
+        else if (result.ok) { session.layoutRejects.delete(spec.name); for (const [k, v] of [...session.pendingLayouts]) if (v.name === spec.name || keys.includes(k)) session.pendingLayouts.delete(k); }
+      }
       // 칸 배치가 거절되면 짓지 않고 문제 목록(칸 좌표)을 돌려준다 — 고칠 횟수가 다 차면 배치 없이 옛 빌더로 짓는다.
       const bboxState = result.state as { bbox?: "dungeon" | "village"; rejected?: string[] } | undefined;
       if (!result.ok && bboxState?.bbox && bboxState.rejected) {
@@ -957,6 +965,16 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
       // 칸 배치 고침: 지금 배치에 그대로 적용해 set.layout 으로 다시 짓는다(검증은 짓기가 한다). 빈 껍데기는 «고침 없음».
       if (patch.layoutPatch && !layoutPatchIsEmpty(patch.layoutPatch)) {
         const cur = record?.spec.layout;
+        const pending = !record || !layoutGiven(cur) ? session.pendingLayouts.get(patch.mapId) ?? session.pendingLayouts.get(String(patch.set?.name ?? "")) : undefined;
+        if (pending && layoutGiven(pending.layout)) {
+          // 거절된 배치 고치기: 그 배치에 고침을 적용해 make_place 로 다시 보낸다(고치기 횟수는 make_place 가 센다).
+          const ap = applyLayoutPatch(pending.layout!, patch.layoutPatch);
+          if (ap.errors.length) return text({ ok: false, summary: `Rejected: the layout patch for "${pending.name}" (not built yet — your last make_place layout was rejected) does not apply:\n- ${ap.errors.join("\n- ")}\nYou sent: ${JSON.stringify(patch.layoutPatch).slice(0, 400)}\nFixed call: edit_place again with layoutPatch entries that match that layout (exact id and x,y), or make_place with the full corrected spec.layout.` });
+          const res = await makePlace.execute(id, { spec: { ...pending, layout: ap.layout } });
+          const head = res.content[0];
+          if (head && head.type === "text") { try { const j = JSON.parse(head.text) as Record<string, unknown>; res.content[0] = { type: "text", text: JSON.stringify({ note: `layoutPatch applied to your rejected (not yet built) layout for "${pending.name}" and sent as make_place.`, ...j }) }; } catch { /* 글 그대로 */ } }
+          return res;
+        }
         if (!record || !layoutGiven(cur)) return text({ ok: false, summary: `layoutPatch needs a place laid from spec.layout; ${patch.mapId} was not laid that way in this run. Send patch.set.layout with a full layout instead.` });
         const ap = applyLayoutPatch(cur!, patch.layoutPatch);
         if (ap.errors.length) return text({ ok: false, summary: `Rejected: the layout patch for "${record.spec.name}" does not apply:\n- ${ap.errors.join("\n- ")}\nYou sent: ${JSON.stringify(patch.layoutPatch).slice(0, 400)}\nFixed call: edit_place again with layoutPatch entries that match the current layout (exact id and x,y of an entry), or replace the whole field.` });

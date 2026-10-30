@@ -66,6 +66,15 @@ const fresh = () => {
     if (r.ok) { const id = r.mapIds[0]; fs.writeFileSync(`${out}/bad-dropped.png`, renderMapPng(env.ctx.project, env.ctx.project.maps[id]!, 2).png); break; }
   }
 }
+// 2b) 거절된 배치를 edit_place layoutPatch 로 고쳐 보내기(짓지 않은 맵) — 거절 배치를 기억해 고침을 적용하고 make_place 로 다시 보낸다
+{
+  const { env, call } = fresh();
+  const bad = { ...layout, objects: [...(layout.objects ?? []), { id: "golden unicorn", x: 3, y: 8 }] };
+  const r0 = await call("make_place", { spec: { type: "interior", name: "Probe Pending", layout: bad } });
+  console.log(`\n[pending 0] ok=${r0.ok} ${String(r0.summary).slice(0, 160)}`);
+  const r1 = await call("edit_place", { patch: { mapId: env.ctx.currentMapId, layoutPatch: { remove_objects: [{ id: "golden unicorn", x: 3, y: 8 }] } } });
+  console.log(`[pending patch] ok=${r1.ok} note=${r1.note ?? "-"} ${String(r1.summary).slice(0, 300)}`);
+}
 // 3) 던전으로 보낸 감옥 → 실내 길(배치 없으면 되돌려 보냄)
 {
   const { call } = fresh();

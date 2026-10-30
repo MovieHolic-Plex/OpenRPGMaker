@@ -247,7 +247,7 @@ export function rejectionText(name: string, check: LayoutCheck, sent: unknown, l
     ...all.slice(0, 30).map((e) => `- ${e}`),
     ...(check.warnings.length ? ["Warnings (fix if you can):", ...check.warnings.slice(0, 8).map((w) => `- ${w}`)] : []),
     `You sent: ${sentText}${sentText.length >= 500 ? "…" : ""}`,
-    `Fixed call: make_place again with the same name and the full corrected spec.layout — change only what the problems name (move or drop the listed pieces, close or extend the named walls, carve the missing doors, shrink or furnish the empty rooms). ${left > 0 ? `${left} repair${left === 1 ? "" : "s"} left; after that, pieces that still fail are left out, the rest is laid and space problems stay as warnings.` : "This was the last repair: next time the pieces that still fail are left out and the rest is laid."}`].join("\n");
+    `Fixed call: make_place again with the same name and the full corrected spec.layout (or edit_place({patch:{mapId, layoutPatch}}) with just the changes — it patches this rejected layout and sends it again) — change only what the problems name (move or drop the listed pieces, close or extend the named walls, carve the missing doors, shrink or furnish the empty rooms). ${left > 0 ? `${left} repair${left === 1 ? "" : "s"} left; after that, pieces that still fail are left out, the rest is laid and space problems stay as warnings.` : "This was the last repair: next time the pieces that still fail are left out and the rest is laid."}`].join("\n");
 }
 
 /** 지은 뒤 남기는 선언(맵 위치 note) — 할 일 검사 layout_built 가 읽는다. 좌표는 지은 맵 좌표. */
