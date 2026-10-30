@@ -84,11 +84,24 @@ export const FIRST_LOVE_STYLE_LOCK: FlagshipStyleLock = {
   bannedProperNouns: BANNED_IP_PROPER_NOUNS,
 } as const;
 
+export const JOSEON_HAEWON_STYLE_LOCK: FlagshipStyleLock = {
+  demoId: "joseon-haewon",
+  presetId: "adventure-jrpg",
+  resolution: { width: 480, height: 270 },
+  cameraZoom: 1,
+  dialogueStyle: "joseon",
+  allowedTilesetIds: ["joseon_baram"],
+  allowedCharsetPrefixes: ["easyrpg-charset-actor", "easyrpg-charset-people", "tex_easyrpg_charset_"],
+  allowedPortraitPrefixes: [],
+  bannedProperNouns: BANNED_IP_PROPER_NOUNS,
+} as const;
+
 export const FLAGSHIP_STYLE_LOCKS: Readonly<Record<FlagshipDemoId, FlagshipStyleLock>> = {
   "chrono-bell": CHRONO_BELL_STYLE_LOCK,
   "emerald-crown": EMERALD_CROWN_STYLE_LOCK,
   "shitamachi-fourth-season": SHITAMACHI_STYLE_LOCK,
   "first-love": FIRST_LOVE_STYLE_LOCK,
+  "joseon-haewon": JOSEON_HAEWON_STYLE_LOCK,
 } as const;
 
 export const CHRONO_BELL_BEATS: readonly FlagshipBeat[] = [
@@ -207,6 +220,13 @@ export const SHITAMACHI_FOURTH_SEASON_BEATS: readonly FlagshipBeat[] = [
 ];
 
 
+const JOSEON_HAEWON_BEATS: readonly FlagshipBeat[] = [
+  { id: "jw-01", atMinute: 0, act: "도착", mapKey: "map_jw_village", sceneTitle: "청석골 들머리", playerFeel: "감영 검률이 우물에 빠져 죽은 아이 소식을 듣고 고을에 들어선다", mechanics: ["autorun", "presentItem"], sharedAssets: ["joseon-v20-64x56"] },
+  { id: "jw-02", atMinute: 3, act: "사건 1", mapKey: "map_jw_office", sceneTitle: "동헌 검안", playerFeel: "덮은 시신을 살피고 증언을 모은다 — 말이 증거와 어긋나는 사람을 찾는다", mechanics: ["author_mystery_case", "journal"], sharedAssets: ["joseon-in-office-17x15"] },
+  { id: "jw-03", atMinute: 10, act: "사건 1", mapKey: "map_jw_office", sceneTitle: "지목", playerFeel: "이방 앞에서 범인을 고한다. 틀려도 이야기는 이어진다", mechanics: ["verdict-chapter", "switch"], sharedAssets: [] },
+  { id: "jw-04", atMinute: 13, act: "사건 1 밤", mapKey: "map_jw_village", sceneTitle: "밤 우물", playerFeel: "불이 꺼진 고을, 우물가의 원혼에게 진범의 이름을 고해 원한을 푼다", mechanics: ["setLighting", "addLight", "battleProcessing", "troop-page-choice"], sharedAssets: [] },
+];
+
 const FIRST_LOVE_BEATS: readonly FlagshipBeat[] = [
   { id: "fl-01", atMinute: 0, act: "월요일", mapKey: "fl_platform_am", sceneTitle: "첫 출근", playerFeel: "아침 승강장에서 회사까지 걸어간다", mechanics: ["autorun", "letterbox"], sharedAssets: ["oprn-charset-modern2"] },
   { id: "fl-02", atMinute: 2, act: "월요일", mapKey: "fl_office", sceneTitle: "처음 뵙겠습니다", playerFeel: "사수로 온 첫사랑이 모르는 척한다", mechanics: ["choices", "bust-expression"], sharedAssets: ["shared-modern-casual-boy-hoodie-expressions-bust-base"] },
@@ -307,6 +327,26 @@ export const FLAGSHIP_BEAT_MANIFESTS: Readonly<Record<FlagshipDemoId, FlagshipBe
     ],
     beats: FIRST_LOVE_BEATS,
     styleLock: FIRST_LOVE_STYLE_LOCK,
+  },
+  "joseon-haewon": {
+    id: "joseon-haewon",
+    title: "해원 : 청석골 검안록",
+    subtitle: "조선 검안 미스터리 · 죽은 자의 원한을 증거로 푼다",
+    genreChoiceId: "adventure-jrpg",
+    targetMinutes: 18,
+    mapCount: 4,
+    endingCount: 0,
+    releaseOrder: 4,
+    priorityRank: 4,
+    summary: "감영 검률 정씨가 청석골에 내려온다. 우물에 빠져 죽은 아이, 말을 바꾸는 이웃, 밤마다 우물가에서 우는 소리. 시신을 검안해 진범을 지목하고, 밤에는 원혼에게 그 이름을 고해 원한을 풀어 보낸다.",
+    thumb: "/assets/start/builtin/firstlove-title.webp",
+    cast: [
+      { id: "actor_hero", name: "정 검률", role: "주인공 · 감영에서 내려온 검률", assetId: "easyrpg-charset-actor1" },
+      { id: "npc_jw_ibang", name: "이방", role: "관아 이방", assetId: "easyrpg-charset-actor3" },
+      { id: "npc_jw_wolhwa", name: "월화", role: "고을 만신", assetId: "easyrpg-charset-people1" },
+    ],
+    beats: JOSEON_HAEWON_BEATS,
+    styleLock: JOSEON_HAEWON_STYLE_LOCK,
   },
 } as const;
 

@@ -11,6 +11,8 @@
  * 등장 칩: 조선 검수에서 허용된 RTP 칩만(설계 2절 「사람」). 귀신은 맵에 몸으로 나오지 않는다 — 빛·소리·그림 한 겹뿐.
  */
 import { charsetFrameIndex } from "@/assets/easyrpgRtp";
+import { FLAGSHIP_BEAT_MANIFESTS } from "./beats";
+import type { FlagshipDemoBuildResult } from "./types";
 import { prepareTool } from "@/editor/tools/asyncToolRunner";
 import { runTool } from "@/editor/tools/toolRunner";
 import "@/editor/tools/toolRegistry";
@@ -99,6 +101,7 @@ const faceHero = (eventId: string): Command =>
   ({ kind: "moveEvent", eventId, route: { moves: [{ kind: "turnTowardPlayer" }], repeat: false, wait: true, skippable: true } } as Command);
 const transfer = (mapId: string, x: number, y: number, direction: Dir = "down"): Command =>
   ({ kind: "transfer", mapId, x, y, direction, fade: "black" } as Command);
+void SE_DOOR; void transfer; // 사건 2·3 에서 쓴다
 
 const stageIs = (n: number): EventPageCondition => ({ kind: "variable", variableId: V_STAGE, op: "==", value: n } as EventPageCondition);
 const stageAtLeast = (n: number): EventPageCondition => ({ kind: "variable", variableId: V_STAGE, op: ">=", value: n } as EventPageCondition);
@@ -165,7 +168,7 @@ const INN = { jumo: { x: 12, y: 6 }, bed: { x: 18, y: 4 } } as const;
 
 const ITEM = (clue: string) => `item_mystery_c1_${clue}`;
 
-export function createJoseonHaewonFlagshipDemo(): { id: string; project: Project; serialized: string } {
+export function createJoseonHaewonFlagshipDemo(): FlagshipDemoBuildResult {
   assertPreloaded();
   const project = createBlankProject();
   const initialMapIds = Object.keys(project.maps);
@@ -226,7 +229,13 @@ export function createJoseonHaewonFlagshipDemo(): { id: string; project: Project
   project.startPos = { ...V.arrive };
 
   const serialized = serialize(project);
-  return { id: "joseon-haewon", project: deserialize(serialized), serialized };
+  const reloaded = deserialize(serialized);
+  return {
+    id: "joseon-haewon",
+    manifest: { ...FLAGSHIP_BEAT_MANIFESTS["joseon-haewon"], mapCount: Object.keys(reloaded.maps).length, endingCount: reloaded.endings?.length ?? 0 },
+    project: reloaded,
+    serialized,
+  };
 }
 
 // ── 프롤로그 「청석골에 들다」 ──

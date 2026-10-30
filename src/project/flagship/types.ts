@@ -6,6 +6,7 @@ export const FLAGSHIP_DEMO_IDS = [
   "emerald-crown",
   "shitamachi-fourth-season",
   "first-love",
+  "joseon-haewon",
 ] as const;
 
 export type FlagshipDemoId = (typeof FLAGSHIP_DEMO_IDS)[number];

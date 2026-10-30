@@ -130,7 +130,7 @@ async function bootExportedPlayer(root: HTMLElement): Promise<void> {
   rebaseRuntimeCssAssetUrls(assetBase);
   const rawDemoParam = new URLSearchParams(window.location.search).get("demo");
   const demoParam = rawDemoParam === "fallen-star" ? "chrono-bell" : rawDemoParam === "astra-horizon" ? "emerald-crown" : rawDemoParam;
-  if (demoParam === "chrono-bell" || demoParam === "emerald-crown" || demoParam === "shitamachi-fourth-season" || demoParam === "first-love") {
+  if (demoParam === "chrono-bell" || demoParam === "emerald-crown" || demoParam === "shitamachi-fourth-season" || demoParam === "first-love" || demoParam === "joseon-haewon") {
     const loader = mountBootLoader(root, { title: document.title });
     const demo = await loadFlagshipDemo(demoParam, assetBase, (bytes) => loader.projectProgress(bytes), devQaDemoUrl(boot), (done, total, bytes) => loader.definitionsProgress(done, total, bytes));
     if (!demo.ok) { loader.remove(); renderBootError(root, demo.message); return; }
@@ -301,8 +301,10 @@ async function loadBundledProject(projectUrl: URL, onBytes: (bytes: number) => v
  */
 async function loadFlagshipDemo(id: string, assetBase: URL, onBytes: (bytes: number) => void, devBakedUrl?: URL, onDefinitions?: BundledJsonProgress): Promise<BundledProjectLoad> {
   if (import.meta.env.DEV && !devBakedUrl) {
-    const { createFlagshipDemoProject } = await import("@/project/flagship");
-    return { ok: true, project: createFlagshipDemoProject(id as Parameters<typeof createFlagshipDemoProject>[0]).project };
+    const { createFlagshipDemoProject, preloadFlagshipDemo } = await import("@/project/flagship");
+    const demoId = id as Parameters<typeof createFlagshipDemoProject>[0];
+    await preloadFlagshipDemo(demoId);
+    return { ok: true, project: createFlagshipDemoProject(demoId).project };
   }
   try {
     const response = await fetchTextWithProgress(devBakedUrl ?? new URL(`demos/${encodeURIComponent(id)}.play.json`, assetBase), onBytes);

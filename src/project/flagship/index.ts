@@ -11,6 +11,7 @@ import {
 import { createChronoBellFlagshipDemo } from "./chronoBell";
 import { createEmeraldCrownFlagshipDemo } from "./emeraldCrown";
 import { createFirstLoveFlagshipDemo } from "./firstLove";
+import { createJoseonHaewonFlagshipDemo, preloadJoseonHaewon } from "./joseonHaewon";
 import { createShitamachiFourthSeasonFlagshipDemo } from "./shitamachiFourthSeason";
 import {
   FLAGSHIP_DEMO_IDS,
@@ -68,7 +69,18 @@ export const FLAGSHIP_DEMO_SPECS: Readonly<Record<FlagshipDemoId, FlagshipDemoSp
     manifest: FLAGSHIP_BEAT_MANIFESTS["first-love"],
     build: createFirstLoveFlagshipDemo,
   },
+  "joseon-haewon": {
+    id: "joseon-haewon",
+    choiceId: "adventure-jrpg",
+    manifest: FLAGSHIP_BEAT_MANIFESTS["joseon-haewon"],
+    build: createJoseonHaewonFlagshipDemo,
+  },
 };
+
+/** 등록 장소를 쓰는 데모는 지도 사본을 먼저 받아야 동기 빌더가 돈다(regionReferences 비동기 적재). */
+export async function preloadFlagshipDemo(id: FlagshipDemoId): Promise<void> {
+  if (id === "joseon-haewon") await preloadJoseonHaewon();
+}
 
 export function createFlagshipDemoProject(id: FlagshipDemoId): FlagshipDemoBuildResult {
   const spec = FLAGSHIP_DEMO_SPECS[id];

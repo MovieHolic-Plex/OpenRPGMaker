@@ -16,7 +16,7 @@ import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from
 import { createHash } from "node:crypto";
 import { gzipSync } from "node:zlib";
 import { join } from "node:path";
-import { FLAGSHIP_DEMO_IDS, createFlagshipDemoProject } from "@/project/flagship";
+import { FLAGSHIP_DEMO_IDS, createFlagshipDemoProject, preloadFlagshipDemo } from "@/project/flagship";
 import { serialize } from "@/project/io";
 import { validateShippedPlayJson } from "@/project/flagship/ipCleanliness";
 import { demoLoreCounts, demoLoreProblems } from "@/project/flagship/loreKit";
@@ -41,6 +41,7 @@ const mb = (n: number) => (n / 1048576).toFixed(1);
 for (const id of FLAGSHIP_DEMO_IDS) {
   if (only && !only.includes(id)) continue;
   const started = performance.now();
+  await preloadFlagshipDemo(id);
   const { project } = createFlagshipDemoProject(id);
   const built = performance.now();
   const player = prepareWebExport(project).projectJson;
