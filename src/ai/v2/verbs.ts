@@ -931,13 +931,14 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     },
   };
   const BEAT_ITEM = { type: "object", properties: {
-        do: { type: "string", enum: ["walk", "say", "appear", "face", "wait", "fade", "tint", "weather", "shake", "flash", "music", "emote", "camera", "look", "vanish"] },
+        do: { type: "string", enum: ["walk", "say", "appear", "face", "wait", "fade", "tint", "weather", "shake", "flash", "music", "emote", "camera", "look", "vanish", "choose"] },
         who: { type: "string" }, to: { type: "string", description: "spot word (or 'x,y')" }, text: { type: "string" },
         where: { type: "string" }, looks: { type: "string" }, toward: { type: "string" }, ms: { type: "number" }, dir: { type: "string", enum: ["in", "out"] },
         tone: { type: "string", enum: ["night", "dusk", "dawn", "sepia", "clear"] }, as: { type: "string", enum: ["shadow", "ghost", "normal"] },
         weather: { type: "string", enum: ["rain", "storm", "snow", "fog", "none"] }, intensity: { type: "number" },
         strength: { type: "string", enum: ["weak", "medium", "strong"] }, axis: { type: "string", enum: ["both", "horizontal", "vertical"] }, color: { type: "string" },
-        action: { type: "string", enum: ["bgm", "se", "bgs", "stop", "fade"] }, emote: { type: "string", description: "emote: ! ? ♥ 땀 화 … zzz 반짝 전구 or exclamation·question·heart·sweat·anger·ellipsis·sleep·sparkle·idea·music·smile" }, query: { type: "string", description: "music: word to find the sound (festival·battle·town·sad·boss·door…; horror 비명 scream · 심장 heartbeat · 삐걱 creak · 물방울 drip · 웅웅 hum · 속삭임 whisper · 쾅 bang · 발소리 footsteps)" },
+        action: { type: "string", enum: ["bgm", "se", "bgs", "stop", "fade"] },
+        options: { type: "array", description: "choose: 2–4 answers the player picks from; each branch says its own reply and can move gold (negative = the player pays; not enough gold → the branch ends with a short refusal) or give an item by DB item name", items: { type: "object", properties: { label: { type: "string" }, lines: { type: "array", items: { type: "string" }, description: "reply lines after this pick — «이름: 대사» or a line by the choose who" }, gold: { type: "number" }, item: { type: "string" }, count: { type: "number" } }, required: ["label"] } }, emote: { type: "string", description: "emote: ! ? ♥ 땀 화 … zzz 반짝 전구 or exclamation·question·heart·sweat·anger·ellipsis·sleep·sparkle·idea·music·smile" }, query: { type: "string", description: "music: word to find the sound (festival·battle·town·sad·boss·door…; horror 비명 scream · 심장 heartbeat · 삐걱 creak · 물방울 drip · 웅웅 hum · 속삭임 whisper · 쾅 bang · 발소리 footsteps)" },
       }, required: ["do"] };
   const addEndingScene: PiToolShape = {
     name: "add_ending_scene", label: "엔딩 장면", concurrency: "exclusive",
@@ -959,7 +960,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
 
   const addEvent: PiToolShape = {
     name: "add_event", label: "사건·컷신", concurrency: "exclusive",
-    description: "Make a cutscene or dialogue event as a list of beats (walk/say/appear/face/wait/fade/tint/weather/shake/flash/music/emote/camera/look/vanish). The function decides walkable paths and spots and checks with a preview probe.",
+    description: "Make a cutscene or dialogue event as a list of beats (walk/say/appear/face/wait/fade/tint/weather/shake/flash/music/emote/camera/look/vanish/choose). choose = the player picks an answer and each branch replies differently (haggling, persuading, confessing) — use it instead of hand-writing choices with patch_event_page. The function decides walkable paths and spots and checks with a preview probe.",
     parameters: { type: "object", properties: { event: { type: "object", properties: {
       kind: { type: "string", enum: ["cutscene", "talk", "trigger"] }, mapId: { type: "string" },
       when: { type: "string", enum: ["game-start", "enter", "touch", "talk"], description: "game-start = once when the game starts (start map) · enter = once when the player enters this map (arrival spot) · touch = when the player steps on the scene cell (where/at) · talk = when talked to" }, where: { type: "string" }, at: POINT,

@@ -35,7 +35,8 @@ export const EVENT_CARD =
   "say{who,text} = a line (empty who = narration) / appear{who,where?,looks?,talk?} = «pops» into that spot (where can be omitted — if they then walk to the hero, the function picks a road cell 4–8 cells away; talk = lines when talked to after the cutscene) / " +
   "face{who,toward} = look toward / wait{ms} / fade{dir:'in'|'out'} / " +
   "tint{tone:'night'|'dusk'|'dawn'|'sepia'|'clear'} = screen color (night stays night after the cutscene; use clear to undo) / weather{weather:'rain'|'storm'|'snow'|'fog'|'none',intensity?:0~1} = real weather (rain starts → weather rain; do not fake it with tint; it stays after the cutscene) / shake{strength?:'weak'|'medium'|'strong',axis?:'vertical'(quake, thud)|'horizontal'(impact),ms?} = screen shake (do not fake a quake with camera) / flash{color?:'white'|'#rrggbb',ms?} = flash (lightning, explosion — do not fake it with fade) / music{action:'bgm'|'se'|'bgs'|'stop'|'fade',query} = change background music (festival, battle music…) · sound effect · bgs = ambient loop under the music (wind, heartbeat, hum) — query is a sound word (horror: 비명 scream · 심장 heartbeat · 삐걱 creak · 물방울 drip · 웅웅 hum · 속삭임 whisper · 쾅 bang · 발소리 footsteps are synthesized by the function) / emote{who,emote:'!'|'?'|'♥'|'땀'|'화'|'…'|'zzz'} = emotion icon over the head (use this for a surprised «!», not a line) / camera{to} = move the camera to a spot word, a person or 'x,y' to show it; to:'back' returns to the hero (it also returns at the end if you forget) / " +
-  "look{who,as:'shadow'|'ghost'|'normal'} = black silhouette · translucent ghost · normal look / vanish{who} = vanish like smoke (a «passing» shadow walks to a spot word on the opposite side from where it appeared and vanishes — walking next to someone makes it a «visiting» scene). " +
+  "look{who,as:'shadow'|'ghost'|'normal'} = black silhouette · translucent ghost · normal look / vanish{who} = vanish like smoke (a «passing» shadow walks to a spot word on the opposite side from where it appeared and vanishes — walking next to someone makes it a «visiting» scene) / " +
+  "choose{who,text?,options:[{label, lines?:[…], gold?, item?, count?}×2–4]} = the player picks an answer; each branch has its own reply (haggling, persuading, a confession) and can move gold (gold:-25 = the player pays 25; not enough gold ends that branch with a refusal) or give an item by DB name. With after:'<NPC>' the choice runs once at the end of that NPC's talk, so it cannot be repeated for profit. Beats after choose play in every branch. " +
   "Town and person names in lines must be the ones already in map names and existing NPC lines (do not invent new ones). " +
   "who: 주인공·player·hero = the player; any other name = a person appearing in the cutscene (bring them in with appear first, or use an NPC name already on the map). " +
   "The function simulates every walk on the real passability grid and fixes walks under 3 cells or unreachable ones, adds letterbox and facing, and the critic looks at a few scene pictures. " +
@@ -595,6 +596,7 @@ export function buildEvent(run: BuildRun, spec: EventSpec): EventBuildResult {
 
   // 3) 비트를 차례로 모의하며 script_cutscene 비트로 옮긴다.
   const out: Record<string, unknown>[] = [];
+  const chooses: Extract<EventBeat, { do: "choose" }>[] = [];
   const sayMoments: { who: string; text: string; x: number; y: number; visible: boolean; hx: number; hy: number }[] = [];
   const letterbox = spec.kind === "cutscene";
   const keyOf = (who: string): string | undefined => (isHero(who) ? PLAYER : actorIds.get(who));
@@ -784,6 +786,15 @@ export function buildEvent(run: BuildRun, spec: EventSpec): EventBuildResult {
         effects.push(`the screen flashes ${color}`);
         break;
       }
+      case "choose": {
+        // 고르는 말: script_cutscene 에는 선택 비트가 없어 자리 표지(label)만 두고, 컷신을 지은 뒤 그 자리를 choices 명령으로 바꾼다.
+        const opts = (b.options ?? []).filter((o) => String(o?.label ?? "").trim());
+        if (opts.length < 2) { warnings.push("choose: options 가 둘 이상 필요하다(각 {label, lines?, gold?, item?})."); break; }
+        out.push({ kind: "label", name: `${CHOOSE_LABEL}${chooses.length}` });
+        chooses.push(b);
+        effects.push(`the player picks one of ${opts.length} answers (${opts.map((o) => `«${o.label}»`).join(" / ")})`);
+        break;
+      }
       case "emote": {
         const key = keyOf(b.who) ?? ensureActor(b.who, i);
         if (!key) { warnings.push(`emote: 누군지 모르는 '${b.who}'.`); break; }
@@ -965,6 +976,24 @@ export function buildEvent(run: BuildRun, spec: EventSpec): EventBuildResult {
   const cutId = cd.eventId ?? hostId;
   if (!cutId) return fail("script_cutscene 가 이벤트 id 를 안 돌려줬다.", [mapId]);
   if (Array.isArray(cd.unsupportedCommands) && cd.unsupportedCommands.length > 0) warnings.push(`지원 안 되는 명령: ${JSON.stringify(cd.unsupportedCommands).slice(0, 160)}`);
+  if (chooses.length) {
+    // 고르는 말 자리 표지를 choices 명령으로 바꾼다(2026-10-31 씬 벤치 terra 흥정: add_event 에 선택이 없어 patch_event_page 로 중첩 선택지를 손으로
+    // 쓰다 changeGold 형식으로 두 번 거절 → 막힘. 판정 「흥정 선택지 없음 — 일반 상점 창만」).
+    const m0 = findMap(run.ctx.project, mapId);
+    const e0 = m0 ? eventsOf(m0).find((e) => e.id === cutId) : undefined;
+    const pi = e0?.pages ? Math.max(0, e0.pages.findIndex((p) => (cd.pageId ? p.id === cd.pageId : p.name === "컷신"))) : -1;
+    const pg = pi >= 0 ? e0!.pages![pi] : undefined;
+    if (pg) {
+      const swapped = (pg.commands ?? []).map((c) => {
+        const name = (c as { kind?: string; name?: string }).kind === "label" ? String((c as { name?: string }).name ?? "") : "";
+        if (!name.startsWith(CHOOSE_LABEL)) return c;
+        const ch = chooses[Number(name.slice(CHOOSE_LABEL.length))];
+        return ch ? chooseCommand(run.ctx.project, ch, warnings) : c;
+      });
+      const res = run.call("patch_event_page", { mapId, eventId: cutId, pageIndex: pi, set: { commands: swapped } });
+      if (!res.ok) warnings.push(`choose: 선택지를 넣지 못했다 — ${String(res.summary).slice(0, 200)}`);
+    }
+  }
 
   // 6) 컷신 검사(probe).
   const after = findMap(run.ctx.project, mapId);
@@ -1054,6 +1083,39 @@ export function buildEvent(run: BuildRun, spec: EventSpec): EventBuildResult {
     eventIds,
     stage: { mapId, hostEventId: cutId, frames: sim.frames, walks: sim.walks, checks, letterbox, effects, ...(hero ? { hero } : {}) },
   };
+}
+
+const CHOOSE_LABEL = "v2-choose-";
+
+/** choose 비트 → choices 명령. 갈래: 대답 대사 + 돈(모자라면 «모자란다»로 끝) + 물건. 취소는 막는다(흥정 도중 빠져나가 결과가 없는 길을 없앤다). */
+function chooseCommand(project: Project, b: Extract<EventBeat, { do: "choose" }>, warnings: string[]): Command {
+  const who = String(b.who ?? "").trim();
+  const lineCmd = (raw: string): Command => {
+    const m = /^([^:：]{1,12})[:：]\s*(.+)$/u.exec(raw.trim());
+    const speaker = m ? m[1]!.trim() : who;
+    const body = m ? m[2]!.trim() : raw.trim();
+    return (isHero(speaker) || !speaker ? { kind: "text", body } : { kind: "text", speaker, body }) as Command;
+  };
+  const items = (project.database.items ?? []) as unknown as { id: string; name?: string }[];
+  const options = b.options.filter((o) => String(o?.label ?? "").trim()).slice(0, 4).map((o) => {
+    const said = (o.lines ?? []).map((l) => String(l).trim()).filter(Boolean).map(lineCmd);
+    const gain: Command[] = [];
+    if (o.item) {
+      const want = String(o.item).trim();
+      const it = items.find((x) => String(x.name ?? "").trim() === want) ?? items.find((x) => x.id === want) ?? items.find((x) => want && String(x.name ?? "").includes(want));
+      if (it) gain.push({ kind: "changeItem", itemId: it.id, op: "+=", amount: Math.max(1, Math.round(o.count ?? 1)) } as unknown as Command);
+      else warnings.push(`choose: 물건 '${want}' 이 DB 아이템에 없어 그 갈래에서 뺐다(있는 이름: ${items.slice(0, 8).map((x) => x.name).join(", ")}).`);
+    }
+    const gold = Math.round(Number(o.gold ?? 0));
+    let branch: Command[];
+    if (gold < 0) {
+      const pay = { kind: "changeGold", op: "-=", amount: -gold } as unknown as Command;
+      branch = [{ kind: "fork", condition: { kind: "gold", op: ">=", amount: -gold }, then: [pay, ...gain, ...said],
+        else: [lineCmd(`${who ? `${who}: ` : ""}돈이 모자라는군. ${-gold}G 는 있어야 해.`)] } as unknown as Command];
+    } else branch = [...(gold > 0 ? [{ kind: "changeGold", op: "+=", amount: gold } as unknown as Command] : []), ...gain, ...said];
+    return { text: String(o.label).trim().slice(0, 40), branch };
+  });
+  return { kind: "choices", ...(b.text ? { prompt: String(b.text).trim() } : {}), options, cancelBehavior: "disallow" } as unknown as Command;
 }
 
 function dirTo(from: Cell, to: Cell): Dir {

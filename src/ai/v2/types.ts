@@ -206,7 +206,19 @@ export type EventBeat =
   /** 배경 음악 바꾸기·효과음·멈춤 — query 는 음원 찾을 낱말(festival·battle·town·sad…). */
   /** 머리 위 감정 표시(!·?·♥·땀·…) — 대사창으로 흉내 내지 않는다. */
   | { readonly do: "emote"; readonly who: string; readonly emote: string }
-  | { readonly do: "music"; readonly action?: "bgm" | "se" | "bgs" | "stop" | "fade"; readonly query?: string };
+  | { readonly do: "music"; readonly action?: "bgm" | "se" | "bgs" | "stop" | "fade"; readonly query?: string }
+  /** 플레이어가 고르는 말 — 갈래마다 대답 대사와 결과(돈·물건). 흥정·설득·고백처럼 고른 말에 따라 반응이 달라야 할 때. */
+  | { readonly do: "choose"; readonly who?: string; readonly text?: string; readonly options: readonly ChooseOption[] };
+export interface ChooseOption {
+  readonly label: string;
+  /** 고른 뒤 대사 — 「이름: 대사」 또는 그냥 대사(choose 의 who 가 말한다). */
+  readonly lines?: readonly string[];
+  /** 돈 — 음수는 낸다(-25), 양수는 받는다. 낼 돈이 모자라면 그 갈래는 «돈이 모자란다» 대사로 끝난다. */
+  readonly gold?: number;
+  /** 받는 물건 이름(DB 아이템 이름) · 개수. */
+  readonly item?: string;
+  readonly count?: number;
+}
 
 /** 없는 기물 — draw_object 의 인자. */
 export interface ObjectSpec {
