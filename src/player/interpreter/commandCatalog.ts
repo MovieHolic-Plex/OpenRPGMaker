@@ -3,6 +3,7 @@ import { normalizeLiftRide } from "@/project/eventCommands/liftRide";
 import { isParticlePreset, normalizeParticleDurationMs, normalizeParticleSizePercent, normalizeShakeDirection } from "@/project/eventCommands/cinematicStaging";
 import { playerChoiceText } from "@/project/choiceText";
 import { playMonsterSfx } from "@/player/monsterSfx";
+import { playProjectSeCue } from "@/player/seCuePlayback";
 import { monsterCampaign } from "@/project/monsterJournal";
 import { normalizeBlendMode } from "@/project/blendMode";
 import { normalizeEasing } from "@/project/easing";
@@ -1022,7 +1023,8 @@ export function executeCommand(
         : state.session.variables[command.amount.id] ?? 0;
       const gained = changeItem(state.session, command.itemId, command.op, amount);
       // 몬스터 장르: 아이템을 얻었을 때(=, += 로 늘었고 amount>0) 획득 소리.
-      if (gained && state.project && command.op !== "-=" && amount > 0) playMonsterSfx(state.project, "item-get");
+      // 아이템을 얻었을 때(=, += 로 늘었고 amount>0): 저작한 「아이템 획득」 자리 → 몬스터 장르 획득 소리.
+      if (gained && state.project && command.op !== "-=" && amount > 0 && !playProjectSeCue("itemGet", state.project)) playMonsterSfx(state.project, "item-get");
       return resumeNext(frame);
     }
     case "craftRecipe": {

@@ -29,6 +29,17 @@ export interface DetourInput {
 
 /** 주인공을 비켜 가는 새 moves(막힌 번호부터 갈아 끼운 전체 배열)를 돌려준다. 못 찾으면 null. */
 export function detourAroundPlayer(input: DetourInput): MoveCommand[] | null {
+  const found = detourSegment(input);
+  if (!found) return null;
+  return [...input.moves.slice(0, input.blockedIndex), ...found.path, ...input.moves.slice(found.resumeIndex)];
+}
+
+/**
+ * 막힌 걸음부터 이어지는 단순 걸음(move)들의 끝 칸까지, isPlayerAt 칸을 피해 가는 걸음들.
+ * resumeIndex = 원래 moves 에서 그 끝 칸 다음 명령 번호. 반복 경로가 경로 배열을 바꾸지 않고
+ * 한 번만 돌아가는 덧걸음으로 쓴다(playSceneAutonomous §routeDetour).
+ */
+export function detourSegment(input: DetourInput): { path: MoveCommand[]; resumeIndex: number; end: { x: number; y: number } } | null {
   const { moves, blockedIndex, from } = input;
   let k = blockedIndex, end = { x: from.x, y: from.y };
   while (k < moves.length) {
@@ -39,12 +50,23 @@ export function detourAroundPlayer(input: DetourInput): MoveCommand[] | null {
   }
   const straight = k - blockedIndex;
   if (straight === 0 || (end.x === from.x && end.y === from.y)) return null;
+  const path = shortestPathAvoiding(input, from, end, straight + 8);
+  return path ? { path, resumeIndex: k, end } : null;
+}
+
+/** from → end 의 4방향 최단 걸음(limit 걸음 안). isPlayerAt 칸과 canStep 이 막은 칸은 지나지 않는다. */
+export function shortestPathAvoiding(
+  input: Pick<DetourInput, "width" | "height" | "canStep" | "isPlayerAt">,
+  from: { readonly x: number; readonly y: number },
+  end: { readonly x: number; readonly y: number },
+  limit: number,
+): MoveCommand[] | null {
   if (end.x < 0 || end.y < 0 || end.x >= input.width || end.y >= input.height || input.isPlayerAt(end.x, end.y)) return null;
+  if (end.x === from.x && end.y === from.y) return [];
   const key = (x: number, y: number) => y * input.width + x;
   const prev = new Map<number, { at: number; dir: Dir }>();
   const queue: Array<{ x: number; y: number; d: number }> = [{ x: from.x, y: from.y, d: 0 }];
   const seen = new Set<number>([key(from.x, from.y)]);
-  const limit = straight + 8;
   let found = false;
   for (let head = 0; head < queue.length && head < 2000 && !found; head++) {
     const cur = queue[head]!;
@@ -65,7 +87,7 @@ export function detourAroundPlayer(input: DetourInput): MoveCommand[] | null {
     path.unshift({ kind: "move", dir: p.dir });
     id = p.at;
   }
-  return [...moves.slice(0, blockedIndex), ...path, ...moves.slice(k)];
+  return path;
 }
 
 /**

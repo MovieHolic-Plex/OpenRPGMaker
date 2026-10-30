@@ -146,6 +146,31 @@ FF6·크로노 트리거식 「필드에 보이는 적」을 조수가 한 마�
   두 칸 걸으면 발소리로 달려와 서 있는 주인공에 닿아 battle-scene, 대각 옆 정지 → battle-scene, 레버 소리 → 와서 닿아 battle-scene.
   `field-enemy` 게이트는 느낌표 멈춤 계약을 보므로 픽스처 추격자 둘을 `brain:"classic"` 으로 고정했다.
 
+## 호러 추격: 말풍선 끄기·발소리·숨기 소리 (2026-10-30 「이상 없음」 데모)
+
+계기: 밤 학교 추격 호러 데모 설계(`docs/games/school/design.md`, agent/game-school)가 「소리와 어둠으로 하는 공포」를 요구했는데,
+추격자는 걸어도 아무 소리가 없었고, 알아챈 순간 「!」·숨 고를 때 땀 말풍선이 만화처럼 떠서 첫 발각이 웃음이 됐다.
+
+- **말풍선 끄기(G5)**: `ChaseSightAlert.emote` 가 `null` 이면 알아챔 멈춤은 그대로 두고 말풍선만 띄우지 않는다(`holdForSightAlert`).
+  `movement.quietBreath:true` 면 지치기 숨 고르기(650ms 멈춤)는 남기고 땀 말풍선만 뺀다. 조수: `set_field_detection({emotes:"none"})` 한 인자로 둘 다,
+  `"default"` 로 되돌린다. `make_chase_scene` 은 프로젝트 장르가 `horror-chase` 면 기본이 none(`emotes` 로 바꾼다). 편집기: 추격 설정 「「!」·땀 말풍선 끄기」.
+- **추격자 발소리(G4)**: `movement.footsteps {se, everySteps?=2, radius?=10, volume?=1}`(`EventFootsteps`). 자율 이동이 칸을 옮길 때마다
+  (`moveAutonomousRuntimePosition` — 순찰·추격·수색·생활 이동 모두) 세어 everySteps 째에 낸다(`src/player/eventFootsteps.ts`).
+  음량 = volume × (1 − d/radius)², d 는 주인공까지 **걸음 거리**(4방향 BFS, 반경 안까지만, 길이 없으면 맨해튼+4 = 벽 너머로 먹먹하게).
+  좌우 = clamp(dx/8, −0.8, 0.8). 쫓는 동안은 박자가 짧아지니 발소리도 빨라진다. 숨어 있어도 들린다.
+  재생은 `playPositionalSound` — 엔진의 밸런스 값(명령 「밸런스」로 정하는 끈적한 pan)을 바꾸지 않는 위치음(`AudioPlayOptions.positional`)이고,
+  잠금 해제 전에는 큐에 쌓지 않는다(지나간 발소리를 나중에 몰아 들려주지 않는다). 헤드리스 장면(Phaser 없음)에서는 내지 않는다.
+  조수: `set_field_detection({footsteps:{…}})`·`make_chase_scene({footsteps})`. se 를 생략하면 공포 기본 패치 「공포 — 발소리 한 걸음」(`HORROR_SOUNDS` key `step`)을
+  내장 합성으로 한 번 만들어 다시 쓴다(`src/editor/tools/horrorSoundAssets.ts` `ensureHorrorSound`). `horror-chase` 장르의 `make_chase_scene` 은 생략해도 단다(false 면 끔).
+- **숨기 소리(G3)**: 「숨어 있음」 조건은 이미 있었다(`Condition {kind:"hiding", value}`, 편집기 조건 「숨어 있음」) — 병렬 이벤트·페이지 조건으로 숨은 동안 연출을 건다.
+  더한 것은 `interaction.hiding` 의 `enterSe`(숨을 때)·`exitSe`(나올 때, 생략 = enterSe)·`heldSe`(숨어 있는 동안 고리).
+  `heldSe` 는 BGM·BGS 채널이 아니라 엔진의 별도 고리(`AudioEngine.holdLoop`)라 맵 음악·환경음을 끊지 않는다. 매 프레임 `isPlayerHiding` 으로 맞추므로
+  나오기·붙잡힘(게임 오버 화면의 `stopAllAudio`)·맵 이동에서 저절로 멈추고, 저장 뒤 불러와도 숨어 있으면 다시 깔린다.
+  조수: `make_chase_scene({hidingSound:{enterSe?, exitSe?, heartbeat?}})` — 공포 장르는 생략해도 사물함 문 소리(`cc0-se-osx-door-close-03`) + 심장 고동(`HORROR_SOUNDS` heartbeat).
+  편집기: 물체 동작 「은신처」 아래 소리 칸 셋.
+- 저장 형식: 모두 선택 필드다. 옛 프로젝트는 그대로 돌고, 형식 검사(`shapeEventFields`)·허용 키(`eventPageKeys`)·정규화(`eventPages`)·스키마(`schemaShapes`)에 같이 넣었다.
+  내보내기는 프로젝트 문자열을 훑으므로(`webExportAssets`) 새 효과음 id 도 따라간다.
+
 ## 안전 장치 (도구가 거절하는 것)
 
 - 문·시작 위치·착지 칸·표지판 등 보호 칸(`protectedCells`) 맨해튼 거리 2 이내: `field-enemy-unsafe-spot`.

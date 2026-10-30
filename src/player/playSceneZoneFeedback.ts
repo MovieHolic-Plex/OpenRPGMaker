@@ -11,6 +11,7 @@ import { runtimePixelDensity } from "@/player/runtimeViewScale";
 import type { GameMap } from "@/project/types";
 import { createObjectiveCard, destroyObjectiveCard, syncObjectiveCard, type ObjectiveCard } from "@/player/objectiveCard";
 import { chooseObjectivePlacement, choosePromptPlacement, type ObjectivePlacement, type PlacementRect } from "@/player/objectivePlacement";
+import { eventMenuLocked } from "@/player/eventMenuLock";
 import {
   createZoneFeedbackModel,
   interactionPromptLabel,
@@ -163,9 +164,17 @@ export function syncPlaySceneZoneFeedback(
   // 안내를 먼저 놓는다 — 목표 창은 안내(다른 HUD)를 피해 자리를 고른다.
   if (host && feedback.dom && update.view.prompt && !update.view.suppressed) placePrompt(scene, feedback, host, update.view.prompt);
   if (host && feedback.dom && update.view.objective && !update.view.suppressed) placeObjective(scene, feedback, host, update.view.objective);
+  // 이벤트가 메뉴를 잠근 동안(기본, @/player/eventMenuLock) 터치 「메뉴」 단추를 숨긴다 — 눌러도 열리지 않는 단추를 보이지 않게.
+  // 키보드 X·Esc 는 player.ts 가 같은 규칙으로 막는다. 매 프레임 불러 이어지는 이벤트 사이 틈 보정도 여기서 센다.
+  const menuLocked = eventMenuLocked(scene.running, scene.session, performance.now());
+  const viewport = host?.closest<HTMLElement>(".play-viewport");
+  if (viewport && (viewport.dataset.eventMenuLocked === "true") !== menuLocked) {
+    if (menuLocked) viewport.dataset.eventMenuLocked = "true";
+    else delete viewport.dataset.eventMenuLocked;
+  }
   if (host) {
     // 로딩 막이 걷히고 이벤트(도입 연출)가 끝나 실제로 움직일 수 있는 첫 순간부터 센다.
-    const controllable = !suppressed && !scene.running && !document.querySelector("[data-testid='play-loading-overlay']");
+    const controllable = !suppressed && !scene.running && !menuLocked && !document.querySelector("[data-testid='play-loading-overlay']");
     // 벽시계로 센다 — 게임 시간(elapsedMs)은 느린 기계에서 프레임 델타 상한 때문에 늘어져 2.8초 카드가 6초 떠 있었다.
     syncObjectiveCard(feedback.card ??= createObjectiveCard(), host, scene.session, update.view.objective, controllable, performance.now());
   }
