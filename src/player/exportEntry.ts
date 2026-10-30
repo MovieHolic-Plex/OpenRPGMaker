@@ -6,7 +6,8 @@ import { syncProjectFontTheme } from "@/app/fontTheme";
 
 installVitePreloadRecovery();
 import { PRODUCT_BRAND } from "@/brand";
-import { deserialize } from "@/project/io";
+import { deserialize, deserializeParsed } from "@/project/io";
+import { preloadBundledTilesetDefinitions } from "@/project/defaults/defaultAssets";
 import { OPRN_EXTENSION } from "@/project/package";
 import type { Project } from "@/project/types";
 import { renderPlayer } from "@/player/player";
@@ -248,6 +249,23 @@ async function readPreloadPlan(base: URL): Promise<{ readonly files: string[]; r
   }
 }
 
+/**
+ * 받은 project.json 을 읽어 Project 로 만든다. 번들 타일셋 정의(칩셋 하나에 수 MB)는 플레이어에서도 지연 JSON 이다
+ * (scripts/lib/bundledJsonLazy.mjs) — 첫 화면 청크에 모든 칩셋 정의를 싣던 때는 dist 진입 청크가 약 41MB 였다.
+ * 이 게임이 쓰는 타일셋 정의만 비동기로 받아 둔 뒤 되돌린다. 받지 않으면 되돌리기가 동기 요청 대비책으로 메인 스레드를 막는다.
+ */
+async function deserializeWithBundledTilesets(text: string): Promise<Project> {
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(text) as unknown;
+  } catch {
+    return deserialize(text); // 같은 형식 오류 문구를 낸다.
+  }
+  const tilesets = parsed && typeof parsed === "object" ? (parsed as { tilesets?: unknown }).tilesets : undefined;
+  if (tilesets && typeof tilesets === "object") await preloadBundledTilesetDefinitions(Object.keys(tilesets));
+  return deserializeParsed(parsed);
+}
+
 type BundledProjectLoad =
   | { readonly ok: true; readonly project: Project }
   | { readonly ok: false; readonly message: string };
@@ -259,7 +277,7 @@ async function loadBundledProject(projectUrl: URL, onBytes: (bytes: number) => v
       return { ok: false, message: `이 주소에는 번들된 게임이 없습니다. ${OPRN_EXTENSION} 게임 파일을 열어 주세요.` };
     }
     if (!response.ok) return { ok: false, message: `project.json 로드 실패 (${response.status})` };
-    return { ok: true, project: deserialize(response.text) };
+    return { ok: true, project: await deserializeWithBundledTilesets(response.text) };
   } catch (error) {
     return { ok: false, message: error instanceof Error ? error.message : String(error) };
   }
@@ -281,7 +299,7 @@ async function loadFlagshipDemo(id: string, assetBase: URL, onBytes: (bytes: num
   try {
     const response = await fetchTextWithProgress(devBakedUrl ?? new URL(`demos/${encodeURIComponent(id)}.play.json`, assetBase), onBytes);
     if (!response.ok) return { ok: false, message: `데모 ${id} 를 읽지 못했습니다 (${response.status})` };
-    return { ok: true, project: deserialize(response.text) };
+    return { ok: true, project: await deserializeWithBundledTilesets(response.text) };
   } catch (error) {
     return { ok: false, message: error instanceof Error ? error.message : String(error) };
   }

@@ -8,9 +8,12 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <title>OPRN Player</title>
     <style>
-      /* 불러오는 동안 검은 빈 화면 대신 점 셋이 깜박인다. 앱이 #app 에 무엇이든 붙이면 :empty 가 풀려 저절로 사라진다. */
-      #app:empty::after { content: "\2022  \2022  \2022"; position: fixed; inset: 0; display: grid; place-items: center; font: 16px/1 monospace; letter-spacing: 4px; color: #8aa; animation: oprn-boot-dots 1.2s steps(2) infinite; }
-      @keyframes oprn-boot-dots { 50% { opacity: 0.25; } }
+      /* 불러오는 동안 검은 빈 화면 대신 움직이는 막대가 보인다(글자 없음 — 게임 언어를 아직 모른다).
+         앱이 #app 에 무엇이든 붙이면 :empty 가 풀려 저절로 사라진다. */
+      #app:empty::before, #app:empty::after { content: ""; position: fixed; left: 50%; top: 50%; height: 4px; border-radius: 2px; }
+      #app:empty::before { width: 160px; margin: -2px 0 0 -80px; background: #1c2a2e; }
+      #app:empty::after { width: 48px; margin: -2px 0 0 -80px; background: #8ab; animation: oprn-boot-bar 1.1s ease-in-out infinite alternate; }
+      @keyframes oprn-boot-bar { to { transform: translateX(112px); } }
     </style>
   </head>
 <body style="margin:0;background:#000;color:#fff">
