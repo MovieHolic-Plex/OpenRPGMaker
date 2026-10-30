@@ -5,6 +5,12 @@
 
 <!-- releases -->
 
+## 0.372.1 — 2026-10-30
+
+### 수정
+
+- **runtime** — revert the off-thread tileset atlas bake (#3963) — maps rendered without tiles (#3975) (`1a93552`)
+
 ## 0.372.0 — 2026-10-30
 
 ### 기능
