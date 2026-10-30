@@ -274,6 +274,9 @@ export type SaveSnapshot = {
     readonly stepCount?: number;
     readonly stateStepCounts?: Record<string, Record<string, number>>;
     readonly highScores?: Record<string, number>;
+    readonly schedulePlans?: PlaySession["schedulePlans"];
+    readonly scheduleUses?: PlaySession["scheduleUses"];
+    readonly scheduleRun?: PlaySession["scheduleRun"];
     readonly storyJournal?: PlaySession["storyJournal"];
     readonly teleportPoints?: PlaySession["teleportPoints"];
     readonly playTimeSeconds?: number;
@@ -614,6 +617,9 @@ export function createSaveSnapshot(project: Project, input: PlaySession): SaveSn
       ...(session.stepCount ? { stepCount: Math.floor(session.stepCount) } : {}),
       ...(session.stateStepCounts && Object.keys(session.stateStepCounts).length > 0 ? { stateStepCounts: structuredClone(session.stateStepCounts) } : {}),
       ...(session.highScores && Object.keys(session.highScores).length > 0 ? { highScores: { ...session.highScores } } : {}),
+      ...(session.schedulePlans && Object.keys(session.schedulePlans).length > 0 ? { schedulePlans: structuredClone(session.schedulePlans) } : {}),
+      ...(session.scheduleUses && Object.keys(session.scheduleUses).length > 0 ? { scheduleUses: structuredClone(session.scheduleUses) } : {}),
+      ...(session.scheduleRun ? { scheduleRun: { ...session.scheduleRun } } : {}),
       ...(session.storyJournal && session.storyJournal.length > 0 ? { storyJournal: structuredClone(session.storyJournal) } : {}),
       ...(session.teleportPoints && session.teleportPoints.length > 0 ? { teleportPoints: structuredClone(session.teleportPoints) } : {}),
       playTimeSeconds: Math.floor(session.playTimeSeconds ?? 0),
@@ -1004,6 +1010,9 @@ export function applySaveSnapshot(project: Project, input: SaveSnapshot): PlaySe
   if (typeof snapshot.session.stepCount === "number") session.stepCount = snapshot.session.stepCount;
   if (snapshot.session.stateStepCounts) session.stateStepCounts = structuredClone(snapshot.session.stateStepCounts);
   if (snapshot.session.highScores) session.highScores = { ...snapshot.session.highScores };
+  if (snapshot.session.schedulePlans) session.schedulePlans = structuredClone(snapshot.session.schedulePlans);
+  if (snapshot.session.scheduleUses) session.scheduleUses = structuredClone(snapshot.session.scheduleUses);
+  if (snapshot.session.scheduleRun) session.scheduleRun = { ...snapshot.session.scheduleRun };
   if (snapshot.session.storyJournal) session.storyJournal = structuredClone(snapshot.session.storyJournal);
   if (snapshot.session.teleportPoints) session.teleportPoints = structuredClone(snapshot.session.teleportPoints);
   if (typeof snapshot.session.playTimeSeconds === "number") session.playTimeSeconds = snapshot.session.playTimeSeconds;
@@ -1509,6 +1518,9 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       playerFacing: session.playerFacing === "up" || session.playerFacing === "down" || session.playerFacing === "left" || session.playerFacing === "right" ? session.playerFacing : undefined,
       stateStepCounts: isNestedNumberRecord(session.stateStepCounts) ? session.stateStepCounts : undefined,
       highScores: isNumberRecord(session.highScores) ? session.highScores : undefined,
+      schedulePlans: isSchedulePlans(session.schedulePlans) ? session.schedulePlans : undefined,
+      scheduleUses: isNestedNumberRecord(session.scheduleUses) ? session.scheduleUses : undefined,
+      scheduleRun: isScheduleRun(session.scheduleRun) ? session.scheduleRun : undefined,
       storyJournal: normalizeJournalLines(session.storyJournal),
       teleportPoints: Array.isArray(session.teleportPoints)
         ? session.teleportPoints.filter((p): p is NonNullable<PlaySession["teleportPoints"]>[number] =>
@@ -1861,4 +1873,16 @@ function parseUniqueSaveJson(text: string): unknown {
     keys.add(key);
   }
   return value;
+}
+
+function isSchedulePlans(value: unknown): value is NonNullable<PlaySession["schedulePlans"]> {
+  return !!value && typeof value === "object" && !Array.isArray(value)
+    && Object.values(value as Record<string, unknown>).every((row) => Array.isArray(row) && row.every((id) => typeof id === "string"));
+}
+
+function isScheduleRun(value: unknown): value is NonNullable<PlaySession["scheduleRun"]> {
+  if (!value || typeof value !== "object") return false;
+  const run = value as { scheduleId?: unknown; index?: unknown; slotVariableId?: unknown };
+  return typeof run.scheduleId === "string" && typeof run.index === "number" && Number.isInteger(run.index) && run.index >= 0
+    && (run.slotVariableId === undefined || typeof run.slotVariableId === "string");
 }

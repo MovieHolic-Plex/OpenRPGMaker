@@ -443,6 +443,12 @@ export interface PlaySession {
   teleportPoints?: import("./teleportPoints").TeleportPoint[];
   /** 미니게임 최고 점수(id → 점수). 세이브에 들어간다. */
   highScores?: Record<string, number>;
+  /** 주간 일정표(G4): `planSchedule` 이 저장한 계획(scheduleId → 슬롯 순서의 활동 id). 세이브에 들어간다. project/schedule.ts */
+  schedulePlans?: import("./schedule").SchedulePlans;
+  /** 일정표 활동 사용 횟수(scheduleId → activityId → 횟수). `maxUses` 판정에 쓴다. 세이브에 들어간다. */
+  scheduleUses?: import("./schedule").ScheduleUses;
+  /** 진행 중인 `runSchedule`. 활동이 맵을 옮겨도 다음 슬롯을 이어 돌리는 대기열. 끝나면 지운다. 세이브에 들어간다. */
+  scheduleRun?: import("./schedule").ScheduleRunState;
   /** 이야기 일지 줄(«Journal Line» 이 쌓고 ESC 메뉴 「일지」 가 읽는다). 세이브에 들어간다. project/storyJournal.ts */
   storyJournal?: import("./storyJournal").JournalLine[];
   /** Key Poll 이 읽는 지금 눌린 키(필드 씬이 매 프레임 쓴다). 세이브에 넣지 않는다. */
