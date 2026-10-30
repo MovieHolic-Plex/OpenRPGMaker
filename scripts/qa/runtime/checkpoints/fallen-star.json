@@ -4395,7 +4395,7 @@
       {
        "kind": "hold",
        "dir": null,
-       "ms": 6000
+       "ms": 12000
       }
      ],
      "shot": true
@@ -4486,7 +4486,7 @@
       {
        "kind": "hold",
        "dir": null,
-       "ms": 4000
+       "ms": 12000
       }
      ],
      "shot": true
@@ -5194,7 +5194,7 @@
   {
    "id": "act2-b6-court",
    "label": "제2막 B6 — 도개교 앞 눈 턱: 순찰 기사가 보자마자 달려든다",
-   "note": "act2Opening.ts northFortress — 순찰 기사 COURT_SPOTS.knight (28,28)",
+   "note": "act2Opening.ts northFortress — 순찰 기사 COURT_SPOTS.knight (28,28) — 부하 걸린 호스트에서는 Phaser 프레임 시간이 17ms 로 고정돼 게임 시간이 벽시계의 1/3~1/4 로 흐른다(실측 15fps·delta 17). 맵 진입 은총 2초가 벽시계 8~10초가 되므로 접근 비트를 16초 기다린다",
    "mapId": "fs2_fort_court",
    "x": 22,
    "y": 28,
@@ -5233,7 +5233,7 @@
       {
        "kind": "hold",
        "dir": null,
-       "ms": 6000
+       "ms": 16000
       }
      ],
      "shot": true
