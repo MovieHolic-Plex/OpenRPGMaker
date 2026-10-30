@@ -10,6 +10,7 @@ import {
 } from "./beats";
 import { createChronoBellFlagshipDemo } from "./chronoBell";
 import { createEmeraldCrownFlagshipDemo } from "./emeraldCrown";
+import { createEighthSeatFlagshipDemo } from "./eighthSeat";
 import { createFirstLoveFlagshipDemo } from "./firstLove";
 import { createShitamachiFourthSeasonFlagshipDemo } from "./shitamachiFourthSeason";
 import {
@@ -67,6 +68,12 @@ export const FLAGSHIP_DEMO_SPECS: Readonly<Record<FlagshipDemoId, FlagshipDemoSp
     choiceId: "story-cutscene",
     manifest: FLAGSHIP_BEAT_MANIFESTS["first-love"],
     build: createFirstLoveFlagshipDemo,
+  },
+  "eighth-seat": {
+    id: "eighth-seat",
+    choiceId: "story-cutscene",
+    manifest: FLAGSHIP_BEAT_MANIFESTS["eighth-seat"],
+    build: createEighthSeatFlagshipDemo,
   },
 };
 

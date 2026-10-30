@@ -9,6 +9,7 @@ import { EMERALD_OPENING_BACKDROP_URLS } from "./emeraldOpeningBackdrops";
 import { ASTRA_CAST_URLS, ASTRA_TITLE_ART_URLS } from "./astraCast";
 import { FALLEN_STAR_BACKDROP_URLS } from "./fallenStarOpeningBackdrops";
 import { FIRST_LOVE_OPENING_BACKDROP_URLS } from "./firstLoveOpeningBackdrops";
+import { EIGHTH_SEAT_BACKDROP_URLS } from "./eighthSeatOpeningBackdrops";
 import { uploadedAssetUrl } from "@/project/persistence/assetAccessors";
 import { withInlineAsset } from "./inlineAssetStore";
 import { resolveCc0IconAssetUrl } from "./cc0IconAssets";
@@ -66,6 +67,8 @@ const BUILTIN_GENERATED_RESOURCE_URLS: Record<string, string | null> = {
   ...FALLEN_STAR_BACKDROP_URLS,
   // 『첫사랑』 오프닝 몽타주 배경(게임 맵을 1:1 로 구운 그림).
   ...FIRST_LOVE_OPENING_BACKDROP_URLS,
+  // 『여덟째 자리』 오프닝·타이틀 배경(게임 맵을 1:1 로 구운 그림).
+  ...EIGHTH_SEAT_BACKDROP_URLS,
   hero: null,
   "oprn-title-bright": "/assets/generated/title/oprn-title-bright-v2.png",
   "oprn-title-blue": "/assets/generated/title/default-title-blue.png",

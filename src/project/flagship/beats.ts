@@ -84,11 +84,31 @@ export const FIRST_LOVE_STYLE_LOCK: FlagshipStyleLock = {
   bannedProperNouns: BANNED_IP_PROPER_NOUNS,
 } as const;
 
+/** 『여덟째 자리』 — 마법 학교 번들의 원작 이름(스토어 WIZARDING_SCRUB 왼쪽 낱말)과 스토어 바꿈말(기숙사 넷)을 둘 다 막는다(설계서 2.1). */
+export const EIGHTH_SEAT_BANNED_NOUNS = [
+  ...BANNED_IP_PROPER_NOUNS,
+  "해리포터", "호그와트", "그리핀도르", "슬리데린", "래번클로", "후플푸프", "퀴디치", "허니듀크", "호그스미드", "다이애건", "올리밴더", "세스트랄", "스니치", "블러저", "쿼플",
+  "붉은 사자 기숙사", "초록 뱀 기숙사", "푸른 독수리 기숙사", "노란 오소리 기숙사", "덤블도어", "스네이프", "해그리드", "맥고나걸",
+] as const;
+
+export const EIGHTH_SEAT_STYLE_LOCK: FlagshipStyleLock = {
+  demoId: "eighth-seat",
+  presetId: "story-cutscene",
+  resolution: { width: 480, height: 270 },
+  cameraZoom: 1,
+  dialogueStyle: "pixel-cinematic",
+  allowedTilesetIds: ["wizarding_world"],
+  allowedCharsetPrefixes: ["oprn-charset-wizarding", "tex_oprn_charset_wizarding"],
+  allowedPortraitPrefixes: [],
+  bannedProperNouns: EIGHTH_SEAT_BANNED_NOUNS,
+} as const;
+
 export const FLAGSHIP_STYLE_LOCKS: Readonly<Record<FlagshipDemoId, FlagshipStyleLock>> = {
   "chrono-bell": CHRONO_BELL_STYLE_LOCK,
   "emerald-crown": EMERALD_CROWN_STYLE_LOCK,
   "shitamachi-fourth-season": SHITAMACHI_STYLE_LOCK,
   "first-love": FIRST_LOVE_STYLE_LOCK,
+  "eighth-seat": EIGHTH_SEAT_STYLE_LOCK,
 } as const;
 
 export const CHRONO_BELL_BEATS: readonly FlagshipBeat[] = [
@@ -217,6 +237,16 @@ const FIRST_LOVE_BEATS: readonly FlagshipBeat[] = [
   { id: "fl-07", atMinute: 17, act: "금요일 밤", mapKey: "fl_platform_pm", sceneTitle: "막차", playerFeel: "이번엔 먼저 말할까", mechanics: ["triggerEnding", "affection"], sharedAssets: [] },
 ];
 
+const EIGHTH_SEAT_BEATS: readonly FlagshipBeat[] = [
+  { id: "es-01", atMinute: 0, act: "오프닝", mapKey: "es_coach", sceneTitle: "아홉 번째 이름", playerFeel: "숲 승차장에 내려 장학석 명단에서 자기 이름을 찾는다", mechanics: ["opening-animatic", "letterbox"], sharedAssets: ["oprn-charset-wizarding1"] },
+  { id: "es-02", atMinute: 2, act: "1주", mapKey: "es_hall", sceneTitle: "입학 연회", playerFeel: "학장이 「자리는 여덟」을 말한다", mechanics: ["autorun", "choices"], sharedAssets: [] },
+  { id: "es-03", atMinute: 3, act: "1주", mapKey: "es_duelroom", sceneTitle: "결투 1 · 연습 갑옷", playerFeel: "예고를 읽고 방벽으로 받거나 끊는다", mechanics: ["battleProcessing", "chargeTurns", "troop-events"], sharedAssets: ["generated-enemy-armor-living"] },
+  { id: "es-04", atMinute: 6, act: "1주 저녁", mapKey: "es_dorm", sceneTitle: "여덟 자리야", playerFeel: "같은 방 세라의 첫마디에 대답한다", mechanics: ["choices", "journal"], sharedAssets: [] },
+  { id: "es-05", atMinute: 16, act: "3주", mapKey: "es_library", sceneTitle: "삼 년째래", playerFeel: "장부에서 친구 이름을 찾는다", mechanics: ["fork", "switch"], sharedAssets: [] },
+  { id: "es-06", atMinute: 26, act: "5주 밤", mapKey: "es_clock", sceneTitle: "태엽 속 목소리", playerFeel: "파수 기계와 싸우고 장부 원본 쪽을 얻는다", mechanics: ["battleGuests", "item"], sharedAssets: ["generated-enemy-golem-iron"] },
+  { id: "es-07", atMinute: 32, act: "6주", mapKey: "es_hall", sceneTitle: "결정전", playerFeel: "이길지, 지팡이를 내려놓을지", mechanics: ["changeTile", "presentItem", "triggerEnding"], sharedAssets: [] },
+];
+
 export const FLAGSHIP_BEAT_MANIFESTS: Readonly<Record<FlagshipDemoId, FlagshipBeatManifest>> = {
   "chrono-bell": {
     id: "chrono-bell",
@@ -307,6 +337,27 @@ export const FLAGSHIP_BEAT_MANIFESTS: Readonly<Record<FlagshipDemoId, FlagshipBe
     ],
     beats: FIRST_LOVE_BEATS,
     styleLock: FIRST_LOVE_STYLE_LOCK,
+  },
+  "eighth-seat": {
+    id: "eighth-seat",
+    title: "여덟째 자리",
+    subtitle: "마법 학원 한 학기 · 장학석은 여덟, 장학생은 아홉",
+    genreChoiceId: "story-cutscene",
+    targetMinutes: 36,
+    mapCount: 13,
+    endingCount: 4,
+    releaseOrder: 5,
+    priorityRank: 5,
+    summary: "케른 마도학원에는 장학생 자리가 여덟 개 있다. 올해 장학생은 아홉 명이다. 겨울 시험이 끝나면 꼴찌 둘이 결정전을 치르고, 진 사람은 학원에서 만난 사람의 기억을 두고 집으로 돌아간다. 아홉 번째 장학생 렌의 여섯 주 — 오후를 어디에 쓸지 고르고, 상대의 예고를 읽고 받아치는 결투 다섯 번, 그리고 3년째 「신입」인 친구의 비밀.",
+    thumb: "/assets/region-references/wz-space-library.png",
+    cast: [
+      { id: "actor_hero", name: "렌", role: "주인공 · 아홉 번째 장학생", assetId: "oprn-charset-wizarding1" },
+      { id: "npc_es_sera", name: "세라", role: "라이벌 · 장학생, 문헌학 반", assetId: "oprn-charset-wizarding1" },
+      { id: "npc_es_teo", name: "테오", role: "친구 · 약초학 반, 3년째 신입", assetId: "oprn-charset-wizarding2" },
+      { id: "npc_es_brandt", name: "브란트", role: "실기 교관 · 시험 감독", assetId: "oprn-charset-wizarding3" },
+    ],
+    beats: EIGHTH_SEAT_BEATS,
+    styleLock: EIGHTH_SEAT_STYLE_LOCK,
   },
 } as const;
 

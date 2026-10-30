@@ -16,7 +16,7 @@ const REPO_ROOT = fileURLToPath(new URL("../../", import.meta.url));
 
 /** 플레이어(exportEntry.ts)와 같은 별칭. */
 const DEMO_ALIASES = { "fallen-star": "chrono-bell", "astra-horizon": "emerald-crown" };
-const DEMO_IDS = new Set(["chrono-bell", "emerald-crown", "shitamachi-fourth-season", "first-love"]);
+const DEMO_IDS = new Set(["chrono-bell", "emerald-crown", "shitamachi-fourth-season", "first-love", "eighth-seat"]);
 
 export function demoIdOfQuery(query) {
   const raw = query?.demo;
