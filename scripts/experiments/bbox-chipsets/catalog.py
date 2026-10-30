@@ -111,7 +111,7 @@ if OUT:
 else: L.append("id | footprint w x h cells | placement rule | what it is")
 L += [line(o) for o in detail]
 if OUT:
-    L += ["", "# Grounds (map 'base' and 'grounds' rect ids; edges of autotile grounds are drawn automatically)"]
+    L += ["", "# Grounds (map 'base', 'grounds' zone and ground-path ids; edges of autotile grounds are drawn automatically)"]
     L += [f"{g['id']} | {'walkable' if g['walk'] else 'NOT walkable (water)'}{' | autotile edges' if g['autotile'] else ''} | {en('g:' + g['id'], g['id'])}" for g in D["grounds"]]
 else:
     L += ["", "# Floors (region 'floor' id) — " + "; ".join(f"{f['id']} = {en('f:' + f['id'], f['id'])}" for f in D["floors"]),

@@ -19,6 +19,8 @@ OCX = "http://127.0.0.1:10200/v1/chat/completions"
 SUFFIX = " 다른 맵은 만들지 말고 이 방 하나만 지어 줘."
 REQ = P["request"] + SUFFIX
 catalog = open(f"{RUNS}/cat/catalog-{task}.txt").read()
+SF = f"{HOME}/z-project/assistant-whole-game/suite/rooms/objpool/_structure_ideas.md"
+STRUCT = ("# Structure vocabulary (ideas to choose from — not templates to copy; use only what fits this room's purpose)\n" + open(SF).read().strip() + "\n\n") if os.path.exists(SF) else ""
 PROMPT = f"""You design one RPG map room as an exact cell layout. Your JSON is laid onto the map cell by cell by code that only executes it — every floor, wall, opening and object you write is exactly what appears, nothing is added.
 
 User request (Korean): {REQ}
@@ -43,13 +45,17 @@ User request (Korean): {REQ}
  "carpets": [{{"id": "<carpet id>", "x": X, "y": Y, "w": W, "h": H, "purpose": "..."}}],
  "daises": [{{"id": "<dais id>", "x": X, "y": Y, "w": W, "h": H}}],
  "objects": [{{"id": "<catalog id>", "x": X, "y": Y, "repeat": {{"count": 4, "dx": 2, "dy": 0}}, "purpose": "..."}}]}}
+# Floors (a material per zone — code lays the tiles)
+- A floor id is a material for a whole zone, not something you draw tile by tile. Give each room ONE dominant floor, plus at most one purposeful sub-zone of another floor (a genkan / entry strip, kitchen or bath tiles, a wet area) made as its own small region. Doorways and openings automatically take the floor of the room they open into; do not add floor strips for them.
+- No single-cell floor patches of a different material.
+- Tatami: if a region's floor is "tatami", add "jo": N (number of mats). Code lays whole 1x2-cell mats edge-aligned in the proper pattern (no point where four mat corners meet). Each mat is 2 floor cells, so the region's floor (w x (h-2)) must hold exactly 2*N cells as an even rectangle: 4 jo = 4x2, 6 jo = 4x3 or 6x2, 8 jo = 4x4, 12 jo = 4x6 or 6x4, 18 jo = 6x6 floor cells. Do not place tatami mats as objects.
 x,y of a piece = the top-left cell of its footprint. "repeat" is optional (count copies, each shifted by dx,dy). carpets/daises only if the catalog lists them. Sized pieces go in "objects" with the size in the id (e.g. "<id> 3x2").
 # Size and space (checked by the validator — a failing layout is sent back)
 - Design principle: size each room to its content. First decide each room's furniture groups, then draw the region just big enough for them plus 1-cell aisles. A small full room beats a big empty one.
 - A floor cell is bare when no standing piece is on it or next to it (8 neighbours). Wall-mounted pieces, decals and carpets do not count as standing pieces.
 - Per region: at most 30% of its floor may be bare, and no bare rect with both sides >= 2 and area >= 14 (e.g. 2x7, 3x5, 4x4). Whole map: at most 25% bare.
 - When a region fails, the validator names the empty rect; then either shrink the region or fill that rect with a purposeful group that belongs in that room.
-Design a specific, lived-in room that fits the request: not a plain rectangle — use several regions (side rooms, alcoves, an L or two-part shape), a clear landmark, distinct functional zones, and enough furniture and decoration that no large floor area is empty. Use the chipset's range: many different pieces (look them up with find_pieces), not the same few repeated."""
+{STRUCT}Design a specific, lived-in room that fits the request: not a plain rectangle — use several regions (side rooms, alcoves, an L or two-part shape), a clear landmark, distinct functional zones, and enough furniture and decoration that no large floor area is empty. Use the chipset's range: many different pieces (look them up with find_pieces), not the same few repeated."""
 if P.get("mode") == "outdoor":
     PROMPT = f"""You design one RPG outdoor place as an exact cell layout. Your JSON is laid onto the map cell by cell by code that only executes it — every ground cell and every piece you write is exactly what appears, nothing is added.
 
@@ -57,7 +63,9 @@ User request (Korean): {REQ}
 
 {catalog}
 # Grid rules (16px cells, x to the right, y down, origin top-left, 3/4 top-down view: buildings show roof and front wall, the door is on the front (south) side)
-- The whole map is first filled with the 'base' ground, then each 'grounds' rect is painted in order (later rects win). Autotile grounds draw their own edges.
+- The whole map is first filled with the 'base' ground, then each 'grounds' zone is painted in order (later zones win), then each ground path. Autotile grounds (marked autotile in the catalog) draw their own soft edges against their neighbours — prefer them for zones that sit on grass, so the transitions are natural.
+- Ground zones should have natural, irregular outlines, not boxes: give "shape" instead of x/y/w/h — {{"blob": [[cx, cy, r], ...]}} (overlapping round lumps), {{"poly": [[x, y], ...]}} (outline corners), {{"ellipse": [cx, cy, rx, ry]}} or {{"rect": [x, y, w, h]}} — and "edge": "rough" (or "smooth"/"none") to roughen the outline. A plain x/y/w/h rect is fine for paved courts inside walls.
+- Paths are lines, and code renders them: {{"ground": id, "points": [...], "width": 1-3}} paints a continuous path of that ground along the polyline; {{"stones": piece id, "points": [...], "spacing": 2-4}} sets stepping stones along the line at an even spacing (cells already used by a piece are skipped). "curve": true smooths the line. Draw the line between the places it connects (gate → madang → each wing's step stone, well → kitchen); do not place path stones one by one as objects.
 - A piece is stamped whole at x,y = top-left of its art box. Two pieces may not both draw the same cell (only '.' cells of a piece may share a cell with another piece).
 - X cells block walking; o cells are walkable (eaves/canopy you walk behind, or flat art). Pieces must lie inside the map.
 - Every building needs a walkable approach to the cell right below its door (the bottom row of its art box). Walls are built from small wall pieces placed cell by cell (use "repeat").
@@ -66,7 +74,10 @@ User request (Korean): {REQ}
 # Output: one JSON object only, no prose
 {{"map": {{"w": W, "h": H}},
  "base": "<ground id>",
- "grounds": [{{"id": "<ground id>", "x": X, "y": Y, "w": W, "h": H, "purpose": "...", "open": false}}],
+ "grounds": [{{"id": "<ground id>", "shape": {{"blob": [[CX, CY, R], [CX2, CY2, R2]]}}, "edge": "rough", "purpose": "...", "open": false}},
+             {{"id": "<ground id>", "x": X, "y": Y, "w": W, "h": H, "purpose": "..."}}],
+ "paths": [{{"ground": "<ground id>", "points": [[X, Y], [X, Y], [X, Y]], "width": 2, "curve": true, "purpose": "..."}},
+           {{"stones": "<stepping-stone piece id>", "points": [[X, Y], [X, Y]], "spacing": 2, "curve": true, "purpose": "..."}}],
  "landmark": {{"id": "...", "x": X, "y": Y, "purpose": "..."}},
  "entrance": {{"x": X, "y": H-1}},
  "objects": [{{"id": "<catalog id>", "x": X, "y": Y, "repeat": {{"count": 4, "dx": 1, "dy": 0}}, "purpose": "..."}}]}}
@@ -76,6 +87,11 @@ User request (Korean): {REQ}
 - Bare ground = a walkable cell with no piece on it or next to it (8 neighbours). At most 40% of the walkable ground may be bare, the open courtyard included.
 - An intentional open courtyard is allowed: mark at most one grounds rect with "open": true. Outside it, no bare rect with both sides >= 4 and area >= 20.
 - When the check fails, the validator names the empty rect; then shrink the map/walls there or fill it with a purposeful group (jar terrace, well with its path, garden bed with trees and rocks, woodpile by the kitchen).
+# How a Korean yangban house yard works (why the open centre is allowed)
+- A hanok compound is zoned by function. The house wings take an ㄱ, ㄷ or ㅁ layout chosen by what they hold: the sarangchae (men's quarters, guests) near the gate, the anchae (family quarters) deeper inside, the kitchen at the end of the anchae wing, haengnang (servants, storage) along the gate wall.
+- The madang (open yard) is a deliberate centre — work, ceremonies and light happen there — so it stays open. It is not leftover space: it is framed by purposeful edges.
+- Typical edges: a jangdokdae (crock terrace) next to the kitchen wing, a well with a stone path to the kitchen, a vegetable patch, a firewood stack by the kitchen, drying racks / pepper mats, stepping-stone paths between the wings, and a back garden (hwagye terraces, trees, rocks) behind the anchae.
+- So: choose the wing layout by function, put the open madang between the wings, and line its edges with these groups. The catalog's category list has these pieces — use find_pieces on the prop categories (e.g. prop-other, trees, bushes) to get them.
 Design a specific, lived-in place that fits the request: a clear landmark, distinct functional zones, enclosing walls where they belong, and enough pieces that no large ground area is empty. Use the chipset's range: many different pieces (look them up with find_pieces), not the same few repeated."""
 open(f"{G}/prompt.txt", "w").write(PROMPT)
 IMG = "data:image/png;base64," + base64.b64encode(open(f"{RUNS}/cat/palette-{task}.png", "rb").read()).decode()
@@ -164,7 +180,7 @@ for n in range(4):   # first call + at most 3 repairs
                      + "\n- ".join(chk["errors"][:40]) + ("\nWarnings (fix if you can):\n- " + "\n- ".join(chk["warnings"][:10]) if chk["warnings"] else "")})
 spaceOnly = bool(chk and not chk["ok"] and chk.get("structOk"))
 res = {"task": task, "tileset": TS, "arm": arm, "rep": int(rep), "model": MODEL, "calls": calls, "repairs": len(calls) - 1, "ok": bool(chk and chk["ok"]),
-       "structOk": bool(chk and chk.get("structOk")), "spaceErrors": [e for e in (chk or {}).get("errors", []) if e.startswith("space:")], "lookups": lookups,
+       "structOk": bool(chk and chk.get("structOk")), "structVocab": bool(STRUCT), "spaceErrors": [e for e in (chk or {}).get("errors", []) if e.startswith("space:")], "lookups": lookups,
        "secs": round(sum(c["secs"] for c in calls), 1), "tokens": sum(c["tokens"] for c in calls)}
 if res["ok"] or spaceOnly:
     json.dump(layout, open(f"{G}/layout.json", "w"), indent=1)

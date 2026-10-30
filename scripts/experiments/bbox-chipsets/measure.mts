@@ -5,7 +5,7 @@
 // Prints one JSON line: {emptyPct (whole map), rooms[], largest, types (distinct piece kinds), pieces}
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { indoorSpace, outdoorSpace, type Rect } from "./space.mts";
+import { indoorSpace, outdoorSpace, boxRegions, type Rect } from "./space.mts";
 import { effectiveSpec } from "./spec.mts";
 import type { HandInteriorSpec } from "../../../src/editor/handInterior/builder";
 
@@ -72,7 +72,8 @@ if (import.meta.main) {
     }
     const s = indoorSpace(plan, footprints(S, objs, tables, daises), rooms);
     const types = typesOf(S, typeIds);
-    console.log(JSON.stringify({ emptyPct: s.total.emptyPct, floor: s.total.floor, largest: s.total.largest, rooms: s.rooms, types: types.length, typeList: types, pieces: typeIds.length }));
+    const box = mode === "indoor-layout" ? boxRegions(rooms, plan, daises) : null;
+    console.log(JSON.stringify({ boxPct: box === null ? null : Math.round((100 * box) / Math.max(1, rooms.length)), regionCount: rooms.length, emptyPct: s.total.emptyPct, floor: s.total.floor, largest: s.total.largest, rooms: s.rooms, types: types.length, typeList: types, pieces: typeIds.length }));
   } else {
     const m = J.maps ? (a5 && J.maps[a5] ? J.maps[a5] : J.maps["bbox-room"] ?? Object.values(J.maps)[0]) : J.map;
     const [cx, cy, cw, ch] = (a6 ?? `0,0,${m.width},${m.height}`).split(",").map(Number) as [number, number, number, number];

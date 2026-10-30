@@ -7,7 +7,8 @@ from concurrent.futures import ThreadPoolExecutor
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from places import PLACES
 H = os.path.expanduser("~"); S = f"{H}/z-project/assistant-whole-game/suite/rooms"
-R1 = f"{S}/runs-bbox-chipsets"; RUNS = os.environ.get("BBOX_RUNS", f"{S}/runs-bbox-chipsets-2")
+R1 = f"{S}/runs-bbox-chipsets"; RUNS = os.environ.get("BBOX_RUNS", f"{S}/runs-bbox-chipsets-3")
+ROUNDS = [("r1", R1), ("r2", f"{S}/runs-bbox-chipsets-2"), ("r3", f"{S}/runs-bbox-chipsets-3")]
 f = f"{RUNS}/metrics.json"; M = json.load(open(f)) if os.path.exists(f) else {}
 D = "scripts/experiments/bbox-chipsets"
 def env(base): return dict(os.environ, OPRN_SHARED_CONTENT_SQLITE=f"{RUNS}/shared-content.sqlite", BBOX_POOL_DIR=f"{RUNS}/base/pool")
@@ -15,7 +16,7 @@ def last(p):
     try: return json.loads(p.stdout.strip().splitlines()[-1])
     except Exception: return {"error": (p.stderr or p.stdout)[-300:]}
 jobs = []
-for rnd, root in (("r1", R1), ("r2", RUNS)):
+for rnd, root in ROUNDS:
     for place, P in PLACES.items():
         for slot in ("sol1", "sol2", "terra1", "terra2"):
             lf = f"{root}/{slot}/{place}/layout.json"; k = f"{rnd}|{slot}/{place}"

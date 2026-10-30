@@ -7,8 +7,9 @@ import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { resolve } from "node:path";
 import { buildHandInteriorLayers, type HandInteriorInput, type HandInteriorTable } from "../../../src/editor/handInterior/builder";
 import { effectiveSpec } from "./spec.mts";
-import { indoorSpace, indoorProblems } from "./space.mts";
+import { indoorSpace, indoorProblems, boxRegions } from "./space.mts";
 import { footprints, typesOf } from "./measure.mts";
+import { tatamiTiling, tatamiSizes, floorReport } from "./floors.mts";
 
 const [TS, lf, outDir, baseDir] = process.argv.slice(2);
 const render = process.argv.includes("--render");
@@ -87,6 +88,20 @@ if (errors.length) done();
 
 const plan = grid.map((r) => r.join(""));
 const zones = regions.map((r) => ({ x0: r.x, y0: r.y, x1: r.x + r.w - 1, y1: r.y + r.h - 1, floor: r.floor, wall: r.wall }));
+// thresholds: an opening / the entrance lies outside every region, so the builder gave it the first region's floor — a third material
+// in the doorway. Each opening cell takes the floor of the region it opens onto (below, else above, else left, else right).
+const regionAt = (x: number, y: number) => { let hit: any = null; for (const r of regions) if (x >= r.x && x < r.x + r.w && y >= r.y && y < r.y + r.h) hit = r; return hit; };
+let thresholds = 0;
+for (const o of [...openings.flatMap((o: any) => Array.from({ length: (o.w ?? 1) * (o.h ?? 1) }, (_, k) => ({ x: o.x + (k % (o.w ?? 1)), y: o.y + Math.floor(k / (o.w ?? 1)) }))), ...(ent ? [ent] : [])]) {
+  if (regionAt(o.x, o.y)) continue;
+  const side = regionAt(o.x, o.y + 1) ?? regionAt(o.x, o.y - 1) ?? regionAt(o.x - 1, o.y) ?? regionAt(o.x + 1, o.y);
+  if (side) { zones.push({ x0: o.x, y0: o.y, x1: o.x, y1: o.y, floor: side.floor, wall: side.wall }); thresholds++; }
+}
+// tatami "jo" (optional): a jo is one 1x2-cell mat
+for (const r of regions) if (r.floor === "tatami" && r.jo !== undefined) {
+  const cells = r.w * Math.max(0, r.h - 2);
+  if (!num(r.jo) || cells !== 2 * r.jo) errors.push(`floor: region "${r.id}" says ${r.jo} jo but its tatami floor is ${r.w}x${r.h - 2} = ${cells} cells; a jo is one 1x2-cell mat, so ${r.jo} jo needs ${2 * r.jo} floor cells (${tatamiSizes(2 * r.jo) || "pick another jo"}). Resize the region (its floor rows = h - 2) or change "jo".`);
+}
 const input: HandInteriorInput = { plan, floor: regions[0].floor, wall: regions[0].wall, zones, objects: objs.map(({ id, x, y }) => ({ id, x, y })), tables, lines, daises, start: ent ? [{ x: ent.x, y: ent.y }] : undefined };
 
 const built = buildHandInteriorLayers(input, tileset, S);
@@ -122,13 +137,48 @@ for (const i of built.issues) {
   else if (i.severity === "warning" && i.code !== "too-many-layers") warnings.push(`${i.code}${at}${who(i.x, i.y)}`);
   else if (i.code === "too-many-layers") warnings.push(`too many stacked pieces${at}${who(i.x, i.y)}`);
 }
+// tatami: lay whole mats per connected tatami area (edge-aligned, no four corners meeting) instead of the floor's 4x4 wallpaper,
+// which tiles from the map origin and cuts mats at every wall. The floor's own pattern holds the mat halves: (0,0)|(1,0) = horizontal mat, (2,0)/(2,1) = vertical.
+const TAT = S.floors.tatami;
+let tatamiMats = 0;
+if (TAT && TAT.cols === 4) {
+  const pos = new Map<number, number>(); TAT.tiles.forEach((t, k) => pos.set(t, k));
+  const W2 = built.width, isT = (i: number) => pos.has(built.lowerTiles[i]!);
+  const seen = new Set<number>();
+  for (let i = 0; i < built.lowerTiles.length; i++) if (isT(i) && !seen.has(i)) {
+    const comp = new Set<number>(), q = [i]; seen.add(i);
+    while (q.length) { const c = q.pop()!; comp.add(c); for (const n of [c - 1, c + 1, c - W2, c + W2]) if (n >= 0 && n < built.lowerTiles.length && Math.abs((n % W2) - (c % W2)) <= 1 && isT(n) && !seen.has(n)) { seen.add(n); q.push(n); } }
+    const mats = tatamiTiling(comp, W2);
+    const xs = [...comp].map((c) => c % W2), ys = [...comp].map((c) => Math.floor(c / W2));
+    const bw = Math.max(...xs) - Math.min(...xs) + 1, bh = Math.max(...ys) - Math.min(...ys) + 1;
+    const who = regions.find((r: any) => r.floor === "tatami" && xs[0]! >= r.x && xs[0]! < r.x + r.w && ys[0]! >= r.y && ys[0]! < r.y + r.h)?.id ?? "?";
+    if (!mats) { errors.push(`floor: region "${who}" has a tatami floor of ${comp.size} cells (${bw}x${bh} around x ${Math.min(...xs)}, y ${Math.min(...ys)}) that cannot be laid with whole mats (each mat is 1x2 cells, no four mat corners meeting, mats aligned to the walls). Resize its floor to an even rectangle such as 4x4, 4x6 or 6x6 cells (floor rows = region h - 2), or pick another floor.`); continue; }
+    const put = (c: number, k: number) => { const sh = pos.get(built.lowerTiles[c]!)! % 4; built.lowerTiles[c] = TAT.tiles[k * 4 + sh]!; };
+    for (const m of mats) { if (m.dir === "h") { put(m.a, 0); put(m.b, 1); } else { put(m.a, 2); put(m.b, 6); } }
+    tatamiMats += mats.length;
+  }
+}
+// soft floor checks (warnings): one dominant floor per room + at most one sub-zone, single-cell islands
+const floorAt = (x: number, y: number) => {
+  if (plan[y]?.[x] !== "." || plan[y - 1]?.[x] === "#" || plan[y - 2]?.[x] === "#" || y === H - 1) return null;
+  let f: string | null = null; for (const z of zones) if (z.x0 <= x && x <= z.x1 && z.y0 <= y && y <= z.y1) f = z.floor; return f;
+};
+const par = regions.map((_: any, i: number) => i); const fnd = (i: number): number => (par[i] === i ? i : (par[i] = fnd(par[i])));
+regions.forEach((a: any, i: number) => regions.forEach((b: any, j: number) => { if (j > i && a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h) par[fnd(i)] = fnd(j); }));
+const groups = new Map<number, { id: string; cells: number[] }>();
+regions.forEach((r: any, i: number) => { const g = groups.get(fnd(i)) ?? groups.set(fnd(i), { id: r.id, cells: [] }).get(fnd(i))!; if (g.id !== r.id && !g.id.includes(r.id)) g.id += `+${r.id}`;
+  for (let y = r.y; y < r.y + r.h; y++) for (let x = r.x; x < r.x + r.w; x++) g.cells.push(y * W + x); });
+for (const g of groups.values()) g.cells = [...new Set(g.cells)];
+const fr = floorReport(W, H, floorAt, [...groups.values()]);
+warnings.push(...fr.warnings);
 const structOk = errors.length === 0;
 // size/space checks (space.mts): only measured once the structure is valid, named as "space:" errors so the repair call can shrink or fill
 const space = indoorSpace(plan, footprints(S, objs, tables, daises), regions.map((r: any) => ({ id: r.id, x: r.x, y: r.y, w: r.w, h: r.h })));
 if (structOk) errors.push(...indoorProblems(space));
 const types = typesOf(S, [...objs.map((p) => p.id), ...tables.map((t) => `${t.style} ${t.w}x${t.h}`)]);
-const stats = { w: W, h: H, plan, reachable: built.reachable, floorCells: built.floorCells, objects: objs.length, emptyPct: space.total.emptyPct,
-  rooms: space.rooms.map((r) => ({ id: r.id, emptyPct: r.emptyPct, largest: r.largest })), types: types.length };
+const boxes = boxRegions(regions, plan, daises);
+const stats = { w: W, h: H, plan, boxRegions: boxes, regionCount: regions.length, boxPct: regions.length ? Math.round((100 * boxes) / regions.length) : null, reachable: built.reachable, floorCells: built.floorCells, objects: objs.length, emptyPct: space.total.emptyPct,
+  rooms: space.rooms.map((r) => ({ id: r.id, emptyPct: r.emptyPct, largest: r.largest })), types: types.length, thresholds, tatamiMats, floorIslands: fr.islands, floorMix: fr.mix };
 if (!structOk || !render) done({ stats, structOk });
 
 const { addRenderAssetRoot, renderReviewMapPng } = await import("../../qa-game/render.mts");
