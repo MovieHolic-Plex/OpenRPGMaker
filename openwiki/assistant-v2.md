@@ -312,6 +312,16 @@ v1 의 `script_cutscene` 비트로 옮긴다(`events.ts`).
 - 빌더 경고: `builders/dungeon.ts` 가 `author_dungeon` 결과의 `diff.warnings` 를 읽지 않아 「고침:」 줄이 모델에게 한 번도 가지 않았다(지문의 고침 수 늘 0) — 고쳤다.
 - 시험: `bun scripts/qa/assistant-v2/dungeonDesign.mts <out> [theme…]`(예시 넷 + 설계 없음, 모델 없음). 실조수 판 검사 `bun scripts/qa/assistant-v2/dungeonLiveCheck.mts <판>…`(막힘·자동 플레이·던전 맵 도달(시작/이동 칸에서 이벤트 모두 닿는가)·열린 바닥 한가운데 외톨이 막힌 칸 수, `DLC_NOPLAY=1` 이면 자동 플레이 생략). 실조수 `suite/dungeon-live.sh <arm> <prompt> <batch>`(같은 요청 same1~3 + demon·crystal·goblin·volcano·forest), 지문은 `suite/dungeon-design-fp.py <batch> <out>` — mapvqa 렌더·거의 같음 규칙 + 구조 사인(방 수·방 종류·입구 쪽, 방 이름과 무관해서 mapvqa 「방 구성」 표지가 모델이 지은 이름으로 다양해 보이는 착시를 막는다). 결과 페이지 `~/claude-viz/dungeon-design-1029.html`.
 
+## 숲길도 조수가 설계한다 (2026-10-30 씬 벤치 «opus 숲길 3판이 거의 같은 맵»)
+
+씬 「숲길 탐색 구간」(버들마을↔마왕의 동굴, 갈림길·상자·약한 몬스터)은 v2 숲·들판 낱말 경로(`game.ts` words → `author_forest_route`, `editor/tools/forestRouteTool.ts`)를 탄다 — 던전 빌더가 아니다.
+opus 3판(sc-1030s-b3 r1~r3)이 인자까지 똑같이(`side:north, count:1, names, moods, hiddenPerMap:1`) 불렀고, 씨앗 기본값이 「7 + 맵 수×13」이라 같은 바탕 프로젝트면 늘 같은 숲이었다. 틀도 굽이 4·빈터 자리 고정, 갈림길 없음(요청의 「갈림길·막다른 곳 보상」을 지을 수단이 없었다).
+
+- **씨앗 숨김**: `seed` 를 스키마에서 뺐다(대본 `act2Opening` 은 seed 211 을 그대로 넘기고 같은 그림 — 설계 없음·고정 씨앗 틀은 바뀌지 않았다). 기본 씨앗은 인자 해시 + 무작위 덧값, 쓴 값은 요약 「seed N」으로 남긴다(다시 짓기용).
+- **모델 설계** `designs[i]`: 굽이 수 1~6·휘는 폭(gentle·normal·wide)·들어오고 나가는 자리 0~1·길 폭·갈림길 `branches[{at, toward, length, end: chest|clearing|nothing}]`·빈터 `clearings[{at, size, toward}]`. 함수는 칸으로 옮기고 맵 안에 가둘 뿐이다(`designedForestSpec`). 갈림길은 `WoodSpec.paths` 의 곁 곡선 + 끝 작은 빈터, 끝 칸은 `data.maps[i].deadEnds` 로 돌려준다(상자·적 자리). 설계 없이 부르면 옛 틀 그대로 짓고 경고로 designs 를 쓰라고 알린다.
+- **앞서 지은 것과 다르게**: 설계 한 줄을 맵 위치(`tags:["forest-route"]`, note)로 남기고, 새 설계가 이 프로젝트의 앞선 숲길과 굽이 수·갈림 자리(¼ 단위)·방향이 같으면 경고한다. 도구 설명·v2 안내(`game.ts` 숲·들판 줄)가 「사연에 맞게, 앞서 지은 숲길과 다르게」를 요구한다.
+- 시험(모델 없음): `node --max-old-space-size=8000 node_modules/vite-node/dist/cli.mjs --script scripts/qa/assistant-v2/forestRouteDesign.mts <out>` — 같은 인자 3번·설계 3개·같은 설계 두 번(경고)·대본 seed 211(전후 통행 격자 같음). 막다른 끝이 입구에서 닿는지 찍는다.
+
 ## 씬 벤치 1회차 수리 (2026-10-30 sc-1030a terra · sc-1030s-b1~b4 opus)
 
 장면 하나 요청(보스 방·엔딩·강가 마을 잇기)을 판정자가 플레이한 결과에서 빌더·런타임 결함을 고쳤다. 판 저장본(project.sqlite)이 지워져 있어
