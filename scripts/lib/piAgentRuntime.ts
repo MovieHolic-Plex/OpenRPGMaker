@@ -1525,18 +1525,38 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     render: (mapId, w, h) => renderMapRegionImage(ctx.project, { mapId, x: 0, y: 0, w, h }, options.renderToolImage!, options.signal),
     emit: (summary, data) => emit({ type: "execution_status", name: "experiment.selfcheck", ok: true, summary, ...(data ? { data } : {}) }),
   }) : undefined;
+  // 한 판의 답(조수 글·todo 호출)은 다음 판이 시작되거나 실행이 끝날 때 기록한다.
+  let scCurrent: { round: number; texts: string[]; todos: unknown[] } | undefined;
+  let scBusy = false;
+  const scFlush = () => { if (selfCheck && scCurrent) selfCheck.record(scCurrent.round, scCurrent.texts.filter(Boolean).join("\n\n"), scCurrent.todos); };
+  selfCheck && agent.subscribe((event) => {
+    if (event.type === "tool_execution_start" && String(event.toolName ?? "") === "todo") scCurrent?.todos.push(event.args);
+    if (event.type === "message_end") {
+      const m = event.message as { role?: string; content?: Array<{ type?: string; text?: string }> } | undefined;
+      if (m?.role === "assistant") scCurrent?.texts.push((m.content ?? []).filter((b) => b.type === "text").map((b) => b.text ?? "").join(" ").trim());
+      if (scCurrent) scFlush();
+    }
+    // (선택, OPRN_EXPERIMENT_SELFCHECK_MIDTURN=1) 큰 짓기 호출(make_place·edit_place 성공) 바로 뒤 차례 안에서 자기 검사를 끼워 넣는다(steer). 기본은 차례 끝마다.
+    if (process.env.OPRN_EXPERIMENT_SELFCHECK_MIDTURN === "1" && event.type === "tool_execution_end" && !event.isError && ["make_place", "edit_place"].includes(String(event.toolName ?? "")) && !scBusy) {
+      scBusy = true;
+      void (async () => {
+        try {
+          if (fatal || rejected || options.signal?.aborted) return;
+          const sc = await selfCheck.next(); if (!sc) return;
+          scFlush(); scCurrent = { round: sc.round, texts: [], todos: [] };
+          agent.steer({ role: "user", content: [{ type: "text", text: sc.text }, ...sc.images] as never, timestamp: Date.now() });
+        } catch (error) { console.error(`[pi-agent] experiment self-check failed: ${(error as Error).message}`); } finally { scBusy = false; }
+      })();
+    }
+  }) : undefined;
+  /** 차례가 끝났는데 맵이 지난 검사 뒤로 바뀌었으면 새 차례로 한 번 더 묻는다(남은 판 수 안에서). */
   const runExperimentSelfCheck = async (): Promise<void> => {
     if (!selfCheck || fatal || rejected || options.signal?.aborted || turns >= maxTurns) return;
+    while (scBusy) await new Promise((r) => setTimeout(r, 500));
     const sc = await selfCheck.next(); if (!sc) return;
-    const texts: string[] = []; const todos: unknown[] = [];
-    const off = agent.subscribe((event) => {
-      if (event.type === "tool_execution_start" && String(event.toolName ?? "") === "todo") todos.push(event.args);
-      if (event.type === "message_end") {
-        const m = event.message as { role?: string; content?: Array<{ type?: string; text?: string }> } | undefined;
-        if (m?.role === "assistant") texts.push((m.content ?? []).filter((b) => b.type === "text").map((b) => b.text ?? "").join(" ").trim());
-      }
-    });
-    try { await promptResuming(sc.text, sc.images); } finally { off(); selfCheck.record(sc.round, texts.filter(Boolean).join("\n\n"), todos); }
+    scFlush(); scCurrent = { round: sc.round, texts: [], todos: [] };
+    await promptResuming(sc.text, sc.images);
+    scFlush();
   };
   try {
     if (options.v2?.beforeFirstPrompt && v2Env) options.v2.beforeFirstPrompt(v2Env);
