@@ -9,6 +9,7 @@
 - 화자 색은 `displayName` 이 대사 화자 이름과 같을 때만 붙는다. 이벤트 `characterId` 는 그 이벤트의 모든 줄에 한 프로필을 입히므로 데모 lore 는 이벤트에 characterId 를 달지 않는다.
 - 데모마다 lore 파일 하나(`src/project/flagship/*Lore.ts`, 데모 브랜치 `agent/demo-lore`)가 세 도구로 칸을 채우고 빌더 끝(`serialize` 직전)에서 한 줄로 부른다. 공용 도우미는 `src/project/flagship/loreKit.ts`(`loreExec`, `writeCodex` 는 없는 ref 만 빼고 쓴다, `demoLoreProblems`).
 - 회귀 경보: `bake-flagship-demos.mts` 가 데모마다 `demoLoreProblems` 를 돌려 하한(문서 12, 프로필 3, 개요 본문 400자) 아래면 `[demo-lore] … 「이야기」 탭이 비었다` 를 찍는다. 전체 굽기 없이 lore 파일만 시험하려면 `scripts/content/check-demo-lore.mts --demo <id> --in <구운 project.json>`(멱등성도 본다).
+- 원작 IP 고유명 경보: `bake-flagship-demos.mts` 가 `<id>.play.json` 을 쓴 직후 `validateShippedPlayJson(id, playJsonText)`(`src/project/flagship/ipCleanliness.ts`)를 돌려, 플레이어에게 보이는 글(맵 이름·이벤트 대사/선택지/화자·데이터베이스·엔딩·제목·저널·용어)에 원작 고유명이 있으면 경로(`[ip-clean] maps.<id>…: 「낱말」`)를 찍고 비0 종료한다. 낱말 = 데모 `styleLock.bannedProperNouns` + 전역 `BANNED_IP_PROPER_NOUNS` + `WIZARDING_ORIGINAL_NAMES`(스토어 `seedBundles.mts` 의 `WIZARDING_SCRUB_PAIRS` 왼쪽 낱말 + 대체 기숙사 이름 — 한 소스). 번들 타일셋 참고문서는 `bundledTilesetRef` 포인터라 걷지 않는다. 조수도 같은 검사를 `run_lint` 로 닿는다: `lintOriginalIpNames`(`src/project/lint/originalIpLint.ts`, 낱말은 `WIZARDING_ORIGINAL_NAMES` 만)가 경고 `original-ip-name` 을 낸다(`game-scene-polish` 스킬 §8·경고 코드 표, 능력 색인 `scene-polish`).
 
 ## 평면도대로 버들항 맵 칠하기 `paint_beodeul_plan` (2026-10-29)
 
