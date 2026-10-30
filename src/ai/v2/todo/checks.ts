@@ -411,6 +411,7 @@ export function runTodoCheck(project: Project, check: TodoCheck, ctx: TodoCheckC
     case "party_join": return checkPartyJoin(project, sc, ctx, check.name, check.map);
     case "room_zones": return checkRoomZones(project, sc, check.map, check.min);
     case "room_graph": return checkRoomGraph(project, sc, check.map);
+    case "layout_built": return checkLayoutBuilt(project, sc, check.map);
   }
 }
 
@@ -933,7 +934,7 @@ function roomGraphOf(project: Project, m: GameMap): CheckResult {
       if (!at) problems.push(t(`방 ${q(r.id)}: 랜드마크 ${r.landmark} 가 놓이지 않았다 — 그 방 design.groups 에 넣는다(id 는 room_parts)`, `room ${q(r.id)}: landmark ${r.landmark} was not placed — put it in that room's design.groups (ids from room_parts)`));
       else if (!ringReached(m, reach, at)) problems.push(t(`방 ${q(r.id)}: 랜드마크 ${r.landmark}(${at[0]},${at[1]}) 둘레에 걸어 닿지 못한다`, `room ${q(r.id)}: no walkable cell next to landmark ${r.landmark}(${at[0]},${at[1]})`));
       bits.push(`${t("랜드마크", "landmark")} ${r.landmark}${at ? `@${at[0]},${at[1]}` : t(" 없음", " missing")}`);
-    } else problems.push(t(`방 ${q(r.id)}: 랜드마크를 선언하지 않았다 — zone.landmark 에 그 방의 눈길을 끄는 큰 기물 id 하나`, `room ${q(r.id)}: no landmark declared — set zone.landmark to the one big part the room is built around`));
+    } else if ((decl as { source?: string }).source !== "layout") problems.push(t(`방 ${q(r.id)}: 랜드마크를 선언하지 않았다 — zone.landmark 에 그 방의 눈길을 끄는 큰 기물 id 하나`, `room ${q(r.id)}: no landmark declared — set zone.landmark to the one big part the room is built around`));
     if (r.stairs) {
       const at = boxTag(l, "stairs-at");
       if (!at) problems.push(t(`방 ${q(r.id)}: 계단(${r.stairs})을 선언했지만 계단 기물이 없다 — stairs up wood·stairs down 같은 계단을 그 방 design.groups 에`, `room ${q(r.id)}: stairs (${r.stairs}) declared but no stairs part was placed — put a stairs part (stairs up wood, stairs down…) in that room's design.groups`));
@@ -943,9 +944,50 @@ function roomGraphOf(project: Project, m: GameMap): CheckResult {
     if (r.role) bits.push(r.role);
     lines.push(`${q(r.id)} ${rectText(l)}${bits.length ? ` ${bits.join(" · ")}` : ""}`);
   }
+  if ((decl as { source?: string }).source === "layout" && !built.some((r) => r.landmark)) problems.push(t("랜드마크가 없다 — layout.landmark 에 장소가 서는 큰 기물 하나", "no landmark — set layout.landmark to the one big piece the place is built around"));
   const head = `${mapAt(m)} ${t("방", "rooms")} ${built.length}/${decl.rooms.length}, ${t("연결", "connections")} ${decl.connections.length - cut.length}/${decl.connections.length}: ${lines.join(" / ")}`;
   if (problems.length) return { pass: false, detail: `${head} — ${t("걸린 것", "problems")}: ${problems.slice(0, 6).join(" / ")}`, evidence: { mapId: m.id } };
   return { pass: true, detail: head, evidence: { mapId: m.id } };
+}
+
+const LAYOUT_TAG = "interior-layout";
+interface LayoutDeclJson { regions: { id: string; x: number; y: number; w: number; h: number }[]; objects: { id: string; x: number; y: number; w: number; h: number }[]; landmark?: { id: string; x: number; y: number; w: number; h: number }; entrance: { x: number; y: number } }
+
+/** 칸 배치로 지은 맵: 선언한 방(영역)과 기물이 지금 맵에 있나 — 방 칸이 막힌 칸이 아니고, 기물 발자국에 그림이 있다. 랜드마크는 걸어 닿아야 한다. */
+function layoutBuiltOf(project: Project, m: GameMap): CheckResult {
+  const decl0 = (m.locations ?? []).find((l) => (l.tags ?? []).includes(LAYOUT_TAG) && (l.tags ?? []).includes("decl"));
+  let decl: LayoutDeclJson | undefined;
+  try { decl = decl0?.note ? JSON.parse(decl0.note) as LayoutDeclJson : undefined; } catch { decl = undefined; }
+  if (!decl?.regions?.length) return { pass: false, detail: t(`${mapAt(m)}: 칸 배치 선언이 없다 — make_place spec.layout 으로 짓는다`, `${mapAt(m)}: no layout record — build it with make_place spec.layout`), evidence: { mapId: m.id } };
+  const W = m.width, idx = (x: number, y: number) => y * W + x;
+  const solid = m.lowerTiles[0];
+  const art = (x: number, y: number) => [m.upperTiles, m.upperOverlayTiles, m.lowerOverlayTiles].some((layer) => ((layer as number[] | undefined)?.[idx(x, y)] ?? -1) >= 0);
+  const problems: string[] = [];
+  const lostRooms = decl.regions.filter((r) => {
+    let n = 0, open = 0;
+    for (let y = r.y + 2; y < r.y + r.h; y++) for (let x = r.x; x < r.x + r.w; x++) { if (x >= W || y >= m.height) continue; n++; if (m.lowerTiles[idx(x, y)] !== solid) open++; }
+    return n > 0 && open / n < 0.8;
+  });
+  if (lostRooms.length) problems.push(t(`선언한 방이 맵에 없다: ${lostRooms.map((r) => q(r.id)).join(", ")}`, `declared regions are gone from the map: ${lostRooms.map((r) => q(r.id)).join(", ")}`));
+  const lostObjs = decl.objects.filter((o) => { for (let y = o.y; y < o.y + Math.max(1, o.h); y++) for (let x = o.x; x < o.x + o.w; x++) if (art(x, y)) return false; return true; });
+  if (lostObjs.length) problems.push(t(`선언한 기물 ${lostObjs.length}개가 맵에 없다: ${lostObjs.slice(0, 8).map((o) => `${o.id}@${o.x},${o.y}`).join(", ")}`, `${lostObjs.length} declared pieces are not on the map: ${lostObjs.slice(0, 8).map((o) => `${o.id}@${o.x},${o.y}`).join(", ")}`));
+  if (!decl.landmark) problems.push(t("랜드마크가 없다", "no landmark"));
+  else {
+    const reach = mapReach(project, m);
+    const lm = decl.landmark;
+    if (reach && !ringReached(m, reach, [lm.x, lm.y, lm.w, Math.max(1, lm.h)])) problems.push(t(`랜드마크 ${lm.id}(${lm.x},${lm.y}) 둘레에 걸어 닿지 못한다`, `landmark ${lm.id} at (${lm.x},${lm.y}) has no walkable cell next to it`));
+  }
+  const head = `${mapAt(m)} ${t("영역", "regions")} ${decl.regions.length - lostRooms.length}/${decl.regions.length}, ${t("기물", "pieces")} ${decl.objects.length - lostObjs.length}/${decl.objects.length}${decl.landmark ? `, ${t("랜드마크", "landmark")} ${decl.landmark.id}` : ""}`;
+  if (problems.length) return { pass: false, detail: `${head} — ${t("걸린 것", "problems")}: ${problems.join(" / ")}`, evidence: { mapId: m.id } };
+  return { pass: true, detail: head, evidence: { mapId: m.id } };
+}
+
+function checkLayoutBuilt(project: Project, sc: Scope, name: string): CheckResult {
+  const maps = interiorMaps(project, sc, name, LAYOUT_TAG);
+  if (isResult(maps)) return maps;
+  const results = maps.map((m) => layoutBuiltOf(project, m));
+  const bad = results.find((r) => !r.pass);
+  return bad ?? results[0]!;
 }
 
 function checkRoomGraph(project: Project, sc: Scope, name: string): CheckResult {

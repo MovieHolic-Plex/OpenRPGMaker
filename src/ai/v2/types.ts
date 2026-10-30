@@ -3,6 +3,7 @@
 // v2 의 한 줄: 모델은 «무엇을» 정하고(명세), 함수가 «어떻게» 짓고(결정론 빌더), 다른 눈이 1배 그림을 본다(비평가).
 // 모델은 칸 번호·평면 문자열·좌표 목록을 쓰지 않는다. 빌더가 명세를 v1 의 결정론 도구 인자로 옮겨 부른다.
 // 이 파일은 순수 타입이다 — 워커(scripts/lib/assistantV2Runtime.ts)와 테스트가 같이 읽는다.
+import type { InteriorLayout } from "./interiorLayout";
 import type { ToolContext, ToolResult } from "@/editor/tools/types";
 import type { RoomDesign } from "@/editor/handInterior/designRoom";
 
@@ -71,6 +72,8 @@ export interface PlaceSpec {
   readonly floors?: number;
   /** (실내 방 그래프) 방 쌍의 연결 — a·b 는 zones[].id, type door(문) · open(칸막이 없이 트임). 주면 방 배치를 함수가 고르지 않고 모델의 대략 자리를 조화만 한다. */
   readonly connections?: readonly { readonly a: string; readonly b: string; readonly type?: string }[];
+  /** (실내 칸 배치, 2026-10-31) 모델이 쓴 칸 단위 배치(맵 크기·방 사각형·문 틈·입구·깔개·단·기물) — 주면 코드는 그대로 깔고 검증만 한다(interiorLayout.ts). */
+  readonly layout?: InteriorLayout;
   /** (실내 방 그래프) 남쪽 출구가 나는 방(zones[].id) — 가장 남쪽이어야 한다. */
   readonly entrance?: string;
   /** 나가는 쪽. 실내는 기본 south. */

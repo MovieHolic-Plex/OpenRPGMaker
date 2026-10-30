@@ -18,6 +18,7 @@ export const SMALL_ROOM_WORDS = /작은\s*방|좁은|조그만|자그마한|단�
 const UPPER = /2층|3층|위층|다락|upper|floor\s*[2-9]|_f[2-9]\b/iu;
 
 const designedMap = (m: GameMap) => (m.locations ?? []).some((l) => (l.tags ?? []).includes(ROOM_TAG) && (l.tags ?? []).includes("model-designed"));
+const layoutMap = (m: GameMap) => (m.locations ?? []).some((l) => (l.tags ?? []).includes("interior-layout") && (l.tags ?? []).includes("decl"));
 const graphMap = (m: GameMap) => (m.locations ?? []).some((l) => (l.tags ?? []).includes(GRAPH_TAG) && (l.tags ?? []).includes("decl"));
 
 /** 이번 턴에 새로 짓거나 바꾼 맵 가운데 모델 설계로 지은 손 도트 실내. */
@@ -27,9 +28,9 @@ export function designedInteriorsChanged(project: Project, changed: TodoChanged 
 }
 
 /** 이 맵을 가리키는 그 종류 항목이 이미 있나. */
-function covered(store: TodoStore, m: GameMap, kind: "room_zones" | "room_graph"): boolean {
+function covered(store: TodoStore, m: GameMap, kind: "room_zones" | "room_graph" | "layout_built"): boolean {
   const label = normName(mapLabel(m), true);
-  const key = `${kind === "room_graph" ? "graph" : "zones"}:${m.id}`;
+  const key = `${kind === "room_graph" ? "graph" : kind === "layout_built" ? "layout" : "zones"}:${m.id}`;
   return store.items.some((i) => i.check?.kind === kind && (i.refs?.mapIds?.includes(m.id) || normName(i.check.map, true) === label || store.meta.get(i.id)?.key === key));
 }
 
@@ -43,6 +44,15 @@ export function syncRoomZoneItems(store: TodoStore, project: Project, changed: T
   const opened: TodoItem[] = [];
   for (const m of designedInteriorsChanged(project, changed)) {
     const name = mapLabel(m);
+    // 칸 배치로 지은 맵(spec.layout): 배치대로 섰나(layout_built) + 방 그래프(room_graph) 두 항목.
+    if (layoutMap(m) && !covered(store, m, "layout_built")) {
+      const [item] = store.append("interior layout", [{ content: `"${name}": laid as the layout you wrote — every region and piece on the map, landmark reachable`, check: { kind: "layout_built", map: name, fresh: false }, key: `layout:${m.id}` }], "gate");
+      if (item) {
+        item.refs = { ...(item.refs ?? {}), mapIds: [m.id] };
+        const r = runTodoItemCheck(project, item);
+        if (!store.done(item, r, "auto") && isOpen(item.status)) opened.push(item);
+      }
+    }
     const graph = graphMap(m);
     const kind = graph ? "room_graph" as const : "room_zones" as const;
     if (covered(store, m, kind)) continue;
@@ -67,6 +77,10 @@ export function zoneStatusLines(project: Project, mapIds: readonly string[], tas
   for (const id of [...new Set(mapIds)]) {
     const m = project.maps[id];
     if (!m || !designedMap(m)) continue;
+    if (layoutMap(m)) {
+      const r0 = runTodoItemCheck(project, { check: { kind: "layout_built", map: mapLabel(m) }, refs: { mapIds: [m.id] } });
+      out.push(`layout_built ${r0.pass ? "✓" : "✗"} ${r0.en ?? r0.detail}`.slice(0, 900));
+    }
     const check = graphMap(m) ? { kind: "room_graph" as const, map: mapLabel(m) } : { kind: "room_zones" as const, map: mapLabel(m), ...(minZones(m, task) !== 2 ? { min: minZones(m, task) } : {}) };
     const r = runTodoItemCheck(project, { check, refs: { mapIds: [m.id] } });
     out.push(`${check.kind} ${r.pass ? "✓" : "✗"} ${r.en ?? r.detail}`.slice(0, 900));

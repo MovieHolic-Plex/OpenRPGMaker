@@ -17,6 +17,8 @@ import type { HandInteriorNotch } from "@/editor/handInterior/rooms";
 import { normalizeDoor, shapeNotches, type DesignRoomReport, type RoomDesign } from "@/editor/handInterior/designRoom";
 import { harmonizeRoomGraph, RoomGraphError, type GraphOut } from "@/editor/handInterior/roomGraph";
 import { copiedReference } from "../roomIdeas";
+import { buildFromLayout, hasLayout } from "./interiorLayoutBuild";
+import { LAYOUT_FORMAT, LAYOUT_GRID_RULES } from "../interiorLayout";
 
 type Obj = { id: string; x: number; y: number };
 type Room = { id: string; x0: number; y0: number; x1: number; y1: number; floor?: string; wall?: string };
@@ -1037,16 +1039,21 @@ export function coverZones(tilesetId: string, spec: PlaceSpec, zones: readonly Z
   return zones;
 }
 
-export const INTERIOR_CARD = `[Interior interior] make_place({type:"interior", name, style?, size?, zones:[{kind, purpose, anchors?}], floors?}).
-- ★ You design the room (hand-pixel interior): first call room_parts({purpose}) to see part labels, sample layouts and pictures, then write zones[].design: shape (rect · L · U · T · bay (window bump) · alcove; L and alcove take corner — pick from room_parts shapes/shape pictures; a plain rect over 60 cells gets flagged as a box room; a side room is one more zone), floor size (w×h, wall-face rows excluded), door, materials (floor · wall), furniture groups (groups: name · at wall/corner/center · pos 0–1 · rug · items[{id, dx, dy, count}]). Your list is everything that gets placed — the function adds nothing; it only fixes names missing from the chipset, group overlap, chair facing, the aisle in front of the door and reachability, and reports them in «고침:» lines. Read those lines and the «맨바닥» (bare floor) line, fix the design, and rebuild with edit_place({patch:{mapId, design: the whole fixed design}}). Samples are references — do not copy a layout. Bookshelves/display cases (wall furniture) and windows/maps (hangings) stand only on the north wall. Without design, the function asks the same model for a design before building (it does not transplant a sample room). Upper-floor rooms (floor:2) each get their own design.
+export const INTERIOR_CARD = `[Interior interior] make_place({type:"interior", name, layout:{…}}) — inns, taverns, shops, libraries, studies, jails, chapels, forges, guild halls, houses inside.
+- ★ You design every cell: put one cell layout in spec.layout — map size, regions (each room or area as a rectangle with floor, wall, purpose, role, optional landmark), openings (doorways you carve between regions), the entrance, carpets, daises and objects (catalog ids; the landmark first). Code lays it exactly as written — nothing is added, moved or chosen for you — and checks it: unknown id, overlap, out of bounds, wall-face rules, unreachable opening or region, landmark placement. A failed check comes back as Rejected / You sent / Fixed call: fix exactly what it names. You get 2 repairs; after that, pieces that still fail are left out and the rest is laid.
+- layout format: ${LAYOUT_FORMAT}
+${LAYOUT_GRID_RULES.map((r) => `- ${r}`).join("\n")}
+- Ids: the [Interior catalog] card lists every floor, wall, carpet, dais, sized table and object id with its footprint and placement kind. Use exact ids. room_parts({purpose}) adds reference rooms players liked (structure summaries + pictures) — borrow structure, not plans.
+- Design it like a real place: a clear landmark (a big piece the place is built around), distinct functional areas, side rooms or alcoves, furniture and decoration so that no large floor area is empty, and walking paths from the entrance to every area.
 - ★ "Build one room / one place" means one map — one place — not one cell. Design the room graph inside that map from what the place needs to work: an inn has a hall, a kitchen, stairs and guest rooms; a library has reading rooms and stacks; a shop has the sales floor and a back storeroom; a jail has a guard room, a corridor and cells. Players and the judge expect a place with structure — rooms to walk between, a reason to go deeper, one landmark per room — and a single box reads as unfinished. A single cell is right only for places that really are one room (a closet, a hut, a cell on its own). How many rooms is your call.
-- ★ Several rooms in one map (the reference rooms players liked are all like this: a main room, side rooms, a corridor or stairs, one big landmark per room): give each zone id, x, y (rough top-left cell), design (w, h, groups) and landmark (a part id in its groups; big multi-cell parts welcome), plus connections:[{a, b, type:"door"|"open"}] and entrance (the southernmost room). You decide the room count, sizes, positions and links; the function only snaps walls, carves doors and checks reachability, and the todo check room_graph verifies the result.
+- (zones path — older, weaker than layout) zones[{kind, purpose, design}] per room: the function lays out shapes and groups from your design; room_parts shows the design format.
+- (zones path) Several rooms in one map (the reference rooms players liked are all like this: a main room, side rooms, a corridor or stairs, one big landmark per room): give each zone id, x, y (rough top-left cell), design (w, h, groups) and landmark (a part id in its groups; big multi-cell parts welcome), plus connections:[{a, b, type:"door"|"open"}] and entrance (the southernmost room). You decide the room count, sizes, positions and links; the function only snaps walls, carves doors and checks reachability, and the todo check room_graph verifies the result.
 - zones = each room (rooms split by partitions). kind words: tavern (tavern hall) · kitchen · storeroom · cellar · bedroom · inn_room (guest room) · study · library · living · dining · forge · workshop · alchemy · chapel · treasury · armory · throne_room · great_hall · entrance · corridor · bathroom · cell. Korean words also work.
 - anchors = the room's hero objects (words): 「큰 망원경」(big telescope) 「벽난로」(fireplace) 「바 카운터」(bar counter) 「책장」(bookshelf) 「별자리표」(star chart) 「올라가는 계단」(stairs up). Prefix 「큰」 for big ones. The function looks them up in the parts dictionary and places them on free floor, or tells you they are missing.
 - For stairs to a 2nd/upper floor, put "올라가는 계단" in anchors and floors:2 — it builds the upper floor and links the stairs.
 - style: fantasy (default — also wizard towers, alchemy workshops and observatories; telescope and alchemy parts are in this chipset) · wizarding (Hogwarts-style magic «school» buildings only) · sengoku (Sengoku/Edo) · modern (modern city). Modern Japanese homes use type:"house".
 - A name word (inn, tavern, observatory…) does not lay down a preset room — an inn hall or a study stands as your design says. Put hero objects like a big telescope in anchors and design.groups.
-- Fixing an existing room: edit_place({mapId, patch:{dressing:1}}) = keep the room layout and floor, add props. A north back door: patch.set.exits:["north"] or addAnchors:[{what:"북쪽 뒷문"}] — it adds a door in the north wall and builds and links a back room. Keep the original floor and wall materials.`;
+- Changing a laid layout: edit_place({mapId, patch:{set:{layout:{…the full corrected layout}}}}) relays it exactly. Fixing an existing room built another way: edit_place({mapId, patch:{dressing:1}}) = keep the room layout and floor, add props. A north back door: patch.set.exits:["north"] or addAnchors:[{what:"북쪽 뒷문"}] — it adds a door in the north wall and builds and links a back room. Keep the original floor and wall materials.`;
 
 /** 모델 설계(zone.design)로 방 한 칸의 layout 요청을 만든다 — 모양 → 도려 낼 귀퉁이, 크기·재질·문 자리. 모르는 재질은 알리고 뺀다. */
 function designedRoom(zone: ZoneSpec, kind: string, n: number, design: RoomDesign, S: HandInteriorSpec, notes: string[]) {
@@ -1080,6 +1087,12 @@ export const interiorBuilder: PlaceBuilder = {
     if (!roomSpec) return { ok: false, mapIds: [], summary: `실내 칩셋 ${tilesetId} 이 이 프로젝트에 없다`, warnings: [], missingArt: [spec.name], calls: run.calls };
     // hints.newMap: make_place 가 「이번에 지은 다른 장소」를 덮지 않게 새 맵을 요구했다(2026-10-25 G27: 지하 예배당을 지은 맵에 저택을 다시 지어 예배당이 사라졌다).
     const mapId: string | undefined = prev?.mapId ?? spec.mapId ?? (spec.hints?.newMap === true ? undefined : run.ctx.currentMapId ?? run.ctx.project.startMapId);
+    // 칸 배치(spec.layout, 2026-10-31): 모델이 모든 칸을 썼다 — 견본·묶음·방 그래프 길을 거치지 않고 그대로 깔고 검증만 한다(interiorLayoutBuild.ts).
+    if (hasLayout(spec)) {
+      const lt = run.ctx.project.tilesets[HAND_INTERIOR_TILESET_ID] ? HAND_INTERIOR_TILESET_ID : tilesetId;
+      const ls = roomSpecOf(run.ctx.project.tilesets[lt]);
+      if (ls) return buildFromLayout(run, spec, ls, lt, mapId);
+    }
     // 장소 견본(천문대 등) — 방 종류 견본으로는 주인공 물건이 방을 정하지 못한다(2026-10-23 비교: 천문대가 평범한 서재로 읽혀 v1 8 · v2 3.5).
     const venueText = `${spec.name} ${spec.theme ?? ""} ${(spec.zones ?? []).map((z) => `${z.kind} ${z.purpose ?? ""}`).join(" ")}`;
     // 가구 길 고르기(2026-10-29 3단계, 벤치 room-base/vig/vig2-1029): 기본은 장소 견본·방 견본(제작자 구성이 있는 용도에선 이쪽이 강하다 — 예배당·여관).
