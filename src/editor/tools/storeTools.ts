@@ -185,8 +185,8 @@ const storeInstall: ToolDefinition = {
     // 몬스터 팩: 전투 도트 시트(meta.pixelEnemySheet)가 있는 몬스터는 전투에서 움직인다 — 조수가 그것을 먼저 고르게 표시한다.
     const monsters = Object.keys(prepared.manifest.content.assets).filter((id) => prepared.manifest.content.assets[id]!.kind === "monster")
       .map((id) => {
-        const motion = prepared.manifest.content.assets[id]!.meta.pixelEnemySheet?.motion;
-        return { resourceId: storeProjectId(slug, id), name: prepared.manifest.content.assets[id]!.name, ...(motion ? { battleMotion: motion } : {}) };
+        const sheet = prepared.manifest.content.assets[id]!.meta.pixelEnemySheet;
+        return { resourceId: storeProjectId(slug, id), name: prepared.manifest.content.assets[id]!.name, ...(sheet?.motion ? { battleMotion: sheet.motion } : {}), ...(sheet?.grid === "4x4" ? { battleCells: 16 } : {}) };
       });
     const animated = monsters.filter((m) => m.battleMotion).length;
     const sounds = Object.keys(prepared.manifest.content.assets).filter((id) => prepared.manifest.content.assets[id]!.kind === "sound")
@@ -200,7 +200,7 @@ const storeInstall: ToolDefinition = {
       summary: `스토어 상품 「${prepared.manifest.title}」 판본 ${prepared.version}을 넣었다: 타일셋 ${tilesets.length}개, 그림·소리 ${result.assetIds.length}개.`
         + (animations.length ? ` 전투 애니메이션 ${animations.length}개: ${animations.slice(0, 8).map((a) => `${a.name}=${a.id}`).join(", ")} — 기술·아이템의 animationId 로 upsert_skill/upsert_item 에 건다.` : "")
         + (music.length ? ` 음악 리소스 id: ${music.slice(0, 6).map((m) => m.resourceId).join(", ")} — set_game_audio 로 연결하라. 다 걸면 사용자에게는 「넣었어요: 자리 ← 곡 제목」 한 줄씩만 말한다(리소스 id·곡 설명은 쓰지 않는다 — 화면 쪽지가 바꾸기를 보여 준다).` : "")
-        + (monsters.length ? ` 몬스터 ${monsters.length}개(전투에서 움직이는 도트 시트 ${animated}개) — 적의 monsterResourceId 로 쓰고, 고를 때 battleMotion 이 있는 것을 먼저 쓴다.` : "")
+        + (monsters.length ? ` 몬스터 ${monsters.length}개(전투에서 움직이는 도트 시트 ${animated}개${monsters.some((m) => m.battleCells === 16) ? `, 그중 16칸 시트 ${monsters.filter((m) => m.battleCells === 16).length}개` : ""}) — 적의 monsterResourceId 로 쓰고, 고를 때 battleMotion 이 있는 것을 먼저 쓴다(battleCells:16 은 시전·막기·빈사·등장까지 움직인다).` : "")
         + (sounds.length ? ` 효과음 ${sounds.length}개: ${sounds.slice(0, 6).map((m) => `${m.cue ?? "?"}=${m.resourceId}`).join(", ")} — set_game_audio{role:'se', cue, resourceId} 로 자리에 건다.` : ""),
       data: {
         title: prepared.manifest.title, version: prepared.version, replaced: result.replaced, tilesets, assetIds: result.assetIds.slice(0, 40),

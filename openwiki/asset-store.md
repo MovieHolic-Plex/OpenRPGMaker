@@ -94,6 +94,23 @@ gzip 은 풀린 크기에도 같은 상한(`maxOutputLength`). 캐시 blob 은 �
 - 조수: `list_monster_resources`·`get_monster_resource` 가 시트로 움직이는 소재에 `battleMotion` 을 붙이고 설명이 그것을 먼저 고르라고 한다. `store_install` 결과는 `monsters[{resourceId, name, battleMotion?}]`.
 - 테스트 `test/assetStoreMonsterMotion.test.ts`.
 
+#### 16칸(4×4) 시트 (2026-10-31)
+
+`pixelEnemySheet.grid: "4x4"`(생략 = `"3x3"`)이면 시트는 4cell×4cell, 시트 그림 meta `frames: 16`. 칸 번호는 격자 폭과 무관한 **행 우선 번호**다:
+0 idle_a · 1 idle_b · 2 idle_c · 3 windup · 4 move · 5 attack · 6 recover · 7 hit · 8 dead(0~8 = 3×3 과 같은 이름·순서) ·
+9 attack_mid · 10 cast_charge · 11 cast_release · 12 guard · 13 weak · 14 intro · 15 예약(완전 투명). 기준선·가운데·알파 규칙은 3×3 과 같다.
+
+```json
+"pixelEnemySheet": { "sheetResourceId": "slime-sheet", "cell": 64, "motion": "hop", "idleFrameMs": 220, "skillCell": true, "grid": "4x4", "missingCells": [12, 13] }
+```
+
+- `missingCells`(선택, 9~14 만, 중복 금지, grid 4x4 에만): 그리지 못한 확장 칸. 0~8 은 비울 수 없다.
+- 검사: `monsterSheetProblems`(grid·missingCells·frames 9/16), `storeMonsterSheetSizeProblems`(시트 n·cell), 칸 채움 `storeMonsterSheetCellProblems`(0~8·적지 않은 9~14 는 그려져 있어야, 15·missingCells 는 알파 0). 칸 채움은 PNG 를 풀 수 있는 곳에서 돈다 — 스토어 서버 `checkBlobs`(`src/png.ts decodePng`), `scripts/store/agentStore.mts`(pngjs), 편집기 넣기 `prepareManifestItem`(`createImageBitmap`, 못 풀면 건너뜀).
+- 런타임 대체(`pixelEnemyFrame`·`PIXEL_ENEMY_EXTRA_FALLBACK`): attack_mid 없음 → windup 에서 바로 attack, cast_charge → windup, cast_release → attack, guard·weak·intro → 그 동작을 하지 않는다. 동작 설명은 [전투 런타임](runtime-battle.md) 「16칸 시트」.
+- 조수: 16칸 소재에 `battleCells: 16` 이 더 붙는다(`monsterBattleCells`), `store_install` 요약이 16칸 수를 센다.
+- 자료집 미리보기는 대기 루프 아래 15칸을 이름과 함께 펼치고 빠진 칸은 흐리게 「없음」.
+- 테스트 `test/enemyPixelSheet16.test.ts`.
+
 ### 전투 애니메이션 팩 (2026-10-31)
 
 종류 `animation`. `content.battleAnimations?` = `BattleAnimationRecord[]`(최대 64)이고 id·`resourceId`·`timings[].soundResourceId`·`followUps[].animationId` 는 **팩 안의 id** 다.
