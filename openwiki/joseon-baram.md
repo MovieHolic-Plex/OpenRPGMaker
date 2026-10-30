@@ -177,9 +177,21 @@ BFS 는 `save-joseon-baram.mjs` 가 **엔진 `canMove`** 로 돌린다(`storage-
 
 조수 v2 `make_place` 는 조선 낱말(조선·한양·사극·고려·한옥·저잣거리·포도청·주막…)이 요청이나 명세에 있으면 이 칩셋의 등록 장소를 가져온다(`src/ai/v2/builders/joseon.ts`): 마을 → 마을 20호(+저잣거리·장터면 `dress_joseon_market`), 실내 → 이름 낱말로 방 6·궁 4 중 하나, 동굴·사냥터. 새 판을 짓지 않고 등록 장소를 그대로 쓰므로 같은 마을이 판마다 같다. 자세한 규칙은 `openwiki/assistant-v2.md`.
 
+## 건물 문 ↔ 방 잇기 `link_joseon_interior` (2026-10-30)
+
+등록 장소 맵에는 이동 이벤트가 없다. 문과 방은 조수 도구 둘이 잇는다(`src/editor/tools/joseonInteriorLink.ts`).
+
+- `list_joseon_doors({mapId})`: 마을 20호(문 18곳)·국내성(10)·국내성 원작 규모(27)의 건물 문 칸·디딤돌·건물 이름, 실내 10장의 출구 깔개·도착 칸. 이미 이어진 문은 `linked`.
+- `link_joseon_interior({mapId, door, place | interiorMapId, exit?, replace?})`: 방 장소를 새 맵으로 가져와(또는 있는 방) 양쪽을 잇는다.
+  들어가는 이벤트는 **문 칸**(디딤돌 바로 위 막힌 창호 칸)의 부딪힘 이벤트라 디딤돌에서 문 쪽으로 밀 때만 발동한다(PR #3973 의 문 모델, `project/doorEntries.ts`).
+  방 출구 깔개(맨 아래 줄 문간)는 밟는 발판이고, 나오면 디딤돌에 아래를 보고 선다. `map.doors` 에 외짝 여닫이를 적는다 — 조선 창호 이름표(「기와집 6칸 (5,4)」)에는 「문」 낱말이 없어 런타임이 문으로 추론하지 못하기 때문이다(적지 않으면 문 앞 칸·문간 걸음·도착 보호가 안 붙는다).
+- 문 표 `src/project/defaults/joseonDoors.json` 은 `scripts/content/prepare-joseon-doors.py` 가 구운 지도(`tiledata/joseon-village/maps/*.json` 의 `doors[].step`·`walk`)에서 만든다. 디딤돌이 없는 대문·사립·성문·굴 입구는 통로라 싣지 않는다. 가져온 맵이 장소 그대로인지는 지문(크기 + 아랫층 칸 16개)으로 본다 — 고쳐 그린 맵이면 표를 쓰지 않고 「디딤돌 위 첫 막힌 칸 = 문, 방 맨 아래 걸음 줄 = 출구」로 정한다. `rebuild-joseon.sh` 로 지도를 다시 구우면 이 스크립트도 다시 돌린다.
+- 조수 v2 `make_place`(조선 마을)는 구역(zones)에 주막·관아·약방·서당·대장간·민가 안을 적으면 그 방을 가져와 맞는 건물 문(주막 → 초가 jumak, 서당 → 기와 seodang, 관아 → 큰 기와집)과 잇는다(`src/ai/v2/builders/joseon.ts`).
+- 증거: `scripts/qa/joseon-interior-link-proof.mts` — 마을 20호에 방 6종을 잇고 임시 SQLite 에 저장 → 별도 핸들로 다시 열기 → 엔진 `canMove` 로 시작 칸 → 디딤돌, 방 도착 칸 → 출구 깔개 도달과 문 입구(`doorEntryAt`) 일치를 본다.
+
 ## 한계
 
-- 실내 방 맵(민가·주막·대장간·약방·서당·관아·궁 4장)과 사냥터·동굴은 있지만 **건물 문 ↔ 방 입구를 잇는 이동 이벤트는 없다**(맵 사이 전송은 저작자가 건다). 주민 NPC 만(마을 20호 20명·국내성 21명·국내성 원작 규모 40명·사냥터·방 몇 명), 몬스터는 `extra.json.spawns` 자리 좌표뿐이다. 장소 적대 검수 점수는 3~5/10 대에 머문다(검수 결과 요약은 `tiledata/joseon-field/QA_ROUND1.md`·`tiledata/joseon-interior/QA_ROUND1~2.md`).
+- 실내 방 맵(민가·주막·대장간·약방·서당·관아·궁 4장)과 사냥터·동굴은 있다. 건물 문 ↔ 방은 위 `link_joseon_interior` 로 잇는다. 사냥터 굴 입구 ↔ 동굴, 마을 가장자리 ↔ 사냥터는 통로라 `create_transfer_pair` 로 건다. 주민 NPC 만(마을 20호 20명·국내성 21명·국내성 원작 규모 40명·사냥터·방 몇 명), 몬스터는 `extra.json.spawns` 자리 좌표뿐이다. 장소 적대 검수 점수는 3~5/10 대에 머문다(검수 결과 요약은 `tiledata/joseon-field/QA_ROUND1.md`·`tiledata/joseon-interior/QA_ROUND1~2.md`).
 - 공용 DB(`shared-content.sqlite`) 게시와 사용자 프로젝트 반영은 하지 않았다 — 소급 적용은 별도 `register-*`/게시 작업이다.
 - 장소 카드 내려받기 JSON 은 각 약 4.4MB(전부 `database` 3.7MB 와 가벼운 타일셋 표; 타일셋 조각·참고문서는 열 때 번들이 되살린다). 14장 합 약 62MB.
 - 앞 13,632칸은 동결 장부로 불변이다. 옛 3개 시트의 맵 산출이 바뀌어 **새 꼬리 복사본이 필요해지면** 변환기가 `동결 장부 위반` 으로 멈춘다(옛 칸을 못 건드린다). 이미 저장된 사용자 프로젝트 맵이 있으면 칸 수 변경은 `ensureJoseonBaramTileset` 의 표 교체만 하고 맵 칸 번호는 다시 쓰지 않는다 — 번들 맵을 사용자 프로젝트에 올리는 일은 별도 작업이다.
