@@ -5,6 +5,33 @@
 
 <!-- releases -->
 
+## 0.372.2 — 2026-10-30
+
+### 수정
+
+- **export** — ship transit vehicle images with web export and store publish (#3978) (`b40b461`)
+- **assistant** — alley-nook lot props stay between building walls, never on the sidewalk (`118bd69`)
+
+## 0.372.1 — 2026-10-30
+
+### 수정
+
+- **runtime** — revert the off-thread tileset atlas bake (#3963) — maps rendered without tiles (#3975) (`1a93552`)
+
+## 0.372.0 — 2026-10-30
+
+### 기능
+
+- **runtime** — system.fieldGuides off hides automatic field guide markers (`02a482e`)
+
+### 수정
+
+- **runtime** — star tiles resting on solid furniture y-sort with their row (`ff7d3e1`)
+
+### 문서
+
+- **openwiki** — regenerate INDEX (`2caf26f`)
+
 ## 0.371.0 — 2026-10-30
 
 ### 기능
