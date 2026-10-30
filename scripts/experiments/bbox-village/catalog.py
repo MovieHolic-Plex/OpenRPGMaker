@@ -74,7 +74,8 @@ L += ["", "## Cliff cuts: ramps and stairs  (id | footprint w x cliff height | d
       "height 2 (level difference 2) needs an -h2- piece. Place it by its FOOT: x,y = the left cell of the row on the LOWER level",
       "directly south of the cliff; it covers columns x..x+w-1. Entry = the row below (x..x+w-1, y+1), lower level; exit = the row above",
       "(x..x+w-1, y-1), higher level; both rows must be road/track/plaza cells. dir is \"north\" (walk north to climb). The foot row",
-      "itself is path (do not list it as road). A cut through a north-facing cliff (dir \"south\") is allowed but hidden by the 3/4 view — avoid it."]
+      "itself is path (do not list it as road). A cut through a north-facing cliff (dir \"south\") is hidden by the 3/4 view and is REJECTED whenever",
+      "the same level boundary has a south-facing face somewhere; only if it has none, write it with \"northFace\": true."]
 for i, e in kits.items():
     if e["kind"] == "cut": L.append(f"{i} | {e['w']} wide x {e['rise']} tall face | {e['en']}")
 L += ["", "## Surfaces (rects, not kits)",

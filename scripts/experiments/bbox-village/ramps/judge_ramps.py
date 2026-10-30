@@ -21,19 +21,26 @@ pixel style and colours? Ignore everything else in the crops.
 Answer with one JSON object only: {"pick": "A" | "B" | "tie", "why": "<one or two sentences>"}"""
 f = f"{NEW}/results-opus.json"; res = json.load(open(f)) if os.path.exists(f) else {}
 jobs = []
-for arm in ("sol", "terra"):
-    for brief in ("port", "hill"):
-        ok = [r for r in (f"{NEW}/{arm}{n}/{brief}" for n in (1, 2, 3)) if os.path.exists(f"{r}/map.png")]
-        if not ok: continue
-        run = ok[0]; tag = run.split("/")[-2]
-        for vs, png in ((f"old-bbox-{arm}1", f"{OLD}/{arm}1/{brief}/map.png"), ("base-sol", f"{OLD}/base-sol/{brief}/map.png"), ("base-terra", f"{OLD}/base-terra/{brief}/map.png")):
-            k = f"map|{tag}/{brief}|{vs}"
-            if k not in res and os.path.exists(png): jobs.append(("map", k, f"{run}/map.png", png, brief))
-        cn, co = f"{run}/cuts-contact.png", f"{NEW}/old-{arm}1-{brief}-contact.png"
-        t = f"{NEW}/terrain-{brief}/terrain.json"
-        if contact(run, t, cn, 3) and contact(f"{OLD}/{arm}1/{brief}", t, co, 3):
-            k = f"cuts|{tag}/{brief}|old-bbox-{arm}1"
-            if k not in res: jobs.append(("cuts", k, cn, co, brief))
+def targets():
+    """argv: explicit run tags like sol21/hill (round 2); none = round 1 (first successful rep 1..3 per model/brief)"""
+    if len(sys.argv) > 1:
+        for t in sys.argv[1:]: yield t.split("/")[0].rstrip("0123456789"), t.split("/")[1], f"{NEW}/{t}"
+        return
+    for arm in ("sol", "terra"):
+        for brief in ("port", "hill"):
+            ok = [r for r in (f"{NEW}/{arm}{n}/{brief}" for n in (1, 2, 3)) if os.path.exists(f"{r}/map.png")]
+            if ok: yield arm, brief, ok[0]
+for arm, brief, run in targets():
+    if not os.path.exists(f"{run}/map.png"): continue
+    tag = run.split("/")[-2]
+    for vs, png in ((f"old-bbox-{arm}1", f"{OLD}/{arm}1/{brief}/map.png"), ("base-sol", f"{OLD}/base-sol/{brief}/map.png"), ("base-terra", f"{OLD}/base-terra/{brief}/map.png")):
+        k = f"map|{tag}/{brief}|{vs}"
+        if k not in res and os.path.exists(png): jobs.append(("map", k, f"{run}/map.png", png, brief))
+    cn, co = f"{run}/cuts-contact.png", f"{NEW}/old-{arm}1-{brief}-contact.png"
+    t = f"{NEW}/terrain-{brief}/terrain.json"
+    if contact(run, t, cn, 3) and contact(f"{OLD}/{arm}1/{brief}", t, co, 3):
+        k = f"cuts|{tag}/{brief}|old-bbox-{arm}1"
+        if k not in res: jobs.append(("cuts", k, cn, co, brief))
 print("jobs", len(jobs), flush=True)
 def one(j):
     typ, k, x, y, brief = j

@@ -81,24 +81,45 @@ def ramp_surface(px, F, W, rise):
         px[X, F - 1] = S1 if h(X, F - 1, 11) < 128 else S2           # toe shadow
 
 def stair_surface(px, F, W, rise):
-    """cobble steps cut into the face, 8 px a step (two steps per face row): lit nosing, a tread in the paving's own cobble
-    pattern lifted one tone, the riser in the same pattern dropped one tone with a staggered joint, a shadow line under it."""
+    """cut-stone steps, 8 px a step (two per face row). Each step = a row of dressed slabs (5-8 px, joints staggered step to
+    step): lit nosing, tread with a bevel highlight top-left and shade bottom-right, a few weathering pits; the riser below is
+    the slab's front in darker stone with its own joints offset half a slab; a shadow line under the next nosing.
+    Per-step light: the upper steps catch more light, the lower ones sit deeper in the cut (one tone darker)."""
     x0, x1 = CW, W - CW
-    pave = FOOT["stairs"].load()
-    up = {P0: P1, P1: P2, P2: P3, P3: P4}; down = {P3: P2, P2: P1, P1: P0, P0: P0}
-    for k in range(rise * 2):
+    L = [P0, P1, P2, P3, P4, P5]
+    n = rise * 2
+    for k in range(n):
         y0 = k * 8
-        joints = {x0 + 3 + ((k * 5 + j * 8) % max(1, x1 - x0 - 4)) for j in range(0, (x1 - x0) // 8 + 1)}
+        dk = 1 if k >= (n + 1) // 2 else 0                     # lower half of the flight one tone darker
+        # slab edges for this step
+        edges, x = [x0], x0 + (k * 3) % 5 + 3
+        while x < x1 - 3: edges.append(x); x += 5 + h(x, k, 41) % 4
+        edges.append(x1)
+        rj = {(edges[i] + edges[i + 1]) // 2 for i in range(len(edges) - 1)}   # riser joints: half a slab over
         for X in range(x0, x1):
+            j = max(i for i in range(len(edges)) if edges[i] <= X)
+            sx, ex = edges[j], edges[min(j + 1, len(edges) - 1)]
+            first, last = X == sx, X == ex - 1
             for d in range(8):
-                Y = y0 + d; t = pave[X % 16, (Y * 3 + k) % 16]
-                if d == 0: c = P5 if h(X, Y, 31) < 170 else P4
-                elif d <= 3: c = up.get(t, t)
-                elif d == 4: c = P3 if h(X, Y, 33) < 150 else P2
-                elif d <= 6: c = P0 if X in joints else down.get(t, t)
-                else: c = P0
-                if X == x0 and d > 0: c = P1 if d <= 4 else P0
-                if X == x1 - 1 and 0 < d <= 4: c = P4
+                Y = y0 + d
+                if d == 0: c = L[5 - dk] if not first else L[4 - dk]                         # nosing
+                elif d <= 3:
+                    sv = 1 if h(sx, k, 51) < 90 else 0                                        # every slab its own stone: some a tone darker
+                    c = L[3 - dk - sv]                                                        # tread body
+                    if d == 1 and not last: c = L[4 - dk - sv]                                # bevel highlight
+                    if last or d == 3: c = L[max(0, 2 - dk - sv)]                             # bevel shade
+                    if first: c = L[1]                                                        # joint
+                    if 1 < d < 3 and not first and not last:
+                        q = h(X, Y, 43)
+                        if q < 60: c = L[2 - dk]                                            # pit / grain
+                        elif q > 225: c = L[4 - dk]                                         # fleck
+                elif d == 4: c = L[2 - dk] if not first else L[1]                             # tread back edge
+                elif d <= 6:                                                                     # riser front
+                    q = h(X, Y, 47)
+                    c = L[0] if X in rj else ((L[2] if q < 150 else L[3 - dk]) if d == 5 else (L[1] if q < 170 else L[2]))
+                else: c = L[0]                                                                # shadow
+                if X == x0 and d > 0: c = L[1] if d <= 4 else L[0]                            # left end, cheek shade
+                if X == x1 - 1 and 0 < d <= 3: c = L[4]                                       # right end, lit
                 px[X, Y] = c
     for X in range(x0, x1): px[X, F - 1] = P0
 
