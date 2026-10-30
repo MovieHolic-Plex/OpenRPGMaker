@@ -1,4 +1,4 @@
-import { applySystemWindowSkinVariable } from "@/player/systemGraphics";
+import { applySystemWindowSkinVariable, markClassicWindowSkin } from "@/player/systemGraphics";
 import { shopBuyPromptText, shopGreetingText, shopListHeaderText } from "@/project/shopMessages";
 import { el } from "@/util/dom";
 import {
@@ -83,6 +83,8 @@ export function createShopOverlay(): HTMLElement {
   // 오버레이는 스크림이다 — 윈도스킨 변수만 심고(border-image 없이) 표면은
   // 개별 창이 그린다. 이 노드에 fill 을 걸면 가게가 아니라 플레이 영역 전체를 덮는 한 장의 상자가 된다.
   applySystemWindowSkinVariable(overlay);
+  // 고전 윈도스킨 게임은 가게 창도 같은 그림으로(오버레이는 스크림 그대로, 창 칸만 — windowSkinSurfaces.css).
+  markClassicWindowSkin(overlay);
   return overlay;
 }
 
