@@ -501,7 +501,8 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
       for (const [dx, dy, bit] of bits) if (inb(x + dx, y + dy) && (liquid[idx(x + dx, y + dy)] || bridge[idx(x + dx, y + dy)]) && exact.liqKind[idx(x + dx, y + dy)] === kind) m |= bit;
       if (kind === 3) { lower[idx(x, y)] = (groups.length ? ceilingTile(groups[0]!, m) : undefined) ?? voidTile; continue; }
       if (kind === 2) { lower[idx(x, y)] = gapLava ? autoCell(gapLava, m, x, y) : tileOf(LAVA_KIT, x, y); continue; }
-      lower[idx(x, y)] = canal?.variantMap[String(m)] ?? canal?.variantMap["255"] ?? voidTile; continue;
+      // natural rock themes (gap rock line): rock-shore water autotile instead of the stone canal rim
+      lower[idx(x, y)] = gapWater ? autoCell(gapWater, m, x, y) : canal?.variantMap[String(m)] ?? canal?.variantMap["255"] ?? voidTile; continue;
     }
     if (voidLiquid) continue;   // 허공은 천장 오토타일이 이미 칠했다
     if (profile.bank && (profile.liquid !== "lava" || !gapLava)) bankCells.push(idx(x, y));   // 용암은 gap 용암 오토타일이 식은 껍질 테두리를 그리면 둑을 얹지 않는다
