@@ -13,6 +13,7 @@ import {
   placeholderSha,
   storeImageHasSpec,
   storeImageSizeProblem,
+  storeMonsterSheetSizeProblems,
   storeThirdPartyName,
   storeProjectId,
   tilesetUploadedAssetIds,
@@ -72,6 +73,11 @@ export function closeSelection(project: Project, selection: PackSelection): { ti
   const uploaded = new Set(Object.keys(project.assets.uploaded));
   const assetIds = new Set<string>(selection.assetIds);
   for (const id of tilesetIds) for (const assetId of tilesetUploadedAssetIds(project.tilesets[id]!, uploaded)) assetIds.add(assetId);
+  // 몬스터 초상의 전투 도트 시트(meta.pixelEnemySheet)는 meta 로만 이어진 그림이라 따로 딸려 보낸다.
+  for (const id of [...assetIds]) {
+    const sheetId = uploaded.has(id) ? project.assets.uploaded[id]!.meta.pixelEnemySheet?.sheetResourceId : undefined;
+    if (sheetId) assetIds.add(sheetId);
+  }
   for (const id of assetIds) if (!uploaded.has(id)) missing.push(`에셋 ${id}`);
   return { tilesetIds: [...tilesetIds], assetIds: [...assetIds].filter((id) => uploaded.has(id)), missing };
 }
@@ -298,6 +304,15 @@ export interface ApplyResult {
 
 const dataUrlOf = (bytes: Uint8Array, mime: string): string => `data:${mime};base64,${bytesToBase64(bytes)}`;
 
+/** 팩 에셋 meta → 프로젝트 meta. 전투 도트 시트의 시트 id 를 프로젝트 id 로 바꾼다(번들 id 와 겹치지 않게). */
+function packMetaForProject(packAsset: StorePackAsset, assetIdMap: ReadonlyMap<string, string>): UploadedAsset["meta"] {
+  const meta: UploadedAsset["meta"] = { ...packAsset.meta };
+  const sheet = packAsset.kind === "monster" ? meta.pixelEnemySheet : undefined;
+  if (sheet) meta.pixelEnemySheet = { ...sheet, sheetResourceId: assetIdMap.get(sheet.sheetResourceId) ?? sheet.sheetResourceId };
+  else delete meta.pixelEnemySheet;
+  return meta;
+}
+
 /**
  * 팩을 프로젝트에 넣는다. id 는 storeProjectId 로 바꾸고, 자리표시는 data URL 로 되돌리고, 에셋마다 출처를 남긴다.
  * 같은 상품의 이전 판본이 있으면 같은 id 를 덮어쓴다(맵 참조 유지). 이전 판본에만 있던 항목은 지우지 않는다.
@@ -338,6 +353,9 @@ export function applyPackToProject(project: Project, manifest: StorePackManifest
     const problem = size ? storeImageSizeProblem(packAsset.kind, size.width, size.height) : null;
     if (problem) throw new Error(`${packAsset.name}: ${problem}`);
   }
+  // 전투 도트 시트: 초상 cell×cell, 시트 3cell×3cell. 크기가 틀리면 전투가 엉뚱한 칸을 잘라 그린다.
+  const sheetProblems = storeMonsterSheetSizeProblems(manifest, (sha) => pngSize(context.blob(sha)));
+  if (sheetProblems.length > 0) throw new Error(sheetProblems[0]);
   for (const tileset of Object.values(manifest.content.tilesets)) {
     const image = tileset.image.type === "uploaded" && Object.hasOwn(manifest.content.assets, tileset.image.id) ? manifest.content.assets[tileset.image.id] : undefined;
     const size = image?.mime === "image/png" ? pngSize(context.blob(image.blob)) : null;
@@ -356,7 +374,7 @@ export function applyPackToProject(project: Project, manifest: StorePackManifest
       name: packAsset.name,
       kind: packAsset.kind,
       ...(ref ? { ref } : { dataUrl: dataUrlOf(bytes, mime) }),
-      meta: { ...packAsset.meta },
+      meta: packMetaForProject(packAsset, assetIdMap),
       origin: { ...origin },
     };
   }
