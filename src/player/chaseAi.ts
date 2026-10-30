@@ -3,6 +3,7 @@ import { canMove, canMoveFootprint, inBounds } from "@/project/collision";
 import { passageBounds } from "@/project/footprint";
 import {
   armTerrainComponents,
+  hasTerrainComponents,
   terrainMayReach,
   terrainReachFilter,
 } from "@/project/tilePassabilityComponents";
@@ -11,6 +12,8 @@ import type { CharacterFootprint, Dir, GameMap, Project, Rect } from "@/project/
 
 const REPATH_INTERVAL_MS = 500;
 export const CHASE_MAX_EXPANSIONS = 2048;
+/** 막혔을 때 다가갈 칸을 찾는 너비 우선 탐색의 상한(칸). */
+const APPROACH_MAX_CELLS = 512;
 const DIRECTIONS: readonly { readonly dir: Dir; readonly x: number; readonly y: number }[] = [
   { dir: "down", x: 0, y: 1 },
   { dir: "left", x: -1, y: 0 },
@@ -147,7 +150,9 @@ export function nextChaseDecision(input: {
     mover.chasePathBlocked = mover.chasePath.length === 0;
     if (mover.chasePathBlocked && input.approachWhenBlocked && input.pathfind !== false && mover.chaseWidenPending !== true
       && (input.from.x !== input.player.x || input.from.y !== input.player.y)) {
-      mover.chasePath = approachPath(input.project, input.map, input.from, input.player, input.pass);
+      // 막혔을 때 가는 «가장 가까운 닿는 칸»은 대개 몇 칸 앞이다 — 성분 전체(2048칸)를 훑지 않는다(추격자 여럿이 주인공을 에워싸면
+      // 모두가 막혀 프레임마다 이 탐색을 돌렸다, 2026-10-30 프로파일).
+      mover.chasePath = approachPath(input.project, input.map, input.from, input.player, input.pass, APPROACH_MAX_CELLS);
     }
   }
 
@@ -174,6 +179,8 @@ export function nextChaseDecision(input: {
  */
 export type ChasePassSize = {
   readonly blocked?: (x: number, y: number) => boolean;
+  /** 벽·지형을 통과한다(유령, @/project/chaseBrain). 맵 밖과 blocked(막는 이벤트·배치)는 그대로 막는다. */
+  readonly phase?: boolean;
   readonly footprint: CharacterFootprint;
   readonly passRows: number;
 };
@@ -250,6 +257,7 @@ function chasePassable(
   pass: ChasePassSize | undefined
 ): boolean {
   if (pass?.blocked?.(to.x, to.y)) return false;
+  if (pass?.phase) return inBounds(map, to.x, to.y);
   if (!pass) return canMove(project, map, from.x, from.y, to.x, to.y);
   return canMoveFootprint(project, map, from.x, from.y, pass.footprint, to.x, to.y, pass.passRows);
 }
@@ -297,7 +305,8 @@ function searchChasePath(
   // 지형 성분이 다르면 아래 탐색은 맵 절반을 훑고 반드시 빈 경로를 낸다 — 그 결과를
   // 색인에서 바로 읽는다(실측 6.7ms → 25µs). 통행 사각이 1x1 보다 크면 통행 관계가
   // 비대칭이라 색인 대상이 아니다(tilePassabilityComponents 머리 주석).
-  const unitPass = passIsUnitRect(pass);
+  // 벽을 통과하는 추격자는 지형 성분과 무관하다 — 색인으로 끊지 않는다.
+  const unitPass = pass?.phase !== true && passIsUnitRect(pass);
   if (unitPass && !terrainMayReach(project, map, from.x, from.y, to.x, to.y)) return { path: [], capped: false };
   const width = map.width;
   const start: AStarNode = {
@@ -364,7 +373,8 @@ function searchChasePath(
   // 성분 색인으로 남겨 같은 질의가 반복될 때 다시 훑지 않게 한다. 1x1 보다 큰 통행 사각은
   // 색인의 대칭 전제를 만족하지 않으므로 남기지 않는다. closed.size 는 방금 훑은 성분의
   // 크기다 — 그게 면적에 비해 작으면 색인이 손해라 만들지 않는다.
-  if (unitPass && !canEnter) armTerrainComponents(project, map, closed.size);
+  // 색인이 이미 있으면(낡았는지는 질의 때 검증한다) 지문 검증을 치르지 않는다 — 추격자 여럿이 막힐 때마다 치르면 프레임이 무너진다.
+  if (unitPass && !canEnter && !hasTerrainComponents(map)) armTerrainComponents(project, map, closed.size);
   return { path: [], capped: false };
 }
 

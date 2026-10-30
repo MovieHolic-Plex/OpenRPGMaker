@@ -49,6 +49,23 @@ function pickStreetStartPos(project: Project, map: GameMap, walkRows: readonly n
   return { x: cx, y: cy };
 }
 
+
+/** avoidProps 낱말 → 키트 id 마디. 모르는 낱말은 그대로 마디로 쓴다. */
+const AVOID_PROP_ALIASES: Record<string, string> = { "자전거": "bike", "자판기": "vend", "자동차": "car", "차": "car", "벤치": "bench", "화분": "planter", "노보리": "nobori", "라바콘": "cone" };
+function avoidPropPatterns(value: unknown): string[] {
+  if (!Array.isArray(value)) return [];
+  return [...new Set(value.filter((v): v is string => typeof v === "string").map((v) => v.trim().toLowerCase()).filter(Boolean).map((v) => AVOID_PROP_ALIASES[v] ?? v))];
+}
+/** 소품 찍기(stamp_object kit:jp_city/…) 중 avoidProps 에 걸린 것인가. */
+function avoidedProp(patterns: readonly string[], tool: string, args: Record<string, unknown>): boolean {
+  if (!patterns.length || tool !== "stamp_object" || typeof args.objectId !== "string") return false;
+  const id = args.objectId.toLowerCase().replace(/^kit:jp_city\//u, "");
+  // 길 표시(jp-road-…)는 땅이라 빼지 않는다. 낱말은 id 마디로 맞춘다 — 「car」가 카포트(carport)를 지우지 않게 짧은 낱말(3자 이하)은 마디 전체, 긴 낱말은 마디 앞부분.
+  if (!id.startsWith("jp-") || id.startsWith("jp-road-")) return false;
+  const parts = id.split("-");
+  return patterns.some((p) => parts.some((part) => (p.length <= 3 ? part === p : part.startsWith(p))));
+}
+
 export const COMPOSE_JP_CITY_STREET_TOOL: ToolDefinition = {
   name: "compose_jp_city_street",
   mode: "write",
@@ -70,6 +87,7 @@ export const COMPOSE_JP_CITY_STREET_TOOL: ToolDefinition = {
       parkForest: { type: "string", enum: ["grove", "dense", "none"], description: "공원 구획 뒤쪽 잔디에 숲 — grove 덩이 숲(기본) · dense 빽빽한 숲 · none 숲 없음(나무 키트 몇 그루만)" },
       grounding: { type: "boolean", description: "옛 인자 — 무시한다. 숲 나무 밑 땅 그늘(접지)은 늘 켜진다" },
       lotsOnly: { type: "boolean", description: "다시 짜지 않고 이미 지은 jp_city 맵의 남은 빈 대지만 쓰임(코인 주차·골목 자판기·놀이터·텃밭·공사장·광장 꾸밈)으로 채운다 — 건물을 손으로 더하거나 옮긴 뒤 부른다" },
+      avoidProps: { type: "array", items: { type: "string" }, description: "이 거리에 두지 않을 소품 — 키트 id 마디(bike·vend·car·bench·planter·nobori·cone…) 또는 자전거·자판기·자동차·벤치·화분·노보리. 예: [\"bike\"] 면 자전거·자전거 거치대·자전거 무리·자전거 보관소를 하나도 찍지 않는다(그 자리는 바닥 그대로 걷는 칸). 길 표시는 빼지 않는다" },
     },
     additionalProperties: false,
   },
@@ -87,10 +105,14 @@ export const COMPOSE_JP_CITY_STREET_TOOL: ToolDefinition = {
     if (!tileset || !isJpCityTileset(tileset)) {
       throw new ToolError(`맵 '${map.name}'(${mapId}) 의 칩셋 '${map.tilesetId}' 은 일본 도시(${JP_CITY_ID}, 계열 ${JP_CITY_FAMILY})가 아니다 — 이 도구는 jp_city 맵에서만 동작한다.`, { code: "wrong-tileset", mapId });
     }
+    const avoid = avoidPropPatterns(args.avoidProps);
+    let avoided = 0;
+    const avoidNote = () => (avoid.length ? ` 빼 달라는 소품(${avoid.join("·")}) ${avoided}개는 찍지 않았다.` : "");
     if (args.lotsOnly === true) {
       const style0: JpStreetStyle = args.style === "residential" ? "residential" : "shopping";
       const work = structuredClone(draft);                              // 복제본에서 채우고 끝나면 반영(중간 실패로 반쯤 채운 맵이 남지 않게)
       const lot = fillLotUses({ mapId, seed: typeof args.seed === "number" ? args.seed : 0, style: style0, view: () => ({ map: work.maps[mapId]!, tileset: work.tilesets[work.maps[mapId]!.tilesetId]! }), call: (name, a) => {
+        if (avoidedProp(avoid, name, a)) { avoided++; return undefined; }
         const tool = lookup(name);
         if (!tool) throw new ToolError(`도구 ${name} 이 없다`, { code: "unknown-tool" });
         return tool.run(work, a).data;
@@ -99,7 +121,7 @@ export const COMPOSE_JP_CITY_STREET_TOOL: ToolDefinition = {
       for (const [id, ts] of Object.entries(work.tilesets)) draft.tilesets[id] = ts;
       const kinds = [...new Set(lot.uses.map((u) => u.use))].join("·") || "없음";
       return {
-        summary: `빈터 쓰임 ${lot.uses.length}곳(${kinds}) · 소품 ${lot.props}개 — 소품 없는 대지 ${(lot.emptyBefore * 100).toFixed(0)}% → ${(lot.emptyAfter * 100).toFixed(0)}%. show_map_region 으로 확인한다.`,
+        summary: `빈터 쓰임 ${lot.uses.length}곳(${kinds}) · 소품 ${lot.props}개 — 소품 없는 대지 ${(lot.emptyBefore * 100).toFixed(0)}% → ${(lot.emptyAfter * 100).toFixed(0)}%.${avoidNote()} show_map_region 으로 확인한다.`,
         data: { mapId, uses: lot.uses, props: lot.props, emptyBefore: lot.emptyBefore, emptyAfter: lot.emptyAfter },
       };
     }
@@ -119,6 +141,7 @@ export const COMPOSE_JP_CITY_STREET_TOOL: ToolDefinition = {
     const crosswalkTile = (tileset.structureKits ?? []).find((k) => k.id === "jp-road-lane-crosswalk-h")?.rows.flatMap((row) => row.upperTiles ?? []).find((t) => t >= 0);
     const plan = planJpCityStreet({ mapId, width: target.width, height: target.height, seed, style, shops, crosswalkTile });
     const outcome = runJpStreetPlan(plan, (name, a) => {
+      if (avoidedProp(avoid, name, a)) { avoided++; return undefined; }
       const tool = lookup(name);
       if (!tool) throw new ToolError(`도구 ${name} 이 없다`, { code: "unknown-tool" });
       const res = tool.run(next, a);
@@ -154,8 +177,8 @@ export const COMPOSE_JP_CITY_STREET_TOOL: ToolDefinition = {
     for (const [id, ts] of Object.entries(next.tilesets)) draft.tilesets[id] = ts;
     const startNote = claimStartIfBlank(draft, mapId, pickStreetStartPos(draft, built, plan.walkRows)).note;
     return {
-      summary: `${plan.summary} — 건물 ${outcome.built}채(못 지은 자리 ${outcome.skipped}) · 소품 ${outcome.props}개, 빈터 쓰임 ${outcome.lotUses.length}곳(${[...new Set(outcome.lotUses.map((u) => u.use))].join("·") || "없음"})${parkForestCells ? `, 공원 숲 ${parkForestCells}칸` : ""}. 건물 문: ${labels.join(" · ")}. 문마다 가게에 맞는 실내를 link_jp_city_interior 로 잇는다(건물 이름표는 list_map_locations).${startNote}`,
-      data: { mapId, seed, style, parkForestCells, shopsBuilt: labels, built: outcome.built, skipped: outcome.skipped, props: outcome.props, walkRows: plan.walkRows },
+      summary: `${plan.summary} — 건물 ${outcome.built}채(못 지은 자리 ${outcome.skipped}) · 소품 ${outcome.props}개, 빈터 쓰임 ${outcome.lotUses.length}곳(${[...new Set(outcome.lotUses.map((u) => u.use))].join("·") || "없음"})${parkForestCells ? `, 공원 숲 ${parkForestCells}칸` : ""}. 건물 문: ${labels.join(" · ")}. 문마다 가게에 맞는 실내를 link_jp_city_interior 로 잇는다(건물 이름표는 list_map_locations).${avoidNote()}${startNote}`,
+      data: { mapId, seed, style, parkForestCells, shopsBuilt: labels, built: outcome.built, skipped: outcome.skipped, props: outcome.props - avoided, walkRows: plan.walkRows, ...(avoid.length ? { avoidedProps: avoided } : {}) },
       ...(warnings.length ? { warnings } : {}),
     };
   },

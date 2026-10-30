@@ -5,6 +5,62 @@
 
 <!-- releases -->
 
+## 0.372.0 — 2026-10-30
+
+### 기능
+
+- **runtime** — system.fieldGuides off hides automatic field guide markers (`02a482e`)
+
+### 수정
+
+- **runtime** — star tiles resting on solid furniture y-sort with their row (`ff7d3e1`)
+
+### 문서
+
+- **openwiki** — regenerate INDEX (`2caf26f`)
+
+## 0.371.0 — 2026-10-30
+
+### 기능
+
+- **assistant** — compose_jp_city_street avoidProps skips unwanted street props (`a068e74`)
+
+### 수정
+
+- **ai** — label map ids in the v2 map list so mapIds stops getting tileset ids; horror words pull horror store music lines (`15f50ae`)
+
+### 문서
+
+- **readme** — refresh all four READMEs — playable demos, what's new since October, fresh editor/store/play screens (`8840ff0`)
+- **openwiki** — regenerate INDEX (`e310d0b`)
+
+### 잡무
+
+- retrigger ci (`3013a02`)
+
+## 0.370.0 — 2026-10-30
+
+### 기능
+
+- **chase** — smart chase AI — touch means battle, hearing, per-kind brains, pack perf (#3967) (`3aa7175`)
+
+### 성능
+
+- **runtime** — bake grafted tileset atlases in a worker, upload to the GPU in bands, prewarm neighbour maps (#3963) (`8b516cf`)
+
+## 0.369.0 — 2026-10-30
+
+### 기능
+
+- **ai** — official polish skill dialogue-polish (general-good-writing by code-yeongyu) + lint_dialogue (#3962) (`d47e34f`)
+
+## 0.368.1 — 2026-10-30
+
+### 수정
+
+- **runtime** — exit destination label no longer covers authored door art (#3960) (`5f3d25b`)
+- **qa** — battle driver no longer 'presses' inert skill rows and waits out the op timeout (#3959) (`c30731f`)
+
 ## 0.368.0 — 2026-10-30
 
 ### 기능

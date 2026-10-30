@@ -74,47 +74,131 @@ export function tileCountWithGrafts(
   return Math.max(tileset.count, rowAlignedTileCount(maxTarget + 1, tileset.tilesPerRow));
 }
 
-// 베이스 이미지 위에 graft 타일들을 합성한 캔버스를 만든다.
+/**
+ * 합성 계획 — 캔버스 크기, 소스 목록, 칸 하나당 9개 정수(소스 번호·원본 x,y,w,h·대상 x,y,w,h).
+ * 메인 스레드 합성(createGraftedTilesetCanvas)과 워커 합성(tilesetBake.worker.ts)이 같은 계획을 같은 순서로 그린다:
+ * 베이스를 (0,0)에 그리고, 칸마다 대상 칸을 지운 뒤 소스 칸을 그린다.
+ */
+export interface GraftedTilesetPlan<TSource> {
+  readonly width: number;
+  readonly height: number;
+  /** 이식이 요구하는 최소 크기 — 베이스 크기를 모를 때(그림판 키만으로 세운 계획) 워커가 베이스 크기와 큰 쪽을 쓴다. */
+  readonly minWidth: number;
+  readonly minHeight: number;
+  readonly base: TSource;
+  readonly sources: readonly TSource[];
+  /** sources 와 같은 순서의 그림판 키(워커가 그림을 주소로 받을 때 쓴다). */
+  readonly sourceKeys: readonly string[];
+  /** [sourceIndex, sx, sy, sw, sh, dx, dy, dw, dh] × 칸 수. */
+  readonly ops: Int32Array;
+}
+export const GRAFT_PLAN_STRIDE = 9;
+
+/** 계획 세우기를 몇 칸마다 쉬어 갈지(planGraftedTilesetSteps 가 이만큼마다 yield 한다). */
+const PLAN_STEP_GRAFTS = 16;
+
+// 베이스 이미지 위에 graft 타일들을 합성할 계획을 세운다.
 // - 캔버스 크기: 베이스 크기와 count 가 요구하는 크기의 최대(확장 모드에서 세로로 자람).
 // - resolveSourceImage: sourceChipset textureKey → 이미지(투명색 처리 완료본). 못 찾으면 해당 graft 는 건너뛰고 경고.
+export function planGraftedTileset<TSource extends GraftSource | string>(
+  tileset: Pick<TilesetDef, "count" | "tileSize" | "tilesPerRow" | "tileGrafts">,
+  base: TSource,
+  resolveSourceImage: (sourceChipset: string) => TSource | null
+): GraftedTilesetPlan<TSource> {
+  const steps = planGraftedTilesetSteps(tileset, base, resolveSourceImage);
+  for (let step = steps.next(); ; step = steps.next()) if (step.done) return step.value;
+}
+
+/**
+ * planGraftedTileset 를 조각으로 — PLAN_STEP_GRAFTS 칸마다 yield 한다. 이식이 4천 칸인 아틀라스는 한 번에 세우면
+ * 메인 스레드를 수십 ms 막으므로, 유휴 시간에 미리 굽는 쪽(tilesetPrewarm.ts)이 시간 상한 안에서 이어 돌린다.
+ * 결과는 planGraftedTileset 과 같다(대상 칸이 겹치면 뒤 항목이 이긴다 — activeTileGrafts 와 같은 규칙; 칸이 겹치지 않으니 그리는 순서는 결과를 바꾸지 않는다).
+ */
+export function* planGraftedTilesetSteps<TSource extends GraftSource | string>(
+  tileset: Pick<TilesetDef, "count" | "tileSize" | "tilesPerRow" | "tileGrafts">,
+  base: TSource,
+  resolveSourceImage: (sourceChipset: string) => TSource | null
+): Generator<void, GraftedTilesetPlan<TSource>, void> {
+  const raw = tileset.tileGrafts ?? [];
+  const byTarget = new Map<number, TileGraft>();
+  for (let index = 0; index < raw.length; index += 1) {
+    const graft = raw[index];
+    if (isValidTileGraft(graft)) byTarget.set(graft.targetTile, graft);
+    if (index % PLAN_STEP_GRAFTS === PLAN_STEP_GRAFTS - 1) yield;
+  }
+  const grafts = [...byTarget.values()].sort((a, b) => a.targetTile - b.targetTile);
+  yield;
+  const tileSize = tileset.tileSize;
+  const maxTarget = grafts.length > 0 ? grafts[grafts.length - 1]!.targetTile : -1;
+  const rows = Math.ceil(Math.max(tileset.count, rowAlignedTileCount(maxTarget + 1, tileset.tilesPerRow)) / Math.max(1, tileset.tilesPerRow));
+  const sources: TSource[] = [];
+  const sourceKeys: string[] = [];
+  const sourceIndex = new Map<string, number>();
+  const ops = new Int32Array(grafts.length * GRAFT_PLAN_STRIDE);
+  let count = 0;
+  for (let index = 0; index < grafts.length; index += 1) {
+    const graft = grafts[index]!;
+    let sourceAt = sourceIndex.get(graft.sourceChipset);
+    if (sourceAt === undefined) {
+      const source = resolveSourceImage(graft.sourceChipset);
+      sourceAt = source ? sources.push(source) - 1 : -1;
+      if (source) sourceKeys.push(graft.sourceChipset);
+      sourceIndex.set(graft.sourceChipset, sourceAt);
+    }
+    if (sourceAt < 0) {
+      console.warn(`[tileGrafts] 소스 타일 그림판 이미지를 찾지 못해 이식을 건너뜁니다: ${graft.sourceChipset}#${graft.sourceTile}`);
+    } else {
+      const geometry = graftSourceGeometry(graft);
+      const sourceTileSize = geometry.tileSize;
+      const src = tileXY(graft.sourceTile, geometry.tilesPerRow, sourceTileSize);
+      const dst = tileXY(graft.targetTile, tileset.tilesPerRow, tileSize);
+      const at = count * GRAFT_PLAN_STRIDE;
+      ops[at] = sourceAt; ops[at + 1] = src.x; ops[at + 2] = src.y; ops[at + 3] = sourceTileSize; ops[at + 4] = sourceTileSize;
+      ops[at + 5] = dst.x; ops[at + 6] = dst.y; ops[at + 7] = tileSize; ops[at + 8] = tileSize;
+      count += 1;
+    }
+    if (index % PLAN_STEP_GRAFTS === PLAN_STEP_GRAFTS - 1) yield;
+  }
+  // 소스가 그림판 키(문자열)면 크기를 모른다 — 최소 크기만 두고 워커가 베이스를 푼 뒤 정한다.
+  const minWidth = tileset.tilesPerRow * tileSize;
+  const minHeight = rows * tileSize;
+  return {
+    width: typeof base === "string" ? minWidth : Math.max(sourceWidth(base), minWidth),
+    height: typeof base === "string" ? minHeight : Math.max(sourceHeight(base), minHeight),
+    minWidth,
+    minHeight,
+    base,
+    sources,
+    sourceKeys,
+    ops: ops.subarray(0, count * GRAFT_PLAN_STRIDE),
+  };
+}
+
+type PlanContext = Pick<CanvasRenderingContext2D, "drawImage" | "clearRect" | "imageSmoothingEnabled">;
+/** 계획대로 그린다 — 워커(OffscreenCanvas)도 같은 순서를 따른다(tilesetBake.worker.ts). */
+export function drawGraftedTilesetPlan<TSource extends GraftSource>(context: PlanContext, plan: GraftedTilesetPlan<TSource>): void {
+  context.imageSmoothingEnabled = false;
+  context.drawImage(plan.base, 0, 0);
+  const ops = plan.ops;
+  for (let at = 0; at < ops.length; at += GRAFT_PLAN_STRIDE) {
+    context.clearRect(ops[at + 5]!, ops[at + 6]!, ops[at + 7]!, ops[at + 8]!);
+    context.drawImage(plan.sources[ops[at]!]!, ops[at + 1]!, ops[at + 2]!, ops[at + 3]!, ops[at + 4]!, ops[at + 5]!, ops[at + 6]!, ops[at + 7]!, ops[at + 8]!);
+  }
+}
+
+// 베이스 이미지 위에 graft 타일들을 합성한 캔버스를 만든다(메인 스레드). 실패 시 null.
 export function createGraftedTilesetCanvas(
   tileset: Pick<TilesetDef, "count" | "tileSize" | "tilesPerRow" | "tileGrafts">,
   base: GraftSource,
   resolveSourceImage: (sourceChipset: string) => GraftSource | null
 ): HTMLCanvasElement | null {
-  const grafts = activeTileGrafts(tileset);
-  const tileSize = tileset.tileSize;
-  const rows = Math.ceil(tileCountWithGrafts(tileset) / Math.max(1, tileset.tilesPerRow));
+  const plan = planGraftedTileset(tileset, base, resolveSourceImage);
   const canvas = document.createElement("canvas");
-  canvas.width = Math.max(sourceWidth(base), tileset.tilesPerRow * tileSize);
-  canvas.height = Math.max(sourceHeight(base), rows * tileSize);
+  canvas.width = plan.width;
+  canvas.height = plan.height;
   const context = canvas.getContext("2d");
   if (!context) return null;
-  context.imageSmoothingEnabled = false;
-  context.drawImage(base, 0, 0);
-  for (const graft of grafts) {
-    const source = resolveSourceImage(graft.sourceChipset);
-    if (!source) {
-      console.warn(`[tileGrafts] 소스 타일 그림판 이미지를 찾지 못해 이식을 건너뜁니다: ${graft.sourceChipset}#${graft.sourceTile}`);
-      continue;
-    }
-    const geometry = graftSourceGeometry(graft);
-    const sourceTileSize = geometry.tileSize;
-    const src = tileXY(graft.sourceTile, geometry.tilesPerRow, sourceTileSize);
-    const dst = tileXY(graft.targetTile, tileset.tilesPerRow, tileSize);
-    context.clearRect(dst.x, dst.y, tileSize, tileSize);
-    context.drawImage(
-      source,
-      src.x,
-      src.y,
-      sourceTileSize,
-      sourceTileSize,
-      dst.x,
-      dst.y,
-      tileSize,
-      tileSize
-    );
-  }
+  drawGraftedTilesetPlan(context, plan);
   return canvas;
 }
 

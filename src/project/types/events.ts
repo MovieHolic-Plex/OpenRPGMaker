@@ -867,6 +867,12 @@ export interface EventPageMovement {
    * 표는 project/fieldApproachStyle.ts. 조수: place_field_enemy·tune_field_enemies(approachStyle, auto = 종족으로)·set_field_approach_style.
    */
   approachStyle?: import("@/project/fieldApproachStyle").FieldApproachStyle;
+  /**
+   * chase 전용 «성격» — 어떻게 알아채고(발소리·소리·넓은 시야) 어디로 가는가(곧장·앞질러 막기·포위·벽 통과).
+   * 생략·auto = 다가오는 방식으로 고른다(질주·도약·급강하·기기 = beast, 육중 = knight, 나머지 = smart).
+   * classic = 2026-10-29 이전 추격(시야로만, 느낌표에서 저작한 만큼 멈춤). 표는 project/chaseBrain.ts.
+   */
+  chaseBrain?: import("@/project/chaseBrain").ChaseBrain;
 }
 
 export interface ChaseLunge {

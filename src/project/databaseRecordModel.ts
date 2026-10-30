@@ -415,6 +415,8 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
   if (system.allowAutoBattle === false) records.allowAutoBattle = false;
   if (system.clearStatesAfterBattle === true) records.clearStatesAfterBattle = true;
   if (system.saveAccess === "savePoints") records.saveAccess = "savePoints";
+  // 필드 안내 끄기 — 화이트리스트라 여기 없으면 저장/로드 1회 왕복에 사라진다.
+  if (system.fieldGuides === "off") records.fieldGuides = "off";
   if (emotionCycle) records.emotionCycle = emotionCycle;
   if (actionCombat) records.actionCombat = actionCombat;
   if (Array.isArray(system.toolActions)) records.toolActions = system.toolActions;

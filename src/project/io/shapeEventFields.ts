@@ -1,4 +1,5 @@
 import { FIELD_APPROACH_STYLES, isFieldApproachStyle } from "@/project/fieldApproachStyle";
+import { CHASE_BRAINS, isChaseBrain } from "@/project/chaseBrain";
 import { isNpcSight, isDetectionEncounter } from '@/project/npcBehavior';
 import { isBlendModeName } from "@/project/blendMode";
 import { assert, requireArray, requireBoolean, requireNumber, requireRecord, requireString } from "./guards";
@@ -545,6 +546,9 @@ function validatePageShape(label: string, value: unknown): void {
   }
   if (movement.approachStyle !== undefined) {
     assert(isFieldApproachStyle(movement.approachStyle), `${label}: 다가오는 방식은 ${FIELD_APPROACH_STYLES.join("|")}`);
+  }
+  if (movement.chaseBrain !== undefined) {
+    assert(isChaseBrain(movement.chaseBrain), `${label}: 추격 성격은 ${CHASE_BRAINS.join("|")}`);
   }
   if (movement.pursuit !== undefined) {
     const pursuit = requireRecord(`${label}.movement.pursuit`, movement.pursuit);

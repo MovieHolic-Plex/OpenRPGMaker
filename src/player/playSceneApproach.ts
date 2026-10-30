@@ -9,7 +9,7 @@ import { passageBounds, UNIT_FOOTPRINT } from "@/project/footprint";
 import { isSpatialPlacementBlocking } from "@/project/spatialOccupancy";
 import { findBlockingEventOverlappingRect, runtimeEventViewById, runtimeEventViewsForMap } from "@/project/runtimeEventState";
 import { store } from "@/project/store";
-import { isAlwaysAboveCharacterUpperTile } from "@/player/characterDepth";
+import { isAlwaysAboveCharacterUpperTile, starRestsOnSolidFurniture } from "@/player/characterDepth";
 import { PLAYER_MOVE_TARGET } from "@/project/moveRouteTarget";
 import { dirToward, planApproach, type StageCell } from "@/project/staging/approach";
 import type { Dir, MoveCommand } from "@/project/types";
@@ -61,6 +61,8 @@ export function expandApproach(scene: StageScene, actor: string, from: StageCell
   // 인물 그림은 발 칸과 머리 칸(한 줄 위)을 덮는다 — 둘 중 하나에 늘 위에 그려지는 ★ 타일(기둥·수관)이 있으면 가려진다.
   const coveredRow = (x: number, y: number): boolean => {
     if (!tileset || y < 0 || !inBounds(map, x, y)) return false;
+    // 막힌 가구 위 ★ 는 줄 정렬이라 남쪽 칸 사람을 덮지 않는다.
+    if (starRestsOnSolidFurniture(map, tileset, x, y)) return false;
     const i = y * map.width + x;
     return upperLayers.some((layer) => {
       const t = layer[i];
