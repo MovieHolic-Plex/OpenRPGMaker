@@ -59,9 +59,14 @@ try {
           const canvas = document.querySelector("canvas"); const camera = window.__oprnCamera?.();
           if (!canvas || !camera) return null;
           const rect = canvas.getBoundingClientRect(); const size = camera.tileSize ?? 16;
-          return { x: rect.left + ((x + 0.5) * size - camera.scrollX) * camera.zoom * (rect.width / camera.width), y: rect.top + ((y + 0.5) * size - camera.scrollY) * camera.zoom * (rect.height / camera.height) };
+          // Phaser 카메라: 화면 = (월드 - worldView) × zoom, worldView = scroll + 화면 크기 × (1 - 1/zoom) / 2.
+          const wvx = camera.scrollX + camera.width * (1 - 1 / camera.zoom) / 2, wvy = camera.scrollY + camera.height * (1 - 1 / camera.zoom) / 2;
+          return { x: rect.left + ((x + 0.5) * size - wvx) * camera.zoom * (rect.width / camera.width), y: rect.top + ((y + 0.5) * size - wvy) * camera.zoom * (rect.height / camera.height) };
         }, [tx, ty]);
         if (point) await page.mouse.click(point.x, point.y, { button: "left" });
+        await page.waitForTimeout(100);
+        const receipt = await page.evaluate(() => document.querySelector("[data-pointer-move]")?.getAttribute("data-pointer-move") ?? null).catch(() => null);
+        trail.push({ step: `${step} receipt`, at, state: { receipt } });
       } else {
         const key = { up: "ArrowUp", down: "ArrowDown", left: "ArrowLeft", right: "ArrowRight" }[step];
         await page.keyboard.down(key); await page.waitForTimeout(clip.holdMs ?? 200); await page.keyboard.up(key);
