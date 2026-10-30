@@ -322,7 +322,7 @@ function build2F(project: Project): void {
     chaser: { at: F2.patrolEast, graphic: { textureKey: SAEKI.tex, characterIndex: SAEKI.index }, speed: 3, sightRange: 6 },
     patrol: { waypoints: [F2.patrolEast, { x: 13, y: 17 }, F2.patrolWest, { x: 13, y: 16 }], pauseBeats: 3, lookAround: true },
     pursuit: { scope: "map", doorDelayMs: 0, searchMs: 6000, onLost: "return" },
-    killOnTouch: true, activateSwitch: SW_SAEKI_2F, emotes: "none",
+    killOnTouch: true, characterId: "saeki", caughtText: "찾았다.", activateSwitch: SW_SAEKI_2F, emotes: "none",
     footsteps: {}, hidingSound: { heartbeat: true },
     hidingSpots: [{ ...F2.lockerA }, { ...F2.lockerB }, { ...F2.lockerHall }],
   });
@@ -331,7 +331,6 @@ function build2F(project: Project): void {
     mapIds: [NR_MAP.f2], eventIds: ["ev_nr_saeki_2f"], brain: "smart", coneDegrees: 100, sightRange: 6, chaseStepMs: 200, searchMs: 6000, emotes: "none",
     visionLight: { color: "#fff3c4", intensity: 0.85 },
   });
-  tagSaeki(project, NR_MAP.f2, "ev_nr_saeki_2f");
 
   // 숨은 동안 문틈으로 들리는 혼잣말(설계 대사 4) — 숨어 있고 사에키 순찰 중일 때 한 번.
   addEvents(project, NR_MAP.f2, event("ev_nr_mutter_2f", "혼잣말", { x: 1, y: 17 }, [
@@ -348,15 +347,6 @@ function build2F(project: Project): void {
   ]));
 }
 
-/** 추격자 이벤트에 인물 프로필을 달아 bark 가 그 머리 위에 붙게 하고, 붙잡힘 한 줄을 「찾았다.」로. */
-function tagSaeki(project: Project, mapId: string, eventId: string): void {
-  const ev = project.maps[mapId]!.events.find((e) => e.id === eventId)!;
-  ev.characterId = "saeki";
-  ev.name = SAEKI_NAME;
-  for (const pg of ev.pages ?? []) {
-    pg.commands = pg.commands.map((c) => (c.kind === "killPlayer" ? { ...c, message: "찾았다." } : c));
-  }
-}
 
 // ─────────────────────────────────────────────────────────────────────────
 // 1층 — B3 잠긴 현관·열쇠함·낱장 1·2 · B5 열쇠함 1107 · B6a 하교
@@ -396,22 +386,17 @@ function build1F(project: Project): void {
   // 현관 유리문의 쇠사슬 — 현관 열쇠가 있으면 푼다(item-gate). 풀면 아래 출입구로 운동장에 나갈 수 있다.
   exec(project, "compile_puzzle", {
     mapId: NR_MAP.f1, kind: "item-gate", puzzleId: "nr_chain", at: F1.chain, name: "현관 유리문 쇠사슬",
-    requiredItemId: IT_KEY_DOOR, consumeItem: false,
+    requiredItemId: IT_KEY_DOOR, consumeItem: false, blocking: true,
     lockedMessage: "유리문 손잡이 둘을 쇠사슬이 감고 있다. 자물쇠가 걸렸다. 밖의 가로등이 보인다.",
     unlockedMessage: "현관 열쇠를 자물쇠에 넣었다. 돌아간다.",
-    onSolve: { setSwitch: SW_CHAIN, beats: [{ kind: "say", text: "쇠사슬이 바닥으로 흘러내린다. 소리가 복도 끝까지 울린다." }] },
+    // 쇠사슬이 풀릴 때 소리 — 스위치를 켜는 조사라 근처 추격자가 듣고 온다(조사 반경 8).
+    onSolve: { setSwitch: SW_CHAIN, beats: [{ kind: "music", action: "se", resourceId: SE.chain }, { kind: "say", text: "쇠사슬이 바닥으로 흘러내린다. 소리가 복도 끝까지 울린다." }] },
   });
-  // 쇠사슬이 풀릴 때 소리 — 근처 추격자가 듣고 온다(소리 반경 5, 조사 반경 8).
-  const chainGate = map.events.length ? project.maps[NR_MAP.f1]!.events.find((e) => e.id.includes("nr_chain")) : undefined;
-  if (chainGate) for (const pg of chainGate.pages ?? []) pg.commands = pg.commands.map((c) => c.kind === "fork" ? { ...c, then: [playSe(SE.chain, 0.9), ...(c as { then: Command[] }).then] } as Command : c);
   // 쇠사슬 오른쪽 칸 — 같은 문짝(조사하면 같은 말).
   addEvents(project, NR_MAP.f1, event("ev_nr_chain_r", "현관 유리문", F1.chainR, [
     page("p_chain_r", [swOff(SW_CHAIN)], [...think("유리문 두 짝을 쇠사슬 하나가 묶었다. 왼쪽 손잡이에 자물쇠.")], { priority: "same" }),
     gone("p_chain_r_off", [swOn(SW_CHAIN)]),
   ]));
-  // 쇠사슬이 풀리기 전에는 현관 아래로 나갈 수 없다 — 출입구 칸을 막는 투명 문짝(설계: 그림 없음).
-  // 쇠사슬 칸(12,17)은 막는 문짝이어야 한다 — 퍼즐 도구의 활성 페이지는 아래층(밟고 지나감)이라 같은 층으로 올린다.
-  for (const ev of project.maps[NR_MAP.f1]!.events) if (ev.id.includes("nr_chain_gate")) for (const pg of ev.pages ?? []) if (pg.conditions.some((c) => c.kind === "switch" && c.value === false)) { pg.priority = "same"; pg.overlapForbidden = true; }
 
   // 열쇠함 메모(설계: 「번호는 그날이다. 잊으면 안 되는 날.」).
   addEvents(project, NR_MAP.f1, event("ev_nr_key_note", "열쇠함 메모", F1.keyNote, [
@@ -426,9 +411,12 @@ function build1F(project: Project): void {
   exec(project, "compile_puzzle", {
     mapId: NR_MAP.f1, kind: "password", puzzleId: "nr_keybox", at: F1.keyBox, name: "열쇠함", answer: "1107",
     prompt: "네 자리 번호 자물쇠. 다이얼이 차갑다.",
+    wrongMessage: "다이얼이 걸리지 않는다. 그날이 아니다.", wrongSound: SE.metal,
     onSolve: {
       setSwitch: SW_KEYBOX,
+      giveItems: [IT_KEY_DOOR, IT_KEY_ROOF],
       beats: [
+        { kind: "music", action: "se", resourceId: SE.lock },
         { kind: "say", text: "철컥. 열쇠함 문이 열렸다. 소리가 너무 크다." },
         { kind: "say", text: "열쇠 두 개. 꼬리표에 「昇降口」, 그리고 「屋上」." },
       ],
@@ -439,9 +427,9 @@ function build1F(project: Project): void {
     pg.commands = pg.commands.map((c) => {
       if (c.kind !== "fork") return c;
       const fork = c as { then: Command[]; else?: Command[] };
-      return { ...c, then: [playSe(SE.lock, 1), ...fork.then, giveItem(IT_KEY_DOOR), giveItem(IT_KEY_ROOF), setSw(SW_SAEKI_1F, false), setSw(SW_SAEKI_HUNT, true),
-        { kind: "checkpointSave", label: "keybox" } as Command, wait(600), ...think("발소리가 멈췄다.", "…이쪽으로 온다.")],
-        else: [playSe(SE.metal, 0.5), { kind: "text", body: "다이얼이 걸리지 않는다. 그날이 아니다." } as Command, ...(fork.else ?? []).filter((x) => x.kind !== "text")] } as Command;
+      // 열린 뒤의 추격 단계 전환은 이야기 고유 흐름이라 푼 명령 뒤에 붙인다(퍼즐 도구 밖).
+      return { ...c, then: [...fork.then, setSw(SW_SAEKI_1F, false), setSw(SW_SAEKI_HUNT, true),
+        { kind: "checkpointSave", label: "keybox" } as Command, wait(600), ...think("발소리가 멈췄다.", "…이쪽으로 온다.")] } as Command;
     });
   }
 
@@ -474,27 +462,25 @@ function build1F(project: Project): void {
     chaser: { at: { x: 2, y: 13 }, graphic: { textureKey: SAEKI.tex, characterIndex: SAEKI.index }, speed: 3, sightRange: 6 },
     patrol: { waypoints: [{ x: 2, y: 13 }, F1.loopStaff, { x: 6, y: 8 }, F1.loopStaff, F1.loopNurse, { x: 15, y: 8 }, F1.loopNurse, F1.loopNE, F1.loopNurse], pauseBeats: 3, lookAround: true },
     pursuit: { scope: "map", doorDelayMs: 0, searchMs: 7000, onLost: "return" },
-    killOnTouch: true, activateSwitch: SW_SAEKI_1F, emotes: "none", footsteps: {}, hidingSound: { heartbeat: true },
+    killOnTouch: true, characterId: "saeki", caughtText: "찾았다.", activateSwitch: SW_SAEKI_1F, emotes: "none", footsteps: {}, hidingSound: { heartbeat: true },
     hidingSpots: [{ ...F1.nurseCurtain }, { ...F1.nurseBed2 }, { ...F1.staffHide }, { ...F1.toilet }],
   });
   exec(project, "set_field_detection", {
     mapIds: [NR_MAP.f1], eventIds: ["ev_nr_saeki_1f"], brain: "smart", coneDegrees: 100, sightRange: 6, chaseStepMs: 185, searchMs: 7000, emotes: "none",
     visionLight: { color: "#fff3c4", intensity: 0.85 },
   });
-  tagSaeki(project, NR_MAP.f1, "ev_nr_saeki_1f");
 
   // 사에키 3단계 — 열쇠함 소리로 깨어난다. 층을 따라오고(connected) 오래 뒤진다. knight, 175ms/칸.
   exec(project, "make_chase_scene", {
     mapId: NR_MAP.f1, id: "ev_nr_saeki_hunt",
     chaser: { at: { x: 15, y: 8 }, graphic: { textureKey: SAEKI.tex, characterIndex: SAEKI.index }, speed: 3, sightRange: 6 },
     pursuit: { scope: "connected", doorDelayMs: 1500, searchMs: 9000, onLost: "return", tracking: "persistent" },
-    killOnTouch: true, activateSwitch: SW_SAEKI_HUNT, emotes: "none", footsteps: {}, hidingSound: { heartbeat: true }, hidingSpots: [],
+    killOnTouch: true, characterId: "saeki", caughtText: "찾았다.", activateSwitch: SW_SAEKI_HUNT, emotes: "none", footsteps: {}, hidingSound: { heartbeat: true }, hidingSpots: [],
   });
   exec(project, "set_field_detection", {
     mapIds: [NR_MAP.f1], eventIds: ["ev_nr_saeki_hunt"], brain: "knight", sightRange: 6, chaseStepMs: 175, searchMs: 9000, emotes: "none",
     visionLight: { color: "#fff3c4", intensity: 0.85 },
   });
-  tagSaeki(project, NR_MAP.f1, "ev_nr_saeki_hunt");
 
   // 순찰 혼잣말(교무실 문 앞에서 들여다볼 때 들린다) — 사에키 1층 순찰 중, 주인공이 교무실 안에 있으면.
   addEvents(project, NR_MAP.f1, event("ev_nr_mutter_1f", "혼잣말", { x: 1, y: 12 }, [
@@ -558,7 +544,7 @@ function build3F(project: Project): void {
     mapId: NR_MAP.f3, id: "ev_nr_sayo",
     chaser: { at: F3.sayoAt, graphic: { textureKey: SAYO.tex, characterIndex: SAYO.index }, speed: 2, sightRange: 5 },
     pursuit: { scope: "map", doorDelayMs: 0, searchMs: 3000, onLost: "wait" },
-    killOnTouch: true, activateSwitch: SW_SAYO, emotes: "none", hidingSound: { heartbeat: true },
+    killOnTouch: true, characterId: "sayo", activateSwitch: SW_SAYO, emotes: "none", footsteps: { off: true }, hidingSound: { heartbeat: true },
     hidingSpots: [{ ...F3.hideCounter }, { ...F3.hideBench }, { ...F3.hideBench2 }],
     checkpointOnEntry: true,
   });
@@ -567,10 +553,7 @@ function build3F(project: Project): void {
   });
   {
     const ev = project.maps[NR_MAP.f3]!.events.find((e) => e.id === "ev_nr_sayo")!;
-    ev.characterId = "sayo"; ev.name = SAYO_NAME;
     for (const pg of ev.pages ?? []) {
-      // 유령은 발소리가 없다 — 공포 장르 기본 발소리를 뗀다(도구의 footsteps:false 가 스키마에서 거절된다: 조수 결함 목록).
-      if (pg.movement) { const { footsteps: _f, ...rest } = pg.movement as typeof pg.movement & { footsteps?: unknown }; void _f; pg.movement = rest as typeof pg.movement; }
       if (pg.graphic) pg.graphic = { ...pg.graphic, blendMode: "add" };
       // 사요는 잡지 않는다 — 닿으면 차가운 손, 화면이 하얘지고 계단 앞에서 깬다(사요는 원망하지 않는다). 그래도 피하는 게 맞다.
       pg.commands = [
@@ -732,13 +715,12 @@ function buildYard(project: Project): void {
     mapId: NR_MAP.yard, id: "ev_nr_saeki_yard",
     chaser: { at: { x: 6, y: 12 }, graphic: { textureKey: SAEKI.tex, characterIndex: SAEKI.index }, speed: 3, sightRange: 8 },
     pursuit: { scope: "map", doorDelayMs: 0, searchMs: 4000, onLost: "return" },
-    killOnTouch: true, activateSwitch: SW_YARD_SAEKI, emotes: "none", footsteps: {}, hidingSound: { heartbeat: true }, hidingSpots: [],
+    killOnTouch: true, characterId: "saeki", caughtText: "찾았다.", activateSwitch: SW_YARD_SAEKI, emotes: "none", footsteps: {}, hidingSound: { heartbeat: true }, hidingSpots: [],
   });
   exec(project, "set_field_detection", {
     mapIds: [NR_MAP.yard], eventIds: ["ev_nr_saeki_yard"], brain: "smart", coneDegrees: 120, sightRange: 8, chaseStepMs: 170, searchMs: 4000, emotes: "none",
     visionLight: { color: "#fff3c4", intensity: 0.85 },
   });
-  tagSaeki(project, NR_MAP.yard, "ev_nr_saeki_yard");
 }
 
 // ─────────────────────────────────────────────────────────────────────────
