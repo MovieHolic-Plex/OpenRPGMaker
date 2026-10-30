@@ -4,6 +4,7 @@ import { appVersionPlugin } from "./scripts/lib/appVersion.mjs";
 import { playerBundleGuardPlugin } from "./scripts/lib/playerBundleGuard.mjs";
 import { playerEditorOnlyAssetsVitePlugin } from "./scripts/lib/playerEditorOnlyAssets.mjs";
 import { runtimeLicenseBannerPlugin } from "./scripts/lib/runtimeLicenseBanner.mjs";
+import { bundledJsonLazyPlugin } from "./scripts/lib/bundledJsonLazy.mjs";
 
 const src = (path: string): string => fileURLToPath(new URL(`./src/${path}`, import.meta.url));
 
@@ -15,7 +16,8 @@ export default defineConfig({
   // 버그 리포트가 "게임이 이상해요" 로 시작할 때 도구 버전이 유일한 단서다.
   // 타일셋 AI 참고문서(에디터 전용, 약 14MB)는 빈 값으로 싣는다 — scripts/lib/playerEditorOnlyAssets.mjs.
   // 조수·하네스 레지스트리·공방 키트·AI 제공자 주소가 플레이어에 들어오면 빌드를 멈춘다 — scripts/lib/playerBundleGuard.mjs.
-  plugins: [playerBundleGuardPlugin(), playerEditorOnlyAssetsVitePlugin(), appVersionPlugin(), runtimeLicenseBannerPlugin(fileURLToPath(new URL("./LICENSE-RUNTIME.md", import.meta.url)))],
+  // 번들 타일셋 정의 JSON(약 40MB)은 진입 청크에 싣지 않고 게임이 참조하는 것만 읽는다 — scripts/lib/bundledJsonLazy.mjs.
+  plugins: [bundledJsonLazyPlugin(), playerBundleGuardPlugin(), playerEditorOnlyAssetsVitePlugin(), appVersionPlugin(), runtimeLicenseBannerPlugin(fileURLToPath(new URL("./LICENSE-RUNTIME.md", import.meta.url)))],
   resolve: {
     alias: [
       { find: /^@\/app\/mode$/, replacement: src("player/exportAppModeShim.ts") },

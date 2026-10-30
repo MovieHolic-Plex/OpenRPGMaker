@@ -21,7 +21,7 @@ map/battle/menu can each get a fitting cue without the author sourcing music the
 - **License: CC0-1.0.** All tracks are vocal-free original compositions. Attribution is not
   required; it is recorded in `public/assets/ATTRIBUTION.md` so provenance stays re-verifiable.
 - **The complete audio is distributed as a GitHub Release pack**, not in ordinary Git.
-  The 281 files total 1,303,934,164 bytes (1.304 GB / 1.214 GiB). The private `bgm-v1`
+  The 281 files total 1,303,934,164 bytes (1.304 GB / 1.214 GiB). The public `bgm-v1`
   release and committed `assets/bgm-release-v1.json` pin the exact bytes. DigitalOcean
   remains the producer's source and an optional explicit streaming override.
 - **Exception — three starter tracks are committed** (`public/assets/cc0/audio/catalog/`, ~10MB).
@@ -57,10 +57,15 @@ Do **not** hand-edit the two generated files. Re-run the scripts.
 ## Release pack installation (2026-09-07)
 
 After `npm ci`, run `npm run bgm:install`, then `npm run bgm:verify`. The repository
-`MovieHolic-Plex/OpenRPGMaker` is public: automatic installation invokes `gh release download`.
-No token is passed in arguments or exposed to the browser. Without gh, download
-`rpg-zzu-bgm-v1.tar` from <https://github.com/MovieHolic-Plex/OpenRPGMaker/releases/tag/bgm-v1>
-and run:
+`MovieHolic-Plex/OpenRPGMaker` and the `bgm-v1` release are public. Installation downloads
+`rpg-zzu-bgm-v1.tar` over HTTPS and checks the committed size and SHA-256. It tries
+`https://github.com/MovieHolic-Plex/OpenRPGMaker/releases/download/bgm-v1/rpg-zzu-bgm-v1.tar`
+first. That browser URL can return 404 even though the release page lists the file; the
+installer then requests the public API asset (`Accept: application/octet-stream`) and follows
+the redirect only to GitHub release hosts. `gh release download` runs only if both anonymous
+channels refuse. No token is passed in arguments or exposed to the browser. To install from a
+file saved out of band, download `rpg-zzu-bgm-v1.tar` from
+<https://github.com/MovieHolic-Plex/OpenRPGMaker/releases/tag/bgm-v1> and run:
 
 ```sh
 npm run bgm:install -- --archive "/path/rpg-zzu-bgm-v1.tar"
@@ -80,7 +85,7 @@ whole-directory transaction: rerun after a late I/O failure to finish/repair the
 Ctrl-C/termination clean owned staging and locks. After forced termination, remove a stale
 `.bgm-install.lock` only after confirming no installation is active.
 
-An already verified complete installation returns without gh/network. To use the installed
+An already verified complete installation returns without a download. To use the installed
 audio, leave `VITE_BGM_CDN_BASE` unset: an explicit CDN still wins. Restart dev after env
 changes. Install before `npm run build` or web export so portable/static output contains the
 pack. Vite dev/preview can also discover and serve a later install without rebuilding (below).
@@ -103,7 +108,8 @@ in `vite.config.ts`, mounts the same endpoint in dev and preview:
   `OPRN_BGM_INSTALL_REMOTE=1` and a restart. The plugin uses Vite `loadEnv` with resolved
   mode/envDir, including preview; `.env.local` values are not automatically in `process.env`.
   Forwarded request headers cannot opt a client in. This is a host-wide permission, not user
-  authentication; enable it only on a trusted editor network. Credentials stay in server gh.
+  authentication; enable it only on a trusted editor network. The anonymous download sends no
+  token. The gh fallback, if it runs, keeps credentials in the server's own gh store.
 - Status is lightweight nonempty-file inventory plus job/progress/error facts, not an offline
   digest audit (`npm run bgm:verify` owns that). The build-time installed filenames only seed
   `installedBgm.ts`. Both installation polling and the initial fetch on every picker opening
@@ -145,7 +151,7 @@ the browser bundle. `vite-node` runs the maintainer's TypeScript catalog imports
 After tests, real installation/playback and production build pass, commit source/manifest/docs,
 push the verified commit, then create a **non-latest draft** release targeting that commit.
 Upload all three assets, verify GitHub's uploaded asset digest/size, and publish the draft.
-Download the published pack through the real private-access path and verify all 281 installed
+Download the published pack through the public HTTPS path and verify all 281 installed
 files. Do not put the tar or downloaded audio in ordinary Git. CC0 provenance remains in
 `public/assets/ATTRIBUTION.md` and the manifest.
 

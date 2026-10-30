@@ -5,6 +5,41 @@
 
 <!-- releases -->
 
+## 0.368.1 — 2026-10-30
+
+### 수정
+
+- **runtime** — exit destination label no longer covers authored door art (#3960) (`5f3d25b`)
+- **qa** — battle driver no longer 'presses' inert skill rows and waits out the op timeout (#3959) (`c30731f`)
+
+## 0.368.0 — 2026-10-30
+
+### 기능
+
+- **workshop** — natural objects drop geometric shapes — organic recipe, Beodeul exemplars, judge Q7, 12 crown checks (WIP: VQA not at 0 majors) (#3279) (`e5e0fd4`)
+- **runtime** — door kinds x footprint — auto glass, double, slide, shutter doors open with their own art (#3949) (`10cd5e0`)
+- **runtime** — snap non-integer camera zoom >= 1 to an integer for pixel games (#3950) (`b4fad37`)
+
+### 수정
+
+- **player** — follow-ups to lazy tileset definitions — stall-guarded fetch with progress, immutable json cache, build assertions (#3958) (`7027c93`)
+- **runtime** — first-timer review fixes — nameplate side, victory box, redundant buffs, enemy plates, exit labels (#3956) (`33ff457`)
+- **bgm** — install the public bgm-v1 pack without gh (#3565) (`85d334c`)
+- **editor** — 자료집 개요에 「이야기 구조」(퀘스트·엔딩 목록) 절 (#3954) (`9f3cde2`)
+- **runtime** — storefront door rect from the label column, not the clicked leaf (#3955) (`33e4bcb`)
+- **runtime** — cut dead black time on retry transfers (caught / battle-loss) (#3953) (`1fa4589`)
+- **openwiki** — regenerate the index (`996e8c6`)
+- **ai** — store music sees every pack, marks the recommended pick, wires gallery music to the start map (`6a06568`)
+
+### 성능
+
+- **player** — load only the bundled tileset definitions the game uses (52MB entry chunk → 7.6MB) (#3957) (`3684ce3`)
+- **player** — reuse life-calendar HUD lines between clock minutes (#3580) (`d2810c2`)
+- **player** — skip page resolution for events that cannot match the frame query (#3598) (`6310ab3`)
+- **player** — scan minimap overlays once per frame (#3675) (`28bdc74`)
+- **player** — reuse map background layers between frames (#3693) (`ddb563d`)
+- **player** — scan zone feedback overlays once per frame (#3735) (`bb7e72b`)
+
 ## 0.367.0 — 2026-10-30
 
 ### 기능

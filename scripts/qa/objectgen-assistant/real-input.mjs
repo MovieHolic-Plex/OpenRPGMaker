@@ -170,9 +170,11 @@ async function dumpRound(harnessId, file) {
       item: item ? { title: item.title, description: item.description, width: item.width, height: item.height, padTop: item.padTop, footRows: item.footRows, risePx: item.risePx, kind: item.kind, passage: item.passage ?? null, footprintNote: item.footprintNote ?? null, refTop: item.refTop ?? null } : null,
       reference: round.reference ?? null,
       runs: round.runs.map((run) => ({
-        letter: run.letter, status: run.status, verdict: run.verdict, error: run.error,
+        letter: run.letter, status: run.status, verdict: run.verdict, error: run.error, base: run.base ?? null,
         png8: run.grid && palette ? gridDataUrl(run.grid, palette, 8, [150, 120, 90, 255]) : null,
         png1: run.grid && palette ? gridDataUrl(run.grid, palette, 1) : null,
+        // 시도마다 걸린 검사와 그림 — 후보가 하나도 안 남을 때 무엇이 막았는지 본다.
+        attempts: (run.attempts ?? []).map((a) => ({ attempt: a.attempt, hard: a.hard, verdict: a.verdict?.verdict ?? null, png1: a.grid && palette ? gridDataUrl(a.grid, palette, 1) : null })),
       })),
     };
   }, { harnessId });
@@ -192,7 +194,7 @@ for (const job of cases) {
   const cardsBefore = await page.locator('[data-testid="ai-objectgen-card"]').count();
   await page.getByTestId("ai-input").fill(job.prompt);
   await page.getByTestId("ai-send").click();
-  let kit = null, placedAt = 0, lastShot = 0, noCardSince = null, redrawn = false;
+  let kit = null, placedAt = 0, lastShot = 0, noCardSince = null, redrawn = false, redrawnAt = 0;
   const deadline = Date.now() + Number(process.env.CASE_TIMEOUT_MS ?? 45 * 60_000);
   while (Date.now() < deadline) {
     await page.waitForTimeout(5000);
@@ -212,8 +214,13 @@ for (const job of cases) {
     if (!kit && process.env.SUPERVISOR_PICK === "1") {
       const waiting = await page.locator('[data-testid="ai-objectgen-card"]').last().locator('[role="status"]').textContent().catch(() => "");
       // 후보를 하나도 못 그렸으면(격자 줄 길이 깨짐 등) 사람처럼 「다시 그리기」를 한 번 누른다.
+      if (/후보를 그리지 못했어요/u.test(waiting ?? "")) {
+        try { await dumpRound("map-objects", resolve(out, `${job.id}-nocand-${redrawn ? 2 : 1}.json`)); } catch (error) { log(`nocand dump failed: ${error.message}`); }
+      }
+      // 다시 그려도 후보가 없으면 45분을 기다리지 않고 끝낸다.
+      if (/후보를 그리지 못했어요/u.test(waiting ?? "") && redrawn && Date.now() - redrawnAt > 30_000) { log(`${job.id}: no candidate after redraw`); break; }
       if (/후보를 그리지 못했어요/u.test(waiting ?? "") && !redrawn) {
-        redrawn = true;
+        redrawn = true; redrawnAt = Date.now();
         await page.locator('[data-testid="ai-objectgen-card"]').last().locator('[data-testid="ai-objectgen-redraw"]').click().catch(() => {});
         log("redraw pressed (no candidate drawn)"); appendFileSync(resolve(out, `${job.id}-redraw.txt`), new Date().toISOString() + "\n");
       }
@@ -235,7 +242,12 @@ for (const job of cases) {
         for (const layer of map.extraLayers ?? []) (layer.tiles ?? []).forEach((id, i) => { if (ids.has(id)) hits.push(i); });
         return hits.length ? { cells: [...new Set(hits)].map((i) => [i % map.width, Math.floor(i / map.width)]) } : null;
       }, { mapId, kit });
-      if (stamped && !placedAt) { placedAt = Date.now(); log(`placed ${kit} at ${JSON.stringify(stamped.cells.slice(0, 3))}…`); }
+      if (stamped && !placedAt) {
+        placedAt = Date.now(); log(`placed ${kit} at ${JSON.stringify(stamped.cells.slice(0, 3))}…`);
+        // 놓자마자 판·프로젝트를 먼저 받아 둔다 — 메모리가 빠듯한 박스에서 턴 끝을 기다리다 렌더러가 죽어 둘 다 잃었다(2026-10-22).
+        try { await dumpRound("map-objects", resolve(out, `${job.id}-round.json`)); } catch (error) { log(`early round dump failed: ${error.message}`); }
+        try { writeFileSync(resolve(out, "project.json"), await page.evaluate(() => JSON.stringify(window.__oprnEditorStore.getCurrent()))); log("project exported"); } catch (error) { log(`early export failed: ${error.message}`); }
+      }
       if (placedAt && Date.now() - placedAt > 15_000 && await sendIdle()) break;
     }
   }

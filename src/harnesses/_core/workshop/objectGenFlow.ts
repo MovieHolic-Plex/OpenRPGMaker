@@ -15,12 +15,13 @@
  * 판정은 후보 한 장 + 숨긴 반려 표본으로 한다(원본은 그 판 후보 전부를 한 판에).
  */
 import type { ChatMessage, ContentPart } from "@/ai/llmClient";
+import { footprintClass, isOrganicObject } from "./footprint";
 import { kitConstant, kitFile, objectGenKit } from "./genKits";
 import { gridToAnswer, onBackground, renderGrid, scaleImage } from "./grid";
 import { styleFacts } from "@/harnesses/object-gate/node/facts";
-import type { DrawContext, Grid, Palette, Rgba, RgbaImage, ReviewContext, Verdict, WorkshopEnv, WorkshopItem } from "./types";
+import type { BaseInfo, DrawContext, Grid, Palette, PaletteEntry, Rgba, RgbaImage, ReviewContext, Verdict, WorkshopEnv, WorkshopItem } from "./types";
 
-type KitSection = "prompts" | "reference" | "picker" | "vqa" | "drawer" | "exemplars" | "footprint";
+type KitSection = "prompts" | "reference" | "picker" | "vqa" | "drawer" | "exemplars" | "footprint" | "checks";
 type AnchorSet = { examples?: { file: string; label: string }[]; good: { file: string; label: string; why?: string }[]; bad: { file: string; label: string; why?: string }[]; rejects?: { file: string }[] };
 
 /**
@@ -38,6 +39,16 @@ const anchorSet = (set: string): AnchorSet | undefined => {
 };
 /** 원본 flow.DEFAULT_STYLE */
 export const OG_STYLE = "oprn-interior-v5-large";
+/**
+ * 원본 flow.ORGANIC_STYLE — 자연물(나무·덤불·식물·꽃·더미·동물·바위)은 버들항 손 도트 나무(#3223·#3229)를 견본·GOOD 으로,
+ * 도형으로 그린 사과나무를 BAD 로, 도형 반려 표본을 숨겨 판정한다. 왜(2026-10-22 사용자): 2×3 사과나무가 달걀 수관·네모 줄기·
+ * 격자 네모 사과로 나왔다 — 가구 지시문(윗면 3줄·받침)과 가구 견본(침대·옷장)으로 그렸고, 판정도 가구와 비교했다.
+ */
+export const OG_STYLE_ORGANIC = "oprn-beodeul-organic";
+/** 자연물인가 — 3/4 관문 종류 organic 이거나 이름(크기 사전 종류·머리 낱말)이 자연물(object-gen footprint.is_organic). */
+export const ogIsOrganic = (item: Pick<WorkshopItem, "title"> & { readonly gateKind?: string | null }): boolean => isOrganicObject(item.title, item.gateKind ?? null);
+/** 그 물건을 그리고 판정할 견본 묶음 */
+export const ogStyleSetFor = (item: Pick<WorkshopItem, "title"> & { readonly gateKind?: string | null }): string => (ogIsOrganic(item) ? OG_STYLE_ORGANIC : OG_STYLE);
 export const OG_JUDGE_RUNS = 3;
 export const OG_JUDGE_RETRIES = 2;
 export const OG_PICK_RUNS = kitValue<number>("picker", "RUNS");
@@ -244,6 +255,295 @@ export function topPlaneRows(image: RgbaImage): number {
   return rows.length ? rows[Math.floor(rows.length / 2)]! : 0;
 }
 
+const GEOMETRIC_TURNS = kitValue<number>("checks", "GEOMETRIC_TURNS");
+const GEOMETRIC_ELLIPSE = kitValue<number>("checks", "GEOMETRIC_ELLIPSE");
+const GEOMETRIC_MIN_ROWS = kitValue<number>("checks", "GEOMETRIC_MIN_ROWS");
+const GEOMETRIC_MIRROR = kitValue<number>("checks", "GEOMETRIC_MIRROR");
+const GEOMETRIC_MIRROR_ROWS = kitValue<number>("checks", "GEOMETRIC_MIRROR_ROWS");
+const CROWN_SOLIDITY_MAX = kitValue<number>("checks", "CROWN_SOLIDITY_MAX");
+const MASS_SOLIDITY_MAX = kitValue<number>("checks", "MASS_SOLIDITY_MAX");
+const LEAF_MIN_PIXELS = kitValue<number>("checks", "LEAF_MIN_PIXELS");
+const LEAF_CAST_MAX = kitValue<number>("checks", "LEAF_CAST_MAX");
+const LEAF_DARK_MIN = kitValue<number>("checks", "LEAF_DARK_MIN");
+const LEAF_CONTRAST_MIN = kitValue<number>("checks", "LEAF_CONTRAST_MIN");
+const LEAF_BAND_MAX = kitValue<number>("checks", "LEAF_BAND_MAX");
+const LEAF_BASE_MAX = kitValue<number>("checks", "LEAF_BASE_MAX");
+const LEAF_LONE_MAX = kitValue<number>("checks", "LEAF_LONE_MAX");
+const LEAF_HOLES_MIN = kitValue<number>("checks", "LEAF_HOLES_MIN");
+const STRAIGHT_SIDE_MAX = kitValue<number>("checks", "STRAIGHT_SIDE_MAX");
+const TRUNK_SHARE_MAX = kitValue<number>("checks", "TRUNK_SHARE_MAX");
+const BROAD_TREE_SIDE_MAX = kitValue<number>("checks", "BROAD_TREE_SIDE_MAX");
+const SHELF_LUMA = kitValue<number>("checks", "SHELF_LUMA");
+const SHELF_MIN_PIXELS = kitValue<number>("checks", "SHELF_MIN_PIXELS");
+const SHELF_MAX = kitValue<number>("checks", "SHELF_MAX");
+const LEAF_PALE_MIN = kitValue<number>("checks", "LEAF_PALE_MIN");
+const UNDERGAP_MAX = kitValue<number>("checks", "UNDERGAP_MAX");
+const ROCK_BASE_MAX = kitValue<number>("checks", "ROCK_BASE_MAX");
+const SPUR_MAX = kitValue<number>("checks", "SPUR_MAX");
+const SPUR_MAX_NARROW = kitValue<number>("checks", "SPUR_MAX_NARROW");
+const CLEFT_MAX = kitValue<number>("checks", "CLEFT_MAX");
+const SPECKLE_MAX = kitValue<number>("checks", "SPECKLE_MAX");
+const DEEP_LUMA = kitValue<number>("checks", "DEEP_LUMA");
+const DEEP_MIN = kitValue<number>("checks", "DEEP_MIN");
+const ORGANIC_LEAF_RAMP = kitValue<readonly string[]>("prompts", "ORGANIC_LEAF_RAMP");
+/** 버들항 바위·꽃밭 밑의 반투명 바닥 그림자 키(#rrggbbaa) — object-gen prompts.GROUND_SHADOW */
+export const GROUND_SHADOW = kitValue<string>("prompts", "GROUND_SHADOW");
+const SHADOW_WORDS = kitValue<string>("footprint", "SHADOW_WORDS");
+/** 버들항에서 반투명 바닥 그림자 위에 그려지는 자연물(바위·돌무더기·꽃밭·화분) — object-gen footprint.casts_shadow. 나무·덤불은 없다. */
+export const ogCastsShadow = (item: { readonly title: string; readonly description?: string; readonly gateKind?: string | null }): boolean =>
+  ogIsOrganic(item) && footprintClass(item.title, item.description ?? "") !== "tree" && new RegExp(SHADOW_WORDS, "iu").test((item.title ?? "").toLowerCase());
+
+// --- 칩셋 출발 그림(원본 bases.py, base-from-chipset 2026-10-23) ------------------------------------------------------
+// 처음부터 그린 자연물은 6판 넘게 버들항 잎 결·수관 짜임에 못 미쳤다(공·상자·줄무늬 수관, 색종이 꽃밭). 나무·덤불·꽃밭·바위는
+// 같은 종류의 칩셋 손 도트 기물(정확한 화소)에서 출발하고, 그리는 쪽은 열매·꽃을 더하고 팔레트 안에서 다시 칠하고 윤곽을 몇 화소 바꾼다.
+
+/** 출발 그림 하나(set.json 한 줄 — 상자 크기·불투명 색은 원본 scripts/make_bases.py 가 잰다) */
+export type OgBase = BaseInfo & { readonly file: string; readonly kind: string; readonly w: number; readonly h: number; readonly colors: readonly string[]; readonly prefer?: string };
+export const OG_BASE_SET = "oprn-beodeul-bases";
+const BASE_KIND_WORDS = kitValue<readonly (readonly [string, string])[]>("footprint", "BASE_KIND_WORDS");
+let baseList: readonly OgBase[] | null = null;
+const ogBases = (): readonly OgBase[] => {
+  if (!baseList) {
+    try { baseList = (JSON.parse(kitFile(objectGenKit, `objectgen/anchors/${OG_BASE_SET}/set.json`)) as { bases: OgBase[] }).bases; } catch { baseList = []; }
+  }
+  return baseList;
+};
+/** 원본 bases.kind_of — 이름이 처음 맞는 종류(꽃밭이 덤불보다, 바위가 나무보다 먼저) */
+export function ogBaseKind(title: string): string | null {
+  for (const [kind, words] of BASE_KIND_WORDS) if (new RegExp(words, "iu").test(title ?? "")) return kind;
+  return null;
+}
+/** 원본 bases.pick — 같은 종류 중 캔버스(가로 × 세로-padTop)에 들어가는 것: prefer 낱말이 맞는 것 먼저, 그다음 가장 큰 것. 자연물이 아니면 null. */
+export function ogPickBase(item: Pick<WorkshopItem, "title" | "width" | "height" | "padTop"> & { readonly gateKind?: string | null }): OgBase | null {
+  if (!ogIsOrganic(item)) return null;
+  const kind = ogBaseKind(item.title);
+  if (!kind) return null;
+  let best: OgBase | null = null, key: [number, number, number] | null = null;
+  ogBases().forEach((b, i) => {
+    if (b.kind !== kind || b.w > item.width || b.h > item.height - (item.padTop ?? 0)) return;
+    const k: [number, number, number] = [b.prefer && new RegExp(b.prefer, "iu").test(item.title) ? 1 : 0, b.w * b.h, -i];
+    if (!key || k[0] > key[0] || (k[0] === key[0] && (k[1] > key[1] || (k[1] === key[1] && k[2] > key[2])))) { best = b; key = k; }
+  });
+  return best;
+}
+/** 원본 bases.with_colors — 팔레트 hex 목록 뒤에 출발 그림의 불투명 색을 붙인다(앞 키의 뜻은 그대로). */
+export function ogPaletteWithBase(hexes: readonly string[], base: OgBase | null): string[] {
+  if (!base) return [...hexes];
+  const have = new Set(hexes.map((h) => h.toLowerCase()));
+  return [...hexes, ...base.colors.filter((c) => !have.has(c.toLowerCase()))];
+}
+/** 원본 bases.grid — 출발 그림을 캔버스 아래 가운데에 놓은 팔레트 격자. 같은 색은 그 키, 다른 불투명 색은 가장 가까운 불투명 키, 반투명은 그림자 키. */
+export async function ogBaseGrid(base: OgBase, item: Pick<WorkshopItem, "width" | "height">, palette: Palette, env: WorkshopEnv): Promise<Grid> {
+  const image = await env.loadImage(env.assetUrl(`assets/gen-kits/object-gen/anchors/${OG_BASE_SET}/${base.file}`));
+  let x0 = image.width, y0 = image.height, x1 = -1, y1 = -1;
+  for (let y = 0; y < image.height; y++) for (let x = 0; x < image.width; x++) if (image.data[(y * image.width + x) * 4 + 3]) { x0 = Math.min(x0, x); y0 = Math.min(y0, y); x1 = Math.max(x1, x); y1 = Math.max(y1, y); }
+  const bw = x1 - x0 + 1, bh = y1 - y0 + 1, W = item.width, H = item.height;
+  const ox = Math.floor((W - bw) / 2), oy = H - bh;
+  const opaque = palette.entries.filter((e) => e.rgba[3] === 255);
+  const shadow = palette.entries.find((e) => e.rgba[3] < 255)?.key ?? null;
+  const nearest = (r: number, g: number, b: number): string => {
+    let best = opaque[0]!.key, bd = Infinity;
+    for (const e of opaque) { const d = (e.rgba[0] - r) ** 2 + (e.rgba[1] - g) ** 2 + (e.rgba[2] - b) ** 2; if (d < bd) { bd = d; best = e.key; } }
+    return best;
+  };
+  const cells: (string | null)[] = new Array(W * H).fill(null);
+  for (let y = 0; y < bh; y++) for (let x = 0; x < bw; x++) {
+    const i = ((y0 + y) * image.width + x0 + x) * 4, a = image.data[i + 3]!;
+    if (!a) continue;
+    const tx = ox + x, ty = oy + y;
+    if (tx < 0 || ty < 0 || tx >= W || ty >= H) continue;
+    const r = image.data[i]!, g = image.data[i + 1]!, b = image.data[i + 2]!;
+    cells[ty * W + tx] = a < 255 ? shadow : palette.byColor.get(`${r},${g},${b},255`)?.key ?? nearest(r, g, b);
+  }
+  return { width: W, height: H, cells };
+}
+/** 원본 bases.provenance — 설명서 provenance.base 한 줄 */
+export const ogBaseProvenance = (base: BaseInfo): string => `${base.id} (${base.label}) from ${base.sources.join(", ")}`.slice(0, 400);
+
+/**
+ * 잎 덩이 자연물(나무·덤불·화단) 팔레트의 잎 초록을 견본 잎 단으로 잠근다(object-gen palette.leaf_lock 과 같다).
+ * 칩셋에 실제로 있는 잎 단 색은 넣고, 그 밖의 잎 초록(잔디·올리브·이끼)은 뺀다. 잎 단 색이 하나도 없는 칩셋은 그대로.
+ * 「이 키로만 칠하라」고 해도 수관의 61% 를 올리브·잔디 키로 칠해 세 검수자가 「탁하다, 다른 세트」로 떨어뜨렸다(2026-10-23).
+ */
+export function leafLockHexes(hexes: readonly string[], sheet: RgbaImage): string[] {
+  const rgb = (h: string): [number, number, number] => [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)];
+  const isLeaf = ([r, g, b]: [number, number, number]) => g >= r + 10 && g >= b;
+  const have = new Set<number>();
+  for (let i = 0; i < sheet.data.length; i += 4) if (sheet.data[i + 3] === 255) have.add((sheet.data[i]! << 16) | (sheet.data[i + 1]! << 8) | sheet.data[i + 2]!);
+  const present = ORGANIC_LEAF_RAMP.map((h) => h.toLowerCase()).filter((h) => { const [r, g, b] = rgb(h); return have.has((r << 16) | (g << 8) | b); });
+  if (!present.length) return [...hexes];
+  const keep = hexes.map((h) => h.toLowerCase()).filter((h) => h.length < 9 && (!isLeaf(rgb(h)) || present.includes(h)));
+  for (const h of present) if (!keep.includes(h)) keep.push(h);
+  const luma = (h: string) => { const [r, g, b] = rgb(h); return 0.299 * r + 0.587 * g + 0.114 * b; };
+  return keep.sort((a, b) => luma(a) - luma(b) || (a < b ? -1 : a > b ? 1 : 0));
+}
+const ORGANIC_LEAF_SHARES = kitValue<readonly number[]>("prompts", "ORGANIC_LEAF_SHARES");
+
+/**
+ * 원본 prompts.leaf_ramp_line: 견본 나무 잎 단에 가장 가까운 팔레트 키를 이름으로 준다. 팔레트 단만 주면 네 판 내리 잔디·올리브 키로
+ * 잎을 칠했다(2026-10-23 Opus VQA major 「다른 세트에서 붙여 넣은 것 같다」).
+ */
+export function leafRampLine(palette: Palette): string {
+  const nearest = (hex: string) => {
+    const v = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16));
+    let best = palette.entries[0]!, bd = Infinity;
+    for (const e of palette.entries) { const d = Math.hypot(e.rgba[0] - v[0]!, e.rgba[1] - v[1]!, e.rgba[2] - v[2]!); if (d < bd) { bd = d; best = e; } }
+    return best;
+  };
+  const hex = (e: PaletteEntry) => `#${[0, 1, 2].map((i) => e.rgba[i]!.toString(16).padStart(2, "0")).join("")}`;
+  const pairs = ORGANIC_LEAF_RAMP.map((h, i) => { const e = nearest(h); return `[${i}] ${e.key} ${hex(e)} ~${ORGANIC_LEAF_SHARES[i]}%`; }).join(", ");
+  return [
+    "## Leaf greens (from the exemplar trees, darkest to lightest, with their share of the leaf pixels)",
+    `- Paint leaves ONLY with these keys: ${pairs}. Other greens of the palette are grass, moss or olive keys -`,
+    "  a crown in them looks lighter and yellower than the town's trees (failed review four times). Fruit, flowers and",
+    "  bark use their own ramps.",
+  ].join("\n");
+}
+
+/**
+ * 원본 checks.leaves: 잎 초록(초록이 빨강보다 10+ 크고 파랑 이상) 화소 수, 평균(빨강-파랑), 명도 60 미만 몫,
+ * 이웃 명도 차 평균(contrast — 덩이마다 밝은 획 옆에 어두운 구멍이면 크다), 명도와 높이의 상관(band — 위 밝고 아래 띠로 어두우면 더 음수).
+ */
+export function leafTone(image: RgbaImage): { leafPixels: number; leafHoles: number; leafLone: number; leafCast: number; leafDark: number; leafContrast: number; leafBand: number; trunkShare: number; leafShelf: number; leafPale: number } {
+  const lum = new Map<number, number>();
+  let cast = 0, dark = 0;
+  for (let i = 0; i < image.data.length; i += 4) {
+    const r = image.data[i]!, g = image.data[i + 1]!, b = image.data[i + 2]!;
+    if (image.data[i + 3]! > 0 && g >= r + 10 && g >= b) { const l = 0.299 * r + 0.587 * g + 0.114 * b; lum.set(i / 4, l); cast += r - b; if (l < 60) dark++; }
+  }
+  const n = lum.size;
+  if (!n) return { leafPixels: 0, leafHoles: 0, leafLone: 0, leafCast: 0, leafDark: 0, leafContrast: 0, leafBand: 0, trunkShare: 0, leafShelf: 0, leafPale: 0 };
+  const w = image.width;
+  let steps = 0, stepSum = 0, sumY = 0, sumL = 0;
+  for (const [i, l] of lum) {
+    sumY += Math.floor(i / w); sumL += l;
+    for (const j of [(i % w) + 1 < w ? i + 1 : -1, i + w]) { const m = j >= 0 ? lum.get(j) : undefined; if (m !== undefined) { steps++; stepSum += Math.abs(m - l); } }
+  }
+  const my = sumY / n, ml = sumL / n;
+  let sy = 0, sl = 0, cov = 0;
+  for (const [i, l] of lum) { const dy = Math.floor(i / w) - my, dl = l - ml; sy += dy * dy; sl += dl * dl; cov += dy * dl; }
+  const band = sy && sl ? cov / Math.sqrt(sy * sl) : 0;
+  // 가장 밝은 잎 색(4화소 이상) 중 같은 색 이웃이 없는 몫 — 견본의 밝은 획은 2~4px 이어서 0~0.12, 뿌린 점은 0.24~0.72.
+  const tones = new Map<number, number[]>();
+  for (const i of lum.keys()) { const c = (image.data[i * 4]! << 16) | (image.data[i * 4 + 1]! << 8) | image.data[i * 4 + 2]!; const list = tones.get(c); if (list) list.push(i); else tones.set(c, [i]); }
+  const toneLum = (c: number) => 0.299 * (c >> 16) + 0.587 * ((c >> 8) & 255) + 0.114 * (c & 255);
+  let hi = -1;
+  for (const [c, list] of tones) if (list.length >= 4 && (hi < 0 || toneLum(c) > toneLum(hi))) hi = c;
+  let lone = 0;
+  if (hi >= 0) {
+    const pts = new Set(tones.get(hi)!);
+    let alone = 0;
+    for (const i of pts) if (!((i % w) + 1 < w && pts.has(i + 1)) && !(i % w > 0 && pts.has(i - 1)) && !pts.has(i + w) && !pts.has(i - w)) alone++;
+    lone = alone / pts.size;
+  }
+  // 원본 checks.leaves 의 leafHoles: 수관 안쪽(2px 떨어진 여덟 칸이 모두 잎) 명도 60 미만 화소의 4-연결 덩이 수 / 잎 100화소.
+  // 견본 2.7~3.3, 큰 덩이마다 초승달 그늘 하나인 「구름 선반」 0.8~2.0.
+  const inner = (i: number) => { const x = i % w; for (const dy of [-2, 0, 2]) for (const dx of [-2, 0, 2]) { if (x + dx < 0 || x + dx >= w || !lum.has(i + dy * w + dx)) return false; } return true; };
+  const darkIn = new Set<number>();
+  for (const [i, l] of lum) if (l < 60 && inner(i)) darkIn.add(i);
+  let holes = 0;
+  const seen = new Set<number>();
+  for (const i of darkIn) {
+    if (seen.has(i)) continue;
+    holes++;
+    const stack = [i];
+    seen.add(i);
+    while (stack.length) {
+      const k = stack.pop()!;
+      for (const q of [(k % w) + 1 < w ? k + 1 : -1, k % w > 0 ? k - 1 : -1, k + w, k - w]) if (q >= 0 && darkIn.has(q) && !seen.has(q)) { seen.add(q); stack.push(q); }
+    }
+  }
+  // 맨 아래 칠한 줄과, 잎 화소가 3개 이상인 가장 낮은 줄 사이(맨 껍데기 줄기)의 높이 몫 (object-gen leaves trunkShare)
+  const rowLeaf = new Map<number, number>();
+  for (const i of lum.keys()) { const y = Math.floor(i / w); rowLeaf.set(y, (rowLeaf.get(y) ?? 0) + 1); }
+  let top = -1, bottom = -1;
+  for (let y = 0; y < image.height; y++) for (let x = 0; x < w; x++) if (image.data[(y * w + x) * 4 + 3]! > 0) { if (top < 0) top = y; bottom = y; break; }
+  let lowLeaf = -1;
+  for (const [y, k] of rowLeaf) if (k > 2 && y > lowLeaf) lowLeaf = y;
+  const trunkShare = top >= 0 && lowLeaf >= 0 ? Math.round(((bottom - lowLeaf) / (bottom - top + 1)) * 1000) / 1000 : 0;
+  // 원본 checks.leaves leafShelf: 밝은 잎(명도 > SHELF_LUMA)의 가로 연속 평균 / 세로 연속 평균. 버들항 나무 0.74~1.35, 「층층 선반」 1.40~1.85.
+  const pale = new Set<number>();
+  for (const [i, l] of lum) if (l > SHELF_LUMA) pale.add(i);
+  let leafShelf = 0;
+  if (pale.size >= SHELF_MIN_PIXELS) {
+    let hr = 0, vr = 0;
+    for (const i of pale) { if (!(i % w > 0 && pale.has(i - 1))) hr++; if (!pale.has(i - w)) vr++; }
+    leafShelf = Math.round((vr / hr) * 100) / 100;
+  }
+  return { leafPixels: n, leafShelf, leafPale: Math.round((pale.size / n) * 1000) / 1000, leafHoles: Math.round((holes * 1000) / n) / 10, leafLone: Math.round(lone * 100) / 100, leafCast: Math.round((cast / n) * 10) / 10, leafDark: Math.round((dark / n) * 1000) / 1000,
+    leafContrast: steps ? Math.round((stepSum / steps) * 10) / 10 : 0, leafBand: Math.round(band * 100) / 100, trunkShare };
+}
+/**
+ * 원본 checks.geometry: 윤곽이 도형인가. turns = 왼/오른 가장자리가 들어갔다 나왔다 꺾이는 횟수(줄당) — 손으로 뭉친 수관은 자주 꺾이고
+ * 타원·돔은 한 번 꺾인다. ellipse = 가장 넓은 줄의 절반 이상인 띠와 거기 맞춘 타원의 IoU. 실측: 버들항 나무·덤불 0.25~0.45 / 0.82~0.87,
+ * 반려된 달걀 사과나무 0.085 / 0.92.
+ */
+export function silhouetteGeometry(image: RgbaImage): { rows: number; turns: number; ellipse: number; mirror: number; solidity: number; side: number } {
+  const rows: [number, number, number, number][] = [];
+  for (let y = 0; y < image.height; y++) {
+    let first = -1, last = -1, n = 0;
+    for (let x = 0; x < image.width; x++) if (image.data[(y * image.width + x) * 4 + 3]! > 0) { if (first < 0) first = x; last = x; n++; }
+    if (n) rows.push([y, first, last, n]);
+  }
+  if (rows.length < 4) return { rows: rows.length, turns: 1, ellipse: 0, mirror: 0, solidity: 0, side: 0 };
+  const turns = (seq: number[]) => {
+    const d: number[] = [];
+    for (let i = 1; i < seq.length; i++) if (seq[i] !== seq[i - 1]) d.push(seq[i]! - seq[i - 1]!);
+    let t = 0;
+    for (let i = 1; i < d.length; i++) if ((d[i]! > 0) !== (d[i - 1]! > 0)) t++;
+    return t;
+  };
+  const t = (turns(rows.map((r) => r[1])) + turns(rows.map((r) => r[2]))) / rows.length;
+  const mw = Math.max(...rows.map((r) => r[3]));
+  const band = rows.filter((r) => r[3] >= 0.5 * mw);
+  const by0 = band[0]![0], by1 = band.at(-1)![0];
+  const bx0 = Math.min(...band.map((r) => r[1])), bx1 = Math.max(...band.map((r) => r[2]));
+  const ea = (bx1 - bx0 + 1) / 2, eb = (by1 - by0 + 1) / 2, cx = (bx0 + bx1 + 1) / 2, cy = (by0 + by1 + 1) / 2;
+  let inter = 0, union = 0;
+  for (let y = by0; y <= by1; y++) for (let x = bx0; x <= bx1; x++) {
+    const e = ((x + 0.5 - cx) / ea) ** 2 + ((y + 0.5 - cy) / eb) ** 2 <= 1;
+    const f = image.data[(y * image.width + x) * 4 + 3]! > 0;
+    if (e && f) inter++;
+    if (e || f) union++;
+  }
+  // 좌우 거울 IoU(원본 geometry 의 mirror) — 버들항 나무 0.80~0.85, 대칭 클로버로 반려된 수관 0.91~0.93.
+  let mi = 0, mu = 0;
+  const s2 = bx0 + bx1;
+  for (let y = by0; y <= by1; y++) for (let x = bx0; x <= bx1; x++) {
+    const p = image.data[(y * image.width + x) * 4 + 3]! > 0;
+    const q = s2 - x >= 0 && s2 - x < image.width && image.data[(y * image.width + s2 - x) * 4 + 3]! > 0;
+    if (p && q) mi++;
+    if (p || q) mu++;
+  }
+  // 수관(넓은 띠 아래끝까지) 면적 / 볼록 껍질 면적(원본 geometry 의 solidity) — 견본 참나무 0.86~0.89, 「막대 위 달걀」 0.91~0.93.
+  const corners = new Set<string>();
+  let crown = 0;
+  for (let y = rows[0]![0]; y <= by1; y++) for (let x = 0; x < image.width; x++) if (image.data[(y * image.width + x) * 4 + 3]! > 0) {
+    crown++;
+    for (const [dx, dy] of [[0, 0], [1, 0], [0, 1], [1, 1]] as const) corners.add(`${x + dx},${y + dy}`);
+  }
+  const pts = [...corners].map((k) => k.split(",").map(Number) as [number, number]).sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+  const cross = (o: [number, number], a: [number, number], b: [number, number]) => (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0]);
+  const lo: [number, number][] = [], up: [number, number][] = [];
+  for (const p of pts) { while (lo.length >= 2 && cross(lo.at(-2)!, lo.at(-1)!, p) <= 0) lo.pop(); lo.push(p); }
+  for (const p of [...pts].reverse()) { while (up.length >= 2 && cross(up.at(-2)!, up.at(-1)!, p) <= 0) up.pop(); up.push(p); }
+  const hull = [...lo.slice(0, -1), ...up.slice(0, -1)];
+  let area2 = 0;
+  for (let i = 0; i < hull.length; i++) { const a = hull[i]!, b = hull[(i + 1) % hull.length]!; area2 += a[0] * b[1] - b[0] * a[1]; }
+  const harea = Math.abs(area2) / 2;
+  const round3 = (v: number) => Math.round(v * 1000) / 1000;
+  // 띠(가장 넓은 줄의 절반 이상) 안에서 왼쪽·오른쪽 가장자리 x 가 그대로인 연속 줄 수 — 상자 벽 (object-gen geometry side)
+  let side = 1;
+  for (const k of [1, 2] as const) {
+    let run = 1;
+    for (let i = 1; i < band.length; i++) {
+      run = band[i]![0] === band[i - 1]![0] + 1 && band[i]![k] === band[i - 1]![k] ? run + 1 : 1;
+      side = Math.max(side, run);
+    }
+  }
+  return { rows: rows.length, turns: round3(t), ellipse: union ? round3(inter / union) : 0, mirror: mu ? round3(mi / mu) : 0, solidity: harea ? round3(crown / harea) : 0, side };
+}
+
 export function ogCheck(item: WorkshopItem, grid: Grid, palette: Palette): OgCheck {
   const hard: OgIssue[] = [], warn: OgIssue[] = [];
   const { width: w, height: h, cells } = grid;
@@ -266,7 +566,11 @@ export function ogCheck(item: WorkshopItem, grid: Grid, palette: Palette): OgChe
     const light = [...cc].some((c) => { const e = c ? palette.byKey.get(c) : undefined; return e ? (e.rgba[0] + e.rgba[1] + e.rgba[2]) / 3 > 60 : false; });
     if (cc.size === 1 && (light || share > 0.3)) hard.push({ code: "BG", msg: "all four corners are painted with one fill colour - leave everything outside the object transparent" });
   }
-  const stray = painted.filter(([x, y]) => [[1, 0], [-1, 0], [0, 1], [0, -1]].every(([dx, dy]) => at(x + dx!, y + dy!) === null));
+  // 실제 버들항 나무(object-gen calibration/)는 뿌리 끝이 대각선 화소, 땅 줄에 홀로 선 풀 한 점이다 — 자연물은 맨 아래 줄 위에서
+  // 8방향 이웃이 하나도 없는 화소만 먼지로 본다(object-gen stray_pixels 와 같다).
+  const ring8 = [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [1, -1], [-1, 1], [-1, -1]];
+  const stray = painted.filter(([x, y]) => [[1, 0], [-1, 0], [0, 1], [0, -1]].every(([dx, dy]) => at(x + dx!, y + dy!) === null))
+    .filter(([x, y]) => !ogIsOrganic(item) || (y !== bottom && ring8.every(([dx, dy]) => at(x + dx!, y + dy!) === null)));
   if (stray.length) hard.push({ code: "STRAY", msg: `${stray.length} isolated pixel(s), e.g. x=${stray[0]![0]} y=${stray[0]![1]} - remove dust` });
   if (STANDING.has(anchor)) {
     const tile = 16, foot = item.footRows ?? 1;
@@ -301,7 +605,114 @@ export function ogCheck(item: WorkshopItem, grid: Grid, palette: Palette): OgChe
   }
   if (facts.nearFlatFill > 0.2) warn.push({ code: "FLAT", msg: `${Math.round(facts.nearFlatFill * 100)}% of the object is 5x5 blocks with no visible change - break flat fills with texture and shading` });
   const topRows = topPlaneRows(rendered);
-  if (TOP_KINDS.has(item.gateKind ?? "") && STANDING.has(anchor) && topRows < 3) warn.push({ code: "TOP", msg: `measured top plane is ${topRows} row(s) (column scan) - a 3/4 top needs >= 3 lit rows above the front` });
+  if (ogIsOrganic(item)) {
+    // 반투명 화소(바닥 그림자)는 물체 모양이 아니다 — 모든 모양·잎 잣대에서 뺀다(object-gen geometry_issues)
+    const full = rendered;
+    let translucent = 0;
+    const solidData = new Uint8ClampedArray(full.data);
+    for (let i = 3; i < solidData.length; i += 4) if (solidData[i]! < 255) { if (solidData[i]! > 0) translucent++; solidData[i] = 0; }
+    const solid: RgbaImage = { width: full.width, height: full.height, data: solidData };
+    const g = silhouetteGeometry(solid);
+    if (g.turns < GEOMETRIC_TURNS && g.ellipse > GEOMETRIC_ELLIPSE) {
+      const issue = { code: "GEOMETRIC", msg: `the silhouette is a smooth primitive (edge turn-backs ${g.turns}/row, ellipse match ${g.ellipse}) - break it into irregular leaf clumps / lumps with notches, as in the exemplars` };
+      (g.rows >= GEOMETRIC_MIN_ROWS ? hard : warn).push(issue);
+    }
+    if (footprintClass(item.title, item.description ?? "") === "tree" && g.rows >= GEOMETRIC_MIRROR_ROWS && g.mirror > GEOMETRIC_MIRROR) {
+      hard.push({ code: "SYMMETRIC", msg: `the crown is nearly mirror-symmetric (left/right match ${g.mirror}, Beodeul trees 0.75-0.93) - make one shoulder 3+ px higher, one side wider, lobes and notches at different heights` });
+    }
+    const cls = footprintClass(item.title, item.description ?? "");
+    const isTree = cls === "tree";
+    // 잎 검사는 잎 덩이 종류(나무·덤불·화단)만 — 이끼 낀 돌무더기의 초록 이끼는 수관이 아니다(object-gen geometry_issues leafy)
+    const leafy = cls === "tree" || cls === "plant";
+    if (isTree && g.rows >= GEOMETRIC_MIRROR_ROWS && g.solidity > CROWN_SOLIDITY_MAX) {
+      hard.push({ code: "CROWNFULL", msg: `the crown fills its outline like an egg (solidity ${g.solidity}, Beodeul trees 0.86-0.91) - cut 1-2 deep notches (3+ px) into the rim and push one lobe out to one side` });
+    }
+    const shown = solid;
+    let opaque = 0, deep = 0;
+    for (let i = 0; i < shown.data.length; i += 4) if (shown.data[i + 3]! > 0) { opaque++; if (0.299 * shown.data[i]! + 0.587 * shown.data[i + 1]! + 0.114 * shown.data[i + 2]! < DEEP_LUMA) deep++; }
+    // 원본 checks NODEEP: 견본 나무·덤불은 덩이 사이 깊은 그늘이 14~20%, 「바랜 베개 돌」로 반려된 돌무더기는 0~4%.
+    if (g.rows >= GEOMETRIC_MIN_ROWS && opaque && deep / opaque < DEEP_MIN) hard.push({ code: "NODEEP", msg: `no deep shadow (${Math.round((deep / opaque) * 100)}% of pixels below luma ${DEEP_LUMA}, Beodeul 14-54%) - put near-black pockets in the gaps between clumps / stones and under the object` });
+    const lv = leafTone(shown);
+    if (leafy && lv.leafPixels >= LEAF_MIN_PIXELS) {
+      if (lv.leafCast > LEAF_CAST_MAX) hard.push({ code: "LEAFHUE", msg: `the leaves are olive/yellow (red-blue ${lv.leafCast}, Beodeul -16..+14) - paint them with the listed leaf-green keys` });
+      if (!isTree && g.rows >= GEOMETRIC_MIN_ROWS && g.solidity > MASS_SOLIDITY_MAX) hard.push({ code: "BLOBBY", msg: `the leafy mass fills its outline like a ball or dome (solidity ${g.solidity}, Beodeul bushes 0.89-0.91) - bite 1-2 deep notches into the outline and let one clump stick out to one side` });
+      if (isTree && g.rows >= GEOMETRIC_MIRROR_ROWS && lv.trunkShare > TRUNK_SHARE_MAX) hard.push({ code: "TALLTRUNK", msg: `the bare trunk is ${Math.round(lv.trunkShare * 100)}% of the height (Beodeul 13-27%) - lower and widen the crown so it overhangs, keep the trunk short and stout with a root flare` });
+      if (g.rows >= GEOMETRIC_MIN_ROWS && g.side > STRAIGHT_SIDE_MAX) hard.push({ code: "STRAIGHTSIDE", msg: `one side of the leafy mass runs straight down ${g.side} rows like a box wall (Beodeul 2-10) - let the side bulge in and out lobe by lobe, the edge moving every 1-3 rows` });
+      else if (isTree && g.rows >= GEOMETRIC_MIRROR_ROWS && shown.width >= 32 && g.side > BROAD_TREE_SIDE_MAX) hard.push({ code: "STRAIGHTSIDE", msg: `one side of the crown runs straight down ${g.side} rows like a box wall (broad Beodeul trees 3) - make the crown lopsided and lobed: the edge moves out or in every 1-3 rows, one shoulder higher` });
+      if (isTree && g.rows >= GEOMETRIC_MIRROR_ROWS && lv.leafShelf > SHELF_MAX) hard.push({ code: "LEAFSHELF", msg: `the light leaves are 1 px horizontal strokes in tiers (run width/height ${lv.leafShelf}, Beodeul trees 0.74-1.35) - draw the highlights as flecks and small clumps about as tall as wide (2x2, 2x3, an L of 3-4 px)` });
+      // 원본 checks SPURS: 불투명 4-이웃이 1개 이하인 화소(가시 끝·1px 줄·떨어진 점)의 몫(%). 버들항 나무·덤불 0~0.89, 측백 1.35, 「삐져나온 1px 줄」 1.40~1.73.
+      {
+        const W = solid.width, H = solid.height, op = (x: number, y: number) => x >= 0 && y >= 0 && x < W && y < H && solid.data[(y * W + x) * 4 + 3] === 255;
+        let tips = 0, total = 0;
+        for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (op(x, y)) { total++; if ((op(x + 1, y) ? 1 : 0) + (op(x - 1, y) ? 1 : 0) + (op(x, y + 1) ? 1 : 0) + (op(x, y - 1) ? 1 : 0) <= 1) tips++; }
+        const spur = total ? Math.round((10000 * tips) / total) / 100 : 0;
+        if (g.rows >= GEOMETRIC_MIN_ROWS && spur > (W >= 32 ? SPUR_MAX : SPUR_MAX_NARROW)) hard.push({ code: "SPURS", msg: `${tips} pixels stick out on their own (${spur}% - 1 px streaks, spur tips, loose pixels; Beodeul trees and bushes under 0.9%) - end every clump in a rounded 2-3 px bump, no 1 px streaks or loose pixels along the outline` });
+      }
+      // 원본 checks CLEFT·SPECKLE: 윗선의 가장 깊은 V 홈(높이 대비, 버들항 0~0.09)과 네 이웃 모두와 색이 다른 안쪽 화소 몫(버들항 0.10~0.20).
+      {
+        const W = solid.width, H = solid.height, d = solid.data, op = (x: number, y: number) => x >= 0 && y >= 0 && x < W && y < H && d[(y * W + x) * 4 + 3] === 255;
+        const top: number[] = [];
+        for (let x = 0; x < W; x++) { let t = -1; for (let y = 0; y < H; y++) if (op(x, y)) { t = y; break; } if (t >= 0) top.push(t); }
+        let cleft = 0;
+        for (let i = 1; i < top.length - 1; i++) {
+          let l = Infinity, r = Infinity;
+          for (let j = 0; j < i; j++) l = Math.min(l, top[j]);
+          for (let j = i + 1; j < top.length; j++) r = Math.min(r, top[j]);
+          cleft = Math.max(cleft, top[i] - Math.max(l, r));
+        }
+        const cleftRatio = g.rows ? Math.round((1000 * cleft) / g.rows) / 1000 : 0;
+        if (g.rows >= GEOMETRIC_MIN_ROWS && cleft > 2 && cleftRatio > CLEFT_MAX) hard.push({ code: "CLEFT", msg: `a notch ${cleft} px deep splits the top (${cleftRatio} of the height, Beodeul 0-0.09) - keep ONE mass: the top is a row of small bumps 1-2 px deep, never a V cleft into two clumps` });
+        const same = (a: number, b: number) => d[a] === d[b] && d[a + 1] === d[b + 1] && d[a + 2] === d[b + 2];
+        let inner = 0, lone = 0;
+        for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+          if (!(op(x, y) && op(x + 1, y) && op(x - 1, y) && op(x, y + 1) && op(x, y - 1))) continue;
+          inner++;
+          const i = (y * W + x) * 4;
+          if (!same(i, i + 4) && !same(i, i - 4) && !same(i, i + W * 4) && !same(i, i - W * 4)) lone++;
+        }
+        const speckle = inner ? Math.round((1000 * lone) / inner) / 1000 : 0;
+        if (g.rows >= GEOMETRIC_MIN_ROWS && speckle > SPECKLE_MAX) hard.push({ code: "SPECKLE", msg: `${Math.round(speckle * 100)}% of the pixels differ from all four neighbours (Beodeul 10-20%) - per-pixel noise, not leaves: paint clumps as patches of 3-8 same-colour pixels, a lit patch on top, a dark pocket under` });
+      }
+      if (lv.leafPale < LEAF_PALE_MIN) hard.push({ code: "LEAFDULL", msg: `almost no sunlit leaves (${Math.round(lv.leafPale * 1000) / 10}% of leaf pixels are pale, Beodeul 4-42%) - put the palest keys on the lit upper-left of the clumps as flecks and small 2x2-3x3 clumps, about a tenth of the leaves` });
+      if (lv.leafHoles < LEAF_HOLES_MIN) hard.push({ code: "LEAFHOLES", msg: `too few dark holes inside the crown (${lv.leafHoles} per 100 leaf px, Beodeul 0.9-3.2) - break big lobes into many small clusters with 1-3 px dark holes all through the interior` });
+      if (lv.leafLone > LEAF_LONE_MAX) hard.push({ code: "LEAFSPECK", msg: `the highlights are single sprinkled pixels (${Math.round(lv.leafLone * 100)}% of the lightest leaf tone stands alone, Beodeul 0-35%) - group the lightest green into 2-4 px dashes on the upper-left lobes only` });
+      if (lv.leafContrast < LEAF_CONTRAST_MIN) hard.push({ code: "LEAFFLAT", msg: `the leaves are a smooth gradient, not clumps (neighbour contrast ${lv.leafContrast}, Beodeul 15-25) - build separate clumps: a 2-4 px light dash on each clump's upper left right next to dark pockets` });
+      if (lv.leafBand < LEAF_BAND_MAX) hard.push({ code: "LEAFBAND", msg: `light and dark change by height (luma-height correlation ${lv.leafBand}, Beodeul -0.19..-0.71) - keep a lit top, but break the bands: lit clumps reach into the lower half and dark gaps reach up between them` });
+      const art = solid;
+      const widths: number[] = [];
+      let lowLeaf = 0; // 가장 아래 칠한 줄에서 잎 초록의 비율 — 줄기·뿌리·화분이 바닥이면 FLATBASE 를 보지 않는다(실제 버들항 화분 가로수)
+      for (let y = 0; y < art.height; y++) {
+        let n = 0, leaf = 0;
+        for (let x = 0; x < art.width; x++) {
+          const i = (y * art.width + x) * 4;
+          if (art.data[i + 3]! > 0) { n++; const r = art.data[i]!, gg = art.data[i + 1]!, b = art.data[i + 2]!; if (gg >= r + 10 && gg >= b) leaf++; }
+        }
+        if (n) { widths.push(n); lowLeaf = leaf / n; }
+      }
+      if (widths.length && lowLeaf > 0.5 && widths.at(-1)! / Math.max(...widths) > LEAF_BASE_MAX) hard.push({ code: "FLATBASE", msg: `the base is cut flat along the ground (lowest row ${widths.at(-1)} of ${Math.max(...widths)} px wide) - let the lower edge come down unevenly: leaves hanging lower in places, gaps, a rounded tuck` });
+      if (lv.leafDark < LEAF_DARK_MIN) hard.push({ code: "LEAFLIGHT", msg: `the crown is too light (${Math.round(lv.leafDark * 100)}% dark leaf pixels, Beodeul 22-73%) - more dark interior, shadow under lobes, darker lower right` });
+    }
+    // 원본 checks UNDERGAP: 돌·잔돌 더미(그림자 있음, 잎 아님)의 아래 절반에서 칠한 화소 사이로 바닥이 비치는 열 수. 버들항 바위 0, 「다리로 선 하마」 5~8.
+    if (ogCastsShadow(item) && !leafy && g.rows >= 8) {
+      const W = full.width, H = full.height;
+      let top = -1, bot = -1;
+      for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (solid.data[(y * W + x) * 4 + 3] === 255) { if (top < 0) top = y; bot = y; break; }
+      const mid = (top + bot) / 2;
+      let under = 0;
+      for (let x = 0; x < W; x++) {
+        let first = -1, last = -1;
+        for (let y = 0; y < H; y++) if (solid.data[(y * W + x) * 4 + 3] === 255) { if (first < 0) first = y; last = y; }
+        if (first < 0) continue;
+        for (let y = first; y < last; y++) if (y > mid && full.data[(y * W + x) * 4 + 3] === 0) { under++; break; }
+      }
+      // 원본 checks FLATBASE(돌): 맨 아래 불투명 줄 폭 / 가장 넓은 줄. 버들항 바위 0.36~0.67, 「붙인 받침대」 1.0.
+      let widest = 0, lowest = 0;
+      for (let y = top; y >= 0 && y <= bot; y++) { let w = 0; for (let x = 0; x < W; x++) if (solid.data[(y * W + x) * 4 + 3] === 255) w++; if (w > widest) widest = w; if (y === bot) lowest = w; }
+      if (widest && lowest / widest > ROCK_BASE_MAX) hard.push({ code: "FLATBASE", msg: `the pile is cut flat along the ground (lowest row ${lowest} of ${widest} px wide, Beodeul rocks at most 67%) - round the stones' lower edges off; the translucent shadow key does the grounding, never a band or plinth` });
+      if (under > UNDERGAP_MAX) hard.push({ code: "UNDERGAP", msg: `the ground shows under the stones in ${under} columns - the pile floats or stands on its chips like legs (Beodeul rocks 0) - rest every stone's base on the ground row with a dark contact band, chips beside the boulder, not under it` });
+    }
+    if (ogCastsShadow(item) && g.rows >= 8 && translucent === 0) hard.push({ code: "NOSHADOW", msg: "no soft ground shadow - put 1-3 rows of the translucent ground-shadow key on the ground under the object's lower right, as under the Beodeul rocks and flower beds (lift the object 1-2 px)" });
+  } else if (TOP_KINDS.has(item.gateKind ?? "") && STANDING.has(anchor) && topRows < 3) warn.push({ code: "TOP", msg: `measured top plane is ${topRows} row(s) (column scan) - a 3/4 top needs >= 3 lit rows above the front` });
   return { ok: hard.length === 0, hard, warn, topRows };
 }
 /** 칩셋 소품 수준의 칸당 보이는 색조 하한 — 경고용(관문 기준이 아니다). */
@@ -335,6 +746,7 @@ export function ogDrawBrief(ctx: DrawContext, opts: { readonly hasReference: boo
   const item = ctx.item;
   const letter = ctx.direction.letter;
   const anchor = ogAnchorOf(item);
+  const organic = ogIsOrganic(item);
   const cellsW = item.width / 16, cellsH = item.height / 16;
   const brief = `${item.title} — ${item.description}${item.setting ? ` Setting: ${item.setting}` : ""}`;
   const lines = [
@@ -380,11 +792,17 @@ export function ogDrawBrief(ctx: DrawContext, opts: { readonly hasReference: boo
       "pixel yourself with the palette keys (a REFCOPY warning means the drawing looks like a shrunken reference).",
       // 모양만 보라는 말에 색까지 버려 금빛 건초를 연한 베이지로 칠했다(2026-10-22 VQA major) — 색 몫만은 따르게 한다.
       ...(ctx.referenceColors?.length ? [`Its main colours, mapped to the nearest palette keys (share of the object): ${ctx.referenceColors.map((c) => `${c.key} ${c.hex} ${c.share}%`).join(", ")}.`,
-        "Keep these hues for the matching parts (shade them with darker/lighter keys of the same ramp) - do not wash a saturated part out to beige or grey."] : []),
+        organic
+          // 자연물: 생성 그림의 초록은 칩셋 나무보다 밝고 노래서 가장 가까운 키가 잔디색이 된다 — 잔디색 잎은 풀밭에 묻힌다(2026-10-22 Opus VQA major, 사과나무 잎 #618c3b = 잔디).
+          ? "Use these only for the fruit, flower or accent hues. Leaves, bark and stone take the ramps of this chipset's own trees and rocks (ref-*.png, darker blue-greens) - the reference picture's greens map to the GRASS keys, and leaves in grass green vanish on the lawn."
+          : "Keep these hues for the matching parts (shade them with darker/lighter keys of the same ramp) - do not wash a saturated part out to beige or grey."] : []),
       ""] : [""]),
-    anchor === "flat" || anchor === "hang" ? `## View\n- This object ${ANCHOR_TEXT[anchor]}.\n` : `${kitValue("prompts", "VIEW")}\n`,
-    kitValue("prompts", "RECIPE"),
-    ...(cellsW * cellsH >= LARGE_CELLS ? ["", kitValue("prompts", "LARGE")] : []),
+    anchor === "flat" || anchor === "hang" ? `## View\n- This object ${ANCHOR_TEXT[anchor]}.\n` : `${kitValue("prompts", organic ? "VIEW_ORGANIC" : "VIEW")}\n`,
+    kitValue("prompts", organic ? "RECIPE_ORGANIC" : "RECIPE"),
+    ...(organic ? ["", leafRampLine(ctx.palette)] : []),
+    ...ctx.palette.entries.filter((e) => e.rgba[3] < 255).map((e) => `- ${e.key} is the TRANSLUCENT ground shadow (alpha ${e.rgba[3]}): only on the ground under the object's lower right, 1-3 rows, as under the Beodeul rocks and flower beds - never on the object.`),
+    // 큰 물건 지시(윗면 25~35%·받침)는 가구용이다 — 자연물에는 넣지 않는다(원본 draw_brief 와 같다).
+    ...(cellsW * cellsH >= LARGE_CELLS && !organic ? ["", kitValue("prompts", "LARGE")] : []),
     "",
     "## Palette ramps (taken from the chipset; ramp:step, dark to light)",
     rampSummary(ctx.palette),
@@ -398,7 +816,12 @@ export function ogDrawBrief(ctx: DrawContext, opts: { readonly hasReference: boo
     "- After your answer you will be shown your drawing at 8x/1x/2x on the floor next to the references and exemplars,",
     "  with the mechanical checks. Fix every FAIL code; look honestly - would it sit next to the exemplars in the same game, and read at 1x?",
   );
-  if (ctx.previousGrid) lines.push("", "## Your previous grid (start from it)", JSON.stringify(gridToAnswer(ctx.previousGrid)));
+  if (ctx.base && ctx.previousGrid && ctx.attempt === 1) {
+    lines.push("", kitValue<string>("prompts", "BASE_ORGANIC").replace("{label}", ctx.base.label).replace("{id}", ctx.base.id), JSON.stringify(gridToAnswer(ctx.previousGrid)));
+  } else if (ctx.previousGrid) {
+    if (ctx.base) lines.push("", `- This object started from the chipset's ${ctx.base.label} (${ctx.base.id}): keep its pixels wherever you are not changing them.`);
+    lines.push("", "## Your previous grid (start from it)", JSON.stringify(gridToAnswer(ctx.previousGrid)));
+  }
   return lines.join("\n");
 }
 
@@ -411,7 +834,7 @@ export function ogDrawMessages(ctx: DrawContext, env: WorkshopEnv, style: OgStyl
   style.refs.forEach((ref, i) => parts.push(txt(`ref-${i}.png — ${ref.label}`), img(ref.url)));
   forms.forEach((url, i) => parts.push(txt(`reference/ref-${i + 1}.png — FORM only (참고용, 설치 안 됨)`), img(url)));
   if (anchors) parts.push(txt("exemplars.png — drawings the owner called very good (the bar for view, shading and craft) at 6x"), img(env.encodePng(exemplarSheet(anchors, style.floor))));
-  if (ctx.previousGrid) parts.push(txt("your previous grid at 8x"), img(env.encodePng(scaleImage(onBackground(renderGrid(ctx.previousGrid, ctx.palette), style.floor), 8))));
+  if (ctx.previousGrid) parts.push(txt(ctx.base && ctx.attempt === 1 ? `the chipset base (${ctx.base.label}) on your canvas at 8x - start from it` : "your previous grid at 8x"), img(env.encodePng(scaleImage(onBackground(renderGrid(ctx.previousGrid, ctx.palette), style.floor), 8))));
   return [{ role: "user", content: parts }];
 }
 

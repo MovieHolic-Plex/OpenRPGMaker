@@ -14,7 +14,7 @@ import { resolvePlayerBody } from "@/project/playerFootprint";
 import type { StepResult } from "@/player/interpreter";
 import { applyMapOverrides, fireAutoTriggers } from "@/player/playSceneMapRuntime";
 import { dialogueHost } from "@/player/playSceneDom";
-import { holdScreenFlash } from "@/player/playSceneScreenEffects";
+import { holdScreenFlash, screenCoverRemainingMs } from "@/player/playSceneScreenEffects";
 import { restoreTintAfterFlash } from "@/player/screen/flashTint";
 import { parseTransitionKind, usesOverlayTransition } from "@/player/transitions/transitionModel";
 import { runTransitionPhase } from "@/player/transitions/transitionOverlay";
@@ -28,7 +28,7 @@ import { fireLocationTransitionTriggersAfterTransfer } from "@/player/playSceneL
 import { worldAtlasForMap, atlasNodeForMap, atlasCanTravel } from '@/project/worldAtlas';
 import { abortHop } from "@/player/characterHopRuntime";
 import { CHASE_ENTRY_GRACE_MS, extendChaseSpawnGrace } from "@/player/chaseSpawnGrace";
-import { holdForMapAssets } from "@/player/scenePreload";
+import { holdForMapAssets, prefetchMapAssets } from "@/player/scenePreload";
 import { prepareMapTilesets } from "@/player/tilesetPrewarm";
 import { clearFurniturePush, furniturePushPosition } from "@/player/furniturePushAnimation";
 
@@ -89,13 +89,19 @@ export async function transferTo(scene: PlaySceneContext, request: TransferReque
   const overlayTransition = usesOverlayTransition(transition);
   const host = overlayTransition ? dialogueHost(scene) : undefined;
   const fadeColor = overlayTransition ? null : transferFadeColor(request.fade ?? "black");
+  // 새 맵 파일 받기는 페이드아웃과 같이 시작한다 — 다 어두워진 뒤에야 받기 시작하면 그만큼 검은 화면이 길어진다.
+  prefetchMapAssets(project, request.mapId);
   // 도착 맵 타일셋의 이식 아틀라스를 페이드아웃과 같이 워커에서 굽기 시작한다(tilesetPrewarm.ts) — 처음 쓰는 큰 아틀라스는
   // 메인 스레드에서 1초 넘게 걸려 검은 화면이 그만큼 길었다. 착지 때는 올리기만 남는다.
   const tilesetsReady = request.mapId === scene.map.id ? Promise.resolve() : prepareMapTilesets(scene, project, request.mapId);
   if (host) {
     await runTransitionPhase(host, transition, "out", TRANSFER_FADE_DURATION_MS);
   } else if (fadeColor) {
-    await fadeCamera(scene, "out", fadeColor);
+    // 이벤트가 「화면 효과 fadeOut」으로 이미 화면을 덮었으면(전투 패배 → 감방, 붙잡힘 연출) 그 아래 카메라 페이드는
+    // 보이지 않는 채 시간만 쓴다 — 덮는 트윈이 끝나기만 기다린다.
+    const cover = screenCoverRemainingMs(scene);
+    if (cover === null) await fadeCamera(scene, "out", fadeColor);
+    else if (cover > 0) await new Promise<void>((done) => { setTimeout(done, cover); });
   }
   // 웹 판본: 새 맵 그림·소리가 다 오기 전에는 화면을 밝히지 않는다(어두운 채로 기다린다, scenePreload.ts).
   await holdForMapAssets(dialogueHost(scene), project, request.mapId);
@@ -152,7 +158,11 @@ export async function transferTo(scene: PlaySceneContext, request: TransferReque
   if (host) {
     await runTransitionPhase(host, transition, "in", TRANSFER_FADE_DURATION_MS);
   } else if (fadeColor) {
-    await fadeCamera(scene, "in", fadeColor);
+    // 화면 효과 층이 아직 불투명하면 카메라 페이드인은 보이지 않는다 — 기다리지 않고 바로 걷어,
+    // 도착 맵의 자동 장면(보통 「화면 효과 fadeIn」)이 곧장 이어받게 한다. 예전에는 이 0.5초 + 맵 짓기가
+    // 통째로 검은 화면이라 재도전이 멈춘 것처럼 보였다(2026-10-30 폴른 2막 B6 패배 → 요새 감방 1.6초).
+    if (screenCoverRemainingMs(scene) === 0) clearCameraFade(scene);
+    else await fadeCamera(scene, "in", fadeColor);
   }
   // 오토세이브 훅(PlayScene 경로 전용): 전이 좌표/맵이 세션에 커밋된 뒤, 도착 맵의
   // 자동 트리거가 상태를 바꾸기 전 시점을 굽는다. 정책(save 금지·디바운스·컷신)은 maybeAutosave 가 판정.
@@ -214,6 +224,11 @@ export function fadeCamera(scene: PlaySceneContext, phase: "in" | "out", color: 
     }
     scene.cameras.main.fadeIn(durationMs, color.red, color.green, color.blue);
   });
+}
+
+/** 카메라 페이드를 연출 없이 걷는다(검게 덮인 화면 효과 아래라 보이지 않을 때). */
+function clearCameraFade(scene: PlaySceneContext): void {
+  scene.cameras.main.fadeEffect.reset();
 }
 
 // Flash Screen: 카메라 전체를 지정 색상으로 깜빡인다. fadeCamera 와 동일한

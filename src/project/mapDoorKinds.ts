@@ -124,6 +124,22 @@ function placedDoorKit(project: Project, map: GameMap, bottom: Cell): { x: numbe
   return null;
 }
 
+/**
+ * 일체형 가게 정면 문(2칸)의 왼쪽 칸 x. 이름표 「… N칸(문 왼쪽|오른쪽) 칸 (c,r)」 에서 이 칸이 문의 몇 번째 칸인지 읽는다.
+ * 왜: 오른쪽 짝 앞(발판을 넓힌 칸)에서 추론하면 사각형이 한 칸 오른쪽으로 밀려 벽까지 열렸다. 읽지 못하면 bottom.x.
+ */
+function storefrontDoorLeft(project: Project, map: GameMap, bottom: Cell, label: string): number {
+  const m = /(\d+)칸\(문 (왼쪽|오른쪽)\)\s*칸\s*\((\d+),\s*\d+\)/u.exec(label);
+  if (!m) return bottom.x;
+  const width = Number(m[1]), col = Number(m[3]);
+  const doorStart = m[2] === "왼쪽" ? 0 : width - 2;
+  const offset = col - doorStart;
+  if (offset !== 0 && offset !== 1) return bottom.x;
+  const left = bottom.x - offset;
+  const ok = classifyCell(project, map, { x: left, y: bottom.y });
+  return ok && STOREFRONT.test(ok.label) ? left : bottom.x;
+}
+
 export interface InferredMapDoor {
   readonly kind: DoorKind;
   /** 문 그림 사각형(칸). kind none 이면 문 칸 하나. */
@@ -191,7 +207,7 @@ export function inferMapDoor(project: Project, map: GameMap, at: Cell, opts: Inf
   let how: string;
   const placed = STOREFRONT.test(label) ? null : placedDoorKit(project, map, bottom);
   if (STOREFRONT.test(label)) {
-    rect = { x: bottom.x, y: bottom.y - 1, w: 2, h: 2 };
+    rect = { x: storefrontDoorLeft(project, map, bottom, label), y: bottom.y - 1, w: 2, h: 2 };
     how = "일체형 가게 정면의 문(2칸 × 2줄)";
   } else if (placed) {
     rect = { x: placed.x, y: placed.y, w: placed.w, h: bottom.y - placed.y + 1 };
