@@ -61,18 +61,36 @@ export function syncTransitForMap(scene: PlaySceneContext): void {
   }
 }
 
-/** 주인공이 차지한 칸(통행 사각이 1×1 이 아닐 수도 있어 사각 전체). */
+const STEP_DELTA: Record<string, { x: number; y: number }> = { up: { x: 0, y: -1 }, down: { x: 0, y: 1 }, left: { x: -1, y: 0 }, right: { x: 1, y: 0 } };
+
+/**
+ * 차가 양보할 칸 — 주인공과 걸어 다니는 인물(자율 이동 NPC)이 서 있거나, 걸음 도중이거나, 곧 디딜 칸.
+ * 걸음은 시작할 때 자리를 도착 칸으로 옮기므로 떠나는 칸(from)도 넣고, 걷는 중이면 같은 방향의 다음 칸도 넣는다
+ * — 차선 옆 보도에서 차도로 걸어 들어오는 사람 앞에서 차가 먼저 선다(첫사랑 r4: 횡단보도 행인을 차가 뚫고 지나감).
+ * 서 있는 인물은 제 칸만 센다(차도 옆에 서서 보는 사람이 차를 영영 묶지 않게). 투명한(opacity 0) 인물은 세지 않는다.
+ */
 function playerBlocksCell(scene: PlaySceneContext): (x: number, y: number) => boolean {
-  const px = scene.tileX, py = scene.tileY;
-  // 걸어 다니는 인물(자율 이동 NPC)도 차를 세운다 — 횡단보도를 건너는 행인을 차가 뚫고 지나가지 않게.
-  // 서 있는 인물은 세지 않는다(차도 위 고정 인물이 차를 영영 묶지 않게). 칸 집합은 매 갱신 한 번 만든다.
-  const walkers = new Set<number>();
-  const positions = scene.eventPositions ?? {};
-  for (const id of scene.autonomousNPCs?.keys?.() ?? []) {
-    const pos = positions[id];
-    if (pos && scene.eventSprites?.get(id)?.visible !== false) walkers.add(pos.y * 4096 + pos.x);
+  const cells = new Set<number>();
+  const add = (x: number, y: number): void => { cells.add(y * 4096 + x); };
+  add(scene.tileX, scene.tileY);
+  if (scene.moving) {
+    if (scene.movingFrom) add(scene.movingFrom.x, scene.movingFrom.y);
+    if (scene.movingTo) add(scene.movingTo.x, scene.movingTo.y);
   }
-  return (x, y) => (x === px && y === py) || walkers.has(y * 4096 + x);
+  const positions = scene.eventPositions ?? {};
+  for (const [id, mover] of scene.autonomousNPCs?.entries?.() ?? []) {
+    const pos = positions[id];
+    if (!pos || scene.eventSprites?.get(id)?.visible === false || mover.opacity === 0) continue;
+    add(pos.x, pos.y);
+    const move = mover.activeMove;
+    if (move) {
+      add(move.fromX, move.fromY);
+      add(move.toX, move.toY);
+      const d = STEP_DELTA[move.dir];
+      if (d && !move.hop) add(move.toX + d.x, move.toY + d.y);
+    }
+  }
+  return (x, y) => cells.has(y * 4096 + x);
 }
 
 export function updateTransit(scene: PlaySceneContext, deltaMs: number): void {
