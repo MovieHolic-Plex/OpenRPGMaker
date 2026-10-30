@@ -173,6 +173,7 @@ description: Use when authoring or reviewing story scenes, events, cutscenes, NP
 4. **붙잡히면 전투가 아니라 짧은 게임 오버.** `killOnTouch` + `set_game_over({presentation:"horror"})`. 진입 체크포인트가 붙어 다시 하기에서 아이템·단서가 남는다. 우스운 패배 대사를 쓰지 않는다.
 5. **추격자의 손전등이 보이게.** `set_field_detection({visionLight:{color}})` 는 그 맵 조명을 정한 **뒤에** 부른다. 조명을 나중에 다시 깔면 빛이 지워진다.
 6. **추격자는 한 사람이다.** 층마다 다른 추격자 이벤트여도 `make_chase_scene({characterId})` 로 같은 인물 프로필에 묶는다. 붙잡힌 한 줄은 그 사람의 말로 `caughtText`(숙직 선생 「찾았다.」). 순찰 혼잣말은 `text {speaker:<프로필 이름>, container:"bark"}` — 그 추격자 머리 위에 뜨고 게임을 멈추지 않는다. 발소리가 없어야 하는 유령은 `footsteps:{off:true}`.
+7. **잠긴 문·열쇠함은 퍼즐 도구로, 손으로 고치지 않는다.** 몸으로 막아야 하는 문·쇠사슬은 `compile_puzzle({kind:"item-gate", blocking:true})`(기본은 지나갈 수 있는 조사 칸이라 열쇠 없이 걸어 나간다). 번호 자물쇠는 `password` 에 `wrongMessage`·`wrongSound` 로 그 장면 말투를 주고, 안의 열쇠는 `onSolve.giveItems`. 여는 소리는 `onSolve.beats` 의 `{kind:"music",action:"se"}` — 스위치를 켜는 조사는 추격자에게 들린다. 확인: 문 칸 `isPassable` 이 풀기 전 false, 푼 뒤 소지품에 열쇠.
 
 ## 경고 코드 (쓰기 도구 issues · run_lint)
 
