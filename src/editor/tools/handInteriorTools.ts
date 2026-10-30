@@ -23,11 +23,13 @@ import { workshopHandObjects } from "@/project/workshopTiles";
 import { referenceOwner } from "@/project/tilesetReferences";
 import { handInteriorPlanExits } from '@/editor/handInterior/exits';
 import { withComposedRooms } from '@/editor/handInterior/rooms';
+import { ROOM_GRAPH_TAG, roomGraphDrafts, type RoomGraphDecl } from '@/editor/handInterior/designAreaRecord';
 import { layoutAscii, layoutCandidates, LayoutError, type LayoutCandidate, type LayoutRequest } from '@/editor/handInterior/layout';
 import { composeInteriorBlueprint, type BlueprintInteriorArgs } from '@/editor/handInterior/blueprintComposers';
 import { furnishRooms } from '@/editor/handInterior/furnish';
 import { furnishWithVignettes } from '@/editor/handInterior/vignettes';
 import { furnishFromDesign, type RoomDesign } from '@/editor/handInterior/designRoom';
+import { DESIGN_AREA_TAG, designAreaDrafts, roomPieceTags } from '@/editor/handInterior/designAreaRecord';
 import { addMapLocation, COMPOSED_LAYOUT_TAG } from '@/project/mapNamedLocations';
 
 /** layout 으로 짠 방의 이름표 — 다시 지을 때 이 이름표만 갈아 끼운다. */
@@ -630,7 +632,7 @@ function trimPlanMargin(args: Record<string, unknown>): { args: Record<string, u
   plan.forEach((row, y) => { for (let x = 0; x < row.length; x++) if (row[x] !== "#") include(x, y); });
   if (x1 < 0) return { args, dx: 0, dy: 0 };
   const points = (value: unknown): XYLike[] => Array.isArray(value) ? value.filter((v): v is XYLike => !!v && typeof v === "object" && typeof (v as XYLike).x === "number" && typeof (v as XYLike).y === "number") : [];
-  for (const key of ["objects", "goods", "start", "links"]) for (const p of points(args[key])) include(p.x, p.y);
+  for (const key of ["objects", "goods", "start", "links", "passages"]) for (const p of points(args[key])) include(p.x, p.y);
   for (const key of ["tables", "daises"]) for (const p of points(args[key]) as (XYLike & { w?: number; h?: number })[]) { include(p.x, p.y); include(p.x + (p.w ?? 1) - 1, p.y + (p.h ?? 1) - 1); }
   for (const zone of Array.isArray(args.zones) ? args.zones as Record<string, number>[] : []) { include(zone.x0, zone.y0); include(zone.x1, zone.y1); }
   for (const line of Array.isArray(args.lines) ? args.lines as { cells?: unknown; rect?: Record<string, number> }[] : []) {
@@ -643,7 +645,7 @@ function trimPlanMargin(args: Record<string, unknown>): { args: Record<string, u
   const shift = <T extends XYLike>(p: T): T => ({ ...p, x: p.x - dx, y: p.y - dy });
   const shiftList = (value: unknown) => Array.isArray(value) ? value.map((v) => v && typeof v === "object" && typeof (v as XYLike).x === "number" ? shift(v as XYLike) : v) : value;
   const next: Record<string, unknown> = { ...args, plan: plan.slice(dy, bottom + 1).map((row) => row.padEnd(W, "#").slice(dx, right + 1)) };
-  for (const key of ["objects", "goods", "start", "links", "tables", "daises"]) if (key in args) next[key] = shiftList(args[key]);
+  for (const key of ["objects", "goods", "start", "links", "tables", "daises", "passages"]) if (key in args) next[key] = shiftList(args[key]);
   if (Array.isArray(args.zones)) next.zones = (args.zones as Record<string, number>[]).map((z) => ({ ...z, x0: z.x0 - dx, x1: z.x1 - dx, y0: z.y0 - dy, y1: z.y1 - dy }));
   if (Array.isArray(args.lines)) next.lines = (args.lines as { cells?: unknown; rect?: Record<string, number> }[]).map((line) => ({
     ...line,
@@ -747,6 +749,7 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
       daises: { type: "array", items: { type: "object", properties: { id: { type: "string" }, x: { type: "integer" }, y: { type: "integer" }, w: { type: "integer", minimum: 1 }, h: { type: "integer", minimum: 1 } }, required: ["id", "x", "y", "w", "h"], additionalProperties: false } },
       goods: { type: "array", items: { type: "object", properties: { id: { type: "string" }, x: { type: "integer" }, y: { type: "integer" } }, required: ["id", "x", "y"], additionalProperties: false } },
       start: { type: "array", items: XY, description: "출입구 칸(생략 시 맨 아래 줄 실내 칸). 위층은 계단 도착 칸." },
+      passages: { type: "array", items: XY, description: "세로 칸막이 3줄 문 틈의 위 두 칸 — 벽면 대신 트인 통로(바닥)로 그린다. 생략하면 칸막이 끝 벽면." },
       links: { type: "array", description: "이동 이벤트(계단·문): 이 맵의 x,y 에 닿으면 toMapId 의 toX,toY 로", items: { type: "object", properties: {
         x: { type: "integer" }, y: { type: "integer" }, toMapId: { type: "string" }, toX: { type: "integer" }, toY: { type: "integer" }, direction: { type: "string", enum: ["up", "down", "left", "right"] },
       }, required: ["x", "y", "toMapId", "toX", "toY"], additionalProperties: false } },
@@ -825,6 +828,7 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
         if (canon && programKinds(tilesetId, canon)) args = { ...args, layout: { ...lbag, program: canon } };
       }
     }
+    let graphDecl: RoomGraphDecl | undefined;
     let picked: { c: LayoutCandidate; variant: number; variants: number; furnish: boolean; vignette?: { picks?: Record<string, string[]>; purposes?: Record<string, string>; seed?: number }; designs?: Record<string, RoomDesign> } | undefined;
     // 청사진 구성기가 있는 공간(오피스 로비·대학 강의동·왕성 알현실·백화점)은 견본 한 벌 대신 청사진 규칙으로 매번 새로 짠다 —
     // 2026-10-18 사용자 반려 「프리셋을 그대로 깔지 말고 AI 가 참고해서, 똑같이 깔지 말고」. 방 목록을 직접 준 layout 은 그대로 따른다.
@@ -857,11 +861,15 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
         args = kept as typeof args;
         if (dropped.length) fitNotes.push(`layout 이 방 배치를 짜므로 같이 온 ${dropped.join("·")} 는 버리고 layout 대로 지었다(plan·rooms 를 직접 주려면 layout 을 빼라)`);
       }
-      const req = args.layout as LayoutRequest & { variant?: number; furnish?: boolean | "vignette" | "template"; vignettes?: Record<string, string[]>; purposes?: Record<string, string>; composeSeed?: number; designs?: Record<string, RoomDesign> };
+      const req = args.layout as LayoutRequest & { variant?: number; furnish?: boolean | "vignette" | "template"; vignettes?: Record<string, string[]>; purposes?: Record<string, string>; composeSeed?: number; designs?: Record<string, RoomDesign>;
+        placed?: { rooms: LayoutCandidate["rooms"]; connect: LayoutCandidate["connect"]; exit: LayoutCandidate["exit"] }; graph?: RoomGraphDecl };
       const variant = Math.max(0, Math.floor(req.variant ?? 0));
       let cands: LayoutCandidate[];
-      try { cands = layoutCandidates(tilesetId, req, spec, Math.max(4, variant + 1)); }
+      // placed = 모델이 선언한 방 그래프를 조화한 방 사각형(roomGraph.ts) — 배치 후보를 짜지 않고 그대로 쓴다.
+      if (req.placed?.rooms?.length) cands = [{ width: 0, height: 0, score: 0, rooms: req.placed.rooms, connect: req.placed.connect ?? [], exit: req.placed.exit, notes: ["room graph declared by the model (positions harmonised only)"] }];
+      else try { cands = layoutCandidates(tilesetId, req, spec, Math.max(4, variant + 1)); }
       catch (error) { if (error instanceof LayoutError) throw new ToolError(error.message, { code: "layout-failed" }); throw error; }
+      if (req.graph) graphDecl = req.graph;
       const c = cands[Math.min(variant, cands.length - 1)]!;
       // furnish:"vignette" = 견본 한 벌 대신 기물 묶음 배치기(vignettes.ts) — 방 용도에 맞는 묶음을 함수가 골라 벽·앞 통로·밀도를 지켜 놓는다.
       // vignettes:{방 id: [묶음 id·몸통 기물 id]} 로 모델이 묶음을 고를 수 있다.
@@ -984,8 +992,16 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
     // 이 배치를 손으로 다시 짜게 하지 않는다. 2026-10-14 gemini-4-argon 실조수: 「학교 복도와 신발장」을 school-1f 로 잘 지은 뒤 권고를 받고
     // 35×16 → 22×16 손 평면·손 가구로 다시 지어 견본 배치를 버렸다(복도는 원래 비어 있는 동선이다).
     if (picked) {
-      map.locations = (map.locations ?? []).filter((l) => !(l.tags ?? []).includes(HAND_LAYOUT_ROOM_TAG));
-      for (const r of picked.c.rooms) addMapLocation(map, { name: r.kind, x: r.x0, y: r.y0, w: r.x1 - r.x0 + 1, h: r.y1 - r.y0 + 1, note: picked.designs?.[r.id] ? "모델이 설계한 방(design)" : "layout 으로 짠 방(견본 가구 한 벌)", tags: [HAND_LAYOUT_ROOM_TAG, COMPOSED_LAYOUT_TAG, ...(r.template && !picked.designs?.[r.id] ? [`template:${r.template}`] : []), ...(picked.designs?.[r.id] ? ["model-designed"] : [])] });
+      map.locations = (map.locations ?? []).filter((l) => !(l.tags ?? []).includes(HAND_LAYOUT_ROOM_TAG) && !(l.tags ?? []).includes(DESIGN_AREA_TAG));
+      for (const r of picked.c.rooms) addMapLocation(map, { name: r.kind, x: r.x0, y: r.y0, w: r.x1 - r.x0 + 1, h: r.y1 - r.y0 + 1, note: picked.designs?.[r.id] ? "모델이 설계한 방(design)" : "layout 으로 짠 방(견본 가구 한 벌)", tags: [HAND_LAYOUT_ROOM_TAG, COMPOSED_LAYOUT_TAG, `room:${r.id}`, ...(r.template && !picked.designs?.[r.id] ? [`template:${r.template}`] : []), ...(picked.designs?.[r.id] ? ["model-designed"] : []), ...(designRooms?.[r.id] ? roomPieceTags(designRooms[r.id]!) : [])] });
+      // 모델이 설계한 구역(design.areas)과 실제로 놓인 자리 — 할 일 검사 room_zones 가 읽는다(designAreaRecord.ts). 기록만 한다.
+      for (const r of picked.c.rooms) {
+        const d = picked.designs?.[r.id], rep = designRooms?.[r.id];
+        if (d && rep) for (const a of designAreaDrafts(r, d, rep, spec)) addMapLocation(map, a);
+      }
+      // 모델이 선언한 방 그래프 — 할 일 검사 room_graph 가 읽는다(선언 + 방마다 랜드마크·계단이 실제로 놓인 자리). 기록만 한다.
+      map.locations = (map.locations ?? []).filter((l) => !(l.tags ?? []).includes(ROOM_GRAPH_TAG));
+      if (graphDecl) for (const draft of roomGraphDrafts(map, graphDecl, picked.c.rooms, designRooms ?? {}, spec)) addMapLocation(map, draft);
     }
     if (blueprint) {
       map.locations = (map.locations ?? []).filter((l) => !(l.tags ?? []).includes(HAND_LAYOUT_ROOM_TAG));

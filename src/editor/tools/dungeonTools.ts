@@ -542,7 +542,7 @@ function towerRooms(top: boolean, k: number, seed = 0, shape: TowerFloorShape = 
 }
 
 /** 채우기 적 그룹: 준 것은 그대로, 안 준 역할은 던전 주제(dungeonThemeTroops.ts)의 그림으로 만든다 — 세기는 원래 고르던 그룹에 맞춘다. */
-function themedTroops(draft: Project, args: Record<string, unknown>): ReturnType<typeof pickTroops> & { theme: string } {
+export function themedTroops(draft: Project, args: Record<string, unknown>): ReturnType<typeof pickTroops> & { theme: string } {
   const base = pickTroops(draft, args.troops);
   const given = (args.troops && typeof args.troops === "object" ? args.troops : {}) as Record<string, unknown>;
   const known = (id: unknown) => typeof id === "string" && draft.database.troops.some((t) => t.id === id);
