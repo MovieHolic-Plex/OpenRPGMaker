@@ -174,6 +174,7 @@ for (const d of Array.isArray(L.doors) ? L.doors : []) {
   if (!open(a!) || !open(b!)) { errors.push(`door ${P(d.x, d.y)} on "${w.id}" does not join two rooms: ${P(a![0]!, a![1]!)} and ${P(b![0]!, b![1]!)} must both be room cells (not wall).`); continue; }
   if (d.piece !== undefined && d.piece !== null && !["locked door", "iron gate", "iron gate open"].includes(d.piece)) errors.push(`door ${P(d.x, d.y)}: piece "${d.piece}" — a door piece must be one of locked door, iron gate, iron gate open (or omit it for an open doorway).`);
   for (const i of cells) doorCell.add(i);
+  if (vertical && d.piece) { errors.push(`door ${P(d.x, d.y)} in vertical wall "${w.id}": a "${d.piece}" leaf is drawn facing south, so it only fits a doorway in a horizontal wall — in a side wall it shows as a stray tile and blocks the way. Leave this doorway open (piece null), or move the door to a horizontal wall.`); d.piece = null; }
   doors.push({ wall: w.id, cells, piece: d.piece ?? undefined, x: d.x, y: d.y, vertical });
 }
 // entrance
@@ -408,6 +409,7 @@ for (const i of built.issues) {
   const at = i.x !== undefined ? ` at ${P(i.x, i.y!)}` : "";
   if (i.severity === "error" && ["stair-entrance-blocked", "stairs-not-at-wall", "travel-landing-unreached"].includes(i.code) && late.some((e) => /stair/i.test(e))) continue;
   if (i.severity === "error") errors.push((EN[i.code] ?? i.code) + at + who(i.x, i.y));
+  else if (i.code === "unreached-floor" && built.unreachedFloor.length >= 8) errors.push(`${built.unreachedFloor.length} floor cells cannot be reached from the entrance (e.g. ${built.unreachedFloor.slice(0, 6).map((c) => P(c.x, c.y)).join(" ")}) — furniture, a door leaf or a rail blocks the way; open a path.`);
   else if (i.code === "unreached-floor") warnings.push(`${built.unreachedFloor.length} floor cells are not reachable from the entrance (e.g. ${built.unreachedFloor.slice(0, 6).map((c) => P(c.x, c.y)).join(" ")}) — furniture blocks the way.`);
   else if (i.code === "unreachable-piece") warnings.push(`a piece has no reachable side: ${i.message.replace(/[^\x00-\x7F]+/g, " ").replace(/\s+/g, " ").trim()}`);
   else if (i.code === "too-many-layers") warnings.push(`too many stacked pieces${at}${who(i.x, i.y)}`);

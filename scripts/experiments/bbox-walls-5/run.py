@@ -44,7 +44,7 @@ Coordinates: x to the right, y down, origin top-left. A wall is a line of solid 
 3. doors: openings carved in a partition wall: {{"wall": id, "x", "y"}} where (x,y) is a cell of that wall.
    - In a horizontal wall: a 1-cell gap ("width" may be 2-3). It joins the room north of the wall with the room south of it.
    - In a vertical wall: a doorway is 3 cells tall: (x,y) is the walkable BOTTOM cell, and (x,y-1),(x,y-2) above it are also cut (they turn into wall face). All 3 cells must belong to that wall.
-   - Optional "piece": "locked door" | "iron gate" | "iron gate open" puts a door leaf in the doorway.
+   - Optional "piece": "locked door" | "iron gate" | "iron gate open" puts a door leaf in the doorway (horizontal walls only; a leaf faces south). Doorways in vertical walls stay open.
 4. entrance: one cell of the outer wall on the bottom row y=H-1, with a room cell directly above it. It is the only opening in the outer wall.
 5. rooms: every space closed by walls is a room. Give each one: {{"id", "at": [x,y] any cell inside it, "floor": floor id, "serves": one purpose tag, "purpose", optional "repeat": true for genuinely repeated rooms}}. Every enclosed space needs exactly one room entry; two rooms in one connected space means a wall is not closed.
    "serves" tags required by this request (each its own room): {", ".join(SERVES[0])}. Optional extra tags: {", ".join(SERVES[1])}.
