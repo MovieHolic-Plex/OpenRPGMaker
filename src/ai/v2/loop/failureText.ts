@@ -59,6 +59,9 @@ type Rule = { readonly code?: RegExp; readonly re: RegExp; readonly en: (m: RegE
 const EN_RULES: readonly Rule[] = [
   { re: /^([AB]): doorAt은 문 하단 칸이며.*?받은 값 x,y=\((-?\d+),(-?\d+)\), doorAt=\((-?\d+),(-?\d+)\)/su,
     en: (m) => `${m[1]}: doorAt must be the door's bottom cell and the entrance (x,y) must be the cell directly south of it (x=doorAt.x, y=doorAt.y+1). Got x,y=(${m[2]},${m[3]}), doorAt=(${m[4]},${m[5]}). If the door is at (${m[4]},${m[5]}) send {x:${m[4]},y:${Number(m[5]) + 1},doorAt:{x:${m[4]},y:${m[5]}}}; if the entrance is at (${m[2]},${m[3]}) send {x:${m[2]},y:${m[3]},doorAt:{x:${m[2]},y:${Number(m[3]) - 1}}}. With no door picture, omit doorAt.` },
+  // 캐릭터 칩 관문(charsetSelectionGate): 본 적 없는 칩을 골라 쓰기 전체가 되돌려졌다. 2026-10-30 en-loop 판 upsert_actor 재실패 1위(판당 0.33).
+  { re: /^캐릭터 그림 선택을 되돌렸습니다: (\S+?)의 실제 칩은 「(.*?)」\((charset:([^:)]+):(\d+))\)/u,
+    en: (m) => `Not saved: the walking chip at ${m[1]} (${m[3]}, «${m[2]}») was not picked from a list_npc_graphics/list_resources result you have seen, so the whole write was undone. Either omit characterResourceId/characterIndex (and graphic) to keep the current look, or first call list_npc_graphics{query:'<look>'} and copy a row's selectionId charset:<sheet>:<slot> as characterResourceId:'<sheet>', characterIndex:<slot> (events: graphic.selectionId). Never guess slot or pattern numbers.` },
   { re: /트룹에는 최소 1마리의 적/u, en: () => "A troop needs at least one enemy in enemyIds (or members). An empty members:[] clears enemyIds — omit members." },
   { re: /^patrol 은 behavior:"patrol" 또는 "chase"/u, en: () => `patrol is only allowed with behavior "patrol" or "chase". For any other behavior (e.g. "stationary") omit patrol entirely.` },
   { re: /^patrol\.directions 는 up\|down\|left\|right 2\.\.16개/u, en: () => "patrol.directions must be a closed path of 2..16 steps, each up|down|left|right. If you do not want a route, omit patrol.directions (or the whole patrol)." },

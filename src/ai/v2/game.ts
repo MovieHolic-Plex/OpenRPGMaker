@@ -220,7 +220,7 @@ export function v2ToolPool(): string[] {
 /** pool:true 면 이 요청의 도구에 v2ToolPool 전부를 더한다(필요할 때 싣는 도구도 같은 감싸개를 지나게). */
 export function createGameTools(env: PiAssistantV2Env, task = "", options: { readonly pool?: boolean } = {}): PiToolShape[] {
   const names = [...new Set([...v2ExtraToolNames(task), ...(options.pool ? v2ToolPool() : [])])].filter((name) => getTool(name));
-  return withSchemaFillCleanup(withTransferRelocation(withEncountersOnlyWhenAsked(withPictureSearchBudget(createPiToolset(env.ctx, { ...(env.toolsetOptions ?? {}), toolNames: names, onCall: env.record })), task)));
+  return withActorLookRetry(withSchemaFillCleanup(withTransferRelocation(withEncountersOnlyWhenAsked(withPictureSearchBudget(createPiToolset(env.ctx, { ...(env.toolsetOptions ?? {}), toolNames: names, onCall: env.record })), task))));
 }
 
 /**
@@ -282,6 +282,41 @@ export function withSchemaFillCleanup(tools: PiToolShape[]): PiToolShape[] {
       if (!/실행 실패|"ok":false/u.test(b2)) return { ...second, content: [...second.content, { type: "text", text: "[Graphic matched] The graphic you gave differed from the battle picture, so the enemy was placed again without graphic — the field sprite now matches the battle picture (the troop's lead enemy)." }] } as typeof second;
     }
     return result;
+  } });
+}
+
+/**
+ * upsert_actor 가 캐릭터 칩 관문(「캐릭터 그림 선택을 되돌렸습니다」)에 걸리면 칩 칸(characterResourceId·characterIndex)만 빼고 한 번 더 부른다 —
+ * 이름·능력치·기술·얼굴은 저장되고, 결과 글이 «겉모습은 그대로 두었다 + 바꾸려면 list_npc_graphics 에서 고른 selectionId 를» 이라고 알린다.
+ * 왜 (2026-10-30 scenes-duel en-loop 판, terra): 관문 거절이 upsert_actor 재실패 1위(판당 0.33, ce04 0.44)였다. 진짜 거절(쓰기 전체 되돌림)이다 —
+ * terra 는 list_npc_graphics 를 부르지 않고 characterIndex 만 0→1→… 바꿔 같은 거절을 되풀이했고, 그사이 배우의 능력치·기술도 저장되지 않았다.
+ * 같은 호출 id 로 다시 부르므로 기록(tool_end)에는 다시 부른 결과가 남는다. 칩을 «본 적 있는» 후보로 고르면 관문이 받는다(손대지 않는다).
+ */
+const LOOK_GATE = /캐릭터 그림 선택을 되돌렸습니다/u;
+export function withActorLookRetry(tools: PiToolShape[]): PiToolShape[] {
+  return tools.map((tool) => tool.name !== "upsert_actor" ? tool : { ...tool, async execute(id, params, signal) {
+    const args = (params && typeof params === "object" ? params : {}) as Record<string, unknown>;
+    let why: string | undefined;
+    try {
+      const result = await tool.execute(id, params, signal);
+      const body = (result.content.find((c) => c.type === "text") as { text?: string } | undefined)?.text ?? "";
+      if (!LOOK_GATE.test(body)) return result;
+      why = body;
+    } catch (error) {
+      why = error instanceof Error ? error.message : String(error);
+      if (!LOOK_GATE.test(why)) throw error;
+    }
+    // 레지스트리 모양은 {actor:{…}} 이다(평평하게 펴기 flatWrapper 는 이 감싸개 바깥).
+    const nested = args.actor && typeof args.actor === "object" && !Array.isArray(args.actor);
+    const actor = (nested ? args.actor : args) as Record<string, unknown>;
+    if (signal?.aborted || (actor.characterResourceId === undefined && actor.characterIndex === undefined)) throw new Error(why);
+    const { characterResourceId: sheet, characterIndex: slot, ...rest } = actor;
+    const chip = /\((charset:[^)]+)\)/u.exec(why)?.[1] ?? `${String(sheet ?? "")}:${String(slot ?? 0)}`;
+    const retryArgs = nested ? { ...args, actor: rest } : rest;
+    const second = await tool.execute(id, retryArgs as typeof params, signal); // 실패면 그대로 던진다(다른 이유) — 할 일 고리가 영어로 옮긴다.
+    const note = `[Look not changed] The walking chip ${chip} was not picked from a list_npc_graphics result you have seen, so it was left out; everything else in this call was saved. `
+      + `To change the look: list_npc_graphics{query:'<look>'} → upsert_actor{id:'${String(actor.id ?? "<id>")}', characterResourceId:'<sheet>', characterIndex:<slot>} using a selectionId charset:<sheet>:<slot> from that result. Do not resend the same chip.`;
+    return { ...second, content: [...second.content, { type: "text", text: note }] };
   } });
 }
 
