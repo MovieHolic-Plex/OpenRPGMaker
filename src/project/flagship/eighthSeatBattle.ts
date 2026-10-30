@@ -81,19 +81,19 @@ function enemy(id: string, f: Partial<EnemyRecord> & Pick<EnemyRecord, "name" | 
 const say = (body: string, speaker?: string) => ({ kind: "text", body, ...(speaker ? { speaker } : {}), position: "bottom" });
 
 /**
- * 항복 — 상대 체력이 문턱 아래로 떨어지면 무릎을 꿇고 결투가 끝난다(승리로 센다).
- * ES_DUEL_SEAM: 지금은 전투 이벤트(enemyHpBelow → 대사 → 스위치 → 「전투 중단」)로 하고, 결과는 escape 로 돌아온다.
- * 그래서 이 데모의 결투 분기는 escape 를 「상대 항복」으로, victory 를 「상대가 쓰러짐」으로 같이 받는다(둘 다 승리).
+ * 항복 — 상대 체력이 문턱 아래로 떨어지면 무릎을 꿇는다. 끝내는 일은 트룹의 결투 규칙(TroopRecord.duel, #4006)이 한다.
+ * 이 페이지는 그 순간 상대가 하는 한마디만 맡는다(같은 문턱).
  */
-function yieldPage(enemyId: string, percent: number, line: string, speaker: string, winSwitch: string) {
+function yieldPage(enemyId: string, percent: number, line: string, speaker: string) {
   return {
     id: `${enemyId}_yield`, name: "항복", span: "battle", runOnce: true,
     conditions: [{ kind: "enemyHpBelow", enemyId, percent }],
-    commands: [say(line, speaker), { kind: "setSwitch", switchId: winSwitch, value: true }, { kind: "m2Command", commandId: "m2-105-abort-battle", fields: {} }],
+    commands: [say(line, speaker)],
   };
 }
 
-export const SW_DUEL_WON = "sw_es_duel_won";
+/** 결투 규칙: 상대 25% 항복, 내 쪽 20% 아래면 패배(게임 오버 없음), 도주 = 기권, 아이템 금지. */
+const DUEL = { yieldAtPercent: 25, playerYieldAtPercent: 20, forfeit: true, noItems: true } as const;
 
 export function buildEighthSeatBattle(project: Project): void {
   const db = project.database;
@@ -252,27 +252,26 @@ export function buildEighthSeatBattle(project: Project): void {
   upsert(db.troops, troop(TR.armor, "결투 1 · 연습 갑옷", EN.armor, [
     { id: "es_d1_open", name: "시작", span: "battle", runOnce: true, conditions: [{ kind: "onRound", round: 1 }],
       commands: [say("갑옷은 두 번째 라운드에 크게 들어 올립니다. 머리 위 표시를 보세요.", "브란트"), say("모으는 동안 세게 맞히면 흩어집니다. 아니면 방벽으로 받으세요.", "브란트")] },
-    yieldPage(EN.armor, 25, "그만. 갑옷이 무릎을 꿇었습니다.", "브란트", SW_DUEL_WON),
-  ]));
+    yieldPage(EN.armor, 25, "그만. 갑옷이 무릎을 꿇었습니다.", "브란트"),
+  ], { duel: DUEL }));
   upsert(db.troops, troop(TR.sera, "결투 2 · 세라", EN.sera, [
     { id: "es_d2_open", name: "시작", span: "battle", runOnce: true, conditions: [{ kind: "onRound", round: 1 }],
       commands: [say("단일 주문은 내 막에 그대로 돌아가. 알고 쏘는 게 좋을 거야.", "세라")] },
     { id: "es_d2_hint", name: "막 설명", span: "battle", runOnce: true, conditions: [{ kind: "onRound", round: 3 }, { kind: "enemyState", enemyId: EN.sera, stateId: ST.mirror }],
       commands: [say("막은 한 사람만 겨눈 주문을 튕깁니다. 넓게 치거나, 막부터 걷어 내십시오.", "브란트")] },
-    yieldPage(EN.sera, 25, "……됐어. 내려놓을게.", "세라", SW_DUEL_WON),
-  ]));
+    yieldPage(EN.sera, 25, "……됐어. 내려놓을게.", "세라"),
+  ], { duel: DUEL }));
   upsert(db.troops, troop(TR.dowin, "결투 3 · 도윈", EN.dowin, [
     { id: "es_d3_open", name: "시작", span: "battle", runOnce: true, conditions: [{ kind: "onRound", round: 1 }],
       commands: [say("공개 결투니까 끝까지 하자. 지는 쪽도 배운다.", "도윈")] },
-    yieldPage(EN.dowin, 25, "여기까지. 네 얼음이 내 불을 읽었어.", "도윈", SW_DUEL_WON),
-  ]));
+    yieldPage(EN.dowin, 25, "여기까지. 네 얼음이 내 불을 읽었어.", "도윈"),
+  ], { duel: DUEL }));
   upsert(db.troops, troop(TR.warden, "결투 4 · 파수 기계", EN.warden, [
     { id: "es_d4_open", name: "시작", span: "battle", runOnce: true, conditions: [{ kind: "onRound", round: 1 }],
       commands: [say("태엽이 감기는 소리가 들린다. 종을 치기 전에 멈춰야 한다.")] },
     { id: "es_d4_low", name: "멈춤", span: "battle", runOnce: true, conditions: [{ kind: "enemyHpBelow", enemyId: EN.warden, percent: 20 }],
-      commands: [say("톱니가 헛돌다 멈춘다. 가슴판이 열리고 접힌 종이 한 장이 떨어진다."),
-        { kind: "setSwitch", switchId: SW_DUEL_WON, value: true }, { kind: "m2Command", commandId: "m2-105-abort-battle", fields: {} }] },
-  ], { battleGuests: [] }));
+      commands: [say("톱니가 헛돌다 멈춘다. 가슴판이 열리고 접힌 종이 한 장이 떨어진다.")] },
+  ], { battleGuests: [], duel: { ...DUEL, yieldAtPercent: 20 } }));
   upsert(db.troops, troop(TR.final, "결투 5 · 결정전", EN.seraFinal, [
     { id: "es_d5_open", name: "시작", span: "battle", runOnce: true, conditions: [{ kind: "onRound", round: 1 }],
       commands: [say("결정전. 상대 체력 사분의 일, 또는 지팡이를 내려놓으면 끝납니다.", "브란트")] },
@@ -281,7 +280,7 @@ export function buildEighthSeatBattle(project: Project): void {
     { id: "es_d5_tremor", name: "손떨림", span: "battle", runOnce: true, conditions: [{ kind: "enemyHpBelow", enemyId: EN.seraFinal, percent: 50 }],
       commands: [say("세라의 지팡이 끝이 흔들린다. 손목이 떨리고 있다."),
         { kind: "m2Command", commandId: "m2-100-change-enemy-state", fields: { target: EN.seraFinal, operation: "add", value: ST.tremor } }] },
-  ]));
+  ], { duel: DUEL }));
 }
 
 /** 레벨 1~99 곡선을 [시작값, 레벨당 증가] 로 다시 쓴다(결투는 작은 숫자로 읽혀야 한다). */

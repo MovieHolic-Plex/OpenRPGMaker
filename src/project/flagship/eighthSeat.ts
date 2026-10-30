@@ -16,7 +16,7 @@ import { DEFAULT_ACTOR_ID } from "@/project/defaults/constants";
 import { deserialize, serialize } from "@/project/io";
 import type { Command, Dir, EventPage, EventPageCondition, GameEvent, GameMap, Project } from "@/project/types";
 import { FLAGSHIP_BEAT_MANIFESTS } from "./beats";
-import { ES_HERO, SK, SW_DUEL_WON, TR, buildEighthSeatBattle } from "./eighthSeatBattle";
+import { ES_HERO, SK, TR, buildEighthSeatBattle } from "./eighthSeatBattle";
 import { buildEighthSeatLore } from "./eighthSeatLore";
 import { buildEighthSeatMaps, ES_MAP, ES_MAP_NAMES, freeCell, type Cell, type EsAnchors } from "./eighthSeatMaps";
 import { buildEighthSeatOpening, chipTexture, ES_CHIPS } from "./eighthSeatOpening";
@@ -325,9 +325,10 @@ function buildDuelOne(project: Project): void {
     ...watchers.map((w) => event(w.id, "학생", w.at, [page(`${w.id}_p`, [stageIs(V_WEEK, 1)], voice("학생", "다음은 나야. 갑옷 무릎 소리 들었어? 저게 들리면 크게 온다."), { who: w.chip, dir: w.dir })])),
   );
 
-  const duelBranch = (won: Command[], lost: Command[]): Command => ({
-    kind: "battleProcessing", troopId: TR.armor, canEscape: false, canLose: true, branchOnResult: true,
-    victoryBranch: won, escapeBranch: won, defeatBranch: lost,
+  // 결투 규칙(TroopRecord.duel): 상대가 25% 아래로 무릎 꿇으면 victory, 내가 20% 아래면 defeat(게임 오버 없음), 도주 = 기권(escape).
+  const duelBranch = (won: Command[], lost: Command[], forfeited: Command[]): Command => ({
+    kind: "battleProcessing", troopId: TR.armor, canEscape: true, canLose: true, branchOnResult: true,
+    victoryBranch: won, escapeBranch: forfeited, defeatBranch: lost,
   } as unknown as Command);
 
   const afterWin: Command[] = [
@@ -339,6 +340,12 @@ function buildDuelOne(project: Project): void {
     ...fadeIn(400),
     ...line("brandt", "괜찮습니다. 첫날 갑옷에 지는 학생이 절반입니다."),
     ...line("brandt", "머리 위 표시가 뜨면 그다음 라운드에 내려칩니다. 그 표시를 읽으세요. 결투는 그것뿐입니다."),
+  ];
+
+  const afterForfeit: Command[] = [
+    ...fadeIn(400),
+    ...line("brandt", "지팡이를 내려놓았군요. 첫날에 그걸 할 줄 아는 학생은 드뭅니다."),
+    ...line("brandt", "다만 겨울에는 내려놓는 쪽이 집에 갑니다. 머리 위 표시를 읽는 것부터 익히세요."),
   ];
 
   add(map, scene("ev_es_duel1", { x: 1, y: 1 }, weekStage(1, S.DUEL), [
@@ -355,9 +362,8 @@ function buildDuelOne(project: Project): void {
     ...line("brandt", "갑옷은 두 라운드에 한 번 크게 들어 올립니다. 그때 무엇을 할지 미리 정해 두세요."),
     ...letterbox(false, 300),
     bgm(BGM.duel, 300),
-    duelBranch(afterWin, afterLoss),
+    duelBranch(afterWin, afterLoss, afterForfeit),
     bgm(BGM.night, 1200),
-    setSw(SW_DUEL_WON, false),
     stage(S.AFTER_DUEL),
   ]));
 }
@@ -528,7 +534,7 @@ export function createEighthSeatFlagshipDemo(): FlagshipDemoBuildResult {
   const ensureSw = (id: string, name: string): void => { if (!project.switches.some((s) => s.id === id)) project.switches.push({ id, name }); };
   ensureVar(V_WEEK, "주차"); ensureVar(V_STAGE, "주 안의 장면"); ensureVar(V_SERA, "세라 호감"); ensureVar(V_TEO, "테오 호감");
   ensureVar(V_PREP, "시험 준비"); ensureVar(V_CLUE, "단서");
-  ensureSw(SW_FEAST_DONE, "입학 연회를 봄"); ensureSw(SW_DUEL_WON, "결투: 상대 항복");
+  ensureSw(SW_FEAST_DONE, "입학 연회를 봄");
 
   execTool(project, "configure_story_journal", { title: "수첩", writers: [{ id: "ren", name: "렌" }, { id: "sera", name: "세라" }, { id: "teo", name: "테오" }] });
 
