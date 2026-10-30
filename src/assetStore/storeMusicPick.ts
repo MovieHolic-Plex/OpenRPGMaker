@@ -307,6 +307,28 @@ export function rankStoreMusic(tracks: readonly StoreMusicTrack[], want: StoreMu
     .map((row) => row.track);
 }
 
+/**
+ * 후보가 왜 그 자리인가(조수에게 보이는 짧은 이유) + 물러선 곡인가.
+ * 2026-10-30 실조수: 「파판 전투곡 느낌으로 일반 전투」에서 1위(심포닉 전투곡) 대신 3위를 넣었다 — 후보에 순위 이유가 없었다.
+ * fallback: 게임 이름에서 줄을 읽었는데(「파판」 → symphonic-jrpg) 이 곡은 그 첫 줄이 아니다 — 그 줄 곡이 없을 때만 쓰는 대신 곡.
+ */
+export function explainStoreMusicPick(track: StoreMusicTrack, want: StoreMusicQuery): { readonly why: string; readonly fallback: boolean } {
+  const m = track.music;
+  const parts: string[] = [];
+  if (want.scene) {
+    const at = m.scenes.indexOf(want.scene);
+    parts.push(at === 0 ? `장면 ${want.scene} 맞음(주 장면)` : at > 0 ? `장면 ${want.scene} 맞음` : `장면 ${want.scene} 가까움(${m.scenes.join("·")})`);
+  }
+  const expanded = expandStoreMusicQuery(want.query ?? "");
+  const mapped = expanded.lines[0];
+  const fallback = Boolean(mapped) && m.genre !== mapped;
+  if (expanded.games.length) parts.push(fallback ? `「${expanded.games[0]}」 결(${mapped}) 아님 — 대신 곡(${m.genre})` : `「${expanded.games[0]}」 결 줄(${m.genre}) 맞음`);
+  const words = tokens(expanded.query).filter((word) => `${m.genreKo} ${m.genreLabel}`.toLowerCase().includes(word) || m.feelTags.some((feel) => feel.toLowerCase().includes(word)));
+  if (words.length) parts.push(`낱말 ${[...new Set(words)].slice(0, 3).join("·")} 맞음`);
+  if (want.scene && want.scene !== "victory" && !m.loopable) parts.push("루프 아님");
+  return { why: parts.join(", ") || "장르·분위기", fallback };
+}
+
 /** 조수에게 보이는 곡 한 줄(바이트·sha 없음). */
 export function briefStoreMusic(track: StoreMusicTrack) {
   const m = track.music;

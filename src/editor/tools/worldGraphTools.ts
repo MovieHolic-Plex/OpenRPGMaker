@@ -2,6 +2,7 @@ import { defaultOutdoorTilesetId } from "@/project/defaults/outdoorTileset";
 // 선언형 월드 그래프 툴: plan_world / link_maps / build_world / lint_world.
 
 import { kitDoorOpenCommands } from "@/project/kitDoors";
+import { recordDoorForGate } from "./mapDoorTools";
 import { resolveTransferEndpoint, upsertEventIntoMap } from "./eventTools";
 import { assertDoorExitWidths, transferGatesStayApproachable } from './transferReachability';
 import { COORD_SCHEMA } from './schemaShapes';
@@ -344,6 +345,9 @@ export function linkMapsInDraft(
     }, kitDoorOpenCommands(draft, toMap, gateB)));
     if (outcomeB === "added") changedEvents += 1;
   }
+  // 문 종류(자동문·미닫이·셔터·두 짝 문)를 그림에서 추론해 적고 넓은 문이면 발판을 넓힌다(mapDoorTools) — 외짝 여닫이·키트 문은 그대로.
+  recordDoorForGate(draft, fromMap, gateA);
+  if (eventIdB) recordDoorForGate(draft, toMap, gateB);
   for (const map of fromMap.id === toMap.id ? [fromMap] : [fromMap, toMap]) {
     const check = transferGatesStayApproachable(draft, map);
     if (!check.ok) throw new ToolError(`출입구 설치로 문이 봉쇄됩니다: ${check.sealed.join(', ')}`, { code: 'transfer-sealed', mapId: map.id });

@@ -3,7 +3,9 @@
 //
 // 데이터(종류별 소리·흔들림·파편·흔적)는 project/containerFx.ts 가 갖고, 여기서는 그대로 그린다.
 // 그림은 전부 절차 그림(사각형·그래픽)과 칸에 이미 그려진 타일 이미지 흔들기다 — 새 그림 자산이 필요 없다.
-//  - 문: 이동(transfer) 직전 문 칸이 타일셋의 닫힘/열림 키트 짝(project/kitDoors.ts, 예 1×2 던전 문)이면 그 문 자신의 그림으로
+//  - 문: 이동(transfer) 직전 문 칸에 맵 문(map.doors, 없으면 그림에서 추론한 자동문·미닫이·셔터·두 짝 문 — project/mapDoorKinds.ts)이
+//    있으면 그 종류대로 문 그림 전체를 연다(player/playSceneDoors.ts). 다가가서 이미 열린 자동문이면 연출을 겹치지 않는다.
+//    그다음, 문 칸이 타일셋의 닫힘/열림 키트 짝(project/kitDoors.ts, 예 1×2 던전 문)이면 그 문 자신의 그림으로
 //    닫힘 → 열림을 문 전체(키트 크기)에 걸쳐 바꾸고, 열린 그림을 세션에 남긴다. 이미 열린 키트 문이면 연출하지 않는다.
 //    키트 짝이 없으면 문짝이 경첩 쪽으로 접히며 어두운 문간이 드러나고 문 소리가 난다.
 //    문 이벤트가 문 캐릭터 시트(RPG Maker 관례: 방향 줄 = 닫힘→열림)를 쓰면 그 프레임을 넘긴다.
@@ -13,6 +15,7 @@ import type Phaser from "phaser";
 import { playSoundEffect } from "@/player/audio";
 import { characterDepth, characterSpriteY } from "@/player/characterDepth";
 import { applyDoorCue, DOOR_OPEN_SE } from "@/player/playSceneDoorway";
+import { mapDoorForCells, openMapDoorNow } from "@/player/playSceneDoors";
 import { applyMapOverrides, rootYSortTileImagesAt } from "@/player/playSceneMapRuntime";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import {
@@ -193,6 +196,14 @@ export async function playDoorOpenBeforeTransfer(
 ): Promise<boolean> {
   const project = store.getCurrent();
   const map = scene.map;
+  // 맵 문(map.doors, 없으면 그림에서 추론한 자동문·미닫이·셔터·두 짝 문 — playSceneDoors.sceneMapDoors): 그 종류대로 문 그림 전체를 연다.
+  // 다가가서 이미 열린 자동문이면 다시 열지 않는다.
+  const mapDoor = mapDoorForCells(scene, transferCells(scene, project, eventId, options.mode));
+  if (mapDoor) {
+    const opened = openMapDoorNow(scene, mapDoor, { silent: options.silent });
+    if (opened) await sleep(scene, DOOR_LEAD_MS);
+    return opened;
+  }
   // 키트 문(닫힘/열림 짝): 그 문 자신의 그림으로 연다. 이벤트가 먼저 연 문(열림)이면 연출을 겹치지 않는다.
   const kit = kitDoorForTransfer(scene, project, eventId, options.mode);
   if (kit) {
@@ -240,6 +251,18 @@ export async function playDoorOpenBeforeTransfer(
 function runtimeKitDoor(scene: PlaySceneContext, project: Project, at: Cell): KitDoorMatch | null {
   const map = scene.map;
   return findKitDoor(project, map, at, (layer, index) => getMapTile(scene.session, map.id, layer, map, index) ?? -1);
+}
+
+/** 이동 이벤트가 여는 문을 찾을 칸: 이벤트 칸. door:true 면 주인공이 바라보는 칸·선 칸까지. */
+function transferCells(scene: PlaySceneContext, project: Project, eventId: string | undefined, mode: "auto" | "on" | undefined): Cell[] {
+  const view = eventId ? runtimeEventViewById(project, scene.map, scene.session, scene.eventPositions, eventId) : undefined;
+  const cells: Cell[] = view ? [{ x: view.x, y: view.y }] : [];
+  if (mode === "on") {
+    const facing = scene.session.playerFacing ?? "down";
+    const d = facing === "up" ? [0, -1] : facing === "down" ? [0, 1] : facing === "left" ? [-1, 0] : [1, 0];
+    cells.push({ x: scene.tileX + d[0]!, y: scene.tileY + d[1]! }, { x: scene.tileX, y: scene.tileY });
+  }
+  return cells;
 }
 
 /** 이동 이벤트의 키트 문: 이벤트 칸(또는 바로 윗칸). door:true 면 주인공이 바라보는 칸·선 칸까지. */

@@ -22,6 +22,7 @@ import { unsafeSpawnLines } from "@/project/chaserSpawnSafety";
 import { ensureChaserHidingSpots, HIDING_SPARKLE } from "@/project/chaserHiding";
 import { isDoorArtCell } from "@/project/lint/scenePolishLint";
 import { kitDoorOpenCommands } from "@/project/kitDoors";
+import { doorLine, recordDoorForGate } from "./mapDoorTools";
 import { normalizeLightingState } from "@/project/lightingRules";
 import { isWaterChipsetTile } from "@/project/defaults/chipsetMapping";
 import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
@@ -2938,6 +2939,12 @@ const createTransferPair: ToolDefinition = {
     }
     upsertEventIntoMap(mapA, gate(idA, gateA.x, gateA.y, transferTo(b.mapId, landingB.x, landingB.y, awayFrom(gateB, landingB)), bumpA, kitDoorOpenCommands(draft, mapA, gateA)));
     upsertEventIntoMap(mapB, gate(idB, gateB.x, gateB.y, transferTo(a.mapId, landingA.x, landingA.y, awayFrom(gateA, landingA)), bumpB, kitDoorOpenCommands(draft, mapB, gateB)));
+    // 문 종류(자동문·미닫이·셔터·두 짝 문)를 그림에서 추론해 적고, 넓은 문이면 발판을 문 폭만큼 넓힌다(mapDoorTools) — 외짝 여닫이·키트 문은 그대로.
+    const doorNotes: string[] = [];
+    for (const [map, at] of (a.mapId === b.mapId ? [[mapA, gateA], [mapA, gateB]] : [[mapA, gateA], [mapB, gateB]]) as [GameMap, Point][]) {
+      const recorded = recordDoorForGate(draft, map, at);
+      if (recorded.door) doorNotes.push(`${map.name} 문 종류 ${doorLine(recorded.door)}${recorded.widened.length ? ` · 발판 ${recorded.widened.length}칸 더` : ""}`);
+    }
     // 배치가 끝난 뒤 두 맵의 모든 transfer 문이 방 바닥으로 열리는지 최종 점검(같은 맵 쌍·후보가
     // 없어 원자리를 쓴 경우 포함). 실패하면 toolRunner가 초안을 버려 두 맵 모두 보존한다.
     const sealedAfter: string[] = [];
@@ -2963,7 +2970,7 @@ const createTransferPair: ToolDefinition = {
         : []),
     ];
     return {
-      summary: `출입구 쌍 생성: ${mapA.name}(${gateA.x},${gateA.y}) ↔ ${mapB.name}(${gateB.x},${gateB.y})`,
+      summary: `출입구 쌍 생성: ${mapA.name}(${gateA.x},${gateA.y}) ↔ ${mapB.name}(${gateB.x},${gateB.y})${doorNotes.length ? ` · ${doorNotes.join(" · ")}(틀리면 set_map_door)` : ""}`,
       data: { eventIdA: idA, eventIdB: idB, gateA, gateB, landingA, landingB, adjustedA, adjustedB, ...(bumpA || bumpB ? { bumpDoor: { a: bumpA, b: bumpB } } : {}) },
       ...(warnings.length > 0 ? { warnings } : {}),
     };
