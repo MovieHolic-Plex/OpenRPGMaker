@@ -30,7 +30,10 @@ type TransitScene = PlaySceneContext & {
 function ensureFrames(phaser: Phaser.Scene, def: TransitVehicleDef): boolean {
   const key = `transit-vehicle:${def.id}`;
   if (!phaser.textures.exists(key)) {
-    void ensureSceneImageTexture(phaser, key, def.image);
+    // 문서 기준 상대 경로로 읽는다. 차량 정의는 `/assets/...` 로 적혀 있는데, 출하 판본은
+    // `<게임>/<판>/index.html` 아래에 있어 루트 절대 경로는 게임 폴더 밖을 가리켜 404 가 난다
+    // (사용자 2026-10-31 「첫사랑에서 차가 여전히 안 뜬다」 — #3978 은 그림을 실었지만 주소가 틀렸다).
+    void ensureSceneImageTexture(phaser, key, def.image.replace(/^\/+/u, ""));
     return false;
   }
   const tex = phaser.textures.get(key);
