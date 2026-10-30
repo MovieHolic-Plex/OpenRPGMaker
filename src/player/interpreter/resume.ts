@@ -3,6 +3,7 @@ import type { InterpreterState, PendingStep, ResumeAdvance, ResumeValue } from "
 import { pushFrame, topFrame } from "@/player/interpreter/stack";
 import { authoredChoiceIndex } from "@/project/choiceView";
 import { presentItemBranch } from "@/player/interpreter/presentItem";
+import { storeSchedulePlan } from "@/player/interpreter/schedule";
 import { clampName } from "@/player/nameEntry/hangulTable";
 import { changeActorName } from "@/project/sessionActorCommands";
 
@@ -42,10 +43,14 @@ export function advanceResume(
   } else if (pending === "presentItem") {
     const command = frame.commands[frame.pc];
     if (command?.kind === "presentItem") {
-      if (!pushFrame(state, presentItemBranch(state.session, command, value))) frame.pc += 1;
+      if (!pushFrame(state, presentItemBranch(state.session, command, value, state.project))) frame.pc += 1;
     } else {
       frame.pc += 1;
     }
+  } else if (pending === "planSchedule") {
+    const command = frame.commands[frame.pc];
+    if (command?.kind === "planSchedule") storeSchedulePlan(state.project, state.session, command, value);
+    frame.pc += 1;
   } else if (pending === "shop") {
     const command = frame.commands[frame.pc];
     if (command?.kind === "shop") {

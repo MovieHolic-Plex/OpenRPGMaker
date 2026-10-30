@@ -698,7 +698,12 @@ export function stepTransitSim(sim: TransitSim, dtSec: number, isBlocked: (x: nu
     const ahead = transitHeadAt(r, next + 1);
     const aheadCells = transitRectCells(transitFootprintRect(ahead.head, ahead.dir, 1));
     const enter = transitRectCells(nextPose.rect).filter((c) => !cur.has(cellKey(c.x, c.y)));
-    const byPlayer = enter.some((c) => isBlocked(c.x, c.y));
+    // 사람 앞: 다음 몸 칸 전체와 머리 앞 두 칸에 사람(주인공·걷는 인물)이 있으면 선다. 새로 들어갈 칸만 보면 몸 밑으로
+    // 걸어 들어온 사람 위를 그대로 밀고 지나갔고, 머리 바로 앞에서야 서면 범퍼가 사람에게 닿은 뒤였다(첫사랑 r4 횡단보도).
+    // 사람이 비키면(isBlocked 가 거짓이 되면) 다음 걸음에 다시 간다.
+    const ahead2 = transitHeadAt(r, next + 2);
+    const yieldCells = [...transitRectCells(nextPose.rect), ...aheadCells, ...transitRectCells(transitFootprintRect(ahead2.head, ahead2.dir, 1))];
+    const byPlayer = yieldCells.some((c) => isBlocked(c.x, c.y));
     const blockers = new Set<TransitVehicleState>();
     for (const c of [...enter, ...aheadCells]) { const o = occ.get(cellKey(c.x, c.y)); if (o) blockers.add(o); }
     // 교차로 교착(가로·세로 탈것이 서로의 다음 칸을 막음): 막는 탈것이 전부 **엇갈린(직각) 방향**이고 STUCK_RELEASE_SEC 넘게

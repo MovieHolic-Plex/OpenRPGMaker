@@ -138,6 +138,25 @@ describe("completed house geometry and exact cell ownership", () => {
     expect(serialize(ctx.project)).toBe(before);
   });
 
+  it("allows shrinking empty rows away from the house and names the smallest safe size when it would cut", () => {
+    const ctx = { project: completedHouseProject() };
+    const ok = mutateProject(ctx, (draft) => {
+      const map = houseMap(draft);
+      const height = 10;
+      map.lowerTiles.length = map.width * height; map.upperTiles.length = map.width * height; map.height = height;
+    });
+    expect(ok.ok, JSON.stringify(ok.issues)).toBe(true);
+    expect(houseMap(ctx.project).height).toBe(10);
+    const cut = mutateProject(ctx, (draft) => {
+      const map = houseMap(draft);
+      const height = 5;
+      map.lowerTiles.length = map.width * height; map.upperTiles.length = map.width * height; map.height = height;
+    });
+    expect(cut.ok).toBe(false);
+    expect(cut.issues?.[0]?.code).toBe("protected-house-write");
+    expect(cut.issues?.[0]?.message).toMatch(/높이 \d+ 이상/);
+  });
+
   // 집 셀 보호는 살아 있는 맵의 칸을 지키는 검사다 — 맵 자체의 소멸은 시작맵 가드·무결성 왕복·
   // (에디터) 맵 파괴 승인이 맡는다(2026-09-24 감성 스토리 r3: 집 보호가 remove_map 을 물어
   // 고아·중복 맵 12개가 정리되지 못함). 하위 계약: 시작맵 통째 삭제는 여전히 거부된다.

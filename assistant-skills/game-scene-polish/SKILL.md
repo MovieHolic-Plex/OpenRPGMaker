@@ -16,7 +16,7 @@ description: Use when authoring or reviewing story scenes, events, cutscenes, NP
    왜: 스위치·페이지 조건만 바꾸면 방 한가운데서 «펑» 사라진다(세 데모 모두). 예외: 쓰러진 필드 적(전투 직후 대사 없이), 동료 합류, 검은 화면. 확인: `scene-npc-vanish` 0.
 2. **경로는 그 맵의 이벤트를 다 놓은 뒤에 짠다.** 막힘 = 통행 불가 + 다른 이벤트 칸 + 주인공 칸. 두 인물을 같은 목표 칸에 동시에 세우지 않는다 — 같은 문으로 차례로 떠나는 것은 괜찮다(앞 인물을 지우거나 «떠남» 스위치를 켠 **뒤** 다음 인물이 걷기 시작). 확인: 경로를 한 칸씩 되짚어 통행·겹침이 없다, `scene-actors-stacked` 0.
 3. **도구 호출 사이에 명령 객체를 붙잡지 않는다.** 도구는 프로젝트를 복제해 maps 를 갈아끼운다 — 앞서 만든 명령을 고쳐도 반영되지 않는다. 고칠 명령은 최종 프로젝트를 다시 읽어 찾는다. 확인: 빈 moves 의 moveEvent 가 없다.
-4. **새 스위치는 처음 쓰는 단계에서 project.switches 에 등록한다.** 미등록 id 는 저장·불러오기 참조 오류다. 확인: `run_lint` reference-validation 0.
+4. **새 스위치는 처음 쓰는 단계에서 project.switches 에 등록한다.** 미등록 id 는 저장·불러오기 참조 오류다. 추리 사건을 여러 장으로 이을 때는 `author_mystery_case` 의 `verdict:{mode:"chapter"}` 가 결과 스위치(`sw_mystery_<caseId>_solved`/`_wrong`)를 등록해 주니 다음 장 이벤트는 그 id 를 조건으로 건다(손으로 엔딩·스위치를 따로 만들지 않는다). 확인: `run_lint` reference-validation 0.
 5. **자리는 이름 붙은 앵커로.** 자리에서 +1·+2 같은 고정 오프셋은 방을 다시 지으면 의자·탁자 위에 떨어진다. 맵 작가가 준 앵커(좌석·난간 앞·NPC 출구)를 쓴다. 확인: 앵커를 맵 그림 위에 찍어 본다.
 
 ## 2. 문·이동·계단
@@ -113,6 +113,7 @@ description: Use when authoring or reviewing story scenes, events, cutscenes, NP
 
 1. **선택지는 열린 직후 확인 키를 잠깐 무시한다(엔진, 약 300ms — `CHOICE_CONFIRM_GRACE_MS`).** 대사를 Enter 로 넘기던 손이 선택지 첫 줄을 못 보고 고른다. 조수는 그래도 중요한 선택 바로 앞 대사를 autoAdvance 로 넘기지 않는다.
 2. **자막을 즉시 닫히는 창으로 띄우지 않는다**(4-2).
+3. **주간 일정표(학원물·육성 시뮬)는 손으로 선택지를 늘어놓지 않는다.** `upsert_schedule` 로 슬롯·활동 카드(각 카드는 공통 이벤트 하나)를 만들고, 이벤트에서 `planSchedule {scheduleId}` 로 짜게 한 뒤 `runSchedule {scheduleId, slotVariableId}` 로 슬롯 순서대로 실행한다(다른 맵으로 가도 이어진다). 활동마다 `commonEventId` 가 실제 공통 이벤트여야 하고, 횟수 한도·조건은 카드 필드(`maxUses`·`condition*`)에 둔다. 확인: `run_lint` reference-validation 0, `get_event` 로 두 명령이 같은 scheduleId.
 
 ## 10. 엔진 화면 (코딩 에이전트만)
 
@@ -163,6 +164,14 @@ description: Use when authoring or reviewing story scenes, events, cutscenes, NP
 51. **앉아 있어야 할 주인공은 대역으로 앉힌다.** 주인공은 위 층(above)으로 그릴 수 없어 의자에 세우면 등받이가 머리를 가로지른다. 장면 동안 주인공을 감추고(`Sprite Look` 투명) 의자 뒤 바닥 칸에 둔 채, 같은 걷기 칩의 대역 이벤트를 의자 칸에 위 층으로 앉힌다(첫사랑 수요일 야근: 「서하만 통로에 서 있다」 VQA r24~r33). 일어설 때 대역이 통과를 켜고 의자 뒤 칸(주인공이 있는 칸)으로 한 걸음 → 대역 숨김 스위치 → 바로 다음 명령에서 주인공 `Sprite Look` 되돌리기. 대사는 대역을 듣는 사람으로 못박고(sayTo/addressee), 대역 페이지에는 단계 조건을 걸지 않는다(단계가 넘어갈 때 «방 안에서 꺼진다»로 잡힌다). 확인: `scene-npc-vanish`(스위치 뒤 두 명령 안의 주인공 되돌리기는 바통 넘기기로 본다)·`scene-bust-unstaged` 0.
 52. **소리는 카탈로그 설명으로 고르고, 이름이 오해를 부르면 바꾼다.** 리소스 이름이 «fire1»(불 마법)·«teleport2»(순간이동)이면 소리 계획을 읽는 사람·검수자는 마법 소리로 읽는다(첫사랑 r32: 막차가 «불 마법 후시», 유리문이 «순간이동»). 열차는 저역 모터 구동음 + 강한 기류 두 겹, 문은 이름이 중립인 짧은 기계 클릭. 소리 계획에는 BGM 이 바뀌는 자리마다 바로 앞 대사를 붙여 «어느 대사 뒤에 곡이 돌아오는지»가 보이게 한다.
 53. **여럿을 문으로 내보낼 땐 문에 가까운 사람부터.** `exitVia` 는 출발하는 순간 문까지 길을 찾고, 그때 서 있는 사람(주인공 포함)을 벽으로 본다. 길이 없으면 제자리에서 깜박 사라졌다가 다시 보이고 그대로 선다(첫사랑 엔딩 C: 팀장 오른쪽 민호와 회의석 서하가 두 길을 다 막아 「가요, 다 같이」 뒤 팀장이 남았다, r34 중대). 문 쪽 사람을 먼저 기다리지 않는 경로로 내보내고 한 박자 뒤에 다음 사람을, 좁은 방에서 주인공이 유일한 길을 막으면 주인공이 한 걸음 비켜 길을 내고 지나간 뒤 돌아온다. 사람을 장면 밖으로 데려갈 때 카메라를 다른 곳(빈 승강기 앞)에 몇 초씩 붙잡아 두면 감정 장면이 늘어진다 — 방 문으로 내보내고 카메라는 남은 사람에게 둔다. 확인: `scene-exit-blocked` 0.
+
+## 12. 추격 호러 (순찰·숨기·붙잡힘)
+
+1. **겁은 소리와 어둠에서 나온다.** 추격 곡을 깔면 발소리가 묻힌다. 추격자에 `footsteps` 를 달고(걸음 거리로 커지고 좌우로 갈린다), 맵 음악은 끄거나 낮은 환경음만 둔다(「이상 없음」 설계). 확인: 추격자 페이지 `movement.footsteps` 가 있다.
+2. **「!」·땀 말풍선은 호러에서 웃음이 된다.** `make_chase_scene({emotes:"none"})` 또는 `set_field_detection({emotes:"none"})`. 장르가 horror-chase 면 기본이다. 확인: `sightAlert.emote` 가 null, `quietBreath` 가 true.
+3. **숨기는 진짜 은신처로.** 대사·선택지와 스위치로 흉내 내지 않는다. `hidingSpots` 에 청소 도구함·커튼·침대 칸을 주고 `hidingSound {heartbeat:true}` 로 숨은 동안 심장 소리를 깐다. 숨은 동안만 도는 연출은 페이지 조건 `{kind:"hiding",value:true}`.
+4. **붙잡히면 전투가 아니라 짧은 게임 오버.** `killOnTouch` + `set_game_over({presentation:"horror"})`. 진입 체크포인트가 붙어 다시 하기에서 아이템·단서가 남는다. 우스운 패배 대사를 쓰지 않는다.
+5. **추격자의 손전등이 보이게.** `set_field_detection({visionLight:{color}})` 는 그 맵 조명을 정한 **뒤에** 부른다. 조명을 나중에 다시 깔면 빛이 지워진다.
 
 ## 경고 코드 (쓰기 도구 issues · run_lint)
 

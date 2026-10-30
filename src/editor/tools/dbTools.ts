@@ -614,7 +614,7 @@ const itemRecordSchema = objectSchema({
   captureProfile: captureProfileSchema,
   careProfile: careProfileSchema,
   heldEffect: heldEffectSchema,
-  pocket: { type: "string", enum: ["items", "balls", "machines", "held", "key"], description: "몬스터 게임 가방 포켓을 직접 정한다(도구·볼·기술머신·지닌 도구·중요한 물건). 생략하면 captureProfile→볼, learnedSkillId→기술머신, heldEffect→지닌 도구, 쓸 곳 없는 아이템→중요한 물건, 나머지→도구로 자동 분류된다. 진화의 돌은 아이템을 만들고 종의 evolutions[].requires.itemId 로 가리키기만 하면 필드 메뉴에서 바로 쓴다(별도 필드 없음)" },
+  pocket: { type: "string", enum: ["items", "balls", "machines", "held", "key"], description: "가방 칸. key = 「중요한 물건」(모든 장르): 추리 증거·편지·열쇠 같은 이야기 물건은 key 로 둔다 — 일반 장르 가방에 「중요한 물건」 분류가 생기고, 정답이 모두 중요한 물건이고 후보(itemIds)를 생략한 presentItem 은 소지한 중요한 물건만 띄운다(occasion never·가격 0 이면 생략해도 중요한 물건). 몬스터 게임 가방 포켓을 직접 정한다(도구·볼·기술머신·지닌 도구·중요한 물건). 생략하면 captureProfile→볼, learnedSkillId→기술머신, heldEffect→지닌 도구, 쓸 곳 없는 아이템→중요한 물건, 나머지→도구로 자동 분류된다. 진화의 돌은 아이템을 만들고 종의 evolutions[].requires.itemId 로 가리키기만 하면 필드 메뉴에서 바로 쓴다(별도 필드 없음)" },
   repelSteps: integerSchema("벌레퇴치류: 쓰면 이 걸음 수(1~9999) 동안 야생 조우가 나오지 않는다. 필드 메뉴(가방)에서 쓰고 occasion 은 field, scope 는 none. 쓸 때 문장이 뜨고 걸음이 다하면 「효과가 사라졌다」 문장이 뜬다. 몬스터 수집(포켓몬류) 게임용"),
   repelBelowLead: booleanSchema("repelSteps 와 함께: true 면 파티 선두 몬스터보다 레벨이 낮은 야생만 막는다(포켓몬식). 생략 = 전부 막는다"),
   escapeTo: { type: "string", enum: ["entrance"], description: "탈출 로프류: entrance = 던전·동굴(맵 mapRole dungeon)에서 쓰면 마지막으로 들어온 입구 밖(없으면 시작 지점)으로 나간다. occasion 은 field, scope 는 none. 던전 밖에서는 「효과가 없다」, 전투 중에는 못 쓴다" },
@@ -698,6 +698,7 @@ const troopRecordSchema = objectSchema({
     roundLimit: integerSchema("라운드 제한(1 이상). N 라운드가 지나면 남은 HP 비율 합이 높은 쪽 승리, 같으면 도망(무승부) 분기"),
     noItems: booleanSchema("true = 아이템(가방) 명령 숨김"),
   }, "결투 규칙(모두 선택, 없으면 기존 전투 그대로). 연습 대련·결투·시험처럼 죽지 않는 전투에 쓴다. 보상이 0 이면 결과 화면이 「결투 종료」 한 줄로 나온다. 지우려면 clearFields:[\"duel\"]"),
+  victoryBanner: stringSchema("이 적 그룹을 이겼을 때 화면 가운데 뜨는 큰 승리 띠 글자(최대 40자). 예: 보스전 「봉인 해제!」. 생략 = 그대로 · 빈 문자열 = 지움(프로젝트 용어 set_project_settings terms.battleVictory, 그것도 없으면 「승리!」). 에메랄드 화면에는 띠가 없다"),
   // battleEventPages 는 여기서 받지 않는다 — 자유 객체(additionalProperties:true)로 통과시키면
   // 조건 kind 오타·빈 commands·무한 반복이 무검증으로 저장된다. upsert_troop_battle_page /
   // author_boss_phases 가 페이지 단위로 검증해서 쓴다(아래 run 의 리다이렉트 참고).
@@ -1806,7 +1807,7 @@ const ENEMY_CLEARABLE_FIELDS = [
 ] as const;
 
 /** upsert_troop.clearFields 로 지울 수 있는 선택 필드. */
-const TROOP_CLEARABLE_FIELDS = ["duel"] as const;
+const TROOP_CLEARABLE_FIELDS = ["duel", "victoryBanner"] as const;
 
 /** 병합된 트룹에서 clearFields 를 지운다. 실제로 지운 필드 이름을 돌려준다. */
 function clearTroopFields(merged: Record<string, unknown>, patch: unknown, clearFields: unknown): string[] {
@@ -1986,7 +1987,7 @@ const upsertTroop: ToolDefinition = {
     clearFields: {
       type: "array",
       items: { type: "string", enum: [...TROOP_CLEARABLE_FIELDS] },
-      description: "기존 트룹에서 지울 필드(병합은 필드를 지우지 못한다). 결투 규칙을 통째로 없애려면 [\"duel\"]. 같은 필드를 troop 에도 주면 오류",
+      description: "기존 트룹에서 지울 필드(병합은 필드를 지우지 못한다). 결투 규칙을 통째로 없애려면 [\"duel\"], 승리 띠 글자는 [\"victoryBanner\"](빈 문자열과 같다). 같은 필드를 troop 에도 주면 오류",
     },
   }),
   run(draft, args): ToolExecResult {
