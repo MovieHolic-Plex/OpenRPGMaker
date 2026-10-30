@@ -58,11 +58,11 @@ export function setupIsekaiDatabase(project: Project, backdrops: typeof BACKDROP
   skill("skill_weaken", "skill_ig_ping", { name: "핑 찍기", mpCost: mp(2), description: "「여기 약점!」 적 하나의 방어가 내려간다." });
   skill("skill_cleric_mass_heal", "skill_ig_share_snack", { name: "매점 빵 나눠 먹기", mpCost: mp(8), description: "가방 속 소보로빵을 반씩 쪼갠다. 파티 모두 회복." });
   // ── 에델(기사) — 의전
-  skill("skill_guard_iron_wall", "skill_ig_protocol_wall", { name: "의전 방패", mpCost: mp(4), description: "「용사님 앞을 막는 것이 기사의 예법입니다!」 파티 모두 방어가 오른다." });
+  skill("skill_guard_iron_wall", "skill_ig_protocol_wall", { name: "의전 방패", mpCost: mp(4), description: "「용사님 앞은 기사가 막습니다!」 파티 모두 방어가 오른다." });
   skill("skill_hero_cross_slash", "skill_ig_royal_slash", { name: "왕실 공인 베기", mpCost: mp(5), description: "대본 7장 3절에 적힌 정식 검술." });
   // ── 피오(엘프 마법사) — 기출 변형
   skill("skill_fire", "skill_ig_exam_fireball", { name: "기출 변형 파이어볼", mpCost: mp(5), power: 95, description: "7년 동안 외운 파이어볼을 민재식으로 비틀었다. 시험엔 안 나온 각도로 날아간다." });
-  skill("skill_mage_chain_lightning", "skill_ig_summary_bolt", { name: "요점 정리 번개", mpCost: mp(9), description: "핵심만 세 줄로 줄인 번개. 적 모두를 친다." });
+  skill("skill_mage_chain_lightning", "skill_ig_summary_bolt", { name: "요점 정리 번개", mpCost: mp(9), description: "요점만 세 줄로 줄인 번개. 적 모두를 친다." });
   // ── 꾸르(고블린 족장)
   skill("skill_scout_knife_storm", "skill_ig_group_call", { name: "단톡 소환", mpCost: mp(6), description: "「@전체 지금 와라」 고블린 친구들이 우르르 몰려와 적 모두를 친다." });
   skill("skill_hero_war_cry", "skill_ig_chief_roar", { name: "족장의 함성", mpCost: mp(4), description: "「꾸르르!」 파티 모두 공격이 오른다." });
@@ -122,9 +122,10 @@ export function setupIsekaiDatabase(project: Project, backdrops: typeof BACKDROP
   exec("upsert_item", { item: { ...itemOf("item_rice_ball"), id: ITEM.tteok, name: "이세계 떡볶이", price: 0,
     hpRecovery: { flat: 300, percentMax: 0 }, description: "쌀 반죽을 길게 밀고 불꽃고추로 볶았다. 맵다. 그리고 그립다." } });
   exec("upsert_item", { item: { ...itemOf("item_old_key"), id: ITEM.crystal, name: "통신 수정구", price: 0, consumable: false,
-    description: "피오가 빌려준 수정구. 여럿이 한꺼번에 말을 주고받을 수 있다. 민재는 이걸 단톡방이라고 부른다." } });
+    description: "피오가 빌려준 수정구. 여럿이 한꺼번에 말을 주고받는다. 민재는 이걸 단톡방이라고 부른다." } });
 
-  // ── 적 — 보스 HP 는 보통 플레이로 50초 안쪽(처음 하는 사람 검수: 교무부장 900 은 85초, 마왕 1100 은 3분 넘게 걸렸다). 공격력은 그대로 둔다.
+  // ── 적 — 보스 HP 는 보통 플레이로 50초 안쪽(처음 하는 사람 검수: 교무부장 900 은 85초, 마왕 1100 은 3분 넘게 걸렸다.
+  //    v6 녹화에서 교무부장(표시 590) 67초, 마왕(표시 620) 65초 — 표시 HP 를 400·430 으로 줄였다). 공격력은 그대로 둔다.
   // ── 적 — 보상은 0 이 아니게(마왕 편의점 검수 8: 「EXP +0 · +0 G」 화면은 고장으로 읽힌다).
   const enemyOf = (id: string) => clone(project.database.enemies.find((x) => x.id === id) ?? project.database.enemies[0]!) as unknown as Record<string, unknown>;
   const act = (skillId: string, priority: number, condition: Record<string, unknown> = { kind: "always" }) =>
@@ -144,10 +145,18 @@ export function setupIsekaiDatabase(project: Project, backdrops: typeof BACKDROP
     [act("skill_attack", 6), act("skill_ig_goblin_poke", 7)], 150, 80, 9);
   enemy("enemy_ig_quiz", "출제 위원 해골", "generated-enemy-skeleton-knight", { maxHp: 600, maxMp: 0, attack: 66, defense: 40, mind: 30, agility: 36 },
     [act("skill_attack", 6), act("skill_ig_pop_quiz", 8)], 160, 90, 10);
-  enemy("enemy_ig_dean", "마왕군 교무부장", "generated-enemy-lich-frost", { maxHp: 520, maxMp: 50, attack: 70, defense: 38, mind: 60, agility: 40 },
+  enemy("enemy_ig_dean", "마왕군 교무부장", "generated-enemy-lich-frost", { maxHp: 400, maxMp: 50, attack: 70, defense: 38, mind: 60, agility: 40 },
     [act("skill_ig_pop_quiz", 7), act("skill_ig_mock_exam", 8, { kind: "turn", start: 2, interval: 3 })], 260, 150, 12, { role: "boss" });
-  enemy("enemy_ig_maou", "재수생 마왕 벨제", "generated-enemy-demon-lord", { maxHp: 620, maxMp: 80, attack: 80, defense: 45, mind: 70, agility: 45 },
+  enemy("enemy_ig_maou", "재수생 마왕 벨제", "generated-enemy-demon-lord", { maxHp: 430, maxMp: 80, attack: 80, defense: 45, mind: 70, agility: 45 },
     [act("skill_attack", 5), act("skill_ig_retake", 8), act("skill_ig_mock_exam", 9, { kind: "turn", start: 2, interval: 3 })], 500, 300, 15, { role: "boss" });
+
+  // upsert_enemy 는 role:boss 에 「보스 위협 하한」(scaleBossToStartParty)을 걸어 HP 를 590·560 으로 되올린다.
+  // 이 데모는 짧은 보스전(50초 안쪽)이 의도라 HP 만 저자 값으로 되돌린다(공격·민첩 하한은 그대로 둔다).
+  for (const [id, hp] of [["enemy_ig_dean", 400], ["enemy_ig_maou", 430]] as const) {
+    const boss = project.database.enemies.find((e) => e.id === id);
+    if (!boss) throw new Error(`[isekai-godding] 보스 ${id} 없음`);
+    boss.stats = { ...boss.stats, maxHp: hp };
+  }
 
   const troop = (id: string, name: string, enemyIds: string[], background: string) =>
     exec("upsert_troop", { troop: { id, name, enemyIds, previewBackgroundResourceId: background } });

@@ -21,7 +21,7 @@ import type { Command, GameMap, Project } from "@/project/types";
 import { FLAGSHIP_BEAT_MANIFESTS } from "./beats";
 import { ACTOR, BACKDROP, ITEM, setupIsekaiDatabase, TROOP } from "./isekaiGoddingDb";
 import {
-  bgm, caption, type Cell, choices, emote, event, execTool, faceHero, fadeIn, fadeOut, flash, gone, ifCond, mustReach,
+  bgm, caption, type Cell, choices, emote, event, execTool, faceHero, fadeIn, fadeOut, flash, gone, ifCond, m2, mustReach,
   mustBlock, mustWalk, nearestFree, note, page, playSe, reachableCells, say, setSw, setVar, shake, stopBgm, swOff, swOn, think, varAtLeast, varIs, wait, walkTo,
 } from "./isekaiGoddingKit";
 import { applyIsekaiGoddingLore } from "./isekaiGoddingLore";
@@ -92,6 +92,8 @@ const SE_CHAOS = "easyrpg-sound-chime2";
  * 소리·번쩍·흔들림·토스트(「깽판 지수 +1 · 무엇」)로 행동의 결과임을 보여 준다(처음 하는 사람 검수 8: 지수가 1 에서 안 움직였다).
  * 토스트는 같은 글을 한 번만 띄우므로 자리마다 label 을 다르게 준다.
  */
+/** 화면을 불빛 색으로 물들인다(Screen Effect tint). 빈 값이면 걷어 낸다. */
+const glow = (rgba: string, ms: number): Command => m2("Screen Effect", { effect: "tint", value: rgba, durationMs: ms });
 const chaos = (label: string): Command[] => [
   setVar(V_CHAOS, "+=", 1), playSe(SE_CHAOS), flash("yellow", 250), shake(350, "3"), emote("player", "exclamation", 900),
   { kind: "m2Command", commandId: "m2-214-ui-command", fields: { surface: "toast", message: `깽판 지수 +1 · ${label}`, durationMs: 2200 } } as Command,
@@ -376,8 +378,11 @@ function buildGuild(project: Project, _b: Built): void {
   const clerkAt = nearestFree(project, map, { x: 6, y: 10 });
   const fioAt = nearestFree(project, map, { x: 9, y: 15 }, [clerkAt]);
   const cookAt = nearestFree(project, map, { x: 5, y: 3 });
-  const crowd = [nearestFree(project, map, { x: 5, y: 12 }, [clerkAt, fioAt]), nearestFree(project, map, { x: 7, y: 12 }, [clerkAt, fioAt]), nearestFree(project, map, { x: 6, y: 13 }, [clerkAt, fioAt])];
-  const line = [{ x: 6, y: 11 }, { x: 6, y: 12 }, { x: 6, y: 13 }].map((want, i) => nearestFree(project, map, { x: want.x + 2, y: want.y + i }, [clerkAt, fioAt, ...crowd]));
+  // 처음 하는 사람 검수 v6: 모험가 셋으로는 「인파」가 안 보였다 — 여섯이 접수대 앞에 몰렸다가 한 줄로 선다.
+  const crowd: Cell[] = [];
+  for (const want of [{ x: 5, y: 12 }, { x: 7, y: 12 }, { x: 6, y: 13 }, { x: 5, y: 11 }, { x: 7, y: 11 }, { x: 4, y: 13 }]) crowd.push(nearestFree(project, map, want, [clerkAt, fioAt, ...crowd]));
+  const line: Cell[] = [];
+  for (let i = 0; i < crowd.length; i++) line.push(nearestFree(project, map, { x: 8, y: 11 + i }, [clerkAt, fioAt, ...crowd, ...line]));
   const CLERK = "ev_ig_g_clerk", FIO = "ev_ig_g_fio", COOK = "ev_ig_g_cook";
   const advIds = crowd.map((_, i) => `ev_ig_g_adv${i}`);
 
@@ -403,7 +408,7 @@ function buildGuild(project: Project, _b: Built): void {
     ...say("minjae", "base", "기출부터 풀자. 과외비는 마왕 잡고 받는다."),
     setVar(V_STAGE, "=", 2),
     ...join(ACTOR.fio, "피오"),
-    giveItem(ITEM.crystal), playSe(SE_OK), ...caption("피오에게 통신 수정구를 빌렸다. 여럿이 한꺼번에 말할 수 있다.\n…단톡방이네."),
+    giveItem(ITEM.crystal), playSe(SE_OK), ...caption("피오에게 통신 수정구를 빌렸다. 여럿이 한꺼번에 말이 오간다.\n…단톡방이네."),
     setSw(SW_LINE),
     objective("동쪽 성문으로 나가 반반 마을로"),
   ];
@@ -423,8 +428,11 @@ function buildGuild(project: Project, _b: Built): void {
       ["줄 서니까 오히려 빠르네…", "다들 군대 다녀왔나?"],
       ["반반 마을 고블린들, 원래 착했어.", "요즘 서로 말이 안 통해서 그래."],
       ["번호표… 집에 가져가도 되나?"],
+      ["나 원래 새치기 전문인데."],
+      ["번호 부르면 가면 되니까 편하네."],
+      ["저 용사 고2래. 고2가 뭐야?"],
     ][i]!;
-    const who = (["adventurer", "adventurer2", "adventurer3"] as const)[i]!;
+    const who = (["adventurer", "adventurer2", "adventurer3", "adventurer4", "adventurer5", "adventurer6"] as const)[i]!;
     map.events.push(event(advIds[i]!, "모험가", at, [
       page(`${advIds[i]}_p`, [], [faceHero(advIds[i]!), ...say(who, "base", ...lines)], { who }),
     ]));
@@ -597,7 +605,7 @@ function buildCastle(project: Project, b: Built): void {
       { text: "13", then: [playSe(SE_OK), ...say("examiner", "surprised", "…정답. 앞의 두 수를 더한다."), ...say("minjae", "base", "중2 때 기출이에요."), ...say("fio", "happy", "기출!!")] },
       { text: "11", then: [playSe(SE_WRONG), ...say("examiner", "angry", "오답. 체벌이다."),
         ...battle(TROOP.quiz, [...say("examiner", "sad", "…채점은 끝났다. 지나가라.")], [...caption("해골은 빨간 펜으로 동그라미를 하나 그려 주고 물러났다.")]), bgm(BGM_CASTLE, 600)] },
-      { text: "답 말고 출제 의도부터 묻는다", then: [...say("examiner", "doubtful", "출제… 의도…?"), ...say("minjae", "base", "앞의 두 수를 더하라는 거죠? 그럼 13."),
+      { text: "답 말고 출제 의도부터 묻는다", then: [...say("examiner", "doubtful", "출제… 의도…?"), ...say("minjae", "base", "앞의 두 수를 더하면 되죠? 그럼 13."),
         ...say("examiner", "crying", "…15년 동안 의도를 물은 놈은 처음이다."), ...chaos("출제 의도 따지기")] },
     ]),
     setSw(SW_QUIZ),
@@ -623,7 +631,7 @@ function buildCastle(project: Project, b: Built): void {
     ...say("dean", "angry", "마왕님은 지금 자율 학습 중이시다.\n방해하는 놈은 벌점이다!"),
     ...battle(TROOP.dean,
       [...say("dean", "sad", "…벌점 100점… 다 썼다…"), ...say("kkur", "happy", "꾸르! 이겼다!")],
-      [...caption("교무부장은 벌점 장부를 다 쓰고 쓰러졌다. 잉크가 떨어진 것이다.")], BGM_BOSS),
+      [...caption("교무부장은 벌점 장부를 다 쓰고 쓰러졌다. 잉크도 바닥났다.")], BGM_BOSS),
     bgm(BGM_CASTLE, 600),
     setSw(SW_DEAN), setVar(V_STAGE, "=", 5),
     objective("계단으로 올라가 꼭대기의 마왕 만나기"),
@@ -799,17 +807,20 @@ function endingStayArrive(): Command[] {
 
 function endingChaos(): Command[] {
   return [
-    playSe(SE_BOOM), shake(900, "3"), flash("yellow", 400),
+    // 처음 하는 사람 검수 v6: 노란 번쩍임 한 번과 자막뿐이라 「날아갔다」가 보이지 않았다 — 두 번 터지고, 크게 흔들리고, 화면이 불빛으로 물든다.
+    playSe(SE_BOOM), shake(500, "3"), flash("white", 200), wait(400),
+    playSe(SE_BOOM), shake(1800, "10"), flash("white", 350), glow("255,120,40,0.5", 250), wait(1100),
     ...caption("그날, 마왕성 꼭대기 층이 통째로 날아갔다."),
+    glow("", 1500),
     stopBgm(), bgm(BGM_END, 800),
     ...say("edel", "crying", "성이… 대본에 이런 장면은…!"),
     ...say("fio", "happy", "그래도 파이어볼 각도는 완벽했어요!"),
     ...say("maou", "embarrassed", "…성 수리비는 누가 내냐."),
     ...say("minjae", "base", "국고요. 활동비 장부 비어 있던데."),
     ifCond(varAtLeast(V_CHAOS, CHAOS_KING), [
-      ...caption("왕국 연대기는 그를 이렇게 적었다.\n「깽판왕 강민재. 대본을 한 줄도 지키지 않은 용사」."),
+      ...caption("왕국 연대기에는 이렇게 적혀 있다.\n「깽판왕 강민재. 대본을 한 줄도 지키지 않은 용사」."),
     ], [
-      ...caption("왕국 연대기는 그를 이렇게 적었다.\n「대본을 조금 고친 용사 강민재」."),
+      ...caption("왕국 연대기에는 이렇게 적혀 있다.\n「대본을 조금 고친 용사 강민재」."),
     ]),
     ...say("kkur", "happy", "다음 깽판 언제냐. 공지 올려라."),
     ...endingCommon(END_CHAOS),
@@ -888,6 +899,8 @@ export function createIsekaiGoddingFlagshipDemo(): FlagshipDemoBuildResult {
   execTool(project, "set_project_settings", { fieldHud: { objective: true, widgets: [
     { id: "chaos", kind: "gauge", source: "variable", variableId: V_CHAOS, max: 10, shape: "number", label: "깽판 지수", anchor: "top-left", x: 8, y: 14, width: 104, height: 30, panel: "paper", color: "#e0503a" },
   ] } });
+  // 처음 하는 사람 검수 v6: 기본 HUD 글꼴로는 「깽판 지수」 이름표가 6px 라 「1 / 10」만 보였다. 둥근모는 이름표를 9px 로 그린다(도구가 font 를 받지 않아 직접 둔다).
+  project.system.fieldHud = { ...project.system.fieldHud!, font: "round" };
   execTool(project, "set_project_settings", { resources: { defaultBgmResourceId: BGM_CAPITAL } });
 
   for (const id of new Set(JSON.stringify(project.maps).match(/sw_ig_[a-z0-9_]+/g) ?? [])) ensureSw(id, id.replace(/^sw_ig_/, "이세계 · "));

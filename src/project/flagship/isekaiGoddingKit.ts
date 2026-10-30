@@ -17,7 +17,7 @@ export type Expr =
 export type Who =
   | "minjae" | "suah" | "teacher" | "king" | "priest" | "edel" | "fio" | "kkur" | "clerk" | "goblin" | "maou"
   | "guard" | "cook" | "merchant" | "villager" | "kid" | "adventurer" | "chief"
-  | "examiner" | "dean" | "slime" | "adventurer2" | "adventurer3";
+  | "examiner" | "dean" | "slime" | "adventurer2" | "adventurer3" | "adventurer4" | "adventurer5" | "adventurer6";
 
 interface CastMember {
   readonly name: string;
@@ -55,6 +55,10 @@ export const CAST: Readonly<Record<Who, CastMember>> = {
   dean: { name: "교무부장", tex: "tex_easyrpg_charset_monster1", resource: "easyrpg-charset-monster1", index: 6, side: "right" },
   adventurer2: { name: "모험가", tex: "tex_easyrpg_charset_actor4", resource: "easyrpg-charset-actor4", index: 0, side: "right" },
   adventurer3: { name: "모험가", tex: "tex_easyrpg_charset_actor4", resource: "easyrpg-charset-actor4", index: 2, side: "right" },
+  // 길드 줄 세우기 장면의 군중(처음 하는 사람 검수 v6: 셋으로는 「인파」가 안 보였다).
+  adventurer4: { name: "모험가", tex: "tex_easyrpg_charset_actor4", resource: "easyrpg-charset-actor4", index: 4, side: "right" },
+  adventurer5: { name: "모험가", tex: "tex_easyrpg_charset_actor2", resource: "easyrpg-charset-actor2", index: 1, side: "right" },
+  adventurer6: { name: "모험가", tex: "tex_easyrpg_charset_actor4", resource: "easyrpg-charset-actor4", index: 6, side: "right" },
   slime: { name: "슬라임", tex: "tex_easyrpg_charset_monster1", resource: "easyrpg-charset-monster1", index: 0, side: "right" },
 };
 
