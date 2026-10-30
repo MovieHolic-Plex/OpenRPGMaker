@@ -85,7 +85,7 @@ def tally(rx):
         v = [x["verdict"] for k, x in R.items() if k.startswith(typ + "|") and k.split("|")[2].startswith(vs) and re.fullmatch(rx, k.split("|")[1].split("/")[0])]
         rows.append(f"<tr><td>{name}</td><td>{v.count(1)}승 {v.count(0)}무 {v.count(-1)}패 / {len(v)}</td></tr>")
     return "<table>" + "".join(rows) + "</table>"
-R1, R2 = r"(sol|terra)[12]", r"(sol|terra)2[12]"
+R1, R2 = r"(sol|terra)[12]", r"(sol|terra)2[123]"
 v2line = sys.argv[2] if len(sys.argv) > 2 else ""
 page = f"""<!doctype html><meta charset=utf-8><title>bbox 마을 — 경사로·계단 다시 그림</title>
 <style>body{{background:#16161c;color:#ddd;font:14px/1.5 sans-serif;margin:20px}}h1{{font-size:20px}}h2{{font-size:17px;margin-top:30px}}.v{{font-size:16px;color:#ffd866}}
