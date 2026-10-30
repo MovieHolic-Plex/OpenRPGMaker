@@ -219,6 +219,7 @@ function referenceSets(project: Project, mapId: MapId, host: GameEvent) {
       Object.values(project.maps).flatMap((projectMap) => projectMap.events.map((entry) => entry.id)),
     ),
     items: new Set(project.database.items.map((entry) => entry.id)),
+    schedules: new Set((project.database.schedules ?? []).map((entry) => entry.id)),
     lifeSkills: new Set((project.database.lifeSkills ?? []).map((entry) => entry.id)),
     maps: new Set(Object.keys(project.maps)),
     npcActivities: new Set(collectNpcActivitySuggestions(project)),
@@ -1084,6 +1085,11 @@ function validateCommand(
     case "enterHeroName": if (!command.stringVariableId) require("reference.actor.missing", "배우", command.actorId, refs.actors, true); return;
     case "changeGold": variableOperand(command.amount, "골드 변수"); return;
     case "changeItem": require("reference.item.missing", "아이템", command.itemId, refs.items); variableOperand(command.amount, "아이템 수량 변수"); return;
+    case "planSchedule":
+    case "runSchedule":
+      require("reference.schedule.missing", "일정표", command.scheduleId, refs.schedules);
+      if (command.kind === "runSchedule") require("reference.variable.missing", "슬롯 번호 변수", command.slotVariableId, refs.variables, true);
+      return;
     case "presentItem":
       command.itemIds?.forEach((id) => require("reference.item.missing", "제시 후보 아이템", id, refs.items));
       command.options.forEach((option) => require("reference.item.missing", "제시 정답 아이템", option.itemId, refs.items));
@@ -1227,8 +1233,13 @@ function validateCommand(
       require("reference.resource.missing", "필드 적 그래픽", command.spawn.graphic?.sprite?.id, refs.resources, true);
       validateMapRect(project, mapId, command.spawn.area, pageId, path, "필드 적 생성 영역", issues);
       return;
-    case "text":
     case "choices":
+      command.options.forEach((option) => {
+        if (option.showWhen) validateForkCondition(option.showWhen, pageId, refs, issues, path, [], mapId);
+        if (option.enableWhen) validateForkCondition(option.enableWhen, pageId, refs, issues, path, [], mapId);
+      });
+      return;
+    case "text":
     case "label":
     case "gotoLabel":
     case "loop":

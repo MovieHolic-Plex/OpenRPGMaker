@@ -68,6 +68,8 @@ import { isEmeraldMonsterStyle } from "@/project/emeraldMonsterStyle";
 import { playEmeraldEvolutions } from "@/player/emeraldEvolutionScene";
 import { fireAutoTriggers } from "@/player/playSceneMapRuntime";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
+import { restUntilTarget } from "@/player/restMenuRuntime";
+import type { RestTarget } from "@/project/restMenu";
 
 export function createPlayerStatusMenuController(options: PlayerStatusMenuControllerOptions): PlayerStatusMenuController {
   let selectedCommand: StatusMenuRailId = "items";
@@ -356,6 +358,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
           options.emitMenuJuice(ok ? "menu-confirm" : "menu-invalid", renderMenu(message, "life-ledger"));
         },
         onToggleWait: toggleWaitMode,
+        onRest: restFromMenu,
         onToTitle: confirmToTitle,
       },
     });
@@ -390,6 +393,16 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     monsterView = "box";
     pcMode = true;
     options.emitMenuJuice("menu-open", renderMenu(undefined, "monsters"));
+  };
+
+  /** 이벤트의 「메뉴 화면 열기」(screen:skills): 스킬 장착 화면을 그 배우(기본 파티장)로 바로 연다. */
+  const openSkillScreen = (actorId?: string): void => {
+    reset();
+    mode = "function";
+    selectedCommand = "skills";
+    const party = options.getActiveScene()?.getSession().partyActorIds ?? [];
+    skillActorId = actorId && party.includes(actorId) ? actorId : party[0];
+    options.emitMenuJuice("menu-open", renderMenu(undefined, "skills"));
   };
 
   const openLifeRecoveryLedger = (): void => {
@@ -1020,6 +1033,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       case "options":
       // 「전투 대기」도 다른 명령처럼 화면을 열기만 한다 — 값은 그 화면의 행에서 바꿉니다.
       case "wait":
+      case "rest":
       case "load":
       case "status":
       case "row":
@@ -1039,6 +1053,18 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       default:
         assertNever(commandId);
     }
+  }
+
+  // 「쉬기」 — 메뉴를 닫고 페이드 속에서 고른 시각까지 시간을 흘린다. 거절 사유는 행의 unavailableReason 이 먼저 막는다.
+  function restFromMenu(target: RestTarget): void {
+    const scene = options.getActiveScene();
+    if (!scene) return;
+    rememberDetailCursorFromTestId(`status-menu-rest-${target}`);
+    options.emitMenuJuice("menu-confirm", currentMenu());
+    options.closeMenu();
+    void restUntilTarget(scene as unknown as PlaySceneContext, target).then((result) => {
+      if (!result.ok) void runCommands(scene as unknown as PlaySceneContext, [{ kind: "text", body: result.message }]);
+    });
   }
 
   function toggleWaitMode(): void {
@@ -1162,6 +1188,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       case "status":
       case "to-title":
       case "wait":
+      case "rest":
         return false;
     }
   }
@@ -1321,6 +1348,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       case "status":
       case "to-title":
       case "wait":
+      case "rest":
         if (selectedCommand !== "life-ledger") return selectedCommand;
         const scene = options.getActiveScene();
         const project = store.getCurrent();
@@ -1345,7 +1373,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     return session.m2Runtime?.access.save !== false;
   }
 
-  return { reset, renderMenu, openSaveMenu, openMonsterBox, openLifeRecoveryLedger, toggleMenu, handleKey };
+  return { reset, renderMenu, openSaveMenu, openMonsterBox, openSkillScreen, openLifeRecoveryLedger, toggleMenu, handleKey };
 }
 
 function isRailNavKey(key: RuntimeMenuKey): boolean {

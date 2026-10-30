@@ -6,7 +6,7 @@ import { expForRewardActor } from "@/battle/rewardPolicy";
 import { normalizeActorRecord, totalExpForLevel } from "@/project/actorModel";
 import { DEFAULT_MONSTER_EXP_CURVE, monsterExpInLevelBand, monsterSpeciesById, stripWildNamePrefix } from "@/project/monsterCollection";
 import { store } from "@/project/store";
-import { resolveTerms } from "@/project/terms";
+import { formatBattleCommandPrompt, resolveTerms } from "@/project/terms";
 import { CONTINUE_KEY_PROMPT } from "@/player/keyBindings";
 import { disambiguatedBattlerName } from "@/player/battleCommandDom";
 import { menuSkinFor } from "@/player/menuSkins/registry";
@@ -43,7 +43,8 @@ export function commandPromptState(snapshot: BattleSnapshot, openingLine?: strin
     step: "command",
     lines: [
       openingLine ?? (snapshot.forcedSwitchActorId && store.getCurrent().system.battleUiStyle === "pokemon" ? "다음은 누구를\n내보낼까?"
-        : actor ? `${withJosa(emeraldNarrationActive() ? emeraldShortName(actor.name) : actor.name, "은/는")}${store.getCurrent().system.battleUiStyle === "pokemon" ? "\n" : " "}무엇을 할까?` : "게이지가 차는 중입니다."),
+        // 질문 줄은 자료집 용어(terms.battleCommandPrompt)를 따른다 — 기본값은 예전 「○○는 무엇을 할까?」 그대로다.
+        : actor ? formatBattleCommandPrompt(resolveTerms(store.getCurrent()).battleCommandPrompt, emeraldNarrationActive() ? emeraldShortName(actor.name) : actor.name, store.getCurrent().system.battleUiStyle === "pokemon") : "게이지가 차는 중입니다."),
     ],
     activeActorRecordId: actor?.recordId,
   };
@@ -1145,7 +1146,7 @@ function battleCurrencyUnit(): string {
 }
 
 function rewardsLine(snapshot: BattleSnapshot): string {
-  if (snapshot.result !== "victory") return "전투가 종료되었습니다.";
+  if (snapshot.result !== "victory") return snapshot.duel?.duelTroop === true ? "결투가 종료되었습니다." : "전투가 종료되었습니다.";
   const terms = resolveTerms(store.getCurrent());
   const itemCount = snapshot.rewards.items.length;
   const itemWord = terms.item.trim() || "아이템";
@@ -1167,7 +1168,7 @@ function rewardRows(snapshot: BattleSnapshot): readonly EmeraldResultRow[] {
   // 패배/도주에는 보상이 없다 — "결과: 전투 종료" 자리표시 행은 정보가 없고
   // 저대비 남색 띠로만 보였다(적대 리뷰 3차). 제목+확인 버튼만 남긴다.
   if (emeraldNarrationActive()) return emeraldResultRows(snapshot, skillName);
-  if (snapshot.result !== "victory") return [];
+  if (snapshot.result !== "victory") return duelEndRows(snapshot);
   // 0 인 경험치·돈 줄은 뺀다 — 이야기 전투(보상 없는 연출 전투)에서 「EXP +0 · +0 G」, 「소지금 0 G → 0 G」만 남아
   // 처음 하는 사람이 보상 계산이 고장 났다고 읽었다(마왕 편의점 처음 하는 사람 검수 2026-10-29).
   const rows: { kind: string; label: string; value: string }[] = [
@@ -1199,7 +1200,16 @@ function rewardRows(snapshot: BattleSnapshot): readonly EmeraldResultRow[] {
       rows.push({ kind: "skill", label: `${levelUp.name} 기술 습득`, value: skillName(skillId) });
     }
   }
+  // 결투 부대: 보상이 하나도 없으면 빈 목록 대신 「결투 종료」 한 줄 카드.
+  if (rows.length === 0) return duelEndRows(snapshot);
   return rows;
+}
+
+/** 결투 규칙을 가진 부대가 보상 없이 끝났을 때의 한 줄 카드. 결투 부대가 아니면 빈 목록(옛 동작). */
+function duelEndRows(snapshot: BattleSnapshot): readonly EmeraldResultRow[] {
+  return snapshot.duel?.duelTroop === true && snapshot.result !== undefined
+    ? [{ kind: "duel", label: "결투 종료", value: "" }]
+    : [];
 }
 
 function skillName(skillId: string): string {

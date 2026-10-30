@@ -104,6 +104,36 @@ export function playSoundEffect(
   return playChannelResource("se", resourceId, project);
 }
 
+/**
+ * 위치음 한 번(발소리 등): 음량 배율 gain(0..1)·좌우 pan(-1..1). 엔진 밸런스 값은 바꾸지 않는다.
+ * 잠금 해제 전이면 큐에 쌓지 않는다 — 지나간 발소리를 나중에 몰아 들려주면 안 된다.
+ */
+export function playPositionalSound(
+  resourceId: string,
+  project: Pick<Project, "assets">,
+  mix: { readonly gain: number; readonly pan: number },
+): boolean {
+  const id = resourceId.trim();
+  if (!id) return false;
+  const audio = getAudioEngine();
+  if (!audio.isUnlocked()) return false;
+  const url = resolveAudioSource(id, project);
+  if (url === null) return false;
+  audio.play("se", id, url, false, { gain: mix.gain, pan: mix.pan, positional: true });
+  return true;
+}
+
+/** 숨어 있는 동안의 고리음(interaction.heldSe)을 맞춘다 — resourceId 가 없으면 끈다. */
+export function syncHeldLoop(resourceId: string | undefined, project: Pick<Project, "assets">): void {
+  const id = resourceId?.trim();
+  // 고리가 없고 켤 것도 없으면 엔진을 만들지 않는다(편집기 미리보기·헤드리스).
+  if (!id && (engine === null || engine.heldLoopResourceId() === null)) return;
+  const audio = getAudioEngine();
+  if (!id) { audio.holdLoop(null, null); return; }
+  if (audio.heldLoopResourceId() === id) return;
+  audio.holdLoop(id, resolveAudioSource(id, project));
+}
+
 function playChannelResource(
   channel: AudioChannel,
   resourceId: string | undefined,

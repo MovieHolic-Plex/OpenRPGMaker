@@ -5,7 +5,7 @@
 // 랜덤 인카운터(set_encounter_table)·구역 스폰(make_hunting_ground)·지키는 한 마리(place_battle_blocker)와 구분한다.
 import { CHASE_BRAINS, isChaseBrain, type ChaseBrain } from '@/project/chaseBrain';
 import { FIELD_APPROACH_STYLES, defaultFieldApproachStyle, isFieldApproachStyle, type FieldApproachStyle } from '@/project/fieldApproachStyle';
-import type { Command, Condition, Dir, EventPage, EventPageGraphic, EventPageMovement, GameEvent, GameMap, Project } from '@/project/types';
+import type { Command, Condition, Dir, EventFootsteps, EventPage, EventPageGraphic, EventPageMovement, GameEvent, GameMap, Project } from '@/project/types';
 import { npcMoveDurationMs, npcPageMoveIntervalMs } from '@/project/characterMotion';
 import { CHASE_ALERT_HOLD_MS, CHASE_STEP_MAX_MS, CHASE_STEP_MIN_MS } from '@/project/chaseTempo';
 import { canMove, isPassable } from '@/project/collision';
@@ -13,6 +13,7 @@ import { genId } from '@/util/id';
 import { buildMapPlacementContext } from '@/ai/mapPlacementContext';
 import { normalizeLightingState } from '@/project/lightingRules';
 import { ToolError, type ToolDefinition, type ToolExecResult, type JsonSchema } from './types';
+import { readFootstepsArg, resolveFootstepsSe } from './horrorSoundAssets';
 import { inMapBounds, requireMap } from './mapHelpers';
 import { resolveGraphic, type GraphicSpec } from './eventCompile';
 import { ensureNamedSwitch } from './flagHelpers';
@@ -287,6 +288,10 @@ export interface FieldDetectionTuning {
   readonly lineOfSight?: boolean;
   /** 추격 성격(@/project/chaseBrain). auto 는 저장하지 않는다(생략 = 다가오는 방식으로). */
   readonly brain?: ChaseBrain;
+  /** none = 알아챔 「!」·숨 고르기 땀 말풍선을 끈다(멈춤은 남는다, 호러). default = 되돌린다. */
+  readonly emotes?: 'none' | 'default';
+  /** 걸을 때 발소리. se 가 빈 문자열이면 도구가 공포 기본 발소리를 만들어 채운다. false = 끈다. */
+  readonly footsteps?: EventFootsteps | false;
 }
 
 export const FIELD_DETECTION_SCHEMA: Record<string, JsonSchema> = {
@@ -301,6 +306,8 @@ export const FIELD_DETECTION_SCHEMA: Record<string, JsonSchema> = {
   rushSteps: { type: 'integer', description: 'rush 로 달리는 칸 수(1..30, 기본 10). 그 뒤 지친다 — 놓쳤다 다시 보면 새로 센다' },
   allRound: { type: 'boolean', description: 'true 면 사방을 본다 — 부채꼴·앞만 보기를 끄고 뒤·옆도 알아챈다(트인 들판의 매복꾼·유령). false 면 앞쪽 부채꼴로 되돌린다' },
   lineOfSight: { type: 'boolean', description: 'false 면 벽·나무·바위가 시선을 가리지 않는다(시야 칸 안이면 무조건 본다 — 트인 들판·유령). 기본 true(가린다)' },
+  emotes: { type: 'string', enum: ['none', 'default'], description: 'none = 알아챈 순간의 「!」 와 숨 고를 때 땀 말풍선을 띄우지 않는다(멈춤·숨 고르기 자체는 남는다). 호러에서 말풍선은 만화처럼 보여 첫 발각이 웃음이 된다. default = 다시 띄운다' },
+  footsteps: { type: 'object', description: '걸을 때 발소리 — 주인공과 걸음 거리로 커지고(벽 너머는 돌아가는 길) 좌우로 갈린다. 소리로 거리를 재는 호러 순찰에. {se?(효과음 id, 생략 = 공포 기본 구두 발소리를 만든다), everySteps?(기본 2), radius?(칸, 기본 10), volume?(0..1)}. false 면 끈다', properties: { se: { type: 'string' }, everySteps: { type: 'integer' }, radius: { type: 'integer' }, volume: { type: 'number' } } },
   brain: { type: 'string', enum: [...CHASE_BRAINS], description: '추격 성격 — auto(기본: 다가오는 방식으로 고름)·smart 발소리(걷기 3칸·달리기 8칸)를 사방으로 듣고 앞질러 막고 여럿이면 감쌈·beast 시야 +3칸·앞쪽 반원으로 멀리서 알아채고 곧장 돌진(짐승)·knight 160° 경계로 넓게 보고 혼자서도 길목을 막고 여럿이면 포위(기사·경비)·ghost 벽을 통과하고 벽 너머도 봄(유령)·classic 예전 방식(시야로만, 느낌표에서 멈춤). 모든 성격은 닿으면(옆·대각) 바로 전투, 레버·스위치 소리를 들으면 와서 뒤진다' },
 };
 
@@ -330,6 +337,11 @@ export function readFieldDetectionArgs(args: Record<string, unknown>): FieldDete
     if (!isChaseBrain(args.brain)) throw new ToolError(`brain 은 ${CHASE_BRAINS.join('|')} 입니다.`, { code: 'invalid-args' });
     out.brain = args.brain;
   }
+  if (args.emotes !== undefined && args.emotes !== null) {
+    if (args.emotes !== 'none' && args.emotes !== 'default') throw new ToolError('emotes 는 none|default 입니다.', { code: 'invalid-args' });
+    out.emotes = args.emotes;
+  }
+  if (args.footsteps !== undefined && args.footsteps !== null) out.footsteps = readFootstepsArg(args.footsteps);
   for (const key of ['allRound', 'lineOfSight'] as const) {
     if (args[key] === undefined || args[key] === null) continue;
     if (typeof args[key] !== 'boolean') throw new ToolError(`${key} 는 true/false 입니다.`, { code: 'invalid-args' });
@@ -394,7 +406,7 @@ export function applyFieldDetection(movement: EventPageMovement, tuning: FieldDe
   }
   if (tuning.alertMs !== undefined) {
     if (tuning.alertMs === 0 && next.sightAlert) next.sightAlert = { ...next.sightAlert, holdMs: 0 };
-    else if (tuning.alertMs > 0) next.sightAlert = { emote: next.sightAlert?.emote ?? 'exclamation', holdMs: tuning.alertMs };
+    else if (tuning.alertMs > 0) next.sightAlert = { emote: next.sightAlert ? next.sightAlert.emote : 'exclamation', holdMs: tuning.alertMs };
   }
   if (tuning.searchMs !== undefined) {
     next.pursuit = { ...(next.pursuit ?? { scope: 'map', doorDelayMs: 0, onLost: 'return' }), searchMs: tuning.searchMs } as NonNullable<EventPageMovement['pursuit']>;
@@ -409,6 +421,15 @@ export function applyFieldDetection(movement: EventPageMovement, tuning: FieldDe
     };
     if (tuning.allRound === true) delete (next.sight as { coneDegrees?: number }).coneDegrees;
   }
+  if (tuning.emotes === 'none') {
+    if (next.sightAlert) next.sightAlert = { ...next.sightAlert, emote: null };
+    next.quietBreath = true;
+  } else if (tuning.emotes === 'default') {
+    if (next.sightAlert && next.sightAlert.emote === null) next.sightAlert = { ...next.sightAlert, emote: 'exclamation' };
+    delete next.quietBreath;
+  }
+  if (tuning.footsteps === false) delete next.footsteps;
+  else if (tuning.footsteps) next.footsteps = tuning.footsteps;
   if (tuning.brain === 'auto') delete next.chaseBrain;
   else if (tuning.brain !== undefined) next.chaseBrain = tuning.brain;
   if (tuning.rush === true) next.chaseLunge = { steps: tuning.rushSteps ?? RUSH_STEPS, speed: 7, stepMs: tuning.rushStepMs ?? RUSH_STEP_MS };
@@ -708,9 +729,11 @@ export const FIELD_ENEMY_TOOLS: readonly ToolDefinition[] = [
     }, []),
     invalidArgsExample: { mapIds: ['map_field_1'], sightRange: 7, coneDegrees: 140, alertMs: 300, searchMs: 6000, rush: true, visionLight: {} },
     run(draft, args): ToolExecResult {
-      const tuning = readFieldDetectionArgs(args);
+      const read = readFieldDetectionArgs(args);
+      const footsteps = resolveFootstepsSe(draft, read.footsteps);
+      const tuning: FieldDetectionTuning = footsteps === undefined ? read : { ...read, footsteps };
       const vision = args.visionLight === undefined || args.visionLight === false ? undefined : (typeof args.visionLight === 'object' && args.visionLight !== null ? args.visionLight as Record<string, unknown> : {});
-      if (Object.keys(tuning).length === 0 && !vision) throw new ToolError('바꿀 값(sightRange·coneDegrees·chaseStepMs·alertMs·searchMs·giveUpRange·rush·allRound·lineOfSight·brain·visionLight)을 하나 이상 주세요.', { code: 'invalid-args' });
+      if (Object.keys(tuning).length === 0 && !vision) throw new ToolError('바꿀 값(sightRange·coneDegrees·chaseStepMs·alertMs·searchMs·giveUpRange·rush·allRound·lineOfSight·brain·emotes·footsteps·visionLight)을 하나 이상 주세요.', { code: 'invalid-args' });
       const visionColor = typeof vision?.color === 'string' && /^#[0-9a-f]{6}$/iu.test(vision.color) ? vision.color : '#ffcf7a';
       const visionIntensity = vision?.intensity === undefined ? 0.85 : Number(vision.intensity);
       if (vision && (!Number.isFinite(visionIntensity) || visionIntensity < 0 || visionIntensity > 1)) throw new ToolError('visionLight.intensity 는 0..1 입니다.', { code: 'invalid-args' });
@@ -753,7 +776,7 @@ export const FIELD_ENEMY_TOOLS: readonly ToolDefinition[] = [
         }
       }
       if (changed.length === 0) throw new ToolError('추격하는 적이 없습니다 — place_field_enemy behavior:chase 나 tune_field_enemies 로 먼저 추격형으로 만드세요.', { code: 'field-enemy-none' });
-      const parts = [tuning.sightRange !== undefined ? `시야 ${tuning.sightRange}칸` : '', tuning.coneDegrees !== undefined ? `부채꼴 ${tuning.coneDegrees}°` : '', tuning.chaseStepMs !== undefined ? `추격 ${tuning.chaseStepMs}ms/칸` : '', tuning.alertMs !== undefined ? `알아챔 ${tuning.alertMs}ms` : '', tuning.searchMs !== undefined ? `수색 ${tuning.searchMs}ms` : '', tuning.giveUpRange !== undefined ? `포기 ${tuning.giveUpRange}칸` : '', tuning.rush !== undefined ? (tuning.rush ? `돌진 ${tuning.rushSteps ?? RUSH_STEPS}칸 ${tuning.rushStepMs ?? RUSH_STEP_MS}ms/칸` : '돌진 끔') : ''].filter(Boolean);
+      const parts = [tuning.sightRange !== undefined ? `시야 ${tuning.sightRange}칸` : '', tuning.coneDegrees !== undefined ? `부채꼴 ${tuning.coneDegrees}°` : '', tuning.chaseStepMs !== undefined ? `추격 ${tuning.chaseStepMs}ms/칸` : '', tuning.alertMs !== undefined ? `알아챔 ${tuning.alertMs}ms` : '', tuning.searchMs !== undefined ? `수색 ${tuning.searchMs}ms` : '', tuning.giveUpRange !== undefined ? `포기 ${tuning.giveUpRange}칸` : '', tuning.rush !== undefined ? (tuning.rush ? `돌진 ${tuning.rushSteps ?? RUSH_STEPS}칸 ${tuning.rushStepMs ?? RUSH_STEP_MS}ms/칸` : '돌진 끔') : '', tuning.emotes === 'none' ? '말풍선 끔' : tuning.emotes === 'default' ? '말풍선 켬' : '', tuning.footsteps === false ? '발소리 끔' : tuning.footsteps ? `발소리 ${tuning.footsteps.se}` : ''].filter(Boolean);
       if (lit.length) parts.push(`시야 등불 ${lit.join(', ')}`);
       return {
         summary: `추격 적 ${changed.length}마리 조율 — ${parts.join(' · ')}`,

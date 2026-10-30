@@ -111,8 +111,11 @@ const simulateBattleTool: ToolDefinition = {
           `${unsupported.map((phase) => `${phase.pageId}(${phase.unsupported}건)`).join(", ")} — 연출이 조용히 생략됩니다.`,
       );
     }
+    const outcomeNote = result.outcomes
+      ? `, 결투 판정 승${result.outcomes.victory}·패${result.outcomes.defeat}·기권/무승부${result.outcomes.escape}`
+      : "";
     return {
-      summary: `전투 시뮬(${troopId}, Lv${args.heroLevel}${monsterParty?.length ? ` 몬스터 ${monsterParty.map((monster) => monsterSpeciesById(project, monster.speciesId)?.name ?? monster.speciesId).join("·")}` : ""}, n=${result.samples}): 승률 ${(result.winRate * 100).toFixed(0)}%, 평균 ${result.avgTurns.toFixed(1)}타${phaseNote}${skillNote}${chargeNote}`,
+      summary: `전투 시뮬(${troopId}, Lv${args.heroLevel}${monsterParty?.length ? ` 몬스터 ${monsterParty.map((monster) => monsterSpeciesById(project, monster.speciesId)?.name ?? monster.speciesId).join("·")}` : ""}, n=${result.samples}): 승률 ${(result.winRate * 100).toFixed(0)}%, 평균 ${result.avgTurns.toFixed(1)}타${outcomeNote}${phaseNote}${skillNote}${chargeNote}`,
       data: result,
       ...(warnings.length > 0 ? { warnings } : {}),
     };
