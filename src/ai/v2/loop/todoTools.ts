@@ -16,7 +16,7 @@ import { bindRefs, changedSince, checkItem, indexProject, isAmbiguous, refsFromD
 import { HookStats } from "./hookStats";
 import { isRegistryTool, preCheck, retryCandidates } from "./argGuard";
 import { covers, requestSkeleton, type SkeletonElement } from "./requestSkeleton";
-import { formatCall, nextAfterFailure, nextForItem, strategyAfterRepeat, type NextCall } from "./nextCall";
+import { formatCall, MISSING_HIGH_VERB, nextAfterFailure, nextForItem, scopeRedirect, strategyAfterRepeat, type NextCall } from "./nextCall";
 
 const text = (value: unknown): PiToolExecResult => ({ content: [{ type: "text", text: typeof value === "string" ? value : JSON.stringify(value) }] });
 
@@ -303,6 +303,8 @@ export function withTodoLoop(env: PiAssistantV2Env, store: TodoStore, loop: Todo
   // H3 — 거절 뒤 다음 호출 우선: 고른 동사가 불리면 내린다. 거절 뒤로 부른 동사(같은 제안을 되풀이하지 않게).
   let pendingPrefer: string | undefined;
   const sinceFailure = new Set<string>();
+  /** H5 — 항목마다 이 항목에 묶여 부른 쓰기 동사. */
+  const itemVerbs = new Map<string, Set<string>>();
   const remember = (nc: NextCall) => {
     const cur = store.current();
     if (cur) store.meta.set(cur.id, { ...(store.meta.get(cur.id) ?? {}), nextCall: { verb: nc.verb, text: formatCall(nc) } });
@@ -365,6 +367,29 @@ export function withTodoLoop(env: PiAssistantV2Env, store: TodoStore, loop: Todo
       // 묶을 항목: 인자 todoId 의 항목, 없으면 진행 중 항목. 판정이 refs 를 쓰는 항목일 때만 전후 지문을 뜬다.
       const bindTo = write ? (todoId ? store.resolve(todoId) : undefined) ?? store.current() : undefined;
       const before = bindTo?.check && bindTo.check.kind !== "none" ? indexProject(env.ctx.project) : undefined;
+      // H5 동사 범위(nextCall.ts VERB_SCOPE): 항목 종류의 상위 동사를 아직 안 부르고 하위 도구로 조립하려 하면 항목마다 한 번 돌려보내고 상위 동사 호출을 준다.
+      // 같은 호출을 다시 하면 실행한다(실패로 세지 않는다). 상위 동사가 없는 종류(전투·엔딩)는 기록만 한다.
+      if (write && bindTo && isOpen(bindTo.status)) {
+        const meta = store.meta.get(bindTo.id) ?? {};
+        const kind = bindTo.check?.kind ?? "";
+        const missing = MISSING_HIGH_VERB[kind];
+        if (missing && !meta.scoped) {
+          store.meta.set(bindTo.id, { ...meta, scoped: true });
+          hooks.fire("scope", `${bindTo.id} ${kind}: 상위 동사 없음 — ${tool.name} 로 조립 (${missing})`, { item: bindTo.id, kind, tool: tool.name, missingHighVerb: true });
+        } else if (!meta.scoped) {
+          let redirect: NextCall | undefined;
+          try { redirect = scopeRedirect(bindTo, tool.name, itemVerbs.get(bindTo.id), env.ctx.project, verbNames); } catch { redirect = undefined; }
+          if (redirect) {
+            store.meta.set(bindTo.id, { ...meta, scoped: true, nextCall: { verb: redirect.verb, text: formatCall(redirect) } });
+            hooks.fire("scope", `${bindTo.id} ${kind}: ${tool.name} → ${redirect.verb}`, { item: bindTo.id, kind, tool: tool.name, to: redirect.verb });
+            prefer(redirect, `${bindTo.id} 은 ${redirect.verb} 로 짓는다`);
+            const summary = `[동사 범위 — 실행 안 함(실패 아님)] ${bindTo.id} «${bindTo.content.slice(0, 60)}»(${checkLabel(bindTo.check)}) 은 하위 도구 ${tool.name} 로 한 칸씩 맞추지 말고 상위 동사 한 번으로 짓는다 — 다음 호출: ${formatCall(redirect)}. 그래도 ${tool.name} 가 꼭 필요하면 같은 호출을 다시 하면 실행한다.`;
+            if (isRegistryTool(tool.name)) env.record({ toolCallId: id, name: tool.name, args: params, result: { ok: false, summary: summary.slice(0, 400), notFailure: true } as never });
+            return text({ ok: false, notFailure: true, summary });
+          }
+        }
+      }
+      if (write && bindTo) { const set = itemVerbs.get(bindTo.id) ?? new Set<string>(); set.add(tool.name); itemVerbs.set(bindTo.id, set); }
       // H2 실행 전 인자 검사·보정(argGuard.ts): 답이 하나뿐이면 고쳐 실행하고 결과에 «고침:», 아니면 실행하지 않고 고친 호출 예시를 돌려준다.
       const fixNotes: string[] = [];
       let callParams = params;

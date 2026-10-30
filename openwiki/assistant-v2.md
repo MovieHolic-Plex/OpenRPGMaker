@@ -426,6 +426,9 @@ salt 를 찾아(무작위 salt 를 고정해 몇 번 지어 본다) 같은 마�
     edit_place 다시 짓기 거절: 고치기 항목(gate·critic·vqa)이면 «stamp_object 꾸밈 한두 번 뒤 block», 새로 만들기 항목이면 «make_place 새 맵 + create_transfer_pair» · stamp_object 자리 거절 → inspect 또는 block · 그 밖은 «같은 동사·모양을 버린다». 전략의 동사도 우선한다.
   - H4 쓰기 직후 확인: 쓰기 동사가 성공하면 묶인 항목(todoId, 없으면 진행 중)의 기계 확인을 바로 돌린다 — ✓ 면 그 자리에서 닫고(closedBy auto, `v2.todo.auto_done`) 결과에 «[자동 확인 ✓] … 다음: <항목> — 다음 호출: 동사(뼈대)», ✗ 면 «[자동 확인] 아직 ✗ — 이유»를 싣는다(실패로 세지 않음). 확인 없는(눈 확인) 항목은 건너뛴다.
   - H7 재주입 구체화(`continuationPrompt` opts.nextCallFor): 「지금 할 것: <항목>」 다음 줄에 «다음 호출: 동사(채운 인자 뼈대)» — 그 항목에서 거절 뒤 남긴 다음 호출(meta.nextCall, 그 동사가 성공하면 지움), 없으면 항목 확인 종류에서(`nextForItem`: 장소→make_place, 인물→add_people …, 눈 확인 항목은 글이 이른 동사). 발화 `reinject`.
+  - H5 동사 범위(`loop/nextCall.ts VERB_SCOPE·scopeRedirect`): 항목 확인 종류마다 상위 동사(장소 make_place·author_forest_route·edit_place, 인물 add_people, 대사 add_people·add_event, 이동 create_transfer_pair)와 하위 도구(upsert_event·place_npc·patch_event_page·add_event_page·stamp_object)를 둔다.
+    그 항목에서 상위 동사를 아직 안 불렀고 묶인 대상이 없고 이미 있는 맵·이벤트 이름을 가리키지 않는데 하위 도구를 부르면 항목마다 한 번 실행하지 않고 «다음 호출: 상위 동사(뼈대)»를 주고 그 동사를 우선한다(실패로 세지 않음, 같은 호출을 다시 하면 실행). 발화 `scope`.
+    상위 동사가 없는 종류는 돌려보내지 않고 기록만 한다(`scope` data.missingHighVerb): **전투**(말 걸기 → 보스전을 한 번에 짓는 동사 없음 — upsert_enemy·upsert_troop·patch_event_page 조립), **엔딩**(축하 대사 → 엔딩 호출 — add_event + define_ending·patch_event_page 조립).
   - H6 문맥 정리(`loop/contextTrim.ts trimContext`, 실행기 transformContext 에서 `options.v2.stateCard` 가 있을 때만): 마지막 도구 결과 10개는 그대로, 그보다 앞은 글 700자만 남기고 그림은 뺀다 — 줄이는 경계는 8개 단위로만 옮겨 프롬프트 캐시 접두부를 지킨다.
     그리고 그 호출의 마지막 메시지 끝에만 상태 카드(진척 줄·지금 할 것+다음 호출·그 항목 마지막 ✗·남은 항목 6개)를 붙인다. 사본만 바꾸고 기록에는 남지 않는다. 줄인 수가 늘 때 `v2.hook.context`.
 - 화면 검수 고치기 차례 상한(`vqaFixBudget.ts`)·도구 0회 고치기 재시도는 이 고리의 항목 시도·재주입 규칙이 대신한다(파일은 남았지만 실행기가 쓰지 않는다).

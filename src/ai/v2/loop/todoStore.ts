@@ -22,6 +22,8 @@ export interface TodoMeta {
   blockBounced?: boolean;
   /** 앞 실행에서 이어 받은 항목 — refs 가 없으면 이번 기준선 대비 «새로» 를 묻지 않는다. */
   restored?: boolean;
+  /** H5 동사 범위로 하위 도구를 이미 한 번 돌려보냈나(항목마다 한 번). */
+  scoped?: boolean;
   /** H8 전략 바꾸기 글을 이미 줬나(같은 거절 두 번 — 한 번은 막지 않고 전략을 준다, 그다음 같은 거절은 막는다). */
   strategyGiven?: boolean;
   /** H3 마지막 거절 뒤 고리가 고른 다음 호출(재주입 글이 쓴다). */

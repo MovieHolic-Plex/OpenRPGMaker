@@ -6,6 +6,7 @@
 import type { Project } from "@/project/types";
 import type { TodoItem } from "../todo/types";
 import { eventListLine, findMapId } from "./argGuard";
+import { nameScore } from "../todo/names";
 
 type Obj = Record<string, unknown>;
 export interface NextCall {
@@ -146,4 +147,42 @@ export function nextForItem(item: TodoItem, project: Project, available: Readonl
     case "objective": return has("set_objective") ? { verb: "set_objective", args: { text: c.text ? `<${c.text} 를 넣은 목표 줄>` : "<목표 줄>", at: "start" }, why: "목표 줄" } : undefined;
     default: return undefined;
   }
+}
+
+/**
+ * H5 동사 범위 — 항목 확인 종류마다 상위 동사(한 번에 그 요소를 짓는 것)와, 상위 동사 전에 부르면 돌려보낼 하위 도구.
+ * 하위 도구로 한 칸씩 조립하면 싼 모델은 이벤트 페이지·좌표를 손으로 맞추다 거절을 쌓는다(omo-loop-1030b terra: get_event 44·patch_event_page 22).
+ * battle 은 «말을 걸고 → 보스전» 을 한 번에 짓는 상위 동사가 없다 — 하위 도구 조립이 유일한 길이라 돌려보내지 않고 기록만 한다.
+ */
+export const VERB_SCOPE: Readonly<Partial<Record<string, { high: readonly string[]; low: readonly string[] }>>> = {
+  place: { high: ["make_place", "author_forest_route", "edit_place"], low: ["stamp_object", "upsert_event", "patch_event_page", "add_event_page", "place_npc"] },
+  person: { high: ["add_people"], low: ["upsert_event", "place_npc", "add_event_page"] },
+  talk: { high: ["add_people", "add_event"], low: ["upsert_event", "place_npc"] },
+  link: { high: ["create_transfer_pair"], low: ["upsert_event", "patch_event_page", "add_event_page"] },
+};
+/** 상위 동사가 없어 하위 도구로만 짓는 확인 종류(측정 보고용). */
+export const MISSING_HIGH_VERB: Readonly<Partial<Record<string, string>>> = {
+  battle: "대사 → 전투(보스전) 를 한 번에 짓는 동사가 없다 — upsert_enemy·upsert_troop·patch_event_page(battleProcessing) 조립",
+  ending: "엔딩 장면(축하 대사 → 엔딩 호출)을 한 번에 짓는 동사가 없다 — add_event 대사 + define_ending·patch_event_page 조립",
+};
+
+/** 이 항목에서 이 도구를 돌려보낼까: 하위 도구이고, 이 항목에서 상위 동사를 아직 안 불렀고, 묶인 대상이 없을 때. 돌려보내면 상위 동사 호출 하나. */
+export function scopeRedirect(item: TodoItem, tool: string, usedOnItem: ReadonlySet<string> | undefined, project: Project, available: ReadonlySet<string>): NextCall | undefined {
+  const kind = item.check?.kind;
+  const scope = kind ? VERB_SCOPE[kind] : undefined;
+  if (!scope || !scope.low.includes(tool)) return undefined;
+  if (scope.high.some((v) => usedOnItem?.has(v))) return undefined;
+  const r = item.refs;
+  if (r && (r.mapIds?.length || r.eventIds?.length)) return undefined;
+  // 이미 있는 대상을 고치는 항목이면 하위 도구가 맞다 — 장소 이름이 지금 맵이거나, 인물·대사 이름이 지금 이벤트 이름이면 돌려보내지 않는다.
+  const c = item.check!;
+  if (c.kind === "place" && findMapId(project, c.name)) return undefined;
+  const who = c.kind === "person" ? c.name : c.kind === "talk" ? c.who : undefined;
+  if (who && Object.values(project.maps).some((m) => (m.events ?? []).some((ev) => nameScore(who, String(ev.name ?? "")) > 0))) return undefined;
+  const call = nextForItem(item, project, available);
+  if (!call || !scope.high.includes(call.verb)) {
+    const verb = scope.high.find((v) => available.has(v));
+    return verb ? { verb, args: skeletonFor(verb), why: `${kind} 항목의 상위 동사` } : undefined;
+  }
+  return { ...call, why: `${kind} 항목은 ${call.verb} 한 번으로 짓는다` };
 }
