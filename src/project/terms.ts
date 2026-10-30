@@ -1,6 +1,7 @@
 import { defaultTerms } from "@/project/defaults/defaultDatabase";
 import type { Project, Terms } from "@/project/types";
 import { withJosa } from "@/util/josa";
+import { normalizeTroopVictoryBanner } from "@/project/databaseEnemyTroopRecordModel";
 
 export const TERM_KEYS = [
   "attack",
@@ -48,6 +49,18 @@ export function resolveTermOverrides(terms: Terms | undefined): ResolvedTerms {
 
 export function defaultTermValue(key: TermKey): string {
   return defaultTerms()[key];
+}
+
+/**
+ * 승리 띠 글자. 우선순위: 이 전투 적 그룹의 victoryBanner → 프로젝트 용어 terms.battleVictory → 기본 「승리!」.
+ * 빈 문자열은 어느 단계에서도 「없음」으로 보고 다음 단계로 넘어간다.
+ */
+export function resolveVictoryBannerText(project: Pick<Project, "meta" | "database">, troopId: string | undefined): string {
+  const troop = troopId ? project.database.troops.find((entry) => entry.id === troopId) : undefined;
+  const override = normalizeTroopVictoryBanner(troop?.victoryBanner);
+  if (override) return override;
+  const term = resolveTerms(project).battleVictory;
+  return term.trim() ? term : defaultTermValue("battleVictory");
 }
 
 const NAME_PLACEHOLDER = /\{name(은|이|을)?\}/gu;
