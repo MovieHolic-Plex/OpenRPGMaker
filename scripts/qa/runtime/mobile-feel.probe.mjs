@@ -2,7 +2,7 @@
 // CDP Input.dispatchTouchEvent 로 진짜 터치를 보낸다. 합성 PointerEvent 가 아니라 브라우저 터치 파이프라인을 탄다.
 //
 //   OPRN_ASSUME_ALL_BGM_INSTALLED=1 npx tsx scripts/content/bake-flagship-demos.mts --out /tmp/mf --only chrono-bell
-//   node scripts/qa/runtime/mobile-feel.probe.mjs --project /tmp/mf/demos/chrono-bell.play.json --out /tmp/mf/before [--devices iphone15,iphone15-land,fold,fold-open] [--video]
+//   node scripts/qa/runtime/mobile-feel.probe.mjs --project /tmp/mf/demos/chrono-bell.play.json --out /tmp/mf/before [--devices iphone15,iphone15-land,fold,fold-open] [--video] [--server http://127.0.0.1:PORT]
 //
 // 결과: <out>/<기기>/result.json (지연·패드·단추·메뉴·브라우저 설정) + <out>/summary.json, --video 면 <기기>/walk.webm
 import { chromium, devices } from "@playwright/test";
@@ -679,7 +679,9 @@ async function recordWalk(browser, deviceId) {
   if (video) await rename(await video.path(), join(outDir, "walk.webm")).catch(() => {});
 }
 
-const server = await startPlayerQaServer();
+// --server <url>: 이미 떠 있는 QA 서버에 붙는다(브라우저 실행만 잠금 안에서 돌릴 때).
+const externalServer = arg("server", null);
+const server = externalServer ? { url: externalServer.replace(/\/$/, ""), close: async () => {} } : await startPlayerQaServer();
 const browser = await chromium.launch({ headless: true, args: ["--no-sandbox", "--use-gl=swiftshader", "--disable-gpu", "--disable-background-networking", "--disable-features=NetworkChangeNotifier"] });
 const summary = {};
 try {

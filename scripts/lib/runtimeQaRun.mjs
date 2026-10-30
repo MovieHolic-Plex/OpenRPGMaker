@@ -674,6 +674,17 @@ export async function applyOp(page, op, runState) {
       if (!(await testidMatches(page, op))) throw new Error(`repeatUntil: ${max}회 뒤에도 ${op.testid} 가 ${op.state} 가 되지 않았다`);
       return;
     }
+    case "repeatUntilMap": {
+      // 하위 op 묶음을 그 맵에 들어설 때까지 되풀이한다 — 대사 줄 수·글자 흘림 속도에 기대지 않고 장면 전환까지 넘긴다.
+      const onMap = () => page.evaluate((mapId) => window.__oprnDebug?.readState?.()?.currentMapId === mapId, op.mapId);
+      const max = op.maxRounds ?? 20;
+      for (let round = 0; round < max; round += 1) {
+        if (await onMap()) return;
+        for (const inner of op.ops) await applyOp(page, inner, runState);
+      }
+      if (!(await onMap())) throw new Error(`repeatUntilMap: ${max}회 뒤에도 ${op.mapId} 에 들어서지 않았다`);
+      return;
+    }
     case "waitForStyleVar":
       // 인라인 CSS 사용자 속성(예: --battle-node-x) 값 대기 — 렌더된 위치를 좌표계 그대로 단정한다.
       await page.waitForFunction(
@@ -1288,13 +1299,26 @@ export async function runRuntimeQa(page, rawScenario, opts = {}) {
   // 영상 클립에 같은 파일을 그 시각에 다시 섞을 수 있다(scripts/qa/runtime/mux-audio-cues.py). 읽기만 하고 재생은 바꾸지 않는다.
   await page.addInitScript(`(() => {
     window.__qaSfx = [];
+    // 곡(BGM)은 fetch → blob URL 로 재생된다 — blob 이 어느 파일에서 왔는지 적어 두어야 다시 섞을 수 있다.
+    const blobSrc = {};
+    try {
+      const cou = URL.createObjectURL;
+      URL.createObjectURL = function (o) { const u = cou.call(URL, o); try { if (o && o.__qaSrc) blobSrc[u] = o.__qaSrc; } catch {} return u; };
+      const f = window.fetch;
+      window.fetch = async function (...a) {
+        const r = await f.apply(this, a);
+        try { const url = typeof a[0] === "string" ? a[0] : a[0]?.url; const bl = r.blob.bind(r); r.blob = async () => { const x = await bl(); try { x.__qaSrc = new URL(url, location.href).href; } catch {} return x; }; } catch {}
+        return r;
+      };
+    } catch {}
     const proto = HTMLMediaElement.prototype;
     const play = proto.play, pause = proto.pause;
     const cueOf = (el) => el.__qaCue;
     proto.play = function (...a) {
       try {
         if (window.__qaSfx.length < 4000) {
-          const cue = { at: Date.now(), src: this.currentSrc || this.src, volume: this.volume, rate: this.playbackRate, loop: !!this.loop };
+          const raw = this.currentSrc || this.src;
+          const cue = { at: Date.now(), src: blobSrc[raw] ?? raw, volume: this.volume, rate: this.playbackRate, loop: !!this.loop };
           this.__qaCue = cue; window.__qaSfx.push(cue);
           if (!this.__qaWatch) {
             this.__qaWatch = true;
@@ -1473,7 +1497,7 @@ export async function runRuntimeQa(page, rawScenario, opts = {}) {
   const report = {
     scenarioId: scenario.id,
     ...(checkpoint ? { checkpointId: checkpoint.id } : {}),
-    timing: { bootMs, totalMs: Date.now() - startedAt },
+    timing: { bootMs, totalMs: Date.now() - startedAt, startedAt },
     ...(runState.capturedCheckpoints?.length ? { capturedCheckpoints: runState.capturedCheckpoints } : {}),
     projectPath: relative(REPO_ROOT, projectPath),
     seed: scenario.seed,

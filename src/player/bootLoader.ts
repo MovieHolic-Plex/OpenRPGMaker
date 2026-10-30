@@ -18,6 +18,8 @@ export interface BootLoader {
   setInfo(info: BootLoaderInfo): void;
   /** 게임 데이터(project.json) 받기 — 받은 바이트. */
   projectProgress(bytes: number): void;
+  /** 이 게임이 쓰는 번들 타일셋 정의 받기 — 끝난 파일 수 / 전체, 받은 바이트. */
+  definitionsProgress(done: number, total: number, bytes: number): void;
   /** 첫 화면 파일 받기 — 끝난 파일 수 / 전체, 받은 바이트. */
   filesProgress(done: number, total: number, bytes: number): void;
   /** 다 받았다 — 「시작하기」를 띄우고 누를 때까지 기다린다. */
@@ -28,8 +30,10 @@ export interface BootLoader {
 const MB = 1048576;
 const formatMb = (bytes: number): string => `${(bytes / MB).toFixed(bytes >= 10 * MB ? 0 : 1)} MB`;
 
-/** 게임 데이터는 막대의 앞 30%, 첫 화면 파일이 나머지 70%. */
-const PROJECT_SHARE = 0.3;
+/** 게임 데이터는 막대의 앞 25%, 타일셋 정의가 다음 15%, 첫 화면 파일이 나머지 60%. */
+const PROJECT_SHARE = 0.25;
+const DEFINITIONS_SHARE = 0.15;
+const FILES_START = PROJECT_SHARE + DEFINITIONS_SHARE;
 
 export function mountBootLoader(host: HTMLElement, initial: BootLoaderInfo): BootLoader {
   const root = document.createElement("section");
@@ -103,8 +107,12 @@ export function mountBootLoader(host: HTMLElement, initial: BootLoaderInfo): Boo
         label.textContent = `게임 데이터 ${formatMb(bytes)}`;
       }
     },
+    definitionsProgress(done, total, bytes) {
+      setRatio(PROJECT_SHARE + DEFINITIONS_SHARE * (total > 0 ? done / total : 1));
+      label.textContent = `타일 정보 ${done} / ${total} · ${formatMb(bytes)}`;
+    },
     filesProgress(done, total, bytes) {
-      setRatio(PROJECT_SHARE + (1 - PROJECT_SHARE) * (total > 0 ? done / total : 1));
+      setRatio(FILES_START + (1 - FILES_START) * (total > 0 ? done / total : 1));
       label.textContent = `첫 화면 파일 ${done} / ${total} · ${formatMb(bytes)}`;
     },
     waitForStart() {

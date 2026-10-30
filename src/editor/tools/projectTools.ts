@@ -3,7 +3,7 @@ import { ensureHighResFullbodyPlayResolution } from "@/project/playResolution";
 import { isCatalogBgmAvailable } from '@/assets/audioResourceCatalog';
 import { createBlankProject } from "@/project/defaults";
 import { retitlePlaceholderOpening } from "@/project/defaults/defaultOpeningSequence";
-import { CAMERA_ZOOM_LIMITS, resolveCameraZoom, storeCameraZoom } from "@/project/cameraZoom";
+import { CAMERA_ZOOM_LIMITS, pixelZoomWarning, resolveCameraZoom, storeCameraZoom } from "@/project/cameraZoom";
 import { applyGenrePreset, type GenrePresetId } from "@/project/genrePresets";
 import { replaceProjectContents } from "./historyTools";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
@@ -381,6 +381,7 @@ const setProjectSettings: ToolDefinition = {
         properties: {
           theme: { type: "string", enum: Object.keys(FIELD_HUD_THEMES) },
           menuStyle: { type: "string", enum: Object.keys(HUD_MENUS), description: "ESC 메뉴 모양. project = 프로젝트 메뉴 설정을 따른다." },
+          objective: { type: "boolean", description: "화면 오른쪽 위 「현재 목표」 줄. 이벤트의 목표 칩(UI 명령 surface objectiveChip)이 바꾸는 글이 여기에 뜬다 — 목표 칩을 쓰면 켠다. widgets 를 줘도 이 값은 따로 지킨다." },
           widgets: {
             type: "array", maxItems: HUD_WIDGET_LIMIT,
             items: {
@@ -429,6 +430,7 @@ const setProjectSettings: ToolDefinition = {
   run(draft, args): ToolExecResult {
     const changed: string[] = [];
     const teamWarnings: string[] = [];
+    let zoomWarningArg = false;
     if (args.fonts !== undefined) {
       if (!args.fonts || typeof args.fonts !== "object" || Array.isArray(args.fonts)) {
         throw new ToolError("fonts는 역할별 글꼴 객체여야 합니다.", { code: "invalid-args" });
@@ -468,7 +470,7 @@ const setProjectSettings: ToolDefinition = {
       changed.push(`강하게 다시 하기=${next?.enabled ? "켬" : "끔"}`);
     }
     if (args.fieldHud !== undefined) {
-      const hud = args.fieldHud as { theme?: string; menuStyle?: string; widgets?: unknown[] };
+      const hud = args.fieldHud as { theme?: string; menuStyle?: string; objective?: unknown; widgets?: unknown[] };
       const prev = draft.system.fieldHud;
       const next = { theme: "minimal", vitals: false, clock: false, tools: false, objective: false, hideEmpty: true, ...(prev ?? {}) } as NonNullable<typeof prev>;
       if (hud.theme !== undefined) { if (!Object.hasOwn(FIELD_HUD_THEMES, hud.theme)) throw new ToolError(`알 수 없는 HUD 테마: ${hud.theme}`, { code: "invalid-args" }); next.theme = hud.theme as typeof next.theme; }
@@ -483,8 +485,13 @@ const setProjectSettings: ToolDefinition = {
         // 위젯을 직접 정했으면 테마 기본 위젯(체력·시계·도구)은 끈다.
         next.vitals = false; next.clock = false; next.tools = false;
       }
+      if (hud.objective !== undefined) {
+        if (typeof hud.objective !== "boolean") throw new ToolError("fieldHud.objective 는 true/false 입니다.", { code: "invalid-args" });
+        next.objective = hud.objective;
+      }
       draft.system.fieldHud = next;
       changed.push(next.widgets?.length === 0 ? "HUD=끔" : `HUD 위젯 ${next.widgets?.length ?? "기본"}개`);
+      if (hud.objective !== undefined) changed.push(`현재 목표 줄 ${next.objective ? "켬" : "끔"}`);
     }
     if (args.chapter !== undefined) {
       if (typeof args.chapter !== "object" || args.chapter === null || Array.isArray(args.chapter)) {
@@ -544,6 +551,7 @@ const setProjectSettings: ToolDefinition = {
     if (typeof args.cameraZoom === "number") {
       storeCameraZoom(draft.system, args.cameraZoom);
       changed.push(`카메라 배율=${resolveCameraZoom(draft.system)}`);
+      zoomWarningArg = true;
     }
     if (args.playResolution && typeof args.playResolution === "object" && !Array.isArray(args.playResolution)) {
       const resolution = args.playResolution as { width: number; height: number };
@@ -728,7 +736,11 @@ const setProjectSettings: ToolDefinition = {
       changed.push("초기 파티");
     }
     if (changed.length === 0) throw new ToolError("바꿀 프로젝트 설정이 없습니다.", { code: "invalid-args" });
-    return { summary: `프로젝트 설정 변경 — ${changed.join(", ")}`, data: { changed }, ...(teamWarnings.length > 0 ? { warnings: teamWarnings } : {}) };
+    // 해상도와 배율을 함께 바꿀 수 있으니 경고는 최종 system 으로 판정한다. 저장값은 그대로 둔다(옛 프로젝트 호환).
+    const zoomWarning = zoomWarningArg ? pixelZoomWarning(resolveCameraZoom(draft.system), draft.system, "프로젝트 카메라 배율") : null;
+    const settingWarnings = zoomWarning ? [zoomWarning, ...teamWarnings] : teamWarnings;
+    const summary = `프로젝트 설정 변경 — ${changed.join(", ")}${zoomWarning ? ` (경고: ${zoomWarning})` : ""}`;
+    return { summary, data: { changed }, ...(settingWarnings.length > 0 ? { warnings: settingWarnings } : {}) };
   },
 };
 

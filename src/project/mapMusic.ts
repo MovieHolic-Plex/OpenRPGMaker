@@ -50,8 +50,16 @@ function decide(map: GameMap | undefined): MapBgmResolution | null {
 export function resolveMapBgm(
   project: BgmProject,
   mapId: MapId,
-  overrides: { readonly defaultBgmResourceId?: string } = {},
+  overrides: { readonly defaultBgmResourceId?: string; readonly switches?: Readonly<Record<string, boolean>> } = {},
 ): MapBgmResolution {
+  // 스위치가 켜진 동안의 곡(추격 곡 등)이 맵 기본보다 먼저다 — 세션 스위치를 넘긴 호출(런타임 맵 진입)만 본다.
+  const switches = overrides.switches;
+  if (switches) {
+    for (const entry of project.maps[mapId]?.bgmWhileSwitch ?? []) {
+      const resourceId = typeof entry?.resourceId === "string" ? entry.resourceId.trim() : "";
+      if (resourceId && switches[entry.switchId] === true) return { kind: "play", resourceId };
+    }
+  }
   const own = decide(project.maps[mapId]);
   if (own) return own;
   for (const ancestorId of mapAncestorIds(project.mapTree, mapId)) {

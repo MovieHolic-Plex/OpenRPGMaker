@@ -1,6 +1,8 @@
 import { defaultOutdoorTilesetId } from "@/project/defaults/outdoorTileset";
 // 선언형 월드 그래프 툴: plan_world / link_maps / build_world / lint_world.
 
+import { kitDoorOpenCommands } from "@/project/kitDoors";
+import { recordDoorForGate } from "./mapDoorTools";
 import { resolveTransferEndpoint, upsertEventIntoMap } from "./eventTools";
 import { assertDoorExitWidths, transferGatesStayApproachable } from './transferReachability';
 import { COORD_SCHEMA } from './schemaShapes';
@@ -329,7 +331,7 @@ export function linkMapsInDraft(
     x: landingB.x,
     y: landingB.y,
     fade: options.fade,
-  }));
+  }, kitDoorOpenCommands(draft, fromMap, gateA)));
   let changedEvents = outcomeA === "added" ? 1 : 0;
   let eventIdB: string | undefined;
   if (options.bidirectional && landingA) {
@@ -340,9 +342,12 @@ export function linkMapsInDraft(
       x: landingA.x,
       y: landingA.y,
       fade: options.fade,
-    }));
+    }, kitDoorOpenCommands(draft, toMap, gateB)));
     if (outcomeB === "added") changedEvents += 1;
   }
+  // 문 종류(자동문·미닫이·셔터·두 짝 문)를 그림에서 추론해 적고 넓은 문이면 발판을 넓힌다(mapDoorTools) — 외짝 여닫이·키트 문은 그대로.
+  recordDoorForGate(draft, fromMap, gateA);
+  if (eventIdB) recordDoorForGate(draft, toMap, gateB);
   for (const map of fromMap.id === toMap.id ? [fromMap] : [fromMap, toMap]) {
     const check = transferGatesStayApproachable(draft, map);
     if (!check.ok) throw new ToolError(`출입구 설치로 문이 봉쇄됩니다: ${check.sealed.join(', ')}`, { code: 'transfer-sealed', mapId: map.id });
@@ -485,7 +490,8 @@ function ensureGraphNodesForMaps(
   return [...byId.values()];
 }
 
-function transferGateEvent(id: string, point: Point, target: Command): GameEvent {
+/** opens = 들어가기 전 문 열기(닫힘/열림 키트 문이면 kitDoorOpenCommands — 그 문 그림으로 열고 열린 채 남긴다). */
+function transferGateEvent(id: string, point: Point, target: Command, opens: readonly Command[] = []): GameEvent {
   return {
     id,
     x: point.x,
@@ -502,7 +508,7 @@ function transferGateEvent(id: string, point: Point, target: Command): GameEvent
         priority: "below",
         overlapForbidden: false,
         movement: PASSIVE,
-        commands: [target],
+        commands: [...opens, target],
       },
     ],
   };

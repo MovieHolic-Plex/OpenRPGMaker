@@ -9,6 +9,7 @@
 import type { Project } from "@/project/types";
 import { battleDataEmptied, placementContentProblems } from "./gameChecks";
 import { unsafeSpawnLines } from "@/project/chaserSpawnSafety";
+import { musicOnly } from "./musicWords";
 
 type Obj = Record<string, unknown>;
 const obj = (v: unknown): Obj | undefined => (v && typeof v === "object" && !Array.isArray(v) ? (v as Obj) : undefined);
@@ -401,6 +402,17 @@ export function withShipBlockers(verdict: AdvisorVerdict, blockers: readonly { r
   const extra = blockers.map((b): AdvisorNote => ({ level: "blocker", what: `[출하 차단 ${b.id}] ${b.message}`, evidence: b.evidence }))
     .filter((n) => !seen.has(n.what));
   return { ...verdict, notes: [...verdict.notes, ...extra] };
+}
+
+/** 요청 자체를 두고 한 지적(보고 주장·삭제·빠진 부분) — 음악만 바라는 요청에서도 일감이다. 나머지는 프로젝트에 이미 있던 것에 대한 지적이다. */
+const ABOUT_THIS_REQUEST = /^(보고의 주장|알린 삭제|시키지 않았고|요청 중 안 된 부분)/u;
+/**
+ * 음악만 바라는 요청(musicWords.musicOnly)이면 요청 밖 지적(출하 차단·끊긴 고리·그 밖의 우려)을 참고(aside)로 낮춘다 — 일감으로 넘기지 않는다.
+ * 2026-10-30 실조수 r12: 「추격 음악」에 «체크포인트가 추격자 시야 안» 우려가 넘어가 조수가 상자를 찍고 make_chase_scene 을 불렀다.
+ */
+export function scopeAdviceToRequest(verdict: AdvisorVerdict, task: string): AdvisorVerdict {
+  if (!musicOnly(task)) return verdict;
+  return { ...verdict, notes: verdict.notes.map((n) => ABOUT_THIS_REQUEST.test(n.what) ? n : { ...n, level: "aside" as const, what: `(음악 요청 밖 — 고치지 않음) ${n.what}` }) };
 }
 
 /** 막는 메모가 있으면 한 차례 더 돌릴 지시문. 없으면 undefined(검토 메모는 조수 기록에만 남는다). */

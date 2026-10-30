@@ -42,6 +42,7 @@ import { TILE_CHANGE_EFFECT_TOOLS } from "./tileChangeEffectTools";
 import { VEHICLE_TOOLS } from "./vehicleTools";
 import { EVENT_COMMAND_ASSIST_TOOLS } from "./eventCommandAssistTool";
 import { EVENT_TOOLS } from "./eventTools";
+import { MAP_DOOR_TOOLS } from "./mapDoorTools";
 import { BEODEUL_DOOR_TOOLS } from "./beodeulDoorTools";
 import { BEODEUL_HAMLET_TOOLS } from './beodeulHamletTools';
 import { BEODEUL_COURTYARD_TOOLS } from './beodeulCourtyardTools';
@@ -136,6 +137,7 @@ import { CINEMATIC_TOOLS } from "./cinematicTools";
 import { IMAGE_ASSET_TOOLS } from "./imageAssetTools";
 import { MAP_BACKGROUND_GENERATION_TOOLS } from "./mapBackgroundGenerationTool";
 import { TITLE_ART_TOOLS } from "./titleArtTools";
+import { BATTLE_BACKDROP_TOOLS } from "./battleBackdropTools";
 import { PRESENTATION_TOOLS } from "./presentationTools";
 import { TITLE_IMPROVE_TOOLS } from "./titleImproveTools";
 import { AUDIO_DESCRIPTION_TOOLS } from "./audioDescriptionTools";
@@ -340,6 +342,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(MAP_GEN_TOOLS, "map").map(retireEasyRpgGenerator),
   ...withDomain(WILD_ROUTE_TOOLS, "map"),
   ...withDomain(EVENT_TOOLS, "event"),
+  ...MAP_DOOR_TOOLS,
   ...BEODEUL_DOOR_TOOLS,
   ...BEODEUL_GROUND_TOOLS,
   ...BEODEUL_LIGHT_TOOLS,
@@ -439,6 +442,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(OPENING_STORYBOOK_TOOLS, 'system'),
   ...withDomain(IMAGE_ASSET_TOOLS, "system"),
   ...withDomain(TITLE_ART_TOOLS, "system"),
+  ...withDomain(BATTLE_BACKDROP_TOOLS, "system"),
   ...withDomain(PRESENTATION_TOOLS, "system"),
   ...withDomain(TITLE_IMPROVE_TOOLS, "system"),
   ...withDomain(AUDIO_DESCRIPTION_TOOLS, "system"),

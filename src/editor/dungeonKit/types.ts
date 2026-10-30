@@ -86,6 +86,11 @@ export interface DungeonSpec {
    * A 해안 흙굴 · B 산속 바위굴 · C 검푸른 심층굴 · none 옛 검은 천장. 생략하면 종류 기본(cave A · mine B · volcano C, 그 밖 none).
    */
   readonly rockLine?: "A" | "B" | "C" | "none";
+  /**
+   * 조수가 설계한 층(2026-10-29 「맵은 조수가 설계한다」, designLayout.ts): 방(역할·크기·모양·자리·물·특징)·잇는 길·입구 쪽.
+   * 주면 불규칙 문법은 이 설계대로 파고(layoutDesignedBlob), 방+통로 문법은 rooms 로 옮긴다(designToRooms). 함수는 고친 것만 warnings 「고침:」 줄로 알린다.
+   */
+  readonly design?: import("./designLayout").DungeonDesign;
 }
 
 /** 층 계단·문 하나: x,y = 이동 이벤트를 둘 칸(계단 그림 칸), front = 들어서는 앞 칸(도착 칸). */
@@ -96,7 +101,7 @@ export interface DungeonStairCell {
 }
 
 export interface Rect { x: number; y: number; w: number; h: number }
-export interface PlacedRoom extends Rect { id: string; kind: DungeonRoomKind; from: string | null; dir: DungeonDir | null; depth: number; shape?: "round" | "apse" | "ring" }
+export interface PlacedRoom extends Rect { id: string; kind: DungeonRoomKind; from: string | null; dir: DungeonDir | null; depth: number; shape?: "round" | "apse" | "ring"; /** 설계한 방의 특징(stalagmites·crystals·mushrooms·bones·pillars·boulders·camp) — 꾸미기가 더한다. */ features?: readonly string[]; /** 설계한 높이 단(0 바닥 · 1 · 2) — compose 가 map.relief 와 돌계단으로 짓는다. */ level?: number }
 export interface PlacedCorridor { a: string; b: string; dir: DungeonDir; rect: Rect; loop?: boolean }
 
 
@@ -104,6 +109,8 @@ export interface DungeonLayout {
   rooms: PlacedRoom[]; corridors: PlacedCorridor[]; width: number; height: number; notes: string[]; grid?: Grid;
   /** 얇은 칸막이 배치(벽 1칸) — 벽 두께 규칙(settle)을 적용하지 않는다. */
   thin?: boolean;
+  /** 설계한 입구 쪽(야외 던전의 출구 길 방향). */
+  entranceSide?: "south" | "north" | "west" | "east";
 }
 
 export interface DungeonCompose {
@@ -134,6 +141,8 @@ export interface DungeonCompose {
   /** 자연 물가 둑 덧그림(2층): 액체 칸 목록 — 맵에 쓸 때 beodeul_nature 둑 칸(256 이웃 모양)으로 덮는다. 다리 칸은 이웃(같은 물)로 친다. */
   readonly banks?: { readonly style: "grass" | "bog" | "lava"; readonly cells: readonly number[] };
   readonly counts: Record<string, number>;
+  /** 설계한 높이 단(rooms[].level)이 있으면 map.relief 로 쓸 높이·계단(코드 5~8)·양식(*-steps = 버들항 돌계단 화소). */
+  readonly relief?: { readonly levels: number[]; readonly ramps: number[]; readonly style: string };
   /** 놓인 키트(왼쪽 위 칸) — 배치 검사·표본 그림용. 되돌린 놓기는 빠진다. */
   readonly placed?: readonly { readonly id: string; readonly x: number; readonly y: number }[];
   /** 이 층을 그린 어댑터와 쓴 타일셋(몬스터 키트는 시트마다 타일셋이 다르다). */

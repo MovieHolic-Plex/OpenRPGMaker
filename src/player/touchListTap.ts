@@ -9,7 +9,7 @@
 // 키는 데스크톱·패드와 같은 길이라 창의 규칙(건너뛰는 칸, 비활성 행)을 그대로 따른다. 다가가지 못하면(다른 창이
 // 키를 받는 중) 보낸 키를 되돌리고 원래 클릭을 그대로 흘려 보낸다 — 예전 동작(바로 실행)으로 떨어질 뿐 막히지 않는다.
 
-import { keyTarget } from "@/player/touchPad";
+import { inputTime, keyTarget } from "@/player/touchPad";
 
 const MARK = ".selected, [aria-current='true'], [aria-selected='true']";
 const ROW = "button, [role='menuitem'], [role='option'], [role='button'], li, .rm-nav-item";
@@ -18,11 +18,16 @@ const ROW = "button, [role='menuitem'], [role='option'], [role='button'], li, .r
  * ESC 메뉴 첫 명령 줄(아이템·스킬·장비…) — 화면을 여는 것뿐이라 되돌리기 쉽고, 두 번 눌러야 열리면 고장처럼 보였다(2026-10-25).
  * 그 안의 목록(아이템 쓰기·장비 바꾸기 등 되돌리기 어려운 결정)은 여전히 첫 탭 = 커서, 두 번째 = 결정이다.
  */
-const EXCLUDE = "[role='tab'], .touch-pad, .name-entry-overlay, [data-testid='dialogue-log'], [data-testid='dialogue-backlog'], input, textarea, select, .play-fullscreen-toggle, .status-menu-command-rail";
-/** 고르면 바로 여는 줄 무리(EXCLUDE 안이지만 눌림 영역 넓히기는 받는다). */
-const ONE_TAP = ".status-menu-command-rail";
+/**
+ * 고르면 바로 여는 줄 무리(EXCLUDE 안이지만 눌림 영역 넓히기는 받는다).
+ * 대사 선택지(.choice-list)도 한 번 탭이다(2026-10-30) — RPG 쯔꾸르 MZ 처럼 누른 줄이 곧 답이다. 선택지는 두세 줄뿐이고 글이 보이므로
+ * 「첫 탭 = 커서」는 고장처럼 느껴졌다. 대사를 넘기던 누름이 막 뜬 선택지를 고르지 않게 touchTap 이 그 누름의 click 을 삼킨다.
+ */
+const ONE_TAP_GROUPS = [".status-menu-command-rail", ".choice-list"];
+const ONE_TAP = ONE_TAP_GROUPS.join(", ");
+const EXCLUDE = ["[role='tab']", ".touch-pad", ".name-entry-overlay", "[data-testid='dialogue-log']", "[data-testid='dialogue-backlog']", "input", "textarea", "select", ".play-fullscreen-toggle", ...ONE_TAP_GROUPS].join(", ");
 /** 눌림 영역을 넓히지 않는 곳 — EXCLUDE 에서 한 번 탭 줄(ONE_TAP)만 뺀 것. */
-const NO_SNAP = EXCLUDE.split(", ").filter((selector) => selector !== ONE_TAP).join(", ");
+const NO_SNAP = EXCLUDE.split(", ").filter((selector) => !ONE_TAP_GROUPS.includes(selector)).join(", ");
 /** 줄 밖 탭을 줄로 받아 주는 거리(화면 px). 줄 둘레 22px — 혼자 선 줄이면 어느 방향이든 44px 이상이다. */
 const SNAP_REACH = 22;
 /** 떠 있는 동안 맵이 탭을 받지 않는 창(touchTap BUSY 와 같은 무리). */
@@ -222,15 +227,15 @@ export function installTouchListTap(root: HTMLElement): () => void {
   root.addEventListener("pointerdown", (event) => {
     if (event.pointerType === "mouse") { pending = null; return; }
     const row = findListRow(event.target, root);
-    if (row) { pending = { row, wasSelected: isRowSelected(row), at: performance.now(), snapped: false }; return; }
+    if (row) { pending = { row, wasSelected: isRowSelected(row), at: inputTime(event), snapped: false }; return; }
     const snapped = snapRowAt(root, event.target, event.clientX, event.clientY);
-    pending = snapped ? { row: snapped, wasSelected: isRowSelected(snapped), at: performance.now(), snapped: true } : null;
+    pending = snapped ? { row: snapped, wasSelected: isRowSelected(snapped), at: inputTime(event), snapped: true } : null;
   }, { capture: true, signal });
   root.addEventListener("click", (event) => {
     if (replaying) return;
     const start = pending;
     pending = null;
-    if (!start || performance.now() - start.at > DOWN_TO_CLICK_MS) return;
+    if (!start || inputTime(event) - start.at > DOWN_TO_CLICK_MS) return;
     if (start.snapped) {
       // 줄 밖(넓힌 영역) 탭: 바탕의 클릭은 삼키고 그 줄을 탭한 것과 똑같이 처리한다.
       if (!start.row.isConnected) return;

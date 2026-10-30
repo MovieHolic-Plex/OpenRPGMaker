@@ -16,5 +16,7 @@
   "화풍: 칸 정보량이 기준보다 훨씬 낮음 (1/4)"
  ],
  "note": "묶음 허용: 조수 공방 기물 8 (칸 정하기·큰 물건) — 조수 공방 기물 8 — 사용자 위임·fresh Opus 적대 VQA r4 major 0 (r3 major 4 수정 후) — delegated by user to supervisor 2026-10-22; Opus VQA receipt harness-data/object-",
- "sig": "f0fec168351a281f8f6546fee532d58424ab3d95f67aeb3a16fdf3b9c9bebd7d"
+ "supersededBy": "user rejected 2026-10-22 (too geometric); organic redraw via objectgen-organic",
+ "supersededAt": "2026-10-22T21:30:14.690Z",
+ "sig": "48eb25382c8fea137bbcda74d209bc07145ef795a4afe9467cf5b0bbe8ed7be9"
 }

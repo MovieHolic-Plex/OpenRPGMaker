@@ -7,6 +7,7 @@ import { DungeonComposeError } from "./errors";
 import type { DungeonLayout, DungeonRoomKind, DungeonSpec, PlacedCorridor, PlacedRoom } from "./types";
 import { Grid, carveDisc, edgeDistance, rng, smooth, vnoise, type Rect } from "./grid";
 import type { GrammarInfo } from "./grammar";
+import { layoutDesignedBlob } from "./designLayout";
 
 const MARGIN = 2;
 const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, Math.round(v)));
@@ -141,6 +142,8 @@ interface Chamber { cx: number; cy: number; rx: number; ry: number; kind: Dungeo
  * 한 판만 놓으면 방이 상자 안에 흩어져 잘라도 맵의 55~60%가 검은 허공이었다.
  */
 export function layoutBlob(spec: DungeonSpec, profile: GrammarInfo): DungeonLayout & { grid: Grid } {
+  // 조수가 설계한 층은 설계대로(designLayout.ts) — 아래 방 수·자리·역할을 함수가 고르는 길은 설계가 없을 때만.
+  if (spec.design) return layoutDesignedBlob(spec, profile, spec.design);
   let best: { layout: DungeonLayout & { grid: Grid }; score: number } | null = null;
   let lastError: unknown = null;
   for (let salt = 0; salt < 32; salt += 1) {

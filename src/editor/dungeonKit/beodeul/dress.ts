@@ -1336,3 +1336,45 @@ function dressCastle(c: DressCtx, r: PlacedRoom, rs: () => number, slots: Slot[]
   c.hangAlong(slots, rs, 4, () => TORCH, 4);
   return true;
 }
+
+/**
+ * 조수가 설계한 방의 특징(dungeonDesign.rooms[].features, 2026-10-29) — 방 종류 꾸미기 뒤에 덧붙인다. 낱개로 흩지 않고 덩이(blob·벽가 덩이)로만:
+ * 트인 바닥 한가운데 홀로 선 기물은 「용도 모를 물건」으로 읽혔다(2026-10-29 배치 검사). 그림이 칩셋에 없으면 건너뛰고 false 를 센다.
+ */
+export function dressDesignFeatures(c: DressCtx, r: PlacedRoom, rs: () => number): string[] {
+  const missed: string[] = [];
+  const inner = () => c.shuffle(rs, c.floorCells(r, 2));
+  const clumpsInside = (n: number, size: number, pick: () => string): number => {
+    let k = 0;
+    for (const [x, y] of inner()) { if (k >= n) break; if (!lonely(c, x, y, 2)) continue; if (blob(c, rs, x, y, size, pick) >= 2) k += 1; }
+    return k;
+  };
+  const volcano = c.hasKit(VC("fire-crystal"));
+  for (const f of r.features ?? []) {
+    let got = 0;
+    switch (f) {
+      case "stalagmites": {
+        const spike = () => c.weighted(rs, [[caveSpike(c), 3], [pickKit(c, [CK("stalagmite-cluster"), CV("rock-pillar-2")]), 1]]);
+        got = clumpsInside(r.w * r.h > 120 ? 3 : 2, 3, spike);
+        break;
+      }
+      case "crystals": {
+        const id = c.hasKit(CK("crystal-cluster")) ? CK("crystal-cluster") : volcano ? VC("fire-crystal") : "";
+        if (id) got = edgeClumps(c, rs, c.edgeCells(r, rs), 2, [[id, 3], [caveSpike(c), 1]]);
+        break;
+      }
+      case "mushrooms": got = clumpsInside(2, 3, () => c.weighted(rs, [[caveGlow(c), 3], [CV("glow-moss-floor"), 2]])); break;
+      case "bones": got = clumpsInside(2, 3, () => c.weighted(rs, [[caveBones(c), 2], [SW("skulls"), 2], [SW("bones"), 1]])); break;
+      case "pillars": {
+        const id = c.hasKit(CK("broken-pillar")) ? CK("broken-pillar") : CV("rock-pillar-2");
+        got = edgeClumps(c, rs, c.edgeCells(r, rs), 3, [[id, 3], [caveSpike(c), 1]]);
+        break;
+      }
+      case "boulders": got = edgeClumps(c, rs, c.edgeCells(r, rs), 2, [[caveBig(c, rs), 2], [CK("mossy-boulder"), 2]]); break;
+      case "camp": { const before = Object.values(c.counts).reduce((a, b) => a + b, 0); lairCamp(c, r, rs, c.edgeCells(r, rs), r.kind === "boss"); got = Object.values(c.counts).reduce((a, b) => a + b, 0) - before; break; }
+      default: got = 1;   // bridge 등은 꾸미기가 아니라 배치가 맡는다
+    }
+    if (got > 0) c.counts[`design-${f}`] = (c.counts[`design-${f}`] ?? 0) + got; else missed.push(f);
+  }
+  return missed;
+}

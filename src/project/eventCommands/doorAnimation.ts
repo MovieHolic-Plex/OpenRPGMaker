@@ -12,14 +12,19 @@
  * l/r/t/b = 문 그림 사각형 안에서 문틀(움직이지 않는 부분)의 왼·오른·위·아래 두께(픽셀). 승강기 층 표시등·문틀,
  * 유리문 둘레 벽은 제자리에 남고 그 안쪽 문짝만 움직인다. 비우면 0(칸 전체가 문짝).
  *
+ *  - shutter(셔터·롤업): 문짝이 위로 말려 올라간다(문틀 윗변 속으로).
+ * hinge = left|right(외짝 여닫이의 경첩 쪽) · both(두 짝 여닫이 — 가운데에서 갈라져 양쪽 경첩으로 접힌다).
+ * fit:"art" = 문틀 두께를 적지 않고 런타임이 문 그림에서 문짝(유리·나무판)을 재어 정한다 — 조수 도구가 문을 적을 때 쓴다.
+ * 문의 종류(자동문·여닫이·미닫이·셔터)·크기를 그림에서 추론하는 규칙은 `@/project/mapDoorKinds`.
+ *
  * 맵에 `doors`(MapDoorDef[]) 로 적은 auto 문은 명령 없이 저절로 열고 닫힌다 — 누가(주인공·인물) 문 칸이나 바로 앞뒤 칸에 서면 열리고,
  * 아무도 없으면 잠깐 뒤 닫힌다(소리 포함). 회의실 유리문·편의점 자동문처럼 사람이 지나다니는 문에 쓴다.
  * 열린 상태는 세션에 남고(같은 맵에 있는 동안), 다른 맵으로 가면 닫힌다. 소리는 이 명령이 내지 않는다(효과음 명령을 같이 쓴다).
  */
 
-export const DOOR_STYLES = ["slide", "swing"] as const;
+export const DOOR_STYLES = ["slide", "swing", "shutter"] as const;
 export type DoorStyle = (typeof DOOR_STYLES)[number];
-export type DoorHinge = "left" | "right";
+export type DoorHinge = "left" | "right" | "both";
 
 export type DoorInterior = "lit" | "dark" | "none";
 
@@ -34,6 +39,8 @@ export type DoorSpec = {
   readonly interior?: DoorInterior;
   /** 문틀 두께(픽셀) — 문짝은 이 안쪽 사각형만. */
   readonly frame?: DoorFrame;
+  /** "art" = frame 이 없을 때 런타임이 문 그림에서 문짝 사각형을 잰다(playSceneDoors.measureDoorLeaves). */
+  readonly fit?: "art";
 };
 
 export type DoorFrame = { readonly l: number; readonly r: number; readonly t: number; readonly b: number };
@@ -44,10 +51,19 @@ export type MapDoorDef = DoorSpec & {
   /** 열림·닫힘 효과음 리소스 id. 비우면 소리 없음. */
   readonly openSe?: string;
   readonly closeSe?: string;
+  /** 주인공이 열 때만 열림 소리와 함께 울리는 소리(편의점 입점 차임). 인물이 지나갈 때는 울리지 않는다. */
+  readonly chimeSe?: string;
 };
 
 export function doorInteriorOf(spec: DoorSpec): DoorInterior {
   return spec.interior ?? (spec.style === "slide" ? "lit" : "dark");
+}
+
+/** 문의 종류 이름(조수·보고용) — auto 미닫이 = 자동문, 두 짝 여닫이 = double. */
+export function doorKindName(def: Pick<MapDoorDef, "style" | "hinge" | "auto">): "auto" | "slide" | "swing" | "double" | "shutter" {
+  if (def.style === "shutter") return "shutter";
+  if (def.style === "slide") return def.auto ? "auto" : "slide";
+  return def.hinge === "both" ? "double" : "swing";
 }
 
 /** 세션에 남는 문 상태(키 = doorKey). */
@@ -73,8 +89,8 @@ export function parseDoorValue(value: string): DoorSpec | null {
   const w = Number.isInteger(nums[2]) && nums[2]! > 0 ? nums[2]! : 1;
   const h = Number.isInteger(nums[3]) && nums[3]! > 0 ? nums[3]! : 1;
   const words = parts.slice(2).filter((p) => !/^\d+$/u.test(p));
-  const style: DoorStyle = words.includes("swing") ? "swing" : "slide";
-  const hinge: DoorHinge = words.includes("right") ? "right" : "left";
+  const style: DoorStyle = words.includes("swing") ? "swing" : words.includes("shutter") ? "shutter" : "slide";
+  const hinge: DoorHinge = words.includes("both") ? "both" : words.includes("right") ? "right" : "left";
   const interior = (["lit", "dark", "none"] as const).find((v) => words.includes(v));
   const frame: Record<"l" | "r" | "t" | "b", number> = { l: 0, r: 0, t: 0, b: 0 };
   let framed = false;
@@ -82,11 +98,11 @@ export function parseDoorValue(value: string): DoorSpec | null {
     const m = /^([lrtb])(\d{1,3})$/u.exec(word);
     if (m) { frame[m[1] as "l"] = Number(m[2]); framed = true; }
   }
-  return { x: x!, y: y!, w: Math.min(w, 8), h: Math.min(h, 8), style, hinge, ...(interior ? { interior } : {}), ...(framed ? { frame } : {}) };
+  return { x: x!, y: y!, w: Math.min(w, 8), h: Math.min(h, 8), style, hinge, ...(interior ? { interior } : {}), ...(framed ? { frame } : words.includes("fit") ? { fit: "art" as const } : {}) };
 }
 
-export function doorValue(spec: { x: number; y: number; w?: number; h?: number; style?: DoorStyle; hinge?: DoorHinge; interior?: DoorInterior; frame?: DoorFrame }): string {
+export function doorValue(spec: { x: number; y: number; w?: number; h?: number; style?: DoorStyle; hinge?: DoorHinge; interior?: DoorInterior; frame?: DoorFrame; fit?: "art" }): string {
   const f = spec.frame;
   return [spec.x, spec.y, spec.w ?? 1, spec.h ?? 1, spec.style ?? "slide", spec.hinge ?? "left", ...(spec.interior ? [spec.interior] : []),
-    ...(f ? [`l${f.l}`, `r${f.r}`, `t${f.t}`, `b${f.b}`] : [])].join(",");
+    ...(f ? [`l${f.l}`, `r${f.r}`, `t${f.t}`, `b${f.b}`] : spec.fit === "art" ? ["fit"] : [])].join(",");
 }

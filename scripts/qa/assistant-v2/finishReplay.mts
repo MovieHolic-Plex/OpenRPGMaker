@@ -18,6 +18,7 @@ import type { PiAssistantV2Env } from "../../../src/ai/v2/env.ts";
 import type { Project } from "../../../src/project/types.ts";
 import { composePiTask } from "../../../src/ai/piAgent/executionRoute.ts";
 import { priorRequestsNote } from "../../../src/ai/v2/priorRequests.ts";
+import { createHash } from "node:crypto";
 
 const argv = process.argv.slice(2);
 const outAt = argv.indexOf("--out");
@@ -27,7 +28,27 @@ const followup = followAt >= 0 ? argv[followAt + 1] : undefined;
 // --snapshot <json>: 저장본 대신 이 프로젝트 JSON(세션 snapshots/NNN-before.json 등)에서 끝맺음을 돈다 — 빌드 사이 회귀를 같은 입력으로 비교할 때.
 const snapAt = argv.indexOf("--snapshot");
 const snapshotFile = snapAt >= 0 ? argv[snapAt + 1] : undefined;
-const dirs = argv.filter((a, i) => a !== "--out" && i !== outAt + 1 && a !== "--followup" && (followAt < 0 || i !== followAt + 1) && a !== "--snapshot" && (snapAt < 0 || i !== snapAt + 1));
+// --trace: 끝맺음이 낸 실행 기록(v2.* 이름·ok·요약)과 체크포인트 이름을 rec.trace 에 남기고, Math.random·Date.now·crypto.randomUUID 를 고정해
+// 같은 입력이면 같은 출력이 나오게 한다 — 구조만 바꾼 리팩터가 동작을 바꾸지 않았는지 커밋 둘을 대조할 때(rec.projectHash).
+const trace = argv.includes("--trace");
+// --task <글>: 요청 글을 그대로 쓴다(씬 벤치 판 — 첫 요청이 장면 하나라 게임 전체 요청으로 읽히면 안 된다; sceneToolReplay.mts 와 같이 쓴다).
+const taskAt = argv.indexOf("--task");
+const taskText = taskAt >= 0 ? argv[taskAt + 1] : undefined;
+// --built <mapId,…>: 그 판이 make_place 로 지은 장소 맵(세션 기록 session.places 를 대신한다 — 끝맺음 「지은 장소 잇기」가 읽는다).
+const builtAt = argv.indexOf("--built");
+const builtIds = builtAt >= 0 ? argv[builtAt + 1]!.split(",").filter(Boolean) : [];
+const dirs = argv.filter((a, i) => a !== "--built" && (builtAt < 0 || i !== builtAt + 1) && a !== "--out" && a !== "--trace" && i !== outAt + 1 && a !== "--followup" && (followAt < 0 || i !== followAt + 1) && a !== "--snapshot" && (snapAt < 0 || i !== snapAt + 1) && a !== "--task" && (taskAt < 0 || i !== taskAt + 1));
+if (trace) {
+  let seed = 0x2545f491;
+  Math.random = () => { seed = (Math.imul(seed ^ (seed >>> 15), 0x2c1b3c6d) + 0x6d2b79f5) >>> 0; return seed / 0x100000000; };
+  let clock = 1_800_000_000_000;
+  Date.now = () => (clock += 1000);
+  // 이벤트 id(ev_npc_<uuid>)와 거기서 나온 스위치 id 도 고정한다.
+  globalThis.crypto.randomUUID = () => {
+    const hex = Array.from({ length: 32 }, () => Math.floor(Math.random() * 16).toString(16)).join("");
+    return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-4${hex.slice(13, 16)}-a${hex.slice(17, 20)}-${hex.slice(20)}` as `${string}-${string}-${string}-${string}-${string}`;
+  };
+}
 fs.mkdirSync(out, { recursive: true });
 
 const brief = (project: Project, task: string) => {
@@ -58,15 +79,21 @@ for (const dir of dirs) {
   const name = `${path.basename(path.dirname(path.resolve(dir)))}-${path.basename(dir)}`;
   const project = snapshotFile ? ((raw) => (raw.project ?? raw) as Project)(JSON.parse(fs.readFileSync(snapshotFile, "utf8"))) : readProjectSqlite(path.join(dir, "project"));
   const first = firstRequest(dir);
-  const task = followup ? composePiTask(followup, priorRequestsNote([{ kind: "user", text: first } as never], followup)) : first;
+  const task = taskText ?? (followup ? composePiTask(followup, priorRequestsNote([{ kind: "user", text: first } as never], followup)) : first);
   const before = brief(project, task);
+  const events: string[] = [];
   const ctx = { project: structuredClone(project), currentMapId: project.startMapId, assistantRun: true };
   const env = {
     ctx, request: { task, project, currentMapId: project.startMapId } as never,
-    emit: () => {}, record: () => {}, sideChat: async () => { throw new Error("모델 없음"); }, checkpoint: async () => {},
+    emit: (e: { type?: string; name?: string; ok?: boolean; summary?: string }) => { if (trace) events.push(`emit ${e.name} ok=${e.ok} ${e.summary ?? ""}`); },
+    record: () => {}, sideChat: async () => { throw new Error("모델 없음"); }, checkpoint: async (label: string) => { if (trace) events.push(`checkpoint ${label}`); },
   } as unknown as PiAssistantV2Env;
   const session = new V2Session();
   createV2Tools(env, session);
+  for (const id of builtIds) {
+    const m = ctx.project.maps[id];
+    if (m) session.places.set(id, { builder: "replay", spec: { type: m.tilesetId === "beodeul_city" && (m as { climate?: { mode?: string } }).climate?.mode !== "indoor" ? "village" : "interior", name: m.name ?? id, mapId: id }, result: { ok: true, mapIds: [id], summary: "", warnings: [], missingArt: [], calls: [] }, rounds: 0 } as never);
+  }
   const notes: string[] = [];
   try {
     const auto = await runFinishAutoBuild(env, session);
@@ -74,13 +101,14 @@ for (const dir of dirs) {
     if (!ctx.project.gameBlueprint) notes.push("청사진 없음 — 장소·경로·마감 단계가 돌지 않는다");
   } catch (e) { notes.push(`예외: ${(e as Error).stack?.slice(0, 400)}`); }
   const after = brief(ctx.project, task);
-  const rec = { name, task, before, notes, after };
+  const rec: Record<string, unknown> = { name, task, before, notes, after };
+  if (trace) { rec.trace = events; rec.projectHash = createHash("sha256").update(JSON.stringify(ctx.project)).digest("hex"); }
   fs.writeFileSync(path.join(out, `${name}.json`), JSON.stringify(rec, null, 1));
   fs.writeFileSync(path.join(out, `${name}.project.json`), JSON.stringify(ctx.project));
   // 저장 → 다시 읽기: 쓴 파일을 플레이어·편집기와 같은 deserialize 로 읽는다(2026-10-29 vm6: trigger 빠진 이벤트로 게임이 안 열리는데 출하·자동 플레이는 통과).
   let reload = "성공";
   try { deserialize(fs.readFileSync(path.join(out, `${name}.project.json`), "utf8")); } catch (e) { reload = `실패 ${(e as Error).message.slice(0, 300)}`; }
-  (rec as Record<string, unknown>).reload = reload;
+  rec.reload = reload;
   fs.writeFileSync(path.join(out, `${name}.json`), JSON.stringify(rec, null, 1));
   console.log(`\n### ${name}\n  전: 막힘 ${before.blockers.length} ${before.blockers.map((b) => b.slice(0, 120)).join(" | ")}\n      자동 ${before.auto}\n      청사진 ${before.bp.join(",") || "-"}\n      출하 ${before.ship.length} ${before.ship.join(",")}\n      지름길 ${before.skip.length} ${before.skip.join(",")}\n  끝맺음: ${notes.join("\n          ")}\n  후: 막힘 ${after.blockers.length} ${after.blockers.map((b) => b.slice(0, 160)).join(" | ")}\n      자동 ${after.auto}\n      청사진 ${after.bp.join(",") || "-"}\n      출하 ${after.ship.length} ${after.ship.join(",")}\n      지름길 ${after.skip.length} ${after.skip.join(",")}\n      다시 읽기 ${reload}`);
 }

@@ -22,6 +22,17 @@ function styleOfTileset(tilesetId: string): string | undefined {
   return undefined;
 }
 
+/** 이름 낱말만으로 정해지는 장소 종류(모르면 undefined) — 끝맺음이 모델이 지은 맵을 청사진 장소에 이을 때 실내/바깥이 맞는지 본다. */
+export function placeTypeFromName(name: string): PlaceType | undefined {
+  if (CAVE.test(name)) return "cave";
+  if (INTERIOR.test(name)) return "interior";
+  if (DUNGEON.test(name)) return "dungeon";
+  if (VILLAGE.test(name)) return "village";
+  if (STREET.test(name)) return "street";
+  if (FIELD.test(name)) return "dungeon";
+  return undefined;
+}
+
 /** 장소 종류 하나 — 이름이 말하지 않으면 장르·요청으로. */
 export function guessPlaceType(name: string, genre: string, task: string): PlaceType {
   if (CAVE.test(name)) return "cave";

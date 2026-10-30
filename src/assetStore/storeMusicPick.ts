@@ -2,7 +2,60 @@
 // 서버 검색은 팩(상품) 단위이고 곡별 설명은 매니페스트 안(meta.oprnMusic)에만 있다 — 그래서 음악 팩 매니페스트를 받아 곡 단위로 줄 세운다.
 // 곡 하나만 넣을 때는 subsetMusicManifest 로 그 곡만 남긴 매니페스트를 applyPackToProject 에 넘긴다(출처·라이선스·AI 표시는 그대로 붙는다).
 import type { StoreItemSummary, StorePackManifest } from "./format";
-import { readStoreMusicMeta, STORE_MUSIC_SCENE_LABELS, type StoreMusicMeta, type StoreMusicScene } from "@/assets/storeMusicMeta";
+import { readStoreMusicMeta, STORE_MUSIC_SCENE_LABELS, STORE_MUSIC_SCENES, type StoreMusicMeta, type StoreMusicScene } from "@/assets/storeMusicMeta";
+
+/**
+ * 조수가 scene 에 넣는 다른 말 → 장면 id. 2026-10-30 실조수 e2e(/tmp/mfe2): 「village」「maps」「미술관」을 넣거나 scene 을 빼고 한 번 실패한 뒤 고쳐 불렀다.
+ * 미술관·박물관·저택은 걸어 다니며 살피는 실내 — 그곳의 배경음은 마을·가게 자리(town)다(공포 미술관도 평소 곡은 잔잔하고, 쫓길 때만 chase).
+ */
+const SCENE_SYNONYMS: Readonly<Record<string, StoreMusicScene>> = {
+  village: "town", city: "town", shop: "town", inn: "town", castle: "town", home: "town", house: "town", gallery: "town", museum: "town", mansion: "town", school: "town",
+  마을: "town", 도시: "town", 가게: "town", 상점: "town", 여관: "town", 성: "town", 집: "town", 미술관: "town", 갤러리: "town", 박물관: "town", 저택: "town", 학교: "town",
+  map: "field", maps: "field", world: "field", worldmap: "field", overworld: "field", 필드: "field", 월드맵: "field", 들판: "field", 평원: "field", 맵: "field",
+  cave: "dungeon", ruin: "dungeon", ruins: "dungeon", tower: "dungeon", 던전: "dungeon", 동굴: "dungeon", 유적: "dungeon", 탑: "dungeon", 미궁: "dungeon",
+  fight: "battle", combat: "battle", 전투: "battle", 배틀: "battle",
+  "final-boss": "boss", finalboss: "boss", 보스: "boss", 보스전: "boss", 마왕: "boss",
+  fanfare: "victory", jingle: "victory", win: "victory", 승리: "victory", 팡파르: "victory", 팡파레: "victory",
+  sorrow: "sad", 슬픔: "sad", 슬픈: "sad", 이별: "sad",
+  horror: "tense", suspense: "tense", stealth: "tense", mystery: "tense", 긴장: "tense", 공포: "tense", 호러: "tense", 잠입: "tense", 미스터리: "tense",
+  chaser: "chase", pursuit: "chase", "chase-scene": "chase", 추격: "chase", 추격전: "chase", 도망: "chase",
+  menu: "title", 타이틀: "title", 메인: "title",
+  credits: "ending", credit: "ending", epilogue: "ending", 엔딩: "ending", 크레딧: "ending", 에필로그: "ending",
+};
+
+/** scene 인자 → 장면 id(정확한 id·한국어 이름·다른 말). 모르면 null. */
+export function normalizeStoreMusicScene(value: unknown): StoreMusicScene | null {
+  const text = typeof value === "string" ? value.trim().toLowerCase().replace(/[\s_]+/gu, "-") : "";
+  if (!text) return null;
+  if ((STORE_MUSIC_SCENES as readonly string[]).includes(text)) return text as StoreMusicScene;
+  const label = (Object.entries(STORE_MUSIC_SCENE_LABELS) as [StoreMusicScene, string][]).find(([, ko]) => ko === text);
+  if (label) return label[0];
+  return SCENE_SYNONYMS[text] ?? SCENE_SYNONYMS[text.replace(/-/gu, "")] ?? SCENE_SYNONYMS[text.replace(/(곡|음악|bgm|브금|용|씬|장면)$/u, "")] ?? null;
+}
+
+/** scene 이 없을 때 요청 말에서 읽는 장면 — 앞 줄이 먼저(보스는 전투보다, 추격은 긴장보다 먼저). */
+const SCENE_WORDS: readonly (readonly [StoreMusicScene, RegExp])[] = [
+  ["chase", /추격|쫓아|쫓기|쫓는|도망|chase|chaser|pursuit/iu],
+  ["boss", /보스|마왕|최종\s*전|boss/iu],
+  ["victory", /승리|팡파[르레]|fanfare|victory/iu],
+  ["ending", /엔딩|크레딧|에필로그|ending|credits?/iu],
+  ["title", /타이틀|메인\s*화면|title/iu],
+  ["battle", /전투|배틀|싸움|battle|combat/iu],
+  ["dungeon", /던전|동굴|유적|미궁|dungeon|cave/iu],
+  ["field", /필드|월드\s*맵|들판|평원|초원|field|overworld/iu],
+  ["town", /마을|도시|가게|상점|여관|미술관|갤러리|박물관|저택|town|village|city|gallery/iu],
+  ["sad", /슬픈|슬픔|이별|애도|sad/iu],
+  ["tense", /긴장|공포|호러|잠입|tense|horror|stealth/iu],
+];
+
+/** 요청 말(query·need·mood …)에서 장면을 짐작한다. 못 읽으면 null. */
+export function inferStoreMusicScene(...texts: readonly unknown[]): StoreMusicScene | null {
+  const text = texts.filter((value): value is string => typeof value === "string").join(" ");
+  return SCENE_WORDS.find(([, re]) => re.test(text))?.[0] ?? null;
+}
+
+/** 요청한 장면이 적힌 곡이 없을 때 그다음으로 맞는 장면(추격 곡이 없으면 긴장 곡). */
+const SCENE_NEAR: Readonly<Partial<Record<StoreMusicScene, readonly StoreMusicScene[]>>> = { chase: ["tense"], tense: ["chase"] };
 
 /** 팩의 장르 줄(genreLine) → 사용자가 쓰는 낱말. 실제로 그렇게 들리지 않는 곡도 이 팩 줄에는 약하게 맞는다. */
 const LINE_WORDS: Readonly<Record<string, readonly string[]>> = {
@@ -20,6 +73,15 @@ const LINE_WORDS: Readonly<Record<string, readonly string[]>> = {
   "orchestral-melodrama": ["멜로드라마", "멜로", "melodrama"],
   "casual-race": ["캐주얼", "레이싱", "레이스", "달리기", "경주", "아케이드", "casual", "race", "racing", "arcade"],
   "piano-story": ["피아노", "인디", "piano", "indie"],
+  // 2026-10-30 새 줄(팩 게시 전 — 게임 이름 줄은 아래 GAME_FEELS 의 lines 둘째 이후로 옛 줄에 물러선다). 게임 이름은 여기 넣지 않는다.
+  "dark-folk-fantasy": ["다크 판타지", "다크 포크", "슬라브 민속", "허디거디", "주막", "dark folk", "slavic folk", "hurdy-gurdy", "tavern"],
+  "gallery-mystery": ["미술관", "갤러리", "오르골", "클래식 피아노", "gallery", "museum", "music box", "harpsichord"],
+  "chase-horror": ["추격 호러", "쫓기는", "저택 공포", "chase horror", "being chased", "mansion horror"],
+  "dark-fairytale": ["잔혹 동화", "오르골 왈츠", "기괴한 귀여움", "dark fairy tale", "creepy cute", "music-box waltz"],
+  "dream-ambient": ["꿈 세계", "몽환", "초현실", "로파이", "dream world", "surreal", "lo-fi ambient", "dreamlike"],
+  "eerie-minimal": ["기묘한", "인더스트리얼", "차가운 전자음", "eerie", "industrial ambient", "minimal electronic"],
+  "school-horror": ["학교 괴담", "학교 공포", "교실", "school horror", "haunted school", "classroom"],
+  "chiptune-indie-rpg": ["칩튠", "8비트", "아기자기 인디", "chiptune", "8-bit", "quirky indie rpg"],
 };
 
 /** 짧은 영문 낱말(sf·ost·ff …)은 같아야만 맞는다 — 「sfc」가 SF 줄에, 「ost」가 다른 낱말 속에 걸리지 않게. */
@@ -32,8 +94,10 @@ const wordHits = (line: string, word: string): boolean => {
  * 게임·시리즈 이름 → 장르 줄 + 들리는 결 낱말(조수 쪽에서만 쓴다). 스토어 곡 메타에는 게임 이름이 없다(원작과 거리 두기) —
  * 「크로노트리거 느낌」「투더문 같은 피아노」를 받으면 이름을 지우고 이 낱말로 바꿔 점수를 매긴다. 스토어·게시 자료에 이 이름을 쓰지 않는다.
  * lines 의 첫 줄이 가장 가깝다(+4, 나머지 +2 — 새 팩이 없을 때 옛 판타지 팩으로 물러선다).
+ * guarded: 흔한 낱말·이름과 겹치는 이름(「이브닝」의 이브, 「off」, 「위처럼」의 위처) — 바로 뒤에 느낌·처럼·풍·같은이 올 때만 그 게임으로 본다.
+ * 줄을 더할 때는 이 표에 한 줄만 쓰면 된다 — 조수 v2 음악 요청 판정(src/ai/v2/musicWords.ts)도 이 이름을 함께 쓴다.
  */
-const GAME_FEELS: readonly { readonly names: readonly string[]; readonly lines: readonly string[]; readonly words: string }[] = [
+const GAME_FEELS: readonly { readonly names: readonly string[]; readonly guarded?: readonly string[]; readonly lines: readonly string[]; readonly words: string }[] = [
   { names: ["크로노트리거", "크로노 트리거", "chrono trigger", "chronotrigger", "クロノトリガー", "크로노크로스", "chrono cross"], lines: ["snes-jrpg", "fantasy"], words: "16비트 snes 레트로 모험" },
   { names: ["파이널판타지", "파이널 판타지", "파판", "final fantasy", "ff", "ファイナルファンタジー", "ファイファン", "ff14", "ff7", "ff6"], lines: ["symphonic-jrpg", "snes-jrpg", "fantasy"], words: "심포닉 오케스트라 16비트" },
   { names: ["드래곤퀘스트", "드래곤 퀘스트", "드퀘", "dragon quest", "dq", "ドラゴンクエスト", "ドラクエ"], lines: ["symphonic-jrpg", "snes-jrpg", "fantasy"], words: "오케스트라 심포닉 16비트" },
@@ -42,17 +106,37 @@ const GAME_FEELS: readonly { readonly names: readonly string[]; readonly lines: 
   { names: ["테일즈런너", "테일즈 런너", "테런", "tales runner", "talesrunner", "テイルズランナー", "카트라이더", "카트 라이더", "kartrider", "kart rider"], lines: ["casual-race"], words: "캐주얼 레이싱 경쾌한 신나는" },
   { names: ["투더문", "투 더 문", "to the moon", "tothemoon", "トゥ・ザ・ムーン", "파인딩파라다이스", "finding paradise"], lines: ["piano-story"], words: "피아노 잔잔한 감성" },
   { names: ["포켓몬스터", "포켓몬", "pokemon", "pokémon", "ポケモン", "ポケットモンスター"], lines: ["monster"], words: "몬스터" },
+  // 2026-10-30 새 줄 — lines 둘째 이후는 새 팩이 아직 없을 때 물러설 옛 줄.
+  { names: ["위쳐", "witcher", "ウィッチャー"], guarded: ["위처"], lines: ["dark-folk-fantasy", "fantasy"], words: "다크 포크 판타지 슬라브 민속 허디거디" },
+  { names: ["ib"], guarded: ["이브", "イヴ"], lines: ["gallery-mystery", "piano-story", "horror"], words: "미술관 갤러리 오르골 클래식 피아노" },
+  { names: ["아오오니", "청귀", "ao oni", "aooni", "青鬼"], lines: ["chase-horror", "horror"], words: "추격 호러 쫓기는 저택 공포" },
+  { names: ["마녀의 집", "매드 파더", "witch's house", "witchs house", "mad father", "魔女の家"], lines: ["dark-fairytale", "horror"], words: "잔혹 동화 오르골 왈츠 기괴한 귀여움" },
+  { names: ["유메닛키", "유메 닛키", "yume nikki", "yumenikki", "ゆめにっき"], lines: ["dream-ambient", "horror"], words: "꿈 세계 몽환 초현실 로파이" },
+  { names: ["off rpg"], guarded: ["off", "오프"], lines: ["eerie-minimal", "scifi", "horror"], words: "기묘한 인더스트리얼 차가운 전자음 미니멀" },
+  { names: ["콥스 파티", "콥스파티", "미사오", "corpse party", "misao", "コープスパーティー"], lines: ["school-horror", "horror"], words: "학교 괴담 학교 공포 교실" },
+  { names: ["언더테일", "델타룬", "undertale", "deltarune", "アンダーテール"], lines: ["chiptune-indie-rpg", "monster", "fantasy"], words: "칩튠 8비트 아기자기 인디" },
 ];
 
+/** 이름 뒤에 결을 빌리는 말이 올 때만(guarded). musicWords.ts 의 GAME_FEEL 꼬리와 같은 말. */
+const FEEL_TAIL = String.raw`(?=\s*(?:의\s*)?(?:느낌|처럼|풍|같은|같이|같게|스타일|분위기|st\b|style))`;
+
 const escapeRe = (text: string): string => text.replace(/[.*+?^${}()|[\]\\]/gu, "\\$&");
+const namePattern = (name: string): string => {
+  const body = [...name.replace(/\s+/gu, "")].map(escapeRe).join("\\s*");
+  return /^[a-z]/u.test(name) ? `(?<![a-z0-9])${body}(?:\\s*(?:\\d+|[ivx]+))?(?![a-z])` : body;
+};
 const GAME_PATTERNS = GAME_FEELS.map((game) => ({
   ...game,
   // 띄어쓰기는 있어도 없어도 맞는다(「투 더 문」 = 「투더문」). 영문은 낱말 경계 + 뒤 번호(ff6·ff 7·ff vi).
-  re: new RegExp(game.names.map((name) => {
-    const body = [...name.replace(/\s+/gu, "")].map(escapeRe).join("\\s*");
-    return /^[a-z]/u.test(name) ? `(?<![a-z0-9])${body}(?:\\s*(?:\\d+|[ivx]+))?(?![a-z])` : body;
-  }).sort((a, b) => b.length - a.length).join("|"), "giu"),
+  re: new RegExp([...game.names.map((name) => namePattern(name)), ...(game.guarded ?? []).map((name) => namePattern(name) + FEEL_TAIL)]
+    .sort((a, b) => b.length - a.length).join("|"), "giu"),
 }));
+
+/**
+ * 위 표의 모든 게임·시리즈 이름을 하나로 맞추는 정규식 본문(플래그 없음 — 쓰는 쪽이 iu 로 감싼다).
+ * 조수 v2 가 「테일즈런너처럼」「투더문 느낌」을 음악 요청으로 알아보는 데 쓴다(src/ai/v2/musicWords.ts) — 표에 줄을 더하면 함께 맞는다.
+ */
+export const STORE_MUSIC_GAME_NAME_SOURCE: string = GAME_PATTERNS.map((game) => game.re.source).join("|");
 
 export interface ExpandedStoreMusicQuery {
   /** 게임 이름을 지우고 결 낱말을 붙인 검색어. */
@@ -167,8 +251,10 @@ export function scoreStoreMusic(track: StoreMusicTrack, want: StoreMusicQuery): 
   let score = 0;
   if (want.scene) {
     const at = m.scenes.indexOf(want.scene);
-    if (at < 0) return -1;
-    score += at === 0 ? 12 : 9;
+    if (at >= 0) score += at === 0 ? 12 : 9;
+    // 가까운 장면(추격 ↔ 긴장)은 낮게 받는다 — 정확히 그 장면으로 적힌 곡이 늘 앞에 선다.
+    else if ((SCENE_NEAR[want.scene] ?? []).some((near) => m.scenes.includes(near))) score += 5;
+    else return -1;
   }
   const genreText = `${m.genreKo} ${m.genreLabel}`.toLowerCase();
   const lineWords = LINE_WORDS[m.genre] ?? [m.genre];
@@ -219,6 +305,28 @@ export function rankStoreMusic(tracks: readonly StoreMusicTrack[], want: StoreMu
     .sort((a, b) => b.score - a.score || a.index - b.index)
     .slice(0, limit)
     .map((row) => row.track);
+}
+
+/**
+ * 후보가 왜 그 자리인가(조수에게 보이는 짧은 이유) + 물러선 곡인가.
+ * 2026-10-30 실조수: 「파판 전투곡 느낌으로 일반 전투」에서 1위(심포닉 전투곡) 대신 3위를 넣었다 — 후보에 순위 이유가 없었다.
+ * fallback: 게임 이름에서 줄을 읽었는데(「파판」 → symphonic-jrpg) 이 곡은 그 첫 줄이 아니다 — 그 줄 곡이 없을 때만 쓰는 대신 곡.
+ */
+export function explainStoreMusicPick(track: StoreMusicTrack, want: StoreMusicQuery): { readonly why: string; readonly fallback: boolean } {
+  const m = track.music;
+  const parts: string[] = [];
+  if (want.scene) {
+    const at = m.scenes.indexOf(want.scene);
+    parts.push(at === 0 ? `장면 ${want.scene} 맞음(주 장면)` : at > 0 ? `장면 ${want.scene} 맞음` : `장면 ${want.scene} 가까움(${m.scenes.join("·")})`);
+  }
+  const expanded = expandStoreMusicQuery(want.query ?? "");
+  const mapped = expanded.lines[0];
+  const fallback = Boolean(mapped) && m.genre !== mapped;
+  if (expanded.games.length) parts.push(fallback ? `「${expanded.games[0]}」 결(${mapped}) 아님 — 대신 곡(${m.genre})` : `「${expanded.games[0]}」 결 줄(${m.genre}) 맞음`);
+  const words = tokens(expanded.query).filter((word) => `${m.genreKo} ${m.genreLabel}`.toLowerCase().includes(word) || m.feelTags.some((feel) => feel.toLowerCase().includes(word)));
+  if (words.length) parts.push(`낱말 ${[...new Set(words)].slice(0, 3).join("·")} 맞음`);
+  if (want.scene && want.scene !== "victory" && !m.loopable) parts.push("루프 아님");
+  return { why: parts.join(", ") || "장르·분위기", fallback };
 }
 
 /** 조수에게 보이는 곡 한 줄(바이트·sha 없음). */

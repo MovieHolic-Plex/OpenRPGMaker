@@ -8,6 +8,7 @@ import { HAND_INTERIOR_TILESET_ID, MODERN_CITY_INTERIOR_TILESET_ID, SENGOKU_INTE
 import { roomTemplates, templateStyle, type InteriorRoomTemplate } from "@/editor/handInterior/templates";
 import { INTERIOR_BARE_FLOOR_LIMIT, measureInteriorBareFloor } from "@/editor/handInterior/bareFloor";
 import type { BuildRun, PlaceBuilder, PlaceBuildResult, PlaceRecord, PlaceSpec, ZoneSpec } from "../types";
+import type { Project } from "@/project/types";
 import { interiorVenues, type InteriorVenue, type VenueStamp } from "./interiorVenues";
 import { kindServesPurpose, purposeOf, purposeSwap } from "../roomPurpose";
 import { DRESS_ROOM_TARGET, dressRoom, roomBarePct } from "./dressRoom";
@@ -27,6 +28,22 @@ function tilesetFor(style: string | undefined): string {
   if (/sengoku|edo|전국|에도|사무라이/u.test(s)) return SENGOKU_INTERIOR_TILESET_ID;
   if (/modern|현대|city|도시/u.test(s)) return MODERN_CITY_INTERIOR_TILESET_ID;
   return HAND_INTERIOR_TILESET_ID;
+}
+
+/**
+ * 이 명세를 지을 실내 칩셋 — style 낱말 → 칩셋, 단 주인공 물건이 고른 칩셋에 없고 기본 판타지 실내(v5)에는 더 많으면 v5
+ * (「마법사의 천문대」를 마법 학교 칩셋으로 지어 망원경·책장이 하나도 없었다, 2026-10-23 v2 실조수).
+ * make_place 의 설계 받기(designRooms.ts)도 이 함수로 «손 도트 실내로 지어지나»를 본다 — style 이 modern 이어도 v5 로 짓는 방이 있다(2026-10-29 vm8 flash 방탈출).
+ */
+export function interiorTilesetOf(project: Project, spec: PlaceSpec): { tilesetId: string; note?: string } {
+  const tilesetId = tilesetFor(spec.style);
+  if (tilesetId === HAND_INTERIOR_TILESET_ID) return { tilesetId };
+  const own = roomSpecOf(project.tilesets[tilesetId]);
+  const base = roomSpecOf(project.tilesets[HAND_INTERIOR_TILESET_ID]);
+  const words = (spec.zones ?? []).flatMap((z) => z.anchors ?? []);
+  const hits = (rs: typeof own) => (rs ? words.filter((w) => findPart(rs, w)).length : -1);
+  if (base && words.length && hits(base) > hits(own)) return { tilesetId: HAND_INTERIOR_TILESET_ID, note: `주인공 물건(${words.join("·")})이 ${tilesetId} 에 ${Math.max(0, hits(own))}개, 기본 판타지 실내에 ${hits(base)}개 있어 기본 판타지 실내로 지었다` };
+  return { tilesetId };
 }
 
 /** 방 낱말 → 방 종류(그 칩셋에 견본이 있는 것). 없으면 가장 가까운 쓰임. */
@@ -779,7 +796,29 @@ function buildUpperFloor(run: BuildRun, roomSpec: HandInteriorSpec, tilesetId: s
       // 복도는 방 수에 맞춘 작은 계단참(방마다 4칸 + 1, 높이 5) — 견본 크기 그대로면 38칸짜리 빈 홀이 됐다.
       layout: { rooms: (upKinds.length ? upKinds : ["bedroom"]).map((kind, i, all) => ({ id: `${kind}${i + 1}`, kind, ...(/corridor/u.test(kind) ? { w: Math.max(9, 4 * (all.length - 1) + 1), h: 5 } : {}) })) } };
     // 위층은 배치 후보 넷 중 맵 틀 안 검은 바깥이 가장 적은 것(방 넓이 ÷ 맵 넓이 최대) — 객실 둘 + 긴 복도가 ㄱ자로 앉아 왼쪽 위가 통째로 검었다(비평 major).
+    // 위층 방도 모델 설계(zone.design)면 설계대로 — 객실 견본 둘 + 복도를 깔지 않는다(2026-10-29 «위층까지 모델이 설계»). 계단통을 놓을 복도·홀이 설계에 없으면 계단참 하나만 함수가 붙인다.
+    const designedUp = tilesetId === HAND_INTERIOR_TILESET_ID && upperZones.some((z) => z.design && typeof z.design === "object");
+    if (designedUp) {
+      const usedK = new Map<string, number>();
+      const droom = upperZones.map((z) => {
+        const kind = resolveKind(tilesetId, z, notes, spec.name);
+        const n = (usedK.get(kind) ?? 0) + 1; usedK.set(kind, n);
+        return z.design && typeof z.design === "object" ? designedRoom(z, kind, n, z.design, roomSpec, notes) : { id: z.id ?? (n > 1 ? `${kind}${n}` : kind), kind, design: undefined };
+      });
+      // 계단통(3칸 폭)은 설계 방 가운데 넓은 방에 선다 — 설계 방이 모두 좁을 때만(바닥 24칸 미만) 계단참 복도를 붙인다(빈 복도가 맨바닥 덩이가 됐다).
+      const hub = droom.some((r) => /corridor|hall|landing/u.test(r.kind) || ((r as { w?: number }).w ?? 0) * (((r as { h?: number }).h ?? 2) - 2) >= 24);
+      const roomsUp = [...droom.map((r) => clean({ id: r.id, kind: r.kind, w: (r as { w?: number }).w, h: (r as { h?: number }).h, floor: (r as { floor?: string }).floor, wall: (r as { wall?: string }).wall, notches: (r as { notches?: unknown }).notches })),
+        ...(hub || !known("corridor") ? [] : [{ id: "corridor", kind: "corridor", w: Math.max(9, 4 * droom.length + 1), h: 5 }])];
+      const designsUp = Object.fromEntries(droom.filter((r) => r.design).map((r) => [r.id, r.design!] as const));
+      (upBase as { layout: unknown }).layout = { rooms: roomsUp, designs: designsUp };
+    }
     let up = build(run, upBase);
+    if (designedUp && up.ok) {
+      for (const r of ((up.data?.layout as { rooms?: { id: string; design?: DesignRoomReport }[] } | undefined)?.rooms ?? [])) if (r.design) {
+        notes.push(`설계 방(위층) ${r.id}: 묶음 ${r.design.placed.length}개·기물 ${r.design.items}점을 설계대로 놓았다(막힌 바닥 ${Math.round(r.design.blockedShare * 100)}%)${r.design.fixes.length ? ` — 함수가 고친 것 ${r.design.fixes.length}건` : " — 함수가 고친 것 없음"}`);
+        for (const f of r.design.fixes) notes.push(`고침(위층): ${f}`);
+      }
+    }
     const fill = (a: Attempt) => {
       const rr = (a.data?.rebuild as Rebuild | undefined)?.rooms ?? [];
       const m = run.ctx.project.maps[String(a.data?.mapId)];
@@ -791,7 +830,7 @@ function buildUpperFloor(run: BuildRun, roomSpec: HandInteriorSpec, tilesetId: s
       const m = run.ctx.project.maps[String(a.data?.mapId)];
       return m ? (m.lowerTiles as readonly number[]).reduce((n, t) => n + (t === roomSpec.void ? 1 : 0), 0) : Number.POSITIVE_INFINITY;
     };
-    if (up.ok) {
+    if (up.ok && !designedUp) {
       const rooms0 = (upBase.layout as { rooms: { id: string; kind: string; w?: number; h?: number }[] }).rooms;
       const corridorW = rooms0.find((r) => typeof r.w === "number")?.w;
       const widths = corridorW === undefined ? [undefined] : [...new Set([corridorW, corridorW - 2, corridorW - 1, corridorW + 1, corridorW + 2])].filter((w) => w >= 7);
@@ -837,8 +876,11 @@ function buildUpperFloor(run: BuildRun, roomSpec: HandInteriorSpec, tilesetId: s
         }
         build(run, uargs);
         // 위층은 기준보다 낮게(8%) 메운다 — 객실 벽면이 분모를 키워 15% 안이어도 계단참 아래 절반이 비어 보였다.
-        const ufill = fillBare(run, roomSpec, uargs, urb, new Map(urb.rooms.map((r) => [r.id, r.id.replace(/\d+$/u, "")] as const)), 8, spec.name);
-        uargs = ufill.args; urb = ufill.rb;
+        // 설계 위층은 함수가 고른 물건으로 빈 바닥을 메우지 않는다(맨바닥은 모델이 설계를 고쳐 줄인다).
+        if (!designedUp) {
+          const ufill = fillBare(run, roomSpec, uargs, urb, new Map(urb.rooms.map((r) => [r.id, r.id.replace(/\d+$/u, "")] as const)), 8, spec.name);
+          uargs = ufill.args; urb = ufill.rb;
+        }
         const upFinal = build(run, uargs);
         if (upFinal.ok) {
           lowerLink = { x: stairsUp.x + 1, y: stairsUp.y, toMapId: upperMapId, toX: d.x + 1, toY: d.y + 2, direction: "up" };
@@ -994,12 +1036,12 @@ export function coverZones(tilesetId: string, spec: PlaceSpec, zones: readonly Z
 }
 
 export const INTERIOR_CARD = `[실내 interior] make_place({type:"interior", name, style?, size?, zones:[{kind, purpose, anchors?}], floors?}).
-- ★ 방은 네가 설계한다(손 도트 실내): 먼저 room_parts({purpose}) 로 기물 이름표·견본 배치·그림을 보고, zones[].design 에 모양(shape rect·L ㄱ자·U ㄷ자·T ㅜ자·bay 창가 돌출·alcove 알코브, L·alcove 는 corner — room_parts 의 shapes·모양 그림에서 고른다, 60칸 넘는 네모는 ㅁ자로 짚힌다; 곁방은 zones 하나 더)·바닥 크기(w×h, 벽면 줄 빼고)·문(door)·재질(floor·wall)·가구 묶음(groups: name·at 벽/모서리/center·pos 0~1·rug·items[{id, dx, dy, count}])을 쓴다. 무엇을 몇 개 놓을지는 네 목록이 전부다 — 함수는 더하지 않고 칩셋에 없는 이름 맞추기·묶음 겹침·의자 방향·문 앞 통로·도달만 고쳐 결과에 「고침:」 줄로 알린다. 그 줄과 「맨바닥」 줄을 보고 design 을 고쳐 edit_place({patch:{mapId, design: 고친 설계 전체}}) 로 다시 짓는다. 견본은 참고 — 같은 배치를 베끼지 않는다. 책장·진열장(벽 가구)과 창·지도(걸이)는 북벽에만 선다. design 을 안 주면 함수가 견본으로 짓는다(네가 설계한 방이 아니다).
+- ★ 방은 네가 설계한다(손 도트 실내): 먼저 room_parts({purpose}) 로 기물 이름표·견본 배치·그림을 보고, zones[].design 에 모양(shape rect·L ㄱ자·U ㄷ자·T ㅜ자·bay 창가 돌출·alcove 알코브, L·alcove 는 corner — room_parts 의 shapes·모양 그림에서 고른다, 60칸 넘는 네모는 ㅁ자로 짚힌다; 곁방은 zones 하나 더)·바닥 크기(w×h, 벽면 줄 빼고)·문(door)·재질(floor·wall)·가구 묶음(groups: name·at 벽/모서리/center·pos 0~1·rug·items[{id, dx, dy, count}])을 쓴다. 무엇을 몇 개 놓을지는 네 목록이 전부다 — 함수는 더하지 않고 칩셋에 없는 이름 맞추기·묶음 겹침·의자 방향·문 앞 통로·도달만 고쳐 결과에 「고침:」 줄로 알린다. 그 줄과 「맨바닥」 줄을 보고 design 을 고쳐 edit_place({patch:{mapId, design: 고친 설계 전체}}) 로 다시 짓는다. 견본은 참고 — 같은 배치를 베끼지 않는다. 책장·진열장(벽 가구)과 창·지도(걸이)는 북벽에만 선다. design 을 안 주면 짓기 전에 함수가 같은 모델에게 설계를 따로 받아 짓는다(견본 방을 옮겨 심지 않는다). 위층 방(floor:2)도 각자 design 을 준다.
 - zones = 방 하나하나(칸막이로 나뉜 방). kind 낱말: tavern(선술집 홀)·kitchen·storeroom·cellar·bedroom·inn_room(객실)·study(서재)·library(서고)·living·dining·forge(대장간)·workshop·alchemy·chapel·treasury·armory·throne_room·great_hall·entrance·corridor·bathroom·cell. 한국어 낱말도 된다.
 - anchors = 그 방의 주인공 물건(낱말): 「큰 망원경」「벽난로」「바 카운터」「책장」「별자리표」「올라가는 계단」. 크면 「큰」을 붙인다. 함수가 부품 사전에서 찾아 빈 자리에 놓고, 못 찾으면 없다고 알려 준다.
 - 「2층·위층 계단」이 필요하면 anchors 에 "올라가는 계단"을 넣고 floors:2 — 위층을 짓고 계단끼리 이어 준다.
 - style: fantasy(기본 — 마법사의 탑·연금술 공방·천문대 같은 판타지도 여기, 망원경·연금술 부품이 이 칩셋에 있다) · wizarding(호그와트풍 마법 «학교» 건물만) · sengoku(전국·에도) · modern(현대 도시). 일본 현대 집은 type:"house".
-- 장소 견본: 이름이 천문대·관측소면 둥근 지붕 관측 홀, 선술집·주점·여관이면 바 카운터·벽난로·식탁이 갖춰진 통나무 홀로 짓는다(name 에 그 낱말을 넣으면 된다). 천문대는 zones [{kind:"study", anchors:["큰 망원경","별자리표","책장"]}].
+- 이름 낱말(여관·선술집·천문대…)로 정해진 방이 깔리지 않는다 — 여관 홀도 서재도 네 design 대로 선다. 큰 망원경 같은 주인공 물건은 anchors·design.groups 에 넣는다.
 - 이미 있는 방 고치기: edit_place({mapId, patch:{dressing:1}}) = 원래 방 배치·바닥은 그대로 두고 소품을 더한다. 북쪽 뒷문은 patch.set.exits:["north"] 또는 addAnchors:[{what:"북쪽 뒷문"}] — 북벽에 문을 달고 뒷방을 지어 잇는다. 바닥·벽 재질은 원래 것을 지킨다.`;
 
 /** 모델 설계(zone.design)로 방 한 칸의 layout 요청을 만든다 — 모양 → 도려 낼 귀퉁이, 크기·재질·문 자리. 모르는 재질은 알리고 뺀다. */
@@ -1026,15 +1068,9 @@ export const interiorBuilder: PlaceBuilder = {
     const notes: string[] = [];
     const missing: string[] = [];
     const prev = previous?.result.state as InteriorState | undefined;
-    let tilesetId = prev?.tilesetId ?? tilesetFor(spec.style);
-    // 주인공 물건이 고른 칩셋에 없고 기본 판타지 실내(v5)에는 있으면 v5 로 — 「마법사의 천문대」를 마법 학교 칩셋으로 지어 망원경·책장이 하나도 없었다(2026-10-23 v2 실조수).
-    if (!prev && tilesetId !== HAND_INTERIOR_TILESET_ID) {
-      const own = roomSpecOf(run.ctx.project.tilesets[tilesetId]);
-      const base = roomSpecOf(run.ctx.project.tilesets[HAND_INTERIOR_TILESET_ID]);
-      const words = (spec.zones ?? []).flatMap((z) => z.anchors ?? []);
-      const hits = (rs: typeof own) => (rs ? words.filter((w) => findPart(rs, w)).length : -1);
-      if (base && words.length && hits(base) > hits(own)) { notes.push(`주인공 물건(${words.join("·")})이 ${tilesetId} 에 ${Math.max(0, hits(own))}개, 기본 판타지 실내에 ${hits(base)}개 있어 기본 판타지 실내로 지었다`); tilesetId = HAND_INTERIOR_TILESET_ID; }
-    }
+    const sheet = prev ? { tilesetId: prev.tilesetId } : interiorTilesetOf(run.ctx.project, spec);
+    const tilesetId = sheet.tilesetId;
+    if ("note" in sheet && sheet.note) notes.push(sheet.note);
     if (/murim|wuxia|무협|무림|강호|객잔|문파|협객/iu.test(`${spec.name} ${spec.style ?? ""} ${spec.theme ?? ""}`)) missing.push(`${spec.name} — 무협 실내(무림 전용 칩셋 murim_wuxia 가 번들에 없어 ${tilesetId} 로 지었다)`);
     const roomSpec = roomSpecOf(run.ctx.project.tilesets[tilesetId]);
     if (!roomSpec) return { ok: false, mapIds: [], summary: `실내 칩셋 ${tilesetId} 이 이 프로젝트에 없다`, warnings: [], missingArt: [spec.name], calls: run.calls };
@@ -1048,7 +1084,9 @@ export const interiorBuilder: PlaceBuilder = {
     const venueAllowed = spec.hints?.furnish !== "vignette" || spec.hints?.venue === true;
     // 한 게임 안 반복 금지: 같은 장소 견본으로 지은 맵이 이 게임에 이미 있으면(그 맵을 다시 짓는 것은 빼고) 장소 견본을 건너뛰고 방 견본 변형으로 — 추리 여관의 로비·식당이 같은 16×14 통나무 홀이었다(vm1 flash mystery).
     const usedVenues = usedTemplates(run.ctx.project, mapId);
-    const venue = venueAllowed && tilesetId === HAND_INTERIOR_TILESET_ID && !(spec.zones ?? []).some((z) => z.design) && (spec.zones ?? []).filter((z) => (z.floor ?? 1) === 1).length <= 1 && (!prev || prev.venue)
+    // 장소 견본은 새로 짓는 방에 깔지 않는다(2026-10-29 사용자 원칙 «방은 모델이 설계한다, 함수는 고르지 않는다» — 23판 중 여관 1층 13개가 같은 16×14 홀이었다).
+    // 이미 장소 견본으로 지은 방을 설계 없이 고칠 때만 그 견본을 다시 쓴다(가구 비키기·물건 더하기가 같은 방에서 출발하게).
+    const venue = venueAllowed && !!prev?.venue && tilesetId === HAND_INTERIOR_TILESET_ID && !(spec.zones ?? []).some((z) => z.design) && (spec.zones ?? []).filter((z) => (z.floor ?? 1) === 1).length <= 1
       ? interiorVenues(roomSpec).find((v) => v.words.test(venueText) && (!(spec.floors && spec.floors > 1) || (spec.floors === 2 && !!v.stairs)) && (prev?.venue === v.id || !usedVenues.has(`venue-${v.id}`))) : undefined;
     if (venue) {
       const done = buildVenue(run, spec, venue, roomSpec, tilesetId, mapId, prev);
@@ -1340,7 +1378,10 @@ export const interiorBuilder: PlaceBuilder = {
         /shelf|bookcase|^cabinet\b|apothecary drawers/u, /wardrobe/u, /^(crate|chest|barrel|sack|basket|box|chopping block|seed sacks|loot sacks)\b/u];
       const same = (o: Obj) => { const h = o.id.split(/[ :]/u)[0]!; return h === head || KIN.some((k) => k.test(o.id) && k.test(part.id)); };
       // 견본 한 벌로 꾸민 방(묶음 길이 아닌 방)도 같다 — 병동 견본(가로 침대 여섯)에 「병원 침대」를 세로 침대로 덧놓아 세면대·정수기 앞을 막았다(2026-10-29 horror-ward).
-      if ((settled || !vignette) && !/계단|stair/iu.test(what) && rb.objects.some((o) => same(o) && inZone(o))) { placed.push({ zone: room.id, what, id: part.id }); continue; }
+      // 놓은 것으로 칠 때는 그 방에 실제로 있는 가구 id 로 적는다 — 찾은 부품 id(desk 1x1)로 적으면 설계 방의 desk 3x1 이 있는데도
+      // 「최종 맵에 없다(놓은 뒤 밀려났다)」 anchor-missing 실패로 셌다(2026-10-29 vm8·fvL1 terra 방탈출: 책상·책장·금고 셋 다).
+      const kin = (settled || !vignette) && !/계단|stair/iu.test(what) ? rb.objects.find((o) => same(o) && inZone(o)) : undefined;
+      if (kin) { placed.push({ zone: room.id, what, id: kin.id }); continue; }
       // 올라가는 계단: 이 방이 맨 북쪽 바깥 벽에 닿지 않으면(위에 다른 방) 맨 북쪽 방 벽에 단다 — 칸막이 속으로 오르는 계단은 틀린 그림이다.
       const isUp = part.stairs === "up" || /stairs up/u.test(part.id);
       const top = Math.min(...rb.rooms.map((r) => r.y0));

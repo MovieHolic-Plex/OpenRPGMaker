@@ -3,14 +3,18 @@
 // 조수는 이 값으로 장면·분위기·장르에 맞는 곡을 고른다(recommend_bgm, src/editor/tools/audioDescriptionTools.ts).
 // 값은 팩 제작자가 실제로 들어 보고 적은 것이다 — 없거나 모양이 틀리면 null 로 보고 이름만 쓴다.
 
-/** 곡이 맡는 장면. 조수가 recommend_bgm scene 으로 거른다. */
-export const STORE_MUSIC_SCENES = ["town", "field", "dungeon", "battle", "boss", "victory", "sad", "tense", "title", "ending"] as const;
+/**
+ * 곡이 맡는 장면. 조수가 recommend_bgm scene 으로 거른다.
+ * chase = 추격자가 쫓아올 때(아오오니식 추격 호러). 호러 팩(chase-horror …)이 곡에 sceneRoles:["chase"] 로 싣는다 — id 를 바꾸지 말 것.
+ * 연결은 set_game_audio role:'chase'(추격자가 나타날 때 바꾸고 끝나면 되돌림), 전투 곡이 아니다.
+ */
+export const STORE_MUSIC_SCENES = ["town", "field", "dungeon", "battle", "boss", "victory", "sad", "tense", "chase", "title", "ending"] as const;
 export type StoreMusicScene = (typeof STORE_MUSIC_SCENES)[number];
 
 /** 장면 이름의 한국어 낱말. 검색 태그와 설명에 같이 싣는다. */
 export const STORE_MUSIC_SCENE_LABELS: Readonly<Record<StoreMusicScene, string>> = {
   town: "마을", field: "필드", dungeon: "던전", battle: "전투", boss: "보스", victory: "승리",
-  sad: "슬픔", tense: "긴장", title: "타이틀", ending: "엔딩",
+  sad: "슬픔", tense: "긴장", chase: "추격", title: "타이틀", ending: "엔딩",
 };
 
 export interface StoreMusicMeta {

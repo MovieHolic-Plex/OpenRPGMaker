@@ -22,7 +22,8 @@ export const DUNGEON_CARD =
   "mine 광산 · sewer 하수도 · labyrinth 미궁 · cave 동굴. size small|medium|large, floors 1~5(탑·마법탑은 위로, 나머지는 아래로; 보스는 마지막 층 맨 안쪽 방). " +
   "features: 원문의 적 낱말(늑대·유령·미라·전갈·도마뱀 인간·눈알·갑옷·악마·박쥐…)과 보스 낱말(히드라·붉은 용·얼음 용·대마법사·마계의 군주…)을 그대로, " +
   "boss·chests·enemies, 장치 함정(모래 함정)·다리·마법진·레버·얼음 미끄럼·광차, flooded(물에 잠긴 방), goblin lair. 적 낱말 → 보이는 적 그림, 보스 낱말 → 보스 그림. " +
-  "hints: variant(다른 배치)·seed·direction(up|down)·gimmick·inspiration(「엘든링 같은」 게임 이름). 탑은 층마다 직접 고른다: floorShapes 「cross,spiral,hall」(아래층부터 — 중간 ring·gallery·cross·spiral·twin, 꼭대기 ring·hall·observatory), floorGimmicks 「none,teleporter」(중간 층 장치 lever·bridge·teleporter·minecart·iceslide·sandpit·none). 고치기는 variant·features·size·floors 만 — 방·소품 하나하나는 못 한다.";
+  "층은 네가 설계한다: spec.dungeonDesign = {entrance 입구 쪽, rooms[{id, role(entrance·boss·treasure·lake·camp·shrine·hall·grotto), size, shape(blob·cavern·long·shaft·ring·twin), at 맵 안 자리, water(none·pool·lake·stream), features}], links[{from,to,kind}]} — 어휘·예시 그림은 dungeon_parts, 함수는 겹침·길·도달만 고친다(설계 없이 오면 한 번 되돌려 보낸다). " +
+  "hints: variant(다른 배치)·direction(up|down)·gimmick·inspiration(「엘든링 같은」 게임 이름). 탑은 층마다 직접 고른다: floorShapes 「cross,spiral,hall」(아래층부터 — 중간 ring·gallery·cross·spiral·twin, 꼭대기 ring·hall·observatory), floorGimmicks 「none,teleporter」(중간 층 장치 lever·bridge·teleporter·minecart·iceslide·sandpit·none). 고치기는 edit_place set.dungeonDesign(고친 설계 전체)·variant·features — 소품 하나하나는 못 한다.";
 
 const KNOWN_HINTS = new Set(["type", "size", "floors", "direction", "seed", "variant", "width", "height", "populate", "flooded", "lair", "puzzle", "style", "gimmick", "inspiration", "layout", "floorShapes", "floorGimmicks"]);
 const BEODEUL_TILESET = "beodeul_city";
@@ -154,6 +155,10 @@ export function dungeonArgs(spec: PlaceSpec, keepType?: DungeonType): DungeonPla
   }
   if (/torch|횃불|door|문\s*지정/.test(text)) warnings.push("조각(문·횃불) 지정은 못 한다 — 도구가 알아서 놓는다");
   for (const [key, value] of Object.entries(spec.hints ?? {})) {
+    // 스키마 칸을 0·빈 값으로 다 채우는 모델(terra)이 있다 — 빈 값은 「안 줬다」로 읽는다. 마을의 hints.layout(자리 객체)이 던전 layout(배치 가족 낱말)으로
+    // 넘어가 author_dungeon 인자 검증에 걸렸다(2026-10-30 dd1030 terra 같은 요청 3판 모두 실패).
+    if (value === "" || value === 0 || value === null || (typeof value === "object" && !Array.isArray(value))) continue;
+    if (value === false && !KNOWN_HINTS.has(key)) continue;
     if (!KNOWN_HINTS.has(key)) { warnings.push(`알 수 없는 hints.${key} 는 무시했다`); continue; }
     if (key === "variant" || key === "style") continue;
     if (key === "type" && !(TYPES as readonly string[]).includes(String(value))) { warnings.push(`알 수 없는 type ${String(value)} → ${type}`); continue; }
@@ -166,6 +171,9 @@ export function dungeonArgs(spec: PlaceSpec, keepType?: DungeonType): DungeonPla
   for (const [re, id, name] of BOSS_WORDS) if (re.test(rest)) { boss ??= [id, name]; rest = rest.replace(new RegExp(re.source, "g"), " "); }
   const foes: string[] = [];
   for (const [re, id] of FOE_WORDS) if (re.test(rest)) { if (!foes.includes(id)) foes.push(id); rest = rest.replace(new RegExp(re.source, "g"), " "); }
+  // 조수가 설계한 층(2026-10-29): 방·길·입구 쪽은 설계 그대로 도구에 넘긴다 — 함수는 조화(겹침·길·도달)만 하고 「고침:」으로 알린다.
+  if (spec.dungeonDesign && typeof spec.dungeonDesign === "object") args.design = spec.dungeonDesign;
+  if (Array.isArray(spec.floorDesigns) && spec.floorDesigns.length) args.floorDesigns = spec.floorDesigns;
   return { args, type: args.type as DungeonType, foes, boss, missing, warnings };
 }
 
@@ -511,6 +519,11 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
     args.seed = base0 + (variant ?? 0) * 7919;
   }
   const base: Record<string, unknown> = { name: spec.name, ...args };
+  // 바깥 문 자리를 make_place·make_game 이 정해 주면(세계 방향 가장자리 길 칸) 짓기가 그 칸과 바로 잇는다 — 기본 출구(시작점 곁 갱구 자리)를 쓰지 않는다.
+  if (spec.gate && run.ctx.project.maps[spec.gate.fromMapId]) base.entrance = { fromMapId: spec.gate.fromMapId, x: spec.gate.x, y: spec.gate.y };
+  // 다시 짓기: 옛 바깥 문 칸에 짓기가 바로 잇는다(entrance) — 기본 출구 + 나중 create_transfer_pair 로 문이 둘 생기던 것.
+  else if (relink) base.entrance = { fromMapId: relink.fromMapId, x: relink.x, y: relink.y };
+  const gateAt = base.entrance as { x: number; y: number } | undefined;
   const firstCall = run.calls.length;
   const wanted = words(spec);
   const wantsFoes = args.populate !== false;
@@ -529,7 +542,9 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
     // 새로 지을 때는 이름 해시에 무작위를 더한다 — 이름만 쓰면 같은 요청이 늘 같은 던전이었다(2026-10-23 사용자 「던전 만들어 줘가 늘 비슷하다」).
     // 고치기(prev·variant)는 앞 씨앗에서 밀어 재현된다.
     const nameHash = [...spec.name].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 11);
-    const seed0 = num(args.seed) ?? (nameHash + (spec.salt ?? Math.floor(Math.random() * 90000))) % 90000;
+    // 씨앗은 요청·게임 열쇠(variety)와 이름에서 — 모델이 준 seed 는 make_place 가 버린다(2026-10-29 terra 가 seed 0·1·2 만 보내 동굴 8장이 세 무리로 같았다).
+    const keyHash = spec.variety ? [...`${spec.variety}|${spec.name}`].reduce((h, c) => (Math.imul(h, 31) + c.charCodeAt(0)) >>> 0, 17) : undefined;
+    const seed0 = num(args.seed) ?? (keyHash !== undefined ? keyHash % 90000 : (nameHash + (spec.salt ?? Math.floor(Math.random() * 90000))) % 90000);
     let best: { seed: number; score: number; gimmick?: unknown } | undefined;
     const requestedLever = /레버|lever/.test(wanted) || spec.hints?.gimmick === "lever" || spec.hints?.puzzle === "lever";
     for (let i = 0; i < (Number(args.floors) > 1 ? SEED_TRIALS - 1 : SEED_TRIALS); i++) {
@@ -558,8 +573,10 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
     dropOldGate(trial);
     if (mapId) { base.mapId = mapId; base.rebuild = true; }
     result = exec(trial);
+    if (!result.ok && base.entrance) { warnings.push(`바깥 문 자리 (${gateAt!.x},${gateAt!.y}) 와 잇지 못해 기본 출구로 지었다`); delete base.entrance; result = exec(trial); }
     // 지운 바깥 문을 다시 지은 1층 입구와 다시 잇는다 — 짓기(make_game)가 처음 이은 방식(create_transfer_pair, 던전 쪽은 입구 칸) 그대로.
-    if (result.ok && relink) {
+    // 바깥 문 자리(entrance)를 짓기에 넘겼으면 짓기가 이미 이었다 — 또 이으면 문이 둘이 된다(2026-10-30 dd1030 opus 마을+동굴: (19,0)·(30,19)).
+    if (result.ok && relink && !base.entrance) {
       const d = (result.data ?? {}) as { floors?: string[]; entrance?: { x: number; y: number } };
       const first = d.floors?.[0];
       const fm = first ? trial.ctx.project.maps[first] : undefined;
@@ -574,6 +591,7 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
   } else {
     if (mapId) base.mapId = mapId;
     result = exec(run);
+    if (!result.ok && base.entrance) { warnings.push(`바깥 문 자리 (${gateAt!.x},${gateAt!.y}) 와 잇지 못해 기본 출구로 지었다`); delete base.entrance; result = exec(run); }
   }
   const data = (result.data ?? {}) as Record<string, unknown>;
   const floors = Array.isArray(data.floors) ? (data.floors as unknown[]).filter((f): f is string => typeof f === "string") : [];
@@ -582,7 +600,8 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
     if (refused) missing.push(`${type} 던전 그림이 이 칩셋에 없다 — 가장 가까운 대체: cave 동굴(type 을 cave 로 바꿔 다시 요청)`);
     return { ok: false, mapIds: [], summary: `던전 짓기 실패: ${result.summary}`, warnings: [...warnings, ...(result.issues ?? []).map((i) => i.message)], missingArt: missing, calls: run.calls.slice(firstCall), state: prev };
   }
-  warnings.push(...(result.warnings ?? []));
+  // 쓰기 도구의 경고(「고침:」 줄 포함)는 diff.warnings 로 온다 — result.warnings 만 읽어 설계 조화 보고가 조수에게 가지 않았다(2026-10-30).
+  warnings.push(...(result.warnings ?? []), ...((result as { diff?: { warnings?: string[] } }).diff?.warnings ?? []).filter((w) => !(result.warnings ?? []).includes(w)));
   // 도구가 손잡이로 못 하는 것: 층마다 보이는 적 수, 맨 안쪽 상자. 잡몹 그룹은 실제로 놓인 적에서 읽는다.
   const floorData = (Array.isArray(data.floorData) ? data.floorData : [data]) as Record<string, unknown>[];
   const project = into.ctx.project;
