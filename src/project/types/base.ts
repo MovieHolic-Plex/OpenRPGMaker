@@ -769,6 +769,14 @@ export interface Terms {
   defend?: string;
   /** 도주 커맨드 라벨. defend 와 같은 이유로 용어에 편입한다. */
   escape?: string;
+  /** 전투에서 이겼을 때 화면 가운데 뜨는 큰 띠(기본 「승리!」). 에메랄드 화면에는 띠가 없다. */
+  battleVictory?: string;
+  /**
+   * 명령을 고를 차례의 질문 줄(기본 「{name은} 무엇을 할까?」).
+   * `{name}` = 이름 그대로, `{name은}`·`{name이}`·`{name을}` = 받침에 맞춘 조사(은/는·이/가·을/를)를 붙인 이름.
+   * 포켓몬 화면에서는 이름 자리표시자 바로 뒤 첫 빈칸이 줄바꿈이 된다.
+   */
+  battleCommandPrompt?: string;
   back?: string;
   target?: string;
   shopGreeting?: string;

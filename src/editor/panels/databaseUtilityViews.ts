@@ -20,7 +20,7 @@ import {
 } from "@/editor/panels/databaseWorkspace";
 import { storyFlagListLabel } from "@/project/storyFlags";
 import { store } from "@/project/store";
-import { defaultTermValue, TERM_KEYS, type TermKey } from "@/project/terms";
+import { defaultTermValue, formatBattleCommandPrompt, TERM_KEYS, type TermKey } from "@/project/terms";
 import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
 
@@ -462,7 +462,7 @@ const TERM_GROUPS: readonly TermGroup[] = [
     id: "battle",
     label: "전투",
     eyebrow: "전투",
-    hint: "전투 중 명령 메뉴와 대상 선택에 쓰이는 말입니다.",
+    hint: "전투 중 명령 메뉴·대상 선택·질문 줄·승리 띠에 쓰이는 말입니다. 명령 질문의 {name} 은 이름, {name은} 은 조사(은/는)를 붙인 이름입니다.",
     entries: [
       { key: "attack", label: "공격" },
       { key: "skill", label: "스킬", testid: "db-field-skill-term" },
@@ -472,6 +472,8 @@ const TERM_GROUPS: readonly TermGroup[] = [
       { key: "capture", label: "포획" },
       { key: "back", label: "뒤로" },
       { key: "target", label: "대상" },
+      { key: "battleCommandPrompt", label: "명령 질문", testid: "db-field-battle-command-prompt" },
+      { key: "battleVictory", label: "승리 띠", testid: "db-field-battle-victory" },
     ],
   },
   {
@@ -709,6 +711,8 @@ function termPreviewRows(groupId: string): readonly HTMLElement[] {
       termValue("back"),
     ]));
     rows.push(line("대상 선택", `${termValue("target")}을(를) 고르세요`));
+    rows.push(line("명령 질문", formatBattleCommandPrompt(termValue("battleCommandPrompt"), "카엘")));
+    rows.push(line("승리 띠", termValue("battleVictory")));
   } else if (groupId === "shop") {
     rows.push(line("상점 인사", termValue("shopGreeting")));
     rows.push(menu("상점 메뉴", [termValue("shopBuy"), termValue("shopSell"), termValue("shopCancel")]));

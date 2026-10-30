@@ -63,6 +63,7 @@
   `abreast` = 주인공이 보는 방향에 수직으로 나란히(첫째 화면 왼쪽, 둘째 오른쪽, 그 바깥), 칸이 막히면 옛 `nearest` 로 떨어진다(`followers.ts abreastCell`).
   옛 `nearest` 는 빈 칸 중 가장 가까운 곳이라, 적이 걸어오는 쪽(주인공 앞)에 동료가 서는 일이 있었다.
 - **보스 위협 하한은 기본값이다 (2026-10-30, 이세계 고딩 리뷰).** `upsert_enemy` 의 role boss(또는 id·이름의 boss/보스)는 `bossThreatScaling.scaleBossToStartParty(project, enemy, locked)` 로 시작 파티 기준 HP·공격·마력·민첩 하한을 건다. 이번 호출의 `enemy.stats` 에 직접 준 키(`explicitBossStats`)는 locked — 하한보다 낮아도 그대로 두고 경고에 「저자 값 유지 … maxHp 400(권장 600)」을 적는다(예전에는 저자가 짧은 보스전을 위해 준 400·430 을 590·560 으로 덮었다). 빠진 키만 올리고, 요약에 「보스 위협 하한을 기본값으로 적용: maxHp·attack…」처럼 **실제로 채운 키**를 밝힌다. 이미 있는 적을 고칠 때는 이번에 role:"boss" 를 다시 준 경우에만 하한을 건다(옛 호출의 명시값을 덮지 않음). `edit_enemy_pixel_sheet` 의 거신 칸 승격은 바닥값을 레코드에 직접 쓰고 stats 를 넘기지 않는다(명시값으로 잠기지 않게).
+- **걷기 칩 적 (2026-10-30).** `upsert_enemy.enemy.walkChip {characterResourceId, characterIndex}` 는 몬스터 그림 대신 걷기 칩(오른쪽 보기)이 전투에 서게 한다 — 사람 적·결투 상대용. 풀리지 않는 id 는 후보 목록과 함께 거부(`enemy-reference-not-found`), 지우기는 `clearFields:["walkChip"]`. 상세 `openwiki/runtime-battle.md` 「걷기 칩으로 서는 적」.
 - 보스 HP 숨김은 이미 있던 적 단위 `upsert_enemy {enemy:{id, hideHp:true}}` 를 쓴다(새 필드 없음). 「대형·횡대·보스 HP·체력 숨김」 낱말이면 `configure_companion_rules`·`upsert_enemy`·`upsert_troop`·`get_database_records` 를 연다.
 - 「대형」은 뒤따르기(`display:"follow"`)에서도 컷신 동안 횡대로 선다(장면이 끝나 걸으면 궤적으로). 폴른 스타는 10-24 의 FF6 식 `scenesOnly`(필드에서 동료 숨김)를 걷어 다시 뒤따른다.
 - 전투·저장·필드 규칙(같은 날, 사용자 7건):
@@ -3718,7 +3719,7 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
 ### 장르 기본값 걷어 내기 — HUD·오프닝 그림·결말 그림 (2026-10-25, 시타마치 2차)
 
 사용자가 시타마치를 보고 「오프닝이 에디터 기본 같다·기본 HUD·엔딩 약함·차도 위 NPC」를 짚었다. 조수가 직접 고칠 수 있게 한 것:
-- **HUD 저작** `set_project_settings({fieldHud:{theme?, menuStyle?, widgets:[…]}})` — 위젯 칸은 모두 열거된 이름 있는 속성(자유 키 없음). `widgets` 를 주면 통째로 바꾸고 테마 기본 위젯(체력·시계·도구)은 끈다. `widgets:[]` = HUD 끔. `source:"variable"` 은 없는 변수면 거절. 연애 기본값은 `widgets` 가 정해져 있으면 손대지 않는다. 시타마치: 「소원 등롱 n / 3」 하나(`condition:"nonzero"`, 왼쪽 위 종이 판).
+- **HUD 저작** `set_project_settings({fieldHud:{theme?, font?, menuStyle?, objective?, widgets:[…]}})` — `font` 는 `HUD_FONTS` 열거(auto·pixel·round·clean, 모르는 값은 거절)로 `system.fieldHud.font` 에 저장된다. 런타임 `src/player/fieldHud.ts` 가 위젯 판 `data-font` 로 읽고, auto 가 아니면 무대에 `data-hud-objective-font` 를 걸어 HUD 판 밖의 「현재 목표」 줄도 같은 글꼴로 바꾼다(`fieldHud.css`; 2026-10-30 전에는 스키마에 칸이 없어 조수가 준 글꼴이 버려졌다). 위젯 칸은 모두 열거된 이름 있는 속성(자유 키 없음). `widgets` 를 주면 통째로 바꾸고 테마 기본 위젯(체력·시계·도구)은 끈다. `widgets:[]` = HUD 끔. `source:"variable"` 은 없는 변수면 거절. 연애 기본값은 `widgets` 가 정해져 있으면 손대지 않는다. 시타마치: 「소원 등롱 n / 3」 하나(`condition:"nonzero"`, 왼쪽 위 종이 판).
 - **붓 그림 오프닝** `place_opening_background({…, resourceId, sampling:"linear"})` — 기본 nearest 는 도트·맵용이고, 1672×941 일러스트를 480×270 무대에 줄이면 계단처럼 깨진다. `mapId` 배경은 항상 nearest. 시타마치 오프닝 = 이 이야기용으로 생성한 다섯 장(공용 전신 초상으로 만든 참조 시트로 인물 일치, 감독 선택, 출처 `public/assets/generated/title/shitamachi-keyart-provenance.json`) + `animate_opening_camera` 천천히 밀기 + 자막.
 - **결말 순서**: 맵 위 마지막 대사 → `fadeOut` → `showPicture`(결말 그림, 480 무대에 29%) → `triggerEnding` → `define_ending.epilogue` 첫 비트 `{kind:"picture",action:"show"}` 위로 «그 뒤» 와 다른 인물 각자의 매듭 → 엔딩 카드. 첫사랑(`firstLove.ts endingOpen`)과 같은 모양.
 - **장면 그림(CG)**: 고백 순간·옛 사진처럼 이야기 중간의 한 장면은 `showPicture`(opacity 0) → 같은 그림 opacity 255 `durationMs` 로 서서히 띄우고, 그동안의 대사는 흉상 없이 이름표만(`changeFace` 비움) — 그림 속 인물 위에 같은 사람 흉상이 겹친다. 끝나면 opacity 0 → `erasePicture`. 시타마치 `cgIn`·`overCg`·`cgOut`.

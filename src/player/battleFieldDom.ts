@@ -1,3 +1,4 @@
+import { stateBadgeLabel } from "@/player/battleStatusLabel";
 import { enemyHidesHp } from "@/project/enemyHpVisibility";
 import { withInlineAsset } from "@/assets/inlineAssetStore";
 import { STAT_STAGE_ABBREVIATIONS, STAT_STAGE_KEYS, STAT_STAGE_LABELS } from "@/battle/statStages";
@@ -1350,7 +1351,16 @@ function enemyButton(
   // 시트는 왼쪽(적 쪽)을 보도록 그려져 있다 — 적 진영(왼쪽)에 서면 CSS 가 좌우를 뒤집어 아군 쪽을 보게 한다.
   const charsetEnemy = perEnemyUrl && resourceId && charsetBattler(resourceId) && !Object.hasOwn(store.getCurrent().assets.uploaded, resourceId)
     ? resourceId : undefined;
-  if (charsetEnemy && perEnemyUrl) {
+  // 걷기 칩으로 서는 적(EnemyRecord.walkChip): 아군 걷기 칩 배틀러와 같은 24x32 칸 그림을 오른쪽 방향 줄로 그린다.
+  // 변신 중이면 변신 그림이 우선이라 이 경로를 타지 않는다. 그림 클래스는 HP·조준·쓰러짐 규칙이 보는 battle-enemy-image 도 단다.
+  const walkChip = record?.walkChip && !enemy.transformResourceId ? record.walkChip : undefined;
+  const walkChipUrl = walkChip ? resolveAssetResourceUrl(walkChip.characterResourceId, { project: store.getCurrent() }) : null;
+  if (walkChip && walkChipUrl) {
+    const sprite = appendWalkChipBattler(enemyNode, enemy.name, walkChip.characterResourceId, walkChip.characterIndex, walkChipUrl, "right");
+    sprite.classList.add("battle-enemy-image");
+    sprite.dataset.testid = `battle-enemy-sprite-${enemy.id}`;
+    sprite.style.setProperty("--breathe-delay", `-${index * 730}ms`);
+  } else if (charsetEnemy && perEnemyUrl) {
     enemyNode.dataset.charsetEnemy = "true";
     enemyNode.dataset.battlerExtended = "true";
     enemyNode.dataset.battleCharsetResourceId = charsetEnemy;
@@ -2226,6 +2236,10 @@ function statusIconCluster(battler: BattleBattlerSnapshot): HTMLElement {
     node.dataset.testid = `battle-status-${battler.id}-${entry.icon}`;
     node.dataset.statusIcon = entry.icon;
     node.dataset.statusName = entry.name;
+    // 배지 글자는 저작한 상태 이름(게임의 언어)을 쓴다 — 한국어 게임에서 마비가 「PAR」로 떴다(2026-10-30).
+    // 이름이 배지에 안 들어가는 영문 이름이면 CSS 의 3글자 약어(PSN·PAR…)로 남는다.
+    const label = entry.icon === "death" || entry.icon.endsWith("-up") || entry.icon.endsWith("-down") ? null : stateBadgeLabel(entry.name);
+    if (label) node.dataset.statusLabel = label;
     node.setAttribute("role", "img");
     node.setAttribute("aria-label", entry.name);
     cluster.append(node);

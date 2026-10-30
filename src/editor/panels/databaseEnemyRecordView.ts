@@ -9,6 +9,8 @@ import { capturePreviewLine } from "@/editor/panels/databaseCapturePreview";
 import { switchDatabaseActiveTab } from "@/editor/panels/database";
 import { openActionContextMenu, openActionDialog } from "@/editor/panels/databaseEnemyActionDialog";
 import { openGraphicDialog } from "@/editor/panels/databaseEnemyGraphicDialog";
+import { openDatabaseResourcePickerDialog } from "@/editor/panels/databaseResourcePickerDialog";
+import { resourceControl } from "@/editor/panels/actorRecordControls";
 import { monsterResourceSummary } from "@/editor/panels/monsterResourcePresentation";
 import { setSelectedMonsterSpeciesId } from "@/editor/panels/databaseMonsterSpeciesView";
 import { monsterSpeciesForEnemy, normalizeMonsterSpeciesRecord } from "@/project/monsterCollection";
@@ -728,6 +730,31 @@ function graphicFields(record: EnemyRecord, rerender: () => void): HTMLElement[]
       record.collapseEffect ?? "dissolve",
       ENEMY_COLLAPSE_EFFECTS.map((id) => ({ id, name: ENEMY_COLLAPSE_LABELS[id] })),
       (value) => updateDatabaseRecord("enemies", record.id, { collapseEffect: normalizeEnemyCollapseEffect(value) })
+    ),
+    resourceControl(
+      "걷기 칩 (서 있는 적)",
+      "db-field-enemy-walk-chip",
+      record.walkChip?.characterResourceId ?? "",
+      (characterResourceId) => {
+        const id = characterResourceId.trim();
+        updateDatabaseRecord("enemies", record.id, {
+          walkChip: id ? { characterResourceId: id, characterIndex: currentEnemy(record).walkChip?.characterIndex ?? 0 } : undefined,
+        });
+      },
+      () =>
+        openDatabaseResourcePickerDialog({
+          kind: "charset",
+          title: "걷기 칩 (전투에 서는 적)",
+          currentId: record.walkChip?.characterResourceId,
+          currentCharacterIndex: record.walkChip?.characterIndex ?? 0,
+          testidPrefix: "db-enemy-walk-chip-dialog",
+          onConfirm: (result) => {
+            updateDatabaseRecord("enemies", record.id, {
+              walkChip: result.resourceId ? { characterResourceId: result.resourceId, characterIndex: result.characterIndex ?? 0 } : undefined,
+            });
+            rerender();
+          },
+        })
     ),
     toggleSwitch("HP 숨김 (보스) — 전투에서 HP 막대·숫자를 보이지 않는다", "db-field-enemy-hide-hp", record.hideHp === true, (hideHp) =>
       updateDatabaseRecord("enemies", record.id, { hideHp: hideHp ? true : undefined })

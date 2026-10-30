@@ -24,6 +24,8 @@ export const HORROR_SOUNDS: readonly Preset[] = [
     patch: { duration: 0.9, layers: [L("noise", 0, 0.45, 300, 300, 0.8, 0.002, 0.4), L("sine", 0, 0.6, 85, 38, 1, 0.002, 0.5)] } },
   { key: "footsteps", words: /발소리|발걸음|footstep|steps/iu, name: "공포 — 다가오는 발소리", brief: "복도 저편에서 천천히 다가오는 무거운 발소리 네 번.",
     patch: { duration: 2.4, layers: [L("noise", 0, 0.08, 300, 300, 0.25, 0.003, 0.06), L("sine", 0, 0.1, 90, 60, 0.4, 0.003, 0.08), L("noise", 0.6, 0.08, 300, 300, 0.35, 0.003, 0.06), L("sine", 0.6, 0.1, 90, 60, 0.55, 0.003, 0.08), L("noise", 1.2, 0.08, 300, 300, 0.5, 0.003, 0.06), L("sine", 1.2, 0.1, 90, 60, 0.75, 0.003, 0.08), L("noise", 1.8, 0.08, 300, 300, 0.65, 0.003, 0.06), L("sine", 1.8, 0.1, 90, 60, 1, 0.003, 0.08)] } },
+  { key: "step", words: /한 걸음|발소리 하나|single step|footfall/iu, name: "공포 — 발소리 한 걸음", brief: "딱딱한 복도 바닥을 딛는 구두 한 걸음. 걷는 추격자의 위치음(movement.footsteps)용.",
+    patch: { duration: 0.22, layers: [L("noise", 0, 0.06, 300, 300, 0.45, 0.002, 0.05), L("sine", 0, 0.12, 120, 70, 0.8, 0.002, 0.1), L("noise", 0.015, 0.09, 1800, 1800, 0.12, 0.002, 0.07)] } },
 ];
 
 export function horrorSoundFor(query: string): Preset | undefined {
