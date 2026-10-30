@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **188쪽 / 7672KB / 약 2,253,609 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **188쪽 / 7678KB / 약 2,255,503 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -38,14 +38,14 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/harnesses/monster-collect-species.md` | 63KB | 18KB | 353 | ~19,132 |
 | `openwiki/harnesses/object-gate.md` | 89KB | 12KB | 642 | ~26,964 |
 | `openwiki/harnesses/super-harness.md` | 102KB | 4KB | 1063 | ~32,225 |
-| `openwiki/jp-city.md` | 108KB | 14KB | 510 | ~31,925 |
+| `openwiki/jp-city.md` | 108KB | 14KB | 511 | ~32,096 |
 | `openwiki/runtime-battle.md` | 440KB | 32KB | 2417 | ~129,307 |
 | `openwiki/runtime-m2-flow-controls.md` | 54KB | 25KB | 346 | ~14,800 |
-| `openwiki/runtime-pre-edit-routing.md` | 203KB | 103KB ⚠상한 초과 — 절을 더 쪼개라 | 1218 | ~60,382 |
+| `openwiki/runtime-pre-edit-routing.md` | 208KB | 103KB ⚠상한 초과 — 절을 더 쪼개라 | 1249 | ~61,933 |
 | `openwiki/runtime-project-schema.md` | 264KB | 83KB ⚠상한 초과 — 절을 더 쪼개라 | 1825 | ~74,678 |
 | `openwiki/runtime-sessions.md` | 166KB | 64KB ⚠상한 초과 — 절을 더 쪼개라 | 922 | ~45,466 |
 | `openwiki/team-project-host.md` | 51KB | 5KB | 536 | ~15,628 |
-| `openwiki/testing.md` | 265KB | 48KB | 2403 | ~74,707 |
+| `openwiki/testing.md` | 266KB | 48KB | 2407 | ~74,879 |
 | `openwiki/tileset-reference-documents.md` | 60KB | 4KB | 603 | ~18,386 |
 
 ## 한국어 산문이 깨진 페이지
@@ -108,7 +108,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/gothic-manor.md` | 1 | `dist-electron/browser-bridge.js` |
 | `openwiki/growth-trees.md` | 3 | `.omo/evidence/growth-integrated/browser-presets/report.json`, `applied-bundle.json`, `verify-shots/runtime-qa/growth-tree/SUMMARY.md` |
 | `openwiki/harnesses/README.md` | 1 | `docs/superpowers/specs/2026-10-05-unified-harness-production.md` |
-| `openwiki/harnesses/assistant-capability.md` | 23 | `REPORT.md`, `agent-briefs.json`, `assessment.json`, `asset-receipts.json`, `before/after/original/trace.json`, `boxes.json`, `dist-electron/browser-bridge.js`, `dist/export-player/player.html`, `film-log.json`, `live.json`, `map-portals/after.png`, `matrix-native.json`, `matrix-score.json`, `matrix-validation.json`, `native-result.json`, `output/qa/vn2/seed-novn.json`, `page-errors.json`, `project.json`, `report.html`, `runtime-recheck.json`, `seed-novn.json`, `selfcheck.json`, `visual.json` |
+| `openwiki/harnesses/assistant-capability.md` | 22 | `REPORT.md`, `agent-briefs.json`, `assessment.json`, `asset-receipts.json`, `before/after/original/trace.json`, `boxes.json`, `dist-electron/browser-bridge.js`, `film-log.json`, `live.json`, `map-portals/after.png`, `matrix-native.json`, `matrix-score.json`, `matrix-validation.json`, `native-result.json`, `output/qa/vn2/seed-novn.json`, `page-errors.json`, `project.json`, `report.html`, `runtime-recheck.json`, `seed-novn.json`, `selfcheck.json`, `visual.json` |
 | `openwiki/harnesses/battle-backdrop.md` | 3 | `capture.png`, `facts.json`, `reference.png` |
 | `openwiki/harnesses/beodeul-architecture.md` | 1 | `qa-runs/harnesses/beodeul-architecture/structural-families-review.png` |
 | `openwiki/harnesses/beodeul-building-review.md` | 19 | `.pixels.json`, `DATA/store-uploads.json`, `output/beodeul-building-review/round7-v3-gate-status.json`, `round4-mill-pass-courtyard-rejection.json`, `round7-browser-proof.json`, `round7-new-candidates.png`, `round7-save-proof.json`, `round7-v2-texture-rejection.json`, `scripts/content/prepare-beodeul-reviewed-references.mts`, `verify-shots/beodeul-building-review/round6-save-proof.json`, `verify-shots/beodeul-building-review/round6-v1-rejection.json`, `verify-shots/beodeul-building-review/round6-v2-rejection.json`, `verify-shots/beodeul-building-review/round6-v3-rejection.json`, `verify-shots/beodeul-building-review/round6-v4-rejection.json`, `verify-shots/beodeul-building-review/round6-v5-structure-rejection.json`, `verify-shots/beodeul-building-review/round6-v6-top-rejection.json`, `verify-shots/beodeul-building-review/round6-visualqa-proof.json`, `verify-shots/beodeul-building-review/round7-v1-texture-rejection.json`, `verify-shots/beodeul-building-review/round7-visualqa-proof.json` |
@@ -2239,7 +2239,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L176` 조수 v2 가 짓는 길 (2026-10-28)
 - `L180` 한계
 
-### `openwiki/jp-city.md` — 108KB · 510줄 · ~31,925 토큰 · 통째읽기 잘림
+### `openwiki/jp-city.md` — 108KB · 511줄 · ~32,096 토큰 · 통째읽기 잘림
 
 - `L6` 식별자
 - `L17` 파일
@@ -2276,16 +2276,16 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L357` AI 참고문서 (10용도 · 61쪽 · 그림 167장)
   - `L374` 굽는 법 (한 줄)
 - `L389` 거리 구성기 `compose_jp_city_street` (2026-10-12)
-- `L400` 하천 거리 (2026-10-12)
-- `L406` 일체형 1층 정면 (2026-10-12)
-- `L413` 고층·거리 소품 (2026-10-13)
-- `L418` 조수 지침: compose 우선 (2026-10-13)
-- `L422` 상가 띠 3/4 관문 = 조립 건물 영수증 (2026-10-13)
-- `L429` 빈터 쓰임 단계 `fillLotUses` (2026-10-14)
-- `L440` 일본 집 보강 8종 `interior_house3` — object-gen, 3/4 관문 보류 (2026-10-21)
-- `L454` 시설 실내 6묶음 — 병원·학교 별관·IT 사옥 + 방 구성(program)·길 고르기 (2026-10-14)
-- `L472` 숲 — 조수 도구 `paint_jp_forest`·지역/거리 숲·참고문서 `jp-forest` (2026-10-21, PR #3058)
-- `L496` 거리 계단 — 육교·옆 계단·단상·벽 사다리 (블록 `street_stairs`, `BLOCK_ORDER` 끝, 2026-10-22)
+- `L401` 하천 거리 (2026-10-12)
+- `L407` 일체형 1층 정면 (2026-10-12)
+- `L414` 고층·거리 소품 (2026-10-13)
+- `L419` 조수 지침: compose 우선 (2026-10-13)
+- `L423` 상가 띠 3/4 관문 = 조립 건물 영수증 (2026-10-13)
+- `L430` 빈터 쓰임 단계 `fillLotUses` (2026-10-14)
+- `L441` 일본 집 보강 8종 `interior_house3` — object-gen, 3/4 관문 보류 (2026-10-21)
+- `L455` 시설 실내 6묶음 — 병원·학교 별관·IT 사옥 + 방 구성(program)·길 고르기 (2026-10-14)
+- `L473` 숲 — 조수 도구 `paint_jp_forest`·지역/거리 숲·참고문서 `jp-forest` (2026-10-21, PR #3058)
+- `L497` 거리 계단 — 육교·옆 계단·단상·벽 사다리 (블록 `street_stairs`, `BLOCK_ORDER` 끝, 2026-10-22)
 
 ### `openwiki/licensing.md` — 7KB · 62줄 · ~2,064 토큰
 
@@ -2893,44 +2893,45 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L329` 그림 컷 준비와 direction (2026-10-04)
 - `L337` 글자·장면 오프닝 연출 (2026-10-04)
 
-### `openwiki/runtime-pre-edit-routing.md` — 203KB · 1218줄 · ~60,382 토큰 · 통째읽기 잘림
+### `openwiki/runtime-pre-edit-routing.md` — 208KB · 1249줄 · ~61,933 토큰 · 통째읽기 잘림
 
-- `L1` 목표 안내창 자리·한국어 줄바꿈·숫자 입력 (2026-10-28, 장부 hud.json)
-- `L47` 카메라 스크롤은 캔버스 픽셀 격자에 맞춘다 (2026-10-23)
-- `L54` 지상 격자 위로 돌출한 원본 구조 (2026-10-06)
-- `L63` 태양 지형 그림자 (2026-10-04)
-- `L69` ★ 기물 뒤에 가려진 주인공 실루엣 (2026-10-29)
-- `L80` 도트 게임은 정수 배율로 보인다 (2026-10-30)
-- `L94` 작은 방은 화면을 채운다 · 어둠 막은 맵 안에만 (2026-10-28)
-- `L125` 내보낸 게임의 화면 배율 (2026-10-04 → 2026-10-20 개정)
-- `L142` 그림 아이콘을 조사 물체로 쓴다 (2026-10-04)
-- `L723` 게임 화면의 2층·그림자·4층 (MZ식 4층, 2026-09-24)
-- `L750` 맵별 16/32/48px 좌표
-- `L754` ESC skill thumbnails (2026-09-06)
-- `L765` Recovered head emotes (2026-09-05)
-- `L771` 메뉴 입력·불러오기 배율 (2026-09-05)
-- `L779` 가구 밀기 애니메이션 (2026-09-05)
-- `L788` Recovered head emotes (2026-09-05)
-- `L794` Saved uploaded tilesets in the actual player (2026-09-14)
-- `L815` 맵 배경(패럴랙스) 렌더 (2026-09-14)
-- `L844` 맵 배경 다중 레이어 (2026-09-21)
-- `L896` 맵 배경 깊이(카메라 따라가기)·흐름 배율 — 회상 파노라마 (2026-09-27)
-- `L944` 맵 배경 사용성 — OPRN 자체 파노라마 견본·움직임 프리셋·게임 화면 미리보기 (2026-10-21)
-- `L989` 맵 배경 조수 경로 — 견본 고르기 정확도·새 배경 생성 generate_map_background (2026-10-22)
-- `L1016` 맵 배경 「다른 맵 보기」 층 `fromMap` (2026-10-24)
-- `L1024` 8차 맵 진입 (2026-09-28)
-- `L1057` 화면 주변 타일 유지 (2026-10-01)
-- `L1086` 자유 크기 인물 프레임의 발 기준점 (2026-10-06)
-- `L1098` Independent opening timelines
-- `L1102` Monster authoring dogfood (2026-10-03)
-- `L1113` 위쪽 대사창의 흉상·전신 초상 (2026-10-17 romance-loop-1)
-  - `L1120` 흉상·전신이 있는 대사는 대사창이 항상 아래 (2026-10-17, vn-bust-bottom-1)
-- `L1137` 대사창은 고정 틀 (2026-10-22, dialogue-stable-frame)
-- `L1168` 엔딩 카드 글자는 게임 언어 (2026-10-22)
-- `L1176` 대사창 읽기 보조 — 백로그·오토·스킵·숨기기 (2026-10-17, 미연시 시스템 UI 1단계)
-  - `L1187` 대사창 읽기 보조 수리 1 (2026-10-17, 적대 리뷰 D1~D12)
-- `L1199` 미연시 추가 화면 — 갤러리 잠금·엔딩 목록·세이브 카드 (2026-10-17, 미연시 시스템 UI 2단계)
-- `L1212` 인물 연출 런타임 — approach·turnToward·대사 자동 돌아보기 (2026-10-22)
+- `L1` 큰 타일셋 이식 아틀라스는 워커에서 굽고 GPU 에 띠씩 올린다 (2026-10-30)
+- `L32` 목표 안내창 자리·한국어 줄바꿈·숫자 입력 (2026-10-28, 장부 hud.json)
+- `L78` 카메라 스크롤은 캔버스 픽셀 격자에 맞춘다 (2026-10-23)
+- `L85` 지상 격자 위로 돌출한 원본 구조 (2026-10-06)
+- `L94` 태양 지형 그림자 (2026-10-04)
+- `L100` ★ 기물 뒤에 가려진 주인공 실루엣 (2026-10-29)
+- `L111` 도트 게임은 정수 배율로 보인다 (2026-10-30)
+- `L125` 작은 방은 화면을 채운다 · 어둠 막은 맵 안에만 (2026-10-28)
+- `L156` 내보낸 게임의 화면 배율 (2026-10-04 → 2026-10-20 개정)
+- `L173` 그림 아이콘을 조사 물체로 쓴다 (2026-10-04)
+- `L754` 게임 화면의 2층·그림자·4층 (MZ식 4층, 2026-09-24)
+- `L781` 맵별 16/32/48px 좌표
+- `L785` ESC skill thumbnails (2026-09-06)
+- `L796` Recovered head emotes (2026-09-05)
+- `L802` 메뉴 입력·불러오기 배율 (2026-09-05)
+- `L810` 가구 밀기 애니메이션 (2026-09-05)
+- `L819` Recovered head emotes (2026-09-05)
+- `L825` Saved uploaded tilesets in the actual player (2026-09-14)
+- `L846` 맵 배경(패럴랙스) 렌더 (2026-09-14)
+- `L875` 맵 배경 다중 레이어 (2026-09-21)
+- `L927` 맵 배경 깊이(카메라 따라가기)·흐름 배율 — 회상 파노라마 (2026-09-27)
+- `L975` 맵 배경 사용성 — OPRN 자체 파노라마 견본·움직임 프리셋·게임 화면 미리보기 (2026-10-21)
+- `L1020` 맵 배경 조수 경로 — 견본 고르기 정확도·새 배경 생성 generate_map_background (2026-10-22)
+- `L1047` 맵 배경 「다른 맵 보기」 층 `fromMap` (2026-10-24)
+- `L1055` 8차 맵 진입 (2026-09-28)
+- `L1088` 화면 주변 타일 유지 (2026-10-01)
+- `L1117` 자유 크기 인물 프레임의 발 기준점 (2026-10-06)
+- `L1129` Independent opening timelines
+- `L1133` Monster authoring dogfood (2026-10-03)
+- `L1144` 위쪽 대사창의 흉상·전신 초상 (2026-10-17 romance-loop-1)
+  - `L1151` 흉상·전신이 있는 대사는 대사창이 항상 아래 (2026-10-17, vn-bust-bottom-1)
+- `L1168` 대사창은 고정 틀 (2026-10-22, dialogue-stable-frame)
+- `L1199` 엔딩 카드 글자는 게임 언어 (2026-10-22)
+- `L1207` 대사창 읽기 보조 — 백로그·오토·스킵·숨기기 (2026-10-17, 미연시 시스템 UI 1단계)
+  - `L1218` 대사창 읽기 보조 수리 1 (2026-10-17, 적대 리뷰 D1~D12)
+- `L1230` 미연시 추가 화면 — 갤러리 잠금·엔딩 목록·세이브 카드 (2026-10-17, 미연시 시스템 UI 2단계)
+- `L1243` 인물 연출 런타임 — approach·turnToward·대사 자동 돌아보기 (2026-10-22)
 
 ### `openwiki/runtime-project-schema.md` — 264KB · 1825줄 · ~74,678 토큰 · 통째읽기 잘림
 
@@ -3426,7 +3427,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L70` 저장·크기 변경
 - `L79` 확인
 
-### `openwiki/testing.md` — 265KB · 2403줄 · ~74,707 토큰 · 통째읽기 잘림
+### `openwiki/testing.md` — 266KB · 2407줄 · ~74,879 토큰 · 통째읽기 잘림
 
 - `L3` AI 세션 테스트의 모델 id 는 임의로 짓지 않는다 (2026-09-14)
 - `L19` 전체 스위트가 워커 힙에서 죽던 문제 (2026-09-11)
@@ -3505,44 +3506,44 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L1599` 메뉴 적대적 플레이 회귀 (2026-09-05)
   - `L1611` 바라보는 방향 기록 — `recordUntilJs` (2026-10-21)
   - `L1626` 런타임 QA 체크포인트 — 늦은 단계는 타이틀부터 다시 하지 않는다 (2026-10-21, hard rule)
-- `L1814` sceneTestRunner 의 자율 이동 관측 공백 (2026-08-27)
-- `L1821` NPC 배회 런타임 QA — `npm run qa:runtime -- --scenario npc-movement` (2026-09-17)
-- `L1835` fakeDom 은 프로덕션이 쓰는 브라우저 전역을 빠짐없이 준다 (2026-08-29)
-  - `L1856` Shared fake DOM enhancement contracts (2026-09-08)
-- `L1888` bugfix-sweep 실제 표면 하네스 (2026-08-29)
-- `L1901` 마을 설계서 (2026-09-05)
-- `L1906` 공포 제작 개정 QA와 개발 서버 전송 (2026-09-05)
-- `L1916` 상점 진열 중심 편집 검증 (2026-09-05)
-- `L1924` 실제 DB로 나가는 전체 검사 요청 (2026-09-05 실측)
-- `L1930` Request-bound functional acceptance verification (2026-09-07)
-- `L1998` 조수 보상 저작과 출하 플레이어 검증 (2026-09-06)
-- `L2008` 실내 조립·형상 검증 (2026-09-05)
-- `L2012` Feature16 player preferences / inventory / shop (2026-09-21)
-- `L2024` Feature16 통합 검증 (2026-09-21)
-  - `L2032` 필드 HUD 브라우저 증거 (2026-09-21)
-  - `L2038` 장르 HUD 시각 확인 (2026-09-21)
-- `L2046` 실제 첫 생성 → 정본 재로드 → 출하 ZIP 플레이 (2026-10-03)
-- `L2071` 맵 크기 성능 실측 (2026-10-01)
-  - `L2092` 화면 주변 타일 유지 검증
-  - `L2115` 공식 512×512 저작 상한 검증
-  - `L2143` 공식 1024×1024 저작 상한과 성능 검증
-- `L2161` 첫 자동 게임의 실제 대사 대기 (2026-10-04)
-  - `L2177` Maker repair and click-first startup (2026-10-04)
-- `L2202` 조수 기능별 실제 수행 점검 (2026-10-05)
-- `L2206` FF6 수정 A 헤드리스 프로브 (2026-10-15)
-- `L2212` 몬스터 여정 영상 (2026-10-07)
-- `L2219` 세계 변형·입구·지형 조우 · ct-vehicle 픽스처 (2026-10-15, worker B)
-- `L2229` 필드 스킬 게이트 시험 (2026-10-15, FF6 수정 C)
-- `L2248` CT 회귀 시나리오 복구 (2026-10-15)
-- `L2259` 팀 교대 전투 프로브 (2026-10-15, FF6 수정 A)
-- `L2267` `qa:game check` 자동 플레이가 연애물을 거짓으로 막던 네 원인 (2026-10-16)
-- `L2279` 연애 조수 한 편의 완성도 측정 — 조수 대용 3판 (2026-10-16, 2차 수리 C)
-- `L2285` 몬스터 마을 시스템 시각 QA (2026-10-16)
-- `L2289` 연애 3차 수리 검증 — 조수 대용 + 출하 플레이어 (2026-10-16, romance-fix-3)
-- `L2296` 대사창 읽기 보조 검증 (2026-10-17)
-- `L2303` 미연시 추가 화면 검증 (2026-10-17)
-- `L2310` 에이전트 플레이 세션 · 재현 · 게임 카탈로그 (2026-10-22)
-  - `L2355` 실물 게임(SQLite) 전투 런타임 QA — `qa:runtime --whole-game` (2026-10-29)
+- `L1818` sceneTestRunner 의 자율 이동 관측 공백 (2026-08-27)
+- `L1825` NPC 배회 런타임 QA — `npm run qa:runtime -- --scenario npc-movement` (2026-09-17)
+- `L1839` fakeDom 은 프로덕션이 쓰는 브라우저 전역을 빠짐없이 준다 (2026-08-29)
+  - `L1860` Shared fake DOM enhancement contracts (2026-09-08)
+- `L1892` bugfix-sweep 실제 표면 하네스 (2026-08-29)
+- `L1905` 마을 설계서 (2026-09-05)
+- `L1910` 공포 제작 개정 QA와 개발 서버 전송 (2026-09-05)
+- `L1920` 상점 진열 중심 편집 검증 (2026-09-05)
+- `L1928` 실제 DB로 나가는 전체 검사 요청 (2026-09-05 실측)
+- `L1934` Request-bound functional acceptance verification (2026-09-07)
+- `L2002` 조수 보상 저작과 출하 플레이어 검증 (2026-09-06)
+- `L2012` 실내 조립·형상 검증 (2026-09-05)
+- `L2016` Feature16 player preferences / inventory / shop (2026-09-21)
+- `L2028` Feature16 통합 검증 (2026-09-21)
+  - `L2036` 필드 HUD 브라우저 증거 (2026-09-21)
+  - `L2042` 장르 HUD 시각 확인 (2026-09-21)
+- `L2050` 실제 첫 생성 → 정본 재로드 → 출하 ZIP 플레이 (2026-10-03)
+- `L2075` 맵 크기 성능 실측 (2026-10-01)
+  - `L2096` 화면 주변 타일 유지 검증
+  - `L2119` 공식 512×512 저작 상한 검증
+  - `L2147` 공식 1024×1024 저작 상한과 성능 검증
+- `L2165` 첫 자동 게임의 실제 대사 대기 (2026-10-04)
+  - `L2181` Maker repair and click-first startup (2026-10-04)
+- `L2206` 조수 기능별 실제 수행 점검 (2026-10-05)
+- `L2210` FF6 수정 A 헤드리스 프로브 (2026-10-15)
+- `L2216` 몬스터 여정 영상 (2026-10-07)
+- `L2223` 세계 변형·입구·지형 조우 · ct-vehicle 픽스처 (2026-10-15, worker B)
+- `L2233` 필드 스킬 게이트 시험 (2026-10-15, FF6 수정 C)
+- `L2252` CT 회귀 시나리오 복구 (2026-10-15)
+- `L2263` 팀 교대 전투 프로브 (2026-10-15, FF6 수정 A)
+- `L2271` `qa:game check` 자동 플레이가 연애물을 거짓으로 막던 네 원인 (2026-10-16)
+- `L2283` 연애 조수 한 편의 완성도 측정 — 조수 대용 3판 (2026-10-16, 2차 수리 C)
+- `L2289` 몬스터 마을 시스템 시각 QA (2026-10-16)
+- `L2293` 연애 3차 수리 검증 — 조수 대용 + 출하 플레이어 (2026-10-16, romance-fix-3)
+- `L2300` 대사창 읽기 보조 검증 (2026-10-17)
+- `L2307` 미연시 추가 화면 검증 (2026-10-17)
+- `L2314` 에이전트 플레이 세션 · 재현 · 게임 카탈로그 (2026-10-22)
+  - `L2359` 실물 게임(SQLite) 전투 런타임 QA — `qa:runtime --whole-game` (2026-10-29)
 
 ### `openwiki/tile-geometry.md` — 12KB · 145줄 · ~3,629 토큰
 
