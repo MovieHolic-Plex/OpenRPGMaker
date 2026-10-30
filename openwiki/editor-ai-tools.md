@@ -3722,6 +3722,7 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
 - **결말 순서**: 맵 위 마지막 대사 → `fadeOut` → `showPicture`(결말 그림, 480 무대에 29%) → `triggerEnding` → `define_ending.epilogue` 첫 비트 `{kind:"picture",action:"show"}` 위로 «그 뒤» 와 다른 인물 각자의 매듭 → 엔딩 카드. 첫사랑(`firstLove.ts endingOpen`)과 같은 모양.
 - **장면 그림(CG)**: 고백 순간·옛 사진처럼 이야기 중간의 한 장면은 `showPicture`(opacity 0) → 같은 그림 opacity 255 `durationMs` 로 서서히 띄우고, 그동안의 대사는 흉상 없이 이름표만(`changeFace` 비움) — 그림 속 인물 위에 같은 사람 흉상이 겹친다. 끝나면 opacity 0 → `erasePicture`. 시타마치 `cgIn`·`overCg`·`cgOut`.
 - **결말 카드 흉상 끄기** `define_ending.presentation.portraits:"none"` — 결말 그림에 이미 두 사람이 그려져 있으면 카드 위 커플 흉상을 그리지 않는다(`playSceneOverlays.buildEndingCg`). 기본 `auto`.
+- **결말 글 판 자리** `define_ending.presentation.textSide:"left"|"right"|"center"`(2026-10-30) — 초상 없는 장면 엔딩(`data-ending-cg="scene"`)에서 에필로그 판·크레딧·끝 장·안내를 한쪽 44% 기둥으로 옮기고(`data-text-side`, `gameOver.css`), 비네트 중심을 반대편으로 민다. 결말 그림의 인물을 반대편 삼분선에 두라는 뜻 — 가운데 판(16%~84%)이 인물을 화면 끝으로 몰았다(첫사랑 r4). 기본 가운데.
 - **듣는 사람 흉상은 불투명**(`dialogue.css`·`dialogueStyles.css`) — 반투명(0.9·0.96)이면 뒤 배경이 비쳐 «유령»으로 읽혔다(VQA r1). 누가 말하는지는 밝기·크기로 가린다.
 - **타이틀**: `set_title_screen({logoStyle:"gold", menuStyle:"plain"})` — 기본 창 메뉴·glow 글자는 차가운 파란 기본 스킨으로 읽혔다. 메뉴 글자 크기 `menuFontPx` 는 아직 도구 인자가 아니다(데이터 필드만 있음).
 - 하네스 과제(scene-lessons-seed): `story-hud-replaces-genre-default`(19537) · `painted-opening-from-story-stills`(19538) · `ending-scene-then-final-image`(19539) · `npcs-stand-on-sidewalks`(19540) · `confession-cg-over-dialogue`(19541) · `lanterns-visibly-light`(19542).

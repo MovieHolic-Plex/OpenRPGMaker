@@ -489,6 +489,8 @@ export function showEndingScreen(scene: PlaySceneContext, title: string, message
     const cg = isEmeraldMonsterStyle(store.getCurrent()) ? undefined : buildEndingCg(terminal, store.getCurrent(), presentation, endingId);
     if (cg) {
       terminal.root.dataset.endingCg = cg.mode;
+      // 장면 엔딩의 글 판을 한쪽 기둥으로(그림의 인물을 반대편 삼분선에 비운다). 초상 엔딩은 이미 글이 오른쪽이다.
+      if (cg.mode === "scene" && (presentation?.textSide === "left" || presentation?.textSide === "right")) terminal.root.dataset.textSide = presentation.textSide;
       terminal.root.prepend(cg.layer);
     } else addBackground(terminal, presentation?.backgroundResourceId);
     playTerminalMusic(terminal, store.getCurrent(), presentation?.musicResourceId, "ending-music");
