@@ -99,10 +99,26 @@ const WORDS: readonly [RegExp, string][] = [
 ];
 
 /** Known id wins; custom records use element → words → effect, never animation filename. */
+/**
+ * 스킬의 animationId 가 스토어에서 넣은 시트(출처 origin 이 있는 업로드 에셋)를 쓰는 레코드인가.
+ * 계약(retroChoreographyId·직업 스킬 id)이 없는 스킬은 측면 전투가 자동 연출을 붙이고 그때 lastAnimation 을 그리지 않아,
+ * 스토어 애니메이션을 기술에 달아도 보이지 않았다. 스토어 시트에만 한정해 옛 프로젝트의 연출은 바꾸지 않는다.
+ */
+function usesStoreBattleAnimation(skill: Partial<SkillRecord>): boolean {
+  const id = skill.animationId;
+  if (!id) return false;
+  const project = store.getCurrent();
+  const record = project.database.battleAnimations.find((entry) => entry.id === id);
+  const asset = record?.resourceId && Object.hasOwn(project.assets.uploaded, record.resourceId) ? project.assets.uploaded[record.resourceId] : undefined;
+  return Boolean(asset?.origin);
+}
+
 export function retroSkillRecipe(skill: Pick<SkillRecord, "id" | "name" | "elementId" | "effect" | "retroChoreographyId"> & Partial<SkillRecord> | undefined): RetroSkillRecipe | undefined {
   if (!skill) return undefined;
   // 계약 직업 스킬은 자기 타임라인으로 재생한다(아래 driveRetroClassSkill). 속성·낱말 추정으로 옛 레시피를 붙이지 않는다.
   if (resolveSkillChoreography(skill, choreographyRecords())) return undefined;
+  // 스토어에서 넣은 전투 애니메이션을 단 스킬은 그 애니메이션이 연출이다 — 낱말·속성·자동 추천 연출로 덮지 않는다(2026-10-31).
+  if (usesStoreBattleAnimation(skill)) return undefined;
   const exact = RETRO_SKILL_RECIPES[skill.id];
   if (exact) return exact;
   // 계약도 레시피도 없는 스킬은 기전·속성·범위로 고른 직업 연출(자동 추천)이 재생한다 — 옛 속성/낱말 추정은 그 기전이 없는 종류만.
@@ -294,7 +310,7 @@ function choreographyRecords() {
 /** 이 레코드가 계약 직업 스킬이면 그 계약(또는 프로젝트 연출 레코드로 합성한 같은 모양). */
 export function retroClassSkillRecord(skill: Pick<SkillRecord, "id" | "retroChoreographyId"> & Partial<SkillRecord> | undefined): RetroClassSkill | undefined {
   const resolved = resolveRetroClassChoreography(skill, choreographyRecords());
-  if (resolved || !skill || RETRO_SKILL_RECIPES[skill.id] || !skill.effect || !skill.name || !skill.scope) return resolved;
+  if (resolved || !skill || RETRO_SKILL_RECIPES[skill.id] || !skill.effect || !skill.name || !skill.scope || usesStoreBattleAnimation(skill)) return resolved;
   return recommendRetroChoreography(skill as Parameters<typeof recommendRetroChoreography>[0])?.skill;
 }
 

@@ -61,7 +61,11 @@ function normalizeAssetScale(value: number | undefined): number {
 
 function normalizeAnimationFrames(frames: readonly Partial<BattleAnimationFrame>[] | undefined): BattleAnimationFrame[] {
   const source = frames?.length ? frames : [{ cells: [defaultAnimationCell()] }];
-  return source.map((frame) => ({ cells: normalizeAnimationCells(frame.cells) }));
+  return source.map((frame) => {
+    const hold = typeof frame.hold === "number" && Number.isFinite(frame.hold) ? clampInteger(frame.hold, 1, 16) : 1;
+    // 1(기본)은 저장하지 않는다 — 옛 JSON 바이트 유지.
+    return { cells: normalizeAnimationCells(frame.cells), ...(hold > 1 ? { hold } : {}) };
+  });
 }
 
 function normalizeAnimationCells(cells: readonly Partial<BattleAnimationCell>[] | undefined): BattleAnimationCell[] {
