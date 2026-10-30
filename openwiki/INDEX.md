@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **188쪽 / 7617KB / 약 2,236,929 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **188쪽 / 7639KB / 약 2,243,830 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -16,9 +16,9 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
 |---|---|---|---|---|
 | `openwiki/asset-store.md` | 53KB | 16KB | 352 | ~15,810 |
-| `openwiki/assistant-v2.md` | 155KB | 46KB | 431 | ~47,361 |
+| `openwiki/assistant-v2.md` | 165KB | 46KB | 442 | ~50,286 |
 | `openwiki/atlas-biome-interior.md` | 109KB | 21KB | 534 | ~32,760 |
-| `openwiki/beodeul-city.md` | 218KB | 19KB | 1102 | ~66,201 |
+| `openwiki/beodeul-city.md` | 231KB | 19KB | 1135 | ~70,177 |
 | `openwiki/charset-actor-harness.md` | 70KB | 7KB | 501 | ~22,135 |
 | `openwiki/editor-ai-panel.md` | 718KB | 100KB ⚠상한 초과 — 절을 더 쪼개라 | 4650 | ~211,017 |
 | `openwiki/editor-ai-tools.md` | 594KB | 90KB ⚠상한 초과 — 절을 더 쪼개라 | 3955 | ~174,209 |
@@ -73,7 +73,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/ai-workflow.md` | 10 | `.omo/evidence/ai-assistant-failure-modes.md`, `20260709000000_ai_activity_logs.sql`, `docs/2026-07-10-tool-calling-architecture-review.md`, `docs/tool-catalog.md`, `latest.json`, `src/ai/plannerSkip.ts`, `test/authorVillageScopeGate.test.ts`, `test/legacyDbRlsCoverage.node.test.mjs`, `test/tilesetAiClient.test.ts`, `test/volumeContractSession.test.ts` |
 | `openwiki/architecture.md` | 10 | `.lazy.ts`, `.mjs`, `app.cjs`, `bridge.js`, `dist-electron/main.cjs`, `dist-electron/project-core.cjs`, `dist/start-screen.html`, `editor-demo-load.mjs`, `player.js`, `project.json` |
 | `openwiki/asset-store.md` | 21 | `DATA/store-uploads.json`, `OpenRPGMaker-store/scripts/storeCli.ts`, `deploy/README.md`, `installed.json`, `loading.json`, `migrations/012_games.sql`, `migrations/016_game_saves.sql`, `migrations/017_creator_voice.sql`, `packs/pNNN.json`, `preload-files.json`, `preload-sw.js`, `public/cloudsave.js`, `scripts/check-contract.mjs`, `scripts/games-host.mjs`, `src/gameSaves.ts`, `src/games.ts`, `src/markdown.ts`, `src/posts.ts`, `src/web/changelog.ts`, `src/web/discoverPages.ts`, `test/changelog.test.ts` |
-| `openwiki/assistant-v2.md` | 5 | `assistant-whole-game/tools/hplay.mjs`, `refs/anchors.json`, `suite/dungeon-design-fp.py`, `suite/ledger/handoff-study.md`, `suite/prompts.json` |
+| `openwiki/assistant-v2.md` | 7 | `assistant-whole-game/tools/hplay.mjs`, `refs/anchors.json`, `scene.json`, `scene_start.mts`, `suite/dungeon-design-fp.py`, `suite/ledger/handoff-study.md`, `suite/prompts.json` |
 | `openwiki/atlas-biome-interior.md` | 8 | `.loop.json`, `.loop.png`, `interior-merged-palette.html`, `public/assets/atlas-biomes/jungle-chipset.png`, `public/assets/atlas-interior/dungeon-chipset.png`, `scripts/content/atlas-dungeon/split-dungeon.mjs`, `src/assets/atlasBiomeDungeonTileset.json`, `verify-shots/interior-bake-4/new-objects.png` |
 | `openwiki/authoring-play-presets.md` | 1 | `catalog-96.json` |
 | `openwiki/autotiles.md` | 13 | `install-pixel-art-world-shared-host.mjs`, `pixelArtWorldAutotiles.ts`, `prepare-pixel-art-world-xp-library.mjs`, `publish-pixel-art-world-xp-library.mjs`, `reports/pr617-621-integration.md`, `src/assets/tiboRecoveredTileset.json`, `src/project/defaults/iceGrandPlain64.ts`, `src/project/defaults/tallGrassArrange.ts`, `test/iceGrandPlain64.test.ts`, `test/placeConceptRender.test.ts`, `test/villageBuilder.test.ts`, `tiboRecovery.test.ts`, `wildRouteForest.ts` |
@@ -318,7 +318,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L247` 바로 플레이 게임 (2026-10-23)
   - `L344` 조수와 평가 (2026-10-25)
 
-### `openwiki/assistant-v2.md` — 155KB · 431줄 · ~47,361 토큰 · 통째읽기 잘림
+### `openwiki/assistant-v2.md` — 165KB · 442줄 · ~50,286 토큰 · 통째읽기 잘림
 
 - `L16` 다양성 — 같은 요청이 같은 맵이 되지 않게 (2026-10-23)
 - `L24` 방은 모델이 설계한다 — 견본을 깔지 않는다 (2026-10-29 맵 같음 감사)
@@ -332,13 +332,13 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L180` 조사 자리·조사 표식 (2026-10-29 vm3 terra escape «책상 정면에서는 반응 없음·하이라이트가 흐림»)
 - `L258` 길 찾기 2차 (2026-10-29 vm7 판정 «동굴 가는 길·나무 구멍·용사의 검·안락의자 단서»)
 - `L282` 던전·동굴은 조수가 설계한다 (2026-10-29 맵 똑같음 조사 «동굴 28장 중 26장이 한 공식»)
-- `L298` 씬 벤치 1회차 수리 (2026-10-30 sc-1030a terra · sc-1030s-b1~b4 opus)
-- `L316` 끝맺음 단계 더하기 (2026-10-29 단계 목록화)
-- `L325` 켜는 법
-- `L332` 구조 — v1 실행기를 그대로 쓴다
-- `L350` 빌더가 하는 것 / 못 하는 것
-- `L409` 시험
-- `L417` v1 비교 결과 (2026-10-23, 코드 e06766bd8d)
+- `L306` 씬 벤치 1회차 수리 (2026-10-30 sc-1030a terra · sc-1030s-b1~b4 opus)
+- `L327` 끝맺음 단계 더하기 (2026-10-29 단계 목록화)
+- `L336` 켜는 법
+- `L343` 구조 — v1 실행기를 그대로 쓴다
+- `L361` 빌더가 하는 것 / 못 하는 것
+- `L420` 시험
+- `L428` v1 비교 결과 (2026-10-23, 코드 e06766bd8d)
 
 ### `openwiki/atlas-biome-interior.md` — 109KB · 534줄 · ~32,760 토큰 · 통째읽기 잘림
 
@@ -424,7 +424,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L131` 함정 목록
 - `L161` 실린 자산의 실측값
 
-### `openwiki/beodeul-city.md` — 218KB · 1102줄 · ~66,201 토큰 · 통째읽기 잘림
+### `openwiki/beodeul-city.md` — 231KB · 1135줄 · ~70,177 토큰 · 통째읽기 잘림
 
 - `L3` 출처 정정 (2026-10-22) — RTP 파생 칸은 크레딧, 나무는 다시 그렸다
 - `L46` 2026-10-05 건물 반려와 사람의 허용/거절 대기열
@@ -471,24 +471,26 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L728` 높은 단 오르막·고립 방지·포구 길가·둥근 울타리 (2026-10-11 후속)
   - `L751` 지형 먼저 — 마을 짓기의 기본 순서 (2026-10-29)
   - `L796` 코드 지형 + 조수 배치 + 칩셋 계단 (2026-10-30)
-- `L824` 작은 마을 길·마당 구도 보정 (2026-10-04)
-- `L829` 우물 공동마당으로 원본 마을 재배치 (2026-10-04)
-- `L834` 공동마당 식생·울타리/돌벽 보정 (2026-10-04)
-  - `L839` 마을·붓 숲 = 이어진 수관 오토타일 (2026-10-22, 「숲 오토타일을 제대로 적용해야 함」)
-  - `L869` woodland 보정 (2026-10-20)
-- `L888` 기와 복원 · stone 박공 벽/중앙 창 (2026-10-04 사용자 정정)
-- `L893` 물굽이 조밀한 마을 표본 (2026-10-04)
-- `L899` 색 역할 정리 · 따뜻한 황록 확정 (2026-10-05)
-- `L905` 황록 마을 50×50 · 실제 선택 색 적용 (2026-10-05)
-  - `L913` 포석길 끊김 정정 (2026-10-05)
-- `L917` RPG 시설과 생활 역할 (2026-10-05)
-- `L925` 서로 다른 건축 구조의 강변 마을 (2026-10-05 초안 기록 · 4종 반려)
-- `L933` 던전 층: 받침 규칙 + `author_beodeul_dungeon` (2026-10-14, 사용자 스크린샷 · field-enemy fe1)
-  - `L954` 던전 시공기 2판 — 적대 시각 QA 뒤 한 번 고침 (2026-10-14 같은 날)
-  - `L977` 던전 시공기 3판 — 종류(`type`) 8가지 (2026-10-14, 사용자: 「던전 종류가 좀 다양해야 할 것 같다」)
-  - `L1002` 던전 시공기 4판 — 장르 × 칩셋 어댑터 (2026-10-15, 사용자: 「던전을 장르별로 — 포켓몬풍 / 일반 RPG / 그 밖」)
-- `L1079` 마당 바닥 오토타일 (2026-10-23, village-art)
-- `L1092` 자연 기물 beodeul_organic (2026-10-24) — 숲·들판의 바위·덤불·통나무·버섯·들꽃·고사리·풀·이끼 돌·고목·사당 돌
+  - `L824` 코드 지형 2판: 끊긴 절벽·낮은 기본 땅·늪 널판·어촌 물가·빈 단 쓰임 (2026-10-30)
+  - `L844` 코드 지형 3판: 굽은 띠·넓은 돌계단·집 크기 고르기·과수원·길가 소품·집 보호 다시 짓기 (2026-10-30)
+- `L857` 작은 마을 길·마당 구도 보정 (2026-10-04)
+- `L862` 우물 공동마당으로 원본 마을 재배치 (2026-10-04)
+- `L867` 공동마당 식생·울타리/돌벽 보정 (2026-10-04)
+  - `L872` 마을·붓 숲 = 이어진 수관 오토타일 (2026-10-22, 「숲 오토타일을 제대로 적용해야 함」)
+  - `L902` woodland 보정 (2026-10-20)
+- `L921` 기와 복원 · stone 박공 벽/중앙 창 (2026-10-04 사용자 정정)
+- `L926` 물굽이 조밀한 마을 표본 (2026-10-04)
+- `L932` 색 역할 정리 · 따뜻한 황록 확정 (2026-10-05)
+- `L938` 황록 마을 50×50 · 실제 선택 색 적용 (2026-10-05)
+  - `L946` 포석길 끊김 정정 (2026-10-05)
+- `L950` RPG 시설과 생활 역할 (2026-10-05)
+- `L958` 서로 다른 건축 구조의 강변 마을 (2026-10-05 초안 기록 · 4종 반려)
+- `L966` 던전 층: 받침 규칙 + `author_beodeul_dungeon` (2026-10-14, 사용자 스크린샷 · field-enemy fe1)
+  - `L987` 던전 시공기 2판 — 적대 시각 QA 뒤 한 번 고침 (2026-10-14 같은 날)
+  - `L1010` 던전 시공기 3판 — 종류(`type`) 8가지 (2026-10-14, 사용자: 「던전 종류가 좀 다양해야 할 것 같다」)
+  - `L1035` 던전 시공기 4판 — 장르 × 칩셋 어댑터 (2026-10-15, 사용자: 「던전을 장르별로 — 포켓몬풍 / 일반 RPG / 그 밖」)
+- `L1112` 마당 바닥 오토타일 (2026-10-23, village-art)
+- `L1125` 자연 기물 beodeul_organic (2026-10-24) — 숲·들판의 바위·덤불·통나무·버섯·들꽃·고사리·풀·이끼 돌·고목·사당 돌
 
 ### `openwiki/bgm-catalog.md` — 27KB · 362줄 · ~7,031 토큰
 

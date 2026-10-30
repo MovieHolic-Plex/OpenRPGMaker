@@ -30,13 +30,13 @@ export function eventBlocks(ev: GameEvent): boolean {
 }
 
 /** 시작 맵은 시작점 하나(다른 맵에서 돌아오는 착지점은 잠긴 문 너머일 수 있다), 그 밖의 맵은 들어오는 착지점들. */
-function anchorsOf(project: Project, map: GameMap): Cell[] {
+export function anchorsOf(project: Project, map: GameMap): Cell[] {
   const start = project.startMapId === map.id && project.startPos && isPassable(project, map, project.startPos.x, project.startPos.y) ? [{ x: project.startPos.x, y: project.startPos.y }] : [];
   return start.length ? start : playerAnchors(project, map).filter((a) => isPassable(project, map, a.x, a.y));
 }
 
 /** 앵커에서 걸어 닿는 칸(blocked 는 못 지난다). 같은 맵 안 이동 이벤트 옆에 닿으면 그 도착 칸에서도 이어 걷는다. */
-function reachFrom(project: Project, map: GameMap, anchors: readonly Cell[], blocked: ReadonlySet<number>): Uint8Array {
+export function reachFrom(project: Project, map: GameMap, anchors: readonly Cell[], blocked: ReadonlySet<number>, passageList?: readonly { at: Cell; to: Cell[] }[]): Uint8Array {
   const w = map.width;
   const seen = new Uint8Array(w * map.height);
   const q: number[] = [];
@@ -44,7 +44,7 @@ function reachFrom(project: Project, map: GameMap, anchors: readonly Cell[], blo
   // 셈되어 맵 전체가 「닿지 못함」이 되고, 사람 옮기기(spreadCrowdedPeople)가 후보 0 으로 아무도 못 옮겼다(2026-10-29 vm4 argon mystery:
   // 여관 주인·악사가 양탄자 통로에 위아래로 붙어 섰다).
   for (const a of anchors) { const i = a.y * w + a.x; if (!seen[i]) { seen[i] = 1; q.push(i); } }
-  const passages = sameMapPassages(map);
+  const passages = passageList ?? sameMapPassages(map);
   const used = new Set<number>();
   for (let k = 0; ; k++) {
     if (k >= q.length) {
@@ -77,7 +77,7 @@ function reachFrom(project: Project, map: GameMap, anchors: readonly Cell[], blo
  * 왜(2026-10-29 vm4 deepseek 탈출): 가구 전체 조사(settleFurnitureSpots)로 1×2 몸이 된 「촛대 선반」 윗칸이 방 오른쪽으로 가는 유일한 목을
  * 막았는데, 앵커 칸만 막힘으로 세어 사람 떼기가 하녀를 남은 목(13,6)에 세웠고 자동 플레이가 탈출문 쪽에 갇혔다.
  */
-function blockersOf(map: GameMap, except?: string): Set<number> {
+export function blockersOf(map: GameMap, except?: string): Set<number> {
   const out = new Set<number>();
   for (const ev of map.events ?? []) {
     if (ev.id === except || !eventBlocks(ev)) continue;
@@ -91,7 +91,7 @@ function blockersOf(map: GameMap, except?: string): Set<number> {
 }
 
 /** 이벤트 몸 사각의 어느 칸이든 걸어 닿는 칸 곁(또는 위)인가. 1×1 이면 앵커 곁과 같다. */
-function bodyReached(map: GameMap, reach: Uint8Array, ev: GameEvent): boolean {
+export function bodyReached(map: GameMap, reach: Uint8Array, ev: GameEvent): boolean {
   const rect = eventBodyRect(ev);
   for (let y = rect.top; y <= rect.bottom; y++) for (let x = rect.left; x <= rect.right; x++) {
     if (x < 0 || y < 0 || x >= map.width || y >= map.height) continue;

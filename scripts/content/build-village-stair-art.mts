@@ -24,6 +24,7 @@ const STYLES: Record<string, { ramp?: string[]; foot: string; crest: string }> =
   "grass-steps": { foot: "#276d2d", crest: "#87c464" },
   "snow-steps": { foot: "#93a9c6", crest: "#ffffff" },
   "sand-steps": { ramp: ["#5a3e22", "#7a5630", "#98703f", "#b58a50", "#cfa566", "#e8c282"], foot: "#826e4c", crest: "#f5d090" },
+  "cave-steps": { foot: "#604e48", crest: "#8d7766" },
   "peat-steps": { ramp: ["#2e1a0a", "#4a2c12", "#6e4520", "#94632f", "#b98648", "#d8a866"], foot: "#4e542c", crest: "#939e54" },
 };
 
