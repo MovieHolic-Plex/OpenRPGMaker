@@ -6,6 +6,7 @@ import { ensureMonsterGraphic } from "./monsterGraphicAssignment";
 import { validateArgs } from "./jsonSchema";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
 import type { EnemyActionProfile, EnemyRecord, FactionDef, FactionRelationDef, FieldSpawnDef, Project } from "@/project/types";
+import { isTimePhase, TIME_PHASES, type TimePhase } from "@/project/gameTime";
 
 const enemyHpBarsSchema: JsonSchema = { type: "string", enum: ["always", "damaged", "never"] };
 
@@ -182,6 +183,7 @@ const makeActionEnemy: ToolDefinition = {
           chase: { type: "boolean" },
           factionId: { type: "string" },
           graphic: { type: "object", additionalProperties: true },
+          timePhases: { type: "array", items: { type: "string", enum: ["morning", "day", "evening", "night"] }, description: "이 시간대에만 나온다(시간 시스템이 켜졌을 때). 생략하면 늘" },
         },
         required: ["mapId", "troopId", "area"],
       },
@@ -243,6 +245,7 @@ const makeActionEnemy: ToolDefinition = {
         chase: spawn.chase !== undefined ? spawn.chase !== false : existingSpawn?.chase ?? true,
         ...(typeof spawn.factionId === "string" && spawn.factionId.length > 0 ? { factionId: spawn.factionId } : {}),
         ...(spawn.graphic !== undefined ? { graphic: structuredClone(spawn.graphic) as FieldSpawnDef["graphic"] } : {}),
+        ...(spawn.timePhases !== undefined ? { timePhases: parseSpawnTimePhases(spawn.timePhases) } : {}),
       };
       map.fieldSpawns = existingSpawn
         ? (map.fieldSpawns ?? []).map((entry) => entry.id === def.id ? def : entry)
@@ -366,3 +369,10 @@ const setFactions: ToolDefinition = {
 };
 
 export const ACTION_TOOLS: readonly ToolDefinition[] = [setActionCombat, makeActionEnemy, removeFieldSpawn, setFactions];
+
+function parseSpawnTimePhases(value: unknown): TimePhase[] {
+  if (!Array.isArray(value) || value.length === 0 || !value.every(isTimePhase)) {
+    throw new ToolError("spawn.timePhases 는 morning|day|evening|night 중 하나 이상입니다.", { code: "invalid-args" });
+  }
+  return TIME_PHASES.filter((phase) => value.includes(phase));
+}

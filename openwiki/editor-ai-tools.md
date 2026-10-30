@@ -9,6 +9,7 @@
 - 화자 색은 `displayName` 이 대사 화자 이름과 같을 때만 붙는다. 이벤트 `characterId` 는 그 이벤트의 모든 줄에 한 프로필을 입히므로 데모 lore 는 이벤트에 characterId 를 달지 않는다.
 - 데모마다 lore 파일 하나(`src/project/flagship/*Lore.ts`, 데모 브랜치 `agent/demo-lore`)가 세 도구로 칸을 채우고 빌더 끝(`serialize` 직전)에서 한 줄로 부른다. 공용 도우미는 `src/project/flagship/loreKit.ts`(`loreExec`, `writeCodex` 는 없는 ref 만 빼고 쓴다, `demoLoreProblems`).
 - 회귀 경보: `bake-flagship-demos.mts` 가 데모마다 `demoLoreProblems` 를 돌려 하한(문서 12, 프로필 3, 개요 본문 400자) 아래면 `[demo-lore] … 「이야기」 탭이 비었다` 를 찍는다. 전체 굽기 없이 lore 파일만 시험하려면 `scripts/content/check-demo-lore.mts --demo <id> --in <구운 project.json>`(멱등성도 본다).
+- 원작 IP 고유명 경보: `bake-flagship-demos.mts` 가 `<id>.play.json` 을 쓴 직후 `validateShippedPlayJson(id, playJsonText)`(`src/project/flagship/ipCleanliness.ts`)를 돌려, 플레이어에게 보이는 글(맵 이름·이벤트 대사/선택지/화자·데이터베이스·엔딩·제목·저널·용어)에 원작 고유명이 있으면 경로(`[ip-clean] maps.<id>…: 「낱말」`)를 찍고 비0 종료한다. 낱말 = 데모 `styleLock.bannedProperNouns` + 전역 `BANNED_IP_PROPER_NOUNS` + `WIZARDING_ORIGINAL_NAMES`(스토어 `seedBundles.mts` 의 `WIZARDING_SCRUB_PAIRS` 왼쪽 낱말 + 대체 기숙사 이름 — 한 소스). 번들 타일셋 참고문서는 `bundledTilesetRef` 포인터라 걷지 않는다. 조수도 같은 검사를 `run_lint` 로 닿는다: `lintOriginalIpNames`(`src/project/lint/originalIpLint.ts`, 낱말은 `WIZARDING_ORIGINAL_NAMES` 만)가 경고 `original-ip-name` 을 낸다(`game-scene-polish` 스킬 §8·경고 코드 표, 능력 색인 `scene-polish`).
 
 ## 평면도대로 버들항 맵 칠하기 `paint_beodeul_plan` (2026-10-29)
 
@@ -4000,3 +4001,4 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
 - 검증(2026-10-29, 번호 단계): `bun scripts/qa/assistant-v2/codeStepCheck.mts <run-dir>` — mt3 flash 방탈출 실제 결과에서 `blueprint-code-bypass` 가 잡히고, 대사 없는 재빌드·그 턴 인자 재현 모두 자동 플레이가 단서(번호 쪽지) → 번호 입력 → 엔딩 순으로만 간다.
 - 검증(2026-10-28): mt2 flash·argon 방탈출 저장본 사본에 돌려 `scripts/qa-game/check.mts` 자동 플레이가 엔딩까지 갔다(증거 `~/z-project/assistant-whole-game/suite/ledger/evidence/gamepath/`).
 - 측정: 고정 프롬프트 스위트(저장소 밖 `~/z-project/assistant-whole-game/suite/`)의 판정자는 `playerGoal` 한 줄만 받는다. 엔딩 여부는 판정자의 말이 아니라 플레이어 클리어 기록(`:clear-record:v1`)으로 센다.
+- `upsert_troop.duel` — 결투 규칙 `{yieldAtPercent, playerYieldAtPercent, forfeit, roundLimit, noItems}`(고정 속성, 모두 선택). `clearFields:["duel"]` 로 지운다. 의미는 `runtime-battle.md` 「결투 규칙」.

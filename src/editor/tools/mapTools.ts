@@ -1750,6 +1750,12 @@ function parseFieldSpawn(draft: Project, map: GameMap, value: unknown, label: st
     spawn.passRows = passRows;
   }
   if (input.persistKill !== undefined) spawn.persistKill = booleanField(input, "persistKill", label);
+  if (input.timePhases !== undefined) {
+    if (!Array.isArray(input.timePhases) || input.timePhases.length === 0 || !input.timePhases.every(isTimePhase)) {
+      throw new ToolError(`${label}.timePhases 는 morning|day|evening|night 중 하나 이상입니다.`, { code: "invalid-time-phase", mapId: map.id });
+    }
+    spawn.timePhases = TIME_PHASES.filter((phase) => (input.timePhases as unknown[]).includes(phase));
+  }
   if (input.onKillSwitchId !== undefined) {
     const onKillSwitchId = stringField(input, "onKillSwitchId", label).trim();
     if (!onKillSwitchId) throw new ToolError(`${label}.onKillSwitchId는 비울 수 없습니다.`, { code: "invalid-kill-switch", mapId: map.id });
@@ -2547,6 +2553,11 @@ const makeHuntingGround: ToolDefinition = {
       passRows: { type: "integer" },
       persistKill: { type: "boolean" },
       onKillSwitchId: { type: "string" },
+      timePhases: {
+        type: "array",
+        items: { type: "string", enum: ["morning", "day", "evening", "night"] },
+        description: "이 시간대에만 나온다(시간 시스템이 켜졌을 때). 아침 6~10시·낮 10~17시·저녁 17~20시·밤 그 밖. 벗어나면 무리가 사라지고 돌아오면 다시 나온다. 예: 밤에만 나오는 익사귀 [\"night\"]. 시간 시스템이 꺼져 있으면 늘 나오므로 configure_time_system 도 켜라.",
+      },
       encounterEntries: { type: "array", items: encounterEntrySchema },
       encounterRate: { type: "integer", description: "생략하면 0일 때만 기본값으로 보정한다. 0을 명시하면 랜덤 인카운터를 끈다." },
     },
@@ -2574,8 +2585,12 @@ const makeHuntingGround: ToolDefinition = {
       ...(args.passRows !== undefined ? { passRows: args.passRows } : {}),
       ...(args.persistKill !== undefined ? { persistKill: args.persistKill } : {}),
       ...(args.onKillSwitchId !== undefined ? { onKillSwitchId: args.onKillSwitchId } : {}),
+      ...(args.timePhases !== undefined ? { timePhases: args.timePhases } : {}),
     }, "fieldSpawn");
     map.fieldSpawns = [...(map.fieldSpawns ?? []), spawn];
+    const phaseWarnings = spawn.timePhases && !draft.system.timeSystem?.enabled
+      ? [`timePhases(${spawn.timePhases.join(",")}) 는 시간 시스템이 켜져야 듣는다. 지금은 늘 나온다 — configure_time_system {enabled:true} 로 켜라.`]
+      : [];
     if (combat && combat.mode !== "random") {
       map.actionCombat = combat.mode === "action";
       if (combat.mode === "action") draft.system.actionCombat = { ...draft.system.actionCombat, enabled: true };
@@ -2584,6 +2599,7 @@ const makeHuntingGround: ToolDefinition = {
       return {
         summary: `${map.name} — 보이는 몬스터 배치 (${combat.mode === "action" ? "맵 위 직접 전투" : "접촉 시 전투 화면"})`,
         data: { mapId: map.id, fieldSpawn: spawn, encounterRate: 0, combatMode: combat.mode, sourceId: combat.sourceId },
+        ...(phaseWarnings.length ? { warnings: phaseWarnings } : {}),
       };
     }
     const entries = args.encounterEntries !== undefined
@@ -2595,6 +2611,7 @@ const makeHuntingGround: ToolDefinition = {
     return {
       summary: `${map.name} 사냥터 구성 — 스폰 ${spawn.id}, 트룹 ${troopId}, 인카운터 ${entries.length}개${rateNote === undefined ? "" : ` — ${rateNote}`}`,
       data: { mapId: map.id, fieldSpawn: spawn, encounterTable: entries, encounterRate: map.encounterRate ?? 0 },
+      ...(phaseWarnings.length ? { warnings: phaseWarnings } : {}),
     };
   },
 };
