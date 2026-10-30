@@ -5,13 +5,14 @@
 //       · 같은 도구·같은 인자 연속 3번째에 경고, 4번째부터 실행하지 않는다(omo loop-guard IDENTICAL_RUN_THRESHOLD)
 //       · 쓰기 실패는 진행 중 항목의 실패로 센다 — 3번째 또는 같은 실패 서명 연속이면 막힘으로 닫고 기대는 항목도 닫는다
 //       · 성공한 쓰기의 결과 지문을 고리(TodoLoop)에 넘긴다(진척 판정)
+//       · 성공한 쓰기 전후 차이(맵·이벤트·아이템·적 그룹 id)를 진행 중 항목(또는 인자 todoId 의 항목) refs 에 묶는다(refs.ts)
 import type { PiToolExecResult, PiToolShape } from "@/ai/piAgent/toolAdapter";
 import type { PiAgentRequest } from "@/ai/piAgent/protocol";
 import type { PiAssistantV2Env } from "../env";
 import { parseTodoCheck, TODO_CHECK_SCHEMA, type CheckResult, type TodoCheck, type TodoItem } from "../todo/types";
-import { runTodoCheck } from "../todo/checks";
 import { checkLabel, isOpen, type TodoInput, type TodoPhaseInput, type TodoStore } from "./todoStore";
 import { callKey, effectFingerprint, maskVolatile, type TodoLoop } from "./continuation";
+import { bindRefs, changedSince, checkItem, indexProject, isAmbiguous, refsFromDiff, refsLabel } from "./refs";
 
 const text = (value: unknown): PiToolExecResult => ({ content: [{ type: "text", text: typeof value === "string" ? value : JSON.stringify(value) }] });
 
@@ -51,7 +52,8 @@ const TODO_ITEM_SCHEMA = {
 export const TODO_TOOL_DESCRIPTION = [
   "이번 요청의 할 일 목록. 쓰기 요청이면 첫 호출로 op:\"init\" 에 요청 전체를 단계(phase)별 항목으로 빠짐없이 적는다 — 요청의 장소·사람·대사·전투·연결·엔딩·물건마다 항목 하나.",
   "항목마다 check(기계 확인)를 단다: 장소=place, 인물=person, 대사=talk, 전투=battle(boss), 맵 잇기=link, 엔딩=ending, 아이템=item, 증거 내밀기=present_evidence, 목표 줄=objective, 걸어 닿기=reachable. 기계로 볼 수 없는 것만 none.",
-  "ops: init(list) · start(task) · done(task — 기계 확인을 돌려 ✗ 면 끝나지 않는다) · block(task, reason — 할 수 없을 때 이유 한 줄, 다음 항목으로) · drop(task, reason — 요청에 필요 없게 됐을 때) · append(phase, items) · view.",
+  "ops: init(list) · start(task) · done(task — 기계 확인을 돌려 ✗ 면 끝나지 않는다) · block(task, reason — 할 수 없을 때 이유 한 줄, 다음 항목으로) · drop(task, reason — 요청에 필요 없게 됐을 때) · append(phase, items) · bind(task, mapId/eventId/itemId/troopId — 확인이 「모호함」일 때 그 항목이 가리키는 실제 id) · view.",
+  "쓰기 동사가 만든 맵·이벤트·아이템·적 그룹 id 는 그때 진행 중인 항목에 자동으로 묶인다 — 한 호출로 다른 항목을 지으면 그 동사에 todoId 를 준다. 「만들어 달라」 항목은 원래 있던 것으로는 ✓ 가 나지 않는다.",
   "진행 중은 하나. 끝낸 항목은 바로 done 한다. todo 만 부르고 차례를 끝내지 않는다 — 같은 응답에서 실제 동사를 이어 부른다.",
   "함수 검사·비평·화면 검수가 짚은 문제도 이 목록에 항목으로 덧붙어 돌아온다(출처 표시). 열린 항목이 0 이고 기계 확인이 모두 ✓ 일 때만 「완료」라고 보고한다.",
 ].join(" ");
@@ -93,14 +95,16 @@ function attributeFailure(env: PiAssistantV2Env, store: TodoStore, sig: string, 
   return `[할 일 막힘 자동] ${item.id} «${item.content}» — ${why}. 막힘으로 닫았다${cascaded.length ? `(기대던 ${cascaded.map((c) => c.id).join(", ")}도)` : ""}. ${next ? `다음 항목 ${next.id} «${next.content}» 로 간다.` : "열린 항목이 없다."}`;
 }
 
-function runCheck(env: PiAssistantV2Env, check: TodoCheck | undefined): CheckResult | undefined {
-  if (!check || check.kind === "none") return undefined;
-  try { return runTodoCheck(env.ctx.project, check, { startMapId: env.ctx.project.startMapId }); }
+function runCheck(env: PiAssistantV2Env, store: TodoStore, item: TodoItem): CheckResult | undefined {
+  try { return checkItem(env.ctx.project, store, item); }
   catch (error) {
-    env.emit({ type: "execution_status", name: "v2.todo.check_error", ok: false, summary: `기계 확인(${checkLabel(check)}) 실행 오류 — 확인 못 함: ${error instanceof Error ? error.message : String(error)}` });
+    env.emit({ type: "execution_status", name: "v2.todo.check_error", ok: false, summary: `기계 확인(${checkLabel(item.check)}) 실행 오류 — 확인 못 함: ${error instanceof Error ? error.message : String(error)}` });
     return undefined;
   }
 }
+
+/** 「모호함」 판정에 붙이는 한 줄 — 후보 id 는 판정 글에 있다. */
+export const BIND_HINT = (id: string) => `→ 후보 중 이 항목이 가리키는 것을 todo(op:"bind", task:"${id}", mapId|eventId|itemId|troopId:<id>)로 묶고 다시 done 한다.`;
 
 export function createTodoTool(env: PiAssistantV2Env, store: TodoStore, state: TodoToolsState, verbNames: ReadonlySet<string>): PiToolShape {
   const done = (summary: string, ok = true, extra: Record<string, unknown> = {}): PiToolExecResult => text({ ok, summary, ...extra, list: store.view() });
@@ -109,21 +113,25 @@ export function createTodoTool(env: PiAssistantV2Env, store: TodoStore, state: T
     parameters: {
       type: "object",
       properties: {
-        op: { type: "string", enum: ["init", "start", "done", "drop", "block", "append", "view"], description: "할 일 조작" },
+        op: { type: "string", enum: ["init", "start", "done", "drop", "block", "append", "bind", "view"], description: "할 일 조작" },
         list: { type: "array", description: "init: 단계별 목록", items: { type: "object", properties: { phase: { type: "string", description: "단계 이름(짧은 명사구)" }, items: { type: "array", items: TODO_ITEM_SCHEMA } }, required: ["phase", "items"] } },
         phase: { type: "string", description: "append: 덧붙일 단계 이름" },
         items: { type: "array", items: TODO_ITEM_SCHEMA, description: "append: 덧붙일 항목" },
         task: { type: "string", description: "start·done·drop·block: 항목 id(또는 내용 그대로). done 은 비우면 진행 중 항목" },
         reason: { type: "string", description: "block·drop: 이유 한 줄(block 은 무엇이 막았는지 — 도구 거절 글이면 그 요지)" },
+        mapId: { type: "string", description: "bind: 이 항목이 가리키는 맵 id" },
+        eventId: { type: "string", description: "bind: 이 항목이 가리키는 이벤트 id(또는 mapId:eventId)" },
+        itemId: { type: "string", description: "bind: 이 항목이 가리키는 아이템 id" },
+        troopId: { type: "string", description: "bind: 이 항목이 가리키는 적 그룹 id" },
       },
       required: ["op"],
     },
     async execute(id, params) {
-      const p = (params ?? {}) as { op?: string; list?: unknown; phase?: string; items?: unknown; task?: string; reason?: string };
+      const p = (params ?? {}) as { op?: string; list?: unknown; phase?: string; items?: unknown; task?: string; reason?: string; mapId?: string; eventId?: string; itemId?: string; troopId?: string };
       const op = String(p.op ?? "view");
       const warnings: string[] = [];
       let result: PiToolExecResult;
-      const target = (): TodoItem | undefined => store.resolve(p.task) ?? (op === "done" || op === "block" ? store.current() : undefined);
+      const target = (): TodoItem | undefined => store.resolve(p.task) ?? (op === "done" || op === "block" || op === "bind" ? store.current() : undefined);
       const notFound = () => done(`항목 «${p.task ?? ""}» 를 찾지 못했다 — id(t1…)나 내용을 그대로 준다`, false);
       switch (op) {
         case "init": {
@@ -159,15 +167,17 @@ export function createTodoTool(env: PiAssistantV2Env, store: TodoStore, state: T
           const item = target();
           if (!item) { result = notFound(); break; }
           if (!isOpen(item.status) && item.status !== "blocked") { result = done(`${item.id} 는 이미 ${item.status === "completed" ? "끝났다" : "뺐다"}`); break; }
-          const check = runCheck(env, item.check);
+          const check = runCheck(env, store, item);
+          const bound = refsLabel(item.refs);
           if (store.done(item, check)) {
             const next = store.current();
-            env.emit({ type: "execution_status", name: "v2.todo.done", ok: true, summary: `할 일 ${item.id} ✓${check ? ` — ${check.detail.slice(0, 120)}` : ""}` });
-            result = done(`${item.id} ✓${check ? ` 기계 확인: ${check.detail}` : ""}. ${next ? `다음: ${next.id} «${next.content}» — 바로 진행한다.` : store.openCount() ? "" : "열린 항목 0."}`);
+            env.emit({ type: "execution_status", name: "v2.todo.done", ok: true, summary: `할 일 ${item.id} ✓${check ? ` — ${check.detail.slice(0, 120)}` : ""}${bound ? ` · ${bound}` : ""}` });
+            result = done(`${item.id} ✓${check ? ` 기계 확인: ${check.detail}` : ""}${bound ? ` (${bound})` : ""}. ${next ? `다음: ${next.id} «${next.content}» — 바로 진행한다.` : store.openCount() ? "" : "열린 항목 0."}`);
           } else {
             const why = attributeFailure(env, store, `check:${maskVolatile(check!.detail).slice(0, 160)}`, `기계 확인 ✗ ${check!.detail}`);
             env.emit({ type: "execution_status", name: "v2.todo.false_done", ok: false, summary: `할 일 ${item.id} done 요청 — 기계 확인 ✗: ${check!.detail.slice(0, 160)}` });
-            result = done(`${item.id} 는 끝나지 않았다 — 기계 확인(${checkLabel(item.check)}) ✗: ${check!.detail}. 고친 뒤 다시 done 하고, 할 수 없으면 block(이유). 확인이 ✗ 인 채 끝났다고 보고하면 거짓 완료다.${why ? `\n${why}` : ""}`, false, check!.evidence ? { evidence: check!.evidence } : {});
+            const hint = isAmbiguous(check) ? ` ${BIND_HINT(item.id)}` : "";
+            result = done(`${item.id} 는 끝나지 않았다 — 기계 확인(${checkLabel(item.check)}) ✗: ${check!.detail}${bound ? ` (${bound})` : ""}.${hint} 고친 뒤 다시 done 하고, 할 수 없으면 block(이유). 확인이 ✗ 인 채 끝났다고 보고하면 거짓 완료다.${why ? `\n${why}` : ""}`, false, check!.evidence ? { evidence: check!.evidence } : {});
           }
           break;
         }
@@ -199,6 +209,27 @@ export function createTodoTool(env: PiAssistantV2Env, store: TodoStore, state: T
           }
           break;
         }
+        case "bind": {
+          const item = target();
+          if (!item) { result = notFound(); break; }
+          const want = { mapIds: p.mapId?.trim() ? [p.mapId.trim()] : undefined, eventIds: p.eventId?.trim() ? [p.eventId.trim()] : undefined, itemIds: p.itemId?.trim() ? [p.itemId.trim()] : undefined, troopIds: p.troopId?.trim() ? [p.troopId.trim()] : undefined };
+          const project = env.ctx.project;
+          const missing = [
+            ...(want.mapIds ?? []).filter((m) => !project.maps[m]).map((m) => `맵 ${m}`),
+            ...(want.eventIds ?? []).filter((e) => !Object.values(project.maps).some((m) => m?.events?.some((ev) => ev.id === e || `${m.id}:${ev.id}` === e))).map((e) => `이벤트 ${e}`),
+            ...(want.itemIds ?? []).filter((i) => !(project.database?.items ?? []).some((x) => String(x.id) === i)).map((i) => `아이템 ${i}`),
+            ...(want.troopIds ?? []).filter((t) => !(project.database?.troops ?? []).some((x) => String(x.id) === t)).map((t) => `적 그룹 ${t}`),
+          ];
+          if (!want.mapIds && !want.eventIds && !want.itemIds && !want.troopIds) { result = done("bind 에는 mapId·eventId·itemId·troopId 중 하나가 필요하다", false); break; }
+          if (missing.length) { result = done(`없는 id: ${missing.join(", ")} — 판정 글의 후보 id 를 그대로 준다`, false); break; }
+          // 모델이 직접 묶으면 그 종류의 자동 묶음을 바꾼다(자동 묶기가 엉뚱한 것을 붙였을 수 있다).
+          for (const k of ["mapIds", "eventIds", "itemIds", "troopIds"] as const) if (want[k] && item.refs) delete item.refs[k];
+          bindRefs(item, want, project, false);
+          const check = runCheck(env, store, item);
+          env.emit({ type: "execution_status", name: "v2.todo.bind", ok: true, summary: `할 일 ${item.id} 묶음 — ${refsLabel(item.refs)}${check ? ` · 확인 ${check.pass ? "✓" : "✗"}` : ""}` });
+          result = done(`${item.id} ${refsLabel(item.refs)}${check ? ` · 지금 기계 확인 ${check.pass ? "✓" : "✗"}: ${check.detail}` : ""}${check?.pass ? " — done 으로 닫는다." : ""}`);
+          break;
+        }
         default:
           result = done("할 일 목록");
       }
@@ -207,6 +238,19 @@ export function createTodoTool(env: PiAssistantV2Env, store: TodoStore, state: T
       return result;
     },
   };
+}
+
+const TODO_ID_PARAM = { type: "string", description: "이 호출이 짓는 할 일 항목 id(선택) — 비우면 진행 중 항목에 묶인다" } as const;
+/** 쓰기 동사 인자 스키마에 todoId 를 더한다(객체 스키마일 때만). */
+function withTodoId(schema: PiToolShape["parameters"]): PiToolShape["parameters"] {
+  const s = schema as unknown as { type?: string; properties?: Record<string, unknown> } | undefined;
+  if (!s || s.type !== "object" || !s.properties || "todoId" in s.properties) return schema;
+  return { ...s, properties: { ...s.properties, todoId: TODO_ID_PARAM } } as unknown as PiToolShape["parameters"];
+}
+function splitTodoId(raw: unknown): { params: unknown; todoId?: string } {
+  if (!raw || typeof raw !== "object" || Array.isArray(raw) || !("todoId" in raw)) return { params: raw };
+  const { todoId, ...rest } = raw as { todoId?: unknown };
+  return { params: rest, ...(typeof todoId === "string" && todoId.trim() ? { todoId: todoId.trim() } : {}) };
 }
 
 /**
@@ -221,9 +265,12 @@ export function withTodoLoop(env: PiAssistantV2Env, store: TodoStore, loop: Todo
   let lastKey = "";
   let same = 0;
   const wrap = (tool: PiToolShape): PiToolShape => Object.assign(Object.create(Object.getPrototypeOf(tool)) as PiToolShape, tool, {
-    execute: async (id: string, params: unknown, signal?: AbortSignal): Promise<PiToolExecResult> => {
+    ...(isReadVerb(tool.name) ? {} : { parameters: withTodoId(tool.parameters) }),
+    execute: async (id: string, rawParams: unknown, signal?: AbortSignal): Promise<PiToolExecResult> => {
       state.callNo += 1;
       const write = !isReadVerb(tool.name);
+      // todoId 는 감싸개 몫이다 — 동사에는 넘기지 않는다.
+      const { params, todoId } = splitTodoId(rawParams);
       if (write && writeRequest && !store.initialized) {
         if (firstWriteBounces < 2) {
           firstWriteBounces += 1;
@@ -242,6 +289,9 @@ export function withTodoLoop(env: PiAssistantV2Env, store: TodoStore, loop: Todo
         return text({ ok: false, summary: `[같은 호출 차단] ${tool.name} 를 같은 인자로 ${same}번째 부른다 — 실행하지 않았다. 결과는 앞과 같다. 인자를 바꾸거나 다른 동사를 쓰거나, 할 수 없으면 todo block(이유).${why ? `\n${why}` : ""}` });
       }
       state.calledAt.set(tool.name, state.callNo);
+      // 묶을 항목: 인자 todoId 의 항목, 없으면 진행 중 항목. 판정이 refs 를 쓰는 항목일 때만 전후 지문을 뜬다.
+      const bindTo = write ? (todoId ? store.resolve(todoId) : undefined) ?? store.current() : undefined;
+      const before = bindTo?.check && bindTo.check.kind !== "none" ? indexProject(env.ctx.project) : undefined;
       let result: PiToolExecResult;
       try { result = await tool.execute(id, params, signal); }
       catch (error) {
@@ -260,7 +310,14 @@ export function withTodoLoop(env: PiAssistantV2Env, store: TodoStore, loop: Todo
           state.failures.push({ name: tool.name, text: read.text.slice(0, 1200), at: state.callNo });
           const note = attributeFailure(env, store, `${tool.name}:${maskVolatile(read.text).slice(0, 160)}`, `${tool.name} 거절: ${read.text.slice(0, 240)}`);
           if (note) notes.push(note);
-        } else loop.noteEffect(effectFingerprint(tool.name, params, read.text));
+        } else {
+          loop.noteEffect(effectFingerprint(tool.name, params, read.text));
+          if (bindTo && before) {
+            const add = refsFromDiff(bindTo, tool.name, changedSince(before, indexProject(env.ctx.project)), env.ctx.project);
+            const added = add ? bindRefs(bindTo, add, env.ctx.project) : [];
+            if (added.length) env.emit({ type: "execution_status", name: "v2.todo.autobind", ok: true, summary: `할 일 ${bindTo.id} ← ${tool.name}: ${refsLabel(bindTo.refs)}`, data: { id: bindTo.id, verb: tool.name, refs: bindTo.refs } });
+          }
+        }
       }
       if (same === 3) {
         env.emit({ type: "execution_status", name: "v2.loop_guard.warn", ok: false, summary: `${tool.name} 같은 인자 3번째` });

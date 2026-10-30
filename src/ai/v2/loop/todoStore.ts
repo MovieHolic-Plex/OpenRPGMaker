@@ -3,6 +3,7 @@
 // 계약: 진행 중(in_progress)은 하나. 끝(completed)은 기계 확인이 통과해야 붙는다(부르는 쪽이 확인 결과를 넘긴다).
 // 출처(source): model = 조수가 적은 항목, gate = 끝맺음 관문(기계 검사·게임 검사·출하 차단), critic = 독립 비평가·검토자, vqa = 화면 검수.
 import type { CheckResult, TodoCheck, TodoItem, TodoStatus } from "../todo/types";
+import { refsLabel, type ProjectIndex } from "./refs";
 
 export type TodoSource = TodoItem["source"];
 
@@ -19,6 +20,8 @@ export interface TodoMeta {
   closedBy?: "model" | "auto";
   /** block 을 한 번 되돌렸는가(거절 글이 이른 대안 동사를 안 써 봤을 때). */
   blockBounced?: boolean;
+  /** 앞 실행에서 이어 받은 항목 — refs 가 없으면 이번 기준선 대비 «새로» 를 묻지 않는다. */
+  restored?: boolean;
 }
 
 /** 프로젝트에 같이 저장되는 모양(project.assistantTodo) — 다시 읽기·이어 하기에서 되살린다. */
@@ -69,6 +72,8 @@ export class TodoStore {
   readonly meta = new Map<string, TodoMeta>();
   /** 조수가 init 을 한 번이라도 했나(또는 앞 실행 목록을 되살렸나). */
   initialized = false;
+  /** 이번 쓰기 턴 시작 때 프로젝트 지문(맵·이벤트·아이템·적 그룹) — 판정의 changed 기준. */
+  baseline: ProjectIndex | undefined;
   private seq = 0;
 
   private nextId(prefix = "t"): string {
@@ -273,8 +278,9 @@ export class TodoStore {
       const m = this.meta.get(item.id);
       const check = item.check && item.check.kind !== "none" ? ` · 확인: ${checkLabel(item.check)}${m?.lastCheck ? (m.lastCheck.pass ? " ✓" : ` ✗ ${clip(m.lastCheck.detail, 90)}`) : ""}` : "";
       const why = item.blockedReason ? ` — ${item.blockedReason}` : "";
+      const bound = refsLabel(item.refs);
       const src = item.source === "model" ? "" : ` (${item.source === "gate" ? "함수 검사" : item.source === "critic" ? "비평" : "화면 검수"})`;
-      lines.push(` ${MARK[item.status]} ${item.id} ${item.content}${src}${check}${item.attempts ? ` · 시도 ${item.attempts}` : ""}${why}`);
+      lines.push(` ${MARK[item.status]} ${item.id} ${item.content}${src}${check}${bound ? ` · ${bound}` : ""}${item.attempts ? ` · 시도 ${item.attempts}` : ""}${why}`);
     }
     if (this.items.length > maxItems) lines.push(` …항목 ${this.items.length - maxItems}개 더`);
     return lines.join("\n");
@@ -296,6 +302,7 @@ export class TodoStore {
     this.items = items;
     this.meta.clear();
     for (const [k, v] of Object.entries(s.meta ?? {})) if (v && typeof v === "object") this.meta.set(k, { key: (v as TodoMeta).key });
+    for (const i of items) this.meta.set(i.id, { ...(this.meta.get(i.id) ?? {}), restored: true });
     this.seq = items.length;
     this.initialized = true;
     for (const i of this.items) if (i.status === "in_progress") i.status = "pending";

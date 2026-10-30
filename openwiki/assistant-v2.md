@@ -387,10 +387,14 @@ salt 를 찾아(무작위 salt 를 고정해 몇 번 지어 본다) 같은 마�
  ⑦ 끝: 최종 보고 = 기계 확인 표(todoReport)
 ```
 
-- **todo 동사**(`loop/todoTools.ts`): `init/start/done/drop/block/append/view`. 항목 = `src/ai/v2/todo/types.ts` `TodoItem`(id·phase·content·status·check·dependsOn·blockedReason·attempts·source model|gate|critic|vqa).
+- **todo 동사**(`loop/todoTools.ts`): `init/start/done/drop/block/append/bind/view`. 항목 = `src/ai/v2/todo/types.ts` `TodoItem`(id·phase·content·status·check·dependsOn·blockedReason·attempts·source model|gate|critic|vqa).
   `check` 는 `TodoCheck`(place·person·talk·battle·link·ending·item·present_evidence·objective·reachable·none), 판정은 `todo/checks.ts runTodoCheck`(순수, 프로젝트만 읽음).
   `done` 은 확인을 다시 돌려 ✗ 면 끝내지 않는다(실패 1회). 진행 중은 하나, `block` 은 기대는(dependsOn) 열린 항목도 막힘으로 닫는다.
   `block` 이유가 도구 거절이고 그 거절 글이 아직 안 쓴 다른 동사 이름을 일렀으면 한 번 되돌린다(terra boss-room: edit_place 거절 글의 make_place).
+- **id 묶기**(`loop/refs.ts`, 이름 오인 대책): 실행 시작 때 `indexProject`(맵(이벤트 뺀)·이벤트·아이템·적 그룹 지문)를 `store.baseline` 에 뜨고, 판정마다 기준선 대비 새로 생기거나 바뀐 것(`changed`)을 넘긴다 — `fresh`(기본) 항목은 원래 있던 것으로 ✓ 가 안 난다.
+  쓰기 동사가 성공하면 전후 차이를 진행 중 항목(또는 동사 인자 `todoId` 의 항목 — 감싸개가 모든 쓰기 동사 스키마에 더하고 동사에는 넘기지 않는다)의 `refs` 에 붙인다: 주 대상만(장소=맵, 인물·대사·엔딩·목표·증거 내밀기=이벤트, 전투=이벤트·적 그룹, 아이템=아이템, link·reachable 은 안 묶음).
+  이벤트 항목에는 맵 짓는 동사(make_place·edit_place·stamp_object…)가 만든 이벤트와 이동만 든 이벤트를 묶지 않는다. 같은 종류에서 사라진 id 는 새로 붙일 때 뺀다(다시 짓기가 새 id).
+  판정이 「모호함」이면 todo 결과·재주입 글에 `todo(op:"bind", task, mapId|eventId|itemId|troopId)` 를 이른다(모델이 묶으면 그 종류의 자동 묶음을 바꾼다). 앞 실행에서 이어 받은 refs 없는 항목은 changed 없이 본다. view·done 결과에 묶인 id 를 보인다.
 - **실패 세기**(`TodoStore.recordFailure`): 진행 중 항목에서 쓰기 동사가 거절·예외, 또는 done 확인 ✗ → 시도 +1. 3번째(`TODO_MAX_ATTEMPTS`)이거나 같은 실패 서명(도구+거절 글, 수 가림)이 2번 이어지면 함수가 막힘으로 닫는다.
 - **같은 호출**: 같은 도구·같은 인자 연속 3번째에 결과 끝에 경고, 4번째부터 실행하지 않는다(omo loop-guard). 실행기의 `PiRepeatBreaker`(12번 멈춤)는 그대로 뒤에 있다.
 - **재주입 규칙**(`loop/continuation.ts TodoLoop`): 묶음(조수 목록, 또는 ④~⑥ 이 덧붙인 묶음)마다 연속 8번, 진척 없는 재주입 2번 연속이면 멈춤 —

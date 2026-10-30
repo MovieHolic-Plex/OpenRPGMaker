@@ -19,7 +19,7 @@ import { withTodoLoop, isWriteRequest } from "../../src/ai/v2/loop/todoTools.ts"
 import { continuationPrompt, projectFingerprint, textHash, STOP_REASON_KO } from "../../src/ai/v2/loop/continuation.ts";
 import { syncGateItems } from "../../src/ai/v2/loop/gates.ts";
 import { TODO_MAX_ATTEMPTS, isOpen } from "../../src/ai/v2/loop/todoStore.ts";
-import { runTodoCheck } from "../../src/ai/v2/todo/checks.ts";
+import { changedSince, checkItem, indexProject } from "../../src/ai/v2/loop/refs.ts";
 import type { TodoItem } from "../../src/ai/v2/todo/types.ts";
 
 /** 독립 검토자(src/ai/v2/advisor.ts). 끄려면 OPRN_V2_ADVISOR=0 — 비교 실행·장애 때만 쓴다. 읽기 전용 실행에는 돌지 않는다. */
@@ -90,6 +90,8 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
   if (CONTINUE_WORDS.test(request.task) && store.restore((request.project as { assistantTodo?: unknown }).assistantTodo)) {
     options.onEvent?.({ type: "execution_status", name: "v2.todo.restore", ok: true, at: Date.now(), summary: `앞 실행의 할 일을 이어 받음 — ${store.counts().open}개 열림`, data: { list: store.view() } });
   }
+  // 판정 기준선 — 「만들어 달라」 항목(fresh)은 이 시점에 원래 있던 것으로는 ✓ 가 나지 않는다.
+  try { store.baseline = indexProject(request.project as Project); } catch { store.baseline = undefined; }
   // 검토자의 재료: 이 실행의 도구 기록과 마지막 보고 초안. 사용자 화면으로 가는 이벤트를 그대로 흘려보내며 옆에서 모은다.
   const calls: AdvisorToolCall[] = [];
   const argsById = new Map<string, unknown>();
@@ -181,12 +183,14 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
   const writeRequest = isWriteRequest(request);
   /** 이 실행에 노출한 동사·도구 이름 — 관문 항목이 이르는 도구가 없으면 그 항목은 돌리지 않는다. */
   const toolNames = new Set<string>();
+  let changedNow: ReturnType<typeof changedSince> | undefined;
   const checkOf = (env: PiAssistantV2Env, item: TodoItem) => {
     if (!item.check || item.check.kind === "none") return undefined;
-    try { return runTodoCheck(env.ctx.project, item.check, { startMapId: env.ctx.project.startMapId }); } catch { return undefined; }
+    try { return checkItem(env.ctx.project, store, item, changedNow); } catch { return undefined; }
   };
   /** ① 기계 확인 다시 — 끝난 항목이 지금 ✗ 면 다시 연다(거짓 완료·뒤 편집이 깬 것), 막힌 항목이 지금 ✓ 면 닫는다(함수 마감이 해냈다). */
   const refreshChecks = (env: PiAssistantV2Env, final = false): void => {
+    try { changedNow = store.baseline ? changedSince(store.baseline, indexProject(env.ctx.project)) : undefined; } catch { changedNow = undefined; }
     for (const item of store.items) {
       if (!item.check || item.check.kind === "none") continue;
       if (item.status === "completed") {
@@ -201,6 +205,7 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
         if (r?.pass) { store.done(item, r, "auto"); env.emit({ type: "execution_status", name: "v2.todo.auto_done", ok: true, summary: `할 일 ${item.id} 기계 확인 ✓ — 닫음: ${r.detail.slice(0, 120)}` }); }
       }
     }
+    changedNow = undefined;
   };
   // 할 일 상태를 프로젝트에 싣는다(새 뿌리 객체 — 요청 사본과 뿌리를 나눠 쓸 수 있어 제자리 수정하지 않는다). 다음 체크포인트·끝 저장에 같이 간다.
   const stamp = (env: PiAssistantV2Env) => { if (store.items.length) env.ctx.project = { ...env.ctx.project, assistantTodo: store.serialize(env.request.task) }; };

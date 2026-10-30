@@ -90,7 +90,7 @@ export const STOP_REASON_KO: Record<Exclude<LoopDecision, { kind: "continue" }>[
 
 const failingLine = (store: TodoStore, item: TodoItem): string | undefined => {
   const m = store.meta.get(item.id);
-  if (m?.lastCheck && !m.lastCheck.pass) return `- ${item.id} «${item.content}» 기계 확인 ✗ — ${m.lastCheck.detail}`;
+  if (m?.lastCheck && !m.lastCheck.pass) return `- ${item.id} «${item.content}» 기계 확인 ✗ — ${m.lastCheck.detail}${m.lastCheck.detail.startsWith("모호함") ? ` → todo(op:"bind", task:"${item.id}", mapId|eventId|itemId|troopId:<후보 id>)로 묶는다` : ""}`;
   if (m?.lastFail) return `- ${item.id} «${item.content}» 마지막 실패 — ${m.lastFail}`;
   return undefined;
 };
