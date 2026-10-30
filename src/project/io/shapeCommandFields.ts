@@ -27,6 +27,9 @@ function validateCommandShape(label: string, value: unknown): void {
         const record = requireRecord(`${label}.options[${index}]`, option);
         requireString(`${label}.options[${index}].text`, record.text);
         validateCommandArray(`${label}.options[${index}].branch`, record.branch);
+        if (record.showWhen !== undefined) validateConditionShape(`${label}.options[${index}].showWhen`, record.showWhen);
+        if (record.enableWhen !== undefined) validateConditionShape(`${label}.options[${index}].enableWhen`, record.enableWhen);
+        if (record.disabledText !== undefined) requireString(`${label}.options[${index}].disabledText`, record.disabledText);
       }
       if (command.cancelBehavior !== undefined) requireChoiceCancelBehavior(`${label}.cancelBehavior`, command.cancelBehavior);
       if (command.cancelBranch !== undefined) validateCommandArray(`${label}.cancelBranch`, command.cancelBranch);

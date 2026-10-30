@@ -792,14 +792,15 @@ function choicesMock(cmd: Extract<Command, { kind: "choices" }>): HTMLElement {
   const prompt = cmd.prompt?.trim();
   if (prompt) list.append(el("div", { class: "choice-prompt-row ecp-message-body", text: prompt }));
   const options = cmd.options.filter((option) => option.text.trim().length > 0);
-  options.forEach((option, index) =>
-    list.append(
-      el("div", {
-        class: "choice-btn ecp-choice" + (index === 0 ? " selected" : ""),
-        text: option.text || `선택지 ${index + 1}`,
-      })
-    )
-  );
+  // 미리보기는 게임 상태를 모른다 — 조건 붙은 줄은 「조건이 거짓일 때」 모습으로 보인다(숨는 줄은 점선, 흐린 줄은 흐리게+이유).
+  options.forEach((option, index) => {
+    const row = el("div", {
+      class: "choice-btn ecp-choice" + (index === 0 ? " selected" : "") + (option.enableWhen ? " is-disabled" : "") + (option.showWhen ? " ecp-choice-conditional" : ""),
+      text: option.text || `선택지 ${index + 1}`,
+    });
+    if (option.enableWhen && option.disabledText?.trim()) row.append(el("span", { class: "choice-disabled-reason", text: option.disabledText.trim() }));
+    list.append(row);
+  });
   if (options.length === 0) list.append(el("div", { class: "choice-btn ecp-choice empty", text: "선택지 없음" }));
   win.append(list);
   overlay.append(win);

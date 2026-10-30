@@ -1,4 +1,5 @@
 import { calendarOptionsOf, evalActorQueryCondition, type ActorQuerySession } from "@/project/conditionActorQueries";
+import { authoredChoiceIndex, choiceView, choicesHaveConditions, type ChoiceView } from "@/project/choiceView";
 import { withJosa } from "@/util/josa";
 import { ownsMonsterSpecies } from "@/project/monsterOwnership";
 import { growthEffects, permanentActorSkillIds } from '@/project/growth/runtime';
@@ -254,7 +255,7 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
   const queuedCommonEvents: string[] = [];
   const invocations: BattleInvocation[] = [];
   let batch: { readonly context: BattleEventContext; nextPage: number } | undefined;
-  let pendingChoice: { readonly command: Extract<Command, { kind: "choices" }>; readonly request: BattleEventChoiceSnapshot } | undefined;
+  let pendingChoice: { readonly command: Extract<Command, { kind: "choices" }>; readonly request: BattleEventChoiceSnapshot; readonly view?: ChoiceView } | undefined;
   let nextChoiceId = 0;
   let pendingPause: BattleEventPauseSnapshot | undefined;
   let nextPauseId = 0;
@@ -348,9 +349,11 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
 
   function resumeChoice(requestId: number, index: number): BattleEventRuntimeResult | undefined {
     if (stopped || !pendingChoice || pendingChoice.request.id !== requestId || !Number.isInteger(index)) return;
-    const { command } = pendingChoice;
-    const branch = index === -1 && command.cancelBehavior === "branch"
-      ? command.cancelBranch ?? [] : command.options[index]?.branch;
+    const { command, view } = pendingChoice;
+    const authored = authoredChoiceIndex(view, index);
+    if (authored === undefined) return;
+    const branch = authored === -1 && command.cancelBehavior === "branch"
+      ? command.cancelBranch ?? [] : command.options[authored]?.branch;
     if (!branch) return;
     const invocation = invocations.at(-1);
     if (!invocation) return;
@@ -552,13 +555,16 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
         case "choices": {
           logs.push({ pageId: page.id, round: context.turn, triggerId: page.id, kind: "choices", detail: [command.prompt, command.options.map((option) => option.text).join("/")].filter(Boolean).join(" ") });
           if (command.options.length === 0) { logUnsupported(page, context, "choices has no options"); break; }
+          // 조건 붙은 줄(showWhen·enableWhen)은 맵 선택지와 같은 규칙으로 거른다(project/choiceView.ts).
+          const view = choicesHaveConditions(command) ? choiceView(command, evaluateCondition) : undefined;
+          if (view && view.options.length === 0) break;
           const request: BattleEventChoiceSnapshot = {
             id: ++nextChoiceId, pageId: page.id, round: context.turn,
-            prompt: command.prompt, options: command.options.map(option => ({ text: option.text })),
-            cancelBehavior: command.cancelBehavior,
+            prompt: command.prompt, options: view ? view.options.map(option => ({ ...option })) : command.options.map(option => ({ text: option.text })),
+            cancelBehavior: view ? view.cancelBehavior : command.cancelBehavior,
             settings: options.state.messageWindowSettings ? { ...options.state.messageWindowSettings } : undefined,
           };
-          pendingChoice = { command, request };
+          pendingChoice = { command, request, view };
           return { kind: "choice", request };
         }
         case "label":

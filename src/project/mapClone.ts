@@ -121,6 +121,12 @@ function rewriteCommand(command: Command, context: CloneContext): void {
     case "fork":
       command.condition = remapCondition(command.condition, context);
       return;
+    case "choices":
+      for (const option of command.options) {
+        if (option.showWhen) option.showWhen = remapCondition(option.showWhen, context);
+        if (option.enableWhen) option.enableWhen = remapCondition(option.enableWhen, context);
+      }
+      return;
     case "m2Command": {
       let remapped = false;
       for (const key of M2_EVENT_REFERENCE_KEYS) {

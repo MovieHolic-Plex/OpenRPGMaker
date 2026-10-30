@@ -42,6 +42,49 @@ export const RECT_SCHEMA: JsonSchema = {
 };
 
 /**
+ * `Condition` (project/types/events) — 리프 + all/any/not 복합까지 17 variant.
+ * `value` 는 boolean|number 로 갈리므로 단일 type을 강제하지 않는다.
+ * 필수 값과 타입은 validateConditionShape가 kind별로 검사한다.
+ */
+export const CONDITION_SCHEMA: JsonSchema = {
+  type: "object",
+  description:
+    "kind=switch → switchId + value(boolean). kind=variable → variableId + op + value(number). " +
+    'kind=item → itemId + present(boolean), 예: {kind:"item",itemId:"조회한 ID",present:true}. ' +
+    "kind=monsterSpecies → speciesId + present(boolean). 파티 또는 박스의 현재 보유 여부(과거 포획 이력 아님). " +
+    "kind=partyKnowsSkill → skillId + present(boolean, 생략=true): 파티 배우·몬스터 파티 누군가가 그 스킬을 아는가(필드 스킬 게이트 — 바위깨기·나무베기·서핑·플래시. 막힌 길을 여는 페이지는 이 조건, 못 여는 안내 페이지는 present:false). " +
+    "kind=badgeCount → op + value(number): 획득한 배지 수 비교(몬스터 캠페인 badges[].switchId 가 켜진 개수, 예 {kind:\"badgeCount\",op:\">=\",value:3} = 배지 3개 이상). 배지 N 의 스위치는 mx_badge_N. 「배지 N개 필요」 문은 place_badge_gate 가 이 조건으로 만든다. " +
+    "kind=all|any → conditions[]. kind=not → condition. kind=selfSwitch → key + value(boolean).",
+  properties: {
+    kind: {
+      type: "string",
+      // 손으로 복사한 목록은 드리프트한다 — 실측으로 `run`(로그라이크 런)이 빠져 모델이 쓸 수 없었다.
+      // 단일 진실 소스는 commandKindRegistry.CONDITION_KINDS 다.
+      enum: [...CONDITION_KINDS],
+    },
+    state: { type: "string", enum: [...RELATIONSHIP_STATES] },
+    switchId: { type: "string" },
+    variableId: { type: "string" },
+    itemId: { type: "string" },
+    actorId: { type: "string" },
+    value: { description: "switch/selfSwitch: boolean 필수. variable/friendshipAtLeast/badgeCount: number 필수. run: query별 boolean 또는 number." },
+    speciesId: { type: "string", description: "monsterSpecies 조건: 조회한 몬스터 종 ID" },
+    skillId: { type: "string", description: "partyKnowsSkill 조건: 조회한 스킬 ID(필드 스킬은 upsert_skill 의 fieldCommonEventId 가 있는 스킬)" },
+    present: { type: "boolean", description: "item/actor/monsterSpecies 조건: true=보유/합류, false=미보유/미합류. 필수." },
+    op: { type: "string", enum: ["==", ">=", "<=", ">", "<", "!="] },
+    amount: { type: "integer" },
+    phase: { type: "string", enum: ["morning", "day", "evening", "night"] },
+    season: { type: "string", enum: ["spring", "summer", "fall", "winter"] },
+    activity: { type: "string" },
+    result: { type: "string", enum: ["victory", "defeat", "escape"] },
+    key: { type: "string", enum: ["A", "B", "C", "D"], description: "selfSwitch 키" },
+    npcKey: { type: "string", description: "friendshipAtLeast 대상. 비우면 이 이벤트 characterId" },
+  },
+  required: ["kind"],
+  additionalProperties: true,
+};
+
+/**
  * 이벤트 커맨드 — 조건은 CONDITION_SCHEMA로 분리한다. `kind` 로 분기하는 넓은 유니온이다. 전 variant 를 나열하면 스키마가 수백 줄이
  * 되고 노출 토큰이 폭증하므로 `kind` 와 최빈 필드만 선언한다. 값 검증은 커맨드 컴파일러가 한다.
  */
@@ -140,6 +183,17 @@ export const COMMAND_SCHEMA: JsonSchema = {
           text: { type: "string", description: "choices 전용 선택지 문구" },
           itemId: { type: "string", description: "presentItem 전용: 정답으로 받을 아이템 ID" },
           branch: { type: "array", items: COMMAND_BRANCH_ITEM_SCHEMA },
+          showWhen: {
+            ...CONDITION_SCHEMA,
+            description: "choices 전용: 이 조건이 참일 때만 이 줄이 보인다(거짓이면 목록에서 빠지고 번호가 당겨진다). " +
+              "이미 받은 계약·이미 한 질문·아직 모르는 단서를 숨길 때. 예: {kind:\"switch\",switchId:\"조회한 ID\",value:false}. 페이지를 쪼개지 않는다.",
+          },
+          enableWhen: {
+            ...CONDITION_SCHEMA,
+            description: "choices 전용: 이 조건이 거짓이면 줄은 보이지만 흐리고 고를 수 없다(이유는 disabledText). " +
+              "돈·물건·단서가 모자란 선택지를 보여 주되 막을 때. 예: {kind:\"gold\",op:\">=\",amount:50}.",
+          },
+          disabledText: { type: "string", description: "choices 전용: enableWhen 이 거짓일 때 흐린 줄 아래 보이는 이유 한 줄(예: 「은화 50 필요」)." },
         },
         required: ["branch"],
       },
@@ -352,49 +406,6 @@ export const CUTSCENE_BEAT_SCHEMA: JsonSchema = {
   },
 };
 
-/**
- * `Condition` (project/types/events) — 리프 + all/any/not 복합까지 17 variant.
- * `value` 는 boolean|number 로 갈리므로 단일 type을 강제하지 않는다.
- * 필수 값과 타입은 validateConditionShape가 kind별로 검사한다.
- */
-export const CONDITION_SCHEMA: JsonSchema = {
-  type: "object",
-  description:
-    "kind=switch → switchId + value(boolean). kind=variable → variableId + op + value(number). " +
-    'kind=item → itemId + present(boolean), 예: {kind:"item",itemId:"조회한 ID",present:true}. ' +
-    "kind=monsterSpecies → speciesId + present(boolean). 파티 또는 박스의 현재 보유 여부(과거 포획 이력 아님). " +
-    "kind=partyKnowsSkill → skillId + present(boolean, 생략=true): 파티 배우·몬스터 파티 누군가가 그 스킬을 아는가(필드 스킬 게이트 — 바위깨기·나무베기·서핑·플래시. 막힌 길을 여는 페이지는 이 조건, 못 여는 안내 페이지는 present:false). " +
-    "kind=badgeCount → op + value(number): 획득한 배지 수 비교(몬스터 캠페인 badges[].switchId 가 켜진 개수, 예 {kind:\"badgeCount\",op:\">=\",value:3} = 배지 3개 이상). 배지 N 의 스위치는 mx_badge_N. 「배지 N개 필요」 문은 place_badge_gate 가 이 조건으로 만든다. " +
-    "kind=all|any → conditions[]. kind=not → condition. kind=selfSwitch → key + value(boolean).",
-  properties: {
-    kind: {
-      type: "string",
-      // 손으로 복사한 목록은 드리프트한다 — 실측으로 `run`(로그라이크 런)이 빠져 모델이 쓸 수 없었다.
-      // 단일 진실 소스는 commandKindRegistry.CONDITION_KINDS 다.
-      enum: [...CONDITION_KINDS],
-    },
-    state: { type: "string", enum: [...RELATIONSHIP_STATES] },
-    switchId: { type: "string" },
-    variableId: { type: "string" },
-    itemId: { type: "string" },
-    actorId: { type: "string" },
-    value: { description: "switch/selfSwitch: boolean 필수. variable/friendshipAtLeast/badgeCount: number 필수. run: query별 boolean 또는 number." },
-    speciesId: { type: "string", description: "monsterSpecies 조건: 조회한 몬스터 종 ID" },
-    skillId: { type: "string", description: "partyKnowsSkill 조건: 조회한 스킬 ID(필드 스킬은 upsert_skill 의 fieldCommonEventId 가 있는 스킬)" },
-    present: { type: "boolean", description: "item/actor/monsterSpecies 조건: true=보유/합류, false=미보유/미합류. 필수." },
-    op: { type: "string", enum: ["==", ">=", "<=", ">", "<", "!="] },
-    amount: { type: "integer" },
-    phase: { type: "string", enum: ["morning", "day", "evening", "night"] },
-    season: { type: "string", enum: ["spring", "summer", "fall", "winter"] },
-    activity: { type: "string" },
-    result: { type: "string", enum: ["victory", "defeat", "escape"] },
-    key: { type: "string", enum: ["A", "B", "C", "D"], description: "selfSwitch 키" },
-    npcKey: { type: "string", description: "friendshipAtLeast 대상. 비우면 이 이벤트 characterId" },
-  },
-  required: ["kind"],
-  additionalProperties: true,
-};
-
 /** Native EventPage input for the partial-update tool, not a SimplePage compiler. */
 export const NATIVE_EVENT_PAGE_SCHEMA: JsonSchema = {
   type: "object",
@@ -496,6 +507,9 @@ export const SIMPLE_PAGE_SCHEMA: JsonSchema = {
         properties: {
           text: { type: "string" },
           commands: { type: "array", description: "이 선택지를 고르면 실행할 Command[] (branch로 보내도 commands로 읽는다)", items: COMMAND_SCHEMA_COMPACT },
+          showWhen: { ...CONDITION_SCHEMA, description: "참일 때만 이 선택지가 보인다(이미 받은 계약·이미 들은 질문 숨기기)." },
+          enableWhen: { ...CONDITION_SCHEMA, description: "거짓이면 보이지만 흐리고 고를 수 없다. 이유는 disabledText." },
+          disabledText: { type: "string", description: "enableWhen 이 거짓일 때 흐린 줄 아래 이유 한 줄." },
         },
         required: ["text"],
       },

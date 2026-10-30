@@ -154,6 +154,11 @@ export class ToolError extends Error {
 export interface SimplePageChoice {
   readonly text: string;
   readonly commands?: readonly unknown[];
+  /** 참일 때만 보이는 줄(네이티브 choices option 의 showWhen 과 같다). */
+  readonly showWhen?: unknown;
+  /** 거짓이면 흐리게(고를 수 없음). */
+  readonly enableWhen?: unknown;
+  readonly disabledText?: string;
 }
 
 export interface SimplePage {
