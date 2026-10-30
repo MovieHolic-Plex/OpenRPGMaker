@@ -150,8 +150,7 @@ export function setupIsekaiDatabase(project: Project, backdrops: typeof BACKDROP
   // (simulate_battle 30판: 감독관 5.9타·파티 HP 55% 손실, 마왕 6.3타·58% — 400·430 일 때 5.7·6.2 와 같다).
   const BOSS_DAMAGE_TAKEN = { physical: 230, magic: 230 };
   const BOSS_STATE_RATES = { ...(enemyOf("enemy_slime").stateRates as Record<string, string>), state_sleep: "E" };
-  exec("upsert_state", { state: { id: STATE_SHADOW, name: "15년의 그림자", battleAura: "dark-fog", restriction: "없음", removalCondition: "전투 종료", clearOnBattleEnd: true,
-    description: "왕좌에 15년 앉아 있던 모양이 몸 위에 내려앉았다." } });
+  exec("upsert_state", { state: { id: STATE_SHADOW, name: "15년의 그림자", battleAura: "dark-fog", restriction: "없음", removalCondition: "전투 종료", clearOnBattleEnd: true } });
   enemy("enemy_ig_slime", "들슬라임", "generated-enemy-slime-green", { maxHp: 180, maxMp: 0, attack: 88, defense: 10, mind: 10, agility: 75 },
     [act("skill_attack", 7)], 40, 25, 3);
   enemy("enemy_ig_slime_red", "붉은 슬라임", "generated-enemy-slime-red", { maxHp: 220, maxMp: 0, attack: 100, defense: 12, mind: 12, agility: 80 },

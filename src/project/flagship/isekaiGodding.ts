@@ -115,7 +115,7 @@ const setLight = (ambient: number, color: string, ms = 0): Command => ({ kind: "
  * 배재민을 두 배로 세우고 검은 안개(state_ig_shadow · dark-fog)를 두른다. 여기서는 화면을 보랏빛으로 눌러 그 안개를 먼저 보인다.
  */
 const throneForm = (): Command[] => [
-  playSe(SE_BOOM), shake(700, "3"), tint("40,12,64,0.5", 700), wait(700),
+  playSe(SE_BOOM), shake(700, "3"), tint("purple", 700), wait(700),
   ...caption("왕좌의 그림자가 배재민 위로 내려앉았다.\n15년 동안 앉아 있던 모양 그대로."),
 ];
 /** 전투 뒤 — 그림자가 걷히고 교복이 다시 보인다. */
