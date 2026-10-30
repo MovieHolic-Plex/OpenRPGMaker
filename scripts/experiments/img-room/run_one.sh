@@ -99,7 +99,7 @@ $EXTRA
 Rough cell map made by code from the mockup (a guess that may be wrong — trust the picture; ' ' outside, '#' wall, '.' floor or object):
 $(cat $PREP/cells.txt)
 The gridded mockup is attached again to every follow-up message. After each big build step you will also get your current map next to the mockup at the same scale; list the differences, add them as todo items and fix them."
-    IMG_ENV="OPRN_EXPERIMENT_USER_IMAGE=$G/mockup.jpg,$G/mockup-grid.jpg OPRN_EXPERIMENT_AID_IMAGE=$G/mockup-grid.jpg OPRN_EXPERIMENT_MOCKUP_NATIVE=$PREP/mockup-native.png OPRN_EXPERIMENT_SELFCHECK=3 OPRN_EXPERIMENT_SELFCHECK_DIR=$G/selfcheck OPRN_EXPERIMENT_LOG_MODEL=1"
+    IMG_ENV="OPRN_EXPERIMENT_USER_IMAGE=$G/mockup.jpg,$G/mockup-grid.jpg OPRN_EXPERIMENT_AID_IMAGE=$G/mockup-grid.jpg OPRN_EXPERIMENT_MOCKUP_NATIVE=$PREP/mockup-native.png OPRN_EXPERIMENT_SELFCHECK=3 OPRN_EXPERIMENT_SELFCHECK_DIR=$G/selfcheck OPRN_EXPERIMENT_LOG_MODEL=1${V_REPAIR:+ OPRN_EXPERIMENT_REPAIR_ROUNDS=$V_REPAIR}"
   fi
 fi
 [ -f $G/project/project.sqlite ] || bun src/harnesses/assistant-capability/node/wholeGamePrepare.ts $G "imgroom-$COND$REP-$ARM-$TASK" > $G/prepare.log 2>&1 || { echo "VOID: prepare 실패" > $G/VOID.txt; exit 1; }

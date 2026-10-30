@@ -71,7 +71,8 @@ import { buildBossEncounter, buildEndingScene, wantsBossEncounter, wantsEndingSc
 // 속도 우선(6차)으로 1바퀴만 — 첫 비평의 major 를 한 번 고치고 남은 것은 보고한다.
 // 2026-10-30 omo 할 일 고리: 1바퀴 상한이 비평 항목을 «상한 막힘»으로 닫았다(세 장면 모두). 상한은 할 일 항목의 시도 상한(TODO_MAX_ATTEMPTS=3)과
 // 고리의 진척 규칙(진척 없는 재주입 2번이면 멈춤)이 맡는다 — 맵당 다시 짓기 상한도 같은 3.
-export const V2_MAX_REPAIR_ROUNDS = 3;
+// 실험(img-room-test 조건 V): OPRN_EXPERIMENT_REPAIR_ROUNDS 로 맵당 다시 짓는 고치기 상한을 올린다(자기 검사가 상한에 막혀 못 고친 실측, 2026-10-30). 기본 3.
+export const V2_MAX_REPAIR_ROUNDS = (() => { const n = Number(typeof process !== "undefined" ? process.env?.OPRN_EXPERIMENT_REPAIR_ROUNDS : undefined); return Number.isInteger(n) && n >= 3 && n <= 10 ? n : 3; })();
 /** build_hand_interior_room 이 layout 방마다 다는 장소 꼬리표(handInteriorTools.ts 와 같은 값). */
 const HAND_LAYOUT_ROOM_TAG = "hand-layout-room";
 
