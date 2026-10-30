@@ -11,6 +11,7 @@ import { startPlayerQaServer } from '../../lib/runtimeQaRun.mjs';
 
 const { values } = parseArgs({ options: {
   project: { type: 'string' }, masks: { type: 'string' }, out: { type: 'string' }, read: { type: 'string', default: '2300' },
+  opening: { type: 'boolean', default: false },
 } });
 if (!values.project || !values.masks || !values.out) throw new Error('--project --masks --out 가 필요합니다');
 const out = resolve(values.out);
@@ -171,16 +172,31 @@ try {
   t0 = Date.now();
   await delay(1800);
   mark('새 게임');
-  await page.keyboard.press('Enter');
-  // 오프닝(새 게임 뒤 애니메틱)은 건너뛴다 — 이 녹화는 게임 안 첫 숨기의 톤 시험이다. 오프닝은 따로 녹화한다.
+  // 타이틀 메뉴가 늦게 뜨면 첫 Enter 가 먹힌다 — 맵이 잡히거나 오프닝이 시작될 때까지 다시 누른다.
+  for (let i = 0; i < 80; i++) {
+    const started = await page.evaluate(() => !!window.__oprnDebug?.readState?.().currentMapId || !!document.querySelector('[data-testid="cinematic-sequence"]')).catch(() => false);
+    if (started) break;
+    const btn = page.getByText('새 게임', { exact: true });
+    if (i % 3 === 2 && await btn.count()) await btn.first().click({ timeout: 2000 }).catch(() => {});
+    else await page.keyboard.press('Enter');
+    await delay(700);
+  }
   await delay(1500);
-  for (let i = 0; i < 60 && await page.locator('[data-testid="cinematic-sequence"]').count(); i++) { await page.keyboard.press('Escape'); await delay(250); await page.keyboard.press('Enter'); await delay(400); }
+  if (values.opening) {
+    // --opening: 오프닝 애니메틱을 끝까지 보고 깨어나는 장면까지만 녹화한다.
+    mark('오프닝');
+    for (let i = 0; i < 400 && await page.locator('[data-testid="cinematic-sequence"]').count(); i++) await delay(250);
+  } else {
+    // 오프닝(새 게임 뒤 애니메틱)은 건너뛴다 — 이 녹화는 게임 안 첫 숨기의 톤 시험이다. 오프닝은 --opening 으로 따로.
+    for (let i = 0; i < 60 && await page.locator('[data-testid="cinematic-sequence"]').count(); i++) { await page.keyboard.press('Escape'); await delay(250); await page.keyboard.press('Enter'); await delay(400); }
+  }
   await page.waitForFunction(() => !!window.__oprnDebug?.readState?.().currentMapId, null, { timeout: 120000 });
   await page.evaluate(() => window.__oprnDebug.setSeed(1));
   await delay(1200);
   mark('깨어남');
   await readThrough();
   await delay(900);
+  if (values.opening) throw Object.assign(new Error('opening-done'), { done: true });
   // 교탁 서랍(16,4) — (17,4) 에서 왼쪽.
   await goTo({ x: 17, y: 4 }, '교탁');
   await faceAndAct('left');
@@ -225,7 +241,8 @@ try {
     spawnSync('ffmpeg', ['-hide_banner', '-loglevel', 'error', '-y', '-ss', String(at), '-i', join(out, 'hide.mp4'), '-frames:v', '1', join(out, `beat-${Math.round(at * 10)}.png`)], { env });
   }
 } catch (e) {
-  report.errors.push(String(e.stack ?? e));
+  if (e?.done) { await delay(800); await finishRecording().catch(() => {}); }
+  else report.errors.push(String(e.stack ?? e));
 } finally {
   await hold(null).catch(() => {});
   await finishRecording().catch((e) => report.errors.push(String(e)));
