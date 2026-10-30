@@ -33,7 +33,7 @@ export function dedupeToolSchemas<T extends { readonly name: string; readonly pa
       const first = seen.get(key);
       if (first !== undefined) {
         const bare = strip(node) as Record<string, Json>;
-        return { ...bare, description: `형식은 위와 같다 — 칸 설명은 ${first} 의 같은 칸에 있다` };
+        return { ...bare, description: `Same format as above — field descriptions are on the same fields of ${first}` };
       }
       seen.set(key, owner);
     }

@@ -18,13 +18,13 @@ import type { BuildRun, BuilderCall, PlaceBuildResult, PlaceBuilder, PlaceRecord
 
 /** v2 계획 모델에게 주는 유일한 던전 지식(≤900자). */
 export const DUNGEON_CARD =
-  "[던전·동굴 type:dungeon|cave] 버들항 칩셋. theme 낱말(한·영 다 된다): forest 숲·정글 · swamp 늪·독늪·습지 · volcano 화산·용암 · ice 얼음·빙굴·설산 · " +
-  "pyramid 피라미드·사막 왕묘 · tower 마법사의 탑·마법탑 · otherworld 이세계·마계·지옥·심연 · castle 성·마왕성 · catacomb 지하묘지(기본) · temple 신전·유적 · " +
-  "mine 광산 · sewer 하수도 · labyrinth 미궁 · cave 동굴. size small|medium|large, floors 1~5(탑·마법탑은 위로, 나머지는 아래로; 보스는 마지막 층 맨 안쪽 방). " +
-  "features: 원문의 적 낱말(늑대·유령·미라·전갈·도마뱀 인간·눈알·갑옷·악마·박쥐…)과 보스 낱말(히드라·붉은 용·얼음 용·대마법사·마계의 군주…)을 그대로, " +
-  "boss·chests·enemies, 장치 함정(모래 함정)·다리·마법진·레버·얼음 미끄럼·광차, flooded(물에 잠긴 방), goblin lair. 적 낱말 → 보이는 적 그림, 보스 낱말 → 보스 그림. " +
-  "층은 네가 설계한다: spec.dungeonDesign = {entrance 입구 쪽, rooms[{id, role(entrance·boss·treasure·lake·camp·shrine·hall·grotto), size, shape(blob·cavern·long·shaft·ring·twin), at 맵 안 자리, water(none·pool·lake·stream), features}], links[{from,to,kind}]} — 어휘·예시 그림은 dungeon_parts, 함수는 겹침·길·도달만 고친다(설계 없이 오면 한 번 되돌려 보낸다). " +
-  "hints: variant(다른 배치)·direction(up|down)·gimmick·inspiration(「엘든링 같은」 게임 이름). 탑은 층마다 직접 고른다: floorShapes 「cross,spiral,hall」(아래층부터 — 중간 ring·gallery·cross·spiral·twin, 꼭대기 ring·hall·observatory), floorGimmicks 「none,teleporter」(중간 층 장치 lever·bridge·teleporter·minecart·iceslide·sandpit·none). 고치기는 edit_place set.dungeonDesign(고친 설계 전체)·variant·features — 소품 하나하나는 못 한다.";
+  "[Dungeon/cave type:dungeon|cave] Beodeul chipset. theme words (Korean or English): forest (forest, jungle) · swamp (swamp, poison bog, marsh) · volcano (volcano, lava) · ice (ice, ice cave, snow mountain) · " +
+  "pyramid (pyramid, desert tomb) · tower (wizard tower, mage tower) · otherworld (other world, demon realm, hell, abyss) · castle (castle, demon king castle) · catacomb (catacombs, default) · temple (temple, ruins) · " +
+  "mine · sewer · labyrinth · cave. size small|medium|large, floors 1–5 (towers go up, the rest go down; the boss is in the innermost room of the last floor). " +
+  "features: copy the enemy words from the request as written (늑대 wolf · 유령 ghost · 미라 mummy · 전갈 scorpion · 도마뱀 인간 lizardman · 눈알 eyeball · 갑옷 armor · 악마 demon · 박쥐 bat…) and boss words (히드라 hydra · 붉은 용 red dragon · 얼음 용 ice dragon · 대마법사 archmage · 마계의 군주 demon lord…), " +
+  "plus boss · chests · enemies, trap devices (sand trap), bridge, magic circle, lever, ice slide, minecart, flooded (flooded room), goblin lair. Enemy words → visible enemy art, boss words → boss art. " +
+  "You design the floor: spec.dungeonDesign = {entrance side, rooms[{id, role(entrance·boss·treasure·lake·camp·shrine·hall·grotto), size, shape(blob·cavern·long·shaft·ring·twin), at spot in the map, water(none·pool·lake·stream), features}], links[{from,to,kind}]} — vocabulary and sample pictures in dungeon_parts; the function only fixes overlap, paths and reachability (a call without a design is sent back once). " +
+  "hints: variant (another layout) · direction (up|down) · gimmick · inspiration (a game name, e.g. «like Elden Ring»). For towers pick each floor yourself: floorShapes «cross,spiral,hall» (bottom floor first — middle ring·gallery·cross·spiral·twin, top ring·hall·observatory), floorGimmicks «none,teleporter» (middle-floor devices lever·bridge·teleporter·minecart·iceslide·sandpit·none). Fix with edit_place set.dungeonDesign (the whole fixed design) · variant · features — single props cannot be edited.";
 
 const KNOWN_HINTS = new Set(["type", "size", "floors", "direction", "seed", "variant", "width", "height", "populate", "flooded", "lair", "puzzle", "style", "gimmick", "inspiration", "layout", "floorShapes", "floorGimmicks"]);
 const BEODEUL_TILESET = "beodeul_city";

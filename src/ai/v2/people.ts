@@ -16,15 +16,15 @@ import type { BuildRun, ContentBuildResult, PersonSpec } from "./types";
 import { counterSide, exitThroats, isCounterArt, isShopkeeperName, laneCells, wanderReach } from "./placementRules";
 
 export const PEOPLE_CARD =
-  "사람(people) 명세: {role,name?,where?,at?,looks?,firstTalk?,laterTalk?,movement?,mapId?}. " +
-  "role=문지기·촌장·상인 같은 역할(그림 고르기에도 쓴다 — 마을 사람에게 몬스터·해골 그림은 안 쓰고 짝 얼굴 있는 칩을 먼저 고른다). looks=외형 낱말(경비병·노인·소녀·old woman). " +
-  "where 낱말: 입구·성문(길이 맵 밖으로 나가는 곳의 길가, 길 쪽을 봄) / 광장·가운데 / 문 앞 / «X 옆·앞·뒤»(카운터·바·벽난로·우물 — 칩셋 이름표로 찾음) / " +
-  "한쪽·벽 쪽 / 북쪽 벽(남·동·서) / 구석 / 창가 — 방 낱말(홀·부엌·침실)을 붙이면 그 방 안(«홀 한쪽», «부엌 화덕 옆») / 생략(시작 지점 근처). " +
-  "at:{x,y} 는 정말 필요할 때만 — 막힌 칸이면 가까운 걸어 닿는 칸으로 옮긴다. " +
-  "firstTalk=처음 말 걸 때 대사(배열), laterTalk=그 뒤 두 번째부터 대사(배열, 생략하면 같은 말 반복). " +
-  "movement: still(기본, 제자리) · wander(배회 — 출구 길목·차도 가까이면 제자리로 바꾼다) · patrol(제자리로 처리). " +
-  "빌더가 길을 막지 않는 자리만 고르고, 놓은 뒤 길찾기로 확인한다. 사람은 차도·선로 한가운데에 세우지 않는다 — 보도·가게 안·벤치·카운터 뒤·문 앞에 선다. " +
-  "가게 주인·점원은 where 를 «카운터 뒤»로 — 카운터 북쪽(주인 쪽)에 세운다(카운터 앞은 손님 자리).";
+  "People spec: {role,name?,where?,at?,looks?,firstTalk?,laterTalk?,movement?,mapId?}. " +
+  "role = a role like 문지기 (gatekeeper) · 촌장 (village chief) · 상인 (merchant) (also used to pick art — villagers never get monster or skeleton art; chips with a matching face come first). looks = appearance words (경비병 guard · 노인 old man · 소녀 girl · old woman). " +
+  "where words: 입구·성문 (entrance/gate — roadside where the road leaves the map, facing the road) / 광장·가운데 (square/center) / 문 앞 (in front of the door) / «X 옆·앞·뒤» (beside/in front of/behind X: counter, bar, fireplace, well — found by chipset labels) / " +
+  "한쪽·벽 쪽 (one side/by the wall) / 북쪽 벽 (north wall; also 남·동·서) / 구석 (corner) / 창가 (by the window) — add a room word (홀 hall · 부엌 kitchen · 침실 bedroom) to stay inside that room («홀 한쪽», «부엌 화덕 옆») / omit (near the start point). English words (entrance, center, behind the counter) also work. " +
+  "at:{x,y} only when really needed — a blocked cell moves to the nearest walkable cell. " +
+  "firstTalk = lines the first time you talk (array), laterTalk = lines from the second time on (array; omit to repeat the same lines). " +
+  "movement: still (default, stays put) · wander (roams — switched to still near exit throats or roads) · patrol (treated as still). " +
+  "The builder picks only spots that do not block paths and checks them with pathfinding after placing. Never stand people in the middle of a road or rail track — sidewalk, inside a shop, bench, behind a counter or by a door. " +
+  "Shopkeepers and clerks get where «카운터 뒤» (behind the counter) — they stand on the counter's north (owner) side; in front of the counter is the customer spot.";
 
 type Cell = { x: number; y: number };
 const DIRS = [[0, -1], [0, 1], [-1, 0], [1, 0]] as const;
