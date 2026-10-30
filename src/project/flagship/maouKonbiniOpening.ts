@@ -309,6 +309,10 @@ function setupThroneBattle(project: Project): void {
     ...say("mira", "base", "레온, 연금이랑 휴가는 좀 탐나는데."),
     ...say("leonF", "base", "미라!! …이 목숨을 걸겠다. 『동귀어진』!"),
     ...say("maouF", "base", "자, 잠깐! 연금은? 연금은 어떻게 되는 거냐!"),
+    // 봉인의 빛 — 전투 화면이 하얗게 탄다(전투 색조 m2-046). 전투 색조는 필드로 이어지지 않으므로 필드 장면이 끝나자마자
+    // 같은 흰빛을 다시 깐다(옥좌 맵은 전투 퇴장 0.3~0.5초만 비친다). 필드 색조를 전투 전에 깔면 전투 화면 전체가 하얗게 덮였다(r4 시도).
+    playSe(SFX.vanish),
+    { kind: "m2Command", commandId: "m2-046-tint-screen", fields: { value: "255,255,255,1", durationMs: 700 } } as Command, wait(800),
     { kind: "m2Command", commandId: "m2-105-abort-battle", fields: {} } as Command,
   ]);
 }
@@ -324,16 +328,15 @@ export function buildMaouThrone(project: Project, roomWake: Cell): Cell {
   const garetAt = nearestFree(project, map, { x: 22, y: 9 }, [leonAt]);
   const miraAt = nearestFree(project, map, { x: 24, y: 9 }, [leonAt, garetAt]);
   const L = "ev_mk_t_leon", G = "ev_mk_t_garet", R = "ev_mk_t_mira";
-  // 애니메틱의 마지막 컷이 하얗게 닫힌다 — 필드도 흰빛으로 덮은 채 전투에 들어가, 전투가 끝나면 옥좌 맵을 다시 보이지 않고
+  // 전투 2합의 봉인술이 화면을 하얗게 채운 채(색조) 전투가 끝나므로, 옥좌 맵을 다시 보이지 않고
   // 그 흰빛 위에서 곧장 「빛이 모든 것을 삼켰다」 → 원룸이 흰빛에서 걷혀 나온다(전환 한 번).
   // r3 녹화: 전투 뒤 옥좌 2초 → 흰 화면 5초 → 검은 화면 2.5초 → 흰 화면 2초 → 원룸(약 10초). 감독 검수 7/10.
   const scene: Command[] = [
-    m2("Screen Effect", { effect: "fadeIn", value: "", durationMs: 0 }),
-    fieldTint("255,255,255,1", 0),
+    m2("Screen Effect", { effect: "fadeIn", value: "", durationMs: 300 }), wait(300),
     playSe(SFX.sword),
     { kind: "battleProcessing", troopId: "troop_mk_castle", canEscape: false, canLose: true, branchOnResult: false } as Command,
-    // 『동귀어진』 대사는 전투 2합 머리에서 이미 했다 — 전투가 끝나면 말 없이 흰빛 속에서 사라진다.
-    playSe(SFX.vanish), shake(700, "10"),
+    // 『동귀어진』 대사와 흰빛은 전투 2합 머리에서 이미 났다 — 전투가 끝나면 흰 화면 위에서 곧장 내레이션.
+    fieldTint("255,255,255,1", 0), shake(700, "10"),
     stopBgm(),
     wait(400),
     // 흰 화면 위 내레이션 한 줄 — 화자 없는 중립 창, 한 번에 표시(타자기로 한 글자씩 나오면 「빛」만 찍힌 빈 창처럼 보였다).
