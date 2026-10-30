@@ -65,7 +65,6 @@ import {
 } from "@/player/playSceneMapCommands";
 import { findRuntimeEventInScene, resetEncounterCounter, updatePlayScene } from "@/player/playSceneMovement";
 import { prefetchBattleAssetsForMap } from "@/player/battleAssetPrefetch";
-import { holdLoaderForMapTileset, scheduleNeighborTilesetPrewarm } from "@/player/tilesetPrewarm";
 import { recordDungeonEntrance } from "@/project/encounterGuard";
 import { createWorldAtlasController } from './worldAtlasOverlay';
 import { visitAtlasMap } from '@/project/worldAtlas';
@@ -253,11 +252,6 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     });
     reportProgress(0);
     loadBundledAssets(this, store.getCurrent());
-    // 첫 맵 타일셋의 이식 아틀라스를 로딩과 겹쳐 워커에서 굽는다(create 가 굽느라 멈추지 않게).
-    const project = store.getCurrent();
-    const sessionValue: unknown = this.game.registry.get("initialSession");
-    const firstMapId = isPlaySession(sessionValue) ? sessionValue.currentMapId : project.startMapId;
-    holdLoaderForMapTileset(this, project, firstMapId, PhaserRuntime);
   }
 
   private installFailedAssetPlaceholder(key: string): void {
@@ -534,8 +528,6 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     syncTransitForMap(this);
     void this.syncMinimap();
     if (this.map) prefetchBattleAssetsForMap(store.getCurrent(), this.map);
-    // 이웃 맵(장소 이동으로 가는 맵)의 타일셋 이식 아틀라스를 유휴 시간에 워커로 굽는다 — 이동의 검은 화면에서 첫 굽기를 뺀다.
-    if (this.map) scheduleNeighborTilesetPrewarm(this, this.map);
   }
 
   renderTiles(): void {
