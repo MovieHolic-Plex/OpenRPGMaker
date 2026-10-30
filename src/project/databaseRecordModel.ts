@@ -1,3 +1,4 @@
+import { normalizeSeCues } from "@/project/seCues";
 import { normalizePartyBonds } from "@/project/partyBonds";
 import { normalizeChargeBreak, normalizeFixedDamage, normalizeMultiHit } from "@/project/skillBattleRules";
 import { normalizeShinyRate } from "@/project/monsterIdentity";
@@ -303,6 +304,9 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
   records.battleVictoryMeResourceId = cleanOptionalId(system.battleVictoryMeResourceId);
   records.battleDefeatSeResourceId = cleanOptionalId(system.battleDefeatSeResourceId);
   records.battleEscapeSeResourceId = cleanOptionalId(system.battleEscapeSeResourceId);
+  // 효과음 자리 표 — 화이트리스트라 여기 없으면 저장 왕복 1회에 사라진다. 비면 저장하지 않는다(옛 JSON 바이트 유지).
+  const seCues = normalizeSeCues(system.seCues);
+  if (seCues) records.seCues = seCues;
   records.initialTroopId = cleanOptionalId(system.initialTroopId);
   records.battleFlow = normalizeBattleFlow(system.battleFlow);
   // ATB 대기 방식·속도·필드 배경 — 기본(wait·기존 속도·트룹 배경)은 저장하지 않는다(옛 JSON 바이트 유지).

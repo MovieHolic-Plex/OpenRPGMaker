@@ -938,16 +938,17 @@ function exitTargetOf(page: { commands?: readonly unknown[] } | undefined, here:
   return undefined;
 }
 
-/** 출구가 맵 밖으로 향하는 쪽의 화살표 — 맵 가장자리에 붙은 출구는 그 가장자리 쪽, 맵 안 문은 주인공에게서 문 쪽(대개 ↑). */
-export function exitArrowGlyph(rect: { left: number; right: number; top: number; bottom: number }, mapW: number, mapH: number, heroX: number, heroY: number): string {
+/** 출구가 맵 밖으로 향하는 쪽의 화살표 — 맵 가장자리에 붙은 출구는 그 가장자리 쪽, 건물 문(map.doors 위 칸)은 늘 ↑(문 앞 칸에서 위로 밀어 들어간다, #3973),
+ *  그 밖의 맵 안 출구는 주인공에게서 출구 쪽 — 위아래가 다르면 위아래가 먼저다(옆에서 다가와도 문 화살표가 옆을 가리키지 않게). */
+export function exitArrowGlyph(rect: { left: number; right: number; top: number; bottom: number }, mapW: number, mapH: number, heroX: number, heroY: number, onDoor = false): string {
   if (rect.bottom >= mapH - 1) return "↓";
   if (rect.top <= 0) return "↑";
   if (rect.left <= 0) return "←";
   if (rect.right >= mapW - 1) return "→";
-  const dx = (rect.left + rect.right) / 2 - heroX;
+  if (onDoor) return "↑";
   const dy = (rect.top + rect.bottom) / 2 - heroY;
-  if (Math.abs(dx) > Math.abs(dy)) return dx < 0 ? "←" : "→";
-  return dy > 0 ? "↓" : "↑";
+  if (dy !== 0) return dy > 0 ? "↓" : "↑";
+  return (rect.left + rect.right) / 2 < heroX ? "←" : "→";
 }
 
 function syncExitLabels(scene: PlaySceneContext, now: number, options: { arrowOnly?: boolean } = {}): void {
@@ -979,7 +980,8 @@ function syncExitLabels(scene: PlaySceneContext, now: number, options: { arrowOn
     const dx = Math.max(rect.left - scene.tileX, 0, scene.tileX - rect.right);
     const dy = Math.max(rect.top - scene.tileY, 0, scene.tileY - rect.bottom);
     if (Math.max(dx, dy) > EXIT_LABEL_RADIUS || (dx === 0 && dy === 0)) continue;
-    const text = options.arrowOnly ? exitArrowGlyph(rect, map.width, map.height, scene.tileX, scene.tileY) : `→ ${name}`;
+    const onDoor = (map.doors ?? []).some((door) => rect.left < door.x + door.w && rect.right >= door.x && rect.top < door.y + door.h && rect.bottom >= door.y);
+    const text = options.arrowOnly ? exitArrowGlyph(rect, map.width, map.height, scene.tileX, scene.tileY, onDoor) : `→ ${name}`;
     want.set(view.event.id, { text, x: ((rect.left + rect.right + 1) / 2) * size, y: rect.top * size - 2, below: (rect.bottom + 1) * size + 2 });
   }
   // 같은 목적지로 옮기는 붙은 칸들(두 칸 폭 길 끝 출구와 그 길 폭 사본 — ai/v2 widenRoadExits)은 글자 하나를 가운데에 —

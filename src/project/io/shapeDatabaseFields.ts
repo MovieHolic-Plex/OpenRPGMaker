@@ -1,3 +1,4 @@
+import { isSeCueId } from "@/project/seCues";
 import { validateOpeningAnimatic } from "@/project/openingAnimatic";
 import { validateMonsterCampaign } from "./shapeMonsterCampaign";
 import { parseCinematicPresentation } from '@/project/cinematicPresentation';
@@ -254,6 +255,13 @@ export function validateSystem(value: unknown): void {
       const member = requireRecord(`system.partyBonds.members[${index}]`, raw);
       requireString(`system.partyBonds.members[${index}].actorId`, member.actorId);
       requireString(`system.partyBonds.members[${index}].variableId`, member.variableId);
+    }
+  }
+  if (system.seCues !== undefined) {
+    const cues = requireRecord("system.seCues", system.seCues);
+    for (const [key, value] of Object.entries(cues)) {
+      assert(isSeCueId(key), `system.seCues 의 자리 id 꼴이 아닙니다: ${key}`);
+      requireString(`system.seCues.${key}`, value);
     }
   }
   if (system.fieldGuides !== undefined) assert(system.fieldGuides === "off" || system.fieldGuides === "arrows", "system.fieldGuides 는 off·arrows(생략 = 켜기)");
