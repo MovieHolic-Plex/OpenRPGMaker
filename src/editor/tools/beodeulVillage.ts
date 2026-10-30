@@ -750,13 +750,18 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     const opts = (wide: boolean) => ({ maxStep: 2, before: 3, after: 3, turnCost: wide ? 2.2 : 1.4, climbCost: 6, fordCost: 4, wide, climbNS: true });
     for (const c of plazaHold) if (occ[c] === PLAZA_HOLD) occ[c] = FREE;
     const paths: { name: string; cells: number[]; width: number }[] = [];
-    const edgeOf = (e: string) => (c: number) => { const x = c % W, y = (c - x) / W; return e === "west" ? x === 0 : e === "east" ? x === W - 1 : e === "north" ? y === 0 : y === H - 1; };
+    // 출구는 그 가장자리 가운데 쪽(양끝 20% 밖)에 먼저 낸다 — 가장자리 전체를 받으면 북쪽 출구가 서쪽 가장자리 열을 타고 올라가 (0,0) 구석으로 나갔다(4판 출구 시험 셋째 판).
+    const edgeOf = (e: string, mid = true) => (c: number) => { const x = c % W, y = (c - x) / W;
+      const inX = !mid || (x >= W * 0.2 && x <= W * 0.8), inY = !mid || (y >= H * 0.2 && y <= H * 0.8);
+      return e === "west" ? x === 0 && inY : e === "east" ? x === W - 1 && inY : e === "north" ? y === 0 && inX : y === H - 1 && inX; };
     const exits = layout.exits?.length ? layout.exits : (W >= H ? ["west", "east"] as const : ["north", "south"] as const);
     let entrance: { x: number; y: number } | null = null;
     for (const e of exits) {
       let path = routePath(grid(true), [g0], edgeOf(e), opts(true));
       let width = 2;
       if (!path) { path = routePath(grid(false), [g0], edgeOf(e), opts(false)); width = 1; }
+      if (!path) { path = routePath(grid(true), [g0], edgeOf(e, false), opts(true)); width = 2; }
+      if (!path) { path = routePath(grid(false), [g0], edgeOf(e, false), opts(false)); width = 1; }
       if (!path) { report.roadsFailed.push(`${e} 가장자리로 가는 큰길`); continue; }
       paths.push({ name: "큰길", cells: path, width }); for (const c of path) network.add(c);
       const end = path[path.length - 1]!; if (!entrance) entrance = { x: end % W, y: Math.floor(end / W) };
@@ -2309,10 +2314,12 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       const cells: number[] = []; let ok = true;
       for (let j = -1; j <= ph && ok; j += 1) for (let i = -1; i <= pw; i += 1) { const c = idx(x + i, y + j); if (occ[c] !== FREE) { ok = false; break; } cells.push(c); }
       if (!ok || !flatCells(cells)) continue;
-      // 울타리 문에서 길까지 걸어갈 수 없으면(띠 위 등) 울타리 없이 줄지은 나무만
-      if (fenced) planFence(x - 1, y - 1, x + pw, y + ph, (c) => distRoad[c]!);
+      // 울타리는 두르지 않는다(4판 ab23 판정 「울타리 안에 나무만 있어 쓸모없음」 — 울타리가 나무를 가둔 빈 우리로 읽혔다). 줄지은 나무 사이에 사과 상자를 둬 과수원으로 읽히게 한다.
       const tk = K(choice(trees)); let n = 0;
       for (let j = 0; j < rowsN; j += 1) for (let i = 0; i < cols; i += 1) { const tx = x + 1 + i * 4, ty = y + j * 4; if (fits(tk, tx, ty, 0)) { claim(tk, tx, ty, PROP, false); n += 1; } }
+      const crates = have(["bd-prop-crate_apple"]);
+      if (n && crates.length) { const ck = K(crates[0]!); let put = 0;
+        for (let j = ph - 1; j >= 0 && put < Math.min(2, cols - 1); j -= 1) for (let i = 0; i < pw && put < Math.min(2, cols - 1); i += 1) { const cxx = x + i, cyy = y + j; if ((i % 4) === 0 && fits(ck, cxx, cyy, 0)) { claim(ck, cxx, cyy, PROP, false); put += 1; i += 4; } } }
       for (let j = 0; j < ph; j += 1) for (let i = 0; i < pw; i += 1) { const c = idx(x + i, y + j); if (occ[c] === FREE) occ[c] = CLEAR; }
       if (n) orchardCount += 1; break;
     }

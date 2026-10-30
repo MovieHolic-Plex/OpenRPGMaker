@@ -233,6 +233,8 @@ function scanCommand(
     case "choices":
       if (!Array.isArray(command.options)) break;
       for (const [optionIndex, option] of command.options.entries()) {
+        addConditionReads(option.showWhen, add, { ...owner, commandPath: `${commandPath}.options[${optionIndex}].showWhen`, detail: "choice shown when" });
+        addConditionReads(option.enableWhen, add, { ...owner, commandPath: `${commandPath}.options[${optionIndex}].enableWhen`, detail: "choice enabled when" });
         scanCommands(option.branch, add, owner, `${commandPath}.options[${optionIndex}].branch`);
       }
       if (command.cancelBranch) scanCommands(command.cancelBranch, add, owner, `${commandPath}.cancelBranch`);

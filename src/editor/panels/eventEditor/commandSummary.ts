@@ -1190,7 +1190,9 @@ function choicesSummaryParts(cmd: Extract<Command, { kind: "choices" }>): readon
     options.forEach((option, index) => {
       if (index > 0) parts.push(plainPart(" "));
       const label = oneLine(option.text) || `선택지 ${index + 1}`;
-      parts.push(choiceOptionPart(`${index + 1}.${label}`));
+      // 조건 붙은 줄은 목록에서 바로 알아보게 표시한다(보일 조건 ?, 고를 조건 ◐).
+      const marks = `${option.showWhen ? "?" : ""}${option.enableWhen ? "◐" : ""}`;
+      parts.push(choiceOptionPart(`${index + 1}.${label}${marks ? ` ${marks}` : ""}`));
     });
   }
   parts.push(plainPart("  "), choiceCancelPart(choiceCancelSummary(cmd)));

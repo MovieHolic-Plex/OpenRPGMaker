@@ -10,8 +10,8 @@ v2 는 같은 실행기 위에서 역할을 나눈다.
 | 2 짓기 | 결정론 빌더 | 명세 → v1 결정론 도구 호출(`src/ai/v2/builders/*`, `people.ts`, `events.ts`, `drawObject.ts`). |
 | 3 보기 | 코드 | 1배 그림 + 기계 검사(`checks.ts`: 도달·출입 착지·계단·NPC 도달·맨바닥·빈 칸). |
 | 4 비평 | 다른 호출 | 요청 원문 + 1배 그림만 보는 독립 비평가(`critic.ts`, v1 `featureCriticPrompt` 루브릭 축 1·2·6). major 를 칸 좌표로. |
-| 5 고치기 | 모델 → 빌더 | `edit_place` 패치(구역·주인공 물건 near·크기·variant·dressing)로 같은 빌더를 다시. 맵당 1바퀴(6차 속도 — 3바퀴는 바퀴마다 다시 짓기+비평 20~35초). |
-| 6 보고 | 모델 | 「다 됐다」는 비평 major 0 + 기계 검사 통과일 때만. `missingArt` 는 그대로 보고. |
+| 5 고치기 | 모델 → 빌더 | `edit_place` 패치(구역·주인공 물건 near·크기·variant·dressing)로 같은 빌더를 다시. 맵당 3바퀴(`V2_MAX_REPAIR_ROUNDS` — 2026-10-30 할 일 고리에서 1→3, 항목 시도 상한 3·진척 규칙과 같은 값; 그 전 6차는 속도로 1바퀴). 비평·검사·화면 검수 결함은 할 일 항목으로 돌아온다(아래 «할 일 고리»). |
+| 6 보고 | 모델 + 함수 | 「완료」는 할 일 열림 0·막힘 0·기계 확인 전부 ✓ 일 때만 — 아니면 함수가 기계 확인 표로 최종 보고를 쓴다. `missingArt` 는 그대로 보고. |
 
 ## 다양성 — 같은 요청이 같은 맵이 되지 않게 (2026-10-23)
 
@@ -58,6 +58,15 @@ v1 의 `script_cutscene` 비트로 옮긴다(`events.ts`).
 못 하는 것: 이미 있는 마을에 강·다리 같은 지형 덧그리기(맵을 새로 짓지 않으면 못 한다).
 음악 낱말(음악·배경음·브금·BGM·팡파르·사운드트랙·OST)이 있으면 `FALLEN_TIERS` 음악 단이 `recommend_bgm`·`store_find_music`·`store_install`·`set_game_audio`·`get_database_records` 를 싣는다.
 맵·시스템 음악 연결이 바뀌었으면 마감 검사가 「playAudio 이벤트」를 더 요구하지 않는다(`gameChecks.ts` `audioBindingsChanged`). 기본은 조수가 묻지 않고 스토어 곡을 넣어 잇고, 걸지 않았으면 마감 검사가 `set_game_audio`(필요하면 `store_find_music` → `store_install`)를 요구한다. 사용자가 「먼저 묻기」를 켰을 때만 음악 카드가 질문으로 세져 관문이 재촉하지 않는다. 스토어 음악 길은 `openwiki/asset-store.md` 「조수가 스토어 음악을 찾아 넣는다」.
+
+### 도구 노출 — 처음부터 싣는 도구·필요할 때 싣는 도구·영어 사본 (2026-10-30)
+
+게임 요청 한 턴에 v2 모델이 받던 v1 도구 글이 91.8k 토큰(o200k)이었고 거의 다 한국어였다. 노출은 `src/ai/v2/toolExposure.ts` `exposeV2Tools` 한 곳이 정한다(실행기 `scripts/lib/assistantV2Runtime.ts` 가 할 일 고리 뒤에 부른다).
+- **처음부터 싣는 도구** = 이 요청 묶음(`v2ExtraToolNames`) ∩ `V2_UP_FRONT`. `V2_UP_FRONT` 는 기록된 실행(turns/*.json `toolArgs` = 모델이 직접 부른 호출)에서 세션 수 terra ≥10 또는 opus ≥20 인 도구다.
+- **필요할 때 싣는 도구** = 묶음의 나머지 + `v2ToolPool()`(모든 v2 낱말 묶음의 합). `load_tools{names}` 가 다음 호출부터 선언하고(실행기 `env.declareTool` → in-place push), 이름으로 바로 부르면 실행기 `resolveFallbackTool` → `options.v2.lazyTool` 이 그 자리에서 싣고 실행한다. 할 일 고리가 강제·우선하는 도구도 먼저 싣는다. 없는 이름은 영어 거절 글(`unknownToolText`).
+- **영어 사본**: `src/ai/v2/toolTextEn.ts`(설명 d + 파라미터 경로 p). 처음부터 싣는 도구는 덮개 없는 한국어 파라미터 설명을 걷고, 필요할 때 싣는 도구는 한국어 파라미터 설명을 남긴다. v1 레지스트리 글은 그대로다.
+- **같은 모양 걷기**: 설명 뺀 모양이 400자 이상인 하위 스키마가 앞(처음부터 싣는 도구)에 있으면 v1 도구는 느슨한 자리표시(«Same shape as 도구 경로»)로, v2 동사는 설명만 걷는다(동사는 광고 스키마가 곧 검증기라서). v1 도구의 실제 검증은 레지스트리 `validateArgs` 가 원래 스키마로 한다.
+- 측정 `bun scripts/qa/assistant-v2/dumpPrompt.mts`(도구 글), 기록 재생 `bun scripts/qa/assistant-v2/toolExposureReplay.mts`(닿음·인자 검증 회귀 0 이어야 한다).
 
 ## 새 플레이어 길잡이 — 목표 줄·보이는 이야기 이벤트 (2026-10-26, J90~J96)
 
@@ -150,7 +159,7 @@ v1 의 `script_cutscene` 비트로 옮긴다(`events.ts`).
   이미 정해진 값보다 짧을 때만 줄이고, 0 이면 우리 상한 없음. 사용자 지정(openai-compat:*) 엔드포인트는 늘 씌운다 — 엔드포인트 「첫 토큰 대기」 600초가 토큰 사이 감시까지 10분으로 늘려 호출 하나가 10분씩 잡혔다.
   다른 제공자는 OPRN_MODEL_* 를 명시했을 때만. 감시가 끊은 호출(「timed out while waiting for the first event」·「stalled while waiting for the next event」)은 같은 기록으로
   `OPRN_MODEL_STALL_RETRIES`(기본 2)번 다시 요청(`provider_stall_retry`)하고, 그래도 조용하면 차례를 실패 문장으로 끝낸다(`provider_stall_giveup` + error — 적용한 변경은 남는다). 확인: `bun scripts/qa/model-stall-probe.mts`(헤더만 보내고 침묵하는 가짜 끝점).
-- **화면 검수 고치기 차례 상한**(`src/ai/v2/vqaFixBudget.ts`, 실행기가 v2 도구 실행 앞에 낀다): 고치기 지시를 낸 차례마다 쓰기 도구 `OPRN_V2_VQA_FIX_MAX_CALLS`(12)회 · `OPRN_V2_VQA_FIX_MAX_MS`(600000) ·
+- **화면 검수 고치기 차례 상한**(`src/ai/v2/vqaFixBudget.ts` — 2026-10-30 할 일 고리로 대체, 실행기가 더 쓰지 않는다): 고치기 지시를 낸 차례마다 쓰기 도구 `OPRN_V2_VQA_FIX_MAX_CALLS`(12)회 · `OPRN_V2_VQA_FIX_MAX_MS`(600000) ·
   같은 도구+같은 인자 실패 `OPRN_V2_VQA_FIX_SAME_FAILS`(2) · 같은 도구 실패 `OPRN_V2_VQA_FIX_TOOL_FAILS`(4). 넘으면 실행하지 않고 «남은 결함으로 보고하라» 거절을 돌려주며 `v2.vqa.fix_cap` 을 한 번 남긴다.
   읽기 도구(inspect·list_·find_·get_·read_)는 세지 않는다. 판 사이 반복은 기존 `vqaActionable`(두 판 연속 그대로 = stuck)·`VQA_MAX_ROUNDS` 가 막는다 — 이 상한은 **한 차례 안**의 반복이다
   (vm1 escape 001: 1판 결함 6건 뒤 고치기 차례 하나가 move_object 를 20번 넘게, 반은 같은 「길이 막혀 되돌림」 거절로 부르며 45분 상한까지 갔다).
@@ -300,9 +309,22 @@ v1 의 `script_cutscene` 비트로 옮긴다(`events.ts`).
 - **같은 게임 안 「다르게」·십자 공식(2026-10-30 terra 같은 요청 3판이 모두 s·center·e·w·n 5방)**: 예시 순서 돌리기(`rotatedExamples`)는 terra 에 효과가 없었다(projectKey 는 판마다 달랐는데 같은 십자). 그래서 ① `screenDungeonSpec` 이 `crossFormula`(방 넷 이상, 자리가 모두 나침반 낱말, 가운데 + 네 끝 중 셋 이상)를 장소마다 한 번 되돌려 보내며 "x,y" 자리·치우친 긴 굴·갈래·높이를 요구하고(`cross:<이름>`), 두 번째는 짓고 알린다. ② `dungeon_parts`·되돌려 보내기 `context` 에 이 게임에서 이미 지은 굴의 설계 한 줄(`designLine`: 입구·방 수·역할@자리/모양/단)을 보여 「방 수·입구 쪽·자리·모양을 다르게」를 요구한다.
 - **높이(단·계단)**: 방마다 `level` 0·1·2(옛 `levels` 맵도 읽음). 입구 방이 0 이 아니면 모두 그만큼 내린다(고침). `compose.ts` 가 방 칸에서 다중 출발 BFS 로 바닥 단을 정하고 `reliefPlan.planDungeonRelief` 가 단이 다른 경계마다 곧은 계단 자리(아랫 참·계단 dl+1칸·윗 참, 폭 1~3, 남북 오름 우선)를 찾는다. 못 잇는 방은 한 단 내리고 알린다. 계단 칸은 꾸미기 전에 막아 두었다가 도달 검사 2 앞에서 푼다. 결과는 `map.relief`(스타일 `dungeonReliefStyle`: 숲 grass-steps·늪 peat-steps·얼음 snow-steps·피라미드 sand-steps·나머지 새 `cave-steps` — 칩셋 동굴 바위 색, `rampArt.json` 은 `build-village-stair-art.mts`). 남북 계단 칸의 아래 층 타일은 마을과 같은 버들항 돌계단 조각(`bd-capital-quay-steps-*` 폭 1~2, `bd-mpart-stairs` 폭 3+)으로 칠한다(`dungeonTools.paintReliefStairTiles`) — 동서 계단 조각은 칩셋에 없어 비탈로 그리고 「고침:」으로 알린다(그림 없음). 공허 액체·탑 고리 던전은 높이를 쓰지 않는다.
 - **미궁도 설계를 따른다**: `designMaze.layoutDesignedMaze` — 노드 격자 안에 설계한 방을 자리·크기대로 블록으로 두고(겹치면 가까운 빈 자리로 옮기고 알림) 입구 쪽 바깥에 입구 방, 그 사이를 무작위 DFS 갈림길로 잇는다. 보스·보물은 막다른 끝, 지나가는 방은 이은 수만큼 문. 못 닿는 방은 문을 더하거나 빼고 알린다. 예전 `layoutMaze` 는 설계를 버렸다.
+- **세션마다 다르게**(2026-10-31 씬 벤치 opus 「보스 방」 3판이 모두 입구·뼈의 회랑·보스 세 방 남북 일자): 예시 순서·입구 낱말 순서·참고 그림이 게임 열쇠(프로젝트 열쇠)로만 돌아 같은 시작 저장본의 같은 요청이면 늘 같은 안내였고, 던전 씨앗도 요청·게임 열쇠(variety)라 같은 설계면 같은 맵이었다. `V2Session.nonce`(세션마다 무작위)를 안내 열쇠와 던전·동굴 variety 에 섞고, `dungeon_parts`·설계 되돌림이 `angle`(설계 실마리 열 개 중 둘 — 높은 단 보스·물로 가른 굴·고리·바퀴살·큰 방 둘·옆 끝 보스·보스 뒤 보물·쉬는 곳·내려가는 굴·숨은 곁굴)을 함께 준다. 쓰거나 버리는 것은 모델이다. 실내 빌더(같은 게임·같은 요청 → 같은 방)는 그대로.
 - 빌더 hints: 스키마 칸을 0·빈 값으로 다 채우는 terra 의 `hints.layout`(마을 자리 객체)이 author_dungeon `layout`(배치 가족 낱말)으로 넘어가 인자 검증에 걸렸다(dd1030 terra 같은 요청 3판 모두 실패) — 빈 값·객체 hints 는 안 준 것으로 읽는다.
 - 빌더 경고: `builders/dungeon.ts` 가 `author_dungeon` 결과의 `diff.warnings` 를 읽지 않아 「고침:」 줄이 모델에게 한 번도 가지 않았다(지문의 고침 수 늘 0) — 고쳤다.
 - 시험: `bun scripts/qa/assistant-v2/dungeonDesign.mts <out> [theme…]`(예시 넷 + 설계 없음, 모델 없음). 실조수 판 검사 `bun scripts/qa/assistant-v2/dungeonLiveCheck.mts <판>…`(막힘·자동 플레이·던전 맵 도달(시작/이동 칸에서 이벤트 모두 닿는가)·열린 바닥 한가운데 외톨이 막힌 칸 수, `DLC_NOPLAY=1` 이면 자동 플레이 생략). 실조수 `suite/dungeon-live.sh <arm> <prompt> <batch>`(같은 요청 same1~3 + demon·crystal·goblin·volcano·forest), 지문은 `suite/dungeon-design-fp.py <batch> <out>` — mapvqa 렌더·거의 같음 규칙 + 구조 사인(방 수·방 종류·입구 쪽, 방 이름과 무관해서 mapvqa 「방 구성」 표지가 모델이 지은 이름으로 다양해 보이는 착시를 막는다). 결과 페이지 `~/claude-viz/dungeon-design-1029.html`.
+
+## 숲길도 조수가 설계한다 (2026-10-30 씬 벤치 «opus 숲길 3판이 거의 같은 맵»)
+
+씬 「숲길 탐색 구간」(버들마을↔마왕의 동굴, 갈림길·상자·약한 몬스터)은 v2 숲·들판 낱말 경로(`game.ts` words → `author_forest_route`, `editor/tools/forestRouteTool.ts`)를 탄다 — 던전 빌더가 아니다.
+opus 3판(sc-1030s-b3 r1~r3)이 인자까지 똑같이(`side:north, count:1, names, moods, hiddenPerMap:1`) 불렀고, 씨앗 기본값이 「7 + 맵 수×13」이라 같은 바탕 프로젝트면 늘 같은 숲이었다. 틀도 굽이 4·빈터 자리 고정, 갈림길 없음(요청의 「갈림길·막다른 곳 보상」을 지을 수단이 없었다).
+
+- **씨앗 숨김**: `seed` 를 스키마에서 뺐다(대본 `act2Opening` 은 seed 211 을 그대로 넘기고 같은 그림 — 설계 없음·고정 씨앗 틀은 바뀌지 않았다). 기본 씨앗은 인자 해시 + 무작위 덧값, 쓴 값은 요약 「seed N」으로 남긴다(다시 짓기용).
+- **모델 설계** `designs[i]`: 굽이 수 1~6·휘는 폭(gentle·normal·wide)·들어오고 나가는 자리 0~1·길 폭·갈림길 `branches[{at, toward, length, end: chest|clearing|nothing}]`·빈터 `clearings[{at, size, toward}]`. 함수는 칸으로 옮기고 맵 안에 가둘 뿐이다(`designedForestSpec`). 갈림길 끝은 본길·앞선 갈래에서 5칸 넘게 떨어진 자리만 쓴다 — 정한 쪽이 본길 굽이와 겹치면 반대쪽·짧게, 고친 것은 「고침:」 경고(sc-1030fr opus: 「서쪽 갈래」가 본길의 서쪽 큰 굽이와 겹쳐 상자가 본길 굽이에 놓였다). 갈림길은 `WoodSpec.paths` 의 곁 곡선 + 끝 작은 빈터, 끝 칸은 `data.maps[i].deadEnds` 로 돌려준다(상자·적 자리). 설계 없이 부르면 옛 틀 그대로 짓고 경고로 designs 를 쓰라고 알린다.
+- **앞서 지은 것과 다르게**: 설계 한 줄을 맵 위치(`tags:["forest-route"]`, note)로 남기고, 새 설계가 이 프로젝트의 앞선 숲길과 굽이 수·갈림 자리(¼ 단위)·방향이 같으면 경고한다. 도구 설명·v2 안내(`game.ts` 숲·들판 줄)가 「사연에 맞게, 앞서 지은 숲길과 다르게」를 요구한다.
+- **세션마다 다른 설계 지시서 + 짓기 전 검사**(sc-1030fr·fr2: designs 를 받자 opus 는 세 세션 모두 「굽이 3·wide·갈림 0.30왼·0.65오」, terra 는 「굽이 4·갈림 0.48왼」; 실마리를 설명에 붙이기만 한 판(omo-fr-t)도 terra 3판 모두 무시): `forestBrief.ts withForestRouteBrief` 가 세션마다 숫자로 확인되는 지시서 둘(입구 가까운 갈림·곧은 길+큰 빈터·좁고 굽은 숲·비스듬히 가로지르기·한쪽으로 몰린 갈래·빈터 끝 갈래·트인 숲·나란한 긴 갈래·갈림 셋·늦은 상자 갈래)을 **영어로** `author_forest_route` 설명 끝에 싣는다. 첫 짓기 전에 `briefProblems` 가 designs 를 지시서·이 프로젝트의 앞선 숲길(위치 메모 forest-route 줄)·측정된 모델 버릇(`ROUTE_HABITS`)과 대조해(`designDistance` ≤1 = 거의 같음) 걸리면 짓지 않고 ok:false «Rejected: … You sent: … Change at least: …»로 되돌린다. 되돌림은 2번까지, 그 뒤엔 받아 짓고 결과 글에 «[Route brief not met]»을 붙여 보고에 넣게 한다. **함수는 설계를 고치지 않는다**(각도를 설계에 직접 넣던 929c37054f 는 사용자 규칙 「설계는 모델 몫」 위반으로 되돌림). 지시서는 감싸개가 `descriptionTail` 로도 들고 있어 `toolExposure.englishToolCopy` 가 영어 설명(`toolTextEn.ts`)으로 바꿀 때 뒤에 다시 붙는다(designs 칸 뜻도 영어 p 로 싣는다). 깊은 칸 설명은 CLI 도구 목록에서 걷히므로(`cliContextBudget.stripDeep`) 필드 뜻은 도구 설명 본문에 둔다.
+- **몬스터·조우는 비었다고 알린다**(2026-10-31 sc-1031-b4 terra 숲길 3판 «몬스터·조우 없음»): terra 가 돌려받은 `clearing` 한 칸에 동굴 문·상자·필드 적을 모두 겹쳐 두다 자리 충돌로 적이 다 빠졌다. 이 도구는 전투 방식이 프로젝트마다 달라 조우를 깔지 않는다 — 대신 `data.maps[i].encounters:'none'`·요약 「몬스터·조우 없음」과 `enemySpots`(입구에서 걸음 수 30·50·70·88% 지점, 이벤트·입구·출구·빈터·갈림 끝과 3칸 넘게·서로 4칸 넘게 떨어진 트인 길 칸)를 돌려준다. v2 안내도 clearing·deadEnds·enemySpots 를 나눠 쓰라고 적는다. 요청을 지키게 하는 것은 경고가 아니라 게임 검사 `gameChecks` 1i «[게임 검사 전투]»다(`FOE_ASK` — «약한 몬스터가 있게»·«고블린과 싸우는»; 이번에 바뀐 이벤트에 battleProcessing 이 없고 켠 조우표도 안 바뀌었으면) — 할 일 고리 ④ 가 gate 항목으로 단다. 모델이 battle 항목을 적지 않아도 걸리고, 적었으면 같은 일을 두 번 시키지 않도록 도구 경고는 뺐다(omo-forest 1030). **세기**: «[게임 검사 전투 세기]»(`pathBattleBudget.fieldBattleStrain`, 맵마다 한 문제) — 이번에 새로 두었거나 무리가 바뀐 보이는 적(닿으면 싸움·도망 가능)을 시작 파티 맨몸으로 모의(24판, 시드 고정)해 승률 100% 미만, 한 판 손실 > 35%(«약한» 요청)·50%, 한 맵 이어 싸운 손실 합 > 60% 이면 관문 항목. 통과하는 기존 무리를 예로 이른다. 끝맺음 path-battles(청사진 길 맞춤)는 게임 전체 요청에서만 돌아 장면 요청의 숲은 재지 않았다(omo-fr-o opus: 숲 말벌 무리 손실 73%·네 무리 합 169% → 판정자 패배). 게임 전체 요청이면 길 위 전투는 path-battles 몫이라 뺀다.
+- 시험(모델 없음): `node --max-old-space-size=8000 node_modules/vite-node/dist/cli.mjs --script scripts/qa/assistant-v2/forestRouteDesign.mts <out>` — 같은 인자 3번·설계 3개·같은 설계 두 번(경고)·대본 seed 211(전후 통행 격자 같음). 막다른 끝이 입구에서 닿는지 찍는다.
 
 ## 씬 벤치 1회차 수리 (2026-10-30 sc-1030a terra · sc-1030s-b1~b4 opus)
 
@@ -315,11 +337,15 @@ salt 를 찾아(무작위 salt 를 고정해 몇 번 지어 본다) 같은 마�
 
 - **말을 거는 보스가 싸운다**(`bossTalkBattles.talkBossBattles`, 마감 `lanes/stages/talk-boss-battles.ts` order 105): terra boss-room r2·r3 — 해골 기사를 `add_people`(「…내 검을 받아라!」/「결판을 내자.」)로 세우고 전투는 입구 칸 닿기 컷신에만 넣었다. 장면은 방 안에서 시작해 판정자가 말을 걸면 「결판을 내자.」만 되풀이됐다. 같은 맵 다른 이벤트의 전투 상대(부대 적 이름)나 그 페이지 화자가 사람 이름과 같으면 그 사람의 말 거는 페이지 끝에 같은 전투를 붙이고(없으면 그 이름 적 하나뿐인 부대 + 싸움 거는 말), 이기면 `sw_<id>_beaten` 으로 사람·원래 컷신 모두 끝난다(「격파 뒤」 페이지). 출하 검사 **「보스 대사 뒤 전투 없음」**(`shipChecks` `boss-talk-no-battle`, `bossTalkWithoutBattle`): 적 이름과 같은 사람이 싸움 거는 말을 하는데 어느 페이지에도 전투가 없다.
 - **보스에게 지면 그 맵 입구에서 다시**(`bossTalkBattles.bossDefeatReturns`, 끝맺음 `finish/stages/boss-defeat-returns.ts` 청사진 order 97): 기본 게임 오버가 돌아오기(recover)인데 돌아올 자리가 시작 마을이라, 던전 깊은 보스에게 지면 마을 다리 위로 보내졌다. 시작 맵이 아닌 맵의 지면 안 되는 이벤트 전투마다 그 맵으로 들어오는 문의 착지 칸(없으면 전투 이벤트에서 3칸 이상 떨어진 걸어 닿는 칸 — 문도 시작점도 없는 방은 전투 이벤트 곁에서 잰다)을 돌아올 자리로 한 게임 오버 정의 `go_back_<맵 id>`(기본 설정 사본)를 만들고 전투를 `canLose:true` + 패배 갈래 `gameOver{gameOverId}` 로 바꾼다. 전투 뒤에 이어지던 명령은 이긴(·도망친) 갈래로 옮긴다(gameOver 명령은 돌아오기 뒤 사건을 이어 돌린다).
+  - 도망칠 수 있는 전투(`canEscape: true` — 필드 적·잡몹)는 보스가 아니라 그대로 둔다(2026-10-31 sc-1031-b4 opus party-join r1~r3: 장면 요청은 검사 합류뿐이었는데 끝맺음이 손대지 않은 시작 저장본의 지하 던전·마왕의 동굴 필드 적 …_foe1·v2foe1·v2foe2 여섯 개까지 지는 갈래로 다시 써 장면 판정이 그 적을 «바뀐 이벤트»로 골랐다). 조수 호출에는 그 적을 고치는 것이 없었다 — 재구성 판에 끝맺음만 다시 돌려 이 단계가 다시 쓰는 것을 확인했다(전 전투 4개, 후 보스 1개). 시작 저장본의 보스도 이 단계가 다시 쓰므로 장면 시작 도구는 같은 변환을 시작 저장본에도 해 보고 같으면 후보에서 뺀다(저장소 밖 scene_start).
 - **지은 장소를 요청 속 맵과 잇는다**(`session.linkBuiltPlaces`, 끝맺음 `finish/stages/link-built-places.ts` 청사진 order 32): terra river-village r2·r3 — 「…새로 만들어서 지금 마을과 이어 줘」에 어촌을 짓고 `create_transfer_pair` 를 버들마을 (35,14)·(20,29)에 불렀다가 「안전한 출입구를 만들 수 없다」로 거절된 채 끝냈다(판정 blocker «출입구 없음»). 이번 실행에 지은 장소 맵이 시작에서 걸어 닿지 않으면 요청 글에 이름이 나온 맵(없으면 요청 때 보던 맵, 그것도 지은 맵이면 시작 맵)과 make_game 잇기(`linkChild` — 문 그림·길 끝·칩셋 문, 없으면 그림 없는 이동 칸)로 잇는다. 길 끝 「막힌 길」 표지(`ev_dead_end_*`)는 잇기 전에 걷는다(표지가 길 끝 칸을 차지해 자리 고르기가 길 끝을 못 썼다 — 남은 막힌 길은 마감이 다시 세운다). boss-room r2 의 새 방(입구 없음, unreachable-map)도 같은 단계로 지하 던전과 이어진다.
 - **두 칸 폭 길 끝 출구는 장면 판에도 길 폭 전체로**(마감 `lanes/stages/widen-road-exits.ts` order 165, 같은 `widenRoadExits`): opus river-village r1·r3 — 새 어촌의 「→ 버들마을」 출구가 두 칸 길의 왼쪽 칸 (27,0)·(22,0)에만 있어 오른쪽 줄로 올라간 판정자가 (28,0)·(23,0)에서 막혔다(«표지판은 있는데 전환이 안 된다»). 길 폭 사본은 조립 묶음(게임 전체 요청)에서만 돌았다. 또 «잃는 칸» 규칙을 좁혔다: 사본 때문에 못 닿게 되는 칸이 출구와 같은 가장자리 줄의 빈 칸 6개 이하(이벤트·착지 없음)면 둔다 — 그 칸들은 길 너머 맵 끝 풀밭이라 아무 데도 못 간다. 맵 안쪽 통로(몬스터 새순 마을)는 여전히 막지 않는다. 런타임: 같은 목적지로 옮기는 붙은 칸들(사본 포함)의 「→ 목적지」 글자는 하나만 가운데에 띄운다(`playSceneFieldStaging.syncExitLabels` — 둘이 반 칸 어긋나 「→ →강가 어촌」으로 겹쳤다).
 - **목표 표시가 가리키는 대상 검사**(`objectiveTargets.checkObjectiveTargets`, 마감 `lanes/stages/objective-targets.ts` order 155; 보기용 `objectiveTargetGaps`): terra ending r1~r3 판정 «화살표가 가리키는 「동굴의 흔적」 칸이 Enter 에 반응 없음». 재구성해 보니 세 판은 `define_ending` 만 고쳤고, 「동굴의 흔적」(마왕의 동굴 (10,6), 해골 무더기 위 투명 조사 칸)은 (10,7)에서 마주 보고 누르면 「동굴의 흔적을 살펴보았다.」가 나온다 — 판정자는 주인공 곁 1.7칸에 뜨는 방향 화살표를 «그 칸»으로 읽고 모닥불 칸에서 눌렀다(고장 아님). 같은 증상의 진짜 고장을 막으려고, 목표 글(objectiveChip)마다 런타임과 같은 `objectiveTargetViews` 로 이 맵의 대상을 골라 걸어 닿지 않으면 `repairEventReach` 로 옮기고, 조사·접촉 페이지에 명령이 없으면 적는다. 확인: 그 판 0건, 대상을 벽 속으로 옮긴 고장 판 → (7,6)으로 옮김, 명령을 비운 판 → 「아무 명령이 없다」.
 - **퍼즐 문이 실제로 열리는가**(`puzzleGates`, 마감 `lanes/stages/puzzle-gates.ts` order 154): sc-1030r2 terra gym-leader r1~r3 판정 «스타터를 받고도 「아래쪽 새싹 돌 받침을 살펴보자」 안내를 따라갈 수 없다·덤불 조사 뒤 「위/아래」를 골라도 이동이 없다». 「새순 체육관」(시작 저장본 bases/monster 의 내용 — 모델이 짓지 않았다) 관장(14,3)은 받침(8,17)→덩굴 문(8,14)·가위→덤불(12,6) 두 장치 너머다. 원인 둘: (1) 장면 입구(`scene_start.mts`)가 관장 곁(14,4)에 퍼즐 스위치 없이 세워 받침이 닫힌 덩굴 문 남쪽에 갇혔다 — 관장은 「먼저 이곳의 장치와 이전 약속을 마쳐야」만 말한다. (2) 통로 선택지가 고정 칸으로 옮겨 이미 서 있는 쪽을 고르면 제자리다. 고침: 같은 맵 이동이 스위치 조건(페이지 조건·감싼 갈래) 아래면 퍼즐 문으로 보고, 앵커에서 걷기 + 열린 문 지나기로 닿는 장치를 켜고 그 `changeTile` 을 맵 사본에 반영하며 다시 걷는 고정점(`puzzleFlow`)을 돈다. 끝까지 안 켜지는 이 맵 스위치가 문·전투 갈래를 막으면 적는다(`puzzleGateGaps` — 다른 맵·공통 이벤트가 켜는 스위치는 판단 밖). 두 갈래 통로 선택지(옵션마다 이벤트 양옆 마주 보는 칸으로 이동)는 `facing` 갈래로 바꿔 보는 쪽 건너편으로 옮긴다(옆에서 누르면 원래 선택지, `directPassageChoices`). 장면 입구는 `progressSwitchesBefore`(맵 입구에서 대상 자신을 빼고 퍼즐을 풀며 온 이 맵 스위치)를 체크포인트에 얹는다(`scene.json` 의 `puzzleProgress`). 확인(재구성 r1, 실제 걸음): 입구 (14,4) 조사 → 전 「장치와 이전 약속을 마쳐야」 / 후 「어서 와, 도전자!…」(walkpath 는 몬스터를 못 얹어 그 뒤 「몬스터가 한 마리도 없어서」 — 체크포인트는 `sessionPatch` 로 스타터를 준다), 덤불 위 (12,5) 아래 보고 → 전 (12,5) 제자리 / 후 (12,7), 덩굴 문 위 (8,13) 아래 보고 → 전 (8,13) / 후 (8,15)(끝맺음 다시 돌린 저장본, 다시 읽기 성공). 다른 재구성 판 4개 0건.
 - **장면 입구의 「현재 목표」**(`puzzleGates.objectiveForSwitches`, 플레이어 `QaCheckpoint.objective`): 목표 줄은 목표 명령이 실행될 때만 바뀐다(진행 상태에서 다시 계산하지 않는다 — 저장본 불러오기도 `session.objective` 글을 넣는 방식). 그래서 명령들을 건너뛴 체크포인트는 줄이 비었다(gym-leader 관장 앞; 처음부터 걸으면 「연구소에서 첫 몬스터를 받자」). 장면 시작 도구가 켜진 스위치로 «지나온» 목표 글 — 같은 명령 목록에서 켜는 스위치와 그 목록의 조건이 모두 켜진 것 — 중 가장 뒤(켜는 스위치의 조건 사슬이 가장 깊은 것, 같으면 뒤에 놓인 것)를 `checkpoint.objective` 로 넣고, 플레이어는 그 글을 마지막 objectiveChip 으로 넣는다. 확인(재구성 r1 체크포인트 실제 부팅): 전 목표 줄 없음 / 후 「덤불 틈을 지나 새순 체육관 관장에게 도전하자」, 관장 조사 → 도전 대사.
+- **착지 칸이 주머니면 옮긴다**(`landingPockets.fixLandingPockets`, 마감 `lanes/stages/landing-pockets.ts` order 118): 회귀 ebfe-sl sl1 opus jrpg — 동굴 지하 1층 계단 → 버들 마을 (0,21). 마을 서쪽 가장자리 출구 (0,20) 바로 밑 칸인데 오른쪽·아래가 벽이라 위(출구)로만 나가져 동굴로 되돌아갔다(판정자는 새 게임). 착지 칸에서 걷기(같은 높이 이벤트·밟는 이동 칸은 못 지남)로 닿는 칸이 6칸 이하이고 맵에 더 큰 덩어리가 있으면, 돌아가는 문 곁의 덩어리 칸(없으면 가장 가까운 덩어리 칸)으로 그 칸에 오던 이동을 모두 옮기고 문을 등지게 세운다. 확인: 재구성 판 끝맺음 → (1,20), 실제 걸음 동굴 계단 → 마을 → 오른쪽·아래로 마을 안까지. 다른 판 8개 0건.
+- **안내 글을 실제 자리에 맞춘다**(`guideTexts.fixGuideTexts`, 마감 `lanes/stages/guide-texts.ts` order 157): sl1 terra 「용사의 보급품을 어디서 얻는지 안내 없음」 — 목표 「…보급품을 챙긴다 (용사의 보급품)」의 대상은 그림 없는 조사 칸이라 같은 맵 «이름만» 규칙으로는 찾을 수 없었다 → 목표 끝 「(이름)」이 그 맵의 그림 없는 이벤트면 `landmarkWord` 로 「(용사의 보급품: 회복의 샘 남서쪽)」. sl3 opus 「촌장 위치 안내가 실제와 다름」 — 대장장이 대사 「촌장님이 광장에서 널 찾던데」, 촌장은 대장간 남쪽 (19,29) → 대사 속 「<같은 맵 사람>(님)이 <곳 낱말>에서/에」의 곳 낱말이 그 사람 둘레 3칸의 칸 이름표·이벤트 이름에 없으면 말하는 이에서 본 방위(「바로 남쪽에서」)로 바꾼다. 다른 판 7개 0건.
+- **재검증(회귀 ebfe-sl 세 판, 저장본 그대로 `finishReplay --followup`)**: `bossDefeatReturns` 만 떼어 같은 입력에 돌리면 sl1 opus 필드 적(도망 가능) 6개가 고치기 전 6개 바뀜 → 뒤 0개(보스 2개만 패배 복귀). 끝맺음 전체에서 필드 적이 바뀌는 것은 `pathBattleBudget`(무리 사본 `troop_path_*`·상징 적 상한 4)의 의도된 조정이고, 끝맺음을 한 번 더 돌리면 전투 이벤트·타일·이벤트 자리가 첫 번째와 바이트 그대로다(넓힌 출구 사본 (0,21)을 `objective-targets` 가 옮겼다 `widen-road-exits` 가 되살리는 알림만 남는다). 실제 걸음(`walkpath`, 출하 플레이어): sl1 opus 동굴 계단 → 전 (0,21)에서 네 방향 제자리 / 후 (1,20) 착지 → (7,20)·(7,22)·(3,22); sl3 opus 대장장이 → 「촌장님이 바로 남쪽에서」, 한 칸 아래 조사 → 촌장 대사; sl1 terra 촌장 → 목표 「(용사의 보급품: 회복의 샘 남서쪽)」, 따라가 (8,6) 조사 → 「보급품을 챙겼다」. `walkpath` 에 `afterFace`/`afterAction`(afterLegs 뒤 보고 조사)을 더했다.
 - **조사 안내에 내부 이름을 띄우지 않는다**(`player/objectiveTarget.promptTargetName`): 같은 판 관장(이벤트 이름 없음) 앞 안내가 단상 칸 이름 「Z 조사 · gyd_dais_gr…」였다. 영문·숫자·밑줄 식별자(밑줄 포함)는 이름으로 안 쓰고, 그 페이지 첫 대사 화자(「유림」, 장치면 「새싹 돌 받침」)를 먼저 쓴다.
 - **대사의 「▼ 기록」「■ 기록」**: 게임 글이 아니다. 판정 도구(`assistant-whole-game/tools/hplay.mjs` ui())가 대사창 `.dialogue-box` 의 innerText 를 읽어 쪽 표시(`.dialogue-page-cursor` ▼ 다음 쪽 · ■ 끝)와 「기록」 단추(`.dialogue-log-button`) 글이 대사 끝에 붙었다. 도구가 조작 칸을 뺀 사본에서 글을 읽게 고쳤다(저장소 밖, `hplay.mjs.bak-1030` 옛 판). 확인: walkpath `dialogueDump`(창 전체 글과 뺀 글을 같이 파일로).
 - **잠기지 않은 출구에 자물쇠 문을 세우지 않는다**(`exitDress.doorPiece`): 손 도트 실내 칩셋(`atlas_biome_interior`)에는 사람이 드나드는 1칸 나무 문 조각이 없어 boss-room r2 새 방의 「→ 지하 던전」 출구가 `locked door`(큰 자물쇠 나무 문)로 섰다. 잠기지 않은 출구는 낱말 「door」 조각(「indoor well」·「trapdoor」·「doormat」 제외) → 같은 1×2 모양의 `iron gate open`(열린 쇠창살 문, 6423·6424) → `locked door` 순으로 고른다. 칩셋에 있는 다른 문 조각: 「둥근 문」(호빗 굴 2×2 장식 걸이)·「둥근 아치 문틀」(칸막이 틈에 거는 3×2) — 벽 발치 출구 모양이 아니다. 새 방 쪽 지하 던전 착지 칸은 문 그림 없는 이동 칸이다(잇기 `linkChild` 의 마지막 갈래).
@@ -334,6 +360,15 @@ salt 를 찾아(무작위 salt 를 고정해 몇 번 지어 본다) 같은 마�
 - **더하는 법**: (1) 새 파일 `stages/<id>.ts` — 단계 하나, 실패가 끝맺음을 깨면 안 되면 그 안에서 `try/catch`; 기록 키가 필요하면 `env.emit({ type:"execution_status", name:"v2.…" })`. (2) `stages/index.ts` 에 한 줄. (3) `order` 는 앞뒤 단계 사이 빈 번호(10 간격, 꽉 차면 소수 `135` 도 된다). 같은 묶음 안 `order`·`id` 가 겹치면 모듈을 읽을 때 던진다 — 순서가 import 줄 순서에 기대지 않는다. 다른 단계 파일·실행기는 고치지 않는다.
 - **동작이 같은지 보기**: `bun scripts/qa/assistant-v2/finishReplay.mts <판> --trace --followup "<후속>" [--snapshot <json>]` — `--trace` 는 `Math.random`·`Date.now` 를 고정하고 `rec.trace`(emit 이름·ok·요약, 체크포인트 이름)·`rec.projectHash` 를 남긴다. 구조만 바꾸는 변경은 두 커밋의 출력(`after`·`trace`·`notes`·`reload`·프로젝트 해시)이 같아야 한다.
 
+## 할 일 기계 검사 — omo 고리의 「끝났나」 판정 (2026-10-30)
+
+- 타입 `src/ai/v2/todo/types.ts`(`TodoItem`·`TodoCheck`·`CheckResult`, 모델 도구 인자 스키마 `TODO_CHECK_SCHEMA` = 평평한 객체 하나·oneOf·자유 키 없음, 인자 검사 `parseTodoCheck`).
+- 대상 고르기(감독 검토 반영): 항목의 `refs`(고리가 쓰기 동사 전후 차이로 채우는 mapIds·eventIds·itemIds·troopIds)가 있으면 그 id 만 판정하고, 묶인 id 가 사라지면 실패. refs 가 없으면 이름으로 찾되 `fresh`(모델 인자 기본 true)면 `ctx.changed`(이번 턴에 새로 생기거나 바뀐 것)만 후보 — 시작 저장본에 원래 있던 엔딩·보스전으로 새 요청 항목이 통과하지 않는다. 가장 잘 맞는 후보가 이름이 다른 둘 이상이면 「모호함」 실패(같은 이름 무리는 하나로 본다). 부분 일치는 같음이 없을 때만, 짧은 쪽 ≥ 긴 쪽 절반. detail·evidence 에 잡은 id 를 싣는다. `runTodoItemCheck(project, item, ctx)` 는 item.refs 를 얹어 부른다.
+- 판정 `src/ai/v2/todo/checks.ts` `runTodoCheck(project, check, { startMapId?, changed?, refs? })` — 순수 함수, 프로젝트만 읽는다. 이름은 `todo/names.ts` 로 느슨히 맞추고(공백·괄호·부호 무시, 포함 일치, 영어 몇 낱말→한국어), 못 찾으면 detail 에 가까운 후보를 적는다.
+- kind: place(빈 자리표시 맵이면 실패, placeKind 는 안/바깥 묶음으로 대략) · person(걷기 칩 이벤트, 이름·대사 화자·건 전투의 적 이름으로 찾는다) · talk(says 포함) · battle(boss = 이벤트/그룹 id 의 boss·보스, 도망 불가, 마왕·군주 같은 이름) · link(이동 이벤트에 들어오는 칸에서 걸어 닿고 도착 칸이 걸을 수 있다) · ending(map 을 주면 그 맵에서) · item(gives = 넣기 명령) · present_evidence(그 아이템을 받는 presentItem 갈래, 그 아이템을 얻는 길) · objective · reachable(시작 또는 from 맵에서 이동 이벤트를 타고 이벤트·맵까지) · party_join(changeParty add 가 살아 있는 이벤트에 있고 그 배우 이름이나 그 이벤트 이름이 맞고 시작에서 걸어 닿는다 — 배우 이름이 「강」이어도 「떠돌이 검사」 이벤트면 맞는다) · none(판정자 몫).
+- 걷기는 `puzzleFlow`(장치를 켜면 열리는 같은 맵 퍼즐 문 포함) + `bodyReached`, 맵 사이는 닿는 이동 이벤트를 따라 넓힌다. **영영 안 도는 페이지의 명령은 세지 않는다**: 뒤 페이지에 가림(`findShadowedPages`·`findSetterShadowedPages`), 아무도 켜지 않는 스위치·아무도 주지 않는 아이템 조건.
+- 재생 표: `bun scripts/qa/assistant-v2/todoChecksReplay.mts` — 씬 벤치 판(성공·실패)에 손으로 적은 항목을 돌려 기대와 대조. 판 저장본이 지워진 판은 `sceneToolReplay.mts`(+`finishReplay.mts --snapshot`)로 재구성한 것을 쓰고, 재구성 차이는 표 메모에 적는다. 기계 검사로 못 보는 것(입구 그림과 이동 칸 자리 어긋남, 판정자가 선택지를 못 본 일)은 VQA·판정자 몫이다.
+
 ## 켜는 법
 
 - 편집기 주소 `?assistant=v2`, 또는 `localStorage['oprn:assistant-v2'] = '1'`(`src/ai/v2/switch.ts`). `?assistant=v1` 이나 `'0'` 이면 끈다. **기본은 v1** — 기본을 바꾸는 것은 사용자 결정이다.
@@ -347,17 +382,121 @@ salt 를 찾아(무작위 salt 를 고정해 몇 번 지어 본다) 같은 마�
 
 - `toolNames: ["__assistant_v2__"]` + `initialToolNames: []` → 레지스트리 도구 0개 노출. 대신 v2 동사 8개(`verbs.ts`):
   `make_place · edit_place · add_people · add_event · draw_object · place_object · inspect · ask_user`.
+  맨 앞에 `todo`(할 일 목록, 아래 «할 일 고리»)가 붙고, 나머지 동사는 `withTodoLoop` 감싸개(첫 쓰기 되돌림·같은 호출 막기·실패 세기)를 거친다.
 - 동사 인자 중 감싸는 칸 하나(`make_place` 의 spec, `add_people` 의 people 등)는 `src/ai/v2/flatWrapper.ts` 가 최상위로 펴 보여 주고 실행 직전에 다시 감싼다. 예전에 감싸 보낸 호출도 통과한다. 목록과 최상위 칸이 같이 오면, 필수 칸이 찬 최상위는 한 명 더로 붙이고, 한 명짜리 목록의 빈 칸은 채우며, 필수 칸이 빈 찌꺼기는 목록 전체를 거절하지 않고 버린다. 객체 칸은 최상위 값으로 빈 자리를 채우고, 이미 감싼 값이 있으면 그 값을 남긴다.
 - 동사는 `wrapTool` 을 거친다 → 체크포인트·실시간 시공 재생(constructionLogs)·맵 소유권·맵별 대기열·사용량 집계·로컬 CLI 엔진이 v1 과 같다.
   동사 안에서 `env.checkpoint` 로 **첫 짓기를 비평 전에** 편집기에 싣는다(사용자는 비평을 기다리지 않는다).
 - `options.v2` 가 있으면 v1 의 낱말별 지시(regex system prompt)·몬스터/오프닝 제작·완료 검사·배치 품질 권고·특징 확인표가 꺼진다. 없으면 v1 은 한 줄도 달라지지 않는다.
 - 시스템 지시(`prompt.ts`) = 역할·고리·규칙 + 지식 카드 7장(실내·마을·던전·일본 도시·사람·사건·없는 물건, 각 ≤900자) + 지금 프로젝트 맵 목록. 약 5천 자.
 - 비평가는 `env.sideChat`(= v1 `eventAssistChat`, 같은 모델) — 사용량은 `stats.review` 로 따로 모인다.
-- 끝맺음 관문(`v2FinishGate`): 고칠 수 있는 major·기계 실패가 남은 장소가 있으면 한 바퀴 더 돌게 한다.
 - 빈 자리표시 시작 맵(`isPlaceholderMap`)을 `edit_place` 로 「고치려」 하면서 구역(`addZones`)을 주면, 고칠 장소가 없으니 그 패치로 그 맵 자리에 실내를 `make_place` 로 짓는다(2026-10-29 방 과제: 10개 중 4개가 edit_place(map_blank_start) 실패 한 번으로 빈 맵인 채 끝났다).
 - 고치기가 더 나쁘면 되돌린다: `edit_place` 뒤 (기계 실패 + 비평 major) 수가 앞보다 늘면 앞 프로젝트로 되돌리고 `reverted:true` 를 돌려준다(바퀴는 쓴 것으로 센다).
 - 마을·던전·거리 빌더는 소품 하나하나·`dressing` 을 받지 않는다 — 그런 패치는 바퀴를 쓰지 않고 거절한다(같은 맵이 또 나와 바퀴만 쓰던 것).
 - 실패한 동사·예외도 `guard` 가 tool_end 에 ok:false·이유로 싣는다.
+
+### 할 일 고리 (2026-10-30, omo 방식 — `src/ai/v2/loop/`)
+
+옛 고리는 끝날 때마다 «한 바퀴 더» 글(끝맺음 관문·검토자 막음·화면 검수 고치기 지시)을 따로 넣었고, 모델은 거절 한 번이면 «못 했다»로 끝냈다
+(sc-1031-b2 terra boss-room r1: edit_place 거절 + stamp_object 실패 뒤 1.6분 만에 끝). 지금은 omo(senpi todotools·goal·loop-guard)를 본뜬 할 일 목록 하나가 고리다.
+
+```
+요청 ─▶ [첫 호출 todo init 강제] ─▶ 항목 start → 동사 → done(기계 확인) ─┐
+          (Agent: tool_choice 이름 지정, 로컬 CLI: 목록 없이 쓰기 동사 → 되돌림 2번 → 요청 한 줄로 대신 init)
+                                                                          │ 모델이 멈춤(afterMain)
+   ┌──────────────────────────────────────────────────────────────────────┘
+   ▼
+ ① 기계 확인 다시: 끝난 항목이 지금 ✗ → 다시 엶 / 막힌 항목이 지금 ✓ → 닫음
+ ② 열린 항목 있음 → 숨은 재주입 «남은 항목 N/M — 지금 할 것: … — 도구로 진행하거나 block(이유)» (TodoLoop 규칙)
+ ③ 끝맺음 자동 짓기 한 번(finish/stages — 결정적, 고리가 멈췄어도 돈다) → ① 다시
+ ④ v2GateProblems(게임 검사·출하 차단·고칠 수 있는 장소 문제) → gate·critic 항목 덧붙임 → ②
+ ⑤ 독립 검토자 막음 → critic 항목(처음 한 번 + 그 항목을 닫은 뒤 한 번) → ②
+ ⑥ 화면 검수(게임 전체 요청만) 결함 → vqa 항목(판마다, 두 판 그대로면 막힘) → ②
+ ⑦ 끝: 최종 보고 = 기계 확인 표(todoReport)
+```
+
+- **todo 동사**(`loop/todoTools.ts`): `init/start/done/drop/block/append/bind/view`. 항목 = `src/ai/v2/todo/types.ts` `TodoItem`(id·phase·content·status·check·dependsOn·blockedReason·attempts·source model|gate|critic|vqa).
+  `check` 는 `TodoCheck`(place·person·talk·battle·link·ending·item·present_evidence·objective·reachable·party_join·none), 판정은 `todo/checks.ts runTodoCheck`(순수, 프로젝트만 읽음).
+  `done` 은 확인을 다시 돌려 ✗ 면 끝내지 않는다(실패 1회). 진행 중은 하나, `block` 은 기대는(dependsOn) 열린 항목도 막힘으로 닫는다.
+  `block` 이유가 도구 거절이고 그 거절 글이 아직 안 쓴 다른 동사 이름을 일렀으면 한 번 되돌린다(terra boss-room: edit_place 거절 글의 make_place).
+- **id 묶기**(`loop/refs.ts`, 이름 오인 대책): 실행 시작 때 `indexProject`(맵(이벤트 뺀)·이벤트·아이템·적 그룹 지문)를 `store.baseline` 에 뜨고, 판정마다 기준선 대비 새로 생기거나 바뀐 것(`changed`)을 넘긴다 — `fresh`(기본) 항목은 원래 있던 것으로 ✓ 가 안 난다.
+  쓰기 동사가 성공하면 전후 차이를 진행 중 항목(또는 동사 인자 `todoId` 의 항목 — 감싸개가 모든 쓰기 동사 스키마에 더하고 동사에는 넘기지 않는다)의 `refs` 에 붙인다: 주 대상만(장소=맵, 인물·대사·엔딩·목표·증거 내밀기·합류=이벤트, 전투=이벤트·적 그룹, 아이템=아이템, link·reachable 은 안 묶음).
+  이벤트 항목에는 맵 짓는 동사(make_place·edit_place·stamp_object…)가 만든 이벤트와 이동만 든 이벤트를 묶지 않는다. 같은 종류에서 사라진 id 는 새로 붙일 때 뺀다(다시 짓기가 새 id).
+  판정이 「모호함」이면 todo 결과·재주입 글에 `todo(op:"bind", task, mapId|eventId|itemId|troopId)` 를 이른다(모델이 묶으면 그 종류의 자동 묶음을 바꾼다). 앞 실행에서 이어 받은 refs 없는 항목은 changed 없이 본다. view·done 결과에 묶인 id 를 보인다.
+- **실패 세기**(`TodoStore.recordFailure`): 진행 중 항목에서 쓰기 동사가 거절·예외, 또는 done 확인 ✗ → 시도 +1. 3번째(`TODO_MAX_ATTEMPTS`)이거나 같은 실패 서명(도구+거절 글, 수 가림)이 2번 이어지면 함수가 막힘으로 닫는다.
+- **같은 호출**: 같은 도구·같은 인자 연속 3번째에 결과 끝에 경고, 4번째부터 실행하지 않는다(omo loop-guard). 실행기의 `PiRepeatBreaker`(12번 멈춤)는 그대로 뒤에 있다.
+- **재주입 규칙**(`loop/continuation.ts TodoLoop`): 묶음(조수 목록, 또는 ④~⑥ 이 덧붙인 묶음)마다 연속 8번, 진척 없는 재주입 2번 연속이면 멈춤 —
+  진척 = 성공한 쓰기 도구의 **새** 결과 지문(이름+인자+결과 글, 시각·긴 수·id 가림, 창 256) 또는 열린 항목 수 감소. 서명(열린 수/전체·프로젝트 지문(할 일 제외)·보고 해시)이 앞과 같으면 멈춤. ask_user 로 물은 실행은 다시 돌리지 않는다.
+  멈추면 열린 항목은 «고리 멈춤 — 이유» 막힘으로 닫고 ④~⑥ 은 건너뛴다(③ 은 돈다). 재주입마다 Agent 경로는 tool_choice required.
+- **관문 항목 맞추기**(`loop/gates.ts`): 열쇠(문제 글, 수 가림)가 같은 문제는 새 항목을 만들지 않고 닫힌 항목이면 다시 연다(시도 +1, 상한이면 막힘).
+  문제가 사라진 항목은 함수가 닫고, 고치기 상한(맵당 3바퀴)에 닿은 장소 항목은 «상한» 막힘. 장소·컷신 문제의 열쇠는 맵마다 하나(`place:<mapId>:place|stage`)라 고칠 때마다 글이 바뀌어도 같은 항목이 다시 열려 시도 3에서 막힌다(글은 지금 것으로 바뀐다). 옛 `v2FinishGate` 글은 `v2GateProblems` 위의 얇은 포장으로 남았다.
+- **기존 결함**(`gates.ts splitPreexisting`): 시작 저장본에서 같은 게임 검사를 돌린 열쇠(`v2BaselineGameKeys`)에 있는 문제, 또는 문제 글이 짚는 이벤트가 모두 시작 저장본 그대로이거나 함수 마감(autoBuild)만 건드린 것이면 항목으로 만들지 않고 최종 보고 「기존 결함」 칸에만 싣는다 — 완료를 막지 않는다(omo-loop-1030: 버들마을 출입구 그림 없음이 세 장면 모두 할 일이 됐다).
+- **도구 없는 관문**: 관문 글이 이르는 도구가 이 실행에 없으면 막힘으로 닫지만, 결정적으로 고칠 수 있는 것은 끝맺음이 먼저 고친다 — `finish/stages/combat-menu.ts`(reload 묶음, 늘 돈다): 전투를 넣었는데 ESC 메뉴가 이야기용이면 소지품 뒤에 스킬·장비·상태 칸을 되돌린다.
+- **문 잇기 자리 옮기기**(`game.ts withTransferRelocation`): v2 의 `create_transfer_pair` 가 doorAt 모양 어긋남·문앞 막힘·도착 칸 겹침으로 거절되면 거절된 끝(그래도 안 되면 두 끝)의 doorAt 을 빼고 다시 불러 걸어 닿는 가장 가까운 칸에 잇는다(편집기 도구의 «문을 옆 칸으로 대신 잇지 않는다» 계약은 그대로, v2 감싸개만). terra boss-room r1~r3 저장본 셋 모두 link ✓ 로 재현.
+- **미완료 원인 수리**(2026-10-30 omo-loop-1030b 미완료 7판 분류 — `~/claude-viz/omo-unfinished-1030.html`):
+  - 맵 **가장자리 출구는 door-bare 가 아니다**(`placementRules.ts` — caveGates 와 같은 규칙: 맵 밖으로 이어지는 길이 곧 입구). 버들마을 (0,23)·(21,0) 기존 출구가 마감의 길 포석으로 «바뀐 맵»이 되어 다섯 판에서 관문 항목이 됐고, 가장자리 칸 위 갱구 찍기는 «transfer 목적지 통행 불가»·«완성된 집 보호»로 늘 거절됐다.
+  - **던전 안쪽 새 장소**(`dungeonGates.ts innerDungeonParent·innerGateSpot`): 요청이 이미 있는 던전 이름 뒤에 «가장 안쪽·깊은 곳·끝·안에·아래층»을 말하면 make_place 던전의 바깥 문(spec.gate)을 그 던전에서 걸어서 가장 먼 칸으로 — 짓기 기본 출구가 보는 맵(마을)에 이어 보스 방이 마을 가장자리에서도 들어가지던 것.
+  - **던전 다시 짓기는 거절하지 않는다**(`builders/dungeonRebuildCarry.ts`): 여러 맵·아래층에서 들어오는 문이 있어도 1층 문 하나는 다시 잇고 나머지는 남겨 다시 지은 층의 가까운 걸어 닿는 칸으로 다시 가리킨다. 짓기 도구 밖에서 붙은 이벤트(사람·컷신·상자 — id 가 `ev_<층>_` 가 아닌 것)는 같은 칸(막히면 가까운 칸)으로 옮겨 싣는다(rebuild:true 가 층 이벤트를 비워 해골 기사가 사라졌다).
+  - **연출 비평의 «싸움이 안 보인다»**: 비평가는 지도 틀만 본다 — 컷신(또는 그 사람) 명령에 전투가 있으면 비평 글에 «전투 화면은 틀에 없다»를 싣고, 관문(`v2GateProblems`)은 지금 전투를 여는 컷신의 싸움 지적을 지난 일로 뺀다(전투를 patch_event_page 로 붙인 뒤에도 옛 비평이 항목으로 남았다).
+  - **스키마 기본값 채움 정리**(`game.ts withSchemaFillCleanup`, v2 감싸개): upsert_troop 빈 members, place_field_enemy 의 patrol(patrol·chase 아닐 때)·빈 directions, upsert_item 회복약의 escapeTo·repelSteps(이름·설명에 탈출·퇴치 낱말이 없을 때, repelSteps 0), create_transfer_pair 의 x,y 와 같은 doorAt 을 «안 줬다»로 읽는다.
+  - 확인 판(omo-unfinished-1030 r1)에서 더 나온 것: place_field_enemy 의 기본값 graphic(빈 selectionId·query·textureKey)은 빼고, 그래도 «graphic 이 전투 그림과 다릅니다»면 graphic 을 빼고 한 번 다시 부른다. 사람·컷신 자리(`people.ts resolveWhere`)는 다른 맵에서 오는 이동의 도착 칸을 피한다(커밋 «transfer 목적지에 이벤트가 겹칩니다»). 관문 항목의 «고치는 도구» 낱말 찾기(`loop/gates.ts namedTools`)는 sw_·ev_·map_ 같은 id 를 도구 이름으로 읽지 않는다(깃발 항목이 «도구 없음»으로 막혔다).
+  - **숲길 갈림길**: `author_forest_route` 결과 글이 샛길(nooks) 갈림길·막다른 끝 좌표와 빈터를 이른다(갈림길이 있는데 «빌더가 못 한다»며 막힘으로 닫았다).
+- **대사 판정**(`todo/checks.ts checkTalk`): refs 로 묶인 이벤트 하나는 이름이 안 맞아도 골라지지만, 그때는 그 이벤트 대사에 그 인물이 말하는 줄(speaker·「이름: …」 머리)이 있어야 ✓.
+- **갈고리(2026-10-30, 싼 모델 terra 기준 — `loop/hookStats.ts`, 발화마다 `v2.hook.<이름>` 상태, 끝 `v2.summary` data.hooks 에 수)**:
+    | 갈고리 | 언제 | 무엇 | 발화 기록(`v2.hook.<이름>`) |
+    |---|---|---|---|
+    | H1 요청 뼈대 | 목록 전 첫 호출 / init·자동 init 직후 | 뼈대 카드 / 덮이지 않은 확인 요소를 «요청 뼈대» gate 항목으로 | `skeleton_card` · `skeleton` |
+    | H2 인자 검사 | 모든 동사 실행 전 / 거절 직후 | 빈 기본값 걷기·규칙 표 보정 또는 돌려보냄 / 같은 id 로 고쳐 다시 | `arg_fix` · `arg_reject` · `retry_fix` |
+    | H3 다음 호출 | 고쳐도 거절된 쓰기 뒤 | «[다음 호출] 동사(뼈대)» + 다음 차례 그 동사 우선(SoftToolRequirement) | `next_call` · `prefer` |
+    | H4 쓰기 직후 확인 | 쓰기 동사 성공 직후 | 묶인 항목 기계 확인 — ✓ 자동 닫음+다음 호출, ✗ 이유 | `auto_check` · `auto_done` |
+    | H5 동사 범위 | 항목의 상위 동사 전에 하위 도구 쓰기 | 항목마다 한 번 돌려보내고 상위 동사 우선 / 상위 동사 없는 종류는 기록만 | `scope` |
+    | H6 문맥 정리 | 매 모델 호출 직전(transformContext) | 오래된 도구 결과 줄이기(8개 단위) + 상태 카드 | `context` |
+    | H7 재주입 구체화 | 모델이 멈춰 할 일을 다시 줄 때 | «지금 할 것» 뒤 «다음 호출: 동사(뼈대)» | `reinject` |
+    | H8 전략 바꾸기 | 같은 항목 같은 거절 두 번째 | 막지 않고 전략 글 한 번(그다음은 막힘) | `strategy` |
+
+    모두 `options.v2` 가 있을 때만 걸린다 — 실행기 `getToolChoice` 우선은 v2 환경의 `preferToolNextTurn` 로만 서고, 문맥 정리는 `options.v2.stateCard` 가 있을 때만 돈다. v1·편집기 조수(옵션 v2 없음)는 그대로다.
+  - H1 요청 뼈대(`loop/requestSkeleton.ts`): 요청 글에서 낱말 규칙으로 필수 요소를 뽑는다 — 「X가 말을 걸/나타나/경고/맞이」→인물+대사, 「X를 만나/심문」·「X와 흥정/대화」→인물+대사, 「X와 싸우/X를 쓰러뜨리」→인물, 싸우·전투·몬스터·관장전→전투(보스·관장전·마왕 상대면 boss, «쓰러뜨린 뒤»류 지난 일은 뺀다), 엔딩→엔딩(«X로 돌아와» 맵), 「X를 주는/받는」→지급.
+    목록을 적기 전 호출에는 상태 카드로 뼈대를 보이고(`v2.hook.skeleton_card`), init(또는 자동 init) 뒤 모델 목록이 덮지 못한(같은 확인 종류+이름 맞음, 전투·엔딩은 종류만) 요소를 «요청 뼈대» 단계 gate 항목(열쇠 skeleton:…)으로 덧붙인다(`skeleton`). 다시 init 해 덮이면 그 항목은 뺀다.
+    장소·이동·합류·증거·갈림길·상자·다리·흥정처럼 이름을 모델이 정하거나 확인 종류가 없는 요소는 덧붙이지 않고 카드의 «잊지 말 것» 줄에만 둔다— 동료 합류는 이름(만나는·말 거는 인물)이 있으면 party_join 항목으로 덧붙인다.
+  - H2 인자 검사·보정(`loop/argGuard.ts`, 감싸개가 모든 동사 실행 전에): 레지스트리 도구의 선택 칸 중 빈 글·빈 배열·null·잎이 다 기본값인 객체를 걷어 낸다(terra 는 스키마의 모든 칸을 기본값으로 채웠다 — patrol.directions:[]·graphic{…""}·members:[]·referencePurpose:"").
+    규칙 표 `PRE_RULES`(도구 거절 글에서 뽑음): create_transfer_pair doorAt=출입구 칸 → 걸을 수 있는 쪽으로 doorAt=(x,y-1) 또는 출입구=(doorAt.x,doorAt.y+1), 둘 다 안 되면 doorAt 뺌 ·
+    place_field_enemy 보초에 patrol 뺌 · upsert_troop 적이 비면 이름 맞는 적 하나(하나뿐일 때, 아니면 돌려보냄+후보) · 이벤트 id 가 그 맵에 없으면 다른 맵에 하나뿐일 때 맵을, 이벤트 이름이면 id 로(아니면 돌려보냄+그 맵 이벤트 목록) ·
+    stamp_object 입구 하나짜리 기물을 출입구 이벤트 2칸 안에 찍으면 입구 칸을 그 이벤트에 맞춤 · 맵 밖이면 맵 안 가장 가까운 자리 · 완성된 집·이동 도착 칸을 덮으면 4칸 안 가장 가까운(맵 안에 다 들어가는) 자리.
+    답이 하나면 고쳐 실행하고 결과에 «고침: …»(arg_fix), 아니면 실행하지 않고 «[인자 검사 — 실행 안 함]»+고친 호출 예시(arg_reject, 항목 실패로 셈).
+    거절 뒤(`RETRY_RULES`=retryCandidates, 같은 호출 id 로 다시 — 기록이 성공을 싣는다): «<칸> 은/는 …» 검증 거절의 칸이 선택 칸이고 기본값처럼 보이거나 «…에서만»류면 빼고 · «존재하지 않는 이벤트 'X'» 가 이름이면 id 로 · stamp_object 무결성·집 거절이면 가까운 자리로(retry_fix).
+    «(실패 아님)» 결과(마을 땅 미리보기·굴 입구 되돌림)는 항목 실패로 세지 않는다. 재생: `bun scripts/qa/assistant-v2/argGuardReplay.mts <판 폴더…>` — omo-loop-1030b terra 실패 28건 중 22건을 실행 전에 고친다.
+    `withTransferRelocation` 도 같은 호출 id 로 다시 부른다(옮겨 이었는데 tool_end 가 FAIL 로 남던 것).
+  - **거절 글(`loop/failureText.ts formatV2Failure`, 2026-10-30)**: 편집기 도구가 거절하면 v2 감싸개가 모델에게 가는 글을 바꿔 싣는다(v1·편집기 글은 그대로).
+    예전 글은 `formatPiToolFailure` JSON — 200자에서 잘린 요약 + issues(같은 문장 되풀이, 규칙만, 보낸 값·고칠 방법 없음).
+    지금은 영어로(사용자 결정 — 싼 모델은 영어 되먹임을 더 잘 쓴다): `Rejected: <도구> — <이유>` · `Blocking issues (N)` 최대 8(코드·맵·칸, 같은 칸 «xN») · `You sent: <거절 글이 말한 인자>=<보낸 값>` · `Already tried:` (같은 id 로 다시 불러 또 거절된 고침) ·
+    `Fixed call: <도구>({…})`(420자 넘으면 «같은 인자 + 아래 고친 곳») + `Changes: remove patrol · a.doorAt.y 7→6 · drop N empty/default optional fields — 이유`. 고친 호출은 `correctionFor`(argGuard preCheck → retryCandidates → nextAfterFailure 같은 도구) 가 결정적으로 고른다.
+    도구 오류 문장(한국어)은 고치지 않는다 — 자주 나는 것만(doorAt·적 그룹 비었음·patrol·patrol.directions·repelSteps·이동 도착 칸 막힘·완성된 집·이벤트 없음·graphic·edit_place 다시 짓기 안 함·출입구 봉쇄·인자 누락/모르는 인자) `EN_RULES` 로 옮기고 나머지는 `Tool said (Korean): …`. 맵·인물 이름·대사는 그대로.
+    H2 고침·돌려보냄, H3 `[Next call]`, H8 `[Change strategy]`, H7 재주입(`Do now: … Next call: …`)·상태 카드, `[Relocated and linked]`·`[Graphic matched]` 도 영어다. 기록·실패 세기(state.failures·서명)는 원래 글 그대로다.
+    할 일 고리 글도 모델 몫은 영어다: todo 도구 설명·스키마·op 결과(init/done ✓✗/block/bind…), `TODO_CHECK_SCHEMA`·`parseTodoCheck` 오류, H4 `[Auto-check ✓]`, H5 `[Verb scope — not run (not a failure)]`, `[Todo first]`·`[Repeated call blocked]`·`[Repeat warning]`·`[Todo auto-blocked]`, 요청 뼈대 카드, 재주입 머리말(관문·검토자·화면 검수·함수 마감), 화면 검수 고치기 차례 글(`vqaFixBrief`), 이어 받은 목록, 문맥 줄임 표시, 조우 꺼짐·그림 찾기 상한.
+    기계 확인은 두 언어로 돈다: `runTodoItemCheck` 가 `CheckResult.detail`(한국어 — 장부·최종 보고) 과 `.en`(모델) 을 함께 낸다(`checks.ts` 의 `t(ko,en)`). 목록은 `store.view(n, true)`, 실패 기록은 `lastFailEn`. 항목 내용·막힘 이유·상태 줄(emit)·최종 보고·v2 시스템 프롬프트 본문(`prompt.ts`·동사 카드)은 한국어 그대로다.
+    재생: `bun scripts/qa/assistant-v2/failureTextReplay.mts <판 폴더 …>` — 판 저장본에서 실패 호출을 다시 돌려 예전 글/지금 글을 나란히 찍는다.
+    tool_end 표시: «아직 짓지 않았다(실패 아님)»(make_place 설계 받기·땅 미리보기)와 H5 «실행 안 함(실패 아님)»은 ok:true(+notFailure)로 기록한다.
+  - H3 거절 뒤 다음 호출(`loop/nextCall.ts nextAfterFailure`): 고쳐 다시 불러도 거절이면 분류해 «[다음 호출] 동사(채운 인자 뼈대) — 이유»를 결과에 싣는다 — create_transfer_pair 문앞 막힘 → 양끝 doorAt 뺀 같은 호출 ·
+    upsert_troop 적 없음 → enemyIds 뼈대+후보 · 이벤트 없음 → 그 맵 이벤트 목록 · 거절 글이 이른 다른 동사 중 거절 뒤로 아직 안 쓴 것(비평 칸 «(3,10)» 을 뼈대에) · 찍을 자리 없음 → inspect.
+    그리고 다음 차례 그 동사를 코어 `SoftToolRequirement` 로 우선한다(`env.preferToolNextTurn` — 알림 한 번, 그래도 다른 도구면 실행하지 않고 그 도구를 강제, todo 는 같이 불러도 됨).
+    코어는 강제 3번째에 실행을 던지므로 실행기 `getToolChoice` 가 3번 내준 뒤 내린다(강제 최대 2). 그 동사가 불리거나 todo done·block·drop·start 면 내린다. Anthropic 확장 생각·로컬 CLI 는 걸지 않는다.
+  - H8 같은 거절 두 번(`strategyAfterRepeat`): 같은 항목에서 같은 실패 서명이 두 번이면 옛 규칙은 바로 막힘이었다 — 시도 상한(3) 전이면 한 번은 막지 않고 전략 글을 준다(그다음 같은 거절은 막힘).
+    edit_place 다시 짓기 거절: 고치기 항목(gate·critic·vqa)이면 «stamp_object 꾸밈 한두 번 뒤 block», 새로 만들기 항목이면 «make_place 새 맵 + create_transfer_pair» · stamp_object 자리 거절 → inspect 또는 block · 그 밖은 «같은 동사·모양을 버린다». 전략의 동사도 우선한다.
+  - H4 쓰기 직후 확인: 쓰기 동사가 성공하면 묶인 항목(todoId, 없으면 진행 중)의 기계 확인을 바로 돌린다 — ✓ 면 그 자리에서 닫고(closedBy auto, `v2.todo.auto_done`) 결과에 «[자동 확인 ✓] … 다음: <항목> — 다음 호출: 동사(뼈대)», ✗ 면 «[자동 확인] 아직 ✗ — 이유»를 싣는다(실패로 세지 않음). 확인 없는(눈 확인) 항목은 건너뛴다.
+  - H7 재주입 구체화(`continuationPrompt` opts.nextCallFor): 「지금 할 것: <항목>」 다음 줄에 «다음 호출: 동사(채운 인자 뼈대)» — 그 항목에서 거절 뒤 남긴 다음 호출(meta.nextCall, 그 동사가 성공하면 지움), 없으면 항목 확인 종류에서(`nextForItem`: 장소→make_place, 인물→add_people …, 눈 확인 항목은 글이 이른 동사). 발화 `reinject`.
+  - H5 동사 범위(`loop/nextCall.ts VERB_SCOPE·scopeRedirect`): 항목 확인 종류마다 상위 동사(장소 make_place·author_forest_route·edit_place, 인물 add_people, 대사 add_people·add_event, 이동 create_transfer_pair)와 하위 도구(upsert_event·place_npc·patch_event_page·add_event_page·stamp_object)를 둔다.
+    그 항목에서 상위 동사를 아직 안 불렀고 묶인 대상이 없고 이미 있는 맵·이벤트 이름을 가리키지 않는데 하위 도구를 부르면 항목마다 한 번 실행하지 않고 «다음 호출: 상위 동사(뼈대)»를 주고 그 동사를 우선한다(실패로 세지 않음, 같은 호출을 다시 하면 실행). 발화 `scope`.
+    상위 동사가 없는 종류는 돌려보내지 않고 기록만 한다(`scope` data.missingHighVerb): **전투**(말 걸기 → 보스전을 한 번에 짓는 동사 없음 — upsert_enemy·upsert_troop·patch_event_page 조립), **엔딩**(축하 대사 → 엔딩 호출 — add_event + define_ending·patch_event_page 조립).
+  - 상위 동사 둘(`sceneVerbs.ts`, 요청에 보스·싸우·마왕 / 엔딩·결말 낱말이 있을 때만 싣는다): `add_boss_encounter{mapId, boss{name, where, at, looks, enemy, troopId}, lines, afterWin, laterTalk}` — buildPeople 로 보스를 세우고(있으면 대사만), 적 그룹은 troopId → 이름이 맞는 DB 적 → 이름·외형 낱말 그림(`dungeon.ts enemyArtFor`, 해골 기사→enemy_skeleton_knight)으로 `ensureFoeTroop` 보스 그룹(시작 파티에 맞춤), 말 거는 페이지 끝에 보스전(도망·패배 불가, branchOnResult, 이기면 `sw_<이벤트>_beaten`)+격파 뒤 페이지(사라짐 또는 laterTalk). 지면 끝맺음 bossDefeatReturns.
+    `add_ending_scene{mapId, title, lines(「이름: 대사」), epilogue, talkTo, afterSwitchId, after}` — define_ending(조건 없음, 에필로그·finalTitle) + 대사 줄 뒤 triggerEnding 이벤트: talkTo 면 그 인물 새 맨 끝 페이지, 아니면 스위치 조건 자동 실행(투명). 스위치는 afterSwitchId → after 낱말이 맞는 격파 스위치(스위치가 가리키는 이벤트·맵 이름, 보스 우선) → 격파 스위치가 하나뿐이면 그것. 언제가 없으면 거절한다(시작하자마자 끝나는 엔딩 방지).
+    H5 는 보스 전투(check.boss)·엔딩 항목의 하위 도구를 이 둘로 돌려보내고, 동사가 실리지 않은 실행에서만 «상위 동사 없음»을 기록한다. fantasy 바탕 저장본 확인: 보스 인물·대사·보스전 ✓, 엔딩 ✓(after:「마왕」 → 마왕의 동굴 보스 처치 스위치).
+  - H6 문맥 정리(`loop/contextTrim.ts trimContext`, 실행기 transformContext 에서 `options.v2.stateCard` 가 있을 때만): 마지막 도구 결과 10개는 그대로, 그보다 앞은 글 700자만 남기고 그림은 뺀다 — 줄이는 경계는 8개 단위로만 옮겨 프롬프트 캐시 접두부를 지킨다.
+    그리고 그 호출의 마지막 메시지 끝에만 상태 카드(진척 줄·지금 할 것+다음 호출·그 항목 마지막 ✗·남은 항목 6개)를 붙인다. 사본만 바꾸고 기록에는 남지 않는다. 줄인 수가 늘 때 `v2.hook.context`.
+- 화면 검수 고치기 차례 상한(`vqaFixBudget.ts`)·도구 0회 고치기 재시도는 이 고리의 항목 시도·재주입 규칙이 대신한다(파일은 남았지만 실행기가 쓰지 않는다).
+- **최종 보고**(`finalReport.ts todoReport`): 「완료」는 열림 0·막힘 0·확인이 달린 항목 전부 ✓·고치기 상한 남은 문제 0 일 때만 — 조수 보고 뒤에 `[할 일 N/N ✓]` 표.
+  아니면 「최종 보고(기계 확인 — 아직 완료 아님 …)」 + ✓/✗/막힘/뺌 표 + **보고와 다른 것**(조수 문장이 ✗ 항목의 이름과 «만들었다»류 낱말을 같이 쓰면 기계 결과로 고침) + 남은 문제·그림 없음·자동으로 지음 + 조수 보고(참고). 기록 `v2.todo.final`.
+- **저장·이어 하기**: 상태는 `project.assistantTodo`(AssistantTodoState)로 afterMain 마다 프로젝트에 실려 체크포인트·끝 저장에 같이 간다. 다음 요청이 «계속·이어서·마저·남은 것·끝까지»면 열린(막혔던 것 포함) 항목을 되살리고 시스템 지시에 목록을 싣는다(init 하지 말 것).
+- 기록 이름: `v2.todo.init|done|false_done|block|block_bounce|auto_block|reopen|auto_done|first|auto_init|final|restore`, `v2.loop.continue|stop`, `v2.loop_guard.warn|block`, `v2.gate.items|sync`.
+- 확인 판: `/tmp` 같은 휘발 경로 말고 장면 벤치 `suite/scenes` 판으로(아래 «시험»). 결과 그림 `~/claude-viz/omo-loop-1030.html`.
 
 ## 빌더가 하는 것 / 못 하는 것
 
@@ -423,6 +562,7 @@ salt 를 찾아(무작위 salt 를 고정해 몇 번 지어 본다) 같은 마�
 - 모델 없이 빌더: `bun scripts/qa/assistant-v2/builders.mts <out> [caseId]` (사례 `builderCases.ts`).
 - 모델 없이 동사: `bun scripts/qa/assistant-v2/verbs.mts <out> [--critic]`.
 - 사람·사건·물건: `bun scripts/qa/assistant-v2/content.mts`.
+- 할 일 기계 검사 재생: `bun scripts/qa/assistant-v2/todoChecksReplay.mts [--replayed <dir>] [--only <라벨>]`.
 - v1/v2 비교: `space-craft` 하네스의 `compare` 분류(cmp-monster-town·cmp-romance-scene 포함 — 연애 사례는 `startBrief` 로 확정 기획·계약 씨앗까지 심는다)(`harness-data/space-craft/seed.json`, `startBuild` 로 「이미 있는 맵」 시작 상태),
   ai-config `local-claude-sonnet-high.json`(v1) / `local-claude-sonnet-high-v2.json`(v2, `assistantVersion:"v2"` → 하네스가 스위치를 켠다).
 
