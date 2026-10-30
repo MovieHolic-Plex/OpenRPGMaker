@@ -8,7 +8,7 @@ import { editorState } from "@/editor/editorState";
 import { paletteStampFromKit } from "@/editor/harnessSuggestion/structureKitModel";
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { workshopBakeSheet, workshopGridHash } from "@/harnesses/_core/workshop/bakeSheet";
-import type { GateAdvice, Grid, Palette, WorkshopEnv, WorkshopItem } from "@/harnesses/_core/workshop/types";
+import type { BaseInfo, GateAdvice, Grid, Palette, WorkshopEnv, WorkshopItem } from "@/harnesses/_core/workshop/types";
 import { ATLAS_BIOME_INTERIOR_ID, createAtlasBiomeInteriorTileset, ensureAtlasBiomeInteriorCurrent } from "@/project/defaults/atlasBiomeInterior";
 import { store } from "@/project/store";
 import type { ObjectSpecV1 } from "@/project/objectSpec";
@@ -75,7 +75,7 @@ export function armWorkshopStamp(item: WorkshopItem, grid: Grid): string | null 
  * 고른 후보를 칩셋에 굽는다. 되돌리기 한 번으로 뺄 수 있다.
  * autoPicked = 사람이 아니라 사용자가 켠 「알아서 고르기」(조수 요청 카드)가 골랐다 — 설명서에 사람 선택(review.pick)을 적지 않는다.
  */
-export function bakeWorkshopPick(item: WorkshopItem, grid: Grid, palette: Palette, env: WorkshopEnv, options: { readonly autoPicked?: boolean; readonly gate?: GateAdvice | null } = {}): WorkshopBakedDetail {
+export function bakeWorkshopPick(item: WorkshopItem, grid: Grid, palette: Palette, env: WorkshopEnv, options: { readonly autoPicked?: boolean; readonly gate?: GateAdvice | null; readonly base?: BaseInfo | null } = {}): WorkshopBakedDetail {
   if (!KINDS.has(item.kind)) throw new Error(`이 기물 종류(${item.kind})는 칩셋에 넣을 수 없습니다.`);
   const { sheet, cells, columns, rows } = workshopBakeSheet(grid, palette);
   const dataUrl = env.encodePng(sheet);
@@ -108,7 +108,11 @@ export function bakeWorkshopPick(item: WorkshopItem, grid: Grid, palette: Palett
         asset: { id: workshopAssetId(dataUrl), dataUrl, width: sheet.width, height: sheet.height },
         cells,
         // 설명서(ObjectSpec): 공방 판에서 고른 후보다. 「한 번에 만들기」 알아서 고르기는 3/4 관문 영수증(호스트 판정기)이 통과한 것만 여기 온다.
-        provenance: { aiGenerated: true, tool: `oprn-workshop/${item.tilesetId ? "map-objects" : "interior-props"}${options.autoPicked ? "/auto-pick" : ""}` },
+        provenance: {
+          aiGenerated: true, tool: `oprn-workshop/${item.tilesetId ? "map-objects" : "interior-props"}${options.autoPicked ? "/auto-pick" : ""}`,
+          // 칩셋 출발 그림(object-gen base-from-chipset)에서 출발했으면 그 id·출처 칸
+          ...(options.base ? { base: `${options.base.id} (${options.base.label}) from ${options.base.sources.join(", ")}`.slice(0, 400) } : {}),
+        },
         // 3/4 관문 조언(1표, 미보정)은 review.vqa 에 calibrated:false 로만 남긴다 — 출구 효력 없음(관문 영수증이 아니다).
         ...(reviewOf(options) ? { review: reviewOf(options) } : {}),
         ...(gateOf(options.gate) ? { gate: gateOf(options.gate) } : {}),

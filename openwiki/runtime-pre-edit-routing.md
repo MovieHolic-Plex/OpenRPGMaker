@@ -161,6 +161,10 @@ Phaser `preRender` 는 경계가 있으면 따라가기·패닝 뒤 clamp 를 �
   - `runtimeEventViewById` 는 그 id 하나만 뷰로 만든다. 사각 질의(`findEventOverlappingRect`·`findBlocking*`)는
     앵커가 사각에 닿을 수 없는 이벤트를 뷰 없이 건너뛴다 — 몸 사각 상한(축 8)에서 파생한 범위라, 상한을 바꾸면
     `anchorMayOverlap` 이 따라 바뀐다.
+  - 매 프레임 병렬 이벤트(`activeRuntimeEvents("parallel")`)와 발견 조우(`updateDetectionEncounters`)는
+    활성 페이지가 그 질문과 맞을 수 있는 이벤트만 뷰로 만든다(`eventMayMatchTrigger`·`eventMayHaveDetectionEncounter`).
+    페이지가 있으면 그 페이지의 trigger·detectionEncounter 만 보고, 페이지가 없는 레거시 이벤트는 이벤트 trigger 를 본다.
+    지워졌거나 다른 맵으로 옮겨 간 이벤트는 예전과 같이 후보가 아니다.
   - 생활 NPC 는 같은 목표로 걷는 중이면 BFS 를 다시 돌리지 않는다(`reusableLivingRouteKey`). 호러 수색이 막히면
     500ms 동안 다시 훑지 않는다(`SEARCH_RETRY_MS`). `nearestPassableTile` 은 고리만 훑는다(결과 순서는 같다).
   - 조명은 어둠 0 이면 마스크를 그리지 않는다. 천둥 잡음 버퍼는 한 번 만들어 재사용한다. 필드 HUD·타이머·시계 HUD·
@@ -182,6 +186,10 @@ Phaser `preRender` 는 경계가 있으면 따라가기·패닝 뒤 clamp 를 �
   - 시간 틴트는 색·알파·화면 크기가 같으면 Graphics 를 다시 비우고 칠하지 않는다(`timeTintPainted`).
     시계가 없거나 낮(알파 0)이라 이미 숨긴 틴트는 매 프레임 `clear` 하지 않는다. 위상 전환 중에는
     보간값이 바뀔 때만 다시 칠한다.
+  - 구역 안내 가림(`feedbackSuppressedByOverlay`)은 프레임마다 testid 마다 호스트와 문서를 훑지 않는다.
+    선택자 한 줄로 호스트를 한 번, 없으면 문서를 한 번만 본다. 떼어 낸 대사 호스트와 호스트 밖
+    상점·전투·타이틀도 그대로 가린다. 줄의 글·hidden 은 값이 바뀔 때만 쓰고, 새 글·만료가 없는 프레임은
+    피드백 모델을 다시 만들지 않는다.
   - 남은 후보(고치지 않음): 자동저장은 동기다(큰 세션에서 스냅샷 약 17–28ms, stringify 약 3ms). `maybeAutosave` 가
     곧바로 true 를 내고 복제 실패를 동기로 던지는 계약(`test/autosave.test.ts`)이 있어 미루지 않았다.
     맵 타일 표시는 아래 「화면 주변 타일 유지」로 바뀌었다(2026-10-01). Phaser Container 는 자식을 깊이로 정렬하지
@@ -200,6 +208,9 @@ Phaser `preRender` 는 경계가 있으면 따라가기·패닝 뒤 clamp 를 �
     - 디버그 패널 라이브 줄은 `readLive` 만 읽는다. 전체 `readState` 는 덤프를 펼쳤을 때만.
     - 전투 적 맞춤은 배율 1 이하면 레이아웃을 읽지 않는다(브라우저 실측 전투 진입 작업 51–110ms 의 주범).
     - 미니맵은 해안 렌더 패스로 그리고, 생성 세대 번호로 늦게 끝난 낡은 생성을 버린다.
+    - 미니맵 가림(`minimap.ts` `isSuppressed`)은 프레임마다 testid 마다 호스트와 문서를 훑지 않는다.
+      선택자 한 줄로 호스트를 한 번, 없으면 문서를 한 번만 본다. 떼어 낸 대사 호스트와 호스트 밖
+      상점·전투도 그대로 가린다. 점 좌표와 `display` 는 값이 바뀔 때만 쓴다.
     - 조사했지만 고치지 않은 것: 이벤트 층 전량 재생성(스프라이트 재사용은 이동 보간·패턴 override·그림자 계약이
       얽혀 별도 작업이었으며 아래 6차에서 해결), 대기 없는 라벨 루프(`gotoLabel` 선형 검색), 빈자리 없는 필드 스폰의 1초 재검사, 빈칸 조사의
       세션 복제(`farming.ts`). 각각 Node 에서 재현은 됐지만 사용자 맵에서 흔한 조건인지 확인되지 않았다.
@@ -510,6 +521,13 @@ Phaser `preRender` 는 경계가 있으면 따라가기·패닝 뒤 clamp 를 �
   점유 기록(`session.occupiedLocationIds`, ID 만·optional)은 큐와 무관하게 즉시 갱신한다.
   새 스케줄러를 만들지 마라 — 이 트리거는 auto 와 같은 «사건 하나» 성질이다. 계약 전문은
   `openwiki/runtime-project-schema.md` 의 「구역 드나듦 트리거」 절.
+- **장소 이동의 검은 화면은 일한 시간만 남긴다 (2026-10-30):** `transferTo`(`src/player/playSceneMapCommands.ts`)는
+  새 맵 파일 받기를 페이드아웃과 **같이** 건다(`prefetchMapAssets`, 뒤의 `holdForMapAssets` 는 같은 받기를 기다릴 뿐).
+  화면 효과 층(z 27, 캔버스 위)이 이미 불투명하게 덮었거나 덮어 가는 중이면(`screenCoverRemainingMs`, 저작된
+  「화면 효과 fadeOut」 → 전투 패배 재시작·붙잡혀 끌려감) 카메라 페이드아웃 대신 그 덮개 트윈만 기다리고, 착지 뒤 카메라
+  페이드인은 기다리지 않고 걷는다(`fadeEffect.reset`) — 그 아래 카메라 페이드는 보이지 않는데 0.5초씩 검은 화면을 늘렸고,
+  도착 맵 자동 장면의 「fadeIn」도 그만큼 늦게 시작했다(폴른 2막 B6 패배 → 감방, 프레임 밝기 실측). 플래시는 덮개로 치지 않는다.
+  남은 검은 시간은 `loadMap`(첫 방문 타일셋의 이식 굽기 `ensureTilesetTexture` 가 1~2초)이다 — 줄이려면 굽기를 앞당겨야 한다.
 - **이벤트 명령 실동작 검토 (2026-09-05):** `docs/reviews/2026-09-05-event-runtime-audit.md`. 「철수의 기억」에서 강제 NPC 방향 전환이 `scene.running` 게이트에 막혀 30초 뒤에야 다음 명령으로 진행됐다. `updatePlayScene`은 NPC 업데이트를 호출하고 `updateAutonomousNPCs`가 대화 중 **명령 루트만** 허용한다. 배경 자율 이동과 병렬 이벤트는 기존 설정대로 정지한다. 직접 NPC updater만 호출하는 테스트로는 이 배선 결함을 잡지 못하므로 `test/runtimeMovementStability.test.ts`의 실제 프레임 디스패치 회귀를 유지한다. 저장된 M2 대화 설정의 강제 기본값 초기화도 수정했다(`test/persistedMessageSettings.test.ts`). `Wait Until`, `Pathfind Move`, 메뉴/로드 화면, 좌표 ID 조회, 저장된 M2 영화 명령의 후속 미구현·오연결도 수정했다. 실행 계약과 제한은 `openwiki/runtime-m2-flow-controls.md`의 2026-09-05 항목을 따른다. 카탈로그 배지나 최종 종료만으로 전체 명령을 검증했다고 보고하지 않는다.
 - **실내 화로 불 애니메이션:** `src/editor/tilesetImage.ts`의 `supportsChipsetTileAnimation(tileset,tile)`이 기존 마을 애니메이션과 실내 불 스트립 124/154/184/214만 허용한다. 플레이어 `playSceneMapRuntime.renderTile`과 편집기 `chipsetTileRender.createRawTileObject`가 공통 조건을 쓴다. `isDefaultTilesetTexture`를 넓히면 실내에 마을 길/나무 규칙까지 적용되므로 바꾸지 않는다. `stone_hearth_unlit`의 463은 정지, `stone_hearth_lit`의 아래 가운데 124는 4fps이다. `test/interiorFireRendering.test.ts`는 양 레이어의 실제 렌더 경로를 검사한다.
 - **Shipping pointer-exclusion contract (2026-08-28):** `.player-layout[data-play-input-owner="keyboard-only"]` is keyboard-only regardless of `navigator.webdriver`. The capture blocker rejects mouse, pointer, touch, wheel, context-menu, drag, selection, auxiliary, and native trusted-click channels; Phaser mouse/touch managers are disabled. The root prevents selection, dragging, canvas hit testing, browser scroll, and autoscroll. Exactly two pointer owners exist: `[data-play-input-owner="touch-controls"]`, mounted only by explicit `VITE_TOUCH_CONTROLS` / `OPENRPG_PLAYER_TOUCH_CONTROLS`, and `[data-play-input-owner="host-fullscreen"]`, mounted only when `hostFeatures` advertises fullscreen. Ownership never escapes those subtrees, and keyboard-only runtime content has no native `title` tooltips.
@@ -813,6 +831,8 @@ Do not use matching map IDs or a canvas-export PNG alone as evidence for Phaser 
   (맵을 적기 전에 저장된 세이브)은 모든 맵에 적용한다. 맵을 다시 싣지 않고 명령이 들어오는
   경로가 있으므로 `updateMapBackground` 가 매 프레임 «해석 결과 ≠ 적용/로드 중 id» 를 보고
   그 자리에서 다시 건다 — 그 비교가 없으면 명령이 다음 맵 전환까지 아무 일도 안 한다.
+  해석(층 배열·서명)은 맵·배경 객체·오버라이드 기록이 같고 그 자리의 속도·반복·깊이·그림·맵 보기가
+  그대로일 때 재사용한다. 바뀌면 다음 프레임에 다시 만든다.
   형제 명령 둘은 **여전히 소비자가 없다** — 「타일셋 변경」(`map.tileset_override`)과
   「인카운터율 설정」(`map.encounter_rate`)은 같은 모양(`{mapId,x,y,value}`)으로 세션에만 적힌다.
   같은 방식으로 붙이려면 «어느 맵에 적용되는가» 를 먼저 정하라(배경은 명령 시점의 현재 맵으로 정했다).

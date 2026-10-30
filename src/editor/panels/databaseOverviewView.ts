@@ -21,8 +21,10 @@ import {
   type EnemyScatterPoint,
   type PartyPowerCurvePoint,
 } from "@/editor/panels/databaseBalanceCompute";
+import { renderStoryStructure } from "@/editor/panels/databaseOverviewStory";
 import { makeDatabaseTabIcon } from "@/editor/panels/databaseTabIcons";
 import { store } from "@/project/store";
+import { prefersReducedMotion } from "@/util/reducedMotion";
 import { resolveWorldCanon, worldCanonHasContent } from "@/project/world/canon";
 import { clearChildren, el } from "@/util/dom";
 
@@ -116,6 +118,7 @@ export function renderOverviewTab(host: HTMLElement, _rerender: () => void): voi
         ],
       }),
       renderGamePulse(project, host),
+      renderStoryStructure(project),
     ],
   });
   const statsRow = el("div", { class: "db-overview-stats" });
@@ -217,7 +220,18 @@ function renderGamePulse(project: ReturnType<typeof store.getCurrent>, host: HTM
       renderCanonCard(project, host),
       renderCodexCard(project, host),
       card("db-overview-world", "맵", `${maps.length}개 맵`, `${project.mapConnections?.length ?? 0}개 이동 연결`),
-      card("db-overview-story", "이야기", `${events}개 이벤트`, `${project.quests?.length ?? 0}개 퀘스트 · ${project.endings?.length ?? 0}개 엔딩`),
+      // 「이야기」는 개수만으로는 줄거리를 읽을 수 없다 — 누르면 아래 「이야기 구조」(퀘스트·엔딩 목록)로 내려간다.
+      el("button", {
+        class: "db-overview-pulse-card db-overview-story",
+        attrs: { type: "button", title: "퀘스트·엔딩 목록 보기" },
+        dataset: { testid: "db-overview-story" },
+        on: { click: () => host.querySelector("#db-overview-story-structure")?.scrollIntoView({ block: "start", behavior: prefersReducedMotion() ? "auto" : "smooth" }) },
+        children: [
+          el("span", { text: "이야기" }),
+          el("strong", { text: `${events}개 이벤트` }),
+          el("p", { text: `${project.quests?.length ?? 0}개 퀘스트 · ${project.endings?.length ?? 0}개 엔딩` }),
+        ],
+      }),
       card("db-overview-cast", "등장인물", `${cast}명`, `플레이어 ${project.database.actors.length}명 · 주민 ${Object.keys(project.characters ?? {}).length}명`),
       card("db-overview-systems", "게임 데이터", `${databaseRecords}개 레코드`, `전투, 아이템, 성장, 생활 규칙`),
       card("db-overview-readiness", "시작 지점", startMap?.name ?? "미설정", `좌표 ${project.startPos.x}, ${project.startPos.y}`),

@@ -98,7 +98,7 @@ export interface ObjectSpecV1 {
     pick?: { by: "human"; at: string; pixelSha256?: string };
   };
   /** 누가 어떻게 만들었나. AI 가 그렸으면 aiGenerated: true 를 숨길 수 없다. */
-  provenance: { aiGenerated: boolean; tool?: string; drawModel?: string; agent?: string; brief?: string };
+  provenance: { aiGenerated: boolean; tool?: string; drawModel?: string; agent?: string; brief?: string; /** 출발한 칩셋 기물(object-gen base-from-chipset) */ base?: string };
 }
 
 export type ObjectSpecValidation = { ok: true; value: ObjectSpecV1 } | { ok: false; errors: string[] };
@@ -175,7 +175,7 @@ export function validateObjectSpec(input: unknown): ObjectSpecValidation {
   }
   const prov = isRecord(s.provenance) ? s.provenance : null;
   if (!prov || typeof prov.aiGenerated !== "boolean") err("provenance.aiGenerated(참·거짓)가 있어야 합니다.");
-  else for (const key of ["tool", "drawModel", "agent", "brief"] as const) {
+  else for (const key of ["tool", "drawModel", "agent", "brief", "base"] as const) {
     if (prov[key] !== undefined && !isText(prov[key], OBJECT_SPEC_LIMITS.text)) err(`provenance.${key} 는 ${OBJECT_SPEC_LIMITS.text}자 이하여야 합니다.`);
   }
   return errors.length ? { ok: false, errors } : { ok: true, value: s as unknown as ObjectSpecV1 };

@@ -886,7 +886,7 @@ function syncExitLabels(scene: PlaySceneContext, now: number): void {
   const project = store.getCurrent();
   const size = mapTileSize(map);
   const zoom = Math.max(1, Math.round(scene.cameras?.main?.zoom || 1));
-  const want = new Map<string, { text: string; x: number; y: number }>();
+  const want = new Map<string, { text: string; x: number; y: number; below: number }>();
   for (const view of runtimeEventViewsForMap(project, map, scene.session, scene.eventPositions)) {
     const target = exitTargetOf(view.page as { commands?: readonly unknown[] } | undefined, map.id);
     const dest = target ? project.maps[target] : undefined;
@@ -896,7 +896,7 @@ function syncExitLabels(scene: PlaySceneContext, now: number): void {
     const dx = Math.max(rect.left - scene.tileX, 0, scene.tileX - rect.right);
     const dy = Math.max(rect.top - scene.tileY, 0, scene.tileY - rect.bottom);
     if (Math.max(dx, dy) > EXIT_LABEL_RADIUS || (dx === 0 && dy === 0)) continue;
-    want.set(view.event.id, { text: `→ ${name}`, x: ((rect.left + rect.right + 1) / 2) * size, y: rect.top * size - 2 });
+    want.set(view.event.id, { text: `→ ${name}`, x: ((rect.left + rect.right + 1) / 2) * size, y: rect.top * size - 2, below: (rect.bottom + 1) * size + 2 });
   }
   // 같은 목적지로 옮기는 붙은 칸들(두 칸 폭 길 끝 출구와 그 길 폭 사본 — ai/v2 widenRoadExits)은 글자 하나를 가운데에 —
   // 칸마다 띄우면 「→ 강가 어촌」 둘이 반 칸 어긋나 겹쳐 「→ →강가 어촌」으로 읽혔다(2026-10-30 씬 벤치 river-village 재현).
@@ -905,7 +905,7 @@ function syncExitLabels(scene: PlaySceneContext, now: number): void {
     const near = [...want].filter(([other, b]) => other !== id && b.text === at.text && Math.abs(b.x - at.x) <= size * 3.01 && Math.abs(b.y - at.y) <= size * 1.01);
     if (!near.length) continue;
     const all = [at, ...near.map(([, b]) => b)];
-    want.set(id, { text: at.text, x: all.reduce((sum, b) => sum + b.x, 0) / all.length, y: Math.min(...all.map((b) => b.y)) });
+    want.set(id, { text: at.text, x: all.reduce((sum, b) => sum + b.x, 0) / all.length, y: Math.min(...all.map((b) => b.y)), below: Math.max(...all.map((b) => b.below)) });
     for (const [other] of near) want.delete(other);
   }
   for (const [id, t] of state.labels) if (!want.has(id)) { t.destroy(); state.labels.delete(id); }
@@ -923,8 +923,29 @@ function syncExitLabels(scene: PlaySceneContext, now: number): void {
     // 가장자리 출구(2026-10-29 vm3 argon jrpg «마을 가장자리가 어디로도 이어지지 않아 보임»): 글자가 맵 밖으로 반쯤 나가 잘리지 않게 맵 안으로 민다.
     // 맨 윗줄 출구는 칸 위에 둘 자리가 없으니 칸 아래에 둔다.
     const mapW = map.width * size;
+    const mapH = map.height * size;
     label.x = Math.round(Math.max(1, Math.min(mapW - label.displayWidth - 1, at.x - label.displayWidth / 2)));
-    label.y = Math.round(at.y - label.displayHeight < 0 ? at.y + size + 2 + label.displayHeight : at.y);
+    // 글자는 주인공이 오는 쪽의 **반대편**에 둔다. 방 아래쪽 문 바로 위에 선 주인공 머리 위에 「→ 왕도 아르벤」이 덮여
+    // 문 앞의 주인공이 안 보였다(이세계 고딩 첫인상 리뷰 2026-10-30). 위에서 다가오면 문 아래, 아래에서 오면 문 위.
+    const heroTop = (scene.tileY - 0.75) * size;
+    const heroBottom = (scene.tileY + 1) * size;
+    const aboveFits = at.y - label.displayHeight >= 0;
+    const belowFits = at.below + label.displayHeight <= mapH;
+    const heroAboveExit = heroBottom <= at.y + 2;
+    const placeBelow = !aboveFits || (heroAboveExit && belowFits);
+    label.y = Math.round(placeBelow ? at.below + label.displayHeight : at.y);
+    // 아래에 둘 자리가 없어(맨 아랫줄 문) 그래도 몸에 겹치면 주인공 옆으로 비킨다(오른쪽, 안 되면 왼쪽).
+    // 옆으로도 못 비키면 글자를 옅게 — 주인공이 위에 보인다.
+    const heroLeft = scene.tileX * size;
+    const overlapsHero = (): boolean => label.x < heroLeft + size && label.x + label.displayWidth > heroLeft
+      && label.y - label.displayHeight < heroBottom && label.y > heroTop;
+    if (overlapsHero()) {
+      const right = heroLeft + size + 2;
+      const left = heroLeft - 2 - label.displayWidth;
+      if (right + label.displayWidth <= mapW - 1) label.x = Math.round(right);
+      else if (left >= 1) label.x = Math.round(left);
+    }
+    label.setAlpha(overlapsHero() ? 0.35 : 1);
   }
 }
 
