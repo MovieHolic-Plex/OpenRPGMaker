@@ -64,7 +64,7 @@ export interface LocalCliWeight {
 
 export interface LocalCliLoop {
   subscribe(listener: (event: CoreEvent) => void): () => void;
-  prompt(text: string): Promise<void>;
+  prompt(text: string, images?: readonly { mimeType: string; data: string }[]): Promise<void>;
   steer(message: { content?: readonly { type: string; text?: string }[] } | string): void;
   abort(reason?: string): void;
   dispose(): Promise<void>;
@@ -264,10 +264,10 @@ export async function createLocalCliLoop(setup: LocalCliLoopSetup): Promise<Loca
 
   return {
     subscribe(listener) { listeners.add(listener); return () => listeners.delete(listener); },
-    async prompt(text) {
+    async prompt(text, images) {
       if (aborted) return;
       lastActivity = Date.now();
-      await open().prompt(text);
+      await open().prompt(text, images?.length ? images : undefined);
     },
     steer(message) {
       const text = typeof message === "string" ? message : (message.content ?? []).filter((part) => part.type === "text").map((part) => part.text ?? "").join("\n");
