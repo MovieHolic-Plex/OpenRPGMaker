@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""bbox-walls scoring (Opus 5.5 medium): (1) mapvqa.pairwise vs reference rooms, both orders; (2) a wall-quality score per map
+"""bbox-walls-2 scoring (same judge, references and wall prompt as bbox-walls) (Opus 5.5 medium): (1) mapvqa.pairwise vs reference rooms, both orders; (2) a wall-quality score per map
 (also for the bbox-room baseline inn maps). Writes $BW_RUNS/results.json and walls.json. 8 calls at a time."""
 import json, os, sys, glob, threading, concurrent.futures as cf
 S = os.path.expanduser("~/z-project/assistant-whole-game/suite")
 sys.path.insert(0, f"{S}/mapvqa")
 import mapvqa
-RUNS = os.environ.get("BW_RUNS", f"{S}/rooms/runs-bboxwalls"); BASE = f"{S}/rooms/runs-bboxroom"
+RUNS = os.environ.get("BW_RUNS", f"{S}/rooms/runs-bboxwalls2")
 J = "teamclaude/claude-opus-5-5@medium"
 KIND = {"inn": "room-hall", "library": "room-study", "jail": "room-other", "manor": "room-hall"}
 REQ = {"inn": "village inn ground floor: hall with reception counter and dining, kitchen, stairs up, two guest rooms",
@@ -26,9 +26,6 @@ for g in sorted(glob.glob(f"{RUNS}/*[0-9]/*/map.png")):
     for a in mapvqa.anchors_for(KIND[task]):
         if f"{run}|{a['id']}" not in res: jobs.append(("pair", run, g, task, a))
     if run not in wal: jobs.append(("wall", run, g, task, None))
-for g in sorted(glob.glob(f"{BASE}/*[0-9]/inn/map.png")):
-    run = "bbox:" + "/".join(g.split("/")[-3:-1])
-    if run not in wal: jobs.append(("wall", run, g, "inn", None))
 print("jobs", len(jobs), flush=True)
 def one(j):
     kind, run, png, task, a = j
