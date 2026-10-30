@@ -112,10 +112,16 @@ export function mapUpperTileDepth(tileset: TilesetDef, tile: number, tileY: numb
  * 이런 칸은 제 줄로 캐릭터와 y 정렬한다 — 북쪽(계산대 안쪽) 사람은 계속 가려지고, 남쪽 사람은 앞에 선다.
  */
 export function starRestsOnSolidFurniture(map: Pick<GameMap, "width" | "lowerTiles" | "upperTiles" | "lowerOverlayTiles" | "upperOverlayTiles">, tileset: TilesetDef, x: number, y: number): boolean {
+  // × 가 ★ 보다 아래 층이어야 「얹은」 것이다. 거리 건물처럼 ★ 그림 위 층에 충돌만 막는 × 덮개(jp_city 851)를 얹은 칸은 가구가 아니라
+  // 건물 몸이다 — 그것까지 제 줄로 정렬하면 바로 남쪽 칸(건물 뒤 통로)을 걷는 행인의 머리가 건물 벽 위로 튀어나왔다(마왕 편의점 r7 2026-10-30).
   const index = y * map.width + x;
+  let solidBelow = false;
   for (const layer of [2, 3, 4] as const) {
     const tile = layerTileAt(map as GameMap, layer, index);
-    if (tile >= 0 && passageMarkForTile(tileset, tile) === "x") return true;
+    if (tile < 0) continue;
+    const mark = passageMarkForTile(tileset, tile);
+    if (mark === "star" && solidBelow) return true;
+    if (mark === "x") solidBelow = true;
   }
   return false;
 }
