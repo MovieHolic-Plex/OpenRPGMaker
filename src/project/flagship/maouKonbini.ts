@@ -285,6 +285,10 @@ function buildMaps(project: Project): Links {
     return { x: Number(m[1]), y: Number(m[2]) };
   };
   const links: Links = { konbini: link(doorAt("konbini"), M.konbini), room: link(doorAt("apartment"), M.room) };
+  // 문 종류를 분명히 적는다(link_jp_city_interior 가 스스로 적지만 데모는 의도를 남긴다) — 편의점은 차임이 울리는 유리 자동문 2칸,
+  // 맨션 현관은 차임 없는 자동문. 넓은 문의 이동 발판은 문 폭만큼 넓어진다(#3949·#3955).
+  execTool(project, "set_map_door", { mapId: M.street, x: 2, y: 8, kind: "auto", chime: true });
+  execTool(project, "set_map_door", { mapId: M.street, x: 13, y: 8, kind: "auto", chime: false });
   for (const id of Object.keys(project.maps)) if (!(Object.values(M) as string[]).includes(id)) delete project.maps[id];
   return links;
 }
