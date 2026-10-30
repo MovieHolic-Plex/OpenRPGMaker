@@ -44,6 +44,11 @@ export type EndingPresentation = {
   finalTitle?: string;
   /** 엔딩 CG 위에 엔딩 상대·주인공 전신 초상을 세울지. 비우면(auto) 호감 엔딩에 세운다. none = 배경 그림에 두 사람이 이미 그려진 결말 그림일 때(초상이 겹쳐 두 번 나온다). */
   portraits?: "auto" | "none";
+  /**
+   * 그림 위 엔딩 글 판의 자리(초상 없는 장면 엔딩). 비우면 가운데. left·right = 그쪽 42% 기둥에 글을 세우고 반대편 삼분선을
+   * 그림(인물)에 비운다 — 가운데 판이 화면 2/3 를 덮어 인물을 가장자리로 몰았다(첫사랑 r4 엔딩 카드).
+   */
+  textSide?: "center" | "left" | "right";
 };
 
 export type GameOverOutcome = "menu" | "recover" | "title";

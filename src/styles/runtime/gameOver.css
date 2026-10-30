@@ -262,6 +262,17 @@
 /* 긴 요약은 글자를 줄이기 전에 판부터 넓힌다(G52) — fitEndingMessage 가 붙인다. */
 .ending-screen[data-ending-cg="scene"] .ending-epilogue.ending-epilogue--long { inset: 7% 8% 11%; }
 .ending-screen[data-ending-cg="couple"] .ending-epilogue.ending-epilogue--long { top: 5%; bottom: 10%; }
+/* 장면 엔딩 글 판을 한쪽 기둥으로(presentation.textSide) — 반대편 삼분선의 인물을 비운다(첫사랑 r4). 끝 장·크레딧·안내도 같은 기둥. */
+.ending-screen[data-ending-cg="scene"][data-text-side="left"] .ending-epilogue { inset: 9% auto 13% 5%; width: 44%; }
+.ending-screen[data-ending-cg="scene"][data-text-side="right"] .ending-epilogue { inset: 9% 5% 13% auto; width: 44%; }
+.ending-screen[data-ending-cg="scene"][data-text-side="left"] .ending-epilogue.ending-epilogue--long { inset: 5% auto 9% 4%; width: 50%; }
+.ending-screen[data-ending-cg="scene"][data-text-side="right"] .ending-epilogue.ending-epilogue--long { inset: 5% 4% 9% auto; width: 50%; }
+.ending-screen[data-ending-cg="scene"][data-text-side="left"] .ending-credits { inset: 10% 54% 14% 5%; z-index: 3; }
+.ending-screen[data-ending-cg="scene"][data-text-side="right"] .ending-credits { inset: 10% 5% 14% 54%; z-index: 3; }
+.ending-screen[data-ending-cg="scene"][data-text-side="left"] :is(.ending-final-title, .ending-final-meta, .game-over-actions, .game-over-hint) { left: 4%; right: 54%; }
+.ending-screen[data-ending-cg="scene"][data-text-side="right"] :is(.ending-final-title, .ending-final-meta, .game-over-actions, .game-over-hint) { left: 54%; right: 4%; }
+.ending-screen[data-ending-cg="scene"][data-text-side="left"] .ending-cg-grade { background: radial-gradient(ellipse 70% 75% at 68% 50%, transparent 40%, rgba(18, 8, 16, .66) 100%), linear-gradient(90deg, rgba(20, 10, 22, .5) 0%, rgba(20, 10, 22, .15) 52%, transparent 70%); }
+.ending-screen[data-ending-cg="scene"][data-text-side="right"] .ending-cg-grade { background: radial-gradient(ellipse 70% 75% at 32% 50%, transparent 40%, rgba(18, 8, 16, .66) 100%), linear-gradient(270deg, rgba(20, 10, 22, .5) 0%, rgba(20, 10, 22, .15) 52%, transparent 70%); }
 .ending-badge {
   padding: .7cqh 1.8cqh; border: .25cqh solid #f3c98b; border-radius: 99px;
   background: linear-gradient(180deg, rgba(255, 214, 160, .3), rgba(160, 90, 60, .25));
