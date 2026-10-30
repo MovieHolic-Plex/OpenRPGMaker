@@ -37,11 +37,11 @@ if [ $COND = T ] && [ ! -f $G/mockup.png ]; then
   done
 fi
 PREP=$RUNS/O-prep/$TASK
-if [ $COND = O ]; then
+if [ $COND = O ] || [ $COND = V ]; then
   [ -f $PREP/OBJECTS.json ] || { echo "VOID: O-prep/$TASK 없음(og_run.py 먼저)" > $G/VOID.txt; exit 1; }
   cp $PREP/mockup.png $G/mockup.png; cp $PREP/mockup.json $G/mockup.json; cp $PREP/missing.json $G/missing.json
 fi
-if [ $COND = B ] || [ $COND = G ] || [ $COND = T ] || [ $COND = O ]; then
+if [ $COND = B ] || [ $COND = G ] || [ $COND = T ] || [ $COND = O ] || [ $COND = V ]; then
   if [ ! -f $G/mockup.png ]; then
     for try in 1 2 3; do
       env $MOCK_ENV timeout 600 bun scripts/experiments/img-room/gen_mockup.mts $TASK $REFS $G/mockup.png > $G/mockup.json 2> $G/mockup.err && break
@@ -80,9 +80,30 @@ Step 2: build the room from your own table with make_place zones[].design, using
 Step 3: inspect the result and fix every group the finish gate reports as missing or misplaced."
     IMG_ENV="$IMG_ENV OPRN_EXPERIMENT_PIECE_TABLE=1 OPRN_EXPERIMENT_LOG_MODEL=1"
   fi
+  if [ $COND = V ]; then
+    # 조건 V: 조수가 목업을 내내 본다 — 첫 요청에 목업 + 칸 좌표 목업, 이어 하기마다 칸 좌표 목업, 큰 차례 뒤 자기 검사(지금 맵 | 목업). 맵은 조수가 깐다.
+    [ -f $PREP/mockup-grid.png ] || { echo "VOID: 보조 그림 없음(mockup_aids.py 먼저)" > $G/VOID.txt; exit 1; }
+    python3 -c "from PIL import Image;Image.open('$PREP/mockup-grid.png').convert('RGB').save('$G/mockup-grid.jpg',quality=88)"
+    EXTRA=$(python3 - $PREP <<'PY'
+import json,sys,glob
+for f in sorted(glob.glob(sys.argv[1]+"/objects/*.json")):
+    o=json.load(open(f)); print(f"- workshop:{o['slug']} — {o['name']} ({o['w']}x{o['h']} cells, {o['anchor']}): {o['brief']}")
+PY
+)
+    TEXT="$(cat $REQ0)
+
+Build this room with the hand-pixel interior chipset (make_place type interior, tileset atlas_biome_interior) so that it looks like the attached mockup [mockup attached]. Picture 1 is the mockup; picture 2 is the same mockup with a cell grid and cell coordinates (x along the top, y down the left; one cell = one 16px chipset tile).
+You lay everything yourself: the room outline, side rooms and alcoves, partitions, doors, and every object group at the cells the mockup shows. Use the grid to read sizes and positions.
+Objects in the mockup that the chipset lacked were drawn as new pieces and added to this project's atlas_biome_interior chipset; use them where the mockup shows them (ids go in zones[].design groups items like any other piece id):
+$EXTRA
+Rough cell map made by code from the mockup (a guess that may be wrong — trust the picture; ' ' outside, '#' wall, '.' floor or object):
+$(cat $PREP/cells.txt)
+The gridded mockup is attached again to every follow-up message. After each big build step you will also get your current map next to the mockup at the same scale; list the differences, add them as todo items and fix them."
+    IMG_ENV="OPRN_EXPERIMENT_USER_IMAGE=$G/mockup.jpg,$G/mockup-grid.jpg OPRN_EXPERIMENT_AID_IMAGE=$G/mockup-grid.jpg OPRN_EXPERIMENT_MOCKUP_NATIVE=$PREP/mockup-native.png OPRN_EXPERIMENT_SELFCHECK=3 OPRN_EXPERIMENT_SELFCHECK_DIR=$G/selfcheck OPRN_EXPERIMENT_LOG_MODEL=1"
+  fi
 fi
 [ -f $G/project/project.sqlite ] || bun src/harnesses/assistant-capability/node/wholeGamePrepare.ts $G "imgroom-$COND$REP-$ARM-$TASK" > $G/prepare.log 2>&1 || { echo "VOID: prepare 실패" > $G/VOID.txt; exit 1; }
-if [ $COND = O ] && [ ! -f $G/baked.json ]; then bun scripts/experiments/img-room/bake_objects.mts $G $PREP >> $G/RUN.txt 2>&1 || { echo "VOID: bake 실패" > $G/VOID.txt; exit 1; }; fi
+if { [ $COND = O ] || [ $COND = V ]; } && [ ! -f $G/baked.json ]; then bun scripts/experiments/img-room/bake_objects.mts $G $PREP >> $G/RUN.txt 2>&1 || { echo "VOID: bake 실패" > $G/VOID.txt; exit 1; }; fi
 [ -f $G/before.json ] || node -e "import('./src/harnesses/assistant-capability/node/editorDriver.mjs').then(m=>m.writeRuntimeProject('$G/project','$G/before.json'))" || exit 1
 case $ARM in
   terra) ENG="--ai-config $RUNS/aiconfig-terra-high.json" ;;
@@ -95,7 +116,8 @@ T0=$(date +%s)
 env $IMG_ENV HARNESS_HOST_LOG=$G/host.log OPRN_OPENAI_COMPAT_PATH=${COMPAT:-$HOME/.oprn-suite/openai-compat-endpoints.json} OPRN_TURN_DIAG=1 HARNESS_DIST_DIR=dist setsid nohup node src/harnesses/assistant-capability/node/wholeGameSession.mjs --project-dir $G/project --out $G/session --v2 $ENG > $G/session-driver.log 2>&1 &
 DRV=$!
 printf '%s' "$TEXT" > $G/request.txt
-python3 - "$G/session" "$G/request.txt" 30 <<'PY'
+WAIT_MIN=30; [ $COND = V ] && WAIT_MIN=50
+python3 - "$G/session" "$G/request.txt" $WAIT_MIN <<'PY'
 import json,sys,time,os
 S,tf,to=sys.argv[1],sys.argv[2],int(sys.argv[3]); text=open(tf).read()
 inbox=f"{S}/inbox"; log=open(f"{S}/../steps.log","a"); T0=time.time()
@@ -123,5 +145,6 @@ kill -0 $DRV 2>/dev/null && kill $DRV
 echo "build_s=$(( $(date +%s) - T0 ))" >> $G/RUN.txt
 node -e "import('./src/harnesses/assistant-capability/node/editorDriver.mjs').then(m=>m.writeRuntimeProject('$G/project','$G/after.json'))" || { echo "VOID: after.json 없음" > $G/VOID.txt; exit 1; }
 SUITE_WT=$WT timeout 600 bun $R/measure-room.mts $G > $G/measure.log 2>&1; echo "measure exit $?" >> $G/RUN.txt
-{ [ $COND = T ] || [ $COND = O ]; } && timeout 300 bun scripts/experiments/img-room/coverage.mts $G >> $G/RUN.txt 2>&1
+{ [ $COND = T ] || [ $COND = O ] || [ $COND = V ]; } && timeout 300 bun scripts/experiments/img-room/coverage.mts $G >> $G/RUN.txt 2>&1
+{ [ $COND = O ] || [ $COND = V ]; } && timeout 600 python3 scripts/experiments/img-room/fidelity.py $G $PREP >> $G/RUN.txt 2>&1
 echo "done=$(date -u +%FT%TZ)" >> $G/RUN.txt
