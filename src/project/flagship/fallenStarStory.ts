@@ -77,7 +77,7 @@ export const FALLEN_STAR_ACT1: ChapterSpec = {
     { key: "valen", name: FS_NAMES.inquisitor, query: "젊은 남성 마법사", lines: ["심문관 발렌: 어린 별지기로군.\n하늘에서 떨어진 건 교단 몫이다. 잊지 마라."] },
     { key: "knight", name: "심문회 기사", query: "붉은 갑옷 기사", lines: ["심문회 기사: 심문관님 말씀 못 들었나. 물러서라."] },
     { key: "baker", name: "빵집 아주머니", query: "여성 상인", roam: true, lines: ["빵집 아주머니: 어젯밤 하늘이 대낮처럼 밝았지 뭐니. 놀라서 반죽을 다 망쳤어."] },
-    { key: "kid", name: "꼬마 토비", query: "아이", roam: true, lines: ["꼬마 토비: 형도 별똥별 봤어? 나 소원 빌었다! 뭘 빌었는지는 비밀이야."] },
+    { key: "kid", name: "꼬마 토비", query: "어린 남자아이", roam: true, lines: ["꼬마 토비: 형도 별똥별 봤어? 나 소원 빌었다! 뭘 빌었는지는 비밀이야."] },
     { key: "gate", name: "동문 문지기", query: "청년 병사", lines: ["동문 문지기: 문 밖에서 북쪽으로 돌면 바로 숲이다. 심문관들은 남쪽 골짜기부터 뒤진다더군.", "동문 문지기: 숲길은 숲지기 브람 영감이 훤하다. 들어가면 찾아봐."] },
     { key: "elder", name: "광장의 할머니", query: "노인", lines: ["광장의 할머니: 별이 떨어지면 큰일 난다는 옛말이 있지. 이번엔 영 마음이 쓰이는구먼."] },
     { key: "hanel", name: "천문대장 하넬", query: "노학자", map: "observatory", lines: ["천문대장 하넬: 왔느냐. 기다리고 있었다."] },
