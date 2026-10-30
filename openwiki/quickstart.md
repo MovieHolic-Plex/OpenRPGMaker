@@ -82,9 +82,10 @@ Node.js 24 LTS와 npm을 설치하고, 본인에게 쓰기 권한이 있는 체�
 
 그림·효과음·기본 BGM 3곡은 Git에 있지만, 전체 281곡(약 1.304 GB)은
 공개 [bgm-v1 Release](https://github.com/MovieHolic-Plex/OpenRPGMaker/releases/tag/bgm-v1)에서 따로 받는다.
-`npm ci` 뒤 `gh auth login` + `npm run bgm:install` + `npm run bgm:verify`.
-gh가 없으면 Release의 `rpg-zzu-bgm-v1.tar`를 받아
-`npm run bgm:install -- --archive "/받은/파일/경로"`를 실행한다. 약 5 GB 여유 공간 권장.
+`npm ci` 뒤 `npm run bgm:install` + `npm run bgm:verify`. gh 로그인은 필요 없다.
+설치기는 공개 릴리스 자산을 HTTPS로 받고, 커밋된 `assets/bgm-release-v1.json`의 크기와 SHA-256으로 검증한다.
+브라우저 다운로드 주소가 거절되면 공개 GitHub API 자산 주소를 쓰고, 둘 다 거절될 때만 `gh`로 한 번 더 시도한다.
+직접 받은 파일은 `npm run bgm:install -- --archive "/받은/파일/경로"`. 약 5 GB 여유 공간 권장.
 기존 설치가 정상이면 재실행은 다운로드하지 않는다. 자동 실행/설정 마법사에는 다운로드를 붙이지 않았다.
 로컬 재생은 `VITE_BGM_CDN_BASE`를 비워야 한다. 워크트리에 복사된 env의 CDN 값이
 로컬 설치보다 우선할 수 있다. 음악 리소스 선택 창의 「전체 받기」도 같은 검증 설치기를 쓴다.

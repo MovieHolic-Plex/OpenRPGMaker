@@ -19,7 +19,20 @@ const ID = /^cc0-bgm-[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const NAME = /^[a-z0-9][a-z0-9_-]*\.(mp3|wav)$/;
 const compare = (a, b) => a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
 const destination = (root) => join(resolve(root), 'public/assets/cc0/audio/catalog');
-const fail = (message) => { throw new Error(message); };
+const fail = (message, extra) => {
+  const error = new Error(message);
+  if (extra) Object.assign(error, extra);
+  throw error;
+};
+const PUBLIC_MISS = new Set([401, 403, 404, 429]);
+const GITHUB_RELEASE_HOSTS = new Set([
+  'github.com', 'api.github.com', 'release-assets.githubusercontent.com',
+  'objects.githubusercontent.com', 'github-releases.githubusercontent.com',
+]);
+const LOCAL_HOSTS = new Set(['127.0.0.1', '[::1]', 'localhost']);
+const ARCHIVE_TIMEOUT_MS = 30 * 60 * 1000;
+const METADATA_LIMIT = 1_048_576;
+const RELEASE_TOKEN = /^[A-Za-z0-9._-]+$/;
 const positive = (n) => Number.isSafeInteger(n) && n > 0;
 function keys(value, expected) {
   if (!value || typeof value !== 'object' || Array.isArray(value)
@@ -112,26 +125,132 @@ function meter(expected) {
     return { bytes, sha256 };
   } };
 }
-export async function downloadFile({ url, path, bytes, sha256, timeoutMs = 120000, signal: externalSignal = undefined }) {
+function assertDownloadUrl(address) {
+  if (address.username || address.password) fail('Unsafe download URL');
+  const local = address.protocol === 'http:' && LOCAL_HOSTS.has(address.hostname);
+  if (address.protocol !== 'https:' && !local) fail('Unsafe download URL');
+}
+function originBase(base) {
+  const url = new URL(base);
+  assertDownloadUrl(url);
+  if (url.search || url.hash || (url.pathname !== '/' && url.pathname !== '')) fail('Unsafe download URL');
+  return base.endsWith('/') ? base.slice(0, -1) : base;
+}
+function redirectHosts(bases) {
+  const hosts = new Set(GITHUB_RELEASE_HOSTS);
+  for (const base of bases) {
+    const host = new URL(base).hostname;
+    if (LOCAL_HOSTS.has(host)) hosts.add(host);
+  }
+  return hosts;
+}
+async function fetchResponse(address, { signal, headers, allowRedirectHosts }) {
+  assertDownloadUrl(address);
+  if (!allowRedirectHosts) return fetch(address, { signal, redirect: 'error', headers });
+  const allowed = new Set(allowRedirectHosts);
+  let current = address;
+  for (let hop = 0; hop <= 5; hop++) {
+    assertDownloadUrl(current);
+    if (!allowed.has(current.hostname)) fail(`Download redirect host refused: ${current.hostname}`, { publicUnavailable: true });
+    const response = await fetch(current, { signal, redirect: 'manual', headers });
+    const location = response.headers.get('location');
+    const redirecting = response.status === 0 || (response.status >= 300 && response.status < 400 && response.status !== 304);
+    if (!redirecting) return response;
+    await response.body?.cancel();
+    if (!location) fail('Download redirect missing Location', { publicUnavailable: true });
+    if (hop === 5) fail('Too many download redirects', { publicUnavailable: true });
+    current = new URL(location, current);
+  }
+  fail('Too many download redirects', { publicUnavailable: true });
+}
+export async function downloadFile({ url, path, bytes, sha256, timeoutMs = 120000, signal: externalSignal = undefined, headers = undefined, allowRedirectHosts = undefined }) {
   const address = new URL(url);
-  if (address.username || address.password || (address.protocol !== 'https:'
-    && !(address.protocol === 'http:' && ['127.0.0.1', '[::1]', 'localhost'].includes(address.hostname)))) fail('Unsafe download URL');
+  assertDownloadUrl(address);
   const temp = `${path}.${randomUUID()}.part`;
   try {
     const deadline = AbortSignal.timeout(timeoutMs);
     const signal = externalSignal ? AbortSignal.any([externalSignal, deadline]) : deadline;
-    const response = await fetch(address, { signal, redirect: 'error' });
-    if (!response.ok) { await response.body?.cancel(); fail(`Download HTTP ${response.status}`); }
+    const response = await fetchResponse(address, { signal, headers, allowRedirectHosts });
+    if (!response.ok) {
+      await response.body?.cancel();
+      fail(`Download HTTP ${response.status}`, { publicUnavailable: PUBLIC_MISS.has(response.status), status: response.status });
+    }
     const length = response.headers.get('content-length');
-    if (length !== null && Number(length) !== bytes) { await response.body?.cancel(); fail('Download Content-Length mismatch'); }
+    if (length !== null && Number(length) !== bytes) {
+      await response.body?.cancel();
+      fail('Download Content-Length mismatch', { publicUnavailable: true });
+    }
     const check = meter({ bytes, sha256 });
     await pipeline(Readable.fromWeb(response.body), check.stream, createWriteStream(temp, { flags: 'wx', mode: 0o600 }), { signal });
     const result = check.check(); await rename(temp, path); return result;
   } finally { await rm(temp, { force: true }); }
 }
-export async function downloadRelease({ manifest, directory, signal = undefined, spawnProcess = spawn }) {
-  signal?.throwIfAborted();
-  // Private repository: credentials stay in gh's own store/environment, never in argv or logs.
+function miss(message) {
+  return fail(message, { publicUnavailable: true });
+}
+function releaseTarget(manifest) {
+  const parts = String(manifest.repo ?? '').split('/');
+  const tokens = [manifest.tag, manifest.archive?.fileName, ...parts];
+  if (parts.length !== 2 || tokens.some((value) => typeof value !== 'string' || !RELEASE_TOKEN.test(value) || value.includes('..'))) {
+    fail('Invalid release target');
+  }
+  return manifest;
+}
+function stopForAbort(signal, error) {
+  if (signal?.aborted) throw signal.reason ?? error;
+  if (error?.name === 'TimeoutError') throw error;
+}
+async function readLimited(response) {
+  const chunks = []; let total = 0;
+  for await (const chunk of Readable.fromWeb(response.body)) {
+    total += chunk.length;
+    if (total > METADATA_LIMIT) fail('Release metadata exceeds size limit');
+    chunks.push(chunk);
+  }
+  return Buffer.concat(chunks).toString('utf8');
+}
+async function fetchJson(url, signal) {
+  const deadline = AbortSignal.timeout(30000);
+  const combined = signal ? AbortSignal.any([signal, deadline]) : deadline;
+  const response = await fetch(url, {
+    signal: combined, redirect: 'error',
+    headers: { Accept: 'application/vnd.github+json', 'User-Agent': 'oprn-bgm-install', 'X-GitHub-Api-Version': '2022-11-28' },
+  });
+  if (!response.ok) {
+    await response.body?.cancel();
+    fail(`Download HTTP ${response.status}`, { publicUnavailable: PUBLIC_MISS.has(response.status), status: response.status });
+  }
+  const length = response.headers.get('content-length');
+  if (length !== null && Number(length) > METADATA_LIMIT) {
+    await response.body?.cancel();
+    fail('Release metadata exceeds size limit');
+  }
+  let parsed;
+  try { parsed = JSON.parse(await readLimited(response)); }
+  catch (error) { if (error.message === 'Release metadata exceeds size limit') throw error; miss('Release metadata is not JSON'); }
+  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) miss('Release metadata is not JSON');
+  return parsed;
+}
+async function downloadViaApi({ manifest, path, signal, fetchFile, apiBase, hosts }) {
+  const root = originBase(apiBase);
+  const metadata = await fetchJson(`${root}/repos/${manifest.repo}/releases/tags/${encodeURIComponent(manifest.tag)}`, signal);
+  const assets = Array.isArray(metadata.assets) ? metadata.assets.filter((asset) => asset?.name === manifest.archive.fileName) : [];
+  if (assets.length > 1) fail('공개 릴리스 자산 이름이 중복입니다.');
+  if (assets.length !== 1) miss('공개 릴리스에서 BGM 자산을 찾지 못했습니다.');
+  const asset = assets[0];
+  if (asset.state && asset.state !== 'uploaded') miss('공개 릴리스 자산이 아직 업로드되지 않았습니다.');
+  if (asset.size !== undefined && Number(asset.size) !== manifest.archive.bytes) fail('공개 릴리스 자산 크기가 신뢰 매니페스트와 다릅니다.');
+  const id = String(asset.id ?? '');
+  if (!/^[0-9]{1,18}$/.test(id)) miss('공개 릴리스 자산 id가 올바르지 않습니다.');
+  await fetchFile({
+    url: `${root}/repos/${manifest.repo}/releases/assets/${id}`, path,
+    bytes: manifest.archive.bytes, sha256: manifest.archive.sha256, timeoutMs: ARCHIVE_TIMEOUT_MS, signal,
+    headers: { Accept: 'application/octet-stream', 'User-Agent': 'oprn-bgm-install', 'X-GitHub-Api-Version': '2022-11-28' },
+    allowRedirectHosts: hosts,
+  });
+}
+async function downloadWithGh({ manifest, directory, signal, spawnProcess }) {
+  // Fallback only. Credentials stay in gh's own store and are never placed in argv or logs.
   await new Promise((resolvePromise, reject) => {
     const child = spawnProcess('gh', ['release', 'download', manifest.tag, '--repo', manifest.repo,
       '--pattern', manifest.archive.fileName, '--dir', directory], {
@@ -144,7 +263,7 @@ export async function downloadRelease({ manifest, directory, signal = undefined,
       child.kill('SIGTERM');
       shutdown = setTimeout(() => child.kill('SIGKILL'), 2000);
     };
-    const timeout = setTimeout(stop, 600000);
+    const timeout = setTimeout(stop, ARCHIVE_TIMEOUT_MS);
     const cleanup = () => {
       clearTimeout(timeout); clearTimeout(shutdown);
       signal?.removeEventListener('abort', stop);
@@ -156,10 +275,47 @@ export async function downloadRelease({ manifest, directory, signal = undefined,
       cleanup();
       if (signal?.aborted) reject(signal.reason);
       else if (code === 0 && !cancelled) resolvePromise();
-      else reject(new Error('공개 BGM 릴리스 다운로드 실패: gh 설치와 네트워크를 확인하세요.'));
+      else reject(new Error('gh 다운로드 실패: gh 설치와 네트워크를 확인하세요.'));
     });
   });
-  return join(directory, manifest.archive.fileName);
+}
+// bgm-v1 is a public release. Anonymous HTTPS is the install path. gh runs only when both the
+// browser asset URL and the public API asset endpoint refuse. The committed manifest's size
+// and SHA-256 are the integrity check; a hash mismatch does not fall through to another channel.
+export async function downloadRelease({
+  manifest, directory, signal = undefined, spawnProcess = spawn, fetchFile = downloadFile,
+  apiBase = 'https://api.github.com', downloadBase = 'https://github.com',
+}) {
+  signal?.throwIfAborted();
+  const target = releaseTarget(manifest);
+  const path = join(directory, target.archive.fileName);
+  const hosts = redirectHosts([apiBase, downloadBase]);
+  const direct = `${originBase(downloadBase)}/${target.repo}/releases/download/${encodeURIComponent(target.tag)}/${encodeURIComponent(target.archive.fileName)}`;
+  const errors = [];
+  const channels = [
+    () => fetchFile({
+      url: direct, path, bytes: target.archive.bytes, sha256: target.archive.sha256,
+      timeoutMs: ARCHIVE_TIMEOUT_MS, signal, allowRedirectHosts: hosts,
+      headers: { Accept: 'application/octet-stream', 'User-Agent': 'oprn-bgm-install' },
+    }),
+    () => downloadViaApi({ manifest: target, path, signal, fetchFile, apiBase, hosts }),
+  ];
+  for (const channel of channels) {
+    try { await channel(); return path; }
+    catch (error) {
+      stopForAbort(signal, error);
+      if (!error.publicUnavailable) throw error;
+      errors.push(error);
+    }
+  }
+  console.error('익명 BGM 다운로드가 거절되어 gh로 다시 시도합니다.');
+  try { await downloadWithGh({ manifest: target, directory, signal, spawnProcess }); }
+  catch (error) {
+    stopForAbort(signal, error);
+    const prior = errors.map((item) => item.message).join('; ');
+    throw new Error(`공개 BGM 릴리스를 받지 못했습니다 (${prior}). ${error.message} 수동 설치: https://github.com/${target.repo}/releases/tag/${target.tag} 의 ${target.archive.fileName} 를 받아 --archive 로 지정하세요.`);
+  }
+  return path;
 }
 async function snapshotArchive(archive, target, expected, signal) {
   signal?.throwIfAborted();

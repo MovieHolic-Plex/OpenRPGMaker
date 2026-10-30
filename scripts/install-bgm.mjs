@@ -9,9 +9,11 @@ const usage = `BGM 설치 (Node.js 24):
   npm run bgm:install -- --archive /경로/rpg-zzu-bgm-v1.tar
   npm run bgm:install -- --root /경로/체크아웃
   npm run bgm:verify -- --root /경로/체크아웃
-기본 다운로드에는 gh 설치가 필요합니다. 공개 릴리스라 저장소 접근 권한은 필요하지 않습니다.
-수동 설치: GitHub의 MovieHolic-Plex/OpenRPGMaker → Releases → bgm-v1에서
-rpg-zzu-bgm-v1.tar를 직접 받은 뒤 --archive로 지정하세요. 수동 설치에는 gh/네트워크가 필요 없습니다.
+기본 설치는 공개 릴리스 bgm-v1의 rpg-zzu-bgm-v1.tar를 HTTPS로 받고,
+체크아웃의 assets/bgm-release-v1.json에 적힌 크기와 SHA-256으로 검증합니다. gh는 필요 없습니다.
+익명 다운로드가 거절될 때만 gh release download로 한 번 더 시도합니다.
+수동 설치: https://github.com/MovieHolic-Plex/OpenRPGMaker/releases/tag/bgm-v1 에서
+rpg-zzu-bgm-v1.tar를 받아 --archive로 지정하세요. 수동 설치에는 gh와 네트워크가 필요 없습니다.
 설정 파일은 변경하지 않습니다. 로컬 재생은 VITE_BGM_CDN_BASE를 해제한 뒤 실행하세요.`;
 
 const controller = new AbortController();

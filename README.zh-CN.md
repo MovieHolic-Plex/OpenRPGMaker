@@ -94,6 +94,8 @@ npm run mac:launch   # macOS / Linux —— 询问项目文件夹后打开 http:
 首次启动时请输入一个**新**文件夹的完整路径，项目会以 SQLite 和素材文件的形式保存在那里。
 点击右上角的 AI 标签即可登录。
 
+全部 281 首背景音乐不在上面的桌面安装包里，而是公开的 [bgm-v1 发布](https://github.com/MovieHolic-Plex/OpenRPGMaker/releases/tag/bgm-v1)（`rpg-zzu-bgm-v1.tar`）。在源码目录运行 `npm run bgm:install` 会通过 HTTPS 下载，并用仓库里提交的 SHA-256 校验。只有这次下载被拒绝时才会用到 GitHub CLI。
+
 ## 画廊
 
 <table>
