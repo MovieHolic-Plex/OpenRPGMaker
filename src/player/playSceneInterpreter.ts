@@ -1,6 +1,12 @@
 import { playLiftRide } from "@/player/playSceneLiftRide";
+<<<<<<< ours
 import { releaseOrphanedFadeOut } from "@/player/playSceneScreenEffects";
 import { sendPursuerHome } from "@/player/pursuitNavigation";
+||||||| base
+import { sendPursuerHome } from "@/player/pursuitNavigation";
+=======
+import { sendMapPursuersHome, sendPursuerHome } from "@/player/pursuitNavigation";
+>>>>>>> theirs
 import { isTouchUiHost } from "@/player/touchTap";
 import { stepStopReason, stopsReading } from "@/project/dialogueSystem";
 import { applySpriteLookStep, playParticleEffect } from "@/player/playSceneFieldStaging";
@@ -574,7 +580,8 @@ async function consumeBlockingStep(
         try { await playDoorOpenBeforeTransfer(scene, currentEventId, { silent: genreDoorSound, mode: step.door === true ? "on" : "auto" }); } catch (error) { console.warn("[player] door open fx", error); }
       }
       // 추격자의 접촉 페이지가 주인공을 다른 맵으로 보내면(붙잡혀 끌려감) 그 추격자는 제자리로 — 돌아오자마자 재포획 방지.
-      if (step.mapId !== scene.map.id && currentEventId) sendPursuerHome(scene.session, currentEventId);
+      // 같은 맵의 다른 추격자도 같이 — 남은 하나가 길목에 서 있으면 재도전이 곧 재포획이다.
+      if (step.mapId !== scene.map.id && currentEventId && sendPursuerHome(scene.session, currentEventId)) sendMapPursuersHome(scene.session, scene.map.id);
       try { await scene.transferTo(step); }
       finally { finishTransfer?.(); }
       return resumeAfterSurface(scene, interpreter);
