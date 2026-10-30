@@ -19,6 +19,7 @@ import { homedir } from "node:os";
 import { join, resolve } from "node:path";
 import type { FlagshipDemoId } from "@/project/flagship";
 import { publishStoreGame, type StoreGameMeta, type StoreGameMine, type StoreGameTransport } from "@/assetStore/gamePublish";
+import { REFMAP_CREDIT } from "@/assetStore/format";
 import { PublishError, closeSession, openSession, requireTargetBase, type Session } from "./storePublish.mts";
 
 const root = resolve(import.meta.dirname, "..", "..");
@@ -176,7 +177,9 @@ const started = performance.now();
 const baked = join(root, "dist", "demos", `${demoId}.play.json`);
 // 빌드가 구워 둔 데모(bake-flagship-demos)가 있으면 그것을, 없으면 데모 빌더로 짓는다.
 const project = existsSync(baked) && !process.argv.includes("--rebuild") ? deserialize(readFileSync(baked, "utf8")) : createFlagshipDemoProject(demoId).project;
-// 스토어가 막는 제3자 팩 이름 자원(REFMAP·Rasak·PAW·RPG Maker 계열)은 판본에 싣지 않는다 — 쓰지 않으면 빼고, 쓰면 게시를 멈춘다.
+// 스토어가 막는 제3자 팩 이름 자원(REFMAP 원본·Rasak·PAW·RPG Maker 계열)은 판본에 싣지 않는다 — 쓰지 않으면 빼고, 쓰면 게시를 멈춘다.
+// 고친 REFMAP 칩(RefmapDoll)은 허용한다(2026-10-31 사용자) — 쓰면 크레딧에 REFMAP 표기를 단다.
+let usesModifiedRefmap = false;
 {
   const { splitStoreGameThirdPartyProfiles } = await import("@/assetStore/storeGameThirdParty");
   const split = splitStoreGameThirdPartyProfiles(project);
@@ -185,6 +188,7 @@ const project = existsSync(baked) && !process.argv.includes("--rebuild") ? deser
   }
   if (split.dropped.length > 0) console.error(`[publish-game] 쓰지 않는 제3자 이름 자원 ${split.dropped.length}개를 판본에서 뺍니다(예: ${split.dropped[0]!.name}).`);
   project.resourceProfiles = split.kept;
+  usesModifiedRefmap = split.usesModifiedRefmap;
 }
 // 큰 WAV(루프 마스터 40MB 대)는 MP3 192kbps 로 바꿔 싣는다 — 같은 입력이면 같은 바이트(bitexact), 결과는 해시로 캐시.
 const transcodeCache = join(homedir(), ".cache", "oprn-store-transcode");
@@ -228,7 +232,7 @@ if (process.argv.includes("--dry")) out({ ok: true, dry: true, ...summary });
 if (target !== "staging" && target !== "production") out({ ...summary, ok: false, error: "--target staging|production 이 필요합니다(또는 --dry)." }, 2);
 
 const meta: StoreGameMeta = {
-  title: builtin.title, summary: builtin.description, description: demo.description, credits: CREDITS, genre: builtin.genre, controls: CONTROLS(demo.pointer === true),
+  title: builtin.title, summary: builtin.description, description: demo.description, credits: usesModifiedRefmap ? `${CREDITS}\n인물 칩 일부: ${REFMAP_CREDIT}` : CREDITS, genre: builtin.genre, controls: CONTROLS(demo.pointer === true),
 };
 try {
   const base = requireTargetBase(target);
