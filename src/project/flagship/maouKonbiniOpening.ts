@@ -20,8 +20,8 @@ import { openingMapViewCrop } from "@/project/openingMapView";
 import type { AnimaticLayer } from "@/project/openingAnimatic";
 import type { Command, GameMap, Project } from "@/project/types";
 import {
-  CAST, type Cell, emote, event, execTool, gone, letter, m2, mustBlock, mustWalk, nearestFree, page,
-  playSe, say, setSw, setVar, shake, stopBgm, thinkAs, varAtLeast, varIs, wait, bgm,
+  type Cell, emote, event, execTool, gone, letter, m2, mustBlock, mustWalk, nearestFree, page,
+  playSe, say, setSw, setVar, shake, stopBgm, varAtLeast, varIs, wait, bgm,
 } from "./maouKonbiniKit";
 
 // maouKonbini.ts 와 같은 id(순환 import 를 피하려고 문자열을 다시 적는다).
@@ -338,7 +338,6 @@ export function buildMaouThrone(project: Project, roomWake: Cell): Cell {
     // 『동귀어진』 대사와 흰빛은 전투 2합 머리에서 이미 났다 — 전투가 끝나면 흰 화면 위에서 곧장 내레이션.
     fieldTint("255,255,255,1", 0), shake(700, "10"),
     stopBgm(),
-    wait(400),
     // 흰 화면 위 내레이션 한 줄 — 화자 없는 중립 창, 한 번에 표시(타자기로 한 글자씩 나오면 「빛」만 찍힌 빈 창처럼 보였다).
     { kind: "text", body: "빛이 모든 것을 삼켰다.", position: "center", context: "system" } as Command,
     setVar(V_STAGE, "=", 1),
@@ -381,19 +380,18 @@ export function stageMaouRoomWake(project: Project): void {
   // 들리지 않아야 「정적 → 형광등」이 산다(v3 녹화: 기본 곡이 0.7초 울렸다). 나중에 현관으로 들어올 때도 같은 곡이 천천히 깔린다.
   // 16×12 칸 원룸은 배율 1 이면 480×270 화면 가운데 작은 섬으로 떠 미완성처럼 보였다(감독 검수 v10). 배율 2 면 15×8 칸 시야라 방이 화면을 채운다.
   execTool(project, "set_map_properties", { mapId: MAP_ROOM, zoom: 2, bgm: { mode: "custom", resourceId: BGM_ROOM, fadeInMs: 8000 } });
-  const Z = (...l: string[]) => thinkAs(CAST.zervas.name, ...l);
   const zs = (expr: "base" | "happy" | "surprised" | "sad" | "embarrassed", ...l: string[]) => say("zervas", expr, ...l);
   // 눈뜨자마자 조작을 넘긴다 — 안내문·잔고는 탁자에 놓인 물건(살펴보기), 우편함 소리와 전단지는 걷는 동안 병렬 이벤트가 낸다.
   const wakeScene: Command[] = [
     stopBgm(),
     playSe(SFX.fluoro),
     // 옥좌에서 넘어온 흰빛을 형광등이 켜지듯 걷는다(전환 한 번, 약 1초).
-    fieldTint("", 900), wait(900),
+    fieldTint("", 700), wait(700),
     // 냉장고 웅웅·먼 차 소리는 한 번 울리는 효과음이면 다음 효과음(우편함)이 끊어 15초가 무음이었다(2026-10-30 r3 녹화 -120dB).
     // 환경음(bgs) 고리로 깔고, 전단지를 읽고 방 음악이 들어올 때 거둔다.
     { kind: "playAudio", resourceId: SFX.room, loop: true, channel: "bgs", fadeInMs: 800 } as Command,
-    ...Z("낯선 천장이다."),
-    ...zs("surprised", "…뿔이 없다?! 망토도! 이 올리브색 겉옷은 또 뭐냐!"),
+    // 눈뜨기 대사는 한 창 — r4 녹화에서 두 창이 첫 자유 이동을 3초 늦췄다.
+    ...zs("surprised", "낯선 천장…. 뿔이 없다?! 망토도! 이 올리브색 겉옷은 또 뭐냐!"),
     setSw("sw_mk_woke"),
   ];
   // 탁자 위 안내문·통장 — 들르지 않아도 진행된다.
