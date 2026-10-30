@@ -62,6 +62,8 @@ import { DUNGEON_DESIGN_SCHEMA, arrivalEntrance, createDungeonPartsVerb, dungeon
 import { ROOM_IDEA_RULE, roomIdeasFor } from "./roomIdeas";
 import { buildsHandInterior, designMissingRooms } from "./designRooms";
 import { dropModelSeed } from "./modelSeed";
+import { TodoStore } from "./loop/todoStore";
+import { TodoLoop } from "./loop/continuation";
 
 // 2026-10-23 5차: 고치기 3바퀴는 바퀴마다 다시 짓기+비평(20~35초)이라 던전 한 장에 200~250초가 들었다.
 // 속도 우선(6차)으로 1바퀴만 — 첫 비평의 major 를 한 번 고치고 남은 것은 보고한다.
@@ -77,6 +79,10 @@ interface Seen {
 
 /** 이 실행의 v2 상태 — 맵별 장소 기록·마지막 검사·누적 「그림 없음」. */
 export class V2Session {
+  /** 이번 실행의 할 일 목록(omo todo — src/ai/v2/loop). todo 동사가 쓰고, 멈춤 재주입 고리·최종 보고가 읽는다. */
+  readonly todo = new TodoStore();
+  /** 멈춤 재주입 고리의 연속·진척 상태(src/ai/v2/loop/continuation.ts). */
+  readonly loop = new TodoLoop();
   readonly places = new Map<string, PlaceRecord>();
   readonly seen = new Map<string, Seen>();
   readonly content: { verb: string; result: ContentBuildResult }[] = [];
@@ -1528,9 +1534,16 @@ const MUSIC_ONLY_VERBS: ReadonlySet<string> = new Set(["inspect", "ask_user"]);
 /** 음악 요청의 일감인 게임 검사 줄 — 나머지(이미 있던 위협·출하 차단 등)는 음악만 바라는 요청에서 참고다. */
 const isMusicWork = (line: string) => /^\[게임 검사 (음악|실행|부작용)\]/u.test(line);
 
-/** 끝맺음 관문 — 남은 문제가 있으면 한 번 더 돌게 하는 글. 다 통과면 undefined. */
-export function v2FinishGate(session: V2Session, env?: PiAssistantV2Env): string | undefined {
-  if (session.questions.length) return undefined;
+/** 끝맺음 관문이 짚은 문제 하나 — 할 일 고리(src/ai/v2/loop)가 gate·critic 항목으로 덧붙인다. key 가 같으면 같은 문제다. */
+export interface V2GateProblem { readonly key: string; readonly text: string; readonly source: "gate" | "critic" }
+const gateKey = (text: string): string => text.replace(/\d+/gu, "#").replace(/\s+/gu, " ").trim().slice(0, 160);
+
+/**
+ * 끝맺음 관문의 재료 — 고칠 수 있는 장소 문제(비평 major·기계 검사, 맵당 고치기 상한 전)와 게임 검사·출하 차단 줄.
+ * leftovers = 고치기 상한에 닿아 보고로만 갈 장소 문제, missing = 그림·부품이 없어 못 한 것. 사용자에게 물은 실행은 비운다.
+ */
+export function v2GateProblems(session: V2Session, env?: PiAssistantV2Env): { problems: V2GateProblem[]; leftovers: string[]; missing: string[] } {
+  if (session.questions.length) return { problems: [], leftovers: [], missing: [] };
   const open = session.unresolved();
   const missing = [...session.missingArt];
   const fixable = open.filter((o) => o.rounds < V2_MAX_REPAIR_ROUNDS);
@@ -1559,13 +1572,27 @@ export function v2FinishGate(session: V2Session, env?: PiAssistantV2Env): string
     game = game.filter(isMusicWork);
     if (outside.length) env.emit({ type: "execution_status", name: "v2.music-only.notes", ok: true, summary: `음악 요청 밖 참고 ${outside.length}건 — 고치지 않음`, data: { notes: outside } });
   }
+  const problems: V2GateProblem[] = [
+    ...game.map((g) => ({ key: `game:${gateKey(g)}`, text: g, source: "gate" as const })),
+    ...fixable.map((o) => ({ key: `place:${o.mapId}:${gateKey(o.problems.join(" / "))}`, text: `${o.name}(${o.mapId}) 고치기 — 장소는 edit_place·move_object·dress_room, 컷신은 add_event: ${o.problems.slice(0, 5).join(" / ")}`,
+      source: o.problems.some((p) => p.startsWith("[비평")) ? "critic" as const : "gate" as const })),
+  ];
+  const leftovers = open.filter((o) => o.rounds >= V2_MAX_REPAIR_ROUNDS).map((o) => `${o.name}: ${o.problems.slice(0, 4).join(" / ")}`);
+  return { problems, leftovers, missing };
+}
+
+/** 끝맺음 관문 글(옛 고리 — 한 번 더 돌게 하는 글). 할 일 고리는 v2GateProblems 를 항목으로 쓴다. 다 통과면 undefined. */
+export function v2FinishGate(session: V2Session, env?: PiAssistantV2Env): string | undefined {
+  const { problems, leftovers, missing } = v2GateProblems(session, env);
+  const game = problems.filter((p) => p.key.startsWith("game:")).map((p) => p.text);
+  const fixable = problems.filter((p) => p.key.startsWith("place:")).map((p) => p.text);
   // 고칠 것이 없으면 한 바퀴를 더 쓰지 않는다 — 남은 문제·「그림 없음」은 동사 결과가 이미 보고하라고 일렀다.
   if (!fixable.length && !game.length) return undefined;
   return [
     "[v2 끝맺음 관문] 「다 됐다」고 말하기 전에:",
     ...(game.length ? ["게임 검사가 짚은 것 — 고친 뒤 get_event 로 다시 읽어 확인한다(고칠 수 없으면 보고에 그대로 적는다):", ...game.map((g) => `- ${g}`)] : []),
-    ...(fixable.length ? [`아직 고칠 수 있는 곳 ${fixable.length}곳 — 장소는 edit_place, 컷신은 add_event 로 고친다:`, ...fixable.map((o) => `- ${o.name}(${o.mapId}, ${o.rounds}바퀴): ${o.problems.slice(0, 5).join(" / ")}`)] : []),
-    ...(open.length > fixable.length ? ["고치기 상한에 닿은 장소의 남은 문제는 사용자 보고에 그대로 적는다:", ...open.filter((o) => o.rounds >= V2_MAX_REPAIR_ROUNDS).map((o) => `- ${o.name}: ${o.problems.slice(0, 4).join(" / ")}`)] : []),
+    ...(fixable.length ? [`아직 고칠 수 있는 곳 ${fixable.length}곳 — 장소는 edit_place, 컷신은 add_event 로 고친다:`, ...fixable.map((t) => `- ${t}`)] : []),
+    ...(leftovers.length ? ["고치기 상한에 닿은 장소의 남은 문제는 사용자 보고에 그대로 적는다:", ...leftovers.map((t) => `- ${t}`)] : []),
     ...(missing.length ? [`그림·부품이 없어 못 한 것(보고에 반드시 적는다, 대체물로 지어내지 않는다): ${missing.join(" / ")}`] : []),
     "고칠 것을 고친 뒤(또는 고칠 수 없으면 바로) 앞 보고를 대신하는 최종 보고 하나를 다시 쓴다 — 첫 줄을 「최종 보고(앞 보고를 고침):」로 시작하고, 지은 것·통과 여부·못 한 것을 처음부터 다시 적되 앞 보고와 달라진 것(고친 것·되돌린 것)을 분명히 밝힌다. 앞 보고에서 «했다»고 한 것을 되돌렸으면 반드시 그렇다고 쓴다(사용자는 두 보고를 다 본다).",
   ].join("\n");
