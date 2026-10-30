@@ -46,6 +46,9 @@ Phaser 에 실린 텍스처와 파일이 같다는 가정이 맞는지 확인하
   출구에는 `syncExitLabels(...,{arrowOnly:true})` 로 목적지 이름 없이 화살표 글자 하나만 띄운다. 방향은 `exitArrowGlyph` —
   맵 가장자리에 붙은 출구는 그 가장자리 쪽(↓↑←→), 건물 문(`map.doors` 위 칸)은 늘 ↑, 그 밖의 맵 안 출구는 주인공에게서 출구 쪽(위아래 먼저 — 옆에서 다가와도 문 화살표가 ←가 되지 않게). 편집기 「시스템 → 필드 안내 표시」(`fieldGuidesField`)와
   `set_project_settings({fieldGuides:"on"|"arrows"|"off"})` 가 같은 값을 쓴다.
+  **출구가 아닌 것(2026-10-30 첫사랑 검수):** 그림 있는 조사(action) 이벤트가 대사·선택지 뒤에 옮기는 페이지는 「다음 장면으로 넘어가는 대화」라 출구 글자를 달지 않는다
+  (`exitTargetOf(page, here, talker)` — 탕비실 지후 머리 위 「→ 7층 · 금요일」이 다음 장을 미리 알렸다). 조사 ▼ 표식(`syncExamineMarkers`)도 출구 글자처럼 `scene.running` 동안 숨긴다
+  (재회 컷신 내내 팀장·민호 머리 위에 떠 있었다).
   **길 잇기(2026-10-29 vm2 jrpg 「길 못 찾음」)**: 지금 맵에서 그 맵으로 바로 가는 문이 없으면 `mapRoute`(옮기기 이벤트로 이은 가장 짧은 맵 경로)의
   첫 맵으로 가는 문을 짚는다. 꼬리 「→」 뒤(「(숲 입구: 북쪽 → 숲 통과)」·「(마을 입구: 남쪽 → 마왕의 동굴 · 마왕 처치)」)는 그 뒤 대상이다 —
   그 이름의 이벤트가 지금 맵에 있으면 그것, 아니면 그 맵으로 가는 첫 출구. 글에 나온 다른 맵도 같은 첫 출구 규칙.
@@ -1245,5 +1248,6 @@ QA 근거와 재실행: `scripts/qa/runtime/dialogue-frame-fixture.mts`(데모�
 
 - 경로 단계 `approach`·`turnToward` 는 **즉시 명령**이다. NPC 는 `playSceneAutonomousCommands.executeInstantCommand`, 주인공은 `playSceneMovement.applyPlayerRouteCommand` 가 그 순간 `expandApproach`(`playSceneApproach.ts`)로 경로에 보통 `move` + `turnToward` 를 끼워 넣는다(`mover.step-1`·`route.index-1` 자리). 그래서 걸음 속도·막힘·주인공 비켜 가기(`commandRouteDetour`)는 기존 걸음과 같다. 속도 표를 여기서 다시 정하지 않는다(`project/characterMotion.ts`).
 - 대사 자동 돌아보기는 인터프리터 `text` 단계가 showText 직전에 부른다(`playSceneDialogueFacing.applyDialogueFacing`). 화자·듣는 인물 규칙은 장면 검사와 같은 `project/staging/dialogueActors.ts` 다 — 한쪽만 바꾸면 검사가 상상한 방향과 게임이 다르다.
+- 주인공 이동 경로의 `placeAt{x,y}` 은 같은 맵 순간 이동이다(`playSceneMovement.applyPlayerRouteCommand` → `placePlayerOnCurrentMap`, 2026-10-30). 예전엔 주인공 대상에서 조용히 건너뛰어, 「문간에 세우고 한 걸음 나온다」 컷신이 주인공을 시작 칸에 둔 채 뒤 걸음이 막혔다(첫사랑 옥상).
 - `exitVia`·`enterVia` 도 같은 즉시 펼침이다(`playSceneDoorway.ts`): 걸음 + `doorCue`(문 소리·문 이벤트 방향 프레임, `mover.routeWaitMs` 로 프레임 사이 쉼 — `playSceneAutonomous` 의 wait 처리 옆) + `placeAt`(같은 맵 순간 이동). 문 그림 칸 판정은 `project/staging/doorCells.ts`(장면 검사와 공유 — 검사 모듈은 큰 JSON 을 들고 있어 출하 플레이어가 끌어오면 안 된다).
 - `moveEvent` 대상 `"@this"`/`"this-event"` 는 실행 중 이벤트 id 로 묶인다(`bindStageTargets`).
