@@ -756,7 +756,8 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
       // 손 도트 실내 방은 조수가 설계한다: 설계(zones[].design) 없이 오면 장소마다 한 번 되돌려 보낸다. 다시 설계 없이 오면 짓기 전에 같은 모델에게 따로 설계를 받는다(designRooms.ts).
       // 손 도트 실내로 지어지는지는 빌더와 같은 함수로 본다 — style:modern 이어도 주인공 물건 때문에 v5 로 짓는 방이 견본 서재로 섰다(2026-10-29 vm8 flash 방탈출).
       // 칸 배치(spec.layout)가 정본 경로다 — zones[].design 을 들고 와도 장소마다 한 번은 칸 배치로 돌려보낸다(2026-10-31 4회차: terra 가 design 으로 10×10 한 칸 서재를 지었다).
-      if (spec.type === "interior" && !spec.mapId && !hasLayout(spec) && buildsHandInterior(run.ctx.project, spec)
+      // mapId 가 와도(엄격 스키마 모델은 지금 맵 id 를 채워 보낸다 — 4회차 terra 서재) 한 번은 돌려보낸다.
+      if (spec.type === "interior" && !hasLayout(spec) && buildsHandInterior(run.ctx.project, spec)
         && !session.designBounced.has(spec.name)) {
         session.designBounced.add(spec.name);
         // 재료(기물 이름표·견본 배치)를 같이 돌려준다 — 되돌려 보내기를 «실패»로 읽고 짓기를 그만둔 모델이 있었다(2026-10-29 flash 「마법사의 서재」).
