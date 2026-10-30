@@ -1,0 +1,65 @@
+/* src/styles/runtime/windowSkinSurfaces.css
+   ── 「고전 · 윈도스킨」 게임의 메뉴·상점·타이틀 창 ───────────────────────────────
+   대화창 스타일 classic(system.dialogueStyle)은 대사·선택지 창을 자료집 System 윈도스킨 9칸 그림으로 그린다
+   (dialogueStyles.css). 같은 게임의 필드 메뉴·상점·타이틀 명령 창은 그 그림을 변수로만 받고 칠하지 않아서,
+   스킨을 바꿔도 대사창만 바뀌었다. 이 파일이 그 세 표면의 창 칸을 같은 계약으로 칠한다.
+
+   켜는 곳: systemGraphics.ts markClassicWindowSkin — classic 이고 에메랄드 몬스터 화면이 아닐 때만
+   루트에 `data-window-skin="classic"` 을 붙인다. 표식이 없는 게임(유리 기본·다른 대화창 스타일)은 이 파일이
+   아무것도 바꾸지 않는다. 전투 창은 _windowskin.css 계약 그대로다.
+
+   계약(대사창과 같다): 그림 96×96, 9칸 자르기 24px + 가운데 채움, 화면에 그리는 테두리 두께 8px(3배 축소).
+   글자색은 스킨 위 흰 글씨 — 대사창(--dlg-text 흰색)과 같다. 스킨은 가운데가 어둡게 만들어져야 한다(4.5:1). */
+
+/* ── 필드 메뉴(ESC) — 모든 메뉴 스킨의 창 칸 ───────────────────────────────────── */
+.oprn-status-menu.main-menu[data-window-skin="classic"] {
+  --runtime-window-text: rgb(255, 255, 255);
+  --runtime-window-muted: rgba(226, 232, 255, 0.92);
+  --px-ink: rgb(255, 255, 255);
+  --px-ink-dim: rgba(226, 232, 255, 0.92);
+  --px-shadow: 1px 1px 0 rgba(0, 0, 0, 0.85);
+}
+.oprn-status-menu.main-menu[data-window-skin="classic"] :is(.status-menu-party-overview, .status-menu-primary-dock, .status-menu-detail, .status-menu-party),
+.oprn-status-menu.main-menu[data-window-skin="classic"][data-status-menu-screen="main"] :is(.status-menu-gold, .status-menu-time, .status-menu-location, .status-menu-chapter),
+.oprn-status-menu.main-menu[data-window-skin="classic"] .status-menu-footer {
+  background: transparent;
+  border-color: transparent;
+  border-image: var(--runtime-window-skin) 24 fill / 8px / 0 stretch;
+  border-radius: 0;
+  box-shadow: none;
+  image-rendering: pixelated;
+}
+
+/* ── 상점 — 오버레이(스크림)는 그대로, 창 칸만 ─────────────────────────────────── */
+.runtime-shop-overlay[data-window-skin="classic"] {
+  --shop-ink: rgb(255, 255, 255);
+  --shop-ink-dim: rgba(226, 232, 255, 0.92);
+}
+.runtime-shop-overlay[data-window-skin="classic"] :is(.runtime-shop-greeting-panel, .runtime-shop-list-panel, .runtime-shop-detail-panel,
+  .runtime-shop-party-panel, .runtime-shop-desc-panel, .runtime-shop-purse-panel, .runtime-shop-comparison, .runtime-shop-haggle-shell,
+  .runtime-shop-gold-panel, .runtime-shop-prompt-panel) {
+  background: transparent;
+  border-color: transparent;
+  border-image: var(--runtime-window-skin) 24 fill / 8px / 0 stretch;
+  border-radius: 0;
+  box-shadow: none;
+  image-rendering: pixelated;
+}
+
+/* ── 타이틀 — 명령 창만(루트·키아트는 손대지 않는다) ─────────────────────────────── */
+.player-layout.system-shell .rm-title-screen-editorial[data-window-skin="classic"] .rm-title-menu:not([data-menu-style="plain"]) {
+  background: transparent;
+  border: 6px solid transparent;
+  border-image: var(--runtime-window-skin) 24 fill / 6px / 0 stretch;
+  border-radius: 0;
+  image-rendering: pixelated;
+}
+.player-layout.system-shell .rm-title-screen-editorial[data-window-skin="classic"] .rm-title-menu:not([data-menu-style="plain"]) .rm-title-menu-button {
+  color: rgba(226, 232, 255, 0.92);
+  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.85);
+}
+.player-layout.system-shell .rm-title-screen-editorial[data-window-skin="classic"] .rm-title-menu:not([data-menu-style="plain"]) .rm-title-menu-button.selected {
+  background: rgba(255, 255, 255, 0.16);
+  box-shadow: inset 2px 0 0 rgb(255, 230, 140);
+  color: rgb(255, 255, 255);
+}
