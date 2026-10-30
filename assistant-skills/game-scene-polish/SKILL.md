@@ -98,6 +98,7 @@ description: Use when authoring or reviewing story scenes, events, cutscenes, NP
 7. **보스 레벨은 플레이어 띠 안에.** 플레이어보다 몇 레벨 낮게 보이는 보스는 세게 맞춰도 들러리처럼 보인다. 보이는 레벨을 올리고 능력치 배율로 세기를 맞춘다. 확인: 그 시점 보스 파티 모두 레벨 ≥ 플레이어 −1.
 8. **레벨업 숫자가 터지지 않는다.** 높은 레벨에서 시작하는 배우의 경험치는 그 레벨 바닥부터. Lv6 HP 526 같은 값이 나오면 곡선을 본다.
 9. **스킬 장착 칸이 있는 게임은 이벤트에서 장착 화면을 열어 준다.** `upsert_actor loadoutSlots`(1~12) 로 칸을 정하고, 전투 전에 m2 「메뉴 화면 열기」 `{screen:"skills", actorId}` 를 두면 닫을 때 이벤트가 이어진다. 확인: 칸 수만 있고 장착 화면을 여는 이벤트가 없으면 플레이어가 장착 방법을 모른다.
+10. **결투·겨루기 장면은 부대 `duel` 로 규칙을 건다.** 사람 상대는 `upsert_enemy.walkChip`(걷기 칩, 서 있는 적), 항복·기권·라운드 판정은 `upsert_troop.duel {yieldAtPercent, playerYieldAtPercent, forfeit, roundLimit, noItems}` 로 쓰고 이벤트로 흉내 내지 않는다. 확인은 `simulate_battle` 의 `outcomes`(victory/defeat/escape).
 
 ## 8. 이름과 크레딧
 
