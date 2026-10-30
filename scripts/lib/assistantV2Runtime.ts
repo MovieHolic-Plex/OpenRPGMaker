@@ -179,6 +179,8 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
   let freshNext = false;
   let reinjections = 0;
   const writeRequest = isWriteRequest(request);
+  /** 이 실행에 노출한 동사·도구 이름 — 관문 항목이 이르는 도구가 없으면 그 항목은 돌리지 않는다. */
+  const toolNames = new Set<string>();
   const checkOf = (env: PiAssistantV2Env, item: TodoItem) => {
     if (!item.check || item.check.kind === "none") return undefined;
     try { return runTodoCheck(env.ctx.project, item.check, { startMapId: env.ctx.project.startMapId }); } catch { return undefined; }
@@ -286,7 +288,7 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
     // 존재하지 않는 이름 하나 — 레지스트리 도구를 하나도 고르지 않고, 이름 지정 실행이라 v1 확인표·작가 도구도 꺼진다.
     toolNames: ["__assistant_v2__"],
     v2: {
-      tools: (env) => withTodoLoop(env, store, session.loop, createV2Tools(env, session)),
+      tools: (env) => { const tools = withTodoLoop(env, store, session.loop, createV2Tools(env, session)); for (const t of tools) toolNames.add(t.name); return tools; },
       // 첫 호출 todo 강제(omo first-turn) — 쓰기 요청이고 이어 받은 목록이 없을 때. 로컬 CLI 는 감싸개가 첫 쓰기를 되돌린다.
       beforeFirstPrompt: (env) => { if (writeRequest && !store.initialized) env.requireToolNextTurn?.("todo"); },
       // 할 일 고리는 스스로 멈춘다(묶음당 8·진척 없음 2·서명 같음·ask_user). 이 수는 안전 상한일 뿐이다.
@@ -318,7 +320,7 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
           // ④ 끝맺음 관문 — 남은 문제는 «한 바퀴 더» 글이 아니라 할 일 항목이다.
           const gate = v2GateProblems(session, env);
           const capMapIds = new Set(session.unresolved().filter((o) => o.rounds >= V2_MAX_REPAIR_ROUNDS).map((o) => o.mapId));
-          const synced = syncGateItems(store, gate.problems, capMapIds);
+          const synced = syncGateItems(store, gate.problems, capMapIds, toolNames);
           if (synced.closed.length || synced.capped.length) env.emit({ type: "execution_status", name: "v2.gate.sync", ok: true, summary: `관문 항목 — 사라져 닫음 ${synced.closed.length} · 상한 막힘 ${synced.capped.length}` });
           if (synced.opened.length) {
             env.emit({ type: "execution_status", name: "v2.gate.items", ok: false, summary: `끝맺음 관문이 짚은 것 ${synced.opened.length}건을 할 일에 덧붙임`, data: { items: synced.opened.map((i) => ({ id: i.id, source: i.source, content: i.content })) } });

@@ -10,7 +10,7 @@ const keyOf = (store: TodoStore, item: TodoItem): string | undefined => store.me
 function capReopened(store: TodoStore, items: readonly TodoItem[], what: string): TodoItem[] {
   const capped: TodoItem[] = [];
   for (const item of items) {
-    if (item.attempts >= TODO_MAX_ATTEMPTS && isOpen(item.status)) { store.block(item, `${what}이 ${item.attempts}번 다시 나옴 — 고치지 못함`, "auto"); capped.push(item); }
+    if (item.attempts >= TODO_MAX_ATTEMPTS && isOpen(item.status)) { store.block(item, `${what} — ${item.attempts}번 다시 나옴, 고치지 못함`, "auto"); capped.push(item); }
   }
   return capped;
 }
@@ -19,7 +19,12 @@ function capReopened(store: TodoStore, items: readonly TodoItem[], what: string)
  * 끝맺음 관문 문제(v2GateProblems)를 gate·critic 항목으로. capMapIds = 고치기 상한에 닿은 장소 맵 — 그 맵의 장소 항목이 문제 목록에서 사라져도
  * «고쳐짐»이 아니라 «상한»이다(막힘으로 닫는다).
  */
-export function syncGateItems(store: TodoStore, problems: readonly V2GateProblem[], capMapIds: ReadonlySet<string>): { opened: TodoItem[]; closed: TodoItem[]; capped: TodoItem[] } {
+/** 문제 글이 고치는 법으로 이르는 도구 이름들(`configure_field_menu{…}`·`upsert_actor(…)` 모양). */
+export function namedTools(text: string): string[] {
+  return [...new Set([...text.matchAll(/\b([a-z][a-z0-9]*(?:_[a-z0-9]+)+)\s*[{(]/gu)].map((m) => m[1]!))];
+}
+
+export function syncGateItems(store: TodoStore, problems: readonly V2GateProblem[], capMapIds: ReadonlySet<string>, available?: ReadonlySet<string>): { opened: TodoItem[]; closed: TodoItem[]; capped: TodoItem[] } {
   const keys = new Set(problems.map((p) => p.key));
   const closed: TodoItem[] = [];
   for (const item of store.items) {
@@ -37,5 +42,13 @@ export function syncGateItems(store: TodoStore, problems: readonly V2GateProblem
     ...store.append("비평", problems.filter((p) => p.source === "critic").map((p) => ({ content: p.text, key: p.key })), "critic"),
   ];
   const capped = capReopened(store, opened, "같은 문제");
+  // 고치는 법으로 이른 도구가 이 실행에 하나도 없으면 조수가 할 수 없다 — 돌리지 않고 막힘으로 닫는다(남은 문제로 보고된다).
+  // 2026-10-30 omo-loop-1030 ending: «configure_field_menu 로 ESC 메뉴를 기본으로» 항목을 도구 없이 세 번 돌았다.
+  if (available) for (const item of opened) {
+    if (!isOpen(item.status)) continue;
+    const full = problems.find((p) => p.key === keyOf(store, item))?.text ?? item.content;
+    const tools = namedTools(full);
+    if (tools.length && !tools.some((t) => available.has(t))) { store.block(item, `고치는 도구(${tools.join(", ")})가 이 실행의 도구 목록에 없다 — 남은 문제`, "auto"); capped.push(item); }
+  }
   return { opened: opened.filter((i) => !capped.includes(i)), closed, capped };
 }

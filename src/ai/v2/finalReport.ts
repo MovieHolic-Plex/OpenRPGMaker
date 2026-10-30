@@ -76,6 +76,18 @@ export interface TodoReportInput {
   readonly vqa?: string;
 }
 
+/** 끝맺음 자동 짓기 글(조수에게 주던 «[자동으로 지음] … 그대로 적는다» 머리 포함)을 사람이 읽을 줄로 — 머리를 빼고 같은 줄은 한 번만. */
+function autoLines(notes: readonly string[] | undefined): string[] {
+  const seen = new Set<string>();
+  const out: string[] = [];
+  for (const note of notes ?? []) for (const raw of note.split("\n")) {
+    const line = raw.replace(/^\s*-\s*/u, "").trim();
+    if (!line || /^\[자동으로 지음\]/u.test(line) || seen.has(line)) continue;
+    seen.add(line); out.push(line);
+  }
+  return out;
+}
+
 const cell = (text: string) => text.replace(/\|/gu, "/").replace(/\n+/gu, " ").slice(0, 160);
 
 export function todoReport(input: TodoReportInput): { text: string; complete: boolean; receipts: string[] } {
@@ -106,7 +118,7 @@ export function todoReport(input: TodoReportInput): { text: string; complete: bo
     ...(input.leftovers?.length ? ["남은 문제(함수 검사 기록 — 고치기 상한):", ...input.leftovers.map((l) => `- ${l.slice(0, 220)}`)] : []),
     ...(input.missing?.length ? [`그림·부품이 없어 못 한 것: ${input.missing.join(" / ").slice(0, 400)}`] : []),
     ...(input.vqa ? [input.vqa] : []),
-    ...(input.autoNotes?.length ? ["자동으로 지음(함수):", ...input.autoNotes.map((n) => `- ${n.slice(0, 300)}`)] : []),
+    ...(autoLines(input.autoNotes).length ? ["자동으로 지음(함수):", ...autoLines(input.autoNotes).map((n) => `- ${n.slice(0, 300)}`)] : []),
   ];
   if (complete) {
     return { complete, receipts, text: [draft.trim(), "", `[할 일 ${c.done}/${c.total} ✓ — 기계 확인]`, ...table, ...(tail.length ? ["", ...tail] : [])].join("\n") };

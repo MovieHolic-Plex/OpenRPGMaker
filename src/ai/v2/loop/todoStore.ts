@@ -159,10 +159,9 @@ export class TodoStore {
       if (!input.content?.trim()) continue;
       const same = input.key ? this.items.find((i) => this.meta.get(i.id)?.key === input.key) : undefined;
       if (same) {
-        if (!isOpen(same.status) && same.status !== "dropped") {
-          // 닫았던 문제가 다시 나왔다 — 거짓 완료이거나 고치기가 효과가 없었다. 다시 열고 한 번 실패로 센다.
-          if (same.status === "completed" || same.status === "blocked") { same.attempts += 1; same.status = "pending"; delete same.blockedReason; delete this.metaOf(same.id).closedBy; opened.push(same); }
-        }
+        // 끝났다던 문제가 다시 나왔다 — 거짓 완료이거나 고치기가 효과가 없었다. 다시 열고 한 번 실패로 센다.
+        // 막힘(이유를 적고 닫음)·뺌은 다시 열지 않는다 — 같은 문제가 남는 것이 당연하다(남은 문제로 보고된다).
+        if (same.status === "completed") { same.attempts += 1; same.status = "pending"; delete this.metaOf(same.id).closedBy; opened.push(same); }
         continue;
       }
       const item = this.add(phase, input, source, input.key);
