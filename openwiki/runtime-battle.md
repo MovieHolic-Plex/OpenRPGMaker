@@ -3,6 +3,10 @@
 - `EnemyRecord.walkChip?: { characterResourceId: string; characterIndex: number }`(0~7). 있으면 측면 전투에서 몬스터 그림 대신 걷기 칩(CharSet 288×256, 24×32)이 **오른쪽 보기** 행으로 선다. 없으면 기존 경로 그대로(바이트 동일). 정규화는 `normalizeEnemyWalkChip`(`databaseEnemyTroopRecordModel.ts`): 빈 id 는 버리고 칸은 반올림해 0~7 로 자른다. 변신(`transformResourceId`)한 적이나 id 가 풀리지 않는 칩은 옛 경로로 떨어진다.
 - 그림: `battleFieldDom.enemyButton` 의 첫 분기가 `appendWalkChipBattler(..., "right")` 를 부르고(`facing` 인자, 기본 `"left"` 라 파티 경로 불변) 스프라이트에 `battle-enemy-image` 를 함께 단다 — 적 HP·표적·쓰러짐·맞춤 규칙이 계속 그림을 찾는다. 포즈는 파티원과 같다(대기·접근/복귀 걸음·공격 한 걸음·피격·쓰러짐).
 - 준비 관문: `battleAssetPrefetch.troopImageUrls` 가 `walkChip.characterResourceId` 도 싣는다.
+- 크기(2026-10-30): `EnemyRecord.battleScalePercent` 가 걷기 칩 적에도 먹는다. 예전에는 칸·노드 상자가 인라인 고정 px(48×64·96)라 200% 도 100% 와 같았다(실측: 두 적 모두 css 48×64).
+  100% 가 아니면 `appendWalkChipBattler(..., "right", true)` 가 노드에 `--battle-walk-chip-k = --battle-enemy-scale × --battle-enemy-fit` 을 두고 노드 상자·칸·시트 크기·칸 위치(포즈·걸음 키프레임 포함)를 모두 그 배율로 calc 한다.
+  노드는 발밑 가운데 기준이라 발이 그대로 서고(발 아래 여백 6px 는 배율과 무관), 상자가 함께 커져 조준 ▼·이름표가 가운데에 붙는다. 맞춤(`battleEnemyFit`)은 스프라이트의 `--battle-enemy-base-width/height`(=96px)로 잰다.
+  100% 는 예전 인라인 값 그대로(파티 걷기 칩 경로도 불변). 실측(런타임 QA, retro2003 측면): 100% css 48×64 · 200% 94.4×125.9(fit 0.983) · 300% 128.4×171.3(fit 0.892), 200%·300% 의 발 바닥선은 같은 자리 100% 때와 같은 줄(화면 457.4px).
 - 편집기: 적 탭 「걷기 칩 (서 있는 적)」 선택기. 조수: `upsert_enemy.enemy.walkChip {characterResourceId, characterIndex}`(고정 속성), 지우기는 `clearFields:["walkChip"]`. 풀리지 않는 id 는 `enemy-reference-not-found` 로 거부하고 후보 id 를 알린다(`tex_*_charset_*` 는 `<계열>-charset-*` 로 바꿔 받는다). 헤드리스 `simulate_battle` 은 그림과 무관해 영향이 없다.
 
 ## 상태 배지 글자는 저작 상태 이름 · 승리 띠·명령 질문은 용어 (2026-10-30)
