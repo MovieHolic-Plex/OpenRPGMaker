@@ -38,7 +38,16 @@ export const EVENT_CARD =
   "look{who,as:'shadow'|'ghost'|'normal'} = black silhouette · translucent ghost · normal look / vanish{who} = vanish like smoke (a «passing» shadow walks to a spot word on the opposite side from where it appeared and vanishes — walking next to someone makes it a «visiting» scene). " +
   "Town and person names in lines must be the ones already in map names and existing NPC lines (do not invent new ones). " +
   "who: 주인공·player·hero = the player; any other name = a person appearing in the cutscene (bring them in with appear first, or use an NPC name already on the map). " +
-  "The function simulates every walk on the real passability grid and fixes walks under 3 cells or unreachable ones, adds letterbox and facing, and the critic looks at a few scene pictures.";
+  "The function simulates every walk on the real passability grid and fixes walks under 3 cells or unreachable ones, adds letterbox and facing, and the critic looks at a few scene pictures. " +
+  "redo:'<scene event id>' rewrites that existing scene in place (same spot and trigger) — use it to fix a scene instead of adding a second event. " +
+  "Writing the scene (the player feels a scene through change and bodies; one announced line is not a scene): situation → turn → consequence, usually 4–8 lines. " +
+  "1) Open on the place before the first word — music, tint/weather, a camera move or a short wait. " +
+  "2) Each speaker sounds like one person: word choice, sentence length, 반말/존댓말 and habits only they have (a demon lord does not talk like the village chief). " +
+  "3) Lines are an exchange: the other side answers — the hero reacts with an emote or a short line, or the player chooses. " +
+  "4) Bodies carry the feeling: approach to press, turn away to hide, step back in shock, walk off to end; an emote marks the moment a line lands. " +
+  "5) End on a consequence the player can see — someone leaves or joins, a door opens, the music changes, the objective changes. " +
+  "6) Never write the same line twice; when talked to again, say what changed, shorter. Put the name in who, never «이름: …» inside text. " +
+  "Do not add hints that repeat what the scene already showed.";
 
 type Cell = { x: number; y: number };
 
@@ -382,10 +391,18 @@ export function buildEvent(run: BuildRun, spec: EventSpec): EventBuildResult {
   });
 
   // after(NPC 대화 뒤)는 언제나 말 걸기 장면이다 — kind:'cutscene' 이어도 게임 시작 컷신으로 만들지 않는다.
-  const when = spec.after ? "talk" : spec.when ?? (spec.kind === "talk" ? "talk" : spec.kind === "trigger" ? "touch" : "game-start");
   const mapId = spec.mapId ?? run.ctx.project.startMapId;
   let map = findMap(run.ctx.project, mapId);
   if (!map) return fail(`맵 '${mapId}' 이 없다.`);
+  // redo: 이미 있는 장면 이벤트를 그 자리에서 다시 쓴다(장면 손질 검사 «Fix: add_event{… redo}» — 2026-10-31). 언제(trigger)는 그 이벤트의 것을 따른다.
+  const redoEv = spec.redo ? eventsOf(map).find((e) => e.id === spec.redo) : undefined;
+  if (spec.redo && !redoEv) {
+    const scenes = eventsOf(map).filter((e) => (e.pages ?? []).some((pg) => (pg.commands ?? []).some((c) => (c as { kind?: string }).kind === "text"))).map((e) => `${e.id}${e.name ? ` «${e.name}»` : ""}`);
+    return fail(`redo: there is no event '${spec.redo}' on map '${mapId}'. Events with lines on this map: ${scenes.slice(0, 10).join(", ") || "none"}.`, [mapId]);
+  }
+  const redoTrigger = redoEv ? String(((redoEv.pages ?? []).find((pg) => pg.name === "컷신") ?? redoEv.pages?.[0])?.trigger?.kind ?? "") : "";
+  const redoWhen = redoTrigger === "action" ? "talk" : redoTrigger === "playerTouch" || redoTrigger === "eventTouch" ? "touch" : redoTrigger === "auto" && redoEv?.id === START_HOST_ID ? "game-start" : redoTrigger ? "touch" : undefined;
+  const when = spec.after ? "talk" : spec.when ?? redoWhen ?? (spec.kind === "talk" ? "talk" : spec.kind === "trigger" ? "touch" : "game-start");
   if (spec.beats.length === 0) return fail("비트가 비었다.");
   if (when === "game-start" && mapId !== run.ctx.project.startMapId) {
     warnings.push(`game-start 는 시작 맵(${run.ctx.project.startMapId}) 에서만 게임이 열 때 돈다 — '${mapId}' 의 자동 컷신은 그 맵에 들어갈 때 돈다.`);
@@ -847,13 +864,13 @@ export function buildEvent(run: BuildRun, spec: EventSpec): EventBuildResult {
 
   // 5) 컷신 이벤트 자리(보이지 않는 연출 이벤트) — 사람·주인공 칸을 피한 빈 칸.
   const trigger = when === "game-start" ? "auto" : when === "talk" ? "action" : "playerTouch";
-  const existingHost = hostId ? eventsOf(map!).find((e) => e.id === hostId) : undefined;
+  const existingHost = hostId ? eventsOf(map!).find((e) => e.id === hostId) : redoEv ? eventsOf(map!).find((e) => e.id === redoEv.id) : undefined;
   const hostCell = existingHost ? { cell: { x: existingHost.x, y: existingHost.y }, note: undefined as string | undefined }
     : resolveWhere(project(), map!, when === "game-start" ? undefined : spec.where, { ...(spec.at ? { at: spec.at } : {}), avoid: [...used, ...sim.walks.flatMap((w) => w.path)] });
   if (hostCell.note && when !== "game-start") warnings.push(`컷신 자리: ${hostCell.note}`);
   const args: Record<string, unknown> = {
     mapId, x: hostCell.cell.x, y: hostCell.cell.y, trigger, beats, skippable: true, mode: "replace",
-    once: when === "game-start" || when === "touch", ...(hostId ? { eventId: hostId } : {}),
+    once: when === "game-start" || when === "touch", ...(hostId ? { eventId: hostId } : existingHost ? { eventId: existingHost.id } : {}),
   };
   // after NPC 의 페이지를 못 고르면 장면을 만들기 전에 멈춘다(장면 배우·투명 이벤트를 남기지 않는다).
   if (spec.after) {
