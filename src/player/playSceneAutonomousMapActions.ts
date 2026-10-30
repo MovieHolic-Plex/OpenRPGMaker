@@ -1,5 +1,5 @@
 import { furniturePushBlocks } from './furniturePushAnimation';
-import { canMoveFootprint, inBounds, isLedgeCell } from "@/project/collision";
+import { canMoveFootprint, inBounds, isLedgeCell, isPassableLanding } from "@/project/collision";
 import { transitBlocksCell } from "@/player/playSceneTransit";
 import { UNIT_FOOTPRINT, passageBounds, rectsOverlap } from "@/project/footprint";
 import { isSpatialPlacementBlocking } from "@/project/spatialOccupancy";
@@ -102,7 +102,14 @@ function leg(
   toX: number,
   toY: number
 ): boolean {
-  return canMoveFootprint(
+  // 막힌 칸 안에 서 있는 한 칸 인물(문·지하철 계단 그림 칸으로 통과해 들어가 사라졌다가 통과를 끈 행인)은 그 칸의
+  // 나가는 방향 통행을 보지 않고 걸어 나온다. 예전에는 칸 자체가 막혀 나가는 걸음도 막혔고, 막힌 걸음을 버리지 않는
+  // 순찰은 문 앞에 영원히 섰다 — 뒤따라 들어간 행인이 같은 칸에 겹쳐 쌓였다(첫사랑 거리 2026-10-30, 행인 2·4·8).
+  const leavingWall = self.fp.width === 1 && self.fp.height === 1 && self.passRows === 1
+    && !isPassableLanding(request.project, request.scene.map, fromX, fromY);
+  return (leavingWall
+    ? isPassableLanding(request.project, request.scene.map, toX, toY)
+    : canMoveFootprint(
     request.project,
     request.scene.map,
     fromX,
@@ -111,7 +118,7 @@ function leg(
     toX,
     toY,
     self.passRows
-  ) && !isLedgeCell(request.project, request.scene.map, toX, toY)
+  )) && !isLedgeCell(request.project, request.scene.map, toX, toY)
     && !isSpatialPlacementBlocking(
     request.project,
     request.scene.session,

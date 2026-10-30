@@ -138,6 +138,11 @@ export type AutonomousMover = {
   retryBlockedSteps?: boolean;
   /** Authored non-skippable patrols never consume a blocked absolute step. */
   preserveBlockedSteps?: boolean;
+  /**
+   * 다른 인물에게 막힌 반복 순찰(preserveBlockedSteps)이 한 번만 돌아가는 덧걸음. 경로 배열(moves)은 그대로 두고
+   * 이 걸음들을 먼저 걷고 나면 step 을 resumeStep(막힌 직선 구간의 끝 다음)으로 옮긴다 — playSceneAutonomous §routeDetour.
+   */
+  routeDetour?: { moves: MoveCommand[]; resumeStep: number; end: { readonly x: number; readonly y: number }; blocked: number };
 };
 
 export type AutonomousMoveTween = {
