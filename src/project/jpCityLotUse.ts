@@ -389,7 +389,14 @@ export function fillLotUses(opts: {
         ? [vend, pick(["jp-prop-bike-sora", "jp-prop-bike-aka"]), opts.style === "residential" ? "jp-gomi-box" : "jp-prop-garbage-net", "jp-ac-unit"]
         : ["jp-ac-unit", "jp-propane"];
       const ids = shuffle(pool).slice(0, fr && r.h >= 8 && rng() < 0.4 ? 3 : 2);
-      const low = { x: r.x, y: Math.max(r.y, r.y + r.h - 5), w: r.w, h: Math.min(r.h, 5) };
+      // 골목 틈은 양옆(또는 한옆)이 건물 벽인 줄까지만 — 건물 발 아래 보도 줄은 틈이 아니다. 보도 소품(자전거)을 빼고 짜면
+      // 빈 보도가 틈의 아래로 이어져 실외기·가스통이 보도 한가운데에 섰다(마왕 편의점 2026-10-30 「보도 한가운데 잡동사니」).
+      const walled = (y: number): boolean => (r.x > 0 && building[y * W + r.x - 1] === 1) || (r.x + r.w < W && building[y * W + r.x + r.w] === 1);
+      let bottom = r.y + r.h - 1;
+      while (bottom >= r.y && !walled(bottom)) bottom--;
+      if (bottom < r.y) return undefined;
+      const top = Math.max(r.y, bottom - 4);
+      const low = { x: r.x, y: top, w: r.w, h: bottom - top + 1 };
       return pack(low, ids, true);
     },
     // 납작한 띠(높이 1~2): 화분·자전거·벤치.

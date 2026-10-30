@@ -2,7 +2,7 @@ import { defaultOutdoorTilesetId } from "@/project/defaults/outdoorTileset";
 // 선언형 월드 그래프 툴: plan_world / link_maps / build_world / lint_world.
 
 import { kitDoorOpenCommands } from "@/project/kitDoors";
-import { recordDoorForGate } from "./mapDoorTools";
+import { bindGateToDoor, recordDoorForGate } from "./mapDoorTools";
 import { resolveTransferEndpoint, upsertEventIntoMap } from "./eventTools";
 import { assertDoorExitWidths, transferGatesStayApproachable } from './transferReachability';
 import { COORD_SCHEMA } from './schemaShapes';
@@ -142,7 +142,7 @@ const planWorld: ToolDefinition = {
 
 const linkMaps: ToolDefinition = {
   name: "link_maps",
-  description: "두 맵 사이 transfer edge를 등록하고 실제 출입구 이벤트를 안정 ID로 생성/갱신한다. bidirectional 기본 true. create_transfer_pair와 같은 도달·봉쇄·착지 검사를 수행하며 안전한 자리가 없으면 실패한다. 문 그림 연결은 place_door의 transferEndpoint(doorAt 포함)를 from/to로 사용한다.",
+  description: "두 맵 사이 transfer edge를 등록하고 실제 출입구 이벤트를 안정 ID로 생성/갱신한다. bidirectional 기본 true. create_transfer_pair와 같은 도달·봉쇄·착지 검사를 수행하며 안전한 자리가 없으면 실패한다. 문 그림 연결은 place_door의 transferEndpoint(doorAt 포함)를 from/to로 사용한다. 문이 있으면(doorAt, 또는 출입구 칸 바로 위의 문 그림 — 통로·아치·계단 제외) 이벤트는 문 칸에 선다: 문 앞 칸에 서기만 해서는 옮기지 않고, 문 쪽으로 걸어 들어갈 때(막힌 문 칸이면 부딪힘) 문이 열리고 주인공이 문간으로 한 걸음 들어간 뒤 옮긴다. 그 문으로 돌아오면 문 앞 칸에 문을 등지고 선다.",
   mode: "write",
   parameters: {
     type: "object",
@@ -317,21 +317,28 @@ export function linkMapsInDraft(
   const endpointA = resolveTransferEndpoint(projectView, viewA, { ...requestedA, ...(doorA ? { doorAt: doorA } : {}) }, 'A', warnings);
   const endpointB = resolveTransferEndpoint(projectView, viewB, { ...requestedB, ...(doorB ? { doorAt: doorB } : {}) }, 'B', warnings);
   if (!endpointA || !endpointB) throw new ToolError('출입구 인접에 왕복 통행 가능한 빈 착지 칸이 없습니다. 길·문앞을 먼저 비우세요.', { code: 'transfer-no-landing' });
-  const gateA = endpointA.gate, gateB = endpointB.gate;
-  assertDoorExitWidths(projectView, viewA, gateA, viewB, gateB, doorA, doorB);
+  assertDoorExitWidths(projectView, viewA, endpointA.gate, viewB, endpointB.gate, doorA, doorB);
+  // 문이 있으면 이벤트를 문 칸에 묶는다 — 문 앞 칸을 밟는 순간이 아니라 문 쪽으로 걸어 들어갈 때 옮기고,
+  // 그 문으로 나오면 문 앞 칸에 문을 등지고 선다(bindGateToDoor, project/doorEntries.ts).
+  const boundA = bindGateToDoor(projectView, viewA, endpointA.gate, doorA, ownIds);
+  const boundB = bindGateToDoor(projectView, viewB, endpointB.gate, doorB, ownIds);
+  const gateA = boundA?.door ?? endpointA.gate, gateB = boundB?.door ?? endpointB.gate;
   const requestedLandingB = isPointRef(toEntry) ? toEntry : undefined;
   const landingB = requestedLandingB
-    ? assertProvidedLanding(projectView, viewB, requestedLandingB, gateB, "to.entry")
-    : endpointB.landing;
-  const landingA = options.bidirectional ? endpointA.landing : undefined;
+    ? assertProvidedLanding(projectView, viewB, requestedLandingB, endpointB.gate, "to.entry")
+    : boundB?.landing ?? endpointB.landing;
+  const landingA = options.bidirectional ? boundA?.landing ?? endpointA.landing : undefined;
+  const facing = (bound: typeof boundA, landing: Point | undefined) =>
+    bound && landing && landing.x === bound.landing.x && landing.y === bound.landing.y ? { direction: bound.direction } : {};
 
   const outcomeA = upsertEventIntoMap(fromMap, transferGateEvent(eventIdA, gateA, {
     kind: "transfer",
     mapId: toMap.id,
     x: landingB.x,
     y: landingB.y,
+    ...facing(boundB, landingB),
     fade: options.fade,
-  }, kitDoorOpenCommands(draft, fromMap, gateA)));
+  }, kitDoorOpenCommands(draft, fromMap, gateA), boundA?.bump ?? false));
   let changedEvents = outcomeA === "added" ? 1 : 0;
   let eventIdB: string | undefined;
   if (options.bidirectional && landingA) {
@@ -341,8 +348,9 @@ export function linkMapsInDraft(
       mapId: fromMap.id,
       x: landingA.x,
       y: landingA.y,
+      ...facing(boundA, landingA),
       fade: options.fade,
-    }, kitDoorOpenCommands(draft, toMap, gateB)));
+    }, kitDoorOpenCommands(draft, toMap, gateB), boundB?.bump ?? false));
     if (outcomeB === "added") changedEvents += 1;
   }
   // 문 종류(자동문·미닫이·셔터·두 짝 문)를 그림에서 추론해 적고 넓은 문이면 발판을 넓힌다(mapDoorTools) — 외짝 여닫이·키트 문은 그대로.
@@ -491,7 +499,8 @@ function ensureGraphNodesForMaps(
 }
 
 /** opens = 들어가기 전 문 열기(닫힘/열림 키트 문이면 kitDoorOpenCommands — 그 문 그림으로 열고 열린 채 남긴다). */
-function transferGateEvent(id: string, point: Point, target: Command, opens: readonly Command[] = []): GameEvent {
+/** bump = 막힌 문 칸의 같은 층 접촉 이벤트(문 쪽으로 걸어 들어갈 때 부딪혀 발동), 아니면 밟는 발판. */
+function transferGateEvent(id: string, point: Point, target: Command, opens: readonly Command[] = [], bump = false): GameEvent {
   return {
     id,
     x: point.x,
@@ -505,8 +514,8 @@ function transferGateEvent(id: string, point: Point, target: Command, opens: rea
         conditions: [],
         graphic: { transparent: true },
         trigger: { kind: "playerTouch" },
-        priority: "below",
-        overlapForbidden: false,
+        priority: bump ? "same" : "below",
+        overlapForbidden: bump,
         movement: PASSIVE,
         commands: [...opens, target],
       },
