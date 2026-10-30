@@ -82,7 +82,8 @@ import { explainOpenAiCompatRunError, guardedOpenAiCompatFetch, shapeOpenAiCompa
 import { isOpenAiCompatProviderId } from "../../src/ai/openAiCompat.ts";
 import { PLAN_EXECUTION_REKICK, ULTRABRAIN_PLAN_HEADING } from "../../src/ai/piAgent/planExecution.ts";
 import { WHOLE_GAME_REKICKS, unbuiltGameSigns, wantsWholeGame, wholeGameRekickPrompt } from "../../src/ai/v2/shipChecks.ts";
-import { DIALOGUE_POLISH_FAMILIES, DIALOGUE_POLISH_MAX_ROUNDS, DIALOGUE_POLISH_ROUND_TOKENS, DIALOGUE_POLISH_ROUND_TURNS, DIALOGUE_POLISH_TOOLS, baseDialogueTexts, dialoguePolishHookEnabled, dialoguePolishPairs, dialoguePolishReportText, dialoguePolishRewriteGate, dialoguePolishRoundPrompt, dialoguePolishWanted, emptyPolishReport, isRunWrittenText, lintPolishLines, noteDialoguePolishCall, runWrittenDialogueLines, type DialoguePolishReport } from "../../src/ai/piAgent/dialoguePolishHook.ts";
+import { DIALOGUE_POLISH_FAMILIES, DIALOGUE_POLISH_MAX_ROUNDS, DIALOGUE_POLISH_ROUND_TOKENS, DIALOGUE_POLISH_ROUND_TURNS, DIALOGUE_POLISH_TOOLS, baseDialogueTexts, dialoguePolishHookEnabled, dialoguePolishPairs, dialoguePolishReportText, dialoguePolishRewriteGate, dialoguePolishRoundPrompt, dialoguePolishWanted, emptyPolishReport, isRunWrittenText, lintPolishLines, noteDialoguePolishCall, runWrittenDialogueLines, type DialoguePolishPair, type DialoguePolishReport } from "../../src/ai/piAgent/dialoguePolishHook.ts";
+import { knownSpeakerNames, liftDialogueSpeakerLabelsTool, parseSpeakerLabel, type SpeakerLabelOutcome } from "../../src/editor/dialogue/dialogueSpeakerLabel.ts";
 import { resolveDialogueEditLine } from "../../src/editor/tools/dialogueTools.ts";
 import { collectDialogueLines } from "../../src/editor/dialogue/dialogueIndex.ts";
 import { readDialogueDesk } from "../../src/project/dialogueDesk.ts";
@@ -97,6 +98,7 @@ import { buildWorldmap } from "./worldmapBuild.mjs";
 import type { GameMap, Project } from "../../src/project/types.ts";
 import type { ToolContext, ToolResult } from "../../src/editor/tools/types.ts";
 import { runTool } from '../../src/editor/tools/index.ts';
+import { runToolDefinition } from '../../src/editor/tools/toolRunner.ts';
 import { prepareMapBackgroundGeneration } from '../../src/editor/tools/mapBackgroundGenerationTool.ts';
 import { emptyTopRows } from '../../src/project/mapBackgroundVisibility.ts';
 import { isEmptyAssistantReply, messagesHaveImages, stripImages } from '../../src/ai/piAgent/emptyReply.ts';
@@ -1434,14 +1436,27 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     const tokensNow = () => (usage ? usage.input + usage.output : 0);
     const tokens0 = tokensNow();
     const baseTexts = baseDialogueTexts(base);
-    const written = runWrittenDialogueLines(ctx.project, baseTexts);
+    let written = runWrittenDialogueLines(ctx.project, baseTexts);
     if (!dialoguePolishWanted(written.length, wantsWholeGame(request.task))) {
       const report = emptyPolishReport(`새로 쓴 글 ${written.length}줄 — 게임 완성·큰 덩어리가 아니라 건너뜀`, written.length);
       emit({ type: "execution_status", name: "dialogue_polish.skip", ok: true, summary: report.reason!, data: report });
       return report;
     }
     let lint: Awaited<ReturnType<typeof lintPolishLines>>;
-    try { lint = await lintPolishLines(written); }
+    // 글 앞 「이름: 」 라벨은 모델에게 맡기지 않는다 — 실행기가 화자 칸(이름표)으로 옮기고, 화자 칸이 없는 자리면 그대로 두고 세지 않는다
+    // (dialogueSpeakerLabel.ts — 모델은 라벨을 지우거나 「직원이 말한다」 서술로 바꿔 글을 망쳤다). 다른 쓰기 도구와 같은 초안·적용 검증을 지난다.
+    let labelOutcomes: SpeakerLabelOutcome[] = [];
+    const labelIds = written.filter((line) => parseSpeakerLabel(line.text, knownSpeakerNames(ctx.project)) !== undefined).map((line) => line.id);
+    if (labelIds.length) {
+      const lifted = runToolDefinition(ctx, liftDialogueSpeakerLabelsTool, { lineIds: labelIds });
+      labelOutcomes = lifted.ok ? ((lifted.data as { outcomes?: SpeakerLabelOutcome[] } | undefined)?.outcomes ?? []) : [];
+      const moved = labelOutcomes.filter((outcome) => outcome.action === "lifted").length;
+      emit({ type: "execution_status", name: "dialogue_polish.speaker_labels", ok: lifted.ok,
+        summary: lifted.ok ? `글 앞 「이름:」 라벨 ${labelIds.length}줄 — 화자 칸으로 옮김 ${moved}, 화자 칸이 없거나 다른 이름이라 그대로 둠 ${labelOutcomes.length - moved}(세지 않음)` : `라벨 옮기기 실패: ${lifted.summary}`,
+        data: { outcomes: labelOutcomes } });
+      written = runWrittenDialogueLines(ctx.project, baseTexts);
+    }
+    try { lint = await lintPolishLines(written, knownSpeakerNames(ctx.project)); }
     catch (error) {
       const report = emptyPolishReport(`윤문 린터를 불러오지 못해 건너뜀(${error instanceof Error ? error.message.slice(0, 160) : String(error)})`, written.length, Date.now() - t0);
       emit({ type: "execution_status", name: "dialogue_polish", ok: false, summary: report.reason!, data: report });
@@ -1515,7 +1530,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
         const overBudget = polishBudget.over;
         polishBudget = undefined;
         tools.splice(0, tools.length, ...saved);
-        lint = await lintPolishLines(runWrittenDialogueLines(ctx.project, baseTexts));
+        lint = await lintPolishLines(runWrittenDialogueLines(ctx.project, baseTexts), knownSpeakerNames(ctx.project));
         emit({ type: "execution_status", name: "dialogue_polish.relint", ok: lint.target === 0, summary: `윤문 ${round}차례 뒤 다시 린트(실행기): 고칠 적중 ${previous.target} → ${lint.target}건` });
         if (overBudget) { stopReason = `윤문 차례 예산(${DIALOGUE_POLISH_ROUND_TURNS}차례·${DIALOGUE_POLISH_ROUND_TOKENS}토큰)에 닿아 멈춤.`; break; }
         if (lint.target >= previous.target) { stopReason = "앞 차례보다 줄지 않아 더 돌지 않음."; break; }
@@ -1525,11 +1540,14 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       polishBudget = undefined;
     }
     const proposals = readDialogueDesk(ctx.project).proposals.filter((proposal) => !proposalsAtStart.has(proposal.id));
-    const pairs = dialoguePolishPairs(linesAtStart, ctx.project, proposals);
+    const labelPairs: DialoguePolishPair[] = labelOutcomes.flatMap((outcome) => outcome.action === "lifted"
+      ? [{ id: outcome.id, speaker: outcome.name, nameplate: outcome.name, where: linesAtStart.get(outcome.id)?.groupLabel ?? "", before: outcome.before, after: outcome.after, how: "label" as const }] : []);
+    const pairs = [...labelPairs, ...dialoguePolishPairs(linesAtStart, ctx.project, proposals)];
     const report: DialoguePolishReport = {
       ran: true, ...(first.target === 0 ? { reason: "고칠 적중이 없어 윤문 차례를 돌리지 않음." } : stopReason ? { reason: stopReason } : {}),
       newLines: written.length, before: first.target, after: lint.target, beforeByFamily: first.byFamily, afterByFamily: lint.byFamily,
       beforeAll: first.all, afterAll: lint.all, rounds, applied: pairs.filter((pair) => pair.how === "apply").length, proposed: proposals.length,
+      labelsLifted: labelPairs.length, labelsKept: labelOutcomes.length - labelPairs.length,
       pairs: pairs.slice(0, 80), ms: Date.now() - t0, tokens: tokensNow() - tokens0,
     };
     emit({ type: "execution_status", name: "dialogue_polish", ok: report.after === 0, summary: dialoguePolishReportText(report), data: report });

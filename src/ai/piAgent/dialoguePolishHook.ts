@@ -15,6 +15,7 @@
 
 import { collectDialogueLines, type DialogueLine } from "@/editor/dialogue/dialogueIndex";
 import { flattenDialogueText, lintDialogueTexts, type DialoguePolishHit } from "@/editor/dialogue/dialoguePolishLint";
+import { isSpeakerLabelHit } from "@/editor/dialogue/dialogueSpeakerLabel";
 import { buildStory, lineRefLabel } from "@/editor/dialogue/storyScript";
 import { speakerVoiceNote } from "@/project/dialogueDesk";
 import type { Project } from "@/project/types";
@@ -48,8 +49,10 @@ export interface DialoguePolishPair {
   readonly where: string;
   readonly before: string;
   readonly after: string;
-  /** apply = 이번 실행이 쓴 줄을 바로 고침, propose = 사람이 쓴 줄이라 「대사」 탭 제안. */
-  readonly how: "apply" | "propose";
+  /** apply = 이번 실행이 쓴 줄을 바로 고침, propose = 사람이 쓴 줄이라 「대사」 탭 제안, label = 실행기가 「이름: 」 라벨을 화자 칸으로 옮김. */
+  readonly how: "apply" | "propose" | "label";
+  /** label 일 때 화자 칸에 들어간 이름. */
+  readonly nameplate?: string;
 }
 
 export interface DialoguePolishReport {
@@ -68,6 +71,9 @@ export interface DialoguePolishReport {
   readonly rounds: number;
   readonly applied: number;
   readonly proposed: number;
+  /** 실행기가 「이름: 」 라벨을 화자 칸으로 옮긴 줄 / 화자 칸이 없어 그대로 둔 라벨 줄(세지 않음). */
+  readonly labelsLifted?: number;
+  readonly labelsKept?: number;
   readonly pairs: readonly DialoguePolishPair[];
   readonly ms: number;
   readonly tokens?: number;
@@ -106,8 +112,13 @@ export function isRunWrittenText(text: string, baseTexts: ReadonlySet<string>): 
   return !baseTexts.has(norm(text));
 }
 
-export async function lintPolishLines(lines: readonly DialogueLine[]): Promise<PolishLint> {
-  const hits = await lintDialogueTexts(lines.map((line) => line.text));
+/**
+ * known 을 주면 글 맨 앞 「이름: 」 라벨의 콜론 적중은 세지 않는다 — 라벨은 실행기가 화자 칸으로 옮기고(dialogueSpeakerLabel.ts),
+ * 화자 칸이 없는 자리의 라벨은 그대로 둔다. 모델에게 «고치라» 고 넘기면 지우거나 3인칭 서술로 바꿔 글이 나빠졌다(2026-10-30 실측).
+ */
+export async function lintPolishLines(lines: readonly DialogueLine[], known?: ReadonlySet<string>): Promise<PolishLint> {
+  const raw = await lintDialogueTexts(lines.map((line) => line.text));
+  const hits = known ? raw.map((lineHits, index) => lineHits.filter((hit) => !isSpeakerLabelHit(lines[index]!.text, hit.pid, known))) : raw;
   const target = new Set(DIALOGUE_POLISH_FAMILIES);
   const byFamily: Record<string, number> = {};
   let targetCount = 0, all = 0;
@@ -162,6 +173,7 @@ export function dialoguePolishRoundPrompt(project: Project, lint: PolishLint, ro
     "3. rewrite_dialogue({edits:[{id, hash, text, reason}], mode:'apply'}) 로 아래 줄만 고친다. 이번 실행이 쓴 줄은 실행기가 바로 반영하고, 사람이 쓴 줄을 건드리면 실행기가 「대사」 탭 제안으로 돌린다.",
     "   지킬 것: 각 화자의 말투(아래 말투 메모·이미 쓴 어미), 대사 안 줄 수(\\n 개수), 제어 코드·자리표시자(\\C[n] \\N[n] {name} [흔들]…[/])는 바이트 그대로, 숫자·단서·고유명사·화자 이름은 그대로. 고칠 필요가 없는 줄은 넣지 않는다.",
     "   말투가 그 어미를 요구해 남기는 적중은 reason 이 아니라 보고에 «남김: 이유» 로 적는다.",
+    "   대사는 대사로 둔다: 3인칭 서술·지문(「직원이 말한다. …」「~라고 외쳤다」「~라고 적혀 있다」)로 바꾸지 않는다. 글 맨 앞의 「이름: 」 라벨은 실행기가 이미 화자 칸으로 옮겼다 — 남은 라벨은 지우지도 풀어 쓰지도 않는다.",
     "4. lint_dialogue({lineIds:[…]}) 로 고친 줄을 다시 검사한다. 끝나면 두세 줄로 보고한다(고친 줄 수, 남긴 적중과 이유). 실행기가 전/후 적중 수를 따로 센다 — 숫자를 지어내지 않는다.",
     ...(voices.length ? ["화자 말투 메모:", ...voices] : []),
     `고칠 줄(${rows.length}${lint.rows.length > rows.length ? ` / 적중 줄 ${lint.rows.length} 중 앞쪽` : ""}):`,
@@ -175,8 +187,9 @@ export function dialoguePolishReportText(report: DialoguePolishReport): string {
   const left = report.after
     ? ` 남은 적중 ${report.after}건(${familySummary(report.afterByFamily)}) — 말투 때문에 남긴 것이면 위 보고의 이유를 보세요.`
     : "";
+  const labels = report.labelsLifted ? ` 글 앞 「이름:」 라벨 ${report.labelsLifted}줄은 화자 칸(이름표)으로 옮겼다.` : "";
   return `대사 윤문(완성 뒤 자동 단계, 실행기가 센 숫자): 새로 쓴 글 ${report.newLines}줄에서 고칠 규칙 적중 ${report.before}건 → ${report.after}건`
-    + ` (${report.rounds}차례, 바로 고친 줄 ${report.applied} · 「대사」 탭 제안 ${report.proposed}).${left}${report.reason ? ` ${report.reason}` : ""}`;
+    + ` (${report.rounds}차례, 바로 고친 줄 ${report.applied} · 「대사」 탭 제안 ${report.proposed}).${labels}${left}${report.reason ? ` ${report.reason}` : ""}`;
 }
 
 export function emptyPolishReport(reason: string, newLines = 0, ms = 0): DialoguePolishReport {
