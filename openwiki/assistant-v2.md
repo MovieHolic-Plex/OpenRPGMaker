@@ -314,6 +314,22 @@ v1 의 `script_cutscene` 비트로 옮긴다(`events.ts`).
 - 빌더 경고: `builders/dungeon.ts` 가 `author_dungeon` 결과의 `diff.warnings` 를 읽지 않아 「고침:」 줄이 모델에게 한 번도 가지 않았다(지문의 고침 수 늘 0) — 고쳤다.
 - 시험: `bun scripts/qa/assistant-v2/dungeonDesign.mts <out> [theme…]`(예시 넷 + 설계 없음, 모델 없음). 실조수 판 검사 `bun scripts/qa/assistant-v2/dungeonLiveCheck.mts <판>…`(막힘·자동 플레이·던전 맵 도달(시작/이동 칸에서 이벤트 모두 닿는가)·열린 바닥 한가운데 외톨이 막힌 칸 수, `DLC_NOPLAY=1` 이면 자동 플레이 생략). 실조수 `suite/dungeon-live.sh <arm> <prompt> <batch>`(같은 요청 same1~3 + demon·crystal·goblin·volcano·forest), 지문은 `suite/dungeon-design-fp.py <batch> <out>` — mapvqa 렌더·거의 같음 규칙 + 구조 사인(방 수·방 종류·입구 쪽, 방 이름과 무관해서 mapvqa 「방 구성」 표지가 모델이 지은 이름으로 다양해 보이는 착시를 막는다). 결과 페이지 `~/claude-viz/dungeon-design-1029.html`.
 
+## 던전 층·코드 지형 마을은 칸 배치(bbox)로 — 모델이 칸을 쓰고 함수는 검사·실행만 (2026-10-31)
+
+실험(브랜치 agent/bbox-dungeon·agent/bbox-village·agent/bbox-better)에서 모델이 칸 단위 배치 JSON 을 쓰고 함수가 검사·실행만 한 판이 Opus 판정에서 v2 빌더를 이겼다(던전 10승 2무 0패, 마을 8승 6무 2패, 실내 자기 비평 2바퀴 0.61→0.71). 그것을 v2 경로로 옮겼다. `OPRN_V2_BBOX_PLACES=0` 이면 꺼지고 옛 경로만 탄다(측정 대조군).
+
+- **던전(type dungeon)**: 설계·배치 없이 온 `make_place` 는 장소마다 한 번 영어 카드로 되돌린다(`placeLayout.dungeonLayoutCard`) — 칩셋 메타에서 뽑은 조각 목록(`bboxFloor.bboxDungeonCatalog`: 던전 테마 role prop·벽걸이/바닥/무늬, 이름 = 키트 id 의 낱말)·견본 그림(사본 맵에 조각을 실제 벽·바닥 위에 찍어 1배 렌더, 목록에 sheet 좌표)·격자 규칙·형식. 모델이 `spec.dungeonLayout` 을 주면 `BBOX_DUNGEON_BUILDER`(id dungeon, 빌더 목록 맨 앞)가 받는다. 동굴(type cave)은 옛 경로.
+  - 깔기: 쓰기 도구 `lay_dungeon_layout`(`editor/tools/bboxPlaceTools.ts`) → `layBboxDungeon`(검사) → `composeExactFloor`(compose.ts `spec.exact` — 배치·자리·장식 단계를 건너뛰고 칸 그대로 바닥·벽·물/용암/구덩이). 방 이름표(dungeon-room·bbox-room)·입구(gate:/land: 태그)·잠긴 문(쇠창살 이벤트)·배치 선언(이름표 태그 `bbox-layout`, note 에 조각·보스·적·상자 JSON).
+  - 적·보스·상자: 모델이 적은 칸 그대로 `place_field_enemy`·`place_chest`. 적 그룹은 옛 빌더와 같은 고르기(`planTroops`·`themedTroops`). 보스 칸을 안 적으면 보스방 가운데에 가장 가까운 빈 칸. 회복 길(`ensureHealingAccess`·`ensureBossRest`)은 옛 경로와 같다.
+  - 다시 깔기(edit_place)는 같은 맵 자리에서: 바깥에서 들어오는 문은 새 입구 착지로, 이 층의 바깥 문은 새 입구 계단 칸으로, 손으로 붙인 이벤트는 가까운 걷는 칸으로 옮긴다(`carryEvents`).
+- **마을(코드 지형을 쓰는 마을)**: 첫 `make_place` 는 코드가 땅(높이맵·강·단)을 만들고 영어 카드를 준다(`villageLayoutCard`) — 지형 그림(좌표 눈금)·한 칸 한 글자 격자·요약(단·물·평지 덩이·다리 자리)·조각 목록(`bboxVillage.bboxVillageCatalog`: role building 중 «검수 통과»·원본 집, 아래 줄 문 칸만 · 마을 묶음 소품 · bd-tree 나무)·견본 그림. 모델이 `spec.villageLayout` 을 주면 `BBOX_VILLAGE_BUILDER` 가 같은 땅(세션에 둔 씨앗·크기) 위에 `lay_village_layout` 으로 칠한다. hints.layout(옛 자리 고르기)을 주면 옛 빌더.
+  - 검사(`checkBboxVillage`, 실험 lay.mts 이식): 칸 하나에 주인 하나(길끼리·광장 위 소품만 겹침), 한 단 위에만, 물 위엔 배·잔교만, 계단은 남북·낮은 단에서 절벽에 붙여 높이 차+1, 길·광장·계단이 실제 걷기 규칙으로 한 덩이 + 마른 맵 끝 하나, 집 문앞 칸은 같은 단의 이어진 길, 울타리 문 밖은 길.
+- **거절**: 검사 문제는 칸 좌표가 붙은 영어 목록 + Fixed call 로 돌려준다(짓지 않음). 장소마다 `LAYOUT_REPAIRS`(2)번까지 — 넘으면 배치를 버리고 옛 빌더로 짓고 경고에 적는다.
+- **자기 비평 두 바퀴**(`attachLayoutCritique`): 지은 결과(1배 그림·기계 검사·독립 비평) 뒤에 배치 상자 그림(8px/칸, 방 색 = 목적, 문·상자·적·보스 / 마을은 지형 위 길·집·밭·숲)과 영어 비평 지시를 붙인다. 모델은 `edit_place {patch:{mapId, set:{dungeonLayout|villageLayout: 전체}}}` 로 다시 깔거나 `layoutReview` 로 «고칠 것 없음»을 적는다 — 둘 다 한 바퀴. 던전 방 그래프가 일자(고리·곁가지 0)면 비평 글이 짚는다.
+- **할 일 고리**: `v2GateProblems` 가 `placeLayoutProblems` 를 더한다 — 열쇠 `place:<맵>:layout-{items,connected,boss_gate,doors_roads,critique}`(배치 항목이 맵에 있나·입구에서 방에 걸어 닿나·보스방이 앞방을 거쳐야만 닿나·집 문앞이 마을 입구에서 닿나·비평 두 바퀴). 지금 맵에서 다시 재므로 뒤의 편집이 길을 막으면 다시 열린다.
+- **확장 자리**(다음 실험이 끼울 곳): `bboxFloor.BBOX_ROOM_SHAPES`(방 모양 → 칸 목록; 지금 rects) · `BBOX_ROOM_CHECKS`(방마다 검사) · `bboxVillage.BBOX_VILLAGE_CLIMBS`(단 오르기 종류; 지금 stairs). 검사·그리기는 칸 집합만 보므로 새 모양은 함수 하나로 들어온다.
+- 진행 상황은 `execution_status` `v2.bbox`(data: mapId·kind·graph{rooms,links,loops,branches,longestChain}·critiqueRounds·rejects)로 남는다 — 측정이 읽는다.
+
 ## 숲길도 조수가 설계한다 (2026-10-30 씬 벤치 «opus 숲길 3판이 거의 같은 맵»)
 
 씬 「숲길 탐색 구간」(버들마을↔마왕의 동굴, 갈림길·상자·약한 몬스터)은 v2 숲·들판 낱말 경로(`game.ts` words → `author_forest_route`, `editor/tools/forestRouteTool.ts`)를 탄다 — 던전 빌더가 아니다.
