@@ -1,33 +1,14 @@
-## 큰 타일셋 이식 아틀라스는 워커에서 굽고 GPU 에 띠씩 올린다 (2026-10-30)
+## 이식 아틀라스 워커 굽기(#3963)는 되돌렸다 — 텍스처 등록만 `addImage` (2026-10-30)
 
-버들항(`beodeul_city`, 2048×4992·이식 4,133칸)처럼 이식(`tileGrafts`)이 큰 타일셋을 처음 쓰는 순간, 예전에는 메인 스레드가
-캔버스 합성(0.2~0.4초)과 `textures.addCanvas`(캔버스 전체 `getImageData` 읽기 + 올리기, 0.3~0.6초)를 한 번에 했다.
-장소 이동이면 검은 화면이 그만큼 길었고(폴른 2막 B6 패배 → 요새, 소프트웨어 GL 실측 0.75~0.88초), 첫 맵이면 `create` 가 멈춰 있었다.
+#3963 은 버들항처럼 큰 이식 타일셋을 워커(OffscreenCanvas)에서 굽고 GPU 에 띠씩 올렸다. 머지 뒤 폴른 스타 체크포인트에서
+**타일이 하나도 안 그려졌다**(act2-b5-dogs 숲 맵이 캐릭터만 검은 바탕에, 요새 감방도 같음). 띠 올리기(`addGLTexture`)로 등록한 텍스처는 비어 있었고,
+그보다 앞선 판(워커 비트맵을 `addImage`)은 엉뚱한 칸 그림이 들어갔다. 워커는 그림판을 **파일 주소로 다시 받아** 합성했는데,
+Phaser 에 실린 텍스처와 파일이 같다는 가정이 맞는지 확인하지 않았다. 측정 때 검은 화면 길이만 재고 착지 화면을 눈으로 보지 않아 놓쳤다.
 
-- **계획과 그리기를 나눴다** — `tileGrafts.ts` `planGraftedTilesetSteps`(32칸마다 yield 하는 생성기)가 칸 좌표 `Int32Array` 계획을 세우고,
-  메인 스레드(`drawGraftedTilesetPlan`)와 워커(`tilesetBake.worker.ts`)가 같은 순서로 그린다(베이스 → 칸마다 지우고 그리기). 둘을 바꿀 때는 같이 바꾼다.
-- **워커 합성** (`tilesetBakeOffthread.ts`): 소스 그림은 **주소**로 넘겨 워커가 받고 푼다. Phaser 로더는 그림을 blob 으로 받고 주소를 곧 버리므로
-  `HTMLImageElement.src` 는 못 쓴다 — 주소는 `tilesetImage.ts` `textureFileUrl`(로더와 같은 `withInlineAsset`/업로드 주소). 투명색 키 칩셋은
-  처리본이 파일과 달라 주소로 넘기지 않는다. 메인 스레드에서 큰 그림을 `createImageBitmap` 하면 그것만으로 0.1~0.2초 막았다.
-  워커·OffscreenCanvas 가 없거나 실패하면 예전처럼 메인 스레드에서 굽는다(`ensureTilesetTexture`).
-- **GPU 띠 올리기** (`tilesetGpuStaging.ts`): 미리 굽기는 화소 바이트도 받아 빈 GL 텍스처에 `texSubImage2D` 로 한 프레임에 상한만큼 올린다.
-  Phaser 4 는 그림을 위아래 뒤집어 올리고 UV 도 그렇게 계산한다(`Frame.updateUVs` 의 `1 - y/h`) — 띠도 `flipY` 로, 이미지 y 줄을 텍스처 `높이-y-띠` 줄에 놓는다.
-  다 올리면 `addGLTexture` 로 등록하고 원본 그림(`getSourceImage`)은 비트맵으로 둔다(그림자 띠·햇빛·문 상자가 `drawImage` 로 칸 화소를 읽는다).
-  문맥 복구용으로 `wrapper.pixels` 에도 비트맵을 건다. GL 텍스처는 그 게임 것이라 다른 게임(편집기 플레이 재시작)에는 비트맵만 넘긴다.
-- **텍스처 올리기는 `addImage`** — `addCanvas` 의 `CanvasTexture` 는 캔버스 전체를 `getImageData` 로 읽는다. 아틀라스는 그 사본을 안 쓴다.
-  이 때문에 원본이 캔버스가 아니어도 되도록 `playSceneMapSkirt.ts` 의 `textures.getPixel`(ImageBitmap 이면 null)을 프레임 한 번 그려 읽는 `pixelAt` 으로 바꿨다.
-- **언제 굽나** (`src/player/tilesetPrewarm.ts`):
-  - 맵에 들어서면 다음 프레임부터 이웃 맵(이벤트 안 `kind: "transfer"` 를 모양 가리지 않고 훑는다 — 전투 패배 갈래 포함)의 타일셋을
-    프레임 사이 조각(상한 4ms, `requestAnimationFrame` 뒤 `setTimeout 0`)으로 굽는다. `requestIdleCallback` 은 게임 루프 중 거의 오지 않아(헤드리스: 2초 시한마다) 안 쓴다.
-  - 장소 이동은 페이드아웃과 함께 도착 맵 타일셋을 서둘러 굽고(`prepareMapTilesets`, 상한 4초) 착지 전에 기다린다. 미리 다 올렸으면 착지는 등록만 한다.
-  - 첫 맵은 `PlayScene.preload` 가 로더에 「기다림」 파일(`holdLoaderForMapTileset`)을 넣는다. 그림 파일 주소를 다 알면 그림판이 실리기 전에
-    워커가 곧바로 받아 굽고(`planTilesetTextureBakeStepsFromKeys` — 계획은 이식 기하만 쓴다), 다른 파일이 다 끝나면 남은 띠를 서둘러 올린다. 상한 8초.
-- **측정** (폴른 2막 체크포인트 `act2-b6-lose`·`act2-b4-caught`, 미리 굽지 않고 체크포인트에서 바로 시작, 소프트웨어 GL·영상 녹화 부하): 결과 페이지 http://mdc-server:18301/retry-black-gap.html 2절.
-  B6 패배 → 요새 이동의 「페이드아웃 끝 → 페이드인 시작」 748~1,022 → 91~162ms, 영상 검은 구간 1,000~1,600 → 320~440ms.
-  첫 맵(B4 정원) `create`→첫 그림 2,094~3,549 → 965~2,188ms, 로딩 시작→첫 그림 4,411~8,774 → 3,220~6,885ms(부하로 흔들림이 크다. 워커가 다른 에셋보다 늦으면 0.5초까지만 기다리고 create 가 굽는다 — `BOOT_BAKE_HOLD_AFTER_LOAD_MS`).
-  미리 굽기 동안 메인 스레드 조각은 122개 중 p50 4.2ms·p90 9.7ms·최대 120.7ms(부하 80~110 에서 스레드가 밀린 한 번), 미리 굽기 창 안 프레임 p95 317ms 로 창 밖(350ms)보다 나쁘지 않았다. 이 환경은 프레임 자체가 130~300ms 라 long frame 기준(50ms)으로는 가를 수 없어, 미리 굽기 창과 나머지의 프레임 시간 분포를 비교했다.
-- **안 고른 방향: 굽기 결과 캐시·데모 굽기 단계 사전 생성.** 합성 결과가 40MB 화소라 PNG 로 두면 내려받기·풀기·올리기가 그대로 남고(올리기가 남은 큰 몫이었다),
-  이식 목록 해시가 바뀔 때마다 무효다. 합성은 이미 워커로 빠져 메인 스레드 몫이 0이라 캐시가 줄일 것이 없었다.
+- 지금: 굽기는 예전처럼 메인 스레드 `bakeTilesetTextureCanvas`, 등록만 `addCanvas` → `addImage`(캔버스 전체 `getImageData` 읽기 제거, 소프트웨어 GL 에서 0.3~0.9초 줄어듦).
+  원본은 캔버스 그대로라 `getPixel`·`drawImage` 읽기는 같다. `playSceneMapSkirt.ts` 는 칸 화소를 프레임 한 번 그려 읽는 `pixelAt` 을 쓴다.
+- 다시 시도하려면: 워커에는 **실린 텍스처에서 만든 비트맵**만 넘기고(파일 주소 금지), 착지 화면을 원본 경로와 픽셀 비교하는 검사를 먼저 둔다.
+  검은 화면 길이만으로 합격시키지 않는다.
 
 ## 목표 안내창 자리·한국어 줄바꿈·숫자 입력 (2026-10-28, 장부 hud.json)
 
@@ -1044,6 +1025,7 @@ Do not use matching map IDs or a canvas-export PNG alone as evidence for Phaser 
 - **반복하지 않는 축은 카메라를 따라가지 않는다**(`playSceneMapBackground.placeMapBackgroundLayer`): `cameraFollow` 는 두 축에 같이 걸리는데,
   그림 한 장짜리 축(지평선 loopY:false)이 따라가면 위로 걸을 때 그림이 내려가 위쪽에 검은 띠가 생기고, 실루엣 층은 맵 바닥선을 떠나 아래 채움 줄이 드러났다
   (출하 플레이어 실측). 이제 깊이는 반복하는 축에만 적용 — 지평선은 가로 시차만, 세로는 화면 고정. 편집기 탭 미리보기는 원래 가로로만 흔든다.
+- **세로 한 장 층은 카메라 세로 이동을 따라간다 — `pinY` (2026-10-30)** (`playSceneMapBackground` extra 층 `loopY:false` → `pinY:true`): 화면 고정이던 지평선 띠가 대사 카메라 들림(`syncDialogueCameraLift`)·위아래 걷기에서 맵과 따로 놀아 옥상 난간 위 하늘 한가운데에 거리 띠가 떠 보였다(첫사랑 옥상). 이제 세로는 맵과 1:1 로 붙는다(가로 시차는 그대로). 층 `offsetY`(논리 px, + = 아래, ±2000, `normalizeMapBackgroundOffset`)로 지평선을 난간 높이에 앉힌다.
 - **남은 한계:** `show_map_region` 은 배경을 그리지 못해(설계상 거부) 조수가 배경을 눈으로 검수하지 못한다 — 생성 도구는 그림을 첨부해 대신한다.
   Pi 경로는 되묻기를 건너뛰므로(`executionRoute.ts clarifyBypassed`) 「배경 좀 예쁘게」 는 묻지 않고 해석한다. 칸을 비운 가장자리는 여전히 각지다. 견본 바다·구름 바다는 흐릿한 얼룩 질감이고 노을 견본의 해는 7줄 바닥선에 반쯤 잘린다(견본 그림 문제, 이번 변경 밖). 다리 상판 타일(버들항 3640)은 자기 그림에 물이 있어 다리 밑으로 배경이 비치지 않는다.
 
