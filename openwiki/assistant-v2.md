@@ -373,6 +373,7 @@ salt 를 찾아(무작위 salt 를 고정해 몇 번 지어 본다) 같은 마�
   `{kind:"room_zones", map, min?}` ✓ 조건: 겹침(작은 쪽 60%↑)·같은 초점을 하나로 센 구역이 min(기본 2) 이상 · 구역마다 초점 기물이 놓였고 둘레 칸에 걸어 닿음 · 구역마다 갈 이유(구역 상자에서 2칸 안, 가장 가까운 구역 하나에만 셈: 걸어 닿는 사람·살아 있는 조사(대사·선택지·아이템·증거·전투)·이동, 자동·병렬 실행 제외) · 반복 없음(앉는 기물 뺀 같은 기물 5개↑이 35% 초과, 같은 구성 묶음 3개↑이면 ✗).
   todo 동사 설명이 실내 방을 지으면 place 다음에 room_zones 를 달라고 이르고(도구 계약), 관문 ③b(`loop/roomZones.ts syncRoomZoneItems`, 끝맺음 자동 짓기 뒤·④ 앞)가 이번 턴에 바뀐 모델 설계 실내 맵 가운데 room_zones 항목이 없는 맵마다 항목(출처 gate, 열쇠 `zones:<mapId>`, refs=그 맵, min 은 작은 방 요청·위층이면 1)을 덧붙이고 바로 확인해 ✓ 면 함수가 닫는다.
   make_place·edit_place·add_event·add_people 결과에 같은 판정 줄 `zones: ["room_zones ✓|✗ …"]`(구역 상자 좌표·걸린 것)이 실린다. 함수는 가구를 고르거나 놓지 않는다(검사·보고만). 손 시험 `bun scripts/qa/assistant-v2/roomZonesProbe.mts <스냅숏> [out]`.
+  측정(2026-10-30 VM, inn·study·shop·jail × terra 3 + opus 1, 전 e22463a47d / 후 43cbfed0b3, gpt-6.1-sol 쌍 비교, 결과 `suite/rooms/runs-omo/results.json`·`~/claude-viz/interior-omo-1030.html`): 기준 방 승 **전 0/52 · 후 0/52**(무 4 → 2). 이벤트는 판당 0.6 → 3.4 로 늘었으나 방은 9×9 안팎 한 칸 상자 그대로(넓이 102 → 92, 가구 칸 25 → 18) — 판정자는 매번 계단·곁방·랜드마크가 있는 여러 칸 기준 방을 골랐다. 구역 기록·검사만으로는 승률이 움직이지 않는다. 다음 손잡이는 방 수·크기(여러 방·계단·곁방)와 초점 기물의 크기다; bare-floor 기준이 방을 줄이게 밀어 구역이 한 상자로 겹치는 충돌도 있다.
 - 재생 표: `bun scripts/qa/assistant-v2/todoChecksReplay.mts` — 씬 벤치 판(성공·실패)에 손으로 적은 항목을 돌려 기대와 대조. 판 저장본이 지워진 판은 `sceneToolReplay.mts`(+`finishReplay.mts --snapshot`)로 재구성한 것을 쓰고, 재구성 차이는 표 메모에 적는다. 기계 검사로 못 보는 것(입구 그림과 이동 칸 자리 어긋남, 판정자가 선택지를 못 본 일)은 VQA·판정자 몫이다.
 
 ## 켜는 법
