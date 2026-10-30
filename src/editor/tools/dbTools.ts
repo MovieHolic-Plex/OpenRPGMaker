@@ -614,7 +614,7 @@ const itemRecordSchema = objectSchema({
   captureProfile: captureProfileSchema,
   careProfile: careProfileSchema,
   heldEffect: heldEffectSchema,
-  pocket: { type: "string", enum: ["items", "balls", "machines", "held", "key"], description: "몬스터 게임 가방 포켓을 직접 정한다(도구·볼·기술머신·지닌 도구·중요한 물건). 생략하면 captureProfile→볼, learnedSkillId→기술머신, heldEffect→지닌 도구, 쓸 곳 없는 아이템→중요한 물건, 나머지→도구로 자동 분류된다. 진화의 돌은 아이템을 만들고 종의 evolutions[].requires.itemId 로 가리키기만 하면 필드 메뉴에서 바로 쓴다(별도 필드 없음)" },
+  pocket: { type: "string", enum: ["items", "balls", "machines", "held", "key"], description: "가방 칸. key = 「중요한 물건」(모든 장르): 추리 증거·편지·열쇠 같은 이야기 물건은 key 로 둔다 — 일반 장르 가방에 「중요한 물건」 분류가 생기고, 정답이 모두 중요한 물건이고 후보(itemIds)를 생략한 presentItem 은 소지한 중요한 물건만 띄운다(occasion never·가격 0 이면 생략해도 중요한 물건). 몬스터 게임 가방 포켓을 직접 정한다(도구·볼·기술머신·지닌 도구·중요한 물건). 생략하면 captureProfile→볼, learnedSkillId→기술머신, heldEffect→지닌 도구, 쓸 곳 없는 아이템→중요한 물건, 나머지→도구로 자동 분류된다. 진화의 돌은 아이템을 만들고 종의 evolutions[].requires.itemId 로 가리키기만 하면 필드 메뉴에서 바로 쓴다(별도 필드 없음)" },
   repelSteps: integerSchema("벌레퇴치류: 쓰면 이 걸음 수(1~9999) 동안 야생 조우가 나오지 않는다. 필드 메뉴(가방)에서 쓰고 occasion 은 field, scope 는 none. 쓸 때 문장이 뜨고 걸음이 다하면 「효과가 사라졌다」 문장이 뜬다. 몬스터 수집(포켓몬류) 게임용"),
   repelBelowLead: booleanSchema("repelSteps 와 함께: true 면 파티 선두 몬스터보다 레벨이 낮은 야생만 막는다(포켓몬식). 생략 = 전부 막는다"),
   escapeTo: { type: "string", enum: ["entrance"], description: "탈출 로프류: entrance = 던전·동굴(맵 mapRole dungeon)에서 쓰면 마지막으로 들어온 입구 밖(없으면 시작 지점)으로 나간다. occasion 은 field, scope 는 none. 던전 밖에서는 「효과가 없다」, 전투 중에는 못 쓴다" },

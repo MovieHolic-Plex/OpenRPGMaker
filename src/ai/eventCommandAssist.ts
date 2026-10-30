@@ -345,7 +345,7 @@ export function eventCommandCatalogSections(
       '- runControl action variants: start, advance, end, setFlag, resetRoom. 필드: start(seed?,runId?,startFloor?), advance(amount?), end(result), setFlag(flag,value), resetRoom(roomId?).',
       '- run condition queries: active, floor, flag, result. 필드: active(value?), floor(op,value), flag(flag,value), result(result).',
       "- choices: options[].branch, cancelBranch에 커맨드 배열 중첩 가능.",
-      "- presentItem(증거 제시·아이템 보여주기): options[{itemId,branch}] 정답 분기, otherwiseBranch 틀린 것, cancelBranch 안 냄. itemIds 로 후보 제한, consume:true 면 정답 1개 소모.",
+      "- presentItem(증거 제시·아이템 보여주기): options[{itemId,branch}] 정답 분기, otherwiseBranch 틀린 것, cancelBranch 안 냄. itemIds 로 후보 제한(생략 + 정답이 모두 중요한 물건이면 소지한 중요한 물건만 — 증거 아이템은 upsert_item pocket:key), consume:true 면 정답 1개 소모.",
       "- loop: body에 커맨드 배열 중첩 가능. breakLoop로 탈출.",
       "- 셀프 스위치 분기는 fork의 selfSwitch 조건을 사용한다(페이지 분리는 이번 범위 밖).",
     ].join("\n")
