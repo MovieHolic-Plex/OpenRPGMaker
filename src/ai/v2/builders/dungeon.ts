@@ -13,6 +13,7 @@ import { terrainReachability } from "@/project/terrainReachability";
 import { cloneProjectSharingSharedDictionaries } from "@/project/projectClone";
 import type { EnemyRecord, GameMap, Project } from "@/project/types";
 import { createBuildRun } from "../buildRun";
+import { carryFloorEvents, retargetIncoming } from "./dungeonRebuildCarry";
 import type { BuildRun, BuilderCall, PlaceBuildResult, PlaceBuilder, PlaceRecord, PlaceSpec } from "../types";
 
 /** v2 계획 모델에게 주는 유일한 던전 지식(≤900자). */
@@ -489,6 +490,8 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
   // 그 이동 좌표가 맵 밖이 되고 커밋이 거부된다(2026-10-25 G5). 1층으로 들어오는 바깥 문이 한 맵에서 하나면 그 문을 지우고
   // 같은 칸에 다시 잇는다(author_dungeon entrance) — 짓기가 문을 잇고 나면 던전을 못 고치던 것(G26)을 푼다. 더 깊은 층으로 들어오는 문은 그대로 거절.
   let relink: { readonly fromMapId: string; readonly x: number; readonly y: number; readonly eventIds: readonly string[] } | undefined;
+  // 남겨 두고 다시 가리킬 바깥 문(다시 잇는 문 빼고) — 「맵 id:이벤트 id」.
+  let incomingKeep = new Set<string>();
   if (previous) {
     const floorList = [...(prev?.floors ?? previous.result.mapIds)];
     const floors = new Set<string>(floorList);
@@ -503,17 +506,21 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
         }
       }
     }
-    const outside = new Set(linked.map((l) => l.mapId));
-    const deep = linked.filter((l) => l.floor !== floorList[0]);
-    if (linked.length && (deep.length || outside.size > 1)) {
-      return { ok: false, mapIds: [...floors], summary: `던전 다시 짓기 안 함: 바깥에서 이 던전으로 들어오는 문(${linked.slice(0, 3).map((l) => `${l.mapName}의 ${l.event.name ?? l.event.id}`).join(", ")})이 ${deep.length ? "아래층으로도" : "여러 맵에서"} 이어져 있다 — 다시 지으면 그 문이 맵 밖을 가리켜 거부된다. 같은 edit_place 를 되풀이하지 말고, 남은 문제는 덧그리기(stamp_object·fill_region)·move_event 로 고치거나 보고에 적는다.`, warnings, missingArt: missing, calls: [], state: prev };
+    // 1층으로 들어오는 바깥 문 하나(맵 하나)는 지우고 다시 지은 입구에 그 칸 그대로 다시 잇는다(relink). 나머지 문(다른 맵·아래층으로 들어오는 문)은
+    // 거절하지 않고 남겨 두었다가 다시 지은 층의 가장 가까운 걸어 닿는 칸으로 다시 가리킨다(dungeonRebuildCarry — 2026-10-30 omo-loop-1030b boss-room:
+    // 마을·지하 던전 두 곳에서 들어오는 보스 방을 «여러 맵에서 이어져 있다»로 세 판 모두 못 고쳤다).
+    const head = linked.find((l) => l.floor === floorList[0]);
+    if (head) {
+      const gate = head.event;
+      relink = { fromMapId: head.mapId, x: gate.x, y: gate.y, eventIds: linked.filter((l) => l.mapId === head.mapId && l.floor === floorList[0]).map((l) => l.event.id) };
+      warnings.push(`바깥 ${head.mapName}(${gate.x},${gate.y})의 던전 문을 다시 지은 입구와 다시 이었다`);
     }
-    if (linked.length) {
-      const gate = linked[0]!.event;
-      relink = { fromMapId: linked[0]!.mapId, x: gate.x, y: gate.y, eventIds: linked.map((l) => l.event.id) };
-      warnings.push(`바깥 ${linked[0]!.mapName}(${gate.x},${gate.y})의 던전 문을 다시 지은 입구와 다시 이었다`);
-    }
+    const others = linked.filter((l) => !relink?.eventIds.includes(l.event.id));
+    incomingKeep = new Set(others.map((l) => `${l.mapId}:${l.event.id}`));
+    if (others.length) warnings.push(`다른 곳에서 들어오는 문 ${others.length}개(${others.slice(0, 3).map((l) => `${l.mapName}의 ${l.event.name ?? l.event.id}`).join(", ")})는 그대로 두고 다시 지은 층의 가까운 칸으로 다시 가리켰다`);
   }
+  // 다시 짓기 전 층 사본 — 짓기 도구 밖에서 붙은 이벤트(사람·컷신·상자…)를 다시 지은 층으로 옮겨 싣는다(rebuild:true 는 층 이벤트를 비운다).
+  const oldFloorMaps: GameMap[] = previous ? [...((previous.result.state as DungeonState | undefined)?.floors ?? previous.result.mapIds)].map((id) => run.ctx.project.maps[id]).filter((m): m is GameMap => !!m).map((m) => structuredClone(m)) : [];
   /** 사본에서 바깥 문과 이 던전 층을 가리키는 월드 그래프 연결을 지운다 — 다시 지은 던전에 새로 잇는다(옛 착지 좌표가 새 맵 밖·벽이 된다). */
   const oldFloors = new Set<string>(previous ? [...(prev?.floors ?? previous.result.mapIds)] : []);
   const dropOldGate = (trial: BuildRun) => {
@@ -596,7 +603,17 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
         if (!pair.ok) result = { ...result, ok: false, summary: `다시 지은 던전을 바깥 문과 다시 잇지 못했다: ${pair.summary}` };
       } else result = { ...result, ok: false, summary: "다시 지은 던전의 입구 칸을 몰라 바깥 문과 다시 잇지 못했다" };
     }
-    if (result.ok) into = trial;
+    if (result.ok) {
+      const d = (result.data ?? {}) as { floors?: unknown[] };
+      const newFloors = Array.isArray(d.floors) ? d.floors.filter((f): f is string => typeof f === "string") : [];
+      if (newFloors.length) {
+        const oldToNew = new Map(oldFloorMaps.map((m, k) => [m.id, newFloors[Math.min(k, newFloors.length - 1)]!] as const));
+        const moved = retargetIncoming(trial.ctx.project, oldToNew, incomingKeep);
+        if (moved) warnings.push(`다른 맵에서 이 던전으로 들어오던 이동 ${moved}개를 다시 지은 층의 가까운 걸어 닿는 칸으로 다시 가리켰다`);
+        warnings.push(...carryFloorEvents(trial.ctx.project, oldFloorMaps, newFloors, new Set(relink ? [relink.fromMapId] : [])));
+      }
+      into = trial;
+    }
     else run.calls.push(...trial.calls);
   } else {
     if (mapId) base.mapId = mapId;

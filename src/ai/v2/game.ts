@@ -204,7 +204,52 @@ export function v2ExtraToolNames(task: string): string[] {
 
 export function createGameTools(env: PiAssistantV2Env, task = ""): PiToolShape[] {
   const names = v2ExtraToolNames(task).filter((name) => getTool(name));
-  return withTransferRelocation(withEncountersOnlyWhenAsked(withPictureSearchBudget(createPiToolset(env.ctx, { ...(env.toolsetOptions ?? {}), toolNames: names, onCall: env.record })), task));
+  return withSchemaFillCleanup(withTransferRelocation(withEncountersOnlyWhenAsked(withPictureSearchBudget(createPiToolset(env.ctx, { ...(env.toolsetOptions ?? {}), toolNames: names, onCall: env.record })), task)));
+}
+
+/**
+ * 스키마 칸을 기본값으로 다 채워 보내는 모델(terra)의 «빈 칸»을 «안 줬다»로 읽는다 — 도구 계약은 그대로, v2 감싸개만.
+ * 2026-10-30 omo-loop-1030b(미완료 판 toolCalls):
+ *  - upsert_troop enemyIds:[적] + members:[] → «트룹에는 최소 1마리의 적이 필요»(boss-room 3/3판). 빈 members 는 뺀다.
+ *  - place_field_enemy behavior:"stationary" + patrol{length:1,…,directions:[]} → «patrol 은 patrol·chase 에서만», chase + directions:[] → «2..16개 닫힌 경로»
+ *    (forest-path: 세 번째 실패로 전투 항목이 막힘). patrol·chase 가 아니면 patrol 을, 빈 directions 는 directions 를 뺀다.
+ *  - upsert_item 회복약에 escapeTo:"entrance"·repelSteps:0(열거 첫 값·0) → «repelSteps 는 1 이상» 거절, 다시 보내자 회복약이 «던전 탈출» 아이템으로 저장됐다.
+ *    이름·설명에 탈출·퇴치 낱말이 없으면 escapeTo·repelSteps·repelBelowLead 를 뺀다. repelSteps 0 은 늘 뺀다.
+ *  - create_transfer_pair 끝의 doorAt 이 그 끝 x,y 와 같은 칸이면(문앞=문) doorAt 을 뺀다(terra 5/5판이 이 모양으로 처음 거절됐다).
+ */
+const ESCAPE_ITEM_WORD = /탈출|귀환|되돌아|입구로|escape|rope|로프|밧줄/iu;
+const REPEL_ITEM_WORD = /퇴치|기피|쫓|피하|성수|향|repel|ward/iu;
+export function cleanSchemaFill(name: string, params: unknown): unknown {
+  if (!params || typeof params !== "object") return params;
+  const args = structuredClone(params) as Record<string, unknown>;
+  if (name === "upsert_troop" && args.troop && typeof args.troop === "object") {
+    const t = args.troop as Record<string, unknown>;
+    if (Array.isArray(t.members) && t.members.length === 0) delete t.members;
+  }
+  if (name === "place_field_enemy") {
+    const behavior = String(args.behavior ?? "");
+    const patrol = args.patrol as Record<string, unknown> | undefined;
+    if (patrol && typeof patrol === "object" && Array.isArray(patrol.directions) && patrol.directions.length === 0) delete patrol.directions;
+    if (patrol !== undefined && behavior !== "patrol" && behavior !== "chase") delete args.patrol;
+    else if (behavior === "chase" && patrol && typeof patrol === "object" && patrol.directions === undefined && !(Number(patrol.length) > 1)) delete args.patrol;
+  }
+  if (name === "upsert_item" && args.item && typeof args.item === "object") {
+    const it = args.item as Record<string, unknown>;
+    const words = `${String(it.name ?? "")} ${String(it.description ?? "")}`;
+    if (it.escapeTo !== undefined && (it.escapeTo === "" || !ESCAPE_ITEM_WORD.test(words))) delete it.escapeTo;
+    if (it.repelSteps !== undefined && (!(Number(it.repelSteps) >= 1) || !REPEL_ITEM_WORD.test(words))) { delete it.repelSteps; delete it.repelBelowLead; }
+  }
+  if (name === "create_transfer_pair") {
+    for (const k of ["a", "b"] as const) {
+      const e = args[k] as { x?: unknown; y?: unknown; doorAt?: { x?: unknown; y?: unknown } } | undefined;
+      if (e?.doorAt && e.doorAt.x === e.x && e.doorAt.y === e.y) delete e.doorAt;
+    }
+  }
+  return args;
+}
+export function withSchemaFillCleanup(tools: PiToolShape[]): PiToolShape[] {
+  const names = new Set(["upsert_troop", "place_field_enemy", "upsert_item", "create_transfer_pair"]);
+  return tools.map((tool) => !names.has(tool.name) ? tool : { ...tool, execute: (id, params, signal) => tool.execute(id, cleanSchemaFill(tool.name, params) as typeof params, signal) });
 }
 
 /**
