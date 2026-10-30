@@ -799,7 +799,7 @@ function performAction(
   const delta = directionDelta(scene.facing);
   const tx = scene.tileX + delta.x;
   const ty = scene.tileY + delta.y;
-  const event = findRuntimeEventInScene(scene, tx, ty, "action") ?? findEventAcrossCounter(scene, world.project, tx, ty, delta) ?? findWalkerLeaving(scene, world.project, tx, ty) ?? findEventOnFacedObject(scene, world.project, tx, ty);
+  const event = findRuntimeEventInScene(scene, tx, ty, "action") ?? findEventAcrossCounter(scene, world.project, tx, ty, delta) ?? findWalkerLeaving(scene, world.project, tx, ty) ?? findEventOnFacedObject(scene, world.project, tx, ty) ?? findFieldFoeFacing(scene, tx, ty);
   if (event) {
     if (event.page?.interaction?.kind === 'hiding') return toggleHiding(world, event);
     if (event.page?.interaction?.kind === 'pushable') {
@@ -846,6 +846,17 @@ function performAction(
   const message = underfootFarm.message ?? facingFarm.message;
   if (message) showFarmFeedbackMessage(scene, message);
   return false;
+}
+
+/**
+ * 정면의 보이는 적(닿으면 싸우는 eventTouch·playerTouch 이벤트 중 전투 명령이 있는 것)은 조사 단추로도 부딪힌 것과 같게 연다 — RPG Maker MV 의 확인 단추 관례.
+ * 왜(2026-10-30 omo-fr-t terra 숲길 r3 판정): 서 있는 슬라임 바로 옆에서 Enter·z 를 눌러도 아무 일이 없어 «전투를 못 해 봄»으로 적었다.
+ * 전투가 없는 닿기 이벤트(함정·문)는 조사로 열지 않는다.
+ */
+function findFieldFoeFacing(scene: ActionEventSceneContext, tx: number, ty: number): RuntimeEventView | undefined {
+  const view = findRuntimeEventInScene(scene, tx, ty, ["eventTouch", "playerTouch"]);
+  if (!view) return undefined;
+  return JSON.stringify(view.page?.commands ?? []).includes('"battleProcessing"') ? view : undefined;
 }
 
 /**
