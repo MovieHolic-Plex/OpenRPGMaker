@@ -7,6 +7,8 @@ import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { resolve } from "node:path";
 import { buildHandInteriorLayers, type HandInteriorInput, type HandInteriorTable } from "../../../src/editor/handInterior/builder";
 import { effectiveSpec } from "./spec.mts";
+import { indoorSpace, indoorProblems } from "./space.mts";
+import { footprints, typesOf } from "./measure.mts";
 
 const [TS, lf, outDir, baseDir] = process.argv.slice(2);
 const render = process.argv.includes("--render");
@@ -120,8 +122,14 @@ for (const i of built.issues) {
   else if (i.severity === "warning" && i.code !== "too-many-layers") warnings.push(`${i.code}${at}${who(i.x, i.y)}`);
   else if (i.code === "too-many-layers") warnings.push(`too many stacked pieces${at}${who(i.x, i.y)}`);
 }
-const stats = { w: W, h: H, plan, reachable: built.reachable, floorCells: built.floorCells, objects: objs.length };
-if (errors.length || !render) done({ stats });
+const structOk = errors.length === 0;
+// size/space checks (space.mts): only measured once the structure is valid, named as "space:" errors so the repair call can shrink or fill
+const space = indoorSpace(plan, footprints(S, objs, tables, daises), regions.map((r: any) => ({ id: r.id, x: r.x, y: r.y, w: r.w, h: r.h })));
+if (structOk) errors.push(...indoorProblems(space));
+const types = typesOf(S, [...objs.map((p) => p.id), ...tables.map((t) => `${t.style} ${t.w}x${t.h}`)]);
+const stats = { w: W, h: H, plan, reachable: built.reachable, floorCells: built.floorCells, objects: objs.length, emptyPct: space.total.emptyPct,
+  rooms: space.rooms.map((r) => ({ id: r.id, emptyPct: r.emptyPct, largest: r.largest })), types: types.length };
+if (!structOk || !render) done({ stats, structOk });
 
 const { addRenderAssetRoot, renderReviewMapPng } = await import("../../qa-game/render.mts");
 const { store } = await import("../../../src/project/store");
@@ -136,4 +144,4 @@ store.replaceProject(base);
 const cur = store.getCurrent();
 writeFileSync(resolve(outDir, "map.png"), renderReviewMapPng(cur, cur.maps[id]!, 1).png as Buffer);
 writeFileSync(resolve(outDir, "after.json"), JSON.stringify(cur));
-done({ stats, rendered: true });
+done({ stats, structOk, rendered: true });

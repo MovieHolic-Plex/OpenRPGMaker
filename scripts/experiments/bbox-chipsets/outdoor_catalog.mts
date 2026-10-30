@@ -33,7 +33,10 @@ const kits = (t.structureKits ?? []).filter((k: any) => k.kind === "section" && 
 const ranked = kits.map((k: any) => ({ k, s: score(`${k.name} ${k.id} ${k.ai?.description ?? ""} ${(k.ai?.tags ?? []).join(" ")}`) })).filter((r: any) => r.s > 0).sort((a: any, b: any) => b.s - a.s);
 const seen = new Map<string, number>();
 const picked = ranked.filter(({ k }: any) => { const stem = k.id.replace(/_[a-j]$/u, ""); const n = seen.get(stem) ?? 0; seen.set(stem, n + 1); return n < 1; });
-const objects = picked.slice(0, max).map(({ k }: any) => {
+const selected = new Set(picked.slice(0, max).map(({ k }: any) => k.id));
+const scoreOf = new Map(ranked.map((r: any) => [r.k.id, r.s]));
+// round 2: every kit is exported (grouped into categories by catalog.py; find_pieces answers from the full set); `selected` = round 1's pick
+const objects = kits.map((k: any) => {
   const cells: [number, number, number, number][] = [];
   const grid: string[] = [];
   k.rows.forEach((row: any, y: number) => {
@@ -45,8 +48,10 @@ const objects = picked.slice(0, max).map(({ k }: any) => {
     }
     grid.push(line);
   });
-  return { id: k.id, ko: k.name ?? k.id, role: k.ai?.role, kind: "kit", w: k.width, h: k.rows.length, up: 0, cells, grid, desc: (k.ai?.description ?? "").replace(/칸 통행 격자.*$/su, "").slice(0, 200), tags: k.ai?.tags ?? [], place: k.ai?.placementRules ?? "", use: [], stairs: null };
+  const words = k.id.split(/[-_]/u).slice(1);
+  return { id: k.id, ko: k.name ?? k.id, role: k.ai?.role, kind: "kit", cat: `${k.ai?.role}-${words[0] ?? "misc"}`, catKo: `${(k.ai?.tags ?? [])[1] ?? k.ai?.role}`,
+    score: scoreOf.get(k.id) ?? 0, selected: selected.has(k.id), pool: false, w: k.width, h: k.rows.length, up: 0, cells, grid, desc: (k.ai?.description ?? "").replace(/칸 통행 격자.*$/su, "").slice(0, 200), tags: k.ai?.tags ?? [], place: k.ai?.placementRules ?? "", use: [], stairs: null };
 });
 writeFileSync(out!, JSON.stringify({ tileset: tilesetId, mode: "outdoor", sheet: asset?.path ? `public/${asset.path}` : null, tilesPerRow: bundledChipsetTilesPerRow(key), tileSize: t.tileSize,
   rooms: {}, floors: [], walls: [], tables: [], lines: [], daises: [], grounds: keepGrounds, objects }, null, 1));
-console.log(JSON.stringify({ tileset: tilesetId, grounds: keepGrounds.length, kits: kits.length, matched: ranked.length, objects: objects.length }));
+console.log(JSON.stringify({ tileset: tilesetId, grounds: keepGrounds.length, kits: kits.length, matched: ranked.length, selected: selected.size, objects: objects.length }));

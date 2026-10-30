@@ -5,6 +5,7 @@ import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { resolve } from "node:path";
 import { shapeAllAutotileGroupsAround } from "../../../src/project/defaults/autotileEngine";
 import { passabilityOf } from "../../../src/project/collision";
+import { outdoorSpace, outdoorProblems } from "./space.mts";
 const [TS, lf, outDir, baseDir] = process.argv.slice(2);
 const render = process.argv.includes("--render");
 mkdirSync(outDir!, { recursive: true });
@@ -83,8 +84,14 @@ for (const p of placed) if (p.k.ai?.role === "building") {
   for (let rx = 0; rx < p.k.width && !ok; rx++) { const x = p.x + rx, y = p.y + H2; if (y < H && seen[y * W + x]) ok = true; }
   if (!ok) warnings.push(`building "${p.id}"@(${p.x},${p.y}) has no reachable cell right below its front (door side)`);
 }
-const stats = { w: W, h: H, walkable, reached, objects: placed.length };
-if (!render) done({ stats });
+const structOk = errors.length === 0;
+const openRects = (Array.isArray(L.grounds) ? L.grounds : []).filter((r: any) => r.open === true).map((r: any) => ({ x: r.x, y: r.y, w: r.w, h: r.h }));
+if (openRects.length > 1) errors.push(`only one grounds rect may be the intentional open courtyard ("open": true); you marked ${openRects.length}.`);
+const space = outdoorSpace(W, H, (x, y) => owner.has(y * W + x), walk, openRects.slice(0, 1));
+errors.push(...outdoorProblems(space));
+const types = new Set(placed.map((p) => p.id)).size;
+const stats = { w: W, h: H, walkable, reached, objects: placed.length, emptyPct: space.barePct, largest: space.largest, openBare: space.openBare, types };
+if (!render) done({ stats, structOk });
 const { addRenderAssetRoot, renderReviewMapPng } = await import("../../qa-game/render.mts");
 const { store } = await import("../../../src/project/store");
 addRenderAssetRoot(resolve(baseDir!, "assets"));
@@ -97,4 +104,4 @@ store.replaceProject(base);
 const cur = store.getCurrent();
 writeFileSync(resolve(outDir!, "map.png"), renderReviewMapPng(cur, cur.maps[id]!, 1).png as Buffer);
 writeFileSync(resolve(outDir!, "after.json"), JSON.stringify(cur));
-done({ stats, rendered: true });
+done({ stats, structOk, rendered: true });
