@@ -97,7 +97,7 @@ const SECTION_DESCRIPTIONS: Record<MapPropsTab, string> = {
   battle: "이 맵에서 전투가 시작되면 표시할 배경입니다.",
   restrictions: "체크한 행동을 이 맵에서 제한합니다.",
   encounter: "걸어 다닐 때 만나는 적 그룹과 출현 조건을 설정합니다.",
-  spawns: "맵 위에 배치된 적의 소속 진영을 설정합니다.",
+  spawns: "맵 위에 배치된 적의 소속 진영과 나오는 시간대를 설정합니다.",
   minimap: "플레이 화면에 표시할 작은 지도를 설정합니다.",
 };
 
@@ -2007,6 +2007,8 @@ function spawnFactionRow(
   main.append(select);
   row.append(main);
 
+  row.append(spawnTimePhaseRow(map, spawns, index, spawn, host));
+
   row.append(el("p", {
     class: `map-props-hint map-spawn-row-effect${dangling ? " map-spawn-row-warning" : ""}`,
     dataset: { testid: `map-spawn-faction-effective-${index}` },
@@ -2018,6 +2020,41 @@ function spawnFactionRow(
   }));
 
   return row;
+}
+
+/** 「나오는 시간대」 — 체크가 모두 켜져 있으면 키를 지운다(늘 나온다). 시간 시스템이 꺼져 있으면 듣지 않는다고 알린다. */
+function spawnTimePhaseRow(
+  map: import("@/project/types").GameMap,
+  spawns: readonly FieldSpawnDef[],
+  index: number,
+  spawn: FieldSpawnDef,
+  host: HTMLElement,
+): HTMLElement {
+  const active = new Set<TimePhase>(spawn.timePhases?.length ? spawn.timePhases : TIME_PHASES);
+  const wrap = el("div", { class: "map-encounter-row-main", dataset: { testid: `map-spawn-time-phases-${index}` } });
+  wrap.append(el("span", { class: "map-spawn-row-meta", text: "나오는 시간대" }));
+  for (const phase of TIME_PHASES) {
+    const check = el("input", { attrs: { type: "checkbox" }, dataset: { testid: `map-spawn-time-phase-${index}-${phase}` } }) as HTMLInputElement;
+    check.checked = active.has(phase);
+    check.addEventListener("change", () => {
+      const nextPhases = TIME_PHASES.filter((candidate) => candidate === phase ? check.checked : active.has(candidate));
+      if (nextPhases.length === 0) { check.checked = true; return; }
+      const next = spawns.map((item, i) => {
+        if (i !== index) return item;
+        const { timePhases: _dropped, ...rest } = item;
+        return nextPhases.length === TIME_PHASES.length ? rest : { ...rest, timePhases: nextPhases };
+      });
+      setMapFieldSpawns(map.id, next as FieldSpawnDef[]);
+      rerender(host);
+    });
+    const label = el("label", { class: "map-props-check-row" });
+    label.append(check, el("span", { text: TIME_PHASE_LABELS[phase] }));
+    wrap.append(label);
+  }
+  if (spawn.timePhases?.length && !store.getCurrent().system.timeSystem?.enabled) {
+    wrap.append(el("p", { class: "map-props-hint map-spawn-row-warning", text: "시간 시스템이 꺼져 있어 늘 나옵니다. 자료집 「시스템 → 시간」에서 켜세요." }));
+  }
+  return wrap;
 }
 
 // ── 헬퍼 ──
