@@ -106,7 +106,7 @@
   bottom: -32px;
 }
 .rm-title-menu {
-  background: var(--runtime-window-fill-fallback);
+  background: linear-gradient(var(--runtime-window-fill-fallback), var(--runtime-window-fill-fallback)), rgb(8 10 20 / 88%);
   border: 1px solid var(--runtime-glass-hairline);
   border-radius: var(--runtime-glass-radius-small);
   box-shadow: none;

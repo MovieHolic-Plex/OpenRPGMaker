@@ -48,6 +48,7 @@ export const AREA_LABELS: Readonly<Record<string, string>> = {
   aiDocuments: "AI 문서",
   aiInstructions: "AI 지시문",
   gameDesignBrief: "게임 기획",
+  gameBlueprint: "게임 청사진",
   worldCanon: "세계 정본",
   dialogueDesk: "대사 책상",
   worldGraph: "세계 그래프",

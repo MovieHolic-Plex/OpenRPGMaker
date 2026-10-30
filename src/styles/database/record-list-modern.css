@@ -30,9 +30,15 @@
   outline-offset: -2px;
 }
 
+/* 선택 행은 색만이 아니라 굵기로도 구별된다(색을 못 보는 사람 — IS-076). 줄무늬 표시는 쓰지 않는다(C-88). */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-list-row {
+  font-weight: 400;
+}
+
 .database-modal-backdrop .database-modal-window .database-modal-body .db-list-row.active {
+  font-weight: 600;
   background: var(--db-studio-accent-soft, rgba(74,87,214,.08));
-  box-shadow: inset 2px 0 0 var(--db-studio-accent, var(--accent));
+  box-shadow: none;
   color: var(--db-studio-accent, var(--accent));
 }
 

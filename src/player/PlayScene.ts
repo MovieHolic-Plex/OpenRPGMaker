@@ -1,4 +1,5 @@
 import { syncSessionWithDeviceRecords } from "@/player/deviceRecords";
+import { syncPlayerOcclusionGhost } from "@/player/playerOcclusionGhost";
 import { setCharacterBaseOrigin } from "./characterOrigin";
 import { restoreRuntimeTimers } from "@/player/playSceneTimers";
 import { syncTerrainVision } from "./terrainVision";
@@ -88,6 +89,7 @@ import {
 import { installPlaySceneTestHooks } from "@/player/playSceneTestHooks";
 import { applyStoredCameraState, centerRuntimeCamera, panRuntimeCamera } from "@/player/playSceneCamera";
 import { runtimeMapViewZoom, runtimePixelDensity } from "@/player/runtimeViewScale";
+import { syncMapSkirt } from "@/player/playSceneMapSkirt";
 import { hasSessionCheckpoint, restoreSessionCheckpoint, setSessionCheckpoint, getSessionCheckpoint } from "@/player/checkpoints";
 import { syncFollowerSceneVisibility, syncFollowerSprites } from "@/player/playSceneFollowers";
 import { startChaseSpawnGrace } from "@/player/chaseSpawnGrace";
@@ -459,6 +461,8 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     // 맵 크기만큼 부풀고, 마커 클릭이 무대를 스크롤시켜 재생 화면이 검게 된다(runtimeDom 주석).
     this.runtimeDom.syncCameraOffset(this.cameras.main.scrollX, this.cameras.main.scrollY);
     syncSceneEmotes(this);
+    // ★ 기물 뒤에 몸이 가려지면 반투명 실루엣(playerOcclusionGhost.ts).
+    syncPlayerOcclusionGhost(this);
     if (this.zoneFeedback) syncPlaySceneZoneFeedback(this, this.zoneFeedback, deltaMs);
     this.syncHandSlotChip();
     if (this.minimap) {
@@ -575,6 +579,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
   centerCamera(): void {
     centerRuntimeCamera(this.cameras.main, this.map, this.player, runtimeMapViewZoom(this));
     applyStoredCameraState(this);
+    syncMapSkirt(this);
     syncWeatherLayer(this);
     installTimeTintLayer(this);
     syncLightingLayer(this);
@@ -722,6 +727,8 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     // Loading replaces the old event run; its pending menu must not own the new session.
     this.running = false;
     this.setInputEnabled(true);
+    // 불러오기를 확정한 키 입력이 필드 조사로 새지 않게(정면 이벤트 재조사) — 다음 프레임에 쌓인 엣지를 버린다.
+    this.input_.dropPendingEdgesOnNextUpdate();
     const project = store.getCurrent();
     this.playerSprite = resolvePlayerSpriteResource(project, this.session);
     this.loadMap(this.session.currentMapId, { preserveErasedEvents: true, applyDefaultLighting: false, applyMapBgm: false });

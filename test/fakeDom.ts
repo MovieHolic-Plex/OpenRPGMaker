@@ -463,8 +463,8 @@ export class FakeElement extends FakeNode {
     }
     const options = this.options;
     // A selected option being adopted wins over the old single-select default.
-    const selected = options.findLast((option) => option.optionSelected && inserted?.contains(option))
-      ?? options.findLast((option) => option.optionSelected)
+    const selected = lastMatch(options, (option) => option.optionSelected && Boolean(inserted?.contains(option)))
+      ?? lastMatch(options, (option) => option.optionSelected)
       ?? options.find((option) => !option.disabled && option.getAttribute("disabled") === null
         && !(option.parentElement?.tagName === "OPTGROUP"
           && (option.parentElement.disabled || option.parentElement.getAttribute("disabled") !== null)));
@@ -1031,4 +1031,10 @@ function eventPropagationStopped(event: Event): false | "bubble" | "immediate" {
   // DOM Event.stopPropagation sets cancelBubble = true.
   if (anyEvent.cancelBubble) return "bubble";
   return false;
+}
+
+/** Array.prototype.findLast 와 같다 — 이 저장소의 lib 은 ES2022 라 findLast 타입이 없다. */
+function lastMatch<T>(list: readonly T[], predicate: (item: T) => boolean): T | undefined {
+  for (let i = list.length - 1; i >= 0; i -= 1) if (predicate(list[i]!)) return list[i];
+  return undefined;
 }

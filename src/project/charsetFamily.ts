@@ -10,6 +10,7 @@ export type CharsetFamilyId =
   | "rtp-creature"      // RTP Monster1~3 · Animal · 농장 동물 — 판타지 RPG 몬스터·동물(포켓몬풍 아님)
   | "object"            // 문·상자·표지·탈것·템플릿 같은 기능 칩(사람이 아님)
   | "heroes"           // OPRN Heroes1 — 시간여행·제국군 직업 인물(CT·FF6풍, 포켓몬풍 아님)
+  | "refmap-doll"      // OPRN RefmapDoll<n> — REFMAP 인물 머리×몸 변형(판타지 마을 사람·기사·귀족·메이드…, 포켓몬풍 아님)
   | "modern"           // OPRN Modern1~3 — 현대 연애물 인물(교복·사복·정장·카페 점원·선생, 포켓몬풍 아님)
   | "wizarding"         // 마법 학교 인물·생물 칩
   | "shared-actor"      // 공용 캐릭터 공방(charset-actor)에서 사람이 남긴 칩
@@ -24,6 +25,7 @@ export const CHARSET_FAMILY_LABELS: Readonly<Record<CharsetFamilyId, string>> = 
   object: "기물·탈것 칩",
   heroes: "CT·FF6풍 영웅 칩",
   modern: "현대 인물 칩",
+  "refmap-doll": "REFMAP 변형 인물 칩",
   wizarding: "마법 학교 칩",
   "shared-actor": "공용 공방 캐릭터",
   uploaded: "업로드한 칩",
@@ -52,6 +54,7 @@ export function charsetFamilyOf(project: CharsetFamilyContext | undefined, idOrT
   if (/^easyrpg-charset-(object\d+|vehicles?|template)$/u.test(s)) return "object";
   if (/^oprn-charset-heroes\d+$/u.test(s)) return "heroes";
   if (/^oprn-charset-modern\d+$/u.test(s)) return "modern";
+  if (/^oprn-charset-refmap-doll\d+$/u.test(s)) return "refmap-doll";
   if (/^oprn-charset-wizarding\d+$/u.test(s)) return "wizarding";
   if (project?.assets?.uploaded?.[idOrTextureKey]?.kind === "charset") return "uploaded";
   return "other";

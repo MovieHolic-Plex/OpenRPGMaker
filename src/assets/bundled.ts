@@ -800,6 +800,44 @@ function isExtraBundledLoadKey(fileKey: string): boolean {
   );
 }
 
+/**
+ * 이보다 칸이 많은 칩셋은 프레임을 처음 쓸 때 만든다. 버들항(23,936칸)은 칸마다 프레임 5개(통짜+사분면)를 미리 만들어
+ * 새 게임마다 12만 개를 등록했다(0.7~1.4초, 2026-10-29 pacing-boot). 맵 하나는 그중 수백 칸만 쓴다.
+ */
+const LAZY_TILE_FRAME_THRESHOLD = 4096;
+const LAZY_TILE_FRAME_NAME = /^tile_(\d+)(?:_(nw|ne|sw|se))?$/u;
+type LazyTileTexture = Phaser.Textures.Texture & { __oprnLazyTiles?: number };
+
+/** `tile_n`·`tile_n_nw|ne|sw|se` 를 get/has 가 처음 물을 때 그 칸의 프레임 다섯을 만든다(Phaser 의 setFrame·getFrame·애니메이션 모두 이 둘을 지난다). */
+function installLazyTileFrames(tex: Phaser.Textures.Texture, frameCount: number, tileSize: number, tilesPerRow: number): void {
+  const lazy = tex as LazyTileTexture;
+  if (lazy.__oprnLazyTiles !== undefined) { lazy.__oprnLazyTiles = Math.max(lazy.__oprnLazyTiles, frameCount); return; }
+  lazy.__oprnLazyTiles = frameCount;
+  const half = tileSize / 2;
+  const frames = tex.frames as Record<string, Phaser.Textures.Frame | undefined>;
+  // Texture.add 가 안에서 has 를 부른다 — 만드는 동안 다시 들어오지 않게 막는다.
+  let adding = false;
+  const ensure = (name: unknown): void => {
+    if (adding || typeof name !== "string" || frames[name]) return;
+    const match = LAZY_TILE_FRAME_NAME.exec(name);
+    if (!match) return;
+    const index = Number(match[1]);
+    if (index >= (lazy.__oprnLazyTiles ?? 0)) return;
+    const { sx, sy } = tileSourceXY(index, tilesPerRow, tileSize);
+    adding = true;
+    try {
+      if (!frames[`tile_${index}`]) tex.add(`tile_${index}`, 0, sx, sy, tileSize, tileSize);
+      for (const [quarter, dx, dy] of [["nw", 0, 0], ["ne", half, 0], ["sw", 0, half], ["se", half, half]] as const) {
+        if (!frames[`tile_${index}_${quarter}`]) tex.add(`tile_${index}_${quarter}`, 0, sx + dx, sy + dy, half, half);
+      }
+    } finally { adding = false; }
+  };
+  const get = tex.get.bind(tex);
+  const has = tex.has.bind(tex);
+  tex.get = ((name?: string | number) => { ensure(name); return get(name); }) as typeof tex.get;
+  tex.has = ((name: string) => { ensure(name); return has(name); }) as typeof tex.has;
+}
+
 function registerTileFrames(
   scene: Phaser.Scene,
   textureKey: string,
@@ -815,17 +853,22 @@ function registerTileFrames(
     { name: "se", dx: quarterSize, dy: quarterSize },
   ] as const;
   const tex = scene.textures.get(textureKey);
-  const existing = tex.getFrameNames();
+  if (frameCount > LAZY_TILE_FRAME_THRESHOLD) {
+    installLazyTileFrames(tex, frameCount, tileSize, tilesPerRow);
+    return;
+  }
+  // 배열 includes 는 칸 수의 제곱이다 — 2,400칸 시트 하나에 90ms 를 썼다(2026-10-29).
+  const existing = new Set(tex.getFrameNames());
   // 마지막 프레임까지 이미 있으면 완료 — 확장 타일셋(frameCount > 480)은 확장분만 이어서 등록한다.
-  if (existing.includes("tile_0") && existing.includes("tile_0_nw") && existing.includes(`tile_${frameCount - 1}_se`)) return;
+  if (existing.has("tile_0") && existing.has("tile_0_nw") && existing.has(`tile_${frameCount - 1}_se`)) return;
   for (let i = 0; i < frameCount; i++) {
     const { sx, sy } = tileSourceXY(i, tilesPerRow, tileSize);
-    if (!existing.includes(`tile_${i}`)) {
+    if (!existing.has(`tile_${i}`)) {
       tex.add(`tile_${i}`, 0, sx, sy, tileSize, tileSize);
     }
     for (const quarter of quarters) {
       const frameName = `tile_${i}_${quarter.name}`;
-      if (!existing.includes(frameName)) {
+      if (!existing.has(frameName)) {
         tex.add(frameName, 0, sx + quarter.dx, sy + quarter.dy, quarterSize, quarterSize);
       }
     }

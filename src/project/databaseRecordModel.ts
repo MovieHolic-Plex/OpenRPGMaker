@@ -56,6 +56,7 @@ import { isFarmTool, normalizeCropRecord } from "@/project/farmModel";
 import { normalizeLifeSkillRecord } from "@/project/skillModel";
 import { isGenrePackId } from "@/project/genrePackId";
 import { isGenreLockPresetId, type GenreLock } from "@/project/genreLock";
+import { normalizePeopleChipLock } from "@/project/peopleChipLock";
 import {
   normalizeBundleDefinitions,
   normalizeEnergySystemConfig,
@@ -256,6 +257,7 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
   const actionCombat = normalizeActionCombatConfig(system.actionCombat);
   const playerFootprint = normalizeCharacterFootprint(system.playerFootprint);
   const genreLock = normalizeGenreLock(system.genreLock);
+  const peopleChipLock = normalizePeopleChipLock(system.peopleChipLock);
   // 양쪽 전신 대화창이면 생략이 1024×768·3.2배를 뜻하므로 작가가 고른 기본값(320×240·1배)도 값으로 남긴다.
   const keepDefaults = keepsExplicitDefaultResolution(system);
   const playResolution = normalizePlayResolution(system.playResolution, { keepDefault: keepDefaults });
@@ -290,6 +292,7 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
   if (cameraZoom !== undefined) records.cameraZoom = cameraZoom;
   if (isGenrePackId(system.genre)) records.genre = system.genre;
   if (genreLock) records.genreLock = genreLock;
+  if (peopleChipLock) records.peopleChipLock = peopleChipLock;
   records.titleResourceId = titleResourceId;
   records.systemResourceId = normalizeSystemWindowSkinId(system.systemResourceId);
   records.battleSystemResourceId = cleanOptionalId(system.battleSystemResourceId);

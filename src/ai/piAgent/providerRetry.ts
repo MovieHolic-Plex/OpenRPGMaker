@@ -55,3 +55,66 @@ export function isTransientProviderStreamError(message: string | undefined): boo
 export function providerStreamResumePrompt(attempt: number, limit: number): string {
   return `[연결 끊김 ${attempt}/${limit}] 직전 응답이 제공자 쪽에서 끊겼습니다. 「not executed」로 끝난 도구 호출은 실행되지 않았으니 필요하면 다시 부르고, 하던 작업을 처음부터 다시 하지 말고 이어서 진행하세요.`;
 }
+
+// ───── 모델 호출 무응답 감시 (2026-10-29 vm1 argon) ─────
+// 사용자 지정 엔드포인트(openai-compat:*)는 엔드포인트 설정 「첫 토큰 대기」(기본 600초)를 첫 응답·토큰 사이 감시로 그대로 썼다 —
+// 스트림이 조용해지면 호출 하나가 10분씩 붙잡혔고, 그 오류 문구(「timed out while waiting for the first event」「stalled while
+// waiting for the next event」)는 위 TRANSIENT_PATTERNS 에 없어 다시 요청하지도 않았다. 이제 호출 단위로 더 짧게 끊고,
+// 같은 대화 기록으로 정해진 횟수만 다시 요청한 뒤 그래도 조용하면 이 차례를 깔끔한 실패로 끝낸다.
+
+/** pi-ai 의 스트림 감시가 끊을 때 남기는 문구(openai-completions·공통 idle iterator). */
+const MODEL_STALL_PATTERN = /stream (?:timed out while waiting for the first event|stalled while waiting for the next event)|waiting for the (?:first|next) (?:stream )?event|^Request timed out\.?$/i;
+
+/** 스트림 무응답 감시가 끊은 호출인가 — 무응답 재시도 예산(modelStallLimits().retries)으로 센다. */
+export function isModelStallError(message: string | undefined): boolean {
+  return !!message && MODEL_STALL_PATTERN.test(message);
+}
+
+export interface ModelStallLimits {
+  /** 요청 뒤 첫 이벤트까지 기다리는 최대 시간(ms). */
+  readonly firstEventMs: number;
+  /** 첫 이벤트 뒤 이벤트 사이 최대 침묵(ms). */
+  readonly idleMs: number;
+  /** 무응답으로 끊긴 호출을 같은 기록으로 다시 요청하는 횟수. 넘으면 차례를 실패로 끝낸다. */
+  readonly retries: number;
+}
+
+const positiveInt = (raw: string | undefined, fallback: number): number => {
+  const n = raw === undefined || raw.trim() === "" ? NaN : Number(raw);
+  return Number.isFinite(n) && n >= 0 ? Math.floor(n) : fallback;
+};
+
+/**
+ * 호출 단위 무응답 한도. 환경 변수로 조절한다(0 은 «내 상한 없음» — 엔드포인트·제공자 값을 그대로 쓴다):
+ *   OPRN_MODEL_FIRST_EVENT_TIMEOUT_MS (기본 180000), OPRN_MODEL_IDLE_TIMEOUT_MS (기본 90000), OPRN_MODEL_STALL_RETRIES (기본 2).
+ * 첫 응답 기본이 120초가 아니라 180초인 까닭: vm1 argon(8318) 실측에서 정상 호출도 첫 응답까지 1분 넘게 걸렸다 — 정상 호출을 끊지 않을 여유.
+ */
+export function modelStallLimits(env: Record<string, string | undefined> = process.env): ModelStallLimits {
+  return {
+    firstEventMs: positiveInt(env.OPRN_MODEL_FIRST_EVENT_TIMEOUT_MS, 180_000),
+    idleMs: positiveInt(env.OPRN_MODEL_IDLE_TIMEOUT_MS, 90_000),
+    retries: positiveInt(env.OPRN_MODEL_STALL_RETRIES, 2),
+  };
+}
+
+/**
+ * 한 호출의 스트림 옵션에 무응답 한도를 씌운다 — 이미 정해진 값(엔드포인트 설정·모델 compat)보다 짧을 때만 줄인다.
+ * pi-ai 는 호출 옵션(streamFirstEventTimeoutMs·streamIdleTimeoutMs)을 환경 변수·모델 compat 보다 먼저 본다.
+ */
+export function withModelStallLimits<O extends Record<string, unknown> | undefined>(
+  options: O, current: { readonly firstEventMs?: number; readonly idleMs?: number }, limits: ModelStallLimits = modelStallLimits(),
+): O & { streamFirstEventTimeoutMs?: number; streamIdleTimeoutMs?: number } {
+  const cap = (have: number | undefined, mine: number): number | undefined => {
+    if (!mine) return have;
+    if (have === undefined || have <= 0) return mine;
+    return Math.min(have, mine);
+  };
+  const first = cap(current.firstEventMs, limits.firstEventMs);
+  const idle = cap(current.idleMs, limits.idleMs);
+  return { ...(options ?? {}), ...(first !== undefined ? { streamFirstEventTimeoutMs: first } : {}), ...(idle !== undefined ? { streamIdleTimeoutMs: idle } : {}) } as never;
+}
+
+/** 무응답 재시도를 다 쓴 뒤 사용자·다음 차례에 남기는 실패 문장. */
+export function modelStallFailure(retries: number, limits: ModelStallLimits = modelStallLimits()): string {
+  return `AI 모델이 응답하지 않아(첫 응답 ${Math.round(limits.firstEventMs / 1000)}초·토큰 사이 ${Math.round(limits.idleMs / 1000)}초 한도, 같은 요청 ${retries}번 더 보냄) 이 차례를 끝냈습니다. 지금까지 적용한 변경은 남아 있습니다 — 다시 보내면 이어서 합니다.`;
+}

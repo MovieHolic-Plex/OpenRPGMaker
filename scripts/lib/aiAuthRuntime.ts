@@ -385,11 +385,12 @@ async function launchProviderLogin(id: string, options: { remote?: boolean }, ab
 
   const startedAt = Date.now();
   const expiresAt = startedAt + 10 * 60 * 1000;
-  const loginFetch = (input: string | URL | Request, init?: RequestInit): Promise<Response> =>
+  // typeof fetch 자리(로그인 모듈의 fetch 인자)에 넘긴다 — 노드 타입의 fetch 에는 preconnect 가 붙어 있어 화살표만으로는 맞지 않는다.
+  const loginFetch = ((input: string | URL | Request, init?: RequestInit): Promise<Response> =>
     globalThis.fetch(input, {
       ...init,
       signal: init?.signal ? AbortSignal.any([abort.signal, init.signal]) : abort.signal,
-    });
+    })) as typeof fetch;
   if (id === CODEX_PROVIDER_ID) {
     const started = await beginCodexLogin({
       openCallbackServer: (options) => startOAuthCallbackServer(options),

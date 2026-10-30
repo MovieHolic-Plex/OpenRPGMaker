@@ -52,6 +52,11 @@ export interface PiToolShape {
   readonly concurrency?: "shared" | "exclusive";
   /** true 면 코어가 스키마 불일치에도 원래 인자를 넘긴다 — 실행기의 인자 고치기 층(argRepair)이 직접 검증한다. */
   readonly lenientArgValidation?: boolean;
+  /**
+   * 이 하위 도구가 되풀이해 실패할 때(인자 모양 오류·같은 거절 두 번째부터) 오류 끝에 붙일 «대신 부를 상위 동사» 한 줄.
+   * 없거나 undefined 를 돌려주면 붙이지 않는다(2026-10-28 mt2 Flash: upsert_event 에 MV 모양을 6번 보냈다 — build_blueprint_path 로 보낸다).
+   */
+  readonly escalateHint?: () => string | undefined;
   execute(toolCallId: string, params: unknown, signal?: AbortSignal): Promise<PiToolExecResult>;
 }
 

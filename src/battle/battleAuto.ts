@@ -3,6 +3,7 @@ import { areaTargets, resolveBattleTargets, skillRevivesDefeatedAllies, targetId
 import { predictSkillDamageFor } from "@/battle/battlePredict";
 import type { ActorCommand, BattleBattlerSnapshot, BattleSnapshot } from "@/battle/types";
 import { stateBehavior } from "@/battle/battleStates";
+import { battlerTypes, typeChartMultiplierForTypes } from "@/battle/typeChart";
 import type { ActorAutoTactic, Project, SkillRecord } from "@/project/types";
 import type { Rng } from "@/util/rng";
 
@@ -130,6 +131,12 @@ function bestAttack(
   rng: Rng,
 ): ActorCommand | undefined {
   const candidates: Array<{ skill: SkillRecord; target: BattleBattlerSnapshot; score: number }> = [];
+  // 상성표가 있는 게임: 예측 피해가 반올림으로 같아지면(낮은 레벨에서 4 대 4) 동률 무작위로 저항받는 기술을 골랐다 —
+  // 위력 × 상성·자속 배율을 1 미만의 가산점으로 더해 동률만 가른다(정수 피해 차이는 그대로 이긴다).
+  const actorTypes = project.system.typeChart ? battlerTypes(project, actor) : [];
+  const edge = (skill: SkillRecord, target: BattleBattlerSnapshot): number => project.system.typeChart
+    ? Math.min(0.9, Math.max(0, skill.power ?? 0) * typeChartMultiplierForTypes(project, skill.elementId, actorTypes, battlerTypes(project, target)) / 2000)
+    : 0;
   for (const skill of skills) {
     const resolution = resolveBattleTargets({
       scope: skill.scope,
@@ -139,7 +146,7 @@ function bestAttack(
     });
     if (resolution.side !== "enemy") continue;
     if (!resolution.requiresSelection && resolution.targets.length > 0) {
-      const score = resolution.targets.reduce((sum, target) => sum + Math.max(0, predictSkillDamageFor(project, actor, skill, target).amount), 0);
+      const score = resolution.targets.reduce((sum, target) => sum + Math.max(0, predictSkillDamageFor(project, actor, skill, target).amount), 0) + edge(skill, resolution.targets[0]);
       candidates.push({ skill, target: resolution.targets[0], score });
       continue;
     }
@@ -147,7 +154,7 @@ function bestAttack(
       // 위치 범위기는 주 대상 둘레까지 합산한다 — 런타임 대상 해결과 같은 areaTargets 를 쓴다.
       const hits = areaTargets(target, resolution.candidates, skill.area);
       const damage = hits.reduce((sum, hit) => sum + Math.max(0, predictSkillDamageFor(project, actor, skill, hit).amount), 0);
-      candidates.push({ skill, target, score: damage + (hits.some((hit) => predictSkillDamageFor(project, actor, skill, hit).amount >= hit.hp) ? 1000 : 0) });
+      candidates.push({ skill, target, score: damage + edge(skill, target) + (hits.some((hit) => predictSkillDamageFor(project, actor, skill, hit).amount >= hit.hp) ? 1000 : 0) });
     }
   }
   const selected = pickBest(candidates, (entry) => entry.score, rng);

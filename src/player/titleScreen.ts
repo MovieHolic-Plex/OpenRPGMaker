@@ -1,3 +1,5 @@
+import { parseOpeningStill } from "@/project/openingStill";
+import { openingStillReady, prepareOpeningStill } from "./openingStill";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { applySystemWindowSkinVariable, applyTitleScreenBackground } from "@/player/systemGraphics";
 import { createTitleRunnersCanvas } from "@/player/titleRunners";
@@ -180,6 +182,15 @@ export function renderTitleScreen(
   // 어두운 막(::before, z1)보다 아래(z0)여야 하므로 fx 스택과 분리해 루트 첫 자식으로 둔다.
   const effects = renderTitleEffectsLayer(settings, backgroundResourceId, project, context?.reuseEffects ?? null);
   if (effects) title.append(effects);
+  // opening-still:<컷>@<ms> 배경은 그 컷을 한 번 그려야 주소가 생긴다. 아직이면 그린 뒤 배경·효과 층을 다시 단다.
+  if (parseOpeningStill(backgroundResourceId) && !openingStillReady(project, backgroundResourceId!)) {
+    void prepareOpeningStill(project, backgroundResourceId).then((url) => {
+      if (!url || !title.isConnected) return;
+      applyTitleScreenBackground(title, backgroundResourceId, project, { fit: settings.backgroundFit, rendering: settings.backgroundRendering });
+      const late = renderTitleEffectsLayer(settings, backgroundResourceId, project, title.querySelector<HTMLElement>("[data-testid='title-effects']"));
+      if (late && !late.isConnected) title.prepend(late);
+    });
+  }
   // The full-screen title root owns the key art. Menu chrome consumes the runtime
   // windowskin CSS variable without applying the 9-slice fill over the artwork.
   applyTitleMenuGraphic(title, project);
@@ -536,7 +547,8 @@ function renderTitleLogoSubtitle(settings: TitleScreenSettings, titleFit: TitleF
   const titleHeightPx = titleFit ? Math.round(titleFit.fontPx * 1.1 * lines) : 27;
   node.style.top = `calc(${logicalY(settings.layout.titleY)} + ${titleHeightPx + 3}px)`;
   const fit = fitTitleSubtitle(settings.logoSubtitle ?? "", { left: settings.layout.titleX, basePx: 8, baseSpacingEm: 0.32 });
-  node.style.letterSpacing = `${fit.letterSpacingEm}em`;
+  // 한글 부제에 영문 대문자용 넓은 자간(0.32em)을 주면 가는 획이 흩어져 배경에 묻혔다(장부 assembly #11·#28) — 한글은 0.06em 까지.
+  node.style.letterSpacing = `${/[\uac00-\ud7a3]/u.test(settings.logoSubtitle ?? "") ? Math.min(fit.letterSpacingEm, 0.06) : fit.letterSpacingEm}em`;
   node.style.maxWidth = `${fit.availablePx}px`;
   if (fit.lines > 1) {
     node.style.whiteSpace = "normal";

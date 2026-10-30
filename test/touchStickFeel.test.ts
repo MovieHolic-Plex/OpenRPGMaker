@@ -22,6 +22,15 @@ describe("touch stick sectors (2026-10-24 mobile feel)", () => {
     expect(stickSector(10, 0, 0)).toBe(0);
     expect(stickSector(7, 0, 0)).toBeNull();
   });
+  it("dead zone scales with the pad radius: 12% to start, 8% to release (2026-10-30)", () => {
+    // 세로 판 반지름 65px: 7.8px 를 넘으면 출발(예전 고정 12px = 18%), 5.2px 밑이면 멈춤.
+    expect(stickSector(7, 0, null, 65)).toBeNull();
+    expect(stickSector(9, 0, null, 65)).toBe(0);
+    expect(stickSector(6, 0, 0, 65)).toBe(0);
+    expect(stickSector(5, 0, 0, 65)).toBeNull();
+    // 아주 작은 판도 6px 밑으로는 내리지 않는다(엄지를 얹기만 해서 걷지 않게).
+    expect(stickSector(5.5, 0, null, 30)).toBeNull();
+  });
 });
 
 describe("stick deflection runs (2026-10-25, no separate Run button)", () => {

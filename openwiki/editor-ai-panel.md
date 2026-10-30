@@ -3898,6 +3898,34 @@ validateVillageContract → applyProposedProject`로 처리한다. 의도 선언
 거절 runId에 start 이벤트가 없고, 실제 조회 호출은 A 1회/B 2회/C 3회였다. 원본은
 `verify-shots/ai-map-ownership/three-maps/timeline.json`. 세 실행 완료와 프로젝트 불변을 포함한 11개 관측 조건을 충족했다.
 
+### 확인 카드가 열린 채 새 메시지가 오면 (2026-10-29)
+
+카드 주인 실행은 맵(또는 프로젝트 전체)을 잡은 채 사람 답을 기다린다. 확인 카드는 `aiDecisionPrompt`의 맵 소실 확인과
+`aiPiPublication`의 단계 적용 확인이다. 워커 쪽에서는 `piCheckpointBroker`의 적용 대기, 최대 30분이다.
+예전에는 사용자가 단추 대신 입력창에 다음 말을 치면 교착이 생겼다. 그 말은 맵별 대기열에서 카드 주인 뒤에 섰고,
+카드 주인은 단추를 기다렸다. 결과는 30분 적용 대기 실패, 그다음 턴 상한이었다.
+실측(vm1 argon escape·jrpg 3→4턴): 「맵 1개 삭제」 카드에 글로 답했고, checkpoint 단계가 2,718,068ms였다.
+
+- **열린 카드 대장:** `aiDecisionPrompt.ts`의 `registerAssistantDecision`. 카드마다 주인 실행의 맵 키(`runKey`)를 올린다.
+  `runKey`는 `PiCommandSurface.runKey`에서 오며, 앞 턴은 `foregroundRunKey`, 대기열 실행은 `MapRunInput.runKey`, 프로젝트 전체는 `"*"`다.
+  키가 없는 카드는 앞 턴 카드로 보고 모든 요청을 붙잡는 것으로 친다.
+- **보내기(`aiChatPanel` send):** 대기열 판정 전에 `blockingAssistantDecisions(mapKey, exclusive)`를 본다.
+  붙잡는 카드는 같은 맵·프로젝트 전체 실행·앞 턴의 카드다.
+  - 입력이 짧은 답 낱말과 **전체가 같으면** 카드 답으로 쓰고 끝낸다. 답 판정은 `readDecisionAnswer`이며 12자 이하만 본다.
+    예: 「예·네·좋아·지워·진행」은 확인, 「아니·그만·취소·지우지마」는 그만두기. 답은 가장 최근 카드 하나에 간다. 새 실행은 없다.
+  - 그 밖의 문장이면 붙잡는 카드를 모두 **「그만두기」(내용 보존)** 로 닫는다. 시스템 말풍선을 남기고 요청을 그대로 대기열에 넣는다.
+    카드 주인 실행은 끝나지 않는다. 맵 소실 거절은 `[맵 소실 거절]` 머리로 워커에 가고, 워커는 그 변경만 되돌린 뒤 이어 간다.
+    문장에 「새 메시지를 보내 카드가 그만두기로 닫혔다」가 들어가 조수가 다음 차례에 읽는다.
+    대기열에 넣는 요청 끝에도 같은 사실을 `[참고: …]`로 붙인다. 앞에 붙이면 `/pi`·team 해석이 문장 머리를 잘못 읽는다.
+    단계 적용 확인은 거절이 곧 실행 중단이다. 이미 적용한 단계는 남는다.
+  - 다른 맵 실행의 카드는 건드리지 않는다. 그 실행은 새 요청을 붙잡지 않는다.
+- **30분 타이머는 그대로다.** 적용 자체는 수 초이고, 30분은 사람이 답할 시간의 상한이다. 줄이면 자리를 비운 사용자의 실행이 죽는다.
+  교착은 타이머가 아니라 카드와 새 메시지가 서로를 기다린 것이었고, 보내기가 카드를 먼저 닫아 푼다.
+- 화면 없는 실행(`surface.decide`, qa-game gen)은 카드가 없어 해당 없다.
+  스위트 하네스 `wholeGameSession.mjs`의 자동 그만두기는 제품 규칙과 같은 동작이다.
+
+확인: `node scripts/qa/ai-decision-card-new-message.mjs`. 실제 편집기 send() 경로와 실제 발행기로 카드를 연다. 모델 호출은 없다.
+
 ## 실시간 작업 상태판 (2026-10-04)
 
 `src/editor/panels/aiCanvasActivity.ts`는 Pi 실행 동안 맵 위에 현재 작업·대상·경과 시간과 최근 처리한 작업 세 건을 유지한다.
@@ -4480,6 +4508,10 @@ Pi가 error 뒤 done을 보내도 성공 완료로 승격하지 않는다. 최�
 ### 검증 (2026-10-14)
 
 - 모의 서버 `scripts/qa/openai-compat-mock-server.mjs`(401·404·429·도구 미지원·강도 인자 거절·`--models`) + 실제 설정 화면 Playwright: 카드·프리셋·401/404·모델 목록·마스킹된 키·역할 지정 거절·차단 모델 숨김·4개 언어. 실제 프로젝트 저장소 호스트(`scripts/oprn-serve.mjs`)에서 조수 한 턴(분류 호출 → 도구 25개 → `set_map_properties` 도구 호출 → 결과 왕복)으로 맵 이름을 바꾸고 `project.sqlite` 저장·새 브라우저 재로드로 확인.
+- 모델별 그림 시험(`probeOpenAiCompatImageModels`): 8×8 빨강 한 장을 보내 글로 답하면 «본다», 빈 답·400 이면 «못 본다»로 `imageProbe` 에 적고, 못 보는 모델에는 그림 자리를 글 한 줄로 바꿔 보낸다.
+  시험 대상은 기본 모델·모델 목록에 더해 **허용 목록에 이름 그대로 적힌 모델**이다(2026-10-30 — proxy8318 은 모델 목록이 비어 gemini-3.8-flash 만 시험됐다).
+  실측(2026-10-30, 8318): `gemini-3.8-flash`·`gemini-4-argon` 은 요청 어디에든(첫 메시지·도구 결과) 그림이 있으면 글도 도구 호출도 없는 빈 답을 준다(같은 요청에서 그림만 빼면 도구를 부른다, 3/3).
+  `gemini-3.8-flash-high`·`gemini-4-argon-high` 는 그림을 보고 도구도 부른다. 맨 이름 모델에게 그림을 보이려면 `-high` 이름을 써야 한다(강도도 high 가 된다).
 - 실서버 시험: `OPRN_LIVE_KEY=*** bun scripts/qa/openai-compat-live.mjs --base http://mdc-server:8318/v1 --models gemini-4-argon-high --items models,turn,effort,image --allow 'gemini-4-argon*' --block 'claude-*'` — 키는 환경변수로만 받고 출력은 마스킹되며, 패턴에 막힌 모델(claude-*)은 호출하지 않는다.
 - 안 돌린 것: vitest·게이트·typecheck(번들 확인은 esbuild·bun 으로 함). 이 PR 에 새 단위 테스트는 없다.
 

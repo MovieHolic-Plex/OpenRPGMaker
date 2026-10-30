@@ -15,6 +15,7 @@ import { FS_NAMES } from "../fallenStarStory";
 import { FS_SILVER_SPOON } from "./townLife";
 import { FS_KEEPER_SEAL } from "./battleItems";
 import { canMove, isPassable } from "@/project/collision";
+import { assertTownAnchors } from "./frozenTowns";
 import { applyFallenAct2Tower } from "./act2Tower";
 import { buildFrostford, FS2_FROST, FS2_FROST_ID, FS2_RELEASE_STOP, SW_FROST_ARRIVE, SW_ICE_DONE, SW_STOP_B9, SW_VALEN_MET } from "./frostford";
 import { primeWavePlaces, ASH_SPOTS, COURT_SPOTS, DAWN_SPOTS, ICE_SPOTS, FS2_ICE_LAKE_ID, WAVE_ASH_PLAIN, WAVE_ICE_AGE_FIELD, WAVE_MOUNTAIN_FORTRESS, WAVE_RUINED_VILLAGE } from "./act2Places";
@@ -607,6 +608,12 @@ function ensureItemRecord(project: Project, exec: Exec): void {
 // ════════════════════════════════════════════════════════════════════
 
 function hubNight(project: Project, exec: Exec, hubId: string): void {
+  // 2막 좌표는 고정 왕도 배치(frozenTowns.ts)에 묶여 있다 — 배치가 바뀌면 커밋 무결성 오류 대신 여기서 어느 칸인지 말한다.
+  assertTownAnchors(project, hubId, [
+    { what: "B1 사다리 도착 HUB_ARRIVE", ...HUB_ARRIVE }, { what: "뚜껑 문 골목 틈 HUB_ALLEY_GAP", ...HUB_ALLEY_GAP },
+    { what: "B2 미레", ...MIRE_AT }, { what: "B2 토비", ...TOBY_AT }, { what: "B2 마르타", ...MARTA_AT },
+    { what: "골목 틈 밖", x: HUB_ALLEY_GAP.x, y: HUB_ALLEY_GAP.y - 1 }, { what: "B3 우물 앞", ...WELL_FRONT },
+  ]);
   // 같은 광장의 「통금의 밤」 판 — 사람·연출(1막 포위·군중·발렌)은 비우고 문만 남겨 잠근다(duplicate_map events:doors).
   // B2 가 순찰 기사·창틈 주민을, B3·B4 가 천문대 우물·대장간 문을 새로 연다.
   // 천문대 정문만 다른 문구 — 미레 말(기사가 지킨다)과 맞춘다(lockedDoorTexts: 그 맵으로 가는 문).

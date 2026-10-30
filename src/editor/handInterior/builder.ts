@@ -22,11 +22,32 @@ import type { TilesetDef } from "@/project/types";
 
 export const HAND_INTERIOR_TILESET_ID = "atlas_biome_interior";
 
+/** 상판이 dy -1 줄에 그려지고 dy 0 은 받침대·다리인 가구(생성 사양 JSON 을 다시 굽지 않고 여기서 준다 — 사양의 surfaceRow 가 있으면 그것이 먼저). */
+const PEDESTAL_SURFACE_ROW: Readonly<Record<string, number>> = { "mci-cafe-table": -1, "mci-bedside": -1, "mci-med-cart": -1 };
+/** 가구의 상판 줄 dy(없으면 undefined = 0..h-1 줄 전부). */
+/**
+ * 탁상 물건이 앉는 윗면 줄 dy. surfaceRow·받침대 표가 먼저, 없으면 윗면 그림 상자(surface = [x, y, w, h] px, 그림 맨 위 기준)의 가운데가
+ * 발밑 줄 위로 솟은 줄(dy < 0)에 있으면 그 줄 — 카운터(up 8, 윗면 y 2~7)는 윗면이 dy -1 줄에 그려지고 dy 0 은 서랍 앞면이다.
+ * 2026-10-29 방 견본 4판: 계산대 위 돈통·저울·종이 서랍 앞면에 그려져 「서랍장으로 읽힘」(잡화점·빵집·옷가게 major).
+ */
+export function surfaceRowOf(id: string, d: { readonly surfaceRow?: number; readonly surface?: readonly number[]; readonly up?: number }): number | undefined {
+  const fixed = d.surfaceRow ?? PEDESTAL_SURFACE_ROW[id.split(":")[0]!];
+  if (fixed !== undefined) return fixed;
+  if (d.surface && d.surface.length >= 4 && d.up) {
+    const row = Math.floor((d.surface[1]! + d.surface[3]! / 2 - d.up) / 16);
+    if (row < 0) return row;
+  }
+  return undefined;
+}
+
 type SpecCell = readonly [number, number, number, number];
 interface SpecObject {
   readonly ko: string; readonly category: string; readonly category_ko: string; readonly kind: "floor" | "wall" | "hang" | "flat" | "door" | "sidedoor";
   readonly w: number; readonly h: number; readonly up: number; readonly cells: readonly SpecCell[];
   readonly surface?: readonly number[]; readonly animated?: boolean; readonly stairs?: "up" | "down";
+  /** 윗면(상판)이 그려진 줄 dy. 없으면 0..h-1 줄. 원탁·협탁처럼 dy 0 이 받침대인 가구는 -1 — 탁상 물건이 받침대 칸에 오면 상판 칸으로 올린다
+   *  (2026-10-28 interior 장부 111: 카페 원탁 받침대 칸에 컵이 그려져 바닥에 놓인 듯 보였다). */
+  readonly surfaceRow?: number;
   /** 조수용 메모(tiledata/hand-interior/v5/notes6.py): 무엇인지 한 줄 · 쓰는 방 태그 · 놓는 곳 · 짝 소품 id. */
   readonly desc?: string; readonly tags?: readonly string[]; readonly place?: string; readonly pair?: readonly string[];
   /** 쓰임(tiledata/hand-interior/v5/use6.py USE_KO): sit·sleep·open·search·read·counter·travel·light·save·heal·switch·push·trap·key·gate·seal·walk·block. */
@@ -335,6 +356,8 @@ export function buildHandInteriorLayers(input: HandInteriorInput, tileset?: Tile
   const per = new Map<number, Entry[]>();
   const goodsAt = new Map<number, { tile: number; label: string }>();
   const surfaceCells = new Set<number>();
+  /** 받침대 칸 → 그 위 상판 칸(surfaceRow 가구). */
+  const liftGoods = new Map<number, number>();
   const footprint = new Map<number, string>();
   const seats = new Set<number>();
   let order = 0;
@@ -466,7 +489,13 @@ export function buildHandInteriorLayers(input: HandInteriorInput, tileset?: Tile
     for (const [dx, dy, tile, layer] of d.cells) {
       push(o.x + dx, o.y + dy - lift, { key, tile, layer: layer as 2 | 3, label });
       if (flush && inBounds(o.x + dx, o.y + dy - lift)) flushFace.set((o.y + dy - lift) * W + o.x + dx, label);
-      if (isSurfaceObj && dy >= 0 && dy < Math.max(1, d.h) && inBounds(o.x + dx, o.y + dy)) surfaceCells.add((o.y + dy) * W + o.x + dx);
+      const row = surfaceRowOf(o.id, d);
+      if (row !== undefined) {
+        if (dy === row && inBounds(o.x + dx, o.y + dy)) {
+          surfaceCells.add((o.y + dy) * W + o.x + dx);
+          for (let r = dy + 1; r < Math.max(1, d.h); r++) if (inBounds(o.x + dx, o.y + r)) liftGoods.set((o.y + r) * W + o.x + dx, (o.y + dy) * W + o.x + dx);
+        }
+      } else if (isSurfaceObj && dy >= 0 && dy < Math.max(1, d.h) && inBounds(o.x + dx, o.y + dy)) surfaceCells.add((o.y + dy) * W + o.x + dx);
     }
   }
   // 걸이(액자·시계·창)는 벽면에 박은 엘리베이터 문·계단과 같은 칸에 걸 수 없다 — 문 위에 액자가 덮였다.
@@ -525,7 +554,7 @@ export function buildHandInteriorLayers(input: HandInteriorInput, tileset?: Tile
     const tile = S.goods[gd.id.replace(/^goods:/, "")];
     if (tile === undefined) { issues.push({ severity: "error", code: "unknown-goods", message: `탁상 물건 "${gd.id}" 이 없다`, x: gd.x, y: gd.y }); continue; }
     if (!inBounds(gd.x, gd.y)) { issues.push({ severity: "error", code: "out-of-bounds", message: `탁상 물건 ${gd.id} (${gd.x},${gd.y}) 맵 밖` }); continue; }
-    const i = gd.y * W + gd.x;
+    const i = liftGoods.get(gd.y * W + gd.x) ?? gd.y * W + gd.x;
     if (!surfaceCells.has(i)) issues.push({ severity: "error", code: "goods-needs-surface", message: `탁상 물건 ${gd.id} (${gd.x},${gd.y}) — 윗면이 있는 가구(탁자·카운터·책상·협탁 등) 칸 위에만 둔다`, x: gd.x, y: gd.y });
     if (goodsAt.has(i)) issues.push({ severity: "warning", code: "goods-stacked", message: `(${gd.x},${gd.y}) 에 탁상 물건이 둘 — 나중 것만 남는다`, x: gd.x, y: gd.y });
     goodsAt.set(i, { tile, label: gd.id });

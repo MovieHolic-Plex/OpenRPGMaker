@@ -52,7 +52,7 @@
 .tileset-knowledge-template-grid button[aria-pressed="true"] {
   background: var(--surface-selected);
   border-color: var(--accent-primary);
-  box-shadow: inset 3px 0 0 var(--accent-primary);
+  box-shadow: none;
 }
 
 .tileset-knowledge-template-grid button:focus-visible,

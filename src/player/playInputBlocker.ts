@@ -85,8 +85,15 @@ function releaseStrandedTextEntryFocus(pressed: EventTarget | null): void {
   (active as HTMLElement).blur?.();
 }
 
+/** 마우스로 고를 수 있는 메뉴 항목. 누름·클릭만 통과시킨다(호버·끌기는 여전히 막는다). */
+const POINTER_MENU_ITEM_SELECTOR = ".oprn-status-menu .status-menu-command";
+const POINTER_MENU_EVENTS = new Set<string>(["click", "mousedown", "mouseup", "pointerdown", "pointerup"]);
+
 export function shouldBlockPlayPointerEvent(event: PlayPointerEvent): boolean {
   if (isExplicitPointerOwner(event.target)) return false;
+  // 게임 메뉴 명령은 마우스 클릭으로도 고른다 — 눈에 보이는 단추를 눌러도 아무 일이 없었다(HIG C-91).
+  // 단추의 click 처리기는 키보드 합성 click 과 같은 runCommand 다. 맵 이동 같은 다른 누름은 그대로 막는다.
+  if (POINTER_MENU_EVENTS.has(event.type) && hasClosestTarget(event.target, POINTER_MENU_ITEM_SELECTOR)) return false;
   // 휠은 칸을 고르거나 누르지 않는다. 넘치는 읽기 목록 위에서만 통과시킨다.
   // ESC 메뉴 상세(2026-10-17 리뷰 B2: 휠이 막혀 scrollTop 이 0)와 대화 기록·백로그.
   // 백로그 안내는 「휠·↑↓ 넘겨 보기」인데, 키보드 전용 플레이에서 휠이 여기서 막혀 목록이 안 움직였다.

@@ -472,7 +472,7 @@ PASS = {'up': True, 'down': True, 'left': True, 'right': True}
 SOLID = {'up': False, 'down': False, 'left': False, 'right': False}
 def pass_of(pc):
     return {'blank': (SOLID, 'lower'), 'wall': (SOLID, 'lower'), 'floor': (PASS, 'lower'), 'flat': (PASS, 'lower'), 'stair': (PASS, 'lower'),
-            'star': (PASS, 'upper'), 'solid': (SOLID, 'upper'), 'goods': (SOLID, 'upper')}[pc]
+            'star': (PASS, 'upper'), 'solid': (SOLID, 'upper'), 'goods': (PASS, 'upper')}[pc]  # 탁상 물건은 ★ — 받침 가구가 막는다. 카운터처럼 윗면이 발밑 위 줄(주인 통로 칸)에 그려지는 가구에 얹어도 통로를 막지 않게(2026-10-29)
 def tile_pass(tid):
     inf = SH.info[tid]
     return pass_of(inf['pc'])[0] if inf else SOLID
@@ -533,7 +533,7 @@ if SNAP:
 os.makedirs(os.path.dirname(OUT_PNG), exist_ok=True)
 sheet.save(OUT_PNG, optimize=True)
 passability, priority, terrain, tileMeta = [], [], [], []
-PASSAGE_KO = {'blank': 'solid', 'wall': 'solid', 'floor': 'passable', 'flat': 'passable', 'stair': 'passable', 'star': 'passable', 'solid': 'solid', 'goods': 'solid'}
+PASSAGE_KO = {'blank': 'solid', 'wall': 'solid', 'floor': 'passable', 'flat': 'passable', 'stair': 'passable', 'star': 'passable', 'solid': 'solid', 'goods': 'passable'}
 for tid in range(count):
     inf = SH.info[tid]
     if inf is not None and 'legacy' in inf:   # 아무도 안 쓰는 옛 칸: 옛 정의 그대로(옛 맵 호환)

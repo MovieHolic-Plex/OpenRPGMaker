@@ -68,7 +68,7 @@ function generatorCard(generator: WorkshopGenerator, ai: { ready: boolean; hostO
       notes.push(el("p", { class: "left-workshop-note", dataset: { testid: "left-workshop-no-ai" }, text: "이 서버는 AI를 꺼 두어 여기서 그릴 수 없어요. 만든 묶음은 가져올 수 있어요." }));
     } else {
       actions.push(button("내 AI 연결하기", "left-workshop-connect", () => { openAiSettingsModal(); }, true));
-      notes.push(el("p", { class: "left-workshop-note", dataset: { testid: "left-workshop-no-ai" }, text: "그림은 내 AI 계정으로 그려요. 연결하면 바로 만들 수 있어요." }));
+      notes.push(el("p", { class: "left-workshop-note", dataset: { testid: "left-workshop-no-ai" }, text: "그림은 내 AI 계정으로 그려요." }));
     }
     actions.push(button("만든 묶음 가져오기", "workshop-gen-import-object-gen", () => openGen("object-gen"), actions.length === 0));
   } else if (generator.id === "char-gen" || generator.id === "tile-gen") {
@@ -132,7 +132,8 @@ export function createLeftWorkshopPane(): { root: HTMLElement; show(): void; dis
         button("만든 묶음 가져오기", `workshop-gen-import-${importGen}`, () => openGen(importGen)),
       ],
     }));
-    const upcoming = WORKSHOP_GENERATORS.filter((g) => g.status === "next" || g.status === "soon");
+    // 「준비 중」(soon) 카드는 누를 수 있는 것이 없어 빼고, 다시 만드는 중(next)인 생성기만 남긴다.
+    const upcoming = WORKSHOP_GENERATORS.filter((g) => g.status === "next");
     if (upcoming.length) {
       const ai = { ready: workshopAiReady(), hostOff: false };
       root.append(

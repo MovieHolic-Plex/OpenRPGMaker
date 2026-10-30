@@ -491,6 +491,38 @@
   color: var(--db-studio-danger);
 }
 
+/* 삭제는 복제 옆에 붙지 않는다 — 12px 띄워 다른 무리임을 보인다(V-database-15). 참조 중이라 지울 수 없으면
+   흐린 채 포커스는 받고, 이유는 툴바 아래 한 줄(상태 줄, aria-describedby)에 보인다(J-p6-keyboard-11). */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-toolbar .db-toolbar-delete {
+  display: contents;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-toolbar .db-toolbar-delete > .btn.danger {
+  margin-left: 12px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-toolbar .btn.danger.is-blocked {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-toolbar .db-toolbar-reason {
+  color: var(--db-studio-text-2);
+  flex: 1 0 100%;
+  font: 400 12px/1.4 var(--font-ui);
+  margin: 0;
+  order: 99;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  /* 한 줄 말줄임 글자가 목록 칸의 최소 폭을 밀어 넓히지 않게 한다(본문 폭은 0 으로 계산). */
+  contain: inline-size;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-toolbar .db-toolbar-reason.is-pulsed {
+  color: var(--db-studio-danger);
+}
+
 .database-modal-backdrop .database-modal-window .database-modal-body .db-toolbar .btn.danger:hover,
 .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-btn-danger:hover {
   background: var(--db2-danger-tint);

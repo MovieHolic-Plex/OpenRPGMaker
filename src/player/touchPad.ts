@@ -39,9 +39,20 @@ const STICK_SECTORS: readonly { readonly center: number; readonly keys: readonly
 const DIAGONAL_HALF_WIDTH = 17;
 const CARDINAL_HALF_WIDTH = 28;
 const SECTOR_HYSTERESIS = 8;
-/** 중립 → 방향은 이 거리(px)를 넘어야, 방향 → 중립은 HOLD 아래로 내려와야. */
+/** 중립 → 방향은 이 거리(px)를 넘어야, 방향 → 중립은 HOLD 아래로 내려와야. 판 반지름을 모를 때의 값. */
 export const STICK_DEADZONE = 12;
 const STICK_DEADZONE_HOLD = 8;
+/**
+ * 판 반지름에 비례한 데드존(2026-10-30): 들어갈 때 12%, 나올 때 8%. 아날로그 스틱 관례(반지름의 10~12%)와 같다.
+ * 예전 고정 12px 는 세로 판(반지름 65px)에서 18%라 엄지를 조금 굴려서는 출발하지 않았다. 너무 작으면 엄지를 얹기만 해도 걸으니 6px 밑으로는 내리지 않는다.
+ */
+export const STICK_DEADZONE_RATIO = 0.12;
+const STICK_DEADZONE_HOLD_RATIO = 0.08;
+
+export function stickDeadzone(radius: number | undefined, holding: boolean): number {
+  if (!(radius && radius > 0)) return holding ? STICK_DEADZONE_HOLD : STICK_DEADZONE;
+  return holding ? Math.max(4, radius * STICK_DEADZONE_HOLD_RATIO) : Math.max(6, radius * STICK_DEADZONE_RATIO);
+}
 
 /**
  * 조이스틱을 판 반지름의 70% 넘게 밀면 달리고, 60% 밑으로 돌아오면 다시 걷는다(2026-10-25 — 따로 달리기 단추 대신).
@@ -62,10 +73,10 @@ function angleGap(a: number, b: number): number {
 }
 
 /** 손가락 위치(중심 기준 dx,dy) → 8방향 구역 번호(STICK_SECTORS 색인) 또는 null(중립). previous 는 직전 구역(떨림 방지). */
-export function stickSector(dx: number, dy: number, previous: number | null): number | null {
+export function stickSector(dx: number, dy: number, previous: number | null, radius?: number): number | null {
   const distance = Math.hypot(dx, dy);
   if (!Number.isFinite(distance)) return null;
-  if (distance <= (previous === null ? STICK_DEADZONE : STICK_DEADZONE_HOLD)) return null;
+  if (distance <= stickDeadzone(radius, previous !== null)) return null;
   const angle = (Math.atan2(dy, dx) * 180) / Math.PI;
   const halfWidth = (index: number): number => (index % 2 === 1 ? DIAGONAL_HALF_WIDTH : CARDINAL_HALF_WIDTH);
   if (previous !== null && angleGap(angle, STICK_SECTORS[previous]!.center) <= halfWidth(previous) + SECTOR_HYSTERESIS) return previous;
@@ -165,6 +176,16 @@ function buzz(ms: number): void {
   try {
     if (typeof navigator !== "undefined" && typeof navigator.vibrate === "function") navigator.vibrate(ms);
   } catch { /* 권한·정책 */ }
+}
+
+/**
+ * 누름·뗌이 실제로 일어난 시각. 처리기가 도는 시각(performance.now)이 아니다 — 무거운 맵·느린 폰에서 메인 스레드가 바쁘면
+ * pointerup 처리가 수백 ms 늦게 돌아 짧은 탭이 「길게 누름」으로 버려졌다(2026-10-30 실측: 분위기 효과가 있는 숲 맵에서 맵 탭이 하나도 안 먹음).
+ * event.timeStamp 는 브라우저가 입력을 받은 시각이라 손가락이 닿아 있던 시간을 그대로 잰다.
+ */
+export function inputTime(event: Event): number {
+  const stamp = event.timeStamp;
+  return Number.isFinite(stamp) && stamp > 0 ? stamp : performance.now();
 }
 
 /** 키보드와 같은 곳(초점 요소)에 보낸다 — 상점처럼 자기 상자에 keydown 을 거는 화면도 패드를 받는다. 거품은 document 까지 올라간다. */
@@ -276,7 +297,7 @@ export function createTouchPad(host: HTMLElement, options?: TouchPadOptions): To
     const distance = Number.isFinite(measuredDistance) ? measuredDistance : 0;
     const unitX = distance > 0 ? dx / distance : 0;
     const unitY = distance > 0 ? dy / distance : 0;
-    const next = stickSector(dx, dy, sector);
+    const next = stickSector(dx, dy, sector, Math.min(base.offsetWidth, base.offsetHeight) / 2);
     if (next !== sector) {
       // 방향이 처음 잡히거나 바뀔 때 짧게 떤다 — 눈을 화면에 둔 채 엄지로 방향을 느낀다.
       if (next !== null) haptic(sector === null ? 8 : 5);

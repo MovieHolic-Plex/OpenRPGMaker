@@ -1,0 +1,18 @@
+[
+  { "id": "L6-list-1024", "width": 1024, "height": 640, "lang": "ko", "steps": ["aria:자료집"] },
+  { "id": "L6-list-900", "width": 900, "height": 600, "lang": "ko", "steps": ["aria:자료집"] },
+  { "id": "L6-db-1440", "width": 1440, "height": 900, "lang": "ko", "steps": ["aria:자료집"] },
+  { "id": "L6-db-en", "width": 1366, "height": 768, "lang": "en", "readySelector": "[data-testid=\"toolbar-database\"]", "steps": ["aria:자료집"] },
+  { "id": "L6-enemy-en", "width": 1366, "height": 768, "lang": "en", "readySelector": "[data-testid=\"toolbar-database\"]", "steps": ["aria:자료집", "text:전투", "aria:전투 몬스터"] },
+  { "id": "L6-world-1440", "width": 1440, "height": 900, "lang": "ko", "steps": ["aria:자료집", "text:이야기", "aria:세계 개요"] },
+  { "id": "L6-world-en", "width": 1366, "height": 768, "lang": "en", "readySelector": "[data-testid=\"toolbar-database\"]", "steps": ["aria:자료집", "text:이야기", "aria:세계 개요"] },
+  { "id": "L6-life-rail", "width": 1440, "height": 900, "lang": "ko", "steps": ["aria:자료집", "text:생활"] },
+  { "id": "L6-delete-ref", "width": 1440, "height": 900, "lang": "ko", "steps": ["aria:자료집", "text:수호자", "text:삭제"] },
+  { "id": "L6-escape-close", "width": 1440, "height": 900, "lang": "ko", "steps": ["aria:자료집", "text:+ 추가", "key:Escape"] },
+  { "id": "L6-keep-editing", "width": 1440, "height": 900, "lang": "ko", "steps": ["aria:자료집", "text:이야기", "aria:설정집", "text:+ 새 문서", "aria:이름", "key:K", "key:A", "key:Escape", "text:계속 편집"] },
+  { "id": "L6-ctrl-k", "width": 1440, "height": 900, "lang": "ko", "steps": ["aria:자료집", "key:Control+k"] },
+  { "id": "L6-search-arrow", "width": 1440, "height": 900, "lang": "ko", "steps": ["aria:자료집", "aria:이름 또는 ID 검색", "key:ArrowDown"] },
+  { "id": "L6-record-switch", "width": 1024, "height": 640, "lang": "ko", "steps": ["aria:자료집", "text:칭호", "key:End", "key:X", "text:수호자"] },
+  { "id": "L6-states-en", "width": 1366, "height": 768, "lang": "en", "readySelector": "[data-testid=\"toolbar-database\"]", "steps": ["aria:자료집", "text:전투", "aria:상태"] },
+  { "id": "L6-delete-free", "width": 1440, "height": 900, "lang": "ko", "steps": ["aria:자료집", "text:수호자", "key:End", "key:Enter", "text:삭제"] }
+]

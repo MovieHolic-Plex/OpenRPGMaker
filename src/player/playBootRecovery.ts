@@ -105,9 +105,11 @@ export function repairSummaries(repairs: readonly PlayPreflightRepair[]): readon
  * 세션 생성은 이 스냅숏과 별개로 고친 프로젝트를 명시적으로 받아 시작 맵/좌표를 복구한다.
  */
 export function installBootProject(project: Project): () => void {
-  const host = store as { beginReadOnlyProjectSnapshot?: (snapshot: Project) => () => void };
+  const host = store as { beginReadOnlyProjectSnapshot?: (snapshot: Project, options?: { readonly owned?: boolean }) => () => void };
   if (typeof host.beginReadOnlyProjectSnapshot !== "function") return () => undefined;
-  return host.beginReadOnlyProjectSnapshot(project);
+  // 받는 프로젝트는 예비검사(preflightProjectForPlay)나 safeModeProject 가 막 만든 사본이다 — 다시 복사하지 않는다.
+  // 새 게임 직후 메인 스레드를 0.5초 막아 오프닝 첫 컷 앞 검은 화면을 늘렸다(2026-10-29 maou-konbini).
+  return host.beginReadOnlyProjectSnapshot(project, { owned: true });
 }
 
 /**

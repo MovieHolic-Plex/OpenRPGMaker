@@ -55,6 +55,23 @@ export function audioPlayback(
   return { url, playable, midi };
 }
 
+/** 목록 행 글자 — 「필드 — Town Theme (CC0)」 를 곡 이름(주)과 「필드 · CC0」(보조)로 나눈다. */
+export function audioRowParts(name: string): { readonly title: string; readonly meta: string } {
+  const license = name.match(/\s*\((CC0|CC-BY[^)]*|CC BY[^)]*)\)\s*$/u);
+  const base = license ? name.slice(0, license.index).trim() : name.trim();
+  const dash = base.indexOf(" — ");
+  const title = dash > 0 ? base.slice(dash + 3).trim() : base;
+  const meta = [dash > 0 ? base.slice(0, dash).trim() : "", license?.[1] ?? ""].filter(Boolean).join(" · ");
+  return { title, meta };
+}
+
+/** 미리 듣기를 못 하는 이유 한 마디. */
+export function audioUnplayableReason(playback: { readonly url: string | null; readonly midi: boolean }): string {
+  if (playback.midi) return "MIDI · 미리 듣기 불가";
+  if (playback.url === null) return "파일 없음";
+  return "지원하지 않는 형식";
+}
+
 export function audioPlaybackBadge(
   resourceId: string,
   project: Pick<Project, "assets">,

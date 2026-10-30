@@ -2234,6 +2234,14 @@ dedicated exported player passed. Do not describe this as all browser checks gre
 - `qa:game check` 자동 플레이 — 길이 막히면 막은 조사 이벤트 앞에서 아는 필드 스킬을 쓴 뒤 길을 다시 잰다. `partyKnowsSkill` 선행 조건은 `learnSkill`/동료 합류로 채운다. 아는 사람이 없으면 `autoplay-failed` 문구가 「이 길 앞에서 learnedSkills/learnSkill/grantsSkillIds 로 가르쳐라」 까지 말한다.
 
 재현 프로젝트(poke slice-3, 1번 도로 바위): 스킬을 아는 배우가 없을 때 막힘 1(걸어갈 길 없음), 주인공 `learnedSkills:[{level:1,skillId:"mx_skill_rocksmash"}]` 면 막힘 0. 가르칠 곳이 아예 없으면(분실된 스킬) 막힘 2(참조 누락 + 위 안내).
+- 퀘스트 납품(`author_quest` → `questCompiler`): 갈래 앞에서 `m2-217-data-query` 의 `itemCount` 로 채운 변수(`var_…_quantity0 >= n`)는 계획에서 「그 물건 가지기」 선행으로 푼다 — 개수 문턱은 세지 않고 러너가 런타임으로 돌려 본다(모자라면 그 목표가 실패로 남는다). 전에는 「세터 없는 선행」으로 엔딩 계획이 끊겨 2026-10-28 standin slice(들꽃마을 세 부탁)가 거짓 `autoplay-failed` 였다.
+- 다일 반복(2026-10-29 standin romance 카페 하은: 1~7일째 페이지마다 +호감·「오늘 대화 끝」 ON, 출입문이 그 스위치 ON 페이지에서 날 +1·끄기)은 세 규칙으로 푼다(`autoPlay.ts`). 전에는 「한 번만 열리는 세터」로 문턱 미달 → 엔딩 셋 모두 거짓 `autoplay-failed`.
+- 길 위 장애물을 치우는 레버(2026-10-29 vm1 terra/jrpg: 레버 (6,12) 가 스위치를 켜면 막힌 바위 (12,14)·(12,15) 의 둘째 페이지가 발밑·투명이 된다)는 목표의 선행 조건이 아니라서 계획에 없다. `runPlan` 이 「걸어갈 길이 없습니다」 뒤에 같은 맵의 `pathOpenerGoals` — 지금 막는 첫 페이지와 «스위치 ON» 에서 지나갈 수 있는 뒷페이지를 가진 이벤트의 그 스위치 세터(선행 조건 없는 것만) — 를 하나씩 켜 보고 다시 시도한다.
+  ① 되풀이 준비(`pageResetGoals`)의 끄는 이벤트가 그 스위치 ON 페이지에서만 열려도 받는다(세터가 방금 켰다). 세터 페이지가 스위치 ON 을 요구하고 스스로 끄면(출입문 날 +1) 되풀이 준비는 그 스위치를 다시 켜는 이벤트다.
+  ② 문턱 목표·되풀이 준비에 같은 이벤트 다른 페이지의 같은 쪽 세터를 형제(`Goal.siblings`)로 달고, 실행 때 지금 열린 페이지의 형제로 바꾼다. 지금 페이지에 세터가 없으면(7일째 고백 페이지) 부르지 않고 실패 — 엔딩을 «되풀이 준비» 로 터뜨리지 않는다.
+  ③ 목표 상한(`targetCaps`): 같은 이벤트 뒤 페이지가 목표 페이지 조건 전부 + 문턱 하나(호감 ≥·변수 ≥/>)를 더 가지면 그 문턱 미만, 목표 triggerEnding 앞에 같은 길로 도는 triggerEnding 의 엔딩 호감 문턱 미만. 길 밖 선택지는 0번 대신 그 값을 올리지 않는 보기를 고른다(평범 엔딩을 고백 페이지가 덮거나 혼자 엔딩 앞에서 평범 엔딩이 터지지 않게).
+  재생 `bun scripts/qa/assistant-v2/dayCycleReplay.mts <project.json>... --negatives --as-variable`: romance 엔딩 셋(regular·alone·together)이 각자 엔딩에 닿고, 반례(날 += 지움·호감 + 지움·스위치 끄기 지움)는 여전히 막힌다(호감을 지워도 혼자 엔딩은 정상 도달). `--as-variable` 은 호감을 변수 하나(일과 점수)로 바꾼 사본으로 변수형 다일 반복을 본다 — 엔딩 조건을 비우므로 혼자 엔딩 판은 조건 없는 평범 엔딩이 먼저 터진다(사본의 부산물). standin slice·errand 는 하루 안의 부탁·배달이라 다일 구조가 아니고, 바꾸기 전후 결과가 같다. 다른 장르 standin 9판·옛 연애 픽스처 15개도 결과 불변.
+- 증거 제시(`presentItem`, 2026-10-29 추리 사건): 목표가 증거 제시 보기 안에 있으면 그 보기의 아이템을 낸다(`choiceSequence` 의 `{present:itemId}`), 길 밖 증거 제시는 닫는다. 선택지 대신 증거 제시 창이 떠 있으면 닫고 이어 간다. 전에는 `choose` 가 「대기 중 선택지가 없습니다」로 끝나 증거 제시 갈래 속 목표를 못 채웠다.
 알려진 한계: `storeParty`/`recallParty` 로 바뀐 파티 구성은 자동 플레이가 모델링하지 않는다(세트 안 배우를 선행 조건으로 보지 않음), 다단계 보스·`oncePerBattle` 은 기존 전투 해결기(첫 적을 계속 공격)에 맡긴다.
 - `ct-stage-performance`(`scripts/qa/runtime/ct-stage-performance*`) — `author_stage_performance` 로 저작한 공연 컷신을 출하 플레이어로 본다(가사·합창 코너 자막, 조명 어두움, 끝난 뒤 색조 복구). 크로미움은 `unshare -rn` 안에서.
 
@@ -2263,6 +2271,7 @@ ct-vehicle 은 별도 작업이 소유한다. 구조 가드(`src/ai/gameStructur
 1. **호감 문턱을 선행 요구로 안 봤다** — 페이지 조건 `friendshipAtLeast` 를 `leafRequirements` 가 버려서, 호감 20 이 필요한 고백 페이지를 호감 0 으로 한 번 조사하고 「다른 페이지가 실행됐다」로 오판. 이제 `Requirement` 종류 `friendship`(npcKey·value): 세터는 `changeFriendship(delta>0)`(npcKey 가 비면 이벤트 `characterId`), 완료는 `session.friendship[npcKey] ≥ value`, 변수 문턱과 같은 되풀이(`repeat`, 최대 20번)로 쌓는다.
 2. **NPC 일정을 안 봤다** — 러너는 일정이 있는 이벤트를 시각에 맞춰 `session.eventLocations` 의 다른 맵·칸에 세운다. 계획기는 저작 위치로 걸어가 「조사할 action 이벤트 없음」. `executeGoal` 이 `presentLocation()` 으로 지금 선 자리(맵·칸)를 쓴다.
 3. **하루 잠금이 공통 이벤트로 풀리는 걸 몰랐다** — 「오늘 만남 끝」 스위치를 침대 이벤트가 아니라 `timeSystem.onDayEnd` 공통 이벤트가 끈다. 계획기는 공통 이벤트 안 세터를 못 써서 「되풀이해도 문턱에 닿지 않습니다」. 이제 그 스위치를 `onDayEnd` 가 끄면 되풀이 준비로 `advanceDays 1`(`Goal.sleepDays`)을 쓴다. 목표 페이지가 같은 스위치 OFF 를 요구하면 선행 뒤에 하룻밤을 한 번 넣는다.
+5. (2026-10-28 추가) **컷신으로 옮겨진 NPC 를 저작 칸으로 봤다** — 시작 컷신이 NPC 를 주인공 옆으로 데려오면(`moveEvent approach`) 러너는 그 실제 자리(`SceneTestResult.movedEvents`)에서 「이동 대상에 막는 이벤트」로 멈추는데, 계획기 `pathMoves` 는 저작 칸을 피해 길을 짰다. 이제 `fireEvent` 가 `driver.last.movedEvents` 를 넘겨 현재 맵의 막는 이벤트를 지금 자리로 잰다(standin jrpg 「버들마을과 마왕의 동굴」 동굴 입구).
 4. (참고) 러너 쪽 호감 대화 재현은 `applySocialTalkForRunner`(`socialLoop` 켠 프로젝트) — 별도 PR.
 
 **정밀성 확인(반례 3종이 여전히 막힌다)**: 호감을 올리는 세터를 지운 사본, `onDayEnd` 리셋을 지운 사본, 일정이 문 없는 맵으로 보내는 사본 → 모두 `autoplay-failed`. 입력·출력은 `~/romance-fix-work/item3/`. 알려진 한계: `talkFriendship`(대화 자체가 호감을 주는 이벤트)는 세터 방문이 없어 아직 계획에 못 쓴다.
@@ -2342,3 +2351,52 @@ ct-vehicle 은 별도 작업이 소유한다. 구조 가드(`src/ai/gameStructur
   행에 testid 가 없다). 맵·이벤트 목록 조회도 없다(프로젝트 JSON 에서 읽어라). 대사는 «지금 떠 있는 창» 글자만
   보인다. 재현 계획을 세울 때 이 제약을 전제로 잡아라.
 
+
+### 실물 게임(SQLite) 전투 런타임 QA — `qa:runtime --whole-game` (2026-10-29)
+
+조수가 만든 게임은 `project.sqlite` + `assets/` 폴더라 커밋된 JSON 픽스처가 없고, 올린 그림(uploaded)은
+JSON 만으로는 안 나온다. `--whole-game <project 폴더>` 는 `wholeGamePlayer.mjs --serve` 를 띄워 제품
+`prepareWebExport` 투영 + 컴파일된 `dist/export-player` + 올린 그림(SHA 확인)으로 시나리오를 돌린다.
+먼저 `vite build --config vite.player.config.ts`(워크트리는 `VITE_CACHE_DIR=$PWD/.vite-cache/build`)로 dist 를 만든다.
+
+```sh
+node scripts/runtime-qa.mjs --scenario whole-game-battle-jrpg --browser firefox --netns \
+  --whole-game ~/z-project/assistant-whole-game/suite/runs/2026-10-28-standin/standin/jrpg/project --out /tmp/bq/jrpg
+```
+
+시나리오 `whole-game-battle-{jrpg,dungeon,monster}` 는 공용 비트(`scripts/qa/runtime/wholeGameBattleCommon.mjs`)로
+타이틀 → 오프닝 건너뛰기(Esc 두 번) → 필드 적 옆 칸 순간이동 → 몸으로 밀어 접촉 발동 → 명령 → 공격 연출 → 승리 결과 창 →
+필드 복귀 → 체력 1(`?e2eVitals=1`) 패배 → 게임 오버까지 1배로 찍는다. 몬스터 판은 박사에게 첫 동료를 받은 뒤 트레이너에게 말을 건다.
+추가 비트(2026-10-29): 승리 전투에서 기술(`battle` op `plan` + `stopAfter:"skill"` — 연출 도중 멈춤)·아이템(`giveItem` op 로 가방에 넣고 사용)·
+도주(`fallback:"escape"`, 성공할 때까지), 몬스터 판은 1번길 키큰풀에서 `pressUntilJs keys:[→→→←←←]` 로 오가며 야생 조우 → 가방 → 포획 구슬
+(`capture:<itemId>`) → 포획 → 다시 조우 → 도망간다. 풀 칸은 런타임 `__oprnDebug.terrainIdAt(x,y)` 로 찾았다(번들 타일셋 지형은 내보낸 JSON 에 없다).
+함정: 전투 복귀 직후는 `battle-transition-overlay` 암전이라 필드 조건에서 빼야 하고, 결과 창·게임 오버는 미끄러지며 들어오므로
+`waitForVisible minAlpha 0.99` 뒤에 찍는다. 부하가 높으면 타이틀 첫 Enter 가 씹힌다 — 상태가 읽힐 때까지 누른다.
+
+공포판 `whole-game-horror`(standin horror 「폐병원」): 첫 필드(어둠 ambient 0.85·손전등 at:player) → 잠긴 비상구 조사 대사 → `setSwitch` op 로
+추격자 페이지 스위치(sw_0001, 원래는 금고 퍼즐 끝)를 켜고 순찰 사각형 왼쪽 변 위 (28,25)에 서서 추격자가 보고 3칸 안으로 올 때까지
+(`readState().horror.pursuits[*].active` + `eventLocations`) → 잡힘 → 공포 게임 오버 → 「다시 도망친다」 → 다시 잡힘 → 「타이틀로」 → 「기록 불러오기」.
+함정: 추격자는 바라보는 쪽만 본다 — 집 북쪽은 등 뒤라 영원히 안 잡힌다. `__oprnDebug.setSwitch/setVariable/giveItem` 은 이제 끝에
+`refreshRuntimeEntities` 를 불러 페이지 조건을 다시 본다(전에는 켠 페이지가 화면에도 이동에도 안 나왔다). 숨기 비트(hide → 숨은 채 추격자 2칸 안 통과 → 5칸 밖 → 나오기)는 은신처가 있는 판에서만 통과한다 — 원본 standin 판은 은신처 0곳이라 실패하고(전), `scripts/content/apply-chaser-hiding.mts` 로 소급한 사본(병원 침대 (38,24), 순찰에서 10걸음)에서 통과한다(후). 들킨 뒤 (31,24)→(37,24) 복도를 `playerRoute` 로 달려 숨는다. 추격자가 얼마나 가까이 오는지는 판마다 다르다(부하·발견 시점 — 2칸·5칸 실측) — 근접 비트는 3칸 안 또는 추격 해제에서 넘어가고 최소 거리를 `/tmp/hide-min-distance.json` 에 적는다. 그 앞 hide-approach 비트가 반짝임·「숨기」 안내를 찍는다.
+
+이야기판 `whole-game-magic`·`whole-game-joseon`(standin magic 「별빛 마법학교」·joseon, 공통 비트 `wholeGameStoryCommon.mjs`): 타이틀 → 오프닝 두 장 →
+(magic) 첫 대사(흉상·이름표) → Esc 두 번으로 오프닝 컷신 건너뛰기 → 교장·사서 대화 → 기숙사 들어가기·나오기 → `setSwitch sw_0003` 뒤 천문탑 → 엘라 교수 대화 → 엔딩.
+(joseon) 첫 필드 → 감옥 들어가기·나오기 → 주막 안(거리에서 들어가는 문이 없어 순간이동) → 나오기. 문 이동은 `transferBeat`(문 앞 순간이동 → 화살표를 `currentMapId` 가 바뀔 때까지).
+magic 첫 필드 비트가 「Esc 두 번」 회귀를 잡는다 — 대사 창이 떠 있는 컷신에서 건너뛰기가 안 되면 6회 뒤에도 「건너뛰기」 가 남아 실패한다.
+
+추리판 `whole-game-mystery`(2026-10-29, `ai/v2/mysteryCase.ts` 로 세운 판): `MYS='<json>'`(무대·무죄·범인·지목 칸, 증거 아이템, 그 페이지 조건 스위치, 고르기 번호)는 `scripts/qa/assistant-v2` 의 임시 도우미처럼 고친 프로젝트에서 뽑는다.
+무대(용의자 셋) → 무죄 탐문(흉상·이름표·알리바이 증인) → 범인에게 증거 제시 창 → 맞는 증거 반응 → 지목 칸 범인 고르기 → 틀린 사람(엔딩 없음) → 범인 → 증거 제시 → 엔딩. `MYS_MODE=before` 는 고치기 전 판: 무대 → 지목 칸 → Enter 만으로 엔딩.
+
+목표 대상판 `whole-game-objective-target`(VM 측정 판 아무거나, 2026-10-29): `OBJ_APPROACH='{"x","y","face"}'`(시작 맵의 시작 목표 대상 곁 칸) 를 주면
+첫 필드(목표 대상 칸의 금빛 표시) → 대상 곁에서 바라봄(안내 「Z 조사 · 이름」) → 조사·대사 넘김 → 다음 목표 대상 표시를 찍는다.
+VM 판 5개의 곁 칸: deepseek escape (3,4) up · terra escape (2,4) up · terra mystery (4,9) up · flash mystery (7,10) up · deepseek mystery (11,7) right.
+
+몬스터 수집 전 구간 `whole-game-monster-campaign`(standin monster 「새싹 몬스터 모험」, 2026-10-29): 스타터 → 새싹마을 센터 → 1번길 야생·포획 →
+1번길 트레이너 → 새순 마을 도착(목표 줄이 체육관을 가리키나) → 센터 회복 → 체육관 퍼즐(받침→덩굴 문→가시 덤불; 관원 셋의 `_won` 은
+`setSwitch` 로 둔다 — 시야 전투가 퍼즐 칸마다 끼어든다) → 관장전 → 배지 → 도감 정원 풀숲 레벨업 5판 → 관측탑 보스 → 리그 챔피언 → 엔딩.
+순간이동 뒤 판정은 `fieldReady` 가 아니라 실행·입력 깃발(`runtime-state-json` 의 `data-live-flags`)까지 보는 `fieldIdle` 이다 — 배지 번쩍임·간호사
+회복 연출 중에도 대사창이 없어 `fieldReady` 가 통과하고, 다음 비트에 대사가 엉뚱한 곳에서 떴다. 전투 op 는 선두가 쓰러져 교체 창
+(`actor-switch-*` 만 있고 뿌리 명령 없음)이 뜨면 첫 교체 대상을 누른다(`runtimeQaBattle.mjs`). 보스 이후는 풀숲 조우·레벨에 따라 지기도 한다
+(진 판은 센터에서 깨고 챔피언은 잠겨 있다 — 결함이 아니라 레벨 부족).
+
+체크포인트도 같은 실물 게임으로 부팅된다(2026-10-29 — 전에는 `--checkpoint-set` 경로가 `--whole-game` 을 무시하고 기본 픽스처로 떨어져 «없는 맵» 으로 죽었다). 판정자가 멈춘 자리 하나를 확인할 때: 세트 파일에 `{ mapId, x, y, facing, beats }` 만 적고 `--scenario checkpoints --checkpoint-set <세트> --whole-game <폴더> --netns`. 예: standin monster 1번길 (19,20) 오른쪽 누르기 — 대화창 없이 제자리, 아래는 움직임 → 오른쪽 칸은 숲 경계(대사 잠금 아님).

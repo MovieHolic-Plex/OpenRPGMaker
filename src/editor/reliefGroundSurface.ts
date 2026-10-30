@@ -9,7 +9,17 @@ import { hasRelief } from "@/project/relief/walk";
 import { bindReliefRevision, unbindReliefRevision } from "@/project/relief/revision";
 import { store } from "@/project/store";
 
-export interface GroundRaster { readonly width: number; readonly height: number; readonly data: ArrayLike<number> }
+/**
+ * 칩셋 그림의 픽셀. `data` 는 시트 전체, `band` 는 16줄 띠를 처음 읽을 때 꺼내 주는 게으른 판(출하 플레이어의 큰 시트 —
+ * 버들항 2048×4240 을 통째로 getImageData 하면 새 게임마다 ~1초였다, 2026-10-29 pacing-boot). 둘 중 하나는 있다.
+ */
+export interface GroundRaster {
+  readonly width: number;
+  readonly height: number;
+  readonly data?: ArrayLike<number>;
+  band?(y: number): { readonly y0: number; readonly data: ArrayLike<number> } | undefined;
+}
+const RASTER_BAND_ROWS = 16;
 const reliefStore = store as Pick<typeof store, "getCurrent"> & Partial<Pick<typeof store, "getVersionToken" | "subscribe">>;
 const cellCaches = new WeakMap<object, WeakMap<TilesetDef, Map<string, Uint8ClampedArray>>>();
 const imageRasters = new WeakMap<object, GroundRaster>();
@@ -135,11 +145,25 @@ export function reliefGroundFromImage(map: GameMap, tileset: TilesetDef, image: 
   if (!isImage(image) || !reliefGroundAvailable(map, image)) return undefined;
   let raster = imageRasters.get(image);
   if (!raster) {
-    const canvas = document.createElement("canvas"); canvas.width = image.width; canvas.height = image.height;
+    // 시트 전체가 아니라 맵이 실제로 쓰는 칸이 든 16줄 띠만 처음 쓸 때 읽는다.
+    const canvas = document.createElement("canvas"); canvas.width = image.width; canvas.height = RASTER_BAND_ROWS;
     const ctx = canvas.getContext("2d", { willReadFrequently: true }); if (!ctx) return undefined;
-    ctx.drawImage(image, 0, 0);
-    const data = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    raster = { width: canvas.width, height: canvas.height, data: data.data }; imageRasters.set(image, raster);
+    const width = image.width, height = image.height;
+    const bands = new Map<number, Uint8ClampedArray>();
+    raster = { width, height, band(y) {
+      if (y < 0 || y >= height) return undefined;
+      const y0 = Math.floor(y / RASTER_BAND_ROWS) * RASTER_BAND_ROWS;
+      let data = bands.get(y0);
+      if (!data) {
+        const rows = Math.min(RASTER_BAND_ROWS, height - y0);
+        ctx.clearRect(0, 0, width, RASTER_BAND_ROWS);
+        ctx.drawImage(image, 0, y0, width, rows, 0, 0, width, rows);
+        data = ctx.getImageData(0, 0, width, rows).data;
+        bands.set(y0, data);
+      }
+      return { y0, data };
+    } };
+    imageRasters.set(image, raster);
   }
   return createReliefGroundSurface(map, tileset, raster);
 }
@@ -160,10 +184,18 @@ function cellContext(atlas: GroundRaster, data: Uint8ClampedArray, ox: number, o
     },
     drawImage(_image: unknown, sx: number, sy: number, sw: number, sh: number, dx: number, dy: number, dw: number, dh: number) {
       dx -= ox; dy -= oy;
-      for (let y = Math.max(0, Math.floor(dy)); y < Math.min(16, Math.ceil(dy + dh)); y++) for (let x = Math.max(0, Math.floor(dx)); x < Math.min(16, Math.ceil(dx + dw)); x++) {
-        const ax = Math.floor(sx + (x - dx + .5) * sw / dw), ay = Math.floor(sy + (y - dy + .5) * sh / dh);
-        if (ax < 0 || ay < 0 || ax >= atlas.width || ay >= atlas.height) continue;
-        const i = (ay * atlas.width + ax) * 4; blend((y * 16 + x) * 4, atlas.data[i]!, atlas.data[i + 1]!, atlas.data[i + 2]!, atlas.data[i + 3]!);
+      for (let y = Math.max(0, Math.floor(dy)); y < Math.min(16, Math.ceil(dy + dh)); y++) {
+        const ay = Math.floor(sy + (y - dy + .5) * sh / dh);
+        if (ay < 0 || ay >= atlas.height) continue;
+        // 띠는 줄마다 한 번만 찾는다 — 화소마다 찾으면 띠를 아낀 것보다 더 든다.
+        let src = atlas.data, row = ay * atlas.width;
+        if (!src) { const band = atlas.band?.(ay); if (!band) continue; src = band.data; row = (ay - band.y0) * atlas.width; }
+        for (let x = Math.max(0, Math.floor(dx)); x < Math.min(16, Math.ceil(dx + dw)); x++) {
+          const ax = Math.floor(sx + (x - dx + .5) * sw / dw);
+          if (ax < 0 || ax >= atlas.width) continue;
+          const i = (row + ax) * 4;
+          blend((y * 16 + x) * 4, src[i]!, src[i + 1]!, src[i + 2]!, src[i + 3]!);
+        }
       }
     },
   } as unknown as CanvasRenderingContext2D;

@@ -27,6 +27,7 @@ import { FS_VALEN_START, FS_VAULT_LENS, rebuildFallenRooms } from "./fallenStarR
 import { FALLEN_STAR_ACT1, FS_NAMES, FS_PREFIX, FS_STAR_KEY_ITEM } from "./fallenStarStory";
 import { applyFallenLoreAndHanel } from "./fallen/loreAndHanel";
 import { reworkFallenTown } from "./fallenTown";
+import { withFrozenTowns } from "./fallen/frozenTowns";
 import { applyFallenBattleItems, FS_SPEAR_PIKE, FS_SWORD_GALE } from "./fallen/battleItems";
 import { applyFallenAreaEncounters, applyFallenBattleRoles } from "./fallen/battleRoles";
 import { applyFallenBattleDepth, applyFallenGrowthCurves } from "./fallen/battleDepth";
@@ -1526,7 +1527,15 @@ function tryStamp(project: Project, map: GameMap, objectId: string, x: number, y
 
 // ── 짓기 ────────────────────────────────────────────────────────────────
 
+/**
+ * 왕도 아스텔·새벽샘·서리나루는 생성기 대신 커밋된 스냅숏으로 짓는다(fallen/frozenTowns.ts) — 생성기가 바뀌어도
+ * 2막의 고정 좌표가 흔들리지 않게(2026-10-29 #3900 뒤 굽기 실패).
+ */
 export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
+  return withFrozenTowns(buildChronoBellFlagshipDemo);
+}
+
+function buildChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   const project = createBlankProject();
   const initialBlankMapIds = Object.keys(project.maps);
 

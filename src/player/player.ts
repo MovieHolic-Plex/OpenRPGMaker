@@ -256,7 +256,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
   const cleanupRightClickCancel = pointerInput ? installRightClickCancel(layout) : () => {};
   // 목록 창: 첫 탭은 커서 이동, 커서가 있는 줄을 탭하면 결정.
   const cleanupListTap = touchUi ? installTouchListTap(layout) : () => {};
-  const cleanupTapConfirm = touchUi ? installTapConfirm(layout, { pointerMovement: () => store.getCurrent().system.pointerMovement === true || currentTouchControls().tapToMove }) : () => {};
+  const cleanupTapConfirm = touchUi ? installTapConfirm(layout, { pointerMovement: () => store.getCurrent().system.pointerMovement === true || currentTouchControls().tapToMove, haptics: () => currentTouchControls().haptics }) : () => {};
   main.append(layout);
 
   const stopGame = (): void => {
@@ -356,6 +356,9 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     warnIfPlayBootIssues(store.getCurrent());
     const run = ++startRun;
     const startedAt = performance.now();
+    // 타이틀 전환이 그림으로 돌아와 머문 상태(rm-title-transition-hold)면 그 타이틀을 떼어 오프닝 첫 컷이 보일 때까지 덮개로 쓴다.
+    const heldTitle = opening ? layout.querySelector<HTMLElement>("[data-testid='title-screen'].rm-title-transition-hold") : null;
+    heldTitle?.remove();
     clearChildren(layout);
     const surface = createPlaySurface(resolvePlayResolution(store.getCurrent().system), surfaceScaleFor(store.getCurrent()), store.getCurrent().system.displayFilter, surfaceOptions);
     playStage = surface.stage;
@@ -400,9 +403,28 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
       onFrame: (url, fadeMs) => { lastFrame = url; if (fadeMs !== undefined) handoffFadeMs = fadeMs; } });
     openingMusicPlayback = playback;
     firstScreen();
+    if (heldTitle) {
+      heldTitle.dataset.testid = 'title-hold-cover';
+      heldTitle.setAttribute('aria-hidden', 'true');
+      // 전환 막은 이미 끝났다. 노드를 옮기면 CSS 애니메이션이 처음부터 다시 돌아 섬광이 한 번 더 터지므로 뗀다.
+      heldTitle.querySelector('.rm-title-transition')?.remove();
+      heldTitle.classList.add('rm-title-hold-cover');
+      heldTitle.style.cssText += ';position:absolute;inset:0;z-index:60;pointer-events:none';
+      surface.stage.append(heldTitle);
+      const release = (): void => {
+        if (!heldTitle.isConnected) return;
+        void heldTitle.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 450, fill: 'forwards' }).finished
+          .catch(() => undefined).then(() => heldTitle.remove());
+      };
+      void playback.firstFrame.then(release);
+      controller.signal.addEventListener('abort', () => heldTitle.remove(), { once: true });
+    }
     // Start the real engine, decode textures and assemble the map during the cinematic.
     // PlayScene gates time, events, input and map audio until the presentation handoff.
-    const prepared = bootPlayGame(surface.phaserContainer, session, eventTestId, loading, run, startedAt, repairs, true);
+    // 엔진 기동은 첫 컷이 보인 뒤에 건다. 같이 시작하면 엔진의 긴 작업(초 단위)이 첫 컷 준비를 막아
+    // 새 게임 직후 「미디어 불러오는 중」 검은 화면이 2초 넘게 떴다(2026-10-29 maou-konbini 녹화). 첫 컷이 늦어도 4초 뒤엔 건다(오프닝은 그보다 길고, 짧으면 끝난 뒤 덮개가 기동을 기다린다).
+    const prepared = Promise.race([playback.firstFrame, new Promise<void>((resolve) => window.setTimeout(resolve, 4000))])
+      .then(() => run === startRun && shellActive ? bootPlayGame(surface.phaserContainer, session, eventTestId, loading, run, startedAt, repairs, true) : undefined);
     void playback.done.then(async result => {
       if (result === 'aborted' || run !== startRun || !shellActive) return;
       openingController = null;
@@ -731,7 +753,16 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
   };
 
   // 타이틀 메뉴에 "이어하기"를 노출할지 — 불러올 수 있는 저장이 하나라도 있을 때만.
-  const isAutosaveAvailable = (): boolean => resumableSave() !== undefined;
+  // 가장 새 저장이 마지막 엔딩보다 옛것이면 그 판은 이미 끝났다 — 「이어하기」를 새 게임 바로 밑에 두면
+  // 방향키 한 번에 엔딩 직전(열린 금고·열쇠)으로 돌아가 「새 게임이 초기화되지 않는다」로 읽혔다
+  // (2026-10-29 vm4 flash 방탈출 판정; 새 게임 자체는 비워진다 — QA ending-newgame). 옛 저장은 「불러오기」에 그대로 있다.
+  const isAutosaveAvailable = (): boolean => {
+    const latest = resumableSave();
+    if (!latest) return false;
+    const cleared = Date.parse(readClearRecord(window.localStorage)?.clearedAt ?? "");
+    const saved = Date.parse(latest.snapshot.savedAt ?? "");
+    return !(Number.isFinite(cleared) && Number.isFinite(saved) && saved < cleared);
+  };
 
   // 켜 두었고 클리어 기록이 있을 때만 타이틀 항목 이름을 돌려준다(없으면 항목이 숨는다).
   const newGamePlusTitleLabel = (): string | undefined => {
@@ -930,6 +961,10 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     }
     if (isMenuKey(key)) {
       event.preventDefault();
+      // 이벤트가 도는 동안에는 메뉴를 열지 않는다(RM 관례). 적의 느낌표·대기 사이에 열린 메뉴 아래에서 전투가
+      // 시작돼, 메뉴는 닫히지 않고 메뉴의 Enter 가 전투 명령(도주)으로 갔다(2026-10-29 vm5 argon jrpg).
+      // 대기 중 걷기를 허락한 이벤트(allowEventMovementDuringWait)는 필드 조작이 열려 있으므로 막지 않는다.
+      if (!menu && scene?.running === true && sceneSession?.messageWindowSettings?.allowEventMovementDuringWait !== true) return;
       statusMenu.toggleMenu();
     }
   };
@@ -1191,12 +1226,15 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
       title?.removeAttribute('aria-busy');
       title?.querySelector('.title-preparing')?.remove();
       stopTitleBgm();
-      const transitionMs = withTransition
-        ? playTitleTransition(
-            layout.querySelector<HTMLElement>("[data-testid='title-screen']"),
-            store.getCurrent().system.titleScreen ?? defaultTitleScreenSettings(),
-          )
-        : null;
+      // 새 게임 뒤 오프닝이 이어지면 밝은 전환(섬광·안개)은 검게 끝나지 않고 타이틀 그림으로 돌아와 머문다.
+      // 그 그림이 오프닝 첫 컷이 보일 때까지 덮개로 남는다(bootRun) — 예전에는 전환 끝의 검은 화면이 첫 컷까지 1.5~2초 이어졌다.
+      const transitionSettings = store.getCurrent().system.titleScreen ?? defaultTitleScreenSettings();
+      const nextOpening = store.getCurrent().system.opening;
+      const holdForOpening = withTransition && !!nextOpening?.enabled && (!nextOpening.entry || nextOpening.entry.mode === 'new-game')
+        && nextOpening.scenes.length > 0 && (transitionSettings.transition?.kind === 'flash' || transitionSettings.transition?.kind === 'mist');
+      const titleNode = layout.querySelector<HTMLElement>("[data-testid='title-screen']");
+      if (holdForOpening) titleNode?.classList.add('rm-title-transition-hold');
+      const transitionMs = withTransition ? playTitleTransition(titleNode, transitionSettings) : null;
       titleConfirmTimer = setTimeout(() => {
         titleConfirmTimer = undefined;
         if (!shellActive) return;

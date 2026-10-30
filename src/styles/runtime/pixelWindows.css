@@ -86,6 +86,8 @@
 .battle-scene:is([data-battle-ui-style])[data-battle-skin][data-battle-skin-family][data-battle-layout] .battle-result-panel.battle-result-pixel .battle-result-title::after { content: "!"; }
 .battle-scene:is([data-battle-ui-style])[data-battle-skin][data-battle-skin-family][data-battle-layout] .battle-result-pixel .battle-result-summary-value { color: var(--px-gain); font-variant-numeric: tabular-nums; }
 .battle-scene:is([data-battle-ui-style])[data-battle-skin][data-battle-skin-family][data-battle-layout] .battle-result-pixel .battle-result-summary-gold { color: var(--px-accent); font-variant-numeric: tabular-nums; }
+/* 돈 단위(「G」) — 도트 글꼴의 G 는 6 과 같은 모양이라 「+37 G」가 「+37 6」으로 읽혔다(2026-10-29). 단위 글자만 획이 분명한 굵은 UI 글꼴로, 값과 같은 높이로 그린다. */
+.battle-scene:is([data-battle-ui-style])[data-battle-skin][data-battle-skin-family][data-battle-layout] .battle-result-panel.battle-result-pixel .battle-currency-unit { font-family: var(--font-ui); font-size: 1.05em; font-weight: 800; letter-spacing: 0; line-height: 1; }
 .battle-scene:is([data-battle-ui-style])[data-battle-skin][data-battle-skin-family][data-battle-layout] .battle-result-pixel .battle-result-summary-loot { color: var(--px-ink-faint); min-width: 0; overflow: hidden; text-overflow: ellipsis; }
 /* 파티 창 — 한 줄 4칸, 칸마다 세로로 쌓는다. 걷는 그림은 2배(48×64). */
 /* 칸 폭은 네 명 기준(25%)으로 고정하고 가운데 모은다 — 한 명 파티가 창 전체로 늘어나지 않게. */
@@ -216,7 +218,7 @@
   text-shadow: var(--px-shadow);
 }
 .oprn-status-menu.main-menu[data-menu-skin="pixel"] {
-  /* 명령 한 줄 14px + 위아래 안쪽 4px. 6항목까지는 예전 94px 그대로, 그보다 많으면 늘어나 마지막 항목이 창 밖으로 안 나간다(R10). 아래 돈·장소·시간·장 창은 그만큼 내려온다. */
+  /* 명령 한 줄 16px + 위아래 안쪽 4px. 6항목까지는 예전 94px 그대로, 그보다 많으면 늘어나 마지막 항목이 창 밖으로 안 나간다(R10). 아래 돈·장소·시간·장 창은 그만큼 내려온다. */
   --px-dock-h: max(94px, calc(var(--status-menu-command-count, 6) * 16px + 8px));
 }
 .oprn-status-menu.main-menu[data-menu-skin="pixel"]::before { background: var(--px-stage); border: 0; border-radius: 0; box-shadow: none; inset: 0; }
@@ -252,10 +254,13 @@
   width: 78px;
 }
 .oprn-status-menu.main-menu[data-menu-skin="pixel"][data-status-menu-screen="main"] .status-menu-gold { color: var(--px-ink); font-size: 12px; top: calc(var(--px-dock-h, 94px) + 10px); }
-.oprn-status-menu.main-menu[data-menu-skin="pixel"][data-status-menu-screen="main"] .status-menu-location { color: var(--px-ink-dim); font-size: 10px; font-family: var(--px-small-font); top: calc(var(--px-dock-h, 94px) + 32px); }
-.oprn-status-menu.main-menu[data-menu-skin="pixel"][data-status-menu-screen="main"] .status-menu-time { color: var(--px-ink-dim); top: calc(var(--px-dock-h, 94px) + 52px); }
+/* 장소 이름은 맨 아래 창에서 줄을 바꿔 다 보인다 — 78px 한 줄 말줄임이라 「잊힌 지하묘…」처럼 층수가 잘렸다(장부 hud #47). 시간 창을 위로 올렸다.
+   좌우 안쪽 여백은 3px — 6px 이면 「멈춘 시계의 방」(10px 글자 68px)이 「멈춘 / 시계의 방」으로 접혔다(VQA vm 28·50). */
+.oprn-status-menu.main-menu[data-menu-skin="pixel"][data-status-menu-screen="main"] .status-menu-location { color: var(--px-ink-dim); font-size: 10px; font-family: var(--px-small-font); line-height: 12px; overflow: visible; text-overflow: clip; top: calc(var(--px-dock-h, 94px) + 52px); white-space: normal; text-wrap: balance; word-break: keep-all; padding-inline: 3px; }
+.oprn-status-menu.main-menu[data-menu-skin="pixel"][data-status-menu-screen="main"]:has(.status-menu-chapter) .status-menu-location { top: calc(var(--px-dock-h, 94px) + 92px); }
+.oprn-status-menu.main-menu[data-menu-skin="pixel"][data-status-menu-screen="main"] .status-menu-time { color: var(--px-ink-dim); top: calc(var(--px-dock-h, 94px) + 32px); }
 /* 장(NG+ 회차) — 시간 창 아래 같은 폭. 이야기 진행이 첫 화면에서 보인다. */
-.oprn-status-menu.main-menu[data-menu-skin="pixel"][data-status-menu-screen="main"] .status-menu-chapter { color: var(--px-accent); top: calc(var(--px-dock-h, 94px) + 72px); }
+.oprn-status-menu.main-menu[data-menu-skin="pixel"][data-status-menu-screen="main"] .status-menu-chapter { color: var(--px-accent); top: calc(var(--px-dock-h, 94px) + 52px); }
 
 /* 명령 창 — 오른쪽 위, 손가락 커서. 두 모드에서 같은 자리라 화면을 넘겨도 창이 움직이지 않는다. */
 .oprn-status-menu.main-menu[data-menu-skin="pixel"] .status-menu-primary-dock {
@@ -276,9 +281,11 @@
   border: 0;
   border-radius: 0;
   color: var(--px-ink);
-  flex: 0 0 14px;
+  /* 한 줄 16px(12px 글자 + 4px) — 14px 이면 위아래 글자가 붙고 손가락 커서가 이웃 줄 글자에 닿았다(VQA vm 31). 글자는 손가락(2+12px) 뒤 5px 띄운다. */
+  flex: 0 0 16px;
   font-size: 12px;
-  padding: 0 4px 0 17px;
+  line-height: 16px;
+  padding: 0 4px 0 19px;
   text-shadow: var(--px-shadow);
 }
 .oprn-status-menu.main-menu[data-menu-skin="pixel"] .status-menu-primary-dock > .status-menu-command.selected { background: transparent; color: var(--px-ink); }
@@ -299,7 +306,9 @@
 /* 커서가 작업 패널에 있으면 명령 창 손가락은 멈추고 흐려진다. */
 .oprn-status-menu.main-menu[data-menu-skin="pixel"].status-menu-detail-focus .status-menu-primary-dock > .status-menu-command.selected::before { animation: none; opacity: 0.5; }
 .oprn-status-menu.main-menu[data-menu-skin="pixel"]:not(.status-menu-detail-focus) .status-menu-detail-action.selected::before { display: none; }
-.oprn-status-menu.main-menu[data-menu-skin="pixel"] .status-menu-command.destructive { color: var(--px-loss); }
+/* 「타이틀로」는 커서가 올라갔을 때만 붉다 — 늘 붉으면 커서와 함께 선택 표시가 둘로 보였다(VQA vm-smoke 27·32·49). 쉴 때는 흐린 글자. */
+.oprn-status-menu.main-menu[data-menu-skin="pixel"] .status-menu-command.destructive { color: var(--px-ink-dim); }
+.oprn-status-menu.main-menu[data-menu-skin="pixel"] .status-menu-command.destructive.selected { color: var(--px-loss); }
 
 /* 조작 줄 — 맨 아래 창. 작업 화면은 설명 한 줄을 위에 더한다. */
 .oprn-status-menu.main-menu[data-menu-skin="pixel"] .status-menu-footer { bottom: 6px; gap: 1px; left: 6px; padding: 3px 7px; right: 6px; }
@@ -334,6 +343,12 @@
   justify-self: center;
 }
 .oprn-status-menu[data-menu-skin="pixel"] .status-menu-overview-info { gap: 0; line-height: 11px; }
+/* 이야기형(주인공 한 명 + 현재 목표) 머리는 칸 걱정이 없다 — 12px 글자에 11px 줄이라 이름과 장소 줄이 붙어 보였다(VQA vm 29·48). */
+.oprn-status-menu[data-menu-skin="pixel"] .status-menu-story-overview .status-menu-overview-info { gap: 3px; line-height: 15px; }
+/* 주인공 한 줄(이야기·관계 첫 화면)은 이름과 지금 있는 곳을 머리 묶음 없이 두 줄로 쌓는다. 11px 줄 높이는 12px 글자보다 작아
+   「주인공」 아랫부분이 「빈 맵」 위에 겹쳐 그려졌다(HIG C-97). 이 두 줄만 글자 높이에 맞는 줄 간격을 준다. */
+.oprn-status-menu[data-menu-skin="pixel"] .status-menu-rel-lead .status-menu-overview-info { align-content: center; gap: 2px; line-height: 1.25; }
+.oprn-status-menu[data-menu-skin="pixel"] .status-menu-rel-lead .status-menu-actor-subline { color: var(--px-ink-dim); font-family: var(--px-small-font); font-size: 10px; }
 /* 12px 글자에서는 네 칸(파티 넷)에 이름·HP·MP·EX 만 들어간다 — 「정상」 상태 줄은 이상이 있을 때만 보인다. */
 .oprn-status-menu[data-menu-skin="pixel"] .status-menu-overview-states:not(.has-state) { display: none; }
 /* 상태가 있으면 이름 줄 오른쪽에 붙인다 — 따로 한 줄을 쓰면 넷째 줄(EX)이 칸 아래로 밀려 다음 파티원 이름을 덮었다

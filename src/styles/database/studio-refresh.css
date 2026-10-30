@@ -133,12 +133,12 @@
 
 /* ── 3. 버튼 위계 ─────────────────────────────────────────────────────────── */
 
-/* 삭제는 평소 중립 — 목록 발마다 빨간 글자가 서 있으면 가장 위험한 행동이 가장 눈에 띈다. */
-/* 두 번 눌러 지우는 확인 단계(.confirming)는 그대로 붉다. */
+/* 삭제는 바탕·테두리는 중립이고 글자만 위험 색이다 — 추가·복제와 같은 모양이면 파괴 동작이 구별되지
+   않았다(V-database-15). 붉은 채움은 쓰지 않는다: 가장 위험한 행동이 가장 눈에 띄면 안 된다. */
 .database-modal-backdrop .database-modal-window .database-modal-body :is(.db-toolbar, .db-ws-toolbar) :is(.btn.danger, .db-toolbar-button.danger, .db-ws-btn.danger):not(:hover):not(:focus-visible):not(.confirming) {
   background: var(--db-studio-surface);
   border-color: var(--db-studio-border-default);
-  color: var(--db-studio-text-2);
+  color: var(--db-studio-danger);
 }
 
 /* ── 4. 푸터 ─────────────────────────────────────────────────────────────── */

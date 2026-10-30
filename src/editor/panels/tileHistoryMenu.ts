@@ -14,6 +14,7 @@ import {
   getMapEditHistoryRevision,
   getMapEditHistoryState,
   getMapEditRedoEntries,
+  pendingHistoryLabels,
   redoMapEdit,
   redoToHistoryIndex,
   revertToHistoryIndex,
@@ -178,12 +179,15 @@ export function makeTileHistoryControls(rerender: () => void): HTMLElement {
 
 function makeActionButton(spec: DirectionSpec, rerender: () => void): HTMLButtonElement {
   const enabled = spec.enabled();
+  // 이름에 무엇을 되돌리는지(다시 하는지) 붙인다 — 「되돌리기」만으로는 누르기 전에 무엇이 사라질지 모른다.
+  const pending = pendingHistoryLabels()[spec === DIRECTIONS.undo ? "undo" : "redo"];
+  const name = enabled && pending ? `${spec.label}: ${pending}` : spec.label;
   const button = el("button", {
     class: "oprn-tile-tool",
     attrs: {
       type: "button",
-      "aria-label": spec.label,
-      title: `${spec.label} (${spec.hotkey})`,
+      "aria-label": name,
+      title: `${name} (${spec.hotkey})`,
     },
     children: [makeSvgIcon(spec.icon)],
     dataset: { testid: spec.actionTestId },

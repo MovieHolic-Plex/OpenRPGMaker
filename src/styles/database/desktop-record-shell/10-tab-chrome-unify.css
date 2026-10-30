@@ -53,7 +53,6 @@
   .database-modal-body .db-tab-note {
     background: var(--bg-panel-2, var(--bg-raised));
     border: 1px solid var(--border-soft, var(--border-subtle));
-    border-left: 3px solid var(--accent);
     border-radius: 4px;
     color: var(--text-2, var(--text-primary));
     font: 400 12px/18px var(--font-ui);

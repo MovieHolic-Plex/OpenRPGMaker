@@ -668,6 +668,78 @@
   margin: 0;
 }
 
+/* 맵 만들기 창은 이벤트 하위 창 골격(.event-subdialog-body .btn, event 레이어)을 빌려 쓴다. map 레이어가 event 레이어보다
+   앞이라 명시도로는 이길 수 없어, 고른 시작 모양·주 동작·글자 단추의 색만 !important 로 지정한다.
+   범위는 이 창 자신의 본문(.map-create-form)으로 건다 — 남의 표면(event)의 골격 클래스를 선택자에 쓰지 않는다. */
+.map-create-form .map-create-preset[aria-pressed="true"] {
+  background: var(--accent-muted) !important;
+  border-color: var(--accent) !important;
+  color: var(--text-1) !important;
+  font-weight: 700;
+}
+
+.map-create-size {
+  align-items: end;
+  display: flex;
+  gap: 8px;
+}
+
+.map-create-size .map-create-field input {
+  width: 96px;
+}
+
+.map-create-times {
+  color: var(--text-2);
+  font: 600 13px/32px var(--font-ui, system-ui, sans-serif);
+}
+
+.map-create-actions {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 4px;
+}
+
+.map-create-secondary {
+  display: flex;
+  flex: 1 1 auto;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.map-create-form .map-create-actions .map-create-link {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  color: var(--text-2) !important;
+  min-height: 32px;
+  padding: 0 6px;
+}
+
+.map-create-form .map-create-actions .map-create-link:hover {
+  background: var(--bg-hover) !important;
+  color: var(--text-1) !important;
+}
+
+.map-create-form .map-create-actions .map-create-cancel {
+  min-height: 32px;
+  min-width: 72px;
+}
+
+.map-create-form .map-create-actions .map-create-submit {
+  background: var(--accent) !important;
+  border-color: var(--accent) !important;
+  color: var(--on-accent) !important;
+  min-height: 32px;
+  min-width: 88px;
+}
+
+.map-create-form .map-create-actions .map-create-submit:hover {
+  background: var(--accent-hover) !important;
+}
+
 /* 아래 세 규칙(행 썸네일, 활성 썸네일 보더, 계층 들여쓰기 — 전부 스코프 없는
    전역 셀렉터였다)은 editor/map-panel.modern.css 의 패널 절로 이관됐다(2026-08,
    Task 6 후속). 썸네일 클래스는 mapThumbnail.ts 의 생성 함수 한 곳에서만 만들고,

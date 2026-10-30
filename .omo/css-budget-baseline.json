@@ -1,15 +1,16 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-10-26T06:37:59.070Z",
+  "generatedAt": "2026-10-29T13:35:55.840Z",
   "metrics": {
-    "hexLiterals": 2756,
-    "important": 358,
-    "undefinedVars": 59,
-    "globalRootFiles": 10,
-    "cssFileCount": 419
+    "hexLiterals": 2786,
+    "important": 385,
+    "undefinedVars": 56,
+    "globalRootFiles": 11,
+    "cssFileCount": 420
   },
   "details": {
     "hexByFile": {
+      "src/styles/base/theme.css": 21,
       "src/styles/components/app-modal.css": 7,
       "src/styles/components/from-map-resource-system-part-1.css": 5,
       "src/styles/components/from-map-resource-system-part-2.css": 26,
@@ -34,7 +35,7 @@
       "src/styles/database/from-editor-ai-settings-modal.css": 1,
       "src/styles/database/from-editor-core-part-2.css": 4,
       "src/styles/database/from-editor-event-editor-legacy-part-1.css": 3,
-      "src/styles/database/from-editor-world-panel.css": 18,
+      "src/styles/database/from-editor-world-panel.css": 17,
       "src/styles/database/light-theme.css": 4,
       "src/styles/database/modern/tilesets.css": 1,
       "src/styles/database/modern/troops.css": 5,
@@ -61,12 +62,13 @@
       "src/styles/database/tabs-b-assistant-panel/30-tileset-change-card.css": 2,
       "src/styles/database/tabs-b-assistant-panel/31-map-run-card.css": 11,
       "src/styles/database/tabs-b-assistant-panel/33-store-card.css": 2,
-      "src/styles/database/tabs-b-assistant-panel/34-ai-presence.css": 81,
+      "src/styles/database/tabs-b-assistant-panel/34-ai-presence.css": 78,
       "src/styles/database/tabs-b-assistant-panel/assistant-deck.part-4.css": 2,
       "src/styles/database/tabs-b-assistant-panel/studio-mode-start-screen.part-4.css": 6,
       "src/styles/database/tabs-b-status-menu-base.css": 2,
       "src/styles/database/tabs-b-status-menu-main.css": 2,
       "src/styles/database/tabs-b-title-screen.css": 19,
+      "src/styles/database/tileset-ai-workspace.css": 2,
       "src/styles/database/tileset-references.css": 20,
       "src/styles/database/tilesets-terrain.css": 4,
       "src/styles/database/tilesets.css": 4,
@@ -78,14 +80,14 @@
       "src/styles/database/workshop/workshop.css": 28,
       "src/styles/dialogue.css": 17,
       "src/styles/dialogueReading.css": 9,
-      "src/styles/editor/relief-toolbar.css": 30,
+      "src/styles/editor/relief-toolbar.css": 31,
       "src/styles/event/command-forms/forms-2.css": 22,
       "src/styles/event/command-forms/forms-3.css": 56,
       "src/styles/event/command-forms/forms-4.css": 5,
       "src/styles/event/command-forms/forms-5.css": 27,
       "src/styles/event/command-forms/forms-6.css": 20,
       "src/styles/event/command-forms/forms.css": 20,
-      "src/styles/event/command-list-2.css": 12,
+      "src/styles/event/command-list-2.css": 11,
       "src/styles/event/command-list-3.css": 3,
       "src/styles/event/command-list.css": 18,
       "src/styles/event/footer.css": 1,
@@ -115,7 +117,7 @@
       "src/styles/map/harness-suggestion.css": 33,
       "src/styles/map/harness-suggestion.part-2.css": 35,
       "src/styles/map/harness-suggestion.part-3.css": 1,
-      "src/styles/map/inline-assist.css": 16,
+      "src/styles/map/inline-assist.css": 14,
       "src/styles/map/map-panel.modern.css": 1,
       "src/styles/map/map-props.css": 26,
       "src/styles/map/palette-player.css": 1,
@@ -151,33 +153,36 @@
       "src/styles/runtime/emeraldMoveLearn.css": 6,
       "src/styles/runtime/emeraldOpeningMotion.css": 13,
       "src/styles/runtime/emeraldShop.css": 15,
-      "src/styles/runtime/emeraldSurfaces.css": 227,
+      "src/styles/runtime/emeraldSurfaces.css": 228,
       "src/styles/runtime/emeraldTrainerIntro.css": 4,
-      "src/styles/runtime/fieldHud.css": 62,
+      "src/styles/runtime/fieldHud.css": 63,
+      "src/styles/runtime/from-map-resource-system-part-1.css": 1,
       "src/styles/runtime/galleryMenu.css": 3,
-      "src/styles/runtime/gameOver.css": 56,
+      "src/styles/runtime/gameOver.css": 57,
       "src/styles/runtime/keyboardNav.css": 6,
       "src/styles/runtime/minimap.css": 2,
       "src/styles/runtime/mobileUi.css": 9,
       "src/styles/runtime/monsterCampaignMenu.css": 24,
       "src/styles/runtime/nameEntry.css": 23,
       "src/styles/runtime/playLoading.css": 17,
-      "src/styles/runtime/playSurface.css": 47,
+      "src/styles/runtime/playSurface.css": 50,
       "src/styles/runtime/shop.css": 138,
       "src/styles/runtime/statusMenuSkins.css": 18,
       "src/styles/runtime/tacticsBattle.css": 3,
       "src/styles/runtime/timer.css": 1,
-      "src/styles/runtime/title.css": 56,
+      "src/styles/runtime/title.css": 60,
       "src/styles/runtime/tokens.dark.css": 3,
       "src/styles/runtime/touchpad.css": 1,
       "src/styles/runtime/transitions.css": 2,
+      "src/styles/runtime/zoneFeedback.css": 1,
       "src/styles/shell/dialogs/ai-modal-shell.css": 12,
       "src/styles/shell/dialogs/help-modal.css": 28,
       "src/styles/shell/dialogs/jp-city-pin-repair.css": 1,
-      "src/styles/shell/editor-ui-modes.css": 14,
+      "src/styles/shell/editor-ui-modes.css": 11,
+      "src/styles/shell/from-map-resource-system-part-1.css": 1,
       "src/styles/shell/shell-density.part-1.css": 1,
       "src/styles/shell/window-controls.css": 5,
-      "src/styles/tokens.css": 28,
+      "src/styles/tokens.css": 31,
       "src/player/player.css": 1
     },
     "importantByFile": {
@@ -205,13 +210,13 @@
       "src/styles/dialogue.css": 1,
       "src/styles/editor/relief-toolbar.css": 2,
       "src/styles/event/command-forms/forms-2.css": 1,
-      "src/styles/map/from-shell-editor-ui-modes.css": 20,
+      "src/styles/map/from-shell-editor-ui-modes.css": 22,
       "src/styles/map/from-shell-figma-editor-03-layout-left-palette.css": 2,
       "src/styles/map/from-shell-shell-density-part-1.css": 1,
       "src/styles/map/left-sidebar.modern.part-6.css": 2,
-      "src/styles/map/map-props.css": 3,
+      "src/styles/map/map-props.css": 16,
       "src/styles/map/region-task.part-4.css": 1,
-      "src/styles/overrides.css": 3,
+      "src/styles/overrides.css": 10,
       "src/styles/resources/resource-manager.part-2.css": 1,
       "src/styles/resources/resource-manager.part-4.css": 3,
       "src/styles/runtime/battle/20-pokemon-skin.css": 1,
@@ -223,11 +228,12 @@
       "src/styles/runtime/battle-skins/_battlers.css": 9,
       "src/styles/runtime/battle-skins/_windowskin.css": 5,
       "src/styles/runtime/fieldHud.css": 2,
+      "src/styles/runtime/from-map-resource-system-part-1.css": 1,
       "src/styles/runtime/gameOver.css": 2,
       "src/styles/runtime/mobileUi.css": 26,
       "src/styles/runtime/playSurface.css": 4,
       "src/styles/runtime/statusMenuEdgeDock.css": 5,
-      "src/styles/runtime/title.css": 7,
+      "src/styles/runtime/title.css": 11,
       "src/styles/runtime/touchpad.css": 1,
       "src/styles/shell/dialogs/cinematic-interview.css": 2,
       "src/styles/shell/editor-ui-modes.css": 2,
@@ -236,6 +242,7 @@
       "src/player/player.css": 8
     },
     "globalRootFileList": [
+      "src/styles/base/theme.css",
       "src/styles/database/enemies.part-1.css",
       "src/styles/database/tabs-b-shell-layout.css",
       "src/styles/dialogue.css",
@@ -262,13 +269,11 @@
       "--ai-deck-border",
       "--ai-dock-width",
       "--bg-subtle",
-      "--bg-sunken",
       "--db-danger",
       "--db-modern-raised",
       "--db-modern-surface",
       "--db-studio-danger-muted",
       "--db-studio-danger-soft",
-      "--db-studio-mono",
       "--db-studio-success-soft",
       "--db-studio-warning-muted",
       "--db-studio-warning-soft",
@@ -293,7 +298,6 @@
       "--oprn-text",
       "--pkmn-hit-flash",
       "--pop-x",
-      "--radius-2",
       "--runtime-font-size-13",
       "--shadow-sm",
       "--shop-space-5",
@@ -356,10 +360,6 @@
       "--bg-subtle": [
         "src/styles/resources/resource-manager.part-2.css"
       ],
-      "--bg-sunken": [
-        "src/styles/database/tabs-b-assistant-panel/04-chat-bubbles-proposals.css",
-        "src/styles/map/tile-palette-smart.css"
-      ],
       "--db-danger": [
         "src/styles/database/title-workbench.css"
       ],
@@ -377,9 +377,6 @@
       ],
       "--db-studio-danger-soft": [
         "src/styles/database/from-editor-world-panel.css"
-      ],
-      "--db-studio-mono": [
-        "src/styles/database/retro-gallery.css"
       ],
       "--db-studio-success-soft": [
         "src/styles/database/from-editor-world-panel.css"
@@ -465,9 +462,6 @@
         "src/styles/runtime/battle/06-damage-flash-targeting.css",
         "src/styles/runtime/battle/06-damage-flash-targeting.css"
       ],
-      "--radius-2": [
-        "src/styles/shell/dialogs/ai-settings-modal.css"
-      ],
       "--runtime-font-size-13": [
         "src/styles/runtime/commerce.css"
       ],
@@ -516,6 +510,7 @@
     },
     "cssFileList": [
       "src/styles/base/index.css",
+      "src/styles/base/theme.css",
       "src/styles/components/app-modal.css",
       "src/styles/components/empty-state.css",
       "src/styles/components/from-database-tabs-b-resource-manager.css",

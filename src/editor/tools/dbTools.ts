@@ -41,6 +41,7 @@ import { COMBO_MAX_ACTORS, MAX_TITLE_BACKGROUND_LAYERS, MAX_TITLE_RUNNERS, norma
 import { normalizeCropRecord } from "@/project/farmModel";
 import { monsterBattleStatsForSpecies, monsterSkillIdsAtLevel, monsterSpeciesById, normalizeMonsterSpeciesRecord } from "@/project/monsterCollection";
 import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
+import { findOpeningStillScene, parseOpeningStill } from "@/project/openingStill";
 import { countLimitedRuntimeSupportCommands } from "@/project/lint/projectLint";
 import { ensureMonsterGraphic } from "./monsterGraphicAssignment";
 import { CHARACTER_SCALE_MIN, CHARACTER_SCALE_MAX } from "@/project/footprint";
@@ -95,6 +96,7 @@ import { assertPartyActorReferences } from "./partyActorReferences";
 import { resolveEventPlacement } from "./eventTools";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
 import { unsuitableOpeningStillMessage } from "@/assets/openingStillMoods";
+import { pickBlueprintTitleArt } from "@/project/blueprintAssembly";
 import { troopBalanceWarnings } from "./troopBalanceCheck";
 import { expandShortParameterCurves } from "./parameterCurveInput";
 import { BATTLE_BACKDROP_ID_HINT } from "@/assets/battleSceneryCatalog";
@@ -768,7 +770,8 @@ const actorRecordSchema = objectSchema({
   characterResourceId: stringSchema(),
   characterIndex: { type: "integer", minimum: 0, maximum: 7, description: "캐릭터셋 안의 칸(0~7). 0은 기본값" },
   characterTransparent: booleanSchema(),
-  battleCharacterResourceId: stringSchema(),
+  battleCharacterResourceId: stringSchema("측면 전투 도트 시트 id(charset-battler-* · party-pixel-* 등). 빈 문자열 \"\" 이면 지운다 — 전투 시트가 없는 배우는 자기 걷기 칩(characterResourceId·characterIndex) 한 칸으로 측면 전투에 선다. 기본 주인공(actor_hero)을 현대 교복 칩 같은 다른 걷기 칩으로 바꿨다면 물려받은 전투 시트(Actor1 검사)를 \"\" 로 지워야 전투에서도 같은 인물이 보인다."),
+  battleScalePercent: integerSchema("측면 전투 표시 크기(%). 50~300, 기본 100. 파티원 몬스터 도트 시트(party-pixel-*)에 적용 — 마왕처럼 사람보다 큰 파티원."),
   critical: objectSchema({ enabled: booleanSchema(), chanceDenominator: integerSchema() }),
   parameterCurves: parameterCurvesSchema,
   expCurve: expCurveSchema,
@@ -1774,6 +1777,29 @@ function skillDamagesFoe(project: Project, skillId: string): boolean {
   return skill?.effect?.kind === "damage" && (skill.scope === "enemy" || skill.scope === "allEnemies");
 }
 
+/** upsert_enemy.clearFields 로 지울 수 있는 선택 필드. id·name·stats·actions·그림(monsterResourceId)은 적의 뼈대라 뺀다. */
+const ENEMY_CLEARABLE_FIELDS = [
+  "speciesId", "level", "battleScalePercent", "lungeSpeedPercent", "collapseEffect", "hideHp", "criticalHit", "attackOptions",
+  "reactions", "stealItems", "stateRates", "elementRates", "damageTypeRates",
+] as const;
+
+/** 병합된 적에서 clearFields 를 지운다. 실제로 지운 필드 이름을 돌려준다(없던 필드는 조용히 넘어간다). */
+function clearEnemyFields(merged: Record<string, unknown>, patch: unknown, clearFields: unknown): string[] {
+  if (clearFields === undefined) return [];
+  if (!Array.isArray(clearFields)) throw new ToolError("clearFields 는 필드 이름 배열이어야 합니다.", { code: "invalid-clear-fields" });
+  const allowed = new Set<string>(ENEMY_CLEARABLE_FIELDS);
+  const given = patch && typeof patch === "object" ? patch as Record<string, unknown> : {};
+  const removed: string[] = [];
+  for (const field of clearFields) {
+    if (typeof field !== "string" || !allowed.has(field)) {
+      throw new ToolError(`clearFields '${String(field)}' 는 지울 수 없는 필드입니다. 지울 수 있는 필드: ${ENEMY_CLEARABLE_FIELDS.join(", ")}`, { code: "invalid-clear-fields" });
+    }
+    if (field in given) throw new ToolError(`'${field}' 를 enemy 에 주면서 clearFields 로 지우라고 했습니다 — 한쪽만 주세요.`, { code: "invalid-clear-fields" });
+    if (field in merged) { delete merged[field]; removed.push(field); }
+  }
+  return removed;
+}
+
 const upsertEnemy: ToolDefinition = {
   name: "upsert_enemy",
   description:
@@ -1787,6 +1813,11 @@ const upsertEnemy: ToolDefinition = {
   mode: "write",
   parameters: parametersForRecord("enemy", enemyRecordSchema, { id: "enemy_slime", name: "슬라임", stats: { maxHp: 40, attack: 12 }, rewards: { exp: 3, gold: 2 } }, {
     role: { type: "string", enum: ["boss", "normal"], description: "boss 면 시작 파티 기준 위협 하한을 맞춘다. 생략 시 id·이름의 boss/보스로 판정." },
+    clearFields: {
+      type: "array",
+      items: { type: "string", enum: [...ENEMY_CLEARABLE_FIELDS] },
+      description: "기존 적에서 지울 필드(병합은 필드를 지우지 못한다). 예: 몬스터 종에서 복제한 사람 적이 「야생의 ○○」로 나오면 [\"speciesId\"]. 같은 호출의 enemy 에 같은 필드를 함께 주지 않는다.",
+    },
   }),
   run(draft, rawArgs): ToolExecResult {
     const repaired = repairRecordArgs("enemy", "enemy", rawArgs, enemyRecordSchema, upsertEnemy.parameters);
@@ -1796,9 +1827,11 @@ const upsertEnemy: ToolDefinition = {
     requirePositiveTp((args.enemy as { rewards?: { tp?: unknown } } | undefined)?.rewards?.tp, "enemy.rewards.tp");
     requirePositiveAp((args.enemy as { rewards?: { ap?: unknown } } | undefined)?.rewards?.ap, "enemy.rewards.ap");
     const merged = mergeRecord(draft.database.enemies, args.enemy, "enemy", enemyRecordSchema, { id: "enemy_slime", name: "슬라임" });
+    const cleared = clearEnemyFields(merged as Record<string, unknown>, args.enemy, args.clearFields);
     rejectUnknownEnemyReferences(draft, args.enemy);
     const record = normalizeEnemyRecord(merged as Partial<EnemyRecord> & Pick<EnemyRecord, "id" | "name">);
     const warnings: string[] = [...repaired.notes];
+    if (cleared.length > 0) warnings.push(`지운 필드: ${cleared.join(", ")}`);
     dropUnknownElementRates(draft, record, "enemy", warnings);
     dropUnknownSpeciesId(draft, record, "enemy", warnings);
     ensureMonsterGraphic(draft, record, record, "enemy.monsterResourceId", warnings, args.appearanceTags as unknown[] | undefined, { pendingWhenLocked: true });
@@ -1872,6 +1905,17 @@ function withEnemyIdsFromMembers(troop: unknown): unknown {
   return enemyIds.length > 0 ? { ...record, enemyIds } : troop;
 }
 
+/**
+ * 트룹 쓰기 요약의 밸런스 한 줄. 「레벨을 올려도 전멸」은 올린 파티도 질 때만 쓴다 — 몬스터 게임 경고는 «스타터보다 Lv4 높으면 이긴다»여도
+ * 「전멸」 낱말을 담아, 요약이 «레벨을 올려도 전멸»이라 거짓말하자 모델이 관장·챔피언을 한 마리 Lv7 로 깎았다(2026-10-29 standin monster).
+ */
+function troopWarningSummary(warnings: readonly string[]): string {
+  if (!warnings.length) return "";
+  if (warnings.some(w => /올려도 (?:전멸|이길 수 없)|지나갈 수 없는 잡몹/u.test(w))) return " — 밸런스 경고: 파티가 레벨을 올려도 전멸함";
+  if (warnings.some(w => w.includes("전멸"))) return " — 밸런스 경고: 지금 기준 파티로는 지고, 레벨을 올리면 이김(경고 참고)";
+  return " — 밸런스 경고: 적이 시작 파티에게 거의 피해를 주지 못함";
+}
+
 const upsertTroop: ToolDefinition = {
   name: "upsert_troop",
   description: "적 그룹(트룹) 레코드를 등록/수정한다. 기존 id는 전달 필드만 병합하고 나머지를 보존한다.",
@@ -1905,7 +1949,7 @@ const upsertTroop: ToolDefinition = {
     const outcome = upsertById(draft.database.troops, record);
     const warnings = troopBalanceWarnings(draft, record.id);
     return {
-      summary: `트룹 '${record.name}'(${memberCount}마리) ${outcome === "added" ? "추가" : "수정"}${warnings.length ? (warnings.some(w => w.includes("전멸")) ? " — 밸런스 경고: 파티가 레벨을 올려도 전멸함" : " — 밸런스 경고: 적이 시작 파티에게 거의 피해를 주지 못함") : ""}`,
+      summary: `트룹 '${record.name}'(${memberCount}마리) ${outcome === "added" ? "추가" : "수정"}${troopWarningSummary(warnings)}`,
       data: record,
       ...(warnings.length ? { warnings } : {}),
     };
@@ -2690,13 +2734,21 @@ function parseTitleIntro(value: unknown): TitleIntroSettings {
  * 「참조 검증 실패 … backgroundResourceId 가 존재하지 않습니다」 로 **변경 전체**를 되돌려 제목·음악까지 날아갔다
  * (추리 도그푸딩 gen: 지어낸 easyrpg-backdrop-room-1).
  */
-function requireTitleResource(draft: Project, field: string, id: string, kind: "picture" | "bgm" | "charset"): string {
+/** 「bgm:easyrpg-music-…」「picture:…」처럼 종류 머리를 붙여 보낸 id 에서 머리를 뗀다(2026-10-28 deepseek 방탈출). */
+function stripResourceKindPrefix(raw: string): string {
+  return raw.trim().replace(/^(?:bgm|music|se|sound|picture|pictures|image|backdrop|title|resource|charset)\s*[:/]\s*/iu, "");
+}
+
+function requireTitleResource(draft: Project, field: string, id: string, kind: "picture" | "bgm" | "charset", hint = ""): string {
   const known = collectResourceIds(draft);
   if (known.has(id)) return id;
+  const lower = id.toLowerCase();
+  const sameIgnoringCase = [...known].find((candidate) => candidate.toLowerCase() === lower);
+  if (sameIgnoringCase) return sameIgnoringCase;
   const stem = id.split(/[-_]/u).slice(0, 2).join("-");
   const near = [...known].filter((candidate) => stem && candidate.startsWith(stem)).slice(0, 6);
   throw new ToolError(
-    `${field} '${id}' 는 없는 리소스입니다.${near.length > 0 ? ` 비슷한 실제 id: ${near.join(", ")}.` : ""} list_resources(kind:"${kind}") 로 실제 id 를 찾아 넣거나 이 필드를 빼세요.`,
+    `${field} '${id}' 는 없는 리소스입니다.${hint}${near.length > 0 ? ` 비슷한 실제 id: ${near.join(", ")}.` : ""} list_resources(kind:"${kind}") 로 실제 id 를 찾아 넣거나 이 필드를 빼세요.`,
     { code: "invalid-args" },
   );
 }
@@ -2758,7 +2810,7 @@ const setTitleScreen: ToolDefinition = {
           menuY: { type: "integer" },
         },
       },
-      backgroundResourceId: { type: "string", description: "titleScreen.background only; does not clear system.titleResourceId" },
+      backgroundResourceId: { type: "string", description: "titleScreen.background only; does not clear system.titleResourceId. 게임 맵·걷기 칩으로 지은 오프닝 애니메틱 컷의 한 순간을 타이틀 그림으로 쓰려면 \"opening-still:<컷 id>@<ms>\"(예: opening-still:shot_throne@2400) — 그림 파일 없이 플레이어가 그 컷을 그 시각으로 그려 쓴다. 타이틀 전용 컷이 필요하면 오프닝 도구로 컷을 만들고 그 id 를 준다" },
       musicResourceId: { type: "string" },
       backgroundLayers: {
         type: "array",
@@ -2927,18 +2979,39 @@ const setTitleScreen: ToolDefinition = {
       };
     }
 
+    // 청사진(게임 장르·장소)에 맞는 번들 그림 — 빈 배경·못 쓰는 그림·없는 id 를 받았을 때 고칠 방법 한 줄로 쓴다.
+    const blueprintArt = pickBlueprintTitleArt(draft);
+    const artHint = blueprintArt ? ` 이 게임(청사진)에는 backgroundResourceId:'${blueprintArt.id}'(${blueprintArt.name})가 맞다.` : "";
     if (typeof args.backgroundResourceId === "string") {
-      const background = args.backgroundResourceId.trim();
+      const background = stripResourceKindPrefix(args.backgroundResourceId);
       if (background) {
-        const banned = unsuitableOpeningStillMessage(background, "backgroundResourceId");
-        if (banned) throw new ToolError(banned, { code: "invalid-args" });
-        current.backgroundResourceId = requireTitleResource(draft, "backgroundResourceId", background, "picture");
+        const still = parseOpeningStill(background);
+        if (still) {
+          const scene = findOpeningStillScene(draft, still.sceneId);
+          if (!scene) {
+            const shots = [...(draft.system.opening?.scenes ?? []), ...(draft.system.titleIntro?.scenes ?? [])].filter((entry) => entry.kind === "animatic").map((entry) => entry.id);
+            throw new ToolError(`backgroundResourceId '${background}': 애니메틱 컷 '${still.sceneId}' 가 오프닝·타이틀 인트로에 없습니다.${shots.length ? ` 있는 컷: ${shots.join(", ")}` : " 오프닝 애니메틱 컷을 먼저 만드세요."}`, { code: "invalid-args" });
+          }
+          if (still.atMs > scene.durationMs) throw new ToolError(`backgroundResourceId '${background}': @${still.atMs}ms 가 컷 길이 ${scene.durationMs}ms 를 넘습니다.`, { code: "invalid-args" });
+          current.backgroundResourceId = background;
+        } else {
+          const banned = unsuitableOpeningStillMessage(background, "backgroundResourceId");
+          if (banned) throw new ToolError(blueprintArt ? `backgroundResourceId '${background}' 는 타이틀에 못 쓰는 그림이다 —${artHint}` : banned, { code: "invalid-args" });
+          current.backgroundResourceId = requireTitleResource(draft, "backgroundResourceId", background, "picture", artHint);
+        }
+      } else if (blueprintArt) {
+        // 빈 값 = «지금 그림을 치워 달라». 지우기만 하면 시스템 기본 그림(눈 덮인 산촌)이 다시 나온다(2026-10-28 argon 방탈출) — 청사진 그림으로 바꾼다.
+        current.backgroundResourceId = blueprintArt.id;
+        current.backgroundFit ??= "cover";
+        labelNotes.push(`배경을 비우면 기본 눈 마을 그림이 나와 청사진에 맞는 「${blueprintArt.name}」(${blueprintArt.id})로 바꿨다`);
+      } else {
+        delete current.backgroundResourceId;
+        if (draft.system.titleResourceId) labelNotes.push(`배경을 비워 시스템 기본 그림(${draft.system.titleResourceId})이 나온다 — 다른 그림은 list_resources{kind:'backdrop'} 에서 골라 backgroundResourceId 로 준다`);
       }
-      else delete current.backgroundResourceId;
     }
 
     if (typeof args.musicResourceId === "string") {
-      const music = args.musicResourceId.trim();
+      const music = stripResourceKindPrefix(args.musicResourceId);
       if (music) current.musicResourceId = requireTitleResource(draft, "musicResourceId", music, "bgm");
       else delete current.musicResourceId;
     }

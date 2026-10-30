@@ -11,6 +11,7 @@ import { charsetFamilyOf, CHARSET_FAMILY_LABELS } from "./charsetFamily";
 import { defaultPartyRecords } from "./defaults/defaultDatabasePartyRecords";
 import { activeGenreLock, enableGenreLock, genreLockAllowsCharsetUse, genreLockCharsetFamiliesOfPreset, refreshGrandfatheredCharsets, type ActiveGenreLock, type GenreLockMode, type GenreLockPresetId } from "./genreLock";
 import { faceFamilyOf } from "./visualFamily";
+import { peopleChipCatalogFilter } from "./peopleChipLock";
 import { battlerSourceChip, collectCharsetUses, type CharsetUse } from "./genreLockCharsetUses";
 import type { Project } from "./types";
 
@@ -38,7 +39,7 @@ export function genreLockCharsetViolations(before: Project, after: Project): Cha
   return out;
 }
 
-const PEOPLE_FAMILIES: ReadonlySet<string> = new Set(["rtp-people", "shared-actor", "scarloxy-people", "heroes", "modern"]);
+const PEOPLE_FAMILIES: ReadonlySet<string> = new Set(["rtp-people", "shared-actor", "scarloxy-people", "heroes", "modern", "refmap-doll"]);
 const CREATURE_TAGS = ["몬스터", "동물", "생물"];
 
 function isCreatureEntry(entry: CharsetSemanticEntry | undefined): boolean {
@@ -144,12 +145,26 @@ export function assertGenreLockCharsets(before: Project, draft: Project, args: {
   return [`[경고 모드] ${message}`];
 }
 
-/** 허용 칩만 보이게 하는 카탈로그 필터(조수 실행 중 list_npc_graphics·그림 질의가 쓴다). 강제 중인 캐릭터 잠금이 아니면 undefined. */
-export function genreLockCharsetCatalogFilter(project: Project): ((entry: Pick<CharsetSemanticEntry, "textureKey">) => boolean) | undefined {
+function forwardCharsetFilter(project: Project): ((entry: Pick<CharsetSemanticEntry, "textureKey">) => boolean) | undefined {
   const active = activeGenreLock(project);
   if (!active?.allowedCharsets || active.lock.mode !== "enforce") return undefined;
   const allowed = active.allowedCharsets;
   return (entry) => allowed.has(charsetFamilyOf(project, entry.textureKey));
+}
+
+/**
+ * 허용 칩만 보이게 하는 카탈로그 필터(조수 실행 중 list_npc_graphics·그림 질의·기본 선택이 쓴다). 강제 중인 캐릭터 잠금도 사람 칩 잠금(peopleChipLock.ts)도 없으면 undefined.
+ * 두 잠금을 한 필터로 묶는다 — 기본 선택 경로가 이 필터로 withNpcGraphicCatalogFilter 를 다시 걸면 바깥 필터를 덮기 때문이다.
+ */
+export function genreLockCharsetCatalogFilter(project: Project): ((entry: Pick<CharsetSemanticEntry, "textureKey">) => boolean) | undefined {
+  const forward = forwardCharsetFilter(project);
+  const people = peopleChipCatalogFilter(project);
+  return forward && people ? (entry) => forward(entry) && people(entry) : forward ?? people;
+}
+
+/** 장르 잠금이 캐릭터 칩을 허용 계열(칸이 적은 키트)로 강제하는가 — 다른 인물과 같은 칩 피하기를 프로젝트 전체로 넓히는 근거. */
+export function genreLockLimitsCharsets(project: Project): boolean {
+  return forwardCharsetFilter(project) !== undefined;
 }
 
 export interface CharsetRemapResult {

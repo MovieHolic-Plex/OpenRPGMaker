@@ -26,7 +26,16 @@ export interface DeckRail {
   setState(state: DeckState): void;
 }
 
-const NAME = "AI";
+// 조수의 이름은 「조수」 하나다 — 머리·레일·접기 버튼이 같은 이름을 쓴다(C-62).
+const NAME = "조수";
+/** 점의 색만으로 상태를 말하지 않는다 — 같은 뜻을 title 로 붙인다(C-60). */
+const STATE_LABEL: Record<DeckState, string> = {
+  idle: "대기 중",
+  run: "작업 중",
+  attention: "확인 필요",
+  done: "완료",
+  error: "오류",
+};
 
 /** 상태 배지 톤 → 데크 상태. 「확인 필요」 는 톤이 아니라 승인 대기 사실이므로 패널이 직접 setState 한다. */
 export function deckStateOfTone(tone: AiStatusTone): DeckState {
@@ -49,7 +58,7 @@ function assertNever(value: never): never {
 }
 
 export function createDeckRail(): DeckRail {
-  const dot = el("span", { class: "ai-deck-rail-dot", attrs: { "aria-hidden": "true" }, dataset: { aiState: "idle" } });
+  const dot = el("span", { class: "ai-deck-rail-dot", attrs: { "aria-hidden": "true", title: `조수 상태: ${STATE_LABEL.idle}` }, dataset: { aiState: "idle" } });
   const ctx = el("span", { class: "ai-deck-rail-ctx", dataset: { testid: "ai-deck-rail-ctx" } });
   const statusSlot = el("span", { class: "ai-deck-rail-state" });
   const actions = el("div", { class: "ai-deck-rail-actions", attrs: { role: "toolbar", "aria-label": "AI 도구" } });
@@ -79,6 +88,7 @@ export function createDeckRail(): DeckRail {
     setState: (state) => {
       root.dataset.aiState = state;
       dot.dataset.aiState = state;
+      dot.title = `조수 상태: ${STATE_LABEL[state]}`;
     },
   };
 }

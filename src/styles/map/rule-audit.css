@@ -50,8 +50,8 @@
   align-items: center;
   cursor: pointer;
   display: flex;
-  font-size: 11px;
-  font-weight: 700;
+  font-size: 12px;
+  font-weight: 600;
   gap: var(--space-1);
   list-style: none;
   margin: 0;
@@ -133,4 +133,12 @@
 
 .rule-audit-empty {
   padding: var(--space-2) 0 0;
+}
+
+/* 검사·기록 판의 섹션 이름은 문장 그대로 쓴다(대문자 눈썹 없음) — 한국어에는 대문자가 없고 영어에서는 외치는 글자가 된다. */
+.left-panel-stack[data-testid="left-palette-root"] .oprn-toolbar-dropdown .oprn-overflow-section {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
 }

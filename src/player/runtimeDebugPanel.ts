@@ -7,8 +7,8 @@
 // 저작자용 계측기 요건(측정된 결함 D4/D5 대응):
 //  - 이름 없는 레코드도 id 라벨로 반드시 노출한다(빈 프로젝트 셀렉트가 0개였다).
 //  - 큰 목록은 필터 입력으로 좁힌다(아이템 179개를 스크롤로 고를 수 없었다).
-//  - 기본은 접힌 🛠 아이콘 하나. 펼치면 한 줄 라이브 상태 + 전체 JSON. 루프는 패널이 DOM에서 떨어지면 스스로 멈춘다.
-//  - 하단 고정 바로 배치해 플레이 필드를 가리지 않고, 펼침 상태를 localStorage 에 기억한다.
+//  - 기본은 접힌 「디버그」 단추 하나. 펼치면 한 줄 라이브 상태 + 전체 JSON. 루프는 패널이 DOM에서 떨어지면 스스로 멈춘다.
+//  - 펼치면 창 오른쪽 서랍이 되어 플레이 필드를 가리지 않고, 펼침 상태를 localStorage 에 기억한다.
 
 import { store } from "@/project/store";
 import { el } from "@/util/dom";
@@ -59,21 +59,22 @@ function ensureDebugPanelStyles(): void {
   const style = document.createElement("style");
   style.id = "runtime-debug-panel-style";
   // 디자인 토큰(src/styles/tokens.css) 참조 — 하드코딩 색 없음. 토큰 미로드 환경 폴백값 포함.
-  // 배치: 플레이 필드를 덮지 않도록 하단 고정 바다. 접으면 왼쪽 아래 🛠 아이콘 하나, 펼치면 아래에서 위로
-  // 최대 절반까지만 자란다(예전 right:150px/top:4px 절대배치는 게임 화면 위를 가렸다).
+  // 배치: 접으면 왼쪽 아래 「디버그」 글자 단추 하나(28px), 펼치면 창 오른쪽 서랍(300px)이 되고 게임 본문이
+  // 그만큼 물러난다 — 아래 절반을 덮던 하단 바는 플레이어를 가렸다(HIG C-99). 서랍 머리(접기)는 스크롤해도 고정된다.
   // 접힌 상태에서도 요약줄 띠(「🛠 런타임 디버그 · map_… · 입력 ON · 이벤트 대기」)를 깔았더니
   // 처음 쓰는 사람에게는 게임 화면 밑에 붙은 개발자 잡음이었다(2026-09-23 첫인상 점검) — 띠는 펼칠 때만.
   style.textContent = `
-.runtime-debug-panel{position:absolute;left:var(--space-2,8px);right:var(--space-2,8px);bottom:var(--space-1,4px);top:auto;z-index:60;max-height:50%;overflow:auto;
-  background:var(--bg-overlay,#232838);color:var(--text-1,#e9ecf3);border:1px solid var(--border-strong,rgba(255,255,255,.17));
-  border-radius:var(--radius-m,10px);padding:4px var(--space-2,8px) var(--space-2,8px);font-size:12px;box-shadow:var(--shadow-pop,0 4px 12px rgba(0,0,0,.28));
+.runtime-debug-panel{position:absolute;top:36px;right:0;bottom:0;left:auto;width:300px;z-index:60;overflow:auto;overscroll-behavior:contain;
+  background:var(--bg-overlay,#232838);color:var(--text-1,#e9ecf3);border-left:1px solid var(--border-strong,rgba(255,255,255,.17));
+  padding:0 var(--space-2,8px) var(--space-2,8px);font-size:12px;box-sizing:border-box;
   font-family:var(--font-ui,system-ui,sans-serif)}
-.runtime-debug-panel:not([open]){max-height:none;overflow:hidden;padding:0;right:auto;border-radius:999px;opacity:.72}
-.runtime-debug-panel:not([open]):hover,.runtime-debug-panel:not([open]):focus-within{opacity:1}
-.runtime-debug-panel:not([open]) summary{padding:3px 7px;font-size:13px;line-height:1}
+.test-play-window:has(> .runtime-debug-panel[open]) > .test-play-modal-body{margin-right:300px}
+.runtime-debug-panel:not([open]){top:auto;right:auto;left:var(--space-2,8px);bottom:var(--space-2,8px);width:auto;overflow:hidden;padding:0;border:1px solid var(--border-strong,rgba(255,255,255,.17));border-radius:var(--radius-s,6px);box-shadow:var(--shadow-pop,0 4px 12px rgba(0,0,0,.28))}
+.runtime-debug-panel:not([open]) summary{min-height:28px;padding:0 10px;font-size:12px;line-height:1;align-items:center}
 .runtime-debug-panel:not([open]) .runtime-debug-live{display:none}
-.runtime-debug-panel:not([open]) .runtime-debug-title{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .runtime-debug-panel summary{cursor:pointer;font-weight:700;user-select:none;color:var(--text-1,#e9ecf3);display:flex;flex-wrap:wrap;gap:var(--space-2,8px);align-items:baseline}
+.runtime-debug-panel[open] > summary{position:sticky;top:0;z-index:1;min-height:32px;align-items:center;background:var(--bg-overlay,#232838);margin:0 calc(-1 * var(--space-2,8px));padding:0 var(--space-2,8px);border-bottom:1px solid var(--border-subtle,rgba(255,255,255,.07))}
+.runtime-debug-panel summary:focus-visible{outline:none;box-shadow:var(--focus-ring,0 0 0 2px rgba(108,121,242,.55))}
 .runtime-debug-live{font-weight:400;font-family:var(--font-mono,monospace);font-size:11px;color:var(--text-2,#9aa3b5)}
 .runtime-debug-live[data-live='running']{color:var(--accent,#6c79f2)}
 .runtime-debug-row{display:flex;flex-direction:column;gap:2px;margin-top:var(--space-1,4px)}
@@ -456,12 +457,11 @@ export function renderRuntimeDebugPanel(): HTMLElement {
     dataset: { testid: "runtime-debug-panel" },
     children: [
       el("summary", {
-        attrs: { title: "런타임 디버그 (테스트 플레이 계측기)" },
+        attrs: { title: "런타임 디버그 (테스트 실행 계측기)" },
         dataset: { testid: "runtime-debug-toggle" },
         children: [
-          el("span", { text: "🛠", attrs: { "aria-hidden": "true" } }),
-          // 접힌 아이콘 상태에서도 스크린리더가 이름을 읽도록 display:none 이 아니라 시각적으로만 숨긴다.
-          el("span", { class: "runtime-debug-title", text: "런타임 디버그" }),
+          // 글자 단추다 — 27x19 이모지 알약은 무엇인지 읽히지 않았다(HIG C-99).
+          el("span", { class: "runtime-debug-title", text: "디버그" }),
           liveLine,
         ],
       }),

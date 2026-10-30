@@ -413,7 +413,9 @@ const VAULT_ROOM: RoomSpec = {
     {id: "rug royal", rect: {"x0": 11, "y0": 8, "x1": 20, "y1": 9}},
     {id: "rug blue", rect: {"x0": 15, "y0": 10, "x1": 16, "y1": 25}},
     {id: "rug purple", rect: {"x0": 3, "y0": 7, "x1": 7, "y1": 9}},
-    {id: "rug purple", rect: {"x0": 23, "y0": 7, "x1": 29, "y1": 8}},
+    // 별 봉인 2×2 (26,7) 은 깔개와 겹치면 stamp 가 거부한다. 봉인 칸만 맨바닥으로 남긴다.
+    {id: "rug purple", rect: {"x0": 23, "y0": 7, "x1": 25, "y1": 8}},
+    {id: "rug purple", rect: {"x0": 28, "y0": 7, "x1": 29, "y1": 8}},
   ],
   goods: [
     {id: "openbook", x: 27, y: 16},

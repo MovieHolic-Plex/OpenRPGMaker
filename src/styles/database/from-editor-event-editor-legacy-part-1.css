@@ -179,8 +179,9 @@
   font-size: 10px;
   color: var(--text-dim);
   margin: 6px 0 2px;
-  text-transform: uppercase;
-  letter-spacing: 0.4px;
+  /* 필드 라벨은 문장형 대소문자다 — 대문자 변환은 영어 라벨을 「SKILL SLOTS (0 = UNLIMITED)」처럼 섹션 제목보다
+     세게 만들었다(V-database-21, J-p8-language-14). */
+  text-transform: none;
 }
 
 /* editor/event-editor-legacy.part-1.css:140-153 */

@@ -9,6 +9,7 @@ import { normalizeVisualTopOverhangPx } from "../mapVisualBounds";
 import { normalizeSunlight } from "../sunlight";
 import { normalizeAiAuthoring } from "../aiAuthoring";
 import { normalizeGameDesignBrief } from "../gameDesignBrief";
+import { normalizeGameBlueprint } from "../gameBlueprint";
 import { assertGrowthShape } from "@/project/growth/validation";
 import { validateSpatialProject } from "../spatial/overviewPairs";
 import { validateSpatialAuthoring } from "../spatial/guards";
@@ -181,6 +182,7 @@ function normalizeProjectV4(data: JsonRecord, adoptParsed = false): Project {
   const project = adoptParsed ? ownedParsedProject(data) : cloneJson<Project>(data);
   if (data.aiAuthoring !== undefined) project.aiAuthoring = normalizeAiAuthoring(data.aiAuthoring);
   if (data.gameDesignBrief !== undefined) project.gameDesignBrief = normalizeGameDesignBrief(data.gameDesignBrief);
+  if (data.gameBlueprint !== undefined) project.gameBlueprint = normalizeGameBlueprint(data.gameBlueprint);
   project.mapTree = mapTree;
   project.mapConnections ??= [];
   project.villageInfoDocuments ??= [];

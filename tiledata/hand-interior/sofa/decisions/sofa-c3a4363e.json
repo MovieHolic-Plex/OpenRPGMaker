@@ -1,0 +1,33 @@
+{
+ "schema": "oprn-hand-interior-pick/1",
+ "object": "sofa",
+ "tiles": [
+  3678,
+  3679
+ ],
+ "tileset": "atlas_biome_interior",
+ "file": "tiledata/hand-interior/sofa/sofa.png",
+ "objectGatePixelSha256": "c3a4363ef51b578adebfc849280331e733810e0290f2d145c4796eee1692936d",
+ "source": "object-gen job sofa-r1 candidate C attempt 2 (AI picker chose D1; the user picked C2)",
+ "decision": "allow",
+ "decidedBy": "user",
+ "decidedAt": "2026-10-30",
+ "userWords": "소파는 r1 C2 가 괜찮아보이는군....",
+ "relayedBy": "supervisor (coordinator message, 2026-10-30)",
+ "seenOn": "http://mdc-server:18301/sofa-1030.html",
+ "note": "Same set as the armchair r4 C2 (user pick 2026-10-29). The human allow is the final pass.",
+ "objectGate": {
+  "verdict": "pass",
+  "profileHash": "4d8774b517f41638",
+  "calibrated": false,
+  "judge": "object-gate profile judges (Sonnet 5.5 x4 + eye runs) — not Argon, no Opus stand-in needed for this receipt",
+  "refSet": "atlas_biome_interior",
+  "reasons": []
+ },
+ "objectGenBlindReview": {
+  "judge": "claude opus 5.5 medium (object-gen judge; Argon not used)",
+  "C": "PASS",
+  "votes": "3/3"
+ },
+ "independentVqa": "not run: the user picked from the page before an independent VQA round"
+}

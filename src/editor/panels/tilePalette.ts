@@ -3,6 +3,7 @@ import { editorState } from "@/editor/editorState";
 import type { Layer } from "@/editor/editorState";
 import { recentTilesView, recordRecentTile } from "@/editor/panels/tileBrushTools";
 import { renderEventEditor } from "@/editor/panels/eventEditor";
+import { openNewEventEditorModal } from "@/editor/panels/eventEditor/modal";
 import { makeTileToolbar } from "@/editor/panels/tileToolbar";
 import { makePaintShapeSelect } from "@/editor/panels/tileToolOptions";
 import { makeSidebarMapHeader } from "@/editor/panels/sidebarMapHeader";
@@ -10,6 +11,7 @@ import { makeSidebarSurface } from "@/editor/panels/sidebarSurface";
 import { isDefaultTilesetTexture, tilesetImageUrl, tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
 import { TILE_GRAFT_IMAGE_BAKED_EVENT } from "@/assets/tileGraftImageCache";
 import { openTilePropsDialog } from "@/editor/panels/tilePropsDialog";
+import { makeSvgIcon } from "@/editor/panels/tileToolbarIcons";
 import { openMapPropertiesDialog } from "@/editor/panels/mapPropertiesDialog";
 import { makeStructureKitShelf } from "@/editor/harnessSuggestion/structureKitShelf";
 import { hasWorldmapBrushes, makeWorldmapBrushShelf } from './worldmapBrushShelf';
@@ -68,6 +70,8 @@ let tileSearchQuery = "";
 const TILE_SEARCH_RENDER_DELAY_MS = 120;
 let tileSearchRenderTimer: ReturnType<typeof setTimeout> | null = null;
 let showQuickTileNumbers = false;
+/** 원본 배치 시트(커스텀 판)의 칸 배율 — 16px 칸으로는 여러 칸짜리 구조를 알아보기 어렵다. */
+let sheetZoom: 1 | 2 | 3 = 1;
 /** 맵 우클릭 스포이트 후 팔레트 타일 그림판 셀로 스크롤 (전문가 모드). */
 let pendingRevealSelectedTile = false;
 let resetChipsetScroll = false;
@@ -89,7 +93,7 @@ type PaletteScroll = {
  */
 function paintSheetRetainKey(tileset: TilesetDef, layer: Exclude<Layer, "event">): string {
   const view = paletteHasSmartCatalog(tileset) ? currentPaletteView(tileset) : "raw";
-  if (usesSourceSheet(tileset)) return [tileset.id, tileset.count, tileset.tilesPerRow, view, "custom"].join("|");
+  if (usesSourceSheet(tileset)) return [tileset.id, tileset.count, tileset.tilesPerRow, view, "custom", sheetZoom].join("|");
   return [tileset.id, tileset.count, tileset.tilesPerRow, layer, activeTileCategory, tileSearchQuery, view, "grid"].join("|");
 }
 
@@ -280,11 +284,12 @@ export function renderTilePalette(container: HTMLElement): void {
       class: "palette-work-pane is-event",
       dataset: { testid: "palette-work-pane-event" },
     });
-    if (map) root.append(makeSidebarMapHeader(map, renderPalettePreservingViewport));
+    if (map) root.append(mapHeaderWithLayer(map, "event"));
     if (map && tileset) {
       root.append(makeTileToolbar({ map, rerender: renderPalettePreservingViewport, state, tileset }));
     }
     renderEventEditor(root);
+    if (map) offerNewEventInEmptyList(root, map);
     // 검사 컨트롤(⋯ 오버플로·핀)은 도구막대 행 끝에 있다(tileToolbar.ts) — 사이드바 아래 줄은 비웠다.
     shell.append(root);
     mountPaletteShell(container, shell);
@@ -322,7 +327,7 @@ export function renderTilePalette(container: HTMLElement): void {
   if (map.worldmapSource && !map.worldmapSource.tilemap && tileset.family === 'worldmap-kit') {
     const pane = el('div', { class: 'palette-work-pane is-paint', dataset: { testid: 'worldmap-material-upgrade' } });
     pane.style.display = 'flex'; pane.style.flexDirection = 'column';
-    pane.append(makeSidebarMapHeader(map, renderPalettePreservingViewport));
+    pane.append(mapHeaderWithLayer(map, tileLayer));
     const status = el('p', { class: 'empty-hint', text: '지형과 거점을 재료로 분리하면 붓으로 편집할 수 있습니다.', attrs: { 'aria-live': 'polite' } });
     const button = el('button', { class: 'btn', text: '지형·거점 재료로 바꾸기', attrs: { type: 'button' }, dataset: { testid: 'worldmap-material-upgrade-confirm' } }) as HTMLButtonElement;
     button.onclick = async () => {
@@ -365,6 +370,11 @@ export function renderTilePalette(container: HTMLElement): void {
   }
 }
 
+/** 띠에는 타일 이름만 앞세운다 — 내부 번호(「360 …」)는 사람에게 뜻이 없고 좁은 폭에서 이름을 밀어낸다. */
+function selectedTileDisplayName(name: string, index: number): string {
+  return name.replace(/^\d+\s+/, "").trim() || `타일 ${index}`;
+}
+
 /**
  * 선택 타일 + 타일셋 이름을 한 줄 칩으로 — 구 palette-tileset-badge(별도 줄)를 흡수했다.
  *
@@ -399,7 +409,7 @@ function updateSelectedTileStatus(
   const labelButton = chip.querySelector<HTMLElement>(".selected-tile-label");
   if (!labelButton) return false;
   const name = hasTile ? quickTileName(tileset, selectedTile) : "";
-  const label = !hasTile ? "공백" : name.startsWith(`${selectedTile} `) ? name : `${selectedTile} ${name}`;
+  const label = !hasTile ? "공백" : selectedTileDisplayName(name, selectedTile);
   if (hasTile) {
     const thumb = chip.querySelector<HTMLElement>(".selected-tile-thumb");
     if (!thumb) return false;
@@ -424,7 +434,7 @@ function makeSelectedTileStatus(
   const hasTile = selectedTile >= 0 && selectedTile < tileset.count;
   // 기본 타일 그림판 라벨(tileDisplayLabelForIndex)은 이미 "360 흙길 중심"처럼 번호로 시작 — 번호 중복 표기를 막는다.
   const name = hasTile ? quickTileName(tileset, selectedTile) : "";
-  const label = !hasTile ? "공백" : name.startsWith(`${selectedTile} `) ? name : `${selectedTile} ${name}`;
+  const label = !hasTile ? "공백" : selectedTileDisplayName(name, selectedTile);
   const chip = el("div", {
     class: "selected-tile-status",
     attrs: { title: `선택 타일: ${label} · 타일셋: ${tileset.name}` },
@@ -444,7 +454,9 @@ function makeSelectedTileStatus(
       })
     );
   }
-  chip.append(
+  const names = el("span", { class: "selected-tile-names" });
+  chip.append(names);
+  names.append(
     el("button", {
       class: "selected-tile-label",
       text: label,
@@ -458,7 +470,7 @@ function makeSelectedTileStatus(
       on: { click: () => { if (hasTile) revealPaletteTileFromMap(Number(chip.dataset.selectedTile)); } },
     })
   );
-  chip.append(
+  names.append(
     el("button", {
       class: "selected-tile-tileset",
       text: tileset.name,
@@ -475,7 +487,7 @@ function makeSelectedTileStatus(
   chip.append(
     el("button", {
       class: "selected-tile-props-button",
-      text: "⚙",
+      children: [makeSvgIcon("gear")],
       attrs: {
         type: "button",
         title: hasTile ? "타일 속성 (통행 · 지면 종류)" : "타일을 먼저 고르세요",
@@ -486,6 +498,46 @@ function makeSelectedTileStatus(
     })
   );
   return chip;
+}
+
+const LAYER_NAMES: Readonly<Record<Layer, string>> = { lower: "바닥 레이어", upper: "상위 레이어", event: "이벤트 레이어" };
+
+/** 패널 머리에 지금 편집하는 레이어를 적는다 — 캔버스에서 레이어를 바꿔도 왼쪽 패널이 무엇을 다루는지 바로 보인다. */
+function mapHeaderWithLayer(map: GameMap, layer: Layer): HTMLElement {
+  const header = makeSidebarMapHeader(map, renderPalettePreservingViewport);
+  header.append(el("span", { class: "sidebar-layer-badge", text: LAYER_NAMES[layer], dataset: { testid: "sidebar-layer-badge", layer } }));
+  return header;
+}
+
+/** 빈 이벤트 목록에는 안내 글만 두지 않고 바로 만드는 단추를 둔다(맵 가운데에서 가장 가까운 빈 칸). */
+function offerNewEventInEmptyList(root: HTMLElement, map: GameMap): void {
+  const empty = root.querySelector<HTMLElement>(".event-list-empty");
+  if (!empty || empty.querySelector("[data-testid=event-list-new]")) return;
+  empty.append(el("button", {
+    class: "btn primary event-list-new",
+    text: "새 이벤트",
+    attrs: { type: "button", title: "맵 가운데 빈 칸에 새 이벤트를 만들고 편집 창을 엽니다." },
+    dataset: { testid: "event-list-new" },
+    on: { click: () => {
+      const cell = freeEventCell(map);
+      if (cell) openNewEventEditorModal(map.id, cell.x, cell.y);
+    } },
+  }));
+}
+
+function freeEventCell(map: GameMap): { x: number; y: number } | null {
+  const taken = new Set(map.events.map((event) => `${event.x},${event.y}`));
+  const cx = Math.floor(map.width / 2);
+  const cy = Math.floor(map.height / 2);
+  for (let radius = 0; radius < Math.max(map.width, map.height); radius += 1) {
+    for (let y = cy - radius; y <= cy + radius; y += 1) {
+      for (let x = cx - radius; x <= cx + radius; x += 1) {
+        if (x < 0 || y < 0 || x >= map.width || y >= map.height) continue;
+        if (!taken.has(`${x},${y}`)) return { x, y };
+      }
+    }
+  }
+  return null;
 }
 
 /**
@@ -506,7 +558,7 @@ function makePaletteSurface(input: {
   });
 
   const model = { map, rerender: renderPalettePreservingViewport, state, tileset };
-  root.append(makeSidebarMapHeader(map, renderPalettePreservingViewport));
+  root.append(mapHeaderWithLayer(map, tileLayer));
   root.append(makeTileToolbar({ ...model, refreshChrome: refreshPaletteChrome }));
   const assist = makeBrushAssistSection(map.id, state, tileset);
   const options = el('div', { class: 'sidebar-paint-options' });
@@ -581,6 +633,7 @@ function makePaletteSurface(input: {
     const displayTile = usesSourceSheet(tileset) ? state.selectedTile : gridPaletteDisplayTile(tileset, state.selectedTile);
     movePaletteActiveCell(palette, displayTile);
   }
+  if (usesSourceSheet(tileset)) palette.dataset.sheetZoom = String(sheetZoom);
   if (showQuickTileNumbers) palette.classList.add("show-index");
   else palette.classList.remove("show-index");
   // 살린 시트는 제자리에 두므로 새 판에는 자리표시자만 둔다(swapPaneAroundSheet 가 앞뒤를 시트 둘레로 옮긴다).
@@ -661,7 +714,7 @@ function makePaletteFilterBar(
     text: "#",
     attrs: {
       type: "button",
-      title: showQuickTileNumbers ? "타일 번호 숨기기" : "타일 번호 보이기",
+      title: showQuickTileNumbers ? "타일 번호 숨기기 — 칸마다 붙은 번호를 감춥니다" : "타일 번호 보이기 — 칸마다 타일 번호를 겹쳐 보입니다",
       "aria-pressed": String(showQuickTileNumbers),
       "aria-label": "타일 번호 표시",
     },
@@ -690,7 +743,22 @@ function makePaletteFilterBar(
     categorySelect.append(el("option", { value: category.id, text: `${category.label} (${count})` }));
   }
   categorySelect.value = activeTileCategory;
-  bar.append(el("div", { class: "palette-filter-search-row", children: [search, categorySelect, numberToggle] }));
+  const zoomSelect = usesSourceSheet(tileset) ? el("select", {
+    class: "tile-sheet-zoom",
+    attrs: { "aria-label": "확대", title: "시트 칸 확대 — 크게 보면 여러 칸짜리 구조를 알아보기 쉽습니다" },
+    dataset: { testid: "tile-sheet-zoom" },
+    on: { change: (event) => {
+      if (!(event.currentTarget instanceof HTMLSelectElement)) return;
+      const value = Number(event.currentTarget.value);
+      if (value === 1 || value === 2 || value === 3) sheetZoom = value;
+      renderPalettePreservingViewport();
+    } },
+  }) as HTMLSelectElement : null;
+  if (zoomSelect) {
+    for (const zoom of [1, 2, 3] as const) zoomSelect.append(el("option", { value: String(zoom), text: `${zoom}배` }));
+    zoomSelect.value = String(sheetZoom);
+  }
+  bar.append(el("div", { class: "palette-filter-search-row", children: [search, categorySelect, numberToggle, ...(zoomSelect ? [zoomSelect] : [])] }));
 
   const status = makePaletteFilterStatus(tileset, tileLayer, selectedTile);
   if (status) bar.append(status);

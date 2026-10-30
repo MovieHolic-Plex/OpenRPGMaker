@@ -9,7 +9,7 @@ import { CONFIGURE_OBJECT_BEHAVIOR, PURSUIT_SCHEMA, parsePursuit } from "./horro
 //              / duplicate_event / remove_event / move_event.
 
 import { shadowedPageWarnings } from "@/project/eventPageShadow";
-import { genreLockCharsetCatalogFilter } from "@/project/genreLockCharsets";
+import { genreLockLimitsCharsets } from "@/project/genreLockCharsets";
 import { EVENT_ANIMATION_TYPES } from "@/project/types";
 import { projectSetterShadowedPages } from "@/project/eventPageSetterShadow";
 import { nestedCommandLists } from "@/project/authoredCommandIndex";
@@ -19,8 +19,10 @@ import { ACTION_CONTROLS_GUIDE } from "@/player/keyBindings";
 import { EventPlacementAnalysis, eventRequiresPassableTile } from "@/project/eventPlacementRecovery";
 import { canMove, isPassable, tileAt } from "@/project/collision";
 import { unsafeSpawnLines } from "@/project/chaserSpawnSafety";
+import { ensureChaserHidingSpots, HIDING_SPARKLE } from "@/project/chaserHiding";
 import { isDoorArtCell } from "@/project/lint/scenePolishLint";
 import { kitDoorOpenCommands } from "@/project/kitDoors";
+import { doorLine, recordDoorForGate } from "./mapDoorTools";
 import { normalizeLightingState } from "@/project/lightingRules";
 import { isWaterChipsetTile } from "@/project/defaults/chipsetMapping";
 import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
@@ -571,6 +573,8 @@ function fillRequiredPageFields(event: GameEvent, page: Partial<EventPage>, page
       // 이름에 맞는 그림이 없으면 투명으로 두고 알린다. 이름과 무관한 대체 그림(예전 보석 표식)은 붙이지 않는다 —
       // 「고대 진실의 제단」이 보석으로 저장돼 제단 자리에 보석이 놓였다(2026-09-27 사용자 지적).
       page.graphic = object.graphic;
+      // 칩 그림 사물(문·철창·상자)은 조사하면 플레이어 쪽으로 돌아 다른 줄(열린 문짝)을 보였다 — 잠긴 문이 열린 문으로 보였다(2026-10-28 interior 장부 38).
+      if (!object.graphic.transparent && page.animationType === undefined) page.animationType = "fixedGraphic";
       warnings?.push(object.graphic.transparent
         ? `${event.id}.${pageId}: '${event.name ?? event.id}' 은(는) 말하는 인물이 아니라 조사할 사물로 보여 주민 그림을 세우지 않고 투명으로 두었습니다 — ` +
           `이대로는 바닥에서 보이지 않습니다. 그 칸에 사물 타일을 칠하거나(paint_tiles·place_props) graphic 을 지정하세요.`
@@ -1469,7 +1473,7 @@ const placeNpc: ToolDefinition = {
     const recurring = specQuery !== undefined && !('selectionId' in graphicSpec) ? recurringCharacterLook(draft, map.id, name) : undefined;
     if (recurring) normalizationWarnings.push(`같은 인물 '${name}' 이 ${recurring.mapId} 에 이미 있어 그 외형을 그대로 썼습니다(graphic.query "${specQuery}" 대신). 다른 모습이 의도라면 graphic 을 sprite 로 명시하세요.`);
     // 허용 칩이 적은 장르 잠금 아래에서는 다른 맵에 선 다른 인물의 칩도 피한다(같은 사람은 recurring 이 같은 모습을 준다).
-    const avoidKeys = genreLockCharsetCatalogFilter(draft) ? usedCharsetGraphicKeysOnProject(draft, name) : usedCharsetGraphicKeysOnMap(map);
+    const avoidKeys = genreLockLimitsCharsets(draft) ? usedCharsetGraphicKeysOnProject(draft, name) : usedCharsetGraphicKeysOnMap(map);
     const graphic = recurring?.graphic ?? resolveGraphic(graphicSpec, {
       avoidKeys,
       seed: `${map.id}:${name}:${x},${y}`,
@@ -1481,7 +1485,7 @@ const placeNpc: ToolDefinition = {
       if (sameChip >= 2) normalizationWarnings.push(`같은 걷기 칩(${graphic.sprite.id}#${decodeCharsetFrameIndex(typeof graphic.pattern === "number" ? graphic.pattern : 0).characterIndex})이 이 맵에 이미 ${sameChip}명 있어 ${sameChip + 1}번째가 됩니다 — 한 화면에 같은 얼굴이 셋 이상이면 어색합니다. list_npc_graphics 로 다른 인물 칩을 골라 graphic 으로 주세요(query 를 생략하거나 "villager" 로 두면 쓰이지 않은 칩이 먼저 골라집니다).`);
     }
     // 허용 칩이 적은 잠금(현대 연애): 다른 인물이 이미 쓴 칩을 직접 골랐으면(맵이 달라도) 알린다 — 칸이 모자라 어쩔 수 없을 때까지는 다른 칸을 쓰게 한다(2026-10-16 연애 첫 실측: 서로 다른 인물 셋이 같은 칩).
-    if (!graphic.transparent && graphic.sprite?.id && !recurring && genreLockCharsetCatalogFilter(draft)) {
+    if (!graphic.transparent && graphic.sprite?.id && !recurring && genreLockLimitsCharsets(draft)) {
       const key = `${graphic.sprite.id}#${decodeCharsetFrameIndex(typeof graphic.pattern === "number" ? graphic.pattern : 0).characterIndex}`;
       if (usedCharsetGraphicKeysOnProject(draft, name).has(key)) {
         normalizationWarnings.push(`이 칩(${key})은 이미 다른 인물이 쓰고 있어 '${name}' 이(가) 그 사람과 같은 얼굴이 됩니다 — list_npc_graphics 로 아직 안 쓴 허용 칩을 골라 graphic 으로 주세요(같은 사람이 다른 맵에 다시 나올 때만 같은 칩을 씁니다).`);
@@ -2935,6 +2939,12 @@ const createTransferPair: ToolDefinition = {
     }
     upsertEventIntoMap(mapA, gate(idA, gateA.x, gateA.y, transferTo(b.mapId, landingB.x, landingB.y, awayFrom(gateB, landingB)), bumpA, kitDoorOpenCommands(draft, mapA, gateA)));
     upsertEventIntoMap(mapB, gate(idB, gateB.x, gateB.y, transferTo(a.mapId, landingA.x, landingA.y, awayFrom(gateA, landingA)), bumpB, kitDoorOpenCommands(draft, mapB, gateB)));
+    // 문 종류(자동문·미닫이·셔터·두 짝 문)를 그림에서 추론해 적고, 넓은 문이면 발판을 문 폭만큼 넓힌다(mapDoorTools) — 외짝 여닫이·키트 문은 그대로.
+    const doorNotes: string[] = [];
+    for (const [map, at] of (a.mapId === b.mapId ? [[mapA, gateA], [mapA, gateB]] : [[mapA, gateA], [mapB, gateB]]) as [GameMap, Point][]) {
+      const recorded = recordDoorForGate(draft, map, at);
+      if (recorded.door) doorNotes.push(`${map.name} 문 종류 ${doorLine(recorded.door)}${recorded.widened.length ? ` · 발판 ${recorded.widened.length}칸 더` : ""}`);
+    }
     // 배치가 끝난 뒤 두 맵의 모든 transfer 문이 방 바닥으로 열리는지 최종 점검(같은 맵 쌍·후보가
     // 없어 원자리를 쓴 경우 포함). 실패하면 toolRunner가 초안을 버려 두 맵 모두 보존한다.
     const sealedAfter: string[] = [];
@@ -2960,7 +2970,7 @@ const createTransferPair: ToolDefinition = {
         : []),
     ];
     return {
-      summary: `출입구 쌍 생성: ${mapA.name}(${gateA.x},${gateA.y}) ↔ ${mapB.name}(${gateB.x},${gateB.y})`,
+      summary: `출입구 쌍 생성: ${mapA.name}(${gateA.x},${gateA.y}) ↔ ${mapB.name}(${gateB.x},${gateB.y})${doorNotes.length ? ` · ${doorNotes.join(" · ")}(틀리면 set_map_door)` : ""}`,
       data: { eventIdA: idA, eventIdB: idB, gateA, gateB, landingA, landingB, adjustedA, adjustedB, ...(bumpA || bumpB ? { bumpDoor: { a: bumpA, b: bumpB } } : {}) },
       ...(warnings.length > 0 ? { warnings } : {}),
     };
@@ -3134,6 +3144,7 @@ function placeHidingSpots(draft: Project, chaserMap: GameMap, raw: unknown, chas
     if (!inMapBounds(map, x, y)) { warnings.push(`은신처 (${x}, ${y}) 가 맵 밖이라 건너뛰었습니다.`); continue; }
     const hideIn = (page: EventPage): void => {
       page.interaction = { kind: "hiding" };
+      page.nearSparkle ??= { ...HIDING_SPARKLE };
       page.movement = { ...page.movement, type: "fixed" };
       page.trigger = { kind: "action" };
       page.priority = "same";
@@ -3427,7 +3438,7 @@ const makeChaseScene: ToolDefinition = {
       activateSwitch: { type: "string" },
       checkpointOnEntry: { type: "boolean" },
       mood: { type: "boolean", description: "공포 장르에서 조명이 없는 추격 맵을 어둡게(ambient 0.5). 기본 true, false 면 그대로" },
-      hidingSpots: { type: "array", items: { type: "object", properties: { x: { type: "integer" }, y: { type: "integer" }, mapId: { type: "string", description: "옷장이 다른 방(맵)에 있으면 그 mapId. 생략하면 추격자 맵" } }, required: ["x", "y"] }, description: "{x,y,mapId?}[] 은신처(옷장 등) 칸. 그 칸의 조사 이벤트를 은신처로 바꾸고, 없으면 투명 은신 이벤트를 만든다." },
+      hidingSpots: { type: "array", items: { type: "object", properties: { x: { type: "integer" }, y: { type: "integer" }, mapId: { type: "string", description: "옷장이 다른 방(맵)에 있으면 그 mapId. 생략하면 추격자 맵" } }, required: ["x", "y"] }, description: "{x,y,mapId?}[] 은신처(옷장 등) 칸. 그 칸의 조사 이벤트를 은신처로 바꾸고, 없으면 투명 은신 이벤트를 만든다. 생략하면 맵에 있는 옷장·사물함·침대·커튼 1~2곳(순찰 길에서 걸어서 2~14걸음)을 스스로 고른다. [] 면 은신처 없음." },
     },
     required: ["mapId", "chaser"],
   },
@@ -3553,6 +3564,14 @@ const makeChaseScene: ToolDefinition = {
     const darkened = args.mood !== false && draft.system?.genre === "horror-chase" && !map.defaultLighting;
     if (darkened) map.defaultLighting = normalizeLightingState({ ambient: 0.5, color: "#1a1020", sources: [] });
     const hiding = placeHidingSpots(draft, map, args.hidingSpots, id);
+    // hidingSpots 를 안 주면 맵에 이미 있는 숨을 만한 가구(옷장·사물함·침대·커튼) 1~2곳을 순찰 길 가까이에서 고른다 —
+    // 2026-10-29 standin horror: 순찰·즉사 추격자가 있는데 숨을 곳이 0곳이었다. hidingSpots:[] 를 명시하면 두지 않는다.
+    if (args.hidingSpots === undefined) {
+      const auto = ensureChaserHidingSpots(draft, map, id);
+      hiding.eventIds.push(...auto.placed.map((pick) => pick.eventId));
+      if (auto.placed.length) hiding.warnings.push(`은신처 자동: ${auto.placed.map((p) => `${p.label}(${p.x},${p.y})`).join(" · ")} — 다른 칸을 원하면 hidingSpots 로 준다.`);
+      else if (auto.note) hiding.warnings.push(`${auto.note} — 숨을 곳이 0곳이다. 옷장·사물함을 놓고(place_object) hidingSpots 로 그 칸을 준다.`);
+    }
     const ratio = PLAYER_WALK_STEP_MS / paceMs;
     // 안전지대 안에서는 절대 잡히지 않는다. 2026-09-24 r4 에서 11×22 복도에 12×17 안전지대를 깔아
     // 추격 맵 전체가 무적 구역이 됐다 — 안전지대는 세이브 방·계단참 같은 작은 구역이다.

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-25T06:50:58.826Z",
+  "generatedAt": "2026-10-28T16:41:51.993Z",
   "tokens": [
     "actor-command-row",
     "actor-face-image",
@@ -118,6 +118,8 @@
     "db-world-canon-absences",
     "db-ws-btn-ghost",
     "db-ws-section-tab-label",
+    "db-ws-tag-label",
+    "db-ws-tag-value",
     "oprn-boot-loader",
     "oprn-cloud-status",
     "oprn-load-slot-chapter",

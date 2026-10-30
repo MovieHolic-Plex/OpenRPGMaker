@@ -122,7 +122,7 @@ export function scopeUsesJpCity(project: Pick<Project, "tilesets" | "maps">, map
 export const JP_CITY_EXPOSED_TOOLS: readonly string[] = [
   "compose_jp_city_street", "list_jp_regions", "compose_jp_region", "paint_jp_forest", "list_jp_city_building_parts", "build_jp_city_building", "list_tileset_references", "read_tileset_reference",
   "create_map", "fill_region", "lay_path", "paint_tiles", "stamp_object", "check_reachability", "show_map_region", "ask_tileset_change",
-  "set_street_traffic", "set_map_transit", "inspect_map_transit", "import_region_reference", "list_hand_interior_parts", "build_hand_interior_room", "link_jp_city_interior",
+  "set_street_traffic", "set_map_transit", "inspect_map_transit", "import_region_reference", "list_hand_interior_parts", "build_hand_interior_room", "link_jp_city_interior", "set_map_door",
 ];
 
 /** 시스템 프롬프트 한 줄(항상) — 칩셋이 있다는 사실과 길을 알린다. */

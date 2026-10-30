@@ -24,6 +24,11 @@ export interface AiSuggestionPeek {
   readonly root: HTMLElement;
   /** 추천 카드가 마운트되는 본문. 호출자가 자기 표면을 여기에 넣는다. */
   readonly body: HTMLElement;
+  /**
+   * 조수 패널 머리에 꽂는 같은 입구(C-61). 패널이 열려 있는 동안 캔버스 위 떠 있는 버튼은 CSS 가 숨기고,
+   * 이 버튼이 같은 팝오버를 연다 — 한 기능에 보이는 입구 하나, 모양은 AI 요청(✦)과 다른 점검표.
+   */
+  readonly headerButton: HTMLButtonElement;
   /** 배지 숫자. 0 이면 배지가 사라진다. */
   readonly setCount: (count: number) => void;
   readonly isOpen: () => boolean;
@@ -38,7 +43,14 @@ export function createAiSuggestionPeek(): AiSuggestionPeek {
     class: "ai-suggestion-peek-button",
     attrs: { type: "button", "aria-haspopup": "dialog", "aria-expanded": "false", "aria-label": "살펴볼 것", title: "살펴볼 것" },
     dataset: { testid: "ai-suggestion-peek" },
-    children: [deckIcon("spark", { size: 22 }), badge],
+    children: [deckIcon("list", { size: 22 }), badge],
+  }) as HTMLButtonElement;
+  const headerBadge = el("span", { class: "ai-suggestion-peek-badge", attrs: { hidden: "" } });
+  const headerButton = el("button", {
+    class: "ai-composer-menu-btn ai-suggestion-peek-header",
+    attrs: { type: "button", "aria-haspopup": "dialog", "aria-expanded": "false", "aria-label": "살펴볼 것", title: "살펴볼 것" },
+    dataset: { testid: "ai-suggestion-peek-header" },
+    children: [deckIcon("list"), headerBadge],
   }) as HTMLButtonElement;
   const body = el("div", { class: "ai-suggestion-peek-body", dataset: { testid: "ai-suggestion-peek-body" } });
   const popover = el("section", {
@@ -55,6 +67,7 @@ export function createAiSuggestionPeek(): AiSuggestionPeek {
     popover.hidden = !open;
     button.setAttribute("aria-expanded", String(open));
     button.classList.toggle("is-open", open);
+    headerButton.setAttribute("aria-expanded", String(open));
     if (!open) return;
     // 팝오버 안에 포커스 가능한 것이 있으면 첫 항목으로 — 열자마자 Tab 이 팝오버 밖으로
     // 나가면 키보드 사용자에게는 「열렸는데 아무것도 없다」로 보인다.
@@ -72,6 +85,10 @@ export function createAiSuggestionPeek(): AiSuggestionPeek {
   };
 
   button.addEventListener("click", () => setOpen(!open));
+  // 머리 버튼은 팝오버 바깥이라 pointerdown 이 먼저 닫는다 — 그 직전 상태를 기억해 토글한다.
+  let openAtPointerDown = false;
+  headerButton.addEventListener("pointerdown", () => { openAtPointerDown = open; }, true);
+  headerButton.addEventListener("click", () => { setOpen(!openAtPointerDown); openAtPointerDown = false; });
   const onPointerDown = (event: PointerEvent): void => {
     if (!open) return;
     const target = event.target;
@@ -88,6 +105,7 @@ export function createAiSuggestionPeek(): AiSuggestionPeek {
 
   return {
     root,
+    headerButton,
     body,
     setCount: (count: number): void => {
       const safe = Number.isFinite(count) && count > 0 ? Math.floor(count) : 0;
@@ -99,6 +117,10 @@ export function createAiSuggestionPeek(): AiSuggestionPeek {
       button.setAttribute("aria-label", label);
       button.setAttribute("title", label);
       button.classList.toggle("has-items", safe > 0);
+      headerBadge.textContent = badge.textContent;
+      headerBadge.hidden = badge.hidden;
+      headerButton.setAttribute("aria-label", label);
+      headerButton.setAttribute("title", label);
     },
     isOpen: () => open,
     open: () => setOpen(true),

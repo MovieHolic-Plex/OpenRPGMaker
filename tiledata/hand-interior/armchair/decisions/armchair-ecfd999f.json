@@ -1,0 +1,47 @@
+{
+ "schema": "oprn-hand-interior-pick/1",
+ "object": "armchair",
+ "tile": 3677,
+ "tileset": "atlas_biome_interior",
+ "file": "tiledata/hand-interior/armchair/armchair.png",
+ "objectGatePixelSha256": "ecfd999ffe629aa14b72836f09ccc4390b86e0a35928c13da4d6dc91b43839d2",
+ "source": "object-gen job armchair-r4 candidate C attempt 2 (not the AI picker choice: picker chose r4 A2)",
+ "decision": "allow",
+ "decidedBy": "user",
+ "decidedAt": "2026-10-29",
+ "userWords": "이건 r4 C2 가 가장 나은거같군.",
+ "relayedBy": "supervisor (coordinator message, 2026-10-29)",
+ "seenOn": "http://mdc-server:18301/armchair-1029.html",
+ "note": "The user picked r4 C2 from the comparison page. This human allow replaces the failing independent VQA as the final pass (user decision).",
+ "objectGate": {
+  "verdict": "fail",
+  "profileHash": "4d8774b517f41638",
+  "calibrated": false,
+  "refSet": "atlas_biome_interior",
+  "reasons": [
+   "3/4: 투영이 3/4 아님(front_elevation) (3/4)",
+   "3/4: 윗면 1행 < 4 (2/4)",
+   "3/4: 윗면 2행 < 4 (1/4)"
+  ]
+ },
+ "independentVqa": {
+  "note": "Sonnet 5.5 high x3 was run on r4 A2 (the AI pick of the same round), not on C2; all three FAIL, better_than_old false",
+  "r4A2": [
+   {
+    "verdict": "FAIL",
+    "better_than_old": false,
+    "reads_as": "red boxy block/pouffe with a cushion panel, only weakly an armchair"
+   },
+   {
+    "verdict": "FAIL",
+    "better_than_old": false,
+    "reads_as": "red upholstered armchair, but close to a rounded red block with a front-facing seat panel"
+   },
+   {
+    "verdict": "FAIL",
+    "better_than_old": false,
+    "reads_as": "a red rounded block or box-like armchair with a faint cushion panel"
+   }
+  ]
+ }
+}

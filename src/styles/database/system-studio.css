@@ -279,8 +279,6 @@
   color: var(--db-studio-accent);
   border-color: var(--db-studio-accent-border);
   background: var(--db-studio-accent-soft);
-  border-left-width: 3px;
-  border-left-color: var(--db-studio-accent);
   font: 600 13px/1.5 var(--font-ui);
   padding: 6px 10px;
   white-space: nowrap;
@@ -490,7 +488,7 @@
 .database-modal-backdrop .database-modal-window .db-system-form .db-system-studio-preview h3 { font: 600 13px/1.5 var(--font-ui); margin: 0 0 12px; }
 .database-modal-backdrop .database-modal-window .db-system-form :is(.db-system-studio-preview-stage, .db-system-studio-preview-menu, .db-system-studio-impact) { display: grid; gap: 8px; }
 .database-modal-backdrop .database-modal-window .db-system-form .db-system-studio-preview-stage > strong { overflow-wrap: anywhere; }
-.database-modal-backdrop .database-modal-window .db-system-form .db-system-studio-preview-menu span { padding-left: 12px; border-left: 2px solid var(--db-studio-accent-border); }
+.database-modal-backdrop .database-modal-window .db-system-form .db-system-studio-preview-menu span { padding-left: 12px; }
 .database-modal-backdrop .database-modal-window .db-system-form .db-system-studio-impact { border-top: 1px solid var(--db-studio-border-subtle); margin-top: 16px; padding-top: 12px; }
 .database-modal-backdrop .database-modal-window .db-system-form .db-system-studio-impact h4 { margin: 0; font-size: 12px; }
 .database-modal-backdrop .database-modal-window .db-system-form .db-system-studio-impact-row > span { display: flex; justify-content: space-between; gap: 8px; font-size: 12px; }
@@ -524,7 +522,7 @@
 .database-modal-backdrop .database-modal-window .db-system-form .db-system-resolution-facts > div { padding: 0; background: transparent; border: 0; display: block; }
 .database-modal-backdrop .database-modal-window .db-system-form .db-system-resolution-facts dt { color: var(--db-studio-text-2); font: 400 12px/1.5 var(--font-ui); }
 .database-modal-backdrop .database-modal-window .db-system-form .db-system-resolution-facts dd { margin: 0; font: 500 13px/1.5 var(--font-ui); color: var(--db-studio-text-1); }
-.database-modal-backdrop .database-modal-window .db-system-form .db-system-resolution-warning { padding: 8px 12px; border-left: 2px solid var(--db-studio-warning); background: var(--db-studio-surface); }
+.database-modal-backdrop .database-modal-window .db-system-form .db-system-resolution-warning { padding: 8px 12px; border-radius: 6px; background: var(--db2-danger-tint, var(--db-studio-inset)); color: var(--db-studio-text-1); }
 /* Matrix alone scrolls horizontally. Direct entry stays in normal flow. */
 .database-modal-backdrop .database-modal-window .db-system-form .db-type-chart-wrap { display: grid; gap: 12px; min-width: 0; }
 .database-modal-backdrop .database-modal-window .db-system-form .db-type-chart-preview { display: flex; flex-wrap: wrap; gap: 8px; padding: 12px; background: var(--db-studio-inset); font-size: 13px; }

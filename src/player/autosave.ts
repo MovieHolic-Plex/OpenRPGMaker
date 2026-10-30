@@ -101,6 +101,26 @@ export function maybeAutosave(
   return true;
 }
 
+// ---- 전투 승리 자동 저장은 필드가 쉴 때 굽는다 --------------------------------------
+// 전투를 연 이벤트는 승리 뒤에도 이어진다(「이 적을 이겼다」 스위치·보상·대사). 정산 직후에 구우면 그 뒤의
+// 명령이 빠진 순간이 저장돼, 불러오면 같은 적이 다시 닿아 전투가 열렸다(2026-10-29 vm5 argon jrpg).
+// 그래서 승리는 「구울 것」만 적고, 실행 중인 이벤트가 끝나 필드가 쉴 때 한 번 굽는다. 표시는 세션에 묶이므로
+// 그사이 불러오기·새 게임으로 세션이 바뀌면 함께 버려진다.
+const pendingAutosaves = new WeakMap<PlaySession, AutosaveTrigger>();
+
+/** 지금 굽지 않고, 필드가 쉴 때(flushPendingAutosave) 굽도록 적어 둔다. */
+export function requestAutosaveWhenIdle(session: PlaySession, trigger: AutosaveTrigger): void {
+  pendingAutosaves.set(session, trigger);
+}
+
+/** 적어 둔 자동 저장이 있으면 굽는다. 이벤트가 돌지 않는 필드 프레임에서만 부른다. */
+export function flushPendingAutosave(project: Project, session: PlaySession, nowMs: number = Date.now()): boolean {
+  const trigger = pendingAutosaves.get(session);
+  if (!trigger) return false;
+  pendingAutosaves.delete(session);
+  return maybeAutosave(project, session, trigger, nowMs);
+}
+
 function resolveLocalStorage(): Storage | null {
   try {
     const storage = (globalThis as { localStorage?: Storage }).localStorage;

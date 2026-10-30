@@ -1,3 +1,4 @@
+import { runtimeResourceUrl } from "@/assets/runtimeResourceUrls";
 import { PIXEL_ENEMY_PORTRAIT_URLS } from "./pixelEnemyPortraits";
 import { pixelEnemySheet } from "./pixelEnemySheets";
 import { CHARSET_BATTLERS } from "./charsetBattlers";
@@ -20,6 +21,7 @@ import { resolveFarmingAssetUrl } from "./farmingSprites";
 import { resolveOprnMonsterCharsetUrl } from "./oprnMonsterCharsets";
 import { resolveHeroesCharsetUrl } from "./heroesCharsets";
 import { resolveModernCharsetUrl } from "./modernCharsets";
+import { resolveRefmapDollCharsetUrl } from "./refmapDollCharsets";
 import { resolveScarloxyPeopleCharsetUrl } from "./scarloxyPeopleCharsets";
 import { resolveWizardingCharsetUrl } from "./wizardingCharsets";
 import { resolveGeneratedEffectAssetUrl } from "./generatedEffectSheets";
@@ -246,6 +248,8 @@ export type AssetResourceResolutionOptions = {
 
 export function resolveAssetResourceUrl(resourceId: string | undefined, options: AssetResourceResolutionOptions = {}): string | null {
   if (!hasResourceId(resourceId)) return null;
+  // 타이틀 배경 opening-still:<컷>@<ms> — 플레이어가 그 컷을 그려 등록한 주소(그리기 전에는 null). src/project/openingStill.ts
+  if (resourceId.startsWith("opening-still:")) return runtimeResourceUrl(resourceId);
   const packagedUrl =
     LEGACY_PACKAGED_RESOURCE_URLS[resourceId] ??
     resolveEasyRpgRuntimeAssetUrl(resourceId) ??
@@ -261,6 +265,7 @@ export function resolveAssetResourceUrl(resourceId: string | undefined, options:
     resolveWizardingCharsetUrl(resourceId) ??
     resolveHeroesCharsetUrl(resourceId) ??
     resolveModernCharsetUrl(resourceId) ??
+    resolveRefmapDollCharsetUrl(resourceId) ??
     resolveScarloxyPeopleCharsetUrl(resourceId) ??
     resolveCc0IconAssetUrl(resourceId) ??
     resolveOgaBackdropAssetUrl(resourceId) ??

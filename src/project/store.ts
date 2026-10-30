@@ -599,9 +599,10 @@ class ProjectStore {
    * Store updates, autosave, export projections, and project storage persistence keep
    * using the canonical `current` project. The returned release is idempotent.
    */
-  beginReadOnlyProjectSnapshot(project: Project): () => void {
+  beginReadOnlyProjectSnapshot(project: Project, options: { readonly owned?: boolean } = {}): () => void {
     const previous = this.readOnlyProjectSnapshot;
-    const snapshot = structuredClone(project);
+    // owned: 호출자가 방금 만든 사본이라 아무도 고치지 않는다(플레이 예비검사의 draft) — 큰 프로젝트에서 두 번째 복사가 0.5초 걸렸다.
+    const snapshot = options.owned ? project : structuredClone(project);
     this.readOnlyProjectSnapshot = snapshot;
     let released = false;
     return () => {

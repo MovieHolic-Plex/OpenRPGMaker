@@ -9,8 +9,8 @@ const STAGE_TASK: Readonly<Record<AuthoringJourneyStage["id"], AuthoringTaskId |
 };
 const STAGE_HINT: Readonly<Record<AuthoringJourneyStage["id"], string>> = {
   project: "제목과 첫 맵이 있으면 끝납니다.",
-  map: "맵에 타일을 한 번이라도 칠하면 끝납니다.",
-  event: "NPC·문 같은 이벤트를 하나 확정하면 끝납니다.",
+  map: "맵에 타일이 깔려 있으면 끝납니다.",
+  event: "NPC·문 같은 이벤트를 하나 만들면 끝납니다.",
   data: "자료집에서 항목을 하나 고치면 끝납니다. 연결이 끊긴 항목이 있으면 여기 알려 줘요.",
   test: "지금 버전으로 테스트 플레이가 시작되면 끝납니다.",
 };
@@ -18,6 +18,7 @@ const STAGE_HINT: Readonly<Record<AuthoringJourneyStage["id"], string>> = {
 const STAGE_GO_LABEL: Readonly<Record<AuthoringJourneyStage["id"], string>> = {
   project: "", map: "맵 열기", event: "이벤트 열기", data: "자료집 열기", test: "테스트 열기",
 };
+const CHECK_ICON = '<svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 const MANUAL: ReadonlySet<string> = new Set<ManualJourneyStageId>(["map", "event", "data"]);
 
 /**
@@ -53,7 +54,9 @@ export function createLeftProgressPane(scope: () => string): { root: HTMLElement
         class: "left-progress-step" + (finished ? " is-done" : "") + (isNext ? " is-next" : "") + (stage.completion === null && stage.acknowledgement !== null ? " is-claimed" : ""),
         dataset: { testid: `left-progress-${stage.id}`, state: finished ? "done" : isNext ? "next" : "todo" },
         children: [
-          el("span", { class: "left-progress-mark", attrs: { "aria-hidden": "true" }, text: stage.completion !== null ? "✓" : finished ? "☑" : String(index + 1) }),
+          finished
+            ? el("span", { class: "left-progress-mark", attrs: { "aria-hidden": "true" }, html: CHECK_ICON })
+            : el("span", { class: "left-progress-mark", attrs: { "aria-hidden": "true" }, text: String(index + 1) }),
           el("div", {
             class: "left-progress-copy",
             children: [
@@ -78,9 +81,9 @@ export function createLeftProgressPane(scope: () => string): { root: HTMLElement
         const checked = stage.acknowledgement !== null;
         row.append(el("button", {
           class: "left-progress-ack",
-          attrs: { type: "button", "aria-pressed": String(checked), title: checked ? "「이미 했어요」 표시 해제" : "이 단계는 이미 했다고 직접 표시합니다 (편집기가 변경을 못 찾았을 때)" },
+          attrs: { type: "button", "aria-pressed": String(checked), "aria-label": `이미 했어요 — ${stage.label}`, title: checked ? "「이미 했어요」 표시 해제" : "이 단계는 이미 했다고 직접 표시합니다 (편집기가 변경을 못 찾았을 때)" },
           dataset: { testid: `left-progress-ack-${stage.id}` },
-          text: checked ? "이미 했어요 ✓" : "이미 했어요",
+          text: "이미 했어요",
           on: { click: () => { saveAuthoringJourneyProgress(scope(), setManualJourneyStage(loadAuthoringJourneyProgress(scope()), stageId, !checked)); render(); } },
         }));
       }

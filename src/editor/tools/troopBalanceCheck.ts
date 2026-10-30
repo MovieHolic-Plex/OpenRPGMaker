@@ -12,9 +12,10 @@
 
 import { actorBattlers } from "@/battle/battleBattlers";
 import { simulateBattle } from "@/battle/simulate";
-import { monsterBattleStatsForSpecies, monsterSkillIdsAtLevel, monsterSpeciesById } from "@/project/monsterCollection";
+import { monsterTypesForRecord, typeChartMultiplierForTypes } from "@/battle/typeChart";
+import { monsterBattleStats, monsterBattleStatsForSpecies, monsterSkillIdsAtLevel, monsterSpeciesById } from "@/project/monsterCollection";
 import type { MonsterInstance } from "@/project/session";
-import type { Project } from "@/project/types";
+import type { EnemyRecord, Project } from "@/project/types";
 import { visitProjectCommands } from "./commandTraversal";
 
 const SAMPLES = 3;
@@ -84,19 +85,86 @@ function baselineStarterMonster(project: Project): MonsterInstance | null {
     if (!first) return null;
     give = { speciesId: first.id, level: STARTER_LEVEL };
   }
-  const species = monsterSpeciesById(project, give.speciesId);
+  return balanceMonster(project, give.speciesId, give.level);
+}
+
+function balanceMonster(project: Project, speciesId: string, level: number): MonsterInstance | null {
+  const species = monsterSpeciesById(project, speciesId);
   if (!species) return null;
-  const skillIds = monsterSkillIdsAtLevel(species, give.level)
+  const skillIds = monsterSkillIdsAtLevel(species, level)
     .filter(skillId => project.database.skills.some(skill => skill.id === skillId));
   return {
-    instanceId: `balance_${give.speciesId}`,
-    speciesId: give.speciesId,
-    level: give.level,
+    instanceId: `balance_${speciesId}`,
+    speciesId,
+    level,
     exp: 0,
     skillIds,
     friendship: 0,
     caughtAt: { mapId: project.startMapId, x: project.startPos.x, y: project.startPos.y },
   };
+}
+
+/**
+ * 원정 진행 깊이 — 이 트룹과 싸우는 이벤트가 켜는 원정 목표(monsterCampaign.objectives) 스위치가 requiresSwitchId 사슬로 몇 단계인가.
+ * 스타터 0 · 첫 관장 1 · 그 뒤(악당 보스·리그 챔피언) 2 이상. 원정 목표를 켜지 않는 전투(길 트레이너·관원)는 0.
+ */
+function campaignDepth(project: Project, troopId: string): number {
+  const objectives = project.system.monsterCampaign?.objectives ?? [];
+  if (!objectives.length) return 0;
+  const bySwitch = new Map(objectives.map(objective => [objective.switchId, objective]));
+  const depthOf = (switchId: string, seen = new Set<string>()): number => {
+    const objective = bySwitch.get(switchId);
+    if (!objective?.requiresSwitchId || seen.has(switchId)) return 0;
+    seen.add(switchId);
+    return 1 + depthOf(objective.requiresSwitchId, seen);
+  };
+  const fighting = new Set<string>();
+  const sets = new Map<string, string[]>();
+  visitProjectCommands(project, ({ command, location }) => {
+    if (location.kind !== "eventPage" && location.kind !== "legacyEvent") return;
+    const key = `${location.mapId}:${location.eventId}`;
+    if (command.kind === "battleProcessing" && command.troopId === troopId) fighting.add(key);
+    if (command.kind === "setSwitch" && command.value !== false && typeof command.switchId === "string" && bySwitch.has(command.switchId)) sets.set(key, [...(sets.get(key) ?? []), command.switchId]);
+  });
+  let depth = 0;
+  for (const key of fighting) for (const switchId of sets.get(key) ?? []) depth = Math.max(depth, depthOf(switchId));
+  return depth;
+}
+
+/** 첫 관장 다음부터의 원정 전투(깊이 2 이상)는 플레이어가 길에서 잡고 키운 파티로 맞선다. */
+const PROGRESSED_DEPTH = 2;
+
+/**
+ * 진행 뒤 기준 파티 — 스타터와 야생에서 잡을 수 있는 종(스타터 종 제외, 트룹 수 - 1 과 진행 깊이 - 1 중 큰 수, 최대 5)을 트룹의 가장 높은 적 레벨에 맞춘다.
+ * 왜(2026-10-29 standin monster 「새싹 몬스터 모험」): 리그 챔피언(Lv10 여섯 마리)·악당 보스를 Lv8 스타터 한 마리로 재서
+ * 「스타터로는 이길 수 없다」 경고가 나자 모델이 챔피언을 Lv7 한 마리로 깎았다 — 엔딩 상대가 길의 라이벌(Lv10 네 마리)보다 약해졌다.
+ */
+function progressedParty(project: Project, starter: MonsterInstance, troop: TroopRecord, depth: number): MonsterInstance[] {
+  const enemyLevels = troop.enemyIds.map(id => project.database.enemies.find(enemy => enemy.id === id)?.level).filter((level): level is number => typeof level === "number" && level > 0);
+  const level = Math.max(starter.level, ...enemyLevels);
+  const lead = balanceMonster(project, starter.speciesId, level);
+  if (!lead) return [starter];
+  // 풀숲 조우표의 종을 야생 레벨이 낮은 순으로 — 흔한 길 몬스터부터 잡는다. map.troopIds·전설 조우(관측탑 Lv50)로
+  // «잡은 파티»가 채워지지 않게 한다(첫 시도에서 챔피언 상대 파티가 전설 다섯 마리가 됐다).
+  // 원정 정의에 길(route)이 있으면 그 맵의 풀숲만 — 관측탑의 희귀 몬스터 조우표(Lv10 전설)는 «잡은 파티» 재료가 아니다.
+  const routes = new Set((project.system.monsterCampaign?.locations ?? []).filter(location => location.kind === "route").map(location => location.mapId));
+  const wildLevel = new Map<string, number>();
+  for (const map of Object.values(project.maps)) {
+    if (routes.size > 0 && !routes.has(map.id)) continue;
+    for (const troopId of (map.encounterTable ?? []).map(entry => entry.troopId)) {
+      for (const enemyId of project.database.troops.find(entry => entry.id === troopId)?.enemyIds ?? []) {
+        const enemy = project.database.enemies.find(entry => entry.id === enemyId);
+        if (!enemy?.speciesId || enemy.speciesId === starter.speciesId) continue;
+        const at = typeof enemy.level === "number" ? enemy.level : 99;
+        wildLevel.set(enemy.speciesId, Math.min(wildLevel.get(enemy.speciesId) ?? 99, at));
+      }
+    }
+  }
+  // 이 싸움의 레벨보다 높은 곳에서만 나오는 종(전설)은 아직 못 잡는다.
+  const wildSpecies = [...wildLevel.entries()].filter(([, at]) => at <= level).sort((x, y) => x[1] - y[1]).map(([speciesId]) => speciesId);
+  const partners = wildSpecies.slice(0, Math.min(5, Math.max(0, troop.enemyIds.length - 1, depth - 1)))
+    .map(speciesId => balanceMonster(project, speciesId, level)).filter((monster): monster is MonsterInstance => monster !== null);
+  return [lead, ...partners];
 }
 
 function enemyBalanceText(project: Project, troop: TroopRecord): string {
@@ -113,26 +181,35 @@ function enemyBalanceText(project: Project, troop: TroopRecord): string {
 function monsterPartyBalanceWarnings(project: Project, troop: TroopRecord, starter: MonsterInstance): string[] {
   const species = monsterSpeciesById(project, starter.speciesId);
   if (!species) return [];
-  const formula = monsterBattleStatsForSpecies(species, starter.level, undefined);
-  const partyHp = formula.maxHp;
+  // 첫 관장 다음 원정 전투는 스타터 한 마리가 아니라 잡고 키운 파티로 잰다(progressedParty).
+  const depth = campaignDepth(project, troop.id);
+  const progressed = depth >= PROGRESSED_DEPTH;
+  const party = progressed ? progressedParty(project, starter, troop, depth) : [starter];
+  const lead = party[0]!;
+  const formula = monsterBattleStatsForSpecies(species, lead.level, undefined);
+  const partyHp = party.reduce((sum, monster) => {
+    const entry = monsterSpeciesById(project, monster.speciesId);
+    return sum + (entry ? monsterBattleStatsForSpecies(entry, monster.level, undefined).maxHp : 0);
+  }, 0);
   if (partyHp <= 0) return [];
-  const starterLabel = `스타터 ${species.name} Lv${starter.level}(HP ${formula.maxHp}·공 ${formula.attack}·방 ${formula.defense}·민 ${formula.agility})`;
+  const starterLabel = `스타터 ${species.name} Lv${lead.level}(HP ${formula.maxHp}·공 ${formula.attack}·방 ${formula.defense}·민 ${formula.agility})`;
+  const partyLabel = party.length > 1 ? `${starterLabel} + 잡은 몬스터 ${party.length - 1}마리 Lv${lead.level}(진행 뒤 파티 — 첫 관장 다음 원정 전투)` : starterLabel;
   const enemyText = enemyBalanceText(project, troop);
   const boss = isBossTroop(troop.id, troop.name, troop.enemyIds);
-  const result = simulateBattle({ project, troopId: troop.id, heroLevel: starter.level, monsterParty: [starter], n: SAMPLES, seed: 1 });
+  const result = simulateBattle({ project, troopId: troop.id, heroLevel: lead.level, monsterParty: party, n: SAMPLES, seed: 1 });
   if (result.winRate < 1) {
     const slack = boss ? BOSS_WIPE_LEVEL_SLACK : WIPE_LEVEL_SLACK;
-    const boostLevel = starter.level + slack;
-    const boostSkills = monsterSkillIdsAtLevel(species, boostLevel)
-      .filter(skillId => project.database.skills.some(skill => skill.id === skillId));
-    const boosted: MonsterInstance = { ...starter, level: boostLevel, skillIds: boostSkills };
-    const boost = simulateBattle({ project, troopId: troop.id, heroLevel: boostLevel, monsterParty: [boosted], n: SAMPLES, seed: 1 });
-    const base = `밸런스: ${troop.name}(${troop.id}) 에 ${starterLabel} 이 모의전 ${SAMPLES}판 모두 평균 ${result.avgTurns.toFixed(1)}타 만에 전멸합니다 — 스타터로는 이길 수 없습니다. 적 ${enemyText}. `;
+    const boostLevel = lead.level + slack;
+    const boosted = party.map(monster => balanceMonster(project, monster.speciesId, boostLevel) ?? monster);
+    const boost = simulateBattle({ project, troopId: troop.id, heroLevel: boostLevel, monsterParty: boosted, n: SAMPLES, seed: 1 });
+    const who = party.length > 1 ? "이 파티" : "스타터";
+    const base = `밸런스: ${troop.name}(${troop.id}) 에 ${partyLabel} 이 모의전 ${SAMPLES}판 모두 평균 ${result.avgTurns.toFixed(1)}타 만에 전멸합니다 — ${who}로는 이길 수 없습니다. 적 ${enemyText}. `;
     if (boost.winRate > 0) {
-      return [base + `스타터보다 Lv${slack} 높아야 겨우 이깁니다(${boost.winRate * 100}%). 적 level 을 낮추거나 tune_enemy 로 맞춘 뒤 simulate_battle {troopId} 로 다시 재세요.`];
+      return [base + `${who}보다 Lv${slack} 높아야 겨우 이깁니다(${boost.winRate * 100}%). 적 level 을 낮추거나 tune_enemy 로 맞춘 뒤 simulate_battle {troopId} 로 다시 재세요.`];
     }
-    return [base + `스타터를 Lv${boostLevel} 로 올려도 전멸합니다 — 레벨을 올려도 못 이기는 구간이라 적 수치를 tune_enemy 로 낮추세요.`];
+    return [base + `${who}를 Lv${boostLevel} 로 올려도 전멸합니다 — 레벨을 올려도 못 이기는 구간이라 적 수치를 tune_enemy 로 낮추세요.`];
   }
+  if (progressed) return [];
   const lossShare = 1 - result.avgHpRemaining / partyHp;
   if (lossShare >= TRIVIAL_PARTY_LOSS) return [];
   const damageText = lossShare <= 0
@@ -143,6 +220,70 @@ function monsterPartyBalanceWarnings(project: Project, troop: TroopRecord, start
     `적 ${enemyText} / 파티 ${starterLabel}. ` +
     `tune_enemy {enemyId:"${troop.enemyIds[0] ?? ""}", targetHitsToKill:(보스 8~12, 잡몹 2~4), targetDamageToHeroPerHit:(스타터 HP의 10~20%)} 로 맞춘 뒤 simulate_battle {troopId} 로 확인하세요.`,
   ];
+}
+
+/**
+ * 몬스터 파티 게임에서 이 트룹을 잴 기준 파티 — 첫 관장까지는 스타터 한 마리, 그 뒤 원정 전투는 잡고 키운 파티(progressedParty).
+ * level 을 주면 모두 그 레벨로 맞춘다(simulate_battle 의 heroLevel). 몬스터 파티 게임이 아니면 null.
+ */
+export function monsterBalanceParty(project: Project, troopId: string, level?: number): MonsterInstance[] | null {
+  const starter = baselineStarterMonster(project);
+  const troop = project.database.troops.find(entry => entry.id === troopId);
+  if (!starter || !troop) return null;
+  const depth = campaignDepth(project, troopId);
+  const party = depth >= PROGRESSED_DEPTH ? progressedParty(project, starter, troop, depth) : [starter];
+  if (level === undefined || level <= 0) return party;
+  return party.map(monster => balanceMonster(project, monster.speciesId, level) ?? monster);
+}
+
+/** 이 기술 목록 중 상성·자속까지 친 가장 센 피해 기술(위력·쓰는 능력치·배율). 피해 기술이 없으면 undefined. */
+function strongestDamageMove(project: Project, skillIds: readonly string[], attackerTypes: readonly string[], defenderTypes: readonly string[], only?: "attack"): { id: string; power: number; statistic: "attack" | "mind"; multiplier: number } | undefined {
+  let best: { id: string; power: number; statistic: "attack" | "mind"; multiplier: number } | undefined;
+  for (const skillId of skillIds) {
+    const skill = project.database.skills.find(entry => entry.id === skillId);
+    if (!skill || skill.effect.kind !== "damage" || skill.effect.affects !== "hp" || skill.scope === "ally") continue;
+    const power = typeof skill.power === "number" ? skill.power : 0;
+    const statistic = (skill.effect as { statistic?: string }).statistic === "mind" ? "mind" : "attack";
+    if (power <= 0 || (only && statistic !== only)) continue;
+    const multiplier = typeChartMultiplierForTypes(project, (skill as { elementId?: string }).elementId, attackerTypes, defenderTypes);
+    if (multiplier <= 0) continue;
+    if (!best || power * multiplier > best.power * best.multiplier) best = { id: skill.id, power, statistic, multiplier };
+  }
+  return best;
+}
+
+/**
+ * 몬스터 파티 게임에서 tune_enemy 가 역산할 기준 — 스타터 종을 level(없으면 스타터 레벨)로 올린 몬스터의 공격·방어와 그 레벨에서 아는
+ * 가장 센 피해 기술(한 대 = 그 기술), 그리고 적이 아군을 가장 세게 칠 기술(공격·특수). 런타임 아군 배틀러(monsterPartyBattlers)와 같은 monsterBattleStats.
+ * 몬스터 파티 게임이 아니면 null.
+ * 왜(2026-10-29 standin monster): tune_enemy 가 영웅 액터(공 45·방 59 근처)의 평타로 역산해 트레이너 몬스터 수치가 스타터 척도와 어긋났다 —
+ * 몬스터는 평타가 아니라 위력 30~55 기술로 싸운다(평타 기준이면 관장 토리프가 HP 8·공 24 가 됐다).
+ */
+export function monsterTuningBaseline(project: Project, enemy: EnemyRecord, level?: number): {
+  hero: { name: string; level: number; attack: number; defense: number; move?: { id: string; power: number; stat: number; targetDefense: number; multiplier: number } };
+  /** 적이 가장 세게 치는 기술 — 특수(mind) 기술이면 tune_enemy 는 attack 이 아니라 mind 를 푼다. */
+  enemyMove?: { id: string; power: number; multiplier: number; statistic: "attack" | "mind"; heroGuard: number };
+} | null {
+  const starter = baselineStarterMonster(project);
+  if (!starter) return null;
+  const at = level && level > 0 ? level : starter.level;
+  const monster = balanceMonster(project, starter.speciesId, at) ?? starter;
+  const stats = monsterBattleStats(project, monster);
+  const heroTypes = monsterSpeciesById(project, monster.speciesId)?.types ?? [];
+  const enemyTypes = monsterTypesForRecord(project, enemy.id);
+  const heroMove = strongestDamageMove(project, monster.skillIds ?? [], heroTypes, enemyTypes);
+  const enemySkills = [...(enemy.skillIds ?? []), ...(enemy.actions ?? []).flatMap(action => action.skillId ? [action.skillId] : [])];
+  const enemyMove = strongestDamageMove(project, enemySkills, enemyTypes, heroTypes);
+  return {
+    hero: {
+      name: monsterSpeciesById(project, monster.speciesId)?.name ?? monster.speciesId,
+      level: monster.level,
+      attack: stats.attack,
+      defense: stats.defense,
+      ...(heroMove ? { move: { id: heroMove.id, power: heroMove.power, stat: heroMove.statistic === "mind" ? stats.mind : stats.attack, targetDefense: heroMove.statistic === "mind" ? enemy.stats.mind : enemy.stats.defense, multiplier: heroMove.multiplier } } : {}),
+    },
+    ...(enemyMove ? { enemyMove: { id: enemyMove.id, power: enemyMove.power, multiplier: enemyMove.multiplier, statistic: enemyMove.statistic, heroGuard: enemyMove.statistic === "mind" ? stats.mind : stats.defense } } : {}),
+  };
 }
 
 export function troopBalanceWarnings(project: Project, troopId: string): string[] {

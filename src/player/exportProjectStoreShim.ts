@@ -30,9 +30,9 @@ export const store = {
     return () => {};
   },
 
-  beginReadOnlyProjectSnapshot(project: Project): () => void {
+  beginReadOnlyProjectSnapshot(project: Project, options: { readonly owned?: boolean } = {}): () => void {
     const previous = currentProject;
-    const snapshot = structuredClone(project);
+    const snapshot = options.owned ? project : structuredClone(project);
     currentProject = snapshot;
     let released = false;
     return () => {

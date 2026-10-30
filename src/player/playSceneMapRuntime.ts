@@ -11,6 +11,7 @@ import { prepareDoorFx, syncContainerSearchedMarks } from "@/player/playSceneFie
 import { evalCondition } from "@/project/session";
 import { clearFurniturePush, furniturePushPosition } from './furniturePushAnimation';
 import { chipsetAnimationKey } from "@/assets/bundled";
+import { ensureTilesetStripAnimation } from "@/assets/uploadedTilesets";
 import {
   supportsChipsetQuarterComposition,
   tilesetAnimationKeyForTile,
@@ -420,6 +421,8 @@ function trackMapTile(host: object, image: RenderedTileImage, x: number, y: numb
 }
 
 function playTileAnimation<T extends RenderedEventSprite>(host: object, sprite: T, key: string): T {
+  const owner = (sprite as unknown as { scene?: Pick<Phaser.Scene, "anims" | "textures"> }).scene;
+  if (owner) ensureTilesetStripAnimation(owner, key);
   sprite.play(key);
   const leaders = tileAnimationLeaders.get(host);
   const animation = sprite.anims as TileAnimationState | undefined;

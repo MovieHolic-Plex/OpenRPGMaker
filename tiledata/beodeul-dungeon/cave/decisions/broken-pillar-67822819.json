@@ -1,0 +1,14 @@
+{
+ "schema": "oprn-cave-piece-decision/1",
+ "item": "broken-pillar",
+ "pixelSha256": "67822819d8a7777b830d6dc8967f550bd50703d7a085aff050e64e84439c5d34",
+ "picture": "tiledata/beodeul-dungeon/cave/picks/broken-pillar.png (object-gen job broken-pillar-r2, candidate B, Opus picker 3/3)",
+ "receipt": "/home/main/z-project/rpg-zzu-object-gate-holds/harness-data/object-gate/receipts/67/67822819d8a7777b830d6dc8967f550bd50703d7a085aff050e64e84439c5d34.json",
+ "advisoryVerdict": "FAIL (profile 4d8774b517f41638, uncalibrated): 3/4 front_elevation 3/4, top 2 rows < 4, style near-black outline 3/4",
+ "decision": "allow",
+ "decidedBy": "user",
+ "date": "2026-10-29",
+ "userWords": ["괜찮았는데", "이 정도면 윗면이 거의 잘 보이는 것 같고, 화풍도 괜찮다"],
+ "channel": "the user's words in the 2026-10-29 conversation, relayed to this worker by the supervisor (coordinator message). The worker did not see the user's message directly, so the gate record is written as by:delegated with delegatedBy = user, not as a human click on 18323.",
+ "independentVqa": "none — the user's own judgment is the decision"
+}

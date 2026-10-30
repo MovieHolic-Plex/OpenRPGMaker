@@ -6,7 +6,7 @@ import { bakedDemoBody, resolveBakedDemo } from "./runtimeQaDemo.mjs";
 // 설계: docs/superpowers/specs/2026-08-28-runtime-vision-qa-design.md
 import { createServer as createNetServer } from "node:net";
 import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
-import { join, relative, resolve } from "node:path";
+import { dirname, join, relative, resolve } from "node:path";
 import { homedir, tmpdir } from "node:os";
 import { gunzipSync } from "node:zlib";
 import { fileURLToPath } from "node:url";
@@ -394,6 +394,14 @@ export async function applyOp(page, op, runState) {
     case "seed":
       await page.evaluate((seed) => window.__oprnDebug.setSeed(seed), op.seed);
       return;
+    case "giveItem":
+      // 실물 게임에 시작 아이템이 없을 때 전투 아이템 사용을 보려고 가방에 넣는다(__oprnDebug.giveItem — 실제 세션 인벤토리).
+      await page.evaluate(([itemId, amount]) => window.__oprnDebug.giveItem(itemId, amount), [op.itemId, op.amount ?? 1]);
+      return;
+    case "setSwitch":
+      // 실물 게임의 진행 스위치(예: 공포판 추격자 등장 sw_0001)를 퍼즐을 다 풀지 않고 켠다(__oprnDebug.setSwitch — 실제 세션).
+      await page.evaluate(([switchId, value]) => window.__oprnDebug.setSwitch(switchId, value), [op.switchId, op.value ?? true]);
+      return;
     case "setVitals":
       await page.evaluate(
         ([hp, mp, actorIds]) => {
@@ -721,7 +729,10 @@ export async function applyOp(page, op, runState) {
       const ok = () => page.evaluate(`(${op.fn})()`).catch(() => false);
       for (let i = 0; i < max; i += 1) {
         if (await ok()) return;
-        await page.keyboard.press(op.key ?? "Enter");
+        // times: 한 바퀴에 연달아 누를 횟수(「Esc 두 번: 컷신 건너뛰기」처럼 짧은 간격의 두 번 누르기).
+        // keys: 바퀴마다 돌려 쓰는 키 목록(풀숲을 좌우로 오가며 조우를 기다릴 때). 없으면 key 하나.
+        const key = Array.isArray(op.keys) && op.keys.length > 0 ? op.keys[i % op.keys.length] : (op.key ?? "Enter");
+        for (let n = 0; n < (op.times ?? 1); n += 1) await page.keyboard.press(key);
         await page.waitForTimeout(op.settleMs ?? 450);
       }
       if (!(await ok())) throw new Error(`pressUntilJs: ${max}회 뒤에도 조건이 참이 아니다: ${op.fn}`);
@@ -811,8 +822,38 @@ export async function applyOp(page, op, runState) {
       runState.capturedCheckpoints.push({ id: op.id, ...(op.label ? { label: op.label } : {}), snapshot });
       return;
     }
+    case "cpuProfileStart": {
+      // CPU 표본 수집 시작 — 「무엇이 n초 걸리나」를 함수 단위로 보려고(2026-10-29 새 게임 로딩 8~10초 원인 계측).
+      runState.cpuProfiler = await page.context().newCDPSession(page);
+      await runState.cpuProfiler.send("Profiler.enable");
+      await runState.cpuProfiler.send("Profiler.setSamplingInterval", { interval: op.intervalUs ?? 1000 });
+      await runState.cpuProfiler.send("Profiler.start");
+      return;
+    }
+    case "cpuProfileStop": {
+      // 멈추고 자기 시간(self) 상위 함수 표를 op.out 에 쓴다(전체 .cpuprofile 은 op.raw 가 있을 때만).
+      const session = runState.cpuProfiler;
+      if (!session) throw new Error("cpuProfileStop: cpuProfileStart 가 먼저다");
+      const { profile } = await session.send("Profiler.stop");
+      runState.cpuProfiler = undefined;
+      if (op.raw) await writeFile(op.raw, JSON.stringify(profile));
+      const dt = profile.timeDeltas ?? [];
+      const self = new Map();
+      profile.samples.forEach((id, i) => self.set(id, (self.get(id) ?? 0) + (dt[i] ?? 0)));
+      const byFn = new Map();
+      for (const node of profile.nodes) {
+        const f = node.callFrame;
+        const key = `${f.functionName || "(anon)"} ${(f.url ?? "").split("/").slice(-2).join("/")}:${f.lineNumber + 1}`;
+        byFn.set(key, (byFn.get(key) ?? 0) + (self.get(node.id) ?? 0));
+      }
+      const totalMs = (profile.endTime - profile.startTime) / 1000;
+      const top = [...byFn.entries()].sort((a, b) => b[1] - a[1]).slice(0, op.top ?? 40).map(([fn, us]) => ({ fn, selfMs: Math.round(us / 1000) }));
+      await writeFile(op.out, JSON.stringify({ totalMs: Math.round(totalMs), top }, null, 1));
+      return;
+    }
     case "evalToFile": {
       const value = await page.evaluate(`(${op.fn})()`);
+      await mkdir(dirname(op.out), { recursive: true });
       await writeFile(op.out, JSON.stringify(value, null, 1));
       return;
     }

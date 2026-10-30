@@ -425,7 +425,9 @@ export function createBattleSequencer(
       if (beat.hitStop) hooks.onHitFeel?.(false, beat.feedback);
       playBeats(rest, directorBase, done);
     };
-    if (beat.durationMs > 0) delay(advance, beat.durationMs);
+    // 히트스톱은 배속·빨리감기와 무관하게 원래 길이다 — 「타격 손맛」의 정지 프레임은 감으면 사라진다
+    // (5배 빨리감기에서 110ms 정지가 40ms 로 줄었다, 2026-10-29 pacing-battle). 나머지 연출만 배속을 탄다.
+    if (beat.durationMs > 0) delay(advance, beat.durationMs, beat.hitStop && !reducedMotion());
     else advance();
   }
 
