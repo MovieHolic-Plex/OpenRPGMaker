@@ -58,7 +58,9 @@ async function readBattleUi(page) {
 async function press(page, testid) {
   return page.evaluate((id) => {
     const button = document.querySelector(`[data-testid="${id}"]`);
-    if (!button || button.disabled) return false;
+    // 막힌 행(MP 부족·PP 없음)은 `disabled` 가 아니라 aria-disabled + data-battle-command-inert 이고 클릭 리스너가 없다
+    // (battleCommandDom: 커서가 서서 사유를 읽히게). 그 행을 «눌렀다»고 하면 목록이 열린 채 명령이 안 나가 op 가 시간을 다 쓴다.
+    if (!button || button.disabled || button.getAttribute("aria-disabled") === "true" || button.dataset.battleCommandInert === "true") return false;
     button.click();
     return true;
   }, testid);
@@ -98,6 +100,7 @@ export async function battleQaOp(page, op) {
   let pendingTarget;
   let forceFallback = false;
   let skillIssued = false;
+  let stuckSince = null;
   await page.waitForSelector('[data-testid="battle-scene"]', { timeout: op.sceneTimeoutMs ?? 60_000 });
   await installBattleLog(page);
   const nextFor = (actor) => {
@@ -202,8 +205,8 @@ export async function battleQaOp(page, op) {
           : `actor-skill-${wanted}`;
       if (!(await press(page, id))) {
         if (!submenu.includes(id) && !(await page.$(`[data-testid="${id}"]`))) throw new Error(`battle op: ${id} 를 고를 수 없다 (보이는 것: ${submenu.join(", ")})`);
-        // 막힌 칸(MP 부족 등) — 목록을 닫고 다음 바퀴에서 fallback 으로 다시 고른다.
-        await page.keyboard.press("Escape");
+        // 막힌 칸(MP 부족 등) — 목록을 닫고 다음 바퀴에서 fallback 으로 다시 고른다. 「뒤로」 단추가 먼저(Esc 는 컷신 건너뛰기와 겹친다).
+        await press(page, "actor-command-back") || await page.keyboard.press("Escape");
         wanted = null;
         forceFallback = true;
         issued -= 1;
@@ -257,6 +260,19 @@ export async function battleQaOp(page, op) {
       continue;
     }
     if (ui.dialogue) { await page.keyboard.press("Enter"); await sleep(300); continue; }
+    // 하위 목록(기술·아이템)이 열린 채 고를 것도 없고 명령 카드도 없이 멈춰 있으면(누른 행이 반응하지 않음) 닫고 fallback 으로.
+    // 2026-10-30 폴른 스타 B13: MP 3 엘레나의 눈보라 행을 «눌렀다»고 보고 15분을 기다렸다.
+    if (!wanted && submenu.length > 0 && ui.menu.includes("actor-command-back")) {
+      stuckSince ??= Date.now();
+      if (Date.now() - stuckSince > 4000) {
+        stuckSince = null;
+        await press(page, "actor-command-back") || await page.keyboard.press("Escape");
+        forceFallback = true;
+        issued -= 1;
+        await sleep(300);
+        continue;
+      }
+    } else stuckSince = null;
     await sleep(150);
   }
   throw new Error(`battle op: ${op.timeoutMs ?? 90_000}ms 안에 끝나지 않았다 (명령 ${issued}개)`);
