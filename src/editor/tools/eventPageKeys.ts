@@ -10,7 +10,7 @@ export const EVENT_PAGE_KEYS: ReadonlySet<string> = new Set([
 /** EventPageMovement(types/events.ts) 의 키 — 필드를 더하면 여기도 더한다. */
 export const MOVEMENT_KEYS: ReadonlySet<string> = new Set([
   "type", "speed", "frequency", "route", "living", "pursuit", "sight", "sightRange", "giveUpRange", "pathfind",
-  "moveIntervalMs", "sightAlert", "chaseLunge", "approachStyle", "chaseStepMs", "chaseBrain",
+  "moveIntervalMs", "sightAlert", "chaseLunge", "approachStyle", "chaseStepMs", "chaseBrain", "quietBreath", "footsteps",
 ]);
 /** ChaseAcrossMaps(movement.pursuit) 의 키. */
 export const PURSUIT_KEYS: ReadonlySet<string> = new Set([

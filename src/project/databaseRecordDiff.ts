@@ -89,6 +89,7 @@ const FIELD_LABELS: Readonly<Record<string, string>> = {
   forfeit: "기권 허용",
   roundLimit: "라운드 제한",
   noItems: "아이템 금지",
+  walkChip: "걷기 칩(서 있는 적)",
   lungeSpeedPercent: "달려드는 속도",
   collapseEffect: "쓰러지는 연출",
   hideHp: "HP 숨김(보스)",
