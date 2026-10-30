@@ -256,8 +256,9 @@ fieldList.forEach((f, i) => {
   for (let y = f.y; y < f.y + f.h; y += 1) for (let x = f.x; x < f.x + f.w; x += 1) stamp(id, x, y);
 });
 const REVIEWED = [{ house: "bd-house-rv-", shadow: "bd-rv-shadow-", foundation: "bd-rv-foundation-" }, { house: "bd-house-mk-", shadow: "bd-mk-shadow-", foundation: "bd-mk-foundation-" }];
-for (const p of placed) {
-  if (!stamp(p.id, p.x, p.y)) continue;
+const stampedOk = placed.filter((p) => stamp(p.id, p.x, p.y));
+// reviewed buildings' ground shadow (layer 2) and foundation (layer 4) go on after every kit, only on empty cells (as the village builder does)
+for (const p of stampedOk) {
   const set = REVIEWED.find((r) => p.id.startsWith(r.house));
   if (set) for (const [prefix, layer] of [[set.shadow, 2], [set.foundation, 4]] as const) {
     const kit = kitDef(prefix + p.id.slice(set.house.length)); if (!kit) continue;
