@@ -1,3 +1,4 @@
+import { REST_ALLOW_ON_MAPS, REST_TARGETS, isRestTarget } from "@/project/restMenu";
 import { isSeCueId } from "@/project/seCues";
 import { validateOpeningAnimatic } from "@/project/openingAnimatic";
 import { validateMonsterCampaign } from "./shapeMonsterCampaign";
@@ -697,6 +698,20 @@ function validateTimeSystem(value: unknown): void {
   if (timeSystem.startWeekday !== undefined) requireNumber("system.timeSystem.startWeekday", timeSystem.startWeekday);
   if (timeSystem.forceSleep !== undefined) requireBoolean("system.timeSystem.forceSleep", timeSystem.forceSleep);
   if (timeSystem.onDayEnd !== undefined) requireString("system.timeSystem.onDayEnd", timeSystem.onDayEnd);
+  if (timeSystem.restMenu !== undefined) {
+    const rest = requireRecord("system.timeSystem.restMenu", timeSystem.restMenu);
+    requireBoolean("system.timeSystem.restMenu.enabled", rest.enabled);
+    if (rest.allowOnMaps !== undefined) {
+      const allow = requireString("system.timeSystem.restMenu.allowOnMaps", rest.allowOnMaps);
+      assert((REST_ALLOW_ON_MAPS as readonly string[]).includes(allow), `system.timeSystem.restMenu.allowOnMaps must be one of ${REST_ALLOW_ON_MAPS.join(", ")}.`);
+    }
+    if (rest.targets !== undefined) {
+      for (const [index, target] of requireArray("system.timeSystem.restMenu.targets", rest.targets).entries()) {
+        assert(isRestTarget(target), `system.timeSystem.restMenu.targets[${index}] must be one of ${REST_TARGETS.join(", ")}.`);
+      }
+    }
+    if (rest.recoverHp !== undefined) requireBoolean("system.timeSystem.restMenu.recoverHp", rest.recoverHp);
+  }
 }
 
 export function validateSession(value: unknown): void {

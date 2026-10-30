@@ -91,6 +91,7 @@ import { normalizeCharacterFootprint, normalizePassRows } from "@/project/footpr
 import { keepsExplicitDefaultResolution, normalizePlayResolution } from "@/project/playResolution";
 import { normalizeCameraZoom } from "@/project/cameraZoom";
 import { normalizeWorldGenRulesForStorage } from "@/project/worldGenRules";
+import { normalizeRestMenu } from "@/project/restMenu";
 import { normalizeCinematicSequence, normalizeGameOverSettings } from "@/project/cinematicSettings";
 import { isTeamSwapCost, normalizeBattleTeams } from "@/project/battleTeamModel";
 
@@ -465,6 +466,7 @@ export function normalizeTimeSystemConfig(config: Partial<TimeSystemConfig> | un
   const rawDayEndHour = clampInteger(config.dayEndHour ?? DEFAULT_DAY_END_HOUR, dayStartHour + 1, 48);
   const dayEndHour = rawDayEndHour <= dayStartHour ? DEFAULT_DAY_END_HOUR : rawDayEndHour;
   const onDayEnd = cleanOptionalId(config.onDayEnd);
+  const restMenu = normalizeRestMenu(config.restMenu);
   const daysPerSeason = clampInteger(
     typeof config.daysPerSeason === "number" && Number.isFinite(config.daysPerSeason)
       ? config.daysPerSeason
@@ -480,6 +482,7 @@ export function normalizeTimeSystemConfig(config: Partial<TimeSystemConfig> | un
     daysPerSeason,
     forceSleep: config.forceSleep === true,
     ...(onDayEnd ? { onDayEnd } : {}),
+    ...(restMenu ? { restMenu } : {}),
   };
 }
 
