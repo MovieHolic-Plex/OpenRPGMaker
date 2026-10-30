@@ -102,8 +102,11 @@ export const transfer = (mapId: string, at: Cell, direction: Dir = "down"): Comm
   ({ kind: "transfer", mapId, x: at.x, y: at.y, direction, fade: "black" } as Command);
 export const ifCond = (condition: EventPageCondition, then: Command[], otherwise: Command[] = []): Command =>
   ({ kind: "fork", condition, then, ...(otherwise.length ? { else: otherwise } : {}) } as Command);
-export const choices = (options: { text: string; then: Command[] }[]): Command =>
-  ({ kind: "choices", options: options.map((o) => ({ text: o.text, branch: o.then })), cancelBehavior: "disallow" } as Command);
+/** 선택지. enableWhen 이 거짓이면 흐린 줄로 보이고 고를 수 없다(disabledText 가 이유, #4001). */
+export const choices = (options: { text: string; then: Command[]; enableWhen?: EventPageCondition; disabledText?: string; showWhen?: EventPageCondition }[]): Command =>
+  ({ kind: "choices", options: options.map((o) => ({ text: o.text, branch: o.then,
+    ...(o.enableWhen ? { enableWhen: o.enableWhen } : {}), ...(o.disabledText ? { disabledText: o.disabledText } : {}), ...(o.showWhen ? { showWhen: o.showWhen } : {}) })),
+    cancelBehavior: "disallow" } as Command);
 export const varIs = (v: string, n: number): EventPageCondition => ({ kind: "variable", variableId: v, op: "==", value: n } as EventPageCondition);
 export const varAtLeast = (v: string, n: number): EventPageCondition => ({ kind: "variable", variableId: v, op: ">=", value: n } as EventPageCondition);
 export const swOn = (id: string): EventPageCondition => ({ kind: "switch", switchId: id, value: true } as EventPageCondition);

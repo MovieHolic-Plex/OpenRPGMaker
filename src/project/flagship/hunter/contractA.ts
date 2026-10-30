@@ -85,6 +85,7 @@ function trailMark(id: string, at: Cell, lines: Command[], conditions: EventPage
   (p as unknown as { nearSparkle: unknown }).nearSparkle = { radius: 2, preset: "sparkle" };
   return event(id, "끈 자국", at, [gone(`${id}_none`, []), p, gone(`${id}_done`, [swOn(SW.clueTrail)])]);
 }
+const goldAtLeast = (amount: number): EventPageCondition => ({ kind: "gold", op: ">=", amount } as EventPageCondition);
 /** 공백 E 우회 — 명상 대신 여관 침대에서 밤까지 쉰다. */
 function waitForNight(): Command[] {
   return [
@@ -122,16 +123,12 @@ export function buildContractA(project: Project, s: Stage): void {
       faceHero("ev_hc_a_keeper"),
       ...say("keeper", "base", "방은 은화 다섯. 밥은 없소. 늪이 굶은 지 두 해요."),
       choices([
-        { text: "불씨 기름을 산다 (은화 40)", then: [
-          ifCond({ kind: "gold", op: ">=", amount: 40 } as EventPageCondition, [
-            { kind: "changeGold", op: "-=", amount: 40 } as Command, giveItem(ITEM.oil), setSw(SW.oilBought), playSe(SE.coin),
-            ...say("keeper", "base", "송진하고 유황이오. 칼에 바르면 한 번은 탄다."),
-          ], [...say("keeper", "annoyed", "은화 마흔. 깎지 마시오. 기름도 굶었소.")]),
+        { text: "불씨 기름을 산다 (은화 40)", enableWhen: goldAtLeast(40), disabledText: "은화가 모자란다. 깎아 주지 않는다.", then: [
+          { kind: "changeGold", op: "-=", amount: 40 } as Command, giveItem(ITEM.oil), setSw(SW.oilBought), playSe(SE.coin),
+          ...say("keeper", "base", "송진하고 유황이오. 칼에 바르면 한 번은 탄다."),
         ] },
-        { text: "물약을 산다 (은화 20)", then: [
-          ifCond({ kind: "gold", op: ">=", amount: 20 } as EventPageCondition, [
-            { kind: "changeGold", op: "-=", amount: 20 } as Command, giveItem(ITEM.potion), playSe(SE.coin),
-          ], [...say("keeper", "base", "스물이오.")]),
+        { text: "물약을 산다 (은화 20)", enableWhen: goldAtLeast(20), disabledText: "은화 스물이 없다.", then: [
+          { kind: "changeGold", op: "-=", amount: 20 } as Command, giveItem(ITEM.potion), playSe(SE.coin),
         ] },
         { text: "그만둔다", then: [] },
       ]),
@@ -140,10 +137,8 @@ export function buildContractA(project: Project, s: Stage): void {
       faceHero("ev_hc_a_keeper"),
       ...say("keeper", "smile", "사냥꾼 양반. 기름은 서른만 받겠소."),
       choices([
-        { text: "불씨 기름을 산다 (은화 30)", then: [
-          ifCond({ kind: "gold", op: ">=", amount: 30 } as EventPageCondition, [
-            { kind: "changeGold", op: "-=", amount: 30 } as Command, giveItem(ITEM.oil), playSe(SE.coin),
-          ], [...say("keeper", "base", "서른이오.")]),
+        { text: "불씨 기름을 산다 (은화 30)", enableWhen: goldAtLeast(30), disabledText: "은화 서른이 없다.", then: [
+          { kind: "changeGold", op: "-=", amount: 30 } as Command, giveItem(ITEM.oil), playSe(SE.coin),
         ] },
         { text: "그만둔다", then: [] },
       ]),
@@ -265,11 +260,12 @@ export function buildContractA(project: Project, s: Stage): void {
   ], { trigger: goPage.trigger.kind as "action" | "playerTouch", priority: goPage.priority as "below" | "same" });
   const nightGo = { ...structuredClone(goPage), id: "nest_night", conditions: [night] };
   (nightGo.commands as Command[]).unshift(
-    ifCond(all(hasItem(ITEM.oil), swOff(SW.oiled)), [
-      ...think("기름을 바를까. 한 번 싸우면 다 탄다."),
+    ifCond(swOff(SW.oiled), [
+      ...think("물이 낮다. 들어가기 전에 칼을 본다."),
       choices([
-        { text: "칼에 불씨 기름을 바른다", then: [...applyOil(), setSw(SW.oiled), playSe("easyrpg-sound-fire1"), ...caption("칼날에 기름이 먹었다. 송진 냄새.")] },
-        { text: "아끼고 들어간다", then: [] },
+        { text: "칼에 불씨 기름을 바른다", enableWhen: hasItem(ITEM.oil), disabledText: "기름이 없다. 여관 베일이 판다.",
+          then: [...applyOil(), setSw(SW.oiled), playSe("easyrpg-sound-fire1"), ...caption("칼날에 기름이 먹었다. 송진 냄새.")] },
+        { text: "그냥 들어간다", then: [] },
       ]),
     ]),
   );

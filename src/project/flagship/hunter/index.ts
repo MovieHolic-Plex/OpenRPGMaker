@@ -58,7 +58,9 @@ export function createHunterContractFlagshipDemo(): FlagshipDemoBuildResult {
   }
 
   // 시간 — 하루가 빨리 흐르지 않게(실제 1초 = 게임 1분). 낮에 시작한다(늪 일은 밤까지 기다리는 것이 고리의 일부).
-  execTool(project, "configure_time_system", { enabled: true, minutesPerRealSecond: 1, dayStartHour: 10, dayEndHour: 30 });
+  // 「쉬기」(#4011) — ESC 메뉴에서 저녁·자정까지 흘린다. 침대는 이야기 안의 같은 길이다.
+  execTool(project, "configure_time_system", { enabled: true, minutesPerRealSecond: 1, dayStartHour: 10, dayEndHour: 30,
+    restMenu: { enabled: true, targets: ["evening", "midnight", "morning"], allowOnMaps: "safe", recoverHp: true } });
 
   buildOpening(project, stage);
   setupTitle(project);
@@ -66,7 +68,7 @@ export function createHunterContractFlagshipDemo(): FlagshipDemoBuildResult {
   execTool(project, "configure_story_journal", { title: "일지", writers: [{ id: "doran", name: "도르반" }], lines: [] });
   execTool(project, "configure_field_menu", { preset: "custom", entries: [
     { command: "items", label: "가방" }, { command: "skills", label: "기술" }, { command: "equipment", label: "장비" }, { command: "status", label: "상태" },
-    { command: "journal", label: "일지" }, { command: "backlog", label: "대화 기록" },
+    { command: "journal", label: "일지" }, { command: "rest", label: "쉬기" }, { command: "backlog", label: "대화 기록" },
     { command: "save", label: "저장" }, { command: "load", label: "불러오기" }, { command: "options", label: "설정" }, { command: "to-title", label: "타이틀로" },
   ] });
 
