@@ -300,13 +300,19 @@ export function applyLayoutPatch(L: InteriorLayout, p: LayoutPatch): { layout: I
     for (const a of add ?? []) if (a && typeof a.id === "string" && a.id !== "") list.push(a);
     out[key] = list;
   };
-  take("objects", p.remove_objects, p.add_objects);
-  if (p.remove_wall_items?.length || p.add_wall_items?.length) take("wall_items", p.remove_wall_items, p.add_wall_items);
+  // replace 먼저, 그다음 빼기/더하기 — 엄격 스키마 모델은 replace 의 모든 칸을 지금 값 그대로 채워 보낸다(5회차 terra: replace.objects 가 add_objects 를 지웠다).
   for (const [k, v] of Object.entries(p.replace ?? {})) {
     if (v === null || v === undefined || (Array.isArray(v) && !v.length && k !== "walls" && k !== "doors" && k !== "carpets")) continue;
     if (typeof v === "object" && !Array.isArray(v) && !Object.keys(v as object).length) continue;
+    // 빈 껍데기(엄격 스키마의 0·빈 값): map{w:0}·landmark{id:""}·outer_wall{path:[]}·entrance{x:0,y:0} 는 «바꾸지 않는다».
+    if (k === "map" && !((v as { w?: number }).w! > 0)) continue;
+    if ((k === "landmark") && !(v as { id?: string }).id) continue;
+    if (k === "outer_wall" && !((v as { path?: unknown[] }).path?.length)) continue;
+    if (k === "entrance" && !(v as { y?: number }).y) continue;
     if (REPLACEABLE.has(k)) out[k] = v; else errors.push(`replace: unknown field "${k}".`);
   }
+  take("objects", p.remove_objects, p.add_objects);
+  if (p.remove_wall_items?.length || p.add_wall_items?.length) take("wall_items", p.remove_wall_items, p.add_wall_items);
   return { layout: out as unknown as InteriorLayout, errors };
 }
 
