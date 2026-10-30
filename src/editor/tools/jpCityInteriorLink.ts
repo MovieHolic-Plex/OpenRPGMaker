@@ -11,6 +11,8 @@ import { extractTreeNode, insertTreeNode } from "@/project/mapTree";
 import { importReferenceScene, preloadRegionReferenceScene, regionReferenceScene } from "@/project/regionReferenceImport";
 import type { GameEvent, GameMap, MapId, Project } from "@/project/types";
 import { requireMap } from "./mapHelpers";
+import { doorLine, recordDoorForGate } from "./mapDoorTools";
+import { inferMapDoor } from "@/project/mapDoorKinds";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 
 type Cell = { readonly x: number; readonly y: number };
@@ -116,7 +118,7 @@ export const LINK_JP_CITY_INTERIOR_TOOL: ToolDefinition = {
     properties: {
       mapId: { type: "string", description: "거리(바깥) jp_city 맵 id. 생략하면 지금 보는 맵" },
       door: { type: "object", description: "건물 문 칸 {x,y} (막힌 문 칸 또는 문 바로 아래 접근칸). 문이 여러 칸이면 가장 왼쪽 칸", properties: { x: { type: "integer", minimum: 0 }, y: { type: "integer", minimum: 0 } }, required: ["x", "y"], additionalProperties: false },
-      width: { type: "integer", minimum: 1, maximum: 4, description: "문 칸 수(가로로 이어진 문 — data.doors 가 같은 줄에 2~3칸이면 그 수). 기본 1" },
+      width: { type: "integer", minimum: 1, maximum: 4, description: "문 칸 수(가로로 이어진 문 — data.doors 가 같은 줄에 2~3칸이면 그 수). 생략 = 문 그림에서 추론(일체형 가게 정면 유리문 2칸), 못 하면 1" },
       place: { type: "string", description: "가져올 실내 장소 id (interiorMapId 와 둘 중 하나)" },
       interiorMapId: { type: "string", description: "이미 있는 실내 맵 id (place 와 둘 중 하나)" },
       name: { type: "string", description: "새 실내 맵 이름(place 일 때). 예 「さくら 편의점 안」" },
@@ -139,7 +141,14 @@ export const LINK_JP_CITY_INTERIOR_TOOL: ToolDefinition = {
     if (!!place === !!givenInterior) throw new ToolError("place(가져올 장소 id) 와 interiorMapId(이미 있는 실내 맵) 중 정확히 하나를 준다", { code: "invalid-args" });
     const replace = args.replace === true;
     const d = args.door as { x: number; y: number };
-    const width = Number.isInteger(args.width) ? Math.max(1, Math.min(4, Number(args.width))) : 1;
+    // 폭을 안 주면 문 그림에서 추론한다(일체형 가게 정면의 유리문은 2칸 — 오른쪽 짝 앞으로 걸어가도 들어간다). 넓힌 칸 앞이 막혔으면 1칸.
+    const inferredWidth = (() => {
+      if (Number.isInteger(args.width)) return undefined;
+      const w = inferMapDoor(draft, street, { x: Number(d.x), y: Number(d.y) })?.rect.w ?? 1;
+      if (w < 2) return undefined;
+      try { Array.from({ length: w }, (_, i) => resolveDoor(draft, street, { x: Number(d.x) + i, y: Number(d.y) })); return w; } catch { return undefined; }
+    })();
+    const width = Number.isInteger(args.width) ? Math.max(1, Math.min(4, Number(args.width))) : inferredWidth ?? 1;
     const doors = Array.from({ length: width }, (_, i) => resolveDoor(draft, street, { x: Number(d.x) + i, y: Number(d.y) }));
     const { door } = doors[0]!;
     if (doors.some((e) => e.front.y !== doors[0]!.front.y)) throw new ToolError("문 칸들이 한 줄에 있지 않다 — width 를 줄인다", { code: "invalid-args", mapId });
@@ -206,13 +215,15 @@ export const LINK_JP_CITY_INTERIOR_TOOL: ToolDefinition = {
       exitIds.push(id);
       interior.events = [...(interior.events ?? []), gateEvent(id, `${street.name} 로 나가기`, c, { mapId, ...outLanding })];
     }
+    // 문 종류(유리 자동문·셔터·미닫이·두 짝)를 그림에서 추론해 적는다 — 런타임이 그 문 그림 전체를 그 종류대로 연다(mapDoorTools).
+    const recorded = recordDoorForGate(draft, street, door);
     // 맵 목록: 실내(층들은 그 아래에 매달려 있다)를 거리 맵 아래로.
     const node = extractTreeNode(draft.mapTree, interiorId as MapId);
     if (node && !insertTreeNode(draft.mapTree, node, mapId as MapId)) insertTreeNode(draft.mapTree, node, "");
 
     return {
-      summary: `${street.name} 문 (${door.x},${door.y})${width > 1 ? ` 외 ${width - 1}칸` : ""} ↔ ${interior.name}: 문 앞 ${fronts.map((c) => `(${c.x},${c.y})`).join(" ")} 발판 → 실내 (${inLanding.x},${inLanding.y}) · 실내 출입구 ${exits.map((c) => `(${c.x},${c.y})`).join(" ")} → 거리 (${outLanding.x},${outLanding.y})${importNote ? ` · ${importNote}` : ""}`,
-      data: { mapId, door, fronts, interiorMapId: interiorId, floorMapIds, enterEventIds: enterIds, exitEventIds: exitIds, entryLanding: inLanding, exitCells: exits, exitLanding: outLanding },
+      summary: `${street.name} 문 (${door.x},${door.y})${width > 1 ? ` 외 ${width - 1}칸` : ""} ↔ ${interior.name}: 문 앞 ${fronts.map((c) => `(${c.x},${c.y})`).join(" ")} 발판 → 실내 (${inLanding.x},${inLanding.y}) · 실내 출입구 ${exits.map((c) => `(${c.x},${c.y})`).join(" ")} → 거리 (${outLanding.x},${outLanding.y})${importNote ? ` · ${importNote}` : ""}${recorded.door ? ` · 문 종류 ${doorLine(recorded.door)} 적음(틀리면 set_map_door)` : ""}`,
+      data: { mapId, door, fronts, interiorMapId: interiorId, floorMapIds, enterEventIds: enterIds, exitEventIds: exitIds, entryLanding: inLanding, exitCells: exits, exitLanding: outLanding, ...(recorded.door ? { doorKind: recorded.door.kind, doorRect: recorded.door.rect } : {}) },
     };
   },
 };

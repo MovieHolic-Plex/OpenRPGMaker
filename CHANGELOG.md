@@ -5,6 +5,12 @@
 
 <!-- releases -->
 
+## 0.367.0 — 2026-10-30
+
+### 기능
+
+- **assistant** — open-field ambushers + chasers go home together + qa repeatUntilMap (#3947) (`17b7340`)
+
 ## 0.366.0 — 2026-10-30
 
 ### 기능

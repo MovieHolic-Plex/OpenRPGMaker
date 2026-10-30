@@ -77,6 +77,20 @@ Phaser `preRender` 는 경계가 있으면 따라가기·패닝 뒤 clamp 를 �
   충돌은 바꾸지 않는다 — 처마 밑 길·숲 가장자리처럼 일부러 뒤로 지나가는 칸이 막히기 때문. 계산은 주인공 칸이 바뀔 때만, 칸 불투명 비율은 텍스처·칸마다 한 번.
   QA 는 `scene.playerOcclusion`({body, head, weighted, ghost})과 이름 `player-occlusion-ghost` 스프라이트를 읽는다.
 
+## 도트 게임은 정수 배율로 보인다 (2026-10-30)
+
+- **규칙.** `cameraZoom.pixelSnappedCameraZoom` — 저작 배율(맵 `cameraZoom`·`system.cameraZoom`·카메라 명령 `zoom`)이 1 이상이고 정수가 아니면
+  가장 가까운 정수(최소 1)로 **보인다**. `applyCameraZoom` 이 클램프 뒤 이 값을 저작값으로 기억하고, 맵 보기 배율(`runtimeMapViewZoom`, 섞인 칸 크기)은
+  그 위에 곱한다 — 곱한 결과는 반올림하지 않는다. 저장값은 그대로다(스키마 변경 없음, 옛 프로젝트는 표시만 바뀐다).
+  왜: 480×270·16px 게임이 맵마다 2·1.5배, 오프닝 카메라 1.18·1.25배로 끝나 세계 1px 이 캔버스 1px·2px 로 번갈아 그려졌다.
+- **맞추지 않는 것.** 1 미만(멀리 보기), `dialogueStyle: "dual-fullbody-veil"`(3.2배 기본), 논리 해상도 높이 > `PIXEL_ZOOM_SNAP_MAX_HEIGHT`(540)
+  인 고해상도 화면(1440×1080 + 4.5배 「배경 1:1」 조합). Phaser 는 항상 `pixelArt: true` 라 「도트 게임」 판정은 이 예외 밖 전부다.
+  `smallMapFillZoom` 의 `integer` 판정은 맞춘 뒤의 base 를 보므로 보통 정수 맞춤이 된다.
+- **저작 도구.** `set_map_properties.zoom`·`set_project_settings.cameraZoom` 은 값을 그대로 저장하고, 표시 배율이 달라지면
+  `pixelZoomWarning` 한국어 경고(실제 보일 배율 포함)를 warnings·요약에 붙인다. `animate_opening_camera` 는 카메라 줌(기본값·zoom 키)에
+  정수 아닌 값이 있으면 `openingCameraZoomWarning` 으로 경고만 한다 — 애니메틱 렌더러는 바꾸지 않았다(1.04→1.14 같은 느린 줌이 사라지므로).
+  시험: `test/pixelCameraZoom.test.ts`.
+
 ## 작은 방은 화면을 채운다 · 어둠 막은 맵 안에만 (2026-10-28)
 
 - **작은 맵 맞춤 배율.** `playSceneCamera.smallMapFillZoom` = 맵 전체(북쪽 돌출 포함)가 화면에 다 들어가는 가장 큰 **정수 캔버스 배율**.
@@ -496,6 +510,13 @@ Phaser `preRender` 는 경계가 있으면 따라가기·패닝 뒤 clamp 를 �
   점유 기록(`session.occupiedLocationIds`, ID 만·optional)은 큐와 무관하게 즉시 갱신한다.
   새 스케줄러를 만들지 마라 — 이 트리거는 auto 와 같은 «사건 하나» 성질이다. 계약 전문은
   `openwiki/runtime-project-schema.md` 의 「구역 드나듦 트리거」 절.
+- **장소 이동의 검은 화면은 일한 시간만 남긴다 (2026-10-30):** `transferTo`(`src/player/playSceneMapCommands.ts`)는
+  새 맵 파일 받기를 페이드아웃과 **같이** 건다(`prefetchMapAssets`, 뒤의 `holdForMapAssets` 는 같은 받기를 기다릴 뿐).
+  화면 효과 층(z 27, 캔버스 위)이 이미 불투명하게 덮었거나 덮어 가는 중이면(`screenCoverRemainingMs`, 저작된
+  「화면 효과 fadeOut」 → 전투 패배 재시작·붙잡혀 끌려감) 카메라 페이드아웃 대신 그 덮개 트윈만 기다리고, 착지 뒤 카메라
+  페이드인은 기다리지 않고 걷는다(`fadeEffect.reset`) — 그 아래 카메라 페이드는 보이지 않는데 0.5초씩 검은 화면을 늘렸고,
+  도착 맵 자동 장면의 「fadeIn」도 그만큼 늦게 시작했다(폴른 2막 B6 패배 → 감방, 프레임 밝기 실측). 플래시는 덮개로 치지 않는다.
+  남은 검은 시간은 `loadMap`(첫 방문 타일셋의 이식 굽기 `ensureTilesetTexture` 가 1~2초)이다 — 줄이려면 굽기를 앞당겨야 한다.
 - **이벤트 명령 실동작 검토 (2026-09-05):** `docs/reviews/2026-09-05-event-runtime-audit.md`. 「철수의 기억」에서 강제 NPC 방향 전환이 `scene.running` 게이트에 막혀 30초 뒤에야 다음 명령으로 진행됐다. `updatePlayScene`은 NPC 업데이트를 호출하고 `updateAutonomousNPCs`가 대화 중 **명령 루트만** 허용한다. 배경 자율 이동과 병렬 이벤트는 기존 설정대로 정지한다. 직접 NPC updater만 호출하는 테스트로는 이 배선 결함을 잡지 못하므로 `test/runtimeMovementStability.test.ts`의 실제 프레임 디스패치 회귀를 유지한다. 저장된 M2 대화 설정의 강제 기본값 초기화도 수정했다(`test/persistedMessageSettings.test.ts`). `Wait Until`, `Pathfind Move`, 메뉴/로드 화면, 좌표 ID 조회, 저장된 M2 영화 명령의 후속 미구현·오연결도 수정했다. 실행 계약과 제한은 `openwiki/runtime-m2-flow-controls.md`의 2026-09-05 항목을 따른다. 카탈로그 배지나 최종 종료만으로 전체 명령을 검증했다고 보고하지 않는다.
 - **실내 화로 불 애니메이션:** `src/editor/tilesetImage.ts`의 `supportsChipsetTileAnimation(tileset,tile)`이 기존 마을 애니메이션과 실내 불 스트립 124/154/184/214만 허용한다. 플레이어 `playSceneMapRuntime.renderTile`과 편집기 `chipsetTileRender.createRawTileObject`가 공통 조건을 쓴다. `isDefaultTilesetTexture`를 넓히면 실내에 마을 길/나무 규칙까지 적용되므로 바꾸지 않는다. `stone_hearth_unlit`의 463은 정지, `stone_hearth_lit`의 아래 가운데 124는 4fps이다. `test/interiorFireRendering.test.ts`는 양 레이어의 실제 렌더 경로를 검사한다.
 - **Shipping pointer-exclusion contract (2026-08-28):** `.player-layout[data-play-input-owner="keyboard-only"]` is keyboard-only regardless of `navigator.webdriver`. The capture blocker rejects mouse, pointer, touch, wheel, context-menu, drag, selection, auxiliary, and native trusted-click channels; Phaser mouse/touch managers are disabled. The root prevents selection, dragging, canvas hit testing, browser scroll, and autoscroll. Exactly two pointer owners exist: `[data-play-input-owner="touch-controls"]`, mounted only by explicit `VITE_TOUCH_CONTROLS` / `OPENRPG_PLAYER_TOUCH_CONTROLS`, and `[data-play-input-owner="host-fullscreen"]`, mounted only when `hostFeatures` advertises fullscreen. Ownership never escapes those subtrees, and keyboard-only runtime content has no native `title` tooltips.
