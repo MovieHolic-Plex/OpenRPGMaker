@@ -4002,3 +4002,7 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
 - 검증(2026-10-28): mt2 flash·argon 방탈출 저장본 사본에 돌려 `scripts/qa-game/check.mts` 자동 플레이가 엔딩까지 갔다(증거 `~/z-project/assistant-whole-game/suite/ledger/evidence/gamepath/`).
 - 측정: 고정 프롬프트 스위트(저장소 밖 `~/z-project/assistant-whole-game/suite/`)의 판정자는 `playerGoal` 한 줄만 받는다. 엔딩 여부는 판정자의 말이 아니라 플레이어 클리어 기록(`:clear-record:v1`)으로 센다.
 - `upsert_troop.duel` — 결투 규칙 `{yieldAtPercent, playerYieldAtPercent, forfeit, roundLimit, noItems}`(고정 속성, 모두 선택). `clearFields:["duel"]` 로 지운다. 의미는 `runtime-battle.md` 「결투 규칙」.
+
+## 일정표 도구 (upsert_schedule)
+
+`list_schedules`/`upsert_schedule`(`src/editor/tools/scheduleTools.ts`)이 주간 일정표(`database.schedules`)를 저작한다. 명령 `planSchedule`/`runSchedule` 은 조수 이벤트 스키마에 포함. 계약·한계는 `openwiki/schedule-planner.md`.
