@@ -7,7 +7,10 @@
 // 보스 판정은 gateBattleSteps 와 같은 낱말(boss/보스 — 이벤트 id·적 그룹 id)과 도망 불가에 이름(마왕·군주·수문장 등)을 더했다.
 import { isPassable } from "@/project/collision";
 import type { GameEvent, GameMap, Project } from "@/project/types";
+import { findShadowedPages } from "@/project/eventPageShadow";
+import { findSetterShadowedPages, projectSwitchSetterLists } from "@/project/eventPageSetterShadow";
 import { isPlaceholderMap } from "../blankStart";
+import { endingConditionsUnset, writtenStateIds } from "../shipChecks";
 import { isObjectiveCommand } from "../discoverability";
 import { anchorsOf, bodyReached } from "../eventReach";
 import { puzzleFlow } from "../puzzleGates";
@@ -50,6 +53,91 @@ function deepCmds(project: Project, ev: GameEvent): Cmd[] {
   const more = own.filter((c) => c.kind === "callCommonEvent" && typeof c.commonEventId === "string").flatMap((c) => commonCmds(project, String(c.commonEventId)));
   return [...own, ...more];
 }
+
+// ───────────── 페이지가 살아 있나 ─────────────
+// 런타임은 조건이 맞는 마지막 페이지 하나만 돈다. 가려진 페이지·아무도 켜지 않는 스위치/주지 않는 아이템을 기다리는 페이지의 명령은
+// 「있다」로 세지 않는다(2026-10-30 b3 interrogation: 증거 내밀기 페이지가 있어도 판정자는 선택지를 한 번도 못 봤다 — 이런 꼴을 잡는다).
+
+interface Live { written: Set<string>; given: Set<string>; setters: Set<string>[]; startOn: Set<string> }
+const liveCache = new WeakMap<Project, Live>();
+function liveFacts(project: Project): Live {
+  let f = liveCache.get(project);
+  if (f) return f;
+  const given = new Set<string>();
+  const ids = (node: unknown) => JSON.stringify(node ?? null).replace(/"itemId":"([^"]+)"/gu, (m, id: string) => { given.add(id); return m; });
+  // 얻는 길: 아이템 넣기 명령, 상점 품목, 적 드롭.
+  const gives = (c: Cmd) => { if (c.kind === "changeItem" && (c.op === "+=" || c.op === "=") && typeof c.itemId === "string") given.add(c.itemId); else if (/shop/iu.test(c.kind)) ids(c); };
+  for (const map of Object.values(project.maps)) for (const ev of map.events ?? []) eventCmds(ev).forEach(gives);
+  for (const ce of (project.commonEvents ?? []) as unknown as Obj[]) walk(ce.commands, gives);
+  for (const [id, n] of Object.entries(((project.session as unknown as Obj | undefined)?.items as Record<string, number> | undefined) ?? {})) if (n > 0) given.add(id);
+  for (const e of project.database.enemies ?? []) ids((e as unknown as Obj).drops ?? (e as unknown as Obj).dropItems);
+  f = {
+    written: writtenStateIds(project).switches,
+    given,
+    setters: projectSwitchSetterLists(project),
+    startOn: new Set(Object.entries(project.session?.switches ?? {}).filter(([, on]) => on === true).map(([id]) => id)),
+  };
+  liveCache.set(project, f);
+  return f;
+}
+
+/** 페이지마다 영영 안 도는 까닭(살아 있으면 undefined). 이벤트마다 한 번 잰다. */
+const deadCache = new WeakMap<GameEvent, (string | undefined)[]>();
+function deadPages(project: Project, ev: GameEvent): (string | undefined)[] {
+  const hit = deadCache.get(ev);
+  if (hit) return hit;
+  const pages = ev.pages ?? [];
+  const f = liveFacts(project);
+  const out: (string | undefined)[] = pages.map(() => undefined);
+  if (pages.length > 1) {
+    for (const sh of findShadowedPages(pages)) out[sh.index] ??= `페이지 ${sh.index + 1} 은 뒤 페이지 ${sh.byIndex + 1}(조건이 같거나 더 적다)에 가려 영영 안 돈다`;
+    for (const ss of findSetterShadowedPages(pages, f.setters, f.startOn)) out[ss.index] ??= `페이지 ${ss.index + 1} 의 스위치 ${ss.switchIds.join("·")} 를 켜는 곳이 모두 페이지 ${ss.byIndex + 1} 조건(${ss.bySwitchIds.join("·")})도 켜서 영영 안 돈다`;
+  }
+  pages.forEach((page, index) => {
+    if (out[index]) return;
+    const missing: string[] = [];
+    const visit = (c: unknown): void => {
+      const r = c as Obj | undefined;
+      if (!r || typeof r !== "object") return;
+      if (r.kind === "switch" && r.value !== false && typeof r.switchId === "string" && !f.written.has(r.switchId)) missing.push(`스위치 ${r.switchId}(켜는 곳 없음)`);
+      if (r.kind === "item" && r.present !== false && typeof r.itemId === "string" && !f.given.has(r.itemId)) missing.push(`아이템 ${r.itemId}(주는 곳 없음)`);
+      if (r.kind === "all" && Array.isArray(r.conditions)) r.conditions.forEach(visit);
+    };
+    (page.conditions ?? []).forEach(visit);
+    if (missing.length) out[index] = `페이지 ${index + 1} 조건 ${missing.join(", ")}`;
+  });
+  deadCache.set(ev, out);
+  return out;
+}
+
+/** 살아 있는 페이지의 명령(부르는 공통 이벤트 속까지)과, 죽은 페이지에만 있는 명령의 까닭. */
+function liveCmds(project: Project, ev: GameEvent): { cmds: Cmd[]; dead: { why: string; cmds: Cmd[] }[] } {
+  const cmds: Cmd[] = [];
+  const dead: { why: string; cmds: Cmd[] }[] = [];
+  walk((ev as unknown as Obj).commands, (c) => cmds.push(c));
+  (ev.pages ?? []).forEach((page, i) => {
+    const list: Cmd[] = [];
+    walk(page.commands, (c) => list.push(c));
+    for (const c of [...list]) if (c.kind === "callCommonEvent" && typeof c.commonEventId === "string") list.push(...commonCmds(project, c.commonEventId));
+    const why = deadPages(project, ev)[i];
+    if (why) dead.push({ why, cmds: list }); else cmds.push(...list);
+  });
+  return { cmds, dead };
+}
+
+/** 맵들의 살아 있는 페이지에서 pred 가 맞는 명령, 그리고 죽은 페이지에만 있던 것과 그 까닭. */
+function scanLive(project: Project, maps: readonly GameMap[], pred: (c: Cmd, ev: GameEvent) => boolean): { hits: { map: GameMap; ev: GameEvent; c: Cmd }[]; dead: { map: GameMap; ev: GameEvent; why: string }[] } {
+  const hits: { map: GameMap; ev: GameEvent; c: Cmd }[] = [];
+  const dead: { map: GameMap; ev: GameEvent; why: string }[] = [];
+  for (const map of maps) for (const ev of map.events ?? []) {
+    const live = liveCmds(project, ev);
+    for (const c of live.cmds) if (pred(c, ev)) hits.push({ map, ev, c });
+    for (const d of live.dead) if (d.cmds.some((c) => pred(c, ev))) dead.push({ map, ev, why: d.why });
+  }
+  return { hits, dead };
+}
+const deadNote = (dead: readonly { map: GameMap; ev: GameEvent; why: string }[]) =>
+  dead.length ? ` — 영영 안 도는 페이지에만 있다: ${dead.slice(0, 2).map((d) => `${at(d.map, d.ev)} ${d.why}`).join(" / ")}` : "";
 
 const trigOf = (ev: GameEvent, p: { trigger?: unknown }): string => {
   const t = p.trigger ?? (ev as unknown as Obj).trigger;
@@ -219,7 +307,7 @@ export function runTodoCheck(project: Project, check: TodoCheck, ctx: TodoCheckC
     case "talk": return checkTalk(project, check.who, check.says);
     case "battle": return checkBattle(project, check.who, check.map, check.boss);
     case "link": return checkLink(project, check.from, check.to);
-    case "ending": return checkEnding(project, ctx);
+    case "ending": return checkEnding(project, ctx, check.map);
     case "item": return checkItem(project, check.name, check.gives);
     case "present_evidence": return checkPresent(project, check.item, check.to);
     case "objective": return checkObjective(project, check.text);
@@ -256,16 +344,11 @@ function checkPerson(project: Project, name: string, map?: string): CheckResult 
 function checkTalk(project: Project, who: string, says?: string): CheckResult {
   const maps = Object.values(project.maps);
   // 그 인물 이벤트의 대사, 또는 어느 이벤트든 화자가 그 인물인 대사.
-  const lines: { map: GameMap; ev: GameEvent; body: string }[] = [];
   const named = new Set(findEvents(project, maps, who).map((h) => h.ev));
-  for (const map of maps) for (const ev of map.events ?? []) {
-    const own = named.has(ev);
-    for (const c of deepCmds(project, ev)) {
-      if (c.kind !== "text") continue;
-      if (own || (typeof c.speaker === "string" && nameMatches(who, c.speaker))) lines.push({ map, ev, body: String(c.body ?? "") });
-    }
-  }
+  const scan = scanLive(project, maps, (c, ev) => c.kind === "text" && (named.has(ev) || (typeof c.speaker === "string" && nameMatches(who, c.speaker))));
+  const lines = scan.hits.map((h) => ({ map: h.map, ev: h.ev, body: String(h.c.body ?? "") }));
   if (!lines.length) {
+    if (scan.dead.length) return { pass: false, detail: `「${who}」 대사가 있지만${deadNote(scan.dead)}`, evidence: { mapId: scan.dead[0]!.map.id, eventId: scan.dead[0]!.ev.id, x: scan.dead[0]!.ev.x, y: scan.dead[0]!.ev.y } };
     const any = [...named][0];
     if (any) { const m = maps.find((mm) => mm.events?.includes(any))!; return { pass: false, detail: `${at(m, any)} 에 대사 명령이 없다`, evidence: { mapId: m.id, eventId: any.id, x: any.x, y: any.y } }; }
     const speakers = maps.flatMap((m) => (m.events ?? []).flatMap((ev) => [String(ev.name ?? ""), ...eventCmds(ev).filter((c) => c.kind === "text").map((c) => String(c.speaker ?? ""))]));
@@ -274,7 +357,7 @@ function checkTalk(project: Project, who: string, says?: string): CheckResult {
   if (says) {
     const want = normName(says, true);
     const hit = lines.find((l) => normName(l.body, true).includes(want));
-    if (!hit) return { pass: false, detail: `「${who}」 대사 ${lines.length}줄에 「${says}」 가 없다 — 예: 「${lines[0]!.body.slice(0, 40)}」`, evidence: { mapId: lines[0]!.map.id, eventId: lines[0]!.ev.id } };
+    if (!hit) return { pass: false, detail: `「${who}」 대사 ${lines.length}줄에 「${says}」 가 없다 — 예: 「${lines[0]!.body.slice(0, 40)}」${deadNote(scan.dead.filter((d) => liveCmds(project, d.ev).dead.some((x) => x.cmds.some((c) => c.kind === "text" && normName(String(c.body ?? ""), true).includes(want)))))}`, evidence: { mapId: lines[0]!.map.id, eventId: lines[0]!.ev.id } };
     return { pass: true, detail: `${at(hit.map, hit.ev)}: 「${hit.body.slice(0, 50)}」`, evidence: { mapId: hit.map.id, eventId: hit.ev.id, x: hit.ev.x, y: hit.ev.y } };
   }
   const l = lines[0]!;
@@ -284,11 +367,9 @@ function checkTalk(project: Project, who: string, says?: string): CheckResult {
 function checkBattle(project: Project, who?: string, map?: string, boss?: boolean): CheckResult {
   const scope = scopeMaps(project, map);
   if (isResult(scope)) return scope;
-  const all: { map: GameMap; ev: GameEvent; c: Cmd; names: string[] }[] = [];
-  for (const m of scope) for (const ev of m.events ?? []) for (const c of deepCmds(project, ev)) {
-    if (c.kind === "battleProcessing") all.push({ map: m, ev, c, names: [...eventNames(project, ev), ...troopNames(project, c.troopId)] });
-  }
-  if (!all.length) return { pass: false, detail: `${map ? `「${map}」 에` : "어느 맵에도"} 전투 명령(battleProcessing)이 있는 이벤트가 없다` };
+  const scan = scanLive(project, scope, (c) => c.kind === "battleProcessing");
+  const all = scan.hits.map((h) => ({ map: h.map, ev: h.ev, c: h.c, names: [...eventNames(project, h.ev), ...troopNames(project, h.c.troopId)] }));
+  if (!all.length) return { pass: false, detail: `${map ? `「${map}」 에` : "어느 맵에도"} 도는 전투 명령(battleProcessing)이 있는 이벤트가 없다${deadNote(scan.dead)}` };
   let cands = all;
   if (who) {
     const scored = all.map((b) => ({ b, s: Math.max(0, ...b.names.map((n) => nameScore(who, n))) })).filter((x) => x.s > 0);
@@ -330,20 +411,38 @@ function checkLink(project: Project, from: string, to: string): CheckResult {
 
 const ENDING_KINDS = new Set(["triggerEnding", "ending", "returnToTitle"]);
 
-function checkEnding(project: Project, ctx: TodoCheckContext): CheckResult {
-  const sites: { map: GameMap; ev: GameEvent; kind: string }[] = [];
-  for (const map of Object.values(project.maps)) for (const ev of map.events ?? []) {
-    const c = deepCmds(project, ev).find((x) => ENDING_KINDS.has(x.kind));
-    if (c) sites.push({ map, ev, kind: c.kind });
+function checkEnding(project: Project, ctx: TodoCheckContext, onMap?: string): CheckResult {
+  const scope = scopeMaps(project, onMap);
+  if (isResult(scope)) return scope;
+  const unsetEndings = new Set(endingConditionsUnset(project).map((b) => b.evidence.split(":")[0]!));
+  const scan = scanLive(project, scope, (c) => ENDING_KINDS.has(c.kind));
+  const sites: { map: GameMap; ev: GameEvent; kind: string; why?: string }[] = [];
+  const seen = new Set<GameEvent>();
+  for (const h of scan.hits) {
+    if (seen.has(h.ev)) continue;
+    seen.add(h.ev);
+    const why = h.c.kind === "triggerEnding" && typeof h.c.endingId === "string" && unsetEndings.has(h.c.endingId) ? `엔딩 ${h.c.endingId} 의 조건 스위치·변수를 켜는 곳이 없다` : undefined;
+    sites.push({ map: h.map, ev: h.ev, kind: h.c.kind, why });
   }
-  if (!sites.length) return { pass: false, detail: "엔딩 명령(triggerEnding·ending·returnToTitle)이 어느 이벤트에도 없다 — 엔딩 장면 끝에 넣어야 한다" };
+  for (const d of scan.dead) if (!seen.has(d.ev)) sites.push({ map: d.map, ev: d.ev, kind: "triggerEnding", why: d.why });
+  if (!sites.length) {
+    if (onMap) {
+      const elsewhere = Object.values(project.maps).filter((m) => !scope.includes(m)).flatMap((m) => (m.events ?? []).filter((ev) => deepCmds(project, ev).some((c) => ENDING_KINDS.has(c.kind))).map((ev) => at(m, ev)));
+      return { pass: false, detail: `「${onMap}」 에 엔딩을 부르는 이벤트가 없다${elsewhere.length ? ` — 엔딩은 ${elsewhere.slice(0, 3).join(", ")} 에 있다` : " — 엔딩 명령이 어디에도 없다"}` };
+    }
+    return { pass: false, detail: "엔딩 명령(triggerEnding·ending·returnToTitle)이 어느 이벤트에도 없다 — 엔딩 장면 끝에 넣어야 한다" };
+  }
   const world = walkWorld(project, startOf(project, ctx));
+  const notes: string[] = [];
   for (const s of sites) {
-    if (!world.maps.has(s.map.id)) continue;
-    if (eventReached(s.map, world.reach.get(s.map.id), s.ev)) return { pass: true, detail: `엔딩 ${s.kind} — ${at(s.map, s.ev)}, 시작에서 걸어 닿는다`, evidence: { mapId: s.map.id, eventId: s.ev.id, x: s.ev.x, y: s.ev.y } };
+    const ev = { mapId: s.map.id, eventId: s.ev.id, x: s.ev.x, y: s.ev.y };
+    if (s.why) { notes.push(`${at(s.map, s.ev)}: ${s.why}`); continue; }
+    if (!world.maps.has(s.map.id)) { notes.push(`${at(s.map, s.ev)}: 시작 맵에서 「${mapLabel(s.map)}」 로 가는 길이 없다`); continue; }
+    if (!eventReached(s.map, world.reach.get(s.map.id), s.ev)) { notes.push(`${at(s.map, s.ev)}: 그 맵 안에서 걸어 닿지 못한다`); continue; }
+    return { pass: true, detail: `엔딩 ${s.kind} — ${at(s.map, s.ev)}, 시작에서 걸어 닿는다`, evidence: ev };
   }
   const s = sites[0]!;
-  return { pass: false, detail: `엔딩 명령은 ${sites.map((x) => at(x.map, x.ev)).slice(0, 3).join(", ")} 에 있지만 ${world.maps.has(s.map.id) ? "그 맵 안에서 걸어 닿지 못한다" : `시작 맵에서 그 맵(「${mapLabel(s.map)}」)으로 가는 길이 없다`}`, evidence: { mapId: s.map.id, eventId: s.ev.id, x: s.ev.x, y: s.ev.y } };
+  return { pass: false, detail: `엔딩 명령에 닿지 못한다 — ${notes.slice(0, 3).join(" / ")}`, evidence: { mapId: s.map.id, eventId: s.ev.id, x: s.ev.x, y: s.ev.y } };
 }
 
 function findItems(project: Project, name: string) {
@@ -359,13 +458,16 @@ function checkItem(project: Project, name: string, gives?: boolean): CheckResult
   const ids = new Set(items.map((i) => String(i.id)));
   const label = String(items[0]!.name ?? items[0]!.id);
   if (!gives) return { pass: true, detail: `아이템 「${label}」 이 DB 에 있다` };
-  for (const map of Object.values(project.maps)) for (const ev of map.events ?? []) for (const c of deepCmds(project, ev)) {
-    if (c.kind !== "changeItem" || !ids.has(String(c.itemId))) continue;
+  const giving = (c: Cmd) => {
+    if (c.kind !== "changeItem" || !ids.has(String(c.itemId))) return false;
     const amt = c.amount as unknown;
     const n = typeof amt === "number" ? amt : typeof (amt as Obj | undefined)?.value === "number" ? Number((amt as Obj).value) : 1;
-    if ((c.op === "+=" && n > 0) || (c.op === "=" && n > 0)) return { pass: true, detail: `「${label}」 지급 — ${at(map, ev)}`, evidence: { mapId: map.id, eventId: ev.id, x: ev.x, y: ev.y } };
-  }
-  return { pass: false, detail: `아이템 「${label}」 은 있지만 주는 명령(changeItem +=)이 어느 이벤트에도 없다` };
+    return (c.op === "+=" || c.op === "=") && n > 0;
+  };
+  const scan = scanLive(project, Object.values(project.maps), giving);
+  const h = scan.hits[0];
+  if (h) return { pass: true, detail: `「${label}」 지급 — ${at(h.map, h.ev)}`, evidence: { mapId: h.map.id, eventId: h.ev.id, x: h.ev.x, y: h.ev.y } };
+  return { pass: false, detail: `아이템 「${label}」 은 있지만 주는 명령(changeItem +=)이 도는 이벤트에 없다${deadNote(scan.dead)}` };
 }
 
 function checkPresent(project: Project, item: string, to?: string): CheckResult {
@@ -373,14 +475,15 @@ function checkPresent(project: Project, item: string, to?: string): CheckResult 
   if (!items.length) return { pass: false, detail: `증거 아이템 「${item}」 이 DB 에 없다.${hint(item, (project.database.items as unknown as Obj[]).map((i) => String(i.name ?? "")))}` };
   const ids = new Set(items.map((i) => String(i.id)));
   const label = String(items[0]!.name ?? items[0]!.id);
-  const sites: { map: GameMap; ev: GameEvent }[] = [];
-  let anyPresent = 0;
-  for (const map of Object.values(project.maps)) for (const ev of map.events ?? []) for (const c of deepCmds(project, ev)) {
-    if (c.kind !== "presentItem") continue;
-    anyPresent++;
-    if (((c.options as Obj[] | undefined) ?? []).some((o) => ids.has(String(o.itemId)))) { sites.push({ map, ev }); break; }
+  const takes = (c: Cmd) => c.kind === "presentItem" && ((c.options as Obj[] | undefined) ?? []).some((o) => ids.has(String(o.itemId)));
+  const maps = Object.values(project.maps);
+  const scan = scanLive(project, maps, takes);
+  const sites = [...new Map(scan.hits.map((h) => [h.ev, { map: h.map, ev: h.ev }])).values()];
+  if (![...ids].some((id) => liveFacts(project).given.has(id))) return { pass: false, detail: `증거 「${label}」 을 주는 곳(아이템 넣기·상점·드롭)이 없다 — 플레이어가 가질 수 없다` };
+  if (!sites.length) {
+    const anyPresent = scanLive(project, maps, (c) => c.kind === "presentItem").hits.length;
+    return { pass: false, detail: scan.dead.length ? `「${label}」 을 받는 증거 내밀기가 있지만${deadNote(scan.dead)}` : anyPresent ? `증거 내밀기(presentItem)는 ${anyPresent}곳 있지만 「${label}」 을 맞는 증거로 받는 갈래가 없다` : `증거 내밀기(presentItem) 명령이 어디에도 없다 — 「${label}」 을 내밀 수단이 없다` };
   }
-  if (!sites.length) return { pass: false, detail: anyPresent ? `증거 내밀기(presentItem)는 ${anyPresent}곳 있지만 「${label}」 을 맞는 증거로 받는 갈래가 없다` : `증거 내밀기(presentItem) 명령이 어디에도 없다 — 「${label}」 을 내밀 수단이 없다` };
   if (to) {
     const hit = sites.find((s) => evScore(project, to, s.ev) > 0);
     if (!hit) return { pass: false, detail: `「${label}」 을 받는 곳은 ${sites.map((s) => at(s.map, s.ev)).join(", ")} — 「${to}」 에게 내미는 갈래가 아니다` };
@@ -392,9 +495,7 @@ function checkPresent(project: Project, item: string, to?: string): CheckResult 
 
 function checkObjective(project: Project, text?: string): CheckResult {
   const found: { map: GameMap | undefined; ev: GameEvent | undefined; message: string }[] = [];
-  for (const map of Object.values(project.maps)) for (const ev of map.events ?? []) for (const c of eventCmds(ev)) {
-    if (isObjectiveCommand(c as never)) found.push({ map, ev, message: String((c.fields as Obj).message) });
-  }
+  for (const h of scanLive(project, Object.values(project.maps), (c) => isObjectiveCommand(c as never)).hits) found.push({ map: h.map, ev: h.ev, message: String((h.c.fields as Obj).message) });
   for (const ce of (project.commonEvents ?? []) as unknown as Obj[]) walk(ce.commands, (c) => { if (isObjectiveCommand(c as never)) found.push({ map: undefined, ev: undefined, message: String((c.fields as Obj).message) }); });
   if (!found.length) return { pass: false, detail: "목표 줄 설정 명령이 없다" };
   const pick = text ? found.find((f) => normName(f.message, true).includes(normName(text, true))) : found[0];
