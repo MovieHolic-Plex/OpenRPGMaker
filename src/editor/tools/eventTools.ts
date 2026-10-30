@@ -37,6 +37,7 @@ import { chestOpenCommands, chestOpenedGraphic, lootGrantCommands } from "@/edit
 import { buildMapPlacementContext } from "@/ai/mapPlacementContext";
 import { laneCells } from "@/ai/v2/placementRules";
 import { noteToolChosenGraphic } from "./toolChosenGraphics";
+import { ensureHorrorSound, readFootstepsArg, resolveFootstepsSe } from "./horrorSoundAssets";
 import type { Command, Condition, Dir, EventPage, EventPageCondition, EventPageGraphic, FaceGraphic, GameEvent, GameMap, GiftPrefs, GiftResponses, MoveCommand, MoveRoute, NpcScheduleEntry, NpcScheduleWhen, Project, SelfSwitchKey, ShopStockEntry, TransferFade, Trigger } from "@/project/types";
 import {
   canonicalizeSayBeatAliases,
@@ -3477,6 +3478,9 @@ const makeChaseScene: ToolDefinition = {
       activateSwitch: { type: "string" },
       checkpointOnEntry: { type: "boolean" },
       mood: { type: "boolean", description: "공포 장르에서 조명이 없는 추격 맵을 어둡게(ambient 0.5). 기본 true, false 면 그대로" },
+      footsteps: { type: "object", description: "추격자 발소리 — 주인공과 걸음 거리로 커지고 좌우로 갈린다(소리로 거리를 재는 호러). {se?(생략 = 공포 기본 구두 발소리를 만든다), everySteps?(기본 2), radius?(칸, 기본 10), volume?}. 공포 장르(horror-chase)는 생략해도 기본 발소리를 단다 — false 면 끈다", properties: { se: { type: "string" }, everySteps: { type: "integer" }, radius: { type: "integer" }, volume: { type: "number" } } },
+      emotes: { type: "string", enum: ["none", "default"], description: "none = 알아챈 「!」·숨 고르기 땀 말풍선을 띄우지 않는다(호러 기본). default = 띄운다" },
+      hidingSound: { type: "object", description: "은신처 소리 — {enterSe?(숨을 때, 생략 = 사물함 문 소리), exitSe?, heartbeat?(true 면 숨어 있는 동안 심장 고동 고리, 공포 장르 기본 true)}. false 면 무음", properties: { enterSe: { type: "string" }, exitSe: { type: "string" }, heartbeat: { type: "boolean" } } },
       hidingSpots: { type: "array", items: { type: "object", properties: { x: { type: "integer" }, y: { type: "integer" }, mapId: { type: "string", description: "옷장이 다른 방(맵)에 있으면 그 mapId. 생략하면 추격자 맵" } }, required: ["x", "y"] }, description: "{x,y,mapId?}[] 은신처(옷장 등) 칸. 그 칸의 조사 이벤트를 은신처로 바꾸고, 없으면 투명 은신 이벤트를 만든다. 생략하면 맵에 있는 옷장·사물함·침대·커튼 1~2곳(순찰 길에서 걸어서 2~14걸음)을 스스로 고른다. [] 면 은신처 없음." },
     },
     required: ["mapId", "chaser"],
@@ -3592,6 +3596,14 @@ const makeChaseScene: ToolDefinition = {
         },
       ],
     };
+    const horrorGenre = draft.system?.genre === "horror-chase";
+    const chasePage = event.pages![0]!;
+    const footstepsArg = args.footsteps === undefined ? (horrorGenre ? { se: "" } : undefined) : readFootstepsArg(args.footsteps);
+    const footsteps = resolveFootstepsSe(draft, footstepsArg);
+    if (footsteps) chasePage.movement = { ...chasePage.movement, footsteps };
+    const quiet = args.emotes === "none" || (args.emotes === undefined && horrorGenre);
+    if (args.emotes !== undefined && args.emotes !== "none" && args.emotes !== "default") throw new ToolError("emotes 는 none|default 입니다.", { code: "invalid-args" });
+    if (quiet) chasePage.movement = { ...chasePage.movement, quietBreath: true, ...(chasePage.movement.sightAlert ? { sightAlert: { ...chasePage.movement.sightAlert, emote: null } } : {}) };
     assertEventShape(event);
     upsertEventIntoMap(map, event);
     // 붙잡히면 게임 오버인 추격은 기본으로 진입 체크포인트를 둔다 — 없으면 「다시 시작」 이 타이틀뿐이다
@@ -3610,6 +3622,16 @@ const makeChaseScene: ToolDefinition = {
       hiding.eventIds.push(...auto.placed.map((pick) => pick.eventId));
       if (auto.placed.length) hiding.warnings.push(`은신처 자동: ${auto.placed.map((p) => `${p.label}(${p.x},${p.y})`).join(" · ")} — 다른 칸을 원하면 hidingSpots 로 준다.`);
       else if (auto.note) hiding.warnings.push(`${auto.note} — 숨을 곳이 0곳이다. 옷장·사물함을 놓고(place_object) hidingSpots 로 그 칸을 준다.`);
+    }
+    const hidingSound = readHidingSound(draft, args.hidingSound, horrorGenre);
+    if (hidingSound) {
+      for (const hideId of hiding.eventIds) {
+        const hideEvent = draft.maps[map.id]?.events.find((e) => e.id === hideId)
+          ?? Object.values(draft.maps).flatMap((m) => m.events).find((e) => e.id === hideId);
+        for (const page of hideEvent?.pages ?? []) {
+          if (page.interaction?.kind === "hiding") page.interaction = { ...page.interaction, ...hidingSound };
+        }
+      }
     }
     const ratio = PLAYER_WALK_STEP_MS / paceMs;
     // 안전지대 안에서는 절대 잡히지 않는다. 2026-09-24 r4 에서 11×22 복도에 12×17 안전지대를 깔아
@@ -3633,6 +3655,24 @@ const makeChaseScene: ToolDefinition = {
     };
   },
 };
+
+/** 사물함 문 소리(숨기 기본). */
+const HIDING_ENTER_SE = "cc0-se-osx-door-close-03";
+
+/** make_chase_scene hidingSound → interaction 소리 필드. 공포 장르는 생략해도 사물함 소리 + 심장 고동. false = 무음. */
+function readHidingSound(draft: Project, raw: unknown, horrorGenre: boolean): { enterSe?: string; exitSe?: string; heldSe?: string } | undefined {
+  if (raw === false) return undefined;
+  if (raw === undefined && !horrorGenre) return undefined;
+  if (raw !== undefined && (typeof raw !== "object" || raw === null || Array.isArray(raw))) throw new ToolError("hidingSound 는 {enterSe?,exitSe?,heartbeat?} 또는 false 입니다.", { code: "invalid-args" });
+  const r = (raw ?? {}) as { enterSe?: unknown; exitSe?: unknown; heartbeat?: unknown };
+  const str = (v: unknown) => (typeof v === "string" && v.trim() ? v.trim() : undefined);
+  const heartbeat = r.heartbeat === undefined ? true : r.heartbeat === true;
+  return {
+    enterSe: str(r.enterSe) ?? HIDING_ENTER_SE,
+    ...(str(r.exitSe) ? { exitSe: str(r.exitSe) } : {}),
+    ...(heartbeat ? { heldSe: ensureHorrorSound(draft, "heartbeat") } : {}),
+  };
+}
 
 /** 벽감의 action 접근 예외는 기본 보물상자를 수면에 띄우는 허가가 아니다. */
 function assertChestDrySurface(project: Project, map: GameMap, x: number, y: number): void {
