@@ -226,7 +226,7 @@ const authorForestRoute: ToolDefinition = {
       return pick === "field" || pick === "edge" ? pick : "forest";
     };
     const warnings: string[] = [];
-    const out: Array<{ mapId: string; name: string; entry: Cell; exit: Cell | null; clearing: Cell; hidden: Cell[]; terrain: Terrain; treeline?: number }> = [];
+    const out: Array<{ mapId: string; name: string; entry: Cell; exit: Cell | null; clearing: Cell; hidden: Cell[]; terrain: Terrain; treeline?: number; branches: { from: Cell; end: Cell }[] }> = [];
     const linkFrom = args.linkFrom !== false;
     let prev: ({ mapId: string } & Cell) | null = linkFrom ? { mapId: from.id, ...originEdge(draft, from, side) } : null;
     let used = 0;
@@ -275,11 +275,16 @@ const authorForestRoute: ToolDefinition = {
       if (result.pockets.length < hidden) warnings.push(`${name}: 나무 사이 틈이 ${result.pockets.length}곳뿐이라 숨은 물건 ${result.pockets.length}개만 두었다.`);
       const c = spec.clearings?.[spec.clearings.length - 1];
       const treeline = terrain === "edge" ? (side === "north" ? EDGE_MEADOW_V : side === "south" ? ALONG - 1 - EDGE_MEADOW_V : side === "west" ? EDGE_MEADOW_V : ALONG - 1 - EDGE_MEADOW_V) : undefined;
-      out.push({ mapId: id, name, entry, exit, clearing: c ? { x: Math.round(c.cx), y: Math.round(c.cy) } : entry, hidden: spots, terrain, ...(treeline !== undefined ? { treeline } : {}) });
+      // 샛길(nooks)은 큰길에서 갈라져 막다른 끝으로 가는 갈림길이다 — 결과에 좌표로 알린다(2026-10-30 omo-loop-1030b terra forest-path:
+      // 갈림길이 이미 있는데 «숲길 빌더는 갈림길을 지정하지 못한다»며 항목을 막힘으로 닫았다).
+      const branches = (spec.nooks ?? []).map((nk) => ({ from: { x: Math.round(nk.from.x), y: Math.round(nk.from.y) }, end: { x: Math.round(nk.to.x), y: Math.round(nk.to.y) } }));
+      out.push({ mapId: id, name, entry, exit, clearing: c ? { x: Math.round(c.cx), y: Math.round(c.cy) } : entry, hidden: spots, terrain, ...(treeline !== undefined ? { treeline } : {}), branches });
       if (exit) prev = { mapId: id, ...exit };
     }
     return {
-      summary: `숲길 ${count}장(${side}): ${out.map((m) => `${m.name}=${m.mapId}(${m.terrain})${m.hidden.length ? ` 숨은 물건 ${m.hidden.length}` : ""}`).join(" → ")} · ${from.id} ${side} 가장자리와 연결`,
+      summary: `숲길 ${count}장(${side}): ${out.map((m) => `${m.name}=${m.mapId}(${m.terrain})${m.hidden.length ? ` 숨은 물건 ${m.hidden.length}` : ""}`).join(" → ")} · ${from.id} ${side} 가장자리와 연결`
+        + out.filter((m) => m.branches.length).map((m) => ` · ${m.name} 갈림길 ${m.branches.length}곳(큰길에서 갈라지는 막다른 샛길): ${m.branches.map((b) => `(${b.from.x},${b.from.y})→끝 (${b.end.x},${b.end.y})`).join(", ")} — 막다른 끝에 place_chest·place_field_enemy 를 그 좌표로 놓는다`).join("")
+        + out.map((m) => ` · ${m.name} ${m.exit ? "" : "막다른 "}빈터 (${m.clearing.x},${m.clearing.y})`).join(""),
       data: { maps: out },
       ...(warnings.length ? { warnings } : {}),
     };

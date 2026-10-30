@@ -40,21 +40,51 @@ export interface PiAssistantV2Env {
   /** 동사 안에서 중간 결과를 편집기에 바로 싣는다(첫 짓기를 비평 전에 보이게). */
   readonly checkpoint: (label: string) => Promise<void>;
   readonly signal?: AbortSignal;
-  /** 다음 지시의 첫 모델 호출에 tool_choice «required» 를 건다(한 번만). 화면 검수 고치기 차례가 글만 쓰고 끝나지 않게. 로컬 CLI 고리는 무시한다. */
-  readonly requireToolNextTurn?: () => void;
+  /**
+   * 다음 지시의 첫 모델 호출에 tool_choice 를 건다(한 번만) — 이름을 주면 그 도구 하나(첫 호출 todo init), 없으면 «required».
+   * 재주입 차례가 글만 쓰고 끝나지 않게. 로컬 CLI 고리는 무시한다(그쪽은 todo 동사 감싸개가 첫 쓰기를 되돌린다).
+   * Anthropic 확장 생각이 켜진 호출은 이름 지정 강제를 거절하므로 실행기가 그때는 걸지 않는다.
+   */
+  readonly requireToolNextTurn?: (toolName?: string) => void;
+  /**
+   * H3 다음 호출 우선(할 일 고리 갈고리): 다음 모델 호출부터 이 도구를 먼저 부르게 한다 — 코어의 SoftToolRequirement(알림 한 번 → 그래도 다른 도구면
+   * 실행하지 않고 그 도구를 강제). todo 는 같이 불러도 된다. 강제는 최대 2번, 그 도구가 불리면(clearToolPreference) 또는 3차례 지나면 내린다.
+   * 로컬 CLI 고리·Anthropic 확장 생각 호출은 무시한다(이름 강제를 못 건다).
+   */
+  readonly preferToolNextTurn?: (toolName: string, reminder: string) => void;
+  readonly clearToolPreference?: () => void;
   /** 다음 지시 앞에서 대화 기록을 비운다(한 번). 화면 검수 고치기 차례가 긴 실행의 문맥을 다시 싣지 않게(J78). 시스템 지시는 그대로. */
   readonly freshContextNextTurn?: () => void;
+  /**
+   * 도구 하나를 이 실행의 도구 목록에 더한다 — 다음 모델 호출부터 선언된다(load_tools, src/ai/v2/toolExposure.ts). 실행기가 감싸개(wrapTool)를 씌운다.
+   * 없으면(시험·덤프) load_tools 는 도구 글만 돌려준다.
+   */
+  readonly declareTool?: (tool: PiToolShape) => void;
   /** 빌려 쓰는 v1 도구가 이 실행의 관문(참고문서 읽기·캐릭터 칩 선택)·맵 범위·보조 호출을 같이 쓰게 하는 옵션. */
   readonly toolsetOptions?: Pick<ResolvePiToolOptions, "referenceGate" | "charsetGate" | "scopeMapIds" | "scopeAllowsSystem" | "findToolsCallable" | "eventAssistChat">;
 }
 export interface PiAssistantV2Hooks {
   readonly tools: (env: PiAssistantV2Env) => PiToolShape[];
+  /** 첫 지시(사용자 요청)를 보내기 직전에 한 번 — 첫 호출 todo 강제 같은 준비. */
+  readonly beforeFirstPrompt?: (env: PiAssistantV2Env) => void;
   /**
-   * 주 지시가 끝난 뒤 — 글을 돌려주면 그 글로 한 차례 더 돈다(완료 조건 미충족 보고 등). round 0 이 첫 부름이고,
-   * round 0 이 글을 돌려줘 한 차례 더 돈 뒤에 round 1 로 한 번 더 부른다(새 최종 보고를 다시 대어 보는 자리). 최대 2차례.
+   * 모델이 도구 없이 멈춘 뒤마다 — 글을 돌려주면 그 글(숨은 재주입)로 같은 대화를 한 차례 더 돈다. undefined 면 실행이 끝난다.
+   * v2 는 여기서 할 일 고리를 돌린다(열린 항목·기계 확인 ✗·관문·비평·화면 검수 → 재주입, 상한·진척 규칙은 src/ai/v2/loop/continuation.ts).
    */
   readonly afterMain?: (env: PiAssistantV2Env, round: number) => Promise<string | undefined> | string | undefined;
-  /** afterMain 이 몇 차례까지 돌 수 있나(기본 2 — 검토자 후속·재검토). 화면 검수 고리가 켜진 실행은 더 늘린다. */
+  /**
+   * H6 문맥 정리(할 일 고리 갈고리): 모델 호출마다 붙일 짧은 상태 카드(할 일 표·지금 맵·마지막 실패). 실행기가 매 호출 직전에 부른다.
+   * 돌려준 글은 그 호출의 마지막 메시지에만 붙고 대화 기록에는 남지 않는다. 오래된 도구 결과 줄이기도 이 갈고리가 있을 때만 한다.
+   */
+  readonly stateCard?: (env: PiAssistantV2Env) => string | undefined;
+  /**
+   * 목록에 없는 이름을 모델이 불렀을 때 — 필요할 때 싣는 v2 사본(toolExposure.ts)을 돌려주면 실행기가 그 자리에서 선언하고 실행한다.
+   * undefined 면 unknownToolText 로 영어 거절 글을 준다.
+   */
+  readonly lazyTool?: (name: string) => PiToolShape | undefined;
+  /** 없는 도구 이름을 부른 호출에 돌려줄 영어 글. */
+  readonly unknownToolText?: (name: string) => string;
+  /** afterMain 이 몇 차례까지 돌 수 있나(기본 2). v2 할 일 고리는 자체 상한(묶음당 8·진척 없음 2)으로 멈추므로 넉넉히 준다. */
   readonly maxRounds?: number;
 }
 

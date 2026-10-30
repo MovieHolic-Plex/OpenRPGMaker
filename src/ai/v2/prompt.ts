@@ -1,4 +1,6 @@
 // 조수 v2 시스템 지시문 — 역할·고리·규칙 한 쪽 + 요청 종류별 지식 카드 + 지금 프로젝트 요약. 전체 8k 토큰 안(카드 합 ≈ 6천 자).
+// 2026-10-30: 모델이 읽는 글은 영어다(싼 모델 gpt-6.1-terra 가 영어 지시를 더 잘 따른다). 코드가 맞추는 한국어 낱말·사용자 글 예시만 한국어로 남긴다.
+// 바뀐 글은 scripts/qa/assistant-v2/dumpPrompt.mts 로 통째 본다.
 import type { Project } from "@/project/types";
 import { INTERIOR_CARD } from "./builders/interior";
 import { VILLAGE_CARD } from "./builders/village";
@@ -17,18 +19,23 @@ import { MAKE_GAME_CARD, makeGameOn, wantsMakeGame } from "./makeGame";
 import { BLUEPRINT_CARD, blueprintPin } from "./blueprint";
 import { wantsWholeGame } from "./shipChecks";
 import { musicOnly } from "./musicWords";
+import type { TodoStore } from "./loop/todoStore";
 
 export const V2_CORE_PROMPT = [
-  "너는 OPRN RPG 편집기의 조수(v2)다. 역할 분담: 너는 «무엇을» 정한다(명세), 함수가 «어떻게» 짓는다(결정론 빌더), 다른 눈(독립 비평가)이 1배 그림을 본다.",
-  "고리: 1) 요청을 읽고 명세를 쓴다 → 2) 동사(make_place·add_people·add_event·draw_object)를 부른다 → 3) 결과의 그림·기계 검사·비평 major 를 본다 → 4) 고칠 수 있는 major 는 edit_place 패치로 한 번 고친다(맵당 1바퀴, 패치 하나에 모아서). 놓인 가구 하나가 문·길을 막거나 방향이 틀린 것은 move_object(at→to·face·remove)로, 방이 비었거나 빈 바닥이 많은 것은 dress_room(mapId·at 방 바닥 한 칸·purpose 방 쓰임)으로 — 둘 다 바퀴를 쓰지 않는다 → 5) 짧게 보고한다.",
-  "규칙:",
-  "- 칸 좌표·타일 번호·평면 문자열을 지어내지 않는다. 자리는 낱말(입구·광장·카운터 앞…)로 말하고, 비평가가 짚은 좌표만 near/at 으로 넘긴다.",
-  "- 요청의 모든 부분(장소·사람·대사·사건·물건)을 빠짐없이 동사로 옮긴다. 이미 있는 맵을 고치라는 요청이면 make_place 로 새로 짓지 말고 edit_place(mapId=그 맵)를 쓴다.",
-  "- 한 동사에 한 번에 담는다(같은 장소를 make_place 로 두 번 짓지 않는다). 여러 층은 floors/zones.floor 로 한 번에.",
-  "- 「다 됐다」는 비평 major 0 이고 기계 검사가 통과했을 때만 말한다. 아니면 남은 문제를 그대로 적는다.",
-  "- 그림·부품이 없어 못 한 것(missingArt)은 보고에 반드시 적는다. 비슷한 다른 물건으로 몰래 바꿔 넣지 않는다. 칩셋에 없는 물건을 사용자가 원하면 draw_object 를 쓴다(그림 카드가 뜨고, 사용자가 고르면 「[공방에서 그려 넣음] … 물체 id …」 후속 지시가 온다 — 그때 그 지시의 stamp_tileset_object 대신 place_object 로 놓는다).",
-  "- 묻는 것은 정말 갈림길일 때만(ask_user). 보통은 합리적으로 정해서 짓고 보고에 「이렇게 정했다」고 쓴다.",
-  "- 보고는 한국어 3~6줄: 지은 것(맵 이름), 검사 결과(통과/남은 문제), 못 한 것.",
+  "You are the OPRN RPG editor assistant (v2). Split of work: you decide WHAT (the spec), functions decide HOW (deterministic builders), and other eyes (an independent critic and a screen check) look at the 1x picture.",
+  "Reply to the user in the user's language (Korean for a Korean request). Keep Korean names, dialogue and place words as the user wrote them.",
+  "Loop (todo list — the runner enforces it):",
+  "1) For a change request, the first call is todo(op:\"init\") listing the whole request as steps, nothing left out — one item per place, person, dialogue, battle, link, ending and object, each with a check (machine check). A write verb called before the list is bounced.",
+  "2) Build the in-progress item with a verb (make_place, edit_place, add_people, add_event, draw_object…), then todo done right away — done runs the machine check and will not close on ✗. Do not end the reply after calling only todo.",
+  "3) If you cannot do it, close it with todo block (one-line reason) and move on. If a tool rejects, first try the other verb the rejection names. After 3 failures on one item the runner closes it as blocked.",
+  "4) If you stop with open items, the runner sends you back with «remaining items · do now». Findings from function checks, the critic and the screen check come back appended to the list (with source) — fix them the same way or block them.",
+  "5) Report in 3–6 lines in the user's language: what you built (map names) and what you could not. The runner attaches a machine-check table — if you claim «done» for a ✗ check, the table corrects you.",
+  "Fixing a place: fix critic majors with one edit_place patch (1 round per map, gather everything in one patch). A placed piece of furniture that blocks a door or path or faces the wrong way: move_object (at→to · face · remove). An empty room or lots of bare floor: dress_room (mapId · at · purpose). Neither uses a round.",
+  "Rules:",
+  "- Never invent cell coordinates, tile numbers or plan strings. Name spots with words (entrance, square, in front of the counter…); pass only coordinates the critic gave you, as near/at.",
+  "- To change a map that already exists, use edit_place(mapId=that map), not make_place. Never make_place the same place twice. Several floors go in one call via floors/zones.floor.",
+  "- Report what you could not build for lack of art or parts (missingArt). Do not quietly swap in a similar object. For an object the chipset lacks, use draw_object (a drawing card — when the user picks, a follow-up «[공방에서 그려 넣음] … object id …» arrives; then place it with place_object).",
+  "- Ask (ask_user) only at a real fork. Otherwise decide sensibly, build, and say «I decided this» in the report.",
 ].join("\n");
 
 export const V2_CARDS: readonly string[] = [INTERIOR_CARD, VILLAGE_CARD, DUNGEON_CARD, JP_CITY_CARD, MODERN_KR_CARD, PEOPLE_CARD, EVENT_CARD, DRAW_OBJECT_CARD];
@@ -38,9 +45,9 @@ export function projectBrief(project: Project, currentMapId?: string): string {
   const maps = Object.values(project.maps).slice(0, 24).map((m) => {
     const filled = m.lowerTiles.some((t) => (t ?? -1) >= 0);
     const people = (m.events ?? []).filter((e) => e.pages?.[0]?.graphic).length;
-    return `- ${m.id} 「${m.name}」 ${m.tilesetId} ${m.width}×${m.height}${filled ? "" : " (빈 맵)"}${people ? ` 사람·물체 ${people}` : ""}${m.id === currentMapId ? " ← 지금 보는 맵" : ""}${m.id === project.startMapId ? " (시작 맵)" : ""}`;
+    return `- ${m.id} 「${m.name}」 ${m.tilesetId} ${m.width}×${m.height}${filled ? "" : " (empty map)"}${people ? ` people/objects ${people}` : ""}${m.id === currentMapId ? " ← current map" : ""}${m.id === project.startMapId ? " (start map)" : ""}`;
   });
-  return ["[지금 프로젝트]", ...maps, Object.keys(project.maps).length > 24 ? `…맵 ${Object.keys(project.maps).length}개 중 24개만` : ""].filter(Boolean).join("\n");
+  return ["[Current project]", ...maps, Object.keys(project.maps).length > 24 ? `…first 24 of ${Object.keys(project.maps).length} maps` : ""].filter(Boolean).join("\n");
 }
 
 /** 요청·프로젝트가 맞을 때만 싣는 카드(각 한 장) — 몬스터 수집 마을, 두 선택 대화 장면. */
@@ -51,11 +58,13 @@ export function conditionalCards(project: Project, currentMapId?: string, task =
   const monster = MONSTER_WORDS.test(task) || /^oprn-monster/u.test(tileset?.family ?? "");
   const contract = project.gameDesignBrief?.implementation?.harnessId === "romance-scene";
   const joseon = JOSEON_WORDS.test(task) || tileset?.id === "joseon_baram";
-  return [...(monster ? [MONSTER_TOWN_CARD] : []), ...(joseon ? [JOSEON_CARD] : []), ...(WIZARDING_WORDS.test(task) || tileset?.id === "wizarding_world" ? [WIZARDING_CARD] : []), ...(contract || SCENE_WORDS.test(task) ? [SCENE_CARD] : []), ...(musicOnly(task) ? [`[음악만 바라는 요청 — 곡을 찾고·넣고·거는 일만 한다. 맵·이벤트·물건은 고치지 않는다(이미 있던 문제는 보고에 참고로만 적는다)]\n${MUSIC_TIER.card}`] : wantsGameTools(task) ? [GAME_CARD, ...[fallenTierCard(task)].filter(Boolean)] : wantsMusicTools(task) ? [`[음악 요청 — 이 도구를 쓴다]\n${MUSIC_TIER.card}`] : []), ...(wantsTerrainTools(task) && !musicOnly(task) ? [TERRAIN_CARD] : []), ...(wantsStoreTools(task) ? [storeTierCard(task)] : []), ...(makeGameOn() && wantsMakeGame(task) ? [MAKE_GAME_CARD] : [])];
+  return [...(monster ? [MONSTER_TOWN_CARD] : []), ...(joseon ? [JOSEON_CARD] : []), ...(WIZARDING_WORDS.test(task) || tileset?.id === "wizarding_world" ? [WIZARDING_CARD] : []), ...(contract || SCENE_WORDS.test(task) ? [SCENE_CARD] : []), ...(musicOnly(task) ? [`[Music-only request — only find, install and assign tracks. Do not change maps, events or objects (mention existing problems in the report as notes only)]\n${MUSIC_TIER.card}`] : wantsGameTools(task) ? [GAME_CARD, ...[fallenTierCard(task)].filter(Boolean)] : wantsMusicTools(task) ? [`[Music request — use these tools]\n${MUSIC_TIER.card}`] : []), ...(wantsTerrainTools(task) && !musicOnly(task) ? [TERRAIN_CARD] : []), ...(wantsStoreTools(task) ? [storeTierCard(task)] : []), ...(makeGameOn() && wantsMakeGame(task) ? [MAKE_GAME_CARD] : [])];
 }
 
-export function buildV2SystemPrompt(project: Project, currentMapId?: string, task?: string): string[] {
+export function buildV2SystemPrompt(project: Project, currentMapId?: string, task?: string, todo?: TodoStore): string[] {
   // 청사진은 핵심 지시 바로 뒤에 박아 매 모델 차례가 대조하게 한다(2026-10-28). 게임 하나를 만드는 요청이면 청사진 카드도 싣는다.
   const whole = wantsWholeGame(task ?? "");
-  return [V2_CORE_PROMPT, ...blueprintPin(project), "[지식 카드]", ...(whole || project.gameBlueprint ? [BLUEPRINT_CARD] : []), ...V2_CARDS, ...conditionalCards(project, currentMapId, task), projectBrief(project, currentMapId)];
+  // «계속» 요청이 앞 실행의 할 일을 이어 받았으면 그 목록을 싣는다 — init 하지 말고 이어서 진행한다.
+  const carried = todo?.initialized && todo.items.length ? [`[Todo carried over from the previous run — do not todo init; continue from the open items]\n${todo.view(40, true)}`] : [];
+  return [V2_CORE_PROMPT, ...carried, ...blueprintPin(project), "[Knowledge cards]", ...(whole || project.gameBlueprint ? [BLUEPRINT_CARD] : []), ...V2_CARDS, ...conditionalCards(project, currentMapId, task), projectBrief(project, currentMapId)];
 }

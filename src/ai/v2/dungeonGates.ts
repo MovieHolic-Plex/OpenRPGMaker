@@ -144,3 +144,77 @@ export function gateFor(project: Project, outsideId: string, design: Parameters<
   const spot = worldSideGateSpot(project, map, want);
   return spot ? { fromMapId: outsideId, x: spot.x, y: spot.y } : undefined;
 }
+
+/**
+ * 「지하 던전 가장 안쪽에 보스 방」처럼 요청이 이미 있는 던전 맵 «안쪽»에 새 장소를 지으라고 하면 그 던전 맵(부모).
+ * 왜(2026-10-30 omo-loop-1030b terra boss-room r1~r3): 새 보스 방을 짓기 도구 기본 출구가 지금 보는 맵(버들마을)에 이었고, 조수가 지하 던전에서 또 이어
+ * 보스 방이 마을 가장자리 (0,12)에서도 들어가지는 방이 됐다 — 두 맵에서 이어진 던전이라 다시 짓기(edit_place)도 거절됐다.
+ * 이름이 요청에 나오고 그 뒤 몇 글자 안에 안쪽 낱말이 와야 한다. 새로 지을 이름과 같은 맵은 부모가 아니다.
+ */
+const INNER_WORD = /가장\s*안쪽|맨\s*안쪽|안쪽|가장\s*깊은|깊은\s*곳|깊숙|최심부|최하층|맨\s*끝|끝\s*(?:에|자락|방)|안에|속에|아래층|밑에|innermost|deepest|inside|bottom|end\s+of/iu;
+export function innerDungeonParent(project: Project, task: string, newName: string): GameMap | undefined {
+  const norm = (s: string) => s.replace(/\s+/gu, "");
+  const t = norm(task);
+  const hits: { map: GameMap; at: number }[] = [];
+  for (const map of Object.values(project.maps)) {
+    if ((map as unknown as { mapRole?: string }).mapRole !== "dungeon" || !map.name || norm(map.name) === norm(newName)) continue;
+    const name = norm(map.name);
+    if (name.length < 2) continue;
+    let at = t.indexOf(name);
+    while (at >= 0) {
+      const after = t.slice(at + name.length, at + name.length + 14);
+      if (INNER_WORD.test(after)) { hits.push({ map, at }); break; }
+      at = t.indexOf(name, at + 1);
+    }
+  }
+  // 이름이 긴(더 구체적인) 맵 먼저 — 「지하 던전」과 「던전」이 둘 다 맞으면 앞의 것.
+  hits.sort((a, b) => norm(b.map.name).length - norm(a.map.name).length || a.at - b.at);
+  return hits[0]?.map;
+}
+
+/**
+ * 부모 던전 안에서 새 장소로 이어질 문 칸 — 그 던전으로 들어오는 바깥 문 착지(없으면 시작 칸·가운데)에서 걸어서 가장 먼 칸.
+ * 칸과 바로 아래 칸이 걸을 수 있고(돌아오면 아래 칸에 선다), 둘레 2칸에 이벤트가 없어야 한다. 바로 위가 벽이면(북벽 발치 — 문처럼 읽힌다) 조금 더 친다.
+ */
+export function innerGateSpot(project: Project, map: GameMap): { x: number; y: number } | undefined {
+  const w = map.width, h = map.height;
+  const starts: { x: number; y: number }[] = [];
+  for (const m of Object.values(project.maps)) {
+    if (m.id === map.id) continue;
+    for (const ev of m.events ?? []) {
+      const walk = (n: unknown): void => {
+        if (Array.isArray(n)) { n.forEach(walk); return; }
+        if (!n || typeof n !== "object") return;
+        const o = n as { kind?: string; mapId?: string; x?: number; y?: number };
+        if (o.kind === "transfer" && o.mapId === map.id && typeof o.x === "number" && typeof o.y === "number") starts.push({ x: o.x, y: o.y });
+        Object.values(n).forEach(walk);
+      };
+      walk(ev.pages ?? []);
+    }
+  }
+  if (!starts.length) starts.push(project.startMapId === map.id && project.startPos ? { x: project.startPos.x, y: project.startPos.y } : { x: Math.floor(w / 2), y: Math.floor(h / 2) });
+  const dist = new Int32Array(w * h).fill(-1);
+  const queue: number[] = [];
+  for (const s of starts) {
+    if (s.x < 0 || s.y < 0 || s.x >= w || s.y >= h || !isPassable(project, map, s.x, s.y)) continue;
+    const i = s.y * w + s.x;
+    if (dist[i] === -1) { dist[i] = 0; queue.push(i); }
+  }
+  for (let q = 0; q < queue.length; q += 1) {
+    const i = queue[q]!, x = i % w, y = Math.floor(i / w);
+    for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+      const nx = x + dx, ny = y + dy, j = ny * w + nx;
+      if (nx < 0 || ny < 0 || nx >= w || ny >= h || dist[j] !== -1 || !isPassable(project, map, nx, ny)) continue;
+      dist[j] = dist[i]! + 1; queue.push(j);
+    }
+  }
+  const busy = (x: number, y: number) => (map.events ?? []).some((e) => Math.abs(e.x - x) + Math.abs(e.y - y) <= 2);
+  let best: { x: number; y: number; score: number } | undefined;
+  for (let y = 1; y < h - 1; y += 1) for (let x = 1; x < w - 1; x += 1) {
+    const d = dist[y * w + x]!;
+    if (d < 0 || dist[(y + 1) * w + x]! < 0 || busy(x, y)) continue;
+    const score = d * 2 + (isPassable(project, map, x, y - 1) ? 0 : 3);
+    if (!best || score > best.score) best = { x, y, score };
+  }
+  return best ? { x: best.x, y: best.y } : undefined;
+}
