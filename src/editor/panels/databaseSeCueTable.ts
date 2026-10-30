@@ -48,10 +48,9 @@ export function seCueTableSection(project: Project, updateSystem: UpdateSystem, 
     }));
   }
   return el("div", {
-    class: "oprn-db-se-cues",
     dataset: { testid: "db-se-cue-table" },
     children: [
-      el("p", { class: "oprn-db-help", text: "비운 자리는 기본 소리를 냅니다. 마법 자리가 비면 「주문 시전」, 아군 피해가 비면 「적 피해」, 보스 쓰러짐이 비면 「적 쓰러짐」 소리로 물러섭니다. 지형에 발소리를 따로 고른 칸은 그 소리가 먼저입니다." }),
+      el("p", { class: "db-system-font-help", text: "비운 자리는 기본 소리를 냅니다. 마법 자리가 비면 「주문 시전」, 아군 피해가 비면 「적 피해」, 보스 쓰러짐이 비면 「적 쓰러짐」 소리로 물러섭니다. 지형에 발소리를 따로 고른 칸은 그 소리가 먼저입니다." }),
       ...groups,
     ],
   });
