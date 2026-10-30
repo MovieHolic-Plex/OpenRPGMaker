@@ -975,9 +975,10 @@ export function validateEndingContinueTo(value: unknown, label = "ending.continu
 
 export function validateEndingPresentation(value: unknown, label = "ending.presentation"): void {
   const settings = requireRecord(label, value);
-  requireOnlyFields(label, settings, ["tone", "backgroundResourceId", "musicResourceId", "credits", "kicker", "badge", "finalTitle", "portraits", "textSide"]);
+  requireOnlyFields(label, settings, ["tone", "backgroundResourceId", "musicResourceId", "credits", "kicker", "badge", "finalTitle", "portraits", "textSide", "particles"]);
   if (settings.portraits !== undefined) assert(settings.portraits === "auto" || settings.portraits === "none", `${label}.portraits is invalid.`);
   if (settings.textSide !== undefined) assert(settings.textSide === "center" || settings.textSide === "left" || settings.textSide === "right", `${label}.textSide is invalid.`);
+  if (settings.particles !== undefined) assert(settings.particles === "petals" || settings.particles === "none", `${label}.particles is invalid.`);
   for (const key of ["kicker", "badge", "finalTitle"] as const) {
     if (settings[key] === undefined) continue;
     requireString(`${label}.${key}`, settings[key]);

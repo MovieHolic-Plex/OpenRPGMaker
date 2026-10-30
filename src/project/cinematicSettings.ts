@@ -49,6 +49,8 @@ export type EndingPresentation = {
    * 그림(인물)에 비운다 — 가운데 판이 화면 2/3 를 덮어 인물을 가장자리로 몰았다(첫사랑 r4 엔딩 카드).
    */
   textSide?: "center" | "left" | "right";
+  /** 엔딩 CG 위 떨어지는 꽃잎. 비우면 petals. none = 비·밤처럼 꽃잎이 맞지 않는 그림(첫사랑 엔딩 C: 폭우 속 분홍 꽃잎, r4). */
+  particles?: "petals" | "none";
 };
 
 export type GameOverOutcome = "menu" | "recover" | "title";

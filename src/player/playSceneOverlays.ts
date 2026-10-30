@@ -396,7 +396,7 @@ function buildEndingCg(terminal: TerminalScene, project: Project, presentation: 
   }
   layer.append(textNode("div", "ending-cg-grade", ""), textNode("div", "ending-cg-bokeh", ""));
   const petals = textNode("div", "ending-cg-petals", "");
-  for (let i = 0; i < ENDING_PETAL_COUNT; i += 1) {
+  for (let i = 0; i < (presentation?.particles === "none" ? 0 : ENDING_PETAL_COUNT); i += 1) {
     const petal = textNode("span", "ending-cg-petal", "");
     petal.style.setProperty("--petal-x", `${(i * 37 + 11) % 100}%`);
     petal.style.setProperty("--petal-y", `${(i * 53 + 7) % 90}%`);
