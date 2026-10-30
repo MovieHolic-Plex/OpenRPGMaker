@@ -5,6 +5,13 @@
 
 <!-- releases -->
 
+## 0.372.2 — 2026-10-30
+
+### 수정
+
+- **export** — ship transit vehicle images with web export and store publish (#3978) (`b40b461`)
+- **assistant** — alley-nook lot props stay between building walls, never on the sidewalk (`118bd69`)
+
 ## 0.372.1 — 2026-10-30
 
 ### 수정
