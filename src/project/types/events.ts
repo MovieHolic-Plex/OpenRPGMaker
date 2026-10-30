@@ -312,6 +312,17 @@ export type ActorAmountOp = "=" | "+=" | "-=";
 export type ActorEquipmentSlot = string;
 export type MessageWindowFormat = "normal" | "transparent";
 export type MessageWindowPosition = "top" | "center" | "bottom";
+/**
+ * 선택지 한 줄. `showWhen` 이 거짓이면 목록에서 빠지고, `enableWhen` 이 거짓이면 흐리게 보이며 고를 수 없다
+ * (`disabledText` 가 그 이유 한 줄). 둘 다 없으면 예전과 같이 늘 보이고 고를 수 있다. project/choiceView.ts.
+ */
+export type ChoiceOption = {
+  text: string;
+  branch: Command[];
+  showWhen?: Condition;
+  enableWhen?: Condition;
+  disabledText?: string;
+};
 export type ChoiceCancelBehavior = "disallow" | "choice1" | "choice2" | "choice3" | "choice4" | "choice5" | "branch";
 export type MessageWindowSettings = {
   readonly format: MessageWindowFormat;
@@ -412,7 +423,7 @@ export type Command =
   | {
       kind: "choices";
       prompt?: string;
-      options: { text: string; branch: Command[] }[];
+      options: ChoiceOption[];
       cancelBehavior?: ChoiceCancelBehavior;
       cancelBranch?: Command[];
     }

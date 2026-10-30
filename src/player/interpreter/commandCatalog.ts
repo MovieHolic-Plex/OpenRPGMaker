@@ -47,6 +47,7 @@ import { resolveEventPage } from "@/project/io";
 import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
 import type { CommandExecution, Frame, InterpreterState, PendingStep, StagingTarget, StepResult } from "@/player/interpreter/types";
 import { breakLoop, gotoLabel, pushFrame, pushLoopFrame } from "@/player/interpreter/stack";
+import { choiceView, choicesHaveConditions, MAX_SHOWN_CHOICES } from "@/project/choiceView";
 import { presentableItems } from "@/player/interpreter/presentItem";
 import { executeM2RuntimeCommand, memorizedBgmPlayback, relocateM2Events } from "@/player/interpreter/m2Runtime";
 import { fieldBoolean, fieldNumber, fieldString } from "@/player/interpreter/m2RuntimeFields";
@@ -645,14 +646,30 @@ export function executeCommand(
         ...(command.calling === true ? { calling: true } : {}),
       });
     }
-    case "choices":
+    case "choices": {
+      // 조건 붙은 줄(showWhen·enableWhen)은 지금 세션으로 한 번 평가해 굳힌다 — 재개는 이 표로 원래 번호를 찾는다.
+      const view = choicesHaveConditions(command)
+        ? choiceView(command, (condition) => evalCondition(
+          state.session,
+          condition,
+          conditionReadsSocialHost(condition) ? resolveSocialHost(state) ?? state.currentEventId : state.currentEventId,
+          locationEvalContext(state),
+        ))
+        : undefined;
+      // 보일 줄이 하나도 없으면 창을 띄우지 않고 지나간다(빈 선택지 창에 갇히지 않게).
+      if (view && view.options.length === 0) {
+        state.choiceView = undefined;
+        return resumeNext(frame);
+      }
+      state.choiceView = view;
       return pause("choices", {
         kind: "choices",
         prompt: command.prompt,
-        options: command.options.slice(0, 5).map((option) => ({ text: playerChoiceText(option.text) })),
+        options: view ? view.options : command.options.slice(0, MAX_SHOWN_CHOICES).map((option) => ({ text: playerChoiceText(option.text) })),
         settings: state.session.messageWindowSettings ?? DEFAULT_MESSAGE_WINDOW_SETTINGS,
-        cancelBehavior: command.cancelBehavior,
+        cancelBehavior: view ? view.cancelBehavior : command.cancelBehavior,
       });
+    }
     case "presentItem":
       return pause("presentItem", {
         kind: "presentItem",
