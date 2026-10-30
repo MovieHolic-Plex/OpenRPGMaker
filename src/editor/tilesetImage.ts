@@ -8,10 +8,12 @@ import {
 } from "@/assets/bundled";
 import { graftedTilesetImageUrl, setUploadedGraftSourceUrlResolver } from "@/assets/tileGraftImageCache";
 import { withInlineAsset } from "@/assets/inlineAssetStore";
-import { activeTileGrafts, setUploadedGraftGeometryResolver, tileGraftsTextureSuffix, uploadedGraftGeometryIn } from "@/assets/tileGrafts";
-import { bakeTilesetTextureCanvas, tilesetTextureNeedsBake } from "@/assets/tileGraftTexture";
+import { setUploadedGraftGeometryResolver, tileGraftsTextureSuffix, uploadedGraftGeometryIn } from "@/assets/tileGrafts";
+import { bakeTilesetTextureCanvas, planTilesetTextureBakeSteps, planTilesetTextureBakeStepsFromKeys, tilesetTextureNeedsBake } from "@/assets/tileGraftTexture";
+import { addStagedTexture, stageTextureUpload, type StagedTextureUpload } from "@/assets/tilesetGpuStaging";
+import { bakeGraftPlanOffthread, offthreadTilesetBakeAvailable, type OffthreadBakeOptions } from "@/assets/tilesetBakeOffthread";
 import { normalizeRgbHexColor } from "@/assets/transparentColorKey";
-import { rawChipsetTextureKey } from "@/assets/chipsetTransparency";
+import { isColorKeyedChipsetTextureKey, rawChipsetTextureKey } from "@/assets/chipsetTransparency";
 import { INTERIOR_TEXTURE_KEY } from "@/project/tilesetHarness/themePacks";
 import { isWorldTileset, isWorldAnimatedTile } from "@/project/defaults/worldCoastMapping";
 import { isCombinedTownHalfTile, isCombinedTownRetroWorldTileset } from "@/project/defaults/combinedTownRetroWorld";
@@ -61,23 +63,71 @@ export function tilesetTextureKey(tileset: TilesetDef): string {
 
 const BUNDLED_CHIPSET_KEYS: ReadonlySet<string> = new Set([...BUNDLED_EASYRPG_CHIPSET_ASSETS, ...BUNDLED_REFERENCE_CHIPSET_ASSETS].map((asset) => asset.textureKey));
 
+/**
+ * 워커가 미리 구워 둔 아틀라스(텍스처 키별). ensureTilesetTexture 가 등록하면서 꺼낸다.
+ * stage 가 있으면 GPU 에 띠씩 올리는 중이거나 다 올린 것이다(tilesetGpuStaging.ts) — 등록만 남는다.
+ */
+type OffthreadEntry = { readonly bitmap: ImageBitmap; stage?: StagedTextureUpload; readonly game: Phaser.Game };
+const offthreadBaked = new Map<string, OffthreadEntry>();
+const offthreadPending = new Map<string, Promise<boolean>>();
+/** 장소 이동이 기다리는 굽기 — 유휴 굽기 중이었어도 쉬지 않고 이어 간다. */
+const offthreadUrgent = new Set<string>();
+
+/** 그림 파일을 그대로 실은 텍스처의 절대 주소 — 워커가 같은 파일을 받아 푼다(loadBundledAssets 와 같은 주소). */
+function textureFileUrl(textureKey: string): string | null {
+  let path: string | null = null;
+  if (textureKey === TEX_TILESET) path = withInlineAsset(ASSET_TILESET);
+  else {
+    const uploaded = store.getCurrent().assets.uploaded[textureKey];
+    if (uploaded) path = uploadedAssetUrl(uploaded) || null;
+    else {
+      const asset = [...BUNDLED_EASYRPG_CHIPSET_ASSETS, ...BUNDLED_REFERENCE_CHIPSET_ASSETS].find((candidate) => candidate.textureKey === textureKey);
+      // 투명색 키 칩셋은 원본(raw)을 실은 뒤 처리한 캔버스가 텍스처다 — 파일과 픽셀이 달라 주소로 넘기지 않는다.
+      if (asset && !isColorKeyedChipsetTextureKey(asset.textureKey)) path = withInlineAsset(asset.path);
+    }
+  }
+  if (!path) return null;
+  try { return new URL(path, document.baseURI).href; } catch { return null; }
+}
+
+/** 이식 소스 그림판이 아직 안 실렸으면 굽지 않는다(빠진 칸이 든 텍스처가 캐시로 남는다). 이식 목록을 정렬하지 않고 한 번만 훑는다. */
+function bakeSourcesMissing(scene: Phaser.Scene, tileset: TilesetDef): boolean {
+  const uploaded = store.getCurrent().assets.uploaded;
+  const checked = new Set<string>();
+  for (const graft of tileset.tileGrafts ?? []) {
+    const key = graft?.sourceChipset;
+    if (typeof key !== "string" || checked.has(key)) continue;
+    checked.add(key);
+    // 업로드 그림판에서 이식하는 칸은 그 그림판이 실린 뒤에만 굽는다 — 먼저 구우면 빠진 칸이 든 텍스처가 캐시로 남는다.
+    if (uploaded[key] && !scene.textures.exists(key)) return true;
+    // 번들 그림판도 같다 — 부팅 뒤에 들어온 이식(장소 가져오기 등)의 소스 칩셋은 ensureBundledProjectTextures 가 뒤늦게 싣는다.
+    // 그 전에 구우면 폭포·다리 칸이 빈칸으로 캐시에 남는다(2026-09-25 너울목 가져오기).
+    if (BUNDLED_CHIPSET_KEYS.has(key) && !scene.textures.exists(key) && !scene.textures.exists(rawChipsetTextureKey(key))) return true;
+  }
+  return false;
+}
+
 export function ensureTilesetTexture(scene: Phaser.Scene, tileset: TilesetDef): string {
   const textureKey = tilesetTextureKey(tileset);
   if (scene.textures.exists(textureKey)) return textureKey;
   if (!tilesetTextureNeedsBake(tileset)) return textureKey;
 
   const baseKey = baseTilesetTextureKey(tileset);
-  // 업로드 그림판에서 이식하는 칸은 그 그림판이 실린 뒤에만 굽는다 — 먼저 구우면 빠진 칸이 든 텍스처가 캐시로 남는다.
-  const uploaded = store.getCurrent().assets.uploaded;
-  if (activeTileGrafts(tileset).some((graft) => uploaded[graft.sourceChipset] && !scene.textures.exists(graft.sourceChipset))) return baseKey;
-  // 번들 그림판도 같다 — 부팅 뒤에 들어온 이식(장소 가져오기 등)의 소스 칩셋은 ensureBundledProjectTextures 가 뒤늦게 싣는다.
-  // 그 전에 구우면 폭포·다리 칸이 빈칸으로 캐시에 남는다(2026-09-25 너울목 가져오기).
-  if (activeTileGrafts(tileset).some((graft) => BUNDLED_CHIPSET_KEYS.has(graft.sourceChipset)
-    && !scene.textures.exists(graft.sourceChipset) && !scene.textures.exists(rawChipsetTextureKey(graft.sourceChipset)))) return baseKey;
-  const canvas = bakeTilesetTextureCanvas(scene, tileset, baseKey);
-  if (!canvas) return baseKey;
+  if (bakeSourcesMissing(scene, tileset)) return baseKey;
+  // 워커가 먼저 구워 두었으면(prepareTilesetTexture) 올리기만 한다.
+  const ready = offthreadBaked.get(textureKey);
+  offthreadBaked.delete(textureKey);
+  // GPU 에 띠씩 올리던 중이면 남은 띠만 마저 올리고 그 텍스처를 쓴다. GL 텍스처는 그 게임(문맥) 것이라
+  // 다른 게임(편집기에서 플레이를 다시 연 경우)이면 버리고 비트맵을 통째로 올린다.
+  const sameGame = ready?.game === scene.sys.game;
+  const staged = ready?.stage && sameGame && (ready.stage.done || ready.stage.finish()) ? addStagedTexture(scene, textureKey, ready.stage) : null;
+  if (ready?.stage && !staged && sameGame) ready.stage.cancel();
+  const source = staged ? null : ready?.bitmap ?? bakeTilesetTextureCanvas(scene, tileset, baseKey);
+  if (!staged && !source) return baseKey;
 
-  const texture = scene.textures.addCanvas(textureKey, canvas);
+  // addCanvas 는 CanvasTexture 를 만들며 캔버스 전체를 getImageData 로 읽는다(버들항 시트 40MB) — 아틀라스는 그 픽셀 사본을
+  // 쓰지 않으므로 그림 텍스처로 올린다. Phaser 의 TextureSource 는 캔버스·ImageBitmap 을 그대로 GPU 에 올린다.
+  const texture = staged ?? scene.textures.addImage(textureKey, source as unknown as HTMLImageElement);
   if (!texture) return baseKey;
 
   // 확장 타일셋(count > 480)은 확장분 프레임까지 등록한다(기본 480 은 불변).
@@ -87,6 +137,91 @@ export function ensureTilesetTexture(scene: Phaser.Scene, tileset: TilesetDef): 
     registerTilesetStripAnimations(scene, tileset, textureKey);
   }
   return textureKey;
+}
+
+export interface PrepareTilesetOptions extends OffthreadBakeOptions {
+  /** 그림판이 아직 안 실렸어도 그림 파일 주소로 굽는다(첫 맵 로딩과 겹치기). tilesetBakeFilesKnown 이 참일 때만. */
+  readonly fromFiles?: boolean;
+}
+
+/** 베이스와 이식 소스가 모두 그림 파일 그대로라 워커가 주소로 받을 수 있는가. */
+export function tilesetBakeFilesKnown(tileset: TilesetDef): boolean {
+  if ((tileset.tileGrafts?.length ?? 0) === 0 || normalizeRgbHexColor(tileset.transparentColor ?? "")) return false;
+  if (!textureFileUrl(baseTilesetTextureKey(tileset))) return false;
+  const checked = new Set<string>();
+  for (const graft of tileset.tileGrafts ?? []) {
+    const key = graft?.sourceChipset;
+    if (typeof key !== "string" || checked.has(key)) continue;
+    checked.add(key);
+    if (!textureFileUrl(key)) return false;
+  }
+  return true;
+}
+
+/**
+ * 이 타일셋의 이식 아틀라스를 워커에서 미리 굽는다(메인 스레드를 막지 않는다). 다 구우면 다음 ensureTilesetTexture 가
+ * 올리기만 한다. 굽기가 필요 없거나 이미 올라갔으면 바로 true. 워커를 못 쓰면 false(그때는 ensureTilesetTexture 가 예전처럼 굽는다).
+ * options 를 주면 유휴 시간 굽기다 — 계획 세우기를 시간 상한마다 끊는다(tilesetBakeOffthread.ts).
+ * 유휴 굽기는 화소 바이트도 받아 GPU 에 띠씩 올려 둔다(tilesetGpuStaging.ts).
+ */
+export function prepareTilesetTexture(scene: Phaser.Scene, tileset: TilesetDef, options?: PrepareTilesetOptions): Promise<boolean> {
+  const textureKey = tilesetTextureKey(tileset);
+  if (scene.textures.exists(textureKey) || offthreadBaked.has(textureKey)) return Promise.resolve(true);
+  if (!options) offthreadUrgent.add(textureKey);
+  const pending = offthreadPending.get(textureKey);
+  if (pending) return pending;
+  if ((tileset.tileGrafts?.length ?? 0) === 0) return Promise.resolve(!tilesetTextureNeedsBake(tileset));
+  const fromFiles = options?.fromFiles === true && tilesetBakeFilesKnown(tileset);
+  if (!offthreadTilesetBakeAvailable() || (!fromFiles && bakeSourcesMissing(scene, tileset))) return Promise.resolve(false);
+  // 투명색 키 시트는 베이스를 메인 스레드에서 한 번 더 처리한다 — 유휴 굽기에서는 건너뛴다.
+  if (options && normalizeRgbHexColor(tileset.transparentColor ?? "")) return Promise.resolve(false);
+  const steps = fromFiles
+    ? planTilesetTextureBakeStepsFromKeys(tileset, baseTilesetTextureKey(tileset))
+    : planTilesetTextureBakeSteps(scene, tileset, baseTilesetTextureKey(tileset));
+  if (!steps) return Promise.resolve(false);
+  const idle = options?.nextSlice;
+  const budget = options?.sliceBudgetMs;
+  const sliced = idle ? { ...options, wantPixels: true, nextSlice: () => offthreadUrgent.has(textureKey) ? Promise.resolve() : idle() } : options;
+  const finishJob = (): void => { offthreadPending.delete(textureKey); offthreadUrgent.delete(textureKey); };
+  const job = bakeGraftPlanOffthread(steps, baseTilesetTextureKey(tileset), textureFileUrl, sliced).then(async (baked) => {
+    if (!baked) { finishJob(); return false; }
+    // 그사이 메인 스레드가 먼저 구웠으면(대기 상한을 넘긴 이동) 버린다.
+    if (scene.textures.exists(textureKey)) { baked.bitmap.close(); finishJob(); return true; }
+    const entry: OffthreadEntry = { bitmap: baked.bitmap, game: scene.sys.game };
+    offthreadBaked.set(textureKey, entry);
+    // 유휴 굽기는 GPU 올리기도 띠씩 나눈다 — 통째로 올리면 그 한 번이 플레이 중 끊김이 된다.
+    const stage = idle && budget !== undefined && baked.pixels
+      ? stageTextureUpload(scene, baked.bitmap, baked.pixels, baked.bitmap.width, baked.bitmap.height)
+      : null;
+    if (stage && idle && budget !== undefined) {
+      entry.stage = stage;
+      while (!stage.done && !stage.cancelled && offthreadBaked.get(textureKey) === entry) {
+        // 게임이 닫혔으면 그만둔다(문맥과 함께 GL 텍스처도 사라진다).
+        if (!scene.sys.game || (scene.sys.game as { pendingDestroy?: boolean }).pendingDestroy) { delete entry.stage; break; }
+        // 장소 이동이 이 텍스처를 기다리면 남은 띠를 한 번에.
+        if (offthreadUrgent.has(textureKey)) { stage.finish(); break; }
+        stage.step(budget);
+        if (!stage.done) await idle();
+      }
+      if (stage.cancelled && offthreadBaked.get(textureKey) === entry) delete entry.stage;
+    }
+    finishJob();
+    return true;
+  }, () => { finishJob(); return false; });
+  offthreadPending.set(textureKey, job);
+  return job;
+}
+
+/** 이 타일셋의 미리 굽기를 서두르게 한다 — 남은 계획·GPU 띠를 쉬지 않고 이어 간다(첫 맵 로딩이 이것만 남았을 때). */
+export function hurryTilesetTexture(tileset: TilesetDef): void {
+  const textureKey = tilesetTextureKey(tileset);
+  if (offthreadPending.has(textureKey)) offthreadUrgent.add(textureKey);
+}
+
+/** 굽기에 쓸 그림판(베이스·이식 소스)이 다 실렸는가. */
+export function tilesetBakeSourcesLoaded(scene: Phaser.Scene, tileset: TilesetDef): boolean {
+  const baseKey = baseTilesetTextureKey(tileset);
+  return scene.textures.exists(baseKey) && !bakeSourcesMissing(scene, tileset);
 }
 
 export { isDefaultTilesetTexture, supportsChipsetQuarterComposition };

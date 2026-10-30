@@ -29,6 +29,7 @@ import { worldAtlasForMap, atlasNodeForMap, atlasCanTravel } from '@/project/wor
 import { abortHop } from "@/player/characterHopRuntime";
 import { CHASE_ENTRY_GRACE_MS, extendChaseSpawnGrace } from "@/player/chaseSpawnGrace";
 import { holdForMapAssets } from "@/player/scenePreload";
+import { prepareMapTilesets } from "@/player/tilesetPrewarm";
 import { clearFurniturePush, furniturePushPosition } from "@/player/furniturePushAnimation";
 
 type FlashScreenStep = Extract<StepResult, { kind: "flashScreen" }>;
@@ -88,6 +89,9 @@ export async function transferTo(scene: PlaySceneContext, request: TransferReque
   const overlayTransition = usesOverlayTransition(transition);
   const host = overlayTransition ? dialogueHost(scene) : undefined;
   const fadeColor = overlayTransition ? null : transferFadeColor(request.fade ?? "black");
+  // 도착 맵 타일셋의 이식 아틀라스를 페이드아웃과 같이 워커에서 굽기 시작한다(tilesetPrewarm.ts) — 처음 쓰는 큰 아틀라스는
+  // 메인 스레드에서 1초 넘게 걸려 검은 화면이 그만큼 길었다. 착지 때는 올리기만 남는다.
+  const tilesetsReady = request.mapId === scene.map.id ? Promise.resolve() : prepareMapTilesets(scene, project, request.mapId);
   if (host) {
     await runTransitionPhase(host, transition, "out", TRANSFER_FADE_DURATION_MS);
   } else if (fadeColor) {
@@ -95,6 +99,7 @@ export async function transferTo(scene: PlaySceneContext, request: TransferReque
   }
   // 웹 판본: 새 맵 그림·소리가 다 오기 전에는 화면을 밝히지 않는다(어두운 채로 기다린다, scenePreload.ts).
   await holdForMapAssets(dialogueHost(scene), project, request.mapId);
+  await tilesetsReady;
   // Resolve once against destination runtime terrain and destination-scoped event positions.
   // Queue this final landing, not the requested tile or the source map's position overlay.
   const destinationMap = runtimeMap(targetMap, scene.session);
