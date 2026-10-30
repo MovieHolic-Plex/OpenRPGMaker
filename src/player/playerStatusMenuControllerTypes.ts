@@ -24,6 +24,8 @@ export type PlayerStatusMenuController = {
   readonly openSaveMenu: () => void;
   /** 이벤트의 「메뉴 화면 열기」(screen:monster-box)가 보관함(PC) 화면을 바로 연다. */
   readonly openMonsterBox: () => void;
+  /** 이벤트의 「메뉴 화면 열기」(screen:skills, actorId 선택)가 스킬 장착 화면을 바로 연다. actorId 가 없거나 파티에 없으면 파티장. */
+  readonly openSkillScreen: (actorId?: string) => void;
   /** Opens the life ledger on the recovery tab when session claims remain. */
   readonly openLifeRecoveryLedger: () => void;
   readonly toggleMenu: () => void;

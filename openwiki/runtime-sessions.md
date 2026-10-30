@@ -650,6 +650,7 @@ buyOnly/sellOnly; real item comparison and purchase/sale handlers remain authori
   2026-10-15: 순차 팀 전환(번갈아 조작)은 `scripts/qa/ff6-fix-a-party-probe.mts` 로 증명했다(3팀 저장 → A→B→C→A 전환 시 각자 자기 맵·자리에서 이어 감, 상한 8, 팀별 전투 파티, 세이브 왕복).
   조수 안내는 능력 색인 레시피 `party-split`. 전용 지휘 도구는 없다 — 이벤트 명령 조합이다. 여러 팀이 한 전투에서 동시에 싸우는 것은 아직 미지원(설계 메모 대기).
 - **스킬 장착(#18)** — `ActorRecord.loadoutSlots`(1~12). 있으면 전투는 **장착한 스킬만** 쓰고(`applySkillLoadoutsToBattlers`), 메뉴 스킬 화면에서 장착을 바꾼다. 생략 = 배운 스킬 전부.
+  이벤트에서 바로 여는 길: m2 「메뉴 화면 열기」(`m2-078-open-menu-screen`) `fields.screen:"skills"` + 선택 `fields.actorId`(파티 안 배우, 생략·파티 밖 = 파티장) → ESC 메뉴를 그 배우의 스킬 장착 화면으로 열고(`statusMenu.openSkillScreen`), 닫으면 이벤트가 이어진다(`screen:"monster-box"` 와 같은 일시정지 계약). 에디터 m2 폼은 「화면」 선택(ESC 메뉴/보관함/스킬 장착) + 배우 ID 칸. 조수는 `upsert_actor.loadoutSlots`(0~12, 0 = 제한 없음)로 칸 수를 정한다.
 - **아이템 조합·대상 사용(#12)** — 메뉴 아이템 화면의 「조합」이 `craftRecipes`를 두 재료로 찾는다(`combineItems`). 「바라보는 대상에 사용」은 정면 이벤트를 실행하며
   세션 `itemUsedId`를 걸어 두고, 그 이벤트 페이지가 조건 `itemUsed`로 반응한다(`src/player/itemUseOnTarget.ts`).
 - **몬스터 방출·교환·합체(#14)** — 명령 `removeMonster`(인스턴스 놓아주기), `tradeMonster`(종 A 한 마리 → 종 B), `fuseMonsters`(`system.monsterFusions` 규칙으로 둘을 하나로).
