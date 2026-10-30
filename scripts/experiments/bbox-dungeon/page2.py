@@ -44,7 +44,7 @@ for brief in BR:
             a, c, v = wdl(res, key, "ref"), wdl(res, key, "r1"), wdl(res, key, "v2")
             tot["r2-ref"] = add(tot["r2-ref"], a); tot["r2-r1"] = add(tot["r2-r1"], c); tot["r2-v2"] = add(tot["r2-v2"], v)
             sk = ", ".join(f"{k} {n}" for k, n in (st.get("shapeKinds") or {}).items())
-            right = fig(f"{g}/map.png", f"r2-{ar}-{brief}", f"2차 (모양 어휘) · 네모 방 비율 {st.get('boxRatio', 0):.0%} · 기준 대비 {fmt(a)} · 1차 대비 {fmt(c)} · v2 대비 {fmt(v)}<br>모양 {sk} · 거친 가장자리 {st.get('roughEdges')} · 곡선 통로 {st.get('curves')} · 바위섬 {st.get('rocks')} · 물/용암/구덩이 {st.get('hazards')} · 다리 {st.get('bridges')} · 단 {st.get('ledges')}·계단 {st.get('stairs')} · 기물 {st.get('pieces')} · {r['secs']}초 · 고침 {r['repairs']}회")
+            right = fig(f"{g}/map.png", f"r2-{ar}-{brief}", f"2차 (모양 어휘) · 네모 방 비율 {st.get('boxRatio', 0):.0%} · 기준 대비 {fmt(a)} {'' if brief == 'cave' else f'· 1차 대비 {fmt(c)} '}· v2 대비 {fmt(v)}<br>모양 {sk} · 거친 가장자리 {st.get('roughEdges')} · 곡선 통로 {st.get('curves')} · 바위섬 {st.get('rocks')} · 물/용암/구덩이 {st.get('hazards')} · 다리 {st.get('bridges')} · 단 {st.get('ledges')}·계단 {st.get('stairs')} · 기물 {st.get('pieces')} · {r['secs']}초 · 고침 {r['repairs']}회")
         if brief != "cave": tot["r1-ref"] = add(tot["r1-ref"], wdl(res1, key, "ref"))
         cards.append(f"<div class=card><h3>gpt-6.1-{arm} #{rep}</h3><div class=pair>{left}{right}</div></div>")
 for v in ("solv2", "terrav2"): tot["v2-ref"] = add(tot["v2-ref"], wdl(res, f"{v}/cave", "ref"))
