@@ -286,7 +286,7 @@ npm run harness -- game-concepts publish --target staging|prod --yes-prod|http:/
 - 첫 화면 목록(`scenePreload.ts` `firstPlayableUrls`): 타이틀·오프닝·system 글자·메뉴 효과음 + 엔진 부팅 텍스처(가짜 로더로 `loadBundledAssets` 를 그대로 받아 적음)
   + 시작 맵(타일셋·화자 얼굴·BGM) + 시작 파티. 소리는 받은 바이트를 blob 으로 쥐고 있다(`preloadedAudio.ts`, 큰 WAV 가 캐시에 안 남는 문제).
 - 시작한 뒤 뒤에서 **판본의 모든 파일**: 가까운 맵 → 코드 조각·스킬 효과 시트 → 나머지. 목록은 판본에 실린 `preload-files.json`(게시 때 생성).
-  맵 이동은 페이드 뒤에서 새 맵 파일을 기다린다(`holdForMapAssets`, 300ms 넘으면 「불러오는 중…」). 전투 첫 화면은 #3306 관문이 기다린다.
+  맵 이동은 페이드아웃과 함께 새 맵 파일 받기를 걸고(`prefetchMapAssets`), 페이드 뒤에서 남은 것을 기다린다(`holdForMapAssets`, 300ms 넘으면 「불러오는 중…」). 전투 첫 화면은 #3306 관문이 기다린다.
 - **그림 묶음**(`project/storeGamePacks.ts`·`player/preloadPacks.ts`): 512KB 이하 그림을 2MB 안팎 `packs/pNNN.json`({v:1, files:[[경로, base64]]})
   으로 묶어 싣고(첫 화면 파일 제외, 가까운 맵 순), `preload-files.json` 은 `{v:2, files, packs}`. 플레이어가 묶음을 풀어 Cache Storage
   `oprn-pack:/<slug>/<판본>/` 에 넣고, 판본 폴더 범위 서비스 워커 `preload-sw.js`(공식 파일, 신뢰 해시)가 그림 GET 만 캐시에서 준다.
