@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **188쪽 / 7684KB / 약 2,257,258 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **188쪽 / 7685KB / 약 2,257,443 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -40,7 +40,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/harnesses/super-harness.md` | 102KB | 4KB | 1063 | ~32,225 |
 | `openwiki/jp-city.md` | 108KB | 14KB | 511 | ~32,141 |
 | `openwiki/runtime-battle.md` | 440KB | 32KB | 2417 | ~129,307 |
-| `openwiki/runtime-m2-flow-controls.md` | 57KB | 28KB | 351 | ~15,489 |
+| `openwiki/runtime-m2-flow-controls.md` | 58KB | 29KB | 352 | ~15,674 |
 | `openwiki/runtime-pre-edit-routing.md` | 205KB | 103KB ⚠상한 초과 — 절을 더 쪼개라 | 1233 | ~60,998 |
 | `openwiki/runtime-project-schema.md` | 264KB | 83KB ⚠상한 초과 — 절을 더 쪼개라 | 1825 | ~74,678 |
 | `openwiki/runtime-sessions.md` | 166KB | 64KB ⚠상한 초과 — 절을 더 쪼개라 | 922 | ~45,466 |
@@ -2876,24 +2876,24 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L2391` 전투 연출 설정 — 달려드는 속도 · 얼굴 교차 컷인 · 화려한 연계 착탄 · 한 줄 도움말 · 성장 곡선 (fs-battle-3, 2026-10-25)
 - `L2408` 적 약점은 알아 가는 것 — 처음 맞힌 타격에서 발견 · 세이브 기록 · 공개 설정 (2026-10-25)
 
-### `openwiki/runtime-m2-flow-controls.md` — 57KB · 351줄 · ~15,489 토큰 · 통째읽기 잘림
+### `openwiki/runtime-m2-flow-controls.md` — 58KB · 352줄 · ~15,674 토큰 · 통째읽기 잘림
 
 - `L5` Quest companion presence query (2026-10-01)
 - `L15` Map-effect repair boundary (2026-09-06)
 - `L22` Sound Layer audio controls (2026-09-06)
 - `L30` M2 Runtime Flow Controls
-- `L97` Storage chest authoring
-- `L103` Page 3 location/vehicle compatibility (2026-07-30)
-- `L107` 저장된 M2 명령 실행 연결 복구 (2026-09-05)
-- `L120` 좌표 목적지 이동의 실패 계약 (OPRN-OUT-013, 2026-09-10)
-  - `L179` 이동 중 경로 재지정 — 2026-09-05 브라우저 적대적 QA
-  - `L186` 맵 위를 흐르는 구름 그림자 (2026-09-14)
-  - `L260` Weather sound (2026-09-21)
-  - `L274` Map-wide atmosphere presets (2026-09-21)
-  - `L295` Genre ambience presets and sound pairing (2026-09-21)
-  - `L319` Thirty audiovisual presets — evidence (2026-09-21)
-  - `L334` 그림 컷 준비와 direction (2026-10-04)
-- `L342` 글자·장면 오프닝 연출 (2026-10-04)
+- `L98` Storage chest authoring
+- `L104` Page 3 location/vehicle compatibility (2026-07-30)
+- `L108` 저장된 M2 명령 실행 연결 복구 (2026-09-05)
+- `L121` 좌표 목적지 이동의 실패 계약 (OPRN-OUT-013, 2026-09-10)
+  - `L180` 이동 중 경로 재지정 — 2026-09-05 브라우저 적대적 QA
+  - `L187` 맵 위를 흐르는 구름 그림자 (2026-09-14)
+  - `L261` Weather sound (2026-09-21)
+  - `L275` Map-wide atmosphere presets (2026-09-21)
+  - `L296` Genre ambience presets and sound pairing (2026-09-21)
+  - `L320` Thirty audiovisual presets — evidence (2026-09-21)
+  - `L335` 그림 컷 준비와 direction (2026-10-04)
+- `L343` 글자·장면 오프닝 연출 (2026-10-04)
 
 ### `openwiki/runtime-pre-edit-routing.md` — 205KB · 1233줄 · ~60,998 토큰 · 통째읽기 잘림
 
