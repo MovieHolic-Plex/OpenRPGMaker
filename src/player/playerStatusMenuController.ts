@@ -596,7 +596,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       rejectInput(`${slot}번 저장 칸에 저장하지 못했습니다 — ${written.message}`);
       return;
     }
-    options.emitMenuJuice("menu-confirm", renderMenu(`${slot}번 저장 칸에 저장했습니다`, "save"));
+    options.emitMenuJuice("menu-confirm", renderMenu(`${slot}번 저장 칸에 저장했습니다`, "save"), "save");
     justSaved = true;
     // 마우스로 다른 것을 만지면 「저장 직후」가 아니다 — 그 뒤 Esc 는 평소처럼 한 단계만 닫는다.
     document.addEventListener("pointerdown", () => { justSaved = false; }, { capture: true, once: true });
@@ -604,14 +604,14 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
 
   function loadSlot(slot: SaveSlotIndex): void {
     rememberDetailCursorFromTestId(`load-slot-${slot}`);
-    options.emitMenuJuice("menu-confirm", currentMenu());
+    options.emitMenuJuice("menu-confirm", currentMenu(), "load");
     options.loadSlot(slot, false);
   }
 
   function loadAutosave(): void {
     if (!options.loadAutosave) return;
     rememberDetailCursorFromTestId("load-slot-auto");
-    options.emitMenuJuice("menu-confirm", currentMenu());
+    options.emitMenuJuice("menu-confirm", currentMenu(), "load");
     options.loadAutosave(false);
   }
 
@@ -641,7 +641,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     if (result.kind === "used" && (scene.getSession().inventory[itemId] ?? 0) === 0) targetItemId = undefined;
     const panel = renderMenu(result.message, "items");
     if (panel && result.kind === "used") animateStatusMenuVitals(panel, beforeVitals);
-    emitMutationResult(result, panel);
+    emitMutationResult(result, panel, "useItem");
     // 진화의 돌·이상한 사탕으로 진화했으면 3세대 진화 장면(모습이 바뀐다 → 축하 문장)을 메뉴 위에 보인다. 끝나면 새 모습으로 다시 그린다.
     if (result.kind === "used" && result.evolutions?.length && isEmeraldMonsterStyle(store.getCurrent())) void playItemEvolutions(result.evolutions, result.message);
   }
@@ -723,7 +723,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     rememberDetailCursorFromTestId(`status-menu-equipment-item-${equipmentId}`);
     const result = equipStatusMenuItem(scene, actorId, slotId, equipmentId);
     if (result.kind === "used") equipmentSlotId = undefined;
-    emitMutationResult(result, renderMenu(result.message, "equipment"));
+    emitMutationResult(result, renderMenu(result.message, "equipment"), "equip");
   }
 
   function unequipItem(actorId: string, slotId: keyof ActorInitialEquipment): void {
@@ -732,7 +732,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     rememberDetailCursorFromTestId("status-menu-equipment-item-none");
     const result = unequipStatusMenuItem(scene, actorId, slotId);
     if (result.kind === "used") equipmentSlotId = undefined;
-    emitMutationResult(result, renderMenu(result.message, "equipment"));
+    emitMutationResult(result, renderMenu(result.message, "equipment"), "equip");
   }
 
   function optimizeEquipment(actorId: string): void {
@@ -1238,8 +1238,8 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     return true;
   }
 
-  function emitMutationResult(result: StatusMenuMutationResult, target?: HTMLElement | null): void {
-    options.emitMenuJuice(result.kind === "used" ? "menu-confirm" : "menu-invalid", target ?? currentMenu());
+  function emitMutationResult(result: StatusMenuMutationResult, target?: HTMLElement | null, cue?: string): void {
+    options.emitMenuJuice(result.kind === "used" ? "menu-confirm" : "menu-invalid", target ?? currentMenu(), result.kind === "used" ? cue : undefined);
   }
 
   function rememberDetailCursorFromTestId(testId: string): void {

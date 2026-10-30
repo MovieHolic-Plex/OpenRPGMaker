@@ -366,7 +366,7 @@ export function playShop(
         setStatus(result.status);
         return;
       }
-      emitRuntimeJuice({ event: "menu-confirm", project: store.getCurrent(), session: scene.session });
+      emitRuntimeJuice({ event: "menu-confirm", cue: "shop", project: store.getCurrent(), session: scene.session });
       merchantGold = result.merchantGold;
       const qty = clampQuantity(count);
       const unit = agreed ?? (nextMode === "buy"

@@ -44,7 +44,7 @@ Phaser 에 실린 텍스처와 파일이 같다는 가정이 맞는지 확인하
   `databaseRecordModel` 화이트리스트에 넣어 저장/로드 왕복에서 살아남는다.
   **중간값 `"arrows"`(2026-10-30 사용자 「화살표만 남겨줘도 충분히 친절」):** 목표 빛무리·화살표와 ▼ 는 끄고(`clearFieldGuides(scene,{keepExits:true})`),
   출구에는 `syncExitLabels(...,{arrowOnly:true})` 로 목적지 이름 없이 화살표 글자 하나만 띄운다. 방향은 `exitArrowGlyph` —
-  맵 가장자리에 붙은 출구는 그 가장자리 쪽(↓↑←→), 맵 안 문은 주인공에게서 문 쪽(대개 ↑). 편집기 「시스템 → 필드 안내 표시」(`fieldGuidesField`)와
+  맵 가장자리에 붙은 출구는 그 가장자리 쪽(↓↑←→), 건물 문(`map.doors` 위 칸)은 늘 ↑, 그 밖의 맵 안 출구는 주인공에게서 출구 쪽(위아래 먼저 — 옆에서 다가와도 문 화살표가 ←가 되지 않게). 편집기 「시스템 → 필드 안내 표시」(`fieldGuidesField`)와
   `set_project_settings({fieldGuides:"on"|"arrows"|"off"})` 가 같은 값을 쓴다.
   **길 잇기(2026-10-29 vm2 jrpg 「길 못 찾음」)**: 지금 맵에서 그 맵으로 바로 가는 문이 없으면 `mapRoute`(옮기기 이벤트로 이은 가장 짧은 맵 경로)의
   첫 맵으로 가는 문을 짚는다. 꼬리 「→」 뒤(「(숲 입구: 북쪽 → 숲 통과)」·「(마을 입구: 남쪽 → 마왕의 동굴 · 마왕 처치)」)는 그 뒤 대상이다 —
@@ -1184,6 +1184,18 @@ QA 근거와 재실행: `scripts/qa/runtime/dialogue-frame-fixture.mts`(데모�
 `DFRAME_STYLE`/`DFRAME_VN` 또는 같은 픽스처의 `system.dialogueStyle`·`meta.oprnVnLook` 만 바꾼 사본 + `DFRAME_FAST=1`.
 `DFRAME_SCENE=door`(천문대 철문 칸에서 화자 → 잠긴 문 안내)·`letterbox`(광장 컷신 그대로). 영상: `QA_RECORD_VIDEO=<폴더>`(runtime-qa.mjs, 컨텍스트 녹화) + `DFRAME_VIDEO=1`, `<out>-t0.json` 으로 자른다(영상 시각 ≈ performance.now + 0.75초). 오버레이의
 `data-dialogue-position-reason`(portrait·session·fixed·auto:0.25·previous-box)이 자리를 정한 근거다. 저작 쪽 경고는 `scene-dialogue-position-jump`(`scenePolishLint.ts`).
+
+### 초상이 준비된 뒤에 창을 연다 · 양쪽 초상이면 선택지는 가운데 (2026-10-30, 이세계 고딩 리뷰)
+
+- **이름표만 있는 빈 창.** 흉상은 그림(또는 에메랄드 도트 변환본)이 풀릴 때까지 `visibility:hidden` 이었다(`renderFace` → `applyPixelBust` onReady).
+  새 표정·새 인물 줄마다 그림을 처음 받는 동안 창은 이름표만 보였고(부하 없는 탐침에서도 줄마다 120~330ms, 부하 녹화에서는 약 1초), 본문 흘림도 같이 늦게 보였다.
+  이제 `showText` 가 창을 만들기 **전에** 그 줄의 초상(화자 `request.face`·표정 변형 `faceForDialogueEmotion`·`listenerFace`) 중 아직 안 받은 것을 기다린다
+  (`unsettledLinePortraits` → `waitForLinePortraits`, 흉상은 `bustPixelate.preloadPixelBust`(받기+`decode()`+변환), 48px 얼굴은 `imageWarmQueue.warmImageUrl`, 상한 1.5초·중단 신호 존중).
+  기다리는 동안 앞 줄의 창은 퇴장하지 않고 그대로 선다(`holdPendingExit` — 세션·듣는 사람 무대가 끊기지 않는다). 목소리도 창과 함께 시작한다.
+  이미 풀린 흉상은 `applyPixelBust` 가 마이크로태스크에서 붙여 첫 페인트부터 보인다. 단위 테스트(`import.meta.env.VITEST`)·그림을 못 받는 환경은 옛 동기 경로 그대로다.
+- **선택지가 듣는 사람 흉상을 덮음.** 오른쪽 흉상이 선 틀이면 선택지 칸이 왼쪽으로 비켰는데, 왼쪽에 듣는 사람 흉상이 있으면 그 사람을 덮었다.
+  틀에 양쪽 초상이 다 있으면(`.choices-frame.has-portrait-listener`) 선택지 칸은 가운데에 서고 폭은 양옆 흉상 자리(`--runtime-dialogue-bust-width` + 26px)만큼 비운다(`dialogue.css` 「고정 틀 선택지」).
+- 탐침(커밋 안 함): 구운 데모 + `qaCheckpoint` 로 옥좌 앞 대사·선택지를 돌리며 rAF 마다 이름표·얼굴 보임·본문 글자 수와 선택지/흉상 사각형을 적는다.
 
 ## 엔딩 카드 글자는 게임 언어 (2026-10-22)
 

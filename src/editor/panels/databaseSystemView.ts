@@ -18,6 +18,7 @@ import {
 import { recordCoalescedSnapshot, recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { resourcePickerControl as baseResourcePickerControl, listDatabaseResourceOptions } from "@/editor/panels/databaseResourcePickerDialog";
 import { sectionCard } from "@/editor/panels/databaseWorkspace";
+import { seCueTableSection } from "@/editor/panels/databaseSeCueTable";
 import { recordListThumbnail, markDatabaseImageFailed } from "@/editor/panels/databaseRecordThumbnails";
 import { renderSystemStudioOverview, wireSystemStudioOverview } from "@/editor/panels/databaseSystemStudio";
 import { dialogueStyleSection } from "@/editor/panels/databaseDialogueStyleSection";
@@ -610,6 +611,7 @@ function systemSectionNodes(
           rerender,
         }),
       ]),
+      seCueTableSection(project, updateSystem, rerender, resourcePickerControl),
       rm2k3Fieldset("선물과 전투 보상", [
         checkboxField("선물 시스템", "db-field-system-gift-system", project.system.giftSystem === true, (checked) => {
           updateSystem((draft) => {

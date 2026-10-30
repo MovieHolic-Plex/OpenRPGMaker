@@ -198,7 +198,9 @@ function syncBattleSkillHintLine(host: HTMLElement, selected: HTMLElement | unde
   const text = skillHelpOneLiner(project, skill, actor ? { recordId: actor.recordId, maxMp: actor.maxMp, ...(actor.equipmentEffects ? { equipmentEffects: actor.equipmentEffects } : {}) } : undefined);
   hint.dataset.skillId = skill.id;
   hint.dataset.inert = inert ? "true" : "false";
-  hint.textContent = inert ? `${text} — ${inert}` : text;
+  // 막힌 기술은 사유가 먼저다 — 한 줄 창은 넘치면 끝을 말줄임하므로, 사유를 뒤에 붙이면 정작 「왜 못 쓰나」가 잘린다
+  // (2026-10-30 이세계 고딩: 「MP4 · 아군 전체 · 공격 상승 — 이미 공격 상승」이 창을 넘쳤다).
+  hint.textContent = inert ? `${inert} · ${text}` : text;
   hint.title = skill.description;
   windowNode.dataset.skillHint = "true";
 }
