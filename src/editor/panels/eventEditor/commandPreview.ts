@@ -1774,7 +1774,7 @@ function screenEffectPreviewModel(effect: string, value: string, durationMs: num
       // 물결·모자이크·기울기는 게임 화면 자체를 비트는 카메라 후처리라 미리보기 덮개로 흉내 내지 않는다.
       return { background: "rgba(15,23,42,0)", fromOpacity: 0, restOpacity: 0, note: DISTORTION_NOTES[plan.effect] ?? "화면 왜곡" };
     case "door":
-      return { background: "rgba(15,23,42,0)", fromOpacity: 0, restOpacity: 0, note: `${plan.open ? "문 열기" : "문 닫기"} — (${plan.door.x},${plan.door.y}) ${plan.door.w}×${plan.door.h} ${plan.door.style === "slide" ? "미닫이" : "여닫이"}` };
+      return { background: "rgba(15,23,42,0)", fromOpacity: 0, restOpacity: 0, note: `${plan.open ? "문 열기" : "문 닫기"} — (${plan.door.x},${plan.door.y}) ${plan.door.w}×${plan.door.h} ${plan.door.style === "slide" ? "미닫이" : plan.door.style === "shutter" ? "셔터" : plan.door.hinge === "both" ? "두 짝 여닫이" : "여닫이"}` };
     case "unsupported":
       return { background: "rgba(15,23,42,0.35)", fromOpacity: 0, restOpacity: 1 };
   }

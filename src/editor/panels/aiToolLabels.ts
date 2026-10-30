@@ -361,6 +361,7 @@ export const TOOL_LABELS: Readonly<Record<string, ToolLabelEntry>> = {
   list_jp_city_building_parts: inspect("일본 거리 건물 부품 찾기", "house"),
   build_jp_city_building: build("일본 거리 건물 짓기", "house"),
   link_jp_city_interior: world("일본 거리 실내 잇기", "door"),
+  set_map_door: world("문 종류 정하기", "door"),
   compose_jp_city_street: build("일본 거리 짜기", "road"),
   list_jp_regions: inspect("일본 지역 30종 찾기", "map"),
   find_village_type: inspect("마을 종류 찾기", "map"),

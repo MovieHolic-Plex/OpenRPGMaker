@@ -34,6 +34,8 @@ export const OP_KINDS = [
   "waitForStyleVar",
   // 하위 op 묶음을 조건이 설 때까지 되풀이(ct-engine: 적이 쓰러질 때까지 공격).
   "repeatUntil",
+  // 하위 op 묶음을 그 맵에 들어설 때까지 되풀이(폴른 스타 B4: 대사 줄 수와 흘림 속도에 기대지 않고 장면 전환까지 넘긴다).
+  "repeatUntilMap",
   // 파티 동료 수·키와 선두 교대를 상태로 기다린다(ct-field).
   "waitForFollowers",
   "waitForLeader",
