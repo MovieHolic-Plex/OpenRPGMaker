@@ -11,7 +11,12 @@ res1 = {}
 for fn in ("results.json", "results-2.json"):
     if os.path.exists(f"{R1}/{fn}"): res1.update(json.load(open(f"{R1}/{fn}")))
 EXTRA = [(n, f"{S}/rooms/runs-bboxdungeon{n}", f"r{n-1}") for n in (3, 4) if os.path.isdir(f"{S}/rooms/runs-bboxdungeon{n}")]
-resN = {n: (json.load(open(f"{d}/results.json")) if os.path.exists(f"{d}/results.json") else {}) for n, d, _ in EXTRA}
+import glob
+def merged(d):
+    out = {}
+    for fn in sorted(glob.glob(f"{d}/results*.json")): out.update(json.load(open(fn)))
+    return out
+resN = {n: merged(d) for n, d, _ in EXTRA}
 totN = {n: {"ref": [0, 0, 0, 0], "prev": [0, 0, 0, 0], "v2": [0, 0, 0, 0]} for n, _, _ in EXTRA}
 boxN = {n: [] for n, _, _ in EXTRA}; sparseN = {n: [] for n, _, _ in EXTRA}
 BR = {"crypt": "교회 밑 지하 묘지", "flooded": "물에 잠긴 동굴 신전", "demon": "마왕성 지하", "cave": "자연 동굴 (새 요청)"}

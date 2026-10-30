@@ -11,8 +11,11 @@ RUNS = os.environ.get("BBOX_RUNSN", f"{S}/rooms/runs-bboxdungeon3")
 PREV = os.environ.get("BBOX_PREV", R2); PREVTAG = os.environ.get("BBOX_PREVTAG", "r2")
 REQ = {"crypt": "교회 지하 지하 묘지 던전 한 층", "flooded": "물에 잠긴 동굴 속 옛 신전 던전 한 층", "demon": "마왕성 지하 던전 한 층", "cave": "사람 손이 닿지 않은 자연 동굴 던전 한 층"}
 JUDGES = ["teamclaude/claude-opus-5-5@medium"]
-f = f"{RUNS}/results.json"
+SHARD = os.environ.get("BBOX_SHARD", "")   # "k/n": this process takes every n-th job, writes results-s<k>.json
+f = f"{RUNS}/results.json" if not SHARD else f"{RUNS}/results-s{SHARD.split('/')[0]}.json"
 res = json.load(open(f)) if os.path.exists(f) else {}
+done_any = set()
+for o in glob.glob(f"{RUNS}/results*.json"): done_any |= set(json.load(open(o)))
 anchors = mapvqa.anchors_for("dungeon")
 def v2png(v, brief): return f"{R2}/{v}/{brief}/map.png" if brief == "cave" else f"{R1}/{v}/{brief}/map.png"
 jobs = []
@@ -24,7 +27,8 @@ for g in sorted(glob.glob(f"{RUNS}/*/*/map.png")):
         opp += [(f"v2:{v}", v2png(v, brief)) for v in ("solv2", "terrav2")]
     for oid, png in opp:
         k = f"{run}|{oid}"
-        if k not in res and os.path.exists(png): jobs.append((k, g, brief, png))
+        if k not in res and k not in done_any and os.path.exists(png): jobs.append((k, g, brief, png))
+if SHARD: a, n = map(int, SHARD.split("/")); jobs = jobs[a::n]
 print("jobs", len(jobs), flush=True)
 def one(j):
     k, png, brief, other = j
