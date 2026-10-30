@@ -13,6 +13,8 @@ const [snap, lf, out = "/tmp/layout-probe"] = process.argv.slice(2);
 if (!snap || !lf) { console.error("usage: layoutProbe.mts <snapshot.json> <layout.json> [outDir]"); process.exit(2); }
 fs.mkdirSync(out, { recursive: true });
 const layout = JSON.parse(fs.readFileSync(lf, "utf8"));
+// 벽 우선 실험 배치(agent/bbox-walls)엔 landmark 칸이 없다 — 첫 기물을 랜드마크로 삼고 objects 에도 그대로 남겨 «같은 것 두 번 = 하나» 를 같이 본다.
+if (layout.outer_wall && !layout.landmark && layout.objects?.length) layout.landmark = { ...layout.objects[0], purpose: "probe landmark" };
 const fresh = () => {
   const project = loadHeadlessProject(fs.readFileSync(snap, "utf8"));
   const ctx: ToolContext = { project, currentMapId: project.startMapId, assistantRun: true };
@@ -33,6 +35,20 @@ const fresh = () => {
     for (const l of m.locations ?? []) console.log("  loc", l.name, l.x, l.y, l.w, l.h, (l.tags ?? []).join("|").slice(0, 200));
     for (const kind of ["layout_built", "room_graph"] as const) console.log(`  ${kind}`, JSON.stringify(runTodoCheck(env.ctx.project, { kind, map: "Probe Inn" }, { refs: { mapIds: [mapId] } })).slice(0, 600));
     fs.writeFileSync(`${out}/good.png`, renderMapPng(env.ctx.project, m, 2).png);
+    // 자기 검토 두 바퀴: 1) 기물 하나 빼기 2) 빈 고침 → layout_review ✓
+    const first = (layout.objects ?? [])[1];
+    const r1 = await call("review_layout", { mapId, problems: ["probe: one piece removed"], patch: first ? { remove_objects: [{ id: first.id, x: first.x, y: first.y }] } : {} });
+    console.log(`[review 1] ok=${r1.ok} ${String(r1.summary).slice(0, 200)}`);
+    console.log("  layout_review", JSON.stringify(runTodoCheck(env.ctx.project, { kind: "layout_review", map: "Probe Inn" }, { refs: { mapIds: [mapId] } })).slice(0, 300));
+    const r2 = await call("review_layout", { mapId, problems: [], patch: { remove_objects: [{ id: "", x: 0, y: 0 }], add_objects: [] } });
+    console.log(`[review 2] ok=${r2.ok} ${String(r2.summary).slice(0, 200)}`);
+    console.log("  layout_review", JSON.stringify(runTodoCheck(env.ctx.project, { kind: "layout_review", map: "Probe Inn" }, { refs: { mapIds: [mapId] } })).slice(0, 300));
+    console.log("  layout_built", JSON.stringify(runTodoCheck(env.ctx.project, { kind: "layout_built", map: "Probe Inn" }, { refs: { mapIds: [mapId] } })).slice(0, 300));
+    const bad = await call("edit_place", { patch: { mapId, layoutPatch: { remove_objects: [{ id: "golden unicorn", x: 1, y: 1 }] } } });
+    console.log(`[layoutPatch bad] ok=${bad.ok} ${String(bad.summary).slice(0, 300)}`);
+    // 상한: 다시 짓기 4번째도 막히지 않아야 한다
+    for (let k = 0; k < 3; k++) { const r = await call("review_layout", { mapId, problems: [], patch: {} }); console.log(`[review ${k + 3}] ok=${r.ok} ${String(r.summary).slice(0, 120)}`); }
+    fs.writeFileSync(`${out}/reviewed.png`, renderMapPng(env.ctx.project, env.ctx.project.maps[mapId]!, 2).png);
   }
 }
 // 2) 틀린 배치: 없는 id·겹침 → 거절 셋, 넷째는 걸린 기물을 빼고 깐다

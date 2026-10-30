@@ -160,6 +160,7 @@ export function nextForItem(item: TodoItem, project: Project, available: Readonl
     case "ending": return has("add_ending_scene") ? { verb: "add_ending_scene", args: { mapId: mapId(c.map) ?? "<ending map mapId>", title: "<ending name>", lines: ["<name>: <line>"], epilogue: ["<epilogue line>"], after: "<after what (e.g. the demon lord)> or talkTo" }, why: "lines → ending in one call" } : has("define_ending") ? { verb: "define_ending", args: { "<ending definition>": "…" }, why: "ending" } : has("add_event") ? { verb: "add_event", args: skeletonFor("add_event", mapId(c.map)), why: "ending scene" } : undefined;
     case "item": return has("upsert_item") ? { verb: "upsert_item", args: { item: { id: "<item id>", name: c.name } }, why: "item" } : undefined;
     case "objective": return has("set_objective") ? { verb: "set_objective", args: { text: c.text ? `<objective line containing ${c.text}>` : "<objective line>", at: "start" }, why: "objective line" } : undefined;
+    case "layout_review": return has("review_layout") ? { verb: "review_layout", args: { mapId: mapId(c.map) ?? "<mapId>", problems: ["<what looks wrong or empty to a player, with cells>"], patch: { remove_objects: [], add_objects: [] } }, why: "self-review the laid interior as a player and patch the layout" } : undefined;
     default: return undefined;
   }
 }

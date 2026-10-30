@@ -109,6 +109,8 @@ export interface PlacePatch {
   /** (설계 방) 고친 방 설계 전체 — designZone(구역 id·kind, 생략하면 첫 설계 구역)의 design 을 바꿔 다시 짓는다. */
   readonly design?: RoomDesign;
   readonly designZone?: string;
+  /** (칸 배치 장소) 지금 배치에 적용할 고침 — 기물 빼기/더하기·칸 통째 바꾸기(interiorLayout.applyLayoutPatch). */
+  readonly layoutPatch?: import("./interiorLayout").LayoutPatch;
 }
 
 /** 빌더가 실제로 부른 v1 결정론 도구 하나. */

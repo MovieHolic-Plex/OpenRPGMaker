@@ -3,8 +3,8 @@
 // 바뀐 글은 scripts/qa/assistant-v2/dumpPrompt.mts 로 통째 본다.
 import type { Project } from "@/project/types";
 import { INTERIOR_CARD } from "./builders/interior";
-import { HAND_INTERIOR_SPEC, HAND_INTERIOR_TILESET_ID } from "@/editor/handInterior/builder";
-import { layoutCatalog } from "./interiorLayout";
+import { HAND_INTERIOR_TILESET_ID } from "@/editor/handInterior/builder";
+import { chipsetCatalog } from "./interiorCatalog";
 import { VILLAGE_CARD } from "./builders/village";
 import { DUNGEON_CARD } from "./builders/dungeon";
 import { JP_CITY_CARD } from "./builders/jpCity";
@@ -64,8 +64,14 @@ const SCENE_WORDS = /대화 ?장면|선택지|고백|속마음|연애|데이트|
 /** 실내 칸 배치용 칩셋 목록 카드(영어, 만든 것) — 실내 요청이거나 지금 맵이 손 도트 실내일 때만 싣는다(약 4k 토큰). */
 export const INTERIOR_WORDS = /실내|방|여관|주점|선술집|객잔|가게|상점|잡화|서재|도서|서고|감옥|뇌옥|감방|교회|성당|예배당|대장간|길드|집\s*안|부엌|연구실|inn|tavern|shop|store|library|study|jail|prison|room|interior|chapel|forge|guild|kitchen/iu;
 let catalogCard: string | undefined;
-export function interiorCatalogCard(): string {
-  catalogCard ??= `[Interior catalog — chipset ${HAND_INTERIOR_TILESET_ID}, 16px cells; exact ids for make_place spec.layout]\n${layoutCatalog(HAND_INTERIOR_SPEC)}`;
+/** 칸 배치 목록 카드 — 칩셋 메타데이터에서 생성(interiorCatalog.ts). 지금 맵의 칩셋이 방 역할표를 가진 실내 칩셋이면 그것, 아니면 손 도트 실내 v5. */
+export function interiorCatalogCard(project?: Project, currentMapId?: string, task = ""): string {
+  const cur = project?.tilesets[project.maps[currentMapId ?? project.startMapId]?.tilesetId ?? ""];
+  const v5 = project?.tilesets[HAND_INTERIOR_TILESET_ID];
+  const fromCur = cur && cur.id !== HAND_INTERIOR_TILESET_ID && cur.roomKit ? chipsetCatalog(cur, task) : undefined;
+  if (fromCur) return fromCur;
+  if (v5) { const c = chipsetCatalog(v5, task); if (c) return c; }
+  catalogCard ??= chipsetCatalog({ id: HAND_INTERIOR_TILESET_ID } as never, task) ?? `[Interior catalog — chipset ${HAND_INTERIOR_TILESET_ID}] (no spec)`;
   return catalogCard;
 }
 export function conditionalCards(project: Project, currentMapId?: string, task = ""): string[] {
@@ -74,7 +80,7 @@ export function conditionalCards(project: Project, currentMapId?: string, task =
   const contract = project.gameDesignBrief?.implementation?.harnessId === "romance-scene";
   const joseon = JOSEON_WORDS.test(task) || tileset?.id === "joseon_baram";
   const interior = INTERIOR_WORDS.test(task) || tileset?.id === HAND_INTERIOR_TILESET_ID;
-  return [...(interior ? [interiorCatalogCard()] : []), ...(monster ? [MONSTER_TOWN_CARD] : []), ...(joseon ? [JOSEON_CARD] : []), ...(WIZARDING_WORDS.test(task) || tileset?.id === "wizarding_world" ? [WIZARDING_CARD] : []), ...(contract || SCENE_WORDS.test(task) ? [SCENE_CARD] : []), ...(audioOnly(task) ? [`[${musicOnly(task) ? "Music" : "Sound-effect"}-only request — only find, install and assign sounds. Do not change maps, events or objects (mention existing problems in the report as notes only)]`, ...(wantsMusic(task) ? [MUSIC_TIER.card] : []), ...(wantsSoundTools(task) ? [SOUND_TIER.card] : [])] : wantsGameTools(task) ? [GAME_CARD, ...[fallenTierCard(task)].filter(Boolean), ...(wantsSoundTools(task) ? [`[Sound-effect request — use these tools]\n${SOUND_TIER.card}`] : [])] : wantsMusicTools(task) ? [...(wantsMusic(task) ? [`[Music request — use these tools]\n${MUSIC_TIER.card}`] : []), ...(wantsSoundTools(task) ? [`[Sound-effect request — use these tools]\n${SOUND_TIER.card}`] : [])] : []), ...(wantsTerrainTools(task) && !audioOnly(task) ? [TERRAIN_CARD] : []), ...(wantsStoreTools(task) ? [storeTierCard(task)] : []), ...(makeGameOn() && wantsMakeGame(task) ? [MAKE_GAME_CARD] : [])];
+  return [...(interior ? [interiorCatalogCard(project, currentMapId, task)] : []), ...(monster ? [MONSTER_TOWN_CARD] : []), ...(joseon ? [JOSEON_CARD] : []), ...(WIZARDING_WORDS.test(task) || tileset?.id === "wizarding_world" ? [WIZARDING_CARD] : []), ...(contract || SCENE_WORDS.test(task) ? [SCENE_CARD] : []), ...(audioOnly(task) ? [`[${musicOnly(task) ? "Music" : "Sound-effect"}-only request — only find, install and assign sounds. Do not change maps, events or objects (mention existing problems in the report as notes only)]`, ...(wantsMusic(task) ? [MUSIC_TIER.card] : []), ...(wantsSoundTools(task) ? [SOUND_TIER.card] : [])] : wantsGameTools(task) ? [GAME_CARD, ...[fallenTierCard(task)].filter(Boolean), ...(wantsSoundTools(task) ? [`[Sound-effect request — use these tools]\n${SOUND_TIER.card}`] : [])] : wantsMusicTools(task) ? [...(wantsMusic(task) ? [`[Music request — use these tools]\n${MUSIC_TIER.card}`] : []), ...(wantsSoundTools(task) ? [`[Sound-effect request — use these tools]\n${SOUND_TIER.card}`] : [])] : []), ...(wantsTerrainTools(task) && !audioOnly(task) ? [TERRAIN_CARD] : []), ...(wantsStoreTools(task) ? [storeTierCard(task)] : []), ...(makeGameOn() && wantsMakeGame(task) ? [MAKE_GAME_CARD] : [])];
 }
 
 export function buildV2SystemPrompt(project: Project, currentMapId?: string, task?: string, todo?: TodoStore): string[] {

@@ -28,6 +28,7 @@ export type TodoCheckBody =
   /** 모델이 선언한 방 그래프(roomGraph)대로 지어졌나: 방 수·연결·모든 방 도달·선언한 계단·곁방·방마다 랜드마크가 놓이고 닿음. */
   | { kind: "room_graph"; map: string }
   | { kind: "layout_built"; map: string }
+  | { kind: "layout_review"; map: string }
   | { kind: "none" };
 
 export type TodoCheck = TodoCheckBody & TodoCheckCommon;
@@ -80,6 +81,7 @@ export const TODO_CHECK_KINDS = [
   "room_zones",
   "room_graph",
   "layout_built",
+  "layout_review",
   "none",
 ] as const satisfies readonly TodoCheckKind[];
 
@@ -101,6 +103,7 @@ export const TODO_CHECK_REQUIRED: Record<TodoCheckKind, readonly string[]> = {
   room_zones: ["map"],
   room_graph: ["map"],
   layout_built: ["map"],
+  layout_review: ["map"],
   none: [],
 };
 
@@ -112,17 +115,17 @@ export const TODO_CHECK_REQUIRED: Record<TodoCheckKind, readonly string[]> = {
 export const TODO_CHECK_SCHEMA = {
   type: "object",
   description:
-    "How a machine checks that this todo is finished. Required fields per kind: place=name, person=name, talk=who, link=from+to, item=name, present_evidence=item, reachable=target, party_join=name, room_zones=map, room_graph=map, layout_built=map. battle, ending, objective and none need no field. If a machine cannot see it, kind=none. Names are the in-game names (any language).",
+    "How a machine checks that this todo is finished. Required fields per kind: place=name, person=name, talk=who, link=from+to, item=name, present_evidence=item, reachable=target, party_join=name, room_zones=map, room_graph=map, layout_built=map, layout_review=map. battle, ending, objective and none need no field. If a machine cannot see it, kind=none. Names are the in-game names (any language).",
   properties: {
     kind: {
       type: "string",
       enum: [...TODO_CHECK_KINDS],
       description:
-        "place=a place (map) with that name exists, person=a person with that name is on a map, talk=that person has dialogue, battle=a battle is triggered (boss=boss battle), link=you can walk from map `from` into map `to`, ending=an ending is reached (map=from that map), item=that item exists (gives=it is actually given), present_evidence=that evidence can be presented, objective=an objective line is set, reachable=target is reachable on foot from the start (or from), party_join=a companion with that name joins the party (a changeParty add in a live event reachable on foot), room_zones=that interior map has min distinct zones, each with its focal part placed and reachable and a reason to go there (person, inspect point, stairs), without rows of the same furniture, layout_built=that interior map still holds the regions and pieces of the spec.layout it was laid from, landmark reachable, room_graph=that interior map was built as the room graph you declared (room count, connections, every room reachable, declared stairs and side rooms present, each room's landmark placed and reachable), none=a reviewer checks by eye",
+        "place=a place (map) with that name exists, person=a person with that name is on a map, talk=that person has dialogue, battle=a battle is triggered (boss=boss battle), link=you can walk from map `from` into map `to`, ending=an ending is reached (map=from that map), item=that item exists (gives=it is actually given), present_evidence=that evidence can be presented, objective=an objective line is set, reachable=target is reachable on foot from the start (or from), party_join=a companion with that name joins the party (a changeParty add in a live event reachable on foot), room_zones=that interior map has min distinct zones, each with its focal part placed and reachable and a reason to go there (person, inspect point, stairs), without rows of the same furniture, layout_built=that interior map still holds the regions and pieces of the spec.layout it was laid from, landmark reachable, layout_review=you looked at that laid interior as a player and sent review_layout rounds (2 by default, an empty patch when nothing is wrong), room_graph=that interior map was built as the room graph you declared (room count, connections, every room reachable, declared stairs and side rooms present, each room's landmark placed and reachable), none=a reviewer checks by eye",
     },
     name: { type: "string", description: "name for place/person/item; the companion (actor) name for party_join" },
     placeKind: { type: "string", enum: [...TODO_PLACE_KINDS], description: "kind of place (optional)" },
-    map: { type: "string", description: "narrow person/battle/ending to this map name (optional) — for ending, the event that calls the ending must be on that map. For room_zones, room_graph and layout_built: the interior map to check (required)" },
+    map: { type: "string", description: "narrow person/battle/ending to this map name (optional) — for ending, the event that calls the ending must be on that map. For room_zones, room_graph, layout_built and layout_review: the interior map to check (required)" },
     min: { type: "number", description: "room_zones: minimum number of distinct zones (default 2; 1 only when the request really asks for a tiny room)" },
     who: { type: "string", description: "person name for talk/battle" },
     says: { type: "string", description: "word that must appear in the talk dialogue (optional)" },
@@ -188,6 +191,7 @@ export function parseTodoCheck(raw: unknown): TodoCheck | { error: string } {
     }
     case "room_graph":
     case "layout_built":
+    case "layout_review":
       return clean({ kind: k, map: str("map")! });
     case "none":
       return { kind: k };

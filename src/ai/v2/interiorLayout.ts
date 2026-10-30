@@ -7,14 +7,16 @@
 // 모델이 받는 글은 모두 영어다(2026-10-30 사용자 결정).
 import { buildHandInteriorLayers, type HandInteriorInput, type HandInteriorLayers, type HandInteriorSpec } from "@/editor/handInterior/builder";
 import type { TilesetDef } from "@/project/types";
+import { checkWallLayout, type WallsLayoutFields, type WallsRoomOut } from "./interiorWalls";
 
 export interface LayoutRect { readonly x: number; readonly y: number; readonly w: number; readonly h: number }
 export interface LayoutRegion extends LayoutRect { readonly id: string; readonly floor: string; readonly wall: string; readonly purpose?: string; readonly role?: string; readonly landmark?: string; readonly stairs?: string }
 export interface LayoutObject { readonly id: string; readonly x: number; readonly y: number; readonly repeat?: { readonly count?: number; readonly dx?: number; readonly dy?: number }; readonly purpose?: string }
-export interface InteriorLayout {
+/** 두 형식: 벽 우선(outer_wall·walls·doors·rooms·wall_items — 정본, interiorWalls.ts) 또는 사각형 영역(regions·openings). */
+export interface InteriorLayout extends WallsLayoutFields {
   readonly map: { readonly w: number; readonly h: number };
-  readonly landmark?: LayoutObject;
-  readonly regions: readonly LayoutRegion[];
+  readonly landmark?: LayoutObject & { readonly wall?: string };
+  readonly regions?: readonly LayoutRegion[];
   readonly openings?: readonly (LayoutRect & { readonly purpose?: string })[];
   readonly entrance: { readonly x: number; readonly y: number };
   readonly carpets?: readonly (LayoutRect & { readonly id: string; readonly purpose?: string })[];
@@ -48,13 +50,38 @@ export function layoutCatalog(S: HandInteriorSpec, opts: { categories?: readonly
   ].join("\n");
 }
 
-export const LAYOUT_FORMAT = `{"map":{"w":W,"h":H}, "landmark":{"id":"<object id>","x":X,"y":Y,"purpose":"..."},
+/** 벽 우선 형식(정본) — 모델에게 보이는 글(영어). bbox-walls run.py 의 규칙을 옮겼다. */
+export const LAYOUT_FORMAT = `{"map":{"w":W,"h":H},
+ "landmark":{"id":"<catalog id>","x":X,"y":Y,"wall":"<wall id, only for a wall piece>","purpose":"..."},
+ "outer_wall":{"material":"<wall id>","path":[[x,y],...]},
+ "walls":[{"id":"w_kitchen","material":"<wall id>","thickness":1,"path":[[x,y],[x,y]],"purpose":"..."}],
+ "doors":[{"wall":"w_kitchen","x":X,"y":Y,"piece":null,"purpose":"..."}],
+ "entrance":{"x":X,"y":H-1},
+ "rooms":[{"id":"hall","at":[x,y],"floor":"<floor id>","purpose":"...","role":"main|side|corridor|stairs","stairs":"up|down|none"}],
+ "wall_items":[{"id":"<catalog id>","wall":"outer","x":X,"y":Y,"purpose":"..."}],
+ "objects":[{"id":"<catalog id>","x":X,"y":Y,"repeat":{"count":2,"dx":3,"dy":0},"purpose":"..."}],
+ "carpets":[{"id":"<carpet id>","x":X,"y":Y,"w":W,"h":H}], "rails":[{"id":"bars","path":[[x,y],[x,y]]}]}`;
+
+export const LAYOUT_GRID_RULES = [
+  "Cells are 16px, x to the right, y down, origin top-left. A wall is a line of solid cells (seen from above as a dark cap).",
+  "A wall shows a FACE only on its SOUTH side: the 2 cells directly below any wall cell are wall face (drawn as wall, not walkable), so a room's floor starts 3 rows below its north wall cell (wall on row 6 → face rows 7–8 → floor from row 9). Vertical walls and the building's south side show only the cap; nothing hangs on them.",
+  "wall_items: wall-mounted pieces (h: windows, shelves, signs, pictures) hang on the UPPER face row y = wall row + 1; against-wall pieces (w: fireplace, bookshelves, beds, cupboards, stairs up, kitchen range) stand on y = wall row + 3. Each names its \"wall\". Windows only on the outer wall.",
+  "outer_wall: a closed ring of corner points (straight segments, back to the first point) around the whole building; outside it is void. Its south side runs along the bottom row y=H-1 where the entrance is. Notches (L, T, U shapes) are fine.",
+  "walls: partitions, each a path of corner points, thickness 1 (or 2), a material. A partition runs from wall to wall (both ends touch another wall or the ring) so every room is closed; \"stub\": true allows a freestanding piece.",
+  "doors: {wall, x, y} on a partition cell. Horizontal wall: a 1-cell gap (\"width\" 2–3 allowed) joining the rooms north and south. Vertical wall: 3 cells tall — (x,y) is the walkable bottom cell and (x,y-1),(x,y-2) must also be cells of that wall. Optional \"piece\": \"locked door\" | \"iron gate\" | \"iron gate open\".",
+  "entrance: one cell of the outer wall on the bottom row with a room cell directly above; the only opening in the ring.",
+  "rooms: every space closed by walls needs exactly one entry {id, at:[x,y] any cell inside, floor, purpose}; two labels in one space means a wall is not closed.",
+  "objects: floor pieces, x,y = top-left of the footprint, optional repeat {count,dx,dy}. Footprints must not overlap and must be on floor cells (not face rows). Keep every doorway and the cells in front of it free so every room and the landmark are reachable from the entrance. Tall art draws upward; keep that space free of other tall pieces. Carpets and decals are walkable.",
+  "landmark: the one big piece the place is built around, written once (it may also appear in objects/wall_items at the same x,y — counted once).",
+];
+
+export const LAYOUT_FORMAT_REGIONS = `{"map":{"w":W,"h":H}, "landmark":{"id":"<object id>","x":X,"y":Y,"purpose":"..."},
  "regions":[{"id":"hall","x":X,"y":Y,"w":W,"h":H,"floor":"<floor id>","wall":"<wall id>","purpose":"...","role":"main|side|corridor|stairs","landmark":"<object id in this region>"}],
  "openings":[{"x":X,"y":Y,"w":1,"h":1,"purpose":"door to the kitchen"}], "entrance":{"x":X,"y":H-1},
  "carpets":[{"id":"<carpet id>","x":X,"y":Y,"w":W,"h":H}], "daises":[{"id":"<dais id>","x":X,"y":Y,"w":W,"h":H}],
  "objects":[{"id":"<catalog id>","x":X,"y":Y,"repeat":{"count":3,"dx":2,"dy":0},"purpose":"..."}]}`;
 
-export const LAYOUT_GRID_RULES = [
+export const LAYOUT_GRID_RULES_REGIONS = [
   "Cells are 16px, x to the right, y down, origin top-left. Every cell outside all regions is solid. Regions are rectangles of interior space.",
   "Regions that touch or overlap merge into one open space. To put a wall between two regions leave at least one solid cell between them, then carve openings.",
   "Wall face: inside a region the two rows directly below a solid cell are wall face (drawn as wall, not walkable) — a region's top two rows are its north wall; its floor starts at y+2. h pieces go on row y (the upper face row); w pieces and stairs up go on row y+2.",
@@ -70,7 +97,18 @@ export interface LayoutCheck {
   /** 문제의 기물(지워도 되는 것) 인덱스 — 고치기 횟수를 다 쓴 뒤 «되는 것만 깔기»에 쓴다. */
   readonly badObjects: Set<number>;
   readonly objects: (LayoutObject & { readonly region?: string })[];
+  /** 벽 우선 형식만: 벽으로 닫힌 방·문으로 이은 방 쌍·입구가 여는 방. */
+  readonly rooms?: WallsRoomOut[];
+  /** 모델이 쓴 기물 목록(랜드마크 먼저) — badObjects 인덱스가 가리킨다. */
+  readonly sources?: readonly LayoutObject[];
+  readonly connections?: { a: string; b: string; type: string }[];
+  readonly entranceRoom?: string;
 }
+
+/** 칸 배치가 실제로 왔나 — 엄격 스키마로 빈 껍데기({regions:[], outer_wall:{path:[]}})를 채워 보내는 모델이 있다. */
+export const layoutGiven = (raw: unknown): boolean => !!raw && typeof raw === "object" && ((Array.isArray((raw as { regions?: unknown }).regions) && ((raw as { regions: unknown[] }).regions.length > 0)) || isWallsLayout(raw));
+/** 벽 우선 형식인가(바깥 벽 고리가 있다). */
+export const isWallsLayout = (raw: unknown): boolean => !!(raw && typeof raw === "object" && (raw as WallsLayoutFields).outer_wall && Array.isArray((raw as WallsLayoutFields).outer_wall?.path) && (raw as WallsLayoutFields).outer_wall!.path.length > 0);
 
 const int = (v: unknown): v is number => typeof v === "number" && Number.isInteger(v);
 const footprint = (S: HandInteriorSpec, id: string): { w: number; h: number } => {
@@ -79,6 +117,7 @@ const footprint = (S: HandInteriorSpec, id: string): { w: number; h: number } =>
 };
 
 export function checkLayout(raw: unknown, S: HandInteriorSpec, tileset: TilesetDef, opts: { dropObjects?: ReadonlySet<number> } = {}): LayoutCheck {
+  if (isWallsLayout(raw)) return checkWallLayout(raw, S, tileset, opts);
   const errors: string[] = [], warnings: string[] = [];
   const badObjects = new Set<number>();
   const L = (raw ?? {}) as Partial<InteriorLayout>;
@@ -116,7 +155,9 @@ export function checkLayout(raw: unknown, S: HandInteriorSpec, tileset: TilesetD
   // 기물: 랜드마크 먼저, 모델이 쓴 순서대로(반복은 펼친다).
   const regionAt = (x: number, y: number) => regions.find((r) => x >= r.x && x < r.x + r.w && y >= r.y && y < r.y + r.h)?.id;
   const objs: (LayoutObject & { region?: string; src: number })[] = [];
-  const srcList = [...(L.landmark ? [L.landmark] : []), ...(Array.isArray(L.objects) ? L.objects : [])];
+  // 랜드마크를 objects 에 또 적은 것(같은 id·자리, 반복 없음)은 하나로 친다 — 겹침으로 거절하지 않는다(2026-10-31 감독 지적).
+  const lmSame = (o: LayoutObject) => !!L.landmark && o?.id === L.landmark.id && o.x === L.landmark.x && o.y === L.landmark.y && !((o.repeat?.count ?? 1) > 1);
+  const srcList = [...(L.landmark ? [L.landmark] : []), ...(Array.isArray(L.objects) ? L.objects : []).filter((o) => !lmSame(o))];
   if (!L.landmark) errors.push(`landmark is missing — name the one big piece the place is built around: "landmark":{"id":"<object id>","x":X,"y":Y,"purpose":"..."}.`);
   srcList.forEach((o, i) => {
     if (opts.dropObjects?.has(i)) return;
@@ -142,7 +183,7 @@ export function checkLayout(raw: unknown, S: HandInteriorSpec, tileset: TilesetD
     return [{ id: d.id, x: d.x, y: d.y, w: d.w, h: d.h }];
   });
   for (const r of regions) if (r.landmark && !objs.some((o) => o.id === r.landmark && o.region === r.id)) warnings.push(`region "${r.id}" names landmark "${r.landmark}" but no such object stands in it.`);
-  if (errors.length) return out({ objects: objs });
+  if (errors.length) return out({ objects: objs, sources: srcList });
 
   const plan = grid.map((row) => row.join(""));
   const input: HandInteriorInput = {
@@ -186,7 +227,7 @@ export function checkLayout(raw: unknown, S: HandInteriorSpec, tileset: TilesetD
   if (lm && built.issues.some((i) => i.code === "unreachable-piece" && hits(i.x, i.y).some((p) => p.src === 0))) errors.push(`landmark "${lm.id}" at (${lm.x},${lm.y}) has no reachable free side — clear a cell next to it that connects to the entrance.`);
   const rest = built.unreachedFloor.length;
   if (rest) warnings.push(`${rest} floor cells are not reachable from the entrance (e.g. ${built.unreachedFloor.slice(0, 6).map((c) => `(${c.x},${c.y})`).join(" ")}).`);
-  return { errors, warnings, badObjects, input, built, objects: objs };
+  return { errors, warnings, badObjects, input, built, objects: objs, sources: srcList };
 }
 
 /** 거절 글: Rejected / You sent / Fixed call (영어). */
@@ -196,25 +237,76 @@ export function rejectionText(name: string, check: LayoutCheck, sent: unknown, l
     ...check.errors.slice(0, 30).map((e) => `- ${e}`),
     ...(check.warnings.length ? ["Warnings (fix if you can):", ...check.warnings.slice(0, 8).map((w) => `- ${w}`)] : []),
     `You sent: ${sentText}${sentText.length >= 500 ? "…" : ""}`,
-    `Fixed call: make_place again with the same name and the full corrected spec.layout — change only what the problems name (move or drop the listed pieces, carve the missing openings). ${left > 0 ? `${left} repair${left === 1 ? "" : "s"} left; after that, pieces that still fail are left out and the rest is laid.` : "This was the last repair: next time the pieces that still fail are left out and the rest is laid."}`].join("\n");
+    `Fixed call: make_place again with the same name and the full corrected spec.layout — change only what the problems name (move or drop the listed pieces, close or extend the named walls, carve the missing doors). ${left > 0 ? `${left} repair${left === 1 ? "" : "s"} left; after that, pieces that still fail are left out and the rest is laid.` : "This was the last repair: next time the pieces that still fail are left out and the rest is laid."}`].join("\n");
 }
 
 /** 지은 뒤 남기는 선언(맵 위치 note) — 할 일 검사 layout_built 가 읽는다. 좌표는 지은 맵 좌표. */
 export interface LayoutDecl {
-  readonly regions: readonly { id: string; x: number; y: number; w: number; h: number; purpose?: string; role?: string }[];
+  /** 방 상자(벽 우선 형식은 방 칸의 바깥 상자, cells = 방 칸 수). */
+  readonly regions: readonly { id: string; x: number; y: number; w: number; h: number; cells?: number; purpose?: string; role?: string }[];
   readonly objects: readonly { id: string; x: number; y: number; w: number; h: number }[];
   readonly landmark?: { id: string; x: number; y: number; w: number; h: number };
   readonly entrance: { x: number; y: number };
+  /** 자기 검토(review_layout) 바퀴 수 — 할 일 검사 layout_review 가 읽는다. */
+  readonly reviews?: number;
+  readonly reviewNotes?: readonly string[];
 }
 export const LAYOUT_TAG = "interior-layout";
 
 export function layoutDecl(L: InteriorLayout, check: LayoutCheck, S: HandInteriorSpec): LayoutDecl {
   const fp = (o: { id: string; x: number; y: number }) => ({ id: o.id, x: o.x, y: o.y, ...footprint(S, o.id) });
   const lm = L.landmark && check.objects.find((o) => o.id === L.landmark!.id && o.x === L.landmark!.x && o.y === L.landmark!.y);
+  if (check.rooms) return {
+    regions: check.rooms.map((r) => ({ id: r.id, x: r.x, y: r.y, w: r.w, h: r.h, cells: r.cells, ...(r.purpose ? { purpose: r.purpose } : {}), ...(r.role ? { role: r.role } : {}) })),
+    objects: check.objects.map(fp),
+    ...(lm ? { landmark: fp(lm) } : {}),
+    entrance: L.entrance,
+  };
   return {
-    regions: L.regions.map((r) => ({ id: r.id, x: r.x, y: r.y, w: r.w, h: r.h, ...(r.purpose ? { purpose: String(r.purpose).slice(0, 60) } : {}), ...(r.role ? { role: String(r.role) } : {}) })),
+    regions: (L.regions ?? []).map((r) => ({ id: r.id, x: r.x, y: r.y, w: r.w, h: r.h, ...(r.purpose ? { purpose: String(r.purpose).slice(0, 60) } : {}), ...(r.role ? { role: String(r.role) } : {}) })),
     objects: check.objects.map(fp),
     ...(lm ? { landmark: fp(lm) } : {}),
     entrance: L.entrance,
   };
 }
+
+/** 칸 배치 고침(자기 검토·고치기): 기물 빼기/더하기, 벽에 붙인 기물 빼기/더하기, 칸 통째 바꾸기. 함수는 고른 것 없이 그대로 적용하고 검증은 짓기가 한다. */
+export interface LayoutPatch {
+  readonly remove_objects?: readonly { id: string; x: number; y: number }[];
+  readonly add_objects?: readonly LayoutObject[];
+  readonly remove_wall_items?: readonly { id: string; x: number; y: number }[];
+  readonly add_wall_items?: readonly (LayoutObject & { wall?: string })[];
+  readonly replace?: Readonly<Record<string, unknown>>;
+}
+const REPLACEABLE = new Set(["map", "landmark", "outer_wall", "walls", "doors", "entrance", "rooms", "wall_items", "objects", "carpets", "rails", "regions", "openings", "daises"]);
+export function layoutPatchIsEmpty(p: LayoutPatch | undefined): boolean {
+  if (!p) return true;
+  const real = (v: unknown) => Array.isArray(v) ? v.some((o) => o && typeof o === "object" && typeof (o as { id?: unknown }).id === "string" && (o as { id: string }).id !== "") : false;
+  const rep = Object.entries(p.replace ?? {}).filter(([k, v]) => REPLACEABLE.has(k) && v !== null && v !== undefined && !(Array.isArray(v) && !v.length) && !(typeof v === "object" && !Array.isArray(v) && !Object.keys(v as object).length));
+  return !real(p.remove_objects) && !real(p.add_objects) && !real(p.remove_wall_items) && !real(p.add_wall_items) && !rep.length;
+}
+export function applyLayoutPatch(L: InteriorLayout, p: LayoutPatch): { layout: InteriorLayout; errors: string[] } {
+  const errors: string[] = [];
+  const out: Record<string, unknown> = structuredClone(L) as unknown as Record<string, unknown>;
+  const take = (key: "objects" | "wall_items", rm: readonly { id: string; x: number; y: number }[] | undefined, add: readonly LayoutObject[] | undefined) => {
+    const list = [...((out[key] as LayoutObject[] | undefined) ?? [])];
+    for (const r of rm ?? []) {
+      if (!r || typeof r.id !== "string" || r.id === "") continue;
+      const i = list.findIndex((o) => o.id === r.id && o.x === r.x && o.y === r.y);
+      if (i >= 0) list.splice(i, 1);
+      else if (key === "objects" && L.landmark && L.landmark.id === r.id && L.landmark.x === r.x && L.landmark.y === r.y) errors.push(`remove_objects: "${r.id}" at (${r.x},${r.y}) is the landmark — move it with replace.landmark instead.`);
+      else errors.push(`remove_${key}: no entry "${r.id}" at (${r.x},${r.y}) in "${key}" — use the exact id and x,y of an entry in the current layout.`);
+    }
+    for (const a of add ?? []) if (a && typeof a.id === "string" && a.id !== "") list.push(a);
+    out[key] = list;
+  };
+  take("objects", p.remove_objects, p.add_objects);
+  if (p.remove_wall_items?.length || p.add_wall_items?.length) take("wall_items", p.remove_wall_items, p.add_wall_items);
+  for (const [k, v] of Object.entries(p.replace ?? {})) {
+    if (v === null || v === undefined || (Array.isArray(v) && !v.length && k !== "walls" && k !== "doors" && k !== "carpets")) continue;
+    if (typeof v === "object" && !Array.isArray(v) && !Object.keys(v as object).length) continue;
+    if (REPLACEABLE.has(k)) out[k] = v; else errors.push(`replace: unknown field "${k}".`);
+  }
+  return { layout: out as unknown as InteriorLayout, errors };
+}
+

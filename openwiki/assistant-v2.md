@@ -388,6 +388,11 @@ salt 를 찾아(무작위 salt 를 고정해 몇 번 지어 본다) 같은 마�
   - 할 일 검사 `{kind:"layout_built", map}` ✓ = 영역마다 바닥 80% 이상이 막힌 칸이 아님 · 기물마다 발자국에 그림 있음 · 랜드마크 닿음. 관문 ③b 가 layout 맵이면 layout_built + room_graph 항목을 단다.
   - 감옥·여관·가게·서재 같은 실내형 장소를 모델이 type dungeon/cave 로 보내도(던전 설계 없고 요청이 분명한 던전이 아니면) make_place 가 interior 로 돌린다(INTERIOR_PLACE·CLEAR_DUNGEON).
   - 모델 없는 손 시험: `bun scripts/qa/assistant-v2/layoutProbe.mts <snapshot> <layout.json> [outDir]` — 좋은 배치·틀린 배치(거절 두 번 → 빼고 깔기)·감옥 돌리기.
+  - **벽 우선 형식(정본, 2026-10-31 agent/bbox-walls 31승 10무 3패/44)**: `outer_wall`(닫힌 고리)·`walls`(벽에서 벽까지 칸막이, stub 허용)·`doors`(칸막이 위, 세로 벽은 3칸)·`rooms`(닫힌 공간마다 이름표 하나)·`wall_items`(벽에 묶인 걸이·벽붙이, 창은 바깥 벽만)·`objects`·`carpets`·`rails`. 검사 `interiorWalls.ts checkWallLayout`(실험 lay.mts 이식) — 고리 안 닫힘·칸막이 끝 안 닿음·이름표 없는 주머니·두 이름표 한 공간·문이 두 방을 안 이음·벽면 줄 규칙·방 못 닿음이 영어 거절. 사각형 영역 형식도 받는다(`outer_wall` 이 있으면 벽 우선).
+  - 랜드마크를 objects/wall_items 에 같은 id·자리로 또 적으면 겹침 거절이 아니라 하나로 친다.
+  - 목록 카드 `interiorCatalog.ts chipsetCatalog` — 칩셋 메타데이터만으로(roomKit 역할표 `effectiveSpec` = roomSpecOf + 가구 표가 비면 kitHandObjects, 예제 방 표 `rooms.examples`, 낱말 검색 `searchParts`): 요청 낱말이 맞는 방 종류의 예제 기물 → 검색 결과를 «suggested» 줄로 먼저, 그다음 칩셋 전체 목록. 손 목록 없음(agent/bbox-chipsets 이식).
+  - 자기 검토 단계 `review_layout({mapId, problems, patch})`(agent/bbox-better critique.py, terra 0.61→0.71): 고침(remove/add objects·wall_items, replace 필드)을 지금 배치에 그대로 적용해 다시 짓고 바퀴를 센다(배치 선언 위치 태그 `reviews:N`). 할 일 `{kind:"layout_review", map}` ✓ = N ≥ `OPRN_V2_LAYOUT_REVIEW_ROUNDS`(기본 2, 0 = 끔). 관문 ③b 가 layout 맵마다 이 항목을 달고, 검토만 남으면 재주입 글이 «플레이어 눈으로 보고 review_layout» 이다. `edit_place({patch:{mapId, layoutPatch}})` 도 같은 고침을 받는다.
+  - 칸 배치 장소의 다시 짓기 상한은 `LAYOUT_MAX_REBUILDS`(12) — 고침이 싸고 매번 검증되므로(3바퀴 상한이 자기 검토 고침을 막았다). 끝맺음 관문이 «더 고쳐라»를 다시 묻는 상한은 그대로 3.
 - 재생 표: `bun scripts/qa/assistant-v2/todoChecksReplay.mts` — 씬 벤치 판(성공·실패)에 손으로 적은 항목을 돌려 기대와 대조. 판 저장본이 지워진 판은 `sceneToolReplay.mts`(+`finishReplay.mts --snapshot`)로 재구성한 것을 쓰고, 재구성 차이는 표 메모에 적는다. 기계 검사로 못 보는 것(입구 그림과 이동 칸 자리 어긋남, 판정자가 선택지를 못 본 일)은 VQA·판정자 몫이다.
 
 ## 켜는 법

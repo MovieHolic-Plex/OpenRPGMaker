@@ -23,6 +23,7 @@ import { isPersonEvent } from "../placementRules";
 import { eventBodyRect } from "@/project/eventFootprintQuery";
 import { hint, nameScore, normName } from "./names";
 import type { CheckResult, TodoCheck, TodoCheckContext, TodoItem, TodoPlaceKind } from "./types";
+import { layoutReviewRounds, REVIEWS_TAG } from "../layoutReview";
 
 type Obj = Record<string, unknown>;
 type Cmd = Obj & { kind: string };
@@ -412,6 +413,7 @@ export function runTodoCheck(project: Project, check: TodoCheck, ctx: TodoCheckC
     case "room_zones": return checkRoomZones(project, sc, check.map, check.min);
     case "room_graph": return checkRoomGraph(project, sc, check.map);
     case "layout_built": return checkLayoutBuilt(project, sc, check.map);
+    case "layout_review": return checkLayoutReview(project, sc, check.map);
   }
 }
 
@@ -951,7 +953,7 @@ function roomGraphOf(project: Project, m: GameMap): CheckResult {
 }
 
 const LAYOUT_TAG = "interior-layout";
-interface LayoutDeclJson { regions: { id: string; x: number; y: number; w: number; h: number }[]; objects: { id: string; x: number; y: number; w: number; h: number }[]; landmark?: { id: string; x: number; y: number; w: number; h: number }; entrance: { x: number; y: number } }
+interface LayoutDeclJson { regions: { id: string; x: number; y: number; w: number; h: number; cells?: number }[]; objects: { id: string; x: number; y: number; w: number; h: number }[]; landmark?: { id: string; x: number; y: number; w: number; h: number }; entrance: { x: number; y: number } }
 
 /** 칸 배치로 지은 맵: 선언한 방(영역)과 기물이 지금 맵에 있나 — 방 칸이 막힌 칸이 아니고, 기물 발자국에 그림이 있다. 랜드마크는 걸어 닿아야 한다. */
 function layoutBuiltOf(project: Project, m: GameMap): CheckResult {
@@ -965,6 +967,8 @@ function layoutBuiltOf(project: Project, m: GameMap): CheckResult {
   const problems: string[] = [];
   const lostRooms = decl.regions.filter((r) => {
     let n = 0, open = 0;
+    // 벽 우선 형식은 방 칸 수(cells)를 남긴다 — 상자 안 열린 칸이 그 80% 이상이면 선 것으로 본다(L 자 방의 상자엔 벽 칸이 섞인다).
+    if (typeof r.cells === "number") { for (let y = r.y; y < r.y + r.h; y++) for (let x = r.x; x < r.x + r.w; x++) if (x < W && y < m.height && m.lowerTiles[idx(x, y)] !== solid) open++; return open < 0.8 * r.cells; }
     for (let y = r.y + 2; y < r.y + r.h; y++) for (let x = r.x; x < r.x + r.w; x++) { if (x >= W || y >= m.height) continue; n++; if (m.lowerTiles[idx(x, y)] !== solid) open++; }
     return n > 0 && open / n < 0.8;
   });
@@ -988,6 +992,22 @@ function checkLayoutBuilt(project: Project, sc: Scope, name: string): CheckResul
   const results = maps.map((m) => layoutBuiltOf(project, m));
   const bad = results.find((r) => !r.pass);
   return bad ?? results[0]!;
+}
+
+/** 자기 검토(review_layout) 바퀴: 칸 배치 선언 위치의 reviews:N 태그. */
+function checkLayoutReview(project: Project, sc: Scope, name: string): CheckResult {
+  const maps = interiorMaps(project, sc, name, LAYOUT_TAG);
+  if (isResult(maps)) return maps;
+  const want = layoutReviewRounds();
+  const results = maps.map((m): CheckResult => {
+    const decl = (m.locations ?? []).find((l) => (l.tags ?? []).includes(LAYOUT_TAG) && (l.tags ?? []).includes("decl"));
+    const n = Number((decl?.tags ?? []).find((x) => x.startsWith(REVIEWS_TAG))?.slice(REVIEWS_TAG.length) ?? 0) || 0;
+    if (!decl) return { pass: false, detail: t(`${mapAt(m)}: 칸 배치 선언이 없다`, `${mapAt(m)}: no layout record — build it with make_place spec.layout`), evidence: { mapId: m.id } };
+    return n >= want
+      ? { pass: true, detail: t(`${mapAt(m)} 자기 검토 ${n}바퀴`, `${mapAt(m)} self-reviewed ${n} round(s)`), evidence: { mapId: m.id } }
+      : { pass: false, detail: t(`${mapAt(m)} 자기 검토 ${n}/${want}바퀴 — 그림을 플레이어 눈으로 보고 review_layout 을 보낸다`, `${mapAt(m)} self-review ${n}/${want} — look at its picture as a player walking in and send review_layout({mapId:"${m.id}", problems, patch}) (empty patch if nothing is wrong)`), evidence: { mapId: m.id } };
+  });
+  return results.find((r) => !r.pass) ?? results[0]!;
 }
 
 function checkRoomGraph(project: Project, sc: Scope, name: string): CheckResult {

@@ -6,6 +6,7 @@
 import type { GameMap, Project } from "@/project/types";
 import type { TodoChanged, TodoItem } from "../todo/types";
 import { runTodoItemCheck } from "../todo/checks";
+import { layoutReviewRounds } from "../layoutReview";
 import { normName } from "../todo/names";
 import { isOpen, type TodoStore } from "./todoStore";
 
@@ -28,9 +29,9 @@ export function designedInteriorsChanged(project: Project, changed: TodoChanged 
 }
 
 /** 이 맵을 가리키는 그 종류 항목이 이미 있나. */
-function covered(store: TodoStore, m: GameMap, kind: "room_zones" | "room_graph" | "layout_built"): boolean {
+function covered(store: TodoStore, m: GameMap, kind: "room_zones" | "room_graph" | "layout_built" | "layout_review"): boolean {
   const label = normName(mapLabel(m), true);
-  const key = `${kind === "room_graph" ? "graph" : kind === "layout_built" ? "layout" : "zones"}:${m.id}`;
+  const key = `${kind === "room_graph" ? "graph" : kind === "layout_built" ? "layout" : kind === "layout_review" ? "review" : "zones"}:${m.id}`;
   return store.items.some((i) => i.check?.kind === kind && (i.refs?.mapIds?.includes(m.id) || normName(i.check.map, true) === label || store.meta.get(i.id)?.key === key));
 }
 
@@ -47,6 +48,15 @@ export function syncRoomZoneItems(store: TodoStore, project: Project, changed: T
     // 칸 배치로 지은 맵(spec.layout): 배치대로 섰나(layout_built) + 방 그래프(room_graph) 두 항목.
     if (layoutMap(m) && !covered(store, m, "layout_built")) {
       const [item] = store.append("interior layout", [{ content: `"${name}": laid as the layout you wrote — every region and piece on the map, landmark reachable`, check: { kind: "layout_built", map: name, fresh: false }, key: `layout:${m.id}` }], "gate");
+      if (item) {
+        item.refs = { ...(item.refs ?? {}), mapIds: [m.id] };
+        const r = runTodoItemCheck(project, item);
+        if (!store.done(item, r, "auto") && isOpen(item.status)) opened.push(item);
+      }
+    }
+    // 자기 검토 단계(2026-10-31, agent/bbox-better critique.py: terra 0.61→0.71): 깔린 그림을 플레이어 눈으로 보고 review_layout 으로 고침을 보낸다.
+    if (layoutMap(m) && layoutReviewRounds() > 0 && !covered(store, m, "layout_review")) {
+      const [item] = store.append("interior self-review", [{ content: `"${name}": look at its picture as a player walking in, list what looks wrong or empty, and send review_layout({mapId:"${m.id}", problems, patch}) — ${layoutReviewRounds()} rounds (an empty patch when nothing is wrong)`, check: { kind: "layout_review", map: name, fresh: false }, key: `review:${m.id}` }], "gate");
       if (item) {
         item.refs = { ...(item.refs ?? {}), mapIds: [m.id] };
         const r = runTodoItemCheck(project, item);

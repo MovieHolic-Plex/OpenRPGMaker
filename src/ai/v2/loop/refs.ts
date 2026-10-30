@@ -54,7 +54,7 @@ const transferOnly = (e: GameEvent) => { const k = kindsOf(e); return k.length >
 export function refsFromDiff(item: Pick<TodoItem, "check">, verb: string, diff: TodoChanged, project: Project): TodoRefs | undefined {
   const kind = item.check?.kind;
   if (!kind || kind === "none" || kind === "link" || kind === "reachable") return undefined;
-  if (kind === "place" || kind === "room_zones" || kind === "room_graph" || kind === "layout_built") return diff.mapIds.size ? { mapIds: [...diff.mapIds] } : undefined;
+  if (kind === "place" || kind === "room_zones" || kind === "room_graph" || kind === "layout_built" || kind === "layout_review") return diff.mapIds.size ? { mapIds: [...diff.mapIds] } : undefined;
   if (kind === "item") return diff.itemIds.size ? { itemIds: [...diff.itemIds] } : undefined;
   if (!EVENT_KINDS.has(kind)) return undefined;
   const refs: TodoRefs = {};

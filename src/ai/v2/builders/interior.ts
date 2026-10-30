@@ -18,7 +18,8 @@ import { normalizeDoor, shapeNotches, type DesignRoomReport, type RoomDesign } f
 import { harmonizeRoomGraph, RoomGraphError, type GraphOut } from "@/editor/handInterior/roomGraph";
 import { copiedReference } from "../roomIdeas";
 import { buildFromLayout, hasLayout } from "./interiorLayoutBuild";
-import { LAYOUT_FORMAT, LAYOUT_GRID_RULES } from "../interiorLayout";
+import { LAYOUT_FORMAT, LAYOUT_FORMAT_REGIONS, LAYOUT_GRID_RULES } from "../interiorLayout";
+import { effectiveSpec } from "../interiorCatalog";
 
 type Obj = { id: string; x: number; y: number };
 type Room = { id: string; x0: number; y0: number; x1: number; y1: number; floor?: string; wall?: string };
@@ -1040,10 +1041,11 @@ export function coverZones(tilesetId: string, spec: PlaceSpec, zones: readonly Z
 }
 
 export const INTERIOR_CARD = `[Interior interior] make_place({type:"interior", name, layout:{…}}) — inns, taverns, shops, libraries, studies, jails, chapels, forges, guild halls, houses inside.
-- ★ You design every cell: put one cell layout in spec.layout — map size, regions (each room or area as a rectangle with floor, wall, purpose, role, optional landmark), openings (doorways you carve between regions), the entrance, carpets, daises and objects (catalog ids; the landmark first). Code lays it exactly as written — nothing is added, moved or chosen for you — and checks it: unknown id, overlap, out of bounds, wall-face rules, unreachable opening or region, landmark placement. A failed check comes back as Rejected / You sent / Fixed call: fix exactly what it names. You get 2 repairs; after that, pieces that still fail are left out and the rest is laid.
+- ★ You design every cell: put one cell layout in spec.layout — map size, the landmark, the outer wall ring, partition walls (wall to wall), doors on those walls, the entrance, one label per room (floor, purpose), wall_items bound to a wall (windows, shelves, fireplace, beds, stairs up) and floor objects (catalog ids). Code lays it exactly as written — nothing is added, moved or chosen for you — and checks it: unknown id, overlap, out of bounds, open walls, unlabelled pockets, wall-face rules, a door that joins nothing, unreachable rooms, landmark placement. A failed check comes back as Rejected / You sent / Fixed call: fix exactly what it names. You get 2 repairs; after that, pieces that still fail are left out and the rest is laid.
 - layout format: ${LAYOUT_FORMAT}
 ${LAYOUT_GRID_RULES.map((r) => `- ${r}`).join("\n")}
-- Ids: the [Interior catalog] card lists every floor, wall, carpet, dais, sized table and object id with its footprint and placement kind. Use exact ids. room_parts({purpose}) adds reference rooms players liked (structure summaries + pictures) — borrow structure, not plans.
+- Ids: the [Interior catalog] card (generated from the chipset's own room tables) lists pieces suggested for this request first, then every floor, wall, carpet, dais, sized table and object id with its footprint and placement kind (h and w pieces go in wall_items). Use exact ids. The older rectangle form (regions + openings: ${LAYOUT_FORMAT_REGIONS.replace(/\s+/gu, " ").slice(0, 120)}…) is still accepted.
+- After it is laid you get its picture. Look at it as a player walking in and send review_layout({mapId, problems, patch}) — a patch (remove/add pieces, replace a field) is applied to your layout exactly and validated; an empty patch means nothing to fix. The todo loop asks for these review rounds. room_parts({purpose}) adds reference rooms players liked (structure summaries + pictures) — borrow structure, not plans.
 - Design it like a real place: a clear landmark (a big piece the place is built around), distinct functional areas, side rooms or alcoves, furniture and decoration so that no large floor area is empty, and walking paths from the entrance to every area.
 - ★ "Build one room / one place" means one map — one place — not one cell. Design the room graph inside that map from what the place needs to work: an inn has a hall, a kitchen, stairs and guest rooms; a library has reading rooms and stacks; a shop has the sales floor and a back storeroom; a jail has a guard room, a corridor and cells. Players and the judge expect a place with structure — rooms to walk between, a reason to go deeper, one landmark per room — and a single box reads as unfinished. A single cell is right only for places that really are one room (a closet, a hut, a cell on its own). How many rooms is your call.
 - (zones path — older, weaker than layout) zones[{kind, purpose, design}] per room: the function lays out shapes and groups from your design; room_parts shows the design format.
@@ -1053,7 +1055,7 @@ ${LAYOUT_GRID_RULES.map((r) => `- ${r}`).join("\n")}
 - For stairs to a 2nd/upper floor, put "올라가는 계단" in anchors and floors:2 — it builds the upper floor and links the stairs.
 - style: fantasy (default — also wizard towers, alchemy workshops and observatories; telescope and alchemy parts are in this chipset) · wizarding (Hogwarts-style magic «school» buildings only) · sengoku (Sengoku/Edo) · modern (modern city). Modern Japanese homes use type:"house".
 - A name word (inn, tavern, observatory…) does not lay down a preset room — an inn hall or a study stands as your design says. Put hero objects like a big telescope in anchors and design.groups.
-- Changing a laid layout: edit_place({mapId, patch:{set:{layout:{…the full corrected layout}}}}) relays it exactly. Fixing an existing room built another way: edit_place({mapId, patch:{dressing:1}}) = keep the room layout and floor, add props. A north back door: patch.set.exits:["north"] or addAnchors:[{what:"북쪽 뒷문"}] — it adds a door in the north wall and builds and links a back room. Keep the original floor and wall materials.`;
+- Changing a laid layout: review_layout, or edit_place({patch:{mapId, layoutPatch:{remove_objects, add_objects, remove_wall_items, add_wall_items, replace}}}), or edit_place({patch:{mapId, set:{layout:{…the full corrected layout}}}}) — relaid exactly; layout places are not limited to 3 rebuilds. Fixing an existing room built another way: edit_place({mapId, patch:{dressing:1}}) = keep the room layout and floor, add props. A north back door: patch.set.exits:["north"] or addAnchors:[{what:"북쪽 뒷문"}] — it adds a door in the north wall and builds and links a back room. Keep the original floor and wall materials.`;
 
 /** 모델 설계(zone.design)로 방 한 칸의 layout 요청을 만든다 — 모양 → 도려 낼 귀퉁이, 크기·재질·문 자리. 모르는 재질은 알리고 뺀다. */
 function designedRoom(zone: ZoneSpec, kind: string, n: number, design: RoomDesign, S: HandInteriorSpec, notes: string[]) {
@@ -1090,7 +1092,7 @@ export const interiorBuilder: PlaceBuilder = {
     // 칸 배치(spec.layout, 2026-10-31): 모델이 모든 칸을 썼다 — 견본·묶음·방 그래프 길을 거치지 않고 그대로 깔고 검증만 한다(interiorLayoutBuild.ts).
     if (hasLayout(spec)) {
       const lt = run.ctx.project.tilesets[HAND_INTERIOR_TILESET_ID] ? HAND_INTERIOR_TILESET_ID : tilesetId;
-      const ls = roomSpecOf(run.ctx.project.tilesets[lt]);
+      const ls = effectiveSpec(run.ctx.project.tilesets[lt]);
       if (ls) return buildFromLayout(run, spec, ls, lt, mapId);
     }
     // 장소 견본(천문대 등) — 방 종류 견본으로는 주인공 물건이 방을 정하지 못한다(2026-10-23 비교: 천문대가 평범한 서재로 읽혀 v1 8 · v2 3.5).
