@@ -1,12 +1,6 @@
 import { playLiftRide } from "@/player/playSceneLiftRide";
-<<<<<<< ours
 import { releaseOrphanedFadeOut } from "@/player/playSceneScreenEffects";
-import { sendPursuerHome } from "@/player/pursuitNavigation";
-||||||| base
-import { sendPursuerHome } from "@/player/pursuitNavigation";
-=======
 import { sendMapPursuersHome, sendPursuerHome } from "@/player/pursuitNavigation";
->>>>>>> theirs
 import { isTouchUiHost } from "@/player/touchTap";
 import { stepStopReason, stopsReading } from "@/project/dialogueSystem";
 import { applySpriteLookStep, playParticleEffect } from "@/player/playSceneFieldStaging";

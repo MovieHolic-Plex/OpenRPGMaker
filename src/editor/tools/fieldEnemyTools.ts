@@ -699,18 +699,12 @@ export const FIELD_ENEMY_TOOLS: readonly ToolDefinition[] = [
     invalidArgsExample: { mapIds: ['map_field_1'], sightRange: 7, coneDegrees: 140, alertMs: 300, searchMs: 6000, rush: true, visionLight: {} },
     run(draft, args): ToolExecResult {
       const tuning = readFieldDetectionArgs(args);
-<<<<<<< ours
       const vision = args.visionLight === undefined || args.visionLight === false ? undefined : (typeof args.visionLight === 'object' && args.visionLight !== null ? args.visionLight as Record<string, unknown> : {});
-      if (Object.keys(tuning).length === 0 && !vision) throw new ToolError('바꿀 값(sightRange·coneDegrees·chaseStepMs·alertMs·searchMs·giveUpRange·rush·visionLight)을 하나 이상 주세요.', { code: 'invalid-args' });
+      if (Object.keys(tuning).length === 0 && !vision) throw new ToolError('바꿀 값(sightRange·coneDegrees·chaseStepMs·alertMs·searchMs·giveUpRange·rush·allRound·lineOfSight·visionLight)을 하나 이상 주세요.', { code: 'invalid-args' });
       const visionColor = typeof vision?.color === 'string' && /^#[0-9a-f]{6}$/iu.test(vision.color) ? vision.color : '#ffcf7a';
       const visionIntensity = vision?.intensity === undefined ? 0.85 : Number(vision.intensity);
       if (vision && (!Number.isFinite(visionIntensity) || visionIntensity < 0 || visionIntensity > 1)) throw new ToolError('visionLight.intensity 는 0..1 입니다.', { code: 'invalid-args' });
       const lit: string[] = [];
-||||||| base
-      if (Object.keys(tuning).length === 0) throw new ToolError('바꿀 값(sightRange·coneDegrees·chaseStepMs·alertMs·searchMs·giveUpRange·rush)을 하나 이상 주세요.', { code: 'invalid-args' });
-=======
-      if (Object.keys(tuning).length === 0) throw new ToolError('바꿀 값(sightRange·coneDegrees·chaseStepMs·alertMs·searchMs·giveUpRange·rush·allRound·lineOfSight)을 하나 이상 주세요.', { code: 'invalid-args' });
->>>>>>> theirs
       const wantedMaps = Array.isArray(args.mapIds) ? (args.mapIds as unknown[]).map(String) : undefined;
       for (const id of wantedMaps ?? []) if (!draft.maps[id]) throw new ToolError(`맵을 찾을 수 없습니다: ${id}`, { code: 'map-not-found' });
       const wantedEvents = Array.isArray(args.eventIds) ? new Set((args.eventIds as unknown[]).map(String)) : undefined;
