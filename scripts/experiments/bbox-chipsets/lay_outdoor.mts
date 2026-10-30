@@ -29,11 +29,17 @@ const map = { width: W, height: H, lowerTiles: Array(W * H).fill(-1) as number[]
 const hash = (x: number, y: number) => ((x * 73856093) ^ (y * 19349663)) >>> 0;
 const autoPts = new Map<any, { x: number; y: number }[]>();
 const groundAt = new Array<string>(W * H).fill("");
+// earth grounds (dirt yard / dirt road autotiles) have grass-rimmed edge art: two different earth grounds side by side draw a green seam
+// through bare dirt (round 3 sol2: yard16 paths over a yard64 base became a maze of green lines). Dirt painted over dirt is left as it was.
+const EARTH = /^(yard|yard16|yard64|road16|road64|slab_dirt)$/u;
+const earthSkips = new Map<string, number>();
 const paintCells = (gid: string, cells: Iterable<number>, tag: string) => {
   const g = grounds.get(gid);
   if (!g) { errors.push(`${tag}: unknown ground id "${gid}" — use a ground id from the catalog.`); return; }
   for (const i of cells) {
     const x = i % W, y = Math.floor(i / W); if (x < 0 || y < 0 || x >= W || y >= H) continue;
+    const was = groundAt[i]!;
+    if (was && was !== gid && EARTH.test(was) && EARTH.test(gid)) { const k = `${tag} over "${was}"`; earthSkips.set(k, (earthSkips.get(k) ?? 0) + 1); continue; }
     groundAt[i] = gid;
     if (g.auto) { map.lowerTiles[i] = g.auto.variantMap[String(g.auto.neighborhood === 8 ? 255 : 15)]; (autoPts.get(g.auto) ?? autoPts.set(g.auto, []).get(g.auto)!).push({ x, y }); }
     else map.lowerTiles[i] = g.tiles[hash(x, y) % g.tiles.length]!;
@@ -111,6 +117,7 @@ for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) for (const [dx, dy] of [
   const a = groundAt[y * W + x], b = x + dx < W && y + dy < H ? groundAt[(y + dy) * W + x + dx] : "";
   if (a && b && a !== b && !grounds.get(a)?.auto && !grounds.get(b)?.auto && !owner.has(y * W + x) && !owner.has((y + dy) * W + x + dx)) hardEdges++;
 }
+for (const [k, n] of earthSkips) warnings.push(`ground: ${k}: ${n} cells left unpainted — two dirt grounds next to each other draw a grass-rimmed seam through the dirt, so dirt is never painted over dirt. Across a dirt yard use a stepping-stone path ("stones"); dirt paths and dirt zones belong on grass.`);
 if (hardEdges > 12) warnings.push(`ground: ${hardEdges} cell edges are straight seams between two non-autotile grounds (e.g. grass next to paving) — for zones on open ground use an autotile ground (marked "autotile edges") or a "shape" so the outline blends.`);
 const ent = L.entrance;
 const pass = (x: number, y: number) => passabilityOf(t, map.lowerTiles[y * W + x]!, -1, map.upperTiles[y * W + x]!, -1);
@@ -156,7 +163,7 @@ if (madang) {
     if (hit) framed++;
   }
 }
-const stats = { w: W, h: H, walkable, reached, objects: placed.length, emptyPct: space.barePct, largest: space.largest, openBare: space.openBare, types, madang, edgeFramedPct: ring ? Math.round((100 * framed) / ring) : null, stonesSet, stonesSkipped, groundIslands: fr.islands, hardEdges };
+const stats = { w: W, h: H, walkable, reached, objects: placed.length, emptyPct: space.barePct, largest: space.largest, openBare: space.openBare, types, madang, edgeFramedPct: ring ? Math.round((100 * framed) / ring) : null, stonesSet, stonesSkipped, groundIslands: fr.islands, hardEdges, earthSkipped: [...earthSkips.values()].reduce((a, b) => a + b, 0) };
 if (!render) done({ stats, structOk });
 const { addRenderAssetRoot, renderReviewMapPng } = await import("../../qa-game/render.mts");
 const { store } = await import("../../../src/project/store");
