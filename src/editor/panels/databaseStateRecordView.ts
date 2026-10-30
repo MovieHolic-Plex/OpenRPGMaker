@@ -143,7 +143,7 @@ export function renderStateRecordForm(form: HTMLElement, state: StateRecord): HT
 // 이미 숫자로 저장된 값을 그대로 반환. 사용자가 아직 편집하지 않았다면 ontology에서 파생.
 /** 상태 아이콘 고르기(StateRecord.iconResourceId) — 전투 상태 배지가 글자 대신 이 그림을 쓴다. 고르면 이 칸만 다시 그린다. */
 function stateIconSlot(stateId: string): HTMLElement {
-  const slot = el("div", { class: "db-state-icon-slot" });
+  const slot = el("div");
   const render = (): void => {
     const current = store.getCurrent().database.states.find((entry) => entry.id === stateId);
     slot.replaceChildren(resourcePickerControl({

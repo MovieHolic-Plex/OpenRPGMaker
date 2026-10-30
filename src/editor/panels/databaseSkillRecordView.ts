@@ -80,7 +80,7 @@ export function renderSkillRecordForm(form: HTMLElement, record: SkillRecord): v
   const retroBody = el("div", { class: "db-skill-retro-slot" });
   const pickerBody = el("div", { class: "db-skill-retro-picker-slot" });
   const actionBody = el("div", { class: "db-skill-action-fields" });
-  const iconBody = el("div", { class: "db-skill-icon-slot" });
+  const iconBody = el("div");
   const renderIconPanel = (): void => {
     const current = currentSkill(record);
     iconBody.replaceChildren(resourcePickerControl({
