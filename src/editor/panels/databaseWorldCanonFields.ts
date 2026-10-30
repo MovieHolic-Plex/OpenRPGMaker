@@ -24,6 +24,8 @@ export const WORLD_CANON_TONE_LABELS: Record<WorldCanonTone, string> = {
   gothic: "고딕",
   fairytale: "동화",
   mythic: "신화",
+  horror: "공포",
+  mystery: "미스터리",
 };
 
 const LAW_LABELS: Record<WorldCanonLawKind, string> = {
