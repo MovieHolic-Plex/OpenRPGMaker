@@ -46,7 +46,7 @@ import { assertNever, type PlayerRouteState, type PlaySceneContext } from "@/pla
 import { findBlockingEventOverlappingRect,
 findRuntimeEventAtInMap,
 setRuntimeEventPositionDirection, } from "@/project/runtimeEventState"
-import { runtimeEventViewById, type RuntimeEventView } from "@/project/runtimeEventState"
+import { runtimeEventViewById, runtimeEventViewsForMap, type RuntimeEventView } from "@/project/runtimeEventState"
 import type { EventAnimationType, Trigger } from "@/project/types";
 import { nextSessionRandom } from "@/project/session";
 import { isCutsceneInputLocked } from "@/player/cutsceneControl";
@@ -73,6 +73,9 @@ import { fireLocationTransitionTriggers } from "@/player/playSceneLocationTransi
 import { interactWithLifeField } from "@/player/lifeFieldInteraction";
 import { diagnosticObserved, publishDiagnostic } from "@/util/diagnosticObserver";
 import { tryChestInteraction } from "@/player/playSceneChest";
+import { pickNearbyActionTarget } from "@/player/nearbyActionTarget";
+import { objectiveMarkerIds } from "@/player/playSceneFieldStaging";
+import { interactionPromptLabel } from "@/player/zoneFeedback";
 import { tryActionCombatSwing, tryActionSkillCast, updateActionSkillCharge } from "@/player/playSceneActionCombat";
 import { applyBattleDefeat } from "@/player/playSceneDefeat";
 import { boardedVehicleId, vehicleCanEnter, vehicleSpeedFactor } from "@/project/vehicles";
@@ -866,6 +869,22 @@ function performAction(
   if (attemptLifeInteraction(scene, scene.tileX, scene.tileY)) return true;
   const underfootFarm = attemptFarmInteraction(scene, scene.tileX, scene.tileY, farmAttempts);
   if (underfootFarm.handled) return true;
+  // 정면·발밑에 없으면 바로 곁(상하좌우, 그다음 대각)에 몸이 닿은 조사 대상으로 돌아서서 연다(pickNearbyActionTarget 주석).
+  const nearby = pickNearbyActionTarget(
+    runtimeEventViewsForMap(world.project, scene.map, scene.session, scene.eventPositions),
+    scene.tileX,
+    scene.tileY,
+    { front: { x: tx, y: ty }, preferIds: new Set(objectiveMarkerIds(scene as PlaySceneContext)), usable: (view) => interactionPromptLabel(view.page) !== null },
+  );
+  if (nearby) {
+    if (nearby.view.event.id === scene.lastActionTargetKey) return true;
+    if (scene.running) return true;
+    scene.facing = nearby.face;
+    scene.lastActionTargetKey = nearby.view.event.id;
+    turnActionEventTowardPlayer(scene, nearby.view);
+    void scene.runEvent(nearby.view.event.id);
+    return true;
+  }
   // 한 번의 A 입력에 안내 문구는 최대 하나. 정면과 발밑 두 번 시도하므로 여기서 한 번만 띄운다.
   // 발밑 사유를 우선하고(플레이어가 서 있는 밭이 더 구체적인 대상), 없으면 정면 사유로 대체한다.
   const message = underfootFarm.message ?? facingFarm.message;
