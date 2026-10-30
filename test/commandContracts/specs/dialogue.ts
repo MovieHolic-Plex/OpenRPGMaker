@@ -19,6 +19,8 @@ export const DIALOGUE_SPECS = {
     prompt: "Present",
     options: [{ itemId: "item_contract", branch: [] }],
   }),
+  planSchedule: nativeManifestEntry("dialogue", { kind: "planSchedule", scheduleId: "schedule_contract" }),
+  runSchedule: nativeManifestEntry("dialogue", { kind: "runSchedule", scheduleId: "schedule_contract" }),
   inputWait: nativeManifestEntry("dialogue", { kind: "inputWait", variableId: "variable_contract" }),
   inputNumber: nativeManifestEntry("dialogue", {
     kind: "inputNumber",

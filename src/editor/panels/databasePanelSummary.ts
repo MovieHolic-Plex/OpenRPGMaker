@@ -61,6 +61,7 @@ function recordCollectionForTab(tab: DatabaseTab): DatabaseCollection | undefine
     case "battleCommands":
     case "battleScreen":
     case "commonEvents":
+    case "schedules":
     case "elements":
     case "switches":
     case "system":
