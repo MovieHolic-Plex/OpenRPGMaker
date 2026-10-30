@@ -7,8 +7,12 @@
 // 그림 자리 = 걸음 진행률로 보간한 칸 좌표. 두 몸의 중심 거리가 TOUCH_REACH 칸 이하일 때만 닿았다고 본다(옆 칸에 붙어 선 것 = 1칸).
 import type { AutonomousMover } from "./playSceneTypes";
 
-/** 닿았다고 보는 두 몸 중심 거리(칸). 옆 칸에 붙어 선 것이 1.0 — 대각 이웃(1.41)은 닿지 않았다. */
-export const TOUCH_REACH = 1.05;
+/**
+ * 닿았다고 보는 두 몸 중심 거리(칸). 옆 칸에 붙어 선 것이 1.0, 대각 이웃이 1.41 — 둘 다 닿았다.
+ * 2026-10-30 사용자 「닿으면 무조건 전투(직교·대각·겹침)」: 예전 1.05 는 대각 이웃을 빼서, 대각 옆에 선 들개가
+ * 전투를 걸지 못하고 서 있었다. 1.45 는 대각(1.414)까지만 넣고, 반 칸 이상 떨어진 그림(1.5 이상)은 여전히 안 닿는다.
+ */
+export const TOUCH_REACH = 1.45;
 
 export type CellPoint = { readonly x: number; readonly y: number };
 

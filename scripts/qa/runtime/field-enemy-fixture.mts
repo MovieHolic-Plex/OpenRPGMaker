@@ -45,14 +45,15 @@ const mismatch = runTool(ctx, "place_field_enemy", { mapId: startId, x: start.x 
 if (mismatch.ok) throw new Error("해골 적에 슬라임 그림이 통과했다");
 log("mismatch rejected:", mismatch.summary.slice(0, 120));
 
-const chase = call("place_field_enemy", { mapId: startId, x: start.x + 7, y: start.y, troopId: "troop_field_slime", behavior: "chase", sightRange: 5, pace: "slow", id: "ev_field_chaser" });
+// 이 게이트는 «느낌표에서 멈췄다 쫓는» 옛 추격 계약을 본다 — 성격 classic 으로 고정한다(새 기본 성격은 멈추지 않는다, chase-contact 시나리오).
+const chase = call("place_field_enemy", { mapId: startId, x: start.x + 7, y: start.y, troopId: "troop_field_slime", behavior: "chase", sightRange: 5, pace: "slow", brain: "classic", id: "ev_field_chaser" });
 log("chase", chase.summary, JSON.stringify(chase.warnings ?? []));
 
 // 둘째 맵 — 나갔다 들어와도 처치가 유지되는지 보는 재진입 확인용. 순찰·보초·순찰+추격도 한 마리씩 놓아 실제 도구가 통과하는지 본다.
 call("create_map", { id: "map_field_two", name: "둘째 들판", width: 20, height: 15, tilesetId: startMap.tilesetId });
 const patrol = call("place_field_enemy", { mapId: "map_field_two", x: 10, y: 8, troopId: "troop_field_skeleton", behavior: "patrol", patrol: { length: 3, axis: "horizontal" }, id: "ev_field_patrol" });
 const guard = call("place_field_enemy", { mapId: "map_field_two", x: 15, y: 4, troopId: "troop_field_slime", behavior: "stationary", id: "ev_field_guard" });
-const patchase = call("place_field_enemy", { mapId: "map_field_two", x: 5, y: 11, troopId: "troop_field_skeleton", behavior: "chase", patrol: { length: 2, axis: "horizontal" }, sightRange: 3, pace: "slow", id: "ev_field_patchase" });
+const patchase = call("place_field_enemy", { mapId: "map_field_two", x: 5, y: 11, troopId: "troop_field_skeleton", behavior: "chase", patrol: { length: 2, axis: "horizontal" }, sightRange: 3, pace: "slow", brain: "classic", id: "ev_field_patchase" });
 log("patrol", patrol.summary, JSON.stringify(patrol.warnings ?? []));
 log("guard", guard.summary, JSON.stringify(guard.warnings ?? []));
 log("patchase", patchase.summary, JSON.stringify(patchase.warnings ?? []));

@@ -48,16 +48,16 @@ export function preloadMonsterSfx(project: Project = store.getCurrent()): void {
 
 /** 전투 사건 → 몬스터 세트 큐. 세트에 없는 사건은 undefined(기존 소리 그대로). */
 export function monsterBattleCue(
-  event: "command-select" | "command-confirm" | "command-cancel" | "attack-swing" | "hit-damage" | "hit-critical" | "hit-miss" | "hit-heal" | "faint" | "defend" | "escape" | "victory" | "defeat",
+  event: "command-select" | "command-confirm" | "command-cancel" | "attack-swing" | "hit-damage" | "hit-actor" | "hit-critical" | "hit-miss" | "hit-heal" | "faint" | "boss-collapse" | "defend" | "escape" | "victory" | "defeat",
   tier: "weak" | "normal" | "super" = "normal",
 ): MonsterSfxCue | undefined {
   switch (event) {
     case "command-select": return "ui-cursor";
     case "command-confirm": return "ui-confirm";
     case "command-cancel": return "ui-cancel";
-    case "hit-damage": return tier === "weak" ? "hit-weak" : tier === "super" ? "hit-super" : "hit-normal";
+    case "hit-damage": case "hit-actor": return tier === "weak" ? "hit-weak" : tier === "super" ? "hit-super" : "hit-normal";
     case "hit-critical": return "hit-super";
-    case "faint": return "faint";
+    case "faint": case "boss-collapse": return "faint";
     default: return undefined;
   }
 }

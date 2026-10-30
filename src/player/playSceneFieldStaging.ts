@@ -503,10 +503,41 @@ export function updateFieldStaging(scene: PlaySceneContext): void {
   syncFreezeFrame(scene);
   syncNearSparkles(scene, now);
   syncEventGlows(scene, now);
-  syncObjectiveMarkers(scene, now);
-  syncExamineMarkers(scene, now);
-  syncExitLabels(scene, now);
+  // 저자가 안내 표시를 껐으면(system.fieldGuides "off") 목표 빛무리·화살표, 자동 조사 ▼, 출구 목적지 글자를 그리지 않는다.
+  // 저자가 단 page.glow·nearSparkle 은 그대로 둔다(위 두 줄).
+  // "arrows"(2026-10-30 마왕 편의점 사용자 「화살표만 남겨줘도 충분히 친절」): 목표 표시·▼ 는 끄고 출구에는 맵 밖을 가리키는 화살표만, 목적지 이름은 뺀다.
+  const guides = store.getCurrent().system.fieldGuides;
+  if (guides === "off") clearFieldGuides(scene);
+  else if (guides === "arrows") {
+    clearFieldGuides(scene, { keepExits: true });
+    syncExitLabels(scene, now, { arrowOnly: true });
+  } else {
+    syncObjectiveMarkers(scene, now);
+    syncExamineMarkers(scene, now);
+    syncExitLabels(scene, now);
+  }
   syncLiftRide(scene);
+}
+
+/** 안내 표시(목표 빛무리·화살표, 조사 ▼, 출구 글자)를 모두 걷는다 — system.fieldGuides "off". 왜(마왕 편의점 2026-10-30
+ *  「너무 친절함 … 너무 많은 화살표도 짜증남」): 장면이 스스로 갈 곳을 보여 주는 이야기 게임에서는 자동 안내가 화면을 덮고 발견을 빼앗는다. */
+function clearFieldGuides(scene: PlaySceneContext, options: { keepExits?: boolean } = {}): void {
+  const objective = objectiveMarkerStates.get(scene);
+  if (objective) {
+    for (const parts of objective.parts.values()) destroyObjectiveMarker(parts);
+    objective.arrow?.destroy();
+    objectiveMarkerStates.delete(scene);
+  }
+  const examine = examineMarkerStates.get(scene);
+  if (examine) {
+    for (const marker of examine.markers.values()) marker.destroy();
+    examineMarkerStates.delete(scene);
+  }
+  const exits = options.keepExits ? undefined : exitLabelStates.get(scene);
+  if (exits) {
+    for (const label of exits.labels.values()) label.destroy();
+    exitLabelStates.delete(scene);
+  }
 }
 
 // ── 늘 빛나는 표지(page.glow) ────────────────────────────────────────────
@@ -907,7 +938,20 @@ function exitTargetOf(page: { commands?: readonly unknown[] } | undefined, here:
   return undefined;
 }
 
-function syncExitLabels(scene: PlaySceneContext, now: number): void {
+/** 출구가 맵 밖으로 향하는 쪽의 화살표 — 맵 가장자리에 붙은 출구는 그 가장자리 쪽, 건물 문(map.doors 위 칸)은 늘 ↑(문 앞 칸에서 위로 밀어 들어간다, #3973),
+ *  그 밖의 맵 안 출구는 주인공에게서 출구 쪽 — 위아래가 다르면 위아래가 먼저다(옆에서 다가와도 문 화살표가 옆을 가리키지 않게). */
+export function exitArrowGlyph(rect: { left: number; right: number; top: number; bottom: number }, mapW: number, mapH: number, heroX: number, heroY: number, onDoor = false): string {
+  if (rect.bottom >= mapH - 1) return "↓";
+  if (rect.top <= 0) return "↑";
+  if (rect.left <= 0) return "←";
+  if (rect.right >= mapW - 1) return "→";
+  if (onDoor) return "↑";
+  const dy = (rect.top + rect.bottom) / 2 - heroY;
+  if (dy !== 0) return dy > 0 ? "↓" : "↑";
+  return (rect.left + rect.right) / 2 < heroX ? "←" : "→";
+}
+
+function syncExitLabels(scene: PlaySceneContext, now: number, options: { arrowOnly?: boolean } = {}): void {
   const map = scene.map;
   if (!map || !scene.session || !scene.add) return;
   let state = exitLabelStates.get(scene);
@@ -931,12 +975,14 @@ function syncExitLabels(scene: PlaySceneContext, now: number): void {
     const target = exitTargetOf(view.page as { commands?: readonly unknown[] } | undefined, map.id);
     const dest = target ? project.maps[target] : undefined;
     const name = String((dest as { displayName?: string } | undefined)?.displayName || dest?.name || "").trim();
-    if (!name) continue;
+    if (!name && !(options.arrowOnly && target)) continue;
     const rect = view.bodyRect;
     const dx = Math.max(rect.left - scene.tileX, 0, scene.tileX - rect.right);
     const dy = Math.max(rect.top - scene.tileY, 0, scene.tileY - rect.bottom);
     if (Math.max(dx, dy) > EXIT_LABEL_RADIUS || (dx === 0 && dy === 0)) continue;
-    want.set(view.event.id, { text: `→ ${name}`, x: ((rect.left + rect.right + 1) / 2) * size, y: rect.top * size - 2, below: (rect.bottom + 1) * size + 2 });
+    const onDoor = (map.doors ?? []).some((door) => rect.left < door.x + door.w && rect.right >= door.x && rect.top < door.y + door.h && rect.bottom >= door.y);
+    const text = options.arrowOnly ? exitArrowGlyph(rect, map.width, map.height, scene.tileX, scene.tileY, onDoor) : `→ ${name}`;
+    want.set(view.event.id, { text, x: ((rect.left + rect.right + 1) / 2) * size, y: rect.top * size - 2, below: (rect.bottom + 1) * size + 2 });
   }
   // 같은 목적지로 옮기는 붙은 칸들(두 칸 폭 길 끝 출구와 그 길 폭 사본 — ai/v2 widenRoadExits)은 글자 하나를 가운데에 —
   // 칸마다 띄우면 「→ 강가 어촌」 둘이 반 칸 어긋나 겹쳐 「→ →강가 어촌」으로 읽혔다(2026-10-30 씬 벤치 river-village 재현).
@@ -961,7 +1007,7 @@ function syncExitLabels(scene: PlaySceneContext, now: number): void {
         backgroundColor: "rgba(26,16,6,0.82)", padding: { x: 3, y: 1 },
       }).setResolution(zoom).setScale(1 / zoom).setOrigin(0, 1).setDepth(MAP_UPPER_LAYER_DEPTH + 901);
       state.labels.set(id, label);
-    }
+    } else if (label.text !== at.text) label.setText(at.text);
     // 가장자리 출구(2026-10-29 vm3 argon jrpg «마을 가장자리가 어디로도 이어지지 않아 보임»): 글자가 맵 밖으로 반쯤 나가 잘리지 않게 맵 안으로 민다.
     // 주인공이 오는 쪽의 반대편에 두고, 몸에 겹치면 옆으로 비키고, 맵에 적힌 문 그림(문 칸 위 그림 칸까지)은 덮지 않는다 — 규칙은 exitLabelPlacement.
     const place = placeExitLabel({

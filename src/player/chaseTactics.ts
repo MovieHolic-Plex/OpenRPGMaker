@@ -90,6 +90,13 @@ export type ChaseGoalInput = {
   readonly allies: readonly ChasePoint[];
   /** 직전 결정의 목표(있으면 앞질러 막기에 여유를 준다). */
   readonly previous?: ChasePoint;
+  /** 성격(@/project/chaseBrain)이 정하는 전술. 생략하면 앞질러 막기·감싸기 모두 켜고 예전 수를 쓴다. */
+  readonly tactics?: {
+    readonly intercept: boolean;
+    readonly interceptMinRun: number;
+    readonly flank: boolean;
+    readonly flankOffset: number;
+  };
 };
 
 export type ChaseGoal = { readonly x: number; readonly y: number; readonly reason: "direct" | "intercept" | "flank" };
@@ -108,17 +115,22 @@ export function chooseChaseGoal(input: ChaseGoalInput): ChaseGoal {
   const dist = distanceField(input, gap + PROJECTION_CELLS + 6);
   const mine = (p: ChasePoint): number | undefined => dist.get(p.y * input.map.width + p.x);
 
-  // 1) 감싸기 — 나보다 주인공에 가까운 동료가 있으면 그 반대편으로 돈다.
-  const leader = closest(input.allies, player.at);
+  const tactics = input.tactics ?? { intercept: true, interceptMinRun: MIN_RUN_FOR_INTERCEPT, flank: true, flankOffset: FLANK_OFFSET };
+  const flankOffset = tactics.flankOffset;
+  // 1) 감싸기 — 나보다 주인공에 가까운 동료가 있으면 그 반대편으로 돈다(퇴로 끊기).
+  const leader = tactics.flank ? closest(input.allies, player.at) : undefined;
   if (leader && manhattan(leader, player.at) < gap) {
-    const vx = Math.sign(player.at.x - leader.x), vy = Math.sign(player.at.y - leader.y);
-    const ideal = { x: player.at.x + vx * FLANK_OFFSET, y: player.at.y + vy * FLANK_OFFSET };
+    // 동료가 주인공과 같은 줄이면 반대편, 아니면 주인공이 달아나는 쪽(진행 방향)을 먼저 막는다.
+    const lead = { x: Math.sign(player.at.x - leader.x), y: Math.sign(player.at.y - leader.y) };
+    const vx = lead.x === 0 && lead.y === 0 ? (player.heading?.x ?? 0) : lead.x;
+    const vy = lead.x === 0 && lead.y === 0 ? (player.heading?.y ?? 0) : lead.y;
+    const ideal = { x: player.at.x + vx * flankOffset, y: player.at.y + vy * flankOffset };
     let best: { p: ChasePoint; score: number } | undefined;
     const direct = mine(base);
     for (const [key, d] of dist) {
       const p = { x: key % input.map.width, y: Math.floor(key / input.map.width) };
       const near = manhattan(p, player.at);
-      if (near === 0 || near > FLANK_OFFSET + 1) continue;
+      if (near === 0 || near > flankOffset + 1) continue;
       // 앞선 동료와 같은 쪽 자리는 줄 서기다 — 동료보다 주인공 반대편에 있어야 한다.
       if (manhattan(p, leader) <= manhattan(player.at, leader)) continue;
       if (direct !== undefined && d > direct + 6) continue;
@@ -129,7 +141,7 @@ export function chooseChaseGoal(input: ChaseGoalInput): ChaseGoal {
   }
 
   // 2) 앞질러 막기 — 진행 방향(복도는 꺾임을 따라)으로 내다본 칸 중, 내가 주인공보다 먼저(같아도) 닿는 첫 칸.
-  if (player.heading && (player.run ?? 0) >= MIN_RUN_FOR_INTERCEPT) {
+  if (tactics.intercept && player.heading && (player.run ?? 0) >= tactics.interceptMinRun) {
     const path = projectAhead(input.project, input.map, base, player.heading, PROJECTION_CELLS, player.turn);
     // 이미 그 길 위에 서 있으면 마주 오는 주인공을 곧장 막는다.
     if (path.some((p) => p.x === input.from.x && p.y === input.from.y)) return direct;

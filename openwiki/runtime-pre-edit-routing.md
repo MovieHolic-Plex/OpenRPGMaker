@@ -1,3 +1,15 @@
+## 이식 아틀라스 워커 굽기(#3963)는 되돌렸다 — 텍스처 등록만 `addImage` (2026-10-30)
+
+#3963 은 버들항처럼 큰 이식 타일셋을 워커(OffscreenCanvas)에서 굽고 GPU 에 띠씩 올렸다. 머지 뒤 폴른 스타 체크포인트에서
+**타일이 하나도 안 그려졌다**(act2-b5-dogs 숲 맵이 캐릭터만 검은 바탕에, 요새 감방도 같음). 띠 올리기(`addGLTexture`)로 등록한 텍스처는 비어 있었고,
+그보다 앞선 판(워커 비트맵을 `addImage`)은 엉뚱한 칸 그림이 들어갔다. 워커는 그림판을 **파일 주소로 다시 받아** 합성했는데,
+Phaser 에 실린 텍스처와 파일이 같다는 가정이 맞는지 확인하지 않았다. 측정 때 검은 화면 길이만 재고 착지 화면을 눈으로 보지 않아 놓쳤다.
+
+- 지금: 굽기는 예전처럼 메인 스레드 `bakeTilesetTextureCanvas`, 등록만 `addCanvas` → `addImage`(캔버스 전체 `getImageData` 읽기 제거, 소프트웨어 GL 에서 0.3~0.9초 줄어듦).
+  원본은 캔버스 그대로라 `getPixel`·`drawImage` 읽기는 같다. `playSceneMapSkirt.ts` 는 칸 화소를 프레임 한 번 그려 읽는 `pixelAt` 을 쓴다.
+- 다시 시도하려면: 워커에는 **실린 텍스처에서 만든 비트맵**만 넘기고(파일 주소 금지), 착지 화면을 원본 경로와 픽셀 비교하는 검사를 먼저 둔다.
+  검은 화면 길이만으로 합격시키지 않는다.
+
 ## 목표 안내창 자리·한국어 줄바꿈·숫자 입력 (2026-10-28, 장부 hud.json)
 
 - **목표 안내창 자리**: `playSceneZoneFeedback.placeObjective` 가 300ms 마다(글이 바뀌면 즉시) `objectivePlacement.chooseObjectivePlacement` 로 고른다.
@@ -27,6 +39,13 @@
 - **현재 목표 대상 표시**(2026-10-29): `playSceneFieldStaging.syncObjectiveMarkers` 가 지금 목표 글(`currentObjectiveText`)의 대상
   (`objectiveTarget.objectiveTargetViews`: 꼬리 「(이름: 자리)」 이름의 이벤트 → 「(<맵> 입구: …)」면 그 맵으로 가는 문 → 글에 나온 이벤트 이름 전부(다른 나온 이름에 품긴 짧은 이름은 뺀다 — 「용의자: 마부 한스·여행자 미라·상인 도윤」이면 셋 다) → 글에 나온 다른 맵의 문)에
   금빛 빛무리·바닥 고리를 거리와 무관하게 둔다(page.glow 보다 옅게, 깊이는 그 칸 사물 줄). 목표가 바뀌면 400ms 안에 옮긴다. QA: `objectiveMarkerIds(scene)`.
+- **안내 표시 끄기(2026-10-30):** `system.fieldGuides: "off"`(조수 `set_project_settings({fieldGuides:"off"})`)면 `updateFieldStaging` 이 목표 빛무리·화살표, 조사 ▼, 출구 「→ 목적지」 글자를
+  그리지 않고 남은 것을 걷는다(`clearFieldGuides`). 저자가 단 `page.glow`·`nearSparkle` 은 남는다. 장면이 스스로 길을 보여 주는 이야기 게임(마왕 편의점 「너무 친절함 … 화살표 짜증남」)용.
+  `databaseRecordModel` 화이트리스트에 넣어 저장/로드 왕복에서 살아남는다.
+  **중간값 `"arrows"`(2026-10-30 사용자 「화살표만 남겨줘도 충분히 친절」):** 목표 빛무리·화살표와 ▼ 는 끄고(`clearFieldGuides(scene,{keepExits:true})`),
+  출구에는 `syncExitLabels(...,{arrowOnly:true})` 로 목적지 이름 없이 화살표 글자 하나만 띄운다. 방향은 `exitArrowGlyph` —
+  맵 가장자리에 붙은 출구는 그 가장자리 쪽(↓↑←→), 건물 문(`map.doors` 위 칸)은 늘 ↑, 그 밖의 맵 안 출구는 주인공에게서 출구 쪽(위아래 먼저 — 옆에서 다가와도 문 화살표가 ←가 되지 않게). 편집기 「시스템 → 필드 안내 표시」(`fieldGuidesField`)와
+  `set_project_settings({fieldGuides:"on"|"arrows"|"off"})` 가 같은 값을 쓴다.
   **길 잇기(2026-10-29 vm2 jrpg 「길 못 찾음」)**: 지금 맵에서 그 맵으로 바로 가는 문이 없으면 `mapRoute`(옮기기 이벤트로 이은 가장 짧은 맵 경로)의
   첫 맵으로 가는 문을 짚는다. 꼬리 「→」 뒤(「(숲 입구: 북쪽 → 숲 통과)」·「(마을 입구: 남쪽 → 마왕의 동굴 · 마왕 처치)」)는 그 뒤 대상이다 —
   그 이름의 이벤트가 지금 맵에 있으면 그것, 아니면 그 맵으로 가는 첫 출구. 글에 나온 다른 맵도 같은 첫 출구 규칙.
@@ -738,6 +757,10 @@ Phaser `preRender` 는 경계가 있으면 따라가기·패닝 뒤 clamp 를 �
 - **벽면 ★ 예외(2026-10-22):** ★ 상층이라도 그 칸의 하층이 막혔고(×) 바로 아래 칸 하층이 밟는 칸이면(엘리베이터 문·벽에 박힌
   문틀의 맨 아래 줄) 고정 컨테이너가 아니라 root 에서 제 줄 + 0.5 로 캐릭터와 y 정렬한다(`playSceneMapRuntime.isWallFaceCell`).
   문턱에 선 사람의 머리가 문틀 밑에 짓눌려 보였다(첫사랑 사무실 승강기, #3231 리뷰). 같은 줄(문 안쪽 칸)은 타일이 이겨 문 안의 사람은 계속 가려진다.
+- **가구 위 ★ 예외(2026-10-30):** ★ 상층이라도 같은 칸 2~4층에 × 타일이 있으면(계산대 위 계산 단말 `10740`, 책상 위 스탠드처럼 막힌 가구에 얹은 탁상 기물)
+  같은 규칙으로 제 줄 + 0.5 에 y 정렬한다(`characterDepth.starRestsOnSolidFurniture`). 그 칸은 아무도 밟지 못해 「밑으로 지나가는」 ★ 의 뜻이 없고,
+  고정 상층이면 남쪽 칸에 선 사람의 머리(한 줄 위로 걸친다)를 덮어 계산대 앞 손님이 계산대 밑에 깔려 보였다(마왕 편의점). 주인공 실루엣(`playerOcclusionGhost`)과
+  `approach` 의 가려진 칸 판정도 이 칸을 덮개로 세지 않는다.
 - 통행은 `collision.ts` 의 `cellPassability`(4 → 1, ★ 건너뛰기). 게임 쪽 `canMove`/`isPassable` 이 그대로 쓴다.
 - 출하 경로 검증: `npm run qa:runtime -- --scenario rasak-layers --project /tmp/... --out /tmp/...` (Rasak 자료는
   재배포 금지라 프로젝트·PNG 는 저장소 밖). 프레임을 멈추고 같은 수만 밀어 합성 판과 4층 판을 비교했다:
@@ -1161,6 +1184,18 @@ QA 근거와 재실행: `scripts/qa/runtime/dialogue-frame-fixture.mts`(데모�
 `DFRAME_STYLE`/`DFRAME_VN` 또는 같은 픽스처의 `system.dialogueStyle`·`meta.oprnVnLook` 만 바꾼 사본 + `DFRAME_FAST=1`.
 `DFRAME_SCENE=door`(천문대 철문 칸에서 화자 → 잠긴 문 안내)·`letterbox`(광장 컷신 그대로). 영상: `QA_RECORD_VIDEO=<폴더>`(runtime-qa.mjs, 컨텍스트 녹화) + `DFRAME_VIDEO=1`, `<out>-t0.json` 으로 자른다(영상 시각 ≈ performance.now + 0.75초). 오버레이의
 `data-dialogue-position-reason`(portrait·session·fixed·auto:0.25·previous-box)이 자리를 정한 근거다. 저작 쪽 경고는 `scene-dialogue-position-jump`(`scenePolishLint.ts`).
+
+### 초상이 준비된 뒤에 창을 연다 · 양쪽 초상이면 선택지는 가운데 (2026-10-30, 이세계 고딩 리뷰)
+
+- **이름표만 있는 빈 창.** 흉상은 그림(또는 에메랄드 도트 변환본)이 풀릴 때까지 `visibility:hidden` 이었다(`renderFace` → `applyPixelBust` onReady).
+  새 표정·새 인물 줄마다 그림을 처음 받는 동안 창은 이름표만 보였고(부하 없는 탐침에서도 줄마다 120~330ms, 부하 녹화에서는 약 1초), 본문 흘림도 같이 늦게 보였다.
+  이제 `showText` 가 창을 만들기 **전에** 그 줄의 초상(화자 `request.face`·표정 변형 `faceForDialogueEmotion`·`listenerFace`) 중 아직 안 받은 것을 기다린다
+  (`unsettledLinePortraits` → `waitForLinePortraits`, 흉상은 `bustPixelate.preloadPixelBust`(받기+`decode()`+변환), 48px 얼굴은 `imageWarmQueue.warmImageUrl`, 상한 1.5초·중단 신호 존중).
+  기다리는 동안 앞 줄의 창은 퇴장하지 않고 그대로 선다(`holdPendingExit` — 세션·듣는 사람 무대가 끊기지 않는다). 목소리도 창과 함께 시작한다.
+  이미 풀린 흉상은 `applyPixelBust` 가 마이크로태스크에서 붙여 첫 페인트부터 보인다. 단위 테스트(`import.meta.env.VITEST`)·그림을 못 받는 환경은 옛 동기 경로 그대로다.
+- **선택지가 듣는 사람 흉상을 덮음.** 오른쪽 흉상이 선 틀이면 선택지 칸이 왼쪽으로 비켰는데, 왼쪽에 듣는 사람 흉상이 있으면 그 사람을 덮었다.
+  틀에 양쪽 초상이 다 있으면(`.choices-frame.has-portrait-listener`) 선택지 칸은 가운데에 서고 폭은 양옆 흉상 자리(`--runtime-dialogue-bust-width` + 26px)만큼 비운다(`dialogue.css` 「고정 틀 선택지」).
+- 탐침(커밋 안 함): 구운 데모 + `qaCheckpoint` 로 옥좌 앞 대사·선택지를 돌리며 rAF 마다 이름표·얼굴 보임·본문 글자 수와 선택지/흉상 사각형을 적는다.
 
 ## 엔딩 카드 글자는 게임 언어 (2026-10-22)
 

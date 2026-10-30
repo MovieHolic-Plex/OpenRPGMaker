@@ -43,7 +43,7 @@ import { guessPlaceSpec } from "./placeGuess";
 // 콘텐츠 동사(컷신 무대·연출 비평·물건 자리 계획) — finishContent·addEvent·drawObjectVerb·placeObject 가 쓴다.
 import { critiqueStaging } from "./critic";
 import { createGameTools, wantsPuzzle, wantsGameTools, wantsMusicTools, wantsStoreTools, wantsTerrainTools } from "./game";
-import { musicOnly } from "./musicWords";
+import { audioOnly } from "./musicWords";
 import { gameContentProblems, unaskedChanges } from "./gameChecks";
 import { HELPER_LIMITS, helpersOn, runHelperJobs, type HelperJob } from "./helpers";
 import { isStoreCardRequest } from "@/editor/tools/storeTools";
@@ -1489,13 +1489,14 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
   } });
   const verbs = [writeBlueprint, buildBlueprintPathVerb, makePlace, ...(makeGameOn() && wantsMakeGame(String(task ?? "")) ? [makeGame] : []), editPlace, moveObject, dressRoomVerb, addPeople, addEvent, addScene, ...(wantsPuzzle(String(task ?? "")) ? [authorPuzzleChain] : []), sealLockedRoomVerb, setObjectiveVerb, drawObjectVerb, placeObject, inspect, roomPartsVerb, createDungeonPartsVerb(env, () => session.places.values()), restoreEvent, ...(helpersOn() ? [askHelpers] : []), askUser]
     // 음악만 바라는 요청은 맵·이벤트를 쓰는 동사를 싣지 않는다 — 보기·묻기만(2026-10-30 r12: 추격 음악 요청에 상자를 찍었다).
-    .filter((tool) => !musicOnly(String(task ?? "")) || MUSIC_ONLY_VERBS.has(tool.name))
+    .filter((tool) => !audioOnly(String(task ?? "")) || MUSIC_ONLY_VERBS.has(tool.name))
     .map((tool) => guard(flattenWrapperTool(tool)));
   // 게임 요소(퀘스트·아이템·전투·파티) 요청이면 v1 게임 도구를 덧붙인다 — 기록은 도구 묶음이 env.record 로 직접 남긴다.
   const t = String(task ?? "");
   // 스토어 음악 카드(사용자가 듣고 고른다)를 띄웠으면 사용자 질문과 같다 — 끝맺음 관문이 «음악을 안 걸었다»며 넣기를 재촉하지 않게 한다.
   const gameEnv: PiAssistantV2Env = { ...env, record: (r) => {
     if (r.name === "store_find_music" && r.result.ok && isStoreCardRequest(r.result.data)) session.questions.push("스토어 음악 카드: 사용자가 듣고 고른다");
+    if (r.name === "store_find_sound" && r.result.ok && isStoreCardRequest(r.result.data)) session.questions.push("스토어 효과음 카드: 사용자가 듣고 고른다");
     env.record(r);
   } };
   // 같은 Command·페이지 스키마의 설명은 처음 한 번만 보낸다(schemaDedupe.ts — 매 턴 다시 가는 도구 목록이 21만 자였다).
@@ -1509,7 +1510,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
 /** 음악만 바라는 요청에 남기는 v2 동사 — 맵 보기·사용자에게 묻기. 곡 걸기는 음악 묶음(set_game_audio)이 한다. */
 const MUSIC_ONLY_VERBS: ReadonlySet<string> = new Set(["inspect", "ask_user"]);
 /** 음악 요청의 일감인 게임 검사 줄 — 나머지(이미 있던 위협·출하 차단 등)는 음악만 바라는 요청에서 참고다. */
-const isMusicWork = (line: string) => /^\[게임 검사 (음악|실행|부작용)\]/u.test(line);
+const isMusicWork = (line: string) => /^\[게임 검사 (음악|효과음|실행|부작용)\]/u.test(line);
 
 /** 끝맺음 관문 — 남은 문제가 있으면 한 번 더 돌게 하는 글. 다 통과면 undefined. */
 export function v2FinishGate(session: V2Session, env?: PiAssistantV2Env): string | undefined {
@@ -1537,7 +1538,7 @@ export function v2FinishGate(session: V2Session, env?: PiAssistantV2Env): string
     } catch { /* 비교 실패는 무시 */ }
   }
   // 음악만 바라는 요청: 음악 밖 지적(이미 있던 체크포인트 위협·출하 차단…)은 일감이 아니다 — 한 바퀴를 더 돌리지 않고 기록에만 남긴다.
-  if (env && musicOnly(env.request.task)) {
+  if (env && audioOnly(env.request.task)) {
     const outside = game.filter((g) => !isMusicWork(g));
     game = game.filter(isMusicWork);
     if (outside.length) env.emit({ type: "execution_status", name: "v2.music-only.notes", ok: true, summary: `음악 요청 밖 참고 ${outside.length}건 — 고치지 않음`, data: { notes: outside } });

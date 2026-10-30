@@ -200,7 +200,19 @@ export function storeMusicTracks(item: Pick<StoreItemSummary, "slug" | "latestVe
   return out;
 }
 
-const tokens = (text: string): string[] => text.toLowerCase().split(/[\s,·/]+/u).map((word) => word.replace(/(풍|스러운|같은|느낌|음악|곡|bgm)$/u, "")).filter((word) => word.length > 0);
+/**
+ * 아무 곡에나 붙는 말 — 점수 낱말로 쓰지 않는다. 2026-10-30: 「공포 게임」의 「게임」이 캐주얼 레이스 로비 곡의 결(「레트로 게임 감성」)·설명(「게임의 로비」)에 맞아
+ * 장르가 맞은 것으로 쳐져(named) 호러 곡과 같은 점수로 1위에 섰다.
+ */
+const GENERIC_WORDS = new Set(["게임", "game", "games", "배경음악", "배경음", "브금", "노래", "music", "song", "track"]);
+const tokens = (text: string): string[] => text.toLowerCase().split(/[\s,·/]+/u).map((word) => word.replace(/(풍|스러운|같은|느낌|음악|곡|bgm)$/u, "")).filter((word) => word.length > 0 && !GENERIC_WORDS.has(word));
+
+/**
+ * 공포 낱말(공포·호러·무서운·괴담 …) → 공포 계열 줄. 장면(마을·던전 …)이 무엇이든 이 줄 곡이 다른 줄 곡보다 앞에 선다.
+ * 2026-10-30: 「공포 게임」+town 에 캐주얼 레이스 로비 곡이 1위였고, 「무서운」「괴담」은 어느 공포 줄도 끌어오지 못했다.
+ */
+const HORROR_ASK = /공포|호러|무서|무섭|괴담|오싹|으스스|소름|귀신|유령|horror|scary|creepy|spooky|haunted/iu;
+export const HORROR_FAMILY_LINES: readonly string[] = ["horror", "chase-horror", "school-horror", "dark-fairytale", "eerie-minimal"];
 
 export interface StoreMusicQuery {
   readonly scene?: StoreMusicScene; readonly query?: string; readonly mood?: string;
@@ -265,6 +277,8 @@ export function scoreStoreMusic(track: StoreMusicTrack, want: StoreMusicQuery): 
   const expanded = expandStoreMusicQuery(want.query ?? "");
   const gameAt = expanded.lines.indexOf(m.genre);
   let named = gameAt >= 0;
+  // 사용자가 이 곡의 줄 자체를 말했는가(줄 낱말·게임 이름) — 공포 요청이어도 「공포 피아노」의 피아노 줄은 깎지 않는다.
+  let lineNamed = gameAt >= 0;
   if (gameAt >= 0) score += gameAt === 0 ? 4 : 2;
   const queryWords = tokens(expanded.query);
   for (const word of queryWords) {
@@ -272,7 +286,7 @@ export function scoreStoreMusic(track: StoreMusicTrack, want: StoreMusicQuery): 
     if (genreText.includes(word)) { score += 6; named = true; }
     // 팩 줄 낱말(따로 더한다 — 「판타지」가 「중국풍 판타지」에도 들어 있어 장르 이름만으로는 판타지 팩을 못 가린다).
     // 문화색을 따로 들어 본 곡(조선 팩)은 실제로 들리는 만큼만 친다.
-    if (lineWords.some((line) => wordHits(line, word))) { score += track.cultureHeard === "no" ? 1.5 : track.cultureHeard === "partly" ? 3 : 6; named = true; }
+    if (lineWords.some((line) => wordHits(line, word))) { score += track.cultureHeard === "no" ? 1.5 : track.cultureHeard === "partly" ? 3 : 6; named = true; lineNamed = true; }
     // 실제로 들리는 결(feelTags) — 장르 이름만큼은 아니어도 「16비트」「솔로 피아노」를 들은 곡이 앞에 선다.
     if (feelHit(word)) { score += 5; named = true; }
     if (moods.some((mood) => mood.includes(word))) score += 3;
@@ -289,6 +303,10 @@ export function scoreStoreMusic(track: StoreMusicTrack, want: StoreMusicQuery): 
   const share = lines[m.genre] ?? 0;
   // 사용자가 장르를 말했는데(어느 팩 줄 낱말과 맞음) 이 곡은 그 장르가 아니면 분위기가 맞아도 뒤로.
   const asked = expanded.lines.length > 0 || queryWords.some((word) => Object.values(LINE_WORDS).some((words) => words.some((line) => wordHits(line, word))));
+  // 공포 낱말: 공포 계열 줄은 앞으로(+4, 장르 맞음), 그 밖의 줄은 사용자가 그 줄을 말하지 않았으면 결·설명 낱말이 맞아도 뒤로(−8).
+  const horrorAsked = HORROR_ASK.test(`${want.query ?? ""} ${want.mood ?? ""}`);
+  if (horrorAsked && HORROR_FAMILY_LINES.includes(m.genre)) { score += 4; named = true; }
+  else if (horrorAsked && !lineNamed) score -= 8;
   if (asked && !named) score -= 6;
   score += 4 * share;
   // 분위기 낱말 몇 개(최대 약 9점)보다 장르가 어긋나는 것이 더 크게 틀린다 — 그래서 감점이 분위기 점수만큼 크다.

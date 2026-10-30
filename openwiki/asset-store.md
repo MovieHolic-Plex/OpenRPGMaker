@@ -105,11 +105,12 @@ faceset(48×48 얼굴)·picture(흉상·전신) 에셋을 가리킨다. 표정 �
   (`scripts/lib/workerStore.ts` → `setWorkerStoreAccess`, `src/assetStore/storeAccess.ts`). 공개 목록·매니페스트·파일만 읽는다.
 - **`store_find_music`** (`src/editor/tools/storeTools.ts`): `scene`(town·field·dungeon·battle·boss·victory·sad·tense·chase·title·ending) + `query`(장르) + `mood` 로
   음악 팩 매니페스트를 받아 곡 단위로 순위를 매긴다(`src/assetStore/storeMusicPick.ts` `rankStoreMusic` — 장면이 먼저, 실제로 들리는 장르 `genreKo` 가 팩 줄보다 무겁고, 승리는 징글·그 밖은 루프).
+  공포 낱말(공포·호러·무서운·괴담·오싹·귀신·scary …)이 있으면 장면이 무엇이든 공포 계열 줄(`HORROR_FAMILY_LINES` horror·chase-horror·school-horror·dark-fairytale·eerie-minimal)이 +4, 그 밖의 줄은 사용자가 그 줄을 따로 말하지 않았으면(「공포 피아노」의 피아노) −8. 「게임」「배경음악」 같은 아무 곡에나 붙는 말은 점수 낱말이 아니다(`GENERIC_WORDS` — 「공포 게임」의 「게임」이 캐주얼 레이스 로비 곡의 결 「레트로 게임 감성」에 맞아 1위였다). 단위 `test/storeMusicFeel.test.ts` 「horror-word music requests」.
   **팩 목록은 전부 본다**(2026-10-30, 실조수 e2e 14/16 → 수정): `listAllStoreMusicPacks` 가 `catalog{kind:music}` 첫 쪽의 `total`·`pageSize` 로 나머지 쪽을 두 쪽씩 받는다(상한 8쪽·120팩). 예전 16팩 자르기 때문에 18팩 중 호러·판타지 팩이 안 보였다.
   목록은 스토어 주소마다 5분, 매니페스트는 `slug@판본`마다 세션 내내 캐시한다(곡 파일은 받지 않는다). 목록이 상한에 걸렸을 때만 검색어로 한 번 더 찾는다.
   **1위 추천**: 후보에 `rank`·`why`(장면·게임 결 줄·맞은 낱말)를 붙이고 1위만 `recommended:true`. 게임 이름에서 줄을 읽었으면(`feelFrom.line`, 예: 파판 → symphonic-jrpg) 그 줄이 아닌 곡은 `fallback:true`. summary 는 1위 slug·assetId 를 적고 「사용자가 다른 곡을 말하지 않았으면 바꾸지 않는다」고 시킨다(「파판 전투곡」에 3위를 넣었다).
   **미술관 = town**: 조수가 `scene:'dungeon'` 을 줘도 요청 말에 미술관·갤러리·박물관·저택이 있고 던전 낱말이 없으면 town 으로 읽는다(`townPlaceOverDungeon`).
-  **연결 자리**: 음악 카드(`MUSIC_TIER`)와 `set_game_audio` 설명이 「mapIds 는 맵 id(타일셋 id 아님), 맵을 말하지 않았으면 시작 맵·지금 보는 맵, 곡과 이름이 비슷한 맵을 고르지 않는다」고 시킨다(「이브 같은 미술관 BGM」을 동굴 맵에 걸었다). 틀린 mapIds 는 `mapIdsError` 가 실제 맵 id(이름, 시작 맵 표시)와 「타일셋 id 다」를 돌려준다. 단위 `test/storeMusicPaging.test.ts`.
+  **연결 자리**: 음악 카드(`MUSIC_TIER`)와 `set_game_audio` 설명이 「mapIds 에는 맵 목록의 mapId 값, 맵을 말하지 않았으면 시작 맵·지금 보는 맵, 곡과 이름이 비슷한 맵을 고르지 않는다」고 시킨다(「이브 같은 미술관 BGM」을 동굴 맵에 걸었다). 카드에 「타일셋 id」를 적지 않는다 — 부정문이 오히려 그 값을 떠올리게 한다. 조수 v2 맵 목록(`src/ai/v2/prompt.ts` `projectBrief`)은 `- mapId=map_x 「이름」 (칩셋 beodeul_city, 20×15) ← 시작 맵·지금 보는 맵` 꼴이다(2026-10-30 실조수: 칩셋 id 가 이름표 없이 맵 id 옆에 있어 7번 중 5번 mapIds 에 칩셋 id 를 넣었다; 단위 `test/v2ProjectBriefMapIds.test.ts`). 틀린 mapIds 는 `mapIdsError` 가 실제 맵 id(이름, 시작 맵 표시)와 「타일셋 id 다」를 돌려준다. 단위 `test/storeMusicPaging.test.ts`.
 - **기본은 바로 넣기 + 바꾸기 쪽지.** 사용자가 음악을 청하면 조수가 묻지 않고 가장 맞는 곡을 `store_install` 로 넣고 `set_game_audio` 로 잇는다(결과 `autoInstall:true`).
   턴 뒤 패널이 짧은 쪽지(`ai-store-music-note`: 「넣었어요: 곡 · 장면·분위기 (바꾸기)」)를 띄운다 — 「바꾸기」(`ai-store-music-swap`)는 같은 검색의 다른 후보를 미리 듣기와 「이걸로」(`ai-store-music-take`)로 펼치고,
   누르면 그 곡만 받아 「앞 곡이 연결된 자리를 이 곡으로 바꿔라」 후속 요청을 보낸다. 쪽지는 답을 기다리는 질문이 아니다(`isAutoMusicChoice`, `isStoreCardRequest` 는 false).
@@ -157,6 +158,24 @@ faceset(48×48 얼굴)·picture(흉상·전신) 에셋을 가리킨다. 표정 �
   2026-10-25 스테이징 실조수(v2·Argon, 판타지·몬스터 자동 넣기 + 조선 카드): 첫 판 14자리 중 9자리 적합(Argon 청취) → 고친 뒤 새 프로젝트 11요청 15자리 중 11자리.
   모든 곡이 `assets/` 파일·저장 뒤 재로드 유지, 출하 플레이어에서 타이틀·마을·던전·전투·보스·승리 15자리 모두 재생 확인. 남은 빗나감은 곡 자체(조선 팩 마을·전투·보스가 조선풍으로 안 들림, 몬스터 타이틀).
   고친 것: 위 점수 규칙·카드 묶기·boss 자동 고르기, 그리고 v2 가 음악 요청을 다 건 뒤에도 「실패」로 끝나던 것(v1 의 게임 시스템 검토 검사 `PiGameSystemProduction` 을 v2 에서 끈다 — v2 에는 그 검토 도구가 없다).
+
+### 효과음 팩과 조수 (2026-10-30)
+
+- 팩: kind `sound`, OGG, 소리마다 `meta.oprnSound`(판 1 — `slots`(1..4, 첫째가 주 자리)·`group`·`style` retro|modern·`set`·`variant` a|b|c·`mood`·`intensity`·`durationSec`·`loopable`·`pairWith`·`summaryKo`·`feelTags`, 참고용 `qa`).
+  지금 팩 8개 = retro·modern × UI·전투·마법·필드. 절차 합성이라 `aiGenerated:false`·크레딧 「OPRN 합성 효과음」 — AI 표시가 붙지 않는다. 에셋 id 는 `oprn-sfx-<style>-<cue>-<a|b|c>`.
+- 읽기 `src/assets/storeSoundMeta.ts` `readStoreSoundMeta`: 자리 id 는 `@/project/seCues` 목록. 옛 이름 별칭(collapse→faint, evasion→miss …)을 풀고,
+  아는 자리가 하나도 없으면 null, 모르는 새 자리 id 는 버리지 않고 `extraSlots`(태그)로 넘긴다. 프로젝트에 넣은 소리는 `audioResourceCatalog` 가 이 값으로 태그·설명을 단다.
+- 고르기 `src/assetStore/storeSoundPick.ts`: 점수 = 주 자리 +20 / 다른 자리 +14 / 가족 기본 자리(magic-fire 를 원하는데 cast) +6 / 안 맞으면 −30, 화풍 ±8, 분위기 낱말 +2, A안 +1, qa 는 /20 동점 깨기.
+  `planSoundStyle` 은 한 화풍으로 자리마다 한 소리(기본 A안). `subsetAudioManifest` 가 곡·소리 몇 개만 남긴 매니페스트를 만든다(음악과 공용).
+- 조수 도구(`src/editor/tools/storeTools.ts`): `store_find_sound{cue, style, mood, query}` — 효과음 팩 목록 전부(쪽 넘김·캐시 `sound|주소`) → 매니페스트(slug@판본 캐시)만 읽고 소리 단위로 줄 세운다,
+  1위에 recommended·why. `autoInstall:false`(「먼저 묻기」)면 `store-sound-choice` 카드(`aiStoreCard.ts` soundChoiceCard, 미리듣기·넣기). 넣은 뒤 `set_game_audio{role:'se', cue, resourceId}`.
+  화풍 통째는 `set_game_audio{role:'sfx-style', style, variant?, cues?}` 한 번 — prepare 가 팩마다 고른 소리 파일만 받고, run 이 넣고 `system.seCues` 를 채운다(먼저 묻기면 거절).
+- `set_game_audio` 의 다른 변화: `role:'maps'` 에 mapIds 가 없으면 지금 보는 맵 → 시작 맵 → 하나뿐인 맵에 걸고 결과 글에 그렇다고 쓴다(틀린 mapIds 는 여전히 거절).
+  `role:'se'` 는 프로젝트 전체 자리라 mapIds 를 받지 않는다. 메뉴 역할(cursor·confirm·cancel)도 자리 표에 같이 건다.
+- v2 낱말 길(`src/ai/v2/musicWords.ts`): `wantsSound`(효과음·SE·SFX·사운드 이펙트·타격음·발소리…) → `SOUND_TIER` 묶음·카드. `soundOnly` 는 `musicOnly` 의 짝 —
+  맵·이벤트 동사를 싣지 않고 검토자·끝맺음 관문의 소리 밖 지적은 참고로 낮춘다(`audioOnly`). 「사운드 이펙트」의 「사운드」는 음악 낱말로 세지 않는다.
+  끝맺음 검사 `[게임 검사 효과음]`: 효과음만 바라는 요청에 효과음 연결(seCues·타이틀 소리·패배/도주·지형 발소리)이 그대로면 짚는다.
+- 시험: `test/storeSoundPick.test.ts`(매니페스트 사본 `test/fixtures/oprn-sfx-*-battle.manifest.json` — 실제 팩에서 소리 6개만 남김, 소리 파일 없음). 런타임 쪽은 `openwiki/runtime-battle.md` 「효과음 자리」.
 
 ## 게시기
 

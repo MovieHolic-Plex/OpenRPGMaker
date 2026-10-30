@@ -11,7 +11,8 @@ export type PlayerStatusMenuControllerOptions = {
   readonly closeMenu: () => void;
   readonly closeMenuWithJuice: () => void;
   readonly renderTitle: () => void;
-  readonly emitMenuJuice: (event: RuntimeJuiceEvent, target?: HTMLElement | null) => void;
+  /** cue: 이 사건이 먼저 찾아볼 효과음 자리(save·load·equip·useItem — project.system.seCues). */
+  readonly emitMenuJuice: (event: RuntimeJuiceEvent, target?: HTMLElement | null, cue?: string) => void;
   readonly menuCloseJuiceMs: number;
   readonly loadSlot: (slot: SaveSlotIndex, fromTitle: boolean) => void;
   readonly loadAutosave?: (fromTitle: boolean) => void;

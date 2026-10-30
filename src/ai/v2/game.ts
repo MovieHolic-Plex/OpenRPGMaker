@@ -8,7 +8,7 @@ import { WHOLE_GAME_WORDS } from "./shipChecks";
 import { getTool } from "@/editor/tools/toolRegistry";
 import type { PiAssistantV2Env } from "./env";
 import { ENCOUNTER_ASK } from "./combatChecks";
-import { MUSIC_REQUEST_WORDS, musicOnly, wantsMusic } from "./musicWords";
+import { MUSIC_REQUEST_WORDS, SOUND_REQUEST_WORDS, audioOnly, wantsMusic, wantsSound } from "./musicWords";
 
 export const GAME_WORDS = /퀘스트|의뢰|심부름|부탁|아이템|회복약|포션|무기|갑옷|방패|장비|장신구|상점|가게|팔게|팔기|열쇠|잠긴|보물|상자|제작|만들어 주는|주인공|이름|직업|레벨|능력치|체력|동료|파티|합류|떠나|스킬|기술|전투|싸우|보스|적\b|몬스터|무리|선택지|호감|기억|스위치|변수|횟수|레버|여관|묵으|저장|회복|치료|신부|골드|돈|엔딩|결말|게임|일지|제한 시간|타이머|낮에|밤에|시간대|아침|저녁|팻말|표지판|우물|동전|암호|비밀번호|통행료|경비|문지기|함정|독|중독|마비|수면|상태 ?이상|날씨|비가|비 ?오|무작위|랜덤|인카운터|조우|마주치|늑대|멧돼지|슬라임|고블린|얻게|얻는|얻을|모으|모았|모아|줍|주워|개수|몇 개|조사하면|조사할|입력|자물쇠|숫자|비밀번호|옮겨|옮기|묘비|회상|따라오|따라와|따라다|도망|사라지|나타나|말 걸|말을 걸|대사|다가가|밟으면|들어가면|문을|잇|이어 줘|이어줘|연결|follow|random|encounter|지진|흔들|번쩍|번개|음악|배경음|브금|bgm|팡파르|사운드트랙|약초|광맥|이동석|눈이|눈 ?내|폭풍|안개|대화|표정|얼굴|초상|흉상|웃으|걱정|장면|뛰어다|돌아다|걸어 다|순찰|쫓아|쫓다|추격|발견|뒤지|뒤져|뒤질|수납|항아리|서랍|옷장|들키|들켜|몰래|숲|사당|오프닝|제목|타이틀|레터박스|검은 띠|카메라|연기|막 끝|막이|제\s*\d+\s*막|카드|페이즈|소환|불러|예고|힘을 모|꿰뚫|속성|약하게|약점|치명타|반지|목걸이|마나|에테르|\bMP\b|화상|기절|잠 |잠은|책장|비석|역사|망원경|이름을|줄여|절반|추가해|연계|합체|협동|콤보|레벨 ?업|팡파레|습득|달려들|돌진|느릿|컷인|도움말|말투|존댓말|반말|다듬|윤문|호칭|대화창|넘치|줄거리|대본|휴대폰|모바일|폰에서|터치|탭하면|탭해서|진동|조이스틱|달리기 단추|들판|초원|필드|바위|버섯|들꽃|고사리|그루터기|통나무|덤불|풀숲|행인|오가|출근|지나다니|옥상|내려다|전망|황무지|문 열리|여는 효과|문 효과|한 명만|두 명|중복|겹쳐|남겨|지워|없애|삭제|빼 줘|치워|combo|touch|mobile|quest|item|shop|weapon|armor|battle|enemy|party|skill|inn|save|gold|ending|poison|weather/iu;
 
@@ -20,9 +20,18 @@ export function wantsPuzzle(task: string): boolean {
   return HORROR_WORDS.test(task) || /퍼즐|단서|금고|비밀번호|암호|열쇠|잠긴|잠겨|탈출|수수께끼|puzzle|clue|escape|riddle/iu.test(task);
 }
 /** 음악 묶음 — 게임 요소 낱말이 없어도 음악 요청이면 이 묶음만 따로 싣는다(createGameTools). */
-export const MUSIC_TIER = { words: MUSIC_REQUEST_WORDS, tools: ["recommend_bgm", "store_find_music", "store_install", "set_game_audio", "get_database_records", "list_endings"], card: "· 배경음악·전투곡·보스곡·승리 팡파르·타이틀곡·엔딩곡: 1) recommend_bgm{scene, query(장르)} 로 프로젝트에 있는 곡을 본다 2) 후보가 기본 내장곡(cc0-·rtp 계열, music 칸 없음)뿐이거나 장르 곡(조선풍·무협·호러·16비트 레트로·피아노…)이 필요하면 store_find_music{scene, query, mood, need} — query 에는 사용자의 말을 그대로(「크로노트리거 느낌」「투더문 같은」「파판 전투곡」처럼 게임 이름이 있으면 이름째) 넣는다, 장르를 지어내 바꾸지 않는다(도구가 이름을 들리는 결로 바꾼다). 후보는 점수 순이고 1위에 recommended:true 와 이유(why)가 붙는다 — 사용자가 다른 곡을 고르지 않았으면 recommended 곡을 쓴다(fallback:true 는 게임 결 줄이 아닌 대신 곡). 그 게임 곡이라고 말하지 않는다(「그런 느낌의 곡」). 미술관·갤러리·박물관·저택 배경음은 scene:'town' 이다(던전이 아니다). 결과 autoInstall:true(기본)면 묻지 말고 recommended 곡을 store_install{slug, assetIds:[assetId]} 로 넣는다, false(사용자가 「먼저 묻기」를 켬)면 카드가 뜨니 넣지 말고 이 턴을 끝낸다 3) 연결은 set_game_audio: 마을·맵 = role:'maps'+mapIds(mapIds 는 맵 id — 타일셋 id 가 아니다. 사용자가 맵 이름을 말하지 않았으면 시작 맵(지금 보는 맵)에 건다 — 곡 분위기와 이름이 비슷한 맵(「미술관」 곡 → 동굴 맵)을 고르지 않는다), 모든 전투 = 'battle-default', 보스전만 = 'boss'(+troopIds, 비우면 이름에 보스·마왕·드래곤이 든 부대), 승리 = 'victory'(loopable:false 짧은 곡), 타이틀 = 'title', 엔딩·크레딧 곡 = 'ending'(+endingIds — 비우면 모든 엔딩과 엔딩 명령에 건다; 엔딩이 아직 없으면 곡만 넣어 두고 보고에 적는다). 추격 음악(「쫓아올 때」「아오오니 느낌 추격」) = store_find_music{scene:'chase'} 로 찾고 'chase'(+mapIds — 추격자가 나타날 때 바꾸고 끝나면 되돌린다; 추격자가 없으면 곡만 넣어 두고 보고에 적는다) — 전투 곡(battle-default)이 아니다. 「게임 음악 전부」는 맵마다(마을·필드·던전 각각) + 전투 + 보스 + 승리 + 타이틀을 장면에 맞는 서로 다른 곡으로 건다. 맵 배경음을 이벤트의 playAudio 로 흉내 내지 않는다(장면 도중 잠깐 바뀌는 곡만 add_event music 비트). 음악만 바라는 요청(「X처럼 신나는 곡 마을에」「잔잔한 엔딩곡」)은 곡을 찾고·넣고·연결하는 일만 한다 — 맵을 다시 짓거나 이벤트·엔딩을 새로 만들지 않는다(곡을 걸 자리가 없으면 보고에 적는다)." } as const;
+export const MUSIC_TIER = { words: MUSIC_REQUEST_WORDS, tools: ["recommend_bgm", "store_find_music", "store_install", "set_game_audio", "get_database_records", "list_endings"], card: "· 배경음악·전투곡·보스곡·승리 팡파르·타이틀곡·엔딩곡: 1) recommend_bgm{scene, query(장르)} 로 프로젝트에 있는 곡을 본다 2) 후보가 기본 내장곡(cc0-·rtp 계열, music 칸 없음)뿐이거나 장르 곡(조선풍·무협·호러·16비트 레트로·피아노…)이 필요하면 store_find_music{scene, query, mood, need} — query 에는 사용자의 말을 그대로(「크로노트리거 느낌」「투더문 같은」「파판 전투곡」처럼 게임 이름이 있으면 이름째) 넣는다, 장르를 지어내 바꾸지 않는다(도구가 이름을 들리는 결로 바꾼다). 후보는 점수 순이고 1위에 recommended:true 와 이유(why)가 붙는다 — 사용자가 다른 곡을 고르지 않았으면 recommended 곡을 쓴다(fallback:true 는 게임 결 줄이 아닌 대신 곡). 그 게임 곡이라고 말하지 않는다(「그런 느낌의 곡」). 미술관·갤러리·박물관·저택 배경음은 scene:'town' 이다(던전이 아니다). 결과 autoInstall:true(기본)면 묻지 말고 recommended 곡을 store_install{slug, assetIds:[assetId]} 로 넣는다, false(사용자가 「먼저 묻기」를 켬)면 카드가 뜨니 넣지 말고 이 턴을 끝낸다 3) 연결은 set_game_audio: 마을·맵 = role:'maps'+mapIds(mapIds 에는 [지금 프로젝트] 맵 목록의 mapId= 값을 쓴다. 사용자가 맵 이름을 말하지 않았으면 시작 맵(지금 보는 맵)에 건다 — 곡 분위기와 이름이 비슷한 맵(「미술관」 곡 → 동굴 맵)을 고르지 않는다), 모든 전투 = 'battle-default', 보스전만 = 'boss'(+troopIds, 비우면 이름에 보스·마왕·드래곤이 든 부대), 승리 = 'victory'(loopable:false 짧은 곡), 타이틀 = 'title', 엔딩·크레딧 곡 = 'ending'(+endingIds — 비우면 모든 엔딩과 엔딩 명령에 건다; 엔딩이 아직 없으면 곡만 넣어 두고 보고에 적는다). 추격 음악(「쫓아올 때」「아오오니 느낌 추격」) = store_find_music{scene:'chase'} 로 찾고 'chase'(+mapIds — 추격자가 나타날 때 바꾸고 끝나면 되돌린다; 추격자가 없으면 곡만 넣어 두고 보고에 적는다) — 전투 곡(battle-default)이 아니다. 「게임 음악 전부」는 맵마다(마을·필드·던전 각각) + 전투 + 보스 + 승리 + 타이틀을 장면에 맞는 서로 다른 곡으로 건다. 맵 배경음을 이벤트의 playAudio 로 흉내 내지 않는다(장면 도중 잠깐 바뀌는 곡만 add_event music 비트). 음악만 바라는 요청(「X처럼 신나는 곡 마을에」「잔잔한 엔딩곡」)은 곡을 찾고·넣고·연결하는 일만 한다 — 맵을 다시 짓거나 이벤트·엔딩을 새로 만들지 않는다(곡을 걸 자리가 없으면 보고에 적는다)." } as const;
 export function wantsMusicTools(task: string): boolean {
-  return wantsMusic(task);
+  return wantsMusic(task) || wantsSound(task);
+}
+/** 효과음 묶음 — 음악 묶음의 짝. 효과음 낱말(효과음·SE·타격음·발소리…)이면 싣는다. */
+export const SOUND_TIER = { words: SOUND_REQUEST_WORDS, tools: ["store_find_sound", "store_install", "set_game_audio", "list_resources", "get_database_records"], card: "· 효과음(커서·결정·취소·타격·급소·회피·쓰러짐·마법·레벨 업·아이템 획득·저장·장비·문·상자·발소리 …): 효과음은 자리(cue) 표 project.system.seCues 에 건다 — 자리마다 소리 하나, 런타임이 그 자리에서 울린다(비운 자리는 예전 소리 그대로). "
+  + "1) 화풍 하나로 통째로(「효과음 전부 레트로로」「8비트 소리로」「현대적인 효과음으로 맞춰」) = set_game_audio{role:'sfx-style', style:'retro'|'modern'} 한 번 — 스토어 효과음 팩에서 자리마다 한 소리(기본 A안, variant 로 b·c)를 골라 넣고 다 건다. 자리를 좁히려면 cues:[…]. "
+  + "2) 자리 하나(「타격음 더 묵직하게」「레벨 업 소리 바꿔」) = store_find_sound{cue, style, mood, query(사용자 말 그대로)} → 결과 autoInstall:true 면 묻지 말고 recommended 소리를 store_install{slug, assetIds:[assetId]} 로 넣고 set_game_audio{role:'se', cue, resourceId} 로 건다; false 면 카드가 뜨니 넣지 말고 턴을 끝낸다. 프로젝트에 이미 있는 효과음이면 list_resources{kind:'se'} 로 고르고 바로 set_game_audio role:'se'. "
+  + "자리 id: 적 피해 damage · 아군 피해 actorDamage · 급소 critical · 빗나감 miss · 적 쓰러짐 faint · 보스 쓰러짐 bossCollapse · 시전 cast · 속성 마법 magic-fire/ice/thunder/wind/earth/water/holy/dark(없으면 cast 로 물러선다) · 메뉴 열기 menuOpen · 장비 equip · 저장 save · 불러오기 load · 상점 shop · 아이템 사용 useItem · 획득 itemGet · 레벨 업 levelUp · 전투 시작 battleStart · 문 door · 상자 chest · 발소리 footstep-grass/stone/wood/sand/snow/water(지형 이름으로 고른다). 한국어 낱말도 도구가 자리로 바꾼다. "
+  + "효과음만 바라는 요청은 소리를 찾고·넣고·거는 일만 한다 — 맵을 다시 짓거나 이벤트를 새로 만들지 않는다. 장면 도중 한 번 울리는 소리만 add_event 의 playAudio(se) 로 넣는다." } as const;
+export function wantsSoundTools(task: string): boolean {
+  return wantsSound(task);
 }
 export const FALLEN_TIERS: readonly { readonly words: RegExp; readonly tools: readonly string[]; readonly card?: string }[] = [
   { words: /숲|들판|필드|초원|forest|woods?\b|field|meadow/iu, tools: ["author_forest_route"] },
@@ -197,8 +206,10 @@ export function gameToolNames(task: string): string[] {
  */
 export function v2ExtraToolNames(task: string): string[] {
   // 음악만 바라는 요청은 음악 묶음만 — 「추격」「엔딩」 낱말이 게임 도구(찍기·추격 장면·엔딩 정의)를 끌어오지 않게(2026-10-30 r12).
-  if (musicOnly(task)) return [...new Set([...MUSIC_TIER.tools, ...storeTierTools(task)])];
-  const want = [...(wantsGameTools(task) ? [...gameToolNames(task), "list_spatial_designs", "stamp_object", ...fallenTierTools(task)] : wantsMusicTools(task) ? MUSIC_TIER.tools : []), ...(wantsTerrainTools(task) ? V2_TERRAIN_TOOLS : []), ...storeTierTools(task)];
+  // 효과음만 바라는 요청도 같다(소리 묶음만) — 음악 낱말이 같이 있으면 음악 묶음도 싣는다.
+  if (audioOnly(task)) return [...new Set([...(wantsMusic(task) ? MUSIC_TIER.tools : []), ...(wantsSound(task) ? SOUND_TIER.tools : []), ...storeTierTools(task)])];
+  const audioTools = [...(wantsMusic(task) ? MUSIC_TIER.tools : []), ...(wantsSound(task) ? SOUND_TIER.tools : [])];
+  const want = [...(wantsGameTools(task) ? [...gameToolNames(task), "list_spatial_designs", "stamp_object", ...fallenTierTools(task), ...(wantsSound(task) ? SOUND_TIER.tools : [])] : audioTools), ...(wantsTerrainTools(task) ? V2_TERRAIN_TOOLS : []), ...storeTierTools(task)];
   return [...new Set(want)];
 }
 

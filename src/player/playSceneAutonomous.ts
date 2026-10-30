@@ -5,7 +5,9 @@ import { jumpHop } from "@/player/characterHop";
 import type { Dir } from "@/project/types";
 import { actionFieldSlow } from "./actionFieldSlow";
 import { isDetectionEmoting } from "./npcDetectionEncounter";
-import { pursuitTarget } from "./horrorRuntime";
+import { hearsPlayer, isPlayerHiding, pursuitTarget } from "./horrorRuntime";
+import { chaseBrainProfile } from "@/project/chaseBrain";
+import { tickChaseNoises, updatePlayerFootsteps } from "./chaseNoise";
 import { pursuitPass, pursuitState } from "./pursuitNavigation";
 import { canMoveFootprint, isLedgeCell, isPassableLanding } from "@/project/collision";
 import { isSpatialPlacementBlocking } from "@/project/spatialOccupancy";
@@ -52,6 +54,8 @@ runtimeEventViewsForMap, } from "@/project/runtimeEventState"
 const frameMotion = new WeakMap<object, PlayerMotion>();
 /** 막힌 걸음 뒤 재탐색까지 남기는 시간: 재탐색 주기 500ms 중 이 값부터 센다(= 약 150ms 뒤). */
 const CHASE_BLOCKED_REPATH_AT_MS = 350;
+/** 접촉 전투가 끝난 뒤 같은 추격자가 다시 접촉 전투를 열기까지(ms). 도망친 직후 제자리 재전투를 막는다. */
+const CHASE_CONTACT_COOLDOWN_MS = 1500;
 const FACING_STEP: Readonly<Record<Dir, ChasePoint>> = { up: { x: 0, y: -1 }, down: { x: 0, y: 1 }, left: { x: -1, y: 0 }, right: { x: 1, y: 0 } };
 
 /**
@@ -171,6 +175,11 @@ function updateAutonomousNPCsInPass(scene: AutonomousNpcSceneContext, frameDelta
   // 추격 전술이 쓰는 주인공 진행 방향 — 프레임마다 한 번만 갱신한다(@/player/chaseTactics).
   const movingTo = (scene as { movingTo?: ChasePoint }).movingTo;
   frameMotion.set(scene, trackPlayerMotion(scene, { x: scene.tileX, y: scene.tileY }, scene.moving === true, movingTo));
+  // 추격자가 듣는 발소리·소리(@/player/chaseNoise): 서 있기·걷기·달리기.
+  const stepping = scene.moving === true && movingTo !== undefined;
+  updatePlayerFootsteps(scene.session, { moving: stepping, dashing: (scene as { dashing?: boolean }).dashing === true,
+    at: stepping ? movingTo! : { x: scene.tileX, y: scene.tileY }, deltaMs: frameDeltaMs });
+  tickChaseNoises(scene.session, frameDeltaMs);
   const repathCandidates: LivingRepathCandidate[] = [];
   for (const [eventId, mover] of scene.autonomousNPCs) {
     const deltaMs = frameDeltaMs * (actionFieldSlow.get(mover) ?? 1);
@@ -179,6 +188,8 @@ function updateAutonomousNPCsInPass(scene: AutonomousNpcSceneContext, frameDelta
     if (isDetectionEmoting(scene, eventId)) continue;
     if (scene.running && scene.session.messageWindowSettings?.allowEventMovementDuringWait !== true
       && !scene.commandMoveRouteEventIds?.has(eventId)) continue;
+    // 닿으면 무조건 전투 — 옆·대각·겹침, 주인공이 서 있어도, 추격자가 순찰·수색·걸음 중이어도(2026-10-30).
+    if (mover.strategy === "chase" && !spawnGrace && tryChaseContact(scene, project, eventId, mover, deltaMs)) continue;
     // 명령 경로(moveEvent·시간표 이동): 걸음 사이에 빈도 대기를 넣지 않고 이어 걷는다(RPG Maker MV/MZ 「이동 루트 설정」).
     // 예전에는 기본 빈도(3)로 걸음마다 560ms 서 있어 칸당 1초 가까이 걸렸다(2026-10-22 실측, @/project/characterMotion).
     const routeForced = scene.commandMoveRouteEventIds?.has(eventId) === true && mover.strategy === "sequence";
@@ -191,9 +202,9 @@ function updateAutonomousNPCsInPass(scene: AutonomousNpcSceneContext, frameDelta
         const chasing = view ? pursuitTarget({ project, map: scene.map, session: scene.session, positions: scene.eventPositions }, view, mover, deltaMs) : null;
         updateActiveNpcMove({ scene, eventId, mover }, deltaMs);
         // 걸어오는 도중에도 그림이 닿는 그 프레임에 전투를 연다 — 닿기 전에는 열지 않는다(@/player/chaseContact).
-        if (view && chasing && !chasing.searching && !mover.kite && !mover.through
+        if (view && chasing !== null && !mover.kite && !mover.through && (mover.contactCooldownMs ?? 0) <= 0
           && chaserBodyTouches(scene, project, view, mover)) {
-          fireEventTouch(scene, eventId, view.trigger.kind);
+          fireEventTouch(scene, eventId, view.trigger.kind, mover);
           continue;
         }
       } else {
@@ -505,9 +516,14 @@ function updateChaseNpc(
   const lunge = view.movement.chaseLunge;
   const approach = fieldApproachRecipe(view.movement.approachStyle);
   const seenBefore = mover.alertSeen === true;
-  if (sightAlert && !mover.chaseTarget && holdForSightAlert(scene, eventId, mover, { ...sightAlert, holdMs: chaseAlertHoldMs(view.movement) }, tracked, deltaMs)) {
-    // 덮치기(movement.chaseLunge)는 놀람 멈춤이 끝나는 순간부터 센다.
-    if (lunge && !seenBefore && mover.alertSeen) mover.lungeLeft = Math.max(0, Math.round(lunge.steps));
+  const brain = chaseBrainProfile(view.movement);
+  mover.phaseWalls = brain.phase || undefined;
+  // 성격이 영리하면 느낌표는 달리면서 띄운다 — 멈추지 않는다(alertHoldCapMs 0). 옛 방식(classic)만 저작한 만큼 선다.
+  const holding = sightAlert !== undefined && !mover.chaseTarget
+    && holdForSightAlert(scene, eventId, mover, { ...sightAlert, holdMs: Math.min(chaseAlertHoldMs(view.movement), brain.alertHoldCapMs) }, tracked, deltaMs);
+  // 덮치기(movement.chaseLunge)는 알아챈 그 순간(멈춤이 있으면 그 멈춤부터) 센다.
+  if (sightAlert && lunge && !seenBefore && mover.alertSeen && !mover.chaseTarget) mover.lungeLeft = Math.max(0, Math.round(lunge.steps));
+  if (holding) {
     setNpcIdleFrame(sprite, baseFrame, mover.facing, view.animationType, mover.animationEnabled);
     return;
   }
@@ -551,7 +567,7 @@ function updateChaseNpc(
     ? findBlockingEventOverlappingRect(project, scene.map, scene.session, scene.eventPositions,
       { left: pursuit.x, right: pursuit.x, top: pursuit.y, bottom: pursuit.y }, eventId)
     : undefined;
-  const pass = pursuitPass(world, view, targetEvent?.event.id);
+  const pass = brain.phase ? { ...pursuitPass(world, view, targetEvent?.event.id), phase: true } : pursuitPass(world, view, targetEvent?.event.id);
   // 추격 전술(@/player/chaseTactics): 진행 방향 앞질러 막기·여럿이면 갈라져 감싸기. 안전지대 안의 주인공은 건드리지 않는다.
   const motion = frameMotion.get(scene);
   if (engaged && motion && mover.pathfind !== false && !isInSafeZone(scene.map.safeZones, { x: scene.tileX, y: scene.tileY })
@@ -561,6 +577,7 @@ function updateChaseNpc(
       cellMs: styledPace ? approach!.stepMs + approach!.pauseMs / Math.max(1, approach!.burst) : tempoMs,
       playerStepMs: (scene as { moveDurationMs?: number }).moveDurationMs ?? PLAYER_WALK_STEP_MS,
       player: motion, allies: engagedAllyCells(scene, eventId, motion),
+      tactics: { intercept: brain.intercept, interceptMinRun: brain.interceptMinRun, flank: brain.flank, flankOffset: brain.flankOffset },
       ...(mover.chaseGoalKey ? { previous: parseGoalKey(mover.chaseGoalKey) } : {}),
     });
     const key = `${goal.x}:${goal.y}`;
@@ -573,6 +590,8 @@ function updateChaseNpc(
   } else if (!engaged) {
     mover.chaseGoalKey = undefined;
   }
+  // 시야·추격 정책이 없는 옛 추격자(sightRange 만)도 발소리를 들으면 깨어난다.
+  if (tracked === undefined && !mover.chaseTarget && mover.chaseActive !== true && hearsPlayer(world, view)) mover.chaseActive = true;
   let decision = nextChaseDecision({
     project,
     map: scene.map,
@@ -580,8 +599,8 @@ function updateChaseNpc(
     player: pursuit,
     deltaMs,
     mover,
-    sightRange: tracked ? undefined : mover.sightRange,
-    giveUpRange: tracked ? undefined : mover.giveUpRange !== undefined && approach?.giveUpBonus ? mover.giveUpRange + approach.giveUpBonus : mover.giveUpRange,
+    sightRange: tracked ? undefined : mover.sightRange !== undefined ? mover.sightRange + brain.sightBonusCells : undefined,
+    giveUpRange: tracked ? undefined : mover.giveUpRange !== undefined ? mover.giveUpRange + (approach?.giveUpBonus ?? 0) + brain.giveUpBonus : undefined,
     pathfind: mover.pathfind,
     kite: mover.kite,
     requestRepath: () => requestChaseRepath(scene, mover),
@@ -633,7 +652,7 @@ function updateChaseNpc(
     && !rectsOverlap(nextRect, playerPassageRect(playerBody, scene.movingTo.x, scene.movingTo.y))
     && !playerBodyTouches(scene, project, view);
   if (!mover.through && touchesPlayer && !followVacated) {
-    if (!mover.chaseTarget && !mover.kite && !tracked?.searching && playerBodyTouches(scene, project, view)) fireEventTouch(scene, eventId, view.trigger.kind);
+    if (!mover.chaseTarget && !mover.kite && (mover.contactCooldownMs ?? 0) <= 0 && playerBodyTouches(scene, project, view)) fireEventTouch(scene, eventId, view.trigger.kind, mover);
     setNpcIdleFrame(sprite, baseFrame, frameDir, view.animationType, mover.animationEnabled);
     return;
   }
@@ -711,8 +730,37 @@ function moveAutonomousRuntimePosition(
   moveRuntimeEventPosition(scene.eventPositions, eventId, x, y, direction);
 }
 
-function fireEventTouch(scene: AutonomousNpcSceneContext, eventId: string, triggerKind: string): void {
+/**
+ * 추격자 몸이 주인공 몸에 닿았으면 접촉 전투를 연다(옆·대각·겹침 모두, @/player/chaseContact TOUCH_REACH).
+ * 예전에는 추격자가 주인공 칸으로 «걸어 들어가려는» 순간에만 열려, 대각 옆에 선 추격자·순찰하다 스친 추격자·
+ * 서 있는 주인공 곁에 멈춘 추격자는 영영 전투를 안 걸었다(2026-10-30 폴른 스타 B5 들개).
+ * 숨은 주인공(목격되지 않은 숨기)·안전지대·NPC 를 쫓는 진영 추격·거리 유지 적·통과(through) 페이지는 열지 않는다.
+ */
+function tryChaseContact(
+  scene: AutonomousNpcSceneContext,
+  project: ReturnType<typeof store.getCurrent>,
+  eventId: string,
+  mover: AutonomousMover,
+  deltaMs: number
+): boolean {
+  if (mover.chaseTarget || mover.kite || mover.through || mover.actionFrozen) return false;
+  if ((mover.contactCooldownMs ?? 0) > 0) {
+    mover.contactCooldownMs = Math.max(0, (mover.contactCooldownMs ?? 0) - Math.max(0, deltaMs));
+    return false;
+  }
+  if (isInSafeZone(scene.map.safeZones, { x: scene.tileX, y: scene.tileY })) return false;
+  const view = runtimeEventViewById(project, scene.map, scene.session, scene.eventPositions, eventId);
+  if (!view || view.trigger.kind !== "eventTouch" || view.movement.type !== "chase") return false;
+  const world = { project, map: scene.map, session: scene.session, positions: scene.eventPositions };
+  if (isPlayerHiding(world) && !scene.session.horror?.hiding?.witnessedBy.includes(eventId)) return false;
+  if (!chaserBodyTouches(scene, project, view, mover)) return false;
+  fireEventTouch(scene, eventId, view.trigger.kind, mover);
+  return true;
+}
+
+function fireEventTouch(scene: AutonomousNpcSceneContext, eventId: string, triggerKind: string, mover?: AutonomousMover): void {
   if (triggerKind !== "eventTouch") return;
+  if (mover && !scene.running) mover.contactCooldownMs = CHASE_CONTACT_COOLDOWN_MS;
   // 이벤트 실행은 첫 대기까지 동기로 돌아 맵 이벤트 배열을 바꿀 수 있다(소환·제거) — 조회 색인을 버린다.
   invalidateEventIdIndexPass();
   void scene.runEvent(eventId);

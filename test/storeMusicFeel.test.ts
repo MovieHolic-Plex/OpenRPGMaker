@@ -107,3 +107,38 @@ describe("game-name music requests", () => {
     expect(projectHintLines(["Grace of the Forest"])).toEqual({});
   });
 });
+
+describe("horror-word music requests", () => {
+  // 2026-10-30 실데이터 재현: 「공포 게임」+town 에 캐주얼 레이스 로비 곡이 1위였다(「게임」이 결 「레트로 게임 감성」·설명 「게임의 로비」에 맞았다).
+  const HORROR_POOL = [
+    ...pack("race2", [track("race-lobby", { ...loop, genre: "casual-race", genreKo: "밝은 캐주얼 레이스", sceneRoles: ["town"], mood: ["경쾌한", "발랄한"], feelTags: ["칩튠 사운드", "경쾌한 리듬", "레트로 게임 감성"], summaryKo: "경쾌하고 반복적인 칩튠 선율이 돋보이는 곡으로 게임의 로비나 광장에 잘 어울립니다." })]),
+    ...pack("snes2", [track("snes-plaza", { ...loop, genre: "snes-jrpg", genreKo: "16비트 JRPG", sceneRoles: ["town", "dungeon"], mood: ["무서운 듯 신비로운"], feelTags: ["16비트 SNES 음색"], summaryKo: "광장의 축제 곡." })]),
+    ...pack("horror", [track("horror-town", { ...loop, genre: "horror", genreKo: "호러 앰비언트", sceneRoles: ["town", "tense"], mood: ["으스스한"], feelTags: ["낮은 드론"], summaryKo: "안개 낀 폐허 마을." })]),
+    ...pack("chase", [track("chase-cellar", { ...loop, genre: "chase-horror", genreKo: "추격 호러", sceneRoles: ["dungeon"], mood: ["불안한"], feelTags: ["긴장된 현악"], summaryKo: "어두운 지하실." })]),
+    ...pack("fairy", [track("fairy-rest", { ...loop, genre: "dark-fairytale", genreKo: "잔혹 동화", sceneRoles: ["town"], mood: ["기묘한"], feelTags: ["오르골"], summaryKo: "벽난로 곁의 짧은 쉼." })]),
+    ...pack("piano2", [track("piano-rain", { ...loop, genre: "piano-story", genreKo: "피아노 스토리", sceneRoles: ["town"], mood: ["잔잔한"], feelTags: ["솔로 피아노"], summaryKo: "창가의 빗소리." })]),
+  ];
+  const top = (want: Parameters<typeof rankStoreMusic>[1]) => rankStoreMusic(HORROR_POOL, want).map((t) => t.music.genre);
+  const HORROR = ["horror", "chase-horror", "school-horror", "dark-fairytale", "eerie-minimal"];
+
+  it.each(["공포 게임", "호러", "무서운", "괴담", "scary"])("「%s」 puts horror-family lines first in town and dungeon", (query) => {
+    for (const scene of ["town", "dungeon"] as const) {
+      const genres = top({ scene, query });
+      expect(HORROR, `${scene} ${query}: ${genres.join(",")}`).toContain(genres[0]);
+      const firstOther = genres.findIndex((g) => !HORROR.includes(g));
+      const lastHorror = genres.map((g) => HORROR.includes(g)).lastIndexOf(true);
+      if (firstOther >= 0) expect(lastHorror).toBeLessThan(firstOther);
+    }
+  });
+
+  it("「게임」 alone is not a genre word — the lobby track is not boosted by it", () => {
+    const lobby = HORROR_POOL.find((t) => t.assetId === "race-lobby")!;
+    expect(scoreStoreMusic(lobby, { scene: "town", query: "게임" })).toBe(scoreStoreMusic(lobby, { scene: "town" }));
+  });
+
+  it("a horror word does not demote a line the user named too (공포 피아노)", () => {
+    const piano = HORROR_POOL.find((t) => t.assetId === "piano-rain")!;
+    expect(scoreStoreMusic(piano, { scene: "town", query: "공포 피아노" })).toBeGreaterThan(scoreStoreMusic(piano, { scene: "town", query: "공포" }));
+    expect(top({ scene: "town", query: "공포 피아노" })).toContain("piano-story");
+  });
+});

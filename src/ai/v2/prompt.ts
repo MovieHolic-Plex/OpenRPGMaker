@@ -12,11 +12,11 @@ import { EVENT_CARD } from "./events";
 import { DRAW_OBJECT_CARD } from "./drawObject";
 import { MONSTER_TOWN_CARD } from "./builders/monsterTown";
 import { SCENE_CARD } from "./scene";
-import { GAME_CARD, MUSIC_TIER, TERRAIN_CARD, fallenTierCard, storeTierCard, wantsGameTools, wantsMusicTools, wantsStoreTools, wantsTerrainTools } from "./game";
+import { GAME_CARD, MUSIC_TIER, SOUND_TIER, TERRAIN_CARD, fallenTierCard, storeTierCard, wantsGameTools, wantsMusicTools, wantsSoundTools, wantsStoreTools, wantsTerrainTools } from "./game";
 import { MAKE_GAME_CARD, makeGameOn, wantsMakeGame } from "./makeGame";
 import { BLUEPRINT_CARD, blueprintPin } from "./blueprint";
 import { wantsWholeGame } from "./shipChecks";
-import { musicOnly } from "./musicWords";
+import { audioOnly, musicOnly, wantsMusic } from "./musicWords";
 
 export const V2_CORE_PROMPT = [
   "너는 OPRN RPG 편집기의 조수(v2)다. 역할 분담: 너는 «무엇을» 정한다(명세), 함수가 «어떻게» 짓는다(결정론 빌더), 다른 눈(독립 비평가)이 1배 그림을 본다.",
@@ -33,14 +33,20 @@ export const V2_CORE_PROMPT = [
 
 export const V2_CARDS: readonly string[] = [INTERIOR_CARD, VILLAGE_CARD, DUNGEON_CARD, JP_CITY_CARD, MODERN_KR_CARD, PEOPLE_CARD, EVENT_CARD, DRAW_OBJECT_CARD];
 
-/** 지금 프로젝트를 모델이 알 만큼만 — 맵(이름·칩셋·크기·사람 수·비었는지), 지금 보는 맵, 시작 맵. */
+/**
+ * 지금 프로젝트를 모델이 알 만큼만 — 맵(이름·칩셋·크기·사람 수·비었는지), 지금 보는 맵, 시작 맵.
+ * 2026-10-30 실조수 e2e: 「map_blank_start 「버들 마을」 beodeul_city 20×15」처럼 칩셋 id 가 이름표 없이 맵 id 옆에 있어
+ * 7번 중 5번 set_game_audio mapIds 에 칩셋 id 를 넣었다. 맵 id 는 `mapId=` 로, 칩셋은 괄호 안 `칩셋 …` 으로 이름을 붙인다.
+ */
 export function projectBrief(project: Project, currentMapId?: string): string {
   const maps = Object.values(project.maps).slice(0, 24).map((m) => {
     const filled = m.lowerTiles.some((t) => (t ?? -1) >= 0);
     const people = (m.events ?? []).filter((e) => e.pages?.[0]?.graphic).length;
-    return `- ${m.id} 「${m.name}」 ${m.tilesetId} ${m.width}×${m.height}${filled ? "" : " (빈 맵)"}${people ? ` 사람·물체 ${people}` : ""}${m.id === currentMapId ? " ← 지금 보는 맵" : ""}${m.id === project.startMapId ? " (시작 맵)" : ""}`;
+    const marks = [m.id === project.startMapId ? "시작 맵" : "", m.id === currentMapId ? "지금 보는 맵" : ""].filter(Boolean);
+    const details = [`칩셋 ${m.tilesetId}`, `${m.width}×${m.height}`, ...(filled ? [] : ["빈 맵"]), ...(people ? [`사람·물체 ${people}`] : [])];
+    return `- mapId=${m.id} 「${m.name}」 (${details.join(", ")})${marks.length ? ` ← ${marks.join("·")}` : ""}`;
   });
-  return ["[지금 프로젝트]", ...maps, Object.keys(project.maps).length > 24 ? `…맵 ${Object.keys(project.maps).length}개 중 24개만` : ""].filter(Boolean).join("\n");
+  return ["[지금 프로젝트 — 맵을 가리키는 칸(mapId·mapIds)에는 mapId= 뒤의 값을 쓴다]", ...maps, Object.keys(project.maps).length > 24 ? `…맵 ${Object.keys(project.maps).length}개 중 24개만` : ""].filter(Boolean).join("\n");
 }
 
 /** 요청·프로젝트가 맞을 때만 싣는 카드(각 한 장) — 몬스터 수집 마을, 두 선택 대화 장면. */
@@ -51,7 +57,7 @@ export function conditionalCards(project: Project, currentMapId?: string, task =
   const monster = MONSTER_WORDS.test(task) || /^oprn-monster/u.test(tileset?.family ?? "");
   const contract = project.gameDesignBrief?.implementation?.harnessId === "romance-scene";
   const joseon = JOSEON_WORDS.test(task) || tileset?.id === "joseon_baram";
-  return [...(monster ? [MONSTER_TOWN_CARD] : []), ...(joseon ? [JOSEON_CARD] : []), ...(WIZARDING_WORDS.test(task) || tileset?.id === "wizarding_world" ? [WIZARDING_CARD] : []), ...(contract || SCENE_WORDS.test(task) ? [SCENE_CARD] : []), ...(musicOnly(task) ? [`[음악만 바라는 요청 — 곡을 찾고·넣고·거는 일만 한다. 맵·이벤트·물건은 고치지 않는다(이미 있던 문제는 보고에 참고로만 적는다)]\n${MUSIC_TIER.card}`] : wantsGameTools(task) ? [GAME_CARD, ...[fallenTierCard(task)].filter(Boolean)] : wantsMusicTools(task) ? [`[음악 요청 — 이 도구를 쓴다]\n${MUSIC_TIER.card}`] : []), ...(wantsTerrainTools(task) && !musicOnly(task) ? [TERRAIN_CARD] : []), ...(wantsStoreTools(task) ? [storeTierCard(task)] : []), ...(makeGameOn() && wantsMakeGame(task) ? [MAKE_GAME_CARD] : [])];
+  return [...(monster ? [MONSTER_TOWN_CARD] : []), ...(joseon ? [JOSEON_CARD] : []), ...(WIZARDING_WORDS.test(task) || tileset?.id === "wizarding_world" ? [WIZARDING_CARD] : []), ...(contract || SCENE_WORDS.test(task) ? [SCENE_CARD] : []), ...(audioOnly(task) ? [`[${musicOnly(task) ? "음악" : "효과음"}만 바라는 요청 — 소리를 찾고·넣고·거는 일만 한다. 맵·이벤트·물건은 고치지 않는다(이미 있던 문제는 보고에 참고로만 적는다)]`, ...(wantsMusic(task) ? [MUSIC_TIER.card] : []), ...(wantsSoundTools(task) ? [SOUND_TIER.card] : [])] : wantsGameTools(task) ? [GAME_CARD, ...[fallenTierCard(task)].filter(Boolean), ...(wantsSoundTools(task) ? [`[효과음 요청 — 이 도구를 쓴다]\n${SOUND_TIER.card}`] : [])] : wantsMusicTools(task) ? [...(wantsMusic(task) ? [`[음악 요청 — 이 도구를 쓴다]\n${MUSIC_TIER.card}`] : []), ...(wantsSoundTools(task) ? [`[효과음 요청 — 이 도구를 쓴다]\n${SOUND_TIER.card}`] : [])] : []), ...(wantsTerrainTools(task) && !audioOnly(task) ? [TERRAIN_CARD] : []), ...(wantsStoreTools(task) ? [storeTierCard(task)] : []), ...(makeGameOn() && wantsMakeGame(task) ? [MAKE_GAME_CARD] : [])];
 }
 
 export function buildV2SystemPrompt(project: Project, currentMapId?: string, task?: string): string[] {

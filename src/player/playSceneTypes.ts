@@ -109,6 +109,10 @@ export type AutonomousMover = {
   chaseBreathMs?: number;
   /** 추격 전술(@/player/chaseTactics)이 고른 지금 목표 칸 — 바뀌면 경로를 다시 찾는다. */
   chaseGoalKey?: string;
+  /** 접촉 전투를 막 열었다 — 이벤트가 끝난 뒤 이만큼(ms) 다시 열지 않는다(도망친 뒤 같은 자리에서 곧바로 재전투 방지). */
+  contactCooldownMs?: number;
+  /** 벽·지형을 통과한다(chaseBrain ghost). 맵 밖·다른 캐릭터 몸은 그대로 막힌다. */
+  phaseWalls?: boolean;
   /** 순찰+추격: 직전 프레임에 추격 상태였다. 추격이 끝나면 순찰을 처음 걸음부터 다시 시작한다. */
   patrolChasing?: boolean;
   chaseHome?: { readonly x: number; readonly y: number };
