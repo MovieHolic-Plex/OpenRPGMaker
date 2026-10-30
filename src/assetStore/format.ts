@@ -495,10 +495,27 @@ export function storeMonsterSheetCellProblems(
 /**
  * 팩 전투 애니메이션(content.battleAnimations, 2026-10-31). 레코드는 프로젝트의 BattleAnimationRecord 와 같은 꼴이고
  * id·resourceId·timings[].soundResourceId·followUps[].animationId 는 **팩 안의 id** 다(넣을 때 storeProjectId 로 바뀐다).
- * resourceId 는 같은 팩의 battle(PNG) 에셋, 소리는 같은 팩의 sound 에셋 또는 내장 CC0 효과음 카탈로그 id(cc0-se-…).
+ * resourceId 는 같은 팩의 battle(PNG) 에셋, 소리는 같은 팩의 sound 에셋 또는 내장 CC0 효과음 카탈로그 id(cc0-se-…)·번들 EasyRPG 효과음 id(easyrpg-sound-…).
  * 시트 크기(가로 = columns×frameWidth, 세로 = 행×frameHeight, 패턴 < 칸 수)는 바이트가 있는 쪽이 storeBattleAnimationSizeProblems 로 본다.
  */
 export const STORE_ANIMATION_BUILTIN_SOUND = /^cc0-se-[a-z0-9][a-z0-9-]{0,100}$/;
+/**
+ * 내장 EasyRPG RTP 효과음(src/assets/easyrpgRtp.ts EASYRPG_SOUND_ASSETS 의 id 꼬리). 이 파일은 편집기 모듈을 import 하지 못해
+ * 목록을 그대로 적는다 — test/assetStoreBattleAnimations.test.ts 가 번들 목록과 같은지 본다. 정확히 일치해야 한다(접두어 허용 아님).
+ */
+export const STORE_ANIMATION_EASYRPG_SOUNDS: ReadonlySet<string> = new Set([
+  "absorb1", "absorb2", "attack1", "attack2", "barrier", "barrier1", "barrier2", "bell", "blind", "blow2", "blow4", "breath", "buff",
+  "buzzer1", "buzzer2", "buzzer3", "buzzer4", "cancel1", "cancel2", "cat", "chime1", "chime2", "clock", "close1", "collapse1", "collapse2",
+  "combat1", "combat2", "confusion", "cursor1", "cursor2", "damage2", "darkness3", "darkness4", "darkness5", "debuff", "decision1",
+  "decision2", "dog", "earth2", "earth6", "earth7", "earth8", "escape", "evade1", "evade2", "explosion1", "fall1", "fall2", "fire1",
+  "fire2", "fire3", "fire4", "fire5", "fire6", "fire7", "flash1", "flash3", "fog1", "glare", "holy2", "holy3", "holy5", "holy6", "holy7",
+  "ice1", "ice2", "ice5", "ice6", "ice7", "ice9", "item1", "item2", "key", "knock", "magic1", "magic2", "monster1", "move", "poison",
+  "pollen", "raise2", "recovery5", "recovery7", "recovery8", "sandstorm", "shot1", "shot2", "shot3", "silence", "sleep", "song",
+  "teleport2", "wave1", "wave2", "wind8",
+].map((name) => `easyrpg-sound-${name}`));
+/** 팩 밖 소리 id 로 쓸 수 있는가: 내장 CC0 효과음(cc0-se-…) 또는 번들 EasyRPG 효과음(목록에 있는 것만). */
+export const isStoreAnimationBuiltinSound = (id: unknown): boolean =>
+  typeof id === "string" && (STORE_ANIMATION_BUILTIN_SOUND.test(id) || STORE_ANIMATION_EASYRPG_SOUNDS.has(id));
 const ANIMATION_SCOPES = ["singleTarget", "allTargets", "screen"] as const;
 const ANIMATION_POSITIONS = ["head", "center", "feet", "screen"] as const;
 const ANIMATION_BLENDS = ["add", "screen", "multiply"] as const;
@@ -564,7 +581,7 @@ function battleAnimationProblems(raw: unknown, assets: Record<string, unknown>):
         if (t.soundResourceId !== undefined) {
           const sound = t.soundResourceId;
           const packSound = kindOf(sound) === "sound";
-          if (!packSound && !(typeof sound === "string" && STORE_ANIMATION_BUILTIN_SOUND.test(sound))) out.push(`${where}: 소리는 같은 팩의 sound 에셋이나 내장 효과음 id(cc0-se-…)여야 합니다.`);
+          if (!packSound && !isStoreAnimationBuiltinSound(sound)) out.push(`${where}: 소리는 같은 팩의 sound 에셋이나 내장 효과음 id(cc0-se-… 또는 번들 easyrpg-sound-…)여야 합니다.`);
         }
         if (t.flash !== undefined) {
           const f = t.flash;
