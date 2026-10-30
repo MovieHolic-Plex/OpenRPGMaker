@@ -15,6 +15,7 @@ import { callKey, effectFingerprint, maskVolatile, type TodoLoop } from "./conti
 import { bindRefs, changedSince, checkItem, indexProject, isAmbiguous, refsFromDiff, refsLabel } from "./refs";
 import { HookStats } from "./hookStats";
 import { isRegistryTool, preCheck, retryCandidates } from "./argGuard";
+import { correctionFor, englishVerbFailureHead, formatV2Failure } from "./failureText";
 import { covers, requestSkeleton, type SkeletonElement } from "./requestSkeleton";
 import { formatCall, MISSING_HIGH_VERB, VERB_SCOPE, nextAfterFailure, nextForItem, scopeRedirect, strategyAfterRepeat, type NextCall } from "./nextCall";
 
@@ -36,7 +37,7 @@ function readResult(result: PiToolExecResult | undefined): { text: string; faile
   const first = result?.content.find((c) => c.type === "text") as { text?: string } | undefined;
   const body = first?.text ?? "";
   let failed = false;
-  try { const parsed = JSON.parse(body) as { ok?: unknown; notFailure?: unknown }; failed = parsed?.ok === false && parsed?.notFailure !== true; } catch { failed = /^\s*(실패|거절)|\bok\s*[:=]\s*false\b/u.test(body.slice(0, 200)); }
+  try { const parsed = JSON.parse(body) as { ok?: unknown; notFailure?: unknown }; failed = parsed?.ok === false && parsed?.notFailure !== true; } catch { failed = /^\s*(실패|거절|Rejected:)|\bok\s*[:=]\s*false\b/u.test(body.slice(0, 200)); }
   // «아직 짓지 않았다(실패 아님)»(마을 땅 미리보기·굴 입구 되돌림)는 정상 흐름이다 — 항목 실패로 세지 않는다.
   if (failed && /\(실패 아님\)/u.test(body.slice(0, 300))) failed = false;
   return { text: body, failed };
@@ -321,7 +322,7 @@ export function withTodoLoop(env: PiAssistantV2Env, store: TodoStore, loop: Todo
     const st = strategyAfterRepeat(toolName, failText, item, verbNames);
     if (!st) return undefined;
     hooks.fire("strategy", `${item.id} ${toolName}: ${st.text.slice(0, 160)}`, { item: item.id, tool: toolName });
-    const line = `${st.text}${st.call ? ` 다음 호출: ${formatCall(st.call)}` : ""}`;
+    const line = `${st.text}${st.call ? ` Next call: ${formatCall(st.call)}` : ""}`;
     if (st.call) prefer(st.call, line);
     return line;
   };
@@ -331,7 +332,7 @@ export function withTodoLoop(env: PiAssistantV2Env, store: TodoStore, loop: Todo
     try { nc = nextAfterFailure(toolName, args, failText, env.ctx.project, verbNames, sinceFailure); } catch { nc = undefined; }
     sinceFailure.clear();
     if (!nc) return undefined;
-    const line = `[다음 호출] ${formatCall(nc)} — ${nc.why}. 이 호출을 하거나, 할 수 없으면 todo block(이유).`;
+    const line = `[Next call] ${formatCall(nc)} — ${nc.why}. Make this call, or todo block(reason) if you cannot.`;
     hooks.fire("next_call", `${toolName} 거절 뒤 → ${formatCall(nc).slice(0, 200)}`, { tool: toolName, verb: nc.verb });
     prefer(nc, line);
     return line;
@@ -384,7 +385,7 @@ export function withTodoLoop(env: PiAssistantV2Env, store: TodoStore, loop: Todo
             hooks.fire("scope", `${bindTo.id} ${kind}: ${tool.name} → ${redirect.verb}`, { item: bindTo.id, kind, tool: tool.name, to: redirect.verb });
             prefer(redirect, `${bindTo.id} 은 ${redirect.verb} 로 짓는다`);
             const summary = `[동사 범위 — 실행 안 함(실패 아님)] ${bindTo.id} «${bindTo.content.slice(0, 60)}»(${checkLabel(bindTo.check)}) 은 하위 도구 ${tool.name} 로 한 칸씩 맞추지 말고 상위 동사 한 번으로 짓는다 — 다음 호출: ${formatCall(redirect)}. 그래도 ${tool.name} 가 꼭 필요하면 같은 호출을 다시 하면 실행한다.`;
-            if (isRegistryTool(tool.name)) env.record({ toolCallId: id, name: tool.name, args: params, result: { ok: false, summary: summary.slice(0, 400), notFailure: true } as never });
+            if (isRegistryTool(tool.name)) env.record({ toolCallId: id, name: tool.name, args: params, result: { ok: true, summary: summary.slice(0, 400), notFailure: true } as never }); // 실패 아님 — tool_end 를 FAIL 로 남기지 않는다
             return text({ ok: false, notFailure: true, summary });
           }
         }
@@ -396,7 +397,7 @@ export function withTodoLoop(env: PiAssistantV2Env, store: TodoStore, loop: Todo
       const pre = preCheck(tool.name, tool.parameters, params, env.ctx.project);
       if (pre.kind === "reject") {
         hooks.fire("arg_reject", `${tool.name}: ${pre.message}`, { tool: tool.name });
-        const summary = `[인자 검사 — 실행 안 함] ${pre.message}`;
+        const summary = `[Argument check — not run] ${pre.message}`;
         env.record({ toolCallId: id, name: tool.name, args: params, result: { ok: false, summary: summary.slice(0, 400) } });
         if (write) state.failures.push({ name: tool.name, text: summary, at: state.callNo });
         const why = write ? attributeFailure(env, store, `${tool.name}:arg:${maskVolatile(pre.message).slice(0, 120)}`, `${tool.name} 인자 거절: ${pre.message.slice(0, 200)}`) : undefined;
@@ -416,6 +417,7 @@ export function withTodoLoop(env: PiAssistantV2Env, store: TodoStore, loop: Todo
         } catch (error) { return { error, failText: error instanceof Error ? error.message : String(error) }; }
       };
       let outcome = await attempt(callParams);
+      const triedFixes: { note: string; failure: string; args: unknown }[] = [];
       if (outcome.failText !== undefined && !signal?.aborted && isRegistryTool(tool.name)) {
         let candidates: ReturnType<typeof retryCandidates> = [];
         try { candidates = retryCandidates(tool.name, tool.parameters, callParams, outcome.failText, env.ctx.project); } catch { candidates = []; }
@@ -427,30 +429,55 @@ export function withTodoLoop(env: PiAssistantV2Env, store: TodoStore, loop: Todo
             outcome = again; callParams = cand.args;
             break;
           }
+          triedFixes.push({ note: cand.note, failure: again.failText ?? "", args: cand.args });
         }
       }
+      // 편집기 도구 거절을 모델이 바로 고칠 수 있는 글로(failureText.ts): 막은 이유 전부·걸린 인자의 보낸 값·고친 호출.
+      // 기록·실패 세기(state.failures·attributeFailure)는 원래 글 그대로 쓴다 — 같은 거절인지 가르는 서명이 바뀌지 않게.
+      const forModel = (failText: string): string => {
+        if (!isRegistryTool(tool.name)) { const head = englishVerbFailureHead(tool.name, failText); return head ? `${head}\n${failText}` : failText; }
+        try {
+          const correction = correctionFor(tool.name, tool.parameters, callParams, failText, env.ctx.project, new Set(triedFixes.map((t) => JSON.stringify(t.args))));
+          return formatV2Failure({ tool: tool.name, sent: callParams, failText, ...(correction ? { correction } : {}), tried: triedFixes });
+        } catch { return failText; }
+      };
       let result: PiToolExecResult;
       if (outcome.error !== undefined) {
         const error = outcome.error;
         const message = error instanceof Error ? error.message : String(error);
+        const shown = signal?.aborted ? message : forModel(message);
         if (write && !signal?.aborted) {
           state.failures.push({ name: tool.name, text: message, at: state.callNo });
           const note = attributeFailure(env, store, `${tool.name}:${maskVolatile(message).slice(0, 160)}`, `${tool.name} 실패: ${message}`, strategyFor(tool.name, message));
           const next = note ? undefined : suggestNext(tool.name, callParams, message);
-          if (note || next || fixNotes.length) throw new Error([message, ...fixNotes.map((n) => `고침(실행 전): ${n}`), ...(note ? [note] : []), ...(next ? [next] : [])].join("\n"));
+          // 고친 호출을 이미 실었으면 같은 도구의 [다음 호출] 줄은 겹친다(우선 순위 지정은 suggestNext 안에서 이미 했다).
+          const nextLine = next && !(shown.includes("\nFixed call: ") && next.startsWith(`[Next call] ${tool.name}(`)) ? next : undefined;
+          if (note || nextLine || fixNotes.length) throw new Error([shown, ...fixNotes.map((n) => `Fixed before run: ${n}`), ...(note ? [note] : []), ...(nextLine ? [nextLine] : [])].join("\n"));
         }
+        if (shown !== message) throw new Error(shown);
         throw error;
       }
       result = outcome.result!;
-      if (fixNotes.length) result = withNote(result, `고침: ${fixNotes.join(" · ")}`);
-      const read = readResult(result);
+      {
+        const r0 = readResult(result);
+        if (r0.failed && !signal?.aborted) {
+          const shown = forModel(r0.text);
+          if (shown !== r0.text) { const at = result.content.findIndex((c) => c.type === "text"); result = { ...result, content: result.content.map((c, k) => k === at ? { type: "text" as const, text: shown } : c) }; }
+        }
+      }
+      if (fixNotes.length) result = withNote(result, `Fixed: ${fixNotes.join(" · ")}`);
+      const read = readResult(outcome.result);
       const notes: string[] = [];
       if (write) {
         if (read.failed) {
           state.failures.push({ name: tool.name, text: read.text.slice(0, 1200), at: state.callNo });
           const note = attributeFailure(env, store, `${tool.name}:${maskVolatile(read.text).slice(0, 160)}`, `${tool.name} 거절: ${read.text.slice(0, 240)}`, strategyFor(tool.name, read.text));
           if (note) notes.push(note);
-          else { const next = suggestNext(tool.name, callParams, read.text); if (next) notes.push(next); }
+          else {
+            const next = suggestNext(tool.name, callParams, read.text);
+            const sent = (result.content.find((c) => c.type === "text") as { text?: string } | undefined)?.text ?? "";
+            if (next && !(sent.includes("\nFixed call: ") && next.startsWith(`[Next call] ${tool.name}(`))) notes.push(next);
+          }
         } else {
           loop.noteEffect(effectFingerprint(tool.name, params, read.text));
           { const cur = bindTo ?? store.current(); const m = cur ? store.meta.get(cur.id) : undefined; if (m?.nextCall?.verb === tool.name) { const { nextCall: _n, ...rest } = m; store.meta.set(cur!.id, rest); } }

@@ -438,6 +438,14 @@ salt 를 찾아(무작위 salt 를 고정해 몇 번 지어 본다) 같은 마�
     거절 뒤(`RETRY_RULES`=retryCandidates, 같은 호출 id 로 다시 — 기록이 성공을 싣는다): «<칸> 은/는 …» 검증 거절의 칸이 선택 칸이고 기본값처럼 보이거나 «…에서만»류면 빼고 · «존재하지 않는 이벤트 'X'» 가 이름이면 id 로 · stamp_object 무결성·집 거절이면 가까운 자리로(retry_fix).
     «(실패 아님)» 결과(마을 땅 미리보기·굴 입구 되돌림)는 항목 실패로 세지 않는다. 재생: `bun scripts/qa/assistant-v2/argGuardReplay.mts <판 폴더…>` — omo-loop-1030b terra 실패 28건 중 22건을 실행 전에 고친다.
     `withTransferRelocation` 도 같은 호출 id 로 다시 부른다(옮겨 이었는데 tool_end 가 FAIL 로 남던 것).
+  - **거절 글(`loop/failureText.ts formatV2Failure`, 2026-10-30)**: 편집기 도구가 거절하면 v2 감싸개가 모델에게 가는 글을 바꿔 싣는다(v1·편집기 글은 그대로).
+    예전 글은 `formatPiToolFailure` JSON — 200자에서 잘린 요약 + issues(같은 문장 되풀이, 규칙만, 보낸 값·고칠 방법 없음).
+    지금은 영어로(사용자 결정 — 싼 모델은 영어 되먹임을 더 잘 쓴다): `Rejected: <도구> — <이유>` · `Blocking issues (N)` 최대 8(코드·맵·칸, 같은 칸 «xN») · `You sent: <거절 글이 말한 인자>=<보낸 값>` · `Already tried:` (같은 id 로 다시 불러 또 거절된 고침) ·
+    `Fixed call: <도구>({…})`(420자 넘으면 «같은 인자 + 아래 고친 곳») + `Changes: remove patrol · a.doorAt.y 7→6 · drop N empty/default optional fields — 이유`. 고친 호출은 `correctionFor`(argGuard preCheck → retryCandidates → nextAfterFailure 같은 도구) 가 결정적으로 고른다.
+    도구 오류 문장(한국어)은 고치지 않는다 — 자주 나는 것만(doorAt·적 그룹 비었음·patrol·patrol.directions·repelSteps·이동 도착 칸 막힘·완성된 집·이벤트 없음·graphic·edit_place 다시 짓기 안 함·출입구 봉쇄·인자 누락/모르는 인자) `EN_RULES` 로 옮기고 나머지는 `Tool said (Korean): …`. 맵·인물 이름·대사는 그대로.
+    H2 고침·돌려보냄, H3 `[Next call]`, H8 `[Change strategy]`, H7 재주입(`Do now: … Next call: …`)·상태 카드, `[Relocated and linked]`·`[Graphic matched]` 도 영어다. 기록·실패 세기(state.failures·서명)는 원래 글 그대로다.
+    재생: `bun scripts/qa/assistant-v2/failureTextReplay.mts <판 폴더 …>` — 판 저장본에서 실패 호출을 다시 돌려 예전 글/지금 글을 나란히 찍는다.
+    tool_end 표시: «아직 짓지 않았다(실패 아님)»(make_place 설계 받기·땅 미리보기)와 H5 «실행 안 함(실패 아님)»은 ok:true(+notFailure)로 기록한다.
   - H3 거절 뒤 다음 호출(`loop/nextCall.ts nextAfterFailure`): 고쳐 다시 불러도 거절이면 분류해 «[다음 호출] 동사(채운 인자 뼈대) — 이유»를 결과에 싣는다 — create_transfer_pair 문앞 막힘 → 양끝 doorAt 뺀 같은 호출 ·
     upsert_troop 적 없음 → enemyIds 뼈대+후보 · 이벤트 없음 → 그 맵 이벤트 목록 · 거절 글이 이른 다른 동사 중 거절 뒤로 아직 안 쓴 것(비평 칸 «(3,10)» 을 뼈대에) · 찍을 자리 없음 → inspect.
     그리고 다음 차례 그 동사를 코어 `SoftToolRequirement` 로 우선한다(`env.preferToolNextTurn` — 알림 한 번, 그래도 다른 도구면 실행하지 않고 그 도구를 강제, todo 는 같이 불러도 됨).

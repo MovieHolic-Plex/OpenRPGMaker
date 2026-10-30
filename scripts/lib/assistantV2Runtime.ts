@@ -328,17 +328,17 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
           return card;
         }
         const cur = store.next();
-        const lines = [`[상태 카드 — 이 호출에만] ${store.view(0).split("\n")[0]}`];
+        const lines = [`[State card — this call only] ${store.view(0).split("\n")[0]}`];
         if (cur) {
           const m = store.meta.get(cur.id);
           let call = m?.nextCall?.text;
           if (!call) { try { const nc = nextForItem(cur, env.ctx.project, toolNames); call = nc ? formatCall(nc) : undefined; } catch { call = undefined; } }
-          lines.push(`지금 할 것: ${cur.id} «${cur.content.slice(0, 120)}»${cur.check && cur.check.kind !== "none" ? ` (확인: ${checkLabel(cur.check)})` : ""}`);
-          if (call) lines.push(`다음 호출: ${call.slice(0, 400)}`);
-          if (m?.lastCheck && !m.lastCheck.pass) lines.push(`마지막 확인 ✗: ${m.lastCheck.detail.slice(0, 240)}`);
+          lines.push(`Do now: ${cur.id} «${cur.content.slice(0, 120)}»${cur.check && cur.check.kind !== "none" ? ` (check: ${checkLabel(cur.check)})` : ""}`);
+          if (call) lines.push(`Next call: ${call.slice(0, 400)}`);
+          if (m?.lastCheck && !m.lastCheck.pass) lines.push(`Last check ✗: ${m.lastCheck.detail.slice(0, 240)}`);
         }
         const rest = store.open().filter((i) => i !== cur).slice(0, 6).map((i) => `${i.id} «${i.content.slice(0, 50)}»`);
-        if (rest.length) lines.push(`남은 것: ${rest.join(" · ")}${store.openCount() - 1 > rest.length ? " …" : ""}`);
+        if (rest.length) lines.push(`Still open: ${rest.join(" · ")}${store.openCount() - 1 > rest.length ? " …" : ""}`);
         return lines.join("\n");
       },
       // 첫 호출 todo 강제(omo first-turn) — 쓰기 요청이고 이어 받은 목록이 없을 때. 로컬 CLI 는 감싸개가 첫 쓰기를 되돌린다.

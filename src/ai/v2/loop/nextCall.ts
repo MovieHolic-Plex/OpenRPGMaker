@@ -2,6 +2,7 @@
 //   H3 도구 실패 직후: 거절을 분류해 다음 호출(동사 + 채운 인자 뼈대)을 결과에 싣고, 다음 차례 그 동사를 우선한다(실행기 SoftToolRequirement).
 //   H7 멈춤 재주입: 「지금 할 것: <항목> — 다음 호출: <동사>(<인자 뼈대>)」 — 항목의 기계 확인 종류에서 뼈대를 만든다.
 //   H8 같은 거절 두 번: 같은 동사·같은 모양을 버리는 전략 안내(맵을 다시 지을 수 없으면 꾸밈 한두 번 뒤 막힘, 새 장소가 꼭 필요하면 새 맵+잇기).
+// 모델이 읽는 글(why·전략·자리표시)은 영어다(2026-10-30 사용자 결정). 도구 거절 문장을 가르는 정규식은 한국어 그대로.
 // 근거: terra boss-room r1~r3 — edit_place 거절 글이 move_event·stamp_object 를 일렀는데 모델은 다른 길을 찾지 못하고 block 했다.
 import type { Project } from "@/project/types";
 import type { TodoItem } from "../todo/types";
@@ -34,15 +35,15 @@ const mentions = (text: string, verb: string) => new RegExp(`(^|[^a-z_])${verb}(
 export function skeletonFor(verb: string, mapId?: string, extra: Obj = {}): Obj {
   const m = mapId ?? "<mapId>";
   switch (verb) {
-    case "stamp_object": return { objectId: "<list_spatial_designs({kind:'object'}) 의 id>", mapId: m, x: "<x>", y: "<y>", ...extra };
+    case "stamp_object": return { objectId: "<id from list_spatial_designs({kind:'object'})>", mapId: m, x: "<x>", y: "<y>", ...extra };
     case "move_event": return { mapId: m, eventId: "<eventId>", x: "<x>", y: "<y>", ...extra };
-    case "fill_region": return { mapId: m, x: "<x>", y: "<y>", w: "<w>", h: "<h>", tile: "<타일>", ...extra };
+    case "fill_region": return { mapId: m, x: "<x>", y: "<y>", w: "<w>", h: "<h>", tile: "<tile>", ...extra };
     case "move_object": return { mapId: m, at: { x: "<x>", y: "<y>" }, to: { x: "<x>", y: "<y>" }, ...extra };
-    case "dress_room": return { mapId: m, at: { x: "<바닥 x>", y: "<바닥 y>" }, purpose: "<방 쓰임>", ...extra };
-    case "create_transfer_pair": return { a: { mapId: m, x: "<x>", y: "<y>" }, b: { mapId: "<도착 mapId>", x: "<x>", y: "<y>" }, ...extra };
-    case "make_place": return { type: "<interior|village|dungeon|cave>", name: "<장소 이름>", ...extra };
-    case "add_people": return { mapId: m, people: [{ role: "<역할>", name: "<이름>", where: "<자리 낱말>", firstTalk: ["<대사>"] }], ...extra };
-    case "add_event": return { event: { kind: "cutscene", mapId: m, when: "touch", beats: [{ do: "say", who: "<누가>", text: "<대사>" }] }, ...extra };
+    case "dress_room": return { mapId: m, at: { x: "<floor x>", y: "<floor y>" }, purpose: "<room purpose>", ...extra };
+    case "create_transfer_pair": return { a: { mapId: m, x: "<x>", y: "<y>" }, b: { mapId: "<destination mapId>", x: "<x>", y: "<y>" }, ...extra };
+    case "make_place": return { type: "<interior|village|dungeon|cave>", name: "<place name>", ...extra };
+    case "add_people": return { mapId: m, people: [{ role: "<role>", name: "<name>", where: "<spot word>", firstTalk: ["<line>"] }], ...extra };
+    case "add_event": return { event: { kind: "cutscene", mapId: m, when: "touch", beats: [{ do: "say", who: "<speaker>", text: "<line>" }] }, ...extra };
     case "get_event": return { mapId: m, eventId: "<eventId>", ...extra };
     case "inspect": return { mapId: m, ...extra };
     default: return { ...(mapId ? { mapId } : {}), ...extra };
@@ -61,17 +62,17 @@ export function nextAfterFailure(tool: string, args: unknown, failure: string, p
   // 이동 칸 잇기 — 문앞이 막힘: doorAt 을 빼고 부르면 도구가 걸어 닿는 가장 가까운 칸으로 옮겨 잇는다.
   if (tool === "create_transfer_pair" && /안전한 출입구를 만들 수 없|봉쇄|겹칩니다|doorAt/u.test(body)) {
     const strip = (e: unknown) => { if (!isObj(e)) return e; const { doorAt: _d, ...rest } = e; return rest; };
-    return { verb: tool, args: { ...a, a: strip(a.a), b: strip(a.b) }, why: "문앞 칸이 막혀 거절 — doorAt 을 빼면 도구가 걸어 닿는 가장 가까운 칸으로 옮겨 잇는다" };
+    return { verb: tool, args: { ...a, a: strip(a.a), b: strip(a.b) }, why: "the door-front cell was refused — without doorAt the tool links at the nearest walkable cell" };
   }
   if (tool === "upsert_troop" && /최소 1마리/u.test(body)) {
     const troop = isObj(a.troop) ? a.troop : a;
     const enemies = ((project.database?.enemies ?? []) as { id: string; name?: string }[]).slice(0, 4).map((e) => e.id);
-    return { verb: tool, args: { troop: { id: troop.id ?? "<troop id>", name: troop.name ?? "<이름>", enemyIds: [enemies[0] ?? "<적 id>"] } }, why: `enemyIds 에 적 id 하나 이상(members 는 비우지 말고 빼기) — 적 후보: ${enemies.join(", ")}` };
+    return { verb: tool, args: { troop: { id: troop.id ?? "<troop id>", name: troop.name ?? "<name>", enemyIds: [enemies[0] ?? "<enemy id>"] } }, why: `put at least one enemy id in enemyIds (omit members instead of sending it empty) — enemy candidates: ${enemies.join(", ")}` };
   }
   if (/이벤트를 찾을 수 없습니다|존재하지 않는 이벤트/u.test(body)) {
     const list = eventListLine(project, mapId, 8);
     const first = /이 맵의 이벤트:\s*([^\s,)…]+)/u.exec(body)?.[1];
-    if (list || first) return { verb: "get_event", args: { mapId: mapId ?? "<mapId>", eventId: "<아래 목록의 id>" }, why: `그 id 는 없다(지워졌거나 다시 지어 id 가 바뀜) — 그 맵의 이벤트: ${list || first}` };
+    if (list || first) return { verb: "get_event", args: { mapId: mapId ?? "<mapId>", eventId: "<an id from the list below>" }, why: `that id does not exist (deleted, or rebuilt with a new id) — events on that map: ${list || first}` };
   }
   // 거절 글이 다른 동사를 일렀다(«stamp_object·fill_region·move_event 로 고친다»): 그중 아직 안 쓴 것 하나.
   const named = [...available].filter((v) => v !== tool && v !== "todo" && mentions(body, v)).sort((x, y) => body.indexOf(x) - body.indexOf(y));
@@ -80,10 +81,10 @@ export function nextAfterFailure(tool: string, args: unknown, failure: string, p
     // 고치기 결함이 짚은 칸이 있으면 뼈대에 넣는다(비평 «(3,10) 13×5»).
     const at = /\((\d+)\s*,\s*(\d+)\)/u.exec(body);
     const extra: Obj = at && (fresh === "stamp_object" || fresh === "move_event") ? { x: Number(at[1]), y: Number(at[2]) } : {};
-    return { verb: fresh, args: skeletonFor(fresh, mapId, extra), why: `거절 글이 이른 다른 길 — ${fresh}` };
+    return { verb: fresh, args: skeletonFor(fresh, mapId, extra), why: `the rejection names another way — ${fresh}` };
   }
   // 그림 판에 맵 밖·덮음 거절이 남았다: 빈 땅을 먼저 본다.
-  if (tool === "stamp_object" && has("inspect")) return { verb: "inspect", args: skeletonFor("inspect", mapId), why: "놓을 빈 땅을 다시 본다(가까운 자리가 모두 막힘) — 그래도 없으면 todo block" };
+  if (tool === "stamp_object" && has("inspect")) return { verb: "inspect", args: skeletonFor("inspect", mapId), why: "look for empty ground again (every nearby spot is blocked) — if there is none, todo block" };
   return undefined;
 }
 
@@ -99,16 +100,16 @@ export function strategyAfterRepeat(tool: string, failure: string, item: TodoIte
   const body = failure.replace(/^[^:]*실행 실패:\s*/u, "");
   const fixing = !!item && item.source !== "model";
   if (tool === "edit_place" && /다시 짓기 안 함|다시 지을 방 구성도|기록이 없고/u.test(body)) {
-    if (fixing) return { text: "[전략 바꾸기] 이 장소는 다시 짓지 않는다(edit_place 는 같은 거절만 낸다). 짚힌 자리에 stamp_object 로 꾸밈을 한두 개 찍고, 그래도 남으면 todo block(\"다시 지을 수 없는 장소 — 꾸밈만 함\") 하고 다음 항목으로 간다.", ...(available.has("stamp_object") ? { call: { verb: "stamp_object", args: skeletonFor("stamp_object", undefined), why: "다시 짓지 않고 덧찍기" } } : {}) };
-    return { text: "[전략 바꾸기] 있던 장소는 다시 짓지 않는다. 새 장소가 필요하면 make_place 로 새 맵을 짓고 create_transfer_pair 로 그 장소와 잇는다(있던 맵은 그대로).", call: { verb: "make_place", args: skeletonFor("make_place"), why: "새 맵 + 잇기" } };
+    if (fixing) return { text: "[Change strategy] Do not rebuild this place (edit_place only repeats the same refusal). Stamp one or two decorations at the flagged spot with stamp_object; if the issue remains, todo block(\"cannot rebuild this place — decorated only\") and move to the next item.", ...(available.has("stamp_object") ? { call: { verb: "stamp_object", args: skeletonFor("stamp_object", undefined), why: "decorate on top instead of rebuilding" } } : {}) };
+    return { text: "[Change strategy] Existing places are not rebuilt. If you need a new place, build a new map with make_place and link it with create_transfer_pair (the existing map stays as it is).", call: { verb: "make_place", args: skeletonFor("make_place"), why: "new map + link" } };
   }
   if (tool === "stamp_object" && /완성된 집|transfer 목적지|겹치지 않습니다|겹칩니다/u.test(body)) {
-    return { text: "[전략 바꾸기] 이 자리에는 찍을 수 없다(집·이동 칸·맵 밖). inspect 로 빈 땅을 고르거나, 그림이 꼭 필요하지 않으면 todo block(\"놓을 자리 없음\") 하고 다음 항목으로 간다.", call: { verb: "inspect", args: skeletonFor("inspect"), why: "빈 땅 다시 보기" } };
+    return { text: "[Change strategy] You cannot stamp here (house, transfer cell, or off the map). Pick empty ground with inspect, or if the picture is not essential, todo block(\"no place to put it\") and move to the next item.", call: { verb: "inspect", args: skeletonFor("inspect"), why: "look for empty ground" } };
   }
   if (tool === "create_transfer_pair") {
-    return { text: "[전략 바꾸기] 이 두 칸으로는 잇지 못한다. 양쪽 doorAt 을 빼고(도구가 걸어 닿는 칸으로 옮긴다) 다른 가장자리 길 끝 칸으로 다시 부르거나, 그래도 안 되면 todo block(이유).", call: { verb: "create_transfer_pair", args: skeletonFor("create_transfer_pair"), why: "doorAt 없이 다른 칸" } };
+    return { text: "[Change strategy] These two cells cannot be linked. Remove doorAt on both ends (the tool moves to a reachable cell) and call again with another edge road-end cell, or todo block(reason) if that fails too.", call: { verb: "create_transfer_pair", args: skeletonFor("create_transfer_pair"), why: "other cells, no doorAt" } };
   }
-  return { text: `[전략 바꾸기] ${tool} 가 같은 이유로 두 번 거절됐다 — 같은 동사·같은 인자 모양을 다시 쓰지 않는다. 다른 동사로 하거나, 할 수 없으면 todo block(이유) 하고 다음 항목으로 간다.` };
+  return { text: `[Change strategy] ${tool} was refused twice for the same reason — do not repeat the same verb with the same argument shape. Use another verb, or todo block(reason) and move to the next item.` };
 }
 
 const PLACE_TYPE: Record<string, string> = { village: "village", interior: "interior", dungeon: "dungeon", cave: "cave", field: "village", street: "street" };
@@ -122,35 +123,35 @@ export function nextForItem(item: TodoItem, project: Project, available: Readonl
     // 관문·비평 항목: 글 속 맵 id 와 «edit_place·move_object·dress_room / add_event» 낱말로.
     const m = /\((map_[\w-]+)\)/u.exec(item.content)?.[1];
     const verb = ["add_event", "edit_place", "stamp_object", "move_event", "create_transfer_pair"].find((v) => has(v) && new RegExp(`(^|[^a-z_])${v}([^a-z_]|$)`, "u").test(item.content));
-    return verb ? { verb, args: skeletonFor(verb, m), why: "항목 글이 이른 동사" } : undefined;
+    return verb ? { verb, args: skeletonFor(verb, m), why: "the verb named in the item" } : undefined;
   }
   switch (c.kind) {
-    case "place": return has("make_place") ? { verb: "make_place", args: { type: PLACE_TYPE[c.placeKind ?? ""] ?? "<interior|village|dungeon|cave>", name: c.name }, why: "장소 짓기" } : undefined;
-    case "person": return has("add_people") ? { verb: "add_people", args: { mapId: mapId(c.map) ?? "<mapId>", people: [{ role: c.name, name: c.name, where: "<자리 낱말>", firstTalk: ["<대사>"] }] }, why: "인물 두기" } : undefined;
+    case "place": return has("make_place") ? { verb: "make_place", args: { type: PLACE_TYPE[c.placeKind ?? ""] ?? "<interior|village|dungeon|cave>", name: c.name }, why: "build the place" } : undefined;
+    case "person": return has("add_people") ? { verb: "add_people", args: { mapId: mapId(c.map) ?? "<mapId>", people: [{ role: c.name, name: c.name, where: "<spot word>", firstTalk: ["<line>"] }] }, why: "place the person" } : undefined;
     case "talk": {
       // 그 인물이 이미 있으면 말 걸기 장면, 없으면 사람 두기(대사 포함).
       const present = Object.values(project.maps).some((m) => (m.events ?? []).some((e) => (e.name ?? "").includes(c.who)));
-      if (present && has("add_event")) return { verb: "add_event", args: { event: { kind: "talk", mapId: "<그 인물이 있는 mapId>", when: "talk", after: c.who, beats: [{ do: "say", who: c.who, text: c.says ? `<${c.says} 를 넣은 대사>` : "<대사>" }] } }, why: "그 인물 대사 장면" };
-      return has("add_people") ? { verb: "add_people", args: { people: [{ role: c.who, name: c.who, where: "<자리 낱말>", firstTalk: [c.says ? `<${c.says} 를 넣은 대사>` : "<대사>"] }] }, why: "대사가 있는 인물 두기" } : undefined;
+      if (present && has("add_event")) return { verb: "add_event", args: { event: { kind: "talk", mapId: "<mapId where that person is>", when: "talk", after: c.who, beats: [{ do: "say", who: c.who, text: c.says ? `<line containing ${c.says}>` : "<line>" }] } }, why: "a talk scene for that person" };
+      return has("add_people") ? { verb: "add_people", args: { people: [{ role: c.who, name: c.who, where: "<spot word>", firstTalk: [c.says ? `<line containing ${c.says}>` : "<line>"] }] }, why: "place the person with a line" } : undefined;
     }
     case "battle": {
-      if (c.boss && has("add_boss_encounter")) return { verb: "add_boss_encounter", args: { mapId: mapId(c.map) ?? "<보스 방 mapId>", boss: { name: c.who ?? "<보스 이름>", where: "<자리 낱말>", looks: "<외형 낱말>" }, lines: ["<싸우기 전 대사>"], afterWin: ["<이긴 뒤 대사>"] }, why: "말 걸고 → 보스전 한 번에" };
-      if (has("place_field_enemy") && !c.boss) return { verb: "place_field_enemy", args: { mapId: mapId(c.map) ?? "<mapId>", x: "<x>", y: "<y>", troopId: "<troop id>", behavior: "stationary" }, why: "보이는 적 한 마리" };
-      if (has("patch_event_page")) return { verb: "patch_event_page", args: { mapId: mapId(c.map) ?? "<mapId>", eventId: `<${c.who ?? "보스"} 이벤트 id>`, pageIndex: 0, set: { commands: ["<원래 명령 그대로>", { kind: "battleProcessing", troopId: "<troop id>", canEscape: false }] } }, why: "대사 이벤트 끝에 전투 명령(원래 명령은 지우지 말고 이어 붙인다)" };
+      if (c.boss && has("add_boss_encounter")) return { verb: "add_boss_encounter", args: { mapId: mapId(c.map) ?? "<boss room mapId>", boss: { name: c.who ?? "<boss name>", where: "<spot word>", looks: "<looks word>" }, lines: ["<line before the fight>"], afterWin: ["<line after winning>"] }, why: "talk → boss battle in one call" };
+      if (has("place_field_enemy") && !c.boss) return { verb: "place_field_enemy", args: { mapId: mapId(c.map) ?? "<mapId>", x: "<x>", y: "<y>", troopId: "<troop id>", behavior: "stationary" }, why: "one visible enemy" };
+      if (has("patch_event_page")) return { verb: "patch_event_page", args: { mapId: mapId(c.map) ?? "<mapId>", eventId: `<event id of ${c.who ?? "the boss"}>`, pageIndex: 0, set: { commands: ["<the existing commands, unchanged>", { kind: "battleProcessing", troopId: "<troop id>", canEscape: false }] } }, why: "append a battle command after the talk (keep the existing commands)" };
       return undefined;
     }
     case "party_join": {
       // 동료 합류: 배우(upsert_actor)가 있어야 하고, 그 인물 대화 끝에 changeParty add 를 붙인다(원래 명령은 그대로).
-      if (has("patch_event_page")) return { verb: "patch_event_page", args: { mapId: mapId(c.map) ?? "<그 인물이 있는 mapId>", eventId: `<${c.name} 이벤트 id>`, pageIndex: 0, set: { commands: ["<원래 명령 그대로>", { kind: "changeParty", actorId: `<${c.name} 배우 id — 없으면 upsert_actor 먼저>`, action: "add" }] } }, why: "대화 끝에 파티 합류 명령" };
+      if (has("patch_event_page")) return { verb: "patch_event_page", args: { mapId: mapId(c.map) ?? "<mapId where that person is>", eventId: `<event id of ${c.name}>`, pageIndex: 0, set: { commands: ["<the existing commands, unchanged>", { kind: "changeParty", actorId: `<actor id of ${c.name} — upsert_actor first if missing>`, action: "add" }] } }, why: "append a party-join command after the talk" };
       return undefined;
     }
     case "link": {
       if (!has("create_transfer_pair")) return undefined;
-      return { verb: "create_transfer_pair", args: { a: { mapId: mapId(c.from) ?? `<${c.from} mapId>`, x: "<가장자리 길 끝 x>", y: "<y>" }, b: { mapId: mapId(c.to) ?? `<${c.to} mapId>`, x: "<입구 x>", y: "<y>" } }, why: "두 맵 잇기(doorAt 은 문 그림이 있을 때만, 출입구 바로 위 칸)" };
+      return { verb: "create_transfer_pair", args: { a: { mapId: mapId(c.from) ?? `<${c.from} mapId>`, x: "<edge road-end x>", y: "<y>" }, b: { mapId: mapId(c.to) ?? `<${c.to} mapId>`, x: "<entrance x>", y: "<y>" } }, why: "link the two maps (doorAt only when there is a door picture, the cell directly above the entrance)" };
     }
-    case "ending": return has("add_ending_scene") ? { verb: "add_ending_scene", args: { mapId: mapId(c.map) ?? "<엔딩 맵 mapId>", title: "<엔딩 이름>", lines: ["<이름>: <대사>"], epilogue: ["<에필로그 줄>"], after: "<어떤 일 뒤(마왕 등)> 또는 talkTo" }, why: "대사 → 엔딩 한 번에" } : has("define_ending") ? { verb: "define_ending", args: { "<엔딩 정의>": "…" }, why: "엔딩" } : has("add_event") ? { verb: "add_event", args: skeletonFor("add_event", mapId(c.map)), why: "엔딩 장면" } : undefined;
-    case "item": return has("upsert_item") ? { verb: "upsert_item", args: { item: { id: "<item id>", name: c.name } }, why: "아이템" } : undefined;
-    case "objective": return has("set_objective") ? { verb: "set_objective", args: { text: c.text ? `<${c.text} 를 넣은 목표 줄>` : "<목표 줄>", at: "start" }, why: "목표 줄" } : undefined;
+    case "ending": return has("add_ending_scene") ? { verb: "add_ending_scene", args: { mapId: mapId(c.map) ?? "<ending map mapId>", title: "<ending name>", lines: ["<name>: <line>"], epilogue: ["<epilogue line>"], after: "<after what (e.g. the demon lord)> or talkTo" }, why: "lines → ending in one call" } : has("define_ending") ? { verb: "define_ending", args: { "<ending definition>": "…" }, why: "ending" } : has("add_event") ? { verb: "add_event", args: skeletonFor("add_event", mapId(c.map)), why: "ending scene" } : undefined;
+    case "item": return has("upsert_item") ? { verb: "upsert_item", args: { item: { id: "<item id>", name: c.name } }, why: "item" } : undefined;
+    case "objective": return has("set_objective") ? { verb: "set_objective", args: { text: c.text ? `<objective line containing ${c.text}>` : "<objective line>", at: "start" }, why: "objective line" } : undefined;
     default: return undefined;
   }
 }
@@ -193,7 +194,7 @@ export function scopeRedirect(item: TodoItem, tool: string, usedOnItem: Readonly
   const call = nextForItem(item, project, available);
   if (!call || !scope.high.includes(call.verb)) {
     const verb = scope.high.find((v) => available.has(v));
-    return verb ? { verb, args: skeletonFor(verb), why: `${kind} 항목의 상위 동사` } : undefined;
+    return verb ? { verb, args: skeletonFor(verb), why: `the high-level verb for a ${kind} item` } : undefined;
   }
-  return { ...call, why: `${kind} 항목은 ${call.verb} 한 번으로 짓는다` };
+  return { ...call, why: `a ${kind} item is built with one ${call.verb} call` };
 }

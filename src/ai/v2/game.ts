@@ -9,6 +9,10 @@ import { getTool } from "@/editor/tools/toolRegistry";
 import type { PiAssistantV2Env } from "./env";
 import { ENCOUNTER_ASK } from "./combatChecks";
 import { MUSIC_REQUEST_WORDS, musicOnly, wantsMusic } from "./musicWords";
+import { englishToolMessage, parseFailure } from "./loop/failureText";
+
+/** 거절 본문(JSON·감싼 JSON·글)에서 첫 이유 한 줄 — 머리(«'도구' 실행 실패:»)를 걷는다. */
+const firstReason = (why: string): string => { const p = parseFailure(why); return (p.issues[0]?.message ?? p.summary).replace(/^'[^']+'\s*실행 실패:\s*/u, ""); };
 
 export const GAME_WORDS = /퀘스트|의뢰|심부름|부탁|아이템|회복약|포션|무기|갑옷|방패|장비|장신구|상점|가게|팔게|팔기|열쇠|잠긴|보물|상자|제작|만들어 주는|주인공|이름|직업|레벨|능력치|체력|동료|파티|합류|떠나|스킬|기술|전투|싸우|보스|적\b|몬스터|무리|선택지|호감|기억|스위치|변수|횟수|레버|여관|묵으|저장|회복|치료|신부|골드|돈|엔딩|결말|게임|일지|제한 시간|타이머|낮에|밤에|시간대|아침|저녁|팻말|표지판|우물|동전|암호|비밀번호|통행료|경비|문지기|함정|독|중독|마비|수면|상태 ?이상|날씨|비가|비 ?오|무작위|랜덤|인카운터|조우|마주치|늑대|멧돼지|슬라임|고블린|얻게|얻는|얻을|모으|모았|모아|줍|주워|개수|몇 개|조사하면|조사할|입력|자물쇠|숫자|비밀번호|옮겨|옮기|묘비|회상|따라오|따라와|따라다|도망|사라지|나타나|말 걸|말을 걸|대사|다가가|밟으면|들어가면|문을|잇|이어 줘|이어줘|연결|follow|random|encounter|지진|흔들|번쩍|번개|음악|배경음|브금|bgm|팡파르|사운드트랙|약초|광맥|이동석|눈이|눈 ?내|폭풍|안개|대화|표정|얼굴|초상|흉상|웃으|걱정|장면|뛰어다|돌아다|걸어 다|순찰|쫓아|쫓다|추격|발견|뒤지|뒤져|뒤질|수납|항아리|서랍|옷장|들키|들켜|몰래|숲|사당|오프닝|제목|타이틀|레터박스|검은 띠|카메라|연기|막 끝|막이|제\s*\d+\s*막|카드|페이즈|소환|불러|예고|힘을 모|꿰뚫|속성|약하게|약점|치명타|반지|목걸이|마나|에테르|\bMP\b|화상|기절|잠 |잠은|책장|비석|역사|망원경|이름을|줄여|절반|추가해|연계|합체|협동|콤보|레벨 ?업|팡파레|습득|달려들|돌진|느릿|컷인|도움말|말투|존댓말|반말|다듬|윤문|호칭|대화창|넘치|줄거리|대본|휴대폰|모바일|폰에서|터치|탭하면|탭해서|진동|조이스틱|달리기 단추|들판|초원|필드|바위|버섯|들꽃|고사리|그루터기|통나무|덤불|풀숲|행인|오가|출근|지나다니|옥상|내려다|전망|황무지|문 열리|여는 효과|문 효과|한 명만|두 명|중복|겹쳐|남겨|지워|없애|삭제|빼 줘|치워|combo|touch|mobile|quest|item|shop|weapon|armor|battle|enemy|party|skill|inn|save|gold|ending|poison|weather/iu;
 
@@ -263,7 +267,7 @@ export function withSchemaFillCleanup(tools: PiToolShape[]): PiToolShape[] {
       const { graphic: _g, ...rest } = cleaned as Record<string, unknown>;
       const second = await tool.execute(id, rest as typeof params, signal); // 같은 호출 id — 기록(tool_end)이 다시 놓은 성공을 싣게
       const b2 = (second.content.find((c) => c.type === "text") as { text?: string } | undefined)?.text ?? "";
-      if (!/실행 실패|"ok":false/u.test(b2)) return { ...second, content: [...second.content, { type: "text", text: "[그림 맞춤] 준 graphic 이 전투 그림과 달라 graphic 을 빼고 다시 놓았다 — 필드 그림은 전투 그림(적 그룹 선두)에 맞췄다." }] } as typeof second;
+      if (!/실행 실패|"ok":false/u.test(b2)) return { ...second, content: [...second.content, { type: "text", text: "[Graphic matched] The graphic you gave differed from the battle picture, so the enemy was placed again without graphic — the field sprite now matches the battle picture (the troop's lead enemy)." }] } as typeof second;
     }
     return result;
   } });
@@ -309,7 +313,7 @@ export function withTransferRelocation(tools: PiToolShape[]): PiToolShape[] {
         try { const r = await tool.execute(id, retry, signal); if (!failed(r)) { second = r; drop = t; break; } } catch { /* 다음 시도 */ }
       }
       if (!second) return result;
-      const note = `[자리 옮겨 이음] 처음 요청은 거절됐다(${why.replace(/^.*?실행 실패:\s*/u, "").slice(0, 160)}) — ${drop.map((k) => k.toUpperCase()).join("·")} 끝의 doorAt(문 칸)을 빼고 다시 불러, 걸어 닿는 가장 가까운 칸으로 옮겨 이었다(옮긴 자리는 위 결과). 문 그림이 필요하면 그 자리 위에 stamp_object 로 찍는다.`;
+      const note = `[Relocated and linked] The first request was refused (${((t) => t.length > 220 ? `${t.slice(0, 219)}…` : t)(englishToolMessage(firstReason(why)))}) — called again without doorAt (the door cell) on end ${drop.map((k) => k.toUpperCase()).join("+")}, and linked at the nearest walkable cell (the new cell is in the result above). If you need a door picture, stamp it there with stamp_object.`;
       return { ...second, content: [...second.content, { type: "text", text: note }] } as Awaited<ReturnType<PiToolShape["execute"]>>;
     },
   });

@@ -1556,9 +1556,11 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     if (BLUEPRINT_PROGRESS_VERBS.has(tool.name)) { const note = blueprintProgressNote(env.ctx.project); if (note) result = { ...result, content: [...result.content, { type: "text", text: note }] }; }
     if (!recorded.get(env)?.has(id)) {
       const first = result.content.find((c) => c.type === "text") as { text: string } | undefined;
-      let parsed: { ok?: boolean; summary?: string } = {};
-      try { parsed = first ? JSON.parse(first.text) as { ok?: boolean; summary?: string } : {}; } catch { /* 글 */ }
-      env.record({ toolCallId: id, name: tool.name, args: params, result: { ok: parsed.ok !== false, summary: String(parsed.summary ?? (parsed.ok === false ? "실패" : `${tool.label} 완료`)) } });
+      let parsed: { ok?: boolean; summary?: string; notFailure?: boolean } = {};
+      try { parsed = first ? JSON.parse(first.text) as { ok?: boolean; summary?: string; notFailure?: boolean } : {}; } catch { /* 글 */ }
+      // «아직 짓지 않았다(실패 아님)»(설계 받기·땅 미리보기·굴 입구 되돌림)는 정상 흐름이다 — tool_end 를 실패(FAIL)로 남기지 않는다.
+      const notFailure = parsed.notFailure === true || /\(실패 아님\)/u.test(String(parsed.summary ?? "").slice(0, 300));
+      env.record({ toolCallId: id, name: tool.name, args: params, result: { ok: parsed.ok !== false || notFailure, summary: String(parsed.summary ?? (parsed.ok === false ? "실패" : `${tool.label} 완료`)), ...(notFailure && parsed.ok === false ? { notFailure: true } : {}) } as never });
     }
     return result;
   } });
