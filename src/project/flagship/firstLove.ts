@@ -265,7 +265,10 @@ function walkRoute(project: Project, mapId: string, eventId: string, from: Cell,
 function sideBySide(project: Project, mapId: string, npcId: string, npc: Cell): Command[] {
   const map = project.maps[mapId]!;
   const free = (c: Cell): boolean => isPassable(project, map, c.x, c.y) && !map.events.some((e) => e.x === c.x && e.y === c.y);
-  const side = [{ x: npc.x - 1, y: npc.y }, { x: npc.x + 1, y: npc.y }].find(free);
+  // 바로 옆으로 돌아 설 수 있는 쪽(옆 칸 아래·위가 비어 있는 쪽)을 먼저 — 왼쪽 아래가 탁자면 맵을 한 바퀴 돌아갔다(탕비실 카운터, 2026-10-30).
+  const sides = [{ x: npc.x - 1, y: npc.y }, { x: npc.x + 1, y: npc.y }].filter(free);
+  const short = (c: Cell): boolean => free({ x: c.x, y: npc.y + 1 }) || free({ x: c.x, y: npc.y - 1 });
+  const side = sides.find(short) ?? sides[0];
   if (!side) return [faceHero(npcId)];
   const from = (dir: "up" | "down"): Cell => ({ x: npc.x, y: dir === "up" ? npc.y + 1 : npc.y - 1 });
   const go = (dir: "up" | "down"): Command[] => [
@@ -525,13 +528,39 @@ function buildMondayOffice(project: Project, a: FirstLoveAnchors): void {
     page("minho_desk", [stageIs(V_STAGE, S.STREET)], [], { who: "minho", dir: "up" }),
     page("minho_pantry", [stageIs(V_STAGE, S.MET)], [
       ...sideBySide(project, FL_MAP.office, "ev_fl_minho", minhoSpot),
-      ...say("minho", "happy", "왔어요? 이 커피 머신, 버튼 두 개를 같이 누르면 라떼가 돼요. 우리 회사 최대 기밀."),
-      // 커피 머신 앞의 작은 시연 — 돌아서서 두 단추를 같이 누르고, 기계가 울리면 잔을 들고 돌아선다.
+      // 사용자 2026-10-30 「탕비실 — 커피 머신 쓰는 법 알려 준다더니 안 알려 줌」: 예전엔 민호가 등을 돌려 혼자 누르고 끝났다(머신 그림도 없었다).
+      // 이제 탕비실 카운터에 머신이 있고(firstLoveRooms.json ox-coffee-counter), 민호가 버튼을 짚어 준 뒤 서하가 직접 누른다.
+      ...say("minho", "happy", "왔어요? 커피 머신 쓰는 법 알려 준다고 했죠. 이거 우리 회사 최대 기밀이에요."),
       face("ev_fl_minho", "up"),
-      quiet(SE_BUTTON, 0.5), wait(120), quiet(SE_BUTTON, 0.5), wait(700),
-      quiet("cc0-se-osx-dishes-02", 0.5), wait(500),
+      ...say("minho", "base", "왼쪽 버튼은 아메리카노, 오른쪽은 우유 거품. 여기까진 다 알아요."),
       faceHero("ev_fl_minho"),
-      ...think("고소한 냄새. …진짜 라떼다."),
+      ...say("minho", "happy", "직접 해 봐요. 컵은 놔뒀어요. 라떼 마시고 싶으면, 뭘 누를까요?"),
+      face("@player", "up"),
+      choices([
+        { text: "왼쪽 버튼(아메리카노)", then: [
+          quiet(SE_BUTTON, 0.5), wait(200), quiet("cc0-se-osx-machine-02", 0.45), wait(900),
+          ...think("새까만 아메리카노가 졸졸 나왔다. …라떼는 아니다."),
+          ...say("minho", "happy", "그건 그냥 아메리카노죠. 기밀은 지금부터예요. 두 개를 같이, 꾹."),
+        ] },
+        { text: "오른쪽 버튼(우유 거품)", then: [
+          quiet(SE_BUTTON, 0.5), wait(200), quiet("cc0-se-orp-inventory-bubble", 0.5), wait(900),
+          ...think("우유 거품만 잔에 한가득 부풀어 올랐다."),
+          ...say("minho", "happy", "거품 한 잔 나왔네요. 기밀은 지금부터예요. 두 개를 같이, 꾹."),
+        ] },
+        { text: "두 버튼을 같이 꾹", then: [
+          { kind: "changeFriendship", npcKey: "minho", delta: 50 } as Command,
+          ...say("minho", "surprised", "오, 감 좋은데요? 맞아요, 같이 꾹."),
+        ] },
+      ]),
+      // 두 버튼을 동시에 — 딸깍 두 번이 한 번처럼 겹치고, 기계가 웅 돌고, 김이 오른다.
+      ...think("왼쪽과 오른쪽 버튼에 손가락을 하나씩 올리고, 같이 꾹 눌렀다."),
+      quiet(SE_BUTTON, 0.55), wait(40), quiet(SE_BUTTON, 0.45), wait(250),
+      quiet("cc0-se-osx-machine-02", 0.5),
+      m2("Particle Effect", { preset: "smoke", target: "tile", x: o.coffee.x, y: o.coffee.y, durationMs: 1600, sizePercent: 70, wait: false }),
+      wait(1100), quiet("cc0-se-orp-inventory-bubble2", 0.45), wait(700),
+      faceHero("ev_fl_minho"),
+      ...think("고소한 냄새. 우유 거품 위에 갈색 에스프레소가 천천히 번진다. …진짜 라떼다."),
+      ...say("minho", "happy", "그게 기밀이에요. 메뉴에는 없는 라떼."),
       ...say("seoha", "happy", "그런 걸 첫날에 알려 줘도 돼요?"),
       ...say("minho", "happy", "동기잖아요. 기밀은 동기끼리 나누는 거죠."),
       { kind: "changeFriendship", npcKey: "minho", delta: 150 } as Command,
@@ -565,6 +594,20 @@ function buildMondayOffice(project: Project, a: FirstLoveAnchors): void {
         [...say("minho", "base", "…아, 그리고. 선임님, 점심엔 꼭 옥상에 혼자 있어요. 이건 기밀 아니고 그냥 관찰이에요.")],
         [...say("minho", "base", "라떼 버튼, 아무한테도 말하면 안 돼요. 그거 우리 팀 복지의 전부예요.")]),
     ], { who: "minho", dir: "up" }),
+  ]));
+
+  // 탕비실 커피 머신 — 민호가 알려 준 뒤로는 서하도 혼자 라떼를 내릴 수 있다(배운 것을 직접 다시 해 본다).
+  add(office, event("ev_fl_coffee", "커피 머신", o.coffee, [
+    page("coffee_before", [stageBelow(V_STAGE, S.PANTRY)], [
+      ...think("커피 머신이다. 버튼이 두 개 — 왼쪽은 아메리카노, 오른쪽은 우유 거품.", "민호 씨가 쓰는 법을 알려 준다고 했다."),
+    ], { priority: "same" }),
+    page("coffee_after", [stageAtLeast(V_STAGE, S.PANTRY)], [
+      ...think("두 버튼을 같이, 꾹."),
+      quiet(SE_BUTTON, 0.55), wait(40), quiet(SE_BUTTON, 0.45), wait(250), quiet("cc0-se-osx-machine-02", 0.5),
+      m2("Particle Effect", { preset: "smoke", target: "tile", x: o.coffee.x, y: o.coffee.y, durationMs: 1400, sizePercent: 70, wait: false }),
+      wait(1200),
+      ...think("메뉴에 없는 라떼 한 잔. 민호 씨의 기밀이다."),
+    ], { priority: "same" }),
   ]));
 
   // 만남 장면 — 엘리베이터에서 내리자마자.

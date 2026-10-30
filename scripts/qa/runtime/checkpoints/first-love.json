@@ -198,9 +198,9 @@
   {
    "id": "d1-minho-choice",
    "label": "민호 질문 선택",
-   "note": "MET 3: ev_fl_minho talk at (6,4)",
+   "note": "MET 3: ev_fl_minho talk at the coffee machine (5,4); Seoha steps beside him and presses the buttons herself",
    "mapId": "fl_office",
-   "x": 6,
+   "x": 5,
    "y": 5,
    "facing": "up",
    "switches": {},

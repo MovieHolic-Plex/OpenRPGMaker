@@ -58,7 +58,8 @@ export interface FirstLoveAnchors {
     /** 엘리베이터 앞 첫 만남 자리(팀장·지후) — 트인 바닥. */
     readonly meetLead: Cell; readonly meetJihu: Cell;
     readonly heroDesk: Cell; readonly jihuDesk: Cell; readonly leadDesk: Cell;
-    readonly pantry: Cell; readonly meeting: Cell; readonly meetingSeat: Cell; readonly whiteboard: Cell;
+    /** 탕비실 — pantry 는 커피 머신 앞 바닥, coffee 는 머신 칸(카운터 왼쪽 반, 김이 오르는 자리). */
+    readonly pantry: Cell; readonly coffee: Cell; readonly meeting: Cell; readonly meetingSeat: Cell; readonly whiteboard: Cell;
     /** 회의 탁자 둘레의 빈 바닥 다섯 칸(서하·고객·팀장·지후·민호). */
     readonly meetSeats: readonly Cell[];
   };
@@ -254,25 +255,18 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
   }
   // 둘레 빌딩 숲(VQA r22: 하늘만 두르면 옥상이 공중에 뜬 상자로 읽혔다) — 옆 빈 칸과 난간 위로 이웃 빌딩이 보인다.
   roofRoom.background = mapBackgroundFromPanoramaSet("oprn-sky-day-city");
-  // 난간 너머로 내려다본 아래 거리(사용자 2026-10-24: 원 크기 거리는 너무 컸다) — 거리 맵을 0.4배로 줄여 안개를 섞은 층.
-  // 가까운 빌딩 실루엣 층 자리에 둔다. 세로는 한 장(loopY:false): 거리 아랫단이 난간 바로 뒤에 오게 focusY 를 거리 높이 너머로 민다.
+  // 난간 너머 빌딩 숲(사용자 2026-10-30 「옥상 하늘이 이상」): 예전엔 거리 맵을 1/4 로 줄인 띠를 하늘에 깔았는데, 도착 화면에서는
+  // 옥상 바닥 뒤에 숨어 있다가 대사 창이 카메라를 들어 올리면 띠만 제자리에 남아 하늘 한가운데 떴다(구름 아래 거리·그 아래 다시 하늘).
+  // 이제 세트의 먼 빌딩·가까운 빌딩 실루엣을 난간 바로 뒤에 앉힌다(offsetY). 세로로 반복하지 않는 층은 맵에 붙어 다니므로
+  // (playSceneMapBackground pinY) 카메라가 움직여도 빌딩 밑동은 늘 난간 뒤에 있다.
+  // 도착 화면(문 앞 칸)에서 난간 윗줄은 화면 위에서 46px(논리 480×270) — 표지 그림(720×270 으로 덮기) 기준으로 먼 빌딩은 60, 가까운 빌딩은 130 올린다.
   {
-    const streetMap = project.maps[FL_MAP.street];
     const bg = roofRoom.background;
-    if (streetMap && bg) {
-      // 사용자 2026-10-24 「옥상에선 하늘이 보이는 게 더 기분이 좋다」 — 위에서부터 하늘·구름 → 먼 빌딩 → 안개 낀 거리(작게) → 난간.
-      // 거리 띠는 1/4 배·가게 줄과 큰길만(15줄 = 60px) 두고 위아래를 녹여 그 위로 하늘이 넓게 남는다.
-      const scale = 1 / 4;
-      const region = { x: 0, y: 6, width: streetMap.width, height: 15 };
-      const cell = streetMap.tileSize * scale;
-      const railScreenY = 108; // 도착 화면의 난간 윗줄(논리 px, 480×270)
-      const bandTop = railScreenY - region.height * cell;
-      const focusY = Math.round((region.y + (135 - bandTop) / cell - 0.5) * 100) / 100;
-      // 세로로 한 장인 층(loopY:false)은 카메라를 세로로 따라가지 않는다 — 하늘을 올려다보는 카메라 팬은 거리 띠를 하늘에 띄웠다(영상 r1). 팬은 가로·제자리만.
-      const layers = (bg.layers ?? []).filter((layer) => !layer.imageId.endsWith("-city-near"));
+    if (bg) {
       roofRoom.background = {
         ...bg,
-        layers: [...layers, { imageId: "", fromMap: { mapId: FL_MAP.street, scale, haze: 0.38, desaturate: 0.35, focusY, region, feather: 0.3 }, loopX: true, loopY: false, cameraFollow: 0.4 }],
+        layers: (bg.layers ?? []).map((layer) => layer.imageId.endsWith("-city-far") ? { ...layer, offsetY: -60 }
+          : layer.imageId.endsWith("-city-near") ? { ...layer, offsetY: -130 } : layer),
       };
     }
   }
@@ -295,8 +289,10 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
         const i = y * W + x;
         if (y === ROOF_FENCE_Y ? roofRoom.upperTiles[i]! >= 0 || !isPassable(project, roofRoom, x, y) : roofRoom.upperTiles[i]! < 0 && isPassable(project, roofRoom, x, y)) src = i;
       }
-      if (src < 0) continue;
-      for (const x of edgeCols) copyCell(src, y * W + x);
+      if (src >= 0) { for (const x of edgeCols) copyCell(src, y * W + x); continue; }
+      // 바닥 칸이 없는 줄(난간 아래 턱·건물 앞면 윗단)은 원래 맵의 바깥 열을 그대로 늘린다 — 비워 두면 그 줄 양 끝에
+      // 하늘이 비쳐 옥상 아래 모서리에 하늘색 조각이 떴다(사용자 2026-10-30 「옥상 하늘이 이상」).
+      for (const x of edgeCols) copyCell(y * W + (x < W / 2 ? ROOF_PAD : W - 1 - ROOF_PAD), y * W + x);
     }
   }
   const broadcast = project.maps[FL_MAP.broadcast]!;
@@ -338,7 +334,8 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
       heroDesk: nearestFree(project, officeRoom, { x: 13, y: 9 }),
       jihuDesk: nearestFree(project, officeRoom, { x: 17, y: 9 }),
       leadDesk: nearestFree(project, officeRoom, { x: 20, y: 10 }),
-      pantry: nearestFree(project, officeRoom, { x: 6, y: 4 }),
+      pantry: nearestFree(project, officeRoom, { x: 5, y: 4 }),
+      coffee: { x: 5, y: 3 },
       // 회의실: 유리문(10,12) 바로 안쪽이 meeting, 탁자(4×2) 둘레의 빈 바닥 다섯 칸이 meetSeats(의자·탁자 위가 아니다).
       meeting: nearestFree(project, officeRoom, { x: 10, y: 14 }),
       // 발표 배치(VQA r4 M3): 발표자 둘은 탁자 동쪽 끝에 나란히 서서 서쪽(탁자)을 본다 — 한 열로 쌓이지 않는다.
