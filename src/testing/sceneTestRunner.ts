@@ -71,6 +71,7 @@ import { normalizeWeatherParams, parseWeather, weatherToRuntimeString } from "@/
 import {
   advanceFieldSpawns,
   createFieldSpawnRuntime,
+  fieldSpawnTimePhase,
   fieldSpawnAliveCount,
   fieldSpawnRuntimeNeedsRefresh,
   fieldSpawnTroopId,
@@ -1392,6 +1393,7 @@ function pump(state: RunnerState, interp: Interpreter, first: StepResult): PumpS
       case "pathfindMove":
       case "openMenuScreen":
       case "openLoadMenu":
+      case "planSchedule":
         return { stop: "failed", reason: `${step.kind}: 출하 플레이어 하네스로 검증해야 하는 명령` };
       case "choices":
       {
@@ -2722,7 +2724,8 @@ function initializeFieldSpawnsForRunner(state: RunnerState): void {
     map,
     { x: state.session.x, y: state.session.y },
     state.session.killedFieldSpawns?.[map.id],
-    state.session.roguelikeRun
+    state.session.roguelikeRun,
+    fieldSpawnTimePhase(state.project, state.session.gameTime),
   );
   syncFieldSpawnEventsIntoMap(map, state.fieldSpawnState, state.eventPositions);
 }
@@ -2740,7 +2743,7 @@ function advanceFieldSpawnsForRunner(state: RunnerState, deltaMs: number): void 
   const map = currentMap(state);
   if (!map) return;
   if (refreshRoguelikeRoomForRunner(state)) return;
-  const changed = advanceFieldSpawns(state.fieldSpawnState, state.project, map, { x: state.session.x, y: state.session.y }, deltaMs);
+  const changed = advanceFieldSpawns(state.fieldSpawnState, state.project, map, { x: state.session.x, y: state.session.y }, deltaMs, undefined, fieldSpawnTimePhase(state.project, state.session.gameTime));
   if (!changed) return;
   syncFieldSpawnEventsIntoMap(map, state.fieldSpawnState, state.eventPositions);
   refreshChasers(state);

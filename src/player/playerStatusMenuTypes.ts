@@ -48,6 +48,7 @@ export type PlayerStatusMenuActions = {
   readonly onSelectLifeLedgerTab?: (tab: LifeLedgerTabId) => void;
   readonly onLifeLedgerMutation?: (ok: boolean, message: string) => void;
   readonly onToggleWait: () => void;
+  readonly onRest?: (target: import("@/project/restMenu").RestTarget) => void;
   readonly onToTitle: () => void;
 };
 
