@@ -3,7 +3,7 @@ import { store } from "@/project/store";
 import { tileStackAt } from "@/project/mapOverlayTiles";
 import { layerTileAt } from "@/project/mapLayers";
 import { tilesetTextureKey } from "@/editor/tilesetImage";
-import { isAlwaysAboveCharacterUpperTile, MAP_UPPER_LAYER_DEPTH } from "@/player/characterDepth";
+import { isAlwaysAboveCharacterUpperTile, MAP_UPPER_LAYER_DEPTH, starRestsOnSolidFurniture } from "@/player/characterDepth";
 import type { GameMap, TilesetDef } from "@/project/types";
 
 /**
@@ -94,6 +94,8 @@ export function playerCoverage(scene: GhostScene, map: GameMap, x: number, y: nu
 
 function cellCover(scene: GhostScene, map: GameMap, tileset: TilesetDef, key: string, x: number, y: number): number {
   if (x < 0 || y < 0 || x >= map.width || y >= map.height) return 0;
+  // 막힌 가구 위 ★ 는 줄 정렬이라 사람을 덮지 않는다(playSceneMapRuntime.placeMapTileImage) — 실루엣도 띄우지 않는다.
+  if (starRestsOnSolidFurniture(map, tileset, x, y)) return 0;
   const index = y * map.width + x;
   let best = 0;
   for (const tile of [map.upperTiles[index], ...tileStackAt(map, "upper", index), layerTileAt(map, 4, index)]) {
