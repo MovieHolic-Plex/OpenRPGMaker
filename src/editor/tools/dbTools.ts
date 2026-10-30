@@ -106,6 +106,7 @@ import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver
 import { CHARSET_ASSETS } from "@/assets/charsetCatalog";
 import { heroCharacterResourceId } from "./cutsceneCharacterLock";
 import { closestDeclaredKey } from "./argRepair";
+import { projectStoreIcons, rankStoreIcons, stateIconWant, STORE_ICON_CONFIDENT_SCORE, type StoreIconWant } from "@/assetStore/storeIconPick";
 import { DB_FIELD_REJECT_HINTS, repairRecordArgs } from "./dbRecordAliases";
 
 const DATABASE_RECORD_COLLECTIONS = [
@@ -812,6 +813,7 @@ const skillRecordSchema = objectSchema({
   },
   power: integerSchema(),
   animationId: stringSchema(),
+  iconResourceId: stringSchema("메뉴·전투 기술 목록 아이콘(그림 id). 생략하면 프로젝트에 넣은 스토어 아이콘 중 이름이 맞는 것을 자동으로 붙인다"),
   description: stringSchema(),
   type: { type: "string", enum: ["normal", "teleport", "escape", "switch"] },
   mpCost: recoverySchema,
@@ -1068,6 +1070,7 @@ const classRecordSchema = objectSchema({
 const stateRecordSchema = objectSchema({
   id: stringSchema(),
   name: stringSchema(),
+  iconResourceId: stringSchema("전투 상태 배지 아이콘(그림 id). 생략하면 프로젝트에 넣은 스토어 아이콘 중 이름이 맞는 것을 자동으로 붙인다"),
   gen1MajorStatus: { type: "string", enum: ["poison", "toxic", "burn", "sleep", "freeze", "paralysis"] },
   volatileStatus: { type: "string", enum: ["confusion"] },
   removalCondition: stringSchema(),
@@ -1303,6 +1306,19 @@ function resolveIconResourceId(project: Project, record: { iconResourceId?: stri
   );
 }
 
+/**
+ * 아이콘을 주지 않은 새 레코드에 프로젝트의 스토어 아이콘(kind icon, meta.oprnIcon) 중 이름이 맞는 것을 붙인다.
+ * 자신 있는 짝(STORE_ICON_CONFIDENT_SCORE 이상)만 쓰고, 붙였으면 경고 줄로 알린다(바꾸려면 iconResourceId 를 주면 된다).
+ * 아이콘 팩을 안 넣은 프로젝트는 아무 일도 없다.
+ */
+function autoStoreIcon(project: Project, record: { iconResourceId?: string }, want: StoreIconWant, label: string, warnings: string[]): void {
+  if (record.iconResourceId) return;
+  const [best] = rankStoreIcons(projectStoreIcons(project), want, 1);
+  if (!best || best.score < STORE_ICON_CONFIDENT_SCORE) return;
+  record.iconResourceId = best.id;
+  warnings.push(`${label} 아이콘을 스토어 아이콘 「${best.meta.nameKo || best.meta.nameEn}」(${best.id})로 붙였습니다. 다른 그림을 쓰려면 iconResourceId 를 주세요.`);
+}
+
 /** captureProfile.condition 을 줬는데 정규화가 버렸으면(모르는 종류·필수 매개변수 누락) 허용 값을 담아 거절한다. */
 function validateItemCaptureCondition(draft: Project, raw: unknown, record: ItemRecord): void {
   if (raw === undefined || raw === null) return;
@@ -1379,6 +1395,7 @@ const upsertItem: ToolDefinition = {
     coerceMonsterFieldItem(record, warnings);
     dropUnknownAnimationId(draft, record, "item", warnings);
     resolveIconResourceId(draft, record, "item", warnings);
+    autoStoreIcon(draft, record, { target: "item", name: record.name, description: record.description, itemType: record.type }, "item", warnings);
     const outcome = upsertById(draft.database.items, record);
     return { summary: `아이템 '${record.name}' ${outcome === "added" ? "추가" : "수정"}`, data: record, ...(warnings.length ? { warnings } : {}) };
   },
@@ -2379,6 +2396,9 @@ const upsertSkill: ToolDefinition = {
     }
     validateSkillSpecialEffect(draft, record, warnings);
     dropUnknownAnimationId(draft, record, "skill", warnings);
+    resolveIconResourceId(draft, record, "skill", warnings);
+    autoStoreIcon(draft, record, { target: "skill", name: record.name, description: record.description,
+      element: draft.database.elements?.find((element) => element.id === record.elementId)?.name ?? record.elementId }, "skill", warnings);
     const outcome = upsertById(draft.database.skills, record);
     const auto = autoChoreographyNote(draft, record);
     return { summary: `스킬 '${record.name}' ${outcome === "added" ? "추가" : "수정"}${auto ? ` — ${auto}` : ""}`, data: record, ...(warnings.length ? { warnings } : {}) };
@@ -2448,6 +2468,8 @@ const upsertEquipment: ToolDefinition = {
       warnings.push("apGrants 는 설정했지만 AP 를 주는 적이 없습니다 — upsert_enemy 의 rewards.ap 를 정해야 마석이 자랍니다(승리 시 트룹 합계를 받음).");
     }
     resolveIconResourceId(draft, record, "equipment", warnings);
+    autoStoreIcon(draft, record, { target: "equipment", name: record.name, description: record.description, itemType: record.slot,
+      element: draft.database.elements?.find((element) => element.id === record.attackElementIds[0])?.name ?? record.attackElementIds[0] }, "equipment", warnings);
     dropUnknownEquipmentRestrictions(draft, record, warnings);
     const outcome = upsertById(draft.database.equipment, record);
     return { summary: `장비 '${record.name}'(${record.slot}) ${outcome === "added" ? "추가" : "수정"}`, data: record, ...(warnings.length ? { warnings } : {}) };
@@ -2613,6 +2635,8 @@ const upsertState: ToolDefinition = {
     }
     if (record.gen1MajorStatus === "toxic") warnings.push("맹독(toxic)은 차례 말마다 1/16 × (1,2,3…15) 피해가 커지고 교체하면 처음부터 셉니다. runtimeEffects.hpDamagePercentPerTurn 을 따로 주지 마세요(이중 피해). 보통 독은 gen1MajorStatus:\"poison\"(고정 1/16).");
     if (record.volatileStatus === "confusion") warnings.push("혼란(volatileStatus:\"confusion\")은 주요 상태와 겹쳐 걸리고 2~5 행동 지속, 행동마다 절반이 위력 40 자해로 행동을 잃으며 교체·전투 종료로 풀립니다. removalCondition 은 '전투 종료' 로 두세요.");
+    resolveIconResourceId(draft, record, "state", warnings);
+    autoStoreIcon(draft, record, stateIconWant(record), "state", warnings);
     if (record.runtimeEffects?.forcedAction === "rage") warnings.push("forcedAction rage 는 폭주(rage) 기술이 몬스터를 정한 배틀러에게만 작동합니다 — upsert_skill 로 effect.kind \"rage\" 기술을 만들어 이 상태를 걸게 하세요(기본 id state_rage 는 자동으로 걸림).");
     const outcome = upsertById(draft.database.states, record);
     return { summary: `상태 '${record.name}' ${outcome === "added" ? "추가" : "수정"}`, data: record, ...(warnings.length ? { warnings } : {}) };

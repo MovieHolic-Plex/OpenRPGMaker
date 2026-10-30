@@ -230,6 +230,20 @@ faceset(48×48 얼굴)·picture(흉상·전신) 에셋을 가리킨다. 표정 �
   끝맺음 검사 `[게임 검사 효과음]`: 효과음만 바라는 요청에 효과음 연결(seCues·타이틀 소리·패배/도주·지형 발소리)이 그대로면 짚는다.
 - 시험: `test/storeSoundPick.test.ts`(매니페스트 사본 `test/fixtures/oprn-sfx-*-battle.manifest.json` — 실제 팩에서 소리 6개만 남김, 소리 파일 없음). 런타임 쪽은 `openwiki/runtime-battle.md` 「효과음 자리」.
 
+### 아이콘 팩과 조수 (2026-10-31)
+
+- 팩: kind `icon`, 에셋 kind `icon`, **32×32 투명 PNG 한 장 = 아이콘 하나**(`STORE_ICON_SIZE`, `STORE_FIXED_SHEETS.icon` — 넣을 때 크기가 다르면 거절).
+  넣으면 프로젝트 자원 kind `icon`(통이미지, 프로필 `icon`)이 되고 `iconResourceId` 를 그대로 쓴다. 고르개(`resourceOptions` icon·image)는 kind `icon` 업로드도 보인다.
+- 고르기 설명 `meta.oprnIcon`(판 1): `category` weapon|armor|consumable|material|key|skill|state|treasure|modern|eastern · `itemType`(아이템 종류·장비 칸·skill·state) ·
+  `element`(fire|ice|thunder|water|wind|earth|light|dark|poison|arcane) · `nameEn` · `nameKo` · `tags`(≤24). 읽기·점수 `src/assetStore/storeIconPick.ts`
+  (이름 낱말 +6·설명 낱말 +2·부분 +3/+1·종류 +4·속성 ±; 분류는 대상별로 거르고 skill/state 아이콘은 아이템 자리에 안 간다). 자동 배정은 `STORE_ICON_CONFIDENT_SCORE`(6) 이상만.
+- 기술(`SkillRecord`)·상태(`StateRecord`)에 선택 필드 `iconResourceId` 가 생겼다(없으면 예전 그대로: 기술은 애니메이션 첫 칸, 상태는 글자 배지). 참조 검사·정규화·DB 탭 고르개 포함.
+  런타임: 상태 메뉴 기술 줄, 전투 기술·아이템 하위 메뉴 줄 머리(`.battle-command-record-icon`), 전투 상태 배지(`.battle-status-icon-image`).
+- 조수: `upsert_item`·`upsert_equipment`·`upsert_skill`·`upsert_state` 는 아이콘을 안 주면 프로젝트에 이미 있는 스토어 아이콘 중 자신 있는 것을 붙이고 경고 줄로 알린다(`dbTools` `autoStoreIcon`).
+  `assign_store_icons{collections?, ids?, overwrite?}`(`src/editor/tools/storeIconTools.ts`) — 빈 레코드를 한꺼번에 채운다. 스토어가 연결돼 있으면 아이콘 팩 매니페스트만 읽어 더 맞는 것을 고르고 고른 파일만 받는다.
+  `store_install` 결과의 `icons[]` 도 같은 자원 id 를 준다.
+- 시험: `test/assetStoreIcons.test.ts`.
+
 ## 게시기
 
 주소와 토큰은 코드·문서에 두지 않는다. 환경 변수로만 받고, 없으면 아무것도 보내지 않는다(plan 은 `configured:false`).

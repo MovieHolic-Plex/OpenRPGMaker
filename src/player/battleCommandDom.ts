@@ -15,6 +15,7 @@ import { battleNameText, disambiguatedBattlerName, hpBarState, syncStatusIcons }
 import type { BattlePresentationLedger } from "@/player/battlePresentation";
 import { noEscapeNoticeLine } from "@/player/emeraldBattleNarration";
 import { store } from "@/project/store";
+import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { isEmeraldMonsterStyle } from "@/project/emeraldMonsterStyle";
 import type { ItemId, SkillId } from "@/project/types";
 import { resolveTerms, type ResolvedTerms } from "@/project/terms";
@@ -785,6 +786,7 @@ function skillSubmenu(snapshot: BattleSnapshot, options: BattleCommandPanelOptio
       options.beginTargetCommand({ kind: "skill", skillId });
     }, Boolean(reason), reason, hint);
     button.dataset.skillHelpId = skillId;
+    setCommandIconImage(button, skill?.iconResourceId);
     appendSkillTypeBadge(button, project, skill?.elementId);
     nodes.push(button);
   }
@@ -983,9 +985,11 @@ function itemSubmenu(snapshot: BattleSnapshot, options: BattleCommandPanelOption
     // 수량은 aria-label(hint)에도 남겨 보조기술이 읽는다.
     const countLabel = `x${item.count}`;
     const hintText = [countLabel, hint].filter(Boolean).join(" · ");
-    nodes.push(commandButton(item.name, `actor-item-${item.itemId}`, "bag", countLabel, () => {
+    const button = commandButton(item.name, `actor-item-${item.itemId}`, "bag", countLabel, () => {
       options.beginTargetCommand({ kind: "item", itemId: item.itemId });
-    }, false, undefined, hintText || `${terms.item} 사용`));
+    }, false, undefined, hintText || `${terms.item} 사용`);
+    setCommandIconImage(button, record?.iconResourceId ?? record?.imageResourceId);
+    nodes.push(button);
   }
   if (isPokemonMonsterActor(project, activeActor(snapshot))) {
     for (const item of captureItems(snapshot)) {
@@ -1138,6 +1142,23 @@ function keyPrompts(): HTMLElement {
   prompt.className = "battle-key-prompts";
   prompt.textContent = BATTLE_KEY_PROMPT;
   return prompt;
+}
+
+/**
+ * 기술·아이템 행 이름 앞에 레코드 그림(iconResourceId, 예: 스토어 아이콘 팩)을 붙인다. 스킨이 글리프 칸(.battle-command-icon)을
+ * 서브메뉴에서 숨기므로 이름(strong) 안에 넣는다. 그림이 없으면 아무것도 붙이지 않는다 — 기존 화면 그대로.
+ */
+function setCommandIconImage(button: HTMLElement, resourceId: string | undefined): void {
+  const url = resourceId ? resolveAssetResourceUrl(resourceId, { project: store.getCurrent() }) : null;
+  const title = button.querySelector<HTMLElement>(".battle-command-text strong");
+  if (!url || !title || !resourceId) return;
+  const icon = document.createElement("span");
+  icon.className = "battle-command-record-icon";
+  icon.setAttribute("aria-hidden", "true");
+  icon.dataset.iconResource = resourceId;
+  icon.style.backgroundImage = `url("${url}")`;
+  title.prepend(icon);
+  button.dataset.recordIcon = "true";
 }
 
 function commandButton(

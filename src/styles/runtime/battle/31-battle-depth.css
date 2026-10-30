@@ -618,3 +618,34 @@
 @media (prefers-reduced-motion: reduce) {
   .battle-combo-finisher-glow { animation: none; filter: brightness(1.4); }
 }
+
+/* 기술·아이템 행의 레코드 아이콘(iconResourceId, battleCommandDom setCommandIconImage) — 이름 앞 한 글자 높이. 그림이 없는 행은 이 요소가 없다. */
+.battle-scene .battle-command-record-icon {
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  display: inline-block;
+  flex: 0 0 auto;
+  height: 1.25em;
+  image-rendering: pixelated;
+  margin-inline-end: 0.3em;
+  vertical-align: -0.25em;
+  width: 1.25em;
+}
+
+/* 상태 배지 그림(StateRecord.iconResourceId, battleFieldDom statusIconCluster) — 글자·색 배지 대신 그림 한 장. */
+.battle-scene .battle-status-icon.battle-status-icon-image {
+  background-color: transparent;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  border-color: transparent;
+  box-shadow: none;
+  height: 16px;
+  image-rendering: pixelated;
+  min-width: 16px;
+  padding: 0;
+  width: 16px;
+}
+.battle-scene .battle-status-icon.battle-status-icon-image::before,
+.battle-scene .battle-status-icon.battle-status-icon-image::after { content: none; }
