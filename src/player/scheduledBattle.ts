@@ -1,5 +1,6 @@
 import { showBattleAdmissionError } from "@/player/playSceneOverlays";
 import { store } from '@/project/store';
+import { battleStepCanLose } from '@/player/battleDuel';
 import { evalCondition } from '@/project/session';
 import { runtimeEventViewById } from '@/project/runtimeEventState';
 import type { StepResult } from './interpreter';
@@ -68,7 +69,7 @@ export function resumeScheduledBattle(scene: PlaySceneContext, key: string, proc
       return;
     }
     delete process.pendingBattle;
-    if (result === 'defeat' && !pending.step.canLose) { process.stopped = true; return; }
+    if (result === 'defeat' && !battleStepCanLose(store.getCurrent(), pending.step, scene.session)) { process.stopped = true; return; }
     consume(scene, key, process, process.interpreter.resume(result));
   }).catch(async (error: unknown) => {
     console.error('[player] scheduled battle failed', error);
