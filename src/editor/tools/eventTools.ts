@@ -397,40 +397,75 @@ function eventLook(event: GameEvent | undefined): EventPageGraphic | undefined {
   return graphic ? structuredClone(graphic) : undefined;
 }
 
-/** 이름에 이 낱말이 있으면 말하는 존재로 본다(주민 그림을 세운다). */
-const SPEAKING_BEING_WORDS = /사람|주민|아이|소녀|소년|아가씨|청년|노인|할머니|할아버지|아저씨|아주머니|아줌마|여인|남자|여자|상인|점원|주인|손님|경비|병사|기사|마법사|의사|박사|탐정|집사|신부|수녀|왕|공주|왕자|어부|농부|사냥꾼|그림자|유령|요정|정령|괴물|몬스터|인형|villager|person|npc|man|woman|girl|boy|guard|ghost/iu;
+/**
+ * 이름의 머리 명사(괄호 앞 마지막 낱말)가 이것이면 사물·표지·장치·구역이다. 인물 쪽 낱말 목록은 두지 않는다 —
+ * 촌장·장로·대장장이처럼 역할 이름은 끝이 없어 목록이 늘 빠뜨린다(2026-10-30: 「촌장」이 투명 이벤트로 저장됐다).
+ * 사물은 머리 명사가 정해져 있으므로 이쪽을 적는다.
+ */
+const OBJECT_HEAD_NOUNS = new Set([
+  "문", "대문", "정문", "후문", "철문", "철창", "창살", "창문", "창", "커튼",
+  "표지판", "팻말", "푯말", "간판", "게시판", "안내판", "이정표", "비석", "묘비", "비문", "석판", "명판", "현판", "포스터", "벽보", "지도",
+  "상자", "보물상자", "궤", "금고", "항아리", "단지", "통", "나무통", "술통", "자루", "바구니", "서랍", "옷장", "찬장", "선반", "책장", "장롱", "사물함",
+  "스위치", "레버", "단추", "버튼", "발판", "장치", "기계", "함정", "열쇠구멍", "자물쇠", "손잡이",
+  "영역", "구역", "지점", "트리거", "입구", "출구", "계단", "사다리", "구멍", "통로",
+  "거울", "촛대", "양초", "등불", "램프", "등", "화로", "난로", "벽난로", "우산", "석상", "동상", "조각상", "액자", "사진", "그림", "초상화",
+  "책", "일기", "일기장", "편지", "쪽지", "메모", "수첩", "서류", "노트",
+  "책상", "탁자", "식탁", "의자", "침대", "시계", "괘종시계", "우물", "무덤", "제단", "꽃병", "화분", "기둥", "수정", "분수", "기념비", "오르간", "피아노",
+]);
+/** 숨은 장치·투명 구역 — 그림을 세우면 안 된다(이름이 숨겼다고 말한다). */
+const HIDDEN_WORDS = /숨은|숨겨진|감춰진|보이지 ?않는|투명|hidden|invisible|secret/iu;
+/** 대사가 아니라 서술(「잠겨 있다」「~라고 적혀 있다」)인 본문 — 사물을 조사한 결과다. */
+const NARRATION = /(적혀|쓰여|새겨져|새겨진|잠겨|놓여|걸려|붙어|꽂혀|들어) ?있|열리지 않|꿈쩍도 않|비어 있|아무것도 없|아무 반응이 없|조사했다|살펴보았다/u;
+/** 1인칭·말 건네기 — 누군가 말하고 있다. */
+const FIRST_PERSON = /(^|[\s「"'“])(나|내|난|날|저|제|전|우리|이몸|본인|자네|너|네가|당신|그대|젊은이|여행자|손님)(는|가|도|를|의|에게|한테|요|야|,|\s|!|\?|$)|어서 ?오|안녕|반갑|고맙|부탁|[요죠네게지나]\s*[.!?~…]*\s*$|[까냐니][?？]\s*$|구먼|일세|하게|하오|습니다|ㅂ니다/u;
+
+function pageTextBodies(page: Partial<EventPage>): string[] {
+  return allPageCommands(page.commands).flatMap((command) => command.kind === "text" && typeof command.body === "string" ? [command.body] : []);
+}
 
 /**
- * 투명 action 페이지가 말하는 인물이 아니라 조사할 사물인가 — 그렇다면 주민 그림 대신 쓸 그래픽.
+ * 그림 없는 대화(action) 페이지가 말하는 인물이 아니라 조사할 사물인가 — 그렇다면 주민 그림 대신 쓸 그래픽.
  *
- * 2026-09-24 꿈 세계 도그푸딩: 「기억의 거울」「타오르는 촛대」「버려진 우산」「고양이 석상」「오래된 사진 액자」가
- * 전부 주민 기본 charset(people1)으로 저장돼, 플레이어는 거울·촛대 자리에 서 있는 마을 사람을 봤다. 화자(speaker)가
- * 있는 대사나 인물 낱말이 든 이름이면 null(주민 그림 유지). 사물이면 이름 낱말과 라벨 낱말이 정확히 겹치는
- * charset(문·상자…)을, 없으면 투명을 준다.
+ * 기본은 인물이다. 사물로 보는 것은 이름이나 내용이 분명히 사물·표지·장치·구역이라고 말할 때뿐이다:
+ *   1. 화자가 이벤트 이름 자신이면(speaker === name, 「이름:」으로 시작하는 본문) 인물 — 말하는 거울도 인물로 세운다.
+ *   2. 이름이 숨은 장치(「숨은 스위치」)면 투명.
+ *   3. 이름의 머리 명사가 사물(문·표지판·상자·스위치·구역 …)이면 사물 — 이름과 맞는 칩(문·상자)이 있으면 그 칩, 없으면 투명.
+ *   4. 이름이 없거나 사물 낱말이 아니어도, 본문이 전부 서술(「잠겨 있다」)이고 1인칭·말 건네기가 하나도 없으면 사물(id 로 문 칩만 찾는다).
+ *   5. 나머지는 인물(주민 기본 칩) — 촌장·장로·대장장이처럼 목록에 없는 역할 이름도 인물이다.
+ * 이력: 2026-09-24 꿈 세계(거울·촛대가 주민으로 섬) → 인물 낱말 목록, 2026-10-30 「촌장」 투명 → 사물 쪽 판정으로 뒤집음.
  */
 function objectEventGraphic(event: GameEvent, page: Partial<EventPage>): { graphic: EventPage["graphic"]; label: string } | null {
   if (event.characterId) return null;
   const name = (event.name ?? "").trim();
-  if (allPageCommands(page.commands).some((command) => command.kind === "text"
-    && ((typeof command.speaker === "string" && command.speaker.trim()) || bodyNamesSpeaker(command.body, name)))) return null;
-  if (!name) return objectGraphicFromId(event.id);
-  if (SPEAKING_BEING_WORDS.test(name)) return null;
-  // 머리 명사(괄호 앞 마지막 낱말)만 본다 — 「붉은 문」의 「붉은」이 붉은 몬스터를, 「고양이 석상」의 「고양이」가
-  // 산 고양이를 고르면 안 된다.
-  const head = name.replace(/[(（].*$/u, "").trim().split(/[\s·,/]+/u).filter(Boolean).at(-1);
-  // 이름 전체가 라벨과 같으면 그 칸이 먼저다 — 「감옥 문」이 머리 명사 「문」만 보고 나무 문이 되던 경로(2026-09-27).
-  const whole = name.replace(/[(（].*$/u, "").trim();
-  const exact = searchResources("charset", whole).find((hit) => hit.label.replace(/[(（].*$/u, "").trim() === whole);
-  const exactParsed = exact ? /^charset:(.+):(\d+)$/u.exec(exact.id) : null;
-  if (exactParsed) return { graphic: charsetGraphic(exactParsed[1]!, Number(exactParsed[2])), label: exact!.label };
-  for (const hit of head ? searchResources("charset", head).slice(0, 6) : []) {
-    // 라벨의 머리 명사끼리 맞아야 한다. 라벨 낱말 어디든 맞으면 「큰 나무」가 「나무 문(패널)」 그림을 받았다(2026-09-27).
-    const labelHead = hit.label.replace(/[(（].*$/u, "").trim().split(/[\s·,/]+/u).filter(Boolean).at(-1);
-    if (labelHead !== head) continue;
-    const parsed = /^charset:(.+):(\d+)$/u.exec(hit.id);
-    if (parsed) return { graphic: charsetGraphic(parsed[1]!, Number(parsed[2])), label: hit.label };
+  const bare = name.replace(/[(（].*$/u, "").trim();
+  const texts = allPageCommands(page.commands).filter((command) => command.kind === "text");
+  const speaksAsSelf = Boolean(name) && texts.some((command) => (typeof command.speaker === "string" && command.speaker.trim() === name) || bodyNamesSpeaker(command.body, name));
+  const firstPerson = pageTextBodies(page).some((body) => FIRST_PERSON.test(body));
+  if (bare && HIDDEN_WORDS.test(bare)) return { graphic: { transparent: true }, label: "" };
+  const head = bare.split(/[\s·,/]+/u).filter(Boolean).at(-1);
+  const objectNamed = Boolean(head && OBJECT_HEAD_NOUNS.has(head));
+  // 사물 이름에 화자 표시만 붙은 표지판(「표지판: 북쪽 마을」)은 사물이다 — 이름이 사물이면 1인칭으로 말할 때만 인물로 본다.
+  if (speaksAsSelf && (!objectNamed || firstPerson)) return null;
+  if (objectNamed && head) {
+    // 이름 전체가 라벨과 같으면 그 칸이 먼저다 — 「감옥 문」이 머리 명사 「문」만 보고 나무 문이 되던 경로(2026-09-27).
+    const exact = searchResources("charset", bare).find((hit) => hit.label.replace(/[(（].*$/u, "").trim() === bare);
+    const exactParsed = exact ? /^charset:(.+):(\d+)$/u.exec(exact.id) : null;
+    if (exactParsed) return { graphic: charsetGraphic(exactParsed[1]!, Number(exactParsed[2])), label: exact!.label };
+    for (const hit of searchResources("charset", head).slice(0, 6)) {
+      // 라벨의 머리 명사끼리 맞아야 한다. 라벨 낱말 어디든 맞으면 「큰 나무」가 「나무 문(패널)」 그림을 받았다(2026-09-27).
+      const labelHead = hit.label.replace(/[(（].*$/u, "").trim().split(/[\s·,/]+/u).filter(Boolean).at(-1);
+      if (labelHead !== head) continue;
+      const parsed = /^charset:(.+):(\d+)$/u.exec(hit.id);
+      if (parsed) return { graphic: charsetGraphic(parsed[1]!, Number(parsed[2])), label: hit.label };
+    }
+    return { graphic: { transparent: true }, label: "" };
   }
-  return { graphic: { transparent: true }, label: "" };
+  const bodies = pageTextBodies(page);
+  const anySpeaker = texts.some((command) => typeof command.speaker === "string" && command.speaker.trim());
+  const narrationOnly = !anySpeaker && !BEING_ID_WORDS.test(event.id) && bodies.length > 0 && bodies.every((body) => NARRATION.test(body.trim()) && !FIRST_PERSON.test(body));
+  if (narrationOnly) return objectGraphicFromId(event.id) ?? { graphic: { transparent: true }, label: "" };
+  if (!name) return objectGraphicFromId(event.id);
+  return null;
 }
 
 /** 영문 id 가 가리키는 사물 — 문은 문 그림, 나머지 사물은 투명. id 에 인물 낱말이 있거나 뜻을 모르면 null(주민 그림). */
