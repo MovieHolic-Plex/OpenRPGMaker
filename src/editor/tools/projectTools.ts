@@ -45,8 +45,13 @@ import {
   normalizeNewGamePlusSettings,
 } from "@/project/newGamePlus";
 
-const TERM_KEYS = ["attack", "skill", "item", "defend", "escape", "capture", "back", "target", "shopGreeting", "shopBuy", "shopSell", "shopCancel", "shopSellPrompt", "innTitle", "yes", "no", "notEnoughGold", "gold", "goldPrefix", "level", "hp", "mp"] as const;
-const termSchema = Object.fromEntries(TERM_KEYS.map((key) => [key, { type: "string" as const }])) as Record<(typeof TERM_KEYS)[number], { readonly type: "string" }>;
+const TERM_KEYS = ["attack", "skill", "item", "defend", "escape", "capture", "back", "target", "battleVictory", "battleCommandPrompt", "shopGreeting", "shopBuy", "shopSell", "shopCancel", "shopSellPrompt", "innTitle", "yes", "no", "notEnoughGold", "gold", "goldPrefix", "level", "hp", "mp"] as const;
+/** 이름만으로 뜻이 안 읽히는 용어 칸의 설명. 나머지는 이름이 곧 화면 라벨이다. */
+const TERM_DESCRIPTIONS: Partial<Record<(typeof TERM_KEYS)[number], string>> = {
+  battleVictory: "전투에서 이겼을 때 화면 가운데 뜨는 큰 띠 글자(기본 「승리!」). 에메랄드 화면에는 띠가 없다.",
+  battleCommandPrompt: "명령을 고를 차례의 질문 줄(기본 「{name은} 무엇을 할까?」). {name} = 이름 그대로, {name은}·{name이}·{name을} = 받침에 맞춘 조사를 붙인 이름. 예: 「{name}, 어떻게 할까?」",
+};
+const termSchema = Object.fromEntries(TERM_KEYS.map((key) => [key, TERM_DESCRIPTIONS[key] ? { type: "string" as const, description: TERM_DESCRIPTIONS[key] } : { type: "string" as const }])) as Record<(typeof TERM_KEYS)[number], { readonly type: "string"; readonly description?: string }>;
 
 const MAX_PROMPT_LENGTH = 2000;
 const MAX_TITLE_LENGTH = 120;
@@ -156,7 +161,7 @@ const resetProject: ToolDefinition = {
 
 const setProjectSettings: ToolDefinition = {
   name: "set_project_settings",
-  description: "프로젝트 설정(project settings): 제목(title)·저자(author)·용어(terms)·화면 해상도(playResolution)·기본 음악/시스템 리소스·초기 파티·전투 기본값·휴대폰 조작(touchControls — 맵 탭 걷기·조이스틱·진동·달리기 단추)·전투 화면 꾸미기(battle.look — 전투창 디자인·전투 UI 를 소박하게/화려하게: 창 모양·파티/명령 배치·빛 연출 프리셋 12종)·전투 결과 팡파레(battle.fanfare — 레벨 업 배너·「새 기술 습득!」·「새 연계기!」 카드 켜기/끄기·연출 세기·소리)·전투 연출(battle.staging — 적 달려들기 속도·연계기 얼굴 교차 컷인·연계기 화려함·기술 한 줄 도움말·적 약점 표시 battle.revealWeakness)·공통 글꼴(fonts)·대화창 스타일(dialogue.style)·강하게 다시 하기(newGamePlus)·장 표시(chapter)를 한 번에 설정한다. 해상도는 픽셀 밀도이고 시야는 카메라 배율이 정한다 — 둘을 같이 맞춰야 한다.",
+  description: "프로젝트 설정(project settings): 제목(title)·저자(author)·용어(terms — 전투 명령·승리 띠 battleVictory·명령 질문 줄 battleCommandPrompt·상점·여관 문구)·화면 해상도(playResolution)·기본 음악/시스템 리소스·초기 파티·전투 기본값·휴대폰 조작(touchControls — 맵 탭 걷기·조이스틱·진동·달리기 단추)·전투 화면 꾸미기(battle.look — 전투창 디자인·전투 UI 를 소박하게/화려하게: 창 모양·파티/명령 배치·빛 연출 프리셋 12종)·전투 결과 팡파레(battle.fanfare — 레벨 업 배너·「새 기술 습득!」·「새 연계기!」 카드 켜기/끄기·연출 세기·소리)·전투 연출(battle.staging — 적 달려들기 속도·연계기 얼굴 교차 컷인·연계기 화려함·기술 한 줄 도움말·적 약점 표시 battle.revealWeakness)·공통 글꼴(fonts)·대화창 스타일(dialogue.style)·강하게 다시 하기(newGamePlus)·장 표시(chapter)를 한 번에 설정한다. 해상도는 픽셀 밀도이고 시야는 카메라 배율이 정한다 — 둘을 같이 맞춰야 한다.",
   mode: "write",
   domains: ["system", "database"],
   parameters: {
