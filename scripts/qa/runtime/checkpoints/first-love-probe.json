@@ -1246,6 +1246,275 @@
      "shot": true
     }
    ]
+  },
+  {
+   "id": "p-street-view",
+   "label": "p-street-view",
+   "note": "STREET 2 after the cold open (bump done); walk to the office door",
+   "mapId": "fl_street",
+   "x": 3,
+   "y": 34,
+   "facing": "down",
+   "switches": {
+    "sw_fl_bumped": true
+   },
+   "variables": {
+    "var_fl_stage": 2
+   },
+   "beats": [
+    {
+     "id": "view",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      },
+      {
+       "kind": "evalToFile",
+       "out": "/tmp/fl-r3/probe/view-pan.json",
+       "fn": "() => { const s = window.__oprnHooksScene; const c = s.cameras.main; c.stopFollow(); c.centerOn(20*16, 14*16); return 1; }"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 45000
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "p-pantry-full",
+   "label": "p-pantry-full",
+   "note": "MET 3: ev_fl_minho talk at the coffee machine (5,4); Seoha steps beside him and presses the buttons herself",
+   "mapId": "fl_office",
+   "x": 5,
+   "y": 5,
+   "facing": "up",
+   "switches": {},
+   "variables": {
+    "var_fl_stage": 3
+   },
+   "beats": [
+    {
+     "id": "pre",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 500
+      }
+     ],
+     "shot": false
+    },
+    {
+     "id": "full",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 300
+      },
+      {
+       "kind": "face",
+       "dir": "up"
+      },
+      {
+       "kind": "pressUntilJs",
+       "key": "z",
+       "fn": "() => !!document.querySelector(\"[data-testid='dialogue-box']\") || !!document.querySelector(\"[data-testid='runtime-choices']\")",
+       "maxPresses": 4,
+       "settleMs": 500
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 300
+      },
+      {
+       "kind": "pressUntilJs",
+       "key": "Enter",
+       "fn": "() => !!document.querySelector(\"[data-testid='runtime-choices']\")",
+       "maxPresses": 60,
+       "settleMs": 450
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 300
+      },
+      {
+       "kind": "key",
+       "key": "ArrowDown"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 300
+      },
+      {
+       "kind": "key",
+       "key": "ArrowDown"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 300
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1300
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1300
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1300
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1300
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1300
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1300
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1300
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1300
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1300
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1300
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1300
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1300
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1300
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1300
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1300
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1300
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      }
+     ],
+     "shot": true
+    }
+   ]
   }
  ]
 }
