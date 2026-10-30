@@ -1593,7 +1593,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     : undefined };
   // 설명 걷기(schemaDedupe)·영어 사본·필요할 때 싣기는 노출 단계(toolExposure.ts exposeV2Tools)가 한다 — 처음부터 싣는 도구만 기준으로 걷어야
   // 나중에 싣는 도구를 가리키는 «같은 모양» 표시가 생기지 않는다. 게임 요청은 v2 도구 묶음 전부(v2ToolPool)를 같은 감싸개로 만들어 둔다.
-  const pool = wantsGameTools(t) && !musicOnly(t);
+  const pool = wantsGameTools(t) && !audioOnly(t);
   return wantsGameTools(t) || wantsMusicTools(t) || wantsTerrainTools(t) || wantsStoreTools(t) ? [...verbs, ...createGameTools(gameEnv, t, { pool }).map((tool) => escalate(flattenWrapperTool(tool, gameEnv.record)))] : verbs;
 }
 
