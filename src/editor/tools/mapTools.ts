@@ -2681,7 +2681,7 @@ const createFarmPlot: ToolDefinition = {
 // 맵 크기 변경(좌상단 기준 유지, 확장부 아래층은 가장자리 바탕 타일 연장). 이벤트가 잘려 나가는 축소는 거부한다.
 const resizeMapTool: ToolDefinition = {
   name: "resize_map",
-  description: `맵 크기를 바꾼다(좌상단 기준, 확장부는 가장자리 바탕 타일을 이어 채움, 최대 ${MAX_TOOL_MAP_DIMENSION}×${MAX_TOOL_MAP_DIMENSION}). 축소로 이벤트가 범위 밖에 나가면 거부 — 먼저 move_event/remove_event로 정리하라.`,
+  description: `맵 크기를 바꾼다(좌상단 기준, 확장부는 가장자리 바탕 타일을 이어 채움, 최대 ${MAX_TOOL_MAP_DIMENSION}×${MAX_TOOL_MAP_DIMENSION}). 축소로 이벤트가 범위 밖에 나가면 거부 — 먼저 move_event/remove_event로 정리하라. 완성된 집(마을 시공기 집)의 보호 칸을 자르는 축소도 거부되며, 오류가 지킬 수 있는 가장 작은 너비·높이를 알려 준다. 마을 맵의 빈 바닥 띠(아래쪽 물·들판)는 메우지 말고 이 도구로 줄인다.`,
   mode: "write",
   parameters: {
     type: "object",
