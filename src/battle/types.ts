@@ -35,7 +35,7 @@ export interface BattleEventChoiceSnapshot {
   readonly pageId: string;
   readonly round: number;
   readonly prompt?: string;
-  readonly options: readonly { readonly text: string }[];
+  readonly options: readonly { readonly text: string; readonly disabled?: true; readonly disabledText?: string }[];
   readonly cancelBehavior?: ChoiceCancelBehavior;
   readonly settings?: MessageWindowSettings;
 }

@@ -40,7 +40,8 @@ export type StepResult =
   | {
       kind: "choices";
       prompt?: string;
-      options: { text: string }[];
+      /** 화면에 보일 줄(showWhen 이 거짓인 줄은 이미 빠졌다). disabled 줄은 흐리게 보이고 고를 수 없다. */
+      options: { text: string; disabled?: true; disabledText?: string }[];
       settings: MessageWindowSettings;
       cancelBehavior?: ChoiceCancelBehavior;
     }
@@ -268,6 +269,8 @@ export interface InterpreterState {
   faceSinceText?: boolean;
   // 현재 실행 중인 이벤트 id. 셀프 스위치 조작/평가 기준.
   currentEventId?: string;
+  /** 지금 떠 있는 조건 붙은 선택지의 화면 번호 표(choiceView.ts). 조건 없는 선택지면 없다. */
+  choiceView?: import("@/project/choiceView").ChoiceView;
   onFactionStanceChanged?: () => void;
   onFriendshipChanged?: (npcKey: string, delta: number) => void;
   // 루프 무한 반복 가드의 상한. 실제 카운트는 루프 프레임마다 따로 센다(Frame.loopOwner.iterations).

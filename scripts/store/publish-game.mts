@@ -1,6 +1,6 @@
 /**
  * 대표 데모게임을 스토어 「바로 플레이」에 올린다(판본은 서버가 자동으로 매긴다 — 1.0 → 1.1, --major 면 2.0).
- * 주소·토큰은 환경 변수로만 받는다(storePublish.mts). 플레이어는 먼저 `npm run build:player` 로 dist/export-player 에 만든다.
+ * 주소·토큰은 환경 변수로만 받는다(storePublish.mts). 플레이어는 먼저 `npm run build:player` 로 dist/export-player 에 만든다 — 그 묶음이 마지막 런타임 커밋(src, 편집기 제외)보다 오래면 게시를 거절한다(--allow-stale-player 로만 넘김).
  *
  *   npm run -s store:publish-game -- --demo chrono-bell --dry
  *   npm run -s store:publish-game -- --demo chrono-bell --target staging [--major] [--changelog "…" | --changelog-file notes.txt] [--version 1.4]
@@ -14,7 +14,7 @@
  */
 import { createHash } from "node:crypto";
 import { execFileSync } from "node:child_process";
-import { existsSync, mkdirSync, readdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readdirSync, readFileSync, renameSync, statSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join, resolve } from "node:path";
 import type { FlagshipDemoId } from "@/project/flagship";
@@ -163,6 +163,21 @@ const demoId = (ALIASES[demoArg] ?? demoArg) as FlagshipDemoId;
 const demo = DEMOS[demoId];
 if (!demo || !(FLAGSHIP_DEMO_IDS as readonly string[]).includes(demoId)) out({ ok: false, error: `--demo 은 ${Object.keys(DEMOS).join("|")}` }, 2);
 const builtin: StoreShelf = demo.shelf ?? BUILTIN_GAMES.find((game) => game.id === demo.builtin)!;
+
+// 낡은 플레이어 막기 — 판본의 게임 코드는 dist/export-player(npm run build:player)에서 온다. 그 묶음이 이 체크아웃의 마지막 런타임 커밋보다
+// 오래면 엔진 수정이 빠진 채 나간다(마왕 편의점 스테이징 1.5·1.6: 아침 08:07 묶음이 저녁 수정 뒤에도 실렸다, 2026-10-30). --allow-stale-player 로만 넘긴다.
+{
+  const playerDir = join(root, "dist", "export-player");
+  const builtAt = existsSync(playerDir) ? Math.max(0, ...readdirSync(playerDir).map((name) => statSync(join(playerDir, name)).mtimeMs)) / 1000 : 0;
+  let runtimeAt = 0;
+  try { runtimeAt = Number(execFileSync("git", ["-C", root, "log", "-1", "--format=%ct", "--", "src", ":(exclude)src/editor"], { encoding: "utf8" }).trim()) || 0; } catch { /* git 없는 사본 — 검사 생략 */ }
+  if (runtimeAt > 0 && builtAt < runtimeAt) {
+    const when = (sec: number) => (sec ? new Date(sec * 1000).toISOString() : "없음");
+    const message = `플레이어 묶음(dist/export-player ${when(builtAt)})이 마지막 런타임 커밋(${when(runtimeAt)})보다 오래됐습니다 — npm run build:player 뒤 다시 게시하세요.`;
+    if (!process.argv.includes("--allow-stale-player")) out({ ok: false, error: message }, 2);
+    console.error(`[publish-game] 경고: ${message} (--allow-stale-player)`);
+  }
+}
 
 // 데모 빌더는 맵 BGM 이 «설치됨»인지 본다. 이 체크아웃(또는 OPRN_ASSET_ROOTS)에 실제로 있는 곡 파일을 설치 목록으로 쓴다 —
 // 없는 곡은 여전히 거절되고, 있는 곡은 판본 파일에 함께 실린다.

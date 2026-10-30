@@ -869,6 +869,12 @@ r1 시험(`verify-shots/assistant-beodeul-village/r1/fresh`)은 「마을」에 
 refine_beodeul_courtyard_vegetation({mapId})는 인식된 54×34 예제의 건물/나무 전체 배열을 확인하고 집·길·마당·시작점을 유지하며 흩어진 나무/덤불을 수관이 앞뒤로 겹친 공용 숲 8덩어리로 교체한다. 높이 있는 풀은 숲 밑동에만 겹치고 줄기의 X를 상속하는 ★다. 짧은 문틈 울타리 두 조각을 제거하고 실제 텃밭 3변을 연속 레일/수직선/모서리로 연결한다. 북쪽은 큰길에서 들어오는 면이다. stone 박공은 정면 돌벽과 같은 원본 질감으로 통일한다. 원본 지붕/알파/창문/문 개수/집 위치를 유지한다. 이벤트/높이/다른 이벤트의 전이 도착점/수정된 나무·별도 지형/기물은 거부, 반복은 no-op. source WOODLAND.md, build 하네스가 이전368칸을 보존한다. 공용 문서/정확한 4층 예제/전체 graft 규칙은 새·기존 city/ground 모두 배포하며 각 MD 12만자 이하로 분리한다. 전용 player.html과 SQLite 재로드 근거 verify-shots/beodeul-depth-fix.
 
 
+### 코드 지형 5판 일부: 과수원 울타리 없음·출구는 가장자리 가운데 (2026-10-30)
+
+- **과수원:** 울타리를 두르지 않고 줄지은 둥근 나무 사이에 사과 상자(`bd-prop-crate_apple`) 한두 개 — 4판 ab23 판정 「울타리 안에 나무만 있어 쓸모없음」(나무를 가둔 빈 우리로 읽혔다).
+- **출구:** 큰길은 요청 방향 가장자리의 가운데 60%(양끝 20% 밖)를 먼저 찾고, 길이 없을 때만 가장자리 전체로 — 4판 출구 시험 셋째 판에서 북쪽 출구가 서쪽 가장자리 열을 타고 (0,0) 구석으로 나갔다. 고친 뒤 같은 판은 (33,0) 에서 나간다.
+- 지형 띠 변경(비평지 동서 띠 쌓기)은 같은 10요청 맞대기에서 4판을 못 이겨 함께 넣지 않았다 — 4판 지형 유지.
+
 ### 마을·붓 숲 = 이어진 수관 오토타일 (2026-10-22, 「숲 오토타일을 제대로 적용해야 함」)
 
 - 사용자가 village-diversity-1 마을들을 보고 지적했다. 강가·해안 마을 숲(아래 woodland 보정의 composer)이 짙은 풀 위에 낱 나무로 서서,
@@ -1060,7 +1066,7 @@ revision 16 기와 변경은 사용자 지적을 오해한 것이며 철회했�
 
 **조수 던전 시험 후 고친 것(2026-10-22, assistant-dungeons, 기준 시험 9건 Opus 적대 VQA 평균 4.5):**
 - **죽은 계단** — 8맵 전부 계단이 장식뿐이었다. 이제 1층 바깥 계단은 `entrance` 를 줄 때만 그리고(`entryStair:"none"`), 마지막 층에는 내려가는 계단을 그리지 않는다(`exitStair:"none"`).
-- **여러 층** — `floors`(1~5)·`direction`(down 지하 / up 탑). 층마다 맵을 짓고 계단 칸에 이동 이벤트(`ev_<map>_stair_next/back`, 걷는 계단 priority below, 문 same)를 직접 깐다. 도착은 상대 계단 앞 칸, 계단을 등진다(계단 계약 `stairContracts.json`). 탑은 1층 입구 = 나무 문, 위층 입구 = 바닥 내려가는 계단, 깊은 방 북벽 = 오르는 계단, 꼭대기 층 = 큰 홀 → 보스방 + 보물 방(`towerRooms`, 감방·묘실 없음). 조립기 `compose.ts` 의 `entryStair`/`exitStair`/`sideDoor`.
+- **여러 층** — `floors`(1~5)·`direction`(down 지하 / up 탑). 층마다 맵을 짓고 계단 칸에 이동 이벤트(`ev_<map>_stair_next/back`, 걷는 계단 priority below, 문 same)를 직접 깐다. 도착은 상대 계단 앞 칸, 계단을 등진다(계단 계약 `stairContracts.json`). 탑은 1층 입구 = 나무 문, 위층 입구 = 바닥 내려가는 계단, 깊은 방 북벽 = 오르는 계단, 꼭대기 층 = 큰 홀 → 보스방 + 보물 방(`towerRooms`, 감방·묘실 없음). 조립기 `compose.ts` 의 `entryStair`/`exitStair`/`sideDoor`. **층 계단은 반드시 놓는다(2026-10-30):** 내려가는 계단은 장식이 끝난 뒤 깊은 방에 놓는데, 보스방이 옥좌·제단으로 차면 후보가 0이 되어 말없이 빠졌다(성 2층 시드 4·9·11 = `links: []`, 1층 `exitStair: null`). 이제 `holeSomewhere` 가 깊은 방 안쪽 → 둘레 조건 없는 칸 → 다른 방(깊은 순, 입구 방 끝)을 차례로 보고, 올라가는 계단(탑)도 깊은 방 북벽이 없으면 다른 방 북벽에서 찾는다. 그래도 없으면 경고를 남긴다. 프로브: `bun scripts/content/dungeon-floor-link-probe.mts castle,cave 40`.
 - **빈 방** — `populate`(rpg 기본 켜짐): 계획 자리의 순찰 적(≤4), 상자 2(보물 방 먼저 — 같은 그림 3개부터 린트 경고), 마지막 층 보스(도망 불가)·보스 앞 방 회복 세이브, 그 아래층 층 수문장. `troops:{field,midBoss,boss}` 로 요청한 적을 넘긴다. 도구가 그림을 스스로 고르므로 `choosesOwnGraphic`(없으면 Pi 의 그림 선택 검사가 세 번 거부했다). `expand_jrpg_campaign_volume`·`author_jrpg_chapter` 는 자기 채우기가 있어 `populate:false` 로 부른다.
 - **물에 잠긴 신전** — `flooded:true`: 큰 방(입구·보물 방 제외) 바닥 대부분을 물로, 굽이치는 3칸 둑길(긴 축 + 큰 방은 가로 축)을 남긴다(`mask.ts carveFlood`). 조수가 `fill_region` 으로 네모 웅덩이를 칠하던 것을 대신한다.
 - **레버 퍼즐** — `puzzle:"lever"`: 보물 방(없으면 보스방) 통로 칸에 쇠창살(object1#5), 먼 곁방에 레버(object2#0), 스위치 `sw_<map>_lever`. 손 도트 실내 퍼즐 방(다른 화풍)을 따로 잇던 것을 대신한다.

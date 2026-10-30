@@ -24,6 +24,8 @@ import { abortHop, applyHopFrame, finishHop } from "@/player/characterHopRuntime
 import type { AutonomousMover, PlaySceneContext } from "@/player/playSceneTypes";
 import { VACATED_GRACE_MS } from "@/player/playSceneTypes";
 import { showSceneEmote } from "@/player/playSceneEmotes";
+import { countFootstep, footstepMix, footstepRadius, walkingDistance } from "@/player/eventFootsteps";
+import { playPositionalSound } from "@/player/audio";
 import {
   applyFacing,
   executeInstantCommand,
@@ -486,7 +488,7 @@ function holdForSightAlert(
     mover.alertSeen = true;
     mover.alertHoldMs = Math.max(0, alert.holdMs);
     // 헤드리스 장면(테스트 러너)에는 Phaser 가 없다 — 말풍선은 실제 장면에서만 띄운다.
-    if ((scene as { textures?: unknown }).textures) showSceneEmote(scene as unknown as PlaySceneContext, eventId, alert.emote, Math.max(600, alert.holdMs));
+    if (alert.emote && (scene as { textures?: unknown }).textures) showSceneEmote(scene as unknown as PlaySceneContext, eventId, alert.emote, Math.max(600, alert.holdMs));
   }
   if ((mover.alertHoldMs ?? 0) <= 0) return false;
   mover.alertHoldMs = Math.max(0, (mover.alertHoldMs ?? 0) - Math.max(0, deltaMs));
@@ -690,7 +692,7 @@ function updateChaseNpc(
       if (mover.chaseFastSteps >= CHASE_STAMINA_STEPS) {
         mover.chaseFastSteps = 0;
         mover.chaseBreathMs = CHASE_BREATHER_MS;
-        if ((scene as { textures?: unknown }).textures) showSceneEmote(scene as unknown as PlaySceneContext, eventId, "sweat", CHASE_BREATHER_MS);
+        if (!view.movement.quietBreath && (scene as { textures?: unknown }).textures) showSceneEmote(scene as unknown as PlaySceneContext, eventId, "sweat", CHASE_BREATHER_MS);
       }
     }
   }
@@ -722,12 +724,32 @@ function moveAutonomousRuntimePosition(
   y: number,
   direction: AutonomousMover["facing"]
 ): void {
+  playEventFootstep(scene, eventId, x, y);
   const location = scene.session.eventLocations?.[eventId];
   if (location?.mapId === scene.map.id) {
     scene.session.eventLocations[eventId] = { ...location, x, y, direction };
     return;
   }
   moveRuntimeEventPosition(scene.eventPositions, eventId, x, y, direction);
+}
+
+/**
+ * movement.footsteps — 걸음을 뗄 때 everySteps 째마다 발소리를 낸다(@/player/eventFootsteps). 음량은 주인공까지
+ * 걸음 거리(벽 너머는 돌아가는 길), 좌우는 가로 차이. 헤드리스 장면(Phaser 없음)·숨기 중 자기 발소리 같은 예외는 없다 —
+ * 숨어 있어도 다가오는 발소리는 들려야 한다.
+ */
+function playEventFootstep(scene: AutonomousNpcSceneContext, eventId: string, x: number, y: number): void {
+  if (!(scene as { textures?: unknown }).textures) return;
+  const project = store.getCurrent();
+  const view = runtimeEventViewById(project, scene.map, scene.session, scene.eventPositions, eventId);
+  const config = view?.movement.footsteps;
+  if (!config?.se || !countFootstep(scene, eventId, config)) return;
+  const player = { x: scene.tileX, y: scene.tileY };
+  const from = { x, y };
+  const distance = walkingDistance(from, player, footstepRadius(config),
+    (a, b) => canMoveFootprint(project, scene.map, a.x, a.y, UNIT_FOOTPRINT, b.x, b.y, 1));
+  const mix = footstepMix(config, from, player, distance);
+  if (mix) playPositionalSound(config.se, project, mix);
 }
 
 /**

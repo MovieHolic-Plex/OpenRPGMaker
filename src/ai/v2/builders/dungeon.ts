@@ -13,17 +13,18 @@ import { terrainReachability } from "@/project/terrainReachability";
 import { cloneProjectSharingSharedDictionaries } from "@/project/projectClone";
 import type { EnemyRecord, GameMap, Project } from "@/project/types";
 import { createBuildRun } from "../buildRun";
+import { carryFloorEvents, retargetIncoming } from "./dungeonRebuildCarry";
 import type { BuildRun, BuilderCall, PlaceBuildResult, PlaceBuilder, PlaceRecord, PlaceSpec } from "../types";
 
 /** v2 계획 모델에게 주는 유일한 던전 지식(≤900자). */
 export const DUNGEON_CARD =
-  "[던전·동굴 type:dungeon|cave] 버들항 칩셋. theme 낱말(한·영 다 된다): forest 숲·정글 · swamp 늪·독늪·습지 · volcano 화산·용암 · ice 얼음·빙굴·설산 · " +
-  "pyramid 피라미드·사막 왕묘 · tower 마법사의 탑·마법탑 · otherworld 이세계·마계·지옥·심연 · castle 성·마왕성 · catacomb 지하묘지(기본) · temple 신전·유적 · " +
-  "mine 광산 · sewer 하수도 · labyrinth 미궁 · cave 동굴. size small|medium|large, floors 1~5(탑·마법탑은 위로, 나머지는 아래로; 보스는 마지막 층 맨 안쪽 방). " +
-  "features: 원문의 적 낱말(늑대·유령·미라·전갈·도마뱀 인간·눈알·갑옷·악마·박쥐…)과 보스 낱말(히드라·붉은 용·얼음 용·대마법사·마계의 군주…)을 그대로, " +
-  "boss·chests·enemies, 장치 함정(모래 함정)·다리·마법진·레버·얼음 미끄럼·광차, flooded(물에 잠긴 방), goblin lair. 적 낱말 → 보이는 적 그림, 보스 낱말 → 보스 그림. " +
-  "층은 네가 설계한다: spec.dungeonDesign = {entrance 입구 쪽, rooms[{id, role(entrance·boss·treasure·lake·camp·shrine·hall·grotto), size, shape(blob·cavern·long·shaft·ring·twin), at 맵 안 자리, water(none·pool·lake·stream), features}], links[{from,to,kind}]} — 어휘·예시 그림은 dungeon_parts, 함수는 겹침·길·도달만 고친다(설계 없이 오면 한 번 되돌려 보낸다). " +
-  "hints: variant(다른 배치)·direction(up|down)·gimmick·inspiration(「엘든링 같은」 게임 이름). 탑은 층마다 직접 고른다: floorShapes 「cross,spiral,hall」(아래층부터 — 중간 ring·gallery·cross·spiral·twin, 꼭대기 ring·hall·observatory), floorGimmicks 「none,teleporter」(중간 층 장치 lever·bridge·teleporter·minecart·iceslide·sandpit·none). 고치기는 edit_place set.dungeonDesign(고친 설계 전체)·variant·features — 소품 하나하나는 못 한다.";
+  "[Dungeon/cave type:dungeon|cave] Beodeul chipset. theme words (Korean or English): forest (forest, jungle) · swamp (swamp, poison bog, marsh) · volcano (volcano, lava) · ice (ice, ice cave, snow mountain) · " +
+  "pyramid (pyramid, desert tomb) · tower (wizard tower, mage tower) · otherworld (other world, demon realm, hell, abyss) · castle (castle, demon king castle) · catacomb (catacombs, default) · temple (temple, ruins) · " +
+  "mine · sewer · labyrinth · cave. size small|medium|large, floors 1–5 (towers go up, the rest go down; the boss is in the innermost room of the last floor). " +
+  "features: copy the enemy words from the request as written (늑대 wolf · 유령 ghost · 미라 mummy · 전갈 scorpion · 도마뱀 인간 lizardman · 눈알 eyeball · 갑옷 armor · 악마 demon · 박쥐 bat…) and boss words (히드라 hydra · 붉은 용 red dragon · 얼음 용 ice dragon · 대마법사 archmage · 마계의 군주 demon lord…), " +
+  "plus boss · chests · enemies, trap devices (sand trap), bridge, magic circle, lever, ice slide, minecart, flooded (flooded room), goblin lair. Enemy words → visible enemy art, boss words → boss art. " +
+  "You design the floor: spec.dungeonDesign = {entrance side, rooms[{id, role(entrance·boss·treasure·lake·camp·shrine·hall·grotto), size, shape(blob·cavern·long·shaft·ring·twin), at spot in the map, water(none·pool·lake·stream), features}], links[{from,to,kind}]} — vocabulary and sample pictures in dungeon_parts; the function only fixes overlap, paths and reachability (a call without a design is sent back once). " +
+  "hints: variant (another layout) · direction (up|down) · gimmick · inspiration (a game name, e.g. «like Elden Ring»). For towers pick each floor yourself: floorShapes «cross,spiral,hall» (bottom floor first — middle ring·gallery·cross·spiral·twin, top ring·hall·observatory), floorGimmicks «none,teleporter» (middle-floor devices lever·bridge·teleporter·minecart·iceslide·sandpit·none). Fix with edit_place set.dungeonDesign (the whole fixed design) · variant · features — single props cannot be edited.";
 
 const KNOWN_HINTS = new Set(["type", "size", "floors", "direction", "seed", "variant", "width", "height", "populate", "flooded", "lair", "puzzle", "style", "gimmick", "inspiration", "layout", "floorShapes", "floorGimmicks"]);
 const BEODEUL_TILESET = "beodeul_city";
@@ -88,6 +89,16 @@ const BOSS_WORDS: readonly [RegExp, string, string][] = [
   [/숲의\s*주인|forest\s*lord|forest\s*guardian/, "enemy_troll_cave", "숲의 주인"],
   [/드래곤|dragon|(^|\s)용(\s|$)/, "enemy_dragon_red", "용"],
 ];
+/** 이름·외형 낱말 → 적 그림 id(보스 낱말 → 기사·망령 → 잡몹 낱말). 프로젝트 DB 에 있는 것만. add_boss_encounter 가 쓴다. */
+export function enemyArtFor(project: Project, text: string): string | undefined {
+  const t = text.toLowerCase();
+  const has = (id: string) => project.database.enemies.some((e) => e.id === id);
+  const knights: readonly [RegExp, string][] = [[/해골\s*기사|skeleton\s*knight|죽음의\s*기사|death\s*knight/, "enemy_skeleton_knight"], [/타락한?\s*기사|흑기사|기사|knight/, "enemy_knight_fallen"], [/망령|사령|wraith/, "enemy_wraith_dark"]];
+  for (const [re, id] of BOSS_WORDS) if (re.test(t) && has(id)) return id;
+  for (const [re, id] of knights) if (re.test(t) && has(id)) return id;
+  for (const [re, id] of FOE_WORDS) if (re.test(t) && has(id)) return id;
+  return undefined;
+}
 /** 맵 위 그림이 서로 닮은 적 묶음 — 보스는 잡몹·수문장과 다른 묶음이어야 「보스」로 읽힌다. 골렘은 맵에서 갈색 덩어리라 보스·잡몹 모두 피한다. */
 const LOOKALIKE: readonly (readonly string[])[] = [
   ["enemy_armor_living", "enemy_knight_fallen", "enemy_skeleton_knight"], ["enemy_ghost_pale", "enemy_wraith_dark"],
@@ -207,7 +218,7 @@ const strength = (project: Project, troopId: string | undefined): number =>
  * 요청한 적 하나의 전용 적 그룹. 그림은 그 적 그대로, 세기는 도구가 그 역할로 고르던 그룹(like)에 맞춘 사본 — 원본 그대로 쓰면
  * 부유하는 눈(체력 1312)이 잡몹이 되어 「파티가 레벨을 올려도 전멸」 경고가 났다. 도구 주제 적(dungeonThemeTroops)과 같은 비례 규칙이다.
  */
-function ensureFoeTroop(run: BuildRun, enemyId: string, role: "field" | "boss" | "midBoss", like: string | undefined, name?: string): string | undefined {
+export function ensureFoeTroop(run: BuildRun, enemyId: string, role: "field" | "boss" | "midBoss", like: string | undefined, name?: string): string | undefined {
   const project = run.ctx.project;
   const source = project.database.enemies.find((e) => e.id === enemyId);
   if (!source) return undefined;
@@ -479,6 +490,8 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
   // 그 이동 좌표가 맵 밖이 되고 커밋이 거부된다(2026-10-25 G5). 1층으로 들어오는 바깥 문이 한 맵에서 하나면 그 문을 지우고
   // 같은 칸에 다시 잇는다(author_dungeon entrance) — 짓기가 문을 잇고 나면 던전을 못 고치던 것(G26)을 푼다. 더 깊은 층으로 들어오는 문은 그대로 거절.
   let relink: { readonly fromMapId: string; readonly x: number; readonly y: number; readonly eventIds: readonly string[] } | undefined;
+  // 남겨 두고 다시 가리킬 바깥 문(다시 잇는 문 빼고) — 「맵 id:이벤트 id」.
+  let incomingKeep = new Set<string>();
   if (previous) {
     const floorList = [...(prev?.floors ?? previous.result.mapIds)];
     const floors = new Set<string>(floorList);
@@ -493,17 +506,21 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
         }
       }
     }
-    const outside = new Set(linked.map((l) => l.mapId));
-    const deep = linked.filter((l) => l.floor !== floorList[0]);
-    if (linked.length && (deep.length || outside.size > 1)) {
-      return { ok: false, mapIds: [...floors], summary: `던전 다시 짓기 안 함: 바깥에서 이 던전으로 들어오는 문(${linked.slice(0, 3).map((l) => `${l.mapName}의 ${l.event.name ?? l.event.id}`).join(", ")})이 ${deep.length ? "아래층으로도" : "여러 맵에서"} 이어져 있다 — 다시 지으면 그 문이 맵 밖을 가리켜 거부된다. 같은 edit_place 를 되풀이하지 말고, 남은 문제는 덧그리기(stamp_object·fill_region)·move_event 로 고치거나 보고에 적는다.`, warnings, missingArt: missing, calls: [], state: prev };
+    // 1층으로 들어오는 바깥 문 하나(맵 하나)는 지우고 다시 지은 입구에 그 칸 그대로 다시 잇는다(relink). 나머지 문(다른 맵·아래층으로 들어오는 문)은
+    // 거절하지 않고 남겨 두었다가 다시 지은 층의 가장 가까운 걸어 닿는 칸으로 다시 가리킨다(dungeonRebuildCarry — 2026-10-30 omo-loop-1030b boss-room:
+    // 마을·지하 던전 두 곳에서 들어오는 보스 방을 «여러 맵에서 이어져 있다»로 세 판 모두 못 고쳤다).
+    const head = linked.find((l) => l.floor === floorList[0]);
+    if (head) {
+      const gate = head.event;
+      relink = { fromMapId: head.mapId, x: gate.x, y: gate.y, eventIds: linked.filter((l) => l.mapId === head.mapId && l.floor === floorList[0]).map((l) => l.event.id) };
+      warnings.push(`바깥 ${head.mapName}(${gate.x},${gate.y})의 던전 문을 다시 지은 입구와 다시 이었다`);
     }
-    if (linked.length) {
-      const gate = linked[0]!.event;
-      relink = { fromMapId: linked[0]!.mapId, x: gate.x, y: gate.y, eventIds: linked.map((l) => l.event.id) };
-      warnings.push(`바깥 ${linked[0]!.mapName}(${gate.x},${gate.y})의 던전 문을 다시 지은 입구와 다시 이었다`);
-    }
+    const others = linked.filter((l) => !relink?.eventIds.includes(l.event.id));
+    incomingKeep = new Set(others.map((l) => `${l.mapId}:${l.event.id}`));
+    if (others.length) warnings.push(`다른 곳에서 들어오는 문 ${others.length}개(${others.slice(0, 3).map((l) => `${l.mapName}의 ${l.event.name ?? l.event.id}`).join(", ")})는 그대로 두고 다시 지은 층의 가까운 칸으로 다시 가리켰다`);
   }
+  // 다시 짓기 전 층 사본 — 짓기 도구 밖에서 붙은 이벤트(사람·컷신·상자…)를 다시 지은 층으로 옮겨 싣는다(rebuild:true 는 층 이벤트를 비운다).
+  const oldFloorMaps: GameMap[] = previous ? [...((previous.result.state as DungeonState | undefined)?.floors ?? previous.result.mapIds)].map((id) => run.ctx.project.maps[id]).filter((m): m is GameMap => !!m).map((m) => structuredClone(m)) : [];
   /** 사본에서 바깥 문과 이 던전 층을 가리키는 월드 그래프 연결을 지운다 — 다시 지은 던전에 새로 잇는다(옛 착지 좌표가 새 맵 밖·벽이 된다). */
   const oldFloors = new Set<string>(previous ? [...(prev?.floors ?? previous.result.mapIds)] : []);
   const dropOldGate = (trial: BuildRun) => {
@@ -586,7 +603,17 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
         if (!pair.ok) result = { ...result, ok: false, summary: `다시 지은 던전을 바깥 문과 다시 잇지 못했다: ${pair.summary}` };
       } else result = { ...result, ok: false, summary: "다시 지은 던전의 입구 칸을 몰라 바깥 문과 다시 잇지 못했다" };
     }
-    if (result.ok) into = trial;
+    if (result.ok) {
+      const d = (result.data ?? {}) as { floors?: unknown[] };
+      const newFloors = Array.isArray(d.floors) ? d.floors.filter((f): f is string => typeof f === "string") : [];
+      if (newFloors.length) {
+        const oldToNew = new Map(oldFloorMaps.map((m, k) => [m.id, newFloors[Math.min(k, newFloors.length - 1)]!] as const));
+        const moved = retargetIncoming(trial.ctx.project, oldToNew, incomingKeep);
+        if (moved) warnings.push(`다른 맵에서 이 던전으로 들어오던 이동 ${moved}개를 다시 지은 층의 가까운 걸어 닿는 칸으로 다시 가리켰다`);
+        warnings.push(...carryFloorEvents(trial.ctx.project, oldFloorMaps, newFloors, new Set(relink ? [relink.fromMapId] : [])));
+      }
+      into = trial;
+    }
     else run.calls.push(...trial.calls);
   } else {
     if (mapId) base.mapId = mapId;

@@ -112,6 +112,12 @@ function addCommandRefs(command: Command, refs: ReferenceSets): void {
     case "fork":
       addConditionRefs(command.condition, refs);
       break;
+    case "choices":
+      for (const option of command.options) {
+        addConditionRefs(option.showWhen, refs);
+        addConditionRefs(option.enableWhen, refs);
+      }
+      break;
     case "changeItem":
       refs.items.add(command.itemId);
       if (typeof command.amount === "object" && command.amount.kind === "var") refs.variables.add(command.amount.id);
@@ -235,6 +241,10 @@ export function renameSwitchEverywhere(project: Project, oldId: string, newId: s
       count += 1;
     } else if (command.kind === "fork") {
       count += renameConditionSwitch(command.condition, oldId, newId);
+    } else if (command.kind === "choices") {
+      for (const option of command.options) {
+        count += renameConditionSwitch(option.showWhen, oldId, newId) + renameConditionSwitch(option.enableWhen, oldId, newId);
+      }
     }
   };
   for (const map of Object.values(project.maps)) {

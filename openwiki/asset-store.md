@@ -330,7 +330,7 @@ npm run harness -- game-concepts publish --target staging|prod --yes-prod|http:/
 - 편집기(데스크톱 앱): 발행 대화상자 「스토어에서 바로 플레이」 칸 — 다음 판본(자동)·「큰 갱신」·바뀐 점(자동으로 채움)·「스토어에 올리기」.
   다리: `window.oprn.store.gameMine/gamePublish/gameCurrent`(`electron/main/assetStoreClient.ts`), 순서는 `src/assetStore/gamePublish.ts`.
 - 대표 데모: `npm run store:publish-game -- --demo chrono-bell|emerald-crown|first-love --dry | --target staging | --target production --confirm <contentHash>`,
-  되돌리기 `--rollback <slug>@<판본>`. 플레이어는 먼저 `npm run build:player`. 공용 그림·BGM 이 체크아웃 public/ 에 없으면 `OPRN_ASSET_ROOTS`.
+  되돌리기 `--rollback <slug>@<판본>`. 플레이어는 먼저 `npm run build:player` — `dist/export-player` 가 마지막 런타임 커밋(src, 편집기 제외)보다 오래면 게시를 거절한다(2026-10-30 마왕 편의점 스테이징 1.5·1.6 이 아침 묶음으로 나간 사고, 우회는 `--allow-stale-player`). 공용 그림·BGM 이 체크아웃 public/ 에 없으면 `OPRN_ASSET_ROOTS`.
 - 제3자 이름 자원(2026-10-30): 판본은 프로젝트 자원 목록 전체를 싣는데, 기본 목록에는 쓰지 않는 「RefmapDoll · REFMAP 변형 인물」 걷기 칩 321장이 딸려 왔다.
   `store:publish-game` 은 `splitStoreGameThirdPartyProfiles`(`src/assetStore/storeGameThirdParty.ts`)로 스토어가 막는 이름(`storeThirdPartyName`)의 자원을
   게임이 쓰지 않으면 빼고, 쓰면(assetId 가 자원 목록 밖에 나오면) 게시를 멈춘다. 공개 라이선스 카탈로그(`cc0-`·`easyrpg-`)는 「rtp」 낱말이 있어도 막지 않는다.
