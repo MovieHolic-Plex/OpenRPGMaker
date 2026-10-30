@@ -71,6 +71,7 @@ import { normalizeWeatherParams, parseWeather, weatherToRuntimeString } from "@/
 import {
   advanceFieldSpawns,
   createFieldSpawnRuntime,
+  fieldSpawnTimePhase,
   fieldSpawnAliveCount,
   fieldSpawnRuntimeNeedsRefresh,
   fieldSpawnTroopId,
@@ -372,7 +373,7 @@ export interface SceneTestResult {
 
 type PumpStop =
   | { stop: "done" }
-  | { stop: "choices"; choiceCount: number; cancelBehavior?: ChoiceCancelBehavior }
+  | { stop: "choices"; choiceCount: number; cancelBehavior?: ChoiceCancelBehavior; disabled?: number[]; labels?: string[] }
   | { stop: "present"; itemIds: readonly string[] }
   | { stop: "animation" }
   | { stop: "shop"; step: ShopStep }
@@ -431,7 +432,7 @@ interface RunnerState {
   readonly messages: string[];
   gameOver: boolean;
   held: ({ interp: Interpreter; currentEventId?: string } & (
-    { mode: "choices"; choiceCount: number; cancelBehavior?: ChoiceCancelBehavior } | { mode: "present"; itemIds: readonly string[] }
+    { mode: "choices"; choiceCount: number; cancelBehavior?: ChoiceCancelBehavior; disabled?: number[]; labels?: string[] } | { mode: "present"; itemIds: readonly string[] }
     | { mode: "animation" } | { mode: "shop"; step: ShopStep }
   )) | null;
   runtimeFailure: string | null;
@@ -1263,6 +1264,8 @@ function runChooseStep(state: RunnerState, index: number): string | null {
   const held = state.held;
   if (!held || held.mode !== "choices") return "choose를 처리할 대기 중 선택지가 없습니다.";
   if (!Number.isInteger(index) || index < -1 || index >= held.choiceCount) return `Choice index ${index} is out of range (${held.choiceCount} options).`;
+  // index 는 화면 번호다 — 숨은 줄(showWhen 거짓)은 이미 빠져 있다. 흐린 줄(enableWhen 거짓)은 런타임처럼 고를 수 없다.
+  if (index >= 0 && held.disabled?.includes(index)) return `Choice ${index} is disabled (enableWhen false${held.labels?.[index] ? `: ${held.labels[index]}` : ""}). 선택지는 열린 상태입니다.`;
   const resolvedIndex = index === -1 ? cancelChoiceIndex(held.cancelBehavior, held.choiceCount) : index;
   if (resolvedIndex === null) return "선택지 취소가 허용되지 않습니다. 선택지는 열린 상태입니다.";
   state.held = null;
@@ -1342,7 +1345,7 @@ function updateHeldInterpreter(
   }
   if (stop.stop === "choices" || stop.stop === "present" || stop.stop === "animation" || stop.stop === "shop") {
     state.held = stop.stop === "choices"
-      ? { interp, mode: "choices", currentEventId, choiceCount: stop.choiceCount, cancelBehavior: stop.cancelBehavior }
+      ? { interp, mode: "choices", currentEventId, choiceCount: stop.choiceCount, cancelBehavior: stop.cancelBehavior, disabled: stop.disabled, labels: stop.labels }
       : stop.stop === "present" ? { interp, mode: "present", currentEventId, itemIds: stop.itemIds }
       : stop.stop === "shop" ? { interp, mode: "shop", currentEventId, step: stop.step }
       : { interp, mode: "animation", currentEventId };
@@ -1392,7 +1395,13 @@ function pump(state: RunnerState, interp: Interpreter, first: StepResult): PumpS
       case "openLoadMenu":
         return { stop: "failed", reason: `${step.kind}: 출하 플레이어 하네스로 검증해야 하는 명령` };
       case "choices":
-        return { stop: "choices", choiceCount: step.options.length, cancelBehavior: step.cancelBehavior };
+      {
+        const disabled = step.options.flatMap((option, index) => (option.disabled ? [index] : []));
+        return {
+          stop: "choices", choiceCount: step.options.length, cancelBehavior: step.cancelBehavior,
+          ...(disabled.length ? { disabled, labels: step.options.map((option) => option.text) } : {}),
+        };
+      }
       case "presentItem":
         if (step.prompt) state.messages.push(step.prompt);
         // 보여줄 것이 없으면 실플레이어처럼 prompt 만 띄우고 닫힘(취소)으로 이어 간다.
@@ -2714,7 +2723,8 @@ function initializeFieldSpawnsForRunner(state: RunnerState): void {
     map,
     { x: state.session.x, y: state.session.y },
     state.session.killedFieldSpawns?.[map.id],
-    state.session.roguelikeRun
+    state.session.roguelikeRun,
+    fieldSpawnTimePhase(state.project, state.session.gameTime),
   );
   syncFieldSpawnEventsIntoMap(map, state.fieldSpawnState, state.eventPositions);
 }
@@ -2732,7 +2742,7 @@ function advanceFieldSpawnsForRunner(state: RunnerState, deltaMs: number): void 
   const map = currentMap(state);
   if (!map) return;
   if (refreshRoguelikeRoomForRunner(state)) return;
-  const changed = advanceFieldSpawns(state.fieldSpawnState, state.project, map, { x: state.session.x, y: state.session.y }, deltaMs);
+  const changed = advanceFieldSpawns(state.fieldSpawnState, state.project, map, { x: state.session.x, y: state.session.y }, deltaMs, undefined, fieldSpawnTimePhase(state.project, state.session.gameTime));
   if (!changed) return;
   syncFieldSpawnEventsIntoMap(map, state.fieldSpawnState, state.eventPositions);
   refreshChasers(state);

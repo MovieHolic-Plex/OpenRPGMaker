@@ -102,3 +102,4 @@ description: Use when building or reviewing a 16px RPG interior (house, shop, in
    경계: 호러·고딕·흉가 미술관은 gothic_manor(`build_gothic_place`), 해적 항구·섬 바깥은 pirate_isles, 보고 있는 맵이 pirate_isles 면 그 칩셋의 배 안. 그림·명판에는 글자가 없다.
    관람 통로·배 안 통로·모래 마당은 비어 있는 것이 쓰임이다 — 흩뿌려 채우지 않는다.
 10. 해리포터풍·마법 학교(번들 칩셋 wizarding_world) 방·야외는 이 스킬이 아니다 — `list_wizarding_spaces({space})` → `build_wizarding_space({space, name|mapId, doors, density, seed})` 한 번으로 짓는다(13공간 레시피, 통행 한 덩이 보장). 결과 `doorCells` 에 이동 이벤트를 단다.
+11. 조선·사극(번들 칩셋 joseon_baram) 방도 이 스킬이 아니다 — 등록 방(민가·주막·대장간·약방·서당·관아·궁 어좌전·회랑·침전·서고)을 쓴다. 마을 건물 안으로 들어가게 하려면 `list_joseon_doors({mapId})` 로 건물 문을 보고 `link_joseon_interior({mapId, door, place:"joseon-in-inn-22x16"})` 한 번으로 방을 가져와 잇는다(디딤돌에 `create_transfer_pair` 발판을 깔지 않는다).

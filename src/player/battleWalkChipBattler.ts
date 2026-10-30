@@ -72,14 +72,17 @@ export function paintWalkChipBattler(node: HTMLElement, sprite: HTMLElement, pos
   const beat = node.dataset.retroBeat;
   const walking = (beat === "approach" || beat === "recover") && pose !== "dead" && pose !== "hit";
   const dead = pose === "dead";
+  // 결투 항복: 정면(아래) 가운데 칸. 회색·눕힘 없이 선 채로 멈춘다.
+  const yielded = node.dataset.battleYielded === "true" && !dead && !walking;
   const frame = dead ? "dead"
+    : yielded ? "yield"
     : walking ? "walk"
     : pose === "victory" ? "victory"
     : pose === "attack" || pose === "skill" || pose === "defend" ? "step"
     : pose === "hit" ? "hit"
     : "idle";
   node.dataset.battlePoseFrame = `walk_chip_${frame}`;
-  sprite.style.backgroundPosition = frame === "victory" ? at("down", 1)
+  sprite.style.backgroundPosition = frame === "victory" || frame === "yield" ? at("down", 1)
     : frame === "step" ? at(facing, 2)
     : at(facing, 1);
   // 쓰러짐: 같은 칸을 옆으로 눕히고 흐리게 한다(새 그림 없음). 발 쪽 축으로 돌려 발판 위에 눕는다.

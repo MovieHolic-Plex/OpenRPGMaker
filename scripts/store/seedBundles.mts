@@ -16,6 +16,7 @@ import { createJoseonBaramTileset } from "../../src/project/defaults/joseonBaram
 import { createJpCityTileset } from "../../src/project/defaults/jpCity";
 import { createWizardingWorldTileset } from "../../src/project/defaults/wizardingWorld";
 import { WIZARDING_CHARSET_SEMANTICS } from "../../src/assets/wizardingCharsets";
+import { WIZARDING_SCRUB_PAIRS } from "../../src/project/flagship/ipCleanliness";
 import type { TilesetDef } from "../../src/project/types";
 
 export interface BundleSeed {
@@ -43,12 +44,7 @@ export interface BundleSeed {
 }
 
 /** 공개 팩용 일반 낱말(원작 고유명 → 일반 말). 에디터 번들 안의 글은 그대로 둔다. */
-const WIZARDING_SCRUB: readonly (readonly [string, string])[] = [
-  ["해리포터풍", "마법 학교풍"], ["해리포터", "마법 학교"], ["호그와트풍", "마법 학교풍"], ["호그와트", "마법 학교"],
-  ["그리핀도르", "붉은 사자 기숙사"], ["슬리데린", "초록 뱀 기숙사"], ["래번클로", "푸른 독수리 기숙사"], ["후플푸프", "노란 오소리 기숙사"],
-  ["퀴디치", "빗자루 공놀이"], ["허니듀크", "마법 과자점"], ["호그스미드", "마법 마을"], ["다이애건 앨리", "마법 상점가"], ["다이애건", "마법 상점가"],
-  ["올리밴더", "지팡이 장인"], ["HP 테마", "마법 학교 테마"], ["세스트랄", "해골 날개말"], ["스니치", "금빛 날개공"], ["블러저", "쇠공"], ["쿼플", "붉은 공"],
-];
+const WIZARDING_SCRUB = WIZARDING_SCRUB_PAIRS;
 const scrubText = (text: string, pairs: readonly (readonly [string, string])[] | undefined): string =>
   (pairs ?? []).reduce((out, [from, to]) => out.split(from).join(to), text);
 
