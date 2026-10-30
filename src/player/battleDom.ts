@@ -69,7 +69,7 @@ import {
 import { openBattleTimerScope, clearBattleTimerScope, scheduleBattleTimer } from "@/player/battleTimerScope";
 import { applyBattleSystemGraphic } from "@/player/systemGraphics";
 import { store } from "@/project/store";
-import { resolveTerms } from "@/project/terms";
+import { resolveVictoryBannerText } from "@/project/terms";
 import { RETRO_PIXEL_FX_FRAMES, RETRO_PIXEL_FX_SOUNDS, retroPixelAnimationId, retroPixelFxForResource, retroPixelFxResourceId } from "@/assets/retroPixelAnimations";
 import { bindBattleStageScale } from "@/player/battleStageScale";
 import { bindEmeraldBattleSurface, stampEmeraldSurface } from "@/player/emeraldSurfaces";
@@ -1713,8 +1713,8 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     stamp.setAttribute("aria-hidden", "true");
     const text = document.createElement("span");
     text.className = "battle-finale-stamp-text";
-    // 승리 띠 글자는 자료집 용어(terms.battleVictory, 기본 「승리!」)를 따른다.
-    text.textContent = result === "victory" ? resolveTerms(store.getCurrent()).battleVictory : "전멸…";
+    // 승리 띠 글자: 적 그룹의 victoryBanner → 자료집 용어(terms.battleVictory) → 기본 「승리!」.
+    text.textContent = result === "victory" ? resolveVictoryBannerText(store.getCurrent(), options.runtime.snapshot().troopId) : "전멸…";
     stamp.append(text);
     field.append(stamp);
     root.dataset.battleFinale = result;

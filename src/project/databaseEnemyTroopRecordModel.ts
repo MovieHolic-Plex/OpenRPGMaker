@@ -140,6 +140,16 @@ const SKY_PANORAMA_BATTLEBACK_IDS = new Set([
   "easyrpg-backdrop-planet3",
 ]);
 
+/** 적 그룹별 승리 띠 글자의 최대 길이. 띠는 화면 가운데 한 줄이라 길면 넘친다. */
+export const TROOP_VICTORY_BANNER_MAX_LENGTH = 40;
+
+/** 적 그룹의 victoryBanner 정규화 — 앞뒤 빈칸을 걷고, 비면 undefined(키 없음), 길면 자른다. */
+export function normalizeTroopVictoryBanner(value: unknown): string | undefined {
+  if (typeof value !== "string") return undefined;
+  const trimmed = value.trim();
+  return trimmed ? Array.from(trimmed).slice(0, TROOP_VICTORY_BANNER_MAX_LENGTH).join("") : undefined;
+}
+
 export function normalizeTroopRecord(record: Partial<TroopRecord> & Pick<TroopRecord, "id" | "name">): TroopRecord {
   const members = normalizeMembers(record.members, record.enemyIds);
   return {
@@ -186,6 +196,11 @@ export function normalizeTroopRecord(record: Partial<TroopRecord> & Pick<TroopRe
     ...(() => {
       const duel = normalizeTroopDuel(record.duel);
       return duel ? { duel } : {};
+    })(),
+    // 이 그룹만의 승리 띠 글자. 비면 키를 만들지 않는다(옛 JSON 바이트 유지).
+    ...(() => {
+      const victoryBanner = normalizeTroopVictoryBanner(record.victoryBanner);
+      return victoryBanner ? { victoryBanner } : {};
     })(),
   };
 }
