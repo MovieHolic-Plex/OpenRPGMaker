@@ -12,6 +12,7 @@ import { simulateBattle } from "@/battle/simulate";
 import { gatesThatOpenNothing, lockBypasses, placeholderTexts, selfRevealingLocks, unjoinedFollowers, weakPuzzleLocks } from "./puzzleChecks";
 import { splitScriptSpeaker } from "@/project/endingSummary";
 import { wantsWholeGame } from "./shipChecks";
+import { withoutNegatedEncounters } from "./combatChecks";
 import { lookMismatches, oversizedSprites, pristineFantasyHero, titleBackdropMismatch } from "./lookChecks";
 import { dryBoats, dryBridges, placementProblems, type PlacementProblem } from "./placementRules";
 import { offPurposeProps } from "./roomPurpose";
@@ -599,7 +600,7 @@ export function gameContentProblems(before: Project, after: Project, task: strin
     });
   }
   // 1h) 무작위 조우: 「랜덤 인카운터·풀숲에서 마주치는」 요청인데 조우표가 안 바뀌었다(보이는 적 이벤트만 놓았다).
-  if (/랜덤|무작위|인카운터|마주치|조우|encounter/iu.test(task)) {
+  if (/랜덤|무작위|인카운터|마주치|조우|encounter/iu.test(withoutNegatedEncounters(task))) {
     const enc = (m: unknown) => { const o = m as Obj | undefined; const v = o?.encounterTable ?? o?.encounters ?? o?.encounter; return Array.isArray(v) && v.length ? JSON.stringify(v) : ""; };
     const changedEnc = Object.values(after.maps).some((m) => enc(m) && enc(m) !== enc(before.maps[m.id]));
     if (!changedEnc) problems.push("[게임 검사 조우] 요청에 무작위 조우가 있는데 어느 맵의 조우표도 바뀌지 않았다 — set_encounter_table 로 그 맵에 적 그룹·빈도를 단다(보이는 적 이벤트는 무작위 조우가 아니다).");
