@@ -120,6 +120,11 @@ const ENTRANCE_PROPS: Readonly<Record<string, readonly (readonly [string, number
 };
 
 /** 완성 큰 건물(문 위치를 몰라 이름표·실내 연결은 하지 않는다 — 풍경). 띠 높이에 맞는 것만 놓는다. */
+/**
+ * 완성 큰 건물 그림에 박힌 소품 — 따로 찍는 소품이 아니라 avoidProps 로 뺄 수 없다. 「자전거는 두지 말고」 거리에 슈퍼마켓 정면의
+ * 자전거 줄이 그대로 남았다(2026-10-31 asst-parity 마왕 편의점 opus 후). 그 낱말을 빼 달라면 이 건물을 고르지 않는다.
+ */
+const LANDMARK_BAKED_PROPS: Readonly<Record<string, readonly string[]>> = { "jp-bldg-supermarket": ["bike"] };
 const LANDMARKS: readonly { id: string; w: number; h: number }[] = [
   { id: "jp-bldg-mansion4", w: 11, h: 11 }, { id: "jp-bldg-zakkyo5", w: 7, h: 14 }, { id: "jp-bldg-office6", w: 9, h: 15 }, { id: "jp-bldg-mansion6-slim", w: 7, h: 15 }, { id: "jp-bldg-clinic", w: 9, h: 8 }, { id: "jp-bldg-post-office", w: 9, h: 8 }, { id: "jp-bldg-supermarket", w: 14, h: 6 }, { id: "jp-bldg-koban", w: 6, h: 7 },
 ];
@@ -251,6 +256,8 @@ export interface ComposeOptions {
   readonly shops?: readonly string[];
   /** 동서 큰길 횡단보도 덧그림 칸(흰 줄이 동서로 나란한 투명 칸). 주면 변형 골목 횡단보도를 2층에 이것으로 칠한다 — 없으면 옛 세로 줄 jp-gnd-zebra. */
   readonly crosswalkTile?: number;
+  /** 두지 말라는 소품 마디(bike 등). 그 소품이 그림에 박힌 완성 큰 건물(LANDMARK_BAKED_PROPS)은 고르지 않는다. */
+  readonly avoidProps?: readonly string[];
 }
 
 export type JpBlockZone = "shop" | "house" | "park" | "parking";
@@ -718,7 +725,7 @@ export function planJpCityStreet(opts: ComposeOptions): JpStreetPlan {
         lmEnd += 2; packW -= 2;
       } else if (!flavor && zone === "shop" && w >= 18 && rng() < 0.4) {
         const hAvail = b.foot - b.top + 1;
-        const fits = LANDMARKS.filter((l) => l.h <= hAvail && l.w + 8 <= w);
+        const fits = LANDMARKS.filter((l) => l.h <= hAvail && l.w + 8 <= w && !(LANDMARK_BAKED_PROPS[l.id] ?? []).some((p) => opts.avoidProps?.includes(p)));
         const lm = fits.length ? pick(rng, fits) : undefined;
         if (lm) {
           const lx = rng() < 0.5 ? sx : ex - lm.w;
