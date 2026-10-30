@@ -1,5 +1,5 @@
 /**
- * 『이세계로 떠난 한국 고딩, 깽판치다』 — 타이틀 · 오프닝 애니메틱.
+ * 『이세계로 떠난 한국 고딩, 대본을 찢다』 — 타이틀 · 오프닝 애니메틱.
  *
  * 마왕 편의점 처음 하는 사람 검수의 교훈: 오프닝이 길고(조작까지 3분 24초) 애니메틱을 대사로 다시 틀었다.
  * 그래서 애니메틱은 교실 세 컷 약 15초뿐이고, 소환의 방은 대사로 이어 받기만 한다(같은 장면을 두 번 보이지 않는다).
@@ -163,7 +163,7 @@ export function buildIsekaiOpening(project: Project, classMap: string): void {
 /** 타이틀 — 오프닝 컷 2(빛나는 교실) 한 장면을 배경으로. 글자는 위, 메뉴는 왼쪽 아래. */
 export function setupIsekaiTitle(project: Project): void {
   execTool(project, "set_title_screen", {
-    title: "이세계로 떠난 한국 고딩, 깽판치다", logoSubtitle: "용사님, 대본은 지켜 주세요", backgroundResourceId: `opening-still:${OPENING_SHOTS.glow}@4200`,
+    title: "이세계로 떠난 한국 고딩, 대본을 찢다", logoSubtitle: "앞의 여섯 분은 대본을 지키셨습니다", backgroundResourceId: `opening-still:${OPENING_SHOTS.glow}@4200`,
     backgroundFit: "cover", backgroundRendering: "pixelated",
     logoStyle: "gold", logoShine: "once", menuStyle: "plain", menuFontPx: 13, musicResourceId: BGM_TITLE,
     runners: [],

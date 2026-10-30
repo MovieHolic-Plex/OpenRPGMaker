@@ -1,5 +1,5 @@
 /**
- * 『이세계로 떠난 한국 고딩, 깽판치다』 전용 장면 도구 — 인물표·대사·연출 명령 짓기.
+ * 『이세계로 떠난 한국 고딩, 대본을 찢다』 전용 장면 도구 — 인물표·대사·연출 명령 짓기.
  * 마왕 편의점 키트(maouKonbiniKit.ts)를 이 이야기 인물에 맞춰 옮겼다.
  * 현대 인물(민재·수아·담임)은 현대 흉상(표정 다섯), 이세계 인물은 공용 판타지 흉상(표정 열여섯)으로 말한다.
  */
@@ -15,7 +15,7 @@ export type Expr =
   | "base" | "smile" | "happy" | "content" | "surprised" | "embarrassed" | "doubtful" | "serious"
   | "annoyed" | "angry" | "sad" | "crying" | "worried" | "determined" | "shy" | "wink";
 export type Who =
-  | "minjae" | "suah" | "teacher" | "king" | "priest" | "edel" | "fio" | "kkur" | "clerk" | "goblin" | "maou"
+  | "minjae" | "suah" | "teacher" | "king" | "priest" | "edel" | "fio" | "kkur" | "clerk" | "goblin" | "maou" | "jaemin"
   | "guard" | "cook" | "merchant" | "villager" | "kid" | "adventurer" | "chief"
   | "examiner" | "dean" | "slime" | "adventurer2" | "adventurer3" | "adventurer4" | "adventurer5" | "adventurer6";
 
@@ -42,7 +42,10 @@ export const CAST: Readonly<Record<Who, CastMember>> = {
   kkur: { name: "꾸르", stem: "monster-green-scar", tex: "tex_easyrpg_charset_monster1", resource: "easyrpg-charset-monster1", index: 5, side: "right" },
   clerk: { name: "접수원 리나", stem: "people1-blonde-woman", tex: "tex_easyrpg_charset_people1", resource: "easyrpg-charset-people1", index: 3, side: "right" },
   goblin: { name: "고블린", stem: "monster-pig", tex: "tex_easyrpg_charset_monster1", resource: "easyrpg-charset-monster1", index: 2, side: "right" },
-  maou: { name: "마왕 벨제", stem: "monster-white-hair", tex: "tex_easyrpg_charset_monster2", resource: "easyrpg-charset-monster2", index: 2, side: "right" },
+  // v8 톤 검수: 판타지 미형 흉상으로는 「3학년 7반 배재민」 명찰 폭로가 그림으로 증명되지 않았다 — 15년 입은 회색 교복 그대로.
+  maou: { name: "마왕", stem: "uni-boy-grey", modern: true, tex: "tex_oprn_charset_modern1", resource: "oprn-charset-modern1", index: 1, side: "right" },
+  /** 명찰을 읽은 뒤의 같은 사람. */
+  jaemin: { name: "배재민", stem: "uni-boy-grey", modern: true, tex: "tex_oprn_charset_modern1", resource: "oprn-charset-modern1", index: 1, side: "right" },
   guard: { name: "근위병", stem: "people2-blue-guard", tex: "tex_easyrpg_charset_people3", resource: "easyrpg-charset-people3", index: 7, side: "right" },
   cook: { name: "여관 주인", stem: "people1-bald-man", tex: "tex_easyrpg_charset_people5", resource: "easyrpg-charset-people5", index: 6, side: "right" },
   merchant: { name: "상인", stem: "people1-mustache", tex: "tex_easyrpg_charset_people1", resource: "easyrpg-charset-people1", index: 2, side: "right" },
@@ -51,8 +54,8 @@ export const CAST: Readonly<Record<Who, CastMember>> = {
   adventurer: { name: "모험가", stem: "bearded-bandana", tex: "tex_easyrpg_charset_actor2", resource: "easyrpg-charset-actor2", index: 4, side: "right" },
   chief: { name: "촌장", stem: "people1-old-man", tex: "tex_easyrpg_charset_people1", resource: "easyrpg-charset-people1", index: 6, side: "right" },
   // 흉상 없는 마물 — 걷기 칩만 있고 대사는 이름표만 붙는다.
-  examiner: { name: "출제 위원 해골", tex: "tex_easyrpg_charset_monster1", resource: "easyrpg-charset-monster1", index: 4, side: "right" },
-  dean: { name: "교무부장", tex: "tex_easyrpg_charset_monster1", resource: "easyrpg-charset-monster1", index: 6, side: "right" },
+  examiner: { name: "성문 시험관", tex: "tex_easyrpg_charset_monster1", resource: "easyrpg-charset-monster1", index: 4, side: "right" },
+  dean: { name: "대본 감독관", tex: "tex_easyrpg_charset_monster1", resource: "easyrpg-charset-monster1", index: 6, side: "right" },
   adventurer2: { name: "모험가", tex: "tex_easyrpg_charset_actor4", resource: "easyrpg-charset-actor4", index: 0, side: "right" },
   adventurer3: { name: "모험가", tex: "tex_easyrpg_charset_actor4", resource: "easyrpg-charset-actor4", index: 2, side: "right" },
   // 길드 줄 세우기 장면의 군중(처음 하는 사람 검수 v6: 셋으로는 「인파」가 안 보였다).

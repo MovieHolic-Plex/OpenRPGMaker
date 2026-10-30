@@ -1,4 +1,4 @@
-// 『이세계로 떠난 한국 고딩, 깽판치다』 실플레이 녹화 — 출하 플레이어(player.html, shim 경로), 1배 영상(+소리).
+// 『이세계로 떠난 한국 고딩, 대본을 찢다』 실플레이 녹화 — 출하 플레이어(player.html, shim 경로), 1배 영상(+소리).
 //   IG_FIXTURE=dist/demos/isekai-godding.play.json IG_AUDIO=1 node scripts/qa/runtime/isekai-godding.play.mjs [first,goblin,castle,home,stay,chaos]
 // 결과: verify-shots/runtime-qa/isekai-godding/{facts.json, <구간>.webm, <구간>-audio.webm, native-*.png}
 // ffmpeg 가 없으면(원격 VM) 소리 파일만 남기고 합치기는 건너뛴다 — 로컬에서 mux.sh 로 합친다.
@@ -253,7 +253,7 @@ const B = {
     mark("title"); await page.waitForTimeout(3500); shot(page, "title");
     await page.waitForTimeout(2500);
     await page.keyboard.press("Enter"); mark("newgame");
-    // New Game 뒤 4:00 의 깽판 지수(처음 하는 사람 검수 8: 4분에 1/10). 녹화와 따로 표본만 뜬다.
+    // New Game 뒤 4:00 의 대본 이탈 수(화면에는 안 보인다 — v8). 녹화와 따로 표본만 뜬다.
     const at4 = page.waitForTimeout(240_000).then(() => st(page)).then((s) => { seg.chaosAt4min = s?.v?.var_ig_chaos ?? 0; log("chaos@4:00", seg.chaosAt4min); shot(page, "chaos-4min"); }).catch(() => {});
     seg.pending = at4;
     for (const [i, ms] of [[1, 3000], [2, 5000], [3, 5000]]) { await page.waitForTimeout(ms); shot(page, `opening-${i}`); }
@@ -263,36 +263,36 @@ const B = {
     shot(page, "hall-control", 300);
     const king = evAt(M.hall, "ev_ig_h_king");
     await walkTo(page, king.x, king.y + 2); mark("king");
-    await play(page, seg, [0], quietAnd(async () => (await st(page))?.v?.var_ig_stage === 1), { shotOn: /모의고사|대본이|무릎|깽판/ }); mark("hall-done");
+    await play(page, seg, [0], quietAnd(async () => (await st(page))?.v?.var_ig_stage === 1), { shotOn: /모의고사|한 부뿐|일곱 번째|여섯 분/ }); mark("hall-done");
     shot(page, "hall-after", 300);
     await walkTo(page, hallExit.x, hallExit.y - 1); await walkTo(page, hallExit.x, hallExit.y);
     await waitMap(page, M.capital); await page.waitForTimeout(1500); mark("capital");
     shot(page, "capital", 400);
     await walkTo(page, capGuildDoor.x, capGuildDoor.y + 1); await faceAndAct(page, "up"); await step(page, "up");
     await waitMap(page, M.guild); mark("guild");
-    await play(page, seg, [0], quietAnd(async () => (await st(page))?.v?.var_ig_stage === 2), { shotOn: /한 분씩|히익|돌멩이|일곱 번|단톡방/ }); mark("fio-joined");
+    await play(page, seg, [0], quietAnd(async () => (await st(page))?.v?.var_ig_stage === 2), { shotOn: /한 분씩|계산은|맨 뒤|일곱 번|견습/ }); mark("fio-joined");
     shot(page, "guild-after", 300);
     await walkTo(page, guildExit.x, guildExit.y - 1); await walkTo(page, guildExit.x, guildExit.y);
     await waitMap(page, M.capital); await page.waitForTimeout(1200); mark("capital2");
     await walkTo(page, capEast.x - 1, capEast.y); await walkTo(page, capEast.x, capEast.y);
     await waitMap(page, M.forest); mark("forest");
-    await play(page, seg, [0], async (s) => s.battle, { shotOn: /슬라임|점사|4장/ }); mark("battle");
+    await play(page, seg, [0], async (s) => s.battle, { shotOn: /슬라임|4장|하나씩/ }); mark("battle");
     shot(page, "first-battle", 2500);
     await battle(page, seg, PLAN3); mark("battle-end");
-    await play(page, seg, [], idle, { shotOn: /PC방|점액/ }); mark("after");
+    await play(page, seg, [], idle, { shotOn: /홀로|점액/ }); mark("after");
     shot(page, "forest-after", 300);
     await seg.pending; delete seg.pending;
   },
   async goblin(page, seg, mark) {
     await walkTo(page, forestToGoblin.x, forestToGoblin.y);
     await waitMap(page, M.goblin); mark("village");
-    await play(page, seg, [1, 0], quietAnd(async () => (await st(page))?.v?.var_ig_stage === 4), { shotOn: /통행세|반반|공지방|단톡|방장/ }); mark("kkur");
+    await play(page, seg, [1, 0], quietAnd(async () => (await st(page))?.v?.var_ig_stage === 4), { shotOn: /통행세|반반|장부|열두 닢/ }); mark("kkur");
     shot(page, "village-after", 300);
   },
   async goblinFight(page, seg, mark) {
     await walkTo(page, forestToGoblin.x, forestToGoblin.y);
     await waitMap(page, M.goblin); mark("village");
-    await play(page, seg, [2, 2], async (s) => s.battle, { shotOn: /강퇴|비켜/ }); mark("battle");
+    await play(page, seg, [2, 2], async (s) => s.battle, { shotOn: /비켜|말뚝/ }); mark("battle");
     shot(page, "goblin-battle", 2500);
     await battle(page, seg, PLAN3); mark("battle-end");
     await play(page, seg, [], quietAnd(async () => (await st(page))?.v?.var_ig_stage === 4)); mark("kkur");
@@ -301,11 +301,13 @@ const B = {
     await walkTo(page, goblinToCastle.x, goblinToCastle.y);
     await waitMap(page, M.castle); mark("castle");
     await play(page, seg, [], idle, { shotOn: /대본에 마왕성/ }); mark("enter");
-    await walkTo(page, 8, 18);
-    await play(page, seg, [2], idle, { shotOn: /출입 시험|1, 1, 2|의도/ }); mark("quiz");
-    await walkTo(page, 8, 15); await walkTo(page, 18, 12); await walkTo(page, castleUp.x, castleUp.y + 2);
+    // 시험 구역 칸(통로 끝 줄)은 던전 시드가 정한다 — 빌더가 놓은 출제 구역 이벤트에서 읽는다.
+    const quizCell = project.maps[M.castle].events.filter((e) => e.id.startsWith("ev_ig_k1_quiz_")).sort((a, b) => a.x - b.x)[0];
+    await walkTo(page, quizCell.x, quizCell.y);
+    await play(page, seg, [2], idle, { shotOn: /출입 시험|옳지 않은|여섯/ }); mark("quiz");
+    await walkTo(page, castleUp.x, castleUp.y + 2);
     await faceAndAct(page, "up");
-    await play(page, seg, [], async (s) => s.battle, { shotOn: /명찰|벌점/ }); mark("dean");
+    await play(page, seg, [], async (s) => s.battle, { shotOn: /등록증|부록|낙오/ }); mark("dean");
     shot(page, "dean-battle", 2500);
     await battle(page, seg, PLAN4); mark("dean-end");
     await play(page, seg, [], idle); mark("after");
@@ -318,7 +320,7 @@ const B = {
     const maou = evAt(M.castle2, "ev_ig_k2_maou");
     await walkTo(page, maou.x, maou.y + 1); await faceAndAct(page, "up"); mark("maou");
     if (process.env.IG_DEBUG) {
-      await play(page, seg, [pick], async (s) => s.battle || s.ending || (s.box ?? "").includes("쓰면 되지") || (s.box ?? "").includes("이번엔 도망"), { shotOn: /명찰|2009|수능|주문서/ });
+      await play(page, seg, [pick], async (s) => s.battle || s.ending || (s.box ?? "").includes("작은 글씨") || (s.box ?? "").includes("이번엔 도망"), { shotOn: /명찰|2009|수능|주문서/ });
       for (let i = 0; i < 16; i++) {
         const s = await st(page); const u = await ui(page);
         log("dbg", i, s && { map: s.map, x: s.x, y: s.y }, JSON.stringify(u).slice(0, 200));
@@ -329,7 +331,7 @@ const B = {
     }
     await play(page, seg, [pick], async (s) => s.battle || s.ending, { shotOn: /명찰|2009|수능|주문서/ });
     if ((await ui(page)).battle) { mark("battle"); shot(page, `${seg.key}-maou-battle`, 2500); await battle(page, seg, PLAN4); mark("battle-end"); }
-    await play(page, seg, [], async (s) => s.ending, { shotOn: /모의고사 날|열다섯|분식|날아갔다|깽판왕/ }); mark("ending");
+    await play(page, seg, [], async (s) => s.ending, { shotOn: /모의고사 날|보호자|떡볶이|날아갔다|연대기|생존/ }); mark("ending");
     shot(page, `${seg.key}-ending`, 2500);
     await page.waitForTimeout(5000);
     for (let i = 0; i < 3; i++) { await page.keyboard.press("Enter"); await page.waitForTimeout(3500); shot(page, `${seg.key}-ending-next-${i}`, 200); }

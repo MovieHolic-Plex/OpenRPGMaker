@@ -232,12 +232,12 @@ const FIRST_LOVE_BEATS: readonly FlagshipBeat[] = [
 
 const ISEKAI_GODDING_BEATS: readonly FlagshipBeat[] = [
   { id: "ig-00", atMinute: 0, act: "오프닝", mapKey: "map_ig_class", sceneTitle: "야자 시간, 배터리 3%", playerFeel: "교실 맵 그대로의 애니메틱 세 컷 뒤 바로 소환", mechanics: ["place_opening_background(mapId)", "upsert_opening_light_fx"], sharedAssets: ["oprn-charset-modern1"] },
-  { id: "ig-01", atMinute: 1, act: "소환", mapKey: "map_ig_hall", sceneTitle: "대본을 거부하는 용사", playerFeel: "60초 안에 조작, 왕의 대본을 선택지로 비튼다", mechanics: ["choices", "fieldHud"], sharedAssets: ["shared-modern-uni-boy-navy-expressions-bust-base"] },
-  { id: "ig-02", atMinute: 3, act: "왕도", mapKey: "map_ig_capital", sceneTitle: "급식 줄 규율", playerFeel: "길드 접수 줄을 급식 줄처럼 정리하고 동료를 얻는다", mechanics: ["choices", "changeParty"], sharedAssets: [] },
-  { id: "ig-03", atMinute: 8, act: "첫 전투", mapKey: "map_ig_capital", sceneTitle: "PC방 오더", playerFeel: "점사·어그로·힐 오더로 슬라임을 잡는다", mechanics: ["battleProcessing", "battle-backdrop"], sharedAssets: [] },
-  { id: "ig-04", atMinute: 12, act: "숲과 고블린 마을", mapKey: "map_ig_goblin", sceneTitle: "단톡방 외교", playerFeel: "통신 수정구로 단톡방을 열어 협상하거나 싸운다", mechanics: ["choices", "battleProcessing"], sharedAssets: [] },
-  { id: "ig-05", atMinute: 18, act: "마왕성", mapKey: "map_ig_castle", sceneTitle: "기출 변형 함정", playerFeel: "학원식 기출 분석으로 던전을 뚫는다", mechanics: ["author_beodeul_dungeon"], sharedAssets: [] },
-  { id: "ig-06", atMinute: 24, act: "결말", mapKey: "map_ig_castle", sceneTitle: "재수생 마왕", playerFeel: "수능·떡볶이·한 판, 고른 말로 결말이 갈린다", mechanics: ["triggerEnding"], sharedAssets: [] },
+  { id: "ig-01", atMinute: 1, act: "소환", mapKey: "map_ig_hall", sceneTitle: "일곱 번째 용사", playerFeel: "60초 안에 조작, 한 부뿐인 대본을 찢거나 마지막 장부터 펼친다", mechanics: ["choices", "fieldHud"], sharedAssets: ["shared-modern-uni-boy-navy-expressions-bust-base"] },
+  { id: "ig-02", atMinute: 3, act: "왕도", mapKey: "map_ig_capital", sceneTitle: "줄을 세운 사람도 선다", playerFeel: "계산으로 길드 줄을 세우고 맨 뒤에 서서, 매일 오던 피오를 동료로 얻는다", mechanics: ["choices", "changeParty"], sharedAssets: [] },
+  { id: "ig-03", atMinute: 8, act: "첫 전투", mapKey: "map_ig_capital", sceneTitle: "홀로 앞에 서지 않는다", playerFeel: "대본 4장을 어기고 다 같이 하나씩 쳐서 슬라임을 잡는다", mechanics: ["battleProcessing", "battle-backdrop"], sharedAssets: [] },
+  { id: "ig-04", atMinute: 12, act: "숲과 고블린 마을", mapKey: "map_ig_goblin", sceneTitle: "30년 장부 맞추기", playerFeel: "고블린과 마을의 장부를 끝까지 읽어 거래하거나 싸운다", mechanics: ["choices", "battleProcessing"], sharedAssets: [] },
+  { id: "ig-05", atMinute: 18, act: "마왕성", mapKey: "map_ig_castle", sceneTitle: "옳지 않은 것을 고르시오", playerFeel: "성문 시험과 대본 감독관에게서 7장 부록을 알아낸다", mechanics: ["author_beodeul_dungeon"], sharedAssets: [] },
+  { id: "ig-06", atMinute: 24, act: "결말", mapKey: "map_ig_castle", sceneTitle: "주문서는 한 장", playerFeel: "작은 글씨·떡볶이·정면 승부, 고른 말로 결말이 갈린다", mechanics: ["triggerEnding"], sharedAssets: [] },
 ];
 
 export const FLAGSHIP_BEAT_MANIFESTS: Readonly<Record<FlagshipDemoId, FlagshipBeatManifest>> = {
@@ -333,20 +333,20 @@ export const FLAGSHIP_BEAT_MANIFESTS: Readonly<Record<FlagshipDemoId, FlagshipBe
   },
   "isekai-godding": {
     id: "isekai-godding",
-    title: "이세계로 떠난 한국 고딩, 깽판치다",
-    subtitle: "이세계 코미디 RPG · 배터리 3%로 시작하는 용사의 대본 거부",
+    title: "이세계로 떠난 한국 고딩, 대본을 찢다",
+    subtitle: "이세계 코미디 RPG · 앞의 여섯 용사는 대본을 지켰다",
     genreChoiceId: "adventure-jrpg",
     targetMinutes: 25,
     mapCount: 8,
     endingCount: 3,
     releaseOrder: 6,
     priorityRank: 6,
-    summary: "야자 시간에 떡볶이 생각을 하던 고2 강민재가 이세계 왕궁에 용사로 소환된다. 대본대로 할 생각은 없다. 길드 접수 줄은 급식 줄처럼, 전투는 PC방 오더로, 고블린과의 분쟁은 단톡방으로 푼다. 마왕성 꼭대기에서 기다리는 것은 2009년에 소환된 재수생 마왕이다.",
+    summary: "야자 시간에 떡볶이 생각을 하던 고2 강민재가 이세계 왕궁에 일곱 번째 용사로 소환된다. 앞의 여섯은 300년 된 「용사 대본」대로 했고 아무도 돌아오지 않았다. 민재는 대본을, 30년 묵은 두 장부를, 성문 시험지를 끝까지 읽는다. 마왕성 꼭대기에는 2009년 수능 전날 소환된 선배가 한 장뿐인 귀환 주문서를 15년째 들고 있다.",
     thumb: "/assets/generated/title/isekai-godding-thumb.png",
     cast: [
       { id: "actor_hero", name: "강민재", role: "주인공 · 고2, 폰 배터리 3%", assetId: "shared-modern-uni-boy-navy-expressions-bust-base" },
-      { id: "actor_ig_edel", name: "에델", role: "왕국 기사 · 의전 담당", assetId: "shared-helmet-blonde-expressions-bust-base" },
-      { id: "actor_ig_fio", name: "피오", role: "엘프 마법사 · 마법 시험 7수생", assetId: "shared-green-cap-blonde-expressions-bust-base" },
+      { id: "actor_ig_edel", name: "에델", role: "왕국 기사 · 일곱 번째 용사 호위", assetId: "shared-helmet-blonde-expressions-bust-base" },
+      { id: "actor_ig_fio", name: "피오", role: "엘프 마법사 · 마탑 필기 일곱 번 낙방", assetId: "shared-green-cap-blonde-expressions-bust-base" },
     ],
     beats: ISEKAI_GODDING_BEATS,
     styleLock: ISEKAI_GODDING_STYLE_LOCK,

@@ -1,5 +1,5 @@
 /**
- * 『이세계로 떠난 한국 고딩, 깽판치다』 데이터베이스 — 기술·직업·배우·적·적 그룹·아이템.
+ * 『이세계로 떠난 한국 고딩, 대본을 찢다』 데이터베이스 — 기술·직업·배우·적·적 그룹·아이템.
  * 전부 조수 도구(upsert_skill · upsert_class · upsert_actor · upsert_enemy · upsert_troop · upsert_item)로 짓는다.
  * 새 그림은 없다: 배우는 번들 걷기 칩·전투 도트, 적은 도트 측면 적 시트(pixel-enemies)만 쓴다.
  */
@@ -51,26 +51,26 @@ export function setupIsekaiDatabase(project: Project, backdrops: typeof BACKDROP
   const noMp = { flat: 0, percentMax: 0 };
   const mp = (n: number) => ({ flat: n, percentMax: 0 });
 
-  // ── 민재(고딩) — PC방 오더·급식 줄·벼락치기
-  skill("skill_hero_war_cry", "skill_ig_focus_fire", { name: "점사 오더", mpCost: mp(4), description: "「저거 하나만 다 같이 쳐!」 파티 모두 공격이 오른다. PC방에서 배웠다." });
-  skill("skill_sleep_mist", "skill_ig_lunch_line", { name: "급식 줄 세우기", mpCost: mp(5), scope: "allEnemies", successRate: 70,
-    description: "「한 줄로 서! 새치기하면 맨 뒤로!」 적이 얌전히 줄을 선다(잠듦)." });
-  skill("skill_weaken", "skill_ig_ping", { name: "핑 찍기", mpCost: mp(2), description: "「여기 약점!」 적 하나의 방어가 내려간다." });
-  skill("skill_cleric_mass_heal", "skill_ig_share_snack", { name: "매점 빵 나눠 먹기", mpCost: mp(8), description: "가방 속 소보로빵을 반씩 쪼갠다. 파티 모두 회복." });
+  // ── 민재(고2) — 지시·줄·약점 짚기. 학교 낱말 기술명은 둘까지만(v8 톤 브리프).
+  skill("skill_hero_war_cry", "skill_ig_focus_fire", { name: "점사 지시", mpCost: mp(4), description: "「저거 하나만. 다 같이.」 파티 모두 공격이 오른다. 대본 4장과 정반대다." });
+  skill("skill_sleep_mist", "skill_ig_lunch_line", { name: "줄 세우기", mpCost: mp(5), scope: "allEnemies", successRate: 70,
+    description: "「번호 부르면 오세요.」 적이 제 차례를 기다린다(잠듦). 길드에서 먹힌 방법이다." });
+  skill("skill_weaken", "skill_ig_ping", { name: "약점 짚기", mpCost: mp(2), description: "문제를 끝까지 읽으면 보이는 곳. 적 하나의 방어가 내려간다." });
+  skill("skill_cleric_mass_heal", "skill_ig_share_snack", { name: "소보로빵 반 쪼개기", mpCost: mp(8), description: "야자 때 먹으려던 빵. 넷이 나누면 한 입씩이다. 파티 모두 회복." });
   // ── 에델(기사) — 의전
-  skill("skill_guard_iron_wall", "skill_ig_protocol_wall", { name: "의전 방패", mpCost: mp(4), description: "「용사님 앞은 기사가 막습니다!」 파티 모두 방어가 오른다." });
-  skill("skill_hero_cross_slash", "skill_ig_royal_slash", { name: "왕실 공인 베기", mpCost: mp(5), description: "대본 7장 3절에 적힌 정식 검술." });
+  skill("skill_guard_iron_wall", "skill_ig_protocol_wall", { name: "의전 방패", mpCost: mp(4), description: "용사 앞을 막는 의전용 자세. 여섯 번 했고, 이번엔 진짜로 막는다. 파티 모두 방어가 오른다." });
+  skill("skill_hero_cross_slash", "skill_ig_royal_slash", { name: "왕실 정식 베기", mpCost: mp(5), description: "대본 3장 2절에 그림까지 실린 검술. 그림이 틀렸다." });
   // ── 피오(엘프 마법사) — 기출 변형
-  skill("skill_fire", "skill_ig_exam_fireball", { name: "기출 변형 파이어볼", mpCost: mp(5), power: 95, description: "7년 동안 외운 파이어볼을 민재식으로 비틀었다. 시험엔 안 나온 각도로 날아간다." });
-  skill("skill_mage_chain_lightning", "skill_ig_summary_bolt", { name: "요점 정리 번개", mpCost: mp(9), description: "요점만 세 줄로 줄인 번개. 적 모두를 친다." });
-  // ── 꾸르(고블린 족장)
-  skill("skill_scout_knife_storm", "skill_ig_group_call", { name: "단톡 소환", mpCost: mp(6), description: "「@전체 지금 와라」 고블린 친구들이 우르르 몰려와 적 모두를 친다." });
-  skill("skill_hero_war_cry", "skill_ig_chief_roar", { name: "족장의 함성", mpCost: mp(4), description: "「꾸르르!」 파티 모두 공격이 오른다." });
+  skill("skill_fire", "skill_ig_exam_fireball", { name: "실기 파이어볼", mpCost: mp(5), power: 95, description: "실기는 일곱 번 다 만점이었다. 시험관만 없으면 정확하다." });
+  skill("skill_mage_chain_lightning", "skill_ig_summary_bolt", { name: "연쇄 번개", mpCost: mp(9), description: "필기 시험 단골 문항. 쓰는 법은 알고, 문제는 끝까지 안 읽었다. 적 모두를 친다." });
+  // ── 꾸르(고블린 족장 · 도로 보수 장부)
+  skill("skill_scout_knife_storm", "skill_ig_group_call", { name: "보수 인부 소집", mpCost: mp(6), description: "30년 동안 길을 닦은 인부들이다. 일당은 장부에 달아 둔다. 적 모두를 친다." });
+  skill("skill_hero_war_cry", "skill_ig_chief_roar", { name: "징수 고함", mpCost: mp(4), description: "통행세 받을 때 쓰던 목소리. 파티 모두 공격이 오른다." });
   // ── 적 기술
-  skill("skill_sword_slash", "skill_ig_pop_quiz", { name: "쪽지 시험", power: 70, mpCost: noMp, description: "예고 없는 쪽지 시험. 마음이 아프다." });
-  skill("skill_dark", "skill_ig_mock_exam", { name: "모의고사 폭격", power: 90, mpCost: noMp, scope: "allEnemies", description: "1교시 국어부터 5교시 탐구까지 한꺼번에 떨어진다." });
-  skill("skill_dark", "skill_ig_retake", { name: "재수의 그림자", power: 110, mpCost: noMp, description: "「한 번 더 하면 된다」는 말만 15년째." });
-  skill("skill_poison_sting", "skill_ig_goblin_poke", { name: "몽둥이 콕", power: 55, mpCost: noMp, description: "고블린이 몽둥이 끝으로 콕 찌른다." });
+  skill("skill_sword_slash", "skill_ig_pop_quiz", { name: "감점", power: 70, mpCost: noMp, description: "대본 이탈 1건당 감점. 정확히 아프다." });
+  skill("skill_dark", "skill_ig_mock_exam", { name: "결재 반려", power: 120, mpCost: noMp, scope: "allEnemies", description: "올린 것이 전부 돌아온다. 사유는 적혀 있지 않다." });
+  skill("skill_dark", "skill_ig_retake", { name: "내년에 본다", power: 150, mpCost: noMp, description: "열다섯 번 한 약속. 한 번도 안 지켰다." });
+  skill("skill_poison_sting", "skill_ig_goblin_poke", { name: "말뚝 박기", power: 55, mpCost: noMp, description: "길 보수용 말뚝. 사람에게도 박힌다." });
 
   // ── 직업
   const heroClass = clone(project.database.classes.find((c) => c.id === "class_hero") ?? project.database.classes[0]!) as unknown as Record<string, unknown>;
@@ -97,7 +97,7 @@ export function setupIsekaiDatabase(project: Project, backdrops: typeof BACKDROP
     fio: curves([0.75, 1.6, 0.7, 0.75, 1.4, 1.0]),
     kkur: curves([1.35, 0.5, 1.25, 1.05, 0.6, 0.8]),
   };
-  exec("upsert_actor", { actor: { id: ACTOR.minjae, name: "강민재", nickname: "고2 · 자칭 용사", classId: CLASS.student, initialLevel: 5, parameterCurves: STATS.minjae,
+  exec("upsert_actor", { actor: { id: ACTOR.minjae, name: "강민재", nickname: "고2 · 일곱 번째 용사", classId: CLASS.student, initialLevel: 5, parameterCurves: STATS.minjae,
     // 기본 주인공이 물려준 전투 도트(Actor1 검사)를 지운다 — 비우면 전투에서 민재 자신의 걷기 칩(교복)이 선다.
     battleCharacterResourceId: "",
     characterResourceId: CAST.minjae.resource, characterIndex: CAST.minjae.index, faceResourceId: "shared-modern-uni-boy-navy-expressions-bust-base" } });
@@ -107,9 +107,9 @@ export function setupIsekaiDatabase(project: Project, backdrops: typeof BACKDROP
       characterResourceId: CAST[who].resource, characterIndex: CAST[who].index, faceResourceId: `shared-${CAST[who].stem}-expressions-bust-base`,
       ...(battle ? { battleCharacterResourceId: battle } : {}), learnedSkills: [], parameterCurves: STATS[who],
     } });
-  fantasyActor(ACTOR.edel, "에델", "왕국 기사 · 의전 담당", CLASS.knight, "edel", 6, "charset-battler-actor1-3");
-  fantasyActor(ACTOR.fio, "피오", "엘프 마법사 · 시험 7수", CLASS.mage, "fio", 5, "charset-battler-actor2-7");
-  fantasyActor(ACTOR.kkur, "꾸르", "고블린 족장 · 단톡방 방장", CLASS.chief, "kkur", 6, "party-pixel-monster1-5");
+  fantasyActor(ACTOR.edel, "에델", "왕국 기사 · 일곱 번째 용사 호위", CLASS.knight, "edel", 6, "charset-battler-actor1-3");
+  fantasyActor(ACTOR.fio, "피오", "엘프 마법사 · 마탑 필기 7회 낙방", CLASS.mage, "fio", 5, "charset-battler-actor2-7");
+  fantasyActor(ACTOR.kkur, "꾸르", "고블린 족장 · 도로 보수 장부", CLASS.chief, "kkur", 6, "party-pixel-monster1-5");
   exec("set_session_start", { party: [ACTOR.minjae], gold: 0 });
   project.system.battleLook = { ...project.system.battleLook, enemyHp: true, enemyNames: true };
   // 필드 화면을 전투 배경으로 깔지 않는다 — 위에서 본 맵 위에 옆모습 배틀러가 서면 어색했다(마왕 편의점 처음 하는 사람 검수 4).
@@ -118,11 +118,11 @@ export function setupIsekaiDatabase(project: Project, backdrops: typeof BACKDROP
   // ── 아이템
   const itemOf = (id: string) => clone(project.database.items.find((x) => x.id === id)!) as unknown as Record<string, unknown>;
   exec("upsert_item", { item: { ...itemOf("item_old_key"), id: ITEM.chili, name: "불꽃고추 한 줌", price: 0, consumable: false,
-    description: "시장 아저씨가 「드래곤도 운다」며 덤으로 준 고추. 고추장 냄새가 난다." } });
+    description: "광장 상인이 판 고추. 「저번 용사님 외상」 이야기를 들었다. 고추장 냄새가 난다." } });
   exec("upsert_item", { item: { ...itemOf("item_rice_ball"), id: ITEM.tteok, name: "이세계 떡볶이", price: 0,
     hpRecovery: { flat: 300, percentMax: 0 }, description: "쌀 반죽을 길게 밀고 불꽃고추로 볶았다. 맵다. 그리고 그립다." } });
   exec("upsert_item", { item: { ...itemOf("item_old_key"), id: ITEM.crystal, name: "통신 수정구", price: 0, consumable: false,
-    description: "피오가 빌려준 수정구. 여럿이 한꺼번에 말을 주고받는다. 민재는 이걸 단톡방이라고 부른다." } });
+    description: "피오가 빌려준 수정구. 여럿이 한꺼번에 말을 주고받는다. 아무도 먼저 쓰지 않는다." } });
 
   // ── 적 — 보스 HP 는 보통 플레이로 50초 안쪽(처음 하는 사람 검수: 교무부장 900 은 85초, 마왕 1100 은 3분 넘게 걸렸다.
   //    v6 녹화에서 교무부장(표시 590) 67초, 마왕(표시 620) 65초 — 표시 HP 를 400·430 으로 줄였다). 공격력은 그대로 둔다.
@@ -135,23 +135,24 @@ export function setupIsekaiDatabase(project: Project, backdrops: typeof BACKDROP
     exec("upsert_enemy", { enemy: { id, name, monsterResourceId: art, stats, actions, skillIds: actions.map((a) => a.skillId), level,
       rewards: { ...(base.rewards as Record<string, unknown>), exp, gold, dropRatePercent: 0 }, ...extra }, clearFields: ["speciesId"] });
   };
-  enemy("enemy_ig_slime", "말랑 슬라임", "generated-enemy-slime-green", { maxHp: 120, maxMp: 0, attack: 34, defense: 10, mind: 10, agility: 20 },
+  enemy("enemy_ig_slime", "들슬라임", "generated-enemy-slime-green", { maxHp: 120, maxMp: 0, attack: 34, defense: 10, mind: 10, agility: 20 },
     [act("skill_attack", 7)], 40, 25, 3);
-  enemy("enemy_ig_slime_red", "매운 슬라임", "generated-enemy-slime-red", { maxHp: 150, maxMp: 0, attack: 40, defense: 12, mind: 12, agility: 22 },
+  enemy("enemy_ig_slime_red", "붉은 슬라임", "generated-enemy-slime-red", { maxHp: 150, maxMp: 0, attack: 40, defense: 12, mind: 12, agility: 22 },
     [act("skill_attack", 7)], 55, 30, 4);
-  enemy("enemy_ig_goblin", "고블린 행동대", "generated-enemy-goblin-scout", { maxHp: 220, maxMp: 0, attack: 52, defense: 24, mind: 20, agility: 40 },
+  enemy("enemy_ig_goblin", "고블린 징수원", "generated-enemy-goblin-scout", { maxHp: 220, maxMp: 0, attack: 52, defense: 24, mind: 20, agility: 40 },
     [act("skill_attack", 6), act("skill_ig_goblin_poke", 7)], 80, 40, 7);
-  enemy("enemy_ig_goblin_brute", "꾸르(화남)", "generated-enemy-goblin-brute", { maxHp: 520, maxMp: 0, attack: 62, defense: 30, mind: 22, agility: 30 },
+  enemy("enemy_ig_goblin_brute", "꾸르", "generated-enemy-goblin-brute", { maxHp: 520, maxMp: 0, attack: 62, defense: 30, mind: 22, agility: 30 },
     [act("skill_attack", 6), act("skill_ig_goblin_poke", 7)], 150, 80, 9);
-  enemy("enemy_ig_quiz", "출제 위원 해골", "generated-enemy-skeleton-knight", { maxHp: 600, maxMp: 0, attack: 66, defense: 40, mind: 30, agility: 36 },
+  enemy("enemy_ig_quiz", "성문 시험관", "generated-enemy-skeleton-knight", { maxHp: 600, maxMp: 0, attack: 66, defense: 40, mind: 30, agility: 36 },
     [act("skill_attack", 6), act("skill_ig_pop_quiz", 8)], 160, 90, 10);
-  enemy("enemy_ig_dean", "마왕군 교무부장", "generated-enemy-lich-frost", { maxHp: 400, maxMp: 50, attack: 70, defense: 38, mind: 60, agility: 40 },
+  enemy("enemy_ig_dean", "대본 감독관", "generated-enemy-lich-frost", { maxHp: 400, maxMp: 50, attack: 92, defense: 38, mind: 60, agility: 40 },
     [act("skill_ig_pop_quiz", 7), act("skill_ig_mock_exam", 8, { kind: "turn", start: 2, interval: 3 })], 260, 150, 12, { role: "boss" });
-  enemy("enemy_ig_maou", "재수생 마왕 벨제", "generated-enemy-demon-lord", { maxHp: 430, maxMp: 80, attack: 80, defense: 45, mind: 70, agility: 45 },
+  enemy("enemy_ig_maou", "마왕", "generated-enemy-demon-lord", { maxHp: 430, maxMp: 80, attack: 104, defense: 45, mind: 70, agility: 45 },
     [act("skill_attack", 5), act("skill_ig_retake", 8), act("skill_ig_mock_exam", 9, { kind: "turn", start: 2, interval: 3 })], 500, 300, 15, { role: "boss" });
 
   // upsert_enemy 는 role:boss 에 「보스 위협 하한」(scaleBossToStartParty)을 걸어 HP 를 590·560 으로 되올린다.
   // 이 데모는 짧은 보스전(50초 안쪽)이 의도라 HP 만 저자 값으로 되돌린다(공격·민첩 하한은 그대로 둔다).
+  // v8 톤 검수(두 검수자): 보스전에서 파티 HP 가 거의 안 깎여 「15년 원한의 결판」이 연습 전투보다 쉬웠다 — 공격력·기술 위력을 올렸다(HP 는 그대로).
   for (const [id, hp] of [["enemy_ig_dean", 400], ["enemy_ig_maou", 430]] as const) {
     const boss = project.database.enemies.find((e) => e.id === id);
     if (!boss) throw new Error(`[isekai-godding] 보스 ${id} 없음`);
@@ -163,8 +164,8 @@ export function setupIsekaiDatabase(project: Project, backdrops: typeof BACKDROP
   // 첫 전투는 둘(처음 하는 사람 검수 4: 셋이면 첫 전투가 54초로 늘어졌다).
   troop(TROOP.slime, "슬라임 둘", ["enemy_ig_slime", "enemy_ig_slime_red"], backdrops.field);
   troop(TROOP.goblin, "통행세 받는 고블린", ["enemy_ig_goblin", "enemy_ig_goblin_brute", "enemy_ig_goblin"], backdrops.village);
-  troop(TROOP.quiz, "출제 위원", ["enemy_ig_quiz"], backdrops.castle);
-  troop(TROOP.dean, "마왕군 교무부장", ["enemy_ig_dean"], backdrops.castle);
-  troop(TROOP.maouExam, "마왕과 모의고사", ["enemy_ig_maou"], backdrops.throne);
-  troop(TROOP.maouBrawl, "마왕과 한 판", ["enemy_ig_maou"], backdrops.throne);
+  troop(TROOP.quiz, "성문 시험관", ["enemy_ig_quiz"], backdrops.castle);
+  troop(TROOP.dean, "대본 감독관", ["enemy_ig_dean"], backdrops.castle);
+  troop(TROOP.maouExam, "마왕과 마지막 시험", ["enemy_ig_maou"], backdrops.throne);
+  troop(TROOP.maouBrawl, "마왕과 7장", ["enemy_ig_maou"], backdrops.throne);
 }
