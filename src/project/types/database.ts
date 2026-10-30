@@ -2077,6 +2077,11 @@ export interface SystemRecords {
   battleDefeatSeResourceId?: string;
   /** 도주 시 효과음. 비우면 기본 도주음. */
   battleEscapeSeResourceId?: string;
+  /**
+   * 효과음 자리 표(자리 id → 리소스 id). 커서·결정·타격·장비·저장·발소리(footstep-grass)·마법(magic-fire) 등.
+   * 알려진 자리와 가족 물러섬은 `@/project/seCues`. 모르는 자리 id 도 저장한다(새 스토어 자리). 생략 = 내장 기본 소리.
+   */
+  seCues?: Record<string, string>;
   initialTroopId?: TroopId;
   battleFlow?: BattleFlow;
   /** gauge 흐름 전용. active 면 명령 메뉴가 열려 있어도 적 게이지가 차고 적이 행동한다. 생략 = wait. */
