@@ -59,7 +59,21 @@ function installWorld(project: Project): Stage["world"] {
   map.id = M.world as GameMap["id"];
   map.name = "서쪽 변경";
   project.maps[M.world] = map;
-  project.tilesets[snap.tileset.id] = structuredClone(snap.tileset);
+  // 월드맵 키트는 아이콘 그림 4천여 칸을 시트 끝에 이식해 둔다(192×11776px) — WebGL 최대 텍스처 8192 를 넘어 지도가 까맣다.
+  // 이 지도가 실제로 쓰는 칸만 남긴다(엔진 쪽 재배치는 별도 PR).
+  const ts = structuredClone(snap.tileset);
+  const used = new Set([...map.lowerTiles, ...map.upperTiles]);
+  ts.tileGrafts = (ts.tileGrafts ?? []).filter((g) => used.has(g.targetTile));
+  const rowsNeeded = Math.ceil(Math.max(Math.ceil((snap.asset.meta as { height: number }).height / 16) * ts.tilesPerRow, ...[...used].map((t) => t + 1)) / ts.tilesPerRow);
+  ts.count = rowsNeeded * ts.tilesPerRow;
+  const perTile = ts as unknown as Record<string, unknown>;
+  for (const key of ["passability", "priority", "terrain", "tileMeta"]) if (Array.isArray(perTile[key])) perTile[key] = (perTile[key] as unknown[]).slice(0, ts.count);
+  // 지운 칸을 가리키는 붓·묶음·키트는 편집용이라 뺀다(데모 지도는 고정).
+  const fits = (o: unknown): boolean => JSON.stringify(o).match(/-?\d+/g)?.every((n) => Number(n) < ts.count) ?? true;
+  ts.autotileGroups = (ts.autotileGroups ?? []).filter((g) => g.memberTileIds.every((t) => t < ts.count));
+  ts.tileGroups = (ts.tileGroups ?? []).map((g) => ({ ...g, tileIds: g.tileIds.filter((t) => t < ts.count) })).filter((g) => g.tileIds.length > 0);
+  ts.structureKits = (ts.structureKits ?? []).filter((k) => fits(k.rows));
+  project.tilesets[snap.tileset.id] = ts;
   project.assets.uploaded[snap.asset.id] = structuredClone(snap.asset);
   map.locations = [
     { id: "wm_hc_swamp", name: "갈대늪", x: snap.places.swamp.entrance.x - 1, y: snap.places.swamp.entrance.y - 1, w: 2, h: 2, tags: ["village"], note: "갈대늪 수상 마을" },
