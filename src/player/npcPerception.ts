@@ -9,7 +9,7 @@ import { isInSafeZone, type ChasePoint } from './chaseAi';
 import type { PursuitWorld } from './pursuitNavigation';
 
 /** Explicit policy, current facing, and a supercover ray (including corner-touching cells). */
-export function npcSeesPoint(world: PursuitWorld, view: RuntimeEventView, target: ChasePoint, sight: NpcSight, facing: Dir = view.direction ?? 'down'): boolean {
+export function npcSeesPoint(world: PursuitWorld, view: RuntimeEventView, target: ChasePoint, sight: NpcSight, facing: Dir = view.direction ?? 'down', seeThroughWalls = false): boolean {
   const dx = target.x - view.x, dy = target.y - view.y;
   if (isInSafeZone(world.map.safeZones, target) || Math.abs(dx) + Math.abs(dy) > terrainVisionRange(world.map, view, sight.range)) return false;
   if (sight.facing === 'forward') {
@@ -20,6 +20,8 @@ export function npcSeesPoint(world: PursuitWorld, view: RuntimeEventView, target
   // 부채꼴 — 이벤트 시선 조건(eventSeesPlayer)과 같은 90° 앞쪽 판정을 쓴다.
   // 바로 곁(8방 한 칸)은 등 뒤라도 느낀다 — 옆으로 꺾어 붙은 추격자가 「안 보여서」 접촉 전투를 못 거는 일을 막는다.
   if (sight.facing === 'cone' && Math.max(Math.abs(dx), Math.abs(dy)) > 1 && !inViewCone(view, facing, target, sight.coneDegrees)) return false;
+  // 유령(chaseBrain ghost)은 벽·지형 너머도 본다.
+  if (seeThroughWalls) return true;
   if (!terrainLineOfSight(world.map, view, target, world.project.tilesets[world.map.tilesetId])) return false;
   if (!sight.lineOfSight) return true;
   const blocked = (x: number, y: number): boolean => {

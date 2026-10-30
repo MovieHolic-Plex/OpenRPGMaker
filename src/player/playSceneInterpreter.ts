@@ -87,6 +87,8 @@ import { getCharacterProfile, resolveCharacterSpeaker } from "@/project/characte
 import { resolveDialogueLook } from "@/project/dialogueStyles";
 import { dialogueSceneHooks } from "@/player/playSceneDialogueHooks";
 import { reportEndingClear } from "@/player/playSceneOverlays";
+import { emitChaseNoise } from "@/player/chaseNoise";
+import { CHASE_NOISE_RADIUS } from "@/project/chaseBrain";
 
 export type RunCommandsOptions = {
   readonly allowNested?: boolean;
@@ -96,6 +98,17 @@ export type RunCommandsOptions = {
   readonly onHandledFailure?: () => void;
   readonly continueAfterTransfer?: boolean;
 };
+
+/** 조사로 실행한 이벤트의 첫 단 명령이 스위치·셀프 스위치를 바꾸면 레버 소리, 효과음만 울리면 작은 소리. */
+function actionEventNoiseRadius(trigger: string, commands: readonly Command[]): number {
+  if (trigger !== "action") return 0;
+  let radius = 0;
+  for (const command of commands) {
+    if (command.kind === "setSwitch" || command.kind === "setSelfSwitch") return CHASE_NOISE_RADIUS.lever;
+    if (command.kind === "playAudio" && (command.channel === "se" || (command.channel === undefined && !command.loop))) radius = CHASE_NOISE_RADIUS.sound;
+  }
+  return radius;
+}
 
 export async function runEvent(scene: PlaySceneContext, eventId: string): Promise<void> {
   if (scene.running) return;
@@ -114,6 +127,9 @@ export async function runEvent(scene: PlaySceneContext, eventId: string): Promis
   }
   const commands = page?.commands ?? event.commands;
   const session = scene.session;
+  // 레버·스위치·효과음을 울린 조사 이벤트는 소리를 낸다 — 곁의 추격자가 듣고 그 자리로 와서 뒤진다(@/player/chaseNoise).
+  const noise = actionEventNoiseRadius(view.trigger.kind, commands);
+  if (noise > 0) emitChaseNoise(session, scene.map.id, { x: view.x, y: view.y }, noise);
   const completionPageId = page?.detectionEncounter ? page.id : undefined;
   const options: RunCommandsOptions = completionPageId === undefined ? {} : {
     continueAfterTransfer: true,

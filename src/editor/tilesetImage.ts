@@ -77,7 +77,9 @@ export function ensureTilesetTexture(scene: Phaser.Scene, tileset: TilesetDef): 
   const canvas = bakeTilesetTextureCanvas(scene, tileset, baseKey);
   if (!canvas) return baseKey;
 
-  const texture = scene.textures.addCanvas(textureKey, canvas);
+  // addCanvas 는 CanvasTexture 를 만들며 캔버스 전체를 getImageData 로 읽는다(버들항 시트 40MB, 소프트웨어 GL 0.3~0.9초).
+  // 아틀라스는 그 픽셀 사본을 쓰지 않으므로 그림 텍스처로 올린다(원본은 캔버스 그대로 — getPixel·drawImage 는 같다).
+  const texture = scene.textures.addImage(textureKey, canvas as unknown as HTMLImageElement);
   if (!texture) return baseKey;
 
   // 확장 타일셋(count > 480)은 확장분 프레임까지 등록한다(기본 480 은 불변).

@@ -1,3 +1,15 @@
+## 이식 아틀라스 워커 굽기(#3963)는 되돌렸다 — 텍스처 등록만 `addImage` (2026-10-30)
+
+#3963 은 버들항처럼 큰 이식 타일셋을 워커(OffscreenCanvas)에서 굽고 GPU 에 띠씩 올렸다. 머지 뒤 폴른 스타 체크포인트에서
+**타일이 하나도 안 그려졌다**(act2-b5-dogs 숲 맵이 캐릭터만 검은 바탕에, 요새 감방도 같음). 띠 올리기(`addGLTexture`)로 등록한 텍스처는 비어 있었고,
+그보다 앞선 판(워커 비트맵을 `addImage`)은 엉뚱한 칸 그림이 들어갔다. 워커는 그림판을 **파일 주소로 다시 받아** 합성했는데,
+Phaser 에 실린 텍스처와 파일이 같다는 가정이 맞는지 확인하지 않았다. 측정 때 검은 화면 길이만 재고 착지 화면을 눈으로 보지 않아 놓쳤다.
+
+- 지금: 굽기는 예전처럼 메인 스레드 `bakeTilesetTextureCanvas`, 등록만 `addCanvas` → `addImage`(캔버스 전체 `getImageData` 읽기 제거, 소프트웨어 GL 에서 0.3~0.9초 줄어듦).
+  원본은 캔버스 그대로라 `getPixel`·`drawImage` 읽기는 같다. `playSceneMapSkirt.ts` 는 칸 화소를 프레임 한 번 그려 읽는 `pixelAt` 을 쓴다.
+- 다시 시도하려면: 워커에는 **실린 텍스처에서 만든 비트맵**만 넘기고(파일 주소 금지), 착지 화면을 원본 경로와 픽셀 비교하는 검사를 먼저 둔다.
+  검은 화면 길이만으로 합격시키지 않는다.
+
 ## 목표 안내창 자리·한국어 줄바꿈·숫자 입력 (2026-10-28, 장부 hud.json)
 
 - **목표 안내창 자리**: `playSceneZoneFeedback.placeObjective` 가 300ms 마다(글이 바뀌면 즉시) `objectivePlacement.chooseObjectivePlacement` 로 고른다.
@@ -27,6 +39,9 @@
 - **현재 목표 대상 표시**(2026-10-29): `playSceneFieldStaging.syncObjectiveMarkers` 가 지금 목표 글(`currentObjectiveText`)의 대상
   (`objectiveTarget.objectiveTargetViews`: 꼬리 「(이름: 자리)」 이름의 이벤트 → 「(<맵> 입구: …)」면 그 맵으로 가는 문 → 글에 나온 이벤트 이름 전부(다른 나온 이름에 품긴 짧은 이름은 뺀다 — 「용의자: 마부 한스·여행자 미라·상인 도윤」이면 셋 다) → 글에 나온 다른 맵의 문)에
   금빛 빛무리·바닥 고리를 거리와 무관하게 둔다(page.glow 보다 옅게, 깊이는 그 칸 사물 줄). 목표가 바뀌면 400ms 안에 옮긴다. QA: `objectiveMarkerIds(scene)`.
+- **안내 표시 끄기(2026-10-30):** `system.fieldGuides: "off"`(조수 `set_project_settings({fieldGuides:"off"})`)면 `updateFieldStaging` 이 목표 빛무리·화살표, 조사 ▼, 출구 「→ 목적지」 글자를
+  그리지 않고 남은 것을 걷는다(`clearFieldGuides`). 저자가 단 `page.glow`·`nearSparkle` 은 남는다. 장면이 스스로 길을 보여 주는 이야기 게임(마왕 편의점 「너무 친절함 … 화살표 짜증남」)용.
+  `databaseRecordModel` 화이트리스트에 넣어 저장/로드 왕복에서 살아남는다.
   **길 잇기(2026-10-29 vm2 jrpg 「길 못 찾음」)**: 지금 맵에서 그 맵으로 바로 가는 문이 없으면 `mapRoute`(옮기기 이벤트로 이은 가장 짧은 맵 경로)의
   첫 맵으로 가는 문을 짚는다. 꼬리 「→」 뒤(「(숲 입구: 북쪽 → 숲 통과)」·「(마을 입구: 남쪽 → 마왕의 동굴 · 마왕 처치)」)는 그 뒤 대상이다 —
   그 이름의 이벤트가 지금 맵에 있으면 그것, 아니면 그 맵으로 가는 첫 출구. 글에 나온 다른 맵도 같은 첫 출구 규칙.
@@ -738,6 +753,10 @@ Phaser `preRender` 는 경계가 있으면 따라가기·패닝 뒤 clamp 를 �
 - **벽면 ★ 예외(2026-10-22):** ★ 상층이라도 그 칸의 하층이 막혔고(×) 바로 아래 칸 하층이 밟는 칸이면(엘리베이터 문·벽에 박힌
   문틀의 맨 아래 줄) 고정 컨테이너가 아니라 root 에서 제 줄 + 0.5 로 캐릭터와 y 정렬한다(`playSceneMapRuntime.isWallFaceCell`).
   문턱에 선 사람의 머리가 문틀 밑에 짓눌려 보였다(첫사랑 사무실 승강기, #3231 리뷰). 같은 줄(문 안쪽 칸)은 타일이 이겨 문 안의 사람은 계속 가려진다.
+- **가구 위 ★ 예외(2026-10-30):** ★ 상층이라도 같은 칸 2~4층에 × 타일이 있으면(계산대 위 계산 단말 `10740`, 책상 위 스탠드처럼 막힌 가구에 얹은 탁상 기물)
+  같은 규칙으로 제 줄 + 0.5 에 y 정렬한다(`characterDepth.starRestsOnSolidFurniture`). 그 칸은 아무도 밟지 못해 「밑으로 지나가는」 ★ 의 뜻이 없고,
+  고정 상층이면 남쪽 칸에 선 사람의 머리(한 줄 위로 걸친다)를 덮어 계산대 앞 손님이 계산대 밑에 깔려 보였다(마왕 편의점). 주인공 실루엣(`playerOcclusionGhost`)과
+  `approach` 의 가려진 칸 판정도 이 칸을 덮개로 세지 않는다.
 - 통행은 `collision.ts` 의 `cellPassability`(4 → 1, ★ 건너뛰기). 게임 쪽 `canMove`/`isPassable` 이 그대로 쓴다.
 - 출하 경로 검증: `npm run qa:runtime -- --scenario rasak-layers --project /tmp/... --out /tmp/...` (Rasak 자료는
   재배포 금지라 프로젝트·PNG 는 저장소 밖). 프레임을 멈추고 같은 수만 밀어 합성 판과 4층 판을 비교했다:
