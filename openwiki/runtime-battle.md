@@ -2421,3 +2421,14 @@ retro2003 sideview 의 명령 창은 `data-look-command`(actor 156px · keys 152
 - **기록** `PlaySession.knownWeaknesses` (적 레코드 id → key → 배율). `playSceneBattle` 이 `session.knownWeaknesses ??= {}` 객체를 `sessionState.knownWeaknesses` 로 넘기고 전투가 **그 객체에 직접** 적는다 — 보상 정산을 거치지 않으므로 져도 도망쳐도 남는다. 세이브 슬롯이 저장·복원한다(`saveSlots.ts`, 검증 `isKnownWeaknessesRecord` — 유한한 배율, 흡수처럼 음수도 포함). PP 검증(`isActorSkillPpRecord`, 0 이상)으로 읽으면 흡수 칸 하나가 장부 전체를 버린다. 세션이 없으면 그 전투만의 장부.
 - **공개 설정** `system.battleStaging.revealWeakness`: never · afterDiscovery(기본) · always. 대상 고르기(`battleDom.syncWeaknessReveal`, 명령 패널을 만들 때마다)가 지금 명령(통상 공격 = 무기 속성·물리, 기술 = 속성·statistic 으로 물리/마법)의 `revealedEffectiveness` 를 적마다 구해 적 노드 위 칩(`battle-weakness-reveal`)과 대상 목록 줄 이름 옆(`.battle-weakness-row`)에 「약점」·「저항」·「무효」를 단다. afterDiscovery 는 아는 칸만 곱한다. 스냅샷 `knownWeaknesses` 가 그 객체다.
 - QA: `fallen-battle-depth.json` `weakness-discovery`(첫 대상 고르기 칩 없음 `measureLayout reveal-before: null` → 화염검 「약점 발견!」 → 다음 화염검 대상 고르기 칩·목록 「약점」).
+
+## 효과음 자리 — 세션 → 프로젝트 표 → 기본 (2026-10-30)
+
+전투·메뉴·필드 효과음은 사건마다 **자리**(`project.system.seCues`, `runtime-project-schema.md` 「효과음 자리 표」)를 찾는다. 순서: 세션 덮어쓰기(m2 「시스템 효과음 바꾸기」, 13자리만) → 프로젝트 자리 표 → 옛 저작 칸(메뉴 소리 `meta.oprnMenuSounds`·타이틀 소리·패배/도주 SE) → 몬스터 세트·내장 RTP 기본 → 합성. **자리 표가 빈 프로젝트는 소리가 바뀌지 않는다.**
+
+- 전투(`battleJuice.authoredBattleCue`): 사건 → 자리 목록 `SE_CUES`. 새 사건 `hit-actor`(아군이 맞음 → `actorDamage` → `damage`)·`boss-collapse`(쓰러짐 연출 `bossSink` 인 적 → `bossCollapse` → `faint`). 몬스터 세트는 두 사건을 `hit-damage`·`faint` 와 같게 친다. 포켓몬 피해 박자(`playPokemonDamagePhase`)는 그대로 `hit-damage`.
+- 기술 시전(`battleJuice.playSkillCastCue`, 명령 확정 순간): 속성 → `magic-<속성>`(`magicCueForElement`, 기본 속성 id·한국어 이름) → `cast`. 속성이 없어도 마력 계열(statistic mind)·마법 속성이면 `cast`. **자리 표에 소리가 있을 때만** 울린다 — 기술 애니메이션 소리는 그대로다.
+- 메뉴(`runtimeJuice.emitRuntimeJuice` 의 `cue`): 저장 `save`, 불러오기 `load`, 장비·해제 `equip`, 아이템 사용 `useItem`, 상점 거래 `shop`, 메뉴 열기 `menuOpen` → 사건의 기본 자리(confirm…). 자리마다 세션 → 표 순.
+- 그 밖(`player/seCuePlayback.playProjectSeCue`, 표에 있을 때만): 레벨 업 창 `levelUp`(없으면 합성), 아이템 늘리기 명령 `itemGet`(없으면 몬스터 세트), 전투 진입 `battleStart`(몬스터 전환음 대신), 문 `door`·`doorClose`(내장 CC0 문 소리 대신), 궤짝 뒤지기 `chest`, 「+ 아이템」 떠오름 `itemGet`.
+- **발소리**(`player/footsteps.ts`): 한 칸을 다 걸은 뒤(비행선·탈것 제외) 그 칸 지형 기록의 `footstepSoundResourceId` → 지형 이름이 가리키는 `footstep-<표면>`(`footstepCueForTerrain`) → 무음. 180ms 안에 한 번, 효과음 채널 크기의 45%. 예전에는 지형 발소리 칸이 저장만 되고 런타임이 틀지 않았다.
+- 자료집: 시스템 → 「전투 오디오」 아래 「효과음 자리 · 메뉴·화면/전투/마법·상태/필드·문」(`databaseSeCueTable.ts`).
