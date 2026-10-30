@@ -901,6 +901,7 @@ function playResolutionFieldset(project: Project, rerender: SystemRefresh): HTML
     cameraZoomField(rerender),
     surfaceScaleField(project),
     displayFilterField(project),
+    fieldGuidesField(project),
   ]);
 }
 
@@ -1016,6 +1017,22 @@ function displayFilterField(project: Project): HTMLElement {
   ]);
 }
 
+/** 필드 안내 표시(system.fieldGuides) — 목표 빛무리·화살표, 인물·조사 ▼, 출구 「→ 목적지」 글자. 화살표만 = 출구 화살표만 남긴다. */
+function fieldGuidesField(project: Project): HTMLElement {
+  const select = el("select", { dataset: { testid: "db-field-system-field-guides" } }) as HTMLSelectElement;
+  for (const [value, label] of [["on", "모두 켜기"], ["arrows", "출구 화살표만"], ["off", "끄기"]] as const) select.append(el("option", { text: label, attrs: { value } }));
+  select.value = project.system.fieldGuides ?? "on";
+  select.addEventListener("change", () => {
+    updateSystem((draft) => {
+      if (select.value === "off" || select.value === "arrows") draft.system.fieldGuides = select.value;
+      else delete draft.system.fieldGuides;
+    }, "system:field-guides");
+  });
+  return rm2k3Fieldset("필드 안내 표시", [
+    el("p", { class: "db-system-resolution-help", text: "갈 곳을 알려 주는 자동 표시입니다. 모두 켜기 = 목표 빛과 화살표, 인물·조사 대상 위 ▼, 출구 앞 「→ 목적지」. 출구 화살표만 = 출구 앞에 맵 밖을 가리키는 화살표만 둡니다. 끄기 = 아무것도 그리지 않습니다." }),
+    field("안내", select),
+  ]);
+}
 
 /**
  * 프로젝트 기본 카메라 배율. 해상도 바로 아래에 둔다 — 둘이 함께 시야를 결정하기 때문에 한 화면에서 보여야 한다.
