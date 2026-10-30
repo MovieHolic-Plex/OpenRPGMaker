@@ -175,6 +175,7 @@ description: Use when authoring or reviewing story scenes, events, cutscenes, NP
 5. **추격자의 손전등이 보이게.** `set_field_detection({visionLight:{color}})` 는 그 맵 조명을 정한 **뒤에** 부른다. 조명을 나중에 다시 깔면 빛이 지워진다.
 6. **추격자는 한 사람이다.** 층마다 다른 추격자 이벤트여도 `make_chase_scene({characterId})` 로 같은 인물 프로필에 묶는다. 붙잡힌 한 줄은 그 사람의 말로 `caughtText`(숙직 선생 「찾았다.」). 순찰 혼잣말은 `text {speaker:<프로필 이름>, container:"bark"}` — 그 추격자 머리 위에 뜨고 게임을 멈추지 않는다. 발소리가 없어야 하는 유령은 `footsteps:{off:true}`.
 7. **잠긴 문·열쇠함은 퍼즐 도구로, 손으로 고치지 않는다.** 몸으로 막아야 하는 문·쇠사슬은 `compile_puzzle({kind:"item-gate", blocking:true})`(기본은 지나갈 수 있는 조사 칸이라 열쇠 없이 걸어 나간다). 번호 자물쇠는 `password` 에 `wrongMessage`·`wrongSound` 로 그 장면 말투를 주고, 안의 열쇠는 `onSolve.giveItems`. 여는 소리는 `onSolve.beats` 의 `{kind:"music",action:"se"}` — 스위치를 켜는 조사는 추격자에게 들린다. 확인: 문 칸 `isPassable` 이 풀기 전 false, 푼 뒤 소지품에 열쇠.
+8. **유령은 빛나고, 죽이지 않을 수 있다.** 사람 걷기 칩에 `make_chase_scene({chaser:{blendMode:"add"}})` 를 주면 희미하게 빛나는 유령이 된다(생성 인물 금지 — 있는 칩 그대로). 닿으면 게임 오버가 아니라 장면이어야 하면(차가운 손 → 화면이 하얘지고 계단 앞에서 깸) `onTouch:[비트]` 로 준다 — `killPlayer` 를 손으로 바꿔 끼우지 않는다. 확인: 추격 페이지 `graphic.blendMode` 가 add, 명령에 `killPlayer` 가 없다.
 
 ## 경고 코드 (쓰기 도구 issues · run_lint)
 
