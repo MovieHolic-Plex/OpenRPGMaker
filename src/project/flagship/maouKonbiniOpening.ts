@@ -278,8 +278,8 @@ const fieldTint = (value: string, ms: number): Command => m2("Screen Effect", { 
 // ── 옥좌의 방: 연출 전투 → 『동귀어진』 ────────────────────────────────────
 
 /**
- * 옥좌 결전 전투 — 2합. 1합에 사천왕 농담, 마왕이 한 번 휘두르고(업화로 체력 막대가 눈에 띄게 준다),
- * 2합 머리에 레온이 『동귀어진』으로 전투를 끝낸다(이기든 지든 같은 결말).
+ * 옥좌 결전 전투 — 1합. 마왕이 한 번 휘두르고(업화로 체력 막대가 눈에 띄게 준다), 사천왕 농담 뒤
+ * 레온이 『동귀어진』으로 전투를 끝낸다(이기든 지든 같은 결말).
  * 3합·전투 뒤 대사까지 있던 판은 새 게임 → 첫 자유 이동이 2분 39초였다(2026-10-30 감독 검수, 목표 75초 안).
  */
 function setupThroneBattle(project: Project): void {
@@ -294,17 +294,16 @@ function setupThroneBattle(project: Project): void {
   const T = "troop_mk_castle";
   const pageOf = (pid: string, name: string, round: number, commands: Command[]) =>
     execTool(project, "upsert_troop_battle_page", { troopId: T, page: { id: pid, name, span: "battle", runOnce: true, conditions: [{ kind: "onRound", round }], commands } });
-  pageOf("mk_castle_r1", "1합 사천왕", 1, [
-    ...say("leonF", "base", "네 사천왕은 어디 갔지!"),
-    ...say("maouF", "base", "사천왕? 걔들 오늘 칼퇴했다."),
-  ]);
   // 「세계의 절반 제안」 기술을 쓴 직후에만 오는 대꾸(성공·실패 어느 쪽이어도 맞는 말).
   execTool(project, "upsert_troop_battle_page", { troopId: T, page: { id: "mk_castle_half_world", name: "절반 제안에 대꾸", span: "battle", runOnce: true,
     conditions: [{ kind: "actorCommand", actorId: MAOU_TRUE, commandId: "skill", skillId: "skill_mk_half_world" }], commands: [
       ...say("leonF", "base", "또 절반 타령이냐! 안 넘어간다!"),
     ] } });
-  pageOf("mk_castle_r2", "2합 동귀어진", 2, [
-    ...say("leonF", "base", "이대로는 끝이 안 나…. 이 목숨을 걸겠다. 『동귀어진』!"),
+  // 첫 합 한 번(마왕의 명령 하나)으로 끝낸다 — 2합이면 새 게임 → 첫 자유 이동이 실측 74~79초로 75초 목표를 넘나들었다.
+  pageOf("mk_castle_r1", "1합 사천왕 · 동귀어진", 1, [
+    ...say("leonF", "base", "네 사천왕은 어디 갔지!"),
+    ...say("maouF", "base", "사천왕? 걔들 오늘 칼퇴했다."),
+    ...say("leonF", "base", "…끝이 안 나겠군. 이 목숨을 걸겠다. 『동귀어진』!"),
     ...say("maouF", "base", "자, 잠깐! 연금은? 연금은 어떻게 되는 거냐!"),
     // 봉인의 빛 — 전투 화면이 하얗게 탄다(전투 색조 m2-046). 전투 색조는 필드로 이어지지 않으므로 필드 장면이 끝나자마자
     // 같은 흰빛을 다시 깐다(옥좌 맵은 전투 퇴장 0.3~0.5초만 비친다). 필드 색조를 전투 전에 깔면 전투 화면 전체가 하얗게 덮였다(r4 시도).
@@ -325,14 +324,14 @@ export function buildMaouThrone(project: Project, roomWake: Cell): Cell {
   const garetAt = nearestFree(project, map, { x: 22, y: 9 }, [leonAt]);
   const miraAt = nearestFree(project, map, { x: 24, y: 9 }, [leonAt, garetAt]);
   const L = "ev_mk_t_leon", G = "ev_mk_t_garet", R = "ev_mk_t_mira";
-  // 전투 2합의 봉인술이 화면을 하얗게 채운 채(색조) 전투가 끝나므로, 옥좌 맵을 다시 보이지 않고
+  // 전투 1합의 봉인술이 화면을 하얗게 채운 채(색조) 전투가 끝나므로, 옥좌 맵을 다시 보이지 않고
   // 그 흰빛 위에서 곧장 「빛이 모든 것을 삼켰다」 → 원룸이 흰빛에서 걷혀 나온다(전환 한 번).
   // r3 녹화: 전투 뒤 옥좌 2초 → 흰 화면 5초 → 검은 화면 2.5초 → 흰 화면 2초 → 원룸(약 10초). 감독 검수 7/10.
   const scene: Command[] = [
     m2("Screen Effect", { effect: "fadeIn", value: "", durationMs: 300 }), wait(300),
     playSe(SFX.sword),
     { kind: "battleProcessing", troopId: "troop_mk_castle", canEscape: false, canLose: true, branchOnResult: false } as Command,
-    // 『동귀어진』 대사와 흰빛은 전투 2합 머리에서 이미 났다 — 전투가 끝나면 흰 화면 위에서 곧장 내레이션.
+    // 『동귀어진』 대사와 흰빛은 전투 1합 끝에서 이미 났다 — 전투가 끝나면 흰 화면 위에서 곧장 내레이션.
     fieldTint("255,255,255,1", 0), shake(700, "10"),
     stopBgm(),
     // 흰 화면 위 내레이션 한 줄 — 화자 없는 중립 창, 한 번에 표시(타자기로 한 글자씩 나오면 「빛」만 찍힌 빈 창처럼 보였다).
