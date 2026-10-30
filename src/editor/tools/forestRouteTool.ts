@@ -105,7 +105,7 @@ export interface ForestDesign {
 const n01 = (v: unknown, d: number) => (v !== undefined && v !== null && v !== "" && Number.isFinite(Number(v)) ? Math.max(0, Math.min(1, Number(v))) : d);
 const towardOf = (v: unknown): -1 | 1 | 0 => (/left|왼|좌|west|서/iu.test(String(v ?? "")) ? -1 : /right|오른|우|east|동/iu.test(String(v ?? "")) ? 1 : 0);
 
-function designedForestSpec(id: string, name: string, side: Side, seed: number, last: boolean, field: boolean, d: ForestDesign): { spec: WoodSpec; entry: Cell; exit: Cell | null; deadEnds: { at: Cell; end: string }[]; line: string; clearing: Cell } {
+function designedForestSpec(id: string, name: string, side: Side, seed: number, last: boolean, field: boolean, d: ForestDesign): { spec: WoodSpec; entry: Cell; exit: Cell | null; deadEnds: { at: Cell; end: string }[]; line: string; clearing: Cell; notes: string[] } {
   const rnd = mulberry32(seed);
   const across = (lo: number, hi: number) => lo + rnd() * (hi - lo);
   const clampU = (u: number) => Math.max(3, Math.min(ACROSS - 4, u));
@@ -142,20 +142,49 @@ function designedForestSpec(id: string, name: string, side: Side, seed: number, 
     ...(field ? raw.slice(1, -1).filter((_, k) => k % 2 === 0).map((p) => centerBlob(side, Math.max(9, Math.min(ACROSS - 10, p.x)), p.y, across(8, 11), across(5, 7))) : []),
   ];
   const deadEnds: { at: Cell; end: string }[] = [];
+  const notes: string[] = [];
   const branchLines: string[] = [];
+  // 갈림길이 본길과 겹치면 갈림이 아니다(sc-1030fr opus: 「서쪽으로」 갈래가 본길이 서쪽으로 크게 휜 자리와 겹쳐 상자가 본길 굽이에 놓였다).
+  // 끝 칸은 본길·앞선 갈래에서 5칸 넘게 떨어진 자리만 쓴다 — 정한 쪽에 자리가 없으면 반대쪽, 그래도 없으면 짧게, 고친 것은 notes 로 알린다.
+  const segDist = (q: Cell, line: readonly Cell[]): number => {
+    let best = Infinity;
+    for (let k = 1; k < line.length; k += 1) {
+      const a0 = line[k - 1]!, a1 = line[k]!; const dx = a1.x - a0.x, dy = a1.y - a0.y; const L = dx * dx + dy * dy;
+      const f = L ? Math.max(0, Math.min(1, ((q.x - a0.x) * dx + (q.y - a0.y) * dy) / L)) : 0;
+      best = Math.min(best, Math.hypot(q.x - a0.x - f * dx, q.y - a0.y - f * dy));
+    }
+    return best;
+  };
+  const taken: Cell[][] = [raw];
+  const clear = (q: Cell) => Math.min(...taken.map((l) => segDist(q, l)));
   for (const b of (d.branches ?? []).slice(0, 4)) {
     const t = n01(b.at, across(0.25, 0.75));
     const p = along(Math.max(0.12, Math.min(0.88, t)));
-    const dir = towardOf(b.toward) || (p.x < ACROSS / 2 ? 1 : -1);
+    const want = towardOf(b.toward) || (p.x < ACROSS / 2 ? 1 : -1);
     const len = 4 + n01(b.length, 0.5) * 12;
-    const end = { x: clampU(p.x + dir * len), y: Math.max(endV + 3, Math.min(ALONG - 5, p.y - across(2, 6))) };
-    const mid = { x: (p.x + end.x) / 2, y: (p.y + end.y) / 2 + across(-1.5, 1.5) };
+    let pick: { end: Cell; dir: number; len: number; room: number } | undefined;
+    for (const dir of [want, -want]) {
+      for (const l of [len, len * 0.75, len * 0.5, 4]) {
+        for (const dv of [-4, -2, -6, 0, 2]) {
+          const end = { x: clampU(p.x + dir * l), y: Math.max(endV + 3, Math.min(ALONG - 5, p.y + dv)) };
+          const room = clear(end);
+          if (room >= 5 && (!pick || (pick.dir !== dir ? false : room > pick.room))) pick = { end, dir, len: l, room };
+        }
+        if (pick) break;
+      }
+      if (pick) break;
+    }
+    if (!pick) { notes.push(`고침: 갈림길(at ${t.toFixed(2)})은 본길과 떨어진 막다른 자리가 없어 짓지 않았다 — 다른 at 이나 반대쪽으로.`); continue; }
+    if (pick.dir !== want) notes.push(`고침: 갈림길(at ${t.toFixed(2)}) ${want < 0 ? "왼" : "오른"}쪽은 본길 굽이와 겹쳐 반대쪽으로 냈다.`);
+    const { end, dir } = pick;
+    const mid = { x: (p.x + end.x) / 2, y: (p.y + end.y) / 2 + across(-1, 1) };
+    taken.push([p, mid, end]);
     paths.push({ pts: [p, mid, end].map((c) => toMap(side, c.x, c.y)), w: [1.8, 2.6] });
     const what = String(b.end ?? "chest");
     if (!/nothing|없/iu.test(what)) clearings.push(centerBlob(side, end.x, end.y, 2.4, 2));
     const at = toMap(side, end.x, end.y);
     deadEnds.push({ at: { x: Math.round(at.x), y: Math.round(at.y) }, end: what });
-    branchLines.push(`${t.toFixed(2)}${dir < 0 ? "왼" : "오"}${Math.round(len)}→${what}`);
+    branchLines.push(`${t.toFixed(2)}${dir < 0 ? "왼" : "오"}${Math.round(pick.len)}→${what}`);
   }
   const clearLines: string[] = [];
   for (const c of (d.clearings ?? []).slice(0, 4)) {
@@ -180,7 +209,7 @@ function designedForestSpec(id: string, name: string, side: Side, seed: number, 
   const line = `굽이 ${n} · 휨 ${sway || "보통"} · 폭 ${width || "보통"} · 들어옴 ${(entryU / ACROSS).toFixed(2)} · 나감 ${last ? "막다른 빈터" : (exitU / ACROSS).toFixed(2)} · 갈림 ${branchLines.join(" ") || "없음"} · 빈터 ${clearLines.join(" ") || "-"}`;
   return {
     spec: { id, name, width: W, height: H, seed, paths, exits: exit ? [entry, exit] : [entry], clearings, nooks, ...(groves.length ? { groves } : {}), ...(field ? { undergrowth: 0.6 } : {}) },
-    entry, exit, deadEnds, line,
+    entry, exit, deadEnds, line, notes,
     // 보스·사당 자리: 마지막 맵은 막다른 빈터, 아니면 길 가운데.
     clearing: (() => { const p = last ? { x: raw[raw.length - 1]!.x, y: endV + 1 } : along(0.5); const c = toMap(side, p.x, p.y); return { x: Math.round(c.x), y: Math.round(c.y) }; })(),
   };
@@ -377,6 +406,7 @@ const authorForestRoute: ToolDefinition = {
       const { spec, entry, exit } = built ?? forestSpec(id, name, side, seed0 + i * 97, i === count - 1, entryU, terrain);
       const result = paintWoodland(draft, spec);
       if (built) {
+        warnings.push(...built.notes.map((n) => `${name}: ${n}`));
         const twin = earlier.find((e) => sameShape(e.line, built.line));
         if (twin) warnings.push(`${name}: 앞서 지은 숲길 「${twin.map}」(${twin.line})과 굽이·갈림이 거의 같다 — 다음 숲길은 굽이 수·갈림 자리·방향을 다르게 설계한다.`);
         addMapLocation(draft.maps[id]!, { name: `숲길 설계 ${name}`, x: 0, y: 0, w: 1, h: 1, note: built.line, tags: ["forest-route"] });

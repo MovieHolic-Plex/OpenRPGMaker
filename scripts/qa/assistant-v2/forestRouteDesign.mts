@@ -23,6 +23,8 @@ const DESIGNS = [
   { bends: 2, sway: "gentle", entryAt: 0.2, width: "wide", branches: [{ at: 0.4, toward: "right", length: 0.7, end: "chest" }], clearings: [{ at: 0.75, size: "large", toward: "left" }] },
   { bends: 5, sway: "wide", entryAt: 0.8, width: "narrow", branches: [{ at: 0.3, toward: "left", length: 0.5, end: "chest" }, { at: 0.65, toward: "right", length: 0.4, end: "nothing" }] },
   { bends: 3, sway: "normal", entryAt: 0.5, branches: [{ at: 0.55, toward: "left", length: 0.9, end: "clearing" }], clearings: [{ at: 0.25, size: "small", toward: "right" }] },
+  // sc-1030fr opus r1 이 실제로 보낸 설계 — 서쪽 갈래가 본길 서쪽 굽이와 겹치던 판.
+  { bends: 3, sway: "wide", entryAt: 0.45, exitAt: 0.6, width: "normal", branches: [{ at: 0.3, toward: "west", length: 0.6, end: "chest" }, { at: 0.65, toward: "east", length: 0.5, end: "chest" }], clearings: [{ at: 0.5, size: "small", toward: "east" }] },
 ];
 function grid(project: Project, mapId: string, entry: { x: number; y: number }, marks: Map<number, string>): { txt: string; reach: Set<number>; pass: string } {
   const map = project.maps[mapId]!; const W = map.width, H = map.height;

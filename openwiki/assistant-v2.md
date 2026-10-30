@@ -318,7 +318,7 @@ v1 의 `script_cutscene` 비트로 옮긴다(`events.ts`).
 opus 3판(sc-1030s-b3 r1~r3)이 인자까지 똑같이(`side:north, count:1, names, moods, hiddenPerMap:1`) 불렀고, 씨앗 기본값이 「7 + 맵 수×13」이라 같은 바탕 프로젝트면 늘 같은 숲이었다. 틀도 굽이 4·빈터 자리 고정, 갈림길 없음(요청의 「갈림길·막다른 곳 보상」을 지을 수단이 없었다).
 
 - **씨앗 숨김**: `seed` 를 스키마에서 뺐다(대본 `act2Opening` 은 seed 211 을 그대로 넘기고 같은 그림 — 설계 없음·고정 씨앗 틀은 바뀌지 않았다). 기본 씨앗은 인자 해시 + 무작위 덧값, 쓴 값은 요약 「seed N」으로 남긴다(다시 짓기용).
-- **모델 설계** `designs[i]`: 굽이 수 1~6·휘는 폭(gentle·normal·wide)·들어오고 나가는 자리 0~1·길 폭·갈림길 `branches[{at, toward, length, end: chest|clearing|nothing}]`·빈터 `clearings[{at, size, toward}]`. 함수는 칸으로 옮기고 맵 안에 가둘 뿐이다(`designedForestSpec`). 갈림길은 `WoodSpec.paths` 의 곁 곡선 + 끝 작은 빈터, 끝 칸은 `data.maps[i].deadEnds` 로 돌려준다(상자·적 자리). 설계 없이 부르면 옛 틀 그대로 짓고 경고로 designs 를 쓰라고 알린다.
+- **모델 설계** `designs[i]`: 굽이 수 1~6·휘는 폭(gentle·normal·wide)·들어오고 나가는 자리 0~1·길 폭·갈림길 `branches[{at, toward, length, end: chest|clearing|nothing}]`·빈터 `clearings[{at, size, toward}]`. 함수는 칸으로 옮기고 맵 안에 가둘 뿐이다(`designedForestSpec`). 갈림길 끝은 본길·앞선 갈래에서 5칸 넘게 떨어진 자리만 쓴다 — 정한 쪽이 본길 굽이와 겹치면 반대쪽·짧게, 고친 것은 「고침:」 경고(sc-1030fr opus: 「서쪽 갈래」가 본길의 서쪽 큰 굽이와 겹쳐 상자가 본길 굽이에 놓였다). 갈림길은 `WoodSpec.paths` 의 곁 곡선 + 끝 작은 빈터, 끝 칸은 `data.maps[i].deadEnds` 로 돌려준다(상자·적 자리). 설계 없이 부르면 옛 틀 그대로 짓고 경고로 designs 를 쓰라고 알린다.
 - **앞서 지은 것과 다르게**: 설계 한 줄을 맵 위치(`tags:["forest-route"]`, note)로 남기고, 새 설계가 이 프로젝트의 앞선 숲길과 굽이 수·갈림 자리(¼ 단위)·방향이 같으면 경고한다. 도구 설명·v2 안내(`game.ts` 숲·들판 줄)가 「사연에 맞게, 앞서 지은 숲길과 다르게」를 요구한다.
 - 시험(모델 없음): `node --max-old-space-size=8000 node_modules/vite-node/dist/cli.mjs --script scripts/qa/assistant-v2/forestRouteDesign.mts <out>` — 같은 인자 3번·설계 3개·같은 설계 두 번(경고)·대본 seed 211(전후 통행 격자 같음). 막다른 끝이 입구에서 닿는지 찍는다.
 
