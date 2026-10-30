@@ -120,7 +120,7 @@ export const TOOL_ALIASES: readonly ToolAlias[] = [
   { terms: ["검사", "점검", "린트", "lint", "validate", "check"], tools: ["run_lint", "check_reachability", "evaluate_game_quality", "check_export_readiness"], label: "검사" },
   { terms: ["플레이 테스트", "시험 플레이", "walkthrough", "playtest", "scene test", "장면 시험", "자동 플레이"], tools: ["run_scene_test", "play_walkthrough", "generate_walkthrough"], label: "플레이 시험" },
   { terms: ["bgm", "음악", "브금", "작곡", "music", "soundtrack"], tools: ["generate_original_bgm", "recommend_bgm", "get_soundtrack", "set_game_audio"], label: "음악" },
-  { terms: ["효과음", "se", "sound effect", "sfx"], tools: ["generate_original_se", "list_resources"], label: "효과음" },
+  { terms: ["효과음", "se", "sound effect", "sfx", "타격음", "발소리", "사운드 이펙트"], tools: ["store_find_sound", "set_game_audio", "generate_original_se", "list_resources"], label: "효과음" },
   { terms: ["세계관", "설정", "world canon", "lore", "worldbuilding"], tools: ["set_world_canon", "upsert_world_codex", "upsert_character_profile", "plan_world"], label: "세계관" },
   { terms: ["설정집", "위키", "codex", "wiki entry", "설정 문서", "세력", "용어", "전승"], tools: ["upsert_world_codex", "read_project_wiki"], label: "설정집" },
   { terms: ["시작 아이템", "시작 골드", "초기 자금", "starting gold", "starting items"], tools: ["set_session_start"], label: "시작 소지품" },

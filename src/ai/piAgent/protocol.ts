@@ -111,6 +111,10 @@ export interface PiAgentRequest {
   /** 기본 시스템 프롬프트를 대체한다(테스트·CLI 용). */
   readonly systemPrompt?: readonly string[];
   readonly maxTurns?: number;
+  /**
+   * 완성 뒤 대사 윤문 고리(src/ai/piAgent/dialoguePolishHook.ts). false 면 끈다(AI 설정 「동작」 → 「완성 뒤 대사 윤문」). 비우면 켬.
+   */
+  readonly dialoguePolish?: boolean;
   /** 다듬기 모드(src/ai/piAgent/featureReview.ts) — 이미 지은 맵을 1배 검토→고치기로 N바퀴·M분까지 다듬는다. */
   readonly polish?: { readonly maxRounds: number; readonly budgetMs: number; readonly request: string; readonly mapIds?: readonly string[];
     readonly lastBuilds?: Readonly<Record<string, { readonly tool: string; readonly args: unknown }>> };
@@ -278,7 +282,9 @@ type PiAgentEventPayload =
        * 모델·제공자 오류나 상한으로 **도중에 멈춘** 실행의 사유. 반영된 작업은 남지만 요청을 끝까지 하지 않았다 —
        * 패널이 「만들었어요 · 플레이해 보세요」 대신 멈췄다고 말하게 한다(2026-09-24 연애 도그푸딩: 공략 인물 하나 없이 완료 표시).
        */
-      readonly stoppedEarly?: string };
+      readonly stoppedEarly?: string;
+      /** 완성 뒤 대사 윤문 고리의 결과(src/ai/piAgent/dialoguePolishHook.ts) — 실행기가 센 전/후 적중 수와 고친 줄. */
+      readonly dialoguePolish?: import("./dialoguePolishHook").DialoguePolishReport };
 
 export type PiAgentDoneEvent = Extract<PiAgentEvent, { type: "done" }>;
 

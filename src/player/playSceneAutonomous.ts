@@ -31,7 +31,7 @@ import {
   nextMoveCommandForScene,
 } from "@/player/playSceneAutonomousCommands";
 import { canNpcMove, isPlayerOccupyingTile } from "@/player/playSceneAutonomousMapActions";
-import { detourAroundPlayer, sidestepForPlayer } from "@/player/commandRouteDetour";
+import { detourAroundPlayer, detourSegment, shortestPathAvoiding, sidestepForPlayer } from "@/player/commandRouteDetour";
 import { startPlayerRoute } from "@/player/playerRouteState";
 import { animationStepsWhileStopped, applySpriteAlpha, setNpcIdleFrame, setNpcWalkFrame } from "@/player/playSceneAutonomousSprites";
 import { isInSafeZone, nextChaseDecision, type ChasePoint } from "@/player/chaseAi";
@@ -259,7 +259,9 @@ function updateAutonomousNPCsInPass(scene: AutonomousNpcSceneContext, frameDelta
       completeRouteCommand(mover);
       continue;
     }
-    const command = strolling && mover.strategy === "random"
+    // 다른 인물을 비켜 가는 덧걸음이 있으면 그것부터 — 경로 번호(step)는 덧걸음이 끝날 때 한꺼번에 옮긴다(§routeDetour).
+    const detourCmd = mover.routeDetour?.moves[0];
+    const command = detourCmd ?? (strolling && mover.strategy === "random"
       ? wanderCommand({
         mover,
         at: { x: view.x, y: view.y },
@@ -272,8 +274,8 @@ function updateAutonomousNPCsInPass(scene: AutonomousNpcSceneContext, frameDelta
         },
         rng: () => nextSessionRandom(scene.session, "movement"),
       })
-      : nextMoveCommandForScene(scene, mover);
-    mover.step += 1;
+      : nextMoveCommandForScene(scene, mover));
+    if (!detourCmd) mover.step += 1;
     const baseFrame = view.page?.graphic.pattern ?? 0;
     const sprite = scene.eventSprites.get(eventId);
     const routeContext = { scene, eventId, mover };
@@ -312,6 +314,11 @@ function updateAutonomousNPCsInPass(scene: AutonomousNpcSceneContext, frameDelta
       continue;
     }
     // eventTouch fires when the event tries to step onto the player (including mid-move destination).
+    if (detourCmd && !mover.through && isPlayerOccupyingTile(scene, nx, ny)) {
+      setNpcIdleFrame(sprite, baseFrame, frameDir, view.animationType, mover.animationEnabled);
+      routeDetourBlocked(scene, eventId, mover, position);
+      continue;
+    }
     if (!movement.jump && !mover.through && isPlayerOccupyingTile(scene, nx, ny)) {
       livingBlockers.delete(mover);
       mover.lastStepDir = undefined;
@@ -348,6 +355,8 @@ function updateAutonomousNPCsInPass(scene: AutonomousNpcSceneContext, frameDelta
         continue;
       }
       retryBlockedStep(mover);
+      // 서 있는 주인공에게 막힌 반복 순찰도 비켜 간다(행인이 주인공 옆에서 17초 섰다 — 첫사랑 거리 r3 탐침).
+      if (command.kind === "move") maybeStartRouteDetour(scene, eventId, mover, view, position, nx, ny, true);
       // 대피 걸음을 플레이어가 막았다. 생활 막힘 경로(아래 else)로 가지 않으므로 여기서 재선택 줄에 세운다 —
       // 안 그러면 대피 칸만 영원히 다시 시도했다(리뷰 반례). 쿨다운·프레임 예산은 그대로 따른다.
       if (yieldingLivingMovers.has(mover) && (mover.livingRepathCooldownMs ?? 0) <= 0) {
@@ -357,6 +366,7 @@ function updateAutonomousNPCsInPass(scene: AutonomousNpcSceneContext, frameDelta
       continue;
     }
     if (canNpcMove({ project, scene, mover, eventId, from: position, to: { x: nx, y: ny } }, movement)) {
+      if (detourCmd) advanceRouteDetour(mover);
       mover.blockedSteps = 0;
       mover.lastStepDir = command.kind === "move" ? command.dir : undefined;
       livingBlockers.delete(mover);
@@ -401,7 +411,12 @@ function updateAutonomousNPCsInPass(scene: AutonomousNpcSceneContext, frameDelta
         scene.commandMoveRouteEventIds?.delete(eventId);
         continue;
       }
+      if (detourCmd) {
+        routeDetourBlocked(scene, eventId, mover, position);
+        continue;
+      }
       retryBlockedStep(mover);
+      if (command.kind === "move") maybeStartRouteDetour(scene, eventId, mover, view, position, nx, ny);
       if (mover.livingRoute) {
         const blocker = findBlockingEventOverlappingRect(project, scene.map, scene.session, scene.eventPositions,
           passageBounds(nx, ny, view.footprint, view.passRows), eventId);
@@ -818,6 +833,77 @@ function updateActiveNpcMove(target: ActiveNpcMoveTarget, deltaMs: number): void
 
 function followerSpritesOf(scene: AutonomousNpcSceneContext): ReadonlyMap<string, { readonly visible: boolean }> | undefined {
   return (scene as { readonly followerSprites?: ReadonlyMap<string, { readonly visible: boolean }> }).followerSprites;
+}
+
+/**
+ * §routeDetour — 반복 순찰끼리 마주 막혀 영원히 서 있던 결함(첫사랑 출근길, 2026-10-30 「NPC 들끼리 충돌 판정」).
+ *
+ * 작가 반복 경로 중 막힌 걸음을 버리지 않는 것(preserveBlockedSteps — 거리 행인 add_street_walkers 가 쓴다)은
+ * 같은 걸음을 영원히 다시 시도한다. 둘이 보도에서 마주 오면 서로의 다음 칸에 서 있어 둘 다 끝까지 섰다
+ * (실측: 행인 1·3 이 (25,14)·(24,14) 에서 마주 본 채 21초 이상 — 관찰 끝까지). 주인공에게 막힌 명령 경로는
+ * commandRouteDetour 가 비켜 가는데, 다른 인물에게 막힌 순찰에는 그런 길이 없었다.
+ *
+ * 규칙: 다른 이벤트나 서 있는 주인공에게 두 번 연달아 막히면, 막힌 걸음부터 이어지는 직선 구간의 끝 칸까지 지금 사람들을
+ * 피해 가는 최단 길(직선 + 8걸음 안)을 덧걸음으로 걷는다. 경로 배열은 바꾸지 않는다(반복할 때마다 길이 굳거나 늘지 않게).
+ * 상대가 이미 덧걸음 중이면 기다린다 — 둘이 같은 쪽으로 동시에 비켜 다시 마주치지 않게. 덧걸음이 또 막히면
+ * 지금 자리에서 같은 끝 칸으로 다시 찾는다. 끝 칸에 누가 서 있거나 길이 없으면 예전처럼 기다린다.
+ */
+const ROUTE_DETOUR_AFTER_BLOCKS = 2;
+
+function routeDetourCanStep(scene: AutonomousNpcSceneContext, eventId: string, mover: AutonomousMover) {
+  const project = store.getCurrent();
+  return (from: { x: number; y: number }, to: { x: number; y: number }, dir: Dir) =>
+    canNpcMove({ project, scene, mover, eventId, from, to }, { x: to.x - from.x, y: to.y - from.y, face: dir });
+}
+
+function maybeStartRouteDetour(scene: AutonomousNpcSceneContext, eventId: string, mover: AutonomousMover,
+  view: RuntimeEventView, position: { x: number; y: number }, nx: number, ny: number, byPlayer = false): void {
+  if (!mover.preserveBlockedSteps || mover.livingRoute || mover.strategy !== "sequence" || mover.routeDetour
+    || scene.commandMoveRouteEventIds?.has(eventId) || (mover.blockedSteps ?? 0) < ROUTE_DETOUR_AFTER_BLOCKS) return;
+  if (!byPlayer) {
+    const blocker = findBlockingEventOverlappingRect(store.getCurrent(), scene.map, scene.session, scene.eventPositions,
+      passageBounds(nx, ny, view.footprint, view.passRows), eventId);
+    if (!blocker) return;
+    if (scene.autonomousNPCs.get(blocker.event.id)?.routeDetour) return;
+  }
+  const length = mover.moves.length;
+  if (length === 0) return;
+  const blockedIndex = ((mover.step % length) + length) % length;
+  const found = detourSegment({
+    moves: mover.moves, blockedIndex, from: position, width: scene.map.width, height: scene.map.height,
+    isPlayerAt: (x, y) => isPlayerOccupyingTile(scene, x, y),
+    canStep: routeDetourCanStep(scene, eventId, mover),
+  });
+  if (!found || found.path.length === 0) return;
+  mover.routeDetour = { moves: found.path, resumeStep: mover.step + (found.resumeIndex - blockedIndex), end: found.end, blocked: 0 };
+  mover.blockedSteps = 0;
+}
+
+function advanceRouteDetour(mover: AutonomousMover): void {
+  const detour = mover.routeDetour;
+  if (!detour) return;
+  detour.moves.shift();
+  detour.blocked = 0;
+  if (detour.moves.length > 0) return;
+  mover.step = detour.resumeStep;
+  mover.routeDetour = undefined;
+}
+
+function routeDetourBlocked(scene: AutonomousNpcSceneContext, eventId: string, mover: AutonomousMover, position: { x: number; y: number }): void {
+  const detour = mover.routeDetour;
+  if (!detour) return;
+  mover.lastStepDir = undefined;
+  detour.blocked += 1;
+  if (detour.blocked < ROUTE_DETOUR_AFTER_BLOCKS) return;
+  const path = shortestPathAvoiding({
+    width: scene.map.width, height: scene.map.height,
+    isPlayerAt: (x, y) => isPlayerOccupyingTile(scene, x, y),
+    canStep: routeDetourCanStep(scene, eventId, mover),
+  }, position, detour.end, detour.moves.length + 8);
+  detour.blocked = 0;
+  if (path === null) return;
+  if (path.length === 0) { mover.step = detour.resumeStep; mover.routeDetour = undefined; return; }
+  detour.moves = path;
 }
 
 function completeRouteCommand(mover: AutonomousMover): void {
