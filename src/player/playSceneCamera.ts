@@ -9,7 +9,7 @@ import type { RuntimeCameraSessionState, RuntimeCameraTarget } from "@/project/s
 import { characterSpriteX, characterSpriteY, footprintSpriteX } from "@/player/characterDepth";
 import { runtimeEventViewsForMap } from "@/project/runtimeEventState"
 import { store } from "@/project/store";
-import { CAMERA_ZOOM_LIMITS, resolveMapCameraZoom } from "@/project/cameraZoom";
+import { CAMERA_ZOOM_LIMITS, pixelSnappedCameraZoom, resolveMapCameraZoom } from "@/project/cameraZoom";
 import { bumpPerfCounter } from "@/player/runtimePerfCounters";
 import { runtimeMapViewZoom } from "@/player/runtimeViewScale";
 import { reliefTopOverhangPx } from "@/player/playSceneRelief";
@@ -348,7 +348,9 @@ function resolveCameraTarget(
 function applyCameraZoom(scene: PlaySceneContext, zoom: number | undefined): void {
   const camera = scene.cameras.main;
   if (zoom !== undefined && Number.isFinite(zoom) && zoom > 0) {
-    authoredZooms.set(camera, Math.min(CAMERA_ZOOM_LIMITS.max, Math.max(CAMERA_ZOOM_LIMITS.min, zoom)));
+    // 도트 게임은 1 이상 소수 저작 배율을 정수로 맞춰 보인다(pixelSnappedCameraZoom). 맵 보기 배율은 아래에서 곱한다.
+    const clamped = Math.min(CAMERA_ZOOM_LIMITS.max, Math.max(CAMERA_ZOOM_LIMITS.min, zoom));
+    authoredZooms.set(camera, pixelSnappedCameraZoom(clamped, store.getCurrent()?.system));
   }
   const authored = authoredZooms.get(camera) ?? 1;
   const base = authored * runtimeMapViewZoom(scene);

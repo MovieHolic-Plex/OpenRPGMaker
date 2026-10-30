@@ -1,5 +1,5 @@
 import { pickBlueprintTitleArt } from "@/project/blueprintAssembly";
-import { normalizeCameraZoom } from "@/project/cameraZoom";
+import { normalizeCameraZoom, pixelSnappedCameraZoom, pixelZoomWarning } from "@/project/cameraZoom";
 import { mapCharacterSizeFactor } from "@/project/characterScale";
 import { CHASER_SPAWN_MIN_STEPS, chaserThreatLine, chaserThreatsAt } from "@/project/chaserSpawnSafety";
 import { patchSunlight, type MapSunlight } from "@/project/sunlight";
@@ -2429,10 +2429,17 @@ const setMapProperties: ToolDefinition = {
         changed.push(`캐릭터 크기=${Math.round(map.characterScale * 100)}%`);
       }
     }
+    const zoomWarnings: string[] = [];
     if (typeof args.zoom === "number" && Number.isFinite(args.zoom)) {
       const zoom = normalizeCameraZoom(args.zoom);
       if (zoom === undefined) { delete map.cameraZoom; changed.push("카메라 배율=프로젝트 기본"); }
-      else { map.cameraZoom = zoom; changed.push(`카메라 배율=${zoom}`); }
+      else {
+        map.cameraZoom = zoom;
+        // 저장값은 그대로 두고(옛 프로젝트 호환) 플레이 표시 배율이 다르면 알린다.
+        const zoomWarning = pixelZoomWarning(zoom, draft.system, "맵 카메라 배율");
+        changed.push(zoomWarning ? `카메라 배율=${zoom}(플레이 표시 ${pixelSnappedCameraZoom(zoom, draft.system)}배)` : `카메라 배율=${zoom}`);
+        if (zoomWarning) zoomWarnings.push(zoomWarning);
+      }
     }
     if (args.loop === "none") {
       delete map.loop;
@@ -2483,7 +2490,7 @@ const setMapProperties: ToolDefinition = {
       changed.push(`구름 그림자=${map.cloudShadows.enabled ? "켬" : "끔"}`);
     }
     if (changed.length === 0) throw new ToolError("바꿀 맵 속성이 없습니다.", { code: "invalid-args", mapId: map.id });
-    return { summary: `${map.name} 속성 변경 — ${changed.join(", ")}`, data: { mapId: map.id }, ...(loopWarnings.length || saveWarnings.length || backgroundWarnings.length ? { warnings: [...backgroundWarnings, ...loopWarnings, ...saveWarnings] } : {}) };
+    return { summary: `${map.name} 속성 변경 — ${changed.join(", ")}`, data: { mapId: map.id }, ...(loopWarnings.length || saveWarnings.length || backgroundWarnings.length || zoomWarnings.length ? { warnings: [...zoomWarnings, ...backgroundWarnings, ...loopWarnings, ...saveWarnings] } : {}) };
   },
 };
 

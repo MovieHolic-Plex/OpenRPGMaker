@@ -3,7 +3,7 @@ import { ensureHighResFullbodyPlayResolution } from "@/project/playResolution";
 import { isCatalogBgmAvailable } from '@/assets/audioResourceCatalog';
 import { createBlankProject } from "@/project/defaults";
 import { retitlePlaceholderOpening } from "@/project/defaults/defaultOpeningSequence";
-import { CAMERA_ZOOM_LIMITS, resolveCameraZoom, storeCameraZoom } from "@/project/cameraZoom";
+import { CAMERA_ZOOM_LIMITS, pixelZoomWarning, resolveCameraZoom, storeCameraZoom } from "@/project/cameraZoom";
 import { applyGenrePreset, type GenrePresetId } from "@/project/genrePresets";
 import { replaceProjectContents } from "./historyTools";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
@@ -430,6 +430,7 @@ const setProjectSettings: ToolDefinition = {
   run(draft, args): ToolExecResult {
     const changed: string[] = [];
     const teamWarnings: string[] = [];
+    let zoomWarningArg = false;
     if (args.fonts !== undefined) {
       if (!args.fonts || typeof args.fonts !== "object" || Array.isArray(args.fonts)) {
         throw new ToolError("fonts는 역할별 글꼴 객체여야 합니다.", { code: "invalid-args" });
@@ -550,6 +551,7 @@ const setProjectSettings: ToolDefinition = {
     if (typeof args.cameraZoom === "number") {
       storeCameraZoom(draft.system, args.cameraZoom);
       changed.push(`카메라 배율=${resolveCameraZoom(draft.system)}`);
+      zoomWarningArg = true;
     }
     if (args.playResolution && typeof args.playResolution === "object" && !Array.isArray(args.playResolution)) {
       const resolution = args.playResolution as { width: number; height: number };
@@ -734,7 +736,11 @@ const setProjectSettings: ToolDefinition = {
       changed.push("초기 파티");
     }
     if (changed.length === 0) throw new ToolError("바꿀 프로젝트 설정이 없습니다.", { code: "invalid-args" });
-    return { summary: `프로젝트 설정 변경 — ${changed.join(", ")}`, data: { changed }, ...(teamWarnings.length > 0 ? { warnings: teamWarnings } : {}) };
+    // 해상도와 배율을 함께 바꿀 수 있으니 경고는 최종 system 으로 판정한다. 저장값은 그대로 둔다(옛 프로젝트 호환).
+    const zoomWarning = zoomWarningArg ? pixelZoomWarning(resolveCameraZoom(draft.system), draft.system, "프로젝트 카메라 배율") : null;
+    const settingWarnings = zoomWarning ? [zoomWarning, ...teamWarnings] : teamWarnings;
+    const summary = `프로젝트 설정 변경 — ${changed.join(", ")}${zoomWarning ? ` (경고: ${zoomWarning})` : ""}`;
+    return { summary, data: { changed }, ...(settingWarnings.length > 0 ? { warnings: settingWarnings } : {}) };
   },
 };
 
