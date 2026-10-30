@@ -1657,7 +1657,7 @@ function defineEndings(project: Project): void {
     conditions: [],
     presentation: { musicResourceId: BGM_HAPPY, tone: "warm", kicker: "엔딩 A · 두 사람의 이야기", credits: ENDING_CREDITS, backgroundResourceId: "oprn-first-love-ending-a" },
     epilogue: [
-      // 타이틀 그림(다른 남자)이 아니라 게임 속 두 사람(서하·지후 공용 초상)이 노을 아래 선 카드(VQA r25).
+      // 노을 옥상 난간 앞에 나란히 선 서하·지후 — 게임과 같은 도트(걷기 칩·옥상 맵·노을 파노라마)로 지은 장면(r3, bake_ending_cards.py).
       epiloguePicture("oprn-first-love-ending-a"),
       { kind: "say", text: "석 달 뒤, 금요일 저녁." }, // 그림이 노을 옥상이다 — 「밤」이면 글과 그림이 어긋났다(VQA r23)
       { kind: "say", text: "‘하루끝’ 오늘의 늦은 답장 — 바나나우유 님께." },
