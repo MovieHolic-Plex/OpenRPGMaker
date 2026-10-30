@@ -42,7 +42,7 @@ export const FALLEN_TIERS: readonly { readonly words: RegExp; readonly tools: re
   // 2026-10-25 스토어 음악 팩: 곡마다 들어 보고 적은 장면·분위기로 골라 넣고 자리에 연결한다.
   // 2026-10-30 낱말은 musicWords.ts 하나(「엔딩곡」「테일즈런너처럼」도 맞는다) — 끝맺음 음악 검사와 같은 판정.
   MUSIC_TIER,
-  { words: /문을 열|문 열|성문|잠긴|창고 문|뒷문|door/iu, tools: ["place_door"] },
+  { words: /문을 열|문 열|성문|잠긴|창고 문|뒷문|자동문|미닫이|셔터|door/iu, tools: ["place_door", "set_map_door"] },
   // 2026-10-25 데모(폴른 스타 전투·대사 책상·모바일·첫사랑 거리)에서 일반 기능으로 연 것 — 낱말이 맞을 때만.
   // 2026-10-25 폴른 스타 2막 과제 11: 보이는 적끼리 진영 싸움(set_factions + place_field_enemy factionId).
   { words: /진영|서로 싸우|서로 싸움|서로 공격|싸움터|세력|faction/iu, tools: ["set_factions", "place_field_enemy"], card: "· A battlefield where visible enemies fight each other: set factions and hostility with set_factions{defs:[{id,name}…], relations:[{a,b,stance:-2}]}, then place_field_enemy{…, factionId} for each visible enemy — hostile factions within 2 cells clash and the weaker one vanishes; the player gets jumped by both." },
@@ -139,8 +139,12 @@ export const GAME_CARD = `[Game elements — quests, items, shops, battles, part
 - Removing maps: delete unused maps and maps built twice for the same role with remove_map{mapId} (transfers into that map are cleaned up too, and a user confirmation card appears before it applies). Move the start map first with set_start_position. Never hand it off as «delete it by hand».
 - If a tool rejects, read the reason, fix and call again. After the same rejection twice, change approach. Put what you cannot do in the report.`;
 
+/**
+ * 2026-10-30 polish-hook-1030: 「이세계 전생 개그 RPG 짧게 만들어 줘」는 GAME_WORDS 에 걸리지 않아 v2 동사만 실렸고,
+ * 모델이 부른 read_assistant_skill·read_story_script·rewrite_dialogue·lint_dialogue 가 닿지 않았다. 「게임·RPG 를 만들어」 꼴은 게임 요청이다.
+ */
 export function wantsGameTools(task: string): boolean {
-  return GAME_WORDS.test(task) || HORROR_WORDS.test(task);
+  return GAME_WORDS.test(task) || HORROR_WORDS.test(task) || WHOLE_GAME_WORDS.test(task);
 }
 
 /** 이미 있는 맵에 물길·다리·작은 물건을 덧그리는 요청(맵을 새로 짓지 않는다) — v1 결정론 덧그리기 도구 셋. */
