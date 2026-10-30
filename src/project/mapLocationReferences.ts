@@ -293,6 +293,12 @@ function collectCommandRefs(
       collectCommandRefs(command.else ?? [], refs, site);
       continue;
     }
+    if (command.kind === "choices") {
+      for (const option of command.options) {
+        if (option.showWhen) collectConditionRefs(option.showWhen, refs, site);
+        if (option.enableWhen) collectConditionRefs(option.enableWhen, refs, site);
+      }
+    }
     for (const branch of commandBranches(command)) collectCommandRefs(branch, refs, site);
   }
 }
@@ -394,7 +400,17 @@ function repairCommands(
       const options = command.options.map((option) => {
         const branch = repairCommands(option.branch, missingId, plan);
         changed += branch.changed;
-        return { ...option, branch: branch.commands };
+        // 장소를 잃은 줄 조건은 떼어 낸다(그 줄은 늘 보이고 고를 수 있게 된다) — 줄 자체를 지우면 저작한 분기가 사라진다.
+        const showWhen = option.showWhen ? repairCondition(option.showWhen, missingId, plan) : undefined;
+        const enableWhen = option.enableWhen ? repairCondition(option.enableWhen, missingId, plan) : undefined;
+        changed += (showWhen?.changed ?? 0) + (enableWhen?.changed ?? 0);
+        const { showWhen: _show, enableWhen: _enable, ...rest } = option;
+        return {
+          ...rest,
+          ...(showWhen?.condition ? { showWhen: showWhen.condition } : {}),
+          ...(enableWhen?.condition ? { enableWhen: enableWhen.condition } : {}),
+          branch: branch.commands,
+        };
       });
       const cancel = command.cancelBranch ? repairCommands(command.cancelBranch, missingId, plan) : undefined;
       if (cancel) changed += cancel.changed;

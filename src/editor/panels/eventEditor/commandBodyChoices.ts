@@ -1,5 +1,7 @@
-import type { ChoiceCancelBehavior, Command } from "@/project/types";
+import type { ChoiceCancelBehavior, Command, Condition } from "@/project/types";
 import { el } from "@/util/dom";
+import { conditionForm } from "./conditionForm";
+import { conditionPreviewSentence } from "./conditionEvalPreview";
 import type { CommandEditContext } from "./types";
 
 type ChoicesCommand = Extract<Command, { kind: "choices" }>;
@@ -143,12 +145,116 @@ function choiceOptionRow(
     },
   });
 
+  const hasConditions = option.showWhen !== undefined || option.enableWhen !== undefined;
+  const conditionToggle = el("button", {
+    class: hasConditions ? "btn small event-command-choice-condition-toggle is-active" : "btn small event-command-choice-condition-toggle",
+    text: hasConditions ? "조건 ●" : "조건",
+    attrs: {
+      type: "button",
+      title: `선택지 ${index + 1}이 보이거나 고를 수 있는 조건`,
+      "aria-expanded": hasConditions ? "true" : "false",
+    },
+    dataset: { testid: `event-choice-conditions-toggle-${index + 1}` },
+  });
+  const conditions = choiceConditionsPanel(context, cmd, index);
+  conditions.hidden = !hasConditions;
+  conditionToggle.addEventListener("click", () => {
+    conditions.hidden = !conditions.hidden;
+    conditionToggle.setAttribute("aria-expanded", conditions.hidden ? "false" : "true");
+  });
+
   return el("div", {
-    class: "event-command-choice-row",
+    class: "event-command-choice-item",
     children: [
-      el("span", { class: "event-command-choice-row-index", text: `${index + 1}` }),
-      input,
-      remove,
+      el("div", {
+        class: "event-command-choice-row",
+        children: [
+          el("span", { class: "event-command-choice-row-index", text: `${index + 1}` }),
+          input,
+          conditionToggle,
+          remove,
+        ],
+      }),
+      conditions,
+    ],
+  });
+}
+
+/** 선택지 한 줄의 「보일 조건」「고를 수 있는 조건」과 흐릴 때 이유. 체크를 끄면 조건을 지운다(늘 보임·늘 고를 수 있음). */
+function choiceConditionsPanel(context: CommandEditContext, cmd: ChoicesCommand, index: number): HTMLElement {
+  const option = cmd.options[index];
+  const patchOption = (patch: (option: ChoiceOption) => ChoiceOption): void => {
+    const latest = latestChoices(context, cmd);
+    const current = latest.options[index];
+    if (!current) return;
+    context.actions.replaceCommand(context.path, {
+      ...latest,
+      options: latest.options.map((entry, entryIndex) => (entryIndex === index ? patch(entry) : entry)),
+    });
+  };
+  const slot = (
+    key: "showWhen" | "enableWhen",
+    label: string,
+    hint: string,
+    defaultCondition: Condition,
+  ): HTMLElement => {
+    const current = option?.[key];
+    const check = el("input", {
+      attrs: { type: "checkbox" },
+      dataset: { testid: `event-choice-${key}-enabled-${index + 1}` },
+    }) as HTMLInputElement;
+    check.checked = current !== undefined;
+    const sentence = el("p", {
+      class: "event-command-choices-hint",
+      text: current ? conditionPreviewSentence(current) : hint,
+      dataset: { testid: `event-choice-${key}-sentence-${index + 1}` },
+    });
+    check.addEventListener("change", () => {
+      patchOption((entry) => {
+        const { [key]: _drop, ...rest } = entry;
+        return check.checked ? { ...rest, [key]: entry[key] ?? defaultCondition } : rest;
+      });
+    });
+    const children: HTMLElement[] = [
+      el("label", { class: "event-command-choice-condition-head", children: [check, el("span", { text: label })] }),
+      sentence,
+    ];
+    if (current) {
+      children.push(conditionForm(current, (condition) => {
+        patchOption((entry) => ({ ...entry, [key]: condition }));
+        sentence.textContent = conditionPreviewSentence(condition);
+      }, [...context.path, index, key === "showWhen" ? 0 : 1]));
+    }
+    return el("fieldset", {
+      class: "event-oprn-fieldset event-command-choice-condition-slot",
+      dataset: { testid: `event-choice-${key}-${index + 1}` },
+      children,
+    });
+  };
+
+  const reason = el("input", {
+    attrs: { type: "text", placeholder: "흐릴 때 보일 이유 (예: 은화 50 필요)", spellcheck: "false", autocomplete: "off", maxlength: "40" },
+    value: option?.disabledText ?? "",
+    dataset: { testid: `event-choice-disabled-text-${index + 1}` },
+  }) as HTMLInputElement;
+  reason.addEventListener("change", () => {
+    patchOption((entry) => {
+      const { disabledText: _drop, ...rest } = entry;
+      const text = reason.value.trim();
+      return text ? { ...rest, disabledText: text } : rest;
+    });
+  });
+
+  return el("div", {
+    class: "event-command-choice-conditions",
+    dataset: { testid: `event-choice-conditions-${index + 1}` },
+    children: [
+      slot("showWhen", "이 조건일 때만 보인다", "끄면 늘 보입니다. 숨은 줄은 목록에서 빠지고 번호가 당겨집니다.", { kind: "switch", switchId: "", value: false }),
+      slot("enableWhen", "이 조건일 때만 고를 수 있다", "끄면 늘 고를 수 있습니다. 거짓이면 흐리게 보이고 고를 수 없습니다.", { kind: "gold", op: ">=", amount: 50 }),
+      ...(option?.enableWhen ? [el("label", {
+        class: "event-command-choice-row event-command-choice-row-prompt",
+        children: [el("span", { class: "event-command-choice-row-label", text: "이유" }), reason],
+      })] : []),
     ],
   });
 }
@@ -252,6 +358,7 @@ function normalizeOptions(options: readonly ChoiceOption[]): ChoiceOption[] {
   const cleaned = options
     .slice(0, MAX_CHOICE_OPTIONS)
     .map((option) => ({
+      ...option,
       text: option.text ?? "",
       branch: option.branch ?? [],
     }));
@@ -279,6 +386,7 @@ function readOptionsFromDom(source: HTMLInputElement, cmd: ChoicesCommand): Choi
     : [source];
   // Row count is owned by add/remove buttons. Preserve typed text including temporary empties.
   const next = inputs.slice(0, MAX_CHOICE_OPTIONS).map((input, index) => ({
+    ...(cmd.options[index] ?? {}),
     text: input.value,
     branch: cmd.options[index]?.branch ?? [],
   }));
