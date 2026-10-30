@@ -19,7 +19,7 @@ import { MODERN_CITY_EXPOSED_TOOLS } from "./modernCityPolicy";
 /** 마을·도시를 «짓는» 문장의 표지 — 「엘프 NPC 놓아 줘」 같은 문장이 엘프 마을로 잡히지 않게. */
 const SETTLEMENT_RE = /마을|도시|동네|촌|부락|거리|시가|정착지|정착촌|콜로니|기지|단지|장터|시장|항구|포구|어항|대학가|상점가|주택가|관광지|수향|역참|town|village|city|settlement|colony|street|harbou?r/iu;
 
-const JOSEON_TOOLS = ["dress_joseon_market", "import_region_reference", "read_region_reference", "list_spatial_designs", "stamp_object", "show_map_region", "list_map_locations", "check_reachability", "create_map"] as const;
+const JOSEON_TOOLS = ["dress_joseon_market", "list_joseon_doors", "link_joseon_interior", "import_region_reference", "read_region_reference", "list_spatial_designs", "stamp_object", "show_map_region", "list_map_locations", "check_reachability", "create_map"] as const;
 
 const CHIPSET_TOOLS: Record<string, readonly string[]> = {
   sf_station: SF_STATION_EXPOSED_TOOLS,
