@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Bake the bbox-village cliff cut pieces (ramp/stairs, h1-3 x w2-3) into the shipped relief art — GATED.
+"""Bake the bbox-village cliff cut pieces (ramp/stairs, h1-4 x w2-3; stacked flights are composed from them at run time) into the shipped relief art — GATED.
 
 The pieces are drawn by scripts/experiments/bbox-village/ramps/pieces.py (code hand-pixel, beodeul locked colours).
 Until they are baked they exist only in the experiment (ramps/install.mts adds them in-process). Baking writes them into
@@ -26,7 +26,7 @@ STYLE = "grass-steps"
 
 def pieces():
     for kind in ("ramp", "stairs"):
-        for rise in (1, 2, 3):
+        for rise in (1, 2, 3, 4):
             for w in (2, 3):
                 name = f"{kind}-h{rise}-w{w}"
                 yield f"{kind}:n:{w}x1:{rise}", name, Image.open(PNG / f"{name}.png").convert("RGBA")
