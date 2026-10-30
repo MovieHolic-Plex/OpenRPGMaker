@@ -11079,8 +11079,18 @@
      "ops": [
       {
        "kind": "move",
+       "dir": "down",
+       "steps": 1
+      },
+      {
+       "kind": "move",
        "dir": "right",
        "steps": 3
+      },
+      {
+       "kind": "move",
+       "dir": "up",
+       "steps": 1
       },
       {
        "kind": "face",
