@@ -46,6 +46,20 @@ const MOVES: Readonly<Record<string, Readonly<Record<string, Move>>>> = {
   skill: { cost: { to: "mpCost" } },
 };
 
+/**
+ * 레코드 타입에는 있지만 이 도구로는 쓰지 않는 칸 — get_database_records 로 읽은 기존 레코드를 복사해 고쳐 보낼 때
+ * 함께 따라온다. 거절하지 않고 기존 값을 그대로 둔 채 버리며, 어디서 바꾸는지 알린다.
+ * 왜(2026-10-30 사냥꾼 계약 데모): 익사귀를 기존 구울 적에서 복사해 upsert_enemy 로 보내자 graphicHue 하나로 통째 거절됐다.
+ */
+const FOREIGN_RECORD_KEYS: Readonly<Record<string, Readonly<Record<string, string>>>> = {
+  enemy: {
+    graphicHue: "옛 RM 색조 칸이라 전투 그림에 쓰이지 않는다",
+    flying: "옛 RM 칸이라 이 도구는 쓰지 않는다",
+    actionProfile: "액션 전투 프로필은 make_action_enemy 가 쓴다",
+    factionId: "진영은 make_action_enemy factionId · set_factions 가 쓴다",
+  },
+};
+
 /** 레코드에 둘 칸이 없는 자유 서술 칸 — 저장하지 않았다고 알리고 버린다. */
 const FREE_TEXT_KEYS: ReadonlySet<string> = new Set(["description", "desc", "memo", "note", "notes", "comment", "summary", "bio", "backstory", "flavor", "flavorText", "lore", "tags"]);
 
@@ -112,6 +126,12 @@ export function repairRecordArgs(label: string, recordKey: string, args: Record<
       nextRecord[camelTarget] = value;
       delete nextRecord[key];
       notes.push(`${label}.${key} 는 ${label}.${camelTarget} 입니다 — 옮겨서 실행했습니다.`);
+      continue;
+    }
+    const foreign = FOREIGN_RECORD_KEYS[label]?.[key];
+    if (foreign) {
+      delete nextRecord[key];
+      notes.push(`${label}.${key} 는 이 도구가 쓰지 않는 칸이라 빼고 실행했습니다(기존 값은 그대로) — ${foreign}.`);
       continue;
     }
     if (FREE_TEXT_KEYS.has(key)) {
