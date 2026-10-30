@@ -641,6 +641,9 @@ export function compileSimplePage(
           `${path}.choices[${choiceIndex}].commands`,
           options.warnings,
         ),
+        ...(choice.showWhen !== undefined ? { showWhen: normalizeCondition(choice.showWhen, `${path}.choices[${choiceIndex}].showWhen`, options.warnings) } : {}),
+        ...(choice.enableWhen !== undefined ? { enableWhen: normalizeCondition(choice.enableWhen, `${path}.choices[${choiceIndex}].enableWhen`, options.warnings) } : {}),
+        ...(typeof choice.disabledText === "string" && choice.disabledText.trim() ? { disabledText: choice.disabledText.trim() } : {}),
       })),
       cancelBehavior: "choice2",
     });
