@@ -235,7 +235,7 @@ export function renderEnemyPixelPreview(
     if (drawing === lastDrawing) return;
     lastDrawing = drawing;
     // 칸 표에서 고른 정지 칸은 시트 자리 그대로, 재생은 skillCell 규칙(pixelEnemyFrame)으로 고른다.
-    const pos = action === "still" && current !== "skill" ? PIXEL_ENEMY_FRAME[current] : pixelEnemyFrame(sheet, current);
+    const pos = action === "still" && Object.hasOwn(PIXEL_ENEMY_FRAME, current) ? PIXEL_ENEMY_FRAME[current as PixelEnemyCell] : pixelEnemyFrame(sheet, current);
     sprite.style.backgroundPosition = -pos.col * cell + "px " + -pos.row * cell + "px";
     sprite.style.left = Math.round(HOME_X - cell / 2 + dx) + "px";
     sprite.style.top = Math.round(FEET_Y - (cell - 4) + dy) + "px";

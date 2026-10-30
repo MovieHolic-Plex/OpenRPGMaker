@@ -22,7 +22,7 @@ import type { SkillChoreographyRecord } from "@/project/types/database";
 // databaseSkillRetroStage 의 범위 헬퍼가 함께 부른다. 재생은 rAF 하나, 두 틱 연속 문서 밖이면 스스로 멈춘다.
 import { withInlineAsset } from "@/assets/inlineAssetStore";
 import { charsetBattler } from "@/assets/charsetBattlers";
-import { PIXEL_ENEMY_SHEETS, pixelEnemyCell, pixelEnemyFrame, pixelEnemySheetUrl, type PixelEnemyCell, type PixelEnemySheet, type RetroMonsterCell } from "@/assets/pixelEnemySheets";
+import { PIXEL_ENEMY_SHEETS, pixelEnemyCell, pixelEnemyFrame, pixelEnemyGridSize, pixelEnemySheetUrl, type PixelEnemyCell, type PixelEnemySheet, type RetroMonsterCell } from "@/assets/pixelEnemySheets";
 import type { RetroFxAnchor, RetroFxLayer } from "@/assets/retroClassSkills";
 import { RETRO_MONSTER_SKILLS, RETRO_MONSTER_SKILLSETS, retroMonsterSkill, type RetroMonsterSkill, type RetroMonsterSkillMotion } from "@/assets/retroMonsterSkills";
 import { EXTENDED_POSE_FRAME, type CastType, type ExtendedBattlerPose } from "@/battle/battlePose";
@@ -447,7 +447,8 @@ export function renderMonsterSkillStage(skill: RetroMonsterSkill, name?: string,
   const monster = el("span", { class: "db-skill-retro-enemy db-skill-mon-caster", dataset: { enemy: sheet?.resourceId ?? "" } });
   monster.style.width = cell + "px";
   monster.style.height = cell + "px";
-  monster.style.backgroundSize = cell * 3 + "px " + cell * 3 + "px";
+  const side = pixelEnemyGridSize(sheet);
+  monster.style.backgroundSize = cell * side + "px " + cell * side + "px";
   if (sheet) {
     const url = pixelEnemySheetUrl(sheet);
     monster.style.backgroundImage = 'url("' + url + '")';

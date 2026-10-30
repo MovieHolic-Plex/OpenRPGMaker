@@ -732,7 +732,7 @@ export interface UploadedAsset {
 
 /** 프로젝트 저작 적 도트 시트 계약(번들 PIXEL_ENEMY_SHEETS 항목과 같은 뜻). */
 export interface UploadedPixelEnemySheetMeta {
-  /** 3×3 시트 PNG 를 담은 uploaded 자산 id. */
+  /** 전투 도트 시트 PNG(3×3 또는 4×4) 를 담은 uploaded 자산 id. */
   sheetResourceId: string;
   cell: 48 | 64 | 96;
   motion: "hop" | "swoop" | "stomp" | "dash" | "float" | "shoot" | "breath";
@@ -742,6 +742,10 @@ export interface UploadedPixelEnemySheetMeta {
   skillSlug?: string;
   /** 생성 인자(공방 대화상자를 다시 열 때 채운다). */
   recipe?: Record<string, unknown>;
+  /** 칸 배치. 생략 = 3x3(9칸, 시트 3cell×3cell). 4x4 = 16칸(시트 4cell×4cell, src/assets/pixelEnemySheets.ts PIXEL_ENEMY_CELL_INDEX). */
+  grid?: "3x3" | "4x4";
+  /** 4x4 시트에서 비워 둔(완전 투명) 확장 칸 번호 — 9~14 만. 런타임이 대신 칸으로 물린다. */
+  missingCells?: number[];
 }
 
 export interface AssetSet {
