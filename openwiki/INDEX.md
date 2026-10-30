@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **188쪽 / 7758KB / 약 2,279,358 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **188쪽 / 7759KB / 약 2,279,544 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -18,7 +18,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/asset-store.md` | 59KB | 19KB | 376 | ~17,543 |
 | `openwiki/assistant-v2.md` | 206KB | 46KB | 583 | ~62,813 |
 | `openwiki/atlas-biome-interior.md` | 109KB | 21KB | 534 | ~32,760 |
-| `openwiki/beodeul-city.md` | 232KB | 19KB | 1141 | ~70,430 |
+| `openwiki/beodeul-city.md` | 232KB | 19KB | 1141 | ~70,616 |
 | `openwiki/charset-actor-harness.md` | 70KB | 7KB | 501 | ~22,135 |
 | `openwiki/editor-ai-panel.md` | 718KB | 100KB ⚠상한 초과 — 절을 더 쪼개라 | 4650 | ~211,017 |
 | `openwiki/editor-ai-tools.md` | 608KB | 90KB ⚠상한 초과 — 절을 더 쪼개라 | 3997 | ~178,330 |
@@ -430,7 +430,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L131` 함정 목록
 - `L161` 실린 자산의 실측값
 
-### `openwiki/beodeul-city.md` — 232KB · 1141줄 · ~70,430 토큰 · 통째읽기 잘림
+### `openwiki/beodeul-city.md` — 232KB · 1141줄 · ~70,616 토큰 · 통째읽기 잘림
 
 - `L3` 출처 정정 (2026-10-22) — RTP 파생 칸은 크레딧, 나무는 다시 그렸다
 - `L46` 2026-10-05 건물 반려와 사람의 허용/거절 대기열
