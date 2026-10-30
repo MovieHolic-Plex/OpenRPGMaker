@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **188쪽 / 7676KB / 약 2,254,950 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **188쪽 / 7677KB / 약 2,255,121 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -38,7 +38,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/harnesses/monster-collect-species.md` | 63KB | 18KB | 353 | ~19,132 |
 | `openwiki/harnesses/object-gate.md` | 89KB | 12KB | 642 | ~26,964 |
 | `openwiki/harnesses/super-harness.md` | 102KB | 4KB | 1063 | ~32,225 |
-| `openwiki/jp-city.md` | 108KB | 14KB | 510 | ~31,925 |
+| `openwiki/jp-city.md` | 108KB | 14KB | 511 | ~32,096 |
 | `openwiki/runtime-battle.md` | 440KB | 32KB | 2417 | ~129,307 |
 | `openwiki/runtime-m2-flow-controls.md` | 54KB | 25KB | 346 | ~14,800 |
 | `openwiki/runtime-pre-edit-routing.md` | 207KB | 103KB ⚠상한 초과 — 절을 더 쪼개라 | 1245 | ~61,723 |
@@ -2239,7 +2239,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L176` 조수 v2 가 짓는 길 (2026-10-28)
 - `L180` 한계
 
-### `openwiki/jp-city.md` — 108KB · 510줄 · ~31,925 토큰 · 통째읽기 잘림
+### `openwiki/jp-city.md` — 108KB · 511줄 · ~32,096 토큰 · 통째읽기 잘림
 
 - `L6` 식별자
 - `L17` 파일
@@ -2276,16 +2276,16 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L357` AI 참고문서 (10용도 · 61쪽 · 그림 167장)
   - `L374` 굽는 법 (한 줄)
 - `L389` 거리 구성기 `compose_jp_city_street` (2026-10-12)
-- `L400` 하천 거리 (2026-10-12)
-- `L406` 일체형 1층 정면 (2026-10-12)
-- `L413` 고층·거리 소품 (2026-10-13)
-- `L418` 조수 지침: compose 우선 (2026-10-13)
-- `L422` 상가 띠 3/4 관문 = 조립 건물 영수증 (2026-10-13)
-- `L429` 빈터 쓰임 단계 `fillLotUses` (2026-10-14)
-- `L440` 일본 집 보강 8종 `interior_house3` — object-gen, 3/4 관문 보류 (2026-10-21)
-- `L454` 시설 실내 6묶음 — 병원·학교 별관·IT 사옥 + 방 구성(program)·길 고르기 (2026-10-14)
-- `L472` 숲 — 조수 도구 `paint_jp_forest`·지역/거리 숲·참고문서 `jp-forest` (2026-10-21, PR #3058)
-- `L496` 거리 계단 — 육교·옆 계단·단상·벽 사다리 (블록 `street_stairs`, `BLOCK_ORDER` 끝, 2026-10-22)
+- `L401` 하천 거리 (2026-10-12)
+- `L407` 일체형 1층 정면 (2026-10-12)
+- `L414` 고층·거리 소품 (2026-10-13)
+- `L419` 조수 지침: compose 우선 (2026-10-13)
+- `L423` 상가 띠 3/4 관문 = 조립 건물 영수증 (2026-10-13)
+- `L430` 빈터 쓰임 단계 `fillLotUses` (2026-10-14)
+- `L441` 일본 집 보강 8종 `interior_house3` — object-gen, 3/4 관문 보류 (2026-10-21)
+- `L455` 시설 실내 6묶음 — 병원·학교 별관·IT 사옥 + 방 구성(program)·길 고르기 (2026-10-14)
+- `L473` 숲 — 조수 도구 `paint_jp_forest`·지역/거리 숲·참고문서 `jp-forest` (2026-10-21, PR #3058)
+- `L497` 거리 계단 — 육교·옆 계단·단상·벽 사다리 (블록 `street_stairs`, `BLOCK_ORDER` 끝, 2026-10-22)
 
 ### `openwiki/licensing.md` — 7KB · 62줄 · ~2,064 토큰
 
