@@ -89,7 +89,7 @@ export async function startHost(projectDir, dir) {
   } };
 }
 export async function newEditor(browser, url, projectDir, config, captureOptions={}) {
-  const {onPage,bootTimeoutMs=360000,...contextOptions}=captureOptions;
+  const {onPage,bootTimeoutMs=Number(process.env.OPRN_CAP_BOOT_TIMEOUT_MS)||360000,...contextOptions}=captureOptions;
   const context=await browser.newContext({ viewport:{width:1440,height:960},reducedMotion:'reduce',...contextOptions });
   const page=await context.newPage();
   await onPage?.(page,context);

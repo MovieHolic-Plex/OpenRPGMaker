@@ -1386,7 +1386,14 @@ const setStartPosition: ToolDefinition = {
     const y = args.y as number;
     if (!inMapBounds(map, x, y)) throw new ToolError(`시작 위치가 맵 밖입니다: (${x}, ${y})`, { code: "start-out-of-bounds", mapId: map.id, x, y });
     if (!isPassable(draft, map, x, y)) {
-      throw new ToolError(`시작 위치가 통행 불가 타일입니다: (${x}, ${y})`, { code: "start-impassable", mapId: map.id, x, y });
+      // 가까운 걸을 수 있는 칸을 같이 알려 준다 — 모델이 칸을 짐작해 다시 부르던 왕복을 줄인다(2026-10-31 asst-parity 원룸 시작 (5,4)).
+      let near: { x: number; y: number } | undefined;
+      for (let r = 1; r <= 4 && !near; r++) for (let dy = -r; dy <= r && !near; dy++) for (let dx = -r; dx <= r && !near; dx++) {
+        if (Math.max(Math.abs(dx), Math.abs(dy)) !== r) continue;
+        const nx = x + dx, ny = y + dy;
+        if (inMapBounds(map, nx, ny) && isPassable(draft, map, nx, ny)) near = { x: nx, y: ny };
+      }
+      throw new ToolError(`시작 위치가 통행 불가 타일입니다: (${x}, ${y})${near ? ` — 가까운 걸을 수 있는 칸: (${near.x}, ${near.y})` : ""}`, { code: "start-impassable", mapId: map.id, x, y });
     }
     const previous = draft.maps[draft.startMapId];
     draft.startMapId = map.id;

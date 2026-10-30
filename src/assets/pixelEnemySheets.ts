@@ -19,6 +19,13 @@ import type { AssetSet, UploadedAsset, UploadedPixelEnemySheetMeta } from "@/pro
 export const PIXEL_ENEMY_CELL = 48;
 
 export type PixelEnemyCell = "idle_a" | "idle_b" | "idle_c" | "windup" | "move" | "attack" | "recover" | "hit" | "dead";
+/**
+ * 4×4(16칸) 시트만 갖는 칸. 칸 번호(행 우선, 격자 폭과 무관): 9 attack_mid · 10 cast_charge · 11 cast_release · 12 guard ·
+ * 13 weak(HP 25% 이하 대기) · 14 intro(전투 시작 한 번) · 15 예약(완전 투명). 0~8 은 3×3 과 같은 이름·순서다.
+ * 저작자가 그리지 못한 9~14 칸은 meta.pixelEnemySheet.missingCells 에 적고 비워 둔다 — pixelEnemyFrame 이 물린다.
+ */
+export type PixelEnemyExtraCell = "attack_mid" | "cast_charge" | "cast_release" | "guard" | "weak" | "intro";
+export type PixelEnemyGrid = "3x3" | "4x4";
 /** 파티원 15칸 시트(3×5)가 더 갖는 칸. 적 시트(3×3)에는 없다 — partyPixelSheets.partyPixelFrame 이 없으면 9칸으로 물린다. */
 export type PartyPixelExtraCell = "cast_charge" | "cast_raise" | "cast_release" | "leap" | "buff" | "finisher";
 export type PartyPixelCell = PixelEnemyCell | PartyPixelExtraCell;
@@ -53,6 +60,10 @@ export interface PixelEnemySheet {
   readonly skillSlug?: string;
   /** project.assets.uploaded 에서 온 저작 시트. 웹 내보내기는 public 경로가 아니라 uploaded 자산으로 싣는다. */
   readonly projectAuthored?: true;
+  /** 칸 배치. 생략 = 3x3(번들·공방 시트). 4x4 는 16칸(PixelEnemyExtraCell). */
+  readonly grid?: PixelEnemyGrid;
+  /** 4x4 시트에서 비워 둔 확장 칸 번호(9~14). */
+  readonly missingCells?: readonly number[];
 }
 
 export const PIXEL_ENEMY_SHEETS: readonly PixelEnemySheet[] = [
@@ -217,17 +228,58 @@ export const PIXEL_ENEMY_FRAME: Readonly<Record<PixelEnemyCell, { readonly col: 
   dead: { col: 2, row: 2 },
 };
 
-/** 몬스터 스킬 재생기가 고르는 칸: 9칸 + 스킬 방출("skill"). */
-export type RetroMonsterCell = PixelEnemyCell | "skill";
+/** 16칸 시트의 칸 번호(행 우선). 0~8 은 PIXEL_ENEMY_FRAME 과 같은 이름 순서. */
+export const PIXEL_ENEMY_CELL_INDEX: Readonly<Record<PixelEnemyCell | PixelEnemyExtraCell, number>> = {
+  idle_a: 0, idle_b: 1, idle_c: 2, windup: 3, move: 4, attack: 5, recover: 6, hit: 7, dead: 8,
+  attack_mid: 9, cast_charge: 10, cast_release: 11, guard: 12, weak: 13, intro: 14,
+};
+/** 4×4 시트에서 비울 수 있는 칸(missingCells 허용 범위). 15 는 항상 비고, 0~8 은 비울 수 없다. */
+export const PIXEL_ENEMY_OPTIONAL_CELLS: readonly number[] = [9, 10, 11, 12, 13, 14];
+/** 비워 둔 확장 칸을 무엇으로 물리는가. undefined = 그 동작을 건너뛴다(attack_mid: windup 에서 바로 attack). */
+export const PIXEL_ENEMY_EXTRA_FALLBACK: Readonly<Record<PixelEnemyExtraCell, PixelEnemyCell | undefined>> = {
+  attack_mid: undefined, cast_charge: "windup", cast_release: "attack", guard: "idle_a", weak: "idle_a", intro: "idle_a",
+};
+
+/** 몬스터 스킬 재생기가 고르는 칸: 9칸 + 스킬 방출("skill") + 16칸 시트의 확장 칸. */
+export type RetroMonsterCell = PixelEnemyCell | PixelEnemyExtraCell | "skill";
+
+type FrameSheet = Pick<PixelEnemySheet, "skillCell" | "grid" | "missingCells">;
+
+/** 시트 한 변의 칸 수. */
+export function pixelEnemyGridSize(sheet: Pick<PixelEnemySheet, "grid"> | undefined): 3 | 4 {
+  return sheet?.grid === "4x4" ? 4 : 3;
+}
+
+/** 이 시트에 그 확장 칸이 그려져 있는가. 3×3 시트는 확장 칸이 없다. */
+export function pixelEnemyHasCell(sheet: FrameSheet | undefined, cell: PixelEnemyExtraCell): boolean {
+  return sheet?.grid === "4x4" && !(sheet.missingCells ?? []).includes(PIXEL_ENEMY_CELL_INDEX[cell]);
+}
 
 /**
- * 칸 이름 → 시트 자리. skillCell 시트는 (0,2)가 스킬 방출 그림이라 skill → (0,2), 통상 복귀 recover → move 칸.
- * 그 밖의 시트는 skill → attack 칸(예전과 같은 방출 그림).
+ * 칸 이름 → 시트 자리(열, 행). skillCell 시트는 (0,2)가 스킬 방출 그림이라 skill → (0,2), 통상 복귀 recover → move 칸.
+ * 그 밖의 시트는 skill → attack 칸(예전과 같은 방출 그림). 4×4 시트는 칸 번호를 4열로 놓고(행 우선),
+ * 확장 칸이 없는 시트(3×3·missingCells)는 PIXEL_ENEMY_EXTRA_FALLBACK 으로 물린다(attack_mid 는 attack).
  */
-export function pixelEnemyFrame(sheet: Pick<PixelEnemySheet, "skillCell"> | undefined, cell: RetroMonsterCell): { readonly col: number; readonly row: number } {
-  if (cell === "skill") return sheet?.skillCell ? PIXEL_ENEMY_FRAME.recover : PIXEL_ENEMY_FRAME.attack;
-  if (cell === "recover" && sheet?.skillCell) return PIXEL_ENEMY_FRAME.move;
-  return PIXEL_ENEMY_FRAME[cell];
+export function pixelEnemyFrame(sheet: FrameSheet | undefined, cell: RetroMonsterCell): { readonly col: number; readonly row: number } {
+  const size = pixelEnemyGridSize(sheet);
+  const at = (name: PixelEnemyCell | PixelEnemyExtraCell) => {
+    const index = PIXEL_ENEMY_CELL_INDEX[name];
+    return { col: index % size, row: Math.floor(index / size) };
+  };
+  if (cell === "skill") return sheet?.skillCell ? at("recover") : at("attack");
+  if (cell === "recover" && sheet?.skillCell) return at("move");
+  if (Object.hasOwn(PIXEL_ENEMY_EXTRA_FALLBACK, cell)) {
+    const extra = cell as PixelEnemyExtraCell;
+    return pixelEnemyHasCell(sheet, extra) ? at(extra) : at(PIXEL_ENEMY_EXTRA_FALLBACK[extra] ?? "attack");
+  }
+  return at(cell as PixelEnemyCell);
+}
+
+/** CSS background-position(%) — 칸 수가 n 이면 한 칸이 100/(n−1)%. */
+export function pixelEnemyBackgroundPosition(sheet: FrameSheet | undefined, cell: RetroMonsterCell): string {
+  const at = pixelEnemyFrame(sheet, cell);
+  const step = 100 / (pixelEnemyGridSize(sheet) - 1);
+  return `${Math.round(at.col * step * 1000) / 1000}% ${Math.round(at.row * step * 1000) / 1000}%`;
 }
 
 const byId = new Map(PIXEL_ENEMY_SHEETS.map((entry) => [entry.resourceId, entry]));
@@ -257,7 +309,7 @@ export function setPixelEnemySheetProjectSource(source: (() => PixelEnemySheetPr
 const PIXEL_ENEMY_MOTIONS: Readonly<Record<PixelEnemyMotion, true>> = { hop: true, swoop: true, stomp: true, dash: true, float: true, shoot: true, breath: true };
 const projectSheetCache = new WeakMap<UploadedAsset, { readonly meta: UploadedPixelEnemySheetMeta; readonly sheet: PixelEnemySheet }>();
 
-/** 프로젝트 저작 9칸 시트. 초상 자산에 시트 표식이 없거나 시트 자산·그림이 없으면 undefined. */
+/** 프로젝트 저작 시트(9칸 3×3 또는 16칸 4×4). 초상 자산에 시트 표식이 없거나 시트 자산·그림이 없으면 undefined. */
 export function projectPixelEnemySheet(resourceId: string | undefined, project: PixelEnemySheetProject | undefined = projectSource?.()): PixelEnemySheet | undefined {
   if (!resourceId || !project) return undefined;
   const uploaded = project.assets.uploaded;
@@ -278,6 +330,7 @@ export function projectPixelEnemySheet(resourceId: string | undefined, project: 
     cell: meta.cell,
     ...(meta.skillCell ? { skillCell: true as const } : {}),
     ...(meta.skillSlug ? { skillSlug: meta.skillSlug } : {}),
+    ...(meta.grid === "4x4" ? { grid: "4x4" as const, missingCells: (meta.missingCells ?? []).filter((index) => PIXEL_ENEMY_OPTIONAL_CELLS.includes(index)) } : {}),
     projectAuthored: true,
   };
   projectSheetCache.set(sheetAsset, { meta, sheet });
@@ -293,6 +346,14 @@ export function monsterBattleMotion(project: PixelEnemySheetProject, resourceId:
   if (authored) return authored.motion;
   if (Object.hasOwn(project.assets.uploaded, resourceId)) return undefined;
   return bundledPixelEnemySheet(resourceId)?.motion;
+}
+
+/** 이 몬스터 소재의 전투 시트가 16칸(4×4: 공격 중간·시전·막기·빈사·등장 칸까지)이면 16, 9칸이면 9, 시트가 없으면 undefined. */
+export function monsterBattleCells(project: PixelEnemySheetProject, resourceId: string): 9 | 16 | undefined {
+  const authored = projectPixelEnemySheet(resourceId, project);
+  if (authored) return authored.grid === "4x4" ? 16 : 9;
+  if (Object.hasOwn(project.assets.uploaded, resourceId)) return undefined;
+  return bundledPixelEnemySheet(resourceId) ? 9 : undefined;
 }
 
 /** 저작 시트가 있으면 그것, 없으면 번들 시트. */

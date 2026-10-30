@@ -3,6 +3,7 @@ import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver
 import { system2GaugeCssVars } from "@/assets/system2Sheet";
 import { transparentColorKeyDataUrl } from "@/assets/transparentColorKeyBackground";
 import { DEFAULT_RUNTIME_WINDOW_SKIN_ID, normalizeSystemWindowSkinId } from "@/project/databaseRecordModel";
+import { isEmeraldMonsterStyle } from "@/project/emeraldMonsterStyle";
 import type { Project, TitleBackgroundFit, TitleBackgroundRendering } from "@/project/types";
 import { openingMapViewMapId } from "@/project/openingMapView";
 import { titleMapFrame, TITLE_MAP_SHADE } from "./titleMapFraming";
@@ -127,6 +128,23 @@ export function applyWindowSkinGraphic(node: HTMLElement, resourceId?: string, p
   const skinId = resolveWindowSkinResourceId(resourceId ?? source.system.systemResourceId);
   node.dataset.systemResource = skinId;
   applyWindowSkinResource(node, skinId, source);
+}
+
+/**
+ * 「고전 · 윈도스킨」 대화창(system.dialogueStyle = "classic")을 고른 게임은 필드 메뉴·상점·타이틀 메뉴 창도
+ * 같은 윈도스킨 9칸 그림으로 그린다(src/styles/runtime/windowSkinSurfaces.css 가 `data-window-skin="classic"` 아래에서 칠한다).
+ * 유리(기본)·다른 대화창 스타일·에메랄드 몬스터 화면은 표식을 붙이지 않는다 — 지금 화면 그대로다.
+ */
+export function usesClassicWindowSkin(project: Pick<Project, "system" | "meta">): boolean {
+  return project.system.dialogueStyle === "classic" && !isEmeraldMonsterStyle(project);
+}
+
+export function markClassicWindowSkin(node: HTMLElement, project?: Project): boolean {
+  const source = project ?? store.getCurrent();
+  const enabled = usesClassicWindowSkin(source);
+  if (enabled) node.dataset.windowSkin = "classic";
+  else delete node.dataset.windowSkin;
+  return enabled;
 }
 
 /** Applies system window skin so DB systemResourceId changes are visible on runtime chrome. */
