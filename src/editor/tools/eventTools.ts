@@ -3442,12 +3442,13 @@ const makeChaseScene: ToolDefinition = {
       id: { type: "string", description: "추격자 이벤트 id(생략 시 자동) — 다른 이벤트·시험에서 이 추격자를 가리킬 때" },
       chaser: {
         type: "object",
-        description: "{at:{x,y},graphic,speed?,sightRange?}",
+        description: "{at:{x,y},graphic,speed?,sightRange?,blendMode?}",
         properties: {
           at: COORD_SCHEMA,
           graphic: GRAPHIC_SPEC_SCHEMA,
           speed: { type: "integer" },
           sightRange: { type: "integer" },
+          blendMode: { type: "string", enum: ["add", "screen", "multiply"], description: "칩을 아래 화면과 섞는 방식. 유령·빛나는 것은 add(사람 걷기 칩을 그대로 쓰고 희미하게 빛나게), 그림자는 multiply. 생략 = 보통" },
         },
         required: ["at"],
       },
@@ -3464,6 +3465,7 @@ const makeChaseScene: ToolDefinition = {
         },
       },
       killOnTouch: { type: "boolean" },
+      onTouch: { type: "array", items: CUTSCENE_BEAT_SCHEMA, description: "닿았을 때 게임 오버 대신 도는 장면(CutsceneBeat[]) — 죽이지 않는 추격자(유령의 차가운 손 → 화면이 하얘지고 계단 앞으로 transfer, 스위치로 추격 끄기). killOnTouch·caughtPenalty 와 같이 쓸 수 없다" },
       caughtText: { type: "string", maxLength: 80, description: "killOnTouch 로 붙잡힌 순간 게임 오버 앞에 뜨는 한 줄(기본 「붙잡혔다.」). 추격자의 말로 — 예 숙직 선생 「찾았다.」, 짐승은 비우거나 「…」" },
       characterId: { type: "string", description: "추격자의 인물 프로필 id(upsert_character_profile). 주면 그 프로필 이름이 이벤트 이름이 되고, 그 이름을 화자로 쓴 bark(text container:\"bark\") 혼잣말이 이 추격자 머리 위에 붙는다 — 층마다 다른 추격자 이벤트여도 같은 인물로 묶인다" },
       caughtPenalty: {
@@ -3545,9 +3547,12 @@ const makeChaseScene: ToolDefinition = {
       ? { ...parsedPursuit, tracking: "persistent" as const } : parsedPursuit;
     const penalty = readCaughtPenalty(draft, args.caughtPenalty);
     if (penalty && args.killOnTouch === true) throw new ToolError("caughtPenalty 와 killOnTouch 는 같이 쓸 수 없습니다 — 붙잡히면 게임 오버인지, 끌려가는지 하나만 고르세요.", { code: "invalid-args" });
+    if (args.onTouch !== undefined && (args.killOnTouch === true || penalty)) throw new ToolError("onTouch 는 killOnTouch·caughtPenalty 와 같이 쓸 수 없습니다 — 닿았을 때 하나만 고르세요.", { code: "invalid-args" });
+    const touchCommands = args.onTouch === undefined ? undefined : compileChaserTouch(draft, map, id, args.onTouch);
     const caughtText = typeof args.caughtText === "string" && args.caughtText.trim() ? args.caughtText.trim() : "붙잡혔다.";
     const characterId = typeof args.characterId === "string" && args.characterId.trim() ? args.characterId.trim() : undefined;
-    const commands: Command[] = args.killOnTouch === true ? [{ kind: "killPlayer", message: caughtText }]
+    const commands: Command[] = touchCommands ? touchCommands
+      : args.killOnTouch === true ? [{ kind: "killPlayer", message: caughtText }]
       : penalty ? [
         { kind: "showEmote", target: { eventId: id }, emote: "exclamation", durationMs: 600 } as Command,
         { kind: "text", body: penalty.text ?? "붙잡혔다!" } as Command,
@@ -3586,7 +3591,7 @@ const makeChaseScene: ToolDefinition = {
           id: `${id}_chase`,
           name: "추격자",
           conditions: activateSwitch ? [{ kind: "switch", switchId: activateSwitch, value: true }] : [],
-          graphic,
+          graphic: chaser.blendMode && !graphic.transparent ? { ...graphic, blendMode: chaser.blendMode } : graphic,
           trigger: { kind: "eventTouch" },
           priority: "same",
           overlapForbidden: true,
@@ -4055,17 +4060,41 @@ function chaseSpec(value: unknown): {
   readonly graphic?: unknown;
   readonly speed?: number;
   readonly sightRange?: number;
+  readonly blendMode?: "add" | "screen" | "multiply";
 } {
   if (typeof value !== "object" || value === null || Array.isArray(value)) {
-    throw new ToolError("chaser는 {at,graphic?,speed?,sightRange?} 객체여야 합니다.", { code: "chaser-spec" });
+    throw new ToolError("chaser는 {at,graphic?,speed?,sightRange?,blendMode?} 객체여야 합니다.", { code: "chaser-spec" });
   }
-  const record = value as { at?: unknown; graphic?: unknown; speed?: unknown; sightRange?: unknown };
+  const record = value as { at?: unknown; graphic?: unknown; speed?: unknown; sightRange?: unknown; blendMode?: unknown };
+  if (record.blendMode !== undefined && record.blendMode !== "add" && record.blendMode !== "screen" && record.blendMode !== "multiply") {
+    throw new ToolError("chaser.blendMode 는 add|screen|multiply 입니다.", { code: "chaser-spec" });
+  }
   return {
     at: pointFromRecord(record.at, "chaser.at"),
     graphic: record.graphic,
     speed: typeof record.speed === "number" ? record.speed : undefined,
     sightRange: typeof record.sightRange === "number" ? record.sightRange : undefined,
+    ...(record.blendMode ? { blendMode: record.blendMode as "add" | "screen" | "multiply" } : {}),
   };
+}
+
+/** 죽이지 않는 추격자의 «닿음» 장면 — script_cutscene 과 같은 비트 검증을 거친다. */
+function compileChaserTouch(draft: Project, map: GameMap, chaserId: string, beats: unknown): Command[] {
+  if (!Array.isArray(beats) || beats.length === 0) throw new ToolError("onTouch 는 비어 있지 않은 CutsceneBeat 배열이어야 합니다.", { code: "invalid-args" });
+  try {
+    return compileCutscene(beats as CutsceneBeat[], {
+      context: {
+        eventIds: new Set([...map.events.map((event) => event.id), chaserId]),
+        resourceIds: collectResourceIds(draft),
+        mapIds: new Set(Object.keys(draft.maps)),
+        switchIds: new Set((draft.switches ?? []).map((sw) => sw.id)),
+        endingIds: new Set((draft.endings ?? []).map((ending) => ending.id)),
+      },
+    });
+  } catch (cause) {
+    if (cause instanceof CutsceneValidationError) throw new ToolError(`onTouch 검증 실패: ${cause.reasons.join(" / ")}`, { code: "cutscene-validation", mapId: map.id });
+    throw cause;
+  }
 }
 
 function rectFromRecord(value: unknown, label: string): { x: number; y: number; w: number; h: number } {
