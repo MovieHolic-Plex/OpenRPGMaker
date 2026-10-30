@@ -889,7 +889,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
 
   const editPlace: PiToolShape = {
     name: "edit_place", label: "장소 고치기", concurrency: "exclusive",
-    description: "Rebuild a built (or existing) place with the same builder, changing only part of its spec. Pass critic-major coordinates as addAnchors.near. 1 round per map. For a room you designed with design, put the whole fixed design in patch.design (dressing is not for designed rooms).",
+    description: "Rebuild a built (or existing) place with the same builder, changing only part of its spec. Pass critic-major coordinates as addAnchors.near. 1 round per map (interiors laid from spec.layout: several rounds — layoutPatch or set.layout). For a room you designed with design, put the whole fixed design in patch.design (dressing is not for designed rooms).",
     parameters: { type: "object", properties: { patch: { type: "object", properties: {
       mapId: { type: "string", description: "map id to fix (inside patch)" },
       set: { type: "object", properties: { layout: LAYOUT_SCHEMA, name: { type: "string" }, style: { type: "string" }, theme: { type: "string" }, size: SIZE, floors: { type: "number" }, features: { type: "array", items: { type: "string" } }, exits: { type: "array", items: { type: "string", enum: ["south", "north", "east", "west"] } }, hints: HINTS_SCHEMA, dungeonDesign: DUNGEON_DESIGN_SCHEMA, connections: CONNECTIONS_SCHEMA, entrance: { type: "string", description: "(interior room graph) entrance room id" } } },
