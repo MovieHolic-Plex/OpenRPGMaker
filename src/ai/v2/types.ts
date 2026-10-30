@@ -42,7 +42,7 @@ export interface ZoneSpec {
   /** (실내 방 그래프) 이 방의 랜드마크 — design.groups 에 넣은 기물 id 하나(큰 여러 칸 기물 환영: great telescope·summoning circle·pulpit). */
   readonly landmark?: string;
   /** (실내 방 그래프) 이 방에 계단이 있다 — design.groups 에 계단 기물(stairs up wood·stairs down…)을 넣는다. 검사가 놓였는지·닿는지 본다. */
-  readonly stairs?: "up" | "down";
+  readonly stairs?: "up" | "down" | "none";
   /** (실내 방 그래프) 방의 역할 낱말: main · side(곁방) · corridor · stairs. 검사·보고용. */
   readonly role?: string;
   /** (빌더 내부) 이미 지어진 방을 고칠 때 원래 크기·재질을 지킨다 — 모델 스키마에는 없다. */

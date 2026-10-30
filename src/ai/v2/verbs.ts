@@ -213,7 +213,7 @@ const ZONE_SCHEMA = {
     x: { type: "integer", description: "(interior room graph) rough top-left cell of this room (x right, y down; the plan origin is free). The function snaps neighbours to a one-cell wall; it never chooses the arrangement for you" },
     y: { type: "integer", description: "(interior room graph) see x" },
     landmark: { type: "string", description: "(interior room graph) the one part this room is built around — a part id that is also in design.groups. Big multi-cell parts are welcome (great telescope · summoning circle · pulpit · long hearth 6 · fireplace · counter 3x1)" },
-    stairs: { type: "string", enum: ["up", "down"], description: "(interior room graph) this room has stairs — put a stairs part (stairs up wood · stairs up stone · stairs down · stairwell down) in design.groups" },
+    stairs: { type: "string", enum: ["none", "up", "down"], description: "(interior room graph) none (default) or this room has stairs up/down — then put a stairs part (stairs up wood · stairs up stone · stairs down · stairwell down) in design.groups" },
     role: { type: "string", description: "(interior room graph) main · side (side room) · corridor · stairs" },
   },
   required: ["kind"],

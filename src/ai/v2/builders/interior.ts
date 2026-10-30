@@ -1163,7 +1163,8 @@ export const interiorBuilder: PlaceBuilder = {
     const designExit = (rooms.find((r) => (r as { exitAt?: number }).exitAt !== undefined) as { exitAt?: number } | undefined)?.exitAt;
     // 방 그래프(2026-10-30 2회차): 모델이 방마다 대략 자리(x,y)·연결·입구를 주면 배치 후보를 함수가 고르지 않는다 — 조화(칸막이 1칸 붙이기·문 내기·
     // 출구 열)만 하고 못 짓는 평면은 영어 고친 호출과 함께 돌려보낸다(roomGraph.ts). 기준 방 평면을 거의 그대로 옮기면 돌려보낸다(roomIdeas.ts 지문).
-    const graphMode = designed && rooms.every((r) => (r as { designed?: boolean }).designed)
+    // 방이 하나면 그래프가 아니다 — 2026-10-30 2회차 terra 가 엄격 스키마로 x·y·stairs 를 늘 채워 한 방짜리도 그래프로 지었고 «계단 선언·없음» 거짓 ✗ 가 났다.
+    const graphMode = designed && rooms.length >= 2 && rooms.every((r) => (r as { designed?: boolean }).designed)
       && (!!spec.connections?.length || firstFloor.some((z) => typeof z.x === "number" && typeof z.y === "number"));
     let graph: GraphOut | undefined;
     if (graphMode) {
@@ -1184,7 +1185,7 @@ export const interiorBuilder: PlaceBuilder = {
     }
     // 그래프 선언(검사 room_graph 가 맵 이름표로 읽는다 — handInteriorTools 가 room-graph 이름표로 남긴다).
     const graphDecl = graph ? {
-      rooms: rooms.map((r) => ({ id: r.id, name: String(r.zone.purpose ?? r.kind).slice(0, 40), ...(r.zone.role ? { role: String(r.zone.role) } : {}), ...(r.zone.stairs ? { stairs: r.zone.stairs } : {}), ...(r.zone.landmark ? { landmark: String(r.zone.landmark) } : {}) })),
+      rooms: rooms.map((r) => ({ id: r.id, name: String(r.zone.purpose ?? r.kind).slice(0, 40), ...(r.zone.role ? { role: String(r.zone.role) } : {}), ...(r.zone.stairs === "up" || r.zone.stairs === "down" ? { stairs: r.zone.stairs } : {}), ...(r.zone.landmark && !/^(none|null|-)?$/iu.test(String(r.zone.landmark).trim()) ? { landmark: String(r.zone.landmark) } : {}) })),
       connections: graph.connect.map((c) => ({ a: c.a, b: c.b, type: c.open ? "open" : "door" })), entrance: graph.exit.room,
     } : undefined;
     // 방이 모두 손으로 짠 견본이면 소금 변주도 쓰지 않는다 — 배치 후보 C·D 가 방을 넓혀 5×6 객실 견본이 7×8 방 왼쪽 위에 몰리고 나머지가 맨바닥이 됐다.
