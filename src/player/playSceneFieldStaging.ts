@@ -970,7 +970,7 @@ function syncExitLabels(scene: PlaySceneContext, now: number, options: { arrowOn
   const project = store.getCurrent();
   const size = mapTileSize(map);
   const zoom = Math.max(1, Math.round(scene.cameras?.main?.zoom || 1));
-  const want = new Map<string, { text: string; x: number; y: number; below: number }>();
+  const want = new Map<string, { text: string; x: number; y: number; below: number; door?: { left: number; top: number; right: number; bottom: number } }>();
   for (const view of runtimeEventViewsForMap(project, map, scene.session, scene.eventPositions)) {
     const target = exitTargetOf(view.page as { commands?: readonly unknown[] } | undefined, map.id);
     const dest = target ? project.maps[target] : undefined;
@@ -980,9 +980,10 @@ function syncExitLabels(scene: PlaySceneContext, now: number, options: { arrowOn
     const dx = Math.max(rect.left - scene.tileX, 0, scene.tileX - rect.right);
     const dy = Math.max(rect.top - scene.tileY, 0, scene.tileY - rect.bottom);
     if (Math.max(dx, dy) > EXIT_LABEL_RADIUS || (dx === 0 && dy === 0)) continue;
-    const onDoor = (map.doors ?? []).some((door) => rect.left < door.x + door.w && rect.right >= door.x && rect.top < door.y + door.h && rect.bottom >= door.y);
+    const doorDef = (map.doors ?? []).find((door) => rect.left < door.x + door.w && rect.right >= door.x && rect.top < door.y + door.h && rect.bottom >= door.y);
+    const onDoor = !!doorDef;
     const text = options.arrowOnly ? exitArrowGlyph(rect, map.width, map.height, scene.tileX, scene.tileY, onDoor) : `→ ${name}`;
-    want.set(view.event.id, { text, x: ((rect.left + rect.right + 1) / 2) * size, y: rect.top * size - 2, below: (rect.bottom + 1) * size + 2 });
+    want.set(view.event.id, { text, x: ((rect.left + rect.right + 1) / 2) * size, y: rect.top * size - 2, below: (rect.bottom + 1) * size + 2, ...(options.arrowOnly && doorDef ? { door: doorPixelRect(doorDef, size) } : {}) });
   }
   // 같은 목적지로 옮기는 붙은 칸들(두 칸 폭 길 끝 출구와 그 길 폭 사본 — ai/v2 widenRoadExits)은 글자 하나를 가운데에 —
   // 칸마다 띄우면 「→ 강가 어촌」 둘이 반 칸 어긋나 겹쳐 「→ →강가 어촌」으로 읽혔다(2026-10-30 씬 벤치 river-village 재현).
@@ -991,7 +992,7 @@ function syncExitLabels(scene: PlaySceneContext, now: number, options: { arrowOn
     const near = [...want].filter(([other, b]) => other !== id && b.text === at.text && Math.abs(b.x - at.x) <= size * 3.01 && Math.abs(b.y - at.y) <= size * 1.01);
     if (!near.length) continue;
     const all = [at, ...near.map(([, b]) => b)];
-    want.set(id, { text: at.text, x: all.reduce((sum, b) => sum + b.x, 0) / all.length, y: Math.min(...all.map((b) => b.y)), below: Math.max(...all.map((b) => b.below)) });
+    want.set(id, { text: at.text, x: all.reduce((sum, b) => sum + b.x, 0) / all.length, y: Math.min(...all.map((b) => b.y)), below: Math.max(...all.map((b) => b.below)), ...(at.door ? { door: at.door } : {}) });
     for (const [other] of near) want.delete(other);
   }
   for (const [id, t] of state.labels) if (!want.has(id)) { t.destroy(); state.labels.delete(id); }
@@ -1010,6 +1011,13 @@ function syncExitLabels(scene: PlaySceneContext, now: number, options: { arrowOn
     } else if (label.text !== at.text) label.setText(at.text);
     // 가장자리 출구(2026-10-29 vm3 argon jrpg «마을 가장자리가 어디로도 이어지지 않아 보임»): 글자가 맵 밖으로 반쯤 나가 잘리지 않게 맵 안으로 민다.
     // 주인공이 오는 쪽의 반대편에 두고, 몸에 겹치면 옆으로 비키고, 맵에 적힌 문 그림(문 칸 위 그림 칸까지)은 덮지 않는다 — 규칙은 exitLabelPlacement.
+    // 화살표만(fieldGuides "arrows")인 건물 문 — 문 그림 가운데 바로 위에 둔다. 글자 자리 규칙(문 그림 비키기)을 따르면 문 옆 진열창에 붙었다(r7 2026-10-30).
+    if (at.door) {
+      label.x = Math.round((at.door.left + at.door.right) / 2 - label.displayWidth / 2);
+      label.y = Math.max(Math.round(label.displayHeight), Math.round(at.door.top) - 1);
+      label.setAlpha(1);
+      continue;
+    }
     const place = placeExitLabel({
       anchorX: at.x, aboveY: at.y, belowY: at.below, width: label.displayWidth, height: label.displayHeight,
       mapW: map.width * size, mapH: map.height * size, heroTileX: scene.tileX, heroTileY: scene.tileY, tileSize: size, doors,
