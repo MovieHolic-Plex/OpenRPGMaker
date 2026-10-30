@@ -1088,6 +1088,23 @@ export interface TroopTrainerSprite {
   backThrow?: string;
 }
 
+/**
+ * 결투 규칙 — 목숨을 걸지 않는 대련·시합용. 모두 선택이고, 없으면 기존 전투 그대로다.
+ * 런타임은 battle/duelRules.ts, 모델 정규화는 project/databaseEnemyTroopRecordModel.ts.
+ */
+export interface TroopDuelRules {
+  /** 적 HP 가 이 퍼센트(1~100) 이하가 되면 그 적은 항복한다(무릎 꿇는 자세, 더는 행동·피격 대상 아님). 전부 항복·쓰러지면 승리. */
+  yieldAtPercent?: number;
+  /** 아군 전원의 HP 가 이 퍼센트(1~100) 이하면 패배로 끝난다. canLose 와 상관없이 게임 오버 없이 전투 뒤 분기로 간다. */
+  playerYieldAtPercent?: number;
+  /** true 면 도주 명령이 「기권」이 되고 반드시 성공해 escapeBranch 로 간다. */
+  forfeit?: boolean;
+  /** 이 라운드 수가 지나면 남은 HP 비율 합이 큰 쪽이 이긴다(같으면 escape). 정수 1 이상. */
+  roundLimit?: number;
+  /** true 면 아이템 명령을 숨기고 쓸 수 없게 한다. */
+  noItems?: boolean;
+}
+
 export interface TroopRecord {
   id: TroopId;
   name: string;
@@ -1122,6 +1139,8 @@ export interface TroopRecord {
    * (경험치·전리품 몫도 없다). 생략·빈 목록 = 없음. 런타임은 battle/battleEvents.ts · battle/runtime.ts.
    */
   battleGuests?: TroopBattleGuest[];
+  /** 결투 규칙(항복 HP·기권·라운드 제한·아이템 금지). 생략 = 일반 전투. */
+  duel?: TroopDuelRules;
 }
 
 export interface TroopBattleGuest {

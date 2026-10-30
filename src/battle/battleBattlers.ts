@@ -102,6 +102,8 @@ export interface MutableBattler {
   captured?: boolean;
   /** 라이브라로 탐색됨. */
   scanned?: boolean;
+  /** 결투 규칙(TroopRecord.duel.yieldAtPercent): 항복한 적. 더 싸우지 않고 표적에서도 빠진다. */
+  yielded?: boolean;
   hp: number;
   mp: number;
   gauge: number;
@@ -683,6 +685,7 @@ export function battlerSnapshot(
     ...(battler.limitGauge !== undefined ? { limitGauge: battler.limitGauge } : {}),
     ...(battler.resource2 !== undefined ? { resource2: battler.resource2 } : {}),
     ...(battler.scanned ? { scanned: true } : {}),
+    ...(battler.yielded ? { yielded: true as const } : {}),
     ...(hasStatStages(battler.statStages) ? { statStages: { ...battler.statStages } } : {}),
     effectiveStats: { attack: battler.attackPower, defense: battler.defense, mind: battler.mind, agility: battler.agility },
     pose: "idle" as unknown as BattleBattlerSnapshot["pose"],

@@ -132,6 +132,20 @@ export interface BattleTeamSnapshot {
   readonly alive: number;
 }
 
+/** 결투 전투의 표시·호스트 계약. 전투군 duel 이 있을 때만 스냅샷에 실린다. */
+export interface BattleDuelSnapshot {
+  /** 이 전투 부대가 결투 규칙을 가진다 — 보상이 0이면 결과 화면이 「결투 종료」 한 줄로 바뀐다. */
+  readonly duelTroop?: true;
+  /** 이 전투 부대가 결투 규칙을 가진다 — 보상이 0이면 결과 화면이 「결투 종료」 한 줄로 바뀐다. */
+  readonly duelTroop?: true;
+  /** 도주 명령이 「기권」 으로 바뀌고 항상 성공한다. */
+  readonly forfeit?: true;
+  /** 아이템 명령이 숨겨진다. */
+  readonly noItems?: true;
+  /** 항복·판정으로 난 패배 — 게임 오버가 아니라 전투 후/패배 분기로 이어진다. */
+  readonly nonLethalDefeat?: true;
+}
+
 export interface BattleRuntimeOptions {
   readonly project: Project;
   readonly troopId: TroopId;
@@ -322,6 +336,8 @@ export interface BattleBattlerSnapshot {
   readonly resource2?: number;
   /** 라이브라로 탐색된 적 — HP 바를 피해 전에도 드러낸다. */
   readonly scanned?: boolean;
+  /** 결투 규칙으로 항복한 적 — 표시 계층이 무릎 꿇은 자세로 그린다. */
+  readonly yielded?: true;
   /** 힘 모으기(SkillRecord.chargeTurns) 중: 발동할 기술과 남은 자기 차례 수. 표시 계층이 예고 표식을 붙인다. */
   readonly charging?: { readonly skillId: SkillId; readonly skillName: string; readonly turnsLeft: number };
   /** 능력치 단계(−6~+6, 0 이 아닌 칸만). 표시 계층이 단계 알약(ATK↑2)을 그린다. 저장하지 않는다. */
@@ -444,7 +460,7 @@ export interface BattleTimelineEntrySnapshot {
   /** 끊겼을 때 시전자의 한 줄(SkillChargeBreak.message). */
   readonly chargeBreakLine?: string;
   readonly stateId?: string;
-  readonly reason?: "natural" | "hit" | "battleEnd" | "effect" | "strictCap";
+  readonly reason?: "natural" | "hit" | "battleEnd" | "effect" | "strictCap" | "duelRoundLimit";
   readonly success?: boolean;
   /** capture 엔트리: 구슬이 흔들린 횟수(0~3). 실패 연출이 이 횟수만큼 흔들리고 빠져나온다. */
   readonly shakes?: 0 | 1 | 2 | 3;
@@ -667,6 +683,8 @@ export interface BattleSnapshot {
   readonly endedByEvent?: true;
   readonly rewards: BattleRewardsSnapshot;
   readonly canEscape: boolean;
+  /** 결투 규칙(TroopRecord.duel)이 있는 전투만. 없으면 옛 전투와 똑같이 동작한다. */
+  readonly duel?: BattleDuelSnapshot;
   /** 이 전투의 개시 진형. 보통 개시는 "normal". */
   readonly formation?: import("@/battle/battleFormation").BattleStartFormation;
   /** 지금까지 실패한 도주 횟수(다음 도주 확률 가산의 근거). */

@@ -44,7 +44,7 @@ import {
 } from "@/editor/panels/databaseWorkspace";
 import { openTroopBattleTestModal } from "@/editor/panels/testPlayModal";
 import { store } from "@/project/store";
-import type { BattleBackdropAnimation, BattleBackdropLayer, EnemyRecord, TroopMemberRecord, TroopRecord } from "@/project/types";
+import type { BattleBackdropAnimation, BattleBackdropLayer, EnemyRecord, TroopDuelRules, TroopMemberRecord, TroopRecord } from "@/project/types";
 import { BATTLE_BACKDROP_ANIMATION_LIMITS, type BattleBackdropAnimationKey } from "@/project/battleBackdropAnimation";
 import {
   BATTLE_BACKDROP_LAYER_LABELS,
@@ -340,6 +340,7 @@ function configurationPanel(record: TroopRecord, rerender: () => void): HTMLElem
         class: "db-troop-check-row",
         children: [trainerBattleField(record, rerender), uncapturableField(record, rerender)],
       }),
+      duelRulesField(record, rerender),
     ],
     testid: "db-troop-config-card",
     extraClass: "db-troop-card-config",
@@ -1034,6 +1035,44 @@ function teamSwapCostField(record: TroopRecord, rerender: () => void): HTMLEleme
     updateDatabaseRecord("troops", record.id, { teamSwapCost: isTeamSwapCost(value) ? value : undefined });
     rerender();
   });
+}
+
+/**
+ * 결투 규칙 — 항복선·기권·라운드 제한·아이템 금지. 하나도 켜지 않으면 `duel` 이 통째로 없어져
+ * 옛 전투 그대로다(normalizeTroopRecord 가 빈 값을 버린다). 접어 두고, 켜진 규칙이 있으면 펼친다.
+ */
+function duelRulesField(record: TroopRecord, rerender: () => void): HTMLElement {
+  const duel: TroopDuelRules = record.duel ?? {};
+  const commit = (patch: Partial<TroopDuelRules>): void => {
+    const next: Record<string, unknown> = { ...duel, ...patch };
+    for (const key of Object.keys(next)) if (next[key] === undefined || next[key] === false || next[key] === 0) delete next[key];
+    updateDatabaseRecord("troops", record.id, { duel: Object.keys(next).length ? (next as TroopDuelRules) : undefined });
+    rerender();
+  };
+  const percent = (label: string, testid: string, value: number | undefined, key: "yieldAtPercent" | "playerYieldAtPercent", hint: string): HTMLElement => {
+    const field = numberField(`${label}(0=끔)`, testid, value ?? 0, (next) => commit({ [key]: next >= 1 ? next : undefined }), { min: 0, max: 100, step: 1 });
+    field.title = hint;
+    return field;
+  };
+  const rounds = numberField("라운드 제한(0=끔)", "db-field-troop-duel-round-limit", duel.roundLimit ?? 0, (next) => commit({ roundLimit: next >= 1 ? next : undefined }), { min: 0, max: 99, step: 1 });
+  rounds.title = "이 라운드가 지나면 남은 HP 비율의 합이 높은 쪽이 이깁니다. 같으면 무승부(기권 분기)입니다.";
+  const forfeit = checkboxField("기권 허용", "db-field-troop-duel-forfeit", duel.forfeit === true, (forfeit) => commit({ forfeit }));
+  forfeit.title = "도망 명령이 「기권」으로 바뀌고 항상 성공합니다. 결과는 도망 분기를 탑니다.";
+  const noItems = checkboxField("아이템 금지", "db-field-troop-duel-no-items", duel.noItems === true, (noItems) => commit({ noItems }));
+  noItems.title = "전투 명령에서 아이템을 숨깁니다.";
+  const details = el("details", {
+    class: "db-troop-duel-details",
+    dataset: { testid: "db-troop-duel-rules" },
+    children: [
+      el("summary", { text: "결투 규칙" }),
+      percent("적 항복선(%)", "db-field-troop-duel-yield", duel.yieldAtPercent, "yieldAtPercent", "적 HP가 이 비율 이하가 되면 그 적은 무릎을 꿇습니다. 모든 적이 항복하거나 쓰러지면 승리입니다."),
+      percent("아군 항복선(%)", "db-field-troop-duel-player-yield", duel.playerYieldAtPercent, "playerYieldAtPercent", "아군 전원이 이 비율 이하가 되면 패배합니다. 게임 오버는 되지 않고 전투 후/패배 분기로 이어집니다."),
+      rounds,
+      el("div", { class: "db-troop-check-row", children: [forfeit, noItems] }),
+    ],
+  }) as HTMLDetailsElement;
+  details.open = record.duel !== undefined;
+  return details;
 }
 
 function uncapturableField(record: TroopRecord, rerender: () => void): HTMLElement {

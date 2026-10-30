@@ -10,6 +10,7 @@ import type {
   EnemyActionSwitchEffect,
   EnemyCritical,
   EnemyOptions,
+  TroopDuelRules,
   EnemyReaction,
   DamageTypeRates,
   EnemyRecord,
@@ -167,7 +168,34 @@ export function normalizeTroopRecord(record: Partial<TroopRecord> & Pick<TroopRe
       const battleGuests = normalizeTroopBattleGuests(record.battleGuests);
       return battleGuests.length > 0 ? { battleGuests } : {};
     })(),
+    // 결투 규칙. 하나도 켜지 않았으면 키를 만들지 않는다(옛 JSON 바이트 유지).
+    ...(() => {
+      const duel = normalizeTroopDuel(record.duel);
+      return duel ? { duel } : {};
+    })(),
   };
+}
+
+function clampDuelPercent(value: unknown): number | undefined {
+  if (typeof value !== "number" || !Number.isFinite(value)) return undefined;
+  return Math.min(100, Math.max(1, Math.round(value)));
+}
+
+/** 결투 규칙. 퍼센트는 1~100 정수, 라운드 한도는 1 이상 정수, 불리언은 true 일 때만 남긴다. 비면 undefined. */
+export function normalizeTroopDuel(value: unknown): TroopDuelRules | undefined {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return undefined;
+  const raw = value as Partial<TroopDuelRules>;
+  const yieldAtPercent = clampDuelPercent(raw.yieldAtPercent);
+  const playerYieldAtPercent = clampDuelPercent(raw.playerYieldAtPercent);
+  const roundLimit = typeof raw.roundLimit === "number" && Number.isFinite(raw.roundLimit) && raw.roundLimit >= 1 ? Math.floor(raw.roundLimit) : undefined;
+  const duel: TroopDuelRules = {
+    ...(yieldAtPercent !== undefined ? { yieldAtPercent } : {}),
+    ...(playerYieldAtPercent !== undefined ? { playerYieldAtPercent } : {}),
+    ...(raw.forfeit === true ? { forfeit: true } : {}),
+    ...(roundLimit !== undefined ? { roundLimit } : {}),
+    ...(raw.noItems === true ? { noItems: true } : {}),
+  };
+  return Object.keys(duel).length > 0 ? duel : undefined;
 }
 
 const GUEST_TACTICS = new Set(["attackAll", "healFirst", "conserveMp"]);

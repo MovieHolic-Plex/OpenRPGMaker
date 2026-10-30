@@ -23,6 +23,7 @@ import { playMonsterSfx } from "@/player/monsterSfx";
 import { playDoorOpenBeforeTransfer } from "@/player/playSceneFieldFx";
 import { walkIntoDoorway } from "@/player/playSceneDoorEntry";
 import { store } from "@/project/store";
+import { battleStepCanLose } from "@/player/battleDuel";
 import { COMPANION_SCENE_FLAG, syncFollowerSceneVisibility } from "@/player/playSceneFollowers";
 import { setEventSpritePattern } from "@/player/eventSpriteResources";
 import { playAudioCommand, stopAudioChannel, stopAudioCommand } from "@/player/audio";
@@ -337,7 +338,7 @@ export async function runCommands(
       if (step.kind === "changeTile") changedTerrainMaps.add(step.mapId);
       result = await consumeBlockingStep(scene, interpreter, step, currentEventId, skipController, current, () => { handledFailure = true; });
       if (step.kind === "gameOver" || step.kind === "returnToTitle") normalCompletion = false;
-      if (step.kind === "battleProcessing" && !step.canLose && activeSession.battleResult === "defeat") normalCompletion = false;
+      if (step.kind === "battleProcessing" && !battleStepCanLose(store.getCurrent(), step, activeSession) && activeSession.battleResult === "defeat") normalCompletion = false;
       // 진 전투는 시야선 트레이너(발견 이벤트)의 「끝낸 만남」 영수증으로 세지 않는다 — 센터에서 돌아와 다시 시야에 들면 또 걸어온다.
       if (step.kind === "battleProcessing" && activeSession.battleResult === "defeat") lostBattle = true;
     }
@@ -692,7 +693,7 @@ async function consumeBlockingStep(
     case "battleProcessing": {
       try {
         const result = await playCommandBattle(scene, step, isCurrent, isCurrent, currentEventId);
-        if (result === null || (result === "defeat" && !step.canLose)) return { kind: "done" };
+        if (result === null || (result === "defeat" && !battleStepCanLose(store.getCurrent(), step, scene.session))) return { kind: "done" };
         return resumeWithValue(scene, interpreter, result);
       } catch (error) {
         onHandledFailure();

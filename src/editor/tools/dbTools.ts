@@ -684,6 +684,13 @@ const troopRecordSchema = objectSchema({
   battleFlow: { type: "string", enum: ["gauge", "strict"] },
   activeSlots: integerSchema(),
   teamSwapCost: { type: "string", enum: ["free", "gauge", "turn"], description: "이 적 그룹 전투만의 팀 교대 비용(set_project_settings battle.teams 가 있을 때). free = 들어온 팀 바로 행동 · gauge = 게이지 0(기본) · turn = 적이 한 번 행동할 때까지 쉼. 생략 = 시스템 설정" },
+  duel: objectSchema({
+    yieldAtPercent: integerSchema("적 항복선 1~100(%). 적 HP 가 행동 뒤 이 % 이하이면 그 적이 항복(무릎)한다. 모든 적이 항복·쓰러지면 승리. 생략 = 항복 없음"),
+    playerYieldAtPercent: integerSchema("아군 항복선 1~100(%). 파티 전원이 이 % 이하이면 패배(게임 오버 없이 패배 분기로). canLose 와 무관. 생략 = 없음"),
+    forfeit: booleanSchema("true = 도망 명령이 「기권」이 되고 항상 성공(결과 = 도망 분기)"),
+    roundLimit: integerSchema("라운드 제한(1 이상). N 라운드가 지나면 남은 HP 비율 합이 높은 쪽 승리, 같으면 도망(무승부) 분기"),
+    noItems: booleanSchema("true = 아이템(가방) 명령 숨김"),
+  }, "결투 규칙(모두 선택, 없으면 기존 전투 그대로). 연습 대련·결투·시험처럼 죽지 않는 전투에 쓴다. 보상이 0 이면 결과 화면이 「결투 종료」 한 줄로 나온다. 지우려면 clearFields:[\"duel\"]"),
   // battleEventPages 는 여기서 받지 않는다 — 자유 객체(additionalProperties:true)로 통과시키면
   // 조건 kind 오타·빈 commands·무한 반복이 무검증으로 저장된다. upsert_troop_battle_page /
   // author_boss_phases 가 페이지 단위로 검증해서 쓴다(아래 run 의 리다이렉트 참고).
@@ -1783,6 +1790,26 @@ const ENEMY_CLEARABLE_FIELDS = [
   "reactions", "stealItems", "stateRates", "elementRates", "damageTypeRates",
 ] as const;
 
+/** upsert_troop.clearFields 로 지울 수 있는 선택 필드. */
+const TROOP_CLEARABLE_FIELDS = ["duel"] as const;
+
+/** 병합된 트룹에서 clearFields 를 지운다. 실제로 지운 필드 이름을 돌려준다. */
+function clearTroopFields(merged: Record<string, unknown>, patch: unknown, clearFields: unknown): string[] {
+  if (clearFields === undefined) return [];
+  if (!Array.isArray(clearFields)) throw new ToolError("clearFields 는 필드 이름 배열이어야 합니다.", { code: "invalid-clear-fields" });
+  const allowed = new Set<string>(TROOP_CLEARABLE_FIELDS);
+  const given = patch && typeof patch === "object" ? patch as Record<string, unknown> : {};
+  const removed: string[] = [];
+  for (const field of clearFields) {
+    if (typeof field !== "string" || !allowed.has(field)) {
+      throw new ToolError(`clearFields '${String(field)}' 는 지울 수 없는 필드입니다. 지울 수 있는 필드: ${TROOP_CLEARABLE_FIELDS.join(", ")}`, { code: "invalid-clear-fields" });
+    }
+    if (field in given) throw new ToolError(`'${field}' 를 troop 에 주면서 clearFields 로 지우라고 했습니다 — 한쪽만 주세요.`, { code: "invalid-clear-fields" });
+    if (field in merged) { delete merged[field]; removed.push(field); }
+  }
+  return removed;
+}
+
 /** 병합된 적에서 clearFields 를 지운다. 실제로 지운 필드 이름을 돌려준다(없던 필드는 조용히 넘어간다). */
 function clearEnemyFields(merged: Record<string, unknown>, patch: unknown, clearFields: unknown): string[] {
   if (clearFields === undefined) return [];
@@ -1932,9 +1959,16 @@ function troopWarningSummary(warnings: readonly string[]): string {
 
 const upsertTroop: ToolDefinition = {
   name: "upsert_troop",
-  description: "적 그룹(트룹) 레코드를 등록/수정한다. 기존 id는 전달 필드만 병합하고 나머지를 보존한다.",
+  description: "적 그룹(트룹) 레코드를 등록/수정한다. 기존 id는 전달 필드만 병합하고 나머지를 보존한다. " +
+    "죽지 않는 결투·대련은 troop.duel {yieldAtPercent, playerYieldAtPercent, forfeit, roundLimit, noItems} 로 규칙을 준다(simulate_battle 도 같은 규칙으로 돈다).",
   mode: "write",
-  parameters: parametersForRecord("troop", troopRecordSchema, { id: "troop_slime", name: "슬라임 무리", enemyIds: ["enemy_slime"] }),
+  parameters: parametersForRecord("troop", troopRecordSchema, { id: "troop_slime", name: "슬라임 무리", enemyIds: ["enemy_slime"] }, {
+    clearFields: {
+      type: "array",
+      items: { type: "string", enum: [...TROOP_CLEARABLE_FIELDS] },
+      description: "기존 트룹에서 지울 필드(병합은 필드를 지우지 못한다). 결투 규칙을 통째로 없애려면 [\"duel\"]. 같은 필드를 troop 에도 주면 오류",
+    },
+  }),
   run(draft, args): ToolExecResult {
     // 전투 이벤트 페이지는 이 툴의 계약이 아니다. 일반 unknown-field 오류로 떨어지면 모델은 필드를
     // 그냥 빼버리고 "보스 연출을 넣었다"고 보고한다 — 어디로 가야 하는지 명시적으로 알려준다.
@@ -1952,6 +1986,7 @@ const upsertTroop: ToolDefinition = {
     // An explicit legacy roster replaces the roster. Do not let inherited members
     // silently override it; unrelated patches still preserve authored placements.
     if (patch.enemyIds !== undefined && patch.members === undefined) delete merged.members;
+    const clearedTroop = clearTroopFields(merged as Record<string, unknown>, args.troop, args.clearFields);
     const record = normalizeTroopRecord(merged as Partial<TroopRecord> & Pick<TroopRecord, "id" | "name">);
     const memberCount = record.members?.length ?? record.enemyIds.length;
     if (memberCount === 0) throw new ToolError("트룹에는 최소 1마리의 적(enemyIds/members)이 필요합니다.", { code: "troop-empty" });
@@ -1963,7 +1998,7 @@ const upsertTroop: ToolDefinition = {
     const outcome = upsertById(draft.database.troops, record);
     const warnings = troopBalanceWarnings(draft, record.id);
     return {
-      summary: `트룹 '${record.name}'(${memberCount}마리) ${outcome === "added" ? "추가" : "수정"}${troopWarningSummary(warnings)}`,
+      summary: `트룹 '${record.name}'(${memberCount}마리) ${outcome === "added" ? "추가" : "수정"}${clearedTroop.length ? ` (지운 필드: ${clearedTroop.join(", ")})` : ""}${troopWarningSummary(warnings)}`,
       data: record,
       ...(warnings.length ? { warnings } : {}),
     };

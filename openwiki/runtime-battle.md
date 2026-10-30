@@ -2447,3 +2447,23 @@ retro2003 sideview 의 명령 창은 `data-look-command`(actor 156px · keys 152
 - 그 밖(`player/seCuePlayback.playProjectSeCue`, 표에 있을 때만): 레벨 업 창 `levelUp`(없으면 합성), 아이템 늘리기 명령 `itemGet`(없으면 몬스터 세트), 전투 진입 `battleStart`(몬스터 전환음 대신), 문 `door`·`doorClose`(내장 CC0 문 소리 대신), 궤짝 뒤지기 `chest`, 「+ 아이템」 떠오름 `itemGet`.
 - **발소리**(`player/footsteps.ts`): 한 칸을 다 걸은 뒤(비행선·탈것 제외) 그 칸 지형 기록의 `footstepSoundResourceId` → 지형 이름이 가리키는 `footstep-<표면>`(`footstepCueForTerrain`) → 무음. 180ms 안에 한 번, 효과음 채널 크기의 45%. 예전에는 지형 발소리 칸이 저장만 되고 런타임이 틀지 않았다.
 - 자료집: 시스템 → 「전투 오디오」 아래 「효과음 자리 · 메뉴·화면/전투/마법·상태/필드·문」(`databaseSeCueTable.ts`).
+
+## 결투 규칙 — TroopRecord.duel (2026-10-30)
+
+적 그룹(`TroopRecord`) 하나에 `duel` 객체를 붙이면 그 전투만 「결투」 규칙으로 돈다. 모든 필드는 선택이고, `duel` 이 없으면 예전 동작 그대로다(`normalizeTroopDuel` 이 빈 값을 버리므로 기존 JSON 은 바이트 그대로).
+
+| 필드 | 뜻 |
+| --- | --- |
+| `yieldAtPercent` (1~100) | 행동이 끝난 뒤 적 HP 가 이 % 이하이면 그 적은 항복한다. 모든 적이 항복했거나 쓰러지면 승리. |
+| `playerYieldAtPercent` (1~100) | 파티 전원이 이 % 이하이면 패배(`canLose` 와 무관하게 게임 오버 없음, 전투 뒤/패배 분기로 이어짐). |
+| `forfeit` | 도망 명령이 「기권」으로 바뀌고 항상 성공한다. 결과는 escape → 기존 `escapeBranch`. |
+| `roundLimit` | N 라운드가 지나면 남은 HP 비율 합으로 판정. 높은 쪽이 승리/패배, 같으면 escape. |
+| `noItems` | 아이템 명령을 숨긴다(포켓몬풍 「가방」 포함). |
+
+- 런타임(`battle/runtime.ts`): `markYieldedEnemies` 가 항복을 표시(`MutableBattler.yielded`, 스냅샷 `yielded:true`). 항복한 적은 표적·적 턴에서 빠진다. `judgeDuelRoundLimit`·`endDuelAsDefeat` 가 판정을 낸다. 스냅샷 `duel`(`BattleDuelSnapshot`)에 `duelTroop/forfeit/noItems/nonLethalDefeat` 가 실린다. 타임라인 사유 `duelRoundLimit`.
+- 호스트: `player/battleDuel.ts` 의 `battleStepCanLose(project, step, session?)` 가 `playerYieldAtPercent` 전투를 항상 「지지 않는(게임 오버 없음)」 전투로 만든다. commandBattle·scheduledBattle·playSceneInterpreter·playSceneBattle 이 이것을 쓴다.
+- 항복 표시: 걷기 칩 적은 정면(아래) 가운데 프레임으로 무릎 꿇는 자세(회색·눕힘 없음), 몬스터 그림은 멈추고 살짝 어두워진다.
+- 결과 화면(`battleDirectorDom.ts`): 결투 그룹에서 보상이 전부 0(경험치 0·골드 0·드롭 없음)이면 빈 보상 목록 대신 한 줄 「결투 종료」 카드.
+- 헤드리스 `simulate_battle`(`battle/simulate.ts`)도 같은 규칙을 따르고, 결투 그룹이면 `outcomes {victory, defeat, escape, undecided}` 를 돌려준다.
+- 편집기: 적 그룹 탭의 접이식 「결투 규칙」(`databaseTroopRecordView.ts` `duelRulesField`, `updateTroopRecord` 가 `duel` 을 그대로 덮는다).
+- 조수: `upsert_troop.troop.duel {yieldAtPercent, playerYieldAtPercent, forfeit, roundLimit, noItems}`(고정 속성, `additionalProperties:false`), 지우기는 `clearFields:["duel"]`.

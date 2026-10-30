@@ -24,6 +24,7 @@ import { applyBattleTimerWrites } from "@/player/playSceneTimers";
 import { dialogueHost, dialogueUi } from "@/player/playSceneDom";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import { store } from "@/project/store";
+import { battleStepCanLose } from "@/player/battleDuel";
 import { markBattleEntry } from "@/app/perfMetrics";
 import { BATTLE_READY_TIMEOUT_MS, BATTLE_SCENERY_GRACE_MS, deferUntilBattleReady } from "@/player/battleReadiness";
 import { clearAudioState, nextSessionRandom, setAudioState } from "@/project/session";
@@ -122,7 +123,7 @@ export async function playBattle(
       project,
       troopId: step.troopId,
       canEscape: step.canEscape && scene.session.m2Runtime?.access?.escape !== false,
-      canLose: step.canLose,
+      canLose: battleStepCanLose(project, step, scene.session),
       battleFlow: step.battleFlow,
       atbMode: getPlayerPreferences().atbMode,
       formation: step.formation,

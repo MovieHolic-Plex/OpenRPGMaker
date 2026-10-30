@@ -617,6 +617,11 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   let strictResolution: { readonly round: number; readonly actions: StrictQueuedAction[]; index: number; grantedExtraActions: number } | undefined;
   let drainingStrictActions = false;
   let escaped = false;
+  // 결투 규칙(TroopRecord.duel). 없으면 아래 값이 전부 꺼져 옛 전투와 똑같다.
+  const duel = troopRecord.duel;
+  const duelRoundLimit = duel?.roundLimit;
+  /** 항복·판정으로 난 패배(게임 오버가 아니라 패배 분기). */
+  let duelNonLethalDefeat = false;
   /** 전투 이벤트가 전투를 끝냈다(전투 중단·이벤트 패배). 스냅샷 endedByEvent. */
   let endedByEvent = false;
   // turn 의 의미를 두 플로우에서 통일한다: **완료된 행동 사이클 수**.
@@ -1338,6 +1343,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       for (const battler of living) applyUpkeep(battler);
       resolveOutcome();
       if (result) return 0;
+      if (duelRoundLimit !== undefined && turn >= duelRoundLimit && judgeDuelRoundLimit()) return 0;
       if (turn >= STRICT_MAX_ROUNDS) {
         recordTimeline({ kind: "stalemate", reason: "strictCap", side: "actor" });
         escaped = true;
@@ -1353,7 +1359,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
 
   /** 버서크 대상: 살아 있는 상대 중 무작위 하나. */
   function randomOpponent(battler: MutableBattler): MutableBattler | undefined {
-    const pool = (battlerSide(battler) === "actor" ? visibleEnemies() : activeActors()).filter((entry) => entry.hp > 0);
+    const pool = (battlerSide(battler) === "actor" ? visibleEnemies() : activeActors()).filter((entry) => entry.hp > 0 && !entry.yielded);
     if (pool.length === 0) return undefined;
     return pool[Math.min(pool.length - 1, Math.floor(rng() * pool.length))];
   }
@@ -1478,6 +1484,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       return;
     }
     if (phase !== "charging") return;
+    if (duelRoundLimit !== undefined && turn >= duelRoundLimit && judgeDuelRoundLimit()) return;
     if (turn >= STRICT_MAX_ROUNDS) {
       recordTimeline({ kind: "stalemate", reason: "strictCap", side: "actor" });
       escaped = true;
@@ -1757,12 +1764,13 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       case "commonEvent":
         return options.project.commonEvents.some((entry) => entry.id === command.commonEventId);
       case "escape":
-        return options.canEscape;
+        return options.canEscape || duel?.forfeit === true;
       case "switch":
         return canSwitchActor(actor.recordId, command.targetActorId);
       case "skill":
         return battleActorSkillFailure(options.project, actor, command.skillId, comboParticipants(), partyGauge) === undefined;
       case "item": {
+        if (duel?.noItems === true) return false;
         const item = options.project.database.items.find((record) => record.id === command.itemId);
         // actor/class 제한 체크 — 불일치 시 커맨드 자체를 거부한다 (무효 턴으로 소모 안 함)
         return Boolean(item && (battleEventState.inventory[command.itemId] ?? 0) > 0 && itemIsBattleUsable(item)
@@ -2060,14 +2068,14 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       }
       case "enemy": {
         if (target.kind !== "enemy") return { kind: "rejected", reason: "invalidTarget" };
-        const enemy = visibleEnemies().find((entry) => entry.id === target.enemyId && entry.hp > 0);
+        const enemy = visibleEnemies().find((entry) => entry.id === target.enemyId && entry.hp > 0 && !entry.yielded);
         if (!enemy) return { kind: "rejected", reason: "invalidTarget" };
         targets = [enemy];
         break;
       }
       case "allEnemies":
         if (target.kind !== "none") return { kind: "rejected", reason: "invalidTarget" };
-        targets = visibleEnemies().filter((entry) => entry.hp > 0);
+        targets = visibleEnemies().filter((entry) => entry.hp > 0 && !entry.yielded);
         if (targets.length === 0) return { kind: "rejected", reason: "invalidTarget" };
         break;
       case "allAllies":
@@ -2098,6 +2106,11 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     return { kind: "used", skillId: skill.id };
   }
   function attemptEscape(): void {
+    if (duel?.forfeit === true) {
+      // 결투 기권: 확률 굴림 없이 항상 받아들여진다(결과 escape → escapeBranch).
+      escaped = true;
+      return;
+    }
     if (!options.canEscape) return;
     // RM2K3 도주: 민첩성 기반 확률(파티 평균 vs 적 평균). 단순화해 절반 확률 + 우위 보정.
     // 실패할 때마다 system.escapeBonusPercent(생략 = 0, 가산 없음)%p 씩 쉬워진다.
@@ -2171,6 +2184,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   function startStrictRound(): void {
     rewardTurn = turn + 1;
     if (result) return;
+    if (duelRoundLimit !== undefined && strictRoundCount >= duelRoundLimit && judgeDuelRoundLimit()) return;
     if (strictRoundCount >= STRICT_MAX_ROUNDS) {
       recordTimeline({ kind: "stalemate", reason: "strictCap", side: "actor" });
       escaped = true;
@@ -2427,7 +2441,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     });
     const enemyActions: StrictQueuedAction[] = visibleEnemies()
       .flatMap((enemy, index) => {
-        if (enemy.hp <= 0 || strictFormationSkipSide === "enemy") return [];
+        if (enemy.hp <= 0 || enemy.yielded || strictFormationSkipSide === "enemy") return [];
         if (!gen1 && !canBattlerAct(options.project, enemy)) {
           recordIncapacitated(enemy);
           return [];
@@ -2598,7 +2612,10 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       result,
       ...(endedByEvent ? { endedByEvent: true as const } : {}),
       rewards: structuredClone(rewards),
-      canEscape: options.canEscape,
+      canEscape: options.canEscape || duel?.forfeit === true,
+      ...(duel
+        ? { duel: { duelTroop: true as const, ...(duel.forfeit ? { forfeit: true as const } : {}), ...(duel.noItems ? { noItems: true as const } : {}), ...(duelNonLethalDefeat ? { nonLethalDefeat: true as const } : {}) } }
+        : {}),
       formation,
       failedEscapeAttempts,
       canLose: options.canLose,
@@ -2639,7 +2656,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       return;
     }
     // 선고로 방금 쓰러졌으면 차례만 소비한다.
-    if (enemy.hp <= 0) {
+    if (enemy.hp <= 0 || enemy.yielded) {
       enemy.gauge = 0;
       applyTroopEvents(finish, markGaugeActionCycle(enemy));
       return;
@@ -2966,7 +2983,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   function drainCounters(): void {
     while (pendingCounters.length > 0 && !result) {
       const { enemy, attacker, skillId, lastStand } = pendingCounters.shift()!;
-      if ((!lastStand && enemy.hp <= 0) || enemy.captured || !canBattlerAct(options.project, enemy)) continue;
+      if ((!lastStand && enemy.hp <= 0) || enemy.yielded || enemy.captured || !canBattlerAct(options.project, enemy)) continue;
       const target = attacker.hp > 0 && activeActors().includes(attacker) ? attacker : chooseBasicEnemyTarget(enemy);
       if (!target) continue;
       recordTimeline({
@@ -3332,7 +3349,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         ...(next.shakes !== undefined ? { shakes: next.shakes } : {}),
       });
     };
-    const target = visibleEnemies().find((entry) => entry.id === targetEnemyId && entry.hp > 0);
+    const target = visibleEnemies().find((entry) => entry.id === targetEnemyId && entry.hp > 0 && !entry.yielded);
     if (!target) {
       finish({ targetId: targetEnemyId, captureItemId, success: false, rate: 0, blockedReason: "missingTarget" });
       return;
@@ -4179,7 +4196,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     if (skill && prepareGimmickCast(user, targets, skill)) return;
     // 연막·도주 기술(type "escape"): 아군이 쓰면 확률 굴림 없이 전투에서 빠져나간다. 도주 불가 전투는 소모만 하고 막힌다.
     if (skill?.type === "escape" && battlerSide(user) === "actor") {
-      if (options.canEscape) {
+      if (options.canEscape || duel?.forfeit === true) {
         recordSpecial(user, user, `${skill.name}! 연기에 몸을 숨기고 무사히 도망쳤다!`, skill.id, commandKind);
         escaped = true;
       } else {
@@ -5236,16 +5253,65 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         }
       }
     }
+    markYieldedEnemies();
     const enemiesInBattle = visibleEnemies();
     // Captures hide defeated participants; they still establish that combat occurred.
     // With no visible enemies AND no captures, all members may be unrevealed: do not auto-win.
-    if ((enemiesInBattle.length > 0 || capturedMonsters.length > 0) && enemiesInBattle.every((enemy) => enemy.hp <= 0)) {
+    if ((enemiesInBattle.length > 0 || capturedMonsters.length > 0) && enemiesInBattle.every((enemy) => enemy.hp <= 0 || enemy.yielded === true)) {
       result = "victory";
       phase = "resolved";
       accumulateRewards();
       clearEndOfBattleStates();
       return;
     }
+    // 결투: 파티 전원이 항복선 이하 — 쓰러지지 않았어도 패배(게임 오버 아님).
+    const playerYieldAt = duel?.playerYieldAtPercent;
+    if (playerYieldAt !== undefined && actors.length > 0 && actors.every((actor) => actor.maxHp > 0 && (actor.hp / actor.maxHp) * 100 <= playerYieldAt)) {
+      endDuelAsDefeat();
+      return;
+    }
+  }
+
+  /** 결투 yieldAtPercent: 행동 뒤 HP 가 선 이하인 적이 항복한다. 이후 표적·행동에서 빠진다. */
+  function markYieldedEnemies(): void {
+    const yieldAt = duel?.yieldAtPercent;
+    if (yieldAt === undefined) return;
+    for (const enemy of enemies) {
+      if (enemy.yielded || enemy.hidden || enemy.captured === true || enemy.hp <= 0 || enemy.maxHp <= 0) continue;
+      if ((enemy.hp / enemy.maxHp) * 100 > yieldAt) continue;
+      enemy.yielded = true;
+      enemy.gauge = 0;
+      recordSpecial(enemy, enemy, `${withJosa(enemy.name, "은/는")} 무릎을 꿇었다!`);
+    }
+  }
+
+  function endDuelAsDefeat(): void {
+    result = "defeat";
+    phase = "resolved";
+    duelNonLethalDefeat = true;
+    clearEndOfBattleStates();
+  }
+
+  /** 결투 roundLimit: 정한 라운드가 끝나면 남은 HP 비율 합으로 판정한다. 같으면 도주(무승부). 이미 끝났으면 false. */
+  function judgeDuelRoundLimit(): boolean {
+    if (result) return false;
+    const ratio = (list: readonly MutableBattler[]): number => list.reduce((sum, battler) => sum + (battler.maxHp > 0 ? Math.max(0, battler.hp) / battler.maxHp : 0), 0);
+    const mine = ratio(actors);
+    const theirs = ratio(enemies.filter((enemy) => !enemy.hidden && enemy.captured !== true));
+    recordTimeline({ kind: "stalemate", reason: "duelRoundLimit", side: "actor" });
+    if (mine > theirs) {
+      result = "victory";
+      phase = "resolved";
+      accumulateRewards();
+      clearEndOfBattleStates();
+    } else if (mine < theirs) {
+      endDuelAsDefeat();
+    } else {
+      escaped = true;
+      result = "escape";
+      phase = "resolved";
+    }
+    return true;
   }
 
   function clearEndOfBattleStates(): void {

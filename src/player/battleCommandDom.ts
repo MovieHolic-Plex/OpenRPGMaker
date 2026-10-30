@@ -326,6 +326,8 @@ function commandGrid(snapshot: BattleSnapshot, options: BattleCommandPanelOption
     overrideCommandIds,
     grantedCommands: actor?.equipmentEffects?.grantedCommands,
   })) {
+    // 결투 규칙 noItems — 아이템 명령은 메뉴에서 뺀다(런타임도 같은 규칙으로 거부).
+    if (command.kind === "item" && snapshot.duel?.noItems) continue;
     menu.append(commandControl(snapshot, options, command, actor, targetMode));
     // 「연계」는 기술 명령 바로 뒤에 선다 — 연계기를 쓸 수 있는 동료가 참전 중일 때만.
     if (command.kind === "skill" && !command.skillId && !menu.querySelector("[data-testid='actor-command-combo']")) {
@@ -362,17 +364,17 @@ function pokemonRootCommands(
       options.setSubmenu({ kind: "pokemonFight" });
       options.render();
     }, targetMode),
-    commandButton("가방", "actor-command-item", "bag", items.length + balls.length > 0 ? `${items.length + balls.length}종` : "없음", () => {
+    ...(snapshot.duel?.noItems ? [] : [commandButton("가방", "actor-command-item", "bag", items.length + balls.length > 0 ? `${items.length + balls.length}종` : "없음", () => {
       if (targetMode || items.length + balls.length === 0) return;
       options.setSubmenu({ kind: "item" });
       options.render();
-    }, targetMode || items.length + balls.length === 0),
+    }, targetMode || items.length + balls.length === 0)]),
     commandButton("몬스터", "actor-command-pkmn", "switch", switches.length > 0 ? `${switches.length}명` : "없음", () => {
       if (targetMode || switches.length === 0) return;
       options.setSubmenu({ kind: "switch" });
       options.render();
     }, targetMode || switches.length === 0),
-    commandButton("도망간다", "actor-command-run", "boot", "", () => {
+    commandButton(snapshot.duel?.forfeit ? "기권" : "도망간다", "actor-command-run", "boot", "", () => {
       if (!targetMode) options.runActorCommand({ kind: "escape" });
     }, targetMode || !snapshot.canEscape, snapshot.canEscape ? undefined : noEscapeNoticeLine(snapshot)),
   ];
@@ -386,7 +388,9 @@ function commandControl(
   targetMode: boolean
 ): HTMLElement {
   const terms = resolveTerms(store.getCurrent());
-  const label = battleCommandKindLabel(command, terms);
+  const label = command.kind === "escape" && snapshot.duel?.forfeit
+    ? "기권"
+    : battleCommandKindLabel(command, terms);
   switch (command.kind) {
     case "attack": {
       // gen1 모델에서 사용 가능한 기술이 남아 있으면 통상 공격은 런타임이 거부한다
