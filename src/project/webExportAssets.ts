@@ -30,6 +30,7 @@ import { decodeCharsetFrameIndex } from "@/assets/easyrpgRtp";
 import type { Project } from "@/project/types";
 import type { WebExportAsset } from "@/project/webExportTypes";
 import { webUploadedAssetPath } from './webUploadedAssetPath';
+import { transitVehicle } from "@/project/mapTransit";
 export { safeFileName } from './webUploadedAssetPath';
 
 const encoder = new TextEncoder();
@@ -136,6 +137,10 @@ export function collectWebExportAssets(project: Project): readonly WebExportAsse
     const zipPath = webUploadedAssetPath(asset);
     assets.set(zipPath, { kind: "uploaded", asset, zipPath });
   }
+  // 맵 위를 다니는 탈것(map.transit — 승용차 흐름·버스·지하철)의 시트는 런타임이 경로로 읽는다(playSceneTransit ensureFrames) —
+  // 프로젝트 문자열에는 차량 id 만 있고 그림 경로가 없어, 출하 판본에 차·열차 그림이 하나도 실리지 않았다
+  // (사용자 2026-10-30 「차가 안 나옴」 — 첫사랑 1.16 판본에서 modern-city/vehicles·jp-city/vehicles 전부 404).
+  for (const path of transitVehicleImagePaths(project)) assets.set(path, { kind: "public", sourcePath: path, zipPath: path });
   if (ids.has('tex_worldmap_selected')) {
     const path = 'assets/worldmap-icons/ATTRIBUTION.md';
     assets.set(path, { kind: 'public', sourcePath: path, zipPath: path });
@@ -144,6 +149,21 @@ export function collectWebExportAssets(project: Project): readonly WebExportAsse
   // 따라오므로 조건부로 돌리지 않는다 — 타이틀 화면의 라이선스 표기도 이 파일을 연다.
   assets.set("assets/ATTRIBUTION.md", { kind: "public", sourcePath: "assets/ATTRIBUTION.md", zipPath: "assets/ATTRIBUTION.md" });
   return [...assets.values()].sort((left, right) => left.zipPath.localeCompare(right.zipPath));
+}
+
+/** 맵 탈것 노선(map.transit.routes[].vehicles)이 쓰는 차량 시트의 public 경로(앞 / 없음). 목록에 없는 id 는 건너뛴다. */
+export function transitVehicleImagePaths(project: Project): string[] {
+  const paths = new Set<string>();
+  for (const map of Object.values(project.maps)) {
+    for (const route of map.transit?.routes ?? []) {
+      if (route.enabled === false) continue;
+      for (const id of route.vehicles ?? []) {
+        const image = transitVehicle(id)?.image;
+        if (image) paths.add(image.replace(/^\/+/u, ""));
+      }
+    }
+  }
+  return [...paths].sort();
 }
 
 /**

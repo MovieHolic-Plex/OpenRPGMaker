@@ -4333,7 +4333,7 @@
   {
    "id": "act2-b5-dogs",
    "label": "제2막 B5 — 숲 어귀 북쪽 잿빛 빈터: 굶은 들개가 보자마자 달려와 전투",
-   "note": "act2Opening.ts dawnwell foes map_field_north_1 들개 (16,12) — 숲 가장자리(23줄) 너머 깊이 — 고백 직후 매복이 아니라 몇 걸음 걸어 들어가야 만난다. detection 짐승 프로필(놀람 150ms·돌진 4칸@100ms) — 길이 서쪽으로 굽어 (15,18)에서는 나무에 가려 안 보인다: 왼쪽 4·위 5·오른쪽 2 로 빈터 입구까지 걸어간다",
+   "note": "act2Opening.ts dawnwell foes map_field_north_1 들개 (16,12) — 숲 가장자리(23줄) 너머 깊이 — 고백 직후 매복이 아니라 몇 걸음 걸어 들어가야 만난다. detection 짐승 프로필(놀람 150ms·돌진 4칸@100ms) — 길이 서쪽으로 굽어 (15,18)에서는 나무에 가려 안 보인다: 왼쪽 4·위 5·오른쪽 2 로 빈터 입구까지 걸어간다 — 걸음마다 stepTimeoutMs 10000: 부하 걸린 호스트(4~6fps)에서 기본 1.2초 안에 한 칸을 못 가 첫 걸음에서 멈추던 것",
    "mapId": "map_field_north_1",
    "x": 15,
    "y": 18,
@@ -4377,22 +4377,25 @@
       {
        "kind": "move",
        "dir": "left",
-       "steps": 4
+       "steps": 4,
+       "stepTimeoutMs": 10000
       },
       {
        "kind": "move",
        "dir": "up",
-       "steps": 5
+       "steps": 5,
+       "stepTimeoutMs": 10000
       },
       {
        "kind": "move",
        "dir": "right",
-       "steps": 2
+       "steps": 2,
+       "stepTimeoutMs": 10000
       },
       {
        "kind": "hold",
        "dir": null,
-       "ms": 6000
+       "ms": 12000
       }
      ],
      "shot": true
@@ -4425,9 +4428,9 @@
   {
    "id": "act2-b5-field",
    "label": "제2막 B5 — 재의 들판: 잿불 도깨비가 12칸 밖에서 알아보고 순식간에 덮친다",
-   "note": "act2Opening.ts DETECTION_PROFILES troop_fs2_ash_wisps — 사방 시야 12·벽 무시·알아챔 0·50ms/칸 돌진 30칸. 도깨비 (26,11)",
+   "note": "act2Opening.ts DETECTION_PROFILES troop_fs2_ash_wisps — 사방 시야 12(맨해튼)·벽 무시. 도깨비 (26,11). 숲 어귀(north_1 북문)에서 넘어오면 (35,19)에 선다 — 길을 따라 위 3·왼쪽 1·위 6 으로 올라가면 (34,15) 근처에서 12칸 안에 들어 덮친다. 예전 (33,19)에서 한 칸만 오르면 14칸이라 순찰이 내려올 때까지(부하에서 10초 넘게) 못 봤다",
    "mapId": "map_field_north_2",
-   "x": 33,
+   "x": 35,
    "y": 19,
    "facing": "up",
    "switches": {
@@ -4460,17 +4463,30 @@
       {
        "kind": "hold",
        "dir": null,
-       "ms": 600
+       "ms": 800
       },
       {
-       "kind": "hold",
+       "kind": "move",
        "dir": "up",
-       "ms": 700
+       "steps": 3,
+       "stepTimeoutMs": 10000
+      },
+      {
+       "kind": "move",
+       "dir": "left",
+       "steps": 1,
+       "stepTimeoutMs": 10000
+      },
+      {
+       "kind": "move",
+       "dir": "up",
+       "steps": 6,
+       "stepTimeoutMs": 10000
       },
       {
        "kind": "hold",
        "dir": null,
-       "ms": 4000
+       "ms": 12000
       }
      ],
      "shot": true
@@ -4872,10 +4888,9 @@
        "ms": 1200
       },
       {
-       "kind": "repeatUntil",
-       "testid": "dialogue-box",
-       "state": "absent",
-       "maxRounds": 16,
+       "kind": "repeatUntilMap",
+       "mapId": "map_snow_north_1",
+       "maxRounds": 40,
        "ops": [
         {
          "kind": "key",
@@ -4889,21 +4904,16 @@
        ]
       },
       {
-       "kind": "waitForMap",
-       "mapId": "map_snow_north_1",
-       "timeoutMs": 10000
-      },
-      {
        "kind": "waitFor",
        "testid": "dialogue-box",
        "state": "present",
-       "timeoutMs": 8000
+       "timeoutMs": 15000
       },
       {
        "kind": "repeatUntil",
        "testid": "dialogue-box",
        "state": "absent",
-       "maxRounds": 20,
+       "maxRounds": 24,
        "ops": [
         {
          "kind": "key",
@@ -5184,7 +5194,7 @@
   {
    "id": "act2-b6-court",
    "label": "제2막 B6 — 도개교 앞 눈 턱: 순찰 기사가 보자마자 달려든다",
-   "note": "act2Opening.ts northFortress — 순찰 기사 COURT_SPOTS.knight (28,28)",
+   "note": "act2Opening.ts northFortress — 순찰 기사 COURT_SPOTS.knight (28,28) — 부하 걸린 호스트에서는 Phaser 프레임 시간이 17ms 로 고정돼 게임 시간이 벽시계의 1/3~1/4 로 흐른다(실측 15fps·delta 17). 맵 진입 은총 2초가 벽시계 8~10초가 되므로 접근 비트를 16초 기다린다",
    "mapId": "fs2_fort_court",
    "x": 22,
    "y": 28,
@@ -5223,7 +5233,7 @@
       {
        "kind": "hold",
        "dir": null,
-       "ms": 6000
+       "ms": 16000
       }
      ],
      "shot": true
@@ -5256,9 +5266,9 @@
   {
    "id": "act2-b6-wall",
    "label": "제2막 B6 — 2층 성벽 문 → 성벽 위: 새라가 바로 앞을 막아서고 그 자리에서 전투",
-   "note": "act2Opening.ts fortressEvents ev_fs2_fort_wall_door",
+   "note": "act2Opening.ts fortressEvents ev_fs2_fort_wall_door (19,6) — 2층을 25칸 폭으로 다시 그리면서 문이 (19,6)으로 옮겨졌다(예전 (25,7)은 맵 밖 검은 칸) · #3973 이후 문 앞 칸(19,6)을 밟아도 넘어가지 않는다 — 한 칸 올라선 뒤 문 쪽(위)으로 한 번 더 민다",
    "mapId": "fs2_fortress_f2",
-   "x": 25,
+   "x": 19,
    "y": 7,
    "facing": "up",
    "switches": {
@@ -5295,7 +5305,14 @@
       {
        "kind": "move",
        "dir": "up",
-       "steps": 1
+       "steps": 1,
+       "stepTimeoutMs": 10000
+      },
+      {
+       "kind": "move",
+       "dir": "up",
+       "steps": 1,
+       "stepTimeoutMs": 10000
       },
       {
        "kind": "waitForMap",
