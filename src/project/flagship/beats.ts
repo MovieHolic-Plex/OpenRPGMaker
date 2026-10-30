@@ -84,11 +84,24 @@ export const FIRST_LOVE_STYLE_LOCK: FlagshipStyleLock = {
   bannedProperNouns: BANNED_IP_PROPER_NOUNS,
 } as const;
 
+export const NOTHING_TO_REPORT_STYLE_LOCK: FlagshipStyleLock = {
+  demoId: "nothing-to-report",
+  presetId: "school-horror",
+  resolution: { width: 480, height: 270 },
+  cameraZoom: 1,
+  dialogueStyle: "glass",
+  allowedTilesetIds: ["jp_city"],
+  allowedCharsetPrefixes: ["oprn-charset-modern", "tex_oprn_charset_modern"],
+  allowedPortraitPrefixes: ["shared-modern-"],
+  bannedProperNouns: BANNED_IP_PROPER_NOUNS,
+} as const;
+
 export const FLAGSHIP_STYLE_LOCKS: Readonly<Record<FlagshipDemoId, FlagshipStyleLock>> = {
   "chrono-bell": CHRONO_BELL_STYLE_LOCK,
   "emerald-crown": EMERALD_CROWN_STYLE_LOCK,
   "shitamachi-fourth-season": SHITAMACHI_STYLE_LOCK,
   "first-love": FIRST_LOVE_STYLE_LOCK,
+  "nothing-to-report": NOTHING_TO_REPORT_STYLE_LOCK,
 } as const;
 
 export const CHRONO_BELL_BEATS: readonly FlagshipBeat[] = [
@@ -217,6 +230,16 @@ const FIRST_LOVE_BEATS: readonly FlagshipBeat[] = [
   { id: "fl-07", atMinute: 17, act: "금요일 밤", mapKey: "fl_platform_pm", sceneTitle: "막차", playerFeel: "이번엔 먼저 말할까", mechanics: ["triggerEnding", "affection"], sharedAssets: [] },
 ];
 
+const NOTHING_TO_REPORT_BEATS: readonly FlagshipBeat[] = [
+  { id: "nr-00", atMinute: 0, act: "오프닝", mapKey: "map_nr_yard", sceneTitle: "교문 · 빈 복도의 손전등 · 열쇠함 · 3층의 세일러복 · 잠든 린", playerFeel: "게임 맵 그대로의 밤 학교 다섯 컷, 음악 없이 바람과 발소리", mechanics: ["place_opening_background(mapId)", "place_opening_charset_actor", "upsert_opening_audio_cue"], sharedAssets: ["oprn-charset-modern3", "oprn-charset-modern1"] },
+  { id: "nr-01", atMinute: 1, act: "B0~B1", mapKey: "map_nr_2f", sceneTitle: "오후 9시 40분 · 일직 일지 · 손전등", playerFeel: "검은 화면의 방송, 내 이름이 적힌 일지, 부채꼴로만 보이는 교실", mechanics: ["set_lighting_volume(when:switch)", "letter"], sharedAssets: ["oprn-charset-modern2"] },
+  { id: "nr-02", atMinute: 4, act: "B2", mapKey: "map_nr_2f", sceneTitle: "첫 손전등 · 첫 숨기", playerFeel: "계단참의 빛, 청소 도구함 안의 심장 소리, 문 앞에서 멈췄다 멀어지는 발소리", mechanics: ["make_chase_scene(patrol,hidingSpots,footsteps)", "set_field_detection(visionLight,emotes:none)", "hiding condition"], sharedAssets: [] },
+  { id: "nr-03", atMinute: 8, act: "B3", mapKey: "map_nr_1f", sceneTitle: "잠긴 현관 · 숙직 일지 · 보건실 침대", playerFeel: "쇠사슬, 번호 메모, 30년 전 일지의 흐린 한 줄", mechanics: ["compile_puzzle(item-gate)", "upsert_item"], sharedAssets: [] },
+  { id: "nr-04", atMinute: 14, act: "B4", mapKey: "map_nr_3f", sceneTitle: "대출 카드 · 피아노 한 음 · 세일러복", playerFeel: "벽을 지나 다가오는 학생, 숨으면 지나간다", mechanics: ["brain:ghost", "blendMode:add"], sharedAssets: ["oprn-charset-modern1"] },
+  { id: "nr-05", atMinute: 19, act: "B5", mapKey: "map_nr_1f", sceneTitle: "1107", playerFeel: "열쇠함 소리가 선생을 깨운다", mechanics: ["compile_puzzle(password)", "pursuit:connected", "checkpointSave"], sharedAssets: [] },
+  { id: "nr-06", atMinute: 22, act: "B6", mapKey: "map_nr_roof", sceneTitle: "하교 / 옥상 이상 있음", playerFeel: "운동장을 달리거나, 옥상에서 일지 마지막 줄을 쓴다", mechanics: ["triggerEnding", "setLighting(transitionMs)", "changeTile"], sharedAssets: [] },
+];
+
 export const FLAGSHIP_BEAT_MANIFESTS: Readonly<Record<FlagshipDemoId, FlagshipBeatManifest>> = {
   "chrono-bell": {
     id: "chrono-bell",
@@ -308,6 +331,26 @@ export const FLAGSHIP_BEAT_MANIFESTS: Readonly<Record<FlagshipDemoId, FlagshipBe
     beats: FIRST_LOVE_BEATS,
     styleLock: FIRST_LOVE_STYLE_LOCK,
   },
+  "nothing-to-report": {
+    id: "nothing-to-report",
+    title: "이상 없음",
+    subtitle: "밤 학교 추격 호러 · 숙직 선생의 손전등을 피해",
+    genreChoiceId: "school-horror",
+    targetMinutes: 22,
+    mapCount: 5,
+    endingCount: 2,
+    releaseOrder: 6,
+    priorityRank: 6,
+    summary: "11월 7일 밤, 일직을 하다 교실에서 잠든 2학년 하야세 린. 깨어 보니 학교는 잠겼고 복도에는 숙직 사에키 선생의 손전등이 오간다. 들키면 「찾았다.」 — 교무실 열쇠함 번호는 30년 전 「그날」이다. 숨고, 듣고, 읽어서 빠져나가거나, 옥상에 올라 일지의 마지막 줄을 고쳐 쓴다.",
+    thumb: "/assets/start/builtin/firstlove-title.webp",
+    cast: [
+      { id: "actor_hero", name: "하야세 린", role: "주인공 · 2학년 B반, 11월 7일 일직", assetId: "shared-modern-uni-girl-long-expressions-bust-base" },
+      { id: "npc_nr_saeki", name: "사에키 선생", role: "숙직 교사 · 추격자", assetId: "shared-modern-teacher-tweed-expressions-bust-base" },
+      { id: "npc_nr_sayo", name: "마키노 사요", role: "30년 전 2학년 · 3층의 세일러복", assetId: "shared-modern-uni-girl-sailor-expressions-bust-base" },
+    ],
+    beats: NOTHING_TO_REPORT_BEATS,
+    styleLock: NOTHING_TO_REPORT_STYLE_LOCK,
+  },
 } as const;
 
 export const FLAGSHIP_DEMO_BY_CHOICE: Partial<Record<NewProjectChoiceId, FlagshipDemoId>> = {
@@ -315,6 +358,7 @@ export const FLAGSHIP_DEMO_BY_CHOICE: Partial<Record<NewProjectChoiceId, Flagshi
   "monster-collect": "emerald-crown",
   "partner-raise": "emerald-crown",
   "story-cutscene": "shitamachi-fourth-season",
+  "school-horror": "nothing-to-report",
 } as const;
 
 export const FLAGSHIP_DEMO_ID_BY_CHOICE = FLAGSHIP_DEMO_BY_CHOICE;
