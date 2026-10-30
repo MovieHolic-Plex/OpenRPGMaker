@@ -391,6 +391,13 @@ Opus 다시 재기: 호출 68 → 31, 실패 11 → 4, 14분 → 6분. `link_jp_
 - **일본 실내에서 `move_object` 가 「위층·딸린 맵」으로 거절했다**(`verbs.moveObject`): jp-city 빌더의 기록 인자는 예제 구성(program)이라 가구 목록이 없고 mapId 도 없어 엉뚱한 거절 글로 빠졌다. jp-city 기록은 인자로 다시 짓지 않고 그림 칸 그대로 옮기기·빼기(`tileMoveObjects`)로 간다. 마왕 편의점 Opus 판에서 dress_room 이 더 놓은 계산대 둘을 빼려다 막혔다.
 - **`set_start_position` 이 막힌 칸만 알렸다**(`mapTools`): 4칸 안의 가장 가까운 걸을 수 있는 칸을 같이 알려 준다(모델이 칸을 짐작해 다시 부르던 왕복).
 
+## 조수 대조 5회차 — 칩 관문 읽기와 장르 기본값 부작용 (2026-10-31 asst-parity p1d-maou-terra)
+
+terra 마왕 편의점 다시 재기: 4 → 7점, 호출 46 → 43, 실패 3 → 1. 남은 실패 하나와 두 모델 공통의 거짓 「남은 문제」를 고쳤다.
+
+- **방금 본 칩을 칩 관문이 「안 봤다」고 되돌렸다**(`piAgent/charsetSelectionGate.payload`): openai-completions 는 도구 결과의 글 조각을 줄바꿈으로 이어 한 tool 메시지로 보내고, v2 문맥 정리는 마지막 도구 결과 끝에 상태 카드를 붙인다. 관문은 tool 메시지 전체를 JSON 하나로 읽으려다 실패해 그 검색 결과와 칩 그림이 모델에 갔다는 것을 세지 못했다(list_npc_graphics 「회사원」 → add_street_walkers 가 그 칩으로 거절). `JSON.stringify` 결과에는 줄바꿈이 없으므로 `{` 로 시작하는 줄을 따로 읽는다. 옛 코드는 같은 시험 입력에서 받은 칩 0개, 새 코드는 1개.
+- **장르 기본값을 「요청 없는 주인공 변경」으로 경고했다**(`gameChecks.unaskedChanges`): 현대 장소를 처음 지을 때 `genreDefaults` 가 주인공을 현대 칩·짝 얼굴로 갈아입히고, 전투 없는 게임이면 공장 기본 장비를 뺀다. 이 경고 줄의 면제가 `initialEquipment`·`battleCharacterResourceId` 를 몰라 「되돌려라」가 떴고, Opus·terra 둘 다 그 할 일을 「원래 값을 몰라 못 되돌린다」로 막고 사용자에게 문제라고 보고했다. 공장 기본 장비만 뺀 것(`onlyFactoryGearRemoved`, 전투 없음)과 배틀러 칩도 면제한다.
+
 ## 끝맺음 단계 더하기 (2026-10-29 단계 목록화)
 
 끝맺음 자동 단계와 출구·이동 칸 마감은 **단계 하나 = 파일 하나** 목록이다. 수리 작업자 여럿이 같은 파일(옛 `finishAutoBuild.ts`·`verbs.ts clearLanes`)을 고쳐 체리픽이 부딪히던 것을 없앤 구조 변경이며 동작은 같다(`finishReplay --trace` 로 vm5~vm7 판 대조).
