@@ -36,7 +36,7 @@ export function bboxPlacesOn(): boolean {
 /** 자기 비평 바퀴 수(실험 bbox-better: 2바퀴). */
 export const LAYOUT_CRITIQUE_ROUNDS = 2;
 /** 거절된 배치를 고쳐 다시 보낼 수 있는 횟수 — 넘으면 옛 빌더로 짓는다. */
-export const LAYOUT_REPAIRS = 2;
+export const LAYOUT_REPAIRS = 3;
 
 const isObj = (v: unknown): v is Record<string, unknown> => !!v && typeof v === "object" && !Array.isArray(v);
 export const hasDungeonLayout = (spec: PlaceSpec): boolean => isObj(spec.dungeonLayout) && Array.isArray((spec.dungeonLayout as BboxDungeonLayout).rooms) && (spec.dungeonLayout as BboxDungeonLayout).rooms!.length >= 2;
