@@ -645,6 +645,8 @@ function syncEnemyGroup(field: HTMLElement, snapshot: BattleSnapshot, presentati
   }
   const onFieldPositions = onFieldEnemyPositions(group as HTMLElement, snapshot, presentation?.onField);
   const positions = onFieldPositions ?? spreadRetroEnemyRow(group as HTMLElement, snapshot, resolveEnemyRowPositions(snapshot, snapshot.enemies));
+  // 쓰기 전에 한 번에 읽는다(적마다 읽고 쓰면 레이아웃을 적 수만큼 다시 계산한다).
+  const plateFloors = presentation?.onField ? undefined : enemyPlateFloors(field, group as HTMLElement, snapshot);
   for (const [index, enemy] of snapshot.enemies.entries()) {
     let node = group.querySelector<HTMLElement>(`[data-testid="${enemy.id}"]`);
     const form = presentedForm(enemy, presentation);
@@ -662,7 +664,10 @@ function syncEnemyGroup(field: HTMLElement, snapshot: BattleSnapshot, presentati
     if (!node) continue;
     syncEnemyNode(node, enemy, snapshot, presentation);
     // 필드 위 전투는 심볼 발밑이 곧 자리다 — 큰 적을 전장 안으로 밀어 넣는 보정을 하지 않는다.
-    const position = presentation?.onField ? positions[index]! : fitBattleEnemy(field, node, positions[index]);
+    const fitted = presentation?.onField ? positions[index]! : fitBattleEnemy(field, node, positions[index]);
+    // 이름·HP 이름표가 전장 아래(명령 창 뒤)로 잘리지 않게 그만큼 적을 올린다.
+    const floor = plateFloors?.get(enemy.id);
+    const position = floor !== undefined && fitted.y > floor ? { x: fitted.x, y: floor } : fitted;
     if (presentation?.onField) fitNodeToFieldSprite(node, ".battle-enemy-image", presentation.onField);
     // 옮겨진 적: 새 좌표로 미끄러지게 이동 시간을 노드에 싣는다(01-scene-base.css 의 left/top 트랜지션).
     if (enemy.moved && node.dataset.battleMoveSequence !== String(enemy.moved.sequence)) {
@@ -681,6 +686,41 @@ function syncEnemyGroup(field: HTMLElement, snapshot: BattleSnapshot, presentati
  * 피격·숨쉬기 애니메이션에 흔들리지 않고, 같은 적·같은 그룹 크기면 그룹에 적어 둔 값을 다시 쓴다.
  * 그림이 아직 없는 적(새로 생긴 노드)은 다음 동기화에서 잰다. 옮겨진 적(moved)은 손대지 않는다.
  */
+/** 적 이름표(.battle-enemy-chrome)의 아래끝이 발 기준점에서 몇 저작 단위(160 = 전장 높이) 아래인가. 노드마다 한 번 재고 적어 둔다. */
+function enemyPlateDrop(node: HTMLElement, unitY: number): number | undefined {
+  const cached = node.dataset.plateDropPx;
+  if (cached !== undefined) return Number(cached) / unitY;
+  const chrome = node.querySelector<HTMLElement>(".battle-enemy-chrome");
+  const height = node.offsetHeight;
+  if (!chrome || chrome.offsetParent !== node || !(chrome.offsetHeight > 0) || !(height > 0)) return undefined;
+  const dropPx = chrome.offsetTop + chrome.offsetHeight - height;
+  node.dataset.plateDropPx = String(dropPx);
+  return dropPx / unitY;
+}
+
+/**
+ * 적마다 발 기준점 y 의 상한(저작 단위). 이름표 아래끝이 전장의 보이는 아래끝 4px 위에 오게 한다.
+ * 진형이 아래쪽 줄에 둔 적은 이름·HP 가 명령 창 뒤로 잘렸다(이세계 고딩 첫인상 리뷰 2026-10-30, 「매운 슬라임」 HP).
+ * 이름표가 없거나 아직 그려지지 않은 적은 다음 동기화에서 잰다.
+ */
+function enemyPlateFloors(field: HTMLElement, group: HTMLElement, snapshot: BattleSnapshot): Map<string, number> | undefined {
+  const groupRect = group.getBoundingClientRect();
+  const fieldRect = field.getBoundingClientRect();
+  if (!(groupRect.height > 0 && fieldRect.height > 0)) return undefined;
+  const unitY = group.offsetHeight / 160;
+  if (!(unitY > 0)) return undefined;
+  const scale = groupRect.height / group.offsetHeight;
+  const visibleBottom = (Math.min(fieldRect.bottom, groupRect.bottom) - groupRect.top) / scale / unitY;
+  const floors = new Map<string, number>();
+  for (const enemy of snapshot.enemies) {
+    const node = group.querySelector<HTMLElement>(`[data-testid="${enemy.id}"]`);
+    const drop = node ? enemyPlateDrop(node, unitY) : undefined;
+    if (drop === undefined) continue;
+    floors.set(enemy.id, visibleBottom - drop - 4 / unitY);
+  }
+  return floors;
+}
+
 function spreadRetroEnemyRow(group: HTMLElement, snapshot: BattleSnapshot, positions: readonly { x: number; y: number }[]): readonly { x: number; y: number }[] {
   if (activeSkin().motionStyle !== "retro" || positions.length < 2 || snapshot.enemies.some((enemy) => enemy.moved)) return positions;
   const width = group.offsetWidth;
@@ -701,7 +741,14 @@ function spreadRetroEnemyRow(group: HTMLElement, snapshot: BattleSnapshot, posit
     const url = image.style.getPropertyValue("--pixel-enemy-url") || image.getAttribute("src") || undefined;
     // 등록되지 않은 그림(업로드)은 칸 전체를 상자로 본다.
     const [l, t, r, b] = battleContactBounds(url, "idle") ?? [0, 0, 1, 1];
-    return { left: (l - 0.5) * w / unitX, right: (r - 0.5) * w / unitX, top: -(1 - t) * h / unitY, bottom: -(1 - b) * h / unitY };
+    const sprite = { left: (l - 0.5) * w / unitX, right: (r - 0.5) * w / unitX, top: -(1 - t) * h / unitY, bottom: -(1 - b) * h / unitY };
+    // 이름표도 상자에 넣는다 — 뒷줄 적의 이름표가 앞줄 적 그림 위에 얹혔다(이세계 고딩 첫인상 리뷰 2026-10-30, 「말랑 슬라임 1」).
+    const node = image.closest<HTMLElement>(".battle-enemy");
+    const chrome = node?.querySelector<HTMLElement>(".battle-enemy-chrome");
+    const drop = node ? enemyPlateDrop(node, unitY) : undefined;
+    if (!chrome || drop === undefined) return sprite;
+    const half = chrome.offsetWidth / 2 / unitX;
+    return { left: Math.min(sprite.left, -half), right: Math.max(sprite.right, half), top: sprite.top, bottom: Math.max(sprite.bottom, drop) };
   });
   const spread = spreadEnemyFormation(positions, boxes);
   if (complete) {
