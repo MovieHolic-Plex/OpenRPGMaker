@@ -33,7 +33,7 @@ import { createMonsterKitTileset, ensureMonsterKitTileset, isMonsterKitTexture, 
 import { ensureStairEntranceReferences } from "./stairReferences";
 import { ATLAS_VEHICLES_TEXTURE, createAtlasVehiclesTileset, ensureAtlasVehiclesReferences } from "./atlasVehicles";
 import { ATLAS_BIOME_INTERIOR_TEXTURE, createAtlasBiomeInteriorTileset, ensureAtlasBiomeInteriorCurrent, atlasBiomeInteriorBundledReferenceDocuments } from "./atlasBiomeInterior";
-import { bundledJsonKeyForTexture, bundledJsonLoaded, preloadBundledJson, type BundledJsonKey } from "./bundledJson";
+import { bundledJsonKeyForTexture, bundledJsonLoaded, preloadBundledJson, type BundledJsonKey, type BundledJsonProgress } from "./bundledJson";
 import type { TilesetReferenceCategory } from "../tilesetReferences";
 import type { AssetSet, GameMap, PassFlag, ResourceKind, ResourceProfile, SpriteDef, TilesetDef } from "../types";
 import { CC0_ICON_ASSETS } from "@/assets/cc0IconAssets";
@@ -163,14 +163,14 @@ export function bundledTilesetDefinitionReady(id: string): boolean | undefined {
 }
 
 /** 번들 타일셋 id 들의 정의 JSON 을 읽어 둔다(차이로 저장한 프로젝트를 되돌리기 전에 await). 읽을 것이 없으면 null. */
-export function preloadBundledTilesetDefinitions(ids: Iterable<string>): Promise<void> | null {
+export function preloadBundledTilesetDefinitions(ids: Iterable<string>, progress?: BundledJsonProgress): Promise<void> | null {
   const keys = new Set<BundledJsonKey>();
   for (const id of ids) {
     const asset = bundledAssetForTilesetId(id);
     const key = asset ? bundledJsonKeyForTexture(asset.textureKey) : undefined;
     if (key && !bundledJsonLoaded(key)) keys.add(key);
   }
-  return keys.size > 0 ? preloadBundledJson([...keys]) : null;
+  return keys.size > 0 ? preloadBundledJson([...keys], progress) : null;
 }
 
 /** 정의 JSON 을 지연으로 읽는 번들 칩셋 → 정의 없이 참고문서만 만드는 함수(새 사본의 referenceDocuments 와 같은 값). */

@@ -4508,6 +4508,10 @@ Pi가 error 뒤 done을 보내도 성공 완료로 승격하지 않는다. 최�
 ### 검증 (2026-10-14)
 
 - 모의 서버 `scripts/qa/openai-compat-mock-server.mjs`(401·404·429·도구 미지원·강도 인자 거절·`--models`) + 실제 설정 화면 Playwright: 카드·프리셋·401/404·모델 목록·마스킹된 키·역할 지정 거절·차단 모델 숨김·4개 언어. 실제 프로젝트 저장소 호스트(`scripts/oprn-serve.mjs`)에서 조수 한 턴(분류 호출 → 도구 25개 → `set_map_properties` 도구 호출 → 결과 왕복)으로 맵 이름을 바꾸고 `project.sqlite` 저장·새 브라우저 재로드로 확인.
+- 모델별 그림 시험(`probeOpenAiCompatImageModels`): 8×8 빨강 한 장을 보내 글로 답하면 «본다», 빈 답·400 이면 «못 본다»로 `imageProbe` 에 적고, 못 보는 모델에는 그림 자리를 글 한 줄로 바꿔 보낸다.
+  시험 대상은 기본 모델·모델 목록에 더해 **허용 목록에 이름 그대로 적힌 모델**이다(2026-10-30 — proxy8318 은 모델 목록이 비어 gemini-3.8-flash 만 시험됐다).
+  실측(2026-10-30, 8318): `gemini-3.8-flash`·`gemini-4-argon` 은 요청 어디에든(첫 메시지·도구 결과) 그림이 있으면 글도 도구 호출도 없는 빈 답을 준다(같은 요청에서 그림만 빼면 도구를 부른다, 3/3).
+  `gemini-3.8-flash-high`·`gemini-4-argon-high` 는 그림을 보고 도구도 부른다. 맨 이름 모델에게 그림을 보이려면 `-high` 이름을 써야 한다(강도도 high 가 된다).
 - 실서버 시험: `OPRN_LIVE_KEY=*** bun scripts/qa/openai-compat-live.mjs --base http://mdc-server:8318/v1 --models gemini-4-argon-high --items models,turn,effort,image --allow 'gemini-4-argon*' --block 'claude-*'` — 키는 환경변수로만 받고 출력은 마스킹되며, 패턴에 막힌 모델(claude-*)은 호출하지 않는다.
 - 안 돌린 것: vitest·게이트·typecheck(번들 확인은 esbuild·bun 으로 함). 이 PR 에 새 단위 테스트는 없다.
 

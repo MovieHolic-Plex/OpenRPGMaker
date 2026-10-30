@@ -2,7 +2,60 @@
 // 서버 검색은 팩(상품) 단위이고 곡별 설명은 매니페스트 안(meta.oprnMusic)에만 있다 — 그래서 음악 팩 매니페스트를 받아 곡 단위로 줄 세운다.
 // 곡 하나만 넣을 때는 subsetMusicManifest 로 그 곡만 남긴 매니페스트를 applyPackToProject 에 넘긴다(출처·라이선스·AI 표시는 그대로 붙는다).
 import type { StoreItemSummary, StorePackManifest } from "./format";
-import { readStoreMusicMeta, STORE_MUSIC_SCENE_LABELS, type StoreMusicMeta, type StoreMusicScene } from "@/assets/storeMusicMeta";
+import { readStoreMusicMeta, STORE_MUSIC_SCENE_LABELS, STORE_MUSIC_SCENES, type StoreMusicMeta, type StoreMusicScene } from "@/assets/storeMusicMeta";
+
+/**
+ * 조수가 scene 에 넣는 다른 말 → 장면 id. 2026-10-30 실조수 e2e(/tmp/mfe2): 「village」「maps」「미술관」을 넣거나 scene 을 빼고 한 번 실패한 뒤 고쳐 불렀다.
+ * 미술관·박물관·저택은 걸어 다니며 살피는 실내 — 그곳의 배경음은 마을·가게 자리(town)다(공포 미술관도 평소 곡은 잔잔하고, 쫓길 때만 chase).
+ */
+const SCENE_SYNONYMS: Readonly<Record<string, StoreMusicScene>> = {
+  village: "town", city: "town", shop: "town", inn: "town", castle: "town", home: "town", house: "town", gallery: "town", museum: "town", mansion: "town", school: "town",
+  마을: "town", 도시: "town", 가게: "town", 상점: "town", 여관: "town", 성: "town", 집: "town", 미술관: "town", 갤러리: "town", 박물관: "town", 저택: "town", 학교: "town",
+  map: "field", maps: "field", world: "field", worldmap: "field", overworld: "field", 필드: "field", 월드맵: "field", 들판: "field", 평원: "field", 맵: "field",
+  cave: "dungeon", ruin: "dungeon", ruins: "dungeon", tower: "dungeon", 던전: "dungeon", 동굴: "dungeon", 유적: "dungeon", 탑: "dungeon", 미궁: "dungeon",
+  fight: "battle", combat: "battle", 전투: "battle", 배틀: "battle",
+  "final-boss": "boss", finalboss: "boss", 보스: "boss", 보스전: "boss", 마왕: "boss",
+  fanfare: "victory", jingle: "victory", win: "victory", 승리: "victory", 팡파르: "victory", 팡파레: "victory",
+  sorrow: "sad", 슬픔: "sad", 슬픈: "sad", 이별: "sad",
+  horror: "tense", suspense: "tense", stealth: "tense", mystery: "tense", 긴장: "tense", 공포: "tense", 호러: "tense", 잠입: "tense", 미스터리: "tense",
+  chaser: "chase", pursuit: "chase", "chase-scene": "chase", 추격: "chase", 추격전: "chase", 도망: "chase",
+  menu: "title", 타이틀: "title", 메인: "title",
+  credits: "ending", credit: "ending", epilogue: "ending", 엔딩: "ending", 크레딧: "ending", 에필로그: "ending",
+};
+
+/** scene 인자 → 장면 id(정확한 id·한국어 이름·다른 말). 모르면 null. */
+export function normalizeStoreMusicScene(value: unknown): StoreMusicScene | null {
+  const text = typeof value === "string" ? value.trim().toLowerCase().replace(/[\s_]+/gu, "-") : "";
+  if (!text) return null;
+  if ((STORE_MUSIC_SCENES as readonly string[]).includes(text)) return text as StoreMusicScene;
+  const label = (Object.entries(STORE_MUSIC_SCENE_LABELS) as [StoreMusicScene, string][]).find(([, ko]) => ko === text);
+  if (label) return label[0];
+  return SCENE_SYNONYMS[text] ?? SCENE_SYNONYMS[text.replace(/-/gu, "")] ?? SCENE_SYNONYMS[text.replace(/(곡|음악|bgm|브금|용|씬|장면)$/u, "")] ?? null;
+}
+
+/** scene 이 없을 때 요청 말에서 읽는 장면 — 앞 줄이 먼저(보스는 전투보다, 추격은 긴장보다 먼저). */
+const SCENE_WORDS: readonly (readonly [StoreMusicScene, RegExp])[] = [
+  ["chase", /추격|쫓아|쫓기|쫓는|도망|chase|chaser|pursuit/iu],
+  ["boss", /보스|마왕|최종\s*전|boss/iu],
+  ["victory", /승리|팡파[르레]|fanfare|victory/iu],
+  ["ending", /엔딩|크레딧|에필로그|ending|credits?/iu],
+  ["title", /타이틀|메인\s*화면|title/iu],
+  ["battle", /전투|배틀|싸움|battle|combat/iu],
+  ["dungeon", /던전|동굴|유적|미궁|dungeon|cave/iu],
+  ["field", /필드|월드\s*맵|들판|평원|초원|field|overworld/iu],
+  ["town", /마을|도시|가게|상점|여관|미술관|갤러리|박물관|저택|town|village|city|gallery/iu],
+  ["sad", /슬픈|슬픔|이별|애도|sad/iu],
+  ["tense", /긴장|공포|호러|잠입|tense|horror|stealth/iu],
+];
+
+/** 요청 말(query·need·mood …)에서 장면을 짐작한다. 못 읽으면 null. */
+export function inferStoreMusicScene(...texts: readonly unknown[]): StoreMusicScene | null {
+  const text = texts.filter((value): value is string => typeof value === "string").join(" ");
+  return SCENE_WORDS.find(([, re]) => re.test(text))?.[0] ?? null;
+}
+
+/** 요청한 장면이 적힌 곡이 없을 때 그다음으로 맞는 장면(추격 곡이 없으면 긴장 곡). */
+const SCENE_NEAR: Readonly<Partial<Record<StoreMusicScene, readonly StoreMusicScene[]>>> = { chase: ["tense"], tense: ["chase"] };
 
 /** 팩의 장르 줄(genreLine) → 사용자가 쓰는 낱말. 실제로 그렇게 들리지 않는 곡도 이 팩 줄에는 약하게 맞는다. */
 const LINE_WORDS: Readonly<Record<string, readonly string[]>> = {
@@ -198,8 +251,10 @@ export function scoreStoreMusic(track: StoreMusicTrack, want: StoreMusicQuery): 
   let score = 0;
   if (want.scene) {
     const at = m.scenes.indexOf(want.scene);
-    if (at < 0) return -1;
-    score += at === 0 ? 12 : 9;
+    if (at >= 0) score += at === 0 ? 12 : 9;
+    // 가까운 장면(추격 ↔ 긴장)은 낮게 받는다 — 정확히 그 장면으로 적힌 곡이 늘 앞에 선다.
+    else if ((SCENE_NEAR[want.scene] ?? []).some((near) => m.scenes.includes(near))) score += 5;
+    else return -1;
   }
   const genreText = `${m.genreKo} ${m.genreLabel}`.toLowerCase();
   const lineWords = LINE_WORDS[m.genre] ?? [m.genre];
@@ -250,6 +305,28 @@ export function rankStoreMusic(tracks: readonly StoreMusicTrack[], want: StoreMu
     .sort((a, b) => b.score - a.score || a.index - b.index)
     .slice(0, limit)
     .map((row) => row.track);
+}
+
+/**
+ * 후보가 왜 그 자리인가(조수에게 보이는 짧은 이유) + 물러선 곡인가.
+ * 2026-10-30 실조수: 「파판 전투곡 느낌으로 일반 전투」에서 1위(심포닉 전투곡) 대신 3위를 넣었다 — 후보에 순위 이유가 없었다.
+ * fallback: 게임 이름에서 줄을 읽었는데(「파판」 → symphonic-jrpg) 이 곡은 그 첫 줄이 아니다 — 그 줄 곡이 없을 때만 쓰는 대신 곡.
+ */
+export function explainStoreMusicPick(track: StoreMusicTrack, want: StoreMusicQuery): { readonly why: string; readonly fallback: boolean } {
+  const m = track.music;
+  const parts: string[] = [];
+  if (want.scene) {
+    const at = m.scenes.indexOf(want.scene);
+    parts.push(at === 0 ? `장면 ${want.scene} 맞음(주 장면)` : at > 0 ? `장면 ${want.scene} 맞음` : `장면 ${want.scene} 가까움(${m.scenes.join("·")})`);
+  }
+  const expanded = expandStoreMusicQuery(want.query ?? "");
+  const mapped = expanded.lines[0];
+  const fallback = Boolean(mapped) && m.genre !== mapped;
+  if (expanded.games.length) parts.push(fallback ? `「${expanded.games[0]}」 결(${mapped}) 아님 — 대신 곡(${m.genre})` : `「${expanded.games[0]}」 결 줄(${m.genre}) 맞음`);
+  const words = tokens(expanded.query).filter((word) => `${m.genreKo} ${m.genreLabel}`.toLowerCase().includes(word) || m.feelTags.some((feel) => feel.toLowerCase().includes(word)));
+  if (words.length) parts.push(`낱말 ${[...new Set(words)].slice(0, 3).join("·")} 맞음`);
+  if (want.scene && want.scene !== "victory" && !m.loopable) parts.push("루프 아님");
+  return { why: parts.join(", ") || "장르·분위기", fallback };
 }
 
 /** 조수에게 보이는 곡 한 줄(바이트·sha 없음). */

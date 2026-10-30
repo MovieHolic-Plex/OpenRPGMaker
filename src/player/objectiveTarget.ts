@@ -155,7 +155,26 @@ export function promptTargetName(project: Pick<Project, "maps">, view: RuntimeEv
     return name ? clip(name) : undefined;
   }
   const raw = String(view.event.name ?? "").replace(/^숨을\s*곳\s*:\s*/u, "").trim();
-  if (raw && !GENERIC_NAME.test(raw) && /[\p{L}]/u.test(raw)) return clip(raw);
+  if (raw && !GENERIC_NAME.test(raw) && !ID_LIKE.test(raw) && /[\p{L}]/u.test(raw)) return clip(raw);
+  // 말 거는 사람(대사 화자)이면 그 이름 — 2026-10-30 씬 벤치 gym-leader: 이름 없는 관장 앞에 단상 칸 이름 「gyd_dais_gr…」가 떴다.
+  const speaker = firstSpeaker(view.page?.commands);
+  if (speaker) return clip(speaker);
   const tile = tileLabel?.split(" · ")[0]?.replace(/\s*\([^)]*\)/gu, "").replace(/\s+\d+\s*[w×x]\s*\d*$/iu, "").trim();
-  return tile ? clip(tile) : undefined;
+  return tile && !ID_LIKE.test(tile) ? clip(tile) : undefined;
+}
+
+/** 내부 식별자(영문·숫자·밑줄만, 밑줄 포함 — 「gyd_dais_grass」「mx_map_x_leader」)는 사람에게 보이는 이름이 아니다. */
+const ID_LIKE = /^(?=.*_)[A-Za-z0-9_.:-]+$/u;
+
+function firstSpeaker(commands: unknown): string | undefined {
+  const stack: unknown[] = [commands];
+  while (stack.length) {
+    const node = stack.shift();
+    if (Array.isArray(node)) { stack.unshift(...node); continue; }
+    if (!node || typeof node !== "object") continue;
+    const r = node as Record<string, unknown>;
+    if (r.kind === "text" && typeof r.speaker === "string" && r.speaker.trim() && !ID_LIKE.test(r.speaker.trim())) return r.speaker.trim();
+    for (const v of Object.values(r)) if (v && typeof v === "object") stack.push(v);
+  }
+  return undefined;
 }

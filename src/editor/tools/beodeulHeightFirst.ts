@@ -119,7 +119,31 @@ export function parseSettle(v: unknown): VillageSettle | undefined {
  * 높이(ab6 블라인드 판정 「한 단 차이 절벽 띠가 얇아 높이감이 없다」): 마을 단과 바로 위 단은 두 단 차이(두꺼운 절벽 띠),
  * 그 위는 한 단씩. 시공기 3b 는 높이 먼저일 때 두 단 차이도 계단(층계참 + 계단 세 칸)으로 건넌다.
  */
-export function planHeightFirst(W: number, H: number, seed: number, _theme: BeodeulVillageTheme, landform: VillageLandform, settle: VillageSettle, coastShore?: number, river = false, tiersArg?: number, highArg?: VillageHigh): HeightFirstPlan {
+/** 맨 윗단에 앉을 높은 곳 건물(망루·예배당·사원·사당)의 크기 — 그 단의 폭·깊이를 여기에 맞춘다(ab10 「맨 위 단에 길만 있고 랜드마크가 없다」). */
+export interface TopNeed { w: number; h: number }
+
+/**
+ * 단 끝이 사라지는 옆면의 오름 줄 수: d 열 떨어진 곳에서 몇 줄 올랐나. 평균은 per 열에 한 줄이지만 한 열에 0~2줄씩 들쭉날쭉 오르고
+ * 가끔 2~4열 평평하게 쉰다 — 한 줄씩 꼬박꼬박 오르면 자로 그은 계단꼴로 보였다(ab10 판정 8·9 「사라지는 절벽 끝이 기계적인 계단」).
+ */
+function riseProfile(len: number, per: number, rand: () => number): Int16Array {
+  const r = new Int16Array(len + 1);
+  let acc = 0, rest = 0;
+  for (let d = 1; d <= len; d += 1) {
+    if (rest > 0) { rest -= 1; r[d] = acc; continue; }
+    const want = d / per; // 평균 기울기에서 너무 멀어지지 않게 당긴다
+    const p = rand();
+    let step = p < 0.28 ? 0 : p < 0.82 ? 1 : 2;
+    if (acc + step < want - 2) step += 1;
+    if (acc + step > want + 2) step = 0;
+    acc += step; r[d] = acc;
+    if (step === 0 && rand() < 0.35) rest = 1 + Math.floor(rand() * 3);
+  }
+  for (let d = 1; d <= len; d += 1) if (r[d]! < Math.ceil(d / (per * 2))) r[d] = Math.ceil(d / (per * 2)); // 끝까지 가면 결국 맵 위로 사라진다
+  return r;
+}
+
+export function planHeightFirst(W: number, H: number, seed: number, _theme: BeodeulVillageTheme, landform: VillageLandform, settle: VillageSettle, coastShore?: number, river = false, tiersArg?: number, highArg?: VillageHigh, need: TopNeed = { w: 9, h: 8 }): HeightFirstPlan {
   const rand = rng(seed * 6343 + landform.length * 29 + settle.length * 7);
   const ri = (a: number, b: number) => a + Math.floor(rand() * (b - a + 1));
   const lv = new Uint8Array(W * H);
@@ -139,12 +163,20 @@ export function planHeightFirst(W: number, H: number, seed: number, _theme: Beod
     let lowH = coastShore !== undefined ? Math.max(lowMin, H - (coastShore - 7)) : Math.max(lowMin, Math.min(16, Math.round(H * (river ? 0.3 : 0.24))));
     let band = Math.max(19, Math.min(23, H - lowH - northMin));
     if (H - lowH - band < northMin) { lowH = Math.max(lowMin, H - band - northMin); band = Math.max(19, H - lowH - northMin); }
+    // 언덕·고원 꼭대기는 높은 곳 건물이 앉을 깊이(건물 높이 + 길·띄움 3줄)와 그 밑 위 단 5줄이 있어야 한다 — 모자라면 마을 단·낮은 단을 최소로 줄여 북쪽에 자리를 낸다
+    const topRoom = landform === "hill" || landform === "plateau" ? need.h + 3 + 5 : 0;
+    if (H - lowH - band < topRoom) { band = 19; lowH = Math.max(lowMin, Math.min(lowH, H - band - topRoom)); }
     const yB = H - lowH + ri(-1, 1);
     below = meander(W, yB, rand, 2);
     raise(below, 1);
     yBand = yB - band;
   } else {
     yBand = Math.max(northMin, Math.round(H * 0.5) + ri(-2, 2) - NORTH_STRIP - (river ? 2 : 0));
+    // 언덕·고원(마을이 맨 아래 단): 꼭대기 건물 자리가 모자라면 마을을 남쪽으로 내린다 — 큰길 남쪽 집 띠·강·맵 끝 자리는 남긴다
+    if (landform === "hill" || landform === "plateau") {
+      const maxBand = H - (NORTH_STRIP + 2 + (river ? 9 + 3 + 3 : 9));
+      yBand = Math.max(yBand, Math.min(need.h + 3 + 5, maxBand));
+    }
   }
   const L0 = settle === "middle" ? 1 : 0; // 마을 단 높이
   const UP = L0 + 2; // 마을 단 바로 위 단 — 두 단 차이(두꺼운 절벽 띠)
@@ -166,7 +198,8 @@ export function planHeightFirst(W: number, H: number, seed: number, _theme: Beod
   /** 꼭대기 등고선: 가운데 span 칸은 base 그대로, 바깥은 per 칸마다 한 줄씩 위로(맵 위 끝에서 사라진다 — 남북 직선 옆면 금지). */
   const bulge = (base: (x: number) => number, cx: number, span: number, per: number) => {
     const x0 = cx - Math.floor(span / 2), x1 = x0 + span - 1;
-    return (x: number) => { const d = x < x0 ? x0 - x : x > x1 ? x - x1 : 0; return base(x) - Math.ceil(d / per); };
+    const rl = riseProfile(W, per, rand), rr = riseProfile(W, per, rand);
+    return (x: number) => x < x0 ? base(x) - rl[x0 - x]! : x > x1 ? base(x) - rr[x - x1]! : base(x);
   };
   let plateauTop: { x0: number; x1: number; level: number } | null = null;
   let aboveSpan: { x0: number; x1: number } | null = null;
@@ -175,7 +208,8 @@ export function planHeightFirst(W: number, H: number, seed: number, _theme: Beod
   const fade = (fn: (x: number) => number, x0: number, x1: number, per: number) => {
     if (x0 > 0) cliffEnds.push({ x: x0, y: fn(x0) });
     if (x1 < W - 1) cliffEnds.push({ x: x1, y: fn(x1) });
-    return (x: number) => { const d = x < x0 ? x0 - x : x > x1 ? x - x1 : 0; return fn(x) - Math.ceil(d / per); };
+    const rl = riseProfile(W, per, rand), rr = riseProfile(W, per, rand);
+    return (x: number) => x < x0 ? fn(x) - rl[x0 - x]! : x > x1 ? fn(x) - rr[x - x1]! : fn(x);
   };
   /** 단 끝이 사라질 열 범위: high west/east 면 그쪽 가장자리에 붙고, 아니면 한쪽(또는 양쪽)이 맵 안에서 끝난다. cover = 맵 폭에 대한 비율. */
   const spanFor = (cover: number, side: VillageHigh): [number, number] => {
@@ -202,21 +236,22 @@ export function planHeightFirst(W: number, H: number, seed: number, _theme: Beod
     const spanOf = () => aboveSpan ?? { x0: 0, x1: W - 1 };
     if (landform === "hill") {
       // 언덕: 위 단 위에 high 자리를 꼭대기로 tiers−1 겹이 남쪽으로 불룩 — 겹마다 폭이 줄고 5줄씩 위
-      let span = Math.round(W * (0.36 + rand() * 0.12)), k = 1, base = meander(W, yBand - 5 - ri(0, 1), rand, 2);
+      // 겹마다 꼭대기는 높은 곳 건물이 앉을 폭(건물 폭 + 6)·깊이(건물 높이 + 3)를 가진다 — 못 가지면 겹을 더 쌓지 않는다(작은 꼭대기는 시공기가 어차피 내려앉혔다: ab10 언덕 꼭대기 105~135칸)
+      let span = Math.max(need.w + 8, Math.round(W * (0.36 + rand() * 0.12))), k = 1, base = meander(W, yBand - 5 - ri(0, 1), rand, 2);
       const sp = spanOf(); const cx = Math.max(sp.x0 + Math.floor(span / 2) + 2, Math.min(sp.x1 - Math.floor(span / 2) - 2, hcx));
-      for (; k < tiers && span >= 8; k += 1) {
-        if (base(cx) < 3) break;
+      for (; k < tiers && span >= need.w + 6; k += 1) {
+        if (base(cx) < need.h + 3) break;
         raise(bulge(base, cx, span, 2), UP + k);
         cliffEnds.push({ x: cx - Math.floor(span / 2), y: base(cx) }, { x: cx + Math.ceil(span / 2), y: base(cx) });
-        span = Math.round(span * 0.6); base = meander(W, minOf(base) - 4, rand, 2);
+        span = Math.round(span * 0.7); base = meander(W, minOf(base) - 5, rand, 2);
       }
       notes.push(k > 1 ? `언덕 ${k}겹(꼭대기 ${high})` : "언덕 한 층");
     } else if (landform === "plateau") {
       // 고원: 위 단 위 high 자리에 두 단 더 높은 넓은 대지(벽 두 칸) — 옆은 한 칸마다 한 줄씩(가파른 벼랑)
-      const span = Math.round(W * (0.34 + rand() * 0.1));
-      const top = meander(W, yBand - 6 - ri(0, 1), rand, 2);
+      const span = Math.max(need.w + 8, Math.round(W * (0.34 + rand() * 0.1)));
+      const top = meander(W, yBand - 5 - ri(0, 1), rand, 1);
       const sp = spanOf(); const cx = Math.max(sp.x0 + Math.floor(span / 2) + 2, Math.min(sp.x1 - Math.floor(span / 2) - 2, hcx));
-      if (top(cx) >= 4) {
+      if (top(cx) >= need.h + 3) {
         raise(bulge(top, cx, span, 1), UP + 2);
         plateauTop = { x0: cx - Math.floor(span / 2), x1: cx - Math.floor(span / 2) + span - 1, level: UP + 2 };
         cliffEnds.push({ x: plateauTop.x0, y: top(plateauTop.x0) }, { x: plateauTop.x1, y: top(plateauTop.x1) });
@@ -226,8 +261,12 @@ export function planHeightFirst(W: number, H: number, seed: number, _theme: Beod
       // 산비탈: 위 단 위로 6~7줄마다 한 단 — 위 단 위의 단들(UP+1~)은 시공기가 산 숲으로 덮는다(summitFrom)
       let k = 1, prev = above;
       for (; k <= tiers; k += 1) {
-        const c = meander(W, minOf(prev) - 6 - ri(0, 1), rand, 2);
-        const next = (x: number) => c(x) + tilt(x);
+        // 첫 겹(마을 단 바로 위 단)은 사람이 사는 단 — 집·높은 곳 건물이 앉을 깊이(건물 높이 + 3)를 모든 열에서 남긴다(ab10 산촌 「두 절벽 사이 빈 띠」: 4줄뿐이라 헛간만)
+        // 산 숲(맨 윗단)도 숲이 설 만큼(7줄) 남긴다 — 둘 다 못 가지면 사는 단을 7줄까지 줄인다
+        const gap = k === 1 ? Math.max(7, Math.min(Math.max(9, need.h + 3), minOf(prev) - 7)) : 6;
+        const c = meander(W, minOf(prev) - gap - ri(0, 1), rand, 2);
+        const pv = prev;
+        const next = (x: number) => Math.min(c(x) + tilt(x), pv(x) - gap);
         if (minOf(next) < 3) break;
         raise(next, UP + k); prev = next;
       }
@@ -238,7 +277,8 @@ export function planHeightFirst(W: number, H: number, seed: number, _theme: Beod
       let k = 1, prev = above, sp = spanOf();
       for (; k < tiers; k += 1) {
         const c = meander(W, minOf(prev) - 8 - ri(0, 1), rand, 3);
-        let next: (x: number) => number = (x: number) => c(x) + tilt(x);
+        const pv = prev;
+        let next: (x: number) => number = (x: number) => Math.min(c(x) + tilt(x), pv(x) - 7); // 겹 사이 띠는 어느 열에서나 집 한 줄(7줄) 깊이
         if (minOf(next) < 3) break;
         const shrink = ri(5, 9);
         const x0 = sp.x0 > 0 ? sp.x0 + shrink : rand() < 0.5 ? 0 : shrink + 2, x1 = sp.x1 < W - 1 ? sp.x1 - shrink : x0 === 0 ? W - 1 - shrink - 2 : W - 1;

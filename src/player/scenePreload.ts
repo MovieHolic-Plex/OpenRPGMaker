@@ -149,6 +149,8 @@ export function mapSceneUrls(project: Project, mapId: MapId): Set<string> {
   try {
     const bgm = resolveMapBgm(project, mapId);
     if (bgm.kind === "play") strings.add(bgm.resourceId);
+    // 스위치가 켜진 동안의 곡(추격 곡)도 이 맵에서 울릴 수 있다.
+    for (const entry of project.maps[mapId]?.bgmWhileSwitch ?? []) if (entry?.resourceId) strings.add(entry.resourceId);
   } catch { /* 맵 트리가 낡았으면 맵 글자만 쓴다 */ }
   urlsFromStrings(strings, project, urls);
   return urls;
@@ -349,6 +351,15 @@ export async function preloadUrls(
   };
   await Promise.all(Array.from({ length: Math.max(1, options.concurrency ?? 6) }, worker));
   return { doneFiles, totalFiles, bytes };
+}
+
+/**
+ * 맵 이동을 시작하는 순간 그 맵의 파일 받기를 먼저 건다(기다리지 않는다). 페이드아웃 동안 받아 두면
+ * 검은 화면에서 holdForMapAssets 가 기다릴 몫이 준다 — 같은 주소는 fetchOne 이 한 번만 받는다.
+ */
+export function prefetchMapAssets(project: Project, mapId: MapId): void {
+  if (!preloadActive) return;
+  void ensureMapReady(project, mapId).catch(() => undefined);
 }
 
 /** 맵 이동 직전: 그 맵의 파일이 다 왔는지 확인하고, 아니면 받을 때까지 기다린다. */

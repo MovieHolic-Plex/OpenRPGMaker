@@ -2,6 +2,7 @@
 // 사용자 스크린샷(field-enemy fe1): 조수가 던전 층을 stamp_object 112번 + paint_tiles 67번(절대 좌표)으로 깔다 25분 시간 초과,
 // 횃불·화로·통·상자·기둥이 허공에 뜨고 벽 조각이 바닥에 서고 이벤트가 천장 칸에 놓였다. 좌표를 모델이 고르지 않게 한다.
 // 계산은 src/editor/dungeonKit/ — 중립 마스크(mask.ts) + 칩셋 어댑터(beodeul/·monster/) + 장르 프리셋(genres.ts) + 라우팅(route.ts).
+import { DUNGEON_DESIGN_SCHEMA } from "@/editor/dungeonKit/designLayout";
 import { isPassable } from "@/project/collision";
 import { kitDoorOpenCommands } from "@/project/kitDoors";
 import { groundSupportIssues } from "@/project/groundSupport";
@@ -24,9 +25,11 @@ import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } 
 import { DUNGEON_ENTRANCE_TAG, pickDungeonGateSpot, ENTRANCE_OPTION_SCHEMA, linkEntranceInDraft, parseEntranceOption } from "./dungeonLinkTools";
 import { dungeonTheme, ensureThemeTroop } from "./dungeonThemeTroops";
 import { beodeulNatureTileset, planBeodeulCanopy, writeBeodeulCanopy } from "./beodeulForest";
+import { invalidateReliefSlopes } from "@/project/relief/walk";
 import { BEODEUL_NATURE } from "@/project/defaults/beodeulNature";
 import { translateTiles } from "@/project/objectStamp";
 import { setLayerTileAt } from "@/project/mapLayers";
+import type { TilesetDef } from "@/project/types";
 import { mapBackgroundFromPanoramaSet } from "@/assets/oprnPanoramas";
 
 const createMapTool = MAP_TOOLS.find((tool) => tool.name === "create_map")!;
@@ -65,6 +68,7 @@ function buildFloor(draft: Project, args: Record<string, unknown>, floor: FloorO
     size: (DUNGEON_SIZES as readonly string[]).includes(String(args.size)) ? (args.size as DungeonSpec["size"]) : undefined,
     width: int(args.width), height: int(args.height),
     ...((DUNGEON_LAYOUTS as readonly string[]).includes(String(args.layout)) ? { layout: args.layout as DungeonSpec["layout"] } : {}),
+    ...(args.design && typeof args.design === "object" && !Array.isArray(args.design) ? { design: args.design as DungeonSpec["design"] } : {}),
     entryStair: floor.entry, exitStair: floor.exit, ...(floor.sideDoor ? { sideDoor: true } : {}), ...(args.flooded === true ? { flooded: true } : {}), ...(args.lair === true ? { lair: true } : {}), ...(args.rockLine === "A" || args.rockLine === "B" || args.rockLine === "C" || args.rockLine === "none" ? { rockLine: args.rockLine } : {}),
   };
   const entranceOpt = args.entrance === undefined ? undefined : parseEntranceOption(args.entrance);
@@ -127,6 +131,13 @@ function buildFloor(draft: Project, args: Record<string, unknown>, floor: FloorO
   map.upperTiles = composed.upper.slice();
   for (const layer of ["lowerOverlayTiles", "upperOverlayTiles"] as const) if (map[layer]) map[layer] = new Array<number>(map.width * map.height).fill(-1);
   map.mapRole = "dungeon";
+  // 설계한 높이 단(rooms[].level): 마을 지형과 같은 map.relief + 버들항 돌계단(*-steps). 다시 짓기는 옛 높이를 지운다.
+  if (composed.relief) {
+    map.relief = { width: map.width, height: map.height, levels: composed.relief.levels.slice(), ramps: composed.relief.ramps.slice(), style: composed.relief.style };
+    invalidateReliefSlopes(map.relief);
+    const painted = paintReliefStairTiles(map, tileset);
+    if (painted.ew) notes.push(`고침: 동서로 오르는 계단 ${painted.ew}칸은 칩셋에 옆 계단 조각이 없어 바닥 비탈로 그렸다(걷기는 계단과 같다).`);
+  } else delete map.relief;
   // 자연 물가(2026-10-23 dungeon-themes): 물·용암 칸 위 2층에 beodeul_nature 둑(풀·이끼 늪·흑요석)을 얹는다 — 가장자리 없는 네모 물·용암이 「물감 칸」으로 읽혔다.
   // 2층은 ★(통행 + 위) — 통행은 아래 물·용암 칸이 정한다(막힘). 이웃 = 같은 액체 또는 다리(다리 밑도 물이 이어진다) 또는 맵 밖.
   if (composed.banks) {
@@ -246,6 +257,39 @@ function buildFloor(draft: Project, args: Record<string, unknown>, floor: FloorO
     data,
     warnings: composed.warnings.length ? composed.warnings : undefined,
   };
+}
+
+/**
+ * 높이 단 계단 칸 그림(마을 12c 와 같은 규칙, beodeulVillage.ts): 남북으로 오르는 계단 칸의 1층을 버들항 칩셋 돌계단 조각 화소 그대로 —
+ * 폭 1·2 = bd-capital-quay-steps-w/-e 0줄, 폭 3 이상 = bd-mpart-stairs 가운데 세 열(아래부터 아랫줄·윗줄 번갈아). *-steps 양식은 그 칸 1층을 비탈 높이로 그린다.
+ * 동서로 오르는 계단 조각은 칩셋에 없다 — 그 칸은 바닥 그대로(비탈)이고 수만 센다.
+ */
+function paintReliefStairTiles(map: GameMap, tileset: TilesetDef): { ns: number; ew: number } {
+  const r = map.relief; if (!r?.ramps) return { ns: 0, ew: 0 };
+  const W = map.width, H = map.height;
+  const kit = (id: string) => (tileset.structureKits ?? []).find((k) => k.id === id);
+  const quay = kit("bd-capital-quay-steps-w"), quayE = kit("bd-capital-quay-steps-e") ?? quay, mp = kit("bd-mpart-stairs");
+  const tileAt = (k: typeof mp, col: number, row: number) => k?.rows[row]?.tiles?.[col] ?? -1;
+  const ns = (c: number) => { const v = r.ramps![c] ?? 0; return v >= 5 && v <= 6; };
+  let nsN = 0, ew = 0;
+  for (let c = 0; c < W * H; c += 1) { const v = r.ramps[c] ?? 0; if (v === 7 || v === 8) ew += 1; }
+  const seen = new Uint8Array(W * H);
+  for (let c0 = 0; c0 < W * H; c0 += 1) {
+    if (seen[c0] || !ns(c0)) continue;
+    const fl = [c0]; seen[c0] = 1;
+    for (let h = 0; h < fl.length; h += 1) { const c = fl[h]!, x = c % W, y = (c - x) / W;
+      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) { const X = x + dx, Y = y + dy; if (X < 0 || Y < 0 || X >= W || Y >= H) continue; const n = Y * W + X; if (!seen[n] && ns(n)) { seen[n] = 1; fl.push(n); } } }
+    const xs = fl.map((c) => c % W), ys = fl.map((c) => Math.floor(c / W));
+    const x0 = Math.min(...xs), x1 = Math.max(...xs), y1 = Math.max(...ys);
+    for (const c of fl) {
+      const x = c % W, y = Math.floor(c / W), row = (y1 - y) % 2 === 0 ? 1 : 0;
+      const t = x1 - x0 <= 1 ? tileAt(x === x0 ? quay : quayE, 0, 0) : tileAt(mp, x === x0 ? 1 : x === x1 ? 3 : 2, row);
+      if (t < 0) continue;
+      map.lowerTiles[c] = t; for (const L of [2, 3, 4] as const) setLayerTileAt(map, L, c, -1);
+      nsN += 1;
+    }
+  }
+  return { ns: nsN, ew };
 }
 
 type Pt = { x: number; y: number };
@@ -616,6 +660,11 @@ function authorDungeon(draft: Project, argsIn: Record<string, unknown>): ToolExe
   delete args.floorShapes;
   const floorGimmicks = Array.isArray(args.floorGimmicks) ? args.floorGimmicks : [];
   delete args.floorGimmicks;
+  // 조수가 설계한 층(design·floorDesigns, designLayout.ts). 여러 층에 design 하나만 오면 그 설계는 마지막(보스) 층에 쓴다.
+  const floorDesigns = Array.isArray(args.floorDesigns) ? (args.floorDesigns as unknown[]) : [];
+  delete args.floorDesigns;
+  const oneDesign = args.design && typeof args.design === "object" ? args.design : undefined;
+  if (oneDesign && floors > 1 && !floorDesigns.length) warnings.push(`고침: 설계(design)가 하나라 마지막 층에만 썼다 — 나머지 ${floors - 1}층은 함수 배치다. 층마다 설계하려면 floorDesigns(아래층부터).`);
   for (let k = 1; k <= floors; k += 1) {
     const first = k === 1, last = k === floors;
     // 들어오는 계단: 1층은 바깥과 이을 때만(안 이으면 죽은 계단이 된다). 다음 층부터는 아래층(지하)·위층(탑)에서 오는 계단.
@@ -625,7 +674,11 @@ function authorDungeon(draft: Project, argsIn: Record<string, unknown>): ToolExe
     const floorArgs: Record<string, unknown> = { ...args, name: FLOOR_NAME(baseName, direction, k, floors) };
     delete floorArgs.floors; delete floorArgs.direction; delete floorArgs.populate; delete floorArgs.troops; delete floorArgs.seed; delete floorArgs.sourceMapId;
     if (!first) { delete floorArgs.entrance; delete floorArgs.mapId; floorArgs.id = baseId ? `${baseId}_f${k}` : undefined; }
+    delete floorArgs.design;
+    const floorDesign = floorDesigns[k - 1] ?? (floors === 1 || last ? oneDesign : undefined);
+    if (floorDesign && typeof floorDesign === "object") floorArgs.design = floorDesign;
     if (Array.isArray(floorRooms[k - 1])) floorArgs.rooms = floorRooms[k - 1];
+    else if (floorArgs.design) { /* 설계한 층: 방은 설계에서 */ }
     else if (floors > 1 && direction === "up" && !args.rooms && !floorRooms.length) { floorArgs.rooms = towerRooms(last, k, baseSeed, shapes[k - 1]); floorArgs.type = args.type ?? "castle"; }
     else if (floors > 1 && !args.rooms && !args.size && !floorArgs.rooms) floorArgs.size = last ? "medium" : "small";
     results.push(buildFloor(draft, floorArgs, { seed: baseSeed + (k - 1) * 101, entry, exit }));
@@ -834,6 +887,8 @@ export const AUTHOR_DUNGEON_TOOL: ToolDefinition = {
       size: { type: "string", enum: [...DUNGEON_SIZES], description: "rooms 를 생략했을 때 층 크기: small 방 4 · medium 6(기본) · large 9" },
       width: { type: "integer", description: "바라는 맵 가로(칸, 선택). rooms 생략 시 방 수를 이 넓이에 맞추고, 배치가 이 비율로 자란다." },
       height: { type: "integer", description: "바라는 맵 세로(칸, 선택)." },
+      design: DUNGEON_DESIGN_SCHEMA,
+      floorDesigns: { type: "array", maxItems: 5, items: DUNGEON_DESIGN_SCHEMA, description: "층마다 설계(아래층부터, floors 2 이상) — 각 원소는 design 과 같은 형식." },
       rooms: {
         type: "array",
         minItems: 1,

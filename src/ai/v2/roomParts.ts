@@ -115,9 +115,10 @@ export function roomParts(project: Project, purpose: string, query?: string, til
   };
 }
 
-/** 손 견본 먼저, 크기가 다른 것으로. */
+/** 손 견본 먼저, 크기가 다른 것으로(옛 서재 견본 authored-study 는 빼고). */
 function pickReferences(tpls: readonly InteriorRoomTemplate[], n: number): InteriorRoomTemplate[] {
-  const ordered = [...tpls].sort((a, b) => Number(b.id.startsWith("authored-")) - Number(a.id.startsWith("authored-")) || a.w * a.h - b.w * b.h);
+  // 옛 서재 사람 견본(authored-study-*)은 빼다 — 2026-10-29 맵 같음 감사에서 방탈출 방 반복의 원천으로 판정됐다(모델이 그 서재를 그대로 옮겼다).
+  const ordered = [...tpls].filter((t) => !t.id.startsWith("authored-study")).sort((a, b) => Number(b.id.startsWith("authored-")) - Number(a.id.startsWith("authored-")) || a.w * a.h - b.w * b.h);
   const out: InteriorRoomTemplate[] = [];
   for (const t of ordered) { if (out.length >= n) break; if (!out.some((o) => o.w === t.w && o.h === t.h)) out.push(t); }
   return out;

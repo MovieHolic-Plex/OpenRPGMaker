@@ -302,7 +302,7 @@ export const OPENING_ANIMATIC_TOOLS: readonly ToolDefinition[] = [
       stage: '모든 샷을 width:384, height:216 으로 만들고 set_opening_pixel_grid({shotId,width:384,height:216})을 부른다. 배경은 place_opening_background({shotId, layerId, resourceId}) 로 깐다 — 레이어 x,y 는 «앵커 점»의 자리이고 기본 앵커가 0.5(중심)라, 직접 upsert 하면서 x:0,y:0 만 넣으면 무대의 한 사분면만 덮인다(2026-10-16 run-3 실측: 여섯 샷 배경이 모두 좌상단 사분면만 칠해졌다). 레터박스는 letterbox:0.15(216의 32px — 참조 도입부 KNIGHT OF LUMERIA 실측 32/216), 가시 영역 y:32..184. 샷 길이는 반드시 6000~9500ms(6~9.5초)로 맞춘다.',
       shots: '샷 목록은 7~8개(총 52~64초): (1) 밤하늘·성좌에서 수정 왕국 전경으로 카메라 하강(하늘/구름 레이어 + 빛기둥 + 카메라 y 하강), (2) 대성당 제단과 스테인드글라스 아래 진홍 기사단 대열(place_opening_charset_actor로 기사 5~7명을 2열 대열로 배치 + 대장 전진 보행 + 대각 빛줄기 shaft 2개 + 제단 glow), (3) 지하 동굴의 황금 수호 수정과 오른편에서 눈을 뜨는 거대한 마젠타 타락의 눈(독립 전경 레이어 role:foreground로 마젠타 눈/덩굴을 얹어 opacity/scale 키로 서서히 깨어나게 연출 + 수정 glow + 마젠타 입자), (4) 분수대가 있는 새벽의 평화로운 마을 광장(분수 수면 region palette-cycle + place_opening_charset_actor로 주민 5~6명 광장 배치 및 산책 + 주민 머리 위 12×14 소형 말풍선 2~3개만), (5) 노을빛 들판 길을 걷는 주인공과 절벽 위 검 발광(하늘·언덕·길 시차 레이어 + 주인공 보행 + 절벽 끝에서 검을 치켜들고 빛기둥/번개 flash), (6) 다크 크림슨 배경 위 황금 검 문장과 타이틀 로고 충격파(상단 y:18..46 문장 소품 + 중앙 제목/부제 텍스트 + 황금 입자 + 발광 고리). 마지막 로고 샷 뒤에 여분 맵 전환 샷을 만들지 않는다.',
       backgroundDiscipline: '배경은 place_opening_background({shotId, layerId, resourceId}) 로 깐다(x,y 는 «앵커 점»의 자리라 손으로 0,0 을 넣으면 중심 앵커 때문에 사분면만 덮인다). 배경 그림은 반드시 generate_opening_image(role:"backdrop") 로 이 오프닝 전용으로 만들고 프롬프트에 "16-bit SNES JRPG pixel art, crisp pixel clusters, unified 32-color dark fantasy palette, empty environment only, no people or characters in background"와 cast:"nobody"를 넣는다 — 번들 스틸(oprn-still-*, battle-scenery-*, title_art_*)은 인물이 그려진 부드러운 일러스트라 도트 배우와 화풍이 갈리고 배경 인물과 겹친다.',
-      regionDiscipline: '⚠️ 절대 384×216 전체 배경(width>=300, height>=150)에 scroll-x나 scroll-y를 걸지 마라. scroll-x는 반드시 상단 하늘/구름 띠(예: x:0, y:28, width:384, height:44)에만 걸고, 마을 분수대·수호 수정·스테인드글라스에는 작은 영역(예: width:28..48, height:24..40) palette-cycle을 써라. 전체 화면 하강/패닝은 animate_opening_camera(예: y: 98 -> 114 또는 zoom: 1.04 -> 1.14)로 연출한다.',
+      regionDiscipline: '⚠️ 절대 384×216 전체 배경(width>=300, height>=150)에 scroll-x나 scroll-y를 걸지 마라. scroll-x는 반드시 상단 하늘/구름 띠(예: x:0, y:28, width:384, height:44)에만 걸고, 마을 분수대·수호 수정·스테인드글라스에는 작은 영역(예: width:28..48, height:24..40) palette-cycle을 써라. 전체 화면 하강/패닝은 animate_opening_camera(예: y: 98 -> 114 또는 zoom: 1 -> 2 — 도트 무대는 멈추는 줌을 정수로)로 연출한다.',
       spriteDiscipline: '⚠️ 인물·기사·주민·주인공을 author_pixel_art로 찍지 마라(막대인간 금지!). 인물은 반드시 번들 24×32 캐릭터 칩(현대·연애·학원·오피스는 oprn-charset-modern1~3, 중세·판타지 JRPG는 oprn-charset-heroes1, easyrpg-charset-actor1~4, easyrpg-charset-people1~5)을 place_opening_charset_actor로 놓아라(scale:1 = 24×32, 정밀한 16-bit JRPG 도트 + 자동 보폭 걷기). 성당에서는 기사 5~7명을 대열로 놓고, 마을 광장에서는 분수대 둘레에 주민 5~6명을 놓아 살아 있는 광장을 만든다. author_pixel_art(kind:"picture")는 타이틀 검 문장이나 마젠타 눈/수정 코어 같은 비인물 소품에만 쓴다. 인물은 배경 그림 안이 아니라 배경 위에 독립 레이어로 놓는다.',
       primitives: '샷마다 최소 3개 이상의 독립 움직임(region 루프 + shaft/glow pulse + particles + place_opening_charset_actor 보행 + animate_opening_camera)을 겹쳐라. 말풍선(upsert_opening_emote)은 width:12, height:14 소형으로 마을 광장(주민 2~3명: ellipsis/question/exclaim)과 절벽(주인공: exclaim 1개)에만 쓰고 성당이나 수정 동굴에는 절대 쓰지 마라.',
       captionDiscipline: '자막(set_opening_caption)은 모든 샷에서 letterbox:0.15 하단 검정 바 안에 한 줄씩 타이프라이터로 찍고, 오프닝 전체에서 기본 색 하나(#fff0dc)로 통일하며 클라이맥스 대사 한두 큐만 강조색(#ff6878)을 써라(전체 색 종류 2가지 이하, 샷마다 무지개색 자막 금지!).',
@@ -460,7 +460,10 @@ export const OPENING_ANIMATIC_TOOLS: readonly ToolDefinition[] = [
     const s = shot(p, args.shotId);
     const camera = cameraFromTo(args.camera, s.durationMs) as OpeningAnimatic['camera'];
     s.composition.camera = { ...s.composition.camera, ...structuredClone(camera), keys: { ...s.composition.camera?.keys, ...camera?.keys } };
-    return commit(p, s, '카메라 타임라인을 저장했습니다.');
+    const result = commit(p, s, '카메라 타임라인을 저장했습니다.');
+    // 값은 그대로 저장하고(렌더러도 안 바꾼다) 소수 줌만 알린다 — 도트 무대에서 1.18·1.25 로 멈추면 도트 굵기가 들쭉날쭉하다.
+    const zoomWarning = openingCameraZoomWarning(s.composition.camera);
+    return zoomWarning ? { ...result, summary: `${result.summary} (경고: ${zoomWarning})`, warnings: [...(result.warnings ?? []), zoomWarning] } : result;
   }),
   definition('set_opening_transition', '샷 입장 cut/fade/wipe/iris/flash와 레터박스.', 'write', schema({ shotId: str, transition: obj, letterbox: { type: 'number' } }, ['shotId', 'transition']), (p, args) => {
     const s = shot(p, args.shotId); s.composition.transition = structuredClone(args.transition) as OpeningAnimatic['transition']; if (args.letterbox !== undefined) s.composition.letterbox = Number(args.letterbox); return commit(p, s, '샷 전환을 저장했습니다.');
@@ -663,6 +666,17 @@ export const OPENING_ANIMATIC_TOOLS: readonly ToolDefinition[] = [
     return commit(p, s, `픽셀 스프라이트 상태 ${entries.map(([name]) => name).join('/') }를 연결했습니다. 실제 frame strip으로 전환됩니다.`);
   }),
 ];
+
+/** 오프닝 카메라의 줌(기본값·zoom 키)에 정수가 아닌 값이 있으면 한국어 경고 한 줄. 저장값은 바꾸지 않는다. */
+export function openingCameraZoomWarning(camera: OpeningAnimatic['camera'] | undefined): string | null {
+  if (!camera) return null;
+  const values = [camera.zoom, ...(camera.keys?.zoom ?? []).map(key => key.value)]
+    .filter((value): value is number => typeof value === 'number' && Number.isFinite(value));
+  const odd = [...new Set(values.filter(value => Math.abs(value - Math.round(value)) > 1e-6))];
+  if (!odd.length) return null;
+  const shown = odd.slice(0, 4).map(value => `${value}(→${Math.max(1, Math.round(value))})`).join(', ');
+  return `카메라 줌 ${shown} 이(가) 정수가 아닙니다. 도트 그림·맵 무대는 1·2 같은 정수 줌으로 멈춰야 도트 굵기가 고르게 나옵니다 — 멈추는 줌 값을 정수로 맞추세요.`;
+}
 
 /**
  * camera:{from:{x,y,zoom},to:{x,y,zoom}} 를 정본 모양(시작 값 + 샷 길이에 걸친 keys)으로 옮긴다.

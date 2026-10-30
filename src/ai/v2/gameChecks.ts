@@ -21,7 +21,7 @@ import { fieldApproachRecipe } from "@/project/fieldApproachStyle";
 import { projectCanLoseHp, resolvedHudWidgets } from "@/project/fieldHud";
 import { gameHasCombat } from "@/project/combatPresence";
 import { FACTORY_HERO_ARMS } from "./genreDefaults";
-import { musicAsked } from "./musicWords";
+import { musicAsked, musicOnly } from "./musicWords";
 
 type Obj = Record<string, unknown>;
 const obj = (v: unknown): Obj | undefined => (v && typeof v === "object" && !Array.isArray(v) ? (v as Obj) : undefined);
@@ -125,6 +125,15 @@ function allCommands(ev: EventRef): { cmd: Obj; guards: readonly Obj[]; page: Ob
   const out: { cmd: Obj; guards: readonly Obj[]; page: Obj; pageIndex: number }[] = [];
   ev.pages.forEach((page, pageIndex) => walkCommands(page.commands, (cmd, guards) => out.push({ cmd, guards, page, pageIndex })));
   return out;
+}
+
+/** 프로젝트 어딘가(모든 맵 이벤트·공통 이벤트)에 그 종류의 명령이 있는가. */
+function projectHasCommand(project: Project, kind: string): boolean {
+  let found = false;
+  const visit = (commands: unknown) => { if (!found) walkCommands(commands, (cmd) => { if (cmd.kind === kind) found = true; }); };
+  for (const map of Object.values(project.maps ?? {})) for (const ev of map.events ?? []) for (const page of ev.pages ?? []) visit(page.commands);
+  for (const ce of project.commonEvents ?? []) visit((ce as { commands?: unknown }).commands);
+  return found;
 }
 
 /** 조건 나무 안의 모든 조건(all·any·not 펼침). */
@@ -448,6 +457,8 @@ export function gameContentProblems(before: Project, after: Project, task: strin
   if (SHAKE_WORDS.test(task) && !m2Has(/m2-048/u)) problems.push("[게임 검사 화면] 요청에 흔들림·지진이 있는데 실제 화면 흔들기 명령이 없다(카메라 이동은 흔들림이 아니다). add_event 의 shake 비트({do:'shake',strength:'strong',axis:'vertical'})로 넣는다.");
   if (FLASH_WORDS.test(task) && !m2Has(/m2-047/u) && !cmds.some((r) => r.cmd.kind === "setWeather" && r.cmd.weather === "storm")) problems.push("[게임 검사 화면] 요청에 번쩍임·번개가 있는데 실제 화면 번쩍 명령이 없다(페이드 아웃은 번쩍이 아니다). add_event 의 flash 비트({do:'flash',color:'white'})로 넣는다.");
   if (musicAsked(task) && !audioBindingsChanged(before, after) && !kinds.has("playAudio") && !kinds.has("stopAudio") && !m2Has(/bgm|audio|music/iu)) problems.push("[게임 검사 음악] 요청에 음악·BGM 이 있는데 어느 자리에도 곡을 걸지 않았다. 맵·전투·보스·승리·타이틀·엔딩 곡은 set_game_audio 로 건다(맞는 곡이 프로젝트에 없으면 store_find_music → 묻지 말고 store_install 로 넣은 뒤). 장면 도중 잠깐 바뀌는 곡만 add_event 의 music 비트({do:'music',action:'bgm',query:'festival'}).");
+  // 추격 음악은 추격자가 나타날 때의 곡이다 — 전투 곡이 아니다(2026-10-30 실조수 e2e: 「아오오니 느낌으로 추격 음악」이 모든 전투에 걸렸다).
+  if (musicAsked(task) && /추격|쫓아|쫓기|chase/iu.test(task) && !/전투|배틀|battle/iu.test(task) && (before.system.battleBgmResourceId ?? null) !== (after.system.battleBgmResourceId ?? null)) problems.push("[게임 검사 음악] 추격 음악을 모든 전투 곡(battle-default)에 걸었다. 추격 곡은 set_game_audio role:'chase'(+mapIds)로 추격자가 나타날 때 바꾸고 끝나면 되돌린다 — 전투 곡은 원래대로 돌려놓는다(추격자가 없으면 곡만 넣어 두고 보고에 적는다).");
   // 1c) 눈에 안 보이는 «조사하는» 물건: 새로 만든 결정 키(action) 이벤트에 그림도 없고 그 칸에 물건 타일도 없다(이동석·덤불·표지판이 맨땅으로 보였다).
   if (!HIDDEN_WORDS.test(task)) {
     for (const ev of changed) {
@@ -581,9 +592,11 @@ export function gameContentProblems(before: Project, after: Project, task: strin
     if (!changedEnc) problems.push("[게임 검사 조우] 요청에 무작위 조우가 있는데 어느 맵의 조우표도 바뀌지 않았다 — set_encounter_table 로 그 맵에 적 그룹·빈도를 단다(보이는 적 이벤트는 무작위 조우가 아니다).");
   }
   // 2) 엔딩: 엔딩 정의 + triggerEnding.
-  if (ENDING_WORDS.test(task)) {
+  // 음악만 바라는 엔딩 요청(「잔잔하게 엔딩곡」)은 엔딩을 짓는 요청이 아니다. 엔딩 명령은 이번에 바꾼 이벤트가 아니라 프로젝트 전체에서 찾는다 —
+  // 이미 있던 보스 이벤트의 triggerEnding 도 엔딩이다(2026-10-30 r11: 바꾼 이벤트만 봐서 «triggerEnding 이 없다»고 거짓으로 막았다).
+  if (ENDING_WORDS.test(task) && !musicOnly(task)) {
     const newEndings = (after.endings ?? []).filter((e) => !(before.endings ?? []).some((b) => b.id === e.id && JSON.stringify(b) === JSON.stringify(e)));
-    if (!kinds.has("triggerEnding")) problems.push(`[게임 검사 엔딩] 요청에 엔딩이 있는데 triggerEnding 명령이 없다${kinds.has("returnToTitle") ? "(내레이션+타이틀로 돌아가기는 엔딩이 아니다)" : ""}. define_ending 으로 엔딩을 정의하고 갈래에 {kind:'triggerEnding',endingId} 를 넣는다.`);
+    if (!kinds.has("triggerEnding") && !projectHasCommand(after, "triggerEnding")) problems.push(`[게임 검사 엔딩] 요청에 엔딩이 있는데 triggerEnding 명령이 없다${kinds.has("returnToTitle") ? "(내레이션+타이틀로 돌아가기는 엔딩이 아니다)" : ""}. define_ending 으로 엔딩을 정의하고 갈래에 {kind:'triggerEnding',endingId} 를 넣는다.`);
     else if (!newEndings.length && !(after.endings ?? []).length) problems.push("[게임 검사 엔딩] triggerEnding 은 있는데 정의된 엔딩(define_ending)이 없다.");
   }
   // 2b) 엔딩 카드 요약은 내레이션이다: 에필로그 대사 본문 앞에 「이름:」을 직접 쓰면 카드에 대본 머리말이 그대로 샌다

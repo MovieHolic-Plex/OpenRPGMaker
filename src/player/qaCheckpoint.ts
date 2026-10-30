@@ -13,6 +13,7 @@ import type { Dir, Project } from "@/project/types";
 import { applySaveSnapshot, type SaveSnapshot } from "@/player/saveSlots";
 import { applyStatePreset } from "@/testing/debugSession";
 import { syncMonsterPartyFollowers } from "@/project/followers";
+import { ensureM2Runtime } from "@/player/interpreter/m2RuntimeState";
 
 export type QaCheckpointPartyMember = {
   readonly actorId: string;
@@ -42,6 +43,12 @@ export type QaCheckpoint = {
    * 배열은 통째로 바꾼다.
    */
   readonly sessionPatch?: Record<string, unknown>;
+  /**
+   * 「현재 목표」 줄 글(objectiveChip). 목표 줄은 목표 명령이 실행될 때만 바뀌므로, 그 명령을 지나치고 시작하는 체크포인트는
+   * 줄이 비거나 옛 글로 남는다 — 저장본 불러오기(saveSlots session.objective)처럼 이 글을 마지막 목표로 넣는다.
+   * 왜(2026-10-30 씬 벤치 gym-leader): 관장 앞 체크포인트에 목표 줄이 없거나 「연구소에서 첫 몬스터를 받자」였다.
+   */
+  readonly objective?: string;
   /** 불러온 직후 이 이벤트를 실행한다(맵 이벤트 id). */
   readonly startEventId?: string;
 };
@@ -107,6 +114,9 @@ export function sessionFromQaCheckpoint(project: Project, checkpoint: QaCheckpoi
     // 몬스터 파티를 덮었으면 따라오는 동료 열차도 그 파티로 맞춘다 — 실제 게임은 포획·스타터 선택 때 맞춘다.
     // 안 맞추면 체크포인트에서 시작한 장면에만 동료가 없어 따라오기를 검사할 수 없었다(2026-10-23).
     if ("monsterParty" in checkpoint.sessionPatch) syncMonsterPartyFollowers(project, session);
+  }
+  if (typeof checkpoint.objective === "string" && checkpoint.objective.trim()) {
+    ensureM2Runtime(session).ui.push({ surface: "objectiveChip", message: checkpoint.objective.trim(), durationMs: 0 });
   }
   if (checkpoint.startEventId) {
     const events = project.maps[mapId]?.events ?? [];

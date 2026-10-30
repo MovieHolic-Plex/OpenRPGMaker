@@ -9,6 +9,10 @@ import { piTimer } from './piRunTiming.mjs';
 import { PiInteriorCompletion } from '../../src/ai/piAgent/interiorCompletion.ts';
 import type { InteriorRequirements } from '../../src/project/interiorPlacementAudit.ts';
 import { randomUUID } from "node:crypto";
+import { readFile } from "node:fs/promises";
+import { fileURLToPath } from "node:url";
+import { join, normalize } from "node:path";
+
 import { cloneProjectSharingSharedDictionaries } from '../../src/project/projectClone.ts';
 import { PiTilesetReferenceGate } from "../../src/ai/piAgent/tilesetReferenceGate.ts";
 import { PiCharsetSelectionGate } from '../../src/ai/piAgent/charsetSelectionGate.ts';
@@ -188,6 +192,36 @@ export interface RunPiAgentOptions {
 
 export type { PiAssistantV2Env, PiAssistantV2Hooks } from "../../src/ai/v2/env.ts";
 import type { PiAssistantV2Env, PiAssistantV2Hooks } from "../../src/ai/v2/env.ts";
+
+/** public/ 아래 정적 그림을 data URL 로 — 저장소 public/ 먼저, 빌드 dist/ 다음. 경로 밖으로 나가는 이름은 거절. */
+export async function readPublicAssetDataUrl(path: string): Promise<string | undefined> {
+  const rel = normalize(path).replace(/^([/\\])+/u, "");
+  if (rel.startsWith("..") || !/\.png$/iu.test(rel)) return undefined;
+  const repo = fileURLToPath(new URL("../../", import.meta.url));
+  for (const root of [join(repo, "public"), join(repo, "dist"), join(process.cwd(), "public"), join(process.cwd(), "dist")]) {
+    try { return `data:image/png;base64,${(await readFile(join(root, rel))).toString("base64")}`; } catch { /* 다음 뿌리 */ }
+  }
+  return undefined;
+}
+
+/** PNG data URL 여러 장을 1배 그대로 한 장에 — 폭 1024 안에서 줄바꿈, 칸 사이 8px 어두운 틈. */
+export async function combinePngDataUrls(urls: readonly string[]): Promise<string | undefined> {
+  const { PNG } = await import("pngjs");
+  const pics = urls.map((u) => PNG.sync.read(Buffer.from(u.slice(u.indexOf(",") + 1), "base64")));
+  if (!pics.length) return undefined;
+  const GAP = 8, MAX = Math.max(1024, ...pics.map((p) => p.width));
+  const at: { x: number; y: number }[] = [];
+  let x = 0, y = 0, rowH = 0, W = 0;
+  for (const p of pics) {
+    if (x > 0 && x + p.width > MAX) { x = 0; y += rowH + GAP; rowH = 0; }
+    at.push({ x, y }); x += p.width + GAP; rowH = Math.max(rowH, p.height); W = Math.max(W, x - GAP);
+  }
+  const H = y + rowH;
+  const out = new PNG({ width: W, height: H });
+  for (let i = 0; i < out.data.length; i += 4) { out.data[i] = 24; out.data[i + 1] = 24; out.data[i + 2] = 28; out.data[i + 3] = 255; }
+  pics.forEach((p, k) => PNG.bitblt(p, out, 0, 0, p.width, p.height, at[k]!.x, at[k]!.y));
+  return `data:image/png;base64,${PNG.sync.write(out).toString("base64")}`;
+}
 
 const DEFAULT_MAX_TURNS = 200;
 const DEFAULT_TIMEOUT_MS = PI_AGENT_DEFAULT_TIMEOUT_MS;
@@ -925,6 +959,10 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     },
     keyedProviders: new Set([...Object.entries(options.providerApiKeys ?? {}).filter(([, key]) => Boolean(key)).map(([id]) => id), ...(options.apiKey ? [request.provider] : []), ...(localCliIdOf(request.provider) ? [request.provider] : [])]),
     ...(options.renderToolImage ? { render: async (mapId: string, x: number, y: number, w: number, h: number) => `data:image/png;base64,${await renderMapRegionImage(ctx.project, { mapId, x, y, w, h }, options.renderToolImage!, options.signal)}` } : {}),
+    readPublicAsset: readPublicAssetDataUrl,
+    combinePictures: combinePngDataUrls,
+    ...(/^(one|each|none)$/u.test(process.env.OPRN_ROOM_PARTS_PICTURES ?? "") ? { roomPartsPictures: process.env.OPRN_ROOM_PARTS_PICTURES as "one" | "each" | "none" } : {}),
+    ...(/^(slim|full)$/u.test(process.env.OPRN_ROOM_PARTS_TEXT ?? "") ? { roomPartsText: process.env.OPRN_ROOM_PARTS_TEXT as "slim" | "full" } : {}),
     ...(options.signal ? { signal: options.signal } : {}),
     toolsetOptions: { referenceGate, charsetGate, findToolsCallable, eventAssistChat: eventAssistChat as never, ...scopeGuard },
   } : undefined;

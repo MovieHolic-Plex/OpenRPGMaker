@@ -20,7 +20,7 @@ import { storeGameProjectKey, type StoreGameChanges } from "@/project/storeGameR
 import type { StoreReviewsPage } from "@/assetStore/bridgeTypes";
 import { briefReview, complaintThemes, mergeReviews, tallyText } from "@/editor/assetStore/reviewDigest";
 import { workerStoreAccess, type StoreReadAccess } from "@/assetStore/storeAccess";
-import { briefStoreMusic, expandStoreMusicQuery, projectHintLines, projectMusicLines, rankStoreMusic, storeMusicTracks, subsetMusicManifest, type StoreMusicTrack } from "@/assetStore/storeMusicPick";
+import { briefStoreMusic, explainStoreMusicPick, expandStoreMusicQuery, inferStoreMusicScene, normalizeStoreMusicScene, projectHintLines, projectMusicLines, rankStoreMusic, storeMusicTracks, subsetMusicManifest, type StoreMusicTrack } from "@/assetStore/storeMusicPick";
 import { STORE_MUSIC_SCENES, type StoreMusicScene } from "@/assets/storeMusicMeta";
 import { storeProjectId, type StoreItemDetail, type StorePackManifest } from "@/assetStore/format";
 
@@ -132,7 +132,7 @@ async function prepareFromWorker(access: StoreReadAccess, slug: string, assetIds
 const storeInstall: ToolDefinition = {
   name: "store_install",
   description: "스토어 상품(slug)을 받아 지금 프로젝트에 넣는다. 사용자가 그 상품을 넣으라고 했을 때만 쓴다(질문 카드의 「넣기」는 사용자가 직접 누르므로 이 도구가 필요 없다). "
-    + "음악 팩은 assetIds 로 고른 곡만 넣는다(store_find_music 결과의 assetId) — 넣은 곡의 리소스 id 가 결과 resourceIds 에 오고, set_game_audio 로 맵·전투·보스·승리·타이틀·엔딩에 연결한다. "
+    + "음악 팩은 assetIds 로 고른 곡만 넣는다(store_find_music 결과의 assetId) — 넣은 곡의 리소스 id 가 결과 resourceIds 에 오고, set_game_audio 로 맵·전투·보스·승리·타이틀·엔딩·추격(chase)에 연결한다. "
     + "넣은 뒤 타일셋이면 list_tileset_references 로 참고문서를 먼저 읽고 깐다. 되돌리기로 뺄 수 있다.",
   mode: "write",
   domains: ["core"],
@@ -193,27 +193,73 @@ export interface StoreMusicChoice {
   readonly need: string;
   readonly scene: StoreMusicScene | null;
   readonly autoInstall: boolean;
-  readonly tracks: readonly (ReturnType<typeof briefStoreMusic> & { readonly version: number; readonly blob: string })[];
+  readonly tracks: readonly (ReturnType<typeof briefStoreMusic> & {
+    readonly version: number; readonly blob: string;
+    /** 1부터. 1위만 recommended:true — 조수는 사용자가 다른 것을 말하지 않았으면 이 곡을 넣는다. */
+    readonly rank?: number; readonly recommended?: boolean;
+    /** 순위 이유 한 줄(장면·게임 결 줄·맞은 낱말). */
+    readonly why?: string;
+    /** 게임 이름이 가리킨 줄이 아닌 대신 곡. */
+    readonly fallback?: boolean;
+  })[];
 }
 
-const SCENE_ALIASES: Readonly<Record<string, StoreMusicScene>> = {
-  village: "town", shop: "town", inn: "town", world: "field", overworld: "field", cave: "dungeon", fight: "battle",
-  "final-boss": "boss", fanfare: "victory", jingle: "victory", sorrow: "sad", horror: "tense", menu: "title", credits: "ending",
-};
-const sceneOf = (value: unknown): StoreMusicScene | null => {
-  const text = typeof value === "string" ? value.trim().toLowerCase() : "";
-  return (STORE_MUSIC_SCENES as readonly string[]).includes(text) ? text as StoreMusicScene : SCENE_ALIASES[text] ?? null;
-};
-const findKey = (args: Record<string, unknown>): string => `music:${sceneOf(args.scene) ?? ""}:${String(args.query ?? "").trim()}:${String(args.mood ?? "").trim()}`;
+/**
+ * scene 인자 → 장면. 다른 말(village·maps·미술관·던전 …)은 normalizeStoreMusicScene 이 바꾸고, 빠졌거나 모르는 말이면
+ * 요청 말(scene 값 자체·query·need·mood)에서 짐작한다. 그래도 모르면 null — 장면 없이 장르·분위기로만 고른다.
+ */
+const sceneOf = (args: Record<string, unknown>): StoreMusicScene | null =>
+  townPlaceOverDungeon(normalizeStoreMusicScene(args.scene), args) ?? inferStoreMusicScene(args.scene, args.query, args.need, args.mood);
+/**
+ * 「이브 같은 미술관 BGM」을 scene:'dungeon' 으로 부른 실조수(2026-10-30) — 요청 말이 미술관·저택·갤러리(town)를 가리키고 던전 낱말이 없으면 town 으로 읽는다.
+ * 던전 말(동굴·유적 …)이 있으면 inferStoreMusicScene 이 dungeon 을 먼저 돌려주므로 그대로 둔다.
+ */
+function townPlaceOverDungeon(scene: StoreMusicScene | null, args: Record<string, unknown>): StoreMusicScene | null {
+  if (scene !== "dungeon") return scene;
+  const text = [args.query, args.need, args.mood].filter((value): value is string => typeof value === "string").join(" ");
+  return /미술관|갤러리|박물관|저택|gallery|museum|mansion/iu.test(text) && inferStoreMusicScene(text) === "town" ? "town" : scene;
+}
+const findKey = (args: Record<string, unknown>): string => `music:${sceneOf(args) ?? ""}:${String(args.query ?? "").trim()}:${String(args.mood ?? "").trim()}`;
 const musicPacks = new Map<string, StoreMusicTrack[]>();
 
-/** 음악 팩 목록(검색어로 한 번, 종류만으로 한 번 — 서버 검색은 팩 제목·태그만 본다) → 매니페스트 → 곡. */
+/** 한 번에 보는 음악 팩 상한(쪽 수 × 서버 쪽 크기 안에서). 팩이 늘어도(2026-10-30 18개 → 25개 이상 예정) 다 본다 — 16개로 잘라 호러·판타지 팩이 안 보였다. */
+const MUSIC_PACK_CAP = 120;
+const MUSIC_PAGE_CAP = 8;
+/** 음악 팩 목록은 세션 동안 잠깐 둔다 — 요청마다 목록 쪽을 다시 받지 않는다(매니페스트는 slug@판본으로 musicPacks 에 둔다). */
+const MUSIC_LIST_TTL_MS = 5 * 60_000;
+const musicLists = new Map<string, { at: number; items: StoreItemSummary[]; complete: boolean }>();
+
+/** 스토어의 음악 팩 전부(쪽을 넘겨 가며, 상한 MUSIC_PACK_CAP). 목록만 — 곡 파일은 받지 않는다. */
+export async function listAllStoreMusicPacks(access: StoreReadAccess, now = Date.now()): Promise<{ items: StoreItemSummary[]; complete: boolean }> {
+  const hit = musicLists.get(access.url);
+  if (hit && now - hit.at < MUSIC_LIST_TTL_MS) return hit;
+  const first = await access.catalog({ kind: "music" });
+  const pageSize = Math.max(1, first.pageSize || first.items.length || 1);
+  const pages = Math.min(MUSIC_PAGE_CAP, Math.max(1, Math.ceil((first.total || first.items.length) / pageSize)));
+  const rest: (typeof first | null)[] = [];
+  // 한 번에 두 쪽씩 — 스토어 API 에 몰아 보내지 않는다.
+  for (let page = 2; page <= pages; page += 2) {
+    rest.push(...await Promise.all([page, page + 1].filter((n) => n <= pages).map((n) => access.catalog({ kind: "music", page: n }).catch(() => null))));
+  }
+  const all = [first, ...rest].flatMap((page) => page?.items ?? []).filter((item) => item.kind === "music");
+  const items = [...new Map(all.map((item) => [item.slug, item])).values()].slice(0, MUSIC_PACK_CAP);
+  const complete = rest.every(Boolean) && items.length >= Math.min(first.total || 0, MUSIC_PACK_CAP);
+  const list = { at: now, items, complete };
+  musicLists.set(access.url, list);
+  return list;
+}
+
+/** 시험용 — 목록 캐시를 비운다. */
+export function clearStoreMusicCache(): void {
+  musicLists.clear();
+  musicPacks.clear();
+}
+
+/** 음악 팩 목록(전부) → 매니페스트(slug@판본 캐시) → 곡. 목록이 상한에 걸렸을 때만 검색어로 한 번 더 찾아 앞에 둔다(서버 검색은 팩 제목·태그만 본다). */
 async function loadStoreMusic(access: StoreReadAccess, query: string): Promise<StoreMusicTrack[]> {
-  const pages = await Promise.all([
-    query ? access.catalog({ kind: "music", q: query }).catch(() => null) : Promise.resolve(null),
-    access.catalog({ kind: "music" }), access.catalog({ kind: "music", page: 2 }).catch(() => null),
-  ]);
-  const items = [...new Map(pages.flatMap((page) => page?.items ?? []).filter((item) => item.kind === "music").map((item) => [item.slug, item])).values()].slice(0, 16);
+  const listed = await listAllStoreMusicPacks(access);
+  const searched = query && !listed.complete ? ((await access.catalog({ kind: "music", q: query }).catch(() => null))?.items ?? []).filter((item) => item.kind === "music") : [];
+  const items = [...new Map([...searched, ...listed.items].map((item) => [item.slug, item])).values()].slice(0, MUSIC_PACK_CAP);
   const tracks: StoreMusicTrack[] = [];
   for (let at = 0; at < items.length; at += 4) {
     const batch = await Promise.all(items.slice(at, at + 4).map(async (item) => {
@@ -234,20 +280,22 @@ const storeFindMusic: ToolDefinition = {
   description: "에셋 스토어의 음악 팩에서 장면(scene)·장르(query)·분위기(mood)에 맞는 곡을 곡 단위로 찾는다. 곡마다 실제로 들어 보고 적은 장르·장면·분위기·빠르기·루프 여부가 있다. "
     + "프로젝트에 있는 곡(recommend_bgm)으로 요청에 꼭 맞는 것이 없을 때, 특히 장르 곡(조선풍·무협·호러·16비트 레트로·피아노 …)이 필요할 때 쓴다. "
     + "사용자가 「크로노트리거 느낌」「투더문 같은 피아노」처럼 게임 이름으로 말하면 그 이름을 query 에 그대로 넣는다 — 도구가 들리는 결(16비트 SNES·심포닉·잔잔한 피아노 …)로 바꿔 찾는다. 장르를 지어내 바꿔 넣지 않는다. 곡 메타에는 게임 이름이 없으니 사용자에게 「그 게임 곡」이라 하지 말고 「그런 느낌의 곡」이라 말한다. "
-    + "결과 autoInstall:true(기본)면 묻지 말고 가장 맞는 곡을 store_install{slug, assetIds:[assetId]} 로 넣고 set_game_audio 로 연결한다 — 화면에 「넣었어요 (바꾸기)」 쪽지가 뜬다. "
+    + "후보는 점수 순이고 1위에 recommended:true 와 이유(why)가 붙는다 — 사용자가 다른 곡을 고르지 않았으면 recommended 곡을 쓴다(fallback:true 는 게임 결 줄이 아닌 대신 곡). "
+    + "결과 autoInstall:true(기본)면 묻지 말고 recommended 곡을 store_install{slug, assetIds:[assetId]} 로 넣고 set_game_audio 로 연결한다 — 화면에 「넣었어요 (바꾸기)」 쪽지가 뜬다. "
     + "false 면 사용자가 「먼저 묻기」를 켠 것이다 — 미리듣기 카드가 뜨니 넣지 말고 이 턴을 끝내라(고르면 리소스 id 와 함께 후속 요청이 온다).",
   mode: "read",
   domains: ["core"],
   parameters: {
     type: "object",
     properties: {
-      scene: { type: "string", enum: [...STORE_MUSIC_SCENES], description: "곡이 맡을 장면: town 마을·가게, field 필드·월드맵, dungeon 던전·동굴, battle 일반 전투, boss 보스전, victory 승리 팡파르(짧은 곡), sad 슬픈 장면, tense 긴장·잠입·공포, title 타이틀, ending 엔딩" },
+      // enum 을 두지 않는다 — 검사기가 「village」「maps」를 도구에 닿기 전에 거절해 한 번씩 헛돌았다(2026-10-30). 다른 말은 도구가 바꾼다.
+      scene: { type: "string", description: `곡이 맡을 장면(${STORE_MUSIC_SCENES.join("·")}): town 마을·가게·실내(미술관·저택), field 필드·월드맵, dungeon 던전·동굴, battle 일반 전투, boss 보스전, victory 승리 팡파르(짧은 곡), sad 슬픈 장면, tense 긴장·잠입·공포, chase 추격자가 쫓아올 때(연결은 set_game_audio role:'chase'), title 타이틀, ending 엔딩. 비우면 요청 말에서 짐작한다` },
       query: { type: "string", description: "사용자가 한 말을 그대로(게임·시리즈 이름 포함: 크로노트리거, 파판, 투더문, 테일즈런너 …) + 이 게임의 장르 낱말(예: 조선, 무협, 판타지, 호러, 몬스터, 현대, SF, 16비트, 피아노 — 사용자가 말하지 않았으면 게임 제목·맵 이름·이미 쓰는 곡으로 짐작)" },
       mood: { type: "string", description: "분위기(예: 평화로운, 긴장감, 웅장한, 쓸쓸한, 신나는)" },
       need: { type: "string", description: "카드에 보여 줄 한 줄(예: 「버들 마을에 깔 배경음악」, 「붉은 드래곤 보스전 음악」)" },
       limit: { type: "integer", minimum: 1, maximum: 6, description: "후보 수(기본 4)" },
     },
-    required: ["scene"],
+    required: [],
     additionalProperties: false,
   },
   invalidArgsExample: { scene: "boss", query: "조선", mood: "긴장감", need: "보스전 음악" },
@@ -259,30 +307,35 @@ const storeFindMusic: ToolDefinition = {
     });
   },
   run(project, args): ToolExecResult {
-    const scene = sceneOf(args.scene);
-    if (!scene) throw new ToolError(`scene 은 ${STORE_MUSIC_SCENES.join("·")} 중 하나다.`, { code: "invalid-args" });
+    const scene = sceneOf(args);
     const loadedMusic = take<{ tracks: StoreMusicTrack[]; autoInstall: boolean }>(findKey(args));
     const limit = Math.min(6, Math.max(1, Number(args.limit) || 4));
     const stored = projectMusicLines(project.assets.uploaded);
     const lines = Object.keys(stored).length ? stored : projectHintLines([
 project.meta?.title ?? "", ...Object.values(project.maps).map((map) => map.name ?? "")]);
-    const want = { scene, query: String(args.query ?? ""), mood: String(args.mood ?? ""), projectLines: lines };
+    const want = { ...(scene ? { scene } : {}), query: String(args.query ?? ""), mood: String(args.mood ?? ""), projectLines: lines };
     const feelFrom = expandStoreMusicQuery(want.query);
     let picked = rankStoreMusic(loadedMusic.tracks, want, limit);
-    const sceneOnly = picked.length === 0;
+    const sceneOnly = scene !== null && picked.length === 0;
     if (sceneOnly) picked = rankStoreMusic(loadedMusic.tracks, { query: want.query, mood: want.mood, projectLines: want.projectLines }, limit);
     const choice: StoreMusicChoice = {
-      kind: "store-music-choice", need: String(args.need ?? "").trim().slice(0, 120) || `${want.query} ${scene} 음악`.trim(), scene,
+      kind: "store-music-choice", need: String(args.need ?? "").trim().slice(0, 120) || `${want.query} ${scene ?? ""} 음악`.replace(/\s+/gu, " ").trim(), scene,
       autoInstall: loadedMusic.autoInstall,
-      tracks: picked.map((track) => ({ ...briefStoreMusic(track), version: track.version, blob: track.blob })),
+      tracks: picked.map((track, index) => {
+        const told = explainStoreMusicPick(track, sceneOnly ? { query: want.query, mood: want.mood } : want);
+        return { ...briefStoreMusic(track), version: track.version, blob: track.blob, rank: index + 1, ...(index === 0 ? { recommended: true } : {}), why: told.why, ...(told.fallback ? { fallback: true } : {}) };
+      }),
     };
     if (!picked.length) return { summary: `스토어 음악 팩 ${loadedMusic.tracks.length}곡 중 맞는 곡이 없다. 프로젝트에 있는 곡(recommend_bgm)으로 고르거나 직접 작곡(generate_original_bgm)하라.`, data: { ...choice, note: UNTRUSTED_NOTE } };
-    const head = sceneOnly ? `이 장면(${scene})으로 적힌 곡이 없어 장르·분위기만 맞는 곡을 골랐다. ` : "";
+    const given = typeof args.scene === "string" ? args.scene.trim() : "";
+    const read = given === (scene ?? "") ? "" : scene ? `scene ${given ? `「${given}」` : "없음"} → ${scene} 로 읽었다. ` : given ? `scene 「${given}」은 모르는 장면이라 장르·분위기로만 골랐다. ` : "";
+    const head = read + (sceneOnly ? `이 장면(${scene})으로 적힌 곡이 없어 장르·분위기만 맞는 곡을 골랐다. ` : "");
     return {
       summary: head + (choice.autoInstall
-        ? `스토어 곡 ${picked.length}개를 찾았다. 묻지 말고 가장 맞는 곡을 store_install{slug, assetIds:[assetId]} 로 넣고 set_game_audio 로 연결하라.`
+        ? `스토어 곡 ${picked.length}개를 찾았다(점수 순). 묻지 말고 1위(recommended:true) 「${choice.tracks[0]!.title}」(slug ${picked[0]!.slug}, assetId ${picked[0]!.assetId})를 store_install{slug, assetIds:[assetId]} 로 넣고 set_game_audio 로 연결하라 — 사용자가 다른 곡을 말하지 않았으면 다른 후보로 바꾸지 않는다.`
+          + (choice.tracks[0]!.fallback ? ` 1위도 「${feelFrom.games[0] ?? ""}」 결 줄의 곡이 아니라 대신 곡이다 — 보고에 「그 결의 곡이 아직 없어 가까운 곡」이라고 적는다.` : "")
         : `사용자가 「먼저 묻기」를 켰다. 스토어 곡 ${picked.length}개를 미리듣기 카드로 보여 준다. 넣지 말고 이 턴을 끝내라 — 사용자가 고르면 후속 요청이 온다.`),
-      data: { ...choice, ...(feelFrom.games.length ? { feelFrom: { games: feelFrom.games, heardAs: feelFrom.query, note: "게임 이름은 들리는 결로 바꿔 찾았다. 곡은 그 게임 곡이 아니다 — 「그런 느낌의 곡」이라고 말한다." } } : {}), note: UNTRUSTED_NOTE },
+      data: { ...choice, ...(feelFrom.games.length ? { feelFrom: { games: feelFrom.games, heardAs: feelFrom.query, line: feelFrom.lines[0], note: "게임 이름은 들리는 결로 바꿔 찾았다. 곡은 그 게임 곡이 아니다 — 「그런 느낌의 곡」이라고 말한다." } } : {}), note: UNTRUSTED_NOTE },
     };
   },
 };

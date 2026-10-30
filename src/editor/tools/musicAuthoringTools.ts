@@ -28,7 +28,7 @@ function playable(p:Project,id:string,kind:'music'|'sound'){
   }else if(/\.(mid|midi)(?:[?#]|$)/i.test(url))throw new ToolError('브라우저가 재생하지 못하는 MIDI입니다.',{code:'invalid-audio'});
   return url;
 }
-const ROLES=['title','opening','field-default','battle-default','victory','defeat','cursor','confirm','cancel','maps','boss','ending'] as const;
+const ROLES=['title','opening','field-default','battle-default','victory','defeat','cursor','confirm','cancel','maps','boss','chase','ending'] as const;
 
 /** 보스전 이름 낱말 — troopIds 를 주지 않았을 때 보스 부대를 고른다. */
 const BOSS_NAME=/보스|boss|마왕|魔王|드래곤|dragon|용왕|수문장|두목|우두머리|대장|관장|군주|lord|king|queen|ボス/i;
@@ -80,6 +80,85 @@ function setEndingMusic(p:Project,id:string,endingIds:readonly string[]){
   if(!picked.length&&!commands.length)throw new ToolError('곡을 걸 엔딩이 없습니다(정의된 엔딩도, 이벤트의 엔딩 명령도 없음). 음악만 바라는 요청이면 엔딩을 새로 만들지 말고 곡을 넣어 둔 채 보고에 적으세요.',{code:'ending-not-found'});
   return {endingIds:picked.map(e=>e.id),commands};
 }
+/** 이벤트 명령 배열만 돈다 — 이동 경로(moves·route·movement)의 setSwitch 는 이동 명령이라 곡 명령을 끼우면 안 된다. */
+const ROUTE_KEYS=new Set(['moves','route','moveRoute','movement','conditions','trigger','graphic']);
+function eachScriptList(node:unknown,visit:(list:Cmd[])=>void,depth=0):void{
+  if(depth>24||!node||typeof node!=='object')return;
+  if(Array.isArray(node)){if(node.some(item=>item&&typeof item==='object'&&'kind' in (item as object)))visit(node as Cmd[]);for(const item of node)eachScriptList(item,visit,depth+1);return;}
+  for(const [key,value] of Object.entries(node as Record<string,unknown>))if(!ROUTE_KEYS.has(key)&&value&&typeof value==='object')eachScriptList(value,visit,depth+1);
+}
+const MEMORIZE_BGM='m2-063-memorize-current-bgm',PLAY_MEMORIZED_BGM='m2-064-play-memorized-bgm';
+const isM2=(c:Cmd|undefined,id:string)=>!!c&&c.kind==='m2Command'&&c.commandId===id;
+const isBgmPlay=(c:Cmd|undefined)=>!!c&&c.kind==='playAudio'&&(c.channel==='bgm'||c.channel===undefined&&c.loop===true);
+/** 추격 곡 켜기 묶음: 「스위치가 아직 꺼져 있으면 → 현재 BGM 기억 + 곡 재생」. */
+const isChaseCue=(c:Cmd|undefined,switchId:string)=>{
+  if(!c||c.kind!=='fork')return false;
+  const cond=c.condition as {kind?:unknown;switchId?:unknown;value?:unknown}|undefined,then=c.then as Cmd[]|undefined;
+  return cond?.kind==='switch'&&cond.switchId===switchId&&cond.value===false&&Array.isArray(then)&&then.length===2&&isM2(then[0],MEMORIZE_BGM)&&isBgmPlay(then[1]);
+};
+/**
+ * 추격 곡(아오오니식): 추격자(movement.type 'chase' 페이지)가 나타날 때 곡을 바꾸고 끝나면 되돌린다. 추격자는 만들지 않는다 — 없으면 거절.
+ * - 스위치로 깨우는 추격자(페이지 조건 switch=ON): 그 스위치를 켜는 명령 바로 앞에 「(스위치가 아직 꺼져 있으면) 현재 BGM 기억 + 곡 재생」, 끄는 명령 바로 뒤에 「기억한 BGM 재생」.
+ *   그리고 그 맵에 bgmWhileSwitch(스위치가 켜진 동안의 진입 곡)를 남겨, 켜진 채 다시 들어오거나 패배 복구해도 추격 곡이 이어지게 한다.
+ * - 늘 있는 추격자(조건 없음) 또는 켜는 명령을 못 찾은 추격자: 그 맵이 곧 추격 무대이므로 맵 배경음을 추격 곡으로(맵을 나가면 다음 맵 곡으로 돌아온다).
+ * 이미 걸려 있으면 곡만 바꾼다. 2026-10-30 실조수 e2e: 「아오오니 느낌으로 추격 음악」이 모든 전투(battle-default)에 걸렸다.
+ */
+/**
+ * mapIds 가 틀렸을 때 고칠 수 있게 실제 맵 id·이름을 돌려준다. 2026-10-30 실조수: 타일셋 id(beodeul_city)를 mapIds 에 넣고
+ * 「실제 mapIds가 필요합니다」만 받았다. 시작 맵을 앞에 두고 표시한다 — 맵을 말하지 않은 음악 요청은 시작 맵에 건다.
+ */
+export function mapIdsError(p:Project,given:readonly unknown[]):string{
+  const bad=given.filter(m=>typeof m!=='string'||!p.maps[m]).map(m=>String(m));
+  const tilesets=bad.filter(m=>Object.hasOwn(p.tilesets??{},m));
+  const ids=Object.keys(p.maps);const start=p.startMapId&&p.maps[p.startMapId]?p.startMapId:undefined;
+  const ordered=start?[start,...ids.filter(id=>id!==start)]:ids;
+  const list=ordered.slice(0,24).map(id=>`${id}(${p.maps[id]!.name||id}${id===start?', 시작 맵':''})`).join(', ')+(ordered.length>24?` 외 ${ordered.length-24}개`:'');
+  const head=!given.length?'mapIds 가 비었다.':`없는 mapIds: ${bad.join(', ')}.`;
+  return `${head}${tilesets.length?` ${tilesets.join(', ')} 는 타일셋 id 다 — 맵 id 를 넣어라.`:''} 실제 맵: ${list||'없음'}. 사용자가 맵을 말하지 않았으면 시작 맵(지금 보는 맵)에 건다.`;
+}
+function setChaseMusic(p:Project,id:string,mapIds:readonly string[]){
+  const scope=mapIds.length?mapIds:Object.keys(p.maps);
+  const chasers:{mapId:string;eventId:string;switches:string[]}[]=[];
+  for(const mapId of scope)for(const event of p.maps[mapId]?.events??[])for(const page of event.pages??[]){
+    if((page as {movement?:{type?:unknown}}).movement?.type!=='chase')continue;
+    const switches=(page.conditions??[]).flatMap(c=>c.kind==='switch'&&c.value===true?[c.switchId]:[]);
+    chasers.push({mapId,eventId:event.id,switches});
+  }
+  if(!chasers.length)throw new ToolError(`추격자가 없습니다${mapIds.length?`(맵 ${mapIds.join(', ')})`:''} — 추격 곡은 추격자(make_chase_scene 이 만든 movement:chase 이벤트)가 나타날 때 겁니다. 음악만 바라는 요청이면 추격자를 새로 만들지 말고 곡을 넣어 둔 채 보고에 적으세요. 전투 곡(battle-default)에 걸지 마세요.`,{code:'chaser-not-found'});
+  const want=new Set(chasers.flatMap(c=>c.switches)),on=new Set<string>(),cues:{mapId:string;eventId:string;switchId:string;at:'start'|'end'}[]=[];
+  const lists:{list:Cmd[];mapId:string;eventId:string}[]=[];
+  for(const [mapId,map] of Object.entries(p.maps))for(const event of map.events??[])eachScriptList(event,list=>lists.push({list,mapId,eventId:event.id}));
+  for(const ce of p.commonEvents??[])eachScriptList(ce,list=>lists.push({list,mapId:'(공통 이벤트)',eventId:String((ce as {id?:unknown}).id??'')}));
+  for(const {list,mapId,eventId} of lists){
+    for(let i=0;i<list.length;i++){
+      const c=list[i]!;
+      if(c.kind!=='setSwitch'||typeof c.switchId!=='string'||!want.has(c.switchId))continue;
+      if(c.value===true){
+        // 이미 켜져 있으면(금고를 다시 조사) 기억하지 않는다 — 추격 곡을 «평소 곡»으로 덮어 끌 때 되돌아오지 않았다(2026-10-30 출하 플레이어 확인).
+        const cue={kind:'fork',condition:{kind:'switch',switchId:c.switchId,value:false},then:[{kind:'m2Command',commandId:MEMORIZE_BGM,fields:{}},{kind:'playAudio',resourceId:id,loop:true,channel:'bgm'}]};
+        if(isChaseCue(list[i-1],c.switchId))list[i-1]=cue;
+        else if(isBgmPlay(list[i-1])&&isM2(list[i-2],MEMORIZE_BGM)){list.splice(i-2,2,cue);i--;}
+        else{list.splice(i,0,cue);i++;}
+        on.add(c.switchId);cues.push({mapId,eventId,switchId:c.switchId,at:'start'});
+      }else if(c.value===false){
+        if(!isM2(list[i+1],PLAY_MEMORIZED_BGM))list.splice(i+1,0,{kind:'m2Command',commandId:PLAY_MEMORIZED_BGM,fields:{}});
+        cues.push({mapId,eventId,switchId:c.switchId,at:'end'});
+      }
+    }
+  }
+  const mapBgm=[...new Set(chasers.filter(c=>!c.switches.some(sw=>on.has(sw))).map(c=>c.mapId))];
+  for(const mapId of mapBgm)p.maps[mapId]!.bgm={mode:'custom',resourceId:id};
+  // 켜는 순간의 곡 바꾸기만으로는 추격 상태를 따라가지 못한다 — 스위치가 켜진 채 맵에 다시 들어오거나 잡혀서 다시 시작하면
+  // 맵 진입 곡(평소 곡)이 다시 깔렸다(2026-10-30 실조수 e2e). 그래서 추격자 맵에 「이 스위치가 켜진 동안의 진입 곡」을 남긴다.
+  const whileOn:{mapId:string;switchId:string}[]=[];
+  for(const c of chasers)for(const switchId of c.switches){
+    if(!on.has(switchId)||whileOn.some(w=>w.mapId===c.mapId&&w.switchId===switchId))continue;
+    const map=p.maps[c.mapId]!,list=(map.bgmWhileSwitch??=[]),found=list.find(entry=>entry.switchId===switchId);
+    if(found)found.resourceId=id;else list.push({switchId,resourceId:id});
+    whileOn.push({mapId:c.mapId,switchId});
+  }
+  return {chasers:chasers.map(c=>({mapId:c.mapId,eventId:c.eventId,via:c.switches.some(sw=>on.has(sw))?'switch':'map-bgm'})),cues,mapBgm,whileOn};
+}
 export const MUSIC_AUTHORING_TOOLS:readonly ToolDefinition[]=[
   tool('get_music_composer','새 음악을 실제 WAV로 만드는 악보·악기·루프 계약. 기존 BGM 선택과 구분.','read',schema({},[]),()=>({summary:'음표를 저작해 독립된 실제 스테레오 WAV를 만들 수 있습니다.',data:{
     method:'Original symbolic score, deterministic local synthesis; not remote studio/vocal generation. Notes are the actual audible composition, not labels or copied game music.',
@@ -119,13 +198,21 @@ export const MUSIC_AUTHORING_TOOLS:readonly ToolDefinition[]=[
     if(!score.tracks.length)throw new ToolError('해당 파트가 없습니다.',{code:'track-not-found'});
     return {summary:'실제로 합성한 악보와 측정값입니다. 음악 청취를 대신하지 않습니다.',data:{resourceId:id,...stored,score}};
   }),
-  tool('set_game_audio','타이틀/오프닝/필드/전투/승리·패배/메뉴 효과음/지정 맵/보스전에 실제 리소스를 연결. 종류와 대상 검증 후 변경. 맵 배경음은 role:maps+mapIds, 모든 전투는 battle-default, 승리 팡파르는 victory(짧은 곡), 보스전만은 role:boss(+troopIds — 비우면 이름에 보스·마왕·드래곤 등이 든 부대) — 그 전투 직전에 곡을 바꾸고 끝나면 되돌리는 명령을 넣는다. 엔딩·크레딧 곡은 role:ending(+endingIds — 비우면 모든 엔딩과 이벤트의 엔딩 명령).','write',schema({role:{type:'string',enum:[...ROLES]},resourceId:str,mapIds:{type:'array',items:str},troopIds:{type:'array',items:str},endingIds:{type:'array',items:str}},['role','resourceId']),(p,args)=>{
+  tool('set_game_audio','타이틀/오프닝/필드/전투/승리·패배/메뉴 효과음/지정 맵/보스전에 실제 리소스를 연결. 종류와 대상 검증 후 변경. 맵 배경음은 role:maps+mapIds(맵 id — 타일셋 id 아님. 사용자가 맵을 말하지 않았으면 시작 맵·지금 보는 맵에 건다, 곡과 이름이 비슷한 맵을 고르지 않는다), 모든 전투는 battle-default, 승리 팡파르는 victory(짧은 곡), 보스전만은 role:boss(+troopIds — 비우면 이름에 보스·마왕·드래곤 등이 든 부대) — 그 전투 직전에 곡을 바꾸고 끝나면 되돌리는 명령을 넣는다. 엔딩·크레딧 곡은 role:ending(+endingIds — 비우면 모든 엔딩과 이벤트의 엔딩 명령). 추격 곡(쫓아올 때)은 role:chase(+mapIds — 추격자가 있는 맵, 비우면 모든 추격자): 스위치로 깨우는 추격자는 그 스위치를 켤 때 곡을 바꾸고 끌 때 되돌리며 스위치가 켜진 동안은 그 맵에 다시 들어오거나 잡혀서 다시 시작해도 추격 곡이 이어지고, 늘 있는 추격자는 그 맵 배경음이 된다. 추격자가 없으면 거절한다(새로 만들지 말 것) — 추격 곡을 전투 곡에 걸지 않는다.','write',schema({role:{type:'string',enum:[...ROLES]},resourceId:str,mapIds:{type:'array',items:str},troopIds:{type:'array',items:str},endingIds:{type:'array',items:str}},['role','resourceId']),(p,args)=>{
     const role=String(args.role),id=text(args.resourceId);if(!(ROLES as readonly string[]).includes(role))throw new ToolError('오디오 역할 오류.',{code:'invalid-args'});
     const kind=['cursor','confirm','cancel','defeat'].includes(role)?'sound':'music';
     playable(p,id,kind);
     let maps:string[]=[];
-    if(role==='maps'){if(!Array.isArray(args.mapIds)||!args.mapIds.length||args.mapIds.length>256||args.mapIds.some(id=>typeof id!=='string'||!p.maps[id]))throw new ToolError('실제 mapIds가 필요합니다.',{code:'map-not-found'});maps=[...new Set(args.mapIds as string[])];}
-    else if(args.mapIds!==undefined&&!(Array.isArray(args.mapIds)&&args.mapIds.length===0))throw new ToolError('mapIds는 maps 역할에서만 사용합니다.',{code:'invalid-args'});
+    const mapList=Array.isArray(args.mapIds)?(args.mapIds as unknown[]):[];
+    if(role==='chase'){
+      if(mapList.some(m=>typeof m!=='string'||!p.maps[m]))throw new ToolError(mapIdsError(p,mapList),{code:'map-not-found'});
+      if(args.troopIds!==undefined||Array.isArray(args.endingIds)&&args.endingIds.length)throw new ToolError('chase 역할은 mapIds 만 받습니다.',{code:'invalid-args'});
+      const done=setChaseMusic(p,id,[...new Set(mapList as string[])]);
+      const viaSwitch=done.chasers.filter(c=>c.via==='switch').length;
+      return {summary:`추격자 ${done.chasers.length}명에 추격 곡을 걸었습니다${viaSwitch?` — 추격 스위치를 켜는 곳 ${done.cues.filter(c=>c.at==='start').length}곳에서 곡을 바꾸고 끄는 곳 ${done.cues.filter(c=>c.at==='end').length}곳에서 되돌림, 켜진 동안 맵에 다시 들어오거나 다시 시작해도 추격 곡`:''}${done.mapBgm.length?` — 늘 있는 추격자의 맵 ${done.mapBgm.length}개는 맵 배경음을 추격 곡으로(맵을 나가면 돌아옴)`:''}.`,data:{role,resourceId:id,kind,...done,verificationScope:'authored-binding'}};
+    }
+    if(role==='maps'){if(!Array.isArray(args.mapIds)||!args.mapIds.length||args.mapIds.length>256||args.mapIds.some(id=>typeof id!=='string'||!p.maps[id]))throw new ToolError(mapIdsError(p,mapList),{code:'map-not-found'});maps=[...new Set(args.mapIds as string[])];}
+    else if(args.mapIds!==undefined&&!(Array.isArray(args.mapIds)&&args.mapIds.length===0))throw new ToolError('mapIds는 maps·chase 역할에서만 사용합니다.',{code:'invalid-args'});
     if(args.troopIds!==undefined&&role!=='boss')throw new ToolError('troopIds는 boss 역할에서만 사용합니다.',{code:'invalid-args'});
     const endingIds=Array.isArray(args.endingIds)?(args.endingIds as unknown[]).filter((e):e is string=>typeof e==='string'):[];
     if(endingIds.length&&role!=='ending')throw new ToolError('endingIds는 ending 역할에서만 사용합니다.',{code:'invalid-args'});

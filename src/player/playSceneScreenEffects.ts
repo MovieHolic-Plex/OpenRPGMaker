@@ -253,6 +253,25 @@ function animFor(host: HTMLElement): TintAnim {
   return anim;
 }
 
+/**
+ * 화면 효과 층(z 27, 캔버스 위)이 화면을 불투명하게 덮었거나 덮어 가는 중인지.
+ * - `null`: 덮지 않는다(투명·반투명 색조, 걷히는 중) — 그 아래 카메라 페이드가 보인다.
+ * - `0`: 이미 불투명하게 덮었다 — 그 아래 카메라 페이드는 보이지 않는다.
+ * - 양수: 불투명으로 가는 트윈이 이만큼 남았다.
+ * 장소 이동(playSceneMapCommands.transferTo)이 「보이지 않는 카메라 페이드」를 건너뛰는 데 쓴다.
+ */
+export function screenCoverRemainingMs(scene: PlaySceneContext): number | null {
+  const host = overlayHost(scene);
+  if (!host) return null;
+  const anim = tintAnimations.get(host);
+  // 플래시는 곧 걷히는 한순간이라 덮개로 치지 않는다.
+  if (!anim || anim.mode === "screen-flash") return null;
+  const opaque = (color: Rgba): boolean => color.a >= 0.999;
+  if (anim.durationMs <= 0 || anim.rafId === 0) return opaque(anim.displayed) ? 0 : null;
+  if (!opaque(anim.to)) return null;
+  return Math.max(0, anim.startedAt + anim.durationMs - nowMs());
+}
+
 function setImmediateColor(host: HTMLElement, color: Rgba, mode: string): void {
   const anim = animFor(host);
   anim.displayed = color;

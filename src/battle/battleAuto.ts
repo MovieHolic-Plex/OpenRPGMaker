@@ -3,6 +3,7 @@ import { areaTargets, resolveBattleTargets, skillRevivesDefeatedAllies, targetId
 import { predictSkillDamageFor } from "@/battle/battlePredict";
 import type { ActorCommand, BattleBattlerSnapshot, BattleSnapshot } from "@/battle/types";
 import { stateBehavior } from "@/battle/battleStates";
+import { skillAddsNothingTo } from "@/battle/battleSkillRedundancy";
 import { battlerTypes, typeChartMultiplierForTypes } from "@/battle/typeChart";
 import type { ActorAutoTactic, Project, SkillRecord } from "@/project/types";
 import type { Rng } from "@/util/rng";
@@ -74,7 +75,11 @@ function fallbackLearnedSkill(
       actors: snapshot.actors,
       enemies: snapshot.enemies,
     });
-    for (const target of resolution.requiresSelection ? resolution.candidates : resolution.targets.slice(0, 1)) {
+    const reachable = resolution.requiresSelection ? resolution.candidates : resolution.targets;
+    // 이미 걸린 버프·디버프를 다시 거는 보조 기술은 상태를 늘리지도, 지속을 늘리지도 않는다 — 헛차례다.
+    // 범위 기술은 받는 쪽 하나라도 새로 걸리면 쓴다. 다 걸려 있으면 통상 공격으로 넘어간다.
+    if (!resolution.requiresSelection && reachable.length > 0 && reachable.every((target) => skillAddsNothingTo(skill, target))) continue;
+    for (const target of resolution.requiresSelection ? reachable.filter((target) => !skillAddsNothingTo(skill, target)) : reachable.slice(0, 1)) {
       candidates.push({ skill, target, side: resolution.side });
     }
   }

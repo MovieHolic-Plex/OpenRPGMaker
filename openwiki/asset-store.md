@@ -88,7 +88,7 @@ faceset(48×48 얼굴)·picture(흉상·전신) 에셋을 가리킨다. 표정 �
 ### 음악 팩의 곡별 고르기 설명 (2026-10-25)
 
 음악 팩은 곡(에셋)마다 `meta.oprnMusic` 에 조수가 고를 때 쓰는 값을 싣는다. 넣으면 `meta` 가 그대로 `project.assets.uploaded[id].meta` 로 들어온다.
-읽는 쪽은 `src/assets/storeMusicMeta.ts` `readStoreMusicMeta` 하나다 — `sceneRoles`(town·field·dungeon·battle·boss·victory·sad·tense·title·ending 중 하나 이상, 없으면 무시)·
+읽는 쪽은 `src/assets/storeMusicMeta.ts` `readStoreMusicMeta` 하나다 — `sceneRoles`(town·field·dungeon·battle·boss·victory·sad·tense·chase·title·ending 중 하나 이상, 없으면 무시)·
 `mood`(한국어 분위기 낱말)·`genreLine`/`genreLabel`/`genreKo`(한국어 장르 이름 — 「조선풍」 검색용)·`bpm`·`energy`(1~5)·`tempo`(slow·medium·fast)·`loopable`(false = 징글)·`lengthSec`·`summaryKo`(한 줄).
 `listAudioResources` 가 이 값으로 태그(장르·장면 영/한·분위기·루프/징글)와 설명(출처 `ai-listening`)을 만들고,
 `recommend_bgm` 은 `scene` 을 곡 이름 대신 `sceneRoles` 로 맞추며 `scene`+`query` 를 같이 주면 그 장면 곡 안에서 장르·분위기로 순위를 매긴다(장면 안에 맞는 곡이 없으면 `sceneFallback`).
@@ -103,8 +103,13 @@ faceset(48×48 얼굴)·picture(흉상·전신) 에셋을 가리킨다. 표정 �
 - **워커에서 스토어 읽기.** 조수 도구는 Pi 워커(Bun)에서 돌아 `window.oprn.store` 가 없다. 편집기가 실행 요청에 `store:{url,autoInstall}` 을 싣고
   (`src/editor/assetStore/storeHint.ts` → `PiAgentRequest.store`), 워커가 같은 주소로 로그인 없는 `AssetStoreClient` 를 만든다
   (`scripts/lib/workerStore.ts` → `setWorkerStoreAccess`, `src/assetStore/storeAccess.ts`). 공개 목록·매니페스트·파일만 읽는다.
-- **`store_find_music`** (`src/editor/tools/storeTools.ts`): `scene`(town·field·dungeon·battle·boss·victory·sad·tense·title·ending) + `query`(장르) + `mood` 로
+- **`store_find_music`** (`src/editor/tools/storeTools.ts`): `scene`(town·field·dungeon·battle·boss·victory·sad·tense·chase·title·ending) + `query`(장르) + `mood` 로
   음악 팩 매니페스트를 받아 곡 단위로 순위를 매긴다(`src/assetStore/storeMusicPick.ts` `rankStoreMusic` — 장면이 먼저, 실제로 들리는 장르 `genreKo` 가 팩 줄보다 무겁고, 승리는 징글·그 밖은 루프).
+  **팩 목록은 전부 본다**(2026-10-30, 실조수 e2e 14/16 → 수정): `listAllStoreMusicPacks` 가 `catalog{kind:music}` 첫 쪽의 `total`·`pageSize` 로 나머지 쪽을 두 쪽씩 받는다(상한 8쪽·120팩). 예전 16팩 자르기 때문에 18팩 중 호러·판타지 팩이 안 보였다.
+  목록은 스토어 주소마다 5분, 매니페스트는 `slug@판본`마다 세션 내내 캐시한다(곡 파일은 받지 않는다). 목록이 상한에 걸렸을 때만 검색어로 한 번 더 찾는다.
+  **1위 추천**: 후보에 `rank`·`why`(장면·게임 결 줄·맞은 낱말)를 붙이고 1위만 `recommended:true`. 게임 이름에서 줄을 읽었으면(`feelFrom.line`, 예: 파판 → symphonic-jrpg) 그 줄이 아닌 곡은 `fallback:true`. summary 는 1위 slug·assetId 를 적고 「사용자가 다른 곡을 말하지 않았으면 바꾸지 않는다」고 시킨다(「파판 전투곡」에 3위를 넣었다).
+  **미술관 = town**: 조수가 `scene:'dungeon'` 을 줘도 요청 말에 미술관·갤러리·박물관·저택이 있고 던전 낱말이 없으면 town 으로 읽는다(`townPlaceOverDungeon`).
+  **연결 자리**: 음악 카드(`MUSIC_TIER`)와 `set_game_audio` 설명이 「mapIds 는 맵 id(타일셋 id 아님), 맵을 말하지 않았으면 시작 맵·지금 보는 맵, 곡과 이름이 비슷한 맵을 고르지 않는다」고 시킨다(「이브 같은 미술관 BGM」을 동굴 맵에 걸었다). 틀린 mapIds 는 `mapIdsError` 가 실제 맵 id(이름, 시작 맵 표시)와 「타일셋 id 다」를 돌려준다. 단위 `test/storeMusicPaging.test.ts`.
 - **기본은 바로 넣기 + 바꾸기 쪽지.** 사용자가 음악을 청하면 조수가 묻지 않고 가장 맞는 곡을 `store_install` 로 넣고 `set_game_audio` 로 잇는다(결과 `autoInstall:true`).
   턴 뒤 패널이 짧은 쪽지(`ai-store-music-note`: 「넣었어요: 곡 · 장면·분위기 (바꾸기)」)를 띄운다 — 「바꾸기」(`ai-store-music-swap`)는 같은 검색의 다른 후보를 미리 듣기와 「이걸로」(`ai-store-music-take`)로 펼치고,
   누르면 그 곡만 받아 「앞 곡이 연결된 자리를 이 곡으로 바꿔라」 후속 요청을 보낸다. 쪽지는 답을 기다리는 질문이 아니다(`isAutoMusicChoice`, `isStoreCardRequest` 는 false).
@@ -128,10 +133,18 @@ faceset(48×48 얼굴)·picture(흉상·전신) 에셋을 가리킨다. 표정 �
   단위 `test/storeMusicFeel.test.ts`, 실조수 요청 `g-music-feel-*`(5건, 팩 게시 뒤 위 `--store-url` 로 돌린다).
 - **장면 여럿 = 카드 하나.** (먼저 묻기일 때) 「게임 음악 전부」처럼 `store_find_music` 을 장면마다 부르면 패널이 한 카드로 묶는다(장면마다 「고르기」, 맨 아래 「고른 곡 넣기」 한 번 → 후속 요청 하나). v2 는 카드를 띄운 실행을 사용자 질문으로 보고 끝맺음 관문이 넣기를 재촉하지 않는다.
 - **보스전만 다른 곡.** `set_game_audio role:"boss"`(+`troopIds`, 비우면 이름에 보스·마왕·드래곤·관장 등이 든 부대)는 그 `battleProcessing` 앞뒤에 `m2-027-change-system-bgm`(battle set / reset)을 넣는다. 다시 불러도 한 쌍만 남는다.
+- **추격 곡**(2026-10-30, 실조수 e2e 「아오오니 느낌으로 추격 음악」이 모든 전투 곡에 걸렸다 → 수정). 장면 id 는 정확히 `chase` 다(`STORE_MUSIC_SCENES`) — 호러 팩(`chase-horror` 줄 등)이 쫓길 때 곡에 `sceneRoles:["chase"]` 를 싣는다. 순위는 chase 곡이 먼저, 없으면 tense 곡(+5, `SCENE_NEAR`), 전투 곡은 빠진다. `recommend_bgm scene:'tense'` 도 chase 곡을 받는다.
+  연결은 `set_game_audio role:"chase"`(+`mapIds`, 비우면 모든 추격자): 추격자(`movement.type:'chase'` 페이지, `make_chase_scene`)가 **스위치로 깨어나면** 그 스위치를 켜는 `setSwitch` 바로 앞에 `fork{switch 꺼짐 → m2-063-memorize-current-bgm + playAudio{channel:'bgm'}}`(이미 켜져 있을 때 금고를 다시 조사해도 추격 곡을 «기억한 곡»으로 덮지 않는다 — 덮으면 끌 때 되돌아오지 않았다; 옛 무조건 두 줄은 다시 걸 때 이 묶음으로 바뀐다), 끄는 `setSwitch` 바로 뒤에 `m2-064-play-memorized-bgm`(이동 경로 안의 setSwitch 는 건드리지 않는다). **늘 있는 추격자**(조건 없음)나 켜는 명령을 못 찾은 추격자는 그 맵의 배경음을 추격 곡으로 한다(맵을 나가면 다음 맵 곡). 다시 걸면 곡만 바꾼다. 추격자가 없으면 `chaser-not-found` 로 거절한다 — 추격자를 새로 만들지 않는다. 끝맺음 검사는 추격 음악 요청이 `battle-default` 를 바꾸면 돌려보낸다.
+  **추격 상태를 따라간다**(2026-10-30 실조수 r12 후속): 켜는 순간의 곡 바꾸기만으로는 스위치가 켜진 채 맵에 다시 들어오거나 잡혀서(패배 복구) 다시 시작하면 맵 진입 곡(평소 곡)이 깔렸다. 그래서 스위치로 깨우는 추격자의 맵에 `GameMap.bgmWhileSwitch:[{switchId, resourceId}]`(스위치가 켜진 동안의 진입 곡)를 남긴다 — `bgm` 과 따로라 맵 속성에서 BGM 을 바꿔도 지워지지 않는다. 해석은 `project/mapMusic.ts resolveMapBgm` 하나이고, 세션 스위치를 넘기는 런타임 맵 진입(`player/mapBgm.ts startMapBgm` — 맵 이동·패배 복구·세이브에 곡이 없을 때)만 본다(편집기 미리보기·추천은 평소 곡). 스위치를 끄면 기존대로 `m2-064` 가 기억한 곡을 튼다. 출하 플레이어(`wholeGamePlayer` + 소리 타임라인 프로브)로 확인: 켜기 → 추격 곡, 잡혀서 다시 시작 → 추격 곡, 다른 맵 → 그 맵 곡, 다시 들어오기 → 추격 곡, 끄기 → 기억한 곡. 단위 `test/chaseMusicPersists.test.ts`.
+- **scene 다른 말·빠진 scene.** `store_find_music` 의 `scene` 은 enum 이 없다(검사기가 「village」를 도구에 닿기 전에 거절했다). `normalizeStoreMusicScene` 이 village·city·마을 → town, maps·map·필드·월드맵 → field, 던전·동굴 → dungeon, 미술관·갤러리·박물관·저택(걸어 다니며 살피는 실내) → town, 추격·도망 → chase 등으로 바꾸고, 빠졌거나 모르는 말이면 `inferStoreMusicScene` 이 scene·query·need·mood 낱말로 짐작한다(추격이 긴장보다, 보스가 전투보다 먼저). 그래도 모르면 장면 없이 장르·분위기로 고른다. 결과 summary 에 「scene X → Y 로 읽었다」를 싣는다. `set_game_audio` 는 `bgmResourceId`·`musicResourceId` 등을 `resourceId` 로 옮겨 받는다(`argRepair.ts` `TOOL_ARG_ALIASES`, 경고를 남긴다). 단위 `test/storeMusicChase.test.ts`.
+- **실조수 시험 씨앗**(`src/harnesses/assistant-capability/node/musicStorePrepare.ts`): 모든 장르에 보스를 이기면 열리는 엔딩 `ending_main` 하나(「엔딩곡」 시험이 곡을 걸 자리), `horror` 장르는 지하실 금고 → `sw_chase_on` → 추격자 `ev_chaser`(추격 곡 시험).
 - **엔딩곡.** `set_game_audio role:"ending"`(+`endingIds`, 비우면 모든 엔딩과 이벤트의 `kind:'ending'` 명령)은 `project.endings[].presentation.musicResourceId`(엔딩 화면 「ending-music」, `playSceneOverlays.ts`)에 건다. 걸 엔딩이 없으면 거절한다 — 엔딩을 새로 만들지 않는다.
 - **음악 요청 알아보기**(2026-10-30, 실조수 e2e 5/8 → 수정). v2 는 `src/ai/v2/musicWords.ts` 한 곳에서 음악 요청을 판정한다: 음악·브금·bgm·사운드·선율·노래(부르는 장면 제외), 장면 붙은 「~곡」(엔딩곡·전투곡·보스곡·타이틀곡…; 계곡·곡괭이는 안 걸린다), 그리고 `GAME_FEELS` 의 모든 게임 이름 + 느낌·처럼·풍·같은(`STORE_MUSIC_GAME_NAME_SOURCE` — **표에 줄을 더하면 여기서도 맞는다**).
   게임 요소 낱말이 없으면 음악 묶음(`MUSIC_TIER`)만 맵 동사 위에 덧붙인다(맵 동사를 대신하지 않는다 — 「파판처럼 마을 만들어」도 make_place 를 그대로 쓴다). 끝맺음 음악 검사(`gameChecks.ts`)는 `musicAsked` — 짓는 요청의 게임 이름(화풍일 수 있다)에는 곡을 요구하지 않는다. 엔딩곡 연결도 「걸었다」로 센다.
   음악 카드는 「음악만 바라는 요청은 맵을 다시 짓거나 이벤트·엔딩을 새로 만들지 않는다」고 시킨다(실패 판에서 도구가 없던 조수가 마을을 다시 짓고 엔딩 이벤트를 새로 만들었다). 단위 `test/assistantMusicRouting.test.ts`.
+  **음악만 바라는 요청**(`musicWords.ts musicOnly` — 음악 요청이고 곡 낱말 밖에 짓기·고치기·이벤트·사람 말이 없다: 「아오오니 느낌으로 추격 음악」「잔잔하게 엔딩곡」「배경음악 추가해 줘」는 그렇다, 「보스 만들고 보스곡」「추격자 만들고 추격 음악」은 아니다)은 2026-10-30 r12(검토자의 «체크포인트가 추격자 시야 안» 우려가 관문 글로 넘어가 조수가 상자를 찍고 `make_chase_scene` 을 불렀다) 뒤로 범위를 묶는다:
+  ① 도구는 음악 묶음(+스토어 묶음)만 — 「추격」「엔딩」 낱말이 게임 도구를 끌어오지 않는다(`game.ts v2ExtraToolNames`), v2 동사는 `inspect`·`ask_user` 만(`verbs.ts`). ② 끝맺음 관문(`v2FinishGate`)은 `[게임 검사 음악|실행|부작용]` 만 일감으로 넘기고 나머지(이미 있던 위협·출하 차단…)는 `v2.music-only.notes` 기록으로만 남긴다. ③ 검토자(`advisor.ts scopeAdviceToRequest`)는 요청 밖 지적(출하 차단·끊긴 고리·그 밖의 우려)을 참고(aside)로 낮춘다 — 보고 주장·삭제·빠진 부분은 그대로 막는다. 참고는 「고치지 않는다, 보고에 참고로만」이라는 머리말로만 넘어간다(`scripts/lib/assistantV2Runtime.ts`).
+  **엔딩 검사**(`gameChecks.ts`): 「엔딩」 요청의 «triggerEnding 이 없다»는 이번에 바꾼 이벤트만이 아니라 프로젝트 전체(맵 이벤트·공통 이벤트)에서 찾고, 음악만 바라는 엔딩곡 요청에는 묻지 않는다(r11: 이미 있던 `ev_boss` 의 triggerEnding 을 못 봤다).
   새 줄(2026-10-30, 팩 게시 전): `dark-folk-fantasy`·`gallery-mystery`·`chase-horror`·`dark-fairytale`·`dream-ambient`·`eerie-minimal`·`school-horror`·`chiptune-indie-rpg`.
   일반 낱말은 `LINE_WORDS`, 게임 이름은 `GAME_FEELS` 에만 넣고, 각 게임 줄의 lines 둘째 이후가 새 팩이 없을 때 물러설 옛 줄(fantasy·piano-story·horror·scifi·monster)이다.
   흔한 낱말과 겹치는 이름(이브·イヴ·off·오프·위처)은 `guarded` — 바로 뒤에 느낌·처럼·풍·같은이 올 때만 그 게임이다(「이브닝」「불 꺼(off)」「위처럼」은 안 걸린다). 「Ib」「off rpg」는 낱말째 맞는다.
@@ -278,7 +291,7 @@ npm run harness -- game-concepts publish --target staging|prod --yes-prod|http:/
 - 첫 화면 목록(`scenePreload.ts` `firstPlayableUrls`): 타이틀·오프닝·system 글자·메뉴 효과음 + 엔진 부팅 텍스처(가짜 로더로 `loadBundledAssets` 를 그대로 받아 적음)
   + 시작 맵(타일셋·화자 얼굴·BGM) + 시작 파티. 소리는 받은 바이트를 blob 으로 쥐고 있다(`preloadedAudio.ts`, 큰 WAV 가 캐시에 안 남는 문제).
 - 시작한 뒤 뒤에서 **판본의 모든 파일**: 가까운 맵 → 코드 조각·스킬 효과 시트 → 나머지. 목록은 판본에 실린 `preload-files.json`(게시 때 생성).
-  맵 이동은 페이드 뒤에서 새 맵 파일을 기다린다(`holdForMapAssets`, 300ms 넘으면 「불러오는 중…」). 전투 첫 화면은 #3306 관문이 기다린다.
+  맵 이동은 페이드아웃과 함께 새 맵 파일 받기를 걸고(`prefetchMapAssets`), 페이드 뒤에서 남은 것을 기다린다(`holdForMapAssets`, 300ms 넘으면 「불러오는 중…」). 전투 첫 화면은 #3306 관문이 기다린다.
 - **그림 묶음**(`project/storeGamePacks.ts`·`player/preloadPacks.ts`): 512KB 이하 그림을 2MB 안팎 `packs/pNNN.json`({v:1, files:[[경로, base64]]})
   으로 묶어 싣고(첫 화면 파일 제외, 가까운 맵 순), `preload-files.json` 은 `{v:2, files, packs}`. 플레이어가 묶음을 풀어 Cache Storage
   `oprn-pack:/<slug>/<판본>/` 에 넣고, 판본 폴더 범위 서비스 워커 `preload-sw.js`(공식 파일, 신뢰 해시)가 그림 GET 만 캐시에서 준다.
