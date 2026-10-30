@@ -850,6 +850,11 @@ export interface Project {
   gameDesignBrief?: import("../gameDesignBrief").GameDesignBrief;
   /** 조수가 게임 하나를 짓기 전에 쓰는 청사진(목표·핵심 경로·엔딩). 출하 검사가 이 경로를 걸어 본다. project/gameBlueprint.ts */
   gameBlueprint?: import("../gameBlueprint").GameBlueprint;
+  /**
+   * 조수 v2 의 할 일 목록(마지막 실행 — src/ai/v2/loop/todoStore.ts AssistantTodoState). «계속» 요청이 열린 항목을 이어 받는다.
+   * 게임 실행에는 쓰지 않는다. 모양은 조수 쪽이 검사한다(여기서는 느슨하게 둔다 — 프로젝트 층이 조수 모듈에 기대지 않게).
+   */
+  assistantTodo?: { readonly version: 1; readonly task: string; readonly at: number; readonly items: readonly unknown[]; readonly meta?: Readonly<Record<string, unknown>> };
   /** Prompt library and dialogue review preferences, saved with this project. */
   aiAuthoring?: import("../aiAuthoring").AiAuthoring;
   /** Optional spatial authoring authority, separate from lore, worldGraph and runtime saves. */

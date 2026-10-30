@@ -36,6 +36,8 @@ import { genId } from "@/util/id";
 import { chestOpenCommands, chestOpenedGraphic, lootGrantCommands } from "@/editor/lootFeedback";
 import { buildMapPlacementContext } from "@/ai/mapPlacementContext";
 import { laneCells } from "@/ai/v2/placementRules";
+import { noteToolChosenGraphic } from "./toolChosenGraphics";
+import { ensureHorrorSound, readFootstepsArg, resolveFootstepsSe } from "./horrorSoundAssets";
 import type { Command, Condition, Dir, EventPage, EventPageCondition, EventPageGraphic, FaceGraphic, GameEvent, GameMap, GiftPrefs, GiftResponses, MoveCommand, MoveRoute, NpcScheduleEntry, NpcScheduleWhen, Project, SelfSwitchKey, ShopStockEntry, TransferFade, Trigger } from "@/project/types";
 import {
   canonicalizeSayBeatAliases,
@@ -397,40 +399,75 @@ function eventLook(event: GameEvent | undefined): EventPageGraphic | undefined {
   return graphic ? structuredClone(graphic) : undefined;
 }
 
-/** 이름에 이 낱말이 있으면 말하는 존재로 본다(주민 그림을 세운다). */
-const SPEAKING_BEING_WORDS = /사람|주민|아이|소녀|소년|아가씨|청년|노인|할머니|할아버지|아저씨|아주머니|아줌마|여인|남자|여자|상인|점원|주인|손님|경비|병사|기사|마법사|의사|박사|탐정|집사|신부|수녀|왕|공주|왕자|어부|농부|사냥꾼|그림자|유령|요정|정령|괴물|몬스터|인형|villager|person|npc|man|woman|girl|boy|guard|ghost/iu;
+/**
+ * 이름의 머리 명사(괄호 앞 마지막 낱말)가 이것이면 사물·표지·장치·구역이다. 인물 쪽 낱말 목록은 두지 않는다 —
+ * 촌장·장로·대장장이처럼 역할 이름은 끝이 없어 목록이 늘 빠뜨린다(2026-10-30: 「촌장」이 투명 이벤트로 저장됐다).
+ * 사물은 머리 명사가 정해져 있으므로 이쪽을 적는다.
+ */
+const OBJECT_HEAD_NOUNS = new Set([
+  "문", "대문", "정문", "후문", "철문", "철창", "창살", "창문", "창", "커튼",
+  "표지판", "팻말", "푯말", "간판", "게시판", "안내판", "이정표", "비석", "묘비", "비문", "석판", "명판", "현판", "포스터", "벽보", "지도",
+  "상자", "보물상자", "궤", "금고", "항아리", "단지", "통", "나무통", "술통", "자루", "바구니", "서랍", "옷장", "찬장", "선반", "책장", "장롱", "사물함",
+  "스위치", "레버", "단추", "버튼", "발판", "장치", "기계", "함정", "열쇠구멍", "자물쇠", "손잡이",
+  "영역", "구역", "지점", "트리거", "입구", "출구", "계단", "사다리", "구멍", "통로",
+  "거울", "촛대", "양초", "등불", "램프", "등", "화로", "난로", "벽난로", "우산", "석상", "동상", "조각상", "액자", "사진", "그림", "초상화",
+  "책", "일기", "일기장", "편지", "쪽지", "메모", "수첩", "서류", "노트",
+  "책상", "탁자", "식탁", "의자", "침대", "시계", "괘종시계", "우물", "무덤", "제단", "꽃병", "화분", "기둥", "수정", "분수", "기념비", "오르간", "피아노",
+]);
+/** 숨은 장치·투명 구역 — 그림을 세우면 안 된다(이름이 숨겼다고 말한다). */
+const HIDDEN_WORDS = /숨은|숨겨진|감춰진|보이지 ?않는|투명|hidden|invisible|secret/iu;
+/** 대사가 아니라 서술(「잠겨 있다」「~라고 적혀 있다」)인 본문 — 사물을 조사한 결과다. */
+const NARRATION = /(적혀|쓰여|새겨져|새겨진|잠겨|놓여|걸려|붙어|꽂혀|들어) ?있|열리지 않|꿈쩍도 않|비어 있|아무것도 없|아무 반응이 없|조사했다|살펴보았다/u;
+/** 1인칭·말 건네기 — 누군가 말하고 있다. */
+const FIRST_PERSON = /(^|[\s「"'“])(나|내|난|날|저|제|전|우리|이몸|본인|자네|너|네가|당신|그대|젊은이|여행자|손님)(는|가|도|를|의|에게|한테|요|야|,|\s|!|\?|$)|어서 ?오|안녕|반갑|고맙|부탁|[요죠네게지나]\s*[.!?~…]*\s*$|[까냐니][?？]\s*$|구먼|일세|하게|하오|습니다|ㅂ니다/u;
+
+function pageTextBodies(page: Partial<EventPage>): string[] {
+  return allPageCommands(page.commands).flatMap((command) => command.kind === "text" && typeof command.body === "string" ? [command.body] : []);
+}
 
 /**
- * 투명 action 페이지가 말하는 인물이 아니라 조사할 사물인가 — 그렇다면 주민 그림 대신 쓸 그래픽.
+ * 그림 없는 대화(action) 페이지가 말하는 인물이 아니라 조사할 사물인가 — 그렇다면 주민 그림 대신 쓸 그래픽.
  *
- * 2026-09-24 꿈 세계 도그푸딩: 「기억의 거울」「타오르는 촛대」「버려진 우산」「고양이 석상」「오래된 사진 액자」가
- * 전부 주민 기본 charset(people1)으로 저장돼, 플레이어는 거울·촛대 자리에 서 있는 마을 사람을 봤다. 화자(speaker)가
- * 있는 대사나 인물 낱말이 든 이름이면 null(주민 그림 유지). 사물이면 이름 낱말과 라벨 낱말이 정확히 겹치는
- * charset(문·상자…)을, 없으면 투명을 준다.
+ * 기본은 인물이다. 사물로 보는 것은 이름이나 내용이 분명히 사물·표지·장치·구역이라고 말할 때뿐이다:
+ *   1. 화자가 이벤트 이름 자신이면(speaker === name, 「이름:」으로 시작하는 본문) 인물 — 말하는 거울도 인물로 세운다.
+ *   2. 이름이 숨은 장치(「숨은 스위치」)면 투명.
+ *   3. 이름의 머리 명사가 사물(문·표지판·상자·스위치·구역 …)이면 사물 — 이름과 맞는 칩(문·상자)이 있으면 그 칩, 없으면 투명.
+ *   4. 이름이 없거나 사물 낱말이 아니어도, 본문이 전부 서술(「잠겨 있다」)이고 1인칭·말 건네기가 하나도 없으면 사물(id 로 문 칩만 찾는다).
+ *   5. 나머지는 인물(주민 기본 칩) — 촌장·장로·대장장이처럼 목록에 없는 역할 이름도 인물이다.
+ * 이력: 2026-09-24 꿈 세계(거울·촛대가 주민으로 섬) → 인물 낱말 목록, 2026-10-30 「촌장」 투명 → 사물 쪽 판정으로 뒤집음.
  */
 function objectEventGraphic(event: GameEvent, page: Partial<EventPage>): { graphic: EventPage["graphic"]; label: string } | null {
   if (event.characterId) return null;
   const name = (event.name ?? "").trim();
-  if (allPageCommands(page.commands).some((command) => command.kind === "text"
-    && ((typeof command.speaker === "string" && command.speaker.trim()) || bodyNamesSpeaker(command.body, name)))) return null;
-  if (!name) return objectGraphicFromId(event.id);
-  if (SPEAKING_BEING_WORDS.test(name)) return null;
-  // 머리 명사(괄호 앞 마지막 낱말)만 본다 — 「붉은 문」의 「붉은」이 붉은 몬스터를, 「고양이 석상」의 「고양이」가
-  // 산 고양이를 고르면 안 된다.
-  const head = name.replace(/[(（].*$/u, "").trim().split(/[\s·,/]+/u).filter(Boolean).at(-1);
-  // 이름 전체가 라벨과 같으면 그 칸이 먼저다 — 「감옥 문」이 머리 명사 「문」만 보고 나무 문이 되던 경로(2026-09-27).
-  const whole = name.replace(/[(（].*$/u, "").trim();
-  const exact = searchResources("charset", whole).find((hit) => hit.label.replace(/[(（].*$/u, "").trim() === whole);
-  const exactParsed = exact ? /^charset:(.+):(\d+)$/u.exec(exact.id) : null;
-  if (exactParsed) return { graphic: charsetGraphic(exactParsed[1]!, Number(exactParsed[2])), label: exact!.label };
-  for (const hit of head ? searchResources("charset", head).slice(0, 6) : []) {
-    // 라벨의 머리 명사끼리 맞아야 한다. 라벨 낱말 어디든 맞으면 「큰 나무」가 「나무 문(패널)」 그림을 받았다(2026-09-27).
-    const labelHead = hit.label.replace(/[(（].*$/u, "").trim().split(/[\s·,/]+/u).filter(Boolean).at(-1);
-    if (labelHead !== head) continue;
-    const parsed = /^charset:(.+):(\d+)$/u.exec(hit.id);
-    if (parsed) return { graphic: charsetGraphic(parsed[1]!, Number(parsed[2])), label: hit.label };
+  const bare = name.replace(/[(（].*$/u, "").trim();
+  const texts = allPageCommands(page.commands).filter((command) => command.kind === "text");
+  const speaksAsSelf = Boolean(name) && texts.some((command) => (typeof command.speaker === "string" && command.speaker.trim() === name) || bodyNamesSpeaker(command.body, name));
+  const firstPerson = pageTextBodies(page).some((body) => FIRST_PERSON.test(body));
+  if (bare && HIDDEN_WORDS.test(bare)) return { graphic: { transparent: true }, label: "" };
+  const head = bare.split(/[\s·,/]+/u).filter(Boolean).at(-1);
+  const objectNamed = Boolean(head && OBJECT_HEAD_NOUNS.has(head));
+  // 사물 이름에 화자 표시만 붙은 표지판(「표지판: 북쪽 마을」)은 사물이다 — 이름이 사물이면 1인칭으로 말할 때만 인물로 본다.
+  if (speaksAsSelf && (!objectNamed || firstPerson)) return null;
+  if (objectNamed && head) {
+    // 이름 전체가 라벨과 같으면 그 칸이 먼저다 — 「감옥 문」이 머리 명사 「문」만 보고 나무 문이 되던 경로(2026-09-27).
+    const exact = searchResources("charset", bare).find((hit) => hit.label.replace(/[(（].*$/u, "").trim() === bare);
+    const exactParsed = exact ? /^charset:(.+):(\d+)$/u.exec(exact.id) : null;
+    if (exactParsed) return { graphic: charsetGraphic(exactParsed[1]!, Number(exactParsed[2])), label: exact!.label };
+    for (const hit of searchResources("charset", head).slice(0, 6)) {
+      // 라벨의 머리 명사끼리 맞아야 한다. 라벨 낱말 어디든 맞으면 「큰 나무」가 「나무 문(패널)」 그림을 받았다(2026-09-27).
+      const labelHead = hit.label.replace(/[(（].*$/u, "").trim().split(/[\s·,/]+/u).filter(Boolean).at(-1);
+      if (labelHead !== head) continue;
+      const parsed = /^charset:(.+):(\d+)$/u.exec(hit.id);
+      if (parsed) return { graphic: charsetGraphic(parsed[1]!, Number(parsed[2])), label: hit.label };
+    }
+    return { graphic: { transparent: true }, label: "" };
   }
-  return { graphic: { transparent: true }, label: "" };
+  const bodies = pageTextBodies(page);
+  const anySpeaker = texts.some((command) => typeof command.speaker === "string" && command.speaker.trim());
+  const narrationOnly = !anySpeaker && !BEING_ID_WORDS.test(event.id) && bodies.length > 0 && bodies.every((body) => NARRATION.test(body.trim()) && !FIRST_PERSON.test(body));
+  if (narrationOnly) return objectGraphicFromId(event.id) ?? { graphic: { transparent: true }, label: "" };
+  if (!name) return objectGraphicFromId(event.id);
+  return null;
 }
 
 /** 영문 id 가 가리키는 사물 — 문은 문 그림, 나머지 사물은 투명. id 에 인물 낱말이 있거나 뜻을 모르면 null(주민 그림). */
@@ -573,6 +610,7 @@ function fillRequiredPageFields(event: GameEvent, page: Partial<EventPage>, page
       // 이름에 맞는 그림이 없으면 투명으로 두고 알린다. 이름과 무관한 대체 그림(예전 보석 표식)은 붙이지 않는다 —
       // 「고대 진실의 제단」이 보석으로 저장돼 제단 자리에 보석이 놓였다(2026-09-27 사용자 지적).
       page.graphic = object.graphic;
+      noteToolChosenGraphic(object.graphic);
       // 칩 그림 사물(문·철창·상자)은 조사하면 플레이어 쪽으로 돌아 다른 줄(열린 문짝)을 보였다 — 잠긴 문이 열린 문으로 보였다(2026-10-28 interior 장부 38).
       if (!object.graphic.transparent && page.animationType === undefined) page.animationType = "fixedGraphic";
       warnings?.push(object.graphic.transparent
@@ -581,6 +619,8 @@ function fillRequiredPageFields(event: GameEvent, page: Partial<EventPage>, page
         : `${event.id}.${pageId}: 조사할 사물 '${event.name ?? event.id}' 에 이름으로 찾은 그림 「${object.label}」 을 붙였습니다.`);
     } else {
       page.graphic = siblingGraphic ? structuredClone(siblingGraphic) : previousLook ? structuredClone(previousLook) : resolveGraphicQuery("villager");
+      // 주민 기본 칩은 도구가 고른 것이다 — 모델 선택 관문이 거절하지 않게 적는다(형제·이전 외형은 이미 그 이벤트의 칩이라 관문이 통과시킨다).
+      if (!siblingGraphic && !previousLook) noteToolChosenGraphic(page.graphic);
       warnings?.push(
         siblingGraphic
           ? `${event.id}.${pageId}: 대화가 있는 action 페이지인데 그래픽이 비어 있어 보이지 않습니다 — 다른 페이지의 charset 을 재사용했습니다.`
@@ -3438,6 +3478,9 @@ const makeChaseScene: ToolDefinition = {
       activateSwitch: { type: "string" },
       checkpointOnEntry: { type: "boolean" },
       mood: { type: "boolean", description: "공포 장르에서 조명이 없는 추격 맵을 어둡게(ambient 0.5). 기본 true, false 면 그대로" },
+      footsteps: { type: "object", description: "추격자 발소리 — 주인공과 걸음 거리로 커지고 좌우로 갈린다(소리로 거리를 재는 호러). {se?(생략 = 공포 기본 구두 발소리를 만든다), everySteps?(기본 2), radius?(칸, 기본 10), volume?}. 공포 장르(horror-chase)는 생략해도 기본 발소리를 단다 — false 면 끈다", properties: { se: { type: "string" }, everySteps: { type: "integer" }, radius: { type: "integer" }, volume: { type: "number" } } },
+      emotes: { type: "string", enum: ["none", "default"], description: "none = 알아챈 「!」·숨 고르기 땀 말풍선을 띄우지 않는다(호러 기본). default = 띄운다" },
+      hidingSound: { type: "object", description: "은신처 소리 — {enterSe?(숨을 때, 생략 = 사물함 문 소리), exitSe?, heartbeat?(true 면 숨어 있는 동안 심장 고동 고리, 공포 장르 기본 true)}. false 면 무음", properties: { enterSe: { type: "string" }, exitSe: { type: "string" }, heartbeat: { type: "boolean" } } },
       hidingSpots: { type: "array", items: { type: "object", properties: { x: { type: "integer" }, y: { type: "integer" }, mapId: { type: "string", description: "옷장이 다른 방(맵)에 있으면 그 mapId. 생략하면 추격자 맵" } }, required: ["x", "y"] }, description: "{x,y,mapId?}[] 은신처(옷장 등) 칸. 그 칸의 조사 이벤트를 은신처로 바꾸고, 없으면 투명 은신 이벤트를 만든다. 생략하면 맵에 있는 옷장·사물함·침대·커튼 1~2곳(순찰 길에서 걸어서 2~14걸음)을 스스로 고른다. [] 면 은신처 없음." },
     },
     required: ["mapId", "chaser"],
@@ -3553,6 +3596,14 @@ const makeChaseScene: ToolDefinition = {
         },
       ],
     };
+    const horrorGenre = draft.system?.genre === "horror-chase";
+    const chasePage = event.pages![0]!;
+    const footstepsArg = args.footsteps === undefined ? (horrorGenre ? { se: "" } : undefined) : readFootstepsArg(args.footsteps);
+    const footsteps = resolveFootstepsSe(draft, footstepsArg);
+    if (footsteps) chasePage.movement = { ...chasePage.movement, footsteps };
+    const quiet = args.emotes === "none" || (args.emotes === undefined && horrorGenre);
+    if (args.emotes !== undefined && args.emotes !== "none" && args.emotes !== "default") throw new ToolError("emotes 는 none|default 입니다.", { code: "invalid-args" });
+    if (quiet) chasePage.movement = { ...chasePage.movement, quietBreath: true, ...(chasePage.movement.sightAlert ? { sightAlert: { ...chasePage.movement.sightAlert, emote: null } } : {}) };
     assertEventShape(event);
     upsertEventIntoMap(map, event);
     // 붙잡히면 게임 오버인 추격은 기본으로 진입 체크포인트를 둔다 — 없으면 「다시 시작」 이 타이틀뿐이다
@@ -3571,6 +3622,16 @@ const makeChaseScene: ToolDefinition = {
       hiding.eventIds.push(...auto.placed.map((pick) => pick.eventId));
       if (auto.placed.length) hiding.warnings.push(`은신처 자동: ${auto.placed.map((p) => `${p.label}(${p.x},${p.y})`).join(" · ")} — 다른 칸을 원하면 hidingSpots 로 준다.`);
       else if (auto.note) hiding.warnings.push(`${auto.note} — 숨을 곳이 0곳이다. 옷장·사물함을 놓고(place_object) hidingSpots 로 그 칸을 준다.`);
+    }
+    const hidingSound = readHidingSound(draft, args.hidingSound, horrorGenre);
+    if (hidingSound) {
+      for (const hideId of hiding.eventIds) {
+        const hideEvent = draft.maps[map.id]?.events.find((e) => e.id === hideId)
+          ?? Object.values(draft.maps).flatMap((m) => m.events).find((e) => e.id === hideId);
+        for (const page of hideEvent?.pages ?? []) {
+          if (page.interaction?.kind === "hiding") page.interaction = { ...page.interaction, ...hidingSound };
+        }
+      }
     }
     const ratio = PLAYER_WALK_STEP_MS / paceMs;
     // 안전지대 안에서는 절대 잡히지 않는다. 2026-09-24 r4 에서 11×22 복도에 12×17 안전지대를 깔아
@@ -3594,6 +3655,24 @@ const makeChaseScene: ToolDefinition = {
     };
   },
 };
+
+/** 사물함 문 소리(숨기 기본). */
+const HIDING_ENTER_SE = "cc0-se-osx-door-close-03";
+
+/** make_chase_scene hidingSound → interaction 소리 필드. 공포 장르는 생략해도 사물함 소리 + 심장 고동. false = 무음. */
+function readHidingSound(draft: Project, raw: unknown, horrorGenre: boolean): { enterSe?: string; exitSe?: string; heldSe?: string } | undefined {
+  if (raw === false) return undefined;
+  if (raw === undefined && !horrorGenre) return undefined;
+  if (raw !== undefined && (typeof raw !== "object" || raw === null || Array.isArray(raw))) throw new ToolError("hidingSound 는 {enterSe?,exitSe?,heartbeat?} 또는 false 입니다.", { code: "invalid-args" });
+  const r = (raw ?? {}) as { enterSe?: unknown; exitSe?: unknown; heartbeat?: unknown };
+  const str = (v: unknown) => (typeof v === "string" && v.trim() ? v.trim() : undefined);
+  const heartbeat = r.heartbeat === undefined ? true : r.heartbeat === true;
+  return {
+    enterSe: str(r.enterSe) ?? HIDING_ENTER_SE,
+    ...(str(r.exitSe) ? { exitSe: str(r.exitSe) } : {}),
+    ...(heartbeat ? { heldSe: ensureHorrorSound(draft, "heartbeat") } : {}),
+  };
+}
 
 /** 벽감의 action 접근 예외는 기본 보물상자를 수면에 띄우는 허가가 아니다. */
 function assertChestDrySurface(project: Project, map: GameMap, x: number, y: number): void {

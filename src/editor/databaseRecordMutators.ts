@@ -167,6 +167,7 @@ export function updateEnemyRecord(database: DatabaseRecords, id: string, patch: 
   if ("monsterResourceId" in patch) record.monsterResourceId = patch.monsterResourceId;
   if ("battleScalePercent" in patch) record.battleScalePercent = patch.battleScalePercent;
   if ("lungeSpeedPercent" in patch) { if (typeof patch.lungeSpeedPercent === "number" && patch.lungeSpeedPercent !== 100) record.lungeSpeedPercent = patch.lungeSpeedPercent; else delete record.lungeSpeedPercent; }
+  if ("walkChip" in patch) { if (patch.walkChip) record.walkChip = patch.walkChip; else delete record.walkChip; }
   if ("collapseEffect" in patch) record.collapseEffect = patch.collapseEffect;
   if ("hideHp" in patch) { if (patch.hideHp === true) record.hideHp = true; else delete record.hideHp; }
   if ("damageTypeRates" in patch) { if (patch.damageTypeRates) record.damageTypeRates = patch.damageTypeRates; else delete record.damageTypeRates; }
@@ -209,6 +210,7 @@ export function updateTroopRecord(database: DatabaseRecords, id: string, patch: 
   if ("battleFlow" in patch) record.battleFlow = patch.battleFlow;
   if ("activeSlots" in patch) record.activeSlots = patch.activeSlots;
   if ("teamSwapCost" in patch) record.teamSwapCost = patch.teamSwapCost;
+  if ("duel" in patch) record.duel = patch.duel;
   if ("battleEventPages" in patch && patch.battleEventPages !== undefined) record.battleEventPages = patch.battleEventPages;
   if ("afterBattle" in patch) record.afterBattle = patch.afterBattle;
   database.troops[index] = normalizeTroopRecord(record);

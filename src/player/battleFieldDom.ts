@@ -851,7 +851,18 @@ function syncEnemyNode(node: HTMLElement, enemy: BattleBattlerSnapshot, snapshot
     if (!authored && !node.classList.contains("defeated")) spawnDeathShards(node);
   }
   node.classList.toggle("defeated", presented.defeated);
+  // 결투 항복(TroopDuelRules.yieldAtPercent): 걷기 칩은 정면 가운데 칸으로 무릎 꿇고(paintWalkChipBattler), 그림 적은 멈추고 살짝 어두워진다.
+  const yielded = enemy.yielded === true && !presented.defeated;
+  if (yielded) node.dataset.battleYielded = "true";
+  else delete node.dataset.battleYielded;
   applyBattlerPose(node, presented.pose);
+  if (!node.dataset.walkChipBattler) {
+    const image = node.querySelector<HTMLElement>(".battle-enemy-image");
+    if (image) {
+      image.style.animationPlayState = yielded ? "paused" : "";
+      image.style.filter = yielded ? "brightness(0.82)" : "";
+    }
+  }
   node.dataset.battleTargetable = targetable ? "true" : "false";
   if (targetable) node.dataset.battleTargetId = enemy.id;
   else delete node.dataset.battleTargetId;
@@ -1351,7 +1362,16 @@ function enemyButton(
   // 시트는 왼쪽(적 쪽)을 보도록 그려져 있다 — 적 진영(왼쪽)에 서면 CSS 가 좌우를 뒤집어 아군 쪽을 보게 한다.
   const charsetEnemy = perEnemyUrl && resourceId && charsetBattler(resourceId) && !Object.hasOwn(store.getCurrent().assets.uploaded, resourceId)
     ? resourceId : undefined;
-  if (charsetEnemy && perEnemyUrl) {
+  // 걷기 칩으로 서는 적(EnemyRecord.walkChip): 아군 걷기 칩 배틀러와 같은 24x32 칸 그림을 오른쪽 방향 줄로 그린다.
+  // 변신 중이면 변신 그림이 우선이라 이 경로를 타지 않는다. 그림 클래스는 HP·조준·쓰러짐 규칙이 보는 battle-enemy-image 도 단다.
+  const walkChip = record?.walkChip && !enemy.transformResourceId ? record.walkChip : undefined;
+  const walkChipUrl = walkChip ? resolveAssetResourceUrl(walkChip.characterResourceId, { project: store.getCurrent() }) : null;
+  if (walkChip && walkChipUrl) {
+    const sprite = appendWalkChipBattler(enemyNode, enemy.name, walkChip.characterResourceId, walkChip.characterIndex, walkChipUrl, "right");
+    sprite.classList.add("battle-enemy-image");
+    sprite.dataset.testid = `battle-enemy-sprite-${enemy.id}`;
+    sprite.style.setProperty("--breathe-delay", `-${index * 730}ms`);
+  } else if (charsetEnemy && perEnemyUrl) {
     enemyNode.dataset.charsetEnemy = "true";
     enemyNode.dataset.battlerExtended = "true";
     enemyNode.dataset.battleCharsetResourceId = charsetEnemy;

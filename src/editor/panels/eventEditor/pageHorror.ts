@@ -23,6 +23,7 @@ export function renderChaseSettings(mapId: MapId, eventId: string, page: EventPa
         dataset: { testid: 'event-chase-enable-policy' }, on: { click: () => updateEventPage(mapId, eventId, page.id, {
           movement: { ...page.movement, sight: page.movement.sight ?? defaultChaseSight(), pursuit: defaultChasePursuit() },
         }, '추격 시야와 수색 설정 사용') } }),
+      ...renderChaseSound(mapId, eventId, page),
     ] });
   }
   const set = (patch: Partial<ChaseAcrossMaps>) => updateEventPage(mapId, eventId, page.id, { movement: { ...page.movement, pursuit: { ...config, ...patch } } });
@@ -52,8 +53,45 @@ export function renderChaseSettings(mapId: MapId, eventId: string, page: EventPa
     });
     wrap.append(field(label, input));
   }
+  wrap.append(...renderChaseSound(mapId, eventId, page));
   wrap.append(el('p', { class: 'empty-hint', text: '문까지 이동한 시간과 대기 시간 뒤에 따라옵니다. 벽과 가구는 시야를 가리며, 숨는 모습을 본 괴물은 계속 쫓습니다.' }));
   return wrap;
+}
+
+/** 말풍선 끄기(sightAlert.emote null + quietBreath)와 발소리(movement.footsteps.se) — 호러 추격자의 소리·연출. */
+function renderChaseSound(mapId: MapId, eventId: string, page: EventPage): HTMLElement[] {
+  const quiet = el('input', { attrs: { type: 'checkbox' }, dataset: { testid: 'event-chase-quiet-emotes' } }) as HTMLInputElement;
+  quiet.checked = page.movement.quietBreath === true;
+  quiet.addEventListener('change', () => {
+    const { quietBreath: _q, ...rest } = page.movement;
+    const alert = rest.sightAlert ? { ...rest.sightAlert, emote: quiet.checked ? null : rest.sightAlert.emote ?? 'exclamation' } : undefined;
+    updateEventPage(mapId, eventId, page.id, { movement: { ...rest, ...(alert ? { sightAlert: alert } : {}), ...(quiet.checked ? { quietBreath: true } : {}) } }, '추격 말풍선 설정');
+  });
+  const se = el('input', { attrs: { type: 'text', placeholder: '효과음 id (비우면 발소리 없음)' }, dataset: { testid: 'event-chase-footsteps-se' } }) as HTMLInputElement;
+  se.value = page.movement.footsteps?.se ?? '';
+  se.addEventListener('change', () => {
+    const value = se.value.trim();
+    const { footsteps: before, ...rest } = page.movement;
+    updateEventPage(mapId, eventId, page.id, { movement: value ? { ...rest, footsteps: { ...before, se: value } } : rest }, '추격자 발소리 설정');
+  });
+  return [field('「!」·땀 말풍선 끄기', quiet), field('걸을 때 발소리', se)];
+}
+
+/** 은신처 소리: 숨을 때·나올 때 한 번, 숨어 있는 동안 고리(심장 고동). */
+function renderHidingSound(mapId: MapId, eventId: string, page: EventPage): HTMLElement[] {
+  const interaction = page.interaction;
+  if (interaction?.kind !== 'hiding') return [];
+  return ([['enterSe', '숨을 때 소리'], ['exitSe', '나올 때 소리'], ['heldSe', '숨어 있는 동안 소리(반복)']] as const).map(([key, label]) => {
+    const input = el('input', { attrs: { type: 'text', placeholder: '효과음 id (비우면 없음)' }, dataset: { testid: `event-hiding-${key}` } }) as HTMLInputElement;
+    input.value = interaction[key] ?? '';
+    input.addEventListener('change', () => {
+      const value = input.value.trim();
+      const next = { ...interaction };
+      if (value) next[key] = value; else delete next[key];
+      updateEventPage(mapId, eventId, page.id, { interaction: next }, '은신처 소리 설정');
+    });
+    return field(label, input);
+  });
 }
 
 export function renderObjectInteraction(mapId: MapId, eventId: string, page: EventPage): HTMLElement {
@@ -80,6 +118,9 @@ export function renderObjectInteraction(mapId: MapId, eventId: string, page: Eve
     }
     wrap.append(el('p', { class: 'empty-hint', text: '가구 그림은 이벤트에 지정하고 바닥 타일은 비워 두세요. 밀린 위치는 맵 이동과 세이브 후에도 유지됩니다.' }));
   }
-  if (page.interaction?.kind === 'hiding') wrap.append(el('p', { class: 'empty-hint', text: '조사 키로 숨고 다시 누르면 나옵니다. 숨어 있는 동안 이동할 수 없습니다. 물체 동작이 일반 조사 명령보다 우선합니다.' }));
+  if (page.interaction?.kind === 'hiding') {
+    wrap.append(...renderHidingSound(mapId, eventId, page));
+    wrap.append(el('p', { class: 'empty-hint', text: '조사 키로 숨고 다시 누르면 나옵니다. 숨어 있는 동안 이동할 수 없습니다. 물체 동작이 일반 조사 명령보다 우선합니다. 「숨어 있음」 페이지 조건으로 숨은 동안의 연출을 걸 수 있습니다.' }));
+  }
   return wrap;
 }
