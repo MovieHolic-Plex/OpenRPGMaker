@@ -260,9 +260,13 @@ export function shouldRerenderCommandForm(prev: Command, next: Command): boolean
     );
   }
   if (prev.kind === "choices" && next.kind === "choices") {
+    // 줄 조건을 켜고 끄거나 조건 종류를 바꾸면 그 줄의 조건 폼 모양이 바뀐다(fork 와 같은 규칙).
+    const conditionShape = (command: typeof prev): string => command.options
+      .map((option) => `${option.showWhen?.kind ?? "-"}/${option.enableWhen?.kind ?? "-"}`).join("|");
     return (
       (prev.cancelBehavior ?? "choice2") !== (next.cancelBehavior ?? "choice2") ||
-      prev.options.length !== next.options.length
+      prev.options.length !== next.options.length ||
+      conditionShape(prev) !== conditionShape(next)
     );
   }
   if (prev.kind === "wait" && next.kind === "wait") {

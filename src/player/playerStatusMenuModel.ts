@@ -25,6 +25,8 @@ import { buildQuestLog } from "@/player/questLog";
 import type { SaveSlotReadResult } from "@/player/saveSlots";
 import type { MenuSkinRailStyle } from "@/player/menuSkins/types";
 import { STORY_JOURNAL_DEFAULT_TITLE, storyJournal } from "@/project/storyJournal";
+import { resolveRestMenu } from "@/project/restMenu";
+import { formatGameClock } from "@/project/gameTime";
 
 export const STATUS_MENU_COMMAND_IDS = FIELD_MENU_COMMANDS;
 
@@ -46,7 +48,7 @@ const STATUS_MENU_COMMAND_GROUPS: readonly {
   { id: "party", label: "파티", commandIds: ["status", "row", "formation", "monsters"] },
   { id: "record", label: "기록", commandIds: ["monster-dex", "region-map", "campaign-progress", "trainer-card", "battle-reports", "quests", "journal", "relationships", "gallery", "endings", "life-ledger", "backlog"] },
   // to-title 은 진행 손실 위험이 있는 파괴적 액션이므로 항상 마지막.
-  { id: "system", label: "시스템", commandIds: ["save", "load", "wait", "options", "to-title"] },
+  { id: "system", label: "시스템", commandIds: ["save", "load", "rest", "wait", "options", "to-title"] },
 ];
 
 /** 되돌릴 수 없는(또는 진행을 잃는) 명령 — 레일에서 시각적으로 분리한다. */
@@ -278,6 +280,8 @@ export function listStatusMenuCommandIds(project: Project, session: PlaySession)
     // 이야기 일지는 저작했거나(configure_story_journal) 이미 줄이 적힌 게임에만.
     if (id === "journal") return Boolean(storyJournal(project)) || (session.storyJournal?.length ?? 0) > 0;
     if (id === "save") return !saveDisabled;
+    // 쉬기는 시간 시스템과 system.timeSystem.restMenu 를 켠 게임에만.
+    if (id === "rest") return Boolean(resolveRestMenu(project));
     return true;
   });
 }
@@ -444,6 +448,7 @@ export function statusMenuCommandLabel(commandId: StatusMenuCommandId, waitModeE
     // 오른쪽 상세 패널이 좁아져 값이 잘린다. 라벨은 짧게 두고 무엇이 대기하는지는
     // 상세 패널 제목("전투 대기")과 설명이 알려준다.
     case "options": return "설정";
+    case "rest": return "쉬기";
     case "wait": return waitModeEnabled ? "대기 ON" : "대기 OFF";
     case "to-title": return "타이틀";
     default: return assertNever(commandId);
@@ -525,6 +530,8 @@ export function statusMenuCommandSummary(
     case "save":
     case "load":
       return `${slots.filter((slot) => slot.kind === "present").length}/${Math.max(slots.length, 1)}칸`;
+    case "rest":
+      return session.gameTime ? formatGameClock(session.gameTime) : "";
     case "options":
     case "wait":
     case "to-title":

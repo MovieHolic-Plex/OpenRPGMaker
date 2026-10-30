@@ -154,6 +154,12 @@ function validateFieldSpawns(label: string, value: unknown): void {
       assert(respawnSec >= 0, `${label}[${index}].respawnSec는 0 이상이어야 합니다.`);
     }
     if (entry.chase !== undefined) requireBoolean(`${label}[${index}].chase`, entry.chase);
+    if (entry.timePhases !== undefined) {
+      const phases = requireArray(`${label}[${index}].timePhases`, entry.timePhases);
+      for (const [phaseIndex, phase] of phases.entries()) {
+        assert(isTimePhase(phase), `${label}[${index}].timePhases[${phaseIndex}]가 잘못되었습니다.`);
+      }
+    }
     if (entry.graphic !== undefined) validateEventGraphic(`${label}[${index}].graphic`, entry.graphic);
     // 스폰도 몸 크기를 싣는다(2차). 페이지와 **같은 경계**로 막아 스폰만 검증을 비켜 가는 구멍을 없앤다.
     validateCharacterFootprintFields(`${label}[${index}]`, entry);

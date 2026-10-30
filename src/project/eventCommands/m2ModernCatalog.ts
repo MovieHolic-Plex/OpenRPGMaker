@@ -247,8 +247,20 @@ const SHAKE_INTENSITY_OPTIONS: readonly M2CommandFieldOption[] = [
   { value: "10", label: "매우 강하게" },
 ];
 
+const MENU_SCREEN_OPTIONS: readonly M2CommandFieldOption[] = [
+  { value: "", label: "ESC 메뉴" },
+  { value: "monster-box", label: "보관함(PC)" },
+  { value: "skills", label: "스킬 장착" },
+];
+
 export function modernFieldsFor(title: string): readonly M2CommandFieldSpec[] | undefined {
   switch (title) {
+    case "Open Menu Screen":
+      return [
+        { key: "screen", label: "화면", type: "select", defaultValue: "", options: MENU_SCREEN_OPTIONS },
+        // 스킬 장착 화면에서만 읽는다. 비우면 파티장.
+        { key: "actorId", label: "배우 ID (스킬 장착, 비우면 파티장)", type: "text", defaultValue: "" },
+      ];
     case "Camera Control":
       return [
         { key: "mode", label: "동작", type: "select", defaultValue: "panTo", options: CAMERA_MODE_OPTIONS },
