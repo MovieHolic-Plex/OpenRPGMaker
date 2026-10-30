@@ -31,11 +31,11 @@ log("doors", konDoorOnStreet && [konDoorOnStreet.x, konDoorOnStreet.y], roomDoor
 
 const HERO = [{ actorId: "actor_hero", level: 12 }];
 const CP = {
-  interview: { id: "mk-interview", mapId: "map_mk_street", x: roomDoorOnStreet.x + 1, y: roomDoorOnStreet.y, facing: "left", variables: { var_mk_stage: 2 }, party: HERO },
+  interview: { id: "mk-interview", mapId: "map_mk_street", x: roomDoorOnStreet.x + 1, y: roomDoorOnStreet.y + 1, facing: "left", variables: { var_mk_stage: 2 }, party: HERO },
   day1: { id: "mk-day1", mapId: "map_mk_konbini", x: 12, y: 11, facing: "down", variables: { var_mk_stage: 3, var_mk_tasks: 0, var_mk_service: 2 }, switches: { sw_mk_on_shift: true, sw_mk_brief1: true }, party: HERO },
-  evening1: { id: "mk-evening1", mapId: "map_mk_street", x: konDoorOnStreet.x + 1, y: konDoorOnStreet.y, facing: "right", variables: { var_mk_stage: 4, var_mk_service: 5 }, party: HERO },
+  evening1: { id: "mk-evening1", mapId: "map_mk_street", x: konDoorOnStreet.x + 1, y: konDoorOnStreet.y + 1, facing: "right", variables: { var_mk_stage: 4, var_mk_service: 5 }, party: HERO },
   day2: { id: "mk-day2", mapId: "map_mk_konbini", x: 8, y: 14, facing: "up", variables: { var_mk_stage: 5, var_mk_tasks: 0, var_mk_service: 5 }, switches: { sw_mk_lily_met: true }, party: HERO },
-  meeting: { id: "mk-meeting", mapId: "map_mk_street", x: konDoorOnStreet.x + 1, y: konDoorOnStreet.y, facing: "right", variables: { var_mk_stage: 6, var_mk_service: 8 }, switches: { sw_mk_lily_met: true, sw_mk_tanaka_order: true }, party: HERO },
+  meeting: { id: "mk-meeting", mapId: "map_mk_street", x: konDoorOnStreet.x + 1, y: konDoorOnStreet.y + 1, facing: "right", variables: { var_mk_stage: 6, var_mk_service: 8 }, switches: { sw_mk_lily_met: true, sw_mk_tanaka_order: true }, party: HERO },
   night: { id: "mk-night", mapId: "map_mk_konbini", x: 8, y: 14, facing: "up", variables: { var_mk_stage: 7, var_mk_tasks: 0, var_mk_service: 8 }, switches: { sw_mk_lily_met: true, sw_mk_tanaka_order: true, sw_mk_meeting_done: true }, party: HERO },
   power: { id: "mk-power", mapId: "map_mk_konbini", x: 12, y: 11, facing: "down", variables: { var_mk_stage: 7, var_mk_tasks: 3, var_mk_service: 8 }, switches: { sw_mk_lily_met: true, sw_mk_tanaka_order: true, sw_mk_meeting_done: true, sw_mk_brief3: true, sw_mk_t_reg3: true, sw_mk_t_box3: true, sw_mk_t_waste3: true, "sw_ev_mk_c3a_out": true, "sw_ev_mk_c3b_out": true }, party: HERO },
 };
@@ -139,6 +139,18 @@ async function streetWalk(page, x, y) {
     while (Date.now() - t0 < 15_000 && (await st(page))?.map !== "map_mk_street") await page.waitForTimeout(300);
     await page.waitForTimeout(1200);
   }
+}
+/** 거리 문으로 들어가기(#3973) — 문 칸은 막혀 있고 앞 칸에 서 있기만 해서는 안 옮긴다. 앞 칸으로 걸어가 위로 민다. */
+async function enterDoor(page, door) {
+  const here = (await st(page))?.map;
+  await walkTo(page, door.x, door.y + 1);
+  for (let i = 0; i < 3; i++) {
+    await page.keyboard.down("ArrowUp"); await page.waitForTimeout(500); await page.keyboard.up("ArrowUp");
+    const t0 = Date.now();
+    while (Date.now() - t0 < 2500) { if ((await st(page))?.map !== here) { log("door", `${here} → ${(await st(page))?.map}`); return true; } await page.waitForTimeout(200); }
+  }
+  log("door", "TIMEOUT", here, door.x, door.y);
+  return false;
 }
 async function faceAndAct(page, dir) {
   // 방향키로 돌면 앞 칸이 비었을 때 한 걸음 걸어 버린다(문 칸이면 들어간다) — 제자리 돌기만 시킨다.
@@ -266,7 +278,7 @@ const B = {
   async interview(page, seg, mark) {
     await play(page, seg, [], idle);
     await streetWalk(page, roomDoorOnStreet.x + 1, roomDoorOnStreet.y + 1); await streetWalk(page, roomDoorOnStreet.x - 3, roomDoorOnStreet.y + 1);
-    await streetWalk(page, konDoorOnStreet.x + 1, konDoorOnStreet.y); await walkTo(page, konDoorOnStreet.x, konDoorOnStreet.y); await page.waitForTimeout(2000); mark("enter");
+    await streetWalk(page, konDoorOnStreet.x + 1, konDoorOnStreet.y + 1); await enterDoor(page, konDoorOnStreet); await page.waitForTimeout(2000); mark("enter");
     await play(page, seg, [2, 1], quietAnd(async () => (await st(page))?.v?.var_mk_stage === 3), { shotOn: /이력서|마계|명찰|선배라고|매뉴얼 제1조/ }); mark("hired");
     shot(page, "shift-start", 600);
   },
@@ -291,7 +303,7 @@ const B = {
     await walkTo(page, 29, 8); await faceAndAct(page, "up"); await play(page, seg, [2], idle); mark("pray");
     await walkTo(page, 23, 14); await faceAndAct(page, "down"); await play(page, seg, [], idle, { shotOn: /대흉/ }); mark("kuji");
     await walkTo(page, 19, 27); await page.waitForTimeout(1500); mark("back-street");
-    await walkTo(page, 31, 9); await walkTo(page, 22, 10); await walkTo(page, roomDoorOnStreet.x + 1, roomDoorOnStreet.y + 1); await walkTo(page, roomDoorOnStreet.x, roomDoorOnStreet.y); await page.waitForTimeout(1500); mark("room");
+    await walkTo(page, 31, 9); await walkTo(page, 22, 10); await walkTo(page, roomDoorOnStreet.x + 1, roomDoorOnStreet.y + 1); await enterDoor(page, roomDoorOnStreet); await page.waitForTimeout(1500); mark("room");
     await walkTo(page, 2, 5); await faceAndAct(page, "up");
     await play(page, seg, [], async (s) => { const x = await st(page); return x?.v?.var_mk_stage === 5 && x.map === "map_mk_konbini"; }); mark("slept");
     await page.waitForTimeout(1500);
@@ -309,7 +321,7 @@ const B = {
     await play(page, seg, [2, 1], quietAnd(() => page.evaluate(() => !!window.__oprnDebug.readState().switches.sw_mk_meeting_done)), { shotOn: /가르곤|회비|보름달/ }); mark("meeting-done");
     shot(page, "park-after", 500);
     await walkTo(page, 20, 8); await page.waitForTimeout(1500);
-    await walkTo(page, 31, 10); await walkTo(page, 22, 10); await walkTo(page, roomDoorOnStreet.x + 1, roomDoorOnStreet.y + 1); await walkTo(page, roomDoorOnStreet.x, roomDoorOnStreet.y); await page.waitForTimeout(1500); mark("room");
+    await walkTo(page, 31, 10); await walkTo(page, 22, 10); await walkTo(page, roomDoorOnStreet.x + 1, roomDoorOnStreet.y + 1); await enterDoor(page, roomDoorOnStreet); await page.waitForTimeout(1500); mark("room");
     await walkTo(page, 2, 5); await faceAndAct(page, "up");
     await play(page, seg, [], async () => { const x = await st(page); return x?.v?.var_mk_stage === 7 && x.map === "map_mk_konbini"; }); mark("slept");
     await page.waitForTimeout(1500);

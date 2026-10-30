@@ -1342,9 +1342,10 @@ export function createMaouKonbiniFlagshipDemo(): FlagshipDemoBuildResult {
     { id: "tasks", kind: "gauge", source: "variable", variableId: V_TASKS, max: 3, shape: "number", label: "오늘 업무", anchor: "top-left", x: 8, y: 14, width: 104, height: 30, panel: "paper", color: "#3aa860", condition: "switch", switchId: SW_SHIFT },
   ] } });
   execTool(project, "set_project_settings", { resources: { titleResourceId: "oprn-maou-konbini-title", defaultBgmResourceId: BGM_SHOP } });
-  // 자동 안내(인물 위 ▼·출구 「→ 목적지」·목표 화살표)는 끈다 — 사용자 2026-10-30 「너무 친절함 … 화살표도 짜증남」.
+  // 자동 안내(인물 위 ▼·출구 「→ 목적지」 이름·목표 화살표)는 끈다 — 사용자 2026-10-30 「너무 친절함 … 화살표도 짜증남」.
+  // 출구에는 맵 밖을 가리키는 화살표 하나만 남긴다 — 같은 날 「화살표만 남겨줘도 충분히 친절」("arrows").
   // 갈 곳은 장면이 보여 준다: 전단지는 우편 투입구 소리와 ! 로, 가게는 전단지 「이 건물 바로 왼쪽」과 바로 옆 간판으로.
-  execTool(project, "set_project_settings", { fieldGuides: "off" });
+  execTool(project, "set_project_settings", { fieldGuides: "arrows" });
 
   // 장면 스위치(작업 완료·손님 퇴장·브리핑 등)를 모두 등록한다 — 등록하지 않은 스위치 조건은 프로젝트 검사가 거절한다.
   for (const id of new Set(JSON.stringify(project.maps).match(/sw_(?:ev_)?mk_[a-z0-9_]+/g) ?? [])) ensureSw(id, id.replace(/^sw_(ev_)?mk_/, "마왕 · "));
