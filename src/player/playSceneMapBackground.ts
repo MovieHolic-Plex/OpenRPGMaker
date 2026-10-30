@@ -54,6 +54,14 @@ export type MapBackgroundLayerSpec = {
   readonly fit: MapBackgroundFit;
   /** 그림 대신 다른 맵을 줄여 그린 모습(이때 imageId 는 그 텍스처의 내부 이름). */
   readonly fromMap?: MapBackgroundMapView;
+  /** 세로 자리(논리 px, + = 아래). */
+  readonly offsetY?: number;
+  /**
+   * 세로로 맵에 붙는가. 첫 장 위에 얹은 층 중 세로로 반복하지 않는 띠(지평선·빌딩 숲·실루엣)는 타일과 같이 세로로 움직인다 —
+   * 화면에 고정하면 대사 창이 카메라를 들어 올리거나(syncDialogueCameraLift) 장면이 카메라를 옮길 때 띠만 제자리에 남아
+   * 바닥선을 떠나 하늘 한가운데 떴다(사용자 2026-10-30 「옥상 하늘이 이상」 — 첫사랑 옥상의 거리 띠). 첫 장(바탕 하늘)은 화면을 늘 덮도록 고정이다.
+   */
+  readonly pinY?: boolean;
 };
 
 /** 「다른 맵 보기」 층의 내부 그림 이름 — 서명·텍스처 키가 그림 id 처럼 다뤄지게. */
@@ -164,7 +172,8 @@ export function resolveMapBackgroundLayers(
   const overrideMapId = (override?.mapId ?? "").trim();
   const overridden = overrideId !== "" && (overrideMapId === "" || overrideMapId === scene.map?.id);
   const imageId = overridden ? overrideId : (background?.imageId ?? "").trim();
-  const extra = (background?.layers ?? []).map((layer) => layerSpecFromAuthoring(layer)).filter((spec) => spec.imageId !== "");
+  const extra = (background?.layers ?? []).map((layer) => layerSpecFromAuthoring(layer)).filter((spec) => spec.imageId !== "")
+    .map((spec) => (spec.loopY ? spec : { ...spec, pinY: true }));
   if (!imageId && !overridden && background?.fromMap) return [mapViewSpec(background.fromMap, background), ...extra];
   if (!imageId) return [];
   const base: MapBackgroundLayerSpec = {
@@ -196,6 +205,7 @@ function layerSpecFromAuthoring(layer: MapBackgroundLayer): MapBackgroundLayerSp
     parallax: 1,
     cameraFollow: layer.cameraFollow ?? 0,
     fit: layer.fit ?? "native",
+    ...(layer.offsetY ? { offsetY: layer.offsetY } : {}),
   };
 }
 
@@ -232,6 +242,7 @@ type BackgroundLayerStamp = {
   readonly loopY: boolean | undefined;
   readonly cameraFollow: number | undefined;
   readonly fit: MapBackgroundFit | undefined;
+  readonly offsetY: number | undefined;
   readonly view: BackgroundViewStamp | undefined;
 };
 
@@ -243,6 +254,7 @@ type AuthoredBackgroundLayer = {
   readonly loopY?: boolean;
   readonly cameraFollow?: number;
   readonly fit?: MapBackgroundFit;
+  readonly offsetY?: number;
   readonly fromMap?: MapBackgroundMapView;
 };
 
@@ -289,6 +301,7 @@ function stampLayer(layer: AuthoredBackgroundLayer): BackgroundLayerStamp {
     loopY: layer.loopY,
     cameraFollow: layer.cameraFollow,
     fit: layer.fit,
+    offsetY: layer.offsetY,
     view: viewStamp(layer.fromMap),
   };
 }
@@ -319,6 +332,7 @@ function layerSame(layer: AuthoredBackgroundLayer | undefined, stamp: Background
     && layer.loopY === stamp.loopY
     && layer.cameraFollow === stamp.cameraFollow
     && layer.fit === stamp.fit
+    && layer.offsetY === stamp.offsetY
     && viewSame(layer.fromMap, stamp.view);
 }
 
@@ -503,7 +517,8 @@ function placeMapBackgroundLayer(
   const focus = mapViewFocusOffset(spec, camera);
   centre.x += focus.x; centre.y += focus.y;
   const logicalX = centre.x + mapBackgroundLayerOffset(offset.x, camera.scrollX - (anchor?.x ?? Number.NaN), spec.loopX ? spec.cameraFollow : 0);
-  const logicalY = centre.y + mapBackgroundLayerOffset(offset.y, camera.scrollY - (anchor?.y ?? Number.NaN), spec.loopY ? spec.cameraFollow : 0);
+  const followY = spec.loopY ? spec.cameraFollow : spec.pinY ? 1 : 0;
+  const logicalY = centre.y - (spec.offsetY ?? 0) + mapBackgroundLayerOffset(offset.y, camera.scrollY - (anchor?.y ?? Number.NaN), followY);
   sprite.tilePositionX = mapBackgroundTilePosition(logicalX, sprite.tileScaleX || 1);
   sprite.tilePositionY = mapBackgroundTilePosition(logicalY, sprite.tileScaleY || 1);
   applyAxisScroll(sprite, layout, spec);
