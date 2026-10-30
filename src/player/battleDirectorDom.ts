@@ -6,7 +6,7 @@ import { expForRewardActor } from "@/battle/rewardPolicy";
 import { normalizeActorRecord, totalExpForLevel } from "@/project/actorModel";
 import { DEFAULT_MONSTER_EXP_CURVE, monsterExpInLevelBand, monsterSpeciesById, stripWildNamePrefix } from "@/project/monsterCollection";
 import { store } from "@/project/store";
-import { resolveTerms } from "@/project/terms";
+import { formatBattleCommandPrompt, resolveTerms } from "@/project/terms";
 import { CONTINUE_KEY_PROMPT } from "@/player/keyBindings";
 import { disambiguatedBattlerName } from "@/player/battleCommandDom";
 import { menuSkinFor } from "@/player/menuSkins/registry";
@@ -43,7 +43,8 @@ export function commandPromptState(snapshot: BattleSnapshot, openingLine?: strin
     step: "command",
     lines: [
       openingLine ?? (snapshot.forcedSwitchActorId && store.getCurrent().system.battleUiStyle === "pokemon" ? "다음은 누구를\n내보낼까?"
-        : actor ? `${withJosa(emeraldNarrationActive() ? emeraldShortName(actor.name) : actor.name, "은/는")}${store.getCurrent().system.battleUiStyle === "pokemon" ? "\n" : " "}무엇을 할까?` : "게이지가 차는 중입니다."),
+        // 질문 줄은 자료집 용어(terms.battleCommandPrompt)를 따른다 — 기본값은 예전 「○○는 무엇을 할까?」 그대로다.
+        : actor ? formatBattleCommandPrompt(resolveTerms(store.getCurrent()).battleCommandPrompt, emeraldNarrationActive() ? emeraldShortName(actor.name) : actor.name, store.getCurrent().system.battleUiStyle === "pokemon") : "게이지가 차는 중입니다."),
     ],
     activeActorRecordId: actor?.recordId,
   };

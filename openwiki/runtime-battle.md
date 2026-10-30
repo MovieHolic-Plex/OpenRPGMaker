@@ -5,6 +5,21 @@
 - 준비 관문: `battleAssetPrefetch.troopImageUrls` 가 `walkChip.characterResourceId` 도 싣는다.
 - 편집기: 적 탭 「걷기 칩 (서 있는 적)」 선택기. 조수: `upsert_enemy.enemy.walkChip {characterResourceId, characterIndex}`(고정 속성), 지우기는 `clearFields:["walkChip"]`. 풀리지 않는 id 는 `enemy-reference-not-found` 로 거부하고 후보 id 를 알린다(`tex_*_charset_*` 는 `<계열>-charset-*` 로 바꿔 받는다). 헤드리스 `simulate_battle` 은 그림과 무관해 영향이 없다.
 
+## 상태 배지 글자는 저작 상태 이름 · 승리 띠·명령 질문은 용어 (2026-10-30)
+
+한국어 측면 전투에서 마비 배지가 「PAR」, 승리 띠와 질문 줄은 고칠 수 없는 고정 글자였다.
+
+- **상태 배지**: 글자는 원래 `03-vxace-status-nodes.css` 의 토큰별 `::before { content: "PAR" }` 였다(토큰은 `battleFieldDom.stateIconToken` 이 상태 id 로 고른다).
+  이제 `statusIconCluster` 가 저작 상태 이름에서 `stateBadgeLabel`(`src/player/battleStatusLabel.ts`)로 짧은 글자를 뽑아 `data-status-label` 에 싣고,
+  CSS `.battle-status-icon[data-status-label]::before { content: attr(data-status-label) }` 가 토큰 약어를 이긴다(명시도 0,2,1 > 0,1,1).
+  규칙: 이름이 4글자 이하면 그대로(「마비」「독」), 한글·한자·가나가 든 긴 이름은 첫 낱말 3글자까지(「마비 상태」→「마비」), 긴 라틴 이름(「Paralysis」)은 비워서 CSS 약어(PAR)가 남는다.
+  능력 증감(`*-up`/`*-down`, 화살표가 뜻)과 전투불능(`death`)은 이 규칙을 타지 않는다. 런타임은 i18n DOM 번역을 받지 않으므로(게임 글자는 저작물) 게임의 언어 = 저작한 상태 이름이다.
+- **승리 띠** `meta.terms.battleVictory`(기본 「승리!」) — `battleDom.showFinaleStamp`. 에메랄드 화면에는 띠가 없다. 「전멸…」은 아직 고정 글자다.
+- **명령 질문 줄** `meta.terms.battleCommandPrompt`(기본 「{name은} 무엇을 할까?」) — `battleDirectorDom.commandPromptState` 가 `formatBattleCommandPrompt`(`src/project/terms.ts`)로 채운다.
+  `{name}` = 이름 그대로, `{name은}`·`{name이}`·`{name을}` = 받침에 맞춘 조사. 포켓몬 화면은 이름 자리표시자 바로 뒤 첫 빈칸이 줄바꿈이 된다 — 기본값에서 예전 글자와 한 글자도 다르지 않다.
+- 편집: 자료집 「용어 → 전투」(명령 질문·승리 띠, 미리보기 포함). 조수: `set_project_settings` 의 `terms.battleVictory`·`terms.battleCommandPrompt`(문자열, 설명 달림 — 빈 문자열은 무시).
+- 시험: `test/battleTermsAndStatusLabels.test.ts`.
+
 ## 기술 목록에 기본 공격(skill_attack)을 싣지 않는다 (2026-10-29)
 
 `battleCommandDom.ts` `listedSkillIds` 는 사람 배우의 기술 목록에서 `skill_attack`(이름 「공격」)을 뺀다 — 「공격」 명령과 같은 것이다.
