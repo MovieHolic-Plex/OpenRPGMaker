@@ -93,7 +93,11 @@ function collectCommandItemReferences(command: Command, ids: Set<string>): void 
       collectCommandItemReferenceIds(command.failedTransactionBranch ?? [], ids);
       return;
     case "choices":
-      for (const option of command.options) collectCommandItemReferenceIds(option.branch, ids);
+      for (const option of command.options) {
+        if (option.showWhen) collectConditionItemReferenceIds(option.showWhen, ids);
+        if (option.enableWhen) collectConditionItemReferenceIds(option.enableWhen, ids);
+        collectCommandItemReferenceIds(option.branch, ids);
+      }
       collectCommandItemReferenceIds(command.cancelBranch ?? [], ids);
       return;
     case "presentItem":
@@ -208,7 +212,14 @@ function validateCommandReferences(command: Command, context: ReferenceContext):
       validateOptionalCommandResource("changeFace: resourceId", command.resourceId, context.resourceIds);
       return;
     case "choices":
-      for (const option of command.options) validateCommands(option.branch, context);
+      for (const option of command.options) {
+        for (const condition of [option.showWhen, option.enableWhen]) {
+          if (!condition) continue;
+          validateCondition(condition, context.switchIds, context.variableIds);
+          validateMonsterSpeciesReferences(condition, context);
+        }
+        validateCommands(option.branch, context);
+      }
       validateCommands(command.cancelBranch ?? [], context);
       return;
     case "presentItem":

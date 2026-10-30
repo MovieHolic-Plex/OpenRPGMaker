@@ -284,6 +284,20 @@
   transform: translateY(-50%);
 }
 
+/* 조건 enableWhen 이 거짓인 줄 — 흐리게, 고를 수 없다. 이유(disabledText)는 같은 줄 아래 작은 글씨. */
+.dialogue-overlay.choices-active .choice-list .choice-btn.is-disabled {
+  color: var(--runtime-dialogue-muted);
+  opacity: 0.62;
+}
+
+.dialogue-overlay.choices-active .choice-list .choice-btn .choice-disabled-reason {
+  color: var(--runtime-dialogue-muted);
+  display: block;
+  font-size: var(--runtime-font-size-9);
+  line-height: 1.1;
+  margin-top: 1px;
+}
+
 .dialogue-overlay.choices-active .choice-prompt-row {
   border-bottom: 1px solid var(--runtime-dialogue-glass-border);
   color: var(--runtime-dialogue-muted);

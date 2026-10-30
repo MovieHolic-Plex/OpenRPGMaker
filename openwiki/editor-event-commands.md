@@ -1,5 +1,18 @@
 # Editor Event Commands & Tools
 
+## 선택지 줄 조건 — 숨김(showWhen)·흐리게(enableWhen) (2026-10-30)
+
+왜: 이미 받은 계약·이미 한 질문을 목록에서 빼려면 페이지를 쪼개거나 `fork` 로 선택지 명령을 통째로 여러 벌 복사해야 했다(사냥꾼 계약 설계 공백 C1).
+
+- **데이터:** `choices.options[]` 의 줄마다 `showWhen?: Condition`(거짓이면 목록에서 빠지고 번호가 당겨진다), `enableWhen?: Condition`(거짓이면 흐리고 고를 수 없다), `disabledText?: string`(흐린 줄 아래 이유 한 줄). 타입 `ChoiceOption`(`project/types/events.ts`). 셋 다 없으면 예전과 바이트 단위로 같은 경로다(`choicesHaveConditions` 가 거짓이면 표를 만들지 않는다).
+- **번호 표 하나:** `src/project/choiceView.ts` 의 `choiceView(command, evaluate)` 가 화면 목록과 「화면 번호 → 저작 번호」 표를 만든다. 맵 인터프리터(`commandCatalog` 정지 → `resume` 재개, 표는 `InterpreterState.choiceView`)와 전투 이벤트(`battleEvents.ts`)가 같은 함수를 쓴다. 표는 **정지 순간에 굳힌다** — 창이 떠 있는 사이 병렬 이벤트가 스위치를 바꿔도 플레이어가 본 줄이 실행된다. 처음 5줄 상한은 그대로다(숨긴 줄도 5칸 안에서 센다).
+- **가장자리:** 보일 줄이 0이면 창을 띄우지 않고 다음 명령으로 간다. 보이는 줄이 전부 흐리면 취소가 열린다(저작 `branch` 면 그 취소 분기, 아니면 아무 일 없이 다음 명령) — 갇히지 않게. `cancelBehavior:"choiceN"` 이 숨은·흐린 줄을 가리키면 그 취소는 `disallow` 로 바뀐다(숨은 줄을 취소로 실행하지 않는다).
+- **런타임 화면:** `dialogue.ts showChoices` — 흐린 줄은 `.choice-btn.is-disabled`(`aria-disabled`), 이유는 `.choice-disabled-reason`(testid `runtime-choice-N-reason`). 커서는 흐린 줄에 설 수 있고(이유를 읽게), 결정·숫자 키·클릭은 `menu-invalid` 경고음만 낸다. 첫 커서는 처음 고를 수 있는 줄. CSS `dialogue.css` 「조건 enableWhen」.
+- **편집기:** 선택지 폼(`commandBodyChoices.ts`) 줄마다 「조건」 단추 → 「이 조건일 때만 보인다」「이 조건일 때만 고를 수 있다」 체크 + 공용 `conditionForm` + 「이유」 칸. 조건을 켜고 끄거나 종류를 바꾸면 폼을 다시 그린다(`commandEditDialog.shouldRerenderCommandForm`). 목록 요약은 줄 끝에 `?`(보일 조건)·`◐`(고를 조건). 미리보기(`commandPreview.choicesMock`)는 게임 상태를 모르므로 조건이 거짓일 때 모습(흐린 줄+이유, 숨을 줄은 점선)을 보인다.
+- **조수:** `COMMAND_SCHEMA.options.items` 와 `SIMPLE_PAGE_SCHEMA.choices.items`(place_npc·make_villager)에 `showWhen`·`enableWhen`(= `CONDITION_SCHEMA`)·`disabledText`. 자유 키 객체 없음. SimplePage 는 `normalizeCondition` 으로 정규화한다. `run_scene_test` 의 `{kind:"choose",index}` 는 **화면 번호**이고 흐린 줄을 고르면 「disabled」 실패로 돌려준다(창은 열린 채).
+- **참조 추적:** 저장 검증(`shapeCommandFields`·`commandReferenceValidation`), 스위치/변수 이름 바꾸기(`refactorTools`), 맵 복제(`mapClone`), 장소 수리(`mapLocationReferences` — 장소를 잃은 줄 조건은 떼어 낸다), 이야기 플래그 사용처(`storyFlagUsage`), DB 참조 찾기(`databaseCommandReferences`), 초안 검사(`eventDraftValidator`)가 줄 조건도 본다.
+- **검증:** `scripts/qa/runtime/choice-conditions-fixture.mts` + `choice-conditions.scenario.mjs`(숨김·흐림·이유·경고음 뒤 열린 채·조건이 바뀐 뒤 다시 말 걸면 줄이 보임).
+
 ## 인물 연출 — 다가가기·쪽으로 돌기·대사 자동 돌아보기 (2026-10-22)
 
 왜: 『첫사랑』 영상에서 인사 선택지가 상대 없이 뜨고, 막차 승강장 두 사람이 서로 다른 데를 보며 몇 칸 떨어져 말했다. 장면이 걸음(`moves`)과 방향을 손으로 늘어놓아 시작 칸이 한 칸만 달라도 어긋났다.
