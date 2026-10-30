@@ -137,10 +137,10 @@
 | 역 | 칩 | 이유 |
 |---|---|---|
 | 정 검률(주인공) | `easyrpg-charset-actor1` #6 | 검은 머리, 푸른 도포. 조선 검수에서 허용된 칩 |
-| 덕배(오작사령, 동료) | `easyrpg-charset-actor1` #0 | 머리띠 평민. 조선 검수 허용 |
+| 덕배(오작사령, 동료) | `easyrpg-charset-actor1` #0 | 갈색 머리, 짧은 저고리 평민. 조선 검수 허용 |
 | 이방 최득량 | `easyrpg-charset-actor3` #1 | 검은 긴 머리, 회색 겉옷에 누런 깃. 아전 차림으로 읽힌다 |
 | 월화 만신(분이 할머니) | `easyrpg-charset-people1` #7 | 주황 두건 노파 |
-| 정 서방(방앗간) | `easyrpg-charset-actor3` #3 | 묶은 머리에 흰 머리띠, 일복 |
+| 정 서방(방앗간) | `easyrpg-charset-actor3` #3 | 묶은 머리, 주황 일복 |
 | 칠복(머슴) | `easyrpg-charset-actor2` #0 | 검은 머리, 맨발, 허리띠 |
 | 허 의원 | `easyrpg-charset-people5` #7 | 회색 머리, 초록 도포, 안경(조선 후기 애체로 읽힌다) |
 | 서당 훈장 노인 | `easyrpg-charset-people1` #6 | 대머리, 흰 수염, 초록 겉옷 |
