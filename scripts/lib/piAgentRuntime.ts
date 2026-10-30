@@ -1312,8 +1312,12 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       // A registry write can succeed but its publication can still be rejected.
       // In that case the core's failure must override the earlier draft receipt.
       const publicationFailed = event.isError && record?.ok;
+      // 모델이 실제로 받은 글(영어 거절·고리 메모 포함) — 요약(summary)은 화면·장부용 원문 한국어 400자라 «Fixed call 을 따랐나» 를 잴 수 없었다.
+      const modelText = ((event.result as { content?: Array<{ type?: string; text?: string }> } | undefined)?.content ?? [])
+        .filter((part) => part.type === "text" && typeof part.text === "string").map((part) => part.text!).join("\n").slice(0, 4000);
       emit({
         type: "tool_end",
+        ...(modelText ? { modelText } : {}),
         result: publicationFailed ? activityPayload(event.result) : record?.result ?? activityPayload(event.result),
         visuals: record?.visuals,
         ...(toolAt === undefined ? {} : { durationMs: Date.now() - toolAt }),
