@@ -16,7 +16,7 @@ description: Use when authoring or reviewing story scenes, events, cutscenes, NP
    왜: 스위치·페이지 조건만 바꾸면 방 한가운데서 «펑» 사라진다(세 데모 모두). 예외: 쓰러진 필드 적(전투 직후 대사 없이), 동료 합류, 검은 화면. 확인: `scene-npc-vanish` 0.
 2. **경로는 그 맵의 이벤트를 다 놓은 뒤에 짠다.** 막힘 = 통행 불가 + 다른 이벤트 칸 + 주인공 칸. 두 인물을 같은 목표 칸에 동시에 세우지 않는다 — 같은 문으로 차례로 떠나는 것은 괜찮다(앞 인물을 지우거나 «떠남» 스위치를 켠 **뒤** 다음 인물이 걷기 시작). 확인: 경로를 한 칸씩 되짚어 통행·겹침이 없다, `scene-actors-stacked` 0.
 3. **도구 호출 사이에 명령 객체를 붙잡지 않는다.** 도구는 프로젝트를 복제해 maps 를 갈아끼운다 — 앞서 만든 명령을 고쳐도 반영되지 않는다. 고칠 명령은 최종 프로젝트를 다시 읽어 찾는다. 확인: 빈 moves 의 moveEvent 가 없다.
-4. **새 스위치는 처음 쓰는 단계에서 project.switches 에 등록한다.** 미등록 id 는 저장·불러오기 참조 오류다. 확인: `run_lint` reference-validation 0.
+4. **새 스위치는 처음 쓰는 단계에서 project.switches 에 등록한다.** 미등록 id 는 저장·불러오기 참조 오류다. 추리 사건을 여러 장으로 이을 때는 `author_mystery_case` 의 `verdict:{mode:"chapter"}` 가 결과 스위치(`sw_mystery_<caseId>_solved`/`_wrong`)를 등록해 주니 다음 장 이벤트는 그 id 를 조건으로 건다(손으로 엔딩·스위치를 따로 만들지 않는다). 확인: `run_lint` reference-validation 0.
 5. **자리는 이름 붙은 앵커로.** 자리에서 +1·+2 같은 고정 오프셋은 방을 다시 지으면 의자·탁자 위에 떨어진다. 맵 작가가 준 앵커(좌석·난간 앞·NPC 출구)를 쓴다. 확인: 앵커를 맵 그림 위에 찍어 본다.
 
 ## 2. 문·이동·계단
