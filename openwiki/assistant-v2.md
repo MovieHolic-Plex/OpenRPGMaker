@@ -430,6 +430,8 @@ salt 를 찾아(무작위 salt 를 고정해 몇 번 지어 본다) 같은 마�
   - 계단: 위로 가는 계단은 칩셋 계단 킷 그대로 3칸 폭 x 3줄(북벽 벽면 두 줄 + 첫 바닥 줄), 세 칸 모두 한 곧은 벽 아래, 남쪽 세 칸 빈 바닥. 내려가는 계단은 바닥 구멍, 아래 줄 빈 바닥. 어긋나면 가장 가까운 맞는 자리를 Fixed call 로 준다. 방이 `"stairs":"up|down"` 을 선언했는데 계단이 없으면 soft 문제.
   - 목록: 범주별 묶음에 개수를 붙이고, `find_pieces(category, tags)` 동사가 한 범주(또는 낱말에 맞는 것) 전부를 크기·놓는 자리·솟음·쓰인 예제 방·짝과 함께 영어로 준다(`interiorCatalog.findPieces`). 추천 조각만 쓰지 말라고 카드에 적었다.
   - 세로 칸막이 문 틈: 틈 위 두 칸을 벽면 대신 들어가는 방 바닥으로 그린다(빌더 입력 `passages`, 칸 배치 길만 쓴다 — bbox-walls-4 판정자가 벽면 틈을 «벽판»으로 읽었다). 통행은 그대로.
+  - 거절된 배치 고침(4254302446): make_place 가 칸 배치를 거절하면 그 배치를 맵 id·장소 이름으로 기억한다(`V2Session.pendingLayouts`). 모델이 edit_place layoutPatch 를 보내면 그것에 적용해 make_place 를 다시 부른다(6회차 terra-high 여관 rep2 는 지어지지 않은 맵에 layoutPatch 를 네 번 보내 맵을 못 지었다). 칸 배치 거절 뒤 «다음 호출» 제안은 edit_place layoutPatch 다 — 거절 글에 든 find_pieces 를 고르던 일반 규칙이 find_pieces({}) 헛조회를 낳았다(`loop/nextCall.ts`).
+  - 6회차 측정(2026-10-31, 신기루 VM, inn·study·shop·jail, terra-high 3판 + opus 1판): 판정자 gpt-6.1-sol 8/50(3~5회차 5/52), terra-high 2/37(첫 승). Opus 재판정 18/50(36%, 무 14; 5회차 15/52), opus 11/13, terra-high 7/37(5회차 4/39). terra 기물 13~41개(5회차 12~24). 판 버전이 섞였다 — opus inn·study·shop 은 밀도 검사 전(6b1ec2c78a). 그림 http://mdc-server:18301/interior-omo-1030.html
 - 재생 표: `bun scripts/qa/assistant-v2/todoChecksReplay.mts` — 씬 벤치 판(성공·실패)에 손으로 적은 항목을 돌려 기대와 대조. 판 저장본이 지워진 판은 `sceneToolReplay.mts`(+`finishReplay.mts --snapshot`)로 재구성한 것을 쓰고, 재구성 차이는 표 메모에 적는다. 기계 검사로 못 보는 것(입구 그림과 이동 칸 자리 어긋남, 판정자가 선택지를 못 본 일)은 VQA·판정자 몫이다.
 
 ## 켜는 법
