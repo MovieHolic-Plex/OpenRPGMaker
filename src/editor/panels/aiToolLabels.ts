@@ -114,6 +114,7 @@ export const TOOL_LABELS: Readonly<Record<string, ToolLabelEntry>> = {
   link_maps: people("맵 연결", "link"),
   create_transfer_pair: people("맵 연결", "link"),
   create_time_gate: people("시간의 문 잇기", "link"),
+  lock_door: people("문 잠그기", "link"),
   tile_change_effect: people("타일 바꾸기 장치", "flag"),
   place_vehicle: build("탈것 세우기", "map"),
   // ── 보기·검사 ──
