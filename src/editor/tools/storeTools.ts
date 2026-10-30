@@ -189,6 +189,9 @@ const storeInstall: ToolDefinition = {
         return { resourceId: storeProjectId(slug, id), name: prepared.manifest.content.assets[id]!.name, ...(sheet?.motion ? { battleMotion: sheet.motion } : {}), ...(sheet?.grid === "4x4" ? { battleCells: 16 } : {}) };
       });
     const animated = monsters.filter((m) => m.battleMotion).length;
+    // 윈도스킨(시스템 그림): set_project_settings{resources:{systemResourceId}, dialogue:{style:'classic'}} 한 번으로 건다.
+    const windowSkins = Object.keys(prepared.manifest.content.assets).filter((id) => prepared.manifest.content.assets[id]!.kind === "system")
+      .map((id) => ({ resourceId: storeProjectId(slug, id), name: prepared.manifest.content.assets[id]!.name }));
     const sounds = Object.keys(prepared.manifest.content.assets).filter((id) => prepared.manifest.content.assets[id]!.kind === "sound")
       .map((id) => ({ resourceId: storeProjectId(slug, id), name: prepared.manifest.content.assets[id]!.name, cue: readStoreSoundMeta(prepared.manifest.content.assets[id]!.meta)?.slots[0] }));
     // 전투 애니메이션: 레코드가 database.battleAnimations 에 들어간다(이미 있던 같은 id 는 그대로 둔다).
@@ -201,11 +204,13 @@ const storeInstall: ToolDefinition = {
         + (animations.length ? ` 전투 애니메이션 ${animations.length}개: ${animations.slice(0, 8).map((a) => `${a.name}=${a.id}`).join(", ")} — 기술·아이템의 animationId 로 upsert_skill/upsert_item 에 건다.` : "")
         + (music.length ? ` 음악 리소스 id: ${music.slice(0, 6).map((m) => m.resourceId).join(", ")} — set_game_audio 로 연결하라. 다 걸면 사용자에게는 「넣었어요: 자리 ← 곡 제목」 한 줄씩만 말한다(리소스 id·곡 설명은 쓰지 않는다 — 화면 쪽지가 바꾸기를 보여 준다).` : "")
         + (monsters.length ? ` 몬스터 ${monsters.length}개(전투에서 움직이는 도트 시트 ${animated}개${monsters.some((m) => m.battleCells === 16) ? `, 그중 16칸 시트 ${monsters.filter((m) => m.battleCells === 16).length}개` : ""}) — 적의 monsterResourceId 로 쓰고, 고를 때 battleMotion 이 있는 것을 먼저 쓴다(battleCells:16 은 시전·막기·빈사·등장까지 움직인다).` : "")
+        + (windowSkins.length ? ` 창 그림(윈도스킨) ${windowSkins.length}개: ${windowSkins.slice(0, 6).map((m) => m.resourceId).join(", ")} — set_project_settings{resources:{systemResourceId}, dialogue:{style:'classic'}} 한 번으로 대사·메뉴·상점·타이틀 창에 건다.` : "")
         + (sounds.length ? ` 효과음 ${sounds.length}개: ${sounds.slice(0, 6).map((m) => `${m.cue ?? "?"}=${m.resourceId}`).join(", ")} — set_game_audio{role:'se', cue, resourceId} 로 자리에 건다.` : ""),
       data: {
         title: prepared.manifest.title, version: prepared.version, replaced: result.replaced, tilesets, assetIds: result.assetIds.slice(0, 40),
         ...(music.length ? { resourceIds: music.map((m) => m.resourceId), music: music.slice(0, 12) } : {}),
         ...(sounds.length ? { sounds: sounds.slice(0, 60) } : {}),
+        ...(windowSkins.length ? { windowSkins: windowSkins.slice(0, 60) } : {}),
         ...(monsters.length ? { monsters: monsters.slice(0, 60) } : {}),
         ...(animations.length ? { animations: animations.slice(0, 64) } : {}),
         license: prepared.manifest.license, aiGenerated: prepared.manifest.aiGenerated,

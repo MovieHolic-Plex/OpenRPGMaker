@@ -1145,9 +1145,12 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
       const state = record?.result.state as ArgsState | undefined;
       let base: { tilesetId: string; args: Record<string, unknown> } | undefined;
       let prev: ArgsState | undefined;
-      if (state?.args && !state.stampEdit && String(state.args.mapId ?? state.mapId) === p.mapId) { base = { tilesetId: state.tilesetId ?? map.tilesetId, args: state.args }; prev = state; }
+      // 일본 실내(jp-city 빌더)의 기록 인자는 예제 구성(program) 이라 가구 목록(objects)이 없다 — 인자로 다시 짓지 않고 아래 그림 칸 경로로 간다.
+      // 전에는 그 기록에 mapId 가 없어 「위층·딸린 맵」으로 잘못 거절했다(2026-10-31 asst-parity 마왕 편의점: dress_room 이 더 놓은 계산대 둘을 못 뺐다).
+      const argsRoom = !!state?.args && !state.stampEdit && record?.builder !== "jp-city";
+      if (argsRoom && String(state!.args!.mapId ?? state!.mapId) === p.mapId) { base = { tilesetId: state!.tilesetId ?? map.tilesetId, args: state!.args! }; prev = state; }
       else {
-        if (state?.args && !state.stampEdit && state.mapId !== p.mapId) return text({ ok: false, summary: `${p.mapId} 는 위층·딸린 맵이라 아직 가구를 옮기지 못한다 — 보고에 적는다.` });
+        if (argsRoom && state!.mapId !== p.mapId) return text({ ok: false, summary: `${p.mapId} 는 위층·딸린 맵이라 아직 가구를 옮기지 못한다 — 보고에 적는다.` });
         // 이 실행이 짓지 않은 방: 지금 그림과 똑같이 다시 지어지는 인자를 찾는다(못 찾으면 옮기지 않는다 — 방이 견본으로 바뀌면 안 된다).
         const exact = adoptExactInterior(run, p.mapId);
         if (!exact) {

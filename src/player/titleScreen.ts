@@ -1,7 +1,7 @@
 import { parseOpeningStill } from "@/project/openingStill";
 import { openingStillReady, prepareOpeningStill } from "./openingStill";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
-import { applySystemWindowSkinVariable, applyTitleScreenBackground } from "@/player/systemGraphics";
+import { applySystemWindowSkinVariable, applyTitleScreenBackground, markClassicWindowSkin } from "@/player/systemGraphics";
 import { createTitleRunnersCanvas } from "@/player/titleRunners";
 import { createTitleParticlesCanvas } from "@/player/titleParticles";
 import { createTitleEffectsCanvas, titleEffectsSignature, updateTitleEffectsCanvas } from "@/player/titleEffects/renderer";
@@ -675,6 +675,8 @@ function applyTitleMenuGraphic(node: HTMLElement, project: Project): void {
   // 필드 메뉴·전투·상점(normalizeSystemWindowSkinId 경로)와 타이틀에서 어긍날 수 있었다.
   // 변수만 심는다: 전면 루트에 9-slice fill 을 컬면 타이틀 키아트를 덮는다.
   applySystemWindowSkinVariable(node, project);
+  // 고전 윈도스킨 게임은 타이틀 명령 창만 9칸 그림으로 그린다(루트·키아트는 그대로 — windowSkinSurfaces.css).
+  markClassicWindowSkin(node, project);
 }
 
 function renderTitleNodes(settings: TitleScreenSettings, project: Project): HTMLElement[] {

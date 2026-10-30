@@ -385,6 +385,12 @@ Opus 다시 재기: 호출 68 → 31, 실패 11 → 4, 14분 → 6분. `link_jp_
 - **자전거가 슈퍼마켓 그림에 박혀 남았다**(`jpCityStreetComposer` LANDMARK_BAKED_PROPS): avoidProps 는 따로 찍는 소품만 뺀다. bike 를 빼 달라면 자전거 줄이 그려진 슈퍼마켓 완성 건물을 고르지 않는다(씨앗 40개: 기본 3번 → 0번).
 - 촬영 도구(`sceneFilm.mjs`)가 오프닝 안내 「Esc · 탭 건너뛰기」를 못 알아봐 오프닝 중에 걸음을 보냈다 — 정규식을 넓혔다.
 
+## 조수 대조 4회차 — 오류 글과 일본 실내 가구 빼기 (2026-10-31 asst-parity 4)
+
+- **그림 검색 실패 글이 사람 칩 잠금을 장르 잠금으로만 설명했다**(`eventCompile.resolveGraphicQuery`): 처음 놓은 사람 칩 계열로 정해지는 사람 칩 잠금도 같은 거름이라 글이 둘을 같이 말한다.
+- **일본 실내에서 `move_object` 가 「위층·딸린 맵」으로 거절했다**(`verbs.moveObject`): jp-city 빌더의 기록 인자는 예제 구성(program)이라 가구 목록이 없고 mapId 도 없어 엉뚱한 거절 글로 빠졌다. jp-city 기록은 인자로 다시 짓지 않고 그림 칸 그대로 옮기기·빼기(`tileMoveObjects`)로 간다. 마왕 편의점 Opus 판에서 dress_room 이 더 놓은 계산대 둘을 빼려다 막혔다.
+- **`set_start_position` 이 막힌 칸만 알렸다**(`mapTools`): 4칸 안의 가장 가까운 걸을 수 있는 칸을 같이 알려 준다(모델이 칸을 짐작해 다시 부르던 왕복).
+
 ## 끝맺음 단계 더하기 (2026-10-29 단계 목록화)
 
 끝맺음 자동 단계와 출구·이동 칸 마감은 **단계 하나 = 파일 하나** 목록이다. 수리 작업자 여럿이 같은 파일(옛 `finishAutoBuild.ts`·`verbs.ts clearLanes`)을 고쳐 체리픽이 부딪히던 것을 없앤 구조 변경이며 동작은 같다(`finishReplay --trace` 로 vm5~vm7 판 대조).
