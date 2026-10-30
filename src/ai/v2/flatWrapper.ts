@@ -34,7 +34,7 @@ export function flatWrapperShape(name: string, parameters: unknown): { readonly 
   const innerRequired = (inner.required ?? []).filter((k) => k in innerProps);
   const properties: Record<string, Schema> = {
     ...outer, ...innerProps,
-    ...(w.array ? { [w.slot]: { ...slotSchema, description: `여럿을 한 번에 둘 때만 쓴다. 하나면 이 칸 없이 최상위에 바로 적는다.${slotSchema.description ? ` ${slotSchema.description}` : ""}` } } : {}),
+    ...(w.array ? { [w.slot]: { ...slotSchema, description: `Use only to place several at once. For one, write it at the top level without this field.${slotSchema.description ? ` ${slotSchema.description}` : ""}` } } : {}),
   };
   const required = (p.required ?? []).filter((k) => k !== w.slot);
   // 안쪽이 다른 열쇠도 받으면(upsert_event 의 event: name·graphic·moveRoute…) 바깥 칸이 아닌 최상위 열쇠는 전부 안으로 옮긴다 — 안 그러면 조용히 버려진다.

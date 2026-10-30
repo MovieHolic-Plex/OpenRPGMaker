@@ -7,13 +7,13 @@ import { findMap, resolveWhere, type Footprint } from "./people";
 import type { BuildRun, ContentBuildResult, ObjectSpec } from "./types";
 
 export const DRAW_OBJECT_CARD =
-  "없는 기물(draw_object) 명세: {what,description?,where?,at?,mapId?}. what=기물 이름 한 명사구(놋쇠 태엽 지구본·나무 벌통). " +
-  "description=모양·재료·색 한두 문장(없으면 what 으로 채운다). 사람·동물·지형(바닥·벽·물·길)·건물은 그리지 않는다(거부) — " +
-  "건물은 집 킷, 사람은 people 로. 이미 칩셋에 이름 맞는 기물이 있으면 새로 그리지 않고 그 id 를 돌려준다. " +
-  "where 는 people 과 같은 낱말(입구·광장·문 앞·«홀 한쪽»·«바 옆»·북쪽 벽·구석·창가), at:{x,y} 는 정말 필요할 때만. " +
-  "크기는 낱말로 정한다(커다란·큰 → 2×2 아래 줄만 막힘, 키 큰 것 → 1×2, 나머지 1×1) — 함수가 그 크기가 들어가고 길을 막지 않는 빈 바닥을 지금 골라 카드에 싣는다. " +
-  "놓는 방식은 이름으로 정한다: 액자·간판·포스터는 벽걸이, 러그·카펫·바닥 무늬는 바닥 무늬, 책장·선반·장식장은 벽 앞 가구, 나머지는 바닥에 세움. " +
-  "중요: 이 명세는 «그리기 카드» 를 띄울 뿐이다. 그림은 사용자 화면에서 몇 분 뒤 그려지고 그 뒤에야 놓인다 — 지금 맵에는 아직 없다.";
+  "Missing object (draw_object) spec: {what,description?,where?,at?,mapId?}. what = the object's name as one noun phrase (brass clockwork globe, wooden beehive). " +
+  "description = one or two sentences of shape, material and color (filled from what if omitted). People, animals, terrain (floor, wall, water, road) and buildings are not drawn (rejected) — " +
+  "buildings use the house kit, people use people. If the chipset already has an object with a matching name, nothing new is drawn and its id is returned. " +
+  "where uses the same words as people (입구 entrance · 광장 square · 문 앞 in front of the door · «홀 한쪽» · «바 옆» · 북쪽 벽 north wall · 구석 corner · 창가 by the window); at:{x,y} only when really needed. " +
+  "Size comes from the words (커다란·큰 big → 2×2 with only the bottom row blocking, tall → 1×2, otherwise 1×1) — the function picks free floor now that fits that size without blocking paths and puts it on the card. " +
+  "Placement comes from the name: frames, signs and posters hang on the wall; rugs, carpets and floor patterns lie on the floor; bookshelves, shelves and cabinets stand against a wall; everything else stands on the floor. " +
+  "Important: this spec only shows a «drawing card». The picture is drawn on the user's screen a few minutes later and only then placed — it is not on the map yet.";
 
 type ObjectKind = "floor" | "wall" | "hang" | "flat";
 

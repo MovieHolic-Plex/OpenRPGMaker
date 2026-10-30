@@ -54,6 +54,7 @@ import {
 } from "@/player/dialoguePresentation";
 import { prefersReducedMotion } from "@/player/characterLanding";
 import { directionForKey, isCancelKey, isConfirmKey, isTextEntryTarget, keyboardEventKey } from "@/player/keyBindings";
+import { installConfirmPressTracker, isLeakedConfirmPress, isPlayerKeyInput, OPEN_GRACE_MS } from "@/player/confirmMashGuard";
 import { applySystemWindowSkinVariable } from "@/player/systemGraphics";
 import { resolveAudioSource } from "@/player/audio/audioResources";
 import { lineVoiceActive, playLineVoice, stopLineVoice } from "@/player/lineVoice";
@@ -155,8 +156,6 @@ export type DialogueLogEntry = {
 };
 
 const DIALOGUE_LOG_LIMIT = 200;
-/** 선택지가 열린 직후 결정 키를 받지 않는 시간 — 앞 대사를 넘기던 연타가 선택을 대신하지 않게. */
-const CHOICE_CONFIRM_GRACE_MS = 300;
 /** 휠 위로 백로그 열기: 닫은 뒤 이 시간은 다시 안 열고, 이 시간 안에 문턱만큼 쌓여야 연다(관성 스크롤·핀치 오작동 방지). */
 const WHEEL_REOPEN_COOLDOWN_MS = 450;
 const WHEEL_OPEN_WINDOW_MS = 300;
@@ -547,6 +546,7 @@ export function createDialogueUI(
   stampEmeraldSurface(overlay, store.getCurrent(), "dialogue");
   stampEmeraldSurface(scrim, store.getCurrent(), "dialogue-scrim");
   host.append(scrim, overlay);
+  installConfirmPressTracker();
 
   // 퇴장 예약. 상자를 즉시 파괴하지 않고 이만큼 미뤄 두기 때문에 퇴장 연출이 재생된다.
   let pendingExit: { readonly cancelTimer: () => void; readonly finish: () => void } | null = null;
@@ -1389,7 +1389,7 @@ export function createDialogueUI(
         // ▼ 다음 쪽이 있다 / ■ 이 대사가 끝이다. 바로 뒤에 선택지가 오는 글은 끝 쪽도 ▼ — 결정 키 한 번이면 선택지가 이어진다.
         // 이 글은 스스로 닫지 않고 자기 결정 키를 기다린다(RPG 메이커 2000 과 같다). 2026-10-29 에 다 나오자마자 닫히게 했더니
         // 「계속」 하려고 누른 Enter/Z 가 이미 열린 선택지의 0번을 골라 엔딩 분기가 틀어졌다(마왕 편의점 데모 QA).
-        // 그 결정 키 자체·누른 채 반복은 showChoices 의 CHOICE_CONFIRM_GRACE_MS·repeat 거르기가 버린다.
+        // 그 결정 키 자체·누른 채 반복은 showChoices 의 isLeakedConfirmPress·repeat 거르기가 버린다.
         const endsHere = last && request.beforeChoices !== true;
         cursor.textContent = endsHere ? "■" : "▼";
         cursor.classList.toggle("is-end", endsHere);
@@ -1916,10 +1916,12 @@ export function createDialogueUI(
         const key = keyboardEventKey(e);
         if (key === "Process" || key === "Unidentified") return;
         if (e.isComposing && key === e.key) return;
-        // 열린 직후의 결정·숫자 키는 버린다 — 앞 대사를 넘기려고 연타한 Enter 가, 선택지가 그려진 바로 그 순간 닿아
-        // 플레이어가 읽지도 못한 0번이 골라지던 결함(첫사랑 r11·r8 재현: 선택지 등장과 Enter 가 같은 0.1초).
-        // 실제 키 입력(isTrusted)만 막는다. 단위 테스트의 합성 이벤트는 그대로 지나간다.
-        if (e.isTrusted && performance.now() - openedAt < CHOICE_CONFIRM_GRACE_MS && (isConfirmKey(key) || /^[1-9]$/.test(key))) {
+        // 앞 대사를 넘기던 결정 키 연타가 선택지를 고르지 않게 한다(confirmMashGuard): 열리기 전·열린 뒤 300ms 안에 누른 결정 키,
+        // 바로 앞 결정 키에서 450ms 안에 이어 누른 결정 키는 버린다. 손을 멈췄다 새로 누르거나 커서를 옮긴 뒤의 결정만 받는다.
+        // 첫사랑 r11·r8(선택지 등장과 Enter 가 같은 0.1초), 회귀 벤치 ebfe-sl 방탈출·추리 A8 「Enter 10번」(연타 간격 250~400ms).
+        // 숫자 키(바로 고르기)도 열린 직후에는 버린다. 플레이어 입력(실제 키·패드)만 막는다 — 단위 테스트 합성 키는 지나간다.
+        if (isLeakedConfirmPress(e, openedAt)
+          || (isPlayerKeyInput(e) && e.timeStamp - openedAt < OPEN_GRACE_MS && /^[1-9]$/.test(key))) {
           e.preventDefault();
           return;
         }

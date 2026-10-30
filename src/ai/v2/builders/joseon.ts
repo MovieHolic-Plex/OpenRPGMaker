@@ -232,5 +232,5 @@ export const JOSEON_BUILDER: PlaceBuilder = {
   build,
 };
 
-export const JOSEON_CARD = "[조선 style:joseon] 조선·한양·사극·고려 배경은 style 에 joseon 을 넣는다(버들항 유럽 마을·판타지 실내로 짓지 않는다). " +
-  "village/street=조선 마을 20호(초가·기와집·논·다리, 이름·테마에 저잣거리·장터면 좌판을 앉힌다) · interior=등록 방 한 장: 주막·관아(포도청·동헌)·대장간·약방·서당·민가·궁 어좌전·침전·회랑·서고(이름 낱말로 고른다, 방은 하나씩) · cave=조선 동굴 · 이름에 사냥터·들판이면 사냥터.";
+export const JOSEON_CARD = "[Joseon style:joseon] For Joseon, Hanyang, historical-drama or Goryeo settings put joseon in style (do not build a Beodeul European village or a fantasy interior). " +
+  "village/street = a Joseon village of 20 households (thatched and tiled houses, paddies, bridges; stalls are added when name or theme says 저잣거리/장터 market street) · interior = one registered room: 주막 (tavern) · 관아 (포도청·동헌, government office) · 대장간 (smithy) · 약방 (apothecary) · 서당 (village school) · 민가 (commoner house) · 궁 어좌전 (throne hall) · 침전 (royal bedchamber) · 회랑 (cloister) · 서고 (archive) (chosen by name word, one room per call) · cave = Joseon cave · a name with 사냥터/들판 gives a hunting ground.";
