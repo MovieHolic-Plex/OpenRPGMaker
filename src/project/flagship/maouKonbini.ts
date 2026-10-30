@@ -252,7 +252,8 @@ function buildMaps(project: Project): Links {
     project.maps[id] = m;
   };
   jpMap(M.street, "사쿠라자카 상점가", 40, 28);
-  execTool(project, "compose_jp_city_street", { mapId: M.street, style: "shopping", seed: 3, shops: ["konbini", "apartment", "cafe", "izakaya"], replace: true });
+  // 자전거는 빼 달라(사용자 2026-10-30 「자전거는 충돌도 이상하다」) — 그 자리는 바닥 그대로 걷는 칸.
+  execTool(project, "compose_jp_city_street", { mapId: M.street, style: "shopping", seed: 3, shops: ["konbini", "apartment", "cafe", "izakaya"], replace: true, avoidProps: ["bike"] });
   jpMap(M.park, "사쿠라자카 공원", 40, 28);
   execTool(project, "compose_jp_city_street", { mapId: M.park, region: "neighborhood_park", seed: 2, replace: true });
   jpMap(M.shrine, "언덕 위 신사", 40, 28);
@@ -502,7 +503,7 @@ function buildKonbini(project: Project, links: Links): Cell {
   const hinaTalk = (stage: number): Command[] => {
     const lines: Record<number, Command[]> = {
       2: [],
-      3: [...say("hina", "happy", "손님 오면 계산대 앞에서 말 걸어. 「데워 드릴까요?」 그런 거."), ...say("hina", "base", "상자는 통로, 분리수거함은 입구 옆. 끝.")],
+      3: [...say("hina", "happy", "손님 오면 계산대 앞에서 말 걸어. 「데워 드릴까요?」 그런 거.")],
       5: [...say("hina", "base", "아침엔 다나카 씨 와. 단골. 말은 없는데 착해."), ...say("hina", "happy", "핫스낵은 오늘 네가 해. 가라아게 레드. 우리 가게 간판.")],
       7: [...say("hina", "base", "야간은 조용해서 좋아. …가끔 이상한 사람 오는 거 빼면."), ...say("hina", "happy", "택배 또 왔어. 잡지. 백룸 폐기 정리도.")],
     };
@@ -775,7 +776,7 @@ function buildKonbini(project: Project, links: Links): Cell {
     ...say("hina", "happy", "그래그래. 오늘은 계산대, 핫스낵, 발주."),
     setSw(SW_SHIFT), setSw("sw_mk_brief2"),
     ...clerkPos,
-    ...caption("둘째 날 · 오전 8시. 근무 시작.", "오늘 할 일은 계산대, 핫스낵, 발주."),
+    ...caption("둘째 날 · 오전 8시. 근무 시작."),
   ];
   const night3: Command[] = [
     // 밤 — 창밖은 남색으로 가라앉고, 계산대 위 형광등만 환하다.
@@ -789,12 +790,12 @@ function buildKonbini(project: Project, links: Links): Cell {
     ...boxTiles(true),
     setSw(SW_SHIFT), setSw("sw_mk_brief3"),
     ...clerkPos,
-    ...caption("사흘째 · 밤 11시. 야간 근무 시작.", "오늘 할 일은 계산대, 택배 진열, 폐기 정리."),
+    ...caption("사흘째 · 밤 11시. 야간 근무 시작."),
   ];
   const day1: Command[] = [
     wait(300),
     ...clerkPos,
-    ...caption("첫째 날 · 오전 10시. 근무 시작.", "오늘 할 일은 계산대, 상자 진열, 분리수거."),
+    ...caption("첫째 날 · 오전 10시. 근무 시작."),
     setSw("sw_mk_brief1"),
   ];
   ev(event("ev_mk_ctrl_brief", "근무 시작", { x: 0, y: 1 }, [
@@ -1341,6 +1342,9 @@ export function createMaouKonbiniFlagshipDemo(): FlagshipDemoBuildResult {
     { id: "tasks", kind: "gauge", source: "variable", variableId: V_TASKS, max: 3, shape: "number", label: "오늘 업무", anchor: "top-left", x: 8, y: 14, width: 104, height: 30, panel: "paper", color: "#3aa860", condition: "switch", switchId: SW_SHIFT },
   ] } });
   execTool(project, "set_project_settings", { resources: { titleResourceId: "oprn-maou-konbini-title", defaultBgmResourceId: BGM_SHOP } });
+  // 자동 안내(인물 위 ▼·출구 「→ 목적지」·목표 화살표)는 끈다 — 사용자 2026-10-30 「너무 친절함 … 화살표도 짜증남」.
+  // 갈 곳은 장면이 보여 준다: 전단지는 우편 투입구 소리와 ! 로, 가게는 전단지 「이 건물 바로 왼쪽」과 바로 옆 간판으로.
+  execTool(project, "set_project_settings", { fieldGuides: "off" });
 
   // 장면 스위치(작업 완료·손님 퇴장·브리핑 등)를 모두 등록한다 — 등록하지 않은 스위치 조건은 프로젝트 검사가 거절한다.
   for (const id of new Set(JSON.stringify(project.maps).match(/sw_(?:ev_)?mk_[a-z0-9_]+/g) ?? [])) ensureSw(id, id.replace(/^sw_(ev_)?mk_/, "마왕 · "));
