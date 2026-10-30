@@ -161,7 +161,16 @@ export const LAY_VILLAGE_LAYOUT_TOOL: ToolDefinition = {
   mode: "write",
   parameters: { type: "object", properties: { layout: LAYOUT_ANY, terrain: { type: "object" }, name: { type: "string" }, mapId: { type: "string" }, id: { type: "string" } }, required: ["layout", "terrain"] },
   run(draft, args) {
-    return layBboxVillageInDraft(draft, args.layout as BboxVillageLayout, args.terrain as never, { name: args.name as string | undefined, mapId: args.mapId as string | undefined, id: args.id as string | undefined, prepare: (W, H) => prepareMap(draft, args, W, H, "beodeul_city", "village") });
+    let old: GameEvent[] = [];
+    const res = layBboxVillageInDraft(draft, args.layout as BboxVillageLayout, args.terrain as never, { prepare: (W, H) => { const p = prepareMap(draft, args, W, H, "beodeul_city", "village"); old = p.old; return p; } });
+    const data = res.data as { mapId: string; entrance: Pt | null; doors: unknown[]; stats: unknown };
+    const map = draft.maps[data.mapId]!;
+    map.locations = (map.locations ?? []).filter((l) => !(l.tags ?? []).includes(BBOX_DECL_TAG));
+    writeLayoutDecl(map, "village", { doors: data.doors, entrance: data.entrance, stats: data.stats });
+    const notes = [...(res.warnings ?? [])];
+    // 다시 깐 마을: 손으로 붙인 이벤트(사람·문)는 가까운 걷는 칸으로, 다른 맵에서 오는 문은 마을 입구로.
+    if (old.length && data.entrance) carryEvents(draft, map, old, undefined, data.entrance, notes);
+    return { ...res, warnings: notes };
   },
 };
 
