@@ -9,6 +9,9 @@ import type { AutonomousMover } from './playSceneTypes';
 import { isInSafeZone } from './chaseAi';
 import { chaseSearchLimitMs } from '@/project/chaseTempo';
 import { pursuitState, searchTarget, type PursuitWorld as World } from './pursuitNavigation';
+import { CHASE_NOISE_RADIUS, chaseBrainProfile, type ChaseBrainProfile } from '@/project/chaseBrain';
+import { emitChaseNoise, hearChaseNoise, playerFootstepAt, playerGait } from './chaseNoise';
+import type { NpcSight } from '@/project/types';
 export { carryPursuitThroughDoor, advancePursuitDoors } from './pursuitDoors';
 
 const directions: Record<Dir, { x: number; y: number }> = { up: { x: 0, y: -1 }, down: { x: 0, y: 1 }, left: { x: -1, y: 0 }, right: { x: 1, y: 0 } };
@@ -28,6 +31,8 @@ export function pushObject(world: World, view: RuntimeEventView, dir: Dir): bool
   if (findBlockingEventOverlappingRect(world.project, world.map, world.session, world.positions, bounds, view.event.id)) return false;
   world.session.eventLocations[view.event.id] = { mapId: world.map.id, x, y, direction: view.direction };
   world.positions[view.event.id] = { x, y, direction: view.direction };
+  // 끄는 소리 — 곁의 추격자가 듣고 와서 뒤진다(@/player/chaseNoise).
+  emitChaseNoise(world.session, world.map.id, { x, y }, CHASE_NOISE_RADIUS.push);
   return true;
 }
 
@@ -55,8 +60,36 @@ export function isPlayerHiding(world: World): boolean {
 }
 
 export function seesPlayer(world: World, view: RuntimeEventView): boolean {
-  return npcSeesPoint(world, view, world.session,
-    view.movement.sight ?? { range: view.movement.sightRange ?? 8, lineOfSight: true, facing: 'any' });
+  const authored: NpcSight = view.movement.sight ?? { range: view.movement.sightRange ?? 8, lineOfSight: true, facing: 'any' };
+  if (view.movement.type !== 'chase') return npcSeesPoint(world, view, world.session, authored);
+  const brain = chaseBrainProfile(view.movement);
+  return npcSeesPoint(world, view, world.session, chaseBrainSight(authored, brain), undefined, brain.seeThroughWalls);
+}
+
+/**
+ * 성격이 넓힌 시야(@/project/chaseBrain): 거리에 덤을 더하고, 좁은 부채꼴·앞줄 시야는 최소 각까지 벌린다.
+ * 옛 방식(classic)은 저작 그대로다.
+ */
+export function chaseBrainSight(sight: NpcSight, brain: ChaseBrainProfile): NpcSight {
+  const range = sight.range + brain.sightBonusCells;
+  if (sight.facing === 'any' || brain.minConeDegrees <= 0) return range === sight.range ? sight : { ...sight, range };
+  const cone = Math.min(180, Math.max(sight.facing === 'cone' ? sight.coneDegrees ?? 90 : 0, brain.minConeDegrees));
+  return { ...sight, range, facing: 'cone', coneDegrees: cone };
+}
+
+/**
+ * 발소리를 듣는가 — 사방, 시선 무관. 걸으면 hearWalkCells, 달리면 hearRunCells, 서 있으면 senseStillCells 안(맨해튼).
+ * 숨은 주인공·안전지대 안의 주인공은 듣지 않는다. chase 페이지만.
+ */
+export function hearsPlayer(world: World, view: RuntimeEventView): boolean {
+  if (view.movement.type !== 'chase') return false;
+  if (isPlayerHiding(world) || isInSafeZone(world.map.safeZones, world.session)) return false;
+  const brain = chaseBrainProfile(view.movement);
+  const gait = playerGait(world.session);
+  const reach = gait === 'run' ? brain.hearRunCells : gait === 'walk' ? brain.hearWalkCells : brain.senseStillCells;
+  if (reach <= 0) return false;
+  const at = playerFootstepAt(world.session) ?? world.session;
+  return Math.abs(at.x - view.x) + Math.abs(at.y - view.y) <= reach;
 }
 
 type PursuitTarget = { x: number; y: number; searching: boolean } | null | undefined;
@@ -84,7 +117,7 @@ function trackedPursuitTarget(world: World, view: RuntimeEventView, mover: Auton
   const state = pursuitState(world, view);
   if (state.doors.length) return null; // Transit, not an independently walking duplicate.
   if (config) world.session.eventLocations[view.event.id] = { mapId: world.map.id, x: view.x, y: view.y, direction: view.direction };
-  const visible = (!hiding || hiding.witnessedBy.includes(view.event.id)) && seesPlayer(world, view);
+  const visible = (!hiding || hiding.witnessedBy.includes(view.event.id)) && (seesPlayer(world, view) || hearsPlayer(world, view));
   const persistent = config?.tracking === 'persistent' && (state.active || mover.chaseActive)
     && !hiding && !isInSafeZone(world.map.safeZones, world.session);
   if (visible || persistent) {
@@ -106,6 +139,15 @@ function trackedPursuitTarget(world: World, view: RuntimeEventView, mover: Auton
     return { ...state.lastSeen, searching: false };
   }
   if (!state.active && mover.chaseActive) state.active = true;
+  // 소리(레버·스위치·밀기)를 들었다 — 그 자리로 가서 뒤진다. 지금 쫓는 중이 아니어도 깨어난다.
+  const noise = hearChaseNoise(world.session, world.map.id, view.event.id, view, chaseBrainProfile(view.movement).noiseScale);
+  if (noise && view.movement.type === 'chase') {
+    state.active = true;
+    state.lastSeen = { x: noise.x, y: noise.y };
+    state.searchMs = LOS_GRACE_MS + 1;
+    delete state.searchTarget; delete state.searchCursor; delete state.searchCenter; delete state.lastHeading;
+    mover.chaseActive = true;
+  }
   if (!state.active) return null;
   state.searchMs += Math.max(0, deltaMs);
   // 시야가 막 끊긴 직후(LOS_GRACE_MS)에는 어느 쪽으로 꺾었는지 발소리로 안다 — 마지막 목격 자리를 그 짧은 동안만 따라 옮긴다.

@@ -1,8 +1,9 @@
-// 번들 타일셋 정의 JSON 의 **편집기 출처** — vite.config.ts 가 `bundledJsonSources.ts` 대신 끼운다(편집기·시작 화면 빌드와 dev 서버만).
+// 번들 타일셋 정의 JSON 의 **지연 출처** — 편집기·시작 화면(vite.config.ts)과 웹 플레이어(vite.player.config.ts)의 브라우저 빌드·dev 서버가
+// `bundledJsonSources.ts` 대신 끼운다(scripts/lib/bundledJsonLazy.mjs). 실행형 HTML·node 실행은 정적 출처 그대로다.
 // 파일은 JS 모듈이 아니라 원본 JSON 자산으로 실리고(`?url`), 처음 필요할 때 fetch + JSON.parse 한다 — 진입 청크에 싣지 않는다.
 // 부팅은 필요한 것만 미리 읽는다(store.normalizeCurrentProject 의 첫 부팅 정규화, 편집기 settled 뒤 열린 맵이 쓰는 타일셋).
 // 미리 읽지 않은 것을 동기로 물으면 같은 파일을 동기 XHR 로 읽는다(드문 길 — 콘솔에 한 번 경고). 계약은 bundledJson.ts 머리말.
-import type { BundledJsonData, BundledJsonKey } from "./bundledJsonSources";
+import type { BundledJsonData, BundledJsonKey, BundledJsonReader } from "./bundledJsonSources";
 import jpCityTilesetUrl from "@/assets/jpCityTileset.json?url";
 import beodeulCityTilesetUrl from "@/assets/beodeulCityTileset.json?url";
 import modernCityTilesetUrl from "@/assets/modernCityTileset.json?url";
@@ -43,7 +44,7 @@ const URLS: Record<BundledJsonKey, string> = {
   beodeulWavePlacesTileset: beodeulWavePlacesTilesetUrl,
 };
 
-export type { BundledJsonData, BundledJsonKey };
+export type { BundledJsonData, BundledJsonKey, BundledJsonReader };
 export const BUNDLED_JSON_KEYS = Object.keys(URLS) as BundledJsonKey[];
 export const BUNDLED_JSON_LAZY = true;
 
@@ -62,7 +63,15 @@ export function bundledJsonSync<K extends BundledJsonKey>(key: K): BundledJsonDa
   return JSON.parse(xhr.responseText) as BundledJsonData[K];
 }
 
-export async function loadBundledJsonEntry<K extends BundledJsonKey>(key: K): Promise<BundledJsonData[K]> {
+let reader: BundledJsonReader | null = null;
+
+/** 받는 방법을 바꾼다 — 웹 플레이어는 멈춤 감시 fetch(scenePreload.fetchBlobWithRetry)를 넣는다. null 이면 기본 fetch. */
+export function setBundledJsonReader(next: BundledJsonReader | null): void {
+  reader = next;
+}
+
+export async function loadBundledJsonEntry<K extends BundledJsonKey>(key: K, onBytes?: (bytes: number) => void): Promise<BundledJsonData[K]> {
+  if (reader) return JSON.parse(await reader(URLS[key], onBytes ?? (() => undefined))) as BundledJsonData[K];
   const response = await fetch(URLS[key]);
   if (!response.ok) throw new Error(`번들 자료 ${key} 를 읽지 못했습니다 (HTTP ${response.status})`);
   return (await response.json()) as BundledJsonData[K];

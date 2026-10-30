@@ -94,6 +94,8 @@ npm run mac:launch   # macOS / Linux —— プロジェクトフォルダを聞
 初回は**新しい**フォルダのフルパスを入力してください。プロジェクトは SQLite と素材ファイルとしてそこに保存されます。
 右上の AI チップを押すとログインできます。
 
+全281曲の音楽は、上のデスクトップ版とは別の公開 [bgm-v1 リリース](https://github.com/MovieHolic-Plex/OpenRPGMaker/releases/tag/bgm-v1)（`rpg-zzu-bgm-v1.tar`）です。ソースから `npm run bgm:install` を実行すると HTTPS で受け取り、コミット済みの SHA-256 で検証します。GitHub CLI は、そのダウンロードが拒否されたときだけ使います。
+
 ## ギャラリー
 
 <table>

@@ -2,6 +2,7 @@
 // 게임 오버가 끝없이 반복된다(2026-10-25 심판 J61, 공포 학교: 시작 (11,8) · 추격자 (15,8) · 같은 줄 · 시야 5).
 // 정적 판정 — 추격자의 집 칸과 순찰 경유 칸에서 시야 범위(맨해튼)·벽 가림(통행 불가 칸) 직선으로 보이거나 몇 걸음 안이면 위험.
 // 순수 함수: 저작 도구(set_start_position·make_chase_scene)와 조수 끝맺음 검사가 같이 부른다.
+import { chaseBrainProfile } from "./chaseBrain";
 import { isPassable } from "@/project/collision";
 import type { Dir, GameEvent, GameMap, Project } from "@/project/types";
 
@@ -26,7 +27,8 @@ function chaserCells(event: GameEvent): { range: number; gated: boolean; cells: 
   if (!page) return undefined;
   if (JSON.stringify(page.commands ?? []).includes("battleProcessing")) return undefined;
   const movement = page.movement as Movementish;
-  const range = Math.max(0, Math.trunc(movement.sight?.range ?? movement.sightRange ?? DEFAULT_SIGHT));
+  // 런타임과 같은 시야 — 성격(@/project/chaseBrain)이 더하는 칸까지.
+  const range = Math.max(0, Math.trunc(movement.sight?.range ?? movement.sightRange ?? DEFAULT_SIGHT)) + chaseBrainProfile(page.movement).sightBonusCells;
   const cells = [{ x: event.x, y: event.y }];
   let at = { x: event.x, y: event.y };
   for (const move of movement.route?.moves ?? []) {

@@ -1,0 +1,324 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "64f4804e794c38ff6ae786761380cd61d6f8bf67bbcdec7044f7083562c73d49",
+ "width": 32,
+ "height": 32,
+ "kind": "organic",
+ "name": "mossy rock pile",
+ "label": "workshop-objectgen-organic/m7-rocks",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 6
+ },
+ "metrics": {
+  "tileColorsMedian": 12,
+  "tileColorsP90": 12,
+  "darkV5": 49,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 2
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "large right rock top (moss and pale stone)",
+      "rows": "11-16",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "15-16"
+     },
+     {
+      "part": "small left rock top (moss and pale stone)",
+      "rows": "16-19",
+      "evidence": "a",
+      "front_edge_line_row": 20,
+      "eave_shadow_rows": "21-22"
+     },
+     {
+      "part": "moss tufts on the rock tops",
+      "rows": "10-13",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 13,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The large rock widens from 8px at row 10 to 31px by row 21. Its upper rows 11-16 are lighter (moss green and pale stone, L=174-197) and form a sloped top plane. Below that, darker gray rows 17-28 (L=63-118) form the south face, with a dark base at row 29. The small left rock repeats the pattern: a light moss and stone cap at rows 16-19 over a darker face. The top is a modest, domed, heap-like surface rather than a flat slab, but it is distinct from the front face, which is 13 rows tall."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small prop of about one tile. It has 12 visible tones per 16x16 tile, above tree-1a786c (7) and below tree-d43edd (29). Near-flat coverage is 0%, so there are no flat fills. Only 3% of its dark edge pixels are neutral, so the outline leans visibly cool grey or green-brown, matching the adjacent stone and moss rather than a black sticker line. The stones have about 4-5 lightness steps with a lit top edge and speckled grain. The moss is a clump of 2-3 greens on the upper surfaces, with a few dots trailing down the sides. It is simpler than the rich tree-d43edd canopy, and the stones could use more per-stone shading variety. It is at least as rich as the lower reference and reads as a craft-level piece rather than a flat sticker, so an artist would accept it beside the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16861
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "large rock top with moss and pale stone",
+      "rows": "11-16",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "15-16"
+     },
+     {
+      "part": "small left rock top with moss",
+      "rows": "16-20",
+      "evidence": "a",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "rock front faces",
+      "rows": "17-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 12,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The large rock has a light, mossy upper band at rows 11-16. It is widest at the top of the silhouette (width grows 8→24 over rows 10-16). In the x=16 scan, the light rows 12-14 are followed by dark rows 15-16 (L=63), which act as a crevice or eave shadow. Below that, a mid-to-dark gray front face runs rows 17-28 and darkens toward the base at rows 28-29. The small left rock has the same structure: a moss and pale top at about rows 16-20 over a gray front. The top-to-front lightness gradient is soft, so the top reads as a lit, sloped surface rather than a hard-edged plane. Overall it reads as a three-quarter view of an organic heap, not a flat elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate has 12 visible tones per tile, above tree-1a786c (7) and below tree-d43edd (29). Near-flat coverage is 0%, the same as both references, so there are no flat fills: the grey stones carry stippled facets and the moss has a few greens. Only 3% of dark edge pixels are neutral, so the outline leans toward the material (dark grey-green and blue-grey) and is not a black sticker line. Weaknesses: each material has only about 3-4 lightness steps against the references' 5-6, and the moss cap is small with less clump variety than the leaf clusters. The piece is a small, sparse prop and is cleanly shaded, so it holds up next to the simpler reference without looking flat or sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20562
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "large right rock, mossy and lit top",
+      "rows": "11-15",
+      "evidence": "a",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": "15-16"
+     },
+     {
+      "part": "small left rock, mossy and lit top",
+      "rows": "16-20",
+      "evidence": "a",
+      "front_edge_line_row": 20,
+      "eave_shadow_rows": "21-22"
+     },
+     {
+      "part": "moss tufts on the rock tops",
+      "rows": "11-17",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 13,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The big rock has a lit, moss-covered top band at rows 11-15 (column x=16: moss at row 11, light at rows 12-14). It ends in a darker band at rows 15-16 (L=63) that works as an edge and shadow. Below that is a grey front face of about 13 rows (rows 17-29) that darkens toward the base. The smaller left rock repeats this: light and moss top at rows 16-20, a dark shadow at rows 21-22, then the grey face. The silhouette widens gradually from 8 to 31 px, as a rounded pile would. The top is only weakly separated from the face, because the shading is a gradient with no crisp edge line, but it still reads as a top plus a front face rather than a flat front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small grey rock pile with a moss cap. Its measured facts are 12 visible tones per tile, 0% near-flat coverage and 3% neutral dark edge pixels, so the outline is tinted and not a black sticker line. It beats tree-1a786c (7 tones) on tone count but falls well short of tree-d43edd (29 tones). By eye, the stones show about 3-4 lightness steps (highlight, light grey, mid, dark) with a few speckle dots, and the moss has 2-3 greens. Beodeul uses 5-6 steps per material and shades each stone separately with per-clump highlights. Here the two or three rocks read as smooth lumps with little individual stone shading, and the moss is a small patch with little clumping. The piece is small and simple, so it is not failed for size, but its shading depth and texture are a little below the references. It is plausible but not clearly at the Beodeul bar, and when in doubt it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 15399
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "large rock top with moss",
+      "rows": "11-16",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "15-16"
+     },
+     {
+      "part": "small left rock top with moss",
+      "rows": "16-20",
+      "evidence": "a",
+      "front_edge_line_row": 20,
+      "eave_shadow_rows": "21-22"
+     },
+     {
+      "part": "rock front faces",
+      "rows": "17-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 13,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The large rock has a lit pale and mossy upper band at rows 11-16 (x=16 L=174-197, x=23 L=174 at rows 12-15). Below it a darker shadow step (rows 15-17, L=63-147) leads into a grey front face. The face darkens from L=147 to L=90 to L=36 down to the base at rows 28-29, about 13 rows of front. The small left rock repeats this with a moss and pale top at rows 16-20 over a dark face. The silhouette widens gradually from 8 to 31 px, which fits a lumpy rock mass seen from above at a slant. The top is not a crisp planar surface, but it reads as a top plus a front face rather than a flat elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small grey rock pile with a moss cap. Its measured facts are 12 visible tones per tile, 0% near-flat coverage and 3% neutral dark edge pixels, so the outline is tinted. That puts it above tree-1a786c (7 tones) and well below tree-d43edd (29 tones). By eye, the rocks show about 3-4 grey steps with some speckle, and the moss on top has 2-3 greens. The rocks are not shaded one by one as Beodeul stones are, and the shading looks a little shallow next to the 5-6 steps in the references. There are no large flat fills, and the outline is a dark tone of the neighbouring grey and green rather than black. The piece is small and simple, which is acceptable. A careful artist would find it a bit thinner than the lush canopy references, but it is close to the tree-1a786c level and has no sticker look.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14959
+  }
+ ],
+ "decidedAt": "2026-10-23T08:22:03.408Z",
+ "cells": {
+  "16": [
+   "246bd740f612094f",
+   "4fd12ed621562ad8",
+   "54ab2348a2ecee58",
+   "b0ebcae76962a1e5"
+  ],
+  "24": [
+   "19fe7282f3be1c2a",
+   "26b1562522062a56",
+   "2dcb9f48b62d3ab4",
+   "33fcb140d0c59faf",
+   "4495b605947b09f3",
+   "463caae3d304ca95",
+   "49ed7cf22cfd5bfd",
+   "55b46efc07246f2c",
+   "76b0cdfac15a51d5",
+   "7e646c51124725cb",
+   "81f5746490428b9c",
+   "911c4b7687b2ab1c",
+   "914c17dd8e93f4bf",
+   "c6fcc8cd0e145c4a",
+   "f2426f64d141e3aa",
+   "f9020566e1d8f3ba",
+   "feda458b747a3883",
+   "ff8dfec40fe9c5a7"
+  ],
+  "32": [
+   "2331b2e51ad2d457"
+  ],
+  "48": [
+   "5fccbe4c168ae64d",
+   "6992444c61198eac",
+   "83c5b0b21d73dbab",
+   "a9c449c50648ce7e",
+   "ac60c9a66449b058",
+   "dae4a2c231c05f67"
+  ]
+ }
+}

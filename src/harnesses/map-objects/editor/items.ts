@@ -34,12 +34,13 @@ export function mapItemFromDefinition(def: ItemDefinition): WorkshopItem {
   };
 }
 
-const rgbaOf = (hex: string): Rgba => [parseInt(hex.slice(1, 3), 16), parseInt(hex.slice(3, 5), 16), parseInt(hex.slice(5, 7), 16), 255];
+// #rrggbbaa = 반투명 키(자연물의 바닥 그림자, object-gen GROUND_SHADOW)
+const rgbaOf = (hex: string): Rgba => [parseInt(hex.slice(1, 3), 16), parseInt(hex.slice(3, 5), 16), parseInt(hex.slice(5, 7), 16), hex.length >= 9 ? parseInt(hex.slice(7, 9), 16) : 255];
 const GRAYS = ["#101010", "#383838", "#606060", "#888888", "#b0b0b0", "#d8d8d8", "#f8f8f8"];
 
 /** 정의에 적힌 팔레트(#rrggbb)를 c:0… 키로. 없으면(옛 정의) 회색 단만 — 그래도 그릴 수는 있다. */
 export function paletteFromHexes(hexes: readonly string[] | undefined): Palette {
-  const list = (hexes?.length ? hexes : GRAYS).filter((hex) => /^#[0-9a-f]{6}$/i.test(hex));
+  const list = (hexes?.length ? hexes : GRAYS).filter((hex) => /^#[0-9a-f]{6}([0-9a-f]{2})?$/i.test(hex));
   const seen = new Set<string>();
   return makePalette(list.flatMap((hex) => {
     const lower = hex.toLowerCase();
