@@ -51,7 +51,7 @@ for place, P in PLACES.items():
                      + "</div></div>")
     for k in tot: tot[k] = add(tot[k], pt[k])
     avg = lambda l: f"{round(sum(l) / len(l))}" if l else "—"
-    summary.append(f"<tr><td>{place}</td><td>{avg(e1)}% → <b>{avg(e2)}%</b></td><td>{avg(t1)} → <b>{avg(t2)}</b></td><td>{fmt(pt['r1'])} → <b>{fmt(pt['r2'])}</b></td><td>{fmt(pt['vs'])}</td></tr>")
+    summary.append(f"<tr><td>{place}</td><td>{avg(e1)}{'%' if e1 else ''} → <b>{avg(e2)}{'%' if e2 else ''}</b></td><td>{avg(t1)} → <b>{avg(t2)}</b></td><td>{fmt(pt['r1'])} → <b>{fmt(pt['r2'])}</b></td><td>{fmt(pt['vs'])}</td></tr>")
     secs.append(f"<h2>{place} — {P['tileset']}</h2><p>{html.escape(P['request'])}</p><div class=refs>{refs}</div>"
                 f"<table><tr><th>판</th><th>빈 바닥 1판→2판</th><th>물건 종류 1판→2판</th><th>Opus vs 기준 1판→2판</th><th>Opus 2판 vs 1판</th><th>find_pieces</th><th>2판 상태</th></tr>{''.join(rows)}</table>{''.join(cards)}")
 page = f"""<!doctype html><meta charset=utf-8><title>bbox 배치 2판 — 빈 공간·물건 다양성</title>

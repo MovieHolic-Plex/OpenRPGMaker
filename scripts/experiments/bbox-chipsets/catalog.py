@@ -132,17 +132,17 @@ SH = Sheet(D)
 def palette(k):
     sw = []
     for g in D.get("grounds", []):
-        sw.append(SH.card("ground:" + g["id"], [(x, y, g["tiles"][(y * 2 + x) % len(g["tiles"])] if not g["autotile"] else g["tiles"][0], 1) for y in range(2) for x in range(2)], 2))
+        sw.append(SH.card("ground:" + g["id"], [(x, y, g["tiles"][(y * 2 + x) % len(g["tiles"])] if not g["autotile"] else g["tiles"][0], 1) for y in range(2) for x in range(2)], 1))
     for f in D["floors"]:
-        sw.append(SH.card("floor:" + f["id"], [(x, y, f["tiles"][((y % f["rows"]) * f["cols"] + x % f["cols"]) * 4], 1) for y in range(2) for x in range(2)], 2))
+        sw.append(SH.card("floor:" + f["id"], [(x, y, f["tiles"][((y % f["rows"]) * f["cols"] + x % f["cols"]) * 4], 1) for y in range(2) for x in range(2)], 1))
     for w in D["walls"]:
-        c = min(4, w["cols"]); sw.append(SH.card("wall:" + w["id"], [(x, r, w["tiles"][(r * w["cols"] + x % w["cols"]) * 2], 1) for r in range(2) for x in range(max(2, c))], 2))
+        c = min(4, w["cols"]); sw.append(SH.card("wall:" + w["id"], [(x, r, w["tiles"][(r * w["cols"] + x % w["cols"]) * 2], 1) for r in range(2) for x in range(max(2, c))], 1))
     bands = [("Grounds" if OUT else "Floors and walls", sw)]
     for c in feat: bands.append((f"{c} — {cname(c)} ({len(cats[c])} pieces; find_pieces for more)", [SH.card(o["id"], [tuple(x) for x in o["cells"]], k) for o in reps(c, 6)]))
     rest = [o for o in detail if o["cat"] not in feat]
     if rest: bands.append(("Other pieces used by this chipset's example rooms", [SH.card(o["id"], [tuple(x) for x in o["cells"]], k) for o in rest]))
     return pack(bands)
 img = palette(2)
-if img.height > 2200: img = palette(1)          # big outdoor pieces: native pixels keep the sheet readable after the model's downscale
+if img.height > 2600: img = palette(1)          # big outdoor pieces: native pixels keep the sheet readable after the model's downscale
 img.save(f"{outd}/palette-{place}.png")
 print(place, N, "pieces;", len(cats), "categories;", len(feat), "featured;", len(detail), "detailed;", len(todo), "translated;", img.size)
