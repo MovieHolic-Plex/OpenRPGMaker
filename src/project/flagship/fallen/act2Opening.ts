@@ -1305,7 +1305,7 @@ function forestEdgeChase(project: Project, exec: Exec, mapId: string, bramChip: 
       ...[0.2, 0.5, 0.8].map((f, i) => ({ id: `moon${i}`, at: { x: Math.round(map.width * f), y: moonY }, radius: moonR, intensity: 0.5, color: "#c4d2ff" })),
       { id: "player", at: { kind: "player" }, radius: 2.5, intensity: 0.3, color: "#9fb4ff" },
       ...knightIds.map((eventId, i) => ({ id: `knight_lamp${i}`, at: { eventId }, radius: 4, intensity: 1, color: "#ffb050", flicker: true })),
-      { id: "bram_lamp", at: { eventId: "ev_fs2_edge_bram" }, radius: 2.5, intensity: 0.75, color: "#ffe08a", flicker: true, when: { switchId: SW_B4_ALARM } },
+      { id: "bram_lamp", at: { eventId: "ev_fs2_edge_bram" }, radius: 3.5, intensity: 0.9, color: "#ffe08a", flicker: true, when: { switchId: SW_B4_ALARM } },
     ],
   });
   // 조명 뒤에 감지 — visionLight(부채꼴 손등불)는 지금 맵 조명에 덧붙는다(먼저 걸면 위 조명이 덮어쓴다).
@@ -1464,9 +1464,10 @@ function dawnwell(project: Project, exec: Exec): void {
   // 숲 어귀 — 숲지기 땅(B4 도착선) 너머 숲길에. 맵이 숲 어귀(남쪽 풀밭·북쪽 숲)라 맵 가운데 칸은 나무일 수 있다 — 걸어 닿는 가장 가까운 칸으로.
   const northOpen = walkSteps(project, M(project, north1!), { x: FS2_NORTH_ROUTE.entry.x, y: FS2_NORTH_ROUTE.entry.y - 1 });
   const near1 = (x: number, y: number): Cell => [...northOpen.keys()].map((k) => { const [cx, cy] = k.split(",").map(Number); return { x: cx!, y: cy! }; })
-    .filter((c) => c.y < (FS2_B4.edge[0]?.y ?? H(north1!)) - 4)
+    // 도착선에서 여덟 줄 넘게 안쪽 — 네 줄이면 브람의 고백이 끝나자마자 들개가 덮쳤다(VQA 2026-10-30).
+    .filter((c) => c.y < (FS2_B4.edge[0]?.y ?? H(north1!)) - 8)
     .sort((a, b) => Math.abs(a.x - x) + Math.abs(a.y - y) - (Math.abs(b.x - x) + Math.abs(b.y - y)))[0] ?? { x, y };
-  const dogs = near1(Math.floor(W(north1!) / 2), Math.floor(H(north1!) * 0.4)), crows = near1(Math.floor(W(north1!) / 2) - 2, Math.floor(H(north1!) / 6));
+  const dogs = near1(Math.floor(W(north1!) / 2), Math.floor(H(north1!) * 0.3)), crows = near1(Math.floor(W(north1!) / 2) - 2, Math.floor(H(north1!) / 6));
   try { foe(north1!, "troop_fs2_starved_dogs", dogs.x, dogs.y, "dash"); } catch { /* 그 칸 거절 */ }
   try { foe(north1!, "troop_fs2_ash_crows", crows.x, crows.y, "swoop"); } catch { /* 그 칸 거절 */ }
   foe(field!, "troop_fs2_ash_wisps", FS2_ASH.wisps.x, FS2_ASH.wisps.y, "float");
