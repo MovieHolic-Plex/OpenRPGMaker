@@ -262,13 +262,15 @@ function walkRoute(project: Project, mapId: string, eventId: string, from: Cell,
  * 말 걸기 대화에서 주인공이 위·아래에서 다가오면 두 사람이 한 열로 쌓여 말풍선·대화창에 가린다.
  * 주인공이 보는 방향(= 다가온 쪽)으로 갈라, 위·아래였다면 상대 옆 칸으로 걸어가 나란히 서서 마주 본다.
  */
-function sideBySide(project: Project, mapId: string, npcId: string, npc: Cell): Command[] {
+function sideBySide(project: Project, mapId: string, npcId: string, npc: Cell, preferLeft = false): Command[] {
   const map = project.maps[mapId]!;
   const free = (c: Cell): boolean => isPassable(project, map, c.x, c.y) && !map.events.some((e) => e.x === c.x && e.y === c.y);
   // 바로 옆으로 돌아 설 수 있는 쪽(옆 칸 아래·위가 비어 있는 쪽)을 먼저 — 왼쪽 아래가 탁자면 맵을 한 바퀴 돌아갔다(탕비실 카운터, 2026-10-30).
   const sides = [{ x: npc.x - 1, y: npc.y }, { x: npc.x + 1, y: npc.y }].filter(free);
   const short = (c: Cell): boolean => free({ x: c.x, y: npc.y + 1 }) || free({ x: c.x, y: npc.y - 1 });
-  const side = sides.find(short) ?? sides[0];
+  // preferLeft: 흉상은 맵 위 자리를 따른다(bustSide stage) — 서하가 상대 오른쪽에 서면 흉상이 다른 장면과 좌우가 뒤집혔다(r5 블라인드: 탕비실).
+  const left = sides.find((c) => c.x < npc.x);
+  const side = (preferLeft && left) ? left : sides.find(short) ?? sides[0];
   if (!side) return [faceHero(npcId)];
   const from = (dir: "up" | "down"): Cell => ({ x: npc.x, y: dir === "up" ? npc.y + 1 : npc.y - 1 });
   const go = (dir: "up" | "down"): Command[] => [
@@ -1075,7 +1077,7 @@ function buildWednesday(project: Project, a: FirstLoveAnchors): void {
     ]),
     event("ev_fl_w_jihu_pantry", "강지후", jihuPantry, [
       page("wjp", [stageIs(V_STAGE, S.WED)], [
-        ...sideBySide(project, FL_MAP.officePm, "ev_fl_w_jihu_pantry", jihuPantry),
+        ...sideBySide(project, FL_MAP.officePm, "ev_fl_w_jihu_pantry", jihuPantry, true),
         ...say("jihu", "base", "물 부었어요. 3분."),
         ...say("seoha", "base", "회사에서 이렇게 늦게까지 있는 거, 자주 해요?"),
         ...say("jihu", "base", "발표 주간엔요. …그리고 이번이 마지막이라."),
@@ -1346,7 +1348,7 @@ function buildFriday(project: Project, a: FirstLoveAnchors): void {
     ...sayAt("minho", "left", "happy", "대박! 서하 씨, 첫 주에 발표 통과! 오늘 회식 각이에요!"),
     ...clientOut.end,
     // 오후 3시 발표 뒤 곧장 「9시 21분」 질주가 떠 여섯 시간이 사라졌다(r4 리뷰) — 뒷정리가 밤까지 이어졌다는 자막으로 잇는다.
-    ...caption("…발표 뒷정리는 밤 아홉 시가 넘어서야 끝났다."),
+    ...caption("…본부장 배웅, 2차 일정 회의. 회의실 불은 밤 아홉 시가 넘어서야 꺼질 참이었다."),
     { kind: "moveEvent", eventId: "@player", route: { moves: [{ kind: "move", dir: dirToward(heroAside, o.meetingSeat) }, { kind: "turn", dir: "down" }], repeat: false, wait: true, skippable: true } } as unknown as Command,
     face("@player", dirToward(o.meetingSeat, leadSpot)),
     ifCond(swOff(SW_HONEST), [
@@ -1676,7 +1678,7 @@ function defineEndings(project: Project): void {
       epiloguePicture("oprn-first-love-ending-a"),
       { kind: "say", text: "석 달 뒤, 금요일 저녁." }, // 그림이 노을 옥상이다 — 「밤」이면 글과 그림이 어긋났다(VQA r23)
       { kind: "say", text: "‘하루끝’ 오늘의 늦은 답장 — 바나나우유 님께." },
-      { kind: "say", text: "‘다음 주 금요일엔 내가 서울로 갈게요. 급식 줄은 이제 안 서도 돼요.’" },
+      { kind: "say", text: "‘이번 금요일에도 서울로 갈게요. 약속대로. 급식 줄은 이제 안 서도 돼요.’" },
       { kind: "say", speaker: "서하", text: "…또 실명 안 썼네, 이 사람." },
       { kind: "say", text: "10년이 지나, 첫사랑은 다시 시작됐다." },
     ],
