@@ -2,6 +2,7 @@
  * author_forest_route 설계·씨앗 시험(모델 없음). 빈 프로젝트에서 같은 인자 세 번(설계 없음)과 설계 셋을 짓고
  * 통행 격자·막다른 끝 도달·이전 숲길과 같은 설계 경고를 찍고 프로젝트를 저장한다(그림은 scripts/qa-game/render.mts).
  *   node --max-old-space-size=8000 node_modules/vite-node/dist/cli.mjs --script scripts/qa/assistant-v2/forestRouteDesign.mts <out dir>
+ *   FR_BASE=<project.sqlite> 이면 빈 프로젝트 대신 그 저장본(씬 벤치 시작 저장본)에서 짓는다 — 그림 자산은 그 폴더의 assets/.
  */
 import { mkdirSync, writeFileSync } from "node:fs";
 import { createBlankProject } from "@/project/defaults/blankProject";
@@ -10,6 +11,9 @@ import { isPassable } from "@/project/collision";
 import { serialize } from "@/project/io";
 import { runTool } from "@/editor/tools/toolRunner";
 import type { Project } from "@/project/types";
+import { readProjectSqlite } from "../../content/read-project-sqlite.mts";
+
+const fresh = (): Project => (process.env.FR_BASE ? readProjectSqlite(process.env.FR_BASE) as Project : createBlankProject());
 
 const OUT = process.argv.slice(2).find((a) => !a.startsWith("-")) ?? "/tmp/forest-route-design";
 mkdirSync(OUT, { recursive: true });
@@ -29,10 +33,10 @@ function grid(project: Project, mapId: string, entry: { x: number; y: number }, 
   return { txt, reach: seen, pass };
 }
 const rows: unknown[] = [];
-function build(label: string, args: Record<string, unknown>, project = createBlankProject()): Project {
+function build(label: string, args: Record<string, unknown>, project = fresh()): Project {
   ensureBundledTilesets(project as never);
   const ctx = { project, assistantRun: true };
-  const res = runTool(ctx, "author_forest_route", { fromMapId: project.startMapId, ...args }, { dryRun: false });
+  const res = runTool(ctx, "author_forest_route", { fromMapId: process.env.FR_FROM ?? project.startMapId, ...args }, { dryRun: false });
   if (!res.ok) { console.log(label, "실패", res.summary); process.exit(1); }
   const maps = (res.data as { maps: Array<{ mapId: string; entry: { x: number; y: number }; deadEnds?: { at: { x: number; y: number }; end: string }[]; design?: string; clearing: { x: number; y: number } }> }).maps;
   for (const m of maps) {
