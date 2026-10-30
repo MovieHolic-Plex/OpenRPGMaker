@@ -934,11 +934,18 @@ function syncExitLabels(scene: PlaySceneContext, now: number): void {
     const heroAboveExit = heroBottom <= at.y + 2;
     const placeBelow = !aboveFits || (heroAboveExit && belowFits);
     label.y = Math.round(placeBelow ? at.below + label.displayHeight : at.y);
-    // 그래도 몸에 겹치면(옆에서 붙었거나 둘 곳이 없을 때) 글자를 옅게 — 주인공이 위에 보인다.
+    // 아래에 둘 자리가 없어(맨 아랫줄 문) 그래도 몸에 겹치면 주인공 옆으로 비킨다(오른쪽, 안 되면 왼쪽).
+    // 옆으로도 못 비키면 글자를 옅게 — 주인공이 위에 보인다.
     const heroLeft = scene.tileX * size;
-    const overlaps = label.x < heroLeft + size && label.x + label.displayWidth > heroLeft
+    const overlapsHero = (): boolean => label.x < heroLeft + size && label.x + label.displayWidth > heroLeft
       && label.y - label.displayHeight < heroBottom && label.y > heroTop;
-    label.setAlpha(overlaps ? 0.35 : 1);
+    if (overlapsHero()) {
+      const right = heroLeft + size + 2;
+      const left = heroLeft - 2 - label.displayWidth;
+      if (right + label.displayWidth <= mapW - 1) label.x = Math.round(right);
+      else if (left >= 1) label.x = Math.round(left);
+    }
+    label.setAlpha(overlapsHero() ? 0.35 : 1);
   }
 }
 
