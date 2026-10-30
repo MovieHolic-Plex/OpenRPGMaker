@@ -89,7 +89,7 @@ const storeSearch: ToolDefinition = {
     type: "object",
     properties: {
       query: { type: "string", description: "찾을 말(예: 숲, 성, 상점 실내, 몬스터). 사용자의 말을 짧게." },
-      kind: { type: "string", enum: STORE_ITEM_KINDS, description: "종류로 좁히기. tileset·character·face·battler·picture·music·sound·pack" },
+      kind: { type: "string", enum: STORE_ITEM_KINDS, description: "종류로 좁히기. tileset·character·face·battler·picture·music·sound·animation(전투 애니메이션)·pack" },
       aiReadyOnly: { type: "boolean", description: "참고문서가 있는(조수가 바로 깔 수 있는) 팩만" },
     },
     required: ["query"],
@@ -140,6 +140,7 @@ const storeInstall: ToolDefinition = {
   description: "스토어 상품(slug)을 받아 지금 프로젝트에 넣는다. 사용자가 그 상품을 넣으라고 했을 때만 쓴다(질문 카드의 「넣기」는 사용자가 직접 누르므로 이 도구가 필요 없다). "
     + "음악 팩은 assetIds 로 고른 곡만 넣는다(store_find_music 결과의 assetId) — 넣은 곡의 리소스 id 가 결과 resourceIds 에 오고, set_game_audio 로 맵·전투·보스·승리·타이틀·엔딩·추격(chase)에 연결한다. "
     + "효과음 팩도 assetIds 로 고른 소리만 넣는다(store_find_sound 의 assetId) — 결과 sounds 의 resourceId 를 set_game_audio role:'se'+cue 로 건다. 화풍 하나를 통째로 걸 때는 store_install 없이 set_game_audio role:'sfx-style' 하나면 된다. "
+    + "전투 애니메이션 팩(kind animation)은 결과 animations 의 id 를 upsert_skill·upsert_item·upsert_equipment·upsert_class·upsert_actor(unarmedAnimationId) 의 animationId 로 건다. "
     + "넣은 뒤 타일셋이면 list_tileset_references 로 참고문서를 먼저 읽고 깐다. 되돌리기로 뺄 수 있다.",
   mode: "write",
   domains: ["core"],
@@ -190,8 +191,14 @@ const storeInstall: ToolDefinition = {
     const animated = monsters.filter((m) => m.battleMotion).length;
     const sounds = Object.keys(prepared.manifest.content.assets).filter((id) => prepared.manifest.content.assets[id]!.kind === "sound")
       .map((id) => ({ resourceId: storeProjectId(slug, id), name: prepared.manifest.content.assets[id]!.name, cue: readStoreSoundMeta(prepared.manifest.content.assets[id]!.meta)?.slots[0] }));
+    // 전투 애니메이션: 레코드가 database.battleAnimations 에 들어간다(이미 있던 같은 id 는 그대로 둔다).
+    const animations = (result.animationIds ?? []).map((id) => {
+      const record = draft.database.battleAnimations.find((entry) => entry.id === id);
+      return { id, name: record?.name ?? id, frames: record?.frames?.length ?? 0, scope: record?.scope ?? "singleTarget" };
+    });
     return {
       summary: `스토어 상품 「${prepared.manifest.title}」 판본 ${prepared.version}을 넣었다: 타일셋 ${tilesets.length}개, 그림·소리 ${result.assetIds.length}개.`
+        + (animations.length ? ` 전투 애니메이션 ${animations.length}개: ${animations.slice(0, 8).map((a) => `${a.name}=${a.id}`).join(", ")} — 기술·아이템의 animationId 로 upsert_skill/upsert_item 에 건다.` : "")
         + (music.length ? ` 음악 리소스 id: ${music.slice(0, 6).map((m) => m.resourceId).join(", ")} — set_game_audio 로 연결하라. 다 걸면 사용자에게는 「넣었어요: 자리 ← 곡 제목」 한 줄씩만 말한다(리소스 id·곡 설명은 쓰지 않는다 — 화면 쪽지가 바꾸기를 보여 준다).` : "")
         + (monsters.length ? ` 몬스터 ${monsters.length}개(전투에서 움직이는 도트 시트 ${animated}개) — 적의 monsterResourceId 로 쓰고, 고를 때 battleMotion 이 있는 것을 먼저 쓴다.` : "")
         + (sounds.length ? ` 효과음 ${sounds.length}개: ${sounds.slice(0, 6).map((m) => `${m.cue ?? "?"}=${m.resourceId}`).join(", ")} — set_game_audio{role:'se', cue, resourceId} 로 자리에 건다.` : ""),
@@ -200,6 +207,7 @@ const storeInstall: ToolDefinition = {
         ...(music.length ? { resourceIds: music.map((m) => m.resourceId), music: music.slice(0, 12) } : {}),
         ...(sounds.length ? { sounds: sounds.slice(0, 60) } : {}),
         ...(monsters.length ? { monsters: monsters.slice(0, 60) } : {}),
+        ...(animations.length ? { animations: animations.slice(0, 64) } : {}),
         license: prepared.manifest.license, aiGenerated: prepared.manifest.aiGenerated,
         next: tilesets.length ? "타일셋을 쓰기 전에 list_tileset_references(tilesetId) → read_tileset_reference 로 참고문서를 읽어라." : undefined,
         note: UNTRUSTED_NOTE,

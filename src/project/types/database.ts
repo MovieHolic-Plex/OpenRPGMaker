@@ -1384,6 +1384,11 @@ export interface BattleAnimationSheet {
 
 export interface BattleAnimationFrame {
   cells: BattleAnimationCell[];
+  /**
+   * 이 프레임을 기본 프레임 시간의 몇 배 동안 보이는가(1~16 정수, 2026-10-31). 생략 = 1 — 옛 애니메이션은 그대로다.
+   * 착탄 직후 한 컷을 길게 멈추는 「히트 홀드」 같은 연출용. 길이·착탄 시각·후속 시작은 battle/animationTiming 이 이것을 더해 센다.
+   */
+  hold?: number;
 }
 
 export interface BattleAnimationCell {

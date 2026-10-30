@@ -20,7 +20,7 @@ rtp = Image.open(RTP).convert("RGB").crop((192, 64, 240, 144))
 ref = save(rtp, "rtp-cut.png", 8)
 pieces = []
 for kind in ("ramp", "stairs"):
-    for r in (1, 2, 3):
+    for r in (1, 2, 3, 4):
         for w in (2, 3):
             n = f"{kind}-h{r}-w{w}"; pieces.append((n, save(Image.open(f"{HERE}/png/{n}.png"), f"{n}.png", 8)))
 G = {}
@@ -85,8 +85,26 @@ def tally(rx):
         v = [x["verdict"] for k, x in R.items() if k.startswith(typ + "|") and k.split("|")[2].startswith(vs) and re.fullmatch(rx, k.split("|")[1].split("/")[0])]
         rows.append(f"<tr><td>{name}</td><td>{v.count(1)}승 {v.count(0)}무 {v.count(-1)}패 / {len(v)}</td></tr>")
     return "<table>" + "".join(rows) + "</table>"
-R1, R2 = r"(sol|terra)[12]", r"(sol|terra)2[123]"
+R1, R2, R3 = r"(sol|terra)[12]", r"(sol|terra)2[123]", r"(sol|terra)3[123]"
 v2line = sys.argv[2] if len(sys.argv) > 2 else ""
+v3line = sys.argv[3] if len(sys.argv) > 3 else ""
+# round 3: h1 stairs before/after, h4 pieces, probe2 (h4 + stacked flights) with crops, stacked crop on the hill
+def strip(names, src, out):
+    ims = [Image.open(f"{src}/{n}.png") for n in names]; Wt = sum(i.width + 6 for i in ims) + 6; Ht = max(i.height for i in ims) + 12
+    sh = Image.new("RGB", (Wt, Ht), (24, 24, 30)); x = 6
+    for i in ims: sh.paste(i, (x, Ht - 6 - i.height)); x += i.width + 6
+    return save(sh, out, 8)
+h1old = strip(["stairs-h1-w2", "stairs-h1-w3"], "/tmp/ramps/old2", "h1-round2.png") if os.path.exists("/tmp/ramps/old2/stairs-h1-w2.png") else ""
+h1new = strip(["stairs-h1-w2", "stairs-h1-w3"], f"{HERE}/png", "h1-round3.png")
+h4 = strip(["ramp-h4-w2", "ramp-h4-w3", "stairs-h4-w2", "stairs-h4-w3"], f"{HERE}/png", "h4.png")
+probe2 = ""
+if os.path.exists(f"{NEW}/probe2.png"):
+    pim = Image.open(f"{NEW}/probe2.png").convert("RGB"); pj = json.load(open(f"{NEW}/probe2.json")); pad = pim.height - pj["H"] * 16
+    probe2 = f"<img class=wide src='{save(pim, 'probe2.png', 3)}'><p class=meta>걷기 검사: {html.escape(' · '.join(pj['report']))}</p><div class=row>"
+    for x0, w, kind, z in pj["sections"]:
+        c = pim.crop(((x0 - 2) * 16, (pj["CLIFF"] - 3) * 16 + pad - 64, (x0 + w + 2) * 16, (pj["CLIFF"] + 2) * 16 + pad))
+        probe2 += f"<figure class=pc><img src='{save(c, f'probe2-{kind}-{z}.png', 5)}'><figcaption>{kind} · {'절벽 4칸 한 번' if z == 'h4' else ('2칸 + 띠 + 2칸 (겹친 계단)' if z == 's22' else '1칸 + 띠 + 2칸 (겹친 계단)')}</figcaption></figure>"
+    probe2 += "</div>"
 page = f"""<!doctype html><meta charset=utf-8><title>bbox 마을 — 경사로·계단 다시 그림</title>
 <style>body{{background:#16161c;color:#ddd;font:14px/1.5 sans-serif;margin:20px}}h1{{font-size:20px}}h2{{font-size:17px;margin-top:30px}}.v{{font-size:16px;color:#ffd866}}
 .card{{background:#222230;border-radius:8px;padding:12px;margin:14px 0}}.old{{background:#2a2222}}.base{{background:#1d2a24}}h3{{margin:0 0 8px;font-size:15px}}
@@ -105,5 +123,13 @@ img{{image-rendering:pixelated;max-width:100%}}img.wide{{width:100%}}.row{{displ
 <p>계단 1판(왼쪽) → 2판(오른쪽): 돌 판석 줄·이음 엇갈림·판석마다 밝은 모서리와 그늘·아래 계단일수록 한 단 어둡게. 8배, 왼쪽부터 h1-w2 · h1-w3 · h2-w3 · h3-w3.</p>
 <div class=row><figure class=pc><img src='bbox-village-ramps/stairs-round1.png'><figcaption>1판 계단</figcaption></figure><figure class=pc><img src='bbox-village-ramps/stairs-round2.png'><figcaption>2판 계단</figcaption></figure></div>
 <p>북향 절벽(높은 단이 남쪽)을 깎는 자리는 이제 거절한다. 같은 높은 단으로 오르는 남향 면이 있으면 그 자리 좌표를 영어 Fixed 문장으로 주고, 없을 때만 "northFace": true 로 인정한 경우를 받는다(그래도 3/4 시점에서는 가려진다). 비교 대상(이전 bbox·현행 v2)은 3절과 같다.</p>
-{tally(R2)}{village_cards(R2, False)}"""
+{tally(R2)}{village_cards(R2, False)}
+<h2>5. 3판 — 4칸 절벽 조각 · 겹친 계단(층계참) · h1 계단 다시 그림 · 언덕 4판</h2>
+<p class=v>{html.escape(v3line)}</p>
+<p>h1 계단 2판(왼쪽) → 3판(오른쪽): 돌을 더 작게 쪼개 돌마다 밝은 모서리·그늘을 주고, 디딤판에 결·얼룩, 디딤 앞면에 정 자국, 꼭대기에 풀 술을 늘어뜨렸다. 8배.</p>
+<div class=row><figure class=pc><img src='{h1old}'><figcaption>2판 h1 계단(관문 조언 FAIL)</figcaption></figure><figure class=pc><img src='{h1new}'><figcaption>3판 h1 계단</figcaption></figure></div>
+<p>새 4칸 조각(8배): 경사로 w2·w3, 계단 w2·w3.</p><div class=row><figure class=pc><img src='{h4}'></figure></div>
+<p>겹친 계단: 한 줄짜리 가운데 단 띠가 층계참이 된다. 모델은 같은 x 에 조각 둘을 놓고(아래 것 발치 = 아래 단, 위 것 발치 = 띠), 각 조각은 제 절벽 높이에 맞춘다. 그림은 낱조각 둘을 이어 붙인 것(새 화소 없음)이고, 엔진에는 h=2 경사로 한 개로 들어가 걷기 규칙이 그대로 통한다.</p>
+{probe2}
+{tally(R3)}{village_cards(R3, False)}"""
 open(f"{VIZ}/bbox-village-ramps.html", "w").write(page); print("ok")
