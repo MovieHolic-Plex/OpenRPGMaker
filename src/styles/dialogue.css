@@ -401,6 +401,14 @@
   pointer-events: none;
 }
 
+/* 오른쪽 흉상이 말하면 이름표도 오른쪽에 붙는다. 왼쪽에 듣는 사람 흉상이 남아 있는데 이름표가 왼쪽이면
+   왕의 대사가 주인공 이름표 밑에 놓여 주인공 대사로 읽혔다(이세계 고딩 첫인상 리뷰 2026-10-30, 「국왕 루드릭」).
+   VN 꾸밈(vnLook.css)은 같은 규칙을 이미 갖고, 양쪽 전신 무대는 이름표를 따로 놓는다. */
+.dialogue-overlay:not([data-dialogue-stage]) .dialogue-box.bust-right .speaker.speaker-nameplate {
+  left: auto;
+  right: 10px;
+}
+
 .dialogue-content {
   align-items: start;
   display: grid;

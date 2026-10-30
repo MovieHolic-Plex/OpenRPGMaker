@@ -31,6 +31,37 @@ const DEFAULT_BACKDROP = "#000000";
 const skirts = new WeakMap<object, Phaser.GameObjects.Container>();
 const tileColorCache = new Map<string, [number, number, number] | null>();
 
+type FramePixel = { readonly red: number; readonly green: number; readonly blue: number; readonly alpha: number };
+const framePixelCache = new Map<string, { readonly data: Uint8ClampedArray; readonly w: number; readonly h: number } | null>();
+/**
+ * 타일 프레임 안 한 화소. 프레임마다 한 번 작은 캔버스에 그려 읽고 캐시한다.
+ * Phaser textures.getPixel 은 화소마다 그리고 읽어 느리고, 원본이 ImageBitmap(워커에서 구운 이식 아틀라스)이면 null 만 준다.
+ */
+function pixelAt(scene: SkirtScene, x: number, y: number, textureKey: string, frameName: string): FramePixel | null {
+  const cacheKey = `${textureKey}|${frameName}`;
+  let pixels = framePixelCache.get(cacheKey);
+  if (pixels === undefined) {
+    pixels = null;
+    const texture = scene.textures.exists(textureKey) ? scene.textures.get(textureKey) : undefined;
+    const frame = texture?.has(frameName) ? texture.get(frameName) : undefined;
+    if (frame) {
+      try {
+        const canvas = document.createElement("canvas");
+        canvas.width = frame.cutWidth; canvas.height = frame.cutHeight;
+        const context = canvas.getContext("2d", { willReadFrequently: true });
+        if (context) {
+          context.drawImage(frame.source.image as CanvasImageSource, frame.cutX, frame.cutY, frame.cutWidth, frame.cutHeight, 0, 0, frame.cutWidth, frame.cutHeight);
+          pixels = { data: context.getImageData(0, 0, frame.cutWidth, frame.cutHeight).data, w: frame.cutWidth, h: frame.cutHeight };
+        }
+      } catch { pixels = null; }
+      framePixelCache.set(cacheKey, pixels);
+    }
+  }
+  if (!pixels || x < 0 || y < 0 || x >= pixels.w || y >= pixels.h) return null;
+  const at = (Math.floor(y) * pixels.w + Math.floor(x)) * 4;
+  return { red: pixels.data[at]!, green: pixels.data[at + 1]!, blue: pixels.data[at + 2]!, alpha: pixels.data[at + 3]! };
+}
+
 type SkirtScene = Pick<PlaySceneContext, "map" | "cameras" | "add" | "textures" | "session"> & {
   readonly resolveTilesetTexture?: (tileset: TilesetDef) => string;
 };
@@ -215,8 +246,8 @@ function outlineOnly(scene: SkirtScene, textureKey: string, tile: number, side: 
       const along = i;
       const across = side === "top" || side === "left" ? offset : depth - 1 - offset;
       const color = side === "top" || side === "bottom"
-        ? scene.textures.getPixel(along, across, textureKey, frameName)
-        : scene.textures.getPixel(across, along, textureKey, frameName);
+        ? pixelAt(scene, along, across, textureKey, frameName)
+        : pixelAt(scene, across, along, textureKey, frameName);
       if (!color || color.alpha < 250) return undefined;
       sum += 0.299 * color.red + 0.587 * color.green + 0.114 * color.blue;
     }
@@ -236,7 +267,7 @@ function frameLuma(scene: SkirtScene, textureKey: string, frameName: string): nu
   let sum = 0, n = 0;
   for (let y = 0; y < frame.height; y += 1) {
     for (let x = 0; x < frame.width; x += 1) {
-      const color = scene.textures.getPixel(x, y, textureKey, frameName);
+      const color = pixelAt(scene, x, y, textureKey, frameName);
       if (!color) continue;
       sum += 0.299 * color.red + 0.587 * color.green + 0.114 * color.blue; n += 1;
     }
@@ -255,7 +286,7 @@ function patchTilesCleanly(scene: SkirtScene, textureKey: string, frameName: str
   for (let y = 0; y < size; y += 1) {
     const row: number[] = [];
     for (let x = 0; x < size; x += 1) {
-      const color = scene.textures.getPixel(ox + x, oy + y, textureKey, frameName);
+      const color = pixelAt(scene, ox + x, oy + y, textureKey, frameName);
       if (!color || color.alpha < 250) return false;
       row.push(0.299 * color.red + 0.587 * color.green + 0.114 * color.blue);
     }
@@ -327,7 +358,7 @@ function tileColor(scene: SkirtScene, textureKey: string, tile: number): [number
       for (let sx = 0; sx < 5; sx += 1) {
         const px = Math.floor(((sx + 0.5) / 5) * frame.width);
         const py = Math.floor(((sy + 0.5) / 5) * frame.height);
-        const color = scene.textures.getPixel(px, py, textureKey, frameName);
+        const color = pixelAt(scene, px, py, textureKey, frameName);
         if (!color || color.alpha < 128) continue;
         r += color.red; g += color.green; b += color.blue; n += 1;
       }
@@ -356,8 +387,8 @@ function tileSeamless(scene: SkirtScene, textureKey: string, tile: number, axis:
   let diff = 0, n = 0;
   for (let i = 0; i < samples; i += 1) {
     const along = Math.floor(((i + 0.5) / samples) * (axis === "x" ? frame.height : frame.width));
-    const a = axis === "x" ? scene.textures.getPixel(0, along, textureKey, frameName) : scene.textures.getPixel(along, 0, textureKey, frameName);
-    const b = axis === "x" ? scene.textures.getPixel(frame.width - 1, along, textureKey, frameName) : scene.textures.getPixel(along, frame.height - 1, textureKey, frameName);
+    const a = axis === "x" ? pixelAt(scene, 0, along, textureKey, frameName) : pixelAt(scene, along, 0, textureKey, frameName);
+    const b = axis === "x" ? pixelAt(scene, frame.width - 1, along, textureKey, frameName) : pixelAt(scene, along, frame.height - 1, textureKey, frameName);
     if (!a || !b) continue;
     diff += (Math.abs(a.red - b.red) + Math.abs(a.green - b.green) + Math.abs(a.blue - b.blue)) / 3;
     n += 1;

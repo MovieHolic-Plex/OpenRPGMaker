@@ -94,6 +94,8 @@ npm run mac:launch   # macOS / Linux — 프로젝트 폴더를 물은 뒤 http:
 처음 실행할 때 **아직 없는 새 폴더**의 전체 경로를 넣으세요. 프로젝트가 그 폴더에 SQLite 와 소재 파일로 저장됩니다.
 오른쪽 위 AI 칩을 눌러 로그인합니다. 자세한 안내(저장·백업 복구·막혔을 때·BGM 설치): [`openwiki/getting-started.ko.md`](openwiki/getting-started.ko.md).
 
+전체 281곡은 위 데스크톱 파일이 아니라 공개 [bgm-v1 릴리스](https://github.com/MovieHolic-Plex/OpenRPGMaker/releases/tag/bgm-v1)의 `rpg-zzu-bgm-v1.tar` 입니다. 소스에서 `npm run bgm:install` 을 실행하면 HTTPS로 받아 커밋된 SHA-256으로 검증합니다. GitHub CLI는 그 다운로드가 거절될 때만 씁니다.
+
 ## 갤러리
 
 <table>
