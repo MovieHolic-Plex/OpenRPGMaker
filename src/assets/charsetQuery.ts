@@ -77,6 +77,11 @@ const SYNONYMS: readonly {
   { terms: ["golem", "골렘"], tags: ["골렘"] },
   { terms: ["warrior", "fighter", "전사"], tags: ["전사"] },
   { terms: ["villager", "resident", "주민"], category: "people", tags: ["주민"] },
+  // 현대 역할 낱말(2026-10-30 asst-parity 마왕 편의점): 「회사원」「행인」이 0건이라 조수가 행인 칩을 세 번 고쳐 불렀다(opus·terra 둘 다).
+  // 현대 칩 태그(직장인·정장·점원·앞치마)를 가리키게 한다. 판타지 칩에는 이 태그가 없어 판타지 결과를 바꾸지 않는다.
+  { terms: ["회사원", "직장인", "샐러리맨", "office worker", "businessman", "salaryman"], tags: ["직장인", "정장", "회사"] },
+  { terms: ["점원", "알바", "아르바이트", "계산원", "clerk", "cashier"], tags: ["점원", "직원", "앞치마"] },
+  { terms: ["행인", "passerby", "pedestrian", "지나가는 사람"], category: "people", tags: ["행인"] },
   { terms: ["actor", "hero", "영웅", "주인공"], category: "actor" },
   { terms: ["animal", "동물"], category: "animal" },
   { terms: ["monster", "enemy", "몬스터", "적"], category: "monster" },

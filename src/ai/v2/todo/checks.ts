@@ -350,11 +350,12 @@ const startOf = (project: Project, ctx: TodoCheckContext) => (ctx.startMapId && 
 
 const KIND_WORDS: Record<TodoPlaceKind, RegExp> = {
   village: /마을|촌|항구|도시|읍|town|village|city|harbor/iu,
-  street: /거리|골목|상가|시장|street|market/iu,
+  street: /거리|골목|상가|상점가|시장|아케이드|street|market|arcade|shotengai/iu,
   field: /들판|평원|숲|길|초원|필드|언덕|field|forest|road|plain/iu,
   cave: /동굴|굴|cave|grotto/iu,
   dungeon: /던전|지하|미궁|묘지|탑|유적|보스|마왕성|dungeon|crypt|tower|ruin|labyrinth|boss/iu,
-  interior: /방|실|집|여관|상점|가게|교회|신전|성당|서재|관|저택|내부|room|house|inn|shop|hall|interior/iu,
+  // 「상점가」「가게 거리」는 거리다 — 「상점」이 맞아 상점가 거리가 실내로 읽혀 거리 항목이 세 번 실패했다(2026-10-30 asst-parity 마왕 편의점 opus).
+  interior: /방|실|집|여관|상점(?!가)|가게(?!\s*거리)|교회|신전|성당|서재|관|저택|내부|room|house|inn|shop(?!ping)|hall|interior/iu,
 };
 const GROUP: Record<TodoPlaceKind, "in" | "out"> = { village: "out", street: "out", field: "out", cave: "in", dungeon: "in", interior: "in" };
 
