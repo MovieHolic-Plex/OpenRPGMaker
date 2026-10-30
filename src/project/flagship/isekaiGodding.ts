@@ -469,7 +469,7 @@ function buildForest(project: Project, b: Built): void {
       { text: "…홀로 앞에 선다", then: [...say("minjae", "annoyed", "는 무슨. 하나만 다 같이 친다. 점사.")] },
     ]),
     ...battle(TROOP.slime,
-      [setSw(SW_SLIME), ...say("edel", "surprised", "넷이 한 마리씩… 이렇게 빨리?"), ...say("minjae", "happy", "PC방에서 배웠어. 오더는 짧게.")],
+      [setSw(SW_SLIME), ...say("edel", "surprised", "셋이서 한 마리씩… 이렇게 빨리?"), ...say("minjae", "happy", "PC방에서 배웠어. 오더는 짧게.")],
       [setSw(SW_SLIME), ...caption("셋은 슬라임 점액을 뒤집어쓰고 겨우 일어났다."), ...say("minjae", "annoyed", "…다음엔 점사 오더부터 쓴다.")]),
     bgm(BGM_FOREST, 600),
     setVar(V_STAGE, "=", 3),
