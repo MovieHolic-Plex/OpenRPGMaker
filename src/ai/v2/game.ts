@@ -220,7 +220,7 @@ export function v2ToolPool(): string[] {
 /** pool:true 면 이 요청의 도구에 v2ToolPool 전부를 더한다(필요할 때 싣는 도구도 같은 감싸개를 지나게). */
 export function createGameTools(env: PiAssistantV2Env, task = "", options: { readonly pool?: boolean } = {}): PiToolShape[] {
   const names = [...new Set([...v2ExtraToolNames(task), ...(options.pool ? v2ToolPool() : [])])].filter((name) => getTool(name));
-  return withActorLookRetry(withSchemaFillCleanup(withTransferRelocation(withEncountersOnlyWhenAsked(withPictureSearchBudget(createPiToolset(env.ctx, { ...(env.toolsetOptions ?? {}), toolNames: names, onCall: env.record })), task))));
+  return withActorLookRetry(withSchemaFillCleanup(withTransferRelocation(withForestRouteAngles(withEncountersOnlyWhenAsked(withPictureSearchBudget(createPiToolset(env.ctx, { ...(env.toolsetOptions ?? {}), toolNames: names, onCall: env.record })), task)))));
 }
 
 /**
@@ -364,6 +364,30 @@ export function withTransferRelocation(tools: PiToolShape[]): PiToolShape[] {
       return { ...second, content: [...second.content, { type: "text", text: note }] } as Awaited<ReturnType<PiToolShape["execute"]>>;
     },
   });
+}
+
+/**
+ * 숲길 설계 실마리(2026-10-31 sc-1030fr·fr2: designs 를 받게 했더니 opus 는 세 세션 모두 「굽이 3·wide·갈림 0.30왼·0.65오」, terra 는 「굽이 4·갈림 0.48왼」 —
+ * 같은 시작 저장본의 같은 요청이면 모델이 늘 같은 설계를 냈다). 세션마다 무작위로 실마리 둘을 author_forest_route 설명 끝에 붙인다. 쓰거나 버리는 것은 모델.
+ */
+const FOREST_ANGLES = [
+  "갈림길을 입구 가까이(at 0.15~0.3) — 들어서자마자 길을 고르게",
+  "굽이 적게(1~2) 곧게 뻗은 길 + 큰 빈터 하나",
+  "굽이 많고(5~6) 좁은(narrow) 답답한 숲길",
+  "들어오는 자리를 한쪽 끝(entryAt 0.1 또는 0.9)으로 — 숲을 비스듬히 가로지른다",
+  "갈림길 둘을 같은 쪽으로 — 한쪽 숲이 깊다",
+  "막다른 갈래 끝 하나는 빈터(clearing) — 쉬는 자리",
+  "넓은 길(wide)과 빈터 둘 — 트인 숲",
+  "긴 갈래 하나(length 0.9) — 본길과 나란히 한참 가다 막힌다",
+  "완만한(gentle) 길에 갈림길 셋 — 고를 길이 많은 숲",
+  "보상 갈래를 끝 가까이(at 0.8) — 보스 앞 마지막 샛길",
+] as const;
+export function forestRouteAngles(rand: () => number = Math.random): string {
+  const a = Math.floor(rand() * FOREST_ANGLES.length); const b = (a + 1 + Math.floor(rand() * (FOREST_ANGLES.length - 1))) % FOREST_ANGLES.length;
+  return ` 이번 숲길 설계 실마리(쓰거나 버린다 — 요청과 이야기가 우선): ${FOREST_ANGLES[a]} / ${FOREST_ANGLES[b]}.`;
+}
+export function withForestRouteAngles(tools: PiToolShape[], rand: () => number = Math.random): PiToolShape[] {
+  return tools.map((tool) => tool.name !== "author_forest_route" ? tool : { ...tool, description: `${tool.description ?? ""}${forestRouteAngles(rand)}` });
 }
 
 /**
