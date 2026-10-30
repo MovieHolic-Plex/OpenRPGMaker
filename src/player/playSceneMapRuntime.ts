@@ -60,6 +60,7 @@ import {
   footprintSpriteX,
   isAlwaysAboveCharacterUpperTile,
   mapUpperTileDepth,
+  starRestsOnSolidFurniture,
   placeCharacterSprite,
 } from "@/player/characterDepth";
 // ★ 수관은 upperTileLayer(고정 250k). 솔리드 가구(×)는 root display list + y-sort.
@@ -626,7 +627,8 @@ function placeMapTileImage<TImage extends RenderedTileImage, TSprite extends Ren
   // 벽면 기물(엘리베이터 문·벽에 박힌 문틀): ★ 이어도 막힌 칸에 얹혀 있고 바로 아래가 밟는 칸(문턱)이면 그 앞에 선 사람의
   // 머리가 그 칸에 걸친다 — 늘 위에 그리면 문턱에 선 사람이 문틀 밑에 짓눌려 보였다(첫사랑 r2 사무실 승강기, #3231 리뷰).
   // 그런 칸은 제 줄로 캐릭터와 y 정렬한다(같은 줄은 타일이 이긴다 — 문 안쪽 칸에 들어간 사람은 계속 가려진다).
-  const wallFace = aboveTile && isWallFaceCell(scene.map, tileset, x, y);
+  // 막힌 가구 위 ★(계산대 위 단말 등)도 같은 규칙 — 그 칸은 아무도 밟지 못하니 늘 위에 둘 까닭이 없고, 남쪽 칸 사람 머리를 덮는다.
+  const wallFace = aboveTile && (isWallFaceCell(scene.map, tileset, x, y) || starRestsOnSolidFurniture(scene.map, tileset, x, y));
   const alwaysAbove = aboveTile && !wallFace;
   bumpPerfCounter(scene, "tileObjectsCreated");
   image.setOrigin(0, 0);

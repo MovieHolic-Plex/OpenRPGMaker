@@ -3,7 +3,8 @@ import { TILE_SIZE } from "@/assets/bundled";
 import type { EventPriority, TilesetDef } from "@/project/types";
 import { passageMarkForTile } from "@/project/tilesetPassage";
 import { footprintBounds } from "@/project/footprint";
-import type { CharacterFootprint } from "@/project/types";
+import type { CharacterFootprint, GameMap } from "@/project/types";
+import { layerTileAt } from "@/project/mapLayers";
 
 const PRIORITY_DEPTH_BASE: Record<EventPriority, number> = {
   below: 100_000,
@@ -102,6 +103,21 @@ export function mapUpperTileDepth(tileset: TilesetDef, tile: number, tileY: numb
   if (mark === "star" && !walkableStair) return MAP_UPPER_LAYER_DEPTH;
   if (mark === "o" || mark === "star") return MAP_LOWER_LAYER_DEPTH + tileY * 2 + 1;
   return characterDepth("same", characterSpriteY(tileY, tileSize));
+}
+
+/**
+ * 막힌 가구(×) 위에 얹은 ★ 기물인가 — 계산대 위 계산 단말, 책상 위 스탠드처럼 같은 칸 2~4층 어딘가에 × 타일이 있다.
+ * 그 칸은 아무도 밟지 못하니 「밑으로 지나가는」 ★ 의 뜻이 없다. 고정 상층에 두면 바로 남쪽 칸에 선 사람의 머리(한 줄 위로 걸친다)를
+ * 덮어 계산대 앞 손님이 계산대 밑에 깔린 것처럼 보였다(마왕 편의점 2026-10-30 「계산대 앞에 선 사람이 계산대 아래에 그려진다」).
+ * 이런 칸은 제 줄로 캐릭터와 y 정렬한다 — 북쪽(계산대 안쪽) 사람은 계속 가려지고, 남쪽 사람은 앞에 선다.
+ */
+export function starRestsOnSolidFurniture(map: Pick<GameMap, "width" | "lowerTiles" | "upperTiles" | "lowerOverlayTiles" | "upperOverlayTiles">, tileset: TilesetDef, x: number, y: number): boolean {
+  const index = y * map.width + x;
+  for (const layer of [2, 3, 4] as const) {
+    const tile = layerTileAt(map as GameMap, layer, index);
+    if (tile >= 0 && passageMarkForTile(tileset, tile) === "x") return true;
+  }
+  return false;
 }
 
 /** ★ 수관/꽃 등 — 고정 upper 컨테이너. 솔리드 가구·밟는 계단은 false(y-sort/하위). */
