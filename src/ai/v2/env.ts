@@ -67,6 +67,11 @@ export interface PiAssistantV2Hooks {
    * v2 는 여기서 할 일 고리를 돌린다(열린 항목·기계 확인 ✗·관문·비평·화면 검수 → 재주입, 상한·진척 규칙은 src/ai/v2/loop/continuation.ts).
    */
   readonly afterMain?: (env: PiAssistantV2Env, round: number) => Promise<string | undefined> | string | undefined;
+  /**
+   * H6 문맥 정리(할 일 고리 갈고리): 모델 호출마다 붙일 짧은 상태 카드(할 일 표·지금 맵·마지막 실패). 실행기가 매 호출 직전에 부른다.
+   * 돌려준 글은 그 호출의 마지막 메시지에만 붙고 대화 기록에는 남지 않는다. 오래된 도구 결과 줄이기도 이 갈고리가 있을 때만 한다.
+   */
+  readonly stateCard?: (env: PiAssistantV2Env) => string | undefined;
   /** afterMain 이 몇 차례까지 돌 수 있나(기본 2). v2 할 일 고리는 자체 상한(묶음당 8·진척 없음 2)으로 멈추므로 넉넉히 준다. */
   readonly maxRounds?: number;
 }

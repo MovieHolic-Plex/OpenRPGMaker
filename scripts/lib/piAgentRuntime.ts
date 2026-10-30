@@ -192,6 +192,7 @@ export interface RunPiAgentOptions {
 
 export type { PiAssistantV2Env, PiAssistantV2Hooks } from "../../src/ai/v2/env.ts";
 import type { PiAssistantV2Env, PiAssistantV2Hooks } from "../../src/ai/v2/env.ts";
+import { trimContext } from "../../src/ai/v2/loop/contextTrim.ts";
 
 /** public/ 아래 정적 그림을 data URL 로 — 저장소 public/ 먼저, 빌드 dist/ 다음. 경로 밖으로 나가는 이름은 거절. */
 export async function readPublicAssetDataUrl(path: string): Promise<string | undefined> {
@@ -928,6 +929,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   let freshContextNext = false;
   // H3 다음 호출 우선(src/ai/v2/loop/nextCall.ts): 코어의 SoftToolRequirement — 알림 한 번, 그래도 다른 도구면 그 도구를 강제(최대 2번).
   // 코어는 강제 3번째에 실행을 던져 끝내므로 getToolChoice 가 3번 내준 뒤에는 내린다.
+  let lastContextTrim = 0;
   let softPref: { id: string; toolName: string; reminder: string; served: number } | undefined;
   let softSeq = 0;
   const v2Env: PiAssistantV2Env | undefined = options.v2 ? {
@@ -1179,7 +1181,16 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     },
     transformContext: async (messages: unknown[]) => {
       lastRequestHadImages = messagesHaveImages(messages);
-      return (imagesStripped && lastRequestHadImages ? stripImages(messages) : messages) as never;
+      let shaped = imagesStripped && lastRequestHadImages ? stripImages(messages) : messages;
+      // H6 v2 문맥 정리(src/ai/v2/loop/contextTrim.ts): 오래된 도구 결과 줄이기 + 그 호출에만 붙는 상태 카드.
+      if (options.v2?.stateCard && v2Env) {
+        let card: string | undefined;
+        try { card = options.v2.stateCard(v2Env); } catch { card = undefined; }
+        const trimmedCtx = trimContext(shaped, card);
+        if (trimmedCtx.trimmed > lastContextTrim) { lastContextTrim = trimmedCtx.trimmed; emit({ type: "execution_status", name: "v2.hook.context", ok: true, summary: `문맥 정리 — 오래된 도구 결과 ${trimmedCtx.trimmed}개 줄임(${Math.round(trimmedCtx.savedChars / 1000)}천 자)` }); }
+        shaped = trimmedCtx.messages;
+      }
+      return shaped as never;
     },
     initialState: {
       systemPrompt,

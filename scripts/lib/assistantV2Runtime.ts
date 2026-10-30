@@ -19,7 +19,7 @@ import { withTodoLoop, isWriteRequest } from "../../src/ai/v2/loop/todoTools.ts"
 import { formatCall, nextForItem } from "../../src/ai/v2/loop/nextCall.ts";
 import { continuationPrompt, projectFingerprint, textHash, STOP_REASON_KO } from "../../src/ai/v2/loop/continuation.ts";
 import { splitPreexisting, syncGateItems } from "../../src/ai/v2/loop/gates.ts";
-import { TODO_MAX_ATTEMPTS, isOpen } from "../../src/ai/v2/loop/todoStore.ts";
+import { TODO_MAX_ATTEMPTS, checkLabel, isOpen } from "../../src/ai/v2/loop/todoStore.ts";
 import { changedSince, checkItem, indexProject } from "../../src/ai/v2/loop/refs.ts";
 import type { TodoItem } from "../../src/ai/v2/todo/types.ts";
 
@@ -315,6 +315,24 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
     toolNames: ["__assistant_v2__"],
     v2: {
       tools: (env) => { const tools = withTodoLoop(env, store, session.loop, createV2Tools(env, session), session.hooks); for (const t of tools) toolNames.add(t.name); return tools; },
+      // H6 상태 카드(src/ai/v2/loop/contextTrim.ts 와 함께): 호출마다 마지막 메시지 끝에만 붙는 짧은 카드 — 진척 줄·지금 할 것+다음 호출·그 항목의 마지막 ✗.
+      // 오래된 도구 결과가 줄어도 할 일과 마지막 실패는 매 호출 눈앞에 있다. 대화 기록에는 남지 않는다.
+      stateCard: (env) => {
+        if (!store.items.length) return undefined;
+        const cur = store.next();
+        const lines = [`[상태 카드 — 이 호출에만] ${store.view(0).split("\n")[0]}`];
+        if (cur) {
+          const m = store.meta.get(cur.id);
+          let call = m?.nextCall?.text;
+          if (!call) { try { const nc = nextForItem(cur, env.ctx.project, toolNames); call = nc ? formatCall(nc) : undefined; } catch { call = undefined; } }
+          lines.push(`지금 할 것: ${cur.id} «${cur.content.slice(0, 120)}»${cur.check && cur.check.kind !== "none" ? ` (확인: ${checkLabel(cur.check)})` : ""}`);
+          if (call) lines.push(`다음 호출: ${call.slice(0, 400)}`);
+          if (m?.lastCheck && !m.lastCheck.pass) lines.push(`마지막 확인 ✗: ${m.lastCheck.detail.slice(0, 240)}`);
+        }
+        const rest = store.open().filter((i) => i !== cur).slice(0, 6).map((i) => `${i.id} «${i.content.slice(0, 50)}»`);
+        if (rest.length) lines.push(`남은 것: ${rest.join(" · ")}${store.openCount() - 1 > rest.length ? " …" : ""}`);
+        return lines.join("\n");
+      },
       // 첫 호출 todo 강제(omo first-turn) — 쓰기 요청이고 이어 받은 목록이 없을 때. 로컬 CLI 는 감싸개가 첫 쓰기를 되돌린다.
       beforeFirstPrompt: (env) => { if (writeRequest && !store.initialized) env.requireToolNextTurn?.("todo"); },
       // 할 일 고리는 스스로 멈춘다(묶음당 8·진척 없음 2·서명 같음·ask_user). 이 수는 안전 상한일 뿐이다.
