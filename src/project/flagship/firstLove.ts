@@ -615,8 +615,9 @@ function buildMondayOffice(project: Project, a: FirstLoveAnchors): void {
   add(office, scene("ev_fl_meet", { x: 1, y: 1 }, S.STREET, [
     // 승강기 안에서 도착: 닫힌 문 뒤 → 딩 → 문이 열리고 → 걸어 나온다 → 등 뒤에서 문이 닫힌다.
     ...doorFx(elev, false, 1),
+    // 승강기 칸에서 시작한다(placeAt) — 도착 칸이 한 칸만 달라도 «두 걸음 내려오기»가 서하를 지후 바로 위 칸에 세워 둘이 위아래로 겹쳤다(r4 검수).
     { kind: "moveEvent", eventId: "@player", route: { moves: [
-      { kind: "setThrough", enabled: true }, { kind: "move", dir: "up" }, { kind: "turn", dir: "down" }, { kind: "setThrough", enabled: false },
+      { kind: "setThrough", enabled: true }, { kind: "placeAt", x: o.elevator.x, y: o.elevator.y }, { kind: "move", dir: "up" }, { kind: "turn", dir: "down" }, { kind: "setThrough", enabled: false },
     ], repeat: false, wait: true, skippable: true } } as unknown as Command,
     ...fadeIn(500),
     ...caption("스튜디오 늘봄, 7층."),
@@ -1496,7 +1497,8 @@ function buildClimax(project: Project, a: FirstLoveAnchors): void {
   // 3/4 시점에서 승강장(북)에서 열차로 걸어 내려가면 지붕 위로 올라섰다(VQA r19·r26·r28 중대), 검은 화면에 사라지기만 하면
   // 「문도 안 열리고 사라졌다」였다(r28). 짧게 어두워진 사이 지후를 열린 문 안(차량 옆면 칸, 위 층)에 세우고, 밝아지면 문간에서
   // 서하 쪽을 보고 서 있다가 문이 닫히는 순간 사라진다 — 문이 닫히고 열차가 떠난다.
-  const boardX = 38;
+  // 열차는 두 사람 바로 앞(아래)에 선다 — 몸 가운데 x=37(firstLoveMaps centerX), 문 하나가 x=37 에 온다(r4: 열차가 왼쪽 옆에 섰다).
+  const boardX = jihuSpot.x;
   const edge = { x: boardX, y: 9 };
   const inDoor = { x: boardX, y: 11 };
   const jihuBoards = (): Command[] => [
@@ -1529,6 +1531,8 @@ function buildClimax(project: Project, a: FirstLoveAnchors): void {
     walk("@player", route(project, FL_MAP.platformPm, p.exitOut, meet)),
     face("@player", "right"),
     face("ev_fl_p_jihu", "left"),
+    // 클라이맥스는 두 사람에게 다가간다 — 배율 1 의 먼 화면에서 작은 두 사람이 고백했다(r4 검수). 두 사람 아래로 선로가 보이게 조금 아래를 잡는다.
+    panTo(jihuSpot.x, jihuSpot.y + 1, 1400, 2),
     ...emote("ev_fl_p_jihu", "exclamation", 1300),
     ...say("jihu", "surprised", "…서하야?"),
     ...think("처음이다. 회사에서 만나고, ‘씨’를 떼고 부른 건."),
@@ -1581,6 +1585,7 @@ function buildClimax(project: Project, a: FirstLoveAnchors): void {
           ...say("seoha", "happy", "…늦으면, 사연 보낼 거예요. 하루끝에. 실명으로."),
           ...jihuBoards(),
           ...fadeOut(1200),
+          panBack(0), // 승강장 배율(2)을 엔딩 그림으로 들고 가지 않는다
           stopBgm(),
           ...endingOpen("oprn-first-love-ending-a"),
           { kind: "triggerEnding", endingId: END_A } as Command,
@@ -1656,9 +1661,10 @@ function defineEndings(project: Project): void {
     id: END_A,
     name: "다시, 첫사랑",
     conditions: [],
-    presentation: { musicResourceId: BGM_HAPPY, tone: "warm", kicker: "엔딩 A · 두 사람의 이야기", credits: ENDING_CREDITS, backgroundResourceId: "oprn-first-love-ending-a" },
+    presentation: { musicResourceId: BGM_HAPPY, tone: "warm", kicker: "엔딩 A · 두 사람의 이야기", credits: ENDING_CREDITS, backgroundResourceId: "oprn-first-love-ending-a", textSide: "left" },
     epilogue: [
       // 노을 옥상 난간 앞에 나란히 선 서하·지후 — 게임과 같은 도트(걷기 칩·옥상 맵·노을 파노라마)로 지은 장면(r3, bake_ending_cards.py).
+      // 인물은 오른쪽 삼분선, 카드 글 판은 왼쪽 기둥(textSide, r4) — 가운데 판이 인물을 덮지 않는다.
       epiloguePicture("oprn-first-love-ending-a"),
       { kind: "say", text: "석 달 뒤, 금요일 저녁." }, // 그림이 노을 옥상이다 — 「밤」이면 글과 그림이 어긋났다(VQA r23)
       { kind: "say", text: "‘하루끝’ 오늘의 늦은 답장 — 바나나우유 님께." },
@@ -1671,7 +1677,7 @@ function defineEndings(project: Project): void {
     id: END_B,
     name: "늦은 답장",
     conditions: [],
-    presentation: { musicResourceId: BGM_END_B, tone: "warm", kicker: "엔딩 B · 10년 늦은 인사", credits: ENDING_CREDITS, backgroundResourceId: "oprn-first-love-ending-b" },
+    presentation: { musicResourceId: BGM_END_B, tone: "warm", kicker: "엔딩 B · 10년 늦은 인사", credits: ENDING_CREDITS, backgroundResourceId: "oprn-first-love-ending-b", textSide: "left" },
     epilogue: [
       { kind: "say", text: "열차가 떠났다. 혼자 지상으로 올라왔다. 그날 밤, 회사 옥상에서 연두색 편지지를 다시 펼쳤다. 뒷면에, 낯익은 글씨." },
       { kind: "say", text: "‘바나나우유 님께. 그 금요일 방송, 이제야 읽어요.’" },
@@ -1685,7 +1691,7 @@ function defineEndings(project: Project): void {
     id: END_C,
     name: "비 오는 금요일", // 「우리 팀의 봄」인데 팀은 나오지 않고 서하 혼자 비 속에 섰다(VQA r23)
     conditions: [],
-    presentation: { musicResourceId: BGM_END_C, tone: "warm", kicker: "엔딩 C · 첫 주의 끝", credits: ENDING_CREDITS, backgroundResourceId: "oprn-first-love-ending-c" },
+    presentation: { musicResourceId: BGM_END_C, tone: "warm", kicker: "엔딩 C · 첫 주의 끝", credits: ENDING_CREDITS, backgroundResourceId: "oprn-first-love-ending-c", textSide: "right" },
     epilogue: [
       { kind: "say", text: "회식 자리로 가는 길. 회사 앞에 혼자 서서, 비 오는 길을 한참 봤다." },
       { kind: "say", text: "오후 9시 40분, 그 열차가 떠난 시각. 밤 열 시, ‘하루끝’ 오늘의 사연이 울렸다." },

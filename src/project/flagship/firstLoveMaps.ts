@@ -498,7 +498,8 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
   }
   for (const id of [FL_MAP.platformAm, FL_MAP.platformPm]) {
     try {
-      exec("set_map_transit", { mapId: id, auto: { subway: { vehicle: "jp-subway", name: "한결선", stopName: "한결역", headwaySec: 50, waitSec: 10, centerX: 25 } } });
+      // 막차(밤)는 두 사람(x 36·37) 바로 앞에 선다 — 가운데 25 면 몸이 10~39 라 열차가 두 사람 왼쪽 옆에 섰다(r4 검수).
+      exec("set_map_transit", { mapId: id, auto: { subway: { vehicle: "jp-subway", name: "한결선", stopName: "한결역", headwaySec: 50, waitSec: 10, centerX: id === FL_MAP.platformPm ? 37 : 25 } } });
     } catch (error) {
       console.warn(`[first-love] ${id} 열차를 깔지 못했다: ${(error as Error).message}`);
     }

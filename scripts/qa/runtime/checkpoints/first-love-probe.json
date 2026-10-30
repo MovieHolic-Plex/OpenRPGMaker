@@ -1515,6 +1515,55 @@
      "shot": true
     }
    ]
+  },
+  {
+   "id": "p-roof-real",
+   "label": "p-roof-real",
+   "note": "PANTRY 4: walk into the office elevator (16,3) -> rooftop, ev_fl_roof plays from a real transfer",
+   "mapId": "fl_office",
+   "x": 16,
+   "y": 4,
+   "facing": "up",
+   "switches": {},
+   "variables": {
+    "var_fl_stage": 4
+   },
+   "beats": [
+    {
+     "id": "ride",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": "up",
+       "ms": 600
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 14000
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "walked",
+     "ops": [
+      {
+       "kind": "pressUntilJs",
+       "key": "Enter",
+       "fn": "() => !!document.querySelector(\"[data-testid='runtime-choices']\")",
+       "maxPresses": 40,
+       "settleMs": 900
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 300
+      }
+     ],
+     "shot": true
+    }
+   ]
   }
  ]
 }

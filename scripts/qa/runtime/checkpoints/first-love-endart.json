@@ -32,7 +32,7 @@
       {
        "kind": "evalToFile",
        "out": "/tmp/fl-r3/endart/ea-plat.json",
-       "fn": "() => new Promise((resolve) => { const s = window.__oprnHooksScene; const c = s.cameras.main;\n  document.querySelectorAll('.zone-feedback,[data-testid=objective-card],.touch-pad,.play-fullscreen-toggle').forEach(e => e.style.display='none');\n  if (s.player) s.player.setVisible(false);\n  for (const [k,v] of s.eventSprites) { if (/walker|crowd|commuter|extra|rusher/.test(k)) v.setVisible(false); }\n  c.stopFollow(); c.removeBounds && c.removeBounds();\n  const W = s.map.width*16, H = s.map.height*16, vw = c.width / c.zoom, vh = c.height / c.zoom;\n  const spots = []; for (let y = 0; y < H; y += vh) for (let x = 0; x < W; x += vw) spots.push([Math.min(x, Math.max(0, W - vw)), Math.min(y, Math.max(0, H - vh))]);\n  const out = []; let i = 0;\n  const next = () => { if (i >= spots.length) { resolve({ zoom: c.zoom, vw, vh, W, H, shots: out }); return; }\n    const [x, y] = spots[i++]; c.setScroll(x, y); let n = 0;\n    const tick = () => { if (++n < 5) { requestAnimationFrame(tick); return; }\n      s.game.renderer.snapshot((img) => { out.push({ sx: c.scrollX, sy: c.scrollY, src: img.src }); next(); }); };\n    requestAnimationFrame(tick); };\n  next(); })"
+       "fn": "() => new Promise((resolve) => { const s = window.__oprnHooksScene; const c = s.cameras.main;\n  document.querySelectorAll('.zone-feedback,[data-testid=objective-card],.touch-pad,.play-fullscreen-toggle').forEach(e => e.style.display='none');\n  if (s.player) s.player.setVisible(false);\n  for (const [k,v] of s.eventSprites) { if (/walker|crowd|commuter|extra|rusher|ev_fl_y_/.test(k)) v.setVisible(false); }\n  c.stopFollow(); c.removeBounds && c.removeBounds();\n  const W = s.map.width*16, H = s.map.height*16, vw = c.width / c.zoom, vh = c.height / c.zoom;\n  const spots = []; for (let y = 0; y < H; y += vh) for (let x = 0; x < W; x += vw) spots.push([Math.min(x, Math.max(0, W - vw)), Math.min(y, Math.max(0, H - vh))]);\n  const out = []; let i = 0;\n  const next = () => { if (i >= spots.length) { resolve({ zoom: c.zoom, vw, vh, W, H, shots: out }); return; }\n    const [x, y] = spots[i++]; c.setScroll(x, y); let n = 0;\n    const tick = () => { if (++n < 5) { requestAnimationFrame(tick); return; }\n      s.game.renderer.snapshot((img) => { out.push({ sx: c.scrollX, sy: c.scrollY, src: img.src }); next(); }); };\n    requestAnimationFrame(tick); };\n  next(); })"
       }
      ],
      "shot": false
@@ -62,7 +62,7 @@
       {
        "kind": "evalToFile",
        "out": "/tmp/fl-r3/endart/ea-street.json",
-       "fn": "() => new Promise((resolve) => { const s = window.__oprnHooksScene; const c = s.cameras.main;\n  document.querySelectorAll('.zone-feedback,[data-testid=objective-card],.touch-pad,.play-fullscreen-toggle').forEach(e => e.style.display='none');\n  if (s.player) s.player.setVisible(false);\n  for (const [k,v] of s.eventSprites) { if (/walker|crowd|commuter|extra|rusher/.test(k)) v.setVisible(false); }\n  c.stopFollow(); c.removeBounds && c.removeBounds();\n  const W = s.map.width*16, H = s.map.height*16, vw = c.width / c.zoom, vh = c.height / c.zoom;\n  const spots = []; for (let y = 0; y < H; y += vh) for (let x = 0; x < W; x += vw) spots.push([Math.min(x, Math.max(0, W - vw)), Math.min(y, Math.max(0, H - vh))]);\n  const out = []; let i = 0;\n  const next = () => { if (i >= spots.length) { resolve({ zoom: c.zoom, vw, vh, W, H, shots: out }); return; }\n    const [x, y] = spots[i++]; c.setScroll(x, y); let n = 0;\n    const tick = () => { if (++n < 5) { requestAnimationFrame(tick); return; }\n      s.game.renderer.snapshot((img) => { out.push({ sx: c.scrollX, sy: c.scrollY, src: img.src }); next(); }); };\n    requestAnimationFrame(tick); };\n  next(); })"
+       "fn": "() => new Promise((resolve) => { const s = window.__oprnHooksScene; const c = s.cameras.main;\n  document.querySelectorAll('.zone-feedback,[data-testid=objective-card],.touch-pad,.play-fullscreen-toggle').forEach(e => e.style.display='none');\n  if (s.player) s.player.setVisible(false);\n  for (const [k,v] of s.eventSprites) { if (/walker|crowd|commuter|extra|rusher|ev_fl_y_/.test(k)) v.setVisible(false); }\n  c.stopFollow(); c.removeBounds && c.removeBounds();\n  const W = s.map.width*16, H = s.map.height*16, vw = c.width / c.zoom, vh = c.height / c.zoom;\n  const spots = []; for (let y = 0; y < H; y += vh) for (let x = 0; x < W; x += vw) spots.push([Math.min(x, Math.max(0, W - vw)), Math.min(y, Math.max(0, H - vh))]);\n  const out = []; let i = 0;\n  const next = () => { if (i >= spots.length) { resolve({ zoom: c.zoom, vw, vh, W, H, shots: out }); return; }\n    const [x, y] = spots[i++]; c.setScroll(x, y); let n = 0;\n    const tick = () => { if (++n < 5) { requestAnimationFrame(tick); return; }\n      s.game.renderer.snapshot((img) => { out.push({ sx: c.scrollX, sy: c.scrollY, src: img.src }); next(); }); };\n    requestAnimationFrame(tick); };\n  next(); })"
       }
      ],
      "shot": false
@@ -92,7 +92,37 @@
       {
        "kind": "evalToFile",
        "out": "/tmp/fl-r3/endart/ea-roof.json",
-       "fn": "() => new Promise((resolve) => { const s = window.__oprnHooksScene; const c = s.cameras.main;\n  document.querySelectorAll('.zone-feedback,[data-testid=objective-card],.touch-pad,.play-fullscreen-toggle').forEach(e => e.style.display='none');\n  if (s.player) s.player.setVisible(false);\n  for (const [k,v] of s.eventSprites) { if (/walker|crowd|commuter|extra|rusher/.test(k)) v.setVisible(false); }\n  c.stopFollow(); c.removeBounds && c.removeBounds();\n  const W = s.map.width*16, H = s.map.height*16, vw = c.width / c.zoom, vh = c.height / c.zoom;\n  const spots = []; for (let y = 0; y < H; y += vh) for (let x = 0; x < W; x += vw) spots.push([Math.min(x, Math.max(0, W - vw)), Math.min(y, Math.max(0, H - vh))]);\n  const out = []; let i = 0;\n  const next = () => { if (i >= spots.length) { resolve({ zoom: c.zoom, vw, vh, W, H, shots: out }); return; }\n    const [x, y] = spots[i++]; c.setScroll(x, y); let n = 0;\n    const tick = () => { if (++n < 5) { requestAnimationFrame(tick); return; }\n      s.game.renderer.snapshot((img) => { out.push({ sx: c.scrollX, sy: c.scrollY, src: img.src }); next(); }); };\n    requestAnimationFrame(tick); };\n  next(); })"
+       "fn": "() => new Promise((resolve) => { const s = window.__oprnHooksScene; const c = s.cameras.main;\n  document.querySelectorAll('.zone-feedback,[data-testid=objective-card],.touch-pad,.play-fullscreen-toggle').forEach(e => e.style.display='none');\n  if (s.player) s.player.setVisible(false);\n  for (const [k,v] of s.eventSprites) { if (/walker|crowd|commuter|extra|rusher|ev_fl_y_/.test(k)) v.setVisible(false); }\n  c.stopFollow(); c.removeBounds && c.removeBounds();\n  const W = s.map.width*16, H = s.map.height*16, vw = c.width / c.zoom, vh = c.height / c.zoom;\n  const spots = []; for (let y = 0; y < H; y += vh) for (let x = 0; x < W; x += vw) spots.push([Math.min(x, Math.max(0, W - vw)), Math.min(y, Math.max(0, H - vh))]);\n  const out = []; let i = 0;\n  const next = () => { if (i >= spots.length) { resolve({ zoom: c.zoom, vw, vh, W, H, shots: out }); return; }\n    const [x, y] = spots[i++]; c.setScroll(x, y); let n = 0;\n    const tick = () => { if (++n < 5) { requestAnimationFrame(tick); return; }\n      s.game.renderer.snapshot((img) => { out.push({ sx: c.scrollX, sy: c.scrollY, src: img.src }); next(); }); };\n    requestAnimationFrame(tick); };\n  next(); })"
+      }
+     ],
+     "shot": false
+    }
+   ]
+  },
+  {
+   "id": "ea-bcast",
+   "label": "ea-bcast",
+   "mapId": "fl_broadcast",
+   "x": 16,
+   "y": 13,
+   "facing": "down",
+   "switches": {},
+   "variables": {
+    "var_fl_stage": 999
+   },
+   "beats": [
+    {
+     "id": "look",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 3000
+      },
+      {
+       "kind": "evalToFile",
+       "out": "/tmp/fl-r3/endart/ea-bcast.json",
+       "fn": "() => new Promise((resolve) => { const s = window.__oprnHooksScene; const c = s.cameras.main;\n  document.querySelectorAll('.zone-feedback,[data-testid=objective-card],.touch-pad,.play-fullscreen-toggle').forEach(e => e.style.display='none');\n  if (s.player) s.player.setVisible(false);\n  for (const [k,v] of s.eventSprites) { if (/walker|crowd|commuter|extra|rusher|ev_fl_y_/.test(k)) v.setVisible(false); }\n  c.stopFollow(); c.removeBounds && c.removeBounds();\n  const W = s.map.width*16, H = s.map.height*16, vw = c.width / c.zoom, vh = c.height / c.zoom;\n  const spots = []; for (let y = 0; y < H; y += vh) for (let x = 0; x < W; x += vw) spots.push([Math.min(x, Math.max(0, W - vw)), Math.min(y, Math.max(0, H - vh))]);\n  const out = []; let i = 0;\n  const next = () => { if (i >= spots.length) { resolve({ zoom: c.zoom, vw, vh, W, H, shots: out }); return; }\n    const [x, y] = spots[i++]; c.setScroll(x, y); let n = 0;\n    const tick = () => { if (++n < 5) { requestAnimationFrame(tick); return; }\n      s.game.renderer.snapshot((img) => { out.push({ sx: c.scrollX, sy: c.scrollY, src: img.src }); next(); }); };\n    requestAnimationFrame(tick); };\n  next(); })"
       }
      ],
      "shot": false

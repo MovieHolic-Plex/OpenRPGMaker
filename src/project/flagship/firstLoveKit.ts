@@ -159,7 +159,9 @@ export const shake = (ms = 300): Command => m2("Shake Screen", { value: 1, inten
 export const flash = (color = "white", ms = 300): Command => m2("Flash Screen", { color, durationMs: ms, value: "flash" });
 /** 회상 그림 겹침 — 10년 전 교복의 두 사람을 화면 가득 반투명으로 띄웠다 거둔다(고백 정점). 그림은 앱에 든 연애 타이틀 그림. */
 const MEMORY_PICTURE = "fl_memory";
-const MEMORY_ART = { resourceId: "oprn-title-romance-school", x: -4, y: -3, scale: 29 } as const;
+// 승강장 고백의 회상 — 10년 전 방송실 사연함 앞의 두 사람. 게임의 방송실 맵 + 어린 서하·지후 걷기 칩으로 지은 도트 장면(bake_ending_cards.py).
+// 예전 그림(romance-school 키아트)은 고해상 애니 일러스트라 16px 게임과 결이 달랐다(r3 처음 하는 사람 검수).
+const MEMORY_ART = { resourceId: "oprn-first-love-memory", x: -4, y: -3, scale: 29 } as const;
 // 기다리지 않는다 — 그림이 번지는 동안 대사가 바로 뜬다. 기다리는 동안 눌린 Enter 가 다음 대사를 삼키지 않게(첫사랑 VQA 3차).
 export function memoryPictureIn(opacity = 140, ms = 1600): Command[] {
   return [
