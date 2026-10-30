@@ -14,28 +14,28 @@ const obj = (v: unknown): Obj | undefined => (v && typeof v === "object" && !Arr
 export interface BlueprintBlocker { readonly id: string; readonly message: string; readonly evidence: string }
 
 export const BLUEPRINT_CARD = [
-  "[청사진 먼저 — write_blueprint] 게임 하나를 만드는 요청이면 장소를 짓기 전에 write_blueprint 로 이 게임의 설계 한 장을 쓴다(짓는 동사는 청사진이 없으면 거절된다).",
-  "- playerGoal: 새 플레이어에게 줄 안내 한 줄(무엇을 하면 엔딩인가). 판정자는 이 한 줄만 받고 게임을 끝까지 해 본다.",
-  "- steps: 시작부터 엔딩까지 반드시 지나는 핵심 경로 3~8단계. 단계마다 place(지을 맵 이름 그대로)·event(그 맵 위 이벤트 이름 그대로)·action(플레이어가 하는 일)·needs(이 단계를 여는 조건)·gives(다음 단계를 여는 것: 열쇠·스위치·호감, 마지막은 엔딩)·feeling(장면의 느낌).",
-  "- ending: {name, how, feeling}. 여러 엔딩이면 핵심 경로는 가장 기본 엔딩 하나로 쓰고 나머지는 how 에 적는다.",
-  "- 장소를 지은 뒤 build_blueprint_path 를 한 번 부른다 — 단계마다 이벤트, 앞 단계 gives 를 조건으로, 마지막이 엔딩 호출까지 함수가 짓는다(upsert_event·define_ending 으로 하나씩 맞추지 않는다). 대사는 steps[{id,lines}] 로만 준다.",
-  "- 짓는 동안 장소·이벤트 이름은 청사진과 똑같이 쓴다(이름 없는 이벤트는 event 에 그 id 를 써도 된다). 바뀌면 write_blueprint 를 다시 불러 실제 이름에 맞춘다. 출하 검사가 이 경로를 데이터로 걸어 본다(맵·이벤트가 있나, 시작에서 걸어 닿나, 조건을 켜는 이벤트가 앞 단계에 있나, 마지막 이벤트가 엔딩을 부르나).",
+  "[Blueprint first — write_blueprint] For a request to make a whole game, write one design sheet for the game with write_blueprint before building places (build verbs are rejected without a blueprint).",
+  "- playerGoal: one guiding line for a new player (what leads to the ending). The judge gets only this line and plays the game to the end.",
+  "- steps: the 3–8 step critical path from start to ending. Per step: place (exact name of the map to build) · event (exact name of the event on that map) · action (what the player does) · needs (what opens this step) · gives (what opens the next step: key, switch, affection; the last one is the ending) · feeling (the scene's mood).",
+  "- ending: {name, how, feeling}. With several endings, write the critical path for the most basic ending and describe the rest in how.",
+  "- After building the places call build_blueprint_path once — the function builds an event per step, uses the previous step's gives as the condition, and makes the last one call the ending (do not match them one by one with upsert_event/define_ending). Give dialogue only via steps[{id,lines}].",
+  "- While building, use place and event names exactly as in the blueprint (an unnamed event may use its id in event). If they change, call write_blueprint again to match the real names. The ship check walks this path as data (do the map and event exist, can you walk there from the start, does an earlier step have the event that turns on the condition, does the last event call the ending).",
 ].join("\n");
 
 export const WRITE_BLUEPRINT_SCHEMA = {
   type: "object",
   properties: {
     title: { type: "string" },
-    genre: { type: "string", description: "짧은 장르 낱말(공포·연애·JRPG…)" },
-    playerGoal: { type: "string", description: "새 플레이어에게 줄 안내 한 줄(140자 안)" },
+    genre: { type: "string", description: "short genre word (horror, romance, JRPG…)" },
+    playerGoal: { type: "string", description: "one guiding line for a new player (within 140 chars)" },
     steps: { type: "array", minItems: 2, maxItems: 12, items: { type: "object", properties: {
       id: { type: "string", description: "s1, s2 …" },
-      place: { type: "string", description: "맵 이름(지을 이름 그대로)" },
-      event: { type: "string", description: "그 맵 위 이벤트 이름(지을 이름 그대로)" },
-      action: { type: "string", description: "플레이어가 하는 일" },
-      needs: { type: "string", description: "이 단계를 여는 조건(첫 단계는 생략)" },
-      gives: { type: "string", description: "다음 단계를 여는 것(열쇠·스위치·호감) — 마지막은 엔딩" },
-      feeling: { type: "string", description: "이 장면의 느낌" },
+      place: { type: "string", description: "map name (exactly the name you will build)" },
+      event: { type: "string", description: "event name on that map (exactly the name you will build)" },
+      action: { type: "string", description: "what the player does" },
+      needs: { type: "string", description: "what opens this step (omit for the first step)" },
+      gives: { type: "string", description: "what opens the next step (key, switch, affection) — the last one is the ending" },
+      feeling: { type: "string", description: "the feeling of this scene" },
     }, required: ["place", "event", "action", "gives", "feeling"] } },
     ending: { type: "object", properties: { name: { type: "string" }, how: { type: "string" }, feeling: { type: "string" } }, required: ["name", "how", "feeling"] },
   },
