@@ -209,6 +209,17 @@ export function shuffledOptions(options: readonly string[], answer: string, seed
   return [...rotated.slice(0, at), answer, ...rotated.slice(at)];
 }
 
+/**
+ * 집어 간 뒤 다시 조사했을 때의 말. 알게 된 것(깃발 보상 — 일기의 번호·쪽지 글)이면 원래 글을 다시 보여 준다.
+ * 왜(2026-10-30 sl1 opus 방탈출 판정 major): 금고 번호 1872 가 적힌 일기를 Enter 연타로 넘기자 다시 조사해도 「더는 볼 것이 없다.」뿐이라
+ * 단서를 다시 읽을 수 없었다. 물건 보상(열쇠를 집어 감)은 그대로 「비어 있다」 쪽 말이다.
+ */
+function pickupDoneLines(link: ChainLink): readonly string[] {
+  const generic = (lines: readonly string[] | undefined) => !lines?.length || lines.every((l) => /^(더는 볼 것이 없다|비어 있다|이미 .+)[.。]?$/u.test(l.trim()));
+  if (link.reward?.flag && !link.reward.item && generic(link.doneLines) && link.lines?.length) return ["다시 살펴본다.", ...link.lines];
+  return link.doneLines ?? ["비어 있다."];
+}
+
 export function buildPuzzleChain(run: BuildRun, args: ChainArgs): ContentBuildResult {
   const warnings: string[] = [];
   const eventIds: { mapId: string; eventId: string }[] = [];
@@ -313,7 +324,7 @@ export function buildPuzzleChain(run: BuildRun, args: ChainArgs): ContentBuildRe
       const taken = flag(`taken_${index + 1}`, `${args.name}: 집어 감`);
       if (need.length) pages.push(basePage({ commands: say(link.lockedLines ?? ["지금은 손댈 수 없다."]) }));
       pages.push(basePage({ conditions: need, commands: [...say(link.lines), ...rewardCmds(), { kind: "setSwitch", switchId: taken, value: true }] }));
-      pages.push(basePage({ conditions: [{ kind: "switch", switchId: taken, value: true }], commands: say(link.doneLines ?? ["비어 있다."]) }));
+      pages.push(basePage({ conditions: [{ kind: "switch", switchId: taken, value: true }], commands: say(pickupDoneLines(link)) }));
     } else if (link.role === "door") {
       if (!need.length) return fail(`${index + 1}번 고리(door): needs(열쇠 물건 이름 또는 깃발)가 없다`);
       const opened = flag(`door_open_${index + 1}`, `${args.name}: 문 열림`);
