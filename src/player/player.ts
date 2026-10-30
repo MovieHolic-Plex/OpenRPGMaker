@@ -836,9 +836,9 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     closeStatusMenu(menu);
   };
 
-  const emitMenuJuice = (event: RuntimeJuiceEvent, target?: HTMLElement | null): void => {
+  const emitMenuJuice = (event: RuntimeJuiceEvent, target?: HTMLElement | null, cue?: string): void => {
     emitRuntimeJuice({ event, target: target ?? layout.querySelector<HTMLElement>("[data-testid='main-menu']"),
-      project: store.getCurrent(), session: activeScene()?.session });
+      project: store.getCurrent(), session: activeScene()?.session, ...(cue ? { cue } : {}) });
   };
 
   const statusMenu = createPlayerStatusMenuController({
