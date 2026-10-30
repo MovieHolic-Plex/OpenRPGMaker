@@ -134,7 +134,7 @@ export function createTodoTool(env: PiAssistantV2Env, store: TodoStore, state: T
           }).filter((ph) => ph.items.length);
           if (!phases.length) { result = done("목록이 비었다 — list:[{phase, items:[{content, check}]}] 로 적는다", false); break; }
           const added = store.init(phases);
-          const unchecked = added.filter((i) => !i.check).length;
+          const unchecked = added.filter((i) => !i.check || i.check.kind === "none").length;
           const first = store.current();
           env.emit({ type: "execution_status", name: "v2.todo.init", ok: true, summary: `할 일 ${added.length}개(기계 확인 ${added.length - unchecked})`, data: { items: added.map(({ id: iid, content, check }) => ({ id: iid, content, check })) } });
           result = done(`할 일 ${added.length}개를 적었다${unchecked ? ` (기계 확인 없는 항목 ${unchecked}개 — 확인할 수 있으면 check 를 달아 append 로 다시)` : ""}. ${first ? `${first.id} «${first.content}» 를 진행 중으로 올렸다 — 이 응답에서 바로 동사로 진행한다.` : ""}`, true, warnings.length ? { warnings } : {});

@@ -56,7 +56,7 @@ export function checkLabel(check: TodoCheck | undefined): string {
     case "talk": return `「${check.who}」 대사${check.says ? ` «${check.says}»` : ""}`;
     case "battle": return `${check.boss ? "보스 " : ""}전투${check.who ? ` 「${check.who}」` : ""}${check.map ? ` @${check.map}` : ""}`;
     case "link": return `「${check.from}」→「${check.to}」 이동`;
-    case "ending": return "엔딩 닿음";
+    case "ending": return `엔딩 닿음${check.map ? ` @${check.map}` : ""}`;
     case "item": return `아이템 「${check.name}」${check.gives ? " 지급" : ""}`;
     case "present_evidence": return `증거 「${check.item}」 내밀기${check.to ? ` → ${check.to}` : ""}`;
     case "objective": return `목표 줄${check.text ? ` «${check.text}»` : ""}`;
