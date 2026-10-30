@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **189쪽 / 7833KB / 약 2,301,358 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **189쪽 / 7833KB / 약 2,301,513 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -15,7 +15,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 
 | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
 |---|---|---|---|---|
-| `openwiki/asset-store.md` | 67KB | 19KB | 436 | ~19,930 |
+| `openwiki/asset-store.md` | 67KB | 19KB | 436 | ~19,994 |
 | `openwiki/assistant-v2.md` | 237KB | 47KB | 677 | ~72,166 |
 | `openwiki/atlas-biome-interior.md` | 109KB | 21KB | 534 | ~32,760 |
 | `openwiki/beodeul-city.md` | 232KB | 19KB | 1141 | ~70,616 |
@@ -39,7 +39,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/harnesses/object-gate.md` | 89KB | 12KB | 642 | ~26,964 |
 | `openwiki/harnesses/super-harness.md` | 102KB | 4KB | 1063 | ~32,225 |
 | `openwiki/jp-city.md` | 109KB | 14KB | 511 | ~32,323 |
-| `openwiki/runtime-battle.md` | 455KB | 32KB | 2498 | ~133,602 |
+| `openwiki/runtime-battle.md` | 455KB | 32KB | 2498 | ~133,693 |
 | `openwiki/runtime-m2-flow-controls.md` | 58KB | 29KB | 352 | ~15,674 |
 | `openwiki/runtime-pre-edit-routing.md` | 210KB | 103KB ⚠상한 초과 — 절을 더 쪼개라 | 1257 | ~62,645 |
 | `openwiki/runtime-project-schema.md` | 266KB | 83KB ⚠상한 초과 — 절을 더 쪼개라 | 1834 | ~75,211 |
@@ -300,7 +300,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 
 절 제목 없음 (평면 목록 페이지).
 
-### `openwiki/asset-store.md` — 67KB · 436줄 · ~19,930 토큰 · 통째읽기 잘림
+### `openwiki/asset-store.md` — 67KB · 436줄 · ~19,994 토큰 · 통째읽기 잘림
 
 - `L6` 어디에 무엇이 있나
 - `L25` 계약 동기화 절차
@@ -2778,7 +2778,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L15` Quick routing
 - `L24` For AI agents
 
-### `openwiki/runtime-battle.md` — 455KB · 2498줄 · ~133,602 토큰 · 통째읽기 잘림
+### `openwiki/runtime-battle.md` — 455KB · 2498줄 · ~133,693 토큰 · 통째읽기 잘림
 
 - `L1` 프레임 hold — 전투 애니메이션 한 프레임을 길게 (2026-10-31)
 - `L8` 걷기 칩으로 서는 적 (2026-10-30)
