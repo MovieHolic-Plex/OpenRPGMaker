@@ -216,7 +216,7 @@ export function buildContractA(project: Project, s: Stage): void {
   ]));
   const [t1, t2, t3] = s.swamp.dragTrail;
   const trailOpen = [swOn(SW.clueBody), swOff(SW.clueTrail)];
-  swamp.events.push(trailMark("ev_hc_a_trail1", t1!, [...caption("진흙이 고랑처럼 패였다. 무거운 것을 끌었다. 남쪽으로 이어진다.")], trailOpen));
+  swamp.events.push(trailMark("ev_hc_a_trail1", t1!, [...caption("진흙이 고랑처럼 패였다. 무거운 것을 끌었다. 고랑은 남쪽으로 뻗었다.")], trailOpen));
   swamp.events.push(trailMark("ev_hc_a_trail2", t2!, [...caption("갈대가 한쪽으로 누웠다. 진흙에 손톱 자국이 있다. 더 남쪽이다.")], trailOpen));
   swamp.events.push(trailMark("ev_hc_a_trail3", t3!, [
     ...caption("자국이 물가에서 끊긴다. 끌고 간 것은 물로 들어갔다."),
