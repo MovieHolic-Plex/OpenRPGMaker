@@ -3,7 +3,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
-import { startSession } from "@/project/session";
+import { evalCondition, startSession } from "@/project/session";
 import type { EventPage, GameEvent, GameMap, Project } from "@/project/types";
 import type { PlaySessionLike } from "@/project/sessionRuntimeTypes";
 import * as io from "@/project/io";
@@ -16,6 +16,8 @@ import {
 } from "@/project/runtimeEventState";
 import { footprintBounds, pointRect } from "@/project/footprint";
 import { nearestPassableTile } from "@/player/playSceneMapCommands";
+import { activeRuntimeEvents } from "@/player/playSceneMapRuntime";
+import { updateDetectionEncounters } from "@/player/npcDetectionEncounter";
 import { advanceTimeAcrossDayBoundaries } from "@/player/dayTransition";
 import { lightingMaskSignature } from "@/player/lighting";
 import { RuntimeDomOverlay } from "@/player/runtimeDom";
@@ -229,6 +231,131 @@ describe("QA 상태 미러는 읽을 때만 만든다", () => {
     } finally {
       restore();
     }
+  });
+});
+
+describe("매 프레임 이벤트 질의는 맞을 수 없는 이벤트의 페이지를 해석하지 않는다", () => {
+  function detection(range: number): NonNullable<EventPage["detectionEncounter"]> {
+    return { sight: { range, lineOfSight: false, facing: "any" }, emote: null, emoteMs: 600, approachSpeed: 4 };
+  }
+
+  function frameWorld() {
+    const project = createBlankProject();
+    const map = project.maps[project.startMapId]!;
+    const other: GameMap = { ...structuredClone(map), id: "map_other", events: [] };
+    project.maps[other.id] = other;
+    const villagers = Array.from({ length: 40 }, (_, index) => event(`villager_${index}`, index % 10, 12 + Math.floor(index / 10)));
+    map.events = [
+      ...villagers,
+      event("parallel_npc", 2, 2, [page("parallel_page", { trigger: { kind: "parallel" } })]),
+      event("mixed", 3, 3, [
+        page("mixed_action"),
+        page("mixed_parallel", { trigger: { kind: "parallel" }, conditions: [{ kind: "switch", switchId: "sw_on", value: true }] }),
+      ]),
+      event("gated_parallel", 4, 4, [page("gated_page", { trigger: { kind: "parallel" }, conditions: [{ kind: "switch", switchId: "sw_on", value: true }] })]),
+      { id: "legacy_parallel", x: 1, y: 1, trigger: { kind: "parallel" }, commands: [] },
+      { id: "legacy_action", x: 1, y: 2, trigger: { kind: "action" }, commands: [] },
+      event("erased_parallel", 5, 5, [page("erased_page", { trigger: { kind: "parallel" } })]),
+      event("away_parallel", 6, 6, [page("away_page", { trigger: { kind: "parallel" } })]),
+      event("trainer", 8, 8, [page("trainer_page", { detectionEncounter: detection(2) })]),
+      event("sleeping_trainer", 0, 1, [
+        page("sleeping_action"),
+        page("sleeping_detect", { detectionEncounter: detection(4), conditions: [{ kind: "switch", switchId: "sw_on", value: true }] }),
+      ]),
+    ];
+    other.events = [
+      event("visitor_parallel", 0, 0, [page("visitor_page", { trigger: { kind: "parallel" } })]),
+      event("tpl_action", 1, 1),
+      event("tpl_parallel", 2, 2, [page("tpl_parallel_page", { trigger: { kind: "parallel" } })]),
+    ];
+    store.replace(project);
+    const live = store.getCurrent();
+    const liveMap = live.maps[live.startMapId]!;
+    const session = startSession(live);
+    session.x = 0;
+    session.y = 0;
+    session.erasedEventIds = ["erased_parallel"];
+    session.eventLocations = {
+      visitor_parallel: { mapId: liveMap.id, x: 6, y: 6, direction: "down" },
+      away_parallel: { mapId: other.id, x: 0, y: 0, direction: "down" },
+    };
+    session.spawnedEvents = {
+      spawned_action: { mapId: liveMap.id, templateMapId: other.id, templateEventId: "tpl_action", x: 9, y: 9 },
+      spawned_parallel: { mapId: liveMap.id, templateMapId: other.id, templateEventId: "tpl_parallel", x: 10, y: 10 },
+    } as never;
+    const positions = initialRuntimeEventPositions(liveMap.events);
+    const scene = { map: liveMap, session, eventPositions: positions };
+    const signature = (kind: "parallel" | "action" | "auto") => runtimeEventViewsForMap(live, liveMap, session, positions)
+      .filter((view) => view.trigger.kind === kind
+        && (view.event.pages?.length
+          ? view.page !== undefined
+          : evalCondition(session, view.event.condition, view.event, { map: liveMap })))
+      .map((view) => `${view.event.id}:${view.pageId ?? "legacy"}:${view.trigger.kind}`);
+    return { live, liveMap, session, positions, scene, signature };
+  }
+
+  it("병렬·조사 활성 집합은 전체 뷰를 만든 뒤 거른 것과 같고, 조사 이벤트는 페이지를 해석하지 않는다", () => {
+    const { scene, signature } = frameWorld();
+    const expectedParallel = signature("parallel");
+    const expectedAction = signature("action");
+    const expectedAuto = signature("auto");
+    const resolve = vi.spyOn(io, "resolveEventPage");
+    const parallel = activeRuntimeEvents(scene as never, "parallel")
+      .map((view) => `${view.event.id}:${view.pageId ?? "legacy"}:${view.trigger.kind}`);
+    expect(parallel).toEqual(expectedParallel);
+    expect(parallel).toEqual([
+      "parallel_npc:parallel_page:parallel",
+      "legacy_parallel:legacy:parallel",
+      "visitor_parallel:visitor_page:parallel",
+      "spawned_parallel:tpl_parallel_page:parallel",
+    ]);
+    expect(resolve.mock.calls.map((call) => (call[0] as GameEvent).id)).toEqual([
+      "parallel_npc",
+      "mixed",
+      "gated_parallel",
+      "legacy_parallel",
+      "visitor_parallel",
+      "spawned_parallel",
+    ]);
+    resolve.mockRestore();
+    expect(activeRuntimeEvents(scene as never, "action").map((view) => view.event.id))
+      .toEqual(expectedAction.map((entry) => entry.split(":")[0]));
+    expect(activeRuntimeEvents(scene as never, "auto").map((view) => view.event.id))
+      .toEqual(expectedAuto.map((entry) => entry.split(":")[0]));
+  });
+
+  it("발견 조우는 조우 페이지가 있는 이벤트만 해석하고, 켜진 조우만 시작한다", () => {
+    const { liveMap, session, positions } = frameWorld();
+    const far = {
+      map: liveMap,
+      session,
+      eventPositions: positions,
+      running: false,
+      inputEnabled: true,
+      moving: false,
+      playerHop: null,
+      commandMoveRouteEventIds: new Set<string>(),
+      autonomousNPCs: new Map(),
+      setInputEnabled: () => undefined,
+    };
+    const resolve = vi.spyOn(io, "resolveEventPage");
+    updateDetectionEncounters(far as never, 16);
+    expect(far.running).toBe(false);
+    expect(resolve.mock.calls.map((call) => (call[0] as GameEvent).id)).toEqual(["trainer", "sleeping_trainer"]);
+    resolve.mockClear();
+
+    const closeMap = liveMap;
+    const trainer = closeMap.events.find((entry) => entry.id === "trainer");
+    if (!trainer) throw new Error("trainer missing");
+    trainer.x = 0;
+    trainer.y = 0;
+    trainer.pages = [page("trainer_page", { detectionEncounter: detection(4) })];
+    // 뷰 좌표는 이벤트 원점이 아니라 런타임 위치 기록이다.
+    positions.trainer = { x: 0, y: 0 };
+    const close = { ...far, running: false, inputEnabled: true };
+    updateDetectionEncounters(close as never, 16);
+    expect(close.running).toBe(true);
+    expect(resolve.mock.calls.map((call) => (call[0] as GameEvent).id)).toEqual(["trainer"]);
   });
 });
 

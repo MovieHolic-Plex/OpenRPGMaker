@@ -174,6 +174,11 @@ function forEachRuntimeEventView(
    * 세로 [y-7, y] 안에 있다(축 상한 8, footprintBounds). 통행 사각은 몸 사각의 부분집합이다.
    */
   near?: FootprintRect,
+  /**
+   * 주면 이 술어가 거짓인 이벤트는 뷰를 만들지 않는다. 페이지 조건 평가 전에 이벤트 정의만 본다.
+   * 매 프레임 질의(병렬 트리거·발견 조우)가 대부분의 이벤트를 걸러 낼 때 쓴다.
+   */
+  includeEvent?: (event: GameEvent) => boolean,
 ): void {
   const appearanceProject = project.database && project.assets ? { database: project.database, assets: project.assets } : undefined;
   const pageContext: EventPageLocationContext = { locations: map.locations, ...partySkillContext(project, session) };
@@ -181,6 +186,10 @@ function forEachRuntimeEventView(
   const removedOnCurrentMap = removedEventSet(session, map.id);
   const locations = session.eventLocations;
   const included = new Set<string>();
+  const admit = (event: GameEvent): boolean => {
+    if (includeEvent && !includeEvent(event)) return false;
+    return visit(runtimeEventView(event, session, positions, appearanceProject, pageContext)) === true;
+  };
   for (const event of map.events) {
     if (erased?.has(event.id)) continue;
     if (removedOnCurrentMap?.has(event.id)) continue;
@@ -188,7 +197,7 @@ function forEachRuntimeEventView(
     if (location && location.mapId !== map.id) continue;
     included.add(event.id);
     if (near && !anchorMayOverlap(location ?? positions[event.id] ?? event, near)) continue;
-    if (visit(runtimeEventView(event, session, positions, appearanceProject, pageContext)) === true) return;
+    if (admit(event)) return;
   }
   // 다른 맵의 이벤트는 **이 맵으로 옮겨진 것만** 후보다. 옮겨진 이벤트가 없으면
   // 맵 전체 순회를 건너뛴다(대부분의 프레임이 여기에 해당한다). 후보 집합은 다른 맵이
@@ -209,7 +218,7 @@ function forEachRuntimeEventView(
       if (removedOnSourceMap?.has(event.id)) continue;
       included.add(event.id);
       if (near && !anchorMayOverlap(locations?.[event.id] ?? positions[event.id] ?? event, near)) continue;
-      if (visit(runtimeEventView(event, session, positions, appearanceProject, pageContext)) === true) return;
+      if (admit(event)) return;
     }
   }
   const spawned = session.spawnedEvents;
@@ -225,7 +234,7 @@ function forEachRuntimeEventView(
     const event = materializeSpawnedEvent(project, spawnedEventId, spawn);
     if (!event) continue;
     included.add(spawnedEventId);
-    if (visit(runtimeEventView(event, session, positions, appearanceProject, pageContext)) === true) return;
+    if (admit(event)) return;
   }
 }
 
@@ -244,16 +253,40 @@ function anchorMayOverlap(anchor: { readonly x: number; readonly y: number }, re
     && y - BODY_REACH_UP <= rect.bottom;
 }
 
+/**
+ * 활성 페이지의 트리거가 `kind` 일 수 있는가. 페이지가 있으면 그 중 하나의 trigger 가
+ * `kind` 여야 하고(트리거가 빠진 페이지만 이벤트 trigger 로 떨어진다), 페이지가 없으면
+ * 레거시 이벤트 trigger 를 본다. 거짓이면 뷰를 만들어도 그 트리거의 활성 이벤트가 아니다.
+ */
+export function eventMayMatchTrigger(event: GameEvent, kind: Trigger["kind"]): boolean {
+  const pages = event.pages;
+  if (!pages || pages.length === 0) return event.trigger.kind === kind;
+  for (const page of pages) {
+    const trigger = page.trigger ?? event.trigger;
+    if (trigger.kind === kind) return true;
+  }
+  return false;
+}
+
+/** 어떤 페이지에도 발견 조우가 없으면 활성 페이지에도 없다. 뷰를 만들 필요가 없다. */
+export function eventMayHaveDetectionEncounter(event: GameEvent): boolean {
+  const pages = event.pages;
+  if (!pages) return false;
+  for (const page of pages) if (page.detectionEncounter) return true;
+  return false;
+}
+
 export function runtimeEventViewsForMap(
   project: Pick<Project, "maps">,
   map: GameMap,
   session: PlaySessionLike,
-  positions: RuntimeEventPositions
+  positions: RuntimeEventPositions,
+  includeEvent?: (event: GameEvent) => boolean,
 ): RuntimeEventView[] {
   const views: RuntimeEventView[] = [];
   forEachRuntimeEventView(project, map, session, positions, (view) => {
     views.push(view);
-  });
+  }, undefined, includeEvent);
   return views;
 }
 
