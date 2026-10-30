@@ -134,6 +134,7 @@ export function nextForItem(item: TodoItem, project: Project, available: Readonl
       return has("add_people") ? { verb: "add_people", args: { people: [{ role: c.who, name: c.who, where: "<자리 낱말>", firstTalk: [c.says ? `<${c.says} 를 넣은 대사>` : "<대사>"] }] }, why: "대사가 있는 인물 두기" } : undefined;
     }
     case "battle": {
+      if (c.boss && has("add_boss_encounter")) return { verb: "add_boss_encounter", args: { mapId: mapId(c.map) ?? "<보스 방 mapId>", boss: { name: c.who ?? "<보스 이름>", where: "<자리 낱말>", looks: "<외형 낱말>" }, lines: ["<싸우기 전 대사>"], afterWin: ["<이긴 뒤 대사>"] }, why: "말 걸고 → 보스전 한 번에" };
       if (has("place_field_enemy") && !c.boss) return { verb: "place_field_enemy", args: { mapId: mapId(c.map) ?? "<mapId>", x: "<x>", y: "<y>", troopId: "<troop id>", behavior: "stationary" }, why: "보이는 적 한 마리" };
       if (has("patch_event_page")) return { verb: "patch_event_page", args: { mapId: mapId(c.map) ?? "<mapId>", eventId: `<${c.who ?? "보스"} 이벤트 id>`, pageIndex: 0, set: { commands: ["<원래 명령 그대로>", { kind: "battleProcessing", troopId: "<troop id>", canEscape: false }] } }, why: "대사 이벤트 끝에 전투 명령(원래 명령은 지우지 말고 이어 붙인다)" };
       return undefined;
@@ -147,7 +148,7 @@ export function nextForItem(item: TodoItem, project: Project, available: Readonl
       if (!has("create_transfer_pair")) return undefined;
       return { verb: "create_transfer_pair", args: { a: { mapId: mapId(c.from) ?? `<${c.from} mapId>`, x: "<가장자리 길 끝 x>", y: "<y>" }, b: { mapId: mapId(c.to) ?? `<${c.to} mapId>`, x: "<입구 x>", y: "<y>" } }, why: "두 맵 잇기(doorAt 은 문 그림이 있을 때만, 출입구 바로 위 칸)" };
     }
-    case "ending": return has("define_ending") ? { verb: "define_ending", args: { "<엔딩 정의>": "…" }, why: "엔딩" } : has("add_event") ? { verb: "add_event", args: skeletonFor("add_event", mapId(c.map)), why: "엔딩 장면" } : undefined;
+    case "ending": return has("add_ending_scene") ? { verb: "add_ending_scene", args: { mapId: mapId(c.map) ?? "<엔딩 맵 mapId>", title: "<엔딩 이름>", lines: ["<이름>: <대사>"], epilogue: ["<에필로그 줄>"], after: "<어떤 일 뒤(마왕 등)> 또는 talkTo" }, why: "대사 → 엔딩 한 번에" } : has("define_ending") ? { verb: "define_ending", args: { "<엔딩 정의>": "…" }, why: "엔딩" } : has("add_event") ? { verb: "add_event", args: skeletonFor("add_event", mapId(c.map)), why: "엔딩 장면" } : undefined;
     case "item": return has("upsert_item") ? { verb: "upsert_item", args: { item: { id: "<item id>", name: c.name } }, why: "아이템" } : undefined;
     case "objective": return has("set_objective") ? { verb: "set_objective", args: { text: c.text ? `<${c.text} 를 넣은 목표 줄>` : "<목표 줄>", at: "start" }, why: "목표 줄" } : undefined;
     default: return undefined;
@@ -164,8 +165,11 @@ export const VERB_SCOPE: Readonly<Partial<Record<string, { high: readonly string
   person: { high: ["add_people"], low: ["upsert_event", "place_npc", "add_event_page"] },
   talk: { high: ["add_people", "add_event"], low: ["upsert_event", "place_npc"] },
   link: { high: ["create_transfer_pair"], low: ["upsert_event", "patch_event_page", "add_event_page"] },
+  // 보스전(check.boss)만 — 잡몹 전투는 place_field_enemy·set_encounter_table 이 상위다.
+  battle: { high: ["add_boss_encounter"], low: ["upsert_enemy", "upsert_troop", "patch_event_page", "add_event_page", "upsert_event", "place_npc"] },
+  ending: { high: ["add_ending_scene"], low: ["define_ending", "patch_event_page", "add_event_page", "upsert_event"] },
 };
-/** 상위 동사가 없어 하위 도구로만 짓는 확인 종류(측정 보고용). */
+/** 상위 동사가 이 실행에 없을 때 하위 도구로만 짓는 확인 종류(측정 보고용) — 보스전·엔딩 동사가 실리지 않은 요청. */
 export const MISSING_HIGH_VERB: Readonly<Partial<Record<string, string>>> = {
   battle: "대사 → 전투(보스전) 를 한 번에 짓는 동사가 없다 — upsert_enemy·upsert_troop·patch_event_page(battleProcessing) 조립",
   ending: "엔딩 장면(축하 대사 → 엔딩 호출)을 한 번에 짓는 동사가 없다 — add_event 대사 + define_ending·patch_event_page 조립",
@@ -176,6 +180,8 @@ export function scopeRedirect(item: TodoItem, tool: string, usedOnItem: Readonly
   const kind = item.check?.kind;
   const scope = kind ? VERB_SCOPE[kind] : undefined;
   if (!scope || !scope.low.includes(tool)) return undefined;
+  if (kind === "battle" && !(item.check as { boss?: boolean }).boss) return undefined;
+  if (!scope.high.some((v) => available.has(v))) return undefined;
   if (scope.high.some((v) => usedOnItem?.has(v))) return undefined;
   const r = item.refs;
   if (r && (r.mapIds?.length || r.eventIds?.length)) return undefined;

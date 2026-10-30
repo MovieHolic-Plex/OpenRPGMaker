@@ -65,6 +65,7 @@ import { dropModelSeed } from "./modelSeed";
 import { TodoStore } from "./loop/todoStore";
 import { TodoLoop } from "./loop/continuation";
 import { HookStats } from "./loop/hookStats";
+import { buildBossEncounter, buildEndingScene, wantsBossEncounter, wantsEndingScene, type BossEncounterSpec, type EndingSceneSpec } from "./sceneVerbs";
 
 // 2026-10-23 5차: 고치기 3바퀴는 바퀴마다 다시 짓기+비평(20~35초)이라 던전 한 장에 200~250초가 들었다.
 // 속도 우선(6차)으로 1바퀴만 — 첫 비평의 major 를 한 번 고치고 남은 것은 보고한다.
@@ -882,6 +883,41 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     },
   };
 
+  // 상위 동사 둘(sceneVerbs.ts) — 「말 걸고 → 보스전」·「대사 → 엔딩」을 한 번에. 모델은 누가·무슨 말·어디만 준다.
+  const addBossEncounter: PiToolShape = {
+    name: "add_boss_encounter", label: "보스 만남", concurrency: "exclusive",
+    description: "말을 거는 보스와 보스전을 한 번에 짓는다 — 보스 인물(이미 있으면 대사만 바꿈)·싸우기 전 대사·보스 적 그룹(없으면 이름·외형 낱말의 그림으로 시작 파티에 맞춘 세기로 만듦)·이긴 뒤 대사·이긴 뒤 사라짐(또는 laterTalk). 하위 도구(upsert_enemy·upsert_troop·patch_event_page)로 조립하지 않는다.",
+    parameters: { type: "object", properties: {
+      mapId: { type: "string", description: "보스가 설 맵 id(또는 맵 이름)" },
+      boss: { type: "object", properties: {
+        name: { type: "string" }, where: { type: "string", description: "자리 낱말(방 안쪽·제단 앞…)" }, at: POINT, looks: { type: "string", description: "외형 낱말(해골 기사·검은 갑옷…)" },
+        enemy: { type: "string", description: "적 그림 낱말(해골·늑대·용·마왕…) — 비우면 이름·외형에서" }, troopId: { type: "string", description: "이미 있는 적 그룹을 쓸 때만" },
+      }, required: ["name"] },
+      lines: { type: "array", items: { type: "string" }, description: "싸우기 전 보스 대사(1~6줄)" },
+      afterWin: { type: "array", items: { type: "string" }, description: "이긴 직후 보스 대사(선택)" },
+      laterTalk: { type: "array", items: { type: "string" }, description: "이긴 뒤 다시 말 걸면(선택, 비우면 보스는 사라진다)" },
+    }, required: ["boss", "lines"] },
+    async execute(id, params) {
+      return finishContent(id, "add_boss_encounter", params, buildBossEncounter(run, params as BossEncounterSpec));
+    },
+  };
+  const addEndingScene: PiToolShape = {
+    name: "add_ending_scene", label: "엔딩 장면", concurrency: "exclusive",
+    description: "엔딩 장면을 한 번에 짓는다 — 엔딩 정의(에필로그·마지막 제목)와, 그 맵에서 대사 줄 뒤 엔딩을 부르는 이벤트. 언제: afterSwitchId(또는 after 낱말 — 「마왕」이면 마왕 격파 스위치) 가 켜진 뒤 맵에 들어오면 자동, talkTo 를 주면 그 인물에게 말 걸 때. 하위 도구(define_ending·patch_event_page)로 조립하지 않는다.",
+    parameters: { type: "object", properties: {
+      mapId: { type: "string", description: "엔딩 장면 맵 id(또는 맵 이름)" },
+      title: { type: "string", description: "엔딩 이름·마지막 화면 제목" },
+      lines: { type: "array", items: { type: "string" }, description: "장면 대사 — 「이름: 대사」(화자 있음) 또는 대사만" },
+      epilogue: { type: "array", items: { type: "string" }, description: "엔딩 화면 에필로그 줄(3줄 이상 권장)" },
+      talkTo: { type: "string", description: "이 인물에게 말 걸 때 엔딩(선택)" },
+      afterSwitchId: { type: "string", description: "이 스위치가 켜진 뒤에만(선택)" },
+      after: { type: "string", description: "어떤 일 뒤인지 낱말(「마왕」「해골 기사」) — 격파 스위치를 찾는다(선택)" },
+    }, required: ["title", "lines"] },
+    async execute(id, params) {
+      return finishContent(id, "add_ending_scene", params, buildEndingScene(run, params as EndingSceneSpec));
+    },
+  };
+
   const addEvent: PiToolShape = {
     name: "add_event", label: "사건·컷신", concurrency: "exclusive",
     description: "컷신·대화 사건을 비트 목록으로 만든다(walk/say/appear/face/wait/fade/tint/weather/shake/flash/music/emote/camera/look/vanish). 함수가 걸을 수 있는 길·자리를 정하고 미리보기 탐침으로 검사한다.",
@@ -1515,7 +1551,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     }
     return result;
   } });
-  const verbs = [writeBlueprint, buildBlueprintPathVerb, makePlace, ...(makeGameOn() && wantsMakeGame(String(task ?? "")) ? [makeGame] : []), editPlace, moveObject, dressRoomVerb, addPeople, addEvent, addScene, ...(wantsPuzzle(String(task ?? "")) ? [authorPuzzleChain] : []), sealLockedRoomVerb, setObjectiveVerb, drawObjectVerb, placeObject, inspect, roomPartsVerb, createDungeonPartsVerb(env, () => session.places.values()), restoreEvent, ...(helpersOn() ? [askHelpers] : []), askUser]
+  const verbs = [writeBlueprint, buildBlueprintPathVerb, makePlace, ...(makeGameOn() && wantsMakeGame(String(task ?? "")) ? [makeGame] : []), editPlace, moveObject, dressRoomVerb, addPeople, addEvent, addScene, ...(wantsBossEncounter(String(task ?? "")) ? [addBossEncounter] : []), ...(wantsEndingScene(String(task ?? "")) ? [addEndingScene] : []), ...(wantsPuzzle(String(task ?? "")) ? [authorPuzzleChain] : []), sealLockedRoomVerb, setObjectiveVerb, drawObjectVerb, placeObject, inspect, roomPartsVerb, createDungeonPartsVerb(env, () => session.places.values()), restoreEvent, ...(helpersOn() ? [askHelpers] : []), askUser]
     // 음악만 바라는 요청은 맵·이벤트를 쓰는 동사를 싣지 않는다 — 보기·묻기만(2026-10-30 r12: 추격 음악 요청에 상자를 찍었다).
     .filter((tool) => !musicOnly(String(task ?? "")) || MUSIC_ONLY_VERBS.has(tool.name))
     .map((tool) => guard(flattenWrapperTool(tool)));

@@ -88,6 +88,16 @@ const BOSS_WORDS: readonly [RegExp, string, string][] = [
   [/숲의\s*주인|forest\s*lord|forest\s*guardian/, "enemy_troll_cave", "숲의 주인"],
   [/드래곤|dragon|(^|\s)용(\s|$)/, "enemy_dragon_red", "용"],
 ];
+/** 이름·외형 낱말 → 적 그림 id(보스 낱말 → 기사·망령 → 잡몹 낱말). 프로젝트 DB 에 있는 것만. add_boss_encounter 가 쓴다. */
+export function enemyArtFor(project: Project, text: string): string | undefined {
+  const t = text.toLowerCase();
+  const has = (id: string) => project.database.enemies.some((e) => e.id === id);
+  const knights: readonly [RegExp, string][] = [[/해골\s*기사|skeleton\s*knight|죽음의\s*기사|death\s*knight/, "enemy_skeleton_knight"], [/타락한?\s*기사|흑기사|기사|knight/, "enemy_knight_fallen"], [/망령|사령|wraith/, "enemy_wraith_dark"]];
+  for (const [re, id] of BOSS_WORDS) if (re.test(t) && has(id)) return id;
+  for (const [re, id] of knights) if (re.test(t) && has(id)) return id;
+  for (const [re, id] of FOE_WORDS) if (re.test(t) && has(id)) return id;
+  return undefined;
+}
 /** 맵 위 그림이 서로 닮은 적 묶음 — 보스는 잡몹·수문장과 다른 묶음이어야 「보스」로 읽힌다. 골렘은 맵에서 갈색 덩어리라 보스·잡몹 모두 피한다. */
 const LOOKALIKE: readonly (readonly string[])[] = [
   ["enemy_armor_living", "enemy_knight_fallen", "enemy_skeleton_knight"], ["enemy_ghost_pale", "enemy_wraith_dark"],
@@ -207,7 +217,7 @@ const strength = (project: Project, troopId: string | undefined): number =>
  * 요청한 적 하나의 전용 적 그룹. 그림은 그 적 그대로, 세기는 도구가 그 역할로 고르던 그룹(like)에 맞춘 사본 — 원본 그대로 쓰면
  * 부유하는 눈(체력 1312)이 잡몹이 되어 「파티가 레벨을 올려도 전멸」 경고가 났다. 도구 주제 적(dungeonThemeTroops)과 같은 비례 규칙이다.
  */
-function ensureFoeTroop(run: BuildRun, enemyId: string, role: "field" | "boss" | "midBoss", like: string | undefined, name?: string): string | undefined {
+export function ensureFoeTroop(run: BuildRun, enemyId: string, role: "field" | "boss" | "midBoss", like: string | undefined, name?: string): string | undefined {
   const project = run.ctx.project;
   const source = project.database.enemies.find((e) => e.id === enemyId);
   if (!source) return undefined;

@@ -16,7 +16,7 @@ import { bindRefs, changedSince, checkItem, indexProject, isAmbiguous, refsFromD
 import { HookStats } from "./hookStats";
 import { isRegistryTool, preCheck, retryCandidates } from "./argGuard";
 import { covers, requestSkeleton, type SkeletonElement } from "./requestSkeleton";
-import { formatCall, MISSING_HIGH_VERB, nextAfterFailure, nextForItem, scopeRedirect, strategyAfterRepeat, type NextCall } from "./nextCall";
+import { formatCall, MISSING_HIGH_VERB, VERB_SCOPE, nextAfterFailure, nextForItem, scopeRedirect, strategyAfterRepeat, type NextCall } from "./nextCall";
 
 const text = (value: unknown): PiToolExecResult => ({ content: [{ type: "text", text: typeof value === "string" ? value : JSON.stringify(value) }] });
 
@@ -372,7 +372,7 @@ export function withTodoLoop(env: PiAssistantV2Env, store: TodoStore, loop: Todo
       if (write && bindTo && isOpen(bindTo.status)) {
         const meta = store.meta.get(bindTo.id) ?? {};
         const kind = bindTo.check?.kind ?? "";
-        const missing = MISSING_HIGH_VERB[kind];
+        const missing = MISSING_HIGH_VERB[kind] && !(VERB_SCOPE[kind]?.high ?? []).some((v) => verbNames.has(v)) && (kind !== "battle" || (bindTo.check as { boss?: boolean }).boss) ? MISSING_HIGH_VERB[kind] : undefined;
         if (missing && !meta.scoped) {
           store.meta.set(bindTo.id, { ...meta, scoped: true });
           hooks.fire("scope", `${bindTo.id} ${kind}: 상위 동사 없음 — ${tool.name} 로 조립 (${missing})`, { item: bindTo.id, kind, tool: tool.name, missingHighVerb: true });
