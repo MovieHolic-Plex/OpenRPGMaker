@@ -3,9 +3,10 @@
  *
  * 마왕 편의점 처음 하는 사람 검수의 교훈: 오프닝이 길고(조작까지 3분 24초) 애니메틱을 대사로 다시 틀었다.
  * 그래서 애니메틱은 교실 세 컷 약 15초뿐이고, 소환의 방은 대사로 이어 받기만 한다(같은 장면을 두 번 보이지 않는다).
- *   컷 1 밤 9시 52분, 야자 교실. 민재 혼자 남아 폰을 본다(배터리 3%).
- *   컷 2 「떡볶이 먹고 싶다」. 책상 아래 바닥에 금빛 원이 번진다.
- *   컷 3 빛이 교실을 삼킨다 → 흰 화면.
+ *   컷 1 밤 9시 52분, 야자 교실. 민재 혼자 남아 모의고사 문제지를 넘긴다 — 「옳지 않은 것은」을 끝까지 안 읽고 골랐다.
+ *   컷 2 책상 아래 바닥에 금빛 원이 번진다. 민재는 원의 작은 글씨부터 읽는다.
+ *   컷 3 빛이 교실을 삼킨다 → 흰 화면. 마지막으로 읽은 글자는 「일곱 번째」.
+ * (v8c: 「배터리 3%」「떡볶이 먹고 싶다」는 두 검수자가 웹소설 1화 클리셰로 읽었다 — 민재의 버릇 하나로 바꿨다.)
  * 조수가 쓰는 애니메틱 도구(create_opening_animatic_shot · place_opening_background(mapId) · place_opening_charset_actor ·
  * upsert_opening_light_fx · upsert_opening_emote · animate_opening_camera · set_opening_caption · upsert_opening_audio_cue ·
  * set_opening_transition · configure_opening_music)만으로 짓는다. 배경은 게임 맵(교실) 그대로다 — 새 그림 없음.
@@ -107,11 +108,11 @@ function shotNight(project: Project, classMap: string): void {
   sfx(project, id, "tick", SE.tick, 300, 400, 0.4);
   captions(project, id, [
     { atMs: 500, text: "밤 9시 52분. 야간 자율 학습.", color: INK.narr },
-    { atMs: 2600, text: "민재 「폰 배터리 3%. 집에 가고 싶다.」", color: INK.minjae },
+    { atMs: 2400, text: "민재 「17번, 「옳지 않은 것은」. 또 끝까지 안 읽고 골랐네.」", color: INK.minjae },
   ]);
 }
 
-/** 컷 2 — 「떡볶이 먹고 싶다」. 책상 밑에서 금빛 원이 번지고 웅웅 소리가 오른다. */
+/** 컷 2 — 책상 밑에서 금빛 원이 번지고 웅웅 소리가 오른다. 민재는 원의 글씨부터 읽는다. */
 function shotGlow(project: Project, classMap: string): void {
   const id = OPENING_SHOTS.glow, ms = 5200;
   newShot(project, id, ms, { kind: "cut", durationMs: 1 });
@@ -131,8 +132,8 @@ function shotGlow(project: Project, classMap: string): void {
   pop(project, id, "huh", "exclaim", { x: me.x + 18, y: me.y - 20 }, 2400, ms);
   sfx(project, id, "hum", SE.hum, 1500, 3600, 0.7);
   captions(project, id, [
-    { atMs: 300, text: "민재 「떡볶이 먹고 싶다…」", color: INK.minjae },
-    { atMs: 2700, text: "민재 「어? 바닥이 왜 빛나?」", color: INK.minjae },
+    { atMs: 300, text: "바닥에 원이 번진다. 테두리에 작은 글씨.", color: INK.narr },
+    { atMs: 2700, text: "민재 「…이것도 끝까지 읽어야 되나.」", color: INK.minjae },
   ]);
 }
 
@@ -149,7 +150,7 @@ function shotFlash(project: Project, classMap: string): void {
   screenTint(project, id, "white", "#ffffff", 1, "source-over", [{ atMs: 0, value: 0 }, { atMs: 1600, value: 0.25 }, { atMs: 3200, value: 1, ease: "ease-in" }]);
   sfx(project, id, "summon", SE.summon, 900, 1500, 0.9);
   sfx(project, id, "boom", SE.boom, 2900, 700, 0.6);
-  captions(project, id, [{ atMs: 200, text: "민재 「잠깐, 나 아직 야자 안 끝났…」", color: INK.minjae }]);
+  captions(project, id, [{ atMs: 200, text: "민재 「「…일곱 번째」?」", color: INK.minjae }]);
 }
 
 export function buildIsekaiOpening(project: Project, classMap: string): void {

@@ -281,6 +281,8 @@ const B = {
     await battle(page, seg, PLAN3); mark("battle-end");
     await play(page, seg, [], idle, { shotOn: /홀로|점액/ }); mark("after");
     shot(page, "forest-after", 300);
+    // 숲에서 4:00 표본 타이머를 기다리며 20초 넘게 서 있던 것(v8b 두 검수자) — 반반 마을까지 이어 찍는다.
+    await B.goblin(page, seg, mark);
     await seg.pending; delete seg.pending;
   },
   async goblin(page, seg, mark) {

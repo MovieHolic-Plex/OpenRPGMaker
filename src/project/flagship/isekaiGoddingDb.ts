@@ -13,7 +13,7 @@ import throneBackdrop from "./isekaiGoddingBackdrops/battle_backdrop_ig_throne_9
 
 export const ACTOR = { minjae: DEFAULT_ACTOR_ID, edel: "actor_ig_edel", fio: "actor_ig_fio", kkur: "actor_ig_kkur" } as const;
 export const CLASS = { student: "class_ig_student", knight: "class_ig_knight", mage: "class_ig_mage", chief: "class_ig_chief" } as const;
-export const ITEM = { chili: "item_ig_fire_chili", tteok: "item_ig_tteokbokki", crystal: "item_ig_crystal", sword: "item_ig_mop_sword" } as const;
+export const ITEM = { chili: "item_ig_fire_chili", tteok: "item_ig_tteokbokki", crystal: "item_ig_crystal", sword: "item_ig_mop_sword", halfScript: "item_ig_half_script" } as const;
 export const TROOP = {
   slime: "troop_ig_slime",
   goblin: "troop_ig_goblin",
@@ -67,9 +67,9 @@ export function setupIsekaiDatabase(project: Project, backdrops: typeof BACKDROP
   skill("skill_scout_knife_storm", "skill_ig_group_call", { name: "보수 인부 소집", mpCost: mp(6), description: "30년 동안 길을 닦은 인부들이다. 일당은 장부에 달아 둔다. 적 모두를 친다." });
   skill("skill_hero_war_cry", "skill_ig_chief_roar", { name: "징수 고함", mpCost: mp(4), description: "통행세 받을 때 쓰던 목소리. 파티 모두 공격이 오른다." });
   // ── 적 기술
-  skill("skill_sword_slash", "skill_ig_pop_quiz", { name: "감점", power: 70, mpCost: noMp, description: "대본 이탈 1건당 감점. 정확히 아프다." });
-  skill("skill_dark", "skill_ig_mock_exam", { name: "결재 반려", power: 120, mpCost: noMp, scope: "allEnemies", description: "올린 것이 전부 돌아온다. 사유는 적혀 있지 않다." });
-  skill("skill_dark", "skill_ig_retake", { name: "내년에 본다", power: 150, mpCost: noMp, description: "열다섯 번 한 약속. 한 번도 안 지켰다." });
+  skill("skill_sword_slash", "skill_ig_pop_quiz", { name: "감점", power: 110, mpCost: noMp, description: "대본 이탈 1건당 감점. 정확히 아프다." });
+  skill("skill_dark", "skill_ig_mock_exam", { name: "결재 반려", power: 170, mpCost: noMp, scope: "allEnemies", description: "올린 것이 전부 돌아온다. 사유는 적혀 있지 않다." });
+  skill("skill_dark", "skill_ig_retake", { name: "내년에 본다", power: 220, mpCost: noMp, description: "열다섯 번 한 약속. 한 번도 안 지켰다." });
   skill("skill_poison_sting", "skill_ig_goblin_poke", { name: "말뚝 박기", power: 55, mpCost: noMp, description: "길 보수용 말뚝. 사람에게도 박힌다." });
 
   // ── 직업
@@ -121,9 +121,14 @@ export function setupIsekaiDatabase(project: Project, backdrops: typeof BACKDROP
     description: "광장 상인이 판 고추. 「저번 용사님 외상」 이야기를 들었다. 고추장 냄새가 난다." } });
   exec("upsert_item", { item: { ...itemOf("item_rice_ball"), id: ITEM.tteok, name: "이세계 떡볶이", price: 0,
     hpRecovery: { flat: 300, percentMax: 0 }, description: "쌀 반죽을 길게 밀고 불꽃고추로 볶았다. 맵다. 그리고 그립다." } });
+  exec("upsert_item", { item: { ...itemOf("item_old_key"), id: ITEM.halfScript, name: "대본 마지막 장 반쪽", price: 0, consumable: false,
+    description: "왕궁에서 찢은 아래 반쪽. 맨 끝에 다른 글씨체로 「…은 함께 쓰러진다」. 앞 여섯 장에는 없던 글씨다." } });
   exec("upsert_item", { item: { ...itemOf("item_old_key"), id: ITEM.crystal, name: "통신 수정구", price: 0, consumable: false,
     description: "피오가 빌려준 수정구. 여럿이 한꺼번에 말을 주고받는다. 아무도 먼저 쓰지 않는다." } });
 
+  // ── v8c 위협 조정(두 검수자 1순위 「전투에 위협이 없다」): simulate_battle 로 쟀다(useSkills, 30판).
+  //    슬라임 L5 셋: 기술을 쓰면 파티 HP 29% 손실, 통상 공격만이면 50% · 전멸 0. 적이 먼저 움직인다(민첩 75·80 > 파티 36~58).
+  //    감독관 L9 넷: 52% 손실(통상 공격만 97% 승). 마왕 L10 넷: 약 55% 손실. 보스 HP 는 그대로라 45초 안쪽.
   // ── 적 — 보스 HP 는 보통 플레이로 50초 안쪽(처음 하는 사람 검수: 교무부장 900 은 85초, 마왕 1100 은 3분 넘게 걸렸다.
   //    v6 녹화에서 교무부장(표시 590) 67초, 마왕(표시 620) 65초 — 표시 HP 를 400·430 으로 줄였다). 공격력은 그대로 둔다.
   // ── 적 — 보상은 0 이 아니게(마왕 편의점 검수 8: 「EXP +0 · +0 G」 화면은 고장으로 읽힌다).
@@ -135,9 +140,9 @@ export function setupIsekaiDatabase(project: Project, backdrops: typeof BACKDROP
     exec("upsert_enemy", { enemy: { id, name, monsterResourceId: art, stats, actions, skillIds: actions.map((a) => a.skillId), level,
       rewards: { ...(base.rewards as Record<string, unknown>), exp, gold, dropRatePercent: 0 }, ...extra }, clearFields: ["speciesId"] });
   };
-  enemy("enemy_ig_slime", "들슬라임", "generated-enemy-slime-green", { maxHp: 160, maxMp: 0, attack: 64, defense: 10, mind: 10, agility: 20 },
+  enemy("enemy_ig_slime", "들슬라임", "generated-enemy-slime-green", { maxHp: 180, maxMp: 0, attack: 88, defense: 10, mind: 10, agility: 75 },
     [act("skill_attack", 7)], 40, 25, 3);
-  enemy("enemy_ig_slime_red", "붉은 슬라임", "generated-enemy-slime-red", { maxHp: 200, maxMp: 0, attack: 72, defense: 12, mind: 12, agility: 22 },
+  enemy("enemy_ig_slime_red", "붉은 슬라임", "generated-enemy-slime-red", { maxHp: 220, maxMp: 0, attack: 100, defense: 12, mind: 12, agility: 80 },
     [act("skill_attack", 7)], 55, 30, 4);
   enemy("enemy_ig_goblin", "고블린 징수원", "generated-enemy-goblin-scout", { maxHp: 220, maxMp: 0, attack: 52, defense: 24, mind: 20, agility: 40 },
     [act("skill_attack", 6), act("skill_ig_goblin_poke", 7)], 80, 40, 7);
@@ -145,9 +150,9 @@ export function setupIsekaiDatabase(project: Project, backdrops: typeof BACKDROP
     [act("skill_attack", 6), act("skill_ig_goblin_poke", 7)], 150, 80, 9);
   enemy("enemy_ig_quiz", "성문 시험관", "generated-enemy-skeleton-knight", { maxHp: 600, maxMp: 0, attack: 66, defense: 40, mind: 30, agility: 36 },
     [act("skill_attack", 6), act("skill_ig_pop_quiz", 8)], 160, 90, 10);
-  enemy("enemy_ig_dean", "대본 감독관", "generated-enemy-lich-frost", { maxHp: 400, maxMp: 50, attack: 92, defense: 38, mind: 60, agility: 40 },
+  enemy("enemy_ig_dean", "대본 감독관", "generated-enemy-lich-frost", { maxHp: 400, maxMp: 50, attack: 160, defense: 38, mind: 60, agility: 90 },
     [act("skill_ig_pop_quiz", 7), act("skill_ig_mock_exam", 8, { kind: "turn", start: 2, interval: 3 })], 260, 150, 12, { role: "boss" });
-  enemy("enemy_ig_maou", "마왕", "generated-enemy-demon-lord", { maxHp: 430, maxMp: 80, attack: 104, defense: 45, mind: 70, agility: 45 },
+  enemy("enemy_ig_maou", "마왕", "generated-enemy-demon-lord", { maxHp: 430, maxMp: 80, attack: 170, defense: 45, mind: 70, agility: 92 },
     [act("skill_attack", 5), act("skill_ig_retake", 8), act("skill_ig_mock_exam", 9, { kind: "turn", start: 2, interval: 3 })], 500, 300, 15, { role: "boss" });
 
   // upsert_enemy 는 role:boss 에 「보스 위협 하한」(scaleBossToStartParty)을 걸어 HP 를 590·560 으로 되올린다.

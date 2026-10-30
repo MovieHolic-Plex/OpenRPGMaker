@@ -1,7 +1,7 @@
 /**
  * 『이세계로 떠난 한국 고딩, 대본을 찢다』 — 이세계 소환 코미디 JRPG 데모(약 20~25분, 엔딩 셋).
  *
- * 고2 강민재는 야자 시간에 배터리 3% 폰을 보다 이세계 아르벤 왕국에 일곱 번째 용사로 소환된다. 내일은 모의고사다.
+ * 고2 강민재는 야자 시간에 모의고사 문제지를 보다 이세계 아르벤 왕국에 일곱 번째 용사로 소환된다. 내일은 모의고사다.
  * 왕국은 300년 된 「용사 대본」대로 움직이길 바란다. 앞 용사 여섯은 대본대로 했고 아무도 돌아오지 않았다.
  * 민재의 무기는 「끝까지 읽기」다 — 대본, 두 마을의 장부, 성문 시험지, 귀환 주문서의 작은 글씨.
  * 일곱 번째 호위 기사 에델, 마탑 필기 일곱 번 낙방한 엘프 피오, 30년 도로 보수 장부를 든 고블린 꾸르가 붙는다.
@@ -48,6 +48,7 @@ const SW_OVER = "sw_ig_over";
 const SW_HOME = "sw_ig_end_home";
 const SW_STAY = "sw_ig_end_stay";
 const SW_RUIN = "sw_ig_end_ruin";
+const SW_TORN = "sw_ig_script_torn";
 /** 대본 이탈이 이만큼이면 7장 부록 결말의 연대기 줄이 「지킨 것 없음」이 된다. */
 const CHAOS_KING = 4;
 
@@ -109,6 +110,22 @@ const battle = (troopId: string, victory: Command[], defeat: Command[], music = 
   { kind: "battleProcessing", troopId, canEscape: false, canLose: true, branchOnResult: true, victoryBranch: victory, defeatBranch: defeat } as Command,
 ];
 const setLight = (ambient: number, color: string, ms = 0): Command => ({ kind: "setLighting", ambient, color, transitionMs: ms } as Command);
+/**
+ * 왕좌의 꼴 — 배재민이 전투에서 악마 그림이 되는 이유를 화면에 먼저 보인다(v8b 두 검수자: 대화는 교복 소년, 전투는 기성 악마라
+ * 같은 사람으로 안 읽혔다). 전투와 같은 그림(generated-enemy-demon-lord)을 픽처로 띄웠다 지운다. 새 그림·생성 인물 없음.
+ */
+const MAOU_FORM_PIC = "pic_ig_maou_form";
+const MAOU_FORM_ART = "generated-enemy-demon-lord";
+const throneForm = (): Command[] => [
+  playSe(SE_BOOM), shake(700, "4"), flash("white", 250),
+  { kind: "showPicture", pictureId: MAOU_FORM_PIC, resourceId: MAOU_FORM_ART, x: 336, y: 30, scale: 100, opacity: 0, waitForPicture: false } as Command,
+  { kind: "showPicture", pictureId: MAOU_FORM_PIC, resourceId: MAOU_FORM_ART, x: 336, y: 30, scale: 100, opacity: 235, durationMs: 700, easing: "easeOut", waitForPicture: true } as Command,
+  ...caption("왕좌의 그림자가 배재민 위로 내려앉았다.\n15년 동안 앉아 있던 모양 그대로."),
+  { kind: "showPicture", pictureId: MAOU_FORM_PIC, resourceId: MAOU_FORM_ART, x: 336, y: 30, scale: 100, opacity: 0, durationMs: 300, waitForPicture: true } as Command,
+  { kind: "erasePicture", pictureId: MAOU_FORM_PIC } as Command,
+];
+/** 전투 뒤 — 그림자가 걷히고 교복이 다시 보인다. */
+const formLifts = (): Command[] => [...caption("그림자가 걷혔다. 회색 교복이 다시 보였다.")];
 const custom = (map: GameMap, resourceId: string): void => { map.bgm = { mode: "custom", resourceId } as GameMap["bgm"]; };
 
 // ── 마왕성 장식 ──
@@ -323,10 +340,14 @@ function buildHall(project: Project, b: Built): void {
     ...say("king", "doubtful", "시험은 마왕을 쓰러뜨린 뒤에 보시오."),
     choices([
       { text: "대본을 찢는다", then: [
-        playSe(SE_PAPER), ...chaos(),
+        // v8c: 찢기를 버튼 이름으로만 쓰지 않는다(두 검수자) — 실제로 갈라지고, 숨긴 부록 한 줄이 먼저 손에 들어온다.
+        playSe(SE_PAPER), shake(250, "1"), emote(KING, "exclamation", 700), emote(PRIEST, "exclamation", 700),
+        ...caption("대본 마지막 장이 위아래로 갈라졌다.\n아래 반쪽이 민재 손에 남았다."),
+        giveItem(ITEM.halfScript), setSw(SW_TORN), ...chaos(),
         ...say("king", "surprised", "그건 왕국에 한 부뿐인 대본이오!"),
         ...say("minjae", "base", "이거 보고 돌아온 용사는 있어요?"),
         ...say("king", "serious", "그건 대본에 없소."),
+        ...think("찢긴 쪽 맨 아래, 다른 글씨체로 한 줄.\n「…은 함께 쓰러진다」"),
       ] },
       { text: "마지막 장부터 펼친다", then: [
         playSe(SE_PAPER),
@@ -540,9 +561,9 @@ function buildGuild(project: Project, _b: Built): void {
   map.events.push(event(COOK, "여관 주인", cookAt, [
     page(`${COOK}_p`, [], [faceHero(COOK),
       ...say("cook", "base", "배고프면 스튜 있어. 빵이랑."),
-      ...say("minjae", "sad", "떡볶이 먹고 싶다…"),
-      ...say("cook", "doubtful", "떡…볶이? 그게 뭔데?"),
-      ...say("minjae", "determined", "쌀 반죽을 길게 밀어서, 빨갛고 맵게 볶아요."),
+      ...say("minjae", "base", "쌀 있어요? 쳐서 길게 민 거."),
+      ...say("cook", "doubtful", "쌀을 왜 쳐?"),
+      ...say("minjae", "base", "학교 앞에서 팔던 게 있어요. 빨갛고 맵게 볶은 거."),
       ...say("cook", "content", "매운 거라면 장터 불꽃고추지.\n한 줌 가져오면 만들어 볼게."),
       setSw(SW_CHILI_ASK), objective("광장 상인에게 불꽃고추 구하기"),
     ], { who: "cook" }),
@@ -551,7 +572,8 @@ function buildGuild(project: Project, _b: Built): void {
       ...say("cook", "base", "왔구나. 잠깐만."),
       takeItem(ITEM.chili), ...fadeOut(400), playSe("cc0-se-osx-pot-01"), wait(700), ...fadeIn(400),
       ...say("cook", "content", "자. 맛 좀 봐."),
-      ...say("minjae", "crying", "…이 맛이야. 조금 다른데, 이 맛이야."),
+      ...say("minjae", "base", "…맵네요."),
+      ...think("학교 앞 맛은 아니다. 다 먹었다."),
       giveItem(ITEM.tteok), setSw(SW_TTEOK), playSe(SE_OK), ...caption("이세계 떡볶이를 얻었다."),
       ...say("cook", "base", "하나 더 싸 줄게. 누구 줄 사람 있으면 줘."),
       ifCond(varAtLeast(V_STAGE, 2), [objective("동쪽 성문으로 나가 반반 마을로")], [objective("왕도 광장 앞 모험가 길드에서 등록하기")]),
@@ -744,6 +766,10 @@ function buildCastle(project: Project, b: Built): void {
     ...say("dean", "base", "왕국 대본 감독관이오.\n용사가 대본대로 끝나는지 확인하오."),
     ...say("minjae", "base", "끝난다는 게 어떻게 끝나는 건데요?"),
     ...say("dean", "base", "7장 부록. 「용사와 마왕은 함께 쓰러진다.」\n그래야 왕국이 다음 용사 예산을 받소."),
+    ifCond(swOn(SW_TORN), [
+      ...say("minjae", "base", "그 줄 아래 반쪽, 저한테 있어요. 왕궁에서 찢었거든요."),
+      ...say("dean", "base", "…찢은 용사는 처음이오. 사본은 내 품에 있소."),
+    ]),
     ...say("edel", "surprised", "부록이 있었습니까?"),
     ...say("dean", "base", "기사에겐 안 보여 주오."),
     ...battle(TROOP.dean,
@@ -792,13 +818,16 @@ function buildThrone(project: Project, b: Built): void {
       ...say("jaemin", "doubtful", "이 얼굴로?"),
       ...say("minjae", "base", "여기선 안 늙는다면서요. 주민등록상 서른넷이면 되죠."),
       ...say("jaemin", "serious", "가면 수능이다. 한 번만 붙어 보자.\n내가 아직 겁나는지 알고 싶다."),
-      ...battle(TROOP.maouExam, [...say("jaemin", "sad", "겁난다. 그래도 간다.")], [...say("jaemin", "base", "이겼다. 근데 너희, 끝까지 안 물러서더라.\n간다.")], BGM_BOSS),
+      ...say("jaemin", "serious", "왕좌에 앉으면 이 꼴이 된다. 놀라지 마라."),
+      ...throneForm(),
+      ...battle(TROOP.maouExam, [...formLifts(), ...say("jaemin", "sad", "겁난다. 그래도 간다.")], [...formLifts(), ...say("jaemin", "base", "이겼다. 근데 너희, 끝까지 안 물러서더라.\n간다.")], BGM_BOSS),
       ...homeScene,
     ] },
     ...(withTteok ? [{ text: "떡볶이 드실래요?", then: [takeItem(ITEM.tteok), ...stayScene] }] : []),
     { text: "주문서 내놔요", then: [
       ...say("jaemin", "serious", "그래. 대본대로 하자. 7장 부록까지.\n왕좌에 앉으면 이 꼴이 된다. 보여 주지."),
-      ...battle(TROOP.maouBrawl, [...say("jaemin", "sad", "졌다.")], [...say("jaemin", "base", "아직이다, 후배.")], BGM_BOSS),
+      ...throneForm(),
+      ...battle(TROOP.maouBrawl, [...formLifts(), ...say("jaemin", "sad", "졌다.")], [...formLifts(), ...say("jaemin", "base", "아직이다, 후배.")], BGM_BOSS),
       ...chaosScene,
     ] },
   ]);
@@ -968,13 +997,15 @@ function endingChaosArrive(): Command[] {
     ...fadeIn(1200), bgm(BGM_END, 800),
     ...caption("먼지가 가라앉았다. 왕좌가 있던 자리가 꺼져 있다."),
     ...say("edel", "serious", "의전 방패. 이번엔 진짜로 막았습니다."),
-    ...say("fio", "worried", "주문서는요?"),
+    ...say("jaemin", "embarrassed", "성 수리비는 누가 내냐."),
+    ...say("minjae", "base", "국고요. 활동비 장부 비어 있던데."),
+    ...say("fio", "worried", "…주문서는요?"),
     ...say("jaemin", "base", "주문서도 탔다."),
     ...say("minjae", "base", "그럼 모의고사는…"),
     ...say("jaemin", "base", "결시다. 15년 하면 익숙해진다."),
     ...think("내일 2학년 3반 열네 번째 자리는 빈다.\n담임은 출석부에 뭐라고 적을까."),
-    ...say("jaemin", "embarrassed", "성 수리비는 누가 내냐."),
-    ...say("minjae", "base", "국고요. 활동비 장부 비어 있던데."),
+    // v8c: 이 줄 뒤에 농담을 두지 않는다(두 검수자: 수리비 농담이 여운을 끊었다) — 앞으로 옮기고 침묵을 둔다.
+    wait(1800),
     ifCond(varAtLeast(V_CHAOS, CHAOS_KING), [
       ...caption("왕국 연대기에 한 줄이 남았다.\n「일곱 번째 용사 강민재. 대본 일곱 장 중 지킨 것 없음. 생존.」"),
     ], [
