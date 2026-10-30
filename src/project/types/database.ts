@@ -791,6 +791,13 @@ export interface DatabaseStateEffect {
   operation: "add" | "remove";
 }
 
+export interface EnemyWalkChip {
+  /** 캐릭터 칩 시트 resourceId(assets.uploaded 키 또는 번들 칩). */
+  characterResourceId: string;
+  /** 시트 안 캐릭터 번호 0~7(4열 x 2행). */
+  characterIndex: number;
+}
+
 export interface EnemyRecord {
   id: EnemyId;
   name: string;
@@ -804,6 +811,11 @@ export interface EnemyRecord {
    * 늑대·맹수처럼 날랜 적은 120~160, 굼뜬 거인은 70~90. `project/battleStaging.ts` · `player/battleRetroMotion.measureEnemyReach`.
    */
   lungeSpeedPercent?: number;
+  /**
+   * 걷기 칩(RM2000 CharSet 288x256, 24x32 프레임)으로 서는 적. 지정하면 monsterResourceId 대신 이 칩의 오른쪽 방향 줄로 전투에 선다
+   * (적은 왼쪽에 서서 오른쪽을 본다). 생략 = 기존 몬스터 그림. `player/battleWalkChipBattler` · `battleFieldDom.enemyButton`.
+   */
+  walkChip?: EnemyWalkChip;
   /**
    * 피해 계열별 받는 피해 %(생략 = 100). physical = 공격력 계열(statistic attack) 피해, magic = 마력 계열(statistic mind) 피해.
    * 0 = 그 계열 무효(「무효」 꼬리표), 300 = 세 배. 상태의 runtimeEffects.damageTypeRates 가 걸려 있으면 그 값이 이 값을 대신한다

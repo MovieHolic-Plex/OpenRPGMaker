@@ -72,6 +72,8 @@ export function normalizeEventPage(page: Pick<EventPage, "id"> & Partial<EventPa
       ...(movement?.chaseLunge ? { chaseLunge: movement.chaseLunge } : {}),
       ...(movement?.approachStyle ? { approachStyle: movement.approachStyle } : {}),
       ...(movement?.chaseBrain ? { chaseBrain: movement.chaseBrain } : {}),
+      ...(movement?.quietBreath !== undefined ? { quietBreath: movement.quietBreath } : {}),
+      ...(movement?.footsteps ? { footsteps: movement.footsteps } : {}),
       ...(movement?.chaseStepMs !== undefined ? { chaseStepMs: movement.chaseStepMs } : {}),
     },
     commands: Array.isArray(page.commands) ? page.commands : [],

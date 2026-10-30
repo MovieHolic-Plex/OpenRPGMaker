@@ -1608,6 +1608,16 @@ Playwright 의 `locator.click()` 은 누르기 전에 `scrollIntoViewIfNeeded` �
 `@/project/store`, 내보내기 플레이어는 `exportProjectStoreShim` 을 쓰므로 **편집기
 경로로 하는 런타임 QA 는 출하물을 검증하지 않는다.**
 
+### 사람 손 연타 — `keyBurst` (2026-10-30)
+
+`key` op(`page.keyboard.press`)은 키마다 렌더러 처리를 기다리므로, 부하가 걸린 판(load 80)에서는 「110ms 간격 연타」가
+300~1000ms 간격으로 벌어져 「쉬었다 다시 누른 키」와 구별되지 않는다. 연타·입력 타이밍을 재는 시나리오는 `keyBurst` 를 쓴다:
+`{ kind: "keyBurst", keys: ["Enter", …, "ArrowDown", "Enter"], intervalMs: 110 }`(또는 `key`+`times`). 실제 시계로 그 시각에
+CDP `Input.dispatchKeyEvent` 를 보내고 누른 시각(`timestamp`)을 박는다 — 페이지의 `event.timeStamp` 가 정확히 110ms 간격이 되고,
+배달만 렌더러가 따라오는 대로 늦는다(실제 키보드와 같은 모양). 쓰는 곳: `choice-mash`(선택지·숫자 입력 연타 거르기,
+`openwiki/runtime-pre-edit-routing.md` 「선택지 입력 유예」). 이 머신에서는 `--netns` 없이 돌리면 부팅이 `ERR_NETWORK_CHANGED` 로
+타이틀 대기 120초 시간 초과가 난다 — 런치 플래그만으로는 막히지 않는 날이 있다.
+
 ### 바라보는 방향 기록 — `recordUntilJs` (2026-10-21)
 
 대사·연출 장면의 «누가 누구를 보는가» 는 비트 끝 한 장으로는 안 보인다. `recordUntilJs` op 은 `pressUntilJs` 처럼 넘기되

@@ -94,6 +94,47 @@
   min-width: 0;
 }
 
+/* 선택지 한 줄 = index | text | 조건 | delete, 그 아래 접히는 조건 칸. */
+.event-command-choice-item {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.event-command-choice-item > .event-command-choice-row {
+  grid-template-columns: 28px minmax(0, 1fr) auto auto;
+}
+
+.event-command-choice-condition-toggle {
+  white-space: nowrap;
+}
+
+.event-command-choice-condition-toggle.is-active {
+  font-weight: 700;
+}
+
+.event-command-choice-conditions {
+  border-left: 2px solid var(--event-rm-mid);
+  display: grid;
+  gap: 6px;
+  margin-left: 28px;
+  min-width: 0;
+  padding: 2px 0 4px 8px;
+}
+
+.event-command-choice-condition-slot {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  min-width: 0;
+}
+
+.event-command-choice-condition-head {
+  align-items: center;
+  display: flex;
+  gap: 6px;
+}
+
 .event-command-choice-row-prompt {
   grid-template-columns: 44px minmax(0, 1fr);
 }

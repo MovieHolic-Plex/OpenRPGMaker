@@ -218,7 +218,9 @@ try {
     const reports = events.filter(e => e.type === 'assistant').map(e => (e.text ?? '').trim()).filter(Boolean);
     const answer = reports.at(-1) ?? '';
     const draftReports = reports.slice(0, -1);
-    const tools = events.filter(e => e.type === 'tool_end' || e.type === 'tool_start').map(e => ({ type: e.type, name: e.name, ok: e.ok, summary: typeof e.summary === 'string' ? e.summary.slice(0, 400) : undefined }));
+    const tools = events.filter(e => e.type === 'tool_end' || e.type === 'tool_start').map(e => ({ type: e.type, name: e.name, ok: e.ok, summary: typeof e.summary === 'string' ? e.summary.slice(0, 400) : undefined,
+      // 모델이 받은 글 그대로(영어 거절·Fixed call·고리 메모, 최대 4000자). summary 는 화면·장부용 원문 요약이다.
+      ...(typeof e.modelText === 'string' ? { modelText: e.modelText.slice(0, 4000) } : {}) }));
     const turn = { step, kind, input: body, outcome, elapsedMs: Date.now() - startedAt, saveKind, revision: snap.revision, sha256: snap.sha256,
       requests: requests.slice(requestMark), errors: events.filter(e => ['error', 'stream_error'].includes(e.type)).map(e => e.message),
       pageErrors: pageErrors.slice(errorMark), toolCalls: tools.filter(t => t.type === 'tool_end'), pendingCards: pending, answer, draftReports,

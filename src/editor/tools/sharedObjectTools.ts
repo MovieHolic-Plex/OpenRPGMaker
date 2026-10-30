@@ -48,7 +48,7 @@ function flatOverFlat(project: Project, map: GameMap, kit: StructureKitDef | und
 }
 
 type Layers = "both" | "lower" | "upper";
-type Resolved = { name: string; source: TilesetDef; pattern: StampPattern; assets: Project["assets"]["uploaded"]; defaultLayers: Layers; entrances?: StructureKitDef["parts"]; kit?: StructureKitDef };
+export type Resolved = { name: string; source: TilesetDef; pattern: StampPattern; assets: Project["assets"]["uploaded"]; defaultLayers: Layers; entrances?: StructureKitDef["parts"]; kit?: StructureKitDef };
 
 /** 서는 소품 킷인가 — 발자국 검사 대상. 건물(입구)·지형·다리·벽 걸이·물 위 부품은 제외(그들은 놓기 규칙·받침 규칙이 본다). */
 function isStandingPropKit(kit: StructureKitDef, pattern: StampPattern): boolean {
@@ -81,7 +81,7 @@ export function prepareSharedObject(objectId: unknown): Promise<void> {
   return def?.source.kind === "place-kit" ? preloadRegionReferenceScene(def.source.referenceId).then(() => undefined) : Promise.resolve();
 }
 
-function resolveObject(project: Project, requestedId: string): Resolved {
+export function resolveObject(project: Project, requestedId: string): Resolved {
   const objectId = resolveObjectAlias(requestedId);
   const def = sharedObjectDef(objectId);
   if (def) {

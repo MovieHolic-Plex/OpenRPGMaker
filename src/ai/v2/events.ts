@@ -28,17 +28,17 @@ import {
 import type { BuildRun, ContentBuildResult, EventBeat, EventSpec } from "./types";
 
 export const EVENT_CARD =
-  "이벤트(events) 명세: {kind:'cutscene'|'talk'|'trigger', when?:'game-start'|'touch'|'talk', mapId?, where?, at?, beats:[…]}. " +
-  "after:'촌장' = 그 NPC 와 대화가 끝나면 이어서(그 NPC 대화 끝에 붙고 한 번만 — 말 걸기 페이지가 여럿(낮·밤)이면 afterPage:번호), afterTalk:[…] = 장면 뒤 그 NPC 가 할 말(밤이 됐으면 밤 인사처럼 바뀐 상황에 맞게). " +
-  "cutscene+game-start = 게임이 시작되면 한 번만 자동 재생(시작 맵, 맵마다 하나 — 다시 부르면 앞 컷신을 바꾼다). 비트 do: " +
-  "walk{who,to}=걷기(to=길·광장·입구·문 앞 같은 자리 낱말, 다른 사람 이름이면 그 곁으로 걸어가 마주 선다, {x,y} 는 꼭 필요할 때만) / " +
-  "say{who,text}=대사(who 를 비우면 내레이션) / appear{who,where?,looks?,talk?}=그 자리에 «팍» 나타남(where 생략 가능 — 뒤에 주인공에게 걸어오면 함수가 4~8칸 떨어진 길 위를 고른다; talk=컷신 뒤 말 걸면 할 말 배열) / " +
-  "face{who,toward}=바라봄 / wait{ms} / fade{dir:'in'|'out'} / " +
-  "tint{tone:'night'|'dusk'|'dawn'|'sepia'|'clear'}=화면 색(밤이 되면 컷신 뒤에도 밤으로 남는다, 되돌리려면 clear) / weather{weather:'rain'|'storm'|'snow'|'fog'|'none',intensity?:0~1}=실제 날씨(비가 오기 시작한다 → weather rain; tint 로 흉내 내지 않는다, 컷신 뒤에도 남는다) / shake{strength?:'weak'|'medium'|'strong',axis?:'vertical'(지진·쿵)|'horizontal'(부딪힘),ms?}=화면 흔들림(지진은 camera 로 흉내 내지 않는다) / flash{color?:'white'|'#rrggbb',ms?}=번쩍(번개·폭발 — fade 로 흉내 내지 않는다) / music{action:'bgm'|'se'|'bgs'|'stop'|'fade',query}=배경 음악 바꾸기(축제·전투 음악 등)·효과음·bgs=음악 밑에 계속 깔리는 환경음(바람·심장 고동·웅웅거림) — query 는 음원 낱말(공포: 비명·심장·삐걱·물방울·웅웅·속삭임·쾅·발소리는 함수가 만들어 넣는다) / emote{who,emote:'!'|'?'|'♥'|'땀'|'화'|'…'|'zzz'}=머리 위 감정 표시(놀람 «!»은 대사로 쓰지 않고 이것) / camera{to}=카메라를 자리 낱말·사람·'x,y' 로 옮겨 보여 줌, to:'back' 이면 주인공에게 복귀(빠뜨려도 끝에 돌아온다) / " +
-  "look{who,as:'shadow'|'ghost'|'normal'}=검은 실루엣·반투명 유령·원래 모습 / vanish{who}=연기처럼 사라짐(«지나가는» 그림자는 등장한 반대쪽 자리 낱말로 걸어가 사라진다 — 다른 사람 곁으로 걸으면 «찾아온» 장면이 된다). " +
-  "대사 속 마을·사람 이름은 맵 이름·기존 NPC 대사에 있는 것을 그대로 쓴다(새로 짓지 않는다). " +
-  "who: 주인공·player·hero = 플레이어, 그 밖의 이름 = 컷신에 나타나는 사람(appear 로 먼저 등장시키거나 맵에 이미 있는 NPC 이름). " +
-  "함수가 모든 걸음을 실제 통행 격자로 모의해 3칸 미만·못 닿는 걷기를 고치고, 레터박스·마주 보기를 넣고, 장면 그림 몇 장을 비평가가 본다.";
+  "Events spec: {kind:'cutscene'|'talk'|'trigger', when?:'game-start'|'touch'|'talk', mapId?, where?, at?, beats:[…]}. " +
+  "after:'촌장' = play right after talking with that NPC ends (appended to the end of that NPC's talk, once only — if the NPC has several talk pages (day/night) use afterPage:number), afterTalk:[…] = what that NPC says after the scene (fit the changed situation, e.g. a night greeting once it is night). " +
+  "cutscene+game-start = plays once automatically when the game starts (start map, one per map — calling again replaces the earlier cutscene). Beat do: " +
+  "walk{who,to} = walk (to = a spot word like road, square, entrance, in front of the door; another person's name walks next to them and faces them; {x,y} only when needed) / " +
+  "say{who,text} = a line (empty who = narration) / appear{who,where?,looks?,talk?} = «pops» into that spot (where can be omitted — if they then walk to the hero, the function picks a road cell 4–8 cells away; talk = lines when talked to after the cutscene) / " +
+  "face{who,toward} = look toward / wait{ms} / fade{dir:'in'|'out'} / " +
+  "tint{tone:'night'|'dusk'|'dawn'|'sepia'|'clear'} = screen color (night stays night after the cutscene; use clear to undo) / weather{weather:'rain'|'storm'|'snow'|'fog'|'none',intensity?:0~1} = real weather (rain starts → weather rain; do not fake it with tint; it stays after the cutscene) / shake{strength?:'weak'|'medium'|'strong',axis?:'vertical'(quake, thud)|'horizontal'(impact),ms?} = screen shake (do not fake a quake with camera) / flash{color?:'white'|'#rrggbb',ms?} = flash (lightning, explosion — do not fake it with fade) / music{action:'bgm'|'se'|'bgs'|'stop'|'fade',query} = change background music (festival, battle music…) · sound effect · bgs = ambient loop under the music (wind, heartbeat, hum) — query is a sound word (horror: 비명 scream · 심장 heartbeat · 삐걱 creak · 물방울 drip · 웅웅 hum · 속삭임 whisper · 쾅 bang · 발소리 footsteps are synthesized by the function) / emote{who,emote:'!'|'?'|'♥'|'땀'|'화'|'…'|'zzz'} = emotion icon over the head (use this for a surprised «!», not a line) / camera{to} = move the camera to a spot word, a person or 'x,y' to show it; to:'back' returns to the hero (it also returns at the end if you forget) / " +
+  "look{who,as:'shadow'|'ghost'|'normal'} = black silhouette · translucent ghost · normal look / vanish{who} = vanish like smoke (a «passing» shadow walks to a spot word on the opposite side from where it appeared and vanishes — walking next to someone makes it a «visiting» scene). " +
+  "Town and person names in lines must be the ones already in map names and existing NPC lines (do not invent new ones). " +
+  "who: 주인공·player·hero = the player; any other name = a person appearing in the cutscene (bring them in with appear first, or use an NPC name already on the map). " +
+  "The function simulates every walk on the real passability grid and fixes walks under 3 cells or unreachable ones, adds letterbox and facing, and the critic looks at a few scene pictures.";
 
 type Cell = { x: number; y: number };
 

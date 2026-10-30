@@ -41,6 +41,11 @@ export interface AudioPlayOptions {
   readonly playbackRate?: number;
   // 스테레오 밸런스(-1 왼쪽 … 1 오른쪽). 지정하면 이 요청이 실제 재생될 때 적용된다.
   readonly pan?: number;
+  /**
+   * 위치음(발소리 등): pan 을 이 소리에만 쓰고 엔진의 밸런스 값으로 남기지 않는다.
+   * 생략하면 예전처럼 pan 이 이후 재생의 기본 밸런스가 된다(명령 「밸런스」 계약).
+   */
+  readonly positional?: boolean;
 }
 
 // 브라우저 QA 가 읽는 현재 적용값 스냅숏.
@@ -84,6 +89,8 @@ export class AudioEngine {
   private readonly loopTracks: Map<AudioChannel, ManagedTrack> = new Map();
   private readonly oneShots: Set<ManagedTrack> = new Set();
   private readonly fadingTracks: Set<ManagedTrack> = new Set();
+  /** 숨어 있는 동안의 고리(심장 고동 — interaction.heldSe). 채널 고리(BGM·BGS)와 따로 돌아 그 둘을 끊지 않는다. */
+  private heldLoop: ManagedTrack | null = null;
   private volumes: Record<AudioVolumeGroup, number> = { bgm: 0.7, se: 0.8 };
   // 효과음 덕킹(BGM 그룹에만 곱한다). 전투 효과음은 Web Audio 로 곧장 나가서 이 엔진의 SE 그룹을 거치지 않는다 —
   // 최근 마스터링된 BGM(평균 -14dB) 위에서 RTP 효과음(평균 -20dB 안팎)이 묻혀 「전투에 효과음이 없다」로 들렸다(2026-10-30 실측).
@@ -175,7 +182,7 @@ export class AudioEngine {
       this.atmosphere.setVolume(this.volumes.se);
     }
     // 재생 중인 트랙에 즉시 반영 — 정지 후 재생을 요구하지 않는다.
-    for (const track of [...this.loopTracks.values(), ...this.oneShots, ...this.fadingTracks]) {
+    for (const track of [...this.loopTracks.values(), ...this.oneShots, ...this.fadingTracks, ...(this.heldLoop ? [this.heldLoop] : [])]) {
       if (volumeGroupForChannel(track.channel) === group) this.updateTrackVolume(track);
     }
   }
@@ -265,6 +272,7 @@ export class AudioEngine {
     const fadeInMs = options?.fadeInMs;
     const playbackRate = options?.playbackRate;
     const pan = options?.pan;
+    const positional = options?.positional === true;
     const request: AudioRequest = {
       channel,
       resourceId,
@@ -274,6 +282,7 @@ export class AudioEngine {
       ...(fadeInMs === undefined ? {} : { fadeInMs: Math.max(0, fadeInMs) }),
       ...(playbackRate === undefined ? {} : { playbackRate }),
       ...(pan === undefined ? {} : { pan }),
+      ...(positional ? { positional } : {}),
     };
     const { state, immediate } = requestAudio(this.queue, request);
     this.queue = state;
@@ -290,8 +299,37 @@ export class AudioEngine {
     this.fadeOutAndDispose(track, fadeMs);
   }
 
+  /**
+   * 숨기 고리를 켜거나(resourceId·url) 끈다(null). 같은 소리면 그대로 둔다. 효과음 음량을 따른다.
+   * 잠금 해제 전에는 켜지 않는다 — 숨기는 키 입력 뒤에만 일어난다.
+   */
+  holdLoop(resourceId: string | null, url: string | null, fadeMs = 400): void {
+    if (typeof window === "undefined" || typeof Audio === "undefined") return;
+    const current = this.heldLoop;
+    if (resourceId && url && current?.resourceId === resourceId) return;
+    if (current) {
+      this.heldLoop = null;
+      this.fadeOutAndDispose(current, fadeMs);
+    }
+    if (!resourceId || !url || !this.queue.unlocked) return;
+    this.qaObservation?.resources.push(resourceId);
+    const track: ManagedTrack = { channel: "se", resourceId, audio: this.createElement(url, true, this.playbackRate, 0), fadeTimer: null, gain: 1, fadeLevel: 0 };
+    track.audio.volume = 0;
+    this.heldLoop = track;
+    void track.audio.play()?.catch?.(() => { if (this.heldLoop === track) this.heldLoop = null; this.disposeTrack(track); });
+    this.fadeTo(track, 0, 1, fadeMs);
+  }
+
+  heldLoopResourceId(): string | null {
+    return this.heldLoop?.resourceId ?? null;
+  }
+
   // 세이브 로드/씬 종료: 모든 오디오 정지.
   stopAll(fade = false): void {
+    if (this.heldLoop) {
+      this.disposeTrack(this.heldLoop);
+      this.heldLoop = null;
+    }
     this.weather.stop();
     this.atmosphere.stop();
     this.queue = clearPending(this.queue);
@@ -360,6 +398,7 @@ export class AudioEngine {
   }
 
   private resolvePan(request: AudioRequest): number {
+    if (request.positional && request.pan !== undefined) return clampNumber(request.pan, -1, 1, 0);
     if (request.pan !== undefined) this.pan = clampNumber(request.pan, -1, 1, 0);
     return this.pan;
   }
