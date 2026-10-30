@@ -35,6 +35,7 @@ import { genId } from "@/util/id";
 import { chestOpenCommands, chestOpenedGraphic, lootGrantCommands } from "@/editor/lootFeedback";
 import { buildMapPlacementContext } from "@/ai/mapPlacementContext";
 import { laneCells } from "@/ai/v2/placementRules";
+import { noteToolChosenGraphic } from "./toolChosenGraphics";
 import type { Command, Condition, Dir, EventPage, EventPageCondition, EventPageGraphic, FaceGraphic, GameEvent, GameMap, GiftPrefs, GiftResponses, MoveCommand, MoveRoute, NpcScheduleEntry, NpcScheduleWhen, Project, SelfSwitchKey, ShopStockEntry, TransferFade, Trigger } from "@/project/types";
 import {
   canonicalizeSayBeatAliases,
@@ -572,6 +573,7 @@ function fillRequiredPageFields(event: GameEvent, page: Partial<EventPage>, page
       // 이름에 맞는 그림이 없으면 투명으로 두고 알린다. 이름과 무관한 대체 그림(예전 보석 표식)은 붙이지 않는다 —
       // 「고대 진실의 제단」이 보석으로 저장돼 제단 자리에 보석이 놓였다(2026-09-27 사용자 지적).
       page.graphic = object.graphic;
+      noteToolChosenGraphic(object.graphic);
       // 칩 그림 사물(문·철창·상자)은 조사하면 플레이어 쪽으로 돌아 다른 줄(열린 문짝)을 보였다 — 잠긴 문이 열린 문으로 보였다(2026-10-28 interior 장부 38).
       if (!object.graphic.transparent && page.animationType === undefined) page.animationType = "fixedGraphic";
       warnings?.push(object.graphic.transparent
@@ -580,6 +582,8 @@ function fillRequiredPageFields(event: GameEvent, page: Partial<EventPage>, page
         : `${event.id}.${pageId}: 조사할 사물 '${event.name ?? event.id}' 에 이름으로 찾은 그림 「${object.label}」 을 붙였습니다.`);
     } else {
       page.graphic = siblingGraphic ? structuredClone(siblingGraphic) : previousLook ? structuredClone(previousLook) : resolveGraphicQuery("villager");
+      // 주민 기본 칩은 도구가 고른 것이다 — 모델 선택 관문이 거절하지 않게 적는다(형제·이전 외형은 이미 그 이벤트의 칩이라 관문이 통과시킨다).
+      if (!siblingGraphic && !previousLook) noteToolChosenGraphic(page.graphic);
       warnings?.push(
         siblingGraphic
           ? `${event.id}.${pageId}: 대화가 있는 action 페이지인데 그래픽이 비어 있어 보이지 않습니다 — 다른 페이지의 charset 을 재사용했습니다.`
