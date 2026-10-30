@@ -851,7 +851,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
       // 방이 둘 미만인 dungeonDesign(스키마를 기본값으로 채운 빈 껍데기 {rooms:[], links:[]})은 «설계를 바꾸지 않는다»로 읽는다 — make_place(screenDungeonSpec)와 같다.
       // 2026-10-30 scenes-duel terra boss-room: edit_place 가 이 껍데기로 «dungeonDesign.rooms 에 방이 둘 이상» 거절을 받았다(terra v2 동사 거절 1위).
       const shellDesign = !!patch1.set?.dungeonDesign && !(Array.isArray(patch1.set.dungeonDesign.rooms) && patch1.set.dungeonDesign.rooms.length >= 2);
-      const patch: PlacePatch = shellDesign ? { ...patch1, set: (({ dungeonDesign: _d, ...rest }) => rest)(patch1.set!) } : patch1;
+      let patch: PlacePatch = shellDesign ? { ...patch1, set: (({ dungeonDesign: _d, ...rest }) => rest)(patch1.set!) } : patch1;
       const shellNote = shellDesign ? ["고침: patch.set.dungeonDesign 에 방이 둘 미만이라(빈 설계) 설계는 그대로 두고 나머지만 고쳤다 — 층 설계를 바꾸려면 rooms 를 둘 이상(입구·보스 포함) 보낸다."] : [];
       let record = session.places.get(patch.mapId);
       // 이미 있는 방(이 실행이 짓지 않은 방)의 「아늑하게·물건 더하기·뒷문」은 다시 짓지 않고 덧찍는다 — 다시 지으면 원래 바닥·가구가 바뀐다(2026-10-23 비교).
@@ -898,6 +898,10 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
       if (record.rounds >= V2_MAX_REPAIR_ROUNDS) return text({ ok: false, summary: `고치기 상한(${V2_MAX_REPAIR_ROUNDS}바퀴)에 닿았다. 남은 문제를 사용자에게 보고한다.` });
       // 칸 배치 장소의 자기 비평: «고칠 것 없음»(layoutReview) 은 한 바퀴로 세고 다시 깔지 않는다. 고친 배치(set.dungeonLayout·villageLayout)는 한 바퀴로 세고 다시 깐다.
       const layoutState = layoutSession(session).byMap.get(patch.mapId);
+      // 빈 배치(방 0개·길·건물 0개 — 스키마를 빈 값으로 채운 것)는 보내지 않은 것으로 본다. 그대로 두면 앞 배치가 지워져
+      // 옛 빌더가 그 자리에 다른 던전을 지었다(2026-10-31 terra-high 지하 묘지: 빈 dungeonLayout·dungeonDesign → sandpit 40×27).
+      if (patch.set?.dungeonLayout !== undefined && !hasDungeonLayout({ dungeonLayout: patch.set.dungeonLayout } as PlaceSpec)) { const { dungeonLayout: _d, ...rest } = patch.set; patch = { ...patch, set: rest }; }
+      if (patch.set?.villageLayout !== undefined && !hasVillageLayout({ villageLayout: patch.set.villageLayout } as PlaceSpec)) { const { villageLayout: _v, ...rest } = patch.set; patch = { ...patch, set: rest }; }
       const newLayout = !!(patch.set?.dungeonLayout || patch.set?.villageLayout);
       if (layoutState && (newLayout || patch.layoutReview)) layoutState.critiqueRounds += 1;
       if (layoutState && patch.layoutReview && !newLayout) {

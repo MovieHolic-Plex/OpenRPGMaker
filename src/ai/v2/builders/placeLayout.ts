@@ -38,7 +38,7 @@ export const LAYOUT_REPAIRS = 2;
 
 const isObj = (v: unknown): v is Record<string, unknown> => !!v && typeof v === "object" && !Array.isArray(v);
 export const hasDungeonLayout = (spec: PlaceSpec): boolean => isObj(spec.dungeonLayout) && Array.isArray((spec.dungeonLayout as BboxDungeonLayout).rooms) && (spec.dungeonLayout as BboxDungeonLayout).rooms!.length >= 2;
-export const hasVillageLayout = (spec: PlaceSpec): boolean => isObj(spec.villageLayout) && (Array.isArray((spec.villageLayout as BboxVillageLayout).roads) || Array.isArray((spec.villageLayout as BboxVillageLayout).buildings));
+export const hasVillageLayout = (spec: PlaceSpec): boolean => isObj(spec.villageLayout) && (((spec.villageLayout as BboxVillageLayout).roads as unknown[] | undefined)?.length ?? 0) + (((spec.villageLayout as BboxVillageLayout).buildings as unknown[] | undefined)?.length ?? 0) > 0;
 /** 칸 배치 던전을 받는 명세(type dungeon — 동굴은 옛 빌더). */
 export const bboxDungeonSpec = (spec: PlaceSpec): boolean => bboxPlacesOn() && spec.type === "dungeon";
 const VILLAGE_STYLE_OK = (spec: PlaceSpec) => spec.type === "village" && !/jp-modern|modern-city|wizarding|sengoku/.test(spec.style ?? "");
