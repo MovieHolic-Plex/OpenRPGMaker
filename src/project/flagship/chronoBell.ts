@@ -39,6 +39,7 @@ import { applyFallenTownQuests, FS_QUEST_FACE_ALIASES } from "./fallen/townQuest
 import { applyFallenInteractiveProps } from "./fallen/interactProps";
 import { buildFallenForestMaps } from "./fallen/forestMaps";
 import { applyFallenStoryPass } from "./fallen/storyPass";
+import { applyFallenStoryIndex } from "./fallen/storyIndex";
 import { applyFallenAct1Finale, applyFallenFieldRules } from "./fallen/act1Finale";
 import { applyFallenAct2Opening } from "./fallen/act2Opening";
 import { applyFaceCellEmotions, applyFallenTownCast, applyNorthForest, fallenSpeakerBusts } from "./fallen/townCast";
@@ -2494,6 +2495,8 @@ function buildChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   applyFallenFieldRules(project, execTool);
 
   applyFallenStarLore(project, (target, name, args) => execTool(target, name, args));
+  // 자료집 「이야기」 색인 — 본줄 단계 목표·이야기 스위치 이름·임무/엔딩 배선 검사(fallen/storyIndex.ts). 맨 끝.
+  applyFallenStoryIndex(project);
   const serialized = serialize(project);
   const reloaded = deserialize(serialized);
   const manifest = {
