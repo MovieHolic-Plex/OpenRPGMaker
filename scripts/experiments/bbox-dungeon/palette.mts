@@ -8,12 +8,14 @@ import { Grid } from "../../../src/editor/dungeonKit/grid";
 import { kitSupportKind } from "../../../src/project/groundSupport";
 import type { GameMap } from "../../../src/project/types";
 import { PIECES, TRAPS, LIGHTS, STATUES } from "./pieces.mts";
+import { loadPool, POOL_CLASS, POOL_NAMES } from "./pool.mts";
 
 const out = process.argv[2]!; mkdirSync(out, { recursive: true });
 const project = createBlankProject();
 const ts = project.tilesets["beodeul_city"]!;
+const poolN = await loadPool(project);
 const kit = (n: string) => ts.structureKits!.find((k) => k.id === PIECES[n])!;
-const cls = (n: string) => { const k = kit(n); const sk = kitSupportKind(k); const role = String(k.ai?.role ?? ""); const up = k.rows.some((r) => (r.upperTiles ?? []).some((t) => t >= 0));
+const cls = (n: string) => { if (POOL_CLASS[n]) return POOL_CLASS[n]; const k = kit(n); const sk = kitSupportKind(k); const role = String(k.ai?.role ?? ""); const up = k.rows.some((r) => (r.upperTiles ?? []).some((t) => t >= 0));
   return n === "stairs up" || sk === "mount" || sk === "door" ? "wall" : role === "terrain" || role === "floor" || !up ? "decal" : "floor"; };
 const names = Object.keys(PIECES);
 const wallN = names.filter((n) => cls(n) === "wall"), floorN = names.filter((n) => cls(n) !== "wall");
@@ -38,7 +40,7 @@ const m = { ...structuredClone(start), id: "pal", width: W, height: H, tilesetId
 for (const k of ["lowerTileStacks", "upperTileStacks", "shadowBits", "relief", "background", "parallax"]) delete (m as any)[k];
 writeFileSync(resolve(out, "palette-raw.png"), renderReviewMapPng(project, m, 1).png as Buffer);
 writeFileSync(resolve(out, "palette.json"), JSON.stringify(boxes));
-const cat = (n: string) => n === "stairs up" || n === "stairs down" ? "stairs" : TRAPS.has(n) ? "trap" : LIGHTS.has(n) ? "light" : STATUES.has(n) ? "statue" : "object";
+const cat = (n: string) => POOL_NAMES.has(n) ? "new object" : n === "stairs up" || n === "stairs down" ? "stairs" : TRAPS.has(n) ? "trap" : LIGHTS.has(n) ? "light" : STATUES.has(n) ? "statue" : "object";
 const RULE: Record<string, string> = {
   wall: "wall-mounted: hangs on the north wall face of an open area (the solid rows right above its top floor row); a 2-tall piece covers the 2 face rows just above the floor, a 1-tall piece sits on the face row 2 above the floor",
   floor: "floor: stands on walkable floor and blocks walking; art taller than 1 row may overlap the wall face above",
@@ -47,4 +49,4 @@ const RULE: Record<string, string> = {
 const L = ["# Piece catalog (beodeul dungeon chipset, 16px cells). The attached sheet shows every piece with its exact id.", "id | w x h cells | category | placement"];
 for (const n of names) { const k = kit(n); L.push(`${n} | ${k.width}x${k.height} | ${cat(n)} | ${RULE[cls(n)]}`); }
 writeFileSync(resolve(out, "catalog.txt"), L.join("\n") + "\n");
-console.log("ok", boxes.length, W, H);
+console.log("ok", boxes.length, W, H, "pool", poolN);

@@ -102,6 +102,21 @@ export const PIECES: Record<string, string> = {
   "fire crystal": "bd-pick-volcano-cave-fire-crystal",
   "broken cave pillar": "bd-pick-dungeon-cave-broken-pillar",
   "fallen pillar": "bd-pick-volcano-cave-pillar-fallen",
+  // cave dressing (round 3)
+  "pebbles": "bd-org-rock-pebbles",
+  "loose stones": "bd-pick-deep-forest-path-stones-a",
+  "flat moss stones": "bd-org-moss-stones-flat",
+  "toadstools": "bd-pick-deep-forest-path-toadstools-a",
+  "small bones": "bd-dg-goblin-bones",
+  "cave bones": "bd-pick-volcano-cave-bones",
+  "bone-strewn floor": "bd-pick-aqueduct-sewer-floor-bone",
+  "wet sand patch": "bd-pick-sea-cave-floor-wetsand",
+  "sand patch": "bd-pick-sea-cave-floor-sand",
+  "gold ore vein": "bd-pick-dungeon-theme-ore-vein-gold",
+  "iron ore vein": "bd-pick-dungeon-theme-ore-vein-iron",
+  "gold ore chunk": "bd-pick-dungeon-theme-ore-vein-gold-1",
+  "iron ore chunk": "bd-pick-dungeon-theme-ore-vein-iron-1",
+  "big crystal cluster": "bd-pick-dungeon-theme-corrupt-crystal-big",
 };
 export const TRAPS = new Set(["sand pit trap", "steam vent trap", "spike trap", "floor grate"]);
 export const LIGHTS = new Set(["wall torch", "brazier", "stone brazier", "candelabra", "iron candelabra", "void brazier", "lantern post", "candles"]);
