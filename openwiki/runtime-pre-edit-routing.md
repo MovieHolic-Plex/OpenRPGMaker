@@ -58,6 +58,9 @@
 - **현재 목표 대상 표시**(2026-10-29): `playSceneFieldStaging.syncObjectiveMarkers` 가 지금 목표 글(`currentObjectiveText`)의 대상
   (`objectiveTarget.objectiveTargetViews`: 꼬리 「(이름: 자리)」 이름의 이벤트 → 「(<맵> 입구: …)」면 그 맵으로 가는 문 → 글에 나온 이벤트 이름 전부(다른 나온 이름에 품긴 짧은 이름은 뺀다 — 「용의자: 마부 한스·여행자 미라·상인 도윤」이면 셋 다) → 글에 나온 다른 맵의 문)에
   금빛 빛무리·바닥 고리를 거리와 무관하게 둔다(page.glow 보다 옅게, 깊이는 그 칸 사물 줄). 목표가 바뀌면 400ms 안에 옮긴다. QA: `objectiveMarkerIds(scene)`.
+- **안내 표시 끄기(2026-10-30):** `system.fieldGuides: "off"`(조수 `set_project_settings({fieldGuides:"off"})`)면 `updateFieldStaging` 이 목표 빛무리·화살표, 조사 ▼, 출구 「→ 목적지」 글자를
+  그리지 않고 남은 것을 걷는다(`clearFieldGuides`). 저자가 단 `page.glow`·`nearSparkle` 은 남는다. 장면이 스스로 길을 보여 주는 이야기 게임(마왕 편의점 「너무 친절함 … 화살표 짜증남」)용.
+  `databaseRecordModel` 화이트리스트에 넣어 저장/로드 왕복에서 살아남는다.
   **길 잇기(2026-10-29 vm2 jrpg 「길 못 찾음」)**: 지금 맵에서 그 맵으로 바로 가는 문이 없으면 `mapRoute`(옮기기 이벤트로 이은 가장 짧은 맵 경로)의
   첫 맵으로 가는 문을 짚는다. 꼬리 「→」 뒤(「(숲 입구: 북쪽 → 숲 통과)」·「(마을 입구: 남쪽 → 마왕의 동굴 · 마왕 처치)」)는 그 뒤 대상이다 —
   그 이름의 이벤트가 지금 맵에 있으면 그것, 아니면 그 맵으로 가는 첫 출구. 글에 나온 다른 맵도 같은 첫 출구 규칙.
