@@ -321,8 +321,15 @@ npm run harness -- game-concepts publish --target staging|prod --yes-prod|http:/
   `/var/lib/oprn-store/games` 를 그대로 내보낸다(스토어 앱으로 가지 않음, 쿠키 없음, nosniff, 확장자별 형식, 판본 파일 immutable,
   html 은 `frame-ancestors` 를 스토어로 제한, Cloudflare 엣지 밖 직접 접속 403). 템플릿: 스토어 저장소 `deploy/nginx-games.conf.template`.
   스테이징은 같은 규칙의 `scripts/games-host.mjs`(http://mdc-server:18322).
+- **나라별 출처(2026-10-31).** 한국 밖 방문자는 판본 파일을 **`games-cdn.openrpgmaker.com`**(R2 버킷 `oprn-games` 사용자 도메인, Cloudflare 엣지 캐시)에서 받는다.
+  한국(`CF-IPCountry: KR`)과 나라를 모르는 요청은 지금처럼 games-kr. 고르는 곳은 play 화면(`/games/<slug>/play`) 하나 —
+  응답 머리 `x-oprn-game-origin` 이 고른 출처. 게시하면 스토어가 디스크 판본 폴더를 바이트 그대로(서버가 쓴 index.html·CSP 해시 포함) 사본 버킷에 올리고,
+  다 놓인 판본만 사본으로 보낸다. 세이브가 갈라지지 않게 고른 출처는 게임마다 쿠키에 남고, 사본을 켜기 전에 그 게임을 플레이한 사람은 games-kr 에 남는다.
+  사본 쪽 머리(nosniff·`frame-ancestors`·HSTS)와 경로 제한(GET 만, `_files/`·index 아닌 html 막음)은 Cloudflare 규칙이 붙인다. play CSP `frame-src` 는 두 출처.
+  플레이어 쪽 바꿀 것은 없다: `storeGame.embedders`(play)와 클라우드 세이브 다리(`event.origin` = iframe 출처)는 출처마다 그대로 돈다.
+  되돌리기는 스토어 env `STORE_GAMES_MIRROR_SERVE=off` + 재시작 한 줄. 상세·채우기 명령: 스토어 저장소 `deploy/README.md` 「게임 판본 해외 사본」.
 - 스토어 쪽은 `<iframe sandbox="allow-scripts allow-same-origin allow-pointer-lock allow-fullscreen">` 으로 품는다. 출처가 달라서
-  allow-same-origin 은 게임 출처 자신의 저장소(세이브)만 연다. 스토어 페이지 CSP `frame-src` 는 게임 출처 하나.
+  allow-same-origin 은 게임 출처 자신의 저장소(세이브)만 연다. 스토어 페이지 CSP `frame-src` 는 게임 출처(games-kr·games-cdn)만.
 - 스토어 세션 쿠키는 https 에서 `__Host-oprn_store_session`(Secure·Path=/·Domain 없음). 옛 이름은 2026-11-23 까지 한 번 받아 새 이름으로 다시 준다.
   상태를 바꾸는 요청은 Origin 이 스토어가 아니면 403(형제 하위 도메인 games.* 포함) + 기존 CSRF 토큰.
 - 진입 문서 index.html 은 서버가 공식 플레이어 틀로 쓴다: meta CSP(부팅 스크립트 해시), `__OPENRPG_BOOT__.storeGame`(slug·판본·세이브 이름·품을 수 있는 출처).
