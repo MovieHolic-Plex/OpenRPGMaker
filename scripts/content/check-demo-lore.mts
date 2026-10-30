@@ -23,6 +23,7 @@ const LORE: Record<string, () => Promise<Apply>> = {
   "emerald-crown": async () => (await import("@/project/flagship/emeraldCrownLore")).applyEmeraldCrownLore,
   "shitamachi-fourth-season": async () => (await import("@/project/flagship/shitamachiLore")).applyShitamachiLore,
   "first-love": async () => (await import("@/project/flagship/firstLoveLore")).applyFirstLoveLore,
+  "hunter-contract": async () => (await import("@/project/flagship/hunter/lore")).applyHunterLore,
   "maou-konbini": async () => (await import("@/project/flagship/maouKonbiniLore")).applyMaouKonbiniLore,
 };
 

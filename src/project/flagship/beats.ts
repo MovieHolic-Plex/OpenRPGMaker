@@ -84,11 +84,24 @@ export const FIRST_LOVE_STYLE_LOCK: FlagshipStyleLock = {
   bannedProperNouns: BANNED_IP_PROPER_NOUNS,
 } as const;
 
+export const HUNTER_CONTRACT_STYLE_LOCK: FlagshipStyleLock = {
+  demoId: "hunter-contract",
+  presetId: "adventure-jrpg",
+  resolution: { width: 480, height: 270 },
+  cameraZoom: 1,
+  dialogueStyle: "pixel-cinematic",
+  allowedTilesetIds: ["beodeul_city", "atlas_biome_interior", "worldmap_hc_world", "worldmap_selected"],
+  allowedCharsetPrefixes: ["easyrpg-charset-", "tex_easyrpg_charset_"],
+  allowedPortraitPrefixes: ["shared-"],
+  bannedProperNouns: [...BANNED_IP_PROPER_NOUNS, "위쳐", "게롤트", "노비그라드"],
+} as const;
+
 export const FLAGSHIP_STYLE_LOCKS: Readonly<Record<FlagshipDemoId, FlagshipStyleLock>> = {
   "chrono-bell": CHRONO_BELL_STYLE_LOCK,
   "emerald-crown": EMERALD_CROWN_STYLE_LOCK,
   "shitamachi-fourth-season": SHITAMACHI_STYLE_LOCK,
   "first-love": FIRST_LOVE_STYLE_LOCK,
+  "hunter-contract": HUNTER_CONTRACT_STYLE_LOCK,
 } as const;
 
 export const CHRONO_BELL_BEATS: readonly FlagshipBeat[] = [
@@ -217,6 +230,15 @@ const FIRST_LOVE_BEATS: readonly FlagshipBeat[] = [
   { id: "fl-07", atMinute: 17, act: "금요일 밤", mapKey: "fl_platform_pm", sceneTitle: "막차", playerFeel: "이번엔 먼저 말할까", mechanics: ["triggerEnding", "affection"], sharedAssets: [] },
 ];
 
+const HUNTER_CONTRACT_BEATS: readonly FlagshipBeat[] = [
+  { id: "hc-00", atMinute: 0, act: "오프닝", mapKey: "opening_stage_480x270", sceneTitle: "게임 맵 그대로 5컷", playerFeel: "비 오는 산길, 빈 침낭, 사본 세 장, 갈대늪, 세 곳의 지도", mechanics: ["place_opening_background(mapId)", "set_opening_caption"], sharedAssets: ["easyrpg-charset-actor2"] },
+  { id: "hc-01", atMinute: 1, act: "줄기", mapKey: "hc_world", sceneTitle: "사본 세 장", playerFeel: "세계 지도에서 늪으로 걸어간다. 일지에 사본이 적힌다", mechanics: ["journal-line", "objectiveChip"], sharedAssets: [] },
+  { id: "hc-02", atMinute: 3, act: "계약 A", mapKey: "hc_swamp_inn", sceneTitle: "게시판과 의뢰인", playerFeel: "게시판에서 계약을 보고 마르타에게 조건과 선금을 받는다", mechanics: ["choices", "changeGold"], sharedAssets: ["shared-people1-old-woman-expressions-bust-base"] },
+  { id: "hc-03", atMinute: 5, act: "계약 A", mapKey: "hc_swamp", sceneTitle: "조사", playerFeel: "뱃사공·시체·끈 자국·세나 중 둘이면 다음으로 넘어간다", mechanics: ["nearSparkle", "journal-line"], sharedAssets: [] },
+  { id: "hc-04", atMinute: 10, act: "계약 A", mapKey: "hc_nest", sceneTitle: "밤 사냥", playerFeel: "기름을 바르고 밤에만 열리는 둥지로 들어가 익사귀와 어미를 쓰러뜨린다", mechanics: ["timePhase", "place_field_enemy", "battleProcessing"], sharedAssets: ["generated-enemy-ghoul-grave"] },
+  { id: "hc-05", atMinute: 14, act: "계약 A", mapKey: "hc_nest", sceneTitle: "반지", playerFeel: "어미의 정체를 알고 삯·폭로·침묵 중 고른다", mechanics: ["choices", "triggerEnding"], sharedAssets: [] },
+];
+
 export const FLAGSHIP_BEAT_MANIFESTS: Readonly<Record<FlagshipDemoId, FlagshipBeatManifest>> = {
   "chrono-bell": {
     id: "chrono-bell",
@@ -307,6 +329,27 @@ export const FLAGSHIP_BEAT_MANIFESTS: Readonly<Record<FlagshipDemoId, FlagshipBe
     ],
     beats: FIRST_LOVE_BEATS,
     styleLock: FIRST_LOVE_STYLE_LOCK,
+  },
+  "hunter-contract": {
+    id: "hunter-contract",
+    title: "사냥꾼 계약",
+    subtitle: "어두운 판타지 RPG · 도제가 남긴 계약서 세 장",
+    genreChoiceId: "adventure-jrpg",
+    targetMinutes: 20,
+    mapCount: 4,
+    endingCount: 1,
+    releaseOrder: 5,
+    priorityRank: 5,
+    summary: "떠돌이 사냥꾼 도르반은 사라진 도제 리스크가 남긴 계약서 사본을 따라 갈대늪에 닿는다. 게시판의 익사자 처리 계약, 셋째 날 밤의 규칙, 사람 이빨 자국. 밤까지 기다려 불씨 기름을 바르고 둥지로 들어가면, 물에 잠긴 어미와 촌장의 반지가 기다린다. 삯을 받을지, 마을에 알릴지, 두 배를 받고 입을 다물지 고른다.",
+    thumb: "/assets/generated/welcome/slide-04.png",
+    cast: [
+      { id: "actor_hero", name: "도르반", role: "주인공 · 떠돌이 사냥꾼", assetId: "easyrpg-charset-actor2" },
+      { id: "npc_hc_marta", name: "마르타", role: "갈대늪 촌장 · 의뢰인", assetId: "easyrpg-charset-people1" },
+      { id: "npc_hc_boatman", name: "뱃사공 오그", role: "셋째 날 밤을 아는 사람", assetId: "easyrpg-charset-people1" },
+      { id: "enemy_hc_mother", name: "물에 잠긴 어미", role: "계약 A 보스", assetId: "generated-enemy-ghoul-grave" },
+    ],
+    beats: HUNTER_CONTRACT_BEATS,
+    styleLock: HUNTER_CONTRACT_STYLE_LOCK,
   },
 } as const;
 

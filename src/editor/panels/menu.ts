@@ -968,6 +968,8 @@ function sampleProjectCommands(): readonly MenuCommand[] {
     item("시타마치 사계절 (기본 현대 연애 데모)", "menu-project-demo-shitamachi", () => void loadFlagshipDemoInEditor("shitamachi-fourth-season")),
     item("첫사랑 (기본 오피스 로맨스 데모)", "menu-project-demo-first-love", () => void loadFlagshipDemoInEditor("first-love")),
     item("첫사랑 — 바로 플레이 ▶", "menu-project-play-first-love", () => void loadFlagshipDemoInEditor("first-love", true)),
+    item("사냥꾼 계약 (어두운 판타지 데모)", "menu-project-demo-hunter-contract", () => void loadFlagshipDemoInEditor("hunter-contract")),
+    item("사냥꾼 계약 — 바로 플레이 ▶", "menu-project-play-hunter-contract", () => void loadFlagshipDemoInEditor("hunter-contract", true)),
     { kind: "separator" },
     item("Scarloxy 몬스터 초원 데모", "menu-project-scarloxy-demo", () => void newScarloxyDemoProject()),
   ];
