@@ -133,12 +133,12 @@
 
 /* 세계관·설정집 카드만 클릭으로 탭을 이동한다. 나머지와 생김새가 같은데 커서도 호버도
    없어서 누를 수 있다는 단서가 하나도 없었다. */
-.database-modal-backdrop :is(.db-overview-canon, .db-overview-codex) {
+.database-modal-backdrop :is(.db-overview-canon, .db-overview-codex, .db-overview-story) {
   cursor: pointer;
   transition: background var(--transition-fast), border-color var(--transition-fast);
 }
 
-.database-modal-backdrop :is(.db-overview-canon, .db-overview-codex):hover {
+.database-modal-backdrop :is(.db-overview-canon, .db-overview-codex, .db-overview-story):hover {
   background: var(--db-studio-surface-2);
   border-color: var(--db-studio-border-strong);
 }
@@ -499,3 +499,124 @@
   box-shadow: 0 0 0 2px var(--db-studio-accent-soft);
   outline: none;
 }
+
+/* 「이야기 구조」 — 퀘스트 단계와 그 단계를 채우는 진행 값, 엔딩과 그것을 부르는 곳(databaseOverviewStory.ts). */
+.database-modal-backdrop .db-overview-story-structure {
+  background: var(--db-studio-surface);
+  border: 1px solid var(--db-studio-border-subtle);
+  border-radius: 8px;
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+}
+
+.database-modal-backdrop .db-overview-story-structure h3,
+.database-modal-backdrop .db-overview-story-structure h4 {
+  color: var(--db-studio-text-1);
+  font-size: 14px;
+  margin: 0;
+}
+
+.database-modal-backdrop .db-overview-story-structure h4 { font-size: 12px; margin-top: 4px; }
+
+.database-modal-backdrop .db-overview-story-structure header > p,
+.database-modal-backdrop .db-overview-story-summary,
+.database-modal-backdrop .db-overview-story-empty {
+  color: var(--db-studio-text-2);
+  font-size: 11px;
+  margin: 2px 0 0;
+}
+
+.database-modal-backdrop .db-overview-story-quests { display: grid; gap: 8px; }
+
+.database-modal-backdrop .db-overview-story-quest {
+  border: 1px solid var(--db-studio-border-subtle);
+  border-radius: 6px;
+  padding: 8px 10px;
+}
+
+.database-modal-backdrop .db-overview-story-quest > summary {
+  align-items: baseline;
+  cursor: pointer;
+  display: flex;
+  gap: 8px;
+}
+
+.database-modal-backdrop .db-overview-story-quest > summary > strong { color: var(--db-studio-text-1); font-size: 13px; }
+
+.database-modal-backdrop .db-overview-story-meta { color: var(--db-studio-text-3); font-size: 11px; }
+
+.database-modal-backdrop .db-overview-story-steps {
+  display: grid;
+  gap: 3px;
+  margin: 6px 0 0;
+  padding-left: 22px;
+}
+
+.database-modal-backdrop .db-overview-story-steps > li {
+  color: var(--db-studio-text-1);
+  font-size: 12px;
+}
+
+.database-modal-backdrop .db-overview-story-switches { display: inline-flex; flex-wrap: wrap; gap: 4px; margin-left: 8px; }
+
+.database-modal-backdrop .db-overview-story-switch {
+  background: var(--db-studio-surface-2);
+  border: 1px solid var(--db-studio-border-subtle);
+  border-radius: 4px;
+  color: var(--db-studio-text-3);
+  font-size: 10px;
+  padding: 0 5px;
+}
+
+.database-modal-backdrop .db-overview-story-switch.is-missing { border-color: var(--db-studio-danger); color: var(--db-studio-danger); }
+
+.database-modal-backdrop .db-overview-story-switch.is-off { border-style: dashed; }
+
+.database-modal-backdrop .db-overview-story-switch-off { margin-right: 4px; }
+
+.database-modal-backdrop .db-overview-story-id {
+  color: var(--db-studio-text-3);
+  font-family: var(--font-mono);
+  font-size: 10px;
+}
+
+.database-modal-backdrop .db-overview-story-hint { color: var(--db-studio-text-3); }
+
+.database-modal-backdrop .db-overview-story-row {
+  align-items: baseline;
+  display: flex;
+  gap: 6px;
+}
+
+.database-modal-backdrop .db-overview-story-row-label {
+  color: var(--db-studio-text-3);
+  flex: 0 0 auto;
+  font-size: 11px;
+  min-width: 52px;
+}
+
+.database-modal-backdrop .db-overview-story-row > .db-overview-story-switches { margin-left: 0; }
+
+.database-modal-backdrop .db-overview-story-site {
+  color: var(--db-studio-text-2);
+  display: inline-flex;
+  font-size: 11px;
+  gap: 4px;
+}
+
+.database-modal-backdrop .db-overview-story-site-sep { color: var(--db-studio-text-3); }
+
+.database-modal-backdrop .db-overview-story-meta.is-warning { color: var(--db-studio-warning); }
+
+.database-modal-backdrop .db-overview-story-endings { display: grid; gap: 8px; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+
+.database-modal-backdrop .db-overview-story-ending {
+  border: 1px solid var(--db-studio-border-subtle);
+  border-radius: 6px;
+  display: grid;
+  gap: 2px;
+  padding: 8px 10px;
+}
+
+.database-modal-backdrop .db-overview-story-ending > strong { color: var(--db-studio-text-1); font-size: 13px; }
