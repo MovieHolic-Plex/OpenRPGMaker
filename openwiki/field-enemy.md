@@ -163,8 +163,7 @@ FF6·크로노 트리거식 「필드에 보이는 적」을 조수가 한 마�
   재생은 `playPositionalSound` — 엔진의 밸런스 값(명령 「밸런스」로 정하는 끈적한 pan)을 바꾸지 않는 위치음(`AudioPlayOptions.positional`)이고,
   잠금 해제 전에는 큐에 쌓지 않는다(지나간 발소리를 나중에 몰아 들려주지 않는다). 헤드리스 장면(Phaser 없음)에서는 내지 않는다.
   조수: `set_field_detection({footsteps:{…}})`·`make_chase_scene({footsteps})`. se 를 생략하면 공포 기본 패치 「공포 — 발소리 한 걸음」(`HORROR_SOUNDS` key `step`)을
-  내장 합성으로 한 번 만들어 다시 쓴다(`src/editor/tools/horrorSoundAssets.ts` `ensureHorrorSound`). `horror-chase` 장르의 `make_chase_scene` 은 생략해도 단다(`{off:true}` 면 끔 — 스키마가 객체 하나라 `false` 대신 이 꼴을 받는다. 도구 안에서는 `false` 도 받는다).
-  `make_chase_scene` 의 `caughtText` 는 `killOnTouch` 의 붙잡힘 한 줄(기본 「붙잡혔다.」), `characterId` 는 추격자 이벤트의 인물 프로필 — 프로필 이름을 화자로 쓴 bark 가 그 이벤트 머리 위에 붙는다(`playSceneDialogueHooks.speakingTarget`).
+  내장 합성으로 한 번 만들어 다시 쓴다(`src/editor/tools/horrorSoundAssets.ts` `ensureHorrorSound`). `horror-chase` 장르의 `make_chase_scene` 은 생략해도 단다(false 면 끔).
 - **숨기 소리(G3)**: 「숨어 있음」 조건은 이미 있었다(`Condition {kind:"hiding", value}`, 편집기 조건 「숨어 있음」) — 병렬 이벤트·페이지 조건으로 숨은 동안 연출을 건다.
   더한 것은 `interaction.hiding` 의 `enterSe`(숨을 때)·`exitSe`(나올 때, 생략 = enterSe)·`heldSe`(숨어 있는 동안 고리).
   `heldSe` 는 BGM·BGS 채널이 아니라 엔진의 별도 고리(`AudioEngine.holdLoop`)라 맵 음악·환경음을 끊지 않는다. 매 프레임 `isPlayerHiding` 으로 맞추므로
