@@ -125,7 +125,7 @@ page = f"""<!doctype html><meta charset=utf-8><title>bbox 더 좋게·더 싸게
 <style>body{{background:#16161c;color:#ddd;font:14px/1.5 sans-serif;margin:20px}}h1{{font-size:20px}}h2{{font-size:17px;margin-top:28px}}.v{{font-size:17px;color:#ffd866;margin:6px 0 10px}}
 .card{{background:#222230;border-radius:8px;padding:12px;margin:14px 0}}h3{{margin:0 0 8px;font-size:15px}}h4{{margin:6px 0;font-size:13px;color:#9cf}}.pair{{display:flex;gap:12px;align-items:flex-start}}
 figure{{margin:0;flex:1 1 0;min-width:0}}img{{image-rendering:pixelated;width:100%;display:block}}.meta{{margin:6px 0 0;color:#bbb}}.prob{{color:#c9a;font-size:12px;margin:4px 0}}
-table{{border-collapse:collapse;margin:8px 0}}td,th{{border:1px solid #444;padding:4px 10px}}th{{text-align:left;background:#2a2a3a}}</style>
+table{{border-collapse:collapse;margin:8px 0}}td,th{{border:1px solid #444;padding:4px 10px;white-space:nowrap}}th{{text-align:left;background:#2a2a3a}}</style>
 <h1>bbox 배치를 더 좋게·더 싸게 — 자기 비평 · 카탈로그 형식 · 두 단계</h1>
 <p class=v>{html.escape(verdict)}</p>
 <p>과제는 기존 bbox 와 같은 여관 1층·마왕 보스 방. 판정은 Opus 5.5 medium, 같은 기준 방들과 쌍 비교(두 순서, 엇갈리면 무). 점수 = (승 + 0.5×무) / 판정 수. 토큰은 방 하나당 평균(조수 모델만, 판정 제외).
