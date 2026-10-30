@@ -344,6 +344,7 @@ const setProjectSettings: ToolDefinition = {
         additionalProperties: false,
       },
       startActorIds: { type: "array", items: { type: "string" } },
+      fieldGuides: { type: "string", enum: ["on", "off"], description: "off = 필드 자동 안내(목표 빛무리·화면 밖 목표 화살표, 인물·조사 대상 위 ▼, 출구 앞 「→ 목적지」 글자)를 끈다. 장면·대사가 갈 곳을 스스로 보여 주는 이야기 게임용 — 끄면 그만큼 장면에서 길이 보여야 한다. 저자가 단 page.glow·nearSparkle 은 남는다. on(기본) = 켜기" },
       saveAccess: { type: "string", enum: ["anywhere", "savePoints"], description: "savePoints = 메뉴 「저장」을 없애고 세이브 포인트에서만 저장(place_savepoint 로 마을·쉼터·던전에 둔다). anywhere(기본) = 메뉴에서 언제든" },
       dialogue: {
         type: "object",
@@ -506,6 +507,10 @@ const setProjectSettings: ToolDefinition = {
       if (!next) throw new ToolError("chapter.labels 에 정수 값 → 이름이 하나 이상 있어야 합니다.", { code: "invalid-args" });
       draft.system.chapter = next;
       changed.push(`장 표시=${Object.keys(next.labels).length}개`);
+    }
+    if (args.fieldGuides === "off" || args.fieldGuides === "on") {
+      if (args.fieldGuides === "off") draft.system.fieldGuides = "off"; else delete draft.system.fieldGuides;
+      changed.push(args.fieldGuides === "off" ? "필드 안내 표시 끔" : "필드 안내 표시 켬");
     }
     if (args.saveAccess === "savePoints" || args.saveAccess === "anywhere") {
       if (args.saveAccess === "savePoints") draft.system.saveAccess = "savePoints"; else delete draft.system.saveAccess;
