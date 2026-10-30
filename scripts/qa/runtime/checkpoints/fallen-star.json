@@ -5266,7 +5266,7 @@
   {
    "id": "act2-b6-wall",
    "label": "제2막 B6 — 2층 성벽 문 → 성벽 위: 새라가 바로 앞을 막아서고 그 자리에서 전투",
-   "note": "act2Opening.ts fortressEvents ev_fs2_fort_wall_door (19,6) — 2층을 25칸 폭으로 다시 그리면서 문이 (19,6)으로 옮겨졌다(예전 (25,7)은 맵 밖 검은 칸)",
+   "note": "act2Opening.ts fortressEvents ev_fs2_fort_wall_door (19,6) — 2층을 25칸 폭으로 다시 그리면서 문이 (19,6)으로 옮겨졌다(예전 (25,7)은 맵 밖 검은 칸) · #3973 이후 문 앞 칸(19,6)을 밟아도 넘어가지 않는다 — 한 칸 올라선 뒤 문 쪽(위)으로 한 번 더 민다",
    "mapId": "fs2_fortress_f2",
    "x": 19,
    "y": 7,
@@ -5302,6 +5302,12 @@
     {
      "id": "out",
      "ops": [
+      {
+       "kind": "move",
+       "dir": "up",
+       "steps": 1,
+       "stepTimeoutMs": 10000
+      },
       {
        "kind": "move",
        "dir": "up",
