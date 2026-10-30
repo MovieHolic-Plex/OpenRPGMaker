@@ -21,7 +21,7 @@ export interface BboxDungeonLayout {
   name?: string;
   theme?: string;
   map?: { w?: number; h?: number };
-  rooms?: { id: string; purpose: string; rects?: BboxRect[]; x?: number; y?: number; w?: number; h?: number; landmark?: BboxPut; note?: string }[];
+  rooms?: { id: string; purpose: string; rects?: BboxRect[]; shape?: BboxRoomShape; x?: number; y?: number; w?: number; h?: number; landmark?: BboxPut; note?: string }[];
   corridors?: { id: string; from: string; to: string; width?: number; path: [number, number][] }[];
   doors?: { x: number; y: number; connects: [string, string]; locked?: boolean }[];
   hazards?: { kind: "water" | "lava" | "pit"; x: number; y: number; w?: number; h?: number }[];
@@ -32,6 +32,27 @@ export interface BboxDungeonLayout {
   enemies?: { x: number; y: number }[];
   boss?: { x: number; y: number };
 }
+
+/**
+ * 방 모양(확장 자리): 지금은 rects(사각 합집합)만. 다각형·타원·동굴 덩이 같은 새 모양은 BBOX_ROOM_SHAPES 에 칸 목록 함수 하나를 더하면
+ * 검사(겹침·문·이어짐·보스 앞방)와 그리기(exact compose)가 그대로 받는다 — 모두 칸 집합만 본다.
+ */
+export interface BboxRoomShape { readonly kind: string; readonly [extra: string]: unknown }
+export type BboxRoomShapeCells = (room: NonNullable<BboxDungeonLayout["rooms"]>[number], W: number, H: number) => { cells: [number, number][]; errors: string[] };
+export const BBOX_ROOM_SHAPES: Record<string, BboxRoomShapeCells> = {
+  rects: (r) => {
+    const cells: [number, number][] = [], errors: string[] = [];
+    const rects = Array.isArray(r.rects) && r.rects.length ? r.rects : [r as BboxRect];
+    for (const q of rects) {
+      if (![q?.x, q?.y, q?.w, q?.h].every((v) => typeof v === "number" && Number.isInteger(v)) || q.w < 1 || q.h < 1) { errors.push("every rect needs integer x,y,w,h >= 1."); continue; }
+      for (let y = q.y; y < q.y + q.h; y += 1) for (let x = q.x; x < q.x + q.w; x += 1) cells.push([x, y]);
+    }
+    return { cells, errors };
+  },
+};
+/** 방마다 더 거는 검사(확장 자리: 빈 바닥 넓이·깔개 수 같은 것). 칸 집합과 놓인 조각을 받아 영어 문제 글을 돌려준다. */
+export type BboxRoomCheck = (room: { id: string; purpose: string; cells: ReadonlySet<number>; W: number; H: number }) => string[];
+export const BBOX_ROOM_CHECKS: BboxRoomCheck[] = [];
 
 export type BboxPlacement = "wall" | "floor" | "decal";
 export interface BboxPiece { readonly name: string; readonly kitId: string; readonly w: number; readonly h: number; readonly place: BboxPlacement; readonly family: string }
@@ -178,17 +199,20 @@ export function layBboxDungeon(ts: TilesetDef, L: BboxDungeonLayout): BboxDungeo
     if (!(BBOX_PURPOSES as readonly string[]).includes(r.purpose)) errors.push(`${tag}: purpose must be one of ${BBOX_PURPOSES.join(", ")} (got "${r.purpose}").`);
     const reg: Region = { id: r.id, kind: "room", purpose: r.purpose, cells: new Set() };
     addRegion(reg);
-    const rects = Array.isArray(r.rects) && r.rects.length ? r.rects : [r as BboxRect];
-    for (const q of rects) {
-      if (![q?.x, q?.y, q?.w, q?.h].every(num) || q.w < 1 || q.h < 1) { errors.push(`${tag}: every rect needs integer x,y,w,h >= 1.`); continue; }
-      if (q.x < 1 || q.x + q.w > W - 1 || q.y < 4 || q.y + q.h > H - 1) errors.push(`${tag} rect (${q.x},${q.y},${q.w}x${q.h}) must lie inside x 1..${W - 2}, y 4..${H - 2} (the 3 rows above every open area are its wall face, and a solid border stays).`);
-      for (let y = q.y; y < q.y + q.h; y += 1) for (let x = q.x; x < q.x + q.w; x += 1) {
-        if (!inb(x, y)) continue;
-        const o = owner[idx(x, y)]!;
-        if (o >= 0 && regionList[o] !== reg) { errors.push(`${tag} overlaps ${regionList[o]!.kind} "${regionList[o]!.id}" at ${P(x, y)} — rooms must not overlap; leave solid cells between them and connect with a door or corridor.`); continue; }
-        owner[idx(x, y)] = regionList.indexOf(reg); reg.cells.add(idx(x, y));
-      }
+    const shapeKind = r.shape?.kind ?? "rects";
+    const shapeFn = BBOX_ROOM_SHAPES[shapeKind];
+    if (!shapeFn) { errors.push(`${tag}: room shape kind "${shapeKind}" is not supported (supported: ${Object.keys(BBOX_ROOM_SHAPES).join(", ")}).`); continue; }
+    const shaped = shapeFn(r, W, H);
+    for (const e of shaped.errors) errors.push(`${tag}: ${e}`);
+    let outside = false;
+    for (const [x, y] of shaped.cells) {
+      if (x < 1 || x > W - 2 || y < 4 || y > H - 2) { outside = true; continue; }
+      const o = owner[idx(x, y)]!;
+      if (o >= 0 && regionList[o] !== reg) { errors.push(`${tag} overlaps ${regionList[o]!.kind} "${regionList[o]!.id}" at ${P(x, y)} — rooms must not overlap; leave solid cells between them and connect with a door or corridor.`); continue; }
+      owner[idx(x, y)] = regionList.indexOf(reg); reg.cells.add(idx(x, y));
     }
+    if (outside) errors.push(`${tag} must lie inside x 1..${W - 2}, y 4..${H - 2} (the 3 rows above every open area are its wall face, and a solid border stays).`);
+    for (const check of BBOX_ROOM_CHECKS) for (const e of check({ id: r.id, purpose: r.purpose, cells: reg.cells, W, H })) errors.push(`${tag}: ${e}`);
   }
   const byPurpose = (p: string) => rooms.filter((r) => r?.purpose === p);
   for (const p of ["entrance", "antechamber", "boss"]) if (byPurpose(p).length !== 1) errors.push(`need exactly one room with purpose "${p}" (got ${byPurpose(p).length}).`);

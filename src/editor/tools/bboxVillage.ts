@@ -25,7 +25,8 @@ export interface BboxVillageLayout {
   zones?: ({ name?: string; purpose?: string } & Partial<Rect>)[];
   roads?: { kind: string; purpose?: string; rects: Rect[] }[];
   plazas?: (Rect & { purpose?: string })[];
-  stairs?: (Rect & { dir: string })[];
+  /** 단 오르기. kind 는 확장 자리(지금은 stairs 만 — 손 도트 경사로 같은 새 종류는 BBOX_VILLAGE_CLIMBS 에 더한다). */
+  stairs?: (Rect & { dir: string; kind?: string })[];
   buildings?: { id: string; x: number; y: number; purpose?: string }[];
   fields?: (Rect & { crop: string })[];
   fences?: (Rect & { gate: [number, number] | { x: number; y: number } })[];
@@ -33,6 +34,8 @@ export interface BboxVillageLayout {
   trees?: { id: string; x: number; y: number }[];
   props?: { id: string; x: number; y: number }[];
 }
+/** 단 오르기 종류(검사·칠하기가 받는 것). 새 종류는 여기에 이름을 더하고 checkBboxVillage 의 계단 검사·layBboxVillageInDraft 의 계단 그림에 갈래를 더한다. */
+export const BBOX_VILLAGE_CLIMBS = ["stairs"] as const;
 export type VillageKitKind = "building" | "prop" | "tree" | "boat";
 export interface VillageKit { readonly id: string; readonly kind: VillageKitKind; readonly w: number; readonly h: number; readonly en: string; readonly door?: { dx: number; dy: number } }
 
@@ -179,6 +182,7 @@ export function checkBboxVillage(cat: readonly VillageKit[], L: BboxVillageLayou
   arr("stairs").forEach((s, i) => {
     const tag = `stairs[${i}]`;
     if (!rectOk(s, tag)) return;
+    if (s.kind !== undefined && !(BBOX_VILLAGE_CLIMBS as readonly string[]).includes(s.kind)) { errors.push(`${tag}.kind "${s.kind}" is not supported (supported: ${BBOX_VILLAGE_CLIMBS.join(", ")}).`); return; }
     if (s.dir !== "north" && s.dir !== "south") { errors.push(`${tag}.dir must be "north" or "south" (the direction you walk to climb; there are no east-west stair pieces).`); return; }
     if (s.w > 3) errors.push(`${tag} is ${s.w} wide — stairs are 1 to 3 cells wide.`);
     const cs = cellsOf(s), lo = lv[cs[0]!]!;
