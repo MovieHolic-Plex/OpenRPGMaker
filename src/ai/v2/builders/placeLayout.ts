@@ -28,10 +28,11 @@ import { villageArgs, villageMapSize } from "./village";
 import { ensureBossRest, ensureHealingAccess } from "../healingAccess";
 
 const TS = "beodeul_city";
-/** 실행기·측정 스위치: OPRN_V2_BBOX_PLACES=0 이면 칸 배치 경로를 끄고 옛 빌더만 쓴다(측정 대조군). */
+/** 실행기·측정 스위치: OPRN_V2_BBOX_PLACES=1 일 때만 칸 배치 경로를 쓴다. 기본은 꺼짐 — 실제 v2 경로 측정(2026-10-31)에서
+ *  칸 배치 던전이 지금 빌더에 직접 비교 0승 4패, 기준 그림 대비 8%(지금 빌더 59%)였다. 이길 때까지 옵트인. */
 export function bboxPlacesOn(): boolean {
   const env = (globalThis as { process?: { env?: Record<string, string | undefined> } }).process?.env;
-  return env?.OPRN_V2_BBOX_PLACES !== "0";
+  return env?.OPRN_V2_BBOX_PLACES === "1";
 }
 /** 자기 비평 바퀴 수(실험 bbox-better: 2바퀴). */
 export const LAYOUT_CRITIQUE_ROUNDS = 2;
