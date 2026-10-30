@@ -4406,7 +4406,12 @@
        "ms": 4000
       }
      ],
-     "shot": true
+     "shot": true,
+     "expect": {
+      "testidPresent": [
+       "battle-scene"
+      ]
+     }
     }
    ],
    "sessionPatch": {
@@ -4479,7 +4484,12 @@
        "ms": 4000
       }
      ],
-     "shot": true
+     "shot": true,
+     "expect": {
+      "testidPresent": [
+       "battle-scene"
+      ]
+     }
     }
    ],
    "sessionPatch": {
@@ -5227,7 +5237,12 @@
        "ms": 3000
       }
      ],
-     "shot": true
+     "shot": true,
+     "expect": {
+      "testidPresent": [
+       "battle-scene"
+      ]
+     }
     }
    ],
    "sessionPatch": {
