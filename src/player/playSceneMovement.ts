@@ -10,7 +10,7 @@ import { updateDetectionEncounters } from "./npcDetectionEncounter";
 import { BattleAdmissionError } from "@/project/battleAdmission";
 import { runTroopAfterBattle } from "@/player/troopAfterBattleRunner";
 import { advanceFurniturePush, beginFurniturePush, clearFurniturePush, furniturePushFrames } from './furniturePushAnimation';
-import { advancePursuitDoors, isPlayerHiding, pushObject, toggleHiding } from "./horrorRuntime";
+import { advancePursuitDoors, currentHidingInteraction, isPlayerHiding, pushObject, toggleHiding } from "./horrorRuntime";
 import { refreshRuntimeEntities } from "./playSceneMapRuntime";
 import { conditionWaitScenes } from "@/player/runtimeConditionWait";
 import { canMoveFootprint, inBounds, isPassable, ledgeDirectionAt } from "@/project/collision";
@@ -30,7 +30,7 @@ import { playerPassageRect, resolvePlayerBody, type PlayerBody } from "@/project
 import { isSpatialPlacementBlocking } from "@/project/spatialOccupancy";
 import { isActionCombatMap, resolveActionCombatConfig } from "@/project/actionCombat";
 import { playMonsterSfx } from "@/player/monsterSfx";
-import { playSoundEffect } from "@/player/audio";
+import { playSoundEffect, syncHeldLoop } from "@/player/audio";
 import { store } from "@/project/store";
 import type { MoveCommand } from "@/project/types";
 import { characterSpriteY, footprintSpriteX, updateCharacterDepth } from "@/player/characterDepth";
@@ -131,7 +131,10 @@ export function updatePlayScene(scene: PlaySceneContext, deltaMs: number): void 
   updateDetectionEncounters(scene, deltaMs);
   const world = { project: store.getCurrent(), map: scene.map, session: scene.session, positions: scene.eventPositions };
   if (!scene.running && advancePursuitDoors(world, deltaMs)) refreshRuntimeEntities(scene);
-  scene.player.setVisible?.(!isPlayerHiding(world));
+  const hidingNow = isPlayerHiding(world);
+  scene.player.setVisible?.(!hidingNow);
+  // 숨어 있는 동안의 고리음(심장 고동). 나오기·붙잡힘·맵 이동에서 isPlayerHiding 이 거짓이 되면 이 줄이 끈다.
+  syncHeldLoop(hidingNow ? currentHidingInteraction(world)?.heldSe : undefined, world.project);
   scene.session.playTimeSeconds += deltaMs / 1000;
   // 방향 조건(주인공이 보는 쪽)은 세션만 본다 — 씬의 facing 을 매 프레임 적어 둔다.
   if (scene.session.playerFacing !== scene.facing) scene.session.playerFacing = scene.facing;
@@ -812,13 +815,24 @@ function performAction(
   farmAttempts?: FarmInteractionResult[],
 ): boolean {
   const world = { project: store.getCurrent(), map: scene.map, session: scene.session, positions: scene.eventPositions };
-  if (world.session.horror?.hiding) { toggleHiding(world); scene.lastActionTargetKey = ""; return true; }
+  if (world.session.horror?.hiding) {
+    const leaving = currentHidingInteraction(world);
+    toggleHiding(world);
+    scene.lastActionTargetKey = "";
+    const exitSe = leaving?.exitSe ?? leaving?.enterSe;
+    if (exitSe) playSoundEffect(exitSe, world.project);
+    return true;
+  }
   const delta = directionDelta(scene.facing);
   const tx = scene.tileX + delta.x;
   const ty = scene.tileY + delta.y;
-  const event = findRuntimeEventInScene(scene, tx, ty, "action") ?? findEventAcrossCounter(scene, world.project, tx, ty, delta) ?? findWalkerLeaving(scene, world.project, tx, ty) ?? findEventOnFacedObject(scene, world.project, tx, ty);
+  const event = findRuntimeEventInScene(scene, tx, ty, "action") ?? findEventAcrossCounter(scene, world.project, tx, ty, delta) ?? findWalkerLeaving(scene, world.project, tx, ty) ?? findEventOnFacedObject(scene, world.project, tx, ty) ?? findFieldFoeFacing(scene, tx, ty);
   if (event) {
-    if (event.page?.interaction?.kind === 'hiding') return toggleHiding(world, event);
+    if (event.page?.interaction?.kind === 'hiding') {
+      const hid = toggleHiding(world, event);
+      if (hid && event.page.interaction.enterSe) playSoundEffect(event.page.interaction.enterSe, world.project);
+      return hid;
+    }
     if (event.page?.interaction?.kind === 'pushable') {
       pushFurniture?.(event);
       return true;
@@ -865,6 +879,17 @@ function performAction(
   const message = underfootFarm.message ?? facingFarm.message;
   if (message) showFarmFeedbackMessage(scene, message);
   return false;
+}
+
+/**
+ * 정면의 보이는 적(닿으면 싸우는 eventTouch·playerTouch 이벤트 중 전투 명령이 있는 것)은 조사 단추로도 부딪힌 것과 같게 연다 — RPG Maker MV 의 확인 단추 관례.
+ * 왜(2026-10-30 omo-fr-t terra 숲길 r3 판정): 서 있는 슬라임 바로 옆에서 Enter·z 를 눌러도 아무 일이 없어 «전투를 못 해 봄»으로 적었다.
+ * 전투가 없는 닿기 이벤트(함정·문)는 조사로 열지 않는다.
+ */
+function findFieldFoeFacing(scene: ActionEventSceneContext, tx: number, ty: number): RuntimeEventView | undefined {
+  const view = findRuntimeEventInScene(scene, tx, ty, ["eventTouch", "playerTouch"]);
+  if (!view) return undefined;
+  return JSON.stringify(view.page?.commands ?? []).includes('"battleProcessing"') ? view : undefined;
 }
 
 /**

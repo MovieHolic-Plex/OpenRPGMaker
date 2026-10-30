@@ -89,6 +89,13 @@ export default {
       ops: [{ kind: "move", dir, steps, stepTimeoutMs: 1500 }, { kind: "hold", dir: null, ms: 500 }],
       shot: true,
     })),
+    // afterFace/afterAction: afterLegs 뒤 그쪽을 보고 조사(안내 글을 따라 걸어간 곳이 실제로 반응하는지 — 2026-10-30 회귀 sl1 terra 보급품).
+    ...(qa.afterFace ? [{
+      id: "after-arrive",
+      note: `${qa.afterFace} 보고${qa.afterAction ? " 조사" : ""}`,
+      ops: [{ kind: "face", dir: qa.afterFace }, { kind: "hold", dir: null, ms: 400 }, ...(qa.afterAction ? [{ kind: "action" }, { kind: "hold", dir: null, ms: 1200 }] : [])],
+      shot: true,
+    }] : []),
     // dump: 끝 화면의 body 글과 글을 가진 요소(태그·class·글) — 화면 밖 DOM 글 새기 확인용.
     ...(qa.dump ? [{
       id: "dump",

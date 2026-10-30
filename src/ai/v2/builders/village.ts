@@ -10,14 +10,14 @@ import type { BuildRun, BuilderCall, PlaceBuildResult, PlaceBuilder, PlaceRecord
 
 /** v2 계획 모델에게 주는 유일한 마을 지식(≤900자). */
 export const VILLAGE_CARD =
-  "[마을 type:village] 버들항 판타지 마을. 땅은 코드가 만든다 — 첫 make_place 는 짓지 않고 땅 그림(좌표 눈금)·요약을 준다. " +
-  "그림을 보고 hints.layout 에 자리를 골라 다시 부르면 짓는다: gather{x,y,plaza}·landmark(높은 단 건물)·anchor(여관)·work(일터)·houses[{x,y}](3~12)·fields[{x,y}]·exits(west|east|north|south). " +
-  "함수는 가까운 놓을 자리로 옮기고 길·계단·다리를 잇고 옮김·실패를 보고한다. hints.terrainSeed 를 바꾸면 다른 땅. " +
-    "theme/style: river(풀밭 들 마을 — 강이 있는지는 water 로 따로)·coast(포구)·desert(사막 오아시스)·snow(설원)·swamp(늪 수상 마을). " +
-  "땅 성격 힌트: landform(terraces|hill|slope|plateau|flat)·water(river 강|none, 풀밭 마을)·high(north|south|west|east|center)·tiers(1~4). " +
-  "features: plaza(광장)·scatter(흩어진 농가)·harbour(포구, 큰 맵)·walls(성벽, river·desert·snow, 평지)·forest·dense forest·conifer. " +
-  "그 밖 hints: houseCount(3~5)·roofs(red|slate|moss|log)·woods(edge|dense)·forestType·wallGate(S|N|NS)·width·height·variant(같은 명세의 다른 배치). " +
-  "교회·시장 건물 지정은 못 한다(보고됨). 집이 선 마을은 다시 지을 수 없다 — 처음 make_place 에 다 넣는다.";
+  "[Village type:village] Beodeul fantasy village. Code makes the land — the first make_place does not build; it returns a land picture (coordinate grid) and a summary. " +
+  "Look at the picture, choose spots in hints.layout and call again to build: gather{x,y,plaza} · landmark (building on the high tier) · anchor (inn) · work (workplace) · houses[{x,y}] (3–12) · fields[{x,y}] · exits (west|east|north|south). " +
+  "The function moves each to the nearest buildable spot, links roads, stairs and bridges, and reports moves and failures. Change hints.terrainSeed for different land. " +
+    "theme/style: river (grassland farm village — whether there is a river is set separately by water) · coast (fishing port) · desert (desert oasis) · snow (snowfield) · swamp (swamp stilt village). " +
+  "Land hints: landform (terraces|hill|slope|plateau|flat) · water (river|none, grassland villages) · high (north|south|west|east|center) · tiers (1–4). " +
+  "features: plaza · scatter (scattered farms) · harbour (port, big map) · walls (town walls; river·desert·snow, flat land) · forest · dense forest · conifer. " +
+  "Other hints: houseCount (3–5) · roofs (red|slate|moss|log) · woods (edge|dense) · forestType · wallGate (S|N|NS) · width · height · variant (another layout of the same spec). " +
+  "Church and market buildings cannot be requested (reported). A village with houses cannot be rebuilt — put everything in the first make_place.";
 
 /** 스키마 칸을 0·빈 값으로 다 채우는 모델(terra)이 보낸 layout 에서 {x:0,y:0} 자리·빈 배열을 버린다. 모이는 곳도 집도 없으면 「안 줬다」(null). */
 export function cleanLayoutHint(value: unknown): Record<string, unknown> | null {
