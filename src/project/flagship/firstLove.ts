@@ -270,9 +270,23 @@ function sideBySide(project: Project, mapId: string, npcId: string, npc: Cell, p
   const short = (c: Cell): boolean => free({ x: c.x, y: npc.y + 1 }) || free({ x: c.x, y: npc.y - 1 });
   // preferLeft: 흉상은 맵 위 자리를 따른다(bustSide stage) — 서하가 상대 오른쪽에 서면 흉상이 다른 장면과 좌우가 뒤집혔다(r5 블라인드: 탕비실).
   const left = sides.find((c) => c.x < npc.x);
+  const right = sides.find((c) => c.x > npc.x);
+  const from = (dir: "up" | "down"): Cell => ({ x: npc.x, y: dir === "up" ? npc.y + 1 : npc.y - 1 });
+  // 왼쪽 칸이 막힌 데로만 돌아가야 하면(탕비실: 왼쪽 아래가 탁자 → 12걸음 우회, r5 재검수) 상대가 오른쪽으로 한 칸 비키고 주인공이 그 자리로 든다.
+  if (preferLeft && left && !short(left) && right) {
+    const swap = (dir: "up" | "down"): Command[] => [
+      walk(npcId, ["right"]),
+      walk("@player", [dir]),
+      face("@player", "right"),
+    ];
+    return [
+      ifCond({ kind: "facing", subject: "player", dir: "up" } as Parameters<typeof ifCond>[0], swap("up"),
+        [ifCond({ kind: "facing", subject: "player", dir: "down" } as Parameters<typeof ifCond>[0], swap("down"))]),
+      faceHero(npcId),
+    ];
+  }
   const side = (preferLeft && left) ? left : sides.find(short) ?? sides[0];
   if (!side) return [faceHero(npcId)];
-  const from = (dir: "up" | "down"): Cell => ({ x: npc.x, y: dir === "up" ? npc.y + 1 : npc.y - 1 });
   const go = (dir: "up" | "down"): Command[] => [
     walkRoute(project, mapId, "@player", from(dir), side, [npc]),
     face("@player", dirToward(side, npc)),
