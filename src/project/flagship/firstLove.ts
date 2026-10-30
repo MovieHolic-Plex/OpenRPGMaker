@@ -1473,7 +1473,8 @@ function buildClimax(project: Project, a: FirstLoveAnchors): void {
     ...fadeIn(500),
     { kind: "setWeather", weather: "rain", intensity: 0.6, transitionMs: 800 } as Command,
     quiet(SE_PULSE, 0.8), wait(700), quiet(SE_PULSE, 0.8),
-    ...caption("오후 9시 21분. 9시 40분 열차까지 19분."),
+    // 발표(오후 3시) 뒤 곧장 9시 21분이 떠 여섯 시간이 사라졌다(r3 리뷰) — 남은 마감을 붙들고 있었다는 한 줄로 잇는다.
+    ...caption("오후 9시 21분. 남은 마감을 붙들고 있다 시계를 봤다. 9시 40분 열차까지 19분."),
     ...think("뛰자.", "(지하철 입구로!)"),
     stage(S.RUN),
   ]));
@@ -1672,7 +1673,7 @@ function defineEndings(project: Project): void {
     conditions: [],
     presentation: { musicResourceId: BGM_END_B, tone: "warm", kicker: "엔딩 B · 10년 늦은 인사", credits: ENDING_CREDITS, backgroundResourceId: "oprn-first-love-ending-b" },
     epilogue: [
-      { kind: "say", text: "열차가 떠났다. 혼자 지상으로 올라와 밤하늘을 봤다. 연두색 편지지 뒤에, 낯익은 글씨." },
+      { kind: "say", text: "열차가 떠났다. 혼자 지상으로 올라왔다. 그날 밤, 회사 옥상에서 연두색 편지지를 다시 펼쳤다. 뒷면에, 낯익은 글씨." },
       { kind: "say", text: "‘바나나우유 님께. 그 금요일 방송, 이제야 읽어요.’" },
       { kind: "say", text: "‘나도 금요일마다 사연함을 제일 먼저 열었어요. 당신 글씨가 있는지 보려고.’" },
       { kind: "say", text: "‘잘 지내요. 진심으로. — 강지후’" },
@@ -1687,8 +1688,8 @@ function defineEndings(project: Project): void {
     presentation: { musicResourceId: BGM_END_C, tone: "warm", kicker: "엔딩 C · 첫 주의 끝", credits: ENDING_CREDITS, backgroundResourceId: "oprn-first-love-ending-c" },
     epilogue: [
       { kind: "say", text: "회식 자리로 가는 길. 회사 앞에 혼자 서서, 비 오는 길을 한참 봤다." },
-      { kind: "say", text: "오후 9시 41분, 그 열차가 떠난 시각. 밤 열 시, ‘하루끝’ 오늘의 사연이 울렸다." },
-      { kind: "say", text: "보낸 사람: 익명. 사연 제목은, ‘바나나우유 님께’." },
+      { kind: "say", text: "오후 9시 40분, 그 열차가 떠난 시각. 밤 열 시, ‘하루끝’ 오늘의 사연이 울렸다." },
+      { kind: "say", text: "익명으로 온 사연. 제목은, ‘바나나우유 님께’." },
       { kind: "say", text: "‘10년 전 금요일의 사연, 이제야 답장해요. 이번에도 인사는 못 했네요.’" },
       { kind: "say", speaker: "서하", text: "…답장만 하고 가 버리면, 어떡해요." },
       { kind: "say", text: "다음 주 금요일엔 내가 먼저 사연을 보내야지. 부산까지 닿게." },
@@ -1732,7 +1733,7 @@ export function createFirstLoveFlagshipDemo(): FlagshipDemoBuildResult {
   }
 
   const exec = (name: string, args: Record<string, unknown>) => execTool(project, name, args);
-  const anchors = buildFirstLoveMaps(project, exec);
+  const anchors = buildFirstLoveMaps(project, exec)
   // 조명이 없는 맵은 들어오기 전 맵의 조명을 이어 받는다 — 밤거리에서 편의점에 들어가면 편의점이 어두워진다. 모든 맵의 조명을 못 박는다.
   for (const id of Object.values(FL_MAP)) {
     const m = project.maps[id];

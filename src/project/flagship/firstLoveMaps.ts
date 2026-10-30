@@ -441,7 +441,6 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
     light("fl_kb_spill", { x: kb.x, y: kb.y + 1 }, 2.6, "#fff0c4", 0.8),
   );
   streetPm.defaultLighting = { ambient: 0.74, color: "#0b1230", sources: lamps };
-  addStreetWalkers(project, exec, streetData, office, conv, exits);
   officePm.defaultLighting = {
     // 야근 밤: 너무 어두우면 인물이 안 읽힌다(VQA r3) — 어둠은 한 단계 줄이고 책상·탕비실·회의 자리 불을 넓힌다.
     // 밤 10시대 사무실이 낮과 같은 밝기로 읽혔다(VQA r16) — 한 단계 더 어둡게, 책상 불은 그대로.
@@ -480,6 +479,9 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
   };
   roofRoom.defaultLighting = { ambient: 0.06, color: "#ffd9a8", sources: [] };
   roofRoom.atmosphereEffects = normalizeAtmosphereEffects([{ kind: "sunrays", amount: 0.5, speed: 0.4, size: 1, opacity: 0.5 }]);
+  // 행인 도구(exec)는 프로젝트 맵 객체를 새로 만든다 — 위 조명·대기 효과를 잡아 둔 맵 참조에 쓴 뒤에 부른다. 앞에서 부르면
+  // 야근 사무실·막차 승강장·편의점·옥상 조명이 끊긴 옛 객체에 써져 사라졌다(r3 리뷰: 수요일 밤 사무실이 낮처럼 밝다).
+  addStreetWalkers(project, exec, streetData, office, conv, exits);
 
   // 도구 실행(exec)은 프로젝트 맵 객체를 새로 만들 수 있다 — 위에서 잡아 둔 맵 참조(조명 등)가 끊기지 않게 맨 끝에 둔다(VQA r10: 밤거리 조명 사라짐).
   // 열차가 실제로 들어와 서고 떠난다(VQA r8: 「열차가 들어오고 있습니다」 안내만 있고 열차가 없다).

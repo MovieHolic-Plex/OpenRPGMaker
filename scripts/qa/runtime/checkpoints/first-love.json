@@ -657,9 +657,9 @@
   {
    "id": "d3-pantry-choice",
    "label": "탕비실 지후 선택",
-   "note": "WED 9: ev_fl_w_jihu_pantry talk at (6,4); jihu>=3 shows 'why' option",
+   "note": "WED 9: ev_fl_w_jihu_pantry talk at (5,4); jihu>=3 shows 'why' option",
    "mapId": "fl_office_pm",
-   "x": 6,
+   "x": 5,
    "y": 5,
    "facing": "up",
    "switches": {},
