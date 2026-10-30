@@ -225,6 +225,40 @@ function sameShape(a: string, b: string): boolean {
   return key(a) === key(b);
 }
 
+/**
+ * 적 자리 후보(2026-10-31 씬 벤치 terra 숲길 3판 «몬스터·조우 없음»): 모델이 돌려받은 clearing 한 칸에 동굴 문·상자·필드 적을 모두 겹쳐 놓다
+ * 자리 충돌로 적이 다 빠졌다. 입구에서 걸어 닿는 칸을 걸음 수로 줄 세워 30·50·70·88% 지점에서, 이벤트·입구·출구·빈터·갈림 끝과 3칸 넘게 떨어지고
+ * 서로 4칸 넘게 떨어진 길 칸(사방이 많이 트인 칸 우선)을 고른다.
+ */
+function enemySpotsOf(project: Project, map: GameMap, entry: Cell, avoid: readonly Cell[]): Cell[] {
+  const W = map.width, H = map.height;
+  const dist = new Map<number, number>([[entry.y * W + entry.x, 0]]); const q = [entry.y * W + entry.x];
+  for (let h = 0; h < q.length; h += 1) {
+    const c = q[h]!; const x = c % W, y = (c - x) / W; const d = dist.get(c)!;
+    for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+      const nx = x + dx, ny = y + dy, n = ny * W + nx;
+      if (nx < 1 || ny < 1 || nx >= W - 1 || ny >= H - 1 || dist.has(n) || !isPassable(project, map, nx, ny)) continue;
+      dist.set(n, d + 1); q.push(n);
+    }
+  }
+  const max = Math.max(0, ...dist.values());
+  const busy = [...avoid, ...map.events.map((e) => ({ x: e.x, y: e.y }))];
+  const open = (x: number, y: number) => [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [-1, -1], [1, -1], [-1, 1]].filter(([dx, dy]) => dist.has((y + dy!) * W + x + dx!)).length;
+  const out: Cell[] = [];
+  for (const f of [0.3, 0.5, 0.7, 0.88]) {
+    let best: { c: Cell; score: number } | undefined;
+    for (const [k, d] of dist) {
+      if (Math.abs(d - f * max) > 3) continue;
+      const c = { x: k % W, y: Math.floor(k / W) };
+      if (busy.some((b) => Math.abs(b.x - c.x) + Math.abs(b.y - c.y) <= 3) || out.some((o) => Math.abs(o.x - c.x) + Math.abs(o.y - c.y) <= 4)) continue;
+      const score = open(c.x, c.y) * 10 - Math.abs(d - f * max);
+      if (!best || score > best.score) best = { c, score };
+    }
+    if (best) out.push(best.c);
+  }
+  return out;
+}
+
 export function centerBlob(side: Side, u: number, v: number, ru: number, rv: number) {
   const c = toMap(side, u, v);
   const vertical = side === "north" || side === "south";
@@ -326,7 +360,7 @@ const authorForestRoute: ToolDefinition = {
     + "terrains[i] 로 맵마다 따로 줄 수 있다(예: ['edge','field']). "
     + "마지막 숲은 막다른 빈터로 끝난다(보스·사당 자리). 숲·들판 길 모양은 네가 designs[i] 로 설계한다(edge 맵은 어귀 틀 그대로) — 굽이 수·휘는 폭·들어오고 나가는 자리·길 폭·갈림길(at·toward·length·end)·빈터. "
     + "같은 요청이라도 이 장면의 사연에 맞게 짜고, 앞서 지은 숲길과 다르게(결과 warnings 가 거의 같은 설계를 짚는다). "
-    + "결과 data.maps[i] = {mapId, entry, exit, clearing, terrain, treeline?, deadEnds[{at, end}](갈림길 끝 — 상자·적 자리), design} — edge 맵의 treeline = 풀밭이 끝나고 나무 벽이 시작되는 줄(y 또는 x).",
+    + "결과 data.maps[i] = {mapId, entry, exit, clearing, terrain, treeline?, deadEnds[{at, end}](갈림길 끝 — 상자 자리), enemySpots[](적 자리 — 이 도구는 몬스터·조우를 깔지 않는다, encounters:'none'), design} — edge 맵의 treeline = 풀밭이 끝나고 나무 벽이 시작되는 줄(y 또는 x).",
   mode: "write",
   parameters: {
     type: "object",
@@ -387,7 +421,7 @@ const authorForestRoute: ToolDefinition = {
       return pick === "field" || pick === "edge" ? pick : "forest";
     };
     const warnings: string[] = [];
-    const out: Array<{ mapId: string; name: string; entry: Cell; exit: Cell | null; clearing: Cell; hidden: Cell[]; terrain: Terrain; treeline?: number; branches: { from: Cell; end: Cell }[]; deadEnds?: { at: Cell; end: string }[]; design?: string }> = [];
+    const out: Array<{ mapId: string; name: string; entry: Cell; exit: Cell | null; clearing: Cell; hidden: Cell[]; enemySpots: Cell[]; encounters: "none" | "set"; terrain: Terrain; treeline?: number; branches: { from: Cell; end: Cell }[]; deadEnds?: { at: Cell; end: string }[]; design?: string }> = [];
     const linkFrom = args.linkFrom !== false;
     let prev: ({ mapId: string } & Cell) | null = linkFrom ? { mapId: from.id, ...originEdge(draft, from, side) } : null;
     let used = 0;
@@ -444,15 +478,20 @@ const authorForestRoute: ToolDefinition = {
       }
       if (result.pockets.length < hidden) warnings.push(`${name}: 나무 사이 틈이 ${result.pockets.length}곳뿐이라 숨은 물건 ${result.pockets.length}개만 두었다.`);
       const c = spec.clearings?.[spec.clearings.length - 1];
+      const clearingCell = built ? built.clearing : c ? { x: Math.round(c.cx), y: Math.round(c.cy) } : entry;
+      // 이 도구는 몬스터·조우를 깔지 않는다(전투 방식은 프로젝트마다 다르다) — 비었다고 알리고 겹치지 않는 적 자리를 준다.
+      const enemySpots = enemySpotsOf(draft, draft.maps[id]!, entry, [entry, ...(exit ? [exit] : []), clearingCell, ...(built?.deadEnds.map((e) => e.at) ?? []), ...spots]);
+      const hasFoes = !!draft.maps[id]!.encounterTable?.length || draft.maps[id]!.events.some((e) => /enemy|foe|troop/iu.test(e.id));
+      if (!hasFoes) warnings.push(`${name}: 몬스터·무작위 조우가 아직 없다 — 「몬스터가 있는 숲」이면 data.maps[i].enemySpots(${enemySpots.map((p) => `(${p.x},${p.y})`).join(" ")})에 place_field_enemy 를 두거나 set_encounter_table 로 조우를 건다. clearing·deadEnds·출입구 칸에 적을 겹쳐 두지 않는다.`);
       const treeline = terrain === "edge" ? (side === "north" ? EDGE_MEADOW_V : side === "south" ? ALONG - 1 - EDGE_MEADOW_V : side === "west" ? EDGE_MEADOW_V : ALONG - 1 - EDGE_MEADOW_V) : undefined;
       // 샛길(nooks)은 큰길에서 갈라져 막다른 끝으로 가는 갈림길이다 — 결과에 좌표로 알린다(2026-10-30 omo-loop-1030b terra forest-path:
       // 갈림길이 이미 있는데 «숲길 빌더는 갈림길을 지정하지 못한다»며 항목을 막힘으로 닫았다). 모델 설계 맵은 deadEnds 가 갈림 끝이다.
       const branches = (spec.nooks ?? []).map((nk) => ({ from: { x: Math.round(nk.from.x), y: Math.round(nk.from.y) }, end: { x: Math.round(nk.to.x), y: Math.round(nk.to.y) } }));
-      out.push({ mapId: id, name, entry, exit, clearing: built ? built.clearing : c ? { x: Math.round(c.cx), y: Math.round(c.cy) } : entry, hidden: spots, terrain, ...(treeline !== undefined ? { treeline } : {}), branches, ...(built ? { deadEnds: built.deadEnds, design: built.line } : {}) });
+      out.push({ mapId: id, name, entry, exit, clearing: clearingCell, hidden: spots, enemySpots, encounters: hasFoes ? "set" : "none", terrain, ...(treeline !== undefined ? { treeline } : {}), branches, ...(built ? { deadEnds: built.deadEnds, design: built.line } : {}) });
       if (exit) prev = { mapId: id, ...exit };
     }
     return {
-      summary: `숲길 ${count}장(${side}): ${out.map((m) => `${m.name}=${m.mapId}(${m.terrain})${m.hidden.length ? ` 숨은 물건 ${m.hidden.length}` : ""}${m.deadEnds?.length ? ` 갈림길 끝 ${m.deadEnds.map((e) => `(${e.at.x},${e.at.y})${e.end}`).join(" ")}` : ""}`).join(" → ")} · ${from.id} ${side} 가장자리와 연결 · seed ${seed0}`
+      summary: `숲길 ${count}장(${side}): ${out.map((m) => `${m.name}=${m.mapId}(${m.terrain})${m.hidden.length ? ` 숨은 물건 ${m.hidden.length}` : ""}${m.encounters === "none" ? " 몬스터·조우 없음" : ""}${m.deadEnds?.length ? ` 갈림길 끝 ${m.deadEnds.map((e) => `(${e.at.x},${e.at.y})${e.end}`).join(" ")}` : ""}`).join(" → ")} · ${from.id} ${side} 가장자리와 연결 · seed ${seed0}`
         + out.filter((m) => !m.deadEnds?.length && m.branches.length).map((m) => ` · ${m.name} 갈림길 ${m.branches.length}곳(큰길에서 갈라지는 막다른 샛길): ${m.branches.map((b) => `(${b.from.x},${b.from.y})→끝 (${b.end.x},${b.end.y})`).join(", ")} — 막다른 끝에 place_chest·place_field_enemy 를 그 좌표로 놓는다`).join("")
         + out.map((m) => ` · ${m.name} ${m.exit ? "" : "막다른 "}빈터 (${m.clearing.x},${m.clearing.y})`).join(""),
       data: { maps: out },

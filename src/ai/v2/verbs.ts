@@ -89,6 +89,8 @@ export class V2Session {
   /** 할 일 고리 갈고리의 발화 수(src/ai/v2/loop/hookStats.ts) — v2.summary 에 싣는다. */
   readonly hooks = new HookStats();
   readonly places = new Map<string, PlaceRecord>();
+  /** 세션마다 다른 덧값 — 던전 설계 안내(예시 순서·입구 낱말 순서·설계 실마리)를 같은 요청의 다른 세션에서 다르게 돌린다. */
+  readonly nonce = Math.floor(Math.random() * 1_000_000_000);
   readonly seen = new Map<string, Seen>();
   readonly content: { verb: string; result: ContentBuildResult }[] = [];
   readonly missingArt = new Set<string>();
@@ -667,7 +669,9 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
       const raw0 = (params as { spec: PlaceSpec }).spec;
       const { seed: _modelSeed, ...rawHints } = (raw0.hints ?? {}) as Record<string, string | number | boolean>;
       const raw: PlaceSpec = raw0.hints ? { ...raw0, hints: rawHints } : raw0;
-      let spec: PlaceSpec = localizeCultureSpec(localizePlaceSpec(dropModelSeed({ ...raw, salt: Math.floor(Math.random() * 1_000_000), variety: placeVariety(env, task) }, true), String(task ?? "")), String(task ?? ""));
+      // 던전·동굴은 세션 덧값도 섞는다 — 같은 시작 저장본의 같은 요청을 다른 세션에서 받아도 같은 굴이 되지 않게(2026-10-31 씬 벤치 보스 방 opus 3판).
+      const varietyKey = placeVariety(env, task) + (raw.type === "dungeon" || raw.type === "cave" ? `|${session.nonce}` : "");
+      let spec: PlaceSpec = localizeCultureSpec(localizePlaceSpec(dropModelSeed({ ...raw, salt: Math.floor(Math.random() * 1_000_000), variety: varietyKey }, true), String(task ?? "")), String(task ?? ""));
       // 없는 맵 id 는 버리고 새 맵에 짓는다 — flash 가 타일셋 id(beodeul_city)를 mapId 로 보내 「맵이 없습니다」로 한 채도 못 지었다(2026-10-29 b5 강가 마을).
       if (spec.mapId && !run.ctx.project.maps[spec.mapId]) { const { mapId: _gone, ...rest } = spec; spec = rest; }
       // 이번 실행에서 이미 다른 장소를 지은 맵 위에 새 장소를 짓지 않는다 — 「지하 예배당」을 지은 맵에 「검은 장미 저택」을 다시 지어
@@ -725,7 +729,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
       }
       if (builder.id === "dungeon" && !(spec.mapId && session.places.has(spec.mapId)) && !spec.dungeonDesign && !spec.floorDesigns?.length && !session.dungeonBounced.has(spec.name)) {
         session.dungeonBounced.add(spec.name);
-        const parts = dungeonParts(`${spec.theme ?? ""} ${spec.name} ${spec.type}`, String(env.request.projectKey ?? run.ctx.project.meta.title ?? ""), dungeonContext(session.places.values(), spec.name));
+        const parts = dungeonParts(`${spec.theme ?? ""} ${spec.name} ${spec.type}`, `${String(env.request.projectKey ?? run.ctx.project.meta.title ?? "")}|${session.nonce}`, dungeonContext(session.places.values(), spec.name));
         return text({ ok: false, notFailure: true, summary: `아직 짓지 않았다(실패 아님) — 「${spec.name}」의 층은 네가 설계한다. 아래 parts(방 모양·역할·물·특징·잇는 모양, 뼈대가 다른 예시)를 보고 spec.dungeonDesign 을 채워 make_place 를 바로 다시 부르면 지어진다: `
           + `entrance(플레이어가 들어오는 길 쪽 — 이 굴로 오는 마을 출구·세계 배치에 맞춘다, parts.context)·rooms[{id, role(entrance 하나·boss 하나·treasure·lake·camp·shrine·hall·grotto), size, shape(blob·cavern·long·shaft·ring·twin), at("x,y" 0~1 — 방마다 다르게), level(0 바닥·1 한 단·2 두 단 — 높이가 다른 방 사이에 돌계단), water(none·pool·lake·stream), features}]·links[{from,to,kind}]. `
           + `무엇이 사는 굴인지·어디가 위험한지·무엇을 숨겼는지에 맞게 방 수(보통 5~7, 작은 굴 3~4·큰 굴 8~10)·자리·모양·길을 네가 정한다 — 함수는 겹침·길·도달만 고쳐 알린다. 예시는 참고, 베끼지 않는다. 그림은 dungeon_parts.`, parts });
@@ -1563,7 +1567,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     }
     return result;
   } });
-  const verbs = [writeBlueprint, buildBlueprintPathVerb, makePlace, ...(makeGameOn() && wantsMakeGame(String(task ?? "")) ? [makeGame] : []), editPlace, moveObject, dressRoomVerb, addPeople, addEvent, addScene, ...(wantsBossEncounter(String(task ?? "")) ? [addBossEncounter] : []), ...(wantsEndingScene(String(task ?? "")) ? [addEndingScene] : []), ...(wantsPuzzle(String(task ?? "")) ? [authorPuzzleChain] : []), sealLockedRoomVerb, setObjectiveVerb, drawObjectVerb, placeObject, inspect, roomPartsVerb, createDungeonPartsVerb(env, () => session.places.values()), restoreEvent, ...(helpersOn() ? [askHelpers] : []), askUser]
+  const verbs = [writeBlueprint, buildBlueprintPathVerb, makePlace, ...(makeGameOn() && wantsMakeGame(String(task ?? "")) ? [makeGame] : []), editPlace, moveObject, dressRoomVerb, addPeople, addEvent, addScene, ...(wantsBossEncounter(String(task ?? "")) ? [addBossEncounter] : []), ...(wantsEndingScene(String(task ?? "")) ? [addEndingScene] : []), ...(wantsPuzzle(String(task ?? "")) ? [authorPuzzleChain] : []), sealLockedRoomVerb, setObjectiveVerb, drawObjectVerb, placeObject, inspect, roomPartsVerb, createDungeonPartsVerb(env, () => session.places.values(), session.nonce), restoreEvent, ...(helpersOn() ? [askHelpers] : []), askUser]
     // 음악만 바라는 요청은 맵·이벤트를 쓰는 동사를 싣지 않는다 — 보기·묻기만(2026-10-30 r12: 추격 음악 요청에 상자를 찍었다).
     .filter((tool) => !musicOnly(String(task ?? "")) || MUSIC_ONLY_VERBS.has(tool.name))
     .map((tool) => guard(flattenWrapperTool(tool)));
