@@ -242,7 +242,8 @@ function shotPower(project: Project): void {
   const id = "mk_op_power", ms = 3800;
   newShot(project, id, ms, { kind: "flash", durationMs: 220, color: "#ffd8ff" });
   // 애니메틱 배경은 컷마다 같은 정수 배율(2)이다 — 3배였던 이 컷만 도트가 굵어 보였다(2026-10-30 해상도 검수).
-  const view = mapBackground(project, id, MAP_THRONE, { x: 23, y: 5 }, 2);
+  // 옥좌 컷(23,6 · 2배)과 같은 잘라 내기가 되면 배경 재사용 검사에 걸린다 — 한 칸 오른쪽을 가운데로 잡는다.
+  const view = mapBackground(project, id, MAP_THRONE, { x: 24, y: 5 }, 2);
   execTool(project, "animate_opening_camera", { shotId: id, camera: { x: 240, y: 135, keys: {
     // 뿔이 레터박스에 잘리지 않게 마왕 머리 쪽으로 조금 올려 잡는다.
     y: [{ atMs: 0, value: 120 }, { atMs: ms, value: 110 }],
