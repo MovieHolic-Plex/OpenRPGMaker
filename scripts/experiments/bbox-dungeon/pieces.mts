@@ -86,8 +86,24 @@ export const PIECES: Record<string, string> = {
   "steam vent trap": "bd-pick-volcano-cave-steam-vent",
   "spike trap": "bd-pick-volcano-cave-spike-small",
   "floor grate": "bd-pick-aqueduct-sewer-grate-floor",
+  // natural cave (round 2)
+  "rock pillar": "bd-pick-sea-cave-rock-pillar-2",
+  "cave stalagmite": "bd-pick-volcano-cave-stalagmite",
+  "tall spike rock": "bd-pick-volcano-cave-spike-tall",
+  "wide spike rock": "bd-pick-volcano-cave-spike-wide",
+  "cave rubble": "bd-pick-sea-cave-rubble-cave",
+  "mossy boulder": "bd-pick-dungeon-theme-mossy-boulder",
+  "moss stone": "bd-org-moss-stone",
+  "glow moss": "bd-pick-sea-cave-glow-moss-floor",
+  "hanging vines": "bd-pick-sea-cave-vines-2",
+  "driftwood": "bd-pick-sea-cave-driftwood",
+  "mushroom ring": "bd-pick-dungeon-theme-mushroom-ring",
+  "ice crystal": "bd-pick-dungeon-theme-ice-crystal",
+  "fire crystal": "bd-pick-volcano-cave-fire-crystal",
+  "broken cave pillar": "bd-pick-dungeon-cave-broken-pillar",
+  "fallen pillar": "bd-pick-volcano-cave-pillar-fallen",
 };
 export const TRAPS = new Set(["sand pit trap", "steam vent trap", "spike trap", "floor grate"]);
 export const LIGHTS = new Set(["wall torch", "brazier", "stone brazier", "candelabra", "iron candelabra", "void brazier", "lantern post", "candles"]);
 export const STATUES = new Set(["jackal statue", "scarab statue", "sunken idol", "fallen statue head", "obelisk", "frozen warrior", "bone pillar"]);
-export const THEMES = ["catacomb", "castle", "temple"] as const;
+export const THEMES = ["catacomb", "castle", "temple", "cave"] as const;
