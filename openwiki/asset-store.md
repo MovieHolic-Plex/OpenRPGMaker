@@ -94,6 +94,18 @@ gzip 은 풀린 크기에도 같은 상한(`maxOutputLength`). 캐시 blob 은 �
 - 조수: `list_monster_resources`·`get_monster_resource` 가 시트로 움직이는 소재에 `battleMotion` 을 붙이고 설명이 그것을 먼저 고르라고 한다. `store_install` 결과는 `monsters[{resourceId, name, battleMotion?}]`.
 - 테스트 `test/assetStoreMonsterMotion.test.ts`.
 
+### 전투 애니메이션 팩 (2026-10-31)
+
+종류 `animation`. `content.battleAnimations?` = `BattleAnimationRecord[]`(최대 64)이고 id·`resourceId`·`timings[].soundResourceId`·`followUps[].animationId` 는 **팩 안의 id** 다.
+검사(`format.ts` `battleAnimationProblems`): 시트는 같은 팩의 `battle` PNG 에셋, `sheet` = `{frameWidth 8~640, frameHeight 8~640, columns 1~20, assetScale? 0.125~8}`,
+프레임 1~120 · 셀 1~16(정수 범위, 모르는 칸 거부) · `hold?` 1~16, timings 64·followUps 4, 소리 = 팩 `sound` 에셋 또는 내장 `cc0-se-*`, 후속은 같은 목록의 다른 id.
+시트 기하(`storeBattleAnimationSizeProblems`: 가로 = columns×frameWidth, 세로 = frameHeight 배수, pattern < 칸 수)는 바이트가 있는 쪽 — 편집기 넣기와 스토어 서버 받기 — 가 본다.
+
+넣기(`applyPackBattleAnimations`): `database.battleAnimations` 에 `store_<slug>__anim-<id>`(`storeAnimationId`)로, 시트·소리·후속 id 를 바꿔 넣는다.
+**같은 id 레코드가 이미 있으면 덮지 않는다** — 넣은 뒤 저자가 고친 이름·타이밍이 남고, 다시 넣기는 레코드에 아무것도 하지 않는다(새 판본의 레코드 변경도 반영 안 됨, 지우고 다시 넣어야 한다).
+되돌리기·빼기(`storeUndo.ts`)는 레코드도 함께 다룬다. 기술이 쓰고 있으면 빼기가 막힌다. 조수 `store_install` 결과 `animations[]` 의 id 를 `upsert_skill`·`upsert_item` 의 `animationId` 로 건다.
+웹 내보내기는 레코드의 `resourceId`·소리 id 문자열로 시트·소리를 싣는다(`collectUsedUploadedAssetIds`). 시험 `test/assetStoreBattleAnimations.test.ts`.
+
 ### 캐릭터 칸의 짝 초상 (char-gen 캐릭터 세트, 2026-10-20)
 
 `content.characters[i].portraits` = `{ face?, bust?: {표정: 에셋 id}, full?: {표정: 에셋 id}, extra? }` — 같은 팩의
