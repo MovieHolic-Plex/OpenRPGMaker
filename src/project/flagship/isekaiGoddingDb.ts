@@ -135,9 +135,9 @@ export function setupIsekaiDatabase(project: Project, backdrops: typeof BACKDROP
     exec("upsert_enemy", { enemy: { id, name, monsterResourceId: art, stats, actions, skillIds: actions.map((a) => a.skillId), level,
       rewards: { ...(base.rewards as Record<string, unknown>), exp, gold, dropRatePercent: 0 }, ...extra }, clearFields: ["speciesId"] });
   };
-  enemy("enemy_ig_slime", "들슬라임", "generated-enemy-slime-green", { maxHp: 120, maxMp: 0, attack: 34, defense: 10, mind: 10, agility: 20 },
+  enemy("enemy_ig_slime", "들슬라임", "generated-enemy-slime-green", { maxHp: 160, maxMp: 0, attack: 64, defense: 10, mind: 10, agility: 20 },
     [act("skill_attack", 7)], 40, 25, 3);
-  enemy("enemy_ig_slime_red", "붉은 슬라임", "generated-enemy-slime-red", { maxHp: 150, maxMp: 0, attack: 40, defense: 12, mind: 12, agility: 22 },
+  enemy("enemy_ig_slime_red", "붉은 슬라임", "generated-enemy-slime-red", { maxHp: 200, maxMp: 0, attack: 72, defense: 12, mind: 12, agility: 22 },
     [act("skill_attack", 7)], 55, 30, 4);
   enemy("enemy_ig_goblin", "고블린 징수원", "generated-enemy-goblin-scout", { maxHp: 220, maxMp: 0, attack: 52, defense: 24, mind: 20, agility: 40 },
     [act("skill_attack", 6), act("skill_ig_goblin_poke", 7)], 80, 40, 7);
