@@ -167,6 +167,8 @@ export class TodoStore {
         // 끝났다던 문제가 다시 나왔다 — 거짓 완료이거나 고치기가 효과가 없었다. 다시 열고 한 번 실패로 센다.
         // 막힘(이유를 적고 닫음)·뺌은 다시 열지 않는다 — 같은 문제가 남는 것이 당연하다(남은 문제로 보고된다).
         if (same.status === "completed") { same.attempts += 1; same.status = "pending"; delete this.metaOf(same.id).closedBy; opened.push(same); }
+        // 같은 열쇠(맵마다 하나인 장소 고치기)라도 문제 글은 바뀐다 — 지금 글로 바꿔 둔다.
+        if (isOpen(same.status)) same.content = clip(input.content.trim(), 220);
         continue;
       }
       const item = this.add(phase, input, source, input.key);

@@ -74,6 +74,8 @@ export interface TodoReportInput {
   readonly autoNotes?: readonly string[];
   readonly loopStop?: string;
   readonly vqa?: string;
+  /** 시작 저장본에 이미 있던 결함(관문이 짚었지만 이번 요청의 완료를 막지 않는다). */
+  readonly preexisting?: readonly string[];
 }
 
 /** 끝맺음 자동 짓기 글(조수에게 주던 «[자동으로 지음] … 그대로 적는다» 머리 포함)을 사람이 읽을 줄로 — 머리를 빼고 같은 줄은 한 번만. */
@@ -118,6 +120,7 @@ export function todoReport(input: TodoReportInput): { text: string; complete: bo
     ...(input.leftovers?.length ? ["남은 문제(함수 검사 기록 — 고치기 상한):", ...input.leftovers.map((l) => `- ${l.slice(0, 220)}`)] : []),
     ...(input.missing?.length ? [`그림·부품이 없어 못 한 것: ${input.missing.join(" / ").slice(0, 400)}`] : []),
     ...(input.vqa ? [input.vqa] : []),
+    ...(input.preexisting?.length ? ["기존 결함(시작 저장본에 이미 있던 것·요청 밖 — 이번 요청의 완료를 막지 않음):", ...input.preexisting.map((l) => `- ${l.slice(0, 220)}`)] : []),
     ...(autoLines(input.autoNotes).length ? ["자동으로 지음(함수):", ...autoLines(input.autoNotes).map((n) => `- ${n.slice(0, 300)}`)] : []),
   ];
   if (complete) {

@@ -7,7 +7,7 @@ import type { GameMap, Project } from "../../src/project/types.ts";
 import { runPiAgent, type RunPiAgentOptions } from "./piAgentRuntime.ts";
 import type { PiAgentDoneEvent, PiAgentEvent, PiAgentRequest } from "../../src/ai/piAgent/protocol.ts";
 import { buildV2SystemPrompt } from "../../src/ai/v2/prompt.ts";
-import { createV2Tools, V2Session, v2GateProblems, V2_MAX_REPAIR_ROUNDS } from "../../src/ai/v2/verbs.ts";
+import { createV2Tools, V2Session, v2BaselineGameKeys, v2GateProblems, V2_MAX_REPAIR_ROUNDS } from "../../src/ai/v2/verbs.ts";
 import { shipBlockers } from "../../src/ai/v2/shipChecks.ts";
 import { finishBuildPending, runFinishAutoBuild } from "../../src/ai/v2/finishAutoBuild.ts";
 import { assembledReport, isProviderErrorReply, todoReport } from "../../src/ai/v2/finalReport.ts";
@@ -17,7 +17,7 @@ import type { PiAssistantV2Env } from "../../src/ai/v2/env.ts";
 import { adviseTurn, scopeAdviceToRequest, withShipBlockers, advisorSummary, compactToolLog, summarizeProjectDiff, type AdvisorToolCall, type AdvisorVerdict } from "../../src/ai/v2/advisor.ts";
 import { withTodoLoop, isWriteRequest } from "../../src/ai/v2/loop/todoTools.ts";
 import { continuationPrompt, projectFingerprint, textHash, STOP_REASON_KO } from "../../src/ai/v2/loop/continuation.ts";
-import { syncGateItems } from "../../src/ai/v2/loop/gates.ts";
+import { splitPreexisting, syncGateItems } from "../../src/ai/v2/loop/gates.ts";
 import { TODO_MAX_ATTEMPTS, isOpen } from "../../src/ai/v2/loop/todoStore.ts";
 import { changedSince, checkItem, indexProject } from "../../src/ai/v2/loop/refs.ts";
 import type { TodoItem } from "../../src/ai/v2/todo/types.ts";
@@ -92,6 +92,9 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
   }
   // 판정 기준선 — 「만들어 달라」 항목(fresh)은 이 시점에 원래 있던 것으로는 ✓ 가 나지 않는다.
   try { store.baseline = indexProject(request.project as Project); } catch { store.baseline = undefined; }
+  // 시작 저장본에 이미 있던 게임 검사 문제(기존 결함) — 관문 항목으로 만들지 않고 보고에만 싣는다. 처음 관문을 볼 때 한 번 잰다.
+  let baselineKeys: Set<string> | undefined;
+  const preexisting = new Map<string, string>();
   // 검토자의 재료: 이 실행의 도구 기록과 마지막 보고 초안. 사용자 화면으로 가는 이벤트를 그대로 흘려보내며 옆에서 모은다.
   const calls: AdvisorToolCall[] = [];
   const argsById = new Map<string, unknown>();
@@ -324,8 +327,15 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
           if (loopStop) return undefined;
           // ④ 끝맺음 관문 — 남은 문제는 «한 바퀴 더» 글이 아니라 할 일 항목이다.
           const gate = v2GateProblems(session, env);
+          if (!baselineKeys) { try { baselineKeys = v2BaselineGameKeys(env.request.project, env.request.task); } catch { baselineKeys = new Set(); } }
+          let nowIndex; try { nowIndex = indexProject(env.ctx.project); } catch { nowIndex = undefined; }
+          const split = splitPreexisting(gate.problems, baselineKeys, store.baseline, nowIndex);
+          for (const p of split.preexisting) if (!preexisting.has(p.key)) {
+            preexisting.set(p.key, p.text);
+            env.emit({ type: "execution_status", name: "v2.gate.preexisting", ok: true, summary: `기존 결함(시작 저장본에 있었음 — 완료를 막지 않음): ${p.text.slice(0, 160)}` });
+          }
           const capMapIds = new Set(session.unresolved().filter((o) => o.rounds >= V2_MAX_REPAIR_ROUNDS).map((o) => o.mapId));
-          const synced = syncGateItems(store, gate.problems, capMapIds, toolNames);
+          const synced = syncGateItems(store, split.current, capMapIds, toolNames);
           if (synced.closed.length || synced.capped.length) env.emit({ type: "execution_status", name: "v2.gate.sync", ok: true, summary: `관문 항목 — 사라져 닫음 ${synced.closed.length} · 상한 막힘 ${synced.capped.length}` });
           if (synced.opened.length) {
             env.emit({ type: "execution_status", name: "v2.gate.items", ok: false, summary: `끝맺음 관문이 짚은 것 ${synced.opened.length}건을 할 일에 덧붙임`, data: { items: synced.opened.map((i) => ({ id: i.id, source: i.source, content: i.content })) } });
@@ -373,7 +383,7 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
     const leftovers = left.flatMap((o) => o.problems.slice(0, 3).map((p) => `${o.name}(${o.mapId}): ${p.replace(/ — (dress_room|네가 설계한 방이다).*$/u, "").slice(0, 200)}`));
     const vqaLeft = vqaRounds.length ? vqaSummary(vqaRounds) : undefined;
     if (!(options.signal?.aborted) && !session.questions.length && (store.items.length || leftovers.length)) {
-      const report = todoReport({ store, draft, leftovers, missing: [...session.missingArt], autoNotes, ...(loopStop ? { loopStop } : {}), ...(vqaLeft && !vqaLeft.clean ? { vqa: vqaLeft.text } : {}) });
+      const report = todoReport({ store, draft, leftovers, missing: [...session.missingArt], autoNotes, preexisting: [...preexisting.values()], ...(loopStop ? { loopStop } : {}), ...(vqaLeft && !vqaLeft.clean ? { vqa: vqaLeft.text } : {}) });
       options.onEvent?.({ type: "execution_status", name: "v2.todo.final", ok: report.complete, at: Date.now(), summary: `할 일 최종 — ${report.complete ? "완료" : "아직 완료 아님"} · ${store.view(0).split("\n")[0]}${report.receipts.length ? ` · 보고와 다른 것 ${report.receipts.length}` : ""}`, data: { complete: report.complete, receipts: report.receipts, list: store.view(), items: store.items, reinjections, loopStop } });
       if (store.items.length || /통과|없음|다\s*됐|완료/u.test(draft) || !draft) options.onEvent?.({ type: "assistant", text: report.text });
     }

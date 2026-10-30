@@ -3,6 +3,7 @@
 import type { V2GateProblem } from "../verbs";
 import { TODO_MAX_ATTEMPTS, isOpen, type TodoStore } from "./todoStore";
 import type { TodoItem } from "../todo/types";
+import type { ProjectIndex } from "./refs";
 
 const keyOf = (store: TodoStore, item: TodoItem): string | undefined => store.meta.get(item.id)?.key;
 
@@ -51,4 +52,26 @@ export function syncGateItems(store: TodoStore, problems: readonly V2GateProblem
     if (tools.length && !tools.some((t) => available.has(t))) { store.block(item, `고치는 도구(${tools.join(", ")})가 이 실행의 도구 목록에 없다 — 남은 문제`, "auto"); capped.push(item); }
   }
   return { opened: opened.filter((i) => !capped.includes(i)), closed, capped };
+}
+
+/**
+ * 시작 저장본에 이미 있던 결함을 가른다(2026-10-30 감독: 이번 턴에 생긴 결함만 완료를 막는다).
+ *  - 게임 검사 문제의 열쇠가 시작 저장본 검사(v2BaselineGameKeys)에도 있으면 기존 결함
+ *  - 문제 글이 짚는 이벤트(ev_…)가 모두 시작 저장본에 같은 지문으로 있으면(이번 턴에 안 건드린 이벤트) 기존 결함 — 요청 범위 밖
+ * 장소 고치기(place:)는 이번 실행이 지은 장소라 늘 이번 턴 결함이다.
+ */
+export function splitPreexisting(problems: readonly V2GateProblem[], baselineKeys: ReadonlySet<string> | undefined, baseline: ProjectIndex | undefined, now: ProjectIndex | undefined): { current: V2GateProblem[]; preexisting: V2GateProblem[] } {
+  const current: V2GateProblem[] = [];
+  const preexisting: V2GateProblem[] = [];
+  const byId = new Map<string, string[]>();
+  for (const key of now?.events.keys() ?? []) { const id = key.slice(key.indexOf(":") + 1); byId.set(id, [...(byId.get(id) ?? []), key]); }
+  for (const p of problems) {
+    if (!p.key.startsWith("game:")) { current.push(p); continue; }
+    if (baselineKeys?.has(p.key)) { preexisting.push(p); continue; }
+    const ids = [...new Set([...p.text.matchAll(/\bev_[A-Za-z0-9_\-]+/gu)].map((m) => m[0]))];
+    const keys = ids.flatMap((id) => byId.get(id) ?? []);
+    const untouched = !!baseline && !!now && ids.length > 0 && keys.length > 0 && keys.every((k) => baseline.events.get(k) === now.events.get(k));
+    (untouched ? preexisting : current).push(p);
+  }
+  return { current, preexisting };
 }
