@@ -56,6 +56,8 @@ import { endingChecklist, formatSaveDate, endingRecallLines, galleryRows, listEn
 import { openGalleryViewer } from "@/player/galleryViewer";
 import { openBacklogView } from "@/player/dialogueBacklogView";
 import { dialogueUiText } from "@/player/dialogueUiStrings";
+import { minutesUntilRestTarget, resolveRestMenu, restRefusal, REST_REFUSAL_TEXT, REST_TARGET_HOURS, REST_TARGET_LABELS } from "@/project/restMenu";
+import { formatGameClock, resolveTimeSystem } from "@/project/gameTime";
 import { normalizeBacklog, resolveDialogueSystem } from "@/project/dialogueSystem";
 import { resourceDisplayName } from "@/player/resourceDisplay";
 import { friendshipDisplayName, listFriendshipEntries } from "@/project/friendship";
@@ -129,6 +131,7 @@ export function createStatusMenuDetail(options: StatusMenuDetailOptions): Status
       getPlacementDirection: options.getPlacementDirection,
       getScene: options.getScene,
     });
+    case "rest": return restDetail(options);
     case "wait": return waitDetail(options);
     case "to-title": return toTitleDetail(options);
     default: return assertNever(options.selectedCommand);
@@ -166,6 +169,7 @@ const GROUP_COMMAND_DESCRIPTIONS: Partial<Record<StatusMenuCommandId, string>> =
   options: "음량·대사 속도·메뉴 움직임을 이 기기에 설정합니다.",
   save: "현재 진행을 슬롯에 저장합니다.",
   load: "저장한 진행을 불러옵니다.",
+  rest: "고른 시각까지 쉽니다. 시간대가 바뀌면 나오는 사람·적도 바뀝니다.",
   wait: "전투 중 명령 입력 시 시간을 멈출지 정합니다.",
   "to-title": "타이틀 화면으로 돌아갑니다. 저장하지 않은 진행은 사라집니다.",
 };
@@ -1121,6 +1125,39 @@ function relationshipsDetail(project: Project, session: PlaySession): StatusMenu
     emptyLabel: "알려진 관계가 없습니다.",
     hint: bonds.length > 0 ? "동료와의 유대와 호감이 기록된 관계를 표시합니다." : "호감이 기록된 관계만 표시됩니다.",
   };
+}
+
+/** 「쉬기」 — 목표 시각마다 한 행. 쫓기는 중·위험한 맵이면 행은 남기고 사유를 단다(커서로 읽을 수 있게). */
+function restDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
+  const { project, session } = options;
+  const rest = resolveRestMenu(project);
+  const system = resolveTimeSystem(project);
+  const now = session.gameTime;
+  if (!rest || !system || !now) return { title: "쉬기", entries: [], emptyLabel: "지금은 쉴 수 없습니다" };
+  const refusal = restRefusal(project, session, project.maps[session.currentMapId]);
+  const entries = rest.targets.map((target): StatusMenuDetailEntry => {
+    const minutes = minutesUntilRestTarget(now, target, system);
+    const reason = refusal ? REST_REFUSAL_TEXT[refusal] : minutes === undefined ? "하루가 그 전에 끝납니다" : undefined;
+    return {
+      label: `${REST_TARGET_LABELS[target]}까지`,
+      value: `${String(REST_TARGET_HOURS[target] % 24).padStart(2, "0")}:00`,
+      description: minutes === undefined ? "이 게임의 하루 안에 오지 않는 시각입니다." : `${restDurationText(minutes)} 쉽니다.`,
+      testId: `status-menu-rest-${target}`,
+      ...(reason ? { unavailableReason: reason } : {}),
+      ...(options.onRest ? { onActivate: () => options.onRest?.(target) } : {}),
+    };
+  });
+  return {
+    title: "쉬기",
+    entries,
+    hint: `지금 ${formatGameClock(now)}. ${rest.recoverHp ? "쉬면 HP 가 모두 찹니다." : "쉬어도 HP 는 그대로입니다."}`,
+  };
+}
+
+function restDurationText(minutes: number): string {
+  const hours = Math.floor(minutes / 60);
+  const rest = minutes % 60;
+  return [hours > 0 ? `${hours}시간` : "", rest > 0 ? `${rest}분` : ""].filter(Boolean).join(" ") || "0분";
 }
 
 function waitDetail(options: StatusMenuDetailOptions): StatusMenuDetail {

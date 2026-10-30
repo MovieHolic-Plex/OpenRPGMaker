@@ -1,4 +1,5 @@
 import { store } from '@/project/store';
+import { battleStepCanLose } from '@/player/battleDuel';
 import type { StepResult } from './interpreter';
 import type { PlaySceneContext } from './playSceneTypes';
 import { applyBattleDefeat } from './playSceneDefeat';
@@ -36,7 +37,7 @@ export async function playCommandBattle(
   // 결과가 취소로 위장되어 돌아가고 session.battleResult 가 직전 전투 값으로 남는다.
   if (result === null || scene.session !== session || scene.map !== map || !isLive() || scene.sys?.isActive() === false) return null;
   session.battleResult = result;
-  if (result === 'defeat' && !step.canLose) {
+  if (result === 'defeat' && !battleStepCanLose(store.getCurrent(), { ...step, troopId }, scene.session)) {
     applyBattleDefeat(scene);
     return result;
   }

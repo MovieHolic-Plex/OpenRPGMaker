@@ -1,4 +1,5 @@
 import { normalizeSeCues } from "@/project/seCues";
+import { normalizeScheduleRecords } from "./schedule";
 import { normalizePartyBonds } from "@/project/partyBonds";
 import { normalizeChargeBreak, normalizeFixedDamage, normalizeMultiHit } from "@/project/skillBattleRules";
 import { normalizeShinyRate } from "@/project/monsterIdentity";
@@ -90,6 +91,7 @@ import { normalizeCharacterFootprint, normalizePassRows } from "@/project/footpr
 import { keepsExplicitDefaultResolution, normalizePlayResolution } from "@/project/playResolution";
 import { normalizeCameraZoom } from "@/project/cameraZoom";
 import { normalizeWorldGenRulesForStorage } from "@/project/worldGenRules";
+import { normalizeRestMenu } from "@/project/restMenu";
 import { normalizeCinematicSequence, normalizeGameOverSettings } from "@/project/cinematicSettings";
 import { isTeamSwapCost, normalizeBattleTeams } from "@/project/battleTeamModel";
 
@@ -145,7 +147,7 @@ function normalizeStateEmotion(value: unknown): StateRecord["emotion"] {
 
 type ProjectDatabaseInput = DatabaseRecords & Partial<Pick<ProjectDatabaseRecords,
   "battleCommands" | "elements" | "terrains" | "monsterSpecies" | "crops" | "lifeSkills"
-  | "farmAnimalSpecies" | "fishSpecies" | "farmBuildingTypes" | "homeDecorationTypes" | "skillChoreographies"
+  | "farmAnimalSpecies" | "fishSpecies" | "farmBuildingTypes" | "homeDecorationTypes" | "skillChoreographies" | "schedules"
 >>;
 
 /**
@@ -193,6 +195,7 @@ export function normalizeDatabaseRecords(database: ProjectDatabaseInput): Projec
     ...(database.skillChoreographies !== undefined
       ? { skillChoreographies: normalizeSkillChoreographyRecords(database.skillChoreographies) ?? [] }
       : {}),
+    ...(database.schedules !== undefined ? { schedules: normalizeScheduleRecords(database.schedules) } : {}),
   };
 }
 
@@ -463,6 +466,7 @@ export function normalizeTimeSystemConfig(config: Partial<TimeSystemConfig> | un
   const rawDayEndHour = clampInteger(config.dayEndHour ?? DEFAULT_DAY_END_HOUR, dayStartHour + 1, 48);
   const dayEndHour = rawDayEndHour <= dayStartHour ? DEFAULT_DAY_END_HOUR : rawDayEndHour;
   const onDayEnd = cleanOptionalId(config.onDayEnd);
+  const restMenu = normalizeRestMenu(config.restMenu);
   const daysPerSeason = clampInteger(
     typeof config.daysPerSeason === "number" && Number.isFinite(config.daysPerSeason)
       ? config.daysPerSeason
@@ -478,6 +482,7 @@ export function normalizeTimeSystemConfig(config: Partial<TimeSystemConfig> | un
     daysPerSeason,
     forceSleep: config.forceSleep === true,
     ...(onDayEnd ? { onDayEnd } : {}),
+    ...(restMenu ? { restMenu } : {}),
   };
 }
 

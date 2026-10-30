@@ -20,6 +20,7 @@ import { resolveLocationAnchorRect } from "@/project/locationAnchors";
 import type { RuntimeEventPositions } from "@/project/runtimeEventState"
 import type { RoguelikeRunState } from "@/project/roguelikeRun";
 import { resolveRoguelikeRoomFieldSpawns, roguelikeRoomGenerationKey } from "@/project/roguelikeRooms";
+import { resolveTimeSystem, timePhaseFor, type GameTime, type TimePhase } from "@/project/gameTime";
 
 // Compare occupied cells once per due tick; a failed area is searched again only after an
 // occupancy/terrain change. Runtime state is transient and never written into project data.
@@ -91,6 +92,20 @@ export interface NormalizedFieldSpawn {
   readonly persistKill: boolean;
   readonly factionId?: string;
   readonly onKillSwitchId?: string;
+  /** 이 시간대에만 나온다. 없으면 늘 나온다. */
+  readonly timePhases?: readonly TimePhase[];
+}
+
+/**
+ * 스폰 시간대 판정에 쓰는 지금 시간대. 시간 시스템이 꺼져 있으면 undefined — 그때는 timePhases 가 있어도 늘 나온다
+ * (시간이 없는 게임에서 「밤에만」 무리가 영영 안 나오는 것보다 낫고, 검사가 그 어긋남을 따로 짚는다).
+ */
+export function fieldSpawnTimePhase(project: Project, gameTime: GameTime | undefined): TimePhase | undefined {
+  return resolveTimeSystem(project) ? timePhaseFor(gameTime) : undefined;
+}
+
+function spawnActiveInPhase(spawn: NormalizedFieldSpawn, phase: TimePhase | undefined): boolean {
+  return !spawn.timePhases || phase === undefined || spawn.timePhases.includes(phase);
 }
 
 export function isFieldSpawnEventId(eventId: string): boolean {
@@ -102,7 +117,8 @@ export function createFieldSpawnRuntime(
   map: GameMap,
   player: { readonly x: number; readonly y: number },
   killedCounts?: Readonly<Record<string, number>>,
-  roguelikeRun?: RoguelikeRunState
+  roguelikeRun?: RoguelikeRunState,
+  phase?: TimePhase,
 ): FieldSpawnRuntimeState {
   const generationKey = roguelikeRoomGenerationKey(map, roguelikeRun);
   const spawns = resolveRoguelikeRoomFieldSpawns(map, roguelikeRun);
@@ -123,6 +139,7 @@ export function createFieldSpawnRuntime(
   let occupied: Set<string> | undefined;
   const occupancy = () => (occupied ??= reuseOccupancy(state, occupiedCells(state, map, player)));
   for (const entry of state.entries) {
+    if (!spawnActiveInPhase(entry.spawn, phase)) continue;
     spawnUntilCapacity(state, entry, project, map, player, occupancy);
   }
   return state;
@@ -146,9 +163,17 @@ export function advanceFieldSpawns(
   player: { readonly x: number; readonly y: number },
   deltaMs: number,
   positions?: RuntimeEventPositions,
+  phase?: TimePhase,
 ): boolean {
   if (!state || state.mapId !== map.id) return false;
   let changed = false;
+  // 시간대를 벗어난 무리는 바로 사라진다(쉬기·시간 건너뛰기로 아침이 와도 밤 무리가 남지 않게). 리스폰 대기도 버린다 —
+  // 다시 그 시간대가 오면 첫 배치처럼 상한까지 새로 나온다. 영구 처치 수(persistedDead)는 그대로 둔다.
+  for (const entry of state.entries) {
+    if (spawnActiveInPhase(entry.spawn, phase)) continue;
+    if (entry.alive.length > 0) { entry.alive = []; changed = true; }
+    entry.respawnTimersMs = [];
+  }
   state.fixedAccumulatorMs += Math.max(0, deltaMs);
   // 점유 칸은 틱 하나에서 한 번만 만든다. 스폰에 성공하면 그 몸을 바로 더한다 — 스폰마다 맵 전체 점유를
   // 다시 만들던 것과 같은 집합이다(이 루프 안에서 점유를 바꾸는 것은 스폰뿐이다). 예전에는 대량 리스폰에서
@@ -158,6 +183,7 @@ export function advanceFieldSpawns(
   while (state.fixedAccumulatorMs >= FIELD_SPAWN_FIXED_STEP_MS) {
     state.fixedAccumulatorMs -= FIELD_SPAWN_FIXED_STEP_MS;
     for (const entry of state.entries) {
+      if (!spawnActiveInPhase(entry.spawn, phase)) continue;
       const nextTimers: number[] = [];
       for (const timer of entry.respawnTimersMs) {
         const remaining = timer - FIELD_SPAWN_FIXED_STEP_MS;
@@ -462,6 +488,7 @@ function normalizeFieldSpawn(project: Project, map: GameMap, spawn: FieldSpawnDe
     persistKill: spawn.persistKill === true,
     ...(spawn.factionId ? { factionId: spawn.factionId } : {}),
     ...(spawn.onKillSwitchId ? { onKillSwitchId: spawn.onKillSwitchId } : {}),
+    ...(spawn.timePhases?.length ? { timePhases: [...spawn.timePhases] } : {}),
   };
 }
 

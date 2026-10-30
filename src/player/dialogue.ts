@@ -60,6 +60,7 @@ import { resolveAudioSource } from "@/player/audio/audioResources";
 import { lineVoiceActive, playLineVoice, stopLineVoice } from "@/player/lineVoice";
 import { createDialogueVoice, type DialogueVoicePlayer as DialoguePlayerVoice } from "@/player/dialogueVoice";
 import { createMonsterDialogueTick } from "@/player/monsterSfx";
+import { emitRuntimeJuice } from "@/player/runtimeJuice";
 import {
   DIALOGUE_TAG_COLORS,
   isNonBlockingContainer,
@@ -175,7 +176,8 @@ export function isDialogueLogKey(key: string, code?: string): boolean {
 
 export type DialogueChoicesRequest = DialogueSurfaceSettings & {
   readonly prompt?: string;
-  readonly options: { text: string }[];
+  /** disabled 줄은 흐리게 보이고 커서는 갈 수 있지만 고를 수 없다(결정하면 경고음). disabledText 는 그 줄 아래 이유 한 줄. */
+  readonly options: { text: string; disabled?: boolean; disabledText?: string }[];
   readonly cancelBehavior?: ChoiceCancelBehavior;
   readonly signal?: AbortSignal;
 };
@@ -1879,7 +1881,16 @@ export function createDialogueUI(
         beginExit(choicesWindow, choicesProfile.exitMs);
         resolve(index);
       };
-      let selectedIndex = 0;
+      // 흐린 줄(조건 enableWhen 이 거짓)은 커서가 머물 수 있지만 고르면 경고음만 난다. 이유는 그 줄 아래에 이미 보인다.
+      const pick = (index: number): void => {
+        if (request.options[index]?.disabled) {
+          if (settled) return;
+          emitRuntimeJuice({ event: "menu-invalid", target: buttons[index] });
+          return;
+        }
+        finish(index);
+      };
+      let selectedIndex = Math.max(0, request.options.findIndex((option) => !option.disabled));
       const buttons: HTMLButtonElement[] = [];
       const setSelected = (nextIndex: number): void => {
         selectedIndex = nextIndex;
@@ -1923,7 +1934,7 @@ export function createDialogueUI(
         if (!isNaN(n) && n >= 1 && n <= request.options.length && !document.querySelector("[data-testid='title-screen']")) {
           e.preventDefault();
           e.stopPropagation();
-          finish(n - 1);
+          pick(n - 1);
           return;
         }
         // 취소는 X/Esc 둘 다. 선택지에서 X 만 죽어 있던 결함(적대 리뷰 5).
@@ -1948,28 +1959,33 @@ export function createDialogueUI(
         // 선택지가 뜨는 순간 Z 가 죽던 결함(적대 리뷰 1).
         if (isConfirmKey(key)) {
           e.preventDefault();
-          finish(selectedIndex);
+          pick(selectedIndex);
         }
       };
 
       request.options.forEach((opt, idx) => {
         const btn = el("button", {
-          class: "choice-btn",
-          attrs: { role: "option", type: "button", "data-play-input-owner": "play-ui" },
+          class: opt.disabled ? "choice-btn is-disabled" : "choice-btn",
+          attrs: { role: "option", type: "button", "data-play-input-owner": "play-ui", ...(opt.disabled ? { "aria-disabled": "true" } : {}) },
           dataset: { testid: `runtime-choice-${idx}` },
         });
         renderDialogueSegments(btn, parseDialogueText(opt.text, request.textContext));
+        if (opt.disabled && opt.disabledText) {
+          const reason = el("span", { class: "choice-disabled-reason", dataset: { testid: `runtime-choice-${idx}-reason` } });
+          renderDialogueSegments(reason, parseDialogueText(opt.disabledText, request.textContext));
+          btn.append(reason);
+        }
         btn.addEventListener("mouseenter", () => setSelected(idx));
         btn.addEventListener("focus", () => setSelected(idx));
         btn.addEventListener("click", (event) => {
           if (event.isTrusted && event.detail === 0 && !sawKeyDown && performance.now() - openedAt < 400) return;
-          finish(idx);
+          pick(idx);
         });
         buttons.push(btn);
         choicesEl.append(btn);
       });
       choicesEl.setAttribute("role", "listbox");
-      setSelected(0);
+      setSelected(selectedIndex);
 
       cancelActiveChoice = abort;
       request.signal?.addEventListener("abort", abort, { once: true });
