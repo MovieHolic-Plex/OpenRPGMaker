@@ -365,6 +365,67 @@ function portraitProblems(raw: unknown, assets: Record<string, unknown>, where: 
   return out;
 }
 
+/**
+ * 몬스터 전투 도트 시트(전투가 움직이는 3×3 칸). 몬스터 에셋의 meta.pixelEnemySheet 는 프로젝트의 공방 시트와 같은 계약이다
+ * (src/project/types/base.ts UploadedPixelEnemySheetMeta, 런타임 src/assets/pixelEnemySheets.ts projectPixelEnemySheet).
+ * sheetResourceId 는 같은 팩의 picture 에셋이고, 그림은 (3·cell)×(3·cell), 초상(몬스터 에셋)은 cell×cell 이다.
+ */
+export const STORE_MONSTER_MOTIONS = ["hop", "swoop", "stomp", "dash", "float", "shoot", "breath"] as const;
+export const STORE_MONSTER_SHEET_CELLS = [48, 64, 96] as const;
+export const STORE_MONSTER_IDLE_MS = { min: 60, max: 2000 } as const;
+
+/** 몬스터 에셋 하나의 meta.pixelEnemySheet 검사(크기는 storeMonsterSheetSizeProblems). 표식이 없으면 빈 목록. */
+function monsterSheetProblems(id: string, raw: Record<string, unknown>, assets: Record<string, unknown>): string[] {
+  const meta = isRecord(raw.meta) ? raw.meta : null;
+  if (!meta || meta.pixelEnemySheet === undefined) return [];
+  const where = `에셋 ${id}`;
+  if (raw.kind !== "monster") return [`${where}: 전투 도트 시트(pixelEnemySheet)는 몬스터(monster) 에셋에만 붙일 수 있습니다.`];
+  const sheet = meta.pixelEnemySheet;
+  if (!isRecord(sheet)) return [`${where}: pixelEnemySheet 가 객체가 아닙니다.`];
+  const out: string[] = [];
+  const target = typeof sheet.sheetResourceId === "string" && sheet.sheetResourceId !== id && Object.hasOwn(assets, sheet.sheetResourceId)
+    ? assets[sheet.sheetResourceId] : undefined;
+  if (!isRecord(target)) out.push(`${where}: pixelEnemySheet.sheetResourceId 는 같은 팩의 다른 에셋 id 여야 합니다.`);
+  else if (target.kind !== "picture") out.push(`${where}: 전투 도트 시트 에셋은 그림(picture) 이어야 합니다.`);
+  else if (target.mime !== "image/png") out.push(`${where}: 전투 도트 시트는 PNG 여야 합니다.`);
+  if (!(STORE_MONSTER_SHEET_CELLS as readonly unknown[]).includes(sheet.cell)) out.push(`${where}: pixelEnemySheet.cell 은 ${STORE_MONSTER_SHEET_CELLS.join("·")} 중 하나여야 합니다.`);
+  if (!includes(STORE_MONSTER_MOTIONS, sheet.motion)) out.push(`${where}: pixelEnemySheet.motion 은 ${STORE_MONSTER_MOTIONS.join("·")} 중 하나여야 합니다.`);
+  if (!Number.isInteger(sheet.idleFrameMs) || (sheet.idleFrameMs as number) < STORE_MONSTER_IDLE_MS.min || (sheet.idleFrameMs as number) > STORE_MONSTER_IDLE_MS.max) {
+    out.push(`${where}: pixelEnemySheet.idleFrameMs 는 ${STORE_MONSTER_IDLE_MS.min}~${STORE_MONSTER_IDLE_MS.max} 정수(ms)여야 합니다.`);
+  }
+  if (sheet.skillCell !== undefined && sheet.skillCell !== true) out.push(`${where}: pixelEnemySheet.skillCell 은 true 이거나 없어야 합니다.`);
+  if (sheet.skillSlug !== undefined && !isString(sheet.skillSlug, 80, 1)) out.push(`${where}: pixelEnemySheet.skillSlug 가 올바르지 않습니다.`);
+  if (sheet.recipe !== undefined && !isRecord(sheet.recipe)) out.push(`${where}: pixelEnemySheet.recipe 는 객체여야 합니다.`);
+  return out;
+}
+
+/**
+ * 전투 도트 시트가 붙은 몬스터의 그림 크기 검사 — 초상 cell×cell, 시트 (3·cell)×(3·cell).
+ * 바이트가 있는 쪽(편집기 넣기·에이전트 제출)이 부른다. pngSize 는 sniff.ts 의 것(이 파일은 sniff 를 import 하지 않는다).
+ */
+export function storeMonsterSheetSizeProblems(
+  manifest: Pick<StorePackManifest, "content">,
+  sizeOfBlob: (sha256: string) => { width: number; height: number } | null,
+): string[] {
+  const out: string[] = [];
+  const assets = manifest.content.assets;
+  for (const [id, asset] of Object.entries(assets)) {
+    const sheet = asset.kind === "monster" ? asset.meta.pixelEnemySheet : undefined;
+    if (!sheet) continue;
+    const cell = sheet.cell;
+    const portrait = sizeOfBlob(asset.blob);
+    if (!portrait || portrait.width !== cell || portrait.height !== cell) {
+      out.push(`${asset.name}: 전투 도트 시트가 있는 몬스터 초상은 ${cell}×${cell} 이어야 합니다(지금 ${portrait ? `${portrait.width}×${portrait.height}` : "PNG 아님"}).`);
+    }
+    const sheetAsset = Object.hasOwn(assets, sheet.sheetResourceId) ? assets[sheet.sheetResourceId] : undefined;
+    const size = sheetAsset ? sizeOfBlob(sheetAsset.blob) : null;
+    if (!size || size.width !== cell * 3 || size.height !== cell * 3) {
+      out.push(`${asset.name}: 전투 도트 시트(${sheet.sheetResourceId})는 3×3 칸 ${cell * 3}×${cell * 3} 이어야 합니다(지금 ${size ? `${size.width}×${size.height}` : "PNG 아님"}) — ${id}.`);
+    }
+  }
+  return out;
+}
+
 /** 프로젝트에 넣을 때의 id. 같은 상품의 다음 판본이 같은 id 를 덮어써 맵 참조가 유지된다. */
 export const storeProjectId = (slug: string, originalId: string): string => `store_${slug.replace(/-/g, "_")}${STORE_SLUG_SEPARATOR}${originalId}`;
 
@@ -405,7 +466,10 @@ export function storeThirdPartyName(text: string, license?: string): string | nu
     .replace(/([a-z])([A-Z])/g, "$1 $2")
     .replace(/([A-Z]+)([A-Z][a-z])/g, "$1 $2")
     .replace(/(\p{L})(?=\p{N})|(\p{N})(?=\p{L})/gu, "$1$2 ")
-    .toLowerCase();
+    .toLowerCase()
+    // 「EasyRPG RTP」(CC BY 4.0, 2026-10-07 저작권 정리에서 남긴 걷기 칩 바탕)는 RPG Maker RTP 가 아니다. 그 한 구절만 지운다 —
+    // 대소문자·띄어쓰기·구분자(easyrpg-rtp, github.com/EasyRPG/RTP)를 가리지 않는다. 따로 선 「RTP」·「RPG Maker RTP」는 그대로 걸린다.
+    .replace(/easy[^\p{L}\p{N}]*rpg[^\p{L}\p{N}]*rtp(?![\p{L}\p{N}])/gu, "easyrpg");
   const compact = spaced.replace(/[^\p{L}\p{N}]+/gu, "");
   const tokens = new Set(spaced.split(/[^\p{L}\p{N}]+/u));
   // REFMAP 약관 상품(고친 REFMAP 칩)은 「refmap」 만 허용한다 — 다른 제3자 이름은 그대로 막는다.
@@ -527,6 +591,7 @@ export function validateManifest(input: unknown): Validation<StorePackManifest> 
       else if (blobs.get(raw.blob)!.mime !== raw.mime) errors.push(`에셋 ${id} 의 형식이 blob 과 다릅니다.`);
       if (!isRecord(raw.meta)) errors.push(`에셋 ${id} 의 meta 가 없습니다.`);
       if (raw.generation !== undefined) errors.push(...storeGenerationProblems(raw.generation, `에셋 ${id}`));
+      errors.push(...monsterSheetProblems(id, raw, assets));
     }
     for (const [id, raw] of Object.entries(tilesets)) {
       if (!ASSET_ID.test(id) || !isRecord(raw) || raw.id !== id) { errors.push(`타일셋 id 가 올바르지 않습니다: ${id.slice(0, 40)}`); continue; }

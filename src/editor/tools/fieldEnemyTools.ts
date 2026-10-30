@@ -307,7 +307,7 @@ export const FIELD_DETECTION_SCHEMA: Record<string, JsonSchema> = {
   allRound: { type: 'boolean', description: 'true 면 사방을 본다 — 부채꼴·앞만 보기를 끄고 뒤·옆도 알아챈다(트인 들판의 매복꾼·유령). false 면 앞쪽 부채꼴로 되돌린다' },
   lineOfSight: { type: 'boolean', description: 'false 면 벽·나무·바위가 시선을 가리지 않는다(시야 칸 안이면 무조건 본다 — 트인 들판·유령). 기본 true(가린다)' },
   emotes: { type: 'string', enum: ['none', 'default'], description: 'none = 알아챈 순간의 「!」 와 숨 고를 때 땀 말풍선을 띄우지 않는다(멈춤·숨 고르기 자체는 남는다). 호러에서 말풍선은 만화처럼 보여 첫 발각이 웃음이 된다. default = 다시 띄운다' },
-  footsteps: { type: 'object', description: '걸을 때 발소리 — 주인공과 걸음 거리로 커지고(벽 너머는 돌아가는 길) 좌우로 갈린다. 소리로 거리를 재는 호러 순찰에. {se?(효과음 id, 생략 = 공포 기본 구두 발소리를 만든다), everySteps?(기본 2), radius?(칸, 기본 10), volume?(0..1)}. false 면 끈다', properties: { se: { type: 'string' }, everySteps: { type: 'integer' }, radius: { type: 'integer' }, volume: { type: 'number' } } },
+  footsteps: { type: 'object', description: '걸을 때 발소리 — 주인공과 걸음 거리로 커지고(벽 너머는 돌아가는 길) 좌우로 갈린다. 소리로 거리를 재는 호러 순찰에. {se?(효과음 id, 생략 = 공포 기본 구두 발소리를 만든다), everySteps?(기본 2), radius?(칸, 기본 10), volume?(0..1)}. {off:true} 면 끈다(유령·발소리 없는 추격자)', properties: { se: { type: 'string' }, everySteps: { type: 'integer' }, radius: { type: 'integer' }, volume: { type: 'number' }, off: { type: 'boolean', description: 'true 면 발소리를 뗀다' } } },
   brain: { type: 'string', enum: [...CHASE_BRAINS], description: '추격 성격 — auto(기본: 다가오는 방식으로 고름)·smart 발소리(걷기 3칸·달리기 8칸)를 사방으로 듣고 앞질러 막고 여럿이면 감쌈·beast 시야 +3칸·앞쪽 반원으로 멀리서 알아채고 곧장 돌진(짐승)·knight 160° 경계로 넓게 보고 혼자서도 길목을 막고 여럿이면 포위(기사·경비)·ghost 벽을 통과하고 벽 너머도 봄(유령)·classic 예전 방식(시야로만, 느낌표에서 멈춤). 모든 성격은 닿으면(옆·대각) 바로 전투, 레버·스위치 소리를 들으면 와서 뒤진다' },
 };
 

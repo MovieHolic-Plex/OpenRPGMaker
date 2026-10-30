@@ -65,6 +65,8 @@ FF6·크로노 트리거식 「필드에 보이는 적」을 조수가 한 마�
 3. `_cleared` — 스위치(clearSwitch) 켜짐. 투명·통과·항상 parallel. `respawnSec>0` 이면 N초 뒤 스위치를 꺼서 되돌린다
    (그 맵에 있을 때만 흐른다 — 맵을 떠나 있는 시간은 세지 않는다).
 
+**조사 단추로도 연다(2026-10-30)**: 정면 칸에 있는 닿기(eventTouch·playerTouch) 이벤트 중 페이지 명령에 `battleProcessing` 이 든 것은 조사(Enter·z)로도 부딪힌 것과 같이 실행한다 — RPG Maker MV 의 확인 단추 관례(`playSceneMovement.ts findFieldFoeFacing`, `performAction` 정면 찾기 끝). 전투 없는 닿기 이벤트(함정·문)는 조사로 열지 않는다. 왜: 씬 벤치 omo-fr-t terra 숲길 r3 판정자가 서 있는 슬라임 바로 옆에서 Enter·z 를 눌러도 아무 일이 없어 «전투를 못 해 봄»으로 적었다. 확인 `scripts/qa/runtime/field-foe-action.scenario.mjs`(픽스처 `field-foe-action-fixture.mts --sqlite <판>/project.sqlite`).
+
 처치 상태는 스위치라서 저장·맵 재진입에서도 유지된다. 스위치 id 를 안 주면 도구가 새로 만든다(`clearSwitchId` 로 한 스위치에 여럿을 묶을 수 있다).
 
 ## 이미 놓인 적을 「보면 달려드는」 적으로 — `makeFieldEnemyChase` (2026-10-24)
@@ -161,7 +163,8 @@ FF6·크로노 트리거식 「필드에 보이는 적」을 조수가 한 마�
   재생은 `playPositionalSound` — 엔진의 밸런스 값(명령 「밸런스」로 정하는 끈적한 pan)을 바꾸지 않는 위치음(`AudioPlayOptions.positional`)이고,
   잠금 해제 전에는 큐에 쌓지 않는다(지나간 발소리를 나중에 몰아 들려주지 않는다). 헤드리스 장면(Phaser 없음)에서는 내지 않는다.
   조수: `set_field_detection({footsteps:{…}})`·`make_chase_scene({footsteps})`. se 를 생략하면 공포 기본 패치 「공포 — 발소리 한 걸음」(`HORROR_SOUNDS` key `step`)을
-  내장 합성으로 한 번 만들어 다시 쓴다(`src/editor/tools/horrorSoundAssets.ts` `ensureHorrorSound`). `horror-chase` 장르의 `make_chase_scene` 은 생략해도 단다(false 면 끔).
+  내장 합성으로 한 번 만들어 다시 쓴다(`src/editor/tools/horrorSoundAssets.ts` `ensureHorrorSound`). `horror-chase` 장르의 `make_chase_scene` 은 생략해도 단다(`{off:true}` 면 끔 — 스키마가 객체 하나라 `false` 대신 이 꼴을 받는다. 도구 안에서는 `false` 도 받는다).
+  `make_chase_scene` 의 `caughtText` 는 `killOnTouch` 의 붙잡힘 한 줄(기본 「붙잡혔다.」), `characterId` 는 추격자 이벤트의 인물 프로필 — 프로필 이름을 화자로 쓴 bark 가 그 이벤트 머리 위에 붙는다(`playSceneDialogueHooks.speakingTarget`).
 - **숨기 소리(G3)**: 「숨어 있음」 조건은 이미 있었다(`Condition {kind:"hiding", value}`, 편집기 조건 「숨어 있음」) — 병렬 이벤트·페이지 조건으로 숨은 동안 연출을 건다.
   더한 것은 `interaction.hiding` 의 `enterSe`(숨을 때)·`exitSe`(나올 때, 생략 = enterSe)·`heldSe`(숨어 있는 동안 고리).
   `heldSe` 는 BGM·BGS 채널이 아니라 엔진의 별도 고리(`AudioEngine.holdLoop`)라 맵 음악·환경음을 끊지 않는다. 매 프레임 `isPlayerHiding` 으로 맞추므로
@@ -170,6 +173,10 @@ FF6·크로노 트리거식 「필드에 보이는 적」을 조수가 한 마�
   편집기: 물체 동작 「은신처」 아래 소리 칸 셋.
 - 저장 형식: 모두 선택 필드다. 옛 프로젝트는 그대로 돌고, 형식 검사(`shapeEventFields`)·허용 키(`eventPageKeys`)·정규화(`eventPages`)·스키마(`schemaShapes`)에 같이 넣었다.
   내보내기는 프로젝트 문자열을 훑으므로(`webExportAssets`) 새 효과음 id 도 따라간다.
+
+## 시간대 무리 (2026-10-30)
+
+사냥터 스폰(`make_hunting_ground`)은 `timePhases:["night"]` 처럼 나오는 시간대를 정할 수 있다. 시간 시스템이 켜졌을 때만 듣고, 시간대를 벗어나면 살아 있던 무리가 사라지고, 다시 그 시간대가 오면 상한까지 새로 나온다. 플레이어가 그 시간대까지 기다리는 길은 ESC 「쉬기」(`configure_time_system.restMenu`)다. 한 마리씩 놓는 `place_field_enemy` 는 페이지 조건 `timePhase` 를 쓴다. 정본 설명은 `runtime-sessions.md` 「Rest menu」·`fieldSpawns` 항목.
 
 ## 안전 장치 (도구가 거절하는 것)
 

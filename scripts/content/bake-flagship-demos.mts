@@ -18,6 +18,7 @@ import { gzipSync } from "node:zlib";
 import { join } from "node:path";
 import { FLAGSHIP_DEMO_IDS, createFlagshipDemoProject } from "@/project/flagship";
 import { serialize } from "@/project/io";
+import { validateShippedPlayJson } from "@/project/flagship/ipCleanliness";
 import { demoLoreCounts, demoLoreProblems } from "@/project/flagship/loreKit";
 import { prepareWebExport } from "@/project/webExport";
 
@@ -46,6 +47,13 @@ for (const id of FLAGSHIP_DEMO_IDS) {
   const editor = serialize(project);
   writeFileSync(join(dir, `${id}.play.json`), player);
   writeFileSync(join(dir, `${id}.project.json`), editor);
+  // 출하 play.json 의 플레이어 글에 원작 IP 고유명이 있으면 굽기를 실패시킨다(styleLock.bannedProperNouns + 전역 + 마법 학교 원작 이름).
+  const ipHits = validateShippedPlayJson(id, player);
+  if (ipHits.length > 0) {
+    for (const hit of ipHits) console.error(`[ip-clean] ${id}.play.json ${hit.path}: 「${hit.noun}」`);
+    console.error(`[ip-clean] ${id}: 원작 고유명 ${ipHits.length}건 — 굽기 실패`);
+    process.exit(1);
+  }
   console.log(`${id}: build ${((built - started) / 1000).toFixed(1)}s · player ${mb(player.length)}MB (gzip ${mb(gzipSync(player).length)}MB) · editor ${mb(editor.length)}MB · total ${((performance.now() - started) / 1000).toFixed(1)}s`);
   // 자료집 「이야기」(세계 개요·설정집·인물)가 비면 판매용 데모를 연 사람이 이 게임을 읽을 수 없다(2026-10-29 전 데모 0개였다).
   // 데모마다 *Lore.ts 를 빌더 끝에서 부른다. 빠지거나 하한 아래로 줄면 여기서 크게 경고한다.

@@ -95,7 +95,31 @@ export function commonEventReferenceMessage(id: string): string | null {
     project.database.troops.some((troop) => troop.battleEventPages.some((page) => commandListReferencesCommonEvent(page.commands, id))
       || troopAfterBattleLists(troop).some((list) => commandListReferencesCommonEvent(list.commands, id)))
   ) return "이벤트 명령이 이 커먼 이벤트를 호출 중입니다.";
+  const schedule = (project.database.schedules ?? []).find((entry) => entry.activities.some((activity) => activity.commonEventId === id));
+  if (schedule) return `일정표 '${schedule.title}'의 활동이 이 커먼 이벤트를 호출 중입니다.`;
   return null;
+}
+
+/** 일정 계획·실행 명령이 이 일정표를 가리키면 삭제를 막는 안내를 돌려준다. */
+export function scheduleReferenceMessage(id: string): string | null {
+  const project = store.getCurrent();
+  const hits = (commands: readonly Command[]) => commands.some((command) => commandReferencesSchedule(command, id));
+  if (
+    project.commonEvents.some((event) => hits(event.commands)) ||
+    Object.values(project.maps).some((map) =>
+      map.events.some((event) => eventReferenceMatches(event, (body) =>
+        hits(body.commands) || (body.pages ?? []).some((page) => hits(page.commands))
+      ))
+    ) ||
+    project.database.troops.some((troop) => troop.battleEventPages.some((page) => hits(page.commands))
+      || troopAfterBattleLists(troop).some((list) => hits(list.commands)))
+  ) return "이벤트 명령(일정 계획·일정 실행)이 이 일정표를 사용 중입니다.";
+  return null;
+}
+
+function commandReferencesSchedule(command: Command, id: string): boolean {
+  return ((command.kind === "planSchedule" || command.kind === "runSchedule") && command.scheduleId === id)
+    || eventCommandBranches(command).some((branch) => branch.commands.some((child) => commandReferencesSchedule(child, id)));
 }
 
 function commandListReferencesCommonEvent(commands: readonly Command[], id: string): boolean {

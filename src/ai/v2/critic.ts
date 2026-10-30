@@ -49,6 +49,8 @@ export async function critique(input: {
   const withImages = input.others.filter((o) => o.image);
   const nameOnly = input.others.filter((o) => !o.image).map((o) => o.name);
   const text = criticPrompt(input.task, input.type, input.map.name, input.map, pngSize(input.image), withImages.map((o) => o.name))
+    // 요청이 장소를 여럿 말하면(마을 + 그 북쪽 숲길 맵) 아직 안 지은 다른 장소의 특징을 이 맵의 major 로 잡지 않게 한다(2026-10-31 asst-parity 숲 추격 terra).
+    + `\nIf the request names several separate places (for example a village AND a forest road map linked to it), judge only the features of the place this map «${input.map.name}» is. Features of the other places belong to their own maps, even if those maps are not built yet — do not list them as majors here.`
     + (nameOnly.length ? `\nThis build also has other maps not shown (${nameOnly.join(", ")}). Judge only this map; a requested feature that belongs to another floor/map (boss on the top or bottom floor, stairs' far end) is not missing here.` : "");
   const reply = await input.sideChat([{ role: "user", content: [
     { type: "text", text },

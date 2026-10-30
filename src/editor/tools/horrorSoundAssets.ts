@@ -32,8 +32,11 @@ const intArg = (value: unknown, lo: number, hi: number, name: string): number | 
 export function readFootstepsArg(raw: unknown): EventFootsteps | false {
   if (raw === false) return false;
   if (raw === true) return { se: '' };
-  if (typeof raw !== 'object' || raw === null || Array.isArray(raw)) throw new ToolError('footsteps 는 {se?,everySteps?,radius?,volume?} 또는 false 입니다.', { code: 'invalid-args' });
+  if (typeof raw !== 'object' || raw === null || Array.isArray(raw)) throw new ToolError('footsteps 는 {se?,everySteps?,radius?,volume?} 또는 {off:true} 입니다.', { code: 'invalid-args' });
   const r = raw as Record<string, unknown>;
+  // 스키마는 객체 하나다(유니온 타입은 일부 게이트웨이가 거절한다) — 끄기는 {off:true}. 예전에는 설명만 「false 면 끈다」였고 스키마가 false 를 거절해
+  // 공포 장르의 유령 추격자에서 기본 발소리를 뗄 방법이 없었다(2026-10-31 「이상 없음」 데모).
+  if (r.off === true) return false;
   const se = r.se === undefined ? '' : typeof r.se === 'string' ? r.se.trim() : undefined;
   if (se === undefined) throw new ToolError('footsteps.se 는 효과음 id 문자열입니다.', { code: 'invalid-args' });
   const every = intArg(r.everySteps, 1, 8, 'footsteps.everySteps');

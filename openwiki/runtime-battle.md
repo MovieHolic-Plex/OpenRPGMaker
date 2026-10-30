@@ -3,6 +3,10 @@
 - `EnemyRecord.walkChip?: { characterResourceId: string; characterIndex: number }`(0~7). 있으면 측면 전투에서 몬스터 그림 대신 걷기 칩(CharSet 288×256, 24×32)이 **오른쪽 보기** 행으로 선다. 없으면 기존 경로 그대로(바이트 동일). 정규화는 `normalizeEnemyWalkChip`(`databaseEnemyTroopRecordModel.ts`): 빈 id 는 버리고 칸은 반올림해 0~7 로 자른다. 변신(`transformResourceId`)한 적이나 id 가 풀리지 않는 칩은 옛 경로로 떨어진다.
 - 그림: `battleFieldDom.enemyButton` 의 첫 분기가 `appendWalkChipBattler(..., "right")` 를 부르고(`facing` 인자, 기본 `"left"` 라 파티 경로 불변) 스프라이트에 `battle-enemy-image` 를 함께 단다 — 적 HP·표적·쓰러짐·맞춤 규칙이 계속 그림을 찾는다. 포즈는 파티원과 같다(대기·접근/복귀 걸음·공격 한 걸음·피격·쓰러짐).
 - 준비 관문: `battleAssetPrefetch.troopImageUrls` 가 `walkChip.characterResourceId` 도 싣는다.
+- 크기(2026-10-30): `EnemyRecord.battleScalePercent` 가 걷기 칩 적에도 먹는다. 예전에는 칸·노드 상자가 인라인 고정 px(48×64·96)라 200% 도 100% 와 같았다(실측: 두 적 모두 css 48×64).
+  100% 가 아니면 `appendWalkChipBattler(..., "right", true)` 가 노드에 `--battle-walk-chip-k = --battle-enemy-scale × --battle-enemy-fit` 을 두고 노드 상자·칸·시트 크기·칸 위치(포즈·걸음 키프레임 포함)를 모두 그 배율로 calc 한다.
+  노드는 발밑 가운데 기준이라 발이 그대로 서고(발 아래 여백 6px 는 배율과 무관), 상자가 함께 커져 조준 ▼·이름표가 가운데에 붙는다. 맞춤(`battleEnemyFit`)은 스프라이트의 `--battle-enemy-base-width/height`(=96px)로 잰다.
+  100% 는 예전 인라인 값 그대로(파티 걷기 칩 경로도 불변). 실측(런타임 QA, retro2003 측면): 100% css 48×64 · 200% 94.4×125.9(fit 0.983) · 300% 128.4×171.3(fit 0.892), 200%·300% 의 발 바닥선은 같은 자리 100% 때와 같은 줄(화면 457.4px).
 - 편집기: 적 탭 「걷기 칩 (서 있는 적)」 선택기. 조수: `upsert_enemy.enemy.walkChip {characterResourceId, characterIndex}`(고정 속성), 지우기는 `clearFields:["walkChip"]`. 풀리지 않는 id 는 `enemy-reference-not-found` 로 거부하고 후보 id 를 알린다(`tex_*_charset_*` 는 `<계열>-charset-*` 로 바꿔 받는다). 헤드리스 `simulate_battle` 은 그림과 무관해 영향이 없다.
 
 ## 상태 배지 글자는 저작 상태 이름 · 승리 띠·명령 질문은 용어 (2026-10-30)
@@ -15,6 +19,9 @@
   규칙: 이름이 4글자 이하면 그대로(「마비」「독」), 한글·한자·가나가 든 긴 이름은 첫 낱말 3글자까지(「마비 상태」→「마비」), 긴 라틴 이름(「Paralysis」)은 비워서 CSS 약어(PAR)가 남는다.
   능력 증감(`*-up`/`*-down`, 화살표가 뜻)과 전투불능(`death`)은 이 규칙을 타지 않는다. 런타임은 i18n DOM 번역을 받지 않으므로(게임 글자는 저작물) 게임의 언어 = 저작한 상태 이름이다.
 - **승리 띠** `meta.terms.battleVictory`(기본 「승리!」) — `battleDom.showFinaleStamp`. 에메랄드 화면에는 띠가 없다. 「전멸…」은 아직 고정 글자다.
+  - **적 그룹별 덮어쓰기** `TroopRecord.victoryBanner?: string`(최대 40자, 2026-10-30). 우선순위는 이 전투 적 그룹의 `victoryBanner` → `terms.battleVictory` → 기본 「승리!」이고,
+    빈 문자열은 어느 단계에서도 「없음」이다(`resolveVictoryBannerText`, `src/project/terms.ts`). `normalizeTroopRecord` 는 비거나 빈칸뿐이면 키를 만들지 않는다(옛 JSON 바이트 유지).
+    편집: 적 그룹 「설정」 카드의 「승리 띠 글자」(자리표시자 = 지금 용어 값). 조수: `upsert_troop` 의 `troop.victoryBanner`(문자열; 빈 문자열 또는 `clearFields:["victoryBanner"]` = 지움).
 - **명령 질문 줄** `meta.terms.battleCommandPrompt`(기본 「{name은} 무엇을 할까?」) — `battleDirectorDom.commandPromptState` 가 `formatBattleCommandPrompt`(`src/project/terms.ts`)로 채운다.
   `{name}` = 이름 그대로, `{name은}`·`{name이}`·`{name을}` = 받침에 맞춘 조사. 포켓몬 화면은 이름 자리표시자 바로 뒤 첫 빈칸이 줄바꿈이 된다 — 기본값에서 예전 글자와 한 글자도 다르지 않다.
 - 편집: 자료집 「용어 → 전투」(명령 질문·승리 띠, 미리보기 포함). 조수: `set_project_settings` 의 `terms.battleVictory`·`terms.battleCommandPrompt`(문자열, 설명 달림 — 빈 문자열은 무시).
@@ -656,6 +663,7 @@ SQLite 저장소를 자동 변경하는 이관은 수행하지 않는다.
   - **마법별 시전 도트**: 마법(제자리 스킬)은 `castTypeForSkill`(속성 → 이름 낱말 → 효과 종류, 기본 arcane) 로 fire/ice/thunder/heal/dark/arcane/support 중 하나를 고르고, 시전 시트 `charset-battlers/cast/<id>.png`(3단계 × 7종) 의 칸을 cast_charge/raise/release 자리에 그린다. 날아가는 화살·투사체 애니메이션(`isTravellingEffect`)은 이 스킨에서 띄우지 않는다. limitSkill 또는 power≥100은 착탄 때 skill. 아이템은 item, 방어는 defend 유지. 옛 시트는 기존 6포즈 분기를 유지한다.
   - **도트 적 시트** `src/assets/pixelEnemySheets.ts`: 기존 슬라임(`generated-enemy-slime-01`)·박쥐(`generated-enemy-bat-01`)와 아래 추가 8종은 이 스킨에서만 손도트 시트 `assets/generated/pixel-enemies/<name>.png`(48·64·96px 셀 3×3: idle a·b·c / windup·move·attack / recover·hit·dead, 오른쪽 보기)로 그린다. 원본·설명은 `scripts/asset-gen/pixel-enemy/<name>.py`, `tiledata/pixel-enemies/<name>/README.md`. 2026-10-02부터 일반 이미지 소비자는 같은 id의 native idle_a 초상을 쓴다. 옛 통짜 그림은 폐기했다([공용 몬스터 폐기](native-enemy-retirement.md)).
     `<img>` 는 src 를 유지하고 배경으로 칸을 그린다(`data-pixel-sheet`, cell×2 px 상자, 대기는 CSS a→b→c→b 루프). 노드 `data-pixel-enemy`가 모션 7종을 고른다(아래 확장 설명). 근접(통상 공격·공격력 기술)은 `retroEnemyReach` 가 대상 아군까지의 dx/dy 를 재고 시퀀서 훅 `enemyApproachMs`/`enemyRecoverMs` 가 비트를 늘린다. 이동은 Web Animations 의 `translate` 경로(슬라임 두 번 도약, 박쥐 치켜들기→급강하), 칸은 windup→move→attack→recover. 그 밖의 기술은 제자리에서 당겼다 나선다. 피격 hit 칸 380ms, 막타는 hit→dead 칸 뒤 네 번 깜빡여 사라진다. 시트를 못 읽으면 표시를 걷어 원본 그림이 보인다.
+    - **프로젝트·스토어 시트:** 번들 id 말고도 `project.assets.uploaded[resourceId].meta.pixelEnemySheet`(공방 저작 시트, 스토어 몬스터 팩 — [에셋 스토어](asset-store.md) 「몬스터 전투 도트 시트」)가 있으면 `projectPixelEnemySheet` 가 그 3×3 시트를 번들보다 먼저 쓴다. 이 시트가 없는 업로드 몬스터는 같은 id 의 번들 시트를 쓰지 않고 번쩍임·흔들림만 한다. 조수·자료집용 판정은 `monsterBattleMotion(project, id)`.
   - **손도트 적 8종 추가(2026-09-28, rb-monster):** 기존 슬라임·박쥐에 golem(64px/stomp), dragon(96px/breath), skeleton-archer(shoot), wolf-grey·spider-cave(dash), wisp-blue(float), slime-red(hop), zombie-rot(stomp)를 추가했다(나머지는 48px). 종별 Python 좌표 원본과 README는 `scripts/asset-gen/pixel-enemy/`·`tiledata/pixel-enemies/`, 공통 검토 출력은 `pe_lib.py`. 시트는 3×3, ≤16색, 알파 0/255, 모든 크기에서 같은 정수 2배. `applyPixelEnemySheet`가 인라인 base-width/height=cell×2와 `data-pixel-enemy-cell`을 심고, 로딩 실패 시 원래 치수를 복구한다.
     - `measureEnemyReach`는 적의 앞=cell−6·발=cell−4·부유 중심=cell/2−4로 계산하고 아군 48px 기준은 유지한다. 같은 종 여러 마리의 공격자를 전투 id로 먼저 고른다. 가까워서 dx가 0이어도 근접 모션을 유지한다.
     - stomp는 두 걸음 후 두 팔 내려찍기, dash는 낮은 질주 후 물기, float는 부드러운 접근과 복귀. shoot/breath는 통상 공격이어도 ranged이며 접근·착탄·복귀 전체가 제자리다. 이동 소리는 각각 Earth2/Wind8/Magic2, 방출 소리는 Shot1/Fire1이며 실제 RTP 파일만 쓴다. 방출음은 빗나감의 0ms impact에서도 발생하고 감속 모드에서는 모두 억제한다. 타이머는 기존 비트 세대·씬 수명을 따른다.
@@ -2454,3 +2462,23 @@ retro2003 sideview 의 명령 창은 `data-look-command`(actor 156px · keys 152
 - 그 밖(`player/seCuePlayback.playProjectSeCue`, 표에 있을 때만): 레벨 업 창 `levelUp`(없으면 합성), 아이템 늘리기 명령 `itemGet`(없으면 몬스터 세트), 전투 진입 `battleStart`(몬스터 전환음 대신), 문 `door`·`doorClose`(내장 CC0 문 소리 대신), 궤짝 뒤지기 `chest`, 「+ 아이템」 떠오름 `itemGet`.
 - **발소리**(`player/footsteps.ts`): 한 칸을 다 걸은 뒤(비행선·탈것 제외) 그 칸 지형 기록의 `footstepSoundResourceId` → 지형 이름이 가리키는 `footstep-<표면>`(`footstepCueForTerrain`) → 무음. 180ms 안에 한 번, 효과음 채널 크기의 45%. 예전에는 지형 발소리 칸이 저장만 되고 런타임이 틀지 않았다.
 - 자료집: 시스템 → 「전투 오디오」 아래 「효과음 자리 · 메뉴·화면/전투/마법·상태/필드·문」(`databaseSeCueTable.ts`).
+
+## 결투 규칙 — TroopRecord.duel (2026-10-30)
+
+적 그룹(`TroopRecord`) 하나에 `duel` 객체를 붙이면 그 전투만 「결투」 규칙으로 돈다. 모든 필드는 선택이고, `duel` 이 없으면 예전 동작 그대로다(`normalizeTroopDuel` 이 빈 값을 버리므로 기존 JSON 은 바이트 그대로).
+
+| 필드 | 뜻 |
+| --- | --- |
+| `yieldAtPercent` (1~100) | 행동이 끝난 뒤 적 HP 가 이 % 이하이면 그 적은 항복한다. 모든 적이 항복했거나 쓰러지면 승리. |
+| `playerYieldAtPercent` (1~100) | 파티 전원이 이 % 이하이면 패배(`canLose` 와 무관하게 게임 오버 없음, 전투 뒤/패배 분기로 이어짐). |
+| `forfeit` | 도망 명령이 「기권」으로 바뀌고 항상 성공한다. 결과는 escape → 기존 `escapeBranch`. |
+| `roundLimit` | N 라운드가 지나면 남은 HP 비율 합으로 판정. 높은 쪽이 승리/패배, 같으면 escape. |
+| `noItems` | 아이템 명령을 숨긴다(포켓몬풍 「가방」 포함). |
+
+- 런타임(`battle/runtime.ts`): `markYieldedEnemies` 가 항복을 표시(`MutableBattler.yielded`, 스냅샷 `yielded:true`). 항복한 적은 표적·적 턴에서 빠진다. `judgeDuelRoundLimit`·`endDuelAsDefeat` 가 판정을 낸다. 스냅샷 `duel`(`BattleDuelSnapshot`)에 `duelTroop/forfeit/noItems/nonLethalDefeat` 가 실린다. 타임라인 사유 `duelRoundLimit`.
+- 호스트: `player/battleDuel.ts` 의 `battleStepCanLose(project, step, session?)` 가 `playerYieldAtPercent` 전투를 항상 「지지 않는(게임 오버 없음)」 전투로 만든다. commandBattle·scheduledBattle·playSceneInterpreter·playSceneBattle 이 이것을 쓴다.
+- 항복 표시: 걷기 칩 적은 정면(아래) 가운데 프레임으로 무릎 꿇는 자세(회색·눕힘 없음), 몬스터 그림은 멈추고 살짝 어두워진다.
+- 결과 화면(`battleDirectorDom.ts`): 결투 그룹에서 보상이 전부 0(경험치 0·골드 0·드롭 없음)이면 빈 보상 목록 대신 한 줄 「결투 종료」 카드.
+- 헤드리스 `simulate_battle`(`battle/simulate.ts`)도 같은 규칙을 따르고, 결투 그룹이면 `outcomes {victory, defeat, escape, undecided}` 를 돌려준다.
+- 편집기: 적 그룹 탭의 접이식 「결투 규칙」(`databaseTroopRecordView.ts` `duelRulesField`, `updateTroopRecord` 가 `duel` 을 그대로 덮는다).
+- 조수: `upsert_troop.troop.duel {yieldAtPercent, playerYieldAtPercent, forfeit, roundLimit, noItems}`(고정 속성, `additionalProperties:false`), 지우기는 `clearFields:["duel"]`.

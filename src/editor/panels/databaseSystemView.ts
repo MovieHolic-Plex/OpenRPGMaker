@@ -32,6 +32,7 @@ import {
   normalizeActionCombatConfig,
 } from "@/project/actionCombat";
 import { MAX_TITLE_BACKGROUND_LAYERS, normalizeMonsterCare, normalizeTimeSystemConfig, normalizeTypeChart } from "@/project/databaseRecordModel";
+import { normalizeRestMenu, REST_TARGET_HOURS, REST_TARGET_LABELS, REST_TARGETS, type RestMenuConfig, type RestTarget } from "@/project/restMenu";
 import { defaultTitleScreenSettings } from "@/project/defaults/defaultDatabase";
 import { applyEditedGameTitle } from "@/project/defaults/defaultOpeningSequence";
 import {
@@ -1467,6 +1468,7 @@ function timeSystemFieldset(
   if (controls.length) {
     children.push(rm2k3Fieldset("달력과 시계", controls.slice(0, 4)), rm2k3Fieldset("하루 종료", controls.slice(4)));
   }
+  if (enabled && timeSystem) children.push(restMenuFieldset(timeSystem.restMenu, rerender));
   const root = rm2k3Fieldset("시간 사용", children);
   const refreshClock = (): void => {
     const config = store.getCurrent().system.timeSystem;
@@ -1477,6 +1479,43 @@ function timeSystemFieldset(
   root.addEventListener("input", refreshClock);
   root.addEventListener("change", refreshClock);
   return root;
+}
+
+/** ESC 메뉴 「쉬기」(system.timeSystem.restMenu) — 켜기·목표 시각·안전한 맵에서만·HP 회복. 공백 E(2026-10-30). */
+function restMenuFieldset(config: RestMenuConfig | undefined, rerender: SystemRefresh): HTMLElement {
+  const enabled = config?.enabled === true;
+  const write = (next: Partial<RestMenuConfig>): void => {
+    updateSystem((draft) => {
+      const current = draft.system.timeSystem;
+      if (!current) return;
+      const merged = normalizeRestMenu({ ...(current.restMenu ?? { enabled: false }), ...next });
+      draft.system.timeSystem = normalizeTimeSystemConfig({ ...current, restMenu: merged?.enabled ? merged : undefined });
+    });
+    rerender();
+  };
+  const children: HTMLElement[] = [
+    checkboxField("ESC 메뉴에 「쉬기」", "db-field-system-time-rest-enabled", enabled, (checked) => write({ enabled: checked })),
+    systemHelp("플레이어가 아침·정오·저녁·자정 중 고른 시각까지 쉰다. 쉬고 나면 맵 이벤트 페이지의 시간대 조건과 「이 시간대에만」 필드 스폰이 다시 평가된다. 쫓기는 중에는 쉴 수 없다."),
+  ];
+  if (enabled) {
+    const targets = new Set<RestTarget>(config?.targets?.length ? config.targets : REST_TARGETS);
+    for (const target of REST_TARGETS) {
+      children.push(checkboxField(`${REST_TARGET_LABELS[target]}(${REST_TARGET_HOURS[target] % 24}시)까지`, `db-field-system-time-rest-target-${target}`, targets.has(target), (checked) => {
+        const next = REST_TARGETS.filter((candidate) => candidate === target ? checked : targets.has(candidate));
+        // 하나도 안 남기면 고를 시각이 없다 — 그 체크는 되돌린다.
+        if (next.length === 0) { rerender(); return; }
+        write({ targets: next });
+      }));
+    }
+    children.push(
+      checkboxField("안전한 맵에서만", "db-field-system-time-rest-safe-only", config?.allowOnMaps === "safe", (checked) => write({ allowOnMaps: checked ? "safe" : "all" })),
+      systemHelp("켜면 필드 스폰·랜덤 인카운터가 없는 맵이나 맵의 안전지대 안에서만 쉴 수 있다."),
+      checkboxField("쉬면 HP 회복", "db-field-system-time-rest-recover-hp", config?.recoverHp === true, (checked) => write({ recoverHp: checked })),
+    );
+  }
+  const card = rm2k3Fieldset("쉬기", children);
+  card.dataset.testid = "db-system-time-rest";
+  return card;
 }
 
 function timeSystemSummary(config: SystemRecords["timeSystem"]): HTMLElement {

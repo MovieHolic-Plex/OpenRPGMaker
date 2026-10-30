@@ -26,6 +26,8 @@ export type ReferenceContext = {
   switchIds: ReadonlySet<string>;
   variableIds: ReadonlySet<string>;
   commonEventIds: ReadonlySet<string>;
+  /** 생략하면 일정표 명령의 scheduleId 존재 검사를 건너뛴다(기존 호출자 호환). */
+  scheduleIds?: ReadonlySet<string>;
   endingIds: ReadonlySet<string>;
   gameOverIds?: ReadonlySet<string>;
   mapIds: ReadonlySet<string>;
@@ -93,7 +95,11 @@ function collectCommandItemReferences(command: Command, ids: Set<string>): void 
       collectCommandItemReferenceIds(command.failedTransactionBranch ?? [], ids);
       return;
     case "choices":
-      for (const option of command.options) collectCommandItemReferenceIds(option.branch, ids);
+      for (const option of command.options) {
+        if (option.showWhen) collectConditionItemReferenceIds(option.showWhen, ids);
+        if (option.enableWhen) collectConditionItemReferenceIds(option.enableWhen, ids);
+        collectCommandItemReferenceIds(option.branch, ids);
+      }
       collectCommandItemReferenceIds(command.cancelBranch ?? [], ids);
       return;
     case "presentItem":
@@ -208,7 +214,14 @@ function validateCommandReferences(command: Command, context: ReferenceContext):
       validateOptionalCommandResource("changeFace: resourceId", command.resourceId, context.resourceIds);
       return;
     case "choices":
-      for (const option of command.options) validateCommands(option.branch, context);
+      for (const option of command.options) {
+        for (const condition of [option.showWhen, option.enableWhen]) {
+          if (!condition) continue;
+          validateCondition(condition, context.switchIds, context.variableIds);
+          validateMonsterSpeciesReferences(condition, context);
+        }
+        validateCommands(option.branch, context);
+      }
       validateCommands(command.cancelBranch ?? [], context);
       return;
     case "presentItem":
@@ -249,6 +262,13 @@ function validateCommandReferences(command: Command, context: ReferenceContext):
     case "applyItemUpgrade":
       if (command.resultVariableId !== undefined) {
         assert(context.variableIds.has(command.resultVariableId), `${command.kind}: resultVariableId does not exist: ${command.resultVariableId}`);
+      }
+      return;
+    case "planSchedule":
+    case "runSchedule":
+      if (context.scheduleIds) assert(context.scheduleIds.has(command.scheduleId), `${command.kind}: scheduleId가 존재하지 않습니다: ${command.scheduleId}`);
+      if (command.kind === "runSchedule" && command.slotVariableId !== undefined) {
+        assert(context.variableIds.has(command.slotVariableId), `runSchedule: slotVariableId가 존재하지 않습니다: ${command.slotVariableId}`);
       }
       return;
     case "inputNumber":

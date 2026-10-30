@@ -626,6 +626,11 @@ export interface FieldSpawnDef {
   persistKill?: boolean;
   /** 인스턴스 처치 시 켜는 스위치(킬 리액션 이벤트용). */
   onKillSwitchId?: string;
+  /**
+   * 이 시간대에만 나온다(시간 시스템이 켜졌을 때). 시간대를 벗어나면 살아 있던 무리도 사라지고, 다시 들어오면 새로 나온다.
+   * 생략하거나 시간 시스템이 꺼져 있으면 늘 나온다. 시간대 구분은 gameTime.timePhaseFor(아침 6~10·낮 10~17·저녁 17~20·밤).
+   */
+  timePhases?: import("../gameTime").TimePhase[];
 }
 
 export interface RoguelikeRoomDef {
@@ -850,6 +855,11 @@ export interface Project {
   gameDesignBrief?: import("../gameDesignBrief").GameDesignBrief;
   /** 조수가 게임 하나를 짓기 전에 쓰는 청사진(목표·핵심 경로·엔딩). 출하 검사가 이 경로를 걸어 본다. project/gameBlueprint.ts */
   gameBlueprint?: import("../gameBlueprint").GameBlueprint;
+  /**
+   * 조수 v2 의 할 일 목록(마지막 실행 — src/ai/v2/loop/todoStore.ts AssistantTodoState). «계속» 요청이 열린 항목을 이어 받는다.
+   * 게임 실행에는 쓰지 않는다. 모양은 조수 쪽이 검사한다(여기서는 느슨하게 둔다 — 프로젝트 층이 조수 모듈에 기대지 않게).
+   */
+  assistantTodo?: { readonly version: 1; readonly task: string; readonly at: number; readonly items: readonly unknown[]; readonly meta?: Readonly<Record<string, unknown>> };
   /** Prompt library and dialogue review preferences, saved with this project. */
   aiAuthoring?: import("../aiAuthoring").AiAuthoring;
   /** Optional spatial authoring authority, separate from lore, worldGraph and runtime saves. */

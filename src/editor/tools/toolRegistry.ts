@@ -29,6 +29,7 @@ import { TILESET_REFERENCE_TOOLS, withTilesetReferencePurpose } from "./tilesetR
 
 import { BATTLE_TOOLS } from "./battleTools";
 import { COMBO_TECH_TOOLS } from "./comboTechTools";
+import { SCHEDULE_TOOLS } from "./scheduleTools";
 import { PARTY_BOND_TOOLS } from "./partyBondTools";
 import { TROOP_BATTLE_PAGE_TOOLS } from "./troopBattlePageTools";
 import { CLUSTER_RULE_TOOLS } from "./clusterRuleTools";
@@ -37,6 +38,7 @@ import { ENEMY_PIXEL_SHEET_TOOLS } from "./enemyPixelSheetTools";
 import { ENDING_TOOLS } from "./endingTools";
 import { COMPANION_TOOLS } from "./companionTools";
 import { TIME_GATE_TOOLS } from "./timeGateTools";
+import { LOCK_DOOR_TOOLS } from "./lockDoorTools";
 import { MAP_VARIANT_TOOLS } from "./mapVariantTools";
 import { TILE_CHANGE_EFFECT_TOOLS } from "./tileChangeEffectTools";
 import { VEHICLE_TOOLS } from "./vehicleTools";
@@ -121,6 +123,7 @@ import { DESERT_EAST_TOOLS } from "./desertEastTools";
 import { WIZARDING_SPACE_TOOLS } from "./wizardingSpaceTools";
 import { PIRATE_ISLES_TOOLS } from "./pirateIslesTools";
 import { SENGOKU_EDO_TOOLS } from "./sengokuEdoTools";
+import { JOSEON_DOOR_TOOLS } from "./joseonInteriorLink";
 import { SKY_ISLAND_TOOLS } from "./skyIslandTools";
 import { STEAMPUNK_CITY_TOOLS } from "./steampunkCityTools";
 import { SF_STATION_TOOLS } from "./sfStationTools";
@@ -302,6 +305,8 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(PIRATE_ISLES_TOOLS, "tile"),
   // 전국·에도 일본(sengoku_edo) 야외 구성(성하마을·여관 거리·무가 저택·성·신사/절·농촌)과 건물 문 ↔ 실내 이음. sengoku_edo 맵에서만 동작한다.
   ...withDomain(SENGOKU_EDO_TOOLS, "tile"),
+  // 조선(joseon_baram) 등록 장소 마을·도성의 건물 문 ↔ 실내 방 이음(문 표 src/project/defaults/joseonDoors.json). 조선 칩셋 맵에서만 동작한다.
+  ...withDomain(JOSEON_DOOR_TOOLS, "tile"),
   // 하늘섬(sky_island) 구성기 — 마을·신전 섬·비공정 부두·섬 사슬·실내 방 한 장(섬·건물·다리·소품, 도달 검사)과 건물 문 ↔ 실내 이음. sky_island 맵에서만 동작한다.
   ...withDomain(SKY_ISLAND_TOOLS, "tile"),
   // 스팀펑크 도시(steampunk_city) 구성기 — 거리·공장역·운하 부두·실내 여섯 가지를 한 번에 짓고(배치·통행은 구성기), 건물 문 ↔ 실내를 잇는다.
@@ -356,6 +361,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...AUTHORING_HARNESS_TOOLS,
   ...withDomain(COMPANION_TOOLS, "event"),
   ...withDomain(TIME_GATE_TOOLS, "event"),
+  ...withDomain(LOCK_DOOR_TOOLS, "event"),
   ...withDomain(MAP_VARIANT_TOOLS, "map"),
   ...withDomain(TILE_CHANGE_EFFECT_TOOLS, "event"),
   ...withDomain(VEHICLE_TOOLS, "event"),
@@ -420,6 +426,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(STORY_TOOLS, "quest"),
   ...withDomain(BATTLE_TOOLS, "battle"),
   ...withDomain(COMBO_TECH_TOOLS, "battle"),
+  ...withDomain(SCHEDULE_TOOLS, "database"),
   ...withDomain(PARTY_BOND_TOOLS, "event"),
   ...withDomain(TROOP_BATTLE_PAGE_TOOLS, "battle"),
   ...withDomain(REFACTOR_TOOLS, "system"),
