@@ -19,7 +19,8 @@ import { createBeodeulGroundTileset } from "../../../src/project/defaults/beodeu
 import groundCatalog from "../../../src/assets/beodeulGroundCatalog.json";
 import type { ReliefData } from "../../../src/project/relief/types.ts";
 import { installPieces, STYLE } from "./ramps/install.mts";
-installPieces(JSON.parse(readFileSync(new URL("./ramps/pieces.json", import.meta.url), "utf8")));
+const PIECES: Record<string, { w: number; h: number; rgba: number[] }> = JSON.parse(readFileSync(new URL("./ramps/pieces.json", import.meta.url), "utf8"));
+installPieces(PIECES);
 
 const [lf, tf, cf, outDir] = process.argv.slice(2);
 const render = process.argv.includes("--render");
@@ -90,14 +91,21 @@ const southFaceNear = (x: number, y: number, w: number, lowL: number, highP: num
   }
   return best;
 };
-// cliff cuts (ramps / stairs): one foot row on the lower level against the cliff, as tall as the face (ramps/pieces.py)
+// cliff cuts (ramps / stairs): one foot row on the lower level against the cliff, as tall as the face (ramps/pieces.py).
+// Stacked flight (r3): a cut whose exit row is a ONE-row strip of a middle level can carry a second cut on that strip (same
+// columns, same kind, foot = the strip row, its own cliff height) — the strip is the landing. The chain becomes one relief
+// slope h = number of flights (the strip cells take the bottom level, the slope convention), drawn by a stacked piece
+// composed from the single pieces (upper flight, its foot as the landing, lower flight, foot) — no new pixels.
 const ramps = new Array<number>(W * H).fill(0);
 const stairCells = new Set<number>();
-const cuts: { id: string; x: number; y: number; w: number; rise: number; cut: string; dir: string }[] = [];
+const MAXR = 4;
+type Cut = { i: number; id: string; x: number; y: number; w: number; rise: number; cut: string; dir: string; lo: number; hi: number; tag: string };
+const cuts: (Cut & { stackedOn?: number })[] = [];
 const cutId = (k: string, r: number, w: number) => `${k}-h${r}-w${w}`;
+const pathKind = (c: number) => ["road", "track", "plaza"].includes(kind[c]!);
 arr("cuts").forEach((s, i) => {
   const d = CAT[s?.id] as any, tag = `cuts[${i}] "${s?.id}"`;
-  if (!d || d.kind !== "cut") { errors.push(`${tag}: unknown cut id — use ramp-h<1..3>-w<2|3> or stairs-h<1..3>-w<2|3> from the catalog.`); return; }
+  if (!d || d.kind !== "cut") { errors.push(`${tag}: unknown cut id — use ramp-h<1..${MAXR}>-w<2|3> or stairs-h<1..${MAXR}>-w<2|3> from the catalog.`); return; }
   if (!num(s.x) || !num(s.y)) { errors.push(`${tag}: needs integer x, y (the left foot cell on the lower level).`); return; }
   if (s.dir !== "north" && s.dir !== "south") { errors.push(`${tag}.dir must be "north" (preferred: climbs through a south-facing cliff) or "south".`); return; }
   const w = d.w, north = s.dir === "north";
@@ -110,7 +118,7 @@ arr("cuts").forEach((s, i) => {
   const hi = [...his][0]!;
   if (his.size > 1 || hi <= lo) { errors.push(`${tag}: the row just ${s.dir} of its foot (y=${hiY}) must be ONE higher level across all ${w} columns (foot level ${lo}; found ${[...his].join("/")}). Put the foot directly ${north ? "south" : "north"} of a straight stretch of cliff.`); return; }
   const rise = hi - lo;
-  if (rise > 3) { errors.push(`${tag}: the cliff there is ${rise} tall — cuts exist for heights 1-3 only; choose another spot.`); return; }
+  if (rise > MAXR) { errors.push(`${tag}: the cliff there is ${rise} tall — cuts exist for heights 1-${MAXR} only; choose another spot.`); return; }
   if (rise !== d.rise) errors.push(`${tag}: the cliff face there is ${rise} tall, so the piece must be ${cutId(d.cut, rise, w)} (a ${d.rise}-tall piece does not fit). Fixed: {"id": "${cutId(d.cut, rise, w)}", "x": ${s.x}, "y": ${s.y}, "dir": "${s.dir}"}.`);
   if (!north) {
     // a cut through a NORTH-facing cliff is hidden by the 3/4 view: rejected unless that boundary has no south face at all
@@ -119,14 +127,38 @@ arr("cuts").forEach((s, i) => {
     if (s.northFace !== true) { errors.push(`${tag} climbs through a NORTH-facing cliff and no south-facing face ${w} wide leads from level ${lo} onto this level-${hi} terrace anywhere, so a hidden north cut is the only way. Fixed: acknowledge it explicitly: {"id": "${s.id}", "x": ${s.x}, "y": ${s.y}, "dir": "south", "northFace": true}.`); return; }
     warnings.push(`${tag} is an acknowledged north-facing cut (no south face on that boundary) — hidden in the 3/4 view.`);
   }
-  for (let x = s.x; x < s.x + w; x += 1) {
-    const top = idx(x, hiY), bot = idx(x, loY);
-    if (!["road", "track", "plaza"].includes(kind[top]!)) errors.push(`${tag}: exit cell ${P(top)} (level ${hi}) must be a road/track/plaza cell.`);
-    if (!["road", "track", "plaza"].includes(kind[bot]!) || lv[bot] !== lo) errors.push(`${tag}: entry cell ${P(bot)} must be a road/track/plaza cell on level ${lo}.`);
-  }
+  if (cs.some((c) => stairCells.has(c))) { errors.push(`${tag}: overlaps another cut.`); return; }
   for (const c of cs) { if (kind[c] === "road" || kind[c] === "track") { owner[c] = ""; kind[c] = ""; roadMat.delete(c); } claim(c, "stair", `cut ${i}`); ramps[c] = rampCode(north ? "n" : "s", d.cut === "stairs"); stairCells.add(c); }
-  cuts.push({ id: s.id, x: s.x, y: s.y, w, rise, cut: d.cut, dir: s.dir });
+  cuts.push({ i, id: s.id, x: s.x, y: s.y, w, rise, cut: d.cut, dir: s.dir, lo, hi, tag });
 });
+// entry / exit rows (pass 2, after every cut is known): a row may be road/track/plaza, or the foot of the next flight of a stack
+const footOf = (x: number, y: number, w: number) => cuts.find((q) => q.dir === "north" && q.x === x && q.y === y && q.w === w);
+for (const q of cuts) {
+  const north = q.dir === "north", hiY = north ? q.y - 1 : q.y + 1, loY = north ? q.y + 1 : q.y - 1;
+  const up = north ? footOf(q.x, hiY, q.w) : undefined, down = north ? footOf(q.x, loY, q.w) : undefined;
+  if (up && up.cut !== q.cut) errors.push(`${q.tag} and ${up.tag} form a stacked flight but mix a ramp and stairs — both flights of a stack must be the same kind. Fixed: {"id": "${cutId(q.cut, up.rise, up.w)}", "x": ${up.x}, "y": ${up.y}, "dir": "north"}.`);
+  if (up && up.cut === q.cut) up.stackedOn = q.i;
+  if (!up) {
+    const top = cellsOf({ x: q.x, y: hiY, w: q.w, h: 1 });
+    const bad = top.filter((c) => !pathKind(c));
+    if (bad.length) {
+      // the exit lands on a one-row strip with a further cliff right behind it: name the second flight that climbs it
+      const y2 = hiY - 1, lv2 = inMap(q.x, y2) ? new Set(cellsOf({ x: q.x, y: y2, w: q.w, h: 1 }).map((c) => lv[c])) : new Set<number>();
+      const r2 = lv2.size === 1 ? [...lv2][0]! - q.hi : 0;
+      if (north && r2 > 0 && r2 <= MAXR) errors.push(`${q.tag}: exit row y=${hiY} (level ${q.hi}) is a one-row strip under another ${r2}-tall cliff — it is the landing of a stacked flight. Fixed: add the second flight on it {"id": "${cutId(q.cut, r2, q.w)}", "x": ${q.x}, "y": ${hiY}, "dir": "north"} and make row y=${y2} (columns ${q.x}..${q.x + q.w - 1}, level ${q.hi + r2}) a road/track/plaza cell.`);
+      else for (const c of bad) errors.push(`${q.tag}: exit cell ${P(c)} (level ${q.hi}) must be a road/track/plaza cell.`);
+    }
+  }
+  if (!down) for (const c of cellsOf({ x: q.x, y: loY, w: q.w, h: 1 })) if (!pathKind(c) || lv[c] !== q.lo) errors.push(`${q.tag}: entry cell ${P(c)} must be a road/track/plaza cell on level ${q.lo}.`);
+}
+// stack chains (bottom flight first): the landing/foot cells of the upper flights take the chain's bottom level (one relief slope)
+const stacks: Cut[][] = [];
+for (const q of cuts) {
+  if (q.stackedOn !== undefined) continue;
+  const chain: Cut[] = [q]; let cur: Cut | undefined = q;
+  while ((cur = cuts.find((u) => u.stackedOn === cur!.i))) chain.push(cur);
+  if (chain.length > 1) { stacks.push(chain); for (const u of chain.slice(1)) for (const c of cellsOf({ x: u.x, y: u.y, w: u.w, h: 1 })) lv[c] = q.lo; }
+}
 if (arr("stairs").length) errors.push(`"stairs" is no longer a key — use "cuts" with a ramp-/stairs- piece id from the catalog.`);
 // kit placements
 type Placed = { id: string; x: number; y: number; w: number; h: number; k: string; who: string; door?: { dx: number; dy: number } };
@@ -214,7 +246,9 @@ for (let c = 0; c < W * H; c += 1) {
     errors.push(dx ? `path cells ${P(c)} (level ${lv[c]}) and ${P(n)} (level ${lv[n]}) meet across an east-west level change — paths cannot climb sideways; route the path north/south through stairs.`
       : (() => { const r = Math.abs(lv[c]! - lv[n]!), lowC = lv[c]! < lv[n]! ? c : n, northHigh = lowC === n;
           const fx = lowC % W, fy = Math.floor(lowC / W);
-          return r > 3 ? `path cells ${P(c)} (level ${lv[c]}) and ${P(n)} (level ${lv[n]}) meet across a ${r}-tall cliff — too tall for a cut (max 3); route the path elsewhere.`
+          const hiC0 = lowC === c ? n : c, sy = Math.floor(hiC0 / W) - 1, r2 = northHigh && sy >= 0 ? lv[idx(fx, sy)]! - lv[hiC0]! : 0;
+          if (northHigh && r <= MAXR && r2 > 0 && r2 <= MAXR) return `path cells ${P(c)} (level ${lv[c]}) and ${P(n)} (level ${lv[n]}) meet across a ${r}-tall cliff, and row y=${fy - 1} is a one-row level-${lv[hiC0]} strip under a further ${r2}-tall cliff. Fixed: climb both with a stacked flight (the strip is the landing): {"id": "stairs-h${r}-w2", "x": <left column>, "y": ${fy}, "dir": "north"} and {"id": "stairs-h${r2}-w2", "x": <same column>, "y": ${fy - 1}, "dir": "north"} (or ramp-h${r}-w2 + ramp-h${r2}-w2 for a track; x=${fx} must be inside both), with row y=${fy - 2} a road/track/plaza on level ${lv[hiC0]! + r2}.`;
+          return r > MAXR ? `path cells ${P(c)} (level ${lv[c]}) and ${P(n)} (level ${lv[n]}) meet across a ${r}-tall cliff — too tall for a cut (max ${MAXR}); route the path elsewhere.`
             : `path cells ${P(c)} (level ${lv[c]}) and ${P(n)} (level ${lv[n]}) meet across a ${r}-tall cliff without a cut. Fixed: add {"id": "ramp-h${r}-w2" (track) or "stairs-h${r}-w2" (paved; -w3 for a 3-wide road), "x": <left column>, "y": ${fy}, "dir": "${northHigh ? "north" : "south"}"} with its foot on the lower row y=${fy} (x=${fx} must be inside it)${northHigh ? "" : (() => { const hiC = lowC === c ? n : c, alt = southFaceNear(fx, fy, 2, lv[lowC]!, patch[hiC]!);
               return alt ? ` — BUT this face looks north and north-facing cuts are rejected; climb at the south-facing face of the same boundary instead: {"id": "ramp-h${r}-w2", "x": ${alt.x}, "y": ${alt.y}, "dir": "north"} and reroute the road there` : ` — this face looks north; no south face exists on this boundary, so add "northFace": true`; })()}.`; })());
   }
@@ -251,7 +285,7 @@ for (const g of gates) if (g.out < 0 || !net.has(g.out)) errors.push(`${g.who}: 
 const free = [...Array(W * H).keys()].filter((c) => !water[c] && !owner[c]).length, land = water.filter((v) => !v).length;
 if (free / land > 0.6) warnings.push(`${Math.round((free / land) * 100)}% of the dry land is still bare grass — consider more fields, forests, orchards or props.`);
 const stats = { W, H, buildings: placed.filter((p) => p.k === "building").length, props: placed.filter((p) => p.k === "prop" || p.k === "boat").length, trees: placed.filter((p) => p.k === "tree").length,
-  pathCells: pathCells.length, cuts: cuts.length, cutsSouthFacing: cuts.filter((q) => q.dir === "north").length, fields: fieldCells.size, forest: forestSet.size, bareLandPct: Math.round((free / land) * 100) };
+  pathCells: pathCells.length, cuts: cuts.length, cutsSouthFacing: cuts.filter((q) => q.dir === "north").length, stackedFlights: stacks.length, fields: fieldCells.size, forest: forestSet.size, bareLandPct: Math.round((free / land) * 100) };
 if (errors.length || !render) done({ stats });
 
 // ── 3. paint exactly ──
@@ -353,6 +387,17 @@ if (fenceAt.size) {
 {
   const m = map();
   if (lv.some((v) => v > 0)) {
+    // stacked flights: compose the chain's piece from the single pieces, top flight first (its foot row = the landing)
+    const stackArt: Record<string, { w: number; h: number; rgba: number[] }> = {};
+    for (const ch of stacks) {
+      const key = `${ch[0]!.cut}:n:${ch[0]!.w}x${ch.length}:${ch.reduce((a, q) => a + q.rise, 0)}`;
+      const parts = [...ch].reverse().map((q) => PIECES[`${q.cut}:n:${q.w}x1:${q.rise}`]!);
+      const art = { w: parts[0]!.w, h: parts.reduce((a, p) => a + p.h, 0), rgba: parts.flatMap((p) => p.rgba) };
+      const prev = stackArt[key];
+      if (prev && prev.rgba.join() !== art.rgba.join()) warnings.push(`stacked flights ${key} with different splits on one map — the renderer keys pieces by total height, so one art is used for both.`);
+      stackArt[key] = art;
+    }
+    installPieces(stackArt);
     m.relief = { width: W, height: H, levels: lv.slice(), ramps: ramps.slice(), style: STYLE };
     invalidateReliefSlopes(m.relief);
     for (const c of stairCells) for (const Lr of [2, 3, 4] as const) setLayerTileAt(m, Lr, c, -1);
