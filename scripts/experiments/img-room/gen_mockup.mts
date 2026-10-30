@@ -27,6 +27,20 @@ const PROMPTS: Record<string, { prompt: string; refs: string[] }> = {
       "and a small kitchen alcove behind a counter (kitchen range, sink, barrels, crates). Plank floor, plaster or log walls with windows and pictures. Roughly 22x16 tiles.",
   },
 };
+// 칩셋에 묶인 목업(3단계): 실제 조각 시트(이름 = 조각 id, 16px 격자, 2배)만 주고, 그 조각만으로 16px 격자에 짜게 한다.
+if (process.env.MOCKUP_BOUND === "1") {
+  const ids = readFileSync(`${refs}/${task}-pieces.txt`, "utf8").trim().split("\n");
+  const room = task === "boss"
+    ? "a dungeon BOSS ROOM deep under a demon lord's castle: an entrance from the south, an antechamber with side alcoves (crypt pieces), then the main throne hall with a long carpet runner up the middle, columns on both sides, braziers, and at the far north end the throne as the landmark; one small side room with treasure. Roughly 30x24 cells."
+    : "the GROUND FLOOR OF A SMALL VILLAGE INN: entrance door on the south wall with a doormat, the inn reception counter with the room key board and inn sign near the entrance, a dining hall with several dining tables, chairs and benches, a fireplace on the north wall as the landmark, a wooden staircase up in one corner, and a small kitchen alcove behind a counter. Not a plain rectangle (L-shaped or two-part). Roughly 22x16 cells.";
+  const fb = process.env.MOCKUP_FEEDBACK ? ` A previous attempt drew things that are NOT in the sheet: ${process.env.MOCKUP_FEEDBACK}. Do not draw those again.` : "";
+  PROMPTS[task] = { refs: [`${task}-pieces.png`], prompt:
+    `Design a mockup of ${room} ` +
+    "Style: 16px-per-tile SNES-era JRPG map, 3/4 top-down view, orthographic, crisp pixel art, whole room on a dark void, no people, no text, no labels, no UI, no grid lines in the output. " +
+    "HARD RULE: the attached sheet is the COMPLETE chipset. Every floor, wall and object in your picture must be one of these labelled pieces, copied at its exact size on a 16px grid (each grid square in the sheet is one 16px cell), with the same colours. " +
+    "Do not invent any material, furniture, decoration or effect that is not on the sheet — no extra statues, no flames, lava, water, plants, rugs, lights or props unless that exact piece is on the sheet. Floors and walls only from the floor:/wall: swatches. Plain doorways/doors in walls are fine (the builder adds them). " +
+    `Allowed piece ids: ${ids.join(", ")}. Never reproduce the sheet itself or put loose pieces beside the room.${fb}` };
+}
 const p = PROMPTS[task];
 if (!p) throw Error(`unknown task ${task}`);
 const t0 = Date.now();

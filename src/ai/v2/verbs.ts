@@ -63,6 +63,7 @@ import { buildsHandInterior, designMissingRooms } from "./designRooms";
 import { dropModelSeed } from "./modelSeed";
 import { TodoStore } from "./loop/todoStore";
 import { TodoLoop } from "./loop/continuation";
+import { pieceTableOn, tableGateProblems, validatePieceTable, compareTableToMap, type PieceTable } from "./experiment/pieceTable";
 import { HookStats } from "./loop/hookStats";
 import { buildBossEncounter, buildEndingScene, wantsBossEncounter, wantsEndingScene, type BossEncounterSpec, type EndingSceneSpec } from "./sceneVerbs";
 
@@ -97,6 +98,8 @@ export class V2Session {
   readonly questions: string[] = [];
   /** ask_user 를 한 번 되돌려 보냈는가(아무것도 짓지 않고 물었을 때). */
   askBounced = false;
+  /** 실험(img-room-test): 모델이 목업을 보고 쓴 조각 표 — 관문이 지은 맵과 맞댄다. */
+  pieceTable?: PieceTable & { mapId?: string };
   /** 설계 없이 온 손 도트 실내 make_place 를 한 번 되돌려 보낸 장소 이름(2026-10-29 「방을 짓는 건 조수여야만 한다」). */
   readonly designBounced = new Set<string>();
   /** 지형 설계(hints.landform) 없이 온 마을 make_place 를 한 번 되돌려 보낸 장소 이름(2026-10-29 「지형을 먼저 깔고 마을은 지형에 맞춰 자란다」). */
@@ -1422,6 +1425,28 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     },
   };
 
+  // ───── 실험(img-room-test): piece_table — 모델이 쓴 조각 표를 검사만 하고 세션에 둔다 ─────
+  const pieceTableVerb: PiToolShape = {
+    name: "piece_table", label: "조각 표", concurrency: "exclusive",
+    description: "Write your piece table for the room BEFORE building it (and again whenever you change the design). Look at the attached mockup and list (1) rooms/zones with approximate cell rects on the planned map, and (2) every object group: chipset piece id (exact id from room_parts), approximate x,y of the group's first piece in map cells (0,0 = top-left of the whole map incl. walls), and count. The function only checks that ids exist and coordinates are inside the map; it places nothing. After you build, the finish gate compares the built map with this table and lists missing or misplaced groups.",
+    parameters: { type: "object", properties: {
+      mapId: { type: "string", description: "(optional) the map this table is for, once it exists" },
+      mapWidth: { type: "number", description: "planned map width in cells" }, mapHeight: { type: "number", description: "planned map height in cells" },
+      rooms: { type: "array", items: { type: "object", properties: { name: { type: "string" }, x: { type: "number" }, y: { type: "number" }, w: { type: "number" }, h: { type: "number" } }, required: ["name", "x", "y", "w", "h"] } },
+      groups: { type: "array", items: { type: "object", properties: { name: { type: "string", description: "group name, e.g. «dining tables west»" }, id: { type: "string", description: "chipset piece id" }, x: { type: "number" }, y: { type: "number" }, count: { type: "number" } }, required: ["name", "id", "x", "y", "count"] } },
+    }, required: ["mapWidth", "mapHeight", "rooms", "groups"] },
+    async execute(_id, params) {
+      const raw = (params ?? {}) as Record<string, unknown>;
+      const { table, problems } = validatePieceTable(env.ctx.project, raw);
+      if (!table) return text({ ok: false, problems, next: "fix these and call piece_table again" });
+      const mapId = typeof raw.mapId === "string" && env.ctx.project.maps[raw.mapId] ? raw.mapId : session.pieceTable?.mapId;
+      session.pieceTable = { ...table, ...(mapId ? { mapId } : {}) };
+      env.emit({ type: "execution_status", name: "v2.piece_table", ok: true, summary: `조각 표 — 방 ${table.rooms.length} · 묶음 ${table.groups.length}`, data: session.pieceTable });
+      const now = mapId ? compareTableToMap(env.ctx.project, mapId, table) : undefined;
+      return text({ ok: true, rooms: table.rooms.length, groups: table.groups.length, ...(now ? { coverageNow: `${Math.round(now.coverage * 100)}%` } : {}),
+        next: "Now build the room from YOUR table: make_place type interior with zones[].design (shape, w, h, door, floor, wall, groups with items {id, dx, dy, count}) using these piece ids and positions. Then inspect. The finish gate will check the built map against this table." });
+    },
+  };
   // ───── room_parts: 방을 직접 설계하기 전에 보는 재료(기물 이름표 + 손 견본 배치 요약·그림). 읽기만 한다 ─────
   const refPictures = new Map<string, string>();
   const roomPartsVerb: PiToolShape = {
@@ -1563,7 +1588,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     }
     return result;
   } });
-  const verbs = [writeBlueprint, buildBlueprintPathVerb, makePlace, ...(makeGameOn() && wantsMakeGame(String(task ?? "")) ? [makeGame] : []), editPlace, moveObject, dressRoomVerb, addPeople, addEvent, addScene, ...(wantsBossEncounter(String(task ?? "")) ? [addBossEncounter] : []), ...(wantsEndingScene(String(task ?? "")) ? [addEndingScene] : []), ...(wantsPuzzle(String(task ?? "")) ? [authorPuzzleChain] : []), sealLockedRoomVerb, setObjectiveVerb, drawObjectVerb, placeObject, inspect, roomPartsVerb, createDungeonPartsVerb(env, () => session.places.values()), restoreEvent, ...(helpersOn() ? [askHelpers] : []), askUser]
+  const verbs = [writeBlueprint, buildBlueprintPathVerb, makePlace, ...(makeGameOn() && wantsMakeGame(String(task ?? "")) ? [makeGame] : []), editPlace, moveObject, dressRoomVerb, addPeople, addEvent, addScene, ...(wantsBossEncounter(String(task ?? "")) ? [addBossEncounter] : []), ...(wantsEndingScene(String(task ?? "")) ? [addEndingScene] : []), ...(wantsPuzzle(String(task ?? "")) ? [authorPuzzleChain] : []), sealLockedRoomVerb, setObjectiveVerb, drawObjectVerb, placeObject, inspect, roomPartsVerb, createDungeonPartsVerb(env, () => session.places.values()), restoreEvent, ...(helpersOn() ? [askHelpers] : []), ...(pieceTableOn() ? [pieceTableVerb] : []), askUser]
     // 음악만 바라는 요청은 맵·이벤트를 쓰는 동사를 싣지 않는다 — 보기·묻기만(2026-10-30 r12: 추격 음악 요청에 상자를 찍었다).
     .filter((tool) => !musicOnly(String(task ?? "")) || MUSIC_ONLY_VERBS.has(tool.name))
     .map((tool) => guard(flattenWrapperTool(tool)));
@@ -1669,6 +1694,16 @@ export function v2GateProblems(session: V2Session, env?: PiAssistantV2Env): { pr
     ...fixable.map((o) => ({ key: `place:${o.mapId}:${o.name.includes("컷신(") ? "stage" : "place"}`, text: `${o.name}(${o.mapId}) 고치기 — 장소는 edit_place·move_object·dress_room, 컷신은 add_event: ${o.problems.slice(0, 5).join(" / ")}`,
       source: o.problems.some((p) => p.startsWith("[비평")) ? "critic" as const : "gate" as const })),
   ];
+  // 실험(img-room-test): 조각 표 — 없으면 쓰라고, 있으면 지은 맵과 맞대어 빠진·엇나간 묶음을 항목으로.
+  if (env && pieceTableOn() && env.request.task.includes("[mockup attached]")) {
+    const pt = session.pieceTable;
+    if (!pt) problems.push({ key: "game:table:missing", source: "gate", text: "[piece table] No piece table yet — look at the mockup and call piece_table (rooms with rects, groups with piece id, x, y, count) before or right after building, then build from it." });
+    else {
+      const mapId = pt.mapId && env.ctx.project.maps[pt.mapId] ? pt.mapId : [...session.places.keys()].at(-1) ?? env.ctx.currentMapId;
+      if (mapId && !pt.mapId) session.pieceTable = { ...pt, mapId };
+      problems.push(...tableGateProblems(env.ctx.project, mapId, pt));
+    }
+  }
   const leftovers = open.filter((o) => o.rounds >= V2_MAX_REPAIR_ROUNDS).map((o) => `${o.name}: ${o.problems.slice(0, 4).join(" / ")}`);
   return { problems, leftovers, missing };
 }

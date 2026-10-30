@@ -1,5 +1,5 @@
 #!/bin/bash
-# img-room-test 한 판: run_one.sh <boss|inn> <terra|opus> <A|B|G> <rep>   (G = B 와 같고 목업만 GPT Image)
+# img-room-test 한 판: run_one.sh <boss|inn> <terra|opus> <A|B|G|T> <rep>   (G = B 와 같고 목업만 GPT Image, T = 칩셋에 묶인 GPT 목업 + 조각 표)
 #   A = 지금 v2 경로(요청 글만). B = 칩셋 조각 판(palette) → 이미지 모델 목업 → 목업을 첫 요청에 붙여 v2 가 짓는다.
 #   결과: $IMGROOM_RUNS/<cond><rep>/<arm>/<task>/ (기본 suite/rooms/runs-imgroom). run-room.sh 의 흐름을 따른다(준비→세션→after.json→measure-room).
 set -u
@@ -18,11 +18,25 @@ case $TASK in
   *) echo "unknown task"; exit 1 ;;
 esac
 cd $WT; [ -f dist/index.html ] || { echo "no dist"; exit 1; }
+REQ0=$(mktemp); printf '%s' "$TEXT" > $REQ0
 mkdir -p $G/session/inbox
 [ -d $REFS ] || python3 scripts/experiments/img-room/gen_refs.py $REFS
 IMG_ENV=""
 MOCK_ENV=""; [ $COND = G ] && MOCK_ENV="MOCKUP_PROVIDER=gpt"
-if [ $COND = B ] || [ $COND = G ]; then
+if [ $COND = T ] && [ ! -f $G/mockup.png ]; then
+  # 칩셋에 묶인 GPT 목업 + 검사(Opus medium): 맞는 조각이 없는 물건이 2개 넘으면 다시 그린다(최대 2번). 가장 적은 판을 쓴다.
+  FB=""; BEST=99
+  for try in 1 2 3; do
+    env MOCKUP_PROVIDER=gpt MOCKUP_BOUND=1 MOCKUP_FEEDBACK="$FB" timeout 600 bun scripts/experiments/img-room/gen_mockup.mts $TASK $REFS $G/mockup-try$try.png > $G/mockup-try$try.json 2> $G/mockup-try$try.err || { sleep 20; continue; }
+    timeout 600 python3 scripts/experiments/img-room/mockup_check.py $G/mockup-try$try.png $REFS/$TASK-pieces.png $REFS/$TASK-pieces.txt > $G/mockup-try$try.check.json 2>> $G/mockup-try$try.err
+    N=$(python3 -c "import json;print(json.load(open('$G/mockup-try$try.check.json'))['n'])" 2>/dev/null || echo 99)
+    echo "mockup try $try unmatched=$N" >> $G/RUN.txt
+    if [ "$N" -lt "$BEST" ]; then BEST=$N; cp $G/mockup-try$try.png $G/mockup.png; cp $G/mockup-try$try.json $G/mockup.json; cp $G/mockup-try$try.check.json $G/mockup.check.json; fi
+    [ "$N" -le 2 ] && break
+    FB=$(python3 -c "import json;print('; '.join(u.get('what','') for u in json.load(open('$G/mockup-try$try.check.json'))['unmatched']))" 2>/dev/null)
+  done
+fi
+if [ $COND = B ] || [ $COND = G ] || [ $COND = T ]; then
   if [ ! -f $G/mockup.png ]; then
     for try in 1 2 3; do
       env $MOCK_ENV timeout 600 bun scripts/experiments/img-room/gen_mockup.mts $TASK $REFS $G/mockup.png > $G/mockup.json 2> $G/mockup.err && break
@@ -35,6 +49,15 @@ if [ $COND = B ] || [ $COND = G ]; then
 
 Build this room on the map with the chipset; match its structure, zones and landmark. The attached picture [mockup attached] is a mockup of this room drawn from this chipset's own pieces — follow its room outline (alcoves, side rooms, the L or two-part shape), where each zone sits, and where the landmark stands."
   IMG_ENV="OPRN_EXPERIMENT_USER_IMAGE=$G/mockup.jpg"
+  if [ $COND = T ]; then
+    TEXT="$(cat $REQ0)
+
+Build this room on the map with the hand-pixel interior chipset (make_place type interior, tileset atlas_biome_interior); match its structure, zones and landmark. The attached picture [mockup attached] is a mockup drawn only from this chipset's own pieces.
+Step 1: call room_parts, then look at the mockup and call piece_table — the rooms/zones with approximate cell rects on your planned map, and every object group with its exact chipset piece id, approximate x,y and count. This table is your design.
+Step 2: build the room from your own table with make_place zones[].design, using those piece ids and positions.
+Step 3: inspect the result and fix every group the finish gate reports as missing or misplaced."
+    IMG_ENV="$IMG_ENV OPRN_EXPERIMENT_PIECE_TABLE=1"
+  fi
 fi
 [ -f $G/project/project.sqlite ] || bun src/harnesses/assistant-capability/node/wholeGamePrepare.ts $G "imgroom-$COND$REP-$ARM-$TASK" > $G/prepare.log 2>&1 || { echo "VOID: prepare 실패" > $G/VOID.txt; exit 1; }
 [ -f $G/before.json ] || node -e "import('./src/harnesses/assistant-capability/node/editorDriver.mjs').then(m=>m.writeRuntimeProject('$G/project','$G/before.json'))" || exit 1
@@ -76,4 +99,5 @@ kill -0 $DRV 2>/dev/null && kill $DRV
 echo "build_s=$(( $(date +%s) - T0 ))" >> $G/RUN.txt
 node -e "import('./src/harnesses/assistant-capability/node/editorDriver.mjs').then(m=>m.writeRuntimeProject('$G/project','$G/after.json'))" || { echo "VOID: after.json 없음" > $G/VOID.txt; exit 1; }
 SUITE_WT=$WT timeout 600 bun $R/measure-room.mts $G > $G/measure.log 2>&1; echo "measure exit $?" >> $G/RUN.txt
+[ $COND = T ] && timeout 300 bun scripts/experiments/img-room/coverage.mts $G >> $G/RUN.txt 2>&1
 echo "done=$(date -u +%FT%TZ)" >> $G/RUN.txt

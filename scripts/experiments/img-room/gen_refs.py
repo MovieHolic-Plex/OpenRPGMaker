@@ -99,3 +99,46 @@ open(f"{OUT}/boss-parts.txt", "w").write("\n".join(sorted(set(labels))))
 ref = Image.open("tiledata/beodeul-variants/castle-catacombs/render-1x.png").convert("RGB")
 ref.crop((0, 0, min(ref.width, 640), min(ref.height, 480))).resize((min(ref.width, 640) * 2, min(ref.height, 480) * 2), Image.NEAREST).save(f"{OUT}/boss-style.png")
 print("ok", OUT)
+
+# ---- chipset-bound piece sheets (img-room-test step 3): interior chipset only, label = exact piece id, 16px grid, 2x ----
+def gridded(im, scale=2):
+    big = im.resize((im.width * scale, im.height * scale), Image.NEAREST).convert("RGBA")
+    d = ImageDraw.Draw(big); s = T * scale
+    for x in range(0, big.width + 1, s): d.line([(x, 0), (x, big.height)], fill=(255, 255, 255, 60))
+    for y in range(0, big.height + 1, s): d.line([(0, y), (big.width, y)], fill=(255, 255, 255, 60))
+    return big
+def pack_grid(cards, width):
+    pad, lab = 10, 16; x, y, rowh, placed = pad, pad, 0, []
+    for label, im in cards:
+        g = gridded(im); cw = max(g.width, int(FONT.getlength(label)) + 4)
+        if x + cw > width - pad: x, y, rowh = pad, y + rowh + pad, 0
+        placed.append((x, y, g, label)); x += cw + pad; rowh = max(rowh, g.height + lab)
+    out = Image.new("RGB", (width, y + rowh + pad), (24, 24, 30)); d = ImageDraw.Draw(out)
+    for x, y, g, label in placed: out.paste(g, (x, y), g); d.text((x, y + g.height + 1), label, fill=(240, 240, 200), font=FONT)
+    return out
+def floor_card(fid, w=3, h=2):
+    f = S["floors"][fid]; im = Image.new("RGBA", (w * T, h * T))
+    for y in range(h):
+        for x in range(w): im.alpha_composite(tile(chip, f["tiles"][((y % f["rows"]) * f["cols"] + x % f["cols"]) * 4], C), (x * T, y * T))
+    return (f"floor:{fid}", im)
+def wall_card(wid, w=3):
+    W_ = S["walls"][wid]; im = Image.new("RGBA", (w * T, 2 * T))
+    for r in range(2):
+        for x in range(w): im.alpha_composite(tile(chip, W_["tiles"][(r * W_["cols"] + x % W_["cols"]) * 2], C), (x * T, r * T))
+    return (f"wall:{wid}", im)
+SETS = {
+  "inn": (["plank", "boards", "dplank", "flag", "cobble"], ["plaster", "log", "stone", "goldwood"],
+          [k for k, v in S["objects"].items() if v["category"] in INN_CATS] + INN_HOME + INN_DECOR),
+  "boss": (["dungeon", "marble", "flag", "grey", "cave", "soot"], ["dungeonw", "stone", "marblewall", "rune", "rock"],
+           [k for k, v in S["objects"].items() if v["category"] in ("castle", "dungeon", "crypt", "demon", "magic")] +
+           ["throne", "royal chest", "rug red", "runner", "column marble", "column stone", "wall torch", "brazier", "banner red", "royal banner", "tapestry", "statue",
+            "candelabra", "aisle runner", "altar", "chest", "barrel", "crate", "stairs down", "stairs up stone", "weapon rack", "shield", "hanging lantern"]),
+}
+for name, (fl, wl, objs) in SETS.items():
+    cards = [floor_card(f) for f in fl if f in S["floors"]] + [wall_card(w) for w in wl if w in S["walls"]]
+    seen = set()
+    for k in objs:
+        if k in S["objects"] and k not in seen and S["objects"][k]["kind"] not in ("door", "sidedoor"): seen.add(k); cards.append((k, obj_img(S["objects"][k])))
+    pack_grid(cards, 1500).save(f"{OUT}/{name}-pieces.png")
+    open(f"{OUT}/{name}-pieces.txt", "w").write("\n".join(lab for lab, _ in cards))
+print("pieces ok")
