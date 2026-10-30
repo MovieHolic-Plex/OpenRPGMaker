@@ -1154,7 +1154,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
   // 상위 동사 둘(sceneVerbs.ts) — 「말 걸고 → 보스전」·「대사 → 엔딩」을 한 번에. 모델은 누가·무슨 말·어디만 준다.
   const addBossEncounter: PiToolShape = {
     name: "add_boss_encounter", label: "보스 만남", concurrency: "exclusive",
-    description: "Build a talking boss and the boss battle in one go — the boss person (if already present only the lines change), lines before the fight, the boss troop (if missing, made with art from the name/appearance words at a strength matched to the starting party), lines after winning, and vanishing after the win (or laterTalk). Do not assemble it from lower tools (upsert_enemy, upsert_troop, patch_event_page).",
+    description: "Build a talking boss and the boss battle in one go — the boss person (if already present only the lines change), lines before the fight, the boss troop (if missing, made with art from the name/appearance words at a strength matched to the starting party), lines after winning, and vanishing after the win (or laterTalk). If the map already has a boss fight (the dungeon builder's boss, within 4 cells of boss.at), that one becomes this boss — renamed, given the lines, keeping its troop unless troopId is given — instead of a second boss. Do not assemble it from lower tools (upsert_enemy, upsert_troop, patch_event_page).",
     parameters: { type: "object", properties: {
       mapId: { type: "string", description: "map id (or map name) where the boss stands" },
       boss: { type: "object", properties: {
