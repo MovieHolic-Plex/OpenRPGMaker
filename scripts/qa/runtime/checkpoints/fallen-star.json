@@ -11060,21 +11060,11 @@
      "id": "chest-done",
      "ops": [
       {
-       "kind": "repeatUntil",
-       "testid": "dialogue-box",
-       "state": "absent",
-       "maxRounds": 12,
-       "ops": [
-        {
-         "kind": "key",
-         "key": "Enter"
-        },
-        {
-         "kind": "hold",
-         "dir": null,
-         "ms": 1000
-        }
-       ]
+       "kind": "pressUntilJs",
+       "fn": "() => { const n=document.querySelector(\"[data-testid='runtime-state-json']\"); const f=(n&&n.dataset.liveFlags||'').split('|'); return f[3]==='true' && f[4]==='false'; }",
+       "key": "Enter",
+       "settleMs": 1000,
+       "maxPresses": 14
       },
       {
        "kind": "hold",
@@ -11111,21 +11101,11 @@
        "ms": 1000
       },
       {
-       "kind": "repeatUntil",
-       "testid": "dialogue-box",
-       "state": "absent",
-       "maxRounds": 14,
-       "ops": [
-        {
-         "kind": "key",
-         "key": "Enter"
-        },
-        {
-         "kind": "hold",
-         "dir": null,
-         "ms": 1000
-        }
-       ]
+       "kind": "pressUntilJs",
+       "fn": "() => window.__oprnDebug?.readState?.().currentMapId === 'fs2_hub_night' ",
+       "key": "Enter",
+       "settleMs": 1000,
+       "maxPresses": 16
       },
       {
        "kind": "waitForMap",
