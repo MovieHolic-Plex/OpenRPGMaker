@@ -12,7 +12,7 @@ import { RETRO_MONSTER_FX_SHEETS, RETRO_MONSTER_SKILLS } from "@/assets/retroMon
 import type { RetroMonsterSkill } from "@/assets/retroMonsterSkills";
 import type { RetroFxLayer } from "@/assets/retroClassSkills";
 import {
-  retroClassSkillTimeline, retroMonsterCellForPose, retroMonsterSide, retroPartyPixelCellForPose, retroMonsterSkillTimeline, retroSideForScope, retroTimelineSounds, retroTimelineStateAt,
+  retroClassSkillTimeline, retroMonster16Cell, retroMonsterCellForPose, retroMonsterSide, retroMonsterSkillCellKind, retroPartyPixelCellForPose, retroMonsterSkillTimeline, retroSideForScope, retroTimelineSounds, retroTimelineStateAt,
   type RetroSkillTimeline, type RetroStagePlace, type RetroTimelineEvent, type RetroTimelineSide,
 } from "@/battle/retroSkillTimeline";
 import { recommendRetroChoreography } from "@/assets/retroChoreographyRecommend";
@@ -24,7 +24,7 @@ import { BattlePlaybackClock } from "@/player/battlePlaybackClock";
 import { playBattleSample, preloadBattleSamples } from "@/player/battleSeSamples";
 import { deferUntilBattleReady } from "@/player/battleReadiness";
 import { partyPixelBackgroundPosition, partyPixelSheet, partyPixelSheetUrl } from "@/assets/partyPixelSheets";
-import type { PartyPixelCell } from "@/assets/pixelEnemySheets";
+import { pixelEnemyHasCell, pixelEnemySheet, type PartyPixelCell, type RetroMonsterCell } from "@/assets/pixelEnemySheets";
 
 /** Presentation only: the three sword cuts still resolve one authored damage event. */
 type PoseStep = readonly [fraction: number, pose: ExtendedBattlerPose];
@@ -1011,12 +1011,26 @@ export function stopRetroClassSkill(field: HTMLElement): void {
   if (player) finishPlayer(field, player);
 }
 
-/** 포즈 사건을 시전자에 그린다. 몬스터는 도트 시트 9칸(windup·move·attack·recover)으로 옮긴다. */
+/**
+ * 16칸(4×4) 적 시트의 몬스터 기술 칸. 마력·지원 기술은 cast_charge → cast_release, 자기 방어 기술은 방출을 guard 칸으로.
+ * 3×3 시트·사람 적·파티원은 그대로(9칸 이름). 빠진 칸은 pixelEnemyFrame 이 물린다(cast_charge → windup, cast_release → attack);
+ * guard 칸이 빠진 시트는 예전처럼 skill 칸을 쓴다.
+ */
+function monsterSheetCell(player: ClassPlayer, cell: RetroMonsterCell | undefined): RetroMonsterCell | undefined {
+  const sheet = pixelEnemySheet(battlerImage(player.user).dataset.pixelSheet);
+  if (sheet?.grid !== "4x4") return cell;
+  const project = store.getCurrent();
+  let kind = retroMonsterSkillCellKind(player.plan.record, (stateId) => (project.database.states.find((state) => state.id === stateId)?.runtimeEffects?.defenseMultiplier ?? 1) > 1);
+  if (kind === "guard" && !pixelEnemyHasCell(sheet, "guard")) kind = "physical";
+  return retroMonster16Cell(cell, kind);
+}
+
+/** 포즈 사건을 시전자에 그린다. 몬스터는 도트 시트 9칸(windup·move·attack·recover)으로 옮긴다 — 16칸 시트는 monsterSheetCell. */
 function drawPose(player: ClassPlayer, pose: ExtendedBattlerPose, flip: boolean): void {
   const user = player.user;
   user.classList.toggle("retro-skill-flip", flip || player.behind);
   if (player.plan.monster) {
-    const cell = retroMonsterCellForPose(pose);
+    const cell = monsterSheetCell(player, retroMonsterCellForPose(pose));
     if (cell) user.dataset.retroPixelCell = cell;
     else delete user.dataset.retroPixelCell;
     user.dataset.retroFrame = pose;

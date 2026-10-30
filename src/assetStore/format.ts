@@ -366,13 +366,20 @@ function portraitProblems(raw: unknown, assets: Record<string, unknown>, where: 
 }
 
 /**
- * 몬스터 전투 도트 시트(전투가 움직이는 3×3 칸). 몬스터 에셋의 meta.pixelEnemySheet 는 프로젝트의 공방 시트와 같은 계약이다
+ * 몬스터 전투 도트 시트(전투가 움직이는 3×3 또는 4×4 칸). 몬스터 에셋의 meta.pixelEnemySheet 는 프로젝트의 공방 시트와 같은 계약이다
  * (src/project/types/base.ts UploadedPixelEnemySheetMeta, 런타임 src/assets/pixelEnemySheets.ts projectPixelEnemySheet).
- * sheetResourceId 는 같은 팩의 picture 에셋이고, 그림은 (3·cell)×(3·cell), 초상(몬스터 에셋)은 cell×cell 이다.
+ * sheetResourceId 는 같은 팩의 picture 에셋이고, 그림은 (n·cell)×(n·cell)(grid 3x3 → n=3 기본, 4x4 → n=4), 초상(몬스터 에셋)은 cell×cell 이다.
+ * 4x4 칸 번호(행 우선): 0~8 = 3×3 과 같은 9칸, 9 attack_mid · 10 cast_charge · 11 cast_release · 12 guard · 13 weak · 14 intro · 15 예약(투명).
+ * missingCells(9~14 만)는 그리지 않은 칸 — 완전 투명이어야 하고, 적지 않은 9~14 칸은 비어 있으면 안 된다(storeMonsterSheetCellProblems).
  */
 export const STORE_MONSTER_MOTIONS = ["hop", "swoop", "stomp", "dash", "float", "shoot", "breath"] as const;
 export const STORE_MONSTER_SHEET_CELLS = [48, 64, 96] as const;
 export const STORE_MONSTER_IDLE_MS = { min: 60, max: 2000 } as const;
+export const STORE_MONSTER_SHEET_GRIDS = ["3x3", "4x4"] as const;
+/** 4x4 시트에서 비울 수 있는 칸 번호. 0~8 은 늘 그려야 하고 15 는 늘 비어 있다. */
+export const STORE_MONSTER_OPTIONAL_CELLS = [9, 10, 11, 12, 13, 14] as const;
+/** 시트 한 변의 칸 수. grid 생략 = 3x3. */
+export const storeMonsterSheetSide = (grid: unknown): 3 | 4 => (grid === "4x4" ? 4 : 3);
 
 /** 몬스터 에셋 하나의 meta.pixelEnemySheet 검사(크기는 storeMonsterSheetSizeProblems). 표식이 없으면 빈 목록. */
 function monsterSheetProblems(id: string, raw: Record<string, unknown>, assets: Record<string, unknown>): string[] {
@@ -396,11 +403,23 @@ function monsterSheetProblems(id: string, raw: Record<string, unknown>, assets: 
   if (sheet.skillCell !== undefined && sheet.skillCell !== true) out.push(`${where}: pixelEnemySheet.skillCell 은 true 이거나 없어야 합니다.`);
   if (sheet.skillSlug !== undefined && !isString(sheet.skillSlug, 80, 1)) out.push(`${where}: pixelEnemySheet.skillSlug 가 올바르지 않습니다.`);
   if (sheet.recipe !== undefined && !isRecord(sheet.recipe)) out.push(`${where}: pixelEnemySheet.recipe 는 객체여야 합니다.`);
+  if (sheet.grid !== undefined && !includes(STORE_MONSTER_SHEET_GRIDS, sheet.grid)) out.push(`${where}: pixelEnemySheet.grid 는 ${STORE_MONSTER_SHEET_GRIDS.join("·")} 중 하나여야 합니다.`);
+  if (sheet.missingCells !== undefined) {
+    const cells = sheet.missingCells;
+    if (sheet.grid !== "4x4") out.push(`${where}: pixelEnemySheet.missingCells 는 grid 4x4 시트에만 씁니다.`);
+    else if (!Array.isArray(cells) || cells.some((cell) => !(STORE_MONSTER_OPTIONAL_CELLS as readonly unknown[]).includes(cell)) || new Set(cells).size !== cells.length) {
+      out.push(`${where}: pixelEnemySheet.missingCells 는 ${STORE_MONSTER_OPTIONAL_CELLS.join("·")} 중 겹치지 않는 칸 번호 목록이어야 합니다.`);
+    }
+  }
+  if (isRecord(target) && isRecord(target.meta) && target.meta.frames !== undefined) {
+    const side = storeMonsterSheetSide(sheet.grid);
+    if (target.meta.frames !== side * side) out.push(`${where}: 전투 도트 시트 그림의 meta.frames 는 ${side * side} 이어야 합니다(grid ${side}x${side}).`);
+  }
   return out;
 }
 
 /**
- * 전투 도트 시트가 붙은 몬스터의 그림 크기 검사 — 초상 cell×cell, 시트 (3·cell)×(3·cell).
+ * 전투 도트 시트가 붙은 몬스터의 그림 크기 검사 — 초상 cell×cell, 시트 (n·cell)×(n·cell)(n = 3, grid 4x4 면 4).
  * 바이트가 있는 쪽(편집기 넣기·에이전트 제출)이 부른다. pngSize 는 sniff.ts 의 것(이 파일은 sniff 를 import 하지 않는다).
  */
 export function storeMonsterSheetSizeProblems(
@@ -419,8 +438,43 @@ export function storeMonsterSheetSizeProblems(
     }
     const sheetAsset = Object.hasOwn(assets, sheet.sheetResourceId) ? assets[sheet.sheetResourceId] : undefined;
     const size = sheetAsset ? sizeOfBlob(sheetAsset.blob) : null;
-    if (!size || size.width !== cell * 3 || size.height !== cell * 3) {
-      out.push(`${asset.name}: 전투 도트 시트(${sheet.sheetResourceId})는 3×3 칸 ${cell * 3}×${cell * 3} 이어야 합니다(지금 ${size ? `${size.width}×${size.height}` : "PNG 아님"}) — ${id}.`);
+    const side = storeMonsterSheetSide(sheet.grid);
+    if (!size || size.width !== cell * side || size.height !== cell * side) {
+      out.push(`${asset.name}: 전투 도트 시트(${sheet.sheetResourceId})는 ${side}×${side} 칸 ${cell * side}×${cell * side} 이어야 합니다(지금 ${size ? `${size.width}×${size.height}` : "PNG 아님"}) — ${id}.`);
+    }
+  }
+  return out;
+}
+
+/**
+ * 4x4 전투 도트 시트의 칸 채움 검사: 0~8 은 비면 안 되고, 15 와 missingCells 는 완전 투명(알파 0), 적지 않은 9~14 는 비면 안 된다.
+ * 픽셀이 필요하므로 PNG 를 풀 수 있는 쪽(스토어 서버·에이전트 제출 스크립트)이 부른다. decode 가 null 이면(못 풂) 크기 검사에 맡긴다.
+ * 3x3 시트는 검사하지 않는다(예전 그대로).
+ */
+export function storeMonsterSheetCellProblems(
+  manifest: Pick<StorePackManifest, "content">,
+  decode: (sha256: string) => { width: number; height: number; data: Uint8Array } | null,
+): string[] {
+  const out: string[] = [];
+  const assets = manifest.content.assets;
+  for (const asset of Object.values(assets)) {
+    const sheet = asset.kind === "monster" ? asset.meta.pixelEnemySheet : undefined;
+    if (!sheet || sheet.grid !== "4x4") continue;
+    const sheetAsset = Object.hasOwn(assets, sheet.sheetResourceId) ? assets[sheet.sheetResourceId] : undefined;
+    const image = sheetAsset ? decode(sheetAsset.blob) : null;
+    const cell = sheet.cell;
+    if (!image || image.width !== cell * 4 || image.height !== cell * 4) continue;
+    const missing = new Set(sheet.missingCells ?? []);
+    for (let index = 0; index < 16; index += 1) {
+      const x0 = (index % 4) * cell;
+      const y0 = Math.floor(index / 4) * cell;
+      let filled = false;
+      for (let y = y0; y < y0 + cell && !filled; y += 1) {
+        for (let x = x0; x < x0 + cell; x += 1) if (image.data[(y * image.width + x) * 4 + 3] !== 0) { filled = true; break; }
+      }
+      const mustBeEmpty = index === 15 || missing.has(index);
+      if (mustBeEmpty && filled) out.push(`${asset.name}: 전투 도트 시트 ${index}번 칸은 ${index === 15 ? "예약 칸이라" : "missingCells 에 적혀 있어"} 완전히 투명해야 합니다.`);
+      if (!mustBeEmpty && !filled) out.push(`${asset.name}: 전투 도트 시트 ${index}번 칸이 비어 있습니다${index >= 9 ? " — 그리지 않았으면 missingCells 에 적으세요" : ""}.`);
     }
   }
   return out;
