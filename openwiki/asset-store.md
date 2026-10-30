@@ -50,6 +50,10 @@ IPC `oprn:store.upload` → `AssetStoreClient.upload`(검증 → `/api/v1/blobs/
 `REFMAP_CREDIT` 이 있어야 한다. 공식 게시기·에이전트 제출만 쓴다 — 편집기 올리기 화면과 조수 도구는 이 라이선스를 고를 수 없고, 사용자 올리기
 경로(`pack.ts`)는 refmap 이름을 계속 막는다. 다른 제3자 이름(Rasak·PAW·RPG Maker·RTP)은 이 라이선스에서도 막힌다. 스토어 상품은 무료다.
 
+2026-10-31 (사용자: 「REFMAP 은 수정된 것들은 전부 허용」): 게임 게시(`store:publish-game`)도 고친 REFMAP 칩을 막지 않는다.
+`storeGameThirdParty.ts` 가 RefmapDoll 자원을 `REFMAP-MODIFIED` 로 보고 「refmap」 낱말만 풀며, 게임이 쓰는 시트만 판본에 싣고 쓰지 않는 시트는 뺀다.
+쓰면 게임 크레딧에 `REFMAP_CREDIT` 줄을 자동으로 단다. REFMAP 원본 이름·다른 제3자 이름은 그대로 막는다(실측: 폴른 스타 1.25 의 꼬마 토비 = RefmapDoll121 이 이 관문에 막혔다).
+
 | 지점 | 무엇을 보나 |
 |---|---|
 | `storeThirdPartyName` (`format.ts`) | 공용 낱말표. rasak·라삭·refmap·rpgmaker·알만툴·쯔꾸르·ツクール 는 붙여 써도, paw·mv·mz·rtp 는 낱말로 떨어질 때만(camelCase·숫자 경계 분리, pawn·mvp 는 통과) |
