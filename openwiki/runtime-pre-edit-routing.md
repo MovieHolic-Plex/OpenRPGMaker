@@ -1025,6 +1025,7 @@ Do not use matching map IDs or a canvas-export PNG alone as evidence for Phaser 
 - **반복하지 않는 축은 카메라를 따라가지 않는다**(`playSceneMapBackground.placeMapBackgroundLayer`): `cameraFollow` 는 두 축에 같이 걸리는데,
   그림 한 장짜리 축(지평선 loopY:false)이 따라가면 위로 걸을 때 그림이 내려가 위쪽에 검은 띠가 생기고, 실루엣 층은 맵 바닥선을 떠나 아래 채움 줄이 드러났다
   (출하 플레이어 실측). 이제 깊이는 반복하는 축에만 적용 — 지평선은 가로 시차만, 세로는 화면 고정. 편집기 탭 미리보기는 원래 가로로만 흔든다.
+- **세로 한 장 층은 카메라 세로 이동을 따라간다 — `pinY` (2026-10-30)** (`playSceneMapBackground` extra 층 `loopY:false` → `pinY:true`): 화면 고정이던 지평선 띠가 대사 카메라 들림(`syncDialogueCameraLift`)·위아래 걷기에서 맵과 따로 놀아 옥상 난간 위 하늘 한가운데에 거리 띠가 떠 보였다(첫사랑 옥상). 이제 세로는 맵과 1:1 로 붙는다(가로 시차는 그대로). 층 `offsetY`(논리 px, + = 아래, ±2000, `normalizeMapBackgroundOffset`)로 지평선을 난간 높이에 앉힌다.
 - **남은 한계:** `show_map_region` 은 배경을 그리지 못해(설계상 거부) 조수가 배경을 눈으로 검수하지 못한다 — 생성 도구는 그림을 첨부해 대신한다.
   Pi 경로는 되묻기를 건너뛰므로(`executionRoute.ts clarifyBypassed`) 「배경 좀 예쁘게」 는 묻지 않고 해석한다. 칸을 비운 가장자리는 여전히 각지다. 견본 바다·구름 바다는 흐릿한 얼룩 질감이고 노을 견본의 해는 7줄 바닥선에 반쯤 잘린다(견본 그림 문제, 이번 변경 밖). 다리 상판 타일(버들항 3640)은 자기 그림에 물이 있어 다리 밑으로 배경이 비치지 않는다.
 
