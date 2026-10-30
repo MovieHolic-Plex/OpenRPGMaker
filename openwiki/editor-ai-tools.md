@@ -3994,3 +3994,7 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
 - 검증(2026-10-29, 번호 단계): `bun scripts/qa/assistant-v2/codeStepCheck.mts <run-dir>` — mt3 flash 방탈출 실제 결과에서 `blueprint-code-bypass` 가 잡히고, 대사 없는 재빌드·그 턴 인자 재현 모두 자동 플레이가 단서(번호 쪽지) → 번호 입력 → 엔딩 순으로만 간다.
 - 검증(2026-10-28): mt2 flash·argon 방탈출 저장본 사본에 돌려 `scripts/qa-game/check.mts` 자동 플레이가 엔딩까지 갔다(증거 `~/z-project/assistant-whole-game/suite/ledger/evidence/gamepath/`).
 - 측정: 고정 프롬프트 스위트(저장소 밖 `~/z-project/assistant-whole-game/suite/`)의 판정자는 `playerGoal` 한 줄만 받는다. 엔딩 여부는 판정자의 말이 아니라 플레이어 클리어 기록(`:clear-record:v1`)으로 센다.
+
+## 일정표 도구 (upsert_schedule)
+
+`list_schedules`/`upsert_schedule`(`src/editor/tools/scheduleTools.ts`)이 주간 일정표(`database.schedules`)를 저작한다. 명령 `planSchedule`/`runSchedule` 은 조수 이벤트 스키마에 포함. 계약·한계는 `openwiki/schedule-planner.md`.

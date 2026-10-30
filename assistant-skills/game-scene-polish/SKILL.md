@@ -108,6 +108,7 @@ description: Use when authoring or reviewing story scenes, events, cutscenes, NP
 
 1. **선택지는 열린 직후 확인 키를 잠깐 무시한다(엔진, 약 300ms — `CHOICE_CONFIRM_GRACE_MS`).** 대사를 Enter 로 넘기던 손이 선택지 첫 줄을 못 보고 고른다. 조수는 그래도 중요한 선택 바로 앞 대사를 autoAdvance 로 넘기지 않는다.
 2. **자막을 즉시 닫히는 창으로 띄우지 않는다**(4-2).
+3. **주간 일정표(학원물·육성 시뮬)는 손으로 선택지를 늘어놓지 않는다.** `upsert_schedule` 로 슬롯·활동 카드(각 카드는 공통 이벤트 하나)를 만들고, 이벤트에서 `planSchedule {scheduleId}` 로 짜게 한 뒤 `runSchedule {scheduleId, slotVariableId}` 로 슬롯 순서대로 실행한다(다른 맵으로 가도 이어진다). 활동마다 `commonEventId` 가 실제 공통 이벤트여야 하고, 횟수 한도·조건은 카드 필드(`maxUses`·`condition*`)에 둔다. 확인: `run_lint` reference-validation 0, `get_event` 로 두 명령이 같은 scheduleId.
 
 ## 10. 엔진 화면 (코딩 에이전트만)
 

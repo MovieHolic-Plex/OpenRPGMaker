@@ -48,6 +48,7 @@ import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
 import type { CommandExecution, Frame, InterpreterState, PendingStep, StagingTarget, StepResult } from "@/player/interpreter/types";
 import { breakLoop, gotoLabel, pushFrame, pushLoopFrame } from "@/player/interpreter/stack";
 import { presentableItems } from "@/player/interpreter/presentItem";
+import { advanceScheduleRun, buildSchedulePlanView } from "@/player/interpreter/schedule";
 import { executeM2RuntimeCommand, memorizedBgmPlayback, relocateM2Events } from "@/player/interpreter/m2Runtime";
 import { fieldBoolean, fieldNumber, fieldString } from "@/player/interpreter/m2RuntimeFields";
 import { recordSoundLayer, waitConditionMet } from "@/player/interpreter/m2ModernRuntime";
@@ -660,6 +661,30 @@ export function executeCommand(
         items: presentableItems(state.session, command),
         settings: state.session.messageWindowSettings ?? DEFAULT_MESSAGE_WINDOW_SETTINGS,
       });
+    case "planSchedule": {
+      const view = buildSchedulePlanView(state.project, state.session, command);
+      if (!view) {
+        console.warn(`[interpreter] 일정표 없음(또는 슬롯 0): ${command.scheduleId}`);
+        return resumeNext(frame);
+      }
+      return pause("planSchedule", { kind: "planSchedule", view });
+    }
+    case "runSchedule": {
+      // 슬롯 하나를 실행할 때마다 이 명령으로 되돌아온다. 자식 프레임이 끝나면 부모 pc 가 +1 되므로
+      // (advanceCompletedFrame) 미리 -1 해 두어 같은 명령이 다시 실행되게 한다. 진행 위치는 session.scheduleRun —
+      // 공용 이벤트가 맵을 옮겨도 맵 진입 경로가 같은 명령으로 이어 간다.
+      for (;;) {
+        const commonEventId = advanceScheduleRun(state.project, state.session, command);
+        if (commonEventId === undefined) return resumeNext(frame);
+        const commonEvent = (state.session.commonEvents ?? state.project?.commonEvents)?.find((entry) => entry.id === commonEventId);
+        if (commonEvent?.commands.length && pushFrame(state, commonEvent.commands)) {
+          frame.pc -= 1;
+          return { kind: "continue" };
+        }
+        state.onUnverified?.(`Unsupported missing common event: ${commonEventId}`);
+        console.warn(`[interpreter] 일정 활동의 공통 이벤트 없음: ${commonEventId}`);
+      }
+    }
     case "fork": {
       // 소셜 host(characterId) 는 호감도·관계 조건만 읽는다. 나머지는 event id 만 쓰므로 프로젝트 전체 이벤트를
       // 뒤지지 않는다 — 병렬 이벤트의 조건 분기마다 이벤트 수만큼 선형 탐색하던 비용(8,000개 ≈ 550ms/틱)이다.

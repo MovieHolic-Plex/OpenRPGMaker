@@ -658,6 +658,26 @@ export type Command =
   | { kind: "openSaveMenu" }
   | {
       /**
+       * 주간 일정표 화면(G4). project.database.schedules 의 일정표를 열어 슬롯 순서대로 활동을 고르게 하고,
+       * 확정하면 고른 활동 id 배열을 session.schedulePlans[scheduleId] 에 저장한다. 취소 불가(모두 채워야 확정).
+       */
+      kind: "planSchedule";
+      scheduleId: string;
+      /** 일정표의 앞쪽 N 슬롯만 쓴다. 생략하면 전부. */
+      slotCount?: number;
+    }
+  | {
+      /**
+       * 저장된 계획(session.schedulePlans[scheduleId])을 슬롯 순서대로 실행한다.
+       * 슬롯마다 slotVariableId 변수에 1부터 시작하는 슬롯 번호를 넣고 활동의 공통 이벤트를 부르고 사용 횟수를 올린다.
+       * 공통 이벤트가 맵을 옮겨도 다음 슬롯은 이어서 실행된다(session.scheduleRun).
+       */
+      kind: "runSchedule";
+      scheduleId: string;
+      slotVariableId?: string;
+    }
+  | {
+      /**
        * 전술(격자) 전투. 파티와 적 그룹을 작은 격자 양 끝에 세우고 이동력(칸) 안 이동 + 인접 공격을
        * 번갈아 하다 한쪽이 전멸하면 끝난다. 결과는 세션 battleResult 와 victoryBranch/defeatBranch 로 이어진다.
        * canLose=false 인데 지면 게임 오버. player/tacticsBattle.ts.

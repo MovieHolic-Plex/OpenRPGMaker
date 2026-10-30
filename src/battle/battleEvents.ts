@@ -1010,6 +1010,8 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
       case "changeLifeSkillExp":
       case "moveMonster":
       case "openSaveMenu":
+      case "planSchedule":
+      case "runSchedule":
       case "spawnFieldEnemy":
       case "despawnFieldEnemy":
       case "tacticsBattle":

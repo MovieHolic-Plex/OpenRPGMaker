@@ -42,6 +42,7 @@
 @import "./battle/29-impact-contact.css" layer(runtime);
 @import "./battle/31-battle-depth.css" layer(runtime);
 @import "./commerce.css" layer(runtime);
+@import "./schedule.css" layer(runtime);
 @import "./tacticsBattle.css" layer(runtime);
 @import "./shop.css" layer(runtime);
 @import "./title.css" layer(runtime);

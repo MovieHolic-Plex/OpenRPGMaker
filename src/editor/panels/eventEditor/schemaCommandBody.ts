@@ -61,6 +61,9 @@ export const SCHEMA_RENDERED_KINDS: ReadonlySet<string> = new Set<string>([
   "changeLifeSkillExp",
   // 새 명령이라 승계할 기존 testid 계약이 없다. 정답 목록은 presentOptions 위젯이 그린다.
   "presentItem",
+  // 새 명령(주간 일정표) — 승계할 testid 계약이 없다. 일정표 선택·칸 수·변수 칸을 스키마 폼이 그린다.
+  "planSchedule",
+  "runSchedule",
   // 새 명령(전술 격자 전투) — 승계할 testid 계약이 없다. 적 그룹·격자 크기·패배 허용을 스키마 폼이 그린다.
   "tacticsBattle",
 ]);
@@ -76,6 +79,8 @@ export function summaryLookup(): SummaryLookup {
       const hit = pool?.find((entry) => entry.id === id);
       if (hit?.name) return hit.name;
     }
+    const schedule = db.schedules?.find((entry) => entry.id === id);
+    if (schedule?.title) return schedule.title;
     const map = project.maps?.[id];
     if (map?.name) return map.name;
     return id;
@@ -422,6 +427,14 @@ function renderRecordField(
       return itemPicker({ selectedId, testid: `${testid}-picker`, allowEmpty: spec.allowEmpty, onChange }).root;
     case "map":
       return mapPicker({ selectedId, testid: `${testid}-picker`, onChange }).root;
+    case "schedule":
+      return recordPickerWithPreview({
+        records: (store.getCurrent().database.schedules ?? []).map((entry) => ({ id: entry.id, name: entry.title })),
+        selectedId,
+        placeholder: "일정표 선택",
+        testid: `${testid}-picker`,
+        onChange,
+      }).root;
     case "movie":
       return recordPickerWithPreview({
         records: listMovieResources(store.getCurrent()),

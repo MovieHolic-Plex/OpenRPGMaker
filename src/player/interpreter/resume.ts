@@ -2,6 +2,7 @@ import { teleportMenuEntries } from "@/project/teleportPoints";
 import type { InterpreterState, PendingStep, ResumeAdvance, ResumeValue } from "@/player/interpreter/types";
 import { pushFrame, topFrame } from "@/player/interpreter/stack";
 import { presentItemBranch } from "@/player/interpreter/presentItem";
+import { storeSchedulePlan } from "@/player/interpreter/schedule";
 import { clampName } from "@/player/nameEntry/hangulTable";
 import { changeActorName } from "@/project/sessionActorCommands";
 
@@ -42,6 +43,10 @@ export function advanceResume(
     } else {
       frame.pc += 1;
     }
+  } else if (pending === "planSchedule") {
+    const command = frame.commands[frame.pc];
+    if (command?.kind === "planSchedule") storeSchedulePlan(state.project, state.session, command, value);
+    frame.pc += 1;
   } else if (pending === "shop") {
     const command = frame.commands[frame.pc];
     if (command?.kind === "shop") {

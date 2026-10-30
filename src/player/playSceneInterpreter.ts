@@ -79,6 +79,7 @@ import { resolveTimeSystem } from "@/project/gameTime";
 import { formatFriendshipFeedback, isGiftableEvent, isGiftSystemEnabled, isTalkFriendshipEnabled, trySocialTalk } from "@/project/friendship";
 import { playGiftSelection } from "@/player/playSceneGift";
 import { playPresentItem } from "@/player/playScenePresentItem";
+import { playPlanSchedule } from "@/player/playScenePlanSchedule";
 import { playTacticsBattle } from "@/player/playSceneTactics";
 import { applyBattleDefeat } from "@/player/playSceneDefeat";
 import { completeDetectionEncounter } from "@/project/npcBehavior";
@@ -511,6 +512,12 @@ async function consumeBlockingStep(
       const skipped = skipController.takeResult();
       if (skipped) return skipped;
       return itemId === undefined ? resumeAfterSurface(scene, interpreter) : resumeWithValue(scene, interpreter, itemId);
+    }
+    case "planSchedule": {
+      const picks = await playPlanSchedule(scene, step);
+      const skipped = skipController.takeResult();
+      if (skipped) return skipped;
+      return resumeWithValue(scene, interpreter, picks);
     }
     case "wait":
       if (step.allowParallelEvents) conditionWaitScenes.add(scene);
@@ -984,7 +991,7 @@ function resumeWithChoice(
 function resumeWithValue(
   scene: PlaySceneContext,
   interpreter: Interpreter,
-  value: number | boolean | string
+  value: number | boolean | string | readonly string[]
 ): StepResult {
   const result = interpreter.resume(value);
   scene.refreshRuntimeSurfaces();

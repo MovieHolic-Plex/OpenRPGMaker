@@ -1,0 +1,161 @@
+/* planSchedule(주간 일정표) 오버레이 — 480×270 정수배 계약 안에 들어간다. */
+.runtime-schedule-overlay {
+  pointer-events: auto;
+  z-index: 45;
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgb(0 0 0 / 55%);
+  font-family: var(--runtime-ui-font);
+  font-size: var(--runtime-font-size-11);
+  color: var(--runtime-window-text);
+}
+
+.runtime-schedule-window {
+  box-sizing: border-box;
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  gap: 6px;
+  width: min(456px, calc(100% - 24px));
+  height: min(246px, calc(100% - 24px));
+  padding: 8px 10px;
+  background: var(--runtime-window-fill-fallback);
+  border: 1px solid var(--runtime-glass-hairline);
+  border-radius: var(--runtime-glass-radius-small);
+}
+
+.runtime-schedule-title {
+  color: var(--runtime-window-muted);
+  text-align: center;
+}
+
+.runtime-schedule-slots {
+  display: flex;
+  gap: 4px;
+  min-width: 0;
+}
+
+.runtime-schedule-slot {
+  flex: 1 1 0;
+  min-width: 0;
+  display: grid;
+  gap: 1px;
+  padding: 2px 4px;
+  border: 1px solid var(--runtime-glass-hairline);
+  border-radius: var(--runtime-glass-radius-small);
+  text-align: center;
+  color: var(--runtime-window-muted);
+}
+
+.runtime-schedule-slot.filled {
+  color: var(--runtime-window-text);
+}
+
+.runtime-schedule-slot.current {
+  border-color: var(--runtime-window-highlight);
+}
+
+.runtime-schedule-slot > span {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.runtime-schedule-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-auto-rows: min-content;
+  align-content: start;
+  gap: 4px;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.runtime-schedule-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 6px;
+  text-align: left;
+  color: inherit;
+  font: inherit;
+  background: transparent;
+  border: 1px solid var(--runtime-glass-hairline);
+  border-radius: var(--runtime-glass-radius-small);
+  cursor: pointer;
+}
+
+.runtime-schedule-card.selected,
+.runtime-schedule-confirm.selected,
+.runtime-schedule-undo.selected {
+  background: var(--runtime-window-selected-bg);
+  border-color: var(--runtime-window-highlight);
+}
+
+.runtime-schedule-card.exhausted,
+.runtime-schedule-card[aria-disabled="true"] {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.runtime-schedule-card-body {
+  display: grid;
+  gap: 1px;
+  min-width: 0;
+}
+
+.runtime-schedule-card-body > span {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.runtime-schedule-card-desc,
+.runtime-schedule-card-hint,
+.runtime-schedule-card-uses {
+  color: var(--runtime-window-muted);
+}
+
+.runtime-schedule-card-icon {
+  width: 16px;
+  height: 16px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  image-rendering: pixelated;
+}
+
+.runtime-schedule-card-icon-fallback {
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--runtime-glass-hairline);
+  border-radius: var(--runtime-glass-radius-small);
+}
+
+.runtime-schedule-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.runtime-schedule-confirm,
+.runtime-schedule-undo {
+  padding: 3px 12px;
+  color: inherit;
+  font: inherit;
+  background: transparent;
+  border: 1px solid var(--runtime-glass-hairline);
+  border-radius: var(--runtime-glass-radius-small);
+  cursor: pointer;
+}
+
+.runtime-schedule-undo.exhausted {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.runtime-schedule-confirm[hidden] {
+  display: none;
+}

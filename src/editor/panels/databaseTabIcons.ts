@@ -273,6 +273,11 @@ const TAB_ICONS: Record<DatabaseTab, readonly SvgNodeSpec[]> = {
     { tag: "circle", attrs: { cx: "16.6", cy: "16.4", r: "2.2" } },
     { tag: "path", attrs: { d: "M7.5 10.1 14.5 6.5M7.5 11.9l7 3.6" } },
   ],
+  // 일정표 — 달력 격자
+  schedules: [
+    { tag: "path", attrs: { d: "M3.6 5.4h14.8a1 1 0 0 1 1 1v10.2a1 1 0 0 1-1 1H3.6a1 1 0 0 1-1-1V6.4a1 1 0 0 1 1-1z" } },
+    { tag: "path", attrs: { d: "M2.6 9.2h16.8M7.4 3.6v3.4M14.6 3.6v3.4M7.4 12.2h1.2M10.4 12.2h1.2M13.4 12.2h1.2" } },
+  ],
   // 대사 — 말풍선과 글줄
   dialogue: [
     { tag: "path", attrs: { d: "M4 4.6h14a1.4 1.4 0 0 1 1.4 1.4v8a1.4 1.4 0 0 1-1.4 1.4H9.4L5.6 18.6v-3.2H4A1.4 1.4 0 0 1 2.6 14V6A1.4 1.4 0 0 1 4 4.6z" } },

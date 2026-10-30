@@ -36,6 +36,8 @@ import { GOLD_MAX } from "@/project/economyValues";
 import { CINEMATIC_DURATION_MAX_MS, CINEMATIC_SCENE_LIMIT, GAME_OVER_DEFINITION_LIMIT } from "@/project/cinematicSettings";
 import { assert, requireArray, requireBoolean, requireNumber, requireRecord, requireString } from "./guards";
 import { validateFootprintPair } from "./shapeEventFields";
+import { validateConditionShape } from "./shapeCommandFields";
+import { SCHEDULE_ACTIVITY_LIMIT, SCHEDULE_MAX_USES_LIMIT, SCHEDULE_RECORD_LIMIT, SCHEDULE_SLOT_LIMIT } from "@/project/schedule";
 import { validateCharacterAppearances } from "./characterAppearanceValidation";
 
 export function validateDatabase(value: unknown): void {
@@ -90,6 +92,7 @@ export function validateDatabase(value: unknown): void {
   if (database.fishSpecies !== undefined) validateFishSpecies(database.fishSpecies);
   if (database.farmBuildingTypes !== undefined) validateFarmBuildingTypes(database.farmBuildingTypes);
   if (database.homeDecorationTypes !== undefined) validateHomeDecorationTypes(database.homeDecorationTypes);
+  if (database.schedules !== undefined) validateSchedules(database.schedules);
   // 연출 레코드는 정규화가 잘못된 층·시트를 버리므로 형태(배열·행이 객체)만 확인한다.
   if (database.skillChoreographies !== undefined) {
     for (const [index, raw] of requireArray("database.skillChoreographies", database.skillChoreographies).entries()) requireRecord(`database.skillChoreographies[${index}]`, raw);
@@ -780,6 +783,55 @@ function validateHomeDecorationTypes(value: unknown): void {
       validateOrientationGraphicIds(`${label}.orientationGraphicResourceIds`, record.orientationGraphicResourceIds);
     }
     if (record.allowedMapIds !== undefined) validateUniqueStringArray(`${label}.allowedMapIds`, record.allowedMapIds, SPATIAL_DEFINITION_LIMIT);
+  }
+}
+
+function validateSchedules(value: unknown): void {
+  const rows = requireArray("database.schedules", value);
+  assert(rows.length <= SCHEDULE_RECORD_LIMIT, `database.schedules must contain at most ${SCHEDULE_RECORD_LIMIT} records.`);
+  const seen = new Set<string>();
+  for (const [index, raw] of rows.entries()) {
+    const label = `database.schedules[${index}]`;
+    const record = requireRecord(label, raw);
+    const id = requireNonBlankString(`${label}.id`, record.id);
+    assert(!seen.has(id), `${label}.id is duplicated: ${id}`);
+    seen.add(id);
+    requireString(`${label}.title`, record.title);
+    const slots = requireArray(`${label}.slots`, record.slots);
+    assert(slots.length <= SCHEDULE_SLOT_LIMIT, `${label}.slots must contain at most ${SCHEDULE_SLOT_LIMIT} slots.`);
+    for (const [slotIndex, rawSlot] of slots.entries()) {
+      const slot = requireRecord(`${label}.slots[${slotIndex}]`, rawSlot);
+      requireString(`${label}.slots[${slotIndex}].label`, slot.label);
+    }
+    const activities = requireArray(`${label}.activities`, record.activities);
+    assert(activities.length <= SCHEDULE_ACTIVITY_LIMIT, `${label}.activities must contain at most ${SCHEDULE_ACTIVITY_LIMIT} activities.`);
+    const seenActivities = new Set<string>();
+    for (const [activityIndex, rawActivity] of activities.entries()) {
+      const activityLabel = `${label}.activities[${activityIndex}]`;
+      const activity = requireRecord(activityLabel, rawActivity);
+      const activityId = requireNonBlankString(`${activityLabel}.id`, activity.id);
+      assert(!seenActivities.has(activityId), `${activityLabel}.id is duplicated: ${activityId}`);
+      seenActivities.add(activityId);
+      requireString(`${activityLabel}.label`, activity.label);
+      requireString(`${activityLabel}.description`, activity.description);
+      if (activity.hint !== undefined) requireString(`${activityLabel}.hint`, activity.hint);
+      requireNonBlankString(`${activityLabel}.commonEventId`, activity.commonEventId);
+      if (activity.maxUses !== undefined) {
+        const maxUses = requireNumber(`${activityLabel}.maxUses`, activity.maxUses);
+        assert(Number.isInteger(maxUses) && maxUses >= 1 && maxUses <= SCHEDULE_MAX_USES_LIMIT,
+          `${activityLabel}.maxUses must be an integer from 1 to ${SCHEDULE_MAX_USES_LIMIT}.`);
+      }
+      if (activity.condition !== undefined) validateConditionShape(`${activityLabel}.condition`, activity.condition);
+      if (activity.icon !== undefined) {
+        const icon = requireRecord(`${activityLabel}.icon`, activity.icon);
+        assert(icon.kind === "item" || icon.kind === "tile", `${activityLabel}.icon.kind must be item or tile.`);
+        if (icon.kind === "item") requireNonBlankString(`${activityLabel}.icon.itemId`, icon.itemId);
+        else {
+          requireNonBlankString(`${activityLabel}.icon.tilesetId`, icon.tilesetId);
+          assertSafeInteger(`${activityLabel}.icon.tileId`, icon.tileId);
+        }
+      }
+    }
   }
 }
 

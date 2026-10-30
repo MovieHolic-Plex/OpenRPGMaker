@@ -80,6 +80,8 @@ export const COMMAND_KINDS = [
   "inn",
   "checkpointSave",
   "openSaveMenu",
+  "planSchedule",
+  "runSchedule",
   "spawnFieldEnemy",
   "despawnFieldEnemy",
   "tacticsBattle",

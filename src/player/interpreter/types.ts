@@ -1,3 +1,4 @@
+import type { SchedulePlanView } from "@/player/interpreter/schedule";
 import type { BlendModeName } from "@/project/blendMode";
 import type { ParticlePreset, ShakeDirection } from "@/project/eventCommands/cinematicStaging";
 import type { EasingName } from "@/project/easing";
@@ -50,6 +51,11 @@ export type StepResult =
       /** 소지한 후보. 비어 있으면 UI 는 prompt 뒤 닫힘(취소)으로 재개한다. */
       items: readonly { readonly itemId: string; readonly count: number }[];
       settings: MessageWindowSettings;
+    }
+  | {
+      kind: "planSchedule";
+      /** 일정표를 풀어 둔 뷰(조건이 거짓인 활동은 이미 빠져 있다). */
+      view: SchedulePlanView;
     }
   | { kind: "transfer"; mapId: MapId; x: number; y: number; direction?: TransferDirection; fade?: TransferFade; transition?: TransferTransition; door?: boolean }
   | { kind: "wait"; ms: number; allowParallelEvents?: boolean }
@@ -232,7 +238,7 @@ export type StepResult =
   | { kind: "gameOver"; message?: string; gameOverId?: string }
   | { kind: "returnToTitle"; title?: string; message?: string; presentation?: import("@/project/cinematicSettings").EndingPresentation; clear?: { readonly endingId: string }; continueTo?: import("@/project/types").EndingContinueTo };
 
-export type ResumeValue = number | boolean | string | undefined | void | "failed";
+export type ResumeValue = number | boolean | string | readonly string[] | undefined | void | "failed";
 export type PendingStep = Exclude<StepResult["kind"], "done"> | "waitUntil";
 export type ResumeAdvance = "continue" | "done";
 

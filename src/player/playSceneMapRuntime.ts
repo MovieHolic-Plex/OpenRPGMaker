@@ -1240,6 +1240,23 @@ export async function fireAutoTriggers(scene: PlaySceneContext): Promise<void> {
     // 가 전이에서 잘리면 스위치가 남아 자동 이벤트가 맵 로드마다 다시 살아 방으로 되돌린다(출하 플레이어 실측).
     await runCommands(scene, commonEvent.commands, undefined, { continueAfterTransfer: true });
   }
+  await resumeScheduleRun(scene);
+}
+
+/**
+ * runSchedule 이 슬롯 활동의 공용 이벤트에서 맵 이동을 만나 끊겼다면 `session.scheduleRun` 이 남아 있다.
+ * 새 맵이 준비되어 아무 이벤트도 돌고 있지 않을 때 같은 명령을 다시 걸어 다음 슬롯부터 이어 간다.
+ * 슬롯마다 index 가 전진하므로 같은 슬롯이 두 번 돌지 않고, 마지막 슬롯 뒤에는 상태가 지워진다.
+ */
+async function resumeScheduleRun(scene: PlaySceneContext): Promise<void> {
+  const run = scene.session.scheduleRun;
+  if (!run || scene.running) return;
+  await runCommands(
+    scene,
+    [{ kind: "runSchedule", scheduleId: run.scheduleId, ...(run.slotVariableId ? { slotVariableId: run.slotVariableId } : {}) }],
+    undefined,
+    { continueAfterTransfer: true },
+  );
 }
 
 function commonEventHasContent(commands: readonly Command[]): boolean {

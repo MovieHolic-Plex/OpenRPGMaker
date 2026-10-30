@@ -29,6 +29,8 @@ const EXPECTED_COMMAND_KINDS = [
   "changeTile",
   "callCommonEvent",
   "callMapEvent",
+  "planSchedule",
+  "runSchedule",
   "battleProcessing",
   "learnSkill",
   "changeExp",

@@ -894,6 +894,11 @@ function ensureCommandStoryFlags(project: Project, commands: readonly Command[] 
     } else if (command.kind === "choices") {
       for (const option of Array.isArray(command.options) ? command.options : []) ensureCommandStoryFlags(project, option?.branch, eventId, warnings);
       if (command.cancelBranch) ensureCommandStoryFlags(project, command.cancelBranch, eventId, warnings);
+    } else if (command.kind === "runSchedule") {
+      if (command.slotVariableId && !project.variables.some((entry) => entry.id === command.slotVariableId)) {
+        ensureNamedVariable(project, command.slotVariableId, `이벤트 ${eventId}: ${command.slotVariableId}`);
+        warnings.push(`미등록 slotVariableId 자동 생성: ${command.slotVariableId}`);
+      }
     } else if (command.kind === "presentItem") {
       for (const option of Array.isArray(command.options) ? command.options : []) ensureCommandStoryFlags(project, option?.branch, eventId, warnings);
       if (command.otherwiseBranch) ensureCommandStoryFlags(project, command.otherwiseBranch, eventId, warnings);

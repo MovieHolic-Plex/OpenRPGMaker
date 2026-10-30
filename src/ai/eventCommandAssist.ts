@@ -346,6 +346,8 @@ export function eventCommandCatalogSections(
       '- run condition queries: active, floor, flag, result. 필드: active(value?), floor(op,value), flag(flag,value), result(result).',
       "- choices: options[].branch, cancelBranch에 커맨드 배열 중첩 가능.",
       "- presentItem(증거 제시·아이템 보여주기): options[{itemId,branch}] 정답 분기, otherwiseBranch 틀린 것, cancelBranch 안 냄. itemIds 로 후보 제한, consume:true 면 정답 1개 소모.",
+      '- planSchedule(주간 일정 짜기 화면): {"kind":"planSchedule","scheduleId","slotCount"?} — 플레이어가 슬롯마다 활동 카드를 골라 확정하면 계획이 session 에 저장된다. 일정표는 upsert_schedule 로 먼저 만든다.',
+      '- runSchedule(저장된 계획 실행): {"kind":"runSchedule","scheduleId","slotVariableId"?} — 슬롯 순서대로 slotVariableId(1부터)를 세팅하고 활동의 공통 이벤트를 부른다. 다른 맵으로 이동해도 이어서 실행된다.',
       "- loop: body에 커맨드 배열 중첩 가능. breakLoop로 탈출.",
       "- 셀프 스위치 분기는 fork의 selfSwitch 조건을 사용한다(페이지 분리는 이번 범위 밖).",
     ].join("\n")

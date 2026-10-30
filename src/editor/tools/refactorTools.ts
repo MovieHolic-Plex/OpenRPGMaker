@@ -127,6 +127,9 @@ function addCommandRefs(command: Command, refs: ReferenceSets): void {
     case "applyItemUpgrade":
       if (command.resultVariableId) refs.variables.add(command.resultVariableId);
       break;
+    case "runSchedule":
+      if (command.slotVariableId) refs.variables.add(command.slotVariableId);
+      break;
     case "presentItem":
       for (const itemId of command.itemIds ?? []) refs.items.add(itemId);
       for (const option of command.options) refs.items.add(option.itemId);

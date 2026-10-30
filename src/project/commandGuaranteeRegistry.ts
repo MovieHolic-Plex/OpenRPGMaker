@@ -292,6 +292,8 @@ export const COMMAND_GUARANTEES = {
     completion: "dynamic",
     support: { map: "partial", common: "partial", troop: "partial" },
   }),
+  planSchedule: guarantee("dialogue", playerPause),
+  runSchedule: guarantee("system", { executionOwner: "player", completion: "dynamic" }),
   openSaveMenu: guarantee("system", {
     executionOwner: "player",
     completion: "conditionalPause",

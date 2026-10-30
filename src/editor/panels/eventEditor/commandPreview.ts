@@ -2058,6 +2058,10 @@ function describeRuntimeEffect(cmd: Command, simState: PreviewSimState, _hostEve
       return `맵 이동 → (${cmd.x}, ${cmd.y})`;
     case "callCommonEvent":
       return `이벤트 ${cmd.commonEventId} 부르기`;
+    case "planSchedule":
+      return `일정표 ${cmd.scheduleId} 짜기`;
+    case "runSchedule":
+      return `일정표 ${cmd.scheduleId} 실행`;
     case "callMapEvent":
       return `맵 이벤트 ${cmd.eventId} 호출`;
     case "setLighting":

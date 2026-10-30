@@ -1632,7 +1632,38 @@ export interface SkillChoreographyRecord {
   sourceId?: string;
 }
 
+/** 주간 일정표(G4). `planSchedule` 이 슬롯별로 활동을 고르고 `runSchedule` 이 활동의 공용 이벤트를 차례로 부른다. */
+export interface ScheduleSlotRecord {
+  label: string;
+}
+
+export type ScheduleActivityIcon =
+  | { kind: "item"; itemId: ItemId }
+  | { kind: "tile"; tilesetId: string; tileId: number };
+
+export interface ScheduleActivityRecord {
+  id: string;
+  label: string;
+  description: string;
+  hint?: string;
+  icon?: ScheduleActivityIcon;
+  /** 거짓이면 카드를 숨긴다. */
+  condition?: Condition;
+  /** 이 횟수에 닿으면 카드가 흐려지고 고를 수 없다. 없음 = 무제한. */
+  maxUses?: number;
+  commonEventId: string;
+}
+
+export interface ScheduleRecord {
+  id: string;
+  title: string;
+  slots: ScheduleSlotRecord[];
+  activities: ScheduleActivityRecord[];
+}
+
 export interface ProjectDatabaseRecords extends DatabaseRecords {
+  /** 주간 일정표. 없음 = 일정표 없음(기본 DB 에 넣지 않는다 — 기존 JSON 바이트 동일). */
+  schedules?: ScheduleRecord[];
   /** 스킬 연출 레코드. 없음 = 빈 배열(스키마 변경 없이 덧붙는 옵셔널 컬렉션). */
   skillChoreographies?: SkillChoreographyRecord[];
   characterAppearances?: CharacterAppearanceRecord[];

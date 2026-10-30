@@ -514,6 +514,8 @@ export const TOOL_LABELS: Readonly<Record<string, ToolLabelEntry>> = {
   set_scene_summaries: system("장면 요약 정하기", "book"),
   list_combo_techs: inspect("연계기 목록 보기", "spark"),
   upsert_combo_tech: build("연계기 수정", "spark"),
+  list_schedules: inspect("일정표 목록 보기", "clock"),
+  upsert_schedule: build("일정표 수정", "clock"),
   configure_party_bonds: people("파티 유대 설정", "link"),
   replace_text_in_project: system("프로젝트 글자 바꾸기", "brush"),
   set_field_hud: system("필드 화면 표시 설정", "gear"),

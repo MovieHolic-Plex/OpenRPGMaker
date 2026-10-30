@@ -290,6 +290,16 @@ function validateCommandShape(label: string, value: unknown): void {
       return;
     case "openSaveMenu":
       return;
+    case "planSchedule":
+      requireString(`${label}.scheduleId`, command.scheduleId);
+      if (command.slotCount !== undefined) {
+        assert(Number.isInteger(command.slotCount) && (command.slotCount as number) >= 1, `${label}.slotCount 는 1 이상의 정수여야 합니다.`);
+      }
+      return;
+    case "runSchedule":
+      requireString(`${label}.scheduleId`, command.scheduleId);
+      if (command.slotVariableId !== undefined) requireString(`${label}.slotVariableId`, command.slotVariableId);
+      return;
     case "spawnFieldEnemy": {
       const spawn = requireRecord(`${label}.spawn`, command.spawn) as { id?: unknown; troopId?: unknown; area?: unknown };
       requireString(`${label}.spawn.id`, spawn.id);

@@ -1,4 +1,5 @@
 import { normalizeSeCues } from "@/project/seCues";
+import { normalizeScheduleRecords } from "./schedule";
 import { normalizePartyBonds } from "@/project/partyBonds";
 import { normalizeChargeBreak, normalizeFixedDamage, normalizeMultiHit } from "@/project/skillBattleRules";
 import { normalizeShinyRate } from "@/project/monsterIdentity";
@@ -145,7 +146,7 @@ function normalizeStateEmotion(value: unknown): StateRecord["emotion"] {
 
 type ProjectDatabaseInput = DatabaseRecords & Partial<Pick<ProjectDatabaseRecords,
   "battleCommands" | "elements" | "terrains" | "monsterSpecies" | "crops" | "lifeSkills"
-  | "farmAnimalSpecies" | "fishSpecies" | "farmBuildingTypes" | "homeDecorationTypes" | "skillChoreographies"
+  | "farmAnimalSpecies" | "fishSpecies" | "farmBuildingTypes" | "homeDecorationTypes" | "skillChoreographies" | "schedules"
 >>;
 
 /**
@@ -193,6 +194,7 @@ export function normalizeDatabaseRecords(database: ProjectDatabaseInput): Projec
     ...(database.skillChoreographies !== undefined
       ? { skillChoreographies: normalizeSkillChoreographyRecords(database.skillChoreographies) ?? [] }
       : {}),
+    ...(database.schedules !== undefined ? { schedules: normalizeScheduleRecords(database.schedules) } : {}),
   };
 }
 

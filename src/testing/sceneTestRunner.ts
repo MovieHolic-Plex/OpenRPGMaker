@@ -1390,6 +1390,7 @@ function pump(state: RunnerState, interp: Interpreter, first: StepResult): PumpS
       case "pathfindMove":
       case "openMenuScreen":
       case "openLoadMenu":
+      case "planSchedule":
         return { stop: "failed", reason: `${step.kind}: 출하 플레이어 하네스로 검증해야 하는 명령` };
       case "choices":
         return { stop: "choices", choiceCount: step.options.length, cancelBehavior: step.cancelBehavior };

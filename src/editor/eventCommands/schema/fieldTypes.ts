@@ -31,6 +31,7 @@ export type RecordSource =
   | "skill"
   | "equipment"
   | "commonEvent"
+  | "schedule"
   | "monsterSpecies"
   | "animation"
   | "image"
