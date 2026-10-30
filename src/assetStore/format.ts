@@ -466,7 +466,10 @@ export function storeThirdPartyName(text: string, license?: string): string | nu
     .replace(/([a-z])([A-Z])/g, "$1 $2")
     .replace(/([A-Z]+)([A-Z][a-z])/g, "$1 $2")
     .replace(/(\p{L})(?=\p{N})|(\p{N})(?=\p{L})/gu, "$1$2 ")
-    .toLowerCase();
+    .toLowerCase()
+    // 「EasyRPG RTP」(CC BY 4.0, 2026-10-07 저작권 정리에서 남긴 걷기 칩 바탕)는 RPG Maker RTP 가 아니다. 그 한 구절만 지운다 —
+    // 대소문자·띄어쓰기·구분자(easyrpg-rtp, github.com/EasyRPG/RTP)를 가리지 않는다. 따로 선 「RTP」·「RPG Maker RTP」는 그대로 걸린다.
+    .replace(/easy[^\p{L}\p{N}]*rpg[^\p{L}\p{N}]*rtp(?![\p{L}\p{N}])/gu, "easyrpg");
   const compact = spaced.replace(/[^\p{L}\p{N}]+/gu, "");
   const tokens = new Set(spaced.split(/[^\p{L}\p{N}]+/u));
   // REFMAP 약관 상품(고친 REFMAP 칩)은 「refmap」 만 허용한다 — 다른 제3자 이름은 그대로 막는다.

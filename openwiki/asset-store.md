@@ -56,7 +56,7 @@ IPC `oprn:store.upload` → `AssetStoreClient.upload`(검증 → `/api/v1/blobs/
 
 | 지점 | 무엇을 보나 |
 |---|---|
-| `storeThirdPartyName` (`format.ts`) | 공용 낱말표. rasak·라삭·refmap·rpgmaker·알만툴·쯔꾸르·ツクール 는 붙여 써도, paw·mv·mz·rtp 는 낱말로 떨어질 때만(camelCase·숫자 경계 분리, pawn·mvp 는 통과) |
+| `storeThirdPartyName` (`format.ts`) | 공용 낱말표. rasak·라삭·refmap·rpgmaker·알만툴·쯔꾸르·ツクール 는 붙여 써도, paw·mv·mz·rtp 는 낱말로 떨어질 때만(camelCase·숫자 경계 분리, pawn·mvp 는 통과). 「EasyRPG RTP」 구절(CC BY 4.0 걷기 칩 출처, easyrpg-rtp·github.com/EasyRPG/RTP 포함)은 rtp 로 치지 않는다 — 따로 선 RTP·「RPG Maker RTP」는 그대로 걸린다(2026-10-31) |
 | `storePublishBlockReason`·`packBlockedItems` (`pack.ts`) | 고른 것 **과 딸려 들어가는 것 전부**(타일셋 그림·이식 원본·참고문서 원본 타일셋·번들 이식 칩셋 이름). 스토어에서 받은 것(`origin`)·공용 자료집(`shared_`)도 막는다 |
 | `buildPack` | 하나라도 걸리면 바이트를 읽기 전에 `StorePackBlockedError`(`.blocked` 목록, 한국어 문장) |
 | `uploadCandidates` (`storeUpload.ts`) | 같은 판정으로 후보를 막고 「딸려 들어가는 X: …」를 보여 준다 |
