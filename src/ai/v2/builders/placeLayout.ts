@@ -9,6 +9,8 @@ import type { PiAssistantV2Env } from "../env";
 import type { BuildRun, PlaceBuildResult, PlaceBuilder, PlaceRecord, PlaceSpec } from "../types";
 import type { Project, TilesetDef } from "@/project/types";
 import { createBuildRun } from "../buildRun";
+import { CONSTRUCTION_TOOLS_V3 } from "@/editor/tools/v3/constructionTools";
+import { SHARED_OBJECT_TOOLS } from "@/editor/tools/sharedObjectTools";
 import { cloneProjectSharingSharedDictionaries } from "@/project/projectClone";
 import { isBlankMap } from "@/editor/tools/mapEmptiness";
 import { BBOX_DUNGEON_FORMAT, BBOX_DUNGEON_RULES, BBOX_DUNGEON_THEMES, bboxDungeonCatalog, bboxDungeonCatalogText, bboxGraphShape, layBboxDungeon, type BboxDungeonLayout } from "@/editor/dungeonKit/bboxFloor";
@@ -259,11 +261,15 @@ export async function villageKitSheet(env: PiAssistantV2Env): Promise<{ dataUrl?
     const made = run.call("create_map", { name: "kit sheet", width: W, height: H, tilesetId: TS, border: "none" });
     const id = String((made.data as { mapId?: string; id?: string } | undefined)?.mapId ?? (made.data as { id?: string } | undefined)?.id ?? "");
     if (made.ok && scratch.project.maps[id]) {
-      run.call("fill_region", { mapId: id, rect: { x: 0, y: 0, w: W, h: H }, material: "버들항 풀밭", clearUpper: true, _exactCells: true });
+      // 견본 사본에는 도구를 바로 돌린다 — run.call 은 호출마다 기록·사본을 만들어 208개에 200초를 넘겼고
+      // (2026-10-31 부하 박스 실측), 그동안 조수 스트림이 끊겨 포구 판이 모두 「terminated」로 끝났다.
+      const fill = CONSTRUCTION_TOOLS_V3.find((t) => t.name === "fill_region")!, stamp = SHARED_OBJECT_TOOLS.find((t) => t.name === "stamp_object")!;
+      const direct = (tool: typeof fill, args: Record<string, unknown>) => { try { tool.run(scratch.project, args); } catch { /* 한 견본이 실패해도 나머지는 그린다 */ } };
+      direct(fill, { mapId: id, rect: { x: 0, y: 0, w: W, h: H }, material: "버들항 풀밭", clearUpper: true, _exactCells: true });
       for (const k of cat) {
         const at = pos.get(k.id)!;
-        if (k.kind === "boat") run.call("fill_region", { mapId: id, rect: { x: at.x, y: at.y, w: k.w, h: k.h }, material: "버들항 강·운하 물", _exactCells: true });
-        run.call("stamp_object", { objectId: `kit:${TS}/${k.id}`, mapId: id, x: at.x, y: at.y });
+        if (k.kind === "boat") direct(fill, { mapId: id, rect: { x: at.x, y: at.y, w: k.w, h: k.h }, material: "버들항 강·운하 물", _exactCells: true });
+        direct(stamp, { objectId: `kit:${TS}/${k.id}`, mapId: id, x: at.x, y: at.y });
       }
       out.dataUrl = await renderScratch(env, scratch.project, id);
     }
